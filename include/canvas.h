@@ -44,7 +44,7 @@ class CScreen;
 
 typedef struct tCanvas {
 	CCanvasColor	color;
-	CFont				*font;				// the currently selected font
+	CFont*			font;				// the currently selected font
 	CCanvasColor	fontColors [2];   // current font background color (-1==Invisible)
 	short				nDrawMode;			// fill, XOR, etc.
 } tCanvas;
@@ -142,7 +142,8 @@ class CCanvas : public CBitmap {
 		inline short Right (void) { return Left () + Width (); }
 		inline short Bottom (void) { return Top () + Height (); }
 
-};
+		void SetViewport (CCanvas* parent = NULL);
+	};
 
 //===========================================================================
 

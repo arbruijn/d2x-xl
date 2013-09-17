@@ -1924,7 +1924,7 @@ if (!cockpit->Setup (false))
 if (!cockpit->Setup (true))
 	return;
 #endif
-ogl.SetViewport (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
+gameData.render.frame.SetViewport ();
 CCanvas::SetCurrent (&gameData.render.viewport);
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
@@ -2110,7 +2110,6 @@ if (gameStates.app.bEndLevelSequence >= EL_LOOKBACK)
 if ((gameStates.render.cockpit.nType >= CM_FULL_SCREEN) && (gameStates.zoom.nFactor > gameStates.zoom.nMinFactor))
 	return;
 
-	CCanvas * cockpitCanv;
 	static CCanvas overlapCanv;
 
 	CObject*	viewerSave = gameData.objs.viewerP;
@@ -2136,52 +2135,46 @@ UpdateRenderedData (nWindow + 1, viewerP, bRearView, nUser);
 m_info.weaponBoxUser [nWindow] = nUser;						//say who's using window
 gameData.objs.viewerP = viewerP;
 gameStates.render.bRearView = -bRearView;
-SetupWindow (nWindow, &gameData.render.scene);
-cockpitCanv = CCanvas::Current ();
 CCanvas::Push ();
+transformation.Push ();
+SetupWindow (nWindow, &gameData.render.scene);
 CCanvas::SetCurrent (&gameData.render.scene);
 fontManager.SetCurrent (GAME_FONT);
-transformation.Push ();
 nZoomSave = gameStates.zoom.nFactor;
 gameStates.zoom.nFactor = float (I2X (gameOpts->render.cockpit.nWindowZoom + 1));					//the player's zoom factor
-if ((nUser == WBU_RADAR_TOPDOWN) || (nUser == WBU_RADAR_HEADSUP)) {
-	if (!IsMultiGame || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP)) {
-		automap.m_bDisplay = -1;
-		automap.DoFrame (0, 1 + (nUser == WBU_RADAR_TOPDOWN));
-		automap.m_bDisplay = 0;
-		}
-	else
-		RenderFrame (0, nWindow + 1);
-	}
-else
+if (((nUser != WBU_RADAR_TOPDOWN) && (nUser != WBU_RADAR_HEADSUP)) ||
+	(IsMultiGame && !(netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP)))
 	RenderFrame (0, nWindow + 1);
-if (gameStates.render.bRenderIndirect > 0)
-	ogl.SetDrawBuffer (GL_BACK, 0);
-gameStates.zoom.nFactor = nZoomSave;
-//ogl.SetStereoSeparation (xStereoSeparation);
-transformation.Pop ();
-//	HACK!If guided missile, wake up robots as necessary.
-if (viewerP->info.nType == OBJ_WEAPON) {
-	// -- Used to require to be GUIDED -- if (viewerP->id == GUIDEDMSL_ID)
-	WakeupRenderedObjects (viewerP, nWindow + 1);
+else {
+	automap.m_bDisplay = -1;
+	automap.DoFrame (0, 1 + (nUser == WBU_RADAR_TOPDOWN));
+	automap.m_bDisplay = 0;
 	}
+gameStates.zoom.nFactor = nZoomSave;
+transformation.Pop ();
+ogl.ChooseDrawBuffer ();
+gameData.render.frame.SetViewport ();
+SetupWindow (nWindow, &gameData.render.scene);
+CCanvas::SetCurrent (&gameData.render.scene);
+
+//	HACK!If guided missile, wake up robots as necessary.
+if (viewerP->info.nType == OBJ_WEAPON) 
+	WakeupRenderedObjects (viewerP, nWindow + 1);
+
 if (pszLabel) {
 	SetFontColor (GREEN_RGBA);
 	DrawHUDText (NULL, 0x8000, 2, pszLabel);
 	}
-if (nUser == WBU_GUIDED) {
+
+if (nUser == WBU_GUIDED)
 	DrawGuidedCrosshair (m_info.xStereoSeparation);
-	}
+
 if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 	int smallWindowBottom, bigWindowBottom, extraPartHeight;
 
-	if (gameStates.app.bNostalgia)
-		CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
-	else
-		CCanvas::Current ()->SetColorRGBi (RGB_PAL (47, 31, 0));
-	//glLineWidth (((cockpitCanv->Width () < 1200) ? 1.0f : 2.0f));
-	glLineWidth (float (cockpitCanv->Width ()) / 640.0f);
-	OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height ());
+	CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
+	glLineWidth (float (gameData.render.screen.Width ()) / 640.0f);
+	OglDrawEmptyRect (0, 0, gameData.render.scene.Width () - 1, gameData.render.scene.Height ());
 	glLineWidth (1);
 
 	//if the window only partially overlaps the big 3d window, copy
@@ -2209,7 +2202,8 @@ else {
 m_history [0].weapon [nWindow] = m_history [0].ammo [nWindow] = -1;
 
 gameData.objs.viewerP = viewerSave;
-CCanvas::Pop ();
+CCanvas::SetCurrent (&gameData.render.scene);
+CCanvas::Current ()->SetViewport ();
 #if 0
 // draw a thicker frame with rounded edges around the cockpit displays
 if (!gameStates.app.bNostalgia && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN)) {
@@ -2232,6 +2226,9 @@ if (!gameStates.app.bNostalgia && (gameStates.render.cockpit.nType >= CM_FULL_SC
 	OglDrawLine (x1 + 2, y0 + 3, x1 + 2, y1 - 3);
 	}
 #endif
+SetupCanvasses ();
+CCanvas::Pop ();
+CCanvas::Current ()->SetViewport ();
 gameStates.render.bRearView = bRearViewSave;
 }
 

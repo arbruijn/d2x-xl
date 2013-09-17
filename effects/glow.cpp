@@ -218,8 +218,7 @@ if (bOgl) {
 	glPopMatrix ();
 	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
-	ogl.SetViewport (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
-	//ogl.SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+	gameData.render.frame.SetViewport ();
 	}
 return 0 != (gameOpts->render.effects.bGlow = bGlow);
 }
@@ -599,8 +598,7 @@ if (Available (nType)) {
 #else
 	ogl.ChooseDrawBuffer ();
 #endif
-	ogl.SetViewport (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
-	//ogl.SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+	gameData.render.frame.SetViewport ();
 	}	
 }
 
@@ -624,8 +622,7 @@ else
 	glPushMatrix ();
 	glLoadIdentity ();//clear matrix
 	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-	ogl.SetViewport (gameData.render.screen.Left (), gameData.render.screen.Top (), gameData.render.screen.Width (), gameData.render.screen.Height ());
-	//ogl.SetViewport (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
+	gameData.render.screen.SetViewport ();
 
 	GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
 	bool bDepthWrite = ogl.GetDepthWrite ();
@@ -688,8 +685,7 @@ else
 	glPopMatrix ();
 	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
-	ogl.SetViewport (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
-	//ogl.SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+	gameData.render.frame.SetViewport ();
 	ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
 	ogl.SetDepthWrite (bDepthWrite);
 	ogl.SetAlphaTest (true);

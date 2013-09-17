@@ -527,7 +527,6 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			}
 		}
 	}
-//ogl.SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 }
 
 //------------------------------------------------------------------------------

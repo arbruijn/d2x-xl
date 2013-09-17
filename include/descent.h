@@ -1004,8 +1004,8 @@ class CRenderStates {
 		int bTMapFlat;
 		int bCloaked;
 		int bBrightObject;
-		int nWindow;
-		int xStereoSeparation;
+		int nWindow [2];
+		int xStereoSeparation [2];
 		int nStartSeg;
 		int nLighting;
 		int nMaxTextureQuality;
@@ -1080,6 +1080,18 @@ class CRenderStates {
 		float grAlpha;
 		tRenderDetail detail;
 		tRenderHistory history;
+
+		inline void SetRenderWindow (int w) {
+			nWindow [1] = nWindow [0];
+			nWindow [0] = w;
+			}
+
+		inline void SetStereoSeparation (fix s) {
+			xStereoSeparation [1] = xStereoSeparation [0];
+			xStereoSeparation [0] = s;
+			}
+
+		inline bool Dirty (void) { return (nWindow [0] != nWindow [1]) || (xStereoSeparation [0] != xStereoSeparation [1]); }
 	};
 
 //------------------------------------------------------------------------------

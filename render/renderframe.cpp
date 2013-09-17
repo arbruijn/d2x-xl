@@ -362,24 +362,11 @@ void Draw2DFrameElements (void)
 	fix xStereoSeparation = ogl.StereoSeparation ();
 
 ogl.ColorMask (1,1,1,1,0);
-if (ogl.StereoDevice () >= 0) {
+if (ogl.StereoDevice () < 0) 
+	ogl.ChooseDrawBuffer ();
+else {
 	ogl.SetDrawBuffer (GL_BACK, 0);
 	ogl.SetStereoSeparation (0);
-	}
-else {
-#if 1
-	ogl.ChooseDrawBuffer ();
-#else
-	ogl.SelectBlurBuffer (0);
-	glClearColor (0, 0, 0, 0);
-	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	ogl.SetBlendMode (OGL_BLEND_REPLACE);
-	ogl.SetDepthMode (GL_ALWAYS);
-	ogl.SetViewport (gameData.render.screen.Left () + gameData.render.scene.Left (), 
-						  gameData.render.screen.Top () + gameData.render.scene.Top (), 
-						  gameData.render.scene.Width (), 
-						  gameData.render.scene.Height ());
-#endif
 	}
 
 #if 1
@@ -470,14 +457,11 @@ if (!(i && xStereoSeparation)) {	//no stereo or shutter glasses or Oculus Rift
 	}
 else {
 	if ((i < 0) || (xStereoSeparation > 0)) {
-		ogl.SetViewport (gameData.render.screen.Left () + gameData.render.scene.Left (), 
-							  gameData.render.screen.Top () + gameData.render.scene.Top (), 
-							  gameData.render.scene.Width (), 
-							  gameData.render.scene.Height ());
+		gameData.render.scene.SetViewport (&gameData.render.screen);
 		if (i < 0)
 			Draw2DFrameElements ();
 		if (xStereoSeparation > 0) {
-			ogl.SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
+			gameData.render.screen.SetViewport ();
 			ogl.SwapBuffers (0, 0);
 			}
 		}
@@ -543,15 +527,15 @@ extern CBitmap bmBackground;
 void RenderFrame (fix xStereoSeparation, int nWindow)
 {
 	short nStartSeg;
-	fix	nEyeOffsetSave = gameStates.render.xStereoSeparation;
+	fix	nEyeOffsetSave = gameStates.render.xStereoSeparation [0];
 
 gameStates.render.nType = -1;
-gameStates.render.nWindow = nWindow;
-gameStates.render.xStereoSeparation = xStereoSeparation;
+gameStates.render.SetRenderWindow (nWindow);
+gameStates.render.SetStereoSeparation (xStereoSeparation);
 if (gameStates.app.bEndLevelSequence) {
 	RenderEndLevelFrame (xStereoSeparation, nWindow);
 	gameData.app.nFrameCount++;
-	gameStates.render.xStereoSeparation = nEyeOffsetSave;
+	gameStates.render.xStereoSeparation [0] = nEyeOffsetSave;
 	return;
 	}
 if ((gameData.demo.nState == ND_STATE_RECORDING) && (xStereoSeparation >= 0)) {
@@ -574,10 +558,7 @@ PROF_START
 G3StartFrame (transformation, 0, (nWindow || gameStates.render.cameras.bActive) ? 0 : 1, xStereoSeparation);
 if (!nWindow) {
 	CCanvas::SetCurrent (&gameData.render.scene);
-	ogl.SetViewport (gameData.render.screen.Left () + gameData.render.scene.Left (), 
-						  gameData.render.screen.Top () + gameData.render.scene.Top (), 
-						  gameData.render.scene.Width (), 
-						  gameData.render.scene.Height ());
+	gameData.render.scene.SetViewport (&gameData.render.screen);
 	fontManager.SetCurrent (GAME_FONT);
 	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
 	}
@@ -603,21 +584,17 @@ PROF_END(ptAux)
 #if 0 //DBG
 if (gameStates.render.nShadowMap) {
 	G3EndFrame (transformation, nWindow);
-	gameStates.render.xStereoSeparation = nEyeOffsetSave;
+	gameStates.render.xStereoSeparation [0] = nEyeOffsetSave;
 	return;
 	}
 #endif
 
 if (0 > (gameStates.render.nStartSeg = nStartSeg)) {
 	G3EndFrame (transformation, nWindow);
-	gameStates.render.xStereoSeparation = nEyeOffsetSave;
+	gameStates.render.xStereoSeparation [0] = nEyeOffsetSave;
 	return;
 	}
 
-#if DBG
-if (bShowOnlyCurSide)
-	CCanvas::Current ()->Clear (nClearWindowColor);
-#endif
 
 #if MAX_SHADOWMAPS
 RenderMine (nStartSeg, xStereoSeparation, nWindow);
@@ -625,6 +602,7 @@ RenderMine (nStartSeg, xStereoSeparation, nWindow);
 if (!ogl.m_features.bStencilBuffer.Available ())
 	extraGameInfo [0].bShadows =
 	extraGameInfo [1].bShadows = 0;
+
 if (SHOW_SHADOWS && !(nWindow || gameStates.render.cameras.bActive || automap.Display ())) {
 	if (!gameStates.render.nShadowMap) {
 		gameStates.render.nShadowPass = 1;
@@ -685,7 +663,7 @@ gameStates.render.nShadowPass = 0;
 
 G3EndFrame (transformation, nWindow);
 if (nWindow)
-	ogl.SetStereoSeparation (gameStates.render.xStereoSeparation = nEyeOffsetSave);
+	ogl.SetStereoSeparation (gameStates.render.xStereoSeparation [0] = nEyeOffsetSave);
 if (!ShowGameMessage (gameData.messages, -1, -1))
 	ShowGameMessage (gameData.messages + 1, -1, -1);
 }
@@ -730,7 +708,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
   	gameData.objs.viewerP = gameData.objs.guidedMissile [N_LOCALPLAYER].objP;
 	UpdateRenderedData (0, gameData.objs.viewerP, 0, 0);
 	if ((xStereoSeparation <= 0) && cameraManager.Render ())
-		ogl.SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+		CCanvas::Current ()->SetViewport ();
 	RenderFrame (xStereoSeparation, 0);
 	if (xStereoSeparation <= 0)
   		WakeupRenderedObjects (gameData.objs.viewerP, 0);
@@ -751,7 +729,7 @@ else {
 		}
 	UpdateRenderedData (0, gameData.objs.viewerP, gameStates.render.bRearView, 0);
 	if ((xStereoSeparation <= 0) && cameraManager.Render ())
-		ogl.SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+		CCanvas::Current ()->SetViewport ();
 	RenderFrame (xStereoSeparation, 0);
 	}
 FlushFrame (xStereoSeparation);

@@ -126,7 +126,7 @@ if (gameStates.render.cameras.bActive) {
 		ComputeShadowTransformation (gameStates.render.nShadowMap - 1);
 	}
 else {
-	if (!gameStates.render.nWindow && (bPlayer))
+	if (!gameStates.render.nWindow [0] && bPlayer)
 		externalView.SetPoint (gameData.objs.viewerP);
 	if ((bPlayer) && transformation.m_info.bUsePlayerHeadAngles) {
 		CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
@@ -152,12 +152,12 @@ else {
 		SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView,  //gameStates.render.xZoom, bOglScale);
 									FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
 		}
-	else if ((bPlayer) && (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1])) {
+	else if (bPlayer && (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1])) {
 		if (!(gameStates.zoom.nMinFactor = I2X (gameStates.render.glAspect)))
 			gameStates.zoom.nMinFactor = I2X (1);
 		gameStates.zoom.nMaxFactor = gameStates.zoom.nMinFactor * 5;
 		HandleZoom ();
-		if ((bPlayer) &&
+		if (bPlayer &&
 #if DBG
 			 gameStates.render.bChaseCam) {
 #else
@@ -316,7 +316,7 @@ ogl.m_states.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMult
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, xStereoSeparation, nWindow);
 
-	if (xStereoSeparation <= 0) {
+	if (gameStates.render.Dirty ()) {
 		ResetFaceList ();
 		gameStates.render.nThreads = gameStates.app.nThreads;
 		lightManager.ResetSegmentLights ();

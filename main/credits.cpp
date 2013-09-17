@@ -399,10 +399,7 @@ for (;;) {
 	Read ();
 
 	CCanvas::SetCurrent (&gameData.render.scene);
-	ogl.SetViewport (gameData.render.screen.Left () + gameData.render.scene.Left (), 
-						  gameData.render.screen.Top () + gameData.render.scene.Top (), 
-						  gameData.render.scene.Width (), 
-						  gameData.render.scene.Height ());
+	gameData.render.scene.SetViewport (&gameData.render.screen);
 
 	for (int i = 0; i < nFrames; i++) {
 		ogl.SetStereoSeparation (gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] * (i ? 1 : -1));

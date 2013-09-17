@@ -318,6 +318,7 @@ gap = haveTitle ? Scale (LHY (8)) : 0;
 m_props.titleHeight += gap;		//put some space between pszTitles & body
 fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
 
+m_props.width = 0;
 m_props.height = int (ceil (double (m_props.titleHeight) / GetScale ())); // will be scaled in GetSize()
 m_props.nMenus = m_props.nOthers = 0;
 m_props.nStringHeight = Scale (GetSize (m_props.width, m_props.height, m_props.aw, m_props.nMenus, m_props.nOthers) + m_props.bTinyMode * 2);

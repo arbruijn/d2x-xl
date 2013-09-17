@@ -1618,8 +1618,6 @@ ogl.SetDepthWrite (false);
 ogl.SetFaceCulling (true);
 m_data.bHaveDepthBuffer = NeedDepthBuffer () && ogl.CopyDepthTexture (1);
 particleManager.BeginRender (-1, 1);
-//ogl.ChooseDrawBuffer ();
-//ogl.SetViewport (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 m_data.nCurType = -1;
 
 int h = -1, nBuffers = 0;
@@ -1680,7 +1678,6 @@ ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);
 ogl.StencilOn (bStencil);
-//ogl.SetViewport (gameData.render.screen.Left (), gameData.render.screen.Top (), gameData.render.screen.Width (), gameData.render.screen.Height ());
 
 if (bCleanup) {
 	ResetFreeList ();

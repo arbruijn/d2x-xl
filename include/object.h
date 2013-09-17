@@ -1554,13 +1554,9 @@ void InitMultiPlayerObject (int nStage);
 
 #define	OBJ_CLOAKED(_objP)	((_objP)->ctype.aiInfo.flags [6])
 
-#define	SHOW_SHADOWS \
-			(/*(gameStates.render.bRenderIndirect <= 0) &&*/ \
-			 EGI_FLAG (bShadows, 0, 1, 0) && \
-			 !COMPETITION)
+#define	SHOW_OBJ_FX				(gameOpts->render.effects.bEnabled && !(gameStates.app.bNostalgia || COMPETITION))
 
-#define	SHOW_OBJ_FX \
-			(gameOpts->render.effects.bEnabled && !(gameStates.app.bNostalgia || COMPETITION))
+#define	SHOW_SHADOWS			(SHOW_OBJ_FX && EGI_FLAG (bShadows, 0, 1, 0))
 
 #define	IS_BOSS(_objP)			(((_objP)->info.nType == OBJ_ROBOT) && ROBOTINFO ((_objP)->info.nId).bossFlag)
 #define	IS_GUIDEBOT(_objP)	(((_objP)->info.nType == OBJ_ROBOT) && ROBOTINFO ((_objP)->info.nId).companion)

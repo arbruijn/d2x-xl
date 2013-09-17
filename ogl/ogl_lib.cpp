@@ -537,7 +537,7 @@ viewport [3] = (float) m_states.viewport [0].m_h / (float) gameData.render.scree
 
 void COGL::ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset) 
 {
-if (!bEyeOffset || !ogl.IsAnaglyphDevice () || gameOpts->render.stereo.bEnhance || gameStates.render.nWindow)
+if (!bEyeOffset || !ogl.IsAnaglyphDevice () || gameOpts->render.stereo.bEnhance || gameStates.render.nWindow [0])
 	glColorMask (bRed, bGreen, bBlue, bAlpha);
 else if (gameOpts->render.stereo.nGlasses == GLASSES_AMBER_BLUE) {	//colorcode 3-d (amber/blue)
 	if ((m_data.xStereoSeparation <= 0) != gameOpts->render.stereo.bFlipFrames)
@@ -737,7 +737,7 @@ else
 	SetBlending (true);
 	SetBlendMode (OGL_BLEND_ALPHA);
 	SetStencilTest (false);
-	SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+	CCanvas::Current ()->SetViewport ();
 #if 1
 	if (m_states.bEnableScissor) {
 		glScissor (
@@ -786,7 +786,7 @@ glLoadIdentity ();//clear matrix
 glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 glMatrixMode (GL_MODELVIEW);
 glLoadIdentity ();//clear matrix
-SetScissorTest (false);
+//SetScissorTest (false);
 SetAlphaTest (false);
 SetDepthTest (false);
 SetFaceCulling (false);

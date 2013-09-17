@@ -200,7 +200,7 @@ if (msgP->nEndTime < 0) {
 	msgP->currentMsg = NULL;
 	ResumeGame ();
 	}
-else if (!gameStates.render.nWindow) {
+else if (!gameStates.render.nWindow [0]) {
 	if (!msgP->bmP) {
 		fontManager.SetCurrent (NORMAL_FONT);
 		fontManager.SetColorRGBi (GOLD_RGBA, 1, 0, 0);

@@ -504,7 +504,7 @@ if (bAutomap) {
 		}
 	else if (gameData.objs.viewerP == gameData.objs.consoleP) {
 #if DBG
-		if (gameStates.render.nWindow)
+		if (gameStates.render.nWindow [0])
 			nDbgSeg = nDbgSeg;
 #endif
 		automap.m_visited [nSegment] = gameData.render.mine.bSetAutomapVisited;

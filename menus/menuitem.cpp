@@ -619,6 +619,7 @@ if (m_nType == NM_TYPE_SLIDER) {
 	m_savedText [1] = SLIDER_LEFT [0];
 	memset (m_savedText + 2, SLIDER_MIDDLE [0], (m_maxValue - m_minValue + 1));
 	m_savedText [m_maxValue - m_minValue + 2] = SLIDER_RIGHT [0];
+	m_savedText [m_maxValue - m_minValue + 3] = '\0';
 	fontManager.Current ()->StringSize (m_savedText, w1, h1, aw1);
 	nStringWidth += w1 + aw;
 	}

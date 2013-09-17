@@ -263,7 +263,7 @@ gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nState = 1;
 for (i = gameData.segs.skybox.ToS (), segNumP = gameData.segs.skybox.Buffer (); i; i--, segNumP++)
 	for (nObject = SEGMENTS [*segNumP].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
-		DoRenderObject (nObject, gameStates.render.nWindow);
+		DoRenderObject (nObject, gameStates.render.nWindow [0]);
 PROF_END(ptRenderObjects)
 }
 
@@ -296,7 +296,7 @@ for (int i = 0; i < gameData.render.mine.nObjRenderSegs; i++) {
 		//lightManager.ResetNearestStatic (nSegment, 0);
 		lightManager.SetNearestStatic (nSegment, 1, 0);
 		}
-	RenderObjList (i, gameStates.render.nWindow);
+	RenderObjList (i, gameStates.render.nWindow [0]);
 	if (gameStates.render.bApplyDynLight)
 		lightManager.ResetNearestStatic (nSegment, 0);
 	}	
@@ -381,7 +381,7 @@ i = 0;
 while (nThreads > 0) {
 	if (bSemaphore [i] > 0) {
 		lightManager.SetThreadId (i);
-		RenderObjList (nListPos [i], gameStates.render.nWindow);
+		RenderObjList (nListPos [i], gameStates.render.nWindow [0]);
 		lightManager.SetThreadId (-1);
 		nListPos [i] += (gameStates.app.nThreads - 1);
 		bSemaphore [i] = 0;
@@ -622,7 +622,7 @@ if (bCockpit && bHave3DCockpit && (gameStates.render.cockpit.nType == CM_FULL_CO
 	gameData.models.vScale.Set (F2X (float (screen.Width ()) / float (screen.Height ()) * 0.75f), I2X (1), I2X (1));
 	bHave3DCockpit = (G3RenderModel (&OBJECTS [0], COCKPIT_MODEL, -1, NULL, gameData.models.textures, NULL, NULL, 0, NULL, NULL) > 0);
 	gameData.models.vScale.Set (I2X (1), I2X (1), I2X (1));
-	ogl.SetViewport (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+	CCanvas::Current ()->SetViewport ();
 	OBJECTS [0].Position () += vOffset;
 	ogl.SetTransform (0);
 	gameStates.render.bFullBright = bFullBright;
