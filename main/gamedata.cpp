@@ -122,6 +122,9 @@ int CGameData::FloatingStereoOffset2D (int x)
 #if 0
 return 1;
 #else
+if (gameStates.render.nWindow [0])
+	return 0;
+
 	float scale [2];
 	float w = (float) gameData.render.frame.Width ();
 	float s = X2F (ogl.StereoSeparation ());
