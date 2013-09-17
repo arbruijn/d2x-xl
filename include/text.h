@@ -1996,11 +1996,11 @@ void LoadGameTexts(void);
 #define TXT_SHUTTER_HDMI				GT(1212)
 #define TXT_STEREO_FOV					GT(1213)
 #define TXT_RIFT_IPD						GT(1214)
+#define TXT_ANAGLYPH_GLASSES			GT(1215)
+#define TXT_ANAGLYPH_COLORS			GT(1216)
 
 #if 0
 
-#define TXT_					GT(1215)
-#define TXT_					GT(1216)
 #define TXT_					GT(1217)
 #define TXT_					GT(1218)
 #define TXT_					GT(1219)
@@ -2636,11 +2636,11 @@ void LoadGameTexts(void);
 #define HTX_ALLOW_CUSTOM_WEAPONS		HT(430)
 #define HTX_GAME_SPEED					HT(431)
 #define HTX_STEREO_FOV					HT(432)
+#define HTX_ANAGLYPH_GLASSES			HT(433)
+#define HTX_ANAGLYPH_COLORS			HT(434)
 
 #if 0
 
-#define HTX_						HT(433)
-#define HTX_						HT(434)
 #define HTX_						HT(435)
 #define HTX_						HT(436)
 #define HTX_						HT(437)

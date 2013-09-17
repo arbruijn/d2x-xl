@@ -1961,6 +1961,8 @@ const char *defaultGameTexts [][2] = {
  {"3D TV (1080p)", "3D TV (1080p)"},
  {"~FOV: %d°", "~FOV: %d°"},
  {"~Pupillenabstand: %d mm", "I~PD: %d mm"},
+ {"Anaglyphenbrille", "Anaglyph Glasses"},
+ {"Glas~Farben: %s", "Glass ~Colors: %s"},
  
 #if 0
  {"", ""},
@@ -2689,6 +2691,8 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt, werden von Levelautoren modifizierte Waffen\nverwendet; andernfalls kommen die Standardwaffen zum Einsatz.", 
   "If checked, weapon modifications made by level authors are\nused;otherwise standard weapons are deployed."},
  {"Hier kann die Breite des Sichtfelds eingestellt werden.", "Adjust the width of your periphal vision here."},
+ {"Diese Einstellung fuer 3D-Brillen mit zwei verschieden\nfarbigen Glaesern waehlen.", "Chose this setting for 3D glasses with two differently colored glasses."},
+ {"Hier kann die Farbkombination der Anaglyphenbrille eingestellt werden.", "Chose the color combination of the anaglyph glasses here."},
 #if 0
  {"", ""},
 #endif
