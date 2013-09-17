@@ -708,6 +708,7 @@ else if (nWindowPos == 1)	// near middle
 		 : gameData.render.frame.Width () / 3 - 2 * w / 3;
 else 	// middle
 	x = gameData.render.frame.Width () / 2 - w / 2;
+x -= gameData.FloatingStereoOffset2D (x);
 
 if (gameOpts->render.cockpit.nWindowPos > 2) 
 	y = h / 10;

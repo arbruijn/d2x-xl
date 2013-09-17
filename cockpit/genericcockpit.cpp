@@ -2115,7 +2115,7 @@ if ((gameStates.render.cockpit.nType >= CM_FULL_SCREEN) && (gameStates.zoom.nFac
 	CObject*	viewerSave = gameData.objs.viewerP;
 	int		bRearViewSave = gameStates.render.bRearView;
 	int		nWindowSave = gameStates.render.nWindow [0];
-	//fix		xStereoSeparation = ogl.StereoSeparation ();
+	fix		xStereoSeparation = ogl.StereoSeparation ();
 	float		nZoomSave;
 
 	static int bOverlapDirty [2] = {0, 0};
@@ -2148,12 +2148,16 @@ if (((nUser != WBU_RADAR_TOPDOWN) && (nUser != WBU_RADAR_HEADSUP)) ||
 	RenderFrame (0, nWindow + 1);
 else {
 	automap.m_bDisplay = -1;
+	gameStates.render.SetRenderWindow (nWindow + 1);
 	automap.DoFrame (0, 1 + (nUser == WBU_RADAR_TOPDOWN));
+	gameStates.render.SetRenderWindow (nWindowSave);
 	automap.m_bDisplay = 0;
 	}
 gameStates.zoom.nFactor = nZoomSave;
+ogl.SetStereoSeparation (xStereoSeparation);
 transformation.Pop ();
-ogl.ChooseDrawBuffer ();
+if (ogl.StereoDevice () < 0)
+	ogl.ChooseDrawBuffer ();
 gameData.render.frame.SetViewport ();
 SetupWindow (nWindow, &gameData.render.scene);
 CCanvas::SetCurrent (&gameData.render.scene);

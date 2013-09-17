@@ -569,7 +569,8 @@ void COGL::StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
 {
 SetStereoSeparation (xStereoSeparation);
 m_states.bEnableScissor = 1;
-ChooseDrawBuffer ();
+if (!gameStates.render.nWindow [0])
+	ChooseDrawBuffer ();
 ogl.SetPolyOffsetFill (false);
 #if !MAX_SHADOWMAPS
 if (gameStates.render.nShadowPass) {
