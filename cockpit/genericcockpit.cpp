@@ -2114,6 +2114,7 @@ if ((gameStates.render.cockpit.nType >= CM_FULL_SCREEN) && (gameStates.zoom.nFac
 
 	CObject*	viewerSave = gameData.objs.viewerP;
 	int		bRearViewSave = gameStates.render.bRearView;
+	int		nWindowSave = gameStates.render.nWindow [0];
 	//fix		xStereoSeparation = ogl.StereoSeparation ();
 	float		nZoomSave;
 
@@ -2231,6 +2232,7 @@ ogl.SetDepthTest (true);
 SetupCanvasses ();
 CCanvas::Pop ();
 CCanvas::Current ()->SetViewport ();
+gameStates.render.SetRenderWindow (nWindowSave);
 gameStates.render.bRearView = bRearViewSave;
 }
 
