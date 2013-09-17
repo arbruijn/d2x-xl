@@ -105,6 +105,8 @@ int CGameData::StereoOffset2D (void)
 #if 0
 return 1;
 #else
+if (gameStates.render.nWindow [0])
+	return 0;
 if (ogl.IsOculusRift ())
 	return int (X2D (ogl.StereoSeparation ()) * render.frame.Width () * double (WORLDSCALE) * 0.00125 + 0.5);
 if (ogl.IsSideBySideDevice ())
