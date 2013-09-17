@@ -1207,15 +1207,18 @@ nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ())
 				 : BM_ADDON_RETICLE_GREEN;
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 glColor3i (1,1,1);
+
+fix xScale = ogl.IsOculusRift () ? I2X (1) / 2 : I2X (1);
+
 BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
-		  (x + ScaleX (crossOffsets [ofs].x - 1)), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true,
-		  I2X (1), 0, NULL, BM_ADDON (nBmReticle + nCrossBm));
+		  X (x + ScaleX (crossOffsets [ofs].x - 1), true), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true,
+		  xScale, 0, NULL, BM_ADDON (nBmReticle + nCrossBm));
 BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
-		  (x + ScaleX (primaryOffsets [ofs].x - 1)), (y + ScaleY (primaryOffsets [ofs].y - 1)), false, true,
-		  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 2 + nPrimaryBm));
+		  X (x + ScaleX (primaryOffsets [ofs].x - 1), true), (y + ScaleY (primaryOffsets [ofs].y - 1)), false, true,
+		  xScale, 0, NULL, BM_ADDON (nBmReticle + 2 + nPrimaryBm));
 BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
-		  (x + ScaleX (secondaryOffsets [ofs].x - 1)), (y + ScaleY (secondaryOffsets [ofs].y - 1)), false, true,
-		  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 5 + nSecondaryBm));
+		  X (x + ScaleX (secondaryOffsets [ofs].x - 1), true), (y + ScaleY (secondaryOffsets [ofs].y - 1)), false, true,
+		  xScale, 0, NULL, BM_ADDON (nBmReticle + 5 + nSecondaryBm));
 
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();
@@ -1972,10 +1975,9 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 
-bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0));
+DrawReticle (ogl.StereoDevice () < 0);
 
-//if (!(transformation.m_info.bUsePlayerHeadAngles || gameOpts->render.stereo.nGlasses))
-	DrawReticle (ogl.StereoDevice () < 0);
+bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0));
 
 if (!bLimited) {
 	DrawPlayerNames ();

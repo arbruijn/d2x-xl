@@ -273,7 +273,7 @@ class CGenericCockpit {
 		inline void SetLineSpacing (int nLineSpacing) { m_info.nLineSpacing = nLineSpacing; }
 		inline void SetColor (int nColor) { m_info.nColor = nColor; }
 
-		int X (int x);
+		int X (int x, bool bForce = false);
 
 		int _CDECL_ DrawHUDText (int *idP, int x, int y, const char * format, ...);
 

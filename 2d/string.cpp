@@ -654,7 +654,7 @@ return bmP;
 
 //------------------------------------------------------------------------------
 
-static inline int X (int x) { return x - gameData.FloatingStereoOffset2D (x); }
+static inline int X (int x) { return x - gameData.render.bFloatingOffset ? gameData.FloatingStereoOffset2D (x) : gameData.StereoOffset2D (x); }
 
 //------------------------------------------------------------------------------
 

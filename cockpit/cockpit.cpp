@@ -57,12 +57,12 @@ m_save.Create (10);
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 
-int CGenericCockpit::X (int x)
+int CGenericCockpit::X (int x, bool bForce)
 {
 #if 0
 return 1;
 #else
-return x - gameData.FloatingStereoOffset2D (x);
+return x - gameData.FloatingStereoOffset2D (x, bForce);
 #endif
 }
 

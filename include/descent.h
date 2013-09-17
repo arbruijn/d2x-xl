@@ -1804,6 +1804,7 @@ class CRenderData {
 		float							fAttScale [2];
 		float							fBrightness;
 		ubyte							nPowerupFilter;
+		bool							bFloatingOffset;
 
 	public:
 		CRenderData ();
@@ -3646,7 +3647,7 @@ class CGameData {
 		fix FusionCharge (int nId = -1);
 		fix FusionDamage (fix xBaseDamage);
 		int StereoOffset2D (void);
-		int FloatingStereoOffset2D (int x);
+		int FloatingStereoOffset2D (int x, bool bForce = false);
 
 };
 

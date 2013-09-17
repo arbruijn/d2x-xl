@@ -117,12 +117,12 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int CGameData::FloatingStereoOffset2D (int x)
+int CGameData::FloatingStereoOffset2D (int x, bool bForce)
 {
 #if 0
 return 1;
 #else
-if (gameStates.render.nWindow [0])
+if (!bForce && (gameStates.render.nWindow [0] != 0))
 	return 0;
 
 	float scale [2];
@@ -131,7 +131,7 @@ if (gameStates.render.nWindow [0])
 
 if (ogl.IsOculusRift ()) 
 	scale [1] = s * w * float (WORLDSCALE) * 0.00125f;
-if (ogl.IsSideBySideDevice ())
+else if (ogl.IsSideBySideDevice ())
 	scale [1] = s * w * 0.025f;
 else
 	return 0;
@@ -533,6 +533,7 @@ nColoredFaces = 0;
 nStateChanges = 0;
 nShaderChanges = 0;
 nPowerupFilter = 0;
+bFloatingOffset = false;
 #if 1
 fAttScale [0] = 0.05f;
 fAttScale [1] = 0.005f;
