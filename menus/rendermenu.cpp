@@ -482,8 +482,8 @@ nLighting = (gameOpts->render.nLightingMethod == 0)
 nPowerups = gameOpts->Use3DPowerups () ? gameOpts->render.powerups.b3DShields ? 2 : 1 : 0;
 nCameras = extraGameInfo [0].bUseCameras ? gameOpts->render.cameras.bHires ? 2 : 1 : 0;
 if ((nStereoDevice = gameOpts->render.stereo.nGlasses)) {
-	nAnaglyphColor = (nStereoDevice < DEVICE_STEREO_PHYSICAL) ? nStereoDevice - 3 : 0;
-	nStereoDevice -= 3;
+	nAnaglyphColor = (nStereoDevice < DEVICE_STEREO_PHYSICAL) ? 3 - nStereoDevice : 0;
+	nStereoDevice -= 2;
 	}
 xStereoSeparation = gameOpts->render.stereo.xSeparation [0] / (STEREO_SEPARATION_STEP) - 1;
 if (xStereoSeparation < 0)
@@ -574,14 +574,14 @@ do {
 	sprintf (szSlider + 1, TXT_STEREO_VIEW, pszStereoDevice [nStereoDevice]);
 	*szSlider = *(TXT_STEREO_VIEW - 1);
 	m.AddSlider ("3D glasses", szSlider + 1, nStereoDevice, 0, sizeofa (pszStereoDevice) - 2 + ogl.m_features.bStereoBuffers, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
-	if (nStereoDevice == GLASSES_OCULUS_RIFT - 3) {
+	if (nStereoDevice == GLASSES_OCULUS_RIFT - 2) {
 		sprintf (szSlider + 1, TXT_RIFT_IPD, nIPD + RIFT_MIN_IPD);
 		*szSlider = *(TXT_RIFT_IPD - 1);
 		m.AddSlider ("IPD", szSlider + 1, nIPD, 0, RIFT_MAX_IPD - RIFT_MIN_IPD, KEY_P, HTX_STEREO_SEPARATION);
 		}
 
 	if (EXPERTMODE && nStereoDevice) {
-		if (nStereoDevice == GLASSES_OCULUS_RIFT - 3) {
+		if (nStereoDevice == GLASSES_OCULUS_RIFT - 2) {
 #if 0
 			sprintf (szSlider + 1, TXT_STEREO_FOV, STEREO_MIN_FOV + xFOV * STEREO_FOV_STEP);
 			*szSlider = *(TXT_STEREO_FOV - 1);
@@ -590,10 +590,9 @@ do {
 			}
 		else {
 			if (nStereoDevice == 1) {
-			sprintf (szSlider + 1, TXT_ANAGLYPH_COLORS, pszAnaglyphColors [nAnaglyphColor]);
-			*szSlider = *(TXT_ANAGLYPH_COLORS - 1);
-			m.AddSlider ("anaglyph color", szSlider + 1, nAnaglyphColor, 0, sizeofa (pszAnaglyphColors) - 1, KEY_C, HTX_ANAGLYPH_COLORS);
-
+				sprintf (szSlider + 1, TXT_ANAGLYPH_COLORS, pszAnaglyphColors [nAnaglyphColor]);
+				*szSlider = *(TXT_ANAGLYPH_COLORS - 1);
+				m.AddSlider ("anaglyph color", szSlider + 1, nAnaglyphColor, 0, sizeofa (pszAnaglyphColors) - 1, KEY_C, HTX_ANAGLYPH_COLORS);
 				}
 
 			sprintf (szSlider + 1, TXT_STEREO_SEPARATION, pszStereoSeparation [xStereoSeparation]);
@@ -681,7 +680,7 @@ do {
 #endif
 	} while (i == -2);
 
-gameOpts->render.stereo.nGlasses = (nStereoDevice > 1) ? nStereoDevice + 3 : (nStereoDevice == 1) ? nStereoDevice + nAnaglyphColor : 0;
+gameOpts->render.stereo.nGlasses = (nStereoDevice > 1) ? nStereoDevice + 2 : (nStereoDevice == 1) ? nStereoDevice + nAnaglyphColor : 0;
 lightManager.SetMethod ();
 DefaultRenderSettings ();
 backgroundManager.Rebuild ();
