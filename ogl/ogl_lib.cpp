@@ -567,7 +567,7 @@ else //GLASSES_SHUTTER_NVIDIA, GLASSES_OCULUS_RIFT or NONE
 
 void COGL::StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
 {
-m_data.xStereoSeparation = xStereoSeparation;
+SetStereoSeparation (xStereoSeparation);
 m_states.bEnableScissor = 1;
 ChooseDrawBuffer ();
 ogl.SetPolyOffsetFill (false);
@@ -687,7 +687,8 @@ else
 #endif
 			{
 			ColorMask (1, 1, 1, 1, 1);
-			SetViewport (0, 0, screen.Width (), screen.Height ());
+			//SetViewport (0, 0, screen.Width (), screen.Height ());
+			CCanvas::Current ()->SetViewport ();
 			if (!bResetColorBuf)
 				glClear (GL_DEPTH_BUFFER_BIT);
 			else if (automap.Display () || (gameStates.render.bRenderIndirect > 0)) {
@@ -738,7 +739,7 @@ else
 	SetBlendMode (OGL_BLEND_ALPHA);
 	SetStencilTest (false);
 	CCanvas::Current ()->SetViewport ();
-#if 1
+#if 0
 	if (m_states.bEnableScissor) {
 		glScissor (
 			CCanvas::Current ()->Left (),

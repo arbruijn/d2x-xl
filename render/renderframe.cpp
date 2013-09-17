@@ -555,7 +555,8 @@ else
 
 {
 PROF_START
-G3StartFrame (transformation, 0, (nWindow || gameStates.render.cameras.bActive) ? 0 : 1, xStereoSeparation);
+G3StartFrame (transformation, 0, (nWindow || gameStates.render.cameras.bActive) ? 0 : 1, nWindow ? nEyeOffsetSave : xStereoSeparation);
+ogl.SetStereoSeparation (xStereoSeparation);
 if (!nWindow) {
 	CCanvas::SetCurrent (&gameData.render.scene);
 	gameData.render.scene.SetViewport (&gameData.render.screen);

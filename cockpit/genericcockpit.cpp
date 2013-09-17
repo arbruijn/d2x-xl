@@ -2161,6 +2161,7 @@ CCanvas::SetCurrent (&gameData.render.scene);
 if (viewerP->info.nType == OBJ_WEAPON) 
 	WakeupRenderedObjects (viewerP, nWindow + 1);
 
+ogl.SetDepthTest (false);
 if (pszLabel) {
 	SetFontColor (GREEN_RGBA);
 	DrawHUDText (NULL, 0x8000, 2, pszLabel);
@@ -2226,6 +2227,7 @@ if (!gameStates.app.bNostalgia && (gameStates.render.cockpit.nType >= CM_FULL_SC
 	OglDrawLine (x1 + 2, y0 + 3, x1 + 2, y1 - 3);
 	}
 #endif
+ogl.SetDepthTest (true);
 SetupCanvasses ();
 CCanvas::Pop ();
 CCanvas::Current ()->SetViewport ();
