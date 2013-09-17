@@ -416,7 +416,7 @@ if (!SetDisplayMode (CUSTOM_DISPLAY_MODE, 0))
 if (ogl.IsOculusRift ())
 	cockpit->Activate (CM_FULL_SCREEN, true);
 
-#if DBG == 0
+#if /*DBG ==*/ 0
 ogl.SetFullScreen (1);
 #endif
 SetScreenMode (SCREEN_MENU);

@@ -362,7 +362,7 @@ return 1;
 //------------------------------------------------------------------------------
 // RenderObjectsMT is the object rendering function. It must reside in the main
 // process because only the main process has a valid OpenGL context. It communicates
-// with the object lighting threads via a semaphore. If a lighting threads semaphore
+// with the object lighting threads via a semaphore. If a lighting thread's semaphore
 // is set, that thread has finished lighting calculations for its current segment
 // and all objects in that segment can be rendered. The lighting thread waits for 
 // semaphore to be reset by the render process after the objects have been rendered.
@@ -478,12 +478,11 @@ for (i = 0; i < gameData.render.mine.visibility [0].nSegments; i++)
 	if (0 <= (nSegment = ObjectRenderSegment (i)))
 		gameData.render.mine.objRenderSegList [gameData.render.mine.nObjRenderSegs++] = nSegment;
 
-#if 0
+#if 1
 
 RenderObjectsST ();
 
 #else
-
 
 if (!gameStates.app.bMultiThreaded || (gameStates.render.nShadowPass == 2) || (gameStates.app.nThreads < 3) || (gameData.render.mine.nObjRenderSegs < 2 * (gameStates.app.nThreads - 1)))
 	RenderObjectsST ();
