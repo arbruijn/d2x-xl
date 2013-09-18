@@ -1632,6 +1632,7 @@ if ((gameStates.app.nSDLTicks [0] - OBJECTS [LOCALPLAYER.nObject].TimeLastRepair
 	int	nRad = int (16.0f * fScale + 0.5f);
 	int	y = CCanvas::Current ()->Height () / 2 + 3 * nRad / 2;
 	int	x = CCanvas::Current ()->Width () / 2;
+	int	nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 
 if (gameOpts->render.cockpit.bTextGauges) {
 	int				nColor, nDamage [3], h [4], w [4], aw [4], tw = 0;
@@ -1704,6 +1705,7 @@ else {
 			}
 		}
 	}
+gameData.SetStereoOffsetType (nOffsetSave);
 }
 
 //	-----------------------------------------------------------------------------
