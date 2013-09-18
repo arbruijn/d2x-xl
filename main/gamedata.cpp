@@ -617,15 +617,44 @@ else if (!m_hmdP)
 else if (m_hmdInfo.DisplayDeviceName [0] == '\0')
 	detectionMessage = "Oculus Sensor detected; HMD display EDID not detected.\n";
 else if (!m_sensorP) {
-	gameData.render.rift.m_bAvailable = 1;
+	m_bAvailable = 1;
 	detectionMessage = "Oculus HMD Display detected; Sensor not detected.\n";
 	}
-else 
-	gameData.render.rift.m_bAvailable = 2;
+else {
+	m_sensorFusion.AttachToSensor (m_sensorP);
+	m_bAvailable = 2;
+	}
 if (detectionMessage) 
 	PrintLog (0, detectionMessage);
 #endif
-return gameData.render.rift.m_bAvailable;
+return m_bAvailable;
+}
+
+// ----------------------------------------------------------------------------
+
+int CRiftData::GetViewMatrix (CFixMatrix& mOrient)
+{
+if (Available () < 2)
+	return 0;
+OVR::Quatf q = m_sensorFusion.GetOrientation ();
+OVR::Matrix4f m (q);
+for (int i = 0; i < 3; i++)
+	for (int j = 0; j < 3; j++)
+		mOrient.m.vec [i * 3 + j] = F2X (m.M [i][j]);
+return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+int CRiftData::GetHeadAngles (CAngleVector angles)
+{
+if (Available () < 2)
+	return 0;
+OVR::Quatf q = m_sensorFusion.GetOrientation ();
+float yaw, pitch, roll;
+q.GetEulerAngles<OVR::Axis_Y, OVR::Axis_X, OVR::Axis_Z>(&yaw, &pitch, &roll);
+angles.Set (F2X (yaw), F2X (pitch), F2X (roll));
+return 1;
 }
 
 // ----------------------------------------------------------------------------

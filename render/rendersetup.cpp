@@ -107,84 +107,63 @@ glMatrixMode (matrixMode);
 
 void SetRenderView (fix xStereoSeparation, short *nStartSegP, int bOglScale)
 {
-	short nStartSeg;
-	bool	bPlayer = (gameData.objs.viewerP == &OBJECTS [LOCALPLAYER.nObject]);
+	short			nStartSeg;
+	bool			bPlayer = (gameData.objs.viewerP == &OBJECTS [LOCALPLAYER.nObject]);
+	CFixMatrix	mView = gameData.objs.viewerP->info.position.mOrient;
+	fix			xZoom = gameStates.render.xZoom;
+
 
 gameData.render.mine.viewer = gameData.objs.viewerP->info.position;
-if (xStereoSeparation && bPlayer) {
-	if (ogl.IsOculusRift ())
-		gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.r * xStereoSeparation;
-	else
-		gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.r * xStereoSeparation;
-	}
-
 externalView.SetPos (NULL);
-if (gameStates.render.cameras.bActive) {
-	nStartSeg = gameData.objs.viewerP->info.nSegment;
-	SetupTransformation (transformation, gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient, gameStates.render.xZoom, bOglScale, xStereoSeparation);
-	if (gameStates.render.nShadowMap > 0)
-		ComputeShadowTransformation (gameStates.render.nShadowMap - 1);
-	}
-else {
-	if (!gameStates.render.nWindow [0] && bPlayer)
-		externalView.SetPoint (gameData.objs.viewerP);
-	if ((bPlayer) && transformation.m_info.bUsePlayerHeadAngles) {
-		CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
-		CFixMatrix mView = gameData.objs.viewerP->info.position.mOrient * mHead;
-		SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView, gameStates.render.xZoom, bOglScale, xStereoSeparation);
-		}
-	else if (gameStates.render.bRearView && bPlayer) {
-#if 1
-		CFixMatrix mView;
 
-		mView = gameData.objs.viewerP->info.position.mOrient;
+if (gameStates.render.cameras.bActive)
+	nStartSeg = gameData.objs.viewerP->info.nSegment;
+else if (bPlayer) {
+	if (xStereoSeparation)
+		gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.r * xStereoSeparation;
+	if (!gameStates.render.nWindow [0])
+		externalView.SetPoint (gameData.objs.viewerP);
+	if (gameStates.render.bRearView) { // no zoom, no head tracking
 		mView.m.dir.f.Neg ();
 		mView.m.dir.r.Neg ();
-#else
-		CFixMatrix mHead, mView;
-
-		transformation.m_info.playerHeadAngles [PA] = 0;
-		transformation.m_info.playerHeadAngles [BA] = 0x7fff;
-		transformation.m_info.playerHeadAngles [HA] = 0x7fff;
-		VmAngles2Matrix (&mHead, &transformation.m_info.playerHeadAngles);
-		VmMatMul (&mView, &gameData.objs.viewerP->info.position.mOrient, &mHead);
-#endif
 		SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView,  //gameStates.render.xZoom, bOglScale);
 									FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
 		}
-	else if (bPlayer && (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1])) {
-		if (!(gameStates.zoom.nMinFactor = I2X (gameStates.render.glAspect)))
-			gameStates.zoom.nMinFactor = I2X (1);
-		gameStates.zoom.nMaxFactor = gameStates.zoom.nMinFactor * 5;
-		HandleZoom ();
-		if (bPlayer &&
 #if DBG
-			 gameStates.render.bChaseCam) {
+	else if (gameStates.render.bChaseCam) { // no zoom, no head tracking
 #else
-			 gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || (EGI_FLAG (bEnableCheats, 0, 0, 0) && !COMPETITION))) {
+	else if (gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || (EGI_FLAG (bEnableCheats, 0, 0, 0) && !COMPETITION))) {
 #endif
-			externalView.GetViewPoint ();
-			if (xStereoSeparation)
-				gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.r * xStereoSeparation;
-			SetupTransformation (transformation, gameData.render.mine.viewer.vPos,
-										externalView.GetPos () ? externalView.GetPos ()->mOrient : gameData.objs.viewerP->info.position.mOrient,
-										gameStates.render.xZoom, bOglScale, xStereoSeparation);
-			}
-		else
-			SetupTransformation (transformation, gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient,
-										FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
+		externalView.GetViewPoint ();
+		if (externalView.GetPos ())
+			mView = externalView.GetPos ()->mOrient;
 		}
-	else
-		SetupTransformation (transformation, gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.position.mOrient,
-									gameStates.render.xZoom, bOglScale, xStereoSeparation);
+	else {
+		if (ogl.IsOculusRift ())
+			gameData.render.rift.GetViewMatrix (mView);
+		else if (transformation.m_info.bUsePlayerHeadAngles) {
+			CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
+			mView = gameData.objs.viewerP->info.position.mOrient * mHead;
+			}
+		if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) { // zoom?
+			if (!(gameStates.zoom.nMinFactor = I2X (gameStates.render.glAspect)))
+				gameStates.zoom.nMinFactor = I2X (1);
+			gameStates.zoom.nMaxFactor = gameStates.zoom.nMinFactor * 5;
+			HandleZoom ();
+			xZoom = FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor);
+			}
+		}
 	if (!nStartSegP)
-		nStartSeg = gameStates.render.nStartSeg;
+		nStartSeg = gameStates.render.nStartSeg; // re-use start segment
 	else if (0 > (nStartSeg = FindSegByPos (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.nSegment, 1, 0)))
 		nStartSeg = gameData.objs.viewerP->info.nSegment;
 	}
 if (nStartSegP)
 	*nStartSegP = nStartSeg;
 
+SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView, xZoom, bOglScale, xStereoSeparation);
+if (gameStates.render.cameras.bActive && (gameStates.render.nShadowMap > 0))
+	ComputeShadowTransformation (gameStates.render.nShadowMap - 1);
 ogl.SetupTransform (1);
 transformation.m_info.oglModelview.Get (GL_MODELVIEW_MATRIX);
 ogl.ResetTransform (1);

@@ -392,6 +392,7 @@ public:
 #endif
 	bool IsZero (void) const { return ! (v.coord.p || v.coord.h || v.coord.b); }
 	void SetZero (void) { memset (&v, 0, sizeof (v)); }
+	void Set (const fixang p, const fixang b, const fixang h) { v.coord.p = p; v.coord.b = b; v.coord.h = h; }
 };
 
 //------------------------------------------------------------------------------

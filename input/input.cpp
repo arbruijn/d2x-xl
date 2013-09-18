@@ -40,6 +40,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "automap.h"
 #include "input.h"
 #include "gamecntl.h"
+#include "transformation.h"
 
 class CControlsManager controls;
 
@@ -946,6 +947,20 @@ if (gameStates.input.nMouseType == CONTROL_CYBERMAN) {
 
 //------------------------------------------------------------------------------
 
+int CControlsManager::ReadOculusRift (void)
+{
+transformation.m_info.bUsePlayerHeadAngles = 0;
+return gameData.render.rift.GetHeadAngles (transformation.m_info.playerHeadAngles);
+}
+
+//------------------------------------------------------------------------------
+
+void CControlsManager::DoOculusRift (void)
+{
+}
+
+//------------------------------------------------------------------------------
+
 #ifdef _WIN32
 
 int CControlsManager::ReadTrackIR (void)
@@ -1267,6 +1282,8 @@ for (i = 0; i < 3; i++) {
 	}
 if (gameOpts->input.bUseHotKeys)
 	DoD2XKeys (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
+if (ReadOculusRift ())
+	DoOculusRift ();
 #ifdef _WIN32
 if (ReadTrackIR ())
 	DoTrackIR ();

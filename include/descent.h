@@ -1746,6 +1746,7 @@ class CRiftData {
 		OVR::Ptr<OVR::HMDDevice>				m_hmdP;
 		OVR::Ptr<OVR::SensorDevice>			m_sensorP;
 		OVR::HMDInfo								m_hmdInfo;
+		OVR::SensorFusion							m_sensorFusion;
 		OVR::Util::Render::StereoConfig		m_stereoConfig;
 		OVR::Util::Render::StereoEyeParams	m_eyes [2];
 #endif
@@ -1762,6 +1763,8 @@ class CRiftData {
 		void Destroy (void);
 		inline int Available (void) { return m_bAvailable; }
 		inline int Resolution (void) { return m_nResolution; }
+		int GetViewMatrix (CFixMatrix& m);
+		int GetHeadAngles (CAngleVector angles);
 	};
 
 #define STEREO_OFFSET_FIXED		0

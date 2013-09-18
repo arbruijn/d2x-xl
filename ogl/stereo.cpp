@@ -479,7 +479,7 @@ static const char* riftWarpVS =
 	 "gl_TexCoord [0]=gl_MultiTexCoord0;"
     "}\n";
 
-#if 1
+#if 0
 
 static const char* riftWarpFS =
 	"uniform vec2 LensCenter;\n"
