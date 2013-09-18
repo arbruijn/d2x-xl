@@ -74,7 +74,7 @@ return gmObjP &&
 //------------------------------------------------------------------------------
 
 //draw a crosshair for the guided missile
-void DrawGuidedCrosshair (fix xStereoSeparation)
+void DrawGuidedCrosshairs (fix xStereoSeparation)
 {
 CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 31, 0));
 int w = CCanvas::Current ()->Width () >> 5;
@@ -88,6 +88,7 @@ if (xStereoSeparation) {
 	}
 int y = CCanvas::Current ()->Height () / 2;
 glLineWidth (float (gameData.render.frame.Width ()) / 640.0f);
+x = gameData.X (x);
 #if 1
 	w /= 2;
 	h /= 2;
@@ -142,7 +143,7 @@ if (scope.Load ()) {
 //------------------------------------------------------------------------------
 
 //draw a crosshair for the zoom
-void DrawZoomCrosshair (void)
+void DrawZoomCrosshairs (void)
 {
 DrawScope ();
 
@@ -160,7 +161,13 @@ if (bInitSinCos) {
 	int cw = CCanvas::Current ()->Width ();
 	int h = ch >> 2;
 	int w = X2I (h * screen.Aspect ());
-	int x = cw / 2;
+
+if (ogl.IsSideBySideDevice ()) {
+	w /= 2;
+	h /= 2;
+	}
+
+	int x = gameData.X (cw / 2);
 	int y = ch / 2;
 	int left = x - w, right = x + w, top = y - h, bottom = y + h;
 	float xStep = float (2 * w + 1) / 12.0f;
@@ -172,8 +179,6 @@ if (bInitSinCos) {
 
 w >>= 4;
 h >>= 4;
-//w += w >> 1;
-//h += h >> 1;
 
 glLineWidth (float (cw) / 640.0f);
 
@@ -202,7 +207,7 @@ glLineWidth (float (floor (2 * float (cw) / 640.0f)));
 
 glPushMatrix ();
 ogl.SetLineSmooth (true);
-glTranslatef (0.5f, 1.0f - float (CCanvas::Current ()->Top () + y) / float (screen.Height ()), 0.0f);
+glTranslatef (0.5f - X2F (ogl.StereoSeparation ()), 1.0f - float (CCanvas::Current ()->Top () + y) / float (screen.Height ()), 0.0f);
 glScalef (xScale, yScale, 1.0f);
 #if 0
 float fh = 2.0f * float (h) / float (sh);
@@ -718,7 +723,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 	fontManager.Current ()->StringSize (msg, w, h, aw);
 	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, 3, msg);
-	//DrawGuidedCrosshair (xStereoSeparation);
+	//DrawGuidedCrosshairs (xStereoSeparation);
 	HUDRenderMessageFrame ();
 	}
 else {

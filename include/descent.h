@@ -939,6 +939,7 @@ class CFontStates {
 
 #define DEFAULT_RENDER_DEPTH	255
 #define DEFAULT_ZOOM				0x9000
+#define RIFT_DEFAULT_ZOOM		1.5
 
 typedef struct tRenderDetail {
 	int nLevel;

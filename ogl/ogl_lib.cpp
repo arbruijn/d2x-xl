@@ -463,7 +463,7 @@ else if (IsOculusRift ()) {
 #elif 0
 	SetupFrustum (2 * StereoSeparation ());
 #else
-	gluPerspective (gameStates.render.glFOV /** X2D (transformation.m_info.zoom)*/, gameData.render.scene.AspectRatio (), ZNEAR, ZFAR);
+	gluPerspective (gameStates.render.glFOV * X2D (transformation.m_info.zoom) / RIFT_DEFAULT_ZOOM, gameData.render.scene.AspectRatio (), ZNEAR, ZFAR);
 #endif
 	}
 else if (gameOpts->render.stereo.nMethod == STEREO_PARALLEL)

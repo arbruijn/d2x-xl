@@ -48,7 +48,9 @@ void SetupTransformation (CTransformation& transformation, const CFixVector& vPo
 transformation.m_info.zoom = (ogl.IsOculusRift () && !gameStates.render.nWindow [0]) ? F2X (X2F (xZoom) / X2F (DEFAULT_ZOOM) * 1.5f) : xZoom;
 transformation.m_info.zoomf = (float) xZoom / 65536.0f;
 transformation.m_info.pos = vPos;
-if (gameOpts->render.stereo.nMethod == STEREO_TOE_IN) {
+if (ogl.IsOculusRift ())
+	transformation.m_info.view [0] = mOrient;
+else if (gameOpts->render.stereo.nMethod == STEREO_TOE_IN) {
 	fix zScreen = F2X (ogl.ZScreen () * 10.0);
 	CFixVector o = CFixVector::Create (fix (xStereoSeparation / 2), 0, 0);
 	CFixVector h = CFixVector::Create (fix (xStereoSeparation / 2), 0, zScreen);

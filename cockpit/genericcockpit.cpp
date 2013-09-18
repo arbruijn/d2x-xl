@@ -53,8 +53,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define SHOW_PLAYER_IP		0
 
-void DrawGuidedCrosshair (fix xStereoSeparation);
-void DrawZoomCrosshair (void);
+void DrawGuidedCrosshairs (fix xStereoSeparation);
+void DrawZoomCrosshairs (void);
 
 #if 0
 CCanvas *Canv_LeftEnergyGauge;
@@ -1155,12 +1155,12 @@ if (!gameOpts->render.cockpit.bReticle
 
 if (((gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) ||
 	 ((gameData.demo.nState == ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided))) {
-	DrawGuidedCrosshair (m_info.xStereoSeparation);
+	DrawGuidedCrosshairs (m_info.xStereoSeparation);
 	return;
 	}
 
 if (gameStates.zoom.nFactor > float (gameStates.zoom.nMinFactor)) {
-	DrawZoomCrosshair ();
+	DrawZoomCrosshairs ();
 	return;
 	}
 
@@ -2187,7 +2187,7 @@ if (pszLabel) {
 	}
 
 if (nUser == WBU_GUIDED)
-	DrawGuidedCrosshair (m_info.xStereoSeparation);
+	DrawGuidedCrosshairs (m_info.xStereoSeparation);
 
 if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 	int smallWindowBottom, bigWindowBottom, extraPartHeight;
