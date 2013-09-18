@@ -622,6 +622,10 @@ else if (!m_sensorP) {
 	}
 else {
 	m_sensorFusion.AttachToSensor (m_sensorP);
+	m_sensorFusion.SetYawCorrectionEnabled (true);
+	m_magCalTO.Setup (50000);
+	m_magCalTO.Start (-1, true);
+	m_bCalibrating = false;
 	m_bAvailable = 2;
 	}
 if (detectionMessage) 
@@ -655,6 +659,29 @@ float yaw, pitch, roll;
 q.GetEulerAngles<OVR::Axis_Y, OVR::Axis_X, OVR::Axis_Z>(&yaw, &pitch, &roll);
 angles.Set (F2X (yaw), F2X (pitch), F2X (roll));
 return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+void CRiftData::AutoCalibrate (void)
+{
+if (Available () > 1) {
+	if (m_bCalibrating) {
+		if (!m_magCal.IsAutoCalibrating ()) {
+			m_bCalibrating = false;
+			m_magCalTO.Start (-1, true);
+			}
+		else {
+			m_magCal.UpdateAutoCalibration (m_sensorFusion);
+			if (m_magCal.IsCalibrated ()) {
+				m_bCalibrating = false;
+				m_magCalTO.Start (-1);
+				}
+			}
+		}
+	else if (m_magCalTO.Expired (false))
+		m_magCal.BeginAutoCalibration (m_sensorFusion);
+	}
 }
 
 // ----------------------------------------------------------------------------

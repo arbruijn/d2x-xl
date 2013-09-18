@@ -1282,6 +1282,7 @@ for (i = 0; i < 3; i++) {
 	}
 if (gameOpts->input.bUseHotKeys)
 	DoD2XKeys (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
+gameData.render.rift.AutoCalibrate ();
 if (ReadOculusRift ())
 	DoOculusRift ();
 #ifdef _WIN32
