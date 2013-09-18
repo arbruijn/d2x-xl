@@ -358,8 +358,8 @@ if (p) {
 	fontManager.Current ()->StringSize (s1, w, h, aw);
 	int x = m_x + CMenu::Scale (m_w) - w;
 	if (RETRO_STYLE) {
-		backgroundManager.Current ()->BlitClipped (CCanvas::Current (), x, y, w, 1, x, y);
-		backgroundManager.Current ()->BlitClipped (CCanvas::Current (), x, y + h - 1, w, 1, x, y);
+		backgroundManager.Current ()->BlitClipped (CCanvas::Current (), x - gameData.StereoOffset2D (), y, w, 1, x, y);
+		backgroundManager.Current ()->BlitClipped (CCanvas::Current (), x - gameData.StereoOffset2D (), y + h - 1, w, 1, x, y);
 		}
 	GrString (x, y, s1);
 	*p = '\t';
@@ -404,6 +404,7 @@ if (bTiny) {
 if (w1 == 0) 
 	w1 = w;
 
+x -= gameData.StereoOffset2D ();
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (2, 2, 2));
 OglDrawFilledRect (x - 1, y - 1, x - 1, y + h - 1);
 OglDrawFilledRect (x - 1, y - 1, x + w1 - 1, y - 1);
@@ -412,6 +413,7 @@ OglDrawFilledRect (x, y + h, x + w1, y + h);
 OglDrawFilledRect (x + w1, y - 1, x + w1, y + h);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 OglDrawFilledRect (x, y, x + w1 - 1, y + h - 1);
+x += gameData.StereoOffset2D ();
 GrString (x + 1, y + 1, s);
 }
 
@@ -430,7 +432,7 @@ while (*text) {
 	}
 if (!*text)
 	w1 = 0;
-DrawBlackBox (w, x, y, text, bTiny);
+DrawBlackBox (w, x - gameData.StereoOffset2D (), y, text, bTiny);
 if (current)	
 	GrString (x + w1 + 1, y, CURSOR_STRING);
 }
@@ -449,6 +451,7 @@ if (val > maxVal)
 	val = maxVal;
 #endif
 w1 = (val > maxVal) ? w : w * val / maxVal;
+x -= gameData.StereoOffset2D ();
 if (w1 < w) {
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 	OglDrawFilledRect (x + w1, y, x + w, y + h - 1);
@@ -504,6 +507,7 @@ y = m_y;
 if (time & 0x8000)
 	GrString (x, y, CURSOR_STRING);
 else {
+	x -= gameData.StereoOffset2D ();
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 	OglDrawFilledRect (x, y, x + CCanvas::Current ()->Font ()->Width () - 1, y + CCanvas::Current ()->Font ()->Height () - 1);
 	}

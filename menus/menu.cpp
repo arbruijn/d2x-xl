@@ -218,8 +218,6 @@ if (pszTitle && *pszTitle) {
 	fontManager.SetCurrent (font);
 	fontManager.SetColorRGBi (color, 1, 0, 0);
 	fontManager.Current ()->StringSize (pszTitle, w, h, aw);
-	//if (ogl.IsSideBySideDevice ()) 
-	//	x = (m_props.screenWidth - w) / 2 - gameData.StereoOffset2D ();
 	GrPrintF (NULL, x, ty, pszTitle);
 	ty += h;
 	}
@@ -523,7 +521,7 @@ ogl.SetDepthTest (false);
 FadeIn ();
 ogl.ColorMask (1,1,1,1,0);
 backgroundManager.Redraw ();
-gameData.render.bFloatingOffset = false;
+gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 fontManager.SetScale (fontManager.Scale () * GetScale ());
 int i = DrawTitle (m_props.pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
 DrawTitle (m_props.pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
@@ -587,7 +585,6 @@ if (m_bCloseBox) {
 	}
 #endif
 fontManager.SetScale (fontManager.Scale () / GetScale ());
-gameData.render.bFloatingOffset = true;
 m_bRedraw = 1;
 m_bStart = 0;
 #if 0

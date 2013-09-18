@@ -1762,6 +1762,8 @@ class CRiftData {
 		inline int Resolution (void) { return m_nResolution; }
 	};
 
+#define STEREO_OFFSET_FIXED		0
+#define STEREO_OFFSET_FLOATING	1
 
 class CRenderData {
 	public:
@@ -1801,10 +1803,10 @@ class CRenderData {
 		int							nStateChanges;
 		int							nShaderChanges;
 		int							nUsedFaces;
+		int							nStereoOffsetType;
 		float							fAttScale [2];
 		float							fBrightness;
 		ubyte							nPowerupFilter;
-		bool							bFloatingOffset;
 
 	public:
 		CRenderData ();
@@ -3648,7 +3650,12 @@ class CGameData {
 		fix FusionDamage (fix xBaseDamage);
 		int StereoOffset2D (void);
 		int FloatingStereoOffset2D (int x, bool bForce = false);
-
+		int SetStereoOffsetType (int nType) { 
+			int nOldType = render.nStereoOffsetType;
+			render.nStereoOffsetType = nType; 
+			return nOldType;
+			}
+		inline int X (int x, bool bForce = false) { return x - (render.nStereoOffsetType ? FloatingStereoOffset2D (x, bForce) : StereoOffset2D ()); }
 };
 
 extern CGameData gameData;
