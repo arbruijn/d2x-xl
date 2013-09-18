@@ -1213,7 +1213,7 @@ nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ())
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 glColor3i (1,1,1);
 
-gameData.render.bFloatingOffset = false;
+int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
 		  x + ScaleX (crossOffsets [ofs].x - 1), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true,
 		  I2X (1), 0, NULL, BM_ADDON (nBmReticle + nCrossBm));
@@ -1223,7 +1223,7 @@ BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
 BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
 		  x + ScaleX (secondaryOffsets [ofs].x - 1), (y + ScaleY (secondaryOffsets [ofs].y - 1)), false, true,
 		  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 5 + nSecondaryBm));
-gameData.render.bFloatingOffset = true;
+gameData.SetStereoOffsetType (nOffsetSave);
 
 if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick && gameOpts->render.cockpit.bMouseIndicator)
 	OglDrawMouseIndicator ();

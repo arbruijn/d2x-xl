@@ -663,9 +663,9 @@ if ((MODE == BM_OGL) && (ps = GetPoolString (s, idP))) {
 	CBitmap* bmP = ps->bmP;
 	float		fScale = fontManager.Scale ();
 	int		w = int (bmP->Width () * fScale);
-	int		xs = X (x);
+	int		xs = gameData.X (x);
 
-	ps->bmP->RenderScaled (xs, y, X (x + w) - xs, int (bmP->Height () * fScale), I2X (1), 0, &CCanvas::Current ()->FontColor (0), !gameStates.app.bDemoData);
+	ps->bmP->RenderScaled (xs, y, gameData.X (x + w) - xs, int (bmP->Height () * fScale), I2X (1), 0, &CCanvas::Current ()->FontColor (0), !gameStates.app.bDemoData);
 	return (int) (ps - stringPool) + 1;
 	}
 #endif
@@ -675,7 +675,7 @@ Assert (fontManager.Current () != NULL);
 fontManager.Current ()->StringSize (s, w, h, aw);
 if (x == 0x8000)
 	x = (CCanvas::Current ()->Width () - w) / 2;
-x = X (x);
+x = gameData.X (x);
 if ((x < 0) || (y < 0))
 	clipped |= 1;
 if (x > CCanvas::Current ()->Width ())
@@ -705,8 +705,8 @@ if (MODE == BM_OGL)
 if (fontManager.Current ()->Flags () & FT_COLOR)
 	return fontManager.Current ()->DrawString (x, y, s);
 if (CCanvas::Current ()->FontColor (1).index == -1)
-	return GrInternalStringClippedM (X (x), y, s);
-return GrInternalStringClipped (X (x), y, s);
+	return GrInternalStringClippedM (gameData.X (x), y, s);
+return GrInternalStringClipped (gameData.X (x), y, s);
 }
 
 //------------------------------------------------------------------------------
