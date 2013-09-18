@@ -145,7 +145,7 @@ m_data.bCheat = 0;
 m_data.bHires = 1;
 m_data.nViewDist = 0;
 m_data.nMaxDist = I2X (2000);
-m_data.nZoom = 0x9000;
+m_data.nZoom = DEFAULT_ZOOM;
 m_data.viewer.vPos.SetZero ();
 m_data.viewTarget.SetZero ();
 m_data.viewer.mOrient = CFixMatrix::IDENTITY;

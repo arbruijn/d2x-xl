@@ -298,6 +298,22 @@ for (uint i = 0; i < ToS (); i++) {
 
 //------------------------------------------------------------------------------ 
 
+class CFixFraction {
+	fix	m_den, m_div;
+
+	public:
+		CFixFraction () : m_den(1), m_div(1) {}
+
+		CFixFraction (fix den, fix div) {
+			m_den = den;
+			m_div = div;
+			}
+
+		inline fix operator* (fix v) { return m_den * v / m_div; }
+	};
+
+//------------------------------------------------------------------------------ 
+
 int CMenu::InitProps (const char* pszTitle, const char* pszSubTitle)
 {
 if ((m_props.screenWidth == gameData.render.frame.Width ()) && (m_props.screenHeight == gameData.render.frame.Height ()))
@@ -319,8 +335,11 @@ fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
 m_props.width = 0;
 m_props.height = int (ceil (double (m_props.titleHeight) / GetScale ())); // will be scaled in GetSize()
 m_props.nMenus = m_props.nOthers = 0;
-m_props.nStringHeight = Scale (GetSize (m_props.width, m_props.height, m_props.aw, m_props.nMenus, m_props.nOthers) + m_props.bTinyMode * 2);
-m_props.nMaxOnMenu = ((((m_props.screenHeight > 480)) ? m_props.screenHeight * 4 / 5 : 480) - m_props.titleHeight - Scale (LHY (8))) / m_props.nStringHeight - 2;
+m_props.nStringHeight = GetSize (m_props.width, m_props.height, m_props.aw, m_props.nMenus, m_props.nOthers) + m_props.bTinyMode * 2;
+
+CFixFraction heightScales [2] = { CFixFraction (4, 5), CFixFraction (3, 5) };
+
+m_props.nMaxOnMenu = ((((m_props.screenHeight > 480)) ? heightScales [ogl.IsSideBySideDevice ()] * m_props.screenHeight : 480) - m_props.titleHeight - Scale (LHY (8))) / m_props.nStringHeight - 2;
 if (/*!m_props.bTinyMode && */ (m_props.height > (m_props.nMaxOnMenu * (m_props.nStringHeight + 1)) + gap)) {
  m_props.bIsScrollBox = 1;
  m_props.height = (m_props.nMaxOnMenu * (m_props.nStringHeight + haveTitle) + haveTitle * Scale (LHY (m_props.bTinyMode ? 12 : 8)));
@@ -545,7 +564,7 @@ for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNo
 		Item (i).m_y = Item (i - m_props.nScrollOffset + m_props.nMaxNoScroll).m_y;
 		}
 	x = Item (i).m_x;
-	Item (i).m_x -= gameData.StereoOffset2D ();
+	//Item (i).m_x -= gameData.StereoOffset2D ();
 	Item (i).Draw ((i == m_nChoice) && !m_bAllText, m_props.bTinyMode);
 	Item (i).m_bRedraw = 0;
 	Item (i).m_x = x;

@@ -83,17 +83,22 @@ void CListBox::Render (void)
 {
 if (m_bDone)
 	return;
+gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+fontManager.SetScale (fontManager.Scale () * GetScale ());
 backgroundManager.Redraw ();
 FadeIn ();
 fontManager.SetCurrent (NORMAL_FONT);
 GrString (0x8000, m_yOffset - m_nTitleHeight, m_props.pszTitle);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 for (int i = max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
-	int w, h, aw, y;
+	int w, h, aw, x, y;
+
+	x = gameData.X (m_xOffset);
 	y = (i - m_nFirstItem) * (CCanvas::Current ()->Font ()->Height () + 2) + m_yOffset;
+
 	if (i >= int (m_items->ToS ())) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		OglDrawFilledRect (m_xOffset, y - 1, m_xOffset + m_nWidth - 1, y + CCanvas::Current ()->Font ()->Height () + 1);
+		OglDrawFilledRect (x, y - 1, x + m_nWidth - 1, y + CCanvas::Current ()->Font ()->Height () + 1);
 		}
 	else {
 		if (i == m_nChoice)
@@ -101,11 +106,12 @@ for (int i = max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
 		else
 			fontManager.SetCurrent (NORMAL_FONT);
 		fontManager.Current ()->StringSize ((*m_items) [i], w, h, aw);
-		OglDrawFilledRect (m_xOffset, y - 1, m_xOffset + m_nWidth - 1, y + h + 1);
+		OglDrawFilledRect (x, y - 1, x + m_nWidth - 1, y + h + 1);
 		GrString (m_xOffset + 5, y, (*m_items) [i]);
 		}
 	}	
 gameStates.render.grAlpha = 1.0f;
+fontManager.SetScale (fontManager.Scale () / GetScale ());
 SDL_ShowCursor (1);
 }
 
@@ -140,7 +146,7 @@ for (i = 0; i < int (items.ToS ()); i++) {
 		m_nWidth = w;
 	}
 m_nVisibleItems = LB_ITEMS_ON_SCREEN * CCanvas::Current ()->Height () / 480;
-m_nHeight = (CCanvas::Current ()->Font ()->Height () + 2) * m_nVisibleItems;
+m_nHeight = int (float ((CCanvas::Current ()->Font ()->Height () + 2) * m_nVisibleItems) * GetScale ());
 
 fontManager.Current ()->StringSize (pszTitle, w, h, aw);	
 if (w > m_nWidth)
@@ -150,8 +156,12 @@ m_nTitleHeight = h + 5;
 nOffsetSize = CCanvas::Current ()->Font ()->Width ();
 
 m_nWidth += (CCanvas::Current ()->Font ()->Width ());
-if (m_nWidth > CCanvas::Current ()->Width () - (CCanvas::Current ()->Font ()->Width () * 3))
-	m_nWidth = CCanvas::Current ()->Width () - (CCanvas::Current ()->Font ()->Width () * 3);
+
+int nMargin = CCanvas::Current ()->Font ()->Width () * 3;
+if (ogl.IsSideBySideDevice ())
+	nMargin += 4 * labs (gameData.StereoOffset2D ());
+if (m_nWidth > CCanvas::Current ()->Width () - nMargin)
+	m_nWidth = CCanvas::Current ()->Width () - nMargin;
 
 m_xOffset = (CCanvas::Current ()->Width () - m_nWidth) / 2;
 m_yOffset = (CCanvas::Current ()->Height () - (m_nHeight + m_nTitleHeight)) / 2 + m_nTitleHeight;

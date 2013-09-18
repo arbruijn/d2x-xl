@@ -173,7 +173,7 @@ gameStates.zoom.nChannel = -1;
 
 void InitRenderStates (void)
 {
-gameStates.render.xZoom = 0x9000;
+gameStates.render.xZoom = DEFAULT_ZOOM;
 gameStates.render.xZoomScale = 1;
 gameStates.render.nFrameCount = -1;
 gameStates.render.bQueryOcclusion = 0;

@@ -382,7 +382,7 @@ for (i = 0; i < 6; i++)
 m_centers [0].SetZero ();
 m_normals [0].Set (0, 0, I2X (1));
 for (i = 1; i < 6; i++) {
-	m_normals [i] = CFixVector::Normal (m_corners [planeVerts [i][1]], m_corners [planeVerts [i][2]], m_corners [planeVerts [i][3]]);
+	m_normals [i].Assign (CFloatVector::Normal (corners [planeVerts [i][1]], corners [planeVerts [i][2]], corners [planeVerts [i][3]]));
 	m_centers [i].Assign (centers [i]);
 #if COMPUTE_TYPE == 1
 #else

@@ -100,39 +100,45 @@ if (m_bDone)
 if (!MenuRenderTimeout (t0, -1))
 	return;
 
+gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+fontManager.SetScale (fontManager.Scale () * GetScale ());
+
 backgroundManager.Redraw ();
 fontManager.SetCurrent (NORMAL_FONT);
 FadeIn ();
 GrString (0x8000, m_yOffset + 10, m_props.pszTitle);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 for (int i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
-	int w, h, aw, y;
+	int w, h, aw, x, y;
+
+	x = gameData.X (m_nLeft);
 	y = (i - m_nFirstItem) * (CCanvas::Current ()->Font ()->Height () + 2) + m_nTop;
 
 	if (i >= m_nFileCount) {
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 5));
-		OglDrawFilledRect (m_nLeft + m_nWidth, y - 1, m_nLeft + m_nWidth, y + CCanvas::Current ()->Font ()->Height () + 1);
-		//OglDrawFilledRect (m_nLeft, y + CCanvas::Current ()->Font ()->Height () + 2, m_nLeft + m_nWidth, y + CCanvas::Current ()->Font ()->Height () + 2);
+		OglDrawFilledRect (x + m_nWidth, y - 1, x + m_nWidth, y + CCanvas::Current ()->Font ()->Height () + 1);
+		//OglDrawFilledRect (x, y + CCanvas::Current ()->Font ()->Height () + 2, x + m_nWidth, y + CCanvas::Current ()->Font ()->Height () + 2);
 	
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (2, 2, 2));
-		OglDrawFilledRect (m_nLeft - 1, y - 1, m_nLeft - 1, y + CCanvas::Current ()->Font ()->Height () + 2);
+		OglDrawFilledRect (x - 1, y - 1, x - 1, y + CCanvas::Current ()->Font ()->Height () + 2);
 	
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		OglDrawFilledRect (m_nLeft, y - 1, m_nLeft + m_nWidth - 1, y + CCanvas::Current ()->Font ()->Height () + 1);
+		OglDrawFilledRect (x, y - 1, x + m_nWidth - 1, y + CCanvas::Current ()->Font ()->Height () + 1);
 		} 
 	else {
 		fontManager.SetCurrent ((i == m_nChoice) ? SELECTED_FONT : NORMAL_FONT);
 		fontManager.Current ()->StringSize ((char*) (&m_filenames [i]), w, h, aw);
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 5));
-		OglDrawFilledRect (m_nLeft + m_nWidth, y - 1, m_nLeft + m_nWidth, y + h + 1);
+		OglDrawFilledRect (x + m_nWidth, y - 1, x + m_nWidth, y + h + 1);
 		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (2, 2, 2));
-		OglDrawFilledRect (m_nLeft - 1, y - 1, m_nLeft - 1, y + h + 1);
+		OglDrawFilledRect (x - 1, y - 1, x - 1, y + h + 1);
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		OglDrawFilledRect (m_nLeft, y - 1, m_nLeft + m_nWidth - 1, y + h + 1);
+		OglDrawFilledRect (x, y - 1, x + m_nWidth - 1, y + h + 1);
 		GrString (m_nLeft + 5, y, reinterpret_cast<char*> (&m_filenames [i]) + (((m_nMode == 1) && (m_filenames [i][0] == '$')) ? 1 : 0));
 		}
 	}	 
 gameStates.render.grAlpha = 1.0f;
+fontManager.SetScale (fontManager.Scale () / GetScale ());
 SDL_ShowCursor (1);
 }
 
@@ -378,7 +384,7 @@ while (!m_bDone) {
 		m_nKey = KeyInKey ();
 	switch (m_nKey) {
 		case KEY_CTRLED + KEY_F1:
-			SwitchDisplayMode ( - 1);
+			SwitchDisplayMode (-1);
 			break;
 			
 		case KEY_CTRLED + KEY_F2:
@@ -560,6 +566,7 @@ else {
 	}										 
 
 exitFileMenu:
+
 gameStates.input.keys.bRepeat = bKeyRepeat;
 
 if (bInitialized) {

@@ -993,10 +993,10 @@ void HandleTestKey(int key)
 			break;
 
 		case KEYDBGGED + KEY_COMMA:
-			gameStates.render.xZoom = FixMul(gameStates.render.xZoom, 62259);
+			gameStates.render.xZoom = FixMul (gameStates.render.xZoom, 62259);
 			break;
 		case KEYDBGGED + KEY_PERIOD:
-			gameStates.render.xZoom = FixMul(gameStates.render.xZoom, 68985);
+			gameStates.render.xZoom = FixMul (gameStates.render.xZoom, 68985);
 			break;
 
 		case KEYDBGGED + KEY_B: {

@@ -45,7 +45,7 @@ void SetupTransformation (CTransformation& transformation, const CFixVector& vPo
 {
 	static int ipdScale = 2;
 
-transformation.m_info.zoom = (ogl.IsOculusRift () && !gameStates.render.nWindow [0]) ? /*3 * xZoom / 2*/ I2X (1) : xZoom;
+transformation.m_info.zoom = (ogl.IsOculusRift () && !gameStates.render.nWindow [0]) ? F2X (X2F (xZoom) / X2F (DEFAULT_ZOOM) * 1.5f) : xZoom;
 transformation.m_info.zoomf = (float) xZoom / 65536.0f;
 transformation.m_info.pos = vPos;
 if (gameOpts->render.stereo.nMethod == STEREO_TOE_IN) {
