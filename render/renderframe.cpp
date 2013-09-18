@@ -256,7 +256,8 @@ glLineWidth (float (floor (2 * float (cw) / 640.0f)));
 #if 1
 //float xScale = float (w << 5) / float (cw);
 //float yScale = float (h << 5) / float (screen.Height ());
-OglDrawEllipse (sizeofa (sinCos), GL_LINE_LOOP, xScale, 0.5f, yScale, 1.0f - float (CCanvas::Current ()->Top () + y) / float (screen.Height ()), sinCos);
+OglDrawEllipse (sizeofa (sinCos), GL_LINE_LOOP, xScale, 0.5f - X2F (ogl.StereoSeparation ()), yScale, 
+					 1.0f - float (CCanvas::Current ()->Top () + y) / float (screen.Height ()), sinCos);
 #else
 glPushMatrix ();
 ogl.SetLineSmooth (true);
