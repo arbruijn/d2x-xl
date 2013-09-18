@@ -1737,6 +1737,7 @@ class CFaceListIndex {
 
 #if OCULUS_RIFT
 #	include "OVR.h"
+#	include "timeout.h"
 #endif
 
 class CRiftData {
