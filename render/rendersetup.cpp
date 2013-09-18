@@ -316,7 +316,7 @@ ogl.m_states.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMult
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, xStereoSeparation, nWindow);
 
-	if (gameStates.render.Dirty ()) {
+	if (!ogl.StereoSeparation () || gameStates.render.Dirty ()) {
 		ResetFaceList ();
 		gameStates.render.nThreads = gameStates.app.nThreads;
 		lightManager.ResetSegmentLights ();

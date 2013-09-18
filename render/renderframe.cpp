@@ -76,6 +76,7 @@ return gmObjP &&
 //draw a crosshair for the guided missile
 void DrawGuidedCrosshairs (fix xStereoSeparation)
 {
+int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 31, 0));
 int w = CCanvas::Current ()->Width () >> 5;
 if (w < 5)
@@ -90,8 +91,8 @@ int y = CCanvas::Current ()->Height () / 2;
 glLineWidth (float (gameData.render.frame.Width ()) / 640.0f);
 x = gameData.X (x);
 #if 1
-	w /= 2;
-	h /= 2;
+	w /= 2 << ogl.IsOculusRift ();
+	h /= 2 << ogl.IsOculusRift ();
 	OglDrawLine (x - w, y, x + w, y);
 	OglDrawLine (x, y - h, x, y + h);
 #else
@@ -102,6 +103,7 @@ glLineWidth (1.0f);
 if (xStereoSeparation) {
 	ogl.ColorMask (1,1,1,1,0);
 	}
+gameData.SetStereoOffsetType (nOffsetSave);
 }
 
 //------------------------------------------------------------------------------
@@ -145,6 +147,7 @@ if (scope.Load ()) {
 //draw a crosshair for the zoom
 void DrawZoomCrosshairs (void)
 {
+int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 DrawScope ();
 
 	static tSinCosf sinCos [124];
@@ -163,8 +166,8 @@ if (bInitSinCos) {
 	int w = X2I (h * screen.Aspect ());
 
 if (ogl.IsSideBySideDevice ()) {
-	w /= 2;
-	h /= 2;
+	w /= 3;
+	h /= 3;
 	}
 
 	int x = gameData.X (cw / 2);
@@ -289,7 +292,8 @@ if (bHaveTarget)
 	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 else
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
-GrPrintF (NULL, x - w  / 2, bottom + h, szZoom);
+GrPrintF (NULL, (cw - w) / 2, bottom + h, szZoom);
+gameData.SetStereoOffsetType (nOffsetSave);
 }
 
 //------------------------------------------------------------------------------
