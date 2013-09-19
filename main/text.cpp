@@ -1965,7 +1965,7 @@ const char *defaultGameTexts [][2] = {
  {"Glas~Farben: %s", "Glass ~Colors: %s"},
  {"Neutrale Zone: %s", "Deadzone: %s"},
  {"Oculus Rift-Konfiguration", "Oculus Rift Configuration"},
- {"Oculus Rift-Konfiguration...", "Oculus Rift Configuration..."},
+ {"Oculus Rift konfigurieren..", "Configure Oculus Rift..."},
  
 #if 0
  {"", ""},

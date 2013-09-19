@@ -487,12 +487,13 @@ szDZoneSizes [0] = TXT_NONE;
 szDZoneSizes [1] = TXT_SMALL;
 szDZoneSizes [2] = TXT_MEDIUM;
 szDZoneSizes [3] = TXT_LARGE;
+szDZoneSizes [4] = TXT_VERY_LARGE;
 
 do {
 	m.Destroy ();
 	m.Create (5);
 
-	AddDeadzoneControl (m, szDeadzone, TXT_RIFT_DEADZONE, HTX_RIFT_DEADZONE, NULL, gameOpts->input.oculusRift.nDeadzone, KEY_U);
+	AddDeadzoneControl (m, szDeadzone, TXT_RIFT_DEADZONE, HTX_RIFT_DEADZONE, szDZoneSizes, gameOpts->input.oculusRift.nDeadzone, KEY_U);
 	i = m.Menu (NULL, TXT_RIFT_CONFIG, OculusRiftConfigCallback, &choice);
 	} while ((i >= 0) || (i == -2));
 }
@@ -626,7 +627,7 @@ do {
 			m.AddCheck ("sync axis", TXT_SYNC_TRACKIR_AXES, gameOpts->input.trackIR.bSyncAxis, KEY_K, HTX_SYNC_TRACKIR_AXES);
 			AddAxisControls (m, "sensitivity", &szTrackIRSens [0][0], TXT_TRACKIR_SENS, TXT_TRACKIR_SENS_N, szAxis3D, HTX_TRACKIR_SENS, 
 								  3, gameOpts->input.trackIR.sensitivity, 16, NULL, KEY_S, axis3DHotkeys, gameOpts->input.trackIR.bSyncAxis);
-			AddDeadzoneControl (m, szTrackIRDeadzone, TXT_TRACKIR_DEADZONE, HTX_TRACKIR_DEADZONE, NULL, gameOpts->input.trackIR.nDeadzone, KEY_U);
+			AddDeadzoneControl (m, szTrackIRDeadzone, TXT_TRACKIR_DEADZONE, HTX_TRACKIR_DEADZONE, szDZoneSizes, gameOpts->input.trackIR.nDeadzone, KEY_U);
 			}
 		}
 	i = m.Menu (NULL, TXT_TRACKIR_CONFIG, TrackIRConfigCallback, &choice);
