@@ -86,6 +86,7 @@ static int nWindowPos, nWindowAlign, nTgtInd;
 static int	optWeaponIcons, bShowWeaponIcons, optIconAlpha;
 #endif
 
+static const char* szHUDType [3];
 static const char* szWindowType [7];
 static const char* szWindowSize [4];
 static const char* szWindowPos [2];
@@ -119,6 +120,15 @@ if (dir != bShowWeaponIcons) {
 	return nCurItem;
 	}
 #endif
+
+if ((m = menu ["show hud"])) {
+	v = m->Value ();
+	if (gameOpts->render.cockpit.bHUD != v) {
+		gameOpts->render.cockpit.bHUD = v;
+		sprintf (m->m_text, TXT_SHOW_HUD, szHUDType [v]);
+		m->Rebuild ();
+		}
+	}
 
 for (int i = 0; i < 2; i++) {
 	if ((m = menu [windowTypeIds [i]])) {
@@ -236,6 +246,10 @@ if (bInitialized)
 	return;
 bInitialized = true;
 
+szHUDType [0] = TXT_OFF;
+szHUDType [1] = TXT_MINIMAL;
+szHUDType [2] = TXT_FULL;
+
 szWindowSize [0] = TXT_AUXWIN_SMALL;
 szWindowSize [1] = TXT_AUXWIN_MEDIUM;
 szWindowSize [2] = TXT_AUXWIN_LARGE;
@@ -330,10 +344,9 @@ do {
 	m.Destroy ();
 	m.Create (20);
 
-	m.AddCheck ("show hud", TXT_SHOW_HUD, gameOpts->render.cockpit.bHUD, KEY_U, HTX_CPIT_SHOWHUD);
-	sprintf (szSlider, TXT_SHOW_HUD, szWindowSize [gameOpts->render.cockpit.bHUD]);
-	m.AddSlider ("show hud", szSlider, gameOpts->render.cockpit.nWindowSize, 0, 3, KEY_I, HTX_CPIT_WINSIZE);
-
+	sprintf (szSlider, TXT_SHOW_HUD, szHUDType [gameOpts->render.cockpit.bHUD]);
+	m.AddSlider ("show hud", szSlider, gameOpts->render.cockpit.bHUD, 0, 2, KEY_U, HTX_CPIT_SHOWHUD);
+	m.AddText ("", "");
 
 	m.AddCheck ("show reticle", TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_S, HTX_CPIT_SHOWRETICLE);
 	m.AddCheck ("missile view", TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_M, HTX_CPIT_MSLVIEW);
