@@ -393,6 +393,20 @@ public:
 	bool IsZero (void) const { return ! (v.coord.p || v.coord.h || v.coord.b); }
 	void SetZero (void) { memset (&v, 0, sizeof (v)); }
 	void Set (const fixang p, const fixang b, const fixang h) { v.coord.p = p; v.coord.b = b; v.coord.h = h; }
+
+	inline CAngleVector& operator+= (CAngleVector& other) {
+		v.coord.p += other.v.coord.p;
+		v.coord.b += other.v.coord.b;
+		v.coord.h += other.v.coord.h;
+		return *this;
+		}
+
+	inline CAngleVector& operator-= (CAngleVector& other) {
+		v.coord.p -= other.v.coord.p;
+		v.coord.b -= other.v.coord.b;
+		v.coord.h -= other.v.coord.h;
+		return *this;
+		}
 };
 
 //------------------------------------------------------------------------------

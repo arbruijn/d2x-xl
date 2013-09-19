@@ -1753,13 +1753,14 @@ class CRiftData {
 		OVR::Util::Render::StereoEyeParams	m_eyes [2];
 #endif
 
-		float		m_renderScale;
-		float		m_fov;
-		float		m_projectionCenterOffset;
-		int		m_ipd;
-		int		m_nResolution;
-		int		m_bAvailable;
-		bool		m_bCalibrating;
+		float				m_renderScale;
+		float				m_fov;
+		float				m_projectionCenterOffset;
+		int				m_ipd;
+		int				m_nResolution;
+		int				m_bAvailable;
+		bool				m_bCalibrating;
+		CAngleVector	m_center;
 		CTimeout	m_magCalTO;
 
 		CRiftData () : m_renderScale (1.0f), m_fov (125.0f), m_nResolution (0), m_bAvailable (false) {}
@@ -1768,8 +1769,9 @@ class CRiftData {
 		inline int Available (void) { return m_bAvailable; }
 		inline int Resolution (void) { return m_nResolution; }
 		int GetViewMatrix (CFixMatrix& m);
-		int GetHeadAngles (CAngleVector& angles);
+		int GetHeadAngles (CAngleVector& angles, bool bCalibrate = true);
 		void AutoCalibrate (void);
+		inline void SetCenter (void) { GetHeadAngles (m_center, false); }
 	};
 
 #define STEREO_OFFSET_FIXED		0

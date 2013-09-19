@@ -649,6 +649,9 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			GrToggleFullScreenGame ();
 			break;
 
+		case KEY_CTRLED + KEY_HOME:
+			gameData.render.rift.SetCenter ();
+
 		default:
 				return bScreenChanged;
 		}	 //switch (key)

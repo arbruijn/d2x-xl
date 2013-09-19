@@ -1114,6 +1114,13 @@ gameStates.render.nInterpolationMethod	= saved_interp_method;
 
 //	-----------------------------------------------------------------------------
 
+inline float RadToDeg (float r)
+{
+return r * float (180.0 / PI);
+}
+
+//	-----------------------------------------------------------------------------
+
 CRGBColor playerColors [] = {
  {15, 15, 23},
  {27, 0, 0},
@@ -1212,8 +1219,29 @@ nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ())
 				 : BM_ADDON_RETICLE_GREEN;
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 glColor3i (1,1,1);
-
 int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+
+if (ogl.IsOculusRift ()) {
+	float fov = float (gameStates.render.glFOV * X2D (transformation.m_info.zoom));
+	float yStep = float (CCanvas::Current ()->Height ()) / fov * 4;
+	float xStep = yStep * CCanvas::Current ()->AspectRatio ();
+	if ((fabs (xStep) > 0.1f) || (fabs (yStep) > 0.1f)) {
+		gameStates.render.grAlpha = 0.125f;
+		BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
+				  x + ScaleX (crossOffsets [ofs].x - 1), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true,
+				  I2X (1), 0, NULL, BM_ADDON (nBmReticle + nCrossBm));
+		BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
+				  x + ScaleX (primaryOffsets [ofs].x - 1), (y + ScaleY (primaryOffsets [ofs].y - 1)), false, true,
+				  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 2 + nPrimaryBm));
+		BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
+				  x + ScaleX (secondaryOffsets [ofs].x - 1), (y + ScaleY (secondaryOffsets [ofs].y - 1)), false, true,
+				  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 5 + nSecondaryBm));
+		gameStates.render.grAlpha = 1.0f;
+		}
+	x -= int (ceil (xStep * RadToDeg (X2F (transformation.m_info.playerHeadAngles.v.coord.h))));
+	y -= int (ceil (yStep * RadToDeg (X2F (transformation.m_info.playerHeadAngles.v.coord.p))));
+	}
+
 BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
 		  x + ScaleX (crossOffsets [ofs].x - 1), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true,
 		  I2X (1), 0, NULL, BM_ADDON (nBmReticle + nCrossBm));
