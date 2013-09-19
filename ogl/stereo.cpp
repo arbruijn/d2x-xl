@@ -65,7 +65,7 @@
 int enhance3DShaderProg [2][2][3] = {{{-1,-1,-1},{-1,-1,-1}},{{-1,-1,-1},{-1,-1,-1}}};
 int duboisShaderProg = -1;
 
-int riftWarpShaderProg = -1;
+int riftWarpShaderProg [2] = {-1, -1};
 
 int nScreenDists [10] = {1, 2, 5, 10, 15, 20, 30, 50, 70, 100};
 float nDeghostThresholds [4][2] = {{1.0f, 1.0f}, {0.8f, 0.8f}, {0.7f, 0.7f}, {0.6f, 0.6f}};
@@ -96,7 +96,7 @@ float w = float (gameData.render.viewport.Width ()) / float (gameData.render.scr
 
 float as = float (gameData.render.viewport.Width ()) / float(gameData.render.viewport.Height ());
 
-GLhandleARB warpProg = GLhandleARB (shaderManager.Deploy (riftWarpShaderProg));
+GLhandleARB warpProg = GLhandleARB (shaderManager.Deploy (riftWarpShaderProg [gameOpts->render.stereo.bChromAbCorr]));
 if (!warpProg)
 	return false;
 if (shaderManager.Rebuild (warpProg))
@@ -112,13 +112,12 @@ float scaleFactor = 1.0f / distortion.Scale;
 shaderManager.Set ("Scale", (w / 2) * scaleFactor, (h / 2) * scaleFactor * as);
 shaderManager.Set ("ScaleIn", 2.0f / w, 2.0f / h / as);
 shaderManager.Set ("HmdWarpParam", distortion.K [0], distortion.K [1], distortion.K [2], distortion.K [3]);
-#if CHROM_AB_CORRECTION
-shaderManager.Set ("ChromAbParam",
-                   distortion.ChromaticAberration [0], 
-                   distortion.ChromaticAberration [1],
-                   distortion.ChromaticAberration [2],
-                   distortion.ChromaticAberration [3]);
-#endif
+if (gameOpts->render.stereo.bChromAbCorr)
+	shaderManager.Set ("ChromAbParam",
+		                distortion.ChromaticAberration [0], 
+			             distortion.ChromaticAberration [1],
+				          distortion.ChromaticAberration [2],
+					       distortion.ChromaticAberration [3]);
 glUniform1i (glGetUniformLocation (warpProg, "SceneTex"), 0);
 OglDrawArrays (GL_QUADS, 0, 4);
 return true;
@@ -459,7 +458,7 @@ static const char* riftWarpVS =
 
 #if CHROM_AB_CORRECTION
 
-static const char* riftWarpFS =
+static const char* riftWarpFS [2] = {
 	"uniform vec2 LensCenter;\n"
 	"uniform vec2 ScreenCenter;\n"
 	"uniform vec2 Scale;\n"
@@ -481,11 +480,8 @@ static const char* riftWarpFS =
 	"                          texture2D (SceneTex, tcBlue).b,\n"
 	"                          1.0)\n"
 	"   : vec4 (0.0, 0.0, 0.0, 1.0);\n"
-	"}\n";
-
-#else
-
-static const char* riftWarpFS =
+	"}\n"
+	,
 	"uniform vec2 LensCenter;\n"
 	"uniform vec2 ScreenCenter;\n"
 	"uniform vec2 Scale;\n"
@@ -503,7 +499,8 @@ static const char* riftWarpFS =
 	"(clamp(tc, ScreenCenter-vec2(0.25,0.5), ScreenCenter+vec2(0.25,0.5)) == tc)\n"
 	"? texture2D(SceneTex, tc)\n"
 	": vec4(0.0, 0.0, 0.0, 1.0);\n"
-	"}\n";
+	"}\n"
+};
 
 #endif
 
@@ -521,7 +518,9 @@ if (gameOpts->render.bUseShaders && m_features.bShaders.Available ()) {
 		}
 
 	PrintLog (0, "building Oculus Rift warp shader program\n");
-	gameStates.render.textures.bHaveRiftWarpShader = (0 <= shaderManager.Build (riftWarpShaderProg, riftWarpFS, riftWarpVS));
+	gameStates.render.textures.bHaveRiftWarpShader = 
+		(0 <= shaderManager.Build (riftWarpShaderProg [0], riftWarpFS [0], riftWarpVS)) &&
+		(0 <= shaderManager.Build (riftWarpShaderProg [1], riftWarpFS [1], riftWarpVS));
 
 	PrintLog (0, "building enhanced 3D shader programs\n");
 	for (int h = 0; h < 2; h++) {
@@ -545,7 +544,8 @@ void COGL::DeleteEnhanced3DShader (void)
 {
 if (duboisShaderProg >= 0) {
 	shaderManager.Delete (duboisShaderProg);
-	shaderManager.Delete (riftWarpShaderProg);
+	shaderManager.Delete (riftWarpShaderProg [0]);
+	shaderManager.Delete (riftWarpShaderProg [1]);
 	for (int h = 0; h < 2; h++) {
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < 3; j++) {

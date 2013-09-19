@@ -1967,6 +1967,7 @@ const char *defaultGameTexts [][2] = {
  {"Oculus Rift-Konfiguration", "Oculus Rift Configuration"},
  {"Oculus Rift konfigurieren..", "Configure Oculus Rift..."},
  {"minimal", "minimal"},
+ {"Farbabweichungs-~Korrektur", "~Chromatic Aberration Correction"},
  
 #if 0
  {"", ""},
@@ -2699,6 +2700,7 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann die Farbkombination der Anaglyphenbrille eingestellt werden.", "Chose the color combination of the anaglyph glasses here."},
  {"Hier kann die Empfindlichkeit des Positionssensors eingestellt werden.", "Adjust the sensitivity of the head tracking sensor here."},
  {"Hier kann ein Oculus Rift konfiguriert werden.", "Configure an Oculus Rift here."},
+ {"Wenn angekreuzt, werden auf dem Oculus Rift auftretende\nFarbabweichungen korrigiert.", "When checked, chromatic aberrations (color seams) appearing\non the Oculus Rift are corrected."},
 #if 0
  {"", ""},
 #endif

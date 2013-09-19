@@ -359,7 +359,8 @@ else {
 	stereo.bDeghost = 1;
 	stereo.xSeparation [0] = 65536;
 	stereo.xSeparation [1] = MM2X (RIFT_DEFAULT_IPD);
-	stereo.nFOV = 90;
+	stereo.bChromAbCorr = 1;
+	stereo.nFOV = DEFAULT_FOV;
 	}
 }
 

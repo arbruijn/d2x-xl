@@ -2002,10 +2002,10 @@ void LoadGameTexts(void);
 #define TXT_RIFT_CONFIG					GT(1218)
 #define TXT_RIFTCFG_MENUCALL			GT(1219)
 #define TXT_MINIMAL						GT(1220)
+#define TXT_CHROM_AB_CORR				GT(1221)
 
 #if 0
 
-#define TXT_					GT(1221)
 #define TXT_					GT(1222)
 #define TXT_					GT(1223)
 #define TXT_					GT(1224)
@@ -2262,7 +2262,7 @@ void LoadGameTexts(void);
 #define HTX_MISC_SMARTSEARCH			HT(67)
 #define HTX_MISC_SHOWLVLVER			HT(68)
 #define HTX_MISC_EXPMODE				HT(69)
-#define HTX_MISC_MISSIONDL					HT(70)
+#define HTX_MISC_MISSIONDL				HT(70)
 #define HTX_MISC_DLTIMEOUT				HT(71)
 #define HTX_MISC_DEFAULTS				HT(72)
 #define HTX_MISC_COMPSPEED				HT(73)
@@ -2640,11 +2640,10 @@ void LoadGameTexts(void);
 #define HTX_ANAGLYPH_COLORS			HT(434)
 #define HTX_RIFT_DEADZONE				HT(435)
 #define HTX_RIFT_CONFIG					HT(436)
+#define HTX_CHROM_AB_CORR				HT(437)
 
 #if 0
 
-#define HTX_						HT(436)
-#define HTX_						HT(437)
 #define HTX_						HT(438)
 #define HTX_						HT(439)
 #define HTX_						HT(440)

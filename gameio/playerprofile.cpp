@@ -505,11 +505,12 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.stereo.nScreenDist, i, 0);
 		RP (gameOptions [i].render.stereo.xSeparation [0], i, 0);
 		RP (gameOptions [i].render.stereo.xSeparation [1], i, 1);
-		RP (gameOptions [i].render.stereo.nFOV, i, 0);
+		//RP (gameOptions [i].render.stereo.nFOV, i, 0);
 		RP (gameOptions [i].render.stereo.bEnhance, i, 0);
 		RP (gameOptions [i].render.stereo.bColorGain, i, 0);
 		RP (gameOptions [i].render.stereo.bDeghost, i, 0);
 		RP (gameOptions [i].render.stereo.bBrighten, i, 0);
+		RP (gameOptions [i].render.stereo.bChromAbCorr, i, 0);
 		RP (gameOptions [i].render.cameras.bHires, i, 0);
 		RP (gameOptions [i].render.cockpit.bFlashGauges, i, 0);
 		RP (gameOptions [i].demo.bOldFormat, i, 0);
@@ -1012,11 +1013,12 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.stereo.nScreenDist", "3"},
 	 {"gameOptions[0].render.stereo.xSeparation[0]", "65536"},
 	 {"gameOptions[0].render.stereo.xSeparation[1]", "65536"},
-	 {"gameOptions[0].render.stereo.nFOV", "90"},
+	 //{"gameOptions[0].render.stereo.nFOV", "90"},
 	 {"gameOptions[0].render.stereo.bEnhance", "0"},
 	 {"gameOptions[0].render.stereo.bColorGain", "0"},
 	 {"gameOptions[0].render.stereo.bDeghost", "0"},
 	 {"gameOptions[0].render.stereo.bBrighten", "1"},
+	 {"gameOptions[0].render.stereo.bChromAbCorr", "1"},
 	 {"gameOptions[0].render.effects.bEnabled", "1"},
 	 {"gameOptions[0].render.effects.bGlow", "0"},
 	 {"gameOptions[0].render.effects.bSoftParticles", "0"},

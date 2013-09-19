@@ -582,6 +582,8 @@ do {
 
 	if (EXPERTMODE && nStereoDevice) {
 		if (nStereoDevice == GLASSES_OCULUS_RIFT - 2) {
+			m.AddCheck ("chromAbCorr", TXT_CHROM_AB_CORR, gameOpts->render.stereo.bChromAbCorr, KEY_C, HTX_CHROM_AB_CORR);
+
 #if 0
 			sprintf (szSlider + 1, TXT_STEREO_FOV, STEREO_MIN_FOV + xFOV * STEREO_FOV_STEP);
 			*szSlider = *(TXT_STEREO_FOV - 1);
