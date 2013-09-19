@@ -650,6 +650,18 @@ return 1;
 
 // ----------------------------------------------------------------------------
 
+#define DEFAULT_DEADZONE 0.2f
+
+static inline float AddDeadzone (float v, float deadzone = DEFAULT_DEADZONE)
+{
+if (v < -deadzone)
+	return (v + deadzone) / deadzone;
+if (v > 0.1f)
+	return (v - deadzone) / deadzone;
+return 0.0f;
+}
+
+
 int CRiftData::GetHeadAngles (CAngleVector& angles, bool bCalibrate)
 {
 if (Available () < 2)
@@ -657,9 +669,14 @@ if (Available () < 2)
 OVR::Quatf q = m_sensorFusion.GetOrientation ();
 float yaw, pitch, roll;
 q.GetEulerAngles<OVR::Axis_Y, OVR::Axis_X, OVR::Axis_Z>(&yaw, &pitch, &roll);
-angles.Set (-F2X (pitch * 0.5f), F2X (roll * 0.5f), -F2X (yaw * 0.5f));
-if (bCalibrate)
-	angles -= m_center;
+if (!bCalibrate) 
+	angles.Set (-F2X (pitch), F2X (roll), -F2X (yaw));
+else {
+	pitch -= F2X (m_center.v.coord.p);
+	roll -= F2X (m_center.v.coord.b);
+	yaw -= F2X (m_center.v.coord.h);
+	angles.Set (-F2X (AddDeadzone (pitch) * 0.5f), F2X (AddDeadzone (roll) * 0.5f), -F2X (AddDeadzone (yaw) * 0.5f));
+	}
 return 1;
 }
 

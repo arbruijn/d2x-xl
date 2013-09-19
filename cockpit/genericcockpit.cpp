@@ -247,8 +247,8 @@ else if (x == 0x8000)
 if (y < 0)
 	y = CCanvas::Current ()->Height () + y;
 if (ogl.IsOculusRift ()) {
-	x += int (ceil ((float (x) - float (CCanvas::Current ()->Width ()) * 0.5f) * 0.25f));
-	y += int (ceil ((float (y) - float (CCanvas::Current ()->Height ()) * 0.5f) * 0.25f));
+	x -= int (ceil ((float (x) - float (CCanvas::Current ()->Width ()) * 0.5f) * 0.25f));
+	y -= int (ceil ((float (y) - float (CCanvas::Current ()->Height ()) * 0.5f) * 0.25f));
 	}
 int nId = GrString (x, y, buffer, idP);
 fontManager.SetScale (1.0f);
@@ -1229,8 +1229,13 @@ if (ogl.IsOculusRift ()) {
 	float fov = float (gameStates.render.glFOV * X2D (transformation.m_info.zoom));
 	float yStep = float (CCanvas::Current ()->Height ()) / fov * 4;
 	float xStep = yStep * CCanvas::Current ()->AspectRatio ();
-	if ((fabs (xStep) > 0.1f) || (fabs (yStep) > 0.1f)) {
-		gameStates.render.grAlpha = 0.2f;
+	//if ((fabs (X2F (transformation.m_info.playerHeadAngles.v.coord.h)) > 0.1f) || 
+	//	 (fabs (X2F (transformation.m_info.playerHeadAngles.v.coord.p)) > 0.1f)) 
+		{
+		float fade = 1.0f - 2.0f * X2F (max (abs (transformation.m_info.playerHeadAngles.v.coord.h), 
+														 abs (transformation.m_info.playerHeadAngles.v.coord.p)));
+		fade *= fade;
+		gameStates.render.grAlpha = pow (fade, 4);
 		BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
 				  x + ScaleX (crossOffsets [ofs].x - 1), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true,
 				  I2X (1), 0, NULL, BM_ADDON (nBmReticle + nCrossBm));
@@ -1240,7 +1245,7 @@ if (ogl.IsOculusRift ()) {
 		BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
 				  x + ScaleX (secondaryOffsets [ofs].x - 1), (y + ScaleY (secondaryOffsets [ofs].y - 1)), false, true,
 				  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 5 + nSecondaryBm));
-		gameStates.render.grAlpha = 1.0f;
+		gameStates.render.grAlpha = 1.0f - gameStates.render.grAlpha;
 		}
 	x -= int (ceil (xStep * RadToDeg (X2F (transformation.m_info.playerHeadAngles.v.coord.h))));
 	y -= int (ceil (yStep * RadToDeg (X2F (transformation.m_info.playerHeadAngles.v.coord.p))));
@@ -1264,6 +1269,7 @@ if (ogl.IsOculusRift ()) {
 	m_info.xScale *= 2.0f;
 	m_info.yScale *= 2.0f;
 	}
+gameStates.render.grAlpha = 1.0f;
 #if 0
 if (m_info.xStereoSeparation) {
 	ogl.ColorMask (1,1,1,1,0);

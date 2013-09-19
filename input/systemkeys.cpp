@@ -574,9 +574,10 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			bStopPlayerMovement = 0;
 			break;		// send taunt macros
 
-		case KEY_CTRLED + KEY_F12:
+		case KEY_CTRLED + KEY_F10:
 			gameData.trackIR.x =
 			gameData.trackIR.y = 0;
+			gameData.render.rift.SetCenter ();
 			break;
 
 		case KEY_ALTED + KEY_F12:
@@ -648,9 +649,6 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 		case KEY_ALTED + KEY_PADENTER:
 			GrToggleFullScreenGame ();
 			break;
-
-		case KEY_CTRLED + KEY_HOME:
-			gameData.render.rift.SetCenter ();
 
 		default:
 				return bScreenChanged;
