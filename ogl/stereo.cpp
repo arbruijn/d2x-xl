@@ -75,7 +75,7 @@ extern float quadVerts [3][4][2];
 
 //-----------------------------------------------------------------------------------
 
-#define CHROM_AB_CORRECTION	0
+#define CHROM_AB_CORRECTION	1
 
 #if OCULUS_RIFT
 
