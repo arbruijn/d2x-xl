@@ -129,13 +129,11 @@ bRebuild = false;
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 
-bool bAdjustCoords = false;
-
-int AdjustCockpitCoords (char* s, int& x, int& y)
+int CGenericCockpit::AdjustCockpitCoords (char* s, int& x, int& y)
 {
 	int	h;
 #if 1
-if (bAdjustCoords && ogl.IsOculusRift ()) {
+if (m_info.bAdjustCoords && ogl.IsOculusRift ()) {
 
 
 	h = CCanvas::Current ()->Width () / 2;
@@ -154,7 +152,7 @@ if (bAdjustCoords && ogl.IsOculusRift ()) {
 	}
 else
 	h = gameData.render.nStereoOffsetType;
-bAdjustCoords = false;
+m_info.bAdjustCoords = false;
 return h;
 #endif
 }

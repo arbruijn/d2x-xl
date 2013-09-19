@@ -44,10 +44,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hudicons.h"
 #include "gr.h"
 
-extern bool bAdjustCoords;
-
-int AdjustCockpitCoords (char* s, int& x, int& y);
-
 //	-----------------------------------------------------------------------------
 
 void CHUD::GetHostageWindowCoords (int& x, int& y, int& w, int& h)
@@ -161,7 +157,7 @@ if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
 		y = min (y, (wy - LineSpacing () - gameData.render.frame.Top ()));
 		}
 	SetFontColor (GREEN_RGBA);
-	bAdjustCoords = true;
+	m_info.bAdjustCoords = true;
 	nIdLock = DrawHUDText (&nIdLock, x, y, TXT_LOCK);
 	}
 }
@@ -239,7 +235,7 @@ if (cockpit->Hide ())
 if (gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ()) {
 	int y = IsMultiGame ? -6 * LineSpacing () : -2 * LineSpacing ();
 	SetFontColor (GREEN_RGBA);
-	bAdjustCoords = true;
+	m_info.bAdjustCoords = true;
 	nIdShield = DrawHUDText (&nIdShield, 2, y, "%s: %i", TXT_SHIELD, int (m_info.nShield * LOCALPLAYER.ShieldScale () + 0.5f));
 	}
 }
@@ -331,7 +327,7 @@ h = LOCALPLAYER.Energy () ? X2IR (LOCALPLAYER.Energy ()) : 0;
 if (gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ()) {
 	y = IsMultiGame ? -5* LineSpacing () : -LineSpacing ();
 	SetFontColor (GREEN_RGBA);
-	bAdjustCoords = true;
+	m_info.bAdjustCoords = true;
 	nIdEnergy = DrawHUDText (&nIdEnergy, 2, y, "%s: %i", TXT_ENERGY, h);
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
@@ -413,7 +409,7 @@ h = FixMul (gameData.physics.xAfterburnerCharge, 100);
 if (gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ()) {
 	y = -(IsMultiGame ? 8 : 3) * LineSpacing ();
 	SetFontColor (GREEN_RGBA);
-	bAdjustCoords = true;
+	m_info.bAdjustCoords = true;
 	nIdAfterBurner = DrawHUDText (&nIdAfterBurner, 2, y, TXT_HUD_BURN, h);
 	}
 }
@@ -561,7 +557,7 @@ switch (gameData.weapons.nPrimary) {
 	}
 
 fontManager.Current ()->StringSize (szWeapon, w, h, aw);
-bAdjustCoords = true;
+m_info.bAdjustCoords = true;
 nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, -5 - w, y - 2 * LineSpacing (), szWeapon);
 
 if (gameData.weapons.nPrimary == VULCAN_INDEX) {
@@ -583,7 +579,7 @@ if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 pszWeapon = SECONDARY_WEAPON_NAMES_VERY_SHORT (gameData.weapons.nSecondary);
 sprintf (szWeapon, "%s %d", pszWeapon, LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
 fontManager.Current ()->StringSize (szWeapon, w, h, aw);
-bAdjustCoords = true;
+m_info.bAdjustCoords = true;
 nIdWeapons [1] = DrawHUDText (nIdWeapons + 1, -5 - w, y - LineSpacing (), szWeapon);
 
 if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != m_history [0].ammo [1]) {

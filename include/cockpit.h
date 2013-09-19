@@ -121,6 +121,7 @@ class CCockpitInfo {
 		int		nShield;
 		int		nEnergy;
 		int		bCloak;
+		int		bAdjustCoords;
 		int		nDamage [3];
 		fix		tInvul;
 		fix		xStereoSeparation;
@@ -277,6 +278,7 @@ class CGenericCockpit {
 
 		int _CDECL_ DrawHUDText (int *idP, int x, int y, const char * format, ...);
 
+		int CGenericCockpit::AdjustCockpitCoords (char* s, int& x, int& y);
 	};
 
 //	-----------------------------------------------------------------------------
