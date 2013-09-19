@@ -172,7 +172,6 @@ class CScreen {
 			m_info.width = 0;
 			m_info.height = 0;
 			m_info.aspect = 0;
-			m_info.scale [2] = 1.0f;
 			if (!m_current)
 				m_current = this;
 			CCanvas::SetCurrent ();
