@@ -1226,7 +1226,7 @@ if (ogl.IsOculusRift ()) {
 	float yStep = float (CCanvas::Current ()->Height ()) / fov * 4;
 	float xStep = yStep * CCanvas::Current ()->AspectRatio ();
 	if ((fabs (xStep) > 0.1f) || (fabs (yStep) > 0.1f)) {
-		gameStates.render.grAlpha = 0.125f;
+		gameStates.render.grAlpha = 0.2f;
 		BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
 				  x + ScaleX (crossOffsets [ofs].x - 1), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true,
 				  I2X (1), 0, NULL, BM_ADDON (nBmReticle + nCrossBm));
