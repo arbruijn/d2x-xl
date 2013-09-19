@@ -131,10 +131,12 @@ bRebuild = false;
 
 static void AdjustCockpitCoords (int& x, int& y)
 {
+#if 0
 if (ogl.IsOculusRift ()) {
 	x -= int (ceil ((float (x) - float (CCanvas::Current ()->Width ()) * 0.5f) * 0.5f));
 	y -= int (ceil ((float (y) - float (CCanvas::Current ()->Height ()) * 0.5f) * 0.5f));
 	}
+#endif
 }
 
 //	-----------------------------------------------------------------------------

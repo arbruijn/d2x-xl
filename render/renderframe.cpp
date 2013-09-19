@@ -76,6 +76,9 @@ return gmObjP &&
 //draw a crosshair for the guided missile
 void DrawGuidedCrosshairs (fix xStereoSeparation)
 {
+if (transformation.m_info.playerHeadAngles.v.coord.h || transformation.m_info.playerHeadAngles.v.coord.p)
+	return;
+
 int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 31, 0));
 int w = CCanvas::Current ()->Width () >> 5;
@@ -147,6 +150,9 @@ if (scope.Load ()) {
 //draw a crosshair for the zoom
 void DrawZoomCrosshairs (void)
 {
+if (transformation.m_info.playerHeadAngles.v.coord.h || transformation.m_info.playerHeadAngles.v.coord.p)
+	return;
+
 int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 DrawScope ();
 
