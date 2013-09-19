@@ -623,7 +623,7 @@ else if (!m_sensorP) {
 else {
 	m_sensorFusion.AttachToSensor (m_sensorP);
 	m_sensorFusion.SetYawCorrectionEnabled (true);
-	m_magCalTO.Setup (50000);
+	m_magCalTO.Setup (10000);
 	m_magCalTO.Start (-1, true);
 	m_bCalibrating = false;
 	m_bAvailable = 2;
@@ -657,7 +657,7 @@ if (Available () < 2)
 OVR::Quatf q = m_sensorFusion.GetOrientation ();
 float yaw, pitch, roll;
 q.GetEulerAngles<OVR::Axis_Y, OVR::Axis_X, OVR::Axis_Z>(&yaw, &pitch, &roll);
-angles.Set (F2X (pitch), F2X (roll), F2X (yaw));
+angles.Set (-F2X (pitch), F2X (roll), -F2X (yaw));
 return 1;
 }
 
