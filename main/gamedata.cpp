@@ -650,7 +650,7 @@ return 1;
 
 // ----------------------------------------------------------------------------
 
-int CRiftData::GetHeadAngles (CAngleVector angles)
+int CRiftData::GetHeadAngles (CAngleVector& angles)
 {
 if (Available () < 2)
 	return 0;

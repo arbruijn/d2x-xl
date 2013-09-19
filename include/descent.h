@@ -1768,7 +1768,7 @@ class CRiftData {
 		inline int Available (void) { return m_bAvailable; }
 		inline int Resolution (void) { return m_nResolution; }
 		int GetViewMatrix (CFixMatrix& m);
-		int GetHeadAngles (CAngleVector angles);
+		int GetHeadAngles (CAngleVector& angles);
 		void AutoCalibrate (void);
 	};
 
