@@ -246,6 +246,10 @@ else if (x == 0x8000)
 	x = CenteredStringPos (buffer);
 if (y < 0)
 	y = CCanvas::Current ()->Height () + y;
+if (ogl.IsOculusRift ()) {
+	x += int (ceil ((float (x) - float (CCanvas::Current ()->Width ()) * 0.5f) * 0.25f));
+	y += int (ceil ((float (y) - float (CCanvas::Current ()->Height ()) * 0.5f) * 0.25f));
+	}
 int nId = GrString (x, y, buffer, idP);
 fontManager.SetScale (1.0f);
 CCanvas::Current ()->FontColor (0) = fontColor;
