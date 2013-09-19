@@ -2001,10 +2001,10 @@ void LoadGameTexts(void);
 #define TXT_RIFT_DEADZONE				GT(1217)
 #define TXT_RIFT_CONFIG					GT(1218)
 #define TXT_RIFTCFG_MENUCALL			GT(1219)
+#define TXT_MINIMAL						GT(1220)
 
 #if 0
 
-#define TXT_					GT(1220)
 #define TXT_					GT(1221)
 #define TXT_					GT(1222)
 #define TXT_					GT(1223)

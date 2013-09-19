@@ -2054,18 +2054,17 @@ else
 	m_info.xGaugeScale =
 	m_info.yGaugeScale = 1;
 
-
-if ((gameData.demo.nState == ND_STATE_PLAYBACK))
-	gameData.app.SetGameMode (gameData.demo.nGameMode);
-
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 
 DrawReticle (ogl.StereoDevice () < 0);
 
-bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0));
+if (!transformation.HaveHeadAngles () && (gameOpts->render.cockpit.bHUD > 1)) {
+	if ((gameData.demo.nState == ND_STATE_PLAYBACK))
+		gameData.app.SetGameMode (gameData.demo.nGameMode);
 
-if (!transformation.HaveHeadAngles ()) {
+	bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0));
+
 	if (!bLimited) {
 		DrawPlayerNames ();
 		RenderWindows ();

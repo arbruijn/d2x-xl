@@ -748,7 +748,7 @@ const char *defaultGameTexts [][2] = {
  {"gross", "large"},
  {"riesig", "huge"},
  {"Zoom: %dx", "Zoom: %dx"},
- {"~HUD anzeigen", "Show HUD"},
+ {"~HUD anzeigen: %s", "Show HUD: %s"},
  {"~Fadenkreuz anzeigen", "Show Reticle"},
  {"~Grafische Skalen anzeigen", "Show ~Graphical gauges"},
  {"~Skalen an Aufloesung anpassen", "SCale gauges to screen resolution"},
@@ -1966,6 +1966,7 @@ const char *defaultGameTexts [][2] = {
  {"Neutrale Zone: %s", "Deadzone: %s"},
  {"Oculus Rift-Konfiguration", "Oculus Rift Configuration"},
  {"Oculus Rift konfigurieren..", "Configure Oculus Rift..."},
+ {"minimal", "minimal"},
  
 #if 0
  {"", ""},
