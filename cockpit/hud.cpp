@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern bool bAdjustCoords;
 
-void AdjustCockpitCoords (int& x, int& y);
+int AdjustCockpitCoords (char* s, int& x, int& y);
 
 //	-----------------------------------------------------------------------------
 
@@ -486,8 +486,9 @@ x = gameData.render.scene.Width () - 3 * GAME_FONT->Width () - gameStates.render
 y = gameData.render.scene.Height () - 3 * LineSpacing ();
 if ((extraGameInfo [0].nWeaponIcons >= 3) && (gameData.render.scene.Height () < 670))
 	x -= LHX (20);
-AdjustCockpitCoords (x, y);
+int nOffsetSave = AdjustCockpitCoords (pszBombCount, x, y);
 return GrString (x, y, pszBombCount, &nIdBombCount);
+gameData.SetStereoOffsetType (nOffsetSave);
 }
 
 //	-----------------------------------------------------------------------------
@@ -560,6 +561,7 @@ switch (gameData.weapons.nPrimary) {
 	}
 
 fontManager.Current ()->StringSize (szWeapon, w, h, aw);
+bAdjustCoords = true;
 nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, -5 - w, y - 2 * LineSpacing (), szWeapon);
 
 if (gameData.weapons.nPrimary == VULCAN_INDEX) {

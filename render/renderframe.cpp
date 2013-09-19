@@ -76,7 +76,7 @@ return gmObjP &&
 //draw a crosshair for the guided missile
 void DrawGuidedCrosshairs (fix xStereoSeparation)
 {
-if (transformation.m_info.playerHeadAngles.v.coord.h || transformation.m_info.playerHeadAngles.v.coord.p)
+if (transformation.HaveHeadAngles ())
 	return;
 
 int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
@@ -150,7 +150,7 @@ if (scope.Load ()) {
 //draw a crosshair for the zoom
 void DrawZoomCrosshairs (void)
 {
-if (transformation.m_info.playerHeadAngles.v.coord.h || transformation.m_info.playerHeadAngles.v.coord.p)
+if (transformation.HaveHeadAngles ())
 	return;
 
 int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);

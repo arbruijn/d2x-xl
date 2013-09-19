@@ -131,17 +131,31 @@ bRebuild = false;
 
 bool bAdjustCoords = false;
 
-void AdjustCockpitCoords (int& x, int& y)
+int AdjustCockpitCoords (char* s, int& x, int& y)
 {
+	int	h;
 #if 1
 if (bAdjustCoords && ogl.IsOculusRift ()) {
-	int h = CCanvas::Current ()->Width () / 2;
-	x = h + (x - h) / 3;
+
+
+	h = CCanvas::Current ()->Width () / 2;
+	if (x >= h)
+		x = h + 15;
+	else {
+		int sw, sh, aw;
+		fontManager.Current ()->StringSize (s, sw, sh, aw);
+		x = h - sw - 15;
+		}
 	h = CCanvas::Current ()->Height () / 2;
-	int l = (y - h) / fontManager.Current ()->Height () - 3 * h / fontManager.Current ()->Height () / 4;
-	y = h + l * fontManager.Current ()->Height ();
+	int fh = fontManager.Current ()->Height () + 1;
+	int l = (y - h) / fh - 3 * h / fh / 4;
+	y = h + l * fh;
+	h = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 	}
+else
+	h = gameData.render.nStereoOffsetType;
 bAdjustCoords = false;
+return h;
 #endif
 }
 
@@ -214,7 +228,7 @@ int _CDECL_ CGenericCockpit::PrintF (int *idP, int x, int y, const char *pszFmt,
 
 va_start (args, pszFmt);
 vsprintf (szBuf, pszFmt, args);
-AdjustCockpitCoords (x, y);
+AdjustCockpitCoords (szBuf, x, y);
 return GrString ((x < 0) ? -x : ScaleX (x), (y < 0) ? -y : ScaleY (y), szBuf, idP);
 }
 
@@ -266,8 +280,9 @@ else if (x == 0x8000)
 	x = CenteredStringPos (buffer);
 if (y < 0)
 	y = CCanvas::Current ()->Height () + y;
-AdjustCockpitCoords (x, y);
+int nOffsetSave = AdjustCockpitCoords (buffer, x, y);
 int nId = GrString (x, y, buffer, idP);
+gameData.SetStereoOffsetType (nOffsetSave);
 fontManager.SetScale (1.0f);
 CCanvas::Current ()->FontColor (0) = fontColor;
 CCanvas::Pop ();
@@ -2050,72 +2065,70 @@ DrawReticle (ogl.StereoDevice () < 0);
 
 bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0));
 
-if (!bLimited) {
-	DrawPlayerNames ();
-	RenderWindows ();
-	}
-#if 1 //!DBG
-DrawCockpit (false);
-#endif
-#if 1
-if (bExtraInfo) {
-#if DBG
-	DrawWindowLabel ();
-#endif
-	DrawMultiMessage ();
-	DrawMarkerMessage ();
-	DrawFrameRate ();
-	DrawCruise ();
-	}
-DrawPacketLoss ();
-DrawSlowMotion ();
-DrawPlayerStats ();
-DrawScore ();
-if (m_info.scoreTime)
-	DrawAddedScore ();
-DrawEnergyBar ();
-DrawAfterburnerBar ();
-DrawShieldBar ();
-DrawEnergy ();
-DrawShield ();
-DrawAfterburner ();
-DrawDamage ();
-DrawWeapons ();
-DrawTimerCount ();
-DrawCloak ();
-DrawInvul ();
-if (!bLimited) {
-	DrawTime ();
-	DrawKeys ();
-	DrawFlag ();
-	DrawOrbs ();
-	DrawLives ();
-	DrawBombCount ();
-	DrawHomingWarning ();
-	DrawKillList ();
-	DrawPlayerShip ();
-	}
-hudIcons.Render ();
-if (bExtraInfo) {
-	DrawCountdown ();
-	DrawRecording ();
-	}
+if (!transformation.HaveHeadAngles ()) {
+	if (!bLimited) {
+		DrawPlayerNames ();
+		RenderWindows ();
+		}
+	DrawCockpit (false);
+	if (bExtraInfo) {
+	#if DBG
+		DrawWindowLabel ();
+	#endif
+		DrawMultiMessage ();
+		DrawMarkerMessage ();
+		DrawFrameRate ();
+		DrawCruise ();
+		}
+	DrawPacketLoss ();
+	DrawSlowMotion ();
+	DrawPlayerStats ();
+	DrawScore ();
+	if (m_info.scoreTime)
+		DrawAddedScore ();
+	DrawEnergyBar ();
+	DrawAfterburnerBar ();
+	DrawShieldBar ();
+	DrawEnergy ();
+	DrawShield ();
+	DrawAfterburner ();
+	DrawDamage ();
+	DrawWeapons ();
+	DrawTimerCount ();
+	DrawCloak ();
+	DrawInvul ();
+	if (!bLimited) {
+		DrawTime ();
+		DrawKeys ();
+		DrawFlag ();
+		DrawOrbs ();
+		DrawLives ();
+		DrawBombCount ();
+		DrawHomingWarning ();
+		DrawKillList ();
+		DrawPlayerShip ();
+		}
+	hudIcons.Render ();
+	if (bExtraInfo) {
+		DrawCountdown ();
+		DrawRecording ();
+		}
 
-if ((gameData.demo.nState == ND_STATE_PLAYBACK))
-	gameData.app.SetGameMode (GM_NORMAL);
+	if ((gameData.demo.nState == ND_STATE_PLAYBACK))
+		gameData.app.SetGameMode (GM_NORMAL);
 
-if (gameStates.app.bPlayerIsDead)
-	PlayerDeadMessage ();
+	if (gameStates.app.bPlayerIsDead)
+		PlayerDeadMessage ();
 
-if (!gameStates.render.bRearView)
-	HUDRenderMessageFrame ();
-else if (gameStates.render.cockpit.nType != CM_REAR_VIEW) {
-	HUDRenderMessageFrame ();
-	SetFontColor (GREEN_RGBA);
-	DrawHUDText (NULL, 0x8000, (gameData.demo.nState == ND_STATE_PLAYBACK) ? -14 : -10, TXT_REAR_VIEW);
+	if (!gameStates.render.bRearView)
+		HUDRenderMessageFrame ();
+	else if (gameStates.render.cockpit.nType != CM_REAR_VIEW) {
+		HUDRenderMessageFrame ();
+		SetFontColor (GREEN_RGBA);
+		DrawHUDText (NULL, 0x8000, (gameData.demo.nState == ND_STATE_PLAYBACK) ? -14 : -10, TXT_REAR_VIEW);
+		}
 	}
 DemoRecording ();
-#endif
 m_history [0].bCloak = m_info.bCloak;
 }
 

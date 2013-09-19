@@ -96,12 +96,18 @@ for (i = 0; i < RADAR_SLICES; i++) {
 void CRadar::ComputeCenter (void)
 {
 	CFloatVector vf, vu, vr;
+	CFixMatrix	mView = gameData.objs.viewerP->info.position.mOrient;
 
-vf.Assign (gameData.objs.viewerP->Orientation ().m.dir.f);
+if (transformation.m_info.bUsePlayerHeadAngles) {
+	CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
+	mView = gameData.objs.viewerP->info.position.mOrient * mHead;
+	}
+
+vf.Assign (mView.m.dir.f);
 vf *= m_offset.v.coord.z;
-vu.Assign (gameData.objs.viewerP->Orientation ().m.dir.u);
+vu.Assign (mView.m.dir.u);
 vu *= m_offset.v.coord.y;
-vr.Assign (gameData.objs.viewerP->Orientation ().m.dir.r);
+vr.Assign (mView.m.dir.r);
 vr *= m_offset.v.coord.x;
 m_vCenter.Assign (vf + vu + vr);
 m_vCenter += gameData.objs.viewerP->Position ();
@@ -356,6 +362,8 @@ void CRadar::Render (void)
 if (gameStates.app.bNostalgia)
 	return;
 if (cockpit->Hide ())
+	return;
+if (transformation.HaveHeadAngles ())
 	return;
 if (automap.Display ())
 	return;
