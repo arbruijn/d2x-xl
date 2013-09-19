@@ -2057,7 +2057,9 @@ fontManager.SetCurrent (GAME_FONT);
 
 DrawReticle (ogl.StereoDevice () < 0);
 
-if (!transformation.HaveHeadAngles () && (gameOpts->render.cockpit.bHUD > 1)) {
+if ((gameOpts->render.cockpit.bHUD > 1)
+	 && !transformation.HaveHeadAngles () 
+	 && !(ogl.IsOculusRift () && (gameStates.zoom.nFactor > float (gameStates.zoom.nMinFactor)))) {
 	if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 		gameData.app.SetGameMode (gameData.demo.nGameMode);
 
