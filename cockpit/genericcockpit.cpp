@@ -136,7 +136,7 @@ void AdjustCockpitCoords (int& x, int& y)
 #if 1
 if (bAdjustCoords && ogl.IsOculusRift ()) {
 	int h = CCanvas::Current ()->Width () / 2;
-	x = h + (x - h) / 4;
+	x = h + (x - h) / 3;
 	h = CCanvas::Current ()->Height () / 2;
 	int l = (y - h) / fontManager.Current ()->Height () - 3 * h / fontManager.Current ()->Height () / 4;
 	y = h + l * fontManager.Current ()->Height ();
@@ -1252,16 +1252,18 @@ if (ogl.IsOculusRift ()) {
 		float fade = 1.0f - 2.0f * X2F (max (abs (transformation.m_info.playerHeadAngles.v.coord.h), 
 														 abs (transformation.m_info.playerHeadAngles.v.coord.p)));
 		fade *= fade;
-		gameStates.render.grAlpha = pow (fade, 4);
-		BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
-				  x + ScaleX (crossOffsets [ofs].x - 1), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true,
-				  I2X (1), 0, NULL, BM_ADDON (nBmReticle + nCrossBm));
-		BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
-				  x + ScaleX (primaryOffsets [ofs].x - 1), (y + ScaleY (primaryOffsets [ofs].y - 1)), false, true,
-				  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 2 + nPrimaryBm));
-		BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
-				  x + ScaleX (secondaryOffsets [ofs].x - 1), (y + ScaleY (secondaryOffsets [ofs].y - 1)), false, true,
-				  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 5 + nSecondaryBm));
+		if (gameOpts->input.oculusRift.nDeadzone) { // display a reference image of the reticle
+			gameStates.render.grAlpha = pow (fade, 4);
+			BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,
+					  x + ScaleX (crossOffsets [ofs].x - 1), (y + ScaleY (crossOffsets [ofs].y - 1)), false, true,
+					  I2X (1), 0, NULL, BM_ADDON (nBmReticle + nCrossBm));
+			BitBlt ((bSmallReticle ? SML_RETICLE_PRIMARY : RETICLE_PRIMARY) + nPrimaryBm,
+					  x + ScaleX (primaryOffsets [ofs].x - 1), (y + ScaleY (primaryOffsets [ofs].y - 1)), false, true,
+					  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 2 + nPrimaryBm));
+			BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
+					  x + ScaleX (secondaryOffsets [ofs].x - 1), (y + ScaleY (secondaryOffsets [ofs].y - 1)), false, true,
+					  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 5 + nSecondaryBm));
+			}
 		gameStates.render.grAlpha = 1.0f - gameStates.render.grAlpha;
 		}
 	x -= int (ceil (xStep * RadToDeg (X2F (transformation.m_info.playerHeadAngles.v.coord.h))));
