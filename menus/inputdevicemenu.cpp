@@ -457,6 +457,48 @@ do {
 
 //------------------------------------------------------------------------------
 
+int OculusRiftConfigCallback (CMenu& menu, int& key, int nCurItem, int nState)
+{
+	CMenuItem*	m;
+
+if (!(m = menu ["deadzone"]))
+	return nCurItem;
+int v = m->Value ();
+if (gameOpts->input.oculusRift.nDeadzone != v) {
+	gameOpts->input.oculusRift.nDeadzone = v;
+	sprintf (m->Text (), TXT_RIFT_DEADZONE, szDZoneSizes [v]);
+	m->Rebuild ();
+	}
+return nCurItem;
+}
+
+//------------------------------------------------------------------------------
+
+void OculusRiftConfigMenu (void)
+{
+	CMenu	m;
+	int	i;
+	char	szDeadzone [50];
+	char	szId [100];
+
+	static int choice = 0;
+
+szDZoneSizes [0] = TXT_NONE;
+szDZoneSizes [1] = TXT_SMALL;
+szDZoneSizes [2] = TXT_MEDIUM;
+szDZoneSizes [3] = TXT_LARGE;
+
+do {
+	m.Destroy ();
+	m.Create (5);
+
+	AddDeadzoneControl (m, szDeadzone, TXT_RIFT_DEADZONE, HTX_RIFT_DEADZONE, NULL, gameOpts->input.oculusRift.nDeadzone, KEY_U);
+	i = m.Menu (NULL, TXT_RIFT_CONFIG, OculusRiftConfigCallback, &choice);
+	} while ((i >= 0) || (i == -2));
+}
+
+//------------------------------------------------------------------------------
+
 char* trackirModeIds [] = {"aim", "steer", "look"};
 
 int TrackIRConfigCallback (CMenu& menu, int& key, int nCurItem, int nState)
@@ -715,6 +757,8 @@ do {
 	if (gameStates.input.nJoysticks)
 		m.AddMenu ("joystick options", TXT_JOYCFG_MENUCALL, KEY_J, HTX_JOYSTICK_CONFIG);
 #endif
+	if (!gameStates.app.bNostalgia && gameData.render.rift.Available ()) 
+		m.AddMenu ("oculus rift options", TXT_RIFTCFG_MENUCALL, KEY_I, HTX_RIFT_CONFIG);
 	if (!gameStates.app.bNostalgia && gameStates.input.bHaveTrackIR) 
 		m.AddMenu ("trackir options", TXT_TRACKIRCFG_MENUCALL, KEY_I, HTX_TRACKIR_CONFIG);
 	m.AddText ("", "");
@@ -733,6 +777,8 @@ do {
 		MouseConfigMenu ();
 	else if (choice == m.IndexOf ("joystick options"))
 		JoystickConfigMenu ();
+	else if (choice == m.IndexOf ("oculus rift options"))
+		OculusRiftConfigMenu ();
 	else if (choice == m.IndexOf ("trackir options"))
 		TrackIRConfigMenu ();
 	} while (i >= 0);

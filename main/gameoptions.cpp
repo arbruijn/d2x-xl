@@ -532,6 +532,7 @@ else {
 	mouse.sensitivity [0] =
 	mouse.sensitivity [1] =
 	mouse.sensitivity [2] = 8;
+	oculusRift.nDeadzone = 2;
 	trackIR.nDeadzone = 0;
 	trackIR.bMove [0] =
 	trackIR.bMove [1] = 1;

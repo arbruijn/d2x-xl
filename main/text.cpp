@@ -1963,6 +1963,9 @@ const char *defaultGameTexts [][2] = {
  {"~Pupillenabstand: %d mm", "I~PD: %d mm"},
  {"Anaglyphenbrille", "Anaglyph Glasses"},
  {"Glas~Farben: %s", "Glass ~Colors: %s"},
+ {"Neutrale Zone: %s", "Deadzone: %s"},
+ {"Oculus Rift-Konfiguration", "Oculus Rift Configuration"},
+ {"Oculus Rift-Konfiguration...", "Oculus Rift Configuration..."},
  
 #if 0
  {"", ""},
@@ -2693,6 +2696,8 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann die Breite des Sichtfelds eingestellt werden.", "Adjust the width of your periphal vision here."},
  {"Diese Einstellung fuer 3D-Brillen mit zwei verschieden\nfarbigen Glaesern waehlen.", "Chose this setting for 3D glasses with two differently colored glasses."},
  {"Hier kann die Farbkombination der Anaglyphenbrille eingestellt werden.", "Chose the color combination of the anaglyph glasses here."},
+ {"Hier kann die Empfindlichkeit des Positionssensors eingestellt werden.", "Adjust the sensitivity of the head tracking sensor here."},
+ {"Hier kann ein Oculus Rift konfiguriert werden.", "Configure an Oculus Rift here."},
 #if 0
  {"", ""},
 #endif

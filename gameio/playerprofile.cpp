@@ -456,6 +456,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].input.mouse.nDeadzone, i, 0);
 		RP (gameOptions [i].input.joystick.bLinearSens, i, 0);
 		RP (gameOptions [i].input.joystick.bSyncAxis, i, 0);
+		RP (gameOptions [i].input.oculusRift.nDeadzone, i, 0);
 		RP (gameOptions [i].input.trackIR.nMode, i, 0);
 		RP (gameOptions [i].input.trackIR.nDeadzone, i, 0);
 		RP (gameOptions [i].input.keyboard.nType, i, 0);
@@ -998,6 +999,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].input.mouse.nDeadzone", "2"},
 	 {"gameOptions[0].input.joystick.bLinearSens", "0"},
 	 {"gameOptions[0].input.joystick.bSyncAxis", "1"},
+	 {"gameOptions[0].input.oculusRift.nDeadzone", "2"},
 	 {"gameOptions[0].input.trackIR.nMode", "0"},
 	 {"gameOptions[0].input.trackIR.nDeadzone", "4"},
 	 {"gameOptions[0].input.keyboard.nType", "0"},

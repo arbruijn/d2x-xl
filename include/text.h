@@ -1998,12 +1998,12 @@ void LoadGameTexts(void);
 #define TXT_RIFT_IPD						GT(1214)
 #define TXT_ANAGLYPH_GLASSES			GT(1215)
 #define TXT_ANAGLYPH_COLORS			GT(1216)
+#define TXT_RIFT_DEADZONE				GT(1217)
+#define TXT_RIFT_CONFIG					GT(1218)
+#define TXT_RIFTCFG_MENUCALL			GT(1219)
 
 #if 0
 
-#define TXT_					GT(1217)
-#define TXT_					GT(1218)
-#define TXT_					GT(1219)
 #define TXT_					GT(1220)
 #define TXT_					GT(1221)
 #define TXT_					GT(1222)
@@ -2638,10 +2638,11 @@ void LoadGameTexts(void);
 #define HTX_STEREO_FOV					HT(432)
 #define HTX_ANAGLYPH_GLASSES			HT(433)
 #define HTX_ANAGLYPH_COLORS			HT(434)
+#define HTX_RIFT_DEADZONE				HT(435)
+#define HTX_RIFT_CONFIG					HT(436)
 
 #if 0
 
-#define HTX_						HT(435)
 #define HTX_						HT(436)
 #define HTX_						HT(437)
 #define HTX_						HT(438)

@@ -650,14 +650,19 @@ return 1;
 
 // ----------------------------------------------------------------------------
 
-#define DEFAULT_DEADZONE 0.2f
-
-static inline float AddDeadzone (float v, float deadzone = DEFAULT_DEADZONE)
+static inline float AddDeadzone (float v)
 {
+float deadzone = float (gameOpts->input.oculusRift.nDeadzone) * 0.05f;
+
+if ((deadzone <= 0.0f) || (deadzone >= 1.0f))
+	return v;
+
+	float h = 1.0f / (1.0f - deadzone) - 1.0f;
+
 if (v < -deadzone)
-	return (v + deadzone) / deadzone;
-if (v > 0.1f)
-	return (v - deadzone) / deadzone;
+	return (v + deadzone) * (1.0f + h * fabs (v));
+if (v > deadzone)
+	return (v - deadzone) * (1.0f + h * fabs (v));
 return 0.0f;
 }
 
@@ -670,11 +675,11 @@ OVR::Quatf q = m_sensorFusion.GetOrientation ();
 float yaw, pitch, roll;
 q.GetEulerAngles<OVR::Axis_Y, OVR::Axis_X, OVR::Axis_Z>(&yaw, &pitch, &roll);
 if (!bCalibrate) 
-	angles.Set (-F2X (pitch), F2X (roll), -F2X (yaw));
+	angles.Set (F2X (pitch), F2X (roll), F2X (yaw));
 else {
-	pitch -= F2X (m_center.v.coord.p);
-	roll -= F2X (m_center.v.coord.b);
-	yaw -= F2X (m_center.v.coord.h);
+	pitch -= X2F (m_center.v.coord.p);
+	roll -= X2F (m_center.v.coord.b);
+	yaw -= X2F (m_center.v.coord.h);
 	angles.Set (-F2X (AddDeadzone (pitch) * 0.5f), F2X (AddDeadzone (roll) * 0.5f), -F2X (AddDeadzone (yaw) * 0.5f));
 	}
 return 1;

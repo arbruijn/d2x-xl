@@ -547,6 +547,12 @@ typedef struct tJoystickInputOptions {
 
 //------------------------------------------------------------------------------
 
+typedef struct tOculusRiftInputOptions {
+	int nDeadzone;
+	} tOculusRiftInputOptions;
+
+//------------------------------------------------------------------------------
+
 typedef struct tTrackIRInputOptions {
 	int bPresent;
 	int bUse;
@@ -575,6 +581,7 @@ class CInputOptions {
 		int bUseHotKeys;
 		tMouseInputOptions mouse;
 		tJoystickInputOptions joystick;
+		tOculusRiftInputOptions oculusRift;
 		tTrackIRInputOptions trackIR;
 		tKeyboardInputOptions keyboard;
 

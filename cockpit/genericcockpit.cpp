@@ -129,6 +129,16 @@ bRebuild = false;
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 
+static void AdjustCockpitCoords (int& x, int& y)
+{
+if (ogl.IsOculusRift ()) {
+	x -= int (ceil ((float (x) - float (CCanvas::Current ()->Width ()) * 0.5f) * 0.5f));
+	y -= int (ceil ((float (y) - float (CCanvas::Current ()->Height ()) * 0.5f) * 0.5f));
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
 void CGenericCockpit::Init (void)
 {
 m_history [0].Init ();
@@ -170,6 +180,7 @@ if (bmP) {
 		w = ScaleX (w);
 		h = ScaleY (h);
 		}
+	AdjustCockpitCoords (x, y);
 	if (ogl.IsSideBySideDevice ()) {
 		x = int (float (x) / X2F (scale)); // unscale
 		w = X (x + w); // reposition left and right coordinates
@@ -195,6 +206,7 @@ int _CDECL_ CGenericCockpit::PrintF (int *idP, int x, int y, const char *pszFmt,
 
 va_start (args, pszFmt);
 vsprintf (szBuf, pszFmt, args);
+AdjustCockpitCoords (x, y);
 return GrString ((x < 0) ? -x : ScaleX (x), (y < 0) ? -y : ScaleY (y), szBuf, idP);
 }
 
@@ -246,10 +258,7 @@ else if (x == 0x8000)
 	x = CenteredStringPos (buffer);
 if (y < 0)
 	y = CCanvas::Current ()->Height () + y;
-if (ogl.IsOculusRift ()) {
-	x -= int (ceil ((float (x) - float (CCanvas::Current ()->Width ()) * 0.5f) * 0.25f));
-	y -= int (ceil ((float (y) - float (CCanvas::Current ()->Height ()) * 0.5f) * 0.25f));
-	}
+AdjustCockpitCoords (x, y);
 int nId = GrString (x, y, buffer, idP);
 fontManager.SetScale (1.0f);
 CCanvas::Current ()->FontColor (0) = fontColor;
