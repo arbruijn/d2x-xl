@@ -1767,7 +1767,7 @@ class CRiftData {
 		int				m_nResolution;
 		int				m_bAvailable;
 		bool				m_bCalibrating;
-		CAngleVector	m_center;
+		CFloatVector	m_center;
 		CTimeout	m_magCalTO;
 
 		CRiftData () : m_renderScale (1.0f), m_fov (125.0f), m_nResolution (0), m_bAvailable (false) {}
@@ -1776,9 +1776,9 @@ class CRiftData {
 		inline int Available (void) { return m_bAvailable; }
 		inline int Resolution (void) { return m_nResolution; }
 		int GetViewMatrix (CFixMatrix& m);
-		int GetHeadAngles (CAngleVector& angles, bool bCalibrate = true);
+		int GetHeadAngles (CAngleVector* angles);
 		void AutoCalibrate (void);
-		inline void SetCenter (void) { GetHeadAngles (m_center, false); }
+		inline void SetCenter (void) { GetHeadAngles (NULL); }
 	};
 
 #define STEREO_OFFSET_FIXED		0

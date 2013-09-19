@@ -667,7 +667,7 @@ return 0.0f;
 }
 
 
-int CRiftData::GetHeadAngles (CAngleVector& angles, bool bCalibrate)
+int CRiftData::GetHeadAngles (CAngleVector* angles)
 {
 if (Available () < 2)
 	return 0;
@@ -675,16 +675,13 @@ OVR::Quatf q = m_sensorFusion.GetOrientation ();
 float yaw, pitch, roll;
 q.GetEulerAngles<OVR::Axis_Y, OVR::Axis_X, OVR::Axis_Z>(&yaw, &pitch, &roll);
 float i;
-yaw = modf (yaw, &i);
-roll = modf (roll, &i);
-pitch = modf (pitch, &i);
-if (!bCalibrate) 
-	angles.Set (F2X (pitch), F2X (roll), F2X (yaw));
+if (angles) 
+	m_center.Set (pitch, roll, yaw);
 else {
-	pitch -= X2F (m_center.v.coord.p);
-	roll -= X2F (m_center.v.coord.b);
-	yaw -= X2F (m_center.v.coord.h);
-	angles.Set (-F2X (AddDeadzone (pitch) * 0.5f), F2X (AddDeadzone (roll) * 0.5f), -F2X (AddDeadzone (yaw) * 0.5f));
+	pitch -= m_center.v.coord.x;
+	roll -= m_center.v.coord.y;
+	yaw -= m_center.v.coord.z;
+	angles->Set (-F2X (AddDeadzone (pitch) * 0.5f), F2X (AddDeadzone (roll) * 0.5f), -F2X (AddDeadzone (yaw) * 0.5f));
 	}
 return 1;
 }

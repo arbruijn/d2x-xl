@@ -44,6 +44,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hudicons.h"
 #include "gr.h"
 
+extern bool bAdjustCoords;
+
+void AdjustCockpitCoords (int& x, int& y);
+
 //	-----------------------------------------------------------------------------
 
 void CHUD::GetHostageWindowCoords (int& x, int& y, int& w, int& h)
@@ -157,6 +161,7 @@ if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
 		y = min (y, (wy - LineSpacing () - gameData.render.frame.Top ()));
 		}
 	SetFontColor (GREEN_RGBA);
+	bAdjustCoords = true;
 	nIdLock = DrawHUDText (&nIdLock, x, y, TXT_LOCK);
 	}
 }
@@ -224,6 +229,96 @@ return (int) ((b && (tToggle <= t)) ? t + 300 / b : 0);
 
 //	-----------------------------------------------------------------------------
 
+void CHUD::DrawShield (void)
+{
+if (cockpit->Hide ())
+	return;
+
+	static int nIdShield = 0;
+
+if (gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ()) {
+	int y = IsMultiGame ? -6 * LineSpacing () : -2 * LineSpacing ();
+	SetFontColor (GREEN_RGBA);
+	bAdjustCoords = true;
+	nIdShield = DrawHUDText (&nIdShield, 2, y, "%s: %i", TXT_SHIELD, int (m_info.nShield * LOCALPLAYER.ShieldScale () + 0.5f));
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
+void CHUD::DrawShieldBar (void)
+{
+if (cockpit->Hide ())
+	return;
+
+	static int		bShow = 1;
+	static time_t	tToggle = 0, nBeep = -1;
+	//static int		nIdLevel = 0;
+
+	time_t			t = gameStates.app.nSDLTicks [0];
+	int				bLastFlash = gameStates.render.cockpit.nShieldFlash;
+
+if (!(gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ())) {
+
+	int nLevel = m_info.nShield;
+	if ((t = FlashGauge (nLevel, &gameStates.render.cockpit.nShieldFlash, (int) tToggle))) {
+		tToggle = t;
+		bShow = !bShow;
+		}
+
+	int nLineSpacing = 5 * GAME_FONT->Height () / 4;
+	int h = int (9 * m_info.yGaugeScale), 
+		 w = int (9 * m_info.xGaugeScale), 
+		 y = -(int) (((IsMultiGame ? 6 : 2) * nLineSpacing - 1) * m_info.yGaugeScale);
+	if (hudIcons.LoadGaugeIcons () > 0)
+		hudIcons.GaugeIcon (0).RenderScaled (6, y, w, h);
+	int x = 6 + int (10 * m_info.xGaugeScale);
+	w = (nLevel > 100) ? 100 : 50;
+	CCanvas::Current ()->SetColorRGB (0, 64, 224, 255);
+	glLineWidth (1);
+	OglDrawEmptyRect (x, y, x + int (w * m_info.xGaugeScale), y + h);
+	//CCanvasColor fontColor = {0, 1, {0, 64, 255, 255}};
+	//CCanvas::Current ()->SetFontColor (fontColor, 0);	// black background
+	//nIdLevel = DrawHUDText (&nIdLevel, x + int (w * m_info.xGaugeScale), int (y + m_info.yGaugeScale + 0.5f), " %i%%", nLevel);
+	if (bShow) {
+		CCanvas::Current ()->SetColorRGB (0, 64, 224, 128);
+		if (nLevel <= 100)
+			OglDrawFilledRect (x, y, x + int (nLevel * m_info.xGaugeScale / 2.0f), y + h);
+		else {
+			w = int (50 * m_info.xGaugeScale);
+			OglDrawFilledRect (x, y, x + w, y + h);
+			while (nLevel > 100)
+				nLevel -= 100;
+			CCanvas::Current ()->SetColorRGB (0, 224, 224, 128);
+			OglDrawFilledRect (x + w, y, x + w + int (nLevel * m_info.xGaugeScale / 2.0f), y + h);
+			}
+		}
+	}
+if (gameStates.render.cockpit.nShieldFlash) {
+	if (gameOpts->gameplay.bShieldWarning && gameOpts->sound.bUseSDLMixer) {
+		if ((nBeep < 0) || (bLastFlash != gameStates.render.cockpit.nShieldFlash)) {
+			if (nBeep >= 0)
+				audio.StopSound ((int) nBeep);
+			nBeep = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (2) / 3, 0xFFFF / 2, -1, -1, -1, -1, I2X (1),
+											  AddonSoundName ((gameStates.render.cockpit.nShieldFlash == 1) ? SND_ADDON_LOW_SHIELDS1 : SND_ADDON_LOW_SHIELDS2));
+			}
+		}
+	else if (nBeep >= 0) {
+		audio.StopSound ((int) nBeep);
+		nBeep = -1;
+		}
+	}
+else {
+	bShow = 1;
+	if (nBeep >= 0) {
+		audio.StopSound ((int) nBeep);
+		nBeep = -1;
+		}
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
 void CHUD::DrawEnergy (void)
 {
 if (cockpit->Hide ())
@@ -233,9 +328,10 @@ if (cockpit->Hide ())
 	static int nIdEnergy = 0;
 
 h = LOCALPLAYER.Energy () ? X2IR (LOCALPLAYER.Energy ()) : 0;
-if (gameOpts->render.cockpit.bTextGauges) {
+if (gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ()) {
 	y = IsMultiGame ? -5* LineSpacing () : -LineSpacing ();
 	SetFontColor (GREEN_RGBA);
+	bAdjustCoords = true;
 	nIdEnergy = DrawHUDText (&nIdEnergy, 2, y, "%s: %i", TXT_ENERGY, h);
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
@@ -255,7 +351,7 @@ void CHUD::DrawEnergyBar (void)
 if (cockpit->Hide ())
 	return;
 
-if (!gameOpts->render.cockpit.bTextGauges) {
+if (!(gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ())) {
 	static int		bFlash = 0, bShow = 1;
 	static time_t	tToggle;
 	//static int		nIdLevel = 0;
@@ -314,9 +410,10 @@ if (cockpit->Hide ())
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
 h = FixMul (gameData.physics.xAfterburnerCharge, 100);
-if (gameOpts->render.cockpit.bTextGauges) {
+if (gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ()) {
 	y = -(IsMultiGame ? 8 : 3) * LineSpacing ();
 	SetFontColor (GREEN_RGBA);
+	bAdjustCoords = true;
 	nIdAfterBurner = DrawHUDText (&nIdAfterBurner, 2, y, TXT_HUD_BURN, h);
 	}
 }
@@ -334,7 +431,7 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
 int nLevel = FixMul (gameData.physics.xAfterburnerCharge, 100);
 int nLineSpacing = 5 * GAME_FONT->Height () / 4;
-if (!gameOpts->render.cockpit.bTextGauges) {
+if (!(gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ())) {
 	int h = int (9 * m_info.yGaugeScale), 
 		 w = int (9 * m_info.xGaugeScale), 
 		 y = -(int) (((IsMultiGame ? 8 : 3) * nLineSpacing - 1) * m_info.yGaugeScale);
@@ -389,6 +486,7 @@ x = gameData.render.scene.Width () - 3 * GAME_FONT->Width () - gameStates.render
 y = gameData.render.scene.Height () - 3 * LineSpacing ();
 if ((extraGameInfo [0].nWeaponIcons >= 3) && (gameData.render.scene.Height () < 670))
 	x -= LHX (20);
+AdjustCockpitCoords (x, y);
 return GrString (x, y, pszBombCount, &nIdBombCount);
 }
 
@@ -483,6 +581,7 @@ if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 pszWeapon = SECONDARY_WEAPON_NAMES_VERY_SHORT (gameData.weapons.nSecondary);
 sprintf (szWeapon, "%s %d", pszWeapon, LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
 fontManager.Current ()->StringSize (szWeapon, w, h, aw);
+bAdjustCoords = true;
 nIdWeapons [1] = DrawHUDText (nIdWeapons + 1, -5 - w, y - LineSpacing (), szWeapon);
 
 if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != m_history [0].ammo [1]) {
@@ -528,95 +627,6 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) &&
 		y -= LineSpacing () + gameStates.render.fonts.bHires + 1;
 	SetFontColor (GREEN_RGBA);
 	nIdCloak = DrawHUDText (&nIdCloak, 2, y, "%s", TXT_CLOAKED);
-	}
-}
-
-//	-----------------------------------------------------------------------------
-
-void CHUD::DrawShield (void)
-{
-if (cockpit->Hide ())
-	return;
-
-	static int nIdShield = 0;
-
-if (gameOpts->render.cockpit.bTextGauges) {
-	int y = IsMultiGame ? -6 * LineSpacing () : -2 * LineSpacing ();
-	SetFontColor (GREEN_RGBA);
-	nIdShield = DrawHUDText (&nIdShield, 2, y, "%s: %i", TXT_SHIELD, int (m_info.nShield * LOCALPLAYER.ShieldScale () + 0.5f));
-	}
-}
-
-//	-----------------------------------------------------------------------------
-
-void CHUD::DrawShieldBar (void)
-{
-if (cockpit->Hide ())
-	return;
-
-	static int		bShow = 1;
-	static time_t	tToggle = 0, nBeep = -1;
-	//static int		nIdLevel = 0;
-
-	time_t			t = gameStates.app.nSDLTicks [0];
-	int				bLastFlash = gameStates.render.cockpit.nShieldFlash;
-
-if (!gameOpts->render.cockpit.bTextGauges) {
-
-	int nLevel = m_info.nShield;
-	if ((t = FlashGauge (nLevel, &gameStates.render.cockpit.nShieldFlash, (int) tToggle))) {
-		tToggle = t;
-		bShow = !bShow;
-		}
-
-	int nLineSpacing = 5 * GAME_FONT->Height () / 4;
-	int h = int (9 * m_info.yGaugeScale), 
-		 w = int (9 * m_info.xGaugeScale), 
-		 y = -(int) (((IsMultiGame ? 6 : 2) * nLineSpacing - 1) * m_info.yGaugeScale);
-	if (hudIcons.LoadGaugeIcons () > 0)
-		hudIcons.GaugeIcon (0).RenderScaled (6, y, w, h);
-	int x = 6 + int (10 * m_info.xGaugeScale);
-	w = (nLevel > 100) ? 100 : 50;
-	CCanvas::Current ()->SetColorRGB (0, 64, 224, 255);
-	glLineWidth (1);
-	OglDrawEmptyRect (x, y, x + int (w * m_info.xGaugeScale), y + h);
-	//CCanvasColor fontColor = {0, 1, {0, 64, 255, 255}};
-	//CCanvas::Current ()->SetFontColor (fontColor, 0);	// black background
-	//nIdLevel = DrawHUDText (&nIdLevel, x + int (w * m_info.xGaugeScale), int (y + m_info.yGaugeScale + 0.5f), " %i%%", nLevel);
-	if (bShow) {
-		CCanvas::Current ()->SetColorRGB (0, 64, 224, 128);
-		if (nLevel <= 100)
-			OglDrawFilledRect (x, y, x + int (nLevel * m_info.xGaugeScale / 2.0f), y + h);
-		else {
-			w = int (50 * m_info.xGaugeScale);
-			OglDrawFilledRect (x, y, x + w, y + h);
-			while (nLevel > 100)
-				nLevel -= 100;
-			CCanvas::Current ()->SetColorRGB (0, 224, 224, 128);
-			OglDrawFilledRect (x + w, y, x + w + int (nLevel * m_info.xGaugeScale / 2.0f), y + h);
-			}
-		}
-	}
-if (gameStates.render.cockpit.nShieldFlash) {
-	if (gameOpts->gameplay.bShieldWarning && gameOpts->sound.bUseSDLMixer) {
-		if ((nBeep < 0) || (bLastFlash != gameStates.render.cockpit.nShieldFlash)) {
-			if (nBeep >= 0)
-				audio.StopSound ((int) nBeep);
-			nBeep = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (2) / 3, 0xFFFF / 2, -1, -1, -1, -1, I2X (1),
-											  AddonSoundName ((gameStates.render.cockpit.nShieldFlash == 1) ? SND_ADDON_LOW_SHIELDS1 : SND_ADDON_LOW_SHIELDS2));
-			}
-		}
-	else if (nBeep >= 0) {
-		audio.StopSound ((int) nBeep);
-		nBeep = -1;
-		}
-	}
-else {
-	bShow = 1;
-	if (nBeep >= 0) {
-		audio.StopSound ((int) nBeep);
-		nBeep = -1;
-		}
 	}
 }
 

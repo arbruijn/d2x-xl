@@ -129,13 +129,19 @@ bRebuild = false;
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 
-static void AdjustCockpitCoords (int& x, int& y)
+bool bAdjustCoords = false;
+
+void AdjustCockpitCoords (int& x, int& y)
 {
-#if 0
-if (ogl.IsOculusRift ()) {
-	x -= int (ceil ((float (x) - float (CCanvas::Current ()->Width ()) * 0.5f) * 0.5f));
-	y -= int (ceil ((float (y) - float (CCanvas::Current ()->Height ()) * 0.5f) * 0.5f));
+#if 1
+if (bAdjustCoords && ogl.IsOculusRift ()) {
+	int h = CCanvas::Current ()->Width () / 2;
+	x = h + (x - h) / 4;
+	h = CCanvas::Current ()->Height () / 2;
+	int l = (y - h) / fontManager.Current ()->Height () - 3 * h / fontManager.Current ()->Height () / 4;
+	y = h + l * fontManager.Current ()->Height ();
 	}
+bAdjustCoords = false;
 #endif
 }
 
@@ -182,7 +188,7 @@ if (bmP) {
 		w = ScaleX (w);
 		h = ScaleY (h);
 		}
-	AdjustCockpitCoords (x, y);
+	//AdjustCockpitCoords (x, y);
 	if (ogl.IsSideBySideDevice ()) {
 		x = int (float (x) / X2F (scale)); // unscale
 		w = X (x + w); // reposition left and right coordinates
@@ -1239,7 +1245,7 @@ int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 if (ogl.IsOculusRift ()) {
 	float fov = float (gameStates.render.glFOV * X2D (transformation.m_info.zoom));
 	float yStep = float (CCanvas::Current ()->Height ()) / fov * 4;
-	float xStep = yStep * CCanvas::Current ()->AspectRatio ();
+	float xStep = yStep * float (CCanvas::Current ()->AspectRatio ());
 	//if ((fabs (X2F (transformation.m_info.playerHeadAngles.v.coord.h)) > 0.1f) || 
 	//	 (fabs (X2F (transformation.m_info.playerHeadAngles.v.coord.p)) > 0.1f)) 
 		{
