@@ -369,7 +369,7 @@ class __pack__ CAngleVector {
 	public:
 		union {
 			struct {
-				fixang p, b, h;
+				fixang p, b, h; // pitch, roll, yaw
 			} coord;
 			fixang vec [3];
 		} v;

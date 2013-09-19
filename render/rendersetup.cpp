@@ -139,9 +139,9 @@ else if (bPlayer) {
 			mView = externalView.GetPos ()->mOrient;
 		}
 	else {
-		if (ogl.IsOculusRift ())
-			gameData.render.rift.GetViewMatrix (mView);
-		else if (transformation.m_info.bUsePlayerHeadAngles) {
+		//if (ogl.IsOculusRift ())
+		//	transformation.m_info.bUsePlayerHeadAngles = gameData.render.rift.GetHeadAngles (transformation.m_info.playerHeadAngles);
+		if (transformation.m_info.bUsePlayerHeadAngles) {
 			CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
 			mView = gameData.objs.viewerP->info.position.mOrient * mHead;
 			}

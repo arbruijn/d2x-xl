@@ -949,8 +949,7 @@ if (gameStates.input.nMouseType == CONTROL_CYBERMAN) {
 
 int CControlsManager::ReadOculusRift (void)
 {
-transformation.m_info.bUsePlayerHeadAngles = 0;
-return gameData.render.rift.GetHeadAngles (transformation.m_info.playerHeadAngles);
+return transformation.m_info.bUsePlayerHeadAngles = gameData.render.rift.GetHeadAngles (transformation.m_info.playerHeadAngles);
 }
 
 //------------------------------------------------------------------------------
@@ -1286,7 +1285,7 @@ gameData.render.rift.AutoCalibrate ();
 if (ReadOculusRift ())
 	DoOculusRift ();
 #ifdef _WIN32
-if (ReadTrackIR ())
+else if (ReadTrackIR ())
 	DoTrackIR ();
 #endif
 if (gameStates.input.nCruiseSpeed > I2X (100))

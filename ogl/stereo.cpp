@@ -75,6 +75,8 @@ extern float quadVerts [3][4][2];
 
 //-----------------------------------------------------------------------------------
 
+#define CHROM_AB_CORRECTION	0
+
 #if OCULUS_RIFT
 
 static bool RiftWarpFrame (const OVR::Util::Render::StereoEyeParams stereoParams)
@@ -110,36 +112,12 @@ float scaleFactor = 1.0f / distortion.Scale;
 shaderManager.Set ("Scale", (w / 2) * scaleFactor, (h / 2) * scaleFactor * as);
 shaderManager.Set ("ScaleIn", 2.0f / w, 2.0f / h / as);
 shaderManager.Set ("HmdWarpParam", distortion.K [0], distortion.K [1], distortion.K [2], distortion.K [3]);
+#if CHROM_AB_CORRECTION
 shaderManager.Set ("ChromAbParam",
                    distortion.ChromaticAberration [0], 
                    distortion.ChromaticAberration [1],
                    distortion.ChromaticAberration [2],
                    distortion.ChromaticAberration [3]);
-#if 0
-COGLMatrix m;
-#if 0 // zeilenweise
-double mTex [16] = {w, 0, 0, x,
-						  0, h, 0, y,
-						  0, 0, 0, 0,
-						  0, 0, 0, 1};
-double mView [16] = {2, 0, 0, -1,
-							0, 2, 0, -1,
-							0, 0, 0, 0,
-							0, 0, 0, 1};
-#else // spaltenweise
-double mTex [16] = {w, 0, 0, 0,
-						  0, h, 0, 0,
-						  0, 0, 0, 0,
-						  x, y, 0, 1};
-double mView [16] = {2, 0, 0, 0,
-							0, 2, 0, 0,
-							0, 0, 0, 0,
-							-1, -1, 0, 1};
-#endif
-m = mTex;
-shaderManager.Set ("Texm", m);
-m = mView;
-shaderManager.Set ("View", m);
 #endif
 glUniform1i (glGetUniformLocation (warpProg, "SceneTex"), 0);
 OglDrawArrays (GL_QUADS, 0, 4);
@@ -479,29 +457,7 @@ static const char* riftWarpVS =
 	 "gl_TexCoord [0]=gl_MultiTexCoord0;"
     "}\n";
 
-#if 0
-
-static const char* riftWarpFS =
-	"uniform vec2 LensCenter;\n"
-	"uniform vec2 ScreenCenter;\n"
-	"uniform vec2 Scale;\n"
-	"uniform vec2 ScaleIn;\n"
-	"uniform vec4 HmdWarpParam;\n"
-	"uniform sampler2D SceneTex;\n"
-	"\n"
-	"void main()\n"
-	"{\n"
-	"vec2 theta = (gl_TexCoord [0].xy - LensCenter) * ScaleIn;\n" // Scales to [-1,1]
-	"float rSq = theta.x * theta.x + theta.y * theta.y;\n"
-	"theta *= (HmdWarpParam.x + HmdWarpParam.y * rSq + HmdWarpParam.z * rSq * rSq +	HmdWarpParam.w	* rSq * rSq * rSq);\n"
-	"vec2 tc = LensCenter + Scale * theta;\n"
-	"gl_FragColor =\n"
-	"(clamp(tc, ScreenCenter-vec2(0.25,0.5), ScreenCenter+vec2(0.25,0.5)) == tc)\n"
-	"? texture2D(SceneTex, tc)\n"
-	": vec4(0.0, 0.0, 0.0, 1.0);\n"
-	"}\n";
-
-#else
+#if CHROM_AB_CORRECTION
 
 static const char* riftWarpFS =
 	"uniform vec2 LensCenter;\n"
@@ -525,6 +481,28 @@ static const char* riftWarpFS =
 	"                          texture2D (SceneTex, tcBlue).b,\n"
 	"                          1.0)\n"
 	"   : vec4 (0.0, 0.0, 0.0, 1.0);\n"
+	"}\n";
+
+#else
+
+static const char* riftWarpFS =
+	"uniform vec2 LensCenter;\n"
+	"uniform vec2 ScreenCenter;\n"
+	"uniform vec2 Scale;\n"
+	"uniform vec2 ScaleIn;\n"
+	"uniform vec4 HmdWarpParam;\n"
+	"uniform sampler2D SceneTex;\n"
+	"\n"
+	"void main()\n"
+	"{\n"
+	"vec2 theta = (gl_TexCoord [0].xy - LensCenter) * ScaleIn;\n" // Scales to [-1,1]
+	"float rSq = theta.x * theta.x + theta.y * theta.y;\n"
+	"theta *= (HmdWarpParam.x + HmdWarpParam.y * rSq + HmdWarpParam.z * rSq * rSq +	HmdWarpParam.w	* rSq * rSq * rSq);\n"
+	"vec2 tc = LensCenter + Scale * theta;\n"
+	"gl_FragColor =\n"
+	"(clamp(tc, ScreenCenter-vec2(0.25,0.5), ScreenCenter+vec2(0.25,0.5)) == tc)\n"
+	"? texture2D(SceneTex, tc)\n"
+	": vec4(0.0, 0.0, 0.0, 1.0);\n"
 	"}\n";
 
 #endif
