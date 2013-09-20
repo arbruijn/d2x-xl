@@ -574,8 +574,11 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			bStopPlayerMovement = 0;
 			break;		// send taunt macros
 
-		case KEY_CTRLED + KEY_SPACEBAR:
-		case KEY_CTRLED + KEY_F10:
+#if DBG
+		case KEY_CTRLED + KEY_F10: // VS debugger intercepts F12
+#else
+		case KEY_CTRLED + KEY_F12:
+#endif
 			gameData.trackIR.x =
 			gameData.trackIR.y = 0;
 			gameData.render.rift.SetCenter ();
