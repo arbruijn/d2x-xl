@@ -145,17 +145,15 @@ if (cockpit->Hide ())
 
 	static int nIdLock = 0;
 
-#if !DBG
-if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) 
-#endif
-	{
+if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
 	int	x, y, nOffsetSave = -1;
 
 	if (ogl.IsOculusRift ()) {
 		int w, h, aw;
 		fontManager.Current ()->StringSize (TXT_LOCK, w, h, aw);
 		x = CCanvas::Current ()->Width () / 2 - w / 2;
-		y = CCanvas::Current ()->Height () / 2 + 4 * h;
+		y = AdjustCockpitY (-2 * LineSpacing ());
+		//y = CCanvas::Current ()->Height () / 2 + 4 * h;
 		nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 		}
 	else {
