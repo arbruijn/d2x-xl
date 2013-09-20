@@ -574,6 +574,7 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			bStopPlayerMovement = 0;
 			break;		// send taunt macros
 
+		case KEY_CTRLED + KEY_SPACEBAR:
 		case KEY_CTRLED + KEY_F10:
 			gameData.trackIR.x =
 			gameData.trackIR.y = 0;
