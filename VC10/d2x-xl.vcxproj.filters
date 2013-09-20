@@ -8,9 +8,6 @@
     <Filter Include="Source Files\3d">
       <UniqueIdentifier>{0c653aea-4fe4-4bc8-9f9b-97976388b0ef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\3d\Header Files">
-      <UniqueIdentifier>{4a9fae9a-af15-4803-ace5-f387784aefc0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\3d\Source Files">
       <UniqueIdentifier>{064bb3a9-8920-48ff-8308-d79a7484a03b}</UniqueIdentifier>
     </Filter>
@@ -223,31 +220,22 @@
     <Filter Include="Documents">
       <UniqueIdentifier>{af366f51-f7c7-472a-9ce2-f20649b8a05b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{4a9fae9a-af15-4803-ace5-f387784aefc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\3d\Header Files">
+      <UniqueIdentifier>{f3582809-c77b-4c42-a49c-b5b73a21cc76}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\3d.h">
-      <Filter>Source Files\3d\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\3d\buildmodel.h">
-      <Filter>Source Files\3d\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\3d\globvars.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\hitbox.h">
-      <Filter>Source Files\3d\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\interp.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\rendermodel.h">
-      <Filter>Source Files\3d\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\shadows.h">
-      <Filter>Source Files\3d\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\transformation.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\console.h">
       <Filter>Source Files\misc\Header Files</Filter>
@@ -811,97 +799,112 @@
       <Filter>Source Files\libmve\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\byteswap.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\carray.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cdatapool.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\checker.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\compbit.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cstack.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\desc_id.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\desw.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\gamestat.h">
-      <Filter>Source Files\3d\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\globvars.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\hash.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\ibitblt.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\libmve.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\makesig.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\modex.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\nocfile.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\ogl_hudstuff.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\pa_enabl.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\pstypes.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\reorder.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\screens.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\segpoint.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\texmap.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\textures.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\timeout.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\u_dpmi.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\ui.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\vers_id.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\vesa.h">
-      <Filter>Source Files\3d\Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\producers.h">
       <Filter>Source Files\main\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\wglext.h">
       <Filter>Source Files\ogl\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\3d.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3d\buildmodel.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\globvars.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\transformation.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\shadows.h">
+      <Filter>Source Files\3d\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\interp.h">
+      <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
