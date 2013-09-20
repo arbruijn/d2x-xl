@@ -515,7 +515,7 @@ class CSoundInfo {
 	public:
 		inline tSoundInfo* GetInfo (void) { return &m_info; };
 		inline char* Filename (void) { return m_info.szFilename; }
-		inline fix Volume (void) { return fix (float (m_info.nVolume) * I2X (1) / 10.0f + 0.5f); }
+		inline fix Volume (void) { return (fix) FRound (float (m_info.nVolume) * I2X (1) / 10.0f); }
 		//inline Mix_Chunk* SoundHandle (void) { return m_info.mixChunkP; }
 		//inline void SetSoundHandle (Mix_Chunk* handle) { m_info.mixChunkP = handle; }
 };

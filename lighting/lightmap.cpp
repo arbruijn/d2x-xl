@@ -308,7 +308,7 @@ void InitBrightmap (ubyte *brightmap)
 for (i = 512; i; i--, brightmap++) {
 	h = (double) i / 512.0;
 	h *= h;
-	*brightmap = (ubyte) ((255 * h) + 0.5);
+	*brightmap = (ubyte) FRound ((255 * h));
 	}
 }
 
@@ -322,7 +322,7 @@ void InitLightmapInfo (ubyte *lightmap, ubyte *brightmap, GLfloat *color)
 
 for (i = 512; i; i--, brightmap++)
 	for (j = 0; j < 3; j++, lightmap++)
-		*lightmap = (ubyte) (*brightmap * color [j] + 0.5);
+		*lightmap = (ubyte) FRound (*brightmap * color [j]);
 }
 
 #endif //LMAP_REND2TEX
@@ -367,10 +367,6 @@ static float weight [5] = {0.2270270270f, 0.1945945946f, 0.1216216216f, 0.054054
 
 static inline void Add (CLightmapFaceData& source, int x, int y, int offset, CFloatVector3& color)
 {
-	//float w = float (LM_W), h = float (LM_H);
-
-//int x = int (x0 * w + 0.5f);
-//int y = int (y0 * h + 0.5f);
 if (x < 0)
 	x = 0;
 else if (x >= LM_W)
@@ -404,7 +400,7 @@ for (int y = 0; y < h; y++) {
 			Add (source, x - xo, y - yo, offset, color);
 			Add (source, x + xo, y + yo, offset, color);
 			}
-		destColor->Set (ubyte (color.Red () + 0.5f), ubyte (color.Green () + 0.5f), ubyte (color.Blue () + 0.5f));
+		destColor->Set ((ubyte) FRound (color.Red ()), (ubyte) FRound (color.Green ()), (ubyte) FRound (color.Blue ()));
 		}
 	}
 }

@@ -53,7 +53,7 @@ extern ubyte Reticle_on;
 
 //	-----------------------------------------------------------------------------
 
-#define HUD_SCALE(v, s)		(int (float (v) * (s) /*+ 0.5*/))
+#define HUD_SCALE(v, s)		(int (float (v) * (s)))
 #define HUD_SCALE_X(v)		HUD_SCALE (v, m_info.xScale)
 #define HUD_SCALE_Y(v)		HUD_SCALE (v, m_info.yScale)
 #define HUD_LHX(x)			(gameStates.menus.bHires ? 2 * (x) : x)
@@ -150,8 +150,8 @@ class CGenericCockpit {
 		static void Rewind (bool bActivate = true);
 
 		inline float Aspect (void) { return float (screen.Height ()) / float (screen.Width ()) / 0.75f; }
-		inline int ScaleX (int v) { return int (float (v) * m_info.xScale + 0.5f); }
-		inline int ScaleY (int v) { return int (float (v) * m_info.yScale + 0.5f); }
+		inline int ScaleX (int v) { return (int) FRound (float (v) * m_info.xScale); }
+		inline int ScaleY (int v) { return (int) FRound (float (v) * m_info.yScale); }
 		inline int LHX (int x) { return x << gameStates.render.fonts.bHires; }
 		inline int LHY (int y) { return gameStates.render.fonts.bHires ? 24 * y / 10 : y; }
 		inline float FontScale (void) { return m_info.fontScale; }
@@ -196,7 +196,7 @@ class CGenericCockpit {
 		void DrawOrbs (int x, int y);
 		void DrawFlag (int x, int y);
 		void DrawKillList (int x, int y);
-		void DrawDamage (void);
+		void DrawModuleDamage (void);
 		void DrawCockpit (int nCockpit, int y, bool bAlphaTest = false);
 		void UpdateLaserWeaponInfo (void);
 		void DrawReticle (int bForceBig, fix xStereoSeparation = 0);
@@ -217,12 +217,21 @@ class CGenericCockpit {
 		virtual void DrawKeys (void) = 0;
 		virtual void DrawOrbs (void) = 0;
 		virtual void DrawFlag (void) = 0;
-		virtual void DrawShield (void) = 0;
+		virtual void DrawShieldText (void) = 0;
 		virtual void DrawShieldBar (void) = 0;
-		virtual void DrawEnergy (void) = 0;
+		virtual void DrawEnergyText (void) = 0;
 		virtual void DrawEnergyBar (void) = 0;
-		virtual void DrawAfterburner (void) = 0;
+		virtual void DrawAfterburnerText (void) = 0;
 		virtual void DrawAfterburnerBar (void) = 0;
+		virtual void DrawEnergyLevels (void) {
+			DrawEnergyBar ();
+			DrawAfterburnerBar ();
+			DrawShieldBar ();
+			DrawEnergyText ();
+			DrawShieldText ();
+			DrawAfterburnerText ();
+			}
+
 		virtual void ClearBombCount (int bgColor) = 0;
 		virtual void DrawBombCount (void) = 0;
 		virtual int DrawBombCount (int& nIdBombCount, int y, int x, int nColor, char* pszBombCount) = 0;
@@ -266,6 +275,7 @@ class CGenericCockpit {
 					 (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN));
 			}
 
+		int BombCount (int& nBombType);
 		inline int ScoreTime (void) { return m_info.scoreTime; }
 		inline int SetScoreTime (int nTime) { return m_info.scoreTime = nTime; }
 		inline int AddedScore (int i = 0) { return m_info.addedScore [i]; }
@@ -274,11 +284,14 @@ class CGenericCockpit {
 		inline void SetLineSpacing (int nLineSpacing) { m_info.nLineSpacing = nLineSpacing; }
 		inline void SetColor (int nColor) { m_info.nColor = nColor; }
 
+		bool ShowTextGauges (void);
+		
 		int X (int x, bool bForce = false);
 
 		int _CDECL_ DrawHUDText (int *idP, int x, int y, const char * format, ...);
 
-		int CGenericCockpit::AdjustCockpitCoords (char* s, int& x, int& y);
+		int AdjustCockpitXY (char* s, int& x, int& y);
+		int AdjustCockpitY (int y);
 	};
 
 //	-----------------------------------------------------------------------------
@@ -295,12 +308,13 @@ class CHUD : public CGenericCockpit {
 		virtual void DrawKeys (void);
 		virtual void DrawOrbs (void);
 		virtual void DrawFlag (void);
-		virtual void DrawShield (void);
+		virtual void DrawShieldText (void);
 		virtual void DrawShieldBar (void);
-		virtual void DrawEnergy (void);
+		virtual void DrawEnergyText (void);
 		virtual void DrawEnergyBar (void);
-		virtual void DrawAfterburner (void);
+		virtual void DrawAfterburnerText (void);
 		virtual void DrawAfterburnerBar (void);
+		virtual void DrawEnergyLevels (void);
 		virtual void ClearBombCount (int bgColor);
 		virtual void DrawBombCount (void);
 		virtual int DrawBombCount (int& nIdBombCount, int y, int x, int nColor, char* pszBombCount);
@@ -320,6 +334,7 @@ class CHUD : public CGenericCockpit {
 		virtual bool Setup (bool bRebuild);
 
 	private:
+		void DrawEnergyLevelsCombined (void);
 		int FlashGauge (int h, int *bFlash, int tToggle);
 		inline int LineSpacing (void) {
 			return ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
@@ -354,11 +369,11 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawKeys (void);
 		virtual void DrawOrbs (void);
 		virtual void DrawFlag (void);
-		virtual void DrawEnergy (void);
-		virtual void DrawShield (void);
+		virtual void DrawEnergyText (void);
+		virtual void DrawShieldText (void);
 		virtual void DrawShieldBar (void);
 		virtual void DrawEnergyBar (void);
-		virtual void DrawAfterburner (void);
+		virtual void DrawAfterburnerText (void);
 		virtual void DrawAfterburnerBar (void);
 		virtual void DrawBombCount (void);
 		virtual int DrawBombCount (int& nIdBombCount, int y, int x, int nColor, char* pszBombCount);
@@ -393,9 +408,9 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawKeys (void);
 		virtual void DrawOrbs (void);
 		virtual void DrawFlag (void);
-		virtual void DrawEnergy (void);
+		virtual void DrawEnergyText (void);
 		virtual void DrawEnergyBar (void);
-		virtual void DrawAfterburner (void) {}
+		virtual void DrawAfterburnerText (void) {}
 		virtual void DrawAfterburnerBar (void);
 		virtual void DrawBombCount (void);
 		virtual int DrawBombCount (int& nIdBombCount, int y, int x, int nColor, char* pszBombCount);
@@ -404,7 +419,7 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
 		virtual void DrawCloak (void) {}
 		virtual void DrawInvul (void);
-		virtual void DrawShield (void);
+		virtual void DrawShieldText (void);
 		virtual void DrawShieldBar (void);
 		virtual void DrawLives (void);
 		virtual void DrawPlayerShip (void);
@@ -432,9 +447,9 @@ class CRearView : public CGenericCockpit {
 		virtual void DrawKeys (void) {}
 		virtual void DrawOrbs (void) {}
 		virtual void DrawFlag (void) {}
-		virtual void DrawEnergy (void) {}
+		virtual void DrawEnergyText (void) {}
 		virtual void DrawEnergyBar (void) {}
-		virtual void DrawAfterburner (void) {}
+		virtual void DrawAfterburnerText (void) {}
 		virtual void DrawAfterburnerBar (void) {}
 		virtual void DrawBombCount (void) {}
 		virtual int DrawBombCount (int& nIdBombCount, int y, int x, int nColor, char* pszBombCount) { return -1; }
@@ -444,7 +459,7 @@ class CRearView : public CGenericCockpit {
 		virtual void DrawWeapons (void) {}
 		virtual void DrawCloak (void) {}
 		virtual void DrawInvul (void) {}
-		virtual void DrawShield (void) {}
+		virtual void DrawShieldText (void) {}
 		virtual void DrawShieldBar (void) {}
 		virtual void DrawLives (void) {}
 		virtual void DrawPlayerShip (void) {}

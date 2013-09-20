@@ -264,11 +264,11 @@ if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 				int h = 4 * nChildNodes / 5;
 				nChildNodes = h + rand () % (nChildNodes - h);
 				double scale = sqrt (double (nChildNodes) / double (m_nNodes));
-				int l = int (m_nLength * scale + 0.5);
-				int n = int (m_nFrames * scale + 0.5);
+				int l = (int) DRound (m_nLength * scale);
+				int n = (int) DRound (m_nFrames * scale);
 				if (n == 0)
 					n = (m_nFrames < 0) ? -1 : 1;
-				if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, int (m_nAmplitude * scale + 0.5), m_nAngle,
+				if (!m_nodes [nNode].CreateChild (&m_vEnd, &m_vDelta, m_nLife, l, (int) DRound (m_nAmplitude * scale), m_nAngle,
 															 nChildNodes, m_nChildren / 5, nDepth - 1, n, m_nSmoothe, m_bClamp, m_bGlow, m_bLight,
 															 m_nStyle, m_width, &m_color, this, nNode, nThread))
 					return false;
@@ -1002,10 +1002,10 @@ if (!m_bLight)
 if (!m_nodes.Buffer ())
 	return 0;
 if (0 < (j = m_nNodes)) {
-	if (!(nStride = int ((double (m_nLength) / I2X (20) + 0.5))))
+	if (!(nStride = (int) DRound ((double (m_nLength) / I2X (20)))))
 		nStride = 1;
 	if (!(nStep = double (j - 1) / double (nStride)))
-		nStep = double (int (j + 0.5));
+		nStep = double ((int) DRound (j));
 #if DBG
 	if (m_nSegment == nDbgSeg)
 		nDbgSeg = nDbgSeg;

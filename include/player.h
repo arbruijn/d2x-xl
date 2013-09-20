@@ -106,15 +106,15 @@ class __pack__ CShipEnergy {
 		// return ship type dependent scaling value
 		float Scale (void);
 		// get initial value (which is identical to the max value w/o overcharge)
-		inline fix Initial (void) { return fix (m_init * Scale () + 0.5f); }
+		inline fix Initial (void) { return (fix) FRound (m_init * Scale ()); }
 		// get max value
-		inline fix Max (void) { return fix (m_max * Scale () + 0.5f); }
+		inline fix Max (void) { return (fix) FRound (m_max * Scale ()); }
 		// get current value
-		inline fix Get (bool bScale = true) { return bScale ? *m_current : fix (*m_current / Scale () + 0.5f); }
+		inline fix Get (bool bScale = true) { return bScale ? *m_current : (fix) FRound (*m_current / Scale ()); }
 		// set by fixed value
 		inline bool Set (fix e, bool bScale = true) {
 			if (bScale)
-				e = fix (e * Scale () + 0.5f);
+				e = (fix) FRound (e * Scale ());
 			if (e > Max ())
 				e = Max ();
 			if (*m_current == e)
@@ -126,11 +126,11 @@ class __pack__ CShipEnergy {
 		inline fix Update (fix delta) { return delta ? Set (Get () + delta, false) : Get (); }	
 		// fill up
 		inline bool Reset (fix e) {	
-			e = fix (e * Scale () + 0.5f);
+			e = (fix) FRound (e * Scale ());
 			return (Get () < e) ? Set (e, false) : false; 
 			}
 		// fill rate in percent
-		inline int Level (void) { return int (100.0f * float (Get ()) / float (Initial ()) + 0.5f); }
+		inline int Level (void) { return (int) FRound (100.0f * float (Get ()) / float (Initial ())); }
 		// initialize
 		void Setup (int type, int index, fix init, fix* current) {
 			m_type = type;

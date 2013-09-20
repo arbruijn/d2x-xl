@@ -48,7 +48,7 @@ if (nGauge >= 0) {
 	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (nGauge);
 	if (bmP)
 		bmP->RenderScaled (ScaleX (x), ScaleY (y), 
-								 ScaleX ((int) (bmP->Width () * xScale + 0.5)), ScaleY ((int) (bmP->Height () * yScale + 0.5)), 
+								 ScaleX ((int) DRound (bmP->Width () * xScale)), ScaleY ((int) DRound (bmP->Height () * yScale)), 
 								 scale, orient, NULL);
 	}
 return bmP;
@@ -234,7 +234,7 @@ else if (LOCALPLAYER.lives > 1) {
 
 //	-----------------------------------------------------------------------------
 
-void CStatusBar::DrawEnergy (void)
+void CStatusBar::DrawEnergyText (void)
 {
 	static int nIdEnergy = 0;
 
@@ -243,13 +243,13 @@ void CStatusBar::DrawEnergy (void)
 
 SetFontScale ((float) floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 SetCanvas (&gameData.render.frame);
-sprintf (szEnergy, "%d", int (m_info.nEnergy * LOCALPLAYER.EnergyScale () + 0.5f));
+sprintf (szEnergy, "%d", (int) DRound (m_info.nEnergy * LOCALPLAYER.EnergyScale ()));
 fontManager.Current ()->StringSize (szEnergy, w, h, aw);
 SetFontColor (RGBA_PAL2 (25, 18, 6));
 nIdEnergy = DrawHUDText (&nIdEnergy, 
 						  (ScaleX (SB_ENERGY_GAUGE_X) + (ScaleX (SB_ENERGY_GAUGE_W) - w) / 2), 
 						  (ScaleY (SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H - m_info.nLineSpacing) + HeightPad ()), 
-						  "%d", int (m_info.nEnergy * LOCALPLAYER.EnergyScale () + 0.5f));
+						  "%d", (int) FRound (m_info.nEnergy * LOCALPLAYER.EnergyScale ()));
 }
 
 //	-----------------------------------------------------------------------------
@@ -279,7 +279,7 @@ if (nEraseHeight > 0) {
 
 //	-----------------------------------------------------------------------------
 
-void CStatusBar::DrawAfterburner (void)
+void CStatusBar::DrawAfterburnerText (void)
 {
 if (gameStates.app.bD1Mission)
 	return;
@@ -323,7 +323,7 @@ if (nEraseHeight > 0) {
 
 //	-----------------------------------------------------------------------------
 
-void CStatusBar::DrawShield (void)
+void CStatusBar::DrawShieldText (void)
 {
 	static int nIdShield = 0;
 
@@ -335,13 +335,13 @@ SetCanvas (&gameData.render.frame);
 //LoadTexture (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index, 0);
 SetFontColor (BLACK_RGBA);
 Rect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 27 : 13), SB_SHIELD_NUM_Y + m_info.fontHeight);
-sprintf (szShield, "%d", int (m_info.nShield * LOCALPLAYER.ShieldScale () + 0.5f));
+sprintf (szShield, "%d", (int) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
 fontManager.Current ()->StringSize (szShield, w, h, aw);
 SetFontColor (RGBA_PAL2 (14, 14, 23));
 nIdShield = DrawHUDText (&nIdShield, 
 							  (ScaleX (SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 13 : 6)) - w / 2), 
 							  (ScaleY (SB_SHIELD_NUM_Y) + HeightPad ()), 
-							  "%d", int (m_info.nShield * LOCALPLAYER.ShieldScale () + 0.5f));
+							  "%d", (int) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
 }
 
 //	-----------------------------------------------------------------------------

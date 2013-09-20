@@ -271,7 +271,7 @@ switch (info.renderType) {
 		cf.Read (rType.soundInfo.szFilename, 1, sizeof (rType.soundInfo.szFilename));
 		rType.soundInfo.szFilename [sizeof (rType.soundInfo.szFilename) - 1] = '\0';
 		strlwr (rType.soundInfo.szFilename);
-		rType.soundInfo.nVolume = int (float (cf.ReadInt ()) * float (I2X (1)) / 10.0f + 0.5f);
+		rType.soundInfo.nVolume = (int) FRound (float (cf.ReadInt ()) * float (I2X (1)) / 10.0f);
 		if (gameData.segs.nLevelVersion < 19)
 			rType.soundInfo.bEnabled = 1;
 		else

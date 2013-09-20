@@ -156,7 +156,7 @@ CBitmap* CAnimation::Bitmap (fix xTTL, fix xLifeLeft)
 {
 if (!m_frames.Buffer ())
 	return NULL;
-uint nFrame = uint (float (m_nFrames) * float (xTTL - xLifeLeft) / float (xTTL) + 0.5f);
+uint nFrame = (uint) FRound (float (m_nFrames) * float (xTTL - xLifeLeft) / float (xTTL));
 return (nFrame >= m_nFrames) ? NULL : m_frames [nFrame].Bitmap ();
 }
 

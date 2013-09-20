@@ -225,18 +225,18 @@ return (int) ((b && (tToggle <= t)) ? t + 300 / b : 0);
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::DrawShield (void)
+void CHUD::DrawShieldText (void)
 {
 if (cockpit->Hide ())
 	return;
 
 	static int nIdShield = 0;
 
-if (gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ()) {
+if (ShowTextGauges ()) {
 	int y = IsMultiGame ? -6 * LineSpacing () : -2 * LineSpacing ();
 	SetFontColor (GREEN_RGBA);
 	m_info.bAdjustCoords = true;
-	nIdShield = DrawHUDText (&nIdShield, 2, y, "%s: %i", TXT_SHIELD, int (m_info.nShield * LOCALPLAYER.ShieldScale () + 0.5f));
+	nIdShield = DrawHUDText (&nIdShield, 2, y, "%s: %i", TXT_SHIELD, (int) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
 	}
 }
 
@@ -254,7 +254,7 @@ if (cockpit->Hide ())
 	time_t			t = gameStates.app.nSDLTicks [0];
 	int				bLastFlash = gameStates.render.cockpit.nShieldFlash;
 
-if (!(gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ())) {
+if (!ShowTextGauges ()) {
 
 	int nLevel = m_info.nShield;
 	if ((t = FlashGauge (nLevel, &gameStates.render.cockpit.nShieldFlash, (int) tToggle))) {
@@ -273,9 +273,6 @@ if (!(gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ())) {
 	CCanvas::Current ()->SetColorRGB (0, 64, 224, 255);
 	glLineWidth (1);
 	OglDrawEmptyRect (x, y, x + int (w * m_info.xGaugeScale), y + h);
-	//CCanvasColor fontColor = {0, 1, {0, 64, 255, 255}};
-	//CCanvas::Current ()->SetFontColor (fontColor, 0);	// black background
-	//nIdLevel = DrawHUDText (&nIdLevel, x + int (w * m_info.xGaugeScale), int (y + m_info.yGaugeScale + 0.5f), " %i%%", nLevel);
 	if (bShow) {
 		CCanvas::Current ()->SetColorRGB (0, 64, 224, 128);
 		if (nLevel <= 100)
@@ -315,7 +312,7 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::DrawEnergy (void)
+void CHUD::DrawEnergyText (void)
 {
 if (cockpit->Hide ())
 	return;
@@ -324,8 +321,8 @@ if (cockpit->Hide ())
 	static int nIdEnergy = 0;
 
 h = LOCALPLAYER.Energy () ? X2IR (LOCALPLAYER.Energy ()) : 0;
-if (gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ()) {
-	y = IsMultiGame ? -5* LineSpacing () : -LineSpacing ();
+if (ShowTextGauges ()) {
+	y = IsMultiGame ? -5 * LineSpacing () : -LineSpacing ();
 	SetFontColor (GREEN_RGBA);
 	m_info.bAdjustCoords = true;
 	nIdEnergy = DrawHUDText (&nIdEnergy, 2, y, "%s: %i", TXT_ENERGY, h);
@@ -347,7 +344,7 @@ void CHUD::DrawEnergyBar (void)
 if (cockpit->Hide ())
 	return;
 
-if (!(gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ())) {
+if (!ShowTextGauges ()) {
 	static int		bFlash = 0, bShow = 1;
 	static time_t	tToggle;
 	//static int		nIdLevel = 0;
@@ -369,9 +366,6 @@ if (!(gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ())) {
 	int x = 6 + int (10 * m_info.xGaugeScale);
 	w = (nLevel > 100) ? 100 : 50;
 	OglDrawEmptyRect (x, y, x + int (w * m_info.xGaugeScale), y + h);
-	//CCanvasColor fontColor = {0, 1, {255, 224, 0, 255}};
-	//CCanvas::Current ()->SetFontColor (fontColor, 0);	// black background
-	//nIdLevel = DrawHUDText (&nIdLevel, x + int (w * m_info.xGaugeScale), int (y + m_info.yGaugeScale + 0.5f), " %i%%", nLevel);
 	if (bFlash) {
 		if (!bShow)
 			return;
@@ -395,7 +389,7 @@ if (!(gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ())) {
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::DrawAfterburner (void)
+void CHUD::DrawAfterburnerText (void)
 {
 if (cockpit->Hide ())
 	return;
@@ -406,7 +400,7 @@ if (cockpit->Hide ())
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
 h = FixMul (gameData.physics.xAfterburnerCharge, 100);
-if (gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ()) {
+if (ShowTextGauges ()) {
 	y = -(IsMultiGame ? 8 : 3) * LineSpacing ();
 	SetFontColor (GREEN_RGBA);
 	m_info.bAdjustCoords = true;
@@ -427,7 +421,7 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
 int nLevel = FixMul (gameData.physics.xAfterburnerCharge, 100);
 int nLineSpacing = 5 * GAME_FONT->Height () / 4;
-if (!(gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ())) {
+if (!ShowTextGauges ()) {
 	int h = int (9 * m_info.yGaugeScale), 
 		 w = int (9 * m_info.xGaugeScale), 
 		 y = -(int) (((IsMultiGame ? 8 : 3) * nLineSpacing - 1) * m_info.yGaugeScale);
@@ -437,9 +431,6 @@ if (!(gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ())) {
 	glLineWidth (1);
 	int x = 6 + int (10 * m_info.xGaugeScale);
 	OglDrawEmptyRect (x, y, x + (int) (50 * m_info.xGaugeScale), y + h);
-	//CCanvasColor fontColor = {0, 1, {255, 0, 0, 255}};
-	//CCanvas::Current ()->SetFontColor (fontColor, 0);	// black background
-	//nIdLevel = DrawHUDText (&nIdLevel, x + int (50 * m_info.xGaugeScale), int (y + m_info.yGaugeScale + 0.5f), " %i%%", nLevel);
 	CCanvas::Current ()->SetColorRGB (224, 0, 0, 128);
 	OglDrawFilledRect (x, y, x + (int) (nLevel * m_info.xGaugeScale / 2.0f), y + h);
 	}
@@ -449,6 +440,68 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 		m_history [0].afterburner = gameData.physics.xAfterburnerCharge;
 	 	}
 	}
+}
+
+//	-----------------------------------------------------------------------------
+
+void CHUD::DrawEnergyLevelsCombined (void)
+{
+	int	y = AdjustCockpitY (-2 * LineSpacing ());
+	int	x = CCanvas::Current ()->Width () / 4;
+	int	nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+
+	static uint	energyColors [3] = { GOLD_RGBA, BLUE_RGBA, RED_RGBA };
+
+int				i, nColor, h [4], w [4], aw [4], tw = 0;
+int				nEnergy [3] = {LOCALPLAYER.Energy () ? X2IR (LOCALPLAYER.Energy ()) : 0, 
+										(int) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()), 
+										(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) ? FixMul (gameData.physics.xAfterburnerCharge, 100) : -1
+									  };
+char				szEnergy [3][10];
+CCanvasColor	color;
+
+color.Set (0, 0, 0, 128);
+color.index = -1;
+color.rgb = 1;
+
+CCanvas::Current ()->SetFont (GAME_FONT);
+for (i = 0; i < 3; i++) {
+	if (szEnergy [i] < 0)
+		strcpy (szEnergy [i], " ---");
+	else
+		sprintf (szEnergy [i], "%4d", nEnergy [i]);
+	fontManager.Current ()->StringSize (szEnergy [i], w [i], h [i], aw [i]);
+	tw += w [i];
+	}
+fontManager.Current ()->StringSize (" ", w [3], h [3], aw [3]);
+CCanvas::Current ()->SetFontColor (color, 1);	// black background
+for (i = 0; i < 3; i++) {
+	if (szEnergy [i] >= 0) {
+		nColor = energyColors [i];
+		//color.Set (RGBA_RED (nColor), RGBA_GREEN (nColor), RGBA_BLUE (nColor));
+		//SetCanvas (&gameData.render.frame);
+		SetFontColor (nColor);
+		szEnergy [i][4] = '\0'; 
+		DrawHUDText (NULL, x, y, szEnergy [i]);
+		x += w [i];
+		}
+	}
+fontManager.SetScale (1.0f);
+gameData.SetStereoOffsetType (nOffsetSave);
+}
+
+//	-----------------------------------------------------------------------------
+
+void CHUD::DrawEnergyLevels (void)
+{
+#if DBG
+if (ogl.IsSideBySideDevice ())
+#else
+if (ogl.IsOculusRift ())
+#endif
+	DrawEnergyLevelsCombined ();
+else
+	CGenericCockpit::DrawEnergyLevels ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -482,7 +535,7 @@ x = gameData.render.scene.Width () - 3 * GAME_FONT->Width () - gameStates.render
 y = gameData.render.scene.Height () - 3 * LineSpacing ();
 if ((extraGameInfo [0].nWeaponIcons >= 3) && (gameData.render.scene.Height () < 670))
 	x -= LHX (20);
-int nOffsetSave = AdjustCockpitCoords (pszBombCount, x, y);
+int nOffsetSave = AdjustCockpitXY (pszBombCount, x, y);
 return GrString (x, y, pszBombCount, &nIdBombCount);
 gameData.SetStereoOffsetType (nOffsetSave);
 }
@@ -507,6 +560,8 @@ DrawAmmoInfo (SECONDARY_AMMO_X, SECONDARY_AMMO_Y, ammoCount, 0);
 void CHUD::DrawWeapons (void)
 {
 if (cockpit->Hide ())
+	return;
+if (ogl.IsOculusRift () && EGI_FLAG (nWeaponIcons, 1, 1, 0))
 	return;
 
 	int	w, h, aw;
@@ -601,7 +656,7 @@ if (cockpit->Hide ())
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 	 (((LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame) > I2X (4)) || (gameData.time.xGame & 0x8000))) {
 	 int y = IsMultiGame ? -10 * LineSpacing () : -5 * LineSpacing ();
-	if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !gameOpts->render.cockpit.bTextGauges)
+	if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !ShowTextGauges ())
 		y -= LineSpacing () + gameStates.render.fonts.bHires + 1;
 	SetFontColor (GREEN_RGBA);
 	nIdInvul = DrawHUDText (&nIdInvul, 2, y, "%s", TXT_INVULNERABLE);
@@ -621,7 +676,7 @@ if (cockpit->Hide ())
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) &&
 	 ((LOCALPLAYER.cloakTime + CLOAK_TIME_MAX - gameData.time.xGame > I2X (3)) || (gameData.time.xGame & 0x8000))) {
 	int y = IsMultiGame ? -7 * LineSpacing () : -4 * LineSpacing ();
-	if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !gameOpts->render.cockpit.bTextGauges)
+	if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !ShowTextGauges ())
 		y -= LineSpacing () + gameStates.render.fonts.bHires + 1;
 	SetFontColor (GREEN_RGBA);
 	nIdCloak = DrawHUDText (&nIdCloak, 2, y, "%s", TXT_CLOAKED);

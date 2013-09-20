@@ -796,7 +796,7 @@ switch (objP->info.renderType) {
 		NDRead (objP->rType.soundInfo.szFilename, 1, sizeof (objP->rType.soundInfo.szFilename));
 		objP->rType.soundInfo.szFilename [sizeof (objP->rType.soundInfo.szFilename) - 1] = '\0';
 		strlwr (objP->rType.soundInfo.szFilename);
-		objP->rType.soundInfo.nVolume = int (float (NDReadInt ()) * float (I2X (1)) / 10.0f + 0.5f);
+		objP->rType.soundInfo.nVolume = (int) FRound (float (NDReadInt ()) * float (I2X (1)) / 10.0f);
 		objP->rType.soundInfo.bEnabled = NDReadByte ();
 		break;
 

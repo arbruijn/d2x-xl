@@ -1015,6 +1015,9 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\3d\transformation.cpp" />
+    <ClCompile Include="..\cockpit\crosshairs.cpp" />
+    <ClCompile Include="..\cockpit\genericdrawers.cpp" />
+    <ClCompile Include="..\cockpit\utilities.cpp" />
     <ClCompile Include="..\console\console.cpp" />
     <ClCompile Include="..\include\cquicksort.cpp" />
     <ClCompile Include="..\main\crypt.cpp">

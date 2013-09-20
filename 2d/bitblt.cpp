@@ -116,9 +116,9 @@ static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, uint num_pixel
 		c= (short) *src;
 		if ((ubyte) c != (ubyte) TRANSPARENCY_COLOR) {
 			c *= 3;
-			c = destPalette->ClosestColor ((ubyte) (srcPalette->Raw () [c] * fade + 0.5), 
-												    (ubyte) (srcPalette->Raw () [c + 1] * fade + 0.5), 
-													 (ubyte) (srcPalette->Raw () [c + 2] * fade + 0.5));
+			c = destPalette->ClosestColor ((ubyte) FRound (srcPalette->Raw () [c] * fade), 
+												    (ubyte) FRound (srcPalette->Raw () [c + 1] * fade), 
+													 (ubyte) FRound (srcPalette->Raw () [c + 2] * fade));
 			*dest = (ubyte) c;
 			}
 		dest++;

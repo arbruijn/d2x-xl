@@ -108,9 +108,9 @@ return 1;
 if (gameStates.render.nWindow [0])
 	return 0;
 if (ogl.IsOculusRift ())
-	return int (X2D (ogl.StereoSeparation ()) * render.frame.Width () * double (WORLDSCALE) * 0.00125 + 0.5);
+	return (int) DRound (X2D (ogl.StereoSeparation ()) * render.frame.Width () * double (WORLDSCALE) * 0.00125);
 if (ogl.IsSideBySideDevice ())
-	return int (X2D (ogl.StereoSeparation ()) * render.frame.Width () * 0.025 + 0.5);
+	return (int) DRound (X2D (ogl.StereoSeparation ()) * render.frame.Width () * 0.025);
 return 0;
 #endif
 }
@@ -137,7 +137,7 @@ else
 	return 0;
 	
 scale [0] = (s < 0) ? float (w - x) / w : float (x) / w;
-return int ((3.0f * scale [0] - 1.0f) * scale [1] + 0.5f);
+return (int) FRound ((3.0f * scale [0] - 1.0f) * scale [1]);
 #endif
 }
 
@@ -631,7 +631,7 @@ else {
 if (detectionMessage) 
 	PrintLog (0, detectionMessage);
 #endif
-return m_bAvailable;
+return m_bAvailable != 0;
 }
 
 // ----------------------------------------------------------------------------

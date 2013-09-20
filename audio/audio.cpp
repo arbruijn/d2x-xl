@@ -135,10 +135,10 @@ void Mix_VolPan (int nChannel, int nVolume, int nPan)
 if (!audio.Available ()) 
 	return;
 if (gameOpts->sound.bUseSDLMixer && (nChannel >= 0)) {
-	nVolume = fix (X2F (2 * nVolume) /** X2F (audio.Volume ()*/ * MIX_MAX_VOLUME + 0.5f);
+	nVolume = (fix) FRound (X2F (2 * nVolume) /** X2F (audio.Volume ()*/ * MIX_MAX_VOLUME);
 	Mix_Volume (nChannel, nVolume);
 	if (nPan >= 0) {
-		nPan = fix (X2F (nPan) * 254 + 0.5f);
+		nPan = (fix) FRound (X2F (nPan) * 254);
 		Mix_SetPanning (nChannel, ubyte (nPan), ubyte (254 - nPan));
 		}
 	}

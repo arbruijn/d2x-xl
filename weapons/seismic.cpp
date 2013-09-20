@@ -53,8 +53,8 @@ float fScale = X2F (I2X (3) / 16 + (I2X (16 - fc)) / 32);
 if (fScaleMod > 0.0f)
 	fScale *= fScaleMod;
 //HUDMessage (0, "shaker rock scale %d: %1.2f", i, fScale);
-int rx = fix (SRandShort () * fScale + 0.5f);
-int rz = fix (SRandShort () * fScale + 0.5f);
+int rx = (fix) FRound (SRandShort () * fScale);
+int rz = (fix) FRound (SRandShort () * fScale);
 gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.x += rx;
 gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.z += rz;
 //	Shake the buddy!
@@ -103,8 +103,8 @@ for (int i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 			if (eshakerDetonateScales [i] > 0.0f)
 				fScale *= eshakerDetonateScales [i];
 			//HUDMessage (0, "shaker rock scale %d: %1.2f", i, fScale);
-			rx = fix (SRandShort () * fScale + 0.5f);
-			rz = fix (SRandShort () * fScale + 0.5f);
+			rx = (fix) FRound (SRandShort () * fScale);
+			rz = (fix) FRound (SRandShort () * fScale);
 			gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.x += rx;
 			gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.z += rz;
 			//	Shake the buddy!

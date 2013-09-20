@@ -1066,7 +1066,7 @@ memcpy (item.vertices, vertices, nVertices * sizeof (CFloatVector));
 #if TI_SPLIT_POLYS
 if (bDepthMask && m_data.bSplitPolys) {
 	for (i = 0; i < nVertices; i++)
-		item.sideLength [i] = (short) (CFloatVector::Dist(vertices [i], vertices [(i + 1) % nVertices]) + 0.5f);
+		item.sideLength [i] = (short) FRound (CFloatVector::Dist(vertices [i], vertices [(i + 1) % nVertices]));
 	return SplitPoly (&item, 0);
 	}
 else

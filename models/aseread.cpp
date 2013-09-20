@@ -681,9 +681,9 @@ while ((pszToken = ReadLine (cf))) {
 		return 1;
 	if (!strcmp (pszToken, "*MATERAL_DIFFUSE")) {
 		CRGBColor	avgRGB;
-		avgRGB.Red () = (ubyte) (FloatTok (" \t") * 255 + 0.5);
-		avgRGB.Green () = (ubyte) (FloatTok (" \t") * 255 + 0.5);
-		avgRGB.Blue () = (ubyte) (FloatTok (" \t") * 255 + 0.5);
+		avgRGB.Red () = (ubyte) FRound (FloatTok (" \t") * 255);
+		avgRGB.Green () = (ubyte) FRound (FloatTok (" \t") * 255);
+		avgRGB.Blue () = (ubyte) FRound (FloatTok (" \t") * 255);
 		bmP->SetAvgColor (avgRGB);
 		}
 	else if (!strcmp (pszToken, "*MAP_DIFFUSE")) {

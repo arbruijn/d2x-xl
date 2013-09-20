@@ -117,9 +117,9 @@ if ((m_bmP->BPP () == 4) && m_bmP->Buffer ()) {
 
 	for (int i = m_bmP->Length () / 4; i; i--, rgbaP++) {
 		alpha = float (rgbaP->Alpha () / 255.0f) * fScale;
-		rgbaP->Red () = ubyte (rgbaP->Red () * alpha + 0.5f);
-		rgbaP->Green () = ubyte (rgbaP->Green () * alpha + 0.5f);
-		rgbaP->Blue () = ubyte (rgbaP->Blue () * alpha + 0.5f);
+		rgbaP->Red () = (ubyte) FRound (rgbaP->Red () * alpha);
+		rgbaP->Green () = (ubyte) FRound (rgbaP->Green () * alpha);
+		rgbaP->Blue () = (ubyte) FRound (rgbaP->Blue () * alpha);
 		}
 	}
 }

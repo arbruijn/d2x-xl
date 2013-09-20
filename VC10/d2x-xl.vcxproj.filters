@@ -1841,6 +1841,15 @@
     <ClCompile Include="..\main\producers.cpp">
       <Filter>Source Files\main\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\cockpit\crosshairs.cpp">
+      <Filter>Source Files\cockpit\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cockpit\utilities.cpp">
+      <Filter>Source Files\cockpit\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cockpit\genericdrawers.cpp">
+      <Filter>Source Files\cockpit\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Websites\Descent\d2x-faq.html">

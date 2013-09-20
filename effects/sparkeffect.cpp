@@ -124,7 +124,7 @@ for (int i = 0; i < m_nMaxSparks; i++)
 
 void CSparks::Setup (short nSegment, ubyte nType)
 {
-m_nMaxSparks = (ushort) (2 * SEGMENTS [nSegment].AvgRadf () + 0.5f);
+m_nMaxSparks = (ushort) FRound (2 * SEGMENTS [nSegment].AvgRadf ());
 if (!m_sparks.Create (m_nMaxSparks))
 	m_nMaxSparks = 0;
 else {

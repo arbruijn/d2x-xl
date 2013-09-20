@@ -296,7 +296,7 @@ do {
 		if (gameStates.app.bGameRunning && !(gameOpts->sound.bShip && gameOpts->sound.bGatling))
 			audio.DestroyObjectSound (LOCALPLAYER.nObject);
 		}
-	gameOpts->sound.xCustomSoundVolume = fix (float (gameConfig.nAudioVolume [0]) * 10.0f / 8.0f + 0.5f);
+	gameOpts->sound.xCustomSoundVolume = (fix) FRound (float (gameConfig.nAudioVolume [0]) * 10.0f / 8.0f);
 } while (i == -2);
 if (gameConfig.nMidiVolume < 1)
 	midi.PlaySong (NULL, NULL, NULL, 0, 0);

@@ -292,15 +292,15 @@ FORALL_OBJS (objP, i) {
 				float fScale = float (h - t) / 333.0f;
 				if (ROBOTINFO (objP->info.nId).companion) {
 					if (d < 0)
-						CCanvas::Current ()->SetColorRGB (0, 123 - int ((123 - 78) * fScale + 0.5f), 151 - int ((151 - 112) * fScale + 0.5f), 255);
+						CCanvas::Current ()->SetColorRGB (0, 123 - (int) FRound ((123 - 78) * fScale), 151 - (int) FRound ((151 - 112) * fScale), 255);
 					else
-						CCanvas::Current ()->SetColorRGB (0, 78 + int ((123 - 78) * fScale + 0.5f), 122 + int ((151 - 112) * fScale + 0.5f), 255);
+						CCanvas::Current ()->SetColorRGB (0, 78 + (int) FRound ((123 - 78) * fScale), 122 + (int) FRound ((151 - 112) * fScale), 255);
 					}
 				else {
 					if (d < 0)
-						CCanvas::Current ()->SetColorRGB (123 - int ((123 - 78) * fScale + 0.5f), 0, 135 - int ((135 - 96) * fScale + 0.5f), 255);
+						CCanvas::Current ()->SetColorRGB (123 - (int) FRound ((123 - 78) * fScale), 0, 135 - (int) FRound ((135 - 96) * fScale), 255);
 					else
-						CCanvas::Current ()->SetColorRGB (78 + int ((123 - 78) * fScale + 0.5f), 0, 96 + int ((135 - 96) * fScale + 0.5f), 255);
+						CCanvas::Current ()->SetColorRGB (78 + (int) FRound ((123 - 78) * fScale), 0, 96 + (int) FRound ((135 - 96) * fScale), 255);
 					}
 				spherePoint.TransformAndEncode (objP->info.position.vPos);
 				//transformation.Begin (&objP->info.position.vPos, &objP->info.position.mOrient);

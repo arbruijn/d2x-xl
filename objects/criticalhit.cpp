@@ -197,7 +197,7 @@ fix CObject::SubSystemDamage (int i)
 	fix	nHits;
 
 return (!gameStates.app.bNostalgia && EGI_FLAG (nDamageModel, 0, 0, 0) && (nHits = m_damage.nHits [i])) 
-		 ? fix ((I2X (1) / 2) * pow (DamageRate (), nHits) + 0.5f) 
+		 ? (fix) FRound ((I2X (1) / 2) * pow (DamageRate (), nHits)) 
 		 : I2X (1) / 2;
 }
 

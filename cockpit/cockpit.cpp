@@ -200,7 +200,7 @@ return x + NUMERICAL_GAUGE_X;
 
 //	-----------------------------------------------------------------------------
 
-void CCockpit::DrawShield (void)
+void CCockpit::DrawShieldText (void)
 {
 	static int nIdShield = 0;
 
@@ -215,7 +215,7 @@ CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
 CCanvas::Push ();
 CCanvas::SetCurrent (&gameData.render.frame);
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
-sprintf (szShield, "%d", int (m_info.nShield * LOCALPLAYER.ShieldScale () + 0.5f));
+sprintf (szShield, "%d", (int) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
 int w, h, aw;
 fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 fontManager.Current ()->StringSize (szShield, w, h, aw);
@@ -227,7 +227,7 @@ CCanvas::Pop ();
 
 //	-----------------------------------------------------------------------------
 
-void CCockpit::DrawEnergy (void)
+void CCockpit::DrawEnergyText (void)
 {
 	static int nIdEnergy = 0;
 
@@ -242,7 +242,7 @@ CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
 CCanvas::Push ();
 CCanvas::SetCurrent (&gameData.render.frame);
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
-sprintf (szEnergy, "%d", int (m_info.nEnergy * LOCALPLAYER.EnergyScale () + 0.5f));
+sprintf (szEnergy, "%d", (int) FRound (m_info.nEnergy * LOCALPLAYER.EnergyScale ()));
 int w, h, aw;
 fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 fontManager.Current ()->StringSize (szEnergy, w, h, aw);

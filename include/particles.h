@@ -518,8 +518,8 @@ class CParticleManager {
 
 		inline float ParticleSize (int nSize, float fScale, int bBlowUp = 1) {
 			return (bBlowUp && gameOpts->render.particles.bDisperse)
-					 ? float (PARTICLE_RAD * (nSize + 1)) / fScale + 0.5f
-					 : float (PARTICLE_RAD * (nSize + 1) * (nSize + 2) / 2) / fScale + 0.5f;
+					 ? FRound (float (PARTICLE_RAD * (nSize + 1)) / fScale)
+					 : FRound (float (PARTICLE_RAD * (nSize + 1) * (nSize + 2) / 2) / fScale);
 			}
 
 		inline int RemoveEmitter (int i, int j)

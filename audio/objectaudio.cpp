@@ -749,7 +749,7 @@ while (i) {
 	if (soundObjP->m_flags & SOF_USED) {
 		nOldVolume = FixMulDiv (soundObjP->m_volume, soundObjP->m_audioVolume, I2X (1));
 #if USE_SDL_MIXER
-		nOldVolume = fix (X2F (2 * nOldVolume) * MIX_MAX_VOLUME + 0.5f);
+		nOldVolume = (fix) FRound (X2F (2 * nOldVolume) * MIX_MAX_VOLUME);
 #endif
 #if DBG
 		if ((nOldVolume <= 0) && (soundObjP->m_channel >= 0))
@@ -796,7 +796,7 @@ while (i) {
 		if (!soundObjP->m_bCustom) {
 			nNewVolume = FixMulDiv (soundObjP->m_volume, nAudioVolume [soundObjP->m_bAmbient], I2X (1));
 #if USE_SDL_MIXER
-			nNewVolume = fix (X2F (2 * nNewVolume) * MIX_MAX_VOLUME + 0.5f);
+			nNewVolume = (fix) FRound (X2F (2 * nNewVolume) * MIX_MAX_VOLUME);
 #endif
 			if ((nOldVolume != nNewVolume) || ((nNewVolume <= 0) != (soundObjP->m_channel < 0))) {
 #if DBG

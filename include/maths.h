@@ -56,15 +56,18 @@ typedef struct tQuadInt {// integer 64 bit, previously called "quad"
 #if 1
 
 #	if 1
-#	define Round(_v)					(_v)
+#	define XRound(_v)					(fix) (_v)
 #	else
-#	define Round(_v)					(((_v) < 0.0) ? (_v) - 0.5 : (_v) + 0.5)
+#	define XRound(_v)					(fix) (((_v) < 0.0) ? (_v) - 0.5 : (_v) + 0.5)
 #endif
 
-#define FixMul64(_a, _b)		((QLONG) Round (double (_b) / 65536.0 * double (_a)))
-#define FixMul(_a, _b)			((fix) Round (double (_b) / 65536.0 * double (_a)))
-#define FixDiv(_a, _b)			((fix) Round ((_b) ? (double (_a) / double (_b) * 65536.0) : 1))
-#define FixMulDiv(_a, _b, _c) ((fix) Round ((_c) ? double (_a) / double (_c) * double (_b) : 1))
+inline float FRound (float v)	{ return (v < 0.0f) ? v - 0.5f : v + 0.5f; }
+inline double DRound (double v)	{ return (v < 0.0) ? v - 0.5 : v + 0.5; }
+
+#define FixMul64(_a, _b)		((QLONG) XRound (double (_b) / 65536.0 * double (_a)))
+#define FixMul(_a, _b)			(XRound (double (_b) / 65536.0 * double (_a)))
+#define FixDiv(_a, _b)			(XRound ((_b) ? (double (_a) / double (_b) * 65536.0) : 1))
+#define FixMulDiv(_a, _b, _c) (XRound ((_c) ? double (_a) / double (_c) * double (_b) : 1))
 
 #else
 

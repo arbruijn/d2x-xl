@@ -755,7 +755,7 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bExplosions) {
 	int h = X2I (objP->info.xSize) * 2;
 
 	Create (
-		int ((h + rand () % h) * fRodScale + 0.5f), &objP->info.position.vPos, NULL, NULL, -1, int (500 * X2F (objP->LifeLeft ())), 0,
+		(int) FRound ((h + rand () % h) * fRodScale), &objP->info.position.vPos, NULL, NULL, -1, int (500 * X2F (objP->LifeLeft ())), 0,
 		objP->info.xSize, I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, 0, 0, 1, -1, 3.0f, colorP);
 	}
 }

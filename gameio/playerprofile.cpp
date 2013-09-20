@@ -1743,7 +1743,7 @@ gameStates.render.nMaxLightsPerPass = gameOpts->ogl.nMaxLightsPerPass;
 gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
 gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;
 gameStates.render.bAmbientColor = /*gameStates.render.bPerPixelLighting ||*/ (gameOpts->render.color.nLevel == 2);
-gameOpts->sound.xCustomSoundVolume = fix (float (gameConfig.nAudioVolume [0]) * 10.0f / 8.0f + 0.5f);
+gameOpts->sound.xCustomSoundVolume = (fix) FRound (float (gameConfig.nAudioVolume [0]) * 10.0f / 8.0f);
 if ((gameOpts->render.stereo.nFOV < STEREO_MIN_FOV) || (gameOpts->render.stereo.nFOV > STEREO_MAX_FOV))
 	gameOpts->render.stereo.nFOV = STEREO_DEFAULT_FOV;
 if ((gameOpts->render.stereo.xSeparation [1] < MM2X (RIFT_MIN_IPD)) || (gameOpts->render.stereo.xSeparation [1] > MM2X (RIFT_MAX_IPD)))

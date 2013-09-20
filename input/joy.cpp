@@ -364,7 +364,7 @@ int JoySetDeadzone (int nRelZone, int nAxis)
 {
 nAxis %= UNIQUE_JOY_AXES;
 gameOpts->input.joystick.deadzones [nAxis] = (nRelZone > 100) ? 100 : (nRelZone < 0) ? 0 : nRelZone;
-return joyDeadzone [nAxis] = (fix) (32767.0f * (float) gameOpts->input.joystick.deadzones [nAxis] / 100.0f + 0.5f);
+return joyDeadzone [nAxis] = (fix) FRound (32767.0f * (float) gameOpts->input.joystick.deadzones [nAxis] / 100.0f);
 }
 
 //------------------------------------------------------------------------------

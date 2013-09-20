@@ -163,7 +163,7 @@ if (!brightFlags [(int) m_nType]) {
 	m_bBright = 0;
 	m_nFadeTime = -1;
 	if (colorP && (colorP->Alpha () < 0)) {
-		ubyte a = ubyte (-colorP->Alpha () * 255.0f * 0.25f + 0.5f);
+		ubyte a = (ubyte) FRound (-colorP->Alpha () * 255.0f * 0.25f);
 		m_color [1].Alpha () = float (3 * a + RandN (2 * a)) / 255.0f;
 		}
 	}
@@ -187,7 +187,7 @@ else {
 		if (!colorP)
 			m_color [1].Alpha () = SmokeStartAlpha (m_bBlowUp, m_nClass);
 		else if (colorP->Alpha () < 0) {
-			ubyte a = ubyte (-colorP->Alpha () * 255.0f * 0.25f + 0.5f);
+			ubyte a = (ubyte) FRound (-colorP->Alpha () * 255.0f * 0.25f);
 			m_color [1].Alpha () = float (3 * a + RandN (2 * a)) / 255.0f;
 			} 
 		else if (char (colorP->Alpha ()) != 2.0f) 
@@ -484,7 +484,7 @@ if (!brightFlags [(int) m_nType]) {
 	m_bBright = 0;
 	m_nFadeTime = -1;
 	if (colorP && (colorP->Alpha () < 0)) {
-		ubyte a = ubyte (-colorP->Alpha () * 255.0f * 0.25f + 0.5f);
+		ubyte a = (ubyte) FRound (-colorP->Alpha () * 255.0f * 0.25f);
 		m_color [1].Alpha () = float (3 * a + RandN (2 * a)) / 255.0f;
 		}
 	}
@@ -508,7 +508,7 @@ else {
 		if (!colorP)
 			m_color [1].Alpha () = SmokeStartAlpha (m_bBlowUp, m_nClass);
 		else if (colorP->Alpha () < 0) {
-			ubyte a = ubyte (-colorP->Alpha () * 255.0f * 0.25f + 0.5f);
+			ubyte a = (ubyte) FRound (-colorP->Alpha () * 255.0f * 0.25f);
 			m_color [1].Alpha () = float (3 * a + RandN (2 * a)) / 255.0f;
 			} 
 		else if (char (colorP->Alpha ()) != 2.0f) 

@@ -30,9 +30,9 @@ class CRGBColor {
 		}
 	inline void ToGrayScale (int bWeighted = 0) {
 		if (bWeighted)
-			r = g = b = ubyte (((float) r + (float) g + (float) b) / 3.0f + 0.5f);
+			r = g = b = (ubyte) FRound (((float) r + (float) g + (float) b) / 3.0f);
 		else
-			r = g = b = ubyte ((float) r * 0.30f + (float) g * 0.584f + (float) b * 0.116f + 0.5f);
+			r = g = b = (ubyte) FRound ((float) r * 0.30f + (float) g * 0.584f + (float) b * 0.116f);
 		}
 	inline void Assign (CRGBColor& other) { r = other.r, g = other.g, b = other.b;	}
 	};

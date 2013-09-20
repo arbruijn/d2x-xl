@@ -1155,7 +1155,7 @@ if (extraGameInfo [IsMultiGame].nZoomMode == 1) {
 			else if (gameStates.zoom.nFactor >= gameStates.zoom.nMaxFactor)
 				gameStates.zoom.nDestFactor = gameStates.zoom.nMinFactor;
 			else
-				gameStates.zoom.nDestFactor = fix (gameStates.zoom.nFactor * pow (float (gameStates.zoom.nMaxFactor) / float (gameStates.zoom.nMinFactor), 0.25f) + 0.5f);
+				gameStates.zoom.nDestFactor = (fix) FRound (gameStates.zoom.nFactor * pow (float (gameStates.zoom.nMaxFactor) / float (gameStates.zoom.nMinFactor), 0.25f));
 			gameStates.zoom.nStep = float (gameStates.zoom.nDestFactor - gameStates.zoom.nFactor) / 6.25f;
 			gameStates.zoom.nTime = gameStates.app.nSDLTicks [0] - 40;
 			gameStates.zoom.nState = (gameStates.zoom.nStep > 0) ? 1 : -1;

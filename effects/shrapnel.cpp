@@ -162,7 +162,7 @@ int CShrapnelCloud::Create (CObject* parentObjP, CObject* objP)
 {
 	float		fScale = float (sqrt (X2F (parentObjP->info.xSize))) * 1.25f;
 	int		i, 
-				h = int (fScale * fShrapnelScale [gameOpts->render.effects.nShrapnels] + 0.5);
+				h = (int) FRound (fScale * fShrapnelScale [gameOpts->render.effects.nShrapnels]);
 
 objP->SetLife (0);
 objP->cType.explInfo.nSpawnTime = -1;

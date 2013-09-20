@@ -173,9 +173,9 @@ int h = rawJoyAxis [i]; // JoyGetScaledReading (rawJoyAxis [i], i);
 if (gameOpts->input.joystick.bSyncAxis && (dz < 16384) && ((kcJoystick [18].value == i) || (kcJoystick [48].value == i)))		// If this is the throttle
 	dz *= 2;				// Then use a larger dead-zone
 if (h > dz)
-	h = int ((h - dz) * 32767.0f / float (32767 - dz) + 0.5f);
+	h = (int) FRound ((h - dz) * 32767.0f / float (32767 - dz));
 else if (h < -dz)
-	h = int ((h + dz) * 32767.0f / float (32767 - dz) + 0.5f);
+	h = (int) FRound ((h + dz) * 32767.0f / float (32767 - dz));
 else
 	h = 0;
 return (int) ((AttenuateAxis (h / 256, i) * m_pollTime) / 128);
