@@ -418,7 +418,7 @@ if (ogl.IsSideBySideDevice ()  || (nWeaponIcons < 3)) {
 if (ogl.IsOculusRift () || (nWeaponIcons < 3)) {
 #endif
 	dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
-	y = 3 * gameData.render.frame.Height () / 4 - dy - oy;
+	y = 3 * gameData.render.frame.Height () / 4 - dy - 4 * oy;
 	}
 else if (nWeaponIcons < 3) {
 	dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
@@ -495,22 +495,23 @@ for (int i = 0; i < 2; i++) {
 			}
 
 #if DBG
-		if (!ogl.IsSideBySideDevice ()) {
+		if (!ogl.IsSideBySideDevice ())
 #else
-		if (!ogl.IsOculusRift ()) {
+		if (!ogl.IsOculusRift ()) 
 #endif
+			{
 			SetWeaponFillColor (bHave, bAvailable, alpha);
 			OglDrawFilledRect (cockpit->X (x - 1), y - hIcon - 1, cockpit->X (x + wIcon + 2), y + 2);
 			SetWeaponFrameColor (bHave, bAvailable, bActive, alpha);
 			glLineWidth ((bActive && bAvailable && gameOpts->render.weaponIcons.bBoldHighlight) ? fLineWidth + 2 : fLineWidth);
 			OglDrawEmptyRect (cockpit->X (x - 1), y - hIcon - 1, cockpit->X (x + wIcon + 2), y + 2);
-			if (*szAmmo) {
-				fontManager.SetColorRGBi (nAmmoColor, 1, 0, 0);
-				nIdIcons [i][j] = GrString (x + wIcon + 2 - fw, y - fh, szAmmo, nIdIcons [i] + j);
-				fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
-				}
-			gameStates.render.grAlpha = 1.0f;
 			}
+		if (*szAmmo) {
+			fontManager.SetColorRGBi (nAmmoColor, 1, 0, 0);
+			nIdIcons [i][j] = GrString (x + wIcon + 2 - fw, y - fh, szAmmo, nIdIcons [i] + j);
+			fontManager.SetColorRGBi (MEDGREEN_RGBA, 1, 0, 0);
+			}
+		gameStates.render.grAlpha = 1.0f;
 
 #if DBG
 		if (ogl.IsSideBySideDevice ()  || (nWeaponIcons < 3))

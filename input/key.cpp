@@ -559,7 +559,7 @@ for (int i = 0, j = sizeofa (keyProperties); i < j; i++) {
 				keyP->flags |= ubyte (KEY_SHIFTED / 256);
 			if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
 				keyP->flags |= ubyte (KEY_ALTED / 256);
-			if ((gameStates.input.keys.pressed [KEY_LCTRL] && (nKeyboard != 1)) || gameStates.input.keys.pressed [KEY_RCTRL])
+			if ((/*(nKeyboard != 1) &&*/ gameStates.input.keys.pressed [KEY_LCTRL]) || gameStates.input.keys.pressed [KEY_RCTRL])
 				keyP->flags |= ubyte (KEY_CTRLED / 256);
 			}
 		}
@@ -577,7 +577,7 @@ for (int i = 0, j = sizeofa (keyProperties); i < j; i++) {
 				keyP->flags |= ubyte (KEY_SHIFTED / 256);
 			if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
 				keyP->flags |= ubyte (KEY_ALTED / 256);
-			if (((nKeyboard != 1) && gameStates.input.keys.pressed [KEY_LCTRL]) || gameStates.input.keys.pressed [KEY_RCTRL])
+			if ((/*(nKeyboard != 1) &&*/ gameStates.input.keys.pressed [KEY_LCTRL]) || gameStates.input.keys.pressed [KEY_RCTRL])
 				keyP->flags |= ubyte (KEY_CTRLED / 256);
 //				keyP->timeWentDown = gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
 			}
@@ -595,7 +595,7 @@ for (int i = 0, j = sizeofa (keyProperties); i < j; i++) {
 			keyCode |= KEY_SHIFTED;
 		if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
 			keyCode |= KEY_ALTED;
-		if (((nKeyboard != 1) && gameStates.input.keys.pressed [KEY_LCTRL]) || gameStates.input.keys.pressed [KEY_RCTRL])
+		if ((/*(nKeyboard != 1) &&*/ gameStates.input.keys.pressed [KEY_LCTRL]) || gameStates.input.keys.pressed [KEY_RCTRL])
 			keyCode |= KEY_CTRLED;
 		if (gameStates.input.keys.pressed [KEY_LCMD] || gameStates.input.keys.pressed [KEY_RCMD])
 			keyCode |= KEY_COMMAND;

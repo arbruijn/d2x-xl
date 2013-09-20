@@ -145,20 +145,34 @@ if (cockpit->Hide ())
 
 	static int nIdLock = 0;
 
-if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
-	int	x = 0x8000, 
-			y = CCanvas::Current ()->Height () - LineSpacing ();
+#if !DBG
+if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) 
+#endif
+	{
+	int	x, y, nOffsetSave = -1;
 
-	if ((hudIcons.Visible () && (extraGameInfo [0].nWeaponIcons == 2)) ||
-		(hudIcons.Inventory () && (extraGameInfo [0].nWeaponIcons & 1)))
-		y -= LHY (20);
+	if (ogl.IsOculusRift ()) {
+		int w, h, aw;
+		fontManager.Current ()->StringSize (TXT_LOCK, w, h, aw);
+		x = CCanvas::Current ()->Width () / 2/* - w / 2*/;
+		y = CCanvas::Current ()->Height () / 2;
+		nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+		}
+	else {
+		x = 0x8000;
+		y = CCanvas::Current ()->Height () - LineSpacing ();
+		if ((hudIcons.Visible () && (extraGameInfo [0].nWeaponIcons == 2)) ||
+			(hudIcons.Inventory () && (extraGameInfo [0].nWeaponIcons & 1)))
+			y -= LHY (20);
+		m_info.bAdjustCoords = true;
+		}
 	if ((m_info.weaponBoxUser [0] != WBU_WEAPON) || (m_info.weaponBoxUser [1] != WBU_WEAPON)) {
 		int wy = (m_info.weaponBoxUser [0] != WBU_WEAPON) ? SW_y [0] : SW_y [1];
 		y = min (y, (wy - LineSpacing () - gameData.render.frame.Top ()));
 		}
-	SetFontColor (GREEN_RGBA);
-	m_info.bAdjustCoords = true;
+	SetFontColor (RED_RGBA);
 	nIdLock = DrawHUDText (&nIdLock, x, y, TXT_LOCK);
+	gameData.SetStereoOffsetType (nOffsetSave);
 	}
 }
 
@@ -168,18 +182,28 @@ void CHUD::DrawKeys (void)
 {
 if (cockpit->Hide ())
 	return;
-
-	int y = 3 * LineSpacing ();
-	int dx = GAME_FONT->Width () + GAME_FONT->Width () / 2;
-
 if (IsMultiGame && !IsCoopGame)
 	return;
+
+	int	x, y, dx = GAME_FONT->Width () + GAME_FONT->Width () / 2;
+
+if (ogl.IsOculusRift ()) {
+	x = 3 * CCanvas::Current ()->Width () / 4 - 4 * dx;
+	y = CCanvas::Current ()->Height () + AdjustCockpitY (-2 * LineSpacing ());
+	}
+else {
+	x = 2;
+	y = 3 * LineSpacing ();
+	}
+
+int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_BLUE_KEY)
-	BitBlt (KEY_ICON_BLUE, 2, y, false, false);
+	BitBlt (KEY_ICON_BLUE, x, y, false, false);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_GOLD_KEY) 
-	BitBlt (KEY_ICON_YELLOW, 2 + dx, y, false, false);
+	BitBlt (KEY_ICON_YELLOW, x + dx, y, false, false);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_RED_KEY)
-	BitBlt (KEY_ICON_RED, 2 + (2 * dx), y, false, false);
+	BitBlt (KEY_ICON_RED, x + 2 * dx, y, false, false);
+gameData.SetStereoOffsetType (nOffsetSave);
 }
 
 //	-----------------------------------------------------------------------------
@@ -476,7 +500,7 @@ for (i = 0; i < 3; i++) {
 fontManager.Current ()->StringSize (" ", w [3], h [3], aw [3]);
 CCanvas::Current ()->SetFontColor (color, 1);	// black background
 for (i = 0; i < 3; i++) {
-	if (szEnergy [i] >= 0) {
+	if (nEnergy [i] >= 0) {
 		nColor = energyColors [i];
 		//color.Set (RGBA_RED (nColor), RGBA_GREEN (nColor), RGBA_BLUE (nColor));
 		//SetCanvas (&gameData.render.frame);
