@@ -3672,7 +3672,7 @@ class CGameData {
 		int FloatingStereoOffset2D (int x, bool bForce = false);
 		int SetStereoOffsetType (int nType) { 
 			int nOldType = render.nStereoOffsetType;
-			if (nType > 0)
+			if (nType >= 0)
 				render.nStereoOffsetType = nType; 
 			return nOldType;
 			}
