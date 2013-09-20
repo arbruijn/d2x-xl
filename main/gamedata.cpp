@@ -652,7 +652,7 @@ return 1;
 
 static inline float AddDeadzone (float v)
 {
-float deadzone = float (gameOpts->input.oculusRift.nDeadzone) * 0.05f;
+float deadzone = float (gameOpts->input.oculusRift.nDeadzone) * 0.1f;
 
 if ((deadzone <= 0.0f) || (deadzone >= 1.0f))
 	return v;
