@@ -54,8 +54,8 @@
 #define RIFT_DEFAULT_IPD		64
 #define RIFT_MAX_IPD				72
 #define RIFT_MIN_FOV				0
-#define RIFT_MAX_FOV				3
-#define RIFT_DEFAULT_FOV		3
+#define RIFT_MAX_FOV				4
+#define RIFT_DEFAULT_FOV		RIFT_MAX_FOV
 
 extern double glFOV, glAspect;
 

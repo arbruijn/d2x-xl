@@ -113,7 +113,7 @@ if (gameOpts->render.stereo.nRiftFOV == RIFT_MAX_FOV)
 	scaleFactor = 1.0f / distortion.Scale;
 else {
 	float i, f = modf (distortion.Scale, &i);
-	scaleFactor = 1.0f / (i + f * (float (gameOpts->render.stereo.nRiftFOV) / 3.0f));
+	scaleFactor = 1.0f / (i + f * (float (gameOpts->render.stereo.nRiftFOV) / float (RIFT_MAX_FOV)));
 	}
 shaderManager.Set ("Scale", (w / 2) * scaleFactor, (h / 2) * scaleFactor * as);
 shaderManager.Set ("ScaleIn", 2.0f / w, 2.0f / h / as);

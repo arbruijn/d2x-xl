@@ -83,7 +83,7 @@ static const char *pszEnhance3D [4];
 static const char *pszDeghost [5];
 static const char *psz3DMethod [2];
 static const char *pszStereoSeparation [] = {"0.25", "0.5", "0.75", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0", "3.25", "3.5", "3.75", "4.0", "4.25", "4.5", "4.75", "5.0"};
-static const char *pszFOV [4];
+static const char *pszFOV [5];
 
 static int xStereoSeparation = 0;
 static int nStereoDevice = 0;
@@ -444,7 +444,8 @@ pszAnaglyphColors [2] = TXT_GREEN_MAGENTA;
 pszFOV [0] = TXT_MINIMAL;
 pszFOV [1] = TXT_SMALL;
 pszFOV [2] = TXT_MEDIUM;
-pszFOV [3] = TXT_MAXIMAL;
+pszFOV [3] = TXT_LARGE;
+pszFOV [4] = TXT_MAXIMAL;
 
 pszDeghost [0] = TXT_OFF;
 pszDeghost [1] = TXT_LOW;
