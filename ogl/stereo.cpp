@@ -108,7 +108,13 @@ shaderManager.Set ("ScreenCenter", x + w * 0.5f, y + h * 0.5f);
 
 // MA: This is more correct but we would need higher-res texture vertically; we should adopt this
 // once we have asymmetric input texture scale.
-float scaleFactor = 1.0f / distortion.Scale;
+float scaleFactor;
+if (gameOpts->render.stereo.nRiftFOV == RIFT_MAX_FOV) 
+	scaleFactor = 1.0f / distortion.Scale;
+else {
+	float i, f = modf (distortion.Scale, &i);
+	scaleFactor = 1.0f / (i + f * (float (gameOpts->render.stereo.nRiftFOV) / 3.0f));
+	}
 shaderManager.Set ("Scale", (w / 2) * scaleFactor, (h / 2) * scaleFactor * as);
 shaderManager.Set ("ScaleIn", 2.0f / w, 2.0f / h / as);
 shaderManager.Set ("HmdWarpParam", distortion.K [0], distortion.K [1], distortion.K [2], distortion.K [3]);

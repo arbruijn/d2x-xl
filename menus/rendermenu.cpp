@@ -83,10 +83,9 @@ static const char *pszEnhance3D [4];
 static const char *pszDeghost [5];
 static const char *psz3DMethod [2];
 static const char *pszStereoSeparation [] = {"0.25", "0.5", "0.75", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0", "3.25", "3.5", "3.75", "4.0", "4.25", "4.5", "4.75", "5.0"};
-static const char *pszFOV [] = {"105", "110", "115", "120", "125", "130", "135", "140", "145"};
+static const char *pszFOV [4];
 
 static int xStereoSeparation = 0;
-static int xFOV = (STEREO_DEFAULT_FOV - STEREO_MIN_FOV) / STEREO_FOV_STEP;
 static int nStereoDevice = 0;
 static int nAnaglyphColor = 0;
 static int nIPD = RIFT_DEFAULT_IPD - RIFT_MIN_IPD;
@@ -242,13 +241,12 @@ if ((m = menu ["3D glasses"])) {
 			m->m_bRebuild = -1;
 			}
 		}
-#if 0
+#if 1
 	if ((m = menu ["FOV"])) {
 		v = m->Value ();
-		if (xFOV != v) {
-			xFOV = v;
-			gameOpts->render.stereo.nFOV = EXPERTMODE ? STEREO_MIN_FOV + xFOV * STEREO_FOV_STEP : STEREO_DEFAULT_FOV;
-			sprintf (m->Text (), TXT_STEREO_FOV, STEREO_MIN_FOV + xFOV * STEREO_FOV_STEP);
+		if (gameOpts->render.stereo.nRiftFOV != v) {
+			gameOpts->render.stereo.nRiftFOV = EXPERTMODE ? v : RIFT_DEFAULT_FOV;
+			sprintf (m->Text (), TXT_RIFT_FOV, gameOpts->render.stereo.nRiftFOV);
 			m->m_bRebuild = -1;
 			}
 		}
@@ -443,6 +441,10 @@ pszAnaglyphColors [0] = TXT_AMBER_BLUE;
 pszAnaglyphColors [1] = TXT_RED_CYAN;
 pszAnaglyphColors [2] = TXT_GREEN_MAGENTA;
 
+pszFOV [0] = TXT_MINIMAL;
+pszFOV [1] = TXT_SMALL;
+pszFOV [2] = TXT_MEDIUM;
+pszFOV [3] = TXT_MAXIMAL;
 
 pszDeghost [0] = TXT_OFF;
 pszDeghost [1] = TXT_LOW;
@@ -491,9 +493,6 @@ if (xStereoSeparation < 0)
 else if (xStereoSeparation >= (int) sizeofa (pszStereoSeparation))
 	xStereoSeparation = sizeofa (pszStereoSeparation) - 1;
 nIPD = X2MM (gameOpts->render.stereo.xSeparation [1]) - RIFT_MIN_IPD; //RIFT_IPD_STEP - 1;
-xFOV = (gameOpts->render.stereo.nFOV - STEREO_MIN_FOV) / STEREO_FOV_STEP;
-if (xFOV < 0)
-	xFOV = (STEREO_DEFAULT_FOV - STEREO_MIN_FOV) / STEREO_FOV_STEP;
 
 do {
 	m.Destroy ();
@@ -582,13 +581,12 @@ do {
 
 	if (EXPERTMODE && nStereoDevice) {
 		if (nStereoDevice == GLASSES_OCULUS_RIFT - 2) {
-			m.AddCheck ("chromAbCorr", TXT_CHROM_AB_CORR, gameOpts->render.stereo.bChromAbCorr, KEY_C, HTX_CHROM_AB_CORR);
-
-#if 0
-			sprintf (szSlider + 1, TXT_STEREO_FOV, STEREO_MIN_FOV + xFOV * STEREO_FOV_STEP);
-			*szSlider = *(TXT_STEREO_FOV - 1);
-			m.AddSlider ("FOV", szSlider + 1, xFOV, 0, sizeofa (pszFOV) - 1, KEY_F, HTX_STEREO_FOV);
+#if 1
+			sprintf (szSlider + 1, TXT_RIFT_FOV, gameOpts->render.stereo.nRiftFOV);
+			*szSlider = *(TXT_RIFT_FOV - 1);
+			m.AddSlider ("FOV", szSlider + 1, gameOpts->render.stereo.nRiftFOV, 0, sizeofa (pszFOV) - 1, KEY_F, HTX_STEREO_FOV);
 #endif
+			m.AddCheck ("chromAbCorr", TXT_CHROM_AB_CORR, gameOpts->render.stereo.bChromAbCorr, KEY_C, HTX_CHROM_AB_CORR);
 			}
 		else {
 			if (nStereoDevice == 1) {

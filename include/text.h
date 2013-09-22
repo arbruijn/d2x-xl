@@ -1994,7 +1994,7 @@ void LoadGameTexts(void);
 #define TXT_SHIPS_ALLOWED				GT(1210)
 #define TXT_OCULUS_RIFT					GT(1211)
 #define TXT_SHUTTER_HDMI				GT(1212)
-#define TXT_STEREO_FOV					GT(1213)
+#define TXT_RIFT_FOV						GT(1213)
 #define TXT_RIFT_IPD						GT(1214)
 #define TXT_ANAGLYPH_GLASSES			GT(1215)
 #define TXT_ANAGLYPH_COLORS			GT(1216)
@@ -2002,11 +2002,11 @@ void LoadGameTexts(void);
 #define TXT_RIFT_CONFIG					GT(1218)
 #define TXT_RIFTCFG_MENUCALL			GT(1219)
 #define TXT_MINIMAL						GT(1220)
-#define TXT_CHROM_AB_CORR				GT(1221)
+#define TXT_MAXIMAL						GT(1221)
+#define TXT_CHROM_AB_CORR				GT(1222)
 
 #if 0
 
-#define TXT_					GT(1222)
 #define TXT_					GT(1223)
 #define TXT_					GT(1224)
 #define TXT_					GT(1225)

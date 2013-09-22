@@ -419,7 +419,7 @@ typedef struct tStereoRenderOptions {
 	int bFlipFrames;
 	int bBrighten;
 	int bChromAbCorr;
-	int nFOV;
+	int nRiftFOV;
 	fix xSeparation [2];
 } tStereoRenderOptions;
 

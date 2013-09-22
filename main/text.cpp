@@ -1967,6 +1967,7 @@ const char *defaultGameTexts [][2] = {
  {"Oculus Rift-Konfiguration", "Oculus Rift Configuration"},
  {"Oculus Rift konfigurieren..", "Configure Oculus Rift..."},
  {"minimal", "minimal"},
+ {"maximal", "maximal"},
  {"Farbabweichungs-~Korrektur", "~Chromatic Aberration Correction"},
  
 #if 0
