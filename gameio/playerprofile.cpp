@@ -505,7 +505,9 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.stereo.nScreenDist, i, 0);
 		RP (gameOptions [i].render.stereo.xSeparation [0], i, 0);
 		RP (gameOptions [i].render.stereo.xSeparation [1], i, 1);
+#if DBG
 		RP (gameOptions [i].render.stereo.nRiftFOV, i, 0);
+#endif
 		RP (gameOptions [i].render.stereo.bEnhance, i, 0);
 		RP (gameOptions [i].render.stereo.bColorGain, i, 0);
 		RP (gameOptions [i].render.stereo.bDeghost, i, 0);
@@ -1013,7 +1015,9 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.stereo.nScreenDist", "3"},
 	 {"gameOptions[0].render.stereo.xSeparation[0]", "65536"},
 	 {"gameOptions[0].render.stereo.xSeparation[1]", "65536"},
-	 {"gameOptions[0].render.stereo.nRiftFOV", "3"},
+#if DBG
+	 {"gameOptions[0].render.stereo.nRiftFOV", "4"},
+#endif
 	 {"gameOptions[0].render.stereo.bEnhance", "0"},
 	 {"gameOptions[0].render.stereo.bColorGain", "0"},
 	 {"gameOptions[0].render.stereo.bDeghost", "0"},
@@ -1744,8 +1748,10 @@ gameStates.render.nMaxLightsPerFace = gameOpts->ogl.nMaxLightsPerFace;
 gameStates.render.nMaxLightsPerObject = gameOpts->ogl.nMaxLightsPerObject;
 gameStates.render.bAmbientColor = /*gameStates.render.bPerPixelLighting ||*/ (gameOpts->render.color.nLevel == 2);
 gameOpts->sound.xCustomSoundVolume = (fix) FRound (float (gameConfig.nAudioVolume [0]) * 10.0f / 8.0f);
+#if DBG
 if ((gameOpts->render.stereo.nRiftFOV < RIFT_MIN_FOV) || (gameOpts->render.stereo.nRiftFOV > RIFT_MAX_FOV))
 	gameOpts->render.stereo.nRiftFOV = RIFT_DEFAULT_FOV;
+#endif
 if ((gameOpts->render.stereo.xSeparation [1] < MM2X (RIFT_MIN_IPD)) || (gameOpts->render.stereo.xSeparation [1] > MM2X (RIFT_MAX_IPD)))
 	gameOpts->render.stereo.xSeparation [1] = MM2X (RIFT_DEFAULT_IPD);
 extraGameInfo [0].bFlickerLights = gameOpts->app.bEpilepticFriendly;

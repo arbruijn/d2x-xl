@@ -360,7 +360,7 @@ else {
 	stereo.xSeparation [0] = 65536;
 	stereo.xSeparation [1] = MM2X (RIFT_DEFAULT_IPD);
 	stereo.bChromAbCorr = 1;
-	stereo.nRiftFOV = (int) DEFAULT_FOV;
+	stereo.nRiftFOV = 4;
 	}
 }
 
