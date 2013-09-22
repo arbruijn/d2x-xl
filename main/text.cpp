@@ -1959,7 +1959,7 @@ const char *defaultGameTexts [][2] = {
  {"\nerlaubte Schiffe:", "\nships allowed:"},
  {"Oculus Rift", "Oculus Rift"},
  {"3D TV (1080p)", "3D TV (1080p)"},
- {"~FOV: %d°", "~FOV: %d°"},
+ {"~FOV: %s", "~FOV: %s"},
  {"~Pupillenabstand: %d mm", "I~PD: %d mm"},
  {"Anaglyphenbrille", "Anaglyph Glasses"},
  {"Glas~Farben: %s", "Glass ~Colors: %s"},
