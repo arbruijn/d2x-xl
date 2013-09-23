@@ -623,7 +623,7 @@ else if (!m_sensorP) {
 else {
 	m_sensorFusion.AttachToSensor (m_sensorP);
 	m_sensorFusion.SetYawCorrectionEnabled (true);
-	m_magCalTO.Setup (5000);
+	m_magCalTO.Setup (60000); // 1 minute
 	m_magCalTO.Start (-1, true);
 	m_bCalibrating = false;
 	m_bAvailable = 2;

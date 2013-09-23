@@ -1769,7 +1769,7 @@ class CRiftData {
 		int				m_bAvailable;
 		bool				m_bCalibrating;
 		CFloatVector	m_center;
-		CTimeout	m_magCalTO;
+		CTimeout			m_magCalTO;
 
 		CRiftData () : m_renderScale (1.0f), m_fov (125.0f), m_nResolution (0), m_bAvailable (false) {}
 		bool Create (void);
