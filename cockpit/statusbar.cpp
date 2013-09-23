@@ -486,9 +486,9 @@ CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
 
 void CStatusBar::DrawCockpit (bool bAlphaTest)
 {
+gameData.render.frame.Activate ();
 CGenericCockpit::DrawCockpit (CM_STATUS_BAR + m_info.nCockpit, gameData.render.scene.Height (), bAlphaTest);
-//gameData.render.frame.SetLeft ((screen.Width () - gameData.render.frame.Width ()) / 2);
-//gameData.render.frame.SetTop ((screen.Height () - gameData.render.frame.Height ()) / 2);
+gameData.render.frame.Deactivate ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -505,11 +505,9 @@ if (gameStates.app.bDemoData)
 	h *= 2;
 if (screen.Height () > 480)
 	h = (int) ((double) h * (double) screen.Height () / 480.0);
-gameData.render.scene.SetLeft (0);
-gameData.render.scene.SetWidth (gameData.render.frame.Width ());
-gameData.render.scene.SetHeight (gameData.render.frame.Height () - h);
-gameData.render.scene.SetTop ((gameData.render.frame.Height () - gameData.render.frame.Height ()) / 2);
-//GameInitRenderSubBuffers (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
+
+Canvas () += CViewport (0, (gameData.render.frame.Height () - h) / 2, gameData.render.frame.Width (), h);
+Canvas ()->Activate ();
 return true;
 }
 
@@ -518,12 +516,8 @@ return true;
 void CStatusBar::SetupWindow (int nWindow, CCanvas* canvP)
 {
 tGaugeBox* hudAreaP = hudWindowAreas + SB_PRIMARY_BOX + nWindow;
-gameData.render.frame.SetupPane (
-	canvP,
-	ScaleX (hudAreaP->left),
-	ScaleY (hudAreaP->top),
-	ScaleX (hudAreaP->right - hudAreaP->left + 1),
-	ScaleY (hudAreaP->bot - hudAreaP->top + 1));
+gameData.render.window = gameData.render.scene;
+gameData.render.window += CViewport (ScaleX (hudAreaP->left), ScaleY (hudAreaP->top), ScaleX (hudAreaP->right - hudAreaP->left+1), ScaleY (hudAreaP->bot - hudAreaP->top+1));
 }
 
 //	-----------------------------------------------------------------------------

@@ -63,7 +63,7 @@ if (!m_save.Buffer ())
 void CCanvas::Setup (int w, int h)
 {
 Init ();
-CBitmap::Setup (BM_LINEAR, w, h, 1, "Canvas");
+//CBitmap::Setup (BM_LINEAR, w, h, 1, "Canvas");
 }
 
 //	-----------------------------------------------------------------------------
@@ -83,19 +83,27 @@ return paneP;
 void CCanvas::Init (int nType, int w, int h, ubyte *data)
 {
 Init ();
-CBitmap::Init (nType, 0, 0, w, h, 1, data);
+//CBitmap::Init (nType, 0, 0, w, h, 1, data);
 }
 
 //	-----------------------------------------------------------------------------
 
-void CCanvas::SetupPane (CCanvas *paneP, int x, int y, int w, int h)
+void CCanvas::Setup (CCanvas* parentP)
 {
-paneP->SetColor (m_info.color);
-paneP->SetDrawMode (m_info.nDrawMode);
-paneP->SetFont (m_info.font ? m_info.font : GAME_FONT);
-paneP->SetFontColor (m_info.fontColors [0], 0);
-paneP->SetFontColor (m_info.fontColors [1], 1);
-paneP->CBitmap::InitChild (this, x, y, w, h);
+SetColor (parentP->m_info.color);
+SetDrawMode (parentP->m_info.nDrawMode);
+SetFont (parentP->m_info.font ? parentP->m_info.font : GAME_FONT);
+SetFontColor (parentP->m_info.fontColors [0], 0);
+SetFontColor (parentP->m_info.fontColors [1], 1);
+CViewport (*this) = CViewport (*parentP);
+}
+
+//	-----------------------------------------------------------------------------
+
+void CCanvas::Setup (CCanvas* parentP, int x, int y, int w, int h)
+{
+Setup (parentP);
+CViewport (*this) = CViewport (x, y, w, h);
 }
 
 //	-----------------------------------------------------------------------------
@@ -109,10 +117,12 @@ delete this;
 
 //	-----------------------------------------------------------------------------
 
-void CCanvas::SetCurrent (CCanvas *canvP)
+CCanvas* CCanvas::SetCurrent (CCanvas *canvP)
 {
+CCanvas* previous = m_current;
 m_current = canvP ? canvP : &gameData.render.frame;
 fontManager.SetCurrent (m_current->Font ());
+return previous;
 }
 
 //	-----------------------------------------------------------------------------
@@ -169,8 +179,8 @@ if (dFade && m_info.color.rgb) {
 
 void CCanvas::SetViewport (CCanvas* parent)
 {
-if (parent)
-	ogl.SetViewport (Left () + parent->Left (), Top () + parent->Top (), Width (), Height ());
+if (m_parent = parent)
+	ogl.SetViewport (Left () + parent->Left (), Top () + parent->Top (), Width () ? Width () : parent->Width (), Height () ? Height () : parent->Height ());
 else
 	ogl.SetViewport (Left (), Top (), Width (), Height ());
 }
@@ -182,14 +192,18 @@ else
 void SetupCanvasses (float scale)
 {
 screen.SetScale (scale);
-screen.Canvas ()->SetupPane (&gameData.render.screen, 0, 0, screen.Width (false), screen.Height (false));
-if (ogl.IsSideBySideDevice ())
-	screen.Canvas ()->SetupPane (&gameData.render.frame, 0, 0, screen.Width (false) / 2, screen.Height (false));
-else
-	screen.Canvas ()->SetupPane (&gameData.render.frame, 0, 0, screen.Width (false), screen.Height (false));
-screen.Canvas ()->SetupPane (&gameData.render.viewport, 0, 0, gameData.render.frame.Width (false), gameData.render.frame.Height (false));
-screen.Canvas ()->SetupPane (&gameData.render.scene, 0, 0, gameData.render.frame.Width (false), gameData.render.frame.Height (false));
-CCanvas::SetCurrent (&gameData.render.frame);
+gameData.render.screen.Setup (&screen);
+if (!ogl.IsSideBySideDevice ())
+	gameData.render.frame.Setup (&gameData.render.screen);
+else {
+	if (ogl.StereoSeparation () < 0)
+		gameData.render.frame.Setup (&gameData.render.screen, 0, 0, screen.Width (false) / 2, screen.Height (false));
+	else
+		gameData.render.frame.Setup (&gameData.render.screen, screen.Width (false) / 2, 0, screen.Width (false), screen.Height (false));
+	}
+gameData.render.scene.Setup (&gameData.render.frame);
+gameData.render.window.Setup (&gameData.render.scene);
+gameData.render.frame.Activate ();
 screen.SetScale (1.0f);
 }
 

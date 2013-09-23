@@ -73,6 +73,8 @@ CRearView	rearViewCockpit;
 
 CStack<int>	CGenericCockpit::m_save;
 
+bool	CCockpitInfo::bWindowDrawn [2];
+
 CGenericCockpit* cockpit = &fullCockpit;
 
 //	-----------------------------------------------------------------------------
@@ -189,8 +191,8 @@ gameData.objs.viewerP = viewerP;
 gameStates.render.bRearView = -bRearView;
 CCanvas::Push ();
 transformation.Push ();
-SetupWindow (nWindow, &gameData.render.scene);
-CCanvas::SetCurrent (&gameData.render.scene);
+SetupWindow (nWindow);
+gameData.render.window.Activate ();
 fontManager.SetCurrent (GAME_FONT);
 nZoomSave = gameStates.zoom.nFactor;
 gameStates.zoom.nFactor = float (I2X (gameOpts->render.cockpit.nWindowZoom + 1));					//the player's zoom factor
@@ -201,7 +203,6 @@ else {
 	automap.m_bDisplay = -1;
 	gameStates.render.SetRenderWindow (nWindow + 1);
 	automap.DoFrame (0, 1 + (nUser == WBU_RADAR_TOPDOWN));
-	gameStates.render.SetRenderWindow (nWindowSave);
 	automap.m_bDisplay = 0;
 	}
 gameStates.render.SetRenderWindow (nWindowSave);
@@ -211,8 +212,6 @@ transformation.Pop ();
 if (ogl.StereoDevice () < 0)
 	ogl.ChooseDrawBuffer ();
 gameData.render.frame.SetViewport ();
-SetupWindow (nWindow, &gameData.render.scene);
-CCanvas::SetCurrent (&gameData.render.scene);
 
 //	HACK!If guided missile, wake up robots as necessary.
 if (viewerP->info.nType == OBJ_WEAPON) 
@@ -232,9 +231,9 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 
 	CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
 	glLineWidth (float (gameData.render.screen.Width ()) / 640.0f);
-	OglDrawEmptyRect (0, 0, gameData.render.scene.Width () - 1, gameData.render.scene.Height ());
+	OglDrawEmptyRect (0, 0, Canvas ()->Width () - 1, Canvas ()->Height ());
 	glLineWidth (1);
-
+#if 0
 	//if the window only partially overlaps the big 3d window, copy
 	//the extra part to the visible screen
 	bigWindowBottom = gameData.render.viewport.Top () + gameData.render.viewport.Height () - 1;
@@ -252,16 +251,12 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 			bOverlapDirty [nWindow] = 1;
 			}
 		}
-	}
-else {
-	//CCanvas::SetCurrent (CurrentGameScreen ());
+#endif
 	}
 //force redraw when done
 m_history [0].weapon [nWindow] = m_history [0].ammo [nWindow] = -1;
 
 gameData.objs.viewerP = viewerSave;
-CCanvas::SetCurrent (&gameData.render.scene);
-CCanvas::Current ()->SetViewport ();
 #if 0
 // draw a thicker frame with rounded edges around the cockpit displays
 if (!gameStates.app.bNostalgia && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN)) {
@@ -285,9 +280,7 @@ if (!gameStates.app.bNostalgia && (gameStates.render.cockpit.nType >= CM_FULL_SC
 	}
 #endif
 ogl.SetDepthTest (true);
-SetupCanvasses ();
-CCanvas::Pop ();
-CCanvas::Current ()->SetViewport ();
+gameData.render.window.Deactivate ();
 gameStates.render.bRearView = bRearViewSave;
 }
 
@@ -425,7 +418,7 @@ if (!cockpit->Setup (true))
 	return;
 #endif
 gameData.render.frame.SetViewport ();
-CCanvas::SetCurrent (&gameData.render.viewport);
+Canvas ()->Activate ();
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.ColorMask (1,1,1,1,0);
@@ -436,8 +429,13 @@ cockpit->SetLineSpacing (m_info.nLineSpacing);
 m_info.fontWidth = CCanvas::Current ()->Font ()->Width ();
 m_info.fontHeight = CCanvas::Current ()->Font ()->Height ();
 m_info.xStereoSeparation = xStereoSeparation;
+#if 0
 m_info.xScale = gameData.render.viewport.XScale ();
 m_info.yScale = gameData.render.viewport.YScale ();
+#else
+m_info.xScale = Canvas ()->XScale ();
+m_info.yScale = Canvas ()->YScale ();
+#endif
 fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 m_info.nLineSpacing = int (GAME_FONT->Height () + GAME_FONT->Height () * fontManager.Scale () / 4);
 fontManager.SetScale (1.0f);
@@ -458,8 +456,8 @@ m_info.tInvul = (LOCALPLAYER.invulnerableTime == 0x7fffffff) ? LOCALPLAYER.invul
 m_info.nColor = WHITE_RGBA;
 
 if (gameOpts->render.cockpit.bScaleGauges) {
-	m_info.xGaugeScale = float (CCanvas::Current ()->Height ()) / 480.0f;
-	m_info.yGaugeScale = float (CCanvas::Current ()->Height ()) / 640.0f;
+	m_info.xGaugeScale = float (Canvas ()->Height ()) / 480.0f;
+	m_info.yGaugeScale = float (Canvas ()->Height ()) / 640.0f;
 	}
 else
 	m_info.xGaugeScale =
@@ -536,6 +534,7 @@ if ((gameOpts->render.cockpit.bHUD > 1)
 		}
 	}
 DemoRecording ();
+Canvas ()->Deactivate ();
 m_history [0].bCloak = m_info.bCloak;
 }
 
@@ -550,11 +549,11 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordCockpitChange (gameStates.render.cockpit.nType);
 if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 	gameStates.render.cockpit.nType = CM_FULL_SCREEN;
-gameData.render.scene.Set (0, 0, gameData.render.frame.Width (false), gameData.render.frame.Height (false)); // OpenGL viewport must be properly set here
+gameData.render.scene.Setup (gameData.render.frame); // OpenGL viewport must be properly set here
 fontManager.SetCurrent (GAME_FONT);
 SetFontScale (1.0f);
-SetCanvas (NULL);
 SetFontColor (GREEN_RGBA);
+SetCanvas (&gameData.render.scene);
 if (bRebuild)
 	gameStates.render.cockpit.nShieldFlash = 0;
 return true;

@@ -71,7 +71,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void CBitmap::OglVertices (int x, int y, int w, int h, int scale, int orient, CBitmap* destP)
+void CBitmap::OglVertices (int x, int y, int w, int h, int scale, int orient, CCanvas* destP)
 {
 if (!destP)
 	destP = CCanvas::Current ();
@@ -188,7 +188,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int CBitmap::Render (CBitmap *destP,
+int CBitmap::Render (CCanvas* destP,
 							int xDest, int yDest, int wDest, int hDest,
 							int xSrc, int ySrc, int wSrc, int hSrc,
 							int bTransp, int bMipMaps, int bSmoothe,

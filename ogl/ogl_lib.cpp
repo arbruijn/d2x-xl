@@ -132,6 +132,17 @@ ogl.SetScissorTest (ogl.m_states.bEnableScissor != 0);
 }
 
 //------------------------------------------------------------------------------
+
+void CViewport::Setup (int x, int y, int w, int h) 
+{
+m_x = x;
+m_y = y;
+m_w = w;
+m_h = h;
+m_t = screen.Height ();
+}
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -162,6 +173,21 @@ else
 ResetTextures (1, gameStates.app.bGameRunning);
 }
 
+//------------------------------------------------------------------------------
+
+int COGL::StereoDevice (int bForce = 0) 
+{ 
+if (!m_features.bShaders)
+	return 0;
+if (!(bForce || gameOpts->render.stereo.bEnhance))
+	return 0;
+if ((gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER_NVIDIA) && !m_states.nStereo)
+	return 0;
+return (gameOpts->render.stereo.nGlasses < DEVICE_STEREO_PHYSICAL) ? gameOpts->render.stereo.nGlasses : -gameOpts->render.stereo.nGlasses;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 void OglDeleteLists (GLuint *lp, int n)
@@ -689,7 +715,6 @@ else
 			{
 			ColorMask (1, 1, 1, 1, 1);
 			//SetViewport (0, 0, screen.Width (), screen.Height ());
-			CCanvas::Current ()->SetViewport ();
 			if (!bResetColorBuf)
 				glClear (GL_DEPTH_BUFFER_BIT);
 			else if (automap.Display () || (gameStates.render.bRenderIndirect > 0)) {

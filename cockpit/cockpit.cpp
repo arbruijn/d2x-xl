@@ -96,32 +96,23 @@ CGenericCockpit::DrawCruise (3, CCanvas::Current ()->Height () - m_info.nLineSpa
 
 void CCockpit::DrawLives (void)
 {
-CCanvas::Push ();
-CCanvas::SetCurrent (&gameData.render.frame);
 hudCockpit.SetColor (WHITE_RGBA);
 hudCockpit.DrawLives ();
-CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
 
 void CCockpit::DrawScore (void)
 {
-CCanvas::Push ();
-CCanvas::SetCurrent (&gameData.render.frame);
 hudCockpit.DrawScore ();
-CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
 
 void CCockpit::DrawAddedScore (void)
 {
-CCanvas::Push ();
-CCanvas::SetCurrent (&gameData.render.frame);
 hudCockpit.SetLineSpacing (m_info.nLineSpacing);
 hudCockpit.DrawAddedScore ();
-CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -164,19 +155,14 @@ CGenericCockpit::DrawBombCount (BOMB_COUNT_X, BOMB_COUNT_Y, BLACK_RGBA, 1);
 
 int CCockpit::DrawBombCount (int& nIdBombCount, int x, int y, int nColor, char* pszBombCount)
 {
-CCanvas::Push ();
-CCanvas::SetCurrent (&gameData.render.frame);
 fontManager.SetColorRGBi (nColor, 1, 0, 1);
-int i = PrintF (&nIdBombCount, -(ScaleX (x) + WidthPad (pszBombCount)), -(ScaleY (y) + HeightPad ()), pszBombCount, nIdBombCount);
-CCanvas::Pop ();
-return i;
+return PrintF (&nIdBombCount, -(ScaleX (x) + WidthPad (pszBombCount)), -(ScaleY (y) + HeightPad ()), pszBombCount, nIdBombCount);
 }
 
 //	-----------------------------------------------------------------------------
 
 void CCockpit::DrawPrimaryAmmoInfo (int ammoCount)
 {
-SetCanvas (&gameData.render.frame);
 DrawAmmoInfo (ScaleX (PRIMARY_AMMO_X), ScaleY (PRIMARY_AMMO_Y), ammoCount, 1);
 }
 
@@ -184,7 +170,6 @@ DrawAmmoInfo (ScaleX (PRIMARY_AMMO_X), ScaleY (PRIMARY_AMMO_Y), ammoCount, 1);
 
 void CCockpit::DrawSecondaryAmmoInfo (int ammoCount)
 {
-SetCanvas (&gameData.render.frame);
 DrawAmmoInfo (ScaleX (SECONDARY_AMMO_X), ScaleY (SECONDARY_AMMO_Y), ammoCount, 0);
 }
 
@@ -212,8 +197,6 @@ CBitmap* bmP = BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
 PageInGauge (GAUGE_NUMERICAL);
 CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
 #endif
-CCanvas::Push ();
-CCanvas::SetCurrent (&gameData.render.frame);
 fontManager.SetColorRGBi (RGBA_PAL2 (14, 14, 23), 1, 0, 0);
 sprintf (szShield, "%d", (int) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
 int w, h, aw;
@@ -222,7 +205,6 @@ fontManager.Current ()->StringSize (szShield, w, h, aw);
 nIdShield = PrintF (&nIdShield, -(ScaleX (NUMERICAL_GAUGE_X + bmP->Width () / 2) - w / 2), 
 						  NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 36 : 16) + HeightPad (), szShield);
 fontManager.SetScale (1.0f);
-CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -239,8 +221,6 @@ CBitmap* bmP = BitBlt (GAUGE_NUMERICAL, NUMERICAL_GAUGE_X, NUMERICAL_GAUGE_Y);
 PageInGauge (GAUGE_NUMERICAL);
 CBitmap* bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (GAUGE_NUMERICAL);
 #endif
-CCanvas::Push ();
-CCanvas::SetCurrent (&gameData.render.frame);
 fontManager.SetColorRGBi (RGBA_PAL2 (25, 18, 6), 1, 0, 0);
 sprintf (szEnergy, "%d", (int) FRound (m_info.nEnergy * LOCALPLAYER.EnergyScale ()));
 int w, h, aw;
@@ -249,7 +229,6 @@ fontManager.Current ()->StringSize (szEnergy, w, h, aw);
 nIdEnergy = PrintF (&nIdEnergy, -(ScaleX (NUMERICAL_GAUGE_X + bmP->Width () / 2) - w / 2), 
 						  NUMERICAL_GAUGE_Y + (gameStates.video.nDisplayMode ? 5 : 2), szEnergy);
 fontManager.SetScale (1.0f);
-CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -571,15 +550,11 @@ CGenericCockpit::DrawCockpit (m_info.nCockpit, 0, bAlphaTest);
 
 //	-----------------------------------------------------------------------------
 
-void CCockpit::SetupWindow (int nWindow, CCanvas* canvP)
+void CCockpit::SetupWindow (int nWindow)
 {
 tGaugeBox* hudAreaP = hudWindowAreas + COCKPIT_PRIMARY_BOX + nWindow;
-gameData.render.frame.SetupPane (
-	canvP,
-	ScaleX (hudAreaP->left),
-	ScaleY (hudAreaP->top),
-	ScaleX (hudAreaP->right - hudAreaP->left+1),
-	ScaleY (hudAreaP->bot - hudAreaP->top+1));
+gameData.render.window = gameData.render.scene;
+gameData.render.window += CViewport (ScaleX (hudAreaP->left), ScaleY (hudAreaP->top), ScaleX (hudAreaP->right - hudAreaP->left+1), ScaleY (hudAreaP->bot - hudAreaP->top+1));
 }
 
 //	-----------------------------------------------------------------------------
@@ -591,11 +566,8 @@ if (bRebuild && !m_info.bRebuild)
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup (bRebuild))
 	return false;
-gameData.render.scene.SetWidth (gameData.render.frame.Width ());
-gameData.render.scene.SetLeft (0);
-gameData.render.scene.SetHeight (2 * gameData.render.frame.Height () / 3);
-gameData.render.scene.SetTop ((gameData.render.frame.Height () - gameData.render.viewport.Height ()) / 2);
-//GameInitRenderSubBuffers (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
+Canvas () += CViewport (0, 0, gameData.render.frame.Width (false), 2 * gameData.render.frame.Height (false) / 3);
+Canvas ()->Activate ();
 return true;
 }
 

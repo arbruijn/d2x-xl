@@ -722,10 +722,10 @@ if (IsMultiGame) {
 	}
 else if (LOCALPLAYER.lives > 1)  {
 	//m_info.nColor = WHITE_RGBA;
-	CCanvas::Push ();
-	CCanvas::SetCurrent (&gameData.render.scene);
+	//CCanvas::Push ();
+	//CCanvas::SetCurrent (&gameData.render.scene);
 	CBitmap* bmP = BitBlt (GAUGE_LIVES, 10, 3, false, false);
-	CCanvas::Pop ();
+	//CCanvas::Pop ();
 	SetFontColor (MEDGREEN_RGBA);
 	nIdLives = DrawHUDText (&nIdLives, 10 + bmP->Width () + bmP->Width () / 2, 4, "x %d", LOCALPLAYER.lives - 1);
 	}
@@ -761,15 +761,14 @@ if (bRebuild && !m_info.bRebuild)
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup ())
 	return false;
-//screen.Height () = screen.Height ();
-gameData.render.scene.Set (0, 0, gameData.render.frame.Width (false), gameData.render.frame.Height (false));
+Canvas ()->Activate ();
 //GameInitRenderSubBuffers (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 return true;
 }
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::SetupWindow (int nWindow, CCanvas* canvP)
+void CHUD::SetupWindow (int nWindow)
 {
 	static int cockpitWindowScale [4] = {8, 6, 4, 3};
 
@@ -785,14 +784,14 @@ if ((nWindowPos == 2) && gameStates.render.cockpit.n3DView [0] && gameStates.ren
 	nWindowPos = 1;
 if (nWindowPos == 0)	// near corners
 	x = nWindow
-		 ? gameData.render.frame.Width () - w - h / 10
+		 ? Canvas ()->Width () - w - h / 10
 		 : h / 10;
 else if (nWindowPos == 1)	// near middle
 	x = nWindow
-		 ? gameData.render.frame.Width () / 3 * 2 - w / 3
-		 : gameData.render.frame.Width () / 3 - 2 * w / 3;
+		 ? Canvas ()->Width () / 3 * 2 - w / 3
+		 : Canvas ()->Width () / 3 - 2 * w / 3;
 else 	// middle
-	x = gameData.render.frame.Width () / 2 - w / 2;
+	x = Canvas ()->Width () / 2 - w / 2;
 x -= gameData.FloatingStereoOffset2D (x);
 
 if (gameOpts->render.cockpit.nWindowPos > 2) 
@@ -804,13 +803,9 @@ else {
 		y -= (int) ((gameOpts->render.weaponIcons.bSmall ? 20.0 : 30.0) * (double) CCanvas::Current ()->Height () / 480.0);
 	}
 //copy these vars so stereo code can get at them
-SW_drawn [nWindow] = 1;
-SW_x [nWindow] = x;
-SW_y [nWindow] = y;
-SW_w [nWindow] = w;
-SW_h [nWindow] = h;
-if (canvP)
-	gameData.render.frame.SetupPane (canvP, x, y, w, h);
+CCockpitInfo::bWindowDrawn [nWindow] = 1;
+gameData.render.window = gameData.render.scene;
+gameData.render.window += CViewport (x, y, w, h);
 }
 
 //	-----------------------------------------------------------------------------
@@ -831,10 +826,9 @@ if (bRebuild && !m_info.bRebuild)
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup ())
 	return false;
-gameData.render.scene.SetLeft (0);
-gameData.render.scene.SetWidth (gameData.render.frame.Width ());		//VR_render_width;
-gameData.render.scene.SetHeight ((int) ((gameData.render.frame.Height () * 7) / 10 / ((double) screen.Height () / (double) screen.Width () / 0.75)));
-gameData.render.scene.SetTop ((gameData.render.frame.Height () - gameData.render.scene.Height ()) / 2);
+int h = (int) ((gameData.render.frame.Height () * 7) / 10 / ((double) screen.Height () / (double) screen.Width () / 0.75));
+Canvas () += CViewport (0, (gameData.render.frame.Height () - h) / 2, gameData.render.frame.Width (), h);
+Canvas ()->Activate ();
 //GameInitRenderSubBuffers (x, y, w, h);
 return true;
 }
@@ -857,11 +851,12 @@ CGenericCockpit::Activate (CM_FULL_COCKPIT, true);
 
 void CWideHUD::SetupWindow (int nWindow, CCanvas* canvP)
 {
-CHUD::SetupWindow (nWindow, NULL);
-SW_y [nWindow] += gameData.render.frame.Top ();
+CHUD::SetupWindow (nWindow);
+#if 0
 if (SW_y [nWindow] + SW_h [nWindow] > gameData.render.frame.Bottom ())
 	SW_y [nWindow] -= (screen.Height () - gameData.render.frame.Height ());
 gameData.render.frame.SetupPane (canvP, SW_x [nWindow], SW_y [nWindow], SW_w [nWindow], SW_h [nWindow]);
+#endif
 }
 
 //	-----------------------------------------------------------------------------

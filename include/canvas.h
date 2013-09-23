@@ -39,6 +39,57 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //-----------------------------------------------------------------------------
 
+class CViewport {
+	public:
+		int m_x, m_y, m_w, m_h, m_t;
+
+		CViewport (int x = 0, int y = 0, int w = 0, int h = 0, int t = 0) : m_x (x), m_y (y), m_w (w), m_h (h), m_t (t) {}
+
+		void Setup (int x, int y, int w, int h);
+
+		void Apply (int t = -1);
+
+		inline CViewport& operator= (CViewport const other) {
+			m_x = other.m_x;
+			m_y = other.m_y;
+			m_w = other.m_w;
+			m_h = other.m_h;
+			m_t = other.m_t;
+			return *this;
+			}
+
+		inline CViewport& operator+= (CViewport const other) {
+			m_x += other.m_x;
+			m_y += other.m_y;
+			m_w += other.m_w;
+			m_h += other.m_h;
+			m_t = other.m_t;
+			return *this;
+			}
+
+		inline CViewport operator+ (CViewport const other) {
+			CViewport vp = *this;
+			vp += other;
+			return vp;
+			}
+
+		inline const bool operator!= (CViewport const other) {
+			return (m_x != other.m_x) || (m_y != other.m_y) || (m_w != other.m_w) || (m_h != other.m_h) || (m_t != other.m_t);
+			}
+
+		inline int Left (void) { return m_x; }
+		inline int Top (void) { return m_y; }
+		inline int Width (void) { return m_w; }
+		inline int Height (void) { return m_h; }
+
+		inline void SetLeft (int x) { m_x = x; }
+		inline void SetTop (int y) { m_y = y; }
+		inline void SetWidth (int w) { m_w = w; }
+		inline void SetHeight (int h) { m_h = h; }
+	};
+
+//-----------------------------------------------------------------------------
+
 class CCanvas;
 class CScreen;
 
@@ -47,18 +98,24 @@ typedef struct tCanvas {
 	CFont*			font;				// the currently selected font
 	CCanvasColor	fontColors [2];   // current font background color (-1==Invisible)
 	short				nDrawMode;			// fill, XOR, etc.
+	bool				bRelative;
 } tCanvas;
 
-class CCanvas : public CBitmap {
+class CCanvas : public CViewport /*CBitmap*/ {
 	private:
 		tCanvas	m_info;
 
 		static CCanvas*			m_current;
-		static CStack<CCanvas*> m_save;
+		static CStack<CCanvas*>	m_save;
+
+		static CCanvas* SetCurrent (CCanvas* canvP = NULL);
 
 	public:
 		static fix					xCanvW2, xCanvH2;
 		static float				fCanvW2, fCanvH2;
+
+		CCanvas*						m_previous;
+		CCanvas*						m_parent;
 
 	public:
 		CCanvas () { Init (); }
@@ -67,9 +124,11 @@ class CCanvas : public CBitmap {
 		static CCanvas* Create (int w, int h);
 		void Init (void);
 		void Init (int nType, int w, int h, ubyte *data);
-		void Setup (int w, int h);
+		//void Setup (int w, int h);
+		void Setup (CCanvas* parentP);
+		void Setup (CCanvas* parentP, int x, int y, int w, int h);
 		CCanvas* CreatePane (int x, int y, int w, int h);
-		void SetupPane (CCanvas *paneP, int x, int y, int w, int h);
+		void SetupPane (CCanvas* childP, int x, int y, int w, int h);
 		void Destroy (void);
 		void DestroyPane (void);
 		void Clear (void);
@@ -86,7 +145,6 @@ class CCanvas : public CBitmap {
 		inline void SetDrawMode (short nDrawMode) { m_info.nDrawMode = nDrawMode; }
 
 		static CCanvas* Current (void) { return m_current; }
-		static void SetCurrent (CCanvas* canvP = NULL);
 		static void Push (void) { 
 			m_save.Push (m_current); 
 			fontManager.Push ();
@@ -104,7 +162,7 @@ class CCanvas : public CBitmap {
 
 		inline void SetWidth (short w = -1) { 
 			if (w > 0)
-				CBitmap::SetWidth (w); 
+				SetWidth (w); 
 			else
 				w = Width ();
 			if (this == m_current) {
@@ -114,7 +172,7 @@ class CCanvas : public CBitmap {
 			}
 		inline void SetHeight (short h = -1) { 
 			if (h > 0)
-				CBitmap::SetHeight (h); 
+				SetHeight (h); 
 			else
 				h = Height ();
 			if (this == m_current) {
@@ -126,29 +184,46 @@ class CCanvas : public CBitmap {
 		inline float XScale (void) { return (Width () > 640) ? float (Width ()) / 640.0f : 1.0f; }
 		inline float YScale (void) { return (Height () > 480) ? float (Height ()) / 480.0f : 1.0f; }
 
-		inline bool Clip (int x, int y) { return this->CBitmap::Clip (x, y); }
+		//inline bool Clip (int x, int y) { return this->CBitmap::Clip (x, y); }
 
 		inline double AspectRatio (void) { return double (Width ()) / double (Height ()); }
 
 		void FadeColorRGB (double dFade);
 
 		inline float GetScale (void);
-		inline short Scaled (short v);
+		inline int Scaled (int v);
 
-		inline short Width (bool bScale = true) { return bScale ? Scaled (CBitmap::Width ()) : CBitmap::Width (); }
-		inline short Height (bool bScale = true) { return bScale ? Scaled (CBitmap::Height ()) : CBitmap::Height (); }
-		inline short Left (void) { return Scaled (CBitmap::Left ()); }
-		inline short Top (void) { return Scaled (CBitmap::Top ()); }
-		inline short Right (void) { return Left () + Width (); }
-		inline short Bottom (void) { return Top () + Height (); }
+		inline int Width (bool bScale = true) { return bScale ? Scaled (CViewport::Width ()) : CViewport::Width (); }
+		inline int Height (bool bScale = true) { return bScale ? Scaled (CViewport::Height ()) : CViewport::Height (); }
+		inline int Left (void) { return Scaled (CViewport::Left ()); }
+		inline int Top (void) { return Scaled (CViewport::Top ()); }
+		inline int Right (void) { return Left () + Width (); }
+		inline int Bottom (void) { return Top () + Height (); }
+
+		inline CCanvas* Parent (void) { return m_parent; }
 
 		void SetViewport (CCanvas* parent = NULL);
+
+		inline void Activate (CCanvas* parent = NULL) { 
+			if (CCanvas::Current () == this) 
+				m_previous = NULL;
+			else {
+				CCanvas::Push ();
+				m_previous = CCanvas::SetCurrent (this);
+				}
+			SetViewport (parent);
+			}
+
+		inline void Deactivate (void) { 
+			CCanvas::Pop ();
+			if (m_previous)
+				m_previous->Activate ();
+			}
 	};
 
 //===========================================================================
 
 typedef struct tScreen {		// This is a video screen
-	CCanvas  	canvas;			// Represents the entire screen
 	u_int32_t	mode;				// Video mode number
 	short   		width, height; // Actual Width and Height
 	fix     		aspect;			//aspect ratio (w/h) for this screen
@@ -156,11 +231,10 @@ typedef struct tScreen {		// This is a video screen
 } tScreen;
 
 
-class CScreen {
+class CScreen : public CCanvas {
 	private:
 		tScreen	m_info;
 
-		static CScreen* m_current;
 		static float m_fScale;
 
 	public:
@@ -172,24 +246,15 @@ class CScreen {
 			m_info.width = 0;
 			m_info.height = 0;
 			m_info.aspect = 0;
-			if (!m_current)
-				m_current = this;
-			CCanvas::SetCurrent ();
 			}
-		void Destroy (void) { Canvas ()->CBitmap::Destroy (); };
+		void Destroy (void) { /*Canvas ()->CBitmap::Destroy ();*/ };
 
-		inline CCanvas* Canvas (void) { return &m_info.canvas; }
 		inline u_int32_t Mode (void) { return m_info.mode; }
 
 		inline short Width (bool bScale = true) { return bScale ? (short) FRound (m_info.width * GetScale ()) : m_info.width; }
 		inline short Height (bool bScale = true) { return bScale ? (short) FRound (m_info.height * GetScale ()) : m_info.height; }
 		inline fix Aspect (void) { return m_info.aspect; }
 
-		inline void SetCanvas (CCanvas* canvas) { 
-			if (canvas) {
-				m_info.canvas = *canvas;
-				}
-			}
 		inline void SetMode (u_int32_t mode) { m_info.mode = mode; }
 		inline void SetWidth (short width) { 
 			m_info.width = width; 
@@ -202,7 +267,6 @@ class CScreen {
 		inline void SetAspect (fix aspect) { m_info.aspect = aspect; }
 		inline float Scale (uint i = 0) { return m_info.scale [i] ? m_info.scale [i] : 1.0f; }
 
-		static CScreen* Current (void) { return m_current; }
 		static float GetScale (void) { return m_fScale; }
 		static void SetScale (float scale) { m_fScale = scale; }
 		static int Scaled (int v) { return int (ceil (v * GetScale ())); }
@@ -212,7 +276,7 @@ extern CScreen screen;
 
 inline float CCanvas::GetScale (void) { return CScreen::GetScale (); }
 
-inline short CCanvas::Scaled (short v) { return short (CScreen::Scaled (v)); }
+inline int CCanvas::Scaled (int v) { return CScreen::Scaled (v); }
 
 void SetupCanvasses (float scale = 1.0f);
 

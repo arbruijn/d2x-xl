@@ -125,8 +125,11 @@ class CCockpitInfo {
 		int		nDamage [3];
 		fix		tInvul;
 		fix		xStereoSeparation;
-		CCanvas	*canvas;
+		CCanvas*	canvas;
+		CCanvas	windows [2];
 		bool		bRebuild;
+
+		static bool	bWindowDrawn [2];
 
 	public:
 		void Init (void);
@@ -158,7 +161,8 @@ class CGenericCockpit {
 		inline void SetFontScale (float fontScale) { m_info.fontScale = fontScale; }
 		inline uint FontColor (void) { return m_info.fontColor; }
 		inline void SetFontColor (uint fontColor) { m_info.fontColor = fontColor; }
-		inline CCanvas * Canvas (void) { return m_info.canvas; }
+		inline CCanvas* Canvas (void) { return m_info.canvas; }
+		inline CCanvas& Window (int nWindow) { return m_info.windows [ nWindow]; }
 		inline void SetCanvas (CCanvas * canvas) { m_info.canvas = canvas; }
 		inline void PageInGauge (int nGauge) { LoadTexture (gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index, 0); }
 		inline ushort GaugeIndex (int nGauge) { return gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index; }
@@ -247,7 +251,7 @@ class CGenericCockpit {
 		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
 		virtual void DrawWeapons (void);
 		virtual void DrawCockpit (bool bAlphaTest = false) = 0;
-		virtual void SetupWindow (int nWindow, CCanvas* canvP) = 0;
+		virtual void SetupWindow (int nWindow) = 0;
 		virtual bool Setup (bool bRebuild = false);
 
 		inline CCockpitInfo& Info (void) { return m_info; }
@@ -330,7 +334,7 @@ class CHUD : public CGenericCockpit {
 		virtual void DrawCockpit (bool bAlphaTest = false);
 		virtual void Toggle (void);
 
-		virtual void SetupWindow (int nWindow, CCanvas* canvP);
+		virtual void SetupWindow (int nWindow);
 		virtual bool Setup (bool bRebuild);
 
 	private:
@@ -350,7 +354,7 @@ class CWideHUD : public CHUD {
 		virtual void DrawRecording (void);
 		virtual void Toggle (void);
 		virtual bool Setup (bool bRebuild);
-		virtual void SetupWindow (int nWindow, CCanvas* canvP);
+		virtual void SetupWindow (int nWindow);
 	};
 
 //	-----------------------------------------------------------------------------
@@ -390,7 +394,7 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawCockpit (bool bAlphaTest = false);
 		virtual void Toggle (void);
 
-		virtual void SetupWindow (int nWindow, CCanvas* canvP);
+		virtual void SetupWindow (int nWindow);
 		virtual bool Setup (bool bRebuild);
 	};
 
@@ -429,7 +433,7 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawCockpit (bool bAlphaTest = false);
 		virtual void Toggle (void);
 
-		virtual void SetupWindow (int nWindow, CCanvas* canvP);
+		virtual void SetupWindow (int nWindow);
 		virtual bool Setup (bool bRebuild);
 	};
 
@@ -471,7 +475,7 @@ class CRearView : public CGenericCockpit {
 			CGenericCockpit::DrawCockpit (CM_REAR_VIEW + m_info.nCockpit, 0, bAlphaTest); 
 			}
 		virtual void Toggle (void) {};
-		virtual void SetupWindow (int nWindow, CCanvas* canvP) {}
+		virtual void SetupWindow (int nWindow) {}
 		virtual bool Setup (bool bRebuild);
 	};
 

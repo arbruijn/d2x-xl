@@ -459,7 +459,7 @@ if (t - m_info.tAnimate < 10)
 	return;
 m_info.tAnimate = t;
 
-	CCanvas *curCanvSave, *bitmapCanv=0;
+	CCanvas* curCanvSave, bitmapCanv;
 	CFixVector p = CFixVector::ZERO;
 
 	CBitmap *bmP;
@@ -479,18 +479,16 @@ if (*m_info.szBitmapName) {
 	//	Set supertransparency color to black
 	switch (m_info.nAnimatingBitmapType) {
 		case 0: 
-			bitmapCanv = CCanvas::Current ()->CreatePane (x, y, w, h);
+			bitmapCanv.Setup (CCanvas::Current (), x, y, w, h);
 			break;
 		case 1:
-			bitmapCanv = CCanvas::Current ()->CreatePane (x, y, w, h);
+			bitmapCanv.Setup (CCanvas::Current (), x, y, w, h);
 			break;
 		// Adam: Change here for your new animating bitmap thing. 94, 94 are bitmap size.
 		default:
 			Int3 (); // Impossible, illegal value for m_info.nAnimatingBitmapType
 		}
-	curCanvSave = CCanvas::Current (); 
-	CCanvas::SetCurrent (bitmapCanv);
-	CCanvas::Current ()->Clear (m_info.nEraseColor);
+	bitmapCanv.Clear (m_info.nEraseColor);
 	if (!bRedraw) {	//extract current bitmap nFrameber from bitmap name (<name>#<nFrameber>)
 		poundSignP = strchr (m_info.szBitmapName, '#');
 		Assert (poundSignP != NULL);
@@ -584,12 +582,11 @@ if (*m_info.szBitmapName) {
 
 void CBriefing::RenderBitmap (CBitmap* bmP)
 {
-CCanvas* bitmapCanv = CCanvas::Current ()->CreatePane (220, 45, bmP->Width (), bmP->Height ());
-CCanvas::Push ();
-CCanvas::SetCurrent (bitmapCanv);
+CCanvas bitmapCanv;
+bitmapCanv = CViewport (220, 45, bmP->Width (), bmP->Height ());
+bitmapCanv.Activate ();
 bmP->RenderScaled (0, 0);
-CCanvas::Pop ();
-bitmapCanv->Destroy ();
+bitmapCanv.Deactivate ();
 }
 
 //-----------------------------------------------------------------------------
@@ -602,8 +599,6 @@ int t = SDL_GetTicks ();
 if (t - m_info.tAnimate < 10)
 	return;
 
-CCanvas::Push ();
-CCanvas::SetCurrent (m_info.robotCanvP);
 Assert (ROBOTINFO (m_info.nRobot).nModel != -1);
 if (m_info.bInitAnimate) {
 	paletteManager.Load ("", "", 0, 0, 1);
@@ -615,10 +610,11 @@ gameStates.render.bFullBright	= 1;
 
 CCanvas::Current ()->Clear (m_info.nEraseColor);
 //ogl.m_states.bEnableScissor = 1;
+RobotCanv ().Activate ();
 DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
+RobotCanv ().Deactivate ();
 //ogl.m_states.bEnableScissor = 0;
 gameStates.render.bFullBright = 0;
-CCanvas::Pop ();
 m_info.vRobotAngles.v.coord.h += 15 * (t - m_info.tAnimate);
 m_info.tAnimate = t;
 }
@@ -627,10 +623,9 @@ m_info.tAnimate = t;
 
 void CBriefing::RenderRobotMovie (void)
 {
-CCanvas::Push ();
-CCanvas::SetCurrent (m_info.robotCanvP);
+RobotCanv ().Activate ();
 movieManager.RotateRobot ();
-CCanvas::Pop ();
+RobotCanv ().Deactivate ();
 }
 
 //-----------------------------------------------------------------------------
@@ -653,9 +648,7 @@ int x = RescaleX (138);
 int y = RescaleY (55);
 int w = RescaleX (163);
 int h = RescaleY (136);
-if (m_info.robotCanvP)
-	delete m_info.robotCanvP;
-m_info.robotCanvP = CCanvas::Current ()->CreatePane (x, y, w, h);
+RobotCanv ().Setup (CCanvas::Current (), x, y, w, h);
 m_info.bInitAnimate = 1;
 m_info.tAnimate = SDL_GetTicks ();
 }
@@ -919,12 +912,6 @@ int CBriefing::HandleB (void)
 	CIFF		iff;
 	int      iff_error;
 
-if (m_info.message > m_info.pj) {
-	if (m_info.robotCanvP != NULL) {
-		delete m_info.robotCanvP;
-		m_info.robotCanvP = NULL;
-		}
-	}
 ParseMessageText (szBitmap);
 strcat (szBitmap, ".bbm");
 memset (&bmGuy, 0, sizeof (bmGuy));
@@ -996,10 +983,6 @@ return 1;
 int CBriefing::HandleN (void)
 {
 if (m_info.message > m_info.pj) {
-	if (m_info.robotCanvP != NULL) {
-		delete m_info.robotCanvP;
-		m_info.robotCanvP = NULL;
-		}
 	StopSound (m_info.nBotChannel);
 	ParseMessageText (m_info.szBitmapName);
 	strcat (m_info.szBitmapName, "#0");
@@ -1015,10 +998,6 @@ return 1;
 int CBriefing::HandleO (void)
 {
 if (m_info.message > m_info.pj) {
-	if (m_info.robotCanvP != NULL) {
-		delete m_info.robotCanvP;
-		m_info.robotCanvP = NULL;
-		}
 	ParseMessageText (m_info.szBitmapName);
 	strcat (m_info.szBitmapName, "#0");
 	m_info.nAnimatingBitmapType = 1;
@@ -1052,10 +1031,6 @@ return 1;
 int CBriefing::HandleR (void)
 {
 if (m_info.message > m_info.pj) {
-	if (m_info.robotCanvP != NULL) {
-		delete m_info.robotCanvP;
-		m_info.robotCanvP = NULL;
-		}
 	if (m_info.bRobotPlaying) {
 		movieManager.StopRobot ();
 		m_info.bRobotPlaying = 0;
@@ -1073,10 +1048,9 @@ if (gameStates.app.bD1Mission) {
 else {
 	m_info.szSpinningRobot [2] = *m_info.message++; // ugly but proud
 	if (m_info.message > m_info.pj) {
-		CCanvas::Push ();
-		CCanvas::SetCurrent (m_info.robotCanvP);
+		RobotCanv ().Activate ();
 		m_info.bRobotPlaying = movieManager.StartRobot (m_info.szSpinningRobot);
-		CCanvas::Pop ();
+		RobotCanv ().Deactivate ();
 		if (m_info.bRobotPlaying) {
 			RenderRobotMovie ();
 			SetColors ();
@@ -1421,10 +1395,6 @@ if (m_info.bRobotPlaying) {
 	movieManager.StopRobot ();
 	m_info.bRobotPlaying = 0;
 	}
-if (m_info.robotCanvP != NULL) {
-	delete m_info.robotCanvP;
-	m_info.robotCanvP = NULL;
-	}
 if (!songManager.Playing ())
 	StopSound (m_info.nHumChannel);
 StopSound (m_info.nPrintingChannel);
@@ -1642,7 +1612,6 @@ audio.SetFxVolume (gameConfig.nAudioVolume [1], 1);
 audio.SetVolumes ((gameConfig.nAudioVolume [0] * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
 songManager.Play (SONG_BRIEFING, 1);
 SetScreenMode (SCREEN_MENU);
-CCanvas::SetCurrent (NULL);
 gameStates.render.nShadowPass = 0;
 console.printf (CON_DBG, "Playing briefing screen <%s>, level %d\n", fnBriefing, nLevel);
 m_info.Init ();

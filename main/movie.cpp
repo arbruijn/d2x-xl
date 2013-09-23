@@ -241,39 +241,40 @@ delete[] reinterpret_cast<ubyte*> (p);
 
 //-----------------------------------------------------------------------
 
-void CMovie::ShowFrame (ubyte* buf, uint bufw, uint bufh, uint sx, uint sy, uint w, uint h, uint dstx, uint dsty)
+void CMovie::ShowFrame (ubyte* buf, uint wBuffer, uint hBuffer, uint xSrc, uint ySrc, uint w, uint h, uint xDest, uint yDest)
 {
 	CBitmap bmFrame;
 
-bmFrame.Init (BM_LINEAR, 0, 0, bufw, bufh, 1, buf);
+bmFrame.Init (BM_LINEAR, 0, 0, wBuffer, hBuffer, 1, buf);
 bmFrame.SetPalette (movieManager.m_palette);
 
 TRANSPARENCY_COLOR = 0;
 if (gameOpts->movies.bFullScreen) {
-	double r = (double) bufh / (double) bufw;
+	double r = (double) hBuffer / (double) wBuffer;
 	int dh = (int) (CCanvas::Current ()->Width () * r);
 	int yOffs = (CCanvas::Current ()->Height () - dh) / 2;
 
 	ogl.SetBlending (false);
 	bmFrame.AddFlags (BM_FLAG_OPAQUE);
 	bmFrame.SetTranspType (0);
-	bmFrame.Render (CCanvas::Current (), 0, yOffs, CCanvas::Current ()->Width (), dh, sx, sy, bufw, bufh, 0, 0, gameOpts->movies.nQuality);
+	bmFrame.Render (CCanvas::Current (), 0, yOffs, CCanvas::Current ()->Width (), dh, xSrc, ySrc, wBuffer, hBuffer, 0, 0, gameOpts->movies.nQuality);
 	ogl.SetBlending (true);
 	}
 else {
-	int xOffs = (CCanvas::Current ()->Width () - 640) / 2;
-	int yOffs = (CCanvas::Current ()->Height () - 480) / 2;
+	int xOffs = (CCanvas::Current ()->Width () - w) / 2;
+	int yOffs = (CCanvas::Current ()->Height () - h) / 2;
 
 	if (xOffs < 0)
 		xOffs = 0;
 	if (yOffs < 0)
 		yOffs = 0;
-	dstx += xOffs;
-	dsty += yOffs;
-	bmFrame.Blit (CCanvas::Current (), dstx, dsty, bufw, bufh, sx, sy, 1);
-	if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Height () > 480)) {
+	xOffs + xDest;
+	yOffs + yDest;
+	//bmFrame.Blit (CCanvas::Current (), xOffs, yOffs, bufw, bufh, xSrc, ySrc, 1);
+	bmFrame.Render (CCanvas::Current (), xOffs, yOffs, w, h, xSrc, ySrc, wBuffer, hBuffer, 0, 0, gameOpts->movies.nQuality);
+	if ((CCanvas::Current ()->Width () > w) || (CCanvas::Current ()->Height () > h)) {
 		CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
-		OglDrawEmptyRect (dstx - 1, dsty, dstx + w, dsty + h + 1);
+		OglDrawEmptyRect (xDest - 1, yDest, xDest + w, yDest + h + 1);
 		}
 	}
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
@@ -333,13 +334,12 @@ void ShowPauseMessage (const char* msg)
 	int w, h, aw;
 	int x, y;
 
-CCanvas::SetCurrent (NULL);
 fontManager.SetCurrent (SMALL_FONT);
 fontManager.Current ()->StringSize (msg, w, h, aw);
 x = (screen.Width () - w) / 2;
 y = (screen.Height () - h) / 2;
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-OglDrawFilledRect (x-BOX_BORDER/2, y-BOX_BORDER/2, x+w+BOX_BORDER/2-1, y+h+BOX_BORDER/2-1);
+OglDrawFilledRect (x - BOX_BORDER / 2, y - BOX_BORDER / 2, x + w + BOX_BORDER / 2 - 1, y + h + BOX_BORDER / 2 - 1);
 fontManager.SetColor (255, -1);
 GrUString (0x8000, y, msg);
 ogl.Update (0);

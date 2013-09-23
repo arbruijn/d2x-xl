@@ -483,8 +483,7 @@ if (!gameData.render.frame.Height () || (gameData.render.frame.Height () > scree
 	}
 //	Define screen pages for game mode
 // If we designate through screenFlags to use paging, then do so.
-screen.Canvas ()->SetupPane (&gameData.render.frame, 0, 0, screen.Width (), screen.Height ());
-
+gameData.render.frame.Setup (&screen);
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && (gameStates.menus.bHires = (gameStates.video.nDisplayMode > 1));
 console.Resize (0, 0, screen.Width (), screen.Height () / 2);
 return 1;
@@ -502,7 +501,7 @@ int SetScreenMode (u_int32_t sm)
 if ((gameStates.video.nScreenMode == sm) && 
 	 (nCurrentVGAMode == gameData.render.screen.Scalar ()) && 
 	 (screen.Mode () == gameData.render.screen.Scalar ())) {
-	CCanvas::SetCurrent (&gameData.render.frame);
+	gameData.render.frame.Activate ();
 	ogl.SetScreenMode ();
 	return 1;
 	}

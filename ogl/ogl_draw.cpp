@@ -53,8 +53,8 @@ if (ogl.SizeVertexBuffer (1)) {
 	if (!colorP)
 		colorP = &COLOR;
 	OglCanvasColor (colorP);
-	ogl.VertexBuffer () [0].v.coord.x = float (x + CCanvas::Current ()->Left ()) / float (ogl.m_states.viewport [0].m_w);
-	ogl.VertexBuffer () [0].v.coord.y = 1.0f - float (y + CCanvas::Current ()->Top ()) / float (ogl.m_states.viewport [0].m_w);
+	ogl.VertexBuffer () [0].v.coord.x = float (x /*+ CCanvas::Current ()->Left ()*/) / float (ogl.m_states.viewport [0].m_w);
+	ogl.VertexBuffer () [0].v.coord.y = 1.0f - float (y /*+ CCanvas::Current ()->Top ()*/) / float (ogl.m_states.viewport [0].m_w);
 	ogl.FlushBuffers (GL_POINT, 1, 2);
 	}
 }
@@ -63,10 +63,10 @@ if (ogl.SizeVertexBuffer (1)) {
 
 void OglDrawFilledRect (int left, int top, int right, int bot, CCanvasColor *colorP)
 {
-GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (ogl.m_states.viewport [0].m_w);
-GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.viewport [0].m_w);
-GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (ogl.m_states.viewport [0].m_h);
-GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (ogl.m_states.viewport [0].m_h);
+GLfloat x0 = float (left /*+ CCanvas::Current ()->Left ()*/) / float (ogl.m_states.viewport [0].m_w);
+GLfloat x1 = float (right /*+ CCanvas::Current ()->Left ()*/) / float (ogl.m_states.viewport [0].m_w);
+GLfloat y0 = 1.0f - float (top /*+ CCanvas::Current ()->Top ()*/) / float (ogl.m_states.viewport [0].m_h);
+GLfloat y1 = 1.0f - float (bot /*+ CCanvas::Current ()->Top ()*/) / float (ogl.m_states.viewport [0].m_h);
 
 ogl.SetTexturing (false);
 if (!colorP)
@@ -85,8 +85,8 @@ ogl.RenderQuad (NULL, vPosf, (x1 - x0) / 2, (y1 - y0) / 2, 2);
 void OglDrawFilledPoly (int* x, int* y, int nVerts, CCanvasColor *colorP, int nColors)
 {
 if (ogl.SizeBuffers (nVerts + 1)) {
-	int left = CCanvas::Current ()->Left ();
-	int top = CCanvas::Current ()->Top ();
+	int left = 0/*CCanvas::Current ()->Left ()*/;
+	int top = 0/*CCanvas::Current ()->Top ()*/;
 	int j;
 	bool bColor;
 
@@ -109,10 +109,10 @@ if (ogl.SizeBuffers (nVerts + 1)) {
 void OglDrawLine (int left, int top, int right, int bot, CCanvasColor *colorP)
 {
 if (ogl.SizeVertexBuffer (2)) {
-	GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (ogl.m_states.viewport [0].m_w);
-	GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.viewport [0].m_w);
-	GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (ogl.m_states.viewport [0].m_h);
-	GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (ogl.m_states.viewport [0].m_h);
+	GLfloat x0 = float (left/* + CCanvas::Current ()->Left ()*/) / float (ogl.m_states.viewport [0].m_w);
+	GLfloat x1 = float (right /*+ CCanvas::Current ()->Left ()*/) / float (ogl.m_states.viewport [0].m_w);
+	GLfloat y0 = 1.0f - float (top /*+ CCanvas::Current ()->Top ()*/) / float (ogl.m_states.viewport [0].m_h);
+	GLfloat y1 = 1.0f - float (bot /*+ CCanvas::Current ()->Top ()*/) / float (ogl.m_states.viewport [0].m_h);
 	ogl.SetTexturing (false);
 	if (!colorP)
 		colorP = &COLOR;
@@ -130,10 +130,10 @@ if (ogl.SizeVertexBuffer (2)) {
 void OglDrawEmptyRect (int left, int top, int right, int bot, CCanvasColor* colorP)
 {
 if (ogl.SizeVertexBuffer (4)) {
-	GLfloat x0 = float (left + CCanvas::Current ()->Left ()) / float (ogl.m_states.viewport [0].m_w);
-	GLfloat x1 = float (right + CCanvas::Current ()->Left ()) / float (ogl.m_states.viewport [0].m_w);
-	GLfloat y0 = 1.0f - float (top + CCanvas::Current ()->Top ()) / float (ogl.m_states.viewport [0].m_h);
-	GLfloat y1 = 1.0f - float (bot + CCanvas::Current ()->Top ()) / float (ogl.m_states.viewport [0].m_h);
+	GLfloat x0 = float (left /*+ CCanvas::Current ()->Left ()*/) / float (ogl.m_states.viewport [0].m_w);
+	GLfloat x1 = float (right /*+ CCanvas::Current ()->Left ()*/) / float (ogl.m_states.viewport [0].m_w);
+	GLfloat y0 = 1.0f - float (top /*+ CCanvas::Current ()->Top ()*/) / float (ogl.m_states.viewport [0].m_h);
+	GLfloat y1 = 1.0f - float (bot /*+ CCanvas::Current ()->Top ()*/) / float (ogl.m_states.viewport [0].m_h);
 	ogl.SetTexturing (false);
 	if (!colorP)
 		colorP = &COLOR;

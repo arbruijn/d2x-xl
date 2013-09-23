@@ -10,6 +10,7 @@
 #include "descent.h"
 #include "vecmat.h"
 #include "sdlgl.h"
+#include "canvas.h"
 
 //------------------------------------------------------------------------------
 
@@ -138,33 +139,7 @@ class COglData {
 		inline CFBO* GetDepthBuffer (int nBuffer) { return &drawBuffers [nBuffer + 5]; }
 };
 
-class CViewport {
-	public:
-		int m_x, m_y, m_w, m_h, m_t;
-
-		CViewport (int x = 0, int y = 0, int w = 0, int h = 0, int t = 0) : m_x (x), m_y (y), m_w (w), m_h (h), m_t (t) {}
-
-		void Apply (int t = -1);
-
-		inline const CViewport& operator= (CViewport const other) {
-			m_x = other.m_x;
-			m_y = other.m_y;
-			m_w = other.m_w;
-			m_h = other.m_h;
-			m_t = other.m_t;
-			return *this;
-			}
-
-		inline const bool operator!= (CViewport const other) {
-			return (m_x != other.m_x) || (m_y != other.m_y) || (m_w != other.m_w) || (m_h != other.m_h) || (m_t != other.m_t);
-			}
-
-		inline int Left (void) { return m_x; }
-		inline int Top (void) { return m_y; }
-		inline int Width (void) { return m_w - m_x; }
-		inline int Height (void) { return m_h - m_y; }
-	};
-
+//-----------------------------------------------------------------------------
 
 class COglFeature {
 	private:
@@ -568,15 +543,7 @@ class COGL {
 		void RebuildContext (int bGame);
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
-		inline int StereoDevice (int bForce = 0) { 
-			if (!m_features.bShaders)
-				return 0;
-			if (!(bForce || gameOpts->render.stereo.bEnhance))
-				return 0;
-			if ((gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER_NVIDIA) && !m_states.nStereo)
-				return 0;
-			return (gameOpts->render.stereo.nGlasses < DEVICE_STEREO_PHYSICAL) ? gameOpts->render.stereo.nGlasses : -gameOpts->render.stereo.nGlasses;
-			}
+		int StereoDevice (int bForce = 0);
 
 		inline int IsAnaglyphDevice (void) { return StereoDevice () > 0; }
 
