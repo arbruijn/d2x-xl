@@ -479,7 +479,6 @@ void OculusRiftConfigMenu (void)
 	CMenu	m;
 	int	i;
 	char	szDeadzone [50];
-	char	szId [100];
 
 	static int choice = 0;
 

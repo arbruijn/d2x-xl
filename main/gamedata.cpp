@@ -674,7 +674,6 @@ if (Available () < 2)
 OVR::Quatf q = m_sensorFusion.GetOrientation ();
 float yaw, pitch, roll;
 q.GetEulerAngles<OVR::Axis_Y, OVR::Axis_X, OVR::Axis_Z>(&yaw, &pitch, &roll);
-float i;
 if (!angles) 
 	m_center.Set (pitch, roll, yaw);
 else {
