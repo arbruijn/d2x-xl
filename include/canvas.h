@@ -112,7 +112,7 @@ class CCanvas : public CViewport, public CBitmap {
 		void Setup (int w, int h);
 		void Setup (CCanvas* parentP, int x, int y, int w, int h);
 		CCanvas* CreatePane (int x, int y, int w, int h);
-		void SetupPane (CCanvas* childP, int x, int y, int w, int h);
+		//void SetupPane (CCanvas* childP, int x, int y, int w, int h);
 		void Destroy (void);
 		void DestroyPane (void);
 		void Clear (void);

@@ -73,7 +73,8 @@ CCanvas *CCanvas::CreatePane (int x, int y, int w, int h)
 
 if (!(paneP = new CCanvas))	
 	return NULL;
-SetupPane (paneP, x, y, w, h);
+//SetupPane (paneP, x, y, w, h);
+paneP->Setup (this, x, y, w, h);
 return paneP;
 }
 

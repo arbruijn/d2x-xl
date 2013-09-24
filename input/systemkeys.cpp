@@ -516,13 +516,15 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 
 		case KEY_SHIFTED + KEY_MINUS:
 		case KEY_MINUS:
-			ShrinkWindow ();
+			if (gameData.render.rift.m_ipd > RIFT_MIN_IPD)
+				gameData.render.rift.m_ipd--;
 			bScreenChanged = 1;
 			break;
 
 		case KEY_SHIFTED + KEY_EQUALS:
 		case KEY_EQUALS:
-			GrowWindow ();
+			if (gameData.render.rift.m_ipd < RIFT_MAX_IPD)
+				gameData.render.rift.m_ipd++;
 			bScreenChanged = 1;
 			break;
 

@@ -49,8 +49,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define LHX(x)	 (gameStates.menus.bHires ? 2 * (x) : x)
 
-int GrInternalStringClipped (int x, int y, const char *s);
-int GrInternalStringClippedM (int x, int y, const char *s);
+//int GrInternalStringClipped (int x, int y, const char *s);
+//int GrInternalStringClippedM (int x, int y, const char *s);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -708,6 +708,9 @@ if (clipped & 1) {
 	// Partially clipped...
 	}
 // Partially clipped...
+#if 1
+return fontManager.Current ()->DrawString (x, y, s);
+#else
 if (MODE == BM_OGL)
 	return fontManager.Current ()->DrawString (x, y, s);
 if (fontManager.Current ()->Flags () & FT_COLOR)
@@ -715,6 +718,7 @@ if (fontManager.Current ()->Flags () & FT_COLOR)
 if (CCanvas::Current ()->FontColor (1).index == -1)
 	return GrInternalStringClippedM (gameData.X (x), y, s);
 return GrInternalStringClipped (gameData.X (x), y, s);
+#endif
 }
 
 //------------------------------------------------------------------------------
