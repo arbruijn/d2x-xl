@@ -197,7 +197,7 @@ class CCanvas : public CViewport, public CBitmap {
 			//if (CCanvas::Current () != this)
 			if (bReset)
 				m_save.Reset ();
-				CCanvas::Push (this);
+			CCanvas::Push (this);
 			SetViewport (parent);
 			}
 
