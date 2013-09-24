@@ -82,12 +82,11 @@ screen.SetHeight (h);
 gameData.render.screen.Set (0, 0, w, h);
 //screen.Aspect () = FixDiv(screen.Width ()*3,screen.Height ()*4);
 screen.SetAspect (FixDiv (screen.Width (), (fix) (screen.Height () * ((double) w / (double) h))));
-screen.Canvas ()->CBitmap::Init (BM_OGL, 0, 0, w, h, 1, NULL);
-screen.Canvas ()->CreateBuffer ();
-screen.Canvas ()->SetPalette (paletteManager.Default ()); //just need some valid palette here
-//screen.Canvas ()->props.rowSize = screen->pitch;
-//screen.Canvas ()->Buffer () = reinterpret_cast<ubyte*> (screen->pixels);
-CCanvas::SetCurrent (NULL);
+screen.CBitmap::Init (BM_OGL, 0, 0, w, h, 1, NULL);
+screen.CreateBuffer ();
+screen.SetPalette (paletteManager.Default ()); //just need some valid palette here
+//screen.props.rowSize = screen->pitch;
+//screen.Buffer () = reinterpret_cast<ubyte*> (screen->pixels);
 CCanvas::Current ()->SetFont (fontManager.Current ());
 /***/PrintLog (1, "initializing OpenGL window\n");
 i = SdlGlInitWindow (w, h, 0);	//platform specific code
@@ -285,7 +284,7 @@ else
 /***/PrintLog (0, "initializing texture manager\n");
 textureManager.Init ();
 /***/PrintLog (0, "allocating screen buffer\n");
-screen.Canvas ()->SetBuffer (NULL);
+screen.SetBuffer (NULL);
 
 CreateDisplayModeInfoTable ();
 // Set the mode.
@@ -524,7 +523,7 @@ switch (gameStates.video.nScreenMode) {
 		Error ("Invalid screen mode %d",sm);
 	}
 
-CCanvas::SetCurrent (&gameData.render.frame);
+gameData.render.frame.Activate (NULL, true);
 ogl.SetScreenMode ();
 return 1;
 }

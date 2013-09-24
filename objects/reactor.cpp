@@ -173,8 +173,9 @@ else {
 		audio.PlaySound (SOUND_MINE_BLEW_UP);
 	paletteManager.SetEffect (flashValue, flashValue, flashValue);
 	if (paletteManager.BlueEffect () >= 64) {
-		CCanvas::SetCurrent (NULL);
+		gameData.render.frame.Activate ();
 		CCanvas::Current ()->Clear (RGBA_PAL2 (31,31,31));	//make screen all white to match palette effect
+		gameData.render.frame.Deactivate ();
 		paletteManager.ResetEffect ();	//restore palette for death message
 		DoPlayerDead ();		//kill_player ();
 		}																			

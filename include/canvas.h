@@ -202,24 +202,17 @@ class CCanvas : public CViewport /*CBitmap*/ {
 
 		void SetViewport (CCanvas* parent = NULL);
 
-		inline void Activate (CCanvas* parent = NULL) { 
-			if (CCanvas::Current () != this)
+		inline void Activate (CCanvas* parent = NULL, bool bReset = false) { 
+			//if (CCanvas::Current () != this)
+			if (bReset)
+				m_save.Reset ();
 				CCanvas::Push (this);
 			SetViewport (parent);
 			}
 
 		inline void Reactivate (void) { Activate (m_parent); }
 
-		inline void Deactivate (void) { 
-			CCanvas* canvP;
-			do {
-				if (!(canvP = Current ()))
-					break;
-				Pop ();
-			} while (canvP != this);
-			if (canvP)
-				canvP->Reactivate ();
-			}
+		void Deactivate (void);
 	};
 
 //===========================================================================

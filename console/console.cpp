@@ -286,29 +286,7 @@ void CConsole::Update (void)
 	/* Due to the Blits, the update is not very fast: So only update if it's worth it */
 if (!IsVisible ())
 	return;
-Screenlines = m_surface->Height () / (CON_LINE_SPACE + m_surface->Font ()->Height ());
-#if 0
-if (!gameOpts->menus.nStyle) {
-	CCanvas::Push ();
-	CCanvas::SetCurrent (m_surface);
-	SDL_FillRect (m_surface, NULL, SDL_MapRGBA (m_surface->format, 0, 0, 0, m_ConsoleAlpha);
-	if (m_output->flags & SDL_OPENGLBLIT)
-		SDL_SetAlpha (m_surface, 0, SDL_ALPHA_OPAQUE);
-/* draw the background image if there is one */
-	if (m_background)
-		m_background->RenderStretched ();
-	}
-#endif
-/* Draw the text from the back buffers, calculate in the scrollback from the user
- * this is a Normal SDL software-mode blit, so we need to temporarily set the ColorKey
- * for the font, and then clear it when we're done.
- */
-#if 0
-if ((m_output->flags & SDL_OPENGLBLIT) && (m_output->format->BytesPerPixel > 2)) {
-	uint *pix = reinterpret_cast<uint*> (CurrentFont->FontSurface->pixels);
-	SDL_SetColorKey (CurrentFont->FontSurface, SDL_SRCCOLORKEY, *pix);
-	}
-#endif
+Screenlines = m_canvas.Height () / (CON_LINE_SPACE + m_canvas.Font ()->Height ());
 
 orig_color = CCanvas::Current ()->FontColor (0);
 fontManager.SetCurrent (SMALL_FONT);
@@ -317,23 +295,17 @@ fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 for (loop = 0; loop < Screenlines-1 && loop < m_LineBuffer - m_ConsoleScrollBack; loop++) {
 	if (m_ConsoleScrollBack != 0 && loop == 0)
 		for (loop2 = 0; loop2 < (m_VChars / 5) + 1; loop2++) {
-			GrString (CON_CHAR_BORDER + (loop2*5*m_surface->Font ()->Width ()),
-						 (Screenlines - loop - 2) * (CON_LINE_SPACE + m_surface->Font ()->Height ()),
+			GrString (CON_CHAR_BORDER + (loop2 * 5 * m_canvas.Font ()->Width ()),
+						 (Screenlines - loop - 2) * (CON_LINE_SPACE + m_canvas.Font ()->Height ()),
 						 CON_SCROLL_INDICATOR);
 			}
 	else {
 		GrString (CON_CHAR_BORDER,
-					 (Screenlines - loop - 2) * (CON_LINE_SPACE + m_surface->Font ()->Height ()),
+					 (Screenlines - loop - 2) * (CON_LINE_SPACE + m_canvas.Font ()->Height ()),
 					 m_ConsoleLines [m_ConsoleScrollBack + loop].Buffer ());
 		}
 	}
 CCanvas::Current ()->FontColor (0) = orig_color;
-#if 0
-if (!gameOpts->menus.nStyle)
-	CCanvas::Pop ();
-if (m_output->flags & SDL_OPENGLBLIT)
-	SDL_SetColorKey (CurrentFont->FontSurface, 0, 0);
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -351,8 +323,8 @@ switch (m_Visible) {
 
 	case CON_OPENING:
 		m_RaiseOffset += CON_OPENCLOSE_SPEED;
-		if (m_RaiseOffset >= m_surface->Height ()) {
-			m_RaiseOffset = m_surface->Height ();
+		if (m_RaiseOffset >= m_canvas.Height ()) {
+			m_RaiseOffset = m_canvas.Height ();
 			m_Visible = CON_OPEN;
 		}
 		break;
@@ -379,29 +351,15 @@ UpdateOffset ();
 /* Update the command line since it has a blinking cursor */
 DrawCommandLine ();
 
-#if 0
-	/* before drawing, make sure the alpha channel of the console surface is set
-	 * properly.  (sigh) I wish we didn't have to do this every frame... */
-	if (m_output->flags & SDL_OPENGLBLIT)
-		CConsole::AlphaGL (m_surface, m_ConsoleAlpha);
-#endif
-
-CCanvas::Push ();
-CCanvas::SetCurrent (m_output->Canvas ());
+m_output->Activate ();
 if (gameOpts->menus.nStyle)
-	backgroundManager.DrawBox (0, 0, m_surface->Width (), m_RaiseOffset, 1, 1.0f, 0);
+	backgroundManager.DrawBox (0, 0, m_canvas.Width (), m_RaiseOffset, 1, 1.0f, 0);
 else {
-	clip = m_surface->CreateChild (
-		0, m_surface->Height () - m_RaiseOffset,
-		m_surface->Width (), m_RaiseOffset);
+	clip = m_surface->CreateChild (0, m_canvas.Height () - m_RaiseOffset, m_canvas.Width (), m_RaiseOffset);
 	clip->BlitClipped (m_DispX, m_DispY);
 	clip->Destroy ();
-#if 0
-	if (m_output->flags & SDL_OPENGLBLIT)
-		SDL_UpdateRects (m_output, 1, &DestRect);
-#endif
 	}
-CCanvas::Pop ();
+m_output->Deactivate ();
 Update ();
 }
 
@@ -489,28 +447,26 @@ else
 	m_DispY = y;
 
 /* load the console surface */
-m_surface = CCanvas::Create (w, h);
+m_surface = CBitmap::Create (0, w, h, 1);
+m_canvas.Setup (&gameData.render.frame, 0, 0, w, h);
 /* Load the consoles font */
-CCanvas::Push ();
-CCanvas::SetCurrent (m_surface);
+m_canvas.Activate ();
+
 fontManager.SetCurrent (font);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 CCanvas::Pop ();
 
 /* Load the dirty rectangle for user input */
-m_input = CBitmap::Create (0, w, m_surface->Font ()->Height (), 1);
-#if 0
-SDL_FillRect (m_input, NULL, SDL_MapRGBA (m_surface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
-#endif
+m_input = CBitmap::Create (0, w, m_canvas.Font ()->Height (), 1);
 
 /* calculate the number of visible characters in the command line */
-m_VChars = (w - CON_CHAR_BORDER) / m_surface->Font ()->Width ();
+m_VChars = (w - CON_CHAR_BORDER) / m_canvas.Font ()->Width ();
 if (m_VChars > CON_CHARS_PER_LINE)
 	m_VChars = CON_CHARS_PER_LINE;
 
 /* We would like to have a minumum # of lines to guarentee we don't create a memory error */
-if (h / (CON_LINE_SPACE + m_surface->Font ()->Height ()) > lines)
-	m_LineBuffer = h / (CON_LINE_SPACE + m_surface->Font ()->Height ());
+if (h / (CON_LINE_SPACE + m_canvas.Font ()->Height ()) > lines)
+	m_LineBuffer = h / (CON_LINE_SPACE + m_canvas.Font ()->Height ());
 else
 	m_LineBuffer = lines;
 
@@ -636,7 +592,7 @@ void CConsole::DrawCommandLine (void)
 commandbuffer = m_VChars - (int) strlen (m_Prompt) - 1; // -1 to make cursor visible
 
 #if 0
-CurrentFont = m_surface->Font ();
+CurrentFont = m_canvas.Font ();
 #endif
 
 //Concatenate the left and right CSide to command
@@ -664,26 +620,11 @@ if (m_output->flags & SDL_OPENGLBLIT) {
 }
 #endif
 
-//first of all restore input
-#if 0
-if (!gameOpts->menus.nStyle) {
-	CCanvas::Push ();
-	CCanvas::SetCurrent (m_surface);
-	if (m_background)
-		m_background->Render (CCanvas::Current (),
-									 m_surface->Width (), m_surface->Font ()->Height (),
-									 0, m_surface->Height () - m_surface->Font ()->Height (),
-									 m_surface->Width (), m_surface->Font ()->Height (),
-									 0, m_surface->Height () - m_surface->Font ()->Height ());
-	else
-		m_input->BlitClipped (0, m_surface->Height () - m_surface->Font ()->Height ());
-	}
-#endif
 //now add the text
 orig_color = CCanvas::Current ()->FontColor (0);
 fontManager.SetCurrent (SMALL_FONT);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
-GrString (CON_CHAR_BORDER, m_surface->Height () - m_surface->Font ()->Height (), m_VCommand);
+GrString (CON_CHAR_BORDER, m_canvas.Height () - m_canvas.Font ()->Height (), m_VCommand);
 
 //at last add the cursor
 //check if the blink period is over
@@ -708,12 +649,12 @@ if (bBlink) {
 	fontManager.Current ()->StringSize (m_VCommand, w, h, aw);
 	x = CON_CHAR_BORDER + w;
 #else
-	x = CON_CHAR_BORDER + m_surface->Font ()->Width () * (m_CursorPos - m_Offset + (int) strlen (m_Prompt));
+	x = CON_CHAR_BORDER + m_canvas.Font ()->Width () * (m_CursorPos - m_Offset + (int) strlen (m_Prompt));
 #endif
 	if (m_InsMode)
-		GrString (x, m_surface->Height () - m_surface->Font ()->Height (), CON_INS_CURSOR);
+		GrString (x, m_canvas.Height () - m_canvas.Font ()->Height (), CON_INS_CURSOR);
 	else
-		GrString (x, m_surface->Height () - m_surface->Font ()->Height (), CON_OVR_CURSOR);
+		GrString (x, m_canvas.Height () - m_canvas.Font ()->Height (), CON_OVR_CURSOR);
 	}
 CCanvas::Current ()->FontColor (0) = orig_color;
 
@@ -766,27 +707,6 @@ if (m_ConsoleLines.Buffer ()) {
 
 
 //------------------------------------------------------------------------------
-#if 0
-/* Sets the alpha level of the 0 turns off alpha blending */
-void CConsole::Alpha (ubyte alpha) {
-	if (!console)
-		return;
-
-	/* store alpha as state! */
-	m_ConsoleAlpha = alpha;
-
-	if ((m_output->flags & SDL_OPENGLBLIT) == 0) {
-		if (alpha == 0)
-			SDL_SetAlpha (m_surface, 0, alpha);
-		else
-			SDL_SetAlpha (m_surface, SDL_SRCALPHA, alpha);
-	}
-
-	//	CConsole::Update ();
-}
-#endif
-
-//------------------------------------------------------------------------------
 
 void CConsole::LoadBackground (const char *filename)
 {
@@ -812,16 +732,13 @@ if (image == NULL) {
 		delete m_background;
 		m_background = NULL;
 		}
-#if 0
-SDL_FillRect (m_input, NULL, SDL_MapRGBA (m_surface->format, 0, 0, 0, SDL_ALPHA_OPAQUE);
-#endif
 	return 0;
 	}
 
 /* Load a new background */
 if (m_background)
 	delete m_background;
-m_background = CBitmap::Create (0, m_surface->Width (), m_surface->Height (), 1);
+m_background = CBitmap::Create (0, m_canvas.Width (), m_canvas.Height (), 1);
 image->BlitScaled (m_background);
 return 0;
 }
@@ -830,22 +747,21 @@ return 0;
 /* Sets font info for the console */
 void CConsole::SetFont (CFont *font, uint fg, uint bg)
 {
-CCanvas::Push ();
-CCanvas::SetCurrent (m_surface);
+m_canvas.Activate ();
 fontManager.SetCurrent (font);
 fontManager.SetColorRGBi (fg, 1, bg, bg != 0);
-CCanvas::Pop ();
+m_canvas.Deactivate ();
 }
 
 //------------------------------------------------------------------------------
 /* takes a new x and y of the top left of the console window */
 void CConsole::Position (int x, int y)
 {
-if (x < 0 || x > m_output->Width () - m_surface->Width ())
+if (x < 0 || x > m_output->Width () - m_canvas.Width ())
 	m_DispX = 0;
 else
 	m_DispX = x;
-if (y < 0 || y > m_output->Height () - m_surface->Height ())
+if (y < 0 || y > m_output->Height () - m_canvas.Height ())
 	m_DispY = 0;
 else
 	m_DispY = y;
@@ -858,9 +774,9 @@ else
 int CConsole::Resize (int x, int y, int w, int h)
 {
 /* make sure that the size of the console is valid */
-if (w > m_output->Width () || w < m_surface->Font ()->Width () * 32)
+if (w > m_output->Width () || w < m_canvas.Font ()->Width () * 32)
 	w = m_output->Width ();
-if (h > m_output->Height () || h < m_surface->Font ()->Height ())
+if (h > m_output->Height () || h < m_canvas.Font ()->Height ())
 	h = m_output->Height ();
 if (x < 0 || x > m_output->Width () - w)
 	m_DispX = 0;
@@ -872,12 +788,13 @@ else
 	m_DispY = y;
 
 /* resize console surface */
-CFont* font = m_surface->Font ();
+CFont* font = m_canvas.Font ();
 m_surface->Destroy ();
-m_surface = CCanvas::Create (w, h);
-m_surface->SetFont (font);
+m_surface = CBitmap::Create (0, w, h, 1);
+m_canvas.Setup (&gameData.render.frame, 0, 0, w, h);
+m_canvas.SetFont (font);
 delete m_input;
-m_input = CBitmap::Create (0, w, m_surface->Font ()->Height (), 1);
+m_input = CBitmap::Create (0, w, m_canvas.Font ()->Height (), 1);
 m_ConsoleScrollBack = 0;
 return 0;
 }

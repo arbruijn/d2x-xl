@@ -333,8 +333,7 @@ PROF_START
 G3StartFrame (transformation, 0, (nWindow || gameStates.render.cameras.bActive) ? 0 : 1, nWindow ? nEyeOffsetSave : xStereoSeparation);
 ogl.SetStereoSeparation (xStereoSeparation);
 if (!nWindow) {
-	CCanvas::SetCurrent (&gameData.render.scene);
-	gameData.render.scene.SetViewport (&gameData.render.screen);
+	//gameData.render.scene.Activate ();
 	fontManager.SetCurrent (GAME_FONT);
 	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
 	}
@@ -509,7 +508,7 @@ else {
 	RenderFrame (xStereoSeparation, 0);
 	}
 FlushFrame (xStereoSeparation);
-CCanvas::SetCurrent (&gameData.render.screen);
+//CCanvas::SetCurrent (&gameData.render.screen);
 }
 
 //------------------------------------------------------------------------------
@@ -599,83 +598,6 @@ for (y = tileTop;y <= tileBot; y++) {
 }
 
 //------------------------------------------------------------------------------
-//fills int the background surrounding the 3d window
-void FillBackground (void)
-{
-#if 0
-if (gameData.render.screen.Left () || gameData.render.screen.Top ()) {
-	CCanvas::Push ();
-	CCanvas::SetCurrent (CurrentGameScreen ());
-	CViewport viewport = ogl.m_states.viewport [0];
-	ogl.m_states.viewport [0] = CViewport (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
-	ogl.SetDepthWrite (false);
-	bmBackground.Render (CCanvas::Current (), 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height (), 0, 0, -bmBackground.Width (), -bmBackground.Height ());
-	ogl.SetDepthWrite (true);
-	CCanvas::Pop ();
-	ogl.m_states.viewport [0] = viewport;
-	}
-#endif
-}
-
-//------------------------------------------------------------------------------
-
-void ShrinkWindow (void)
-{
-#if 0
-StopTime ();
-if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) {
-	gameData.render.screen.SetHeight (screen.Height ());
-	gameData.render.screen.SetWidth (screen.Width ());
-	//!!ToggleCockpit ();
-	gameStates.render.cockpit.nNextType = CM_FULL_COCKPIT;
-	cockpit->Activate (CM_STATUS_BAR);
-//		ShrinkWindow ();
-//		ShrinkWindow ();
-	HUDInitMessage (TXT_COCKPIT_F3);
-	SavePlayerProfile ();
-	StartTime (0);
-	return;
-	}
-
-if (gameStates.render.cockpit.nType == CM_FULL_SCREEN) {
-	//gameData.render.screen.Width () = screen.Width ();
-	//gameData.render.screen[HA] = screen.Height ();
-	cockpit->Activate (CM_STATUS_BAR);
-	SavePlayerProfile ();
-	StartTime (0);
-	return;
-	}
-
-if (gameStates.render.cockpit.nType != CM_STATUS_BAR) {
-	StartTime (0);
-	return;
-	}
-
-#if TRACE
-console.printf (CON_DBG, "Cockpit mode=%d\n", gameStates.render.cockpit.nType);
-#endif
-if (gameData.render.screen.Width () > WINDOW_MIN_W) {
-	//int x, y;
-   gameData.render.screen.SetWidth (gameData.render.screen.Width () - WINDOW_W_DELTA);
-	gameData.render.screen.SetHeight (gameData.render.screen.Height () - WINDOW_H_DELTA);
-#if TRACE
-  console.printf (CON_DBG, "NewW=%d NewH=%d VW=%d maxH=%d\n", gameData.render.screen.Width (), gameData.render.screen.Height (), screen.Width (), screen.Height ());
-#endif
-	if (gameData.render.screen.Width () < WINDOW_MIN_W)
-		gameData.render.screen.SetWidth (WINDOW_MIN_W);
-	if (gameData.render.screen.Height () < WINDOW_MIN_H)
-		gameData.render.screen.SetHeight (WINDOW_MIN_H);
-	gameData.render.screen.SetLeft ((screen.Width () - gameData.render.screen.Width ()) / 2);
-	gameData.render.screen.SetTop ((screen.Height () - gameData.render.screen.Height ()) / 2);
-	//GameInitRenderSubBuffers (gameData.render.screen.Left (), gameData.render.screen.Top (), gameData.render.screen.Width (), gameData.render.screen.Height ());
-	HUDClearMessages ();
-	SavePlayerProfile ();
-	}
-StartTime (0);
-#endif
-}
-
-//------------------------------------------------------------------------------
 
 void UpdateSlidingFaces (void)
 {
@@ -730,7 +652,6 @@ PROF_END(ptAux);
 SetScreenMode (SCREEN_GAME);
 if (!ogl.StereoDevice () || !(gameData.app.nFrameCount & 1)) {
 	cockpit->PlayHomingWarning ();
-	FillBackground ();
 	transparencyRenderer.Reset ();
 	}
 if (!ogl.StereoDevice ())

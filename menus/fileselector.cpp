@@ -202,6 +202,8 @@ int CFileSelector::FileSelector (const char* pszTitle, const char* filespec, cha
 	int					nPatternLen = 0;
 	char*					pszFn;
 
+gameData.render.frame.Activate ();
+
 m_tEnter = -1;
 m_nFirstItem = -1;
 m_nVisibleItems = 8;
@@ -292,7 +294,6 @@ if (m_nFileCount < 1) {
 if (!bInitialized) {
 //		SetScreenMode (SCREEN_MENU);
 	SetPopupScreenMode ();
-	CCanvas::SetCurrent (NULL);
 	fontManager.SetCurrent (SUBTITLE_FONT);
 	w_w = 0;
 	w_h = 0;
@@ -308,7 +309,7 @@ if (!bInitialized) {
 		fontManager.Current ()->StringSize (pszTitle, w, h, aw);	
 		if (w > w_w)
 			w_w = w;
-		nTitleHeight = h + (CCanvas::Current ()->Font ()->Height ()*2);		// add a little space at the bottom of the pszTitle
+		nTitleHeight = h + (CCanvas::Current ()->Font ()->Height () * 2);		// add a little space at the bottom of the pszTitle
 		}
 
 	m_nWidth = w_w;
@@ -326,8 +327,8 @@ if (!bInitialized) {
 	if (w_h > 480)
 		w_h = 480;
 
-	m_xOffset = (CCanvas::Current ()->Width () - w_w)/2;
-	m_yOffset = (CCanvas::Current ()->Height () - w_h)/2;
+	m_xOffset = (CCanvas::Current ()->Width () - w_w) / 2;
+	m_yOffset = (CCanvas::Current ()->Height () - w_h) / 2;
 
 	if (m_xOffset < 0) 
 		m_xOffset = 0;
@@ -339,9 +340,7 @@ if (!bInitialized) {
 
 // save the screen behind the menu.
 
-	CCanvas::Push ();
 	backgroundManager.Setup (NULL, m_xOffset, m_yOffset, w_w, w_h);
-	CCanvas::Pop ();
 	GrString (0x8000, m_yOffset + 10, pszTitle);
 	bInitialized = 1;
 	}
@@ -573,6 +572,7 @@ if (bInitialized) {
 	backgroundManager.Remove ();
 	}
 
+gameData.render.frame.Deactivate ();
 SDL_EnableKeyRepeat(0, 0);
 Unregister ();
 return exitValue;

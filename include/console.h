@@ -87,8 +87,9 @@ class CConsole {
 		int						m_CursorPos;			//! Current cursor position in CurrentCommand
 		int						m_Offset;			//! CommandOffset (first visible char of command) - if command is too long to fit into console
 		int						m_InsMode;			//! Insert or Overwrite characters?
-		CCanvas*					m_surface;	//! Canvas of the console
 		CScreen*					m_output;	//! This is the screen to draw the console to
+		CCanvas					m_canvas;
+		CBitmap*					m_surface;	//! Canvas of the console
 		CBitmap*					m_background;	//! Background image for the console
 		CBitmap*					m_input;	//! Dirty rectangle to draw over behind the users background
 		int						m_DispX;

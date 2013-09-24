@@ -432,12 +432,9 @@ if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
 if (ReleaseBuffer ()) {
 	CObject* viewerP = gameData.objs.viewerP;
 	gameData.objs.viewerP = m_data.objP ? m_data.objP : &m_data.obj;
-	CCanvas* curCanvP;
-	if ((curCanvP = m_data.bShadowMap ? CCanvas::Current () : NULL))
-		CCanvas::SetCurrent (this);
+	Activate ();
 	RenderFrame (0, 0);
-	if (curCanvP)
-		CCanvas::SetCurrent (curCanvP);
+	Deactivate ();
 	gameData.objs.viewerP = viewerP;
 	m_data.bValid = 1;
 	DisableBuffer ();

@@ -135,7 +135,7 @@ m_callback = NULL;
 
 gameStates.input.keys.bRepeat = 1;
 SetPopupScreenMode ();
-CCanvas::SetCurrent (NULL);
+gameData.render.frame.Activate ();
 fontManager.SetCurrent (SUBTITLE_FONT);
 
 m_nWidth = 0;
@@ -372,6 +372,7 @@ while (!m_bDone) {
 FadeOut ();
 gameStates.input.keys.bRepeat = bKeyRepeat;
 backgroundManager.Remove ();
+gameData.render.frame.Deactivate ();
 SDL_EnableKeyRepeat(0, 0);
 return m_nChoice;
 }

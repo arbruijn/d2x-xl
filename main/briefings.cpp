@@ -459,8 +459,8 @@ if (t - m_info.tAnimate < 10)
 	return;
 m_info.tAnimate = t;
 
-	CCanvas* curCanvSave, bitmapCanv;
-	CFixVector p = CFixVector::ZERO;
+	CCanvas		bitmapCanv;
+	CFixVector	p = CFixVector::ZERO;
 
 	CBitmap *bmP;
 	int x = RescaleX (138);
@@ -548,13 +548,12 @@ if (*m_info.szBitmapName) {
 	p.v.coord.z = 2 * I2X (w);
 	depthFunc = ogl.GetDepthMode ();
 	ogl.SetDepthMode (GL_ALWAYS);
+	bitmapCanv.Activate ();
 	ogl.RenderBitmap (bmP, p, I2X (w), I2X (h), NULL, 1.0, 0);
+	bitmapCanv.Deactivate ();
 	ogl.SetDepthMode (depthFunc);
 	G3EndFrame (transformation, 0);
 	//paletteManager.ResumeEffect ();
-	CCanvas::SetCurrent (curCanvSave);
-	delete bitmapCanv;
-	bitmapCanv = NULL;
 	if (!(bRedraw || m_info.nDoorDivCount)) {
 #if 1
 	m_info.nDoorDivCount = DOOR_DIV_INIT;

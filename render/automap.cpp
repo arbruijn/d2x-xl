@@ -658,8 +658,8 @@ if (m_bDisplay < 0) {
 			m_nHeight = CCanvas::Current ()->Height ();
 			}
 		else {
-			m_nWidth = screen.Canvas ()->Width ();
-			m_nHeight = screen.Canvas ()->Height ();
+			m_nWidth = screen.Width ();
+			m_nHeight = screen.Height ();
 			}
 		m_data.bHires = 1;
 		 }
@@ -778,8 +778,6 @@ while ((c = KeyInKey ())) {
 			break;
 
 		case KEY_PRINT_SCREEN: {
-			if (m_data.bHires)
-				CCanvas::SetCurrent (NULL);
 			gameStates.app.bSaveScreenShot = 1;
 			break;
 			}

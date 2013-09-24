@@ -345,7 +345,7 @@ ReshowScores:
 gameStates.render.nFlashScale = 0;
 scores_read ();
 SetScreenMode (SCREEN_MENU);
-CCanvas::SetCurrent (NULL);
+gameData.render.frame.Activate ();
 xOffs = (CCanvas::Current ()->Width () - 640) / 2;
 yOffs = (CCanvas::Current ()->Height () - 480) / 2;
 if (xOffs < 0)
@@ -442,7 +442,7 @@ while (!done) {
 	}
 // Restore background and exit
 paletteManager.DisableEffect ();
-CCanvas::SetCurrent (NULL);
+gameData.render.frame.Deactivate ();
 GameFlushInputs ();
 backgroundManager.Remove ();
 //backgroundManager.SetShadow (true);

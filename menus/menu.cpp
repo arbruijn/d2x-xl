@@ -404,21 +404,17 @@ return 1;
 
 void CMenu::SaveScreen (CCanvas **gameCanvasP)
 {
-*gameCanvasP = CCanvas::Current ();
-CCanvas::Push ();
-CCanvas::SetCurrent (NULL);
+gameData.render.frame.Activate ();
 }
 
 //------------------------------------------------------------------------------ 
 
 void CMenu::RestoreScreen (char* filename, int m_bDontRestore)
 {
-//CCanvas::SetCurrent (bg->menu_canvas);
 backgroundManager.Remove ();
 if (gameStates.app.bGameRunning && !gameOpts->menus.nStyle)
 	backgroundManager.Remove ();	// remove the stars background loaded for old style menus
-CCanvas::SetCurrent (NULL);		
-CCanvas::Pop ();
+gameData.render.frame.Deactivate ();
 GrabMouse (1, 0);
 }
 
@@ -489,11 +485,11 @@ m_bRedraw = 0;
 m_props.pszTitle = pszTitle;
 m_props.pszSubTitle = pszSubTitle;
 m_props.gameCanvasP = gameCanvasP;
-CCanvas::Push ();
 if (gameStates.app.bGameRunning && gameCanvasP) {
-	CCanvas::SetCurrent (gameCanvasP);
+	gameCanvasP->Activate ();
 	if (!gameStates.app.bShowError)
 		RenderMenuGameFrame ();
+	gameCanvasP->Deactivate ();
 	}
 else {
 	SetupCanvasses ();
@@ -513,7 +509,6 @@ else {
 	if (!gameStates.app.bGameRunning || m_bRedraw)
 		ogl.Update (0);
 	}
-CCanvas::Pop ();
 }
 
 //------------------------------------------------------------------------------ 

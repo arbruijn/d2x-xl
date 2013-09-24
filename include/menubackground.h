@@ -32,8 +32,8 @@ char* BackgroundName (int nType, int bHires = -1);
 
 class CBackground {
 	private:
-		CCanvas*	m_canvas [2];		// canvas (screen area) of a menu
-		CBitmap*	m_saved [2];		// copy of a screen area covered by a menu
+		CCanvas	m_canvas;			// canvas (screen area) of a menu
+		CBitmap	m_saved;				// copy of a screen area covered by a menu
 		CBitmap*	m_bitmap;			// complete background
 		bool		m_bIgnoreCanv;
 		bool		m_bIgnoreBg;

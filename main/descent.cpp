@@ -227,6 +227,8 @@ else
 	float grAlpha = gameStates.render.grAlpha;
 
 SetupCanvasses ();
+gameData.render.frame.Activate ();
+
 gameStates.render.grAlpha = 1.0f;
 if (gameStates.menus.bHires) {
 	if (gameOpts->menus.altBg.bHave > 0)
@@ -242,8 +244,6 @@ else
 
 gameStates.menus.bDrawCopyright = 0;
 if (!nInfoType) {
-	CCanvas::Push ();
-	CCanvas::SetCurrent (NULL);
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.Current ()->StringSize ("V2.2", w, h, aw);
 	fontManager.SetColorRGBi (RGB_PAL (63, 47, 0), 1, 0, 0);
@@ -319,6 +319,7 @@ else {
 fontManager.SetCurrent (NORMAL_FONT);
 fontManager.SetColorRGBi (RGB_PAL (6, 6, 6), 1, 0, 0);
 gameStates.render.grAlpha = grAlpha;
+gameData.render.frame.Deactivate ();
 }
 
 // ----------------------------------------------------------------------------
@@ -1086,7 +1087,7 @@ void ShowOrderForm (void)
 {
 	char	szExitScreen [16];
 
-CCanvas::SetCurrent (NULL);
+gameData.render.frame.Activate ();
 KeyFlush ();
 strcpy (szExitScreen, gameStates.menus.bHires ? "ordrd2ob.pcx" : "ordrd2o.pcx"); // OEM
 if (! CFile::Exist (szExitScreen, gameFolders.szDataDir [0], 0))
@@ -1105,6 +1106,7 @@ if (pcxResult == PCX_ERROR_NONE) {
 		;
 	}
 KeyFlush ();
+gameData.render.frame.Deactivate ();
 }
 
 // ----------------------------------------------------------------------------

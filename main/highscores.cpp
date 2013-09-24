@@ -349,7 +349,6 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	DrawCoopItem (i);
 	}
 DrawDeaths ();
-CCanvas::SetCurrent (NULL);
 //paletteManager.ResumeEffect ();
 ogl.Update (1);
 }

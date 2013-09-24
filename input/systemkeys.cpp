@@ -350,12 +350,14 @@ switch (key) {
 
 	case KEY_SHIFTED + KEY_MINUS:
 	case KEY_MINUS:
-		ShrinkWindow ();
+		if (gameData.render.rift.m_ipd > RIFT_MIN_IPD)
+			gameData.render.rift.m_ipd--;
 		break;
 
 	case KEY_SHIFTED + KEY_EQUALS:
 	case KEY_EQUALS:
-		GrowWindow ();
+		if (gameData.render.rift.m_ipd < RIFT_MAX_IPD)
+			gameData.render.rift.m_ipd++;
 		break;
 
 	case KEY_F2:

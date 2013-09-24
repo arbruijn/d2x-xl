@@ -211,7 +211,8 @@ ogl.SetStereoSeparation (xStereoSeparation);
 transformation.Pop ();
 if (ogl.StereoDevice () < 0)
 	ogl.ChooseDrawBuffer ();
-gameData.render.frame.SetViewport ();
+//gameData.render.frame.SetViewport ();
+gameData.render.window.Activate ();
 
 //	HACK!If guided missile, wake up robots as necessary.
 if (viewerP->info.nType == OBJ_WEAPON) 

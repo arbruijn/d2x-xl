@@ -715,11 +715,17 @@ else
 			{
 			ColorMask (1, 1, 1, 1, 1);
 			//SetViewport (0, 0, screen.Width (), screen.Height ());
+			GLbitfield mask = 0;
 			if (!bResetColorBuf)
-				glClear (GL_DEPTH_BUFFER_BIT);
+				mask = GL_DEPTH_BUFFER_BIT;
 			else if (automap.Display () || (gameStates.render.bRenderIndirect > 0)) {
 				glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-				glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+				mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
+				}
+			if (mask) {
+				gameData.render.frame.Activate ();
+				glClear (mask);
+				gameData.render.frame.Deactivate ();
 				}
 			}
 		}
@@ -769,7 +775,7 @@ else
 	if (m_states.bEnableScissor) {
 		glScissor (
 			CCanvas::Current ()->Left (),
-			screen.Canvas ()->Height () - CCanvas::Current ()->Top () - CCanvas::Current ()->Height (),
+			screen.Height () - CCanvas::Current ()->Top () - CCanvas::Current ()->Height (),
 			CCanvas::Current ()->Width (),
 			CCanvas::Current ()->Height ());
 		SetScissorTest (true);

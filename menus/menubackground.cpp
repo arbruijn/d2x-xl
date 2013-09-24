@@ -115,7 +115,7 @@ return nType ? szBackgrounds [nType - 1][gameStates.app.bDemoData ? 0 : ((bHires
 void CBackground::Init (void)
 {
 m_canvas [0] = NULL;
-m_canvas [1] = NULL;
+m_canvas. = NULL;
 m_saved [0] = NULL;
 m_saved [1] = NULL;
 m_bitmap = NULL;
@@ -132,22 +132,6 @@ void CBackground::Destroy (void)
 {
 if (!backgroundManager.IsDefault (m_bitmap))
 	delete m_bitmap;
-if (m_saved [0]) {
-	delete m_saved [0];
-	m_saved [0] = NULL;
-	}
-if (m_saved [1]) {
-	delete m_saved [1];
-	m_saved [1] = NULL;
-	}
-if (m_canvas [0]) {
-	m_canvas [0]->Destroy ();
-	m_canvas [0] = NULL;
-	}
-if (m_canvas [1]) {
-	m_canvas [1]->Destroy ();
-	m_canvas [1] = NULL;
-	}
 Init ();
 }
 
@@ -176,10 +160,7 @@ return m_bitmap;
 
 void CBackground::Setup (int x, int y, int width, int height)
 {
-if (m_canvas [1])
-	m_canvas [1]->Destroy ();
-m_canvas [1] = screen.Canvas ()->CreatePane (x, y, width, height);
-m_canvas [0] = screen.Canvas ()->CreatePane (0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
+m_canvas.Setup (&screen, x, y, width, height);
 }
 
 //------------------------------------------------------------------------------
@@ -210,21 +191,19 @@ void CBackground::Draw (bool bDrawBox, bool bUpdate)
 //paletteManager.SetEffect (0, 0, 0);
 if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameStates.app.bNostalgia))) {
 	if (m_bFullScreen) {
-		CCanvas::Push ();
-		CCanvas::SetCurrent (m_canvas [0]);
+		gameData.render.frame.Activate ();
 		m_bitmap->RenderStretched ();
 		PrintVersionInfo ();
-		CCanvas::Pop ();
+		gameData.render.frame.Deactivate ();
 		}
 	}
 if (bDrawBox && !((gameStates.app.bNostalgia && m_bTopMenu) /*|| m_bFullScreen*/ || backgroundManager.IsDefault (GetFilename ()))) {
-	CCanvas::Push ();
-	CCanvas::SetCurrent (m_canvas [1]);
+	m_canvas.Activate (&gameData.render.frame);
 	if (m_bMenuBox)
-		backgroundManager.DrawBox (0, 0, m_canvas [1]->Width (), m_canvas [1]->Height (), gameData.menu.nLineWidth, 1.0f, 0);
+		backgroundManager.DrawBox (0, 0, m_canvas.Width (), m_canvas.Height (), gameData.menu.nLineWidth, 1.0f, 0);
 	else if (!m_bFullScreen)
-		DrawArea (0, 0, m_canvas [1]->Width (), m_canvas [1]->Height ());
-	CCanvas::Pop ();
+		DrawArea (0, 0, m_canvas.Width (), m_canvas.Height ());
+	m_canvas.Deactivate ();
 	}
 if (bUpdate && !gameStates.app.bGameRunning)
 	ogl.Update (0);
@@ -295,8 +274,9 @@ gameStates.render.grAlpha = 1.0f;
 void CBackground::Restore (void)
 {
 if (!gameStates.app.bGameRunning) {
-	CCanvas::SetCurrent (m_canvas [0]);
+	gameData.render.frame.Activate ();
 	m_bitmap->RenderStretched ();
+	gameData.render.frame.Deactivate ();
 	}
 }
 
