@@ -631,8 +631,8 @@ return h;
 
 //------------------------------------------------------------------------------
 
-#define kc_gr_pixel(_x,_y)		DrawPixelClipped ((_x), (_y))
-#define KC_LHX(_x) 				(LHX (_x) + m_xOffs)
+#define kc_gr_pixel(_x,_y)		DrawPixelClipped (gameData.X (_x), (_y))
+#define KC_LHX(_x) 				gameData.X (LHX (_x) + m_xOffs)
 #define KC_LHY(_y) 				(LHY (_y) + m_yOffs)
 
 void CControlConfig::DrawTitle (void)
@@ -831,6 +831,7 @@ void CControlConfig::Render (void)
 //	RenderMenuGameFrame ()
 //
 //if (BeginRenderMenu ()) 
+int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 	{
 	backgroundManager.Canvas ()->Activate ();
 	backgroundManager.Redraw ();
@@ -853,6 +854,7 @@ void CControlConfig::Render (void)
 	SDL_ShowCursor (0);
 	m_bRedraw = 1;
 	}
+gameData.SetStereoOffsetType (nOffsetSave);
 }
 
 //------------------------------------------------------------------------------

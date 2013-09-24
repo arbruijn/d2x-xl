@@ -234,7 +234,7 @@ if (gameStates.menus.bHires) {
 	if (gameOpts->menus.altBg.bHave > 0)
 		y = 8; //102
 	else {
-		y = 88 * gameData.render.screen.Height () / 480;
+		y = 88 * CCanvas::Current ()->Height () / 480;
 		if (y < 88)
 			y = 88;
 		}

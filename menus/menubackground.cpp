@@ -194,12 +194,14 @@ if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameSta
 		}
 	}
 if (bDrawBox && !((gameStates.app.bNostalgia && m_bTopMenu) /*|| m_bFullScreen*/ || backgroundManager.IsDefault (GetFilename ()))) {
+	m_canvas.CViewport::SetLeft (m_canvas.CViewport::Left () - gameData.StereoOffset2D ());
 	m_canvas.Activate (&gameData.render.frame);
 	if (m_bMenuBox)
 		backgroundManager.DrawBox (0, 0, m_canvas.Width (), m_canvas.Height (), gameData.menu.nLineWidth, 1.0f, 0);
 	else if (!m_bFullScreen)
 		DrawArea (0, 0, m_canvas.Width (), m_canvas.Height ());
 	m_canvas.Deactivate ();
+	m_canvas.CViewport::SetLeft (m_canvas.CViewport::Left () + gameData.StereoOffset2D ());
 	}
 if (bUpdate && !gameStates.app.bGameRunning)
 	ogl.Update (0);
@@ -370,12 +372,12 @@ if (left <= 0)
 	left = 1;
 if (top <= 0)
 	top = 1;
-if (right >= gameData.render.frame.Width ())
-	right = gameData.render.frame.Width () - 1;
-if (bottom >= gameData.render.frame.Height ())
-	bottom = gameData.render.frame.Height () - 1;
-left -= gameData.StereoOffset2D ();
-right -= gameData.StereoOffset2D ();
+if (right >= CCanvas::Current ()->Width ())
+	right = CCanvas::Current ()->Width () - 1;
+if (bottom >= CCanvas::Current ()->Height ())
+	bottom = CCanvas::Current ()->Height () - 1;
+//left -= gameData.StereoOffset2D ();
+//right -= gameData.StereoOffset2D ();
 CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), (ubyte) (gameData.menu.alpha * fAlpha));
 ogl.SetTexturing (false);
 OglDrawFilledRect (left, top, right, bottom);

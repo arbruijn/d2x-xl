@@ -492,7 +492,6 @@ if (gameStates.app.bGameRunning) {
 		}
 	}
 else {
-	SetupCanvasses ();
 	console.Draw ();
 	CalcFrameTime ();
 	if (!ogl.IsSideBySideDevice ()) {
@@ -502,8 +501,9 @@ else {
 	else {
 		for (int i = 0; i < 2; i++) {
 			ogl.SetStereoSeparation (i ? gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] : -gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()]);
-			ogl.ChooseDrawBuffer ();
+			SetupCanvasses ();
 			gameData.render.frame.Activate ();
+			ogl.ChooseDrawBuffer ();
 			Render ();
 			gameData.render.frame.Deactivate ();
 			}

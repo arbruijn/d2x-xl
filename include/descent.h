@@ -1770,8 +1770,9 @@ class CRiftData {
 		inline void SetCenter (void) { GetHeadAngles (NULL); }
 	};
 
-#define STEREO_OFFSET_FIXED		0
-#define STEREO_OFFSET_FLOATING	1
+#define STEREO_OFFSET_NONE			0
+#define STEREO_OFFSET_FIXED		1
+#define STEREO_OFFSET_FLOATING	2
 
 class CRenderData {
 	public:
@@ -3664,7 +3665,7 @@ class CGameData {
 				render.nStereoOffsetType = nType; 
 			return nOldType;
 			}
-		inline int X (int x, bool bForce = false) { return x - (render.nStereoOffsetType ? FloatingStereoOffset2D (x, bForce) : StereoOffset2D ()); }
+		inline int X (int x, bool bForce = false) { return render.nStereoOffsetType ? x - ((render.nStereoOffsetType == STEREO_OFFSET_FLOATING) ? FloatingStereoOffset2D (x, bForce) : StereoOffset2D ()) : x; }
 };
 
 extern CGameData gameData;
