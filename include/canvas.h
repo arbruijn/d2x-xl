@@ -132,6 +132,8 @@ class CCanvas : public CViewport, public CBitmap {
 		static CCanvas* Current (void) { return m_save.ToS () ? *m_save.Top () : NULL; }
 
 		static void Push (CCanvas* canvP) { 
+			if (!m_save.Buffer ())
+				m_save.Create (10);
 			m_save.Push (canvP); 
 			fontManager.Push ();
 			}
