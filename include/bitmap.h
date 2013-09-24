@@ -375,7 +375,7 @@ class CBitmap : public CArray< ubyte > {
 			return clone;
 			}
 
-		inline CBitmap& operator= (CBitmap& source) {
+		inline CBitmap& Copy (CBitmap& source) {
 			source.Clone (*this);
 			source.ShareBuffer (*this);
 			return *this;

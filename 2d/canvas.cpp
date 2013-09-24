@@ -105,7 +105,8 @@ void CCanvas::Setup (CCanvas* parentP, int x, int y, int w, int h)
 {
 if (parentP)
 	Setup (parentP);
-CViewport (*this) = CViewport (x, y, w, h);
+CViewport vp = CViewport (x, y, w, h);
+*((CViewport*) this) = vp;
 SetWidth ();
 SetHeight ();
 }

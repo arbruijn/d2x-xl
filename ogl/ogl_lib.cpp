@@ -124,8 +124,10 @@ tRenderQuality renderQualities [] = {
 
 void CViewport::Apply (int t) 
 { 
-if (t >= 0)
+if (t > 0)
 	m_t = t;
+else if (m_t < 0)
+	m_t = m_h;
 glViewport ((GLint) m_x, (GLint) (m_t - m_y - m_h), (GLsizei) m_w, (GLsizei) m_h); 
 glScissor (m_x, m_t - m_y - m_h, m_w, m_h);
 ogl.SetScissorTest (ogl.m_states.bEnableScissor != 0);

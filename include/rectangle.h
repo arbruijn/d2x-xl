@@ -9,6 +9,8 @@ class CRectangle {
 
 		CRectangle (int x = 0, int y = 0, int w = 0, int h = 0, int t = 0) : m_x (x), m_y (y), m_w (w), m_h (h) {}
 
+		CRectangle (const CRectangle& other) : m_x (other.m_x), m_y (other.m_y), m_w (other.m_w), m_h (other.m_h) {}
+
 		void Setup (int x, int y, int w, int h) {
 			m_x = x;
 			m_y = y;
@@ -16,7 +18,7 @@ class CRectangle {
 			m_h = h;
 			}	
 
-		inline CRectangle& operator= (CRectangle const other) {
+		inline CRectangle& operator= (const CRectangle other) {
 			m_x = other.m_x;
 			m_y = other.m_y;
 			m_w = other.m_w;
@@ -24,7 +26,7 @@ class CRectangle {
 			return *this;
 			}
 
-		inline CRectangle& operator+= (CRectangle const other) {
+		inline CRectangle& operator+= (const CRectangle other) {
 			m_x += other.m_x;
 			m_y += other.m_y;
 			m_w += other.m_w;
@@ -32,7 +34,7 @@ class CRectangle {
 			return *this;
 			}
 
-		inline CRectangle& operator-= (CRectangle const other) {
+		inline CRectangle& operator-= (const CRectangle other) {
 			m_x -= other.m_x;
 			m_y -= other.m_y;
 			m_w -= other.m_w;
@@ -40,13 +42,13 @@ class CRectangle {
 			return *this;
 			}
 
-		inline CRectangle operator+ (CRectangle const other) {
+		inline CRectangle operator+ (const CRectangle other) {
 			CRectangle rc = *this;
 			rc += other;
 			return rc;
 			}
 
-		inline CRectangle operator- (CRectangle const other) {
+		inline CRectangle operator- (const CRectangle other) {
 			CRectangle rc = *this;
 			rc -= other;
 			return rc;

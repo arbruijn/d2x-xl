@@ -45,23 +45,25 @@ class CViewport : public CRectangle {
 
 		CViewport (int x = 0, int y = 0, int w = 0, int h = 0, int t = 0) : CRectangle (x, y, w, h), m_t (t) {}
 
+		CViewport (const CViewport& other) : CRectangle (other), m_t (other.m_t) {}
+
 		void Setup (int x, int y, int w, int h);
 
 		void Apply (int t = -1);
 
-		inline CViewport& operator= (CViewport const other) {
+		inline CViewport& operator= (const CViewport other) {
 			CRectangle (*this) = CRectangle (other);
 			m_t = other.m_t;
 			return *this;
 			}
 
-		inline CViewport& operator+= (CViewport const other) {
+		inline CViewport& operator+= (const CViewport other) {
 			CRectangle (*this) += CRectangle (other);
 			m_t = other.m_t;
 			return *this;
 			}
 
-		inline CViewport operator+ (CViewport const other) {
+		inline CViewport operator+ (const CViewport other) {
 			CViewport vp = *this;
 			vp += other;
 			return vp;
