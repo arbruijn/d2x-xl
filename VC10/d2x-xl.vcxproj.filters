@@ -906,6 +906,9 @@
     <ClInclude Include="..\include\interp.h">
       <Filter>Source Files\3d\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\rectangle.h">
+      <Filter>Source Files\main\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\3d\ase2model.cpp">

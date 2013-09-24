@@ -4,9 +4,7 @@
 #include "carray.h"
 #include "color.h"
 #include "palette.h"
-#include "canvas.h"
-//#include "fbuffer.h"
-//#include "pbuffer.h"
+#include "rectangle.h"
 
 //-----------------------------------------------------------------------------
 

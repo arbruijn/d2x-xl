@@ -649,6 +649,7 @@
     <ClInclude Include="..\include\hitbox.h" />
     <ClInclude Include="..\include\interp.h" />
     <ClInclude Include="..\include\producers.h" />
+    <ClInclude Include="..\include\rectangle.h" />
     <ClInclude Include="..\include\rendermodel.h" />
     <ClInclude Include="..\include\shadows.h" />
     <ClInclude Include="..\include\transformation.h" />

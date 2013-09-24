@@ -21,6 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cstack.h"
 #include "font.h"
 #include "palette.h"
+#include "rectangle.h"
 
 //-----------------------------------------------------------------------------
 
