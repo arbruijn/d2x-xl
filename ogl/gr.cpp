@@ -80,6 +80,8 @@ screen.SetMode (mode);
 screen.SetWidth (w);
 screen.SetHeight (h);
 gameData.render.screen.Set (0, 0, w, h);
+gameData.render.screen.Activate (NULL, true);
+SetupCanvasses ();
 //screen.Aspect () = FixDiv(screen.Width ()*3,screen.Height ()*4);
 screen.SetAspect (FixDiv (screen.Width (), (fix) (screen.Height () * ((double) w / (double) h))));
 screen.CBitmap::Init (BM_OGL, 0, 0, w, h, 1, NULL);

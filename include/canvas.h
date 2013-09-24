@@ -197,7 +197,7 @@ class CCanvas : public CViewport, public CBitmap {
 			SetViewport (parent);
 			}
 
-		inline void Reactivate (void) { Activate (m_parent); }
+		inline void Reactivate (void) { SetViewport (m_parent); }
 
 		void Deactivate (void);
 	};
