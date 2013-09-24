@@ -73,18 +73,6 @@ void _CDECL_ GrClose(void);
 #include "bitmap.h"
 //#include "canvas.h"
 
-void gr_bm_pixel (CBitmap * bmP, int x, int y, ubyte color);
-void gr_bm_upixel (CBitmap * bmP, int x, int y, ubyte color);
-void BlitToBitmap (CBitmap * dest, int dx, int dy, int w, int h, CBitmap * src, int sx, int sy, int bTransp);
-void GrBmUBitBltM (int w, int h, int dx, int dy, int sx, int sy, CBitmap * src, CBitmap * dest, int bTransp);
-void GrUBitmapM(int x, int y, CBitmap *bmP);
-
-void BlitClipped (int x, int y, CBitmap *bmP);
-
-void GrBitmapScaleTo(CBitmap *src, CBitmap *dst);
-
-void gr_update_buffer (void * sbuf1, void * sbuf2, void * dbuf, int size);
-
 //=========================================================================
 // Color functions:
 
@@ -103,6 +91,7 @@ void GrCopyPalette (ubyte *gr_palette, ubyte *pal, int size);
 // but not necessarily shaded as a concave polygon. It shouldn't hang.
 // probably good solution is to shade from minx to maxx on each scan line.
 // int should really be fix
+#if 0
 int gr_poly(int nverts, int *verts);
 int gr_upoly(int nverts, int *verts);
 
@@ -184,6 +173,8 @@ void GrMergeTextures1(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, 
 void GrMergeTextures2(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
 void GrMergeTextures3(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
 
+#endif
+
 void SaveScreenShot (ubyte *buf, int automapFlag);
 void AutoScreenshot (void);
 
@@ -202,7 +193,6 @@ typedef struct tScrSize {
 extern int curDrawBuffer;
 
 char *ScrSizeArg (int x, int y);
-int GrBitmapHasTransparency (CBitmap *bmP);
 
 class CDisplayModeInfo {
 	public:

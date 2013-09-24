@@ -135,10 +135,7 @@ ogl.SetScissorTest (ogl.m_states.bEnableScissor != 0);
 
 void CViewport::Setup (int x, int y, int w, int h) 
 {
-m_x = x;
-m_y = y;
-m_w = w;
-m_h = h;
+CRectangle::Setup (x, y, w, h);
 m_t = screen.Height ();
 }
 

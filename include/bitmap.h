@@ -4,6 +4,7 @@
 #include "carray.h"
 #include "color.h"
 #include "palette.h"
+#include "canvas.h"
 //#include "fbuffer.h"
 //#include "pbuffer.h"
 
@@ -347,10 +348,10 @@ class CBitmap : public CArray< ubyte > {
 						int xSrc, int ySrc, int wSrc, int hSrc,
 						int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0,
 						float fAlpha = 1.0f, CFloatVector* colorP = NULL);
-		inline void Render (CCanvas* dest, int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0, float fAlpha = 1.0f)
-		 { Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, bSmoothe, fAlpha); }
-		void RenderStretched (CCanvas* dest = NULL, int x = 0, int y = 0);
-		void RenderFixed (CCanvas* dest = NULL, int x = 0, int y = 0, int w = 0, int h = 0);
+		inline void Render (CRectangle* dest, int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0, float fAlpha = 1.0f)
+			{ Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, bSmoothe, fAlpha); }
+		void RenderStretched (CRectangle* dest = NULL, int x = 0, int y = 0);
+		void RenderFixed (CRectangle* dest = NULL, int x = 0, int y = 0, int w = 0, int h = 0);
 
 		void Blit (CBitmap* dest, int dx, int dy, int w, int h, int sx, int sy, int bTransp);
 		void BlitClipped (CBitmap* dest = NULL, int dx = 0, int dy = 0, int w = -1, int h = -1, int sx = 0, int sy = 0);
@@ -358,7 +359,7 @@ class CBitmap : public CArray< ubyte > {
 		void BlitScaled (CBitmap* destP);
 		void ScreenCopy (CBitmap* dest, int dx, int dy, int w, int h, int sx, int sy);
 
-		void OglVertices (int x, int y, int w = 0, int h = 0, int scale = I2X (1), int orient = 0, CCanvas* destP = NULL);
+		void OglVertices (int x, int y, int w = 0, int h = 0, int scale = I2X (1), int orient = 0, CRectangle* destP = NULL);
 		void OglTexCoord (void);
 		void SetTexCoord (GLfloat u, GLfloat v, int orient);
 		void SetTexCoord (GLfloat u, GLfloat v, int orient, tTexCoord2f& texCoord);

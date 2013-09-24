@@ -526,7 +526,6 @@ if (Hide ())
 
 if (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) {
 	CBitmap* bmP = BitBlt (-1, x, y, false, false, I2X (1), 0, &gameData.hoard.icon [gameStates.render.fonts.bHires].bm);
-	//GrUBitmapM (x, y, bmP);
 
 	x += 3 * bmP->Width () / 2;
 	y += gameStates.render.fonts.bHires + 1;

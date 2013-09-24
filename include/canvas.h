@@ -19,7 +19,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 #include "fix.h"
 #include "cstack.h"
-#include "bitmap.h"
 #include "font.h"
 #include "palette.h"
 
@@ -39,30 +38,24 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //-----------------------------------------------------------------------------
 
-class CViewport {
+class CViewport : public CRectangle {
 	public:
-		int m_x, m_y, m_w, m_h, m_t;
+		int m_t;
 
-		CViewport (int x = 0, int y = 0, int w = 0, int h = 0, int t = 0) : m_x (x), m_y (y), m_w (w), m_h (h), m_t (t) {}
+		CViewport (int x = 0, int y = 0, int w = 0, int h = 0, int t = 0) : CRectangle (x, y, w, h), m_t (t) {}
 
 		void Setup (int x, int y, int w, int h);
 
 		void Apply (int t = -1);
 
 		inline CViewport& operator= (CViewport const other) {
-			m_x = other.m_x;
-			m_y = other.m_y;
-			m_w = other.m_w;
-			m_h = other.m_h;
+			CRectangle (*this) = CRectangle (other);
 			m_t = other.m_t;
 			return *this;
 			}
 
 		inline CViewport& operator+= (CViewport const other) {
-			m_x += other.m_x;
-			m_y += other.m_y;
-			m_w += other.m_w;
-			m_h += other.m_h;
+			CRectangle (*this) += CRectangle (other);
 			m_t = other.m_t;
 			return *this;
 			}
@@ -77,15 +70,6 @@ class CViewport {
 			return (m_x != other.m_x) || (m_y != other.m_y) || (m_w != other.m_w) || (m_h != other.m_h) || (m_t != other.m_t);
 			}
 
-		inline int Left (void) { return m_x; }
-		inline int Top (void) { return m_y; }
-		inline int Width (void) { return m_w; }
-		inline int Height (void) { return m_h; }
-
-		inline void SetLeft (int x) { m_x = x; }
-		inline void SetTop (int y) { m_y = y; }
-		inline void SetWidth (int w) { m_w = w; }
-		inline void SetHeight (int h) { m_h = h; }
 	};
 
 //-----------------------------------------------------------------------------

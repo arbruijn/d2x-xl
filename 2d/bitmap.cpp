@@ -465,7 +465,7 @@ for (int i = m_info.props.h * m_info.props.w; i; i--, p++) {
 
 //------------------------------------------------------------------------------
 
-void CBitmap::RenderStretched (CBitmap* dest, int x, int y)
+void CBitmap::RenderStretched (CRectangle* dest, int x, int y)
 { 
 if (!dest)
 	dest = CCanvas::Current ();
@@ -475,7 +475,7 @@ if (dest)
 
 //------------------------------------------------------------------------------
 
-void CBitmap::RenderFixed (CBitmap* dest, int x, int y, int w, int h)
+void CBitmap::RenderFixed (CRectangle* dest, int x, int y, int w, int h)
 { 
 if ((w <= 0) || (w > Width ()))
 	w = Width ();
