@@ -413,7 +413,7 @@ SetupTransformation (projection, CFixVector::ZERO, CFixMatrix::IDENTITY, gameSta
 gameStates.render.nShadowPass = 0;
 gameStates.render.nShadowMap = 0;
 ogl.SetTransform (0);
-CCanvas::Pop ();
+canvas.Deactivate ();
 screen.SetWidth (w);
 screen.SetHeight (h);
 ogl.EndFrame (-1);

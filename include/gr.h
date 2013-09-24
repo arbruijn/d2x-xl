@@ -168,12 +168,12 @@ int GrBitmapAssignSelector(CBitmap * bmPp);
 
 // Given: r, g, b, each in range of 0-63, return the color index that
 // best matches the input.
+#endif
+
 void GrMergeTextures(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
 void GrMergeTextures1(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
 void GrMergeTextures2(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
 void GrMergeTextures3(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
-
-#endif
 
 void SaveScreenShot (ubyte *buf, int automapFlag);
 void AutoScreenshot (void);

@@ -264,7 +264,6 @@ else if ((k == KEY_ESC) || (m_bDone > uint (NUM_LINES))) {
 	Destroy ();
 	paletteManager.DisableEffect ();
 	paletteManager.Load (D2_DEFAULT_PALETTE, NULL);
-	CCanvas::Pop ();
 	songManager.Play (SONG_TITLE, 1);
 #if 0
 	if (creditsOffscreenBuf != gameStates.render.vr.buffers.offscreen)
@@ -383,7 +382,6 @@ m_bmBackdrop.SetPalette (NULL);
 int nPcxError = PCXReadBitmap (BackgroundName (BG_STARS), &m_bmBackdrop, BM_LINEAR, 0);
 if (nPcxError != PCX_ERROR_NONE) {
 	m_cf.Close ();
-	CCanvas::Pop ();
 	return;
 	}
 songManager.Play (SONG_CREDITS, 1);

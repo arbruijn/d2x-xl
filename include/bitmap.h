@@ -346,13 +346,13 @@ class CBitmap : public CArray< ubyte > {
 						int xSrc, int ySrc, int wSrc, int hSrc,
 						int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0,
 						float fAlpha = 1.0f, CFloatVector* colorP = NULL);
-		inline void Render (CRectangle* dest, int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0, float fAlpha = 1.0f)
-			{ Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, bSmoothe, fAlpha); }
+		inline void Render (CRectangle* destP, int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0, float fAlpha = 1.0f)
+			{ Render (destP, 0, 0, destP->Width (), destP->Height (), 0, 0, Width (), Height (), bTransp, bMipMaps, bSmoothe, fAlpha); }
 		void RenderStretched (CRectangle* dest = NULL, int x = 0, int y = 0);
 		void RenderFixed (CRectangle* dest = NULL, int x = 0, int y = 0, int w = 0, int h = 0);
 
 		void Blit (CBitmap* dest, int dx, int dy, int w, int h, int sx, int sy, int bTransp);
-		void BlitClipped (CRectangle* dest = NULL, int dx = 0, int dy = 0, int w = -1, int h = -1, int sx = 0, int sy = 0);
+		void BlitClipped (CBitmap* dest = NULL, int dx = 0, int dy = 0, int w = -1, int h = -1, int sx = 0, int sy = 0);
 		void BlitClipped (int xSrc, int ySrc);
 		void BlitScaled (CBitmap* destP);
 		void ScreenCopy (CBitmap* dest, int dx, int dy, int w, int h, int sx, int sy);
@@ -387,6 +387,10 @@ class CBitmap : public CArray< ubyte > {
 		int FreeHiresAnimation (int bD1);
 		void Unload (int i, int bD1);
 
+		operator const CRectangle() {
+			CRectangle rc (Left (), Top (), Width (), Height ()); 
+			return rc;
+			}
 	};
 
 inline int operator- (CBitmap* o, CArray<CBitmap>& a) { return a.Index (o); }

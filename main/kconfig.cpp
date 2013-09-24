@@ -881,7 +881,6 @@ if (ogl.m_states.nDrawBuffer != GL_BACK)
 void CControlConfig::Quit (void)
 {
 Unregister ();
-CCanvas::Pop ();
 //bg->menu_canvas = NULL;
 GameFlushInputs ();
 backgroundManager.Remove ();

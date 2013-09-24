@@ -294,7 +294,6 @@ if (!nInfoType) {
 	fontManager.SetCurrent (MEDIUM2_FONT);
 	fontManager.Current ()->StringSize (D2X_NAME, w, h, aw);
 	GrPrintF (NULL, CCanvas::Current ()->Width () - w - SUBVER_XOFFS, y + ((bVertigo && !gameOpts->menus.altBg.bHave) ? h + 2 : 0), D2X_NAME);
-	CCanvas::Pop ();
 	}
 else {
 	//gameStates.render.grAlpha = 0.75f;

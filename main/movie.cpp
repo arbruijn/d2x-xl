@@ -268,8 +268,8 @@ else {
 		xOffs = 0;
 	if (yOffs < 0)
 		yOffs = 0;
-	xOffs + xDest;
-	yOffs + yDest;
+	xOffs += xDest;
+	yOffs += yDest;
 	//bmFrame.Blit (CCanvas::Current (), xOffs, yOffs, bufw, bufh, xSrc, ySrc, 1);
 	bmFrame.Render (CCanvas::Current (), xOffs, yOffs, w, h, xSrc, ySrc, wBuffer, hBuffer, 0, 0, gameOpts->movies.nQuality);
 	if ((CCanvas::Current ()->Width () > w) || (CCanvas::Current ()->Height () > h)) {

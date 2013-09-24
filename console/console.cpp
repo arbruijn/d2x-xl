@@ -454,7 +454,6 @@ m_canvas.Activate ();
 
 fontManager.SetCurrent (font);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
-CCanvas::Pop ();
 
 /* Load the dirty rectangle for user input */
 m_input = CBitmap::Create (0, w, m_canvas.Font ()->Height (), 1);
@@ -657,14 +656,6 @@ if (bBlink) {
 		GrString (x, m_canvas.Height () - m_canvas.Font ()->Height (), CON_OVR_CURSOR);
 	}
 CCanvas::Current ()->FontColor (0) = orig_color;
-
-#if 0
-if (!gameOpts->menus.nStyle)
-	CCanvas::Pop ();
-if (m_output->flags & SDL_OPENGLBLIT) {
-	SDL_SetColorKey (CurrentFont->FontSurface, 0, 0);
-}
-#endif
 }
 
 #ifdef _WIN32

@@ -470,30 +470,33 @@ inside:
 
 //------------------------------------------------------------------------------
 
-void CBitmap::Blit (CBitmap* dest, int xDest, int yDest, int w, int h, int xSrc, int ySrc, int bTransp)
+void CBitmap::Blit (CBitmap* destP, int xDest, int yDest, int w, int h, int xSrc, int ySrc, int bTransp)
 {
 if (Mode () == BM_LINEAR) {
-	if (dest->Mode () == BM_LINEAR) {
+	if (destP->Mode () == BM_LINEAR) {
 		if (Flags () & BM_FLAG_RLE)
-			BlitToBitmapRLE (w, h, xDest, yDest, xSrc, ySrc, this, dest);
+			BlitToBitmapRLE (w, h, xDest, yDest, xSrc, ySrc, this, destP);
 		else
-			SWBlitToBitmap (w, h, xDest, yDest, xSrc, ySrc, this, dest);
+			SWBlitToBitmap (w, h, xDest, yDest, xSrc, ySrc, this, destP);
 		}
-	else if (dest->Mode () == BM_OGL) {
-		Render (dest, xDest, yDest, w, h, xSrc, ySrc, w, h, bTransp);
+	else if (destP->Mode () == BM_OGL) {
+		CRectangle rc;
+		if (destP)
+			rc = (CRectangle) (*destP);
+		Render (destP ? &rc : NULL, xDest, yDest, w, h, xSrc, ySrc, w, h, bTransp);
 		}
 	else if (Flags () & BM_FLAG_RLE) {
-		StretchToBitmapRLE (w, h, xDest, yDest, xSrc, ySrc, this, dest);
+		StretchToBitmapRLE (w, h, xDest, yDest, xSrc, ySrc, this, destP);
 		}
 	else {
 		for (int y1 = 0; y1 < h; y1++)  
 			for (int x1 = 0; x1 < w; x1++)  
-				dest->DrawPixel (xDest + x1, yDest + y1, GetPixel (xSrc + x1, ySrc + y1));
+				destP->DrawPixel (xDest + x1, yDest + y1, GetPixel (xSrc + x1, ySrc + y1));
 		}
 	}
 else if (Mode () == BM_OGL) {
-	if (dest->Mode () == BM_LINEAR)
-		ScreenCopy (dest, xDest, yDest, w, h, xSrc, ySrc);
+	if (destP->Mode () == BM_LINEAR)
+		ScreenCopy (destP, xDest, yDest, w, h, xSrc, ySrc);
 	}
 }
 
@@ -531,7 +534,7 @@ Blit (dest, destLeft, destTop, destRight - destLeft + 1, destBottom - destTop + 
 
 //------------------------------------------------------------------------------
 // GrBmBitBlt 
-void CBitmap::BlitClipped (CRectangle* dest, int destLeft, int destTop, int w, int h, int srcLeft, int srcTop)
+void CBitmap::BlitClipped (CBitmap* dest, int destLeft, int destTop, int w, int h, int srcLeft, int srcTop)
 {
 if (!dest)
 	dest = CCanvas::Current ();
@@ -601,7 +604,7 @@ Blit (dest, destLeft, destTop, w, h, srcLeft, srcTop, 1);
 
 void CBitmap::RenderFullScreen (void)
 {
-	CBitmap * const dest = CCanvas::Current ();
+	CCanvas* const dest = CCanvas::Current ();
 
 if ((Mode () == BM_LINEAR) && (dest->Mode () == BM_OGL)) {
 	Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), (m_info.props.flags & BM_FLAG_TRANSPARENT) != 0, 0);

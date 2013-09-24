@@ -220,16 +220,16 @@ if (scale > 1)
 switch(nType) {
 	case 0:
 		// Normal
-		GrMergeTextures(btmDataP, topDataP, destDataP, bmBot->Width (), bmBot->Height (), scale);
+		GrMergeTextures (btmDataP, topDataP, destDataP, bmBot->Width (), bmBot->Height (), scale);
 		break;
 	case 1:
-		GrMergeTextures1(btmDataP, topDataP, destDataP, bmBot->Width (), bmBot->Height (), scale);
+		GrMergeTextures1 (btmDataP, topDataP, destDataP, bmBot->Width (), bmBot->Height (), scale);
 		break;
 	case 2:
-		GrMergeTextures2(btmDataP, topDataP, destDataP, bmBot->Width (), bmBot->Height (), scale);
+		GrMergeTextures2 (btmDataP, topDataP, destDataP, bmBot->Width (), bmBot->Height (), scale);
 		break;
 	case 3:
-		GrMergeTextures3(btmDataP, topDataP, destDataP, bmBot->Width (), bmBot->Height (), scale);
+		GrMergeTextures3 (btmDataP, topDataP, destDataP, bmBot->Width (), bmBot->Height (), scale);
 		break;
 	}
 }
