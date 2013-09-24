@@ -94,7 +94,7 @@ SetDrawMode (parentP->m_info.nDrawMode);
 SetFont (parentP->m_info.font ? parentP->m_info.font : GAME_FONT);
 SetFontColor (parentP->m_info.fontColors [0], 0);
 SetFontColor (parentP->m_info.fontColors [1], 1);
-CViewport (*this) = CViewport (*parentP);
+*((CViewport*) this) = *((CViewport*) parentP);
 SetWidth ();
 SetHeight ();
 }
