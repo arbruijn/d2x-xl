@@ -74,7 +74,7 @@ extern CCanvas	VR_screen_sub_pages[2];		// Two sub pages of VRAM if paging is av
 #define VR_INTERLACED	2	// viewing with the stereo interlaced method
 
 void GameInitRenderBuffers(int screen_mode, int render_max_w, int render_max_h, int render_method, int flags);
-void GameInitRenderSubBuffers(int x, int y, int w, int h);
+void GameInitRenderSubBuffers(void);
 
 int GetDisplayMode (int mode);
 int SetDisplayMode (int mode, int bOverride);

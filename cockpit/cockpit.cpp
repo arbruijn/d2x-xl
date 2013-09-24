@@ -589,7 +589,6 @@ gameData.render.frame.SetHeight (2 * screen.Height () / 3);
 gameData.render.frame.SetWidth (screen.Width ());
 gameData.render.frame.CViewport::SetLeft ((screen.Width () - gameData.render.frame.Width ()) / 2);
 gameData.render.frame.CViewport::SetTop ((screen.Height () - gameData.render.frame.Height ()) / 2);
-//GameInitRenderSubBuffers (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 return true;
 }
 

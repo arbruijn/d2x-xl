@@ -243,24 +243,11 @@ return true;
 
 //------------------------------------------------------------------------------
 
-void GameInitRenderSubBuffers (int x, int y, int w, int h)
-{
-gameData.render.frame.SetLeft (x);
-gameData.render.frame.SetTop (y);
-gameData.render.frame.SetWidth (w);
-gameData.render.frame.SetHeight (h);
-}
-
-//------------------------------------------------------------------------------
-
 // Sets up the canvases we will be rendering to (NORMAL VERSION)
 void GameInitRenderBuffers (int nScreenSize, int render_w, int render_h, int render_method, int flags)
 {
 gameData.render.screen.Set (nScreenSize);
-gameData.render.frame.SetLeft (0);
-gameData.render.frame.SetTop (0);
-gameData.render.frame.SetWidth (render_w);
-gameData.render.frame.SetHeight (render_h);
+SetupCanvasses ();
 }
 
 //------------------------------------------------------------------------------

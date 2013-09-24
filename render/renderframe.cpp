@@ -552,7 +552,6 @@ else {
 		gameData.render.screen.SetWidth (screen.Width ());
 	gameData.render.screen.SetLeft ((screen.Width () - gameData.render.screen.Width ()) / 2);
 	gameData.render.screen.SetTop ((screen.Height () - gameData.render.screen.Height ()) / 2);
-	//GameInitRenderSubBuffers (gameData.render.screen.Left (), gameData.render.screen.Top (), gameData.render.screen.Width (), gameData.render.screen.Height ());
 	}
 HUDClearMessages ();	//	@mk, 11/11/94
 SavePlayerProfile ();
