@@ -45,12 +45,10 @@ int nModexHUDMsgs;
 void ClearBackgroundMessages (void)
 {
 if (((gameStates.render.cockpit.nType == CM_STATUS_BAR) || (gameStates.render.cockpit.nType == CM_FULL_SCREEN)) && 
-	  (nLastMsgYCrd != -1) && (gameData.render.viewport.Top () >= 6)) {
-	CCanvas::Push ();
-
-	CCanvas::SetCurrent (CurrentGameScreen ());
+	  (nLastMsgYCrd != -1) && (gameData.render.scene.Top () >= 6)) {
+	gameData.render.frame.Activate ();
 	CopyBackgroundRect (0, nLastMsgYCrd, CCanvas::Current ()->Width (), nLastMsgYCrd + nLastMsgHeight - 1);
-	CCanvas::Pop ();
+	gameData.render.frame.Deactivate ();
 	nLastMsgYCrd = -1;
 	}
 szDisplayedBackgroundMsg [0][0] = 0;
@@ -122,11 +120,9 @@ if (pMsgs->nMessages > 0) {
 		pszMsg = pMsgs->szMsgs [nMsg];
 
 		if (strcmp (szDisplayedBackgroundMsg [0], pszMsg)) {
-			CCanvas::Push ();
-			int ycrd = CCanvas::Current ()->Top () - (SMALL_FONT->Height ()+2);
+			int ycrd = CCanvas::Current ()->Top () - (SMALL_FONT->Height () + 2);
 			if (ycrd < 0)
 				ycrd = 0;
-			CCanvas::SetCurrent (CurrentGameScreen ());
 			fontManager.SetCurrent (SMALL_FONT);
 			fontManager.Current ()->StringSize (pszMsg, w, h, aw);
 			ClearBackgroundMessages ();
@@ -135,7 +131,6 @@ if (pMsgs->nMessages > 0) {
 			fontManager.SetColorRGBi (pMsgs->nColor, 1, 0, 0);
 			pMsgs->nMsgIds [nMsg] = GrPrintF (pMsgs->nMsgIds + nMsg, (CCanvas::Current ()->Width ()-w) / 2, ycrd, pszMsg);
 			strcpy (szDisplayedBackgroundMsg [0], pszMsg);
-			CCanvas::Pop ();
 			nLastMsgYCrd = ycrd;
 			nLastMsgHeight = h;
 			}

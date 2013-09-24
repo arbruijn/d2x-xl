@@ -832,9 +832,9 @@ void CControlConfig::Render (void)
 //
 //if (BeginRenderMenu ()) 
 	{
-	CCanvas::SetCurrent (backgroundManager.Canvas ());
+	backgroundManager.Canvas ()->Activate ();
 	backgroundManager.Redraw ();
-	CCanvas::SetCurrent (NULL);
+	backgroundManager.Canvas ()->Deactivate ();
 	DrawTitle ();
 #if 1
 	DrawCloseBox (Scale (gameStates.menus.bHires ? 15 : 7), Scale (gameStates.menus.bHires ? 15 : 7));
@@ -1434,13 +1434,12 @@ if (!IsMultiGame || (gameStates.app.nFunctionMode != FMODE_GAME) || gameStates.a
 	StopTime ();
 	}
 
-CCanvas::Push ();
-CCanvas::SetCurrent (NULL);
+gameData.render.frame.Activate ();
 //CFont* font = CCanvas::Current ()->Font ();
 controls.FlushInput ();
 backgroundManager.Setup (NULL, m_xOffs, m_yOffs, 640, 480);
 //paletteManager.ResumeEffect ();
-CCanvas::SetCurrent (NULL);
+gameData.render.frame.Deactivate ();
 
 SDL_ShowCursor (1);
 if (m_items == kcKeyboard)

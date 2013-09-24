@@ -721,11 +721,7 @@ if (IsMultiGame) {
 	nIdLives = DrawHUDText (&nIdLives, 10, 3, "%s: %d", TXT_DEATHS, LOCALPLAYER.netKilledTotal);
 	}
 else if (LOCALPLAYER.lives > 1)  {
-	//m_info.nColor = WHITE_RGBA;
-	//CCanvas::Push ();
-	//CCanvas::SetCurrent (&gameData.render.scene);
 	CBitmap* bmP = BitBlt (GAUGE_LIVES, 10, 3, false, false);
-	//CCanvas::Pop ();
 	SetFontColor (MEDGREEN_RGBA);
 	nIdLives = DrawHUDText (&nIdLives, 10 + bmP->Width () + bmP->Width () / 2, 4, "x %d", LOCALPLAYER.lives - 1);
 	}

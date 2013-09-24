@@ -256,8 +256,6 @@ nIdEnergy = DrawHUDText (&nIdEnergy,
 
 void CStatusBar::DrawEnergyBar (void)
 {
-//CCanvas::Push ();
-//CCanvas::SetCurrent (gameData.render.scene);
 if (gameStates.app.bD1Mission)
 	StretchBlt (SB_GAUGE_ENERGY, SB_ENERGY_GAUGE_X, SB_ENERGY_GAUGE_Y, 1.0, 
 					double (SB_ENERGY_GAUGE_H) / double (SB_ENERGY_GAUGE_H - SB_AFTERBURNER_GAUGE_H));
@@ -274,7 +272,6 @@ if (nEraseHeight > 0) {
 		SB_ENERGY_GAUGE_Y + nEraseHeight);
 	ogl.SetBlending (true);
 	}
-//CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -349,10 +346,7 @@ nIdShield = DrawHUDText (&nIdShield,
 void CStatusBar::DrawShieldBar (void)
 {
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) || (m_info.tInvul <= 0)) {
-	//CCanvas::Push ();
-	//CCanvas::SetCurrent (gameData.render.scene);
 	BitBlt (GAUGE_SHIELDS + 9 - ((m_info.nShield >= 100) ? 9 : (m_info.nShield / 10)), SB_SHIELD_GAUGE_X, SB_SHIELD_GAUGE_Y);
-	//CCanvas::Pop ();
 	}
 }
 
@@ -405,8 +399,6 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 
 void CStatusBar::ClearBombCount (int bgColor)
 {
-//CCanvas::Push ();
-//CCanvas::SetCurrent (gameData.render.scene);
 CCanvas::Current ()->SetColorRGBi (bgColor);
 if (!gameStates.video.nDisplayMode) {
 	Rect (169, 189, 189, 196);
@@ -418,7 +410,6 @@ else {
 	CCanvas::Current ()->SetColorRGBi (RGB_PAL (128, 128, 128));
 	OglDrawLine (ScaleX (336), ScaleY (453), ScaleX (378), ScaleY (453));
 	}
-//CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -452,8 +443,6 @@ void CStatusBar::DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel)
 {
 	int nIndex;
 
-//CCanvas::Push ();
-//CCanvas::SetCurrent (gameData.render.scene);
 if (nWeaponType == 0) {
 	nIndex = primaryWeaponToWeaponInfo [nWeaponId];
 	if (nIndex == LASER_ID && laserLevel > MAX_LASER_LEVEL)
@@ -472,7 +461,6 @@ else {
 												SECONDARY_WEAPON_NAMES_SHORT (nWeaponId),
 												SB_SECONDARY_W_TEXT_X, SB_SECONDARY_W_TEXT_Y, 0);
 	}
-//CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------

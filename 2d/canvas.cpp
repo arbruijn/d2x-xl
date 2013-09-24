@@ -56,6 +56,7 @@ void CCanvas::Init (void)
 memset (&m_info, 0, sizeof (m_info));
 if (!m_save.Buffer ())
 	m_save.Create (10);
+m_previous = NULL;
 }
 
 //	-----------------------------------------------------------------------------
@@ -96,6 +97,8 @@ SetFont (parentP->m_info.font ? parentP->m_info.font : GAME_FONT);
 SetFontColor (parentP->m_info.fontColors [0], 0);
 SetFontColor (parentP->m_info.fontColors [1], 1);
 CViewport (*this) = CViewport (*parentP);
+SetWidth ();
+SetHeight ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -104,25 +107,16 @@ void CCanvas::Setup (CCanvas* parentP, int x, int y, int w, int h)
 {
 Setup (parentP);
 CViewport (*this) = CViewport (x, y, w, h);
+SetWidth ();
+SetHeight ();
 }
 
 //	-----------------------------------------------------------------------------
 
 void CCanvas::Destroy (void)
 {
-if (CCanvas::Current () == this)
-	CCanvas::SetCurrent (NULL);
+Deactivate ();
 delete this;
-}
-
-//	-----------------------------------------------------------------------------
-
-CCanvas* CCanvas::SetCurrent (CCanvas *canvP)
-{
-CCanvas* previous = m_current;
-m_current = canvP ? canvP : &gameData.render.frame;
-fontManager.SetCurrent (m_current->Font ());
-return previous;
 }
 
 //	-----------------------------------------------------------------------------

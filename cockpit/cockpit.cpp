@@ -478,8 +478,6 @@ void CCockpit::DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel)
 {
 	int nIndex;
 
-CCanvas::Push ();
-CCanvas::SetCurrent (&gameData.render.frame);
 if (nWeaponType == 0) {
 	nIndex = primaryWeaponToWeaponInfo [nWeaponId];
 	if (nIndex == LASER_ID && laserLevel > MAX_LASER_LEVEL)
@@ -498,7 +496,6 @@ else {
 		SECONDARY_WEAPON_NAMES_SHORT (nWeaponId),
 		SECONDARY_W_TEXT_X, SECONDARY_W_TEXT_Y, 0);
 	}
-CCanvas::Pop ();
 }
 
 //	-----------------------------------------------------------------------------

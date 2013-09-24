@@ -1000,10 +1000,6 @@ if (!gameStates.app.bAutoRunMission &&
 	PrintLog (-1);
 	return 0;
 	}
-#if 0
-CCanvas::SetCurrent (NULL);
-GrClearCanvas (BLACK_RGBA);		//so palette switching is less obvious
-#endif
 nLastMsgYCrd = -1;		//so we don't restore backgound under msg
 if (!gameStates.app.bProgressBars)
 	messageBox.Show (TXT_LOADING);
@@ -1507,7 +1503,7 @@ SetFunctionMode (FMODE_MENU);
 if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
 SetScreenMode (SCREEN_MENU);
-CCanvas::SetCurrent (NULL);
+gameData.render.frame.Activate ();
 KeyFlush ();
 if (!IsMultiGame) {
 	if (missionManager.nCurrentMission == (gameStates.app.bD1Mission ? missionManager.nBuiltInMission [1] : missionManager.nBuiltInMission [0])) {
@@ -1553,7 +1549,7 @@ else
 	DoEndLevelScoreGlitz (0);
 
 if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && !(IsMultiGame || IsCoopGame)) {
-	CCanvas::SetCurrent (NULL);
+	gameData.render.frame.Activate ();
 	CCanvas::Current ()->Clear (BLACK_RGBA);
 	paletteManager.ResetEffect ();
 	//paletteManager.Load (D2_DEFAULT_PALETTE, NULL, 0, 1, 0);
@@ -1650,7 +1646,7 @@ if (IsMultiGame)
 	return;
 StopTime ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
-CCanvas::SetCurrent (NULL);
+gameData.render.frame.Activate ();
 int nFunctionMode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 if (missionManager.nEntryLevel < 0)
@@ -1674,7 +1670,7 @@ if (IsMultiGame)
 	return;
 StopTime ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
-CCanvas::SetCurrent (NULL);
+gameData.render.frame.Activate ();
 int nFunctionMode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 sprintf (msg, "Base level destroyed.\nAdvancing to level %i", missionManager.nEntryLevel + 1);

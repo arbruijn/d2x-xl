@@ -1260,24 +1260,3 @@ for (buddy_id = 0; buddy_id < gameData.bots.nTypes [0]; buddy_id++)
 }
 
 //	-------------------------------------------------------------------------------
-//	Show the Buddy menu!
-#if 0 //obsolete in d2x-xl
-void ShowEscortMenu (char *msg)
-{
-	int	w,h,aw;
-	int	x,y;
-	bkg	bg;
-
-	memset (&bg, 0, sizeof (bg));
-	bg.bIgnoreBg = 1;
-
-	CCanvas::SetCurrent (&gameData.render.frame);
-	fontManager.SetCurrent ( GAME_FONT );
-	fontManager.Current ()->StringSize (msg,&w,&h,&aw);
-	x = (screen.Width ()-w)/2;
-	y = (screen.Height ()-h)/4;
-	fontManager.SetColorRGBi (RGBA (0, PAL2RGBA (28), 0, 255), 1, 0, 0);
-   NMDrawBackground (NULL,x-15,y-15,x+w+15-1,y+h+15-1);
-  	GrUString ( x, y, msg );
-}
-#endif

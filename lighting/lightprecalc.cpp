@@ -396,13 +396,12 @@ static CTransformation projection;
 
 static void SetupProjection (void)
 {
+	int		w = screen.Width (),
+				h = screen.Height ();
 	CCanvas canvas;
-	int w = screen.Width (),
-		 h = screen.Height ();
 
-canvas.Setup (1024, 1024);
-CCanvas::Push ();
-CCanvas::SetCurrent (&canvas);
+canvas.Setup (&gameData.render.screen, 0, 0, 1024, 1024);
+canvas.Activate ();
 canvas.SetWidth ();
 canvas.SetHeight ();
 screen.SetWidth (1024);

@@ -159,8 +159,6 @@ int _CDECL_ CGenericCockpit::DrawHUDText (int *idP, int x, int y, const char * f
 
 va_start (args, format);
 vsprintf (buffer, format, args);
-CCanvas::Push ();
-CCanvas::SetCurrent (Canvas () ? Canvas () : &gameData.render.scene);
 if (!CCanvas::Current ()->Font ())
 	CCanvas::Current ()->SetFont (GAME_FONT);
 CCanvasColor fontColor = CCanvas::Current ()->FontColor (0);
@@ -177,8 +175,6 @@ int nId = GrString (x, y, buffer, idP);
 gameData.SetStereoOffsetType (nOffsetSave);
 fontManager.SetScale (1.0f);
 CCanvas::Current ()->FontColor (0) = fontColor;
-CCanvas::Pop ();
-SetCanvas (NULL);
 return nId;
 }
 
@@ -1344,12 +1340,9 @@ if ((gameOpts->render.cockpit.bHUD) || (gameStates.render.cockpit.nType != CM_FU
 	bmP->SetTranspType (3);
 	bmP->SetupTexture (0, 1);
 	ogl.m_states.nTransparencyLimit = 0;
-	CCanvas::Push ();
-   CCanvas::SetCurrent (&gameData.render.viewport);
 	CCanvas::Current ()->SetColorRGBi (WHITE_RGBA);
 	bmP->RenderScaled (0, y, -1, CCanvas::Current ()->Height () - y, I2X (1), 0, &CCanvas::Current ()->Color ());
 	CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
-	CCanvas::Pop ();
 	}
 #endif
 }

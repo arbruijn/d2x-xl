@@ -398,8 +398,7 @@ int nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
 for (;;) {
 	Read ();
 
-	CCanvas::SetCurrent (&gameData.render.scene);
-	gameData.render.scene.SetViewport (&gameData.render.screen);
+	gameData.render.scene.Activate ();
 
 	for (int i = 0; i < nFrames; i++) {
 		ogl.SetStereoSeparation (gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] * (i ? 1 : -1));
@@ -408,8 +407,7 @@ for (;;) {
 		Render ();
 		}
 	ogl.Update (0);
-	if (gameOpts->menus.nStyle) 
-		CCanvas::SetCurrent (NULL);
+	gameData.render.scene.Deactivate ();
 
 	int t = m_xTimeout - SDL_GetTicks ();
 	if (t > 0)

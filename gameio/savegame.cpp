@@ -972,14 +972,26 @@ m_cf.WriteInt (gameOpts->gameplay.nShip [0]);
 
 void CSaveGameManager::SaveImage (void)
 {
-	CCanvas	*thumbCanv = CCanvas::Create (THUMBNAIL_LW, THUMBNAIL_LH);
+	CBitmap	bmIn, bmOut;
+	int		x, y;
 
-if (thumbCanv) {
-		CBitmap	bm;
-		int		i, k, x, y;
+bmOut.SetWidth (THUMBNAIL_LW);
+bmOut.SetHeight (THUMBNAIL_LH);
+bmIn.SetBPP (1);
+bmOut.CreateBuffer ();
 
-	CCanvas::Push ();
-	CCanvas::SetCurrent (thumbCanv);
+bmIn.SetWidth ((gameData.render.frame.Width () / THUMBNAIL_LW) * THUMBNAIL_LW);
+bmIn.SetHeight (bmIn.Width () * 3 / 5);	//force 5:3 aspect ratio
+if (bmIn.Height () > gameData.render.frame.Height ()) {
+	bmIn.SetHeight ((gameData.render.frame.Height () / THUMBNAIL_LH) * THUMBNAIL_LH);
+	bmIn.SetWidth (bmIn.Height () * 5 / 3);
+	}
+x = (gameData.render.frame.Width () - bmIn.Width ()) / 2;
+y = (gameData.render.frame.Height () - bmIn.Height ()) / 2;
+bmIn.SetBPP (3);
+bmIn.CreateBuffer ();
+
+if (bmIn.Buffer () && bmOut.Buffer ()) {
 	gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 	if (ogl.m_states.nDrawBuffer == GL_BACK) {
 		gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
@@ -987,36 +999,27 @@ if (thumbCanv) {
 		}
 	else
 		RenderFrame (0, 0);
-	bm.SetWidth ((gameData.render.frame.Width () / THUMBNAIL_LW) * THUMBNAIL_LW);
-	bm.SetHeight (bm.Width () * 3 / 5);	//force 5:3 aspect ratio
-	if (bm.Height () > gameData.render.frame.Height ()) {
-		bm.SetHeight ((gameData.render.frame.Height () / THUMBNAIL_LH) * THUMBNAIL_LH);
-		bm.SetWidth (bm.Height () * 5 / 3);
-		}
-	x = (gameData.render.frame.Width () - bm.Width ()) / 2;
-	y = (gameData.render.frame.Height () - bm.Height ()) / 2;
-	bm.SetBPP (3);
-	bm.CreateBuffer ();
 	//ogl.SetTexturing (false);
 	ogl.SetReadBuffer (GL_FRONT, 0);
-	glReadPixels (x, y, bm.Width (), bm.Height (), GL_RGB, GL_UNSIGNED_BYTE, bm.Buffer ());
+	glReadPixels (x, y, bmIn.Width (), bmIn.Height (), GL_RGB, GL_UNSIGNED_BYTE, bmIn.Buffer ());
 	// do a nice, half-way smart (by merging pixel groups using their average color) image resize
-	CTGA tga (&bm);
-	tga.Shrink (bm.Width () / THUMBNAIL_LW, bm.Height () / THUMBNAIL_LH, 0);
+	CTGA tga (&bmIn);
+	tga.Shrink (bmIn.Width () / THUMBNAIL_LW, bmIn.Height () / THUMBNAIL_LH, 0);
 	//paletteManager.ResumeEffect ();
 	// convert the resized TGA to bmp
-	ubyte *buffer = bm.Buffer ();
+	ubyte* inBuf = bmIn.Buffer ();
+	ubyte* outBuf = bmOut.Buffer ();
 	for (y = 0; y < THUMBNAIL_LH; y++) {
-		i = y * THUMBNAIL_LW * 3;
-		k = (THUMBNAIL_LH - y - 1) * THUMBNAIL_LW;
-		for (x = 0; x < THUMBNAIL_LW; x++, k++, i += 3)
-			thumbCanv->Buffer () [k] = paletteManager.Game ()->ClosestColor (buffer [i] / 4, buffer [i+1] / 4, buffer [i+2] / 4);
-			}
+		int i = y * THUMBNAIL_LW * 3;
+		int j = (THUMBNAIL_LH - y - 1) * THUMBNAIL_LW;
+		for (x = 0; x < THUMBNAIL_LW; x++, j++, i += 3)
+			outBuf [j] = paletteManager.Game ()->ClosestColor (inBuf [i] / 4, inBuf [i + 1] / 4, inBuf [i + 2] / 4);
+		}
 	//paletteManager.ResumeEffect ();
-	bm.DestroyBuffer ();
-	thumbCanv->Write (m_cf, THUMBNAIL_LW * THUMBNAIL_LH);
+	bmIn.DestroyBuffer ();
+	bmOut.Write (m_cf, THUMBNAIL_LW * THUMBNAIL_LH);
 	CCanvas::Pop ();
-	thumbCanv->Destroy ();
+	bmOut.Destroy ();
 	m_cf.Write (paletteManager.Game (), 3, 256);
 	}
 else {

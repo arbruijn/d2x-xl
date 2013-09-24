@@ -105,17 +105,14 @@ class CCanvas : public CViewport /*CBitmap*/ {
 	private:
 		tCanvas	m_info;
 
-		static CCanvas*			m_current;
 		static CStack<CCanvas*>	m_save;
-
-		static CCanvas* SetCurrent (CCanvas* canvP = NULL);
 
 	public:
 		static fix					xCanvW2, xCanvH2;
 		static float				fCanvW2, fCanvH2;
 
-		CCanvas*						m_previous;
 		CCanvas*						m_parent;
+		int							m_nActivations;
 
 	public:
 		CCanvas () { Init (); }
@@ -144,13 +141,14 @@ class CCanvas : public CViewport /*CBitmap*/ {
 		inline void SetFont (CFont *font) { m_info.font = font; }
 		inline void SetDrawMode (short nDrawMode) { m_info.nDrawMode = nDrawMode; }
 
-		static CCanvas* Current (void) { return m_current; }
-		static void Push (void) { 
-			m_save.Push (m_current); 
+		static CCanvas* Current (void) { return m_save.ToS () ? *m_save.Top () : NULL; }
+
+		static void Push (CCanvas* canvP) { 
+			m_save.Push (canvP); 
 			fontManager.Push ();
 			}
 		static void Pop (void) { 
-			m_current = m_save.Pop (); 
+			m_save.Pop (); 
 			fontManager.Pop ();
 			}
 
@@ -162,20 +160,20 @@ class CCanvas : public CViewport /*CBitmap*/ {
 
 		inline void SetWidth (short w = -1) { 
 			if (w > 0)
-				SetWidth (w); 
+				CViewport::SetWidth (w); 
 			else
 				w = Width ();
-			if (this == m_current) {
+			if (this == Current ()) {
 				fCanvW2 = (float) w * 0.5f;
 				xCanvW2 = I2X (w) / 2;
 				}
 			}
 		inline void SetHeight (short h = -1) { 
 			if (h > 0)
-				SetHeight (h); 
+				CViewport::SetHeight (h); 
 			else
 				h = Height ();
-			if (this == m_current) {
+			if (this == Current ()) {
 				fCanvH2 = (float) h * 0.5f;
 				xCanvH2 = I2X (h) / 2;
 				}
@@ -205,19 +203,22 @@ class CCanvas : public CViewport /*CBitmap*/ {
 		void SetViewport (CCanvas* parent = NULL);
 
 		inline void Activate (CCanvas* parent = NULL) { 
-			if (CCanvas::Current () == this) 
-				m_previous = NULL;
-			else {
-				CCanvas::Push ();
-				m_previous = CCanvas::SetCurrent (this);
-				}
+			if (CCanvas::Current () != this)
+				CCanvas::Push (this);
 			SetViewport (parent);
 			}
 
+		inline void Reactivate (void) { Activate (m_parent); }
+
 		inline void Deactivate (void) { 
-			CCanvas::Pop ();
-			if (m_previous)
-				m_previous->Activate ();
+			CCanvas* canvP;
+			do {
+				if (!(canvP = Current ()))
+					break;
+				Pop ();
+			} while (canvP != this);
+			if (canvP)
+				canvP->Reactivate ();
 			}
 	};
 
