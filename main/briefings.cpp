@@ -582,7 +582,7 @@ if (*m_info.szBitmapName) {
 void CBriefing::RenderBitmap (CBitmap* bmP)
 {
 CCanvas bitmapCanv;
-bitmapCanv = CViewport (220, 45, bmP->Width (), bmP->Height ());
+(CViewport) bitmapCanv = CViewport (220, 45, bmP->Width (), bmP->Height ());
 bitmapCanv.Activate ();
 bmP->RenderScaled (0, 0);
 bitmapCanv.Deactivate ();

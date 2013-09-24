@@ -181,7 +181,7 @@ if (nEffects & 5) {
 		else
 			SetDrawBuffer (GL_BACK, 0);
 		ogl.BindTexture (DrawBuffer ((nEffects & 2) ? 2 : 0)->ColorBuffer ());
-		gameData.render.frame.SetLeft (0);
+		gameData.render.frame.CViewport::SetLeft (0);
 		postProcessManager.Setup ();
 		postProcessManager.Render ();
 		if (nEffects & 4) // shutter glasses

@@ -236,7 +236,6 @@ else {
 	}
 gameData.render.scene.Setup (&gameData.render.frame);
 gameData.render.window.Setup (&gameData.render.scene);
-gameData.render.frame.Activate ();
 screen.SetScale (1.0f);
 }
 

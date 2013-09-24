@@ -2108,7 +2108,7 @@ for (i = 0; i < MAX_STARS; i++) {
 
 //------------------------------------------------------------------------------
 
-void DrawStars ()
+void DrawStars (void)
 {
 	int i;
 	int intensity = 31;

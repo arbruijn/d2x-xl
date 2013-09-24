@@ -168,7 +168,6 @@ else
 if (!RiftWarpFrame (gameData.render.rift.m_eyes [0]))
 	return false;
 
-gameData.render.viewport.SetLeft (gameData.render.screen.Width () / 2);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [2]);
 OglVertexPointer (2, GL_FLOAT, 0, quadVerts [2]);
@@ -197,20 +196,21 @@ if (IsSideBySideDevice (nDevice)) {
 	screen.SetScale (1.0f);
 	BindTexture (BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
 	if (!RiftWarpScene () /*&& (nEffects & 1)*/) {
-		ogl.SetViewport (0, 0, screen.Width (), screen.Height ());
+		gameData.render.screen.Activate ();
 		shaderManager.Deploy (-1);
 		EnableClientStates (1, 0, 0, GL_TEXTURE0);
 		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
 		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 		OglDrawArrays (GL_QUADS, 0, 4);
+		gameData.render.screen.Deactivate ();
 		}
-	gameData.render.viewport.SetLeft (0);
 	}
 else if (nDevice == -GLASSES_SHUTTER_NVIDIA) {
 	SetDrawBuffer ((m_data.xStereoSeparation < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
 	OglDrawArrays (GL_QUADS, 0, 4);
 	}
 else { // merge left and right anaglyph buffers
+	gameData.render.screen.Activate ();
 	if (m_data.xStereoSeparation > 0) {
 		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
 		int h = gameOpts->render.stereo.bDeghost;
@@ -241,6 +241,7 @@ else { // merge left and right anaglyph buffers
 			}
 		OglDrawArrays (GL_QUADS, 0, 4);
 		}
+	gameData.render.screen.Deactivate ();
 	}	
 }
 

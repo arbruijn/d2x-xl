@@ -363,7 +363,6 @@ void CCreditsManager::Show (char *creditsFilename)
 if (!Open (creditsFilename))
 	return;
 
-CCanvas::Push ();
 memset (m_buffer, 0, sizeof (m_buffer));
 
 SetScreenMode (SCREEN_MENU);
@@ -395,6 +394,10 @@ ogl.SetBlending (true);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 gameStates.menus.nInMenu = 1;
 int nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
+
+SetupCanvasses ();
+ogl.ChooseDrawBuffer ();
+
 for (;;) {
 	Read ();
 
@@ -402,9 +405,9 @@ for (;;) {
 
 	for (int i = 0; i < nFrames; i++) {
 		ogl.SetStereoSeparation (gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] * (i ? 1 : -1));
-		ogl.ChooseDrawBuffer ();
-		SetupCanvasses ();
+		gameData.render.frame.Activate ();
 		Render ();
+		gameData.render.frame.Deactivate ();
 		}
 	ogl.Update (0);
 	gameData.render.scene.Deactivate ();
@@ -426,6 +429,5 @@ for (;;) {
 			}
 		}
 	}
-CCanvas::Pop ();
 backgroundManager.Redraw (true);
 }

@@ -91,15 +91,15 @@ void GrCopyPalette (ubyte *gr_palette, ubyte *pal, int size);
 // but not necessarily shaded as a concave polygon. It shouldn't hang.
 // probably good solution is to shade from minx to maxx on each scan line.
 // int should really be fix
+void DrawPixelClipped(int x, int y);
+void DrawPixel(int x, int y);
+
 #if 0
 int gr_poly(int nverts, int *verts);
 int gr_upoly(int nverts, int *verts);
 
 
 // Draws a point into the current canvas in the current color and drawmode.
-void DrawPixelClipped(int x, int y);
-void DrawPixel(int x, int y);
-
 // Gets a pixel;
 ubyte gr_gpixel(CBitmap * bitmap, int x, int y);
 ubyte gr_ugpixel(CBitmap * bitmap, int x, int y);

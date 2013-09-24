@@ -170,6 +170,7 @@ class CCanvas : public CViewport, public CBitmap {
 		inline float XScale (void) { return (Width () > 640) ? float (Width ()) / 640.0f : 1.0f; }
 		inline float YScale (void) { return (Height () > 480) ? float (Height ()) / 480.0f : 1.0f; }
 
+		inline bool Clip (int x, int y) { return (x < 0) || (y < 0) || (x >= Width ()) || (y >= Width ()); }
 		//inline bool Clip (int x, int y) { return this->CBitmap::Clip (x, y); }
 
 		inline double AspectRatio (void) { return double (Width ()) / double (Height ()); }
