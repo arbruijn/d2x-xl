@@ -173,10 +173,25 @@ if (dFade && m_info.color.rgb) {
 
 void CCanvas::SetViewport (CCanvas* parent)
 {
-if (m_parent = parent)
-	ogl.SetViewport (Left () + parent->Left (), Top () + parent->Top (), Width () ? Width () : parent->Width (), Height () ? Height () : parent->Height ());
-else
+if (!parent)
 	ogl.SetViewport (Left (), Top (), Width (), Height ());
+else {
+	m_parent = parent;
+	int l = Left ();
+	int t = Top ();
+	int w = Width ();
+	int h = Height ();
+	while (parent) {
+		l += parent->Left ();
+		t += parent->Top ();
+		if (!w)
+			w = parent->Width ();
+		if (!h)
+			h = parent->Height ();
+		parent = parent->Parent ();
+		}
+	ogl.SetViewport (l, t, w, h);
+	}
 }
 
 //	-----------------------------------------------------------------------------
