@@ -1794,7 +1794,7 @@ class CRenderData {
 		CTerrainRenderData		terrain;
 		CThrusterData				thrusters [MAX_PLAYERS];
 		CMineRenderData			mine;
-		//CGameScreenData			screen; // entire screen
+		CScreen						screen; // entire screen
 		CGameScreenData			frame;  // current part of the screen being rendered too (usually entire screen or left and right halves of it)
 		CGameScreenData			scene; // part of the frame being rendered to (can be smaller for certain cockpit types)
 		CGameScreenData			window; // cockpit windows (rear view, guide bot, etc)

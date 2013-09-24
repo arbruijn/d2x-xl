@@ -246,7 +246,7 @@ return true;
 // Sets up the canvases we will be rendering to (NORMAL VERSION)
 void GameInitRenderBuffers (int nScreenSize, int render_w, int render_h, int render_method, int flags)
 {
-screen.Set (nScreenSize);
+gameData.render.screen.Set (nScreenSize);
 SetupCanvasses ();
 }
 
@@ -1280,7 +1280,7 @@ return 0;
 
 void ShowInGameWarning (const char *s)
 {
-if (screen.Width () && screen.Height ()) {
+if (gameData.render.screen.Width () && gameData.render.screen.Height ()) {
 	const char	*hs, *ps = strstr (s, "Error");
 
 	if (ps > s) {	//skip trailing non alphanum chars

@@ -89,10 +89,10 @@ if (stereoParams.pDistortion) {
 		distortion.XCenterOffset = -distortion.XCenterOffset;
 	}
 
-float w = float (gameData.render.frame.Width ()) / float (screen.Width ()),
-      h = float (gameData.render.frame.Height ()) / float (screen.Height ()),
-      x = float (gameData.render.frame.Left ()) / float (screen.Width ()),
-      y = float (gameData.render.frame.Top ()) / float (screen.Height ());
+float w = float (gameData.render.frame.Width ()) / float (gameData.render.screen.Width ()),
+      h = float (gameData.render.frame.Height ()) / float (gameData.render.screen.Height ()),
+      x = float (gameData.render.frame.Left ()) / float (gameData.render.screen.Width ()),
+      y = float (gameData.render.frame.Top ()) / float (gameData.render.screen.Height ());
 
 float as = float (gameData.render.frame.Width ()) / float(gameData.render.frame.Height ());
 
@@ -156,7 +156,7 @@ if (!ogl.IsOculusRift ())
 if (!gameStates.render.textures.bHaveRiftWarpShader)
 	return false;
 
-ogl.SetViewport (0, 0, screen.Width (), screen.Height ());
+ogl.SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
 OglVertexPointer (2, GL_FLOAT, 0, quadVerts [1]);
@@ -193,16 +193,16 @@ if (IsSideBySideDevice (nDevice)) {
 	SetDrawBuffer (GL_BACK, 0);
 	SetBlendMode (OGL_BLEND_REPLACE);
 	SetDepthMode (GL_ALWAYS);
-	screen.SetScale (1.0f);
+	gameData.render.screen.SetScale (1.0f);
 	BindTexture (BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
 	if (!RiftWarpScene () /*&& (nEffects & 1)*/) {
-		screen.Activate ();
+		gameData.render.screen.Activate ();
 		shaderManager.Deploy (-1);
 		EnableClientStates (1, 0, 0, GL_TEXTURE0);
 		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
 		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 		OglDrawArrays (GL_QUADS, 0, 4);
-		screen.Deactivate ();
+		gameData.render.screen.Deactivate ();
 		}
 	}
 else if (nDevice == -GLASSES_SHUTTER_NVIDIA) {
@@ -210,7 +210,7 @@ else if (nDevice == -GLASSES_SHUTTER_NVIDIA) {
 	OglDrawArrays (GL_QUADS, 0, 4);
 	}
 else { // merge left and right anaglyph buffers
-	screen.Activate ();
+	gameData.render.screen.Activate ();
 	if (m_data.xStereoSeparation > 0) {
 		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
 		int h = gameOpts->render.stereo.bDeghost;
@@ -241,7 +241,7 @@ else { // merge left and right anaglyph buffers
 			}
 		OglDrawArrays (GL_QUADS, 0, 4);
 		}
-	screen.Deactivate ();
+	gameData.render.screen.Deactivate ();
 	}	
 }
 

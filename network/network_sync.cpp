@@ -333,7 +333,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		netGame.m_info.nConnected++;
 
 // This is great: D2 1.0 and 1.1 ignore upper part of the gameFlags field of
-//	the tNetGameInfoLite struct when you're sitting on the join netgame screen.  We can
+//	the tNetGameInfoLite struct when you're sitting on the join netgame gameData.render.screen.  We can
 //	"sneak" Hoard information into this field.  This is better than sending 
 //	another packet that could be lost in transit.
 if (HoardEquipped ()) {

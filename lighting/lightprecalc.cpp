@@ -396,16 +396,17 @@ static CTransformation projection;
 
 static void SetupProjection (void)
 {
-	int		w = screen.Width (),
-				h = screen.Height ();
+	int		w = gameData.render.screen.Width (),
+				h = gameData.render.screen.Height ();
 	CCanvas canvas;
 
-canvas.Setup (&screen, 0, 0, 1024, 1024);
+gameData.render.screen.Setup (NULL, 0, 0, 1024, 1024);
+canvas.Setup (&gameData.render.screen);
 canvas.Activate ();
 canvas.SetWidth ();
 canvas.SetHeight ();
-screen.SetWidth (1024);
-screen.SetHeight (1024);
+gameData.render.screen.SetWidth (1024);
+gameData.render.screen.SetHeight (1024);
 ogl.SetTransform (1);
 ogl.SetViewport (0, 0, 1024, 1024);
 gameStates.render.nShadowPass = 1;	// enforce culling of segments behind viewer
@@ -414,8 +415,9 @@ gameStates.render.nShadowPass = 0;
 gameStates.render.nShadowMap = 0;
 ogl.SetTransform (0);
 canvas.Deactivate ();
-screen.SetWidth (w);
-screen.SetHeight (h);
+gameData.render.screen.Setup (NULL, 0, 0, w, h);
+gameData.render.screen.SetWidth (w);
+gameData.render.screen.SetHeight (h);
 ogl.EndFrame (-1);
 }
 

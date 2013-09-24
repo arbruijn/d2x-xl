@@ -840,7 +840,7 @@ if (nType) {
 			glUniform1i (glGetUniformLocation (shaderProg, "maskTex"), 2 + bLightmaps);
 		}
 	}
-//glUniform1f (glGetUniformLocation (shaderProg, "aspect"), (float) screen.Width () / (float) screen.Height ());
+//glUniform1f (glGetUniformLocation (shaderProg, "aspect"), (float) gameData.render.screen.Width () / (float) gameData.render.screen.Height ());
 //glUniform1f (glGetUniformLocation (shaderProg, "zoom"), 65536.0f / (float) gameStates.render.xZoom);
 if ((bTransform = !ogl.m_states.nTransformCalls))
 	ogl.SetupTransform (1);

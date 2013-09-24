@@ -231,7 +231,7 @@ ogl.SetFaceCulling (false);
 ogl.SetBlending (true);
 gameStates.render.grAlpha = gameStates.app.bNostalgia ? 1.0f : bTextured ? 0.5f : 0.9f;
 ogl.SetTexturing (false);
-glLineWidth (2 * GLfloat (screen.Width ()) / 640.0f);
+glLineWidth (2 * GLfloat (gameData.render.screen.Width ()) / 640.0f);
 DrawPlayer (OBJECTS + LOCALPLAYER.nObject);
 if (!m_bRadar) {
 	markerManager.Render ();
@@ -658,8 +658,8 @@ if (m_bDisplay < 0) {
 			m_nHeight = CCanvas::Current ()->Height ();
 			}
 		else {
-			m_nWidth = screen.Width ();
-			m_nHeight = screen.Height ();
+			m_nWidth = gameData.render.screen.Width ();
+			m_nHeight = gameData.render.screen.Height ();
 			}
 		m_data.bHires = 1;
 		 }
@@ -1130,7 +1130,7 @@ void CAutomap::DrawEdges (void)
 	
 m_bDrawBuffers = ogl.SizeBuffers (1000);
 ogl.SetTransform (1);
-glLineWidth (GLfloat (screen.Width ()) / 640.0f);
+glLineWidth (GLfloat (gameData.render.screen.Width ()) / 640.0f);
 ogl.SetDepthTest (false);
 ogl.SetDepthWrite (false);
 ogl.SetTexturing (false);

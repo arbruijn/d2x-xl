@@ -617,8 +617,8 @@ if (bCockpit && bHave3DCockpit && (gameStates.render.cockpit.nType == CM_FULL_CO
 	ogl.SetTransform (1);
 	CFixVector vOffset = /*OBJECTS [0].Orientation ().m.dir.f * F2X (xOffset) +*/ OBJECTS [0].Orientation ().m.dir.u * F2X (yOffset);
 	OBJECTS [0].Position () -= vOffset;
-	ogl.SetViewport (0, 0, screen.Width (), screen.Height ());
-	gameData.models.vScale.Set (F2X (float (screen.Width ()) / float (screen.Height ()) * 0.75f), I2X (1), I2X (1));
+	ogl.SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
+	gameData.models.vScale.Set (F2X (float (gameData.render.screen.Width ()) / float (gameData.render.screen.Height ()) * 0.75f), I2X (1), I2X (1));
 	bHave3DCockpit = (G3RenderModel (&OBJECTS [0], COCKPIT_MODEL, -1, NULL, gameData.models.textures, NULL, NULL, 0, NULL, NULL) > 0);
 	gameData.models.vScale.Set (I2X (1), I2X (1), I2X (1));
 	CCanvas::Current ()->SetViewport ();

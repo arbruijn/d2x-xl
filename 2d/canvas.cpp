@@ -33,8 +33,7 @@ float CCanvas::fCanvH2;
 CStack<CCanvas*> CCanvas::m_save;
 float CScreen::m_fScale = 1.0f;
 
-
-CScreen screen;
+//CScreen screen;
 
 //	-----------------------------------------------------------------------------
 
@@ -216,18 +215,18 @@ else
 
 void SetupCanvasses (float scale)
 {
-screen.SetScale (scale);
+gameData.render.screen.SetScale (scale);
 if (!ogl.IsSideBySideDevice ())
-	gameData.render.frame.Setup (&screen);
+	gameData.render.frame.Setup (&gameData.render.screen);
 else {
 	if (ogl.StereoSeparation () < 0)
-		gameData.render.frame.Setup (&screen, 0, 0, screen.Width (false) / 2, screen.Height (false));
+		gameData.render.frame.Setup (&gameData.render.screen, 0, 0, gameData.render.screen.Width (false) / 2, gameData.render.screen.Height (false));
 	else
-		gameData.render.frame.Setup (&screen, screen.Width (false) / 2, 0, screen.Width (false), screen.Height (false));
+		gameData.render.frame.Setup (&gameData.render.screen, gameData.render.screen.Width (false) / 2, 0, gameData.render.screen.Width (false), gameData.render.screen.Height (false));
 	}
 gameData.render.scene.Setup (&gameData.render.frame);
 gameData.render.window.Setup (&gameData.render.scene);
-screen.SetScale (1.0f);
+gameData.render.screen.SetScale (1.0f);
 }
 
 //	-----------------------------------------------------------------------------

@@ -255,7 +255,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 	if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 		CCanvas::Current ()->SetColorRGB (PAL2RGBA (27), PAL2RGBA (0), PAL2RGBA (0), 255);
 		int x = gameData.render.scene.Width () / 3;
-		int h = (int) FRound (8 * GLfloat (screen.Height ()) / 480.0f);
+		int h = (int) FRound (8 * GLfloat (gameData.render.screen.Height ()) / 480.0f);
 		y -= gameData.render.scene.Height () - y - 2;
 		CCanvas::Current ()->SetColorRGB (255, 0, 0, 200);
 		OglDrawFilledRect (x, y - h, x + int (NDGetPercentDone () * float (x) / 100.0f), y);
@@ -985,7 +985,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 				if (bHasFlag && (gameStates.app.bNostalgia || !(EGI_FLAG (bTargetIndicators, 0, 1, 0) || EGI_FLAG (bTowFlags, 0, 1, 0)))) {// Draw box on HUD
 					fix dy = -FixMulDiv (OBJECTS [nObject].info.xSize, I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.ViewPos ().v.coord.z);
 //					fix dy = -FixMulDiv (FixMul (OBJECTS [nObject].size, transformation.m_info.scale.y), I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.m_z);
-					fix dx = FixMul (dy, screen.Aspect ());
+					fix dx = FixMul (dy, gameData.render.screen.Aspect ());
 					fix w = dx / 4;
 					fix h = dy / 4;
 					if (gameData.app.GameMode (GM_CAPTURE | GM_ENTROPY))
@@ -1307,8 +1307,8 @@ else {
 	glColor4f (1.0f, 0.5f, 0.0f, 1.0f);
 	OglDrawEllipse (
 		sizeofa (sinCos), GL_LINE_LOOP,
-		40.0f / float (screen.Width ()), 0.5f,
-		40.0f / float (screen.Height ()), 1.0f - float (CCanvas::Current ()->Top () + y + 32) / float (screen.Height ()), sinCos);
+		40.0f / float (gameData.render.screen.Width ()), 0.5f,
+		40.0f / float (gameData.render.screen.Height ()), 1.0f - float (CCanvas::Current ()->Top () + y + 32) / float (gameData.render.screen.Height ()), sinCos);
 #	endif
 	glLineWidth (1);
 #endif

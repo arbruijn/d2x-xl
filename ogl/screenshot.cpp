@@ -164,19 +164,19 @@ do {
 	} while (!access (szSaveName, 0));
 
 if ((bTmpBuf = (buf == NULL))) {
-	buf = new ubyte [screen.Width () * screen.Height () * 3];
+	buf = new ubyte [gameData.render.screen.Width () * gameData.render.screen.Height () * 3];
 	ogl.SetTexturing (false);
 	ogl.SetReadBuffer (GL_FRONT, 0);
-	screen.Activate ();
-	glReadPixels (0, 0, screen.Width (), screen.Height (), GL_RGB, GL_UNSIGNED_BYTE, buf);
-	screen.Deactivate ();
+	gameData.render.screen.Activate ();
+	glReadPixels (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height (), GL_RGB, GL_UNSIGNED_BYTE, buf);
+	gameData.render.screen.Deactivate ();
 	glErrCode = glGetError ();
 	glErrCode = GL_NO_ERROR;
 	}
 else
 	glErrCode = GL_NO_ERROR;
 if (glErrCode == GL_NO_ERROR) {
-	WriteScreenShot (szSaveName, screen.Width (), screen.Height (), buf, 0);
+	WriteScreenShot (szSaveName, gameData.render.screen.Width (), gameData.render.screen.Height (), buf, 0);
 	if (!(bAutomap || screenShotIntervals [gameOpts->app.nScreenShotInterval])) {
 		sprintf (szMessage, "%s '%s'", TXT_DUMPING_SCREEN, szSaveName);
 		HUDMessage (MSGC_GAME_FEEDBACK, szMessage);

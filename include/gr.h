@@ -47,7 +47,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int GrInit(void);
 
-// This function sets up the main screen.  It should be called whenever
+// This function sets up the main gameData.render.screen.  It should be called whenever
 // the video mode changes.
 int GrInitScreen(int mode, int w, int h, int x, int y, int rowSize, ubyte *data);
 
@@ -180,7 +180,7 @@ void AutoScreenshot (void);
 
 /*
  * currently SDL and OGL are the only things that supports toggling
- * fullscreen.  otherwise add other checks to the #if -MPM
+ * fullgameData.render.screen.  otherwise add other checks to the #if -MPM
  */
 #define GR_SUPPORTS_FULLSCREEN_TOGGLE
 

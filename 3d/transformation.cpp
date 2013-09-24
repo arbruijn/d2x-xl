@@ -174,7 +174,7 @@ return dest;
 //compute aspect ratio for this canvas
 void CTransformation::ComputeAspect (int nWidth, int nHeight)
 {
-fix s = FixMulDiv (screen.Aspect (), (nWidth > 0) ? nWidth : CCanvas::Current ()->Height (), (nHeight > 0) ? nHeight : CCanvas::Current ()->Width ());
+fix s = FixMulDiv (gameData.render.screen.Aspect (), (nWidth > 0) ? nWidth : CCanvas::Current ()->Height (), (nHeight > 0) ? nHeight : CCanvas::Current ()->Width ());
 if (s <= I2X (1)) {	   //scale x
 	m_info.aspect.v.coord.x = s;
 	m_info.aspect.v.coord.y = I2X (1);
@@ -234,11 +234,11 @@ ubyte CTransformation::Codes (CFixVector& v)
 	ProjectPoint (v, s);
 	if (s.x < 0)
 		codes |= CC_OFF_LEFT;
-	else if (s.x > screen.Width ())
+	else if (s.x > gameData.render.screen.Width ())
 		codes |= CC_OFF_RIGHT;
 	if (s.y < 0)
 		codes |= CC_OFF_BOT;
-	else if (s.y > screen.Height ())
+	else if (s.y > gameData.render.screen.Height ())
 		codes |= CC_OFF_TOP;
 #else
 	fix z = v.v.coord.z;

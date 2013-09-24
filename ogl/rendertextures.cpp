@@ -141,8 +141,8 @@ if (m_states.hDepthBuffer [nId] || (m_states.hDepthBuffer [nId] = CreateDepthTex
 		else
 			ogl.SetReadBuffer (GL_BACK, (gameStates.render.bRenderIndirect > 0) || gameStates.render.cameras.bActive);
 		SaveViewport ();
-		SetViewport (0, 0, screen.Width (), screen.Height ());
-		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
+		SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
+		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
 		RestoreViewport ();
 		if ((nError = glGetError ())) {
 			DestroyDepthTexture (nId);
@@ -227,9 +227,9 @@ if (!m_states.hColorBuffer)
 if (m_states.hColorBuffer || (m_states.hColorBuffer = CreateColorTexture (-1, 0))) {
 	BindTexture (m_states.hColorBuffer);
 	if (!m_states.bColorBuffer) {
-		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
+		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
 		if ((nError = glGetError ())) {
-			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, screen.Width (), screen.Height ());
+			glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
 			if ((nError = glGetError ())) {
 				DestroyColorTexture ();
 				return m_states.hColorBuffer = 0;

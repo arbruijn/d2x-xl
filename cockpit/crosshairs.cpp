@@ -84,7 +84,7 @@ CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 31, 0));
 int w = CCanvas::Current ()->Width () >> 5;
 if (w < 5)
 	w = 5;
-int h = I2X (w) / screen.Aspect ();
+int h = I2X (w) / gameData.render.screen.Aspect ();
 int x = CCanvas::Current ()->Width () / 2;
 if (xStereoSeparation) {
 	ogl.ColorMask (1,1,1,1,1);
@@ -114,7 +114,7 @@ gameData.SetStereoOffsetType (nOffsetSave);
 void DrawScope (void)
 {
 if (scope.Load ()) {
-	float sh = float (screen.Height ());
+	float sh = float (gameData.render.screen.Height ());
 	float ch = float (CCanvas::Current ()->Height ());
 	float w = 0.25f * float (CCanvas::Current ()->Width ()) / ch;
 	float y = 1.0f - float (CCanvas::Current ()->Top ()) / sh;
@@ -165,11 +165,11 @@ if (bInitSinCos) {
 	}
 
 	int bHaveTarget = TargetInLineOfFire ();
-	int sh = screen.Height ();
+	int sh = gameData.render.screen.Height ();
 	int ch = CCanvas::Current ()->Height ();
 	int cw = CCanvas::Current ()->Width ();
 	int h = ch >> 2;
-	int w = X2I (h * screen.Aspect ());
+	int w = X2I (h * gameData.render.screen.Aspect ());
 
 if (ogl.IsSideBySideDevice ()) {
 	w /= 3;
@@ -216,7 +216,7 @@ glLineWidth (float (floor (2 * float (cw) / 640.0f)));
 
 glPushMatrix ();
 ogl.SetLineSmooth (true);
-glTranslatef (0.5f - X2F (ogl.StereoSeparation ()), 1.0f - float (CCanvas::Current ()->Top () + y) / float (screen.Height ()), 0.0f);
+glTranslatef (0.5f - X2F (ogl.StereoSeparation ()), 1.0f - float (CCanvas::Current ()->Top () + y) / float (gameData.render.screen.Height ()), 0.0f);
 glScalef (xScale, yScale, 1.0f);
 #if 0
 float fh = 2.0f * float (h) / float (sh);
@@ -264,9 +264,9 @@ h -= h >> 1;
 glLineWidth (float (floor (2 * float (cw) / 640.0f)));
 #if 1
 //float xScale = float (w << 5) / float (cw);
-//float yScale = float (h << 5) / float (screen.Height ());
+//float yScale = float (h << 5) / float (gameData.render.screen.Height ());
 OglDrawEllipse (sizeofa (sinCos), GL_LINE_LOOP, xScale, 0.5f - X2F (ogl.StereoSeparation ()), yScale, 
-					 1.0f - float (CCanvas::Current ()->Top () + y) / float (screen.Height ()), sinCos);
+					 1.0f - float (CCanvas::Current ()->Top () + y) / float (gameData.render.screen.Height ()), sinCos);
 #else
 glPushMatrix ();
 ogl.SetLineSmooth (true);

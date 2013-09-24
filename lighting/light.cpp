@@ -632,7 +632,7 @@ if (EGI_FLAG (bUseLightning, 0, 0, 1) && !gameStates.render.nLightingMethod) {
 	}
 //	July 5, 1995: New faster dynamic lighting code.  About 5% faster on the PC (un-optimized).
 //	Only objects which are in rendered segments cast dynamic light.  We might want to extend this
-//	one or two segments if we notice light changing as OBJECTS go offscreen.  I couldn't see any
+//	one or two segments if we notice light changing as OBJECTS go offgameData.render.screen.  I couldn't see any
 //	serious visual degradation.  In fact, I could see no humorous degradation, either. --MK
 FORALL_OBJS (objP, nObject) {
 	if (objP->info.nType == OBJ_NONE)

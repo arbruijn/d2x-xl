@@ -574,10 +574,10 @@ const char * szCriticalErrors [13] = {
 
 void PiggyCriticalError (void)
 {
-screen.Activate ();
+gameData.render.screen.Activate ();
 int i = MsgBox ("Disk Error", NULL, 2, "Retry", "Exit", "%s\non drive %c:", 
 					 szCriticalErrors [descent_critical_errcode & 0xf], (descent_critical_deverror & 0xf) + 'A');
-screen.Deactivate ();
+gameData.render.screen.Deactivate ();
 if (i == 1)
 	exit (1);
 }

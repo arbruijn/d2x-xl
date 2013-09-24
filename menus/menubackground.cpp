@@ -156,7 +156,7 @@ return m_bitmap;
 
 void CBackground::Setup (int x, int y, int width, int height)
 {
-m_canvas.Setup (&screen, x, y, width, height);
+m_canvas.Setup (&gameData.render.screen, x, y, width, height);
 }
 
 //------------------------------------------------------------------------------

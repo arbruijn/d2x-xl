@@ -101,7 +101,7 @@ m_render.x1 = dx + float (x + w) / m_render.aspect;
 m_render.aspect = float (ogl.m_states.viewport [0].m_h * fScale);
 m_render.y0 = 1.0f - dy - float (y) / m_render.aspect;
 m_render.y1 = 1.0f - dy - float (y + h) / m_render.aspect;
-m_render.aspect = float (screen.Width ()) / float (screen.Height ());
+m_render.aspect = float (gameData.render.screen.Width ()) / float (gameData.render.screen.Height ());
 }
 
 //------------------------------------------------------------------------------
@@ -255,8 +255,8 @@ void CBitmap::ScreenCopy (CBitmap * dest, int dx, int dy, int w, int h, int sx, 
 	ubyte *d, *s;
 	int	i, j;
 	int	bTGA = (dest->Flags () & BM_FLAG_TGA) != 0;
-	int	wScreen = screen.Width ();
-	int	hScreen = screen.Height ();
+	int	wScreen = gameData.render.screen.Width ();
+	int	hScreen = gameData.render.screen.Height ();
 
 ogl.SetTexturing (false);
 ogl.SetReadBuffer (GL_FRONT, 1);

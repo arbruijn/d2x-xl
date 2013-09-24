@@ -164,7 +164,7 @@ shaderManager.Set ("depthTex", 1);
 shaderManager.Set ("effectStrength", effectStrength);
 float viewport [4] = {
 #if 1
-	0, 0, screen.Width (), screen.Height ()
+	0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ()
 #else
 	gameData.render.frame.Left () + gameData.render.scene.Left (), 
 	gameData.render.frame.Top () + gameData.render.scene.Top (), 
@@ -172,7 +172,7 @@ float viewport [4] = {
 	gameData.render.scene.Height () 
 #endif
 	};
-float screenSize [2] = { screen.Width (), screen.Height () };
+float screenSize [2] = { gameData.render.screen.Width (), gameData.render.screen.Height () };
 shaderManager.Set ("screenSize", screenSize);
 ogl.SetLighting (true);
 return true;
@@ -227,9 +227,9 @@ tScreenPos s [5];
 for (int i = 0; i < 5; i++) {
 	ProjectPoint (p [i], s [i], 0, 0);
 	if (gameStates.render.cockpit.nType == CM_LETTERBOX)
-		s [i].y += (screen.Height () - CCanvas::Current ()->Height ()) / 2;
+		s [i].y += (gameData.render.screen.Height () - CCanvas::Current ()->Height ()) / 2;
 	else if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
-		s [i].y += screen.Height () - CCanvas::Current ()->Height ();
+		s [i].y += gameData.render.screen.Height () - CCanvas::Current ()->Height ();
 	}
 
 #if 1
@@ -255,7 +255,7 @@ m_screenRad = (float) hypot (double (xMax), double (yMax)) * 0.125f;
 int d = 0;
 int n = 0;
 for (int i = 1; i < 5; i++) {
-	if ((s [i].x >= 0) && (s [i].x < screen.Width ()) && (s [i].y >= 0) && (s [i].y < screen.Height ())) {
+	if ((s [i].x >= 0) && (s [i].x < gameData.render.screen.Width ()) && (s [i].y >= 0) && (s [i].y < gameData.render.screen.Height ())) {
 		d += labs (s [0].x - s [i].x) + labs (s [0].y - s [i].y);
 		n += 4;
 		}

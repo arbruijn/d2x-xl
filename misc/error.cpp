@@ -388,7 +388,7 @@ XtDestroyApplicationContext (appShell);
 void D2MsgBox (const char *pszMsg, uint nType)
 {
 gameData.app.bGamePaused = 1;
-if (screen.Width () && screen.Height () && pWarnFunc)
+if (gameData.render.screen.Width () && gameData.render.screen.Height () && pWarnFunc)
 	(*pWarnFunc)(pszMsg);
 #if defined (_WIN32)
 else

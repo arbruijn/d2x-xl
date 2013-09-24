@@ -491,8 +491,8 @@ if (!CGenericCockpit::Setup ())
 int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].Height ();
 if (gameStates.app.bDemoData)
 	h *= 2;
-if (screen.Height () > 480)
-	h = (int) ((double) h * (double) screen.Height () / 480.0);
+if (gameData.render.screen.Height () > 480)
+	h = (int) ((double) h * (double) gameData.render.screen.Height () / 480.0);
 
 *Canvas () += CViewport (0, (gameData.render.frame.Height () - h) / 2, gameData.render.frame.Width (), h);
 Canvas ()->Activate ();

@@ -234,7 +234,7 @@ if (gameStates.menus.bHires) {
 	if (gameOpts->menus.altBg.bHave > 0)
 		y = 8; //102
 	else {
-		y = 88 * screen.Height () / 480;
+		y = 88 * gameData.render.screen.Height () / 480;
 		if (y < 88)
 			y = 88;
 		}
@@ -443,7 +443,7 @@ else {
 		char filename [14];
 
 #if TRACE
-	console.printf(CON_DBG, "\nShowing loading screen...\n"); fflush (fLog);
+	console.printf(CON_DBG, "\nShowing loading gameData.render.screen...\n"); fflush (fLog);
 #endif
 	strcpy (filename, gameStates.menus.bHires ? "descentb.pcx" : "descent.pcx");
 	if (!CFile::Exist (filename, gameFolders.szDataDir [0], 0))
@@ -869,7 +869,7 @@ LoadGameTexts ();
 ReadConfigFile ();
 if (!InitGraphics ())
 	return 1;
-console.Setup (SMALL_FONT, &screen, CON_NUM_LINES, 0, 0, screen.Width (), screen.Height () / 2);
+console.Setup (SMALL_FONT, &gameData.render.screen, CON_NUM_LINES, 0, 0, gameData.render.screen.Width (), gameData.render.screen.Height () / 2);
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	InitializeGauge ();
 else {

@@ -1501,7 +1501,7 @@ if (gameOpts->gameplay.bSkipBriefingScreens) {
 if (gameStates.app.bD1Mission) {
 	int pcxResult = RenderImage (briefingScreens [nScreen % MAX_BRIEFING_SCREENS].szName);
 	if (pcxResult != PCX_ERROR_NONE) {
-		console.printf (CON_DBG, "File '%s', PCX load error: %s (%i)\n  (It's a briefing screen.  Does this cause you pain?)\n", 
+		console.printf (CON_DBG, "File '%s', PCX load error: %s (%i)\n  (It's a briefing gameData.render.screen.  Does this cause you pain?)\n", 
 							 briefingScreens [nScreen % MAX_BRIEFING_SCREENS].szName, PcxErrorMsg (pcxResult), pcxResult);
 		Int3 ();
 		return 0;

@@ -176,7 +176,7 @@ class CConsole {
 		/*! Internal: Default TabCompletion callback */
 		static char* _CDECL_ DefaultTabFunction (char* command);
 
-		/*! Internal: draws the commandline the user is typing in to the screen. called by update? */
+		/*! Internal: draws the commandline the user is typing in to the gameData.render.screen. called by update? */
 		void DrawCommandLine ();
 
 		/*! Internal: Gets called if you press the LEFT key (move cursor left) */
@@ -208,7 +208,7 @@ class CConsole {
 		void _CDECL_ printf (int priority, const char *fmt, ...);
 	};
 
-#define CON_BG BackgroundName (BG_SCORES, screen.Width () >= 640)
+#define CON_BG BackgroundName (BG_SCORES, gameData.render.screen.Width () >= 640)
 
 extern CConsole console;
 

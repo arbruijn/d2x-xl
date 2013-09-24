@@ -744,8 +744,8 @@ CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
 
 void CHUD::DrawCockpit (bool bAlphaTest)
 {
-//gameData.render.frame.SetLeft ((screen.Width () - gameData.render.frame.Width ()) / 2);
-//gameData.render.frame.SetTop ((screen.Height () - gameData.render.frame.Height ()) / 2);
+//gameData.render.frame.SetLeft ((gameData.render.screen.Width () - gameData.render.frame.Width ()) / 2);
+//gameData.render.frame.SetTop ((gameData.render.screen.Height () - gameData.render.frame.Height ()) / 2);
 }
 
 //	-----------------------------------------------------------------------------
@@ -770,9 +770,9 @@ void CHUD::SetupWindow (int nWindow)
 	int x, y, nWindowPos;
 
 int w = (int) (gameData.render.frame.Width () / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);	
-int h = I2X (w) / screen.Aspect ();
+int h = I2X (w) / gameData.render.screen.Aspect ();
 if (!gameStates.app.bNostalgia) //(gameOpts->render.cockpit.bWideDisplays)
-	w = int (float (w) * float (screen.Width ()) / float (screen.Height ()) * 0.75f);
+	w = int (float (w) * float (gameData.render.screen.Width ()) / float (gameData.render.screen.Height ()) * 0.75f);
 	//w = int (w / HUD_ASPECT);
 nWindowPos = gameOpts->render.cockpit.nWindowPos % 3;
 if ((nWindowPos == 2) && gameStates.render.cockpit.n3DView [0] && gameStates.render.cockpit.n3DView [1])
@@ -821,7 +821,7 @@ if (bRebuild && !m_info.bRebuild)
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup ())
 	return false;
-int h = (int) ((gameData.render.frame.Height () * 7) / 10 / ((double) screen.Height () / (double) screen.Width () / 0.75));
+int h = (int) ((gameData.render.frame.Height () * 7) / 10 / ((double) gameData.render.screen.Height () / (double) gameData.render.screen.Width () / 0.75));
 *Canvas () += CViewport (0, (gameData.render.frame.Height () - h) / 2, gameData.render.frame.Width (), h);
 Canvas ()->Activate ();
 return true;
@@ -848,7 +848,7 @@ void CWideHUD::SetupWindow (int nWindow)
 CHUD::SetupWindow (nWindow);
 #if 0
 if (SW_y [nWindow] + SW_h [nWindow] > gameData.render.frame.Bottom ())
-	SW_y [nWindow] -= (screen.Height () - gameData.render.frame.Height ());
+	SW_y [nWindow] -= (gameData.render.screen.Height () - gameData.render.frame.Height ());
 gameData.render.frame.SetupPane (canvP, SW_x [nWindow], SW_y [nWindow], SW_w [nWindow], SW_h [nWindow]);
 #endif
 }

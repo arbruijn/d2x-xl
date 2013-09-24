@@ -846,7 +846,7 @@ if (bGetSlideBank == 2) {
 	else {
 		SDL_GetMouseState (&mouseData.x, &mouseData.y);
 		if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick) {
-			int dx = mouseData.x - screen.Width () / 2;
+			int dx = mouseData.x - gameData.render.screen.Width () / 2;
 			int dz = CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 			if (dx < 0) {
 				if (dx > -dz)
@@ -855,13 +855,13 @@ if (bGetSlideBank == 2) {
 					dx += dz;
 				}
 			else {
-				//dz = dz * screen.Width () / screen.Height ();
+				//dz = dz * gameData.render.screen.Width () / gameData.render.screen.Height ();
 				if (dx < dz)
 					dx = 0;
 				else
 					dx -= dz;
 				}
-			dx = 640 * dx / (screen.Width () / gameOpts->input.mouse.sensitivity [0]);
+			dx = 640 * dx / (gameData.render.screen.Width () / gameOpts->input.mouse.sensitivity [0]);
 			m_info [3].headingTime += dx; // * gameOpts->input.mouse.sensitivity [0]); // nMouseSensMod;
 			}
 		else {
@@ -882,7 +882,7 @@ if (bGetSlideBank == 2) {
 			}
 		else {
 			if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick) {
-				int	dy = mouseData.y - screen.Height () / 2;
+				int	dy = mouseData.y - gameData.render.screen.Height () / 2;
 				int	dz = CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 				if (kcMouse [14].value)
 					dy = -dy;
@@ -898,7 +898,7 @@ if (bGetSlideBank == 2) {
 					else
 						dy -= dz;
 					}
-				dy = 480 * dy / (screen.Height () / gameOpts->input.mouse.sensitivity [1]);
+				dy = 480 * dy / (gameData.render.screen.Height () / gameOpts->input.mouse.sensitivity [1]);
 				m_info [3].pitchTime += dy; // * gameOpts->input.mouse.sensitivity [1]); // nMouseSensMod;
 				}
 			else {
@@ -983,8 +983,8 @@ return 1;
 
 void CControlsManager::DoTrackIR (void)
 {
-	int	dx = (int) ((float) tirInfo.fvRot.z * (float) screen.Width () / 16384.0f),
-			dy = (int) ((float) tirInfo.fvRot.y * (float) screen.Height () / 16384.0f),
+	int	dx = (int) ((float) tirInfo.fvRot.z * (float) gameData.render.screen.Width () / 16384.0f),
+			dy = (int) ((float) tirInfo.fvRot.y * (float) gameData.render.screen.Height () / 16384.0f),
 			dz;
 	int	x, y;
 	float	fDeadzone, fScale;
@@ -1022,8 +1022,8 @@ if (gameOpts->input.trackIR.nMode == 0) {
 		m_info [0].bankTime += (int) (tirInfo.fvRot.x * m_pollTime / 131072.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
 	}
 else if (gameOpts->input.trackIR.nMode == 1) {
-	dx = (int) ((float) tirInfo.fvRot.z * (float) screen.Width () / 16384.0f);
-	dy = (int) ((float) tirInfo.fvRot.y * (float) screen.Height () / 16384.0f);
+	dx = (int) ((float) tirInfo.fvRot.z * (float) gameData.render.screen.Width () / 16384.0f);
+	dy = (int) ((float) tirInfo.fvRot.y * (float) gameData.render.screen.Height () / 16384.0f);
 	dz = 0; //CalcDeadzone (dy, gameOpts->input.trackIR.nDeadzone);
 	if (dx < 0) {
 		if (dx > -dz)
@@ -1053,8 +1053,8 @@ else if (gameOpts->input.trackIR.nMode == 1) {
 #if 0//DBG
 	HUDMessage (0, "%d %d", dx, dy);
 #endif
-	dx = 640 * dx / (screen.Width () / (gameOpts->input.trackIR.sensitivity [0] + 1));
-	dy = 480 * dy / (screen.Height () / (gameOpts->input.trackIR.sensitivity [1] + 1));
+	dx = 640 * dx / (gameData.render.screen.Width () / (gameOpts->input.trackIR.sensitivity [0] + 1));
+	dy = 480 * dy / (gameData.render.screen.Height () / (gameOpts->input.trackIR.sensitivity [1] + 1));
 	if (gameOpts->input.trackIR.bMove [0]) {
 		m_info [0].headingTime -= dx;
 		m_info [0].pitchTime += dy;

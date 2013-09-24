@@ -74,22 +74,22 @@ if (mode <= 0)
 w = SM_W (mode);
 h = SM_H (mode);
 nCurrentVGAMode = mode;
-screen.Destroy ();
-screen.Init ();
-screen.SetMode (mode);
-screen.Setup (NULL, 0, 0, w, h);
-screen.SetWidth (w);
-screen.SetHeight (h);
-screen.Setup (&screen);
-screen.Activate (NULL, true);
+gameData.render.screen.Destroy ();
+gameData.render.screen.Init ();
+gameData.render.screen.SetMode (mode);
+gameData.render.screen.Setup (NULL, 0, 0, w, h);
+gameData.render.screen.SetWidth (w);
+gameData.render.screen.SetHeight (h);
+gameData.render.screen.Setup (&gameData.render.screen);
+gameData.render.screen.Activate (NULL, true);
 SetupCanvasses ();
-//screen.Aspect () = FixDiv(screen.Width ()*3,screen.Height ()*4);
-screen.SetAspect (FixDiv (screen.Width (), (fix) (screen.Height () * ((double) w / (double) h))));
-screen.CBitmap::Init (BM_OGL, 0, 0, w, h, 1, NULL);
-screen.CreateBuffer ();
-screen.CCanvas::SetPalette (paletteManager.Default ()); //just need some valid palette here
-//screen.props.rowSize = screen->pitch;
-//screen.Buffer () = reinterpret_cast<ubyte*> (screen->pixels);
+//gameData.render.screen.Aspect () = FixDiv(gameData.render.screen.Width ()*3,gameData.render.screen.Height ()*4);
+gameData.render.screen.SetAspect (FixDiv (gameData.render.screen.Width (), (fix) (gameData.render.screen.Height () * ((double) w / (double) h))));
+gameData.render.screen.CBitmap::Init (BM_OGL, 0, 0, w, h, 1, NULL);
+gameData.render.screen.CreateBuffer ();
+gameData.render.screen.CCanvas::SetPalette (paletteManager.Default ()); //just need some valid palette here
+//gameData.render.screen.props.rowSize = screen->pitch;
+//gameData.render.screen.Buffer () = reinterpret_cast<ubyte*> (screen->pixels);
 CCanvas::Current ()->SetFont (fontManager.Current ());
 /***/PrintLog (1, "initializing OpenGL window\n");
 i = SdlGlInitWindow (w, h, 0);	//platform specific code
@@ -287,7 +287,7 @@ else
 /***/PrintLog (0, "initializing texture manager\n");
 textureManager.Init ();
 /***/PrintLog (0, "allocating screen buffer\n");
-screen.SetBuffer (NULL);
+gameData.render.screen.SetBuffer (NULL);
 
 CreateDisplayModeInfoTable ();
 // Set the mode.
@@ -326,7 +326,7 @@ void _CDECL_ GrClose (void)
 {
 PrintLog (1, "shutting down graphics subsystem\n");
 SdlGlClose ();//platform specific code
-screen.Destroy ();
+gameData.render.screen.Destroy ();
 #ifdef OGL_RUNTIME_LOAD
 if (ogl_rt_loaded)
 	OpenGL_LoadLibrary(false);
@@ -446,8 +446,8 @@ gameStates.menus.bHires = gameStates.menus.bHiresAvailable;		//do highres if we 
 nMenuMode = gameStates.gfx.bOverride 
 		? gameStates.gfx.nStartScrSize
 		: gameStates.menus.bHires 
-			? (screen.Area () >= 640 * 480) 
-				? screen.Scalar ()
+			? (gameData.render.screen.Area () >= 640 * 480) 
+				? gameData.render.screen.Scalar ()
 				: SM (800, 600)
 			: SM (320, 200);
 gameStates.video.nLastScreenMode = -1;
@@ -468,8 +468,8 @@ return 1;
 
 int SetGameScreenMode (u_int32_t sm)
 {
-if (nCurrentVGAMode != screen.Scalar ()) {
-	if (GrSetMode (screen.Scalar ())) {
+if (nCurrentVGAMode != gameData.render.screen.Scalar ()) {
+	if (GrSetMode (gameData.render.screen.Scalar ())) {
 		Error ("Cannot set desired screen mode for game!");
 		//we probably should do something else here, like select a standard mode
 		}
@@ -478,16 +478,16 @@ if (nCurrentVGAMode != screen.Scalar ()) {
 		JoyDefsCalibrate ();
 #endif
 	}
-if (!gameData.render.frame.Height () || (gameData.render.frame.Height () > screen.Height ()) || 
-	 !gameData.render.frame.Width () || (gameData.render.frame.Width () > screen.Width ())) {
-	gameData.render.frame.SetWidth (screen.Width ());
-	gameData.render.frame.SetHeight (screen.Height ());
+if (!gameData.render.frame.Height () || (gameData.render.frame.Height () > gameData.render.screen.Height ()) || 
+	 !gameData.render.frame.Width () || (gameData.render.frame.Width () > gameData.render.screen.Width ())) {
+	gameData.render.frame.SetWidth (gameData.render.screen.Width ());
+	gameData.render.frame.SetHeight (gameData.render.screen.Height ());
 	}
 //	Define screen pages for game mode
 // If we designate through screenFlags to use paging, then do so.
-gameData.render.frame.Setup (&screen);
+gameData.render.frame.Setup (&gameData.render.screen);
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && (gameStates.menus.bHires = (gameStates.video.nDisplayMode > 1));
-console.Resize (0, 0, screen.Width (), screen.Height () / 2);
+console.Resize (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height () / 2);
 return 1;
 }
 
@@ -501,8 +501,8 @@ int SetScreenMode (u_int32_t sm)
 	GLint nError = glGetError ();
 #endif
 if ((gameStates.video.nScreenMode == sm) && 
-	 (nCurrentVGAMode == screen.Scalar ()) && 
-	 (screen.Mode () == screen.Scalar ())) {
+	 (nCurrentVGAMode == gameData.render.screen.Scalar ()) && 
+	 (gameData.render.screen.Mode () == gameData.render.screen.Scalar ())) {
 	gameData.render.frame.Activate ();
 	ogl.SetScreenMode ();
 	return 1;

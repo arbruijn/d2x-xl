@@ -234,12 +234,12 @@ return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ?
 
 inline int ScreenWidth (void)
 {
-return screen.Width () /*/ ScreenScale ()*/;
+return gameData.render.screen.Width () /*/ ScreenScale ()*/;
 }
 
 inline int ScreenHeight (void)
 {
-return screen.Height () /*/ ScreenScale ()*/;
+return gameData.render.screen.Height () /*/ ScreenScale ()*/;
 }
 
 #else
@@ -277,9 +277,9 @@ s.x = fix (w - float (v.v.coord.x) * w / v.v.coord.z);
 s.y = fix (h - float (v.v.coord.y) * h / v.v.coord.z);
 #endif
 if (gameStates.render.cockpit.nType == CM_LETTERBOX)
-	s.y += (screen.Height () - CCanvas::Current ()->Height ()) / 2;
+	s.y += (gameData.render.screen.Height () - CCanvas::Current ()->Height ()) / 2;
 else if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
-	s.y += screen.Height () - CCanvas::Current ()->Height ();
+	s.y += gameData.render.screen.Height () - CCanvas::Current ()->Height ();
 #pragma omp critical
 if (m_screenMin.x > s.x)
 	m_screenMin.x = s.x;
@@ -622,7 +622,7 @@ else
 	glPushMatrix ();
 	glLoadIdentity ();//clear matrix
 	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-	screen.SetViewport ();
+	gameData.render.screen.SetViewport ();
 
 	GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
 	bool bDepthWrite = ogl.GetDepthWrite ();

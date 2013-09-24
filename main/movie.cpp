@@ -336,8 +336,8 @@ void ShowPauseMessage (const char* msg)
 
 fontManager.SetCurrent (SMALL_FONT);
 fontManager.Current ()->StringSize (msg, w, h, aw);
-x = (screen.Width () - w) / 2;
-y = (screen.Height () - h) / 2;
+x = (gameData.render.screen.Width () - w) / 2;
+y = (gameData.render.screen.Height () - h) / 2;
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 OglDrawFilledRect (x - BOX_BORDER / 2, y - BOX_BORDER / 2, x + w + BOX_BORDER / 2 - 1, y + h + BOX_BORDER / 2 - 1);
 fontManager.SetColor (255, -1);

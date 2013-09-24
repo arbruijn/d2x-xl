@@ -67,12 +67,12 @@ return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ?
 
 inline int ScreenWidth (void)
 {
-return screen.Width () /*/ ScreenScale ()*/;
+return gameData.render.screen.Width () /*/ ScreenScale ()*/;
 }
 
 inline int ScreenHeight (void)
 {
-return screen.Height () /*/ ScreenScale ()*/;
+return gameData.render.screen.Height () /*/ ScreenScale ()*/;
 }
 
 // -----------------------------------------------------------------------------------
@@ -198,11 +198,11 @@ if (!Projected ())
 else {
 	if (m_screen.x < 0)
 		m_codes |= CC_OFF_LEFT;
-	else if (m_screen.x > screen.Width ())
+	else if (m_screen.x > gameData.render.screen.Width ())
 		m_codes |= CC_OFF_RIGHT;
 	if (m_screen.y < 0)
 		m_codes |= CC_OFF_BOT;
-	else if (m_screen.y > screen.Height ())
+	else if (m_screen.y > gameData.render.screen.Height ())
 		m_codes |= CC_OFF_TOP;
 	}
 return m_codes;

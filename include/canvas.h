@@ -265,7 +265,7 @@ class CScreen : public CGameScreenData {
 		static int Scaled (int v) { return int (ceil (v * GetScale ())); }
 };
 
-extern CScreen screen;
+//extern CScreen screen;
 
 inline float CCanvas::GetScale (void) { return CScreen::GetScale (); }
 

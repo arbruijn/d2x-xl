@@ -152,7 +152,7 @@ class CGenericCockpit {
 		static bool IsSaved (void);
 		static void Rewind (bool bActivate = true);
 
-		inline float Aspect (void) { return float (screen.Height ()) / float (screen.Width ()) / 0.75f; }
+		inline float Aspect (void) { return float (gameData.render.screen.Height ()) / float (gameData.render.screen.Width ()) / 0.75f; }
 		inline int ScaleX (int v) { return (int) FRound (float (v) * m_info.xScale); }
 		inline int ScaleY (int v) { return (int) FRound (float (v) * m_info.yScale); }
 		inline int LHX (int x) { return x << gameStates.render.fonts.bHires; }
