@@ -222,7 +222,7 @@ else {
 	if (ogl.StereoSeparation () < 0)
 		gameData.render.frame.Setup (&gameData.render.screen, 0, 0, gameData.render.screen.Width (false) / 2, gameData.render.screen.Height (false));
 	else
-		gameData.render.frame.Setup (&gameData.render.screen, gameData.render.screen.Width (false) / 2, 0, gameData.render.screen.Width (false), gameData.render.screen.Height (false));
+		gameData.render.frame.Setup (&gameData.render.screen, gameData.render.screen.Width (false) / 2, 0, gameData.render.screen.Width (false) / 2, gameData.render.screen.Height (false));
 	}
 gameData.render.scene.Setup (&gameData.render.frame);
 gameData.render.window.Setup (&gameData.render.scene);
