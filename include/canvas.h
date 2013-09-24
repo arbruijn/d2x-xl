@@ -52,13 +52,13 @@ class CViewport : public CRectangle {
 		void Apply (int t = -1);
 
 		inline CViewport& operator= (const CViewport other) {
-			CRectangle (*this) = CRectangle (other);
+			*((CRectangle*) this) = (CRectangle&) other;
 			m_t = other.m_t;
 			return *this;
 			}
 
 		inline CViewport& operator+= (const CViewport other) {
-			CRectangle (*this) += CRectangle (other);
+			*((CRectangle*) this) += CRectangle (other);
 			m_t = other.m_t;
 			return *this;
 			}

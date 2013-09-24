@@ -81,7 +81,6 @@ gameData.render.screen.Setup (NULL, 0, 0, w, h);
 gameData.render.screen.SetWidth (w);
 gameData.render.screen.SetHeight (h);
 gameData.render.screen.Setup (&gameData.render.screen);
-gameData.render.screen.Activate (NULL, true);
 SetupCanvasses ();
 //gameData.render.screen.Aspect () = FixDiv(gameData.render.screen.Width ()*3,gameData.render.screen.Height ()*4);
 gameData.render.screen.SetAspect (FixDiv (gameData.render.screen.Width (), (fix) (gameData.render.screen.Height () * ((double) w / (double) h))));
@@ -90,14 +89,14 @@ gameData.render.screen.CreateBuffer ();
 gameData.render.screen.CCanvas::SetPalette (paletteManager.Default ()); //just need some valid palette here
 //gameData.render.screen.props.rowSize = screen->pitch;
 //gameData.render.screen.Buffer () = reinterpret_cast<ubyte*> (screen->pixels);
-CCanvas::Current ()->SetFont (fontManager.Current ());
 /***/PrintLog (1, "initializing OpenGL window\n");
 i = SdlGlInitWindow (w, h, 0);	//platform specific code
 PrintLog (-1);
 if (!i)
 	return 0;
 /***/PrintLog (1, "initializing OpenGL view port\n");
-ogl.SetViewport (0, 0, w, h);
+gameData.render.screen.Activate (NULL, true);
+CCanvas::Current ()->SetFont (fontManager.Current ());
 PrintLog (-1);
 /***/PrintLog (1, "initializing OpenGL screen mode\n");
 ogl.SetScreenMode ();
