@@ -494,14 +494,14 @@ if (gameStates.app.bDemoData)
 if (screen.Height () > 480)
 	h = (int) ((double) h * (double) screen.Height () / 480.0);
 
-Canvas () += CViewport (0, (gameData.render.frame.Height () - h) / 2, gameData.render.frame.Width (), h);
+*Canvas () += CViewport (0, (gameData.render.frame.Height () - h) / 2, gameData.render.frame.Width (), h);
 Canvas ()->Activate ();
 return true;
 }
 
 //	-----------------------------------------------------------------------------
 
-void CStatusBar::SetupWindow (int nWindow, CCanvas* canvP)
+void CStatusBar::SetupWindow (int nWindow)
 {
 tGaugeBox* hudAreaP = hudWindowAreas + SB_PRIMARY_BOX + nWindow;
 gameData.render.window = gameData.render.scene;

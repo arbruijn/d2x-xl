@@ -236,7 +236,7 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 
 	//if the window only partially overlaps the big 3d window, copy
 	//the extra part to the visible screen
-	bigWindowBottom = gameData.render.viewport.Top () + gameData.render.viewport.Height () - 1;
+	bigWindowBottom = gameData.render.scene.Top () + gameData.render.scene.Height () - 1;
 	if (x > bigWindowBottom) {
 		//the small window is completely outside the big 3d window, so
 		//copy it to the visible screen
@@ -430,8 +430,8 @@ m_info.fontWidth = CCanvas::Current ()->Font ()->Width ();
 m_info.fontHeight = CCanvas::Current ()->Font ()->Height ();
 m_info.xStereoSeparation = xStereoSeparation;
 #if 0
-m_info.xScale = gameData.render.viewport.XScale ();
-m_info.yScale = gameData.render.viewport.YScale ();
+m_info.xScale = gameData.render.scene.XScale ();
+m_info.yScale = gameData.render.scene.YScale ();
 #else
 m_info.xScale = Canvas ()->XScale ();
 m_info.yScale = Canvas ()->YScale ();

@@ -54,7 +54,6 @@ void CCanvas::Init (void)
 memset (&m_info, 0, sizeof (m_info));
 if (!m_save.Buffer ())
 	m_save.Create (10);
-m_previous = NULL;
 }
 
 //	-----------------------------------------------------------------------------
@@ -62,6 +61,7 @@ m_previous = NULL;
 void CCanvas::Setup (int w, int h)
 {
 Init ();
+Setup (NULL, 0, 0, w, h);
 //CBitmap::Setup (BM_LINEAR, w, h, 1, "Canvas");
 }
 

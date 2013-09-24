@@ -109,6 +109,7 @@ class CCanvas : public CViewport, public CBitmap {
 		void Init (int nType, int w, int h, ubyte *data);
 		//void Setup (int w, int h);
 		void Setup (CCanvas* parentP);
+		void Setup (int w, int h);
 		void Setup (CCanvas* parentP, int x, int y, int w, int h);
 		CCanvas* CreatePane (int x, int y, int w, int h);
 		void SetupPane (CCanvas* childP, int x, int y, int w, int h);
