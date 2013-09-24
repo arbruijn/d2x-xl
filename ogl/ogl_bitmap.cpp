@@ -73,21 +73,18 @@ else
 
 void CBitmap::OglVertices (int x, int y, int w, int h, int scale, int orient, CRectangle* destP)
 {
-if (!destP)
-	destP = CCanvas::Current ();
-
 if (!w)
 	w = Width ();
 else if (w < 0)
-	w = destP->Width ();
+	w = destP ? destP->Width () : CCanvas::Current ()->Width ();
 
 if (!h)
 	h = Height ();
 else if (h < 0)
-	h = destP->Height ();
+	h = destP ? destP->Height () : CCanvas::Current ()->Height ();
 
-float dx = float (destP->Left ()) / float (ogl.m_states.viewport [0].m_w);
-float dy = float (destP->Top ()) / float (ogl.m_states.viewport [0].m_h);
+float dx = destP ? float (destP->Left ()) / float (ogl.m_states.viewport [0].m_w) : 0.0f;
+float dy = destP ? float (destP->Top ()) / float (ogl.m_states.viewport [0].m_h) : 0.0f;
 
 if (orient & 1) {
 	::Swap (w, h);

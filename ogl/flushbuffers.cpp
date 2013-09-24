@@ -197,14 +197,14 @@ if (nEffects & 5) {
 		else 
 #endif
 			SelectBlurBuffer (0); 
-		ogl.SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
+		gameData.render.screen.Activate ();
 		SetBlendMode (OGL_BLEND_REPLACE);
 		SetDepthMode (GL_ALWAYS);
 		for (int i = 0; i < 2; i++) {
 			ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-			OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
+			OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [i + 1]);
 			OglVertexPointer (2, GL_FLOAT, 0, quadVerts [i + 1]);
-			ogl.BindTexture (DrawBuffer (i)->ColorBuffer ());
+			ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
 			if (nEffects & 1) {
 				postProcessManager.Setup ();
 				postProcessManager.Render ();
@@ -212,6 +212,7 @@ if (nEffects & 5) {
 			else
 				OglDrawArrays (GL_QUADS, 0, 4);
 			}
+		gameData.render.screen.Deactivate ();
 		}
 	}
 }
