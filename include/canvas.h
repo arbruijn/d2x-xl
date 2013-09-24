@@ -70,7 +70,6 @@ class CViewport : public CRectangle {
 		inline const bool operator!= (CViewport const other) {
 			return (m_x != other.m_x) || (m_y != other.m_y) || (m_w != other.m_w) || (m_h != other.m_h) || (m_t != other.m_t);
 			}
-
 	};
 
 //-----------------------------------------------------------------------------
