@@ -120,8 +120,9 @@ class CStaticCanvasColor : public CCanvasColor {
 
 static inline void CountColors (ubyte *data, int i, int *freq)
 {
-for (; i; i--)
-	freq [*data++]++;
+if (data)
+	for (; i; i--)
+		freq [*data++]++;
 }
 
 //-----------------------------------------------------------------------------

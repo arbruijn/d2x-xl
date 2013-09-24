@@ -234,12 +234,14 @@ m_info.palette = paletteManager.Add (*palette, transparentColor, superTranspColo
 memset (colorFrequencies, 0, 256 * sizeof (int));
 if (bufP)
 	CountColors (bufP, bufLen, colorFrequencies);
-else if (m_info.props.w == m_info.props.rowSize)
-	CountColors (Buffer (), m_info.props.w * m_info.props.h, colorFrequencies);
-else {
-	ubyte *p = Buffer ();
-	for (int y = m_info.props.h; y; y--, p += m_info.props.rowSize)
-		CountColors (p, m_info.props.w, colorFrequencies);
+else if (Buffer ()) {
+	if (m_info.props.w == m_info.props.rowSize)
+		CountColors (Buffer (), m_info.props.w * m_info.props.h, colorFrequencies);
+	else {
+		ubyte *p = Buffer ();
+		for (int y = m_info.props.h; y; y--, p += m_info.props.rowSize)
+			CountColors (p, m_info.props.w, colorFrequencies);
+		}	
 	}
 if (transparentColor <= 255) {
 	if (transparentColor < 0)
@@ -258,6 +260,7 @@ SetTranspType ((Flags () | (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 
 
 void CBitmap::CheckTransparency (void)
 {
+if (Buffer ()) {
 	ubyte *data = Buffer ();
 
 for (int i = m_info.props.w * m_info.props.h; i; i--, data++)
@@ -265,6 +268,7 @@ for (int i = m_info.props.w * m_info.props.h; i; i--, data++)
 		SetTransparent (1);
 		return;
 		}
+	}
 m_info.props.flags = 0;
 }
 

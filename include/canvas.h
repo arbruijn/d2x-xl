@@ -128,8 +128,6 @@ class CCanvas : public CViewport, public CBitmap {
 		inline void SetFont (CFont *font) { m_info.font = font; }
 		inline void SetDrawMode (short nDrawMode) { m_info.nDrawMode = nDrawMode; }
 
-		void SetPalette (CPalette *palette);
-
 		static CCanvas* Current (void) { return m_save.ToS () ? *m_save.Top () : NULL; }
 
 		static void Push (CCanvas* canvP) { 

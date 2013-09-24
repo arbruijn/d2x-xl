@@ -167,16 +167,6 @@ if (dFade && m_info.color.rgb) {
 	}
 }
 
-//------------------------------------------------------------------------------
-
-void CCanvas::SetPalette (CPalette *palette)
-{
-if (palette) 
-	m_info.palette = paletteManager.Add (*palette, transparentColor, superTranspColor);
-else
-	m_info.palette = NULL;
-}
-
 //	-----------------------------------------------------------------------------
 
 void CCanvas::SetViewport (CCanvas* parent)
