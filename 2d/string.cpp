@@ -762,6 +762,8 @@ return GrString (x, y, buffer, idP);
 
 //------------------------------------------------------------------------------
 
+#if 0
+
 int GrInternalStringClipped (int x, int y, const char *s)
 {
 	ubyte * fp;
@@ -856,7 +858,11 @@ font.parentBitmap.SetBuffer (NULL);	//beware of the destructor!
 return 0;
 }
 
+#endif
+
 //------------------------------------------------------------------------------
+
+#if 0
 
 int GrInternalStringClippedM (int x, int y, const char *s)
 {
@@ -950,6 +956,8 @@ while (nextRowP != NULL) {
 font.parentBitmap.SetBuffer (NULL);	//beware of the destructor!
 return 0;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 // Returns the length of the first 'n' characters of a string.

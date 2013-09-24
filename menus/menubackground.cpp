@@ -114,10 +114,6 @@ return nType ? szBackgrounds [nType - 1][gameStates.app.bDemoData ? 0 : ((bHires
 
 void CBackground::Init (void)
 {
-m_canvas [0] = NULL;
-m_canvas. = NULL;
-m_saved [0] = NULL;
-m_saved [1] = NULL;
 m_bitmap = NULL;
 m_bIgnoreCanv = false;
 m_bIgnoreBg = false;
@@ -226,11 +222,11 @@ right = left + width - 1;
 bottom = top + height - 1;
 ogl.SetBlending (false);
 if (!backgroundManager.Shadow ()) {
-	CCanvas::Current ()->SetLeft (CCanvas::Current ()->Left () + LHX (10));
-	CCanvas::Current ()->SetTop (CCanvas::Current ()->Top () + LHX (10));
+	CCanvas::Current ()->CViewport::SetLeft (CCanvas::Current ()->Left () + LHX (10));
+	CCanvas::Current ()->CViewport::SetTop (CCanvas::Current ()->Top () + LHX (10));
 	m_bitmap->RenderFixed (NULL, left, top, width, height); //, LHX (10), LHY (10));
-	CCanvas::Current ()->SetLeft (CCanvas::Current ()->Left () - LHX (10));
-	CCanvas::Current ()->SetTop (CCanvas::Current ()->Top () - LHX (10));
+	CCanvas::Current ()->CViewport::SetLeft (CCanvas::Current ()->Left () - LHX (10));
+	CCanvas::Current ()->CViewport::SetTop (CCanvas::Current ()->Top () - LHX (10));
 	}
 else {
 	m_bitmap->RenderFixed (NULL, left, top, width, height); //, 0, 0);

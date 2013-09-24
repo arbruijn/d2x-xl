@@ -174,6 +174,7 @@ if (pMsgs->nMessages > 0) {
 			}
 		}
 	}
+#if 0
 else if (CurrentGameScreen ()->Mode () == BM_MODEX) {
 	if (nModexHUDMsgs) {
 		int temp = nLastMsgYCrd;
@@ -182,6 +183,7 @@ else if (CurrentGameScreen ()->Mode () == BM_MODEX) {
 		nLastMsgYCrd = temp;
 		}
 	}
+#endif
 fontManager.SetCurrent (GAME_FONT);
 }
 

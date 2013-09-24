@@ -1691,7 +1691,7 @@ class CMineRenderData {
 
 class CGameScreenData : public CCanvas {
 	public:
-		void Set (short l, short t, short w, short h) { SetLeft (l), SetTop (t), SetWidth (w), SetHeight (h); }
+		void Set (short l, short t, short w, short h) { CViewport::SetLeft (l), CViewport::SetTop (t), CViewport::SetWidth (w), CViewport::SetHeight (h); }
 		inline uint Scalar (void) { return (((uint) Width (false)) << 16) + (((uint) Height (false)) & 0xFFFF); }
 		inline uint Area (void) { return (uint) Width (false) * (uint) Height (false); }
 		void Set (uint scalar) { SetWidth ((short) (scalar >> 16)), SetHeight ((short) (scalar & 0xFFFF)); }

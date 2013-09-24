@@ -27,7 +27,7 @@ CCameraManager cameraManager;
 
 int CCamera::CreateBuffer (void)
 {
-if (!m_data.fbo.Create (Width (), Height (), m_data.bShadowMap ? 3 : 1))
+if (!m_data.fbo.Create (CCanvas::Width (), CCanvas::Height (), m_data.bShadowMap ? 3 : 1))
 	return 0;
 m_data.glTexId = m_data.bShadowMap ? m_data.fbo.DepthBuffer () : m_data.fbo.ColorBuffer ();
 char szName [20];
@@ -183,15 +183,15 @@ if (bShadowMap) {
 	if (!gameOpts->render.cameras.bHires)
 		nSize /= 2;
 #endif
-	SetWidth (nSize);
-	SetHeight (nSize);
+	CCanvas::SetWidth (nSize);
+	CCanvas::SetHeight (nSize);
 	}
 else 
 #	endif
 	{
 	int nScreenScale = (!gameOpts->render.cameras.bHires) ? 2 : 1;
-	SetWidth (screen.Width () / nScreenScale);
-	SetHeight (screen.Height () / nScreenScale);
+	CCanvas::SetWidth (screen.Width () / nScreenScale);
+	CCanvas::SetHeight (screen.Height () / nScreenScale);
 	}
 #endif
 SetBPP (4);

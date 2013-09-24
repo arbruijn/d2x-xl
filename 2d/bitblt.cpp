@@ -531,7 +531,7 @@ Blit (dest, destLeft, destTop, destRight - destLeft + 1, destBottom - destTop + 
 
 //------------------------------------------------------------------------------
 // GrBmBitBlt 
-void CBitmap::BlitClipped (CBitmap* dest, int destLeft, int destTop, int w, int h, int srcLeft, int srcTop)
+void CBitmap::BlitClipped (CRectangle* dest, int destLeft, int destTop, int w, int h, int srcLeft, int srcTop)
 {
 if (!dest)
 	dest = CCanvas::Current ();

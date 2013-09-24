@@ -563,7 +563,7 @@ if (bRebuild && !m_info.bRebuild)
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup (bRebuild))
 	return false;
-Canvas () += CViewport (0, 0, gameData.render.frame.Width (false), 2 * gameData.render.frame.Height (false) / 3);
+*Canvas () += CViewport (0, 0, gameData.render.frame.Width (false), 2 * gameData.render.frame.Height (false) / 3);
 Canvas ()->Activate ();
 return true;
 }
@@ -587,8 +587,8 @@ if (!CGenericCockpit::Setup ())
 	return false;
 gameData.render.frame.SetHeight (2 * screen.Height () / 3);
 gameData.render.frame.SetWidth (screen.Width ());
-gameData.render.frame.SetLeft ((screen.Width () - gameData.render.frame.Width ()) / 2);
-gameData.render.frame.SetTop ((screen.Height () - gameData.render.frame.Height ()) / 2);
+gameData.render.frame.CViewport::SetLeft ((screen.Width () - gameData.render.frame.Width ()) / 2);
+gameData.render.frame.CViewport::SetTop ((screen.Height () - gameData.render.frame.Height ()) / 2);
 //GameInitRenderSubBuffers (gameData.render.frame.Left (), gameData.render.frame.Top (), gameData.render.frame.Width (), gameData.render.frame.Height ());
 return true;
 }

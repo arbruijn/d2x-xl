@@ -60,7 +60,7 @@ class CBackground {
 		inline CBitmap* Background (void) { return &m_saved; }
 		inline CBitmap* Saved (void) { return &m_saved; }
 		inline void GetExtent (int& x, int& y, int& w, int& h) { 
-			m_canvas.GetExtent (x, y, w, h); 
+			m_canvas.CViewport::GetExtent (x, y, w, h); 
 			}
 		inline char* GetFilename (void) { return m_bitmap ? m_bitmap->Name () : NULL; }
 

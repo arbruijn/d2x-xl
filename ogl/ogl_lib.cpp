@@ -172,7 +172,7 @@ ResetTextures (1, gameStates.app.bGameRunning);
 
 //------------------------------------------------------------------------------
 
-int COGL::StereoDevice (int bForce = 0) 
+int COGL::StereoDevice (int bForce) 
 { 
 if (!m_features.bShaders)
 	return 0;

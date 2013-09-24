@@ -845,7 +845,7 @@ CGenericCockpit::Activate (CM_FULL_COCKPIT, true);
 
 //	-----------------------------------------------------------------------------
 
-void CWideHUD::SetupWindow (int nWindow, CCanvas* canvP)
+void CWideHUD::SetupWindow (int nWindow)
 {
 CHUD::SetupWindow (nWindow);
 #if 0

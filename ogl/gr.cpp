@@ -84,7 +84,7 @@ gameData.render.screen.Set (0, 0, w, h);
 screen.SetAspect (FixDiv (screen.Width (), (fix) (screen.Height () * ((double) w / (double) h))));
 screen.CBitmap::Init (BM_OGL, 0, 0, w, h, 1, NULL);
 screen.CreateBuffer ();
-screen.SetPalette (paletteManager.Default ()); //just need some valid palette here
+screen.CCanvas::SetPalette (paletteManager.Default ()); //just need some valid palette here
 //screen.props.rowSize = screen->pitch;
 //screen.Buffer () = reinterpret_cast<ubyte*> (screen->pixels);
 CCanvas::Current ()->SetFont (fontManager.Current ());

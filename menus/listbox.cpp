@@ -168,10 +168,8 @@ m_yOffset = (CCanvas::Current ()->Height () - (m_nHeight + m_nTitleHeight)) / 2 
 if (m_yOffset < m_nTitleHeight)
 	m_yOffset = m_nTitleHeight;
 
-CCanvas::Push ();
 backgroundManager.Setup (NULL, m_xOffset - nOffsetSize, m_yOffset - m_nTitleHeight - nOffsetSize, 
 								 m_nWidth + nOffsetSize * 2, m_nHeight + m_nTitleHeight + nOffsetSize * 2);
-CCanvas::Pop ();
 m_bDone = 0;
 m_nChoice = nDefaultItem;
 if (m_nChoice < 0) 

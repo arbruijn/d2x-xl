@@ -80,13 +80,14 @@ class CScreen;
 
 typedef struct tCanvas {
 	CCanvasColor	color;
+	CPalette*		palette;
 	CFont*			font;				// the currently selected font
 	CCanvasColor	fontColors [2];   // current font background color (-1==Invisible)
 	short				nDrawMode;			// fill, XOR, etc.
 	bool				bRelative;
 } tCanvas;
 
-class CCanvas : public CViewport /*CBitmap*/ {
+class CCanvas : public CViewport, public CBitmap {
 	private:
 		tCanvas	m_info;
 
@@ -125,6 +126,8 @@ class CCanvas : public CViewport /*CBitmap*/ {
 		inline void SetFontColor (CCanvasColor& color, int i) { m_info.fontColors [i] = color; }
 		inline void SetFont (CFont *font) { m_info.font = font; }
 		inline void SetDrawMode (short nDrawMode) { m_info.nDrawMode = nDrawMode; }
+
+		void SetPalette (CPalette *palette);
 
 		static CCanvas* Current (void) { return m_save.ToS () ? *m_save.Top () : NULL; }
 

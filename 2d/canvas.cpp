@@ -25,14 +25,12 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_render.h"
 #include "canvas.h"
 
-CCanvas*	CCanvas::m_current = NULL;
 fix CCanvas::xCanvW2;
 fix CCanvas::xCanvH2;
 float CCanvas::fCanvW2;
 float CCanvas::fCanvH2;
 
 CStack<CCanvas*> CCanvas::m_save;
-CScreen* CScreen::m_current = NULL;
 float CScreen::m_fScale = 1.0f;
 
 
@@ -167,6 +165,16 @@ if (dFade && m_info.color.rgb) {
 	m_info.color.Blue () = (ubyte) (m_info.color.Blue () * dFade);
 	//m_info.color.Alpha () = (ubyte) ((float) gameStates.render.grAlpha / (float) FADE_LEVELS * 255.0f);
 	}
+}
+
+//------------------------------------------------------------------------------
+
+void CCanvas::SetPalette (CPalette *palette)
+{
+if (palette) 
+	m_info.palette = paletteManager.Add (*palette, transparentColor, superTranspColor);
+else
+	m_info.palette = NULL;
 }
 
 //	-----------------------------------------------------------------------------

@@ -352,7 +352,7 @@ class CBitmap : public CArray< ubyte > {
 		void RenderFixed (CRectangle* dest = NULL, int x = 0, int y = 0, int w = 0, int h = 0);
 
 		void Blit (CBitmap* dest, int dx, int dy, int w, int h, int sx, int sy, int bTransp);
-		void BlitClipped (CBitmap* dest = NULL, int dx = 0, int dy = 0, int w = -1, int h = -1, int sx = 0, int sy = 0);
+		void BlitClipped (CRectangle* dest = NULL, int dx = 0, int dy = 0, int w = -1, int h = -1, int sx = 0, int sy = 0);
 		void BlitClipped (int xSrc, int ySrc);
 		void BlitScaled (CBitmap* destP);
 		void ScreenCopy (CBitmap* dest, int dx, int dy, int w, int h, int sx, int sy);

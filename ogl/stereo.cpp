@@ -89,12 +89,12 @@ if (stereoParams.pDistortion) {
 		distortion.XCenterOffset = -distortion.XCenterOffset;
 	}
 
-float w = float (gameData.render.viewport.Width ()) / float (gameData.render.screen.Width ()),
-      h = float (gameData.render.viewport.Height ()) / float (gameData.render.screen.Height ()),
-      x = float (gameData.render.viewport.Left ()) / float (gameData.render.screen.Width ()),
-      y = float (gameData.render.viewport.Top ()) / float (gameData.render.screen.Height ());
+float w = float (gameData.render.frame.Width ()) / float (gameData.render.screen.Width ()),
+      h = float (gameData.render.frame.Height ()) / float (gameData.render.screen.Height ()),
+      x = float (gameData.render.frame.Left ()) / float (gameData.render.screen.Width ()),
+      y = float (gameData.render.frame.Top ()) / float (gameData.render.screen.Height ());
 
-float as = float (gameData.render.viewport.Width ()) / float(gameData.render.viewport.Height ());
+float as = float (gameData.render.frame.Width ()) / float(gameData.render.frame.Height ());
 
 GLhandleARB warpProg = GLhandleARB (shaderManager.Deploy (riftWarpShaderProg [gameOpts->render.stereo.bChromAbCorr]));
 if (!warpProg)
