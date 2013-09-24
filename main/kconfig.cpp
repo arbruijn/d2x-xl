@@ -763,7 +763,7 @@ if (m_items == kcKeyboard) {
 	kc_gr_pixel (KC_LHX (128), KC_LHY (43));
 	kc_gr_pixel (KC_LHX (128), KC_LHY (44));
 
-	GrString (KC_LHX (109), KC_LHY (40), "OR");
+	GrString (LHX (109) + m_xOffs, KC_LHY (40), "OR");
 
 	OglDrawLine (KC_LHX (253), KC_LHY (42), KC_LHX (261), KC_LHY (42));
 	OglDrawLine (KC_LHX (274), KC_LHY (42), KC_LHX (283), KC_LHY (42));
@@ -772,7 +772,7 @@ if (m_items == kcKeyboard) {
 	kc_gr_pixel (KC_LHX (283), KC_LHY (43));
 	kc_gr_pixel (KC_LHX (283), KC_LHY (44));
 
-	GrString (KC_LHX (264), KC_LHY (40), "OR");
+	GrString (LHX (264) + m_xOffs, KC_LHY (40), "OR");
 	}
 else if (m_items == kcJoystick) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
@@ -782,7 +782,7 @@ else if (m_items == kcJoystick) {
 	OglDrawLine (KC_LHX (18), KC_LHY (127+18), KC_LHX (144), KC_LHY (127+18));
 	OglDrawLine (KC_LHX (174), KC_LHY (127+18), KC_LHX (294), KC_LHY (127+18));
 	GrString (0x8000, KC_LHY (35), TXT_BUTTONS_HATS);
-	GrString (0x8000,KC_LHY (125+18), TXT_AXES);
+	GrString (0x8000, KC_LHY (125+18), TXT_AXES);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	GrString (KC_LHX (85), KC_LHY (145+8), TXT_AXIS);
 	GrString (KC_LHX (120), KC_LHY (145+8), TXT_INVERT);
@@ -799,15 +799,15 @@ else if (m_items == kcMouse) {
 	GrString (0x8000, KC_LHY (35), TXT_BUTTONS);
 	GrString (0x8000,KC_LHY (125+5), TXT_AXES);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
-	GrString (KC_LHX (169), KC_LHY (137), TXT_AXIS);
-	GrString (KC_LHX (199), KC_LHY (137), TXT_INVERT);
+	GrString (LHX (169) + m_xOffs, KC_LHY (137), TXT_AXIS);
+	GrString (LHX (199) + m_xOffs, KC_LHY (137), TXT_INVERT);
 	}
 else if (m_items == kcHotkeys) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
 
-	GrString (KC_LHX (94), KC_LHY (40), "KB");
-	GrString (KC_LHX (121), KC_LHY (40), "JOY");
+	GrString (LHX (94) + m_xOffs, KC_LHY (40), "KB");
+	GrString (LHX (121) + m_xOffs, KC_LHY (40), "JOY");
 	}
 //fontManager.SetScale (fontManager.Scale () / GetScale ());
 }
