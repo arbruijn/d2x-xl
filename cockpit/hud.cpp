@@ -823,7 +823,7 @@ m_info.bRebuild = false;
 if (!CGenericCockpit::Setup ())
 	return false;
 int h = (int) ((gameData.render.frame.Height () * 7) / 10 / ((double) screen.Height () / (double) screen.Width () / 0.75));
-Canvas () += CViewport (0, (gameData.render.frame.Height () - h) / 2, gameData.render.frame.Width (), h);
+*Canvas () += CViewport (0, (gameData.render.frame.Height () - h) / 2, gameData.render.frame.Width (), h);
 Canvas ()->Activate ();
 //GameInitRenderSubBuffers (x, y, w, h);
 return true;

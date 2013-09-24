@@ -7,7 +7,7 @@ class CRectangle {
 	public:
 		int m_x, m_y, m_w, m_h;
 
-		CRectangle (int x = 0, int y = 0, int w = 0, int h = 0, int t = 0) : m_x (x), m_y (y), m_w (w), m_h (h), m_t (t) {}
+		CRectangle (int x = 0, int y = 0, int w = 0, int h = 0, int t = 0) : m_x (x), m_y (y), m_w (w), m_h (h) {}
 
 		void Setup (int x, int y, int w, int h) {
 			m_x = x;

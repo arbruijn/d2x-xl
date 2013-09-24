@@ -341,7 +341,7 @@ class CBitmap : public CArray< ubyte > {
 		void Unlink (int bAddon);
 #endif
 		void RenderFullScreen (void);
-		int Render (CCanvas *dest,
+		int Render (CRectangle* dest,
 						int xDest, int yDest, int wDest, int hDest,
 						int xSrc, int ySrc, int wSrc, int hSrc,
 						int bTransp = 0, int bMipMaps = 0, int bSmoothe = 0,

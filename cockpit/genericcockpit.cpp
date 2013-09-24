@@ -189,7 +189,6 @@ UpdateRenderedData (nWindow + 1, viewerP, bRearView, nUser);
 m_info.weaponBoxUser [nWindow] = nUser;						//say who's using window
 gameData.objs.viewerP = viewerP;
 gameStates.render.bRearView = -bRearView;
-CCanvas::Push ();
 transformation.Push ();
 SetupWindow (nWindow);
 gameData.render.window.Activate ();
@@ -550,7 +549,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordCockpitChange (gameStates.render.cockpit.nType);
 if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 	gameStates.render.cockpit.nType = CM_FULL_SCREEN;
-gameData.render.scene.Setup (gameData.render.frame); // OpenGL viewport must be properly set here
+gameData.render.scene.Setup (&gameData.render.frame); // OpenGL viewport must be properly set here
 fontManager.SetCurrent (GAME_FONT);
 SetFontScale (1.0f);
 SetFontColor (GREEN_RGBA);

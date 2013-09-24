@@ -176,6 +176,8 @@ int grMsgColorLevel = 1;
 
 //------------------------------------------------------------------------------
 
+#if 0
+
 int GrInternalString0 (int x, int y, const char *s)
 {
 	ubyte*		fp;
@@ -278,6 +280,8 @@ while (nextRowP != NULL) {
 return 0;
 }
 
+#endif
+
 //------------------------------------------------------------------------------
 
 static inline const char* ScanEmbeddedColors (char c, const char* textP, int origColor, int nOffset, int nScale)
@@ -302,6 +306,8 @@ return textP + 1;
 }
 
 //------------------------------------------------------------------------------
+
+#if 0
 
 int GrInternalString0m (int x, int y, const char *s)
 {
@@ -410,6 +416,8 @@ while (nextRowP != NULL) {
 	}
 return 0;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -713,6 +721,9 @@ return GrInternalStringClipped (gameData.X (x), y, s);
 
 int GrUString (int x, int y, const char *s)
 {
+#if 1
+return fontManager.Current ()->DrawString (x, y, s);
+#else
 if (MODE == BM_OGL)
 	return fontManager.Current ()->DrawString (x, y, s);
 if (fontManager.Current ()->Flags () & FT_COLOR)
@@ -722,6 +733,7 @@ else if (MODE != BM_LINEAR)
 if (CCanvas::Current ()->FontColor (1).index == -1)
 	return GrInternalString0m (x, y, s);
 return GrInternalString0 (x, y, s);
+#endif
 }
 
 //------------------------------------------------------------------------------

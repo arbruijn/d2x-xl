@@ -54,11 +54,11 @@ class CBackground {
 		void DrawArea (int left, int top, int right, int bottom);
 		void DrawBox (void);
 
-		inline CCanvas* Canvas (uint i = 0) { return m_canvas [i]; }
+		inline CCanvas* Canvas (uint i = 0) { return &m_canvas; }
 		inline CBitmap* Bitmap (void) { return m_bitmap; }
 		inline void SetBitmap (CBitmap* bmP) { m_bitmap = bmP; }
-		inline CBitmap* Background (void) { return m_saved [0]; }
-		inline CBitmap* Saved (int i) { return m_saved [i]; }
+		inline CBitmap* Background (void) { return &m_saved; }
+		inline CBitmap* Saved (void) { return &m_saved; }
 		inline void GetExtent (int& x, int& y, int& w, int& h) { 
 			if (m_canvas [1])
 				m_canvas [1]->GetExtent (x, y, w, h); 

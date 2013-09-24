@@ -311,8 +311,8 @@ for (i = 0; i < 2; i++) {
 	if (i) {	// i == 1: nostalgia/pure D2 mode
 		}
 	else {
-		RP (gameData.render.screen.CBitmap::m_info.props.w, 0, 0);
-		RP (gameData.render.screen.CBitmap::m_info.props.h, 0, 0);
+		RP (gameData.render.screen.m_w, 0, 0);
+		RP (gameData.render.screen.m_h, 0, 0);
 		RP (gameStates.app.iDownloadTimeout, 0, 0);
 		RP (gameStates.render.bShowFrameRate, 0, 0);
 		RP (gameStates.render.bShowTime, 0, 1);

@@ -114,7 +114,7 @@ if (pMsgs->nMessages > 0) {
 	if (pMsgs->nColor == (uint) -1)
 		pMsgs->nColor = GREEN_RGBA;
 
-	if (((gameStates.render.cockpit.nType == CM_STATUS_BAR) || (gameStates.render.cockpit.nType == CM_FULL_SCREEN)) && (gameData.render.viewport.Top () >= (screen.Height () / 8))) {
+	if (((gameStates.render.cockpit.nType == CM_STATUS_BAR) || (gameStates.render.cockpit.nType == CM_FULL_SCREEN)) && (gameData.render.scene.Top () >= (screen.Height () / 8))) {
 		// Only display the most recent pszMsg in this mode
 		nMsg = (pMsgs->nFirst + pMsgs->nMessages-1) % HUD_MAX_MSGS;
 		pszMsg = pMsgs->szMsgs [nMsg];
