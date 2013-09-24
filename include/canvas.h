@@ -202,7 +202,19 @@ class CCanvas : public CViewport, public CBitmap {
 		void Deactivate (void);
 	};
 
-//===========================================================================
+//------------------------------------------------------------------------------
+
+class CGameScreenData : public CCanvas {
+	public:
+		void Set (short l, short t, short w, short h) { CViewport::SetLeft (l), CViewport::SetTop (t), CViewport::SetWidth (w), CViewport::SetHeight (h); }
+		inline uint Scalar (void) { return (((uint) Width (false)) << 16) + (((uint) Height (false)) & 0xFFFF); }
+		inline uint Area (void) { return (uint) Width (false) * (uint) Height (false); }
+		void Set (uint scalar) { Set (0, 0, (short) (scalar >> 16), (short) (scalar & 0xFFFF)); }
+
+		static int StereoOffset (void);
+	};
+
+//------------------------------------------------------------------------------
 
 typedef struct tScreen {		// This is a video screen
 	u_int32_t	mode;				// Video mode number
@@ -212,7 +224,7 @@ typedef struct tScreen {		// This is a video screen
 } tScreen;
 
 
-class CScreen : public CCanvas {
+class CScreen : public CGameScreenData {
 	private:
 		tScreen	m_info;
 

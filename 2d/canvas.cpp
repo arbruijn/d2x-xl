@@ -104,7 +104,8 @@ SetHeight ();
 
 void CCanvas::Setup (CCanvas* parentP, int x, int y, int w, int h)
 {
-Setup (parentP);
+if (parentP)
+	Setup (parentP);
 CViewport (*this) = CViewport (x, y, w, h);
 SetWidth ();
 SetHeight ();
@@ -216,14 +217,13 @@ else
 void SetupCanvasses (float scale)
 {
 screen.SetScale (scale);
-gameData.render.screen.Setup (&screen);
 if (!ogl.IsSideBySideDevice ())
-	gameData.render.frame.Setup (&gameData.render.screen);
+	gameData.render.frame.Setup (&screen);
 else {
 	if (ogl.StereoSeparation () < 0)
-		gameData.render.frame.Setup (&gameData.render.screen, 0, 0, screen.Width (false) / 2, screen.Height (false));
+		gameData.render.frame.Setup (&screen, 0, 0, screen.Width (false) / 2, screen.Height (false));
 	else
-		gameData.render.frame.Setup (&gameData.render.screen, screen.Width (false) / 2, 0, screen.Width (false), screen.Height (false));
+		gameData.render.frame.Setup (&screen, screen.Width (false) / 2, 0, screen.Width (false), screen.Height (false));
 	}
 gameData.render.scene.Setup (&gameData.render.frame);
 gameData.render.window.Setup (&gameData.render.scene);

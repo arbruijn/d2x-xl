@@ -622,7 +622,7 @@ else
 	glPushMatrix ();
 	glLoadIdentity ();//clear matrix
 	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-	gameData.render.screen.SetViewport ();
+	screen.SetViewport ();
 
 	GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
 	bool bDepthWrite = ogl.GetDepthWrite ();

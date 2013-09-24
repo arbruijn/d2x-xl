@@ -232,11 +232,11 @@ if (!(i && xStereoSeparation)) {	//no stereo or shutter glasses or Oculus Rift
 	}
 else {
 	if ((i < 0) || (xStereoSeparation > 0)) {
-		gameData.render.scene.SetViewport (&gameData.render.screen);
+		gameData.render.scene.SetViewport (&screen);
 		if (i < 0)
 			Draw2DFrameElements ();
 		if (xStereoSeparation > 0) {
-			gameData.render.screen.SetViewport ();
+			screen.SetViewport ();
 			ogl.SwapBuffers (0, 0);
 			}
 		}
@@ -508,7 +508,7 @@ else {
 	RenderFrame (xStereoSeparation, 0);
 	}
 FlushFrame (xStereoSeparation);
-//CCanvas::SetCurrent (&gameData.render.screen);
+//CCanvas::SetCurrent (&screen);
 }
 
 //------------------------------------------------------------------------------
@@ -524,8 +524,8 @@ void GrowWindow (void)
 #if 0
 StopTime ();
 if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) {
-	gameData.render.screen.SetHeight (screen.Height ());
-	gameData.render.screen.SetWidth (screen.Width ());
+	screen.SetHeight (screen.Height ());
+	screen.SetWidth (screen.Width ());
 	cockpit->Toggle ();
 	HUDInitMessage (TXT_COCKPIT_F3);
 	StartTime (0);
@@ -537,21 +537,21 @@ if (gameStates.render.cockpit.nType != CM_STATUS_BAR) {
 	return;
 	}
 
-if ((gameData.render.screen.Height () >= screen.Height ()) || (gameData.render.screen.Width () >= screen.Width ())) {
-	//gameData.render.screen.Width () = screen.Width ();
-	//gameData.render.screen[HA] = screen.Height ();
+if ((screen.Height () >= screen.Height ()) || (screen.Width () >= screen.Width ())) {
+	//screen.Width () = screen.Width ();
+	//screen[HA] = screen.Height ();
 	cockpit->Activate (CM_FULL_SCREEN);
 	}
 else {
 	//int x, y;
-	gameData.render.screen.SetWidth (gameData.render.screen.Width () + WINDOW_W_DELTA);
-	gameData.render.screen.SetHeight (gameData.render.screen.Height () + WINDOW_H_DELTA);
-	if (gameData.render.screen.Height () > screen.Height ())
-		gameData.render.screen.SetHeight (screen.Height ());
-	if (gameData.render.screen.Width () > screen.Width ())
-		gameData.render.screen.SetWidth (screen.Width ());
-	gameData.render.screen.SetLeft ((screen.Width () - gameData.render.screen.Width ()) / 2);
-	gameData.render.screen.SetTop ((screen.Height () - gameData.render.screen.Height ()) / 2);
+	screen.SetWidth (screen.Width () + WINDOW_W_DELTA);
+	screen.SetHeight (screen.Height () + WINDOW_H_DELTA);
+	if (screen.Height () > screen.Height ())
+		screen.SetHeight (screen.Height ());
+	if (screen.Width () > screen.Width ())
+		screen.SetWidth (screen.Width ());
+	screen.SetLeft ((screen.Width () - screen.Width ()) / 2);
+	screen.SetTop ((screen.Height () - screen.Height ()) / 2);
 	}
 HUDClearMessages ();	//	@mk, 11/11/94
 SavePlayerProfile ();

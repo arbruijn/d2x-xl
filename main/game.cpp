@@ -246,7 +246,7 @@ return true;
 // Sets up the canvases we will be rendering to (NORMAL VERSION)
 void GameInitRenderBuffers (int nScreenSize, int render_w, int render_h, int render_method, int flags)
 {
-gameData.render.screen.Set (nScreenSize);
+screen.Set (nScreenSize);
 SetupCanvasses ();
 }
 

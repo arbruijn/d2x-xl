@@ -77,10 +77,11 @@ nCurrentVGAMode = mode;
 screen.Destroy ();
 screen.Init ();
 screen.SetMode (mode);
+screen.Setup (NULL, 0, 0, w, h);
 screen.SetWidth (w);
 screen.SetHeight (h);
-gameData.render.screen.Set (0, 0, w, h);
-gameData.render.screen.Activate (NULL, true);
+screen.Setup (&screen);
+screen.Activate (NULL, true);
 SetupCanvasses ();
 //screen.Aspect () = FixDiv(screen.Width ()*3,screen.Height ()*4);
 screen.SetAspect (FixDiv (screen.Width (), (fix) (screen.Height () * ((double) w / (double) h))));
@@ -445,8 +446,8 @@ gameStates.menus.bHires = gameStates.menus.bHiresAvailable;		//do highres if we 
 nMenuMode = gameStates.gfx.bOverride 
 		? gameStates.gfx.nStartScrSize
 		: gameStates.menus.bHires 
-			? (gameData.render.screen.Area () >= 640 * 480) 
-				? gameData.render.screen.Scalar ()
+			? (screen.Area () >= 640 * 480) 
+				? screen.Scalar ()
 				: SM (800, 600)
 			: SM (320, 200);
 gameStates.video.nLastScreenMode = -1;
@@ -467,8 +468,8 @@ return 1;
 
 int SetGameScreenMode (u_int32_t sm)
 {
-if (nCurrentVGAMode != gameData.render.screen.Scalar ()) {
-	if (GrSetMode (gameData.render.screen.Scalar ())) {
+if (nCurrentVGAMode != screen.Scalar ()) {
+	if (GrSetMode (screen.Scalar ())) {
 		Error ("Cannot set desired screen mode for game!");
 		//we probably should do something else here, like select a standard mode
 		}
@@ -500,8 +501,8 @@ int SetScreenMode (u_int32_t sm)
 	GLint nError = glGetError ();
 #endif
 if ((gameStates.video.nScreenMode == sm) && 
-	 (nCurrentVGAMode == gameData.render.screen.Scalar ()) && 
-	 (screen.Mode () == gameData.render.screen.Scalar ())) {
+	 (nCurrentVGAMode == screen.Scalar ()) && 
+	 (screen.Mode () == screen.Scalar ())) {
 	gameData.render.frame.Activate ();
 	ogl.SetScreenMode ();
 	return 1;

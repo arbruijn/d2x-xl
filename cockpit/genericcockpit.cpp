@@ -228,7 +228,7 @@ if (nUser == WBU_GUIDED)
 
 if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 	CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
-	glLineWidth (float (gameData.render.screen.Width ()) / 640.0f);
+	glLineWidth (float (screen.Width ()) / 640.0f);
 	OglDrawEmptyRect (0, 0, Canvas ()->Width () - 1, Canvas ()->Height ());
 	glLineWidth (1);
 #if 0

@@ -499,8 +499,8 @@ m_data.depthScale.v.coord.x = float (ZFAR / (ZFAR - ZNEAR));
 m_data.depthScale.v.coord.y = float (ZNEAR * ZFAR / (ZNEAR - ZFAR));
 m_data.depthScale.v.coord.z = float (ZFAR - ZNEAR);
 #if 1
-m_data.windowScale.dim.x = 1.0f / float (gameData.render.screen.Width ());
-m_data.windowScale.dim.y = 1.0f / float (gameData.render.screen.Height ());
+m_data.windowScale.dim.x = 1.0f / float (screen.Width ());
+m_data.windowScale.dim.y = 1.0f / float (screen.Height ());
 #else
 m_data.windowScale.dim.x = 1.0f / float (CCanvas::Current ()->Width ());
 m_data.windowScale.dim.y = 1.0f / float (CCanvas::Current ()->Height ());
@@ -550,10 +550,10 @@ if (m_states.viewport [0] != vp) {
 
 void COGL::GetViewport (vec4& viewport)
 {
-viewport [0] = (float) m_states.viewport [0].m_x / (float) gameData.render.screen.Width ();
-viewport [1] = (float) m_states.viewport [0].m_y / (float) gameData.render.screen.Height ();
-viewport [2] = (float) m_states.viewport [0].m_w / (float) gameData.render.screen.Width ();
-viewport [3] = (float) m_states.viewport [0].m_h / (float) gameData.render.screen.Height ();
+viewport [0] = (float) m_states.viewport [0].m_x / (float) screen.Width ();
+viewport [1] = (float) m_states.viewport [0].m_y / (float) screen.Height ();
+viewport [2] = (float) m_states.viewport [0].m_w / (float) screen.Width ();
+viewport [3] = (float) m_states.viewport [0].m_h / (float) screen.Height ();
 }
 
 //------------------------------------------------------------------------------

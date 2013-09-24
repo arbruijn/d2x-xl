@@ -1689,18 +1689,6 @@ class CMineRenderData {
 
 //------------------------------------------------------------------------------
 
-class CGameScreenData : public CCanvas {
-	public:
-		void Set (short l, short t, short w, short h) { CViewport::SetLeft (l), CViewport::SetTop (t), CViewport::SetWidth (w), CViewport::SetHeight (h); }
-		inline uint Scalar (void) { return (((uint) Width (false)) << 16) + (((uint) Height (false)) & 0xFFFF); }
-		inline uint Area (void) { return (uint) Width (false) * (uint) Height (false); }
-		void Set (uint scalar) { Set (0, 0, (short) (scalar >> 16), (short) (scalar & 0xFFFF)); }
-
-		static int StereoOffset (void);
-	};
-
-//------------------------------------------------------------------------------
-
 class CVertColorData {
 	public:
 		int				bExclusive;
@@ -1806,7 +1794,7 @@ class CRenderData {
 		CTerrainRenderData		terrain;
 		CThrusterData				thrusters [MAX_PLAYERS];
 		CMineRenderData			mine;
-		CGameScreenData			screen; // entire screen
+		//CGameScreenData			screen; // entire screen
 		CGameScreenData			frame;  // current part of the screen being rendered too (usually entire screen or left and right halves of it)
 		CGameScreenData			scene; // part of the frame being rendered to (can be smaller for certain cockpit types)
 		CGameScreenData			window; // cockpit windows (rear view, guide bot, etc)

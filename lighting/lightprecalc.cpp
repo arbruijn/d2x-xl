@@ -400,7 +400,7 @@ static void SetupProjection (void)
 				h = screen.Height ();
 	CCanvas canvas;
 
-canvas.Setup (&gameData.render.screen, 0, 0, 1024, 1024);
+canvas.Setup (&screen, 0, 0, 1024, 1024);
 canvas.Activate ();
 canvas.SetWidth ();
 canvas.SetHeight ();

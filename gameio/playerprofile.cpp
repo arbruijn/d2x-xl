@@ -311,8 +311,8 @@ for (i = 0; i < 2; i++) {
 	if (i) {	// i == 1: nostalgia/pure D2 mode
 		}
 	else {
-		RP (gameData.render.screen.m_w, 0, 0);
-		RP (gameData.render.screen.m_h, 0, 0);
+		RP (screen.m_w, 0, 0);
+		RP (screen.m_h, 0, 0);
 		RP (gameStates.app.iDownloadTimeout, 0, 0);
 		RP (gameStates.render.bShowFrameRate, 0, 0);
 		RP (gameStates.render.bShowTime, 0, 1);
@@ -806,8 +806,8 @@ typedef struct tParamValue {
 	} tParamValue;
 
 tParamValue defaultParams [] = {
-	 {"gameData.render.screen.CBitmap::m_info.props.w", "640"},
-	 {"gameData.render.screen.CBitmap::m_info.props.h", "480"},
+	 {"screen.CBitmap::m_info.props.w", "640"},
+	 {"screen.CBitmap::m_info.props.h", "480"},
 	 {"gameStates.app.iDownloadTimeout", "5"},
 	 {"gameStates.render.cockpit.nType", "3"},
 	 {"gameStates.render.bShowFrameRate", "0"},
@@ -1680,8 +1680,8 @@ if (!profile.Load (nStage < 2))
 
 if (gameStates.gfx.bOverride) {
 	gameStates.video.nDefaultDisplayMode = nDisplayMode;
-	gameData.render.screen.SetWidth (gameWindowW);
-	gameData.render.screen.SetHeight (gameWindowH);
+	screen.SetWidth (gameWindowW);
+	screen.SetHeight (gameWindowH);
 	}
 else if (gameStates.video.nDefaultDisplayMode < 0) {
 	gameStates.video.nDefaultDisplayMode = CUSTOM_DISPLAY_MODE;

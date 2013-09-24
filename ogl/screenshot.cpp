@@ -167,9 +167,9 @@ if ((bTmpBuf = (buf == NULL))) {
 	buf = new ubyte [screen.Width () * screen.Height () * 3];
 	ogl.SetTexturing (false);
 	ogl.SetReadBuffer (GL_FRONT, 0);
-	gameData.render.screen.Activate ();
+	screen.Activate ();
 	glReadPixels (0, 0, screen.Width (), screen.Height (), GL_RGB, GL_UNSIGNED_BYTE, buf);
-	gameData.render.screen.Deactivate ();
+	screen.Deactivate ();
 	glErrCode = glGetError ();
 	glErrCode = GL_NO_ERROR;
 	}
