@@ -46,7 +46,7 @@ typedef struct tCamera {
 	time_t			t0;
 } tCamera;
 
-class CCamera : public CCanvas {
+class CCamera : public CCanvas, CBitmap {
 	private:
 		tCamera	m_data;
 	public:

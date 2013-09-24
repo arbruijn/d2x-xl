@@ -63,6 +63,13 @@ class CRectangle {
 		inline void SetTop (int y) { m_y = y; }
 		inline void SetWidth (int w) { m_w = w; }
 		inline void SetHeight (int h) { m_h = h; }
+
+		inline void GetExtent (int& x, int& y, int& w, int& h) {
+			x = Left ();
+			y = Top ();
+			w = Width ();
+			h = Height ();
+			}
 	};
 
 //------------------------------------------------------------------------------
