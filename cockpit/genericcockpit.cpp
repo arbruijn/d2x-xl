@@ -191,7 +191,7 @@ gameData.objs.viewerP = viewerP;
 gameStates.render.bRearView = -bRearView;
 transformation.Push ();
 SetupWindow (nWindow);
-gameData.render.window.Activate ();
+gameData.render.window.Activate (&gameData.render.scene);
 fontManager.SetCurrent (GAME_FONT);
 nZoomSave = gameStates.zoom.nFactor;
 gameStates.zoom.nFactor = float (I2X (gameOpts->render.cockpit.nWindowZoom + 1));					//the player's zoom factor
@@ -211,7 +211,7 @@ transformation.Pop ();
 if (ogl.StereoDevice () < 0)
 	ogl.ChooseDrawBuffer ();
 //gameData.render.frame.SetViewport ();
-gameData.render.window.Activate ();
+gameData.render.window.Activate (&gameData.render.scene);
 
 //	HACK!If guided missile, wake up robots as necessary.
 if (viewerP->info.nType == OBJ_WEAPON) 
@@ -229,7 +229,7 @@ if (nUser == WBU_GUIDED)
 if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 	CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
 	glLineWidth (float (gameData.render.screen.Width ()) / 640.0f);
-	OglDrawEmptyRect (0, 0, Canvas ()->Width () - 1, Canvas ()->Height ());
+	OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height ());
 	glLineWidth (1);
 #if 0
 	int smallWindowBottom, bigWindowBottom, extraPartHeight;

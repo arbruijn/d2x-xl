@@ -149,7 +149,7 @@ if (gameStates.app.bGameRunning)	{
 		gameStates.render.bRenderIndirect = 1;
 		}
 	}
-else if (IsSideBySideDevice ())
+else if (IsSideBySideDevice () || (gameStates.render.bRenderIndirect > 0))
 	FlushDrawBuffer ();
 SDL_GL_SwapBuffers ();
 if (gameStates.app.bSaveScreenShot)

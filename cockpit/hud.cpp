@@ -799,8 +799,7 @@ else {
 	}
 //copy these vars so stereo code can get at them
 CCockpitInfo::bWindowDrawn [nWindow] = 1;
-gameData.render.window = gameData.render.scene;
-gameData.render.window += CViewport (x, y, w, h);
+gameData.render.window.Setup (&gameData.render.scene, x, y, w, h);
 }
 
 //	-----------------------------------------------------------------------------

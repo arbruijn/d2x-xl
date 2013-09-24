@@ -484,12 +484,12 @@ m_bRedraw = 0;
 
 m_props.pszTitle = pszTitle;
 m_props.pszSubTitle = pszSubTitle;
-m_props.gameCanvasP = gameCanvasP;
-if (gameStates.app.bGameRunning && gameCanvasP) {
-	gameCanvasP->Activate ();
-	if (!gameStates.app.bShowError)
+if (gameStates.app.bGameRunning) {
+	if (!gameStates.app.bShowError) {
+		gameData.render.frame.Activate ();
 		RenderMenuGameFrame ();
-	gameCanvasP->Deactivate ();
+		gameData.render.frame.Deactivate ();
+		}
 	}
 else {
 	SetupCanvasses ();
@@ -503,7 +503,9 @@ else {
 		for (int i = 0; i < 2; i++) {
 			ogl.SetStereoSeparation (i ? gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] : -gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()]);
 			ogl.ChooseDrawBuffer ();
+			gameData.render.frame.Activate ();
 			Render ();
+			gameData.render.frame.Deactivate ();
 			}
 		}
 	if (!gameStates.app.bGameRunning || m_bRedraw)
@@ -654,7 +656,6 @@ int CMenu::Menu (const char* pszTitle, const char* pszSubTitle, pMenuCallback ca
 	int			oldChoice, i;
 	int			bSoundStopped = 0, bTimeStopped = 0;
 	int			topChoice;// Is this a scrolling box? Set to 0 at init
-	CCanvas*		gameCanvasP;
 	int			bWheelUp, bWheelDown, nMouseState, nOldMouseState, bDblClick = 0;
 	int			mx = 0, my = 0, x1 = 0, x2, y1, y2;
 	int			bLaunchOption = 0;
@@ -692,7 +693,6 @@ if (gameStates.app.bGameRunning && IsMultiGame)
 	gameData.multigame.nTypingTimeout = 0;
 
 SetPopupScreenMode ();
-SaveScreen (&gameCanvasP);
 SetupCanvasses ();
 
 bKeyRepeat = gameStates.input.keys.bRepeat;
@@ -786,7 +786,6 @@ while (!m_bDone) {
 	if (m_props.bValid && (m_props.nDisplayMode != gameStates.video.nDisplayMode)) {
 		FreeTextBms ();
 		SetScreenMode (SCREEN_MENU);
-		SaveScreen (&gameCanvasP);
 		memset (&m_props, 0, sizeof (m_props));
 		m_props.userWidth = width;
 		m_props.userHeight = height;
@@ -1032,7 +1031,6 @@ radioOption:
 			GrToggleFullScreenGame ();
 			GrabMouse (0, 0);
 			SetScreenMode (SCREEN_MENU);
-			SaveScreen (&gameCanvasP);
 			memset (&m_props, 0, sizeof (m_props));
 			m_props.userWidth = width;
 			m_props.userHeight = height;
@@ -1435,9 +1433,9 @@ launchOption:
 			}
 		}
 	// Redraw everything...
-	Render (pszTitle, pszSubTitle, gameCanvasP);
+	Render (pszTitle, pszSubTitle, NULL);
 	}
-FadeOut (pszTitle, pszSubTitle, gameCanvasP);
+FadeOut (pszTitle, pszSubTitle, NULL);
 SDL_ShowCursor (0);
 // Restore everything...
 RestoreScreen (filename, m_bDontRestore);

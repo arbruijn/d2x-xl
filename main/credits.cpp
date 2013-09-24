@@ -178,7 +178,7 @@ else {
 
 uint CCreditsManager::Read (void)
 {
-do {
+while (m_nExtraInc) {
 	m_nLines [0] = (m_nLines [0] + 1) % NUM_LINES;
 	for (;;) {
 		if (m_cf.GetS (m_buffer [m_nLines [0]], 80)) {
@@ -207,7 +207,8 @@ do {
 			}
 		break;
 		}
-	} while (m_nExtraInc--);
+	--m_nExtraInc;
+	} 
 m_nExtraInc = 0;
 return m_bDone;
 }
@@ -316,10 +317,7 @@ for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 					}
 				}
 			}
-		if (m_buffer[l][0] == '!')
-			y += ROW_SPACING / 2;
-		else
-			y += ROW_SPACING;
+		y += (m_buffer[l][0] == '!') ? ROW_SPACING / 2 : ROW_SPACING;
 		}
 	}
 }
@@ -392,23 +390,20 @@ ogl.SetBlending (true);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 gameStates.menus.nInMenu = 1;
 int nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
-
-SetupCanvasses ();
-ogl.ChooseDrawBuffer ();
+m_nExtraInc = 1;
 
 for (;;) {
 	Read ();
 
-	gameData.render.scene.Activate ();
-
 	for (int i = 0; i < nFrames; i++) {
 		ogl.SetStereoSeparation (gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] * (i ? 1 : -1));
-		gameData.render.frame.Activate ();
+		ogl.ChooseDrawBuffer ();
+		SetupCanvasses ();
+		gameData.render.scene.Activate ();
 		Render ();
-		gameData.render.frame.Deactivate ();
+		gameData.render.scene.Deactivate ();
 		}
 	ogl.Update (0);
-	gameData.render.scene.Deactivate ();
 
 	int t = m_xTimeout - SDL_GetTicks ();
 	if (t > 0)
@@ -419,12 +414,13 @@ for (;;) {
 	if (!HandleInput ())
 		break;
 
-	if (m_buffer [(m_nLines [0] + 1) %  NUM_LINES][0] == '!') {
-		m_nFirstLineOffs -= ROW_SPACING - ROW_SPACING / 2;
-		if (m_nFirstLineOffs <= -ROW_SPACING) {
-			m_nFirstLineOffs += ROW_SPACING;
-			m_nExtraInc++;
-			}
+	if (m_buffer [(m_nLines [0] + 1) %  NUM_LINES][0] == '!')
+		m_nFirstLineOffs -= ROW_SPACING / 2;
+	else
+		m_nFirstLineOffs -= 4;
+	if (m_nFirstLineOffs <= -ROW_SPACING) {
+		m_nFirstLineOffs += ROW_SPACING;
+		m_nExtraInc++;
 		}
 	}
 backgroundManager.Redraw (true);
