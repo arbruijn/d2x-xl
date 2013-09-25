@@ -99,7 +99,7 @@ SetDataVersion (-1);
 
 //------------------------------------------------------------------------------
 
-int CGameData::SetStereoSeparation (int nFrame)
+void CGameData::SetStereoSeparation (int nFrame)
 {
 ogl.SetStereoSeparation (gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] * nFrame);
 }

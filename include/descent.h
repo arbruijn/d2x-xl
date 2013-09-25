@@ -3662,7 +3662,7 @@ class CGameData {
 		fix FusionDamage (fix xBaseDamage);
 		int StereoOffset2D (void);
 		int FloatingStereoOffset2D (int x, bool bForce = false);
-		int SetStereoSeparation (int nFrame);
+		void SetStereoSeparation (int nFrame);
 		int SetStereoOffsetType (int nType) { 
 			int nOldType = render.nStereoOffsetType;
 			if (nType >= 0)
