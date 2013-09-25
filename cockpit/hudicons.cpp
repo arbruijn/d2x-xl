@@ -385,7 +385,7 @@ void CHUDIcons::DrawWeapons (void)
 	int	nHiliteColor = gameOpts->app.bColorblindFriendly;
 	int	nMaxAutoSelect;
 	int	nDmgIconWidth = 0;
-	int	nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+	int	nOffsetSave = gameData.SetStereoOffsetType (IsOculusRift () ? STEREO_OFFSET_NONE : STEREO_OFFSET_FIXED);
 #if 0
 								((nWeaponIcons == 2) 
 								 && ((gameStates.app.nSDLTicks [0] - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) || 
@@ -444,7 +444,7 @@ for (int i = 0; i < 2; i++) {
 #endif
 		if (!i) {
 			int nBombType, bHaveBombs = cockpit->BombCount (nBombType) > 0;
-			x = CCanvas::Current ()->Width () / 2 - (2 + bHaveBombs) * (wIcon + ox) / 2;
+			x = CCanvas::Current ()->Width () / 2 - CScreen::Scaled ((2 + bHaveBombs) * (wIcon + ox) / 2);
 			}
 		}
 	else if (nWeaponIcons < 3) {
