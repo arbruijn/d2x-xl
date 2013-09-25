@@ -471,7 +471,7 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 	if (ogl.IsOculusRift ()) {
 		int w = gameData.render.frame.Width (false) / 2;
 		int h = gameData.render.screen.Height (false) * w / gameData.render.screen.Width (false);
-		gameData.render.window.Setup (&gameData.render.frame, w / 4, h / 4, w, h); 
+		gameData.render.window.Setup (&gameData.render.frame, w / 4, (gameData.render.screen.Height (false) - h) / 4, w, h); 
 		SetCanvas (&gameData.render.window);
 		gameData.render.window.Activate ();
 		DrawEnergyLevels ();

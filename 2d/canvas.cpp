@@ -215,7 +215,9 @@ else
 
 void SetupCanvasses (float scale)
 {
-gameData.render.screen.SetScale (scale);
+if (scale != 0.0f)
+	gameData.render.screen.SetScale (scale);
+
 if (!ogl.IsSideBySideDevice ())
 	gameData.render.frame.Setup (&gameData.render.screen);
 else {
@@ -226,7 +228,7 @@ else {
 	}
 gameData.render.scene.Setup (&gameData.render.frame);
 gameData.render.window.Setup (&gameData.render.scene);
-gameData.render.screen.SetScale (1.0f);
+//gameData.render.screen.SetScale (1.0f);
 }
 
 //	-----------------------------------------------------------------------------

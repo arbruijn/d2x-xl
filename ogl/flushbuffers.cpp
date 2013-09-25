@@ -188,15 +188,7 @@ if (nEffects & 5) {
 			ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
 		}
 	else {
-#if 0
-		if (!(nEffects & 1)) {
-			SetDrawBuffer (GL_BACK, 0);
-			gameData.render.screen.SetScale (1.0f);
-			shaderManager.Deploy (-1);
-			}
-		else 
-#endif
-			SelectBlurBuffer (0); 
+		SelectBlurBuffer (0); 
 		gameData.render.screen.Activate ();
 		SetBlendMode (OGL_BLEND_REPLACE);
 		SetDepthMode (GL_ALWAYS);
@@ -206,7 +198,7 @@ if (nEffects & 5) {
 			gameData.render.frame.Activate ();
 			ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 			OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [i + 1]);
-			OglVertexPointer (2, GL_FLOAT, 0, quadVerts [1]);
+			OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 			ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
 			if (nEffects & 1) {
 				postProcessManager.Setup ();
@@ -224,6 +216,7 @@ if (nEffects & 5) {
 
 void COGL::FlushDrawBuffer (bool bAdditive)
 {
+gameData.render.screen.SetScale (1.0f);
 if (HaveDrawBuffer ()) {
 	int nEffects = postProcessManager.HaveEffects () 
 						+ (int (StereoDevice () > 0) << 1)

@@ -663,7 +663,7 @@ else {
 	SetupCanvasses (ogl.IsOculusRift () ? 1.25f : 1.0f);
 	RenderMonoFrame (-xStereoSeparation);
 	RenderMonoFrame (xStereoSeparation);
-	SetupCanvasses (1.0f);
+	SetupCanvasses ();
 	}
 //StopTime ();
 //if (!gameStates.menus.nInMenu)

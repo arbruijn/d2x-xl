@@ -275,7 +275,7 @@ inline float CCanvas::GetScale (void) { return CScreen::GetScale (); }
 
 inline int CCanvas::Scaled (int v) { return CScreen::Scaled (v); }
 
-void SetupCanvasses (float scale = 1.0f);
+void SetupCanvasses (float scale = 0.0f);
 
 //===========================================================================
 
