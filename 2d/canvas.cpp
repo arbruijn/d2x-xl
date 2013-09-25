@@ -101,11 +101,11 @@ SetHeight ();
 
 //	-----------------------------------------------------------------------------
 
-void CCanvas::Setup (CCanvas* parentP, int x, int y, int w, int h)
+void CCanvas::Setup (CCanvas* parentP, int x, int y, int w, int h, bool bUnscale)
 {
 if (parentP)
 	Setup (parentP);
-*((CViewport*) this) = CViewport (x, y, w, h);
+*((CViewport*) this) = bUnscale ? CViewport (Unscale (x), Unscale (y), Unscale (w), Unscale (h)) : CViewport (x, y, w, h);
 SetWidth ();
 SetHeight ();
 }

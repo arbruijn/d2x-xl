@@ -111,7 +111,7 @@ class CCanvas : public CViewport, public CBitmap {
 		//void Setup (int w, int h);
 		void Setup (CCanvas* parentP);
 		void Setup (int w, int h);
-		void Setup (CCanvas* parentP, int x, int y, int w, int h);
+		void Setup (CCanvas* parentP, int x, int y, int w, int h, bool bUnscale = false);
 		CCanvas* CreatePane (int x, int y, int w, int h);
 		//void SetupPane (CCanvas* childP, int x, int y, int w, int h);
 		void Destroy (void);
@@ -181,6 +181,7 @@ class CCanvas : public CViewport, public CBitmap {
 
 		inline float GetScale (void);
 		inline int Scaled (int v);
+		inline int Unscaled (int v);
 
 		inline int Width (bool bScale = true) { return bScale ? Scaled (CViewport::Width ()) : CViewport::Width (); }
 		inline int Height (bool bScale = true) { return bScale ? Scaled (CViewport::Height ()) : CViewport::Height (); }
@@ -267,6 +268,7 @@ class CScreen : public CGameScreenData {
 		static float GetScale (void) { return m_fScale; }
 		static void SetScale (float scale) { m_fScale = scale; }
 		static int Scaled (int v) { return int (ceil (v * GetScale ())); }
+		static int Unscaled (int v) { return int (ceil (v / GetScale ())); }
 };
 
 //extern CScreen screen;
@@ -274,6 +276,8 @@ class CScreen : public CGameScreenData {
 inline float CCanvas::GetScale (void) { return CScreen::GetScale (); }
 
 inline int CCanvas::Scaled (int v) { return CScreen::Scaled (v); }
+
+inline int CCanvas::Unscaled (int v) { return CScreen::Unscaled (v); }
 
 void SetupCanvasses (float scale = 0.0f);
 
