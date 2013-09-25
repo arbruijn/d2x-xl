@@ -482,7 +482,6 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 		DrawFlag ();
 		DrawOrbs ();
 		DrawLives ();
-		DrawLives ();
 		DrawHomingWarning ();
 		hudIcons.Render ();
 #if DBG

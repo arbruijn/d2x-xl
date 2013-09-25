@@ -145,7 +145,11 @@ if (cockpit->Hide ())
 
 	static int nIdLock = 0;
 
+#if DBG
+if (gameData.time.xGame & 0x4000) {
+#else
 if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
+#endif
 	int	x, y, nOffsetSave = -1;
 
 	if (ogl.IsOculusRift ()) {
