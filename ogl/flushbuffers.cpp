@@ -189,6 +189,7 @@ if (nEffects & 5) {
 		}
 	else {
 		SelectBlurBuffer (0); 
+		gameData.render.screen.SetScale (1.0f);
 		gameData.render.screen.Activate ();
 		SetBlendMode (OGL_BLEND_REPLACE);
 		SetDepthMode (GL_ALWAYS);
@@ -216,7 +217,6 @@ if (nEffects & 5) {
 
 void COGL::FlushDrawBuffer (bool bAdditive)
 {
-gameData.render.screen.SetScale (1.0f);
 if (HaveDrawBuffer ()) {
 	int nEffects = postProcessManager.HaveEffects () 
 						+ (int (StereoDevice () > 0) << 1)
