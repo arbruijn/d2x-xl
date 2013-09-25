@@ -471,18 +471,27 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 	if (ogl.IsOculusRift ()) {
 		int w = gameData.render.frame.Width (false) / 2;
 		int h = gameData.render.screen.Height (false) * w / gameData.render.screen.Width (false);
-		gameData.render.window.Setup (&gameData.render.frame, w / 2, (gameData.render.screen.Height (false) - h) / 2, w, h); 
+		int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
+		gameData.render.window.Setup (&gameData.render.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
 		SetCanvas (&gameData.render.window);
-		gameData.render.window.Activate ();
+		gameData.render.window.Activate (&gameData.render.frame);
 		DrawEnergyLevels ();
 		DrawModuleDamage ();
 		DrawScore ();
+		DrawKeys ();
 		DrawFlag ();
 		DrawOrbs ();
 		DrawLives ();
 		DrawLives ();
 		DrawHomingWarning ();
 		hudIcons.Render ();
+#if DBG
+		CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
+		glLineWidth (float (gameData.render.screen.Width ()) / 640.0f);
+		OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height ());
+		glLineWidth (1);
+#endif
+		gameData.SetStereoOffsetType (nOffsetSave);
 		gameData.render.window.Deactivate ();
 		SetCanvas (&gameData.render.scene);
 		}

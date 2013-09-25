@@ -354,7 +354,7 @@ if (gameStates.zoom.nFactor > float (gameStates.zoom.nMinFactor)) {
 	return;
 	}
 
-gameData.SetStereoOffsetType (STEREO_OFFSET_FLOATING);
+gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 m_info.xStereoSeparation = xStereoSeparation;
 x = CCanvas::Current ()->Width () / 2;
 y = CCanvas::Current ()->Height () / 2;

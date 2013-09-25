@@ -154,7 +154,7 @@ if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
 		x = CCanvas::Current ()->Width () / 2 - w / 2;
 		y = AdjustCockpitY (-2 * LineSpacing ());
 		//y = CCanvas::Current ()->Height () / 2 + 4 * h;
-		nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+		nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 		}
 	else {
 		x = 0x8000;
@@ -194,7 +194,7 @@ else {
 	y = 3 * LineSpacing ();
 	}
 
-int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_BLUE_KEY)
 	BitBlt (KEY_ICON_BLUE, x, y, false, false);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_GOLD_KEY) 
@@ -469,8 +469,8 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 void CHUD::DrawEnergyLevelsCombined (void)
 {
 	int	y = AdjustCockpitY (-2 * LineSpacing ());
-	int	x = CCanvas::Current ()->Width () / 4;
-	int	nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+	int	x = 2; //CCanvas::Current ()->Width () / 4;
+	int	nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 
 	static uint	energyColors [3] = { GOLD_RGBA, BLUE_RGBA, RED_RGBA };
 
@@ -723,7 +723,7 @@ if (IsMultiGame) {
 else if (LOCALPLAYER.lives > 1)  {
 	CBitmap* bmP = BitBlt (GAUGE_LIVES, 10, 3, false, false);
 	SetFontColor (MEDGREEN_RGBA);
-	nIdLives = DrawHUDText (&nIdLives, 10 + bmP->Width () + bmP->Width () / 2, 4, "x %d", LOCALPLAYER.lives - 1);
+	nIdLives = DrawHUDText (&nIdLives, 10 + bmP->Width () + 4, 4, "x %d", LOCALPLAYER.lives - 1);
 	}
 }
 

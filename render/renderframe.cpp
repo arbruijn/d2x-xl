@@ -451,6 +451,7 @@ void RenderMonoFrame (fix xStereoSeparation = 0)
 #if MAX_SHADOWMAPS
 RenderShadowMaps (xStereoSeparation);
 #endif
+ogl.SetStereoSeparation (xStereoSeparation);
 SetupCanvasses ();
 if (xStereoSeparation <= 0) {
 	PROF_START
