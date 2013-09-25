@@ -475,7 +475,6 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 		gameData.render.window.Setup (&gameData.render.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
 		SetCanvas (&gameData.render.window);
 		gameData.render.window.Activate (&gameData.render.frame);
-		ogl.SetDepthTest (false);
 #if 0
 		DrawEnergyLevels ();
 		DrawModuleDamage ();

@@ -409,7 +409,7 @@ public:
 		}
 
 	inline const float SqrMag (void) const {
-		return (float) v.coord.p * (float) v.coord.p + (float) v.coord.b * (float) v.coord.b + (float) v.coord.h * (float) v.coord.h;
+		return X2F (v.coord.p) * X2F (v.coord.p) + X2F (v.coord.b) * X2F (v.coord.b) + X2F (v.coord.h) * X2F (v.coord.h);
 		}
 
 	inline const float Mag (void) const {
