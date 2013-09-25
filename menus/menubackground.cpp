@@ -534,10 +534,10 @@ for (i = 0; i <= j; i++) {
 Destroy ();
 SetupCanvasses ();
 if (j < 0)
-	Setup (BackgroundName (BG_MENU), 0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
+	Setup (BackgroundName (BG_MENU), 0, 0, gameData.render.frame.Width (false), gameData.render.frame.Height (false));
 else {
 	for (i = 0; i <= j; i++) 
-		Setup (bgInfo [i].filename, 0, 0, gameData.render.frame.Width (), gameData.render.frame.Height ());
+		Setup (bgInfo [i].filename, 0, 0, gameData.render.frame.Width (false), gameData.render.frame.Height (false));
 	m_nDepth = nDepth;
 	}
 if (!bGame)

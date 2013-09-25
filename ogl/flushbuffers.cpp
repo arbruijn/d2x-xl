@@ -191,7 +191,6 @@ if (nEffects & 5) {
 		}
 	else {
 		SelectBlurBuffer (0); 
-		gameData.render.screen.SetScale (1.0f);
 		SetBlendMode (OGL_BLEND_REPLACE);
 		SetDepthMode (GL_ALWAYS);
 		for (int i = 0; i < 2; i++) {
@@ -209,7 +208,7 @@ if (nEffects & 5) {
 			else
 				OglDrawArrays (GL_QUADS, 0, 4);
 			}
-		gameData.render.screen.Deactivate ();
+		gameData.render.screen.SetScale (1.0f);
 		}
 	}
 }
