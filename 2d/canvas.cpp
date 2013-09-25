@@ -105,7 +105,7 @@ void CCanvas::Setup (CCanvas* parentP, int x, int y, int w, int h, bool bUnscale
 {
 if (parentP)
 	Setup (parentP);
-*((CViewport*) this) = bUnscale ? CViewport (Unscale (x), Unscale (y), Unscale (w), Unscale (h)) : CViewport (x, y, w, h);
+*((CViewport*) this) = bUnscale ? CViewport (Unscaled (x), Unscaled (y), Unscaled (w), Unscaled (h)) : CViewport (x, y, w, h);
 SetWidth ();
 SetHeight ();
 }
