@@ -501,7 +501,7 @@ else {
 	else {
 		for (int i = 0; i < 2; i++) {
 			gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
-			SetupCanvasses ();
+			SetupCanvasses (-1.0f);
 			gameData.render.frame.Activate ();
 			ogl.ChooseDrawBuffer ();
 			Render ();
@@ -693,7 +693,7 @@ if (gameStates.app.bGameRunning && IsMultiGame)
 	gameData.multigame.nTypingTimeout = 0;
 
 SetPopupScreenMode ();
-SetupCanvasses ();
+SetupCanvasses (-1.0f);
 
 bKeyRepeat = gameStates.input.keys.bRepeat;
 gameStates.input.keys.bRepeat = 1;

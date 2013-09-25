@@ -660,7 +660,7 @@ else {
 	fix xStereoSeparation = (automap.Display () && !ogl.IsSideBySideDevice ()) 
 									? 2 * gameOpts->render.stereo.xSeparation [0] 
 									: gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()];
-	SetupCanvasses (ogl.IsOculusRift () ? 1.25f : 1.0f);
+	SetupCanvasses (-1.0f);
 	RenderMonoFrame (-xStereoSeparation);
 	RenderMonoFrame (xStereoSeparation);
 	SetupCanvasses ();

@@ -154,6 +154,7 @@ else if (IsSideBySideDevice () || (gameStates.render.bRenderIndirect > 0))
 SDL_GL_SwapBuffers ();
 if (gameStates.app.bSaveScreenShot)
 	SaveScreenShot (NULL, 0);
+SetupCanvasses (-1.0f);
 SetDrawBuffer (GL_BACK, gameStates.render.bRenderIndirect > 0);
 #if 0
 if (gameStates.menus.nInMenu || bClear)
@@ -181,7 +182,8 @@ if (nEffects & 5) {
 		else
 			SetDrawBuffer (GL_BACK, 0);
 		ogl.BindTexture (DrawBuffer ((nEffects & 2) ? 2 : 0)->ColorBuffer ());
-		gameData.render.frame.CViewport::SetLeft (0);
+		gameData.render.screen.SetScale (1.0f);
+		gameData.render.screen.Activate ();
 		postProcessManager.Setup ();
 		postProcessManager.Render ();
 		if (nEffects & 4) // shutter glasses
@@ -190,7 +192,6 @@ if (nEffects & 5) {
 	else {
 		SelectBlurBuffer (0); 
 		gameData.render.screen.SetScale (1.0f);
-		gameData.render.screen.Activate ();
 		SetBlendMode (OGL_BLEND_REPLACE);
 		SetDepthMode (GL_ALWAYS);
 		for (int i = 0; i < 2; i++) {
