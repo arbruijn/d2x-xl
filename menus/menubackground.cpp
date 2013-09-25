@@ -194,14 +194,14 @@ if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameSta
 		}
 	}
 if (bDrawBox && !((gameStates.app.bNostalgia && m_bTopMenu) /*|| m_bFullScreen*/ || backgroundManager.IsDefault (GetFilename ()))) {
-	m_canvas.CViewport::SetLeft (m_canvas.CViewport::Left () - gameData.StereoOffset2D ());
+	m_canvas.CViewport::SetLeft (m_canvas.CViewport::Left () - CScreen::Unscaled (gameData.StereoOffset2D ()));
 	m_canvas.Activate (&gameData.render.frame);
 	if (m_bMenuBox)
 		backgroundManager.DrawBox (0, 0, m_canvas.Width (), m_canvas.Height (), gameData.menu.nLineWidth, 1.0f, 0);
 	else if (!m_bFullScreen)
 		DrawArea (0, 0, m_canvas.Width (), m_canvas.Height ());
 	m_canvas.Deactivate ();
-	m_canvas.CViewport::SetLeft (m_canvas.CViewport::Left () + gameData.StereoOffset2D ());
+	m_canvas.CViewport::SetLeft (m_canvas.CViewport::Left () + CScreen::Unscaled (gameData.StereoOffset2D ()));
 	}
 if (bUpdate && !gameStates.app.bGameRunning)
 	ogl.Update (0);
