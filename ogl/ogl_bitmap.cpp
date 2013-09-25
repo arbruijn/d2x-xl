@@ -92,13 +92,13 @@ if (orient & 1) {
 	}
 
 float fScale = X2F (scale);
-m_render.aspect = float (ogl.m_states.viewport [0].m_w * fScale);
-m_render.x0 = dx + float (x) / m_render.aspect;
-m_render.x1 = dx + float (x + w) / m_render.aspect;
-m_render.aspect = float (ogl.m_states.viewport [0].m_h * fScale);
-m_render.y0 = 1.0f - dy - float (y) / m_render.aspect;
-m_render.y1 = 1.0f - dy - float (y + h) / m_render.aspect;
-m_render.aspect = float (gameData.render.screen.Width ()) / float (gameData.render.screen.Height ());
+float a = float (ogl.m_states.viewport [0].m_w) * fScale;
+m_render.x0 = dx + float (x) / a;
+m_render.x1 = dx + float (x + w) / a;
+a = float (ogl.m_states.viewport [0].m_h) * fScale;
+m_render.aspect = float (ogl.m_states.viewport [0].m_h) * fScale;
+m_render.y0 = 1.0f - dy - float (y) / a;
+m_render.y1 = 1.0f - dy - float (y + h) / a;
 }
 
 //------------------------------------------------------------------------------

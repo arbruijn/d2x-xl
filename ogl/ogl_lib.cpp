@@ -546,6 +546,18 @@ if (m_states.viewport [0] != vp) {
 	m_states.viewport [0] = vp;
 	m_states.viewport [0].Apply ();
 	}
+#if DBG
+else {
+	int v [4];
+	glGetIntegerv (GL_VIEWPORT, v);
+	y = t - y - h;
+	if ((x != v [0]) || (y != v [1]) || (w != v [2]) || (h != v [3])) {
+		m_states.viewport [1] = m_states.viewport [0];
+		m_states.viewport [0] = vp;
+		m_states.viewport [0].Apply ();
+		}
+	}
+#endif
 }
 
 //------------------------------------------------------------------------------

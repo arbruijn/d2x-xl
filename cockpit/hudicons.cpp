@@ -417,8 +417,10 @@ if (ogl.IsSideBySideDevice ()  || (nWeaponIcons < 3)) {
 #else
 if (ogl.IsOculusRift () || (nWeaponIcons < 3)) {
 #endif
-	dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
-	y = 3 * gameData.render.frame.Height () / 4 - dy - 4 * oy;
+	//dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
+	//y = 3 * gameData.render.frame.Height () / 4 - dy - 4 * oy;
+	dy = 0;
+	y = CCanvas::Current ()->Height () - oy;
 	}
 else if (nWeaponIcons < 3) {
 	dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
@@ -442,7 +444,7 @@ for (int i = 0; i < 2; i++) {
 #endif
 		if (!i) {
 			int nBombType, bHaveBombs = cockpit->BombCount (nBombType) > 0;
-			x = gameData.render.frame.Width () / 2 - (2 + bHaveBombs) * (wIcon + ox) / 2;
+			x = CCanvas::Current ()->Width () / 2 - (2 + bHaveBombs) * (wIcon + ox) / 2;
 			}
 		}
 	else if (nWeaponIcons < 3) {
