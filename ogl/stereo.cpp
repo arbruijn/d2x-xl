@@ -156,6 +156,9 @@ if (!ogl.IsOculusRift ())
 if (!gameStates.render.textures.bHaveRiftWarpShader)
 	return false;
 
+gameData.SetStereoSeparation (STEREO_LEFT_FRAME);
+SetupCanvasses ();
+gameData.render.frame.Activate ();
 ogl.SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [1]);
@@ -165,9 +168,15 @@ if (!bWarpFrame)
 	OglDrawArrays (GL_QUADS, 0, 4);
 else
 #endif
-if (!RiftWarpFrame (gameData.render.rift.m_eyes [0]))
+if (!RiftWarpFrame (gameData.render.rift.m_eyes [0])) {
+	gameData.render.frame.Deactivate ();
 	return false;
+	}
+gameData.render.frame.Deactivate ();
 
+gameData.SetStereoSeparation (STEREO_RIGHT_FRAME);
+SetupCanvasses ();
+gameData.render.frame.Activate ();
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [2]);
 OglVertexPointer (2, GL_FLOAT, 0, quadVerts [2]);
@@ -176,8 +185,11 @@ if (!bWarpFrame)
 	OglDrawArrays (GL_QUADS, 0, 4);
 else
 #endif
-if (!RiftWarpFrame (gameData.render.rift.m_eyes [1]))
+if (!RiftWarpFrame (gameData.render.rift.m_eyes [1])) {
+	gameData.render.frame.Deactivate ();
 	return false;
+	}
+gameData.render.frame.Deactivate ();
 
 return true;
 #endif

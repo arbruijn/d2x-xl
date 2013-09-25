@@ -3591,6 +3591,9 @@ class CTextData {
 #define MAX_GAUGE_BMS 100   // increased from 56 to 80 by a very unhappy MK on 10/24/94.
 #define D1_MAX_GAUGE_BMS 80   // increased from 56 to 80 by a very unhappy MK on 10/24/94.
 
+#define STEREO_LEFT_FRAME	-1
+#define STEREO_RIGHT_FRAME	+1
+
 class CCockpitData {
 	public:
 		CArray<tBitmapIndex>	gauges [2]; //[MAX_GAUGE_BMS];
@@ -3659,6 +3662,7 @@ class CGameData {
 		fix FusionDamage (fix xBaseDamage);
 		int StereoOffset2D (void);
 		int FloatingStereoOffset2D (int x, bool bForce = false);
+		int SetStereoSeparation (int nFrame);
 		int SetStereoOffsetType (int nType) { 
 			int nOldType = render.nStereoOffsetType;
 			if (nType >= 0)

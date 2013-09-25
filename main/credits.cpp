@@ -396,7 +396,7 @@ for (;;) {
 	Read ();
 
 	for (int i = 0; i < nFrames; i++) {
-		ogl.SetStereoSeparation (gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] * (i ? 1 : -1));
+		gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
 		ogl.ChooseDrawBuffer ();
 		SetupCanvasses ();
 		gameData.render.scene.Activate ();

@@ -201,9 +201,12 @@ if (nEffects & 5) {
 		SetBlendMode (OGL_BLEND_REPLACE);
 		SetDepthMode (GL_ALWAYS);
 		for (int i = 0; i < 2; i++) {
+			gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
+			SetupCanvasses ();
+			gameData.render.frame.Activate ();
 			ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 			OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [i + 1]);
-			OglVertexPointer (2, GL_FLOAT, 0, quadVerts [i + 1]);
+			OglVertexPointer (2, GL_FLOAT, 0, quadVerts [1]);
 			ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
 			if (nEffects & 1) {
 				postProcessManager.Setup ();

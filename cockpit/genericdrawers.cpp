@@ -57,18 +57,25 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int CGenericCockpit::AdjustCockpitY (int y)
 {
+#if 1
+return y;
+#else
 int h = CCanvas::Current ()->Height () / 2;
 int fh = fontManager.Current ()->Height () + 1;
 int l = (y - h) / fh - 3 * h / fh / 4;
 return h + l * fh;
+#endif
 }
 
 //	-----------------------------------------------------------------------------
 
 int CGenericCockpit::AdjustCockpitXY (char* s, int& x, int& y)
 {
-	int	h;
 #if 1
+return gameData.render.nStereoOffsetType;
+#else
+	int	h;
+
 if (m_info.bAdjustCoords && ogl.IsOculusRift ()) {
 	h = CCanvas::Current ()->Width () / 2;
 	if (x >= h)

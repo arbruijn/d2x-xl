@@ -58,7 +58,11 @@ m_save.Create (10);
 
 int CGenericCockpit::X (int x, bool bForce)
 {
+#if 1
+return x;
+#else
 return gameData.X (x, bForce);
+#endif
 }
 
 //------------------------------------------------------------------------------

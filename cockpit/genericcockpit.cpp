@@ -417,7 +417,6 @@ if (!cockpit->Setup (false))
 if (!cockpit->Setup (true))
 	return;
 #endif
-gameData.render.frame.SetViewport ();
 Canvas ()->Activate ();
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
@@ -468,69 +467,87 @@ fontManager.SetCurrent (GAME_FONT);
 
 DrawReticle (ogl.StereoDevice () < 0);
 
-if ((gameOpts->render.cockpit.bHUD > 1)
-	 //&& !transformation.HaveHeadAngles () 
-	 && !(ogl.IsOculusRift () && (gameStates.zoom.nFactor > float (gameStates.zoom.nMinFactor)))) {
-	if ((gameData.demo.nState == ND_STATE_PLAYBACK))
-		gameData.app.SetGameMode (gameData.demo.nGameMode);
-
-	bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0));
-
-	if (!bLimited) {
-		DrawPlayerNames ();
-		RenderWindows ();
-		}
-	DrawCockpit (false);
-	if (bExtraInfo) {
-	#if DBG
-		DrawWindowLabel ();
-	#endif
-		DrawMultiMessage ();
-		DrawMarkerMessage ();
-		DrawFrameRate ();
-		DrawCruise ();
-		}
-	DrawPacketLoss ();
-	DrawSlowMotion ();
-	DrawPlayerStats ();
-	DrawScore ();
-	if (m_info.scoreTime)
-		DrawAddedScore ();
-	DrawEnergyLevels ();
-	DrawModuleDamage ();
-	DrawWeapons ();
-	DrawTimerCount ();
-	DrawCloak ();
-	DrawInvul ();
-	if (!bLimited) {
-		DrawTime ();
-		DrawKeys ();
+if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (gameStates.zoom.nMinFactor))) {
+	if (ogl.IsOculusRift ()) {
+		int w = gameData.render.frame.Width (false) / 2;
+		int h = gameData.render.screen.Height (false) * w / gameData.render.screen.Width (false);
+		gameData.render.window.Setup (&gameData.render.frame, w / 4, h / 4, w, h); 
+		SetCanvas (&gameData.render.window);
+		gameData.render.window.Activate ();
+		DrawEnergyLevels ();
+		DrawModuleDamage ();
+		DrawScore ();
 		DrawFlag ();
 		DrawOrbs ();
 		DrawLives ();
-		DrawBombCount ();
+		DrawLives ();
 		DrawHomingWarning ();
-		DrawKillList ();
-		DrawPlayerShip ();
+		hudIcons.Render ();
+		gameData.render.window.Deactivate ();
+		SetCanvas (&gameData.render.scene);
 		}
-	hudIcons.Render ();
-	if (bExtraInfo) {
-		DrawCountdown ();
-		DrawRecording ();
-		}
+	else {
+		if ((gameData.demo.nState == ND_STATE_PLAYBACK))
+			gameData.app.SetGameMode (gameData.demo.nGameMode);
 
-	if ((gameData.demo.nState == ND_STATE_PLAYBACK))
-		gameData.app.SetGameMode (GM_NORMAL);
+		bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0));
 
-	if (gameStates.app.bPlayerIsDead)
-		PlayerDeadMessage ();
+		if (!bLimited) {
+			DrawPlayerNames ();
+			RenderWindows ();
+			}
+		DrawCockpit (false);
+		if (bExtraInfo) {
+		#if DBG
+			DrawWindowLabel ();
+		#endif
+			DrawMultiMessage ();
+			DrawMarkerMessage ();
+			DrawFrameRate ();
+			DrawCruise ();
+			}
+		DrawPacketLoss ();
+		DrawSlowMotion ();
+		DrawPlayerStats ();
+		DrawScore ();
+		if (m_info.scoreTime)
+			DrawAddedScore ();
+		DrawEnergyLevels ();
+		DrawModuleDamage ();
+		DrawWeapons ();
+		DrawTimerCount ();
+		DrawCloak ();
+		DrawInvul ();
+		if (!bLimited) {
+			DrawTime ();
+			DrawKeys ();
+			DrawFlag ();
+			DrawOrbs ();
+			DrawLives ();
+			DrawBombCount ();
+			DrawHomingWarning ();
+			DrawKillList ();
+			DrawPlayerShip ();
+			}
+		hudIcons.Render ();
+		if (bExtraInfo) {
+			DrawCountdown ();
+			DrawRecording ();
+			}
 
-	if (!gameStates.render.bRearView)
-		HUDRenderMessageFrame ();
-	else if (gameStates.render.cockpit.nType != CM_REAR_VIEW) {
-		HUDRenderMessageFrame ();
-		SetFontColor (GREEN_RGBA);
-		DrawHUDText (NULL, 0x8000, (gameData.demo.nState == ND_STATE_PLAYBACK) ? -14 : -10, TXT_REAR_VIEW);
+		if ((gameData.demo.nState == ND_STATE_PLAYBACK))
+			gameData.app.SetGameMode (GM_NORMAL);
+
+		if (gameStates.app.bPlayerIsDead)
+			PlayerDeadMessage ();
+
+		if (!gameStates.render.bRearView)
+			HUDRenderMessageFrame ();
+		else if (gameStates.render.cockpit.nType != CM_REAR_VIEW) {
+			HUDRenderMessageFrame ();
+			SetFontColor (GREEN_RGBA);
+			DrawHUDText (NULL, 0x8000, (gameData.demo.nState == ND_STATE_PLAYBACK) ? -14 : -10, TXT_REAR_VIEW);
+			}
 		}
 	}
 DemoRecording ();
@@ -563,7 +580,9 @@ return true;
 
 void CGenericCockpit::Activate (int nType, bool bClearMessages)
 {
-if (nType == CM_FULL_COCKPIT)
+if (ogl.IsOculusRift ())
+	cockpit = &hudCockpit;
+else if (nType == CM_FULL_COCKPIT)
 	cockpit = &fullCockpit;
 else if (nType == CM_STATUS_BAR)
 	cockpit = &statusBarCockpit;
