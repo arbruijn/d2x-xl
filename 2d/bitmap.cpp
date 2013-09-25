@@ -482,7 +482,7 @@ if ((w <= 0) || (w > Width ()))
 	w = Width ();
 if ((h <= 0) || (h > Height ()))
 	h = Height ();
-Render (dest ? dest : CCanvas::Current (), x, y, w, h, 0, 0, w, h); 
+Render (dest, x, y, w, h, 0, 0, w, h); 
 }
 
 //------------------------------------------------------------------------------
