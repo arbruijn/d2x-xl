@@ -189,11 +189,14 @@ if (IsMultiGame && !IsCoopGame)
 
 	int	x, y, dx = GAME_FONT->Width () + GAME_FONT->Width () / 2;
 
+#if 0
 if (ogl.IsOculusRift ()) {
 	x = 3 * CCanvas::Current ()->Width () / 4 - 4 * dx;
 	y = CCanvas::Current ()->Height () + AdjustCockpitY (-2 * LineSpacing ());
 	}
-else {
+else 
+#endif
+	{
 	x = 2;
 	y = 3 * LineSpacing ();
 	}

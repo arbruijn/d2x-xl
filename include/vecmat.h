@@ -407,7 +407,17 @@ public:
 		v.coord.h -= other.v.coord.h;
 		return *this;
 		}
+
+	inline const float SqrMag (void) const {
+		return (float) v.coord.p * (float) v.coord.p + (float) v.coord.b * (float) v.coord.b + (float) v.coord.h * (float) v.coord.h;
+		}
+
+	inline const float Mag (void) const {
+		return (const float) sqrt (SqrMag ());
+		}
+
 };
+
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
