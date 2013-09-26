@@ -483,6 +483,7 @@ LoadBackground (CON_BG);
 
 Out ("Console initialised.");
 NewLineConsole ();
+m_canvas.Deactivate ();
 //CConsole::ListCommands (newinfo);
 }
 

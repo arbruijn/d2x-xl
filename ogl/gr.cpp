@@ -502,7 +502,6 @@ int SetScreenMode (u_int32_t sm)
 if ((gameStates.video.nScreenMode == sm) && 
 	 (nCurrentVGAMode == gameData.render.screen.Scalar ()) && 
 	 (gameData.render.screen.Mode () == gameData.render.screen.Scalar ())) {
-	gameData.render.frame.Activate ();
 	ogl.SetScreenMode ();
 	return 1;
 	}
@@ -525,7 +524,6 @@ switch (gameStates.video.nScreenMode) {
 		Error ("Invalid screen mode %d",sm);
 	}
 
-gameData.render.frame.Activate (NULL, true);
 ogl.SetScreenMode ();
 return 1;
 }

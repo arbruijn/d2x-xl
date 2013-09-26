@@ -339,6 +339,7 @@ class CHUD : public CGenericCockpit {
 
 	private:
 		void DrawEnergyLevelsCombined (void);
+		void DrawInvulCloakCombined (void);
 		int FlashGauge (int h, int *bFlash, int tToggle);
 		inline int LineSpacing (void) {
 			return ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))

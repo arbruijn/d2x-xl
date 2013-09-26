@@ -275,7 +275,7 @@ else {
 	yOffs += yDest;
 	//bmFrame.Blit (CCanvas::Current (), xOffs, yOffs, bufw, bufh, xSrc, ySrc, 1);
 	bmFrame.Render (CCanvas::Current (), xOffs, yOffs, w, h, xSrc, ySrc, wBuffer, hBuffer, 0, 0, gameOpts->movies.nQuality);
-	if ((CCanvas::Current ()->Width () > w) || (CCanvas::Current ()->Height () > h)) {
+	if (((uint) CCanvas::Current ()->Width () > w) || ((uint) CCanvas::Current ()->Height () > h)) {
 		CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
 		OglDrawEmptyRect (xDest - 1, yDest, xDest + w, yDest + h + 1);
 		}

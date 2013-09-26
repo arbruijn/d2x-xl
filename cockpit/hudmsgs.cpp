@@ -120,7 +120,7 @@ if (pMsgs->nMessages > 0) {
 		pszMsg = pMsgs->szMsgs [nMsg];
 
 		if (strcmp (szDisplayedBackgroundMsg [0], pszMsg)) {
-			int ycrd = CCanvas::Current ()->Top () - (SMALL_FONT->Height () + 2);
+			int ycrd = /*CCanvas::Current ()->Top () -*/ (SMALL_FONT->Height () + 2);
 			if (ycrd < 0)
 				ycrd = 0;
 			fontManager.SetCurrent (SMALL_FONT);

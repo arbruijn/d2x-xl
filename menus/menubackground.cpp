@@ -224,11 +224,12 @@ right = left + width - 1;
 bottom = top + height - 1;
 ogl.SetBlending (false);
 if (!backgroundManager.Shadow ()) {
-	CCanvas::Current ()->CViewport::SetLeft (CCanvas::Current ()->Left () + LHX (10));
-	CCanvas::Current ()->CViewport::SetTop (CCanvas::Current ()->Top () + LHX (10));
+	CCanvas canvas;
+	canvas.Setup (CCanvas::Current ());
+	canvas += CViewport (LHX (10), LHX (10), 0, 0);
+	canvas.Activate ();
 	m_bitmap->RenderFixed (NULL, left, top, width, height); //, LHX (10), LHY (10));
-	CCanvas::Current ()->CViewport::SetLeft (CCanvas::Current ()->Left () - LHX (10));
-	CCanvas::Current ()->CViewport::SetTop (CCanvas::Current ()->Top () - LHX (10));
+	canvas.Deactivate ();
 	}
 else {
 	m_bitmap->RenderFixed (NULL, left, top, width, height); //, 0, 0);

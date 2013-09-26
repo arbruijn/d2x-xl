@@ -417,7 +417,7 @@ if (!cockpit->Setup (false))
 if (!cockpit->Setup (true))
 	return;
 #endif
-ogl.ChooseDrawBuffer ();
+//ogl.ChooseDrawBuffer ();
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.ColorMask (1,1,1,1,0);
@@ -484,6 +484,8 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 		DrawFlag ();
 		DrawOrbs ();
 		DrawLives ();
+		DrawCloak ();
+		DrawInvul ();
 		DrawHomingWarning ();
 #endif
 #if DBG
@@ -494,7 +496,7 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 #endif
 		gameData.SetStereoOffsetType (nOffsetSave);
 		gameData.render.window.Deactivate ();
-		h = 5 * h / 3; //4 * gameData.render.screen.Height (false) / 9; //* w / gameData.render.screen.Width (false);
+		//h = w; //5 * h / 3; //4 * gameData.render.screen.Height (false) / 9; //* w / gameData.render.screen.Width (false);
 		gameData.render.window.Setup (&gameData.render.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
 		SetCanvas (&gameData.render.window);
 		gameData.render.window.Activate (&gameData.render.frame);

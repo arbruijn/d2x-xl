@@ -404,7 +404,7 @@ return 1;
 
 void CMenu::SaveScreen (CCanvas **gameCanvasP)
 {
-&gameData.render.frame.Activate ();
+gameData.render.frame.Activate ();
 }
 
 //------------------------------------------------------------------------------ 
@@ -1100,9 +1100,9 @@ launchOption:
 			for (i = 0; i < int (ToS ()); i++) {
 				if (!Item (i).Selectable ())
 					continue;
-				x1 = CCanvas::Current ()->Left () + Item (i).m_x - Item (i).m_rightOffset - 6;
+				x1 = /*CCanvas::Current ()->Left () +*/ Item (i).m_x - Item (i).m_rightOffset - 6;
 				x2 = x1 + Item (i).m_w;
-				y1 = CCanvas::Current ()->Top () + Item (i).m_y;
+				y1 = /*CCanvas::Current ()->Top () +*/ Item (i).m_y;
 				y2 = y1 + Item (i).m_h;
 				if ((mx > x1) && (mx < x2) && (my > y1) && (my < y2)) {
 					if (i + m_props.nScrollOffset - m_props.nMaxNoScroll != m_nChoice) {
@@ -1151,8 +1151,8 @@ launchOption:
 			
 				if (m_props.nScrollOffset > m_props.nMaxNoScroll) {
 					fontManager.Current ()->StringSize (UP_ARROW_MARKER, arrowWidth, arrowHeight, aw);
-					x2 = CCanvas::Current ()->Left () + Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires ? 24 : 12);
-					 y1 = CCanvas::Current ()->Top () + Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
+					x2 = /*CCanvas::Current ()->Left () +*/ Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires ? 24 : 12);
+					y1 = /*CCanvas::Current ()->Top () +*/ Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
 					x1 = x2 - arrowWidth;
 					y2 = y1 + arrowHeight;
 					if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
@@ -1166,8 +1166,8 @@ launchOption:
 					}
 				if ((i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll) < int (ToS ()) && Item (i).Selectable ()) {
 					fontManager.Current ()->StringSize (DOWN_ARROW_MARKER, arrowWidth, arrowHeight, aw);
-					x2 = CCanvas::Current ()->Left () + Item (i - 1).m_x - (gameStates.menus.bHires?24:12);
-					y1 = CCanvas::Current ()->Top () + Item (i - 1).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
+					x2 = /*CCanvas::Current ()->Left () +*/ Item (i - 1).m_x - (gameStates.menus.bHires?24:12);
+					y1 = /*CCanvas::Current ()->Top () +*/ Item (i - 1).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
 					x1 = x2 - arrowWidth;
 					y2 = y1 + arrowHeight;
 					if ((mx > x1) && (mx < x2) && (my > y1) && (my < y2)) {
@@ -1184,9 +1184,9 @@ launchOption:
 			for (i = m_props.nScrollOffset; i < int (ToS ()); i++) {
 				if (!Item (i).Selectable ())
 					continue;
-				x1 = CCanvas::Current ()->Left () + Item (i).m_x - Item (i).m_rightOffset - 6;
+				x1 = /*CCanvas::Current ()->Left () +*/ Item (i).m_x - Item (i).m_rightOffset - 6;
 				x2 = x1 + Item (i).m_w;
-				y1 = CCanvas::Current ()->Top () + Item (i).m_y;
+				y1 = /*CCanvas::Current ()->Top () +*/ Item (i).m_y;
 				y1 -= ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
 				y2 = y1 + Item (i).m_h;
 				if ((mx > x1) && (mx < x2) && (my > y1) && (my < y2)) {
@@ -1254,9 +1254,9 @@ launchOption:
 	
 		if (!m_bDone && !nMouseState && nOldMouseState && !m_bAllText && (m_nChoice != -1) && (Item (m_nChoice).m_nType == NM_TYPE_MENU)) {
 			MouseGetPos (&mx, &my);
-			x1 = CCanvas::Current ()->Left () + Item (m_nChoice).m_x;
+			x1 = /*CCanvas::Current ()->Left () +*/ Item (m_nChoice).m_x;
 			x2 = x1 + Item (m_nChoice).m_w;
-			y1 = CCanvas::Current ()->Top () + Item (m_nChoice).m_y;
+			y1 = /*CCanvas::Current ()->Top () +*/ Item (m_nChoice).m_y;
 			if (m_nChoice >= m_props.nScrollOffset)
 				y1 -= ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
 			y2 = y1 + Item (m_nChoice).m_h;

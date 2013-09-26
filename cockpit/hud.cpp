@@ -156,7 +156,7 @@ if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
 		int w, h, aw;
 		fontManager.Current ()->StringSize (TXT_LOCK, w, h, aw);
 		x = CCanvas::Current ()->Width () / 2 - w / 2;
-		y = AdjustCockpitY (-2 * LineSpacing ());
+		y = AdjustCockpitY (-4 * LineSpacing ());
 		//y = CCanvas::Current ()->Height () / 2 + 4 * h;
 		nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 		}
@@ -684,11 +684,20 @@ if (cockpit->Hide ())
 
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 	 (((LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame) > I2X (4)) || (gameData.time.xGame & 0x8000))) {
-	 int y = IsMultiGame ? -10 * LineSpacing () : -5 * LineSpacing ();
-	if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !ShowTextGauges ())
-		y -= LineSpacing () + gameStates.render.fonts.bHires + 1;
 	SetFontColor (GREEN_RGBA);
-	nIdInvul = DrawHUDText (&nIdInvul, 2, y, "%s", TXT_INVULNERABLE);
+
+	if (ogl.IsOculusRift ()) {
+		int w, h, aw;
+		fontManager.Current ()->StringSize ("INVUL CLOAK ", w, h, aw);
+		nIdInvul = DrawHUDText (&nIdInvul, CCanvas::Current ()->Width () - w, -2 * LineSpacing (), "%s", "INVUL");
+		}
+	else {
+		int y = IsMultiGame ? -10 * LineSpacing () : -5 * LineSpacing ();
+		if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !ShowTextGauges ())
+			y -= LineSpacing () + gameStates.render.fonts.bHires + 1;
+		nIdInvul = DrawHUDText (&nIdInvul, 2, y, "%s", TXT_INVULNERABLE);
+		}	
+
 	}
 }
 
@@ -701,14 +710,21 @@ if (cockpit->Hide ())
 
 	static int nIdCloak = 0;
 
-
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) &&
 	 ((LOCALPLAYER.cloakTime + CLOAK_TIME_MAX - gameData.time.xGame > I2X (3)) || (gameData.time.xGame & 0x8000))) {
-	int y = IsMultiGame ? -7 * LineSpacing () : -4 * LineSpacing ();
-	if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !ShowTextGauges ())
-		y -= LineSpacing () + gameStates.render.fonts.bHires + 1;
 	SetFontColor (GREEN_RGBA);
-	nIdCloak = DrawHUDText (&nIdCloak, 2, y, "%s", TXT_CLOAKED);
+
+	if (ogl.IsOculusRift ()) {
+		int w, h, aw;
+		fontManager.Current ()->StringSize ("CLOAK ", w, h, aw);
+		nIdCloak = DrawHUDText (&nIdCloak, CCanvas::Current ()->Width () - w, -2 * LineSpacing (), "%s", "CLOAK");
+		}
+	else {
+		int y = IsMultiGame ? -7 * LineSpacing () : -4 * LineSpacing ();
+		if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !ShowTextGauges ())
+			y -= LineSpacing () + gameStates.render.fonts.bHires + 1;
+		nIdCloak = DrawHUDText (&nIdCloak, 2, y, "%s", TXT_CLOAKED);
+		}
 	}
 }
 
@@ -827,8 +843,8 @@ if (bRebuild && !m_info.bRebuild)
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup ())
 	return false;
-int h = (int) ((gameData.render.frame.Height () * 7) / 10 / ((double) gameData.render.screen.Height () / (double) gameData.render.screen.Width () / 0.75));
-*Canvas () += CViewport (0, (gameData.render.frame.Height () - h) / 2, gameData.render.frame.Width (), h);
+int h = (int) (((double) gameData.render.frame.Height () * 0.15) / ((double) gameData.render.screen.Height () / (double) gameData.render.screen.Width () / 0.75));
+*Canvas () += CViewport (0, h, 0, -h);
 Canvas ()->Activate ();
 return true;
 }

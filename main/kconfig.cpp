@@ -1369,9 +1369,9 @@ if ((m_nMouseState && !m_nPrevMouseState) || (m_nMouseState && m_nPrevMouseState
 //			my = (my * 12) / 10;	//y mouse pos is off here, no clue why
 	for (i = 0; i < m_nItems; i++) {
 		item_height = GetItemHeight (m_items + i);
-		int x1 = CCanvas::Current ()->Left () + LHX (m_items [i].x) + LHX (m_items [i].w1);
+		int x1 = /*CCanvas::Current ()->Left () +*/ LHX (m_items [i].x) + LHX (m_items [i].w1);
 		int x2 = x1 + LHX (m_items [i].w2);
-		int y1 = CCanvas::Current ()->Top () + LHY (m_items [i].y);
+		int y1 = /*CCanvas::Current ()->Top () +*/ LHY (m_items [i].y);
 		int y2 = y1 + /*LHY*/ (item_height);
 		if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 			m_nCurItem = i;
@@ -1387,18 +1387,18 @@ else if (!m_nMouseState && m_nPrevMouseState) {
 	my -= m_yOffs;
 	my = (my * 12) / 10;	//y mouse pos is off here, no clue why
 	item_height = GetItemHeight (m_items + m_nCurItem);
-	int x1 = CCanvas::Current ()->Left () + LHX (m_items [m_nCurItem].x) + LHX (m_items [m_nCurItem].w1);
+	int x1 = /*CCanvas::Current ()->Left () +*/ LHX (m_items [m_nCurItem].x) + LHX (m_items [m_nCurItem].w1);
 	int x2 = x1 + LHX (m_items [m_nCurItem].w2);
-	int y1 = CCanvas::Current ()->Top () + LHY (m_items [m_nCurItem].y);
+	int y1 = /*CCanvas::Current ()->Top () +*/ LHY (m_items [m_nCurItem].y);
 	int y2 = y1 + /*LHY*/ (item_height);
 	if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 		m_nChangeMode = m_items [m_nCurItem].nType;
 		GameFlushInputs ();
 		}
 	else {
-		int x1 = CCanvas::Current ()->Left () + m_closeX + LHX (1);
+		int x1 = /*CCanvas::Current ()->Left () +*/ m_closeX + LHX (1);
 		int x2 = x1 + m_closeSize - LHX (1);
-		int y1 = CCanvas::Current ()->Top () + m_closeY + LHX (1);
+		int y1 = /*CCanvas::Current ()->Top () +*/ m_closeY + LHX (1);
 		int y2 = y1 + m_closeSize - LHY (1);
 		if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 			return -1;

@@ -207,8 +207,8 @@ if (nEffects & 5) {
 				}
 			else
 				OglDrawArrays (GL_QUADS, 0, 4);
+			gameData.render.frame.Deactivate ();
 			}
-		gameData.render.frame.Deactivate ();
 		gameData.render.screen.SetScale (1.0f);
 		}
 	}
