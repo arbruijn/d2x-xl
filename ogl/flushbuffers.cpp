@@ -247,8 +247,9 @@ if (HaveDrawBuffer ()) {
 		}
 	else {
 		SetDrawBuffer (GL_BACK, 0);
-		CCanvas::Current ()->Reactivate ();
+		gameData.render.screen.Activate ();
 		OglDrawArrays (GL_QUADS, 0, 4);
+		gameData.render.screen.Deactivate ();
 		}
 	ResetClientStates (0);
 	SelectDrawBuffer (0);
