@@ -66,6 +66,13 @@ class CStack : public CArray< _T > {
 				m_tos -= i;
 			}
 
+		inline uint Find (_T& elem) {
+			for (uint i = 0; i < m_tos; i++)
+				if (this->m_data.buffer [i] == elem)
+					return i;
+			return m_tos;
+			}
+
 		inline bool Delete (uint i) {
 			if (i >= m_tos) {
 #if DBG
@@ -74,9 +81,11 @@ class CStack : public CArray< _T > {
 				return false;
 				}
 			if (i < --m_tos)
-				this->m_data.buffer [i] = this->m_data.buffer [m_tos];
+				memcpy (this->m_data.buffer + i, this->m_data.buffer + i + 1, sizeof (_T) * (m_tos - i));
 			return true;
 			}
+
+		inline bool Delete (_T& elem) { return Delete (Find (elem));	}
 
 		inline _T& Pull (_T& elem, uint i) {
 			if (i < m_tos) {

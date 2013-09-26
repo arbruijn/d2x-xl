@@ -793,7 +793,7 @@ while (!m_bDone) {
 		}
 #endif
 	if (InitProps (pszTitle, pszSubTitle)) {
-		backgroundManager.Setup (filename, m_props.x, m_props.y, m_props.width, m_props.height, pszSubTitle == NULL);
+		m_background = backgroundManager.Setup (filename, m_props.x, m_props.y, m_props.width, m_props.height, pszSubTitle == NULL);
 		m_bRedraw = 0;
 		m_props.ty = m_props.yOffs;
 		if (m_nChoice > m_props.nScrollOffset + m_props.nMaxOnMenu - 1)

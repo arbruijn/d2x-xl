@@ -126,7 +126,9 @@ gameStates.app.bClearMessage = 0;
 
 void CBackground::Destroy (void)
 {
-if (!backgroundManager.IsDefault (m_bitmap))
+if (backgroundManager.IsDefault (m_bitmap))
+	m_bitmap = NULL;
+else
 	delete m_bitmap;
 Init ();
 }
@@ -314,22 +316,18 @@ Init ();
 
 //------------------------------------------------------------------------------
 
-void CBackgroundManager::Remove (void)
+void CBackgroundManager::Remove (CBackground* bg)
 {
-if (m_nDepth >= 0) {
-	if (m_nDepth > 2) 
-		--m_nDepth;
-	else {
-		m_bg [m_nDepth--].Destroy ();
-		Redraw (true);
-		}
-	}
+bg->Destroy ();
+m_bg.Delete (bg);
 }
 
 //------------------------------------------------------------------------------
 
 void CBackgroundManager::Init (void)
 {
+if (!m_bg.Buffer ())
+	m_bg.Create (10);
 m_background [0] = NULL;
 m_background [1] = NULL;
 m_filename [0] = BackgroundName (BG_MENU);
@@ -352,15 +350,10 @@ return !background ||
 
 void CBackgroundManager::Destroy (void)
 {
-while (m_nDepth >= 0) {
-	if (m_nDepth <= 2)
-		m_bg [m_nDepth].Destroy ();
-	m_nDepth--;
+while (m_bg.ToS ()) {
+	CBackground* bg = m_bg.Pop ();
+	delete bg;
 	}
-if (m_background [1] && (m_background [1] != m_background [0]))
-	m_background [1]->Destroy ();
-if (m_background [0])
-	m_background [0]->Destroy ();
 Init ();
 }
 
@@ -400,7 +393,7 @@ else {
 	if (m_nDepth > 2)
 		m_nDepth = 2;
 	for (int i = 0; i <= m_nDepth; i++)
-		m_bg [i].Draw (i == m_nDepth);
+		m_bg [i]->Draw (i == m_nDepth);
 	if (bUpdate)
 		ogl.Update (1);
 	}
@@ -500,15 +493,15 @@ if (!m_bValid) {
 
 //------------------------------------------------------------------------------
 
-bool CBackgroundManager::Setup (char *filename, int x, int y, int width, int height, bool bTop)
+CBackground* CBackgroundManager::Setup (char *filename, int x, int y, int width, int height, bool bTop)
 {
 Create ();
 if (m_nDepth > 1)
-	return false;
-if (!m_bg [++m_nDepth].Create (filename, x, y, width, height, bTop))
-	return false;
-Redraw ();
-return true;
+	return NULL;
+CBackground* bg = new CBackground ();
+if (!bg->Create (filename, x, y, width, height, bTop))
+	return NULL;
+return bg;
 }
 
 //------------------------------------------------------------------------------
@@ -525,9 +518,9 @@ void CBackgroundManager::Rebuild (int bGame)
 	int					i, j = (m_nDepth > 2) ? 2 : m_nDepth;
 
 for (i = 0; i <= j; i++) {
-	m_bg [i].GetExtent (bgInfo [i].x, bgInfo [i].y, bgInfo [i].w, bgInfo [i].h);
-	if (m_bg [i].GetFilename ())
-		strcpy (bgInfo [i].filename, m_bg [i].GetFilename ());
+	m_bg [i]->GetExtent (bgInfo [i].x, bgInfo [i].y, bgInfo [i].w, bgInfo [i].h);
+	if (m_bg [i]->GetFilename ())
+		strcpy (bgInfo [i].filename, m_bg [i]->GetFilename ());
 	else
 		*bgInfo [i].filename = '\0';
 	}

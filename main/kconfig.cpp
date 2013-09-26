@@ -669,7 +669,7 @@ if (is_current)
 	fontManager.SetColorRGBi (RGBA_PAL2 (20,20,29), 1, 0, 0);
 else
 	fontManager.SetColorRGBi (RGBA_PAL2 (15,15,24), 1, 0, 0);
-GrString (KC_LHX (item->x), KC_LHY (item->y), item->textId ? GT (item->textId) : item->text);
+GrString (LHX (item->x) + m_xOffs, KC_LHY (item->y), item->textId ? GT (item->textId) : item->text);
 
 *szText = '\0';
 if (item->value != 255) {
@@ -832,13 +832,15 @@ void CControlConfig::Render (void)
 //
 //if (BeginRenderMenu ()) 
 int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+
 	{
-	backgroundManager.Canvas ()->Activate ();
-	backgroundManager.Redraw ();
-	backgroundManager.Canvas ()->Deactivate ();
-	DrawTitle ();
+	if (m_background) {
+		m_background->Canvas ()->Activate ();
+		backgroundManager.Redraw ();
+		m_background->Canvas ()->Deactivate ();
+		DrawTitle ();
 #if 1
-	DrawCloseBox (Scale (gameStates.menus.bHires ? 15 : 7), Scale (gameStates.menus.bHires ? 15 : 7));
+		DrawCloseBox (Scale (gameStates.menus.bHires ? 15 : 7), Scale (gameStates.menus.bHires ? 15 : 7));
 #else
 	m_closeX = m_closeY = gameStates.menus.bHires ? 15 : 7;
 	m_closeX += m_xOffs;
@@ -849,6 +851,7 @@ int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
 	OglDrawFilledRect (m_closeX + LHX (1), m_closeY + LHX (1), m_closeX + m_closeSize - LHX (1), m_closeY + m_closeSize - LHX (1));
 #endif
+		}
 	DrawHeader ();
 	DrawTable ();
 	SDL_ShowCursor (0);
@@ -1438,7 +1441,7 @@ if (!IsMultiGame || (gameStates.app.nFunctionMode != FMODE_GAME) || gameStates.a
 gameData.render.frame.Activate ();
 //CFont* font = CCanvas::Current ()->Font ();
 controls.FlushInput ();
-backgroundManager.Setup (NULL, m_xOffs, m_yOffs, 640, 480);
+m_background = backgroundManager.Setup (NULL, m_xOffs, m_yOffs, 640, 480);
 //paletteManager.ResumeEffect ();
 gameData.render.frame.Deactivate ();
 
@@ -1496,6 +1499,7 @@ if (m_yOffs < 0)
 gameOpts->legacy.bInput = 1;
 SetScreenMode (SCREEN_MENU);
 KCSetControls (0);
+fontManager.SetCurrent (GAME_FONT);
 //save screen
 if (gameOpts->menus.bFastMenus)
 	bmSave = NULL;

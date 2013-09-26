@@ -54,7 +54,7 @@ class CBackground {
 		void DrawArea (int left, int top, int right, int bottom);
 		void DrawBox (void);
 
-		inline CCanvas* Canvas (uint i = 0) { return &m_canvas; }
+		inline CCanvas* Canvas (void) { return &m_canvas; }
 		inline CBitmap* Bitmap (void) { return m_bitmap; }
 		inline void SetBitmap (CBitmap* bmP) { m_bitmap = bmP; }
 		inline CBitmap* Background (void) { return &m_saved; }
@@ -74,23 +74,29 @@ class CBackground {
 
 class CBackgroundManager : public CStack<CBackground> {
 	private:
-		CBackground				m_bg [3];
-		CBitmap*					m_background [2];
-		char*						m_filename [2];
-		int						m_nDepth;
-		bool						m_bValid;
-		bool						m_bShadow;
+		CStack< CBackground* >	m_bg;
+		CBitmap*						m_background [2];
+		char*							m_filename [2];
+		int							m_nDepth;
+		bool							m_bValid;
+		bool							m_bShadow;
 
 	public:
 		CBackgroundManager ();
 		void Init (void);
 		void Destroy (void);
 		void Create (void);
-		bool Setup (char *filename, int x, int y, int width, int height, bool bTop = false);
+		CBackground* Setup (char *filename, int x, int y, int width, int height, bool bTop = false);
 		void Load (void);
-		inline void Restore (void) { m_bg [m_nDepth].Restore (); }
-		inline void Restore (int dx, int dy, int w, int h, int sx, int sy) { m_bg [m_nDepth].Restore (dx, dy, w, h, sy, sy); }
-		void Remove (void);
+		inline void Restore (void) { 
+			if (m_bg.ToS ())
+				(*m_bg.Top ())->Restore (); 
+			}
+		inline void Restore (int dx, int dy, int w, int h, int sx, int sy) { 
+			if (m_bg.ToS ())
+				(*m_bg.Top ())->Restore (dx, dy, w, h, sy, sy); 
+			}
+		void Remove (CBackground* bg);
 		void Rebuild (int bGame = 0);
 
 		CBitmap* LoadBackground (char* filename);
@@ -103,13 +109,15 @@ class CBackgroundManager : public CStack<CBackground> {
 		inline bool Shadow (void) { return m_bShadow; }
 		inline void SetShadow (bool bShadow) { m_bShadow = bShadow; }
 		inline void Draw (bool bUpdate = false) { 
-			if (m_nDepth >= 0) 
-				m_bg [m_nDepth].Draw (true, bUpdate); 
+			if (m_bg.ToS ())
+				(*m_bg.Top ())->Draw (true, bUpdate); 
 			}
-		inline void DrawArea (int left, int top, int right, int bottom)
-		 { m_bg [m_nDepth].DrawArea (left, top, right, bottom); }
-		inline CBitmap* Current (void) { return m_bg [m_nDepth].Background (); }
-		inline CCanvas* Canvas (uint i = 0) { return m_bg [m_nDepth].Canvas (i); }
+		inline void DrawArea (int left, int top, int right, int bottom) { 
+			if (m_bg.ToS ())
+				(*m_bg.Top ())->DrawArea (left, top, right, bottom); 
+			}
+		inline CBitmap* Current (void) { return m_bg.ToS () ? (*m_bg.Top ())->Bitmap () : NULL; }
+		inline CCanvas* Canvas (uint i = 0) { return m_bg.ToS () ? (*m_bg.Top ())->Canvas () : NULL; }
 
 		void Redraw (bool bUpdate = false);
 		void DrawBox (int left, int top, int right, int bottom, int nLineWidth, float fAlpha, int bForce);

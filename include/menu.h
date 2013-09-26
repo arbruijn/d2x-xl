@@ -19,6 +19,7 @@
 #include "font.h"
 #include "error.h"
 #include "strutil.h"
+#include "menubackground.h"
 // returns number of item chosen
 
 //------------------------------------------------------------------------------
@@ -212,7 +213,7 @@ class CMenu;
 
 typedef int (*pMenuCallback) (CMenu& mat, int& lastKey, int nItem, int nState);
 
-class CMenu: public CStack<CMenuItem> {
+class CMenu : public CStack<CMenuItem> {
 private:
 	int				m_nGroup;
 	CTimeout			m_to;
@@ -236,6 +237,7 @@ protected:
 	CMenuItem		m_null;
 	CMenuItem		* m_current;
 	tMenuProps		m_props;
+	CBackground*	m_background;
 
 public:
 	CMenu () {
