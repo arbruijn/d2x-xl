@@ -26,44 +26,40 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-char* BackgroundName (int nType, int bHires = -1);
+char* WallpaperName (int nType, int bHires = -1);
 
 //------------------------------------------------------------------------------
 
-class CBackground {
+class CBackground : public CCanvas {
 	private:
-		CCanvas	m_canvas;			// canvas (screen area) of a menu
 		CBitmap	m_saved;				// copy of a screen area covered by a menu
 		CBitmap*	m_bitmap;			// complete background
-		bool		m_bIgnoreCanv;
-		bool		m_bIgnoreBg;
-		bool		m_bTopMenu;
-		bool		m_bMenuBox;
-		bool		m_bSetup;
-		bool		m_bFullScreen;
+		int		m_nType;
+		int		m_nWallpaper;
 
 	public:
 		CBackground () { Init (); }
 		~CBackground () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
-		bool Create (char* filename, int x, int y, int width, int height, bool bTop = false);
+		bool Create (int x, int y, int width, int height, int nType, int nWallpaper);
 		void Restore (void);
 		void Restore (int dx, int dy, int w, int h, int sx, int sy);
-		void Draw (bool bDrawBox, bool bUpdate = false);
+		void Draw (bool bUpdate = false);
 		void DrawArea (int left, int top, int right, int bottom);
 		void DrawBox (void);
 
-		inline CCanvas* Canvas (void) { return &m_canvas; }
 		inline CBitmap* Bitmap (void) { return m_bitmap; }
-		inline void SetBitmap (CBitmap* bmP) { m_bitmap = bmP; }
+		inline CBitmap* SetBitmap (CBitmap* bmP) { return m_bitmap = bmP; }
 		inline CBitmap* Background (void) { return &m_saved; }
 		inline CBitmap* Saved (void) { return &m_saved; }
-		inline void GetExtent (int& x, int& y, int& w, int& h) { 
-			m_canvas.CViewport::GetExtent (x, y, w, h); 
-			}
+		inline void GetExtent (int& x, int& y, int& w, int& h) { CViewport::GetExtent (x, y, w, h); }
 		inline char* GetFilename (void) { return m_bitmap ? m_bitmap->Name () : NULL; }
+		inline int Wallpaper (void) { return m_nWallpaper; }
 
+		void Activate (void);
+		void Deactivate (void);
+		
 	private:
 		CBitmap* Load (char* filename, int width, int height);
 		void Setup (int x, int y, int width, int height);
@@ -74,9 +70,10 @@ class CBackground {
 
 class CBackgroundManager : public CStack<CBackground> {
 	private:
-		CStack< CBackground* >	m_bg;
-		CBitmap*						m_background [2];
-		char*							m_filename [2];
+		CStack< CBackground* >	m_backgrounds;
+		CBackground					m_wallpapers [4];
+		char*							m_filename [4];
+		int							m_nWallpaper;
 		int							m_nDepth;
 		bool							m_bValid;
 		bool							m_bShadow;
@@ -86,51 +83,47 @@ class CBackgroundManager : public CStack<CBackground> {
 		void Init (void);
 		void Destroy (void);
 		void Create (void);
-		CBackground* Setup (char *filename, int x, int y, int width, int height, bool bTop = false);
-		void Load (void);
-		inline void Restore (void) { 
-			if (m_bg.ToS ())
-				(*m_bg.Top ())->Restore (); 
-			}
-		inline void Restore (int dx, int dy, int w, int h, int sx, int sy) { 
-			if (m_bg.ToS ())
-				(*m_bg.Top ())->Restore (dx, dy, w, h, sy, sy); 
-			}
-		void Remove (CBackground* bg);
-		void Rebuild (int bGame = 0);
-
-		CBitmap* LoadBackground (char* filename);
-		bool IsDefault (char* filename);
-		bool IsDefault (CBitmap* background);
+		CBackground* Setup (int x, int y, int width, int height, int nType, int nWallPaper);
 
 		inline char* Filename (uint i = 0) { return m_filename [i]; }
-		inline CBitmap* Background (uint i = 0) { return m_background [i]; }
+		inline CBitmap* Wallpaper (uint i = 0) { return m_wallpapers [i].Bitmap (); }
 		inline int Depth (void) { return m_nDepth; }
 		inline bool Shadow (void) { return m_bShadow; }
 		inline void SetShadow (bool bShadow) { m_bShadow = bShadow; }
-		inline void Draw (bool bUpdate = false) { 
-			if (m_bg.ToS ())
-				(*m_bg.Top ())->Draw (true, bUpdate); 
-			}
-		inline void DrawArea (int left, int top, int right, int bottom) { 
-			if (m_bg.ToS ())
-				(*m_bg.Top ())->DrawArea (left, top, right, bottom); 
-			}
-		inline CBitmap* Current (void) { return m_bg.ToS () ? (*m_bg.Top ())->Bitmap () : NULL; }
-		inline CCanvas* Canvas (uint i = 0) { return m_bg.ToS () ? (*m_bg.Top ())->Canvas () : NULL; }
 
-		void Redraw (bool bUpdate = false);
+		void Redraw (CBackground* bg, bool bUpdate = false);
+#if 0
+		inline void Restore (void) { 
+			if (m_backgrounds.ToS ())
+				(*m_backgrounds.Top ())->Restore (); 
+			}
+		inline void Restore (int dx, int dy, int w, int h, int sx, int sy) { 
+			if (m_backgrounds.ToS ())
+				(*m_backgrounds.Top ())->Restore (dx, dy, w, h, sy, sy); 
+			}
+
+		inline void DrawArea (int left, int top, int right, int bottom) { 
+			if (m_backgrounds.ToS ())
+				(*m_backgrounds.Top ())->DrawArea (left, top, right, bottom); 
+			}
+
+		inline void Draw (bool bUpdate = false) { 
+			if (m_backgrounds.ToS ())
+				(*m_backgrounds.Top ())->Draw (bUpdate); 
+			}
+
 		void DrawBox (int left, int top, int right, int bottom, int nLineWidth, float fAlpha, int bForce);
+
 		inline void DrawBox (int nLineWidth, float fAlpha, int bForce) {
 			DrawBox (CCanvas::Current ()->Left (), CCanvas::Current ()->Top (), 
 						CCanvas::Current ()->Right (), CCanvas::Current ()->Bottom (), 
 						nLineWidth, fAlpha, bForce);
 			}
-
-		void LoadStars (bool bTop = false);
+#endif
 
 	private:
-		CBitmap* LoadCustomBackground (char* filename = NULL);
+		CBitmap* LoadCustomWallpaper (char* filename = NULL);
+		CBitmap* LoadWallpaper (char* filename);
 	};
 
 //------------------------------------------------------------------------------

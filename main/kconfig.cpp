@@ -888,7 +888,7 @@ void CControlConfig::Quit (void)
 Unregister ();
 //bg->menu_canvas = NULL;
 GameFlushInputs ();
-backgroundManager.Remove ();
+backgroundManager.Remove (m_background);
 SDL_ShowCursor (0);
 if (m_bTimeStopped)
 	StartTime (0);

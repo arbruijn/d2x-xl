@@ -411,9 +411,9 @@ gameData.render.frame.Activate ();
 
 void CMenu::RestoreScreen (char* filename, int m_bDontRestore)
 {
-backgroundManager.Remove ();
-if (gameStates.app.bGameRunning && !gameOpts->menus.nStyle)
-	backgroundManager.Remove ();	// remove the stars background loaded for old style menus
+backgroundManager.Remove (m_background);
+//if (gameStates.app.bGameRunning && !gameOpts->menus.nStyle)
+//	backgroundManager.Remove ();	// remove the stars background loaded for old style menus
 gameData.render.frame.Deactivate ();
 GrabMouse (1, 0);
 }
@@ -1026,7 +1026,6 @@ radioOption:
 		case KEY_ALTED + KEY_ENTER: {
 			//int bLoadCustomBg = NMFreeCustomBg ();
 			FreeTextBms ();
-			backgroundManager.Remove ();
 			//NMRestoreScreen (filename, & m_bDontRestore);
 			GrToggleFullScreenGame ();
 			GrabMouse (0, 0);
