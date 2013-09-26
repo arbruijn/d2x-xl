@@ -469,6 +469,7 @@ DrawReticle (ogl.StereoDevice () < 0);
 
 if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (gameStates.zoom.nMinFactor))) {
 	if (ogl.IsOculusRift ()) {
+#if 0
 		int w = gameData.render.frame.Width (false) / 2;
 		int h = gameData.render.screen.Height (false) * w / gameData.render.screen.Width (false);
 		int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
@@ -493,13 +494,14 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 #endif
 		gameData.SetStereoOffsetType (nOffsetSave);
 		gameData.render.window.Deactivate ();
-		h = gameData.render.screen.Height (false) / 2; //* w / gameData.render.screen.Width (false);
+		h = 5 * h / 3; //4 * gameData.render.screen.Height (false) / 9; //* w / gameData.render.screen.Width (false);
 		gameData.render.window.Setup (&gameData.render.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
 		SetCanvas (&gameData.render.window);
 		gameData.render.window.Activate (&gameData.render.frame);
 		hudIcons.Render ();
 		gameData.render.window.Deactivate ();
 		SetCanvas (&gameData.render.scene);
+#endif
 		}
 	else {
 		if ((gameData.demo.nState == ND_STATE_PLAYBACK))
