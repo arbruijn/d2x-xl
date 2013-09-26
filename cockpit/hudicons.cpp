@@ -428,9 +428,9 @@ else if (nWeaponIcons < 3) {
 	y = nIconPos ? gameData.render.frame.Height () - dy - oy : oy + hIcon + 12;
 	}
 if (extraGameInfo [0].nWeaponIcons == 1)
-	y += gameData.render.scene.Top ();
+	; //y += gameData.render.scene.Top ();
 else if (extraGameInfo [0].nWeaponIcons == 2) {
-	y += gameData.render.scene.Top ();
+	//y += gameData.render.scene.Top ();
 	if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)
 		y -= cockpit->LHX (10);
 	}
@@ -459,7 +459,7 @@ for (int i = 0; i < 2; i++) {
 		int h = 0;
 		y = (gameData.render.scene.Height () - h - n * (hIcon + oy)) / 2 + hIcon;
 		x = i ? gameData.render.frame.Width () - wIcon - ox : ox;
-		y += gameData.render.scene.Top ();
+		//y += gameData.render.scene.Top ();
 		}
 
 	for (int j = 0; j < n; j++) {
@@ -662,7 +662,7 @@ firstItem = gameStates.app.bD1Mission ? INV_ITEM_QUADLASERS : 0;
 x = (gameData.render.frame.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox - nDmgIconWidth) / 2;
 if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].nWeaponIcons & 1))
 	y -= cockpit->LHX (10);
-y += gameData.render.scene.Top ();
+//y += gameData.render.scene.Top ();
 for (j = firstItem; j < n; j++) {
 	int bHave, bAvailable, bActive = EquipmentActive (nInvFlags [j]);
 	bmP = bmInvItems + j;
