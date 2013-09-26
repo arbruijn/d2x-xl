@@ -482,13 +482,13 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 
 		bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0));
 
-		gameData.render.frame.Activate ();
-		SetCanvas (&gameData.render.frame);
+		//gameData.render.frame.Activate ();
+		//SetCanvas (&gameData.render.frame);
 		if (!bLimited) {
 			DrawPlayerNames ();
 			RenderWindows ();
 			}
-		SetCanvas (&gameData.render.frame);
+		//SetCanvas (&gameData.render.frame);
 		DrawCockpit (false);
 		if (bExtraInfo) {
 		#if DBG

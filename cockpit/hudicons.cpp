@@ -420,11 +420,11 @@ if (ogl.IsOculusRift () || (nWeaponIcons < 3)) {
 #endif
 	//dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
 	//y = 3 * gameData.render.frame.Height () / 4 - dy - 4 * oy;
-	dy = 0;
+	//dy = 0;
 	y = CCanvas::Current ()->Height () - oy;
 	}
 else if (nWeaponIcons < 3) {
-	dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
+	//dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
 	y = nIconPos ? gameData.render.frame.Height () - dy - oy : oy + hIcon + 12;
 	}
 if (extraGameInfo [0].nWeaponIcons == 1)
@@ -648,7 +648,7 @@ if (ogl.IsOculusRift ())
 	static int nEnergyType [NUM_INV_ITEMS] = {I2X (1), I2X (100), 0, I2X (1), 0, I2X (1), 0, 0, I2X (1), I2X (1)};
 	static int nIdItems [NUM_INV_ITEMS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
+dy = 0; //(gameData.render.frame.Height () - gameData.render.scene.Height ());
 #if 1
 	y = nIconPos ? gameData.render.frame.Height () - dy - oy : oy + hIcon + 12;
 #else
