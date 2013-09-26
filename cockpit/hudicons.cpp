@@ -439,9 +439,9 @@ for (int i = 0; i < 2; i++) {
 	int n = (gameStates.app.bD1Mission) ? 5 : 10;
 	nMaxAutoSelect = 255;
 #if DBG
-	if (ogl.IsSideBySideDevice ()  || (nWeaponIcons < 3)) {
+	if (ogl.IsSideBySideDevice ()) {
 #else
-	if (ogl.IsOculusRift () || (nWeaponIcons < 3)) {
+	if (ogl.IsOculusRift ()) {
 #endif
 		if (!i) {
 			int nBombType, bHaveBombs = cockpit->BombCount (nBombType) > 0;
@@ -518,9 +518,9 @@ for (int i = 0; i < 2; i++) {
 		gameStates.render.grAlpha = 1.0f;
 
 #if DBG
-		if (ogl.IsSideBySideDevice ()  || (nWeaponIcons < 3))
+		if (ogl.IsSideBySideDevice ())
 #else
-		if (ogl.IsOculusRift () || (nWeaponIcons < 3))
+		if (ogl.IsOculusRift ())
 #endif
 			x += wIcon + ox;
 		else if (nWeaponIcons > 2)
