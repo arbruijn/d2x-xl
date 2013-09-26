@@ -949,7 +949,7 @@ if (gameStates.input.nMouseType == CONTROL_CYBERMAN) {
 
 int CControlsManager::ReadOculusRift (void)
 {
-return transformation.m_info.bUsePlayerHeadAngles = gameData.render.rift.GetHeadAngles (&transformation.m_info.playerHeadAngles);
+return transformation.m_info.bUsePlayerHeadAngles = ogl.IsOculusRift () && gameData.render.rift.GetHeadAngles (&transformation.m_info.playerHeadAngles);
 }
 
 //------------------------------------------------------------------------------

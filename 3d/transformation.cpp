@@ -214,6 +214,7 @@ glPushMatrix ();
 glLoadIdentity ();
 m_info.oglModelview.Get (GL_MODELVIEW_MATRIX);
 glPopMatrix ();
+CCanvas::Current ()->Reactivate ();
 glGetIntegerv (GL_VIEWPORT, m_info.oglViewport);
 #if 1
 glGetFloatv (GL_PROJECTION_MATRIX, (GLfloat*) m_info.projection.m.vec);

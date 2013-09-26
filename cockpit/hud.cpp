@@ -844,8 +844,9 @@ if (bRebuild && !m_info.bRebuild)
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
-int h = (int) (((double) gameData.render.frame.Height () * 0.15) / ((double) gameData.render.screen.Height () / (double) gameData.render.screen.Width () / 0.75));
-*Canvas () += CViewport (0, h, 0, -h);
+// 480.0f / 640.0f * 0.7f is the aspect ratio of the widescreen mode in the reference resolution 640x480 
+int h = gameData.render.frame.Height () - (int) ((float) gameData.render.frame.Width () * (480.0f / 640.0f * 0.7f));
+*Canvas () += CViewport (0, h / 2, 0, -h);
 Canvas ()->Activate ();
 return true;
 }
