@@ -100,13 +100,11 @@ strcpy (szScore, (IsMultiGame && !IsCoopGame) ? TXT_KILLS : TXT_SCORE);
 strcat (szScore, ":");
 fontManager.Current ()->StringSize (szScore, w, h, aw);
 SetFontColor (MEDGREEN_RGBA);
-SetCanvas (&gameData.render.frame);
 nIdLabel = DrawHUDText (&nIdLabel, (ScaleX (SB_SCORE_LABEL_X + int (w / fontManager.Scale ())) - w), ScaleY (SB_SCORE_Y), szScore);
 
 sprintf (szScore, "%5d", (IsMultiGame && !IsCoopGame) ? LOCALPLAYER.netKillsTotal : LOCALPLAYER.score);
 fontManager.Current ()->StringSize (szScore, w, h, aw);
 SetFontColor ((IsMultiGame && !IsCoopGame) ? MEDGREEN_RGBA : GREEN_RGBA);
-SetCanvas (&gameData.render.frame);
 nIdScore = DrawHUDText (&nIdScore, ScaleX (SB_SCORE_RIGHT) - w - LHY (2), ScaleY (SB_SCORE_Y), szScore);
 }
 
@@ -179,7 +177,6 @@ hudCockpit.DrawHomingWarning ();
 
 void CStatusBar::DrawPrimaryAmmoInfo (int ammoCount)
 {
-SetCanvas (&gameData.render.frame);
 DrawAmmoInfo (ScaleX (SB_PRIMARY_AMMO_X), ScaleY (SB_PRIMARY_AMMO_Y), ammoCount, 1);
 }
 
@@ -187,7 +184,6 @@ DrawAmmoInfo (ScaleX (SB_PRIMARY_AMMO_X), ScaleY (SB_PRIMARY_AMMO_Y), ammoCount,
 
 void CStatusBar::DrawSecondaryAmmoInfo (int ammoCount)
 {
-SetCanvas (&gameData.render.frame);
 DrawAmmoInfo (ScaleX (SB_SECONDARY_AMMO_X), ScaleY (SB_SECONDARY_AMMO_Y), ammoCount, 0);
 }
 
@@ -202,7 +198,6 @@ void CStatusBar::DrawLives (void)
 
 SetFontScale ((float) floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 SetFontColor (MEDGREEN_RGBA);
-SetCanvas (&gameData.render.frame);
 strcpy (szLives, IsMultiGame ? TXT_DEATHS : TXT_LIVES);
 fontManager.Current ()->StringSize (szLives, w, h, aw);
 nIdLives [0] = DrawHUDText (&nIdLives [0], (ScaleX (SB_LIVES_LABEL_X + int (w / fontManager.Scale ())) - w), ScaleY (SB_LIVES_LABEL_Y + HeightPad ()), szLives);
@@ -242,7 +237,6 @@ void CStatusBar::DrawEnergyText (void)
 	char szEnergy [20];
 
 SetFontScale ((float) floor (float (CCanvas::Current ()->Width ()) / 640.0f));
-SetCanvas (&gameData.render.frame);
 sprintf (szEnergy, "%d", (int) DRound (m_info.nEnergy * LOCALPLAYER.EnergyScale ()));
 fontManager.Current ()->StringSize (szEnergy, w, h, aw);
 SetFontColor (RGBA_PAL2 (25, 18, 6));
@@ -290,7 +284,6 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)
 	SetFontColor (RGBA_PAL2 (45, 21, 0));
 else 
 	SetFontColor (RGBA_PAL2 (12, 12, 12));
-SetCanvas (&gameData.render.frame);
 
 int w, h, aw;
 fontManager.Current ()->StringSize (szAB, w, h, aw);
@@ -328,7 +321,6 @@ void CStatusBar::DrawShieldText (void)
 	char szShield [20];
 
 SetFontScale ((float) floor (float (CCanvas::Current ()->Width ()) / 640.0f));
-SetCanvas (&gameData.render.frame);
 //LoadTexture (gameData.pig.tex.cockpitBmIndex [gameStates.render.cockpit.nType + (gameStates.video.nDisplayMode ? gameData.models.nCockpits / 2 : 0)].index, 0);
 SetFontColor (BLACK_RGBA);
 Rect (SB_SHIELD_NUM_X, SB_SHIELD_NUM_Y, SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 27 : 13), SB_SHIELD_NUM_Y + m_info.fontHeight);
@@ -416,7 +408,6 @@ else {
 
 void CStatusBar::DrawBombCount (void)
 {
-SetCanvas (&gameData.render.frame);
 CGenericCockpit::DrawBombCount (ScaleX (SB_BOMB_COUNT_X), ScaleY (SB_BOMB_COUNT_Y), BLACK_RGBA, 1);
 }
 
@@ -425,7 +416,6 @@ CGenericCockpit::DrawBombCount (ScaleX (SB_BOMB_COUNT_X), ScaleY (SB_BOMB_COUNT_
 int CStatusBar::DrawBombCount (int& nIdBombCount, int x, int y, int nColor, char* pszBombCount)
 {
 SetFontColor (nColor);
-SetCanvas (&gameData.render.frame);
 int nId = DrawHUDText (&nIdBombCount, x, y, pszBombCount, nIdBombCount);
 return nId;
 }
@@ -474,9 +464,7 @@ CGenericCockpit::DrawKillList (60, CCanvas::Current ()->Height ());
 
 void CStatusBar::DrawCockpit (bool bAlphaTest)
 {
-gameData.render.frame.Activate ();
 CGenericCockpit::DrawCockpit (CM_STATUS_BAR + m_info.nCockpit, gameData.render.scene.Height (), bAlphaTest);
-gameData.render.frame.Deactivate ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -504,9 +492,9 @@ return true;
 void CStatusBar::SetupWindow (int nWindow)
 {
 tGaugeBox* hudAreaP = hudWindowAreas + SB_PRIMARY_BOX + nWindow;
-gameData.render.window.Setup (&gameData.render.scene, 
-										gameData.render.scene.Left (false) +ScaleX (hudAreaP->left),
-										gameData.render.scene.Top (false) +ScaleX (hudAreaP->top),
+gameData.render.window.Setup (&gameData.render.frame, 
+										gameData.render.frame.Left (false) +ScaleX (hudAreaP->left),
+										gameData.render.frame.Top (false) +ScaleX (hudAreaP->top),
 										ScaleX (hudAreaP->right - hudAreaP->left + 1), ScaleY (hudAreaP->bot - hudAreaP->top + 1));
 }
 

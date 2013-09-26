@@ -554,9 +554,9 @@ CGenericCockpit::DrawCockpit (m_info.nCockpit, 0, bAlphaTest);
 void CCockpit::SetupWindow (int nWindow)
 {
 tGaugeBox* hudAreaP = hudWindowAreas + COCKPIT_PRIMARY_BOX + nWindow;
-gameData.render.window.Setup (&gameData.render.scene, 
-										gameData.render.scene.Left (false) +ScaleX (hudAreaP->left),
-										gameData.render.scene.Top (false) +ScaleX (hudAreaP->top),
+gameData.render.window.Setup (&gameData.render.frame, 
+										gameData.render.frame.Left (false) +ScaleX (hudAreaP->left),
+										gameData.render.frame.Top (false) +ScaleX (hudAreaP->top),
 										ScaleX (hudAreaP->right - hudAreaP->left + 1), ScaleY (hudAreaP->bot - hudAreaP->top + 1));
 }
 
@@ -591,10 +591,8 @@ if (bRebuild && !m_info.bRebuild)
 	return true;
 if (!CGenericCockpit::Setup ())
 	return false;
-gameData.render.frame.SetHeight (2 * gameData.render.screen.Height () / 3);
-gameData.render.frame.SetWidth (gameData.render.screen.Width ());
-gameData.render.frame.CViewport::SetLeft ((gameData.render.screen.Width () - gameData.render.frame.Width ()) / 2);
-gameData.render.frame.CViewport::SetTop ((gameData.render.screen.Height () - gameData.render.frame.Height ()) / 2);
+*Canvas () += CViewport (0, 0, 0, -gameData.render.frame.Height (false) / 3);
+Canvas ()->Activate ();
 return true;
 }
 

@@ -511,10 +511,13 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 
 		bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0));
 
+		gameData.render.frame.Activate ();
+		SetCanvas (&gameData.render.frame);
 		if (!bLimited) {
 			DrawPlayerNames ();
 			RenderWindows ();
 			}
+		SetCanvas (&gameData.render.frame);
 		DrawCockpit (false);
 		if (bExtraInfo) {
 		#if DBG
@@ -567,6 +570,7 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 			SetFontColor (GREEN_RGBA);
 			DrawHUDText (NULL, 0x8000, (gameData.demo.nState == ND_STATE_PLAYBACK) ? -14 : -10, TXT_REAR_VIEW);
 			}
+		gameData.render.frame.Deactivate ();
 		}
 	}
 DemoRecording ();
