@@ -574,7 +574,7 @@ m_history [0].bCloak = m_info.bCloak;
 //------------------------------------------------------------------------------
 //initialize the various canvases on the game screen
 //called every time the screen mode or cockpit changes
-bool CGenericCockpit::Setup (bool bRebuild)
+bool CGenericCockpit::Setup (bool bScene, bool bRebuild)
 {
 if (gameStates.video.nScreenMode != SCREEN_GAME)
 	return false;
