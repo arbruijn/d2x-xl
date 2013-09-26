@@ -256,28 +256,6 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 m_history [0].weapon [nWindow] = m_history [0].ammo [nWindow] = -1;
 
 gameData.objs.viewerP = viewerSave;
-#if 0
-// draw a thicker frame with rounded edges around the cockpit displays
-if (!gameStates.app.bNostalgia && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN)) {
-	int x0 = gameData.render.scene.Left ();
-	int y0 = gameData.render.scene.Top () - CCanvas::Current ()->Top ();
-	int x1 = gameData.render.scene.Right () - 1;
-	int y1 = gameData.render.scene.Bottom () - CCanvas::Current ()->Top ();
-	CCanvas::Current ()->SetColorRGBi (RGB_PAL (47, 31, 0));
-	//CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
-	//CCanvas::Current ()->SetColorRGBi (RGB_PAL (60, 60, 60));
-	//CCanvas::Current ()->SetColorRGBi (RGB_PAL (31, 31, 31));
-	OglDrawLine (x0 + 1, y0 - 1, x1 - 1, y0 - 1);
-	OglDrawLine (x0 + 1, y1 + 1, x1 - 1, y1 + 1);
-	OglDrawLine (x0 - 1, y0 + 1, x0 - 1, y1 - 1);
-	OglDrawLine (x1 + 1, y0 + 1, x1 + 1, y1 - 1);
-	//CCanvas::Current ()->SetColorRGBi (RGB_PAL (30, 30, 30));
-	OglDrawLine (x0 + 3, y0 - 2, x1 - 3, y0 - 2);
-	OglDrawLine (x0 + 3, y1 + 2, x1 - 3, y1 + 2);
-	OglDrawLine (x0 - 2, y0 + 3, x0 - 2, y1 - 3);
-	OglDrawLine (x1 + 2, y0 + 3, x1 + 2, y1 - 3);
-	}
-#endif
 ogl.SetDepthTest (true);
 gameData.render.window.Deactivate ();
 gameStates.render.bRearView = bRearViewSave;

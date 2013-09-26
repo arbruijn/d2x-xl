@@ -782,18 +782,6 @@ else
 	SetBlendMode (OGL_BLEND_ALPHA);
 	SetStencilTest (false);
 	CCanvas::Current ()->SetViewport ();
-#if 0
-	if (m_states.bEnableScissor) {
-		glScissor (
-			CCanvas::Current ()->Left (),
-			gameData.render.screen.Height () - CCanvas::Current ()->Top () - CCanvas::Current ()->Height (),
-			CCanvas::Current ()->Width (),
-			CCanvas::Current ()->Height ());
-		SetScissorTest (true);
-		}
-	else
-#endif
-		SetScissorTest (false);
 	}
 }
 

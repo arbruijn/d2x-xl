@@ -163,14 +163,7 @@ shaderManager.Set ("sceneTex", 0);
 shaderManager.Set ("depthTex", 1);
 shaderManager.Set ("effectStrength", effectStrength);
 float viewport [4] = {
-#if 1
-	0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ()
-#else
-	gameData.render.frame.Left () + gameData.render.scene.Left (), 
-	gameData.render.frame.Top () + gameData.render.scene.Top (), 
-	gameData.render.scene.Width (), 
-	gameData.render.scene.Height () 
-#endif
+	(float) gameData.render.frame.Left (), (float) gameData.render.scene.Top (), (float) gameData.render.scene.Width (), (float) gameData.render.scene.Height ()
 	};
 float screenSize [2] = { gameData.render.screen.Width (), gameData.render.screen.Height () };
 shaderManager.Set ("screenSize", screenSize);
