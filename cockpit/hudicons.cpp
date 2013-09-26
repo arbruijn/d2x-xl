@@ -487,15 +487,6 @@ for (int i = 0; i < 2; i++) {
 #endif
 			continue;
 
-		cockpit->BitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, bmP);
-
-		nAmmoColor = GREEN_RGBA;
-		*szAmmo = '\0';
-		if (gameOpts->render.weaponIcons.bShowAmmo && bHave && bAvailable) {
-			nAmmoColor = GetAmmo (szAmmo, i, j, l);
-			fontManager.Current ()->StringSize (szAmmo, fw, fh, faw);
-			}
-
 #if DBG
 		if (!ogl.IsSideBySideDevice ())
 #else
@@ -508,6 +499,16 @@ for (int i = 0; i < 2; i++) {
 			glLineWidth ((bActive && bAvailable && gameOpts->render.weaponIcons.bBoldHighlight) ? fLineWidth + 2 : fLineWidth);
 			OglDrawEmptyRect (cockpit->X (x - 1), y - hIcon - 1, cockpit->X (x + wIcon + 2), y + 2);
 			}
+
+		cockpit->BitBlt (-1, nIconScale * (x + (w - bmP->Width ()) / (2 * nIconScale)), nIconScale * (y - hIcon), false, true, I2X (nIconScale), 0, bmP);
+
+		nAmmoColor = GREEN_RGBA;
+		*szAmmo = '\0';
+		if (gameOpts->render.weaponIcons.bShowAmmo && bHave && bAvailable) {
+			nAmmoColor = GetAmmo (szAmmo, i, j, l);
+			fontManager.Current ()->StringSize (szAmmo, fw, fh, faw);
+			}
+
 		if (*szAmmo) {
 			fontManager.SetColorRGBi (nAmmoColor, 1, 0, 0);
 			nIdIcons [i][j] = GrString (x + wIcon + 2 - fw, y - fh, szAmmo, nIdIcons [i] + j);

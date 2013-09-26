@@ -477,14 +477,15 @@ m_info.bRebuild = false;
 if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
 
-if (bScene) {
-	int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].Height ();
-	if (gameStates.app.bDemoData)
-		h *= 2;
-	if (gameData.render.screen.Height () > 480)
-		h = (int) ((double) h * (double) gameData.render.screen.Height () / 480.0);
-	*Canvas () += CViewport (0, 0, 0, -h);
-	}
+int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].Height ();
+if (gameStates.app.bDemoData)
+	h *= 2;
+if (gameData.render.screen.Height () > 480)
+	h = (int) ((double) h * (double) gameData.render.screen.Height () / 480.0);
+*Canvas () += CViewport (0, 0, 0, -h);
+
+if (!bScene)
+	SetCanvas (&gameData.render.frame);
 Canvas ()->Activate ();
 return true;
 }
