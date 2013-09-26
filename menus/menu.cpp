@@ -404,7 +404,7 @@ return 1;
 
 void CMenu::SaveScreen (CCanvas **gameCanvasP)
 {
-gameData.render.frame.Activate ();
+&gameData.render.frame.Activate ();
 }
 
 //------------------------------------------------------------------------------ 

@@ -419,8 +419,8 @@ if (ogl.IsOculusRift ()) {
 			BitBlt ((bSmallReticle ? SML_RETICLE_SECONDARY : RETICLE_SECONDARY) + nSecondaryBm,
 					  x + ScaleX (secondaryOffsets [ofs].x - 1), (y + ScaleY (secondaryOffsets [ofs].y - 1)), false, true,
 					  I2X (1), 0, NULL, BM_ADDON (nBmReticle + 5 + nSecondaryBm));
+			gameStates.render.grAlpha = 1.0f - gameStates.render.grAlpha;
 			}
-		gameStates.render.grAlpha = 1.0f - gameStates.render.grAlpha;
 		}
 	x -= int (ceil (xStep * RadToDeg (X2F (transformation.m_info.playerHeadAngles.v.coord.h))));
 	y -= int (ceil (yStep * RadToDeg (X2F (transformation.m_info.playerHeadAngles.v.coord.p))));

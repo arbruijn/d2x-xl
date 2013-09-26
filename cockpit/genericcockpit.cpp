@@ -417,7 +417,7 @@ if (!cockpit->Setup (false))
 if (!cockpit->Setup (true))
 	return;
 #endif
-Canvas ()->Activate ();
+ogl.ChooseDrawBuffer ();
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.ColorMask (1,1,1,1,0);
@@ -469,7 +469,7 @@ DrawReticle (ogl.StereoDevice () < 0);
 
 if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (gameStates.zoom.nMinFactor))) {
 	if (ogl.IsOculusRift ()) {
-#if 0
+#if 1
 		int w = gameData.render.frame.Width (false) / 2;
 		int h = gameData.render.screen.Height (false) * w / gameData.render.screen.Width (false);
 		int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
