@@ -181,6 +181,7 @@ if (!IsMultiGame || IsCoopGame) {
 			x = x0 - bmW - HUD_LHX (2);
 			bmObjTally [i].RenderScaled (cockpit->X (x), y, bmW, bmH, I2X (1), 0, NULL);
 			sprintf (szInfo, "%d", objCounts [i]);
+			fontManager.SetScale (cockpit->FontScale ());
 			fontManager.Current ()->StringSize (szInfo, w, h, aw);
 			x -= w + HUD_LHY (2);
 			nIdTally [i] = cockpit->DrawHUDText (nIdTally + i, x, y + (bmH - h) / 2, szInfo);
@@ -342,14 +343,14 @@ void CHUDIcons::SetWeaponFillColor (int bHave, int bAvailable, float alpha)
 if (bHave) {
 	if (bAvailable)
 		if (gameOpts->app.bColorblindFriendly)
-			gameData.render.scene.SetColorRGB (0, 192, 255, ubyte (alpha * 16));
+			CCanvas::Current ()->SetColorRGB (0, 192, 255, ubyte (alpha * 16));
 		else
-			gameData.render.scene.SetColorRGB (255, 192, 0, ubyte (alpha * 16));
+			CCanvas::Current ()->SetColorRGB (255, 192, 0, ubyte (alpha * 16));
 	else
-		gameData.render.scene.SetColorRGB (128, 0, 0, ubyte (alpha * 16));
+		CCanvas::Current ()->SetColorRGB (128, 0, 0, ubyte (alpha * 16));
 	}
 else
-	gameData.render.scene.SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
+	CCanvas::Current ()->SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 }
 
 //	-----------------------------------------------------------------------------
@@ -359,18 +360,18 @@ void CHUDIcons::SetWeaponFrameColor (int bHave, int bAvailable, int bActive, flo
 if (bActive)
 	if (bAvailable)
 		if (gameOpts->app.bColorblindFriendly)
-			gameData.render.scene.SetColorRGB (0, 192, 255, 255);
+			CCanvas::Current ()->SetColorRGB (0, 192, 255, 255);
 		else
-			gameData.render.scene.SetColorRGB (255, 192, 0, 255);
+			CCanvas::Current ()->SetColorRGB (255, 192, 0, 255);
 	else
-		gameData.render.scene.SetColorRGB (160, 0, 0, 255);
+		CCanvas::Current ()->SetColorRGB (160, 0, 0, 255);
 else if (bHave)
 	if (bAvailable)
-		gameData.render.scene.SetColorRGB (0, 160, 0, 255);
+		CCanvas::Current ()->SetColorRGB (0, 160, 0, 255);
 	else
-		gameData.render.scene.SetColorRGB (96, 0, 0, 255);
+		CCanvas::Current ()->SetColorRGB (96, 0, 0, 255);
 else
-	gameData.render.scene.SetColorRGB (64, 64, 64, 255);
+	CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
 }
 
 //	-----------------------------------------------------------------------------
@@ -692,31 +693,31 @@ for (j = firstItem; j < n; j++) {
 		if (bAvailable)
 			if (bActive)
 				if (nHiliteColor)
-					gameData.render.scene.SetColorRGB (0, 192, 255, ubyte (alpha * 16));
+					CCanvas::Current ()->SetColorRGB (0, 192, 255, ubyte (alpha * 16));
 				else
-					gameData.render.scene.SetColorRGB (255, 192, 0, ubyte (alpha * 16));
+					CCanvas::Current ()->SetColorRGB (255, 192, 0, ubyte (alpha * 16));
 			else
-				gameData.render.scene.SetColorRGB (128, 128, 0, ubyte (alpha * 16));
+				CCanvas::Current ()->SetColorRGB (128, 128, 0, ubyte (alpha * 16));
 		else
-			gameData.render.scene.SetColorRGB (128, 0, 0, ubyte (alpha * 16));
+			CCanvas::Current ()->SetColorRGB (128, 0, 0, ubyte (alpha * 16));
 		}
 	else {
-		gameData.render.scene.SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
+		CCanvas::Current ()->SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
 		}
 	OglDrawFilledRect (cockpit->X (x - 1), y - hIcon - 1, cockpit->X (x + wIcon + 2), y + 2);
 	if (bHave)
 		if (bAvailable)
 			if (bActive)
 				if (nHiliteColor)
-					gameData.render.scene.SetColorRGB (0, 192, 255, 255);
+					CCanvas::Current ()->SetColorRGB (0, 192, 255, 255);
 				else
-					gameData.render.scene.SetColorRGB (255, 192, 0, 255);
+					CCanvas::Current ()->SetColorRGB (255, 192, 0, 255);
 			else
-				gameData.render.scene.SetColorRGB (0, 160, 0, 255);
+				CCanvas::Current ()->SetColorRGB (0, 160, 0, 255);
 		else
-			gameData.render.scene.SetColorRGB (96, 0, 0, 255);
+			CCanvas::Current ()->SetColorRGB (96, 0, 0, 255);
 	else
-		gameData.render.scene.SetColorRGB (64, 64, 64, 255);
+		CCanvas::Current ()->SetColorRGB (64, 64, 64, 255);
 	glLineWidth ((bActive && gameOpts->render.weaponIcons.bBoldHighlight) ? 3 : fLineWidth);
 	OglDrawEmptyRect (cockpit->X (x - 1), y - hIcon - 1, cockpit->X (x + wIcon + 2), y + 2);
 	if (*szCount) {
