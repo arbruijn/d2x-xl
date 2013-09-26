@@ -185,8 +185,8 @@ class CCanvas : public CViewport, public CBitmap {
 
 		inline int Width (bool bScale = true) { return bScale ? Scaled (CViewport::Width ()) : CViewport::Width (); }
 		inline int Height (bool bScale = true) { return bScale ? Scaled (CViewport::Height ()) : CViewport::Height (); }
-		inline int Left (void) { return Scaled (CViewport::Left ()); }
-		inline int Top (void) { return Scaled (CViewport::Top ()); }
+		inline int Left (bool bScale = true) { return bScale ? Scaled (CViewport::Left ()) : CViewport::Left (); }
+		inline int Top (bool bScale = true) { return bScale ? Scaled (CViewport::Top ()) : CViewport::Top (); }
 		inline int Right (void) { return Left () + Width (); }
 		inline int Bottom (void) { return Top () + Height (); }
 

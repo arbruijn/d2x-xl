@@ -494,7 +494,7 @@ if (gameStates.app.bDemoData)
 if (gameData.render.screen.Height () > 480)
 	h = (int) ((double) h * (double) gameData.render.screen.Height () / 480.0);
 
-*Canvas () += CViewport (0, (gameData.render.frame.Height () - h) / 2, gameData.render.frame.Width (), h);
+*Canvas () += CViewport (0, 0, 0, -h);
 Canvas ()->Activate ();
 return true;
 }
@@ -504,8 +504,10 @@ return true;
 void CStatusBar::SetupWindow (int nWindow)
 {
 tGaugeBox* hudAreaP = hudWindowAreas + SB_PRIMARY_BOX + nWindow;
-gameData.render.window = gameData.render.scene;
-gameData.render.window += CViewport (ScaleX (hudAreaP->left), ScaleY (hudAreaP->top), ScaleX (hudAreaP->right - hudAreaP->left+1), ScaleY (hudAreaP->bot - hudAreaP->top+1));
+gameData.render.window.Setup (&gameData.render.scene, 
+										gameData.render.scene.Left (false) +ScaleX (hudAreaP->left),
+										gameData.render.scene.Top (false) +ScaleX (hudAreaP->top),
+										ScaleX (hudAreaP->right - hudAreaP->left + 1), ScaleY (hudAreaP->bot - hudAreaP->top + 1));
 }
 
 //	-----------------------------------------------------------------------------
