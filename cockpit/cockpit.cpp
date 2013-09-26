@@ -570,7 +570,7 @@ if (bRebuild && !m_info.bRebuild)
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
-(CViewport) gameData.render.scene += CViewport (0, 0, 0, -gameData.render.frame.Height (false) / 3);
+*((CViewport*) &gameData.render.scene) += CViewport (0, 0, 0, -gameData.render.frame.Height (false) / 3);
 if (bScene)
 	gameData.render.scene.Activate ();
 else
