@@ -435,7 +435,7 @@ if (transformation.m_info.bUsePlayerHeadAngles)
 gameStates.render.nShadowPass = 0;
 
 G3EndFrame (transformation, nWindow);
-cockpit->Canvas ()->Deactivate ();
+//cockpit->Canvas ()->Deactivate ();
 if (nWindow)
 	ogl.SetStereoSeparation (gameStates.render.xStereoSeparation [0] = nEyeOffsetSave);
 if (!ShowGameMessage (gameData.messages, -1, -1))

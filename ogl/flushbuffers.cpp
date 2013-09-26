@@ -144,9 +144,9 @@ if (gameStates.app.bGameRunning)	{
 	if (gameStates.render.bRenderIndirect > 0) 
 		FlushDrawBuffer ();
 	if (StereoDevice () >= 0) {
-		gameStates.render.bRenderIndirect = 0;
+		int bRenderIndirect = gameStates.render.bRenderIndirect = 0;
 		Draw2DFrameElements ();
-		gameStates.render.bRenderIndirect = 1;
+		gameStates.render.bRenderIndirect = bRenderIndirect;
 		}
 	}
 else if (IsSideBySideDevice () || (gameStates.render.bRenderIndirect > 0))
@@ -247,6 +247,7 @@ if (HaveDrawBuffer ()) {
 		}
 	else {
 		SetDrawBuffer (GL_BACK, 0);
+		CCanvas::Current ()->Reactivate ();
 		OglDrawArrays (GL_QUADS, 0, 4);
 		}
 	ResetClientStates (0);

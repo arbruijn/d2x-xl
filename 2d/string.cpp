@@ -667,7 +667,7 @@ int GrString (int x, int y, const char *s, int *idP)
 #if STRINGPOOL
 	grsString	*ps;
 
-if ((MODE == BM_OGL) && (ps = GetPoolString (s, idP))) {
+if (/*(CCanvas::Current ()->Mode () == BM_OGL) &&*/ (ps = GetPoolString (s, idP))) {
 	CBitmap* bmP = ps->bmP;
 	float		fScale = fontManager.Scale ();
 	int		w = int (bmP->Width () * fScale);

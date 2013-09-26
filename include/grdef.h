@@ -38,6 +38,7 @@ void gr_linear_line( int x0, int y0, int x1, int y1);
 
 extern uint Table8to32[256];
 
+#if 0
 #define MINX    0
 #define MINY    0
 #define MAXX    (CCanvas::Current ()->Width ()-1)
@@ -48,5 +49,6 @@ extern uint Table8to32[256];
 #define ROWSIZE CCanvas::Current ()->RowSize ()
 #define DATA    CCanvas::Current ()->Buffer ()
 #define COLOR   CCanvas::Current ()->Color ()
+#endif
 
 void order( int *x1, int *x2 );
