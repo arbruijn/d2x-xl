@@ -56,7 +56,7 @@ float				CRadar::radarSizes [3] = {2.0f, 3.0f, 4.0f};
 float				CRadar::sizeOffsets [2][3] = {{4.0f, 2.0f, 0.0f}, {4.0f, 2.0f, 0.0f}};
 
 CAngleVector	CRadar::aRadar = CAngleVector::Create(I2X (1) / 4, 0, 0);
-float				CRadar::yOffs [2][CM_LETTERBOX + 1] = {{17.0f, -20.5f, 18.0f, -20.5f, -19.0f}, {16.0f, 19.5f, 17.0f, 19.5f, 18.0f}};
+float				CRadar::yOffs [2][CM_LETTERBOX + 1] = {{17.0f, -20.5f, -18.0f, -20.5f, -19.0f}, {16.0f, 19.5f, 17.0f, 19.5f, 18.0f}};
 
 tSinCosf			CRadar::sinCosRadar [RADAR_SLICES];
 tSinCosf			CRadar::sinCosBlip [BLIP_SLICES];

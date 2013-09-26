@@ -100,12 +100,11 @@ strcpy (szScore, (IsMultiGame && !IsCoopGame) ? TXT_KILLS : TXT_SCORE);
 strcat (szScore, ":");
 fontManager.Current ()->StringSize (szScore, w, h, aw);
 SetFontColor (MEDGREEN_RGBA);
-nIdLabel = DrawHUDText (&nIdLabel, (ScaleX (SB_SCORE_LABEL_X + int (w / fontManager.Scale ())) - w), ScaleY (SB_SCORE_Y), szScore);
-
+nIdLabel = DrawHUDText (&nIdLabel, ScaleX (SB_SCORE_LABEL_X), ScaleY (SB_SCORE_Y), szScore);
 sprintf (szScore, "%5d", (IsMultiGame && !IsCoopGame) ? LOCALPLAYER.netKillsTotal : LOCALPLAYER.score);
 fontManager.Current ()->StringSize (szScore, w, h, aw);
 SetFontColor ((IsMultiGame && !IsCoopGame) ? MEDGREEN_RGBA : GREEN_RGBA);
-nIdScore = DrawHUDText (&nIdScore, ScaleX (SB_SCORE_RIGHT) - w - LHY (2), ScaleY (SB_SCORE_Y), szScore);
+nIdScore = DrawHUDText (&nIdScore, ScaleX (SB_SCORE_RIGHT- w) - LHY (2), ScaleY (SB_SCORE_Y), szScore);
 }
 
 //	-----------------------------------------------------------------------------
@@ -200,7 +199,7 @@ SetFontScale ((float) floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 SetFontColor (MEDGREEN_RGBA);
 strcpy (szLives, IsMultiGame ? TXT_DEATHS : TXT_LIVES);
 fontManager.Current ()->StringSize (szLives, w, h, aw);
-nIdLives [0] = DrawHUDText (&nIdLives [0], (ScaleX (SB_LIVES_LABEL_X + int (w / fontManager.Scale ())) - w), ScaleY (SB_LIVES_LABEL_Y + HeightPad ()), szLives);
+nIdLives [0] = DrawHUDText (&nIdLives [0], ScaleX (SB_LIVES_LABEL_X), ScaleY (SB_LIVES_LABEL_Y + HeightPad ()), szLives);
 
 if (IsMultiGame) {
 	static int lastX [4] = {SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_L, SB_SCORE_RIGHT_H, SB_SCORE_RIGHT_H};
@@ -212,8 +211,7 @@ if (IsMultiGame) {
 	sprintf (szKilled, "%5d", LOCALPLAYER.netKilledTotal);
 	fontManager.Current ()->StringSize (szKilled, w, h, aw);
 	CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
-	Rect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + 0], 
-			y + 1, SB_SCORE_RIGHT, y + GAME_FONT->Height ());
+	Rect (lastX [(gameStates.video.nDisplayMode ? 2 : 0) + 0], y + 1, SB_SCORE_RIGHT, y + GAME_FONT->Height ());
 	SetFontColor (MEDGREEN_RGBA);
 	x = SB_SCORE_RIGHT - w - 2;	
 	nIdKilled = DrawHUDText (&nIdKilled, ScaleX (x), y + 1, szKilled);
@@ -223,7 +221,7 @@ else if (LOCALPLAYER.lives > 1) {
 	int y = ScaleY (SB_LIVES_Y + HeightPad ());
 	SetFontColor (MEDGREEN_RGBA);
 	CBitmap* bmP = BitBlt (GAUGE_LIVES, SB_LIVES_X, SB_LIVES_Y);
-	nIdLives [1] = DrawHUDText (&nIdLives [1], ScaleX (SB_LIVES_X + bmP->Width () + m_info.fontWidth), y, "x %d", LOCALPLAYER.lives - 1);
+	nIdLives [1] = DrawHUDText (&nIdLives [1], ScaleX (SB_LIVES_X + bmP->Width () + m_info.fontWidth), y, " x %d", LOCALPLAYER.lives - 1);
 	}
 }
 
