@@ -570,10 +570,11 @@ if (bRebuild && !m_info.bRebuild)
 m_info.bRebuild = false;
 if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
-*Canvas () += CViewport (0, 0, 0, -gameData.render.frame.Height (false) / 3);
-if (!bScene)
-	SetCanvas (&gameData.render.frame);
-Canvas ()->Activate ();
+(CViewport) gameData.render.scene += CViewport (0, 0, 0, -gameData.render.frame.Height (false) / 3);
+if (bScene)
+	gameData.render.scene.Activate ();
+else
+	gameData.render.frame.Activate ();
 return true;
 }
 

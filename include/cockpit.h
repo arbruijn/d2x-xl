@@ -125,7 +125,6 @@ class CCockpitInfo {
 		int		nDamage [3];
 		fix		tInvul;
 		fix		xStereoSeparation;
-		CCanvas*	canvas;
 		CCanvas	windows [2];
 		bool		bRebuild;
 
@@ -161,9 +160,8 @@ class CGenericCockpit {
 		inline void SetFontScale (float fontScale) { m_info.fontScale = fontScale; }
 		inline uint FontColor (void) { return m_info.fontColor; }
 		inline void SetFontColor (uint fontColor) { m_info.fontColor = fontColor; }
-		inline CCanvas* Canvas (void) { return m_info.canvas; }
+		inline CCanvas* Canvas (void) { return CCanvas::Current (); }
 		inline CCanvas& Window (int nWindow) { return m_info.windows [ nWindow]; }
-		inline void SetCanvas (CCanvas * canvas) { m_info.canvas = canvas; }
 		inline void PageInGauge (int nGauge) { LoadTexture (gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index, 0); }
 		inline ushort GaugeIndex (int nGauge) { return gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index; }
 		CBitmap* BitBlt (int nGauge, int x, int y, bool bScalePos = true, bool bScaleSize = true, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL, CBitmap* bmoP = NULL);

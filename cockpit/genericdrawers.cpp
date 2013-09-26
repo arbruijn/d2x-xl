@@ -1284,7 +1284,6 @@ if (ShowTextGauges ()) {
 	for (i = 0; i < 3; i++) {
 		nColor = dmgColors [1][nDamage [i] / 33];
 		//dmgColor.Set (RGBA_RED (nColor), RGBA_GREEN (nColor), RGBA_BLUE (nColor));
-		//SetCanvas (&gameData.render.frame);
 		SetFontColor (nColor);
 		if (nDamage [i] < 100)
 			szDamage [i][2] = '\0'; // remove the trailing blank, it causes rendering artifacts

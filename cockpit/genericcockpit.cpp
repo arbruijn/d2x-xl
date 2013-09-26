@@ -445,7 +445,6 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 		int h = gameData.render.screen.Height (false) * w / gameData.render.screen.Width (false);
 		int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 		gameData.render.window.Setup (&gameData.render.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
-		SetCanvas (&gameData.render.window);
 		gameData.render.window.Activate (&gameData.render.frame);
 #if 1
 		DrawEnergyLevels ();
@@ -469,11 +468,9 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 		gameData.render.window.Deactivate ();
 		//h = w; //5 * h / 3; //4 * gameData.render.screen.Height (false) / 9; //* w / gameData.render.screen.Width (false);
 		gameData.render.window.Setup (&gameData.render.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
-		SetCanvas (&gameData.render.window);
 		gameData.render.window.Activate (&gameData.render.frame);
 		hudIcons.Render ();
 		gameData.render.window.Deactivate ();
-		SetCanvas (&gameData.render.scene);
 #endif
 		}
 	else {
@@ -482,13 +479,10 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 
 		bool bLimited = (gameStates.render.bRearView || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0));
 
-		//gameData.render.frame.Activate ();
-		//SetCanvas (&gameData.render.frame);
 		if (!bLimited) {
 			DrawPlayerNames ();
 			RenderWindows ();
 			}
-		//SetCanvas (&gameData.render.frame);
 		DrawCockpit (false);
 		if (bExtraInfo) {
 		#if DBG
@@ -522,7 +516,9 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 			DrawKillList ();
 			DrawPlayerShip ();
 			}
+		gameData.render.scene.Activate ();
 		hudIcons.Render ();
+		gameData.render.scene.Deactivate ();
 		if (bExtraInfo) {
 			DrawCountdown ();
 			DrawRecording ();
@@ -541,7 +537,6 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 			SetFontColor (GREEN_RGBA);
 			DrawHUDText (NULL, 0x8000, (gameData.demo.nState == ND_STATE_PLAYBACK) ? -14 : -10, TXT_REAR_VIEW);
 			}
-		gameData.render.frame.Deactivate ();
 		}
 	}
 DemoRecording ();
@@ -564,7 +559,6 @@ gameData.render.scene.Setup (&gameData.render.frame); // OpenGL viewport must be
 fontManager.SetCurrent (GAME_FONT);
 SetFontScale (1.0f);
 SetFontColor (GREEN_RGBA);
-SetCanvas (&gameData.render.scene);
 if (bRebuild)
 	gameStates.render.cockpit.nShieldFlash = 0;
 return true;

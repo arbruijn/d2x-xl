@@ -480,11 +480,12 @@ if (gameStates.app.bDemoData)
 	h *= 2;
 if (gameData.render.screen.Height () > 480)
 	h = (int) ((double) h * (double) gameData.render.screen.Height () / 480.0);
-*Canvas () += CViewport (0, 0, 0, -h);
+(CViewport) gameData.render.scene += CViewport (0, 0, 0, -h);
 
-if (!bScene)
-	SetCanvas (&gameData.render.frame);
-Canvas ()->Activate ();
+if (bScene)
+	gameData.render.scene.Activate ();
+else
+	gameData.render.frame.Activate ();
 return true;
 }
 

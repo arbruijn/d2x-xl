@@ -508,7 +508,6 @@ for (i = 0; i < 3; i++) {
 	if (nEnergy [i] >= 0) {
 		nColor = energyColors [i];
 		//color.Set (RGBA_RED (nColor), RGBA_GREEN (nColor), RGBA_BLUE (nColor));
-		//SetCanvas (&gameData.render.frame);
 		SetFontColor (nColor);
 		szEnergy [i][4] = '\0'; 
 		DrawHUDText (NULL, x, y, szEnergy [i]);
@@ -845,7 +844,7 @@ m_info.bRebuild = false;
 if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
 // 480.0f / 640.0f * 0.7f is the aspect ratio of the widescreen mode in the reference resolution 640x480 
-int h = gameData.render.frame.Height () - (int) ((float) gameData.render.frame.Width () * (480.0f / 640.0f * 0.7f));
+int h = gameData.render.frame.Height () - 21 * gameData.render.frame.Width () / 40; //(int) FRound ((float) gameData.render.frame.Width () * (480.0f / 640.0f * 0.7f));
 *Canvas () += CViewport (0, h / 2, 0, -h);
 Canvas ()->Activate ();
 return true;

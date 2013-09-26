@@ -414,9 +414,9 @@ if (gameOpts->render.weaponIcons.bShowAmmo) {
 	}
 dx = (int) (10 * m_xScale);
 #if DBG
-if (ogl.IsSideBySideDevice ()  || (nWeaponIcons < 3)) {
+if (ogl.IsSideBySideDevice ()) {
 #else
-if (ogl.IsOculusRift () || (nWeaponIcons < 3)) {
+if (ogl.IsOculusRift ()) {
 #endif
 	//dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
 	//y = 3 * gameData.render.frame.Height () / 4 - dy - 4 * oy;
@@ -425,7 +425,7 @@ if (ogl.IsOculusRift () || (nWeaponIcons < 3)) {
 	}
 else if (nWeaponIcons < 3) {
 	//dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
-	y = nIconPos ? gameData.render.frame.Height () - dy - oy : oy + hIcon + 12;
+	y = nIconPos ? CCanvas::Current ()->Height () - dy - oy : oy + hIcon + 12;
 	}
 if (extraGameInfo [0].nWeaponIcons == 1)
 	; //y += gameData.render.scene.Top ();
@@ -449,7 +449,7 @@ for (int i = 0; i < 2; i++) {
 			}
 		}
 	else if (nWeaponIcons < 3) {
-		x = gameData.render.frame.Width () / 2;
+		x = CCanvas::Current ()->Width () / 2;
 		if (i)
 			x += dx + nDmgIconWidth;
 		else
@@ -458,7 +458,7 @@ for (int i = 0; i < 2; i++) {
 	else {
 		int h = 0;
 		y = (gameData.render.scene.Height () - h - n * (hIcon + oy)) / 2 + hIcon;
-		x = i ? gameData.render.frame.Width () - wIcon - ox : ox;
+		x = i ? CCanvas::Current ()->Width () - wIcon - ox : ox;
 		//y += gameData.render.scene.Top ();
 		}
 
@@ -650,16 +650,16 @@ if (ogl.IsOculusRift ())
 
 dy = 0; //(gameData.render.frame.Height () - gameData.render.scene.Height ());
 #if 1
-	y = nIconPos ? gameData.render.frame.Height () - dy - oy : oy + hIcon + 12;
+	y = nIconPos ? CCanvas::Current ()->Height () - dy - oy : oy + hIcon + 12;
 #else
 if (gameStates.render.cockpit.nType != CM_STATUS_BAR) //(!cockpit->Always ())
-	y = nIconPos ? gameData.render.frame.Height () - dy - oy : oy + hIcon + 12;
+	y = nIconPos ? CCanvas::Current ()->Height () - dy - oy : oy + hIcon + 12;
 else
 	y = oy + hIcon + 12;
 #endif
 n = (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) ? NUM_INV_ITEMS : NUM_INV_ITEMS - 2;
 firstItem = gameStates.app.bD1Mission ? INV_ITEM_QUADLASERS : 0;
-x = (gameData.render.frame.Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox - nDmgIconWidth) / 2;
+x = (CCanvas::Current ()->Width () - (n - firstItem) * wIcon - (n - 1 - firstItem) * ox - nDmgIconWidth) / 2;
 if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].nWeaponIcons & 1))
 	y -= cockpit->LHX (10);
 //y += gameData.render.scene.Top ();
@@ -742,10 +742,6 @@ if (gameStates.app.bEndLevelSequence)
 	return;
 if (gameStates.render.bRearView)
 	return;
-#if 0
-if (gameData.render.frame.Left () || gameData.render.frame.Top ())
-	return;	// render window has been shrunk
-#endif
 if ((gameOpts->render.cockpit.bHUD) || cockpit->ShowAlways ()) {
 	m_nLineSpacing = cockpit->LineSpacing ();
 	if (!(gameStates.render.bRearView || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0)))
