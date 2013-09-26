@@ -801,7 +801,7 @@ else
 
 void COGL::EndFrame (int nWindow)
 {
-SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
+//SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
 if (nWindow == 0) {
 	postProcessManager.Update ();
 	if (postProcessManager.Effects ())

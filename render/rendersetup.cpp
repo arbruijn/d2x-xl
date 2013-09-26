@@ -160,6 +160,7 @@ if (nStartSegP)
 	*nStartSegP = nStartSeg;
 
 SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView, xZoom, bOglScale, xStereoSeparation);
+CCanvas::Current ()->Reactivate ();
 if (gameStates.render.cameras.bActive && (gameStates.render.nShadowMap > 0))
 	ComputeShadowTransformation (gameStates.render.nShadowMap - 1);
 ogl.SetupTransform (1);

@@ -276,10 +276,12 @@ float h = (float) ScreenHeight () / 2.0f;
 s.x = fix (w - float (v.v.coord.x) * w / v.v.coord.z);
 s.y = fix (h - float (v.v.coord.y) * h / v.v.coord.z);
 #endif
+#if 0
 if (gameStates.render.cockpit.nType == CM_LETTERBOX)
 	s.y += (gameData.render.screen.Height () - CCanvas::Current ()->Height ()) / 2;
 else if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
 	s.y += gameData.render.screen.Height () - CCanvas::Current ()->Height ();
+#endif
 #pragma omp critical
 if (m_screenMin.x > s.x)
 	m_screenMin.x = s.x;
