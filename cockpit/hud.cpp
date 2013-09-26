@@ -773,12 +773,12 @@ void CHUD::DrawCockpit (bool bAlphaTest)
 
 //	-----------------------------------------------------------------------------
 
-bool CHUD::Setup (bool bRebuild)
+bool CHUD::Setup (bool bScene, bool bRebuild)
 {
 if (bRebuild && !m_info.bRebuild)
 	return true;
 m_info.bRebuild = false;
-if (!CGenericCockpit::Setup ())
+if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
 Canvas ()->Activate ();
 return true;
@@ -823,6 +823,7 @@ else {
 //copy these vars so stereo code can get at them
 CCockpitInfo::bWindowDrawn [nWindow] = 1;
 gameData.render.window.Setup (&gameData.render.scene, x, y, w, h);
+gameData.render.window.Activate (&gameData.render.scene);
 }
 
 //	-----------------------------------------------------------------------------
@@ -836,12 +837,12 @@ CGenericCockpit::Activate (CM_LETTERBOX, true);
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 
-bool CWideHUD::Setup (bool bRebuild)
+bool CWideHUD::Setup (bool bScene, bool bRebuild)
 {
 if (bRebuild && !m_info.bRebuild)
 	return true;
 m_info.bRebuild = false;
-if (!CGenericCockpit::Setup ())
+if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
 int h = (int) (((double) gameData.render.frame.Height () * 0.15) / ((double) gameData.render.screen.Height () / (double) gameData.render.screen.Width () / 0.75));
 *Canvas () += CViewport (0, h, 0, -h);

@@ -469,20 +469,22 @@ CGenericCockpit::DrawCockpit (CM_STATUS_BAR + m_info.nCockpit, gameData.render.s
 
 //	-----------------------------------------------------------------------------
 
-bool CStatusBar::Setup (bool bRebuild)
+bool CStatusBar::Setup (bool bScene, bool bRebuild)
 {
 if (bRebuild && !m_info.bRebuild)
 	return true;
 m_info.bRebuild = false;
-if (!CGenericCockpit::Setup ())
+if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
-int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].Height ();
-if (gameStates.app.bDemoData)
-	h *= 2;
-if (gameData.render.screen.Height () > 480)
-	h = (int) ((double) h * (double) gameData.render.screen.Height () / 480.0);
 
-*Canvas () += CViewport (0, 0, 0, -h);
+if (bScene) {
+	int h = gameData.pig.tex.bitmaps [0][gameData.pig.tex.cockpitBmIndex [CM_STATUS_BAR + (gameStates.video.nDisplayMode ? (gameData.models.nCockpits / 2) : 0)].index].Height ();
+	if (gameStates.app.bDemoData)
+		h *= 2;
+	if (gameData.render.screen.Height () > 480)
+		h = (int) ((double) h * (double) gameData.render.screen.Height () / 480.0);
+	*Canvas () += CViewport (0, 0, 0, -h);
+	}
 Canvas ()->Activate ();
 return true;
 }
@@ -493,9 +495,10 @@ void CStatusBar::SetupWindow (int nWindow)
 {
 tGaugeBox* hudAreaP = hudWindowAreas + SB_PRIMARY_BOX + nWindow;
 gameData.render.window.Setup (&gameData.render.frame, 
-										gameData.render.frame.Left (false) +ScaleX (hudAreaP->left),
-										gameData.render.frame.Top (false) +ScaleX (hudAreaP->top),
+										gameData.render.frame.Left (false) + ScaleX (hudAreaP->left),
+										gameData.render.frame.Top (false) + ScaleY (hudAreaP->top),
 										ScaleX (hudAreaP->right - hudAreaP->left + 1), ScaleY (hudAreaP->bot - hudAreaP->top + 1));
+gameData.render.window.Activate (&gameData.render.frame);
 }
 
 //	-----------------------------------------------------------------------------

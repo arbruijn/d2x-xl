@@ -191,7 +191,6 @@ gameData.objs.viewerP = viewerP;
 gameStates.render.bRearView = -bRearView;
 transformation.Push ();
 SetupWindow (nWindow);
-gameData.render.window.Activate (&gameData.render.scene);
 fontManager.SetCurrent (GAME_FONT);
 nZoomSave = gameStates.zoom.nFactor;
 gameStates.zoom.nFactor = float (I2X (gameOpts->render.cockpit.nWindowZoom + 1));					//the player's zoom factor
@@ -211,7 +210,7 @@ transformation.Pop ();
 if (ogl.StereoDevice () < 0)
 	ogl.ChooseDrawBuffer ();
 //gameData.render.frame.SetViewport ();
-gameData.render.window.Activate (&gameData.render.scene);
+gameData.render.window.Activate (gameData.render.window.Parent ());
 
 //	HACK!If guided missile, wake up robots as necessary.
 if (viewerP->info.nType == OBJ_WEAPON) 
@@ -410,14 +409,8 @@ if (gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0)) {
 #endif
 	return;
 	}
-#if 1
-if (!cockpit->Setup (false))
+if (!cockpit->Setup (false, false))
 	return;
-#else
-if (!cockpit->Setup (true))
-	return;
-#endif
-//ogl.ChooseDrawBuffer ();
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.ColorMask (1,1,1,1,0);
@@ -623,7 +616,7 @@ gameStates.render.cockpit.nType = nType;
 gameStates.zoom.nFactor = float (gameStates.zoom.nMinFactor);
 m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.models.nCockpits / 2 : 0;
 gameStates.render.cockpit.nNextType = -1;
-cockpit->Setup (false);
+cockpit->Setup (false, false);
 if (bClearMessages)
 	HUDClearMessages ();
 if (!gameStates.app.bPlayerIsDead)

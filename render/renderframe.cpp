@@ -323,10 +323,8 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (xStereoSeparation >= 0)) {
 StartLightingFrame (gameData.objs.viewerP);		//this is for ugly light-smoothing hack
 //ogl.m_states.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 
-if (!nWindow) {
-	cockpit->Setup ();
-	//cockpit->Canvas ()->Activate ();
-	}
+if (!nWindow) 
+	cockpit->Setup (true);
 
 {
 PROF_START

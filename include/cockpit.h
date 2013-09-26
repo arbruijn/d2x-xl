@@ -252,7 +252,7 @@ class CGenericCockpit {
 		virtual void DrawWeapons (void);
 		virtual void DrawCockpit (bool bAlphaTest = false) = 0;
 		virtual void SetupWindow (int nWindow) = 0;
-		virtual bool Setup (bool bRebuild = false);
+		virtual bool Setup (bool bScene = false, bool bRebuild = false);
 
 		inline CCockpitInfo& Info (void) { return m_info; }
 		inline int Type (void) { return m_info.nType; }
@@ -335,7 +335,7 @@ class CHUD : public CGenericCockpit {
 		virtual void Toggle (void);
 
 		virtual void SetupWindow (int nWindow);
-		virtual bool Setup (bool bRebuild);
+		virtual bool Setup (bool bScene, bool bRebuild);
 
 	private:
 		void DrawEnergyLevelsCombined (void);
@@ -354,7 +354,7 @@ class CWideHUD : public CHUD {
 	public:
 		virtual void DrawRecording (void);
 		virtual void Toggle (void);
-		virtual bool Setup (bool bRebuild);
+		virtual bool Setup (bool bScene, bool bRebuild);
 		virtual void SetupWindow (int nWindow);
 	};
 
@@ -396,7 +396,7 @@ class CStatusBar : public CGenericCockpit {
 		virtual void Toggle (void);
 
 		virtual void SetupWindow (int nWindow);
-		virtual bool Setup (bool bRebuild);
+		virtual bool Setup (bool bScene, bool bRebuild);
 	};
 
 //	-----------------------------------------------------------------------------
@@ -435,7 +435,7 @@ class CCockpit : public CGenericCockpit {
 		virtual void Toggle (void);
 
 		virtual void SetupWindow (int nWindow);
-		virtual bool Setup (bool bRebuild);
+		virtual bool Setup (bool bScene, bool bRebuild);
 	};
 
 //	-----------------------------------------------------------------------------
@@ -477,7 +477,7 @@ class CRearView : public CGenericCockpit {
 			}
 		virtual void Toggle (void) {};
 		virtual void SetupWindow (int nWindow) {}
-		virtual bool Setup (bool bRebuild);
+		virtual bool Setup (bool bScene, bool bRebuild);
 	};
 
 //	-----------------------------------------------------------------------------

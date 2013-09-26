@@ -555,19 +555,20 @@ void CCockpit::SetupWindow (int nWindow)
 {
 tGaugeBox* hudAreaP = hudWindowAreas + COCKPIT_PRIMARY_BOX + nWindow;
 gameData.render.window.Setup (&gameData.render.frame, 
-										gameData.render.frame.Left (false) +ScaleX (hudAreaP->left),
-										gameData.render.frame.Top (false) +ScaleX (hudAreaP->top),
+										gameData.render.frame.Left (false) + ScaleX (hudAreaP->left),
+										gameData.render.frame.Top (false) + ScaleY (hudAreaP->top),
 										ScaleX (hudAreaP->right - hudAreaP->left + 1), ScaleY (hudAreaP->bot - hudAreaP->top + 1));
+gameData.render.window.Activate (&gameData.render.frame);
 }
 
 //	-----------------------------------------------------------------------------
 
-bool CCockpit::Setup (bool bRebuild)
+bool CCockpit::Setup (bool bScene, bool bRebuild)
 {
 if (bRebuild && !m_info.bRebuild)
 	return true;
 m_info.bRebuild = false;
-if (!CGenericCockpit::Setup (bRebuild))
+if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
 *Canvas () += CViewport (0, 0, 0, -gameData.render.frame.Height (false) / 3);
 Canvas ()->Activate ();
@@ -585,11 +586,11 @@ CGenericCockpit::Activate (CM_STATUS_BAR, true);
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 
-bool CRearView::Setup (bool bRebuild)
+bool CRearView::Setup (bool bScene, bool bRebuild)
 {
 if (bRebuild && !m_info.bRebuild)
 	return true;
-if (!CGenericCockpit::Setup ())
+if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
 *Canvas () += CViewport (0, 0, 0, -gameData.render.frame.Height (false) / 3);
 Canvas ()->Activate ();
