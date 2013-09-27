@@ -459,6 +459,7 @@ class CListBox: public CMenu {
 	int m_nWidth;
 	int m_nHeight;
 	int m_nTitleHeight;
+	int m_nOffset;
 	CStack<char*>* m_items;
 
 public:

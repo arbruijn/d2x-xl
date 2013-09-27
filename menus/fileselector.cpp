@@ -328,12 +328,12 @@ if (!bInitialized) {
 	if (w_h > 480)
 		w_h = 480;
 
+	backgroundManager.Setup (m_background, w_w, w_h);
 	m_nLeft = CCanvas::Current ()->Font ()->Width () * 2;			// must be in sync with w_w!!!
 	m_nTop = nTitleHeight;
 
 // save the screen behind the menu.
 
-	backgroundManager.Setup (m_background, w_w, w_h);
 	GrString (0x8000, 10, pszTitle);
 	bInitialized = 1;
 	}

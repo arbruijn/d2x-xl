@@ -285,7 +285,7 @@ hogFileManager.UseMission ("");
 
 for (;;) {
 	m.Destroy ();
-	m.Create (15);
+	m.Create (20);
 
 	m.AddMenu ("mission selector", TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
 	m.AddText ("mission name", (nMission < 0) ? TXT_NONE_SELECTED : missionManager [nMission].szMissionName, 0);

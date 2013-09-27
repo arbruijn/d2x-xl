@@ -87,8 +87,14 @@ gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 fontManager.SetScale (fontManager.Scale () * GetScale ());
 backgroundManager.Activate (m_background);
 FadeIn ();
+
 fontManager.SetCurrent (NORMAL_FONT);
 GrString (0x8000, m_nTitleHeight, m_props.pszTitle);
+
+CCanvas textArea;
+textArea.Setup (&gameData.render.frame, m_nOffset, m_nOffset + m_nTitleHeight, m_nWidth, m_nHeight);
+textArea.Activate (&m_background);
+
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 for (int i = max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
 	int w, h, aw, x, y;
@@ -110,6 +116,7 @@ for (int i = max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
 		GrString (5, y, (*m_items) [i]);
 		}
 	}	
+textArea.Deactivate ();
 m_background.Deactivate ();
 gameStates.render.grAlpha = 1.0f;
 fontManager.SetScale (fontManager.Scale () / GetScale ());
@@ -122,7 +129,6 @@ int CListBox::ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultI
 {
 	int	i;
 	int	bKeyRepeat = gameStates.input.keys.bRepeat;
-	int	nOffsetSize;
 	int	mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;	//, bDblClick;
 	int	xClose, yClose, bWheelUp, bWheelDown;
 	char	szPattern [40];
@@ -154,8 +160,7 @@ if (w > m_nWidth)
 	m_nWidth = w;
 m_nTitleHeight = h + 5;
 
-nOffsetSize = CCanvas::Current ()->Font ()->Width ();
-
+m_nOffset = CCanvas::Current ()->Font ()->Width ();
 m_nWidth += (CCanvas::Current ()->Font ()->Width ());
 
 int nMargin = CCanvas::Current ()->Font ()->Width () * 3;
@@ -164,7 +169,7 @@ if (ogl.IsSideBySideDevice ())
 if (m_nWidth > CCanvas::Current ()->Width () - nMargin)
 	m_nWidth = CCanvas::Current ()->Width () - nMargin;
 
-backgroundManager.Setup (m_background, NULL, m_nWidth + nOffsetSize * 2, m_nHeight + m_nTitleHeight + nOffsetSize * 2);
+backgroundManager.Setup (m_background, m_nWidth + m_nOffset * 2, m_nHeight + m_nTitleHeight + m_nOffset * 2);
 m_bDone = 0;
 m_nChoice = nDefaultItem;
 if (m_nChoice < 0) 
@@ -175,8 +180,8 @@ if (m_nChoice >= int (items.ToS ()))
 m_nFirstItem = -1;
 
 nMouseState = nOldMouseState = 0;	//bDblClick = 0;
-xClose = nOffsetSize;
-yClose = m_nTitleHeight - nOffsetSize;
+xClose = m_nOffset;
+yClose = m_nTitleHeight - m_nOffset;
 CMenu::DrawCloseBox (/*xClose, yClose*/0, 0);
 SDL_ShowCursor (1);
 

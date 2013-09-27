@@ -288,7 +288,7 @@ void CMenu::SetItemPos (int twidth, int xOffs, int yOffs, int m_rightOffset)
 for (uint i = 0; i < ToS (); i++) {
 	if (((Item (i).m_x == short (0x8000)) || Item (i).m_bCentered)) {
 		Item (i).m_bCentered = 1;
-		Item (i).m_x = fontManager.Current ()->GetCenteredX (Item (i).m_text, GetScale ());
+		Item (i).m_x = -1;
 		}
 	else
 		Item (i).m_x = xOffs + twidth + m_rightOffset;
@@ -569,7 +569,7 @@ for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNo
 	if ((Item (i).m_nType == NM_TYPE_TEXT) && !*Item (i).m_text)
 		continue;	// skip empty lines
 	m_bRedraw = 1;
-	if (Item (i).m_bRebuild && Item (i).m_bCentered)
+	if (Item (i).m_bCentered)
 		Item (i).m_x = fontManager.Current ()->GetCenteredX (Item (i).m_text);
 	if (i >= m_props.nScrollOffset) {
 		y = Item (i).m_y;
