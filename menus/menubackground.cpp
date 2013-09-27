@@ -63,9 +63,16 @@ int bHiresBackground;
 
 //------------------------------------------------------------------------------
 
+static char* szDesktopFilenames [4][2] = {
+	{"descentb.pcx", "descent.pcx"},
+	{"descntob.pcx", "descento.pcx"},
+	{"descentd.pcx", "descentd.pcx"},
+	{"descentb.pcx", "descentb.pcx"}
+};
+
 #if DBG
 
-const char* menuBgNames [4][2] = {
+static char* menuBgNames [4][2] = {
 	{"menu.pcx", "menub.pcx"},
 	{"menuo.pcx", "menuob.pcx"},
 	{"menud.pcx", "menud.pcx"},
@@ -74,7 +81,7 @@ const char* menuBgNames [4][2] = {
 
 #else
 
-const char* menuBgNames [4][2] = {
+static char* menuBgNames [4][2] = {
 	{"\x01menu.pcx", "\x01menub.pcx"},
 	{"\x01menuo.pcx", "\x01menuob.pcx"},
 	{"\x01menud.pcx", "\x01menud.pcx"},
@@ -94,16 +101,6 @@ static char* szWallpapers [3][2] = {
 static inline int Hires (int bHires = -1)
 {
 return gameStates.app.bDemoData ? 0 : (bHires < 0) ? gameStates.menus.bHires : bHires;
-}
-
-//------------------------------------------------------------------------------
-
-char* MenuBackgroundName (void)
-{
-for (int i = 0; i < 4; i++)
-	if (CFile::Exist (menuBgNames [i][Hires ()], gameFolders.szDataDir [0], 0))
-		return const_cast<char*> (menuBgNames [i][Hires ()]);
-return NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -307,13 +304,13 @@ void CBackgroundManager::Create (void)
 if (!m_bValid) {
 	Init ();
 
-	m_filenames [BG_STANDARD] = MenuBackgroundName ();
 	if (!m_wallpapers [0].SetBitmap (LoadCustomWallpaper ()))
-		m_wallpapers [0].SetBitmap (LoadDesktopWallpaper ());
+		m_wallpapers [0].SetBitmap (LoadMenuBackground ());
 
-	for (int i = 1; i < 5; i++) 
+	for (int i = 1; i < WALLPAPER_COUNT - 1; i++) 
 		if (m_filenames [i] = WallpaperName (i))
 			m_wallpapers [i].SetBitmap (LoadWallpaper (m_filenames [i]));
+	m_wallpapers [BG_LOADING].SetBitmap (LoadDesktopWallpaper ());
 	// inner, black area of automap background is transparent
 	m_wallpapers [BG_MAP].Bitmap ()->SetTranspType (2);
 	m_wallpapers [BG_MAP].Bitmap ()->AddFlags (BM_FLAG_TRANSPARENT);
@@ -325,7 +322,7 @@ if (!m_bValid) {
 
 void CBackgroundManager::Init (void)
 {
-for (int i = 0; i < 5; i++) {
+for (int i = 0; i < WALLPAPER_COUNT; i++) {
 	m_wallpapers [i].SetBitmap (NULL);
 	m_wallpapers [i].SetType (BG_WALLPAPER);
 	}
@@ -337,7 +334,7 @@ m_bValid = false;
 
 void CBackgroundManager::Destroy (void)
 {
-for (int i = 0; i < 5; i++)
+for (int i = 0; i < WALLPAPER_COUNT; i++)
 	if (m_wallpapers [i].Bitmap ())
 		delete m_wallpapers [i].Bitmap ();
 Init ();
@@ -424,12 +421,17 @@ return bmP;
 
 //------------------------------------------------------------------------------
 
-static char* szDesktopFilenames [4][2] = {
-	{"descentb.pcx", "descent.pcx"},
-	{"descntob.pcx", "descento.pcx"},
-	{"descentd.pcx", "descentd.pcx"},
-	{"descentb.pcx", "descentb.pcx"}
-};
+CBitmap* CBackgroundManager::LoadMenuBackground (void)
+{
+for (int i = 0; i < 4; i++) {
+	m_filenames [0] = menuBgNames [i][Hires ()];
+	if (CFile::Exist (m_filenames [0], gameFolders.szDataDir [0], 0))
+		return LoadWallpaper (m_filenames [0]);
+	}
+return NULL;
+}
+
+//------------------------------------------------------------------------------
 
 CBitmap* CBackgroundManager::LoadDesktopWallpaper (void)
 {

@@ -11,6 +11,7 @@
 #define BG_SCORES			2
 #define BG_MAP				3
 #define BG_MENU			4
+#define BG_LOADING		5
 
 #define BG_TOPMENU		0
 #define BG_SUBMENU		1
@@ -61,10 +62,12 @@ class CBackground : public CCanvas {
 
 //------------------------------------------------------------------------------
 
+#define WALLPAPER_COUNT 6
+
 class CBackgroundManager : public CStack<CBackground> {
 	private:
-		CBackground		m_wallpapers [5];
-		char*				m_filenames [5];
+		CBackground		m_wallpapers [WALLPAPER_COUNT];
+		char*				m_filenames [WALLPAPER_COUNT];
 		bool				m_bValid;
 		bool				m_bShadow;
 
@@ -92,6 +95,7 @@ class CBackgroundManager : public CStack<CBackground> {
 		CBitmap* LoadWallpaper (char* filename);
 		CBitmap* LoadCustomWallpaper (void);
 		CBitmap* LoadDesktopWallpaper (void);
+		CBitmap* LoadMenuBackground (void);
 	};
 
 //------------------------------------------------------------------------------

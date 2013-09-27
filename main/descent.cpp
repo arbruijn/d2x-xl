@@ -446,7 +446,7 @@ GrSetMode (
 SetScreenMode (SCREEN_MENU);
 gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
 backgroundManager.Rebuild ();
-backgroundManager.Draw ();
+backgroundManager.Draw (BG_LOADING);
 ogl.Update (0);
 }
 
