@@ -272,7 +272,7 @@ if (nState) { // render
 	if (!image)
 		return nCurItem;
 	if (gameStates.menus.bHires) {
-		int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+		int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 		x = gameData.X ((CCanvas::Current ()->Width () - CMenu::Scale (image->Width ())) / 2);
 		y = menu [0].m_y - CMenu::Scale (16);
 		//paletteManager.ResumeEffect (gameStates.app.bGameRunning);
@@ -420,7 +420,7 @@ if (nSaves < 1) {
 m_nLastSlot = -1;
 bRestoringMenu = 1;
 choice = m_nDefaultSlot + NM_IMG_SPACE;
-i = m.Menu (NULL, TXT_LOAD_GAME_MENU, SaveStateMenuCallback, &choice, NULL, 190, -1);
+i = m.Menu (NULL, TXT_LOAD_GAME_MENU, SaveStateMenuCallback, &choice, BG_SUBMENU, BG_STANDARD, 190, -1);
 bRestoringMenu = 0;
 if (i < 0)
 	return 0;

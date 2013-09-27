@@ -386,7 +386,7 @@ void CHUDIcons::DrawWeapons (void)
 	int	nHiliteColor = gameOpts->app.bColorblindFriendly;
 	int	nMaxAutoSelect;
 	int	nDmgIconWidth = 0;
-	int	nOffsetSave = gameData.SetStereoOffsetType (ogl.IsOculusRift () ? STEREO_OFFSET_NONE : STEREO_OFFSET_FIXED);
+	int	nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 #if 0
 								((nWeaponIcons == 2) 
 								 && ((gameStates.app.nSDLTicks [0] - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) || 
@@ -413,11 +413,7 @@ if (gameOpts->render.weaponIcons.bShowAmmo) {
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	}
 dx = (int) (10 * m_xScale);
-#if DBG
-if (ogl.IsSideBySideDevice ()) {
-#else
 if (ogl.IsOculusRift ()) {
-#endif
 	//dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
 	//y = 3 * gameData.render.frame.Height () / 4 - dy - 4 * oy;
 	//dy = 0;
@@ -438,11 +434,7 @@ else if (extraGameInfo [0].nWeaponIcons == 2) {
 for (int i = 0; i < 2; i++) {
 	int n = (gameStates.app.bD1Mission) ? 5 : 10;
 	nMaxAutoSelect = 255;
-#if DBG
-	if (ogl.IsSideBySideDevice ()) {
-#else
 	if (ogl.IsOculusRift ()) {
-#endif
 		if (!i) {
 			int nBombType, bHaveBombs = cockpit->BombCount (nBombType) > 0;
 			x = CCanvas::Current ()->Width () / 2 - /*CScreen::Scaled*/ ((2 + bHaveBombs) * (wIcon + ox) / 2);
@@ -481,19 +473,10 @@ for (int i = 0; i < 2; i++) {
 		if (!GetWeaponState (bHave, bAvailable, bActive, i, j, l))
 			continue;
 
-#if DBG
-		if (ogl.IsSideBySideDevice () && !bActive) 
-#else
 		if (ogl.IsOculusRift () && !bActive) 
-#endif
 			continue;
 
-#if DBG
-		if (!ogl.IsSideBySideDevice ())
-#else
-		if (!ogl.IsOculusRift ()) 
-#endif
-			{
+		if (!ogl.IsOculusRift ()) {
 			SetWeaponFillColor (bHave, bAvailable, alpha);
 			OglDrawFilledRect (cockpit->X (x - 1), y - hIcon - 1, cockpit->X (x + wIcon + 2), y + 2);
 			SetWeaponFrameColor (bHave, bAvailable, bActive, alpha);
@@ -517,11 +500,7 @@ for (int i = 0; i < 2; i++) {
 			}
 		gameStates.render.grAlpha = 1.0f;
 
-#if DBG
-		if (ogl.IsSideBySideDevice ())
-#else
 		if (ogl.IsOculusRift ())
-#endif
 			x += wIcon + ox;
 		else if (nWeaponIcons > 2)
 			y += hIcon + oy;
