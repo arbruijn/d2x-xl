@@ -216,7 +216,7 @@ if (m_nType == BG_WALLPAPER) {
 	}
 else if (m_nType == BG_SUBMENU) {
 	if (gameStates.app.bNostalgia)
-		DrawArea (0, 0, Width (), Height ());
+		DrawArea ();
 	else 
 		DrawBox ();
 	}
@@ -234,61 +234,56 @@ void CBackground::DrawBox (void)
 //------------------------------------------------------------------------------
 // Redraw a part of the menu area's background
 
-void CBackground::DrawArea (int left, int top, int right, int bottom)
+void CBackground::DrawArea (void)
 {
-if (left < 0)
-	left = 0;
-if (top < 0)
-	top = 0;
-int width = right - left + 1;
-int height = bottom - top + 1;
-//if (width > nmBackground.Width ()) width = nmBackground.Width ();
-//if (height > nmBackground.Height ()) height = nmBackground.Height ();
-right = left + width - 1;
-bottom = top + height - 1;
 ogl.SetBlending (false);
 if (!backgroundManager.Shadow ()) {
 	CCanvas canvas;
 	canvas.Setup (this);
-	*((CViewport*) &canvas) += CViewport (LHX (10), LHX (10), 0, 0);
+	int d = LHX (10);
+	*((CViewport*) &canvas) += CViewport (-d, -d, 2 * d, 2 * d);
 	canvas.Activate ();
-	m_bitmap->RenderFixed (NULL, left, top, width, height); //, LHX (10), LHY (10));
+	m_bitmap->RenderFixed (NULL, 0, 0, Width (), Height ()); 
 	canvas.Deactivate ();
 	}
 else {
 	Activate ();
-	m_bitmap->RenderFixed (NULL, left, top, width, height); //, 0, 0);
+	m_bitmap->RenderFixed (NULL, 0, 0, Width (), Height ()); 
 
 	gameStates.render.grAlpha = GrAlpha (2 * 7);
 	ogl.SetBlending (true);
 	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 	CCanvas::Current ()->SetColorRGB (0, 0, 0, 200);
-	OglDrawFilledRect (right - 5, top + 5, right - 6, bottom - 5);
-	OglDrawFilledRect (right - 4, top + 4, right - 5, bottom - 5);
-	OglDrawFilledRect (right - 3, top + 3, right - 4, bottom - 5);
-	OglDrawFilledRect (right - 2, top + 2, right - 3, bottom - 5);
-	OglDrawFilledRect (right - 1, top + 1, right - 2, bottom - 5);
-	OglDrawFilledRect (right + 0, top + 0, right - 1, bottom - 5);
-	OglDrawFilledRect (left + 5, bottom - 5, right, bottom - 6);
-	OglDrawFilledRect (left + 4, bottom - 4, right, bottom - 5);
-	OglDrawFilledRect (left + 3, bottom - 3, right, bottom - 4);
-	OglDrawFilledRect (left + 2, bottom - 2, right, bottom - 3);
-	OglDrawFilledRect (left + 1, bottom - 1, right, bottom - 2);
-	OglDrawFilledRect (left + 0, bottom - 0, right, bottom - 1);
+
+	int right = Width ();
+	int bottom = Height ();
+
+	OglDrawFilledRect (right - 5, 5, right - 6, bottom - 5);
+	OglDrawFilledRect (right - 4, 4, right - 5, bottom - 5);
+	OglDrawFilledRect (right - 3, 3, right - 4, bottom - 5);
+	OglDrawFilledRect (right - 2, 2, right - 3, bottom - 5);
+	OglDrawFilledRect (right - 1, 1, right - 2, bottom - 5);
+	OglDrawFilledRect (right + 0, 0, right - 1, bottom - 5);
+	OglDrawFilledRect (5, bottom - 5, right, bottom - 6);
+	OglDrawFilledRect (4, bottom - 4, right, bottom - 5);
+	OglDrawFilledRect (3, bottom - 3, right, bottom - 4);
+	OglDrawFilledRect (2, bottom - 2, right, bottom - 3);
+	OglDrawFilledRect (1, bottom - 1, right, bottom - 2);
+	OglDrawFilledRect (0, bottom - 0, right, bottom - 1);
 
 	CCanvas::Current ()->SetColorRGB (255, 255, 255, 50);
-	OglDrawFilledRect (left, top + 0, right - 1, top + 1);
-	OglDrawFilledRect (left, top + 1, right - 2, top + 2);
-	OglDrawFilledRect (left, top + 2, right - 3, top + 3);
-	OglDrawFilledRect (left, top + 3, right - 4, top + 4);
-	OglDrawFilledRect (left, top + 4, right - 5, top + 5);
-	OglDrawFilledRect (left, top + 5, right - 6, top + 6);
-	OglDrawFilledRect (left + 0, top + 6, left + 1, bottom - 1);
-	OglDrawFilledRect (left + 1, top + 6, left + 2, bottom - 2);
-	OglDrawFilledRect (left + 2, top + 6, left + 3, bottom - 3);
-	OglDrawFilledRect (left + 3, top + 6, left + 4, bottom - 4);
-	OglDrawFilledRect (left + 4, top + 6, left + 5, bottom - 5);
-	OglDrawFilledRect (left + 5, top + 6, left + 6, bottom - 6);
+	OglDrawFilledRect (0, 0, right - 1, 1);
+	OglDrawFilledRect (0, 1, right - 2, 2);
+	OglDrawFilledRect (0, 2, right - 3, 3);
+	OglDrawFilledRect (0, 3, right - 4, 4);
+	OglDrawFilledRect (0, 4, right - 5, 5);
+	OglDrawFilledRect (0, 5, right - 6, 6);
+	OglDrawFilledRect (0, 6, 1, bottom - 1);
+	OglDrawFilledRect (1, 6, 2, bottom - 2);
+	OglDrawFilledRect (2, 6, 3, bottom - 3);
+	OglDrawFilledRect (3, 6, 4, bottom - 4);
+	OglDrawFilledRect (4, 6, 5, bottom - 5);
+	OglDrawFilledRect (5, 6, 6, bottom - 6);
 	ogl.SetBlending (false);
 	Deactivate ();
 	}

@@ -38,7 +38,7 @@ class CBackground : public CCanvas {
 		bool Create (int width, int height, int nType, int nWallpaper);
 		void Setup (int width, int height);
 		void Draw (bool bUpdate = false);
-		void DrawArea (int left, int top, int right, int bottom);
+		void DrawArea (void);
 		void DrawBox (void);
 
 		inline CBitmap* Bitmap (void) { return m_bitmap; }
