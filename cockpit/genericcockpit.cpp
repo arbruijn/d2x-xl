@@ -488,7 +488,7 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 		int bStereoOffset = ogl.IsSideBySideDevice () && ((gameStates.render.cockpit.nType == CM_FULL_SCREEN) || (gameStates.render.cockpit.nType == CM_LETTERBOX));
 		if (bStereoOffset) {
 			nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
-			SetupCockpitCanvas (&gameData.render.frame);
+			SetupCockpitCanvas (&gameData.render.scene);
 			}
 		if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 			gameData.app.SetGameMode (gameData.demo.nGameMode);
