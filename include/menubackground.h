@@ -10,8 +10,8 @@
 #define BG_STARS			1
 #define BG_SCORES			2
 #define BG_MAP				3
-#define BG_MENU			4
-#define BG_LOADING		5
+#define BG_LOADING		4
+#define BG_MENU			BG_SCORES
 
 #define BG_TOPMENU		0
 #define BG_SUBMENU		1

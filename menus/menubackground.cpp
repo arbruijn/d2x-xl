@@ -307,9 +307,10 @@ if (!m_bValid) {
 	if (!m_wallpapers [0].SetBitmap (LoadCustomWallpaper ()))
 		m_wallpapers [0].SetBitmap (LoadMenuBackground ());
 
-	for (int i = 1; i < WALLPAPER_COUNT - 1; i++) 
+	for (int i = 1; i < WALLPAPER_COUNT - 1; i++) {
 		if (m_filenames [i] = WallpaperName (i))
 			m_wallpapers [i].SetBitmap (LoadWallpaper (m_filenames [i]));
+		}
 	m_wallpapers [BG_LOADING].SetBitmap (LoadDesktopWallpaper ());
 	// inner, black area of automap background is transparent
 	m_wallpapers [BG_MAP].Bitmap ()->SetTranspType (2);
