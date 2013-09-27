@@ -584,8 +584,8 @@ if (*m_info.szBitmapName) {
 void CBriefing::RenderBitmap (CBitmap* bmP)
 {
 CCanvas bitmapCanv;
-(CViewport) bitmapCanv = CViewport (220, 45, bmP->Width (), bmP->Height ());
-bitmapCanv.Activate ();
+bitmapCanv.Setup (&gameData.render.frame, 220 - gameData.StereoOffset2D (), 45, bmP->Width (), bmP->Height ());
+bitmapCanv.Activate (&gameData.render.frame);
 bmP->RenderScaled (0, 0);
 bitmapCanv.Deactivate ();
 }
@@ -611,7 +611,7 @@ gameStates.render.bFullBright	= 1;
 
 CCanvas::Current ()->Clear (m_info.nEraseColor);
 //ogl.m_states.bEnableScissor = 1;
-RobotCanv ().Activate ();
+RobotCanv ().Activate (&gameData.render.frame);
 DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
 RobotCanv ().Deactivate ();
 //ogl.m_states.bEnableScissor = 0;
@@ -624,7 +624,7 @@ m_info.tAnimate = t;
 
 void CBriefing::RenderRobotMovie (void)
 {
-RobotCanv ().Activate ();
+RobotCanv ().Activate (&gameData.render.frame);
 movieManager.RotateRobot ();
 RobotCanv ().Deactivate ();
 }
@@ -645,11 +645,11 @@ else if (*m_info.szBitmapName)
 
 void CBriefing::InitSpinningRobot (void)
 {
-int x = RescaleX (138);
+int x = RescaleX (138) - gameData.StereoOffset2D ();
 int y = RescaleY (55);
 int w = RescaleX (163);
 int h = RescaleY (136);
-RobotCanv ().Setup (CCanvas::Current (), x, y, w, h);
+RobotCanv ().Setup (&gameData.render.frame, x, y, w, h);
 m_info.bInitAnimate = 1;
 m_info.tAnimate = SDL_GetTicks ();
 }
@@ -1604,10 +1604,14 @@ if (gameStates.app.bD1Mission && (missionManager.nCurrentMission != missionManag
 		return;
 		}
 	}
+
 if (!LoadImageText (fnBriefing, m_info.briefingText)) {
 	gameStates.render.bBriefing = 0;
 	return;
 	}
+
+int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+
 audio.StopAllChannels ();
 audio.SetFxVolume (gameConfig.nAudioVolume [1], 1);
 audio.SetVolumes ((gameConfig.nAudioVolume [0] * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
@@ -1644,6 +1648,7 @@ m_info.briefingText.Destroy ();
 KeyFlush ();
 if (gameStates.app.bNostalgia)
 	ogl.SetDrawBuffer (GL_BACK, 0);
+gameData.SetStereoOffsetType (nOffsetSave);
 backgroundManager.Draw ();
 }
 
