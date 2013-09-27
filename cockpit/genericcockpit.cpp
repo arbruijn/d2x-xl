@@ -368,6 +368,15 @@ gameData.demo.nState = saveNewDemoState;
 }
 
 //	-----------------------------------------------------------------------------
+
+static void SetupCockpitCanvas (CCanvas* refCanv)
+{
+int w = refCanv->Width (false) - 3 * abs (gameData.StereoOffset2D ());
+gameData.render.window.Setup (refCanv, -3 * CScreen::Unscaled (gameData.StereoOffset2D ()) / 2, 0, w, refCanv->Height (false)); 
+gameData.render.window.Activate (refCanv);
+}
+
+//	-----------------------------------------------------------------------------
 //draw all the things on the HUD
 
 void CGenericCockpit::Render (int bExtraInfo, fix xStereoSeparation)
@@ -389,6 +398,9 @@ if (gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0)) {
 	}
 if (!cockpit->Setup (false, false))
 	return;
+
+int nOffsetSave;
+
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.ColorMask (1,1,1,1,0);
@@ -440,13 +452,12 @@ DrawReticle (ogl.StereoDevice () < 0);
 
 if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (gameStates.zoom.nMinFactor))) {
 	if (ogl.IsOculusRift ()) {
-#if 1
+		nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 		int w = gameData.render.frame.Width (false) / 2;
 		int h = gameData.render.screen.Height (false) * w / gameData.render.screen.Width (false);
-		int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 		gameData.render.window.Setup (&gameData.render.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
 		gameData.render.window.Activate (&gameData.render.frame);
-#if 1
+
 		DrawEnergyLevels ();
 		DrawModuleDamage ();
 		DrawScore ();
@@ -457,7 +468,7 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 		DrawCloak ();
 		DrawInvul ();
 		DrawHomingWarning ();
-#endif
+
 #if DBG
 		CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
 		glLineWidth (float (gameData.render.screen.Width ()) / 640.0f);
@@ -466,14 +477,18 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 #endif
 		gameData.SetStereoOffsetType (nOffsetSave);
 		gameData.render.window.Deactivate ();
-		//h = w; //5 * h / 3; //4 * gameData.render.screen.Height (false) / 9; //* w / gameData.render.screen.Width (false);
+		h = w; //5 * h / 3; //4 * gameData.render.screen.Height (false) / 9; //* w / gameData.render.screen.Width (false);
 		gameData.render.window.Setup (&gameData.render.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
 		gameData.render.window.Activate (&gameData.render.frame);
 		hudIcons.Render ();
 		gameData.render.window.Deactivate ();
-#endif
 		}
 	else {
+		int bStereoOffset = ogl.IsSideBySideDevice () && ((gameStates.render.cockpit.nType == CM_FULL_SCREEN) || (gameStates.render.cockpit.nType == CM_LETTERBOX));
+		if (bStereoOffset) {
+			nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
+			SetupCockpitCanvas (&gameData.render.frame);
+			}
 		if ((gameData.demo.nState == ND_STATE_PLAYBACK))
 			gameData.app.SetGameMode (gameData.demo.nGameMode);
 
@@ -516,9 +531,19 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 			DrawKillList ();
 			DrawPlayerShip ();
 			}
-		gameData.render.scene.Activate ();
+		if (bStereoOffset) {
+			gameData.render.window.Deactivate ();
+			SetupCockpitCanvas (&gameData.render.scene);
+			}
+		else
+			gameData.render.scene.Activate ();
 		hudIcons.Render ();
-		gameData.render.scene.Deactivate ();
+		if (bStereoOffset) {
+			gameData.render.window.Deactivate ();
+			SetupCockpitCanvas (&gameData.render.frame);
+			}
+		else
+			gameData.render.scene.Deactivate ();
 		if (bExtraInfo) {
 			DrawCountdown ();
 			DrawRecording ();
@@ -537,6 +562,8 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 			SetFontColor (GREEN_RGBA);
 			DrawHUDText (NULL, 0x8000, (gameData.demo.nState == ND_STATE_PLAYBACK) ? -14 : -10, TXT_REAR_VIEW);
 			}
+		if (bStereoOffset)
+			gameData.render.window.Deactivate ();
 		}
 	}
 DemoRecording ();
