@@ -372,8 +372,15 @@ gameData.demo.nState = saveNewDemoState;
 static void SetupCockpitCanvas (CCanvas* refCanv)
 {
 int w = refCanv->Width (false) - 3 * abs (gameData.StereoOffset2D ());
-gameData.render.window.Setup (refCanv, -3 * CScreen::Unscaled (gameData.StereoOffset2D ()) / 2, 0, w, refCanv->Height (false)); 
+int d = abs (gameData.StereoOffset2D ()) / 2;
+gameData.render.window.Setup (refCanv, (ogl.StereoSeparation () < 0) ? 3 * d : d, 0, w, refCanv->Height (false)); 
 gameData.render.window.Activate (refCanv);
+#if DBG
+CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
+glLineWidth (float (gameData.render.screen.Width ()) / 640.0f);
+OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+glLineWidth (1);
+#endif
 }
 
 //	-----------------------------------------------------------------------------
@@ -469,12 +476,6 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 		DrawInvul ();
 		DrawHomingWarning ();
 
-#if DBG
-		CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
-		glLineWidth (float (gameData.render.screen.Width ()) / 640.0f);
-		OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
-		glLineWidth (1);
-#endif
 		gameData.SetStereoOffsetType (nOffsetSave);
 		gameData.render.window.Deactivate ();
 		h = w; //5 * h / 3; //4 * gameData.render.screen.Height (false) / 9; //* w / gameData.render.screen.Width (false);

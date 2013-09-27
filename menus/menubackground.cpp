@@ -130,7 +130,6 @@ static inline void DrawBox (CCanvas& canvas)
 {
 #if 1
 gameStates.render.nFlashScale = 0;
-canvas.Activate ();
 CCanvasColor fontColors [2] = { canvas.FontColor (0), canvas.FontColor (1) };
 SetBoxFillColor ();
 ogl.SetTexturing (false);
@@ -143,7 +142,6 @@ OglDrawEmptyRect (lw - 1, lw - 1, canvas.Width () - lw, canvas.Height () - lw);
 glLineWidth (1.0f);
 canvas.SetFontColor (fontColors [0], 0);
 canvas.SetFontColor (fontColors [1], 1);
-canvas.Deactivate ();
 #endif
 }
 
@@ -190,7 +188,7 @@ return true;
 
 void CBackground::Activate (void)
 {
-CViewport::SetLeft (CViewport::Left () - CScreen::Unscaled (gameData.StereoOffset2D ()));
+CViewport::SetLeft (CViewport::Left () - gameData.StereoOffset2D ());
 CCanvas::Activate (&gameData.render.frame);
 }
 
@@ -198,7 +196,7 @@ CCanvas::Activate (&gameData.render.frame);
 
 void CBackground::Deactivate (void)
 {
-CViewport::SetLeft (CViewport::Left () + CScreen::Unscaled (gameData.StereoOffset2D ()));
+CViewport::SetLeft (CViewport::Left () + gameData.StereoOffset2D ());
 CCanvas::Deactivate ();
 }
 
@@ -228,7 +226,9 @@ if (bUpdate && !gameStates.app.bGameRunning)
 
 void CBackground::DrawBox (void)
 {
+Activate ();
 ::DrawBox (*this);
+Deactivate ();
 }
 
 //------------------------------------------------------------------------------
@@ -371,8 +371,10 @@ void CBackgroundManager::DrawBox (int left, int top, int right, int bottom, int 
 {
 	CCanvas	canvas;
 
-canvas.Setup (&gameData.render.frame, left, top, left + right - 1, top + bottom - 1, true);
+canvas.Setup (&gameData.render.frame, left - gameData.StereoOffset2D (), top, left + right - 1, top + bottom - 1, true);
+canvas.Activate (&gameData.render.frame);
 ::DrawBox (canvas);
+canvas.Deactivate ();
 }
 
 //------------------------------------------------------------------------------
@@ -471,7 +473,7 @@ return bmP;
 
 void CBackgroundManager::Activate (CBackground& bg)
 {
-bg.Setup (bg.Width (false), bg.Height (false));
+bg.Setup (bg.Width (), bg.Height ());
 Draw (&bg);
 bg.Activate ();
 }

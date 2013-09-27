@@ -218,12 +218,10 @@ ubyte bHackDblClickMenuMode = 0;
 
 void CMenu::DrawCloseBox (int x, int y)
 {
-m_background.Activate ();
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 OglDrawFilledRect (x + MENU_CLOSE_X, y + MENU_CLOSE_Y, x + MENU_CLOSE_X + Scale (MENU_CLOSE_SIZE), y + MENU_CLOSE_Y + Scale (MENU_CLOSE_SIZE));
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
 OglDrawFilledRect (x + MENU_CLOSE_X + LHX (1), y + MENU_CLOSE_Y + LHX (1), x + MENU_CLOSE_X + Scale (MENU_CLOSE_SIZE - LHX (1)), y + MENU_CLOSE_Y + Scale (MENU_CLOSE_SIZE - LHX (1)));
-m_background.Deactivate ();
 }
 
 //------------------------------------------------------------------------------ 
