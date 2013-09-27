@@ -62,7 +62,7 @@ class CBackground : public CCanvas {
 
 //------------------------------------------------------------------------------
 
-#define WALLPAPER_COUNT 6
+#define WALLPAPER_COUNT 5
 
 class CBackgroundManager : public CStack<CBackground> {
 	private:
