@@ -173,7 +173,7 @@ void CMenu::GetMousePos (void)
 {
 MouseGetPos (&m_xMouse, &m_yMouse);
 CRectangle rc;
-CCanvas::Current ()->GetExtent (rc, true, true);
+m_background.CCanvas::GetExtent (rc, true, true);
 m_xMouse -= rc.Left ();
 m_yMouse -= rc.Top ();
 }
