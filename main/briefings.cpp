@@ -476,13 +476,14 @@ if (!bRedraw && m_info.nDoorDivCount) {
 if (*m_info.szBitmapName) {
 	char		*poundSignP;
 	int		nFrame, dig1, dig2;
+	int		nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 	//	Set supertransparency color to black
 	switch (m_info.nAnimatingBitmapType) {
 		case 0: 
-			bitmapCanv.Setup (CCanvas::Current (), x, y, w, h);
+			bitmapCanv.Setup (CCanvas::Current (), x - CScreen::Unscaled (gameData.StereoOffset2D ()), y, w, h);
 			break;
 		case 1:
-			bitmapCanv.Setup (CCanvas::Current (), x, y, w, h);
+			bitmapCanv.Setup (CCanvas::Current (), x - CScreen::Unscaled (gameData.StereoOffset2D ()), y, w, h);
 			break;
 		// Adam: Change here for your new animating bitmap thing. 94, 94 are bitmap size.
 		default:
@@ -553,6 +554,7 @@ if (*m_info.szBitmapName) {
 	bitmapCanv.Deactivate ();
 	ogl.SetDepthMode (depthFunc);
 	G3EndFrame (transformation, 0);
+	gameData.SetStereoOffsetType (nOffsetSave);
 	//paletteManager.ResumeEffect ();
 	if (!(bRedraw || m_info.nDoorDivCount)) {
 #if 1
