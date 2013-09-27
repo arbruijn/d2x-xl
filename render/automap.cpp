@@ -118,23 +118,6 @@ m_colors.nLgtRed = RGBA_PAL2 (48,0,0);
 
 //------------------------------------------------------------------------------
 
-bool CAutomap::InitBackground (void)
-{
-//m_background.Init ();
-if (m_background.Buffer ())
-	return true;
-
-int nPCXError = PCXReadBitmap (BackgroundName (BG_MAP), &m_background, BM_LINEAR, 0);
-if (nPCXError != PCX_ERROR_NONE) {
-	Error ("File %s - PCX error: %s", BackgroundName (BG_MAP), PcxErrorMsg (nPCXError));
-	return false;
-	}
-m_background.SetPalette (NULL, -1, -1);
-return (m_background.Buffer () != NULL);
-}
-
-//------------------------------------------------------------------------------
-
 void CAutomap::Init (void)
 {
 m_nWidth = 640;
@@ -426,40 +409,13 @@ PROF_START
 automap.m_bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_FULLMAP_CHEAT | PLAYER_FLAGS_FULLMAP)) != 0;
 if ((m_bRadar = m_bRadar) == 2) {
 	CFixMatrix& po = gameData.multiplayer.playerInit [N_LOCALPLAYER].position.mOrient;
-#if 1
 	mRadar.m.dir.r = po.m.dir.r;
 	mRadar.m.dir.f = po.m.dir.u;
 	mRadar.m.dir.f.v.coord.y = -mRadar.m.dir.f.v.coord.y;
 	mRadar.m.dir.u = po.m.dir.f;
-#else
-	mRadar.rVec.p.x = po->rVec.p.x;
-	mRadar.rVec.p.y = po->rVec.p.y;
-	mRadar.rVec.p.z = po->rVec.p.z;
-	mRadar.fVec.p.x = po->uVec.p.x;
-	mRadar.fVec.p.y = -po->uVec.p.y;
-	mRadar.fVec.p.z = po->uVec.p.z;
-	mRadar.uVec.p.x = po->fVec.p.x;
-	mRadar.uVec.p.y = po->fVec.p.y;
-	mRadar.uVec.p.z = po->fVec.p.z;
-#endif
 	}
 if (m_bRadar)
 	CCanvas::Current ()->Clear (RGBA_PAL2 (0,0,0));
-#if 0
-if (bAutomapFrame) {
-	if (InitBackground ())
-		m_background.RenderFullScreen ();
-	fontManager.SetCurrent (HUGE_FONT);
-	fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
-	GrPrintF (NULL, RESCALE_X (80), RESCALE_Y (36), TXT_AUTOMAP, HUGE_FONT);
-	fontManager.SetCurrent (SMALL_FONT);
-	fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
-	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (426), TXT_TURN_SHIP);
-	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (443), TXT_SLIDE_UPDOWN);
-	GrPrintF (NULL, RESCALE_X (60), RESCALE_Y (460), TXT_VIEWING_DISTANCE);
-	//ogl.Update (0);
-	}
-#endif
 if (!gameOpts->render.automap.bTextured || gameStates.app.bNostalgia)
 	gameOpts->render.automap.bTextured = 1;
 G3StartFrame (transformation, m_bRadar /*|| !(gameOpts->render.automap.bTextured & 1)*/, !m_bRadar, xStereoSeparation);
@@ -514,11 +470,7 @@ PROF_START
 								 (gameStates.render.cockpit.nType != CM_FULL_SCREEN) &&
 								 (gameStates.render.cockpit.nType != CM_LETTERBOX);
 if (bAutomapFrame) {
-	if (InitBackground ()) {
-		m_background.SetTranspType (2);
-		m_background.AddFlags (BM_FLAG_TRANSPARENT);
-		m_background.RenderFullScreen ();
-		}
+	backgroundManager.Draw (BG_MAP);
 	fontManager.SetCurrent (HUGE_FONT);
 	fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 	GrPrintF (NULL, RESCALE_X (80), RESCALE_Y (36), TXT_AUTOMAP, HUGE_FONT);

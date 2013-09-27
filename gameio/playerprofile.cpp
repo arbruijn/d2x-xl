@@ -1708,7 +1708,7 @@ if (gameStates.input.nPlrFileVersion >= 23) {
 		networkData.nNetLifeKills =
 		networkData.nNetLifeKilled = 0;
 		gameData.app.nLifetimeChecksum = 0;
- 		MsgBox (NULL, NULL, 1, TXT_PROFILE_DAMAGED, TXT_WARNING);
+ 		MsgBox (NULL, BG_STANDARD, 1, TXT_PROFILE_DAMAGED, TXT_WARNING);
 		bRewriteIt = 1;
 		}
 	}
@@ -1923,7 +1923,7 @@ for (;;) {
 		continue;
 	sprintf (filename, "%s.plr", text);
 	if (cf.Exist (filename,gameFolders.szProfDir, 0)) {
-		MsgBox (NULL, NULL, 1, TXT_OK, "%s '%s' %s", TXT_PLAYER, text, TXT_ALREADY_EXISTS);
+		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, "%s '%s' %s", TXT_PLAYER, text, TXT_ALREADY_EXISTS);
 		continue;
 		}
 	if (!NewPlayerConfig ())

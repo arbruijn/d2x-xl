@@ -437,33 +437,17 @@ return (nPlayed != MOVIE_NOT_PLAYED);	//default is not nPlayed
 
 void ShowLoadingScreen (void)
 {
-if (!gameStates.app.bNostalgia)
-	backgroundManager.Rebuild ();
-else {
-		char filename [14];
-
-#if TRACE
-	console.printf(CON_DBG, "\nShowing loading gameData.render.screen...\n"); fflush (fLog);
-#endif
-	strcpy (filename, gameStates.menus.bHires ? "descentb.pcx" : "descent.pcx");
-	if (!CFile::Exist (filename, gameFolders.szDataDir [0], 0))
-		strcpy (filename, gameStates.menus.bHires ? "descntob.pcx" : "descento.pcx"); // OEM
-	if (!CFile::Exist (filename, gameFolders.szDataDir [0], 0))
-		strcpy (filename, "descentd.pcx"); // SHAREWARE
-	if (!CFile::Exist (filename, gameFolders.szDataDir [0], 0))
-		strcpy (filename, "descentb.pcx"); // MAC SHAREWARE
-	GrSetMode (
-		gameStates.menus.bHires 
-			? (gameStates.gfx.nStartScrMode < 0) 
-				? SM (800, 600)
-				: displayModeInfo [gameStates.gfx.nStartScrMode].dim
-			: SM (320, 200));
-	SetScreenMode (SCREEN_MENU);
-	gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
-	backgroundManager.Init ();
-	backgroundManager.Setup (filename, 0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
-	ogl.Update (0);
-	}
+GrSetMode (
+	gameStates.menus.bHires 
+		? (gameStates.gfx.nStartScrMode < 0) 
+			? SM (800, 600)
+			: displayModeInfo [gameStates.gfx.nStartScrMode].dim
+		: SM (320, 200));
+SetScreenMode (SCREEN_MENU);
+gameStates.render.fonts.bHires = gameStates.render.fonts.bHiresAvailable && gameStates.menus.bHires;
+backgroundManager.Rebuild ();
+backgroundManager.Draw ();
+ogl.Update (0);
 }
 
 // ----------------------------------------------------------------------------
@@ -869,6 +853,7 @@ LoadGameTexts ();
 ReadConfigFile ();
 if (!InitGraphics ())
 	return 1;
+backgroundManager.Rebuild ();
 console.Setup (SMALL_FONT, &gameData.render.screen, CON_NUM_LINES, 0, 0, gameData.render.screen.Width (), gameData.render.screen.Height () / 2);
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	InitializeGauge ();
@@ -1033,8 +1018,7 @@ if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
 //do this here because the demo code can do a __asm int 3; longjmp when trying to
 //autostart a demo from the main menu, never having gone into the game
 setjmp (gameExitPoint);
-if (gameStates.app.bNostalgia)
-	backgroundManager.Rebuild ();
+backgroundManager.Rebuild ();
 gameStates.app.bInitialized = 1;
 // handle direct loading and starting of a mission specified via the command line
 if (*szAutoHogFile && *szAutoMission) {
@@ -1071,7 +1055,7 @@ void CheckJoystickCalibration (void)
 	// If joystick hasn't moved...
 	if ((abs (x2-x1)<30) &&  (abs (y2-y1)<30)) {
 		if ((abs (x1)>30) || (abs (x2)>30) ||  (abs (y1)>30) || (abs (y2)>30)) {
-			coord = MsgBox (NULL, NULL, 2, TXT_CALIBRATE, TXT_SKIP, TXT_JOYSTICK_NOT_CEN);
+			coord = MsgBox (NULL, BG_STANDARD, 2, TXT_CALIBRATE, TXT_SKIP, TXT_JOYSTICK_NOT_CEN);
 			if (coord==0) {
 				JoyDefsCalibrate ();
 			}

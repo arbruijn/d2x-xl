@@ -103,10 +103,10 @@ if (!MenuRenderTimeout (t0, -1))
 gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 fontManager.SetScale (fontManager.Scale () * GetScale ());
 
-backgroundManager.Redraw ();
+backgroundManager.Activate (m_background);
 fontManager.SetCurrent (NORMAL_FONT);
 FadeIn ();
-GrString (0x8000, m_yOffset + 10, m_props.pszTitle);
+GrString (0x8000, 10, m_props.pszTitle);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 for (int i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
 	int w, h, aw, x, y;
@@ -137,6 +137,7 @@ for (int i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
 		GrString (m_nLeft + 5, y, reinterpret_cast<char*> (&m_filenames [i]) + (((m_nMode == 1) && (m_filenames [i][0] == '$')) ? 1 : 0));
 		}
 	}	 
+m_background.Deactivate ();
 gameStates.render.grAlpha = 1.0f;
 fontManager.SetScale (fontManager.Scale () / GetScale ());
 SDL_ShowCursor (1);
@@ -155,25 +156,25 @@ char* pszFile = (char*) (&m_filenames [m_nChoice][0]);
 if (*pszFile == '$')
 	pszFile++;
 SDL_ShowCursor (0);
-if (MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s %s?", (m_nMode == 1) ? TXT_DELETE_PILOT : TXT_DELETE_DEMO, pszFile)) {
+if (MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, "%s %s?", (m_nMode == 1) ? TXT_DELETE_PILOT : TXT_DELETE_DEMO, pszFile)) {
 	SDL_ShowCursor (1);
 	return 0;
 	}
 
 if (m_nMode == 2) 
 	if (CFile::Delete (pszFile, gameFolders.szDemoDir))
-		MsgBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_DEMO, pszFile);
+		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_DEMO, pszFile);
 	else
 		m_bDemosDeleted = 1;
 else {
 	char* p = pszFile + strlen (pszFile);
 	*p = '.'; // make the extension visible again
 	if (CFile::Delete (pszFile, gameFolders.szProfDir))
-		MsgBox (NULL, NULL, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_PILOT, pszFile);
+		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_PILOT, pszFile);
 	else {
 		pszFile [strlen (pszFile) - 1] = 'x'; //turn ".plr" to ".plx"
 		CFile::Delete (pszFile, gameFolders.szProfDir);
-		if (!MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, "%s?", TXT_DELETE_SAVEGAMES)) {
+		if (!MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, "%s?", TXT_DELETE_SAVEGAMES)) {
 			*p = '\0'; // hide extension
 			DeleteSaveGames (pszFile);
 			}
@@ -211,7 +212,7 @@ m_nFileCount = 0;
 m_bDemosDeleted = 0;
 m_callback = NULL;
 
-m_xOffset = m_yOffset = w_w = w_h = nTitleHeight = 0;
+w_w = w_h = nTitleHeight = 0;
 m_nLeft = m_nTop = m_nWidth = m_nHeight = 0;
 if (!m_filenames.Create (MENU_MAX_FILES))
 	return 0;
@@ -278,14 +279,14 @@ if ((m_nFileCount < 1) && m_bDemosDeleted) {
 	goto exitFileMenu;
 	}
 if ((m_nFileCount < 1) && (m_nMode == 2)) {
-	MsgBox (NULL, NULL, 1, TXT_OK, "%s %s\n%s", TXT_NO_DEMO_FILES, TXT_USE_F5, TXT_TO_CREATE_ONE);
+	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, "%s %s\n%s", TXT_NO_DEMO_FILES, TXT_USE_F5, TXT_TO_CREATE_ONE);
 	exitValue = 0;
 	goto exitFileMenu;
 	}
 
 if (m_nFileCount < 1) {
 #ifndef APPLE_DEMO
-	MsgBox (NULL, NULL, 1, "Ok", "%s\n '%s' %s", TXT_NO_FILES_MATCHING, filespec, TXT_WERE_FOUND);
+	MsgBox (NULL, BG_STANDARD, 1, "Ok", "%s\n '%s' %s", TXT_NO_FILES_MATCHING, filespec, TXT_WERE_FOUND);
 #endif
 	exitValue = 0;
 	goto exitFileMenu;
@@ -327,21 +328,13 @@ if (!bInitialized) {
 	if (w_h > 480)
 		w_h = 480;
 
-	m_xOffset = (CCanvas::Current ()->Width () - w_w) / 2;
-	m_yOffset = (CCanvas::Current ()->Height () - w_h) / 2;
-
-	if (m_xOffset < 0) 
-		m_xOffset = 0;
-	if (m_yOffset < 0) 
-		m_yOffset = 0;
-
-	m_nLeft = m_xOffset + (CCanvas::Current ()->Font ()->Width ()*2);			// must be in sync with w_w!!!
-	m_nTop = m_yOffset + nTitleHeight;
+	m_nLeft = CCanvas::Current ()->Font ()->Width () * 2;			// must be in sync with w_w!!!
+	m_nTop = nTitleHeight;
 
 // save the screen behind the menu.
 
-	backgroundManager.Setup (NULL, m_xOffset, m_yOffset, w_w, w_h);
-	GrString (0x8000, m_yOffset + 10, pszTitle);
+	backgroundManager.Setup (m_background, w_w, w_h);
+	GrString (0x8000, 10, pszTitle);
 	bInitialized = 1;
 	}
 
@@ -359,7 +352,7 @@ else {
 
 nMouseState = nOldMouseState = 0;
 mouse2State = omouse2State = 0;
-CMenu::DrawCloseBox (m_xOffset, m_yOffset);
+CMenu::DrawCloseBox (0, 0);
 SDL_ShowCursor (1);
 
 SDL_EnableKeyRepeat (60, 30);
@@ -544,9 +537,9 @@ while (!m_bDone) {
 
 	if (!nMouseState && nOldMouseState) {
 		MouseGetPos (&mx, &my);
-		x1 = m_xOffset + MENU_CLOSE_X + 2;
+		x1 = XOffset () + MENU_CLOSE_X + 2;
 		x2 = x1 + MENU_CLOSE_SIZE - 2;
-		y1 = m_yOffset + MENU_CLOSE_Y + 2;
+		y1 = YOffset () + MENU_CLOSE_Y + 2;
 		y2 = y1 + MENU_CLOSE_SIZE - 2;
 		if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 			m_nChoice = -1;
@@ -568,10 +561,7 @@ exitFileMenu:
 
 gameStates.input.keys.bRepeat = bKeyRepeat;
 
-if (bInitialized) {
-	backgroundManager.Remove ();
-	}
-
+backgroundManager.Draw ();
 gameData.render.frame.Deactivate ();
 SDL_EnableKeyRepeat(0, 0);
 Unregister ();

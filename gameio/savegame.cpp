@@ -414,7 +414,7 @@ for (i = 0; i < NUM_SAVES + 1; i++) {
 		}
 	}
 if (nSaves < 1) {
-	MsgBox (NULL, NULL, 1, "Ok", TXT_NO_SAVEGAMES);
+	MsgBox (NULL, BG_STANDARD, 1, "Ok", TXT_NO_SAVEGAMES);
 	return 0;
 	}
 m_nLastSlot = -1;
@@ -1045,7 +1045,7 @@ if (description)
 m_bSecret = bSecret;
 if (!m_cf.Open (m_filename, (bSecret < 0) ? gameFolders.szCacheDir : gameFolders.szSaveDir, "wb", 0)) {
 	if (!IsMultiGame)
-		MsgBox (NULL, NULL, 1, TXT_OK, TXT_SAVE_ERROR2);
+		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_SAVE_ERROR2);
 	StartTime (1);
 	return 0;
 	}
@@ -1066,7 +1066,7 @@ if (!bSecret) {
 	}
 if (m_cf.Error ()) {
 	if (!IsMultiGame) {
-		MsgBox (NULL, NULL, 1, TXT_OK, TXT_SAVE_ERROR);
+		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_SAVE_ERROR);
 		m_cf.Close ();
 		m_cf.Delete (m_filename, gameFolders.szSaveDir);
 		}
@@ -1152,7 +1152,7 @@ if (!m_bQuick) {
 	PopSecretSave (nSaveSlot);
 	AutoSave (nSaveSlot);
 	if (!bSecret && bInGame) {
-		int choice = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_CONFIRM_LOAD);
+		int choice = MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_LOAD);
 		if (choice != 0) {
 			gameData.app.bGamePaused = 0;
 			StartTime (1);
@@ -1207,7 +1207,7 @@ if (!i)
 gameOpts->app.nVersionFilter = nVersionFilter;
 if (i)
 	return 1;
-MsgBox (NULL, NULL, 1, "Ok", TXT_MSN_LOAD_ERROR, szMission);
+MsgBox (NULL, BG_STANDARD, 1, "Ok", TXT_MSN_LOAD_ERROR, szMission);
 return 0;
 }
 

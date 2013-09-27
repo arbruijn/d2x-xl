@@ -267,7 +267,7 @@ int NetworkBrowseGames (void)
 memcpy (callsign, LOCALPLAYER.callsign, sizeof (callsign));
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (!networkData.bActive) {
-		MsgBox (NULL, NULL, 1, TXT_OK, TXT_IPX_NOT_FOUND);
+		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_IPX_NOT_FOUND);
 		return 0;
 		}
 	}
@@ -328,10 +328,7 @@ if (bAutoLaunch) {
 	}
 else {
 	gameStates.multi.bSurfingNet = 1;
-//	NMLoadBackground (BackgroundName (BG_MENU), &bg, 0);             //load this here so if we abort after loading level, we restore the palette
-//	paletteManager.ResumeEffect ();
-	choice = menu.Menu (TXT_NETGAMES, NULL, NetworkJoinPoll, NULL, NULL, LHX (340), -1, 1);
-//	backgroundManager.Remove ();
+	choice = menu.Menu (TXT_NETGAMES, NULL, NetworkJoinPoll, NULL, BG_SUBMENU, BG_STANDARD, LHX (340), -1, 1);
 	gameStates.multi.bSurfingNet = 0;
 	}
 
@@ -343,18 +340,18 @@ if (choice == -1) {
 	}               
 choice -= (2 + tracker.m_bUse);
 if ((choice < 0) || (choice >= networkData.nActiveGames)) {
-	//MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INVALID_CHOICE);
+	//MsgBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_INVALID_CHOICE);
 	goto doMenu;
 	}
 
 // Choice has been made and looks legit
 if (AGI.m_info.gameStatus == NETSTAT_ENDLEVEL) {
-	MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_NET_GAME_BETWEEN2);
+	MsgBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_NET_GAME_BETWEEN2);
 	goto doMenu;
 	}
 if (AGI.m_info.protocolVersion != MULTI_PROTO_VERSION) {
 	if (AGI.m_info.protocolVersion == 3) {
-		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INCOMPAT1);
+		MsgBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_INCOMPAT1);
 		}
 	else if (AGI.m_info.protocolVersion == 4) {
 		}
@@ -363,7 +360,7 @@ if (AGI.m_info.protocolVersion != MULTI_PROTO_VERSION) {
 
 		sprintf (szFmt, "%s%s", TXT_VERSION_MISMATCH, TXT_NETGAME_VERSIONS);
 		sprintf (szError, szFmt, MULTI_PROTO_VERSION, AGI.m_info.protocolVersion);
-		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, szError);
+		MsgBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, szError);
 		}
 	goto doMenu;
 	}
@@ -374,19 +371,19 @@ console.printf (CON_DBG, TXT_LOADING_MSN, AGI.m_info.szMissionName);
 if (!(missionManager.LoadByName (AGI.m_info.szMissionName, 0, "downloads/") || missionManager.LoadByName (AGI.m_info.szMissionName, -1) ||	
 	   (downloadManager.DownloadMission (AGI.m_info.szMissionName) && missionManager.LoadByName (AGI.m_info.szMissionName, 0, "downloads/")))) {
 	PrintLog (0, "Mission '%s' not found\n", AGI.m_info.szMissionName);
-	MsgBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
+	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
 	goto doMenu;
 	}
 if (IS_D2_OEM && (AGI.m_info.nLevel > 8)) {
-	MsgBox (NULL, NULL, 1, TXT_OK, TXT_OEM_ONLY8);
+	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_OEM_ONLY8);
 	goto doMenu;
 	}
 if (IS_MAC_SHARE && (AGI.m_info.nLevel > 4)) {
-	MsgBox (NULL, NULL, 1, TXT_OK, TXT_SHARE_ONLY4);
+	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_SHARE_ONLY4);
 	goto doMenu;
 	}
 if (!NetworkWaitForAllInfo (choice)) {
-	MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_JOIN_ERROR);
+	MsgBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_JOIN_ERROR);
 	networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
 	goto doMenu;
 	}       
@@ -394,9 +391,9 @@ if (!NetworkWaitForAllInfo (choice)) {
 networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
   if (!CanJoinNetGame (activeNetGames + choice, activeNetPlayers + choice)) {
 	if (AGI.m_info.nNumPlayers == AGI.m_info.nMaxPlayers)
-		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_GAME_FULL);
+		MsgBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_GAME_FULL);
 	else
-		MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_IN_PROGRESS);
+		MsgBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_IN_PROGRESS);
 	goto doMenu;
 	}
 // Choice is valid, prepare to join in

@@ -1642,7 +1642,7 @@ m_info.briefingText.Destroy ();
 KeyFlush ();
 if (gameStates.app.bNostalgia)
 	ogl.SetDrawBuffer (GL_BACK, 0);
-backgroundManager.Redraw (true);
+backgroundManager.Draw ();
 }
 
 //-----------------------------------------------------------------------------

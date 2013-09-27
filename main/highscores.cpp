@@ -295,7 +295,7 @@ void CScoreTable::Render (void)
 {
 	int i, color;
 
-backgroundManager.Redraw ();
+backgroundManager.Draw (BG_STARS);
 xOffs = (CCanvas::Current ()->Width () - 640) / 2;
 yOffs = (CCanvas::Current ()->Height () - 480) / 2;
 if (xOffs < 0)
@@ -364,7 +364,7 @@ if (bQuit) {
 	MultiLeaveGame ();
 	}
 gameData.score.bNoMovieMessage = 0;
-backgroundManager.Remove ();
+backgroundManager.Draw ();
 gameStates.menus.nInMenu--;
 if ((missionManager.nCurrentLevel >= missionManager.nLastLevel) &&
 	 !extraGameInfo [IsMultiGame].bRotateLevels)
@@ -423,7 +423,7 @@ switch (k) {
 		else {
 			int nInMenu = gameStates.menus.nInMenu;
 			gameStates.menus.nInMenu = 0;
-			int choice = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
+			int choice = MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
 			gameStates.menus.nInMenu = nInMenu;
 			if (choice == 0) {
 				Cleanup (1);
@@ -512,7 +512,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	m_oldStates [i] = gameData.multiplayer.players [i].connected;
 if (m_bNetwork)
 	NetworkEndLevel (&key);
-backgroundManager.LoadStars (true);
+
 while (true) {
 	if (!bRedraw || (ogl.m_states.nDrawBuffer == GL_BACK)) {
 		Render ();

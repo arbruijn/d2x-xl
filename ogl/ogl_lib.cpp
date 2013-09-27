@@ -931,7 +931,7 @@ m_states.bRebuilding = 1;
 cameraManager.Destroy ();
 m_data.Initialize ();
 SetupExtensions ();
-backgroundManager.Rebuild (bGame);
+backgroundManager.Rebuild ();
 if (!gameStates.app.bGameRunning)
 	messageBox.Show (TXT_PREPARE_FOR_DESCENT);
 ResetClientStates ();

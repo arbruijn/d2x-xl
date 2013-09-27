@@ -190,6 +190,8 @@ class CCanvas : public CViewport, public CBitmap {
 		inline int Right (void) { return Left () + Width (); }
 		inline int Bottom (void) { return Top () + Height (); }
 
+		void GetExtent (CRectangle& rc, bool bScale = true, bool bDeep = false);
+
 		inline CCanvas* Parent (void) { return m_parent; }
 
 		void SetViewport (CCanvas* parent = NULL);

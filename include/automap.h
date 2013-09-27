@@ -95,7 +95,6 @@ class CAutomap {
 		int						m_bFreeCam;
 		char						m_szLevelNum [200];
 		char						m_szLevelName [200];
-		CBitmap					m_background;
 		CAngleVector			m_vTAngles;
 		bool						m_bDrawBuffers;
 		int						m_nVerts;
@@ -114,7 +113,6 @@ class CAutomap {
 		~CAutomap () {}
 		void Init (void);
 		void InitColors (void);
-		bool InitBackground (void);
 		int Setup (int bPauseGame, fix& xEntryTime);
 		int Update (void);
 		void Render (fix xStereoSeparation = 0);

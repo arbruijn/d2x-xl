@@ -632,8 +632,8 @@ return h;
 //------------------------------------------------------------------------------
 
 #define kc_gr_pixel(_x,_y)		DrawPixelClipped (gameData.X (_x), (_y))
-#define KC_LHX(_x) 				gameData.X (LHX (_x) + m_xOffs)
-#define KC_LHY(_y) 				(LHY (_y) + m_yOffs)
+#define KC_LHX(_x) 				gameData.X (LHX (_x))
+#define KC_LHY(_y) 				(LHY (_y))
 
 void CControlConfig::DrawTitle (void)
 {
@@ -669,7 +669,7 @@ if (is_current)
 	fontManager.SetColorRGBi (RGBA_PAL2 (20,20,29), 1, 0, 0);
 else
 	fontManager.SetColorRGBi (RGBA_PAL2 (15,15,24), 1, 0, 0);
-GrString (LHX (item->x) + m_xOffs, KC_LHY (item->y), item->textId ? GT (item->textId) : item->text);
+GrString (LHX (item->x), KC_LHY (item->y), item->textId ? GT (item->textId) : item->text);
 
 *szText = '\0';
 if (item->value != 255) {
@@ -738,7 +738,7 @@ if (item->w1) {
 	OglDrawFilledRect (KC_LHX (item->x + item->w1), KC_LHY (item->y - 1),
 				KC_LHX (item->x + item->w1 + item->w2), KC_LHY (item->y) + h);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28, 28, 28), 1, 0, 0);
-	x = LHX (item->w1 + item->x) + ((LHX (item->w2) - w) / 2) + m_xOffs;
+	x = LHX (item->w1 + item->x) + ((LHX (item->w2) - w) / 2);
 	GrString (x, KC_LHY (item->y), szText);
 	}
 }
@@ -763,7 +763,7 @@ if (m_items == kcKeyboard) {
 	kc_gr_pixel (KC_LHX (128), KC_LHY (43));
 	kc_gr_pixel (KC_LHX (128), KC_LHY (44));
 
-	GrString (LHX (109) + m_xOffs, KC_LHY (40), "OR");
+	GrString (LHX (109), KC_LHY (40), "OR");
 
 	OglDrawLine (KC_LHX (253), KC_LHY (42), KC_LHX (261), KC_LHY (42));
 	OglDrawLine (KC_LHX (274), KC_LHY (42), KC_LHX (283), KC_LHY (42));
@@ -772,7 +772,7 @@ if (m_items == kcKeyboard) {
 	kc_gr_pixel (KC_LHX (283), KC_LHY (43));
 	kc_gr_pixel (KC_LHX (283), KC_LHY (44));
 
-	GrString (LHX (264) + m_xOffs, KC_LHY (40), "OR");
+	GrString (LHX (264), KC_LHY (40), "OR");
 	}
 else if (m_items == kcJoystick) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
@@ -799,15 +799,15 @@ else if (m_items == kcMouse) {
 	GrString (0x8000, KC_LHY (35), TXT_BUTTONS);
 	GrString (0x8000,KC_LHY (125+5), TXT_AXES);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
-	GrString (LHX (169) + m_xOffs, KC_LHY (137), TXT_AXIS);
-	GrString (LHX (199) + m_xOffs, KC_LHY (137), TXT_INVERT);
+	GrString (LHX (169), KC_LHY (137), TXT_AXIS);
+	GrString (LHX (199), KC_LHY (137), TXT_INVERT);
 	}
 else if (m_items == kcHotkeys) {
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,27,6), 1, 0, 0);
 	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (31, 27, 6));
 
-	GrString (LHX (94) + m_xOffs, KC_LHY (40), "KB");
-	GrString (LHX (121) + m_xOffs, KC_LHY (40), "JOY");
+	GrString (LHX (94), KC_LHY (40), "KB");
+	GrString (LHX (121), KC_LHY (40), "JOY");
 	}
 //fontManager.SetScale (fontManager.Scale () / GetScale ());
 }
@@ -833,30 +833,25 @@ void CControlConfig::Render (void)
 //if (BeginRenderMenu ()) 
 int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 
-	{
-	if (m_background) {
-		m_background->Canvas ()->Activate ();
-		backgroundManager.Redraw ();
-		m_background->Canvas ()->Deactivate ();
-		DrawTitle ();
+backgroundManager.Activate (m_background);
+DrawTitle ();
 #if 1
-		DrawCloseBox (Scale (gameStates.menus.bHires ? 15 : 7), Scale (gameStates.menus.bHires ? 15 : 7));
+	DrawCloseBox (Scale (gameStates.menus.bHires ? 15 : 7), Scale (gameStates.menus.bHires ? 15 : 7));
 #else
-	m_closeX = m_closeY = gameStates.menus.bHires ? 15 : 7;
-	m_closeX += m_xOffs;
-	m_closeY += m_yOffs;
-	m_closeSize = gameStates.menus.bHires ? 10 : 5;
-	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-	OglDrawFilledRect (m_closeX, m_closeY, m_closeX + m_closeSize, m_closeY + m_closeSize);
-	CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
-	OglDrawFilledRect (m_closeX + LHX (1), m_closeY + LHX (1), m_closeX + m_closeSize - LHX (1), m_closeY + m_closeSize - LHX (1));
+m_closeX = m_closeY = gameStates.menus.bHires ? 15 : 7;
+m_closeSize = gameStates.menus.bHires ? 10 : 5;
+CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
+OglDrawFilledRect (m_closeX, m_closeY, m_closeX + m_closeSize, m_closeY + m_closeSize);
+CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
+OglDrawFilledRect (m_closeX + LHX (1), m_closeY + LHX (1), m_closeX + m_closeSize - LHX (1), m_closeY + m_closeSize - LHX (1));
 #endif
-		}
-	DrawHeader ();
-	DrawTable ();
-	SDL_ShowCursor (0);
-	m_bRedraw = 1;
-	}
+
+DrawHeader ();
+DrawTable ();
+m_background.Deactivate ();
+SDL_ShowCursor (0);
+m_bRedraw = 1;
+
 gameData.SetStereoOffsetType (nOffsetSave);
 }
 
@@ -869,13 +864,13 @@ void CControlConfig::DrawQuestion (kcItem *item)
 	int x, w, h, aw;
 
 fontManager.Current ()->StringSize ("?", w, h, aw);
-CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21*fades [looper]/31, 0, 24*fades [looper]/31));
-if (++looper>63)
+CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21 * fades [looper] / 31, 0, 24 * fades [looper] / 31));
+if (++looper > 63)
 	looper=0;
 OglDrawFilledRect (KC_LHX (item->w1 + item->x), KC_LHY (item->y - 1),
 						 KC_LHX (item->w1 + item->x + item->w2), KC_LHY (item->y) + h);
 fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
-x = LHX (item->w1+item->x)+ ((LHX (item->w2)-w)/2)+m_xOffs;
+x = LHX (item->w1 + item->x) + ((LHX (item->w2) - w) / 2);
 GrString (x, KC_LHY (item->y), "?");
 if (ogl.m_states.nDrawBuffer != GL_BACK)
 	ogl.Update (1);
@@ -888,7 +883,6 @@ void CControlConfig::Quit (void)
 Unregister ();
 //bg->menu_canvas = NULL;
 GameFlushInputs ();
-backgroundManager.Remove (m_background);
 SDL_ShowCursor (0);
 if (m_bTimeStopped)
 	StartTime (0);
@@ -915,7 +909,7 @@ for (i = 0, n = (int) (item - m_items); i < m_nItems; i++) {
 item->value = code;
 if (ogl.m_states.nDrawBuffer == GL_FRONT) {
 	DrawItem (item, 1);
-	backgroundManager.Restore (m_xOffs, m_yOffs, KC_LHX (310), CCanvas::Current ()->Font ()->Height (), 0, KC_LHY (INFO_Y));
+	backgroundManager.Draw ();
 	}
 GameFlushInputs ();
 fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 1);
@@ -1438,10 +1432,9 @@ if (!IsMultiGame || (gameStates.app.nFunctionMode != FMODE_GAME) || gameStates.a
 	StopTime ();
 	}
 
-gameData.render.frame.Activate ();
 //CFont* font = CCanvas::Current ()->Font ();
 controls.FlushInput ();
-m_background = backgroundManager.Setup (NULL, m_xOffs, m_yOffs, 640, 480);
+backgroundManager.Setup (m_background, 640, 480);
 //paletteManager.ResumeEffect ();
 gameData.render.frame.Deactivate ();
 

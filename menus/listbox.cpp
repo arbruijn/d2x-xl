@@ -85,16 +85,16 @@ if (m_bDone)
 	return;
 gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 fontManager.SetScale (fontManager.Scale () * GetScale ());
-backgroundManager.Redraw ();
+backgroundManager.Activate (m_background);
 FadeIn ();
 fontManager.SetCurrent (NORMAL_FONT);
-GrString (0x8000, m_yOffset - m_nTitleHeight, m_props.pszTitle);
+GrString (0x8000, m_nTitleHeight, m_props.pszTitle);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 for (int i = max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
 	int w, h, aw, x, y;
 
-	x = gameData.X (m_xOffset);
-	y = (i - m_nFirstItem) * (CCanvas::Current ()->Font ()->Height () + 2) + m_yOffset;
+	x = 0;
+	y = (i - m_nFirstItem) * (CCanvas::Current ()->Font ()->Height () + 2);
 
 	if (i >= int (m_items->ToS ())) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
@@ -107,9 +107,10 @@ for (int i = max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
 			fontManager.SetCurrent (NORMAL_FONT);
 		fontManager.Current ()->StringSize ((*m_items) [i], w, h, aw);
 		OglDrawFilledRect (x, y - 1, x + m_nWidth - 1, y + h + 1);
-		GrString (m_xOffset + 5, y, (*m_items) [i]);
+		GrString (5, y, (*m_items) [i]);
 		}
 	}	
+m_background.Deactivate ();
 gameStates.render.grAlpha = 1.0f;
 fontManager.SetScale (fontManager.Scale () / GetScale ());
 SDL_ShowCursor (1);
@@ -163,13 +164,7 @@ if (ogl.IsSideBySideDevice ())
 if (m_nWidth > CCanvas::Current ()->Width () - nMargin)
 	m_nWidth = CCanvas::Current ()->Width () - nMargin;
 
-m_xOffset = (CCanvas::Current ()->Width () - m_nWidth) / 2;
-m_yOffset = (CCanvas::Current ()->Height () - (m_nHeight + m_nTitleHeight)) / 2 + m_nTitleHeight;
-if (m_yOffset < m_nTitleHeight)
-	m_yOffset = m_nTitleHeight;
-
-backgroundManager.Setup (NULL, m_xOffset - nOffsetSize, m_yOffset - m_nTitleHeight - nOffsetSize, 
-								 m_nWidth + nOffsetSize * 2, m_nHeight + m_nTitleHeight + nOffsetSize * 2);
+backgroundManager.Setup (m_background, NULL, m_nWidth + nOffsetSize * 2, m_nHeight + m_nTitleHeight + nOffsetSize * 2);
 m_bDone = 0;
 m_nChoice = nDefaultItem;
 if (m_nChoice < 0) 
@@ -180,9 +175,9 @@ if (m_nChoice >= int (items.ToS ()))
 m_nFirstItem = -1;
 
 nMouseState = nOldMouseState = 0;	//bDblClick = 0;
-xClose = m_xOffset - nOffsetSize;
-yClose = m_yOffset - m_nTitleHeight - nOffsetSize;
-CMenu::DrawCloseBox (xClose, yClose);
+xClose = nOffsetSize;
+yClose = m_nTitleHeight - nOffsetSize;
+CMenu::DrawCloseBox (/*xClose, yClose*/0, 0);
 SDL_ShowCursor (1);
 
 SDL_EnableKeyRepeat(60, 30);
@@ -337,9 +332,9 @@ while (!m_bDone) {
 				if (i >= int (items.ToS ()))
 					break;
 				fontManager.Current ()->StringSize (items [i], w, h, aw);
-				x1 = m_xOffset;
-				x2 = m_xOffset + m_nWidth;
-				y1 = (i - m_nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + m_yOffset;
+				x1 = 0;
+				x2 = m_nWidth;
+				y1 = (i - m_nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2);
 				y2 = y1 + h + 1;
 				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 					//if (i == m_nChoice) {
@@ -369,7 +364,7 @@ while (!m_bDone) {
 	}
 FadeOut ();
 gameStates.input.keys.bRepeat = bKeyRepeat;
-backgroundManager.Remove ();
+backgroundManager.Draw ();
 gameData.render.frame.Deactivate ();
 SDL_EnableKeyRepeat(0, 0);
 return m_nChoice;

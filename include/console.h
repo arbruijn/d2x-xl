@@ -208,7 +208,7 @@ class CConsole {
 		void _CDECL_ printf (int priority, const char *fmt, ...);
 	};
 
-#define CON_BG BackgroundName (BG_SCORES, gameData.render.screen.Width () >= 640)
+#define CON_BG WallpaperName (BG_SCORES, gameData.render.screen.Width () >= 640)
 
 extern CConsole console;
 

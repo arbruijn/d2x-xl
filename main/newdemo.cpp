@@ -3257,7 +3257,7 @@ gameData.demo.nSize = GetDiskFree ();
 gameData.demo.nSize -= 100000;
 if ((gameData.demo.nSize+100000) <  2000000000) {
 	if (( (int) (gameData.demo.nSize)) < 500000) {
-		MsgBox (NULL, NULL, 1, TXT_OK, TXT_DEMO_NO_SPACE);
+		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_DEMO_NO_SPACE);
 		return;
 		}
 	}
@@ -3276,7 +3276,7 @@ if (&ndOutFile.File ()) {                      //dir doesn't exist and no errno 
 	ndOutFile.Open (DEMO_FILENAME, gameFolders.szDemoDir, "wb", 0);
 	}
 if (!ndOutFile.File ()) {
-	MsgBox (NULL, NULL, 1, TXT_OK, "Cannot open demo temp file");
+	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, "Cannot open demo temp file");
 	gameData.demo.nState = ND_STATE_NORMAL;
 	}
 else
@@ -3414,7 +3414,7 @@ do {
 			else
 				sprintf (szSaveFile, "tmp%d.dem", nAnonymous++);
 			if (CFile::Exist (szSaveFile, gameFolders.szDemoDir, 0))
-				exit = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE) - 1;
+				exit = MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE) - 1;
 			if (exit != -2)
 				exit = 0;
 			else {
@@ -3431,7 +3431,7 @@ do {
 		//check to make sure name is ok
 		for (s = filename; *s; s++)
 			if (!isalnum (*s) && (*s != '_')) {
-				MsgBox (NULL, NULL, 1, TXT_CONTINUE, TXT_DEMO_USE_LETTERS);
+				MsgBox (NULL, BG_STANDARD, 1, TXT_CONTINUE, TXT_DEMO_USE_LETTERS);
 				*filename = '\0';
 				break;
 				}
@@ -3443,7 +3443,7 @@ do {
 	strcpy (fullname, m [gameData.demo.bNoSpace].m_text);
 	strcat (fullname, ".dem");
 	if (CFile::Exist (fullname, gameFolders.szDemoDir, 0))
-		exit = MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE);
+		exit = MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE);
 	else
 		exit = 0;
 	if (!exit) {

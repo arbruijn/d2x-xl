@@ -82,30 +82,72 @@ const char* menuBgNames [4][2] = {
 	};
 #endif
 
-	static char szBackgrounds [3][2][12] = {
-		{"stars.pcx", "starsb.pcx"},
-		{"scores.pcx", "scoresb.pcx"},
-		{"\x01map.pcx", "\x01mapb.pcx"}
-		};
+static char* szWallpapers [3][2] = {
+	{"stars.pcx", "starsb.pcx"},
+	{"scores.pcx", "scoresb.pcx"},
+	{"map.pcx", "mapb.pcx"}
+	};
+
 
 //------------------------------------------------------------------------------
 
-char* MenuPCXName (void)
+static inline int Hires (int bHires = -1)
 {
-if (CFile::Exist (MENU_PCX_FULL, gameFolders.szDataDir [0], 0))
-	return const_cast<char*> (MENU_PCX_FULL);
-if (CFile::Exist (MENU_PCX_OEM, gameFolders.szDataDir [0], 0))
-	return const_cast<char*> (MENU_PCX_OEM);
-if (CFile::Exist (MENU_PCX_SHAREWARE, gameFolders.szDataDir [0], 0))
-	return const_cast<char*> (MENU_PCX_SHAREWARE);
-return const_cast<char*> (MENU_PCX_MAC_SHARE);
+return gameStates.app.bDemoData ? 0 : (bHires < 0) ? gameStates.menus.bHires : bHires;
 }
 
 //------------------------------------------------------------------------------
 
-char *WallpaperName (int nType, int bHires)
+char* MenuBackgroundName (void)
 {
-return nType ? szBackgrounds [nType - 1][gameStates.app.bDemoData ? 0 : ((bHires < 0) ? gameStates.menus.bHires : bHires)] : MenuPCXName ();
+for (int i = 0; i < 4; i++)
+	if (CFile::Exist (menuBgNames [i][Hires ()], gameFolders.szDataDir [0], 0))
+		return const_cast<char*> (menuBgNames [i][Hires ()]);
+return NULL;
+}
+
+//------------------------------------------------------------------------------
+
+char* WallpaperName (int nType, int bHires)
+{
+return szWallpapers [nType - 1][Hires (bHires)];
+}
+
+//------------------------------------------------------------------------------
+
+static inline void SetBoxBorderColor (void)
+{
+CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);
+}
+
+//------------------------------------------------------------------------------
+
+static inline void SetBoxFillColor (void)
+{
+CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), gameData.menu.alpha);
+}
+
+//------------------------------------------------------------------------------
+
+static inline void DrawBox (CCanvas& canvas)
+{
+#if 1
+gameStates.render.nFlashScale = 0;
+canvas.Activate ();
+CCanvasColor fontColors [2] = { canvas.FontColor (0), canvas.FontColor (1) };
+SetBoxFillColor ();
+ogl.SetTexturing (false);
+OglDrawFilledRect (0, 0, canvas.Width (), canvas.Height ());
+SetBoxBorderColor ();
+float flw = GLfloat (gameData.menu.nLineWidth) * sqrt (GLfloat (gameData.render.frame.Width ()) / 640.0f);
+glLineWidth (flw);
+int lw = int (ceil (flw));
+OglDrawEmptyRect (lw - 1, lw - 1, canvas.Width () - lw, canvas.Height () - lw);
+glLineWidth (1.0f);
+canvas.SetFontColor (fontColors [0], 0);
+canvas.SetFontColor (fontColors [1], 1);
+canvas.Deactivate ();
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -130,26 +172,20 @@ Init ();
 
 //------------------------------------------------------------------------------
 
-void CBackground::Setup (int x, int y, int width, int height)
+void CBackground::Setup (int width, int height)
 {
-CCanvas::Setup (&gameData.render.screen, x, y, width, height, true);
+SetupCanvasses ();
+CCanvas::Setup (&gameData.render.screen, (gameData.render.frame.Width () - width) / 2, (gameData.render.frame.Height () - height) / 2, width, height, true);
 }
 
 //------------------------------------------------------------------------------
 
-void CBackground::Save (int i, int width, int height)
-{
-}
-
-//------------------------------------------------------------------------------
-
-bool CBackground::Create (int x, int y, int width, int height, int nType, int nWallpaper)
+bool CBackground::Create (int width, int height, int nType, int nWallpaper)
 {
 Destroy ();
 m_nType = nType;
 m_nWallpaper = nWallpaper;
-Setup (x, y, width, height);
-Draw (false);
+Setup (width, height);
 return true;
 }
 
@@ -173,7 +209,7 @@ CCanvas::Deactivate ();
 
 void CBackground::Draw (bool bUpdate)
 {
-if (m_nType == 2) {
+if (m_nType == BG_WALLPAPER) {
 	if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameStates.app.bNostalgia))) {
 		gameData.render.frame.Activate ();
 		m_bitmap->RenderStretched ();
@@ -181,13 +217,11 @@ if (m_nType == 2) {
 		gameData.render.frame.Deactivate ();
 		}
 	}
-else if (!m_nType) {
-	Activate ();
+else if (m_nType == BG_SUBMENU) {
 	if (gameStates.app.bNostalgia)
 		DrawArea (0, 0, Width (), Height ());
 	else 
 		DrawBox ();
-	Deactivate ();
 	}
 if (bUpdate && !gameStates.app.bGameRunning)
 	ogl.Update (0);
@@ -197,14 +231,7 @@ if (bUpdate && !gameStates.app.bGameRunning)
 
 void CBackground::DrawBox (void)
 {
-gameStates.render.nFlashScale = 0;
-CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), gameData.menu.alpha);
-ogl.SetTexturing (false);
-OglDrawFilledRect (0, 0, Width (), Height ());
-CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);
-glLineWidth (GLfloat (gameData.menu.nLineWidth) * sqrt (GLfloat (gameData.render.frame.Width ()) / 640.0f));
-OglDrawEmptyRect (0, 0, Width (), Height ());
-glLineWidth (1);
+::DrawBox (*this);
 }
 
 //------------------------------------------------------------------------------
@@ -225,14 +252,16 @@ bottom = top + height - 1;
 ogl.SetBlending (false);
 if (!backgroundManager.Shadow ()) {
 	CCanvas canvas;
-	canvas.Setup (CCanvas::Current ());
+	canvas.Setup (this);
 	*((CViewport*) &canvas) += CViewport (LHX (10), LHX (10), 0, 0);
 	canvas.Activate ();
 	m_bitmap->RenderFixed (NULL, left, top, width, height); //, LHX (10), LHY (10));
 	canvas.Deactivate ();
 	}
 else {
+	Activate ();
 	m_bitmap->RenderFixed (NULL, left, top, width, height); //, 0, 0);
+
 	gameStates.render.grAlpha = GrAlpha (2 * 7);
 	ogl.SetBlending (true);
 	ogl.SetBlendMode (OGL_BLEND_ALPHA);
@@ -264,70 +293,42 @@ else {
 	OglDrawFilledRect (left + 4, top + 6, left + 5, bottom - 5);
 	OglDrawFilledRect (left + 5, top + 6, left + 6, bottom - 6);
 	ogl.SetBlending (false);
+	Deactivate ();
 	}
 gameStates.render.grAlpha = 1.0f;
 }
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-void CBackground::Restore (void)
+void CBackgroundManager::Create (void)
 {
-if (!gameStates.app.bGameRunning) {
-	gameData.render.frame.Activate ();
-	m_bitmap->RenderStretched ();
-	gameData.render.frame.Deactivate ();
+if (!m_bValid) {
+	Init ();
+
+	m_filenames [BG_STANDARD] = MenuBackgroundName ();
+	if (!m_wallpapers [0].SetBitmap (LoadCustomWallpaper ()))
+		m_wallpapers [0].SetBitmap (LoadDesktopWallpaper ());
+
+	for (int i = 1; i < 5; i++) 
+		if (m_filenames [i] = WallpaperName (i))
+			m_wallpapers [i].SetBitmap (LoadWallpaper (m_filenames [i]));
+	// inner, black area of automap background is transparent
+	m_wallpapers [BG_MAP].Bitmap ()->SetTranspType (2);
+	m_wallpapers [BG_MAP].Bitmap ()->AddFlags (BM_FLAG_TRANSPARENT);
+	m_bValid = true;
 	}
-}
-
-//------------------------------------------------------------------------------
-
-void CBackground::Restore (int dx, int dy, int w, int h, int sx, int sy)
-{
-int x1 = sx;
-int x2 = sx+w-1;
-int y1 = sy;
-int y2 = sy+h-1;
-
-if (x1 < 0)
-	x1 = 0;
-if (y1 < 0)
-	y1 = 0;
-
-if (x2 >= m_bitmap->Width ())
-	x2 = m_bitmap->Width () - 1;
-if (y2 >= m_bitmap->Height ())
-	y2 = m_bitmap->Height () - 1;
-
-w = x2 - x1 + 1;
-h = y2 - y1 + 1;
-m_bitmap->Render (CCanvas::Current (), dx, dy, w, h, x1, y1, w, h);
-}
-
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-
-CBackgroundManager::CBackgroundManager ()
-{
-Init ();
 }
 
 //------------------------------------------------------------------------------
 
 void CBackgroundManager::Init (void)
 {
-if (!m_backgrounds.Buffer ())
-	m_backgrounds.Create (10);
-m_wallpapers [0] = NULL;
-m_wallpapers [1] = NULL;
-m_wallpapers [2] = NULL;
-m_wallpapers [3] = NULL;
-m_filename [0] = WallpaperName (BG_MENU);
-m_filename [1] = WallpaperName (BG_SCORES);
-m_filename [2] = WallpaperName (BG_STARS);
-m_filename [3] = WallpaperName (BG_MAP);
-m_nWallpaper = 0;
-m_nDepth = -1;
+for (int i = 0; i < 5; i++) {
+	m_wallpapers [i].SetBitmap (NULL);
+	m_wallpapers [i].SetType (BG_WALLPAPER);
+	}
 m_bShadow = true;
 m_bValid = false;
 }
@@ -336,7 +337,7 @@ m_bValid = false;
 
 void CBackgroundManager::Destroy (void)
 {
-for (int i = 0; i < 4; i++)
+for (int i = 0; i < 5; i++)
 	if (m_wallpapers [i].Bitmap ())
 		delete m_wallpapers [i].Bitmap ();
 Init ();
@@ -344,36 +345,54 @@ Init ();
 
 //------------------------------------------------------------------------------
 
-void CBackgroundManager::Redraw (CBackground* bg, bool bUpdate)
+void CBackgroundManager::Rebuild (void)
 {
-m_wallpapers [bg->Wallpaper ()].Draw (false);
-bg->Draw (false);
+Destroy ();
+Create ();
+}
+
+//------------------------------------------------------------------------------
+
+void CBackgroundManager::Draw (CBackground* bg, bool bUpdate)
+{
+if (!bg)
+	Draw (0);
+else {
+	m_wallpapers [bg->Wallpaper ()].Draw (false);
+	bg->Draw (false);
+	}
 if (bUpdate)
 	ogl.Update (1);
 }
 
 //------------------------------------------------------------------------------
 
-bool CBackgroundManager::IsDefault (char* filename)
+void CBackgroundManager::Draw (int nWallpaper)
 {
-return filename && !strcmp (filename, m_filename [0]);
+m_wallpapers [nWallpaper].Draw (false);
 }
 
 //------------------------------------------------------------------------------
 
-CBitmap* CBackgroundManager::LoadCustomWallpaper (char* filename)
+void CBackgroundManager::DrawBox (int left, int top, int right, int bottom, int nLineWidth, float fAlpha, int bForce)
+{
+	CCanvas	canvas;
+
+canvas.Setup (&gameData.render.frame, left, top, left + right - 1, top + bottom - 1, true);
+::DrawBox (canvas);
+}
+
+//------------------------------------------------------------------------------
+
+CBitmap* CBackgroundManager::LoadCustomWallpaper (void)
 {
 if (gameStates.app.bNostalgia)
 	return NULL;
-if (!IsDefault (filename))
-	return NULL;
-if (m_wallpapers [0].Bitmap () && !strcmp (filename, m_wallpapers [0].Bitmap ()->Name ()))
-	return m_wallpapers [0].Bitmap ();
-
-CBitmap* bmP;
 
 gameOpts->menus.altBg.bHave = 0;
-if (!(bmP = CBitmap::Create (0, 0, 0, 1)))
+
+CBitmap* bmP = CBitmap::Create (0, 0, 0, 1);
+if (!bmP)
 	return NULL;
 
 CTGA tga (bmP);
@@ -398,9 +417,28 @@ if (!tga.Read (gameOpts->menus.altBg.szName [bModBg], gameFolders.szWallpaperDir
 	gameOpts->menus.altBg.bHave = -1;
 	return NULL;
 	}
-bmP->SetName (filename);
+bmP->SetName (m_filenames [0] = gameOpts->menus.altBg.szName [bModBg]);
 gameOpts->menus.altBg.bHave = 1;
 return bmP;
+}
+
+//------------------------------------------------------------------------------
+
+static char* szDesktopFilenames [4][2] = {
+	{"descentb.pcx", "descent.pcx"},
+	{"descntob.pcx", "descento.pcx"},
+	{"descentd.pcx", "descentd.pcx"},
+	{"descentb.pcx", "descentb.pcx"}
+};
+
+CBitmap* CBackgroundManager::LoadDesktopWallpaper (void)
+{
+for (int i = 0; i < 4; i++) {
+	m_filenames [0] = szDesktopFilenames [i][gameStates.menus.bHires];
+	if (CFile::Exist (m_filenames [0], gameFolders.szDataDir [0], 0))
+		return LoadWallpaper (m_filenames [0]);
+	}
+return NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -433,33 +471,21 @@ return bmP;
 
 //------------------------------------------------------------------------------
 
-void CBackgroundManager::Create (void)
+void CBackgroundManager::Activate (CBackground& bg)
 {
-if (!m_bValid) {
-	if ((m_wallpapers [0].SetBitmap (LoadCustomWallpaper ())))
-		m_wallpapers [1].SetBitmap (m_wallpapers [0].Bitmap ());
-	else {
-		m_wallpapers [0].SetBitmap (LoadWallpaper (m_filename [0]));
-		m_wallpapers [1].SetBitmap (LoadWallpaper (m_filename [1]));
-		}
-	m_wallpapers [3].SetBitmap (LoadWallpaper (m_filename [3]));
-	m_wallpapers [4].SetBitmap (LoadWallpaper (m_filename [4]));
-	m_bValid = true;
-	}
+bg.Setup (bg.Width (false), bg.Height (false));
+Draw (&bg);
+bg.Activate ();
 }
 
 //------------------------------------------------------------------------------
 
-CBackground* CBackgroundManager::Setup (int x, int y, int width, int height, int nType, int nWallPaper)
+bool CBackgroundManager::Setup (CBackground& bg, int width, int height, int nType, int nWallPaper)
 {
-Create ();
-if (m_nDepth > 1)
-	return NULL;
-CBackground* bg = new CBackground ();
-if (!bg->Create (x, y, width, height, nType, nWallPaper))
-	return NULL;
-bg->SetBitmap (m_wallpapers [nWallPaper].Bitmap ());
-return bg;
+if (!bg.Create (width, height, nType, nWallPaper))
+	return false;
+bg.SetBitmap (m_wallpapers [BG_MENU].Bitmap ());
+return true;
 }
 
 

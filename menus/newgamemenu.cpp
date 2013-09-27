@@ -106,7 +106,7 @@ do {
 strncpy (gameConfig.szLastMission, msnNames [nNewMission] + (MsnHasGameVer (msnNames [nNewMission]) ? 4 : 0), sizeof (gameConfig.szLastMission));
 gameConfig.szLastMission [sizeof (gameConfig.szLastMission) - 1] = '\0';
 if (!missionManager.Load (nNewMission)) {
-	MsgBox (NULL, NULL, 1, TXT_OK, TXT_MISSION_ERROR);
+	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_MISSION_ERROR);
 	return -1;
 	}
 gameStates.app.bD1Mission = (missionManager [nNewMission].nDescentVersion == 1);
@@ -178,7 +178,7 @@ do {
 while (!missionManager [nMission].nDescentVersion);
 strcpy (gameConfig.szLastMission, m [nMission]);
 if (!missionManager.Load (nMission)) {
-	MsgBox (NULL, NULL, 1, TXT_OK, TXT_ERROR_MSNFILE); 
+	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_ERROR_MSNFILE); 
 	return;
 }
 gameStates.app.bD1Mission = (missionManager [nMission].nDescentVersion == 1);
@@ -208,7 +208,7 @@ if (nHighestPlayerLevel > 1) {
 		if ((nNewLevel > 0) && (nNewLevel <= nHighestPlayerLevel)) 
 			break;
 		m [0].SetText (const_cast<char*> (TXT_ENTER_TO_CONT));
-		MsgBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
+		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_INVALID_LEVEL); 
 		}
 	}
 
@@ -361,7 +361,7 @@ for (;;) {
 #else
 		if ((i <= 0) || (i > nPlayerMaxLevel) || (i > missionManager.nLastLevel))
 #endif
-			MsgBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
+			MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_INVALID_LEVEL); 
 		else if (nLevel == i)
 			break;
 		else
@@ -369,7 +369,7 @@ for (;;) {
 		}
 	else if (nMission >= 0) {
 		if (m.Available ("level number") && !(nLevel = m.ToInt ("level number"))) {
-			MsgBox (NULL, NULL, 1, TXT_OK, TXT_INVALID_LEVEL); 
+			MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_INVALID_LEVEL); 
 			nLevel = 1;
 			}
 		else
@@ -445,7 +445,7 @@ if (bUDP) {
 		int n = tracker.ActiveCount (1);
 		if (n < -2) {
 			if (n == -4)
-				MsgBox (NULL, NULL, 1, TXT_OK, TXT_NO_TRACKERS);
+				MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_NO_TRACKERS);
 			tracker.m_bUse = 0;
 			PrintLog (-1);
 			return 0;

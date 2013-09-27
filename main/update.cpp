@@ -357,12 +357,12 @@ if (3 != fscanf (cf.File (), "%d.%d.%d", &nVersion [0], &nVersion [1], &nVersion
 
 #if !DBG
 if (D2X_IVER >= nVersion [0] * 100000 + nVersion [1] * 1000 + nVersion [2]) {
-	MsgBox (NULL, NULL, 1, TXT_CLOSE, TXT_NO_UPDATE_FOUND);
+	MsgBox (NULL, BG_STANDARD, 1, TXT_CLOSE, TXT_NO_UPDATE_FOUND);
 	return 0;
 	}
 #endif
 
-if (MsgBox (NULL, NULL, 2, TXT_YES, TXT_NO, TXT_UPDATE_FOUND))
+if (MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_UPDATE_FOUND))
 	return 0;
 sprintf (szDest, "%s/d2x-xl-%s-%d.%d.%d.%s", gameFolders.szDownloadDir,
 			FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
@@ -382,7 +382,7 @@ if (!cf.Exist (szDest, "", 0)) {
 #endif
 #if defined(__unix__)
 sprintf (szMsg, TXT_DOWNLOAD_SUCCEEDED, szDest);
-MsgBox (NULL, NULL, 1, TXT_CLOSE, szMsg);
+MsgBox (NULL, BG_STANDARD, 1, TXT_CLOSE, szMsg);
 #else
 #	if 1
 #	include "shellapi.h"

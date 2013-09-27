@@ -744,7 +744,7 @@ for (;;) {
 	choice = m.Menu (NULL, TXT_CLIENT_WAIT, NetworkRequestPoll);        
 	if (choice == -1) {
 		// User aborted
-		choice = MsgBox (NULL, NULL, 3, TXT_YES, TXT_NO, TXT_START_NOWAIT, TXT_QUITTING_NOW);
+		choice = MsgBox (NULL, BG_STANDARD, 3, TXT_YES, TXT_NO, TXT_START_NOWAIT, TXT_QUITTING_NOW);
 		if (choice == 2)
 			return;
 		if (choice != 0)

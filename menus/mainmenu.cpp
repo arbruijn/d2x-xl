@@ -82,7 +82,7 @@ int CheckForUpdate (void);
 
 // ------------------------------------------------------------------------
 
-int AutoDemoMenuCheck (CMenu& m, int& nLastKey, int nCurItem, int nState)
+int AutoDemoCallback (CMenu& m, int& nLastKey, int nCurItem, int nState)
 {
 if (nState)
 	return nCurItem;
@@ -186,7 +186,7 @@ do {
 		nChoice = 0;
 	gameStates.menus.bDrawCopyright = 1;
 	gameStates.menus.nInMenu = 0;
-	i = m.Menu ("", NULL, AutoDemoMenuCheck, &nChoice, BackgroundName (BG_MENU));
+	i = m.Menu ("", NULL, AutoDemoCallback, &nChoice, BG_TOPMENU, BG_STANDARD);
 	if (gameStates.app.bNostalgia)
 		gameOpts->app.nVersionFilter = 3;
 	if (i > -1) {

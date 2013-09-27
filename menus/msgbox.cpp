@@ -76,7 +76,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------ 
 
-int _CDECL_ MsgBox (const char* pszTitle, pMenuCallback callback, char* filename, int nChoices, ...)
+int _CDECL_ MsgBox (const char* pszTitle, pMenuCallback callback, int nWallpaper, int nChoices, ...)
 {
 	int				i;
 	char*				format, * s;
@@ -96,12 +96,12 @@ format = va_arg (args, char*);
 vsprintf (szSubTitle, format, args);
 va_end (args);
 Assert (strlen (szSubTitle) < MSGBOX_TEXT_SIZE);
-return mm.Menu (pszTitle, szSubTitle, callback, NULL, filename);
+return mm.Menu (pszTitle, szSubTitle, callback, NULL, BG_SUBMENU, nWallpaper);
 }
 
 //------------------------------------------------------------------------------ 
 
-int _CDECL_ MsgBox (const char* pszTitle, char* filename, int nChoices, ...)
+int _CDECL_ MsgBox (const char* pszTitle, int nWallpaper, int nChoices, ...)
 {
 	int				h, i, l, bTiny, nInMenu;
 	char				*format, *s;
@@ -138,8 +138,8 @@ if (!bTiny) {
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;
 i = bTiny 
-	 ? mm.Menu (NULL, pszTitle, NULL, NULL, NULL, LHX (340), - 1, 1)
-	 : mm.Menu (pszTitle, nm_text, NULL, NULL, filename);
+	 ? mm.Menu (NULL, pszTitle, NULL, NULL, BG_SUBMENU, nWallpaper, LHX (340), -1, 1)
+	 : mm.Menu (pszTitle, nm_text, NULL, NULL);
 gameStates.menus.nInMenu = nInMenu;
 return i;
 }

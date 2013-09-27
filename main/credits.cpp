@@ -160,7 +160,7 @@ CCreditsManager creditsManager;
 void CCreditsManager::RenderBackdrop (void)
 {
 #if 1
-m_bmBackdrop.RenderStretched ();
+backgroundManager.Draw (BG_STARS);
 #else
 if (gameOpts->menus.nStyle)
 	m_bmBackdrop.RenderStretched ();
@@ -374,14 +374,6 @@ creditsPalette = paletteManager.Load ("credits.256", NULL);
 m_fonts [0] = fontManager.Load (fontNames [0][gameStates.menus.bHires]);
 m_fonts [1] = fontManager.Load (fontNames [1][gameStates.menus.bHires]);
 m_fonts [2] = fontManager.Load (fontNames [2][gameStates.menus.bHires]);
-m_bmBackdrop.SetBuffer (NULL);
-m_bmBackdrop.SetPalette (NULL);
-
-int nPcxError = PCXReadBitmap (BackgroundName (BG_STARS), &m_bmBackdrop, BM_LINEAR, 0);
-if (nPcxError != PCX_ERROR_NONE) {
-	m_cf.Close ();
-	return;
-	}
 songManager.Play (SONG_CREDITS, 1);
 
 KeyFlush ();
@@ -423,5 +415,5 @@ for (;;) {
 		m_nExtraInc++;
 		}
 	}
-backgroundManager.Redraw (true);
+backgroundManager.Draw ();
 }

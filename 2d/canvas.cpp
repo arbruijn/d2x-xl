@@ -170,6 +170,38 @@ if (dFade && m_info.color.rgb) {
 
 //	-----------------------------------------------------------------------------
 
+void CCanvas::GetExtent (CRectangle& rc, bool bScale, bool bDeep)
+{
+	CCanvas* parent = m_parent;
+
+if (!(bDeep && parent))
+	rc = *((CRectangle*) this);
+else {
+	int l = Left (false);
+	int t = Top (false);
+	int w = Width (false);
+	int h = Height (false);
+	while (parent) {
+		l += parent->Left ();
+		t += parent->Top ();
+		if (!w)
+			w = parent->Width ();
+		if (!h)
+			h = parent->Height ();
+		parent = parent->Parent ();
+		}
+	rc = CRectangle (l, t, w, h);
+	}
+if (bScale) {
+	rc.SetLeft (Scaled (rc.Left ()));
+	rc.SetTop (Scaled (rc.Top ()));
+	rc.SetWidth (Scaled (rc.Width ()));
+	rc.SetHeight (Scaled (rc.Width ()));
+	}	
+}
+
+//	-----------------------------------------------------------------------------
+
 void CCanvas::SetViewport (CCanvas* parent)
 {
 if (!parent)

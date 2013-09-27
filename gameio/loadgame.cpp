@@ -315,16 +315,16 @@ if (gameData.multiplayer.nPlayerPositions != (bCoop ? 4 : 8)) {
 if (IS_D2_OEM && IsMultiGame && (missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && (missionManager.nCurrentLevel == 8)) {
 	for (i = 0; i < nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected && !(netPlayers [0].m_info.players [i].versionMinor & 0xF0)) {
-			MsgBox ("Warning!", NULL, 1, TXT_OK,
-								 "This special version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
+			MsgBox ("Warning!", BG_STANDARD, 1, TXT_OK,
+					  "This special version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
 			}
 	}
 if (IS_MAC_SHARE && IsMultiGame && (missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && (missionManager.nCurrentLevel == 4)) {
 	for (i = 0; i < nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected && !(netPlayers [0].m_info.players [i].versionMinor & 0xF0)) {
-			MsgBox ("Warning!", NULL, 1 , TXT_OK,
-								 "This shareware version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
+			MsgBox ("Warning!", BG_STANDARD, 1, TXT_OK,
+					  "This shareware version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
 			}
 	}
@@ -1288,12 +1288,12 @@ sprintf (szTitle,
 Assert (c <= N_GLITZITEMS);
 paletteManager.DisableEffect ();
 if (network && IsNetworkGame)
-	m.Menu (NULL, szTitle, NetworkEndLevelPoll2, NULL, BackgroundName (BG_STARS));
+	m.Menu (NULL, szTitle, NetworkEndLevelPoll2, NULL, BG_SUBMENU, BG_STARS);
 else
 // NOTE LINK TO ABOVE!!!
 gameStates.app.bGameRunning = 0;
 backgroundManager.SetShadow (false);
-m.Menu (NULL, szTitle, NULL, NULL, BackgroundName (BG_STARS));
+m.Menu (NULL, szTitle, NULL, NULL, BG_SUBMENU, BG_STARS);
 backgroundManager.SetShadow (true);
 }
 
@@ -1325,7 +1325,7 @@ void DoSecretMessage (const char *msg)
 
 StopTime ();
 SetFunctionMode (FMODE_MENU);
-MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, msg);
+MsgBox (NULL, BG_STARS, 1, TXT_OK, msg);
 SetFunctionMode (fMode);
 StartTime (0);
 }
@@ -1631,7 +1631,7 @@ if (IsMultiGame)
 gameStates.app.bGameRunning = 0;
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 backgroundManager.SetShadow (false);
-MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, TXT_DIED_IN_MINE);
+MsgBox (NULL, BG_STARS, 1, TXT_OK, TXT_DIED_IN_MINE);
 backgroundManager.SetShadow (true);
 gameStates.app.bGameRunning = 1;
 }
@@ -1653,7 +1653,7 @@ if (missionManager.nEntryLevel < 0)
 	sprintf (msg, TXT_SECRET_LEVEL_RETURN);
 else
 	sprintf (msg, TXT_RETURN_LVL, missionManager.nEntryLevel);
-MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, msg);
+MsgBox (NULL, BG_STARS, 1, TXT_OK, msg);
 SetFunctionMode (nFunctionMode);
 StartTime (0);
 }
@@ -1675,7 +1675,7 @@ int nFunctionMode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 sprintf (msg, "Base level destroyed.\nAdvancing to level %i", missionManager.nEntryLevel + 1);
 backgroundManager.SetShadow (false);
-MsgBox (NULL, BackgroundName (BG_STARS), 1, TXT_OK, msg);
+MsgBox (NULL, BG_STARS, 1, TXT_OK, msg);
 SetFunctionMode (nFunctionMode);
 StartTime (0);
 }
@@ -1804,7 +1804,7 @@ SetMonsterballForces ();
 #endif
 //	gameData.objs.viewerP = OBJECTS + LOCALPLAYER.nObject;
 if (gameData.multiplayer.nPlayers > gameData.multiplayer.nPlayerPositions) {
-	MsgBox (NULL, NULL, 1, TXT_OK, "Too many players for this level.");
+	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, "Too many players for this level.");
 #if 1
 	while (gameData.multiplayer.nPlayers > gameData.multiplayer.nPlayerPositions) {
 		--gameData.multiplayer.nPlayers;

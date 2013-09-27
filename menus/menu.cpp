@@ -126,6 +126,11 @@ GrString (x - w, y, s);
 
 //------------------------------------------------------------------------------ 
 
+int CMenu::XOffset (void) { return (gameData.render.frame.Width () - m_props.width) / 2; }
+int CMenu::YOffset (void) { return (gameData.render.frame.Height () - m_props.height) / 2; }
+
+//------------------------------------------------------------------------------ 
+
 char* nmAllowedChars = NULL;
 
 //returns true if char is bAllowed
@@ -149,16 +154,28 @@ return 0;
 
 int CMenu::TinyMenu (const char* pszTitle, const char* pszSubTitle, pMenuCallback callback)
 {
-return Menu (pszTitle, pszSubTitle, callback, NULL, NULL, - 1, - 1, 1);
+return Menu (pszTitle, pszSubTitle, callback, NULL, BG_SUBMENU, BG_STANDARD, -1, -1, 1);
 }
 
 //------------------------------------------------------------------------------ 
 
 int CMenu::FixedFontMenu (const char* pszTitle, const char* pszSubTitle, 
-								  pMenuCallback callback, int* nCurItemP, char* filename, int width, int height)
+								  pMenuCallback callback, int* nCurItemP, int nType, int nWallpaper, 
+								  int width, int height)
 {
 SetScreenMode (SCREEN_MENU);
-return Menu (pszTitle, pszSubTitle, callback, nCurItemP, filename, width, height, 0);
+return Menu (pszTitle, pszSubTitle, callback, nCurItemP, nType, nWallpaper, width, height, 0);
+}
+
+//------------------------------------------------------------------------------ 
+
+void CMenu::GetMousePos (void)
+{
+MouseGetPos (&m_xMouse, &m_yMouse);
+CRectangle rc;
+CCanvas::Current ()->GetExtent (rc, true, true);
+m_xMouse -= rc.Left ();
+m_yMouse -= rc.Top ();
 }
 
 //------------------------------------------------------------------------------ 
@@ -186,7 +203,7 @@ switch (gameConfig.nControlType) {
 
 		break;
 	default:
-		Error ("Bad control nType (gameConfig.nControlType):%i", gameConfig.nControlType);
+		Error ("Bad control type (gameConfig.nControlType): %i", gameConfig.nControlType);
 	}
 return 0;
 }
@@ -201,11 +218,12 @@ ubyte bHackDblClickMenuMode = 0;
 
 void CMenu::DrawCloseBox (int x, int y)
 {
-x -= gameData.StereoOffset2D ();
+m_background.Activate ();
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 OglDrawFilledRect (x + MENU_CLOSE_X, y + MENU_CLOSE_Y, x + MENU_CLOSE_X + Scale (MENU_CLOSE_SIZE), y + MENU_CLOSE_Y + Scale (MENU_CLOSE_SIZE));
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21, 21, 21));
 OglDrawFilledRect (x + MENU_CLOSE_X + LHX (1), y + MENU_CLOSE_Y + LHX (1), x + MENU_CLOSE_X + Scale (MENU_CLOSE_SIZE - LHX (1)), y + MENU_CLOSE_Y + Scale (MENU_CLOSE_SIZE - LHX (1)));
+m_background.Deactivate ();
 }
 
 //------------------------------------------------------------------------------ 
@@ -393,8 +411,6 @@ m_props.width += 2 * m_props.xOffs;
 m_props.height += 2 * m_props.yOffs;
 m_props.x = (m_props.screenWidth - m_props.width) / 2;
 m_props.y = (m_props.screenHeight - m_props.height) / 2;
-m_props.xOffs += m_props.x;
-m_props.yOffs += m_props.y;
 m_props.bValid = 1;
 SetItemPos (m_props.titlePos, m_props.xOffs, m_props.yOffs, m_props.rightOffset);
 return 1;
@@ -409,9 +425,9 @@ gameData.render.frame.Activate ();
 
 //------------------------------------------------------------------------------ 
 
-void CMenu::RestoreScreen (char* filename, int m_bDontRestore)
+void CMenu::RestoreScreen (void)
 {
-backgroundManager.Remove (m_background);
+backgroundManager.Draw ();
 //if (gameStates.app.bGameRunning && !gameOpts->menus.nStyle)
 //	backgroundManager.Remove ();	// remove the stars background loaded for old style menus
 gameData.render.frame.Deactivate ();
@@ -536,8 +552,8 @@ if (m_bDone)
 ogl.SetDepthTest (false);
 FadeIn ();
 ogl.ColorMask (1,1,1,1,0);
-gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
-backgroundManager.Redraw ();
+backgroundManager.Activate (m_background);
+int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 fontManager.SetScale (fontManager.Scale () * GetScale ());
 int i = DrawTitle (m_props.pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
 DrawTitle (m_props.pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
@@ -548,6 +564,7 @@ if (m_callback && (gameStates.render.grAlpha == 1.0f))
 	m_nChoice = (*m_callback) (*this, m_nKey, m_nChoice, 1);
 
 fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
+
 for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNoScroll; i++) {
 	if ((i >= m_props.nMaxNoScroll) && (i < m_props.nScrollOffset))
 		continue;
@@ -560,11 +577,8 @@ for (i = 0; i < m_props.nMaxDisplayable + m_props.nScrollOffset - m_props.nMaxNo
 		y = Item (i).m_y;
 		Item (i).m_y = Item (i - m_props.nScrollOffset + m_props.nMaxNoScroll).m_y;
 		}
-	x = Item (i).m_x;
-	//Item (i).m_x -= gameData.StereoOffset2D ();
 	Item (i).Draw ((i == m_nChoice) && !m_bAllText, m_props.bTinyMode);
 	Item (i).m_bRedraw = 0;
-	Item (i).m_x = x;
 	if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING)
 		SDL_ShowCursor (1);
 	if (i >= m_props.nScrollOffset)
@@ -596,10 +610,11 @@ if (m_props.bIsScrollBox) {
 		}
 	}
 if (m_bCloseBox) {
-	DrawCloseBox (m_props.x, m_props.y);
+	DrawCloseBox (0, 0);
 	m_bCloseBox = 1;
 	}
 #endif
+m_background.Deactivate ();
 fontManager.SetScale (fontManager.Scale () / GetScale ());
 m_bRedraw = 1;
 m_bStart = 0;
@@ -607,6 +622,7 @@ m_bStart = 0;
 if (!m_bDontRestore && paletteManager.EffectDisabled ())
 	paletteManager.EnableEffect ();
 #endif
+gameData.SetStereoOffsetType (nOffsetSave);
 gameStates.render.grAlpha = 1.0f;
 }
 
@@ -649,15 +665,15 @@ if (gameOpts->menus.nFade && !gameStates.app.bNostalgia) {
 
 #define REDRAW_ALL	for (i = 0; i < int (ToS ()); i++) Item (i).m_bRedraw = 1;
 
-int CMenu::Menu (const char* pszTitle, const char* pszSubTitle, pMenuCallback callback, 
-					  int* nCurItemP, char* filename, int width, int height, int bTinyMode)
+int CMenu::Menu (const char* pszTitle, const char* pszSubTitle, pMenuCallback callback, int* nCurItemP, 
+					  int nType, int nWallpaper, int width, int height, int bTinyMode)
 {
 	int			bKeyRepeat, nItem = nCurItemP ? *nCurItemP : 0;
 	int			oldChoice, i;
 	int			bSoundStopped = 0, bTimeStopped = 0;
 	int			topChoice;// Is this a scrolling box? Set to 0 at init
 	int			bWheelUp, bWheelDown, nMouseState, nOldMouseState, bDblClick = 0;
-	int			mx = 0, my = 0, x1 = 0, x2, y1, y2;
+	int			x1 = 0, x2, y1, y2;
 	int			bLaunchOption = 0;
 	int			exception = 0;
 
@@ -683,8 +699,8 @@ controls.FlushInput ();
 
 if (int (ToS ()) < 1)
 	return - 1;
-if (gameStates.app.bGameRunning && !gameOpts->menus.nStyle)
-	backgroundManager.LoadStars (true);
+//if (gameStates.app.bGameRunning && !gameOpts->menus.nStyle)
+//	backgroundManager.LoadStars (true);
 SDL_ShowCursor (0);
 SDL_EnableKeyRepeat(60, 30);
 if (gameStates.menus.nInMenu >= 0)
@@ -738,7 +754,7 @@ while (Item (topChoice).m_nType == NM_TYPE_TEXT) {
 // Clear mouse, joystick to clear button presses.
 GameFlushInputs ();
 nMouseState = nOldMouseState = 0;
-m_bCloseBox = !(filename || gameStates.menus.bReordering);
+m_bCloseBox = (nType != BG_TOPMENU) && !gameStates.menus.bReordering;
 
 if (!gameStates.menus.bReordering && !JOYDEFS_CALIBRATING) {
 	SDL_ShowCursor (1);
@@ -793,7 +809,7 @@ while (!m_bDone) {
 		}
 #endif
 	if (InitProps (pszTitle, pszSubTitle)) {
-		m_background = backgroundManager.Setup (filename, m_props.x, m_props.y, m_props.width, m_props.height, pszSubTitle == NULL);
+		backgroundManager.Setup (m_background, m_props.width, m_props.height, nType, nWallpaper);
 		m_bRedraw = 0;
 		m_props.ty = m_props.yOffs;
 		if (m_nChoice > m_props.nScrollOffset + m_props.nMaxOnMenu - 1)
@@ -1095,7 +1111,7 @@ launchOption:
 		}
 
 		if (!m_bDone && nMouseState && !nOldMouseState && !m_bAllText) {
-			MouseGetPos (&mx, &my);
+			GetMousePos ();
 			for (i = 0; i < int (ToS ()); i++) {
 				if (!Item (i).Selectable ())
 					continue;
@@ -1103,7 +1119,7 @@ launchOption:
 				x2 = x1 + Item (i).m_w;
 				y1 = /*CCanvas::Current ()->Top () +*/ Item (i).m_y;
 				y2 = y1 + Item (i).m_h;
-				if ((mx > x1) && (mx < x2) && (my > y1) && (my < y2)) {
+				if ((m_xMouse > x1) && (m_xMouse < x2) && (m_yMouse > y1) && (m_yMouse < y2)) {
 					if (i + m_props.nScrollOffset - m_props.nMaxNoScroll != m_nChoice) {
 						if (bHackDblClickMenuMode) 
 							bDblClick = 0; 
@@ -1142,8 +1158,8 @@ launchOption:
 			}
 	
 		if (!m_bDone && nMouseState && !m_bAllText) {
-			MouseGetPos (&mx, &my);
-		
+			GetMousePos ();
+
 			// check possible scrollbar stuff first
 			if (m_props.bIsScrollBox) {
 				int i, arrowWidth, arrowHeight, aw;
@@ -1154,7 +1170,7 @@ launchOption:
 					y1 = /*CCanvas::Current ()->Top () +*/ Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
 					x1 = x2 - arrowWidth;
 					y2 = y1 + arrowHeight;
-					if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
+					if (((m_xMouse > x1) && (m_xMouse < x2)) && ((m_yMouse > y1) && (m_yMouse < y2))) {
 						m_nChoice--;
 						m_nLastScrollCheck = - 1;
 						if (m_nChoice < m_props.nScrollOffset) {
@@ -1169,7 +1185,7 @@ launchOption:
 					y1 = /*CCanvas::Current ()->Top () +*/ Item (i - 1).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
 					x1 = x2 - arrowWidth;
 					y2 = y1 + arrowHeight;
-					if ((mx > x1) && (mx < x2) && (my > y1) && (my < y2)) {
+					if ((m_xMouse > x1) && (m_xMouse < x2) && (m_yMouse > y1) && (m_yMouse < y2)) {
 						m_nChoice++;
 						m_nLastScrollCheck = - 1;
 						if (m_nChoice >= m_props.nMaxOnMenu + m_props.nScrollOffset) {
@@ -1188,7 +1204,7 @@ launchOption:
 				y1 = /*CCanvas::Current ()->Top () +*/ Item (i).m_y;
 				y1 -= ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
 				y2 = y1 + Item (i).m_h;
-				if ((mx > x1) && (mx < x2) && (my > y1) && (my < y2)) {
+				if ((m_xMouse > x1) && (m_xMouse < x2) && (m_yMouse > y1) && (m_yMouse < y2)) {
 					if (i /* + m_props.nScrollOffset - m_props.nMaxNoScroll*/ != m_nChoice) {
 						if (bHackDblClickMenuMode) 
 							bDblClick = 0; 
@@ -1214,18 +1230,18 @@ launchOption:
 
 							x1 = CCanvas::Current ()->Left () + Item (m_nChoice).m_x + Item (m_nChoice).m_w - slider_width;
 							x2 = x1 + slider_width + sright_width;
-							if ((mx > x1) && (mx < (x1 + sleft_width)) && (Item (m_nChoice).Value () != Item (m_nChoice).MinValue ())) {
+							if ((m_xMouse > x1) && (m_xMouse < (x1 + sleft_width)) && (Item (m_nChoice).Value () != Item (m_nChoice).MinValue ())) {
 								Item (m_nChoice).Value () = Item (m_nChoice).MinValue ();
 								Item (m_nChoice).m_bRedraw = 2;
-							} else if ((mx < x2) && (mx > (x2 - sright_width)) && (Item (m_nChoice).Value () != Item (m_nChoice).MaxValue ())) {
+							} else if ((m_xMouse < x2) && (m_xMouse > (x2 - sright_width)) && (Item (m_nChoice).Value () != Item (m_nChoice).MaxValue ())) {
 								Item (m_nChoice).Value () = Item (m_nChoice).MaxValue ();
 								Item (m_nChoice).m_bRedraw = 2;
-							} else if ((mx > (x1 + sleft_width)) && (mx < (x2 - sright_width))) {
+							} else if ((m_xMouse > (x1 + sleft_width)) && (m_xMouse < (x2 - sright_width))) {
 								int numValues, value_width, newValue;
 							
 								numValues = Item (m_nChoice).MaxValue () - Item (m_nChoice).MinValue () + 1;
 								value_width = (slider_width - sleft_width - sright_width) / numValues;
-								newValue = (mx - x1 - sleft_width) / value_width;
+								newValue = (m_xMouse - x1 - sleft_width) / value_width;
 								if (Item (m_nChoice).Value () != newValue) {
 									Item (m_nChoice).Value () = newValue;
 									Item (m_nChoice).m_bRedraw = 2;
@@ -1252,14 +1268,14 @@ launchOption:
 		}
 	
 		if (!m_bDone && !nMouseState && nOldMouseState && !m_bAllText && (m_nChoice != -1) && (Item (m_nChoice).m_nType == NM_TYPE_MENU)) {
-			MouseGetPos (&mx, &my);
+			GetMousePos ();
 			x1 = /*CCanvas::Current ()->Left () +*/ Item (m_nChoice).m_x;
 			x2 = x1 + Item (m_nChoice).m_w;
 			y1 = /*CCanvas::Current ()->Top () +*/ Item (m_nChoice).m_y;
 			if (m_nChoice >= m_props.nScrollOffset)
 				y1 -= ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
 			y2 = y1 + Item (m_nChoice).m_h;
-			if ((mx > x1) && (mx < x2) && (my > y1) && (my < y2)) {
+			if ((m_xMouse > x1) && (m_xMouse < x2) && (m_yMouse > y1) && (m_yMouse < y2)) {
 				if (bHackDblClickMenuMode) {
 					if (bDblClick) {
 						if (nCurItemP)
@@ -1277,25 +1293,26 @@ launchOption:
 			}
 		}
 	
-		if (!m_bDone && !nMouseState && nOldMouseState && (m_nChoice > - 1) && 
+		if (!m_bDone && !nMouseState && nOldMouseState && (m_nChoice > -1) && 
 			 (Item (m_nChoice).m_nType == NM_TYPE_INPUT_MENU) && (Item (m_nChoice).m_group == 0)) {
 			Item (m_nChoice).m_group = 1;
 			Item (m_nChoice).m_bRedraw = 1;
 			if (!strnicmp (Item (m_nChoice).m_savedText, TXT_EMPTY, strlen (TXT_EMPTY))) {
 				Item (m_nChoice).m_text [0] = '\0';
 				Item (m_nChoice).Value () = -1;
-			} else {
+				} 
+			else {
 				Item (m_nChoice).TrimWhitespace ();
+				}
 			}
-		}
 	
 		if (!m_bDone && !nMouseState && nOldMouseState && m_bCloseBox) {
-			MouseGetPos (&mx, &my);
-			x1 = m_props.x + MENU_CLOSE_X;
+			GetMousePos ();
+			x1 = MENU_CLOSE_X;
 			x2 = x1 + MENU_CLOSE_SIZE;
-			y1 = m_props.y + MENU_CLOSE_Y;
+			y1 = MENU_CLOSE_Y;
 			y2 = y1 + MENU_CLOSE_SIZE;
-			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
+			if (((m_xMouse > x1) && (m_xMouse < x2)) && ((m_yMouse > y1) && (m_yMouse < y2))) {
 				if (nCurItemP)
 					*nCurItemP = m_nChoice;
 				m_nChoice = -1;
@@ -1437,7 +1454,7 @@ launchOption:
 FadeOut (pszTitle, pszSubTitle, NULL);
 SDL_ShowCursor (0);
 // Restore everything...
-RestoreScreen (filename, m_bDontRestore);
+RestoreScreen ();
 FreeTextBms ();
 gameStates.input.keys.bRepeat = bKeyRepeat;
 GameFlushInputs ();

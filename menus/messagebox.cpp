@@ -57,7 +57,7 @@ fontManager.SetScale (fontManager.Scale () * CMenu::GetScale ());
 fontManager.Current ()->StringSize (m_pszMsg, w, h, aw);
 m_x = (gameData.render.frame.Width (false) - w) / 2;
 m_y = (gameData.render.frame.Height (false) - h) / 2;
-backgroundManager.Setup (NULL, m_x - BOX_BORDER / 2, m_y - BOX_BORDER / 2, w + BOX_BORDER, h + BOX_BORDER);
+backgroundManager.Setup (m_background, m_x - BOX_BORDER / 2, m_y - BOX_BORDER / 2, w + BOX_BORDER, h + BOX_BORDER);
 gameStates.app.bClearMessage = 1;
 if (bFade)
 	do {
@@ -71,14 +71,13 @@ fontManager.SetScale (fontManager.Scale () / CMenu::GetScale ());
 
 void CMessageBox::Render (void)
 {
-gameData.render.frame.Activate ();
 FadeIn ();
-backgroundManager.Redraw ();
+backgroundManager.Activate (m_background);
 fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
 fontManager.SetCurrent (MEDIUM1_FONT);
 GrPrintF (NULL, m_x, /*BOX_BORDER / 2*/m_y, m_pszMsg); //(h / 2 + BOX_BORDER) / 2
 gameStates.render.grAlpha = 1.0f;
-gameData.render.frame.Deactivate ();
+m_background.Deactivate ();
 }
 
 //------------------------------------------------------------------------------
@@ -87,7 +86,7 @@ void CMessageBox::Clear (void)
 {
 if (gameStates.app.bClearMessage) {
 	FadeOut ();
-	backgroundManager.Remove ();
+	backgroundManager.Draw ();
 	gameStates.app.bClearMessage = 0;
 	}
 }

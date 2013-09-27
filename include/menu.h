@@ -232,12 +232,14 @@ protected:
 	uint				m_tEnter;
 	int				m_nChoice;
 	int				m_nKey;
+	int				m_xMouse;
+	int				m_yMouse;
 	bool				m_bThrottle;
 	pMenuCallback	m_callback;
 	CMenuItem		m_null;
 	CMenuItem		* m_current;
 	tMenuProps		m_props;
-	CBackground*	m_background;
+	CBackground		m_background;
 
 public:
 	CMenu () {
@@ -303,59 +305,59 @@ public:
 			PrintLog (0, "invalid menu id '%s' queried\n", szId ? szId : "n/a");
 #endif
 		return -1;
-	}
+		}
 
 	inline bool Available (const char* szId) {
 		return IndexOf (szId, false) >= 0;
-	}
+		}
 
 	inline int Value (const char* szId) {
 		int i = IndexOf (szId);
 		return (i < 0) ? 0 : Buffer (i)->Value ();
-	}
+		}
 
 	inline void SetValue (const char* szId, int value) {
 		int i = IndexOf (szId);
 		if (i >= 0)
 			Buffer (i)->Value () = value;
-	}
+		}
 
 	inline int MinValue (const char* szId) {
 		int i = IndexOf (szId);
 		if (i >= 0)
 			return Buffer (i)->MinValue ();
 		return 0;
-	}
+		}
 
 	inline int MaxValue (const char* szId) {
 		int i = IndexOf (szId);
 		if (i >= 0)
 			return Buffer (i)->MaxValue ();
 		return 0;
-	}
+		}
 
 	inline char* Text (const char* szId) {
 		int i = IndexOf (szId);
 		if (i >= 0)
 			return Buffer (i)->Text ();
 		return NULL;
-	}
+		}
 
 	inline int ToInt (const char* szId) {
 		int i = IndexOf (szId);
 		if (i >= 0)
 			return Buffer (i)->ToInt ();
 		return 0;
-	}
+		}
 
 	inline CMenuItem& operator[] (const int i) {
 		return CStack<CMenuItem>::operator[] (i);
-	}
+		}
 
 	inline CMenuItem* operator[] (const char* szId) {
 		int i = IndexOf (szId);
 		return (i < 0) ? NULL : Buffer (i);
-	}
+		}
 
 	int AddCheck (const char* szId, const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL);
 	int AddRadio (const char* szId, const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL);
@@ -368,23 +370,27 @@ public:
 	int AddInputBox (const char* szId, const char* szText, int nLen, int nKey = 0, const char* szHelp = NULL);
 	int AddNumber (const char* szId, const char* szText, int nValue, int nMin, int nMax);
 	int AddGauge (const char* szId, const char* szText, int nValue, int nMax);
-	inline CMenuItem& Item (int i = -1) {
-		return (i < 0) ? m_data.buffer[ToS () - 1] : m_data.buffer[i];
-	}
+	inline CMenuItem& Item (int i = -1) {return (i < 0) ? m_data.buffer [ToS () - 1] : m_data.buffer [i];	}
 
-	int Menu (const char *pszTitle, const char *pszSubTitle,
-			pMenuCallback callback = NULL, int *nCurItemP = NULL,
-			char *filename = NULL, int width = -1, int height = -1,
-			int bTinyMode = 0);
+	int XOffset (void);
+	int YOffset (void);
 
-	int TinyMenu (const char *pszTitle, const char *pszSubTitle,
-			pMenuCallback callBack = NULL);
+	void GetMousePos (void);
+
+	int Menu (const char* pszTitle, const char* pszSubTitle,
+				 pMenuCallback callback = NULL, int* nCurItemP = NULL,
+				 int nType = BG_SUBMENU, int nWallpaper = BG_STANDARD, 
+				 int width = -1, int height = -1,
+				 int bTinyMode = 0);
+
+	int TinyMenu (const char *pszTitle, const char *pszSubTitle, pMenuCallback callBack = NULL);
 
 	int FixedFontMenu (const char* pszTitle, const char* pszSubTitle,
-			pMenuCallback callback, int* nCurItemP, char* filename, int width,
-			int height);
+							 pMenuCallback callback, int* nCurItemP,
+							 int nType = BG_SUBMENU, int nWallpaper = BG_STANDARD, 
+							 int width = -1, int height = -1);
 
-	static void DrawCloseBox (int x, int y);
+	void DrawCloseBox (int x, int y);
 	void FadeIn (void);
 	void FadeOut (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
 
@@ -413,7 +419,7 @@ private:
 	int DrawTitle (const char* pszTitle, CFont *font, uint color, int ty);
 
 	void SaveScreen (CCanvas **gameCanvasP);
-	void RestoreScreen (char* filename, int bDontRestore);
+	void RestoreScreen (void);
 	void FreeTextBms (void);
 	void SwapText (int i, int j);
 
@@ -433,8 +439,6 @@ private:
 	int m_nTop;
 	int m_nWidth;
 	int m_nHeight;
-	int m_xOffset;
-	int m_yOffset;
 	int m_nFileCount;
 	CArray<CFilename> m_filenames;
 
@@ -454,8 +458,6 @@ class CListBox: public CMenu {
 	int m_nVisibleItems;
 	int m_nWidth;
 	int m_nHeight;
-	int m_xOffset;
-	int m_yOffset;
 	int m_nTitleHeight;
 	CStack<char*>* m_items;
 
@@ -487,16 +489,12 @@ extern CMessageBox messageBox;
 
 // This function pops up a messagebox and returns which choice was selected...
 // Example:
-// MsgBox ( "Title", "Subtitle", 2, "Ok", "Cancel", "There are %d objects", nobjects );
-// Returns 0 through nChoices-1.
-int _CDECL_ MsgBox (const char *pszTitle, char *filename, int nChoices, ...);
+int _CDECL_ MsgBox (const char *pszTitle, int nWallpaper, int nChoices, ...);
 
 // Same as above, but you can pass a function
-int _CDECL_ MsgBox (const char *pszTitle, pMenuCallback callBack,
-		char *filename, int nChoices, ...);
+int _CDECL_ MsgBox (const char *pszTitle, pMenuCallback callBack, int nWallpaper, int nChoices, ...);
 
-void ProgressBar (const char *szCaption, int nCurProgress, int nMaxProgress,
-		pMenuCallback doProgress);
+void ProgressBar (const char *szCaption, int nCurProgress, int nMaxProgress, pMenuCallback doProgress);
 
 int FileList (const char *pszTitle, const char *filespec, char *filename);
 

@@ -63,8 +63,6 @@ static all_scores Scores;
 
 stats_info Last_game;
 
-static int xOffs = 0, yOffs = 0;
-
 char scores_filename [128];
 
 #define XX		(7)
@@ -146,7 +144,7 @@ void scores_write ()
 	CFile cf;
 
 if (!cf.Open (GetScoresFilename (), gameFolders.szDataDir [0], "wb", 0)) {
-	MsgBox (TXT_WARNING, NULL, 1, TXT_OK, "%s\n'%s'", TXT_UNABLE_TO_OPEN, GetScoresFilename () );
+	MsgBox (TXT_WARNING, BG_STANDARD, 1, TXT_OK, "%s\n'%s'", TXT_UNABLE_TO_OPEN, GetScoresFilename () );
 	return;
 	}
 
@@ -242,11 +240,6 @@ void MaybeAddPlayerScore (int abortFlag)
 			return;
 		scores_fill_struct (&Last_game);
 	} else {
-//--		if (gameStates.app.nDifficultyLevel < 1) {
-//--			MsgBox ("GRADUATION TIME!", 1, "Ok", "If you would had been\nplaying at a higher difficulty\nlevel, you would have placed\n#%d on the high score list.", position+1);
-//--			return;
-//--		}
-
 		if (position == 0) {
 			strcpy (text1,  "");
 			m.AddText ("", const_cast<char*> (TXT_COOL_SAYING));
@@ -256,7 +249,7 @@ void MaybeAddPlayerScore (int abortFlag)
 			if (strlen (Scores.cool_saying)<1)
 				sprintf (Scores.cool_saying, TXT_NO_COMMENT);
 		} else {
-			MsgBox (TXT_HIGH_SCORE, NULL, 1, TXT_OK, "%s %s!", TXT_YOU_PLACED, GAMETEXT (57 + position));
+			MsgBox (TXT_HIGH_SCORE, BG_STANDARD, 1, TXT_OK, "%s %s!", TXT_YOU_PLACED, GAMETEXT (57 + position));
 		}
 
 		// move everyone down...
@@ -290,7 +283,7 @@ for (p = buffer; *p; p++)
 	if (*p == '1') 
 		*p = (char) 132;
 fontManager.Current ()->StringSize (buffer, w, h, aw);
-GrString (LHX (x) - w + xOffs, LHY (y) + yOffs, buffer);
+GrString (LHX (x) - w, LHY (y), buffer);
 }
 
 //------------------------------------------------------------------------------
@@ -308,13 +301,13 @@ else
 	scores_rprintf (17+33+XX, y+YY, "%d.", i+1);
 
 if (strlen (stats->name)==0) {
-	GrPrintF (NULL, LHX (26+33+XX)+xOffs, LHY (y+YY)+yOffs, TXT_EMPTY);
+	GrPrintF (NULL, LHX (26+33+XX), LHY (y+YY), TXT_EMPTY);
 	return;
 	}
-GrPrintF (NULL, LHX (26+33+XX)+xOffs, LHY (y+YY)+yOffs, "%s", stats->name);
+GrPrintF (NULL, LHX (26+33+XX), LHY (y+YY), "%s", stats->name);
 int_to_string (stats->score, buffer);
 scores_rprintf (109+33+XX, y+YY, "%s", buffer);
-GrPrintF (NULL, LHX (125+33+XX)+xOffs, LHY (y+YY)+yOffs, "%s", MENU_DIFFICULTY_TEXT (stats->diffLevel));
+GrPrintF (NULL, LHX (125+33+XX), LHY (y+YY), "%s", MENU_DIFFICULTY_TEXT (stats->diffLevel));
 if ((stats->startingLevel > 0) && (stats->endingLevel > 0))
 	scores_rprintf (192+33+XX, y+YY, "%d-%d", stats->startingLevel, stats->endingLevel);
 else if ((stats->startingLevel < 0) && (stats->endingLevel > 0))
@@ -346,40 +339,37 @@ gameStates.render.nFlashScale = 0;
 scores_read ();
 SetScreenMode (SCREEN_MENU);
 gameData.render.frame.Activate ();
-xOffs = (CCanvas::Current ()->Width () - 640) / 2;
-yOffs = (CCanvas::Current ()->Height () - 480) / 2;
-if (xOffs < 0)
-	xOffs = 0;
-if (yOffs < 0)
-	yOffs = 0; 
+
 
 //backgroundManager.SetShadow (false);
-backgroundManager.Setup (NULL, xOffs, yOffs, 640, 480);
+CBackground background;
+backgroundManager.Setup (background, 640, 480, BG_TOPMENU, BG_SCORES);
 GameFlushInputs ();
 
 done = 0;
 looper = 0;
 
 while (!done) {
-	backgroundManager.Redraw ();
+	backgroundManager.Activate (background);
 	fontManager.SetCurrent (MEDIUM3_FONT);
 
-	GrString (0x8000, yOffs + LHY (15), TXT_HIGH_SCORES);
+	GrString (0x8000, LHY (15), TXT_HIGH_SCORES);
 	fontManager.SetCurrent (SMALL_FONT);
 	fontManager.SetColorRGBi (RGBA_PAL2 (31,26,5), 1, 0, 0);
-	GrString (xOffs + LHX (31+33+XX), yOffs + LHY (46+7+YY), TXT_NAME);
-	GrString (xOffs + LHX (82+33+XX), yOffs + LHY (46+7+YY), TXT_SCORE);
-	GrString (xOffs + LHX (127+33+XX), yOffs + LHY (46+7+YY), TXT_SKILL);
-	GrString (xOffs + LHX (170+33+XX), yOffs + LHY (46+7+YY), TXT_LEVELS);
-	GrString (xOffs + LHX (288-42+XX), yOffs + LHY (46+7+YY), TXT_TIME);
+	GrString (LHX (31+33+XX), LHY (46+7+YY), TXT_NAME);
+	GrString (LHX (82+33+XX), LHY (46+7+YY), TXT_SCORE);
+	GrString (LHX (127+33+XX), LHY (46+7+YY), TXT_SKILL);
+	GrString (LHX (170+33+XX), LHY (46+7+YY), TXT_LEVELS);
+	GrString (LHX (288-42+XX), LHY (46+7+YY), TXT_TIME);
 	if (nCurItem < 0)
-		GrString (0x8000, yOffs + LHY (175), TXT_PRESS_CTRL_R);
+		GrString (0x8000, LHY (175), TXT_PRESS_CTRL_R);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	for (i = 0; i < MAX_HIGH_SCORES; i++) {
 		c = 28 - i * 2;
 		fontManager.SetColorRGBi (RGBA_PAL2 (c, c, c), 1, 0, 0);
 		scores_draw_item (i, Scores.stats + i);
 		}
+	background.Deactivate ();
 
 	paletteManager.EnableEffect ();
 
@@ -417,7 +407,7 @@ while (!done) {
 		case KEY_CTRLED+KEY_R:	
 			if (nCurItem < 0)	 {
 				// Reset scores...
-				if (MsgBox (NULL, NULL, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES) == 1) {
+				if (MsgBox (NULL, BG_STANDARD, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES) == 1) {
 					CFile::Delete (GetScoresFilename (), gameFolders.szDataDir [0]);
 					paletteManager.DisableEffect ();
 					goto ReshowScores;
@@ -442,9 +432,7 @@ while (!done) {
 	}
 // Restore background and exit
 paletteManager.DisableEffect ();
-gameData.render.frame.Deactivate ();
 GameFlushInputs ();
-backgroundManager.Remove ();
 //backgroundManager.SetShadow (true);
 }
 
