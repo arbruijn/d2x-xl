@@ -372,8 +372,8 @@ gameData.demo.nState = saveNewDemoState;
 static void SetupCockpitCanvas (CCanvas* refCanv)
 {
 int w = refCanv->Width (false) - 3 * abs (gameData.StereoOffset2D ());
-int d = abs (gameData.StereoOffset2D ()) / 2;
-gameData.render.window.Setup (refCanv, (ogl.StereoSeparation () < 0) ? 3 * d : d, 0, w, refCanv->Height (false)); 
+int d = abs (gameData.StereoOffset2D ());
+gameData.render.window.Setup (refCanv, (ogl.StereoSeparation () < 0) ? 2 * d : d, 0, w, refCanv->Height (false)); 
 gameData.render.window.Activate (refCanv);
 #if DBG
 CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
