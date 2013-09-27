@@ -478,7 +478,7 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 
 		gameData.SetStereoOffsetType (nOffsetSave);
 		gameData.render.window.Deactivate ();
-		h = w; //5 * h / 3; //4 * gameData.render.screen.Height (false) / 9; //* w / gameData.render.screen.Width (false);
+		h = 4 * gameData.render.screen.Height (false) / 9; 
 		gameData.render.window.Setup (&gameData.render.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
 		gameData.render.window.Activate (&gameData.render.frame);
 		hudIcons.Render ();

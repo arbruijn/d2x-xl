@@ -216,7 +216,8 @@ glLineWidth (float (floor (2 * float (cw) / 640.0f)));
 
 glPushMatrix ();
 ogl.SetLineSmooth (true);
-glTranslatef (0.5f - X2F (ogl.StereoSeparation ()), 0.5f/*1.0f - float (CCanvas::Current ()->Top () + y) / float (gameData.render.screen.Height ())*/, 0.0f);
+float fStereoOffset = float (gameData.StereoOffset2D ()) / float (gameData.render.frame.Width ());
+glTranslatef (0.5f - fStereoOffset, 0.5f/*1.0f - float (CCanvas::Current ()->Top () + y) / float (gameData.render.screen.Height ())*/, 0.0f);
 glScalef (xScale, yScale, 1.0f);
 #if 0
 float fh = 2.0f * float (h) / float (sh);
@@ -265,7 +266,7 @@ glLineWidth (float (floor (2 * float (cw) / 640.0f)));
 #if 1
 //float xScale = float (w << 5) / float (cw);
 //float yScale = float (h << 5) / float (gameData.render.screen.Height ());
-OglDrawEllipse (sizeofa (sinCos), GL_LINE_LOOP, xScale, 0.5f - X2F (ogl.StereoSeparation ()), yScale, 
+OglDrawEllipse (sizeofa (sinCos), GL_LINE_LOOP, xScale, 0.5f - fStereoOffset, yScale, 
 					 1.0f - float (/*CCanvas::Current ()->Top () +*/ y) / float (gameData.render.screen.Height ()), sinCos);
 #else
 glPushMatrix ();

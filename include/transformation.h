@@ -183,7 +183,7 @@ class CTransformation {
 
 		inline bool FrustumContains (CSide* sideP) { return Frustum ().Contains (sideP); }
 
-		inline int HaveHeadAngles (void) { return m_info.bUsePlayerHeadAngles && (m_info.playerHeadAngles.Mag () > 0.1f); }
+		inline int HaveHeadAngles (void) { return m_info.bUsePlayerHeadAngles && (m_info.playerHeadAngles.Mag () > 0.05f); }
 	};
 
 //------------------------------------------------------------------------------
