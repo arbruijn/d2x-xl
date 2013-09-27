@@ -22,7 +22,8 @@ class CScoreTable {
 		int	m_oldStates [MAX_PLAYERS];
 		int	m_sorted [MAX_PLAYERS];
 		int	m_bNetwork;
-
+		CBackground	m_background;
+		
 	public:
 		void Display (void);
 

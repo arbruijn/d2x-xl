@@ -157,25 +157,6 @@ CCreditsManager creditsManager;
 
 //-----------------------------------------------------------------------------
 
-void CCreditsManager::RenderBackdrop (void)
-{
-#if 1
-backgroundManager.Draw (BG_STARS);
-#else
-if (gameOpts->menus.nStyle)
-	m_bmBackdrop.RenderStretched ();
-else {
-	m_bmBackdrop.RenderFixed (CCanvas::Current (), m_xOffs, m_yOffs);
-	if ((CCanvas::Current ()->Width () > 640) || (CCanvas::Current ()->Height () > 480)) {
-		CCanvas::Current ()->SetColorRGBi (RGB_PAL (0,0,32));
-		OglDrawEmptyRect (m_xOffs, m_yOffs, m_xOffs + m_bmBackdrop.Width () + 1, m_yOffs + m_bmBackdrop.Height () + 1);
-		}
-	}
-#endif
-}
-
-//-----------------------------------------------------------------------------
-
 uint CCreditsManager::Read (void)
 {
 while (m_nExtraInc) {
@@ -283,8 +264,11 @@ void CCreditsManager::Render (void)
 {
 	CFloatVector		colors [4] = {{{{1,1,1,1}}},{{{1,1,1,1}}},{{{1,1,1,1}}},{{{1,1,1,1}}}};
 
+
 for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
-	RenderBackdrop ();
+	backgroundManager.Draw (&m_background);
+	m_background.Activate ();
+	gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 	int y = m_nFirstLineOffs - i;
 	for (int j = 0; j < NUM_LINES; j++) {
 		int l = (m_nLines [0] + j + 1) %  NUM_LINES;
@@ -312,7 +296,7 @@ for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 					colors [0].Alpha () = colors [1].Alpha () = dy / float (FADE_DIST);
 					dy = float ((y + h < FADE_DIST) ? y + h : (480 - y - 2 * h < FADE_DIST) ? 480 - y - 2 * h : FADE_DIST);
 					colors [2].Alpha () = colors [3].Alpha () = dy / float (FADE_DIST);
-					bmP->Render (CCanvas::Current (), (CCanvas::Current ()->Width () - w) / 2 - gameData.StereoOffset2D (), m_yOffs + y, w, h, 0, 0, w, h, 1, 0, 0, 1, colors);
+					bmP->Render (CCanvas::Current (), (CCanvas::Current ()->Width () - w) / 2, y, w, h, 0, 0, w, h, 1, 0, 0, 1, colors);
 					delete bmP;
 					}
 				}
@@ -363,12 +347,8 @@ if (!Open (creditsFilename))
 memset (m_buffer, 0, sizeof (m_buffer));
 
 SetScreenMode (SCREEN_MENU);
-m_xOffs = (CCanvas::Current ()->Width () - 640) / 2;
-m_yOffs = (CCanvas::Current ()->Height () - 480) / 2;
-if (m_xOffs < 0)
-	m_xOffs = 0;
-if (m_yOffs < 0)
-	m_yOffs = 0;
+int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
+backgroundManager.Setup (m_background, 640, 480, BG_TOPMENU, BG_STARS);
 creditsPalette = paletteManager.Load ("credits.256", NULL);
 //paletteManager.ResumeEffect ();
 m_fonts [0] = fontManager.Load (fontNames [0][gameStates.menus.bHires]);
@@ -415,5 +395,6 @@ for (;;) {
 		m_nExtraInc++;
 		}
 	}
+gameData.SetStereoOffsetType (nOffsetSave);
 backgroundManager.Draw ();
 }

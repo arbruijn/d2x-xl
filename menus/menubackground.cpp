@@ -188,16 +188,20 @@ return true;
 
 void CBackground::Activate (void)
 {
+int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 CViewport::SetLeft (CViewport::Left () - CScreen::Unscaled (gameData.StereoOffset2D ()));
 CCanvas::Activate (&gameData.render.frame);
+gameData.SetStereoOffsetType (nOffsetSave);
 }
 
 //------------------------------------------------------------------------------
 
 void CBackground::Deactivate (void)
 {
+int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 CViewport::SetLeft (CViewport::Left () + CScreen::Unscaled (gameData.StereoOffset2D ()));
 CCanvas::Deactivate ();
+gameData.SetStereoOffsetType (nOffsetSave);
 }
 
 //------------------------------------------------------------------------------

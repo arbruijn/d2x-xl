@@ -30,16 +30,14 @@ class CCreditsManager {
 		int				m_xTimeout;
 		int				m_nExtraInc;
 		int				m_bBinary;
-		int				m_xOffs;
-		int				m_yOffs;
 		int				m_nFirstLineOffs;
+		CBackground		m_background;
 
 	public:
 		CCreditsManager () { Init (); }
 		~CCreditsManager () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
-		void RenderBackdrop (void);
 		bool HandleInput (void);
 		uint Read (void);
 		bool Open (char* creditsFilename);

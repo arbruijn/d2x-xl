@@ -293,15 +293,10 @@ GrPrintF (NULL, CENTERSCREEN - sw / 2, LHY (55+72+3), message);
 
 void CScoreTable::Render (void)
 {
-	int i, color;
+	int			i, color;
 
-backgroundManager.Draw (BG_STARS);
-xOffs = (CCanvas::Current ()->Width () - 640) / 2;
-yOffs = (CCanvas::Current ()->Height () - 480) / 2;
-if (xOffs < 0)
-	xOffs = 0;
-if (yOffs < 0)
-	yOffs = 0;
+backgroundManager.Draw (&m_background);
+
 if (IsCoopGame) {
 	RenderCoop ();
 	return;
@@ -311,8 +306,11 @@ fontManager.SetCurrent (MEDIUM3_FONT);
 GrString (0x8000, LHY (10), TXT_KILL_MATRIX_TITLE);
 fontManager.SetCurrent (SMALL_FONT);
 MultiGetKillList (m_sorted);
+
+m_background.Activate ();
+gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 DrawNames ();
-for (i= 0; i<gameData.multiplayer.nPlayers; i++) {
+for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (IsTeamGame)
 		color = GetTeam (m_sorted [i]);
 	else
@@ -324,6 +322,7 @@ for (i= 0; i<gameData.multiplayer.nPlayers; i++) {
 	DrawItem (i);
 	}
 DrawDeaths ();
+m_background.Deactivate ();
 ogl.Update (1);
 //paletteManager.ResumeEffect ();
 }
@@ -339,6 +338,8 @@ fontManager.SetCurrent (MEDIUM3_FONT);
 GrString (0x8000, LHY (10), "COOPERATIVE SUMMARY");
 fontManager.SetCurrent (SMALL_FONT);
 MultiGetKillList (m_sorted);
+m_background.Activate ();
+gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 DrawCoopNames ();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	color = m_sorted [i];
@@ -349,6 +350,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	DrawCoopItem (i);
 	}
 DrawDeaths ();
+m_background.Deactivate ();
 //paletteManager.ResumeEffect ();
 ogl.Update (1);
 }
@@ -505,6 +507,8 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	audio.DestroyObjectSound (gameData.multiplayer.players [i].nObject);
 
 SetScreenMode (SCREEN_MENU);
+int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
+backgroundManager.Setup (m_background, 640, 480, BG_TOPMENU, BG_STARS);
 gameData.score.bWaitingForOthers = 0;
 //@@GrPaletteFadeIn (grPalette,32, 0);
 GameFlushInputs ();
@@ -552,6 +556,7 @@ CONNECT (N_LOCALPLAYER, CONNECT_ADVANCE_LEVEL);
 // Restore background and exit
 paletteManager.DisableEffect ();
 GameFlushInputs ();
+gameData.SetStereoOffsetType (nOffsetSave);
 Cleanup (0);
 }
 
