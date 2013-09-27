@@ -375,7 +375,7 @@ int w = refCanv->Width (false) - 3 * abs (gameData.StereoOffset2D ());
 int d = abs (gameData.StereoOffset2D ());
 gameData.render.window.Setup (refCanv, (ogl.StereoSeparation () < 0) ? 2 * d : d, 0, w, refCanv->Height (false)); 
 gameData.render.window.Activate (refCanv);
-#if DBG
+#if 0 //DBG
 CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
 glLineWidth (float (gameData.render.screen.Width ()) / 640.0f);
 OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
@@ -457,8 +457,8 @@ fontManager.SetCurrent (GAME_FONT);
 
 DrawReticle (ogl.StereoDevice () < 0);
 
-if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (gameStates.zoom.nMinFactor))) {
-	if (ogl.IsOculusRift ()) {
+if (!gameStates.menus.nInMenu && (gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (gameStates.zoom.nMinFactor))) {
+	if (ogl.IsOculusRift () && !transformation.HaveHeadAngles ()) {
 		nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 		int w = gameData.render.frame.Width (false) / 2;
 		int h = gameData.render.screen.Height (false) * w / gameData.render.screen.Width (false);
@@ -532,18 +532,10 @@ if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (ga
 			DrawKillList ();
 			DrawPlayerShip ();
 			}
-		if (bStereoOffset) {
-			gameData.render.window.Deactivate ();
-			SetupCockpitCanvas (&gameData.render.scene);
-			}
-		else
+		if (!bStereoOffset)
 			gameData.render.scene.Activate ();
 		hudIcons.Render ();
-		if (bStereoOffset) {
-			gameData.render.window.Deactivate ();
-			SetupCockpitCanvas (&gameData.render.frame);
-			}
-		else
+		if (!bStereoOffset)
 			gameData.render.scene.Deactivate ();
 		if (bExtraInfo) {
 			DrawCountdown ();

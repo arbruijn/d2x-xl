@@ -188,7 +188,7 @@ return true;
 
 void CBackground::Activate (void)
 {
-CViewport::SetLeft (CViewport::Left () - gameData.StereoOffset2D ());
+CViewport::SetLeft (CViewport::Left () - CScreen::Unscaled (gameData.StereoOffset2D ()));
 CCanvas::Activate (&gameData.render.frame);
 }
 
@@ -196,7 +196,7 @@ CCanvas::Activate (&gameData.render.frame);
 
 void CBackground::Deactivate (void)
 {
-CViewport::SetLeft (CViewport::Left () + gameData.StereoOffset2D ());
+CViewport::SetLeft (CViewport::Left () + CScreen::Unscaled (gameData.StereoOffset2D ()));
 CCanvas::Deactivate ();
 }
 

@@ -407,15 +407,21 @@ PROF_START
 	CFixMatrix	mRadar;
 
 automap.m_bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_FULLMAP_CHEAT | PLAYER_FLAGS_FULLMAP)) != 0;
-if ((m_bRadar = m_bRadar) == 2) {
-	CFixMatrix& po = gameData.multiplayer.playerInit [N_LOCALPLAYER].position.mOrient;
-	mRadar.m.dir.r = po.m.dir.r;
-	mRadar.m.dir.f = po.m.dir.u;
-	mRadar.m.dir.f.v.coord.y = -mRadar.m.dir.f.v.coord.y;
-	mRadar.m.dir.u = po.m.dir.f;
+if (!m_bRadar) {
+	ogl.SetStereoSeparation (xStereoSeparation);
+	SetupCanvasses ();
 	}
-if (m_bRadar)
+else {
+	if (m_bRadar == 2) {
+		CFixMatrix& po = gameData.multiplayer.playerInit [N_LOCALPLAYER].position.mOrient;
+		mRadar.m.dir.r = po.m.dir.r;
+		mRadar.m.dir.f = po.m.dir.u;
+		mRadar.m.dir.f.v.coord.y = -mRadar.m.dir.f.v.coord.y;
+		mRadar.m.dir.u = po.m.dir.f;
+		}
 	CCanvas::Current ()->Clear (RGBA_PAL2 (0,0,0));
+	}
+
 if (!gameOpts->render.automap.bTextured || gameStates.app.bNostalgia)
 	gameOpts->render.automap.bTextured = 1;
 G3StartFrame (transformation, m_bRadar /*|| !(gameOpts->render.automap.bTextured & 1)*/, !m_bRadar, xStereoSeparation);
