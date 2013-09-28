@@ -329,7 +329,7 @@ scores_rprintf (311 - 42 + XX, y + YY, "%d:%02d:%02d", h, m, s);
 
 void ScoresView (int nCurItem)
 {
-	fix	t0 = 0, t1;
+	fix	t0 = 0, t1 = 0;
 
 	sbyte fades[64] = { 1,1,1,2,2,3,4,4,5,6,8,9,10,12,13,15,16,17,19,20,22,23,24,26,27,28,28,29,30,30,31,31,31,31,31,30,30,29,28,28,27,26,24,23,22,20,19,17,16,15,13,12,10,9,8,6,5,4,4,3,2,2,1,1 };
 
@@ -341,38 +341,31 @@ SetScreenMode (SCREEN_MENU);
 
 //backgroundManager.SetShadow (false);
 CBackground background;
+if (gameStates.app.bNostalgia)
+	backgroundManager.Setup (background, 640, 480, BG_TOPMENU, BG_SCORES);
+else
+	backgroundManager.Setup (background, 640, 480, BG_SUBMENU, BG_STANDARD);
+
 GameFlushInputs ();
 
-int done = 0;
+int bDone = 0;
 int looper = 0;
 
-if (gameStates.app.bNostalgia)
-	ogl.SetDrawBuffer (GL_FRONT, 0);
-else
-	ogl.ChooseDrawBuffer ();
+while (!bDone) {
+	if (nCurItem > -1) {
+		t1	= SDL_GetTicks ();
+		if (t1 - t0 >= 10)
+			t0 = t1;
+		}
 
-while (!done) {
 	int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
 	for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 		int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 		gameData.SetStereoSeparation (j);
+		ogl.ChooseDrawBuffer ();
+
 		SetupCanvasses ();
-		gameData.render.frame.Activate ();
-
-		CCanvas* canvas;
-
-		if (!ogl.IsOculusRift ()) {
-			backgroundManager.Setup (background, 640, 480, BG_TOPMENU, BG_SCORES);
-			backgroundManager.Activate (background);
-			canvas = &background;
-			}
-		else {
-			int w, h;
-			cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
-			backgroundManager.Draw (BG_SCORES);
-			canvas = &gameData.render.window;
-			fontManager.SetScale (0.5f);
-			}
+		backgroundManager.Activate (background);
 		gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 
 		fontManager.SetCurrent (MEDIUM3_FONT);
@@ -392,73 +385,60 @@ while (!done) {
 			fontManager.SetColorRGBi (RGBA_PAL2 (c, c, c), 1, 0, 0);
 			scores_draw_item (k, Scores.stats + k);
 			}
-		canvas->Deactivate ();
-
 		paletteManager.EnableEffect ();
-
-		if (nCurItem < 0)
-			ogl.Update (1);
-
-		if (nCurItem > -1) {
-			t1	= SDL_GetTicks ();
-			if (t1 - t0 >= 10) {
-				t0 = t1;
-				int c = 7 + fades [looper];
-				fontManager.SetColorRGBi (RGBA_PAL2 (c, c, c), 1, 0, 0);
-				if (++looper > 63) 
-					looper = 0;
-				canvas->Activate ();
-				if (nCurItem ==  MAX_HIGH_SCORES)
-					scores_draw_item (MAX_HIGH_SCORES, &Last_game);
-				else
-					scores_draw_item (nCurItem, Scores.stats + nCurItem);
-				canvas->Deactivate ();
-				ogl.Update (1);
-				}
-			}
-
-		for (i = 0; i < 4; i++)
-			if (JoyGetButtonDownCnt (i) > 0) 
-				done = 1;
-		for (i = 0; i < 3; i++)
-			if (MouseButtonDownCount (i) > 0) 
-				done = 1;
-
-		//see if redbook song needs to be restarted
-		redbook.CheckRepeat ();
-
-		int k = KeyInKey ();
-		switch (k) {
-			case KEY_CTRLED+KEY_R:	
-				if (nCurItem < 0)	 {
-					// Reset scores...
-					if (MsgBox (NULL, BG_STANDARD, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES) == 1) {
-						CFile::Delete (GetScoresFilename (), gameFolders.szDataDir [0]);
-						paletteManager.DisableEffect ();
-						goto ReshowScores;
-					}
-				}
-				break;
-			case KEY_BACKSPACE:				
-				Int3 (); 
-				k = 0; 
-				break;
-			case KEY_PRINT_SCREEN:		
-				SaveScreenShot (NULL, 0); 
-				k = 0; 
-				break;
-		
-			case KEY_ENTER:
-			case KEY_SPACEBAR:
-			case KEY_ESC:
-				done = 1;
-				break;
-			}
-		fontManager.SetScale (1.0f);
-		gameData.render.frame.Deactivate ();
+		if (t0 == t1) {
+			int c = 7 + fades [looper];
+			fontManager.SetColorRGBi (RGBA_PAL2 (c, c, c), 1, 0, 0);
+			if (++looper > 63) 
+				looper = 0;
+			background.Activate ();
+			if (nCurItem ==  MAX_HIGH_SCORES)
+				scores_draw_item (MAX_HIGH_SCORES, &Last_game);
+			else
+				scores_draw_item (nCurItem, Scores.stats + nCurItem);
+			}	
+		background.Deactivate ();
 		gameData.SetStereoOffsetType (nOffsetSave);
 		}
 	ogl.Update (0);
+
+	for (int k = 0; k < 4; k++)
+		if (JoyGetButtonDownCnt (k) > 0) 
+			bDone = 1;
+	for (int k = 0; k < 3; k++)
+		if (MouseButtonDownCount (k) > 0) 
+			bDone = 1;
+
+	//see if redbook song needs to be restarted
+	redbook.CheckRepeat ();
+
+	int k = KeyInKey ();
+	switch (k) {
+		case KEY_CTRLED+KEY_R:	
+			if (nCurItem < 0)	 {
+				// Reset scores...
+				if (MsgBox (NULL, BG_STANDARD, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES) == 1) {
+					CFile::Delete (GetScoresFilename (), gameFolders.szDataDir [0]);
+					paletteManager.DisableEffect ();
+					goto ReshowScores;
+				}
+			}
+			break;
+		case KEY_BACKSPACE:				
+			Int3 (); 
+			k = 0; 
+			break;
+		case KEY_PRINT_SCREEN:		
+			SaveScreenShot (NULL, 0); 
+			k = 0; 
+			break;
+		
+		case KEY_ENTER:
+		case KEY_SPACEBAR:
+		case KEY_ESC:
+			bDone = 1;
+			break;
+		}
 	}
 // Restore background and exit
 paletteManager.DisableEffect ();
