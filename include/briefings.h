@@ -76,7 +76,7 @@ class CBriefingInfo {
 		CCharArray			briefingText;
 		int					nBriefingTextLen;
 		int					nTabStop;
-		CCanvas				robotCanv;
+		CCanvas				animCanv;
 		CAngleVector		vRobotAngles;
 		time_t				t0;
 		int					nFuncRes;
@@ -171,14 +171,18 @@ class CBriefing {
 
 		char* SkipPage (void); 
 
-		CCanvas& RobotCanv (void) { return m_info.robotCanv; }
+		void SetupAnimationCanvas (CCanvas* baseCanv);
+
+		CCanvas& AnimCanv (void) { return m_info.animCanv; }
 
 		void RenderElement (int nElement);
 
 		float GetScale (void);
 		inline int Scaled (int v) { return int (FRound (v * GetScale ())); }
-		inline int RescaleX (int x) { return Scaled (x * CCanvas::Current ()->Width (false) / 320); }
-		inline int RescaleY (int y) { return Scaled (y * CCanvas::Current ()->Height (false) / 200); }
+		inline int AdjustX (int x) { return x * CCanvas::Current ()->Width (false) / 320; }
+		inline int AdjustY (int y) { return y * CCanvas::Current ()->Height (false) / 200; }
+		inline int RescaleX (int x) { return Scaled (AdjustX (x)); }
+		inline int RescaleY (int y) { return Scaled (AdjustY (y)); }
 
 	};
 

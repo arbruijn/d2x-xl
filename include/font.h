@@ -109,7 +109,7 @@ class CFont {
 		int GetCenteredX (const char *s, float scale = 1.0f);
 		int TotalWidth (float scale = 1.0f);
 
-		inline int Scale (int v, float scale) { return int (ceil (float (v) * scale)); }
+		inline int Scaled (int v, float scale) { return int (ceil (float (v) * scale)); }
 
 		int DrawString (int x, int y, const char *s);
 

@@ -379,7 +379,7 @@ if (ogl.IsOculusRift ()) {
 	}
 else {
 	w = refCanv->Width (false) - 3 * abs (gameData.StereoOffset2D ());
-	d = abs (gameData.StereoOffset2D ());
+	int d = abs (gameData.StereoOffset2D ());
 	gameData.render.window.Setup (refCanv, (ogl.StereoSeparation () < 0) ? 2 * d : d, 0, w, refCanv->Height (false)); 
 	gameData.render.window.Activate (refCanv);
 	}

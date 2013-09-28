@@ -440,13 +440,13 @@ return m_pcxError;
 void CBriefing::InitCharPos (tBriefingScreen *bsP, int bRescale)
 {
 if (bRescale) {
-	bsP->textLeft = RescaleX (bsP->textLeft);
-	bsP->textTop = RescaleY (bsP->textTop);
-	bsP->textWidth = RescaleX (bsP->textWidth);
-	bsP->textHeight = RescaleY (bsP->textHeight);
+	bsP->textLeft = AdjustX (bsP->textLeft);
+	bsP->textTop = AdjustY (bsP->textTop);
+	bsP->textWidth = AdjustX (bsP->textWidth);
+	bsP->textHeight = AdjustY (bsP->textHeight);
 	}
 m_info.briefingTextX = bsP->textLeft;
-m_info.briefingTextY = gameStates.app.bD1Mission ? bsP->textTop : bsP->textTop - (8 *(1 + gameStates.menus.bHires));
+m_info.briefingTextY = gameStates.app.bD1Mission ? bsP->textTop : bsP->textTop - (8 * (1 + gameStates.menus.bHires));
 }
 
 //-----------------------------------------------------------------------------
@@ -611,6 +611,28 @@ m_info.tAnimate = SDL_GetTicks ();
 
 //------------------------------------------------------------------------------ 
 
+void CBriefing::SetupAnimationCanvas (CCanvas* baseCanv)
+{
+int x, y, w, h;
+if (ogl.IsOculusRift ()) {
+	y = gameData.render.window.Height (false) / 3;
+	w = gameData.render.window.Height (false) - y;
+	x = gameData.render.window.Width (false) - w;
+	h = w = 9 * w / 10;
+	}
+else {
+	x = RescaleX (138);
+	y = RescaleY (55);
+	w = RescaleX (163);
+	h = RescaleY (136);
+	}
+AnimCanv ().Setup (baseCanv, x, y, w, h);
+AnimCanv ().Activate (baseCanv);
+AnimCanv ().Clear (m_info.nEraseColor);
+}
+
+//------------------------------------------------------------------------------ 
+
 float CBriefing::GetScale (void)
 {
 #if 0 //DBG
@@ -677,38 +699,23 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 			break;
 
 		case 5:
-			RobotCanv ().Activate (baseCanv);
+			AnimCanv ().Activate (baseCanv);
 			movieManager.RotateRobot ();
-			RobotCanv ().Deactivate ();
+			AnimCanv ().Deactivate ();
 			break;
 
 		case 6:
 			{
-			int x, y, w, h;
-			if (ogl.IsOculusRift ()) {
-				y = gameData.render.window.Height (false) / 3;
-				w = gameData.render.window.Height (false) - y;
-				x = gameData.render.window.Width (false) - w;
-				h = w = 9 * w / 10;
-				}
-			else {
-				x = RescaleX (138);
-				y = RescaleY (55);
-				w = RescaleX (163);
-				h = RescaleY (136);
-				}
-			RobotCanv ().Setup (baseCanv, x, y, w, h);
-			RobotCanv ().Activate (baseCanv);
-			RobotCanv ().Clear (m_info.nEraseColor);
+			SetupAnimationCanvas (baseCanv);
 			DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
-			RobotCanv ().Activate (baseCanv);
+			AnimCanv ().Deactivate ();
 #if DBG
 			CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
 			glLineWidth (float (gameData.render.screen.Width ()) / 640.0f);
 			OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 #endif
 			glLineWidth (1);
-			RobotCanv ().Deactivate ();
+			AnimCanv ().Deactivate ();
 			}
 			break;
 
@@ -724,34 +731,16 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 
 		case 8:
 			{
-			int x = RescaleX (138);
-			int y = RescaleY (55);
-			int w = RescaleX (166);
-			int h = RescaleY (138);
-
-			CCanvas canvas;
-			switch (m_info.nAnimatingBitmapType) {
-				case 0: 
-					canvas.Setup (CCanvas::Current (), x, y, w, h);
-					break;
-				case 1:
-					canvas.Setup (CCanvas::Current (), x, y, w, h);
-					break;
-				// Adam: Change here for your new animating bitmap thing. 94, 94 are bitmap size.
-				default:
-					Int3 (); // Impossible, illegal value for m_info.nAnimatingBitmapType
-				}
-			canvas.Clear (m_info.nEraseColor);
-
+			SetupAnimationCanvas (baseCanv);
 			G3StartFrame (transformation, 1, 0, 0);
 			CFixVector p = CFixVector::ZERO;
 			SetupTransformation (transformation, p, CFixMatrix::IDENTITY, gameStates.render.xZoom, 1);
 			GLint	depthFunc = ogl.GetDepthMode ();
 			ogl.SetDepthMode (GL_ALWAYS);
-			canvas.Activate (baseCanv);
-			p.v.coord.z = 2 * I2X (w);
-			ogl.RenderBitmap (m_bitmap, p, I2X (w), I2X (h), NULL, 1.0, 0);
-			canvas.Deactivate ();
+			//AnimCanv ().Activate (baseCanv);
+			p.v.coord.z = 2 * I2X (AnimCanv ().Width (false));
+			ogl.RenderBitmap (m_bitmap, p, I2X (AnimCanv ().Width (false)), I2X (AnimCanv ().Height (false)), NULL, 1.0, 0);
+			AnimCanv ().Deactivate ();
 			ogl.SetDepthMode (depthFunc);
 			G3EndFrame (transformation, 0);
 			}
@@ -1153,9 +1142,9 @@ if (gameStates.app.bD1Mission) {
 else {
 	m_info.szSpinningRobot [2] = *m_info.message++; // ugly but proud
 	if (m_info.message > m_info.pj) {
-		RobotCanv ().Activate ();
+		AnimCanv ().Activate ();
 		m_info.bRobotPlaying = movieManager.StartRobot (m_info.szSpinningRobot);
-		RobotCanv ().Deactivate ();
+		AnimCanv ().Deactivate ();
 		if (m_info.bRobotPlaying) {
 			RenderRobotMovie ();
 			SetColors ();
