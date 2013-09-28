@@ -615,7 +615,7 @@ int x = RescaleX (138);
 int y = RescaleY (55);
 int w = RescaleX (163);
 int h = RescaleY (136);
-RobotCanv ().Setup (&gameData.render.frame, x - gameData.StereoOffset2D (), y, w, h);
+RobotCanv ().Setup (&gameData.render.frame, x - gameData.StereoOffset2D (), y, w, h, true);
 m_info.bInitAnimate = 1;
 m_info.tAnimate = SDL_GetTicks ();
 }
@@ -626,6 +626,11 @@ void CBriefing::RenderElement (int nElement)
 {
 int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
 
+if (gameStates.app.bNostalgia)
+	ogl.SetDrawBuffer (GL_FRONT, 0);
+else
+	ogl.ChooseDrawBuffer ();
+
 for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 	gameData.SetStereoSeparation (j);
 	SetupCanvasses ();
@@ -635,13 +640,13 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 		case 0:
 			fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
 			fontManager.SetCurrent (GAME_FONT);
-			GrPrintF (NULL, m_info.briefingTextX + 1, m_info.briefingTextY, "_");
+			GrPrintF (NULL, m_info.briefingTextX + 1 + 2 * gameData.StereoOffset2D (), m_info.briefingTextY, "_");
 			break;
 
 		case 1:
 			fontManager.SetCurrent (GAME_FONT);
 			fontManager.SetColorRGBi (m_info.nEraseColor, 1, 0, 0);
-			GrPrintF (NULL, m_info.briefingTextX + 1, m_info.briefingTextY, "_");
+			GrPrintF (NULL, m_info.briefingTextX + 1 + 2 * gameData.StereoOffset2D (), m_info.briefingTextY, "_");
 		//	erase the character
 			fontManager.SetColorRGB (briefBgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
 			GrPrintF (NULL, m_info.briefingTextX, m_info.briefingTextY, m_message);
@@ -650,7 +655,7 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 		case 2:
 			fontManager.SetCurrent (GAME_FONT);
 			fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
-			GrPrintF (NULL, m_info.briefingTextX + 1, m_info.briefingTextY, m_message);
+			GrPrintF (NULL, m_info.briefingTextX + 1 + 2 * gameData.StereoOffset2D (), m_info.briefingTextY, m_message);
 			break;
 
 		case 3:

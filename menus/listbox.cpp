@@ -84,15 +84,16 @@ void CListBox::Render (void)
 if (m_bDone)
 	return;
 gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
-fontManager.SetScale (fontManager.Scale () * GetScale ());
 backgroundManager.Activate (m_background);
+gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 FadeIn ();
 
+fontManager.SetScale (fontManager.Scale () * GetScale ());
 fontManager.SetCurrent (NORMAL_FONT);
 GrString (0x8000, m_nTitleHeight, m_props.pszTitle);
 
 CCanvas textArea;
-textArea.Setup (&gameData.render.frame, m_nOffset, m_nOffset + m_nTitleHeight, m_nWidth, m_nHeight);
+textArea.Setup (&gameData.render.frame, m_nOffset, m_nOffset + m_nTitleHeight, m_nWidth, m_nHeight, true);
 textArea.Activate (&m_background);
 
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
@@ -158,9 +159,9 @@ m_nHeight = int (float ((CCanvas::Current ()->Font ()->Height () + 2) * m_nVisib
 fontManager.Current ()->StringSize (pszTitle, w, h, aw);	
 if (w > m_nWidth)
 	m_nWidth = w;
-m_nTitleHeight = h + 5;
+m_nTitleHeight = int ((h + 5) * GetScale ());
 
-m_nOffset = CCanvas::Current ()->Font ()->Width ();
+m_nOffset = int (CCanvas::Current ()->Font ()->Width () * GetScale ());
 m_nWidth += (CCanvas::Current ()->Font ()->Width ());
 
 int nMargin = CCanvas::Current ()->Font ()->Width () * 3;
@@ -168,6 +169,7 @@ if (ogl.IsSideBySideDevice ())
 	nMargin += 4 * labs (gameData.StereoOffset2D ());
 if (m_nWidth > CCanvas::Current ()->Width () - nMargin)
 	m_nWidth = CCanvas::Current ()->Width () - nMargin;
+m_nWidth = int (m_nWidth * GetScale ());
 
 backgroundManager.Setup (m_background, m_nWidth + m_nOffset * 2, m_nHeight + m_nTitleHeight + m_nOffset * 2);
 m_bDone = 0;
