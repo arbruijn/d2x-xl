@@ -178,13 +178,13 @@ CCanvas::Setup (&gameData.render.screen, (gameData.render.frame.Width () - width
 bool CBackground::Create (int width, int height, int nType, int nWallpaper)
 {
 Destroy ();
-if (!gameStates.app.bNostalgia && (nType == BG_TOPMENU) && (nWallpaper = BG_SCORES)) {
+if (!gameStates.app.bNostalgia && (nType == -BG_TOPMENU) && (nWallpaper = -BG_SCORES)) {
 	m_nType = BG_SUBMENU;
 	m_nWallpaper = BG_STANDARD;
 	}
 else {
-	m_nType = nType;
-	m_nWallpaper = nWallpaper;
+	m_nType = abs (nType);
+	m_nWallpaper = abs (nWallpaper);
 	}
 Setup (width, height);
 return true;

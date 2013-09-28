@@ -391,7 +391,7 @@ gameStates.render.nFlashScale = 0;
 SetScreenMode (SCREEN_MENU);
 Load ();
 int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
-backgroundManager.Setup (m_background, 640, 480, BG_TOPMENU, BG_SCORES);
+backgroundManager.Setup (m_background, 640, 480, -BG_TOPMENU, -BG_SCORES);
 
 GameFlushInputs ();
 
