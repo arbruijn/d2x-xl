@@ -767,4 +767,53 @@ return gameData.render.mine.visibility [nThread + 2].SegmentMayBeVisible (nStart
 }
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+CFrameController::CFrameController () : m_nFrames (0), m_iFrame (0), m_nEye (0) 
+{
+}
+
+//------------------------------------------------------------------------------
+
+void CFrameController::Begin (void)
+{
+m_nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
+m_iFrame = 0;
+m_nEye = -1;
+Setup ();
+}
+
+//------------------------------------------------------------------------------
+
+bool CFrameController::Continue (void)
+{
+if (m_iFrame >= m_nFrames)
+	return false;
+++m_iFrame;
+m_nEye += 2;
+Setup ();
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+void CFrameController::End (void)
+{
+gameData.SetStereoOffsetType (m_nOffsetSave);
+}
+
+//------------------------------------------------------------------------------
+
+void CFrameController::Setup (void)
+{
+m_nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+gameData.SetStereoSeparation (m_nEye);
+SetupCanvasses ();
+ogl.ChooseDrawBuffer ();
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // eof

@@ -95,11 +95,6 @@ void CFileSelector::Render (void)
 if (m_bDone)
 	return;
 
-	static	int t0 = 0;
-
-if (!MenuRenderTimeout (t0, -1))
-	return;
-
 gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 fontManager.SetScale (fontManager.Scale () * GetScale ());
 backgroundManager.Activate (m_background);

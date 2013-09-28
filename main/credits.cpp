@@ -44,6 +44,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "credits.h"
 #include "songs.h"
 #include "ogl_render.h"
+#include "renderlib.h"
 
 #define LHX(x)      (gameStates.menus.bHires?2*(x):x)
 #define LHY(y)      (gameStates.menus.bHires?(24*(y))/10:y)
@@ -367,10 +368,8 @@ m_nExtraInc = 1;
 for (;;) {
 	Read ();
 
-	for (int i = 0; i < nFrames; i++) {
-		gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
-		ogl.ChooseDrawBuffer ();
-		SetupCanvasses ();
+	CFrameController fc;
+	for (fc.Begin (); fc.Continue (); fc.End ()) {
 		gameData.render.scene.Activate ();
 		Render ();
 		gameData.render.scene.Deactivate ();
@@ -395,6 +394,5 @@ for (;;) {
 		m_nExtraInc++;
 		}
 	}
-gameData.SetStereoOffsetType (nOffsetSave);
 backgroundManager.Draw ();
 }

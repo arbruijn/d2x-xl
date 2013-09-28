@@ -44,6 +44,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_lib.h"
 #include "ogl_texcache.h"
 #include "ogl_render.h"
+#include "renderlib.h"
 #include "briefings.h"
 #include "menubackground.h"
 #include "cockpit.h"
@@ -646,20 +647,11 @@ return (ogl.IsOculusRift () /*&& gameStates.app.bGameRunning*/) ? 0.5f : 1.0f;
 
 void CBriefing::RenderElement (int nElement)
 {
-if (gameStates.app.bNostalgia)
-	ogl.SetDrawBuffer (GL_FRONT, 0);
-else
-	ogl.ChooseDrawBuffer ();
-
 fontManager.SetCurrent (GAME_FONT);
 fontManager.SetScale (fontManager.Scale () * GetScale ());
 
-int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
-for (i = 0, j = -1; i < nFrames; i++, j += 2) {
-	int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
-	gameData.SetStereoSeparation (j);
-	SetupCanvasses ();
-
+CFrameController fc;
+for (fc.Begin (); fc.Continue (); fc.End ()) {
 	CCanvas* baseCanv;
 	if (!ogl.IsOculusRift ()) 
 		baseCanv = &gameData.render.frame;
@@ -744,7 +736,6 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 			break;
 		}
 	baseCanv->Deactivate ();
-	gameData.SetStereoOffsetType (nOffsetSave);
 	}
 fontManager.SetScale (fontManager.Scale () / GetScale ());
 }

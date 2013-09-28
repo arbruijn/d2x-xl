@@ -43,6 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "songs.h"
 #include "config.h"
 #include "cockpit.h"
+#include "renderlib.h"
 
 //-----------------------------------------------------------------------
 
@@ -207,13 +208,8 @@ while (nNextSubTitle < m_nCaptions && nFrame >= m_captions [nNextSubTitle].first
 	nNextSubTitle++;
 	}
 
-int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
-int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
-
-for (i = 0, j = -1; i < nFrames; i++, j += 2) {
-	gameData.SetStereoSeparation (j);
-	SetupCanvasses ();
-
+	CFrameController fc;
+	for (fc.Begin (); fc.Continue (); fc.End ()) {
 	if (ogl.IsOculusRift ()) {
 		int w, h;
 		cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
@@ -240,7 +236,6 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 	else
 		gameData.render.frame.Deactivate ();
 	}
-gameData.SetStereoOffsetType (nOffsetSave);
 }
 
 // ----------------------------------------------------------------------
@@ -271,22 +266,8 @@ bmFrame.SetPalette (movieManager.m_palette);
 
 TRANSPARENCY_COLOR = 0;
 
-int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
-int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
-
-if (gameStates.app.bNostalgia)
-	ogl.SetDrawBuffer (GL_FRONT, 0);
-else
-	ogl.ChooseDrawBuffer ();
-
-//gameData.render.screen.Activate ();
-//glClear (GL_COLOR_BUFFER_BIT);
-//gameData.render.screen.Deactivate ();
-
-for (i = 0, j = -1; i < nFrames; i++, j += 2) {
-	gameData.SetStereoSeparation (j);
-	SetupCanvasses ();
-
+CFrameController fc;
+for (fc.Begin (); fc.Continue (); fc.End ()) {
 	if (ogl.IsOculusRift ()) {
 		int w, h;
 		cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
@@ -327,7 +308,6 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 	else
 		gameData.render.frame.Deactivate ();
 	}
-gameData.SetStereoOffsetType (nOffsetSave);
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
 bmFrame.SetBuffer (NULL);
 }

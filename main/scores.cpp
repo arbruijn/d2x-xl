@@ -35,6 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menubackground.h"
 #include "songs.h"
 #include "ogl_lib.h"
+#include "renderlib.h"
 #include "cockpit.h"
 
 #define VERSION_NUMBER 		1
@@ -360,12 +361,8 @@ while (!bDone) {
 			t0 = t1;
 		}
 
-	int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
-	for (i = 0, j = -1; i < nFrames; i++, j += 2) {
-		gameData.SetStereoSeparation (j);
-		ogl.ChooseDrawBuffer ();
-		SetupCanvasses ();
-		gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+	CFrameController fc;
+	for (fc.Begin (); fc.Continue (); fc.End ()) {
 		backgroundManager.Activate (background);
 		gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 
