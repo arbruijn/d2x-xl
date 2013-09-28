@@ -636,11 +636,17 @@ fontManager.SetScale (fontManager.Scale () * GetScale ());
 for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 	gameData.SetStereoSeparation (j);
 	SetupCanvasses ();
-	
-	int w = gameData.render.frame.Width (false) / 2;
-	int h = gameData.render.screen.Height (false) * w / gameData.render.screen.Width (false);
-	gameData.render.window.Setup (&gameData.render.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
-	gameData.render.window.Activate (&gameData.render.frame);
+
+	CCanvas* baseCanv;
+	if (!ogl.IsOculusRift ()) 
+		baseCanv = &gameData.render.frame;
+	else {
+		int w = gameData.render.frame.Width (false) / 2;
+		int h = gameData.render.screen.Height (false) * w / gameData.render.screen.Width (false);
+		gameData.render.window.Setup (&gameData.render.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
+		gameData.render.window.Activate (&gameData.render.frame);
+		baseCanv = &gameData.render.window;
+		}
 
 	switch (nElement) {
 		case 0:
@@ -670,7 +676,7 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 			break;
 
 		case 5:
-			RobotCanv ().Activate (&gameData.render.window);
+			RobotCanv ().Activate (baseCanv);
 			movieManager.RotateRobot ();
 			RobotCanv ().Deactivate ();
 			break;
@@ -690,11 +696,11 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 				w = RescaleX (163);
 				h = RescaleY (136);
 				}
-			RobotCanv ().Setup (&gameData.render.window, x, y, w, h);
-			RobotCanv ().Activate (&gameData.render.window);
+			RobotCanv ().Setup (baseCanv, x, y, w, h);
+			RobotCanv ().Activate (baseCanv);
 			RobotCanv ().Clear (m_info.nEraseColor);
 			DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
-			RobotCanv ().Activate (&gameData.render.window);
+			RobotCanv ().Activate (baseCanv);
 #if DBG
 			CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
 			glLineWidth (float (gameData.render.screen.Width ()) / 640.0f);
@@ -708,8 +714,8 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 		case 7:
 			{
 			CCanvas bitmapCanv;
-			bitmapCanv.Setup (&gameData.render.window, 220, 45, m_bitmap->Width (), m_bitmap->Height ());
-			bitmapCanv.Activate (&gameData.render.window);
+			bitmapCanv.Setup (baseCanv, 220, 45, m_bitmap->Width (), m_bitmap->Height ());
+			bitmapCanv.Activate (baseCanv);
 			m_bitmap->RenderScaled (0, 0);
 			bitmapCanv.Deactivate ();
 			}
@@ -741,7 +747,7 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 			SetupTransformation (transformation, p, CFixMatrix::IDENTITY, gameStates.render.xZoom, 1);
 			GLint	depthFunc = ogl.GetDepthMode ();
 			ogl.SetDepthMode (GL_ALWAYS);
-			canvas.Activate (&gameData.render.window);
+			canvas.Activate (baseCanv);
 			p.v.coord.z = 2 * I2X (w);
 			ogl.RenderBitmap (m_bitmap, p, I2X (w), I2X (h), NULL, 1.0, 0);
 			canvas.Deactivate ();
@@ -753,7 +759,7 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 			// invalid call
 			break;
 		}
-	gameData.render.window.Deactivate ();
+	baseCanv->Deactivate ();
 	}
 fontManager.SetScale (fontManager.Scale () / GetScale ());
 gameData.SetStereoOffsetType (nOffsetSave);
@@ -1247,7 +1253,7 @@ int CBriefing::HandleNEWL (void)
 if (m_info.prevCh != '\\') {
 	m_info.prevCh = m_info.ch;
 	if (m_info.bDumbAdjust == 0)
-		m_info.briefingTextY += Scaled (8 * (gameStates.menus.bHires + 1));
+		m_info.briefingTextY += 8 * (gameStates.menus.bHires + 1);
 	else
 		m_info.bDumbAdjust--;
 	m_info.briefingTextX = m_info.bsP->textLeft;
@@ -1474,7 +1480,7 @@ for (;;) {
 
 		if (m_info.briefingTextX > m_info.bsP->textLeft + m_info.bsP->textWidth) {
 			m_info.briefingTextX = m_info.bsP->textLeft;
-			m_info.briefingTextY += Scaled (m_info.bsP->textTop);
+			m_info.briefingTextY += m_info.bsP->textTop;
 			}
 
 		h = HandleNewPage ();
