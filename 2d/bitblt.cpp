@@ -607,7 +607,7 @@ void CBitmap::RenderFullScreen (void)
 	CCanvas* const dest = CCanvas::Current ();
 
 #if 1
-Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), (m_info.props.flags & BM_FLAG_TRANSPARENT) != 0, 0);
+Render (NULL, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), (m_info.props.flags & BM_FLAG_TRANSPARENT) != 0, 0);
 #else
 if ((Mode () == BM_LINEAR) && (dest->Mode () == BM_OGL)) {
 	Render (dest, 0, 0, dest->Width (), dest->Height (), 0, 0, Width (), Height (), (m_info.props.flags & BM_FLAG_TRANSPARENT) != 0, 0);

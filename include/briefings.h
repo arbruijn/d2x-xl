@@ -99,6 +99,7 @@ class CBriefing {
 	private:
 		CBriefingInfo	m_info;
 		CBitmap			m_background;
+		CBitmap*			m_bitmap;
 		char				m_szBackground [FILENAME_LEN + 1];
 		char				m_message [2];
 		int				m_pcxError;

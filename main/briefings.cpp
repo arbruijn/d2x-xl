@@ -415,7 +415,7 @@ if (strstr (m_szBackground, ".tga")) {
 	CTGA		tga (&m_background);
 	if (!tga.Read (m_szBackground, gameFolders.szDataDir [0], -1, 1.0, 0))
 		return PCX_ERROR_OPENING;
-	RenderElement (4);
+	RenderElement (3);
 	int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
 
 	for (i = 0, j = -1; i < nFrames; i++, j += 2) {
@@ -429,7 +429,7 @@ if (strstr (m_szBackground, ".tga")) {
 	}
 else {
 	for (;;) {
-		RenderElement (5);
+		RenderElement (4);
 		if (m_pcxError == PCX_ERROR_NONE)
 			break;
 		if (!ps)
@@ -589,11 +589,8 @@ if (*m_info.szBitmapName) {
 
 void CBriefing::RenderBitmap (CBitmap* bmP)
 {
-CCanvas bitmapCanv;
-bitmapCanv.Setup (&gameData.render.frame, 220 - gameData.StereoOffset2D (), 45, bmP->Width (), bmP->Height ());
-bitmapCanv.Activate (&gameData.render.frame);
-bmP->RenderScaled (0, 0);
-bitmapCanv.Deactivate ();
+m_bitmap = bmP;
+RenderElement (7);
 }
 
 //-----------------------------------------------------------------------------
@@ -616,10 +613,7 @@ if (m_info.bInitAnimate) {
 gameStates.render.bFullBright	= 1;
 
 //ogl.m_states.bEnableScissor = 1;
-RobotCanv ().Activate (&gameData.render.frame);
-CCanvas::Current ()->Clear (m_info.nEraseColor);
-DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
-RobotCanv ().Deactivate ();
+RenderElement (6);
 //ogl.m_states.bEnableScissor = 0;
 gameStates.render.bFullBright = 0;
 m_info.vRobotAngles.v.coord.h += 15 * (t - m_info.tAnimate);
@@ -630,16 +624,19 @@ m_info.tAnimate = t;
 
 void CBriefing::RenderRobotMovie (void)
 {
-RobotCanv ().Activate (&gameData.render.frame);
-movieManager.RotateRobot ();
-RobotCanv ().Deactivate ();
+RenderElement (5);
 }
 
 //-----------------------------------------------------------------------------
 
 void CBriefing::Animate (void)
 {
-RenderElement (3);
+if (m_info.bRobotPlaying)
+	RenderRobotMovie ();
+else if (m_info.nRobot != -1)
+	RenderRobotFrame ();
+else if (*m_info.szBitmapName)
+	RenderBitmapFrame (0);
 }
 
 //-----------------------------------------------------------------------------
@@ -689,20 +686,34 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 			break;
 
 		case 3:
-			if (m_info.bRobotPlaying)
-				RenderRobotMovie ();
-			else if (m_info.nRobot != -1)
-				RenderRobotFrame ();
-			else if (*m_info.szBitmapName)
-				RenderBitmapFrame (0);
-			break;
-
-		case 4:
 			m_background.RenderFullScreen ();
 			break;
 
-		case 5:
+		case 4:
 			m_pcxError = PcxReadFullScrImage (m_szBackground, gameStates.app.bD1Mission);
+			break;
+
+		case 5:
+			RobotCanv ().Activate (&gameData.render.frame);
+			movieManager.RotateRobot ();
+			RobotCanv ().Deactivate ();
+			break;
+
+		case 6:
+			RobotCanv ().Activate (&gameData.render.frame);
+			CCanvas::Current ()->Clear (m_info.nEraseColor);
+			DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
+			RobotCanv ().Deactivate ();
+			break;
+
+		case 7:
+			{
+			CCanvas bitmapCanv;
+			bitmapCanv.Setup (&gameData.render.frame, 220 - gameData.StereoOffset2D (), 45, m_bitmap->Width (), m_bitmap->Height ());
+			bitmapCanv.Activate (&gameData.render.frame);
+			m_bitmap->RenderScaled (0, 0);
+			bitmapCanv.Deactivate ();
+			}
 			break;
 
 		default:
