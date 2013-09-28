@@ -43,6 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "interp.h"
 #include "ogl_lib.h"
 #include "ogl_texcache.h"
+#include "ogl_render.h"
 #include "briefings.h"
 #include "menubackground.h"
 #include "config.h"
@@ -602,11 +603,6 @@ else if (*m_info.szBitmapName)
 
 void CBriefing::InitSpinningRobot (void)
 {
-int x = RescaleX (138);
-int y = RescaleY (55);
-int w = RescaleX (163);
-int h = RescaleY (136);
-RobotCanv ().Setup (&gameData.render.frame, x - gameData.StereoOffset2D (), y, w, h);
 m_info.bInitAnimate = 1;
 m_info.tAnimate = SDL_GetTicks ();
 }
@@ -649,20 +645,20 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 	switch (nElement) {
 		case 0:
 			fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
-			GrPrintF (NULL, /*Scaled*/ (m_info.briefingTextX + 1), /*Scaled*/ (m_info.briefingTextY), "_");
+			GrPrintF (NULL, Scaled (m_info.briefingTextX + 1), Scaled (m_info.briefingTextY), "_");
 			break;
 
 		case 1:
 			fontManager.SetColorRGBi (m_info.nEraseColor, 1, 0, 0);
-			GrPrintF (NULL, /*Scaled*/ (m_info.briefingTextX + 1), /*Scaled*/ (m_info.briefingTextY), "_");
+			GrPrintF (NULL, Scaled (m_info.briefingTextX + 1), Scaled (m_info.briefingTextY), "_");
 		//	erase the character
 			fontManager.SetColorRGB (briefBgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
-			GrPrintF (NULL, /*Scaled*/ (m_info.briefingTextX), /*Scaled*/ (m_info.briefingTextY), m_message);
+			GrPrintF (NULL, Scaled (m_info.briefingTextX), Scaled (m_info.briefingTextY), m_message);
 			break;
 
 		case 2:
 			fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
-			GrPrintF (NULL, /*Scaled*/ (m_info.briefingTextX + 1), /*Scaled*/ (m_info.briefingTextY), m_message);
+			GrPrintF (NULL, Scaled (m_info.briefingTextX + 1), Scaled (m_info.briefingTextY), m_message);
 			break;
 
 		case 3:
@@ -680,10 +676,35 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 			break;
 
 		case 6:
+			{
+			int x, y, w, h;
+			if (ogl.IsOculusRift ()) {
+				x = gameData.render.window.Width (false) / 2;
+				y = gameData.render.window.Height (false) / 2;
+				w = 9 * x / 10;
+				h = 9 * y / 10;
+				x += w - h;
+				w = h;
+				}
+			else {
+				x = RescaleX (138);
+				y = RescaleY (55);
+				w = RescaleX (163);
+				h = RescaleY (136);
+				}
+			RobotCanv ().Setup (&gameData.render.window, x, y, w, h);
 			RobotCanv ().Activate (&gameData.render.window);
 			RobotCanv ().Clear (m_info.nEraseColor);
 			DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
+			RobotCanv ().Activate (&gameData.render.window);
+#if DBG
+			CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
+			glLineWidth (float (gameData.render.screen.Width ()) / 640.0f);
+			OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+#endif
+			glLineWidth (1);
 			RobotCanv ().Deactivate ();
+			}
 			break;
 
 		case 7:
@@ -842,7 +863,7 @@ if ((TimerGetFixedSeconds () % (I2X (1)/2)) > (I2X (1)/4))
 	fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
 else
 	fontManager.SetColorRGB (&eraseColorRgb, NULL);
-GrPrintF (NULL, /*Scaled*/ (m_info.briefingTextX + 1), /*Scaled*/ (m_info.briefingTextY), "_");
+GrPrintF (NULL, Scaled (m_info.briefingTextX + 1), Scaled (m_info.briefingTextY), "_");
 if (ogl.m_states.nDrawBuffer == GL_FRONT)
 	ogl.Update (0);
 }
