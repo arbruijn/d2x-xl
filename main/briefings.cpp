@@ -679,12 +679,10 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 			{
 			int x, y, w, h;
 			if (ogl.IsOculusRift ()) {
-				x = gameData.render.window.Width (false) / 2;
-				y = gameData.render.window.Height (false) / 2;
-				w = 9 * x / 10;
-				h = 9 * y / 10;
-				x += w - h;
-				w = h;
+				y = gameData.render.window.Height (false) / 3;
+				w = gameData.render.window.Height (false) - y;
+				x = gameData.render.window.Width (false) - w;
+				h = w = 9 * w / 10;
 				}
 			else {
 				x = RescaleX (138);
@@ -1249,7 +1247,7 @@ int CBriefing::HandleNEWL (void)
 if (m_info.prevCh != '\\') {
 	m_info.prevCh = m_info.ch;
 	if (m_info.bDumbAdjust == 0)
-		m_info.briefingTextY += 8 * (gameStates.menus.bHires + 1);
+		m_info.briefingTextY += Scaled (8 * (gameStates.menus.bHires + 1));
 	else
 		m_info.bDumbAdjust--;
 	m_info.briefingTextX = m_info.bsP->textLeft;
@@ -1476,7 +1474,7 @@ for (;;) {
 
 		if (m_info.briefingTextX > m_info.bsP->textLeft + m_info.bsP->textWidth) {
 			m_info.briefingTextX = m_info.bsP->textLeft;
-			m_info.briefingTextY += m_info.bsP->textTop;
+			m_info.briefingTextY += Scaled (m_info.bsP->textTop);
 			}
 
 		h = HandleNewPage ();
