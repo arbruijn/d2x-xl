@@ -133,6 +133,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "findpath.h"
 #include "waypoint.h"
 #include "transprender.h"
+#include "scores.h"
 
 #if defined (FORCE_FEEDBACK)
  #include "tactile.h"
@@ -583,7 +584,7 @@ void DoGameOver (void)
 {
 //	MsgBox (TXT_GAME_OVER, 1, TXT_OK, "");
 if (missionManager.nCurrentMission == missionManager.nBuiltInMission [0])
-	MaybeAddPlayerScore (0);
+	scoreManager.Add (0);
 SetFunctionMode (FMODE_MENU);
 gameData.app.SetGameMode (GM_GAME_OVER);
 longjmp (gameExitPoint, 0);		// Exit out of game loop
@@ -1538,7 +1539,7 @@ if (!IsMultiGame) {
 
 		//try doing special credits
 		sprintf (szBriefing,"%s.ctb",gameStates.app.szCurrentMissionFile);
-		creditsManager.Show (szBriefing);
+		creditsRenderer.Show (szBriefing);
 		}
 	}
 KeyFlush ();
@@ -1553,7 +1554,7 @@ if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && !(
 	CCanvas::Current ()->Clear (BLACK_RGBA);
 	paletteManager.ResetEffect ();
 	//paletteManager.Load (D2_DEFAULT_PALETTE, NULL, 0, 1, 0);
-	MaybeAddPlayerScore (0);
+	scoreManager.Add (0);
 	}
 SetFunctionMode (FMODE_MENU);
 if (gameData.app.GameMode (GM_SERIAL | GM_MODEM))

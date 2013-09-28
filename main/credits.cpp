@@ -154,11 +154,11 @@ static const char *xlCredits [] = {
 
 #define FADE_DIST	240
 
-CCreditsManager creditsManager;
+CCreditsRenderer creditsRenderer;
 
 //-----------------------------------------------------------------------------
 
-uint CCreditsManager::Read (void)
+uint CCreditsRenderer::Read (void)
 {
 while (m_nExtraInc) {
 	m_nLines [0] = (m_nLines [0] + 1) % NUM_LINES;
@@ -197,7 +197,7 @@ return m_bDone;
 
 //-----------------------------------------------------------------------------
 
-bool CCreditsManager::Open (char* creditsFilename)
+bool CCreditsRenderer::Open (char* creditsFilename)
 {
 	char filename [32];
 
@@ -227,7 +227,7 @@ return true;
 
 //-----------------------------------------------------------------------------
 
-bool CCreditsManager::HandleInput (void)
+bool CCreditsRenderer::HandleInput (void)
 {
 int k = KeyInKey ();
 
@@ -261,7 +261,7 @@ return true;
 
 //-----------------------------------------------------------------------------
 
-void CCreditsManager::Render (void)
+void CCreditsRenderer::Render (void)
 {
 	CFloatVector		colors [4] = {{{{1,1,1,1}}},{{{1,1,1,1}}},{{{1,1,1,1}}},{{{1,1,1,1}}}};
 
@@ -309,7 +309,7 @@ for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 
 //-----------------------------------------------------------------------------
 
-void CCreditsManager::Init (void)
+void CCreditsRenderer::Init (void)
 {
 m_bDone = 0;
 m_bBinary = 0;
@@ -323,7 +323,7 @@ m_bmBackdrop.Init ();
 
 //-----------------------------------------------------------------------------
 
-void CCreditsManager::Destroy (void)
+void CCreditsRenderer::Destroy (void)
 {
 m_cf.Close ();
 for (int i = 0; i < 3; i++)
@@ -334,7 +334,7 @@ m_bmBackdrop.Destroy ();
 //-----------------------------------------------------------------------------
 
 //if filename passed is NULL, show Normal credits
-void CCreditsManager::Show (char *creditsFilename)
+void CCreditsRenderer::Show (char *creditsFilename)
 {
 	static char fontNames [3][2][13] = {
 		{"font1-1.fnt", "font1-1h.fnt"},

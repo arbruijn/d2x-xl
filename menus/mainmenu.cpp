@@ -331,7 +331,7 @@ else if (nChoice == m.IndexOf ("play songs"))
 else if (nChoice == m.IndexOf ("view credits")) {
 	paletteManager.DisableEffect ();
 	songManager.StopAll ();
-	creditsManager.Show (NULL); 
+	creditsRenderer.Show (NULL); 
 	}
 //else if (nChoice == m.IndexOf ("show help")) 
 //	ShowHelp ();

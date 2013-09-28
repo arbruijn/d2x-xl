@@ -14,7 +14,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _CREDITS_H
 #define _CREDITS_H
 
-class CCreditsManager {
+class CCreditsRenderer {
 
 #define NUM_LINES_HIRES 21
 #define NUM_LINES (gameStates.menus.bHires ? NUM_LINES_HIRES : 20)
@@ -34,8 +34,8 @@ class CCreditsManager {
 		CBackground		m_background;
 
 	public:
-		CCreditsManager () { Init (); }
-		~CCreditsManager () { Destroy (); }
+		CCreditsRenderer () { Init (); }
+		~CCreditsRenderer () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
 		bool HandleInput (void);
@@ -45,6 +45,6 @@ class CCreditsManager {
 		void Show (char* creditsFilename);
 };
 
-extern CCreditsManager creditsManager;
+extern CCreditsRenderer creditsRenderer;
 
 #endif /* _CREDITS_H */

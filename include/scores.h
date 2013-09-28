@@ -33,10 +33,68 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define INVULNERABILITY_SCORE   0
 #define HEADLIGHT_SCORE         0
 
-void ScoresView (int citem);
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-// If CPlayerData has a high score, adds you to file and returns.
-// If abortFlag set, only show if CPlayerData has gotten a high score.
-void MaybeAddPlayerScore (int abortFlag);
+#define COOL_MESSAGE_LEN 		50
+#define MAX_HIGH_SCORES 		10
+
+//------------------------------------------------------------------------------
+
+typedef struct tStatsInfo {
+  	char		name [CALLSIGN_LEN + 1];
+	int		score;
+	sbyte		startingLevel;
+	sbyte		endingLevel;
+	sbyte		diffLevel;
+	short 	killRatio;		// 0-100
+	short		hostageRatio;  // 
+	int		seconds;		// How long it took in seconds...
+} tStatsInfo;
+
+//------------------------------------------------------------------------------
+
+typedef struct tScoreInfo {
+	char			nSignature [3];			// DHS
+	sbyte       version;				// version
+	char			szCoolSaying [COOL_MESSAGE_LEN];
+	tStatsInfo	stats [MAX_HIGH_SCORES];
+} tScoreInfo;
+
+//------------------------------------------------------------------------------
+
+class CScoreManager {
+	private:
+		tScoreInfo	m_scores;
+		tStatsInfo	m_lastGame;
+		char			m_filename [FILENAME_LEN];
+		CBackground	m_background;
+		int			m_nFade;
+		bool			m_bHilite;
+
+	public:
+		CScoreManager ();
+		bool Load (void);
+		bool Save (void);
+		void Show (int nCurItem);
+		void Add (int bAbort);
+
+	private:
+		char* GetFilename (void);
+		void SetDefaultScores (void);
+		void InitStats (tStatsInfo& stats);
+		char* IntToString (int number, char *dest);
+		void _CDECL_ RPrintF (int x, int y, const char * format, ...);
+		void RenderItem (int i, tStatsInfo& stats);
+		void Render (int nCurItem);
+		int HandleInput (int nCurItem);
+	};
+
+extern CScoreManager scoreManager;
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 #endif /* _SCORES_H */
