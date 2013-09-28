@@ -416,15 +416,6 @@ if (strstr (m_szBackground, ".tga")) {
 	if (!tga.Read (m_szBackground, gameFolders.szDataDir [0], -1, 1.0, 0))
 		return PCX_ERROR_OPENING;
 	RenderElement (3);
-	int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
-
-	for (i = 0, j = -1; i < nFrames; i++, j += 2) {
-		gameData.SetStereoSeparation (j);
-		SetupCanvasses ();
-		gameData.render.frame.Activate ();
-		
-		gameData.render.frame.Deactivate ();
-		}
 	return PCX_ERROR_NONE;
 	}
 else {
@@ -615,7 +606,7 @@ int x = RescaleX (138);
 int y = RescaleY (55);
 int w = RescaleX (163);
 int h = RescaleY (136);
-RobotCanv ().Setup (&gameData.render.frame, x - gameData.StereoOffset2D (), y, w, h, true);
+RobotCanv ().Setup (&gameData.render.frame, x - gameData.StereoOffset2D (), y, w, h);
 m_info.bInitAnimate = 1;
 m_info.tAnimate = SDL_GetTicks ();
 }
@@ -644,7 +635,7 @@ else
 	ogl.ChooseDrawBuffer ();
 
 fontManager.SetCurrent (GAME_FONT);
-fontManager.SetScale (fontManager.Scale () * (ogl.IsOculusRift () ? 0.5f : 1.0f));
+fontManager.SetScale (fontManager.Scale () * GetScale ());
 
 for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 	gameData.SetStereoSeparation (j);
@@ -658,20 +649,20 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 	switch (nElement) {
 		case 0:
 			fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
-			GrPrintF (NULL, Scaled (m_info.briefingTextX + 1), Scaled (m_info.briefingTextY), "_");
+			GrPrintF (NULL, /*Scaled*/ (m_info.briefingTextX + 1), /*Scaled*/ (m_info.briefingTextY), "_");
 			break;
 
 		case 1:
 			fontManager.SetColorRGBi (m_info.nEraseColor, 1, 0, 0);
-			GrPrintF (NULL, Scaled (m_info.briefingTextX + 1), Scaled (m_info.briefingTextY), "_");
+			GrPrintF (NULL, /*Scaled*/ (m_info.briefingTextX + 1), /*Scaled*/ (m_info.briefingTextY), "_");
 		//	erase the character
 			fontManager.SetColorRGB (briefBgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
-			GrPrintF (NULL, Scaled (m_info.briefingTextX), Scaled (m_info.briefingTextY), m_message);
+			GrPrintF (NULL, /*Scaled*/ (m_info.briefingTextX), /*Scaled*/ (m_info.briefingTextY), m_message);
 			break;
 
 		case 2:
 			fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
-			GrPrintF (NULL, Scaled (m_info.briefingTextX + 1), Scaled (m_info.briefingTextY), m_message);
+			GrPrintF (NULL, /*Scaled*/ (m_info.briefingTextX + 1), /*Scaled*/ (m_info.briefingTextY), m_message);
 			break;
 
 		case 3:
@@ -683,7 +674,7 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 			break;
 
 		case 5:
-			RobotCanv ().Activate (&gameData.render.frame);
+			RobotCanv ().Activate (&gameData.render.window);
 			movieManager.RotateRobot ();
 			RobotCanv ().Deactivate ();
 			break;
@@ -698,7 +689,7 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 		case 7:
 			{
 			CCanvas bitmapCanv;
-			bitmapCanv.Setup (&gameData.render.frame, 220, 45, m_bitmap->Width (), m_bitmap->Height ());
+			bitmapCanv.Setup (&gameData.render.window, 220, 45, m_bitmap->Width (), m_bitmap->Height ());
 			bitmapCanv.Activate (&gameData.render.window);
 			m_bitmap->RenderScaled (0, 0);
 			bitmapCanv.Deactivate ();
@@ -745,7 +736,7 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 		}
 	gameData.render.window.Deactivate ();
 	}
-fontManager.SetScale (fontManager.Scale () / (ogl.IsOculusRift () ? 0.5f : 1.0f));
+fontManager.SetScale (fontManager.Scale () / GetScale ());
 gameData.SetStereoOffsetType (nOffsetSave);
 }
 
@@ -851,7 +842,7 @@ if ((TimerGetFixedSeconds () % (I2X (1)/2)) > (I2X (1)/4))
 	fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
 else
 	fontManager.SetColorRGB (&eraseColorRgb, NULL);
-GrPrintF (NULL, m_info.briefingTextX+1, m_info.briefingTextY, "_");
+GrPrintF (NULL, /*Scaled*/ (m_info.briefingTextX + 1), /*Scaled*/ (m_info.briefingTextY), "_");
 if (ogl.m_states.nDrawBuffer == GL_FRONT)
 	ogl.Update (0);
 }
@@ -1237,7 +1228,7 @@ int CBriefing::HandleNEWL (void)
 if (m_info.prevCh != '\\') {
 	m_info.prevCh = m_info.ch;
 	if (m_info.bDumbAdjust == 0)
-		m_info.briefingTextY += (8*(gameStates.menus.bHires+1));
+		m_info.briefingTextY += 8 * (gameStates.menus.bHires + 1);
 	else
 		m_info.bDumbAdjust--;
 	m_info.briefingTextX = m_info.bsP->textLeft;
