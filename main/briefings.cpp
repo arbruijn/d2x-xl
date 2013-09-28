@@ -620,42 +620,58 @@ m_info.bInitAnimate = 1;
 m_info.tAnimate = SDL_GetTicks ();
 }
 
+//------------------------------------------------------------------------------ 
+
+float CBriefing::GetScale (void)
+{
+#if 0 //DBG
+return ogl.IsSideBySideDevice () ? 0.5f : 1.0f;
+#else
+return (ogl.IsOculusRift () /*&& gameStates.app.bGameRunning*/) ? 0.5f : 1.0f;
+#endif
+}
+
 //---------------------------------------------------------------------------
 
 void CBriefing::RenderElement (int nElement)
 {
 int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
+int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 
 if (gameStates.app.bNostalgia)
 	ogl.SetDrawBuffer (GL_FRONT, 0);
 else
 	ogl.ChooseDrawBuffer ();
 
+fontManager.SetCurrent (GAME_FONT);
+fontManager.SetScale (fontManager.Scale () * (ogl.IsOculusRift () ? 0.5f : 1.0f));
+
 for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 	gameData.SetStereoSeparation (j);
 	SetupCanvasses ();
-	gameData.render.frame.Activate ();
+	
+	int w = gameData.render.frame.Width (false) / 2;
+	int h = gameData.render.screen.Height (false) * w / gameData.render.screen.Width (false);
+	gameData.render.window.Setup (&gameData.render.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
+	gameData.render.window.Activate (&gameData.render.frame);
 
 	switch (nElement) {
 		case 0:
 			fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
-			fontManager.SetCurrent (GAME_FONT);
-			GrPrintF (NULL, m_info.briefingTextX + 1 + 2 * gameData.StereoOffset2D (), m_info.briefingTextY, "_");
+			GrPrintF (NULL, Scaled (m_info.briefingTextX + 1), Scaled (m_info.briefingTextY), "_");
 			break;
 
 		case 1:
-			fontManager.SetCurrent (GAME_FONT);
 			fontManager.SetColorRGBi (m_info.nEraseColor, 1, 0, 0);
-			GrPrintF (NULL, m_info.briefingTextX + 1 + 2 * gameData.StereoOffset2D (), m_info.briefingTextY, "_");
+			GrPrintF (NULL, Scaled (m_info.briefingTextX + 1), Scaled (m_info.briefingTextY), "_");
 		//	erase the character
 			fontManager.SetColorRGB (briefBgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
-			GrPrintF (NULL, m_info.briefingTextX, m_info.briefingTextY, m_message);
+			GrPrintF (NULL, Scaled (m_info.briefingTextX), Scaled (m_info.briefingTextY), m_message);
 			break;
 
 		case 2:
-			fontManager.SetCurrent (GAME_FONT);
 			fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
-			GrPrintF (NULL, m_info.briefingTextX + 1 + 2 * gameData.StereoOffset2D (), m_info.briefingTextY, m_message);
+			GrPrintF (NULL, Scaled (m_info.briefingTextX + 1), Scaled (m_info.briefingTextY), m_message);
 			break;
 
 		case 3:
@@ -673,8 +689,8 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 			break;
 
 		case 6:
-			RobotCanv ().Activate (&gameData.render.frame);
-			CCanvas::Current ()->Clear (m_info.nEraseColor);
+			RobotCanv ().Activate (&gameData.render.window);
+			RobotCanv ().Clear (m_info.nEraseColor);
 			DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
 			RobotCanv ().Deactivate ();
 			break;
@@ -682,8 +698,8 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 		case 7:
 			{
 			CCanvas bitmapCanv;
-			bitmapCanv.Setup (&gameData.render.frame, 220 - gameData.StereoOffset2D (), 45, m_bitmap->Width (), m_bitmap->Height ());
-			bitmapCanv.Activate (&gameData.render.frame);
+			bitmapCanv.Setup (&gameData.render.frame, 220, 45, m_bitmap->Width (), m_bitmap->Height ());
+			bitmapCanv.Activate (&gameData.render.window);
 			m_bitmap->RenderScaled (0, 0);
 			bitmapCanv.Deactivate ();
 			}
@@ -699,10 +715,10 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 			CCanvas canvas;
 			switch (m_info.nAnimatingBitmapType) {
 				case 0: 
-					canvas.Setup (CCanvas::Current (), x - CScreen::Unscaled (gameData.StereoOffset2D ()), y, w, h);
+					canvas.Setup (CCanvas::Current (), x, y, w, h);
 					break;
 				case 1:
-					canvas.Setup (CCanvas::Current (), x - CScreen::Unscaled (gameData.StereoOffset2D ()), y, w, h);
+					canvas.Setup (CCanvas::Current (), x, y, w, h);
 					break;
 				// Adam: Change here for your new animating bitmap thing. 94, 94 are bitmap size.
 				default:
@@ -715,7 +731,7 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 			SetupTransformation (transformation, p, CFixMatrix::IDENTITY, gameStates.render.xZoom, 1);
 			GLint	depthFunc = ogl.GetDepthMode ();
 			ogl.SetDepthMode (GL_ALWAYS);
-			canvas.Activate (&gameData.render.frame);
+			canvas.Activate (&gameData.render.window);
 			p.v.coord.z = 2 * I2X (w);
 			ogl.RenderBitmap (m_bitmap, p, I2X (w), I2X (h), NULL, 1.0, 0);
 			canvas.Deactivate ();
@@ -727,8 +743,10 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 			// invalid call
 			break;
 		}
-	gameData.render.frame.Deactivate ();
+	gameData.render.window.Deactivate ();
 	}
+fontManager.SetScale (fontManager.Scale () / (ogl.IsOculusRift () ? 0.5f : 1.0f));
+gameData.SetStereoOffsetType (nOffsetSave);
 }
 
 //---------------------------------------------------------------------------

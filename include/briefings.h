@@ -171,12 +171,15 @@ class CBriefing {
 
 		char* SkipPage (void); 
 
-		inline int RescaleX (int x) { return x * CCanvas::Current ()->Width (false) / 320; }
-		inline int RescaleY (int y) { return y * CCanvas::Current ()->Height (false) / 200; }
-
 		CCanvas& RobotCanv (void) { return m_info.robotCanv; }
 
 		void RenderElement (int nElement);
+
+		float GetScale (void);
+		inline int Scaled (int v) { return int (FRound (v * GetScale ())); }
+		inline int RescaleX (int x) { return Scaled (x * CCanvas::Current ()->Width (false) / 320); }
+		inline int RescaleY (int y) { return Scaled (y * CCanvas::Current ()->Height (false) / 200); }
+
 	};
 
 extern CBriefing briefing;
