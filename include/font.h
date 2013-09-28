@@ -157,6 +157,9 @@ class CFontManager {
 		void Push (void) { m_save.Push (m_current); }
 		void Pop (void) { m_current = m_save.Pop (); }
 		void Remap ();
+
+		inline int Scaled (int v) { return (int) FRound ((float (v) * Scale ())); }
+		inline int Unscaled (int v) { return (int) FRound ((float (v) / Scale ())); }
 	};
 
 extern CFontManager fontManager;

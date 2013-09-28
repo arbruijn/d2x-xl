@@ -102,8 +102,8 @@ if (!MenuRenderTimeout (t0, -1))
 
 gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 fontManager.SetScale (fontManager.Scale () * GetScale ());
-
 backgroundManager.Activate (m_background);
+gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 fontManager.SetCurrent (NORMAL_FONT);
 FadeIn ();
 GrString (0x8000, 10, m_props.pszTitle);
@@ -319,10 +319,13 @@ if (!bInitialized) {
 	w_w += (CCanvas::Current ()->Font ()->Width () * 4);
 	w_h = nTitleHeight + m_nHeight + (CCanvas::Current ()->Font ()->Height () * 2);		// more space at bottom
 
-	if (w_w > CCanvas::Current ()->Width ()) 
-		w_w = CCanvas::Current ()->Width ();
-	if (w_h > CCanvas::Current ()->Height ()) 
-		w_h = CCanvas::Current ()->Height ();
+	w_w = Scaled (w_w);
+	w_h = Scaled (w_h);
+
+	if (w_w > CCanvas::Current ()->Width (false)) 
+		w_w = CCanvas::Current ()->Width (false);
+	if (w_h > CCanvas::Current ()->Height (false)) 
+		w_h = CCanvas::Current ()->Height (false);
 	if (w_w > 640)
 		w_w = 640;
 	if (w_h > 480)

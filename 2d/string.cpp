@@ -449,7 +449,7 @@ while (nextRowP != NULL) {
 	while ((c = *textP)) {
 		if (c == '\n') {
 			nextRowP = textP + 1;
-			y += m_info.height + 2;
+			y += fontManager.Scaled (m_info.height + 2);
 			break;
 			}
 		letter = c - m_info.minChar;

@@ -402,8 +402,8 @@ public:
 	virtual void Render (void);
 
 	static float GetScale (void);
-	static inline int Scale (int v) { return (int) FRound ((float (v) * GetScale ())); }
-	static inline int Unscale (int v) { return (int) FRound ((float (v) / GetScale ())); }
+	static inline int Scaled (int v) { return (int) FRound ((float (v) * GetScale ())); }
+	static inline int Unscaled (int v) { return (int) FRound ((float (v) / GetScale ())); }
 
 	static CMenu * Active (void) { return m_active; }
 
