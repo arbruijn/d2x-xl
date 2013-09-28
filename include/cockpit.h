@@ -294,6 +294,7 @@ class CGenericCockpit {
 
 		int AdjustCockpitXY (char* s, int& x, int& y);
 		int AdjustCockpitY (int y);
+		void SetupSceneCenter (CCanvas* refCanv, int& w, int& h);
 	};
 
 //	-----------------------------------------------------------------------------

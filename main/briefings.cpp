@@ -46,6 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_render.h"
 #include "briefings.h"
 #include "menubackground.h"
+#include "cockpit.h"
 #include "config.h"
 #ifdef __macosx__
 # include <OpenGL/glu.h>
@@ -624,7 +625,6 @@ return (ogl.IsOculusRift () /*&& gameStates.app.bGameRunning*/) ? 0.5f : 1.0f;
 void CBriefing::RenderElement (int nElement)
 {
 int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
-int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 
 if (gameStates.app.bNostalgia)
 	ogl.SetDrawBuffer (GL_FRONT, 0);
@@ -635,6 +635,7 @@ fontManager.SetCurrent (GAME_FONT);
 fontManager.SetScale (fontManager.Scale () * GetScale ());
 
 for (i = 0, j = -1; i < nFrames; i++, j += 2) {
+	int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 	gameData.SetStereoSeparation (j);
 	SetupCanvasses ();
 
@@ -642,13 +643,12 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 	if (!ogl.IsOculusRift ()) 
 		baseCanv = &gameData.render.frame;
 	else {
-		int w = gameData.render.frame.Width (false) / 2;
-		int h = gameData.render.screen.Height (false) * w / gameData.render.screen.Width (false);
-		gameData.render.window.Setup (&gameData.render.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
-		gameData.render.window.Activate (&gameData.render.frame);
+		int w, h;
+		cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
 		baseCanv = &gameData.render.window;
 		}
 
+	gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 	switch (nElement) {
 		case 0:
 			fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
@@ -761,9 +761,9 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 			break;
 		}
 	baseCanv->Deactivate ();
+	gameData.SetStereoOffsetType (nOffsetSave);
 	}
 fontManager.SetScale (fontManager.Scale () / GetScale ());
-gameData.SetStereoOffsetType (nOffsetSave);
 }
 
 //---------------------------------------------------------------------------

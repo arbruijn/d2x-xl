@@ -651,7 +651,7 @@ return nShrinkFactor;
 static char* FindHiresBitmap (const char* bmName, int& nFile, int bD1, int bShrink = 1)
 {
 	static char	fn [6][FILENAME_LEN];
-	char*	baseName [FILENAME_LEN];
+	char	baseName [FILENAME_LEN];
 
 strcpy (baseName, bmName);
 char* p = strchr (baseName, '#');

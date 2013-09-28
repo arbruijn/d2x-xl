@@ -42,6 +42,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "midi.h"
 #include "songs.h"
 #include "config.h"
+#include "cockpit.h"
 
 //-----------------------------------------------------------------------
 
@@ -249,39 +250,56 @@ bmFrame.Init (BM_LINEAR, 0, 0, wBuffer, hBuffer, 1, buf);
 bmFrame.SetPalette (movieManager.m_palette);
 
 TRANSPARENCY_COLOR = 0;
-gameData.render.frame.Activate ();
-glClear (GL_COLOR_BUFFER_BIT);
-gameData.render.frame.Deactivate ();
-if (gameOpts->movies.bFullScreen) {
-	double r = (double) hBuffer / (double) wBuffer;
-	int dh = (int) (CCanvas::Current ()->Width () * r);
-	int yOffs = (CCanvas::Current ()->Height () - dh) / 2;
 
-	ogl.SetBlending (false);
-	bmFrame.AddFlags (BM_FLAG_OPAQUE);
-	bmFrame.SetTranspType (0);
-	bmFrame.Render (CCanvas::Current (), 0, yOffs, CCanvas::Current ()->Width (), dh, xSrc, ySrc, wBuffer, hBuffer, 0, 0, gameOpts->movies.nQuality);
-	ogl.SetBlending (true);
-	}
-else {
-	int xOffs = (CCanvas::Current ()->Width () - w) / 2;
-	int yOffs = (CCanvas::Current ()->Height () - h) / 2;
+int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
+int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 
-	if (xOffs < 0)
-		xOffs = 0;
-	if (yOffs < 0)
-		yOffs = 0;
-	xOffs += xDest;
-	yOffs += yDest;
-	//bmFrame.Blit (CCanvas::Current (), xOffs, yOffs, bufw, bufh, xSrc, ySrc, 1);
-	bmFrame.Render (CCanvas::Current (), xOffs, yOffs, w, h, xSrc, ySrc, wBuffer, hBuffer, 0, 0, gameOpts->movies.nQuality);
-	if (((uint) CCanvas::Current ()->Width () > w) || ((uint) CCanvas::Current ()->Height () > h)) {
-		CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
-		OglDrawEmptyRect (xDest - 1, yDest, xDest + w, yDest + h + 1);
+for (i = 0, j = -1; i < nFrames; i++, j += 2) {
+	gameData.SetStereoSeparation (j);
+	SetupCanvasses ();
+
+	gameData.render.frame.Activate ();
+	glClear (GL_COLOR_BUFFER_BIT);
+	if (ogl.IsOculusRift ()) {
+		int w, h;
+		cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
 		}
+
+	if (gameOpts->movies.bFullScreen) {
+		double r = (double) hBuffer / (double) wBuffer;
+		int dh = (int) (CCanvas::Current ()->Width () * r);
+		int yOffs = (CCanvas::Current ()->Height () - dh) / 2;
+
+		ogl.SetBlending (false);
+		bmFrame.AddFlags (BM_FLAG_OPAQUE);
+		bmFrame.SetTranspType (0);
+		bmFrame.Render (NULL, 0, yOffs, CCanvas::Current ()->Width (), dh, xSrc, ySrc, wBuffer, hBuffer, 0, 0, gameOpts->movies.nQuality);
+		ogl.SetBlending (true);
+		}
+	else {
+		int xOffs = (CCanvas::Current ()->Width () - w) / 2;
+		int yOffs = (CCanvas::Current ()->Height () - h) / 2;
+
+		if (xOffs < 0)
+			xOffs = 0;
+		if (yOffs < 0)
+			yOffs = 0;
+		xOffs += xDest;
+		yOffs += yDest;
+		//bmFrame.Blit (CCanvas::Current (), xOffs, yOffs, bufw, bufh, xSrc, ySrc, 1);
+		bmFrame.Render (NULL, xOffs, yOffs, w, h, xSrc, ySrc, wBuffer, hBuffer, 0, 0, gameOpts->movies.nQuality);
+		if (((uint) CCanvas::Current ()->Width () > w) || ((uint) CCanvas::Current ()->Height () > h)) {
+			CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
+			OglDrawEmptyRect (xDest - 1, yDest, xDest + w, yDest + h + 1);
+			}
+		}
+	if (ogl.IsOculusRift ())
+		gameData.render.window.Deactivate ();
+	gameData.render.frame.Deactivate ();
 	}
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
 bmFrame.SetBuffer (NULL);
+gameData.SetStereoOffsetType (nOffsetSave);
 }
 
 //-----------------------------------------------------------------------
