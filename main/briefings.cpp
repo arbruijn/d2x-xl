@@ -465,15 +465,6 @@ if (t - m_info.tAnimate < 10)
 	return;
 m_info.tAnimate = t;
 
-	CCanvas		bitmapCanv;
-	CFixVector	p = CFixVector::ZERO;
-
-	CBitmap *bmP;
-	int x = RescaleX (138);
-	int y = RescaleY (55);
-	int w = RescaleX (166);
-	int h = RescaleY (138);
-
 	//	Only plot every nth frame.
 if (!bRedraw && m_info.nDoorDivCount) {
 	m_info.nDoorDivCount--;
@@ -482,21 +473,9 @@ if (!bRedraw && m_info.nDoorDivCount) {
 if (*m_info.szBitmapName) {
 	char		*poundSignP;
 	int		nFrame, dig1, dig2;
-	int		nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+
 	//	Set supertransparency color to black
-	switch (m_info.nAnimatingBitmapType) {
-		case 0: 
-			bitmapCanv.Setup (CCanvas::Current (), x - CScreen::Unscaled (gameData.StereoOffset2D ()), y, w, h);
-			break;
-		case 1:
-			bitmapCanv.Setup (CCanvas::Current (), x - CScreen::Unscaled (gameData.StereoOffset2D ()), y, w, h);
-			break;
-		// Adam: Change here for your new animating bitmap thing. 94, 94 are bitmap size.
-		default:
-			Int3 (); // Impossible, illegal value for m_info.nAnimatingBitmapType
-		}
-	bitmapCanv.Clear (m_info.nEraseColor);
-	if (!bRedraw) {	//extract current bitmap nFrameber from bitmap name (<name>#<nFrameber>)
+	if (!bRedraw) {	//extract current bitmap frame number from bitmap name (<name>#<frame>)
 		poundSignP = strchr (m_info.szBitmapName, '#');
 		Assert (poundSignP != NULL);
 
@@ -545,22 +524,11 @@ if (*m_info.szBitmapName) {
 	tBitmapIndex bmi = PiggyFindBitmap (m_info.szBitmapName, gameStates.app.bD1Mission);
 	if (0 > short (bmi.index))
 		return;
-	bmP = gameData.pig.tex.bitmaps [gameStates.app.bD1Mission] + bmi.index;
+	m_bitmap = gameData.pig.tex.bitmaps [gameStates.app.bD1Mission] + bmi.index;
 	LoadTexture (bmi.index, gameStates.app.bD1Mission);
-	bmP->SetStatic (1);
+	m_bitmap->SetStatic (1);
 
-	GLint	depthFunc;
-	G3StartFrame (transformation, 1, 0, 0);
-	SetupTransformation (transformation, p, CFixMatrix::IDENTITY, gameStates.render.xZoom, 1);
-	p.v.coord.z = 2 * I2X (w);
-	depthFunc = ogl.GetDepthMode ();
-	ogl.SetDepthMode (GL_ALWAYS);
-	bitmapCanv.Activate ();
-	ogl.RenderBitmap (bmP, p, I2X (w), I2X (h), NULL, 1.0, 0);
-	bitmapCanv.Deactivate ();
-	ogl.SetDepthMode (depthFunc);
-	G3EndFrame (transformation, 0);
-	gameData.SetStereoOffsetType (nOffsetSave);
+	RenderElement (8);
 	//paletteManager.ResumeEffect ();
 	if (!(bRedraw || m_info.nDoorDivCount)) {
 #if 1
@@ -715,6 +683,40 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 			bitmapCanv.Deactivate ();
 			}
 			break;
+
+		case 8:
+			{
+			int x = RescaleX (138);
+			int y = RescaleY (55);
+			int w = RescaleX (166);
+			int h = RescaleY (138);
+
+			CCanvas canvas;
+			switch (m_info.nAnimatingBitmapType) {
+				case 0: 
+					canvas.Setup (CCanvas::Current (), x - CScreen::Unscaled (gameData.StereoOffset2D ()), y, w, h);
+					break;
+				case 1:
+					canvas.Setup (CCanvas::Current (), x - CScreen::Unscaled (gameData.StereoOffset2D ()), y, w, h);
+					break;
+				// Adam: Change here for your new animating bitmap thing. 94, 94 are bitmap size.
+				default:
+					Int3 (); // Impossible, illegal value for m_info.nAnimatingBitmapType
+				}
+			canvas.Clear (m_info.nEraseColor);
+
+			G3StartFrame (transformation, 1, 0, 0);
+			CFixVector p = CFixVector::ZERO;
+			SetupTransformation (transformation, p, CFixMatrix::IDENTITY, gameStates.render.xZoom, 1);
+			GLint	depthFunc = ogl.GetDepthMode ();
+			ogl.SetDepthMode (GL_ALWAYS);
+			canvas.Activate (&gameData.render.frame);
+			p.v.coord.z = 2 * I2X (w);
+			ogl.RenderBitmap (m_bitmap, p, I2X (w), I2X (h), NULL, 1.0, 0);
+			canvas.Deactivate ();
+			ogl.SetDepthMode (depthFunc);
+			G3EndFrame (transformation, 0);
+			}
 
 		default:
 			// invalid call
