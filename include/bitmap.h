@@ -177,7 +177,7 @@ class CBitmap : public CArray< ubyte > {
 		inline CBitmap* HasParent (void)
 		 { return (m_info.nType == BM_TYPE_STD) ? m_info.parentP :  NULL; }
 		inline CBitmap* HasOverride (void)
-		 { return (m_info.nType == BM_TYPE_STD) ? m_info.overrideP :  m_info.frames.currentP; }
+		 { return (m_info.nType == BM_TYPE_STD) ? m_info.overrideP : m_info.frames.currentP; }
 
 		inline CBitmap *Override (int iFrame) {
 			CBitmap *bmP = this;

@@ -1060,7 +1060,12 @@ else if (texCoordP)
 else {
 	if (!(bmP->Texture () || BindBitmap (bmP, 0, nWrap, true)))
 		return 0;
-
+#if DBG
+	if (!bmP->Texture ()) {
+		BindBitmap (bmP, 0, nWrap, true);
+		return 0;
+		}
+#endif
 	GLfloat			u = bmP->Texture ()->U ();
 	GLfloat			v = bmP->Texture ()->V ();
 	tTexCoord2f		texCoords [4] = {{{0,0}},{{u,0}},{{u,v}},{{0,v}}};
