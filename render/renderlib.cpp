@@ -781,7 +781,6 @@ void CFrameController::Begin (void)
 m_nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
 m_iFrame = 0;
 m_nEye = -1;
-Setup ();
 }
 
 //------------------------------------------------------------------------------
@@ -790,8 +789,6 @@ bool CFrameController::Continue (void)
 {
 if (m_iFrame >= m_nFrames)
 	return false;
-++m_iFrame;
-m_nEye += 2;
 Setup ();
 return true;
 }
@@ -800,6 +797,8 @@ return true;
 
 void CFrameController::End (void)
 {
+++m_iFrame;
+m_nEye += 2;
 gameData.SetStereoOffsetType (m_nOffsetSave);
 }
 
