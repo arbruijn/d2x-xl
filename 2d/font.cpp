@@ -161,7 +161,7 @@ for (w = 0; *s && (*s != '\n'); s++) {
 	GetCharWidth (s[0], s[1], w2, s2);
 	w += s2;
 	}
-return Scale (w, scale);
+return Scaled (w, scale);
 }
 
 //------------------------------------------------------------------------------
@@ -184,7 +184,7 @@ if (m_info.flags & FT_PROPORTIONAL) {
 		}
 	return w;
 	}
-return Scale (m_info.width * Range (), scale);
+return Scaled (m_info.width * Range (), scale);
 }
 
 //------------------------------------------------------------------------------

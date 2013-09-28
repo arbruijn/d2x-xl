@@ -709,11 +709,6 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 			SetupAnimationCanvas (baseCanv);
 			DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
 			AnimCanv ().Deactivate ();
-#if DBG
-			CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
-			glLineWidth (float (gameData.render.screen.Width ()) / 640.0f);
-			OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
-#endif
 			glLineWidth (1);
 			AnimCanv ().Deactivate ();
 			}
