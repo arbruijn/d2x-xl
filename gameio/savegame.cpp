@@ -273,14 +273,14 @@ if (nState) { // render
 		return nCurItem;
 	if (gameStates.menus.bHires) {
 		int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
-		x = gameData.X ((CCanvas::Current ()->Width () - CMenu::Scale (image->Width ())) / 2);
-		y = menu [0].m_y - CMenu::Scale (16);
+		x = gameData.X ((CCanvas::Current ()->Width () - CMenu::Scaled (image->Width ())) / 2);
+		y = menu [0].m_y - CMenu::Scaled (16);
 		//paletteManager.ResumeEffect (gameStates.app.bGameRunning);
 		//BlitClipped (x, y, image);
-		image->RenderFixed (NULL, x, y, CMenu::Scale (image->Width ()), CMenu::Scale (image->Height ()));
+		image->RenderFixed (NULL, x, y, CMenu::Scaled (image->Width ()), CMenu::Scaled (image->Height ()));
 		if (gameOpts->menus.nStyle) {
 			CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
-			OglDrawEmptyRect (x - 1, y - 1, x + CMenu::Scale (image->Width ()) + 1, y + CMenu::Scale (image->Height ()) + 1);
+			OglDrawEmptyRect (x - 1, y - 1, x + CMenu::Scaled (image->Width ()) + 1, y + CMenu::Scaled (image->Height ()) + 1);
 			}
 		gameData.SetStereoOffsetType (nOffsetSave);
 		}

@@ -322,7 +322,7 @@ else if (nChoice == m.IndexOf ("view demo")) {
 	}
 else if (nChoice == m.IndexOf ("view highscores")) {
 	paletteManager.DisableEffect ();
-	ScoresView (-1);
+	scoreManager.Show (-1);
 	}
 else if (nChoice == m.IndexOf ("play movies"))
 	PlayMenuMovie ();
