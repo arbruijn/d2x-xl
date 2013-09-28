@@ -340,6 +340,8 @@ scores_read ();
 SetScreenMode (SCREEN_MENU);
 
 //backgroundManager.SetShadow (false);
+int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+
 CBackground background;
 if (gameStates.app.bNostalgia)
 	backgroundManager.Setup (background, 640, 480, BG_TOPMENU, BG_SCORES);
@@ -360,11 +362,10 @@ while (!bDone) {
 
 	int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
 	for (i = 0, j = -1; i < nFrames; i++, j += 2) {
-		int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 		gameData.SetStereoSeparation (j);
 		ogl.ChooseDrawBuffer ();
-
 		SetupCanvasses ();
+		gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 		backgroundManager.Activate (background);
 		gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 
@@ -386,19 +387,17 @@ while (!bDone) {
 			scores_draw_item (k, Scores.stats + k);
 			}
 		paletteManager.EnableEffect ();
-		if (t0 == t1) {
+		if ((nCurItem >= 0) && (t0 == t1)) {
 			int c = 7 + fades [looper];
 			fontManager.SetColorRGBi (RGBA_PAL2 (c, c, c), 1, 0, 0);
 			if (++looper > 63) 
 				looper = 0;
-			background.Activate ();
 			if (nCurItem ==  MAX_HIGH_SCORES)
 				scores_draw_item (MAX_HIGH_SCORES, &Last_game);
 			else
 				scores_draw_item (nCurItem, Scores.stats + nCurItem);
 			}	
 		background.Deactivate ();
-		gameData.SetStereoOffsetType (nOffsetSave);
 		}
 	ogl.Update (0);
 
@@ -443,6 +442,8 @@ while (!bDone) {
 // Restore background and exit
 paletteManager.DisableEffect ();
 GameFlushInputs ();
+gameData.SetStereoOffsetType (nOffsetSave);
+
 //backgroundManager.SetShadow (true);
 }
 
