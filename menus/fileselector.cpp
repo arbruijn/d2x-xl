@@ -300,8 +300,8 @@ if (!bInitialized) {
 		nTitleHeight = h + (CCanvas::Current ()->Font ()->Height () * 2);		// add a little space at the bottom of the pszTitle
 		}
 
-	m_nTextWidth = Scaled (nWidth);
-	m_nTextHeight = Scaled ((CCanvas::Current ()->Font ()->Height () + 2) * m_nVisibleItems);
+	m_nTextWidth = nWidth;
+	m_nTextHeight = (CCanvas::Current ()->Font ()->Height () + 2) * m_nVisibleItems;
 
 	nWidth += (CCanvas::Current ()->Font ()->Width () * 4);
 	nHeight = nTitleHeight + m_nTextHeight + (CCanvas::Current ()->Font ()->Height () * 2);		// more space at bottom
@@ -321,6 +321,8 @@ if (!bInitialized) {
 	backgroundManager.Setup (m_background, nWidth, nHeight);
 	m_nTextLeft = Scaled (CCanvas::Current ()->Font ()->Width () * 2);			// must be in sync with nWidth!!!
 	m_nTextTop = Scaled (nTitleHeight);
+	m_nTextWidth = Scaled (m_nTextWidth);
+	m_nTextHeight = Scaled (m_nTextHeight);
 
 // save the screen behind the menu.
 
