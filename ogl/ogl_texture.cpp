@@ -1369,7 +1369,7 @@ if (!strcmp (m_info.szName, "font3-1h.fnt"))
 if (bMipMaps < 0)
 	bMipMaps = bMipMaps;
 #endif
-if (!nDepth && (bmP = HasOverride ())) {
+if ((nDepth < 2) && (bmP = HasOverride ())) {
 	int i = bmP->Bind (bMipMaps);
 #if DBG
 	nDepth--;
