@@ -367,7 +367,6 @@ while (!done) {
 			canvas = &background;
 			}
 		else {
-			background.Deactivate ();
 			int w, h;
 			cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
 			backgroundManager.Draw (BG_SCORES);

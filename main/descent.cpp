@@ -226,7 +226,6 @@ else
 	int y, w, ws, h, hs, aw;
 	float grAlpha = gameStates.render.grAlpha;
 
-SetupCanvasses ();
 gameData.render.frame.Activate ();
 
 gameStates.render.grAlpha = 1.0f;
