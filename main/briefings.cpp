@@ -646,8 +646,6 @@ return (ogl.IsOculusRift () /*&& gameStates.app.bGameRunning*/) ? 0.5f : 1.0f;
 
 void CBriefing::RenderElement (int nElement)
 {
-int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
-
 if (gameStates.app.bNostalgia)
 	ogl.SetDrawBuffer (GL_FRONT, 0);
 else
@@ -656,6 +654,7 @@ else
 fontManager.SetCurrent (GAME_FONT);
 fontManager.SetScale (fontManager.Scale () * GetScale ());
 
+int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
 for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 	int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 	gameData.SetStereoSeparation (j);

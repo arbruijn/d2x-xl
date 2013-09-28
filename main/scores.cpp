@@ -35,6 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menubackground.h"
 #include "songs.h"
 #include "ogl_lib.h"
+#include "cockpit.h"
 
 #define VERSION_NUMBER 		1
 #define SCORES_FILENAME 	"descent.hi"
@@ -328,10 +329,7 @@ scores_rprintf (311 - 42 + XX, y + YY, "%d:%02d:%02d", h, m, s);
 
 void ScoresView (int nCurItem)
 {
-	fix t0 = 0, t1;
-	int c,i,done,looper;
-	int k;
-	int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
+	fix	t0 = 0, t1;
 
 	sbyte fades[64] = { 1,1,1,2,2,3,4,4,5,6,8,9,10,12,13,15,16,17,19,20,22,23,24,26,27,28,28,29,30,30,31,31,31,31,31,30,30,29,28,28,27,26,24,23,22,20,19,17,16,15,13,12,10,9,8,6,5,4,4,3,2,2,1,1 };
 
@@ -340,102 +338,132 @@ ReshowScores:
 gameStates.render.nFlashScale = 0;
 scores_read ();
 SetScreenMode (SCREEN_MENU);
-gameData.render.frame.Activate ();
-
 
 //backgroundManager.SetShadow (false);
 CBackground background;
-backgroundManager.Setup (background, 640, 480, BG_TOPMENU, BG_SCORES);
 GameFlushInputs ();
 
-done = 0;
-looper = 0;
+int done = 0;
+int looper = 0;
+
+if (gameStates.app.bNostalgia)
+	ogl.SetDrawBuffer (GL_FRONT, 0);
+else
+	ogl.ChooseDrawBuffer ();
 
 while (!done) {
-	backgroundManager.Activate (background);
-	fontManager.SetCurrent (MEDIUM3_FONT);
+	int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
+	for (i = 0, j = -1; i < nFrames; i++, j += 2) {
+		int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+		gameData.SetStereoSeparation (j);
+		SetupCanvasses ();
+		gameData.render.frame.Activate ();
 
-	GrString (0x8000, LHY (15), TXT_HIGH_SCORES);
-	fontManager.SetCurrent (SMALL_FONT);
-	fontManager.SetColorRGBi (RGBA_PAL2 (31,26,5), 1, 0, 0);
-	GrString (LHX (31+33+XX), LHY (46+7+YY), TXT_NAME);
-	GrString (LHX (82+33+XX), LHY (46+7+YY), TXT_SCORE);
-	GrString (LHX (127+33+XX), LHY (46+7+YY), TXT_SKILL);
-	GrString (LHX (170+33+XX), LHY (46+7+YY), TXT_LEVELS);
-	GrString (LHX (288-42+XX), LHY (46+7+YY), TXT_TIME);
-	if (nCurItem < 0)
-		GrString (0x8000, LHY (175), TXT_PRESS_CTRL_R);
-	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
-	for (i = 0; i < MAX_HIGH_SCORES; i++) {
-		c = 28 - i * 2;
-		fontManager.SetColorRGBi (RGBA_PAL2 (c, c, c), 1, 0, 0);
-		scores_draw_item (i, Scores.stats + i);
-		}
-	background.Deactivate ();
+		CCanvas* canvas;
 
-	paletteManager.EnableEffect ();
-
-	if (nCurItem < 0)
-		ogl.Update (1);
-
-	if (nCurItem > -1) {
-		t1	= SDL_GetTicks ();
-		if (t1 - t0 >= 10) {
-			t0 = t1;
-			c = 7 + fades [looper];
-			fontManager.SetColorRGBi (RGBA_PAL2 (c, c, c), 1, 0, 0);
-			if (++looper > 63) 
-			 looper = 0;
-			if (nCurItem ==  MAX_HIGH_SCORES)
-				scores_draw_item (MAX_HIGH_SCORES, &Last_game);
-			else
-				scores_draw_item (nCurItem, Scores.stats + nCurItem);
-			ogl.Update (1);
+		if (!ogl.IsOculusRift ()) {
+			backgroundManager.Setup (background, 640, 480, BG_TOPMENU, BG_SCORES);
+			backgroundManager.Activate (background);
+			canvas = &background;
 			}
-		}
+		else {
+			background.Deactivate ();
+			int w, h;
+			cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
+			backgroundManager.Draw (BG_SCORES);
+			canvas = &gameData.render.window;
+			fontManager.SetScale (0.5f);
+			}
+		gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 
-	for (i = 0; i < 4; i++)
-		if (JoyGetButtonDownCnt (i) > 0) 
-			done = 1;
-	for (i = 0; i < 3; i++)
-		if (MouseButtonDownCount (i) > 0) 
-			done = 1;
+		fontManager.SetCurrent (MEDIUM3_FONT);
+		GrString (0x8000, LHY (15), TXT_HIGH_SCORES);
+		fontManager.SetCurrent (SMALL_FONT);
+		fontManager.SetColorRGBi (RGBA_PAL2 (31,26,5), 1, 0, 0);
+		GrString (LHX (31+33+XX), LHY (46+7+YY), TXT_NAME);
+		GrString (LHX (82+33+XX), LHY (46+7+YY), TXT_SCORE);
+		GrString (LHX (127+33+XX), LHY (46+7+YY), TXT_SKILL);
+		GrString (LHX (170+33+XX), LHY (46+7+YY), TXT_LEVELS);
+		GrString (LHX (288-42+XX), LHY (46+7+YY), TXT_TIME);
+		if (nCurItem < 0)
+			GrString (0x8000, LHY (175), TXT_PRESS_CTRL_R);
+		fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
+		for (int k = 0; k < MAX_HIGH_SCORES; k++) {
+			int c = 28 - k * 2;
+			fontManager.SetColorRGBi (RGBA_PAL2 (c, c, c), 1, 0, 0);
+			scores_draw_item (k, Scores.stats + k);
+			}
+		canvas->Deactivate ();
 
-	//see if redbook song needs to be restarted
-	redbook.CheckRepeat ();
+		paletteManager.EnableEffect ();
 
-	k = KeyInKey ();
-	switch (k) {
-		case KEY_CTRLED+KEY_R:	
-			if (nCurItem < 0)	 {
-				// Reset scores...
-				if (MsgBox (NULL, BG_STANDARD, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES) == 1) {
-					CFile::Delete (GetScoresFilename (), gameFolders.szDataDir [0]);
-					paletteManager.DisableEffect ();
-					goto ReshowScores;
+		if (nCurItem < 0)
+			ogl.Update (1);
+
+		if (nCurItem > -1) {
+			t1	= SDL_GetTicks ();
+			if (t1 - t0 >= 10) {
+				t0 = t1;
+				int c = 7 + fades [looper];
+				fontManager.SetColorRGBi (RGBA_PAL2 (c, c, c), 1, 0, 0);
+				if (++looper > 63) 
+					looper = 0;
+				canvas->Activate ();
+				if (nCurItem ==  MAX_HIGH_SCORES)
+					scores_draw_item (MAX_HIGH_SCORES, &Last_game);
+				else
+					scores_draw_item (nCurItem, Scores.stats + nCurItem);
+				canvas->Deactivate ();
+				ogl.Update (1);
 				}
 			}
-			break;
-		case KEY_BACKSPACE:				
-			Int3 (); 
-			k = 0; 
-			break;
-		case KEY_PRINT_SCREEN:		
-			SaveScreenShot (NULL, 0); 
-			k = 0; 
-			break;
+
+		for (i = 0; i < 4; i++)
+			if (JoyGetButtonDownCnt (i) > 0) 
+				done = 1;
+		for (i = 0; i < 3; i++)
+			if (MouseButtonDownCount (i) > 0) 
+				done = 1;
+
+		//see if redbook song needs to be restarted
+		redbook.CheckRepeat ();
+
+		int k = KeyInKey ();
+		switch (k) {
+			case KEY_CTRLED+KEY_R:	
+				if (nCurItem < 0)	 {
+					// Reset scores...
+					if (MsgBox (NULL, BG_STANDARD, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES) == 1) {
+						CFile::Delete (GetScoresFilename (), gameFolders.szDataDir [0]);
+						paletteManager.DisableEffect ();
+						goto ReshowScores;
+					}
+				}
+				break;
+			case KEY_BACKSPACE:				
+				Int3 (); 
+				k = 0; 
+				break;
+			case KEY_PRINT_SCREEN:		
+				SaveScreenShot (NULL, 0); 
+				k = 0; 
+				break;
 		
-		case KEY_ENTER:
-		case KEY_SPACEBAR:
-		case KEY_ESC:
-			done = 1;
-			break;
+			case KEY_ENTER:
+			case KEY_SPACEBAR:
+			case KEY_ESC:
+				done = 1;
+				break;
+			}
+		fontManager.SetScale (1.0f);
+		gameData.render.frame.Deactivate ();
+		gameData.SetStereoOffsetType (nOffsetSave);
 		}
+	ogl.Update (0);
 	}
 // Restore background and exit
 paletteManager.DisableEffect ();
 GameFlushInputs ();
-gameData.SetStereoOffsetType (nOffsetSave);
 //backgroundManager.SetShadow (true);
 }
 

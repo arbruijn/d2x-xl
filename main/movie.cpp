@@ -207,20 +207,40 @@ while (nNextSubTitle < m_nCaptions && nFrame >= m_captions [nNextSubTitle].first
 	nNextSubTitle++;
 	}
 
-//find y coordinate for first line of subtitles
-y = CCanvas::Current ()->Height () - ((nLineSpacing + 1) * MAX_ACTIVE_SUBTITLES + 2);
+int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
+int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 
-//erase old subtitles if necessary
-if (bMustErase) {
-	CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-	OglDrawFilledRect (0, y, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height () - 1);
+for (i = 0, j = -1; i < nFrames; i++, j += 2) {
+	gameData.SetStereoSeparation (j);
+	SetupCanvasses ();
+
+	if (ogl.IsOculusRift ()) {
+		int w, h;
+		cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
+		}
+	else
+		gameData.render.frame.Activate ();
+
+	//find y coordinate for first line of subtitles
+	y = CCanvas::Current ()->Height () - ((nLineSpacing + 1) * MAX_ACTIVE_SUBTITLES + 2);
+
+	//erase old subtitles if necessary
+	if (bMustErase) {
+		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
+		OglDrawFilledRect (0, y, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height () - 1);
+		}
+	//now draw the current subtitles
+	for (t = 0; t < nActiveSubTitles; t++)
+		if (activeSubTitleList [t] != -1) {
+			GrString (0x8000, y, m_captions [activeSubTitleList [t]].msg);
+			y += nLineSpacing + 1;
+		}
+	if (ogl.IsOculusRift ())
+		gameData.render.window.Deactivate ();
+	else
+		gameData.render.frame.Deactivate ();
 	}
-//now draw the current subtitles
-for (t = 0; t < nActiveSubTitles; t++)
-	if (activeSubTitleList [t] != -1) {
-		GrString (0x8000, y, m_captions [activeSubTitleList [t]].msg);
-		y += nLineSpacing + 1;
-	}
+gameData.SetStereoOffsetType (nOffsetSave);
 }
 
 // ----------------------------------------------------------------------
@@ -254,16 +274,25 @@ TRANSPARENCY_COLOR = 0;
 int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
 int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 
+if (gameStates.app.bNostalgia)
+	ogl.SetDrawBuffer (GL_FRONT, 0);
+else
+	ogl.ChooseDrawBuffer ();
+
+//gameData.render.screen.Activate ();
+//glClear (GL_COLOR_BUFFER_BIT);
+//gameData.render.screen.Deactivate ();
+
 for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 	gameData.SetStereoSeparation (j);
 	SetupCanvasses ();
 
-	gameData.render.frame.Activate ();
-	glClear (GL_COLOR_BUFFER_BIT);
 	if (ogl.IsOculusRift ()) {
 		int w, h;
 		cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
 		}
+	else
+		gameData.render.frame.Activate ();
 
 	if (gameOpts->movies.bFullScreen) {
 		double r = (double) hBuffer / (double) wBuffer;
@@ -295,11 +324,12 @@ for (i = 0, j = -1; i < nFrames; i++, j += 2) {
 		}
 	if (ogl.IsOculusRift ())
 		gameData.render.window.Deactivate ();
-	gameData.render.frame.Deactivate ();
+	else
+		gameData.render.frame.Deactivate ();
 	}
+gameData.SetStereoOffsetType (nOffsetSave);
 TRANSPARENCY_COLOR = DEFAULT_TRANSPARENCY_COLOR;
 bmFrame.SetBuffer (NULL);
-gameData.SetStereoOffsetType (nOffsetSave);
 }
 
 //-----------------------------------------------------------------------
