@@ -912,7 +912,7 @@ else {
 		}
 	}
 
-if (!(bHaveTGA || HaveHiresBitmap (bmName, bD1) || HaveHiresModel (bmName)))	// hires addon texture not loaded
+if (gameStates.render.bBriefing || !(bHaveTGA || HaveHiresBitmap (bmName, bD1) || HaveHiresModel (bmName)))	// hires addon texture not loaded
 	ReadLoresBitmap (bmP, nIndex, bD1);
 #if DBG
 nPrevIndex = nIndex;
