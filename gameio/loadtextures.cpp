@@ -651,6 +651,12 @@ return nShrinkFactor;
 static char* FindHiresBitmap (const char* bmName, int& nFile, int bD1, int bShrink = 1)
 {
 	static char	fn [6][FILENAME_LEN];
+	char*	baseName [FILENAME_LEN];
+
+strcpy (baseName, bmName);
+char* p = strchr (baseName, '#');
+if (p)
+	strcpy (p + 1, "0");
 
 if (*gameFolders.szTextureDir [2]) {
 	char szLevelFolder [FILENAME_LEN];
@@ -665,11 +671,11 @@ else
 	*gameFolders.szTextureDir [3] =
 	*gameFolders.szTextureCacheDir [3] = '\0';
 
-int nShrinkFactor = bShrink ? ShrinkFactor (bmName) : 1;
+int nShrinkFactor = bShrink ? ShrinkFactor (baseName) : 1;
 
-MakeBitmapFilenames (bmName, gameFolders.szTextureDir [3], gameFolders.szTextureCacheDir [3], fn [1], fn [0], nShrinkFactor);
-MakeBitmapFilenames (bmName, gameFolders.szTextureDir [2], gameFolders.szTextureCacheDir [2], fn [3], fn [2], nShrinkFactor);
-MakeBitmapFilenames (bmName, gameFolders.szTextureDir [bD1], gameFolders.szTextureCacheDir [bD1], fn [5], fn [4], nShrinkFactor);
+MakeBitmapFilenames (baseName, gameFolders.szTextureDir [3], gameFolders.szTextureCacheDir [3], fn [1], fn [0], nShrinkFactor);
+MakeBitmapFilenames (baseName, gameFolders.szTextureDir [2], gameFolders.szTextureCacheDir [2], fn [3], fn [2], nShrinkFactor);
+MakeBitmapFilenames (baseName, gameFolders.szTextureDir [bD1], gameFolders.szTextureCacheDir [bD1], fn [5], fn [4], nShrinkFactor);
 
 nFile = SearchHiresBitmap (fn);
 
@@ -912,7 +918,7 @@ else {
 		}
 	}
 
-if (gameStates.render.bBriefing || !(bHaveTGA || HaveHiresBitmap (bmName, bD1) || HaveHiresModel (bmName)))	// hires addon texture not loaded
+if (/*gameStates.render.bBriefing ||*/ !(bHaveTGA || HaveHiresBitmap (bmName, bD1) || HaveHiresModel (bmName)))	// hires addon texture not loaded
 	ReadLoresBitmap (bmP, nIndex, bD1);
 #if DBG
 nPrevIndex = nIndex;

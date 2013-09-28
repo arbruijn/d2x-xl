@@ -1058,8 +1058,11 @@ if (!bmP)
 else if (texCoordP)
 	RenderArrays (GL_QUADS, vertexP, 4, nDimensions, texCoordP, colorP, nColors, bmP, 0, nWrap);
 else {
+	if (!strcmp ("door13#0", bmP->m_info.szName))
+		bmP = bmP;
 	if (!(bmP->Texture () || BindBitmap (bmP, 0, nWrap, true)))
 		return 0;
+	bmP = bmP->Override (-1);
 #if DBG
 	if (!bmP->Texture ()) {
 		BindBitmap (bmP, 0, nWrap, true);
