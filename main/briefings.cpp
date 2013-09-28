@@ -1647,6 +1647,8 @@ if (!*fnBriefing) {
 
 if (gameStates.app.bNostalgia)
 	ogl.SetDrawBuffer (GL_FRONT, 0);
+else
+	ogl.ChooseDrawBuffer ();
 
 if (gameStates.app.bD1Mission && (missionManager.nCurrentMission != missionManager.nBuiltInMission [1])) {
 	int i;
