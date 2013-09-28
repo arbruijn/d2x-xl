@@ -98,6 +98,10 @@ typedef struct tD1ExtraBotSound {
 class CBriefing {
 	private:
 		CBriefingInfo	m_info;
+		CBitmap			m_background;
+		char				m_szBackground [FILENAME_LEN + 1];
+		char				m_message [2];
+		int				m_pcxError;
 
 	public:
 		CBriefing () { Init (); }
@@ -170,6 +174,8 @@ class CBriefing {
 		inline int RescaleY (int y) { return y*  CCanvas::Current ()->Height () / 200; }
 
 		CCanvas& RobotCanv (void) { return m_info.robotCanv; }
+
+		void RenderElement (int nElement);
 	};
 
 extern CBriefing briefing;
