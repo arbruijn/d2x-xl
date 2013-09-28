@@ -435,10 +435,10 @@ private:
 	int m_nVisibleItems;
 	int m_nMode;
 	int m_bDemosDeleted;
-	int m_nLeft;
-	int m_nTop;
-	int m_nWidth;
-	int m_nHeight;
+	int m_nTextLeft;
+	int m_nTextTop;
+	int m_nTextWidth;
+	int m_nTextHeight;
 	int m_nFileCount;
 	CArray<CFilename> m_filenames;
 

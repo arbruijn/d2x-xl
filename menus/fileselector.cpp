@@ -104,39 +104,26 @@ gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 fontManager.SetScale (fontManager.Scale () * GetScale ());
 backgroundManager.Activate (m_background);
 gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
+
 fontManager.SetCurrent (NORMAL_FONT);
 FadeIn ();
 GrString (0x8000, 10, m_props.pszTitle);
+
+CCanvas textArea;
+textArea.Setup (&gameData.render.frame, m_nTextLeft, m_nTextTop, m_nTextWidth, m_nTextHeight, true);
+textArea.Activate (&m_background);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
+OglDrawFilledRect (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
+
+int y = 0;
 for (int i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
-	int w, h, aw, x, y;
-
-	x = gameData.X (m_nLeft);
-	y = (i - m_nFirstItem) * (CCanvas::Current ()->Font ()->Height () + 2) + m_nTop;
-
-	if (i >= m_nFileCount) {
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 5));
-		OglDrawFilledRect (x + m_nWidth, y - 1, x + m_nWidth, y + CCanvas::Current ()->Font ()->Height () + 1);
-		//OglDrawFilledRect (x, y + CCanvas::Current ()->Font ()->Height () + 2, x + m_nWidth, y + CCanvas::Current ()->Font ()->Height () + 2);
-	
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (2, 2, 2));
-		OglDrawFilledRect (x - 1, y - 1, x - 1, y + CCanvas::Current ()->Font ()->Height () + 2);
-	
-		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		OglDrawFilledRect (x, y - 1, x + m_nWidth - 1, y + CCanvas::Current ()->Font ()->Height () + 1);
-		} 
-	else {
+	if (i < m_nFileCount) {
 		fontManager.SetCurrent ((i == m_nChoice) ? SELECTED_FONT : NORMAL_FONT);
-		fontManager.Current ()->StringSize ((char*) (&m_filenames [i]), w, h, aw);
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (5, 5, 5));
-		OglDrawFilledRect (x + m_nWidth, y - 1, x + m_nWidth, y + h + 1);
-		CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (2, 2, 2));
-		OglDrawFilledRect (x - 1, y - 1, x - 1, y + h + 1);
-		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-		OglDrawFilledRect (x, y - 1, x + m_nWidth - 1, y + h + 1);
-		GrString (m_nLeft + 5, y, reinterpret_cast<char*> (&m_filenames [i]) + (((m_nMode == 1) && (m_filenames [i][0] == '$')) ? 1 : 0));
+		GrString (5, y, reinterpret_cast<char*> (&m_filenames [i]) + (((m_nMode == 1) && (m_filenames [i][0] == '$')) ? 1 : 0));
+		y += CCanvas::Current ()->Font ()->Height () + Scaled (2);
 		}
 	}	 
+textArea.Deactivate ();
 m_background.Deactivate ();
 gameStates.render.grAlpha = 1.0f;
 fontManager.SetScale (fontManager.Scale () / GetScale ());
@@ -195,7 +182,7 @@ int CFileSelector::FileSelector (const char* pszTitle, const char* filespec, cha
 	int					bKeyRepeat = gameStates.input.keys.bRepeat;
 	int					bInitialized = 0;
 	int					exitValue = 0;
-	int					w_w, w_h, nTitleHeight;
+	int					nWidth, nHeight, nTitleHeight;
 	int					mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;
 	int					mouse2State, omouse2State, bWheelUp, bWheelDown;
 	int					bDblClick = 0;
@@ -212,8 +199,8 @@ m_nFileCount = 0;
 m_bDemosDeleted = 0;
 m_callback = NULL;
 
-w_w = w_h = nTitleHeight = 0;
-m_nLeft = m_nTop = m_nWidth = m_nHeight = 0;
+nWidth = nHeight = nTitleHeight = 0;
+m_nTextLeft = m_nTextTop = m_nTextWidth = m_nTextHeight = 0;
 if (!m_filenames.Create (MENU_MAX_FILES))
 	return 0;
 m_nChoice = 0;
@@ -296,44 +283,44 @@ if (!bInitialized) {
 //		SetScreenMode (SCREEN_MENU);
 	SetPopupScreenMode ();
 	fontManager.SetCurrent (SUBTITLE_FONT);
-	w_w = 0;
-	w_h = 0;
+	nWidth = 0;
+	nHeight = 0;
 
 	for (i = 0; i < m_nFileCount; i++) {
 		int w, h, aw;
 		fontManager.Current ()->StringSize (m_filenames [i], w, h, aw);	
-		if (w > w_w)
-			w_w = w;
+		if (w > nWidth)
+			nWidth = w;
 		}
 	if (pszTitle) {
 		int w, h, aw;
 		fontManager.Current ()->StringSize (pszTitle, w, h, aw);	
-		if (w > w_w)
-			w_w = w;
+		if (w > nWidth)
+			nWidth = w;
 		nTitleHeight = h + (CCanvas::Current ()->Font ()->Height () * 2);		// add a little space at the bottom of the pszTitle
 		}
 
-	m_nWidth = w_w;
-	m_nHeight = ((CCanvas::Current ()->Font ()->Height () + 2) * m_nVisibleItems);
+	m_nTextWidth = Scaled (nWidth);
+	m_nTextHeight = Scaled ((CCanvas::Current ()->Font ()->Height () + 2) * m_nVisibleItems);
 
-	w_w += (CCanvas::Current ()->Font ()->Width () * 4);
-	w_h = nTitleHeight + m_nHeight + (CCanvas::Current ()->Font ()->Height () * 2);		// more space at bottom
+	nWidth += (CCanvas::Current ()->Font ()->Width () * 4);
+	nHeight = nTitleHeight + m_nTextHeight + (CCanvas::Current ()->Font ()->Height () * 2);		// more space at bottom
 
-	w_w = Scaled (w_w);
-	w_h = Scaled (w_h);
+	nWidth = Scaled (nWidth);
+	nHeight = Scaled (nHeight);
 
-	if (w_w > CCanvas::Current ()->Width (false)) 
-		w_w = CCanvas::Current ()->Width (false);
-	if (w_h > CCanvas::Current ()->Height (false)) 
-		w_h = CCanvas::Current ()->Height (false);
-	if (w_w > 640)
-		w_w = 640;
-	if (w_h > 480)
-		w_h = 480;
+	if (nWidth > CCanvas::Current ()->Width (false)) 
+		nWidth = CCanvas::Current ()->Width (false);
+	if (nHeight > CCanvas::Current ()->Height (false)) 
+		nHeight = CCanvas::Current ()->Height (false);
+	if (nWidth > 640)
+		nWidth = 640;
+	if (nHeight > 480)
+		nHeight = 480;
 
-	backgroundManager.Setup (m_background, w_w, w_h);
-	m_nLeft = CCanvas::Current ()->Font ()->Width () * 2;			// must be in sync with w_w!!!
-	m_nTop = nTitleHeight;
+	backgroundManager.Setup (m_background, nWidth, nHeight);
+	m_nTextLeft = Scaled (CCanvas::Current ()->Font ()->Width () * 2);			// must be in sync with nWidth!!!
+	m_nTextTop = Scaled (nTitleHeight);
 
 // save the screen behind the menu.
 
@@ -507,9 +494,9 @@ while (!m_bDone) {
 		MouseGetPos (&mx, &my);
 		for (i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
 			fontManager.Current ()->StringSize (m_filenames [i], w, h, aw);
-			x1 = m_nLeft;
-			x2 = m_nLeft + m_nWidth - 1;
-			y1 = (i - m_nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + m_nTop;
+			x1 = m_nTextLeft;
+			x2 = m_nTextLeft + m_nTextWidth - 1;
+			y1 = (i - m_nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + m_nTextTop;
 			y2 = y1 + h + 1;
 			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 				if (i == m_nChoice && !mouse2State)
@@ -526,9 +513,9 @@ while (!m_bDone) {
 
 		fontManager.Current ()->StringSize (m_filenames [m_nChoice], w, h, aw);
 		MouseGetPos (&mx, &my);
-		x1 = m_nLeft;
-		x2 = m_nLeft + m_nWidth - 1;
-		y1 = (m_nChoice - m_nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + m_nTop;
+		x1 = m_nTextLeft;
+		x2 = m_nTextLeft + m_nTextWidth - 1;
+		y1 = (m_nChoice - m_nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + m_nTextTop;
 		y2 = y1 + h + 1;
 		if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 			if (bDblClick) 

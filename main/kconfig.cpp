@@ -836,7 +836,7 @@ int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 backgroundManager.Activate (m_background);
 DrawTitle ();
 #if 1
-	DrawCloseBox (Scale (gameStates.menus.bHires ? 15 : 7), Scale (gameStates.menus.bHires ? 15 : 7));
+	DrawCloseBox (Scaled (gameStates.menus.bHires ? 15 : 7), Scaled (gameStates.menus.bHires ? 15 : 7));
 #else
 m_closeX = m_closeY = gameStates.menus.bHires ? 15 : 7;
 m_closeSize = gameStates.menus.bHires ? 10 : 5;
