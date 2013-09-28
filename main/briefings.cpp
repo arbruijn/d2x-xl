@@ -609,9 +609,9 @@ if (m_info.bInitAnimate) {
 	}
 gameStates.render.bFullBright	= 1;
 
-CCanvas::Current ()->Clear (m_info.nEraseColor);
 //ogl.m_states.bEnableScissor = 1;
 RobotCanv ().Activate (&gameData.render.frame);
+CCanvas::Current ()->Clear (m_info.nEraseColor);
 DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
 RobotCanv ().Deactivate ();
 //ogl.m_states.bEnableScissor = 0;
@@ -633,23 +633,30 @@ RobotCanv ().Deactivate ();
 
 void CBriefing::Animate (void)
 {
-if (m_info.bRobotPlaying)
-	RenderRobotMovie ();
-else if (m_info.nRobot != -1)
-	RenderRobotFrame ();
-else if (*m_info.szBitmapName)
-	RenderBitmapFrame (0);
+	int i, j, nFrames = ogl.IsSideBySideDevice () 2 : 1;
+
+for (i = 0, j = -1; i < nFrames; i++, j += 2) {
+	gameData.SetStereoSeparation (j);
+	SetupCanvasses ();
+	gameData.render.frame.Activate ();
+	if (m_info.bRobotPlaying)
+		RenderRobotMovie ();
+	else if (m_info.nRobot != -1)
+		RenderRobotFrame ();
+	else if (*m_info.szBitmapName)
+		RenderBitmapFrame (0);
+	}
 }
 
 //-----------------------------------------------------------------------------
 
 void CBriefing::InitSpinningRobot (void)
 {
-int x = RescaleX (138) - gameData.StereoOffset2D ();
+int x = RescaleX (138);
 int y = RescaleY (55);
 int w = RescaleX (163);
 int h = RescaleY (136);
-RobotCanv ().Setup (&gameData.render.frame, x, y, w, h);
+RobotCanv ().Setup (&gameData.render.frame, x - gameData.StereoOffset2D (), y, w, h);
 m_info.bInitAnimate = 1;
 m_info.tAnimate = SDL_GetTicks ();
 }
@@ -686,9 +693,17 @@ else if (m_info.nCurrentColor >= MAX_BRIEFING_COLORS)
 #endif
 
 //	Draw cursor if there is some delay and caller says to draw cursor
+int i, j, nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
+
 if (m_info.bFlashingCursor && !m_info.bRedraw) {
 	fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
-	GrPrintF (NULL, m_info.briefingTextX+1, m_info.briefingTextY, "_");
+	for (i = 0, j = -1; i < nFrames; i++, j += 2) {
+		gameData.SetStereoSeparation (j);
+		SetupCanvasses ();
+		gameData.render.frame.Activate ();
+		GrPrintF (NULL, m_info.briefingTextX+1, m_info.briefingTextY, "_");
+		gameData.render.frame.Deactivate ();
+		}
 	}
 
 if ((delay > 0) && !m_info.bRedraw) {
@@ -701,15 +716,27 @@ if ((delay > 0) && !m_info.bRedraw) {
 
 //	Erase cursor
 if (m_info.bFlashingCursor && (delay > 0) && !m_info.bRedraw) {
-	fontManager.SetColorRGBi (m_info.nEraseColor, 1, 0, 0);
-	GrPrintF (NULL, m_info.briefingTextX + 1, m_info.briefingTextY, "_");
+	for (i = 0, j = -1; i < nFrames; i++, j += 2) {
+		gameData.SetStereoSeparation (j);
+		SetupCanvasses ();
+		gameData.render.frame.Activate ();
+		fontManager.SetColorRGBi (m_info.nEraseColor, 1, 0, 0);
+		GrPrintF (NULL, m_info.briefingTextX + 1, m_info.briefingTextY, "_");
 	//	erase the character
-	fontManager.SetColorRGB (briefBgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
-	GrPrintF (NULL, m_info.briefingTextX, m_info.briefingTextY, message);
+		fontManager.SetColorRGB (briefBgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
+		GrPrintF (NULL, m_info.briefingTextX, m_info.briefingTextY, message);
+		gameData.render.frame.Deactivate ();
+		}
 }
 //draw the character
-fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
-GrPrintF (NULL, m_info.briefingTextX+1, m_info.briefingTextY, message);
+for (i = 0, j = -1; i < nFrames; i++, j += 2) {
+	gameData.SetStereoSeparation (j);
+	SetupCanvasses ();
+	gameData.render.frame.Activate ();
+	fontManager.SetColorRGB (briefFgColors [gameStates.app.bD1Mission] + m_info.nCurrentColor, NULL);
+	GrPrintF (NULL, m_info.briefingTextX+1, m_info.briefingTextY, message);
+	gameData.render.frame.Deactivate ();
+	}
 return w;
 }
 

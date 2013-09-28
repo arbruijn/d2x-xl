@@ -101,7 +101,7 @@ SetDataVersion (-1);
 
 void CGameData::SetStereoSeparation (int nFrame)
 {
-ogl.SetStereoSeparation (gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] * nFrame);
+ogl.SetStereoSeparation (ogl.IsSideBySideDevice () ? gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] * nFrame : 0);
 }
 
 //------------------------------------------------------------------------------
