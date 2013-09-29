@@ -902,15 +902,15 @@ if (code == 255)
 for (i = 0, n = (int) (item - m_items); i < m_nItems; i++) {
 	if ((i != n) && (m_items [i].nType == nType) && (m_items [i].value == code)) {
 		m_items [i].value = 255;
-		if (ogl.m_states.nDrawBuffer == GL_FRONT)
-			DrawItem (m_items + i, 0);
+		//if (ogl.m_states.nDrawBuffer == GL_FRONT)
+		//	DrawItem (m_items + i, 0);
 		}
 	}
 item->value = code;
-if (ogl.m_states.nDrawBuffer == GL_FRONT) {
-	DrawItem (item, 1);
-	backgroundManager.Draw ();
-	}
+//if (ogl.m_states.nDrawBuffer == GL_FRONT) {
+//	DrawItem (item, 1);
+//	backgroundManager.Draw ();
+//	}
 GameFlushInputs ();
 fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 1);
 return BT_NONE;
@@ -1048,8 +1048,8 @@ int CControlConfig::ChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrl
 		SaveScreenShot (NULL, 0);
 		return AssignControl (item, BT_NONE, 255);
 		}
-	if (ogl.m_states.nDrawBuffer == GL_FRONT)
-		G3_SLEEP (10);
+	//if (ogl.m_states.nDrawBuffer == GL_FRONT)
+	//	G3_SLEEP (10);
 	DrawQuestion (item);
 	}
 return AssignControl (item, nType, ctrlfunc ());
@@ -1061,8 +1061,8 @@ int CControlConfig::ChangeInvert (kcItem * item)
 {
 GameFlushInputs ();
 item->value = !item->value;
-if (ogl.m_states.nDrawBuffer == GL_FRONT)
-	DrawItem (item, 1);
+//if (ogl.m_states.nDrawBuffer == GL_FRONT)
+//	DrawItem (item, 1);
 return BT_NONE;
 }
 

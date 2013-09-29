@@ -969,7 +969,7 @@ void COGL::SetScreenMode (void)
 {
 if ((gameStates.video.nLastScreenMode == gameStates.video.nScreenMode) &&
 	 (m_states.bLastFullScreen == m_states.bFullScreen) &&
-	 (gameStates.app.bGameRunning || (gameStates.video.nScreenMode == SCREEN_GAME) || (m_states.nDrawBuffer == GL_FRONT)))
+	 (gameStates.app.bGameRunning || (gameStates.video.nScreenMode == SCREEN_GAME) /*|| (m_states.nDrawBuffer == GL_FRONT)*/))
 	return;
 m_data.Initialize ();
 if (gameStates.video.nScreenMode == SCREEN_GAME)

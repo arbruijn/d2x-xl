@@ -843,8 +843,8 @@ if ((TimerGetFixedSeconds () % (I2X (1)/2)) > (I2X (1)/4))
 else
 	fontManager.SetColorRGB (&eraseColorRgb, NULL);
 GrPrintF (NULL, Scaled (m_info.briefingTextX + 1), Scaled (m_info.briefingTextY), "_");
-if (ogl.m_states.nDrawBuffer == GL_FRONT)
-	ogl.Update (0);
+//if (ogl.m_states.nDrawBuffer == GL_FRONT)
+//	ogl.Update (0);
 }
 
 //-----------------------------------------------------------------------------
@@ -1360,10 +1360,10 @@ if (m_info.bOnlyRobots) {
 		return 0;
 	}
 m_info.pi = m_info.message;
-if (ogl.m_states.nDrawBuffer == GL_FRONT) {
-	LoadImage (m_info.nScreen);
-	ogl.Update (0);
-	}
+//if (ogl.m_states.nDrawBuffer == GL_FRONT) {
+//	LoadImage (m_info.nScreen);
+//	ogl.Update (0);
+//	}
 m_info.briefingTextX = m_info.bsP->textLeft;
 m_info.briefingTextY = m_info.bsP->textTop;
 m_info.nDelayCount = KEY_DELAY_DEFAULT;
@@ -1380,8 +1380,8 @@ int CBriefing::ShowMessage (int nScreen, char* message, int nLevel)
 
 m_info.Setup (message, nLevel, nScreen);
 
-if (gameStates.app.bNostalgia)
-	ogl.SetDrawBuffer (GL_FRONT, 0);
+//if (gameStates.app.bNostalgia)
+//	ogl.SetDrawBuffer (GL_FRONT, 0);
 
 m_info.bExtraSounds = gameStates.app.bHaveExtraData && gameStates.app.bD1Mission && 
 							 (missionManager.nCurrentMission == missionManager.nBuiltInMission [1]);
@@ -1413,9 +1413,10 @@ redrawPage:
 for (;;) {
 	m_info.pj = m_info.message;
 	ogl.Update (0);
-	if (ogl.m_states.nDrawBuffer == GL_FRONT)
-		m_info.pi = m_info.message;
-	else {
+	//if (ogl.m_states.nDrawBuffer == GL_FRONT)
+	//	m_info.pi = m_info.message;
+	//else 
+		{
 		m_info.message = m_info.pi;
 		m_info.briefingTextX = m_info.x;
 		m_info.briefingTextY = m_info.y;
@@ -1661,9 +1662,9 @@ if (!*fnBriefing) {
 	return;
 	}
 
-if (gameStates.app.bNostalgia)
-	ogl.SetDrawBuffer (GL_FRONT, 0);
-else
+//if (gameStates.app.bNostalgia)
+//	ogl.SetDrawBuffer (GL_FRONT, 0);
+//else
 	ogl.ChooseDrawBuffer ();
 
 if (gameStates.app.bD1Mission && (missionManager.nCurrentMission != missionManager.nBuiltInMission [1])) {
