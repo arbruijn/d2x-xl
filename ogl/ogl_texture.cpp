@@ -1356,24 +1356,15 @@ int CBitmap::Bind (int bMipMaps)
 {
 	CBitmap		*bmP;
 
-#if DBG
 	static int nDepth = 0;
 
 if (nDepth > 1)
 	return -1;
 nDepth++;
 
-if (!strcmp (m_info.szName, "font3-1h.fnt"))
-	nDbgSeg = nDbgSeg;
-
-if (bMipMaps < 0)
-	bMipMaps = bMipMaps;
-#endif
 if ((nDepth < 2) && (bmP = HasOverride ())) {
 	int i = bmP->Bind (bMipMaps);
-#if DBG
 	nDepth--;
-#endif
 	return i;
 	}
 
@@ -1382,15 +1373,11 @@ if (!(m_info.texP && m_info.texP->IsRenderBuffer ()))
 #endif
 	{
 	if (!Prepared ()) {
-#if DBG
-		if (!strcmp (m_info.szName, "font3-1h.fnt"))
-			nDbgSeg = nDbgSeg;
-#endif
 		if (!SetupTexture (bMipMaps, 1)) {
 #if DBG
 			SetupTexture (bMipMaps, 1);
-			nDepth--;
 #endif
+			nDepth--;
 			return 1;
 			}
 		}
@@ -1402,9 +1389,7 @@ if (!m_info.texP)
 	return -1;
 m_info.texP->Bind ();
 
-#if DBG
 nDepth--;
-#endif
 return 0;
 }
 

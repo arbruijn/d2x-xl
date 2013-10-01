@@ -909,6 +909,9 @@
     <ClInclude Include="..\include\rectangle.h">
       <Filter>Source Files\main\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\input\include\sixense_wrapper.h">
+      <Filter>Source Files\input\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\3d\ase2model.cpp">
@@ -1855,6 +1858,9 @@
     </ClCompile>
     <ClCompile Include="..\cockpit\genericdrawers.cpp">
       <Filter>Source Files\cockpit\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\input\sixense_wrapper.cpp">
+      <Filter>Source Files\input\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

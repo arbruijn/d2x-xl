@@ -262,7 +262,9 @@ class CFloatVector {
 		inline float& Alpha (void) { return v.color.a; }
 		inline float Max (void) { return (v.coord.x > v.coord.y) ? (v.coord.x > v.coord.z) ? v.coord.x : v.coord.z : (v.coord.y > v.coord.z) ? v.coord.y : v.coord.z; }
 		inline float Sum (void) { return v.coord.x + v.coord.y + v.coord.z; }
-};
+
+		inline float& CFloatVector::operator[] (size_t i) { return v.vec [i]; }
+		};
 
 //const float operator* (const CFloatVector& v0, const CFloatVector& v1);
 //const CFloatVector operator* (const CFloatVector& v, const float s);
@@ -1287,7 +1289,7 @@ class CFixMatrix {
 		void CheckAndFix (void);
 
 		//extract angles from a m.matrix
-		const CAngleVector ExtractAnglesVec (void) const;
+		const CAngleVector ComputeAngles (void) const;
 
 		const CFixMatrix& Assign (CFixMatrix& other);
 		const CFixMatrix& Assign (CFloatMatrix& other);
@@ -1473,6 +1475,8 @@ class CFloatMatrix {
 		const CFloatMatrix Transpose (void);
 
 		void CheckAndFix (void);
+
+		const CFloatVector ComputeAngles (void) const;
 
 		const CFloatMatrix& Assign (CFixMatrix& other);
 		const CFloatMatrix& Assign (CFloatMatrix& other);

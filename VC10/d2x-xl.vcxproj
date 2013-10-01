@@ -265,7 +265,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\..\libraries\rift\LibOVR\include;..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\libraries\sixense\include;..\..\..\libraries\rift\LibOVR\include;..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;DBG=1;USE_OPENMP=2;CONSOLE;GLEW_STATIC;ZLIB_DLL;_CRT_SECURE_NO_WARNINGS=1;_CRT_SECURE_NO_DEPRECATE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>true</MinimalRebuild>
@@ -436,7 +436,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\..\libraries\rift\LibOVR\include;..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\libraries\sixense\include;..\..\..\libraries\rift\LibOVR\include;..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_OPENMP=2;_WINNT_WIN32=0x0700;OPENMP;DBG=0;NDEBUG;RELEASE;WIN32;_WINDOWS;NO_ASM;NMONO;PIGGY_USE_PAGING;NEWDEMO;SDL_INPUT;SDL_GL_VIDEO;CONSOLE;NETWORK;NATIVE_IPX;OGL;OGL_ZBUF;FAST_EVENTPOLL;_CRT_SECURE_NO_WARNINGS;GLEW_STATIC;ZLIB_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -494,7 +494,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\..\libraries\rift\LibOVR\include;..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\libraries\sixense\include;..\..\..\libraries\rift\LibOVR\include;..\..\..\libraries\zlib-1.2.5;..\..\..\libraries\SDL_net-1.2.7;..\..\..\libraries\SDL-1.2.14\include;..\..\..\libraries\SDL_mixer-1.2.11;..\..\..\libraries\SDL_image-1.2.7;\projects\OpenAL 1.1 SDK\include;..\d2x-trackir;..\3d;..\include;..\input\include;..\audio\win32\include;..\network\win32\include;..\effects;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>USE_OPENMP=2;DBG=0;_WINNT_WIN32=0x0700;OPENMP;NDEBUG;RELEASE;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS=1;GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <MinimalRebuild>false</MinimalRebuild>
@@ -677,6 +677,7 @@
     <ClInclude Include="..\include\findpath.h" />
     <ClInclude Include="..\include\flightpath.h" />
     <ClInclude Include="..\include\game.h" />
+    <ClInclude Include="..\input\include\sixense_wrapper.h" />
     <ClInclude Include="..\main\gameargs.h" />
     <ClInclude Include="..\include\gamecntl.h" />
     <ClInclude Include="..\include\gamefont.h" />
@@ -1021,6 +1022,7 @@
     <ClCompile Include="..\cockpit\utilities.cpp" />
     <ClCompile Include="..\console\console.cpp" />
     <ClCompile Include="..\include\cquicksort.cpp" />
+    <ClCompile Include="..\input\sixense_wrapper.cpp" />
     <ClCompile Include="..\main\crypt.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>

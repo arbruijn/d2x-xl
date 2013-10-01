@@ -653,35 +653,44 @@ return m;
 
 //	-----------------------------------------------------------------------------
 //extract angles from a m.matrix
-const CAngleVector CFixMatrix::ExtractAnglesVec (void) const 
+const CFloatVector CFloatMatrix::ComputeAngles (void) const 
 {
-	CAngleVector a;
-	fix sinh, cosh, cosp;
+	CFloatVector	a;
 
-if ((m.dir.f.v.coord.x == 0) && (m.dir.f.v.coord.z == 0))		//zero head
-	a.v.coord.h = 0;
-else
-	a.v.coord.h = FixAtan2 (m.dir.f.v.coord.z, m.dir.f.v.coord.x);
+a.v.coord.z = ((m.dir.f.v.coord.x == 0.0f) && (m.dir.f.v.coord.z == 0.0f)) ? 0.0f : a.v.coord.z = atan2 (m.dir.f.v.coord.z, m.dir.f.v.coord.x);
+float sinh = sin (a.v.coord.z);
+float cosh = cos (a.v.coord.z);
+float cosp = (fabs (sinh) > fabs (cosh))	? m.dir.f.v.coord.x / sinh : m.dir.f.v.coord.z / cosh;
+a.v.coord.x = ((cosp == 0.0f) && (m.dir.f.v.coord.y == 0.0f)) ? 0.0f : atan2 (cosp, -m.dir.f.v.coord.y);
+if (cosp == 0)	//the cosine of pitch is zero.  we're pitched straight up. say no bank
+	a.v.coord.y = 0.0f;
+else {
+	float sinb = m.dir.r.v.coord.y / cosp;
+	float cosb = m.dir.u.v.coord.y / cosp;
+	a.v.coord.y = ((sinb == 0.0f) && (cosb == 0.0f)) ? 0.0f : a.v.coord.y = atan2 (cosb, sinb);
+	}
+return a;
+}
+
+//	-----------------------------------------------------------------------------
+//extract angles from a m.matrix
+const CAngleVector CFixMatrix::ComputeAngles (void) const 
+{
+	CAngleVector	a;
+	fix				sinh, cosh, cosp;
+
+a.v.coord.h = (m.dir.f.v.coord.x | m.dir.f.v.coord.z) ? FixAtan2 (m.dir.f.v.coord.z, m.dir.f.v.coord.x) : 0;
 FixSinCos (a.v.coord.h, &sinh, &cosh);
-if (abs (sinh) > abs (cosh))				//sine is larger, so use it
-	cosp = FixDiv (m.dir.f.v.coord.x, sinh);
-else											//cosine is larger, so use it
-	cosp = FixDiv (m.dir.f.v.coord.z, cosh);
-if (cosp==0 && m.dir.f.v.coord.y==0)
-	a.v.coord.p = 0;
-else
-	a.v.coord.p = FixAtan2 (cosp, -m.dir.f.v.coord.y);
+cosp = (abs (sinh) > abs (cosh)) ? FixDiv (m.dir.f.v.coord.x, sinh) : FixDiv (m.dir.f.v.coord.z, cosh);
+a.v.coord.p = (cosp | m.dir.f.v.coord.y) ? FixAtan2 (cosp, -m.dir.f.v.coord.y) : 0;
 if (cosp == 0)	//the cosine of pitch is zero.  we're pitched straight up. say no bank
 	a.v.coord.b = 0;
 else {
 	fix sinb, cosb;
 
-	sinb = FixDiv (m.dir.r.v.coord.y, cosp);
-	cosb = FixDiv (m.dir.u.v.coord.y, cosp);
-	if (sinb==0 && cosb==0)
-		a.v.coord.b = 0;
-	else
-		a.v.coord.b = FixAtan2 (cosb, sinb);
+	fix sinb = FixDiv (m.dir.r.v.coord.y, cosp);
+	fix cosb = FixDiv (m.dir.u.v.coord.y, cosp);
+	a.v.coord.b = (sinb | cosb) ? FixAtan2 (cosb, sinb) : 0;
 	}
 return a;
 }

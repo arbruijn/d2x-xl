@@ -128,7 +128,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static int joy_sens_mod [4] = {16, 16, 16, 16};
+static int joySensMod [4] = {16, 16, 16, 16};
 
 static double dMaxAxis = 127.0;
 
@@ -149,10 +149,10 @@ else {
 	else if (a < -dMaxAxis)
 		a = -dMaxAxis;
 #if 1//!DBG
-	d = dMaxAxis * pow (fabs ((double) a / dMaxAxis), (double) joy_sens_mod [nAxis % 4] / 16.0);
+	d = dMaxAxis * pow (fabs ((double) a / dMaxAxis), (double) joySensMod [nAxis % 4] / 16.0);
 #else
 	h = fabs ((double) vec / dMaxAxis);
-	e = (double) joy_sens_mod [nAxis % 4] / 16.0;
+	e = (double) joySensMod [nAxis % 4] / 16.0;
 	p = pow (h, e);
 	d = dMaxAxis * p;
 #endif
@@ -194,7 +194,7 @@ if (gameStates.limitFPS.bJoystick)
 	ctime = TimerGetFixedSeconds ();
 
 for (i = 0; i < 4; i++)
-	joy_sens_mod [i] = 128 - 7 * gameOpts->input.joystick.sensitivity [i];
+	joySensMod [i] = 128 - 7 * gameOpts->input.joystick.sensitivity [i];
 if (gameStates.limitFPS.bJoystick) {
 	if ((LastReadTime + JOYSTICK_READ_TIME > ctime) && (gameStates.input.nJoyType != CONTROL_THRUSTMASTER_FCS)) {
 		if ((ctime < 0) && (LastReadTime >= 0))
@@ -233,6 +233,12 @@ else {   // LIMIT_JOY_FPS
 		}
 	}
 return bUseJoystick;
+}
+
+//------------------------------------------------------------------------------
+
+int CControlsManager::ReadSixense (int * joyAxis)
+{
 }
 
 //------------------------------------------------------------------------------
@@ -594,12 +600,12 @@ return h;
 inline int DeltaAxis (int v)
 {
 #if 0 //DBG
-int vec = gameOpts->input.joystick.bLinearSens ? joyAxis [dir] * 16 / joy_sens_mod [dir % 4] : joyAxis [dir];
+int vec = gameOpts->input.joystick.bLinearSens ? joyAxis [dir] * 16 / joySensMod [dir % 4] : joyAxis [dir];
 if (vec)
 	HUDMessage (0, "%d", vec);
 return vec;
 #else
-return gameOpts->input.joystick.bLinearSens ? joyAxis [v] * 16 / joy_sens_mod [v % 4] : joyAxis [v];
+return gameOpts->input.joystick.bLinearSens ? joyAxis [v] * 16 / joySensMod [v % 4] : joyAxis [v];
 #endif
 }
 
@@ -713,25 +719,25 @@ for (i = 0; i < 60; i += 30) {
 		else {
 			if ((v = kcJoystick [i + 13].value) < 255) {
 				if (kcJoystick [60].value)		// If inverted...
-					m_info [2].pitchTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
+					m_info [2].pitchTime += DeltaAxis (v); // (joyAxis [v] * 16 / joySensMod);
 				else
-					m_info [2].pitchTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
+					m_info [2].pitchTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joySensMod);
 				}
 			if (!*bBankOn) {
 				if ((v = kcJoystick [i + 14].value) < 255) {
 					if (kcJoystick [61].value)		// If inverted...
-						m_info [2].headingTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod); //m_frameCount;
+						m_info [2].headingTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joySensMod); //m_frameCount;
 					else
-						m_info [2].headingTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod); // m_frameCount;
+						m_info [2].headingTime += DeltaAxis (v); // (joyAxis [v] * 16 / joySensMod); // m_frameCount;
 					}
 				}
 			}
 		if (*bBankOn) {
 			if ((v = kcJoystick [i + 14].value) < 255) {
 				if (kcJoystick [61].value)		// If inverted...
-					m_info [2].bankTime += DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
+					m_info [2].bankTime += DeltaAxis (v); // (joyAxis [v] * 16 / joySensMod);
 				else
-					m_info [2].bankTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joy_sens_mod);
+					m_info [2].bankTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joySensMod);
 				}
 			}
 		}
@@ -1245,6 +1251,7 @@ if (!gameOpts->legacy.bInput)
 
 SetType ();
 bUseJoystick = gameOpts->input.joystick.bUse && ReadJoystick (reinterpret_cast<int*> (&joyAxis [0]));
+bUseSixense = gameOpts->input.joystick.bUse && sixense.GetAngles ();
 if (gameOpts->input.mouse.bUse)
 	if (gameStates.input.bCybermouseActive) {
 #if 0
@@ -1271,7 +1278,7 @@ for (i = 0; i < 3; i++) {
 		DoJoystick (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
 	if (bUseMouse)
 		DoMouse (reinterpret_cast<int*> (&mouseAxis [0]), nMouseButtons, &bSlideOn, &bBankOn, &pitchTime, &headingTime,
-							  reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
+					reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
 	m_info [0].pitchTime = m_info [1].pitchTime + m_info [2].pitchTime + m_info [3].pitchTime;
 	m_info [0].headingTime = m_info [1].headingTime + m_info [2].headingTime + m_info [3].headingTime;
 	m_info [0].bankTime = m_info [1].bankTime + m_info [2].bankTime + m_info [3].bankTime;
