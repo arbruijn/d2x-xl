@@ -686,8 +686,6 @@ a.v.coord.p = (cosp | m.dir.f.v.coord.y) ? FixAtan2 (cosp, -m.dir.f.v.coord.y) :
 if (cosp == 0)	//the cosine of pitch is zero.  we're pitched straight up. say no bank
 	a.v.coord.b = 0;
 else {
-	fix sinb, cosb;
-
 	fix sinb = FixDiv (m.dir.r.v.coord.y, cosp);
 	fix cosb = FixDiv (m.dir.u.v.coord.y, cosp);
 	a.v.coord.b = (sinb | cosb) ? FixAtan2 (cosb, sinb) : 0;
