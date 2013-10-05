@@ -183,12 +183,14 @@ return (int) ((AttenuateAxis (h / 256, i) * m_pollTime) / 128);
 
 //------------------------------------------------------------------------------
 
-int CControlsManager::ReadJoystick (void)
+int CControlsManager::ReadJoystick (int* joyAxis)
 {
 	int	rawJoyAxis [JOY_MAX_AXES];
 	ulong channelMasks;
 	int	i, bUseJoystick = 0;
 	fix	ctime = 0;
+
+memset (joyAxis, 0, sizeof (*joyAxis) * JOY_MAX_AXES);
 
 if (gameStates.limitFPS.bJoystick)
 	ctime = TimerGetFixedSeconds ();
@@ -208,25 +210,24 @@ if (gameStates.limitFPS.bJoystick) {
 				if ((i == 3) && (gameStates.input.nJoyType == CONTROL_THRUSTMASTER_FCS))
 					ReadFCS (rawJoyAxis [i]);
 				else
-					m_joyAxis [i] = ReadJoyAxis (i, rawJoyAxis);
+					joyAxis [i] = ReadJoyAxis (i, rawJoyAxis);
 				}
 			}
 		bUseJoystick = 1;
 		}
 	else {
 		for (i = 0; i < JOY_MAX_AXES; i++)
-			m_joyAxis [i] = 0;
+			joyAxis [i] = 0;
 		}
 	}
 else {   // LIMIT_JOY_FPS
-	memset (m_joyAxis, 0, sizeof (m_joyAxis));
 	if (gameOpts->input.joystick.bUse) {
 		if ((channelMasks = JoyReadRawAxis (JOY_ALL_AXIS, rawJoyAxis))) {
 			for (i = 0; i < JOY_MAX_AXES; i++) {
 				if (channelMasks & (1 << i))
-					m_joyAxis [i] = ReadJoyAxis (i, rawJoyAxis);
+					joyAxis [i] = ReadJoyAxis (i, rawJoyAxis);
 				else
-					m_joyAxis [i] = 0;
+					joyAxis [i] = 0;
 				}
 			}
 		bUseJoystick = 1;
@@ -237,12 +238,12 @@ return bUseJoystick;
 
 //------------------------------------------------------------------------------
 
-int CControlsManager::ReadSixense (void)
+int CControlsManager::ReadSixense (int* joyAxis)
 {
 	int nAxis = sixense.AxisCount ();
 
 for (int i = 0; i < nAxis; i++)
-	m_joyAxis [i] = sixense.GetAxis (i);
+	joyAxis [i] = sixense.GetAxis (i);
 return nAxis;
 }
 
@@ -1254,8 +1255,8 @@ SetType ();
 	int bSlideOn = 0;
 	int bBankOn = 0;
 	int bUseMouse = 0;
-	int bUseJoystick = gameOpts->input.joystick.bUse && ReadJoystick ();
-	int bUseSixense = gameOpts->input.joystick.bUse && ReadSixense ();
+	int bUseJoystick = gameOpts->input.joystick.bUse && ReadJoystick (m_joyAxis);
+	int bUseSixense = gameOpts->input.joystick.bUse && ReadSixense (m_joyAxis);
 
 if (gameOpts->input.mouse.bUse)
 	if (gameStates.input.bCybermouseActive) {

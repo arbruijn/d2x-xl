@@ -16,14 +16,13 @@ class CControlsManager {
 		float				m_lastTick;
 		int				m_joyAxis [JOY_MAX_AXES];
 
-
 	public:
 		CControlsManager () {
 			m_frameCount = m_maxTurnRate = 0;
 			m_lastTick = 0;
 			m_slackTurnRate = 0;
 			}
-		int ReadJoystick (void);
+		int ReadJoystick (int* joyAxis);
 		void ReadFCS (int nRawAxis);
 		int ReadAll (void);
 		void FlushInput (void);
@@ -50,6 +49,8 @@ class CControlsManager {
 
 		inline tControlInfo& operator[] (int i) { return m_info [i]; }
 
+		inline int JoyAxis (int i) { return m_joyAxis [i]; }
+
 	private:
 		int AllowToToggle (int i);
 		int ReadKeyboard (void);
@@ -58,7 +59,7 @@ class CControlsManager {
 		int ReadJoyAxis (int i, int rawJoyAxis []);
 		void SetFCSButton (int btn, int button);
 		int ReadCyberman (int *mouseAxis, int *nMouseButtons);
-		int ReadSixense (void);
+		int ReadSixense (int* joyAxis);
 		int LimitTurnRate (int bUseMouse);
 		int CapSampleRate (void);
 
