@@ -23,7 +23,6 @@ class CSixense {
 		int QueryAxis (void);
 		bool QueryAngles (CFloatVector* v);
 		inline fix GetAxis (int nAxis) { return (nAxis > m_nAxis) ? 0 : m_axis [nAxis]; }
-		inline int AxisCount (void) { return m_nAxis; }
 
 	private:
 		bool QueryAngles (ubyte nController, CFloatVector& v);

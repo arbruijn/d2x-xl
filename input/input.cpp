@@ -240,7 +240,7 @@ return bUseJoystick;
 
 int CControlsManager::ReadSixense (int* joyAxis)
 {
-	int nAxis = sixense.AxisCount ();
+	int nAxis = sixense.QueryAxis ();
 
 for (int i = 0; i < nAxis; i++)
 	joyAxis [i] = sixense.GetAxis (i);

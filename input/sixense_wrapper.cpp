@@ -1,5 +1,7 @@
 #include "sixense_wrapper.h"
 
+CSixense sixense;
+
 // -----------------------------------------------------------------------------
 
 CSixense::CSixense ()
@@ -8,7 +10,7 @@ CSixense::CSixense ()
 if ((m_bAvailable = (sixenseInit () == SIXENSE_SUCCESS))) {
 	m_nBases = sixenseGetMaxBases ();
 	if (m_nBases)
-		m_axis = new fix [m_nBases];
+		m_axis = new fix [m_nBases * 2 * 3];
 	}
 }
 
@@ -16,8 +18,10 @@ if ((m_bAvailable = (sixenseInit () == SIXENSE_SUCCESS))) {
 
 CSixense::~CSixense ()
 {
-if (m_axis)
+if (m_axis) {
 	delete m_axis;
+	m_axis = NULL;
+	}
 sixenseExit ();
 }
 
