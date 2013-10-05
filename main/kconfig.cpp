@@ -866,7 +866,7 @@ void CControlConfig::DrawQuestion (kcItem *item)
 fontManager.Current ()->StringSize ("?", w, h, aw);
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21 * fades [looper] / 31, 0, 24 * fades [looper] / 31));
 if (++looper > 63)
-	looper=0;
+	looper = 0;
 OglDrawFilledRect (KC_LHX (item->w1 + item->x), KC_LHY (item->y - 1),
 						 KC_LHX (item->w1 + item->x + item->w2), KC_LHY (item->y) + h);
 fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);

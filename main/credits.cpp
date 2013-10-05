@@ -266,6 +266,7 @@ void CCreditsRenderer::Render (void)
 	CFloatVector		colors [4] = {{{{1,1,1,1}}},{{{1,1,1,1}}},{{{1,1,1,1}}},{{{1,1,1,1}}}};
 
 
+
 for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 	backgroundManager.Draw (&m_background);
 	m_background.Activate ();
@@ -297,13 +298,14 @@ for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 					colors [0].Alpha () = colors [1].Alpha () = dy / float (FADE_DIST);
 					dy = float ((y + h < FADE_DIST) ? y + h : (480 - y - 2 * h < FADE_DIST) ? 480 - y - 2 * h : FADE_DIST);
 					colors [2].Alpha () = colors [3].Alpha () = dy / float (FADE_DIST);
-					bmP->Render (CCanvas::Current (), (CCanvas::Current ()->Width () - w) / 2, y, w, h, 0, 0, w, h, 1, 0, 0, 1, colors);
+					bmP->Render (NULL, (CCanvas::Current ()->Width () - w) / 2, y, w, h, 0, 0, w, h, 1, 0, 0, 1, colors);
 					delete bmP;
 					}
 				}
 			}
 		y += (m_buffer[l][0] == '!') ? ROW_SPACING / 2 : ROW_SPACING;
 		}
+	m_background.Deactivate ();
 	}
 }
 
@@ -396,3 +398,5 @@ for (;;) {
 	}
 backgroundManager.Draw ();
 }
+
+//-----------------------------------------------------------------------------

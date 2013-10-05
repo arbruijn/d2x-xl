@@ -23,7 +23,7 @@ sixenseExit ();
 
 // -----------------------------------------------------------------------------
 
-int CSixense::GetActiveBase (void)
+int CSixense::QueryActiveBase (void)
 {
 for (int i = m_nActive + 1; i < m_nBases; i++) {
 	if (!sixenseIsBaseConnected (i))
@@ -39,7 +39,7 @@ return m_nActive = -1;
 
 // -----------------------------------------------------------------------------
 
-bool CSixense::GetAngles (ubyte nController, CFloatVector& v)
+bool CSixense::QueryAngles (ubyte nController, CFloatVector& v)
 {
 if ((m_nActive < 0) || (sixenseSetActiveBase (m_nActive) == SIXENSE_FAILURE))
 	return false;
@@ -47,12 +47,12 @@ if (nController >= sixenseGetNumActiveControllers ())
 	return false;
 if (!sixenseIsControllerEnabled (nController))
 	return false;
-return GetAnglesInternal (nController, v);
+return QueryAnglesInternal (nController, v);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CSixense::GetAnglesInternal (ubyte nController, CFloatVector& v)
+bool CSixense::QueryAnglesInternal (ubyte nController, CFloatVector& v)
 {
 if (sixenseGetNewestData (nController, m_data.controllers + nController) == SIXENSE_FAILURE)
 	return false;
@@ -69,18 +69,18 @@ return true;
 
 // -----------------------------------------------------------------------------
 
-int CSixense::GetAxis (void)
+int CSixense::QueryAxis (void)
 {
 if (!m_axis)
 	return 0;
 
 m_nActive = -1;
 int m_nAxis = 0;
-while (GetActiveBase ()) {
+while (QueryActiveBase ()) {
 	CFloatVector v;
 	int n = sixenseGetNumActiveControllers ();
 	for (ubyte i = 0; i < n; i++) {
-		if (GetAnglesInternal (i, v)) {
+		if (QueryAnglesInternal (i, v)) {
 			for (int j = 0; j < 3; j++)
 				m_axis [m_nAxis++] = F2X (v [j]);
 			}

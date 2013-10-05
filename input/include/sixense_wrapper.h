@@ -19,13 +19,16 @@ class CSixense {
 		CSixense ();
 		~CSixense ();
 
-		inline bool Available (void) { return m_bAvailable && (m_nBases > 0) && (GetActiveBase () >= 0); }
-		int GetAxis (void);
+		inline bool Available (void) { return m_bAvailable && (m_nBases > 0) && (QueryActiveBase () >= 0); }
+		int QueryAxis (void);
+		bool QueryAngles (CFloatVector* v);
+		inline fix GetAxis (int nAxis) { return (nAxis > m_nAxis) ? 0 : m_axis [nAxis]; }
+		inline int AxisCount (void) { return m_nAxis; }
 
 	private:
-		bool GetAngles (ubyte nController, CFloatVector& v);
-		bool GetAnglesInternal (ubyte nController, CFloatVector& v);
-		int GetActiveBase (void);
+		bool QueryAngles (ubyte nController, CFloatVector& v);
+		bool QueryAnglesInternal (ubyte nController, CFloatVector& v);
+		int QueryActiveBase (void);
 	};
 
 extern CSixense sixense;

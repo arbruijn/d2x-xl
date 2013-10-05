@@ -14,6 +14,8 @@ class CControlsManager {
 		time_t			m_pollTime;
 		float				m_frameTime;
 		float				m_lastTick;
+		int				m_joyAxis [JOY_MAX_AXES];
+
 
 	public:
 		CControlsManager () {
@@ -21,7 +23,7 @@ class CControlsManager {
 			m_lastTick = 0;
 			m_slackTurnRate = 0;
 			}
-		int ReadJoystick (int* joyAxisP);
+		int ReadJoystick (void);
 		void ReadFCS (int nRawAxis);
 		int ReadAll (void);
 		void FlushInput (void);
@@ -56,7 +58,7 @@ class CControlsManager {
 		int ReadJoyAxis (int i, int rawJoyAxis []);
 		void SetFCSButton (int btn, int button);
 		int ReadCyberman (int *mouseAxis, int *nMouseButtons);
-		int ReadSixense (int * joyAxis);
+		int ReadSixense (void);
 		int LimitTurnRate (int bUseMouse);
 		int CapSampleRate (void);
 
@@ -70,6 +72,7 @@ class CControlsManager {
 		void DoOculusRift (void);
 		void DoSlideBank (int bSlideOn, int bBankOn, fix pitchTime, fix headingTime);
 		void CybermouseAdjust (void);
+		int DeltaAxis (int v);
 };
 
 extern CControlsManager controls;

@@ -41,6 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "input.h"
 #include "gamecntl.h"
 #include "transformation.h"
+#include "sixense_wrapper.h"
 
 class CControlsManager controls;
 
@@ -81,7 +82,6 @@ return extraGameInfo [IsMultiGame].bFastPitch;
 #define	JOYSTICK_READ_TIME	 (I2X (1)/40)		//	Read joystick at 40 Hz.
 
 fix	LastReadTime = 0;
-fix	joyAxis [JOY_MAX_AXES];
 
 //------------------------------------------------------------------------------
 
@@ -183,7 +183,7 @@ return (int) ((AttenuateAxis (h / 256, i) * m_pollTime) / 128);
 
 //------------------------------------------------------------------------------
 
-int CControlsManager::ReadJoystick (int * joyAxis)
+int CControlsManager::ReadJoystick (void)
 {
 	int	rawJoyAxis [JOY_MAX_AXES];
 	ulong channelMasks;
@@ -208,25 +208,25 @@ if (gameStates.limitFPS.bJoystick) {
 				if ((i == 3) && (gameStates.input.nJoyType == CONTROL_THRUSTMASTER_FCS))
 					ReadFCS (rawJoyAxis [i]);
 				else
-					joyAxis [i] = ReadJoyAxis (i, rawJoyAxis);
+					m_joyAxis [i] = ReadJoyAxis (i, rawJoyAxis);
 				}
 			}
 		bUseJoystick = 1;
 		}
 	else {
 		for (i = 0; i < JOY_MAX_AXES; i++)
-			joyAxis [i] = 0;
+			m_joyAxis [i] = 0;
 		}
 	}
 else {   // LIMIT_JOY_FPS
-	memset (joyAxis, 0, sizeof (joyAxis));
+	memset (m_joyAxis, 0, sizeof (m_joyAxis));
 	if (gameOpts->input.joystick.bUse) {
 		if ((channelMasks = JoyReadRawAxis (JOY_ALL_AXIS, rawJoyAxis))) {
 			for (i = 0; i < JOY_MAX_AXES; i++) {
 				if (channelMasks & (1 << i))
-					joyAxis [i] = ReadJoyAxis (i, rawJoyAxis);
+					m_joyAxis [i] = ReadJoyAxis (i, rawJoyAxis);
 				else
-					joyAxis [i] = 0;
+					m_joyAxis [i] = 0;
 				}
 			}
 		bUseJoystick = 1;
@@ -237,8 +237,13 @@ return bUseJoystick;
 
 //------------------------------------------------------------------------------
 
-int CControlsManager::ReadSixense (int * joyAxis)
+int CControlsManager::ReadSixense (void)
 {
+	int nAxis = sixense.AxisCount ();
+
+for (int i = 0; i < nAxis; i++)
+	m_joyAxis [i] = sixense.GetAxis (i);
+return nAxis;
 }
 
 //------------------------------------------------------------------------------
@@ -597,15 +602,15 @@ return h;
 
 //------------------------------------------------------------------------------
 
-inline int DeltaAxis (int v)
+int CControlsManager::DeltaAxis (int v)
 {
 #if 0 //DBG
-int vec = gameOpts->input.joystick.bLinearSens ? joyAxis [dir] * 16 / joySensMod [dir % 4] : joyAxis [dir];
+int vec = gameOpts->input.joystick.bLinearSens ? m_joyAxis [dir] * 16 / joySensMod [dir % 4] : m_joyAxis [dir];
 if (vec)
 	HUDMessage (0, "%d", vec);
 return vec;
 #else
-return gameOpts->input.joystick.bLinearSens ? joyAxis [v] * 16 / joySensMod [v % 4] : joyAxis [v];
+return gameOpts->input.joystick.bLinearSens ? m_joyAxis [v] * 16 / joySensMod [v % 4] : m_joyAxis [v];
 #endif
 }
 
@@ -679,65 +684,65 @@ for (i = 0; i < 60; i += 30) {
 		// Axis movements
 		if ((v = kcJoystick [i + 15].value) < 255) {
 			if (kcJoystick [62].value)		// If inverted...
-				m_info [0].sidewaysThrustTime += joyAxis [v];
+				m_info [0].sidewaysThrustTime += m_joyAxis [v];
 			else
-				m_info [0].sidewaysThrustTime -= joyAxis [v];
+				m_info [0].sidewaysThrustTime -= m_joyAxis [v];
 			}
 		if ((v = kcJoystick [i + 16].value) < 255) {
 			if (kcJoystick [63].value)		// If inverted...
-				m_info [0].verticalThrustTime -= joyAxis [v];
+				m_info [0].verticalThrustTime -= m_joyAxis [v];
 			else
-				m_info [0].verticalThrustTime += joyAxis [v];
+				m_info [0].verticalThrustTime += m_joyAxis [v];
 			}
 		if ((v = kcJoystick [i + 17].value) < 255) {
 			if (kcJoystick [64].value)		// If inverted...
-				m_info [2].bankTime += joyAxis [v];
+				m_info [2].bankTime += m_joyAxis [v];
 			else
-				m_info [2].bankTime -= joyAxis [v];
+				m_info [2].bankTime -= m_joyAxis [v];
 			}
 		if ((v = kcJoystick [i + 18].value) < 255) {
 			if (kcJoystick [65].value)		// If inverted...
-				m_info [0].forwardThrustTime += joyAxis [v];
+				m_info [0].forwardThrustTime += m_joyAxis [v];
 			else
-				m_info [0].forwardThrustTime -= joyAxis [v];
+				m_info [0].forwardThrustTime -= m_joyAxis [v];
 			}
 		// special continuous slide & bank handling
 		if (*bSlideOn) {
 			if ((v = kcJoystick [i + 13].value) < 255) {
 				if (kcJoystick [60].value)		// If inverted...
-					m_info [0].verticalThrustTime -= joyAxis [v];
+					m_info [0].verticalThrustTime -= m_joyAxis [v];
 				else
-					m_info [0].verticalThrustTime += joyAxis [v];
+					m_info [0].verticalThrustTime += m_joyAxis [v];
 			}
 			if ((v = kcJoystick [i + 14].value) < 255) {
 				if (kcJoystick [61].value)		// If inverted...
-					m_info [0].sidewaysThrustTime -= joyAxis [v];
+					m_info [0].sidewaysThrustTime -= m_joyAxis [v];
 				else
-					m_info [0].sidewaysThrustTime += joyAxis [v];
+					m_info [0].sidewaysThrustTime += m_joyAxis [v];
 				}
 			}
 		else {
 			if ((v = kcJoystick [i + 13].value) < 255) {
 				if (kcJoystick [60].value)		// If inverted...
-					m_info [2].pitchTime += DeltaAxis (v); // (joyAxis [v] * 16 / joySensMod);
+					m_info [2].pitchTime += DeltaAxis (v); // (m_joyAxis [v] * 16 / joySensMod);
 				else
-					m_info [2].pitchTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joySensMod);
+					m_info [2].pitchTime -= DeltaAxis (v); // (m_joyAxis [v] * 16 / joySensMod);
 				}
 			if (!*bBankOn) {
 				if ((v = kcJoystick [i + 14].value) < 255) {
 					if (kcJoystick [61].value)		// If inverted...
-						m_info [2].headingTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joySensMod); //m_frameCount;
+						m_info [2].headingTime -= DeltaAxis (v); // (m_joyAxis [v] * 16 / joySensMod); //m_frameCount;
 					else
-						m_info [2].headingTime += DeltaAxis (v); // (joyAxis [v] * 16 / joySensMod); // m_frameCount;
+						m_info [2].headingTime += DeltaAxis (v); // (m_joyAxis [v] * 16 / joySensMod); // m_frameCount;
 					}
 				}
 			}
 		if (*bBankOn) {
 			if ((v = kcJoystick [i + 14].value) < 255) {
 				if (kcJoystick [61].value)		// If inverted...
-					m_info [2].bankTime += DeltaAxis (v); // (joyAxis [v] * 16 / joySensMod);
+					m_info [2].bankTime += DeltaAxis (v); // (m_joyAxis [v] * 16 / joySensMod);
 				else
-					m_info [2].bankTime -= DeltaAxis (v); // (joyAxis [v] * 16 / joySensMod);
+					m_info [2].bankTime -= DeltaAxis (v); // (m_joyAxis [v] * 16 / joySensMod);
 				}
 			}
 		}
@@ -1228,11 +1233,8 @@ m_info [0].rearViewDownCount = 0;
 int CControlsManager::Read (void)
 {
 	int	i;
-	int	bSlideOn, bBankOn;
 	fix	pitchTime, headingTime;
 	fix	mouseAxis [3];
-	int	nMouseButtons;
-	int	bUseMouse, bUseJoystick;
 
 ResetTriggers ();
 gameStates.input.bControlsSkipFrame = 1;
@@ -1241,17 +1243,20 @@ if (CapSampleRate ())
 gameStates.input.bControlsSkipFrame = 0;
 Reset ();
 gameStates.input.bKeepSlackTime = 1;
-nMouseButtons = 0;
-bUseMouse = 0;
-bSlideOn = 0;
-bBankOn = 0;
+
 
 if (!gameOpts->legacy.bInput)
 	event_poll (SDL_ALLEVENTS);	//why poll 2 dozen times in the following code when input polling calls all necessary input handlers anyway?
 
 SetType ();
-bUseJoystick = gameOpts->input.joystick.bUse && ReadJoystick (reinterpret_cast<int*> (&joyAxis [0]));
-bUseSixense = gameOpts->input.joystick.bUse && sixense.GetAngles ();
+
+	int nMouseButtons = 0;
+	int bSlideOn = 0;
+	int bBankOn = 0;
+	int bUseMouse = 0;
+	int bUseJoystick = gameOpts->input.joystick.bUse && ReadJoystick ();
+	int bUseSixense = gameOpts->input.joystick.bUse && ReadSixense ();
+
 if (gameOpts->input.mouse.bUse)
 	if (gameStates.input.bCybermouseActive) {
 #if 0

@@ -765,7 +765,7 @@ if (nStep) {
 		av.v.coord.p /= nStep;
 		av.v.coord.b /= nStep;
 		av.v.coord.h /= nStep;
-		ad = objP->info.position.mOrient.ExtractAnglesVec ();
+		ad = objP->info.position.mOrient.ComputeAngles ();
 		ad.v.coord.p += (an.v.coord.p - ad.v.coord.p) / nStep;
 		ad.v.coord.b += (an.v.coord.b - ad.v.coord.b) / nStep;
 		ad.v.coord.h += (an.v.coord.h - ad.v.coord.h) / nStep;
