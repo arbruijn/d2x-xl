@@ -1256,7 +1256,9 @@ SetType ();
 	int bBankOn = 0;
 	int bUseMouse = 0;
 	int bUseJoystick = gameOpts->input.joystick.bUse && ReadJoystick (m_joyAxis);
+#if DBG
 	int bUseSixense = gameOpts->input.joystick.bUse && ReadSixense (m_joyAxis);
+#endif
 
 if (gameOpts->input.mouse.bUse)
 	if (gameStates.input.bCybermouseActive) {
