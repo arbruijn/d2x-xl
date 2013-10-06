@@ -79,15 +79,29 @@ extern float quadVerts [3][4][2];
 
 #if OCULUS_RIFT
 
-static bool RiftWarpFrame (const OVR::Util::Render::StereoEyeParams stereoParams)
+
+class CDefaultDistortionConfig : public OVR::Util::Render::DistortionConfig {
+	public:
+		CDefaultDistortionConfig () 
+			: OVR::Util::Render::DistortionConfig (1.0f, 0.22f, 0.24f, 0.0f)
+			{
+			XCenterOffset = 0.15197642f;
+			YCenterOffset = 0.0f;
+			Scale = 1.7146056f;
+			SetChromaticAberration (0.996f, -0.004f, 1.014f, 0.0f);
+			}
+	};
+
+
+static CDefaultDistortionConfig defaultDistortion;
+
+static bool RiftWarpFrame (const OVR::Util::Render::StereoEyeParams& stereoParams)
 {
 	OVR::Util::Render::DistortionConfig distortion;
 
-if (stereoParams.pDistortion) {
-	distortion = *stereoParams.pDistortion;
-	if (stereoParams.Eye == OVR::Util::Render::StereoEye_Right)
-		distortion.XCenterOffset = -distortion.XCenterOffset;
-	}
+distortion = (gameData.render.rift.Available () && stereoParams.pDistortion) ? *stereoParams.pDistortion : defaultDistortion;
+if (stereoParams.Eye == OVR::Util::Render::StereoEye_Right)
+	distortion.XCenterOffset = -distortion.XCenterOffset;
 
 float w = float (gameData.render.frame.Width ()) / float (gameData.render.screen.Width ()),
       h = float (gameData.render.frame.Height ()) / float (gameData.render.screen.Height ()),

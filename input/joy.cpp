@@ -263,17 +263,17 @@ return time;
 
 uint JoyReadRawAxis (uint mask, int * axis)
 {
-	int i;
-	uint channel_masks = 0;
+	int	i;
+	uint	axisFlags = 0;
 
 if (!gameStates.input.nJoysticks)
 	return 0;
 for (i = 0; i < JOY_MAX_AXES; i++)
 	if ((axis [i] = joyInfo.axes [i].nValue)) {
-		channel_masks |= (1 << i);
+		axisFlags |= (1 << i);
 		//joyInfo.axes [i].nValue = 0;
 		}
-return channel_masks;
+return axisFlags;
 }
 
 //------------------------------------------------------------------------------
