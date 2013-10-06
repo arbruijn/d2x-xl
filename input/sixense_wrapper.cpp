@@ -80,7 +80,7 @@ if (!m_axis)
 
 m_nActive = -1;
 int m_nAxis = 0;
-while (QueryActiveBase ()) {
+while (QueryActiveBase () >= 0) {
 	CFloatVector v;
 	int n = sixenseGetNumActiveControllers ();
 	for (ubyte i = 0; i < n; i++) {
