@@ -95,13 +95,11 @@ class CDefaultDistortionConfig : public OVR::Util::Render::DistortionConfig {
 
 static CDefaultDistortionConfig defaultDistortion;
 
-static bool RiftWarpFrame (const OVR::Util::Render::StereoEyeParams& stereoParams)
+static bool RiftWarpFrame (const OVR::Util::Render::DistortionConfig* pDistortion, int nEye)
 {
 	OVR::Util::Render::DistortionConfig distortion;
 
-distortion = (gameData.render.rift.Available () && stereoParams.pDistortion) ? *stereoParams.pDistortion : defaultDistortion;
-if (stereoParams.Eye == OVR::Util::Render::StereoEye_Right)
-	distortion.XCenterOffset = -distortion.XCenterOffset;
+distortion = (gameData.render.rift.Available () && pDistortion) ? *pDistortion : defaultDistortion;
 
 float w = float (gameData.render.frame.Width ()) / float (gameData.render.screen.Width ()),
       h = float (gameData.render.frame.Height ()) / float (gameData.render.screen.Height ()),
@@ -117,7 +115,7 @@ if (shaderManager.Rebuild (warpProg))
 	;
 // We are using 1/4 of DistortionCenter offset value here, since it is
 // relative to [-1,1] range that gets mapped to [0, 0.5].
-shaderManager.Set ("LensCenter", x + (w + distortion.XCenterOffset * 0.5f) * 0.5f, y + h * 0.5f);
+shaderManager.Set ("LensCenter", x + (w + (nEye ? -distortion.XCenterOffset : distortion.XCenterOffset) * 0.5f) * 0.5f, y + h * 0.5f);
 shaderManager.Set ("ScreenCenter", x + w * 0.5f, y + h * 0.5f);
 
 // MA: This is more correct but we would need higher-res texture vertically; we should adopt this
@@ -178,7 +176,7 @@ for (int i = 0; i < 2; i++) {
 		OglDrawArrays (GL_QUADS, 0, 4);
 	else
 #endif
-	if (!RiftWarpFrame (gameData.render.rift.m_eyes [i])) {
+	if (!RiftWarpFrame (gameData.render.rift.m_eyes [i].pDistortion, i)) {
 		gameData.render.frame.Deactivate ();
 		return false;
 		}
