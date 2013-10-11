@@ -120,7 +120,7 @@ shaderManager.Set ("ScreenCenter", x + w * 0.5f, y + h * 0.5f);
 
 // MA: This is more correct but we would need higher-res texture vertically; we should adopt this
 // once we have asymmetric input texture scale.
-#if DBG
+#if 0 //DBG -- obsolete, experimental code to decrease the size of the render output. gameOpts->render.stereo.nRiftFOV now actually influences the FOV.
 float scaleFactor;
 if (gameOpts->render.stereo.nRiftFOV == RIFT_MAX_FOV) 
 	scaleFactor = 1.0f / distortion.Scale;

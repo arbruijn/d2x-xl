@@ -241,7 +241,7 @@ if ((m = menu ["3D glasses"])) {
 			m->m_bRebuild = -1;
 			}
 		}
-#if DBG
+#if 1 //DBG
 	if ((m = menu ["FOV"])) {
 		v = m->Value ();
 		if (gameOpts->render.stereo.nRiftFOV != v) {
@@ -582,7 +582,7 @@ do {
 
 	if (EXPERTMODE && nStereoDevice) {
 		if (nStereoDevice == GLASSES_OCULUS_RIFT - 2) {
-#if DBG
+#if 1 //DBG
 			sprintf (szSlider + 1, TXT_RIFT_FOV, pszFOV [gameOpts->render.stereo.nRiftFOV]);
 			*szSlider = *(TXT_RIFT_FOV - 1);
 			m.AddSlider ("FOV", szSlider + 1, gameOpts->render.stereo.nRiftFOV, 0, sizeofa (pszFOV) - 1, KEY_F, HTX_STEREO_FOV);
