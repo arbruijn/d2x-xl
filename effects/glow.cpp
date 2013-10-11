@@ -10,7 +10,7 @@
 CGlowRenderer glowRenderer;
 
 #define USE_VIEWPORT 1
-#define BLUR 0 //2
+#define BLUR 2
 #define START_RAD (m_bViewport ? 2.0f : 0.0f)
 #define RAD_INCR (m_bViewport ? 2.0f : 0.0f)
 
@@ -556,16 +556,16 @@ float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
 //ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 #if 1 //!DBG
-if (direction >= 0)
+if (direction >= 0) {
 	LoadShader (direction, radius);
-else
-#endif
-	shaderManager.Deploy (-1);
-if (source < 0)
-	gameData.render.frame.SetViewport ();
-else
 	gameData.render.window.SetViewport ();
-ogl.SetBlendMode (OGL_BLEND_REPLACE);
+	}
+else
+#endif 
+	{
+	shaderManager.Deploy (-1);
+	gameData.render.frame.SetViewport ();
+	}
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer (source < 0));
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
@@ -685,7 +685,6 @@ else
 #endif
 
 	ogl.ChooseDrawBuffer ();
-	gameData.render.frame.SetViewport ();
 	ogl.SetDepthMode (GL_ALWAYS);
 	//ogl.SetBlendMode (OGL_BLEND_ADD_WEAK);
 	if (m_nType != BLUR_SHADOW)
