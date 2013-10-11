@@ -10,7 +10,7 @@
 CGlowRenderer glowRenderer;
 
 #define USE_VIEWPORT 1
-#define BLUR 2
+#define BLUR 0 //2
 #define START_RAD (m_bViewport ? 2.0f : 0.0f)
 #define RAD_INCR (m_bViewport ? 2.0f : 0.0f)
 
@@ -198,6 +198,9 @@ int CGlowRenderer::Activate (void)
 {
 if (!ogl.SelectGlowBuffer ())
 	return 0;
+gameData.render.window.Setup (&gameData.render.scene);
+gameData.render.window.CViewport::SetLeft (0);
+gameData.render.window.SetViewport ();
 if (m_nType == BLUR_SHADOW)
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 else
@@ -473,8 +476,12 @@ if ((gameOptions [0].render.nQuality < 3) && automap.Display ())
 #if 0
 if (nType != m_nType) {
 #else
-if ((m_bReplace == bReplace) && (m_nStrength == nStrength) && (m_brightness == brightness) && ((nType == GLOW_LIGHTNING) == (m_nType == GLOW_LIGHTNING))) 
+if ((m_bReplace == bReplace) && (m_nStrength == nStrength) && (m_brightness == brightness) && ((nType == GLOW_LIGHTNING) == (m_nType == GLOW_LIGHTNING))) {
 	gameOpts->render.effects.bGlow *= ogl.SelectGlowBuffer ();
+	gameData.render.window.Setup (&gameData.render.scene);
+	gameData.render.window.CViewport::SetLeft (0);
+	gameData.render.window.SetViewport ();
+	}
 else {
 #endif
 	End ();
@@ -549,6 +556,10 @@ if (direction >= 0)
 else
 #endif
 	shaderManager.Deploy (-1);
+if (source < 0)
+	gameData.render.frame.SetViewport ();
+else
+	gameData.render.window.SetViewport ();
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer (source < 0));
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
@@ -563,7 +574,7 @@ void CGlowRenderer::ClearViewport (float const radius)
 {
 #if 1
 ogl.SaveViewport ();
-if (radius < 0) 
+if (radius <= 0.0f) 
 	glViewport (0, 0, ScreenWidth () - 1, ScreenHeight () - 1);
 else {
 	float r = radius * 4.0f * m_nStrength; // scale with a bit more than the max. offset from the blur shader
@@ -624,7 +635,7 @@ else
 	glPushMatrix ();
 	glLoadIdentity ();//clear matrix
 	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-	gameData.render.screen.SetViewport ();
+	gameData.render.window.SetViewport ();
 
 	GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
 	bool bDepthWrite = ogl.GetDepthWrite ();
@@ -633,6 +644,7 @@ else
 	ogl.SetDepthWrite (false);
 	ogl.SetAlphaTest (false);
 	ogl.ResetClientStates (1);
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	//glClearColor (0.0, 0.375, 0.75, 0.5);
 	//glClear (GL_COLOR_BUFFER_BIT);
 
@@ -642,7 +654,6 @@ else
 	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 
 	radius += RAD_INCR;
-	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	if (!ogl.SelectBlurBuffer (0))
 		return Reset (0, 1);
 	ClearViewport (radius);
@@ -668,6 +679,7 @@ else
 #endif
 
 	ogl.ChooseDrawBuffer ();
+	gameData.render.frame.SetViewport ();
 	ogl.SetDepthMode (GL_ALWAYS);
 	//ogl.SetBlendMode (OGL_BLEND_ADD_WEAK);
 	if (m_nType != BLUR_SHADOW)
@@ -680,6 +692,8 @@ else
 #if BLUR
 	Render (1, -1, radius, (scale == 1.0f) ? 1.0f : 8.0f); // Glow -> back buffer
 	if (!m_bReplace)
+#else
+	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 #endif
 		Render (-1, -1, radius, scale); // render the unblurred stuff on top of the blur
 	ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
@@ -687,7 +701,6 @@ else
 	glPopMatrix ();
 	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
-	gameData.render.frame.SetViewport ();
 	ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
 	ogl.SetDepthWrite (bDepthWrite);
 	ogl.SetAlphaTest (true);

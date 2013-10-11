@@ -501,8 +501,8 @@ m_data.depthScale.v.coord.x = float (ZFAR / (ZFAR - ZNEAR));
 m_data.depthScale.v.coord.y = float (ZNEAR * ZFAR / (ZNEAR - ZFAR));
 m_data.depthScale.v.coord.z = float (ZFAR - ZNEAR);
 #if 1
-m_data.windowScale.dim.x = 1.0f / float (gameData.render.screen.Width ());
-m_data.windowScale.dim.y = 1.0f / float (gameData.render.screen.Height ());
+m_data.windowScale.dim.x = 1.0f / float (gameData.render.frame.Width ());
+m_data.windowScale.dim.y = 1.0f / float (gameData.render.frame.Height ());
 #else
 m_data.windowScale.dim.x = 1.0f / float (CCanvas::Current ()->Width ());
 m_data.windowScale.dim.y = 1.0f / float (CCanvas::Current ()->Height ());
