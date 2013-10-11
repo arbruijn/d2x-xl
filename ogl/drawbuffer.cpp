@@ -241,7 +241,7 @@ else {
 
 int COGL::SelectGlowBuffer (void) 
 { 
-return SelectDrawBuffer (int (m_data.xStereoSeparation > 0), 1) > -1;
+return SelectDrawBuffer (int (!IsSideBySideDevice () && (m_data.xStereoSeparation > 0)), 1) > -1;
 }
 
 //------------------------------------------------------------------------------

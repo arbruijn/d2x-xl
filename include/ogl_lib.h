@@ -535,7 +535,7 @@ class COGL {
 		inline CFBO* GlowBuffer () { return m_data.GetDrawBuffer (2); }
 
 		inline CFBO* BlurBuffer (int nBuffer) { 
-			return m_data.GetDrawBuffer ((nBuffer >= 0) ? nBuffer + 3 : int (m_data.xStereoSeparation > 0)); 
+			return m_data.GetDrawBuffer ((nBuffer >= 0) ? nBuffer + 3 : !IsSideBySideDevice () && int (m_data.xStereoSeparation > 0)); 
 			}
 
 		inline CFBO* DepthBuffer (int nBuffer = -1) { return (nBuffer < 0) ? m_data.drawBufferP : m_data.GetDepthBuffer (nBuffer + 5); }

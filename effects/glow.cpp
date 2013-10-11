@@ -530,7 +530,12 @@ float verts [4][2] = {
 	{ScreenCoord ((float) m_screenMax.x + r, (float) w) * scale,
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)}
 	};
-r += 4.0f;
+if (ogl.IsSideBySideDevice ()) {
+	w *= 2;
+	r = 0.0f;
+	}
+else
+	r += 4.0f;
 float texCoord [4][2] = {
 	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
@@ -560,6 +565,7 @@ if (source < 0)
 	gameData.render.frame.SetViewport ();
 else
 	gameData.render.window.SetViewport ();
+ogl.SetBlendMode (OGL_BLEND_REPLACE);
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer (source < 0));
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
@@ -692,8 +698,6 @@ else
 #if BLUR
 	Render (1, -1, radius, (scale == 1.0f) ? 1.0f : 8.0f); // Glow -> back buffer
 	if (!m_bReplace)
-#else
-	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 #endif
 		Render (-1, -1, radius, scale); // render the unblurred stuff on top of the blur
 	ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
