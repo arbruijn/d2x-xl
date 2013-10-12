@@ -1,12 +1,12 @@
 #ifndef __SIXENSE_WRAPPER__
 #define __SIXENSE_WRAPPER__
 
+#if DBG
+
 #include "sixense.h"
 #include "vecmat.h"
 
 // -----------------------------------------------------------------------------
-
-#if DBG
 
 class CSixense {
 	private:
