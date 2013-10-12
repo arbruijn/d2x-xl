@@ -6,6 +6,8 @@
 
 // -----------------------------------------------------------------------------
 
+#if DBG
+
 class CSixense {
 	private:
 		sixenseAllControllerData	m_data;
@@ -30,8 +32,8 @@ class CSixense {
 		int QueryActiveBase (void);
 	};
 
-#if DBG
 extern CSixense sixense;
+
 #endif
 
 // -----------------------------------------------------------------------------
