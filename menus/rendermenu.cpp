@@ -682,8 +682,10 @@ do {
 	} while (i == -2);
 
 gameOpts->render.stereo.nGlasses = (nStereoDevice > 1) ? nStereoDevice + 2 : (nStereoDevice == 1) ? nStereoDevice + nAnaglyphColor : 0;
+#if 0
 if (ogl.IsOculusRift ())
 	gameData.render.rift.m_magCalTO.Start (-1, true);
+#endif
 lightManager.SetMethod ();
 DefaultRenderSettings ();
 }

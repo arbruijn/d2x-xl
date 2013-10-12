@@ -629,9 +629,11 @@ else if (!m_sensorP) {
 else {
 	m_sensorFusion.AttachToSensor (m_sensorP);
 	m_sensorFusion.SetYawCorrectionEnabled (true);
+#if 0
 	m_magCalTO.Setup (60000); // 1 minute
 	m_magCalTO.Start (-1, true);
 	m_bCalibrating = false;
+#endif
 	m_bAvailable = 2;
 	}
 if (detectionMessage) 
@@ -695,6 +697,7 @@ return 1;
 
 void CRiftData::AutoCalibrate (void)
 {
+#if 0
 if (Available () > 1) {
 	if (m_bCalibrating) {
 		if (!m_magCal.IsAutoCalibrating ()) {
@@ -712,6 +715,7 @@ if (Available () > 1) {
 	else if (m_magCalTO.Expired (false))
 		m_magCal.BeginAutoCalibration (m_sensorFusion);
 	}
+#endif
 }
 
 // ----------------------------------------------------------------------------
