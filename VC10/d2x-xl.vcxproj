@@ -1022,7 +1022,11 @@
     <ClCompile Include="..\cockpit\utilities.cpp" />
     <ClCompile Include="..\console\console.cpp" />
     <ClCompile Include="..\include\cquicksort.cpp" />
-    <ClCompile Include="..\input\sixense_wrapper.cpp" />
+    <ClCompile Include="..\input\sixense_wrapper.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-OMP|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-OMP|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\main\crypt.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>

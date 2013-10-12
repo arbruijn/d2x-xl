@@ -240,11 +240,15 @@ return bUseJoystick;
 
 int CControlsManager::ReadSixense (int* joyAxis)
 {
+#if DBG
 	int nAxis = sixense.QueryAxis ();
 
 for (int i = 0; i < nAxis; i++)
 	joyAxis [i] = sixense.GetAxis (i);
 return nAxis;
+#else
+return 0;
+#endif
 }
 
 //------------------------------------------------------------------------------

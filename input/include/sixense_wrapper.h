@@ -30,7 +30,9 @@ class CSixense {
 		int QueryActiveBase (void);
 	};
 
+#if DBG
 extern CSixense sixense;
+#endif
 
 // -----------------------------------------------------------------------------
 
