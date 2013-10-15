@@ -627,8 +627,9 @@ else if (!m_sensorP) {
 	detectionMessage = "Oculus HMD Display detected; Sensor not detected.\n";
 	}
 else {
-	m_sensorFusion.AttachToSensor (m_sensorP);
-	m_sensorFusion.SetYawCorrectionEnabled (true);
+	m_sensorFusion = new OVR::SensorFusion;
+	m_sensorFusion->AttachToSensor (m_sensorP);
+	m_sensorFusion->SetYawCorrectionEnabled (true);
 #if 0
 	m_magCalTO.Setup (60000); // 1 minute
 	m_magCalTO.Start (-1, true);
@@ -648,7 +649,7 @@ int CRiftData::GetViewMatrix (CFixMatrix& mOrient)
 {
 if (Available () < 2)
 	return 0;
-OVR::Quatf q = m_sensorFusion.GetOrientation ();
+OVR::Quatf q = m_sensorFusion->GetOrientation ();
 OVR::Matrix4f m (q);
 for (int i = 0; i < 3; i++)
 	for (int j = 0; j < 3; j++)
@@ -679,7 +680,7 @@ int CRiftData::GetHeadAngles (CAngleVector* angles)
 {
 if (Available () < 2)
 	return 0;
-OVR::Quatf q = m_sensorFusion.GetOrientation ();
+OVR::Quatf q = m_sensorFusion->GetOrientation ();
 float yaw, pitch, roll;
 q.GetEulerAngles<OVR::Axis_Y, OVR::Axis_X, OVR::Axis_Z>(&yaw, &pitch, &roll);
 if (!angles) 
@@ -705,7 +706,7 @@ if (Available () > 1) {
 			m_magCalTO.Start (-1, true);
 			}
 		else {
-			m_magCal.UpdateAutoCalibration (m_sensorFusion);
+			m_magCal.UpdateAutoCalibration (*m_sensorFusion);
 			if (m_magCal.IsCalibrated ()) {
 				m_bCalibrating = false;
 				m_magCalTO.Start (-1);
@@ -713,7 +714,7 @@ if (Available () > 1) {
 			}
 		}
 	else if (m_magCalTO.Expired (false))
-		m_magCal.BeginAutoCalibration (m_sensorFusion);
+		m_magCal.BeginAutoCalibration (*m_sensorFusion);
 	}
 #endif
 }
@@ -722,6 +723,10 @@ if (Available () > 1) {
 
 void CRiftData::Destroy (void)
 {
+if (m_sensorFusion) {
+	delete m_sensorFusion;
+	m_sensorFusion = NULL;
+	}
 }
 
 // ----------------------------------------------------------------------------

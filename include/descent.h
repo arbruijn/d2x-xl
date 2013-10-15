@@ -1743,7 +1743,7 @@ class CRiftData {
 		OVR::Ptr<OVR::HMDDevice>				m_hmdP;
 		OVR::Ptr<OVR::SensorDevice>			m_sensorP;
 		OVR::HMDInfo								m_hmdInfo;
-		OVR::SensorFusion							m_sensorFusion;
+		OVR::SensorFusion*						m_sensorFusion;
 		OVR::Util::Render::StereoConfig		m_stereoConfig;
 		OVR::Util::Render::StereoEyeParams	m_eyes [2];
 #	if 0 // manual calibration removed from Rift SDK since v0.25
@@ -1762,6 +1762,7 @@ class CRiftData {
 		CFloatVector	m_center;
 
 		CRiftData () : m_renderScale (1.0f), m_fov (125.0f), m_nResolution (0), m_bAvailable (false) {}
+		~CRiftData () { Destroy (); }
 		bool Create (void);
 		void Destroy (void);
 		inline int Available (void) { return m_bAvailable; }
