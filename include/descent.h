@@ -1772,8 +1772,8 @@ class CRiftData {
 		void AutoCalibrate (void);
 		inline void SetCenter (void) { GetHeadAngles (NULL); }
 #if OCULUS_RIFT
-		inline int HResolution (void) { return Available () ? m_hmdInfo.HResolution : 1920; }
-		inline int VResolution (void) { return Available () ? m_hmdInfo.VResolution : 1200; }
+		inline int HResolution (void) { return (Available () &&  m_hmdInfo.HResolution) ? m_hmdInfo.HResolution : 1920; }
+		inline int VResolution (void) { return (Available () && m_hmdInfo.VResolution) ? m_hmdInfo.VResolution : 1200; }
 #else
 		inline int HResolution (void) { return 1920; }
 		inline int VResolution (void) { return 1200; }
