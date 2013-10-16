@@ -979,17 +979,17 @@ void CSaveGameManager::SaveImage (void)
 
 bmOut.SetWidth (THUMBNAIL_LW);
 bmOut.SetHeight (THUMBNAIL_LH);
-bmIn.SetBPP (1);
+bmOut.SetBPP (1);
 bmOut.CreateBuffer ();
 
-bmIn.SetWidth ((gameData.render.frame.Width () / THUMBNAIL_LW) * THUMBNAIL_LW);
+bmIn.SetWidth ((gameData.render.screen.Width (false) / THUMBNAIL_LW) * THUMBNAIL_LW);
 bmIn.SetHeight (bmIn.Width () * 3 / 5);	//force 5:3 aspect ratio
-if (bmIn.Height () > gameData.render.frame.Height ()) {
-	bmIn.SetHeight ((gameData.render.frame.Height () / THUMBNAIL_LH) * THUMBNAIL_LH);
+if (bmIn.Height () > gameData.render.screen.Height (false)) {
+	bmIn.SetHeight ((gameData.render.screen.Height (false) / THUMBNAIL_LH) * THUMBNAIL_LH);
 	bmIn.SetWidth (bmIn.Height () * 5 / 3);
 	}
-x = (gameData.render.frame.Width () - bmIn.Width ()) / 2;
-y = (gameData.render.frame.Height () - bmIn.Height ()) / 2;
+x = (gameData.render.screen.Width (false) - bmIn.Width ()) / 2;
+y = (gameData.render.screen.Height (false) - bmIn.Height ()) / 2;
 bmIn.SetBPP (3);
 bmIn.CreateBuffer ();
 

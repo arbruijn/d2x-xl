@@ -582,7 +582,9 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordCockpitChange (gameStates.render.cockpit.nType);
 if (gameStates.video.nScreenMode == SCREEN_EDITOR)
 	gameStates.render.cockpit.nType = CM_FULL_SCREEN;
+SetupCanvasses ();
 gameData.render.scene.Setup (&gameData.render.frame); // OpenGL viewport must be properly set here
+gameData.render.scene.Activate ();
 fontManager.SetCurrent (GAME_FONT);
 SetFontScale (1.0f);
 SetFontColor (GREEN_RGBA);

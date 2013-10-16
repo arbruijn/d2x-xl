@@ -249,7 +249,7 @@ else
 void SetupCanvasses (float scale)
 {
 if (scale != 0.0f)
-	gameData.render.screen.SetScale ((scale < 0.0f) ? ogl.IsOculusRift () ? 1.5f : 1.0f : scale);
+	gameData.render.screen.SetScale ((scale < 0.0f) ? ogl.IsOculusRift () ? 1.25f : 1.0f : scale);
 
 if (!ogl.IsSideBySideDevice ())
 	gameData.render.frame.Setup (&gameData.render.screen);
