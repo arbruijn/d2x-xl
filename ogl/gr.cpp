@@ -402,12 +402,8 @@ return nMode;
 
 int SetSideBySideDisplayMode (void)
 {
-if (gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT) {
-	if (gameData.render.rift.Resolution ())
-		SetCustomDisplayMode (1920, 1080, 0);
-	else
-		SetCustomDisplayMode (1280, 800, 0);
-	}
+if (gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT)
+	SetCustomDisplayMode (gameData.render.rift.HResolution (), gameData.render.rift.VResolution (), 0);
 else if (gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER_HDMI)
 	SetCustomDisplayMode (1920, 1080, 0);
 else
