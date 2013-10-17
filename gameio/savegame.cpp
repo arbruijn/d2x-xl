@@ -977,6 +977,9 @@ void CSaveGameManager::SaveImage (void)
 	CBitmap	bmIn, bmOut;
 	int		x, y;
 
+SetupCanvasses ();
+gameData.render.screen.Activate ();
+
 bmOut.SetWidth (THUMBNAIL_LW);
 bmOut.SetHeight (THUMBNAIL_LH);
 bmOut.SetBPP (1);
@@ -1029,6 +1032,7 @@ else {
  	for (int i = 0; i < THUMBNAIL_LW * THUMBNAIL_LH; i++)
 		m_cf.Write (&color, sizeof (ubyte), 1);
 	}
+gameData.render.screen.Deactivate ();
 }
 
 //------------------------------------------------------------------------------
