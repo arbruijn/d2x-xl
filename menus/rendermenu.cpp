@@ -592,7 +592,7 @@ do {
 		m.AddText ("", "");
 	sprintf (szSlider + 1, TXT_STEREO_VIEW, pszStereoDevice [nStereoDevice]);
 	*szSlider = *(TXT_STEREO_VIEW - 1);
-	m.AddSlider ("3D glasses", szSlider + 1, nStereoDevice, 0, nStereoDeviceCount, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
+	m.AddSlider ("3D glasses", szSlider + 1, nStereoDevice, 0, nStereoDeviceCount - 1, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
 	if (stereoDeviceMap [nStereoDevice] == GLASSES_OCULUS_RIFT) {
 		sprintf (szSlider + 1, TXT_RIFT_IPD, nIPD + RIFT_MIN_IPD);
 		*szSlider = *(TXT_RIFT_IPD - 1);
