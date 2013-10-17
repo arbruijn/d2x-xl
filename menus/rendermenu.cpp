@@ -433,8 +433,8 @@ pszColorLevel [2] = TXT_FULL;
 
 pszStereoDevice [0] = TXT_NONE;
 pszStereoDevice [1] = TXT_ANAGLYPH_GLASSES;
-pszStereoDevice [2] = TXT_OCULUS_RIFT;
-pszStereoDevice [3] = TXT_SHUTTER_HDMI;
+pszStereoDevice [2] = TXT_SHUTTER_HDMI;
+pszStereoDevice [3] = TXT_OCULUS_RIFT;
 pszStereoDevice [4] = TXT_SHUTTER_NVIDIA;
 
 pszAnaglyphColors [0] = TXT_AMBER_BLUE;
