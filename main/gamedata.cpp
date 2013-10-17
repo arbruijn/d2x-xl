@@ -597,7 +597,6 @@ if (m_managerP) {
 			m_eyes [0] = m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Left);
 			m_eyes [1] = m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Right);
 			m_fov = m_stereoConfig.GetYFOVDegrees ();
-			m_nResolution = m_hmdInfo.HResolution > 1280;
 			float viewCenter = m_hmdInfo.HScreenSize * 0.25f;
 			float eyeProjectionShift = viewCenter - m_hmdInfo.LensSeparationDistance * 0.5f;
 			m_projectionCenterOffset = 4.0f * eyeProjectionShift / m_hmdInfo.HScreenSize;
@@ -635,6 +634,7 @@ else {
 	m_magCalTO.Start (-1, true);
 	m_bCalibrating = false;
 #endif
+	m_nResolution = HResolution () > 1280;
 	m_bAvailable = 2;
 	}
 if (detectionMessage) 
