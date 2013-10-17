@@ -135,7 +135,7 @@ if (nState)
 	return nCurItem;
 
 	CMenuItem*	m;
-	int			h, v;
+	int			v;
 
 if (!gameStates.app.bNostalgia) {
 	if ((m = menu ["brightness"])) {
