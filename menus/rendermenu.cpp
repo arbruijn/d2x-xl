@@ -440,7 +440,10 @@ pszStereoDevice [1] = TXT_ANAGLYPH_GLASSES;
 pszStereoDevice [2] = TXT_SHUTTER_HDMI;
 stereoDeviceMap [2] = GLASSES_SHUTTER_HDMI;
 int nStereoDeviceCount = 3;
-if (gameData.render.rift.Available ()) {
+#if !DBG
+if (gameData.render.rift.Available ()) 
+#endif
+	{
 	pszStereoDevice [nStereoDeviceCount] = TXT_OCULUS_RIFT;
 	stereoDeviceMap [nStereoDeviceCount++] = GLASSES_OCULUS_RIFT;
 	}
