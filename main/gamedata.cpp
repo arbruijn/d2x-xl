@@ -609,6 +609,7 @@ if (m_managerP) {
 		m_sensorP = *m_managerP->EnumerateDevices<OVR::SensorDevice> ().CreateDevice ();
 		}
 	}
+m_nResolution = HResolution () > 1280;
 // If there was a problem detecting the Rift, display appropriate message.
 
 const char* detectionMessage = NULL;
@@ -634,7 +635,6 @@ else {
 	m_magCalTO.Start (-1, true);
 	m_bCalibrating = false;
 #endif
-	m_nResolution = HResolution () > 1280;
 	m_bAvailable = 2;
 	}
 if (detectionMessage) 
