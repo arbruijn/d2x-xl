@@ -700,12 +700,9 @@ do {
 #endif
 	} while (i == -2);
 
-if ((gameOpts->render.stereo.nGlasses = stereoDeviceMap [nStereoDevice])) {
-	if (gameOpts->render.stereo.nGlasses == 1)
-		gameOpts->render.stereo.nGlasses += nAnaglyphColor;
-	else
-		gameOpts->render.stereo.nGlasses += 2;
-	}
+gameOpts->render.stereo.nGlasses = stereoDeviceMap [nStereoDevice];
+if (gameOpts->render.stereo.nGlasses == 1)
+	gameOpts->render.stereo.nGlasses += nAnaglyphColor;
 #if 0
 if (ogl.IsOculusRift ())
 	gameData.render.rift.m_magCalTO.Start (-1, true);
