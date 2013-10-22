@@ -275,7 +275,7 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 	else
 		gameData.render.frame.Activate ();
 
-	if (gameOpts->movies.bFullScreen) {
+	if (gameOpts->movies.bFullScreen > 0) {
 		double r = (double) hBuffer / (double) wBuffer;
 		int dh = (int) (CCanvas::Current ()->Width () * r);
 		int yOffs = (CCanvas::Current ()->Height () - dh) / 2;
@@ -287,8 +287,12 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 		ogl.SetBlending (true);
 		}
 	else {
-		int xOffs = (CCanvas::Current ()->Width () - w) / 2;
-		int yOffs = (CCanvas::Current ()->Height () - h) / 2;
+		if (gameOpts->movies.bFullScreen < 0) {
+			w = gameData.render.frame.Width (false) * int (w) / 640;
+			h = gameData.render.frame.Width (false) * int (h) / 640;
+			}
+		int xOffs = (CCanvas::Current ()->Width () - w - xDest) / 2;
+		int yOffs = (CCanvas::Current ()->Height () - h - yDest) / 2;
 
 		if (xOffs < 0)
 			xOffs = 0;
@@ -298,7 +302,7 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 		yOffs += yDest;
 		//bmFrame.Blit (CCanvas::Current (), xOffs, yOffs, bufw, bufh, xSrc, ySrc, 1);
 		bmFrame.Render (NULL, xOffs, yOffs, w, h, xSrc, ySrc, wBuffer, hBuffer, 0, 0, gameOpts->movies.nQuality);
-		if (((uint) CCanvas::Current ()->Width () > w) || ((uint) CCanvas::Current ()->Height () > h)) {
+		if (!gameOpts->movies.bFullScreen && (((uint) CCanvas::Current ()->Width () > w) || ((uint) CCanvas::Current ()->Height () > h))) {
 			CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
 			OglDrawEmptyRect (xDest - 1, yDest, xDest + w, yDest + h + 1);
 			}
@@ -845,20 +849,19 @@ if (!(m_robotP = movieManager.Open (filename, 1))) {
 #endif
 	return MOVIE_NOT_PLAYED;
 	}
-gameOpts->movies.bFullScreen = 1;
+int bFullScreen = gameOpts->movies.bFullScreen;
+gameOpts->movies.bFullScreen = -1;
 m_robotP->m_bLittleEndian = libP ? libP->m_bLittleEndian : 1;
 MVE_memCallbacks (CMovie::Alloc, CMovie::Free);
 MVE_ioCallbacks (CMovie::Read);
 MVE_sfCallbacks (CMovie::ShowFrame);
 MVE_palCallbacks (CMovie::SetPalette);
-if (MVE_rmPrepMovie (reinterpret_cast<void*> (&m_robotP->m_cf), 
-							gameStates.menus.bHires ? 280 : 140, 
-							gameStates.menus.bHires ? 200 : 80, 0,
-							m_robotP->m_bLittleEndian)) {
-	Int3 ();
-	return 0;
-	}
-return 1;
+int res = MVE_rmPrepMovie (reinterpret_cast<void*> (&m_robotP->m_cf), 
+							      gameStates.menus.bHires ? 280 : 140, 
+									gameStates.menus.bHires ? 200 : 80, 0,
+									m_robotP->m_bLittleEndian);
+gameOpts->movies.bFullScreen = bFullScreen;
+return res ? 0 : 1;
 }
 
 //-----------------------------------------------------------------------
@@ -868,28 +871,22 @@ int CMovieManager::RotateRobot (void)
 if (!m_robotP)
 	return 0;
 
-	int res;
+int bFullScreen = gameOpts->movies.bFullScreen;
+gameOpts->movies.bFullScreen = -1;
+int res = MVE_rmStepMovie ();
+gameOpts->movies.bFullScreen = bFullScreen;
 
-gameOpts->movies.bFullScreen = 1;
-#if 0
-if (ogl.m_states.nDrawBuffer == GL_BACK)
-	paletteManager.ResumeEffect ();
-#endif
-res = MVE_rmStepMovie ();
-//paletteManager.ResumeEffect ();
+if (!res)
+	return 1;
 if (res == MVE_ERR_EOF) {   //end of movie, so reset
 	m_robotP->Rewind ();
-	if (MVE_rmPrepMovie (reinterpret_cast<void*> (&m_robotP->m_cf), 
-								gameStates.menus.bHires ? 280 : 140, 
-								gameStates.menus.bHires ? 200 : 80, 0,
-								m_robotP->m_bLittleEndian)) {
-		return 0;
-		}
+	if (!MVE_rmPrepMovie (reinterpret_cast<void*> (&m_robotP->m_cf), 
+								 gameStates.menus.bHires ? 280 : 140, 
+								 gameStates.menus.bHires ? 200 : 80, 0,
+								 m_robotP->m_bLittleEndian)) 
+		return 1;
 	}
-else if (res) {
-	return 0;
-	}
-return 1;
+return 0;
 }
 
 //-----------------------------------------------------------------------

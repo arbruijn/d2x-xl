@@ -1358,15 +1358,25 @@ int CBitmap::Bind (int bMipMaps)
 
 	static int nDepth = 0;
 
+#if 0
 if (nDepth > 1)
 	return -1;
 nDepth++;
 
-if ((nDepth < 2) && (bmP = HasOverride ())) {
+if ((nDepth < 2) && (bmP = HasOverride ()) && (bmP != this)) {
 	int i = bmP->Bind (bMipMaps);
 	nDepth--;
 	return i;
 	}
+
+#else
+
+if ((bmP = HasOverride ()) && (bmP != this)) {
+	int i = bmP->Bind (bMipMaps);
+	return i;
+	}
+
+#endif
 
 #if RENDER2TEXTURE
 if (!(m_info.texP && m_info.texP->IsRenderBuffer ()))
@@ -1388,8 +1398,9 @@ if (!(m_info.texP && m_info.texP->IsRenderBuffer ()))
 if (!m_info.texP)
 	return -1;
 m_info.texP->Bind ();
-
+#if 0
 nDepth--;
+#endif
 return 0;
 }
 

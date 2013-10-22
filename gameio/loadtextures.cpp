@@ -654,32 +654,36 @@ static char* FindHiresBitmap (const char* bmName, int& nFile, int bD1, int bShri
 	char	baseName [FILENAME_LEN];
 
 strcpy (baseName, bmName);
-char* p = strchr (baseName, '#');
-if (p)
-	strcpy (p + 1, "0");
+for (int i = 0; i < 2; i++) {
+	if (i) {
+		char* p = strchr (baseName, '#');
+		if (p)
+			strcpy (p + 1, "0");
+		}
 
-if (*gameFolders.szTextureDir [2]) {
-	char szLevelFolder [FILENAME_LEN];
-	if (missionManager.nCurrentLevel < 0)
-		sprintf (szLevelFolder, "slevel%02d", -missionManager.nCurrentLevel);
+	if (*gameFolders.szTextureDir [2]) {
+		char szLevelFolder [FILENAME_LEN];
+		if (missionManager.nCurrentLevel < 0)
+			sprintf (szLevelFolder, "slevel%02d", -missionManager.nCurrentLevel);
+		else
+			sprintf (szLevelFolder, "level%02d", missionManager.nCurrentLevel);
+		sprintf (gameFolders.szTextureDir [3], "%s/%s", gameFolders.szTextureDir [2], szLevelFolder);
+		sprintf (gameFolders.szTextureCacheDir [3], "%s/%s", gameFolders.szTextureCacheDir [2], szLevelFolder);
+		}
 	else
-		sprintf (szLevelFolder, "level%02d", missionManager.nCurrentLevel);
-	sprintf (gameFolders.szTextureDir [3], "%s/%s", gameFolders.szTextureDir [2], szLevelFolder);
-	sprintf (gameFolders.szTextureCacheDir [3], "%s/%s", gameFolders.szTextureCacheDir [2], szLevelFolder);
+		*gameFolders.szTextureDir [3] =
+		*gameFolders.szTextureCacheDir [3] = '\0';
+
+	int nShrinkFactor = bShrink ? ShrinkFactor (baseName) : 1;
+
+	MakeBitmapFilenames (baseName, gameFolders.szTextureDir [3], gameFolders.szTextureCacheDir [3], fn [1], fn [0], nShrinkFactor);
+	MakeBitmapFilenames (baseName, gameFolders.szTextureDir [2], gameFolders.szTextureCacheDir [2], fn [3], fn [2], nShrinkFactor);
+	MakeBitmapFilenames (baseName, gameFolders.szTextureDir [bD1], gameFolders.szTextureCacheDir [bD1], fn [5], fn [4], nShrinkFactor);
+
+	if (0 < (nFile = SearchHiresBitmap (fn)))
+		return fn [nFile];
 	}
-else
-	*gameFolders.szTextureDir [3] =
-	*gameFolders.szTextureCacheDir [3] = '\0';
-
-int nShrinkFactor = bShrink ? ShrinkFactor (baseName) : 1;
-
-MakeBitmapFilenames (baseName, gameFolders.szTextureDir [3], gameFolders.szTextureCacheDir [3], fn [1], fn [0], nShrinkFactor);
-MakeBitmapFilenames (baseName, gameFolders.szTextureDir [2], gameFolders.szTextureCacheDir [2], fn [3], fn [2], nShrinkFactor);
-MakeBitmapFilenames (baseName, gameFolders.szTextureDir [bD1], gameFolders.szTextureCacheDir [bD1], fn [5], fn [4], nShrinkFactor);
-
-nFile = SearchHiresBitmap (fn);
-
-return (nFile < 0) ? NULL : fn [nFile];
+return NULL;
 }
 
 //------------------------------------------------------------------------------
