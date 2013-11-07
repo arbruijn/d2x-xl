@@ -31,7 +31,7 @@
 
 #if !USE_OPENMP
 #	ifdef __macosx__  // BEGIN itaylo 06 NOV 2013
-#	include "SDL/SDL_mutex.h"
+#		include "SDL/SDL_mutex.h"
 #	else
 #		include "SDL_mutex.h"
 #	endif              // END itaylo 06 NOV 2013
