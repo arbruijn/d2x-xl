@@ -263,7 +263,7 @@ class CFloatVector {
 		inline float Max (void) { return (v.coord.x > v.coord.y) ? (v.coord.x > v.coord.z) ? v.coord.x : v.coord.z : (v.coord.y > v.coord.z) ? v.coord.y : v.coord.z; }
 		inline float Sum (void) { return v.coord.x + v.coord.y + v.coord.z; }
 
-		inline float& CFloatVector::operator[] (size_t i) { return v.vec [i]; }
+		inline float& operator[] (size_t i) { return v.vec [i]; }
 		};
 
 //const float operator* (const CFloatVector& v0, const CFloatVector& v1);

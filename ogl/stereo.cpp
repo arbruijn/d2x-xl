@@ -79,7 +79,6 @@ extern float quadVerts [3][4][2];
 
 #if OCULUS_RIFT
 
-
 class CDefaultDistortionConfig : public OVR::Util::Render::DistortionConfig {
 	public:
 		CDefaultDistortionConfig () 
@@ -143,8 +142,9 @@ if (gameOpts->render.stereo.bChromAbCorr)
 glUniform1i (glGetUniformLocation (warpProg, "SceneTex"), 0);
 OglDrawArrays (GL_QUADS, 0, 4);
 return true;
-#endif
 }
+
+#endif
 
 //-----------------------------------------------------------------------------------
 
