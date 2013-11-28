@@ -399,7 +399,6 @@ if (m_info.flags & FT_COLOR) {		//remap palette
 		else if (m_info.data [i] == 255)
 			m_info.data [i] = 0;
 		}
-	}
 #endif
 	m_info.parentBitmap.SetPalette (&palette, TRANSPARENCY_COLOR, -1, m_info.data, (int) (ptr - m_info.data));
 	}

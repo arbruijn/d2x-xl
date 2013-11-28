@@ -470,10 +470,10 @@ for (i = 0; i < MAX_FADE_LEVELS; i++)
 #ifdef SWAP_0_255
 palette.SwapTransparency ();
 for (i = 0; i < MAX_FADE_LEVELS * 256; i++)
-	if (m_fadeTable [i] == 0)
-		m_fadeTable [i] = 255;
+	if (m_data.fadeTable [i] == 0)
+		m_data.fadeTable [i] = 255;
 for (i = 0; i < MAX_FADE_LEVELS; i++)
-	m_fadeTable [i * 256] = TRANSPARENCY_COLOR;
+	m_data.fadeTable [i * 256] = TRANSPARENCY_COLOR;
 #endif
 ResetEffect ();
 return Add (palette);
