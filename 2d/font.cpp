@@ -200,11 +200,11 @@ for (h = 32; h <= 256; h *= 2) {
 	if (m_info.height > h)
 		continue;
 	r= (h / (m_info.height + gap));
-	w = Pow2ize ((TotalWidth () + (nChars - r) * gap) / r);
+	w = Pow2ize ((TotalWidth () + (nChars - r) * gap) / r, 65536);
 	tries = 0;
 	do {
 		if (tries)
-			w = Pow2ize (w+1);
+			w = Pow2ize (w + 1, 65536);
 		if (tries > 3) 
 			break;
 		nc = 0;

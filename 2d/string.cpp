@@ -472,17 +472,6 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static inline int Pow2ize (int v)
-{
-	int i = 1;
-
-while (i < v)
-	i <<= 2;
-return i;
-}
-
-//------------------------------------------------------------------------------
-
 static bool FillStringBitmap (CBitmap* bmP, const char *s, int nKey, uint nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce, int& w, int& h)
 {
 
@@ -636,8 +625,8 @@ if (!(w && h)) {
 
 for (;;) {
 	if (bForce) {
-		w = Pow2ize (w);
-		h = Pow2ize (h);	
+		w = Pow2ize (w, 65536);
+		h = Pow2ize (h, 65536);	
 		}
 	if (!(bmP = CBitmap::Create (0, w, h, 4))) {
 		fontManager.SetScale (fScale);

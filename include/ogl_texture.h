@@ -145,7 +145,7 @@ extern CTextureManager textureManager;
 
 //------------------------------------------------------------------------------
 
-int Pow2ize (int x);
+int Pow2ize (int v, int max = 4096);
 
 extern int nOglMemTarget;
 

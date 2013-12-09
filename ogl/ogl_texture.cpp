@@ -47,12 +47,12 @@ CTextureManager textureManager;
 
 //------------------------------------------------------------------------------
 //little hack to find the largest or equal multiple of 2 for a given number
-int Pow2ize (int x)
+int Pow2ize (int v, int max)
 {
 	int i;
 
-for (i = 2; i <= 4096; i *= 2)
-	if (x <= i)
+for (i = 2; i <= max; i *= 2)
+	if (v <= i)
 		return i;
 return i;
 }

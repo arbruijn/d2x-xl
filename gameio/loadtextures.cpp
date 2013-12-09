@@ -444,7 +444,7 @@ static int BestShrinkFactor (CBitmap *bmP, int nShrinkFactor)
 {
 	int	nBaseSize, nTargetSize, nBaseFactor;
 
-if ((bmP->Width () != Pow2ize (bmP->Width ())) || (bmP->Height () != Pow2ize (bmP->Height ())))
+if ((bmP->Width () != Pow2ize (bmP->Width (), 65536)) || (bmP->Height () != Pow2ize (bmP->Height (), 65536)))
 	return 1;
 #if 0
 if (bmP->Width () >= 2 * bmP->Width ()) {

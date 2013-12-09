@@ -156,7 +156,7 @@ m_data.bTeleport = (char) bTeleport;
 
 //------------------------------------------------------------------------------
 
-int Pow2ize (int x);//from ogl.c
+int Pow2ize (int v, int max);//from ogl.c
 
 int CCamera::Create (short nId, short srcSeg, short srcSide, short tgtSeg, short tgtSide, CObject *objP, int bShadowMap, int bTeleport)
 {
