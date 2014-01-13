@@ -304,7 +304,7 @@ if (!bAutoLaunch) {
 		menu.Top ()->m_bNoScroll = 1;
 		}
 	menu.AddText ("", szGameList [1 + tracker.m_bUse]);
-	strcpy (menu.Top ()->m_text, TXT_GAME_BROWSER);
+	strcpy (menu.Top ()->m_text, TXT_GAME_BROWSER); // skip leading tab
 	menu.Top ()->m_bNoScroll = 1;
 	InitNetGameMenu (menu, 0);
 	}

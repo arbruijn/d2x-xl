@@ -46,10 +46,15 @@ return Buffer ();
 
 //------------------------------------------------------------------------------
 
+static int _w, _h, _bpp;
+
 CBitmap* CBitmap::Create (ubyte mode, int w, int h, int bpp, const char* pszName)
 {
 	CBitmap	*bmP = new CBitmap; 
 
+_w = w;
+_h = h;
+_bpp = bpp;
 if (bmP)
 	bmP->Setup (mode, w, h, bpp, pszName);
 return bmP;

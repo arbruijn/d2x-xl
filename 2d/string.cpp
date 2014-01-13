@@ -554,7 +554,7 @@ x = 0;
 				CRGBAColor* pc = reinterpret_cast<CRGBAColor*> (bmP->Buffer ()) + (y + hy) * w + x;
 				ubyte* pf = bmfP->Buffer () + hy * bmfP->RowSize ();
 				for (int hx = bmfP->Width (); hx; hx--, pc++, pf++) {
-#if DBG
+#if 1 || DBG
 					if ((pc - reinterpret_cast<CRGBAColor*> (bmP->Buffer ())) >= bmP->Width () * bmP->Height ())
 						continue;
 #endif
@@ -586,7 +586,7 @@ x = 0;
 				CRGBAColor* pc = reinterpret_cast<CRGBAColor*> (bmP->Buffer ()) + (y + hy) * w + x;
 				ubyte* pf = bmfP->Buffer () + hy * bmfP->RowSize ();
 				for (int hx = bmfP->Width (); hx; hx--, pc++, pf++) {
-#if DBG
+#if 1 || DBG
 					if ((pc - reinterpret_cast<CRGBAColor*> (bmP->Buffer ())) >= bmP->Width () * bmP->Height ())
 						continue;
 #endif

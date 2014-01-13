@@ -552,7 +552,7 @@ for (pi = hs; ; pi = pj + 1) {
 				}
 			}
 		else {
-			int xTab = LHX (int (nTabs [nTab - 1] * fScale));
+			int xTab = LHX (int (nTabs [nTab] * fScale));
 			if (xTab > stringWidth) {
 				if (nMaxWidth && (xTab < nMaxWidth))
 					stringWidth = xTab;
