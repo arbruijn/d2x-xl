@@ -570,76 +570,78 @@ bPlayerMessage = 1;
 bool CRiftData::Create (void)
 {
 #if OCULUS_RIFT
-OVR::System::Init (OVR::Log::ConfigureDefaultLog (OVR::LogMask_All));
 gameData.render.rift.m_bAvailable = 0;
-m_managerP = *OVR::DeviceManager::Create();
-if (m_managerP) {
-	//m_managerP->SetMessageHandler(this);
+if (gameOpts->render.bUseRift) {
+	OVR::System::Init (OVR::Log::ConfigureDefaultLog (OVR::LogMask_All));
+	m_managerP = *OVR::DeviceManager::Create();
+	if (m_managerP) {
+		//m_managerP->SetMessageHandler(this);
 
-	// Release Sensor/HMD in case this is a retry.
-	m_sensorP.Clear ();
-	m_hmdP.Clear ();
-	// RenderParams.MonitorName.Clear();
-	m_hmdP = *m_managerP->EnumerateDevices<OVR::HMDDevice> ().CreateDevice ();
-	if (m_hmdP) {
-		m_sensorP = *m_hmdP->GetSensor ();
+		// Release Sensor/HMD in case this is a retry.
+		m_sensorP.Clear ();
+		m_hmdP.Clear ();
+		// RenderParams.MonitorName.Clear();
+		m_hmdP = *m_managerP->EnumerateDevices<OVR::HMDDevice> ().CreateDevice ();
+		if (m_hmdP) {
+			m_sensorP = *m_hmdP->GetSensor ();
 
-		// This will initialize m_hmdInfo with information about configured IPD,
-		// screen size and other variables needed for correct projection.
-		// We pass HMD DisplayDeviceName into the renderer to select the
-		// correct monitor in full-screen mode.
-		if (m_hmdP->GetDeviceInfo (&m_hmdInfo))	{            
-			// RenderParams.MonitorName = m_hmdInfo.DisplayDeviceName;
-			// RenderParams.DisplayId = m_hmdInfo.DisplayId;
-			m_stereoConfig.SetHMDInfo (m_hmdInfo);
-			m_stereoConfig.SetDistortionFitPointVP (-1, 0);
-			m_renderScale = m_stereoConfig.GetDistortionScale (); 
-			m_eyes [0] = m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Left);
-			m_eyes [1] = m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Right);
-			m_fov = m_stereoConfig.GetYFOVDegrees ();
-			float viewCenter = m_hmdInfo.HScreenSize * 0.25f;
-			float eyeProjectionShift = viewCenter - m_hmdInfo.LensSeparationDistance * 0.5f;
-			m_projectionCenterOffset = 4.0f * eyeProjectionShift / m_hmdInfo.HScreenSize;
+			// This will initialize m_hmdInfo with information about configured IPD,
+			// screen size and other variables needed for correct projection.
+			// We pass HMD DisplayDeviceName into the renderer to select the
+			// correct monitor in full-screen mode.
+			if (m_hmdP->GetDeviceInfo (&m_hmdInfo))	{            
+				// RenderParams.MonitorName = m_hmdInfo.DisplayDeviceName;
+				// RenderParams.DisplayId = m_hmdInfo.DisplayId;
+				m_stereoConfig.SetHMDInfo (m_hmdInfo);
+				m_stereoConfig.SetDistortionFitPointVP (-1, 0);
+				m_renderScale = m_stereoConfig.GetDistortionScale (); 
+				m_eyes [0] = m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Left);
+				m_eyes [1] = m_stereoConfig.GetEyeRenderParams (OVR::Util::Render::StereoEye_Right);
+				m_fov = m_stereoConfig.GetYFOVDegrees ();
+				float viewCenter = m_hmdInfo.HScreenSize * 0.25f;
+				float eyeProjectionShift = viewCenter - m_hmdInfo.LensSeparationDistance * 0.5f;
+				m_projectionCenterOffset = 4.0f * eyeProjectionShift / m_hmdInfo.HScreenSize;
+				}
+			}
+		else {            
+			// If we didn't detect an HMD, try to create the sensor directly.
+			// This is useful for debugging sensor interaction; it is not needed in
+			// a shipping app.
+			m_sensorP = *m_managerP->EnumerateDevices<OVR::SensorDevice> ().CreateDevice ();
 			}
 		}
-	else {            
-		// If we didn't detect an HMD, try to create the sensor directly.
-		// This is useful for debugging sensor interaction; it is not needed in
-		// a shipping app.
-		m_sensorP = *m_managerP->EnumerateDevices<OVR::SensorDevice> ().CreateDevice ();
+	m_nResolution = HResolution () > 1280;
+	// If there was a problem detecting the Rift, display appropriate message.
+
+	const char* detectionMessage = NULL;
+
+	if (!m_managerP)
+		detectionMessage = "Cannot initialize Oculus Rift system.";
+	if (!m_hmdP && !m_sensorP)
+		detectionMessage = "Oculus Rift not detected.";
+	else if (!m_hmdP)
+		detectionMessage = "Oculus Sensor detected; HMD Display not detected.\n";
+	else if (m_hmdInfo.DisplayDeviceName [0] == '\0')
+		detectionMessage = "Oculus Sensor detected; HMD display EDID not detected.\n";
+	else if (!m_sensorP) {
+		m_bAvailable = 1;
+		detectionMessage = "Oculus HMD Display detected; Sensor not detected.\n";
 		}
-	}
-m_nResolution = HResolution () > 1280;
-// If there was a problem detecting the Rift, display appropriate message.
-
-const char* detectionMessage = NULL;
-
-if (!m_managerP)
-	detectionMessage = "Cannot initialize Oculus Rift system.";
-if (!m_hmdP && !m_sensorP)
-	detectionMessage = "Oculus Rift not detected.";
-else if (!m_hmdP)
-	detectionMessage = "Oculus Sensor detected; HMD Display not detected.\n";
-else if (m_hmdInfo.DisplayDeviceName [0] == '\0')
-	detectionMessage = "Oculus Sensor detected; HMD display EDID not detected.\n";
-else if (!m_sensorP) {
-	m_bAvailable = 1;
-	detectionMessage = "Oculus HMD Display detected; Sensor not detected.\n";
-	}
-else {
-	m_sensorFusion = new OVR::SensorFusion;
-	m_sensorFusion->AttachToSensor (m_sensorP);
-	m_sensorFusion->SetYawCorrectionEnabled (true);
+	else {
+		m_sensorFusion = new OVR::SensorFusion;
+		m_sensorFusion->AttachToSensor (m_sensorP);
+		m_sensorFusion->SetYawCorrectionEnabled (true);
 #if 0
-	m_magCalTO.Setup (60000); // 1 minute
-	m_magCalTO.Start (-1, true);
-	m_bCalibrating = false;
+		m_magCalTO.Setup (60000); // 1 minute
+		m_magCalTO.Start (-1, true);
+		m_bCalibrating = false;
 #endif
-	m_bAvailable = 2;
-	}
+		m_bAvailable = 2;
+		}
 if (detectionMessage) 
-	PrintLog (0, detectionMessage);
+		PrintLog (0, detectionMessage);
 #endif
+	}
 return m_bAvailable != 0;
 }
 

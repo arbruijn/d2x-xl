@@ -433,6 +433,7 @@ class CRenderOptions {
 		int nLightmapQuality;
 		int nLightmapPrecision;
 		int bUseShaders;
+		int bUseRift;
 		int nMathFormat;
 		int nDefMathFormat;
 		short nMaxFPS;
@@ -1758,6 +1759,7 @@ class CRiftData {
 		float				m_projectionCenterOffset;
 		int				m_ipd;
 		int				m_nResolution;
+		int				m_bUse;
 		int				m_bAvailable;
 		CFloatVector	m_center;
 
