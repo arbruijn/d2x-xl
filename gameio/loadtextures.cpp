@@ -777,7 +777,7 @@ else
 CTGA tga (altBmP);
 
 #if DBG
-if (strstr (pszFile, "door35"))
+if (strstr (pszFile, "metl086"))
 	pszFile = pszFile;
 #endif
 if (!tga.Read (pszFile, ""))
@@ -895,7 +895,7 @@ if (nIndex >= 0)
 #if DBG
 if (nIndex == 262)
 	nIndex = nIndex;
-if (strstr (bmName, "plasblob"))
+if (strstr (bmName, "metl098"))
 	bmName = bmName;
 #endif
 if (gameStates.app.bNostalgia)

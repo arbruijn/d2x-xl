@@ -1209,6 +1209,10 @@ void CQuadMeshBuilder::ComputeFaceKeys (void)
 
 keyFaceRef.Create (FACES.nFaces);
 for (int i = 0; i < FACES.nFaces; i++, faceP++) {
+#if DBG
+	if (i == nDbgFace)
+		i = i;
+#endif
 	keyFaceRef [i] = faceP;
 	if (faceP->m_info.nBaseTex < 0)
 		faceP->m_info.nKey = 0x7FFFFFFF;

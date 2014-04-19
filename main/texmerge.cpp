@@ -542,11 +542,16 @@ int SetupTexMergeShader (int bColorKey, int bColored, int nType)
 if (nType < 2)
 	return -1;
 #endif
+#if 1
+if (nType == 3)
+	nType = 1;
+#else
 if ((nType == 3) && !gameStates.render.history.bmMask)
 	nType = 2;
 else
 	nType = 1;
-	
+#endif
+
 	int nShader = nType + bColored * 3;
 
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (tmShaderProgs [nShader]));

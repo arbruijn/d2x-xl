@@ -860,7 +860,7 @@ int nThread = 0;
 
 CTranspItemBuffers& buffer = m_data.buffers [nThread];
 
-if (nOffset >= (int) buffer.depthBuffer.Length ()) 
+if ((nOffset < 0) || (nOffset >= (int) buffer.depthBuffer.Length ()))
 	return 0;
 CTranspItem* ph = buffer.AllocItem (item->Type (), item->Size ());
 if (!ph) {

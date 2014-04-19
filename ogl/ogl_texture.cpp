@@ -1293,17 +1293,17 @@ if (!Buffer ())
 	return NULL;
 if (m_info.maskP)
 	return m_info.maskP;
-nTranspType = m_info.nTranspType;
-SetBPP (4);
+//nTranspType = m_info.nTranspType;
+//SetBPP (4);
 if (!(m_info.maskP = CBitmap::Create (0, (Width ()  + 1) / 2, (Height () + 1) / 2, 4)))
 	return NULL;
 #if DBG
-sprintf (m_info.szName, "{%s}", Name ());
+sprintf (m_info.maskP->m_info.szName, "{%s}", Name ());
 #endif
 m_info.maskP->SetWidth (m_info.props.w);
 m_info.maskP->SetHeight (m_info.props.w);
 m_info.maskP->SetBPP (1);
-m_info.nTranspType = nTranspType;
+//m_info.nTranspType = nTranspType;
 UseBitmapCache (m_info.maskP, (int) m_info.maskP->Width () * (int) m_info.maskP->RowSize ());
 if (m_info.props.flags & BM_FLAG_TGA) {
 	for (pi = Buffer (), pm = m_info.maskP->Buffer (); i; i--, pi += 4, pm++)
