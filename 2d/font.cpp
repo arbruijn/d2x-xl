@@ -735,6 +735,10 @@ for (int i = 0; i < MAX_OPEN_FONTS; i++)
 
 void CFontManager::SetCurrent (CFont* fontP)
 {
+#if DBG
+if (!fontP)
+	fontP = GAME_FONT;
+#endif
 CCanvas::Current ()->SetFont (m_current = fontP); 
 }
  

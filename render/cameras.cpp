@@ -432,7 +432,7 @@ if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
 if (ReleaseBuffer ()) {
 	CObject* viewerP = gameData.objs.viewerP;
 	gameData.objs.viewerP = m_data.objP ? m_data.objP : &m_data.obj;
-	Activate ();
+	Activate ("Camera");
 	RenderFrame (0, 0);
 	Deactivate ();
 	gameData.objs.viewerP = viewerP;

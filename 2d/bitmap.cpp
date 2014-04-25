@@ -172,7 +172,8 @@ return child;
 
 bool CBitmap::InitChild (CBitmap *parent, int x, int y, int w, int h)
 {
-*this = *parent;
+//*this = *parent;
+memcpy (this, parent, sizeof (*this));
 m_info.parentP =
 m_info.overrideP =
 m_info.maskP = NULL;

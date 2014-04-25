@@ -156,6 +156,7 @@ class CFontManager {
 		void SetColorRGBi (uint fgColor, int bSetFG, uint bgColor, int bSetBG);
 		void Push (void) { m_save.Push (m_current); }
 		void Pop (void) { m_current = m_save.Pop (); }
+		inline int ToS (void) { return m_save.ToS (); }
 		void Remap ();
 
 		inline int Scaled (int v) { return (int) FRound ((float (v) * Scale ())); }

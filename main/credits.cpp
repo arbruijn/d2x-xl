@@ -372,7 +372,7 @@ for (;;) {
 
 	CFrameController fc;
 	for (fc.Begin (); fc.Continue (); fc.End ()) {
-		gameData.render.scene.Activate ();
+		gameData.render.scene.Activate ("Scene");
 		Render ();
 		gameData.render.scene.Deactivate ();
 		}

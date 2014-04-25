@@ -228,6 +228,22 @@ else {
 
 //	-----------------------------------------------------------------------------
 
+void CCanvas::Activate (char* szId, CCanvas* parent, bool bReset) 
+{
+
+if (bReset)
+	m_save.Reset ();
+if (CCanvas::Current () != this) {
+#if DBG
+	SetId (szId);
+#endif
+	CCanvas::Push (this);
+	}
+SetViewport (parent);
+}
+
+//	-----------------------------------------------------------------------------
+
 void CCanvas::Deactivate (void) 
 { 
 CCanvas* canvP;
@@ -239,7 +255,7 @@ do {
 if (Current ())
 	Current ()->Reactivate ();
 else
-	gameData.render.frame.Activate ();
+	gameData.render.frame.Activate ("Frame");
 }
 
 //	-----------------------------------------------------------------------------

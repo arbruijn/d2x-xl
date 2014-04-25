@@ -94,7 +94,7 @@ GrString (0x8000, m_nTitleHeight, m_props.pszTitle);
 
 CCanvas textArea;
 textArea.Setup (&gameData.render.frame, m_nOffset, m_nOffset + m_nTitleHeight, m_nWidth, m_nHeight, true);
-textArea.Activate (&m_background);
+textArea.Activate ("Listbox", &m_background);
 
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 for (int i = max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
@@ -143,7 +143,7 @@ m_callback = NULL;
 
 gameStates.input.keys.bRepeat = 1;
 SetPopupScreenMode ();
-gameData.render.frame.Activate ();
+gameData.render.frame.Activate ("Frame");
 fontManager.SetCurrent (SUBTITLE_FONT);
 
 m_nWidth = 0;

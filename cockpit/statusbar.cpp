@@ -483,9 +483,9 @@ if (gameData.render.screen.Height () > 480)
 *((CViewport*) &gameData.render.scene) += CViewport (0, 0, 0, -h);
 
 if (bScene)
-	gameData.render.scene.Activate ();
+	gameData.render.scene.Activate ("Scene");
 else
-	gameData.render.frame.Activate ();
+	gameData.render.frame.Activate ("Frame");
 return true;
 }
 
@@ -498,7 +498,7 @@ gameData.render.window.Setup (&gameData.render.frame,
 										gameData.render.frame.Left (false) + ScaleX (hudAreaP->left),
 										gameData.render.frame.Top (false) + ScaleY (hudAreaP->top),
 										ScaleX (hudAreaP->right - hudAreaP->left + 1), ScaleY (hudAreaP->bot - hudAreaP->top + 1));
-gameData.render.window.Activate (&gameData.render.frame);
+gameData.render.window.Activate ("Window", &gameData.render.frame);
 }
 
 //	-----------------------------------------------------------------------------

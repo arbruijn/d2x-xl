@@ -106,7 +106,7 @@ GrString (0x8000, 10, m_props.pszTitle);
 
 CCanvas textArea;
 textArea.Setup (&gameData.render.frame, m_nTextLeft, m_nTextTop, m_nTextWidth, m_nTextHeight, true);
-textArea.Activate (&m_background);
+textArea.Activate ("File selector", &m_background);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 OglDrawFilledRect (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 
@@ -185,7 +185,7 @@ int CFileSelector::FileSelector (const char* pszTitle, const char* filespec, cha
 	int					nPatternLen = 0;
 	char*					pszFn;
 
-gameData.render.frame.Activate ();
+gameData.render.frame.Activate ("Frame");
 
 m_tEnter = -1;
 m_nFirstItem = -1;

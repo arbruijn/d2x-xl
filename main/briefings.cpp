@@ -628,7 +628,7 @@ else {
 	h = RescaleY (136);
 	}
 AnimCanv ().Setup (baseCanv, x, y, w, h);
-AnimCanv ().Activate (baseCanv);
+AnimCanv ().Activate ("Robot animation", baseCanv);
 AnimCanv ().Clear (m_info.nEraseColor);
 }
 
@@ -690,7 +690,7 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 			break;
 
 		case 5:
-			AnimCanv ().Activate (baseCanv);
+			AnimCanv ().Activate ("Robot animation", baseCanv);
 			movieManager.RotateRobot ();
 			AnimCanv ().Deactivate ();
 			break;
@@ -709,7 +709,7 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 			{
 			CCanvas bitmapCanv;
 			bitmapCanv.Setup (baseCanv, 220, 45, m_bitmap->Width (), m_bitmap->Height ());
-			bitmapCanv.Activate (baseCanv);
+			bitmapCanv.Activate ("Bitmap animation", baseCanv);
 			m_bitmap->RenderScaled (0, 0);
 			bitmapCanv.Deactivate ();
 			}
@@ -1127,7 +1127,7 @@ if (gameStates.app.bD1Mission) {
 else {
 	m_info.szSpinningRobot [2] = *m_info.message++; // ugly but proud
 	if (m_info.message > m_info.pj) {
-		AnimCanv ().Activate ();
+		AnimCanv ().Activate ("Robot animation");
 		m_info.bRobotPlaying = movieManager.StartRobot (m_info.szSpinningRobot);
 		AnimCanv ().Deactivate ();
 		if (m_info.bRobotPlaying) {

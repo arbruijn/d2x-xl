@@ -914,7 +914,7 @@ return m_usedChannels.Push (int (channelP - m_channels.Buffer ())) ? m_usedChann
 void CAudio::UnregisterChannel (int nIndex)
 {
 if ((nIndex >= 0) && (nIndex < int (m_usedChannels.ToS ()))) {
-	m_usedChannels.Delete (nIndex);
+	m_usedChannels.Delete ((uint) nIndex);
 	if (nIndex < int (m_usedChannels.ToS ())) {
 #if 0 //DBG
 		if (!m_channels [m_usedChannels [nIndex]].Playing ())

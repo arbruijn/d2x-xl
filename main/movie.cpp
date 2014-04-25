@@ -215,7 +215,7 @@ while (nNextSubTitle < m_nCaptions && nFrame >= m_captions [nNextSubTitle].first
 		cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
 		}
 	else
-		gameData.render.frame.Activate ();
+		gameData.render.frame.Activate ("Frame");
 
 	//find y coordinate for first line of subtitles
 	y = CCanvas::Current ()->Height () - ((nLineSpacing + 1) * MAX_ACTIVE_SUBTITLES + 2);
@@ -273,7 +273,7 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 		cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
 		}
 	else
-		gameData.render.frame.Activate ();
+		gameData.render.frame.Activate ("Frame");
 
 	if (gameOpts->movies.bFullScreen > 0) {
 		double r = (double) hBuffer / (double) wBuffer;

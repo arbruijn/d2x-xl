@@ -409,7 +409,7 @@ static void SetupProjection (void)
 
 gameData.render.screen.Setup (NULL, 0, 0, 1024, 1024);
 canvas.Setup (&gameData.render.screen);
-canvas.Activate ();
+canvas.Activate ("Visibility projection");
 canvas.SetWidth ();
 canvas.SetHeight ();
 gameData.render.screen.SetWidth (1024);

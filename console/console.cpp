@@ -351,7 +351,7 @@ UpdateOffset ();
 /* Update the command line since it has a blinking cursor */
 DrawCommandLine ();
 
-m_output->Activate ();
+m_output->Activate ("Console");
 if (gameOpts->menus.nStyle)
 	backgroundManager.DrawBox (0, 0, m_canvas.Width (), m_RaiseOffset, 1, 1.0f, 0);
 else {
@@ -450,7 +450,7 @@ else
 m_surface = CBitmap::Create (0, w, h, 1);
 m_canvas.Setup (&gameData.render.frame, 0, 0, w, h);
 /* Load the consoles font */
-m_canvas.Activate ();
+m_canvas.Activate ("Console");
 
 fontManager.SetCurrent (font);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
@@ -739,7 +739,7 @@ return 0;
 /* Sets font info for the console */
 void CConsole::SetFont (CFont *font, uint fg, uint bg)
 {
-m_canvas.Activate ();
+m_canvas.Activate ("Console");
 fontManager.SetCurrent (font);
 fontManager.SetColorRGBi (fg, 1, bg, bg != 0);
 m_canvas.Deactivate ();

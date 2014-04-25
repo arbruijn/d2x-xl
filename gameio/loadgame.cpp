@@ -1504,7 +1504,7 @@ SetFunctionMode (FMODE_MENU);
 if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
 SetScreenMode (SCREEN_MENU);
-gameData.render.frame.Activate ();
+gameData.render.frame.Activate ("Frame");
 KeyFlush ();
 if (!IsMultiGame) {
 	if (missionManager.nCurrentMission == (gameStates.app.bD1Mission ? missionManager.nBuiltInMission [1] : missionManager.nBuiltInMission [0])) {
@@ -1550,7 +1550,7 @@ else
 	DoEndLevelScoreGlitz (0);
 
 if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && !(IsMultiGame || IsCoopGame)) {
-	gameData.render.frame.Activate ();
+	gameData.render.frame.Activate ("Frame");
 	CCanvas::Current ()->Clear (BLACK_RGBA);
 	paletteManager.ResetEffect ();
 	//paletteManager.Load (D2_DEFAULT_PALETTE, NULL, 0, 1, 0);
@@ -1647,7 +1647,7 @@ if (IsMultiGame)
 	return;
 StopTime ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
-gameData.render.frame.Activate ();
+gameData.render.frame.Activate ("Frame");
 int nFunctionMode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 if (missionManager.nEntryLevel < 0)
@@ -1671,7 +1671,7 @@ if (IsMultiGame)
 	return;
 StopTime ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
-gameData.render.frame.Activate ();
+gameData.render.frame.Activate ("Frame");
 int nFunctionMode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 sprintf (msg, "Base level destroyed.\nAdvancing to level %i", missionManager.nEntryLevel + 1);

@@ -195,8 +195,9 @@ fontManager.SetCurrent (GAME_FONT);
 nZoomSave = gameStates.zoom.nFactor;
 gameStates.zoom.nFactor = float (I2X (gameOpts->render.cockpit.nWindowZoom + 1));					//the player's zoom factor
 if (((nUser != WBU_RADAR_TOPDOWN) && (nUser != WBU_RADAR_HEADSUP)) ||
-	(IsMultiGame && !(netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP)))
+	 (IsMultiGame && !(netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 	RenderFrame (0, nWindow + 1);
+	}
 else {
 	automap.m_bDisplay = -1;
 	gameStates.render.SetRenderWindow (nWindow + 1);
@@ -210,7 +211,7 @@ transformation.Pop ();
 if (ogl.StereoDevice () < 0)
 	ogl.ChooseDrawBuffer ();
 //gameData.render.frame.SetViewport ();
-gameData.render.window.Activate (gameData.render.window.Parent ());
+gameData.render.window.Activate (gameData.render.window.Parent ()->Id (), gameData.render.window.Parent ());
 
 //	HACK!If guided missile, wake up robots as necessary.
 if (viewerP->info.nType == OBJ_WEAPON) 
@@ -375,13 +376,13 @@ if (ogl.IsOculusRift ()) {
 	w = refCanv->Width (false) / 2;
 	h = refCanv->Height (false) * w / refCanv->Width (false);
 	gameData.render.window.Setup (refCanv, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
-	gameData.render.window.Activate (refCanv);
+	gameData.render.window.Activate (refCanv->Id (), refCanv);
 	}
 else {
 	w = refCanv->Width (false) - 3 * abs (gameData.StereoOffset2D ());
 	int d = abs (gameData.StereoOffset2D ());
 	gameData.render.window.Setup (refCanv, (ogl.StereoSeparation () < 0) ? 2 * d : d, 0, w, refCanv->Height (false)); 
-	gameData.render.window.Activate (refCanv);
+	gameData.render.window.Activate (refCanv->Id (), refCanv);
 	}
 #if 0 //DBG
 CCanvas::Current ()->SetColorRGBi (gameStates.app.bNostalgia ? RGB_PAL (0, 0, 32) : RGB_PAL (47, 31, 0));
@@ -486,7 +487,7 @@ if (!gameStates.menus.nInMenu && (gameOpts->render.cockpit.bHUD > 1) && (gameSta
 		gameData.render.window.Deactivate ();
 		h = 4 * gameData.render.screen.Height (false) / 9; 
 		gameData.render.window.Setup (&gameData.render.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
-		gameData.render.window.Activate (&gameData.render.frame);
+		gameData.render.window.Activate ("Window", &gameData.render.frame);
 		hudIcons.Render ();
 		gameData.render.window.Deactivate ();
 		}
@@ -540,7 +541,7 @@ if (!gameStates.menus.nInMenu && (gameOpts->render.cockpit.bHUD > 1) && (gameSta
 			DrawPlayerShip ();
 			}
 		if (!bStereoOffset)
-			gameData.render.scene.Activate ();
+			gameData.render.scene.Activate ("Scene");
 		hudIcons.Render ();
 		if (!bStereoOffset)
 			gameData.render.scene.Deactivate ();
