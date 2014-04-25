@@ -640,8 +640,8 @@ if (gameOpts->render.bUseRift) {
 		}
 if (detectionMessage) 
 		PrintLog (0, detectionMessage);
-#endif
 	}
+#endif
 return m_bAvailable != 0;
 }
 
