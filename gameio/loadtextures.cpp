@@ -1148,10 +1148,13 @@ bool BitmapLoaded (int bmi, int nFrame, int bD1)
 
 if (!bmP)
 	return false;
-if (nFrame && (gameData.pig.tex.bitmaps [bD1][bmi - nFrame].Flags () & BM_FLAG_TGA)) {
-	gameData.pig.tex.bitmaps [bD1][bmi].DelFlags (BM_FLAG_PAGED_OUT);
+#if 1
+if (nFrame && gameData.pig.tex.bitmaps [bD1][bmi - nFrame].Override ()) {
+	bmP->DelFlags (BM_FLAG_PAGED_OUT);
+	bmP->SetOverride (gameData.pig.tex.bitmaps [bD1][bmi - nFrame].Override ());
 	return true;
 	}
+#endif
 if (bmP->Flags () & BM_FLAG_PAGED_OUT)
 	return false;
 if ((bmoP = bmP->Override (-1)))
