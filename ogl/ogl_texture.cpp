@@ -1093,7 +1093,7 @@ CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures)
 	CBitmap*	bmP, * bmoP, * bmfP;
 	int		nFrames;
 
-LoadTexture (gameData.pig.tex.bmIndexP [nTexture].index, gameStates.app.bD1Mission);
+LoadTexture (gameData.pig.tex.bmIndexP [nTexture].index, 0, gameStates.app.bD1Mission);
 bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
 bmP->SetStatic (1);
 if (!(bmoP = bmP->Override ()))

@@ -653,7 +653,7 @@ if (altTextures) {
 		gameData.models.textureIndex [i] = altTextures [i];
 		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + altTextures [i].index;
 		if (gameStates.render.bBuildModels)
-			LoadTexture (altTextures [i].index, gameStates.app.bD1Model);
+			LoadTexture (altTextures [i].index, 0, gameStates.app.bD1Model);
 		}
 	}
 else {
@@ -661,7 +661,7 @@ else {
 		gameData.models.textureIndex [i] = gameData.pig.tex.objBmIndex [gameData.pig.tex.objBmIndexP [j]];
 		gameData.models.textures [i] = gameData.pig.tex.bitmaps [gameStates.app.bD1Model] + gameData.models.textureIndex [i].index;
 		if (gameStates.render.bBuildModels)
-			LoadTexture (gameData.models.textureIndex [i].index, gameStates.app.bD1Model);
+			LoadTexture (gameData.models.textureIndex [i].index, 0, gameStates.app.bD1Model);
 		}
 	}
 #if DBG
@@ -671,13 +671,13 @@ if (m_info.nId == nDbgModel)
 // Make sure the textures for this CObject are paged in...
 gameData.pig.tex.bPageFlushed = 0;
 for (i = 0; i < nTextures; i++)
-	LoadTexture (gameData.models.textureIndex [i].index, gameStates.app.bD1Model);
+	LoadTexture (gameData.models.textureIndex [i].index, 0, gameStates.app.bD1Model);
 // Hmmm... cache got flushed in the middle of paging all these in,
 // so we need to reread them all in.
 if (gameData.pig.tex.bPageFlushed) {
 	gameData.pig.tex.bPageFlushed = 0;
 	for (i = 0; i < nTextures; i++)
-		LoadTexture (gameData.models.textureIndex [i].index, gameStates.app.bD1Model);
+		LoadTexture (gameData.models.textureIndex [i].index, 0, gameStates.app.bD1Model);
 }
 // Make sure that they can all fit in memory.
 Assert (gameData.pig.tex.bPageFlushed == 0);

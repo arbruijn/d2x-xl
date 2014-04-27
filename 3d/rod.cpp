@@ -123,7 +123,7 @@ void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int bLit, int iFrame
 	CBitmap*			bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 	CRenderPoint	pTop, pBottom;
 
-LoadTexture (bmi.index, 0);
+LoadTexture (bmi.index, 0, 0);
 if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
 	bmP->SetupTexture (1, 0);
 	bmP = bmP->Override (iFrame);

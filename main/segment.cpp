@@ -1116,7 +1116,7 @@ else {
 	nSwitchType = 1;
 	}
 //check if it's an animation (monitor) or casts light
-LoadTexture (gameData.pig.tex.bmIndexP [tm].index, gameStates.app.bD1Data);
+LoadTexture (gameData.pig.tex.bmIndexP [tm].index, 0, gameStates.app.bD1Data);
 //this can be blown up...did we hit it?
 if (!bForceBlowup) {
 	HitPointUV (nSide, &u, &v, NULL, vHit, 0);	//evil: always say face zero

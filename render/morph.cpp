@@ -308,13 +308,13 @@ for (i = m; i < n; i++) {
 		// Make sure the textures for this CObject are paged in..
 		gameData.pig.tex.bPageFlushed = 0;
 		for (j = 0; j < h; j++)
-			LoadTexture (gameData.models.textureIndex [j].index, 0);
+			LoadTexture (gameData.models.textureIndex [j].index, 0, 0);
 		// Hmmm.. cache got flushed in the middle of paging all these in,
 		// so we need to reread them all in.
 		if (gameData.pig.tex.bPageFlushed) {
 			gameData.pig.tex.bPageFlushed = 0;
 			for (int j = 0; j < h; j++)
-				LoadTexture (gameData.models.textureIndex [j].index, 0);
+				LoadTexture (gameData.models.textureIndex [j].index, 0, 0);
 			}
 			// Make sure that they can all fit in memory.
 		Assert (gameData.pig.tex.bPageFlushed == 0);

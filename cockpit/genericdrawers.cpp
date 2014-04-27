@@ -684,7 +684,7 @@ void CGenericCockpit::DrawWeaponInfo (int nWeaponType, int nIndex, tGaugeBox* bo
 i = ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode)
 	 ? gameData.weapons.info [nIndex].hiresPicture.index
 	 : gameData.weapons.info [nIndex].picture.index;
-LoadTexture (i, 0);
+LoadTexture (i, 0, 0);
 if (!(bmP = gameData.pig.tex.bitmaps [0] + i))
 	return;
 color = (m_info.weaponBoxStates [nWeaponType] == WS_SET) ? 255 : int (X2F (m_info.weaponBoxFadeValues [nWeaponType]) / float (FADE_LEVELS) * 255);
@@ -840,7 +840,7 @@ if (staticTime [nWindow] >= vc->xTotalTime) {
 	return;
 	}
 framenum = staticTime [nWindow] * vc->nFrameCount / vc->xTotalTime;
-LoadTexture (vc->frames [framenum].index, 0);
+LoadTexture (vc->frames [framenum].index, 0, 0);
 bmp = gameData.pig.tex.bitmaps [0] + vc->frames [framenum].index;
 h = boxofs + nWindow;
 for (x = hudWindowAreas [h].left; x < hudWindowAreas [h].right; x += bmp->Width ())

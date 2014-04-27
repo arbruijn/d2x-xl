@@ -104,7 +104,7 @@ for (int bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 	for (int i = 0; i < gameData.effects.nEffects [bD1]; i++, ecP++)
 		if ((ecP->changingObjectTexture != -1) && !(ecP->flags & EF_ALTFMT))
 			for (int j = 0; j < ecP->vClipInfo.nFrameCount; j++)
-				LoadTexture (ecP->vClipInfo.frames [j].index, bD1);
+				LoadTexture (ecP->vClipInfo.frames [j].index, 0, bD1);
 	}	
 }
 

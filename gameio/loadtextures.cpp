@@ -1141,13 +1141,17 @@ PrintLog (-1);
 
 //------------------------------------------------------------------------------
 
-bool BitmapLoaded (int bmi, int bD1)
+bool BitmapLoaded (int bmi, int nFrame, int bD1)
 {
 	CBitmap*		bmoP, * bmP = gameData.pig.tex.bitmaps [bD1] + bmi;
 	CTexture*	texP;
 
 if (!bmP)
 	return false;
+if (nFrame && (gameData.pig.tex.bitmaps [bD1][bmi - nFrame].Flags () & BM_FLAG_TGA)) {
+	gameData.pig.tex.bitmaps [bD1][bmi].DelFlags (BM_FLAG_PAGED_OUT);
+	return true;
+	}
 if (bmP->Flags () & BM_FLAG_PAGED_OUT)
 	return false;
 if ((bmoP = bmP->Override (-1)))
@@ -1157,13 +1161,13 @@ return ((texP = bmP->Texture ()) && (texP->Handle ())) || (bmP->Buffer () != 0);
 
 //------------------------------------------------------------------------------
 
-void LoadTexture (int bmi, int bD1, bool bHires)
+void LoadTexture (int bmi, int nFrame, int bD1, bool bHires)
 {
 #if DBG
 if ((nDbgTexture >= 0) && (bmi == nDbgTexture))
 	nDbgTexture = nDbgTexture;
 #endif
-if (!BitmapLoaded (bmi, bD1))
+if (!BitmapLoaded (bmi, nFrame, bD1))
 	PiggyBitmapPageIn (bmi, bD1, bHires);
 }
 

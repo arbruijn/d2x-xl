@@ -44,7 +44,7 @@ int PixelTranspType (short nTexture, short nOrient, short nFrame, fix u, fix v)
 	tBitmapIndex *bmiP;
 
 bmiP = gameData.pig.tex.bmIndexP + (nTexture);
-LoadTexture (*bmiP, gameStates.app.bD1Data);
+LoadTexture (*bmiP, 0, gameStates.app.bD1Data);
 bmP = BmOverride (gameData.pig.tex.bitmapP + bmiP->index);
 #else
 bmP = LoadFaceBitmap (nTexture, nFrame);

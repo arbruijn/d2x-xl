@@ -131,12 +131,12 @@ for (i = 0, cacheP = &texCache [0]; i < nCacheEntries; i++, cacheP++) {
 nCacheMisses++;
 // Make sure the bitmaps are paged in...
 gameData.pig.tex.bPageFlushed = 0;
-LoadTexture (gameData.pig.tex.bmIndexP [tMapTop].index, gameStates.app.bD1Mission);
-LoadTexture (gameData.pig.tex.bmIndexP [tMapBot].index, gameStates.app.bD1Mission);
+LoadTexture (gameData.pig.tex.bmIndexP [tMapTop].index, 0, gameStates.app.bD1Mission);
+LoadTexture (gameData.pig.tex.bmIndexP [tMapBot].index, 0, gameStates.app.bD1Mission);
 if (gameData.pig.tex.bPageFlushed) {	// If cache got flushed, re-read 'em.
 	gameData.pig.tex.bPageFlushed = 0;
-	LoadTexture (gameData.pig.tex.bmIndexP [tMapTop].index, gameStates.app.bD1Mission);
-	LoadTexture (gameData.pig.tex.bmIndexP [tMapBot].index, gameStates.app.bD1Mission);
+	LoadTexture (gameData.pig.tex.bmIndexP [tMapTop].index, 0, gameStates.app.bD1Mission);
+	LoadTexture (gameData.pig.tex.bmIndexP [tMapBot].index, 0, gameStates.app.bD1Mission);
 	}
 Assert (gameData.pig.tex.bPageFlushed == 0);
 

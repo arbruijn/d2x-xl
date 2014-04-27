@@ -60,7 +60,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void LoadVClipTextures (tVideoClip* vc, int bD1)
 {
 for (int i = 0; i < vc->nFrameCount; i++)
-	LoadTexture (vc->frames [i].index, bD1);
+	LoadTexture (vc->frames [i].index, i, bD1);
 }
 
 //------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ for (int i = gameData.effects.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) 
 	if (ecP->changingWallTexture == nTexture) {
 		LoadVClipTextures (&ecP->vClipInfo, gameStates.app.bD1Data);
 		if (ecP->nDestBm >= 0)
-			LoadTexture (gameData.pig.tex.bmIndexP [ecP->nDestBm].index, gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
+			LoadTexture (gameData.pig.tex.bmIndexP [ecP->nDestBm].index, 0, gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
 		if (ecP->nDestVClip >= 0)
 			LoadVClipTextures (&gameData.effects.vClipP [ecP->nDestVClip], gameStates.app.bD1Data);		  //what tVideoClip to play when exploding
 		if (ecP->nDestEClip >= 0)
@@ -103,9 +103,9 @@ void LoadModelTextures (int nModel)
 	ushort*		pi = gameData.pig.tex.objBmIndexP + modelP->FirstTexture ();
 	int			j;
 
-for (int i = modelP->TextureCount (); i; i--, pi++) {
+for (int h = modelP->TextureCount (), i = 0; i < h; i++, pi++) {
 	j = *pi;
-	LoadTexture (gameData.pig.tex.objBmIndex [j].index, 0);
+	LoadTexture (gameData.pig.tex.objBmIndex [j].index, i, 0);
 	LoadObjectEffectTextures (j);
 	}
 }
@@ -117,7 +117,7 @@ void LoadWeaponTextures (int nWeaponType)
 if ((nWeaponType < 0) || (nWeaponType > gameData.weapons.nTypes [0])) 
 	return;
 if (gameData.weapons.info [nWeaponType].picture.index)
-	LoadTexture (gameData.weapons.info [nWeaponType].hiresPicture.index, 0);
+	LoadTexture (gameData.weapons.info [nWeaponType].hiresPicture.index, 0, 0);
 if (gameData.weapons.info [nWeaponType].nFlashVClip >= 0)
 	LoadVClipTextures (&gameData.effects.vClips [0][gameData.weapons.info [nWeaponType].nFlashVClip], 0);
 if (gameData.weapons.info [nWeaponType].nWallHitVClip >= 0)
@@ -141,7 +141,7 @@ switch (gameData.weapons.info [nWeaponType].renderType) {
 		break;
 
 	case WEAPON_RENDER_BLOB:
-		LoadTexture (gameData.weapons.info [nWeaponType].bitmap.index, 0);
+		LoadTexture (gameData.weapons.info [nWeaponType].bitmap.index, 0, 0);
 		break;
 	}
 }
@@ -184,7 +184,7 @@ switch (info.renderType) {
 		if (rType.polyObjInfo.nTexOverride == -1)
 			LoadModelTextures (ModelId ());
 		else
-			LoadTexture (gameData.pig.tex.bmIndex [0][rType.polyObjInfo.nTexOverride].index, 0);
+			LoadTexture (gameData.pig.tex.bmIndex [0][rType.polyObjInfo.nTexOverride].index, 0, 0);
 		break;
 
 	case RT_POWERUP:
@@ -239,10 +239,10 @@ if (!FaceCount ())
 	return;
 LoadWallEffectTextures (m_nBaseTex);
 if (m_nOvlTex) {
-	LoadTexture (gameData.pig.tex.bmIndexP [m_nOvlTex].index, gameStates.app.bD1Data);
+	LoadTexture (gameData.pig.tex.bmIndexP [m_nOvlTex].index, 0, gameStates.app.bD1Data);
 	LoadWallEffectTextures (m_nOvlTex);
 	}
-LoadTexture (gameData.pig.tex.bmIndexP [m_nBaseTex].index, gameStates.app.bD1Data);
+LoadTexture (gameData.pig.tex.bmIndexP [m_nBaseTex].index, 0, gameStates.app.bD1Data);
 }
 
 //------------------------------------------------------------------------------
@@ -316,7 +316,7 @@ void CWall::LoadTextures (void)
 if (nClip>= 0) {
 	tWallClip* anim = gameData.walls.animP + nClip;
 	for (int j = 0; j < anim->nFrameCount; j++)
-		LoadTexture (gameData.pig.tex.bmIndexP [anim->frames [j]].index, gameStates.app.bD1Data);
+		LoadTexture (gameData.pig.tex.bmIndexP [anim->frames [j]].index, 0, gameStates.app.bD1Data);
 	}
 }
 
@@ -359,7 +359,7 @@ void LoadGaugeTextures (void)
 {
 for (int i = 0; i < MAX_GAUGE_BMS; i++)
 	if (gameData.cockpit.gauges [1][i].index)
-		LoadTexture (gameData.cockpit.gauges [1][i].index, 0);
+		LoadTexture (gameData.cockpit.gauges [1][i].index, 0, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -467,7 +467,7 @@ else if (nTouchPowerup2 < gameData.objs.pwrUp.nTypes) {
 else if (nTouchGauge < MAX_GAUGE_BMS) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchGauge < MAX_GAUGE_BMS); i++, nTouchGauge++)
 		if (gameData.cockpit.gauges [1][nTouchGauge].index)
-			LoadTexture (gameData.cockpit.gauges [1][nTouchGauge].index, 0);
+			LoadTexture (gameData.cockpit.gauges [1][nTouchGauge].index, 0, 0);
 	}
 else {
 	LoadVClipTextures (&gameData.effects.vClips [0][VCLIP_PLAYER_APPEARANCE], 0);

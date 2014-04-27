@@ -520,7 +520,7 @@ if (*m_info.szBitmapName) {
 		return;
 	m_bitmap = gameData.pig.tex.bitmaps [gameStates.app.bD1Mission] + bmi.index;
 
-	LoadTexture (bmi.index, gameStates.app.bD1Mission);
+	LoadTexture (bmi.index, 0, gameStates.app.bD1Mission);
 	m_bitmap->SetStatic (1);
 
 	RenderElement (8);

@@ -323,12 +323,12 @@ CBitmap* CHUDIcons::LoadWeaponIcon (int i, int l)
 
 int m = i ? secondaryWeaponToWeaponInfo [l] : primaryWeaponToWeaponInfo [l];
 if ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) {
-	LoadTexture (gameData.weapons.info [m].hiresPicture.index, 0);
+	LoadTexture (gameData.weapons.info [m].hiresPicture.index, 0, 0);
 	bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].hiresPicture.index;
 	}
 else {
 	bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].picture.index;
-	LoadTexture (gameData.weapons.info [m].picture.index, 0);
+	LoadTexture (gameData.weapons.info [m].picture.index, 0, 0);
 	}
 
 if ((bmoP = bmP->HasOverride ()))

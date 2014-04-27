@@ -299,7 +299,7 @@ void PiggyCloseFile (void);
 
 void PageInAddonBitmap (int bmi);
 bool BitmapLoaded (int bmi, int bD1);
-void LoadTexture (int bmi, int bD1, bool bHires = false);
+void LoadTexture (int bmi, int nFrame, int bD1, bool bHires = false);
 void LoadGameBackground (void);
 
 char* DefaultPigFile (int bDemoData = 0);
