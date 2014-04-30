@@ -881,6 +881,8 @@ int PageInBitmap (CBitmap* bmP, const char* bmName, int nIndex, int bD1, bool bH
 	int		bHaveTGA;
 
 #if DBG
+if ((nDbgTexture > 0) && (nIndex == nDbgTexture))
+	nDbgTexture = nDbgTexture;
 if (!(bmName && *bmName))
 	return 0;
 if ((nDbgTexture > 0) && (nIndex == nDbgTexture))
@@ -895,7 +897,7 @@ if (nIndex >= 0)
 #if DBG
 if (nIndex == 262)
 	nIndex = nIndex;
-if (strstr (bmName, "metl098"))
+if (strstr (bmName, "merc4#0"))
 	bmName = bmName;
 #endif
 if (gameStates.app.bNostalgia)

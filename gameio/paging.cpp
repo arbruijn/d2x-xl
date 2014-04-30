@@ -105,7 +105,7 @@ void LoadModelTextures (int nModel)
 
 for (int h = modelP->TextureCount (), i = 0; i < h; i++, pi++) {
 	j = *pi;
-	LoadTexture (gameData.pig.tex.objBmIndex [j].index, i, 0);
+	LoadTexture (gameData.pig.tex.objBmIndex [j].index, 0 /*i*/, 0); // don't pass frame number to avoid checking for hires replacement textures
 	LoadObjectEffectTextures (j);
 	}
 }

@@ -1340,7 +1340,7 @@ void CGenericCockpit::DrawCockpit (int nCockpit, int y, bool bAlphaTest)
 if ((gameOpts->render.cockpit.bHUD) || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) {
 	int i = gameData.pig.tex.cockpitBmIndex [nCockpit].index;
 	CBitmap *bmP = gameData.pig.tex.bitmaps [0] + i;
-	LoadTexture (gameData.pig.tex.cockpitBmIndex [nCockpit].index, 0, true);
+	LoadTexture (i, 0, 0, true);
 	if (bmP->HasOverride ())
 		bmP = bmP->Override (-1);
 	ogl.m_states.nTransparencyLimit = 8;	//add transparency to black areas of palettized cockpits (namely the display windows)
