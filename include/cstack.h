@@ -34,7 +34,7 @@ class CStack : public CArray< _T > {
 #endif
 				return false;
 				}
-#pragma omp critical
+//#pragma omp critical
 			m_tos += i;
 			return true;
 			}
@@ -46,7 +46,7 @@ class CStack : public CArray< _T > {
 #endif
 				return false;
 				}
-#pragma omp critical
+//#pragma omp critical
 			this->m_data.buffer [m_tos++] = elem;
 			return true;
 			}
@@ -56,14 +56,14 @@ class CStack : public CArray< _T > {
 		inline uint ToS (void) { return m_tos; }
 
 		inline _T& Pop (void) {
-#pragma omp critical
+//#pragma omp critical
 			if (m_tos)
 				m_tos--;
 			return this->m_data.buffer [m_tos];
 			}
 
 		inline void Shrink (uint i = 1) {
-#pragma omp critical
+//#pragma omp critical
 			if (i >= m_tos)
 				m_tos = 0;
 			else
@@ -84,7 +84,7 @@ class CStack : public CArray< _T > {
 #endif
 				return false;
 				}
-#pragma omp critical
+//#pragma omp critical
 			if (i < --m_tos)
 				memcpy (this->m_data.buffer + i, this->m_data.buffer + i + 1, sizeof (_T) * (m_tos - i));
 			return true;
@@ -93,7 +93,7 @@ class CStack : public CArray< _T > {
 		inline bool DeleteElement (_T& elem) { return Delete (Find (elem));	}
 
 		inline _T& Pull (_T& elem, uint i) {
-#pragma omp critical
+//#pragma omp critical
 			if (i < m_tos) {
 				elem = this->m_data.buffer [i];
 				Delete (i);

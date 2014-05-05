@@ -118,37 +118,39 @@ externalView.SetPos (NULL);
 
 if (gameStates.render.cameras.bActive)
 	nStartSeg = gameData.objs.viewerP->info.nSegment;
-else if (bPlayer) {
-	if (xStereoSeparation)
-		gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.r * xStereoSeparation;
-	if (!gameStates.render.nWindow [0])
-		externalView.SetPoint (gameData.objs.viewerP);
-	if (gameStates.render.bRearView) { // no zoom, no head tracking
-		mView.m.dir.f.Neg ();
-		mView.m.dir.r.Neg ();
-		SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView,  //gameStates.render.xZoom, bOglScale);
-									FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
-		}
-#if DBG
-	else if (gameStates.render.bChaseCam) { // no zoom, no head tracking
-#else
-	else if (gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || (EGI_FLAG (bEnableCheats, 0, 0, 0) && !COMPETITION))) {
-#endif
-		externalView.GetViewPoint ();
-		if (externalView.GetPos ())
-			mView = externalView.GetPos ()->mOrient;
-		}
-	else {
-		if (transformation.m_info.bUsePlayerHeadAngles) {
-			CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
-			mView = gameData.objs.viewerP->info.position.mOrient * mHead;
+else {
+	if (bPlayer) {
+		if (xStereoSeparation)
+			gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.r * xStereoSeparation;
+		if (!gameStates.render.nWindow [0])
+			externalView.SetPoint (gameData.objs.viewerP);
+		if (gameStates.render.bRearView) { // no zoom, no head tracking
+			mView.m.dir.f.Neg ();
+			mView.m.dir.r.Neg ();
+			SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView,  //gameStates.render.xZoom, bOglScale);
+										FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
 			}
-		if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) { // zoom?
-			if (!(gameStates.zoom.nMinFactor = I2X (gameStates.render.glAspect)))
-				gameStates.zoom.nMinFactor = I2X (1);
-			gameStates.zoom.nMaxFactor = gameStates.zoom.nMinFactor * 5;
-			HandleZoom ();
-			xZoom = FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor);
+	#if DBG
+		else if (gameStates.render.bChaseCam) { // no zoom, no head tracking
+	#else
+		else if (gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || (EGI_FLAG (bEnableCheats, 0, 0, 0) && !COMPETITION))) {
+	#endif
+			externalView.GetViewPoint ();
+			if (externalView.GetPos ())
+				mView = externalView.GetPos ()->mOrient;
+			}
+		else {
+			if (transformation.m_info.bUsePlayerHeadAngles) {
+				CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
+				mView = gameData.objs.viewerP->info.position.mOrient * mHead;
+				}
+			if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) { // zoom?
+				if (!(gameStates.zoom.nMinFactor = I2X (gameStates.render.glAspect)))
+					gameStates.zoom.nMinFactor = I2X (1);
+				gameStates.zoom.nMaxFactor = gameStates.zoom.nMinFactor * 5;
+				HandleZoom ();
+				xZoom = FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor);
+				}
 			}
 		}
 	if (!nStartSegP)
