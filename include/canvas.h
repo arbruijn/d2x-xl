@@ -89,11 +89,16 @@ typedef struct tCanvas {
 	bool				bRelative;
 } tCanvas;
 
+typedef struct CCanvasBackup {
+	CCanvas*	m_canvas;
+	char		m_szId [100];
+} tCanvasBackup;
+
 class CCanvas : public CViewport, public CBitmap {
 	private:
 		tCanvas	m_info;
 
-		static CStack<CCanvas*>	m_save;
+		static CStack<tCanvasBackup>	m_save;
 
 	public:
 		static fix					xCanvW2, xCanvH2;
@@ -132,13 +137,16 @@ class CCanvas : public CViewport, public CBitmap {
 		inline void SetId (char* pszId) { m_info.pszId = pszId; }
 		inline char* Id (void) { return m_info.pszId; }
 
-		static CCanvas* Current (void) { return m_save.ToS () ? *m_save.Top () : NULL; }
+		static CCanvas* Current (void) { return m_save.ToS () ? m_save.Top ()->m_canvas : NULL; }
 
 		static void Push (CCanvas* canvP) { 
 			if (!m_save.Buffer ())
 				m_save.Create (10);
-			m_save.Push (canvP); 
-			fontManager.Push ();
+			if (m_save.Grow ()) {
+				m_save.Top ()->m_canvas = canvP;
+				strncpy (m_save.Top ()->m_szId, canvP->Id (), sizeof (m_save.Top ()->m_szId));
+				}
+			fontManager.Push (canvP->Id ());
 			}
 		static void Pop (void) { 
 			m_save.Pop (); 

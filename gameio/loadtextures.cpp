@@ -650,17 +650,26 @@ return nShrinkFactor;
 
 static char* FindHiresBitmap (const char* bmName, int& nFile, int bD1, int bShrink = 1)
 {
+// Low res animations are realized by several textures bearing the frame number after a '#' sign in the filename.
+// Since hires animations contain all frames in a single texture, the hires animation only needs to be loaded
+// for the first low res animation frame texture ("name#0"). So skip all textures that have a '#' sign in their 
+// name that is not followed by a single '0' character.
+//const char* p = strchr (bmName, '#');
+//if (p &&  ((p [1] != '0') || (p [2] != '\0')))
+//	return NULL;
+
 	static char	fn [6][FILENAME_LEN];
 	char	baseName [FILENAME_LEN];
 
 strcpy (baseName, bmName);
 for (int i = 0; i < 2; i++) {
+#if 1
 	if (i) {
 		char* p = strchr (baseName, '#');
 		if (p)
 			strcpy (p + 1, "0");
 		}
-
+#endif
 	if (*gameFolders.szTextureDir [2]) {
 		char szLevelFolder [FILENAME_LEN];
 		if (missionManager.nCurrentLevel < 0)

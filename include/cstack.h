@@ -40,28 +40,13 @@ class CStack : public CArray< _T > {
 			}
 
 		inline bool Push (const _T elem) { 
-			if ((m_tos >= this->m_data.length) && (!(m_growth && this->Resize (this->m_data.length + m_growth)))) {
-#if DBG
-				ArrayError ("invalid stack operation\n");
-#endif
+			if (!Grow ())
 				return false;
-				}
 //#pragma omp critical
 			this->m_data.buffer [m_tos++] = elem;
 			return true;
 			}
 	
-		inline _T* Top (void) { return (this->m_data.buffer && m_tos) ? this->m_data.buffer + m_tos - 1 : NULL; }
-
-		inline uint ToS (void) { return m_tos; }
-
-		inline _T& Pop (void) {
-//#pragma omp critical
-			if (m_tos)
-				m_tos--;
-			return this->m_data.buffer [m_tos];
-			}
-
 		inline void Shrink (uint i = 1) {
 //#pragma omp critical
 			if (i >= m_tos)
@@ -70,12 +55,27 @@ class CStack : public CArray< _T > {
 				m_tos -= i;
 			}
 
+		inline _T& Pop (void) {
+//#pragma omp critical
+			Shrink ();
+			return this->m_data.buffer [m_tos];
+			}
+
+		inline void Truncate (uint i = 1) {
+			if (i < m_tos)
+				m_tos = i;
+			}
+
 		inline uint Find (_T& elem) {
 			for (uint i = 0; i < m_tos; i++)
 				if (this->m_data.buffer [i] == elem)
 					return i;
 			return m_tos;
 			}
+
+		inline uint ToS (void) { return m_tos; }
+
+		inline _T* Top (void) { return (this->m_data.buffer && m_tos) ? this->m_data.buffer + m_tos - 1 : NULL; }
 
 		inline bool Delete (uint i) {
 			if (i >= m_tos) {

@@ -221,8 +221,8 @@ if (bOgl) {
 	glPopMatrix ();
 	glMatrixMode (GL_MODELVIEW);
 	glPopMatrix ();
-	gameData.render.frame.SetViewport ();
 	}
+gameData.render.scene.SetViewport ();
 return 0 != (gameOpts->render.effects.bGlow = bGlow);
 }
 
@@ -286,6 +286,7 @@ else if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
 	s.y += gameData.render.screen.Height () - CCanvas::Current ()->Height ();
 #endif
 #pragma omp critical
+{
 if (m_screenMin.x > s.x)
 	m_screenMin.x = s.x;
 if (m_screenMin.y > s.y)
@@ -294,6 +295,7 @@ if (m_screenMax.x < s.x)
 	m_screenMax.x = s.x;
 if (m_screenMax.y < s.y)
 	m_screenMax.y = s.y;
+}
 #endif
 m_bViewport = 1;
 }
@@ -319,7 +321,8 @@ if (m_bViewport != 1)
 if (m_bViewport == 0)
 	return false;
 if (m_bViewport == -1) {
-	m_screenMin.x = m_screenMin.y = 0;
+	m_screenMin.x = gameData.render.scene.Left ();
+	m_screenMin.y = gameData.render.scene.Top ();
 	m_screenMax.x = ScreenWidth ();
 	m_screenMax.y = ScreenHeight ();
 	return true;
@@ -343,7 +346,8 @@ return true;
 void CGlowRenderer::InitViewport (void)
 {
 if (!UseViewport ()) {
-	m_screenMin.x = m_screenMin.y = 0;
+	m_screenMin.x = gameData.render.scene.Left ();
+	m_screenMin.y = gameData.render.scene.Top ();
 	m_screenMax.x = ScreenWidth ();
 	m_screenMax.y = ScreenHeight ();
 	}	
@@ -518,8 +522,8 @@ void CGlowRenderer::Render (int const source, int const direction, float const r
 #if USE_VIEWPORT //DBG
 
 float r = radius * 4.0f; // scale with a bit more than the max. offset from the blur shader
-float w = (float) ScreenWidth ();
-float h = (float) ScreenHeight ();
+float w = (float) gameData.render.scene.Width ();
+float h = (float) gameData.render.scene.Height ();
 float verts [4][2] = {
 	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
@@ -536,6 +540,8 @@ if (ogl.IsSideBySideDevice ()) {
 	}
 else
 	r += 4.0f;
+w = (float) gameData.render.frame.Width ();
+h = (float) gameData.render.frame.Height ();
 float texCoord [4][2] = {
 	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
@@ -564,7 +570,7 @@ else
 #endif 
 	{
 	shaderManager.Deploy (-1);
-	gameData.render.frame.SetViewport ();
+	gameData.render.scene.SetViewport ();
 	}
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer (source < 0));
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
@@ -617,7 +623,7 @@ if (Available (nType)) {
 #else
 	ogl.ChooseDrawBuffer ();
 #endif
-	gameData.render.frame.SetViewport ();
+	gameData.render.scene.SetViewport ();
 	}	
 }
 
@@ -641,7 +647,6 @@ else
 	glPushMatrix ();
 	glLoadIdentity ();//clear matrix
 	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-	gameData.render.window.SetViewport ();
 
 	GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
 	bool bDepthWrite = ogl.GetDepthWrite ();

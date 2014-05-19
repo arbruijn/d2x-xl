@@ -392,6 +392,13 @@ glLineWidth (1);
 #endif
 }
 
+
+static void CheckFont (void)
+{
+if (!fontManager.Current ())
+	fontManager.SetCurrent (GAME_FONT);
+}
+
 //	-----------------------------------------------------------------------------
 //draw all the things on the HUD
 
@@ -464,7 +471,9 @@ else
 CCanvas::Current ()->SetColorRGBi (BLACK_RGBA);
 fontManager.SetCurrent (GAME_FONT);
 
+//gameData.render.scene.Activate ("Scene");
 DrawReticle (ogl.StereoDevice () < 0);
+//gameData.render.scene.Deactivate ();
 
 if (!gameStates.menus.nInMenu && (gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (gameStates.zoom.nMinFactor))) {
 	if (ogl.IsOculusRift () && !transformation.HaveHeadAngles ()) {
@@ -473,15 +482,25 @@ if (!gameStates.menus.nInMenu && (gameOpts->render.cockpit.bHUD > 1) && (gameSta
 		SetupSceneCenter (&gameData.render.frame, w, h);
 
 		DrawEnergyLevels ();
+		CheckFont ();
 		DrawModuleDamage ();
+		CheckFont ();
 		DrawScore ();
+		CheckFont ();
 		DrawKeys ();
+		CheckFont ();
 		DrawFlag ();
+		CheckFont ();
 		DrawOrbs ();
+		CheckFont ();
 		DrawLives ();
+		CheckFont ();
 		DrawCloak ();
+		CheckFont ();
 		DrawInvul ();
+		CheckFont ();
 		DrawHomingWarning ();
+		CheckFont ();
 
 		gameData.SetStereoOffsetType (nOffsetSave);
 		gameData.render.window.Deactivate ();
@@ -505,49 +524,79 @@ if (!gameStates.menus.nInMenu && (gameOpts->render.cockpit.bHUD > 1) && (gameSta
 
 		if (!bLimited) {
 			DrawPlayerNames ();
+		CheckFont ();
 			RenderWindows ();
+		CheckFont ();
 			}
 		DrawCockpit (false);
+		CheckFont ();
 		if (bExtraInfo) {
 		#if DBG
 			DrawWindowLabel ();
 		#endif
 			DrawMultiMessage ();
+		CheckFont ();
 			DrawMarkerMessage ();
+		CheckFont ();
 			DrawFrameRate ();
+		CheckFont ();
 			DrawCruise ();
+		CheckFont ();
 			}
 		DrawPacketLoss ();
+		CheckFont ();
 		DrawSlowMotion ();
+		CheckFont ();
 		DrawPlayerStats ();
+		CheckFont ();
+		CheckFont ();
 		DrawScore ();
 		if (m_info.scoreTime)
 			DrawAddedScore ();
+		CheckFont ();
 		DrawEnergyLevels ();
+		CheckFont ();
 		DrawModuleDamage ();
+		CheckFont ();
 		DrawWeapons ();
+		CheckFont ();
 		DrawTimerCount ();
+		CheckFont ();
 		DrawCloak ();
+		CheckFont ();
 		DrawInvul ();
+		CheckFont ();
 		if (!bLimited) {
 			DrawTime ();
+		CheckFont ();
 			DrawKeys ();
+		CheckFont ();
 			DrawFlag ();
+		CheckFont ();
 			DrawOrbs ();
+		CheckFont ();
 			DrawLives ();
+		CheckFont ();
 			DrawBombCount ();
+		CheckFont ();
 			DrawHomingWarning ();
+		CheckFont ();
 			DrawKillList ();
+		CheckFont ();
 			DrawPlayerShip ();
+		CheckFont ();
 			}
 		if (!bStereoOffset)
 			gameData.render.scene.Activate ("Scene");
 		hudIcons.Render ();
+		CheckFont ();
 		if (!bStereoOffset)
 			gameData.render.scene.Deactivate ();
 		if (bExtraInfo) {
 			DrawCountdown ();
+		CheckFont ();
 			DrawRecording ();
+		CheckFont ();
 			}
 
 		if ((gameData.demo.nState == ND_STATE_PLAYBACK))

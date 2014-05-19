@@ -130,13 +130,18 @@ typedef struct tOpenFont {
 	ubyte*	data;
 } tOpenFont;
 
+typedef struct tFontBackup {
+	CFont*	m_font;
+	char		m_szId [100];
+} tFontBackup;
+
 class CFontManager {
 	private:
-		tOpenFont		m_fonts [MAX_OPEN_FONTS];
-		CFont*			m_gameFonts [MAX_FONTS];
-		CFont*			m_current;
-		CStack<CFont*>	m_save;
-		float				m_scale;
+		tOpenFont				m_fonts [MAX_OPEN_FONTS];
+		CFont*					m_gameFonts [MAX_FONTS];
+		CFont*					m_current;
+		CStack<tFontBackup>	m_save;
+		float						m_scale;
 
 	public:
 		CFontManager () { Init (); }
@@ -154,9 +159,18 @@ class CFontManager {
 		void SetColor (int fgColor, int bgColor);
 		void SetColorRGB (CRGBAColor *fgColor, CRGBAColor *bgColor);
 		void SetColorRGBi (uint fgColor, int bSetFG, uint bgColor, int bSetBG);
-		void Push (void) { m_save.Push (m_current); }
-		void Pop (void) { m_current = m_save.Pop (); }
+		void Push (char* pszId) { 
+			if (m_save.Grow ()) {
+				m_save.Top ()->m_font = m_current;
+				strncpy (m_save.Top ()->m_szId, pszId, sizeof (m_save.Top ()->m_szId));
+				}
+			}
+		void Pop (void) { m_current = m_save.Pop ().m_font; }
 		inline int ToS (void) { return m_save.ToS (); }
+		inline void Reset (void) { 
+			m_save.Truncate (1); 
+			m_current = m_save.ToS () ? m_save.Top ()->m_font : NULL; 
+			}
 		void Remap ();
 
 		inline int Scaled (int v) { return (int) FRound ((float (v) * Scale ())); }

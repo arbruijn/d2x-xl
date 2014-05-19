@@ -81,16 +81,16 @@ if (transformation.HaveHeadAngles ())
 
 int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 31, 0));
-int w = CCanvas::Current ()->Width () >> 5;
+int w = gameData.render.scene.Width () >> 5;
 if (w < 5)
 	w = 5;
 int h = I2X (w) / gameData.render.screen.Aspect ();
-int x = CCanvas::Current ()->Width () / 2;
+int x = gameData.render.scene.Width () / 2;
 if (xStereoSeparation) {
 	ogl.ColorMask (1,1,1,1,1);
 	x -= int (float (x / 32) * X2F (xStereoSeparation));
 	}
-int y = CCanvas::Current ()->Height () / 2;
+int y = gameData.render.scene.Height () / 2;
 glLineWidth (float (gameData.render.frame.Width ()) / 640.0f);
 x = gameData.X (x);
 #if 1
@@ -115,9 +115,9 @@ void DrawScope (void)
 {
 if (scope.Load ()) {
 	float sh = float (gameData.render.screen.Height ());
-	float ch = float (CCanvas::Current ()->Height ());
-	float w = 0.25f * float (CCanvas::Current ()->Width ()) / ch;
-	float y = 1.0f - float (CCanvas::Current ()->Top ()) / sh;
+	float ch = float (gameData.render.scene.Height ());
+	float w = 0.25f * float (gameData.render.scene.Width ()) / ch;
+	float y = 1.0f - float (gameData.render.scene.Top ()) / sh;
 	float h = ch / sh;
 
 	ogl.SetTexturing (true);
@@ -166,8 +166,8 @@ if (bInitSinCos) {
 
 	int bHaveTarget = TargetInLineOfFire ();
 	int sh = gameData.render.screen.Height ();
-	int ch = CCanvas::Current ()->Height ();
-	int cw = CCanvas::Current ()->Width ();
+	int ch = gameData.render.scene.Height ();
+	int cw = gameData.render.scene.Width ();
 	int h = ch >> 2;
 	int w = X2I (h * gameData.render.screen.Aspect ());
 
@@ -357,8 +357,8 @@ if (gameStates.zoom.nFactor > float (gameStates.zoom.nMinFactor)) {
 
 gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 m_info.xStereoSeparation = xStereoSeparation;
-x = CCanvas::Current ()->Width () / 2;
-y = CCanvas::Current ()->Height () / 2;
+x = gameData.render.scene.Width () / 2;
+y = gameData.render.scene.Height () / 2;
 bLaserReady = AllowedToFireGun ();
 bMissileReady = AllowedToFireMissile (-1, 1);
 bLaserAmmo = PlayerHasWeapon (gameData.weapons.nPrimary, 0, -1, 1);
@@ -390,7 +390,7 @@ if (ogl.IsOculusRift ()) {
 	m_info.yScale *= 0.5f;
 	}
 bHiresReticle = 1; //(gameStates.render.fonts.bHires != 0) && !gameStates.app.bDemoData;
-bSmallReticle = !bForceBig && (CCanvas::Current ()->Width () * 3 <= gameData.render.frame.Width () * 2);
+bSmallReticle = !bForceBig && (gameData.render.scene.Width () * 3 <= gameData.render.frame.Width () * 2);
 ofs = (bHiresReticle ? 0 : 2) + bSmallReticle;
 nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ()) 
 				 ? BM_ADDON_RETICLE_RED 
@@ -401,7 +401,7 @@ int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 
 if (ogl.IsOculusRift ()) {
 	float fov = float (gameStates.render.glFOV * X2D (transformation.m_info.zoom));
-	float yStep = float (CCanvas::Current ()->Height ()) / fov * 4;
+	float yStep = float (gameData.render.scene.Height ()) / fov * 4;
 	float xStep = yStep * float (CCanvas::Current ()->AspectRatio ());
 	//if ((fabs (X2F (transformation.m_info.playerHeadAngles.v.coord.h)) > 0.1f) || 
 	//	 (fabs (X2F (transformation.m_info.playerHeadAngles.v.coord.p)) > 0.1f)) 

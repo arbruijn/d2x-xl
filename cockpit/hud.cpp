@@ -814,7 +814,7 @@ x -= gameData.FloatingStereoOffset2D (x);
 if (gameOpts->render.cockpit.nWindowPos > 2) 
 	y = h / 10;
 else {
-	y = gameData.render.frame.Height () - h - h / 10;
+	y = gameData.render.scene.Height () - h - h / 10;
 	if (extraGameInfo [0].nWeaponIcons &&
 		 (extraGameInfo [0].nWeaponIcons - gameOpts->render.weaponIcons.bEquipment < 3))
 		y -= (int) ((gameOpts->render.weaponIcons.bSmall ? 20.0 : 30.0) * (double) CCanvas::Current ()->Height () / 480.0);
