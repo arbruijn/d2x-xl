@@ -188,6 +188,7 @@ if (nEffects & 5) {
 		postProcessManager.Render ();
 		if (nEffects & 4) // shutter glasses
 			ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
+		gameData.render.screen.Deactivate ();
 		}
 	else {
 		SelectBlurBuffer (0); 

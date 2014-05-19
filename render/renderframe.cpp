@@ -447,11 +447,12 @@ if (!ShowGameMessage (gameData.messages, -1, -1))
 
 void RenderMonoFrame (fix xStereoSeparation = 0)
 {
+SetupCanvasses ();
+gameData.render.screen.Activate ("RenderMonoFrame", NULL, true);
 #if MAX_SHADOWMAPS
 RenderShadowMaps (xStereoSeparation);
 #endif
 ogl.SetStereoSeparation (xStereoSeparation);
-SetupCanvasses ();
 if (xStereoSeparation <= 0) {
 	PROF_START
 	SEM_ENTER (SEM_LIGHTNING)

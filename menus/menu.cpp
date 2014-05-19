@@ -506,6 +506,7 @@ if (gameStates.app.bGameRunning) {
 		}
 	}
 else {
+	gameData.render.screen.Activate ("CMenu::Render", NULL, true);
 	console.Draw ();
 	CalcFrameTime ();
 	if (!ogl.IsSideBySideDevice ()) {
