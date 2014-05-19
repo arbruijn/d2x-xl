@@ -43,7 +43,7 @@ class CStack : public CArray< _T > {
 			if (!Grow ())
 				return false;
 //#pragma omp critical
-			this->m_data.buffer [m_tos++] = elem;
+			this->m_data.buffer [m_tos - 1] = elem;
 			return true;
 			}
 	

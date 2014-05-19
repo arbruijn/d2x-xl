@@ -235,7 +235,7 @@ if (!IS_D2_OEM && !IS_MAC_SHARE && !IS_SHAREWARE) {    // no countdown on regist
 			return;
 			}
 		}
-fontManager.Push ();
+fontManager.Push ("DrawCountDown");
 fontManager.SetCurrent (SMALL_FONT);
 SetFontColor (GREEN_RGBA);
 DrawHUDText (NULL, 0x8000, y, "T-%d s", gameData.reactor.countdown.nSecsLeft);
