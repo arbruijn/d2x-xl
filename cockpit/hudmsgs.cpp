@@ -46,7 +46,7 @@ void ClearBackgroundMessages (void)
 {
 if (((gameStates.render.cockpit.nType == CM_STATUS_BAR) || (gameStates.render.cockpit.nType == CM_FULL_SCREEN)) && 
 	  (nLastMsgYCrd != -1) && (gameData.render.scene.Top () >= 6)) {
-	gameData.render.frame.Activate ("ClearBackgroundMessages");
+	gameData.render.frame.Activate ("ClearBackgroundMessages (frame)");
 	CopyBackgroundRect (0, nLastMsgYCrd, CCanvas::Current ()->Width (), nLastMsgYCrd + nLastMsgHeight - 1);
 	gameData.render.frame.Deactivate ();
 	nLastMsgYCrd = -1;

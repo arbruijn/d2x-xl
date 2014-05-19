@@ -226,7 +226,7 @@ else
 	int y, w, ws, h, hs, aw;
 	float grAlpha = gameStates.render.grAlpha;
 
-gameData.render.frame.Activate ("PrintVersionInfo");
+gameData.render.frame.Activate ("PrintVersionInfo (frame)");
 
 gameStates.render.grAlpha = 1.0f;
 if (gameStates.menus.bHires) {
@@ -1069,7 +1069,7 @@ void ShowOrderForm (void)
 {
 	char	szExitScreen [16];
 
-gameData.render.frame.Activate ("ShowOrderForm");
+gameData.render.frame.Activate ("ShowOrderForm (frame)");
 KeyFlush ();
 strcpy (szExitScreen, gameStates.menus.bHires ? "ordrd2ob.pcx" : "ordrd2o.pcx"); // OEM
 if (! CFile::Exist (szExitScreen, gameFolders.szDataDir [0], 0))

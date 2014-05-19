@@ -978,7 +978,7 @@ void CSaveGameManager::SaveImage (void)
 	int		x, y;
 
 SetupCanvasses ();
-gameData.render.screen.Activate ("CSaveGameManager::SaveImage");
+gameData.render.screen.Activate ("CSaveGameManager::SaveImage (screen)");
 
 bmOut.SetWidth (THUMBNAIL_LW);
 bmOut.SetHeight (THUMBNAIL_LH);

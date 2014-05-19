@@ -216,7 +216,7 @@ void CBackground::Draw (bool bUpdate)
 {
 if (m_nType == BG_WALLPAPER) {
 	if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameStates.app.bNostalgia))) {
-		gameData.render.frame.Activate ("CBackGround::Draw");
+		gameData.render.frame.Activate ("CBackGround::Draw (frame)");
 		m_bitmap->RenderStretched ();
 		PrintVersionInfo ();
 		gameData.render.frame.Deactivate ();

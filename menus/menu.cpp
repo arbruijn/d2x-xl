@@ -418,7 +418,7 @@ return 1;
 
 void CMenu::SaveScreen (CCanvas **gameCanvasP)
 {
-gameData.render.frame.Activate ("CMenu::SaveScreen");
+gameData.render.frame.Activate ("CMenu::SaveScreen (frame)");
 }
 
 //------------------------------------------------------------------------------ 
@@ -500,7 +500,7 @@ m_props.pszTitle = pszTitle;
 m_props.pszSubTitle = pszSubTitle;
 if (gameStates.app.bGameRunning) {
 	if (!gameStates.app.bShowError) {
-		gameData.render.frame.Activate ("CMenu::Render (1)");
+		gameData.render.frame.Activate ("CMenu::Render (frame, 1)");
 		RenderMenuGameFrame ();
 		gameData.render.frame.Deactivate ();
 		}
@@ -516,7 +516,7 @@ else {
 		for (int i = 0; i < 2; i++) {
 			gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
 			SetupCanvasses (-1.0f);
-			gameData.render.frame.Activate ("CMenu::Render (2)");
+			gameData.render.frame.Activate ("CMenu::Render (frame, 2)");
 			ogl.ChooseDrawBuffer ();
 			Render ();
 			gameData.render.frame.Deactivate ();

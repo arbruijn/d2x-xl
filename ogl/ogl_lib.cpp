@@ -738,7 +738,7 @@ else
 				mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
 				}
 			if (mask) {
-				gameData.render.frame.Activate ("StartFrame");
+				gameData.render.frame.Activate ("StartFrame (frame)");
 				glClear (mask);
 				gameData.render.frame.Deactivate ();
 				}

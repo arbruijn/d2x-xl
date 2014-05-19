@@ -185,7 +185,7 @@ int CFileSelector::FileSelector (const char* pszTitle, const char* filespec, cha
 	int					nPatternLen = 0;
 	char*					pszFn;
 
-gameData.render.frame.Activate ("CFileSelector::FileSelector");
+gameData.render.frame.Activate ("CFileSelector::FileSelector (frame)");
 
 m_tEnter = -1;
 m_nFirstItem = -1;

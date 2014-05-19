@@ -378,7 +378,7 @@ if (gameStates.render.bShowFrameRate) {
 		y = 6;
 	fontManager.SetCurrent (SMALL_FONT);
 	SetFontColor (ORANGE_RGBA);
-	gameData.render.scene.Activate ("CGenericCockpit::DrawFrameRate");
+	gameData.render.scene.Activate ("CGenericCockpit::DrawFrameRate (scene)");
 	nIdFrameRate = DrawHUDText (&nIdFrameRate, -x * GAME_FONT->Width (), -y * (GAME_FONT->Height () + GAME_FONT->Height () / 4), szItem);
 	gameData.render.scene.Deactivate ();
 	}

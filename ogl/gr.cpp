@@ -95,7 +95,7 @@ PrintLog (-1);
 if (!i)
 	return 0;
 /***/PrintLog (1, "initializing OpenGL view port\n");
-gameData.render.screen.Activate ("GetScreenMode", NULL, true);
+gameData.render.screen.Activate ("GetScreenMode (screen)", NULL, true);
 CCanvas::Current ()->SetFont (fontManager.Current ());
 PrintLog (-1);
 /***/PrintLog (1, "initializing OpenGL screen mode\n");

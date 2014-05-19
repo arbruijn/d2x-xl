@@ -483,9 +483,9 @@ if (gameData.render.screen.Height () > 480)
 *((CViewport*) &gameData.render.scene) += CViewport (0, 0, 0, -h);
 
 if (bScene)
-	gameData.render.scene.Activate ("CStatusBar::Setup");
+	gameData.render.scene.Activate ("CStatusBar::Setup (scene)");
 else
-	gameData.render.frame.Activate ("CStatusBar::Setup");
+	gameData.render.frame.Activate ("CStatusBar::Setup (frame)");
 return true;
 }
 
@@ -498,7 +498,7 @@ gameData.render.window.Setup (&gameData.render.frame,
 										gameData.render.frame.Left (false) + ScaleX (hudAreaP->left),
 										gameData.render.frame.Top (false) + ScaleY (hudAreaP->top),
 										ScaleX (hudAreaP->right - hudAreaP->left + 1), ScaleY (hudAreaP->bot - hudAreaP->top + 1));
-gameData.render.window.Activate ("CStatusBar::SetupWindow", &gameData.render.frame);
+gameData.render.window.Activate ("CStatusBar::SetupWindow (window)", &gameData.render.frame);
 }
 
 //	-----------------------------------------------------------------------------

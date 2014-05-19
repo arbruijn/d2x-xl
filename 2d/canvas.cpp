@@ -244,7 +244,7 @@ do {
 if (Current ())
 	Current ()->Reactivate ();
 else
-	gameData.render.frame.Activate ("Deactivate");
+	gameData.render.frame.Activate ("Deactivate (frame)");
 }
 
 //	-----------------------------------------------------------------------------

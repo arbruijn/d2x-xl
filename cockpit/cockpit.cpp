@@ -558,7 +558,7 @@ gameData.render.window.Setup (&gameData.render.frame,
 										gameData.render.frame.Left (false) + ScaleX (hudAreaP->left),
 										gameData.render.frame.Top (false) + ScaleY (hudAreaP->top),
 										ScaleX (hudAreaP->right - hudAreaP->left + 1), ScaleY (hudAreaP->bot - hudAreaP->top + 1));
-gameData.render.window.Activate ("HUD Window", &gameData.render.frame);
+gameData.render.window.Activate ("HUD Window (window)", &gameData.render.frame);
 }
 
 //	-----------------------------------------------------------------------------
@@ -572,9 +572,9 @@ if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
 *((CViewport*) &gameData.render.scene) += CViewport (0, 0, 0, -gameData.render.frame.Height (false) / 3);
 if (bScene)
-	gameData.render.scene.Activate ("CCockpit::Setup");
+	gameData.render.scene.Activate ("CCockpit::Setup (scene)");
 else
-	gameData.render.frame.Activate ("CCockpit::Setup");
+	gameData.render.frame.Activate ("CCockpit::Setup (frame)");
 return true;
 }
 

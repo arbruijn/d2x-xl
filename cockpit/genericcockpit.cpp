@@ -506,7 +506,7 @@ if (!gameStates.menus.nInMenu && (gameOpts->render.cockpit.bHUD > 1) && (gameSta
 		gameData.render.window.Deactivate ();
 		h = 4 * gameData.render.screen.Height (false) / 9; 
 		gameData.render.window.Setup (&gameData.render.frame, w / 2 - CScreen::Unscaled (gameData.StereoOffset2D ()), (gameData.render.screen.Height (false) - h) / 2, w, h); 
-		gameData.render.window.Activate ("CGenericCockpit::Render (1)", &gameData.render.frame);
+		gameData.render.window.Activate ("CGenericCockpit::Render (window, 1)", &gameData.render.frame);
 		hudIcons.Render ();
 		gameData.render.window.Deactivate ();
 		}
@@ -587,7 +587,7 @@ if (!gameStates.menus.nInMenu && (gameOpts->render.cockpit.bHUD > 1) && (gameSta
 		CheckFont ();
 			}
 		if (!bStereoOffset)
-			gameData.render.scene.Activate ("CGenericCockpit::Render (2)");
+			gameData.render.scene.Activate ("CGenericCockpit::Render (scene, 2)");
 		hudIcons.Render ();
 		CheckFont ();
 		if (!bStereoOffset)

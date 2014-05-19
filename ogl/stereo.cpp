@@ -167,7 +167,7 @@ if (!gameStates.render.textures.bHaveRiftWarpShader)
 for (int i = 0; i < 2; i++) {
 	gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
 	SetupCanvasses ();
-	gameData.render.frame.Activate ("RiftWarpScene");
+	gameData.render.frame.Activate ("RiftWarpScene (frame)");
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [i + 1]);
 	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
@@ -200,7 +200,7 @@ if (IsSideBySideDevice (nDevice)) {
 	gameData.render.screen.SetScale (1.0f);
 	BindTexture (BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
 	if (!RiftWarpScene () /*&& (nEffects & 1)*/) {
-		gameData.render.screen.Activate ("FlushStereoBuffers (1)");
+		gameData.render.screen.Activate ("FlushStereoBuffers (screen, 1)");
 		shaderManager.Deploy (-1);
 		EnableClientStates (1, 0, 0, GL_TEXTURE0);
 		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
@@ -214,7 +214,7 @@ else if (nDevice == -GLASSES_SHUTTER_NVIDIA) {
 	OglDrawArrays (GL_QUADS, 0, 4);
 	}
 else { // merge left and right anaglyph buffers
-	gameData.render.screen.Activate ("FlushStereoBuffers (2)");
+	gameData.render.screen.Activate ("FlushStereoBuffers (screen, 2)");
 	if (m_data.xStereoSeparation > 0) {
 		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
 		int h = gameOpts->render.stereo.bDeghost;
