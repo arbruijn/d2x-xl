@@ -17,7 +17,7 @@ fix CCanvas::xCanvH2;
 float CCanvas::fCanvW2;
 float CCanvas::fCanvH2;
 
-CStack<CCanvas*> CCanvas::m_save;
+CStack<tCanvasBackup> CCanvas::m_save;
 float CScreen::m_fScale = 1.0f;
 
 //CScreen screen;
