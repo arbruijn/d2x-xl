@@ -572,9 +572,9 @@ if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
 *((CViewport*) &gameData.render.scene) += CViewport (0, 0, 0, -gameData.render.frame.Height (false) / 3);
 if (bScene)
-	gameData.render.scene.Activate ("Scene");
+	gameData.render.scene.Activate ("CCockpit::Setup");
 else
-	gameData.render.frame.Activate ("Frame");
+	gameData.render.frame.Activate ("CCockpit::Setup");
 return true;
 }
 
@@ -596,7 +596,7 @@ if (bRebuild && !m_info.bRebuild)
 if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
 *Canvas () += CViewport (0, 0, 0, -gameData.render.frame.Height (false) / 3);
-Canvas ()->Activate ("HUD");
+Canvas ()->Activate ("CRearView::Setup");
 return true;
 }
 

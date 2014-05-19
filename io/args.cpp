@@ -154,7 +154,7 @@ void CConfigManager::Load (int argC, char **argV)
 {
 for (int i = 0; i < argC; i++) {
 	m_properties.Push (StrDup (argV [i]));
-	if (*m_properties [i]== '-')
+	if (*m_properties [i] == '-')
 		strlwr (m_properties [i]);  // Convert all args to lowercase
 	}
 }

@@ -196,7 +196,7 @@ void CBackground::Activate (void)
 {
 int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 CViewport::SetLeft (CViewport::Left () - CScreen::Unscaled (gameData.StereoOffset2D ()));
-CCanvas::Activate ("Background", &gameData.render.frame);
+CCanvas::Activate ("CBackground::Activate", &gameData.render.frame);
 gameData.SetStereoOffsetType (nOffsetSave);
 }
 
@@ -216,7 +216,7 @@ void CBackground::Draw (bool bUpdate)
 {
 if (m_nType == BG_WALLPAPER) {
 	if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameStates.app.bNostalgia))) {
-		gameData.render.frame.Activate ("Frame");
+		gameData.render.frame.Activate ("CBackGround::Draw");
 		m_bitmap->RenderStretched ();
 		PrintVersionInfo ();
 		gameData.render.frame.Deactivate ();
@@ -252,7 +252,7 @@ if (!backgroundManager.Shadow ()) {
 	canvas.Setup (this);
 	int d = LHX (10);
 	*((CViewport*) &canvas) += CViewport (-d, -d, 2 * d, 2 * d);
-	canvas.Activate ("Background");
+	canvas.Activate ("CBackground::DrawArea");
 	m_bitmap->RenderFixed (NULL, 0, 0, Width (), Height ()); 
 	canvas.Deactivate ();
 	}
@@ -382,7 +382,7 @@ void CBackgroundManager::DrawBox (int left, int top, int right, int bottom, int 
 	CCanvas	canvas;
 
 canvas.Setup (&gameData.render.frame, left - gameData.StereoOffset2D (), top, left + right - 1, top + bottom - 1, true);
-canvas.Activate ("Background", &gameData.render.frame);
+canvas.Activate ("CBackgroundManager::DrawBox", &gameData.render.frame);
 ::DrawBox (canvas);
 canvas.Deactivate ();
 }

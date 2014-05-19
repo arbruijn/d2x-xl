@@ -183,7 +183,7 @@ if (nEffects & 5) {
 			SetDrawBuffer (GL_BACK, 0);
 		ogl.BindTexture (DrawBuffer ((nEffects & 2) ? 2 : 0)->ColorBuffer ());
 		gameData.render.screen.SetScale (1.0f);
-		gameData.render.screen.Activate ("Screen");
+		gameData.render.screen.Activate ("COGL::FlushEffects (1)");
 		postProcessManager.Setup ();
 		postProcessManager.Render ();
 		if (nEffects & 4) // shutter glasses
@@ -196,7 +196,7 @@ if (nEffects & 5) {
 		for (int i = 0; i < 2; i++) {
 			gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
 			SetupCanvasses ();
-			gameData.render.frame.Activate ("Frame");
+			gameData.render.frame.Activate ("COGL::FlushEffects (2)");
 			ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 			OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [i + 1]);
 			OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
@@ -247,7 +247,7 @@ if (HaveDrawBuffer ()) {
 		}
 	else {
 		SetDrawBuffer (GL_BACK, 0);
-		gameData.render.screen.Activate ("Screen");
+		gameData.render.screen.Activate ("COGL::FlushDrawBuffer");
 		OglDrawArrays (GL_QUADS, 0, 4);
 		gameData.render.screen.Deactivate ();
 		}
