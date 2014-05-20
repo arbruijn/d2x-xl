@@ -181,7 +181,6 @@ if (!IsMultiGame || IsCoopGame) {
 			x = x0 - bmW - HUD_LHX (2);
 			bmObjTally [i].RenderScaled (cockpit->X (x), y, bmW, bmH, I2X (1), 0, NULL);
 			sprintf (szInfo, "%d", objCounts [i]);
-			fontManager.SetScale (cockpit->FontScale ());
 			fontManager.Current ()->StringSize (szInfo, w, h, aw);
 			x -= w + HUD_LHY (2);
 			nIdTally [i] = cockpit->DrawHUDText (nIdTally + i, x, y + (bmH - h) / 2, szInfo);
@@ -723,6 +722,8 @@ if (gameStates.render.bRearView)
 	return;
 if ((gameOpts->render.cockpit.bHUD) || cockpit->ShowAlways ()) {
 	m_nLineSpacing = cockpit->LineSpacing ();
+	cockpit->SetFontScale (1.0f);
+	fontManager.SetScale (1.0f);
 	if (!(gameStates.render.bRearView || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0)))
 		DrawTally ();
 	if (!gameStates.app.bDemoData && EGI_FLAG (nWeaponIcons, 1, 1, 0)) {

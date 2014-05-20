@@ -130,7 +130,7 @@ int CListBox::ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultI
 {
 	int	i;
 	int	bKeyRepeat = gameStates.input.keys.bRepeat;
-	int	mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;	//, bDblClick;
+	int	x1, x2, y1, y2, nMouseState, nOldMouseState;	//, bDblClick;
 	int	xClose, yClose, bWheelUp, bWheelDown;
 	char	szPattern [40];
 	int	nPatternLen = 0;
@@ -334,7 +334,8 @@ while (!m_bDone) {
 		if (nMouseState) {
 			int w, h, aw;
 
-			MouseGetPos (&mx, &my);
+			GetMousePos ();
+			m_yMouse -= m_nOffset + m_nTitleHeight;
 			for (i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
 				if (i >= int (items.ToS ()))
 					break;
@@ -343,7 +344,7 @@ while (!m_bDone) {
 				x2 = m_nWidth;
 				y1 = (i - m_nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2);
 				y2 = y1 + h + 1;
-				if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
+				if (((m_xMouse > x1) && (m_xMouse < x2)) && ((m_yMouse > y1) && (m_yMouse < y2))) {
 					//if (i == m_nChoice) {
 					//	break;
 					//}
@@ -357,12 +358,12 @@ while (!m_bDone) {
 
 		//check for close box clicked
 		if (!nMouseState && nOldMouseState) {
-			MouseGetPos (&mx, &my);
+			MouseGetPos (&m_xMouse, &m_yMouse);
 			x1 = xClose + MENU_CLOSE_X + 2;
 			x2 = x1 + MENU_CLOSE_SIZE - 2;
 			y1 = yClose + MENU_CLOSE_Y + 2;
 			y2 = y1 + MENU_CLOSE_SIZE - 2;
-			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
+			if (((m_xMouse > x1) && (m_xMouse < x2)) && ((m_yMouse > y1) && (m_yMouse < y2))) {
 				m_nChoice = -1;
 				m_bDone = 1;
 			}

@@ -211,7 +211,7 @@ transformation.Pop ();
 if (ogl.StereoDevice () < 0)
 	ogl.ChooseDrawBuffer ();
 //gameData.render.frame.SetViewport ();
-gameData.render.window.Activate (gameData.render.window.Parent ()->Id (), gameData.render.window.Parent ());
+gameData.render.window.Activate ("GenericCockpit::RenderWindow", gameData.render.window.Parent ());
 
 //	HACK!If guided missile, wake up robots as necessary.
 if (viewerP->info.nType == OBJ_WEAPON) 
@@ -475,7 +475,7 @@ fontManager.SetCurrent (GAME_FONT);
 DrawReticle (ogl.StereoDevice () < 0);
 //gameData.render.scene.Deactivate ();
 
-if (!gameStates.menus.nInMenu && (gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (gameStates.zoom.nMinFactor))) {
+if ((gameOpts->render.cockpit.bHUD > 1) && (gameStates.zoom.nFactor == float (gameStates.zoom.nMinFactor))) {
 	if (ogl.IsOculusRift () && !transformation.HaveHeadAngles ()) {
 		nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 		int w, h;
