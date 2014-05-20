@@ -1576,7 +1576,7 @@ extern int bLog;
 void CTransparencyRenderer::Render (int nWindow)
 {
 #if RENDER_TRANSPARENCY
-	int				bStencil;
+	int				bStencil, bGlow;
 	bool				bCleanup = !LAZY_RESET || (ogl.StereoSeparation () >= 0) || nWindow;
 
 if (!AllocBuffers ())
@@ -1593,6 +1593,9 @@ ogl.ChooseDrawBuffer ();
 
 shaderManager.Deploy (-1);
 bStencil = ogl.StencilOff ();
+bGlow = gameOpts->render.effects.bGlow;
+if (nWindow)
+	gameOpts->render.effects.bGlow = 0;
 ResetBitmaps ();
 m_data.bReady = 0;
 m_data.bTextured = -1;
@@ -1699,6 +1702,7 @@ else {
 	for (int i = 0; i < gameStates.app.nThreads; i++)
 		m_data.buffers [i].nItems [0] = m_data.buffers [i].nItems [1];
 	}
+gameOpts->render.effects.bGlow = bGlow;
 
 PROF_END(ptTranspPolys)
 #endif
