@@ -132,7 +132,10 @@ typedef struct tOpenFont {
 
 typedef struct tFontBackup {
 	CFont*	m_font;
+	float		m_scale;
+#if DBG
 	char		m_szId [100];
+#endif
 } tFontBackup;
 
 class CFontManager {
@@ -160,12 +163,23 @@ class CFontManager {
 		void SetColorRGB (CRGBAColor *fgColor, CRGBAColor *bgColor);
 		void SetColorRGBi (uint fgColor, int bSetFG, uint bgColor, int bSetBG);
 		void Push (char* pszId) { 
-			if (m_save.Grow ()) {
+			if (m_current && m_save.Grow ()) {
 				m_save.Top ()->m_font = m_current;
-				strncpy (m_save.Top ()->m_szId, pszId, sizeof (m_save.Top ()->m_szId));
+				m_save.Top ()->m_scale = m_scale;
+#if DBG
+				if (pszId)
+					strncpy (m_save.Top ()->m_szId, pszId, sizeof (m_save.Top ()->m_szId));
+				else
+					*m_save.Top ()->m_szId = '\0';
+#endif
 				}
 			}
-		void Pop (void) { m_current = m_save.Pop ().m_font; }
+		void Pop (void) { 
+			if (ToS ()) {
+				m_current = m_save.Top ()->m_font; 
+				m_scale = m_save.Pop ().m_scale; 
+				}
+			}
 		inline int ToS (void) { return m_save.ToS (); }
 		inline void Reset (void) { 
 			m_save.Truncate (1); 

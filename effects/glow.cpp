@@ -483,7 +483,7 @@ if (nType != m_nType) {
 if ((m_bReplace == bReplace) && (m_nStrength == nStrength) && (m_brightness == brightness) && ((nType == GLOW_LIGHTNING) == (m_nType == GLOW_LIGHTNING))) {
 	gameOpts->render.effects.bGlow *= ogl.SelectGlowBuffer ();
 	gameData.render.window.Setup (&gameData.render.scene);
-	gameData.render.window.CViewport::SetLeft (0);
+	//gameData.render.window.CViewport::SetLeft (0);
 	gameData.render.window.SetViewport ();
 	}
 else {
@@ -521,9 +521,14 @@ void CGlowRenderer::Render (int const source, int const direction, float const r
 {
 #if USE_VIEWPORT //DBG
 
-float r = radius * 4.0f; // scale with a bit more than the max. offset from the blur shader
-float w = (float) gameData.render.scene.Width ();
-float h = (float) gameData.render.scene.Height ();
+	bool bUseRadius = UseViewport () && !ogl.IsSideBySideDevice ();
+
+float r = bUseRadius ? 0.0f : radius * 4.0f; // scale with a bit more than the max. offset from the blur shader
+// define the destination area to be rendered to
+float w = (float) gameData.render.frame.Width ();
+float h = (float) gameData.render.frame.Height ();
+if (ogl.IsSideBySideDevice ())
+	w *= 2;
 float verts [4][2] = {
 	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
@@ -534,14 +539,9 @@ float verts [4][2] = {
 	{ScreenCoord ((float) m_screenMax.x + r, (float) w) * scale,
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)}
 	};
-if (ogl.IsSideBySideDevice ()) {
-	w *= 2;
-	r = 0.0f;
-	}
-else
+if (bUseRadius) 
 	r += 4.0f;
-w = (float) gameData.render.frame.Width ();
-h = (float) gameData.render.frame.Height ();
+// define the source area (part of the glow buffer, which serves as a texture here) to be rendered
 float texCoord [4][2] = {
 	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
 	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
@@ -564,13 +564,13 @@ float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 #if 1 //!DBG
 if (direction >= 0) {
 	LoadShader (direction, radius);
-	gameData.render.window.SetViewport ();
+//	gameData.render.window.SetViewport ();
 	}
 else
 #endif 
 	{
 	shaderManager.Deploy (-1);
-	gameData.render.scene.SetViewport ();
+//	gameData.render.scene.SetViewport ();
 	}
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer (source < 0));
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
@@ -640,6 +640,7 @@ if (!Visible ())
 else
 #endif
 	{
+	gameData.render.frame.Activate ("CGlowRenderer::End");
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();//clear matrix
@@ -714,6 +715,7 @@ else
 	ogl.SetAlphaTest (true);
 	ogl.SetDepthMode (nDepthMode);
 	ogl.SetStencilTest (false);
+	gameData.render.frame.Deactivate ();
 	}
 return Reset (gameOpts->render.effects.bGlow);
 }

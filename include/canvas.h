@@ -91,7 +91,9 @@ typedef struct tCanvas {
 
 typedef struct CCanvasBackup {
 	CCanvas*	m_canvas;
+#if DBG
 	char		m_szId [100];
+#endif
 } tCanvasBackup;
 
 class CCanvas : public CViewport, public CBitmap {
@@ -144,7 +146,12 @@ class CCanvas : public CViewport, public CBitmap {
 				m_save.Create (10);
 			if (m_save.Grow ()) {
 				m_save.Top ()->m_canvas = canvP;
-				strncpy (m_save.Top ()->m_szId, canvP->Id (), sizeof (m_save.Top ()->m_szId));
+#if DBG
+				if (canvP->Id ())
+					strncpy (m_save.Top ()->m_szId, canvP->Id (), sizeof (m_save.Top ()->m_szId));
+				else
+					*m_save.Top ()->m_szId = '\0';
+#endif
 				}
 			fontManager.Push (canvP->Id ());
 			}
