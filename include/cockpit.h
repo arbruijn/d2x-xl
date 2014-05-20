@@ -157,7 +157,7 @@ class CGenericCockpit {
 		inline int LHX (int x) { return x << gameStates.render.fonts.bHires; }
 		inline int LHY (int y) { return gameStates.render.fonts.bHires ? 24 * y / 10 : y; }
 		inline float FontScale (void) { return m_info.fontScale; }
-		inline void SetFontScale (float fontScale) { m_info.fontScale = fontScale; }
+		inline void SetFontScale (float fontScale) { m_info.fontScale = (fontScale < 1.0f) ? 1.0f : fontScale; }
 		inline uint FontColor (void) { return m_info.fontColor; }
 		inline void SetFontColor (uint fontColor) { m_info.fontColor = fontColor; }
 		inline CCanvas* Canvas (void) { return CCanvas::Current (); }
