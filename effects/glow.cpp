@@ -436,6 +436,7 @@ CFloatVector3 v;
 v.Assign (pos);
 return SetViewport (nType, v, radius, radius);
 #endif
+return true;
 }
 
 //------------------------------------------------------------------------------
