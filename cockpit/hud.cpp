@@ -294,7 +294,7 @@ if (!ShowTextGauges ()) {
 	int nLineSpacing = 5 * GAME_FONT->Height () / 4;
 	int h = int (9 * m_info.yGaugeScale), 
 		 w = int (9 * m_info.xGaugeScale), 
-		 y = -(int) (((IsMultiGame ? 6 : 2) * nLineSpacing - 1) * m_info.yGaugeScale);
+		 y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * nLineSpacing - 1) * m_info.yGaugeScale);
 	if (hudIcons.LoadGaugeIcons () > 0)
 		hudIcons.GaugeIcon (0).RenderScaled (6, y, w, h);
 	int x = 6 + int (10 * m_info.xGaugeScale);
@@ -387,7 +387,7 @@ if (!ShowTextGauges ()) {
 		}
 	int h = int (9 * m_info.yGaugeScale), 
 		 w = int (9 * m_info.xGaugeScale), 
-		 y = - (int) (((IsMultiGame ? 5 : 1) * nLineSpacing - 1) * m_info.yGaugeScale);
+		 y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * nLineSpacing - 1) * m_info.yGaugeScale);
 	if (hudIcons.LoadGaugeIcons () > 0)
 		hudIcons.GaugeIcon (1).RenderScaled (6, y, w, h);
 	CCanvas::Current ()->SetColorRGB (255, 224, 0, 255);
@@ -453,7 +453,7 @@ int nLineSpacing = 5 * GAME_FONT->Height () / 4;
 if (!ShowTextGauges ()) {
 	int h = int (9 * m_info.yGaugeScale), 
 		 w = int (9 * m_info.xGaugeScale), 
-		 y = -(int) (((IsMultiGame ? 8 : 3) * nLineSpacing - 1) * m_info.yGaugeScale);
+		 y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 8 : 3) * nLineSpacing - 1) * m_info.yGaugeScale);
 	if (hudIcons.LoadGaugeIcons () > 0)
 		hudIcons.GaugeIcon (2).RenderScaled (6, y, w = int (9 * m_info.xGaugeScale), h = int (9 * m_info.yGaugeScale));
 	CCanvas::Current ()->SetColorRGB (255, 0, 0, 255);

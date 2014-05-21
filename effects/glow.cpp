@@ -198,9 +198,10 @@ int CGlowRenderer::Activate (void)
 {
 if (!ogl.SelectGlowBuffer ())
 	return 0;
-gameData.render.window.Setup (&gameData.render.scene);
-gameData.render.window.CViewport::SetLeft (0);
-gameData.render.window.SetViewport ();
+CCanvas glowArea;
+glowArea.Setup (&gameData.render.scene);
+glowArea.CViewport::SetLeft (0);
+glowArea.SetViewport ();
 if (m_nType == BLUR_SHADOW)
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 else
@@ -484,9 +485,7 @@ if (nType != m_nType) {
 #else
 if ((m_bReplace == bReplace) && (m_nStrength == nStrength) && (m_brightness == brightness) && ((nType == GLOW_LIGHTNING) == (m_nType == GLOW_LIGHTNING))) {
 	gameOpts->render.effects.bGlow *= ogl.SelectGlowBuffer ();
-	gameData.render.window.Setup (&gameData.render.scene);
-	//gameData.render.window.CViewport::SetLeft (0);
-	gameData.render.window.SetViewport ();
+	gameData.render.scene.SetViewport ();
 	}
 else {
 #endif
