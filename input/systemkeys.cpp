@@ -344,7 +344,7 @@ if (gameOpts->demo.bRevertFormat && (gameData.demo.nVersion > DEMO_VERSION))
 	return;
 switch (key) {
 	case KEY_F3:
-		 if (!(GuidedInMainView () || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0)))
+		 if (!(GuidedInMainView () || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0) || gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead))
 			cockpit->Toggle ();
 		 break;
 
@@ -500,7 +500,7 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			break;
 
 		case KEY_F3:
-			if (!GuidedInMainView ()) {
+			if (!(GuidedInMainView () || gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0) || gameStates.app.bEndLevelSequence)) {
 				SetFreeCam (0);
 				SetChaseCam (0);
 				cockpit->Toggle ();
