@@ -105,7 +105,7 @@ switch (info.movementType) {
 		break;
 
 	default:
-		Int3();
+		PrintLog (0, "Object %d (type=%d, id=%d) has invalid movement type %d\n", OBJ_IDX (this), info.nType, info.nId, info.movementType);
 	}
 
 int i;
@@ -178,7 +178,8 @@ switch (info.controlType) {
 	case CT_FLYTHROUGH:
 	case CT_REPAIRCEN:
 		default:
-		Int3();
+		PrintLog (0, "Object %d (type=%d, id=%d) has invalid control type %d\n", OBJ_IDX (this), info.nType, info.nId, info.controlType);
+
 	}
 
 switch (info.renderType) {
@@ -279,7 +280,7 @@ switch (info.renderType) {
 		break;
 
 	default:
-		Int3();
+		PrintLog (0, "Object %d (type=%d, id=%d) has invalid render type %d\n", OBJ_IDX (this), info.nType, info.nId, info.renderType);
 	}
 ResetDamage ();
 SetTarget (NULL);
