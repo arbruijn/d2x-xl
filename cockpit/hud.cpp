@@ -165,7 +165,7 @@ if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
 		y = CCanvas::Current ()->Height () - LineSpacing ();
 		if ((hudIcons.Visible () && (extraGameInfo [0].nWeaponIcons == 2)) ||
 			(hudIcons.Inventory () && (extraGameInfo [0].nWeaponIcons & 1)))
-			y -= LHY (20);
+			y -= LHY (30);
 		m_info.bAdjustCoords = true;
 		}
 	if ((m_info.weaponBoxUser [0] != WBU_WEAPON) || (m_info.weaponBoxUser [1] != WBU_WEAPON)) {
