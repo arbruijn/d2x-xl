@@ -647,9 +647,6 @@ return (ogl.IsOculusRift () /*&& gameStates.app.bGameRunning*/) ? 0.5f : 1.0f;
 
 void CBriefing::RenderElement (int nElement)
 {
-fontManager.SetCurrent (GAME_FONT);
-fontManager.SetScale (fontManager.Scale () * GetScale ());
-
 CFrameController fc;
 for (fc.Begin (); fc.Continue (); fc.End ()) {
 	CCanvas* baseCanv;
@@ -661,6 +658,9 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 		baseCanv = &gameData.render.window;
 		}
 
+	baseCanv->Activate ("CBriefing::RenderElement");
+	fontManager.SetCurrent (GAME_FONT);
+	fontManager.SetScale (fontManager.Scale () * GetScale ());
 	gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 	switch (nElement) {
 		case 0:
@@ -753,6 +753,8 @@ m_message [0] = char (m_info.ch);
 m_message [1] = 0;
 
 int	w, h, aw;
+fontManager.SetCurrent (GAME_FONT);
+fontManager.SetScale (fontManager.Scale () * GetScale ());
 fontManager.Current ()->StringSize (m_message, w, h, aw);
 
 static fix tText = 0;

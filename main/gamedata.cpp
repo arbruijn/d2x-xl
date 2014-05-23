@@ -1654,7 +1654,7 @@ if (nEffects && effects.Buffer ()) {
 			OBJECTS [nObject].mType = bo.mType;
 			OBJECTS [nObject].cType = bo.cType;
 			OBJECTS [nObject].rType = bo.rType;
-			if (OBJECTS [nObject].info.nId == SMOKE_ID)
+			if (OBJECTS [nObject].info.nId == PARTICLE_ID)
 				OBJECTS [nObject].SetupSmoke ();
 			j++;
 			}

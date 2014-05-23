@@ -420,7 +420,7 @@ for (int i = 0; i < m_nLinks; i++) {
 		CObject*	objP = OBJECTS + m_segments [i];
 		if (!objP || (objP->info.nType != OBJ_EFFECT))
 			return 0;
-		if (objP->info.nId == SMOKE_ID)
+		if (objP->info.nId == PARTICLE_ID)
 			objP->rType.particleInfo.bEnabled = 1;
 		else if (objP->info.nId == LIGHTNING_ID) {
 			objP->rType.lightningInfo.bEnabled = 1;
@@ -453,7 +453,7 @@ for (int i = 0; i < m_nLinks; i++) {
 		CObject*	objP = OBJECTS + m_segments [i];
 		if (!objP || (objP->info.nType != OBJ_EFFECT))
 			return 0;
-		if (objP->info.nId == SMOKE_ID)
+		if (objP->info.nId == PARTICLE_ID)
 			objP->rType.particleInfo.bEnabled = 0;
 		else if (objP->info.nId == LIGHTNING_ID) {
 			objP->rType.lightningInfo.bEnabled = 0;

@@ -674,7 +674,7 @@ return m_scale;
 void CFontManager::SetScale (float fScale) 
 { 
 m_scale = fScale * (gameStates.app.bDemoData + 1); 
-if (m_scale < 1.0f)
+if (m_scale < 0.01f)
 	m_scale = 1.0f;
 }
 

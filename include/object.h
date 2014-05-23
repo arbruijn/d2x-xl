@@ -109,7 +109,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RT_SOUND			13
 #define RT_SHOCKWAVE		14  // concentric shockwave effect
 
-#define SMOKE_ID			0
+#define PARTICLE_ID		0
 #define LIGHTNING_ID		1
 #define SOUND_ID			2
 #define WAYPOINT_ID		3

@@ -861,7 +861,7 @@ if (t == OBJ_PLAYER)
 	DoPlayerSmoke (objP, -1);
 else if (t == OBJ_ROBOT)
 	DoRobotSmoke (objP);
-else if ((t == OBJ_EFFECT) && (nId == SMOKE_ID))
+else if ((t == OBJ_EFFECT) && (nId == PARTICLE_ID))
 	DoStaticParticles (objP);
 else if (t == OBJ_REACTOR)
 	DoReactorSmoke (objP);
@@ -936,7 +936,7 @@ void StaticParticlesFrame (void)
 if (!SHOW_SMOKE)
 	return;
 FORALL_EFFECT_OBJS (objP, i) {
-	if (objP->info.nId == SMOKE_ID)
+	if (objP->info.nId == PARTICLE_ID)
 		DoStaticParticles (objP);
 	}
 }

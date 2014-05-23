@@ -49,7 +49,7 @@ void ConvertSmokeObject (CObject *objP)
 	CTrigger		*trigP;
 
 objP->SetType (OBJ_EFFECT);
-objP->info.nId = SMOKE_ID;
+objP->info.nId = PARTICLE_ID;
 objP->info.renderType = RT_SMOKE;
 trigP = FindObjTrigger (objP->Index (), TT_SMOKE_LIFE, -1);
 #if 1
@@ -94,7 +94,7 @@ FORALL_STATIC_OBJS (objP, i)
 
 void CObject::SetupSmoke (void)
 {
-if ((info.nType != OBJ_EFFECT) || (info.nId != SMOKE_ID))
+if ((info.nType != OBJ_EFFECT) || (info.nId != PARTICLE_ID))
 	return;
 
 	tParticleInfo*	psi = &rType.particleInfo;
@@ -150,7 +150,7 @@ void SetupEffects (void)
 
 PrintLog (1, "setting up effects\n");
 FORALL_EFFECT_OBJS (objP, i) 
-	if (objP->info.nId == SMOKE_ID)
+	if (objP->info.nId == PARTICLE_ID)
 		objP->SetupSmoke ();
 PrintLog (-1);
 }
