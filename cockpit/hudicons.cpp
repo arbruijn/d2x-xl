@@ -720,7 +720,7 @@ if (gameStates.app.bEndLevelSequence)
 	return;
 if (gameStates.render.bRearView)
 	return;
-if ((gameOpts->render.cockpit.bHUD) || cockpit->ShowAlways ()) {
+if (gameOpts->render.cockpit.bHUD || cockpit->ShowAlways ()) {
 	m_nLineSpacing = cockpit->LineSpacing ();
 	cockpit->SetFontScale (1.0f);
 	fontManager.SetScale (1.0f);
