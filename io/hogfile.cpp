@@ -251,7 +251,7 @@ int CHogFile::ReloadMission (const char * name)
 if (name && *name) {
 	strncpy (m_files.MsnHogFiles.szFolder, name, sizeof (m_files.MsnHogFiles.szFolder));
 	char filename [FILENAME_LEN], extension [FILENAME_LEN];
-	SplitPath (m_files.MsnHogFiles.szName, NULL, filename, extension);
+	CFile::SplitPath (m_files.MsnHogFiles.szName, NULL, filename, extension);
 	sprintf (m_files.MsnHogFiles.szName, "%s%s", filename, extension);
 	}
 return Reload (&m_files.MsnHogFiles);
