@@ -143,7 +143,9 @@ int CHogFile::Setup (const char *pszFile, const char *folder, tHogFile *hogFiles
 	char	fn [FILENAME_LEN];
 
 if (*folder) {
-	sprintf (fn, "%s/%s", folder, pszFile);
+	char filename [FILENAME_LEN], extension [FILENAME_LEN];
+	CFile::SplitPath (pszFile, NULL, filename, extension);
+	sprintf (fn, "%s/%s%s", folder, filename, extension);
 	pszFile = fn;
 	}
 *nFiles = 0;
