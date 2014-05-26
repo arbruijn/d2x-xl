@@ -63,7 +63,7 @@ class CHogFile {
 		int UseD2X (const char *name);
 		int UseExtra (const char *name);
 		int UseMission (const char *name);
-		int ReloadMission (void);
+		int ReloadMission (const char * name = NULL);
 		int UseD1 (const char *name);
 		void UseAltDir (const char *path);
 		FILE* Find (const char *name, int *length, int bUseD1Hog);

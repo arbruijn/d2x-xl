@@ -134,7 +134,9 @@ return NULL;
 }
 
 // ----------------------------------------------------------------------------
-//returns 1 if file loaded with no errors
+// fills the data structure pointed to by hogfiles with the level file names
+// found in the mission named *pszFile in folder *folder.
+// returns 1 if file loaded with no errors
 int CHogFile::Setup (const char *pszFile, const char *folder, tHogFile *hogFiles, int *nFiles) 
 {
 	FILE	*fp;
@@ -242,8 +244,10 @@ return 1;
 
 // ----------------------------------------------------------------------------
 
-int CHogFile::ReloadMission (void) 
+int CHogFile::ReloadMission (const char * name) 
 {
+if (name && *name)
+	strncpy (m_files.MsnHogFiles.szFolder, name, sizeof (m_files.MsnHogFiles.szFolder));
 return Reload (&m_files.MsnHogFiles);
 }
 

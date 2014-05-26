@@ -469,7 +469,7 @@ else if (networkData.nStatus == NETSTAT_AUTODL) {
 		networkData.nStatus = NETSTAT_MENU;
 	else {
 		networkData.nStatus = NETSTAT_PLAYING;
-		hogFileManager.ReloadMission (); // reload hog file's file info 
+		hogFileManager.ReloadMission (gameFolders.szMissionDownloadDir); // reload hog file's file info 
 		return 1;
 		}
 	}
