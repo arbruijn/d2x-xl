@@ -139,7 +139,7 @@ return (nSound < 0) ? -1 : CAudio::UnXlatSound (nSound);
 // to reflect that on shorter distances sound may be able to travel along a more direct path than on longer distances
 // This method leads to a uniform, plausible effect audio experience during gameplay
 
-int CAudio::Distance (CFixVector& vListenerPos, short nListenerSeg, CFixVector& vSoundPos, short nSoundSeg, fix maxDistance, int nDecay, CFixVector& vecToSound)
+int CAudio::Distance (CFixVector& vListenerPos, short nListenerSeg, CFixVector& vSoundPos, short nSoundSeg, fix maxDistance, int nDecay, CFixVector& vecToSound, int nThread)
 {
 #if 0 //DBG
 	static float fCorrFactor = 1.0f;
@@ -160,7 +160,7 @@ if (!HaveRouter ()) {
 	int nSearchSegs = X2I (maxDistance / 10);
 	if (nSearchSegs < 3)
 		nSearchSegs = 3;
-	return uniDacsRouter [m_nThread].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
+	return uniDacsRouter [nThread].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
 	}
 
 if (m_nListenerSeg != nListenerSeg) 
@@ -222,14 +222,15 @@ return (distance < maxDistance) ? distance : -1;
 
 void CAudio::GetVolPan (CFixMatrix& mListener, CFixVector& vListenerPos, short nListenerSeg,
 								CFixVector& vSoundPos, short nSoundSeg,
-								fix maxVolume, int *nVolume, int *pan, fix maxDistance, int nDecay)
+								fix maxVolume, int *nVolume, int *pan, fix maxDistance, int nDecay,
+								int nThread)
 {
 
 *nVolume = 0;
 *pan = 0;
 
 CFixVector vecToSound;
-fix distance = Distance (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, maxDistance, nDecay, vecToSound);
+fix distance = Distance (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, maxDistance, nDecay, vecToSound, nThread);
 if (distance < 0)
 	return;
 
@@ -395,7 +396,7 @@ return true;
 
 int CAudio::CreateObjectSound (
 	short nOrgSound, int nSoundClass, short nObject, int bForever, fix maxVolume, fix maxDistance,
-	int nLoopStart, int nLoopEnd, const char* pszSound, int nDecay, ubyte bCustom)
+	int nLoopStart, int nLoopEnd, const char* pszSound, int nDecay, ubyte bCustom, int nThread)
 {
 	CObject*			objP;
 	CSoundObject*	soundObjP;

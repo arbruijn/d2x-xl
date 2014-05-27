@@ -116,13 +116,11 @@ m_nObject = -1;
 void CLightningEmitter::CreateSound (int bSound)
 {
 if ((m_bSound = bSound)) {
-	audio.SetThreadId (m_nThread);
-	audio.CreateObjectSound (-1, SOUNDCLASS_GENERIC, m_nObject, 1, I2X (1) / 2, I2X (256), -1, -1, AddonSoundName (SND_ADDON_LIGHTNING));
+	audio.CreateObjectSound (-1, SOUNDCLASS_GENERIC, m_nObject, 1, I2X (1) / 2, I2X (256), -1, -1, AddonSoundName (SND_ADDON_LIGHTNING), 0, 0, nThread);
 	if (m_bForcefield) {
 		if (0 <= (m_nSound = audio.GetSoundByName ("ff_amb_1")))
-			audio.CreateObjectSound (m_nSound, SOUNDCLASS_GENERIC, m_nObject, 1);
+			audio.CreateObjectSound (m_nSound, SOUNDCLASS_GENERIC, m_nObject, 1, I2X (1), I2X (256), -1, -1, NULL, 0, 0, nThread);
 		}
-	audio.SetThreadId (0);
 	}
 else
 	m_nSound = -1;
@@ -187,7 +185,6 @@ if (!m_bValid)
 	return 0;
 
 if (gameStates.app.nSDLTicks [0] - m_tUpdate >= 25) {
-	m_nThread = nThread;
 	if (m_nKey [0] || m_nKey [1])
 		m_bDestroy = 1;
 	else {
@@ -196,7 +193,7 @@ if (gameStates.app.nSDLTicks [0] - m_tUpdate >= 25) {
 		if (!(m_nBolts = SetLife ()))
 			lightningManager.Destroy (this, NULL);
 		else if (m_bValid && (m_nObject >= 0)) {
-			UpdateSound ();
+			UpdateSound (nThread);
 			MoveForObject ();
 			}
 		}
@@ -214,7 +211,7 @@ if (m_bSound)
 
 //------------------------------------------------------------------------------
 
-void CLightningEmitter::UpdateSound (void)
+void CLightningEmitter::UpdateSound (int nThread)
 {
 if (m_bValid < 1) {
 	return;
@@ -228,7 +225,7 @@ if (!m_bSound)
 for (i = m_nBolts, lightningP = m_lightning.Buffer (); i > 0; i--, lightningP++)
 	if (lightningP->m_nNodes > 0) {
 		if (m_bSound < 0)
-			CreateSound (1);
+			CreateSound (1, nThread);
 		return;
 		}
 if (m_bSound < 0)

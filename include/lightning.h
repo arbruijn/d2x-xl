@@ -169,9 +169,6 @@ typedef struct tLightningSystem {
 } tLightningSystem;
 
 class CLightningEmitter : public tLightningSystem {
-	private:
-		int	m_nThread;
-
 	public:
 		CLightningEmitter () : m_nThread (0)
 			{ m_bValid = 0, m_lightning = NULL, m_nBolts = 0, m_nObject = -1; };

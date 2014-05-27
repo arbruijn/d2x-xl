@@ -279,7 +279,6 @@ class CAudio {
 		short							m_nListenerSeg;
 		bool							m_bHaveRouter;
 		bool							m_bSDLInitialized;
-		int							m_nThread;
 
 	private:
 		int AudioError (void);
@@ -292,7 +291,6 @@ class CAudio {
 #ifndef _WIN32
 		int InitThread (void);
 #endif
-		void SetThreadId (int nThread = 0) { m_nThread = nThread; }
 		void Destroy (void);
 		void Prepare (void);
 		int Setup (float fSlowDown, int nFormat = -1);
@@ -336,7 +334,7 @@ class CAudio {
 			}
 
 		int CreateObjectSound (short nSound, int nSoundClass, short nObject, int bForever = 0, fix maxVolume = I2X (1), fix maxDistance = I2X (256),
-									  int nLoopStart = -1, int nLoopEnd = -1, const char *pszSound = NULL, int nDecay = 0, ubyte bCustom = 0);
+									  int nLoopStart = -1, int nLoopEnd = -1, const char *pszSound = NULL, int nDecay = 0, ubyte bCustom = 0, int nThread = 0);
 		int ChangeObjectSound (int nObject, fix nVolume);
 		int FindObjectSound (int nObject, short nSound);
 		int DestroyObjectSound (int nObject, short nSound = -1);
@@ -356,7 +354,8 @@ class CAudio {
 
 		void GetVolPan (CFixMatrix& mListener, CFixVector& vListenerPos, short nListenerSeg,
 							 CFixVector& vSoundPos, short nSoundSeg,
-							 fix maxVolume, int *volume, int *pan, fix maxDistance, int nDecay);
+							 fix maxVolume, int *volume, int *pan, fix maxDistance, int nDecay, 
+							 int nThread = 0);
 
 		void InitSounds (void);
 		void SyncSounds (void);
@@ -402,7 +401,7 @@ class CAudio {
 		static void _CDECL_ MixCallback (void* userdata, Uint8* stream, int len);
 
 		inline bool HaveRouter (void) { return m_bHaveRouter; }
-		int Distance (CFixVector& vListenerPos, short nListenerSeg, CFixVector& vSoundPos, short nSoundSeg, fix maxDistance, int nDecay, CFixVector& vecToSound);
+		int Distance (CFixVector& vListenerPos, short nListenerSeg, CFixVector& vSoundPos, short nSoundSeg, fix maxDistance, int nDecay, CFixVector& vecToSound, int nThread = 0);
 
 		void Update (void) { 
 			m_router.SetStartSeg (-1); 
