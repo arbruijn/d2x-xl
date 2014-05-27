@@ -116,11 +116,13 @@ m_nObject = -1;
 void CLightningEmitter::CreateSound (int bSound)
 {
 if ((m_bSound = bSound)) {
+	audio.SetThreadId (m_nThread);
 	audio.CreateObjectSound (-1, SOUNDCLASS_GENERIC, m_nObject, 1, I2X (1) / 2, I2X (256), -1, -1, AddonSoundName (SND_ADDON_LIGHTNING));
 	if (m_bForcefield) {
 		if (0 <= (m_nSound = audio.GetSoundByName ("ff_amb_1")))
 			audio.CreateObjectSound (m_nSound, SOUNDCLASS_GENERIC, m_nObject, 1);
 		}
+	audio.SetThreadId (0);
 	}
 else
 	m_nSound = -1;
@@ -185,6 +187,7 @@ if (!m_bValid)
 	return 0;
 
 if (gameStates.app.nSDLTicks [0] - m_tUpdate >= 25) {
+	m_nThread = nThread;
 	if (m_nKey [0] || m_nKey [1])
 		m_bDestroy = 1;
 	else {
@@ -236,7 +239,7 @@ m_bSound = -1;
 
 //------------------------------------------------------------------------------
 
-void CLightningEmitter::Move (CFixVector vNewPos, short nSegment, int nThread)
+void CLightningEmitter::Move (CFixVector vNewPos, short nSegment)
 {
 if (!m_bValid)
 	return;
@@ -246,13 +249,13 @@ if (!m_lightning.Buffer ())
 	return;
 if (SHOW_LIGHTNING (1)) {
 	for (int i = 0; i < m_nBolts; i++)
-		m_lightning [i].Move (vNewPos, nSegment, nThread);
+		m_lightning [i].Move (vNewPos, nSegment);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void CLightningEmitter::Move (CFixVector vNewPos, CFixVector vNewEnd, short nSegment, int nThread)
+void CLightningEmitter::Move (CFixVector vNewPos, CFixVector vNewEnd, short nSegment)
 {
 if (!m_bValid)
 	return;
@@ -262,20 +265,20 @@ if (!m_lightning.Buffer ())
 	return;
 if (SHOW_LIGHTNING (1)) {
 	for (int i = 0; i < m_nBolts; i++)
-		m_lightning [i].Move (vNewPos, vNewEnd, nSegment, nThread);
+		m_lightning [i].Move (vNewPos, vNewEnd, nSegment);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void CLightningEmitter::MoveForObject (int nThread)
+void CLightningEmitter::MoveForObject (void)
 {
 if (!m_bValid)
 	return;
 
 	CObject* objP = OBJECTS + m_nObject;
 
-Move (OBJPOS (objP)->vPos, objP->info.nSegment, nThread);
+Move (OBJPOS (objP)->vPos, objP->info.nSegment);
 }
 
 //------------------------------------------------------------------------------

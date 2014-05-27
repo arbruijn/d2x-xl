@@ -279,6 +279,7 @@ class CAudio {
 		short							m_nListenerSeg;
 		bool							m_bHaveRouter;
 		bool							m_bSDLInitialized;
+		int							m_nThread;
 
 	private:
 		int AudioError (void);
@@ -291,6 +292,7 @@ class CAudio {
 #ifndef _WIN32
 		int InitThread (void);
 #endif
+		void SetThreadId (int nThread = 0) { m_nThread = nThread; }
 		void Destroy (void);
 		void Prepare (void);
 		int Setup (float fSlowDown, int nFormat = -1);

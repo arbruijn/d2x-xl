@@ -138,6 +138,8 @@ if (i < 0)
 	return -1;
 m_nIndex = ushort (i);
 short nNode = m_index [m_nIndex];
+if (nNode < 0)
+	return -1;
 m_index [m_nIndex] = m_links [nNode];
 nCost = m_cost [nNode];
 m_cost [nNode] |= 0x80000000;

@@ -501,6 +501,7 @@ fix CDACSUniDirRouter::FindPath (void)
 {
 	uint			nDist;
 	short			nSegment, nSide;
+	int			nSegCount = gameData.segs.nSegments - 1;
 	CSegment*	segP;
 
 m_heap.Setup (m_nStartSeg);
@@ -524,8 +525,8 @@ for (;;) {
 			if (segP->m_children [nSide] == nDbgSeg)
 				nDbgSeg = nDbgSeg;
 #endif
-			m_heap.Push (segP->m_children [nSide], nSegment, nSide, nDist + ushort (segP->m_childDists [1][nSide]));
-			++nExpanded;
+			if (m_heap.Push (segP->m_children [nSide], nSegment, nSide, nDist + ushort (segP->m_childDists [1][nSide])))
+				++nExpanded;
 			}
 		}
 	}

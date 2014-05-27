@@ -160,7 +160,7 @@ if (!HaveRouter ()) {
 	int nSearchSegs = X2I (maxDistance / 10);
 	if (nSearchSegs < 3)
 		nSearchSegs = 3;
-	return uniDacsRouter [0].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
+	return uniDacsRouter [m_nThread].PathLength (vListenerPos, nListenerSeg, vSoundPos, nSoundSeg, nSearchSegs, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
 	}
 
 if (m_nListenerSeg != nListenerSeg) 

@@ -49,10 +49,10 @@ class CLightningNode : public tLightningNode {
 		CFixVector CreateErratic (CFixVector *vPos, CFixVector *vBase, int nSteps, int nAmplitude,
 									    int bInPlane, int bFromEnd, int bRandom, int i, int nNodes, int nSmoothe, int bClamp);
 		void CreatePerlin (double l, double i, int nThread);
-		void Move (const CFixVector& vOffset, short nSegment, int nThread);
+		void Move (const CFixVector& vOffset, short nSegment);
 		void Move (const CFixVector& vOldPos, const CFixVector& vOldEnd, 
 					  const CFixVector& vNewPos, const CFixVector& vNewEnd, 
-					  float fScale, short nSegment, int nThread);
+					  float fScale, short nSegment);
 		bool SetLight (short nSegment, CFloatVector *colorP);
 		inline CLightning *GetChild (void) { return m_child; }
 		inline void GetChild (CLightning * child) { m_child = child; }
@@ -126,8 +126,8 @@ class CLightning : public tLightning {
 		int SetLife (void);
 		void Animate (int nDepth, int nThread);
 		int Update (int nDepth, int nThread);
-		void Move (CFixVector vNewPos, short nSegment, int nThread);
-		void Move (CFixVector vNewPos, CFixVector vNewEnd, short nSegment, int nThread);
+		void Move (CFixVector vNewPos, short nSegment);
+		void Move (CFixVector vNewPos, CFixVector vNewEnd, short nSegment);
 		void Render (int nDepth, int nThread);
 		int SetLight (void);
 		inline int MayBeVisible (int nThread);
@@ -169,8 +169,12 @@ typedef struct tLightningSystem {
 } tLightningSystem;
 
 class CLightningEmitter : public tLightningSystem {
+	private:
+		int	m_nThread;
+
 	public:
-		CLightningEmitter () { m_bValid = 0, m_lightning = NULL, m_nBolts = 0, m_nObject = -1; };
+		CLightningEmitter () : m_nThread (0)
+			{ m_bValid = 0, m_lightning = NULL, m_nBolts = 0, m_nObject = -1; };
 		~CLightningEmitter () { Destroy (); };
 		void Init (int nId);
 		bool Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
@@ -181,8 +185,8 @@ class CLightningEmitter : public tLightningSystem {
 		void Animate (int nStart, int nBolts, int nThread);
 		void Render (int nStart, int nBolts, int nThread);
 		int Update (int nThread);
-		void Move (CFixVector vNewPos, short nSegment, int nThread);
-		void Move (CFixVector vNewPos, CFixVector vNewEnd, short nSegment, int nThread);
+		void Move (CFixVector vNewPos, short nSegment);
+		void Move (CFixVector vNewPos, CFixVector vNewEnd, short nSegment);
 		void Mute (void);
 		int SetLife (void);
 		int SetLight (void);
@@ -190,10 +194,10 @@ class CLightningEmitter : public tLightningSystem {
 		inline int Id (void) { return m_nId; }
 		inline void SetValid (char bValid) { m_bValid = bValid; }
 	private:
-		void CreateSound (int bSound);
+		void CreateSound (int bSound, int nThread = 0);
 		void DestroySound (void);
 		void UpdateSound (void);
-		void MoveForObject (int nThread = 0);
+		void MoveForObject (void);
 		void RenderBuffered (int nStart, int nBolts, int nThread);
 };
 

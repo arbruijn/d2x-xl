@@ -311,20 +311,20 @@ m_vNewPos += m_vDelta [1] * int (dy);
 
 //------------------------------------------------------------------------------
 
-void CLightningNode::Move (const CFixVector& vOffset, short nSegment, int nThread)
+void CLightningNode::Move (const CFixVector& vOffset, short nSegment)
 {
 m_vNewPos += vOffset;
 m_vBase += vOffset;
 m_vPos += vOffset;
 if (m_child)
-	m_child->Move (m_vPos, nSegment, nThread);
+	m_child->Move (m_vPos, nSegment);
 }
 
 //------------------------------------------------------------------------------
 
 void CLightningNode::Move (const CFixVector& vOldPos, const CFixVector& vOldEnd, 
 									const CFixVector& vNewPos, const CFixVector& vNewEnd, 
-									float fScale, short nSegment, int nThread)
+									float fScale, short nSegment)
 {
 	CFixVector	vi, vj, vo;
 
@@ -336,7 +336,7 @@ vo.v.coord.x = fix (vo.v.coord.x * fOffset);
 vo.v.coord.y = fix (vo.v.coord.y * fOffset);
 vo.v.coord.z = fix (vo.v.coord.z * fOffset);
 vj = vNewPos + vo;
-Move (vj - vi, nSegment, nThread);
+Move (vj - vi, nSegment);
 }
 
 //------------------------------------------------------------------------------

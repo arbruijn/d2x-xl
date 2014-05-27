@@ -572,7 +572,7 @@ return SetLife ();
 
 //------------------------------------------------------------------------------
 
-void CLightning::Move (CFixVector vNewPos, CFixVector vNewEnd, short nSegment, int nThread)
+void CLightning::Move (CFixVector vNewPos, CFixVector vNewEnd, short nSegment)
 {
 if (nSegment < 0)
 	return;
@@ -588,7 +588,7 @@ if ((vNewPos == m_vPos) && (vNewEnd == m_vEnd))
 	CLightningNode*	nodeP = m_nodes.Buffer ();
 
 for (int i = m_nNodes; i; i--, nodeP++) 
-	nodeP->Move (m_vPos, m_vEnd, vNewPos, vNewEnd, fScale, nSegment, nThread);
+	nodeP->Move (m_vPos, m_vEnd, vNewPos, vNewEnd, fScale, nSegment);
 m_nodes [0].m_vPos =
 m_vPos = m_vBase = vNewPos;
 m_nodes [m_nNodes - 1].m_vPos =
@@ -600,9 +600,9 @@ m_nSegment = nSegment;
 
 //------------------------------------------------------------------------------
 
-void CLightning::Move (CFixVector vNewPos, short nSegment, int nThread)
+void CLightning::Move (CFixVector vNewPos, short nSegment)
 {
-Move (vNewPos, m_vEnd + (vNewPos - m_vPos), nSegment, nThread);
+Move (vNewPos, m_vEnd + (vNewPos - m_vPos), nSegment);
 }
 
 //------------------------------------------------------------------------------

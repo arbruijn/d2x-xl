@@ -42,9 +42,9 @@ if (gameStates.gameplay.slowmo [0].nState > 0) {
 	HUDInitMessage (TXT_SLOWING_DOWN);
 	}
 else if ((gameStates.gameplay.slowmo [0].nState < 0) ||
-			((gameStates.gameplay.slowmo [0].nState == 0) && (gameStates.gameplay.slowmo [0].fSpeed == 1)) || 
+			((gameStates.gameplay.slowmo [0].nState == 0) && (gameStates.gameplay.slowmo [0].fSpeed == 1.0f)) || 
 			(gameStates.gameplay.slowmo [1].nState < 0) || 
-			((gameStates.gameplay.slowmo [1].nState == 0) && (gameStates.gameplay.slowmo [1].fSpeed == 1))) {
+			((gameStates.gameplay.slowmo [1].nState == 0) && (gameStates.gameplay.slowmo [1].fSpeed == 1.0f))) {
 	if (gameOpts->sound.bUseSDLMixer)
 		nSlowMotionChannel = audio.PlayWAV ("speedup.wav");
 	HUDInitMessage (TXT_SPEEDING_UP);
@@ -77,7 +77,7 @@ SetSlowMotionState (0);
 int SlowMotionActive (void)
 {
 return gameStates.gameplay.slowmo [0].bActive =
-		 (gameStates.gameplay.slowmo [0].nState > 0) || (gameStates.gameplay.slowmo [0].fSpeed > 1);
+		 (gameStates.gameplay.slowmo [0].nState > 0) || (gameStates.gameplay.slowmo [0].fSpeed > 1.0f);
 }
 
 //	-----------------------------------------------------------------------------------------------------------

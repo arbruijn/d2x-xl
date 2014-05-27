@@ -676,7 +676,7 @@ PrintLog (-1);
 /*---*/PrintLog (1, "reconfiguring audio\n");
 if (!bRestore) {
 	gameStates.gameplay.slowmo [0].fSpeed =
-	gameStates.gameplay.slowmo [1].fSpeed = 1;
+	gameStates.gameplay.slowmo [1].fSpeed = 1.0f;
 	gameStates.gameplay.slowmo [0].nState =
 	gameStates.gameplay.slowmo [1].nState = 0;
 	if (audio.SlowDown () != 1.0f) {

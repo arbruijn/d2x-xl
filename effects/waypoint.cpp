@@ -242,7 +242,7 @@ for (;;) {
 
 	vMove.Assign (succ->Position () - curr->Position ());
 	CFloatVector::Normalize (vMove);
-	float fMove = (float) curr->cType.wayPointInfo.nSpeed / 40.0f * fScale;
+	float fMove = (float) curr->cType.wayPointInfo.nSpeed / 40.0f * fScale / gameStates.gameplay.slowmo [0].fSpeed;
 	vMove *= fMove;
 	vLeft.Assign (succ->Position () - objP->Position ());
 #if DBG
