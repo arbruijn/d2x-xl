@@ -170,8 +170,7 @@ typedef struct tLightningSystem {
 
 class CLightningEmitter : public tLightningSystem {
 	public:
-		CLightningEmitter () : m_nThread (0)
-			{ m_bValid = 0, m_lightning = NULL, m_nBolts = 0, m_nObject = -1; };
+		CLightningEmitter () { m_bValid = 0, m_lightning = NULL, m_nBolts = 0, m_nObject = -1; };
 		~CLightningEmitter () { Destroy (); };
 		void Init (int nId);
 		bool Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
