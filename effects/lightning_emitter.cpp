@@ -113,7 +113,7 @@ m_nObject = -1;
 
 //------------------------------------------------------------------------------
 
-void CLightningEmitter::CreateSound (int bSound)
+void CLightningEmitter::CreateSound (int bSound, int nThread)
 {
 if ((m_bSound = bSound)) {
 	audio.CreateObjectSound (-1, SOUNDCLASS_GENERIC, m_nObject, 1, I2X (1) / 2, I2X (256), -1, -1, AddonSoundName (SND_ADDON_LIGHTNING), 0, 0, nThread);
