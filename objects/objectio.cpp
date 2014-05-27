@@ -105,7 +105,7 @@ switch (info.movementType) {
 		break;
 
 	default:
-		PrintLog (0, "Object %d (type=%d, id=%d) has invalid movement type %d\n", OBJ_IDX (this), info.nType, info.nId, info.movementType);
+		PrintLog (0, "Object #%d (type=%d, id=%d), has invalid movement type %d", OBJ_IDX (this), info.nType, info.nId, info.movementType);
 	}
 
 int i;
@@ -172,14 +172,17 @@ switch (info.controlType) {
 		cType.wayPointInfo.nSuccessor [0] = cf.ReadInt ();
 		cType.wayPointInfo.nSuccessor [1] = -1;
 		cType.wayPointInfo.nSpeed = cf.ReadInt ();
+		if (info.nId != WAYPOINT_ID) {
+			PrintLog (0, "Waypoint object #%d has invalid id %d", OBJ_IDX (this), info.nId);
+			info.nId = WAYPOINT_ID;
+			}
 		break;
 
 	case CT_MORPH:
 	case CT_FLYTHROUGH:
 	case CT_REPAIRCEN:
-		default:
-		PrintLog (0, "Object %d (type=%d, id=%d) has invalid control type %d\n", OBJ_IDX (this), info.nType, info.nId, info.controlType);
-
+	default:
+		PrintLog (0, "Object #%d (type=%d, id=%d), has invalid control type %d", OBJ_IDX (this), info.nType, info.nId, info.controlType);
 	}
 
 switch (info.renderType) {
@@ -236,6 +239,10 @@ switch (info.renderType) {
 			rType.particleInfo.bEnabled = 1;
 		else
 			rType.particleInfo.bEnabled = cf.ReadByte ();
+		if (info.nId != PARTICLE_ID) {
+			PrintLog (0, "Particle object #%d has invalid id %d", OBJ_IDX (this), info.nId);
+			info.nId = PARTICLE_ID;
+			}
 		break;
 
 	case RT_LIGHTNING:
@@ -266,6 +273,10 @@ switch (info.renderType) {
 		rType.lightningInfo.color.Blue () = cf.ReadByte ();
 		rType.lightningInfo.color.Alpha () = cf.ReadByte ();
 		rType.lightningInfo.bEnabled = (gameData.segs.nLevelVersion < 19) ? 1 : cf.ReadByte ();
+		if (info.nId != LIGHTNING_ID) {
+			PrintLog (0, "Lightning object #%d has invalid id %d", OBJ_IDX (this), info.nId);
+			info.nId = LIGHTNING_ID;
+			}
 		break;
 
 	case RT_SOUND:
@@ -277,10 +288,15 @@ switch (info.renderType) {
 			rType.soundInfo.bEnabled = 1;
 		else
 			rType.soundInfo.bEnabled = cf.ReadByte ();
+		if (info.nId != SOUND_ID) {
+			PrintLog (0, "Sound object #%d has invalid id %d", OBJ_IDX (this), info.nId);
+			info.nId = SOUND_ID;
+			}
 		break;
 
 	default:
-		PrintLog (0, "Object %d (type=%d, id=%d) has invalid render type %d\n", OBJ_IDX (this), info.nType, info.nId, info.renderType);
+		// arriving here means that reading any level data stored after this object will probably fail
+		PrintLog (0, "Object #%d (type=%d, id=%d), has invalid render type %d", OBJ_IDX (this), info.nType, info.nId, info.renderType);
 	}
 ResetDamage ();
 SetTarget (NULL);
