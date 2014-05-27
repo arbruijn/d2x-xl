@@ -87,7 +87,7 @@ if (bInit)
 else
 	m_vPos += m_vOffs;
 if (m_child) {
-	m_child->Move (m_vPos, nSegment, nThread);
+	m_child->Move (m_vPos, nSegment);
 	m_child->Animate (nDepth + 1, nThread);
 	}
 }

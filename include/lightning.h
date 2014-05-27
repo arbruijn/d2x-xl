@@ -194,7 +194,7 @@ class CLightningEmitter : public tLightningSystem {
 		inline int Id (void) { return m_nId; }
 		inline void SetValid (char bValid) { m_bValid = bValid; }
 	private:
-		void CreateSound (int bSound, int nThread = 0);
+		void CreateSound (int bSound);
 		void DestroySound (void);
 		void UpdateSound (void);
 		void MoveForObject (void);
