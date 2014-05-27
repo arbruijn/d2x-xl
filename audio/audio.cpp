@@ -681,7 +681,6 @@ m_info.nFormat = AUDIO_U8;
 m_info.nVolume [0] = 
 m_info.nVolume [1] = SOUND_MAX_VOLUME;
 m_info.nMaxChannels = MAX_SOUND_CHANNELS;
-m_nThread = 0;
 Init ();
 }
 
