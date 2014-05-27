@@ -205,7 +205,7 @@ void CLightningManager::Move (int i, CFixVector vNewPos, CFixVector vNewEnd, sho
 if (nSegment < 0)
 	return;
 if (SHOW_LIGHTNING (1))
-	m_emitters [i].Move (vNewPos, vNewEnd, nSegment, 0);
+	m_emitters [i].Move (vNewPos, vNewEnd, nSegment);
 }
 
 //------------------------------------------------------------------------------
@@ -215,7 +215,7 @@ void CLightningManager::Move (int i, CFixVector vNewPos, short nSegment)
 if (nSegment < 0)
 	return;
 if (SHOW_LIGHTNING (1))
-	m_emitters [i].Move (vNewPos, nSegment, 0);
+	m_emitters [i].Move (vNewPos, nSegment);
 }
 
 //------------------------------------------------------------------------------
