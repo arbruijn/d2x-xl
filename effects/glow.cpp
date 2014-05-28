@@ -598,10 +598,10 @@ void CGlowRenderer::ClearViewport (float const radius)
 if (radius > 0.0f) {
 	ogl.SaveViewport ();
 	float r = radius * 4.0f * m_nStrength; // scale with a bit more than the max. offset from the blur shader
-	glViewport ((GLsizei) max (m_renderMin.x - r, 0), 
-					(GLsizei) max (m_renderMin.y - r, 0), 
-					(GLint) min (m_renderMax.x - m_renderMin.x + 1 + 2 * r, ScreenWidth ()), 
-					(GLint) min (m_renderMax.y - m_renderMin.y + 1 + 2 * r, ScreenHeight ()));
+	glViewport ((GLint) max (m_renderMin.x - r, 0), 
+					(GLint) max (m_renderMin.y - r, 0), 
+					(GLsizei) min (m_renderMax.x - m_renderMin.x + 1 + 2 * r, ScreenWidth ()), 
+					(GLsizei) min (m_renderMax.y - m_renderMin.y + 1 + 2 * r, ScreenHeight ()));
 	}
 
 if (m_nType == BLUR_SHADOW)
@@ -672,6 +672,12 @@ else
 	//glClear (GL_COLOR_BUFFER_BIT);
 
 	float radius = 0.0f;
+	if (m_bViewport < 0) {
+		m_renderMin.x = gameData.render.scene.Left ();
+		m_renderMin.y = gameData.render.scene.Top ();
+		m_renderMax.x = ScreenWidth ();
+		m_renderMax.y = ScreenHeight ();
+		}
 #if BLUR
 	ogl.SetDepthMode (GL_ALWAYS);
 	ogl.SetBlendMode (OGL_BLEND_REPLACE);
