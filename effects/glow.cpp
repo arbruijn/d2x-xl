@@ -270,22 +270,22 @@ if (gameOpts->render.effects.bGlow != 1)
 if (!bTransformed)
 	transformation.Transform (v, v);
 tScreenPos s;
-#if 1
+#	if 1
 ProjectPoint (v, s);
-#else
+#	else
 v = transformation.m_info.projection * v;
 float z = -v.v.coord.z;
 float w = (float) ScreenWidth () / 2.0f;
 float h = (float) ScreenHeight () / 2.0f;
 s.x = fix (w - float (v.v.coord.x) * w / v.v.coord.z);
 s.y = fix (h - float (v.v.coord.y) * h / v.v.coord.z);
-#endif
-#if 0
+#	endif
+#	if 0
 if (gameStates.render.cockpit.nType == CM_LETTERBOX)
 	s.y += (gameData.render.screen.Height () - CCanvas::Current ()->Height ()) / 2;
 else if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
 	s.y += gameData.render.screen.Height () - CCanvas::Current ()->Height ();
-#endif
+#	endif
 #pragma omp critical
 {
 if (m_screenMin.x > s.x)
@@ -297,15 +297,21 @@ if (m_screenMax.x < s.x)
 if (m_screenMax.y < s.y)
 	m_screenMax.y = s.y;
 }
-#endif
 m_bViewport = 1;
+#else
+m_bViewport = 0;
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 bool CGlowRenderer::UseViewport (void)
 {
+#if USE_VIEWPORT
 return !ogl.IsSideBySideDevice () && (gameOpts->render.effects.bGlow == 1);
+#else
+return 0;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -315,10 +321,10 @@ bool CGlowRenderer::Visible (void)
 #if USE_VIEWPORT
 if (!UseViewport ())
 	return true;
-#if 0
+#	if 0
 if (m_bViewport != 1)
 	return false;
-#else
+#	else
 if (m_bViewport == 0)
 	return false;
 if (m_bViewport == -1) {
@@ -328,7 +334,7 @@ if (m_bViewport == -1) {
 	m_screenMax.y = ScreenHeight ();
 	return true;
 	}
-#endif
+#	endif
 if (m_screenMin.x > m_screenMax.x)
 	Swap (m_screenMin.x, m_screenMax.x);
 if (m_screenMin.y > m_screenMax.y)

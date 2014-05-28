@@ -282,11 +282,18 @@ if (gameStates.app.tick40fps.bTick) {
 	int i = 0;
 
 	FORALL_EFFECT_OBJS (objP, i) {
-		if ((objP->Id () == LIGHTNING_ID) && m_wayPoints.Buffer () && objP->WayPoint () && (*objP->WayPoint () >= 0))
+		if (objP->Id () != LIGHTNING_ID) 
+			continue;
+		if (!objP->WayPoint () || (*objP->WayPoint () < 0))
+			continue;
 #if DBG
-			if (objP->rType.lightningInfo.bEnabled)
+		if (!objP->rType.lightningInfo.bEnabled)
+			continue;
 #endif
-				Move (objP);
+		if (m_wayPoints.Buffer ())
+			Move (objP);
+		else
+			*objP->WayPoint () = -1;
 		}
 	}
 }
