@@ -120,6 +120,8 @@ class CArray : public CQuickSort < _T > {
 			if (m_data.buffer) 
 				memset (m_data.buffer, filler, sizeof (_T) * ((count < m_data.length) ? count : m_data.length)); 
 			}
+
+		inline bool IsIndex (uint i) { return (m_data.buffer != NULL) && (i < m_data.length); }
 		
 		inline bool IsElement (_T* elem, bool bDiligent = false) {
 			if (!m_data.buffer || (elem < m_data.buffer) || (elem >= m_data.buffer + m_data.length))

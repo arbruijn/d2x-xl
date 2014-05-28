@@ -146,8 +146,11 @@ void CWayPointManager::Attach (void)
 	CObject* objP;
 
 FORALL_EFFECT_OBJS (objP, i) {
-	if ((objP->Id () == LIGHTNING_ID) && (*objP->WayPoint () >= 0))
-		objP->Position () = m_wayPoints [*objP->WayPoint ()]->Position ();
+	if (objP->Id () == LIGHTNING_ID) {
+		uint i = (uint) *objP->WayPoint ();
+		if (m_wayPoints.IsIndex (i))
+			objP->Position () = m_wayPoints [i]->Position ();
+		}
 	}
 }
 
@@ -156,7 +159,7 @@ FORALL_EFFECT_OBJS (objP, i) {
 
 CObject* CWayPointManager::Current (CObject* objP)
 {
-return m_wayPoints [*objP->WayPoint ()];
+return WayPoint ((uint) *objP->WayPoint ());
 }
 
 // ---------------------------------------------------------------------------------
@@ -164,7 +167,7 @@ return m_wayPoints [*objP->WayPoint ()];
 
 CObject* CWayPointManager::Successor (CObject* objP)
 {
-return m_wayPoints [Current (objP)->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection]];
+return WayPoint ((uint) Current (objP)->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection]);
 }
 
 // ---------------------------------------------------------------------------------
@@ -234,7 +237,7 @@ if (Synchronize (objP))
 for (;;) {
 	CObject* curr = Current (objP);
 	int nSucc = curr->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection];
-	if (nSucc < 0)
+	if (!m_wayPoints.IsIndex (uint (nSucc)))
 		break;
 	CObject* succ = m_wayPoints [nSucc];
 
@@ -279,7 +282,7 @@ if (gameStates.app.tick40fps.bTick) {
 	int i = 0;
 
 	FORALL_EFFECT_OBJS (objP, i) {
-		if ((objP->Id () == LIGHTNING_ID) && objP->WayPoint () && (*objP->WayPoint () >= 0))
+		if ((objP->Id () == LIGHTNING_ID) && m_wayPoints.Buffer () && objP->WayPoint () && (*objP->WayPoint () >= 0))
 #if DBG
 			if (objP->rType.lightningInfo.bEnabled)
 #endif
