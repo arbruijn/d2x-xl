@@ -352,10 +352,10 @@ if (!UseViewport ()) {
 	m_renderMax.y = ScreenHeight ();
 	}	
 else if (!m_bViewport) {
-	m_renderMin.x = gameData.render.scene.Left ();
-	m_renderMin.y = gameData.render.scene.Top ();
-	m_renderMax.x = ScreenWidth ();
-	m_renderMax.y = ScreenHeight ();
+	m_renderMin.x = ScreenWidth ();
+	m_renderMin.y = ScreenHeight ();
+	m_renderMax.x = gameData.render.scene.Left ();
+	m_renderMax.y = gameData.render.scene.Top ();
 	m_bViewport = -1;
 	}
 }
@@ -594,23 +594,24 @@ ogl.BindTexture (0);
 
 void CGlowRenderer::ClearViewport (float const radius)
 {
-#if 1
-ogl.SaveViewport ();
-if (radius <= 0.0f) 
-	glViewport (0, 0, ScreenWidth () - 1, ScreenHeight () - 1);
-else {
+#if USE_VIEWPORT
+if (radius > 0.0f) {
+	ogl.SaveViewport ();
 	float r = radius * 4.0f * m_nStrength; // scale with a bit more than the max. offset from the blur shader
 	glViewport ((GLsizei) max (m_renderMin.x - r, 0), 
 					(GLsizei) max (m_renderMin.y - r, 0), 
 					(GLint) min (m_renderMax.x - m_renderMin.x + 1 + 2 * r, ScreenWidth ()), 
 					(GLint) min (m_renderMax.y - m_renderMin.y + 1 + 2 * r, ScreenHeight ()));
 	}
+
 if (m_nType == BLUR_SHADOW)
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 else
 	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
 glClear (GL_COLOR_BUFFER_BIT);
-ogl.RestoreViewport ();
+
+if (radius > 0.0f)
+	ogl.RestoreViewport ();
 #else
 glClear (GL_COLOR_BUFFER_BIT);
 #endif

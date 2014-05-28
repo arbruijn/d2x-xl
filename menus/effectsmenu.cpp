@@ -148,7 +148,7 @@ if ((m = menu ["glow"])) {
 	v = m->Value ();
 	if (gameOpts->render.effects.bGlow != v) {
 		gameOpts->render.effects.bGlow = v;
-		sprintf (m->m_text, TXT_EFFECTS_GLOW, pszNoneStdHigh [gameOpts->render.effects.bGlow]);
+		sprintf (m->m_text, TXT_EFFECTS_GLOW, pszOffOn [gameOpts->render.effects.bGlow]);
 		m->m_bRebuild = -1;
 		}
 	}
@@ -251,9 +251,9 @@ do {
 	sprintf (szSlider + 1, TXT_LIGHTNING, pszNoneBasicFull [int (extraGameInfo [0].bUseLightning)]);
 	*szSlider = *(TXT_LIGHTNING - 1);
 	m.AddSlider ("lightning", szSlider + 1, extraGameInfo [0].bUseLightning, 0, 2, KEY_L, HTX_LIGHTNING);
-	sprintf (szSlider + 1, TXT_EFFECTS_GLOW, pszNoneStdHigh [gameOpts->render.effects.bGlow]);
+	sprintf (szSlider + 1, TXT_EFFECTS_GLOW, pszOffOn [gameOpts->render.effects.bGlow]);
 	*szSlider = *(TXT_EFFECTS_GLOW - 1);
-	m.AddSlider ("glow", szSlider + 1, gameOpts->render.effects.bGlow, 0, 2, KEY_W, HTX_EFFECTS_GLOW);
+	m.AddSlider ("glow", szSlider + 1, gameOpts->render.effects.bGlow, 0, 1, KEY_W, HTX_EFFECTS_GLOW);
 	m.AddText ("", "");
 
 	sprintf (szSlider + 1, TXT_EXPLOSION_SHRAPNELS, pszExplShrapnels [gameOpts->render.effects.nShrapnels]);

@@ -4008,6 +4008,9 @@ if (gameData.app.semaphores [sem])
 template<typename _T> 
 inline void Swap (_T& a, _T& b) { _T h = a; a = b; b = h; }
 
+template<typename _T> 
+inline _T Clamp (_T v, _T vMin, _T vMax) { return (v < vMin) ? vMin : (v > vMax) ? vMax : v; }
+
 //	-----------------------------------------------------------------------------------------------------------
 
 #ifndef min
