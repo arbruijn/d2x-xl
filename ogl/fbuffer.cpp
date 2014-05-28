@@ -79,6 +79,10 @@ m_info.nColorBuffers =
 m_info.nBufferCount = nBuffers;
 m_info.nFirstBuffer = 0;
 
+#if DBG
+GLenum nError = glGetError ();
+#endif
+
 ogl.GenTextures (nBuffers, m_info.hColorBuffer);
 for (int i = 0; i < nBuffers; i++) {
 	ogl.BindTexture (m_info.hColorBuffer [i]);
@@ -105,7 +109,7 @@ for (int i = 0; i < nBuffers; i++) {
 	//glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, m_info.bufferIds [i], GL_TEXTURE_2D, m_info.hColorBuffer [i], 0);
 	}
 #if DBG
-GLenum nError = glGetError ();
+nError = glGetError ();
 if (nError)
 	return 0;
 return 1;
