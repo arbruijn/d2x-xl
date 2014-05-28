@@ -10,7 +10,7 @@
 CGlowRenderer glowRenderer;
 
 #define USE_VIEWPORT 1
-#define BLUR 2
+#define BLUR 0
 #define START_RAD (m_bViewport ? 2.0f : 0.0f)
 #define RAD_INCR (m_bViewport ? 2.0f : 0.0f)
 
@@ -200,7 +200,7 @@ if (!ogl.SelectGlowBuffer ())
 	return 0;
 CCanvas glowArea;
 glowArea.Setup (&gameData.render.scene);
-glowArea.CViewport::SetLeft (0);
+//glowArea.CViewport::SetLeft (0);
 glowArea.SetViewport ();
 if (m_nType == BLUR_SHADOW)
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
@@ -348,12 +348,12 @@ void CGlowRenderer::InitViewport (void)
 if (!UseViewport ()) {
 	m_renderMin.x = gameData.render.scene.Left ();
 	m_renderMin.y = gameData.render.scene.Top ();
-	m_renderMax.x = ScreenWidth ();
-	m_renderMax.y = ScreenHeight ();
+	m_renderMax.x = gameData.render.scene.Right ();
+	m_renderMax.y = gameData.render.scene.Bottom ();
 	}	
 else if (!m_bViewport) {
-	m_renderMin.x = ScreenWidth ();
-	m_renderMin.y = ScreenHeight ();
+	m_renderMin.x = gameData.render.scene.Right ();
+	m_renderMin.y = gameData.render.scene.Bottom ();
 	m_renderMax.x = gameData.render.scene.Left ();
 	m_renderMax.y = gameData.render.scene.Top ();
 	m_bViewport = -1;
@@ -566,7 +566,21 @@ float texCoord [4][2] = {
 #else
 
 float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
-float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
+//float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
+
+float w = (float) gameData.render.screen.Width ();
+float h = (float) gameData.render.screen.Height ();
+
+float texCoord [4][2] = {
+	{ScreenCoord ((float) gameData.render.scene.Left (), (float) w),
+	 ScreenCoord ((float) gameData.render.scene.Top (), (float) h)},
+	{ScreenCoord ((float) gameData.render.scene.Left (), (float) w),
+	 ScreenCoord ((float) gameData.render.scene.Bottom (), (float) h)},
+	{ScreenCoord ((float) gameData.render.scene.Right (), (float) w),
+	 ScreenCoord ((float) gameData.render.scene.Bottom (), (float) h)},
+	{ScreenCoord ((float) gameData.render.scene.Right (), (float) w),
+	 ScreenCoord ((float) gameData.render.scene.Top (), (float) h)}
+	};
 
 #endif
 
