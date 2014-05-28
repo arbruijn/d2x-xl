@@ -606,19 +606,7 @@ class COGL {
 		inline void DeleteTextures (GLsizei n, GLuint *hTextures) { glDeleteTextures (n, hTextures); }
 #endif
 
-		inline GLenum ClearError (int bTrapError) {
-			GLenum nError = glGetError ();
-#if DBG_OGL
-			if (nError) {
-				const char* pszError = reinterpret_cast<const char*> (gluErrorString (nError));
-				PrintLog (0, "%s\n", pszError);
-				if (bTrapError)
-					nError = nError;
-				}
-#endif
-			return nError;
-			}
-
+		GLenum ClearError (int bTrapError);
 
 		inline int SetTransform (int bUseTransform) { return m_states.bUseTransform = bUseTransform; }
 		inline int UseTransform (void) { return m_states.bUseTransform; }

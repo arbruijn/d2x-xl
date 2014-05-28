@@ -328,7 +328,9 @@ if (!nWindow)
 
 {
 PROF_START
+	ogl.ClearError (0);
 G3StartFrame (transformation, 0, (nWindow || gameStates.render.cameras.bActive) ? 0 : 1, nWindow ? nEyeOffsetSave : xStereoSeparation);
+	ogl.ClearError (0);
 ogl.SetStereoSeparation (xStereoSeparation);
 if (!nWindow) {
 	//gameData.render.scene.Activate ();
@@ -422,8 +424,11 @@ else {
 	}
 ogl.StencilOff ();
 #endif
+	ogl.ClearError (0);
 RenderSkyBox (nWindow);
+	ogl.ClearError (0);
 RenderEffects (nWindow);
+	ogl.ClearError (0);
 
 if (!(nWindow || gameStates.render.cameras.bActive || gameStates.app.bEndLevelSequence || GuidedInMainView ())) {
 	radar.Render ();

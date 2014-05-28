@@ -81,6 +81,8 @@ m_info.nFirstBuffer = 0;
 
 #if DBG
 GLenum nError = glGetError ();
+if (nError)
+	nError = 0;
 #endif
 
 ogl.GenTextures (nBuffers, m_info.hColorBuffer);
