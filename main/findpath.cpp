@@ -426,9 +426,11 @@ else
 
 bool CDACSUniDirRouter::Create (int nNodes) 
 { 
-if ((m_nNodes != nNodes) && !m_heap.Create (nNodes))
+if ((m_nNodes != nNodes) && !m_heap.Create (nNodes)) {
+	SetSize (0);
 	return false;
-m_nNodes = nNodes;
+	}
+SetSize (nNodes);
 return true;
 }
 

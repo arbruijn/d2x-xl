@@ -156,7 +156,7 @@ if (distance > maxDistance)
 	return -1;
 if (nListenerSeg == nSoundSeg)
 	return distance;
-if (!HaveRouter ()) {
+if (!HaveRouter (nThread)) {
 	int nSearchSegs = X2I (maxDistance / 10);
 	if (nSearchSegs < 3)
 		nSearchSegs = 3;

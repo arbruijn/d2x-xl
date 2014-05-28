@@ -277,7 +277,6 @@ class CAudio {
 		CDACSUniDirRouter			m_router [MAX_THREADS];
 		//CArray<fix>					m_segDists;
 		short							m_nListenerSeg;
-		bool							m_bHaveRouter;
 		bool							m_bSDLInitialized;
 
 	private:
@@ -400,12 +399,14 @@ class CAudio {
 #endif
 		static void _CDECL_ MixCallback (void* userdata, Uint8* stream, int len);
 
-		inline bool HaveRouter (void) { return m_bHaveRouter; }
+		inline bool HaveRouter (int nThread) { return m_router [nThread].Size () > 0; }
 		int Distance (CFixVector& vListenerPos, short nListenerSeg, CFixVector& vSoundPos, short nSoundSeg, fix maxDistance, int nDecay, CFixVector& vecToSound, int nThread = 0);
 
 		void Update (void) { 
-			m_router.SetStartSeg (-1); 
-			m_router.SetDestSeg (-1);
+			for (int i = 0; i < MAX_THREADS; i++) {
+				m_router [i].SetStartSeg (-1); 
+				m_router [i].SetDestSeg (-1);
+				}
 			}
 
 	private:

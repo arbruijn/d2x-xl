@@ -12,8 +12,10 @@ bool CDialHeap::Create (short nNodes)
 {
 Destroy ();
 m_nNodes = nNodes;
-if (!(m_index.Create (65536) && m_dirtyIndex.Create (65536) && m_cost.Create (nNodes) && m_dirtyCost.Create (nNodes) && m_links.Create (nNodes) && m_pred.Create (nNodes) && m_edge.Create (nNodes)))
+if (!(m_index.Create (65536) && m_dirtyIndex.Create (65536) && m_cost.Create (nNodes) && m_dirtyCost.Create (nNodes) && m_links.Create (nNodes) && m_pred.Create (nNodes) && m_edge.Create (nNodes))) {
+	Destroy ();
 	return false;
+	}
 m_index.Clear (0xFF);
 m_cost.Clear (0xFF);
 return true;
@@ -31,6 +33,7 @@ m_links.Destroy ();
 m_pred.Destroy ();
 m_edge.Destroy ();
 m_route.Destroy ();
+m_nNodes = 0;
 }
 
 //-----------------------------------------------------------------------------
