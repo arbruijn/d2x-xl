@@ -274,7 +274,7 @@ class CAudio {
 		CArray<CAudioChannel>	m_channels;
 		CStack<CSoundObject>		m_objects;
 		CStack<int>					m_usedChannels;
-		CDACSUniDirRouter			m_router;
+		CDACSUniDirRouter			m_router [MAX_THREADS];
 		//CArray<fix>					m_segDists;
 		short							m_nListenerSeg;
 		bool							m_bHaveRouter;

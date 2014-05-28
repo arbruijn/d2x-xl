@@ -89,6 +89,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	pragma GCC diagnostic ignored "-Wformat-nonliteral"
 #endif
 
+#define MAX_THREADS		8
+
 #include "vers_id.h"
 #include "pstypes.h"
 #include "3d.h"
@@ -149,8 +151,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define AMBIENT_LIGHT	0.3f
 #define DIFFUSE_LIGHT	0.7f
-
-#define MAX_THREADS		8
 
 //------------------------------------------------------------------------------
 

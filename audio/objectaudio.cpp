@@ -165,21 +165,21 @@ if (!HaveRouter ()) {
 
 if (m_nListenerSeg != nListenerSeg) 
 	m_nListenerSeg = nListenerSeg;
-if ((m_nListenerSeg != m_router.StartSeg ()) || (m_router.DestSeg () > -1)) { // either we had a different start last time, or the last calculation was a 1:1 routing
-	m_router.PathLength (CFixVector::ZERO, nListenerSeg, CFixVector::ZERO, -1, /*I2X (5 * 256 / 4)*/maxDistance, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
+if ((m_nListenerSeg != m_router [nThread].StartSeg ()) || (m_router [nThread].DestSeg () > -1)) { // either we had a different start last time, or the last calculation was a 1:1 routing
+	m_router [nThread].PathLength (CFixVector::ZERO, nListenerSeg, CFixVector::ZERO, -1, /*I2X (5 * 256 / 4)*/maxDistance, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
 #if 0 //DBG
 	for (int i = 0; i < gameData.segs.nSegments; i++) {
-		fix pathDistance = m_router.Distance (i);
+		fix pathDistance = m_router [nThread].Distance (i);
 		if (pathDistance <= 0)
 			continue;
-		short l = m_router.RouteLength (nSoundSeg);
+		short l = m_router [nThread].RouteLength (nSoundSeg);
 		if (l < 3)
 			continue;
 		CSegment* segP = &SEGMENTS [nListenerSeg];
-		short nChild = m_router.Route (1)->nNode;
+		short nChild = m_router [nThread].Route (1)->nNode;
 		fix corrStart = CFixVector::Dist (vListenerPos, SEGMENTS [nChild].Center ()) - segP->m_childDists [0][segP->ChildIndex (nChild)];
 		segP = &SEGMENTS [nSoundSeg];
-		nChild = m_router.Route (l - 2)->nNode;
+		nChild = m_router [nThread].Route (l - 2)->nNode;
 		fix corrEnd = CFixVector::Dist (vSoundPos, SEGMENTS [nChild].Center ()) - segP->m_childDists [0][segP->ChildIndex (nChild)];
 		if (corrStart + corrEnd < pathDistance)
 		pathDistance += corrStart + corrEnd;
@@ -191,20 +191,20 @@ if ((m_nListenerSeg != m_router.StartSeg ()) || (m_router.DestSeg () > -1)) { //
 #endif
 	}
 
-fix pathDistance = m_router.Distance (nSoundSeg);
+fix pathDistance = m_router [nThread].Distance (nSoundSeg);
 if (pathDistance < 0)
 	return -1;
 if (gameData.segs.SegVis (nListenerSeg, nSoundSeg))
 	distance += fix (distance * 0.6f * float (distance) / float (maxDistance));
 else {
-	short l = m_router.RouteLength (nSoundSeg);
+	short l = m_router [nThread].RouteLength (nSoundSeg);
 	if (l > 2) {
 		CSegment* segP = &SEGMENTS [nListenerSeg];
-		short nChild = m_router.Route (1)->nNode;
+		short nChild = m_router [nThread].Route (1)->nNode;
 		pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
 		pathDistance += CFixVector::Dist (vListenerPos, SEGMENTS [nChild].Center ());
 		segP = &SEGMENTS [nSoundSeg];
-		nChild = m_router.Route (l - 2)->nNode;
+		nChild = m_router [nThread].Route (l - 2)->nNode;
 		pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
 		pathDistance += CFixVector::Dist (vSoundPos, SEGMENTS [nChild].Center ());
 		if (pathDistance > 0)
@@ -420,7 +420,7 @@ if (!bForever) { 	// Hack to keep sounds from building up...
 	int nVolume, nPan;
 	GetVolPan (gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos,
 				  gameData.objs.viewerP->info.nSegment, objP->info.position.vPos, objP->info.nSegment, maxVolume, &nVolume, &nPan,
-				  maxDistance, nDecay);
+				  maxDistance, nDecay, nThread);
 	PlaySound (nOrgSound, nSoundClass, nVolume, nPan, 0, -1, pszSound, &objP->info.position.vPos);
 	return -1;
 	}
@@ -457,7 +457,7 @@ else {
 	GetVolPan (
 		gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos,
 		gameData.objs.viewerP->info.nSegment, objP->info.position.vPos, objP->info.nSegment, soundObjP->m_maxVolume,
-      &soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
+      &soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay, nThread);
 	soundObjP->Start ();
 	// If it's a one-shot sound effect, and it can't start right away, then
 	// just cancel it and be done with it.
