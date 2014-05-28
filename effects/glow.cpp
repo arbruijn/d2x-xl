@@ -198,10 +198,7 @@ int CGlowRenderer::Activate (void)
 {
 if (!ogl.SelectGlowBuffer ())
 	return 0;
-CCanvas glowArea;
-glowArea.Setup (&gameData.render.scene);
-//glowArea.CViewport::SetLeft (0);
-glowArea.SetViewport ();
+gameData.render.scene.SetViewport ();
 if (m_nType == BLUR_SHADOW)
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 else
@@ -599,7 +596,7 @@ else
 	shaderManager.Deploy (-1);
 //	gameData.render.scene.SetViewport ();
 	}
-ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+//ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer (source < 0));
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
@@ -613,7 +610,7 @@ ogl.BindTexture (0);
 void CGlowRenderer::ClearViewport (float const radius)
 {
 #if USE_VIEWPORT
-if (radius > 0.0f) {
+if ((m_bViewport > 0) && (radius > 0.0f)) {
 	ogl.SaveViewport ();
 	float r = radius * 4.0f * m_nStrength; // scale with a bit more than the max. offset from the blur shader
 	m_renderMin.x = max (m_renderMin.x, 0);
@@ -727,20 +724,15 @@ else
 
 	ogl.ChooseDrawBuffer ();
 	ogl.SetDepthMode (GL_ALWAYS);
-	//ogl.SetBlendMode (OGL_BLEND_ADD_WEAK);
-	if (m_nType != BLUR_SHADOW)
-		ogl.SetBlendMode (OGL_BLEND_ADD);
-	else {
-		ogl.SetBlendMode (OGL_BLEND_MULTIPLY);
-		//ogl.SetStencilTest (true);
-		}
+	ogl.SetBlendMode ((m_nType == BLUR_SHADOW) ? OGL_BLEND_MULTIPLY : OGL_BLEND_ADD);
+
 	float scale = (float) ScreenScale ();
 #if BLUR
 	Render (1, -1, radius, (scale == 1.0f) ? 1.0f : 8.0f); // Glow -> back buffer
 	if (!m_bReplace)
+#else
+	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 #endif
-	gameData.render.frame.SetViewport ();
-	gameData.render.scene.SetViewport ();
 		Render (-1, -1, radius, scale); // render the unblurred stuff on top of the blur
 	ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 	glMatrixMode (GL_PROJECTION);

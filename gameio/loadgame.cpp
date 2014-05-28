@@ -849,15 +849,15 @@ else {
 		particleImageManager.LoadAll ();
 		}
 
-	/*---*/PrintLog (1, "loading cambot\n");
-	gameData.bots.nCamBotId = (LoadRobotReplacements ("cambot.hxm", NULL, 1, 0) > 0) ? gameData.bots.nTypes [0] - 1 : -1;
-	PrintLog (-1);
-	gameData.bots.nCamBotModel = gameData.models.nPolyModels - 1;
 	/*---*/PrintLog (1, "loading replacement robots\n");
 	if (0 > LoadRobotReplacements (pszLevelName, NULL, 0, 0, true)) {
 		PrintLog (-1);
 		return -1;
 		}
+	/*---*/PrintLog (1, "loading cambot\n");
+	gameData.bots.nCamBotId = (LoadRobotReplacements ("cambot.hxm", NULL, 1, 0) > 0) ? gameData.bots.nTypes [0] - 1 : -1;
+	PrintLog (-1);
+	gameData.bots.nCamBotModel = gameData.models.nPolyModels - 1;
 	PrintLog (-1);
 
 	/*---*/PrintLog (1, "loading replacement models\n");
@@ -1785,7 +1785,7 @@ catch (...) {
 	funcRes = 0;
 	}
 ClearWarnFunc (ShowInGameWarning);
-if (!funcRes) {
+if (funcRes <= 0) {
 	try {
 		CleanupAfterGame (false);
 		}

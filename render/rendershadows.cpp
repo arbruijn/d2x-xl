@@ -68,7 +68,11 @@ glLoadIdentity ();
 glMatrixMode (GL_PROJECTION);
 glPushMatrix ();
 glLoadIdentity ();
+#if 1
 glOrtho (0, 1, 1, 0, 0, 1);
+#else
+glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+#endif
 ogl.SetTexturing (false);
 ogl.SetDepthTest (false);
 ogl.SetStencilTest (true);

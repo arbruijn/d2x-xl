@@ -57,12 +57,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 //these values are the number of each item in the release of d2
 //extra items added after the release get written in an additional hamfile
-#define N_D2_ROBOT_TYPES		66
-#define N_D2_ROBOT_JOINTS		1145
-#define N_D2_POLYGON_MODELS   166
-#define N_D2_OBJBITMAPS			422
-#define N_D2_OBJBITMAPPTRS		502
-#define N_D2_WEAPON_TYPES		62
+#define N_D2_ROBOT_TYPES			66
+#define N_D2_ROBOT_JOINTS			1145
+#define N_D2_POLYGON_MODELS		166
+#define N_D2_OBJBITMAPS				422
+#define N_D2_OBJBITMAPPTRS			502
+#define N_D2_WEAPON_TYPES			62
+
+#define N_VERTIGO_ROBOT_TYPES		12
+#define N_VERTIGO_POLYGON_MODELS	13
 
 void _CDECL_ FreeObjExtensionBitmaps (void)
 {
@@ -317,7 +320,7 @@ for (j = 0; j < t; j++) {
 				return -1;
 				}
 			}
-		else {
+		else if ((gameData.models.nPolyModels > N_D2_POLYGON_MODELS) || (i >= N_D2_POLYGON_MODELS + N_VERTIGO_POLYGON_MODELS)) {
 			Warning ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
 						szLevel, i, gameData.models.nPolyModels - 1);
 			gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
