@@ -9,7 +9,7 @@
 
 CGlowRenderer glowRenderer;
 
-#define USE_VIEWPORT 0
+#define USE_VIEWPORT 1
 #define BLUR 2
 #define START_RAD (m_bViewport ? 2.0f : 0.0f)
 #define RAD_INCR (m_bViewport ? 2.0f : 0.0f)
@@ -526,7 +526,7 @@ return c;
 
 void CGlowRenderer::Render (int const source, int const direction, float const radius, float const scale)
 {
-#if USE_VIEWPORT //DBG
+#if USE_VIEWPORT == 2 //DBG
 
 	bool bUseRadius = UseViewport () && !ogl.IsSideBySideDevice ();
 
