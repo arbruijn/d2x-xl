@@ -612,7 +612,7 @@ ogl.BindTexture (0);
 
 void CGlowRenderer::ClearViewport (float const radius)
 {
-#if 0 //USE_VIEWPORT
+#if USE_VIEWPORT
 if (radius > 0.0f) {
 	ogl.SaveViewport ();
 	float r = radius * 4.0f * m_nStrength; // scale with a bit more than the max. offset from the blur shader
@@ -688,8 +688,6 @@ else
 	ogl.SetAlphaTest (false);
 	ogl.ResetClientStates (1);
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	//glClearColor (0.0, 0.375, 0.75, 0.25);
-	//glClear (GL_COLOR_BUFFER_BIT);
 
 	float radius = 0.0f;
 	if (m_bViewport < 0) {
