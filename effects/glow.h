@@ -6,7 +6,8 @@
 class CGlowRenderer {
 	private:
 		GLhandleARB m_shaderProg;
-		tScreenPos m_screenMin, m_screenMax;
+		tScreenPos m_renderMin, m_renderMax;
+		tScreenPos m_itemMin, m_itemMax;
 		int m_x, m_y, m_w, m_h;
 		int m_nType;
 		int m_nStrength;
@@ -34,7 +35,7 @@ class CGlowRenderer {
 		bool Blur (int const direction);
 		int Activate (void);
 		void SetupProjection (void);
-		void SetExtent (CFloatVector3 v, bool bTransformed = false);
+		void SetItemExtent (CFloatVector3 v, bool bTransformed = false);
 		void InitViewport (void);
 		void ClearViewport (float const radius);
 		void ChooseDrawBuffer (void);

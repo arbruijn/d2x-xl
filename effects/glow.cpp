@@ -262,7 +262,7 @@ return CCanvas::Current ()->Height ();
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::SetExtent (CFloatVector3 v, bool bTransformed)
+void CGlowRenderer::SetItemExtent (CFloatVector3 v, bool bTransformed)
 {
 #if USE_VIEWPORT
 if (gameOpts->render.effects.bGlow != 1)
@@ -288,14 +288,14 @@ else if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
 #	endif
 #pragma omp critical
 {
-if (m_screenMin.x > s.x)
-	m_screenMin.x = s.x;
-if (m_screenMin.y > s.y)
-	m_screenMin.y = s.y;
-if (m_screenMax.x < s.x)
-	m_screenMax.x = s.x;
-if (m_screenMax.y < s.y)
-	m_screenMax.y = s.y;
+if (m_itemMin.x > s.x)
+	m_itemMin.x = s.x;
+if (m_itemMin.y > s.y)
+	m_itemMin.y = s.y;
+if (m_itemMax.x < s.x)
+	m_itemMax.x = s.x;
+if (m_itemMax.y < s.y)
+	m_itemMax.y = s.y;
 }
 m_bViewport = 1;
 #else
@@ -321,31 +321,24 @@ bool CGlowRenderer::Visible (void)
 #if USE_VIEWPORT
 if (!UseViewport ())
 	return true;
-#	if 0
-if (m_bViewport != 1)
-	return false;
-#	else
 if (m_bViewport == 0)
 	return false;
-if (m_bViewport == -1) {
-	m_screenMin.x = gameData.render.scene.Left ();
-	m_screenMin.y = gameData.render.scene.Top ();
-	m_screenMax.x = ScreenWidth ();
-	m_screenMax.y = ScreenHeight ();
+if (m_bViewport == -1) // no extent set
 	return true;
-	}
-#	endif
-if (m_screenMin.x > m_screenMax.x)
-	Swap (m_screenMin.x, m_screenMax.x);
-if (m_screenMin.y > m_screenMax.y)
-	Swap (m_screenMin.y, m_screenMax.y);
 
-return (m_screenMax.x > 0) && (m_screenMin.x < ScreenWidth () - 1) &&
-		 (m_screenMax.y > 0) && (m_screenMin.y < ScreenHeight () - 1) &&
-		 (m_screenMax.x > m_screenMin.x) && (m_screenMax.y > m_screenMin.y);
-#else
-return true;
+if ((m_itemMax.x < 0) || (m_itemMin.x >= ScreenWidth ()) ||
+	 (m_itemMax.y < 0) || (m_itemMin.y >= ScreenHeight ()))
+	 return false;
+if (m_renderMin.x > m_itemMin.x)
+	m_renderMin.x = m_itemMin.x;
+if (m_renderMax.x < m_itemMax.x)
+	m_renderMax.x = m_itemMax.x;
+if (m_renderMin.y > m_itemMin.y)
+	m_renderMin.y = m_itemMin.y;
+if (m_renderMax.y < m_itemMax.y)
+	m_renderMax.y = m_itemMax.y;
 #endif
+return true;
 }
 
 //------------------------------------------------------------------------------
@@ -353,15 +346,17 @@ return true;
 void CGlowRenderer::InitViewport (void)
 {
 if (!UseViewport ()) {
-	m_screenMin.x = gameData.render.scene.Left ();
-	m_screenMin.y = gameData.render.scene.Top ();
-	m_screenMax.x = ScreenWidth ();
-	m_screenMax.y = ScreenHeight ();
+	m_renderMin.x = gameData.render.scene.Left ();
+	m_renderMin.y = gameData.render.scene.Top ();
+	m_renderMax.x = ScreenWidth ();
+	m_renderMax.y = ScreenHeight ();
 	}	
 else if (!m_bViewport) {
+	m_renderMin.x = gameData.render.scene.Left ();
+	m_renderMin.y = gameData.render.scene.Top ();
+	m_renderMax.x = ScreenWidth ();
+	m_renderMax.y = ScreenHeight ();
 	m_bViewport = -1;
-	m_screenMin.x = m_screenMin.y = 0x7FFF;
-	m_screenMax.x = m_screenMax.y = -0x7FFF;
 	}
 }
 
@@ -379,8 +374,10 @@ if ((GLOW_FLAGS & nType) == 0)
 if (gameOpts->render.effects.bGlow != 1)
 	return true;
 //#pragma omp parallel for
+m_itemMin.x = m_itemMin.y = 0x7FFF;
+m_itemMax.x = m_itemMax.y = -0x7FFF;
 for (int i = 0; i < nVerts; i++)
-	SetExtent (vertexP [i]);
+	SetItemExtent (vertexP [i]);
 #endif
 return Visible ();
 }
@@ -397,8 +394,10 @@ if ((GLOW_FLAGS & nType) == 0)
 if (!UseViewport ())
 	return true;
 //#pragma omp parallel for
+m_itemMin.x = m_itemMin.y = 0x7FFF;
+m_itemMax.x = m_itemMax.y = -0x7FFF;
 for (int i = 0; i < nVerts; i++) 
-	SetExtent (*(vertexP [i].XYZ ()));
+	SetItemExtent (*(vertexP [i].XYZ ()));
 #endif
 return Visible ();
 }
@@ -420,8 +419,10 @@ if (!bTransformed)
 	transformation.Transform (v, v);
 CFloatVector3 r;
 r.Set (width, height, 0.0f);
-SetExtent (v - r, true);
-SetExtent (v + r, true);
+m_itemMin.x = m_itemMin.y = 0x7FFF;
+m_itemMax.x = m_itemMax.y = -0x7FFF;
+SetItemExtent (v - r, true);
+SetItemExtent (v + r, true);
 #endif
 return Visible ();
 }
@@ -441,6 +442,8 @@ if (!UseViewport ())
 	return true;
 CFloatVector3 v;
 v.Assign (pos);
+m_itemMin.x = m_itemMin.y = 0x7FFF;
+m_itemMax.x = m_itemMax.y = -0x7FFF;
 return SetViewport (nType, v, radius, radius);
 #else
 return true;
@@ -537,27 +540,27 @@ float h = (float) gameData.render.frame.Height ();
 if (ogl.IsSideBySideDevice ())
 	w *= 2;
 float verts [4][2] = {
-	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
-	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
-	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
-	 ScreenCoord ((float) m_screenMax.y + r, (float) h) * scale},
-	{ScreenCoord ((float) m_screenMax.x + r, (float) w) * scale,
-	 ScreenCoord ((float) m_screenMax.y + r, (float) h) * scale},
-	{ScreenCoord ((float) m_screenMax.x + r, (float) w) * scale,
-	 ScreenCoord ((float) m_screenMin.y - r, (float) h)}
+	{ScreenCoord ((float) m_renderMin.x - r, (float) w),
+	 ScreenCoord ((float) m_renderMin.y - r, (float) h)},
+	{ScreenCoord ((float) m_renderMin.x - r, (float) w),
+	 ScreenCoord ((float) m_renderMax.y + r, (float) h) * scale},
+	{ScreenCoord ((float) m_renderMax.x + r, (float) w) * scale,
+	 ScreenCoord ((float) m_renderMax.y + r, (float) h) * scale},
+	{ScreenCoord ((float) m_renderMax.x + r, (float) w) * scale,
+	 ScreenCoord ((float) m_renderMin.y - r, (float) h)}
 	};
 if (bUseRadius) 
 	r += 4.0f;
 // define the source area (part of the glow buffer, which serves as a texture here) to be rendered
 float texCoord [4][2] = {
-	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
-	 ScreenCoord ((float) m_screenMin.y - r, (float) h)},
-	{ScreenCoord ((float) m_screenMin.x - r, (float) w),
-	 ScreenCoord ((float) m_screenMax.y + r, (float) h)},
-	{ScreenCoord ((float) m_screenMax.x + r, (float) w),
-	 ScreenCoord ((float) m_screenMax.y + r, (float) h)},
-	{ScreenCoord ((float) m_screenMax.x + r, (float) w),
-	 ScreenCoord ((float) m_screenMin.y - r, (float) h)}
+	{ScreenCoord ((float) m_renderMin.x - r, (float) w),
+	 ScreenCoord ((float) m_renderMin.y - r, (float) h)},
+	{ScreenCoord ((float) m_renderMin.x - r, (float) w),
+	 ScreenCoord ((float) m_renderMax.y + r, (float) h)},
+	{ScreenCoord ((float) m_renderMax.x + r, (float) w),
+	 ScreenCoord ((float) m_renderMax.y + r, (float) h)},
+	{ScreenCoord ((float) m_renderMax.x + r, (float) w),
+	 ScreenCoord ((float) m_renderMin.y - r, (float) h)}
 	};
 
 #else
@@ -597,10 +600,10 @@ if (radius <= 0.0f)
 	glViewport (0, 0, ScreenWidth () - 1, ScreenHeight () - 1);
 else {
 	float r = radius * 4.0f * m_nStrength; // scale with a bit more than the max. offset from the blur shader
-	glViewport ((GLsizei) max (m_screenMin.x - r, 0), 
-					(GLsizei) max (m_screenMin.y - r, 0), 
-					(GLint) min (m_screenMax.x - m_screenMin.x + 1 + 2 * r, ScreenWidth ()), 
-					(GLint) min (m_screenMax.y - m_screenMin.y + 1 + 2 * r, ScreenHeight ()));
+	glViewport ((GLsizei) max (m_renderMin.x - r, 0), 
+					(GLsizei) max (m_renderMin.y - r, 0), 
+					(GLint) min (m_renderMax.x - m_renderMin.x + 1 + 2 * r, ScreenWidth ()), 
+					(GLint) min (m_renderMax.y - m_renderMin.y + 1 + 2 * r, ScreenHeight ()));
 	}
 if (m_nType == BLUR_SHADOW)
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
