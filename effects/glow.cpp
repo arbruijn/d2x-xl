@@ -10,7 +10,7 @@
 CGlowRenderer glowRenderer;
 
 #define USE_VIEWPORT 1
-#define BLUR 0
+#define BLUR 2
 #define START_RAD (m_bViewport ? 2.0f : 0.0f)
 #define RAD_INCR (m_bViewport ? 2.0f : 0.0f)
 
@@ -566,22 +566,25 @@ float texCoord [4][2] = {
 #else
 
 float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
-//float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
-
+#	if	0
+float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
+#	else
 float w = (float) gameData.render.screen.Width ();
 float h = (float) gameData.render.screen.Height ();
+float t = (float) h - (float) gameData.render.scene.Top () - (float) gameData.render.scene.Height ();
+float b = t + (float) gameData.render.scene.Height ();
 
 float texCoord [4][2] = {
 	{ScreenCoord ((float) gameData.render.scene.Left (), (float) w),
-	 ScreenCoord ((float) gameData.render.scene.Top (), (float) h)},
+	 ScreenCoord (/*(float) gameData.render.scene.Top ()*/t, (float) h)},
 	{ScreenCoord ((float) gameData.render.scene.Left (), (float) w),
-	 ScreenCoord ((float) gameData.render.scene.Bottom (), (float) h)},
+	 ScreenCoord (/*(float) gameData.render.scene.Bottom ()*/b, (float) h)},
 	{ScreenCoord ((float) gameData.render.scene.Right (), (float) w),
-	 ScreenCoord ((float) gameData.render.scene.Bottom (), (float) h)},
+	 ScreenCoord (/*(float) gameData.render.scene.Bottom ()*/b, (float) h)},
 	{ScreenCoord ((float) gameData.render.scene.Right (), (float) w),
-	 ScreenCoord ((float) gameData.render.scene.Top (), (float) h)}
+	 ScreenCoord (/*(float) gameData.render.scene.Top ()*/t, (float) h)}
 	};
-
+#	endif
 #endif
 
 //ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
@@ -596,6 +599,7 @@ else
 	shaderManager.Deploy (-1);
 //	gameData.render.scene.SetViewport ();
 	}
+ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer (source < 0));
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
 OglVertexPointer (2, GL_FLOAT, 0, verts);
@@ -608,10 +612,12 @@ ogl.BindTexture (0);
 
 void CGlowRenderer::ClearViewport (float const radius)
 {
-#if USE_VIEWPORT
+#if 0 //USE_VIEWPORT
 if (radius > 0.0f) {
 	ogl.SaveViewport ();
 	float r = radius * 4.0f * m_nStrength; // scale with a bit more than the max. offset from the blur shader
+	m_renderMin.x = max (m_renderMin.x, 0);
+	m_renderMin.y = max (m_renderMin.y, 0);
 	glViewport ((GLint) max (m_renderMin.x - r, 0), 
 					(GLint) max (m_renderMin.y - r, 0), 
 					(GLsizei) min (m_renderMax.x - m_renderMin.x + 1 + 2 * r, ScreenWidth ()), 
@@ -665,7 +671,7 @@ if (!Visible ())
 else
 #endif
 	{
-	gameData.render.frame.Activate ("CGlowRenderer::End");
+	gameData.render.scene.Activate ("CGlowRenderer::End");
 	glMatrixMode (GL_MODELVIEW);
 	glPushMatrix ();
 	glLoadIdentity ();//clear matrix
@@ -682,15 +688,15 @@ else
 	ogl.SetAlphaTest (false);
 	ogl.ResetClientStates (1);
 	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	//glClearColor (0.0, 0.375, 0.75, 0.5);
+	//glClearColor (0.0, 0.375, 0.75, 0.25);
 	//glClear (GL_COLOR_BUFFER_BIT);
 
 	float radius = 0.0f;
 	if (m_bViewport < 0) {
 		m_renderMin.x = gameData.render.scene.Left ();
 		m_renderMin.y = gameData.render.scene.Top ();
-		m_renderMax.x = ScreenWidth ();
-		m_renderMax.y = ScreenHeight ();
+		m_renderMax.x = gameData.render.scene.Right ();
+		m_renderMax.y = gameData.render.scene.Bottom ();
 		}
 #if BLUR
 	ogl.SetDepthMode (GL_ALWAYS);
@@ -735,6 +741,8 @@ else
 	Render (1, -1, radius, (scale == 1.0f) ? 1.0f : 8.0f); // Glow -> back buffer
 	if (!m_bReplace)
 #endif
+	gameData.render.frame.SetViewport ();
+	gameData.render.scene.SetViewport ();
 		Render (-1, -1, radius, scale); // render the unblurred stuff on top of the blur
 	ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 	glMatrixMode (GL_PROJECTION);
