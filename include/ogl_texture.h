@@ -46,7 +46,7 @@ class CTexture {
 		tTexture	m_info;
 
 	public:
-		CTexture () { Init (); }
+		CTexture () : m_prev (NULL), m_next (NULL), m_bRegistered (false) { Init (); }
 		~CTexture () { Destroy (); }
 		GLuint Create (int w, int h);
 		void Init (void);

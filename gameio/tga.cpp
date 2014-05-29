@@ -40,7 +40,7 @@ m_data.descriptor = char (cf.ReadByte ());
 if (m_data.identSize && cf.Seek (m_data.identSize, SEEK_CUR))
 	return 0;
 if (bmP) {
-	bmP->Init (0, 0, 0, m_data.width, m_data.height, m_data.bits / 8, NULL);
+	bmP->Init (0, 0, 0, m_data.width, m_data.height, m_data.bits / 8, NULL, false);
 	}
 return (m_data.width <= 4096) && (m_data.height <= 32768) && 
        (m_data.xStart < m_data.width) && (m_data.yStart < m_data.height) &&

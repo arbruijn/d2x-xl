@@ -1219,7 +1219,9 @@ for (int i = 0; i < FACES.nFaces; i++, faceP++) {
 	else if (faceP->m_info.nOvlTex <= 0)
 		faceP->m_info.nKey = int (faceP->m_info.nBaseTex);
 	else {
+		textureManager.Check ();
 		LoadFaceBitmaps (SEGMENTS + faceP->m_info.nSegment, faceP);
+		textureManager.Check ();
 		if (faceP->bmTop && (faceP->bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT))
 			faceP->m_info.nKey = int (faceP->m_info.nBaseTex) + int (faceP->m_info.nOvlTex) * MAX_WALL_TEXTURES * MAX_WALL_TEXTURES;
 		else

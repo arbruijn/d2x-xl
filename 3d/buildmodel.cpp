@@ -141,6 +141,7 @@ if (ogl.m_features.bVertexBufferObjects && m_vboIndexHandle)
 #if DBG
 if (m_textures.Buffer ())
 #endif
+	m_textures.Clear (); // careful - m_textures just contains a copy of textures allocated elsewhere
 m_textures.Destroy ();
 m_sortedVerts.Destroy ();
 m_index [0].Destroy ();

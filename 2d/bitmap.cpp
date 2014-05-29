@@ -91,6 +91,7 @@ else {
 
 void CBitmap::Destroy (void)
 {
+textureManager.Check ();
 SetPalette (NULL);
 DestroyBuffer ();
 DestroyFrames ();
@@ -98,9 +99,13 @@ DestroyMask ();
 if (m_info.texP == &m_info.texture)
 	ReleaseTexture ();
 else
+#if DBG
+	if (m_info.texP)
+#endif
 	m_info.texP = NULL;
-m_info.texture.Init ();
 m_info.texture.SetBitmap (NULL);
+m_info.texture.Init ();
+textureManager.Check ();
 }
 
 //------------------------------------------------------------------------------
@@ -139,9 +144,10 @@ SetName (szSignature);
 
 //------------------------------------------------------------------------------
 
-void CBitmap::Init (int mode, int x, int y, int w, int h, int bpp, ubyte *buffer) 
+void CBitmap::Init (int mode, int x, int y, int w, int h, int bpp, ubyte *buffer, bool bReset) 
 {
-Init ();
+if (bReset)
+	Init ();
 m_info.props.x = x;
 m_info.props.y = y;
 m_info.props.w = w;

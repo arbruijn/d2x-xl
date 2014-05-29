@@ -227,6 +227,10 @@ return true;
 
 void CTexture::Init (void)
 {
+#if DBG
+if (m_bRegistered)
+	Destroy ();
+#endif
 m_info.handle = 0;
 m_info.internalFormat = 4;
 m_info.format = ogl.m_states.nRGBAFormat;
@@ -241,6 +245,7 @@ m_info.u =
 m_info.v = 0;
 m_info.bRenderBuffer = 0;
 m_info.prio = 0.3f;
+m_info.bmP = NULL;
 m_prev =
 m_next = NULL;
 m_bRegistered = false;
@@ -339,9 +344,6 @@ if (m_bRegistered) {
 		}
 	m_bRegistered = false;
 	}
-m_info.bmP = NULL;
-m_prev =
-m_next = NULL;
 //m_info.bmP = NULL;
 Init ();
 }
@@ -1104,6 +1106,19 @@ if (bAddon || (Type () == BM_TYPE_STD)) {
 
 //------------------------------------------------------------------------------
 
+#if DBG
+void CBitmap::SetName (const char* pszName) 
+{ 
+if (pszName) {
+	strncpy (m_info.szName, pszName, sizeof (m_info.szName)); 
+	if (!strcmp (pszName, "redlaserblob"))
+		nDbgTexture = nDbgTexture;
+	}
+}
+#endif
+
+//------------------------------------------------------------------------------
+
 CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures)
 {
 	CBitmap*	bmP, * bmoP, * bmfP;
@@ -1113,7 +1128,9 @@ CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures)
 if (nTexture == nDbgTexture)
 	nDbgTexture = nDbgTexture;
 #endif
+textureManager.Check ();
 LoadTexture (gameData.pig.tex.bmIndexP [nTexture].index, 0, gameStates.app.bD1Mission);
+textureManager.Check ();
 bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
 bmP->SetStatic (1);
 if (!(bmoP = bmP->Override ()))
@@ -1303,7 +1320,7 @@ return 1;
 
 CBitmap *CBitmap::CreateMask (void)
 {
-	int		nTranspType, i = (int) Width () * (int) Height ();
+	int		i = (int) Width () * (int) Height ();
 	ubyte		*pi;
 	ubyte		*pm;
 
@@ -1313,7 +1330,7 @@ if (!Buffer ())
 	return NULL;
 if (m_info.maskP)
 	return m_info.maskP;
-//nTranspType = m_info.nTranspType;
+//int nTranspType = m_info.nTranspType;
 //SetBPP (4);
 if (!(m_info.maskP = CBitmap::Create (0, (Width ()  + 1) / 2, (Height () + 1) / 2, 4)))
 	return NULL;

@@ -906,8 +906,6 @@ if (nIndex >= 0)
 #if DBG
 if (nIndex == 262)
 	nIndex = nIndex;
-if (strstr (bmName, "merc4#0"))
-	bmName = bmName;
 #endif
 if (gameStates.app.bNostalgia)
 	gameOpts->render.textures.bUseHires [0] = 0;
