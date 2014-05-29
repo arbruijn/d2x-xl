@@ -279,6 +279,11 @@ CLAMP (green, 0.0f, 1.0f);
 CLAMP (blue, 0.0f, 1.0f);
 //if (!bForce && (m_data.effect.Red () == red) && (m_data.effect.Green () == green) && (m_data.effect.Blue () == blue))
 //	return;
+#if 1
+m_data.effect.Red () = red;
+m_data.effect.Green () = green;
+m_data.effect.Blue () = blue;
+#else
 if (m_data.effect.Red () < red)
 	m_data.effect.Red () = red;
 else
@@ -291,6 +296,7 @@ if (m_data.effect.Blue () < blue)
 	m_data.effect.Blue () = blue;
 else
 	blue = m_data.effect.Blue ();
+#endif
 
 float maxColor = max (red, green);
 maxColor = max (maxColor, blue);
@@ -377,11 +383,15 @@ BumpEffect (float (red) / 64.0f, float (green) / 64.0f, float (blue) / 64.0f);
 void CPaletteManager::BumpEffect (float red, float green, float blue)
 {
 	float	maxVal = (paletteManager.FadeDelay () ? 60 : MAX_PALETTE_ADD) / 64.0f;
+	float fFade = Clamp (FadeScale (), 0.0f, 1.0f);
 
-float fFade = Clamp (FadeScale (), 0.0f, 1.0f);
-SetEffect (Clamp (m_data.effect.Red () * fFade + red, 0.0f, maxVal), 
-			  Clamp (m_data.effect.Green () * fFade + green, 0.0f, maxVal), 
-			  Clamp (m_data.effect.Blue () * fFade + blue, 0.0f, maxVal),
+red = Clamp (m_data.effect.Red () * fFade + red, 0.0f, maxVal);
+green = Clamp (m_data.effect.Green () * fFade + green, 0.0f, maxVal);
+blue = Clamp (m_data.effect.Blue () * fFade + blue, 0.0f, maxVal);
+
+SetEffect (max (red, m_data.effect.Red ()), 
+			  max (green, m_data.effect.Green ()), 
+			  max (blue, m_data.effect.Blue ()),
 			  true);
 }
 
