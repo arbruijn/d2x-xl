@@ -953,11 +953,11 @@ m_cf.WriteFix (gameData.physics.xAfterburnerCharge);
 m_cf.Write (bLastPrimaryWasSuper, sizeof (bLastPrimaryWasSuper), 1);
 m_cf.Write (bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1);
 //	Save flash effect stuff
-m_cf.WriteFix (paletteManager.FlashDuration ());
+m_cf.WriteFix (paletteManager.FadeDelay ());
 m_cf.WriteFix (paletteManager.LastEffectTime ());
-m_cf.WriteShort (paletteManager.RedEffect ());
-m_cf.WriteShort (paletteManager.GreenEffect ());
-m_cf.WriteShort (paletteManager.BlueEffect ());
+m_cf.WriteShort (paletteManager.RedEffect (true));
+m_cf.WriteShort (paletteManager.GreenEffect (true));
+m_cf.WriteShort (paletteManager.BlueEffect (true));
 gameData.render.lights.subtracted.Write (m_cf, LEVEL_SEGMENTS);
 m_cf.WriteInt (gameStates.app.bFirstSecretVisit);
 m_cf.WriteFix (gameData.omega.xCharge [0]);
@@ -1941,11 +1941,9 @@ else {
 //read last was super information
 m_cf.Read (&bLastPrimaryWasSuper, sizeof (bLastPrimaryWasSuper), 1);
 m_cf.Read (&bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1);
-paletteManager.SetFlashDuration (m_cf.ReadFix ());
+paletteManager.SetFadeDelay (m_cf.ReadFix ());
 paletteManager.SetLastEffectTime (m_cf.ReadFix ());
-paletteManager.SetRedEffect ((ubyte) m_cf.ReadShort ());
-paletteManager.SetGreenEffect ((ubyte) m_cf.ReadShort ());
-paletteManager.SetBlueEffect ((ubyte) m_cf.ReadShort ());
+paletteManager.SetEffect ((int) m_cf.ReadShort (), (int) m_cf.ReadShort (), (int) m_cf.ReadShort ());
 h = (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
 j = min (h, LEVEL_SEGMENTS);
 gameData.render.lights.subtracted.Read (m_cf, j);
@@ -2249,11 +2247,9 @@ else {
 	//read last was super information
 	m_cf.Read (&bLastPrimaryWasSuper, sizeof (bLastPrimaryWasSuper), 1);
 	m_cf.Read (&bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1);
-	paletteManager.SetFlashDuration ((fix) m_cf.ReadInt ());
+	paletteManager.SetFadeDelay ((fix) m_cf.ReadInt ());
 	paletteManager.SetLastEffectTime ((fix) m_cf.ReadInt ());
-	paletteManager.SetRedEffect ((ubyte) m_cf.ReadInt ());
-	paletteManager.SetGreenEffect ((ubyte) m_cf.ReadInt ());
-	paletteManager.SetBlueEffect ((ubyte) m_cf.ReadInt ());
+	paletteManager.SetEffect ((int) m_cf.ReadInt (), (int) m_cf.ReadInt (), (int) m_cf.ReadInt ());
 	}
 
 //	Load gameData.render.lights.subtracted

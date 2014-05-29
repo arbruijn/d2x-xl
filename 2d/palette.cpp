@@ -262,6 +262,93 @@ m_data.nPalettes = 0;
 
 //------------------------------------------------------------------------------
 
+void CPaletteManager::SetEffect (float red, float green, float blue, bool bForce)
+{
+if (m_data.nSuspended)
+	return;
+#if 0
+if (!gameStates.render.nLightingMethod) // || gameStates.menus.nInMenu || !gameStates.app.bGameRunning) 
+	{
+	red += float (m_data.nGamma) / 64.0f;
+	green += float (m_data.nGamma) / 64.0f;
+	blue += float (m_data.nGamma) / 64.0f;
+	}
+#endif
+CLAMP (red, 0.0f, 1.0f);
+CLAMP (green, 0.0f, 1.0f);
+CLAMP (blue, 0.0f, 1.0f);
+if (!bForce && (m_data.effect.Red () == red) && (m_data.effect.Green () == green) && (m_data.effect.Blue () == blue))
+	return;
+m_data.effect.Red () = red;
+m_data.effect.Green () = green;
+m_data.effect.Blue () = blue;
+
+float maxColor = max (red, green);
+maxColor = max (maxColor, blue);
+SetFadeDuration (F2X (maxColor * 64.0 / FADE_RATE));
+m_data.bDoEffect = (maxColor > 0.0f); //if we arrive here, brightness needs adjustment
+}
+
+//------------------------------------------------------------------------------
+
+void CPaletteManager::SetEffect (int red, int green, int blue, bool bForce)
+{
+SetEffect (Clamp (float (red) / 64.0f, 0.0f, 1.0f), 
+	        Clamp (float (green) / 64.0f, 0.0f, 1.0f), 
+	        Clamp (float (blue) / 64.0f, 0.0f, 1.0f), 
+			  bForce);
+}
+
+//------------------------------------------------------------------------------
+
+void CPaletteManager::ClearEffect (void)
+{
+SetEffect (0, 0, 0);
+}
+
+//------------------------------------------------------------------------------
+
+#ifdef min
+#	undef min
+#endif
+static inline int min(int x, int y) { return x < y ? x : y; }
+//end changes by adb
+
+int CPaletteManager::ClearEffect (CPalette* palette)
+{
+if (m_data.nLastGamma == m_data.nGamma)
+	return 1;
+m_data.nLastGamma = m_data.nGamma;
+SetEffect (0, 0, 0);
+m_data.current = Add (*palette);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CPaletteManager::DisableEffect (void)
+{
+#if 0 //obsolete
+m_data.nSuspended++; obsolete
+#endif
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+int CPaletteManager::EnableEffect (bool bReset)
+{
+#if 0 //obsolete
+if (bReset)
+	m_data.nSuspended = 0;
+else if (m_data.nSuspended > 0)
+	m_data.nSuspended--;
+#endif
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
 void CPaletteManager::SetEffect (bool bForce)
 {
 SetEffect (m_data.effect.Red (), m_data.effect.Green (), m_data.effect.Blue (), bForce);
@@ -280,14 +367,9 @@ BumpEffect (float (red) / 64.0f, float (green) / 64.0f, float (blue) / 64.0f);
 
 void CPaletteManager::BumpEffect (float red, float green, float blue)
 {
-	float	maxVal = (paletteManager.FlashDuration () ? 60 : MAX_PALETTE_ADD) / 64.0f;
+//	float	maxVal = (paletteManager.FadeDelay () ? 60 : MAX_PALETTE_ADD) / 64.0f;
 
-m_data.effect.Red () += red;
-m_data.effect.Green () += green;
-m_data.effect.Blue () += blue;
-CLAMP (m_data.effect.Red (), -maxVal, maxVal);
-CLAMP (m_data.effect.Green (), -maxVal, maxVal);
-CLAMP (m_data.effect.Blue (), -maxVal, maxVal);
+SetEffect (m_data.effect.Red () += red, m_data.effect.Green () + green, m_data.effect.Blue () + blue);
 }
 
 //------------------------------------------------------------------------------
@@ -295,7 +377,7 @@ CLAMP (m_data.effect.Blue (), -maxVal, maxVal);
 void CPaletteManager::SaveEffect (void)
 {
 m_data.lastEffect = m_data.effect;
-m_data.xLastDuration = m_data.xFlashDuration;
+m_data.xLastDuration = m_data.xFadeDelay [0];
 }
 
 //------------------------------------------------------------------------------
@@ -303,8 +385,9 @@ m_data.xLastDuration = m_data.xFlashDuration;
 void CPaletteManager::ResumeEffect (bool bCond)
 {
 if (bCond) {
-	SetEffect (m_data.lastEffect.Red (), m_data.lastEffect.Green (), m_data.lastEffect.Blue ());
-	m_data.xFlashDuration = m_data.xLastDuration;
+	m_data.effect = m_data.lastEffect;
+	SetEffect ();
+	m_data.xFadeDelay [0] = m_data.xLastDuration;
 	m_data.xLastEffectTime = 0;
 	}
 }
@@ -324,26 +407,20 @@ if (bCond) {
 
 void CPaletteManager::ResetEffect (void)
 {
-m_data.xFlashDuration = 0;
+m_data.xFadeDelay [0] = 0;
 m_data.xLastEffectTime = 0;
 SetEffect (0, 0, 0);
 }
 
 //	------------------------------------------------------------------------------------
 
-static inline float UpdateEffect (float nColor, float nChange)
+void CPaletteManager::UpdateEffect (void)
 {
-if (nColor > 0) {
-	nColor -= nChange;
-	if (nColor < 0)
-		nColor = 0;
-	}
-else if (nColor < 0) {
-	nColor += nChange;
-	if (nColor > 0)
-		nColor = 0;
-	}
-return nColor;
+float	fFade = FadeScale ();
+
+m_data.flash.Red () = m_data.effect.Red () * fFade;
+m_data.flash.Green () = m_data.effect.Green () * fFade;
+m_data.flash.Blue () = m_data.effect.Blue () * fFade;
 }
 
 //	------------------------------------------------------------------------------------
@@ -354,8 +431,9 @@ void CPaletteManager::FadeEffect (void)
 	float	nDelta = 0;
 	bool	bForce = false;
 
-	//	Diminish at FADE_RATE units/second.
-	//	For frame rates > FADE_RATE Hz, use randomness to achieve this.
+//	Diminish at FADE_RATE units/second.
+//	For frame rates > FADE_RATE Hz, use randomness to achieve this.
+#if 0
 if (gameData.time.xFrame < I2X (1) / FADE_RATE) {
 	if (RandShort () < gameData.time.xFrame * FADE_RATE / 2)	
 		nDelta = 1;
@@ -365,36 +443,32 @@ else {
 		nDelta = 1;						// make sure we decrement by something
 	}
 nDelta /= 64.0f;
+#endif
 
-if (m_data.xFlashDuration) {
+if (m_data.xFadeDelay) {
 	//	Part of hack system to force update of palette after exiting a menu.
 	if (m_data.xLastEffectTime)
 		bForce = true;
 
-	if ((m_data.xLastEffectTime + I2X (1)/8 < gameData.time.xGame) || (m_data.xLastEffectTime > gameData.time.xGame)) {
-		audio.PlaySound (SOUND_CLOAK_OFF, SOUNDCLASS_GENERIC, m_data.xFlashDuration / 4);
+	if ((m_data.xLastEffectTime + I2X (1) / 8 < gameData.time.xGame) || (m_data.xLastEffectTime > gameData.time.xGame)) {
+		audio.PlaySound (SOUND_CLOAK_OFF, SOUNDCLASS_GENERIC, m_data.xFadeDelay [0] / 4);
 		m_data.xLastEffectTime = gameData.time.xGame;
 		}
 
-	m_data.xFlashDuration -= gameData.time.xFrame;
-	if (m_data.xFlashDuration < 0)
-		m_data.xFlashDuration = 0;
+	m_data.xFadeDelay -= gameData.time.xFrame;
+	if (m_data.xFadeDelay < 0)
+		m_data.xFadeDelay = 0;
 
 	if (bForce || (RandShort () > 4096)) {
       if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.Red () || m_data.effect.Green () || m_data.effect.Blue ()))
-	      NDRecordPaletteEffect (short (m_data.effect.Red () * 64), short (m_data.effect.Green () * 64), short (m_data.effect.Blue () * 64));
-		paletteManager.SetEffect ();
-		return;
+	      NDRecordPaletteEffect (short (m_data.effect.Red () * 64.0f), short (m_data.effect.Green () * 64.0f), short (m_data.effect.Blue () * 64.0f));
 		}
 	}
-
-m_data.effect.Red () = UpdateEffect (m_data.effect.Red (), nDelta);
-m_data.effect.Green () = UpdateEffect (m_data.effect.Green (), nDelta);
-m_data.effect.Blue () = UpdateEffect (m_data.effect.Blue (), nDelta);
-
-if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.Red () || m_data.effect.Green () || m_data.effect.Blue ()))
-     NDRecordPaletteEffect (short (m_data.effect.Red () * 64), short (m_data.effect.Green () * 64), short (m_data.effect.Blue () * 64));
-SetEffect (bForce);
+else {
+	m_data.xFadeDuration [0] -= gameData.time.xFrame;
+	if ((gameData.demo.nState == ND_STATE_RECORDING) && (m_data.effect.Red () || m_data.effect.Green () || m_data.effect.Blue ()))
+		  NDRecordPaletteEffect (short (m_data.effect.Red () * 64.0f), short (m_data.effect.Green () * 64.0f), short (m_data.effect.Blue () * 64.0f));
+	}
 }
 
 //------------------------------------------------------------------------------

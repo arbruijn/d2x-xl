@@ -407,9 +407,9 @@ int AttemptToStealItem2(CObject *objP, int nPlayer)
 {
 int rval = AttemptToStealItem3 (objP, nPlayer);
 if (rval) {
-	gameData.thief.nStolenItem = (gameData.thief.nStolenItem+1) % MAX_STOLEN_ITEMS;
+	gameData.thief.nStolenItem = (gameData.thief.nStolenItem + 1) % MAX_STOLEN_ITEMS;
 	if (RandShort () > 20000)	//	Occasionally, boost the value again
-		gameData.thief.nStolenItem = (gameData.thief.nStolenItem+1) % MAX_STOLEN_ITEMS;
+		gameData.thief.nStolenItem = (gameData.thief.nStolenItem + 1) % MAX_STOLEN_ITEMS;
 	}
 return rval;
 }

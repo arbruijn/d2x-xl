@@ -467,7 +467,6 @@ class CRenderOptions {
 
 class COglOptions {
 	public:
-		int bSetGammaRamp;
 		int bGlTexMerge;
 		int bLightObjects;
 		int bLightPowerups;

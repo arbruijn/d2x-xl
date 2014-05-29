@@ -282,9 +282,9 @@ FORALL_OBJS (objP, i) {
 				force /= 2;
 				}
 			if (force > I2X (1)) {
-				paletteManager.SetFlashDuration (fe);
 				force = PK1 + X2I (PK2 * force);
 				paletteManager.BumpEffect (force, force, force);
+				paletteManager.SetFadeDelay (fe);
 #if TRACE
 				console.printf (CON_DBG, "force = %7.3f, adding %i\n", X2F (force), PK1 + X2I (PK2*force));
 #endif

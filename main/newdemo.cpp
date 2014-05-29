@@ -2218,14 +2218,14 @@ while (!bDone) {
 			gameData.demo.bFlyingGuided=1;
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.demo.bFlyingGuided=0;
+				gameData.demo.bFlyingGuided = 0;
 			break;
 
 		case ND_EVENT_END_GUIDED:
 			gameData.demo.bFlyingGuided=0;
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.demo.bFlyingGuided=1;
+				gameData.demo.bFlyingGuided = 1;
 			break;
 
 		case ND_EVENT_PALETTE_EFFECT: {
@@ -2236,6 +2236,7 @@ while (!bDone) {
 			b = NDReadShort ();
 			CATCH_BAD_READ
 			paletteManager.SetEffect (r, g, b);
+			paletteManager.SetFadeDelay (I2X (1));
 			}
 			break;
 

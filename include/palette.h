@@ -108,30 +108,31 @@ typedef struct tPaletteList {
 
 class CPaletteData {
 	public:
-		CPalette*		deflt;
-		CPalette*		fade;
-		CPalette*		game;
-		CPalette*		last;
-		CPalette*		D1;
-		CPalette*		texture;
-		CPalette*		current;
-		CPalette*		prev;
-		tPaletteList*	list;
-		char				szLastLoaded [FILENAME_LEN];
-		char				szLastPig [FILENAME_LEN];
-		int				nPalettes;
-		int				nGamma;
-		int				nLastGamma;
-		fix				xFlashDuration;
-		fix				xLastDuration;
-		fix				xLastEffectTime;
+		CPalette*			deflt;
+		CPalette*			fade;
+		CPalette*			game;
+		CPalette*			last;
+		CPalette*			D1;
+		CPalette*			texture;
+		CPalette*			current;
+		CPalette*			prev;
+		tPaletteList*		list;
+		char					szLastLoaded [FILENAME_LEN];
+		char					szLastPig [FILENAME_LEN];
+		int					nPalettes;
+		int					nGamma;
+		int					nLastGamma;
+		fix					xFadeDelay;
+		fix					xFadeDuration [2];
+		fix					xLastDuration;
+		fix					xLastEffectTime;
 
-		ubyte				fadeTable [PALETTE_SIZE * MAX_FADE_LEVELS];
+		ubyte					fadeTable [PALETTE_SIZE * MAX_FADE_LEVELS];
 		CFloatVector3		flash;
 		CFloatVector3		effect;
 		CFloatVector3		lastEffect;
-		bool				bDoEffect;
-		int				nSuspended;
+		bool					bDoEffect;
+		int					nSuspended;
 	};
 
 
@@ -174,6 +175,7 @@ class CPaletteManager {
 		void SetEffect (float r, float g, float b, bool bForce = false);
 		void BumpEffect (int r, int g, int b);
 		void BumpEffect (float r, float g, float b);
+		void UpdateEffect (void);
 		inline void SetRedEffect (int color) { m_data.effect.Red () = float (color) / 64.0f; }
 		inline void SetGreenEffect (int color) { m_data.effect.Green () = float (color) / 64.0f; }
 		inline void SetBlueEffect (int color) { m_data.effect.Blue () = float (color) / 64.0f; }
@@ -202,15 +204,16 @@ class CPaletteManager {
 			return m_data.current;
 			}
 
-		inline sbyte RedEffect (void) { return sbyte (m_data.effect.Red () * 64.0f); }
-		inline sbyte GreenEffect (void) { return sbyte (m_data.effect.Green () * 64.0f); }
-		inline sbyte BlueEffect (void) { return sbyte (m_data.effect.Blue () * 64.0f); }
+		inline sbyte RedEffect (bool bFade = false) { return sbyte (m_data.effect.Red () * 64.0f * (bFade ? FadeScale () : 1.0f)); }
+		inline sbyte GreenEffect (bool bFade = false) { return sbyte (m_data.effect.Green () * 64.0f * (bFade ? FadeScale () : 1.0f)); }
+		inline sbyte BlueEffect (bool bFade = false) { return sbyte (m_data.effect.Blue () * 64.0f * (bFade ? FadeScale () : 1.0f)); }
 		inline void SetRedEffect (sbyte color) {  m_data.effect.Red () = float (color) / 64.0f; }
 		inline void SetGreenEffect (sbyte color) {  m_data.effect.Green () = float (color) / 64.0f; }
 		inline void SetBlueEffect (sbyte color) {  m_data.effect.Blue () = float (color) / 64.0f; }
-		inline void SetFlashDuration (fix xDuration) { m_data.xFlashDuration = xDuration; }
+		inline void SetFadeDelay (fix xDelay) { m_data.xFadeDelay = xDelay; }
+		inline void SetFadeDuration (fix xDuration) { m_data.xFadeDuration [0] = m_data.xFadeDuration [1] = xDuration; }
 		inline void SetLastEffectTime (fix xTime) { m_data.xLastEffectTime = xTime; }
-		inline fix FlashDuration (void) { return m_data.xFlashDuration; }
+		inline fix FadeDelay (void) { return m_data.xFadeDelay; }
 		inline fix LastEffectTime (void) { return m_data.xLastEffectTime; }
 
 		inline void SetDefault (CPalette* palette) { m_data.deflt = palette; }
@@ -236,6 +239,8 @@ class CPaletteManager {
 
 		inline int ClosestColor (int r, int g, int b)
 		 { return m_data.current ? m_data.current->ClosestColor (r, g, b) : 0; }
+
+		inline float FadeScale (void) { return m_data.xFadeDuration [1] ? (float) m_data.xFadeDuration [0] / (float) m_data.xFadeDuration [1] : 0.0f; }
 
 	};
 

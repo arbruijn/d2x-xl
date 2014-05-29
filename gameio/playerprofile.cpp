@@ -692,7 +692,6 @@ for (i = 0; i < 2; i++) {
 	RP (gameOptions [i].menus.bShowLevelVersion, i, 0);
 	RP (gameOptions [i].menus.bSmartFileSearch, i, 0);
 	RP (gameOptions [i].multi.bUseMacros, i, 0);
-	RP (gameOptions [i].ogl.bSetGammaRamp, i, 0);
 	RP (gameOptions [i].render.cockpit.bWideDisplays, i, 0);
 #endif
 	}
@@ -1518,13 +1517,11 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].menus.bShowLevelVersion", "1"},
 	 {"gameOptions[0].menus.bSmartFileSearch", "1"},
 	 {"gameOptions[0].multi.bUseMacros", "1"},
-	 {"gameOptions[0].ogl.bSetGammaRamp", "0"},
 	 {"gameOptions[0].render.cockpit.bWideDisplays", "1"},
 	 {"gameOptions[1].movies.nQuality", "0"},
 	 {"gameOptions[1].menus.bShowLevelVersion", "0"},
 	 {"gameOptions[1].menus.bSmartFileSearch", "1"},
 	 {"gameOptions[1].multi.bUseMacros", "0"},
-	 {"gameOptions[1].ogl.bSetGammaRamp", "0"},
 #endif
 
 	};
