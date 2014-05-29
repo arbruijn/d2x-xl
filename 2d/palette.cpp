@@ -389,9 +389,9 @@ red = Clamp (m_data.effect.Red () * fFade + red, 0.0f, maxVal);
 green = Clamp (m_data.effect.Green () * fFade + green, 0.0f, maxVal);
 blue = Clamp (m_data.effect.Blue () * fFade + blue, 0.0f, maxVal);
 
-SetEffect (max (red, m_data.effect.Red ()), 
-			  max (green, m_data.effect.Green ()), 
-			  max (blue, m_data.effect.Blue ()),
+SetEffect (max (red, m_data.effect.Red () * fFade), 
+			  max (green, m_data.effect.Green () * fFade), 
+			  max (blue, m_data.effect.Blue () * fFade),
 			  true);
 }
 
