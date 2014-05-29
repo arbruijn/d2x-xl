@@ -104,7 +104,9 @@ void CTextureManager::Destroy (void)
 {
 	CTexture*	texP;
 
+#if DBG
 Check ();
+#endif
 ogl.DestroyDrawBuffers ();
 cameraManager.Destroy ();
 OglDeleteLists (&hBigSphere, 1);
@@ -117,6 +119,9 @@ OglDeleteLists (secondary_lh, sizeof (secondary_lh) / sizeof (GLuint));
 OglDeleteLists (g3InitTMU [0], sizeof (g3InitTMU) / sizeof (GLuint));
 OglDeleteLists (g3ExitTMU, sizeof (g3ExitTMU) / sizeof (GLuint));
 OglDeleteLists (&mouseIndList, 1);
+#if DBG
+Check ();
+#endif
 
 while (m_textures && (m_nTextures > 0)) {
 	texP = m_textures;
@@ -137,6 +142,7 @@ m_textures = NULL;
 
 bool CTextureManager::Check (void)
 {
+#if DBG
 	CTexture*	texP = m_textures;
 	int			i = 0;
 
@@ -152,6 +158,7 @@ if  (i != m_nTextures) {
 	TextureError ();
 	return false;
 	}
+#endif
 return true;
 }
 
@@ -161,7 +168,9 @@ static CTexture* dbgTexP = (CTexture*) 0x101fca30;
 
 void CTextureManager::Register (CTexture* texP)
 {
+#if DBG
 Check ();
+#endif
 if (texP == dbgTexP)
 	dbgTexP = dbgTexP;
 #if DBG
@@ -177,14 +186,18 @@ if (m_textures)
 	m_textures->SetPrev (texP);
 m_nTextures++;
 m_textures = texP;
+#if DBG
 Check ();
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 bool CTextureManager::Release (CTexture* texP)
 {
+#if DBG
 Check ();
+#endif
 if (!m_textures)
 	return false;
 #if DBG
@@ -320,14 +333,15 @@ if (m_bRegistered) {
 #endif
 			m_next->m_prev = m_prev;
 			}
+#if DBG
 		textureManager.Check ();
+#endif
 		}
-	m_prev =
-	m_next = NULL;
 	m_bRegistered = false;
 	}
-else if (m_prev || m_next)
-	m_prev = m_next = NULL;
+m_info.bmP = NULL;
+m_prev =
+m_next = NULL;
 //m_info.bmP = NULL;
 Init ();
 }
@@ -336,10 +350,12 @@ Init ();
 
 bool CTexture::Check (void)
 {
+#if DBG
 if (m_prev && (m_prev->m_next != this))
 	return false;
 if (m_next && (m_next->m_prev != this))
 	return false;
+#endif
 return true;
 }
 
@@ -1093,6 +1109,10 @@ CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures)
 	CBitmap*	bmP, * bmoP, * bmfP;
 	int		nFrames;
 
+#if DBG
+if (nTexture == nDbgTexture)
+	nDbgTexture = nDbgTexture;
+#endif
 LoadTexture (gameData.pig.tex.bmIndexP [nTexture].index, 0, gameStates.app.bD1Mission);
 bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
 bmP->SetStatic (1);
