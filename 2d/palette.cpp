@@ -279,9 +279,18 @@ CLAMP (green, 0.0f, 1.0f);
 CLAMP (blue, 0.0f, 1.0f);
 //if (!bForce && (m_data.effect.Red () == red) && (m_data.effect.Green () == green) && (m_data.effect.Blue () == blue))
 //	return;
-m_data.effect.Red () = red;
-m_data.effect.Green () = green;
-m_data.effect.Blue () = blue;
+if (m_data.effect.Red () < red)
+	m_data.effect.Red () = red;
+else
+	red = m_data.effect.Red ();
+if (m_data.effect.Green () < green)
+	m_data.effect.Green () = green;
+else
+	green = m_data.effect.Green ();
+if (m_data.effect.Blue () < blue)
+	m_data.effect.Blue () = blue;
+else
+	blue = m_data.effect.Blue ();
 
 float maxColor = max (red, green);
 maxColor = max (maxColor, blue);
