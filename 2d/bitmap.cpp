@@ -91,7 +91,6 @@ else {
 
 void CBitmap::Destroy (void)
 {
-textureManager.Check ();
 SetPalette (NULL);
 DestroyBuffer ();
 DestroyFrames ();
@@ -105,7 +104,6 @@ else
 	m_info.texP = NULL;
 m_info.texture.SetBitmap (NULL);
 m_info.texture.Init ();
-textureManager.Check ();
 }
 
 //------------------------------------------------------------------------------

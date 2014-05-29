@@ -1128,9 +1128,7 @@ CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures)
 if (nTexture == nDbgTexture)
 	nDbgTexture = nDbgTexture;
 #endif
-textureManager.Check ();
 LoadTexture (gameData.pig.tex.bmIndexP [nTexture].index, 0, gameStates.app.bD1Mission);
-textureManager.Check ();
 bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
 bmP->SetStatic (1);
 if (!(bmoP = bmP->Override ()))

@@ -1024,7 +1024,6 @@ PrintLog (-1);
 
 InitTexColors ();
 
-textureManager.Check ();
 for (;;) {
 	if (!(nLoadRes = LoadLevelData (pszLevelName, nLevel)))
 		break;	//actually load the data from disk!
@@ -1040,7 +1039,6 @@ for (;;) {
 		break;
 	bRetry = 1;
 	}
-textureManager.Check ();
 if (nLoadRes) {
 	/*---*/PrintLog (0, "Couldn't load '%s' (%d)\n", pszLevelName, nLoadRes);
 	gameStates.app.bBetweenLevels = 0;
@@ -1061,7 +1059,6 @@ if (LoadModData (pszLevelName, bLoadTextures, 1) < 0) {
 	PrintLog (-1);
 	return -1;
 	}
-textureManager.Check ();
 #endif
 if (!lightManager.Setup (nLevel)) {
 	PrintLog (-1, "Not enough memory for light data\n");
@@ -1166,7 +1163,6 @@ audio.SetFxVolume ((gameConfig.nAudioVolume [1] * 32768) / 8, 1);
 audio.SetVolumes ((gameConfig.nAudioVolume [0] * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
 PrintLog (-1);
 CreateSoundThread ();
-textureManager.Check ();
 gameStates.render.bDepthSort = 1;
 gameStates.app.bBetweenLevels = 0;
 PrintLog (-1);
@@ -1846,7 +1842,6 @@ if (IsCoopGame && networkData.nJoinState) {
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 		gameData.multiplayer.players [i].flags |= netGame.PlayerFlags () [i];
 	}
-textureManager.Check ();
 if (IsMultiGame)
 	MultiPrepLevel (); // Removes robots from level if necessary
 else
@@ -1876,7 +1871,6 @@ if (!(IsMultiGame || (gameStates.app.cheats.bEnabled & 2))) {
 else
 	LoadPlayerProfile (1);		//get window sizes
 ResetSpecialEffects ();
-textureManager.Check ();
 if (networkData.nJoinState == 1) {
 	networkData.nJoinState = 0;
 	StartLevel (nLevel, 1);
@@ -1884,7 +1878,6 @@ if (networkData.nJoinState == 1) {
 else {
 	StartLevel (nLevel, 0);		// Note link to above if!
 	}
-textureManager.Check ();
 CopyDefaultsToRobotsAll ();
 if (!bRestore) {
 	InitReactorForLevel (0);
@@ -1896,7 +1889,6 @@ if (!bRestore) {
 	SetSoundSources ();
 	PrintLog (-1);
 	}
-textureManager.Check ();
 #if 0
 LOCALPLAYER.nInvuls =
 LOCALPLAYER.nCloaks = 0;
