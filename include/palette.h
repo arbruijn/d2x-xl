@@ -124,7 +124,7 @@ class CPaletteData {
 		int					nLastGamma;
 		fix					xFadeDelay;
 		fix					xFadeDuration [2];
-		fix					xLastDuration;
+		fix					xLastDelay;
 		fix					xLastEffectTime;
 
 		ubyte					fadeTable [PALETTE_SIZE * MAX_FADE_LEVELS];

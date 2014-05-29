@@ -377,7 +377,7 @@ SetEffect (m_data.effect.Red () += red, m_data.effect.Green () + green, m_data.e
 void CPaletteManager::SaveEffect (void)
 {
 m_data.lastEffect = m_data.effect;
-m_data.xLastDuration = m_data.xFadeDelay [0];
+m_data.xLastDelay = m_data.xFadeDelay;
 }
 
 //------------------------------------------------------------------------------
@@ -387,7 +387,7 @@ void CPaletteManager::ResumeEffect (bool bCond)
 if (bCond) {
 	m_data.effect = m_data.lastEffect;
 	SetEffect ();
-	m_data.xFadeDelay [0] = m_data.xLastDuration;
+	m_data.xFadeDelay = m_data.xLastDelay;
 	m_data.xLastEffectTime = 0;
 	}
 }
@@ -407,7 +407,7 @@ if (bCond) {
 
 void CPaletteManager::ResetEffect (void)
 {
-m_data.xFadeDelay [0] = 0;
+m_data.xFadeDelay = 0;
 m_data.xLastEffectTime = 0;
 SetEffect (0, 0, 0);
 }
@@ -437,7 +437,7 @@ if (m_data.xFadeDelay) {
 		bForce = true;
 
 	if ((m_data.xLastEffectTime + I2X (1) / 8 < gameData.time.xGame) || (m_data.xLastEffectTime > gameData.time.xGame)) {
-		audio.PlaySound (SOUND_CLOAK_OFF, SOUNDCLASS_GENERIC, m_data.xFadeDelay [0] / 4);
+		audio.PlaySound (SOUND_CLOAK_OFF, SOUNDCLASS_GENERIC, m_data.xFadeDelay / 4);
 		m_data.xLastEffectTime = gameData.time.xGame;
 		}
 
