@@ -360,8 +360,7 @@ SetEffect (m_data.effect.Red (), m_data.effect.Green (), m_data.effect.Blue (), 
 
 void CPaletteManager::BumpEffect (int red, int green, int blue)
 {
-float fScale = FadeScale () / 64.0f;
-BumpEffect (float (red) * fScale, float (green) * fScale, float (blue) * fScale);
+BumpEffect (float (red) / 64.0f, float (green) / 64.0f, float (blue) / 64.0f);
 }
 
 //	------------------------------------------------------------------------------------
