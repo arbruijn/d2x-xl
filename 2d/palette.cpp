@@ -277,8 +277,8 @@ if (!gameStates.render.nLightingMethod) // || gameStates.menus.nInMenu || !gameS
 CLAMP (red, 0.0f, 1.0f);
 CLAMP (green, 0.0f, 1.0f);
 CLAMP (blue, 0.0f, 1.0f);
-if (!bForce && (m_data.effect.Red () == red) && (m_data.effect.Green () == green) && (m_data.effect.Blue () == blue))
-	return;
+//if (!bForce && (m_data.effect.Red () == red) && (m_data.effect.Green () == green) && (m_data.effect.Blue () == blue))
+//	return;
 m_data.effect.Red () = red;
 m_data.effect.Green () = green;
 m_data.effect.Blue () = blue;
@@ -372,7 +372,8 @@ void CPaletteManager::BumpEffect (float red, float green, float blue)
 float fFade = Clamp (FadeScale (), 0.0f, 1.0f);
 SetEffect (Clamp (m_data.effect.Red () * fFade + red, 0.0f, maxVal), 
 			  Clamp (m_data.effect.Green () * fFade + green, 0.0f, maxVal), 
-			  Clamp (m_data.effect.Blue () * fFade + blue, 0.0f, maxVal));
+			  Clamp (m_data.effect.Blue () * fFade + blue, 0.0f, maxVal),
+			  true);
 }
 
 //------------------------------------------------------------------------------

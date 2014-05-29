@@ -75,12 +75,14 @@ else {
 		return;
 
 	float fScale = float (gameData.FusionCharge () >> 11) / 64.0f;
-	CFloatVector* colorP = gameData.weapons.color + FUSION_ID;
+	if (fScale > 0.0f) {
+		CFloatVector* colorP = gameData.weapons.color + FUSION_ID;
 
-	if (gameData.FusionCharge () < I2X (2)) 
-		paletteManager.BumpEffect (colorP->Red () * fScale, colorP->Green () * fScale, colorP->Blue () * fScale);
-	else 
-		paletteManager.BumpEffect (colorP->Blue () * fScale, colorP->Red () * fScale, colorP->Green () * fScale);
+		if (gameData.FusionCharge () < I2X (2)) 
+			paletteManager.BumpEffect (colorP->Red () * fScale, colorP->Green () * fScale, colorP->Blue () * fScale);
+		else 
+			paletteManager.BumpEffect (colorP->Blue () * fScale, colorP->Red () * fScale, colorP->Green () * fScale);
+		}
 	if (gameData.time.xGame < gameData.fusion.xLastSoundTime)		//gametime has wrapped
 		gameData.fusion.xNextSoundTime = gameData.fusion.xLastSoundTime = gameData.time.xGame;
 	if (gameData.fusion.xNextSoundTime < gameData.time.xGame) {
