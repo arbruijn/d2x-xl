@@ -431,20 +431,6 @@ void CPaletteManager::FadeEffect (void)
 	float	nDelta = 0;
 	bool	bForce = false;
 
-//	Diminish at FADE_RATE units/second.
-//	For frame rates > FADE_RATE Hz, use randomness to achieve this.
-#if 0
-if (gameData.time.xFrame < I2X (1) / FADE_RATE) {
-	if (RandShort () < gameData.time.xFrame * FADE_RATE / 2)	
-		nDelta = 1;
-	}
-else {
-	if (!(nDelta = X2F (gameData.time.xFrame * FADE_RATE)))		// one second = FADE_RATE counts
-		nDelta = 1;						// make sure we decrement by something
-	}
-nDelta /= 64.0f;
-#endif
-
 if (m_data.xFadeDelay) {
 	//	Part of hack system to force update of palette after exiting a menu.
 	if (m_data.xLastEffectTime)
