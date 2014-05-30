@@ -111,6 +111,7 @@ return 1;
 void CCamera::Init (void)
 {
 memset (&m_data, 0, sizeof (m_data)); 
+SetName ("Camera");
 }
 
 //------------------------------------------------------------------------------
@@ -206,7 +207,7 @@ return 1;
 
 void CCamera::Destroy (void)
 {
-this->CBitmap::Destroy ();
+//this->CBitmap::Destroy ();
 //ReleaseTexture ();
 if (m_data.glTexId)
 	ogl.DeleteTextures (1, &m_data.glTexId);

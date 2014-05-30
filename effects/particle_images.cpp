@@ -307,7 +307,7 @@ if (m_textureArray) {
 	int	i, j;
 	tParticleImageInfo* piiP = particleImageInfo [0];
 
-for (i = 0; i < 2; i++)
+for (i = 0; i < MAX_PARTICLE_QUALITY + 1; i++)
 	for (j = 0; j < PARTICLE_TYPES; j++, piiP++)
 		if (piiP->bmP) {
 			delete piiP->bmP;

@@ -1111,9 +1111,7 @@ if (pszName) {
 	m_info.szName [sizeof (m_info.szName) - 1] = '\0';
 	if (!strcmp (pszName, "slowmotion#0"))
 		nDbgTexture = nDbgTexture;
-	if (!strcmp (pszName, "d:/programs/d2/textures/d2x-xl/shield"))
-		nDbgTexture = nDbgTexture;
-	if (!strcmp (pszName, "d:/programs/d2/textures/d2x-xl/shockwave1-01"))
+	if (!strcmp (pszName, "bullettime#0"))
 		nDbgTexture = nDbgTexture;
 	}
 }

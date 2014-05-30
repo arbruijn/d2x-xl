@@ -51,6 +51,10 @@ return 0;
 void RegisterBitmap (CBitmap* bmP)
 {
 if (bRegisterBitmaps) {
+	if (bmP == &gameData.pig.tex.addonBitmaps [0])
+		bmP = bmP;
+	else if (bmP == &gameData.pig.tex.addonBitmaps [1])
+		bmP = bmP;
 	if (!bitmapList.Buffer ()) {
 		bitmapList.Create (1000);
 		bitmapList.SetGrowth (1000);
@@ -151,6 +155,10 @@ else {
 
 void CBitmap::Destroy (void)
 {
+if (!strcmp (m_info.szName, "slowmotion#0"))
+	nDbgTexture = nDbgTexture;
+if (!strcmp (m_info.szName, "bullettime#0"))
+	nDbgTexture = nDbgTexture;
 SetPalette (NULL);
 DestroyBuffer ();
 DestroyFrames ();
@@ -189,15 +197,14 @@ m_info.maskP = NULL;
 
 void CBitmap::Reset (void) 
 {
-	static int nSignature = 0;
-	char szSignature [20];
+	char szName [FILENAME_LEN];
 
+memcpy (szName, m_info.szName, sizeof (szName));
 memset (&m_info, 0, sizeof (m_info));
+memcpy (m_info.szName, szName, sizeof (szName));
 m_info.texture.Init ();
 m_info.texP = &m_info.texture;
 m_info.texture.SetBitmap (this);
-sprintf (szSignature, "Bitmap %d", nSignature++);
-SetName (szSignature);
 }
 
 //------------------------------------------------------------------------------
@@ -629,7 +636,7 @@ int CBitmap::FreeHiresAnimation (int bD1)
 	int		i;
 
 if (!(altBmP = Override ()))
-	return 0;
+	altBmP = this; //return 0;
 SetOverride (NULL);
 if (BPP () == 1)
 	DelFlags (BM_FLAG_TGA);
