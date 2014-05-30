@@ -142,7 +142,7 @@ class CBitmap : public CArray< ubyte > {
 		CBitmapRenderData	m_render;
 
 	public:
-		CBitmap () { Init (); };
+		CBitmap () { Reset (); };
 		~CBitmap () { Destroy (); };
 		static CBitmap* Create (ubyte mode, int w, int h, int bpp, const char* pszName = NULL);
 		ubyte* CreateBuffer (void);
