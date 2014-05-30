@@ -389,6 +389,8 @@ canvas.Deactivate ();
 
 //------------------------------------------------------------------------------
 
+extern bool bRegisterBitmaps;
+
 CBitmap* CBackgroundManager::LoadCustomWallpaper (void)
 {
 if (gameStates.app.bNostalgia)
@@ -396,7 +398,10 @@ if (gameStates.app.bNostalgia)
 
 gameOpts->menus.altBg.bHave = 0;
 
+bool b = bRegisterBitmaps;
+bRegisterBitmaps = false;
 CBitmap* bmP = CBitmap::Create (0, 0, 0, 1);
+bRegisterBitmaps = b;
 if (!bmP)
 	return NULL;
 
@@ -462,7 +467,10 @@ if (PCXGetDimensions (filename, &width, &height) != PCX_ERROR_NONE) {
 	return NULL;
 	}
 
+bool b = bRegisterBitmaps;
+bRegisterBitmaps = false;
 CBitmap* bmP = CBitmap::Create (0, width, height, 1);
+bRegisterBitmaps = b;
 
 if (!bmP) {
 	Error ("Not enough memory for menu background\n");

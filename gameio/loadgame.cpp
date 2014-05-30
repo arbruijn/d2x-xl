@@ -756,6 +756,11 @@ PrintLog (-1);
 /*---*/PrintLog (1, "Unloading mod text messages\n");
 FreeModTexts ();
 PrintLog (-1);
+
+#if DBG
+UnloadAddonImages ();
+particleImageManager.FreeAll ();
+#endif
 }
 
 //------------------------------------------------------------------------------

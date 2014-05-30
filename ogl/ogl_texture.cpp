@@ -1109,7 +1109,11 @@ void CBitmap::SetName (const char* pszName)
 if (pszName) {
 	strncpy (m_info.szName, pszName, sizeof (m_info.szName)); 
 	m_info.szName [sizeof (m_info.szName) - 1] = '\0';
-	if (!strcmp (pszName, "redlaserblob"))
+	if (!strcmp (pszName, "slowmotion#0"))
+		nDbgTexture = nDbgTexture;
+	if (!strcmp (pszName, "d:/programs/d2/textures/d2x-xl/shield"))
+		nDbgTexture = nDbgTexture;
+	if (!strcmp (pszName, "d:/programs/d2/textures/d2x-xl/shockwave1-01"))
 		nDbgTexture = nDbgTexture;
 	}
 }
