@@ -176,7 +176,6 @@ static CTexture* dbgTexP = (CTexture*) 0x101fca30;
 
 uint CTextureManager::Register (CTexture* texP)
 {
-
 uint i = Find (texP);
 if (i) {
 #if DBG
@@ -186,11 +185,14 @@ if (i) {
 	return i;
 	}
 m_textures.Push (texP);
+#if DBG
 int l = (int) strlen (texP->Bitmap ()->Name ()) + 1;
 char* s = new char [l];
 if (s)
 	strcpy (s, texP->Bitmap ()->Name ());
 texIds.Push (s);
+s = NULL;
+#endif
 return m_textures.ToS ();
 }
 
@@ -206,18 +208,26 @@ if (!i)
 	i = Find (texP);
 if (!i)
 	return false;
-if (i == m_textures.ToS ()) {
-	m_textures.Shrink ();
-	delete texIds.Top ();
-	texIds.Shrink ();
-	}
-else {
+if (i != m_textures.ToS ()) {
 	m_textures [i - 1] = *m_textures.Top ();
 	m_textures [i - 1]->Register (i);
-	delete texIds [i - 1];
-	texIds [i - 1] = *texIds.Top ();
-	texIds.Shrink ();
+#if DBG
+	if (texIds.Top ()) 
+		delete texIds.Top ();
+#endif
 	}
+#if DBG
+else {
+	if (texIds [i - 1])
+		delete texIds [i - 1];
+	texIds [i - 1] = *texIds.Top ();
+	}
+*texIds.Top () = NULL;
+texIds.Shrink ();
+#endif
+
+*m_textures.Top () = 0;
+m_textures.Shrink ();
 return true;
 }
 
