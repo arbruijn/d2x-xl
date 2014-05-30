@@ -79,8 +79,8 @@ return (minColor + maxColor) / 2;
 void CTextureManager::Init (void)
 {
 #if 1
-m_textures = NULL;
-m_nTextures = 0;
+m_textures.Create (1000);
+m_textures.SetGrowth (1000);
 #else
 m_textures.Create (TEXTURE_LIST_SIZE);
 for (int i = 0; i < TEXTURE_LIST_SIZE; i++)
@@ -102,8 +102,6 @@ PrintLog (0, "Error in texture management\n");
 
 void CTextureManager::Destroy (void)
 {
-	CTexture*	texP;
-
 #if DBG
 Check ();
 #endif
@@ -123,19 +121,23 @@ OglDeleteLists (&mouseIndList, 1);
 Check ();
 #endif
 
-while (m_textures && (m_nTextures > 0)) {
-	texP = m_textures;
+for (uint i = 0, j = m_textures.ToS (); i < j; i++) {
+	CTexture* texP = m_textures [i];
 #if DBG
-	if (!texP->Registered ())
+	if (texP->Registered () != i + 1)
 		TextureError ();
 #endif
 	texP->Destroy ();
 	}
-if (m_nTextures) {
-	TextureError ();
-	m_nTextures = 0;
-	}
-m_textures = NULL;
+m_textures.Reset ();
+}
+
+//------------------------------------------------------------------------------
+
+uint CTextureManager::Check (CTexture* texP)
+{
+uint i = texP->Registered ();
+return i && (i <= m_textures.ToS ()) && (m_textures [i] != texP) ? i : 0;
 }
 
 //------------------------------------------------------------------------------
@@ -143,20 +145,12 @@ m_textures = NULL;
 bool CTextureManager::Check (void)
 {
 #if DBG
-	CTexture*	texP = m_textures;
-	int			i = 0;
-
-while (texP) {
-	if (!texP->Check ()) {
+for (uint i = 0, j = m_textures.ToS (); i < j; i++) {
+	CTexture* texP = m_textures [i]; 
+	if (texP->Registered () != i + 1) {
 		TextureError ();
 		return false;
 		}
-	texP = texP->Next ();
-	i++;
-	}
-if  (i != m_nTextures) {
-	TextureError ();
-	return false;
 	}
 #endif
 return true;
@@ -164,31 +158,31 @@ return true;
 
 //------------------------------------------------------------------------------
 
+uint CTextureManager::Find (CTexture* texP)
+{
+for (uint i = 0, j = m_textures.ToS (); i < j; i++) 
+	if (m_textures [i] == texP)
+		return i + 1;
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
 static CTexture* dbgTexP = (CTexture*) 0x101fca30;
 
-void CTextureManager::Register (CTexture* texP)
+uint CTextureManager::Register (CTexture* texP)
 {
+
+uint i = Find (texP);
+if (i) {
 #if DBG
-Check ();
-#endif
-if (texP == dbgTexP)
-	dbgTexP = dbgTexP;
-#if DBG
-CTexture* t;
-for (t = m_textures; t; t = t->Next ())
-	if (texP == t) {
+	if (m_textures [i]->Registered () != i)
 		TextureError ();
-		return;
-		}
 #endif
-texP->Link (NULL, m_textures);
-if (m_textures)
-	m_textures->SetPrev (texP);
-m_nTextures++;
-m_textures = texP;
-#if DBG
-Check ();
-#endif
+	return i;
+	}
+m_textures.Push (texP);
+return m_textures.ToS ();
 }
 
 //------------------------------------------------------------------------------
@@ -198,25 +192,16 @@ bool CTextureManager::Release (CTexture* texP)
 #if DBG
 Check ();
 #endif
-if (!m_textures)
+uint i = Check (texP);
+if (!i)
+	i = Find (texP);
+if (!i)
 	return false;
-#if DBG
-CTexture* t;
-for (t = m_textures; t; t = t->Next ())
-	if (texP == t)
-		break;
-if (!t) {
-	TextureError ();
-	return false;
-	}
-#endif
-m_nTextures--;
-if (m_textures == texP) {
-	m_textures = texP->Next ();
-#if DBG
-	if (!m_textures && m_nTextures)
-		TextureError ();
-#endif
+if (i == m_textures.ToS ())
+	m_textures.Shrink ();
+else {
+	m_textures [i - 1] = *m_textures.Top ();
+	m_textures [i - 1]->Register (i);
 	}
 return true;
 }
@@ -228,7 +213,7 @@ return true;
 void CTexture::Init (void)
 {
 #if DBG
-if (m_bRegistered)
+if (m_nRegistered)
 	Destroy ();
 #endif
 m_info.handle = 0;
@@ -246,9 +231,7 @@ m_info.v = 0;
 m_info.bRenderBuffer = 0;
 m_info.prio = 0.3f;
 m_info.bmP = NULL;
-m_prev =
-m_next = NULL;
-m_bRegistered = false;
+m_nRegistered = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -288,12 +271,16 @@ m_info.bSmoothe = (bMipMap < 0) ? -1 : bSmoothe || m_info.bMipMaps;
 
 //------------------------------------------------------------------------------
 
-bool CTexture::Register (void)
+bool CTexture::Register (uint i)
 {
-if (m_bRegistered)
-	return false;	// already registered
-textureManager.Register (this);
-return m_bRegistered = true;
+if (i)
+	m_nRegistered = i;
+else {
+	if (m_nRegistered)
+		return false;	// already registered
+	textureManager.Register (this);
+	}
+return m_nRegistered != 0;
 }
 
 //------------------------------------------------------------------------------
@@ -322,28 +309,8 @@ if (m_info.handle && (m_info.handle != GLuint (-1))) {
 void CTexture::Destroy (void)
 {
 Release ();
-if (m_bRegistered) {
-	if (textureManager.Release (this)) {
-		if (m_prev) {
-#if DBG
-			if (m_prev->m_next != this)
-				TextureError ();
-#endif
-			m_prev->m_next = m_next;
-			}
-		if (m_next) {
-#if DBG
-			if (m_next->m_prev != this)
-				TextureError ();
-#endif
-			m_next->m_prev = m_prev;
-			}
-#if DBG
-		textureManager.Check ();
-#endif
-		}
-	m_bRegistered = false;
-	}
+textureManager.Release (this);
+m_nRegistered = 0;
 //m_info.bmP = NULL;
 Init ();
 }
@@ -353,10 +320,7 @@ Init ();
 bool CTexture::Check (void)
 {
 #if DBG
-if (m_prev && (m_prev->m_next != this))
-	return false;
-if (m_next && (m_next->m_prev != this))
-	return false;
+return textureManager.Check (this) != 0;
 #endif
 return true;
 }

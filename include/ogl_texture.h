@@ -40,13 +40,12 @@ typedef struct tTexture {
 class CTexture {
 	private:
 #if 1
-		CTexture*	m_prev, * m_next;
-		bool			m_bRegistered;
+		uint			m_nRegistered;
 #endif
 		tTexture	m_info;
 
 	public:
-		CTexture () : m_prev (NULL), m_next (NULL), m_bRegistered (false) { Init (); }
+		CTexture () : m_nRegistered (0) { Init (); }
 		~CTexture () { Destroy (); }
 		GLuint Create (int w, int h);
 		void Init (void);
@@ -58,21 +57,13 @@ class CTexture {
 		int Load (ubyte *buffer);
 #endif
 		void Destroy (void);
-		bool Register (void);
+		bool Register (uint i = 0);
 		void Release (void);
 		static void Wrap (int state);
 		void Bind (void);
 		int BindRenderBuffer (void);
 		bool IsBound (void);
 
-		inline CTexture* Prev (void) { return m_prev; }
-		inline CTexture* Next (void) { return m_next; }
-		inline void Link (CTexture* prev, CTexture* next) {
-			m_prev = prev;
-			m_next = next;
-			}
-		inline void SetPrev (CTexture* prev) { m_prev = prev; }
-		inline void SetNext (CTexture* next) { m_next = next; }
 		inline int Index (void) { return m_info.index; }
 		inline void SetIndex (int index) { m_info.index = index; }
 		inline GLint Handle (void) { return GLint (m_info.handle); }
@@ -84,7 +75,7 @@ class CTexture {
 		inline int Height (void) { return m_info.h; }
 		inline int TW (void) { return m_info.tw; }
 		inline int TH (void) { return m_info.th; }
-		inline bool Registered (void) { return m_bRegistered; }
+		inline uint Registered (void) { return m_nRegistered; }
 		inline ubyte IsRenderBuffer (void) { return m_info.bRenderBuffer; }
 		inline CBitmap* Bitmap (void) { return m_info.bmP; }
 		inline void SetBitmap (CBitmap* bmP) { m_info.bmP = bmP; }
@@ -101,12 +92,6 @@ class CTexture {
 #endif
 		ubyte *Copy (int dxo, int dyo, ubyte *data);
 		ubyte *Convert (int dxo, int dyo,  CBitmap *bmP, int nTransp, int bSuperTransp);
-#if 0
-		inline int Prev (void) { return m_prev; }
-		inline int Next (void) { return m_next; }
-		inline void SetPrev (int prev) { m_prev = prev; }
-		inline void SetNext (int next) { m_next = next; }
-#endif
 #if TEXTURE_COMPRESSION
 		int Compress ();
 #endif
@@ -122,12 +107,13 @@ class CTexture {
 //------------------------------------------------------------------------------
 
 class CTexturePool : public CDataPool< CTexture > {};
+class CTextureList : public CStack< CTexture* > {};
 
 class CTextureManager {
 	private:
-		CTexture		m_info;
-		CTexture*	m_textures;
-		int			m_nTextures;
+		CTexture			m_info;
+		CTextureList	m_textures;
+		int				m_nTextures;
 
 	public:
 		CTextureManager () { Init (); }
@@ -135,10 +121,12 @@ class CTextureManager {
 		void Init (void);
 		void Smash (void);
 		void Destroy (void);
-		void Register (CTexture* texP);
+		uint Find (CTexture* texP);
+		uint Register (CTexture* texP);
 		bool Release (CTexture* texP);
-		inline CTexture* Textures (void) { return m_textures; }
+		inline CTextureList Textures (void) { return m_textures; }
 		bool Check (void);
+		uint Check (CTexture* texP);
 	};
 
 extern CTextureManager textureManager;
