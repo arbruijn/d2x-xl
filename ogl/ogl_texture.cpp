@@ -1108,6 +1108,7 @@ void CBitmap::SetName (const char* pszName)
 { 
 if (pszName) {
 	strncpy (m_info.szName, pszName, sizeof (m_info.szName)); 
+	m_info.szName [sizeof (m_info.szName) - 1] = '\0';
 	if (!strcmp (pszName, "redlaserblob"))
 		nDbgTexture = nDbgTexture;
 	}

@@ -605,6 +605,8 @@ return true;
 
 //------------------------------------------------------------------------------
 
+extern boolean bRegisterBitmaps;
+
 CBitmap *CreateStringBitmap (const char *s, int nKey, uint nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce)
 {
 	CFont*		fontP = fontManager.Current ();
@@ -628,7 +630,11 @@ for (;;) {
 		w = Pow2ize (w, 65536);
 		h = Pow2ize (h, 65536);	
 		}
-	if (!(bmP = CBitmap::Create (0, w, h, 4))) {
+	bool b = bRegisterBitmaps;
+	bRegisterBitmaps = false;
+	bmP = CBitmap::Create (0, w, h, 4);
+	bRegisterBitmaps = b;
+	if (!bmP) {
 		fontManager.SetScale (fScale);
 		return NULL;
 		}

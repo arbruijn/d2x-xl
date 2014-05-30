@@ -641,6 +641,9 @@ return h;
 //	------------------------------------------------------------------------------------
 //this function is the game.  called when game mode selected.  runs until
 //editor mode or exit selected
+
+extern boolean bRegisterBitmaps;
+
 void RunGame (void)
 {
 	int i, c;
@@ -772,6 +775,7 @@ try {
 catch (...) {
 	Warning ("Internal error when cleaning up.");
 	}
+bRegisterBitmaps = false;
 }
 
 //-----------------------------------------------------------------------------

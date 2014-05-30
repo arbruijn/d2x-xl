@@ -32,6 +32,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pcx.h"
 
 CStack< CBitmap* > bitmapList;
+bool bRegisterBitmaps = false;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -49,12 +50,14 @@ return 0;
 
 void RegisterBitmap (CBitmap* bmP)
 {
-if (!bitmapList.Buffer ()) {
-	bitmapList.Create (1000);
-	bitmapList.SetGrowth (1000);
+if (bRegisterBitmaps) {
+	if (!bitmapList.Buffer ()) {
+		bitmapList.Create (1000);
+		bitmapList.SetGrowth (1000);
+		}
+	if (!FindBitmap (bmP))
+		bitmapList.Push (bmP);
 	}
-if (!FindBitmap (bmP))
-	bitmapList.Push (bmP);
 }
 
 //------------------------------------------------------------------------------

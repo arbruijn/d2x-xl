@@ -1171,6 +1171,8 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+extern bool bRegisterBitmaps;
+
 //starts a new game on the given level
 int StartNewGame (int nLevel)
 {
@@ -1184,8 +1186,10 @@ networkData.bNewGame = 0;
 missionManager.DeleteLevelStates ();
 missionManager.SaveLevelStates ();
 InitMultiPlayerObject (0);
+bRegisterBitmaps = true;
 if (!StartNewLevel (nLevel, true)) {
 	gameStates.app.bAutoRunMission = 0;
+	bRegisterBitmaps = false;
 	return 0;
 	}
 LOCALPLAYER.startingLevel = nLevel;		// Mark where they started
