@@ -132,8 +132,15 @@ for (uint i = 0, j = m_textures.ToS (); i < j; i++) {
 		TextureError ();
 #endif
 	texP->Destroy ();
+#if DBG
+	if (texIds [i])
+		delete texIds [i];
+#endif
 	}
 m_textures.Reset ();
+#if DBG
+texIds.Reset ();
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -208,20 +215,20 @@ if (!i)
 	i = Find (texP);
 if (!i)
 	return false;
+
+#if DBG
+if (texIds [i - 1])
+	delete texIds [i - 1];
+#endif
+
 if (i != m_textures.ToS ()) {
 	m_textures [i - 1] = *m_textures.Top ();
 	m_textures [i - 1]->Register (i);
 #if DBG
-	if (texIds.Top ()) 
-		delete texIds.Top ();
+	texIds [i - 1] = *texIds.Top ();
 #endif
 	}
 #if DBG
-else {
-	if (texIds [i - 1])
-		delete texIds [i - 1];
-	texIds [i - 1] = *texIds.Top ();
-	}
 *texIds.Top () = NULL;
 texIds.Shrink ();
 #endif
