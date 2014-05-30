@@ -151,6 +151,7 @@ class CBitmap : public CArray< ubyte > {
 		void DestroyMask (void);
 		void DestroyFrames (void);
 		void DestroyBuffer (void);
+		void Reset (void);
 		void Init (void);
 		void Init (int mode, int x, int y, int w, int h, int bpp = 1, ubyte *buffer = NULL, bool bReset = false);
 		bool InitChild (CBitmap *parentP, int x, int y, int w, int h);
@@ -229,11 +230,7 @@ class CBitmap : public CArray< ubyte > {
 		inline void SetFrameCount (void) {  m_info.frames.nCount = m_info.props.h / m_info.props.w; }
 		void SetParent (CBitmap *parentP) { m_info.parentP = parentP; }
 		void SetMask (CBitmap *maskP) { m_info.maskP = maskP; }
-		inline CBitmap* SetOverride (CBitmap *overrideP) {
-			CBitmap*	oldOverrideP = m_info.overrideP;
-			m_info.overrideP = overrideP;
-			return oldOverrideP;
-			}
+		CBitmap* SetOverride (CBitmap *overrideP);
 		CBitmap* SetCurFrame (CBitmap *frameP) {
 			m_info.frames.nCurrent = int ((m_info.frames.currentP = frameP) - m_info.frames.bmP);
 			return m_info.frames.currentP;

@@ -128,7 +128,7 @@ m_info.maskP = NULL;
 
 //------------------------------------------------------------------------------
 
-void CBitmap::Init (void) 
+void CBitmap::Reset (void) 
 {
 	static int nSignature = 0;
 	char szSignature [20];
@@ -142,12 +142,18 @@ SetName (szSignature);
 
 //------------------------------------------------------------------------------
 
+void CBitmap::Init (void) 
+{
+Destroy ();
+Reset ();
+}
+
+//------------------------------------------------------------------------------
+
 void CBitmap::Init (int mode, int x, int y, int w, int h, int bpp, ubyte *buffer, bool bReset) 
 {
-if (bReset) {
-	//Destroy ();
+if (bReset)
 	Init ();
-	}
 m_info.props.x = x;
 m_info.props.y = y;
 m_info.props.w = w;
@@ -608,6 +614,17 @@ if (BPP () == 1)
 SetFromPog (0);
 SetPalette (NULL);
 FreeData ();
+}
+
+//------------------------------------------------------------------------------
+
+CBitmap* CBitmap::SetOverride (CBitmap *overrideP) 
+{
+if (overrideP == this)
+	return m_info.overrideP;
+CBitmap*	oldOverrideP = m_info.overrideP;
+m_info.overrideP = overrideP;
+return oldOverrideP;
 }
 
 //------------------------------------------------------------------------------
