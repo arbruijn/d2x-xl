@@ -1489,7 +1489,10 @@ if (bMipMaps < 0)
 switch (m_info.nType) {
 	case BM_TYPE_STD: // primary (low res) texture
 		if ((bmP = HasOverride ()))
-			return bmP->SetupTexture (bMipMaps, bLoad);
+			if (bmP == this)
+				m_info.overrideP = NULL;
+			else
+				return bmP->SetupTexture (bMipMaps, bLoad);
 		if (m_info.bSetup)
 			return Prepared () || !PrepareTexture (bMipMaps, 0);
 		return SetupFrames (bMipMaps, bLoad);

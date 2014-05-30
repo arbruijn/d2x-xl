@@ -144,8 +144,10 @@ SetName (szSignature);
 
 void CBitmap::Init (int mode, int x, int y, int w, int h, int bpp, ubyte *buffer, bool bReset) 
 {
-if (bReset)
+if (bReset) {
+	//Destroy ();
 	Init ();
+	}
 m_info.props.x = x;
 m_info.props.y = y;
 m_info.props.w = w;
