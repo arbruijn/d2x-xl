@@ -125,8 +125,8 @@ OglDeleteLists (&mouseIndList, 1);
 Check ();
 #endif
 
-for (uint i = 0, j = m_textures.ToS (); i < j; i++) {
-	CTexture* texP = m_textures [i];
+for (uint i = m_textures.ToS (); i > 0; ) {
+	CTexture* texP = m_textures [--i];
 #if DBG
 	if (texP->Registered () != i + 1)
 		TextureError ();
@@ -308,9 +308,10 @@ bool CTexture::Register (uint i)
 if (i)
 	m_nRegistered = i;
 else {
-	if (m_nRegistered)
-		return false;	// already registered
-	textureManager.Register (this);
+	i = m_nRegistered;
+	m_nRegistered = textureManager.Register (this);
+	if (i)
+		return false;
 	}
 return m_nRegistered != 0;
 }

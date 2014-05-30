@@ -31,6 +31,63 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "palette.h"
 #include "pcx.h"
 
+CStack< CBitmap* > bitmapList;
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+uint FindBitmap (CBitmap* bmP)
+{
+for (uint i = 0, j = bitmapList.ToS (); i < j; i++)
+	if (bitmapList [i] == bmP)
+		return i + 1;
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+void RegisterBitmap (CBitmap* bmP)
+{
+if (!bitmapList.Buffer ()) {
+	bitmapList.Create (1000);
+	bitmapList.SetGrowth (1000);
+	}
+if (!FindBitmap (bmP))
+	bitmapList.Push (bmP);
+}
+
+//------------------------------------------------------------------------------
+
+void UnregisterBitmap (CBitmap* bmP)
+{
+uint i = FindBitmap (bmP);
+if (i) {
+	if (i < bitmapList.ToS ()) 
+		bitmapList [i - 1] = *bitmapList.Top ();
+	*bitmapList.Top () = NULL;
+	bitmapList.Shrink ();
+	}
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+CBitmap::CBitmap ()
+{
+RegisterBitmap (this);
+Reset (); 
+};
+
+//------------------------------------------------------------------------------
+
+CBitmap::~CBitmap () 
+{ 
+Destroy (); 
+UnregisterBitmap (this);
+}
+
 //------------------------------------------------------------------------------
 
 ubyte* CBitmap::CreateBuffer (void)
