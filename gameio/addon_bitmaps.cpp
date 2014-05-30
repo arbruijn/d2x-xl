@@ -239,6 +239,7 @@ scope.Unload ();
 damageIcon [0].Unload ();
 damageIcon [1].Unload ();
 damageIcon [2].Unload ();
+joyMouse.Unload ();
 shockwave.Unload ();
 }
 

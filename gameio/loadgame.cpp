@@ -649,6 +649,8 @@ return gameStates.app.bAutoRunMission ? szNoSong : missionManager.szSongNames [n
 
 //------------------------------------------------------------------------------
 
+extern bool CheckBitmaps (void);
+
 void UnloadLevelData (int bRestore, bool bQuit)
 {
 paletteManager.EnableEffect (true);
@@ -694,6 +696,7 @@ PrintLog (-1);
 PrintLog (-1);
 
 /*---*/PrintLog (1, "unloading textures\n");
+CheckBitmaps ();
 UnloadTextures ();
 PrintLog (-1);
 
@@ -710,6 +713,7 @@ lightManager.Reset ();
 PrintLog (-1);
 
 /*---*/PrintLog (1, "unloading hires models\n");
+CheckBitmaps ();
 FreeHiresModels (1);
 PrintLog (-1);
 
@@ -722,10 +726,12 @@ FreeModelExtensions ();
 PrintLog (-1);
 
 /*---*/PrintLog (1, "unloading additional model textures\n");
+CheckBitmaps ();
 FreeObjExtensionBitmaps ();
 PrintLog (-1);
 
 /*---*/PrintLog (1, "unloading additional model textures\n");
+CheckBitmaps ();
 UnloadHiresAnimations ();
 PrintLog (-1);
 
@@ -734,10 +740,12 @@ sparkManager.Destroy ();
 PrintLog (-1);
 
 /*---*/PrintLog (1, "freeing auxiliary poly model data\n");
+CheckBitmaps ();
 gameData.models.Destroy ();
 PrintLog (-1);
 
 /*---*/PrintLog (1, "Destroying camera objects\n");
+CheckBitmaps ();
 cameraManager.Destroy ();
 PrintLog (-1);
 
@@ -758,9 +766,12 @@ FreeModTexts ();
 PrintLog (-1);
 
 #if DBG
+CheckBitmaps ();
 UnloadAddonImages ();
+CheckBitmaps ();
 particleImageManager.FreeAll ();
 #endif
+CheckBitmaps ();
 }
 
 //------------------------------------------------------------------------------

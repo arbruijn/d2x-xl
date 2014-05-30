@@ -38,6 +38,16 @@ bool bRegisterBitmaps = false;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+bool CheckBitmaps (void)
+{
+for (uint i = 0, j = bitmapList.ToS (); i < j; i++)
+	if (bitmapList [i] && (!bitmapList [i]->m_info.szName [0] || (bitmapList [i]->m_info.szName [0] == -51)))
+		return false;
+return true;
+}
+
+//------------------------------------------------------------------------------
+
 uint FindBitmap (CBitmap* bmP)
 {
 for (uint i = 0, j = bitmapList.ToS (); i < j; i++)
