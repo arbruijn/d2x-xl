@@ -176,7 +176,7 @@ uint CTextureManager::Register (CTexture* texP)
 uint i = Find (texP);
 if (i) {
 #if DBG
-	if (m_textures [i]->Registered () != i)
+	if (m_textures [i - 1]->Registered () != i)
 		TextureError ();
 #endif
 	return i;
