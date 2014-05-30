@@ -605,7 +605,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-extern boolean bRegisterBitmaps;
+extern bool bRegisterBitmaps;
 
 CBitmap *CreateStringBitmap (const char *s, int nKey, uint nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce)
 {

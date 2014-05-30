@@ -642,7 +642,7 @@ return h;
 //this function is the game.  called when game mode selected.  runs until
 //editor mode or exit selected
 
-extern boolean bRegisterBitmaps;
+extern bool bRegisterBitmaps;
 
 void RunGame (void)
 {
