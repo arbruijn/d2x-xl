@@ -37,6 +37,8 @@
 
 #if DBG
 CStaticArray< ubyte, 65536 > usedHandles;
+
+CStack< char* > texIds;
 #endif
 
 //------------------------------------------------------------------------------
@@ -81,6 +83,8 @@ void CTextureManager::Init (void)
 #if 1
 m_textures.Create (1000);
 m_textures.SetGrowth (1000);
+texIds.Create (1000);
+texIds.SetGrowth (1000);
 #else
 m_textures.Create (TEXTURE_LIST_SIZE);
 for (int i = 0; i < TEXTURE_LIST_SIZE; i++)
@@ -182,6 +186,11 @@ if (i) {
 	return i;
 	}
 m_textures.Push (texP);
+int l = (int) strlen (texP->Bitmap ()->Name ()) + 1;
+char* s = new char [l];
+if (s)
+	strcpy (s, texP->Bitmap ()->Name ());
+texIds.Push (s);
 return m_textures.ToS ();
 }
 
@@ -197,11 +206,17 @@ if (!i)
 	i = Find (texP);
 if (!i)
 	return false;
-if (i == m_textures.ToS ())
+if (i == m_textures.ToS ()) {
 	m_textures.Shrink ();
+	delete texIds.Top ();
+	texIds.Shrink ();
+	}
 else {
 	m_textures [i - 1] = *m_textures.Top ();
 	m_textures [i - 1]->Register (i);
+	delete texIds [i - 1];
+	texIds [i - 1] = *texIds.Top ();
+	texIds.Shrink ();
 	}
 return true;
 }

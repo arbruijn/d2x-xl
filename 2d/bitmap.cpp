@@ -102,8 +102,7 @@ else
 	if (m_info.texP)
 #endif
 	m_info.texP = NULL;
-m_info.texture.SetBitmap (NULL);
-m_info.texture.Init ();
+Reset ();
 }
 
 //------------------------------------------------------------------------------
@@ -134,6 +133,7 @@ void CBitmap::Reset (void)
 	char szSignature [20];
 
 memset (&m_info, 0, sizeof (m_info));
+m_info.texture.Init ();
 m_info.texP = &m_info.texture;
 m_info.texture.SetBitmap (this);
 sprintf (szSignature, "Bitmap %d", nSignature++);
@@ -144,7 +144,7 @@ SetName (szSignature);
 
 void CBitmap::Init (void) 
 {
-Destroy ();
+//Destroy ();
 Reset ();
 }
 
