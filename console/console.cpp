@@ -448,7 +448,9 @@ else
 
 /* load the console surface */
 m_surface = CBitmap::Create (0, w, h, 1);
+m_surface->SetName ("console surface area");
 m_canvas.Setup (&gameData.render.frame, 0, 0, w, h);
+m_canvas.SetName ("console canvas");
 /* Load the consoles font */
 m_canvas.Activate ("CConsole::Setup");
 
@@ -458,9 +460,7 @@ fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 /* Load the dirty rectangle for user input */
 m_input = CBitmap::Create (0, w, m_canvas.Font ()->Height (), 1);
 
-m_surface->SetName ("console surface area");
 m_input->SetName ("console input area");
-m_canvas.SetName ("console canvas");
 
 /* calculate the number of visible characters in the command line */
 m_VChars = (w - CON_CHAR_BORDER) / m_canvas.Font ()->Width ();
@@ -788,13 +788,13 @@ else
 CFont* font = m_canvas.Font ();
 m_surface->Destroy ();
 m_surface = CBitmap::Create (0, w, h, 1);
+m_surface->SetName ("console surface area");
 m_canvas.Setup (&gameData.render.frame, 0, 0, w, h);
 m_canvas.SetFont (font);
+m_canvas.SetName ("console canvas");
 delete m_input;
 m_input = CBitmap::Create (0, w, m_canvas.Font ()->Height (), 1);
-m_surface->SetName ("console surface area");
 m_input->SetName ("console input area");
-m_canvas.SetName ("console canvas");
 m_ConsoleScrollBack = 0;
 return 0;
 }

@@ -635,7 +635,6 @@ return 1;
 
 int CTGA::Read (const char *pszFile, const char *pszFolder, int alpha, double brightness, int bGrayScale, bool bAutoComplete)
 {
-	char*	psz;
 	int	r;
 
 #if USE_SDL_IMAGE
@@ -674,12 +673,6 @@ if (r && CompressTGA (bmP))
 m_cf.Close ();
 }
 
-char szName [FILENAME_LEN];
-strncpy (szName, pszFile, sizeof (szName));
-szName [sizeof (szName) - 1] = '\0';
-if ((psz = strrchr (szName, '.')))
-	*psz = '\0';
-m_bmP->SetName (szName);
 return r;
 }
 
@@ -689,6 +682,11 @@ CBitmap* CTGA::CreateAndRead (char* pszFile)
 {
 if (!(m_bmP = CBitmap::Create (0, 0, 0, 4)))
 	return NULL;
+
+char szName [FILENAME_LEN], szExt [FILENAME_LEN];
+CFile::SplitPath (pszFile, NULL, szName, szExt);
+sprintf (m_bmP->Name (), "%s%s", szName, szExt);
+
 if (Read (pszFile, NULL, -1, 1.0, 0)) {
 	m_bmP->SetType (BM_TYPE_ALT);
 	return m_bmP;
