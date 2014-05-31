@@ -447,6 +447,8 @@ else
 	m_DispY = y;
 
 /* load the console surface */
+if (m_surface)
+	delete m_surface;
 m_surface = CBitmap::Create (0, w, h, 1);
 m_surface->SetName ("console surface area");
 m_canvas.Setup (&gameData.render.frame, 0, 0, w, h);
@@ -458,8 +460,9 @@ fontManager.SetCurrent (font);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 
 /* Load the dirty rectangle for user input */
+if (m_input)
+	delete m_input;
 m_input = CBitmap::Create (0, w, m_canvas.Font ()->Height (), 1);
-
 m_input->SetName ("console input area");
 
 /* calculate the number of visible characters in the command line */
@@ -786,13 +789,15 @@ else
 
 /* resize console surface */
 CFont* font = m_canvas.Font ();
-m_surface->Destroy ();
+if (m_surface)
+	delete m_surface;
 m_surface = CBitmap::Create (0, w, h, 1);
 m_surface->SetName ("console surface area");
 m_canvas.Setup (&gameData.render.frame, 0, 0, w, h);
 m_canvas.SetFont (font);
 m_canvas.SetName ("console canvas");
-delete m_input;
+if (m_input)
+	delete m_input;
 m_input = CBitmap::Create (0, w, m_canvas.Font ()->Height (), 1);
 m_input->SetName ("console input area");
 m_ConsoleScrollBack = 0;

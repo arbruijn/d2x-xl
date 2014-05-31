@@ -979,6 +979,7 @@ if (!(bmP = CBitmap::Create (0, bih.biWidth, bih.biHeight, 1))) {
 	cf.Close ();
 	return NULL;
 	}
+bmP->SetName (pszFile);
 cf.Seek (bfh.bfOffBits, SEEK_SET);
 if (bmP->Read (cf, bih.biWidth * bih.biHeight) != bih.biWidth * bih.biHeight) {
 	delete bmP;

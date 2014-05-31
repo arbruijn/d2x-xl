@@ -615,6 +615,7 @@ int CModel::ReadTexture (CFile& cf, int nBitmap)
 	char		fn [FILENAME_LEN], *ps;
 	int		l;
 
+sprintf (bmP->Name (), "ASE model %d texture %d", m_nModel, nBitmap);
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
 bmP->SetFlat (0);

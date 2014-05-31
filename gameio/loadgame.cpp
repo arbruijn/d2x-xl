@@ -770,6 +770,7 @@ CheckBitmaps ();
 UnloadAddonImages ();
 CheckBitmaps ();
 particleImageManager.FreeAll ();
+hudIcons.Destroy ();
 #endif
 CheckBitmaps ();
 }

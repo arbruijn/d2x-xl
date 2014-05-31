@@ -40,6 +40,7 @@ bool bRegisterBitmaps = false;
 
 bool CheckBitmaps (void)
 {
+#if DBG
 uint j = bitmapList.ToS ();
 
 if (j--) {
@@ -47,6 +48,7 @@ if (j--) {
 		if (bitmapList [i] && (!bitmapList [i]->m_info.szName [0] || (bitmapList [i]->m_info.szName [0] == -51)))
 			return false;
 	}
+#endif
 return true;
 }
 
@@ -64,6 +66,7 @@ return 0;
 
 void RegisterBitmap (CBitmap* bmP)
 {
+#if DBG
 if (bRegisterBitmaps) {
 	CheckBitmaps ();
 	if (bmP == &gameData.pig.tex.addonBitmaps [0])
@@ -74,15 +77,19 @@ if (bRegisterBitmaps) {
 		bitmapList.Create (1000);
 		bitmapList.SetGrowth (1000);
 		}
+	if (bitmapList.ToS () == nDbgTexture)
+		nDbgTexture = nDbgTexture;
 	if (!FindBitmap (bmP))
 		bitmapList.Push (bmP);
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void UnregisterBitmap (CBitmap* bmP)
 {
+#if DBG
 uint i = FindBitmap (bmP);
 if (i) {
 	if (i < bitmapList.ToS ()) 
@@ -90,6 +97,7 @@ if (i) {
 	*bitmapList.Top () = NULL;
 	bitmapList.Shrink ();
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------

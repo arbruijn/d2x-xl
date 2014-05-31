@@ -1000,14 +1000,15 @@ return q;
 
 CBitmap* CTGA::ReadModelTexture (const char *pszFile, int bCustom)
 {
-	char			fn [FILENAME_LEN], fnBase [FILENAME_LEN], szShrunkFolder [FILENAME_LEN];
+	char			fn [FILENAME_LEN], en [FILENAME_LEN], fnBase [FILENAME_LEN], szShrunkFolder [FILENAME_LEN];
 	int			nShrinkFactor = 1 << (3 - gameStates.render.nModelQuality);
 	time_t		tBase, tShrunk;
 
 if (!pszFile)
 	return NULL;
-CFile::SplitPath (pszFile, NULL, fn, NULL);
+CFile::SplitPath (pszFile, NULL, fn, en);
 #if DBG
+sprintf (m_bmP->Name (), "%s%s", fn, en);
 if (!strcmp (fn, "fusionblobouter2"))
 	pszFile = pszFile;
 #endif
@@ -1017,9 +1018,6 @@ if (nShrinkFactor > 1) {
 	tBase = m_cf.Date (fnBase, gameFolders.szModelDir [bCustom], 0);
 	tShrunk = m_cf.Date (fnBase, szShrunkFolder, 0);
 	if ((tShrunk > tBase) && Read (fnBase, szShrunkFolder, -1, 1.0, 0)) {
-#if DBG
-		m_bmP->SetName (fn);
-#endif
 		UseBitmapCache (m_bmP, int (m_bmP->Height ()) * int (m_bmP->RowSize ()));
 		return m_bmP;
 		}

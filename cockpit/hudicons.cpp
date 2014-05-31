@@ -86,7 +86,7 @@ return bHaveIcons = 1;
 
 void CHUDIcons::DestroyIcons (CBitmap* icons, int nIcons, int& bHaveIcons)
 {
-if (bHaveObjTallyBms > 0) {
+if (bHaveIcons > 0) {
 	for (int i = 0; i < nIcons; i++)
 		icons [i].Destroy ();
 	bHaveIcons = -1;
@@ -749,6 +749,7 @@ if (gameOpts->render.cockpit.bHUD || cockpit->ShowAlways ()) {
 void CHUDIcons::Destroy (void)
 {
 DestroyTallyIcons ();
+DestroyGaugeIcons ();
 DestroyInventoryIcons ();
 }
 
