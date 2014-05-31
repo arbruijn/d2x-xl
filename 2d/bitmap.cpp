@@ -105,7 +105,9 @@ if (i) {
 
 CBitmap::CBitmap ()
 {
+#if DBG
 RegisterBitmap (this);
+#endif
 Reset (); 
 };
 
@@ -114,7 +116,9 @@ Reset ();
 CBitmap::~CBitmap () 
 { 
 Destroy (); 
+#if DBG
 UnregisterBitmap (this);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -714,6 +718,22 @@ if (overrideP == this)
 CBitmap*	oldOverrideP = m_info.overrideP;
 m_info.overrideP = overrideP;
 return oldOverrideP;
+}
+
+//------------------------------------------------------------------------------
+
+void CBitmap::SetName (const char* pszName) 
+{ 
+#if DBG
+if (pszName) {
+	strncpy (m_info.szName, pszName, sizeof (m_info.szName)); 
+	m_info.szName [sizeof (m_info.szName) - 1] = '\0';
+	if (!strcmp (pszName, "slowmotion#0"))
+		nDbgTexture = nDbgTexture;
+	if (!strcmp (pszName, "bullettime#0"))
+		nDbgTexture = nDbgTexture;
+	}
+#endif
 }
 
 //------------------------------------------------------------------------------

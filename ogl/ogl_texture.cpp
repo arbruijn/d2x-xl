@@ -1103,22 +1103,6 @@ if (bAddon || (Type () == BM_TYPE_STD)) {
 
 //------------------------------------------------------------------------------
 
-void CBitmap::SetName (const char* pszName) 
-{ 
-#if DBG
-if (pszName) {
-	strncpy (m_info.szName, pszName, sizeof (m_info.szName)); 
-	m_info.szName [sizeof (m_info.szName) - 1] = '\0';
-	if (!strcmp (pszName, "slowmotion#0"))
-		nDbgTexture = nDbgTexture;
-	if (!strcmp (pszName, "bullettime#0"))
-		nDbgTexture = nDbgTexture;
-	}
-#endif
-}
-
-//------------------------------------------------------------------------------
-
 CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures)
 {
 	CBitmap*	bmP, * bmoP, * bmfP;
