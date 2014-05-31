@@ -134,6 +134,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "waypoint.h"
 #include "transprender.h"
 #include "scores.h"
+#include "hudicons.h"
 
 #if defined (FORCE_FEEDBACK)
  #include "tactile.h"
