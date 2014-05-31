@@ -61,6 +61,7 @@ return 0;
 void RegisterBitmap (CBitmap* bmP)
 {
 if (bRegisterBitmaps) {
+	CheckBitmaps ();
 	if (bmP == &gameData.pig.tex.addonBitmaps [0])
 		bmP = bmP;
 	else if (bmP == &gameData.pig.tex.addonBitmaps [1])
@@ -180,7 +181,11 @@ else
 	if (m_info.texP)
 #endif
 	m_info.texP = NULL;
+
+char szName [FILENAME_LEN];
+memcpy (szName, m_info.szName, sizeof (szName));
 Reset ();
+memcpy (m_info.szName, szName, sizeof (szName));
 }
 
 //------------------------------------------------------------------------------
@@ -207,11 +212,7 @@ m_info.maskP = NULL;
 
 void CBitmap::Reset (void) 
 {
-	char szName [FILENAME_LEN];
-
-memcpy (szName, m_info.szName, sizeof (szName));
 memset (&m_info, 0, sizeof (m_info));
-memcpy (m_info.szName, szName, sizeof (szName));
 m_info.texture.Init ();
 m_info.texP = &m_info.texture;
 m_info.texture.SetBitmap (this);

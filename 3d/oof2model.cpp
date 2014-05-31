@@ -151,6 +151,7 @@ m_textures = po->m_textures.m_bitmaps;
 m_nTextures = po->m_textures.m_nBitmaps;
 for (i = 0, bmP = m_textures.Buffer (); i < m_nTextures; i++, bmP++) {
 	bmP->Texture ()->SetBitmap (bmP);
+	sprintf (m_textures [i].Name (), "OOF model %d texture %d", nModel, i);
 	po->m_textures.m_bitmaps [i].ShareBuffer (*bmP);
 	}
 memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));

@@ -41,6 +41,7 @@ memset (&m_info, 0, sizeof (m_info));
 if (!m_save.Buffer ())
 	m_save.Create (10);
 m_parent = NULL;
+SetName ("Canvas");
 }
 
 //	-----------------------------------------------------------------------------

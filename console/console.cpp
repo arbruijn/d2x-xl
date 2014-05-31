@@ -458,6 +458,10 @@ fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 /* Load the dirty rectangle for user input */
 m_input = CBitmap::Create (0, w, m_canvas.Font ()->Height (), 1);
 
+m_surface->SetName ("console surface area");
+m_input->SetName ("console input area");
+m_canvas.SetName ("console canvas");
+
 /* calculate the number of visible characters in the command line */
 m_VChars = (w - CON_CHAR_BORDER) / m_canvas.Font ()->Width ();
 if (m_VChars > CON_CHARS_PER_LINE)
@@ -731,6 +735,7 @@ if (image == NULL) {
 if (m_background)
 	delete m_background;
 m_background = CBitmap::Create (0, m_canvas.Width (), m_canvas.Height (), 1);
+m_background->SetName ("console background");
 image->BlitScaled (m_background);
 return 0;
 }
@@ -787,6 +792,9 @@ m_canvas.Setup (&gameData.render.frame, 0, 0, w, h);
 m_canvas.SetFont (font);
 delete m_input;
 m_input = CBitmap::Create (0, w, m_canvas.Font ()->Height (), 1);
+m_surface->SetName ("console surface area");
+m_input->SetName ("console input area");
+m_canvas.SetName ("console canvas");
 m_ConsoleScrollBack = 0;
 return 0;
 }

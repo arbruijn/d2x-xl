@@ -151,6 +151,7 @@ canvas.SetFontColor (fontColors [1], 1);
 
 void CBackground::Init (void)
 {
+m_saved.SetName ("menu background backup");
 m_bitmap = NULL;
 m_nType = 0;
 m_nWallpaper = 0;
