@@ -83,8 +83,10 @@ void CTextureManager::Init (void)
 #if 1
 m_textures.Create (1000);
 m_textures.SetGrowth (1000);
+#if DBG
 texIds.Create (1000);
 texIds.SetGrowth (1000);
+#endif
 #else
 m_textures.Create (TEXTURE_LIST_SIZE);
 for (int i = 0; i < TEXTURE_LIST_SIZE; i++)
