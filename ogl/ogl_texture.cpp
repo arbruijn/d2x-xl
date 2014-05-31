@@ -1103,9 +1103,9 @@ if (bAddon || (Type () == BM_TYPE_STD)) {
 
 //------------------------------------------------------------------------------
 
-#if DBG
 void CBitmap::SetName (const char* pszName) 
 { 
+#if DBG
 if (pszName) {
 	strncpy (m_info.szName, pszName, sizeof (m_info.szName)); 
 	m_info.szName [sizeof (m_info.szName) - 1] = '\0';
@@ -1114,8 +1114,8 @@ if (pszName) {
 	if (!strcmp (pszName, "bullettime#0"))
 		nDbgTexture = nDbgTexture;
 	}
-}
 #endif
+}
 
 //------------------------------------------------------------------------------
 

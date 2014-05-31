@@ -54,6 +54,8 @@ return true;
 
 //------------------------------------------------------------------------------
 
+#if DBG
+
 uint FindBitmap (CBitmap* bmP)
 {
 for (uint i = 0, j = bitmapList.ToS (); i < j; i++)
@@ -62,17 +64,14 @@ for (uint i = 0, j = bitmapList.ToS (); i < j; i++)
 return 0;
 }
 
+#endif
+
 //------------------------------------------------------------------------------
 
 void RegisterBitmap (CBitmap* bmP)
 {
 #if DBG
 if (bRegisterBitmaps) {
-	CheckBitmaps ();
-	if (bmP == &gameData.pig.tex.addonBitmaps [0])
-		bmP = bmP;
-	else if (bmP == &gameData.pig.tex.addonBitmaps [1])
-		bmP = bmP;
 	if (!bitmapList.Buffer ()) {
 		bitmapList.Create (1000);
 		bitmapList.SetGrowth (1000);

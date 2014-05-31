@@ -929,8 +929,6 @@ else
 
 //------------------------------------------------------------------------------
 
-extern bool CheckBitmaps (void);
-
 void COGL::RebuildContext (int bGame)
 {
 m_states.bRebuilding = 1;
@@ -947,7 +945,6 @@ if (bGame) {
 	ClearError (0);
 	gameData.models.Destroy ();
 	gameData.models.Prepare ();
-	CheckBitmaps ();
 	if (bGame && lightmapManager.HaveLightmaps ())
 		lightmapManager.BindAll ();
 #if GPGPU_VERTEX_LIGHTING

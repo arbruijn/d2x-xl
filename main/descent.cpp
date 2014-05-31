@@ -467,8 +467,6 @@ if (gameStates.input.bGrabMouse && (bForce || gameStates.app.bGameRunning))
 
 // ----------------------------------------------------------------------------
 
-extern bool CheckBitmaps (void);
-
 void MainLoop (void)
 {
 while (gameStates.app.nFunctionMode != FMODE_EXIT) {
@@ -499,9 +497,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 
 		case FMODE_GAME:
 			GrabMouse (1, 1);
-CheckBitmaps ();
 			RunGame ();
-CheckBitmaps ();
 			GrabMouse (0, 1);
 			paletteManager.EnableEffect (true);
 			gameStates.app.bD1Mission = 0;
