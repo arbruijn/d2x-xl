@@ -585,7 +585,7 @@ static bool IsWeapon (const char* bmName)
 		"hostage"
 		};
 
-if (!strstr (bmName, "#0"))
+if (!strchr (bmName, '#'))
 	return false;
 for (int i = 0, j = sizeofa (szNames); i < j; i++)
 	if (strstr (bmName, szNames [i]) == bmName)
@@ -771,6 +771,14 @@ char* pszFile = FindHiresBitmap (bmName, nFile, bD1, nIndex != 0x7FFFFFFF);
 
 if (!pszFile)
 	return (nIndex < 0) ? -1 : 0;
+
+#if DBG
+if (!strcmp (bmName, "key01#0"))
+	nDbgTexture = nDbgTexture;
+const char* s = strchr (bmName, '#');
+if (s && (s [1] != '0'))
+	nDbgTexture = nDbgTexture;
+#endif
 
 if (nFile < 2)	//was level specific mod folder
 	MakeTexSubFolders (gameFolders.szTextureCacheDir [3]);

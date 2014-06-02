@@ -103,6 +103,8 @@ class CCanvas : public CViewport, public CBitmap {
 		static CStack<tCanvasBackup>	m_save;
 
 	public:
+		using CViewport::operator+=;
+
 		static fix					xCanvW2, xCanvH2;
 		static float				fCanvW2, fCanvH2;
 

@@ -316,7 +316,7 @@ void CWall::LoadTextures (void)
 if (nClip>= 0) {
 	tWallClip* anim = gameData.walls.animP + nClip;
 	for (int j = 0; j < anim->nFrameCount; j++)
-		LoadTexture (gameData.pig.tex.bmIndexP [anim->frames [j]].index, 0, gameStates.app.bD1Data);
+		LoadTexture (gameData.pig.tex.bmIndexP [anim->frames [j]].index, j, gameStates.app.bD1Data);
 	}
 }
 

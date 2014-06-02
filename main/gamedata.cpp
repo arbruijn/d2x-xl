@@ -649,6 +649,7 @@ return m_bAvailable != 0;
 
 int CRiftData::GetViewMatrix (CFixMatrix& mOrient)
 {
+#if OCULUS_RIFT
 if (Available () < 2)
 	return 0;
 OVR::Quatf q = m_sensorFusion->GetOrientation ();
@@ -656,6 +657,7 @@ OVR::Matrix4f m (q);
 for (int i = 0; i < 3; i++)
 	for (int j = 0; j < 3; j++)
 		mOrient.m.vec [i * 3 + j] = F2X (m.M [i][j]);
+#endif
 return 1;
 }
 
@@ -680,6 +682,7 @@ return 0.0f;
 
 int CRiftData::GetHeadAngles (CAngleVector* angles)
 {
+#if OCULUS_RIFT
 if (Available () < 2)
 	return 0;
 OVR::Quatf q = m_sensorFusion->GetOrientation ();
@@ -693,6 +696,7 @@ else {
 	yaw -= m_center.v.coord.z;
 	angles->Set (-F2X (AddDeadzone (pitch) * 0.5f), F2X (AddDeadzone (roll) * 0.5f), -F2X (AddDeadzone (yaw) * 0.5f));
 	}
+#endif
 return 1;
 }
 
@@ -725,19 +729,23 @@ if (Available () > 1) {
 
 void CRiftData::Destroy (void)
 {
+#if OCULUS_RIFT
 if (m_sensorFusion) {
 	delete m_sensorFusion;
 	m_sensorFusion = NULL;
 	}
+#endif
 }
 
 // ----------------------------------------------------------------------------
 
 bool CRenderData::Create (void)
 {
+#if OCULUS_RIFT
 Destroy ();
 CREATE (gameData.render.faceList, LEVEL_FACES, 0);
 Init ();
+#endif
 return true;
 }
 

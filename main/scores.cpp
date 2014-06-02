@@ -94,8 +94,8 @@ sprintf (m_scores.stats[7].name, "Doug");
 sprintf (m_scores.stats[8].name, "Dan");
 sprintf (m_scores.stats[9].name, "Jason");
 
-for (int i = 10000; i > 1000; i -= 1000)
-	m_scores.stats [i].score = i;
+for (int i = 0; i < 10; i++)
+	m_scores.stats [i].score = (10 - i) * 1000;
 }
 
 //------------------------------------------------------------------------------
