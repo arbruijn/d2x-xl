@@ -294,12 +294,15 @@ while (!m_bDone) {
 						}
 					do {
 						pszFn = items [cc];
-						if (items [cc][0] == '[') {
-							if (((items [cc][1] == '1') || (items [cc][1] == '2')) && (items [cc][2] == ']'))
-								pszFn += 4;
-							else
-								pszFn++;
+						char* versionIds [] = {"(D1)", "(D2)", "(XL)"};
+						int nSkip = 0;
+						for (int i = 0; i < 3; i++)
+							if (strstr (pszFn, versionIds [i]) == pszFn) {
+								pszFn += 5;
+								break;
 							}
+						if (pszFn [0] == '[')
+							pszFn++;
 						strlwr (pszFn);
 						if (gameOpts->menus.bSmartFileSearch ? strstr (pszFn, szPattern) == pszFn : *pszFn == tolower (ascii)) {
 							m_nChoice = cc;

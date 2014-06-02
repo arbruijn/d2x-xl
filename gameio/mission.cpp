@@ -276,10 +276,10 @@ int _CDECL_ MLSortFunc (tMsnListEntry *e0, tMsnListEntry *e1)
 			*s2 = e1->szMissionName;
 
 if (gameOpts->menus.bShowLevelVersion) {
-	if (!(strncmp (s1, "[2] ", 4) && strncmp (s1, "[1] ", 4)))
-		s1 += 4;
-	if (!(strncmp (s2, "[2] ", 4) && strncmp (s2, "[1] ", 4)))
-		s2 += 4;
+	if (!(strncmp (s1, "(D2) ", 5) && strncmp (s1, "(D1) ", 5) && strncmp (s1, "(XL) ", 5)))
+		s1 += 5;
+	if (!(strncmp (s2, "(D2) ", 5) && strncmp (s2, "(D1) ", 5) && strncmp (s2, "(XL) ", 5)))
+		s2 += 5;
 	}
 if ((*s1 == '[') == (*s2 == '['))
 	return stricmp (s1, s2);
@@ -359,7 +359,10 @@ if (!key || (stricmp (key, "name") && stricmp (key, "xname") && stricmp (key, "z
 value = Trim (strtok (NULL, "="));
 value [MISSION_NAME_LEN] = '\0';
 if (gameOpts->menus.bShowLevelVersion) {
-	sprintf (szMissionName, "[%d] %s", m_list [m_nCount].nDescentVersion, value);
+	if (!stricmp (key, "d2x-name"))
+		sprintf (szMissionName, "(XL) %s", value);
+	else
+		sprintf (szMissionName, "(D%d) %s", m_list [m_nCount].nDescentVersion, value);
 	strncpy (m_list [m_nCount].szMissionName, szMissionName, sizeof (m_list [m_nCount].szMissionName));
 	strcat (temp, filename);
 	}
@@ -367,10 +370,15 @@ else
 	strncpy (m_list [m_nCount].szMissionName, key, sizeof (m_list [m_nCount].szMissionName));
 m_list [m_nCount].szMissionName [sizeof (m_list [m_nCount].szMissionName) - 1] = '\0';
 
-cf.GetS (lineBuf, sizeof (lineBuf));
-key = Trim (strtok (lineBuf, "="));
-value = stricmp (key, "type") ? NULL : Trim (strtok (NULL, "="));
-m_list [m_nCount].bAnarchyOnly = (value != NULL) && !stricmp (value, "anarchy");
+while (cf.GetS (lineBuf, sizeof (lineBuf))) {
+	key = Trim (strtok (lineBuf, "="));
+	if (stricmp (key, "type"))
+		continue;
+	if (!(value = Trim (strtok (NULL, "="))))
+		continue;
+	m_list [m_nCount].bAnarchyOnly = (value != NULL) && !stricmp (value, "anarchy");
+	break;
+	}
 cf.Close ();
 return 1;
 }
@@ -412,7 +420,7 @@ switch (nBuiltInHogSize [1]) {
 	case D1_MAC_MISSION_HOGSIZE:
 		strcpy (m_list [m_nCount].filename, D1_MISSION_FILENAME);
 		if (gameOpts->menus.bShowLevelVersion)
-			strncpy (m_list [m_nCount].szMissionName, "[1] " D1_MISSION_NAME, sizeof (m_list [m_nCount].szMissionName));
+			strncpy (m_list [m_nCount].szMissionName, "(D1) " D1_MISSION_NAME, sizeof (m_list [m_nCount].szMissionName));
 		else
 			strncpy (m_list [m_nCount].szMissionName, D1_MISSION_NAME, sizeof (m_list [m_nCount].szMissionName));
 		m_list [m_nCount].bAnarchyOnly = 0;
@@ -436,7 +444,7 @@ void CMissionManager::AddBuiltinD2XMission (void)
 if (cf.Exist ("d2x.hog", gameFolders.szMissionDir, 0)) {
 	strcpy (m_list [m_nCount].filename,"d2x");
 	if (gameOpts->menus.bShowLevelVersion)
-		strcpy (m_list [m_nCount].szMissionName,"[2] Descent 2: Vertigo");
+		strcpy (m_list [m_nCount].szMissionName,"(D2) Descent 2: Vertigo");
 	else
 		strcpy (m_list [m_nCount].szMissionName,"Descent 2: Vertigo");
 	m_list [m_nCount].nDescentVersion = 2;
