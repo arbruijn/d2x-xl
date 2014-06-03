@@ -463,12 +463,11 @@ if ((t = FindArg ("-multithreaded"))) {
 		gameStates.app.nThreads = MAX_THREADS;
 	}
 else 
-#else
+#endif
 	{
 	gameStates.app.nThreads = 1;
 	gameStates.app.bMultiThreaded = 0;
 	}
-#endif
 if ((t = FindArg ("-nosound")))
 	gameStates.app.bUseSound = (NumArg (t, 1) == 0);
 if ((t = FindArg ("-progress_bars")))
