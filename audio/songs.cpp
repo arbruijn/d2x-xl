@@ -512,7 +512,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 		return 0;
 	nSongs = 0;
 	while (cf.GetS (szSong, sizeof (szSong))) {
-		if ((bMP3 = (strstr (szSong, ".mp3") != NULL)) || strstr (szSong, ".ogg")) {
+		if ((bMP3 = (strstr (szSong, ".mp3") != NULL)) || strstr (szSong, ".ogg") || strstr (szSong, ".flac")) {
 			if (bRead) {
 				if (bMP3)
 					m_user.bMP3 = 1;

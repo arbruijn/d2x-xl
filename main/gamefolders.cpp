@@ -150,7 +150,11 @@ strcpy (szDataRootDir, "d:\\programs\\d2\\");
 *szDataRootDir = '\0';
 #endif
 if ((i = FindArg ("-userdir")) && appConfig [i + 1] && *appConfig [i + 1]) {
+#	ifdef _WIN32
 	sprintf (gameFolders.szGameDir, "%s\\%s\\", appConfig [i + 1], DATADIR);
+#	else
+	sprintf (gameFolders.szGameDir, "%s/%s/", appConfig [i + 1], DATADIR);
+#	endif
 	if (GetAppFolder ("", gameFolders.szGameDir, gameFolders.szGameDir, "*.hog"))
 		*gameFolders.szGameDir = '\0';
 	else {

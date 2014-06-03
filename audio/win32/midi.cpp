@@ -141,7 +141,7 @@ if (m_nVolume < 1) {
 	return 0;
 	}
 
-bCustom = ((strstr (pszSong, ".mp3") != NULL) || (strstr (pszSong, ".ogg") != NULL));
+bCustom = ((strstr (pszSong, ".mp3") != NULL) || (strstr (pszSong, ".ogg") != NULL) || strstr (pszSong, ".flac"));
 if (bCustom) {
 	if (audio.Format () != AUDIO_S16LSB) {
 		audio.Shutdown ();

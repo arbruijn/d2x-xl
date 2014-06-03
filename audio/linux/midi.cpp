@@ -100,7 +100,7 @@ if (!(pszSong && *pszSong))
 	return 0;
 if (midiVolume < 1)
 	return 0;
-bCustom = ((strstr (pszSong, ".mp3") != NULL) || (strstr (pszSong, ".ogg") != NULL));
+bCustom = ((strstr (pszSong, ".mp3") != NULL) || (strstr (pszSong, ".ogg") != NULL) || strstr (pszSong, ".flac"));
 if (!(bCustom || (hmp = hmp_open (pszSong, bD1Song))))
 	return 0;
 #if USE_SDL_MIXER

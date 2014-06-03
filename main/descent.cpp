@@ -169,6 +169,7 @@ if (++nErrors > 4)
 
 void D2SetCaption (void)
 {
+#if !defined(__linux__)
 #if USE_IRRLICHT
 	char		szCaption [200];
 	wchar_t	wszCaption [200];
@@ -192,6 +193,7 @@ IRRDEVICE->setWindowCaption (wszCaption);
 #else
 	char	szCaption [200];
 	strcpy (szCaption, DESCENT_VERSION);
+
 if (*LOCALPLAYER.callsign) {
 	strcat (szCaption, " [");
 	strcat (szCaption, LOCALPLAYER.callsign);
@@ -202,6 +204,7 @@ if (*missionManager.szCurrentLevel) {
 	strcat (szCaption, " - ");
 	strcat (szCaption, missionManager.szCurrentLevel);
 	}
+#endif
 SDL_WM_SetCaption (szCaption, "Descent II");
 #endif
 }
