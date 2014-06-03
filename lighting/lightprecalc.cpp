@@ -790,7 +790,7 @@ int LoadLightData (int nLevel)
 
 if (!gameStates.app.bCacheLights)
 	return 0;
-if (!cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.szLightmapDir, "rb", 0) &&
+if (!cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.szLightDataDir, "rb", 0) &&
 	 !cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0))
 	return 0;
 bOk = (cf.Read (&ldh, sizeof (ldh), 1) == 1);
@@ -855,7 +855,7 @@ int SaveLightData (int nLevel)
 
 if (!gameStates.app.bCacheLights)
 	return 0;
-if (!cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.szLightmapDir, "wb", 0))
+if (!cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.szLightDataDir, "wb", 0))
 	return 0;
 bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1) &&
 		(gameData.segs.bSegVis.Write (cf, gameData.segs.SegVisSize (ldh.nSegments), 0, ldh.bCompressed) == size_t (gameData.segs.SegVisSize (ldh.nSegments))) &&

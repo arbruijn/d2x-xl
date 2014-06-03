@@ -79,10 +79,10 @@ joyInfo.buttons [hat+2].lastState = joyInfo.buttons [hat+2].state;
 joyInfo.buttons [hat+3].lastState = joyInfo.buttons [hat+3].state;
 
 //get current state of the hat-button
-joyInfo.buttons [hat  ].state = ((jhe->value & SDL_HAT_UP)>0);
-joyInfo.buttons [hat+1].state = ((jhe->value & SDL_HAT_RIGHT)>0);
-joyInfo.buttons [hat+2].state = ((jhe->value & SDL_HAT_DOWN)>0);
-joyInfo.buttons [hat+3].state = ((jhe->value & SDL_HAT_LEFT)>0);
+joyInfo.buttons [hat  ].state = ((jhe->value & SDL_HAT_UP) > 0);
+joyInfo.buttons [hat+1].state = ((jhe->value & SDL_HAT_RIGHT) > 0);
+joyInfo.buttons [hat+2].state = ((jhe->value & SDL_HAT_DOWN) > 0);
+joyInfo.buttons [hat+3].state = ((jhe->value & SDL_HAT_LEFT) > 0);
 
 //determine if a hat-button up or down event based on state and lastState
 for (int hbi = 0; hbi < 4; hbi++) {

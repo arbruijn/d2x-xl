@@ -76,60 +76,69 @@ if (*pszParentFolder) {
 #endif
 
 #if defined(__macosx__)
-#	define	DATADIR			"Data"
-#	define	SHADERDIR		"Shaders"
-#	define	MODELDIR			"Models"
-#	define	SOUNDDIR			"Sounds"
-#	define	SOUNDDIR1		"Sounds1"
-#	define	SOUNDDIR2		"Sounds2"
-#	define	SOUNDDIR1_D1	"Sounds1/D1"
-#	define	SOUNDDIR2_D1	"Sounds2/D1"
-#	define	SOUNDDIR_D2X	"Sounds2/d2x-xl"
-#	define	CONFIGDIR		"Config"
-#	define	PROFDIR			"Profiles"
-#	define	SCRSHOTDIR		"Screenshots"
-#	define	MOVIEDIR			"Movies"
-#	define	SAVEDIR			"Savegames"
-#	define	DEMODIR			"Demos"
-#	define	TEXTUREDIR		"Textures"
-#	define	TEXTUREDIR_D2	"Textures"
-#	define	TEXTUREDIR_D1	"Textures/D1"
-#	define	CACHEDIR			"Cache"
-#	define	LIGHTMAPDIR		"Cache/Lightmaps"
-#	define	MODDIR			"Mods"
-#	define	MUSICDIR			"Music"
-#	define	DOWNLOADDIR		"Downloads"
-#	define	WALLPAPERDIR	"Wallpapers"
+#	define	DATADIR				"Data"
+#	define	SHADERDIR			"Shaders"
+#	define	MODELDIR				"Models"
+#	define	SOUNDDIR				"Sounds"
+#	define	SOUNDDIR1			"Sounds1"
+#	define	SOUNDDIR2			"Sounds2"
+#	define	SOUNDDIR1_D1		"Sounds1/D1"
+#	define	SOUNDDIR2_D1		"Sounds2/D1"
+#	define	SOUNDDIR_D2X		"Sounds2/d2x-xl"
+#	define	CONFIGDIR			"Config"
+#	define	PROFDIR				"Profiles"
+#	define	SCRSHOTDIR			"Screenshots"
+#	define	MOVIEDIR				"Movies"
+#	define	SAVEDIR				"Savegames"
+#	define	DEMODIR				"Demos"
+#	define	TEXTUREDIR			"Textures"
+#	define	TEXTUREDIR_D2		"Textures"
+#	define	TEXTUREDIR_D1		"Textures/D1"
+#	define	CACHEDIR				"Cache"
+#	define	LIGHTMAPDIR			"Cache/Lightmaps"
+#	define	LIGHTDATADIR		"Cache/Lights"
+#	define	MESHDIR				"Cache/Meshes"
+#	define	MISSIONSTATEDIR	"Cache/Lights"
+#	define	MODDIR				"Mods"
+#	define	MUSICDIR				"Music"
+#	define	DOWNLOADDIR			"Downloads"
+#	define	WALLPAPERDIR		"Wallpapers"
 #else
-#	define	DATADIR			"data"
-#	define	SHADERDIR		"shaders"
-#	define	MODELDIR			"models"
-#	define	SOUNDDIR			"sounds"
-#	define	SOUNDDIR1		"sounds1"
-#	define	SOUNDDIR2		"sounds2"
-#	define	SOUNDDIR1_D1	"sounds1/D1"
-#	define	SOUNDDIR2_D1	"sounds2/D1"
-#	define	SOUNDDIR_D2X	"sounds2/d2x-xl"
-#	define	CONFIGDIR		"config"
-#	define	PROFDIR			"profiles"
-#	define	SCRSHOTDIR		"screenshots"
-#	define	MOVIEDIR			"movies"
-#	define	SAVEDIR			"savegames"
-#	define	DEMODIR			"demos"
-#	define	TEXTUREDIR		"textures"
-#	define	TEXTUREDIR_D2	"textures"
-#	define	TEXTUREDIR_D1	"textures/d1"
+#	define	DATADIR				"data"
+#	define	SHADERDIR			"shaders"
+#	define	MODELDIR				"models"
+#	define	SOUNDDIR				"sounds"
+#	define	SOUNDDIR1			"sounds1"
+#	define	SOUNDDIR2			"sounds2"
+#	define	SOUNDDIR1_D1		"sounds1/D1"
+#	define	SOUNDDIR2_D1		"sounds2/D1"
+#	define	SOUNDDIR_D2X		"sounds2/d2x-xl"
+#	define	CONFIGDIR			"config"
+#	define	PROFDIR				"profiles"
+#	define	SCRSHOTDIR			"screenshots"
+#	define	MOVIEDIR				"movies"
+#	define	SAVEDIR				"savegames"
+#	define	DEMODIR				"demos"
+#	define	TEXTUREDIR			"textures"
+#	define	TEXTUREDIR_D2		"textures"
+#	define	TEXTUREDIR_D1		"textures/d1"
 #	if DBG
-#		define	CACHEDIR			"cache/debug"
-#		define	LIGHTMAPDIR		"cache/debug/lightmaps"
+#		define	CACHEDIR				"cache/debug"
+#		define	LIGHTMAPDIR			"cache/debug/lightmaps"
+#		define	LIGHTDATADIR		"cache/debug/lights"
+#		define	MESHDIR				"cache/debug/meshes"
+#		define	MISSIONSTATEDIR	"cache/missions"
 #	else
-#		define	CACHEDIR			"cache"
-#		define	LIGHTMAPDIR		"cache/lightmaps"
+#		define	CACHEDIR				"cache"
+#		define	LIGHTMAPDIR			"cache/lightmaps"
+#		define	LIGHTDATADIR		"cache/lights"
+#		define	MESHDIR				"cache/meshes"
+#		define	MISSIONSTATEDIR	"cache/missions"
 #	endif
-#	define	MODDIR			"mods"
-#	define	MUSICDIR			"music"
-#	define	DOWNLOADDIR		"downloads"
-#	define	WALLPAPERDIR	"wallpapers"
+#	define	MODDIR				"mods"
+#	define	MUSICDIR				"music"
+#	define	DOWNLOADDIR			"downloads"
+#	define	WALLPAPERDIR		"wallpapers"
 #endif
 
 void GetAppFolders (void)
@@ -294,6 +303,12 @@ if (*gameFolders.szHomeDir) {
 	CFile::MkDir (gameFolders.szCacheDir);
 	sprintf (gameFolders.szLightmapDir, "%s/%s", pszOSXCacheDir, LIGHTMAPDIR);
 	CFile::MkDir (gameFolders.szLightmapDir);
+	sprintf (gameFolders.szLightDataDir, "%s/%s", pszOSXCacheDir, LIGHTDATADIR);
+	CFile::MkDir (gameFolders.szLightDataDir);
+	sprintf (gameFolders.szMeshDir, "%s/%s", pszOSXCacheDir, MESHDIR);
+	CFile::MkDir (gameFolders.szMeshDir);
+	sprintf (gameFolders.szMissionStateDir, "%s/%s", pszOSXCacheDir, MISSIONSTATEDIR);
+	CFile::MkDir (gameFolders.szMissionStateDir);
 	sprintf (gameFolders.szCacheDir, "%s/%s/256", pszOSXCacheDir, CACHEDIR);
 	CFile::MkDir (gameFolders.szCacheDir);
 	sprintf (gameFolders.szCacheDir, "%s/%s/128", pszOSXCacheDir, CACHEDIR);
@@ -322,6 +337,12 @@ if (*gameFolders.szHomeDir) {
 	CFile::MkDir (gameFolders.szCacheDir);
 	sprintf (gameFolders.szLightmapDir, "%s/%s", szDataRootDir, LIGHTMAPDIR);
 	CFile::MkDir (gameFolders.szLightmapDir);
+	sprintf (gameFolders.szLightDataDir, "%s/%s", szDataRootDir, LIGHTDATADIR);
+	CFile::MkDir (gameFolders.szLightDataDir);
+	sprintf (gameFolders.szMeshDir, "%s/%s", szDataRootDir, MESHDIR);
+	CFile::MkDir (gameFolders.szMeshDir);
+	sprintf (gameFolders.szMissionStateDir, "%s/%s", szDataRootDir, MISSIONSTATEDIR);
+	CFile::MkDir (gameFolders.szMissionStateDir);
 	sprintf (gameFolders.szDownloadDir, "%s/%s", szDataRootDir, DOWNLOADDIR);
 	CFile::MkDir (gameFolders.szDownloadDir);
 #endif // __macosx__

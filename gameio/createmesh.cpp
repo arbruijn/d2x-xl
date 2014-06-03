@@ -744,7 +744,8 @@ bool CTriMeshBuilder::Load (int nLevel, bool bForce)
 
 if (!(gameStates.render.bTriangleMesh && (gameStates.app.bCacheMeshes || bForce)))
 	return false;
-if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0))
+if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.szMeshDir, "rb", 0) &&
+	 !cf.Open (DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0))
 	return false;
 bOk = (cf.Read (&mdh, sizeof (mdh), 1) == 1);
 if (bOk)
@@ -888,7 +889,7 @@ bool CTriMeshBuilder::Save (int nLevel)
 
 if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
 	return 0;
-if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.szCacheDir, "wb", 0))
+if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.szMeshDir, "wb", 0))
 	return 0;
 bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
 		(gameData.segs.vertices.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint (mdh.nVertices)) &&
