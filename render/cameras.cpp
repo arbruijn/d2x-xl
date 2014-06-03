@@ -389,7 +389,7 @@ else
 			}
 		memcpy (m_data.texCoord, texCoord, sizeof (m_data.texCoord));
 		}
-#if 1
+#if 0
 	if (!gameOpts->render.cameras.bHires) {
 		for (int i = 0; i < 6; i++) {
 #	if 0
