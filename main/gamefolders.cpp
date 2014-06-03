@@ -95,6 +95,7 @@ if (*pszParentFolder) {
 #	define	TEXTUREDIR_D2	"Textures"
 #	define	TEXTUREDIR_D1	"Textures/D1"
 #	define	CACHEDIR			"Cache"
+#	define	LIGHTMAPDIR		"Cache/Lightmaps"
 #	define	MODDIR			"Mods"
 #	define	MUSICDIR			"Music"
 #	define	DOWNLOADDIR		"Downloads"
@@ -120,8 +121,10 @@ if (*pszParentFolder) {
 #	define	TEXTUREDIR_D1	"textures/d1"
 #	if DBG
 #		define	CACHEDIR			"cache/debug"
+#		define	LIGHTMAPDIR		"cache/debug/lightmaps"
 #	else
 #		define	CACHEDIR			"cache"
+#		define	LIGHTMAPDIR		"cache/lightmaps"
 #	endif
 #	define	MODDIR			"mods"
 #	define	MUSICDIR			"music"
@@ -289,6 +292,8 @@ if (*gameFolders.szHomeDir) {
 	CFile::MkDir (gameFolders.szModelCacheDir [0]);
 	sprintf (gameFolders.szCacheDir, "%s/%s", pszOSXCacheDir, CACHEDIR);
 	CFile::MkDir (gameFolders.szCacheDir);
+	sprintf (gameFolders.szLightmapDir, "%s/%s", pszOSXCacheDir, LIGHTMAPDIR);
+	CFile::MkDir (gameFolders.szLightmapDir);
 	sprintf (gameFolders.szCacheDir, "%s/%s/256", pszOSXCacheDir, CACHEDIR);
 	CFile::MkDir (gameFolders.szCacheDir);
 	sprintf (gameFolders.szCacheDir, "%s/%s/128", pszOSXCacheDir, CACHEDIR);
@@ -315,6 +320,8 @@ if (*gameFolders.szHomeDir) {
 	CFile::MkDir (gameFolders.szModelCacheDir [0]);
 	sprintf (gameFolders.szCacheDir, "%s/%s", szDataRootDir, CACHEDIR);
 	CFile::MkDir (gameFolders.szCacheDir);
+	sprintf (gameFolders.szLightmapDir, "%s/%s", szDataRootDir, LIGHTMAPDIR);
+	CFile::MkDir (gameFolders.szLightmapDir);
 	sprintf (gameFolders.szDownloadDir, "%s/%s", szDataRootDir, DOWNLOADDIR);
 	CFile::MkDir (gameFolders.szDownloadDir);
 #endif // __macosx__

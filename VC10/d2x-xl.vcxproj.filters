@@ -217,13 +217,13 @@
     <Filter Include="Source Files\3d\Header Files">
       <UniqueIdentifier>{f3582809-c77b-4c42-a49c-b5b73a21cc76}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\libmve\io">
+    <Filter Include="Source Files\io">
       <UniqueIdentifier>{de91d29e-4a27-426d-8237-61f6694c8288}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\libmve\io\Source Files">
+    <Filter Include="Source Files\io\Source Files">
       <UniqueIdentifier>{53e00ab4-bcd7-4beb-80f7-95616ccc3283}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\libmve\io\Header Files">
+    <Filter Include="Source Files\io\Header Files">
       <UniqueIdentifier>{a4618a0d-052a-4734-8ea0-f2d959f127ee}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -778,16 +778,16 @@
       <Filter>Source Files\menus\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\args.h">
-      <Filter>Source Files\libmve\io\Header Files</Filter>
+      <Filter>Source Files\io\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cfile.h">
-      <Filter>Source Files\libmve\io\Header Files</Filter>
+      <Filter>Source Files\io\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\d_io.h">
-      <Filter>Source Files\libmve\io\Header Files</Filter>
+      <Filter>Source Files\io\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\hogfile.h">
-      <Filter>Source Files\libmve\io\Header Files</Filter>
+      <Filter>Source Files\io\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\libmve\decoders.h">
       <Filter>Source Files\libmve\Header Files</Filter>
@@ -1818,19 +1818,19 @@
       <Filter>Source Files\menus\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\io\args.cpp">
-      <Filter>Source Files\libmve\io\Source Files</Filter>
+      <Filter>Source Files\io\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\io\cfile.cpp">
-      <Filter>Source Files\libmve\io\Source Files</Filter>
+      <Filter>Source Files\io\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\io\d_io.cpp">
-      <Filter>Source Files\libmve\io\Source Files</Filter>
+      <Filter>Source Files\io\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\io\win32\findfile.cpp">
-      <Filter>Source Files\libmve\io\Source Files</Filter>
+      <Filter>Source Files\io\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\io\hogfile.cpp">
-      <Filter>Source Files\libmve\io\Source Files</Filter>
+      <Filter>Source Files\io\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\libmve\decoder16.cpp">
       <Filter>Source Files\libmve\Source Files</Filter>

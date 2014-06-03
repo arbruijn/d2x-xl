@@ -142,6 +142,7 @@ typedef struct tGameFolders {
 #endif
 	char szAltHogDir [FILENAME_LEN];
 	char szCacheDir [FILENAME_LEN];
+	char szLightmapDir [FILENAME_LEN];
 	char szConfigDir [FILENAME_LEN];
 	char szDataDir [2][FILENAME_LEN];
 	char szDemoDir [FILENAME_LEN];
