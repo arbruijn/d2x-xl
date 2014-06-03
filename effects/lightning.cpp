@@ -829,10 +829,64 @@ while (nVerts-- > 0) {
 return pow (1.0f - (zMin + zMax) / 2.0f / (float) ZRANGE, 50.0f);
 }
 
+void RenderTestImage (void)
+{
+if (gameStates.render.cameras.bActive) {
+	//glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+	//glClear (GL_COLOR_BUFFER_BIT);
+	float vertices [4][4][2] = {
+		{{0.0, 0.0}, {0.0, 0.5}, {0.5, 0.5}, {0.5, 0.0}},
+		{{0.5, 0.0}, {0.5, 0.5}, {1.0, 0.5}, {1.0, 0.0}},
+		{{0.0, 0.5}, {0.0, 1.0}, {0.5, 1.0}, {0.5, 0.5}},
+		{{0.5, 0.5}, {0.5, 1.0}, {1.0, 1.0}, {1.0, 0.5}},
+		};
+	float colors [4][4] = {
+		{1.0, 0.5, 0.0, 0.5},
+		{0.0, 0.5, 1.0, 0.5},
+		{1.0, 0.0, 0.5, 0.5},
+		{0.0, 1.0, 0.5, 0.5}
+	};
+
+
+	glMatrixMode (GL_MODELVIEW);
+	glPushMatrix ();
+	glLoadIdentity ();//clear matrix
+	glMatrixMode (GL_PROJECTION);
+	glPushMatrix ();
+	glLoadIdentity ();//clear matrix
+	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+
+	GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
+	ogl.GetBlendMode (nBlendModes [0], nBlendModes [1]);
+	ogl.SetBlendMode (OGL_BLEND_REPLACE);
+	ogl.SetDepthMode (GL_ALWAYS);
+
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	ogl.SetTexturing (false);
+	for (int i = 0; i < 4; i++) {
+		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+		ogl.SetTexturing (false);
+		glColor3fv (colors [i]);
+		OglVertexPointer (2, GL_FLOAT, 0, vertices [i]);
+		OglDrawArrays (GL_QUADS, 0, 4);
+		}
+	ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
+	ogl.SetDepthMode (nDepthMode);
+	glMatrixMode (GL_PROJECTION);
+	glPopMatrix ();
+	glMatrixMode (GL_MODELVIEW);
+	glPopMatrix ();
+	}
+}
+
 //------------------------------------------------------------------------------
 
 void CLightning::RenderCore (CFloatVector *colorP, int nDepth, int nThread)
 {
+#if 0 //DBG
+RenderTestImage ();
+return;
+#endif
 if (!m_coreVerts.Buffer ())
 	return;
 ogl.SetBlendMode (OGL_BLEND_ADD);
@@ -845,9 +899,15 @@ if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	if (glowRenderer.Available (GLOW_LIGHTNING))
 		w *= 2.0f * ZScale (m_coreVerts.Buffer (), m_nNodes);
 	glLineWidth (w);
+
+	//GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
+	//ogl.SetDepthMode (GL_ALWAYS);
+
 	OglVertexPointer (3, GL_FLOAT, 0, m_coreVerts.Buffer ());
 	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
 	ogl.DisableClientStates (0, 0, 0, -1);
+
+	//ogl.SetDepthMode (nDepthMode);
 	}
 #if GL_FALLBACK
 else {
@@ -868,8 +928,9 @@ ogl.ClearError (0);
 
 int CLightning::SetupGlow (void)
 {
-if (/*m_bGlow &&*/ gameOpts->render.lightning.bGlow && ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0)) {
+if (/*m_bGlow &&*/ gameOpts->render.lightning.bGlow) {
 	glowRenderer.Begin (GLOW_LIGHTNING, 2, false, 1.05f);
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetTexturing (true);
 	if (corona.Load () && !corona.Bitmap ()->Bind (1)) {

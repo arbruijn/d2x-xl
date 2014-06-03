@@ -780,7 +780,8 @@ m_info.bRebuild = false;
 if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
 //Canvas ()->Reactivate ();
-gameData.render.scene.Activate ("HUD::Setup (scene)");
+//if (!gameStates.render.cameras.bActive)
+	gameData.render.scene.Activate ("HUD::Setup (scene)");
 return true;
 }
 

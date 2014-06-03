@@ -27,7 +27,7 @@ CCameraManager cameraManager;
 
 int CCamera::CreateBuffer (void)
 {
-if (!m_data.fbo.Create (CCanvas::Width (), CCanvas::Height (), m_data.bShadowMap ? 3 : 1))
+if (!m_data.fbo.Create (CCanvas::Width (), CCanvas::Height (), m_data.bShadowMap ? 3 : 1, m_data.bShadowMap ? 1 : 2))
 	return 0;
 m_data.glTexId = m_data.bShadowMap ? m_data.fbo.DepthBuffer () : m_data.fbo.ColorBuffer ();
 char szName [20];
@@ -389,6 +389,21 @@ else
 			}
 		memcpy (m_data.texCoord, texCoord, sizeof (m_data.texCoord));
 		}
+#if 1
+	if (!gameOpts->render.cameras.bHires) {
+		for (int i = 0; i < 6; i++) {
+#	if 0
+			m_data.texCoord [i].v.u *= 2.0f;
+			m_data.texCoord [i].v.v *= 2.0f;
+#	else
+			m_data.texCoord [i].v.u *= 0.5f;
+			m_data.texCoord [i].v.v *= 0.5f;
+			//m_data.texCoord [i].v.u += 0.5f;
+			m_data.texCoord [i].v.v += 0.5f;
+#	endif
+			}
+		}
+#endif
 	m_data.bAligned = 1;
 	}
 }

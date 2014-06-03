@@ -57,6 +57,7 @@
 #include "cockpit.h"
 #include "renderframe.h"
 #include "automap.h"
+#include "cameras.h"
 #include "gpgpu_lighting.h"
 #include "postprocessing.h"
 
@@ -197,7 +198,7 @@ if (nBuffer != nPrevBuffer) {
 		m_data.drawBufferP = &cameraP->FrameBuffer ();
 		}
 	}
-return m_data.drawBufferP->Enable (nColorBuffers) ? nPrevBuffer : -1;
+return m_data.drawBufferP->Enable (nColorBuffers) ? labs (nPrevBuffer) : -1;
 }
 
 //------------------------------------------------------------------------------
@@ -210,7 +211,7 @@ if (/*gameStates.render.bBriefing ||*/ (gameStates.render.bRenderIndirect < 0) |
 	SetDrawBuffer (GL_BACK, 0);
 	}
 else if (gameStates.render.cameras.bActive) {
-	SelectDrawBuffer (-cameraManager.Current () - 1);
+	SelectDrawBuffer (-cameraManager.CurrentIndex () - 1);
 	gameStates.render.bRenderIndirect = 0;
 	}
 else {
@@ -242,7 +243,7 @@ else {
 
 int COGL::SelectGlowBuffer (void) 
 { 
-return SelectDrawBuffer (int (!IsSideBySideDevice () && (m_data.xStereoSeparation > 0)), 1) > -1;
+return SelectDrawBuffer (gameStates.render.cameras.bActive ? -cameraManager.CurrentIndex () - 1 : int (!IsSideBySideDevice () && (m_data.xStereoSeparation > 0)), 1) > -1;
 }
 
 //------------------------------------------------------------------------------
@@ -250,6 +251,15 @@ return SelectDrawBuffer (int (!IsSideBySideDevice () && (m_data.xStereoSeparatio
 int COGL::SelectBlurBuffer (int nBuffer) 
 { 
 return SelectDrawBuffer (nBuffer + 3) > -1;
+}
+
+//------------------------------------------------------------------------------
+
+CFBO* COGL::BlurBuffer (int nBuffer) 
+{ 
+return (gameStates.render.cameras.bActive && (nBuffer < 0))
+		 ? &cameraManager.Current ()->FrameBuffer ()
+		 : m_data.GetDrawBuffer ((nBuffer >= 0) ? nBuffer + 3 : !IsSideBySideDevice () && int (m_data.xStereoSeparation > 0)); 
 }
 
 //------------------------------------------------------------------------------
