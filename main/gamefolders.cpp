@@ -257,7 +257,9 @@ if (GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szSoundFolder [3
 	*gameFolders.szSoundFolder [3] = '\0';
 //GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szShaderFolder, SHADER_FOLDER, "");
 GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szTextureRootFolder, TEXTURE_FOLDER, "");
-GetAppFolder (gameFolders.szTextureRootFolder, gameFolders.szTextureFolder [0], TEXTURE_FOLDER_D2, "*.tga");
+if (GetAppFolder (gameFolders.szTextureRootFolder, gameFolders.szTextureFolder [0], TEXTURE_FOLDER_D2, "*.tga") &&
+	 GetAppFolder (gameFolders.szTextureRootFolder, gameFolders.szTextureFolder [0], TEXTURE_FOLDER_D2, ""))
+	MakeFolder (gameFolders.szTextureFolder [0], gameFolders.szTextureRootFolder, TEXTURE_FOLDER_D2); // older D2X-XL installations may have a different D2 texture folder
 GetAppFolder (gameFolders.szTextureRootFolder, gameFolders.szTextureFolder [1], TEXTURE_FOLDER_D1, "*.tga");
 GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szModFolder [0], MOD_FOLDER, "");
 GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szMovieFolder, MOVIE_FOLDER, "*.mvl");
