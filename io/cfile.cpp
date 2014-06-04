@@ -56,27 +56,55 @@ int nCFileError = 0;
 tGameFolders gameFolders;
 
 // ----------------------------------------------------------------------------
+// GetAppFolder verifies that szMainFolder/szSubFolder is a valid game folder by
+// scanning it for files with the name szFilter (e.g. "c:/games/descent/data/*.hog"). 
+// If it finds such a file, it will print szMainFolder/szSubFolder to szDestFolder
+// and return 0 (zero). Otherwise, it will print szMainFolder to szSubFolder and 
+// return a value != 0.
 
-int GetAppFolder (const char *szRootDir, char *szFolder, const char *szName, const char *szFilter)
+int GetAppFolder (const char *szMainFolder, char *szDestFolder, const char *szSubFolder, const char *szFilter)
 {
 	FFS	ffs;
-	char	szDir [FILENAME_LEN];
+	char	szFolder [FILENAME_LEN];
 
-if (!(szName && *szName))
+if (!(szSubFolder && *szSubFolder))
 	return 1;
-int i = (int) strlen (szRootDir);
-int bAddSlash = i && (szRootDir [i-1] != '\\') && (szRootDir [i-1] != '/');
-PrintLog (0, "GetAppFolder ('%s', '%s', '%s', '%s')\n", szRootDir, szFolder, szName, szFilter);
-sprintf (szDir, "%s%s%s%s%s", szRootDir, bAddSlash ? "/" : "", szName, *szFilter ? "/" : "", szFilter);
-if (!(i = FFF (szDir, &ffs, *szFilter == '\0'))) {
-	if (szFolder != szName)
-		sprintf (szFolder, "%s%s%s", szRootDir, bAddSlash ? "/" : "", szName);
+int i = (int) strlen (szMainFolder);
+int bAddSlash = i && (szMainFolder [i-1] != '\\') && (szMainFolder [i-1] != '/');
+PrintLog (0, "GetAppFolder ('%s', '%s', '%s', '%s')\n", szMainFolder, szDestFolder, szSubFolder, szFilter);
+sprintf (szFolder, "%s%s%s%s%s", szMainFolder, bAddSlash ? "/" : "", szSubFolder, *szFilter ? "/" : "", szFilter);
+if (!(i = FFF (szFolder, &ffs, *szFilter == '\0'))) {
+	if (szDestFolder != szSubFolder)
+		sprintf (szDestFolder, "%s%s%s", szMainFolder, bAddSlash ? "/" : "", szSubFolder);
 	}
-else if (*szRootDir)
-	strcpy (szFolder, szRootDir);
-PrintLog (0, "GetAppFolder (%s) = '%s' (%d)\n", szName, szFolder, i);
+else if (*szMainFolder)
+	strcpy (szDestFolder, szMainFolder);
+PrintLog (0, "GetAppFolder (%s) = '%s' (%d)\n", szSubFolder, szDestFolder, i);
 FFC (&ffs);
 return i;
+}
+
+// ----------------------------------------------------------------------------
+
+char* FlipBackslash (char* pszFile)
+{
+for (char* psz = pszFile; *psz; psz++)
+	if (*psz == '\\')
+		*psz = '/';
+return pszFile;
+}
+
+// ----------------------------------------------------------------------------
+
+
+char* AppendSlash (char* pszFile)
+{
+int l = (int) strlen (gameFolders.szGameDir);
+if (l && (pszFile [l - 1] != '\\') && (pszFile [l - 1] != '/')) {
+	pszFile [l] = '/';
+	pszFile [l + 1] = '\0';
+	}
+return pszFile;
 }
 
 // ----------------------------------------------------------------------------
@@ -895,7 +923,7 @@ if (*szDestName) {
 	else
 		strcpy (fn, szDestName);
 	}
-sprintf (szDest, "%s%s%s", gameFolders.szCacheDir, *gameFolders.szCacheDir ? "/" : "", fn);
+sprintf (szDest, "%s%s%s", gameFolders.szCacheDir [0], *gameFolders.szCacheDir [0] ? "/" : "", fn);
 if (! (fp = fopen (szDest, "wb"))) {
 	Close ();
 	return 0;

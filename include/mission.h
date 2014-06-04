@@ -60,8 +60,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define ML_MSNROOTDIR	5
 
 //where the missions go
-#define BASE_MISSION_DIR "missions"
-#define MISSION_DIR (gameOpts->app.bSinglePlayer ? BASE_MISSION_DIR "/single/" : BASE_MISSION_DIR)
+#define BASE_MISSION_FOLDER	"missions"
+#define MISSION_FOLDER			(gameOpts->app.bSinglePlayer ? BASE_MISSION_FOLDER "/single/" : BASE_MISSION_FOLDER)
 
 //------------------------------------------------------------------------------
 

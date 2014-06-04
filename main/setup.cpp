@@ -471,7 +471,7 @@ if (nResult) {
 			Warning (szMsg);
 		}
 	CFile	cf;
-	if (cf.Open ("d2x-xl-missing-files.txt", gameFolders.szHomeDir, "rb", 0)) {
+	if (cf.Open ("d2x-xl-missing-files.txt", gameFolders.szUserDir, "rb", 0)) {
 		fprintf (cf.File (), szMsg);
 		cf.Close ();
 		}

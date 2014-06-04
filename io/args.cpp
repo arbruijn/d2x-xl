@@ -66,7 +66,7 @@ if ((i = Find ("-ini")))
 else {
 #if defined(__unix__)
 	FFS		ffs;
-	strcpy (m_filename, gameFolders.szHomeDir);
+	strcpy (m_filename, gameFolders.szUserDir);
 	strcat (m_filename, "/.d2x-xl");
 	if (FFF (m_filename, &ffs, 0) <= 0) {
 #endif
@@ -174,7 +174,7 @@ if (m_cf.Open (filename, "", "rb", 0)) {
 
 // ----------------------------------------------------------------------------
 
-int CConfigManager::Value (int t, int nDefault)
+int CConfigManager::Int (int t, int nDefault)
 {
 	char *psz = m_properties [t];
 
@@ -189,11 +189,20 @@ return nDefault;
 
 // ----------------------------------------------------------------------------
 
-int CConfigManager::Value (const char* szArg, int nDefault)
+int CConfigManager::Int (const char* szArg, int nDefault)
 {
 	int t = Find (szArg);
 
 return t ? Value (t, nDefault) : nDefault;
+}
+
+// ----------------------------------------------------------------------------
+
+char* CConfigManager::Text (const char* szArg, char* pszDefault)
+{
+	int t = Find (szArg);
+
+return t ? m_properties [t] : pszDefault;
 }
 
 //------------------------------------------------------------------------------

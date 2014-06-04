@@ -136,12 +136,12 @@ class CFile {
 
 
 typedef struct tGameFolders {
-	char szHomeDir [FILENAME_LEN];
+	char szUserDir [FILENAME_LEN];
 #if defined (__unix__) || defined (__macosx__)
 	char szSharePath [FILENAME_LEN];
 #endif
 	char szAltHogDir [FILENAME_LEN];
-	char szCacheDir [FILENAME_LEN];
+	char szCacheDir [2][FILENAME_LEN];
 	char szLightmapDir [FILENAME_LEN];
 	char szLightDataDir [FILENAME_LEN];
 	char szMeshDir [FILENAME_LEN];
@@ -172,11 +172,13 @@ typedef struct tGameFolders {
 	int bAltHogDirInited;
 } tGameFolders;
 
-int GetAppFolder (const char *szRootDir, char *szFolder, const char *szName, const char *szFilter);
+int GetAppFolder (const char *szMainFolder, char *szDestFolder, const char *szSubFolder, const char *szFilter);
 char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int nType);
 void MakeTexSubFolders (char* pszParentFolder);
 void MakeModFolders (const char* pszMission, int nLevel = 0);
 void ResetModFolders (void);
+char* FlipBackslash (char* pszFile);
+char* AppendSlash (char* pszFile);
 
 #ifdef _WIN32
 char *UnicodeToAsc (char *str, const wchar_t *w_str);

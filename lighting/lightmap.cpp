@@ -862,7 +862,7 @@ int CLightmapManager::Load (int nLevel)
 if (!(gameStates.app.bCacheLightmaps))
 	return 0;
 if (!cf.Open (Filename (szFilename, nLevel), gameFolders.szLightmapDir, "rb", 0) &&
-	 !cf.Open (Filename (szFilename, nLevel), gameFolders.szCacheDir, "rb", 0))
+	 !cf.Open (Filename (szFilename, nLevel), gameFolders.szCacheDir [0], "rb", 0))
 	return 0;
 bOk = (cf.Read (&ldh, sizeof (ldh), 1) == 1);
 if (bOk)

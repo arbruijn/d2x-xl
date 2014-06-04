@@ -1424,11 +1424,11 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_
 missionManager.LevelStateName (szFile);
 if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed))
 	saveGameManager.Save (0, -1, 0, szFile);
-else if (CFile::Exist (szFile, gameFolders.szCacheDir, 0))
+else if (CFile::Exist (szFile, gameFolders.szCacheDir [0], 0))
 	CFile::Delete (szFile, gameFolders.szSaveDir);
 szFile [0] = '\x02';
 missionManager.LevelStateName (szFile + 1, missionManager.NextLevel ());
-if (!gameStates.app.bD1Mission && (nState > 0) && CFile::Exist (szFile, gameFolders.szCacheDir, 0)) {
+if (!gameStates.app.bD1Mission && (nState > 0) && CFile::Exist (szFile, gameFolders.szCacheDir [0], 0)) {
 	int pwSave = gameData.weapons.nPrimary;
 	int swSave = gameData.weapons.nSecondary;
 	saveGameManager.Load (1, -1, 0, szFile + 1);

@@ -39,8 +39,9 @@ class CConfigManager {
 		int Parse (CFile* cfP = NULL);
 		void PrintLog (void);
 		int Find (const char* s);
-		int Value (int t, int nDefault);
-		int Value (const char* szArg, int nDefault);
+		int Int (int t, int nDefault);
+		int Int (const char* szArg, int nDefault);
+		char* Text (const char* szArg, char* pszDefault = "");
 		inline char* Property (int i) { return (--i < Count ()) ? m_properties [i] : m_null; }
 		inline char* operator[] (int i) { return Property (i); }
 };
@@ -48,6 +49,6 @@ class CConfigManager {
 extern CConfigManager appConfig;
 
 static inline int FindArg (const char * s) { return appConfig.Find (s); }
-static inline int NumArg (int t, int nDefault) { return appConfig.Value (t, nDefault); }
+static inline int NumArg (int t, int nDefault) { return appConfig.Int (t, nDefault); }
 
 #endif //_ARGS_H

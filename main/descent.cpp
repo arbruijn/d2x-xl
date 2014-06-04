@@ -826,7 +826,7 @@ InitArgs (argc, argv);
 EvalArgs ();
 CheckAndFixSetup ();
 GetAppFolders ();
-gameStates.app.nLogLevel = appConfig.Value ("-printlog", 1);
+gameStates.app.nLogLevel = appConfig.Int ("-printlog", 1);
 OpenLogFile ();
 PrintLog (0, "%s\n", DESCENT_VERSION);
 InitArgs (argc, argv);

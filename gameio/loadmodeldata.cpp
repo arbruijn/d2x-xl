@@ -596,7 +596,7 @@ int LoadModelData (void)
 
 if (!gameStates.app.bCacheModelData)
 	return 0;
-if (!cf.Open ("modeldata.d2x", gameFolders.szCacheDir, "rb", 0))
+if (!cf.Open ("modeldata.d2x", gameFolders.szCacheDir [0], "rb", 0))
 	return 0;
 bOk = (cf.Read (&mdh, sizeof (mdh), 1) == 1);
 if (bOk)
@@ -619,7 +619,7 @@ int SaveModelData (void)
 
 if (!gameStates.app.bCacheModelData)
 	return 0;
-if (!cf.Open ("modeldata.d2x", gameFolders.szCacheDir, "wb", 0))
+if (!cf.Open ("modeldata.d2x", gameFolders.szCacheDir [0], "wb", 0))
 	return 0;
 bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
 		(gameData.models.spheres.Write (cf) == gameData.models.spheres.Length ()) &&

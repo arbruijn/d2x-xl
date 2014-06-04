@@ -667,7 +667,7 @@ else {
 		}
 	if (gameFolders.bAltHogDirInited && strcmp (gameFolders.szAltHogDir, gameFolders.szGameDir)) {
 		bHaveSubFolders = 0;
-		sprintf (gameFolders.szMissionDirs [1], "%s/%s%s", gameFolders.szAltHogDir, MISSION_DIR, gameFolders.szMsnSubDir);
+		sprintf (gameFolders.szMissionDirs [1], "%s/%s%s", gameFolders.szAltHogDir, MISSION_FOLDER, gameFolders.szMsnSubDir);
 		if (gameOpts->app.nVersionFilter & 2) {
 			Add (bAnarchy, 0, bSubFolder, bHaveSubFolders, ML_ALTHOGDIR);
 			bHaveSubFolders = 1;
@@ -1111,7 +1111,7 @@ int CMissionManager::LoadLevelStates (void)
 
 sprintf (szFile, "%s.state", m_list [nCurrentMission].szMissionName + ((m_list [nCurrentMission].szMissionName [0] == '[') ? 4 : 0));
 if (!cf.Open (szFile, gameFolders.szMissionStateDir, "rb", 0) &&
-	 !cf.Open (szFile, gameFolders.szCacheDir, "rb", 0))
+	 !cf.Open (szFile, gameFolders.szCacheDir [0], "rb", 0))
 	return 0;
 for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
 	nLevelState [i] = char (cf.ReadByte ());
@@ -1127,8 +1127,8 @@ void CMissionManager::DeleteLevelStates (void)
 
 for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++) {
 	LevelStateName (szFile, i);
-	if (CFile::Exist (szFile, gameFolders.szCacheDir, 0))
-		CFile::Delete (szFile, gameFolders.szCacheDir);
+	if (CFile::Exist (szFile, gameFolders.szCacheDir [0], 0))
+		CFile::Delete (szFile, gameFolders.szCacheDir [0]);
 	}
 memset (nLevelState, 0, sizeof (nLevelState));
 }

@@ -433,7 +433,7 @@ if (bFromHog) {
 	if (*szFilename && cf.Extract (szFilename, gameFolders.szDataDir [0], 0, szFilename)) {
 		char	szSong [FILENAME_LEN];
 
-		sprintf (szSong, "%s%s%s", gameFolders.szCacheDir, *gameFolders.szCacheDir ? "/" : "", szFilename);
+		sprintf (szSong, "%s%s%s", gameFolders.szCacheDir [0], *gameFolders.szCacheDir [0] ? "/" : "", szFilename);
 		if (midi.PlaySong (szSong, NULL, NULL, 1, 0))
 			return;
 		}
