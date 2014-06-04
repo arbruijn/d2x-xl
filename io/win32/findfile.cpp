@@ -66,12 +66,23 @@ return NULL;
 int FileFindFirst (const char *pszFilter, FILEFINDSTRUCT *ffstruct, int bFindDirs)
 {
 	WIN32_FIND_DATA find;
+	char		szFilter [FILENAME_LEN];
 #ifdef _WIN32_WCE
 	wchar_t	w_str [FILENAME_LEN];
 	char		str [FILENAME_LEN];
 #endif
 
 find.dwFileAttributes = bFindDirs ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_NORMAL;
+if (bFindDirs) {
+	int l = (int) strlen (pszFilter);
+	if (!l)
+		return 1;
+	if ((pszFilter [l - 1] == '/') || (pszFilter [l - 1] == '\\')) {
+		memcpy (szFilter, pszFilter, l - 1);
+		szFilter [l - 1] = '\0';
+		pszFilter = szFilter;
+		}
+	}
 _FindFileHandle = FindFirstFile (AscToUnicode (w_str, pszFilter), &find);
 if (_FindFileHandle == INVALID_HANDLE_VALUE) 
 	return 1;

@@ -76,8 +76,9 @@
 #	define	SAVE_FOLDER					"Savegames"
 #	define	DEMO_FOLDER					"Demos"
 #	define	TEXTURE_FOLDER				"Textures"
-#	define	TEXTURE_FOLDER_D2			"Textures"
+#	define	TEXTURE_FOLDER_D2			"Textures/D2"
 #	define	TEXTURE_FOLDER_D1			"Textures/D1"
+#	define	WALLPAPER_FOLDER			"Textures/Wallpapers"
 #	define	CACHE_FOLDER				"Cache"
 #	define	LIGHTMAP_FOLDER			"Lightmaps"
 #	define	LIGHTDATA_FOLDER			"Lights"
@@ -86,7 +87,6 @@
 #	define	MOD_FOLDER					"Mods"
 #	define	MUSIC_FOLDER				"Music"
 #	define	DOWNLOAD_FOLDER			"Downloads"
-#	define	WALLPAPER_FOLDER			"Wallpapers"
 #else
 #	define	DATA_FOLDER					"data"
 #	define	SHADER_FOLDER				"shaders"
@@ -151,11 +151,22 @@ return GetAppFolder ("", gameFolders.szDataFolder [0], pszDataRootDir, "descent2
 
 void MakeFolder (char* pszAppFolder, char* pszFolder = "", char* pszSubFolder = "", char* format = "%s/%s")
 {
-if (GetAppFolder (pszFolder, pszAppFolder, pszSubFolder, "")) {
+if (pszSubFolder && *pszSubFolder) {
+	if (!GetAppFolder (pszFolder, pszAppFolder, pszSubFolder, "")) {
+		AppendSlash (pszAppFolder);
+		return;
+		}
 	if (pszFolder && *pszFolder)
 		sprintf (pszAppFolder, format, pszFolder, pszSubFolder);
-	CFile::MkDir (pszAppFolder);
 	}
+else {
+	FFS	ffs;
+	if (!FFF (pszFolder, &ffs, 1))
+		return;
+	strcpy (pszAppFolder, pszFolder);
+	}
+CFile::MkDir (pszAppFolder);
+AppendSlash (pszAppFolder);
 }
 
 // ----------------------------------------------------------------------------
@@ -243,7 +254,7 @@ if (GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szSoundFolder [2
 	*gameFolders.szSoundFolder [2] = '\0';
 if (GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szSoundFolder [3], SOUND_FOLDER2_D1, "*.wav"))
 	*gameFolders.szSoundFolder [3] = '\0';
-GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szShaderFolder, SHADER_FOLDER, "");
+//GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szShaderFolder, SHADER_FOLDER, "");
 GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szTextureFolder [0], TEXTURE_FOLDER_D2, "*.tga");
 GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szTextureFolder [1], TEXTURE_FOLDER_D1, "*.tga");
 GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szModFolder [0], MOD_FOLDER, "");
@@ -255,7 +266,7 @@ strcpy (gameFolders.szDataRootFolder [1], gameFolders.szUserDir);
 
 // create the user folders
 
-MakeFolder (gameFolders.szDataRootFolder [1]);
+MakeFolder ("", gameFolders.szDataRootFolder [1]);
 MakeFolder (gameFolders.szCacheFolder [1], gameFolders.szDataRootFolder [1], CACHE_FOLDER);
 MakeFolder (gameFolders.szProfileFolder, gameFolders.szDataRootFolder [1], PROF_FOLDER);
 MakeFolder (gameFolders.szSavegameFolder, gameFolders.szDataRootFolder [1], SAVE_FOLDER);
@@ -287,11 +298,11 @@ MakeFolder (gameFolders.szCacheFolder [0], pszOSXCacheDir, CACHE_FOLDER);
 
 #else
 
-MakeFolder (gameFolders.szDataRootFolder [0]);
+MakeFolder ("", gameFolders.szDataRootFolder [0]);
 MakeFolder (gameFolders.szDataFolder [0], gameFolders.szDataRootFolder [0], DATA_FOLDER);
 MakeFolder (gameFolders.szDataFolder [1], gameFolders.szDataFolder [0], "d2x-xl");
 MakeFolder (gameFolders.szCacheFolder [0], gameFolders.szDataRootFolder [0], CACHE_FOLDER);
-MakeFolder (gameFolders.szTextureFolder [0], gameFolders.szTextureFolder [0], WALLPAPER_FOLDER);
+MakeFolder (gameFolders.szWallpaperFolder [0], gameFolders.szDataRootFolder [0], WALLPAPER_FOLDER);
 MakeFolder (gameFolders.szTextureCacheFolder [0], gameFolders.szDataRootFolder [0], TEXTURE_FOLDER_D2);
 MakeFolder (gameFolders.szTextureCacheFolder [1], gameFolders.szDataRootFolder [0], TEXTURE_FOLDER_D1);
 MakeFolder (gameFolders.szModelCacheFolder [0], gameFolders.szDataRootFolder [0], MODEL_FOLDER);
