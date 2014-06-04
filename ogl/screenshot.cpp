@@ -153,8 +153,8 @@ if (j) {
 else
 	strcpy (szLevelName, "scrn");
 StopTime();
-if (*gameFolders.szScrShotDir)
-	sprintf (szSaveName, "%s", gameFolders.szScrShotDir);
+if (*gameFolders.szScreenshotFolder)
+	sprintf (szSaveName, "%s", gameFolders.szScreenshotFolder);
 else
 	*szSaveName = '\0';
 i = (int) strlen (szSaveName);

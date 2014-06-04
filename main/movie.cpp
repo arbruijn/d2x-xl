@@ -115,10 +115,10 @@ int CSubTitles::Init (const char* filename)
 m_nCaptions = 0;
 if (!gameOpts->movies.bSubTitles)
 	return 0;
-if (!cf.Open (filename, gameFolders.szDataDir [0], "rb", 0)) { // first try text version
+if (!cf.Open (filename, gameFolders.szDataFolder [0], "rb", 0)) { // first try text version
 	char filename2 [FILENAME_LEN];	//no text version, try binary version
 	CFile::ChangeFilenameExtension (filename2, filename, ".txb");
-	if (!cf.Open (filename2, gameFolders.szDataDir [0], "rb", 0))
+	if (!cf.Open (filename2, gameFolders.szDataFolder [0], "rb", 0))
 		return 0;
 	bHaveBinary = 1;
 	}
@@ -486,7 +486,7 @@ bool CMovieLib::Setup (const char* filename)
 	CFile cf;
 	int	nFiles = 0;
 
-if (!cf.Open (filename, gameFolders.szMovieDir, "rb", 0))
+if (!cf.Open (filename, gameFolders.szMovieFolder, "rb", 0))
 	return false;
 cf.Read (id, 4, 1);
 if (!strncmp (id, "DMVL", 4))
@@ -514,7 +514,7 @@ for (i = 0; i < m_nMovies; i++)
 		if ((bFromCD = (m_flags & MLF_ON_CD)))
 			redbook.Stop ();		//ready to read from CD
 		do {		//keep trying until we get the file handle
-			m_movies [i].m_cf.Open (m_name, gameFolders.szMovieDir, "rb", 0);
+			m_movies [i].m_cf.Open (m_name, gameFolders.szMovieFolder, "rb", 0);
 			if (bRequired && bFromCD && !m_movies [i].m_cf.File ()) {   //didn't get file!
 				if (movieManager.RequestCD () == -1)		//ESC from requester
 					break;						//bail from here. will get error later
@@ -699,7 +699,7 @@ int CMovieManager::Run (char* filename, int bHires, int bRequired, int dx, int d
 
 result = 1;
 // Open Movie file.  If it doesn't exist, no movie, just return.
-if (!(cf.Open (filename, gameFolders.szDataDir [0], "rb", 0) || (movieP = Open (filename, bRequired)))) {
+if (!(cf.Open (filename, gameFolders.szDataFolder [0], "rb", 0) || (movieP = Open (filename, bRequired)))) {
 	if (bRequired) {
 #if TRACE
 		console.printf (CON_NORMAL, "movie: RunMovie: Cannot open movie <%s>\n", filename);

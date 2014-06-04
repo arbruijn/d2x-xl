@@ -2851,7 +2851,7 @@ void LoadModTexts (void)
 	int	i, l, nLine;
 
 FreeModTexts ();
-sprintf (szFile, "%s/%s.txt", gameFolders.szModDir [1], gameFolders.szModName);
+sprintf (szFile, "%s/%s.txt", gameFolders.szModFolder [1], gameFolders.szModName);
 if (!cf.Open (szFile, "", "rb", 0))
 	return;
 for (nLine = 0; cf.GetS (szText, sizeof (szText)); nLine++) {
@@ -2975,9 +2975,9 @@ fclose (fTxt);
 #endif
 if ((i = FindArg ("-text")))
 	filename = appConfig [i+1];
-if (!tFile.Open (filename, gameFolders.szDataDir [0], "rb", 0)) {
+if (!tFile.Open (filename, gameFolders.szDataFolder [0], "rb", 0)) {
 	filename = "descent.txb";
-	if (!iFile.Open (filename, gameFolders.szDataDir [0], "rb", 0)) {
+	if (!iFile.Open (filename, gameFolders.szDataFolder [0], "rb", 0)) {
 		Warning (TXT_NO_TEXTFILES);
 		return;
 	}

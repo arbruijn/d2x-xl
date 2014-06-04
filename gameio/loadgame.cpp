@@ -808,12 +808,12 @@ if (nStage == 0) {
 	if (missionManager.nEnhancedMission) {
 		sprintf (szFile, "d2x.ham");
 		/*---*/PrintLog (1, "trying vertigo custom robots (d2x.ham)\n");
-		nLoadRes = LoadRobotExtensions ("d2x.ham", gameFolders.szMissionDir, missionManager.nEnhancedMission);
+		nLoadRes = LoadRobotExtensions ("d2x.ham", gameFolders.szMissionFolder, missionManager.nEnhancedMission);
 		PrintLog (-1);
 		}
 	if (gameStates.app.bHaveMod) {
 		/*---*/PrintLog (1, "trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
-		if (LoadRobotReplacements (gameFolders.szModName, gameFolders.szModDir [1], 0, 0, true, false))
+		if (LoadRobotReplacements (gameFolders.szModName, gameFolders.szModFolder [1], 0, 0, true, false))
 			gameStates.app.bCustomData = true;
 		PrintLog (-1);
 		}
@@ -824,13 +824,13 @@ if (nStage == 0) {
 		else {
 			sprintf (szFile, "%s.vham", gameFolders.szModName);
 			/*---*/PrintLog (1, "trying custom robots (vham) from mod '%s'\n", gameFolders.szModName);
-			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szModDir [1], missionManager.nEnhancedMission);
+			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szModFolder [1], missionManager.nEnhancedMission);
 			PrintLog (-1);
 			}
 		if (nLoadRes == 0) {
 			sprintf (szFile, "%s.ham", gameStates.app.szCurrentMissionFile);
 			/*---*/PrintLog (1, "trying custom robots (ham) from level '%s'\n", gameStates.app.szCurrentMissionFile);
-			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szMissionDirs [0], missionManager.nEnhancedMission);
+			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szMissionFolders [0], missionManager.nEnhancedMission);
 			PrintLog (-1);
 			}
 		if (nLoadRes > 0) {
@@ -872,14 +872,14 @@ else {
 	PrintLog (-1);
 
 	/*---*/PrintLog (1, "loading replacement models\n");
-	if (*gameFolders.szModelDir [1]) {
+	if (*gameFolders.szModelFolder [1]) {
 		if (missionManager.nCurrentLevel < 0) {
-			sprintf (gameFolders.szModelDir [2], "%s/slevel%02d", gameFolders.szModelDir [1], -missionManager.nCurrentLevel);
-			sprintf (gameFolders.szModelCacheDir [2], "%s/slevel%02d", gameFolders.szModelCacheDir [1], -missionManager.nCurrentLevel);
+			sprintf (gameFolders.szModelFolder [2], "%s/slevel%02d", gameFolders.szModelFolder [1], -missionManager.nCurrentLevel);
+			sprintf (gameFolders.szModelCacheFolder [2], "%s/slevel%02d", gameFolders.szModelCacheFolder [1], -missionManager.nCurrentLevel);
 			}
 		else {
-			sprintf (gameFolders.szModelDir [2], "%s/level%02d", gameFolders.szModelDir [1], missionManager.nCurrentLevel);
-			sprintf (gameFolders.szModelCacheDir [2], "%s/level%02d", gameFolders.szModelCacheDir [1], missionManager.nCurrentLevel);
+			sprintf (gameFolders.szModelFolder [2], "%s/level%02d", gameFolders.szModelFolder [1], missionManager.nCurrentLevel);
+			sprintf (gameFolders.szModelCacheFolder [2], "%s/level%02d", gameFolders.szModelCacheFolder [1], missionManager.nCurrentLevel);
 			}
 		LoadHiresModels (2);
 		}
@@ -1044,8 +1044,8 @@ for (;;) {
 	if (strstr (hogFileManager.AltFiles ().szName, ".hog"))
 		break;
 	sprintf (szHogName, "%s%s%s%s",
-				gameFolders.szMissionDir, *gameFolders.szMissionDir ? "/" : "",
-				gameFolders.szMsnSubDir, pszLevelName);
+				gameFolders.szMissionFolder, *gameFolders.szMissionFolder ? "/" : "",
+				gameFolders.szMissionSubFolder, pszLevelName);
 	if (!hogFileManager.UseMission (szHogName))
 		break;
 	bRetry = 1;
@@ -1328,7 +1328,7 @@ int PSecretLevelDestroyed (void)
 {
 if (gameStates.app.bFirstSecretVisit)
 	return 0;		//	Never been there, can't have been destroyed.
-if (CFile::Exist (SECRETC_FILENAME, gameFolders.szSaveDir, 0))
+if (CFile::Exist (SECRETC_FILENAME, gameFolders.szSavegameFolder, 0))
 	return 0;
 return 1;
 }
@@ -1377,7 +1377,7 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_
 	NDStopRecording ();
 if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed))
 	saveGameManager.Save (0, 2, 0, SECRETC_FILENAME);
-if (!gameStates.app.bD1Mission && CFile::Exist (SECRETB_FILENAME, gameFolders.szSaveDir, 0)) {
+if (!gameStates.app.bD1Mission && CFile::Exist (SECRETB_FILENAME, gameFolders.szSavegameFolder, 0)) {
 	int pwSave = gameData.weapons.nPrimary;
 	int swSave = gameData.weapons.nSecondary;
 
@@ -1424,11 +1424,11 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_
 missionManager.LevelStateName (szFile);
 if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed))
 	saveGameManager.Save (0, -1, 0, szFile);
-else if (CFile::Exist (szFile, gameFolders.szCacheDir [0], 0))
-	CFile::Delete (szFile, gameFolders.szSaveDir);
+else if (CFile::Exist (szFile, gameFolders.szCacheFolder [0], 0))
+	CFile::Delete (szFile, gameFolders.szSavegameFolder);
 szFile [0] = '\x02';
 missionManager.LevelStateName (szFile + 1, missionManager.NextLevel ());
-if (!gameStates.app.bD1Mission && (nState > 0) && CFile::Exist (szFile, gameFolders.szCacheDir [0], 0)) {
+if (!gameStates.app.bD1Mission && (nState > 0) && CFile::Exist (szFile, gameFolders.szCacheFolder [0], 0)) {
 	int pwSave = gameData.weapons.nPrimary;
 	int swSave = gameData.weapons.nSecondary;
 	saveGameManager.Load (1, -1, 0, szFile + 1);
@@ -1963,7 +1963,7 @@ else if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	SetScreenMode (SCREEN_MENU);		//go into menu mode
 	if (gameStates.app.bFirstSecretVisit)
 		DoSecretMessage (gameStates.app.bD1Mission ? TXT_ALTERNATE_EXIT : TXT_SECRET_EXIT);
-	else if (CFile::Exist (SECRETC_FILENAME,gameFolders.szSaveDir,0))
+	else if (CFile::Exist (SECRETC_FILENAME,gameFolders.szSavegameFolder,0))
 		DoSecretMessage (gameStates.app.bD1Mission ? TXT_ALTERNATE_EXIT : TXT_SECRET_EXIT);
 	else {
 		char	text_str [128];
@@ -1992,7 +1992,7 @@ if (gameStates.app.bFirstSecretVisit || (gameData.demo.nState == ND_STATE_PLAYBA
 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_ALL_KEYS;
 	}
 else {
-	if (CFile::Exist (SECRETC_FILENAME, gameFolders.szSaveDir, 0)) {
+	if (CFile::Exist (SECRETC_FILENAME, gameFolders.szSavegameFolder, 0)) {
 		int	pw_save, sw_save, nCurrentLevel;
 
 		pw_save = gameData.weapons.nPrimary;

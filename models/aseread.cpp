@@ -785,8 +785,8 @@ if (m_nModel >= 0)
 if (gameStates.app.bCacheModelData) {
 	try {
 		if ((IsPlayerShip (nModel) || (nModel == COCKPIT_MODEL))
-			 ? ReadBinary (filename, bCustom, cf.Date (filename, gameFolders.szModelDir [bCustom], 0))
-			 : ReadBinary (nModel, bCustom, cf.Date (filename, gameFolders.szModelDir [bCustom], 0)))
+			 ? ReadBinary (filename, bCustom, cf.Date (filename, gameFolders.szModelFolder [bCustom], 0))
+			 : ReadBinary (nModel, bCustom, cf.Date (filename, gameFolders.szModelFolder [bCustom], 0)))
 			return 1;
 		}
 	catch(...) {
@@ -795,7 +795,7 @@ if (gameStates.app.bCacheModelData) {
 		}
 	}
 
-if (!cf.Open (filename, gameFolders.szModelDir [bCustom], "rb", 0)) {
+if (!cf.Open (filename, gameFolders.szModelFolder [bCustom], "rb", 0)) {
 	return 0;
 	}
 bErrMsg = 0;
@@ -889,7 +889,7 @@ return SaveBinary (szFilename);
 
 int CModel::SaveBinary (const char* szFilename)
 {
-if (!*gameFolders.szModelDir [m_bCustom])
+if (!*gameFolders.szModelFolder [m_bCustom])
 	return 0;
 
 	CFile		cf;
@@ -898,7 +898,7 @@ if (!*gameFolders.szModelDir [m_bCustom])
 strcpy (szBin, szFilename);
 strcpy (strrchr (szBin, '.'), ".bin");
 
-if (!cf.Open (szBin, gameFolders.szModelDir [m_bCustom], "wb", 0))
+if (!cf.Open (szBin, gameFolders.szModelFolder [m_bCustom], "wb", 0))
 	return 0;
 cf.WriteInt (MODEL_DATA_VERSION);
 cf.WriteInt (m_nModel);
@@ -992,12 +992,12 @@ if (!(szFilename && *szFilename))
 strcpy (szBin, szFilename);
 strcpy (strrchr (szBin, '.'), ".bin");
 
-time_t tBIN = cf.Date (szBin, gameFolders.szModelDir [bCustom], 0);
+time_t tBIN = cf.Date (szBin, gameFolders.szModelFolder [bCustom], 0);
 
 if (tASE > tBIN)
 	return 0;
 
-if (!cf.Open (szBin, gameFolders.szModelDir [bCustom], "rb", 0))
+if (!cf.Open (szBin, gameFolders.szModelFolder [bCustom], "rb", 0))
 	return 0;
 h = cf.ReadInt ();
 if (h != MODEL_DATA_VERSION) {

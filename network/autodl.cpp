@@ -325,10 +325,10 @@ return SDLNet_TCP_Send (client.socket, (void *) client.data, DL_PACKET_SIZE) == 
 int CDownloadManager::OpenFile (tClient& client, const char *pszExt)
 {
 	char	szFile [FILENAME_LEN];
-	int	l = (int) strlen (gameFolders.szMissionDirs [0]);
+	int	l = (int) strlen (gameFolders.szMissionFolders [0]);
 
 sprintf (szFile, "%s%s%s%s", 
-			gameFolders.szMissionDirs [0], (l && (gameFolders.szMissionDirs [0][l-1] != '/')) ? "/" : "", 
+			gameFolders.szMissionFolders [0], (l && (gameFolders.szMissionFolders [0][l-1] != '/')) ? "/" : "", 
 			netGame.m_info.szMissionName, pszExt);
 if (client.cf.File ())
 	client.cf.Close ();
@@ -514,7 +514,7 @@ switch (m_nState = m_data [0]) {
 				sprintf (szDest, "%s/%s%s", szFolder, szFile [0], szExt);
 #endif
 			else
-				sprintf (szDest, "%s/%s%s", gameFolders.szMissionDownloadDir, *gameFolders.szMissionDir ? "/" : "", pszFile);
+				sprintf (szDest, "%s/%s%s", gameFolders.szMissionDownloadFolder, *gameFolders.szMissionFolder ? "/" : "", pszFile);
 			if (m_cf.Open (szDest, "", "wb", 0))
 				break;
 			}
@@ -662,7 +662,7 @@ m_nState = DL_CONNECT;
 m_nPollTime = SDL_GetTicks ();
 m_nRequestTime = m_nPollTime - 3000;
 sprintf (szTitle, "Downloading <%s>", pszMission);
-*gameFolders.szMsnSubDir = '\0';
+*gameFolders.szMissionSubFolder = '\0';
 to.Throttle ();
 do {
 	i = m.Menu (NULL, szTitle, DownloadPoll);

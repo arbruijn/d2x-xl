@@ -593,7 +593,7 @@ int CTGA::ReadImage (const char* pszFile, const char* pszFolder, int alpha, doub
 
 m_cf.SplitPath (pszFile, szFolder, szFile, szExt);
 if (!pszFolder)
-	pszFolder = gameFolders.szDataDir [0];
+	pszFolder = gameFolders.szDataFolder [0];
 if (!*szFolder)
 	strcpy (szFolder, pszFolder);
 int l = int (strlen (szFolder));
@@ -650,7 +650,7 @@ else
 if (!pszFolder) {
 	m_cf.SplitPath (pszFile, szFile, NULL, NULL);
 	if (!*szFile)
-		pszFolder = gameFolders.szDataDir [0];
+		pszFolder = gameFolders.szDataFolder [0];
 	}
 
 #if TEXTURE_COMPRESSION
@@ -704,7 +704,7 @@ int CTGA::Save (const char *pszFile, const char *pszFolder)
 	int	r;
 
 if (!pszFolder)
-	pszFolder = gameFolders.szDataDir [0];
+	pszFolder = gameFolders.szDataFolder [0];
 CFile::SplitPath (pszFile, NULL, fn, NULL);
 sprintf (szFolder, "%s/%d/", pszFolder, m_bmP->Width ());
 strcat (fn, ".tga");
@@ -1014,25 +1014,25 @@ if (!strcmp (fn, "fusionblobouter2"))
 #endif
 if (nShrinkFactor > 1) {
 	sprintf (fnBase, "%s.tga", fn);
-	sprintf (szShrunkFolder, "%s/%d", gameFolders.szModelCacheDir [bCustom], 512 / nShrinkFactor);
-	tBase = m_cf.Date (fnBase, gameFolders.szModelDir [bCustom], 0);
+	sprintf (szShrunkFolder, "%s/%d", gameFolders.szModelCacheFolder [bCustom], 512 / nShrinkFactor);
+	tBase = m_cf.Date (fnBase, gameFolders.szModelFolder [bCustom], 0);
 	tShrunk = m_cf.Date (fnBase, szShrunkFolder, 0);
 	if ((tShrunk > tBase) && Read (fnBase, szShrunkFolder, -1, 1.0, 0)) {
 		UseBitmapCache (m_bmP, int (m_bmP->Height ()) * int (m_bmP->RowSize ()));
 		return m_bmP;
 		}
 	}
-if (!(Read (pszFile, gameFolders.szModelDir [bCustom], -1, 1.0, 0, false) ||
-	   Read (pszFile, gameFolders.szModelDir [bCustom], -1, 1.0, 0, true)))
+if (!(Read (pszFile, gameFolders.szModelFolder [bCustom], -1, 1.0, 0, false) ||
+	   Read (pszFile, gameFolders.szModelFolder [bCustom], -1, 1.0, 0, true)))
 	return NULL;
 UseBitmapCache (m_bmP, int (m_bmP->Height ()) * int (m_bmP->RowSize ()));
 if (gameStates.app.bCacheTextures && (nShrinkFactor > 1) &&
 	 (m_bmP->Width () == 512) && Shrink (nShrinkFactor, nShrinkFactor, 1)) {
 	strcat (fn, ".tga");
-	if (!m_cf.Open (fn, gameFolders.szModelDir [bCustom], "rb", 0))
+	if (!m_cf.Open (fn, gameFolders.szModelFolder [bCustom], "rb", 0))
 		return m_bmP;
 	if (m_header.Read (m_cf, NULL))
-		Save (fn, gameFolders.szModelCacheDir [bCustom]);
+		Save (fn, gameFolders.szModelCacheFolder [bCustom]);
 	m_cf.Close ();
 	}
 return m_bmP;

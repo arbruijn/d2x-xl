@@ -715,7 +715,7 @@ if (Busy ())
 gameStates.sound.audio.nMaxChannels = audio.MaxChannels ();
 gameStates.app.iDownloadTimeout = downloadManager.GetTimeoutIndex ();
 sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
-if (!m_cf.Open (fn, gameFolders.szProfDir, "wt", 0))
+if (!m_cf.Open (fn, gameFolders.szProfileFolder, "wt", 0))
 	return 0;
 for (pp = paramList; pp; pp = pp->next)
 	pp->Save (m_cf);
@@ -777,7 +777,7 @@ if (Busy ())
 	int	nParams = 0;
 
 sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
-if (!m_cf.Open (fn, gameFolders.szProfDir, "rb", 0))
+if (!m_cf.Open (fn, gameFolders.szProfileFolder, "rb", 0))
 	return 0;
 while (!m_cf.EoF ()) {
 	LoadParam ();
@@ -1636,7 +1636,7 @@ if (profile.Busy ())
 memset (highestLevels, 0, sizeof (highestLevels));
 nHighestLevels = 0;
 sprintf (filename, "%.8s.plr", LOCALPLAYER.callsign);
-if (!cf.Open (filename, gameFolders.szProfDir, "rb", 0)) {
+if (!cf.Open (filename, gameFolders.szProfileFolder, "rb", 0)) {
 	PrintLog (0, "couldn't read player file '%s'\n", filename);
 	}
 else {
@@ -1841,7 +1841,7 @@ if (profile.Busy ())
 
 funcRes = WriteConfigFile ();
 sprintf (filename, "%s.plr", LOCALPLAYER.callsign);
-cf.Open (filename, gameFolders.szProfDir, "wb", 0);
+cf.Open (filename, gameFolders.szProfileFolder, "wb", 0);
 if (cf.File ()) {
 	cf.WriteInt (SAVE_FILE_ID);
 	cf.WriteShort (PLAYER_FILE_VERSION);
@@ -1920,7 +1920,7 @@ for (;;) {
 	if (text [0] == 0)	//null string
 		continue;
 	sprintf (filename, "%s.plr", text);
-	if (cf.Exist (filename,gameFolders.szProfDir, 0)) {
+	if (cf.Exist (filename,gameFolders.szProfileFolder, 0)) {
 		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, "%s '%s' %s", TXT_PLAYER, text, TXT_ALREADY_EXISTS);
 		continue;
 		}
@@ -1988,7 +1988,7 @@ if (bAutoPlr) {
 callMenu:
 
 bStartup = 0;
-sprintf (filespec, "%s%s*.plr", gameFolders.szProfDir, *gameFolders.szProfDir ? "/" : "");
+sprintf (filespec, "%s%s*.plr", gameFolders.szProfileFolder, *gameFolders.szProfileFolder ? "/" : "");
 if (!fs.FileSelector (TXT_SELECT_PILOT, filespec, filename, bAllowAbort)) {
 	if (bAllowAbort) {
 		return 0;

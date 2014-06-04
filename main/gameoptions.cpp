@@ -704,7 +704,7 @@ if ((bLocal = (szFilename && *szFilename)))
 else
 	strcpy (szConfig + 1, "global.ini");
 szConfig [0] = '\x01'; // only read from mission file
-if (!cf.Open (szConfig, gameFolders.szDataDir [0], "rb", 0))
+if (!cf.Open (szConfig, gameFolders.szDataFolder [0], "rb", 0))
 	return 0;
 if (args.Parse (&cf)) {
 	int h = 0;

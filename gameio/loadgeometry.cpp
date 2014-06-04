@@ -743,7 +743,7 @@ int LoadMineSegmentsCompiled (CFile& cf)
 gameData.segs.vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
 gameData.segs.vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
 gameStates.render.bColored = 0;
-bD1PigPresent = CFile::Exist (D1_PIGFILE, gameFolders.szDataDir [0], 0);
+bD1PigPresent = CFile::Exist (D1_PIGFILE, gameFolders.szDataFolder [0], 0);
 psz = strchr (gameData.segs.szLevelFilename, '.');
 bNewFileFormat = !psz || strcmp (psz, ".sdl");
 #if TRACE

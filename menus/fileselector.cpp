@@ -84,7 +84,7 @@ void DeleteSaveGames (char* name)
 
 for (i = 0; i < 10; i++) {
 	sprintf (filename, "%s.sg%d", name, i);
-	CFile::Delete (filename, gameFolders.szSaveDir);
+	CFile::Delete (filename, gameFolders.szSavegameFolder);
 	}
 }
 
@@ -144,18 +144,18 @@ if (MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, "%s %s?", (m_nMode == 1) ? TX
 	}
 
 if (m_nMode == 2) 
-	if (CFile::Delete (pszFile, gameFolders.szDemoDir))
+	if (CFile::Delete (pszFile, gameFolders.szDemoFolder))
 		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_DEMO, pszFile);
 	else
 		m_bDemosDeleted = 1;
 else {
 	char* p = pszFile + strlen (pszFile);
 	*p = '.'; // make the extension visible again
-	if (CFile::Delete (pszFile, gameFolders.szProfDir))
+	if (CFile::Delete (pszFile, gameFolders.szProfileFolder))
 		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_PILOT, pszFile);
 	else {
 		pszFile [strlen (pszFile) - 1] = 'x'; //turn ".plr" to ".plx"
-		CFile::Delete (pszFile, gameFolders.szProfDir);
+		CFile::Delete (pszFile, gameFolders.szProfileFolder);
 		if (!MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, "%s?", TXT_DELETE_SAVEGAMES)) {
 			*p = '\0'; // hide extension
 			DeleteSaveGames (pszFile);
@@ -242,7 +242,7 @@ if (!FFF (filespec, &ffs, 0)) {
 	}
 if ((m_nMode == 2) && gameFolders.bAltHogDirInited) {
 	char filespec2 [PATH_MAX + FILENAME_LEN];
-	sprintf (filespec2, "%s/%s", gameFolders.szAltHogDir, filespec);
+	sprintf (filespec2, "%s/%s", gameFolders.szAltHogFolder, filespec);
 	if (!FFF (filespec2, &ffs, 0)) {
 		do {
 			if (m_nFileCount < MENU_MAX_FILES) {

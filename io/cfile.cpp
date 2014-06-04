@@ -99,7 +99,7 @@ return pszFile;
 
 char* AppendSlash (char* pszFile)
 {
-int l = (int) strlen (gameFolders.szGameDir);
+int l = (int) strlen (gameFolders.szGameFolder);
 if (l && (pszFile [l - 1] != '\\') && (pszFile [l - 1] != '/')) {
 	pszFile [l] = '/';
 	pszFile [l + 1] = '\0';
@@ -210,8 +210,8 @@ if ((fp = fopen (pfn, mode))) {
 		fp = NULL;
 		}
 	}
-else if (gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.szAltHogDir)) {
-   sprintf (fn, "%s/%s", gameFolders.szAltHogDir, filename);
+else if (gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.szAltHogFolder)) {
+   sprintf (fn, "%s/%s", gameFolders.szAltHogFolder, filename);
    pfn = fn;
    fp = fopen (pfn, mode);
 	}
@@ -227,7 +227,7 @@ size_t CFile::Size (const char *hogname, const char *folder, int bUseD1Hog)
 	struct stat statbuf;
 
 //	sprintf (fn, "%s/%s", folder, hogname);
-if (!Open (hogname, gameFolders.szDataDir [0], "rb", bUseD1Hog))
+if (!Open (hogname, gameFolders.szDataFolder [0], "rb", bUseD1Hog))
 	return -1;
 #ifdef _WIN32
 fstat (_fileno (m_info.file), &statbuf);
@@ -240,7 +240,7 @@ return statbuf.st_size;
 	size_t size;
 
 //sprintf (fn, "%s%s%s", folder, *folder ? "/" : "", hogname);
-if (!Open (hogname, gameFolders.szDataDir [0], "rb", bUseD1Hog))
+if (!Open (hogname, gameFolders.szDataFolder [0], "rb", bUseD1Hog))
 	return -1;
 size = m_info.size;
 Close ();
@@ -923,7 +923,7 @@ if (*szDestName) {
 	else
 		strcpy (fn, szDestName);
 	}
-sprintf (szDest, "%s%s%s", gameFolders.szCacheDir [0], *gameFolders.szCacheDir [0] ? "/" : "", fn);
+sprintf (szDest, "%s%s%s", gameFolders.szCacheFolder [0], *gameFolders.szCacheFolder [0] ? "/" : "", fn);
 if (! (fp = fopen (szDest, "wb"))) {
 	Close ();
 	return 0;
@@ -949,9 +949,9 @@ int CFile::Copy (const char *pszSrc, const char *pszDest)
 	sbyte	buf [COPY_BUF_SIZE];
 	CFile	cf;
 
-if (!cf.Open (pszDest, gameFolders.szSaveDir, "wb", 0))
+if (!cf.Open (pszDest, gameFolders.szSavegameFolder, "wb", 0))
 	return -1;
-if (!Open (pszSrc, gameFolders.szSaveDir, "rb", 0))
+if (!Open (pszSrc, gameFolders.szSavegameFolder, "rb", 0))
 	return -2;
 while (!EoF ()) {
 	int bytes_read = (int) Read (buf, 1, COPY_BUF_SIZE);

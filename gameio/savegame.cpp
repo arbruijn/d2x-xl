@@ -197,7 +197,7 @@ bool CSaveGameInfo::Load (char *filename, int nSlot)
 	int	nId, nVersion;
 
 Init ();
-if (!cf.Open (filename, gameFolders.szSaveDir, "rb", 0))
+if (!cf.Open (filename, gameFolders.szSavegameFolder, "rb", 0))
 	return false;
 	//Read nId
 cf.Read (&nId, sizeof (char) * 4, 1);
@@ -237,7 +237,7 @@ else {
 	char	fn [FILENAME_LEN];
 
 	struct _stat statBuf;
-	sprintf (fn, "%s/%s", gameFolders.szSaveDir, filename);
+	sprintf (fn, "%s/%s", gameFolders.szSavegameFolder, filename);
 	h = _stat (fn, &statBuf);
 #else
 	struct stat statBuf;
@@ -446,7 +446,7 @@ void CSaveGameManager::Backup (void)
 if (!m_override) {
 	CFile cf;
 	
-	if (cf.Exist (m_filename, gameFolders.szSaveDir, 0) && cf.Open (m_filename, gameFolders.szSaveDir, "wb", 0)) {
+	if (cf.Exist (m_filename, gameFolders.szSavegameFolder, 0) && cf.Open (m_filename, gameFolders.szSavegameFolder, "wb", 0)) {
 		char	newName [FILENAME_LEN];
 
 		sprintf (newName, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
@@ -454,8 +454,8 @@ if (!m_override) {
 		int nWritten = (int) cf.Write (szBackup, 1, DESC_LENGTH);
 		cf.Close ();
 		if (nWritten == DESC_LENGTH) {
-			cf.Delete (newName, gameFolders.szSaveDir);
-			cf.Rename (m_filename, newName, gameFolders.szSaveDir);
+			cf.Delete (newName, gameFolders.szSavegameFolder);
+			cf.Rename (m_filename, newName, gameFolders.szSavegameFolder);
 			}
 		}
 	}
@@ -474,9 +474,9 @@ if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 
 	char fc = (nSaveSlot >= 10) ? (nSaveSlot-10) + 'a' : '0' + nSaveSlot;
 	sprintf (tempname, "%csecret.sgc", fc);
-	if (m_cf.Exist (tempname, gameFolders.szSaveDir, 0))
-		m_cf.Delete (tempname, gameFolders.szSaveDir);
-	if (m_cf.Exist (SECRETC_FILENAME, gameFolders.szSaveDir, 0))
+	if (m_cf.Exist (tempname, gameFolders.szSavegameFolder, 0))
+		m_cf.Delete (tempname, gameFolders.szSavegameFolder);
+	if (m_cf.Exist (SECRETC_FILENAME, gameFolders.szSavegameFolder, 0))
 		m_cf.Copy (SECRETC_FILENAME, tempname);
 	}
 }
@@ -513,7 +513,7 @@ if (gameStates.gameplay.bFinalBossIsDead)		//don't allow save while final boss i
 //	If this is a secret save and the control center has been destroyed, don't allow
 //	return to the base level.
 if ((m_bSecret > 0) && gameData.reactor.bDestroyed) {
-	CFile::Delete (SECRETB_FILENAME, gameFolders.szSaveDir);
+	CFile::Delete (SECRETB_FILENAME, gameFolders.szSavegameFolder);
 	return 0;
 	}
 StopTime ();
@@ -1047,7 +1047,7 @@ if (filename)
 if (description)
 	strcpy (m_description, description);
 m_bSecret = bSecret;
-if (!m_cf.Open (m_filename, (bSecret < 0) ? gameFolders.szCacheDir [0] : gameFolders.szSaveDir, "wb", 0)) {
+if (!m_cf.Open (m_filename, (bSecret < 0) ? gameFolders.szCacheFolder [0] : gameFolders.szSavegameFolder, "wb", 0)) {
 	if (!IsMultiGame)
 		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_SAVE_ERROR2);
 	StartTime (1);
@@ -1072,7 +1072,7 @@ if (m_cf.Error ()) {
 	if (!IsMultiGame) {
 		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_SAVE_ERROR);
 		m_cf.Close ();
-		m_cf.Delete (m_filename, gameFolders.szSaveDir);
+		m_cf.Delete (m_filename, gameFolders.szSavegameFolder);
 		}
 	}
 else 
@@ -1105,10 +1105,10 @@ if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 
 	char fc = (nSaveSlot >= 10) ? (nSaveSlot-10) + 'a' : '0' + nSaveSlot;
 	sprintf (tempname, "%csecret.sgc", fc);
-	if (m_cf.Exist (tempname, gameFolders.szSaveDir, 0))
+	if (m_cf.Exist (tempname, gameFolders.szSavegameFolder, 0))
 		m_cf.Copy (tempname, SECRETC_FILENAME);
 	else
-		m_cf.Delete (SECRETC_FILENAME, gameFolders.szSaveDir);
+		m_cf.Delete (SECRETC_FILENAME, gameFolders.szSavegameFolder);
 	}
 }
 
@@ -1140,7 +1140,7 @@ StopTime ();
 gameData.app.bGamePaused = 1;
 if (m_bQuick) {
 	sprintf (m_filename, "%s.quick", LOCALPLAYER.callsign);
-	if (!CFile::Exist (m_filename, gameFolders.szSaveDir, 0))
+	if (!CFile::Exist (m_filename, gameFolders.szSavegameFolder, 0))
 		m_bQuick = 0;
 	}
 if (!m_bQuick) {
@@ -2296,7 +2296,7 @@ int CSaveGameManager::LoadState (int bMulti, int bSecret, char *filename)
 StopTime ();
 if (filename)
 	strcpy (m_filename, filename);
-if (!m_cf.Open (m_filename, (bSecret < 0) ? gameFolders.szCacheDir [0] : gameFolders.szSaveDir, "rb", 0)) {
+if (!m_cf.Open (m_filename, (bSecret < 0) ? gameFolders.szCacheFolder [0] : gameFolders.szSavegameFolder, "rb", 0)) {
 	StartTime (1);
 	return 0;
 	}
@@ -2374,7 +2374,7 @@ int CSaveGameManager::GetGameId (char *filename, int bSecret)
 {
 	int	nId;
 
-if (!m_cf.Open (filename, (bSecret < 0) ? gameFolders.szCacheDir [0] : gameFolders.szSaveDir, "rb", 0))
+if (!m_cf.Open (filename, (bSecret < 0) ? gameFolders.szCacheFolder [0] : gameFolders.szSavegameFolder, "rb", 0))
 	return 0;
 //Read nId
 m_cf.Read (&nId, sizeof (char) * 4, 1);

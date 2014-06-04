@@ -40,6 +40,7 @@
 #	endif
 #endif
 #include "vers_id.h"
+#include "cfile.h"
 
 // ----------------------------------------------------------------------------
 
@@ -114,13 +115,13 @@ static tFileDesc addonFiles [] = {
 	};
 
 static tFileDesc addonTextureFiles [] = {
-	{"\002bullettime#0.tga", "textures", false, false, false},
-	{"\002cockpit.tga", "textures", false, false, false},
-	{"\002cockpitb.tga", "textures", false, false, false},
-	{"\002monsterball.tga", "textures", false, false, false},
-	{"\002slowmotion#0.tga", "textures", false, false, false},
-	{"\002status.tga", "textures", false, false, false},
-	{"\002statusb.tga", "textures", false, false, false},
+	{"\002bullettime#0.tga", "textures/d2", false, false, false},
+	{"\002cockpit.tga", "textures/d2", false, false, false},
+	{"\002cockpitb.tga", "textures/d2", false, false, false},
+	{"\002monsterball.tga", "textures/d2", false, false, false},
+	{"\002slowmotion#0.tga", "textures/d2", false, false, false},
+	{"\002status.tga", "textures/d2", false, false, false},
+	{"\002statusb.tga", "textures/d2", false, false, false},
 
 	{"\002aimdmg.tga", "textures/d2x-xl", false, false, false},
 	{"\002blast.tga", "textures/d2x-xl", false, false, false},
@@ -261,7 +262,7 @@ return nErrors;
 
 static void CheckAndCreateGameFolders (void)
 {
-static const char* gameFolders [] = {
+static const char* gameSubFolders [] = {
 	"cache",
 	"config",
 	"data",
@@ -282,8 +283,8 @@ static const char* gameFolders [] = {
 	FFS	ffs;
 	char	szFolder [FILENAME_LEN];
 
-for (int i = 0; i < int (sizeofa (gameFolders)); i++) {
-	sprintf (szFolder, "%s%s", szRootFolder, gameFolders [i]);
+for (int i = 0; i < int (sizeofa (gameSubFolders)); i++) {
+	sprintf (szFolder, "%s%s", gameFolders.szDataRootFolder [0], gameSubFolders [i]);
 	if (FFF (szFolder, &ffs, 1))
   		CFile::MkDir (szFolder);
 	}
@@ -345,43 +346,8 @@ if (!gameStates.app.bCheckAndFixSetup)
 	bool	bDemoData = false;
 	char	szMsg [10000];
 
-if ((i = FindArg ("-userdir")) && appConfig [i + 1] && *appConfig [i + 1]) {
-	strcpy (szRootFolder, appConfig [i + 1]);
-	i = int (strlen (szRootFolder));
-#if defined(__unix__)
-	if (szRootFolder [i - 1] != '/')
-		strcat (szRootFolder, "/");
-#else
-	if ((szRootFolder [i - 1] != '\\') && (szRootFolder [i - 1] != '/') && (szRootFolder [i - 1] != ':'))
-		strcat (szRootFolder, "/");
-#endif
-	}
-else
-#if defined(__unix__)
-	strcpy (szRootFolder, *gameFolders.szSharePath ? gameFolders.szSharePath : "/usr/local/games/d2x-xl/");
-	if (szRootFolder [strlen (szRootFolder) - 1] != '/')
-		strcat (szRootFolder, "/");
-#else
-	strcpy (szRootFolder, "./");
-#endif
-
-#if defined(__unix__)
-if (getenv ("HOME")) {
-	strcpy (szHomeFolder, getenv ("HOME"));
-	i = int (strlen (szHomeFolder));
-	if (szHomeFolder [i - 1] != '/')
-		strcat (szHomeFolder, "/");
-	}
-else
-	strcpy (szHomeFolder, "./");
-sprintf (szUserFolder, "%s/.d2x-xl/", szHomeFolder);
-#else
-	strcpy (szHomeFolder, szRootFolder);
-	strcpy (szUserFolder, szRootFolder);
-#endif
-
 #if defined(_WIN32)
-CheckAndCreateGameFolders ();
+//CheckAndCreateGameFolders ();
 #endif
 if (CheckAndCopyFiles (gameFilesD2, int (sizeofa (gameFilesD2)))) {
 	if (CheckAndCopyFiles (demoFilesD2, int (sizeofa (demoFilesD2))))
@@ -471,7 +437,7 @@ if (nResult) {
 			Warning (szMsg);
 		}
 	CFile	cf;
-	if (cf.Open ("d2x-xl-missing-files.txt", gameFolders.szUserDir, "rb", 0)) {
+	if (cf.Open ("d2x-xl-missing-files.txt", gameSubFolders.szUserDir, "rb", 0)) {
 		fprintf (cf.File (), szMsg);
 		cf.Close ();
 		}

@@ -107,7 +107,7 @@ bool CScoreManager::Load (void)
 	// clear score array...
 memset (&m_scores, 0, sizeof (tScoreInfo));
 
-if (!cf.Open (GetFilename (), gameFolders.szDataDir [0], "rb", 0)) {
+if (!cf.Open (GetFilename (), gameFolders.szDataFolder [0], "rb", 0)) {
 	// No error message needed, code will work without a m_scores file
 	SetDefaultScores ();
 	return false;
@@ -136,7 +136,7 @@ bool CScoreManager::Save  (void)
 {
 	CFile cf;
 
-if (!cf.Open (GetFilename (), gameFolders.szDataDir [0], "wb", 0)) {
+if (!cf.Open (GetFilename (), gameFolders.szDataFolder [0], "wb", 0)) {
 	MsgBox (TXT_WARNING, BG_STANDARD, 1, TXT_OK, "%s\n'%s'", TXT_UNABLE_TO_OPEN, GetFilename ());
 	return false;
 	}
@@ -362,7 +362,7 @@ switch (k) {
 		if (nCurItem < 0)	{
 			// Reset m_scores...
 			if (MsgBox (NULL, BG_STANDARD, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES) == 1) {
-				CFile::Delete (GetFilename (), gameFolders.szDataDir [0]);
+				CFile::Delete (GetFilename (), gameFolders.szDataFolder [0]);
 				paletteManager.DisableEffect ();
 				Load ();
 			}

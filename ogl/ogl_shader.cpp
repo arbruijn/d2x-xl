@@ -136,7 +136,7 @@ char* CShaderManager::Load (const char* fileName) //, char* Shadersource)
 if (!(fileName && *fileName))
 	return NULL;	// no fileName
 
-sprintf (fn, "%s%s%s", gameFolders.szShaderDir, *gameFolders.szShaderDir ? "/" : "", fileName);
+sprintf (fn, "%s%s%s", gameFolders.szShaderFolder, *gameFolders.szShaderFolder ? "/" : "", fileName);
 #ifdef _WIN32
 if (0 > (f = _open (fn, _O_RDONLY)))
 	return NULL;	// couldn't open file

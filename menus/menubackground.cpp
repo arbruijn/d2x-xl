@@ -408,20 +408,20 @@ if (!bmP)
 
 CTGA tga (bmP);
 
-int bModBg = (*gameFolders.szWallpaperDir [1] != '\0');
+int bModBg = (*gameFolders.szWallpaperFolder [1] != '\0');
 
 if (bModBg) {
-	if (CFile::Exist (gameOpts->menus.altBg.szName [1], gameFolders.szWallpaperDir [1], 0))
+	if (CFile::Exist (gameOpts->menus.altBg.szName [1], gameFolders.szWallpaperFolder [1], 0))
 		bModBg = 1;
 	else {
 		strcpy (gameOpts->menus.altBg.szName [1], "default.tga");
-		bModBg = CFile::Exist (gameOpts->menus.altBg.szName [1], gameFolders.szWallpaperDir [1], 0);
+		bModBg = CFile::Exist (gameOpts->menus.altBg.szName [1], gameFolders.szWallpaperFolder [1], 0);
 		}
 	}
 
 //if (filename && strcmp (filename, gameOpts->menus.altBg.szName [bModBg]))
 //	return NULL;
-if (!tga.Read (gameOpts->menus.altBg.szName [bModBg], gameFolders.szWallpaperDir [bModBg], 
+if (!tga.Read (gameOpts->menus.altBg.szName [bModBg], gameFolders.szWallpaperFolder [bModBg], 
 				   (gameOpts->menus.altBg.alpha < 0) ? -1 : (int) (gameOpts->menus.altBg.alpha * 255),
 					gameOpts->menus.altBg.brightness, gameOpts->menus.altBg.grayscale)) {
 	delete bmP;
@@ -439,7 +439,7 @@ CBitmap* CBackgroundManager::LoadMenuBackground (void)
 {
 for (int i = 0; i < 4; i++) {
 	m_filenames [0] = menuBgNames [i][Hires ()];
-	if (CFile::Exist (m_filenames [0], gameFolders.szDataDir [0], 0))
+	if (CFile::Exist (m_filenames [0], gameFolders.szDataFolder [0], 0))
 		return LoadWallpaper (m_filenames [0]);
 	}
 return NULL;
@@ -451,7 +451,7 @@ CBitmap* CBackgroundManager::LoadDesktopWallpaper (void)
 {
 for (int i = 0; i < 4; i++) {
 	m_filenames [0] = szDesktopFilenames [i][gameStates.menus.bHires];
-	if (CFile::Exist (m_filenames [0], gameFolders.szDataDir [0], 0))
+	if (CFile::Exist (m_filenames [0], gameFolders.szDataFolder [0], 0))
 		return LoadWallpaper (m_filenames [0]);
 	}
 return NULL;
