@@ -372,7 +372,7 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 	fix t = (fix) SDL_GetTicks ();
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (i != N_LOCALPLAYER) {
-			int bConnected = (gameData.multiplayer.players [i].connected == 1) ? 1 : downloadManager.Downloading (i) ? -1 : 0;
+			int bConnected = (gameData.multiplayer.players [i].connected == CONNECT_PLAYING) ? 1 : downloadManager.Downloading (i) ? -1 : 0;
 			if (!bConnected) { 
 				if (gameData.multiplayer.players [i].callsign [0]) {
 #if 0 //DBG
@@ -407,6 +407,26 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 
 //------------------------------------------------------------------------------
 
+void NetworkAdjustPPS (void)
+{
+	static CTimeout to (10000);
+
+if (to.Expired ()) {
+	int nMaxPing = 0;
+	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		if (i == N_LOCALPLAYER)
+			continue;
+		if (gameData.multiplayer.players [i].connected != CONNECT_PLAYING)
+			continue;
+		if (nMaxPing < pingStats [i].averagePing)
+			nMaxPing = pingStats [i].averagePing;
+		}
+	mpParams.nPPS = Clamp (2000 / nMaxPing, MIN_PPS, MAX_PPS);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void NetworkDoFrame (int bForce, int bListen)
 {
 	tFrameInfoShort shortSyncPack;
@@ -425,7 +445,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		nakedData.nLength = 0;
 		nakedData.nDestPlayer = -1;
 		}
-	if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds ()> (networkData.refuse.xTimeLimit+ (I2X (12))))
+	if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds ()> (networkData.refuse.xTimeLimit + (I2X (12))))
 		networkData.refuse.bWaitForAnswer=0;
 	networkData.xLastSendTime += gameData.time.xFrame;
 	networkData.xLastTimeoutCheck += gameData.time.xFrame;
@@ -495,7 +515,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 			if (gameData.reactor.bDestroyed) {
 				if (gameStates.app.bPlayerIsDead)
 					CONNECT (N_LOCALPLAYER, CONNECT_DIED_IN_MINE);
-				if (TimerGetApproxSeconds () > (xLastEndlevel+ (I2X (1)/2))) {
+				if (TimerGetApproxSeconds () > (xLastEndlevel + (I2X (1) / 2))) {
 					NetworkSendEndLevelPacket ();
 					xLastEndlevel = TimerGetApproxSeconds ();
 					}
@@ -519,6 +539,7 @@ if ((networkData.sync [0].nPlayer != -1) && !(gameData.app.nFrameCount & 63))
 #endif
 XMLGameInfoHandler ();
 NetworkDoSyncFrame ();
+NetworkAdjustPPS ();
 tracker.AddServer ();
 }
 
@@ -570,10 +591,12 @@ if ((nPlayer >= gameData.multiplayer.nPlayers) || !pingStats [nPlayer].launchTim
 	}
 if (pingStats [nPlayer].launchTime > 0) { // negative value suppresses display of returned ping on HUD
 	//xPingReturnTime = TimerGetFixedSeconds ();
+	pingStats [nPlayer].received++;
 	pingStats [nPlayer].ping = SDL_GetTicks () - pingStats [nPlayer].launchTime; //X2I (FixMul (xPingReturnTime - pingStats [nPlayer].launchTime, I2X (1000)));
+	pingStats [nPlayer].totalPing += pingStats [nPlayer].ping;
+	pingStats [nPlayer].averagePing = pingStats [nPlayer].totalPing / pingStats [nPlayer].received;
 	if (!gameStates.render.cockpit.bShowPingStats)
 		HUDInitMessage ("Ping time for %s is %d ms!", gameData.multiplayer.players [nPlayer].callsign, pingStats [nPlayer].ping);
-	pingStats [nPlayer].received++;
 	pingStats [nPlayer].launchTime = 0;
 	}
 }

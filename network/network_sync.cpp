@@ -271,7 +271,7 @@ void NetworkSyncConnection (tNetworkSyncData *syncP)
 
 if (t < syncP->timeout)
 	return;
-syncP->timeout = t + 100 / PacketsPerSec ();
+syncP->timeout = t + 100 / Clamp (PacketsPerSec (), MIN_PPS, DEFAULT_PPS);
 #endif
 if (syncP->bExtraGameInfo) {
 	NetworkSendExtraGameInfo (&syncP->player [0]);

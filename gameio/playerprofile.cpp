@@ -845,7 +845,7 @@ tParamValue defaultParams [] = {
 	 {"mpParams.bBrightPlayers", "0"},
 	 {"mpParams.bShowAllNames", "0"},
 	 {"mpParams.bShortPackets", "0"},
-	 {"mpParams.nPPS", "10"},
+	 {"mpParams.nPPS", "20"},
 	 {"mpParams.udpPorts[0]", "28342"},
 	 {"mpParams.udpPorts[1]", "28342"},
 	 {"mpParams.szServerIpAddr", "127.0.0.1"},

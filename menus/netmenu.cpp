@@ -541,15 +541,7 @@ mpParams.bIndestructibleLights = ubyte (m.Value ("indestructible lights"));
 mpParams.nDifficulty = m.Value ("difficulty");
 mpParams.bShowPlayersOnAutomap = m.Value ("show players on map");
 mpParams.bShortPackets = m.Value ("short packets");
-mpParams.nPPS = m.ToInt ("PPS");
-if (mpParams.nPPS > 20) {
-	mpParams.nPPS = 20;
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_PPS_HIGH_ERROR);
-}
-else if (mpParams.nPPS < 2) {
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_PPS_HIGH_ERROR);
-	mpParams.nPPS = 2;      
-}
+mpParams.nPPS = Clamp (m.ToInt ("PPS"), MIN_PPS, MAX_PPS);
 
 if (gameStates.multi.nGameType >= IPX_GAME) { 
 	int newSocket = atoi (szSocket);

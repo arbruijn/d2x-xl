@@ -190,6 +190,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiConnect (nPlayer, nPlayer == gameData.multiplayer.nPlayers, their->player.callsign);
 memcpy (gameData.multiplayer.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN + 1);
 memcpy (netPlayers [0].m_info.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN + 1);
+memset (pingStats + nPlayer, 0, sizeof (pingStats [0]));
 ClipRank (reinterpret_cast<char*> (&their->player.rank));
 netPlayers [0].m_info.players [nPlayer].rank = their->player.rank;
 netPlayers [0].m_info.players [nPlayer].versionMajor = their->player.versionMajor;

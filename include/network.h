@@ -430,6 +430,8 @@ extern int HoardEquipped (void);
 typedef struct tPingStats {
 	fix	launchTime;
 	int	ping;
+	int	totalPing;
+	int	averagePing;
 	int	sent;
 	int	received;
 } __pack__ tPingStats;
@@ -582,12 +584,16 @@ extern int nCoopPenalties [10];
 
 //------------------------------------------------------------------------------
 
+#define MIN_PPS		5
+#define MAX_PPS		100
+#define DEFAULT_PPS	20
+
 static inline short PacketsPerSec (void)
 {
 	int	i = netGame.GetPacketsPerSec ();
 
-if ((i < 1) || (i > 20))
-	netGame.SetPacketsPerSec (10);
+if ((i < MIN_PPS) || (i > MAX_PPS))
+	netGame.SetPacketsPerSec (DEFAULT_PPS);
 return netGame.GetPacketsPerSec ();
 }
 
