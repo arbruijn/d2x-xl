@@ -140,6 +140,7 @@ return pszAppFolder;
 
 int CheckDataFolder (char* pszDataRootDir)
 {
+AppendSlash (FlipBackslash (pszDataRootDir));
 return GetAppFolder ("", gameFolders.szDataFolder [0], pszDataRootDir, "descent2.hog") &&
 		 GetAppFolder ("", gameFolders.szDataFolder [0], pszDataRootDir, "d2demo.hog") &&
 		 GetAppFolder (pszDataRootDir, gameFolders.szDataFolder [0], DATA_FOLDER, "descent2.hog") &&
@@ -191,8 +192,7 @@ if (!*CheckFolder (gameFolders.szGameFolder, appConfig.Text ("-gamedir"), D2X_AP
 	 !*CheckFolder (gameFolders.szGameFolder, appConfig [1], D2X_APPNAME))
 	CheckFolder (gameFolders.szGameFolder, DEFAULT_GAME_FOLDER, "");
 
-if (!*CheckFolder (gameFolders.szUserDir, appConfig.Text ("-userdir"), ""))
-	strcpy (gameFolders.szUserDir, gameFolders.szGameFolder);
+CheckFolder (gameFolders.szUserDir, appConfig.Text ("-userdir"), "");
 
 #else // Linux, OS X
 
@@ -221,14 +221,7 @@ if (*gameFolders.szGameFolder)
 
 #endif
 
-if (!*CheckFolder (gameFolders.szDataRootFolder [0], appConfig.Text ("-datadir"), "descent2.hog") &&
-	 !*CheckFolder (gameFolders.szDataRootFolder [0], appConfig.Text ("-hogdir"), "descent2.hog"))
-#ifdef __macosx__
-	GetOSXAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szGameFolder);
-#else
-	strcpy (gameFolders.szDataRootFolder [0], gameFolders.szGameFolder);
-#endif //__macosx__
-
+strcpy (gameFolders.szDataRootFolder [0], appConfig.Text ("-datadir"));
 if (CheckDataFolder (gameFolders.szDataRootFolder [0])) {
 #ifdef __macosx__
 	GetOSXAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szGameFolder);
@@ -256,6 +249,8 @@ GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szTextureFolder [1],
 GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szModFolder [0], MOD_FOLDER, "");
 GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szMovieFolder, MOVIE_FOLDER, "*.mvl");
 
+if (!*gameFolders.szUserDir)
+	strcpy (gameFolders.szUserDir, gameFolders.szDataRootFolder [0]);
 strcpy (gameFolders.szDataRootFolder [1], gameFolders.szUserDir);
 
 // create the user folders

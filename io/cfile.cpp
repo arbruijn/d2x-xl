@@ -99,7 +99,7 @@ return pszFile;
 
 char* AppendSlash (char* pszFile)
 {
-int l = (int) strlen (gameFolders.szGameFolder);
+int l = (int) strlen (pszFile);
 if (l && (pszFile [l - 1] != '\\') && (pszFile [l - 1] != '/')) {
 	pszFile [l] = '/';
 	pszFile [l + 1] = '\0';
