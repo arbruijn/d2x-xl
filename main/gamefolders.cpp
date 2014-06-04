@@ -125,7 +125,7 @@
 
 char* CheckFolder (char* pszAppFolder, char* pszFolder, char* pszFile)
 {
-if (*pszFolder) {
+if (pszFolder && *pszFolder) {
 	CFile::SplitPath (pszFolder, gameFolders.szGameFolder, NULL, NULL);
 	FlipBackslash (pszAppFolder);
 	if (GetAppFolder ("", pszAppFolder, pszAppFolder, "d2x-xl.exe"))
