@@ -193,7 +193,7 @@ int CConfigManager::Int (const char* szArg, int nDefault)
 {
 	int t = Find (szArg);
 
-return t ? Value (t, nDefault) : nDefault;
+return t ? Int (t, nDefault) : nDefault;
 }
 
 // ----------------------------------------------------------------------------

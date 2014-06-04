@@ -709,17 +709,17 @@ if (!cf.Open (szConfig, gameFolders.szDataDir [0], "rb", 0))
 if (args.Parse (&cf)) {
 	int h = 0;
 	for (int i = 0; i < MAX_SHIP_TYPES; i++) {
-		if ((m_shipsAllowed [i] = args.Value (szShipArgs [i], bLocal ? m_shipsAllowed [i] : 1))) // use the global setting as default when parsing a level config
+		if ((m_shipsAllowed [i] = args.Int (szShipArgs [i], bLocal ? m_shipsAllowed [i] : 1))) // use the global setting as default when parsing a level config
 			h++;
 		}
 	if (!h)
 		m_shipsAllowed [0] = 1; // medium ship, the standard ship
-	m_playerShip = args.Value ("-player_ship", bLocal ? m_playerShip : -1);
-	m_bTeleport = args.Value ("-teleport", bLocal ? m_bTeleport : 1);
-	m_bSecretSave = args.Value ("-secret_save", bLocal ? m_bSecretSave : 1);
-	m_bColoredSegments = args.Value ("-3d_powerups", bLocal ? m_b3DPowerups : 1);
-	m_b3DPowerups = args.Value ("-colored_segments", bLocal ? m_bColoredSegments : 1);
-	m_nCollisionModel = args.Value ("-collision_model", bLocal ? m_nCollisionModel : 1);
+	m_playerShip = args.Int ("-player_ship", bLocal ? m_playerShip : -1);
+	m_bTeleport = args.Int ("-teleport", bLocal ? m_bTeleport : 1);
+	m_bSecretSave = args.Int ("-secret_save", bLocal ? m_bSecretSave : 1);
+	m_bColoredSegments = args.Int ("-3d_powerups", bLocal ? m_b3DPowerups : 1);
+	m_b3DPowerups = args.Int ("-colored_segments", bLocal ? m_bColoredSegments : 1);
+	m_nCollisionModel = args.Int ("-collision_model", bLocal ? m_nCollisionModel : 1);
 	}
 cf.Close ();
 return 1;
