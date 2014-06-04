@@ -217,6 +217,8 @@ if (!*CheckFolder (gameFolders.szGameFolder, appConfig.Text ("-gamedir"), D2X_AP
 
 CheckFolder (gameFolders.szUserFolder, appConfig.Text ("-userdir"), "");
 
+CheckFolder (gameFolders.szDataRootFolder [2], appConfig.Text ("-cachedir"), "");
+
 #else // Linux, OS X
 
 *gameFolders.szSharePath = '\0';
@@ -281,9 +283,8 @@ GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szMovieFolder, MOVIE
 if (!*gameFolders.szUserFolder)
 	strcpy (gameFolders.szUserFolder, gameFolders.szDataRootFolder [0]);
 strcpy (gameFolders.szDataRootFolder [1], gameFolders.szUserFolder);
-#ifndef __linux__
-strcpy (gameFolders.szDataRootFolder [2], gameFolders.szDataRootFolder [0]);
-#endif
+if (!*gameFolders.szDataRootFolder [2])
+	strcpy (gameFolders.szDataRootFolder [2], gameFolders.szDataRootFolder [0]);
 
 // create the user folders
 
