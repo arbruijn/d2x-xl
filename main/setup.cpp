@@ -194,10 +194,6 @@ static tFileDesc addonSoundFiles [] = {
 
 };
 
-static char szRootFolder [FILENAME_LEN];
-static char szHomeFolder [FILENAME_LEN];
-static char szUserFolder [FILENAME_LEN];
-
 // ----------------------------------------------------------------------------
 
 static bool CheckAndCopyWildcards (tFileDesc* fileDesc)
@@ -209,15 +205,15 @@ static bool CheckAndCopyWildcards (tFileDesc* fileDesc)
 
 // quit if none of the specified files exist in the source folder
 if ((i = FFF (fileDesc->pszFile, &ffs, 0))) {
-	sprintf (szFilter, "%s%s\\%s", fileDesc->bUser ? szHomeFolder : szRootFolder, fileDesc->pszFolder, fileDesc->pszFile);
+	sprintf (szFilter, "%s%s\\%s", gameFolders.szDataRootFolder [(int) fileDesc->bUser], fileDesc->pszFolder, fileDesc->pszFile);
 	return FFF (szFilter, &ffs, 0) == 0;
 	}
 do {
 	sprintf (szDest, "\002%s", ffs.name);
-	sprintf (szFilter, "%s%s", fileDesc->bUser ? szUserFolder : szRootFolder, fileDesc->pszFolder);
+	sprintf (szFilter, "%s%s", gameFolders.szDataRootFolder [(int) fileDesc->bUser], fileDesc->pszFolder);
 	if (!CFile::Exist (szDest, szFilter, 0)) {	// if the file doesn't exist in the destination folder copy it
-		sprintf (szSrc, "%s%s", fileDesc->bUser ? szHomeFolder : szRootFolder, ffs.name);
-		sprintf (szDest, "%s%s\\%s", fileDesc->bUser ? szUserFolder : szRootFolder, fileDesc->pszFolder, ffs.name);
+		sprintf (szSrc, "%s%s", gameFolders.szDataRootFolder [(int) fileDesc->bUser], ffs.name);
+		sprintf (szDest, "%s%s\\%s", gameFolders.szDataRootFolder [(int) fileDesc->bUser], fileDesc->pszFolder, ffs.name);
 		cf.Copy (szSrc, szDest);
 		}
 	} while (!FFN (&ffs, 0));
@@ -239,14 +235,14 @@ for (int i = 0; i < nFiles; i++) {
 			nErrors++;
 		}
 	else {
-		sprintf (szDest, "%s%s", fileList [i].bUser ? szUserFolder : szRootFolder, fileList [i].pszFolder);
+		sprintf (szDest, "%s%s", gameFolders.szDataRootFolder [(int) fileList [i].bUser], fileList [i].pszFolder);
 		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, szDest, false) == 1;
 		if (fileList [i].bFound)
 			continue;	// file exists in the destination folder
-		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, fileList [i].bUser ? szHomeFolder : szRootFolder, false) == 1;
+		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, gameFolders.szDataRootFolder [(int) fileList [i].bUser], false) == 1;
 		if (fileList [i].bFound) {	// file exists in the source folder
-			sprintf (szSrc, "%s%s", szRootFolder, fileList [i].pszFile + 1);
-			sprintf (szDest, "%s%s\\%s", fileList [i].bUser ? szUserFolder : szRootFolder, fileList [i].pszFolder, fileList [i].pszFile + 1);
+			sprintf (szSrc, "%s%s", gameFolders.szDataRootFolder [0], fileList [i].pszFile + 1);
+			sprintf (szDest, "%s%s\\%s", gameFolders.szDataRootFolder [(int) fileList [i].bUser], fileList [i].pszFile + 1);
 			cf.Copy (szSrc, szDest);
 			}
 		else if (!fileList [i].bOptional)
@@ -308,9 +304,9 @@ for (int i = 0, j = -1; i < nFiles; i++) {
 				strcat (szMsg, "\n\n");
 				bFirst = true;
 				}
-			if (strcmp (fileList [i].bUser ? szUserFolder : szRootFolder, ".\\")) {
-				strcat (szMsg, fileList [i].bUser ? szUserFolder : szRootFolder);
-				l += int (strlen (fileList [i].bUser ? szUserFolder : szRootFolder));
+			if (strcmp (gameFolders.szDataRootFolder [(int) fileList [i].bUser], ".\\")) {
+				strcat (szMsg, gameFolders.szDataRootFolder [(int) fileList [i].bUser]);
+				l += int (strlen (gameFolders.szDataRootFolder [(int) fileList [i].bUser]));
 				}
 			strcat (szMsg, fileList [i].pszFolder);
 			strcat (szMsg, ": ");
@@ -342,7 +338,7 @@ int CheckAndFixSetup (void)
 if (!gameStates.app.bCheckAndFixSetup)
 	return 0;
 
-	int	i, nResult = 0;
+	int	nResult = 0;
 	bool	bDemoData = false;
 	char	szMsg [10000];
 
