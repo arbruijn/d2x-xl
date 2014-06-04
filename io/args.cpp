@@ -66,7 +66,7 @@ if ((i = Find ("-ini")))
 else {
 #if defined(__unix__)
 	FFS		ffs;
-	strcpy (m_filename, gameFolders.szUserDir);
+	strcpy (m_filename, gameFolders.szUserFolder);
 	strcat (m_filename, "/.d2x-xl");
 	if (FFF (m_filename, &ffs, 0) <= 0) {
 #endif

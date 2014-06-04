@@ -136,12 +136,12 @@ class CFile {
 
 
 typedef struct tGameFolders {
-	char szUserDir [FILENAME_LEN];
+	char szUserFolder [FILENAME_LEN];
 #if defined (__unix__) || defined (__macosx__)
 	char szSharePath [FILENAME_LEN];
 #endif
 	char szAltHogFolder [FILENAME_LEN];
-	char szDataRootFolder [2][FILENAME_LEN];
+	char szDataRootFolder [3][FILENAME_LEN];
 	char szCacheFolder [2][FILENAME_LEN];
 	char szLightmapFolder [FILENAME_LEN];
 	char szLightDataFolder [FILENAME_LEN];

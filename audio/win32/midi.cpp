@@ -170,9 +170,9 @@ if (gameOpts->sound.bUseSDLMixer) {
 			audio.Setup (1);
 			}
 #if defined (_WIN32)
-		sprintf (fnSong, "%s/d2x-temp.mid", *gameFolders.szCacheFolder [0] ? gameFolders.szCacheFolder [0] : gameFolders.szUserDir);
+		sprintf (fnSong, "%s/d2x-temp.mid", *gameFolders.szCacheFolder [0] ? gameFolders.szCacheFolder [0] : gameFolders.szUserFolder);
 #else
-		sprintf (fnSong, "%s/d2x-temp.mid", *gameFolders.szCacheFolder [0] ? gameFolders.szCacheFolder [0] : gameFolders.szUserDir);
+		sprintf (fnSong, "%s/d2x-temp.mid", *gameFolders.szCacheFolder [0] ? gameFolders.szCacheFolder [0] : gameFolders.szUserFolder);
 #endif
 		if (!hmp_to_midi (m_hmp, fnSong)) {
 			PrintLog (0, "SDL_mixer failed to load %s\n(%s)\n", fnSong, Mix_GetError ());

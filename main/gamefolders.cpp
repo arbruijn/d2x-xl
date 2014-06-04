@@ -60,6 +60,7 @@
 #endif
 
 #if defined(__macosx__)
+
 #	define	DATA_FOLDER					"Data"
 #	define	SHADER_FOLDER				"Shaders"
 #	define	MODEL_FOLDER				"Models"
@@ -88,7 +89,9 @@
 #	define	MOD_FOLDER					"Mods"
 #	define	MUSIC_FOLDER				"Music"
 #	define	DOWNLOAD_FOLDER			"Downloads"
+
 #else
+
 #	define	DATA_FOLDER					"data"
 #	define	SHADER_FOLDER				"shaders"
 #	define	MODEL_FOLDER				"models"
@@ -115,11 +118,20 @@
 #	define	LIGHTDATA_FOLDER			"lights"
 #	define	MESH_FOLDER					"meshes"
 #	define	MISSIONSTATE_FOLDER		"missions"
-#	if DBG
-#		define	CACHE_FOLDER			"cache/debug"
+
+#	ifdef _WIN32
+#		if DBG
+#			define	CACHE_FOLDER		"cache/debug"
+#		else
+#			define	CACHE_FOLDER		"cache"
+#		endif
+
 #	else
-#		define	CACHE_FOLDER			"cache"
+
+#		define	CACHE_FOLDER			"d2x-xl"
+
 #	endif
+
 #endif
 
 // ----------------------------------------------------------------------------
@@ -162,9 +174,8 @@ if (pszSubFolder && *pszSubFolder) {
 	}
 else {
 	FFS	ffs;
-	if (!FFF (pszFolder, &ffs, 1))
+	if (!FFF (pszAppFolder, &ffs, 1))
 		return;
-	strcpy (pszAppFolder, pszFolder);
 	}
 CFile::MkDir (pszAppFolder);
 AppendSlash (pszAppFolder);
@@ -192,7 +203,7 @@ void GetAppFolders (void)
 {
 	int	i;
 
-*gameFolders.szUserDir =
+*gameFolders.szUserFolder =
 *gameFolders.szGameFolder =
 *gameFolders.szDataFolder [0] =
 *gameFolders.szDataRootFolder [0] = 
@@ -204,7 +215,7 @@ if (!*CheckFolder (gameFolders.szGameFolder, appConfig.Text ("-gamedir"), D2X_AP
 	 !*CheckFolder (gameFolders.szGameFolder, appConfig [1], D2X_APPNAME))
 	CheckFolder (gameFolders.szGameFolder, DEFAULT_GAME_FOLDER, "");
 
-CheckFolder (gameFolders.szUserDir, appConfig.Text ("-userdir"), "");
+CheckFolder (gameFolders.szUserFolder, appConfig.Text ("-userdir"), "");
 
 #else // Linux, OS X
 
@@ -220,10 +231,13 @@ if (!*CheckFolder (gameFolders.szGameFolder, appConfig.Text ("-gamedir"), D2X_AP
 	 !*CheckFolder (gameFolders.szGameFolder, getenv ("DESCENT2"), D2X_APPNAME))
 	CheckFolder (gameFolders.szGameFolder, DEFAULT_GAME_FOLDER, "");
 
-if (!*CheckFolder (gameFolders.szUserDir, appConfig.Text ("-userdir"), "") &&
-	!*CheckFolder (gameFolders.szUserDir, getenv ("HOME"), ""))
-	strcpy (gameFolders.szUserDir, gameFolders.szGameFolder);
-strcat (gameFolders.szUserDir, ".d2x-xl");
+if (!*CheckFolder (gameFolders.szUserFolder, appConfig.Text ("-userdir"), "") &&
+	!*CheckFolder (gameFolders.szUserFolder, getenv ("HOME"), ""))
+	strcpy (gameFolders.szUserFolder, gameFolders.szGameFolder);
+
+if (!*CheckFolder (gameFolders.szDataFolder [2], appConfig.Text ("-cachedir"), "") &&
+	!*CheckFolder (gameFolders.szDataFolder [2], "/var/cache", ""))
+	strcpy (gameFolders.szDataFolder [2], gameFolders.szUserFolder);
 
 if (!*CheckFolder (gameFolders.szDataFolder [0], appConfig.Text ("-datadir"), D2X_APPNAME))
 	strcpy (gameFolders.szDataFolder [0], gameFolders.szGameFolder);
@@ -264,13 +278,16 @@ GetAppFolder (gameFolders.szTextureRootFolder, gameFolders.szTextureFolder [1], 
 GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szModFolder [0], MOD_FOLDER, "");
 GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szMovieFolder, MOVIE_FOLDER, "*.mvl");
 
-if (!*gameFolders.szUserDir)
-	strcpy (gameFolders.szUserDir, gameFolders.szDataRootFolder [0]);
-strcpy (gameFolders.szDataRootFolder [1], gameFolders.szUserDir);
+if (!*gameFolders.szUserFolder)
+	strcpy (gameFolders.szUserFolder, gameFolders.szDataRootFolder [0]);
+strcpy (gameFolders.szDataRootFolder [1], gameFolders.szUserFolder);
+#ifndef __linux__
+strcpy (gameFolders.szDataRootFolder [2], gameFolders.szDataRootFolder [0]);
+#endif
 
 // create the user folders
 
-MakeFolder ("", gameFolders.szDataRootFolder [1]);
+MakeFolder (gameFolders.szDataRootFolder [1]);
 MakeFolder (gameFolders.szCacheFolder [1], gameFolders.szDataRootFolder [1], CACHE_FOLDER);
 MakeFolder (gameFolders.szProfileFolder, gameFolders.szDataRootFolder [1], PROF_FOLDER);
 MakeFolder (gameFolders.szSavegameFolder, gameFolders.szDataRootFolder [1], SAVE_FOLDER);
@@ -302,10 +319,10 @@ MakeFolder (gameFolders.szCacheFolder [0], pszOSXCacheDir, CACHE_FOLDER);
 
 #else
 
-MakeFolder ("", gameFolders.szDataRootFolder [0]);
+MakeFolder (gameFolders.szDataRootFolder [0]);
 MakeFolder (gameFolders.szDataFolder [0], gameFolders.szDataRootFolder [0], DATA_FOLDER);
 MakeFolder (gameFolders.szDataFolder [1], gameFolders.szDataFolder [0], "d2x-xl");
-MakeFolder (gameFolders.szCacheFolder [0], gameFolders.szDataRootFolder [0], CACHE_FOLDER);
+MakeFolder (gameFolders.szCacheFolder [0], gameFolders.szDataRootFolder [2], CACHE_FOLDER);
 MakeFolder (gameFolders.szWallpaperFolder [0], gameFolders.szTextureRootFolder, WALLPAPER_FOLDER);
 MakeFolder (gameFolders.szTextureCacheFolder [0], gameFolders.szTextureRootFolder, TEXTURE_FOLDER_D2);
 MakeFolder (gameFolders.szTextureCacheFolder [1], gameFolders.szTextureRootFolder, TEXTURE_FOLDER_D1);
