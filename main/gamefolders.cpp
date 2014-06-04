@@ -79,6 +79,7 @@
 #	define	TEXTURE_FOLDER_D2			"Textures/D2"
 #	define	TEXTURE_FOLDER_D1			"Textures/D1"
 #	define	WALLPAPER_FOLDER			"Textures/Wallpapers"
+#	define	TEXTURE_FOLDER_XL			"Textures/D2X-XL"
 #	define	CACHE_FOLDER				"Cache"
 #	define	LIGHTMAP_FOLDER			"Lightmaps"
 #	define	LIGHTDATA_FOLDER			"Lights"
@@ -104,9 +105,9 @@
 #	define	SAVE_FOLDER					"savegames"
 #	define	DEMO_FOLDER					"demos"
 #	define	TEXTURE_FOLDER				"textures"
-#	define	TEXTURE_FOLDER_D2			"textures/d2"
-#	define	TEXTURE_FOLDER_D1			"textures/d1"
-#	define	WALLPAPER_FOLDER			"textures/wallpapers"
+#	define	TEXTURE_FOLDER_D2			"d2"
+#	define	TEXTURE_FOLDER_D1			"d1"
+#	define	WALLPAPER_FOLDER			"wallpapers"
 #	define	MOD_FOLDER					"mods"
 #	define	MUSIC_FOLDER				"music"
 #	define	DOWNLOAD_FOLDER			"downloads"
@@ -255,8 +256,9 @@ if (GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szSoundFolder [2
 if (GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szSoundFolder [3], SOUND_FOLDER2_D1, "*.wav"))
 	*gameFolders.szSoundFolder [3] = '\0';
 //GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szShaderFolder, SHADER_FOLDER, "");
-GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szTextureFolder [0], TEXTURE_FOLDER_D2, "*.tga");
-GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szTextureFolder [1], TEXTURE_FOLDER_D1, "*.tga");
+GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szTextureRootFolder, TEXTURE_FOLDER, "");
+GetAppFolder (gameFolders.szTextureRootFolder, gameFolders.szTextureFolder [0], TEXTURE_FOLDER_D2, "*.tga");
+GetAppFolder (gameFolders.szTextureRootFolder, gameFolders.szTextureFolder [1], TEXTURE_FOLDER_D1, "*.tga");
 GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szModFolder [0], MOD_FOLDER, "");
 GetAppFolder (gameFolders.szDataRootFolder [0], gameFolders.szMovieFolder, MOVIE_FOLDER, "*.mvl");
 
@@ -302,9 +304,9 @@ MakeFolder ("", gameFolders.szDataRootFolder [0]);
 MakeFolder (gameFolders.szDataFolder [0], gameFolders.szDataRootFolder [0], DATA_FOLDER);
 MakeFolder (gameFolders.szDataFolder [1], gameFolders.szDataFolder [0], "d2x-xl");
 MakeFolder (gameFolders.szCacheFolder [0], gameFolders.szDataRootFolder [0], CACHE_FOLDER);
-MakeFolder (gameFolders.szWallpaperFolder [0], gameFolders.szDataRootFolder [0], WALLPAPER_FOLDER);
-MakeFolder (gameFolders.szTextureCacheFolder [0], gameFolders.szDataRootFolder [0], TEXTURE_FOLDER_D2);
-MakeFolder (gameFolders.szTextureCacheFolder [1], gameFolders.szDataRootFolder [0], TEXTURE_FOLDER_D1);
+MakeFolder (gameFolders.szWallpaperFolder [0], gameFolders.szTextureRootFolder, WALLPAPER_FOLDER);
+MakeFolder (gameFolders.szTextureCacheFolder [0], gameFolders.szTextureRootFolder, TEXTURE_FOLDER_D2);
+MakeFolder (gameFolders.szTextureCacheFolder [1], gameFolders.szTextureRootFolder, TEXTURE_FOLDER_D1);
 MakeFolder (gameFolders.szModelCacheFolder [0], gameFolders.szDataRootFolder [0], MODEL_FOLDER);
 MakeFolder (gameFolders.szLightmapFolder, gameFolders.szCacheFolder [0], LIGHTMAP_FOLDER);
 MakeFolder (gameFolders.szLightDataFolder, gameFolders.szCacheFolder [0], LIGHTDATA_FOLDER);

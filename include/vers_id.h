@@ -3,7 +3,7 @@
 
 //#ifndef HAVE_CONFIG_H
 #	ifndef VERSION
-#		define VERSION		"1.17.28"
+#		define VERSION		"1.17.29"
 #	endif
 //#endif
 

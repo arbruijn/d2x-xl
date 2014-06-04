@@ -69,7 +69,7 @@ for (int i = 0; i < nIcons; i++) {
 	icons [i].Destroy ();
 	sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureFolder [2], pszIcons [i]);
 	if (!cf.Exist (szFilename, "", 0))
-		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureFolder [0], pszIcons [i]);
+		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureRootFolder, pszIcons [i]);
 	CTGA tga (&icons [i]);
 	if (!tga.Read (szFilename, NULL, -1, 1.0, 0)) {
 		while (i) {

@@ -315,16 +315,18 @@ sprintf (fn, "%s%s%s", folder, *folder ? "/" : "", filename);
 
 // ----------------------------------------------------------------------------
 // Rename a file.
-int CFile::Rename (const char *oldname, const char *newname, const char *folder)
+int CFile::Rename (char *oldname, char *newname, const char *folder)
 {
 	char	fno [FILENAME_LEN], fnn [FILENAME_LEN];
 
-sprintf (fno, "%s%s%s", folder, *folder ? "/" : "", oldname);
-sprintf (fnn, "%s%s%s", folder, *folder ? "/" : "", newname);
+if (folder && *folder) {
+	sprintf (fno, "%s%s%s", folder, *folder ? "/" : "", oldname);
+	sprintf (fnn, "%s%s%s", folder, *folder ? "/" : "", newname);
+	}
 #ifndef _WIN32_WCE
-	return rename (fno, fnn);
+	return rename (oldname, newname);
 #else
-	return !MoveFile (fno, fnn);
+	return !MoveFile (oldname, newname);
 #endif
 }
 

@@ -77,7 +77,7 @@ if (!m_bAvailable) {
 
 	sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureFolder [2], pszName);
 	if (!m_cf.Exist (szFilename, "", 0))
-		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureFolder [0], pszName);
+		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureRootFolder, pszName);
 	CreateAndRead (szFilename);
 	}
 if (!m_bmP)
@@ -173,7 +173,7 @@ if (!*bHaveP) {
 
 	sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureFolder [2], pszName);
 	if (!cf.Exist (szFilename, "", 0))
-		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureFolder [0], pszName);
+		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.szTextureRootFolder, pszName);
 	CBitmap* bmP = tga.CreateAndRead (szFilename);
 	if (!bmP)
 		*bHaveP = -1;

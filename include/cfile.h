@@ -123,7 +123,7 @@ class CFile {
 
 		static int Exist (const char *filename, const char *folder, int bUseD1Hog);	// Returns true if file exists on disk (1) or in hog (2).
 		static int Delete (const char *filename, const char* folder);
-		static int Rename (const char *oldname, const char *newname, const char *folder);
+		static int Rename (char *oldname, char *newname, const char *folder);
 		static int MkDir (const char *pathname);
 		static FILE *GetFileHandle (const char *filename, const char *folder, const char *mode);
 		static void SplitPath (const char *szFullPath, char *szFolder, char *szFile, char *szExt);
@@ -168,7 +168,8 @@ typedef struct tGameFolders {
 	char szShaderFolder [FILENAME_LEN];
 	char szSoundFolder [7][FILENAME_LEN];
 	char szTextureCacheFolder [4][FILENAME_LEN];
-	char szTextureFolder [4][FILENAME_LEN];
+	char szTextureRootFolder [FILENAME_LEN];
+	char szTextureFolder [5][FILENAME_LEN];
 	char szWallpaperFolder [2][FILENAME_LEN];
 	int bAltHogDirInited;
 } tGameFolders;

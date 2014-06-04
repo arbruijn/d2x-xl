@@ -196,6 +196,48 @@ static tFileDesc addonSoundFiles [] = {
 
 // ----------------------------------------------------------------------------
 
+void MoveFiles (char* pszDestFolder, char* pszSourceFolder, bool bMoveSubFolders)
+{
+	FFS	ffs;
+	char	szSource [FILENAME_LEN], szDest [FILENAME_LEN];
+
+sprintf (szSource, "%s*.*", pszSourceFolder);
+if (!FFF (szSource, &ffs, 0)) {
+	do {
+		sprintf (szDest, "%s%s", pszDestFolder, ffs.name);
+		CFile::Rename (szDest, szSource, "");
+		} while (!FFN (&ffs, 0));
+	}
+
+if (bMoveSubFolders) {
+	if (!FFF (pszSourceFolder, &ffs, 1)) {
+		do {
+			sprintf (szSource, "%s%s", pszSourceFolder, ffs.name);
+			sprintf (szDest, "%s%s", pszDestFolder, ffs.name);
+			CFile::MkDir (szDest);
+			MoveFiles (szDest, szSource, true);
+			} while (!FFN (&ffs, 1));
+		}
+	}
+}
+
+// ----------------------------------------------------------------------------
+
+void MoveD2Textures (void)
+{
+	static char* szSubFolders [] = { "", "/64", "/128", "/256" };
+
+	char szSourceFolder [FILENAME_LEN], szDestFolder [FILENAME_LEN];
+
+for (int i = 0; i < 4; i++) {
+	sprintf (szSourceFolder, "%stextures%s", gameFolders.szDataRootFolder [0], szSubFolders [i]);
+	sprintf (szDestFolder, "%stextures%s", gameFolders.szTextureCacheFolder [0], szSubFolders [i]);
+	MoveFiles (szDestFolder, szSourceFolder, false);
+	}
+}
+
+// ----------------------------------------------------------------------------
+
 static bool CheckAndCopyWildcards (tFileDesc* fileDesc)
 {
 	FFS	ffs;
@@ -363,6 +405,8 @@ if (CheckAndCopyFiles (addonTextureFiles, int (sizeofa (addonTextureFiles))))
 	nResult |= 16;
 if (CheckAndCopyFiles (addonSoundFiles, int (sizeofa (addonSoundFiles))))
 	nResult |= 32;
+
+MoveD2Textures ();
 
 #if 0 //DBG
 nResult = 255;
