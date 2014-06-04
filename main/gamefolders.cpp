@@ -98,8 +98,8 @@
 #	define	SOUND_FOLDER				"sounds"
 #	define	SOUND_FOLDER1				"sounds1"
 #	define	SOUND_FOLDER2				"sounds2"
-#	define	SOUND_FOLDER1_D1			"sounds1/D1"
-#	define	SOUND_FOLDER2_D1			"sounds2/D1"
+#	define	SOUND_FOLDER1_D1			"sounds1/d1"
+#	define	SOUND_FOLDER2_D1			"sounds2/d1"
 #	define	SOUND_FOLDER_D2X			"sounds2/d2x-xl"
 #	define	CONFIG_FOLDER				"config"
 #	define	PROF_FOLDER					"profiles"
@@ -136,12 +136,14 @@
 
 // ----------------------------------------------------------------------------
 
-char* CheckFolder (char* pszAppFolder, char* pszFolder, char* pszFile)
+char* CheckFolder (char* pszAppFolder, char* pszFolder, char* pszFile, bool bFolder = true)
 {
 if (pszFolder && *pszFolder) {
-	CFile::SplitPath (pszFolder, gameFolders.szGameFolder, NULL, NULL);
+	if (bFolder)
+		AppendSlash (pszFolder);
+	CFile::SplitPath (pszFolder, pszAppFolder, NULL, NULL);
 	FlipBackslash (pszAppFolder);
-	if (GetAppFolder ("", pszAppFolder, pszAppFolder, "d2x-xl.exe"))
+	if (GetAppFolder ("", pszAppFolder, pszAppFolder, pszFile))
 		*pszAppFolder = '\0';
 	else
 		AppendSlash (pszAppFolder);
@@ -212,7 +214,7 @@ void GetAppFolders (void)
 #ifdef _WIN32
 if (!*CheckFolder (gameFolders.szGameFolder, appConfig.Text ("-gamedir"), D2X_APPNAME) &&
 	 !*CheckFolder (gameFolders.szGameFolder, getenv ("DESCENT2"), D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.szGameFolder, appConfig [1], D2X_APPNAME))
+	 !*CheckFolder (gameFolders.szGameFolder, appConfig [1], D2X_APPNAME, false))
 	CheckFolder (gameFolders.szGameFolder, DEFAULT_GAME_FOLDER, "");
 
 CheckFolder (gameFolders.szUserFolder, appConfig.Text ("-userdir"), "");
