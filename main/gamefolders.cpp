@@ -164,12 +164,12 @@ return GetAppFolder ("", gameFolders.szDataFolder [0], pszDataRootDir, "descent2
 
 // ----------------------------------------------------------------------------
 
-void MakeFolder (char* pszAppFolder, char* pszFolder = "", char* pszSubFolder = "", char* format = "%s/%s")
+int MakeFolder (char* pszAppFolder, char* pszFolder = "", char* pszSubFolder = "", char* format = "%s/%s")
 {
 if (pszSubFolder && *pszSubFolder) {
 	if (!GetAppFolder (pszFolder, pszAppFolder, pszSubFolder, "")) {
 		AppendSlash (pszAppFolder);
-		return;
+		return 1;
 		}
 	if (pszFolder && *pszFolder)
 		sprintf (pszAppFolder, format, pszFolder, pszSubFolder);
@@ -177,10 +177,12 @@ if (pszSubFolder && *pszSubFolder) {
 else {
 	FFS	ffs;
 	if (!FFF (pszAppFolder, &ffs, 1))
-		return;
+		return 1;
 	}
-CFile::MkDir (pszAppFolder);
+if (CFile::MkDir (pszAppFolder))
+	return 0;
 AppendSlash (pszAppFolder);
+return 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -325,7 +327,10 @@ MakeFolder (gameFolders.szCacheFolder [0], pszOSXCacheDir, CACHE_FOLDER);
 MakeFolder (gameFolders.szDataRootFolder [0]);
 MakeFolder (gameFolders.szDataFolder [0], gameFolders.szDataRootFolder [0], DATA_FOLDER);
 MakeFolder (gameFolders.szDataFolder [1], gameFolders.szDataFolder [0], "d2x-xl");
-MakeFolder (gameFolders.szCacheFolder [0], gameFolders.szDataRootFolder [2], CACHE_FOLDER);
+if (!MakeFolder (gameFolders.szCacheFolder [0], gameFolders.szDataRootFolder [2], CACHE_FOLDER)) {
+	strcpy (gameFolders.szDataRootFolder [2], gameFolders.szDataRootFolder [1]);	 // fall back
+	strcpy (gameFolders.szCacheFolder [0], gameFolders.szCacheFolder [1]);
+	}
 MakeFolder (gameFolders.szWallpaperFolder [0], gameFolders.szTextureRootFolder, WALLPAPER_FOLDER);
 MakeFolder (gameFolders.szTextureCacheFolder [0], gameFolders.szTextureRootFolder, TEXTURE_FOLDER_D2);
 MakeFolder (gameFolders.szTextureCacheFolder [1], gameFolders.szTextureRootFolder, TEXTURE_FOLDER_D1);

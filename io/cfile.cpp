@@ -75,7 +75,7 @@ PrintLog (0, "GetAppFolder ('%s', '%s', '%s', '%s')\n", szMainFolder, szDestFold
 sprintf (szFolder, "%s%s%s%s%s", szMainFolder, bAddSlash ? "/" : "", szSubFolder, *szFilter ? "/" : "", szFilter);
 if (!(i = FFF (szFolder, &ffs, *szFilter == '\0'))) {
 	if (szDestFolder != szSubFolder)
-		sprintf (szDestFolder, "%s%s%s", szMainFolder, bAddSlash ? "/" : "", szSubFolder);
+		sprintf (szDestFolder, "%s%s%s%s", szMainFolder, bAddSlash ? "/" : "", szSubFolder, *szSubFolder ? "/" : "");
 	}
 else if (*szMainFolder)
 	strcpy (szDestFolder, szMainFolder);
@@ -335,7 +335,7 @@ if (folder && *folder) {
 int CFile::MkDir (const char *pathname)
 {
 #if defined (_WIN32_WCE) || defined (_WIN32)
-return !CreateDirectory (pathname, NULL);
+return CreateDirectory (pathname, NULL) ? 0 : -1;
 #else
 return mkdir (pathname, 0755);
 #endif
