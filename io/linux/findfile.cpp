@@ -52,10 +52,10 @@ int FileFindFirst (const char *pszFilter, FILEFINDSTRUCT *ffsP, int nFlags)
   
 if (!pszFilter)
 	return -1;
-//PrintLog ("FileFindFirst (%s, %s)\n", gameFolders.szGameDir, pszFilter);
+//PrintLog ("FileFindFirst (%s, %s)\n", gameFolders.szGameFolder, pszFilter);
 memset (ffsP, 0, sizeof (*ffsP));
 if (*pszFilter && (*pszFilter != ',') && (*pszFilter != '/'))
-	sprintf (ffsP->szDir, "%s/", gameFolders.szGameDir);
+	sprintf (ffsP->szDir, "%s/", gameFolders.szGameFolder);
 else
 	*ffsP->szDir = '\0';
 strcat (ffsP->szDir, pszFilter);

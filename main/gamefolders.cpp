@@ -125,11 +125,8 @@
 #		else
 #			define	CACHE_FOLDER		"cache"
 #		endif
-
 #	else
-
 #		define	CACHE_FOLDER			"d2x-xl"
-
 #	endif
 
 #endif
@@ -139,8 +136,11 @@
 char* CheckFolder (char* pszAppFolder, char* pszFolder, char* pszFile, bool bFolder = true)
 {
 if (pszFolder && *pszFolder) {
-	if (bFolder)
-		AppendSlash (pszFolder);
+	char szFolder [FILENAME_LEN];
+	if (bFolder) {
+		strcpy (szFolder, pszFolder);
+		AppendSlash (pszFolder  = szFolder);
+		}
 	CFile::SplitPath (pszFolder, pszAppFolder, NULL, NULL);
 	FlipBackslash (pszAppFolder);
 	if (GetAppFolder ("", pszAppFolder, pszAppFolder, pszFile))
@@ -231,9 +231,10 @@ if (*SHAREPATH) {
 		sprintf (gameFolders.szSharePath, "%s/d2x-xl", SHAREPATH);
 	else
 		sprintf (gameFolders.szSharePath, "%s/games/d2x-xl", SHAREPATH);
+	}
 
 if (!*CheckFolder (gameFolders.szGameFolder, appConfig.Text ("-gamedir"), D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.szameDir, gameFolders.szSharePath, D2X_APPNAME) &&
+	 !*CheckFolder (gameFolders.szGameFolder, gameFolders.szSharePath, D2X_APPNAME) &&
 	 !*CheckFolder (gameFolders.szGameFolder, getenv ("DESCENT2"), D2X_APPNAME))
 	CheckFolder (gameFolders.szGameFolder, DEFAULT_GAME_FOLDER, "");
 
