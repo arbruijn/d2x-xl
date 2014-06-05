@@ -538,7 +538,7 @@ if ((networkData.sync [0].nPlayer != -1) && !(gameData.app.nFrameCount & 63))
 #endif
 XMLGameInfoHandler ();
 NetworkDoSyncFrame ();
-NetworkAdjustPPS ();
+//NetworkAdjustPPS ();
 tracker.AddServer ();
 }
 

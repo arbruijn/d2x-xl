@@ -235,7 +235,7 @@ void MoveD2Textures (void)
 	char szSourceFolder [FILENAME_LEN], szDestFolder [FILENAME_LEN];
 
 for (int i = 0; i < 4; i++) {
-	sprintf (szSourceFolder, "%stextures/%s", gameFolders.szDataRootFolder [0], szSubFolders [i]);
+	sprintf (szSourceFolder, "%stextures/%s", STATIC_DATA_FOLDER, szSubFolders [i]);
 	sprintf (szDestFolder, "%s%s", gameFolders.szTextureCacheFolder [0], szSubFolders [i]);
 	MoveFiles (szDestFolder, szSourceFolder, false);
 	}
@@ -288,7 +288,7 @@ for (int i = 0; i < nFiles; i++) {
 			continue;	// file exists in the destination folder
 		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, gameFolders.szDataRootFolder [(int) fileList [i].bUser], false) == 1;
 		if (fileList [i].bFound) {	// file exists in the source folder
-			sprintf (szSrc, "%s%s", gameFolders.szDataRootFolder [0], fileList [i].pszFile + 1);
+			sprintf (szSrc, "%s%s", STATIC_DATA_FOLDER, fileList [i].pszFile + 1);
 			sprintf (szDest, "%s%s\\%s", gameFolders.szDataRootFolder [(int) fileList [i].bUser], fileList [i].pszFile + 1);
 			cf.Copy (szSrc, szDest);
 			}
@@ -327,7 +327,7 @@ static const char* gameSubFolders [] = {
 	char	szFolder [FILENAME_LEN];
 
 for (int i = 0; i < int (sizeofa (gameSubFolders)); i++) {
-	sprintf (szFolder, "%s%s", gameFolders.szDataRootFolder [0], gameSubFolders [i]);
+	sprintf (szFolder, "%s%s", STATIC_DATA_FOLDER, gameSubFolders [i]);
 	if (FFF (szFolder, &ffs, 1))
   		CFile::MkDir (szFolder);
 	}

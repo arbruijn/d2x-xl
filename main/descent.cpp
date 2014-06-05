@@ -121,7 +121,7 @@ void ShowOrderForm (void);
 CGameOptions* gameOpts = gameOptions;
 
 void EvalArgs (void);
-void GetAppFolders (void);
+void GetAppFolders (bool bInit);
 #if defined (_WIN32) || defined(__unix__)
 int CheckAndFixSetup (void);
 #else
@@ -824,13 +824,13 @@ InitNetworkData ();
 gameOptions [0].Init ();
 InitArgs (argc, argv);
 EvalArgs ();
-GetAppFolders ();
+GetAppFolders (true);
 CheckAndFixSetup ();
 gameStates.app.nLogLevel = appConfig.Int ("-printlog", 1);
 OpenLogFile ();
 PrintLog (0, "%s\n", DESCENT_VERSION);
 InitArgs (argc, argv);
-GetAppFolders ();
+GetAppFolders (false);
 #ifdef D2X_MEM_HANDLER
 MemInit ();
 #endif

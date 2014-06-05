@@ -146,7 +146,6 @@ typedef struct tGameFolders {
 	char szLightmapFolder [FILENAME_LEN];
 	char szLightDataFolder [FILENAME_LEN];
 	char szMeshFolder [FILENAME_LEN];
-	char szMissionStateFolder [FILENAME_LEN];
 	char szConfigFolder [FILENAME_LEN];
 	char szDataFolder [2][FILENAME_LEN];
 	char szDemoFolder [FILENAME_LEN];
@@ -154,7 +153,9 @@ typedef struct tGameFolders {
 	char szGameFolder [FILENAME_LEN];
 	char szMissionFolder [FILENAME_LEN];
 	char szMissionFolders [2][FILENAME_LEN];
+	char szMissionCacheFolder [FILENAME_LEN];
 	char szMissionDownloadFolder [FILENAME_LEN];
+	char szMissionStateFolder [FILENAME_LEN];
 	char szModFolder [2][FILENAME_LEN];
 	char szModelFolder [3][FILENAME_LEN];
 	char szModelCacheFolder [3][FILENAME_LEN];
@@ -173,6 +174,12 @@ typedef struct tGameFolders {
 	char szWallpaperFolder [2][FILENAME_LEN];
 	int bAltHogDirInited;
 } tGameFolders;
+
+#define STATIC_DATA_FOLDER		gameFolders.szDataRootFolder [0]
+#define PRIVATE_DATA_FOLDER	gameFolders.szDataRootFolder [1]
+#define VAR_DATA_FOLDER			gameFolders.szDataRootFolder [2]
+#define PRIVATE_CACHE_FOLDER	gameFolders.szCacheFolder [0]
+#define PUBLIC_CACHE_FOLDER	gameFolders.szCacheFolder [1]
 
 int GetAppFolder (const char *szMainFolder, char *szDestFolder, const char *szSubFolder, const char *szFilter);
 char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int nType);
