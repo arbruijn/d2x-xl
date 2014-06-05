@@ -207,7 +207,7 @@ void GetAppFolders (bool bInit)
 	int	i;
 
 if (bInit)
-	memset (gameFolders, 0, sizeof (gameFolders));
+	memset (&gameFolders, 0, sizeof (gameFolders));
 *gameFolders.szUserFolder =
 *gameFolders.szGameFolder =
 *gameFolders.szDataFolder [0] =
@@ -269,8 +269,23 @@ if (CheckDataFolder (STATIC_DATA_FOLDER)) {
 
 /*---*/PrintLog (0, "expected game app folder = '%s'\n", gameFolders.szGameFolder);
 /*---*/PrintLog (0, "expected game data folder = '%s'\n", gameFolders.szDataFolder [0]);
+
+#ifdef _WIN32
+
+GetAppFolder (STATIC_DATA_FOLDER, gameFolders.szTextureRootFolder, TEXTURE_FOLDER, "");
 if (GetAppFolder (STATIC_DATA_FOLDER, gameFolders.szModelFolder [0], MODEL_FOLDER, "*.ase"))
 	GetAppFolder (STATIC_DATA_FOLDER, gameFolders.szModelFolder [0], MODEL_FOLDER, "*.oof");
+GetAppFolder (STATIC_DATA_FOLDER, gameFolders.szModFolder [0], MOD_FOLDER, "");
+
+#else
+
+GetAppFolder (VAR_DATA_FOLDER, gameFolders.szTextureRootFolder, TEXTURE_FOLDER, "");
+if (GetAppFolder (VAR_DATA_FOLDER, gameFolders.szModelFolder [0], MODEL_FOLDER, "*.ase"))
+	GetAppFolder (VAR_DATA_FOLDER, gameFolders.szModelFolder [0], MODEL_FOLDER, "*.oof");
+GetAppFolder (VAR_DATA_FOLDER, gameFolders.szModFolder [0], MOD_FOLDER, "");
+
+#endif
+
 GetAppFolder (STATIC_DATA_FOLDER, gameFolders.szSoundFolder [0], SOUND_FOLDER1, "*.wav");
 GetAppFolder (STATIC_DATA_FOLDER, gameFolders.szSoundFolder [1], SOUND_FOLDER2, "*.wav");
 GetAppFolder (STATIC_DATA_FOLDER, gameFolders.szSoundFolder [6], SOUND_FOLDER_D2X, "*.wav");
@@ -278,12 +293,10 @@ if (GetAppFolder (STATIC_DATA_FOLDER, gameFolders.szSoundFolder [2], SOUND_FOLDE
 	*gameFolders.szSoundFolder [2] = '\0';
 if (GetAppFolder (STATIC_DATA_FOLDER, gameFolders.szSoundFolder [3], SOUND_FOLDER2_D1, "*.wav"))
 	*gameFolders.szSoundFolder [3] = '\0';
-GetAppFolder (VAR_DATA_FOLDER, gameFolders.szTextureRootFolder, TEXTURE_FOLDER, "");
 if (GetAppFolder (gameFolders.szTextureRootFolder, gameFolders.szTextureFolder [0], TEXTURE_FOLDER_D2, "*.tga") &&
 	 GetAppFolder (gameFolders.szTextureRootFolder, gameFolders.szTextureFolder [0], TEXTURE_FOLDER_D2, ""))
 	MakeFolder (gameFolders.szTextureRootFolder, gameFolders.szTextureRootFolder, TEXTURE_FOLDER_D2); // older D2X-XL installations may have a different D2 texture folder
 GetAppFolder (gameFolders.szTextureRootFolder, gameFolders.szTextureFolder [1], TEXTURE_FOLDER_D1, "*.tga");
-GetAppFolder (STATIC_DATA_FOLDER, gameFolders.szModFolder [0], MOD_FOLDER, "");
 GetAppFolder (STATIC_DATA_FOLDER, gameFolders.szMovieFolder, MOVIE_FOLDER, "*.mvl");
 if (GetAppFolder (STATIC_DATA_FOLDER, gameFolders.szMissionFolder, BASE_MISSION_FOLDER, ""))
 	GetAppFolder (gameFolders.szGameFolder, gameFolders.szMissionFolder, BASE_MISSION_FOLDER, "");
@@ -294,13 +307,9 @@ strcpy (PRIVATE_DATA_FOLDER, gameFolders.szUserFolder);
 if (!*VAR_DATA_FOLDER)
 	strcpy (VAR_DATA_FOLDER, STATIC_DATA_FOLDER);
 
-// create the user folders
-
 MakeFolder (PRIVATE_DATA_FOLDER);
 MakeFolder (PRIVATE_CACHE_FOLDER, PRIVATE_DATA_FOLDER, CACHE_FOLDER);
 MakeFolder (gameFolders.szMissionStateFolder, PRIVATE_CACHE_FOLDER, MISSIONSTATE_FOLDER);
-
-// create the shared folders
 
 #ifdef __macosx__
 
@@ -324,6 +333,7 @@ if (!MakeFolder (PUBLIC_CACHE_FOLDER, VAR_DATA_FOLDER, CACHE_FOLDER)) {
 
 MakeFolder (gameFolders.szTextureRootFolder, STATIC_DATA_FOLDER, TEXTURE_FOLDER);
 MakeFolder (gameFolders.szModelCacheFolder [0], STATIC_DATA_FOLDER, MODEL_FOLDER);
+MakeFolder (gameFolders.szModFolder [0], STATIC_DATA_FOLDER, MOD_FOLDER);
 
 MakeFolder (gameFolders.szProfileFolder, STATIC_DATA_FOLDER, PROF_FOLDER);
 MakeFolder (gameFolders.szSavegameFolder, STATIC_DATA_FOLDER, SAVE_FOLDER);
@@ -336,6 +346,7 @@ MakeFolder (gameFolders.szDownloadFolder, STATIC_DATA_FOLDER, DOWNLOAD_FOLDER);
 
 MakeFolder (gameFolders.szTextureRootFolder, PUBLIC_CACHE_FOLDER, TEXTURE_FOLDER);
 MakeFolder (gameFolders.szModelCacheFolder [0], PUBLIC_CACHE_FOLDER, MODEL_FOLDER);
+MakeFolder (gameFolders.szModFolder [0], VAR_DATA_FOLDER, MOD_FOLDER);
 
 MakeFolder (gameFolders.szProfileFolder, PRIVATE_CACHE_FOLDER, PROF_FOLDER);
 MakeFolder (gameFolders.szSavegameFolder, PRIVATE_CACHE_FOLDER, SAVE_FOLDER);
