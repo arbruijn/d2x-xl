@@ -655,7 +655,7 @@ else {
 			AddBuiltinD1Mission ();
 		}
 	nBuiltIns = m_nCount;
-	//sprintf (gameFolders.missions.szCurrent, "%s/%s", gameFolders.missions.szRoot, gameFolders.missions.szSubFolder);
+	sprintf (gameFolders.missions.szCurrent [0], "%s/%s", gameFolders.missions.szRoot, gameFolders.missions.szSubFolder);
 	bHaveSubFolders = 0;
 	if (gameOpts->app.nVersionFilter & 2) {
 		Add (bAnarchy, 0, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
