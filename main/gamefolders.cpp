@@ -337,6 +337,7 @@ strcpy (gameFolders.user.szCache, gameFolders.var.szCache);
 MakeFolder (gameFolders.game.szRoot);
 MakeFolder (gameFolders.game.szData [0], gameFolders.game.szRoot, DATA_FOLDER);
 MakeFolder (gameFolders.game.szData [1], gameFolders.game.szData [0], "d2x-xl");
+MakeFolder (gameFolders.game.szShaders, gameFolders.game.szRoot, SHADER_FOLDER);
 if (!MakeFolder (gameFolders.var.szCache, gameFolders.var.szRoot, SHARED_CACHE_FOLDER)) {
 	strcpy (gameFolders.var.szRoot, gameFolders.user.szRoot);	 // fall back
 	strcpy (gameFolders.var.szCache, gameFolders.user.szCache);

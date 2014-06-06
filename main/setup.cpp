@@ -152,45 +152,45 @@ static tFileDesc addonTextureFiles [] = {
 };
 
 static tFileDesc addonSoundFiles [] = {
-	{"\002afbr_1.wav", "sounds2", false, false, false},
-	{"\002airbubbles.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002fire.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002gatling-slowdown.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002gatling-speedup.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002gauss-firing.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002headlight.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002highping.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002lightning.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002lowping.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002missileflight-big.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002missileflight-small.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002slowdown.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002speedup.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002vulcan-firing.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002zoom1.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002zoom2.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002boiling-lava.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002busy-machine.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002computer.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002deep-hum.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002dripping-water.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002dripping-water-2.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002dripping-water-3.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002earthquake.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002energy.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002falling-rocks.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002falling-rocks-2.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002fast-fan.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002flowing-lava.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002flowing-water.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002insects.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002machine-gear.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002mighty-machine.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002static-buzz.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002steam.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002teleporter.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002waterfall.wav", "sounds2/d2x-xl", false, false, false},
-	{"\002jet-engine.wav", "sounds2/d2x-xl", false, false, false}
+	{"\002afbr_1.wav", "sounds/d2", false, false, false},
+	{"\002airbubbles.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002fire.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002gatling-slowdown.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002gatling-speedup.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002gauss-firing.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002headlight.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002highping.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002lightning.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002lowping.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002missileflight-big.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002missileflight-small.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002slowdown.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002speedup.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002vulcan-firing.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002zoom1.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002zoom2.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002boiling-lava.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002busy-machine.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002computer.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002deep-hum.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002dripping-water.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002dripping-water-2.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002dripping-water-3.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002earthquake.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002energy.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002falling-rocks.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002falling-rocks-2.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002fast-fan.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002flowing-lava.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002flowing-water.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002insects.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002machine-gear.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002mighty-machine.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002static-buzz.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002steam.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002teleporter.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002waterfall.wav", "sounds/d2/d2x-xl", false, false, false},
+	{"\002jet-engine.wav", "sounds/d2/d2x-xl", false, false, false}
 
 };
 
@@ -302,14 +302,14 @@ for (int i = 0; i < nFiles; i++) {
 			nErrors++;
 		}
 	else {
-		sprintf (szDest, "%s%s", gameFolders.szDataRootFolder [(int) fileList [i].bUser], fileList [i].pszFolder);
+		sprintf (szDest, "%s%s", fileList [i].bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, fileList [i].pszFolder);
 		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, szDest, false) == 1;
 		if (fileList [i].bFound)
 			continue;	// file exists in the destination folder
-		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, gameFolders.szDataRootFolder [(int) fileList [i].bUser], false) == 1;
+		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, fileList [i].bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, false) == 1;
 		if (fileList [i].bFound) {	// file exists in the source folder
 			sprintf (szSrc, "%s%s", gameFolders.game.szRoot, fileList [i].pszFile + 1);
-			sprintf (szDest, "%s%s\\%s", gameFolders.szDataRootFolder [(int) fileList [i].bUser], fileList [i].pszFile + 1);
+			sprintf (szDest, "%s%s\\%s", fileList [i].bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, fileList [i].pszFile + 1);
 			cf.Copy (szSrc, szDest);
 			}
 		else if (!fileList [i].bOptional)
@@ -371,9 +371,9 @@ for (int i = 0, j = -1; i < nFiles; i++) {
 				strcat (szMsg, "\n\n");
 				bFirst = true;
 				}
-			if (strcmp (gameFolders.szDataRootFolder [(int) fileList [i].bUser], ".\\")) {
-				strcat (szMsg, gameFolders.szDataRootFolder [(int) fileList [i].bUser]);
-				l += int (strlen (gameFolders.szDataRootFolder [(int) fileList [i].bUser]));
+			if (strcmp (fileList [i].bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, ".\\")) {
+				strcat (szMsg, fileList [i].bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot);
+				l += int (strlen (fileList [i].bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot));
 				}
 			strcat (szMsg, fileList [i].pszFolder);
 			strcat (szMsg, ": ");
