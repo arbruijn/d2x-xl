@@ -400,10 +400,6 @@ MakeFolder (gameFolders.missions.szDownloads, gameFolders.missions.szCache, DOWN
 MakeTexSubFolders (gameFolders.var.szTextures [1]);
 MakeTexSubFolders (gameFolders.var.szTextures [2]);
 MakeTexSubFolders (gameFolders.var.szModels [0]);
-
-//if (GetAppFolder (gameFolders.user.szRoot, gameFolders.user.szConfig, CONFIG_FOLDER, "*.ini"))
-//	strcpy (gameFolders.user.szConfig, gameFolders.game.szRoot);
-
 }
 
 // ----------------------------------------------------------------------------
