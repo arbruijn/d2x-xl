@@ -169,10 +169,10 @@ return GetAppFolder ("", gameFolders.game.szData [0], pszDataRootDir, "descent2.
 
 // ----------------------------------------------------------------------------
 
-int MakeFolder (char* pszAppFolder, char* pszFolder = "", char* pszSubFolder = "", char* pszFilter = "")
+int MakeFolder (char* pszAppFolder, const char* pszFolder = "", const char* pszSubFolder = "")
 {
 if (pszSubFolder && *pszSubFolder) {
-	if (!GetAppFolder (pszFolder, pszAppFolder, pszSubFolder, pszFilter)) {
+	if (!GetAppFolder (pszFolder, pszAppFolder, pszSubFolder, "")) {
 		AppendSlash (pszAppFolder);
 		return 1;
 		}
