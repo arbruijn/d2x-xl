@@ -1047,7 +1047,7 @@ if (filename)
 if (description)
 	strcpy (m_description, description);
 m_bSecret = bSecret;
-if (!m_cf.Open (m_filename, (bSecret < 0) ? gameFolders.szCacheFolder [0] : gameFolders.szSavegameFolder, "wb", 0)) {
+if (!m_cf.Open (m_filename, (bSecret < 0) ? gameFolders.shared.szCache : gameFolders.szSavegameFolder, "wb", 0)) {
 	if (!IsMultiGame)
 		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_SAVE_ERROR2);
 	StartTime (1);
@@ -2296,7 +2296,7 @@ int CSaveGameManager::LoadState (int bMulti, int bSecret, char *filename)
 StopTime ();
 if (filename)
 	strcpy (m_filename, filename);
-if (!m_cf.Open (m_filename, (bSecret < 0) ? gameFolders.szCacheFolder [0] : gameFolders.szSavegameFolder, "rb", 0)) {
+if (!m_cf.Open (m_filename, (bSecret < 0) ? gameFolders.shared.szCache : gameFolders.szSavegameFolder, "rb", 0)) {
 	StartTime (1);
 	return 0;
 	}
@@ -2374,7 +2374,7 @@ int CSaveGameManager::GetGameId (char *filename, int bSecret)
 {
 	int	nId;
 
-if (!m_cf.Open (filename, (bSecret < 0) ? gameFolders.szCacheFolder [0] : gameFolders.szSavegameFolder, "rb", 0))
+if (!m_cf.Open (filename, (bSecret < 0) ? gameFolders.shared.szCache : gameFolders.szSavegameFolder, "rb", 0))
 	return 0;
 //Read nId
 m_cf.Read (&nId, sizeof (char) * 4, 1);

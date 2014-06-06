@@ -66,11 +66,11 @@ gameData.hoard.monsterball.bm.Init ();
 
 CTGA tga (&gameData.hoard.monsterball.bm);
 
-if (!tga.Read ("monsterball.tga", gameFolders.szTextureFolder [1], -1, 1.0, 0)) {
+if (!tga.Read ("monsterball.tga", gameFolders.game.szTextures [1], -1, 1.0, 0)) {
 	altBmP = CBitmap::Create (0, 0, 0, 1, "Monsterball");
 	if (altBmP && 
-		(tga.Read ("mballgold#0.tga", gameFolders.szTextureFolder [1], -1, 1.0, 0) ||
-		 tga.Read ("mballred#0.tga", gameFolders.szTextureFolder [1], -1, 1.0, 0))) {
+		(tga.Read ("mballgold#0.tga", gameFolders.game.szTextures [1], -1, 1.0, 0) ||
+		 tga.Read ("mballred#0.tga", gameFolders.game.szTextures [1], -1, 1.0, 0))) {
 		vcP = &gameData.effects.vClips [0][gameData.hoard.monsterball.nClip];
 		for (i = 0; i < gameData.hoard.orb.nFrames; i++, nBitmap++) {
 			Assert (nBitmap < MAX_BITMAP_FILES);
@@ -148,7 +148,7 @@ if (gameStates.app.bDemoData || gameStates.app.bD1Mission) {
 #endif
 	return;
 	}
-if (!cf.Open ("hoard.ham", gameFolders.szDataFolder [0], "rb", 0)) {
+if (!cf.Open ("hoard.ham", gameFolders.game.szData [0], "rb", 0)) {
 	Warning ("Cannot open hoard data file <hoard.ham>.");
 	return;
 	}

@@ -402,7 +402,7 @@ int CAudioChannel::ReadWAV (void)
 	CFile	cf;
 	int	l;
 
-if (!cf.Open ("d2x-temp.wav", gameFolders.szDataFolder [0], "rb", 0))
+if (!cf.Open ("d2x-temp.wav", gameFolders.game.szData [0], "rb", 0))
 	return 0;
 if (0 >= (l = (int) cf.Length ()))
 	l = -1;

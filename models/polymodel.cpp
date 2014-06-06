@@ -261,7 +261,7 @@ void CPolyModel::Parse (const char *filename, tRobotInfo *botInfoP)
 	int	animFlag = 0;
 	ubyte modelBuf [MODEL_BUF_SIZE];
 
-if (!cf.Open (filename, gameFolders.szDataFolder [0], "rb", 0))
+if (!cf.Open (filename, gameFolders.game.szData [0], "rb", 0))
 	Error ("Can't open file <%s>", filename);
 Assert (cf.Length () <= MODEL_BUF_SIZE);
 m_filePos = 0;

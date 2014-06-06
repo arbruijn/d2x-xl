@@ -250,7 +250,7 @@ if (strstr (pii.szName, "smoke")) {
 TGAInterpolate (bmP, 2);
 if (TGAMakeSquare (bmP)) {
 	memset (&h, 0, sizeof (h));
-	SaveTGA (ParticleImageInfo (nType).szName, gameFolders.szDataFolder [0], &h, bmP);
+	SaveTGA (ParticleImageInfo (nType).szName, gameFolders.game.szData [0], &h, bmP);
 	}
 }
 #endif

@@ -38,11 +38,11 @@ static bool LoadBinary (time_t t0, time_t t1)
 {
 	CFile		cf;
 
-time_t tBIN = cf.Date ("IpToCountry.bin", gameFolders.szCacheFolder [0], 0);
+time_t tBIN = cf.Date ("IpToCountry.bin", gameFolders.shared.szCache, 0);
 if ((tBIN < 0) || ((t1 > 0) && (tBIN < t1)) || ((t0 > 0) && (tBIN < t0)))
 	return false;
 
-if (!cf.Open ("IpToCountry.bin", gameFolders.szCacheFolder [0], "rb", 0))
+if (!cf.Open ("IpToCountry.bin", gameFolders.shared.szCache, "rb", 0))
 	return false;
 int h = (int) cf.Size () - sizeof (int);
 if ((h < 0) || (h / sizeof (CIpToCountry) < 1) || (h % sizeof (CIpToCountry) != 0)) {
@@ -71,7 +71,7 @@ static bool SaveBinary (void)
 {
 	CFile	cf;
 
-if (!cf.Open ("IpToCountry.bin", gameFolders.szCacheFolder [0], "wb", 0))
+if (!cf.Open ("IpToCountry.bin", gameFolders.shared.szCache, "wb", 0))
 	return false;
 cf.WriteInt ((int) ipToCountry.ToS ());
 bool bSuccess = (ipToCountry.Write (cf) == ipToCountry.Length ());
@@ -139,8 +139,8 @@ return nCurItem;
 
 int LoadIpToCountry (void)
 {
-time_t t0 = cf.Date ("IpToCountry-Default.csv", gameFolders.szDataFolder [1], 0);
-time_t t1 = cf.Date ("IpToCountry.csv", gameFolders.szDataFolder [1], 0);
+time_t t0 = cf.Date ("IpToCountry-Default.csv", gameFolders.game.szData [1], 0);
+time_t t1 = cf.Date ("IpToCountry.csv", gameFolders.game.szData [1], 0);
 
 if (LoadBinary (t0, t1))
 	return ipToCountry.Length ();
@@ -158,14 +158,14 @@ else if (t1 > t0) // user supplied file newer than default file
 else // default file newer than user supplied file
 	pszFile = "IpToCountry-Default.csv";
 
-int nRecords = cf.LineCount (pszFile, gameFolders.szDataFolder [1], "#");
+int nRecords = cf.LineCount (pszFile, gameFolders.game.szData [1], "#");
 if (nRecords <= 0)
 	return nRecords;
 
 if (!ipToCountry.Create ((uint) nRecords))
 	return -1;
 
-if (!cf.Open (pszFile, gameFolders.szDataFolder [1], "rb", 0))
+if (!cf.Open (pszFile, gameFolders.game.szData [1], "rb", 0))
 	return -1;
 
 #if 0 //slows it down too much

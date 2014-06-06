@@ -210,8 +210,8 @@ if ((fp = fopen (pfn, mode))) {
 		fp = NULL;
 		}
 	}
-else if (gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.szAltHogFolder)) {
-   sprintf (fn, "%s/%s", gameFolders.szAltHogFolder, filename);
+else if (gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.szAltHogs)) {
+   sprintf (fn, "%s/%s", gameFolders.szAltHogs, filename);
    pfn = fn;
    fp = fopen (pfn, mode);
 	}
@@ -227,7 +227,7 @@ size_t CFile::Size (const char *hogname, const char *folder, int bUseD1Hog)
 	struct stat statbuf;
 
 //	sprintf (fn, "%s/%s", folder, hogname);
-if (!Open (hogname, gameFolders.szDataFolder [0], "rb", bUseD1Hog))
+if (!Open (hogname, gameFolders.game.szData [0], "rb", bUseD1Hog))
 	return -1;
 #ifdef _WIN32
 fstat (_fileno (m_info.file), &statbuf);
@@ -240,7 +240,7 @@ return statbuf.st_size;
 	size_t size;
 
 //sprintf (fn, "%s%s%s", folder, *folder ? "/" : "", hogname);
-if (!Open (hogname, gameFolders.szDataFolder [0], "rb", bUseD1Hog))
+if (!Open (hogname, gameFolders.game.szData [0], "rb", bUseD1Hog))
 	return -1;
 size = m_info.size;
 Close ();
@@ -925,7 +925,7 @@ if (*szDestName) {
 	else
 		strcpy (fn, szDestName);
 	}
-sprintf (szDest, "%s%s%s", gameFolders.szCacheFolder [0], *gameFolders.szCacheFolder [0] ? "/" : "", fn);
+sprintf (szDest, "%s%s%s", gameFolders.shared.szCache, *gameFolders.shared.szCache ? "/" : "", fn);
 if (! (fp = fopen (szDest, "wb"))) {
 	Close ();
 	return 0;

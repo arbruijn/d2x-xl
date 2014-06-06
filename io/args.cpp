@@ -66,11 +66,11 @@ if ((i = Find ("-ini")))
 else {
 #if defined(__unix__)
 	FFS		ffs;
-	strcpy (m_filename, gameFolders.szUserFolder);
+	strcpy (m_filename, gameFolders.user.szRoot);
 	strcat (m_filename, "/.d2x-xl");
 	if (FFF (m_filename, &ffs, 0) <= 0) {
 #endif
-	strcpy (m_filename, gameFolders.szConfigFolder);
+	strcpy (m_filename, gameFolders.szConfig);
 	i = int (strlen (m_filename));
 	if (i) {
 		p = m_filename + i - 1;

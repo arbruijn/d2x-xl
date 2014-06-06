@@ -3267,14 +3267,14 @@ gameData.demo.nWritten = 0;
 gameData.demo.bNoSpace = 0;
 gameData.demo.xStartTime = gameData.time.xGame;
 gameData.demo.nState = ND_STATE_RECORDING;
-ndOutFile.Open (DEMO_FILENAME, gameFolders.szDemoFolder, "wb", 0);
+ndOutFile.Open (DEMO_FILENAME, gameFolders.user.szDemos, "wb", 0);
 #ifndef _WIN32_WCE
 if (!ndOutFile.File () && (errno == ENOENT)) {   //dir doesn't exist?
 #else
 if (&ndOutFile.File ()) {                      //dir doesn't exist and no errno on mac!
 #endif
-	CFile::MkDir (gameFolders.szDemoFolder); //try making directory
-	ndOutFile.Open (DEMO_FILENAME, gameFolders.szDemoFolder, "wb", 0);
+	CFile::MkDir (gameFolders.user.szDemos); //try making directory
+	ndOutFile.Open (DEMO_FILENAME, gameFolders.user.szDemos, "wb", 0);
 	}
 if (!ndOutFile.File ()) {
 	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, "Cannot open demo temp file");
@@ -3414,18 +3414,18 @@ do {
 				}
 			else
 				sprintf (szSaveFile, "tmp%d.dem", nAnonymous++);
-			if (CFile::Exist (szSaveFile, gameFolders.szDemoFolder, 0))
+			if (CFile::Exist (szSaveFile, gameFolders.user.szDemos, 0))
 				exit = MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE) - 1;
 			if (exit != -2)
 				exit = 0;
 			else {
-				CFile::Delete (szSaveFile, gameFolders.szDemoFolder);
-				CFile::Rename (DEMO_FILENAME, szSaveFile, gameFolders.szDemoFolder);
+				CFile::Delete (szSaveFile, gameFolders.user.szDemos);
+				CFile::Rename (DEMO_FILENAME, szSaveFile, gameFolders.user.szDemos);
 				}
 			break;
 			}
 		if (exit == -1) {               // pressed ESC
-			CFile::Delete (DEMO_FILENAME, gameFolders.szDemoFolder);      // might as well remove the file
+			CFile::Delete (DEMO_FILENAME, gameFolders.user.szDemos);      // might as well remove the file
 			break;                     // return without doing anything
 			}
 
@@ -3443,13 +3443,13 @@ do {
 		break;
 	strcpy (fullname, m [gameData.demo.bNoSpace].m_text);
 	strcat (fullname, ".dem");
-	if (CFile::Exist (fullname, gameFolders.szDemoFolder, 0))
+	if (CFile::Exist (fullname, gameFolders.user.szDemos, 0))
 		exit = MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE);
 	else
 		exit = 0;
 	if (!exit) {
-		CFile::Delete (fullname, gameFolders.szDemoFolder);
-		CFile::Rename (DEMO_FILENAME, fullname, gameFolders.szDemoFolder);
+		CFile::Delete (fullname, gameFolders.user.szDemos);
+		CFile::Rename (DEMO_FILENAME, fullname, gameFolders.user.szDemos);
 		}
 	} while (exit);
 }
@@ -3462,7 +3462,7 @@ int NDCountDemos (void)
 	int 	nFiles=0;
 	char	searchName [FILENAME_LEN];
 
-sprintf (searchName, "%s%s*.dem", gameFolders.szDemoFolder, *gameFolders.szDemoFolder ? "/" : "");
+sprintf (searchName, "%s%s*.dem", gameFolders.user.szDemos, *gameFolders.user.szDemos ? "/" : "");
 if (!FFF (searchName, &ffs, 0)) {
 	do {
 		nFiles++;
@@ -3470,7 +3470,7 @@ if (!FFF (searchName, &ffs, 0)) {
 	FFC (&ffs);
 	}
 if (gameFolders.bAltHogDirInited) {
-	sprintf (searchName, "%s/%s%s*.dem", gameFolders.szAltHogFolder, gameFolders.szDemoFolder, gameFolders.szDemoFolder ? "/" : "");
+	sprintf (searchName, "%s/%s%s*.dem", gameFolders.szAltHogs, gameFolders.user.szDemos, gameFolders.user.szDemos ? "/" : "");
 	if (!FFF (searchName, &ffs, 0)) {
 		do {
 			nFiles++;
@@ -3504,7 +3504,7 @@ if (!filename) {
 		}
 	nRandFiles = RandShort () % nFiles;
 	nFiles = 0;
-	sprintf (searchName, "%s%s*.dem", gameFolders.szDemoFolder, *gameFolders.szDemoFolder ? "/" : "");
+	sprintf (searchName, "%s%s*.dem", gameFolders.user.szDemos, *gameFolders.user.szDemos ? "/" : "");
 	if (!FFF (searchName, &ffs, 0)) {
 		do {
 			if (nFiles == nRandFiles) {
@@ -3516,7 +3516,7 @@ if (!filename) {
 		FFC (&ffs);
 		}
 	if (!filename && gameFolders.bAltHogDirInited) {
-		sprintf (searchName, "%s/%s%s*.dem", gameFolders.szAltHogFolder, gameFolders.szDemoFolder, gameFolders.szDemoFolder ? "/" : "");
+		sprintf (searchName, "%s/%s%s*.dem", gameFolders.szAltHogs, gameFolders.user.szDemos, gameFolders.user.szDemos ? "/" : "");
 		if (!FFF (searchName, &ffs, 0)) {
 			do {
 				if (nFiles==nRandFiles) {
@@ -3535,7 +3535,7 @@ if (!filename)
 	return;
 strcpy (filename2, filename);
 bRevertFormat = gameOpts->demo.bRevertFormat ? 1 : -1;
-if (!ndInFile.Open (filename2, gameFolders.szDemoFolder, "rb", 0)) {
+if (!ndInFile.Open (filename2, gameFolders.user.szDemos, "rb", 0)) {
 #if TRACE			
 	console.printf (CON_DBG, "Error reading '%s'\n", filename);
 #endif
@@ -3543,7 +3543,7 @@ if (!ndInFile.Open (filename2, gameFolders.szDemoFolder, "rb", 0)) {
 	}
 if (bRevertFormat > 0) {
 	strcat (filename2, ".v15");
-	if (!ndOutFile.Open (filename2, gameFolders.szDemoFolder, "wb", 0))
+	if (!ndOutFile.Open (filename2, gameFolders.user.szDemos, "wb", 0))
 		bRevertFormat = -1;
 	}
 else
@@ -3559,7 +3559,7 @@ if (NDReadDemoStart (bRandom)) {
 	}
 if (gameOpts->demo.bRevertFormat && ndOutFile.File () && (bRevertFormat < 0)) {
 	ndOutFile.Close ();
-	CFile::Delete (filename2, gameFolders.szDemoFolder);
+	CFile::Delete (filename2, gameFolders.user.szDemos);
 	}
 gameData.app.SetGameMode (GM_NORMAL);
 gameData.demo.nState = ND_STATE_PLAYBACK;

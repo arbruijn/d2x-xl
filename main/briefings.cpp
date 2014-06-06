@@ -416,7 +416,7 @@ else if ((ps = strstr (m_szBackground, ".pcx"))) {
 
 if (strstr (m_szBackground, ".tga")) {
 	CTGA		tga (&m_background);
-	if (!tga.Read (m_szBackground, gameFolders.szDataFolder [0], -1, 1.0, 0))
+	if (!tga.Read (m_szBackground, gameFolders.game.szData [0], -1, 1.0, 0))
 		return PCX_ERROR_OPENING;
 	RenderElement (3);
 	return PCX_ERROR_NONE;
@@ -1197,8 +1197,8 @@ for (i = 0; m_info.szBriefScreen [i] != '.'; i++)
 	m_info.szBriefScreenB [i] = m_info.szBriefScreen [i];
 memcpy (m_info.szBriefScreenB + i, "b.pcx", sizeof ("b.pcx"));
 i += sizeof ("b.pcx");
-if ((gameStates.menus.bHires && CFile::Exist (m_info.szBriefScreenB, gameFolders.szDataFolder [0], 0)) || 
-	 !CFile::Exist (m_info.szBriefScreen, gameFolders.szDataFolder [0], 0))
+if ((gameStates.menus.bHires && CFile::Exist (m_info.szBriefScreenB, gameFolders.game.szData [0], 0)) || 
+	 !CFile::Exist (m_info.szBriefScreen, gameFolders.game.szData [0], 0))
 	LoadImage (m_info.szBriefScreenB);
 else
 	LoadImage (m_info.szBriefScreen);
@@ -1513,12 +1513,12 @@ int CBriefing::LoadImageText (char* filename, CCharArray& textBuffer)
 if (!strstr (filename, ".t"))
 	strcat (filename, ".tex");
 bHaveBinary = (strstr (filename, ".txb") != NULL);
-if (!(cf.Open (filename, gameFolders.szModFolder, fileModes [bHaveBinary], gameStates.app.bD1Mission) ||
-	   cf.Open (filename, gameFolders.szDataFolder [0], fileModes [bHaveBinary], gameStates.app.bD1Mission))) {
+if (!(cf.Open (filename, gameFolders.mods.szCurrent, fileModes [bHaveBinary], gameStates.app.bD1Mission) ||
+	   cf.Open (filename, gameFolders.game.szData [0], fileModes [bHaveBinary], gameStates.app.bD1Mission))) {
 	bHaveBinary = !bHaveBinary;
 	strcpy (strstr (filename, ".t"), bHaveBinary ? ".txb" : ".tex");
-	if (!(cf.Open (filename, gameFolders.szModFolder, fileModes [bHaveBinary], gameStates.app.bD1Mission) ||
-			cf.Open (filename, gameFolders.szDataFolder [0], fileModes [bHaveBinary], gameStates.app.bD1Mission))) {
+	if (!(cf.Open (filename, gameFolders.mods.szCurrent, fileModes [bHaveBinary], gameStates.app.bD1Mission) ||
+			cf.Open (filename, gameFolders.game.szData [0], fileModes [bHaveBinary], gameStates.app.bD1Mission))) {
 		PrintLog (0, "can't open briefing '%s'!\n", filename);
 		return 0;
 		}

@@ -250,7 +250,7 @@ static void PlayMenuSong (void)
 
 m.Push (szSongTitles [0]);
 for (i = 0; i < songManager.TotalCount (); i++) {
-	if (cf.Open (reinterpret_cast<char*> (songManager.SongData (i).filename), gameFolders.szDataFolder [0], "rb", i >= songManager.Count (0))) {
+	if (cf.Open (reinterpret_cast<char*> (songManager.SongData (i).filename), gameFolders.game.szData [0], "rb", i >= songManager.Count (0))) {
 		cf.Close ();
 		if (i == songManager.Count (0))
 			m.Push (szSongTitles [1]);
@@ -316,7 +316,7 @@ else if (nChoice == m.IndexOf ("choose pilot"))
 else if (nChoice == m.IndexOf ("view demo")) {
 	char demoPath [FILENAME_LEN], demoFile [FILENAME_LEN];
 
-	sprintf (demoPath, "%s%s*.dem", gameFolders.szDemoFolder, *gameFolders.szDemoFolder ? "/" : ""); 
+	sprintf (demoPath, "%s%s*.dem", gameFolders.user.szDemos, *gameFolders.user.szDemos ? "/" : ""); 
 	if (fs.FileSelector (TXT_SELECT_DEMO, demoPath, demoFile, 1))
 		NDStartPlayback (demoFile);
 	}

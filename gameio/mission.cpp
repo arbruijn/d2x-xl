@@ -318,7 +318,7 @@ int CMissionManager::ReadFile (const char *filename, int m_nCount, int location)
 switch (location) {
 	case ML_MISSIONDIR:
 	case ML_ALTHOGDIR:
-		strcpy (filename2, gameFolders.szMissionFolder [location + 1]);
+		strcpy (filename2, gameFolders.missions.szCurrent [location]);
 		break;
 
 	case ML_CDROM:
@@ -389,9 +389,9 @@ void CMissionManager::AddBuiltinD1Mission (void)
 {
 	CFile	cf;
 
-if (!cf.Exist ("descent.hog", gameFolders.szDataFolder [0], 1))
+if (!cf.Exist ("descent.hog", gameFolders.game.szData [0], 1))
 	return;
-nBuiltInHogSize [1] = (int) cf.Size ("descent.hog", gameFolders.szDataFolder [0], 0);
+nBuiltInHogSize [1] = (int) cf.Size ("descent.hog", gameFolders.game.szData [0], 0);
 switch (nBuiltInHogSize [1]) {
 	case D1_SHAREWARE_MISSION_HOGSIZE:
 	case D1_SHAREWARE_10_MISSION_HOGSIZE:
@@ -441,7 +441,7 @@ void CMissionManager::AddBuiltinD2XMission (void)
 {
 	CFile	cf;
 
-if (cf.Exist ("d2x.hog", gameFolders.szMissionFolder [0], 0)) {
+if (cf.Exist ("d2x.hog", gameFolders.missions.szRoot, 0)) {
 	strcpy (m_list [m_nCount].filename,"d2x");
 	if (gameOpts->menus.bShowLevelVersion)
 		strcpy (m_list [m_nCount].szMissionName,"(D2) Descent 2: Vertigo");
@@ -460,9 +460,9 @@ void CMissionManager::AddBuiltinMission (void)
 {
 	CFile	cf;
 
-nBuiltInHogSize [0] = (int) cf.Size ("descent2.hog", gameFolders.szDataFolder [0], 0);
+nBuiltInHogSize [0] = (int) cf.Size ("descent2.hog", gameFolders.game.szData [0], 0);
 if (nBuiltInHogSize [0] == -1)
-	nBuiltInHogSize [0] = (int) cf.Size ("d2demo.hog", gameFolders.szDataFolder [0], 0);
+	nBuiltInHogSize [0] = (int) cf.Size ("d2demo.hog", gameFolders.game.szData [0], 0);
 
 switch (nBuiltInHogSize [0]) {
 	case SHAREWARE_MISSION_HOGSIZE:
@@ -529,7 +529,7 @@ void CMissionManager::Add (int bAnarchy, int bD1Mission, int bSubFolder, int bHa
 		m_nCount++;
 		}
 	for (bFindDirs = !bHaveSubFolders && (m_nCount == nBuiltIns + bSubFolder); bFindDirs >= 0; bFindDirs--) {
-		sprintf (searchName, "%s%s", gameFolders.szMissionFolder [nLocation + 1], pszExt [bFindDirs][bD1Mission]);
+		sprintf (searchName, "%s%s", gameFolders.missions.szCurrent [nLocation], pszExt [bFindDirs][bD1Mission]);
 		if (!FFF (searchName, &ffs, bFindDirs)) {
 			do {
 				if (!(strcmp (ffs.name, ".") && strcmp (ffs.name, "..")))
@@ -542,7 +542,7 @@ void CMissionManager::Add (int bAnarchy, int bD1Mission, int bSubFolder, int bHa
 						}
 				else {
 					if (strcmp (ffs.name, "d2x.mn2")) { // Vertigo added by default if present
-						sprintf (lvlName, "%s%s", gameFolders.szMissionFolder [nLocation + 1], ffs.name);
+						sprintf (lvlName, "%s%s", gameFolders.missions.szCurrent [nLocation], ffs.name);
 						memcpy (lvlName + strlen (lvlName) - 4, lvlExt, sizeof (lvlExt));
 						if (cf.Exist (lvlName, "", 0))
 							memcpy (lvlName + strlen (lvlName) - 4, altLvlExt [bD1Mission], sizeof (altLvlExt [bD1Mission]));
@@ -604,20 +604,20 @@ void CMissionManager::MoveFolderUp (void)
 {
 int	i;
 
-for (i = (int) strlen (gameFolders.szMissionSubFolder) - 2; i >= 0; i--)
-	if (gameFolders.szMissionSubFolder [i] == '/')
+for (i = (int) strlen (gameFolders.missions.szSubFolder) - 2; i >= 0; i--)
+	if (gameFolders.missions.szSubFolder [i] == '/')
 		break;
-gameFolders.szMissionSubFolder [i + 1] = '\0';
-if (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.szMissionSubFolder, "single/"))
-	*gameFolders.szMissionSubFolder = '\0';
+gameFolders.missions.szSubFolder [i + 1] = '\0';
+if (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.missions.szSubFolder, "single/"))
+	*gameFolders.missions.szSubFolder = '\0';
 }
 
 //------------------------------------------------------------------------------
 
 void CMissionManager::MoveFolderDown (int nSubFolder)
 {
-strcat (gameFolders.szMissionSubFolder, m_list [nSubFolder].szMissionName + 1);
-gameFolders.szMissionSubFolder [strlen (gameFolders.szMissionSubFolder) - 1] = '/';
+strcat (gameFolders.missions.szSubFolder, m_list [nSubFolder].szMissionName + 1);
+gameFolders.missions.szSubFolder [strlen (gameFolders.missions.szSubFolder) - 1] = '/';
 }
 
 //------------------------------------------------------------------------------
@@ -635,9 +635,9 @@ if (nSubFolder >= 0) {
 		MoveFolderUp ();
 	}
 
-bSubFolder = (*gameFolders.szMissionSubFolder != '\0');
+bSubFolder = (*gameFolders.missions.szSubFolder != '\0');
 if (!bSubFolder && gameOpts->app.bSinglePlayer) {
-	strcpy (gameFolders.szMissionSubFolder, "single/");
+	strcpy (gameFolders.missions.szSubFolder, "single/");
 //		bSubFolder = 1;
 	}
 if (gameStates.app.bDemoData) {
@@ -645,7 +645,7 @@ if (gameStates.app.bDemoData) {
 	nBuiltIns = m_nCount;
 	}
 else {
-	if (!bSubFolder) {// || (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.szMissionSubFolder, "single"))) {
+	if (!bSubFolder) {// || (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.missions.szSubFolder, "single"))) {
 		if (gameOpts->app.nVersionFilter & 2) {
 			AddBuiltinMission ();  //read built-in first
 			//if (gameOpts->app.bSinglePlayer)
@@ -655,7 +655,7 @@ else {
 			AddBuiltinD1Mission ();
 		}
 	nBuiltIns = m_nCount;
-	sprintf (gameFolders.szMissionFolder [1], "%s/%s", gameFolders.szMissionFolder [0], gameFolders.szMissionSubFolder);
+	//sprintf (gameFolders.missions.szCurrent, "%s/%s", gameFolders.missions.szRoot, gameFolders.missions.szSubFolder);
 	bHaveSubFolders = 0;
 	if (gameOpts->app.nVersionFilter & 2) {
 		Add (bAnarchy, 0, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
@@ -665,9 +665,9 @@ else {
 		Add (bAnarchy, 1, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
 		bHaveSubFolders = 1;
 		}
-	if (gameFolders.bAltHogDirInited && strcmp (gameFolders.szAltHogFolder, gameFolders.szGameFolder)) {
+	if (gameFolders.bAltHogDirInited && strcmp (gameFolders.szAltHogs, gameFolders.game.szRoot)) {
 		bHaveSubFolders = 0;
-		sprintf (gameFolders.szMissionFolder [2], "%s/%s%s", gameFolders.szAltHogFolder, MISSION_FOLDER, gameFolders.szMissionSubFolder);
+		sprintf (gameFolders.missions.szCurrent [1], "%s/%s%s", gameFolders.szAltHogs, MISSION_FOLDER, gameFolders.missions.szSubFolder);
 		if (gameOpts->app.nVersionFilter & 2) {
 			Add (bAnarchy, 0, bSubFolder, bHaveSubFolders, ML_ALTHOGDIR);
 			bHaveSubFolders = 1;
@@ -920,7 +920,7 @@ console.printf (CON_VERBOSE, "Loading mission %d\n", nMission);
 switch (m_list [nMission].location) {
 	case ML_MISSIONDIR:
 	case ML_ALTHOGDIR:
-		strcpy (szFolder, gameFolders.szMissionFolder [m_list [nMission].location + 1]);
+		strcpy (szFolder, gameFolders.missions.szCurrent [m_list [nMission].location]);
 		break;
 	case ML_CDROM:
 		sprintf (szFolder, "%s/", CDROM_dir);
@@ -931,10 +931,10 @@ switch (m_list [nMission].location) {
 		*szFolder = '\0';
 		break;
 	case ML_MSNROOTDIR:
-		sprintf (szFolder, "%s%s", gameFolders.szMissionFolder [0], *gameFolders.szMissionFolder [0] ? "/" : "");
+		sprintf (szFolder, "%s%s", gameFolders.missions.szRoot, *gameFolders.missions.szRoot ? "/" : "");
 		break;
 	case ML_DATADIR:
-		sprintf (szFolder, "%s%s", gameFolders.szDataFolder [0], *gameFolders.szDataFolder [0] ? "/" : "");
+		sprintf (szFolder, "%s%s", gameFolders.game.szData [0], *gameFolders.game.szData [0] ? "/" : "");
 		break;
 	}
 sprintf (szFile, "%s%s", m_list [nMission].filename, (m_list [nMission].nDescentVersion == 2) ? ".mn2" : ".msn");
@@ -999,11 +999,11 @@ int CMissionManager::LoadByName (char *szMissionName, int nSubFolder, char* szSu
 	int n, i, j;
 
 if (nSubFolder < 0) {
-	*gameFolders.szMissionSubFolder = '\0';
+	*gameFolders.missions.szSubFolder = '\0';
 	PrintLog (1, "searching mission '%s'\n", szMissionName);
 	}
 else if (szSubFolder && *szSubFolder) {
-	strcpy (gameFolders.szMissionSubFolder, szSubFolder);
+	strcpy (gameFolders.missions.szSubFolder, szSubFolder);
 	nSubFolder = -1;
 	}
 n = BuildList (1, nSubFolder);
@@ -1036,7 +1036,7 @@ int CMissionManager::FindByName (char *szMissionName, int nSubFolder)
 	int n,i,j;
 
 if (nSubFolder < 0)
-	*gameFolders.szMissionSubFolder = '\0';
+	*gameFolders.missions.szSubFolder = '\0';
 n = BuildList (1, nSubFolder);
 for (i = 0; i < n; i++) 
 	if (!stricmp (szMissionName, m_list [i].filename))
@@ -1093,7 +1093,7 @@ if (!gameStates.app.bReadOnly) {
 		char		szFile [FILENAME_LEN] = {'\0'};
 
 	sprintf (szFile, "%s.state", m_list [nCurrentMission].szMissionName + ((m_list [nCurrentMission].szMissionName [0] == '[') ? 4 : 0));
-	if (!cf.Open (szFile, gameFolders.szMissionStateFolder, "wb", 0))
+	if (!cf.Open (szFile, gameFolders.missions.szStates, "wb", 0))
 		return 0;
 	for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
 		cf.WriteByte (sbyte (nLevelState [i]));
@@ -1110,8 +1110,8 @@ int CMissionManager::LoadLevelStates (void)
 	char		szFile [FILENAME_LEN] = {'\0'};
 
 sprintf (szFile, "%s.state", m_list [nCurrentMission].szMissionName + ((m_list [nCurrentMission].szMissionName [0] == '[') ? 4 : 0));
-if (!cf.Open (szFile, gameFolders.szMissionStateFolder, "rb", 0) &&
-	 !cf.Open (szFile, gameFolders.szCacheFolder [0], "rb", 0))
+if (!cf.Open (szFile, gameFolders.missions.szStates, "rb", 0) &&
+	 !cf.Open (szFile, gameFolders.shared.szCache, "rb", 0))
 	return 0;
 for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
 	nLevelState [i] = char (cf.ReadByte ());
@@ -1127,8 +1127,8 @@ void CMissionManager::DeleteLevelStates (void)
 
 for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++) {
 	LevelStateName (szFile, i);
-	if (CFile::Exist (szFile, gameFolders.szCacheFolder [0], 0))
-		CFile::Delete (szFile, gameFolders.szCacheFolder [0]);
+	if (CFile::Exist (szFile, gameFolders.shared.szCache, 0))
+		CFile::Delete (szFile, gameFolders.shared.szCache);
 	}
 memset (nLevelState, 0, sizeof (nLevelState));
 }

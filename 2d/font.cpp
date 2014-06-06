@@ -416,7 +416,7 @@ ubyte* CFont::Load (const char *fontname, ubyte* fontData)
 	char 		fileId [4];
 	int 		dataSize;	//size up to (but not including) palette
 
-if (!cf.Open (fontname, gameFolders.szDataFolder [0], "rb", 0)) {
+if (!cf.Open (fontname, gameFolders.game.szData [0], "rb", 0)) {
 #if TRACE
 	console.printf (CON_VERBOSE, "Can't open font file %s\n", fontname);
 #endif

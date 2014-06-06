@@ -158,7 +158,7 @@ gameStates.app.bD1Mission = 0;
 gameStates.app.bD1Data = 0;
 SetDataVersion (-1);
 if ((nMission < 0) || gameOpts->app.bSinglePlayer)
-	gameFolders.szMissionSubFolder [0] = '\0';
+	gameFolders.missions.szSubFolder [0] = '\0';
 hogFileManager.UseMission ("");
 do {
 	nMissions = missionManager.BuildList (0, nFolder);
@@ -270,11 +270,11 @@ gameStates.app.bD1Data = 0;
 gameOpts->app.nVersionFilter = 3;
 SetDataVersion (-1);
 if (nMission < 0)
-	gameFolders.szMissionSubFolder [0] = '\0';
+	gameFolders.missions.szSubFolder [0] = '\0';
 else if (gameOpts->app.bSinglePlayer) {
-	if (!strstr (gameFolders.szMissionSubFolder, "single/"))
+	if (!strstr (gameFolders.missions.szSubFolder, "single/"))
 		nMission = -1;
-	gameFolders.szMissionSubFolder [0] = '\0';
+	gameFolders.missions.szSubFolder [0] = '\0';
 	}
 if (nMission >= 0) {
 	nPlayerMaxLevel = GetHighestLevel ();

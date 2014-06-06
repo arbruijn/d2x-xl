@@ -134,51 +134,74 @@ class CFile {
 		int LineCount (const char* filename, const char* folder, char* delims);
 	};
 
+typedef struct tStaticFolders {
+	char	szRoot [FILENAME_LEN];
+	char	szData [2][FILENAME_LEN];
+	char	szTextures [5][FILENAME_LEN];
+	char	szModels [3][FILENAME_LEN];
+	char	szSounds [5][FILENAME_LEN];
+	char	szMusic [FILENAME_LEN];
+	char	szMovies [FILENAME_LEN];
+	char	szAltHogs [FILENAME_LEN];
+	} tStaticFolders;
+
+typedef struct tSharedFolders {
+	char	szRoot [FILENAME_LEN];
+	char	szCache [FILENAME_LEN];
+	char	szTextures [3][FILENAME_LEN];
+	char	szModels [3][FILENAME_LEN];
+	char	szLightmaps [FILENAME_LEN];
+	char	szLightData [FILENAME_LEN];
+	char	szMeshes [FILENAME_LEN];
+	char	szMods [FILENAME_LEN];
+	char	szDownloads [FILENAME_LEN];
+	} tSharedFolders;
+
+typedef struct tPrivateFolders {
+	char	szRoot [FILENAME_LEN];
+	char	szCache [FILENAME_LEN];
+	char	szConfig [FILENAME_LEN];
+	char	szProfiles [FILENAME_LEN];
+	char	szSavegames [FILENAME_LEN];
+	char	szScreenshots [FILENAME_LEN];
+	char	szDemos [FILENAME_LEN];
+	char	szWallpapers [FILENAME_LEN];
+	} tPrivateFolders;
+
+typedef struct tModFolders {
+	char	szRoot [FILENAME_LEN];
+	char	szCache [FILENAME_LEN];
+	char	szCurrent [FILENAME_LEN];
+	char	szName [FILENAME_LEN];
+	char	szTextures [2][FILENAME_LEN];
+	char	szSounds [2][FILENAME_LEN];
+	char	szModels [2][FILENAME_LEN];
+	char	szWallpapers [FILENAME_LEN];
+	} tModFolders;
+
+typedef struct tMissionFolders {
+	char	szRoot [FILENAME_LEN];
+	char	szCache [FILENAME_LEN];
+	char	szCurrent [2][FILENAME_LEN];
+	char	szSubFolder [FILENAME_LEN];
+	char	szStates [FILENAME_LEN];
+	char	szDownloads [FILENAME_LEN];
+	} tMissionFolders;
+
 typedef struct tGameFolders {
-	char szUserFolder [FILENAME_LEN];
+	tModFolders			mods;
+	tMissionFolders	missions;
+	tStaticFolders		game;
+	tSharedFolders		var;
+	tPrivateFolders	user;
+	char szUser [FILENAME_LEN];
 #if defined (__unix__) || defined (__macosx__)
 	char szSharePath [FILENAME_LEN];
 #endif
-	char szAltHogFolder [FILENAME_LEN];
-	char szDataRootFolder [3][FILENAME_LEN];
-	char szCacheFolder [2][FILENAME_LEN];
-	char szLightmapFolder [FILENAME_LEN];
-	char szLightDataFolder [FILENAME_LEN];
-	char szMeshFolder [FILENAME_LEN];
-	char szConfigFolder [FILENAME_LEN];
-	char szDataFolder [2][FILENAME_LEN];
-	char szDemoFolder [FILENAME_LEN];
-	char szDownloadFolder [FILENAME_LEN];
-	char szGameFolder [FILENAME_LEN];
-	char szMissionFolder [3][FILENAME_LEN];
-	char szMissionCacheFolder [FILENAME_LEN];
-	char szMissionDownloadFolder [FILENAME_LEN];
-	char szMissionStateFolder [FILENAME_LEN];
-	char szModRootFolder [FILENAME_LEN];
-	char szModCacheFolder [FILENAME_LEN];
-	char szModFolder [FILENAME_LEN];
-	char szModelFolder [3][FILENAME_LEN];
-	char szModelCacheFolder [3][FILENAME_LEN];
-	char szModName [FILENAME_LEN];
-	char szMovieFolder [FILENAME_LEN];
-	char szMissionSubFolder [FILENAME_LEN];
-	char szMusicFolder [FILENAME_LEN];
-	char szProfileFolder [FILENAME_LEN];
-	char szSavegameFolder [FILENAME_LEN];
-	char szScreenshotFolder [FILENAME_LEN];
-	char szShaderFolder [FILENAME_LEN];
-	char szSoundFolder [7][FILENAME_LEN];
-	char szTextureCacheFolder [5][FILENAME_LEN];
-	char szTextureFolder [5][FILENAME_LEN];
-	char szWallpaperFolder [2][FILENAME_LEN];
+	char szModelCache [3][FILENAME_LEN];
+	char szTextureCache [5][FILENAME_LEN];
 	int bAltHogDirInited;
 } tGameFolders;
-
-#define STATIC_DATA_FOLDER		gameFolders.szDataRootFolder [0]
-#define PRIVATE_DATA_FOLDER	gameFolders.szDataRootFolder [1]
-#define VAR_DATA_FOLDER			gameFolders.szDataRootFolder [2]
-#define PRIVATE_CACHE_FOLDER	gameFolders.szCacheFolder [0]
-#define PUBLIC_CACHE_FOLDER	gameFolders.szCacheFolder [1]
 
 int GetAppFolder (const char *szMainFolder, char *szDestFolder, const char *szSubFolder, const char *szFilter);
 char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int nType);

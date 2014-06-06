@@ -93,7 +93,7 @@ int PCXGetDimensions (const char *filename, int *width, int *height)
 	CFile cf;
 	PCXHeader header;
 
-if (!cf.Open (filename, gameFolders.szDataFolder [0], "rb", 0))
+if (!cf.Open (filename, gameFolders.game.szData [0], "rb", 0))
 	return PCX_ERROR_OPENING;
 
 	if (ReadPCXHeaders (&header, 1, cf) != 1) {
@@ -118,7 +118,7 @@ int PCXReadBitmap (const char * filename, CBitmap * bmP, int bitmapType, int bD1
 	ubyte			data, *pixdata;
 	CPalette		palette;
 
-if (!cf.Open (filename, gameFolders.szDataFolder [0], "rb", bD1Mission))
+if (!cf.Open (filename, gameFolders.game.szData [0], "rb", bD1Mission))
 	return PCX_ERROR_OPENING;
 
 // read 128 char PCX header
@@ -246,7 +246,7 @@ int pcx_write_bitmap (const char * filename, CBitmap * bmP)
 	header.Ymax = bmP->Height () - 1;
 	header.BytesPerLine = bmP->Width ();
 
-	if (!cf.Open (filename, gameFolders.szDataFolder [0], "wb", 0))
+	if (!cf.Open (filename, gameFolders.game.szData [0], "wb", 0))
 		return PCX_ERROR_OPENING;
 
 	if (cf.Write (&header, PCXHEADER_SIZE, 1) != 1)
@@ -388,7 +388,7 @@ int PcxReadFullScrImage (const char * filename, int bD1Mission)
 	CTGA		tga (&bm);
 
 if (strstr (filename, ".tga"))
-	pcxError = tga.Read (filename, gameFolders.szDataFolder [0], -1, 1.0, 0) ? PCX_ERROR_NONE : PCX_ERROR_OPENING;
+	pcxError = tga.Read (filename, gameFolders.game.szData [0], -1, 1.0, 0) ? PCX_ERROR_NONE : PCX_ERROR_OPENING;
 else {
 	bm.SetMask (NULL);
 	pcxError = PCXReadBitmap (filename, &bm, BM_LINEAR, bD1Mission);

@@ -828,7 +828,7 @@ int CLightmapManager::Save (int nLevel)
 
 if (!(gameStates.app.bCacheLightmaps && m_list.nLights && m_list.nBuffers))
 	return 0;
-if (!cf.Open (Filename (szFilename, nLevel), gameFolders.szLightmapFolder, "wb", 0))
+if (!cf.Open (Filename (szFilename, nLevel), gameFolders.var.szLightmaps, "wb", 0))
 	return 0;
 bOk = (cf.Write (&ldh, sizeof (ldh), 1) == 1);
 if (bOk) {
@@ -861,8 +861,8 @@ int CLightmapManager::Load (int nLevel)
 
 if (!(gameStates.app.bCacheLightmaps))
 	return 0;
-if (!cf.Open (Filename (szFilename, nLevel), gameFolders.szLightmapFolder, "rb", 0) &&
-	 !cf.Open (Filename (szFilename, nLevel), gameFolders.szCacheFolder [0], "rb", 0))
+if (!cf.Open (Filename (szFilename, nLevel), gameFolders.var.szLightmaps, "rb", 0) &&
+	 !cf.Open (Filename (szFilename, nLevel), gameFolders.shared.szCache, "rb", 0))
 	return 0;
 bOk = (cf.Read (&ldh, sizeof (ldh), 1) == 1);
 if (bOk)

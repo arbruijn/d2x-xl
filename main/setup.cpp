@@ -235,13 +235,34 @@ void MoveD2Textures (void)
 	char szSourceFolder [FILENAME_LEN], szDestFolder [FILENAME_LEN];
 
 for (int i = 0; i < 4; i++) {
-	sprintf (szSourceFolder, "%stextures/%s", STATIC_DATA_FOLDER, szSubFolders [i]);
-	sprintf (szDestFolder, "%s%s", gameFolders.szTextureCacheFolder [1], szSubFolders [i]);
+	sprintf (szSourceFolder, "%stextures/%s", gameFolders.game.szRoot, szSubFolders [i]);
+	sprintf (szDestFolder, "%s%s", gameFolders.szTextureCache [1], szSubFolders [i]);
 	MoveFiles (szDestFolder, szSourceFolder, false);
 	}
 for (int i = 1; i < 4; i++) {
-	sprintf (szSourceFolder, "%stextures/d2/%s", STATIC_DATA_FOLDER, szSubFolders [i]);
-	sprintf (szDestFolder, "%s%s", gameFolders.szTextureCacheFolder [1], szSubFolders [i]);
+	sprintf (szSourceFolder, "%stextures/d2/%s", gameFolders.game.szRoot, szSubFolders [i]);
+	sprintf (szDestFolder, "%s%s", gameFolders.szTextureCache [1], szSubFolders [i]);
+	MoveFiles (szDestFolder, szSourceFolder, false);
+	}
+}
+
+// ----------------------------------------------------------------------------
+
+void MoveD2Sounds (void)
+{
+	static char* szOldSoundFolders [] = { "sounds1/d1", "sounds2/d1", "sounds1", "sounds2", "sounds2/d2x-xl"};
+	static char* szNewSoundFolders [] = { gameFolders.game.szSounds [3], gameFolders.game.szSounds [3], gameFolders.game.szSounds [1], gameFolders.game.szSounds [2], gameFolders.game.szSounds [4] };
+
+	char szSourceFolder [FILENAME_LEN], szDestFolder [FILENAME_LEN];
+
+for (int i = 0; i < 4; i++) {
+	sprintf (szSourceFolder, "%%s", gameFolders.game.szRoot, szOldSoundFolders [i]);
+	sprintf (szDestFolder, "%s%s", gameFolders.szTextureCache [1], szNewSoundFolders [i]);
+	MoveFiles (szDestFolder, szSourceFolder, false);
+	}
+for (int i = 1; i < 4; i++) {
+	sprintf (szSourceFolder, "%stextures/d2/%s", gameFolders.game.szRoot, szSubFolders [i]);
+	sprintf (szDestFolder, "%s%s", gameFolders.szTextureCache [1], szSubFolders [i]);
 	MoveFiles (szDestFolder, szSourceFolder, false);
 	}
 }
@@ -293,7 +314,7 @@ for (int i = 0; i < nFiles; i++) {
 			continue;	// file exists in the destination folder
 		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, gameFolders.szDataRootFolder [(int) fileList [i].bUser], false) == 1;
 		if (fileList [i].bFound) {	// file exists in the source folder
-			sprintf (szSrc, "%s%s", STATIC_DATA_FOLDER, fileList [i].pszFile + 1);
+			sprintf (szSrc, "%s%s", gameFolders.game.szRoot, fileList [i].pszFile + 1);
 			sprintf (szDest, "%s%s\\%s", gameFolders.szDataRootFolder [(int) fileList [i].bUser], fileList [i].pszFile + 1);
 			cf.Copy (szSrc, szDest);
 			}
@@ -332,7 +353,7 @@ static const char* gameSubFolders [] = {
 	char	szFolder [FILENAME_LEN];
 
 for (int i = 0; i < int (sizeofa (gameSubFolders)); i++) {
-	sprintf (szFolder, "%s%s", STATIC_DATA_FOLDER, gameSubFolders [i]);
+	sprintf (szFolder, "%s%s", gameFolders.game.szRoot, gameSubFolders [i]);
 	if (FFF (szFolder, &ffs, 1))
   		CFile::MkDir (szFolder);
 	}
@@ -487,7 +508,7 @@ if (nResult) {
 			Warning (szMsg);
 		}
 	CFile	cf;
-	if (cf.Open ("d2x-xl-missing-files.txt", gameFolders.szUserFolder, "rb", 0)) {
+	if (cf.Open ("d2x-xl-missing-files.txt", gameFolders.user.szRoot, "rb", 0)) {
 		fprintf (cf.File (), szMsg);
 		cf.Close ();
 		}

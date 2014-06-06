@@ -529,16 +529,16 @@ if (pszLevel) {
 	char ifile_name [FILENAME_LEN];
 
 	CFile::ChangeFilenameExtension (ifile_name, pszLevel, ".pal");
-	i = cf.Open (ifile_name, gameFolders.szDataFolder [0], "rb", 0);
+	i = cf.Open (ifile_name, gameFolders.game.szData [0], "rb", 0);
 	}
 if (!i)
-	i = cf.Open (pszFile, gameFolders.szDataFolder [0], "rb", 0);
+	i = cf.Open (pszFile, gameFolders.game.szData [0], "rb", 0);
 	// the following is a hack to enable the loading of d2 levels
 	// even if only the d2 mac shareware datafiles are present.
 	// However, if the pig file is present but the palette file isn't,
 	// the textures in the level will look wierd...
 if (!i)
-	i = cf.Open (DEFAULT_LEVEL_PALETTE, gameFolders.szDataFolder [0], "rb", 0);
+	i = cf.Open (DEFAULT_LEVEL_PALETTE, gameFolders.game.szData [0], "rb", 0);
 if (!i) {
 	Error(TXT_PAL_FILES, pszFile, DEFAULT_LEVEL_PALETTE);
 	return NULL;
@@ -615,7 +615,7 @@ CPalette* CPaletteManager::LoadD1 (void)
 	CPalette	palette;
 	CFile 	cf;
 	
-if (!cf.Open (D1_PALETTE, gameFolders.szDataFolder [0], "rb", 1) || (cf.Length () != 9472))
+if (!cf.Open (D1_PALETTE, gameFolders.game.szData [0], "rb", 1) || (cf.Length () != 9472))
 	return NULL;
 palette.Read (cf);
 cf.Close ();

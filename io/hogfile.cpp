@@ -231,7 +231,7 @@ return 0;
 void CHogFile::UseAltDir (const char * path) 
 {
 gameFolders.bAltHogDirInited = 
-	 (strcmp (path, gameFolders.szDataFolder [0]) != 0) && (GetAppFolder ("", gameFolders.szAltHogFolder, path, "descent2.hog") == 0);
+	 (strcmp (path, gameFolders.game.szData [0]) != 0) && (GetAppFolder ("", gameFolders.szAltHogs, path, "descent2.hog") == 0);
 }
 
 // ----------------------------------------------------------------------------
@@ -261,14 +261,14 @@ return Reload (&m_files.MsnHogFiles);
 
 int CHogFile::UseD2X (const char * name) 
 {
-return Use (&m_files.D2XHogFiles, name, gameFolders.szMissionFolder [0]);
+return Use (&m_files.D2XHogFiles, name, gameFolders.missions.szRoot);
 }
 
 // ----------------------------------------------------------------------------
 
 int CHogFile::UseXL (const char * name) 
 {
-return Use (&m_files.XLHogFiles, name, gameFolders.szDataFolder [0]);
+return Use (&m_files.XLHogFiles, name, gameFolders.game.szData [0]);
 }
 
 // ----------------------------------------------------------------------------
@@ -277,14 +277,14 @@ int CHogFile::UseExtra (const char * name)
 {
 return gameStates.app.bHaveExtraData = 
 	!gameStates.app.bNostalgia &&
-	Use (&m_files.ExtraHogFiles, name, gameFolders.szDataFolder [0]);
+	Use (&m_files.ExtraHogFiles, name, gameFolders.game.szData [0]);
 }
 
 // ----------------------------------------------------------------------------
 
 int CHogFile::UseD1 (const char * name) 
 {
-return Use (&m_files.D1HogFiles, name, gameFolders.szDataFolder [0]);
+return Use (&m_files.D1HogFiles, name, gameFolders.game.szData [0]);
 }
 
 // ----------------------------------------------------------------------------
@@ -323,18 +323,18 @@ FILE* CHogFile::Find (const char *name, int *length, int bUseD1Hog)
   
 if ((fp = Find (&m_files.MsnHogFiles, "", name, length)))
 	return fp;
-if ((fp = Find (&m_files.XLHogFiles, gameFolders.szDataFolder [0], name, length)))
+if ((fp = Find (&m_files.XLHogFiles, gameFolders.game.szData [0], name, length)))
 	return fp;
-if ((fp = Find (&m_files.ExtraHogFiles, gameFolders.szDataFolder [0], name, length)))
+if ((fp = Find (&m_files.ExtraHogFiles, gameFolders.game.szData [0], name, length)))
 	return fp;
 if (bUseD1Hog) {
-	if ((fp = Find (&m_files.D1HogFiles, gameFolders.szDataFolder [0], name, length)))
+	if ((fp = Find (&m_files.D1HogFiles, gameFolders.game.szData [0], name, length)))
 		return fp;
 	}
 else {
-	if ((fp = Find (&m_files.D2XHogFiles, gameFolders.szMissionFolder [0], name, length)))
+	if ((fp = Find (&m_files.D2XHogFiles, gameFolders.missions.szRoot, name, length)))
 		return fp;
-	if ((fp = Find (&m_files.D2HogFiles, gameFolders.szDataFolder [0], name, length)))
+	if ((fp = Find (&m_files.D2HogFiles, gameFolders.game.szData [0], name, length)))
 		return fp;
 	}
 return NULL;

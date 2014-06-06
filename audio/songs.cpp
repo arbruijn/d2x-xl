@@ -287,8 +287,8 @@ hogFileManager.UseD1 ("descent.hog");
 for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 		if (!FindArg ("-nomixer"))
 			CD_blast_mixer ();   // Crank it!
-	if (CFile::Exist ("descent.sng", gameFolders.szDataFolder [0], bD1Songs)) {   // mac (demo?) datafiles don't have the .sng file
-		if (!cf.Open ("descent.sng", gameFolders.szDataFolder [0], "rb", bD1Songs)) {
+	if (CFile::Exist ("descent.sng", gameFolders.game.szData [0], bD1Songs)) {   // mac (demo?) datafiles don't have the .sng file
+		if (!cf.Open ("descent.sng", gameFolders.game.szData [0], "rb", bD1Songs)) {
 			if (bD1Songs)
 				break;
 			else
@@ -348,9 +348,9 @@ int CSongManager::PlayModSong (char pszSong[], int bLoop)
 {
 	char	szFilename [FILENAME_LEN];
 
-if (!*gameFolders.szMusicFolder)
+if (!*gameFolders.game.szMusic)
 	return false;
-sprintf (szFilename, "%s/%s.ogg", gameFolders.szMusicFolder, pszSong);
+sprintf (szFilename, "%s/%s.ogg", gameFolders.game.szMusic, pszSong);
 return midi.PlaySong (szFilename, NULL, NULL, bLoop, 0);
 }
 
@@ -430,25 +430,25 @@ redbook.Register ();
 if (bFromHog) {
 	CFile	cf;
 	strcpy (szFilename, LevelSongName (nSong));
-	if (*szFilename && cf.Extract (szFilename, gameFolders.szDataFolder [0], 0, szFilename)) {
+	if (*szFilename && cf.Extract (szFilename, gameFolders.game.szData [0], 0, szFilename)) {
 		char	szSong [FILENAME_LEN];
 
-		sprintf (szSong, "%s%s%s", gameFolders.szCacheFolder [0], *gameFolders.szCacheFolder [0] ? "/" : "", szFilename);
+		sprintf (szSong, "%s%s%s", gameFolders.shared.szCache, *gameFolders.shared.szCache ? "/" : "", szFilename);
 		if (midi.PlaySong (szSong, NULL, NULL, 1, 0))
 			return;
 		}
 	}
 
 // try the missions mod music folder next
-if (*gameFolders.szMusicFolder) {
+if (*gameFolders.game.szMusic) {
 	if (nLevel < 0)
-		sprintf (szFilename, "%s/slevel%02d.ogg", gameFolders.szMusicFolder, -nLevel);
+		sprintf (szFilename, "%s/slevel%02d.ogg", gameFolders.game.szMusic, -nLevel);
 	else
-		sprintf (szFilename, "%s/level%02d.ogg", gameFolders.szMusicFolder, nLevel);
+		sprintf (szFilename, "%s/level%02d.ogg", gameFolders.game.szMusic, nLevel);
 	if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
 		return;
 	if (m_user.nLevelSongs [1]) {
-		sprintf (szFilename, "%s/%s", gameFolders.szMusicFolder, m_user.levelSongs [1][nSong % m_user.nLevelSongs [1]]);
+		sprintf (szFilename, "%s/%s", gameFolders.game.szMusic, m_user.levelSongs [1][nSong % m_user.nLevelSongs [1]]);
 		if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
 			return;
 		}
@@ -501,7 +501,7 @@ int CSongManager::LoadPlayList (char* pszPlayList, int bMod)
 	int	l, bRead, nSongs, bMP3;
 
 if (bMod)
-	strcpy (szListFolder, gameFolders.szModFolder);
+	strcpy (szListFolder, gameFolders.mods.szCurrent);
 else
 	CFile::SplitPath (pszPlayList, szListFolder, NULL, NULL);
 for (l = (int) strlen (pszPlayList) - 1; (l >= 0) && isspace (pszPlayList [l]); l--)
@@ -523,7 +523,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 				l = (int) strlen (szSong) + 1;
 				CFile::SplitPath (szSong, szSongFolder, NULL, NULL);
 				if (bMod)
-					strcpy (szSongFolder, gameFolders.szMusicFolder);
+					strcpy (szSongFolder, gameFolders.game.szMusic);
 				if (!*szSongFolder)
 					l += (int) strlen (szListFolder);
 				if (!(pszSong = new char [l])) {

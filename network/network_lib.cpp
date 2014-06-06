@@ -385,7 +385,7 @@ int HoardEquipped (void)
 	static int bHoard = -1;
 
 if (bHoard == -1)
-	bHoard = CFile::Exist ("hoard.ham", gameFolders.szDataFolder [0], 0) ? 1 : 0;
+	bHoard = CFile::Exist ("hoard.ham", gameFolders.game.szData [0], 0) ? 1 : 0;
 return bHoard;
 }
 

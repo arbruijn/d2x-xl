@@ -808,12 +808,12 @@ if (nStage == 0) {
 	if (missionManager.nEnhancedMission) {
 		sprintf (szFile, "d2x.ham");
 		/*---*/PrintLog (1, "trying vertigo custom robots (d2x.ham)\n");
-		nLoadRes = LoadRobotExtensions ("d2x.ham", gameFolders.szMissionFolder [0], missionManager.nEnhancedMission);
+		nLoadRes = LoadRobotExtensions ("d2x.ham", gameFolders.missions.szRoot, missionManager.nEnhancedMission);
 		PrintLog (-1);
 		}
 	if (gameStates.app.bHaveMod) {
-		/*---*/PrintLog (1, "trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
-		if (LoadRobotReplacements (gameFolders.szModName, gameFolders.szModFolder, 0, 0, true, false))
+		/*---*/PrintLog (1, "trying custom robots (hxm) from mod '%s'\n", gameFolders.mods.szName);
+		if (LoadRobotReplacements (gameFolders.mods.szName, gameFolders.mods.szCurrent, 0, 0, true, false))
 			gameStates.app.bCustomData = true;
 		PrintLog (-1);
 		}
@@ -822,15 +822,15 @@ if (nStage == 0) {
 		if (missionManager.nEnhancedMission < 3)
 			nLoadRes = 0;
 		else {
-			sprintf (szFile, "%s.vham", gameFolders.szModName);
-			/*---*/PrintLog (1, "trying custom robots (vham) from mod '%s'\n", gameFolders.szModName);
-			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szModFolder, missionManager.nEnhancedMission);
+			sprintf (szFile, "%s.vham", gameFolders.mods.szName);
+			/*---*/PrintLog (1, "trying custom robots (vham) from mod '%s'\n", gameFolders.mods.szName);
+			nLoadRes = LoadRobotExtensions (szFile, gameFolders.mods.szCurrent, missionManager.nEnhancedMission);
 			PrintLog (-1);
 			}
 		if (nLoadRes == 0) {
 			sprintf (szFile, "%s.ham", gameStates.app.szCurrentMissionFile);
 			/*---*/PrintLog (1, "trying custom robots (ham) from level '%s'\n", gameStates.app.szCurrentMissionFile);
-			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szMissionFolder [0], missionManager.nEnhancedMission);
+			nLoadRes = LoadRobotExtensions (szFile, gameFolders.missions.szRoot, missionManager.nEnhancedMission);
 			PrintLog (-1);
 			}
 		if (nLoadRes > 0) {
@@ -872,9 +872,9 @@ else {
 	PrintLog (-1);
 
 	/*---*/PrintLog (1, "loading replacement models\n");
-	if (*gameFolders.szModelFolder [1]) {
-		sprintf (gameFolders.szModelFolder [2], "%s/slevel%02d", gameFolders.szModelFolder [1], abs (missionManager.nCurrentLevel));
-		sprintf (gameFolders.szModelCacheFolder [2], "%s/slevel%02d", gameFolders.szModelCacheFolder [1], abs (missionManager.nCurrentLevel));
+	if (*gameFolders.game.szModels [1]) {
+		sprintf (gameFolders.mods.szModels [1], "%s/slevel%02d", gameFolders.mods.szModels [0], abs (missionManager.nCurrentLevel));
+		sprintf (gameFolders.var.szModels [2], "%s/slevel%02d", gameFolders.var.szModelCache [0], abs (missionManager.nCurrentLevel));
 		LoadHiresModels (2);
 		}
 	LoadHiresModels (1);
@@ -1038,8 +1038,8 @@ for (;;) {
 	if (strstr (hogFileManager.AltFiles ().szName, ".hog"))
 		break;
 	sprintf (szHogName, "%s%s%s%s",
-				gameFolders.szMissionFolder [0], *gameFolders.szMissionFolder [0] ? "/" : "",
-				gameFolders.szMissionSubFolder, pszLevelName);
+				gameFolders.missions.szRoot, *gameFolders.missions.szRoot ? "/" : "",
+				gameFolders.missions.szSubFolder, pszLevelName);
 	if (!hogFileManager.UseMission (szHogName))
 		break;
 	bRetry = 1;
@@ -1418,11 +1418,11 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_
 missionManager.LevelStateName (szFile);
 if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed))
 	saveGameManager.Save (0, -1, 0, szFile);
-else if (CFile::Exist (szFile, gameFolders.szCacheFolder [0], 0))
+else if (CFile::Exist (szFile, gameFolders.shared.szCache, 0))
 	CFile::Delete (szFile, gameFolders.szSavegameFolder);
 szFile [0] = '\x02';
 missionManager.LevelStateName (szFile + 1, missionManager.NextLevel ());
-if (!gameStates.app.bD1Mission && (nState > 0) && CFile::Exist (szFile, gameFolders.szCacheFolder [0], 0)) {
+if (!gameStates.app.bD1Mission && (nState > 0) && CFile::Exist (szFile, gameFolders.shared.szCache, 0)) {
 	int pwSave = gameData.weapons.nPrimary;
 	int swSave = gameData.weapons.nSecondary;
 	saveGameManager.Load (1, -1, 0, szFile + 1);

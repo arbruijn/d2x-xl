@@ -261,7 +261,7 @@ for (i = 0; i < 2; i++)
 //retuns file handle of new pig
 int CopyPigFileFromCD (CFile& cf, char *filename)
 {
-return cf.Open (filename, gameFolders.szDataFolder [0], "rb", 0);
+return cf.Open (filename, gameFolders.game.szData [0], "rb", 0);
 #if 0
 	char name [80];
 	FFS ffs;
@@ -294,7 +294,7 @@ do {
 		}
 	} while (ret != EXIT_SUCCESS);
 mb.Clear ();
-return cfPiggy [gameStates.app.bD1Data].Open (filename, gameFolders.szDataFolder [0], "rb", 0);
+return cfPiggy [gameStates.app.bD1Data].Open (filename, gameFolders.game.szData [0], "rb", 0);
 #endif
 }
 
@@ -381,9 +381,9 @@ if (bRegister)
 	PiggyCloseFile ();             //close old pig if still open
 //rename pigfile for shareware
 strlwr (szPigName);
-if (stricmp (szPigName, DefaultPigFile (1)) && !CFile::Exist (szPigName, gameFolders.szDataFolder [0], 0))
+if (stricmp (szPigName, DefaultPigFile (1)) && !CFile::Exist (szPigName, gameFolders.game.szData [0], 0))
 	strcpy (szPigName, DefaultPigFile (1));
-if (!cfP->Open (szPigName, gameFolders.szDataFolder [0], "rb", 0)) {
+if (!cfP->Open (szPigName, gameFolders.game.szData [0], "rb", 0)) {
 	if (!CopyPigFileFromCD (*cfP, szPigName))
 		return;
 	}
@@ -441,14 +441,14 @@ int ReadHamFile (bool bDefault)
 
 if (bDefault) {
 	pszFile = DefaultHamFile ();
-	pszFolder = gameFolders.szDataFolder [0];
+	pszFolder = gameFolders.game.szData [0];
 	}
 else {
-	if (!*gameFolders.szModName)
+	if (!*gameFolders.mods.szName)
 		return 0;
-	sprintf (szFile, "%s.ham", gameFolders.szModName);
+	sprintf (szFile, "%s.ham", gameFolders.mods.szName);
 	pszFile = szFile;
-	pszFolder = gameFolders.szModFolder;
+	pszFolder = gameFolders.mods.szCurrent;
 	}
 
 if (!cf.Open (pszFile, pszFolder, "rb", 0)) {
@@ -479,7 +479,7 @@ strcpy (szD1PigFileName, "descent.pig");
 if (cfPiggy [1].File ())
 	cfPiggy [1].Seek (0, SEEK_SET);
 else
-	cfPiggy [1].Open (szD1PigFileName, gameFolders.szDataFolder [0], "rb", 0);
+	cfPiggy [1].Open (szD1PigFileName, gameFolders.game.szData [0], "rb", 0);
 if (cfPiggy [1].File ()) {
 	gameStates.app.bHaveD1Data = 1;
 /*---*/PrintLog (1, "Loading Descent 1 data\n");
@@ -773,7 +773,7 @@ bool LoadD1Sounds (bool bCustom)
 
 if (cfPiggy [1].File ())
 	cfPiggy [1].Seek (0, SEEK_SET);
-else if (!cfPiggy [1].Open (D1_PIGFILE, gameFolders.szDataFolder [0], "rb", 0)) {
+else if (!cfPiggy [1].Open (D1_PIGFILE, gameFolders.game.szData [0], "rb", 0)) {
 	Warning (D1_PIG_LOAD_FAILED);
 	return false;
 	}
@@ -783,12 +783,8 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data) {
 	SetDataVersion (1);
 	SetD1Sound ();
 	if ((gameData.pig.sound.nType != 1) || gameStates.app.bCustomSounds || bCustom) {
-		if (bCustom) {
-			if (missionManager.nCurrentLevel < 0)
-				sprintf (gameFolders.szSoundFolder [5], "%s/slevel%02d", gameFolders.szSoundFolder [4], -missionManager.nCurrentLevel);
-			else
-				sprintf (gameFolders.szSoundFolder [5], "%s/level%02d", gameFolders.szSoundFolder [4], missionManager.nCurrentLevel);
-			}
+		if (bCustom)
+			sprintf (gameFolders.mods.szSounds [1], "%s/slevel%02d", gameFolders.mods.szSounds [0], abs (missionManager.nCurrentLevel));
 		SetupSounds (cfPiggy [1], nSounds, nBmHdrOffs + nBitmaps * PIGBITMAPHEADER_D1_SIZE, bCustom, false);
 		LoadSounds (cfPiggy [1]);
 		gameData.pig.sound.nType = 1;
@@ -811,7 +807,7 @@ PiggyInitPigFile (const_cast<char*> ("groupa.pig"));
 SetDataVersion (1);
 if (cfPiggy [1].File ())
 	cfPiggy [1].Seek (0, SEEK_SET);
-else if (!cfPiggy [1].Open (D1_PIGFILE, gameFolders.szDataFolder [0], "rb", 0)) {
+else if (!cfPiggy [1].Open (D1_PIGFILE, gameFolders.game.szData [0], "rb", 0)) {
 	Warning (D1_PIG_LOAD_FAILED);
 	return;
 	}
@@ -874,7 +870,7 @@ tBitmapIndex ReadExtraBitmapD1Pig (const char *name)
 	CBitmap			*newBm = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
 
 bmi.index = 0;
-if (!cf.Open (D1_PIGFILE, gameFolders.szDataFolder [0], "rb", 0)) {
+if (!cf.Open (D1_PIGFILE, gameFolders.game.szData [0], "rb", 0)) {
 	Warning (D1_PIG_LOAD_FAILED);
 	return bmi;
 	}
@@ -954,7 +950,7 @@ CBitmap *PiggyLoadBitmap (const char *pszFile)
 	tBitmapFileHeader	bfh;
 	tBitmapInfoHeader	bih;
 
-if (!cf.Open (pszFile, gameFolders.szDataFolder [0], "rb", 0))
+if (!cf.Open (pszFile, gameFolders.game.szData [0], "rb", 0))
 	return NULL;
 
 bfh.bfType = cf.ReadShort ();

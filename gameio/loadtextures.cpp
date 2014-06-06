@@ -213,7 +213,7 @@ if (!m_info.compressed.bCompressed)
 	return 0;
 
 if (!pszFolder)
-	pszFolder = gameFolders.szDataFolder [0];
+	pszFolder = gameFolders.game.szData [0];
 CFile::SplitPath (pszFile, NULL, szFilename, NULL);
 sprintf (szFolder, "%s/dxt/", pszFolder);
 strcat (szFilename, ".dxt");
@@ -247,7 +247,7 @@ if (!m_info.compressed.bCompressed)
 	return 0;
 
 if (!pszFolder)
-	pszFolder = gameFolders.szDataFolder [0];
+	pszFolder = gameFolders.game.szData [0];
 CFile::SplitPath (pszFile, NULL, szFilename, NULL);
 sprintf (szFolder, "%s/dxt/", pszFolder);
 strcat (szFilename, ".dxt");
@@ -670,24 +670,24 @@ for (int i = 0; i < 2; i++) {
 			strcpy (p + 1, "0");
 		}
 #endif
-	if (*gameFolders.szTextureFolder [3]) {
+	if (*gameFolders.game.szTextures [3]) {
 		char szLevelFolder [FILENAME_LEN];
 		if (missionManager.nCurrentLevel < 0)
 			sprintf (szLevelFolder, "slevel%02d", -missionManager.nCurrentLevel);
 		else
 			sprintf (szLevelFolder, "level%02d", missionManager.nCurrentLevel);
-		sprintf (gameFolders.szTextureFolder [4], "%s/%s", gameFolders.szTextureFolder [3], szLevelFolder);
-		sprintf (gameFolders.szTextureCacheFolder [4], "%s/%s", gameFolders.szTextureCacheFolder [3], szLevelFolder);
+		sprintf (gameFolders.game.szTextures [4], "%s/%s", gameFolders.game.szTextures [3], szLevelFolder);
+		sprintf (gameFolders.szTextureCache [4], "%s/%s", gameFolders.szTextureCache [3], szLevelFolder);
 		}
 	else
-		*gameFolders.szTextureFolder [4] =
-		*gameFolders.szTextureCacheFolder [4] = '\0';
+		*gameFolders.game.szTextures [4] =
+		*gameFolders.szTextureCache [4] = '\0';
 
 	int nShrinkFactor = bShrink ? ShrinkFactor (baseName) : 1;
 
-	MakeBitmapFilenames (baseName, gameFolders.szTextureFolder [4], gameFolders.szTextureCacheFolder [4], fn [1], fn [0], nShrinkFactor);
-	MakeBitmapFilenames (baseName, gameFolders.szTextureFolder [3], gameFolders.szTextureCacheFolder [3], fn [3], fn [2], nShrinkFactor);
-	MakeBitmapFilenames (baseName, gameFolders.szTextureFolder [bD1 + 1], gameFolders.szTextureCacheFolder [bD1 + 1], fn [5], fn [4], nShrinkFactor);
+	MakeBitmapFilenames (baseName, gameFolders.game.szTextures [4], gameFolders.szTextureCache [4], fn [1], fn [0], nShrinkFactor);
+	MakeBitmapFilenames (baseName, gameFolders.game.szTextures [3], gameFolders.szTextureCache [3], fn [3], fn [2], nShrinkFactor);
+	MakeBitmapFilenames (baseName, gameFolders.game.szTextures [bD1 + 1], gameFolders.szTextureCache [bD1 + 1], fn [5], fn [4], nShrinkFactor);
 
 	if (0 < (nFile = SearchHiresBitmap (fn)))
 		return fn [nFile];
@@ -781,7 +781,7 @@ if (s && (s [1] != '0'))
 #endif
 
 if (nFile < 2)	//was level specific mod folder
-	MakeTexSubFolders (gameFolders.szTextureCacheFolder [4]);
+	MakeTexSubFolders (gameFolders.szTextureCache [4]);
 
 CBitmap*	altBmP;
 if (nIndex < 0) 
@@ -858,7 +858,7 @@ else
 		}
 #if TEXTURE_COMPRESSION
 	if (CompressTGA (bmP))
-		bmP->SaveS3TC (gameFolders.szTextureCacheFolder [(nFile < 2) ? 4 : (nFile < 4) ? 3 : bD1 + 1], bmName);
+		bmP->SaveS3TC (gameFolders.szTextureCache [(nFile < 2) ? 4 : (nFile < 4) ? 3 : bD1 + 1], bmName);
 	else {
 #endif
 		int nBestShrinkFactor = BestShrinkFactor (bmP, ShrinkFactor (bmName));
@@ -876,7 +876,7 @@ else
 				// nFile < 2: mod level texture folder
 				// nFile < 4: mod texture folder
 				// otherwise standard D1 or D2 texture folder
-				tga.Save (bmName, gameFolders.szTextureCacheFolder [(nFile < 2) ? 4 : (nFile < 4) ? 3 : bD1 + 1]);
+				tga.Save (bmName, gameFolders.szTextureCache [(nFile < 2) ? 4 : (nFile < 4) ? 3 : bD1 + 1]);
 				}
 			}
 		}
@@ -1005,7 +1005,7 @@ void LoadReplacementBitmaps (const char *pszLevelName)
 //first, free up data allocated for old bitmaps
 PrintLog (1, "loading replacement textures\n");
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, ".pog");
-if (cf.Open (szFilename, gameFolders.szDataFolder [0], "rb", 0)) {
+if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 	int					id, version, nBitmapNum, bHaveTGA;
 	int					bmDataOffset, bmOffset;
 	ushort				*indices;
@@ -1144,7 +1144,7 @@ void LoadTextureColors (const char *pszLevelName, CFaceColor *colorP)
 //first, free up data allocated for old bitmaps
 PrintLog (1, "loading texture colors\n");
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, ".clr");
-if (cf.Open (szFilename, gameFolders.szDataFolder [0], "rb", 0)) {
+if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 	if (!colorP)
 		colorP = gameData.render.color.textures.Buffer ();
 	for (i = MAX_WALL_TEXTURES; i; i--, colorP++) {
