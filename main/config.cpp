@@ -120,7 +120,7 @@ gameConfig.bReverseChannels = 0;
 bHiresMoviesSave = gameOpts->movies.bHires;
 bRedbookEnabledSave = redbook.Enabled ();
 
-if (!cf.Open ("descent.cfg", gameFolders.szConfig, "rb", 0))
+if (!cf.Open ("descent.cfg", gameFolders.user.szConfig, "rb", 0))
 	return 1;
 while (!cf.EoF ()) {
 	memset (line, 0, 80);
@@ -227,7 +227,7 @@ if (gameConfig.nRedbookVolume > 8)
 	gameConfig.nRedbookVolume = 8;
 audio.SetFxVolume ((gameConfig.nAudioVolume [1] * 32768) / 8, 1);
 audio.SetVolumes ((gameConfig.nAudioVolume [0] * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
-if (cf.Open ("descentw.cfg", gameFolders.szConfig, "rb", 0)) {
+if (cf.Open ("descentw.cfg", gameFolders.user.szConfig, "rb", 0)) {
 	while (!cf.EoF ()) {
 		memset (line, 0, 80);
 		cf.GetS (line, 80);
@@ -277,7 +277,7 @@ console.printf (CON_VERBOSE, "writing config file ...\n");
 console.printf (CON_VERBOSE, "   getting joystick calibration values ...\n");
 JoyGetCalVals(cal, sizeofa (cal));
 
-if (!cf.Open ("descent.cfg", gameFolders.szConfig, "wt", 0))
+if (!cf.Open ("descent.cfg", gameFolders.user.szConfig, "wt", 0))
 	return 1;
 sprintf (str, "%s=%u\n", pszD2XVersion, D2X_IVER);
 cf.PutS (str);

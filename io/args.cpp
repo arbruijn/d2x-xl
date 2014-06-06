@@ -70,7 +70,7 @@ else {
 	strcat (m_filename, "/.d2x-xl");
 	if (FFF (m_filename, &ffs, 0) <= 0) {
 #endif
-	strcpy (m_filename, gameFolders.szConfig);
+	strcpy (m_filename, gameFolders.user.szConfig);
 	i = int (strlen (m_filename));
 	if (i) {
 		p = m_filename + i - 1;
