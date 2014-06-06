@@ -84,7 +84,7 @@
 #	define	LIGHTMAP_FOLDER			"Lightmaps"
 #	define	LIGHTDATA_FOLDER			"Lights"
 #	define	MESH_FOLDER					"Meshes"
-#	define	MISSIONSTATE_FOLDER		"Missions"
+#	define	MISSIONSTATE_FOLDER		"States"
 #	define	MOD_FOLDER					"Mods"
 #	define	MUSIC_FOLDER				"Music"
 #	define	DOWNLOAD_FOLDER			"Downloads"
@@ -116,7 +116,7 @@
 #	define	LIGHTMAP_FOLDER			"lightmaps"
 #	define	LIGHTDATA_FOLDER			"lights"
 #	define	MESH_FOLDER					"meshes"
-#	define	MISSIONSTATE_FOLDER		"missions"
+#	define	MISSIONSTATE_FOLDER		"states"
 
 #	ifdef _WIN32
 
