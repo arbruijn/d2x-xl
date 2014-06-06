@@ -318,7 +318,7 @@ int CMissionManager::ReadFile (const char *filename, int m_nCount, int location)
 switch (location) {
 	case ML_MISSIONDIR:
 	case ML_ALTHOGDIR:
-		strcpy (filename2, gameFolders.szMissionFolders [location]);
+		strcpy (filename2, gameFolders.szMissionFolder [location + 1]);
 		break;
 
 	case ML_CDROM:
@@ -529,7 +529,7 @@ void CMissionManager::Add (int bAnarchy, int bD1Mission, int bSubFolder, int bHa
 		m_nCount++;
 		}
 	for (bFindDirs = !bHaveSubFolders && (m_nCount == nBuiltIns + bSubFolder); bFindDirs >= 0; bFindDirs--) {
-		sprintf (searchName, "%s%s", gameFolders.szMissionFolders [nLocation], pszExt [bFindDirs][bD1Mission]);
+		sprintf (searchName, "%s%s", gameFolders.szMissionFolder [nLocation + 1], pszExt [bFindDirs][bD1Mission]);
 		if (!FFF (searchName, &ffs, bFindDirs)) {
 			do {
 				if (!(strcmp (ffs.name, ".") && strcmp (ffs.name, "..")))
@@ -542,7 +542,7 @@ void CMissionManager::Add (int bAnarchy, int bD1Mission, int bSubFolder, int bHa
 						}
 				else {
 					if (strcmp (ffs.name, "d2x.mn2")) { // Vertigo added by default if present
-						sprintf (lvlName, "%s%s", gameFolders.szMissionFolders [nLocation], ffs.name);
+						sprintf (lvlName, "%s%s", gameFolders.szMissionFolder [nLocation + 1], ffs.name);
 						memcpy (lvlName + strlen (lvlName) - 4, lvlExt, sizeof (lvlExt));
 						if (cf.Exist (lvlName, "", 0))
 							memcpy (lvlName + strlen (lvlName) - 4, altLvlExt [bD1Mission], sizeof (altLvlExt [bD1Mission]));
@@ -667,7 +667,7 @@ else {
 		}
 	if (gameFolders.bAltHogDirInited && strcmp (gameFolders.szAltHogFolder, gameFolders.szGameFolder)) {
 		bHaveSubFolders = 0;
-		sprintf (gameFolders.szMissionFolders [1], "%s/%s%s", gameFolders.szAltHogFolder, MISSION_FOLDER, gameFolders.szMissionSubFolder);
+		sprintf (gameFolders.szMissionFolder [2], "%s/%s%s", gameFolders.szAltHogFolder, MISSION_FOLDER, gameFolders.szMissionSubFolder);
 		if (gameOpts->app.nVersionFilter & 2) {
 			Add (bAnarchy, 0, bSubFolder, bHaveSubFolders, ML_ALTHOGDIR);
 			bHaveSubFolders = 1;
@@ -920,7 +920,7 @@ console.printf (CON_VERBOSE, "Loading mission %d\n", nMission);
 switch (m_list [nMission].location) {
 	case ML_MISSIONDIR:
 	case ML_ALTHOGDIR:
-		strcpy (szFolder, gameFolders.szMissionFolders [m_list [nMission].location]);
+		strcpy (szFolder, gameFolders.szMissionFolder [m_list [nMission].location + 1]);
 		break;
 	case ML_CDROM:
 		sprintf (szFolder, "%s/", CDROM_dir);
