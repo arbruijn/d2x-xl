@@ -163,15 +163,19 @@ return GetAppFolder ("", gameFolders.szDataFolder [0], pszDataRootDir, "descent2
 
 // ----------------------------------------------------------------------------
 
-int MakeFolder (char* pszAppFolder, char* pszFolder = "", char* pszSubFolder = "", char* format = "%s/%s")
+int MakeFolder (char* pszAppFolder, char* pszFolder = "", char* pszSubFolder = "", char* format = "%s%s")
 {
 if (pszSubFolder && *pszSubFolder) {
 	if (!GetAppFolder (pszFolder, pszAppFolder, pszSubFolder, "")) {
 		AppendSlash (pszAppFolder);
 		return 1;
 		}
-	if (pszFolder && *pszFolder)
-		sprintf (pszAppFolder, format, pszFolder, pszSubFolder);
+	if (pszFolder && *pszFolder) {
+		char szFolder [FILENAME_LEN];
+		strcpy (szFolder, pszFolder);
+		AppendSlash (szFolder);
+		sprintf (pszAppFolder, format, szFolder, pszSubFolder);
+		}
 	}
 else {
 	FFS	ffs;

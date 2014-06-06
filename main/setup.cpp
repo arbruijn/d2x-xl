@@ -239,7 +239,7 @@ for (int i = 0; i < 4; i++) {
 	sprintf (szDestFolder, "%s%s", gameFolders.szTextureCacheFolder [1], szSubFolders [i]);
 	MoveFiles (szDestFolder, szSourceFolder, false);
 	}
-for (int i = 0; i < 4; i++) {
+for (int i = 1; i < 4; i++) {
 	sprintf (szSourceFolder, "%stextures/d2/%s", STATIC_DATA_FOLDER, szSubFolders [i]);
 	sprintf (szDestFolder, "%s%s", gameFolders.szTextureCacheFolder [1], szSubFolders [i]);
 	MoveFiles (szDestFolder, szSourceFolder, false);
