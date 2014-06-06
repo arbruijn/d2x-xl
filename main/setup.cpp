@@ -251,19 +251,13 @@ for (int i = 1; i < 4; i++) {
 void MoveD2Sounds (void)
 {
 	static char* szOldSoundFolders [] = { "sounds1/d1", "sounds2/d1", "sounds1", "sounds2", "sounds2/d2x-xl"};
-	static char* szNewSoundFolders [] = { gameFolders.game.szSounds [3], gameFolders.game.szSounds [3], gameFolders.game.szSounds [1], gameFolders.game.szSounds [2], gameFolders.game.szSounds [4] };
+	static char* pszNewSoundFolders [] = { gameFolders.game.szSounds [3], gameFolders.game.szSounds [3], gameFolders.game.szSounds [1], gameFolders.game.szSounds [2], gameFolders.game.szSounds [4] };
 
 	char szSourceFolder [FILENAME_LEN], szDestFolder [FILENAME_LEN];
 
-for (int i = 0; i < 4; i++) {
+for (int i = 0; i < 5; i++) {
 	sprintf (szSourceFolder, "%%s", gameFolders.game.szRoot, szOldSoundFolders [i]);
-	sprintf (szDestFolder, "%s%s", gameFolders.var.szTextures [1], szNewSoundFolders [i]);
-	MoveFiles (szDestFolder, szSourceFolder, false);
-	}
-for (int i = 1; i < 4; i++) {
-	sprintf (szSourceFolder, "%stextures/d2/%s", gameFolders.game.szRoot, szSubFolders [i]);
-	sprintf (szDestFolder, "%s%s", gameFolders.var.szTextures [1], szSubFolders [i]);
-	MoveFiles (szDestFolder, szSourceFolder, false);
+	MoveFiles (szDestFolder, pszNewSoundFolders [i], false);
 	}
 }
 
@@ -278,15 +272,15 @@ static bool CheckAndCopyWildcards (tFileDesc* fileDesc)
 
 // quit if none of the specified files exist in the source folder
 if ((i = FFF (fileDesc->pszFile, &ffs, 0))) {
-	sprintf (szFilter, "%s%s\\%s", gameFolders.szDataRootFolder [(int) fileDesc->bUser], fileDesc->pszFolder, fileDesc->pszFile);
+	sprintf (szFilter, "%s%s\\%s", fileDesc->bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, fileDesc->pszFolder, fileDesc->pszFile);
 	return FFF (szFilter, &ffs, 0) == 0;
 	}
 do {
 	sprintf (szDest, "\002%s", ffs.name);
-	sprintf (szFilter, "%s%s", gameFolders.szDataRootFolder [(int) fileDesc->bUser], fileDesc->pszFolder);
+	sprintf (szFilter, "%s%s", fileDesc->bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, fileDesc->pszFolder);
 	if (!CFile::Exist (szDest, szFilter, 0)) {	// if the file doesn't exist in the destination folder copy it
-		sprintf (szSrc, "%s%s", gameFolders.szDataRootFolder [(int) fileDesc->bUser], ffs.name);
-		sprintf (szDest, "%s%s\\%s", gameFolders.szDataRootFolder [(int) fileDesc->bUser], fileDesc->pszFolder, ffs.name);
+		sprintf (szSrc, "%s%s", fileDesc->bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, ffs.name);
+		sprintf (szDest, "%s%s\\%s", fileDesc->bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, fileDesc->pszFolder, ffs.name);
 		cf.Copy (szSrc, szDest);
 		}
 	} while (!FFN (&ffs, 0));
