@@ -421,7 +421,7 @@ if (bModBg) {
 
 //if (filename && strcmp (filename, gameOpts->menus.altBg.szName [bModBg]))
 //	return NULL;
-if (!tga.Read (gameOpts->menus.altBg.szName [bModBg], gameFolders.user.szWallpapers [bModBg], 
+if (!tga.Read (gameOpts->menus.altBg.szName [bModBg], bModBg ? gameFolders.mods.szWallpapers : gameFolders.user.szWallpapers, 
 				   (gameOpts->menus.altBg.alpha < 0) ? -1 : (int) (gameOpts->menus.altBg.alpha * 255),
 					gameOpts->menus.altBg.brightness, gameOpts->menus.altBg.grayscale)) {
 	delete bmP;

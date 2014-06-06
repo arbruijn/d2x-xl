@@ -3470,7 +3470,7 @@ if (!FFF (searchName, &ffs, 0)) {
 	FFC (&ffs);
 	}
 if (gameFolders.bAltHogDirInited) {
-	sprintf (searchName, "%s/%s%s*.dem", gameFolders.szAltHogs, gameFolders.user.szDemos, gameFolders.user.szDemos ? "/" : "");
+	sprintf (searchName, "%s/%s%s*.dem", gameFolders.game.szAltHogs, gameFolders.user.szDemos, gameFolders.user.szDemos ? "/" : "");
 	if (!FFF (searchName, &ffs, 0)) {
 		do {
 			nFiles++;
@@ -3516,7 +3516,7 @@ if (!filename) {
 		FFC (&ffs);
 		}
 	if (!filename && gameFolders.bAltHogDirInited) {
-		sprintf (searchName, "%s/%s%s*.dem", gameFolders.szAltHogs, gameFolders.user.szDemos, gameFolders.user.szDemos ? "/" : "");
+		sprintf (searchName, "%s/%s%s*.dem", gameFolders.game.szAltHogs, gameFolders.user.szDemos, gameFolders.user.szDemos ? "/" : "");
 		if (!FFF (searchName, &ffs, 0)) {
 			do {
 				if (nFiles==nRandFiles) {

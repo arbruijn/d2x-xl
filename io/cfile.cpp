@@ -210,8 +210,8 @@ if ((fp = fopen (pfn, mode))) {
 		fp = NULL;
 		}
 	}
-else if (gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.szAltHogs)) {
-   sprintf (fn, "%s/%s", gameFolders.szAltHogs, filename);
+else if (gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.game.szAltHogs)) {
+   sprintf (fn, "%s/%s", gameFolders.game.szAltHogs, filename);
    pfn = fn;
    fp = fopen (pfn, mode);
 	}

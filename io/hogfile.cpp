@@ -231,7 +231,7 @@ return 0;
 void CHogFile::UseAltDir (const char * path) 
 {
 gameFolders.bAltHogDirInited = 
-	 (strcmp (path, gameFolders.game.szData [0]) != 0) && (GetAppFolder ("", gameFolders.szAltHogs, path, "descent2.hog") == 0);
+	 (strcmp (path, gameFolders.game.szData [0]) != 0) && (GetAppFolder ("", gameFolders.game.szAltHogs, path, "descent2.hog") == 0);
 }
 
 // ----------------------------------------------------------------------------
