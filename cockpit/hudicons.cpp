@@ -67,7 +67,7 @@ if (bHaveIcons > -1)
 	return bHaveIcons;
 for (int i = 0; i < nIcons; i++) {
 	icons [i].Destroy ();
-	sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.game.szTextures [3], pszIcons [i]);
+	sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.mods.szTextures [0], pszIcons [i]);
 	if (!cf.Exist (szFilename, "", 0))
 		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.game.szTextures [0], pszIcons [i]);
 	CTGA tga (&icons [i]);

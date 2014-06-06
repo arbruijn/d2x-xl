@@ -236,12 +236,12 @@ void MoveD2Textures (void)
 
 for (int i = 0; i < 4; i++) {
 	sprintf (szSourceFolder, "%stextures/%s", gameFolders.game.szRoot, szSubFolders [i]);
-	sprintf (szDestFolder, "%s%s", gameFolders.szTextureCache [1], szSubFolders [i]);
+	sprintf (szDestFolder, "%s%s", gameFolders.var.szTextures [1], szSubFolders [i]);
 	MoveFiles (szDestFolder, szSourceFolder, false);
 	}
 for (int i = 1; i < 4; i++) {
 	sprintf (szSourceFolder, "%stextures/d2/%s", gameFolders.game.szRoot, szSubFolders [i]);
-	sprintf (szDestFolder, "%s%s", gameFolders.szTextureCache [1], szSubFolders [i]);
+	sprintf (szDestFolder, "%s%s", gameFolders.var.szTextures [1], szSubFolders [i]);
 	MoveFiles (szDestFolder, szSourceFolder, false);
 	}
 }
@@ -257,12 +257,12 @@ void MoveD2Sounds (void)
 
 for (int i = 0; i < 4; i++) {
 	sprintf (szSourceFolder, "%%s", gameFolders.game.szRoot, szOldSoundFolders [i]);
-	sprintf (szDestFolder, "%s%s", gameFolders.szTextureCache [1], szNewSoundFolders [i]);
+	sprintf (szDestFolder, "%s%s", gameFolders.var.szTextures [1], szNewSoundFolders [i]);
 	MoveFiles (szDestFolder, szSourceFolder, false);
 	}
 for (int i = 1; i < 4; i++) {
 	sprintf (szSourceFolder, "%stextures/d2/%s", gameFolders.game.szRoot, szSubFolders [i]);
-	sprintf (szDestFolder, "%s%s", gameFolders.szTextureCache [1], szSubFolders [i]);
+	sprintf (szDestFolder, "%s%s", gameFolders.var.szTextures [1], szSubFolders [i]);
 	MoveFiles (szDestFolder, szSourceFolder, false);
 	}
 }

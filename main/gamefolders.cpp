@@ -281,16 +281,16 @@ if (CheckDataFolder (gameFolders.game.szRoot)) {
 #ifdef _WIN32
 
 GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szTextures [0], TEXTURE_FOLDER, "");
-if (GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szModels [0], MODEL_FOLDER, "*.ase") &&
-	 GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szModels [0], MODEL_FOLDER, "*.oof"))
-	MakeFolder (gameFolders.game.szModels [0], gameFolders.game.szRoot, MODEL_FOLDER);
+if (GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.ase") &&
+	 GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.oof"))
+	MakeFolder (gameFolders.game.szModels, gameFolders.game.szRoot, MODEL_FOLDER);
 GetAppFolder (gameFolders.game.szRoot, gameFolders.mods.szRoot, MOD_FOLDER, "");
 
 #else
 
 GetAppFolder (gameFolders.var.szRoot, gameFolders.game.szTextures [0], TEXTURE_FOLDER, "");
-if (GetAppFolder (gameFolders.var.szRoot, gameFolders.game.szModels [0], MODEL_FOLDER, "*.ase"))
-	GetAppFolder (gameFolders.var.szRoot, gameFolders.game.szModels [0], MODEL_FOLDER, "*.oof");
+if (GetAppFolder (gameFolders.var.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.ase"))
+	GetAppFolder (gameFolders.var.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.oof");
 GetAppFolder (gameFolders.var.szRoot, gameFolders.mods.szRoot, MOD_FOLDER, "");
 
 #endif
@@ -375,16 +375,16 @@ MakeFolder (gameFolders.user.szWallpapers, gameFolders.user.szCache, WALLPAPER_F
 #endif
 
 MakeFolder (gameFolders.game.szSounds [0], gameFolders.game.szRoot, SOUND_FOLDER);
-MakeFolder (gameFolders.game.szSounds [6], gameFolders.game.szRoot, SOUND_FOLDER_D2); // temp usage
-MakeFolder (gameFolders.game.szSounds [1], gameFolders.game.szRoot, SOUND_FOLDER_22KHZ);
-MakeFolder (gameFolders.game.szSounds [2], gameFolders.game.szRoot, SOUND_FOLDER_44KHZ);
+MakeFolder (gameFolders.game.szSounds [3], gameFolders.game.szRoot, SOUND_FOLDER_D2); // temp usage
+MakeFolder (gameFolders.game.szSounds [1], gameFolders.game.szSounds [3], SOUND_FOLDER_22KHZ);
+MakeFolder (gameFolders.game.szSounds [2], gameFolders.game.szSounds [3], SOUND_FOLDER_44KHZ);
 MakeFolder (gameFolders.game.szSounds [3], gameFolders.game.szRoot, SOUND_FOLDER_D1);
 
 MakeFolder (gameFolders.var.szModels [0], gameFolders.var.szCache, MODEL_FOLDER);
 
-MakeFolder (gameFolders.szTextureCache [0], gameFolders.var.szCache, TEXTURE_FOLDER);
-MakeFolder (gameFolders.szTextureCache [1], gameFolders.szTextureCache [0], TEXTURE_FOLDER_D2);
-MakeFolder (gameFolders.szTextureCache [2], gameFolders.szTextureCache [0], TEXTURE_FOLDER_D1);
+MakeFolder (gameFolders.var.szTextures [0], gameFolders.var.szCache, TEXTURE_FOLDER);
+MakeFolder (gameFolders.var.szTextures [1], gameFolders.var.szTextures [0], TEXTURE_FOLDER_D2);
+MakeFolder (gameFolders.var.szTextures [2], gameFolders.var.szTextures [0], TEXTURE_FOLDER_D1);
 
 MakeFolder (gameFolders.var.szDownloads, gameFolders.var.szCache, DOWNLOAD_FOLDER);
 MakeFolder (gameFolders.var.szLightmaps, gameFolders.var.szCache, LIGHTMAP_FOLDER);
@@ -395,8 +395,8 @@ MakeFolder (gameFolders.missions.szCache, gameFolders.user.szCache, MISSION_FOLD
 MakeFolder (gameFolders.missions.szStates, gameFolders.missions.szCache, MISSIONSTATE_FOLDER);
 MakeFolder (gameFolders.missions.szDownloads, gameFolders.missions.szCache, DOWNLOAD_FOLDER);
 
-MakeTexSubFolders (gameFolders.szTextureCache [1]);
-MakeTexSubFolders (gameFolders.szTextureCache [2]);
+MakeTexSubFolders (gameFolders.var.szTextures [1]);
+MakeTexSubFolders (gameFolders.var.szTextures [2]);
 MakeTexSubFolders (gameFolders.var.szModels [0]);
 
 //if (GetAppFolder (gameFolders.user.szRoot, gameFolders.user.szConfig, CONFIG_FOLDER, "*.ini"))
@@ -414,12 +414,11 @@ gameStates.app.bHaveMod = 0;
 *gameFolders.mods.szSounds [0] =
 *gameFolders.mods.szSounds [1] =
 *gameFolders.mods.szCurrent =
-*gameFolders.game.szTextures [3] =
-*gameFolders.game.szTextures [4] =
-*gameFolders.szTextureCache [3] =
-*gameFolders.szTextureCache [4] =
-*gameFolders.game.szModels [1] =
-*gameFolders.game.szModels [2] =
+*gameFolders.mods.szTextures [0] =
+*gameFolders.mods.szTextures [1] =
+*gameFolders.var.szTextures [3] =
+*gameFolders.var.szTextures [4] =
+*gameFolders.mods.szModels [0] =
 *gameFolders.var.szModels [1] =
 *gameFolders.var.szModels [2] = 
 *gameFolders.mods.szWallpapers = '\0';
@@ -466,20 +465,20 @@ if (GetAppFolder (gameFolders.mods.szRoot, gameFolders.mods.szCurrent, gameFolde
 	*gameFolders.mods.szName = '\0';
 else {
 	sprintf (gameFolders.mods.szSounds [0], "%s%s/", gameFolders.mods.szCurrent, SOUND_FOLDER);
-	if (GetAppFolder (gameFolders.mods.szCurrent, gameFolders.game.szTextures [3], TEXTURE_FOLDER, "*.tga"))
-		*gameFolders.game.szTextures [3] = '\0';
+	if (GetAppFolder (gameFolders.mods.szCurrent, gameFolders.mods.szTextures [0], TEXTURE_FOLDER, "*.tga"))
+		*gameFolders.mods.szTextures [0] = '\0';
 	else {
-		sprintf (gameFolders.szTextureCache [3], "%s%s/", gameFolders.mods.szCache, gameFolders.mods.szName);
-		MakeFolder (gameFolders.szTextureCache [3]);
-		sprintf (gameFolders.szTextureCache [3], "%s%s/%s/", gameFolders.mods.szCache, gameFolders.mods.szName, TEXTURE_FOLDER);
-		MakeFolder (gameFolders.szTextureCache [3]);
+		sprintf (gameFolders.var.szTextures [3], "%s%s/", gameFolders.mods.szCache, gameFolders.mods.szName);	// e.g. /var/cache/d2x-xl/mods/mymod/
+		MakeFolder (gameFolders.var.szTextures [3]);
+		sprintf (gameFolders.var.szTextures [3], "%s%s/%s/", gameFolders.mods.szCache, gameFolders.mods.szName, TEXTURE_FOLDER);	// e.g. /var/cache/d2x-xl/mods/mymod/textures/
+		MakeFolder (gameFolders.var.szTextures [3]);
 		//gameOpts->render.textures.bUseHires [0] = 1;
 		}
-	if (GetAppFolder (gameFolders.mods.szCurrent, gameFolders.game.szModels [1], MODEL_FOLDER, "*.ase") &&
-		 GetAppFolder (gameFolders.mods.szCurrent, gameFolders.game.szModels [1], MODEL_FOLDER, "*.oof"))
-		*gameFolders.game.szModels [1] = '\0';
+	if (GetAppFolder (gameFolders.mods.szCurrent, gameFolders.mods.szModels [0], MODEL_FOLDER, "*.ase") &&
+		 GetAppFolder (gameFolders.mods.szCurrent, gameFolders.mods.szModels [0], MODEL_FOLDER, "*.oof"))
+		*gameFolders.mods.szModels [0] = '\0';
 	else {
-		sprintf (gameFolders.game.szModels [1], "%s%s", gameFolders.mods.szCurrent, MODEL_FOLDER);
+		sprintf (gameFolders.mods.szModels [0], "%s%s", gameFolders.mods.szCurrent, MODEL_FOLDER);
 		sprintf (gameFolders.var.szModels [1], "%s%s/%s/", gameFolders.mods.szCache, gameFolders.mods.szName, MODEL_FOLDER);
 		MakeFolder (gameFolders.var.szModels [1]);
 		}
@@ -516,7 +515,7 @@ else {
 		}
 	if (GetAppFolder (gameFolders.mods.szCurrent, gameFolders.game.szMusic, MUSIC_FOLDER, "*.ogg"))
 		*gameFolders.game.szMusic = '\0';
-	MakeTexSubFolders (gameFolders.szTextureCache [3]);
+	MakeTexSubFolders (gameFolders.var.szTextures [3]);
 	MakeTexSubFolders (gameFolders.var.szModels [1]);
 	gameStates.app.bHaveMod = 1;
 	}

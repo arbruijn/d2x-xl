@@ -137,9 +137,9 @@ class CFile {
 typedef struct tStaticFolders {
 	char	szRoot [FILENAME_LEN];
 	char	szData [2][FILENAME_LEN];
-	char	szTextures [5][FILENAME_LEN];
-	char	szModels [3][FILENAME_LEN];
-	char	szSounds [5][FILENAME_LEN];
+	char	szTextures [3][FILENAME_LEN];
+	char	szModels [FILENAME_LEN];
+	char	szSounds [4][FILENAME_LEN];
 	char	szMusic [FILENAME_LEN];
 	char	szMovies [FILENAME_LEN];
 	char	szAltHogs [FILENAME_LEN];
@@ -148,7 +148,7 @@ typedef struct tStaticFolders {
 typedef struct tSharedFolders {
 	char	szRoot [FILENAME_LEN];
 	char	szCache [FILENAME_LEN];
-	char	szTextures [3][FILENAME_LEN];
+	char	szTextures [5][FILENAME_LEN];
 	char	szModels [3][FILENAME_LEN];
 	char	szLightmaps [FILENAME_LEN];
 	char	szLightData [FILENAME_LEN];
@@ -198,8 +198,6 @@ typedef struct tGameFolders {
 #if defined (__unix__) || defined (__macosx__)
 	char szSharePath [FILENAME_LEN];
 #endif
-	char szModelCache [3][FILENAME_LEN];
-	char szTextureCache [5][FILENAME_LEN];
 	int bAltHogDirInited;
 } tGameFolders;
 
