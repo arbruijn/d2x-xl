@@ -188,7 +188,7 @@ else {
 	if (!FFF (pszAppFolder, &ffs, 1))
 		return 1;
 	}
-if (CFile::MkDir (pszAppFolder))
+if (!*pszAppFolder || CFile::MkDir (pszAppFolder))
 	return 0;
 AppendSlash (pszAppFolder);
 return 1;
