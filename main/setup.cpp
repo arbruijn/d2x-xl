@@ -256,8 +256,8 @@ void MoveD2Sounds (void)
 	char szSourceFolder [FILENAME_LEN], szDestFolder [FILENAME_LEN];
 
 for (int i = 0; i < 5; i++) {
-	sprintf (szSourceFolder, "%%s", gameFolders.game.szRoot, szOldSoundFolders [i]);
-	MoveFiles (szDestFolder, pszNewSoundFolders [i], false);
+	sprintf (szSourceFolder, "%s%s", gameFolders.game.szRoot, szOldSoundFolders [i]);
+	MoveFiles (pszNewSoundFolders [i], szSourceFolder, false);
 	}
 }
 
@@ -413,6 +413,7 @@ if (!gameStates.app.bCheckAndFixSetup)
 //CheckAndCreateGameFolders ();
 #endif
 MoveD2Textures ();
+MoveD2Sounds ();
 
 if (CheckAndCopyFiles (gameFilesD2, int (sizeofa (gameFilesD2)))) {
 	if (CheckAndCopyFiles (demoFilesD2, int (sizeofa (demoFilesD2))))

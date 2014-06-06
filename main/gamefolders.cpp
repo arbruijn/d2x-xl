@@ -376,10 +376,10 @@ MakeFolder (gameFolders.user.szWallpapers, gameFolders.user.szCache, WALLPAPER_F
 #endif
 
 MakeFolder (gameFolders.game.szSounds [0], gameFolders.game.szRoot, SOUND_FOLDER);
-MakeFolder (gameFolders.game.szSounds [3], gameFolders.game.szRoot, SOUND_FOLDER_D2); // temp usage
+MakeFolder (gameFolders.game.szSounds [3], gameFolders.game.szSounds [0], SOUND_FOLDER_D2); // temp usage
 MakeFolder (gameFolders.game.szSounds [1], gameFolders.game.szSounds [3], SOUND_FOLDER_22KHZ);
 MakeFolder (gameFolders.game.szSounds [2], gameFolders.game.szSounds [3], SOUND_FOLDER_44KHZ);
-MakeFolder (gameFolders.game.szSounds [3], gameFolders.game.szRoot, SOUND_FOLDER_D1);
+MakeFolder (gameFolders.game.szSounds [3], gameFolders.game.szSounds [0], SOUND_FOLDER_D1);
 
 MakeFolder (gameFolders.var.szModels [0], gameFolders.var.szCache, MODEL_FOLDER);
 
