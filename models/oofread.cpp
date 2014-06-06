@@ -1562,8 +1562,8 @@ if (m_nModel >= 0)
 
 bLogOOF = (fLog != NULL) && FindArg ("-printoof");
 nIndent = 0;
-OOF_PrintLog ("\nreading %s/%s\n", bCustom ? gameFolders.mods.szModels [0] : gameFolders.game.szModels, filename);
-if (!(*filename && cf.Open (filename, bCustom ? gameFolders.mods.szModels [0] : gameFolders.game.szModels, "rb", 0))) {
+OOF_PrintLog ("\nreading %s/%s\n", gameFolders.var.szModels [bCustom], filename);
+if (!(*filename && cf.Open (filename, gameFolders.var.szModels [bCustom], "rb", 0))) {
 	OOF_PrintLog ("file not found");
 	return 0;
 	}

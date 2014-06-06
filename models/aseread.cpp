@@ -785,8 +785,8 @@ if (m_nModel >= 0)
 if (gameStates.app.bCacheModelData) {
 	try {
 		if ((IsPlayerShip (nModel) || (nModel == COCKPIT_MODEL))
-			 ? ReadBinary (filename, bCustom, cf.Date (filename, bCustom ? gameFolders.mods.szModels [0] : gameFolders.game.szModels, 0))
-			 : ReadBinary (nModel, bCustom, cf.Date (filename, bCustom ? gameFolders.mods.szModels [0] : gameFolders.game.szModels, 0)))
+			 ? ReadBinary (filename, bCustom, cf.Date (filename, gameFolders.var.szModels [bCustom], 0))
+			 : ReadBinary (nModel, bCustom, cf.Date (filename, gameFolders.var.szModels [bCustom], 0)))
 			return 1;
 		}
 	catch(...) {
@@ -795,7 +795,7 @@ if (gameStates.app.bCacheModelData) {
 		}
 	}
 
-if (!cf.Open (filename, bCustom ? gameFolders.mods.szModels [0] : gameFolders.game.szModels, "rb", 0)) {
+if (!cf.Open (filename, gameFolders.var.szModels [bCustom], "rb", 0)) {
 	return 0;
 	}
 bErrMsg = 0;
@@ -997,7 +997,7 @@ time_t tBIN = cf.Date (szBin, gameFolders.var.szModels [bCustom], 0);
 if ((tBIN > 0) && (tASE > tBIN))
 	return 0;
 
-if (!cf.Open (szBin, bCustom ? gameFolders.mods.szModels [0] : gameFolders.game.szModels, "rb", 0))
+if (!cf.Open (szBin, gameFolders.var.szModels [bCustom], "rb", 0))
 	return 0;
 h = cf.ReadInt ();
 if (h != MODEL_DATA_VERSION) {
