@@ -874,7 +874,7 @@ else {
 	/*---*/PrintLog (1, "loading replacement models\n");
 	if (*gameFolders.mods.szModels [0]) {
 		sprintf (gameFolders.mods.szModels [1], "%s/slevel%02d", gameFolders.mods.szModels [0], abs (missionManager.nCurrentLevel));
-		sprintf (gameFolders.var.szModels [2], "%s/slevel%02d", gameFolders.mods.szCache [0], abs (missionManager.nCurrentLevel));
+		sprintf (gameFolders.var.szModels [2], "%s/slevel%02d", gameFolders.mods.szCache, abs (missionManager.nCurrentLevel));
 		LoadHiresModels (2);
 		}
 	LoadHiresModels (1);
