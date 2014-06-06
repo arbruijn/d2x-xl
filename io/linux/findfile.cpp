@@ -55,7 +55,7 @@ if (!pszFilter)
 //PrintLog ("FileFindFirst (%s, %s)\n", gameFolders.szGameFolder, pszFilter);
 memset (ffsP, 0, sizeof (*ffsP));
 if (*pszFilter && (*pszFilter != ',') && (*pszFilter != '/'))
-	sprintf (ffsP->szDir, "%s/", gameFolders.szGameFolder);
+	sprintf (ffsP->szDir, "%s/", gameFolders.game.szRoot);
 else
 	*ffsP->szDir = '\0';
 strcat (ffsP->szDir, pszFilter);

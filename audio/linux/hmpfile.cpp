@@ -32,7 +32,7 @@ hmp_file *hmp_open(const char *filename, int bUseD1Hog)
 	int num_tracks, midi_div;
 	ubyte *p;
 
-	if (!cf.Open (filename, gameFolders.szDataFolder [0], "rb", bUseD1Hog))
+	if (!cf.Open (filename, gameFolders.game.szData [0], "rb", bUseD1Hog))
 		return NULL;
 	hmp = new hmp_file;
 	if (!hmp) {

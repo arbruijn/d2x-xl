@@ -352,29 +352,6 @@ if (!MakeFolder (gameFolders.var.szCache, gameFolders.var.szRoot, SHARED_CACHE_F
 #endif // __macosx__
 
 MakeFolder (gameFolders.game.szTextures [0], gameFolders.game.szRoot, TEXTURE_FOLDER);
-MakeFolder (gameFolders.var.szModels [0], gameFolders.var.szCache, MODEL_FOLDER);
-MakeFolder (gameFolders.mods.szRoot, gameFolders.var.szRoot, MOD_FOLDER);
-MakeFolder (gameFolders.mods.szCache, gameFolders.var.szCache, MOD_FOLDER);
-MakeFolder (gameFolders.var.szDownloads, gameFolders.var.szCache, DOWNLOAD_FOLDER);
-
-#ifdef _WIN32
-#	define PRIVATE_DATA_FOLDER	gameFolders.user.szRoot
-#else
-#	define PRIVATE_DATA_FOLDER	gameFolders.user.szCache
-#endif
-
-MakeFolder (gameFolders.user.szConfig, PRIVATE_DATA_FOLDER, CONFIG_FOLDER);
-MakeFolder (gameFolders.user.szProfiles, PRIVATE_DATA_FOLDER, PROF_FOLDER);
-MakeFolder (gameFolders.user.szSavegames, PRIVATE_DATA_FOLDER, SAVE_FOLDER);
-MakeFolder (gameFolders.user.szScreenshots, PRIVATE_DATA_FOLDER, SCRSHOT_FOLDER);
-MakeFolder (gameFolders.user.szDemos, PRIVATE_DATA_FOLDER, DEMO_FOLDER);
-
-#ifdef _WIN32
-MakeFolder (gameFolders.user.szWallpapers, strcmp (gameFolders.game.szRoot, gameFolders.user.szRoot) ? gameFolders.user.szCache : gameFolders.game.szTextures [0], WALLPAPER_FOLDER);
-#else
-MakeFolder (gameFolders.user.szWallpapers, gameFolders.user.szCache, WALLPAPER_FOLDER);
-#endif
-
 MakeFolder (gameFolders.game.szSounds [0], gameFolders.game.szRoot, SOUND_FOLDER);
 MakeFolder (gameFolders.game.szSounds [3], gameFolders.game.szSounds [0], SOUND_FOLDER_D2); // temp usage
 MakeFolder (gameFolders.game.szSounds [1], gameFolders.game.szSounds [3], SOUND_FOLDER_22KHZ);
@@ -393,6 +370,9 @@ MakeFolder (gameFolders.var.szLightmaps, gameFolders.var.szCache, LIGHTMAP_FOLDE
 MakeFolder (gameFolders.var.szLightData, gameFolders.var.szCache, LIGHTDATA_FOLDER);
 MakeFolder (gameFolders.var.szMeshes, gameFolders.var.szCache, MESH_FOLDER);
 
+MakeFolder (gameFolders.mods.szRoot, gameFolders.var.szRoot, MOD_FOLDER);
+MakeFolder (gameFolders.mods.szCache, gameFolders.var.szCache, MOD_FOLDER);
+
 MakeFolder (gameFolders.missions.szCache, gameFolders.user.szCache, MISSION_FOLDER);
 MakeFolder (gameFolders.missions.szStates, gameFolders.missions.szCache, MISSIONSTATE_FOLDER);
 MakeFolder (gameFolders.missions.szDownloads, gameFolders.missions.szCache, DOWNLOAD_FOLDER);
@@ -400,6 +380,24 @@ MakeFolder (gameFolders.missions.szDownloads, gameFolders.missions.szCache, DOWN
 MakeTexSubFolders (gameFolders.var.szTextures [1]);
 MakeTexSubFolders (gameFolders.var.szTextures [2]);
 MakeTexSubFolders (gameFolders.var.szModels [0]);
+
+#ifdef _WIN32
+#	define PRIVATE_DATA_FOLDER	gameFolders.user.szRoot
+#else
+#	define PRIVATE_DATA_FOLDER	gameFolders.user.szCache
+#endif
+
+MakeFolder (gameFolders.user.szConfig, PRIVATE_DATA_FOLDER, CONFIG_FOLDER);
+MakeFolder (gameFolders.user.szProfiles, PRIVATE_DATA_FOLDER, PROF_FOLDER);
+MakeFolder (gameFolders.user.szSavegames, PRIVATE_DATA_FOLDER, SAVE_FOLDER);
+MakeFolder (gameFolders.user.szScreenshots, PRIVATE_DATA_FOLDER, SCRSHOT_FOLDER);
+MakeFolder (gameFolders.user.szDemos, PRIVATE_DATA_FOLDER, DEMO_FOLDER);
+
+#ifdef _WIN32
+MakeFolder (gameFolders.user.szWallpapers, strcmp (gameFolders.game.szRoot, gameFolders.user.szRoot) ? gameFolders.user.szCache : gameFolders.game.szTextures [0], WALLPAPER_FOLDER);
+#else
+MakeFolder (gameFolders.user.szWallpapers, gameFolders.user.szCache, WALLPAPER_FOLDER);
+#endif
 }
 
 // ----------------------------------------------------------------------------
