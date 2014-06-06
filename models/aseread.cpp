@@ -889,7 +889,7 @@ return SaveBinary (szFilename);
 
 int CModel::SaveBinary (const char* szFilename)
 {
-if (!*gameFolders.szModelFolder [m_bCustom])
+if (!*gameFolders.szModelCacheFolder [m_bCustom])
 	return 0;
 
 	CFile		cf;
@@ -992,7 +992,7 @@ if (!(szFilename && *szFilename))
 strcpy (szBin, szFilename);
 strcpy (strrchr (szBin, '.'), ".bin");
 
-time_t tBIN = cf.Date (szBin, gameFolders.szModelFolder [bCustom], 0);
+time_t tBIN = cf.Date (szBin, gameFolders.szModelCacheFolder [bCustom], 0);
 
 if (tASE > tBIN)
 	return 0;
