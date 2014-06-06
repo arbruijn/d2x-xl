@@ -445,26 +445,26 @@ if (bBuiltIn && !gameOpts->app.bEnableMods)
 if (GetAppFolder (gameFolders.szModRootFolder, gameFolders.szModFolder, gameFolders.szModName, "")) 
 	*gameFolders.szModName = '\0';
 else {
-	sprintf (gameFolders.szSoundFolder [4], "%s/%s", gameFolders.szModFolder, SOUND_FOLDER);
+	sprintf (gameFolders.szSoundFolder [4], "%s%s/", gameFolders.szModFolder, SOUND_FOLDER);
 	if (GetAppFolder (gameFolders.szModFolder, gameFolders.szTextureFolder [3], TEXTURE_FOLDER, "*.tga"))
 		*gameFolders.szTextureFolder [3] = '\0';
 	else {
-		sprintf (gameFolders.szTextureCacheFolder [3], "%s/%s/%s", PUBLIC_CACHE_FOLDER, gameFolders.szModName, TEXTURE_FOLDER);
+		sprintf (gameFolders.szTextureCacheFolder [3], "%s%s/%s/", gameFolders.szModCacheFolder, gameFolders.szModName, TEXTURE_FOLDER);
 		//gameOpts->render.textures.bUseHires [0] = 1;
 		}
 	if (GetAppFolder (gameFolders.szModFolder, gameFolders.szModelFolder [1], MODEL_FOLDER, "*.ase") &&
 		 GetAppFolder (gameFolders.szModFolder, gameFolders.szModelFolder [1], MODEL_FOLDER, "*.oof"))
 		*gameFolders.szModelFolder [1] = '\0';
 	else {
-		sprintf (gameFolders.szModelFolder [1], "%s/%s", gameFolders.szModFolder, MODEL_FOLDER);
-		sprintf (gameFolders.szModelCacheFolder [1], "%s/%s/%s", PUBLIC_CACHE_FOLDER, gameFolders.szModName, MODEL_FOLDER);
+		sprintf (gameFolders.szModelFolder [1], "%s%s", gameFolders.szModFolder, MODEL_FOLDER);
+		sprintf (gameFolders.szModelCacheFolder [1], "%s%s/%s/", gameFolders.szModCacheFolder, gameFolders.szModName, MODEL_FOLDER);
 		}
 	if (GetAppFolder (gameFolders.szModFolder, gameFolders.szWallpaperFolder [1], WALLPAPER_FOLDER, "*.tga")) {
 		*gameFolders.szWallpaperFolder [1] = '\0';
 		*gameOpts->menus.altBg.szName [1] = '\0';
 		}
 	else {
-		sprintf (gameFolders.szWallpaperFolder [1], "%s/%s", gameFolders.szModFolder, WALLPAPER_FOLDER);
+		sprintf (gameFolders.szWallpaperFolder [1], "%s%s/", gameFolders.szModFolder, WALLPAPER_FOLDER);
 		if (nLevel < 0)
 			sprintf (gameOpts->menus.altBg.szName [1], "slevel%02d.tga", -nLevel);
 		else if (nLevel > 0) {
