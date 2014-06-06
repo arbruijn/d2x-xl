@@ -898,7 +898,7 @@ if (!*gameFolders.szModelCacheFolder [m_bCustom])
 strcpy (szBin, szFilename);
 strcpy (strrchr (szBin, '.'), ".bin");
 
-if (!cf.Open (szBin, gameFolders.szModelFolder [m_bCustom], "wb", 0))
+if (!cf.Open (szBin, gameFolders.szModelCacheFolder [m_bCustom], "wb", 0))
 	return 0;
 cf.WriteInt (MODEL_DATA_VERSION);
 cf.WriteInt (m_nModel);
@@ -994,7 +994,7 @@ strcpy (strrchr (szBin, '.'), ".bin");
 
 time_t tBIN = cf.Date (szBin, gameFolders.szModelCacheFolder [bCustom], 0);
 
-if (tASE > tBIN)
+if ((tBIN > 0) && (tASE > tBIN))
 	return 0;
 
 if (!cf.Open (szBin, gameFolders.szModelFolder [bCustom], "rb", 0))
