@@ -204,8 +204,6 @@ if (*pszParentFolder) {
 
 void GetAppFolders (bool bInit)
 {
-	int	i;
-
 if (bInit)
 	memset (&gameFolders, 0, sizeof (gameFolders));
 *gameFolders.szUserFolder =

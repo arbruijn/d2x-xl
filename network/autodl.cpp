@@ -325,10 +325,10 @@ return SDLNet_TCP_Send (client.socket, (void *) client.data, DL_PACKET_SIZE) == 
 int CDownloadManager::OpenFile (tClient& client, const char *pszExt)
 {
 	char	szFile [FILENAME_LEN];
-	int	l = (int) strlen (gameFolders.szMissionFolders [0]);
+	int	l = (int) strlen (gameFolders.szMissionFolder [0]);
 
 sprintf (szFile, "%s%s%s%s", 
-			gameFolders.szMissionFolders [0], (l && (gameFolders.szMissionFolders [0][l-1] != '/')) ? "/" : "", 
+			gameFolders.szMissionFolder [0], (l && (gameFolders.szMissionFolder [0][l-1] != '/')) ? "/" : "", 
 			netGame.m_info.szMissionName, pszExt);
 if (client.cf.File ())
 	client.cf.Close ();

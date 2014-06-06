@@ -830,7 +830,7 @@ if (nStage == 0) {
 		if (nLoadRes == 0) {
 			sprintf (szFile, "%s.ham", gameStates.app.szCurrentMissionFile);
 			/*---*/PrintLog (1, "trying custom robots (ham) from level '%s'\n", gameStates.app.szCurrentMissionFile);
-			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szMissionFolders [0], missionManager.nEnhancedMission);
+			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szMissionFolder [0], missionManager.nEnhancedMission);
 			PrintLog (-1);
 			}
 		if (nLoadRes > 0) {
