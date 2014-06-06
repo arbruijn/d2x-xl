@@ -119,13 +119,19 @@
 #	define	MISSIONSTATE_FOLDER		"missions"
 
 #	ifdef _WIN32
+
 #		if DBG
-#			define	CACHE_FOLDER		"cache/debug"
+#			define	SHARED_CACHE_FOLDER		"cache/debug"
 #		else
-#			define	CACHE_FOLDER		"cache"
+#			define	SHARED_CACHE_FOLDER		"cache"
 #		endif
+#	define USER_CACHE_FOLDER	SHARED_CACHE_FOLDER
+
 #	else
-#		define	CACHE_FOLDER			"d2x-xl"
+
+#		define	SHARED_CACHE_FOLDER			"d2x-xl"
+#		define	USER_CACHE_FOLDER				".d2x-xl"
+
 #	endif
 
 #endif
@@ -310,7 +316,7 @@ if (!*VAR_DATA_FOLDER)
 	strcpy (VAR_DATA_FOLDER, STATIC_DATA_FOLDER);
 
 MakeFolder (PRIVATE_DATA_FOLDER);
-MakeFolder (PRIVATE_CACHE_FOLDER, PRIVATE_DATA_FOLDER, CACHE_FOLDER);
+MakeFolder (PRIVATE_CACHE_FOLDER, PRIVATE_DATA_FOLDER, USER_CACHE_FOLDER);
 MakeFolder (gameFolders.szMissionStateFolder, PRIVATE_CACHE_FOLDER, MISSIONSTATE_FOLDER);
 
 #ifdef __macosx__
@@ -324,7 +330,7 @@ strcpy (PRIVATE_CACHE_FOLDER, PUBLIC_CACHE_FOLDER);
 MakeFolder (STATIC_DATA_FOLDER);
 MakeFolder (gameFolders.szDataFolder [0], STATIC_DATA_FOLDER, DATA_FOLDER);
 MakeFolder (gameFolders.szDataFolder [1], gameFolders.szDataFolder [0], "d2x-xl");
-if (!MakeFolder (PUBLIC_CACHE_FOLDER, VAR_DATA_FOLDER, CACHE_FOLDER)) {
+if (!MakeFolder (PUBLIC_CACHE_FOLDER, VAR_DATA_FOLDER, SHARED_CACHE_FOLDER)) {
 	strcpy (VAR_DATA_FOLDER, PRIVATE_DATA_FOLDER);	 // fall back
 	strcpy (PUBLIC_CACHE_FOLDER, PRIVATE_CACHE_FOLDER);
 	}
@@ -343,6 +349,7 @@ MakeFolder (gameFolders.szScreenshotFolder, STATIC_DATA_FOLDER, SCRSHOT_FOLDER);
 MakeFolder (gameFolders.szDemoFolder, STATIC_DATA_FOLDER, DEMO_FOLDER);
 MakeFolder (gameFolders.szConfigFolder, STATIC_DATA_FOLDER, CONFIG_FOLDER);
 MakeFolder (gameFolders.szDownloadFolder, STATIC_DATA_FOLDER, DOWNLOAD_FOLDER);
+MakeFolder (gameFolders.szWallpaperFolder [0], gameFolders.szTextureFolder [0], WALLPAPER_FOLDER);
 
 #else
 
@@ -356,6 +363,7 @@ MakeFolder (gameFolders.szScreenshotFolder, PRIVATE_CACHE_FOLDER, SCRSHOT_FOLDER
 MakeFolder (gameFolders.szDemoFolder, PRIVATE_CACHE_FOLDER, DEMO_FOLDER);
 MakeFolder (gameFolders.szConfigFolder, PRIVATE_CACHE_FOLDER, CONFIG_FOLDER);
 MakeFolder (gameFolders.szDownloadFolder, PRIVATE_CACHE_FOLDER, DOWNLOAD_FOLDER);
+MakeFolder (gameFolders.szWallpaperFolder [0], PRIVATE_CACHE_FOLDER, WALLPAPER_FOLDER);
 
 #endif
 
@@ -364,7 +372,6 @@ MakeFolder (gameFolders.szModelCacheFolder [0], PUBLIC_CACHE_FOLDER, MODEL_FOLDE
 MakeFolder (gameFolders.szTextureCacheFolder [0], PUBLIC_CACHE_FOLDER, TEXTURE_FOLDER);
 MakeFolder (gameFolders.szTextureCacheFolder [1], gameFolders.szTextureCacheFolder [0], TEXTURE_FOLDER_D2);
 MakeFolder (gameFolders.szTextureCacheFolder [2], gameFolders.szTextureCacheFolder [0], TEXTURE_FOLDER_D1);
-MakeFolder (gameFolders.szWallpaperFolder [0], gameFolders.szTextureFolder [0], WALLPAPER_FOLDER);
 
 MakeFolder (gameFolders.szDownloadFolder, PUBLIC_CACHE_FOLDER, DOWNLOAD_FOLDER);
 MakeFolder (gameFolders.szLightmapFolder, PUBLIC_CACHE_FOLDER, LIGHTMAP_FOLDER);
@@ -449,7 +456,10 @@ else {
 	if (GetAppFolder (gameFolders.szModFolder, gameFolders.szTextureFolder [3], TEXTURE_FOLDER, "*.tga"))
 		*gameFolders.szTextureFolder [3] = '\0';
 	else {
+		sprintf (gameFolders.szTextureCacheFolder [3], "%s%s//", gameFolders.szModCacheFolder, gameFolders.szModName);
+		MakeFolder (gameFolders.szTextureCacheFolder [3]);
 		sprintf (gameFolders.szTextureCacheFolder [3], "%s%s/%s/", gameFolders.szModCacheFolder, gameFolders.szModName, TEXTURE_FOLDER);
+		MakeFolder (gameFolders.szTextureCacheFolder [3]);
 		//gameOpts->render.textures.bUseHires [0] = 1;
 		}
 	if (GetAppFolder (gameFolders.szModFolder, gameFolders.szModelFolder [1], MODEL_FOLDER, "*.ase") &&
@@ -458,6 +468,7 @@ else {
 	else {
 		sprintf (gameFolders.szModelFolder [1], "%s%s", gameFolders.szModFolder, MODEL_FOLDER);
 		sprintf (gameFolders.szModelCacheFolder [1], "%s%s/%s/", gameFolders.szModCacheFolder, gameFolders.szModName, MODEL_FOLDER);
+		MakeFolder (gameFolders.szModelCacheFolder [1]);
 		}
 	if (GetAppFolder (gameFolders.szModFolder, gameFolders.szWallpaperFolder [1], WALLPAPER_FOLDER, "*.tga")) {
 		*gameFolders.szWallpaperFolder [1] = '\0';
