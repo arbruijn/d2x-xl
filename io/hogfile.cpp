@@ -261,7 +261,7 @@ return Reload (&m_files.MsnHogFiles);
 
 int CHogFile::UseD2X (const char * name) 
 {
-return Use (&m_files.D2XHogFiles, name, gameFolders.szMissionFolder);
+return Use (&m_files.D2XHogFiles, name, gameFolders.szMissionFolder [0]);
 }
 
 // ----------------------------------------------------------------------------
@@ -332,7 +332,7 @@ if (bUseD1Hog) {
 		return fp;
 	}
 else {
-	if ((fp = Find (&m_files.D2XHogFiles, gameFolders.szMissionFolder, name, length)))
+	if ((fp = Find (&m_files.D2XHogFiles, gameFolders.szMissionFolder [0], name, length)))
 		return fp;
 	if ((fp = Find (&m_files.D2HogFiles, gameFolders.szDataFolder [0], name, length)))
 		return fp;

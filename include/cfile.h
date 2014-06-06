@@ -134,7 +134,6 @@ class CFile {
 		int LineCount (const char* filename, const char* folder, char* delims);
 	};
 
-
 typedef struct tGameFolders {
 	char szUserFolder [FILENAME_LEN];
 #if defined (__unix__) || defined (__macosx__)
@@ -151,12 +150,13 @@ typedef struct tGameFolders {
 	char szDemoFolder [FILENAME_LEN];
 	char szDownloadFolder [FILENAME_LEN];
 	char szGameFolder [FILENAME_LEN];
-	char szMissionFolder [FILENAME_LEN];
-	char szMissionFolders [2][FILENAME_LEN];
+	char szMissionFolder [3][FILENAME_LEN];
 	char szMissionCacheFolder [FILENAME_LEN];
 	char szMissionDownloadFolder [FILENAME_LEN];
 	char szMissionStateFolder [FILENAME_LEN];
-	char szModFolder [2][FILENAME_LEN];
+	char szModRootFolder [FILENAME_LEN];
+	char szModCacheFolder [FILENAME_LEN];
+	char szModFolder [FILENAME_LEN];
 	char szModelFolder [3][FILENAME_LEN];
 	char szModelCacheFolder [3][FILENAME_LEN];
 	char szModName [FILENAME_LEN];
@@ -168,8 +168,7 @@ typedef struct tGameFolders {
 	char szScreenshotFolder [FILENAME_LEN];
 	char szShaderFolder [FILENAME_LEN];
 	char szSoundFolder [7][FILENAME_LEN];
-	char szTextureCacheFolder [4][FILENAME_LEN];
-	char szTextureRootFolder [FILENAME_LEN];
+	char szTextureCacheFolder [5][FILENAME_LEN];
 	char szTextureFolder [5][FILENAME_LEN];
 	char szWallpaperFolder [2][FILENAME_LEN];
 	int bAltHogDirInited;

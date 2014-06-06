@@ -236,7 +236,7 @@ void MoveD2Textures (void)
 
 for (int i = 0; i < 4; i++) {
 	sprintf (szSourceFolder, "%stextures/%s", STATIC_DATA_FOLDER, szSubFolders [i]);
-	sprintf (szDestFolder, "%s%s", gameFolders.szTextureCacheFolder [0], szSubFolders [i]);
+	sprintf (szDestFolder, "%s%s", gameFolders.szTextureCacheFolder [1], szSubFolders [i]);
 	MoveFiles (szDestFolder, szSourceFolder, false);
 	}
 }

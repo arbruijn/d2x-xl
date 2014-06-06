@@ -448,7 +448,7 @@ else {
 		return 0;
 	sprintf (szFile, "%s.ham", gameFolders.szModName);
 	pszFile = szFile;
-	pszFolder = gameFolders.szModFolder [1];
+	pszFolder = gameFolders.szModFolder;
 	}
 
 if (!cf.Open (pszFile, pszFolder, "rb", 0)) {

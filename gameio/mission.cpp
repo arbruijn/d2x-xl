@@ -441,7 +441,7 @@ void CMissionManager::AddBuiltinD2XMission (void)
 {
 	CFile	cf;
 
-if (cf.Exist ("d2x.hog", gameFolders.szMissionFolder, 0)) {
+if (cf.Exist ("d2x.hog", gameFolders.szMissionFolder [0], 0)) {
 	strcpy (m_list [m_nCount].filename,"d2x");
 	if (gameOpts->menus.bShowLevelVersion)
 		strcpy (m_list [m_nCount].szMissionName,"(D2) Descent 2: Vertigo");
@@ -655,7 +655,7 @@ else {
 			AddBuiltinD1Mission ();
 		}
 	nBuiltIns = m_nCount;
-	sprintf (gameFolders.szMissionFolders [0], "%s/%s", gameFolders.szMissionFolder, gameFolders.szMissionSubFolder);
+	sprintf (gameFolders.szMissionFolders [0], "%s/%s", gameFolders.szMissionFolder [0], gameFolders.szMissionSubFolder);
 	bHaveSubFolders = 0;
 	if (gameOpts->app.nVersionFilter & 2) {
 		Add (bAnarchy, 0, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
@@ -931,7 +931,7 @@ switch (m_list [nMission].location) {
 		*szFolder = '\0';
 		break;
 	case ML_MSNROOTDIR:
-		sprintf (szFolder, "%s%s", gameFolders.szMissionFolder, *gameFolders.szMissionFolder ? "/" : "");
+		sprintf (szFolder, "%s%s", gameFolders.szMissionFolder [0], *gameFolders.szMissionFolder [0] ? "/" : "");
 		break;
 	case ML_DATADIR:
 		sprintf (szFolder, "%s%s", gameFolders.szDataFolder [0], *gameFolders.szDataFolder [0] ? "/" : "");

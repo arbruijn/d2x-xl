@@ -271,7 +271,7 @@ if (!nInfoType) {
 	GrPrintF (NULL, 0x8000, CCanvas::Current ()->Height () - 2 * h - 2, TXT_COPYRIGHT);
 	GrPrintF (NULL, CCanvas::Current ()->Width () - w - 2, CCanvas::Current ()->Height () - 2 * h - 2, "V%d.%d", D2X_MAJOR, D2X_MINOR);
 	if (bVertigo < 0)
-		bVertigo = CFile::Exist ("d2x.hog", gameFolders.szMissionFolder, 0);
+		bVertigo = CFile::Exist ("d2x.hog", gameFolders.szMissionFolder [0], 0);
 	if (bVertigo) {
 		fontManager.SetCurrent (MEDIUM2_FONT);
 		fontManager.Current ()->StringSize (TXT_VERTIGO, w, h, aw);

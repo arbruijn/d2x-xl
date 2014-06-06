@@ -808,12 +808,12 @@ if (nStage == 0) {
 	if (missionManager.nEnhancedMission) {
 		sprintf (szFile, "d2x.ham");
 		/*---*/PrintLog (1, "trying vertigo custom robots (d2x.ham)\n");
-		nLoadRes = LoadRobotExtensions ("d2x.ham", gameFolders.szMissionFolder, missionManager.nEnhancedMission);
+		nLoadRes = LoadRobotExtensions ("d2x.ham", gameFolders.szMissionFolder [0], missionManager.nEnhancedMission);
 		PrintLog (-1);
 		}
 	if (gameStates.app.bHaveMod) {
 		/*---*/PrintLog (1, "trying custom robots (hxm) from mod '%s'\n", gameFolders.szModName);
-		if (LoadRobotReplacements (gameFolders.szModName, gameFolders.szModFolder [1], 0, 0, true, false))
+		if (LoadRobotReplacements (gameFolders.szModName, gameFolders.szModFolder, 0, 0, true, false))
 			gameStates.app.bCustomData = true;
 		PrintLog (-1);
 		}
@@ -824,7 +824,7 @@ if (nStage == 0) {
 		else {
 			sprintf (szFile, "%s.vham", gameFolders.szModName);
 			/*---*/PrintLog (1, "trying custom robots (vham) from mod '%s'\n", gameFolders.szModName);
-			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szModFolder [1], missionManager.nEnhancedMission);
+			nLoadRes = LoadRobotExtensions (szFile, gameFolders.szModFolder, missionManager.nEnhancedMission);
 			PrintLog (-1);
 			}
 		if (nLoadRes == 0) {
@@ -873,14 +873,8 @@ else {
 
 	/*---*/PrintLog (1, "loading replacement models\n");
 	if (*gameFolders.szModelFolder [1]) {
-		if (missionManager.nCurrentLevel < 0) {
-			sprintf (gameFolders.szModelFolder [2], "%s/slevel%02d", gameFolders.szModelFolder [1], -missionManager.nCurrentLevel);
-			sprintf (gameFolders.szModelCacheFolder [2], "%s/slevel%02d", gameFolders.szModelCacheFolder [1], -missionManager.nCurrentLevel);
-			}
-		else {
-			sprintf (gameFolders.szModelFolder [2], "%s/level%02d", gameFolders.szModelFolder [1], missionManager.nCurrentLevel);
-			sprintf (gameFolders.szModelCacheFolder [2], "%s/level%02d", gameFolders.szModelCacheFolder [1], missionManager.nCurrentLevel);
-			}
+		sprintf (gameFolders.szModelFolder [2], "%s/slevel%02d", gameFolders.szModelFolder [1], abs (missionManager.nCurrentLevel));
+		sprintf (gameFolders.szModelCacheFolder [2], "%s/slevel%02d", gameFolders.szModelCacheFolder [1], abs (missionManager.nCurrentLevel));
 		LoadHiresModels (2);
 		}
 	LoadHiresModels (1);
@@ -1044,7 +1038,7 @@ for (;;) {
 	if (strstr (hogFileManager.AltFiles ().szName, ".hog"))
 		break;
 	sprintf (szHogName, "%s%s%s%s",
-				gameFolders.szMissionFolder, *gameFolders.szMissionFolder ? "/" : "",
+				gameFolders.szMissionFolder [0], *gameFolders.szMissionFolder [0] ? "/" : "",
 				gameFolders.szMissionSubFolder, pszLevelName);
 	if (!hogFileManager.UseMission (szHogName))
 		break;

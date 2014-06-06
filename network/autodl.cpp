@@ -514,7 +514,7 @@ switch (m_nState = m_data [0]) {
 				sprintf (szDest, "%s/%s%s", szFolder, szFile [0], szExt);
 #endif
 			else
-				sprintf (szDest, "%s/%s%s", gameFolders.szMissionDownloadFolder, *gameFolders.szMissionFolder ? "/" : "", pszFile);
+				sprintf (szDest, "%s/%s%s", gameFolders.szMissionDownloadFolder, *gameFolders.szMissionFolder [0] ? "/" : "", pszFile);
 			if (m_cf.Open (szDest, "", "wb", 0))
 				break;
 			}

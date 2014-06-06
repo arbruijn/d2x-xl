@@ -670,24 +670,24 @@ for (int i = 0; i < 2; i++) {
 			strcpy (p + 1, "0");
 		}
 #endif
-	if (*gameFolders.szTextureFolder [2]) {
+	if (*gameFolders.szTextureFolder [3]) {
 		char szLevelFolder [FILENAME_LEN];
 		if (missionManager.nCurrentLevel < 0)
 			sprintf (szLevelFolder, "slevel%02d", -missionManager.nCurrentLevel);
 		else
 			sprintf (szLevelFolder, "level%02d", missionManager.nCurrentLevel);
-		sprintf (gameFolders.szTextureFolder [3], "%s/%s", gameFolders.szTextureFolder [2], szLevelFolder);
-		sprintf (gameFolders.szTextureCacheFolder [3], "%s/%s", gameFolders.szTextureCacheFolder [2], szLevelFolder);
+		sprintf (gameFolders.szTextureFolder [4], "%s/%s", gameFolders.szTextureFolder [3], szLevelFolder);
+		sprintf (gameFolders.szTextureCacheFolder [4], "%s/%s", gameFolders.szTextureCacheFolder [3], szLevelFolder);
 		}
 	else
-		*gameFolders.szTextureFolder [3] =
-		*gameFolders.szTextureCacheFolder [3] = '\0';
+		*gameFolders.szTextureFolder [4] =
+		*gameFolders.szTextureCacheFolder [4] = '\0';
 
 	int nShrinkFactor = bShrink ? ShrinkFactor (baseName) : 1;
 
-	MakeBitmapFilenames (baseName, gameFolders.szTextureFolder [3], gameFolders.szTextureCacheFolder [3], fn [1], fn [0], nShrinkFactor);
-	MakeBitmapFilenames (baseName, gameFolders.szTextureFolder [2], gameFolders.szTextureCacheFolder [2], fn [3], fn [2], nShrinkFactor);
-	MakeBitmapFilenames (baseName, gameFolders.szTextureFolder [bD1], gameFolders.szTextureCacheFolder [bD1], fn [5], fn [4], nShrinkFactor);
+	MakeBitmapFilenames (baseName, gameFolders.szTextureFolder [4], gameFolders.szTextureCacheFolder [4], fn [1], fn [0], nShrinkFactor);
+	MakeBitmapFilenames (baseName, gameFolders.szTextureFolder [3], gameFolders.szTextureCacheFolder [3], fn [3], fn [2], nShrinkFactor);
+	MakeBitmapFilenames (baseName, gameFolders.szTextureFolder [bD1 + 1], gameFolders.szTextureCacheFolder [bD1 + 1], fn [5], fn [4], nShrinkFactor);
 
 	if (0 < (nFile = SearchHiresBitmap (fn)))
 		return fn [nFile];
@@ -781,7 +781,7 @@ if (s && (s [1] != '0'))
 #endif
 
 if (nFile < 2)	//was level specific mod folder
-	MakeTexSubFolders (gameFolders.szTextureCacheFolder [3]);
+	MakeTexSubFolders (gameFolders.szTextureCacheFolder [4]);
 
 CBitmap*	altBmP;
 if (nIndex < 0) 
@@ -858,7 +858,7 @@ else
 		}
 #if TEXTURE_COMPRESSION
 	if (CompressTGA (bmP))
-		bmP->SaveS3TC (gameFolders.szTextureCacheFolder [(nFile < 2) ? 3 : (nFile < 4) ? 2 : bD1], bmName);
+		bmP->SaveS3TC (gameFolders.szTextureCacheFolder [(nFile < 2) ? 4 : (nFile < 4) ? 3 : bD1 + 1], bmName);
 	else {
 #endif
 		int nBestShrinkFactor = BestShrinkFactor (bmP, ShrinkFactor (bmName));
@@ -876,7 +876,7 @@ else
 				// nFile < 2: mod level texture folder
 				// nFile < 4: mod texture folder
 				// otherwise standard D1 or D2 texture folder
-				tga.Save (bmName, gameFolders.szTextureCacheFolder [(nFile < 2) ? 3 : (nFile < 4) ? 2 : bD1]);
+				tga.Save (bmName, gameFolders.szTextureCacheFolder [(nFile < 2) ? 4 : (nFile < 4) ? 3 : bD1 + 1]);
 				}
 			}
 		}

@@ -367,7 +367,7 @@ if (bCustom) {
 		return 0;
 	sprintf (szFile, "%s%s", gameFolders.szModName, (gameOpts->sound.audioSampleRate >= SAMPLE_RATE_22K) ? ".s22" : ".s11");
 	pszFile = szFile;
-	pszFolder = gameFolders.szModFolder [1];
+	pszFolder = gameFolders.szModFolder;
 	if (!(bUseLowRes = cf.Exist (pszFile, pszFolder, 0) != 0)) {
 		pszFile = DefaultSoundFile ();
 		pszFolder = gameFolders.szDataFolder [0];

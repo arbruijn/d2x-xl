@@ -1513,11 +1513,11 @@ int CBriefing::LoadImageText (char* filename, CCharArray& textBuffer)
 if (!strstr (filename, ".t"))
 	strcat (filename, ".tex");
 bHaveBinary = (strstr (filename, ".txb") != NULL);
-if (!(cf.Open (filename, gameFolders.szModFolder [1], fileModes [bHaveBinary], gameStates.app.bD1Mission) ||
+if (!(cf.Open (filename, gameFolders.szModFolder, fileModes [bHaveBinary], gameStates.app.bD1Mission) ||
 	   cf.Open (filename, gameFolders.szDataFolder [0], fileModes [bHaveBinary], gameStates.app.bD1Mission))) {
 	bHaveBinary = !bHaveBinary;
 	strcpy (strstr (filename, ".t"), bHaveBinary ? ".txb" : ".tex");
-	if (!(cf.Open (filename, gameFolders.szModFolder [1], fileModes [bHaveBinary], gameStates.app.bD1Mission) ||
+	if (!(cf.Open (filename, gameFolders.szModFolder, fileModes [bHaveBinary], gameStates.app.bD1Mission) ||
 			cf.Open (filename, gameFolders.szDataFolder [0], fileModes [bHaveBinary], gameStates.app.bD1Mission))) {
 		PrintLog (0, "can't open briefing '%s'!\n", filename);
 		return 0;
