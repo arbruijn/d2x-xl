@@ -745,7 +745,7 @@ bool CTriMeshBuilder::Load (int nLevel, bool bForce)
 if (!(gameStates.render.bTriangleMesh && (gameStates.app.bCacheMeshes || bForce)))
 	return false;
 if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.var.szMeshes, "rb", 0) &&
-	 !cf.Open (DataFilename (szFilename, nLevel), gameFolders.shared.szCache, "rb", 0))
+	 !cf.Open (DataFilename (szFilename, nLevel), gameFolders.var.szCache, "rb", 0))
 	return false;
 bOk = (cf.Read (&mdh, sizeof (mdh), 1) == 1);
 if (bOk)
@@ -862,7 +862,7 @@ if (bOk) {
 	}
 cf.Close ();
 if (!gameStates.app.bCacheMeshes)
-	cf.Delete (DataFilename (szFilename, nLevel), gameFolders.shared.szCache);
+	cf.Delete (DataFilename (szFilename, nLevel), gameFolders.var.szCache);
 CreateSegFaceList ();
 CreateFaceVertLists ();
 return bOk;

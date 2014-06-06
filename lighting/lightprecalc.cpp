@@ -791,7 +791,7 @@ int LoadLightData (int nLevel)
 if (!gameStates.app.bCacheLights)
 	return 0;
 if (!cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.var.szLightData, "rb", 0) &&
-	 !cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.shared.szCache, "rb", 0))
+	 !cf.Open (LightDataFilename (szFilename, nLevel), gameFolders.var.szCache, "rb", 0))
 	return 0;
 bOk = (cf.Read (&ldh, sizeof (ldh), 1) == 1);
 if (bOk)

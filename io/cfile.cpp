@@ -925,7 +925,7 @@ if (*szDestName) {
 	else
 		strcpy (fn, szDestName);
 	}
-sprintf (szDest, "%s%s%s", gameFolders.shared.szCache, *gameFolders.shared.szCache ? "/" : "", fn);
+sprintf (szDest, "%s%s%s", gameFolders.var.szCache, *gameFolders.var.szCache ? "/" : "", fn);
 if (! (fp = fopen (szDest, "wb"))) {
 	Close ();
 	return 0;
@@ -951,9 +951,9 @@ int CFile::Copy (const char *pszSrc, const char *pszDest)
 	sbyte	buf [COPY_BUF_SIZE];
 	CFile	cf;
 
-if (!cf.Open (pszDest, gameFolders.szSavegameFolder, "wb", 0))
+if (!cf.Open (pszDest, gameFolders.user.szSavegames, "wb", 0))
 	return -1;
-if (!Open (pszSrc, gameFolders.szSavegameFolder, "rb", 0))
+if (!Open (pszSrc, gameFolders.user.szSavegames, "rb", 0))
 	return -2;
 while (!EoF ()) {
 	int bytes_read = (int) Read (buf, 1, COPY_BUF_SIZE);

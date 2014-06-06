@@ -1111,7 +1111,7 @@ int CMissionManager::LoadLevelStates (void)
 
 sprintf (szFile, "%s.state", m_list [nCurrentMission].szMissionName + ((m_list [nCurrentMission].szMissionName [0] == '[') ? 4 : 0));
 if (!cf.Open (szFile, gameFolders.missions.szStates, "rb", 0) &&
-	 !cf.Open (szFile, gameFolders.shared.szCache, "rb", 0))
+	 !cf.Open (szFile, gameFolders.var.szCache, "rb", 0))
 	return 0;
 for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
 	nLevelState [i] = char (cf.ReadByte ());
@@ -1127,8 +1127,8 @@ void CMissionManager::DeleteLevelStates (void)
 
 for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++) {
 	LevelStateName (szFile, i);
-	if (CFile::Exist (szFile, gameFolders.shared.szCache, 0))
-		CFile::Delete (szFile, gameFolders.shared.szCache);
+	if (CFile::Exist (szFile, gameFolders.var.szCache, 0))
+		CFile::Delete (szFile, gameFolders.var.szCache);
 	}
 memset (nLevelState, 0, sizeof (nLevelState));
 }

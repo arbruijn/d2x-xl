@@ -504,7 +504,7 @@ if (i >= 0) {
 	pszSoundFile = addonSounds [i].szSoundFile + 3;
 	}
 if (!gameStates.app.bReadOnly && cf.Extract (pszSoundFile, gameFolders.game.szData [0], 0, "d2x-temp.wav")) {
-	pszFolder = gameFolders.shared.szCache;
+	pszFolder = gameFolders.var.szCache;
 	pszFile = "d2x-temp.wav";
 	}
 else {

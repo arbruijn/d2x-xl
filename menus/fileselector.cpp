@@ -84,7 +84,7 @@ void DeleteSaveGames (char* name)
 
 for (i = 0; i < 10; i++) {
 	sprintf (filename, "%s.sg%d", name, i);
-	CFile::Delete (filename, gameFolders.szSavegameFolder);
+	CFile::Delete (filename, gameFolders.user.szSavegames);
 	}
 }
 
@@ -151,11 +151,11 @@ if (m_nMode == 2)
 else {
 	char* p = pszFile + strlen (pszFile);
 	*p = '.'; // make the extension visible again
-	if (CFile::Delete (pszFile, gameFolders.szProfiles))
+	if (CFile::Delete (pszFile, gameFolders.user.szProfiles))
 		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_PILOT, pszFile);
 	else {
 		pszFile [strlen (pszFile) - 1] = 'x'; //turn ".plr" to ".plx"
-		CFile::Delete (pszFile, gameFolders.szProfiles);
+		CFile::Delete (pszFile, gameFolders.user.szProfiles);
 		if (!MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, "%s?", TXT_DELETE_SAVEGAMES)) {
 			*p = '\0'; // hide extension
 			DeleteSaveGames (pszFile);

@@ -1322,7 +1322,7 @@ int PSecretLevelDestroyed (void)
 {
 if (gameStates.app.bFirstSecretVisit)
 	return 0;		//	Never been there, can't have been destroyed.
-if (CFile::Exist (SECRETC_FILENAME, gameFolders.szSavegameFolder, 0))
+if (CFile::Exist (SECRETC_FILENAME, gameFolders.user.szSavegames, 0))
 	return 0;
 return 1;
 }
@@ -1371,7 +1371,7 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_
 	NDStopRecording ();
 if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed))
 	saveGameManager.Save (0, 2, 0, SECRETC_FILENAME);
-if (!gameStates.app.bD1Mission && CFile::Exist (SECRETB_FILENAME, gameFolders.szSavegameFolder, 0)) {
+if (!gameStates.app.bD1Mission && CFile::Exist (SECRETB_FILENAME, gameFolders.user.szSavegames, 0)) {
 	int pwSave = gameData.weapons.nPrimary;
 	int swSave = gameData.weapons.nSecondary;
 
@@ -1418,11 +1418,11 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_
 missionManager.LevelStateName (szFile);
 if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed))
 	saveGameManager.Save (0, -1, 0, szFile);
-else if (CFile::Exist (szFile, gameFolders.shared.szCache, 0))
-	CFile::Delete (szFile, gameFolders.szSavegameFolder);
+else if (CFile::Exist (szFile, gameFolders.var.szCache, 0))
+	CFile::Delete (szFile, gameFolders.user.szSavegames);
 szFile [0] = '\x02';
 missionManager.LevelStateName (szFile + 1, missionManager.NextLevel ());
-if (!gameStates.app.bD1Mission && (nState > 0) && CFile::Exist (szFile, gameFolders.shared.szCache, 0)) {
+if (!gameStates.app.bD1Mission && (nState > 0) && CFile::Exist (szFile, gameFolders.var.szCache, 0)) {
 	int pwSave = gameData.weapons.nPrimary;
 	int swSave = gameData.weapons.nSecondary;
 	saveGameManager.Load (1, -1, 0, szFile + 1);
@@ -1957,7 +1957,7 @@ else if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 	SetScreenMode (SCREEN_MENU);		//go into menu mode
 	if (gameStates.app.bFirstSecretVisit)
 		DoSecretMessage (gameStates.app.bD1Mission ? TXT_ALTERNATE_EXIT : TXT_SECRET_EXIT);
-	else if (CFile::Exist (SECRETC_FILENAME,gameFolders.szSavegameFolder,0))
+	else if (CFile::Exist (SECRETC_FILENAME,gameFolders.user.szSavegames,0))
 		DoSecretMessage (gameStates.app.bD1Mission ? TXT_ALTERNATE_EXIT : TXT_SECRET_EXIT);
 	else {
 		char	text_str [128];
@@ -1986,7 +1986,7 @@ if (gameStates.app.bFirstSecretVisit || (gameData.demo.nState == ND_STATE_PLAYBA
 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_ALL_KEYS;
 	}
 else {
-	if (CFile::Exist (SECRETC_FILENAME, gameFolders.szSavegameFolder, 0)) {
+	if (CFile::Exist (SECRETC_FILENAME, gameFolders.user.szSavegames, 0)) {
 		int	pw_save, sw_save, nCurrentLevel;
 
 		pw_save = gameData.weapons.nPrimary;

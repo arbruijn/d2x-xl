@@ -225,7 +225,7 @@ if (bFinalCountdown ||
 		for (i = 0; i < gameData.reactor.triggers.m_nLinks; i++)
 			SEGMENTS [gameData.reactor.triggers.m_segments [i]].ToggleWall (gameData.reactor.triggers.m_sides [i]);
 		if (missionManager.nCurrentLevel < 0)
-			CFile::Delete ("secret.sgc", gameFolders.szSavegameFolder);
+			CFile::Delete ("secret.sgc", gameFolders.user.szSavegames);
 		}
 	InitCountdown (trigP, bFinalCountdown, -1);
 	}

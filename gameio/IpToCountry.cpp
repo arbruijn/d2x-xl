@@ -38,11 +38,11 @@ static bool LoadBinary (time_t t0, time_t t1)
 {
 	CFile		cf;
 
-time_t tBIN = cf.Date ("IpToCountry.bin", gameFolders.shared.szCache, 0);
+time_t tBIN = cf.Date ("IpToCountry.bin", gameFolders.var.szCache, 0);
 if ((tBIN < 0) || ((t1 > 0) && (tBIN < t1)) || ((t0 > 0) && (tBIN < t0)))
 	return false;
 
-if (!cf.Open ("IpToCountry.bin", gameFolders.shared.szCache, "rb", 0))
+if (!cf.Open ("IpToCountry.bin", gameFolders.var.szCache, "rb", 0))
 	return false;
 int h = (int) cf.Size () - sizeof (int);
 if ((h < 0) || (h / sizeof (CIpToCountry) < 1) || (h % sizeof (CIpToCountry) != 0)) {
@@ -71,7 +71,7 @@ static bool SaveBinary (void)
 {
 	CFile	cf;
 
-if (!cf.Open ("IpToCountry.bin", gameFolders.shared.szCache, "wb", 0))
+if (!cf.Open ("IpToCountry.bin", gameFolders.var.szCache, "wb", 0))
 	return false;
 cf.WriteInt ((int) ipToCountry.ToS ());
 bool bSuccess = (ipToCountry.Write (cf) == ipToCountry.Length ());
