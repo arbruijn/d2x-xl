@@ -230,16 +230,18 @@ if (bMoveSubFolders) {
 
 void MoveD2Textures (void)
 {
-	static char* szSubFolders [] = { "", "64/", "128/", "256/" };
+	static char* szSubFolders [] = { "64/", "128/", "256/" };
 
 	char szSourceFolder [FILENAME_LEN], szDestFolder [FILENAME_LEN];
 
-for (int i = 0; i < 4; i++) {
+sprintf (szSourceFolder, "%stextures/", gameFolders.game.szRoot);
+MoveFiles (gameFolders.game.szTextures [1], szSourceFolder, false);
+for (int i = 0; i < 3; i++) {
 	sprintf (szSourceFolder, "%stextures/%s", gameFolders.game.szRoot, szSubFolders [i]);
 	sprintf (szDestFolder, "%s%s", gameFolders.var.szTextures [1], szSubFolders [i]);
 	MoveFiles (szDestFolder, szSourceFolder, false);
 	}
-for (int i = 1; i < 4; i++) {
+for (int i = 0; i < 3; i++) {
 	sprintf (szSourceFolder, "%stextures/d2/%s", gameFolders.game.szRoot, szSubFolders [i]);
 	sprintf (szDestFolder, "%s%s", gameFolders.var.szTextures [1], szSubFolders [i]);
 	MoveFiles (szDestFolder, szSourceFolder, false);

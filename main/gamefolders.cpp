@@ -261,7 +261,7 @@ if (!*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "") &&
 	*gameFolders.var.szRoot = '\0';
 
 if (!*gameFolders.var.szRoot)
-	strcpy (gameFolders.var.szRoot, *gameFolders.users.szRoot ? gameFolders.users.szRoot : gameFolders.game.szRoot);
+	strcpy (gameFolders.var.szRoot, *gameFolders.user.szRoot ? gameFolders.user.szRoot : gameFolders.game.szRoot);
 if (!*gameFolders.user.szRoot)
 	strcpy (gameFolders.user.szRoot, *gameFolders.var.szRoot ? gameFolders.var.szRoot : gameFolders.game.szRoot);
 
