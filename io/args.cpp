@@ -62,30 +62,15 @@ char* CConfigManager::Filename (int bDebug)
 	CFile	cf;
 
 if ((i = Find ("-ini")))
-	strncpy (m_filename, m_properties [i + 1], sizeof (m_filename) - 1);
+	strncpy (m_filename, m_properties [i], sizeof (m_filename) - 1);
 else {
 #if defined(__unix__)
 	FFS		ffs;
-	strcpy (m_filename, gameFolders.user.szRoot);
-	strcat (m_filename, "/.d2x-xl");
-	if (FFF (m_filename, &ffs, 0) <= 0) {
+	if (FFF (gameFolders.user.szConfig, &ffs, 1) <= 0) {
 #endif
-	strcpy (m_filename, gameFolders.user.szConfig);
-	i = int (strlen (m_filename));
-	if (i) {
-		p = m_filename + i - 1;
-		if ((*p == '\\') || (*p == '/'))
-			p++;
-		else {
-			strcat (m_filename, "/");
-			p += 2;
-			}
-		}
-	else
-		p = m_filename;
-	strcpy (p, bDebug ? "d2xdebug.ini" : "d2x.ini");
+	sprintf (m_filename, "%s%s", gameFolders.user.szConfig, bDebug ? "d2xdebug.ini" : "d2x.ini");
 	if (!cf.Exist (m_filename, "", false)) 
-		strcpy (p, bDebug ? "d2xdebug-default.ini" : "d2x-default.ini");
+		sprintf (m_filename, "%s%s", gameFolders.user.szConfig, bDebug ? "d2xdebug-default.ini" : "d2x-default.ini");
 #if defined(__unix__)
    }
 #endif //!__unix__
