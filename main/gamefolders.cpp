@@ -283,22 +283,10 @@ if (CheckDataFolder (gameFolders.game.szRoot)) {
 /*---*/PrintLog (0, "expected game app folder = '%s'\n", gameFolders.game.szRoot);
 /*---*/PrintLog (0, "expected game data folder = '%s'\n", gameFolders.game.szData [0]);
 
-#ifdef _WIN32
-
 GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szTextures [0], TEXTURE_FOLDER, "");
-if (GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.ase") &&
-	 GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.oof"))
-	MakeFolder (gameFolders.game.szModels, gameFolders.game.szRoot, MODEL_FOLDER);
-GetAppFolder (gameFolders.game.szRoot, gameFolders.mods.szRoot, MOD_FOLDER, "");
-
-#else
-
-GetAppFolder (gameFolders.var.szRoot, gameFolders.game.szTextures [0], TEXTURE_FOLDER, "");
-if (GetAppFolder (gameFolders.var.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.ase"))
-	GetAppFolder (gameFolders.var.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.oof");
+if (GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.ase"))
+	GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.oof");
 GetAppFolder (gameFolders.var.szRoot, gameFolders.mods.szRoot, MOD_FOLDER, "");
-
-#endif
 
 if (GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szSounds [0], SOUND_FOLDER, ""))
 	MakeFolder (gameFolders.game.szSounds [0], gameFolders.game.szRoot, SOUND_FOLDER);
