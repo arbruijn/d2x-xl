@@ -277,7 +277,7 @@ static bool CheckAndCopyWildcards (tFileDesc* fileDesc)
 if ((i = FFF (fileDesc->pszFile, &ffs, 0))) {
 	for (int j = 0; j < 2; j++)
 		if (*fileDesc->pszFolders [j]) {
-			sprintf (szFilter, "%s%s\\%s", fileDesc->bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, fileDesc->pszFolders [j], fileDesc->pszFile);
+			sprintf (szFilter, "%s%s\\%s", fileDesc->bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, fileDesc->pszFolders [j], fileDesc->pszFile);
 			if (!FFF (szFilter, &ffs, 0))
 				return true;
 			}
@@ -287,10 +287,10 @@ do {
 	for (int j = 0; j < 2; j++)
 		if (*fileDesc->pszFolders [j]) {
 			sprintf (szDest, "\002%s", ffs.name);
-			sprintf (szFilter, "%s%s", fileDesc->bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, fileDesc->pszFolders [j]);
+			sprintf (szFilter, "%s%s", fileDesc->bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, fileDesc->pszFolders [j]);
 			if (!CFile::Exist (szDest, szFilter, 0)) {	// if the file doesn't exist in the destination folder copy it
-				sprintf (szSrc, "%s%s", fileDesc->bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, ffs.name);
-				sprintf (szDest, "%s%s\\%s", fileDesc->bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, fileDesc->pszFolders [j], ffs.name);
+				sprintf (szSrc, "%s%s", fileDesc->bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, ffs.name);
+				sprintf (szDest, "%s%s\\%s", fileDesc->bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, fileDesc->pszFolders [j], ffs.name);
 				cf.Copy (szSrc, szDest);
 				}
 			}
@@ -315,23 +315,23 @@ for (int i = 0; i < nFiles; i++) {
 	else {
 		for (int j = 0; j < 2; j++)
 			if (*fileList [i].pszFolders [j]) {
-				sprintf (szDest, "%s%s", fileList [i].bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, fileList [i].pszFolders [j]);
+				sprintf (szDest, "%s%s", fileList [i].bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, fileList [i].pszFolders [j]);
 				fileList [i].bFound = CFile::Exist (fileList [i].pszFile, szDest, false) == 1;
 				if (fileList [i].bFound)
 					break;
 				}
 		if (fileList [i].bFound)
 			continue;	// file exists in the destination folder
-		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, fileList [i].bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, false) == 1;
+		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, fileList [i].bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, false) == 1;
 		if (fileList [i].bFound) {	// file exists in the source folder
 			sprintf (szSrc, "%s%s", gameFolders.game.szRoot, fileList [i].pszFile + 1);
-			sprintf (szDest, "%s%s\\%s", fileList [i].bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, fileList [i].pszFile + 1);
+			sprintf (szDest, "%s%s\\%s", fileList [i].bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, fileList [i].pszFile + 1);
 			cf.Copy (szSrc, szDest);
 			}
 		else if (!fileList [i].bOptional) {
 			for (int j = 0; j < 2; j++)
 				if (*fileList [i].pszFolders [j]) {
-				sprintf (szDest, "%s%s", fileList [i].bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, fileList [i].pszFolders [j]);
+				sprintf (szDest, "%s%s", fileList [i].bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, fileList [i].pszFolders [j]);
 				fileList [i].bFound = CFile::Exist (fileList [i].pszFile, szDest, false) == 1;
 				}
 			nErrors++;
@@ -394,9 +394,9 @@ for (int i = 0, j = -1; i < nFiles; i++) {
 					strcat (szMsg, "\n\n");
 					bFirst = true;
 					}
-				if (strcmp (fileList [i].bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot, ".\\")) {
-					strcat (szMsg, fileList [i].bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot);
-					l += int (strlen (fileList [i].bUser ? gameFolders.user.szRoot : gameFolders.game.szRoot));
+				if (strcmp (fileList [i].bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, ".\\")) {
+					strcat (szMsg, fileList [i].bUser ? gameFolders.user.szCache : gameFolders.game.szRoot);
+					l += int (strlen (fileList [i].bUser ? gameFolders.user.szCache : gameFolders.game.szRoot));
 					}
 				strcat (szMsg, fileList [i].pszFolders [h]);
 				strcat (szMsg, ": ");
@@ -521,7 +521,7 @@ if (nResult) {
 			Warning (szMsg);
 		}
 	CFile	cf;
-	if (cf.Open ("d2x-xl-missing-files.txt", gameFolders.user.szRoot, "rb", 0)) {
+	if (cf.Open ("d2x-xl-missing-files.txt", gameFolders.user.szCache, "rb", 0)) {
 		fprintf (cf.File (), szMsg);
 		cf.Close ();
 		}
