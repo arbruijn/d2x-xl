@@ -512,8 +512,8 @@ else {
 		pszFolder = gameFolders.mods.szSounds [1];
 	else if (cf.Exist (pszSoundFile, gameFolders.mods.szSounds [0], 0))
 		pszFolder = gameFolders.mods.szSounds [0];
-	else if (cf.Exist (pszSoundFile, gameFolders.game.szSounds [6], 0))
-		pszFolder = gameFolders.game.szSounds [6];
+	else if (cf.Exist (pszSoundFile, gameFolders.mods.szSounds [1], 0))
+		pszFolder = gameFolders.mods.szSounds [1];
 	else
 		return NULL;
 	pszFile = const_cast<char*>(pszSoundFile);

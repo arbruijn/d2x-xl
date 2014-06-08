@@ -80,7 +80,7 @@ class CCanvas;
 class CScreen;
 
 typedef struct tCanvas {
-	char*				pszId;
+	const char*		pszId;
 	CCanvasColor	color;
 	CPalette*		palette;
 	CFont*			font;				// the currently selected font
@@ -138,8 +138,8 @@ class CCanvas : public CViewport, public CBitmap {
 		inline void SetFontColor (CCanvasColor& color, int i) { m_info.fontColors [i] = color; }
 		inline void SetFont (CFont *font) { m_info.font = font; }
 		inline void SetDrawMode (short nDrawMode) { m_info.nDrawMode = nDrawMode; }
-		inline void SetId (char* pszId) { m_info.pszId = pszId; }
-		inline char* Id (void) { return m_info.pszId; }
+		inline void SetId (const char* pszId) { m_info.pszId = pszId; }
+		inline const char* Id (void) { return m_info.pszId; }
 
 		static CCanvas* Current (void) { return m_save.ToS () ? m_save.Top ()->m_canvas : NULL; }
 
@@ -216,7 +216,7 @@ class CCanvas : public CViewport, public CBitmap {
 
 		void SetViewport (CCanvas* parent = NULL);
 
-		void Activate (char* szId, CCanvas* parent = NULL, bool bReset = false);
+		void Activate (const char* szId, CCanvas* parent = NULL, bool bReset = false);
 
 		inline void Reactivate (void) { SetViewport (m_parent); }
 

@@ -41,7 +41,7 @@ class CConfigManager {
 		int Find (const char* s);
 		int Int (int t, int nDefault);
 		int Int (const char* szArg, int nDefault);
-		char* Text (const char* szArg, const char* pszDefault = "");
+		const char* Text (const char* szArg, const char* pszDefault = "");
 		inline char* Property (int i) { return (--i < Count ()) ? m_properties [i] : m_null; }
 		inline char* operator[] (int i) { return Property (i); }
 };

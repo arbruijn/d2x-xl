@@ -138,13 +138,14 @@
 
 // ----------------------------------------------------------------------------
 
-char* CheckFolder (char* pszAppFolder, char* pszFolder, char* pszFile, bool bFolder = true)
+char* CheckFolder (char* pszAppFolder, const char* pszFolder, char* pszFile, bool bFolder = true)
 {
 if (pszFolder && *pszFolder) {
 	char szFolder [FILENAME_LEN];
 	if (bFolder) {
 		strcpy (szFolder, pszFolder);
-		AppendSlash (pszFolder  = szFolder);
+		AppendSlash (szFolder);
+		pszFolder = const_cast<char*> (szFolder);
 		}
 	CFile::SplitPath (pszFolder, pszAppFolder, NULL, NULL);
 	FlipBackslash (pszAppFolder);

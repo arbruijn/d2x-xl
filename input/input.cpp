@@ -1266,8 +1266,10 @@ SetType ();
 	int bBankOn = 0;
 	int bUseMouse = 0;
 	int bUseJoystick = gameOpts->input.joystick.bUse && ReadJoystick (m_joyAxis);
-#if DBG
+#ifdef USE_SIXENSE
+#	if DBG
 	int bUseSixense = gameOpts->input.joystick.bUse && ReadSixense (m_joyAxis);
+#	endif
 #endif
 
 if (gameOpts->input.mouse.bUse)

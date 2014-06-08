@@ -58,7 +58,6 @@ return 0;
 char* CConfigManager::Filename (int bDebug)
 {
 	int	i;
-	char*	p;
 	CFile	cf;
 
 if ((i = Find ("-ini")))
@@ -183,7 +182,7 @@ return t ? Int (t, nDefault) : nDefault;
 
 // ----------------------------------------------------------------------------
 
-char* CConfigManager::Text (const char* szArg, char* pszDefault)
+const char* CConfigManager::Text (const char* szArg, const char* pszDefault)
 {
 	int t = Find (szArg);
 

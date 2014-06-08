@@ -162,7 +162,7 @@ class CFontManager {
 		void SetColor (int fgColor, int bgColor);
 		void SetColorRGB (CRGBAColor *fgColor, CRGBAColor *bgColor);
 		void SetColorRGBi (uint fgColor, int bSetFG, uint bgColor, int bSetBG);
-		void Push (char* pszId) { 
+		void Push (const char* pszId) { 
 			if (m_current && m_save.Grow ()) {
 				m_save.Top ()->m_font = m_current;
 				m_save.Top ()->m_scale = m_scale;
