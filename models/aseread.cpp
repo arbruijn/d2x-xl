@@ -795,7 +795,7 @@ if (gameStates.app.bCacheModelData) {
 		}
 	}
 
-if (!cf.Open (filename, gameFolders.var.szModels [bCustom], "rb", 0)) {
+if (!cf.Open (filename, gameFolders.game.szModels, "rb", 0)) {
 	return 0;
 	}
 bErrMsg = 0;
@@ -994,7 +994,7 @@ strcpy (strrchr (szBin, '.'), ".bin");
 
 time_t tBIN = cf.Date (szBin, gameFolders.var.szModels [bCustom], 0);
 
-if ((tBIN > 0) && (tASE > tBIN))
+if ((tBIN < 0) || (tASE > tBIN))
 	return 0;
 
 if (!cf.Open (szBin, gameFolders.var.szModels [bCustom], "rb", 0))

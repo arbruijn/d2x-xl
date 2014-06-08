@@ -906,7 +906,13 @@ if (m_usedChannels.Push (int (channelP - m_channels.Buffer ())))
 for (int i = int (m_usedChannels.ToS ()); i; )
 	if (!m_channels [m_usedChannels [--i]].Playing ())
 		UnregisterChannel (i);
+#if DBG
+if (m_usedChannels.Push (int (channelP - m_channels.Buffer ())))
+	return m_usedChannels.ToS () - 1;
+return -1;
+#else
 return m_usedChannels.Push (int (channelP - m_channels.Buffer ())) ? m_usedChannels.ToS () - 1 : -1;
+#endif
 }
 
 //------------------------------------------------------------------------------
