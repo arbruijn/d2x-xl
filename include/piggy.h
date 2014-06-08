@@ -247,7 +247,7 @@ void PiggyCriticalError (void);
 
 void swap_0_255 (CBitmap *bmP);
 
-#define HIRES_SOUND_FOLDER(_bD1)		(gameOpts->UseHiresSound () - 1 + 2 * (_bD1))
+#define HIRES_SOUND_FOLDER(_bD1)		((_bD1) ? 3 : gameOpts->UseHiresSound ())
 
 //------------------------------------------------------------------------------
 
