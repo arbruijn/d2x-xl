@@ -41,7 +41,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "input.h"
 #include "gamecntl.h"
 #include "transformation.h"
-#include "sixense_wrapper.h"
+//#include "sixense_wrapper.h"
 
 class CControlsManager controls;
 
