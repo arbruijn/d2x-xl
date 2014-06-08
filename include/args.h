@@ -26,7 +26,7 @@ class CConfigManager {
 		char				m_filename [FILENAME_LEN];
 		char				m_null [1];
 
-		inline int Count (void) { return (m_properties.Buffer () == NULL) ? NULL : int (m_properties.ToS ()); }
+		inline int Count (void) { return (m_properties.Buffer () == NULL) ? 0 : int (m_properties.ToS ()); }
 
 	public:
 		CConfigManager () { Init (); }
@@ -41,7 +41,7 @@ class CConfigManager {
 		int Find (const char* s);
 		int Int (int t, int nDefault);
 		int Int (const char* szArg, int nDefault);
-		char* Text (const char* szArg, char* pszDefault = "");
+		char* Text (const char* szArg, const char* pszDefault = "");
 		inline char* Property (int i) { return (--i < Count ()) ? m_properties [i] : m_null; }
 		inline char* operator[] (int i) { return Property (i); }
 };

@@ -216,7 +216,7 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void CCanvas::Activate (char* szId, CCanvas* parent, bool bReset) 
+void CCanvas::Activate (const char* szId, CCanvas* parent, bool bReset) 
 {
 if (bReset) {
 	m_save.Reset ();

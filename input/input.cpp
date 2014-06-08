@@ -41,7 +41,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 #include "input.h"
 #include "gamecntl.h"
 #include "transformation.h"
-//#include "sixense_wrapper.h"
+#ifdef USE_SIXENSE
+#	include "sixense_wrapper.h"
+#endif
 
 class CControlsManager controls;
 
@@ -238,6 +240,8 @@ return bUseJoystick;
 
 //------------------------------------------------------------------------------
 
+#ifdef USE_SIXENSE
+
 int CControlsManager::ReadSixense (int* joyAxis)
 {
 #if DBG
@@ -250,6 +254,8 @@ return nAxis;
 return 0;
 #endif
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
