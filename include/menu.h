@@ -493,7 +493,7 @@ extern CMessageBox messageBox;
 int _CDECL_ TextBox (const char *pszTitle, int nWallpaper, int nChoices, ...);
 
 // Same as above, but you can pass a function
-int _CDECL_ MsgBox (const char *pszTitle, pMenuCallback callBack, int nWallpaper, int nChoices, ...);
+int _CDECL_ InfoBox (const char *pszTitle, pMenuCallback callBack, int nWallpaper, int nChoices, ...);
 
 void ProgressBar (const char *szCaption, int nCurProgress, int nMaxProgress, pMenuCallback doProgress);
 

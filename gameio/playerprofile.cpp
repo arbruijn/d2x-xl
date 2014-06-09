@@ -1574,7 +1574,7 @@ for(i = 0; i < MAX_HOTKEY_CONTROLS; i++)
 KCSetControls (0);
 gameConfig.nControlType = choice;
 if (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS) {
-	i = MsgBox (TXT_IMPORTANT_NOTE, (pMenuCallback) NULL, BG_STANDARD, 2, "Choose another", TXT_OK, TXT_FCS);
+	i = InfoBox (TXT_IMPORTANT_NOTE, (pMenuCallback) NULL, BG_STANDARD, 2, "Choose another", TXT_OK, TXT_FCS);
 	if (i == 0)
 		goto RetrySelection;
 	}
@@ -1694,7 +1694,7 @@ if (nStage < 2)
 DefaultAllSettings ();
 
 if (funcRes != EZERO) {
-	MsgBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, "%s\n\n%s", TXT_ERROR_READING_PLR, strerror (funcRes));
+	InfoBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, "%s\n\n%s", TXT_ERROR_READING_PLR, strerror (funcRes));
 	return funcRes;
 	}
 
@@ -1857,7 +1857,7 @@ customDisplayMode = displayModeInfo [CUSTOM_DISPLAY_MODE];
 gameData.app.nLifetimeChecksum = GetLifetimeChecksum (networkData.nNetLifeKills, networkData.nNetLifeKilled);
 if (!profile.Save ()) {
 	funcRes = errno;
-	MsgBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, "%s\n\n%s", TXT_ERROR_WRITING_PLR, strerror (funcRes));
+	InfoBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, "%s\n\n%s", TXT_ERROR_WRITING_PLR, strerror (funcRes));
 	}
 if (gameStates.video.nDefaultDisplayMode < 0)
 	gameStates.video.nDefaultDisplayMode = CUSTOM_DISPLAY_MODE;

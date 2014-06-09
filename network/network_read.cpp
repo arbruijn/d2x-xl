@@ -107,7 +107,7 @@ memcpy (szLocalCallSign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 for (int i = 0; i < nPlayers; i++, playerP++) {
 	if (!CmpLocalPlayer (&playerP->network, playerP->callsign, szLocalCallSign)) {
 		if (nLocalPlayer != -1) {
-			MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_DUPLICATE_PLAYERS);
+			InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_DUPLICATE_PLAYERS);
 			console.printf (CON_DBG, TXT_FOUND_TWICE);
 			networkData.nStatus = NETSTAT_MENU;
 			return -2;
@@ -167,7 +167,7 @@ if (netGame.GetSegmentCheckSum () != networkData.nSegmentCheckSum) {
 		short nInMenu = gameStates.menus.nInMenu;
 		gameStates.menus.nInMenu = 0;
 		networkData.nStatus = NETSTAT_MENU;
-		MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_NETLEVEL_MISMATCH);
+		InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_NETLEVEL_MISMATCH);
 		gameStates.menus.nInMenu = nInMenu;
 		}
 #if 1//!DBG
@@ -192,7 +192,7 @@ for (i = 0, playerP = playerInfoP->m_info.players; i < gameData.multiplayer.nPla
 	if (!CmpLocalPlayer (&playerP->network, playerP->callsign, szLocalCallSign)) {
 		if (N_LOCALPLAYER != -1) {
 			Int3 (); // Hey, we've found ourselves twice
-			MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_PLAYERS);
+			InfoBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_PLAYERS);
 			console.printf (CON_DBG, TXT_FOUND_TWICE);
 			networkData.nStatus = NETSTAT_MENU;
 			return;
@@ -232,7 +232,7 @@ for (i = 0, playerP = playerInfoP->m_info.players; i < gameData.multiplayer.nPla
 	}
 
 if (N_LOCALPLAYER < 0) {
-	MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_PLAYER_REJECTED);
+	InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_PLAYER_REJECTED);
 	networkData.nStatus = NETSTAT_MENU;
 	return;
 	}

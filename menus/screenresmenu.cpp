@@ -153,7 +153,7 @@ void ScreenResMenu (void)
 	char		cShortCut, szCustX [7], szCustY [7];
 
 if (gameStates.video.nDisplayMode == -1) {				//special VR mode
-	MsgBox (TXT_SORRY, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, "You may not change screen\nresolution when VR modes enabled.");
+	InfoBox (TXT_SORRY, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, "You may not change screen\nresolution when VR modes enabled.");
 	return;
 	}
 
@@ -213,7 +213,7 @@ do {
 			if (SetCustomDisplayMode (nCustW, nCustH, 1))
 				key = 0;
 			else
-				MsgBox (TXT_SORRY, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, TXT_ERROR_SCRMODE);
+				InfoBox (TXT_SORRY, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, TXT_ERROR_SCRMODE);
 			}
 		else
 			continue;
@@ -230,7 +230,7 @@ do {
 				}
 		}
 	if (((i > 1) && !gameStates.menus.bHiresAvailable) || !GrVideoModeOK (displayModeInfo [i].dim)) {
-		MsgBox (TXT_SORRY, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, TXT_ERROR_SCRMODE);
+		InfoBox (TXT_SORRY, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, TXT_ERROR_SCRMODE);
 		return;
 		}
 	if (i != gameStates.video.nDisplayMode) {

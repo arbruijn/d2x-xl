@@ -76,7 +76,7 @@ void JoyDefsCalibrate (void)
 	joydefs_calibrateFlag = 0;
 
 	if (!gameStates.input.nJoysticks) {
-		MsgBox (NULL, NULL, BG_STANDARD, 1, TXT_OK, TXT_NO_JOYSTICK);
+		InfoBox (NULL, NULL, BG_STANDARD, 1, TXT_OK, TXT_NO_JOYSTICK);
 		return;
 	}
 	//Actual calibration if necessary
@@ -147,7 +147,7 @@ if (nState)
 
 controls.SetType ();
 if ((ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)) {
-	MsgBox (TXT_IMPORTANT_NOTE, NULL, BG_STANDARD, 1, TXT_OK, TXT_FCS);
+	InfoBox (TXT_IMPORTANT_NOTE, NULL, BG_STANDARD, 1, TXT_OK, TXT_FCS);
 	}
 if (ocType != gameConfig.nControlType) {
 	switch (gameConfig.nControlType) {
@@ -309,7 +309,7 @@ if (nState)
 
 controls.SetType ();
 if ((ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)) {
-	MsgBox (TXT_IMPORTANT_NOTE, NULL, BG_STANDARD, 1, TXT_OK, TXT_FCS);
+	InfoBox (TXT_IMPORTANT_NOTE, NULL, BG_STANDARD, 1, TXT_OK, TXT_FCS);
 	}
 
 if (ocType != gameConfig.nControlType) {

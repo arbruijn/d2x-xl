@@ -342,16 +342,16 @@ if (!DownloadFile ("http://www.descent2.de/files/d2x-xl-version.txt", szDest, fa
 else if (!DownloadFile ("http://sourceforge.net/projects/d2x-xl/files/d2x-xl-version.txt/download", szDest, false))
 	nLocation = 1;
 else {
-	MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
+	InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
 	return -1;
 	}
 G3_SLEEP (1000);
 if (!cf.Open ("d2x-xl-version.txt", gameFolders.var.szDownloads, "rb", -1)) {
-	MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
+	InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
 	return -1;
 	}
 if (3 != fscanf (cf.File (), "%d.%d.%d", &nVersion [0], &nVersion [1], &nVersion [2])) {
-	MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
+	InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
 	return -1;
 	}
 
@@ -371,12 +371,12 @@ messageBox.Show ("Downloading...");
 sprintf (szSrc, "%s/d2x-xl-%s-%d.%d.%d.%s", pszSource [nLocation], FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
 if (DownloadFile (szSrc, szDest, true)) {
 	messageBox.Clear ();
-	MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
+	InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
 	return -1;
 	}
 messageBox.Clear ();
 if (!cf.Exist (szDest, "", 0)) {
-	MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
+	InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
 	return -1;
 	}
 #endif
@@ -401,7 +401,7 @@ if (0 <= _execv (szDest, args))
 #endif
 sprintf (szMsg, TXT_PATCH_FAILED, szDest);
 //Warning (szMsg);
-MsgBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_CLOSE, szMsg);
+InfoBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_CLOSE, szMsg);
 #endif
 return -1;
 }

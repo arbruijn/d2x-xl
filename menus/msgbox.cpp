@@ -77,7 +77,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------ 
 // Creates a message box with a brief notification in the message box' subtitle
 
-int _CDECL_ MsgBox (const char* pszTitle, pMenuCallback callback, int nWallpaper, int nChoices, ...)
+int _CDECL_ InfoBox (const char* pszTitle, pMenuCallback callback, int nWallpaper, int nChoices, ...)
 {
 	int				i;
 	char*				format, * s;

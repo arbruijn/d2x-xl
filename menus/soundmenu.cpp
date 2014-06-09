@@ -151,7 +151,7 @@ if ((m = menu ["redbook sound"])) {
 	v = m->Value ();
 	if (redbook.Enabled () != v) {
 		if (v && !gameOpts->sound.bUseRedbook) {
-			MsgBox (TXT_SORRY, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, TXT_REDBOOK_DISABLED);
+			InfoBox (TXT_SORRY, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, TXT_REDBOOK_DISABLED);
 			menu [soundOpts.nRedbook].Value () = 0;
 			menu [soundOpts.nRedbook].Rebuild ();
 			}
@@ -168,7 +168,7 @@ if ((m = menu ["redbook sound"])) {
 				if (v && !redbook.Playing ()) {
 					redbook.Enable (0);
 					gameStates.menus.nInMenu = 0;
-					MsgBox (TXT_SORRY, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, TXT_MUSIC_NOCD);
+					InfoBox (TXT_SORRY, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, TXT_MUSIC_NOCD);
 					gameStates.menus.nInMenu = 1;
 					m->Value () = 0;
 					m->Rebuild ();

@@ -470,7 +470,7 @@ if (m_szHelp && *m_szHelp) {
 	gameStates.menus.nInMenu = 0;
 	gameData.menu.helpColor = RGB_PAL (47, 47, 47);
 	gameData.menu.colorOverride = gameData.menu.helpColor;
-	MsgBox ("D2X - XL online help", NULL, BG_STANDARD, -3, m_szHelp, " ", TXT_CLOSE);
+	InfoBox ("D2X - XL online help", NULL, BG_STANDARD, -3, m_szHelp, " ", TXT_CLOSE);
 	gameData.menu.colorOverride = 0;
 	gameStates.menus.nInMenu = nInMenu;
 	}

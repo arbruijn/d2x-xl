@@ -501,7 +501,7 @@ if (nResult) {
 		if (InitGraphics (false)) {
 			gameData.menu.helpColor = RGB_PAL (47, 47, 47);
 			gameData.menu.colorOverride = gameData.menu.helpColor;
-			MsgBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, -3, szMsg, " ", TXT_CLOSE);
+			InfoBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, -3, szMsg, " ", TXT_CLOSE);
 			gameData.menu.colorOverride = 0;
 			}
 		else
@@ -522,7 +522,7 @@ if (nResult) {
 		if (InitGraphics (false)) {
 			gameData.menu.helpColor = RGB_PAL (47, 47, 47);
 			gameData.menu.colorOverride = gameData.menu.helpColor;
-			MsgBox (TXT_WARNING, (pMenuCallback) NULL, BG_STANDARD, -3, szMsg, " ", TXT_CLOSE);
+			InfoBox (TXT_WARNING, (pMenuCallback) NULL, BG_STANDARD, -3, szMsg, " ", TXT_CLOSE);
 			gameData.menu.colorOverride = 0;
 			}
 		else

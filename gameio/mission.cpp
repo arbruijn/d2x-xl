@@ -946,7 +946,7 @@ i = Parse (cf);
 cf.Close ();
 if (!i) {
 	nCurrentMission = -1;
-	MsgBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, TXT_MSNFILE_ERROR);
+	InfoBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, TXT_MSNFILE_ERROR);
 	return 0;
 	}
 //for non-builtin missions, load HOG

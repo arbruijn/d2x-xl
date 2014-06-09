@@ -340,7 +340,7 @@ if (choice == -1) {
 	}               
 choice -= (2 + tracker.m_bUse);
 if ((choice < 0) || (choice >= networkData.nActiveGames)) {
-	//MsgBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_INVALID_CHOICE);
+	//InfoBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_INVALID_CHOICE);
 	goto doMenu;
 	}
 
