@@ -1057,7 +1057,7 @@ void CheckJoystickCalibration (void)
 	// If joystick hasn't moved...
 	if ((abs (x2-x1)<30) &&  (abs (y2-y1)<30)) {
 		if ((abs (x1)>30) || (abs (x2)>30) ||  (abs (y1)>30) || (abs (y2)>30)) {
-			coord = MsgBox (NULL, BG_STANDARD, 2, TXT_CALIBRATE, TXT_SKIP, TXT_JOYSTICK_NOT_CEN);
+			coord = TextBox (NULL, BG_STANDARD, 2, TXT_CALIBRATE, TXT_SKIP, TXT_JOYSTICK_NOT_CEN);
 			if (coord==0) {
 				JoyDefsCalibrate ();
 			}

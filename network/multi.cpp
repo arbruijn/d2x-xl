@@ -1576,7 +1576,7 @@ else
 void MultiOnlyPlayerMsg (int bMsgBox)
 {
 if (bMsgBox)
-	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_ONLY_PLAYER);
+	TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_ONLY_PLAYER);
 else {
 	char szMsg [100];
 
@@ -4581,7 +4581,7 @@ else if (!(gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY))) {
 void MultiBadRestore ()
 {
 SetFunctionMode (FMODE_MENU);
-MsgBox (NULL, BG_STANDARD, 1, TXT_OK,
+TextBox (NULL, BG_STANDARD, 1, TXT_OK,
 	            "A multi-save game was restored\nthat you are missing or does not\nmatch that of the others.\nYou must rejoin if you wish to\ncontinue.");
 SetFunctionMode (FMODE_GAME);
 gameData.multigame.bQuitGame = 1;

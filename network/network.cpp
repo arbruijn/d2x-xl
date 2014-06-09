@@ -158,7 +158,7 @@ int NetworkStartGame (void)
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	Assert (FRAME_INFO_SIZE < MAX_PAYLOAD_SIZE);
 	if (!networkData.bActive) {
-		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_IPX_NOT_FOUND);
+		TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_IPX_NOT_FOUND);
 		return 0;
 		}
 	}
@@ -166,7 +166,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 NetworkInit ();
 ChangePlayerNumTo (0);
 if (NetworkFindGame ()) {
-	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_NET_FULL);
+	TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_NET_FULL);
 	return 0;
 	}
 bAutoRun = InitAutoNetGame ();
@@ -550,7 +550,7 @@ if (++networkData.nConsistencyErrorCount < 10)
 	return;
 SetFunctionMode (FMODE_MENU);
 PauseGame ();
-MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_CONSISTENCY_ERROR);
+TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_CONSISTENCY_ERROR);
 ResumeGame ();
 SetFunctionMode (FMODE_GAME);
 networkData.nConsistencyErrorCount = 0;

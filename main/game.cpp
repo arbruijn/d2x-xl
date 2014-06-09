@@ -741,7 +741,7 @@ if (!setjmp (gameExitPoint)) {
 			fmode = gameStates.app.nFunctionMode;
 			SetFunctionMode (FMODE_GAME);
 			//paletteManager.SuspendEffect ();
-			choice = MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
+			choice = TextBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
 			//paletteManager.ResumeEffect ();
 			SetFunctionMode (fmode);
 			if (choice)
@@ -1298,11 +1298,11 @@ if (gameData.render.screen.Width () && gameData.render.screen.Height ()) {
 	gameData.menu.warnColor = RED_RGBA;
 	gameData.menu.colorOverride = gameData.menu.warnColor;
 	if (!ps)
-		MsgBox (TXT_WARNING, NULL, -3, s, " ", TXT_OK);
+		MsgBox (TXT_WARNING, (pMenuCallback) NULL, BG_STANDARD, -3, s, " ", TXT_OK);
 	else {
 		for (ps += 5; *ps && !isalnum (*ps); ps++)
 			;
-		MsgBox (TXT_ERROR, NULL, -3, ps, " ", TXT_OK);
+		MsgBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, -3, ps, " ", TXT_OK);
 		}
 	gameData.menu.colorOverride = 0;
 	if (!(IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME)))

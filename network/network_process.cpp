@@ -195,7 +195,7 @@ void NetworkProcessDump (tSequencePacket *their)
 	// Our request for join was denied.  Tell the user why.
 
 if (their->player.connected != 7) {
-	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, NET_DUMP_STRINGS (their->player.connected));
+	TextBox (NULL, BG_STANDARD, 1, TXT_OK, NET_DUMP_STRINGS (their->player.connected));
 	networkData.nStatus = NETSTAT_MENU;
 	}
 else {
@@ -206,7 +206,7 @@ else {
 			else {
 				char temp [40];
 				sprintf (temp, TXT_KICKED_YOU, their->player.callsign);
-				MsgBox (NULL, BG_STANDARD, 1, TXT_OK, &temp);
+				TextBox (NULL, BG_STANDARD, 1, TXT_OK, &temp);
 				if (networkData.nStatus == NETSTAT_PLAYING) {
 					gameStates.multi.bIWasKicked = 1;
 					MultiLeaveGame ();     
@@ -297,7 +297,7 @@ nPlayers = dataP [count++];
 if (nPlayers == 255) {
 	gameStates.multi.bSurfingNet = 0;
 	networkData.nNamesInfoSecurity = -1;
-	MsgBox (NULL, BG_STANDARD, 1, "OK", "That game is refusing\nname requests.\n");
+	TextBox (NULL, BG_STANDARD, 1, "OK", "That game is refusing\nname requests.\n");
 	gameStates.multi.bSurfingNet=1;
 	return;
 	}
@@ -313,7 +313,7 @@ for (gnum = -1, i = 0; i < networkData.nActiveGames; i++) {
 if (gnum == -1) {
 	gameStates.multi.bSurfingNet = 0;
 	networkData.nNamesInfoSecurity = -1;
-	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_GAME_GONE);
+	TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_GAME_GONE);
 	gameStates.multi.bSurfingNet = 1;
 	return;
 	}

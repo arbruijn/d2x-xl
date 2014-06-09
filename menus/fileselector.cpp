@@ -138,25 +138,25 @@ char* pszFile = (char*) (&m_filenames [m_nChoice][0]);
 if (*pszFile == '$')
 	pszFile++;
 SDL_ShowCursor (0);
-if (MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, "%s %s?", (m_nMode == 1) ? TXT_DELETE_PILOT : TXT_DELETE_DEMO, pszFile)) {
+if (TextBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, "%s %s?", (m_nMode == 1) ? TXT_DELETE_PILOT : TXT_DELETE_DEMO, pszFile)) {
 	SDL_ShowCursor (1);
 	return 0;
 	}
 
 if (m_nMode == 2) 
 	if (CFile::Delete (pszFile, gameFolders.user.szDemos))
-		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_DEMO, pszFile);
+		TextBox (NULL, BG_STANDARD, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_DEMO, pszFile);
 	else
 		m_bDemosDeleted = 1;
 else {
 	char* p = pszFile + strlen (pszFile);
 	*p = '.'; // make the extension visible again
 	if (CFile::Delete (pszFile, gameFolders.user.szProfiles))
-		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_PILOT, pszFile);
+		TextBox (NULL, BG_STANDARD, 1, TXT_OK, "%s %s %s", TXT_COULDNT, TXT_DELETE_PILOT, pszFile);
 	else {
 		pszFile [strlen (pszFile) - 1] = 'x'; //turn ".plr" to ".plx"
 		CFile::Delete (pszFile, gameFolders.user.szProfiles);
-		if (!MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, "%s?", TXT_DELETE_SAVEGAMES)) {
+		if (!TextBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, "%s?", TXT_DELETE_SAVEGAMES)) {
 			*p = '\0'; // hide extension
 			DeleteSaveGames (pszFile);
 			}
@@ -261,14 +261,14 @@ if ((m_nFileCount < 1) && m_bDemosDeleted) {
 	goto exitFileMenu;
 	}
 if ((m_nFileCount < 1) && (m_nMode == 2)) {
-	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, "%s %s\n%s", TXT_NO_DEMO_FILES, TXT_USE_F5, TXT_TO_CREATE_ONE);
+	TextBox (NULL, BG_STANDARD, 1, TXT_OK, "%s %s\n%s", TXT_NO_DEMO_FILES, TXT_USE_F5, TXT_TO_CREATE_ONE);
 	exitValue = 0;
 	goto exitFileMenu;
 	}
 
 if (m_nFileCount < 1) {
 #ifndef APPLE_DEMO
-	MsgBox (NULL, BG_STANDARD, 1, "Ok", "%s\n '%s' %s", TXT_NO_FILES_MATCHING, filespec, TXT_WERE_FOUND);
+	TextBox (NULL, BG_STANDARD, 1, "Ok", "%s\n '%s' %s", TXT_NO_FILES_MATCHING, filespec, TXT_WERE_FOUND);
 #endif
 	exitValue = 0;
 	goto exitFileMenu;

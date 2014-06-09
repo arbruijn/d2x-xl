@@ -582,7 +582,7 @@ return 0; //!bHaveReactor;
 
 void NetworkAbortSync (void)
 {
-MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_NET_SYNC_FAILED);
+TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_NET_SYNC_FAILED);
 networkData.nStatus = NETSTAT_MENU;
 }
 

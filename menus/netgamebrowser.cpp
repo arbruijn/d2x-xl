@@ -267,7 +267,7 @@ int NetworkBrowseGames (void)
 memcpy (callsign, LOCALPLAYER.callsign, sizeof (callsign));
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (!networkData.bActive) {
-		MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_IPX_NOT_FOUND);
+		TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_IPX_NOT_FOUND);
 		return 0;
 		}
 	}
@@ -371,15 +371,15 @@ console.printf (CON_DBG, TXT_LOADING_MSN, AGI.m_info.szMissionName);
 if (!(missionManager.LoadByName (AGI.m_info.szMissionName, 0, "downloads/") || missionManager.LoadByName (AGI.m_info.szMissionName, -1) ||	
 	   (downloadManager.DownloadMission (AGI.m_info.szMissionName) && missionManager.LoadByName (AGI.m_info.szMissionName, 0, "downloads/")))) {
 	PrintLog (0, "Mission '%s' not found\n", AGI.m_info.szMissionName);
-	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
+	TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
 	goto doMenu;
 	}
 if (IS_D2_OEM && (AGI.m_info.nLevel > 8)) {
-	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_OEM_ONLY8);
+	TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_OEM_ONLY8);
 	goto doMenu;
 	}
 if (IS_MAC_SHARE && (AGI.m_info.nLevel > 4)) {
-	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_SHARE_ONLY4);
+	TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_SHARE_ONLY4);
 	goto doMenu;
 	}
 if (!NetworkWaitForAllInfo (choice)) {

@@ -928,7 +928,7 @@ else if (bHoard && m.Value ("entropy"))
 else if (bHoard && m.Value ("monsterball"))
 	mpParams.nGameMode = NETGAME_MONSTERBALL;
 else if (bAnarchyOnly) {
-	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_ANARCHY_ONLY_MISSION);
+	TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_ANARCHY_ONLY_MISSION);
 	m.SetValue ("anarchy", 1);
 	m.SetValue ("robot anarchy", 0);
 	m.SetValue ("coop", 0);
@@ -1461,7 +1461,7 @@ for (;;) {
 		bError =  true;
 	if (!bError)
 		return 1;
-	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_IP_INVALID);
+	TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_IP_INVALID);
 	}
 return 0;
 } 

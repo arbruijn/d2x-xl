@@ -75,6 +75,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define LHY(y) (gameStates.menus.bHires? (24 * (y)) / 10 : y)
 
 //------------------------------------------------------------------------------ 
+// Creates a message box with a brief notification in the message box' subtitle
 
 int _CDECL_ MsgBox (const char* pszTitle, pMenuCallback callback, int nWallpaper, int nChoices, ...)
 {
@@ -100,8 +101,10 @@ return mm.Menu (pszTitle, szSubTitle, callback, NULL, BG_SUBMENU, nWallpaper);
 }
 
 //------------------------------------------------------------------------------ 
+// Creates a message box with a longer text placed in static text menu entries
+// of the message box's underlying menu
 
-int _CDECL_ MsgBox (const char* pszTitle, int nWallpaper, int nChoices, ...)
+int _CDECL_ TextBox (const char* pszTitle, int nWallpaper, int nChoices, ...)
 {
 	int				h, i, l, bTiny, nInMenu;
 	char				*format, *s;

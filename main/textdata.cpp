@@ -196,7 +196,7 @@ if (msgP->nEndTime < 0) {
 	if (nId < 0)
 		return 0;
 	PauseGame ();
-	MsgBox (NULL, BG_STANDARD, 1, TXT_CLOSE, indexP->pszText);
+	TextBox (NULL, BG_STANDARD, 1, TXT_CLOSE, indexP->pszText);
 	msgP->currentMsg = NULL;
 	ResumeGame ();
 	}

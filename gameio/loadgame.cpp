@@ -317,16 +317,16 @@ if (gameData.multiplayer.nPlayerPositions != (bCoop ? 4 : 8)) {
 if (IS_D2_OEM && IsMultiGame && (missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && (missionManager.nCurrentLevel == 8)) {
 	for (i = 0; i < nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected && !(netPlayers [0].m_info.players [i].versionMinor & 0xF0)) {
-			MsgBox ("Warning!", BG_STANDARD, 1, TXT_OK,
-					  "This special version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
+			TextBox ("Warning!", BG_STANDARD, 1, TXT_OK,
+					   "This special version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
 			}
 	}
 if (IS_MAC_SHARE && IsMultiGame && (missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && (missionManager.nCurrentLevel == 4)) {
 	for (i = 0; i < nPlayers; i++)
 		if (gameData.multiplayer.players [i].connected && !(netPlayers [0].m_info.players [i].versionMinor & 0xF0)) {
-			MsgBox ("Warning!", BG_STANDARD, 1, TXT_OK,
-					  "This shareware version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
+			TextBox ("Warning!", BG_STANDARD, 1, TXT_OK,
+					   "This shareware version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
 			}
 	}
@@ -583,7 +583,6 @@ InitAIForShip ();
 //do whatever needs to be done when a player dies in multiplayer
 void DoGameOver (void)
 {
-//	MsgBox (TXT_GAME_OVER, 1, TXT_OK, "");
 if (missionManager.nCurrentMission == missionManager.nBuiltInMission [0])
 	scoreManager.Add (0);
 SetFunctionMode (FMODE_MENU);
@@ -1335,7 +1334,7 @@ void DoSecretMessage (const char *msg)
 
 StopTime ();
 SetFunctionMode (FMODE_MENU);
-MsgBox (NULL, BG_STARS, 1, TXT_OK, msg);
+TextBox (NULL, BG_STARS, 1, TXT_OK, msg);
 SetFunctionMode (fMode);
 StartTime (0);
 }
@@ -1641,7 +1640,7 @@ if (IsMultiGame)
 gameStates.app.bGameRunning = 0;
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 backgroundManager.SetShadow (false);
-MsgBox (NULL, BG_STARS, 1, TXT_OK, TXT_DIED_IN_MINE);
+TextBox (NULL, BG_STARS, 1, TXT_OK, TXT_DIED_IN_MINE);
 backgroundManager.SetShadow (true);
 gameStates.app.bGameRunning = 1;
 }
@@ -1663,7 +1662,7 @@ if (missionManager.nEntryLevel < 0)
 	sprintf (msg, TXT_SECRET_LEVEL_RETURN);
 else
 	sprintf (msg, TXT_RETURN_LVL, missionManager.nEntryLevel);
-MsgBox (NULL, BG_STARS, 1, TXT_OK, msg);
+TextBox (NULL, BG_STARS, 1, TXT_OK, msg);
 SetFunctionMode (nFunctionMode);
 StartTime (0);
 }
@@ -1685,7 +1684,7 @@ int nFunctionMode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 sprintf (msg, "Base level destroyed.\nAdvancing to level %i", missionManager.nEntryLevel + 1);
 backgroundManager.SetShadow (false);
-MsgBox (NULL, BG_STARS, 1, TXT_OK, msg);
+TextBox (NULL, BG_STARS, 1, TXT_OK, msg);
 SetFunctionMode (nFunctionMode);
 StartTime (0);
 }
@@ -1814,7 +1813,7 @@ SetMonsterballForces ();
 #endif
 //	gameData.objs.viewerP = OBJECTS + LOCALPLAYER.nObject;
 if (gameData.multiplayer.nPlayers > gameData.multiplayer.nPlayerPositions) {
-	MsgBox (NULL, BG_STANDARD, 1, TXT_OK, "Too many players for this level.");
+	TextBox (NULL, BG_STANDARD, 1, TXT_OK, "Too many players for this level.");
 #if 1
 	while (gameData.multiplayer.nPlayers > gameData.multiplayer.nPlayerPositions) {
 		--gameData.multiplayer.nPlayers;

@@ -137,7 +137,7 @@ bool CScoreManager::Save  (void)
 	CFile cf;
 
 if (!cf.Open (GetFilename (), gameFolders.game.szData [0], "wb", 0)) {
-	MsgBox (TXT_WARNING, BG_STANDARD, 1, TXT_OK, "%s\n'%s'", TXT_UNABLE_TO_OPEN, GetFilename ());
+	TextBox (TXT_WARNING, BG_STANDARD, 1, TXT_OK, "%s\n'%s'", TXT_UNABLE_TO_OPEN, GetFilename ());
 	return false;
 	}
 
@@ -230,7 +230,7 @@ else {
 			sprintf (m_scores.szCoolSaying, TXT_NO_COMMENT);
 		} 
 	else {
-		MsgBox (TXT_HIGH_SCORE, BG_STANDARD, 1, TXT_OK, "%s %s!", TXT_YOU_PLACED, GAMETEXT (57 + position));
+		TextBox (TXT_HIGH_SCORE, BG_STANDARD, 1, TXT_OK, "%s %s!", TXT_YOU_PLACED, GAMETEXT (57 + position));
 		}
 
 	// move everyone down...
@@ -361,7 +361,7 @@ switch (k) {
 	case KEY_CTRLED + KEY_R:	
 		if (nCurItem < 0)	{
 			// Reset m_scores...
-			if (MsgBox (NULL, BG_STANDARD, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES) == 1) {
+			if (TextBox (NULL, BG_STANDARD, 2,  TXT_NO, TXT_YES, TXT_RESET_HIGH_SCORES) == 1) {
 				CFile::Delete (GetFilename (), gameFolders.game.szData [0]);
 				paletteManager.DisableEffect ();
 				Load ();

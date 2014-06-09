@@ -87,7 +87,7 @@ for (;;) {
 	int endOfTeams = m.IndexOf ("end of teams");
 	if (choice == int (m.ToS ()) - 1) {
 		if ((endOfTeams - blueTeam < 2) || (blueTeam - redTeam < 2))
-			MsgBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_TEAM_MUST_ONE);
+			TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_TEAM_MUST_ONE);
 		netGame.m_info.SetTeamVector (teamVector);
 		strcpy (netGame.m_info.szTeamName [0], teamNames [0]);
 		strcpy (netGame.m_info.szTeamName [1], teamNames [1]);

@@ -342,27 +342,27 @@ if (!DownloadFile ("http://www.descent2.de/files/d2x-xl-version.txt", szDest, fa
 else if (!DownloadFile ("http://sourceforge.net/projects/d2x-xl/files/d2x-xl-version.txt/download", szDest, false))
 	nLocation = 1;
 else {
-	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
+	TextBox (TXT_ERROR, NULL, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
 	return -1;
 	}
 G3_SLEEP (1000);
 if (!cf.Open ("d2x-xl-version.txt", gameFolders.var.szDownloads, "rb", -1)) {
-	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
+	TextBox (TXT_ERROR, NULL, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
 	return -1;
 	}
 if (3 != fscanf (cf.File (), "%d.%d.%d", &nVersion [0], &nVersion [1], &nVersion [2])) {
-	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
+	TextBox (TXT_ERROR, NULL, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
 	return -1;
 	}
 
 #if !DBG
 if (D2X_IVER >= nVersion [0] * 100000 + nVersion [1] * 1000 + nVersion [2]) {
-	MsgBox (NULL, BG_STANDARD, 1, TXT_CLOSE, TXT_NO_UPDATE_FOUND);
+	TextBox (NULL, BG_STANDARD, 1, TXT_CLOSE, TXT_NO_UPDATE_FOUND);
 	return 0;
 	}
 #endif
 
-if (MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_UPDATE_FOUND))
+if (TextBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_UPDATE_FOUND))
 	return 0;
 sprintf (szDest, "%s/d2x-xl-%s-%d.%d.%d.%s", gameFolders.var.szDownloads,
 			FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
@@ -371,18 +371,18 @@ messageBox.Show ("Downloading...");
 sprintf (szSrc, "%s/d2x-xl-%s-%d.%d.%d.%s", pszSource [nLocation], FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
 if (DownloadFile (szSrc, szDest, true)) {
 	messageBox.Clear ();
-	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
+	TextBox (TXT_ERROR, NULL, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
 	return -1;
 	}
 messageBox.Clear ();
 if (!cf.Exist (szDest, "", 0)) {
-	MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
+	TextBox (TXT_ERROR, NULL, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);
 	return -1;
 	}
 #endif
 #if defined(__unix__)
 sprintf (szMsg, TXT_DOWNLOAD_SUCCEEDED, szDest);
-MsgBox (NULL, BG_STANDARD, 1, TXT_CLOSE, szMsg);
+TextBox (NULL, BG_STANDARD, 1, TXT_CLOSE, szMsg);
 #else
 #	if 1
 #	include "shellapi.h"
@@ -401,7 +401,7 @@ if (0 <= _execv (szDest, args))
 #endif
 sprintf (szMsg, TXT_PATCH_FAILED, szDest);
 //Warning (szMsg);
-MsgBox (TXT_ERROR, NULL, 1, TXT_CLOSE, szMsg);
+MsgBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_CLOSE, szMsg);
 #endif
 return -1;
 }

@@ -334,7 +334,7 @@ void CMarkerManager::Delete (int bForce)
 {
 if ((m_data.nHighlight > -1) && (m_data.objects [m_data.nHighlight] != -1)) {
 	gameData.objs.viewerP = OBJECTS + m_data.objects [m_data.nHighlight];
-	if (bForce || !MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_DELETE_MARKER)) {
+	if (bForce || !TextBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_DELETE_MARKER)) {
 		int	h, i;
 		ReleaseObject (m_data.objects [m_data.nHighlight]);
 		i = markerManager.Last ();
@@ -371,7 +371,7 @@ if (!IsMultiGame || IsCoopGame) {
 #endif
 	if ((m_data.nHighlight > -1) && (m_data.objects [m_data.nHighlight] != -1)) {
 		gameData.objs.viewerP = OBJECTS + m_data.objects [m_data.nHighlight];
-		if (!MsgBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_JUMP_TO_MARKER)) {
+		if (!TextBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_JUMP_TO_MARKER)) {
 			CObject	*markerP = OBJECTS + m_data.objects [m_data.nHighlight];
 
 #if 1 //!DBG

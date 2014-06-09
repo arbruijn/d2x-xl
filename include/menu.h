@@ -490,7 +490,7 @@ extern CMessageBox messageBox;
 
 // This function pops up a messagebox and returns which choice was selected...
 // Example:
-int _CDECL_ MsgBox (const char *pszTitle, int nWallpaper, int nChoices, ...);
+int _CDECL_ TextBox (const char *pszTitle, int nWallpaper, int nChoices, ...);
 
 // Same as above, but you can pass a function
 int _CDECL_ MsgBox (const char *pszTitle, pMenuCallback callBack, int nWallpaper, int nChoices, ...);
