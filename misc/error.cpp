@@ -587,4 +587,14 @@ int nDbgLight = -1;
 #endif
 
 //------------------------------------------------------------------------------
+
+bool Breakpoint (bool cond)
+{
+if (cond)
+	return true;	// leave it this way to allow setting a breakpoint here!
+else
+	return false;
+}
+
+//------------------------------------------------------------------------------
 //eof

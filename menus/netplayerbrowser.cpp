@@ -113,7 +113,7 @@ for (int i = 0; i < nSavePlayers; i++) {
 		gameData.multiplayer.nPlayers++;
 	}
 if (gameData.multiplayer.nPlayers > netGame.m_info.nMaxPlayers) {
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multiplayer.nMaxPlayers, TXT_NETPLAYERS_IN);
+	MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multiplayer.nMaxPlayers, TXT_NETPLAYERS_IN);
 	gameData.multiplayer.nPlayers = nSavePlayers;
 	return true;
 	}

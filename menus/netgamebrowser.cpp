@@ -346,12 +346,12 @@ if ((choice < 0) || (choice >= networkData.nActiveGames)) {
 
 // Choice has been made and looks legit
 if (AGI.m_info.gameStatus == NETSTAT_ENDLEVEL) {
-	MsgBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_NET_GAME_BETWEEN2);
+	TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_NET_GAME_BETWEEN2);
 	goto doMenu;
 	}
 if (AGI.m_info.protocolVersion != MULTI_PROTO_VERSION) {
 	if (AGI.m_info.protocolVersion == 3) {
-		MsgBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_INCOMPAT1);
+		TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_INCOMPAT1);
 		}
 	else if (AGI.m_info.protocolVersion == 4) {
 		}
@@ -360,7 +360,7 @@ if (AGI.m_info.protocolVersion != MULTI_PROTO_VERSION) {
 
 		sprintf (szFmt, "%s%s", TXT_VERSION_MISMATCH, TXT_NETGAME_VERSIONS);
 		sprintf (szError, szFmt, MULTI_PROTO_VERSION, AGI.m_info.protocolVersion);
-		MsgBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, szError);
+		TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, szError);
 		}
 	goto doMenu;
 	}
@@ -383,7 +383,7 @@ if (IS_MAC_SHARE && (AGI.m_info.nLevel > 4)) {
 	goto doMenu;
 	}
 if (!NetworkWaitForAllInfo (choice)) {
-	MsgBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_JOIN_ERROR);
+	TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_JOIN_ERROR);
 	networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
 	goto doMenu;
 	}       
@@ -391,9 +391,9 @@ if (!NetworkWaitForAllInfo (choice)) {
 networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
   if (!CanJoinNetGame (activeNetGames + choice, activeNetPlayers + choice)) {
 	if (AGI.m_info.nNumPlayers == AGI.m_info.nMaxPlayers)
-		MsgBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_GAME_FULL);
+		TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_GAME_FULL);
 	else
-		MsgBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_IN_PROGRESS);
+		TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_IN_PROGRESS);
 	goto doMenu;
 	}
 // Choice is valid, prepare to join in

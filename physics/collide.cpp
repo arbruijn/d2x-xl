@@ -1568,12 +1568,9 @@ if (robotP->IsGeometry ())
 	CObject		*parentP = ((cType.laserInfo.parent.nType != OBJ_ROBOT) || (cType.laserInfo.parent.nObject < 0)) ? NULL : OBJECTS + cType.laserInfo.parent.nObject;
 	tRobotInfo	*botInfoP = &ROBOTINFO (robotP->info.nId);
 	CWeaponInfo *wInfoP = gameData.weapons.info + info.nId;
-	bool			bAttackRobots = parentP ? parentP->AttacksRobots () || (EGI_FLAG (bRobotsHitRobots, 0, 0, 0) && gameStates.app.cheats.bRobotsKillRobots) : NULL;
+	bool			bAttackRobots = parentP ? parentP->AttacksRobots () || (EGI_FLAG (bRobotsHitRobots, 0, 0, 0) && gameStates.app.cheats.bRobotsKillRobots) : false;
 
-#if DBG
-if (OBJ_IDX (this) == nDbgObj)
-	nDbgObj = nDbgObj;
-#endif
+BRP (OBJ_IDX (this) == nDbgObj);
 if (info.nId == PROXMINE_ID) {
 	if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 		return 1;

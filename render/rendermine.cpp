@@ -140,10 +140,7 @@ if (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameCo
 
 CObject*	objP = OBJECTS + nObject;
 
-#if DBG
-if (nWindow && (objP->info.nType == OBJ_WEAPON))
-	nWindow = nWindow;
-#endif
+BRP (nWindow && (objP->info.nType == OBJ_WEAPON));
 
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	if ((nDemoDoingLeft == 6 || nDemoDoingRight == 6) && objP->info.nType == OBJ_PLAYER) {
@@ -221,10 +218,7 @@ if (nSegment < 0)
 for (i = gameData.render.mine.objRenderList.ref [nSegment], j = 0; i >= 0; i = pi->nNextItem) {
 	pi = gameData.render.mine.objRenderList.objs + i;
 	objRenderList [j++] = *pi;
-#if DBG
-	if (OBJECTS [pi->nObject].info.nSegment != nSegment)
-		nDbgSeg = nDbgSeg;
-#endif
+	BRP (OBJECTS [pi->nObject].info.nSegment != nSegment);
 	}
 #if 1
 if (j > 1)
@@ -287,10 +281,7 @@ void RenderObjectsST (void)
 
 for (int i = 0; i < gameData.render.mine.nObjRenderSegs; i++) {
 	nSegment = gameData.render.mine.objRenderSegList [i];
-#if DBG
-	if (nSegment == nDbgSeg)
-		nDbgSeg = nDbgSeg;
-#endif
+	BRP (nSegment == nDbgSeg);
 	if (gameStates.render.bApplyDynLight) {
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, 0);
 		//lightManager.ResetNearestStatic (nSegment, 0);
@@ -645,8 +636,6 @@ glPolygonMode (GL_BACK, GL_FILL);       // Draw Backfacing Polygons As Wireframe
 
 //------------------------------------------------------------------------------
 //renders onto current canvas
-
-extern int bLog;
 
 void RenderMine (short nStartSeg, fix xStereoSeparation, int nWindow)
 {

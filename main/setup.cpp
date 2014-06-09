@@ -239,7 +239,7 @@ if (bMoveSubFolders) {
 
 void MoveD2Textures (void)
 {
-	static char* szSubFolders [] = { "64/", "128/", "256/" };
+	static const char* szSubFolders [] = { "64/", "128/", "256/" };
 
 	char szSourceFolder [FILENAME_LEN], szDestFolder [FILENAME_LEN];
 
@@ -334,7 +334,7 @@ for (int i = 0; i < nFiles; i++) {
 		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot, false) == 1;
 		if (fileList [i].bFound) {	// file exists in the source folder
 			sprintf (szSrc, "%s%s", gameFolders.game.szRoot, fileList [i].pszFile + 1);
-			sprintf (szDest, "%s%s\\%s", User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot, fileList [i].pszFile + 1);
+			sprintf (szDest, "%s%s", User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot, fileList [i].pszFile + 1);
 			cf.Copy (szSrc, szDest);
 			}
 		else if (!fileList [i].bOptional) {

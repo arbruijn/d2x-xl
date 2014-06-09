@@ -49,7 +49,6 @@
  * because of the "driver's" ipx_packetnum (see linuxnet.c).
  */
 
-void SetFunctionMode (int);
 extern ubyte ipx_MyAddress [10];
 
 //------------------------------------------------------------------------------
@@ -280,9 +279,6 @@ if (nState)
 
 	int i, n, nm;
 
-	key = key;
-	nCurItem = nCurItem;
-
 Assert (networkData.nStatus == NETSTAT_STARTING);
 if (!menu [0].Value ()) {
 	menu [0].Value () = 1;
@@ -304,7 +300,7 @@ for (i = 0; i < int (menu.ToS ()); i++) {
 		}
 	}
 if (nm > gameData.multiplayer.nMaxPlayers) {
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multiplayer.nMaxPlayers, TXT_NETPLAYERS_IN);
+	MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multiplayer.nMaxPlayers, TXT_NETPLAYERS_IN);
 	// Turn off the last CPlayerData highlighted
 	for (i = gameData.multiplayer.nPlayers; i > 0; i--)
 		if (menu [i].Value () == 1) {
@@ -546,7 +542,7 @@ mpParams.nPPS = Clamp (m.ToInt ("PPS"), MIN_PPS, MAX_PPS);
 if (gameStates.multi.nGameType >= IPX_GAME) { 
 	int newSocket = atoi (szSocket);
 	if ((newSocket < -0xFFFF) || (newSocket > 0xFFFF))
-		MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_INV_SOCKET, 
+		MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_INV_SOCKET,
 				  (gameStates.multi.nGameType == UDP_GAME) ? mpParams.udpPorts [0] + networkData.nPortOffset : networkData.nPortOffset);
 	else if (newSocket != networkData.nPortOffset) {
 		networkData.nPortOffset = (gameStates.multi.nGameType == UDP_GAME) ? newSocket - mpParams.udpPorts [0] : newSocket;
@@ -1098,13 +1094,13 @@ if (key != -1) {
 			
 	for (j = 0; j < networkData.nActiveGames; j++)
 		if (!stricmp (activeNetGames [j].m_info.szGameName, szName)) {
-			MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_DUPLICATE_NAME);
+			MsgBox (TXT_ERROR, BG_STANDARD, NULL, 1, TXT_OK, TXT_DUPLICATE_NAME);
 			return 1;
 		}
 	strncpy (mpParams.szGameName, szName, sizeof (mpParams.szGameName));
 	mpParams.nLevel = atoi (szLevel);
 	if ((missionManager.nLastLevel > 0) && ((mpParams.nLevel < 1) || (mpParams.nLevel > missionManager.nLastLevel))) {
-		MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_LEVEL_OUT_RANGE);
+		MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_LEVEL_OUT_RANGE);
 		sprintf (szLevel, "1");
 		return 1;
 	}
@@ -1179,7 +1175,7 @@ do {
 	do {
 		nState = GameParamsMenu (m, key, choice, szName, szLevelText, szLevel, szIpAddr, nNewMission);
 		if ((nNewMission < 0) && (nState == 0)) {
-			MsgBox (TXT_ERROR, NULL, 1, TXT_OK, "Please chose a mission");
+			MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, "Please chose a mission");
 			nState = 1;
 			}
 		} while (nState == 1);
@@ -1283,7 +1279,7 @@ m.AddText ("", TXT_PRESS_ESC);
 m [2].m_bCentered = 1;
 nQueryTimeout = SDL_GetTicks ();
 do {
-	i = m.Menu (NULL, TXT_NET_SEARCH, QueryPoll, 0, NULL);
+	i = m.Menu (NULL, TXT_NET_SEARCH, QueryPoll, NULL);
 	} while (i >= 0);
 return (networkData.nActiveGames >= MAX_ACTIVE_NETGAMES);
 }
@@ -1522,7 +1518,7 @@ m.AddInput ("ip address", szIP, 50, NULL);
 choice = m.Menu (NULL, TXT_JOIN_TCP);
 if ((choice == -1) || !*m [1].Text ())
 	return;
-MsgBox (TXT_SORRY, NULL, 1, TXT_OK, TXT_INV_ADDRESS);
+MsgBox (TXT_SORRY, NULL, BG_STANDARD, 1, TXT_OK, TXT_INV_ADDRESS);
 }
 
 //------------------------------------------------------------------------------

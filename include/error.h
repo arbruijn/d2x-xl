@@ -69,14 +69,12 @@ extern int nDbgVertex, nDbgBaseTex, nDbgOvlTex, nDbgTexture, nDbgLight;
 
 extern FILE *fLog;
 
-#ifdef _WIN32
-#	if DBG
-#		define	CBP(_cond)	if (_cond) _asm int 3;
-#	else
-#		define	CBP(_cond)
-#	endif
+bool Breakpoint (bool cond);
+
+#if DBG
+#	define BRP(cond)	Breakpoint (cond)
 #else
-#	define	CBP(_cond)
+#	define BRP(cond)
 #endif
 
 #endif /* _ERROR_H */

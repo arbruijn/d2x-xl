@@ -76,7 +76,7 @@ void JoyDefsCalibrate (void)
 	joydefs_calibrateFlag = 0;
 
 	if (!gameStates.input.nJoysticks) {
-		MsgBox( NULL, NULL, 1, TXT_OK, TXT_NO_JOYSTICK );
+		MsgBox (NULL, NULL, BG_STANDARD, 1, TXT_OK, TXT_NO_JOYSTICK);
 		return;
 	}
 	//Actual calibration if necessary
@@ -96,7 +96,7 @@ return m.AddSlider ("deadzone", szText + 1, nValue, 0, szSizes ? 4 : 15, nKey, s
 
 //------------------------------------------------------------------------------
 
-int AddAxisControls (CMenu& menu, char* szType, char *szText, const char *szFmtSyncd, const char *szFmt, const char *szLabel, const char *szHelp, 
+int AddAxisControls (CMenu& menu, const char* szType, char *szText, const char *szFmtSyncd, const char *szFmt, const char *szLabel, const char *szHelp,
 							int nControls, int *pnValues, int nValues, int *pnIntervals, 
 							char nKeySyncd, char *pnKeys, int bSyncControls)
 {
@@ -147,7 +147,7 @@ if (nState)
 
 controls.SetType ();
 if ((ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)) {
-	MsgBox (TXT_IMPORTANT_NOTE, NULL, 1, TXT_OK, TXT_FCS);
+	MsgBox (TXT_IMPORTANT_NOTE, NULL, BG_STANDARD, 1, TXT_OK, TXT_FCS);
 	}
 if (ocType != gameConfig.nControlType) {
 	switch (gameConfig.nControlType) {
@@ -309,7 +309,7 @@ if (nState)
 
 controls.SetType ();
 if ((ocType != gameConfig.nControlType) && (gameConfig.nControlType == CONTROL_THRUSTMASTER_FCS)) {
-	MsgBox (TXT_IMPORTANT_NOTE, NULL, 1, TXT_OK, TXT_FCS);
+	MsgBox (TXT_IMPORTANT_NOTE, NULL, BG_STANDARD, 1, TXT_OK, TXT_FCS);
 	}
 
 if (ocType != gameConfig.nControlType) {
@@ -499,7 +499,7 @@ do {
 
 //------------------------------------------------------------------------------
 
-char* trackirModeIds [] = {"aim", "steer", "look"};
+const char* trackirModeIds [] = {"aim", "steer", "look"};
 
 int TrackIRConfigCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {
@@ -637,8 +637,8 @@ do {
 
 //------------------------------------------------------------------------------
 
-static char* kbdRampIds [] = {"acceleration", "rotation", "sliding"};
-static char* kbdLayoutIds [] = {"qwerty", "qwertz", "azerty", "dvorak"};
+static const char* kbdRampIds [] = {"acceleration", "rotation", "sliding"};
+static const char* kbdLayoutIds [] = {"qwerty", "qwertz", "azerty", "dvorak"};
 
 int KeyboardConfigCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {

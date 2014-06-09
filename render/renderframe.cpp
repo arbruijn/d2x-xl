@@ -58,8 +58,10 @@ bool GuidedMissileActive (void);
 
 uint	nClearWindowColor = 0;
 
+#if 0
 extern tTexCoord2f quadTexCoord [3][4];
 extern float quadVerts [3][4][2];
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -606,10 +608,7 @@ void UpdateSlidingFaces (void)
 	tUVL*				uvlP;
 
 for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
-#if DBG
-	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-		faceP = faceP;
-#endif
+	BRP ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)));
 	texCoordP = FACES.texCoord + faceP->m_info.nIndex;
 	ovlTexCoordP = FACES.ovlTexCoord + faceP->m_info.nIndex;
 	uvlP = SEGMENTS [faceP->m_info.nSegment].m_sides [faceP->m_info.nSide].m_uvls;
@@ -636,10 +635,6 @@ for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
 }
 
 //------------------------------------------------------------------------------
-
-#if DBG
-static bool bFixSBSBug = false;
-#endif
 
 void GameRenderFrame (void)
 {

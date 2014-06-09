@@ -419,7 +419,7 @@ switch (k) {
 			gameData.multiplayer.xStartAbortMenuTime = TimerGetApproxSeconds ();
 			int nInMenu = gameStates.menus.nInMenu;
 			gameStates.menus.nInMenu = 0;
-			TextBox (NULL, NetworkEndLevelPoll3, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
+			MsgBox (NULL, NetworkEndLevelPoll3, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
 			gameStates.menus.nInMenu = nInMenu;
 			}
 		else {

@@ -230,8 +230,7 @@ return -1;
 void CHK (void)
 {
 Assert (&ndOutFile.File () != NULL);
-if (gameData.demo.nWritten >= 750)
-	gameData.demo.nWritten = gameData.demo.nWritten;
+BRP (gameData.demo.nWritten >= 750);
 }
 
 #else
@@ -2032,10 +2031,7 @@ while (!bDone) {
 			nObject = AllocObject ();
 			if (nObject == -1)
 				break;
-#if DBG
-			if (nObject == nDbgObj)
-				nDbgObj = nDbgObj;
-#endif
+			BRP (nObject == nDbgObj);
 			objP = OBJECTS + nObject;
 			NDReadObject (objP);
 			CATCH_BAD_READ

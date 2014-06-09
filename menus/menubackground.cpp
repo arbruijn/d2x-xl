@@ -63,7 +63,7 @@ int bHiresBackground;
 
 //------------------------------------------------------------------------------
 
-static char* szDesktopFilenames [4][2] = {
+static const char* szDesktopFilenames [4][2] = {
 	{"descentb.pcx", "descent.pcx"},
 	{"descntob.pcx", "descento.pcx"},
 	{"descentd.pcx", "descentd.pcx"},
@@ -72,7 +72,7 @@ static char* szDesktopFilenames [4][2] = {
 
 #if DBG
 
-static char* menuBgNames [4][2] = {
+static const char* menuBgNames [4][2] = {
 	{"menu.pcx", "menub.pcx"},
 	{"menuo.pcx", "menuob.pcx"},
 	{"menud.pcx", "menud.pcx"},
@@ -81,7 +81,7 @@ static char* menuBgNames [4][2] = {
 
 #else
 
-static char* menuBgNames [4][2] = {
+static const char* menuBgNames [4][2] = {
 	{"\x01menu.pcx", "\x01menub.pcx"},
 	{"\x01menuo.pcx", "\x01menuob.pcx"},
 	{"\x01menud.pcx", "\x01menud.pcx"},
@@ -89,7 +89,7 @@ static char* menuBgNames [4][2] = {
 	};
 #endif
 
-static char* szWallpapers [3][2] = {
+static const char* szWallpapers [3][2] = {
 	{"stars.pcx", "starsb.pcx"},
 	{"scores.pcx", "scoresb.pcx"},
 	{"map.pcx", "mapb.pcx"}
@@ -105,7 +105,7 @@ return gameStates.app.bDemoData ? 0 : (bHires < 0) ? gameStates.menus.bHires : b
 
 //------------------------------------------------------------------------------
 
-char* WallpaperName (int nType, int bHires)
+const char* WallpaperName (int nType, int bHires)
 {
 return szWallpapers [nType - 1][Hires (bHires)];
 }
@@ -314,7 +314,7 @@ if (!m_bValid) {
 		m_wallpapers [0].SetBitmap (LoadMenuBackground ());
 
 	for (int i = 1; i < WALLPAPER_COUNT - 1; i++) {
-		if (m_filenames [i] = WallpaperName (i))
+		if ((m_filenames [i] = WallpaperName (i)))
 			m_wallpapers [i].SetBitmap (LoadWallpaper (m_filenames [i]));
 		}
 	m_wallpapers [BG_LOADING].SetBitmap (LoadDesktopWallpaper ());
@@ -459,7 +459,7 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-CBitmap* CBackgroundManager::LoadWallpaper (char* filename)
+CBitmap* CBackgroundManager::LoadWallpaper (const char* filename)
 {
 	int width, height;
 

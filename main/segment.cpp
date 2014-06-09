@@ -165,10 +165,7 @@ if (!gameStates.app.bD2XLevel && (m_function == 2))
 
 void CSegment::Read (CFile& cf)
 {
-#if DBG
-if (Index () == nDbgSeg)
-	nDbgSeg = nDbgSeg;
-#endif
+BRP (Index () == nDbgSeg);
 if (gameStates.app.bD2XLevel) {
 	m_owner = cf.ReadByte ();
 	m_group = cf.ReadByte ();
@@ -246,10 +243,7 @@ for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
 
 void CSegment::ComputeCenter (void)
 {
-#if 1 //DBG
-if (Index () == nDbgSeg)
-	nDbgSeg = nDbgSeg;
-#endif
+BRP (Index () == nDbgSeg);
 CFloatVector vCenter;
 vCenter.SetZero ();
 int nVertices = 0;
@@ -386,14 +380,11 @@ return m_sides [nSide].Masks (refP, xRad, 1, faceBit, bCheckPoke);
 void CSegment::Setup (void)
 {
 for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
-#if DBG
-	if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (i == nDbgSide)))
-		nDbgSeg = nDbgSeg;
-#endif
+	BRP ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (i == nDbgSide)));
 	m_sides [i].Setup (Index (), m_vertices, sideVertIndex [i], m_children [i] < 0);
 	if (!m_sides [i].FaceCount () && (m_children [i] >= 0)) {
 		PrintLog (0, "Segment %d, side %d is collapsed, but has child %d!\n", SEG_IDX (this), i, m_children [i]);
-		SEGMENTS [m_children [i]].m_children [oppSideTable [i]] = -1;
+		SEGMENTS [m_children [i]].m_children [(int) oppSideTable [i]] = -1;
 		m_children [i] = -1;
 		}
 	}
@@ -440,10 +431,8 @@ if (!m_sides [nSide].FaceCount ())
 CWall* wallP = m_sides [nSide].Wall ();
 
 #if DBG
-if (objP && (objP->Index () == nDbgObj))
-	nDbgObj = nDbgObj;
-if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+BRP (objP && (objP->Index () == nDbgObj));
+BRP ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)));
 #endif
 
 if (!objP) 
@@ -485,8 +474,7 @@ CSegment* childP = SEGMENTS + nChild;
 #if DBG
 if (objP && (objP->Index () == nDbgObj))
 	nDbgObj = nDbgObj;
-if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+BRP ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)));
 #endif
 
 if ((objP == gameData.objs.consoleP) &&

@@ -1003,8 +1003,7 @@ if (!m_info.handle) {
 	return 1;
 	}
 #if DBG
-	if (m_info.handle == 228)
-		m_info.handle = m_info.handle;
+	BRP (m_info.handle == 228);
 	if (!usedHandles [m_info.handle])
 		usedHandles [m_info.handle] = 1;
 	else
@@ -1110,10 +1109,7 @@ CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures)
 	CBitmap*	bmP, * bmoP, * bmfP;
 	int		nFrames;
 
-#if DBG
-if (nTexture == nDbgTexture)
-	nDbgTexture = nDbgTexture;
-#endif
+BRP (nTexture == nDbgTexture);
 LoadTexture (gameData.pig.tex.bmIndexP [nTexture].index, 0, gameStates.app.bD1Mission);
 bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
 bmP->SetStatic (1);
@@ -1214,10 +1210,7 @@ int CBitmap::PrepareTexture (int bMipMap, int bMask, tPixelBuffer *renderBuffer)
 if ((m_info.nType == BM_TYPE_STD) && Parent () && (Parent () != this))
 	return Parent ()->PrepareTexture (bMipMap, bMask, renderBuffer);
 
-#if DBG
-if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
-	nDbgTexture = nDbgTexture;
-#endif
+BRP ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture));
 
 if (!m_info.texP)
 	m_info.texP = &m_info.texture;
@@ -1247,10 +1240,7 @@ if (!bMask) {
 		SetAvgColorIndex ((ubyte) Palette ()->ClosestColor (&color));
 	}
 #endif
-#if DBG
-if (m_info.nId == nDbgTexture)
-	nDbgTexture = nDbgTexture;
-#endif
+BRP (m_info.nId == nDbgTexture);
 LoadTexture (0, 0, (m_info.props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) != 0);
 return m_info.texP->Handle () == 0;
 }
@@ -1265,12 +1255,9 @@ int CBitmap::CreateFrames (int bMipMaps, int bLoad)
 if (nFrames < 2)
 	return 0;
 else {
-#if DBG
-	if (!strcmp (m_info.szName, "sparks.tga"))
-		nDbgSeg = nDbgSeg;
-	if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
-		nDbgTexture = nDbgTexture;
-#endif
+	BRP (!strcmp (m_info.szName, "sparks.tga"));
+	BRP ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture));
+
 	m_info.frames.bmP = new CBitmap [nFrames];
 
 	int		i, w = m_info.props.w;
@@ -1465,12 +1452,8 @@ bool CBitmap::SetupTexture (int bMipMaps, int bLoad)
 {
 	CBitmap *bmP;
 
-#if DBG
-if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
-	nDbgTexture = nDbgTexture;
-if (bMipMaps < 0)
-	bMipMaps = bMipMaps;
-#endif
+BRP ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture));
+BRP (bMipMaps < 0);
 
 switch (m_info.nType) {
 	case BM_TYPE_STD: // primary (low res) texture

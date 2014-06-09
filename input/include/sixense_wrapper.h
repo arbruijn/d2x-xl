@@ -1,7 +1,10 @@
 #ifndef __SIXENSE_WRAPPER__
 #define __SIXENSE_WRAPPER__
 
-#if DBG
+#ifndef USE_SIXENSE
+//#	error SIXENSE is unavailable in this project configuration
+#else
+#	if DBG
 
 #include "sixense.h"
 #include "vecmat.h"
@@ -34,6 +37,7 @@ class CSixense {
 
 extern CSixense sixense;
 
+#	endif
 #endif
 
 // -----------------------------------------------------------------------------

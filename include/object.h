@@ -961,7 +961,7 @@ class CObject : public CObjectInfo {
 			}
 		inline int NextWayPoint (CObject* objP) { 
 			return ((info.controlType == CT_WAYPOINT) && (objP->info.renderType == RT_LIGHTNING))
-					 ? cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection]
+					 ? cType.wayPointInfo.nSuccessor [(int) objP->rType.lightningInfo.bDirection]
 					 : -1;
 			}
 

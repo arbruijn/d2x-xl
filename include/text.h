@@ -18,34 +18,8 @@ extern char **pszHelpTexts;
 void LoadModTexts (void);
 void FreeModTexts (void);
 
-#if DBG
-
 const char *GAMETEXT (int _i);
 const char *HELPTEXT (int _i);
-
-#else
-
-static inline const char *GAMETEXT (int _i)
-{
-if ((_i < BASE_TEXT_COUNT) && d2GameTexts [_i][1])
-	 return d2GameTexts [_i][1] ;
-else if (pszGameTexts)
-	return pszGameTexts [_i];
-else if (_i < BASE_TEXT_COUNT)
-	return d2GameTexts [_i][0];
-else
-	return defaultGameTexts [_i - BASE_TEXT_COUNT][gameStates.app.bEnglish];
-}
-
-static inline const char *HELPTEXT (int _i)
-{
-if (pszHelpTexts)
-	return pszHelpTexts [_i];
-else
-	return defaultHelpTexts [_i][gameStates.app.bEnglish];
-}
-
-#endif
 
 #define TXT_VERTIGO	"Vertigo"
 

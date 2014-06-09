@@ -32,8 +32,6 @@
 
 //#define IPX_MCAST4DBG
 
-extern ubyte ipx_MyAddress[10];
-
 #define UDP_BASEPORT 28342
 
 #define PORTSHIFT_TOLERANCE 0x100
@@ -80,7 +78,7 @@ int Fail (const char *fmt, ...)
 va_start (argP, fmt);
 vsprintf (szFailMsg, fmt, argP);
 va_end (argP);
-MsgBox (NULL, NULL, 1, "OK", "UDP Error\n\n%s", szFailMsg);
+MsgBox (NULL, NULL, BG_STANDARD, 1, "OK", "UDP Error\n\n%s", szFailMsg);
 return 1;
 }
 

@@ -102,10 +102,7 @@ CBitmap* CGenericCockpit::BitBlt (int nGauge, int x, int y, bool bScalePos, bool
 	CBitmap*	saveBmP = NULL;
 
 if (nGauge >= 0) {
-#if DBG
-	if (nGauge == nDbgGauge)
-		nDbgGauge = nDbgGauge;
-#endif
+	BRP (nGauge == nDbgGauge);
 	PageInGauge (nGauge);
 	bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (nGauge);
 	if (overrideP && overrideP->Buffer ())
@@ -345,8 +342,7 @@ if (gameStates.render.bShowFrameRate) {
 		sprintf (szItem, "FPS: %s", ftoa (szRate, xRate));
 #if DBG
 		if ((nDbgFrameRate > 0) && (X2F (xRate) < nDbgFrameRate)) {
-			if (++nFrameCount > 5)
-				nDbgFrameRate = nDbgFrameRate;
+			BRP (++nFrameCount > 5);
 			}
 		else
 			nFrameCount = 0;
@@ -1242,7 +1238,7 @@ if (gameStates.app.bPlayerIsDead)
 #endif
 	int				i;
 
-	static int		dmgColors [3][4] = {
+	static uint		dmgColors [3][4] = {
 							{RGBA (64, 16, 64, 96), RGBA (192, 0, 0, 96), RGBA (255, 208, 0, 96), RGBA (0, 192, 0, 96)},
 							{RGBA (96, 32, 96, 96), RGBA (255, 0, 0, 96), RGBA (255, 255, 0, 96), RGBA (0, 255, 0, 96)},
 							{RGBA (96, 32, 96, 96), RGBA (255, 0, 0, 96), RGBA (255, 255, 0, 96), RGBA (0, 255, 0, 96)}

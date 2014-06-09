@@ -183,8 +183,8 @@ for (int i = 0; i < 2; i++) {
 	gameData.render.frame.Deactivate ();
 	}	
 
-return true;
 #endif
+return true;
 }
 
 //-----------------------------------------------------------------------------------

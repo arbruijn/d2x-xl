@@ -170,7 +170,7 @@ format = va_arg (args, char* );
 vsprintf (szSubTitle, format, args);
 va_end (args);
 Assert (strlen (szSubTitle) < MSGBOX_TEXT_SIZE);
-return mm.FixedFontMenu (pszTitle, szSubTitle, NULL, 0, NULL, - 1, - 1);
+return mm.FixedFontMenu (pszTitle, szSubTitle, NULL, NULL);
 }
 //end this section addition - Victor Rachels
 

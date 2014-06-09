@@ -3071,14 +3071,12 @@ InitGameTexts ();
 
 //------------------------------------------------------------------------------
 
-#if DBG
-
 const char *GAMETEXT (int _i)
 {
 if ((_i < BASE_TEXT_COUNT) && d2GameTexts [_i][1])
 	 return d2GameTexts [_i][1] ;
 else if (pszGameTexts)
-	return pszGameTexts [_i];
+	return const_cast<char*>(pszGameTexts [_i]);
 else if (_i < BASE_TEXT_COUNT)
 	return d2GameTexts [_i][0];
 else
@@ -3089,12 +3087,10 @@ else
 const char *HELPTEXT (int _i)
 {
 if (pszHelpTexts)
-	return pszHelpTexts [_i];
+	return const_cast<char*>(pszHelpTexts [_i]);
 else
 	return defaultHelpTexts [_i][gameStates.app.bEnglish];
 }
-
-#endif
 
 //------------------------------------------------------------------------------
 //eof

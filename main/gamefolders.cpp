@@ -138,7 +138,7 @@
 
 // ----------------------------------------------------------------------------
 
-char* CheckFolder (char* pszAppFolder, const char* pszFolder, char* pszFile, bool bFolder = true)
+char* CheckFolder (char* pszAppFolder, const char* pszFolder, const char* pszFile, bool bFolder = true)
 {
 if (pszFolder && *pszFolder) {
 	char szFolder [FILENAME_LEN];
@@ -220,9 +220,9 @@ if (bInit)
 *gameFolders.user.szRoot =
 *gameFolders.game.szRoot =
 *gameFolders.game.szData [0] =
-*gameFolders.game.szRoot = 
-*gameFolders.var.szRoot = 
-*gameFolders.user.szRoot = '\0';
+*gameFolders.game.szData [1] =
+*gameFolders.var.szCache =
+*gameFolders.user.szCache = '\0';
 
 #ifdef _WIN32
 if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APPNAME) &&

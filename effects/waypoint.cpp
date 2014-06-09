@@ -167,7 +167,7 @@ return WayPoint ((uint) *objP->WayPoint ());
 
 CObject* CWayPointManager::Successor (CObject* objP)
 {
-return WayPoint ((uint) Current (objP)->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection]);
+return WayPoint ((uint) Current (objP)->cType.wayPointInfo.nSuccessor [(int) objP->rType.lightningInfo.bDirection]);
 }
 
 // ---------------------------------------------------------------------------------
@@ -236,7 +236,7 @@ if (Synchronize (objP))
 
 for (;;) {
 	CObject* curr = Current (objP);
-	int nSucc = curr->cType.wayPointInfo.nSuccessor [objP->rType.lightningInfo.bDirection];
+	int nSucc = curr->cType.wayPointInfo.nSuccessor [(int) objP->rType.lightningInfo.bDirection];
 	if (!m_wayPoints.IsIndex (uint (nSucc)))
 		break;
 	CObject* succ = m_wayPoints [nSucc];
@@ -248,18 +248,13 @@ for (;;) {
 	float fMove = (float) curr->cType.wayPointInfo.nSpeed / 40.0f * fScale / gameStates.gameplay.slowmo [0].fSpeed;
 	vMove *= fMove;
 	vLeft.Assign (succ->Position () - objP->Position ());
-#if DBG
-	if (CFloatVector::Dot (vLeft, vMove) < 0.0f)
-		nDbgSeg = nDbgSeg;
-#endif
+	BRP (CFloatVector::Dot (vLeft, vMove) < 0.0f);
 	float fLeft = vLeft.Mag ();
 	if (fLeft > fMove) {
 		objP->Position () += vMove;
 #if DBG
 		vLeft.Assign (succ->Position () - objP->Position ());
-		if (CFloatVector::Dot (vLeft, vMove) < 0.0f)
-			nDbgSeg = nDbgSeg;
-		else
+		if (!BRP (CFloatVector::Dot (vLeft, vMove) < 0.0f))
 			return;
 #else
 		return;

@@ -116,21 +116,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // 22- gameData.omega.xCharge
 
 void SetFunctionMode (int);
-void ShowLevelIntro (int level_num);
 void DoCloakInvulSecretStuff (fix xOldGameTime);
 void CopyDefaultsToRobot (CObject *objP);
 void MultiInitiateSaveGame (int bSecret);
 void MultiInitiateRestoreGame (int bSecret);
 void ApplyAllChangedLight (void);
 void DoLunacyOn (void);
-void DoLunacyOff (void);
-void FixWalls (void);
 
 int m_nLastSlot= 0;
 
 char dgss_id [4] = {'D', 'G', 'S', 'S'};
-
-void ComputeAllStaticLight (void);
 
 void GameRenderFrame (void);
 

@@ -107,6 +107,7 @@ case D1_OEM_10_MISSION_HOGSIZE:
 	break;
 default:
 	Int3(); // fall through
+
 case D1_MISSION_HOGSIZE:
 case D1_10_MISSION_HOGSIZE:
 case D1_15_MISSION_HOGSIZE:
@@ -543,9 +544,9 @@ void CMissionManager::Add (int bAnarchy, int bD1Mission, int bSubFolder, int bHa
 				else {
 					if (strcmp (ffs.name, "d2x.mn2")) { // Vertigo added by default if present
 						sprintf (lvlName, "%s%s", gameFolders.missions.szCurrent [nLocation], ffs.name);
-						memcpy (lvlName + strlen (lvlName) - 4, lvlExt, sizeof (lvlExt));
+						strcpy (lvlName + strlen (lvlName) - 4, lvlExt);
 						if (cf.Exist (lvlName, "", 0))
-							memcpy (lvlName + strlen (lvlName) - 4, altLvlExt [bD1Mission], sizeof (altLvlExt [bD1Mission]));
+							strcpy (lvlName + strlen (lvlName) - 4, altLvlExt [bD1Mission]);
 						if (!cf.Exist (lvlName, "", 0)) {
 							if (ReadFile (ffs.name, m_nCount, nLocation) && (bAnarchy || !m_list [m_nCount].bAnarchyOnly))
 								m_nCount++;
@@ -858,8 +859,6 @@ cf.Close ();
 
 //------------------------------------------------------------------------------
 
-void InitExtraRobotMovie (char *filename);
-
 //values for built-in mission
 
 //loads the specfied mission from the mission m_list.
@@ -994,7 +993,7 @@ return 1;
 //------------------------------------------------------------------------------
 //loads the named mission if exists.
 //Returns true if mission loaded ok, else false.
-int CMissionManager::LoadByName (char *szMissionName, int nSubFolder, char* szSubFolder)
+int CMissionManager::LoadByName (char *szMissionName, int nSubFolder, const char* szSubFolder)
 {
 	int n, i, j;
 

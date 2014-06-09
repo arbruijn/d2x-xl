@@ -76,8 +76,7 @@ if (bRegisterBitmaps) {
 		bitmapList.Create (1000);
 		bitmapList.SetGrowth (1000);
 		}
-	if (bitmapList.ToS () == nDbgTexture)
-		nDbgTexture = nDbgTexture;
+	BRP ((int) bitmapList.ToS () == nDbgTexture);
 	if (!FindBitmap (bmP))
 		bitmapList.Push (bmP);
 	}
@@ -181,10 +180,6 @@ else {
 
 void CBitmap::Destroy (void)
 {
-if (!strcmp (m_info.szName, "slowmotion#0"))
-	nDbgTexture = nDbgTexture;
-if (!strcmp (m_info.szName, "bullettime#0"))
-	nDbgTexture = nDbgTexture;
 SetPalette (NULL);
 DestroyBuffer ();
 DestroyFrames ();
@@ -693,10 +688,6 @@ m_info.nMasks = 0;
 m_info.nTranspType = 0;
 if (i < 0)
 	i = int (this - gameData.pig.tex.bitmaps [bD1]);
-#if DBG
-if ((nDbgTexture >= 0) && (i == nDbgTexture))
-	nDbgTexture = nDbgTexture;
-#endif
 FreeMask ();
 if (!FreeHiresAnimation (bD1))
 	ReleaseTexture ();
@@ -728,10 +719,6 @@ void CBitmap::SetName (const char* pszName)
 if (pszName) {
 	strncpy (m_info.szName, pszName, sizeof (m_info.szName)); 
 	m_info.szName [sizeof (m_info.szName) - 1] = '\0';
-	if (!strcmp (pszName, "slowmotion#0"))
-		nDbgTexture = nDbgTexture;
-	if (!strcmp (pszName, "bullettime#0"))
-		nDbgTexture = nDbgTexture;
 	}
 #endif
 }

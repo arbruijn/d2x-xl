@@ -123,6 +123,8 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+#if 0
+
 static int LoadIpToCountryPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {
 if (!ReadIpToCountryRecord ())
@@ -134,6 +136,8 @@ else {
 	}
 return nCurItem;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -190,7 +194,7 @@ return (int) ipToCountry.ToS ();
 
 //------------------------------------------------------------------------------
 
-char* CountryFromIP (uint ip)
+const char* CountryFromIP (uint ip)
 {
 uint l = 0, r = ipToCountry.ToS () - 1, i;
 do {

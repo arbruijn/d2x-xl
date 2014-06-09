@@ -19,7 +19,7 @@
 
 //------------------------------------------------------------------------------
 
-char* WallpaperName (int nType, int bHires = -1);
+const char* WallpaperName (int nType, int bHires = -1);
 
 //------------------------------------------------------------------------------
 
@@ -67,7 +67,7 @@ class CBackground : public CCanvas {
 class CBackgroundManager : public CStack<CBackground> {
 	private:
 		CBackground		m_wallpapers [WALLPAPER_COUNT];
-		char*				m_filenames [WALLPAPER_COUNT];
+		const char*			m_filenames [WALLPAPER_COUNT];
 		bool				m_bValid;
 		bool				m_bShadow;
 
@@ -82,7 +82,7 @@ class CBackgroundManager : public CStack<CBackground> {
 		bool Setup (CBackground& bg, int width, int height, int nType = BG_SUBMENU, int nWallPaper = BG_STANDARD);
 		void Activate (CBackground& bg);
 
-		inline char* Filename (uint i = 0) { return m_filenames [i]; }
+		inline const char* Filename (uint i = 0) { return m_filenames [i]; }
 		inline CBitmap* Wallpaper (uint i = 0) { return m_wallpapers [i].Bitmap (); }
 		inline bool Shadow (void) { return m_bShadow; }
 		inline void SetShadow (bool bShadow) { m_bShadow = bShadow; }
@@ -92,7 +92,7 @@ class CBackgroundManager : public CStack<CBackground> {
 		void DrawBox (int left, int top, int right, int bottom, int nLineWidth, float fAlpha, int bForce);
 
 	private:
-		CBitmap* LoadWallpaper (char* filename);
+		CBitmap* LoadWallpaper (const char* filename);
 		CBitmap* LoadCustomWallpaper (void);
 		CBitmap* LoadDesktopWallpaper (void);
 		CBitmap* LoadMenuBackground (void);

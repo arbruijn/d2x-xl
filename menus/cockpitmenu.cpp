@@ -101,7 +101,7 @@ static int nWinFuncs, winFunc [2], winFuncList [CV_FUNC_COUNT], winFuncMap [CV_F
 
 //------------------------------------------------------------------------------
 
-static char* windowTypeIds [2] = {"left window type", "right window type"};
+static const char* windowTypeIds [2] = {"left window type", "right window type"};
 
 int CockpitOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
 {

@@ -1762,7 +1762,7 @@ class CRiftData {
 		int				m_bAvailable;
 		CFloatVector	m_center;
 
-		CRiftData () : m_renderScale (1.0f), m_fov (125.0f), m_nResolution (0), m_bAvailable (false) {}
+		CRiftData () : m_renderScale (1.0f), m_fov (125.0f), m_projectionCenterOffset (0.0f), m_ipd (0), m_nResolution (0), m_bUse (0), m_bAvailable (false) {}
 		~CRiftData () { Destroy (); }
 		bool Create (void);
 		void Destroy (void);
@@ -2745,11 +2745,6 @@ class CMultiplayerData {
 		bool Create (void);
 		void Destroy (void);
 		inline void Connect (int nPlayer, sbyte nStatus) {
-#if DBG
-			if ((nPlayer != nLocalPlayer) && (nStatus < 2))
-				nStatus = nStatus;
-			if (nPlayer < MAX_PLAYERS + 4)
-#endif
 			players [nPlayer].Connect (nStatus);
 			}
 

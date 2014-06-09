@@ -294,7 +294,7 @@ while (!m_bDone) {
 						}
 					do {
 						pszFn = items [cc];
-						char* versionIds [] = {"(D1)", "(D2)", "(XL)"};
+						const char* versionIds [] = {"(D1)", "(D2)", "(XL)"};
 						int nSkip = 0;
 						for (int i = 0; i < 3; i++)
 							if (strstr (pszFn, versionIds [i]) == pszFn) {

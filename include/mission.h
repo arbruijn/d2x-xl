@@ -122,7 +122,7 @@ class CMissionManager : public CMissionData {
 
 		//loads the named mission if exists.
 		//Returns true if mission loaded ok, else false.
-		int LoadByName (char *szMissionName, int nSubFolder, char* szSubFolder = NULL);
+		int LoadByName (char *szMissionName, int nSubFolder, const char* szSubFolder = NULL);
 		int FindByName (char *szMissionName, int nSubFolder);
 
 		int IsBuiltIn (const char* pszMission);

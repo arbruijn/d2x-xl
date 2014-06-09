@@ -505,10 +505,6 @@ if (bGetSlideBank == 2) {
 		m_info [1].bankTime -= DELTACTRL (22 + i, 1);
 		m_info [0].forwardThrustTime += DELTACTRL (30 + i, 0);
 		m_info [0].forwardThrustTime -= DELTACTRL (32 + i, 0);
-#if DBG
-		if (m_info [0].forwardThrustTime)
-			m_info [0].forwardThrustTime = m_info [0].forwardThrustTime;
-#endif
 		if ((v = HaveKey (kcKeyboard, 46 + i)) < 255)
 			m_info [0].afterburnerState |= gameStates.input.keys.pressed [v];
 		// count bomb drops

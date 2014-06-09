@@ -123,7 +123,7 @@ class CFile {
 
 		static int Exist (const char *filename, const char *folder, int bUseD1Hog);	// Returns true if file exists on disk (1) or in hog (2).
 		static int Delete (const char *filename, const char* folder);
-		static int Rename (char *oldname, char *newname, const char *folder);
+		static int Rename (const char *oldname, const char *newname, const char *folder);
 		static int MkDir (const char *pathname);
 		static FILE *GetFileHandle (const char *filename, const char *folder, const char *mode);
 		static void SplitPath (const char *szFullPath, char *szFolder, char *szFile, char *szExt);
@@ -131,7 +131,7 @@ class CFile {
 
 		inline FILE*& File () { return m_info.file; }
 		inline char* Name () { return m_info.filename; }
-		int LineCount (const char* filename, const char* folder, char* delims);
+		int LineCount (const char* filename, const char* folder, const char* delims);
 	};
 
 typedef struct tStaticFolders {

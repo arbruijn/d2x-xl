@@ -208,7 +208,7 @@ pszOffOn [1] = TXT_ON;
 
 //------------------------------------------------------------------------------
 
-static char* softParticleIds [] = {"soft sprites", "soft sparks", "soft smoke"};
+static const char* softParticleIds [] = {"soft sprites", "soft sparks", "soft smoke"};
 
 void EffectOptionsMenu (void)
 {

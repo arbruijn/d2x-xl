@@ -442,13 +442,13 @@ return 0;
 int CDownloadManager::DownloadError (int nReason)
 {
 if (nReason == 1)
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_SYNC);
+	MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_AUTODL_SYNC);
 else if (nReason == 2)
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_MISSPKTS);
+	MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_AUTODL_MISSPKTS);
 else if (nReason == 3)
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FILEIO);
+	MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_AUTODL_FILEIO);
 else
-	MsgBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_AUTODL_FAILED);
+	MsgBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_AUTODL_FAILED);
 m_nResult = 0;
 return -1;
 }
@@ -508,11 +508,7 @@ switch (m_nState = m_data [0]) {
 		strlwr (szFile [1]);
 		for (int i = 1 + (strcmp (szFile [0], szFile [1]) == 0); i > 0; i--) {
 			if (i == 2)
-#if DBG
-				;
-#else
 				sprintf (szDest, "%s/%s%s", szFolder, szFile [0], szExt);
-#endif
 			else
 				sprintf (szDest, "%s/%s%s", gameFolders.missions.szDownloads, *gameFolders.missions.szRoot ? "/" : "", pszFile);
 			if (m_cf.Open (szDest, "", "wb", 0))
@@ -531,7 +527,7 @@ switch (m_nState = m_data [0]) {
 		int l = GET_INTEL_INT (m_data + 1);
 		if (l > DL_PAYLOAD_SIZE)
 			return DownloadError (1);
-		if (m_cf.Write (m_data + 5, 1, l) != l)
+		if ((int) m_cf.Write (m_data + 5, 1, l) != l)
 			return DownloadError (3);
 		m_nDestLen += l;
 		break;

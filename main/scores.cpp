@@ -403,7 +403,7 @@ do {
 	m_bHilite = false;
 	if (nCurItem > -1) {
 		t	= SDL_GetTicks ();
-		if (m_bHilite = (t - t0 >= 10))
+		if ((m_bHilite = (t - t0 >= 10)))
 			t0 = t;
 		}
 	Render (nCurItem);
