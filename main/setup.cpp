@@ -194,6 +194,15 @@ static tFileDesc addonSoundFiles [] = {
 
 };
 
+static inline bool User (tFileDesc& fd)
+{
+#ifdef _WIN32
+return false;
+#else
+return fd.bUser; 
+#endif
+}
+
 // ----------------------------------------------------------------------------
 
 void MoveFiles (char* pszDestFolder, char* pszSourceFolder, bool bMoveSubFolders)
@@ -315,23 +324,23 @@ for (int i = 0; i < nFiles; i++) {
 	else {
 		for (int j = 0; j < 2; j++)
 			if (*fileList [i].pszFolders [j]) {
-				sprintf (szDest, "%s%s", fileList [i].bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, fileList [i].pszFolders [j]);
+				sprintf (szDest, "%s%s", User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot, fileList [i].pszFolders [j]);
 				fileList [i].bFound = CFile::Exist (fileList [i].pszFile, szDest, false) == 1;
 				if (fileList [i].bFound)
 					break;
 				}
 		if (fileList [i].bFound)
 			continue;	// file exists in the destination folder
-		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, fileList [i].bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, false) == 1;
+		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot, false) == 1;
 		if (fileList [i].bFound) {	// file exists in the source folder
 			sprintf (szSrc, "%s%s", gameFolders.game.szRoot, fileList [i].pszFile + 1);
-			sprintf (szDest, "%s%s\\%s", fileList [i].bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, fileList [i].pszFile + 1);
+			sprintf (szDest, "%s%s\\%s", User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot, fileList [i].pszFile + 1);
 			cf.Copy (szSrc, szDest);
 			}
 		else if (!fileList [i].bOptional) {
 			for (int j = 0; j < 2; j++)
 				if (*fileList [i].pszFolders [j]) {
-				sprintf (szDest, "%s%s", fileList [i].bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, fileList [i].pszFolders [j]);
+				sprintf (szDest, "%s%s", User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot, fileList [i].pszFolders [j]);
 				fileList [i].bFound = CFile::Exist (fileList [i].pszFile, szDest, false) == 1;
 				}
 			nErrors++;
@@ -394,9 +403,9 @@ for (int i = 0, j = -1; i < nFiles; i++) {
 					strcat (szMsg, "\n\n");
 					bFirst = true;
 					}
-				if (strcmp (fileList [i].bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, ".\\")) {
-					strcat (szMsg, fileList [i].bUser ? gameFolders.user.szCache : gameFolders.game.szRoot);
-					l += int (strlen (fileList [i].bUser ? gameFolders.user.szCache : gameFolders.game.szRoot));
+				if (strcmp (User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot, ".\\")) {
+					strcat (szMsg, User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot);
+					l += int (strlen (User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot));
 					}
 				strcat (szMsg, fileList [i].pszFolders [h]);
 				strcat (szMsg, ": ");

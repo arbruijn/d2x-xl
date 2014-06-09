@@ -289,6 +289,7 @@ if (GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szModels, MODEL_FOLD
 	GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.oof");
 GetAppFolder (gameFolders.var.szRoot, gameFolders.mods.szRoot, MOD_FOLDER, "");
 
+#if 0
 if (GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szSounds [0], SOUND_FOLDER, ""))
 	MakeFolder (gameFolders.game.szSounds [0], gameFolders.game.szRoot, SOUND_FOLDER);
 if (GetAppFolder (gameFolders.game.szSounds [4], gameFolders.game.szSounds [1], SOUND_FOLDER_D2, "*.wav"))
@@ -301,6 +302,7 @@ if (GetAppFolder (gameFolders.game.szSounds [3], gameFolders.game.szSounds [0], 
 	MakeFolder (gameFolders.game.szSounds [3], gameFolders.game.szSounds [0], SOUND_FOLDER_D2);
 if (GetAppFolder (gameFolders.game.szSounds [4], gameFolders.game.szSounds [0], SOUND_FOLDER_D2X, "*.wav"))
 	MakeFolder (gameFolders.game.szSounds [4], gameFolders.game.szSounds [0], SOUND_FOLDER_D2X);
+#endif
 
 if (GetAppFolder (gameFolders.game.szTextures [0], gameFolders.game.szTextures [1], TEXTURE_FOLDER_D2, "*.tga") &&
 	 GetAppFolder (gameFolders.game.szTextures [0], gameFolders.game.szTextures [1], TEXTURE_FOLDER_D2, ""))
