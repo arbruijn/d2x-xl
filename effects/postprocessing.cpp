@@ -158,7 +158,7 @@ m_shaderProg = GLhandleARB (shaderManager.Deploy (hShockwaveShader /*[direction]
 if (!m_shaderProg)
 	return false;
 if (shaderManager.Rebuild (m_shaderProg))
-	;
+	/*nothing*/;
 shaderManager.Set ("sceneTex", 0);
 shaderManager.Set ("depthTex", 1);
 shaderManager.Set ("effectStrength", effectStrength);

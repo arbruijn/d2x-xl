@@ -177,7 +177,7 @@ if (!shaderProg)
 	return -1;
 
 if (shaderManager.Rebuild (shaderProg))
-	;
+	/*nothing*/;
 	{
 	ogl.ClearError (0);
 	glUniform1f (glGetUniformLocation (shaderProg, "fLightScale"), 

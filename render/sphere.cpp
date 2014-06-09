@@ -187,7 +187,7 @@ if (!nHits)
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (sphereShaderProg));
 if (shaderProg) {
 	if (shaderManager.Rebuild (shaderProg))
-		;
+		/*nothing*/;
 		glUniform1i (glGetUniformLocation (shaderProg, "sphereTex"), 0);
 	//if (shaderProg) 
 		{

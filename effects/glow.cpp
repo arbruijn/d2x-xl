@@ -145,7 +145,7 @@ m_shaderProg = GLhandleARB (shaderManager.Deploy (hBlurShader /*[direction]*/));
 if (!m_shaderProg)
 	return false;
 if (shaderManager.Rebuild (m_shaderProg))
-	;
+	/*nothing*/;
 shaderManager.Set ("glowSource", 0);
 shaderManager.Set ("direction", float (direction));
 shaderManager.Set ("scale", fScale [direction]);

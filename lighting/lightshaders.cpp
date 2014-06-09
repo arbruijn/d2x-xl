@@ -1229,7 +1229,8 @@ if (!shaderProg) {
 	return -1;
 	}
 
-if (shaderManager.Rebuild (shaderProg) || (nType != nLastType));
+if (shaderManager.Rebuild (shaderProg) || (nType != nLastType)) 
+	/*nothing*/;
 	{
 	nLastType = nType;
 	glUniform1i (glGetUniformLocation (shaderProg, "lMapTex"), 0);

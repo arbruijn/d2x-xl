@@ -1,3 +1,5 @@
+#ifdef USE_SIXENSE
+
 #include "sixense_wrapper.h"
 
 CSixense sixense;
@@ -94,3 +96,5 @@ return m_nAxis;
 }
 
 // -----------------------------------------------------------------------------
+
+#endif //USE_SIXENSE

@@ -1032,9 +1032,7 @@ m_faceP->m_info.nBaseTex = -1;
 m_faceP->m_info.bTransparent = 1;
 m_faceP->m_info.bSegColor = missionConfig.m_bColoredSegments;
 m_faceP->m_info.bAdditive = 0;
-	//(SEGMENTS [nSegment].m_props & (SEGMENT_PROP_WATER | SEGMENT_PROP_LAVA)) || 
-	//(SEGMENTS [nSegment].m_function >= SEGMENT_FUNC_TEAM_BLUE);
-BRP (SEGMENTS [nSegment].m_props & (SEGMENT_PROP_WATER | SEGMENT_PROP_LAVA));
+BRP ((SEGMENTS [nSegment].m_props & (SEGMENT_PROP_WATER | SEGMENT_PROP_LAVA)) != 0);
 }
 
 //------------------------------------------------------------------------------
