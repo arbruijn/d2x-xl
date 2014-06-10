@@ -741,11 +741,9 @@ if (m_sensorFusion) {
 
 bool CRenderData::Create (void)
 {
-#if OCULUS_RIFT
 Destroy ();
 CREATE (gameData.render.faceList, LEVEL_FACES, 0);
 Init ();
-#endif
 return true;
 }
 
