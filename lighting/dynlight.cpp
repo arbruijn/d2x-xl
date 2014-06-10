@@ -333,9 +333,9 @@ if (fBrightness <= 0)
 
 #if DBG
 if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
-	nSegment = nSegment;
+	BRP;
 if ((nDbgObj >= 0) && (nObject == nDbgObj))
-	nDbgObj = nDbgObj;
+	BRP;
 if (colorP && ((colorP->Red () > 1) || (colorP->Green () > 1) || (colorP->Blue () > 1)))
 	colorP = colorP;
 #endif
@@ -369,7 +369,7 @@ i = m_data.nLights [0]; //LastEnabledDynLight () + 1;
 CDynLight& light = m_data.lights [i];
 light.info.nIndex = i;
 light.info.faceP = faceP;
-light.info.nSegment = nSegment;
+light.info.BRP;
 light.info.nSide = nSide;
 light.info.nObject = nObject;
 light.info.nPlayer = -1;
@@ -430,7 +430,7 @@ else if (nSegment >= 0) {
 	else {
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-			nDbgSeg = nDbgSeg;
+			BRP;
 #endif
 		light.info.nType = 0;
 		light.info.bSelf = SEGMENTS [nSegment].HasOutdoorsProp ();
@@ -484,7 +484,7 @@ if ((nLight >= 0) && (nLight < m_data.nLights [0])) {
 	CDynLight* lightP = m_data.lights + nLight;
 #if DBG
 	if ((nDbgSeg >= 0) && (nDbgSeg == lightP->info.nSegment) && ((nDbgSide < 0) || (nDbgSide == lightP->info.nSide)))
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	if (!lightP->info.nType) {
 		// do not remove static lights, or the nearest lights to segment info will get messed up!
@@ -659,7 +659,7 @@ else {
 	return (i >= j);
 #if DBG
 	if ((nDbgSeg >= 0) && (nDbgVertex >= 0) && (nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (info.nSide == nDbgSide)) && (nDbgVertex >= 0) && (*vPoint == VERTICES [nDbgVertex]))
-		nDbgVertex = nDbgVertex;
+		BRP;
 #endif
 	}
 
@@ -715,14 +715,14 @@ int CDynLight::Contribute (const short nDestSeg, const short nDestSide, const sh
 if ((nLightSeg >= 0) && (nDestSeg >= 0)) {
 #if DBG
 	if ((nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == info.nSide)))
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	if (info.nSide < 0) 
 		info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);
 	else {
 #if DBG
 		if (nDestSeg == nDbgSeg)
-			nDbgSeg = nDbgSeg;
+			BRP;
 #endif
 		if (SEGMENTS [nLightSeg].HasOutdoorsProp ()) {
 			if ((nDestSide >= 0) && ((info.nSide != nDestSide) || (nLightSeg != nDestSeg)))
@@ -796,7 +796,7 @@ else { // check whether light only contributes ambient light to point
 	}
 #if DBG
 if ((nDbgSeg == nDestSeg) && ((nDbgSide < 0) || (nDestSide == nDbgSide)) && info.bDiffuse [nThread])
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 render.xDistance [nThread] = xDistance;
 return 1;
@@ -861,12 +861,12 @@ for (nFace = FACES.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--, faceP+
 		continue;
 #if DBG
 	if (nSegment == nDbgSeg)
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	nSide = faceP->m_info.nSide;
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	nTexture = faceP->m_info.nBaseTex;
 	if ((nTexture < 0) || (nTexture >= MAX_WALL_TEXTURES))
@@ -905,7 +905,7 @@ void CLightManager::GatherStaticVertexLights (int nVertex, int nMax, int nThread
 for (; nVertex < nMax; nVertex++, pf++) {
 #if DBG
 	if (nVertex == nDbgVertex)
-		nVertex = nVertex;
+		BRP;
 #endif
 	vVertex.Assign (gameData.segs.vertices [nVertex]);
 	lightManager.ResetActive (nThread, 0);
@@ -939,7 +939,7 @@ Transform (1, bColorize);
 for (i = 0; i < gameData.segs.nVertices; i++) {
 #if DBG
 	if (i == nDbgVertex)
-		nDbgVertex = nDbgVertex;
+		BRP;
 #endif
 	m_data.variableVertLights [i] = VariableVertexLights (i);
 	if (gameStates.render.nLightingMethod)

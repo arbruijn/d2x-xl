@@ -152,7 +152,7 @@ m_nFirstPart = 0;
 m_fScale = fScale;
 //m_nDensity = nDensity;
 //m_nPartsPerPos = nPartsPerPos;
-m_nSegment = nSegment;
+m_BRP;
 m_nObject = nObject;
 if ((nObject >= 0) && (nObject < 0x70000000)) {
 	m_nObjType = OBJECTS [nObject].info.nType;
@@ -338,7 +338,7 @@ m_vPos = *vPos;
 if (mOrient)
 	m_mOrient = *mOrient;
 if (nSegment >= 0)
-	m_nSegment = nSegment;
+	m_BRP;
 }
 
 //------------------------------------------------------------------------------

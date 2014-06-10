@@ -566,12 +566,12 @@ else {
 
 #if DBG
 	if (nSegment == nDbgSeg)
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	if (llP->nFrame != gameData.app.nFrameCount) {
 		memset (llP, 0, sizeof (*llP));
 		llP->nFrame = gameData.app.nFrameCount;
-		llP->nSegment = nSegment;
+		llP->BRP;
 		llP->nNext = m_nFirstLight;
 		m_nFirstLight = nSegment;
 		}
@@ -652,7 +652,7 @@ if (SHOW_LIGHTNING (1)) {
 		llP = m_lights + i;
 #if DBG
 		if (llP->nSegment == nDbgSeg)
-			nDbgSeg = nDbgSeg;
+			BRP;
 #endif
 		n = llP->nLights;
 		llP->vPos.v.coord.x /= n;

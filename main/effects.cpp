@@ -171,7 +171,7 @@ else {
 		bmP->SetupTexture (1, 1);
 		}
 	if (nBaseTex == nDbgTexture)
-		nDbgTexture = nDbgTexture;
+		BRP;
 #endif
 	nBmFrames = bmP->FrameCount ();
 	if ((bmfP = bmP->Frames ())) {
@@ -218,7 +218,7 @@ xEffectTime += gameData.time.xFrame;
 			continue;
 #if DBG
 		if ((nDbgTexture > 0) && (t == nDbgTexture))
-			nDbgTexture = nDbgTexture;
+			BRP;
 #endif
 		if (!bSetup) {
 			if (ecP->flags & EF_STOPPED)
@@ -302,7 +302,7 @@ xEffectTime += gameData.time.xFrame;
 		if (ecP->flags & EF_ALTFMT) {
 #if DBG
 			if (ecP->vClipInfo.frames [0].index == nDbgTexture)
-				nDbgTexture = nDbgTexture;
+				BRP;
 #endif
 			if (ecP->flags & EF_INITIALIZED) {
 				bmP = gameData.pig.tex.bitmapP [ecP->vClipInfo.frames [0].index].Override ();

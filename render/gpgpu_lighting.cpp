@@ -202,7 +202,7 @@ for (i = 0, colorP = m_vld.colors; i < m_vld.nVertices; i++) {
 	nVertex = m_vld.index [i].nVertex;
 #if DBG
 	if (nVertex == nDbgVertex)
-		nDbgVertex = nDbgVertex;
+		BRP;
 #endif
 	vertColor = m_vld.index [i].color;
 	vertColor += gameData.render.color.ambient [nVertex];
@@ -322,7 +322,7 @@ else if (nState == 1) {
 		Render ();
 #if DBG
 	if (nVertex == nDbgVertex)
-		nDbgVertex = nDbgVertex;
+		BRP;
 #endif
 	for (nLights = 0, i = m_vld.nLights, j = 0; j < h; i++, j++) {
 		lightP = lightManager.Active (0) [j].lightP;
@@ -339,7 +339,7 @@ else if (nState == 1) {
 		nLights++;
 		}
 	if (nLights) {
-		m_vld.index [m_vld.nVertices].nVertex = nVertex;
+		m_vld.index [m_vld.nVertices].BRP;
 		m_vld.index [m_vld.nVertices].nLights = nLights;
 		m_vld.index [m_vld.nVertices].color = (CFloatVector) *colorP;
 		m_vld.nVertices++;

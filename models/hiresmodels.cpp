@@ -235,7 +235,7 @@ if (!(replacementModels [i].pszLores &&
 nModel = replacementModels [i].nModel;
 #if DBG
 if (nModel == nDbgModel)
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 modelP = ((gameStates.app.bFixModels && gameStates.app.bAltModels) ? gameData.models.polyModels [2] : gameData.models.polyModels [0]) + nModel;
 modelP->Destroy ();
@@ -290,7 +290,7 @@ short LoadASEModel (ASE::CModel *pa, short i, int bCustom)
 
 #if DBG
 if (nModel == nDbgModel)
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 if (gameData.models.modelToASE [bCustom != 0][nModel])
 	return i + 1;
@@ -327,7 +327,7 @@ short LoadHiresModel (int nModel, short i, int bCustom, const char* filename)
 
 #if DBG
 if ((nDbgModel >= 0) && (replacementModels [i].nModel == nDbgModel))
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 if (filename)
 	replacementModels [i].pszHires = filename;
@@ -336,7 +336,7 @@ if (bLog)
 	PrintLog (1, "Loading model %d (%s)\n", replacementModels [i].nModel, replacementModels [i].pszHires);
 #if DBG
 if (replacementModels [i].nModel == nDbgModel)
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 if ((j = LoadASEModel (gameData.models.aseModels [bCustom != 0] + gameData.models.nHiresModels, i, bCustom))) {
 	if (bLog)
@@ -473,7 +473,7 @@ for (i = 0, l = gameData.models.nHiresModels; i < l; i++)
 		if (0 <= (h = gameData.models.oofModels [j][i].m_nModel)) {
 #if DBG
 			if (h == nDbgModel)
-				nDbgModel = nDbgModel;
+				BRP;
 #endif
 			if (gameData.models.modelToOOF [j][h]) {
 				gameData.models.modelToOOF [j][h] = NULL;
@@ -484,7 +484,7 @@ for (i = 0, l = gameData.models.nHiresModels; i < l; i++)
 		if (0 <= (h = gameData.models.aseModels [j][i].m_nModel)) {
 #if DBG
 			if (h == nDbgModel)
-				nDbgModel = nDbgModel;
+				BRP;
 #endif
 			if (gameData.models.modelToASE [j][h]) {
 				gameData.models.modelToASE [j][h] = NULL;

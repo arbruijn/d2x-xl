@@ -773,7 +773,7 @@ int CModel::Read (const char* filename, short nModel, int bCustom)
 {
 #if DBG
 if (nModel == nDbgModel)
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 
 	CFile		cf;
@@ -805,7 +805,7 @@ m_nModel = nModel;
 m_bCustom = bCustom;
 #if DBG
 if (nModel == nDbgModel)
-	nDbgModel = nDbgModel;
+	BRP;
 nLine = 0;
 #endif
 while ((pszToken = ReadLine (cf))) {
@@ -841,7 +841,7 @@ int CSubModel::SaveBinary (CFile& cf)
 {
 #if DBG
 if (!strcmp (m_szName, "$WINGTIP2-0"))
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 cf.Write (m_szName, 1, sizeof (m_szName));
 cf.Write (m_szParent, 1, sizeof (m_szParent));

@@ -612,9 +612,9 @@ else {
 
 #if DBG
 if (thisObjP->Index () == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 if ((thisObjP->info.nType == OBJ_WEAPON) || (otherObjP->info.nType == OBJ_WEAPON))
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 // check hit sphere collisions
 bOtherPoly = UseHitbox (otherObjP);
@@ -721,7 +721,7 @@ nObjSegList [0] = hitQuery.nSegment;
 if ((thisObjP->info.nType == OBJ_WEAPON) && (thisObjP->info.nSegment == gameData.objs.consoleP->info.nSegment))
 	hitQuery.flags = hitQuery.flags;
 if (hitQuery.nSegment == nDbgSeg)
-	nDbgSeg = nDbgSeg;
+	BRP;
 #	endif
 #if 1
 CSegment* segP = SEGMENTS + hitQuery.nSegment;
@@ -745,14 +745,14 @@ for (int iObjSeg = 0; iObjSeg < nObjSegs; iObjSeg++) {
 restart:
 #endif
 	if (nSegment == nDbgSeg)
-		nDbgSeg = nDbgSeg;
+		BRP;
 	short nSegObjs = gameData.objs.nObjects;
 	short nFirstObj = SEGMENTS [nSegment].m_objects;
 	for (short nObject = nFirstObj; nObject != -1; nObject = otherObjP->info.nNextInSeg, nSegObjs--) {
 		otherObjP = OBJECTS + nObject;
 #if DBG
 		if (nObject == nDbgObj)
-			nDbgObj = nDbgObj;
+			BRP;
 		if ((nSegObjs < 0) || !CheckSegObjList (otherObjP, nObject, nFirstObj)) {
 			RelinkAllObjsToSegs ();
 			goto restart;
@@ -798,7 +798,7 @@ restart:
 			}
 #if DBG
 		if (nObject == nDbgObj)
-			nDbgObj = nDbgObj;
+			BRP;
 #endif
 		fix d = CheckVectorObjectCollision (curHit, hitQuery.p0, hitQuery.p1, nFudgedRad, otherObjP, thisObjP, bCheckVisibility);
 		if (d && (d < dMin)) {
@@ -901,7 +901,7 @@ if ((hitQuery.nObject > -1) && (gameData.objs.collisionResult [OBJECTS [hitQuery
 //now, check segment walls
 #if DBG
 if (hitQuery.nSegment == nDbgSeg)
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 int startMask = segP->Masks (*hitQuery.p0, hitQuery.radP0).m_face;
 CSegMasks masks = segP->Masks (*hitQuery.p1, hitQuery.radP1);    //on back of which faces?
@@ -931,7 +931,7 @@ if (endMask) { //on the back of at least one face
 			//did we go through this wall/door?
 #if DBG
 			if ((hitQuery.nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-				nDbgSeg = nDbgSeg;
+				BRP;
 #endif
 			int nFaceHitType;
 				nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
@@ -943,7 +943,7 @@ if (endMask) { //on the back of at least one face
 #endif
 #if DBG
 			if ((hitQuery.nSegment == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == nSide))) {
-				nDbgSeg = nDbgSeg;
+				BRP;
 				if (nFaceHitType)
 					nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
 										? segP->CheckLineToFaceSpecial (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace)
@@ -960,7 +960,7 @@ if (endMask) { //on the back of at least one face
 				subHitQuery.nSegment = segP->m_children [nSide];
 #if DBG
 				if (subHitQuery.nSegment == nDbgSeg)
-					nDbgSeg = nDbgSeg;
+					BRP;
 #endif
 				for (i = 0; i < gameData.collisions.nSegsVisited && (subHitQuery.nSegment != gameData.collisions.segsVisited [i]); i++)
 					;
@@ -1260,7 +1260,7 @@ for (;;) {
 				}
 #if DBG
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-				nDbgSeg = nDbgSeg;
+				BRP;
 #endif
 			if (PointIsOutsideFace (&intersection, vertices, 5 - nFaceCount))
 				continue;

@@ -209,7 +209,7 @@ if (nType == OBJ_WEAPON) {
 	if ((nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_ROBOT)) {
 		nType = nType;
 		if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
-			nDbgSeg = nDbgSeg;
+			BRP;
 		}
 	if (nId == FLARE_ID)
 		nType = nType;

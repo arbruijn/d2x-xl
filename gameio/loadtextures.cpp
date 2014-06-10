@@ -384,7 +384,7 @@ for (bD1 = 0; bD1 < 2; bD1++) {
 		  i++, bmP++) {
 #if DBG
 		if (i == nDbgTexture)
-			nDbgTexture = nDbgTexture;
+			BRP;
 #endif
 		if (bitmapOffsets [bD1][i] > 0) { // only page out bitmaps read from disk
 			bmP->AddFlags (BM_FLAG_PAGED_OUT);
@@ -774,10 +774,10 @@ if (!pszFile)
 
 #if DBG
 if (!strcmp (bmName, "key01#0"))
-	nDbgTexture = nDbgTexture;
+	BRP;
 const char* s = strchr (bmName, '#');
 if (s && (s [1] != '0'))
-	nDbgTexture = nDbgTexture;
+	BRP;
 #endif
 
 if (nFile < 2)	//was level specific mod folder
@@ -899,11 +899,11 @@ int PageInBitmap (CBitmap* bmP, const char* bmName, int nIndex, int bD1, bool bH
 
 #if DBG
 if ((nDbgTexture > 0) && (nIndex == nDbgTexture))
-	nDbgTexture = nDbgTexture;
+	BRP;
 if (!(bmName && *bmName))
 	return 0;
 if ((nDbgTexture > 0) && (nIndex == nDbgTexture))
-	nDbgTexture = nDbgTexture;
+	BRP;
 #endif
 if (bmP->Buffer ())
 	return 1;
@@ -926,7 +926,7 @@ bmP->SetKey (nIndex);
 
 #if DBG
 if ((nIndex >= 0) && (nIndex == nDbgTexture))
-	nDbgTexture = nDbgTexture;
+	BRP;
 #endif
 
 if ((nIndex >= 0) && !(IsCockpit (bmName) || bHires || gameOpts->render.textures.bUseHires [0]))
@@ -970,7 +970,7 @@ if (bitmapOffsets [bD1][bmi] == 0)
 
 #if DBG
 if (bmi == nDbgTexture)
-	nDbgTexture = nDbgTexture;
+	BRP;
 #endif
 bmP = &gameData.pig.tex.bitmaps [bD1][bmi];
 if ((bmoP = bmP->Override ()))
@@ -1053,7 +1053,7 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 		cf.Seek (bmDataOffset + bmOffset, SEEK_SET);
 #if DBG
 		if (indices [i] == nDbgTexture)
-			nDbgTexture = nDbgTexture;
+			BRP;
 #endif
 		if (bHaveTGA) {
 			CTGA			tga (&bm);
@@ -1095,7 +1095,7 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 			j = indices [i];
 #if DBG
 			if (j == nDbgTexture)
-				nDbgTexture = nDbgTexture;
+				BRP;
 #endif
 			bm.SetKey (j);
 			bm.RLEExpand (NULL, 0);
@@ -1104,7 +1104,7 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 			}
 #if DBG
 		if (j == nDbgTexture)
-			nDbgTexture = nDbgTexture;
+			BRP;
 #endif
 		gameData.pig.tex.bitmapP [j].Unload (j, 0);
 		bm.SetFromPog (1);
@@ -1185,7 +1185,7 @@ void LoadTexture (int bmi, int nFrame, int bD1, bool bHires)
 {
 #if DBG
 if ((nDbgTexture >= 0) && (bmi == nDbgTexture))
-	nDbgTexture = nDbgTexture;
+	BRP;
 #endif
 if (!BitmapLoaded (bmi, nFrame, bD1))
 	PiggyBitmapPageIn (bmi, bD1, bHires);

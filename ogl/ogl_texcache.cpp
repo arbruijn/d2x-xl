@@ -69,7 +69,7 @@ for (int i = 0; i < vcP->nFrameCount; i++) {
 #if DBG
 	int h = vcP->frames [i].index;
 	if ((nDbgTexture >= 0) && (h == nDbgTexture))
-		nDbgTexture = nDbgTexture;
+		BRP;
 #endif
 	CBitmap* bmP = OglCacheTexture (vcP->frames [i].index, nTranspType);
 	if (!i && bmP->Override ())
@@ -83,10 +83,6 @@ static void OglCacheVClipTextures (int i, int nTransp)
 {
 if ((i >= 0) && !bVClipLoaded [i]) {
 	bVClipLoaded [i] = true;
-#if DBG
-	if (i == 19)
-		i = i;
-#endif
 	OglCacheVClipTextures (&gameData.effects.vClips [0][i], nTransp);
 	}
 }
@@ -273,7 +269,7 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments
 			continue;
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-			nDbgSeg = nDbgSeg;
+			BRP;
 #endif
 		bmBot = LoadFaceBitmap (nBaseTex, sideP->m_nFrame, bLoadTextures);
 		if ((nOvlTex = sideP->m_nOvlTex)) {

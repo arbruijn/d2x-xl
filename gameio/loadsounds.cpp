@@ -399,10 +399,15 @@ else {
 	nSounds = cf.ReadInt ();
 
 	nLoadedSounds = SetupSounds (cf, nSounds, (int) cf.Tell (), bCustom, bUseLowRes);
+#if 1
+	if (gameOpts->sound.bHires [0] && ((nLoadedSounds & 0xFFFF))) // loaded some low res sounds because the corresponding hires sounds weren't found
+		gameOpts->sound.bHires [0] = 0;
+#else
 	if (bCustom)
 		gameOpts->sound.bHires [0] = (nLoadedSounds & 0xffff) ? 0 : 2;
 	else if (gameOpts->sound.bHires [0] && ((nLoadedSounds >> 16) == 0))
 		gameOpts->sound.bHires [0] = 0;
+#endif
 	}
 
 LoadSounds (cf, false);

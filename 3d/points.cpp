@@ -164,7 +164,7 @@ ubyte CRenderPoint::ProjectAndEncode (CTransformation& transformation, int nVert
 {
 #if DBG
 if (nVertex == nDbgVertex)
-	nDbgVertex = nDbgVertex;
+	BRP;
 #endif
 if (!Projected ()) {
 	WorldPos () = VERTICES [nVertex];

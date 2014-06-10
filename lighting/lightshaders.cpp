@@ -1079,16 +1079,16 @@ PROF_START
 
 #if DBG
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 if (faceP - FACES.faces == nDbgFace)
-	nDbgFace = nDbgFace;
+	BRP;
 #endif
 if (!ogl.m_states.iLight) {
 #if DBG
 	if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-		nDbgSeg = nDbgSeg;
+		BRP;
 	if (faceP - FACES.faces == nDbgFace)
-		nDbgFace = nDbgFace;
+		BRP;
 #endif
 #if ONLY_LIGHTMAPS == 2
 	ogl.m_states.nLights = 0;
@@ -1121,9 +1121,9 @@ for (nLights = 0;
 #endif
 #if 0//DBG
 	if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-		nDbgSeg = nDbgSeg;
+		BRP;
 	if (faceP - FACES == nDbgFace)
-		nDbgFace = nDbgFace;
+		BRP;
 	if ((psl->nTarget < 0) && (-psl->nTarget - 1 != faceP->m_info.nSegment))
 		faceP = faceP;
 	else if ((psl->nTarget > 0) && (psl->nTarget != faceP - FACES + 1))
@@ -1190,7 +1190,7 @@ if (nLightRange <= 0) {
 ogl.m_states.nFirstLight = int (activeLightsP - lightManager.Active (0));
 #if DBG
 if ((ogl.m_states.iLight < ogl.m_states.nLights) && !nLightRange)
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 ogl.ClearError (0);
 PROF_END(ptPerPixelLighting)
@@ -1207,7 +1207,7 @@ PROF_START
 
 #if DBG
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 
 	int	nLights = SetupHardwareLighting (faceP, nType);//, bStart = (ogl.m_states.iLight == 0);
@@ -1219,7 +1219,7 @@ nType = 0;
 #endif
 #if DBG
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 if (!SetupLightmap (faceP))
 	return 0;

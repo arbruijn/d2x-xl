@@ -125,7 +125,7 @@ while (tail != head) {
 			goto done;
 #if DBG
 		if (bSizeCheck && (childSeg == nDbgSeg))
-			nDbgSeg = nDbgSeg;
+			BRP;
 #endif
 		bossSegs [nSegments++] = childSeg;
 		}

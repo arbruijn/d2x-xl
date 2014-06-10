@@ -68,7 +68,7 @@ if (nObject < 0)
 	return -1;
 #if DBG
 if (nObject == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 objP = OBJECTS + nObject;
 if (gameData.weapons.info [nWeaponType].renderType == WEAPON_RENDER_POLYMODEL) {
@@ -235,7 +235,7 @@ if (parentP && (parentP->info.nType == OBJ_PLAYER)) {
 		objP->cType.laserInfo.xScale = I2X (3) / 4;
 	else if (nWeaponType == GUIDEDMSL_ID) {
 		if (nParent == LOCALPLAYER.nObject) {
-			gameData.objs.guidedMissile [N_LOCALPLAYER].objP = objP;
+			gameData.objs.guidedMissile [N_LOCALPLAYER].BRP;
 			gameData.objs.guidedMissile [N_LOCALPLAYER].nSignature = objP->info.nSignature;
 			if (gameData.demo.nState == ND_STATE_RECORDING)
 				NDRecordGuidedStart ();

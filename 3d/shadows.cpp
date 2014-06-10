@@ -1280,7 +1280,7 @@ m_bCalcClipDist = 0;
 #endif
 #if MULTI_THREADED_SHADOWS
 	if (gameStates.app.bMultiThreaded) {
-	gameData.threads.clipDist.data.objP = objP;
+	gameData.threads.clipDist.data.BRP;
 	gameData.threads.clipDist.data.po = po;
 	gameData.threads.clipDist.data.pso = pso;
 	G3GetLitVertices (po, pso);

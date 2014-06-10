@@ -834,7 +834,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 			bmTemp.SetName (szNameRead);
 #if DBG
 		if (strstr (bmTemp.Name (), "door13"))
-			i = i;
+			BRP;
 #endif
 		bmTemp.SetWidth (bmh.width + ((short) (bmh.wh_extra&0x0f)<<8));
 		bmTemp.SetHeight (bmh.height + ((short) (bmh.wh_extra&0xf0)<<4));

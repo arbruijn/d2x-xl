@@ -226,7 +226,7 @@ CFloatVector *ColoredSegmentColor (int nSegment, int nSide, char nColor)
 
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 
 if (nColor > 0)
@@ -298,7 +298,7 @@ int SetVertexColor (int nVertex, CFaceColor *colorP, int bBlend)
 {
 #if DBG
 if (nVertex == nDbgVertex)
-	nVertex = nVertex;
+	BRP;
 #endif
 if (gameStates.render.bAmbientColor) { 
 	if (bBlend == 1)
@@ -368,13 +368,13 @@ dl = X2F (dynLight);
 light += dynLight;
 #if DBG
 if (nVertex == nDbgVertex)
-	nVertex = nVertex;
+	BRP;
 #endif
 if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 	if (gameData.render.lights.bGotDynColor [nVertex]) {
 #if DBG
 		if (nVertex == nDbgVertex)
-			nVertex = nVertex;
+			BRP;
 #endif
 		dynColor.Assign (gameData.render.lights.dynamicColor [nVertex]);
 		if (gameOpts->render.color.bMix) {
@@ -476,7 +476,7 @@ if (!IS_WALL (nWall))
 	return 1;
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 if (!(wallP = WALLS + nWall))
 	return 1;

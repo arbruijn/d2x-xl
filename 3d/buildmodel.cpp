@@ -132,7 +132,7 @@ void CModel::Destroy (void)
 if (m_nModel > -1)
 	m_nModel = m_nModel;
 if ((nDbgModel >= 0) && (m_nModel == nDbgModel))
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 if (ogl.m_features.bVertexBufferObjects && m_vboDataHandle)
 	glDeleteBuffersARB (1, &m_vboDataHandle);
@@ -599,7 +599,7 @@ fix CModel::Size (CObject *objP, int bHires)
 
 #if DBG
 if (m_nModel == nDbgModel)
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 psm = m_subModels.Buffer ();
 vOffset = psm->m_vMin;
@@ -672,7 +672,7 @@ vOffset = psm->m_vMin - vOffset;
 gameData.models.offsets [m_nModel].Assign (vOffset);
 #if DBG
 if (m_nModel == nDbgModel)
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 #if 1
 //VmVecInc (&psm [0].vOffset, gameData.models.offsets + m_nModel);
@@ -877,7 +877,7 @@ if (pm->m_bValid < 0)
 pm->m_bRendered = 0;
 #if DBG
 if (nModel == nDbgModel)
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 pm->Init ();
 return bHires

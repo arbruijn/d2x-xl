@@ -70,7 +70,7 @@ FORALL_LIGHT_OBJS (objP, i) {
 		i = objP->Index ();
 #if DBG
 		if (i == nDbgObj)
-			nDbgObj = nDbgObj;
+			BRP;
 #endif
 		if (!(h = objP->cType.lightInfo.nObjects)) {
 			lightManager.Delete (-1, -1, i);
@@ -125,7 +125,7 @@ if (0 > nLightObj)
 	return 0;
 #if DBG
 if (nDbgObj == nLightObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 CObject *lightObjP = OBJECTS + nLightObj;
 if (lightObjP->info.nSignature != m_objects [nObject].nSignature) {

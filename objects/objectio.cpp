@@ -50,7 +50,7 @@ void CObject::Read (CFile& cf)
 {
 #if DBG
 if (OBJ_IDX (this) == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 info.nType = cf.ReadByte ();
 #if DBG
@@ -73,7 +73,7 @@ else
 info.nSegment = cf.ReadShort ();
 #if DBG
 if (info.nSegment == nDbgSeg)
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 info.nAttachedObj = -1;
 cf.ReadVector (info.position.vPos);

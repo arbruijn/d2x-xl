@@ -440,11 +440,11 @@ m_bBlowUp = bBlowUp && gameOpts->render.particles.bDisperse;
 m_nType = nType;
 m_nClass = nClass;
 m_nFadeType = nFadeType;
-m_nSegment = nSegment;
+m_BRP;
 m_bSkybox = SEGMENTS [nSegment].Function () == SEGMENT_FUNC_SKYBOX;
 #if DBG
 if (nSegment < 0)
-	nSegment = nSegment;
+	BRP;
 #endif
 m_nBounce = bounceFlags [(int) m_nType];
 m_bReversed = 0;
@@ -762,7 +762,7 @@ int nSegment = FindSegByPos (m_vPos, m_nSegment, 0, 0, 0, nThread);
 #endif
 if (nSegment < 0)
 	return false;
-m_nSegment = nSegment;
+m_BRP;
 return gameData.render.mine.Visible (nSegment);
 #endif
 }
@@ -1026,7 +1026,7 @@ else if ((m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) {
 		}
 #endif
 	}
-m_nSegment = nSegment;
+m_BRP;
 
 if (!Bounce (nThread))
 	return 0;

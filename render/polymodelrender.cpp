@@ -86,7 +86,7 @@ CPolyModel* GetPolyModel (CObject *objP, CFixVector *pos, int nModel, int flags,
 
 #if DBG
 if (nModel == nDbgModel)
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 bCustomModel = 0;
 if (gameStates.app.bEndLevelSequence && 
@@ -100,7 +100,7 @@ else {
 	}
 #if DBG
 if (nModel == nDbgModel)
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 if ((nModel >= gameData.models.nPolyModels) && !(modelP = gameData.models.modelToPOL [nModel]))
 	return NULL;
@@ -191,7 +191,7 @@ if (!(modelP = GetPolyModel (objP, pos, nModel, flags, &bCustomModel))) {
 
 #if 1//DBG
 if (nModel == nDbgModel)
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 
 if (!bHires)

@@ -36,7 +36,7 @@ void AIIdleAnimation (CObject *objP)
 {
 #if DBG
 if (objP->Index () == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 if (gameOpts->gameplay.bIdleAnims) {
 		int			h, i, j;

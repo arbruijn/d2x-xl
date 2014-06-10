@@ -91,7 +91,7 @@ ubyte code = 0xFF;
 
 #if DBG
 if (segP->Index () == nDbgSeg)
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 ushort* vertices = segP->m_vertices;
 for (int i = 0; i < 8; i++) {
@@ -120,7 +120,7 @@ int SegmentIsVisible (CSegment *segP, CTransformation& transformation, int nThre
 
 #if DBG
 if (segP->Index () == nDbgSeg)
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 ushort* vertices = segP->m_vertices;
 for (int i = 0; i < 8; i++) {
@@ -142,7 +142,7 @@ static int FaceIsVisible (CSegFace* faceP)
 {
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 if (!FaceIsVisible (faceP->m_info.nSegment, faceP->m_info.nSide))
 	return faceP->m_info.bVisible = 0;
@@ -160,9 +160,9 @@ int SetupFace (short nSegment, short nSide, CSegment *segP, CSegFace *faceP, CFa
 
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 if (FACE_IDX (faceP) == nDbgFace)
-	nDbgFace = nDbgFace;
+	BRP;
 #endif
 
 if (!FaceIsVisible (faceP))
@@ -242,7 +242,7 @@ for (i = nStart; i < nEnd; i++) {
 
 #if DBG
 	if (nSegment == nDbgSeg)
-		nSegment = nSegment;
+		BRP;
 #endif
 	if (0 > (nColor = SetupFace (nSegment, nSide, SEGMENTS + nSegment, faceP, faceColor, fAlpha))) {
 		faceP->m_info.bVisible = 0;
@@ -252,10 +252,10 @@ for (i = nStart; i < nEnd; i++) {
 		nLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
-		nSegment = nSegment;
-		if (lightManager.Index (0, nThread).nActive)
-			nSegment = nSegment;
-		}
+		BRP;
+	if (lightManager.Index (0, nThread).nActive)
+		BRP;
+	}
 #endif
 	AddFaceListItem (faceP, nThread);
 	faceColor [nColor].Alpha () = fAlpha;
@@ -270,7 +270,7 @@ for (i = nStart; i < nEnd; i++) {
 			nVertex = faceP->m_info.index [h];
 #if DBG
 			if (nVertex == nDbgVertex)
-				nDbgVertex = nDbgVertex;
+				BRP;
 #endif
 			CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
 			if (UpdateColor (vertColorP)) {
@@ -281,7 +281,7 @@ for (i = nStart; i < nEnd; i++) {
 				else {
 #if DBG
 					if (nVertex == nDbgVertex)
-						nDbgVertex = nDbgVertex;
+						BRP;
 #endif
 					GetVertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &gameData.render.color.ambient [nVertex], 1, 0, nThread);
 					lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
@@ -289,7 +289,7 @@ for (i = nStart; i < nEnd; i++) {
 					}
 #if DBG
 				if (nVertex == nDbgVertex)
-					nVertex = nVertex;
+					BRP;
 #endif
 				}
 			*colorP = *vertColorP;
@@ -395,7 +395,7 @@ for (i = nStart; i < nEnd; i++) {
 		}
 #if DBG
 	if (nSegment == nDbgSeg)
-		nSegment = nSegment;
+		BRP;
 #endif
 	if (bVertexLight && !gameStates.render.bFullBright)
 		nLights = lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
@@ -403,9 +403,9 @@ for (i = nStart; i < nEnd; i++) {
 		nSide = faceP->m_info.nSide;
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
-			nSegment = nSegment;
+			BRP;
 			if (lightManager.Index (0, nThread).nActive)
-				nSegment = nSegment;
+				BRP;
 			}
 #endif
 		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, fAlpha))) {
@@ -428,13 +428,13 @@ for (i = nStart; i < nEnd; i++) {
 				nVertex = faceP->m_info.index [h];
 #if DBG
 				if (nVertex == nDbgVertex)
-					nDbgVertex = nDbgVertex;
+					BRP;
 #endif
 				CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
 				if (UpdateColor (vertColorP)) {
 #if DBG
 					if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-						nSegment = nSegment;
+						BRP;
 #endif
 					if (nLights + lightManager.VariableVertLights (nVertex) == 0) {
 						*vertColorP = gameData.render.color.ambient [nVertex];
@@ -443,7 +443,7 @@ for (i = nStart; i < nEnd; i++) {
 					else {
 #if DBG
 						if (nVertex == nDbgVertex)
-							nDbgVertex = nDbgVertex;
+							BRP;
 #endif
 						GetVertexColor (nSegment, nSide, nVertex, RENDERPOINTS [nVertex].GetNormal ()->XYZ (), FVERTICES [nVertex].XYZ (), NULL, &gameData.render.color.ambient [nVertex], 1, 0, nThread);
 						lightManager.Index (0, nThread) = lightManager.Index (1, nThread);
@@ -452,7 +452,7 @@ for (i = nStart; i < nEnd; i++) {
 					}
 #if DBG
 				if (nVertex == nDbgVertex)
-					nVertex = nVertex;
+					BRP;
 #endif
 				*colorP = *vertColorP;
 				if (!gameStates.render.bPerPixelLighting && (nColor > 0))
@@ -520,16 +520,16 @@ for (i = nStart; i < nEnd; i++) {
 		}
 #if DBG
 	if (nSegment == nDbgSeg)
-		nSegment = nSegment;
+		BRP;
 #endif
 	bool bComputeLight = bNeedLight;
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
 		nSide = faceP->m_info.nSide;
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
-			nSegment = nSegment;
+			BRP;
 			if (lightManager.Index (0, nThread).nActive)
-				nSegment = nSegment;
+				BRP;
 			}
 #endif
 		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, fAlpha))) {
@@ -562,7 +562,7 @@ for (i = nStart; i < nEnd; i++) {
 						nVertex = triP->index [h];
 #if DBG
 						if (nVertex == nDbgVertex)
-							nDbgVertex = nDbgVertex;
+							BRP;
 #endif
 						CFaceColor *vertColorP = gameData.render.color.vertices + nVertex;
 #if LIGHTING_QUALITY == 1
@@ -573,7 +573,7 @@ for (i = nStart; i < nEnd; i++) {
 							{
 #if DBG
 							if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-								nSegment = nSegment;
+								BRP;
 #endif
 							if (nLights + lightManager.VariableVertLights (nVertex) == 0) { // no dynamic lights => only ambient light contribution
 								*vertColorP = gameData.render.color.ambient [nVertex];
@@ -590,7 +590,7 @@ for (i = nStart; i < nEnd; i++) {
 								}
 #	if DBG
 							if (nVertex == nDbgVertex) {
-								nVertex = nVertex;
+								BRP;
 								vertColorP->index = -1;
 								GetVertexColor (nSegment, nSide, nVertex, FACES.normals + nIndex, FACES.vertices + nIndex, NULL, NULL, 1, 0, nThread);
 								}
@@ -655,7 +655,7 @@ for (i = nStart; i < nEnd; i++) {
 		nSide = faceP->m_info.nSide;
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-			nSegment = nSegment;
+			BRP;
 #endif
 		if (0 > (nColor = SetupFace (nSegment, nSide, segP, faceP, faceColor, fAlpha))) {
 			faceP->m_info.bVisible = 0;
@@ -675,7 +675,7 @@ for (i = nStart; i < nEnd; i++) {
 				nVertex = faceP->m_info.index [h];
 #if DBG
 				if (nVertex == nDbgVertex)
-					nDbgVertex = nDbgVertex;
+					BRP;
 #endif
 				SetVertexColor (nVertex, &c, nColor ? faceP->m_info.bTextured ? 2 : 1 : 0);
 				xLight = SetVertexLight (nSegment, nSide, nVertex, &c, uvlP [uvi % sideP->CornerCount ()].l);

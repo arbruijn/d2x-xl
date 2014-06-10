@@ -164,7 +164,7 @@ if (!CreateLightmapShader (nType))
 	return 0;
 #if DBG
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 if (!SetupLightmap (faceP))
 	return 0;

@@ -105,7 +105,7 @@ void G3LightModel (CObject *objP, int nModel, fix xModelLight, fix *xGlowValues,
 
 #if DBG
 if (objP->Index () == nDbgObj)
-	objP = objP;
+	BRP;
 #endif
 #if 0
 if (xModelLight > I2X (1))
@@ -113,7 +113,7 @@ if (xModelLight > I2X (1))
 #endif
 if (SHOW_DYN_LIGHT && (gameOpts->ogl.bObjLighting ||
     (gameOpts->ogl.bLightObjects && (gameOpts->ogl.bLightPowerups || (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT))))) {
-	tiRender.objP = objP;
+	tiRender.BRP;
 	tiRender.modelP = modelP;
 	if (!RunRenderThreads (rtPolyModel))
 		G3DynLightModel (objP, modelP, 0, modelP->m_nVerts, 0, modelP->m_nFaceVerts);
@@ -703,7 +703,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 			else if ((lightP = lightManager.GetActive (activeLightsP, 0))) {
 #if DBG
 				if ((nDbgSeg >= 0) && (lightP->info.nObject >= 0) && (OBJECTS [lightP->info.nObject].info.nSegment == nDbgSeg))
-					nDbgSeg = nDbgSeg;
+					BRP;
 #endif
 				hLight = GL_LIGHT0 + iLight++;
 				glEnable (hLight);
@@ -846,9 +846,9 @@ if (!objP)
 if (nModel == nDbgModel)
 	nDbgModel = nModel;
 if (objP && (ObjIdx (objP) == nDbgObj))
-	nDbgObj = nDbgObj;
+	BRP;
 if (objP->info.nSegment == nDbgSeg)
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 
 if (bHires) {

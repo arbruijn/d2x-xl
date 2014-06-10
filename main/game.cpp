@@ -1099,7 +1099,7 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++, segP++) {
 		if (gameData.pig.tex.tMapInfoP [nTexture].slide_u  || gameData.pig.tex.tMapInfoP [nTexture].slide_v) {
 			if (!bIsSlideSeg) {
 				bIsSlideSeg = 1;
-				gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSegment = nSegment;
+				gameData.segs.slideSegs [gameData.segs.nSlideSegs].BRP;
 				gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSides = 0;
 				}
 			gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSides |= (1 << nSide);
@@ -1138,7 +1138,7 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 			continue;
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-				nSegment = nSegment;
+				BRP;
 #endif
 		i = (segP->m_function == SEGMENT_FUNC_SKYBOX) ? 3 : 8;
 		slideU = FixMul (gameData.time.xFrame, slideU << i);

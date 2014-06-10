@@ -295,7 +295,7 @@ FORALL_OBJS (objP, i) {
 		case OBJ_POWERUP:
 #if DBG
 			if (objP->info.nSegment == nDbgSeg)
-				nDbgSeg = nDbgSeg;
+				BRP;
 #endif
 			switch (objP->info.nId) {
 				case POW_KEY_RED:
@@ -318,7 +318,7 @@ FORALL_OBJS (objP, i) {
 				}
 #if DBG
 			if (objP->info.nSegment == nDbgSeg)
-				nDbgSeg = nDbgSeg;
+				BRP;
 #endif
 			spherePoint.TransformAndEncode (objP->info.position.vPos);
 			G3DrawSphere (&spherePoint, size, !m_bRadar);
@@ -554,7 +554,7 @@ while (head < tail) {
 	nSegment = queue [head++];
 #if DBG
 	if (nSegment == nDbgSeg)
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	nParentDepth = depthBufP [nSegment];
 	childP = SEGMENTS [nSegment].m_children;
@@ -570,7 +570,7 @@ while (head < tail) {
 #endif
 #if DBG
 		if (nChild == nDbgSeg)
-			nDbgSeg = nDbgSeg;
+			BRP;
 #endif
 		if (!depthBufP [nChild])
 			continue;
@@ -1503,7 +1503,7 @@ else {
 	for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++) {
 #if DBG
 		if (nSegment == nDbgSeg)
-			nDbgSeg = nDbgSeg;
+			BRP;
 #endif
 		if (m_visited [nSegment]) 
 			AddSegmentEdges (&SEGMENTS [nSegment]);
@@ -1511,7 +1511,7 @@ else {
 	for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++) {
 #if DBG
 		if (nSegment == nDbgSeg)
-			nDbgSeg = nDbgSeg;
+			BRP;
 #endif
 		if (!m_visited [nSegment]) 
 			AddUnknownSegmentEdges (&SEGMENTS [nSegment]);

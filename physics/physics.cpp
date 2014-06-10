@@ -461,7 +461,7 @@ bGetPhysSegs = (objP->Type () == OBJ_PLAYER) || (objP->Type () == OBJ_ROBOT);
 velocity = objP->Velocity ();
 #if DBG
 if (!velocity.IsZero ())
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 //velocity *= I2X (extraGameInfo [IsMultiGame].nSpeedScale + 2) / 2;
 vStartPos = objP->Position ();
@@ -585,7 +585,7 @@ int CObject::HandleBadCollision (CPhysSimData& simData) // hit point outside of 
 static int nBadP0 = 0;
 HUDMessage (0, "BAD P0 %d", nBadP0++);
 if (info.position.vPos != simData.vOldPos)
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 memset (&simData.hitResult, 0, sizeof (simData.hitResult));
 simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
@@ -1047,9 +1047,9 @@ if (Velocity () /*simData.velocity*/.IsZero ()) {
 
 #if DBG
 if (Index () == nDbgObj) {
-	nDbgObj = nDbgObj;
+	BRP;
 	if (!Velocity () /*simData.velocity*/.IsZero ())
-		nDbgObj = nDbgObj;
+		BRP;
 	else
 		return;
 	HUDMessage (0, "%1.2f", X2F (Velocity ().Mag ()));
@@ -1060,7 +1060,7 @@ ProcessDrag (simData);
 
 #if DBG
 if ((nDbgSeg >= 0) && (info.nSegment == nDbgSeg))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 
 simData.nTries = 0;
@@ -1179,7 +1179,7 @@ if (!gameData.objs.speedBoost [OBJ_IDX (this)].bBoosted || (this != gameData.obj
 #	if DBG
 if (Index () == nDbgObj) {
 	fix xMag = Velocity ().Mag ();
-	nDbgObj = nDbgObj;
+	BRP;
 	}
 #	endif
 #endif
@@ -1308,12 +1308,12 @@ Assert (info.nType != OBJ_NONE);
 Assert (info.movementType == MT_PHYSICS);
 #if DBG
 if (Index () == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 if (bDontMoveAIObjects)
 	if (info.controlType == CT_AI)
 		return;
 	if (info.nType == OBJ_DEBRIS)
-		nDbgObj = nDbgObj;
+		BRP;
 #endif
 if (simData.bInitialize)
 	gameData.physics.xTime = I2X (1);
@@ -1338,7 +1338,7 @@ if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBO
 	memset (&simData.hitResult, 0, sizeof (simData.hitResult));
 #if DBG
 	if (Index () == nDbgObj)
-		nDbgObj = nDbgObj;
+		BRP;
 #endif
 	if (FindHitpoint (simData.hitQuery, simData.hitResult) != HIT_NONE)
 		info.position.mOrient = mSaveOrient;
@@ -1356,9 +1356,9 @@ if (Velocity ().IsZero ()) {
 
 #if DBG
 if (Index () == nDbgObj) {
-	nDbgObj = nDbgObj;
+	BRP;
 	if (!Velocity ().IsZero ())
-		nDbgObj = nDbgObj;
+		BRP;
 	HUDMessage (0, "%1.2f", X2F (Velocity ().Mag ()));
 	}
 #endif
@@ -1434,7 +1434,7 @@ else {
 
 #if DBG
 if ((nDbgSeg >= 0) && (info.nSegment == nDbgSeg))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 
 if (extraGameInfo [IsMultiGame].bFluidPhysics) {
@@ -1524,7 +1524,7 @@ retryMove:
 		memset (&simData.hitResult, 0, sizeof (simData.hitResult));
 	#if DBG
 		if (info.nType == OBJ_POWERUP)
-			nDbgObj = nDbgObj;
+			BRP;
 	#endif
 		simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
 		UpdateStats (this, simData.hitResult.nType);
@@ -1870,7 +1870,7 @@ if (CriticalHit ())
 CATCH_OBJ (this, Velocity ().v.coord.y == 0);
 #if DBG
 if (Index () == nDbgObj) {
-	nDbgObj = nDbgObj;
+	BRP;
 	HUDMessage (0, "%1.2f", X2F (Velocity ().Mag ()));
 	}
 #endif

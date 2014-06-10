@@ -408,7 +408,7 @@ bool MoveObjectToLegalSpot (CObject *objP, int bMoveToCenter)
 
 #if DBG
 if (objP - OBJECTS == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 if (bMoveToCenter) {
 	vSegCenter = SEGMENTS [objP->info.nSegment].Center ();
@@ -461,7 +461,7 @@ fix MoveTowardsPoint (CObject *objP, CFixVector *vGoal, fix xMinDist)
 
 #if DBG
 if ((nDbgSeg >= 0) && (objP->info.nSegment == nDbgSeg))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 vGoalDir = *vGoal - objP->info.position.vPos;
 xDistToGoal = CFixVector::Normalize (vGoalDir);

@@ -530,7 +530,7 @@ void CAudio::DeleteSoundObject (int i)
 if ((i < int (m_objects.ToS ()) - 1) && ((h = m_objects.Top ()->m_channel) >= 0)) {
 #if DBG
 	if (m_channels [h].SoundObject () != int (m_objects.ToS ()) - 1)
-		i = i;
+		BRP;
 	else
 #endif
 	m_channels [h].SetSoundObj (i);
@@ -642,7 +642,7 @@ soundObjP->m_nSignature = m_info.nNextSignature++;
 soundObjP->m_flags = SOF_USED | SOF_LINK_TO_POS;
 if (bForever)
 	soundObjP->m_flags |= SOF_PLAY_FOREVER;
-soundObjP->m_linkType.pos.nSegment = nSegment;
+soundObjP->m_linkType.pos.BRP;
 soundObjP->m_linkType.pos.nSide = nSide;
 soundObjP->m_linkType.pos.position = vPos;
 soundObjP->m_nSound = nSound;
@@ -754,7 +754,7 @@ while (i) {
 #endif
 #if DBG
 		if ((nOldVolume <= 0) && (soundObjP->m_channel >= 0))
-			nDbgSeg = nDbgSeg;
+			BRP;
 #endif
 		nOldPan = soundObjP->m_pan;
 		// Check if its done.
@@ -765,7 +765,7 @@ while (i) {
 		if (soundObjP->m_flags & SOF_LINK_TO_POS) {
 #if DBG
 			if (soundObjP->m_linkType.pos.nSegment == nDbgSeg)
-				nDbgSeg = nDbgSeg;
+				BRP;
 #endif
 			GetVolPan (
 				mListenerOrient, vListenerPos, nListenerSeg,
@@ -802,7 +802,7 @@ while (i) {
 			if ((nOldVolume != nNewVolume) || ((nNewVolume <= 0) != (soundObjP->m_channel < 0))) {
 #if DBG
 				if (soundObjP->m_linkType.pos.nSegment == nDbgSeg)
-					nDbgSeg = nDbgSeg;
+					BRP;
 #endif
 				soundObjP->m_audioVolume = nAudioVolume [soundObjP->m_bAmbient];
 				if (nNewVolume <= 0) {	// sound is too far away or muted, so stop it playing.
@@ -1083,7 +1083,7 @@ gameStates.sound.bDontStartObjects = 1;
 for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSegment; segP++, nSegment++) {
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	for (nSide = 0, nSegSoundSources = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 #if DBG

@@ -1109,7 +1109,7 @@ for (i = gameData.segs.nSegments; i; i--, segP++) {
 	if ((segP->m_function == SEGMENT_FUNC_SKYBOX) == bSkyBox) {
 #if DBG
 		if (segP - SEGMENTS.Buffer () == nDbgSeg)
-			nDbgSeg = nDbgSeg;
+			BRP;
 #endif
 		v0 = segP->m_extents [0] - m_vMin;
 		v1 = segP->m_extents [1] - m_vMin;
@@ -1151,7 +1151,7 @@ for (i = 0; i < gameData.segs.nSegments; i++, segP++) {
 	if ((segP->m_function == SEGMENT_FUNC_SKYBOX) == bSkyBox) {
 #if DBG
 		if (segP - SEGMENTS.Buffer () == nDbgSeg)
-			nDbgSeg = nDbgSeg;
+			BRP;
 #endif
 		v0 = segP->m_extents [0] - m_vMin;
 		v1 = segP->m_extents [1] - m_vMin;
@@ -1482,7 +1482,7 @@ for (h = 0; h < 2; h++) {
 	for (i = 0; i < MAX_POLYGON_MODELS; i++) {
 #if DBG
 		if ((nDbgModel >= 0) && (i == nDbgModel))
-			nDbgModel = nDbgModel;
+			BRP;
 #endif
 		renderModels [h][i].Destroy ();
 		gameData.models.pofData [h][0][i].Destroy ();

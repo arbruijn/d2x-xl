@@ -595,7 +595,7 @@ m_nodes [m_nNodes - 1].m_vPos =
 m_vEnd = vNewEnd;
 m_vDir = m_vEnd - m_vPos;
 m_nLength = xNewLength;
-m_nSegment = nSegment;
+m_BRP;
 }
 
 //------------------------------------------------------------------------------
@@ -661,8 +661,10 @@ else
 dstP = m_plasmaVerts.Buffer ();
 texCoordP = m_plasmaTexCoord.Buffer ();
 for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {
+#if DBG
 	if (i >= h - 1)
-		i = i;
+		BRP;
+#endif
 	vPos [0] = vPos [1];
 	vPos [1].Assign (nodeP->m_vPos);
 	//if (nThread < 0)
@@ -1069,7 +1071,7 @@ if (0 < (j = m_nNodes)) {
 		nStep = double ((int) DRound (j));
 #if DBG
 	if (m_nSegment == nDbgSeg)
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	for (h = nStep / 2; h < j; h += nStep) {
 		if (!m_nodes [int (h)].SetLight (m_nSegment, &m_color))

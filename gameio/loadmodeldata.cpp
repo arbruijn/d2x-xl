@@ -331,7 +331,7 @@ for (j = 0; j < t; j++) {
 		}
 #if DBG
 	if (i == nDbgModel)
-		nDbgModel = nDbgModel;
+		BRP;
 #endif
 	modelP = &gameData.models.polyModels [bAltModels ? 2 : 0][i];
 	modelP->Destroy ();
@@ -344,7 +344,7 @@ for (j = 0; j < t; j++) {
 	if (bAltModels) {
 #	if DBG
 		if (i == nDbgModel)
-			nDbgModel = nDbgModel;
+			BRP;
 #endif
 		cf.ReadInt ();
 		cf.ReadInt ();
@@ -567,7 +567,7 @@ gameData.pig.tex.objBmIndex = gameData.pig.tex.defaultObjBmIndex;
 for (i = 0; i < gameData.models.nDefPolyModels; i++, modelP++) {
 #if DBG
 	if (i == nDbgModel)
-		nDbgModel = nDbgModel;
+		BRP;
 #endif
 	if (modelP->Custom ()) {
 		modelP->Destroy ();

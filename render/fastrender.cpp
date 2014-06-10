@@ -73,7 +73,7 @@ if (j < 0) {
 else {
 #if DBG
 	if (!i)
-		i = i;
+		BRP;
 #endif
 	gameData.render.faceList [j].nNextItem = i;
 	}
@@ -106,9 +106,9 @@ if (faceP->m_info.nCamera >= 0) {
 	}
 #if DBG
 if (FACE_IDX (faceP) == nDbgFace)
-	nDbgFace = nDbgFace;
+	BRP;
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 if ((faceP->m_info.nBaseTex < 0) || !faceP->m_info.bTextured)
 	return;
@@ -186,7 +186,7 @@ static inline bool RenderMineFace (CSegment *segP, CSegFace *faceP, int nType)
 {
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 return renderHandlers [nType] (segP, faceP);
 }
@@ -277,7 +277,7 @@ for (h = i = 0, ph = faceRef [0]; i < gameData.render.mine.visibility [0].nSegme
 		continue;
 	segFaceP = SEGFACES + nSegment;
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++, h++, ph++) {
-		ph->nSegment = nSegment;
+		ph->BRP;
 		ph->faceP = faceP;
 		}
 	}
@@ -505,7 +505,7 @@ if (bAutomap) {
 	else if (gameData.objs.viewerP == gameData.objs.consoleP) {
 #if DBG
 		if (gameStates.render.nWindow [0])
-			nDbgSeg = nDbgSeg;
+			BRP;
 #endif
 		automap.m_visited [nSegment] = gameData.render.mine.bSetAutomapVisited;
 		}
@@ -567,7 +567,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		LoadFaceBitmaps (SEGMENTS + faceP->m_info.nSegment, faceP);
 #if DBG
 		if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-			nDbgSeg = nDbgSeg;
+			BRP;
 #endif
 		faceP->m_info.nTransparent = FaceIsTransparent (faceP, faceP->bmBot, faceP->bmTop);
 		faceP->m_info.nColored = FaceIsColored (faceP);
@@ -575,7 +575,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			nSegment = faceP->m_info.nSegment;
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-				nDbgSeg = nDbgSeg;
+				BRP;
 #endif
 			if (!bHeadlight)
 				VisitSegment (nSegment, bAutomap);
@@ -613,7 +613,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		if (nPass == 1) {
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-				nDbgSeg = nDbgSeg;
+				BRP;
 #	if 0
 			else if (nDbgSeg >= 0)
 				continue;
@@ -624,7 +624,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		else if (nPass == 2) {
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-				nDbgSeg = nDbgSeg;
+				BRP;
 #	if 0
 			else if (nDbgSeg >= 0)
 				continue;
@@ -638,7 +638,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		else {
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-				nDbgSeg = nDbgSeg;
+				BRP;
 #	if 0
 			else if (nDbgSeg >= 0)
 				continue;
@@ -701,7 +701,7 @@ for (i = 0; i < gameData.render.mine.visibility [0].nSegments; i++) {
 	segFaceP = SEGFACES + nSegment;
 #if DBG
 	if (nSegment == nDbgSeg)
-		nSegment = nSegment;
+		BRP;
 #endif
 	for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++)
 		if (faceP->m_info.bVisible && (faceP->m_info.widFlags & WID_VISIBLE_FLAG) && faceP->m_info.bIsLight && (faceP->m_info.nCamera < 0) &&
@@ -727,20 +727,20 @@ if (nSegment < 0)
 
 #if DBG
 if (nSegment == nDbgSeg)
-	nSegment = nSegment;
+	BRP;
 #endif
 if (!(bHeadlight || VisitSegment (nSegment, bAutomap)))
 	return 0;
 #if DBG
 if (nSegment == nDbgSeg)
-	nSegment = nSegment;
+	BRP;
 #endif
 if (gameStates.render.bPerPixelLighting == 2)
 	lightManager.Index (0,0).nActive = -1;
 for (i = segFaceP->nFaces, faceP = segFaceP->faceP; i; i--, faceP++) {
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-		nSegment = nSegment;
+		BRP;
 #endif
 	if (!faceP->m_info.bVisible)
 		continue;

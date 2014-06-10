@@ -251,7 +251,7 @@ if (objP && SHOW_DYN_LIGHT) {
 		}
 #if DBG
 	if (nObject == nDbgObj)
-		nDbgObj = nDbgObj;
+		BRP;
 #endif
 	if (!lightClusterManager.Add (nObject, color, xObjIntensity))
 		lightManager.Add (NULL, color, xObjIntensity, -1, -1, nObject, -1, NULL);
@@ -279,7 +279,7 @@ if (xObjIntensity) {
 				continue;
 #if DBG
 			if (nVertex == nDbgVertex)
-				nDbgVertex = nDbgVertex;
+				BRP;
 #endif
 #if !FLICKERFIX
 			if ((nVertex ^ gameData.app.nFrameCount) & 1)
@@ -326,7 +326,7 @@ if (xObjIntensity) {
 			nVertex = renderVertices [iVertex];
 #if DBG
 			if (nVertex == nDbgVertex)
-				nVertex = nVertex;
+				BRP;
 #endif
 #if FLICKERFIX == 0
 			if ((nVertex ^ gameData.app.nFrameCount) & 1)
@@ -647,7 +647,7 @@ FORALL_OBJS (objP, nObject) {
 		bKeepDynColoring = 1;
 #if DBG
 	if (objP->IsWeapon ())
-		nDbgObj = nDbgObj;
+		BRP;
 #endif
 	if (xObjIntensity) {
 		ApplyLight (xObjIntensity, objP->info.nSegment, objPos, nRenderVertices, gameData.render.lights.vertices, nObject, bGotColor ? &color : NULL);
@@ -1023,7 +1023,7 @@ if ((!gameStates.render.nLightingMethod || gameStates.app.bNostalgia) && gameDat
 					continue;	//bogus data!
 #if DBG
 				if (dlP->nSegment == nDbgSeg)
-					nDbgSeg = nDbgSeg;
+					BRP;
 #endif
 				CSide* sideP = SEGMENTS [dlP->nSegment].Side (dlP->nSide);
 				uvlP = sideP->m_uvls;

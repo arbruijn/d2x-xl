@@ -561,7 +561,7 @@ if ((*pos) == objP->info.position.vPos)
 else {
 	int nSegment = FindSegByPos (*pos, objP->info.nSegment, 1, 0);
 	if (nSegment != -1)
-		hitQuery.nSegment = nSegment;
+		hitQuery.BRP;
 	else {
 		hitQuery.nSegment = objP->info.nSegment;
 		*pos = objP->info.position.vPos;
@@ -570,11 +570,11 @@ else {
 	}
 #if DBG
 if (hitQuery.nSegment == nDbgSeg)
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 #if DBG
 if (hitQuery.nObject == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 CHitResult hitResult;
 FindHitpoint (hitQuery, aiHitResult);
@@ -1710,7 +1710,7 @@ void DoD1AIFrame (CObject *objP)
 	}
 #if DBG
 if (nObject == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 if (objP->cType.aiInfo.SKIP_AI_COUNT) {
 	objP->cType.aiInfo.SKIP_AI_COUNT--;

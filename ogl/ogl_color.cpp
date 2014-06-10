@@ -381,7 +381,7 @@ if (nLights > lightManager.LightCount (0))
 i = sliP->nLast - sliP->nFirst + 1;
 #if DBG
 if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
-	nDbgVertex = nDbgVertex;
+	BRP;
 #endif
 nSelf = 0;
 bSelf = 0;
@@ -395,11 +395,11 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	nLights--;
 #if DBG
 	if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
-		nDbgVertex = nDbgVertex;
+		BRP;
 #endif
 #if DBG
 	if ((nDbgSeg >= 0) && (lightP->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (lightP->info.nSide == nDbgSide)))
-		nDbgSeg = nDbgSeg;
+		BRP;
 #	if 0
 	else
 		continue;
@@ -448,7 +448,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	float hDot = CFloatVector3::Dot (colorData.vertNorm, hDir);
 
 	if ((nDbgSeg >= 0) && (lightP->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (lightP->info.nSide == nDbgSide)))
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 
 	if (fLightDist == 0.0f) {
@@ -496,7 +496,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 
 #if DBG
 	if ((nDbgSeg >= 0) && (lightP->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (lightP->info.nSide == nDbgSide)))
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 
 	fLightDist *= ogl.m_states.fLightRange;
@@ -559,7 +559,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			//CFloatVector3::Normalize (vReflect);
 #	if DBG
 			if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
-				nDbgVertex = nDbgVertex;
+				BRP;
 #	endif
 			RdotE = CFloatVector3::Dot (vReflect, vertPos);
 			if (RdotE > 0.0f) {
@@ -598,7 +598,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 
 #if DBG
 if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
-	nDbgVertex = nDbgVertex;
+	BRP;
 #endif
 	
 if (j) {
@@ -683,7 +683,7 @@ PROF_START
 InitVertColorData (colorData);
 #if DBG
 if (!gameStates.render.nState && (nVertex == nDbgVertex))
-	nVertex = nVertex;
+	BRP;
 #endif
 #if 0
 if (gameStates.render.nFlashScale)
@@ -716,7 +716,7 @@ if (!(gameStates.render.nState || colorData.bExclusive || colorData.bMatEmissive
 			}
 #if DBG
 		if (!gameStates.render.nState && (nVertex == nDbgVertex))
-			nVertex = nVertex;
+			BRP;
 #endif
 PROF_END(ptVertexColor)
 		return;
@@ -725,7 +725,7 @@ PROF_END(ptVertexColor)
 #endif
 #if DBG
 if (!gameStates.render.nState && (nVertex == nDbgVertex))
-	nVertex = nVertex;
+	BRP;
 #endif
 if (ogl.m_states.bUseTransform)
 	colorData.vertNorm = *vVertNormP;
@@ -766,7 +766,7 @@ else {
 			colorSum.Assign (*baseColorP);
 #if DBG
 		if (!gameStates.render.nState && (nVertex == nDbgVertex))
-			nVertex = nVertex;
+			BRP;
 #endif
 		ComputeVertexColor (nSegment, nSide, nVertex, &colorSum, &colorData, nThread);
 		}
@@ -774,7 +774,7 @@ else {
 		colorSum += *gameData.render.color.ambient [nVertex].XYZ () * fScale;
 #if DBG
 		if (!gameStates.render.nState && (nVertex == nDbgVertex) && (colorSum.Sum () < 0.1f))
-			nVertex = nVertex;
+			BRP;
 #endif
 		}
 	colorSum *= gameData.render.fBrightness;
@@ -805,7 +805,7 @@ if (vertColorP)
 
 #if DBG
 if (!gameStates.render.nState && (nVertex == nDbgVertex))
-	nVertex = nVertex;
+	BRP;
 #endif
 PROF_END(ptVertexColor)
 }

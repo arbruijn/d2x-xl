@@ -215,7 +215,7 @@ void AddToVertexNormal (int nVertex, CFixVector& vNormal)
 
 #if DBG
 if (nVertex == nDbgVertex)
-	nDbgVertex = nDbgVertex;
+	BRP;
 #endif
 n += vNormal;
 n++;

@@ -166,7 +166,7 @@ if (m_data.clientStates [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY])
 glEnableClientState (nState);
 #if DBG_OGL
 if (Locked ())
-	nDbgSeg = nDbgSeg;
+	BRP;
 memset (&m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY], 0, sizeof (m_data.clientBuffers [m_data.nTMU [0]][nState - GL_VERTEX_ARRAY]));
 #endif
 GLenum nError = glGetError ();

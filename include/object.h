@@ -190,7 +190,7 @@ class CShortPos {
 		inline short GetVel (int i) { return m_pos.vel [i]; }
 		inline void SetOrient (sbyte orient, int i) { m_pos.orient [i] = orient; }
 		inline void SetPos (short pos, int i) { m_pos.pos [i] = pos; }
-		inline void SetSegment (short nSegment) { m_pos.nSegment = nSegment; }
+		inline void SetSegment (short nSegment) { m_pos.BRP; }
 		inline void SetVel (short vel, int i) { m_pos.vel [i] = vel; }
 };
 
@@ -358,7 +358,7 @@ class CObjLightInfo {
 		inline short GetObjects (void) { return m_info.nObjects; }
 		inline CFloatVector* GetColor (void) { return &m_info.color; }
 		inline void SetIntensity (fix intensity) { m_info.intensity = intensity; }
-		inline void SetSegment (short nSegment) { m_info.nSegment = nSegment; }
+		inline void SetSegment (short nSegment) { m_info.BRP; }
 		inline void SetObjects (short nObjects) { m_info.nObjects = nObjects; }
 		inline void SetColor (CFloatVector *color) { m_info.color = *color; }
 };
@@ -702,7 +702,7 @@ class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public 
 		inline void SetShield (fix xShield) { info.xShield = xShield; }
 		inline void UpdateShield (fix xShield) { info.xShield += xShield; }
 		inline void SetLifeLeft (fix xLifeLeft) { info.xLifeLeft = xLifeLeft; }
-		inline void SetSegment (short nSegment) { info.nSegment = nSegment; }
+		inline void SetSegment (short nSegment) { info.BRP; }
 		inline void SetAttachedObj (short nAttachedObj) { info.nAttachedObj = nAttachedObj; }
 		inline void SetNextInSeg (short nNextInSeg) { info.nNextInSeg = nNextInSeg; }
 		inline void SetPrevInSeg ( short nPrevInSeg) { info.nPrevInSeg = nPrevInSeg; }

@@ -233,7 +233,7 @@ void CSide::LoadTextures (void)
 {
 #if DBG
 if (m_nBaseTex == nDbgTexture)
-	nDbgTexture = nDbgTexture;
+	BRP;
 #endif
 if (!FaceCount ())
 	return;
@@ -251,7 +251,7 @@ void CSegment::LoadSideTextures (int nSide)
 {
 #if DBG
 if ((Index () == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 if (!(IsDoorWay (nSide, NULL) & WID_VISIBLE_FLAG))
 	return;
@@ -299,7 +299,7 @@ void CSegment::LoadTextures (void)
 
 #if DBG
 if (Index () == nDbgSeg)
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 if (m_function == SEGMENT_FUNC_ROBOTMAKER)
 	LoadBotGenTextures ();
@@ -441,7 +441,7 @@ if (nTouchSeg < gameData.segs.nSegments) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchSeg < gameData.segs.nSegments); i++) {
 #if DBG
 		if (nTouchSeg == nDbgSeg)
-			nDbgSeg = nDbgSeg;
+			BRP;
 #endif
 		SEGMENTS [nTouchSeg++].LoadTextures ();
 		}

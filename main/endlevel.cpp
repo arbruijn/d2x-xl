@@ -887,7 +887,7 @@ fixang DeltaAng (fixang a, fixang b);
 void StartEndLevelFlyThrough (int nObject, CObject *objP, fix speed)
 {
 tExitFlightData& exitFlightData = exitFlightObjects [nObject];
-exitFlightData.objP = objP;
+exitFlightData.BRP;
 exitFlightData.exitSide = -1;
 exitFlightData.speed = speed ? speed : DEFAULT_SPEED;
 exitFlightData.lateralOffset = 0;
@@ -931,7 +931,7 @@ if (!bStart) {
 	}
 //check new CPlayerData seg
 if (exitFlightData.pathDot <= 0)
-	nDbgSeg = nDbgSeg;
+	BRP;
 if (objP->info.nSegment < 0)
 	return 0;
 if (bStart || (exitFlightData.pathDot <= 0)) {
@@ -946,7 +946,7 @@ if (bStart || (exitFlightData.pathDot <= 0)) {
 
 #if DBG
 	if (nObject && objP->info.nSegment == nDbgSeg)
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	if (!bStart) {
 		short nNextSeg = segP->m_children [exitFlightData.exitSide];
@@ -2188,7 +2188,7 @@ fixang DeltaAng (fixang a, fixang b);
 void StartEndLevelFlyThrough (int n, CObject *objP, fix speed)
 {
 exitFlightDataP = exitFlightObjects + n;
-exitFlightDataP->objP = objP;
+exitFlightDataP->BRP;
 exitFlightDataP->bStart = 1;
 exitFlightDataP->speed = speed ? speed : DEFAULT_SPEED;
 exitFlightDataP->lateralOffset = 0;
@@ -2242,7 +2242,7 @@ if (exitFlightDataP->bStart || (UpdateObjectSeg (objP, false) > 0)) {
 
 	#if DBG
 		if (n && objP->info.nSegment == nDbgSeg)
-			nDbgSeg = nDbgSeg;
+			BRP;
 	#endif
 		nEntrySide = 0;
 		//find new exit CSide

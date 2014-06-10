@@ -89,7 +89,7 @@ if (IsMultiGame && extraGameInfo [1].bDarkness)
 	return 0;
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 sideP = SEGMENTS [nSegment].m_sides + nSide;
 CWall* wallP = sideP->Wall ();
@@ -355,7 +355,7 @@ if (fIntensity < 0.01f)
 
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 
 if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
@@ -366,7 +366,7 @@ fIntensity *= ComputeSoftGlare ();
 RenderSoftGlare (nTexture, fIntensity, bAdditive, !automap.Display () || automap.m_visited [nSegment] || !gameOpts->render.automap.bGrayOut);
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 }
 

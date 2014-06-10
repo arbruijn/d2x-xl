@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 tMorphInfo *MorphFindData (CObject *objP)
 {
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
-	gameData.render.morph.objects [0].objP = objP;
+	gameData.render.morph.objects [0].BRP;
 	return &gameData.render.morph.objects [0];
 	}
 

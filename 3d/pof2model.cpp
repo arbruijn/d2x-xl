@@ -325,7 +325,7 @@ m_nSubModels = 1;
 #if DBG
 HUDMessage (0, "optimizing model");
 if (nModel == nDbgModel)
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 if (gameStates.app.nLogLevel > 1)
 	PrintLog (1, "optimizing POF model %d\n", nModel);

@@ -381,7 +381,7 @@ void AddObjectToSegList (short nObject, short nSegment)
 
 #if DBG
 if (nObject == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 pi->nNextItem = gameData.render.mine.objRenderList.ref [nSegment];
 gameData.render.mine.objRenderList.ref [nSegment] = gameData.render.mine.objRenderList.nUsed++;
@@ -464,12 +464,12 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 		continue;
 #if DBG
 	if (nSegment == nDbgSeg)
-		nSegment = nSegment;
+		BRP;
 #endif
 	for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = objP->info.nNextInSeg) {
 #if DBG
 		if (nObject == nDbgObj)
-			nDbgObj = nDbgObj;
+			BRP;
 #endif
 		objP = OBJECTS + nObject;
 		//Assert (objP->info.nSegment == nSegment);
@@ -489,7 +489,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 							nNewSeg = nChild;	// only migrate to segment in render list
 #if DBG
 							if (nNewSeg == nDbgSeg)
-								nDbgSeg = nDbgSeg;
+								BRP;
 #endif
 							}
 						}
@@ -747,7 +747,7 @@ for (i = 0; i < gameData.segs.nVertices; i++)
 
 #if DBG
 if (nStartSeg == nDbgSeg)
-	nDbgSeg = nDbgSeg;
+	BRP;
 int nIterations = 0;
 #endif
 int nRenderDepth = min (4 * (int (gameStates.render.detail.nRenderDepth) + 1), gameData.segs.nSegments);
@@ -772,7 +772,7 @@ for (l = 0; l < nRenderDepth; l++) {
 		if (nSegment == -32767)
 			continue;
 		if (nSegment == nDbgSeg)
-			nSegment = nSegment;
+			BRP;
 #endif
 #if DBG
 		nIterations++;
@@ -798,7 +798,7 @@ for (l = 0; l < nRenderDepth; l++) {
 				for (int i = 0; i < j; i++) {
 #if DBG
 					if (sv [i] == nDbgVertex)
-						nDbgVertex = nDbgVertex;
+						BRP;
 #endif
 					if (sv [i] != 0xFFFF)
 						renderPoints [sv [i]].ProjectAndEncode (transformation, sv [i]);
@@ -826,7 +826,7 @@ for (l = 0; l < nRenderDepth; l++) {
 			nChildSeg = segP->m_children [nSide];
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-				nDbgSeg = nDbgSeg;
+				BRP;
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nChildSeg = nChildSeg;
 #endif
@@ -864,7 +864,7 @@ for (l = 0; l < nRenderDepth; l++) {
 				}
 #if DBG
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-				nDbgSeg = nDbgSeg;
+				BRP;
 			if ((nChildSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				nChildSeg = nChildSeg;
 #endif
@@ -965,7 +965,7 @@ nSegments = nCurrent;
 for (i = 0; i < nSegments; i++) {
 #if DBG
 	if (renderSegList [i] == nDbgSeg)
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	if (renderSegList [i] >= 0)
 		bVisible [renderSegList [i]] = nVisible;

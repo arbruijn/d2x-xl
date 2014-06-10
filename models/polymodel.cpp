@@ -572,7 +572,7 @@ void CPolyModel::ReadData (CPolyModel* defModelP, CFile& cf)
 {
 #if DBG
 if (m_info.nId == nDbgModel)
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 if (!Create (m_info.nDataSize))
 	Error ("Not enough memory for game models.");
@@ -598,7 +598,7 @@ int CPolyModel::Read (int bHMEL, CFile& cf)
 
 #if DBG
 if (m_info.nId == nDbgModel)
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 if (bHMEL) {
 	char	szId [4];
@@ -666,7 +666,7 @@ else {
 	}
 #if DBG
 if (m_info.nId == nDbgModel)
-	nDbgModel = nDbgModel;
+	BRP;
 #endif
 // Make sure the textures for this CObject are paged in...
 gameData.pig.tex.bPageFlushed = 0;
@@ -784,7 +784,7 @@ for (i = 0, j = int (OBJECTS.Length ()); i < j; i++, objP++) {
 			PrintLog (1, "building model %d\n", objP->ModelId ());
 #if DBG
 		if (objP->ModelId () == nDbgModel)
-			nDbgModel = nDbgModel;
+			BRP;
 #endif
 		if (DrawPolygonObject (objP, 0))
 			h++;
@@ -818,13 +818,13 @@ for (tReplacementModel *rmP = replacementModels + i; i < j; i++, rmP++) {
 	o.info.nId = (ubyte) rmP->nId;
 #if DBG
 	if (o.info.nId == nDbgObjId)
-		nDbgObjId = nDbgObjId;
+		BRP;
 #endif
 	o.rType.polyObjInfo.nModel = rmP->nModel;
 	if (!G3HaveModel (o.ModelId ())) {
 #if DBG
 		if (o.ModelId () == nDbgModel)
-			nDbgModel = nDbgModel;
+			BRP;
 #endif
 		if (gameStates.app.nLogLevel > 1)
 			PrintLog (1, "building model %d (%s)\n", o.ModelId (), pszHires ? pszHires : "n/a");

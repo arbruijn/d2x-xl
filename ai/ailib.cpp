@@ -63,7 +63,7 @@ if ((*vPos) != objP->info.position.vPos) {
 	else {
 		if (nSegment != objP->info.nSegment)
 			objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
-		hitQuery.nSegment = nSegment;
+		hitQuery.BRP;
 		}
 	}
 else
@@ -115,7 +115,7 @@ else {
 		return -1;
 	if (nSegment != objP->info.nSegment)
 		objP->cType.aiInfo.SUB_FLAGS |= SUB_FLAGS_GUNSEG;
-	hitQuery.nSegment = nSegment;
+	hitQuery.BRP;
 	}
 nModel = objP->rType.polyObjInfo.nModel;
 nSize = objP->info.xSize;

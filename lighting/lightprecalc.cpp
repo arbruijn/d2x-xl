@@ -103,7 +103,7 @@ void ComputeSingleSegmentDistance (int nSegment, int nThread)
 G3_SLEEP (0);
 #if DBG
 if (nSegment == nDbgSeg)
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 router.PathLength (CFixVector::ZERO, nSegment, CFixVector::ZERO, -1, I2X (1024), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
 for (int i = 0; i < gameData.segs.nSegments; i++) {
@@ -276,7 +276,7 @@ if (!(pDists = new tLightDist [lightManager.LightCount (0)])) {
 
 #if DBG
 if (nVertex == nDbgVertex)
-	nDbgVertex = nDbgVertex;
+	BRP;
 #endif
 
 nMaxLights = MAX_NEAREST_LIGHTS;
@@ -285,13 +285,13 @@ nVertex = GetLoopLimits (nVertex, j, gameData.segs.nVertices, nThread);
 for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) {
 #if DBG
 	if (nVertex == nDbgVertex)
-		nVertex = nVertex;
+		BRP;
 #endif
 	lightP = lightManager.Lights ();
 	for (l = n = 0; l < lightManager.LightCount (0); l++, lightP++) {
 #if DBG
 		if (lightP->info.nSegment == nDbgSeg)
-			nDbgSeg = nDbgSeg;
+			BRP;
 #endif
 		if (IsLightVert (nVertex, lightP->info.faceP))
 			h = 0;
@@ -363,7 +363,7 @@ static void SetLightVis (short nLight, short nSegment)
 {
 #if DBG
 if ((lightManager.Lights (nLight)->info.nSegment == nDbgSeg) && (lightManager.Lights (nLight)->info.nSide == nDbgSide))
-	nDbgSeg = nDbgSeg;
+	BRP;
 if (gameData.segs.LightVisIdx (nLight, nSegment) / 4 >= int (gameData.segs.bLightVis.Length ()))
 	return;
 #endif
@@ -379,7 +379,7 @@ while (!gameData.segs.SetLightVis (nLight, nSegment, 2))
 for (nFaces = segFaceP->nFaces, faceP = segFaceP->faceP; nFaces; nFaces--, faceP++) {
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nSegment = nSegment;
+	BRP;
 #endif
 	if (gameStates.render.bTriangleMesh) {
 		for (nTris = faceP->m_info.nTris, triP = FACES.tris + faceP->m_info.nTriIndex; nTris; nTris--, triP++)
@@ -445,7 +445,7 @@ static void ComputeSingleSegmentVisibility (int nThread, short nStartSeg, short 
 
 #if DBG
 if (nStartSeg == nDbgSeg)
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 
 if (!bLights) 
@@ -483,7 +483,7 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 		else { // from side corner, pointing to average between vector from center to corner and side normal
 #if DBG
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == nSide)))
-				nDbgSeg = nDbgSeg;
+				BRP;
 #endif
 			viewer.info.position.vPos = VERTICES [sideP->m_corners [bLights - 1]];
 			CFixVector h = sideP->Center () - viewer.info.position.vPos;
@@ -506,13 +506,13 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 	viewer.info.position.mOrient = CFixMatrix::Create (rVec, uVec, fVec);
 #if DBG
 	if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	SetupTransformation (transformation, viewer.info.position.vPos, viewer.info.position.mOrient, gameStates.render.xZoom, -1, 0, false);
 
 #if DBG
 if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 	visibility.BuildSegList (transformation, nStartSeg, 0, true);
 	for (i = 0; i < visibility.nSegments; i++) {
@@ -520,7 +520,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 			continue;
 #if DBG
 		if (nSegment == nDbgSeg)
-			nDbgSeg = nDbgSeg;
+			BRP;
 		if (nSegment >= gameData.segs.nSegments)
 			continue;
 #endif
@@ -571,7 +571,7 @@ static void CheckLightVisibility (short nLight, short nDestSeg, fix xMaxDist, fl
 {
 #if DBG
 if ((lightManager.Lights (nLight)->info.nSegment == nDbgSeg) && (lightManager.Lights (nLight)->info.nSide == nDbgSide))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 
 	CDynLight* lightP = lightManager.Lights (nLight);
@@ -589,9 +589,9 @@ if ((lightManager.Lights (nLight)->info.nSegment == nDbgSeg) && (lightManager.Li
 
 #if DBG
 if (nLightSeg == nDbgSeg)
-	nDbgSeg = nDbgSeg;
+	BRP;
 if (nDestSeg == nDbgSeg)
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 i = gameData.segs.LightVisIdx (nLight, nDestSeg);
 #if DBG
@@ -682,7 +682,7 @@ CDynLight* lightP = lightManager.Lights () + nLight;
 if ((lightP->info.nSegment >= 0) && (lightP->info.nSide >= 0)) {
 #if DBG
 	if ((nDbgSeg >= 0) && (lightP->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (lightP->info.nSide == nDbgSide)))
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 #if FAST_LIGHTVIS
 	for (int i = 1; i <= 5; i++)

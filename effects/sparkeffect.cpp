@@ -129,7 +129,7 @@ if (!m_sparks.Create (m_nMaxSparks))
 	m_nMaxSparks = 0;
 else {
 	m_bUpdate = 0;
-	m_nSegment = nSegment;
+	m_BRP;
 	m_nType = nType;
 	m_sparks.Clear ();
 	for (int i = 0; i < m_nMaxSparks; i++)

@@ -142,7 +142,7 @@ short nPredSeg = m_queue [m_nTail++];
 
 #if DBG_SCAN
 if (nPredSeg == nDbgSeg)
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 
 short m_nDepth = m_path [nPredSeg].m_nDepth + 1;
@@ -167,7 +167,7 @@ for (short nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 
 #if DBG_SCAN
 	if (nSuccSeg == nDbgSeg)
-		nDbgSeg = nDbgSeg;
+		BRP;
 	if (nSuccSeg >= gameData.segs.nSegments) {
 		PrintLog (0, "internal error in simple router!\n");
 		return -1;
@@ -519,13 +519,13 @@ for (;;) {
 	segP = SEGMENTS + nSegment;
 #if DBG
 	if (nSegment == nDbgSeg)
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 		if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & m_widFlag)) {
 #if DBG
 			if (segP->m_children [nSide] == nDbgSeg)
-				nDbgSeg = nDbgSeg;
+				BRP;
 #endif
 			if (m_heap.Push (segP->m_children [nSide], nSegment, nSide, nDist + ushort (segP->m_childDists [1][nSide])))
 				++nExpanded;

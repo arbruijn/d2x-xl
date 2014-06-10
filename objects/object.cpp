@@ -441,7 +441,7 @@ for (objP = OBJECTS.Buffer () + LEVEL_OBJECTS, i = LEVEL_OBJECTS; i; ) {
 	objP--, i--;
 #if DBG
 	if (i == nDbgObj) {
-		nDbgObj = nDbgObj;
+		BRP;
 		if (objP->info.nType != OBJ_NONE)
 			dbgObjInstances++;
 		}
@@ -742,7 +742,7 @@ if (nObject > gameData.objs.nLastObject [0]) {
 objP = OBJECTS + nObject;
 #if DBG
 if (objP->info.nType != OBJ_NONE)
-	objP = objP;
+	BRP;
 #endif
 memset (objP, 0, sizeof (*objP));
 objP->info.nType = OBJ_NONE;
@@ -1215,14 +1215,14 @@ int UpdateObjectSeg (CObject * objP, bool bMove)
 {
 #if DBG
 if (objP->Index () == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 int nNewSeg = objP->FindSegment ();
 if (0 > nNewSeg) {
 	if (!bMove) {
 #if DBG
 		if (OBJ_IDX (objP) == 0)
-			objP = objP;
+			BRP;
 #endif
 		return -1;
 		}

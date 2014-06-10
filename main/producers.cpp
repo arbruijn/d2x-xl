@@ -492,7 +492,7 @@ if (!objProducerP->bEnabled)
 	return;
 #if DBG
 if (objProducerP->nSegment == nDbgSeg)
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 if (objProducerP->xDisableTime > 0) {
 	objProducerP->xDisableTime -= gameData.time.xFrame;
@@ -565,7 +565,7 @@ if (!objProducerP->bFlag) {
 	nSegment = objProducerP->nSegment;
 #if DBG
 	if (nSegment == nDbgSeg)
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg) {
 		nCount++;

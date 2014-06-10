@@ -100,7 +100,7 @@ void CObject::Die (void)
 info.nFlags |= OF_SHOULD_BE_DEAD;
 #if DBG
 if (Index () == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 if (this == dbgObjP)
 	dbgObjP = dbgObjP;
 #endif
@@ -558,10 +558,10 @@ int CObject::Update (void)
 #if DBG
 if ((info.nType == OBJ_WEAPON) && (info.nId == SMARTMINE_BLOB_ID)) {
 	nDbgObj = OBJ_IDX (this);
-	nDbgObj = nDbgObj;
+	BRP;
 	}
 if (OBJ_IDX (this) == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 if (info.nType == OBJ_ROBOT) {
 	if (gameOpts->gameplay.bNoThief && (!IsMultiGame || IsCoopGame) && ROBOTINFO (info.nId).thief) {
@@ -733,7 +733,7 @@ void CObject::SetLife (fix xLife)
 {
 info.xLifeLeft = xLife;
 if (Index () == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 }
 #endif
 

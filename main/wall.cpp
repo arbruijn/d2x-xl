@@ -177,7 +177,7 @@ int CWall::IsDoorWay (CObject *objP, bool bIgnoreDoors)
 {
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 if (nType == WALL_OPEN)
 	return WID_NO_WALL;
@@ -1404,7 +1404,7 @@ void ExplodeWall (short nSegment, short nSide)
 	CExplodingWall * explodingWallP = AddExplodingWall ();
 
 if (explodingWallP) {
-	explodingWallP->nSegment = nSegment;
+	explodingWallP->BRP;
 	explodingWallP->nSide = nSide;
 	explodingWallP->time = 0;
 	SEGMENTS [nSegment].CreateSound (SOUND_EXPLODING_WALL, nSide);

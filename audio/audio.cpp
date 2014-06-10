@@ -360,7 +360,7 @@ int CAudioChannel::Resample (CSoundSample *soundP, int bD1Sound, int bMP3)
 
 #if DBG
 if (soundP->bCustom)
-	soundP->bCustom = soundP->bCustom;
+	BRP;
 #endif
 l = soundP->nLength [soundP->bCustom];
 i = gameOpts->sound.audioSampleRate / gameOpts->sound.soundSampleRate;

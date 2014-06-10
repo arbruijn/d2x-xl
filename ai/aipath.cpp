@@ -305,7 +305,7 @@ nCurDepth = 0;
 
 #if DBG
 if (objP->Index () == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 if (bRandom)
 	CreateRandomXlate (randomXlate);
@@ -828,7 +828,7 @@ void AIFollowPath (CObject *objP, int nTargetVisibility, int nPrevVisibility, CF
 
 #if DBG
 if (objP->Index () == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 if ((aiP->nHideIndex == -1) || (aiP->nPathLength == 0)) {
 	if (ailP->mode == AIM_RUN_FROM_OBJECT) {

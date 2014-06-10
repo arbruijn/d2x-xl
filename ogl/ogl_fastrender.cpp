@@ -156,7 +156,7 @@ else
 
 #if 0 //DBG
 		if (i == nDbgVertex)
-			nDbgVertex = nDbgVertex;
+			BRP;
 		if (i + j > int (FACES.vertices.Length ())) {
 			PrintLog (0, "invalid vertex index %d in G3FillFaceBuffer\n");
 			return;
@@ -187,7 +187,7 @@ if (!ogl.m_features.bShaders || (gameStates.render.nType == RENDER_TYPE_SKYBOX))
 	return -1;
 #if DBG
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 nType = bColorKey ? 3 : bMultiTexture ? 2 : bTextured;
 #if 0
@@ -401,7 +401,7 @@ PROF_START
 
 #if DBG
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 
 if (!faceP->m_info.bTextured)

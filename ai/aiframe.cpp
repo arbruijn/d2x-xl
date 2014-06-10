@@ -916,7 +916,7 @@ int AIBumpHandler (CObject *objP, tAIStateInfo *siP)
 {
 #if DBG
 if (objP->Index () == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 if (gameData.ai.nTargetVisibility != 1) // Only increase visibility if unobstructed, else claw guys attack through doors.
 	return 0;
@@ -1023,7 +1023,7 @@ int AIApproachHandler (CObject *objP, tAIStateInfo *siP)
 {
 #if DBG
 if (objP->Index () == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 if (siP->bMultiGame || siP->botInfoP->companion || siP->botInfoP->thief)
 	return 0;
@@ -1040,14 +1040,14 @@ if (gameData.ai.nOverallAgitation < 71)
 	}
 #if DBG
 if (objP->Index () == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 if (gameOpts->gameplay.nAIAggressivity &&
 	 (siP->ailP->mode == AIM_FOLLOW_PATH) &&
 	 (siP->ailP->nGoalSegment == gameData.ai.target.nBelievedSeg)) {
 #if DBG
 	if (objP->Index () == nDbgObj)
-		nDbgObj = nDbgObj;
+		BRP;
 #endif
 	if (objP->info.nSegment == siP->ailP->nGoalSegment) {
 		siP->ailP->mode = AIM_IDLING;
@@ -1342,7 +1342,7 @@ void DoAIFrame (CObject *objP)
 
 #if DBG
 if (objP->Index () == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 Assert (objP->info.nSegment != -1);
 si.nObject = objP->Index ();

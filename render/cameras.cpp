@@ -121,7 +121,7 @@ void CCamera::Setup (int nId, short srcSeg, short srcSide, short tgtSeg, short t
 	CAngleVector a;
 
 if (objP) {
-	m_data.objP = objP;
+	m_data.BRP;
 	m_data.orient = objP->info.position.mOrient;
 	m_data.curAngle =
 	m_data.curDelta = 0;
@@ -259,7 +259,7 @@ else
 		int	bFitToWall = 1; //m_data.bTeleport || gameOpts->render.cameras.bFitToWall;
 #if DBG
 	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	if (uvlP) {
 		fix delta = uvlP [1].u - uvlP [0].u;

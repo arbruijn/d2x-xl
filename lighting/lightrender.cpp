@@ -38,7 +38,7 @@ m_data.nLights [1] = 0;
 for (i = 0; i < m_data.nLights [0]; i++, lightP++) {
 #if DBG
 	if ((nDbgSeg >= 0) && (nDbgSeg == lightP->info.nSegment) && ((nDbgSide < 0) || (nDbgSide == lightP->info.nSide)))
-		nDbgSeg = nDbgSeg;
+		BRP;
 	if (i == nDbgLight)
 		nDbgLight = nDbgLight;
 #endif
@@ -113,9 +113,9 @@ int CLightManager::SetActive (CActiveDynLight* activeLightsP, CDynLight* lightP,
 {
 #if DBG
 if ((nDbgSeg >= 0) && (lightP->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (lightP->info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 if ((nDbgObj >= 0) && (lightP->info.nObject == nDbgObj))
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 
 if (lightP->render.bUsed [nThread])
@@ -147,9 +147,9 @@ while (activeLightsP->nType) {
 
 #if DBG
 if ((nDbgSeg >= 0) && (lightP->info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (lightP->info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 if ((nDbgObj >= 0) && (lightP->info.nObject == nDbgObj))
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 
 activeLightsP->nType = nType;
@@ -199,7 +199,7 @@ ubyte CLightManager::VariableVertexLights (int nVertex)
 
 #if DBG
 if (nVertex == nDbgVertex)
-	nDbgVertex = nDbgVertex;
+	BRP;
 #endif
 for (h = 0, i = MAX_NEAREST_LIGHTS; i; i--, nearestLightP++) {
 	if ((j = *nearestLightP) < 0)
@@ -226,7 +226,7 @@ if (bStatic || m_data.variableVertLights [nVertex]) {
 
 #if DBG
 if (nVertex == nDbgVertex)
-	nDbgVertex = nDbgVertex;
+	BRP;
 #endif
 	sliP->iVertex = nActiveLightI;
 	for (i = MAX_NEAREST_LIGHTS; i; i--, nearestLightP++) {
@@ -292,9 +292,9 @@ nFrameCount = gameData.app.nFrameCount;
 
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 if (faceP - FACES.faces == nDbgFace)
-	nDbgFace = nDbgFace;
+	BRP;
 #endif
 #if 1//!DBG
 if (m_data.index [0][0].nActive < 0)
@@ -365,7 +365,7 @@ PROF_START
 	static int nPrevSeg = -1;
 
 if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 if (gameStates.render.nLightingMethod) {
 	ubyte						nType;
@@ -410,7 +410,7 @@ if (gameStates.render.nLightingMethod) {
 				}
 #if DBG
 			if (lightP->info.nObject >= 0)
-				nDbgObj = nDbgObj;
+				BRP;
 #endif
 			}
 #if 1
@@ -454,7 +454,7 @@ if (gameStates.render.nLightingMethod) {
 	m_data.index [1][nThread] = *sliP;
 #if DBG
 	if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	}
 #if DBG
@@ -470,7 +470,7 @@ short CLightManager::SetNearestToPixel (short nSegment, short nSide, CFixVector 
 {
 #if DBG
 if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 if (gameStates.render.nLightingMethod) {
 	short						i, n = m_data.nLights [1];
@@ -496,9 +496,9 @@ if (gameStates.render.nLightingMethod) {
 			continue;
 #if DBG
 		if ((nDbgSeg >= 0) && (nDbgSeg == lightP->info.nSegment))
-			nDbgSeg = nDbgSeg;
+			BRP;
 		if ((nDbgSeg >= 0) && (nDbgSeg == nSegment))
-			nDbgSeg = nDbgSeg;
+			BRP;
 #endif
 		if (lightP->info.nSegment < 0)
 			continue;
@@ -528,9 +528,9 @@ if (gameStates.render.nLightingMethod) {
 #endif
 #if DBG
 		if (lightP->info.bDiffuse [nThread]) {
-			nDbgSeg = nDbgSeg;
+			BRP;
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
-				nDbgSeg = nDbgSeg;
+				BRP;
 			}
 #endif
 		SetActive (activeLightsP, lightP, 1, nThread, bForce);
@@ -548,7 +548,7 @@ int CLightManager::SetNearestToSgmAvg (short nSegment, int nThread)
 
 #if DBG
 if (nSegment == nDbgSeg)
-	nDbgSeg = nDbgSeg;
+	BRP;
 #endif
 lightManager.SetNearestToSegment (nSegment, -1, 0, 0, nThread);	//only get light emitting objects here (variable geometry lights are caught in lightManager.SetNearestToVertex ())
 #if 1
@@ -571,13 +571,13 @@ CFaceColor* CLightManager::AvgSgmColor (int nSegment, CFixVector *vPosP, int nTh
 
 #if DBG
 if (nSegment == nDbgSeg)
-	nSegment = nSegment;
+	BRP;
 #endif
 if (!vPosP && (segColorP->index == (char) (gameData.app.nFrameCount & 0xff)) && (segColorP->Red () + segColorP->Green () + segColorP->Blue () != 0))
 	return segColorP;
 #if DBG
 if (nSegment == nDbgSeg)
-	nSegment = nSegment;
+	BRP;
 #endif
 nThread = ThreadId (nThread);
 if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
@@ -639,7 +639,7 @@ else {
 		}
 #if DBG
 	if (nSegment == nDbgSeg)
-		nSegment = nSegment;
+		BRP;
 #endif
 	c *= 0.125f; // => / 8.0f
 	segColorP->Assign (c);
@@ -686,7 +686,7 @@ void CLightManager::ResetNearestToVertex (int nVertex, int nThread)
 
 #if DBG
 	if (nVertex == nDbgVertex)
-		nDbgVertex = nDbgVertex;
+		BRP;
 #endif
 	for (i = MAX_NEAREST_LIGHTS; i; i--, nearestLightP++) {
 		if ((j = *nearestLightP) < 0)

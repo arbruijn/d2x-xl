@@ -612,7 +612,7 @@ if (objP->info.nType == 255)
 	return 0;
 #if DBG
 if ((objP->info.nType != OBJ_PLAYER) && (objP->info.position.vPos == OBJECTS [0].info.position.vPos))
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 id = (int) objP->info.nId;
 if ((id < 0) || (id == 255))
@@ -767,7 +767,7 @@ if (automap.Display () && !AM_SHOW_ROBOTS)
 gameData.models.vScale.SetZero ();
 #if DBG
 if (objP->Index () == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 #if 1 //!RENDER_HITBOX
 if (!DrawPolygonObject (objP, 0))
@@ -1051,7 +1051,7 @@ if ((gameStates.render.nShadowPass != 2) &&
 	}
 #if DBG
 if (nObject == nDbgObj)
-	nDbgObj = nDbgObj;
+	BRP;
 #endif
 if (nObject != LOCALPLAYER.nObject) {
 	if (objP == gameData.objs.viewerP)

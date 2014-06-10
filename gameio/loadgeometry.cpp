@@ -456,7 +456,7 @@ INIT_PROGRESS_LOOP (nSegment, nLastSeg, gameData.segs.nSegments);
 for (; nSegment < nLastSeg; nSegment++) {
 #if DBG
 	if (nSegment == nDbgSeg)
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	SEGFACES [nSegment].nFaces = 0;
 	SEGMENTS [nSegment].Read (cf);
@@ -473,14 +473,14 @@ for (int i = 0; i < gameData.segs.nSegments; i++) {
 		SEGMENTS [i].ReadExtras (cf);
 #if DBG
 	if (i == nDbgSeg)
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	}
 // can only process producers after knowing all segment's type producer information!
 for (int i = 0; i < gameData.segs.nSegments; i++) {
 #if DBG
 	if (i == nDbgSeg)
-		nDbgSeg = nDbgSeg;
+		BRP;
 #endif
 	SEGMENTS [i].CreateGenerator (SEGMENTS [i].m_function);
 	}
@@ -498,7 +498,7 @@ if (gameStates.app.bD2XLevel) {
 	for (; i < j; i++) {
 #if DBG
 		if (i == nDbgVertex)
-			nDbgVertex = nDbgVertex;
+			BRP;
 #endif
 		ReadColor (cf, gameData.render.color.ambient + i, gameData.segs.nLevelVersion <= 14, 1);
 		}
@@ -607,7 +607,7 @@ for (i = nSegment * 6, segP = SEGMENTS + nSegment; nSegment < j; nSegment++, seg
 #if CALC_SEGRADS
 #	if DBG
 	if (nSegment == nDbgSeg)
-		nDbgSeg = nDbgSeg;
+		BRP;
 #	endif
 	segP->ComputeRads (xMinDist);
 #endif

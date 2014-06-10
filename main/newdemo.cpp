@@ -200,7 +200,7 @@ objP->info.position.mOrient.m.dir.r.v.coord.z = *sp++ << MATRIX_PRECISION;
 objP->info.position.mOrient.m.dir.u.v.coord.z = *sp++ << MATRIX_PRECISION;
 objP->info.position.mOrient.m.dir.f.v.coord.z = *sp++ << MATRIX_PRECISION;
 nSegment = spp->nSegment;
-objP->info.nSegment = nSegment;
+objP->info.BRP;
 const CFixVector& v = gameData.segs.vertices [SEGMENTS [nSegment].m_vertices [0]];
 objP->info.position.vPos.v.coord.x = (spp->pos [0] << RELPOS_PRECISION) + v.v.coord.x;
 objP->info.position.vPos.v.coord.y = (spp->pos [1] << RELPOS_PRECISION) + v.v.coord.y;
@@ -1235,7 +1235,7 @@ void NDRecordWallHitProcess (int nSegment, int nSide, int damage, int playernum)
 if (gameStates.render.cameras.bActive)
 	return;
 StopTime ();
-//nSegment = nSegment;
+//BRP;
 //nSide = nSide;
 //damage = damage;
 //playernum = playernum;

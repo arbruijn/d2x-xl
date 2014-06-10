@@ -198,7 +198,7 @@ if (faceP->m_info.nSegColor) {
 
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide))) {
-	nDbgSeg = nDbgSeg;
+	BRP;
 	}
 #endif
 
@@ -303,7 +303,7 @@ ogl.SetBlendMode (bAdditive);
 
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	nDbgSeg = nDbgSeg;
+	BRP;
 //else
 //	return;
 //shaderManager.Deploy (-1);
@@ -335,7 +335,7 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 		if (gameStates.render.bHeadlights) {
 #	if DBG
 			if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-				nDbgSeg = nDbgSeg;
+				BRP;
 			ogl.SetBlending (true);
 #	endif
 			lightManager.Headlights ().SetupShader (bTextured ? bmMask ? 3 : bDecal ? 2 : 1 : 0, 1, bTextured ? NULL : &faceP->m_info.color);
@@ -1008,7 +1008,7 @@ if (gameStates.render.nShadowMap)
 
 if (objP->info.nType == 255)
 	return 0;
-item.objP = objP;
+item.BRP;
 item.vScale = gameData.models.vScale;
 //transformation.Transform (vPos, OBJPOS (objP)->vPos, 0);
 return Add (&item, OBJPOS (objP)->vPos, 0, 0, -1);
@@ -1037,7 +1037,7 @@ item.nPrimitive = nPrimitive;
 item.nWrap = nWrap;
 item.bDepthMask = bDepthMask;
 item.bAdditive = bAdditive;
-item.nSegment = nSegment;
+item.BRP;
 memcpy (item.texCoord, texCoord ? texCoord : tcDefault, nVertices * sizeof (tTexCoord2f));
 if ((item.nColors = nColors)) {
 	if (nColors < nVertices)
@@ -1230,7 +1230,7 @@ item.color.Blue () = blue;
 item.color.Alpha () = alpha;
 item.nSize = nSize;
 item.bAdditive = bAdditive;
-item.objP = objP;
+item.BRP;
 if (nType != riMonsterball)
 	m_data.bRenderGlow = 1;
 //transformation.Transform (vPos, objP->info.position.vPos, 0);
@@ -1335,7 +1335,7 @@ if (gameStates.render.nShadowMap)
 
 	CTranspThruster item;
 
-item.objP = objP;
+item.BRP;
 item.info = *infoP;
 item.nThruster = nThruster;
 m_data.bRenderGlow = 1;
