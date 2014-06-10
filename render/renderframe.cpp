@@ -608,7 +608,10 @@ void UpdateSlidingFaces (void)
 	tUVL*				uvlP;
 
 for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
-	BRP ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)));
+#if DBG
+	if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+		BRP;
+#endif
 	texCoordP = FACES.texCoord + faceP->m_info.nIndex;
 	ovlTexCoordP = FACES.ovlTexCoord + faceP->m_info.nIndex;
 	uvlP = SEGMENTS [faceP->m_info.nSegment].m_sides [faceP->m_info.nSide].m_uvls;

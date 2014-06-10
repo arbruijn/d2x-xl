@@ -588,12 +588,9 @@ int nDbgLight = -1;
 
 //------------------------------------------------------------------------------
 
-bool Breakpoint (bool cond)
+bool Breakpoint (void)
 {
-if (cond)
-	return true;	// leave it this way to allow setting a breakpoint here!
-else
-	return false;
+PrintLog (0, NULL);
 }
 
 //------------------------------------------------------------------------------

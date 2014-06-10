@@ -76,7 +76,8 @@ if (bRegisterBitmaps) {
 		bitmapList.Create (1000);
 		bitmapList.SetGrowth (1000);
 		}
-	BRP ((int) bitmapList.ToS () == nDbgTexture);
+	if ((int) bitmapList.ToS () == nDbgTexture)
+		BRP;
 	if (!FindBitmap (bmP))
 		bitmapList.Push (bmP);
 	}

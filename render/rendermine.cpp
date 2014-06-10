@@ -140,7 +140,10 @@ if (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameCo
 
 CObject*	objP = OBJECTS + nObject;
 
-BRP (nWindow && (objP->info.nType == OBJ_WEAPON));
+#if DBG
+if (nWindow && (objP->info.nType == OBJ_WEAPON))
+	BRP;
+#endif
 
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	if ((nDemoDoingLeft == 6 || nDemoDoingRight == 6) && objP->info.nType == OBJ_PLAYER) {
@@ -218,7 +221,10 @@ if (nSegment < 0)
 for (i = gameData.render.mine.objRenderList.ref [nSegment], j = 0; i >= 0; i = pi->nNextItem) {
 	pi = gameData.render.mine.objRenderList.objs + i;
 	objRenderList [j++] = *pi;
-	BRP (OBJECTS [pi->nObject].info.nSegment != nSegment);
+#if DBG
+	if (OBJECTS [pi->nObject].info.nSegment != nSegment)
+		BRP;
+#endif
 	}
 #if 1
 if (j > 1)
@@ -281,7 +287,10 @@ void RenderObjectsST (void)
 
 for (int i = 0; i < gameData.render.mine.nObjRenderSegs; i++) {
 	nSegment = gameData.render.mine.objRenderSegList [i];
-	BRP (nSegment == nDbgSeg);
+#if DBG
+	if (nSegment == nDbgSeg)
+		BRP;
+#endif
 	if (gameStates.render.bApplyDynLight) {
 		lightManager.SetNearestToSegment (nSegment, -1, 0, 1, 0);
 		//lightManager.ResetNearestStatic (nSegment, 0);

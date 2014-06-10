@@ -1003,7 +1003,8 @@ if (!m_info.handle) {
 	return 1;
 	}
 #if DBG
-	BRP (m_info.handle == 228);
+	if (m_info.handle == 228)
+		BRP;
 	if (!usedHandles [m_info.handle])
 		usedHandles [m_info.handle] = 1;
 	else
@@ -1109,7 +1110,10 @@ CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures)
 	CBitmap*	bmP, * bmoP, * bmfP;
 	int		nFrames;
 
-BRP (nTexture == nDbgTexture);
+#if DBG
+if (nTexture == nDbgTexture)
+	BRP;
+#endif
 LoadTexture (gameData.pig.tex.bmIndexP [nTexture].index, 0, gameStates.app.bD1Mission);
 bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
 bmP->SetStatic (1);
@@ -1210,7 +1214,10 @@ int CBitmap::PrepareTexture (int bMipMap, int bMask, tPixelBuffer *renderBuffer)
 if ((m_info.nType == BM_TYPE_STD) && Parent () && (Parent () != this))
 	return Parent ()->PrepareTexture (bMipMap, bMask, renderBuffer);
 
-BRP ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture));
+#if DBG
+if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
+	BRP;
+#endif
 
 if (!m_info.texP)
 	m_info.texP = &m_info.texture;
@@ -1240,7 +1247,10 @@ if (!bMask) {
 		SetAvgColorIndex ((ubyte) Palette ()->ClosestColor (&color));
 	}
 #endif
-BRP (m_info.nId == nDbgTexture);
+#if DBG
+if (m_info.nId == nDbgTexture)
+	BRP;
+#endif
 LoadTexture (0, 0, (m_info.props.flags & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) != 0);
 return m_info.texP->Handle () == 0;
 }
@@ -1255,8 +1265,12 @@ int CBitmap::CreateFrames (int bMipMaps, int bLoad)
 if (nFrames < 2)
 	return 0;
 else {
-	BRP (!strcmp (m_info.szName, "sparks.tga"));
-	BRP ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture));
+#if DBG
+	if (!strcmp (m_info.szName, "sparks.tga"))
+		BRP;
+	if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
+		BRP;
+#endif
 
 	m_info.frames.bmP = new CBitmap [nFrames];
 
@@ -1452,9 +1466,12 @@ bool CBitmap::SetupTexture (int bMipMaps, int bLoad)
 {
 	CBitmap *bmP;
 
-BRP ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture));
-BRP (bMipMaps < 0);
-
+#if DBG
+if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
+	BRP;
+if (bMipMaps < 0)
+	BRP;
+#endif
 switch (m_info.nType) {
 	case BM_TYPE_STD: // primary (low res) texture
 		if ((bmP = HasOverride ()))

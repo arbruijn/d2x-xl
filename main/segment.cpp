@@ -165,7 +165,10 @@ if (!gameStates.app.bD2XLevel && (m_function == 2))
 
 void CSegment::Read (CFile& cf)
 {
-BRP (Index () == nDbgSeg);
+#if DBG
+if (Index () == nDbgSeg)
+	BRP;
+#endif
 if (gameStates.app.bD2XLevel) {
 	m_owner = cf.ReadByte ();
 	m_group = cf.ReadByte ();
@@ -243,7 +246,10 @@ for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
 
 void CSegment::ComputeCenter (void)
 {
-BRP (Index () == nDbgSeg);
+#if DBG
+if (Index () == nDbgSeg)
+	BRP;
+#endif
 CFloatVector vCenter;
 vCenter.SetZero ();
 int nVertices = 0;
@@ -380,7 +386,10 @@ return m_sides [nSide].Masks (refP, xRad, 1, faceBit, bCheckPoke);
 void CSegment::Setup (void)
 {
 for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
-	BRP ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (i == nDbgSide)));
+#if DBG
+	if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (i == nDbgSide)))
+		BRP;
+#endif
 	m_sides [i].Setup (Index (), m_vertices, sideVertIndex [i], m_children [i] < 0);
 	if (!m_sides [i].FaceCount () && (m_children [i] >= 0)) {
 		PrintLog (0, "Segment %d, side %d is collapsed, but has child %d!\n", SEG_IDX (this), i, m_children [i]);
@@ -430,8 +439,12 @@ if (!m_sides [nSide].FaceCount ())
 
 CWall* wallP = m_sides [nSide].Wall ();
 
-BRP (objP && (objP->Index () == nDbgObj));
-BRP ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)));
+#if DBG
+if (objP && (objP->Index () == nDbgObj))
+	BRP;
+if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	BRP;
+#endif
 
 if (!objP) 
 	return wallP ? wallP->IsDoorWay (NULL, bIgnoreDoors) : WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG;
@@ -469,7 +482,10 @@ if (nChild == -2)
 CWall* wallP = m_sides [nSide].Wall ();
 CSegment* childP = SEGMENTS + nChild;
 
-BRP ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)));
+#if DBG
+if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	BRP;
+#endif
 
 if ((objP == gameData.objs.consoleP) &&
 	 gameData.objs.speedBoost [objP->Index ()].bBoosted &&

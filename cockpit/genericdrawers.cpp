@@ -102,7 +102,10 @@ CBitmap* CGenericCockpit::BitBlt (int nGauge, int x, int y, bool bScalePos, bool
 	CBitmap*	saveBmP = NULL;
 
 if (nGauge >= 0) {
-	BRP (nGauge == nDbgGauge);
+#if DBG
+	if (nGauge == nDbgGauge)
+		BRP;
+#endif
 	PageInGauge (nGauge);
 	bmP = gameData.pig.tex.bitmaps [0] + GaugeIndex (nGauge);
 	if (overrideP && overrideP->Buffer ())
@@ -342,7 +345,8 @@ if (gameStates.render.bShowFrameRate) {
 		sprintf (szItem, "FPS: %s", ftoa (szRate, xRate));
 #if DBG
 		if ((nDbgFrameRate > 0) && (X2F (xRate) < nDbgFrameRate)) {
-			BRP (++nFrameCount > 5);
+			if (++nFrameCount > 5)
+				BRP;
 			}
 		else
 			nFrameCount = 0;

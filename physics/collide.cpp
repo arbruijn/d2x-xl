@@ -1570,7 +1570,10 @@ if (robotP->IsGeometry ())
 	CWeaponInfo *wInfoP = gameData.weapons.info + info.nId;
 	bool			bAttackRobots = parentP ? parentP->AttacksRobots () || (EGI_FLAG (bRobotsHitRobots, 0, 0, 0) && gameStates.app.cheats.bRobotsKillRobots) : false;
 
-BRP (OBJ_IDX (this) == nDbgObj);
+#if DBG
+if (OBJ_IDX (this) == nDbgObj)
+	BRP;
+#endif
 if (info.nId == PROXMINE_ID) {
 	if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 		return 1;

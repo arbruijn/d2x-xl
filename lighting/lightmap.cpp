@@ -331,7 +331,10 @@ for (i = 512; i; i--, brightmap++)
 
 bool CLightmapManager::FaceIsInvisible (CSegFace* faceP)
 {
-BRP ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)));
+#if DBG
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	BRP;
+#endif
 if (SEGMENTS [faceP->m_info.nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
 	faceP->m_info.nLightmap = 1;
 	return true;
@@ -468,7 +471,10 @@ else {
 		yMax = h;
 	}
 
-BRP ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)));
+#if DBG
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	BRP;
+#endif
 
 vcd.vertPosP = &vcd.vertPos;
 pixelPosP = m_data.m_pixelPos + yMin * w;
@@ -608,17 +614,26 @@ else {
 
 bBlack = bWhite = true;
 for (y = yMin; y < yMax; y++) {
-	BRP ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)));
+#if DBG
+	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+		BRP;
+#endif
 	int h = nTriangles ? w : y + 1;
 	pixelPosP = m_data.m_pixelPos + y * w;
 	for (x = 0; x < h; x++, pixelPosP++) { 
 #if DBG
-		if (BRP ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))) {
-			BRP (((x == 0) || (x == w - 1)) || ((y == 0) || (y == w - 1)));
-			BRP (x == 0);
-			BRP (x == w - 1);
-			BRP (y == 0);
-			BRP (y == w - 1);
+		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
+			BRP;
+			if (((x == 0) || (x == w - 1)) || ((y == 0) || (y == w - 1)))
+				BRP;
+			if (x == 0)
+				BRP;
+			if (x == w - 1)
+				BRP;
+			if (y == 0)
+				BRP;
+			if (y == w - 1)
+				BRP;
 			}
 		fix dist = x ? CFixVector::Dist (*pixelPosP, *(pixelPosP - 1)) : 0;
 #endif
@@ -662,7 +677,10 @@ else if (bWhite)
 else 
 	m_data.m_nColor |= 4;
 }
-BRP ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)));
+#if DBG
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	BRP;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -689,7 +707,10 @@ if (nFace <= 0) {
 	}
 //Next Go through each surface and create a lightmap for it.
 for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.faceP++) {
-	BRP ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)));
+#if DBG
+	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
+		BRP;
+#endif
 	if (SEGMENTS [m_data.faceP->m_info.nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
 		m_data.faceP->m_info.nLightmap = 1;
 		continue;
@@ -709,7 +730,10 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 			Build (m_data.faceP, -1);
 #endif
 		}
-	BRP ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)));
+#if DBG
+	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
+		BRP;
+#endif
 	if (m_data.m_nColor == 1) {
 		m_data.faceP->m_info.nLightmap = 0;
 		m_data.nBlackLightmaps++;
@@ -969,7 +993,10 @@ if (gameStates.render.bPerPixelLighting) {
 
 int SetupLightmap (CSegFace* faceP)
 {
-BRP ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)));
+#if DBG
+if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+	BRP;
+#endif
 int i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
 if (!lightmapManager.Bind (i))
 	return 0;
