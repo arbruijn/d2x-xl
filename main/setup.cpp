@@ -205,7 +205,7 @@ return fd.bUser;
 
 // ----------------------------------------------------------------------------
 
-void MoveFiles (char* pszDestFolder, char* pszSourceFolder, bool bMoveSubFolders)
+void MoveFiles (const char* pszDestFolder, const char* pszSourceFolder, bool bMoveSubFolders)
 {
 	FFS	ffs;
 	char	szSource [FILENAME_LEN], szDest [FILENAME_LEN];
