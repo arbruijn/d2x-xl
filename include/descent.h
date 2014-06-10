@@ -1126,6 +1126,7 @@ class CSoundStates {
 		int nSoundChannels;
 		int bD1Sound;
 		int bMidiFix;
+		int bDynamic;
 		CAudioStates audio;
 	};
 

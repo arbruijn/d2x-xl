@@ -739,6 +739,8 @@ int CAudio::InternalSetup (float fSlowDown, int nFormat, const char* driver)
 {
 if (!gameStates.app.bUseSound)
 	return 1;
+if (!gameStates.sound.bDynamic && m_info.bAvailable)
+	return 1;
 
 if (!m_bSDLInitialized) {
 	if (driver && *driver) {
@@ -847,7 +849,7 @@ for (int i = 0; i < MAX_THREADS; i++)
 /* Shut down audio */
 void CAudio::Close (void)
 {
-if (!m_info.bInitialized) 
+if (!(gameStates.sound.bDynamic && m_info.bAvailable))
 	return;
 m_info.bInitialized =
 m_info.bAvailable = 0;
@@ -878,7 +880,7 @@ else
 
 void CAudio::Shutdown (void)
 {
-if (m_info.bAvailable) {
+if (gameStates.sound.bDynamic && m_info.bAvailable) {
 	int nVolume = m_info.nVolume [0];
 	SetFxVolume (0);
 	m_info.nVolume [0] = nVolume;
@@ -892,8 +894,10 @@ if (m_info.bAvailable) {
 void CAudio::Reset (void) 
 {
 #if !USE_OPENAL
-audio.Shutdown ();
-audio.Setup (1);
+if (gameStates.sound.bDynamic && m_info.bAvailable) {
+	audio.Shutdown ();
+	audio.Setup (1);
+	}
 #endif
 }
 

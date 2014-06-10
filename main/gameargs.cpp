@@ -217,6 +217,8 @@ if ((t = FindArg ("-sdl_mixer")))
 #endif //USE_SDL_MIXER
 if ((t = FindArg ("-midifix")))
 	gameStates.sound.bMidiFix = NumArg (t, 1);
+if ((t = FindArg ("-dynamic_sound")))
+	gameStates.sound.bDynamic = NumArg (t, 1);
 if ((t = FindArg ("-noredbook")))
 	gameOptions [0].sound.bUseRedbook = 0;
 #if USE_SDL_MIXER

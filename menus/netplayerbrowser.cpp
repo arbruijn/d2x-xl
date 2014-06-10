@@ -119,7 +119,7 @@ if (gameData.multiplayer.nPlayers > netGame.m_info.nMaxPlayers) {
 	}
 #if !DBG
 if (gameData.multiplayer.nPlayers < 2) {
-	InfoBox (TXT_WARNING, NULL, 1, TXT_OK, TXT_TEAM_ATLEAST_TWO);
+	InfoBox (TXT_WARNING, NULL, BG_STANDARD, 1, TXT_OK, TXT_TEAM_ATLEAST_TWO);
 #	if 0
 	gameData.multiplayer.nPlayers = nSavePlayers;
 	return true;
@@ -132,7 +132,7 @@ if (((netGame.m_info.gameMode == NETGAME_TEAM_ANARCHY) ||
 	  (netGame.m_info.gameMode == NETGAME_CAPTURE_FLAG) || 
 	  (netGame.m_info.gameMode == NETGAME_TEAM_HOARD)) && 
 	 (gameData.multiplayer.nPlayers < 2)) {
-	InfoBox (TXT_ERROR, NULL, 1, TXT_OK, TXT_NEED_2PLAYERS);
+	InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_NEED_2PLAYERS);
 	gameData.multiplayer.nPlayers = nSavePlayers;
 #if 0	
 	return true;
