@@ -256,7 +256,7 @@ class CBumpForces {
 		fix m_mass;
 
 	explicit CBumpForces (CObject* objP = NULL) { 
-		if ((m_BRP)) {
+		if ((m_objP = objP)) {
 			m_vVel = objP->mType.physInfo.velocity;
 			m_vPos = objP->info.position.vPos;
 			m_mass = objP->mType.physInfo.mass;

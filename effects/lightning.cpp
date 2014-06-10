@@ -595,7 +595,7 @@ m_nodes [m_nNodes - 1].m_vPos =
 m_vEnd = vNewEnd;
 m_vDir = m_vEnd - m_vPos;
 m_nLength = xNewLength;
-m_BRP;
+m_nSegment = nSegment;
 }
 
 //------------------------------------------------------------------------------

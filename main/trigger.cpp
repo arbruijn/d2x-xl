@@ -233,10 +233,10 @@ if (m_nLinks) {
 		do {
 			nSegment = m_segments [RandShort () % m_nLinks];
 			} while (nSegment == m_info.nSegment);
-		m_info.BRP;
+		m_info.nSegment = nSegment;
 		}
 	if (objP->info.nSegment != nSegment) {
-		objP->info.BRP;
+		objP->info.nSegment = nSegment;
 		objP->info.position.vPos = SEGMENTS [nSegment].Center ();
 		objP->RelinkToSeg (nSegment);
 		if (ROBOTINFO (objP->info.nId).bossFlag) {
@@ -364,7 +364,7 @@ int CTrigger::DoSetSpawnPoints (void)
 for (i = j = 0; i < MAX_PLAYERS; i++) {
 	nSegment = m_segments [j];
 	TriggerSetOrient (&gameData.multiplayer.playerInit [i].position, nSegment, m_sides [j], 1, 0);
-	gameData.multiplayer.playerInit [i].BRP;
+	gameData.multiplayer.playerInit [i].nSegment = nSegment;
 	gameData.multiplayer.playerInit [i].nSegType = SEGMENTS [nSegment].m_function;
 	if (i == N_LOCALPLAYER)
 		markerManager.MoveSpawnPoint (&gameData.multiplayer.playerInit [i].position, nSegment);

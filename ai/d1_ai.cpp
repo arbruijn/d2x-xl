@@ -561,7 +561,7 @@ if ((*pos) == objP->info.position.vPos)
 else {
 	int nSegment = FindSegByPos (*pos, objP->info.nSegment, 1, 0);
 	if (nSegment != -1)
-		hitQuery.BRP;
+		hitQuery.nSegment = nSegment;
 	else {
 		hitQuery.nSegment = objP->info.nSegment;
 		*pos = objP->info.position.vPos;

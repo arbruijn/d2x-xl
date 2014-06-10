@@ -991,7 +991,7 @@ if (bRebuild)
 else
 	memset (m_faceP, 0, sizeof (*m_faceP));
 CSide* sideP = SEGMENTS [nSegment].Side (nSide);
-m_faceP->m_info.BRP;
+m_faceP->m_info.nSegment = nSegment;
 m_faceP->m_info.nVerts = sideP->CornerCount ();
 m_faceP->m_info.nFrame = -1;
 m_faceP->m_info.nIndex = m_vertexP - FACES.vertices;
@@ -999,7 +999,7 @@ if (gameStates.render.bTriangleMesh)
 	m_faceP->m_info.nTriIndex = m_triP - TRIANGLES;
 memcpy (m_faceP->m_info.index, m_sideVerts, sizeof (m_faceP->m_info.index));
 m_faceP->m_info.nType = gameStates.render.bTriangleMesh ? m_sideP->m_nType : -1;
-m_faceP->m_info.BRP;
+m_faceP->m_info.nSegment = nSegment;
 m_faceP->m_info.nSide = nSide;
 m_faceP->m_info.nTriangles = sideP->FaceCount ();
 m_faceP->m_info.nWall = gameStates.app.bD2XLevel ? m_nWall : IS_WALL (m_nWall) ? m_nWall : (ushort) -1;
@@ -1526,7 +1526,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 		return 0;
 		}
 #endif
-	m_faceP->m_info.BRP;
+	m_faceP->m_info.nSegment = nSegment;
 	m_nOvlTexCount = 0;
 	m_segFaceP->nFaces = 0;
 	for (nSide = 0, m_sideP = m_segP->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, m_sideP++) {

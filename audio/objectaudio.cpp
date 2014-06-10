@@ -642,7 +642,7 @@ soundObjP->m_nSignature = m_info.nNextSignature++;
 soundObjP->m_flags = SOF_USED | SOF_LINK_TO_POS;
 if (bForever)
 	soundObjP->m_flags |= SOF_PLAY_FOREVER;
-soundObjP->m_linkType.pos.BRP;
+soundObjP->m_linkType.pos.nSegment = nSegment;
 soundObjP->m_linkType.pos.nSide = nSide;
 soundObjP->m_linkType.pos.position = vPos;
 soundObjP->m_nSound = nSound;

@@ -320,7 +320,7 @@ if (m_nShape > SIDE_SHAPE_TRIANGLE)
 if (nSegment == nDbgSeg)
 	BRP;
 #endif
-m_BRP;
+m_nSegment = nSegment;
 if (gameData.segs.nLevelVersion > 24) 
 	index = m_corners;
 SetupCorners (verts, index);

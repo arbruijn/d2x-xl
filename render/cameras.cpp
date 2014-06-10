@@ -121,7 +121,7 @@ void CCamera::Setup (int nId, short srcSeg, short srcSide, short tgtSeg, short t
 	CAngleVector a;
 
 if (objP) {
-	m_data.BRP;
+	m_data.objP = objP;
 	m_data.orient = objP->info.position.mOrient;
 	m_data.curAngle =
 	m_data.curDelta = 0;

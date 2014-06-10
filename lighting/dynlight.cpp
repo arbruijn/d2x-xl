@@ -369,7 +369,7 @@ i = m_data.nLights [0]; //LastEnabledDynLight () + 1;
 CDynLight& light = m_data.lights [i];
 light.info.nIndex = i;
 light.info.faceP = faceP;
-light.info.BRP;
+light.info.nSegment = nSegment;
 light.info.nSide = nSide;
 light.info.nObject = nObject;
 light.info.nPlayer = -1;

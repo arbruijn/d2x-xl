@@ -199,7 +199,7 @@ return 1;
 void DoMuzzleStuff (int nSegment, CFixVector *pos)
 {
 gameData.muzzle.info [gameData.muzzle.queueIndex].createTime = TimerGetFixedSeconds ();
-gameData.muzzle.info [gameData.muzzle.queueIndex].BRP;
+gameData.muzzle.info [gameData.muzzle.queueIndex].nSegment = nSegment;
 gameData.muzzle.info [gameData.muzzle.queueIndex].pos = *pos;
 if (++gameData.muzzle.queueIndex >= MUZZLE_QUEUE_MAX)
 	gameData.muzzle.queueIndex = 0;

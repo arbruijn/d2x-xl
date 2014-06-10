@@ -1008,7 +1008,7 @@ if (gameStates.render.nShadowMap)
 
 if (objP->info.nType == 255)
 	return 0;
-item.BRP;
+item.objP = objP;
 item.vScale = gameData.models.vScale;
 //transformation.Transform (vPos, OBJPOS (objP)->vPos, 0);
 return Add (&item, OBJPOS (objP)->vPos, 0, 0, -1);
@@ -1037,7 +1037,7 @@ item.nPrimitive = nPrimitive;
 item.nWrap = nWrap;
 item.bDepthMask = bDepthMask;
 item.bAdditive = bAdditive;
-item.BRP;
+item.nSegment = nSegment;
 memcpy (item.texCoord, texCoord ? texCoord : tcDefault, nVertices * sizeof (tTexCoord2f));
 if ((item.nColors = nColors)) {
 	if (nColors < nVertices)
@@ -1230,7 +1230,7 @@ item.color.Blue () = blue;
 item.color.Alpha () = alpha;
 item.nSize = nSize;
 item.bAdditive = bAdditive;
-item.BRP;
+item.objP = objP;
 if (nType != riMonsterball)
 	m_data.bRenderGlow = 1;
 //transformation.Transform (vPos, objP->info.position.vPos, 0);
@@ -1335,7 +1335,7 @@ if (gameStates.render.nShadowMap)
 
 	CTranspThruster item;
 
-item.BRP;
+item.objP = objP;
 item.info = *infoP;
 item.nThruster = nThruster;
 m_data.bRenderGlow = 1;

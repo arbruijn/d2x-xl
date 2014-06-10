@@ -113,7 +113,7 @@ if (xModelLight > I2X (1))
 #endif
 if (SHOW_DYN_LIGHT && (gameOpts->ogl.bObjLighting ||
     (gameOpts->ogl.bLightObjects && (gameOpts->ogl.bLightPowerups || (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT))))) {
-	tiRender.BRP;
+	tiRender.objP = objP;
 	tiRender.modelP = modelP;
 	if (!RunRenderThreads (rtPolyModel))
 		G3DynLightModel (objP, modelP, 0, modelP->m_nVerts, 0, modelP->m_nFaceVerts);

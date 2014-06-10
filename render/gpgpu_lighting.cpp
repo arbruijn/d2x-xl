@@ -339,7 +339,7 @@ else if (nState == 1) {
 		nLights++;
 		}
 	if (nLights) {
-		m_vld.index [m_vld.nVertices].BRP;
+		m_vld.index [m_vld.nVertices].nVertex = nVertex;
 		m_vld.index [m_vld.nVertices].nLights = nLights;
 		m_vld.index [m_vld.nVertices].color = (CFloatVector) *colorP;
 		m_vld.nVertices++;

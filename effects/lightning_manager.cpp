@@ -571,7 +571,7 @@ else {
 	if (llP->nFrame != gameData.app.nFrameCount) {
 		memset (llP, 0, sizeof (*llP));
 		llP->nFrame = gameData.app.nFrameCount;
-		llP->BRP;
+		llP->nSegment = nSegment;
 		llP->nNext = m_nFirstLight;
 		m_nFirstLight = nSegment;
 		}
