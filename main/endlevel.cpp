@@ -2188,7 +2188,7 @@ fixang DeltaAng (fixang a, fixang b);
 void StartEndLevelFlyThrough (int n, CObject *objP, fix speed)
 {
 exitFlightDataP = exitFlightObjects + n;
-exitFlightDataP->BRP;
+exitFlightDataP->objP = objP;
 exitFlightDataP->bStart = 1;
 exitFlightDataP->speed = speed ? speed : DEFAULT_SPEED;
 exitFlightDataP->lateralOffset = 0;

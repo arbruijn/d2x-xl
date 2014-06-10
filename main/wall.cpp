@@ -1404,7 +1404,7 @@ void ExplodeWall (short nSegment, short nSide)
 	CExplodingWall * explodingWallP = AddExplodingWall ();
 
 if (explodingWallP) {
-	explodingWallP->BRP;
+	explodingWallP->nSegment = nSegment;
 	explodingWallP->nSide = nSide;
 	explodingWallP->time = 0;
 	SEGMENTS [nSegment].CreateSound (SOUND_EXPLODING_WALL, nSide);
