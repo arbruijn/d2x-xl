@@ -69,7 +69,7 @@ extern int nDbgVertex, nDbgBaseTex, nDbgOvlTex, nDbgTexture, nDbgLight;
 
 extern FILE *fLog;
 
-bool Breakpoint (void);
+void Breakpoint (void);
 
 #if DBG
 #	define BRP	Breakpoint ()

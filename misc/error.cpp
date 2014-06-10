@@ -588,7 +588,7 @@ int nDbgLight = -1;
 
 //------------------------------------------------------------------------------
 
-bool Breakpoint (void)
+void Breakpoint (void)
 {
 PrintLog (0, NULL);
 }
