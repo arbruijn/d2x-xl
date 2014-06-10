@@ -1,10 +1,17 @@
 #ifndef __SIXENSE_WRAPPER__
 #define __SIXENSE_WRAPPER__
 
+<<<<<<< .mine
+#ifndef USE_SIXENSE
+#	error SIXENSE is unavailable in this project configuration
+#else
+#	if DBG
+=======
 #ifndef USE_SIXENSE
 //#	error SIXENSE is unavailable in this project configuration
 #else
 #	if DBG
+>>>>>>> .r12788
 
 #include "sixense.h"
 #include "vecmat.h"

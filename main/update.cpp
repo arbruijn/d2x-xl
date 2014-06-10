@@ -102,9 +102,13 @@ class CDownload {
 			}
 
 	protected:
-		CDownload () : m_nState (-1), m_nResult (0), m_pszSrc (NULL), m_pszDest (NULL), m_nPercent (0), m_nProgress (0), m_nProgressMax (0), m_thread (NULL) {}
+		CDownload () : m_nState (-1), m_nResult (0), m_pszSrc (NULL), m_pszDest (NULL), m_bProgressBar (false), m_nProgress (0), m_nProgressMax (0),
+							m_nPercent (0), m_thread (NULL), m_nOptPercentage (0), m_nOptProgress (0) {}
 
-		CDownload (CDownload const&) {}
+		virtual ~CDownload () {}
+
+		CDownload (CDownload const&) : m_nState (-1), m_nResult (0), m_pszSrc (NULL), m_pszDest (NULL), m_bProgressBar (false), m_nProgress (0), m_nProgressMax (0),
+					m_nPercent (0), m_thread (NULL), m_nOptPercentage (0), m_nOptProgress (0) {}
 
 		CDownload& operator= (CDownload const&) { return *this; }
 
@@ -200,6 +204,8 @@ CDownload* CDownload::m_handler = NULL;
 class CLinuxDownload : public CDownload {
 	protected:
 		CLinuxDownload () : CDownload () {}
+
+		virtual ~CLinuxDownload () {}
 
 		CLinuxDownload (CDownload const&) {}
 

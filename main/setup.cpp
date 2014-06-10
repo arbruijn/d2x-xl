@@ -261,9 +261,9 @@ for (int i = 0; i < 3; i++) {
 
 void MoveD2Sounds (void)
 {
-	static char* szOldSoundFolders [] = { "sounds1/d1/", "sounds2/d1/", "sounds1/", "sounds2/", "sounds1/d2x-xl/", "sounds2/d2x-xl/"};
-	static char* pszNewSoundFolders [] = { gameFolders.game.szSounds [3], gameFolders.game.szSounds [3], gameFolders.game.szSounds [1], 
-														gameFolders.game.szSounds [2], gameFolders.game.szSounds [4], gameFolders.game.szSounds [4] };
+	static const char* szOldSoundFolders [] = { "sounds1/d1/", "sounds2/d1/", "sounds1/", "sounds2/", "sounds1/d2x-xl/", "sounds2/d2x-xl/"};
+	static const char* pszNewSoundFolders [] = { gameFolders.game.szSounds [3], gameFolders.game.szSounds [3], gameFolders.game.szSounds [1], 
+																gameFolders.game.szSounds [2], gameFolders.game.szSounds [4], gameFolders.game.szSounds [4] };
 
 	char szSourceFolder [FILENAME_LEN];
 

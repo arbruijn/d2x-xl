@@ -78,7 +78,7 @@ int Fail (const char *fmt, ...)
 va_start (argP, fmt);
 vsprintf (szFailMsg, fmt, argP);
 va_end (argP);
-MsgBox (NULL, NULL, BG_STANDARD, 1, "OK", "UDP Error\n\n%s", szFailMsg);
+InfoBox (NULL, NULL, BG_STANDARD, 1, "OK", "UDP Error\n\n%s", szFailMsg);
 return 1;
 }
 

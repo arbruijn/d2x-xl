@@ -430,10 +430,8 @@ if (!m_sides [nSide].FaceCount ())
 
 CWall* wallP = m_sides [nSide].Wall ();
 
-#if DBG
 BRP (objP && (objP->Index () == nDbgObj));
 BRP ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)));
-#endif
 
 if (!objP) 
 	return wallP ? wallP->IsDoorWay (NULL, bIgnoreDoors) : WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG;
@@ -471,11 +469,7 @@ if (nChild == -2)
 CWall* wallP = m_sides [nSide].Wall ();
 CSegment* childP = SEGMENTS + nChild;
 
-#if DBG
-if (objP && (objP->Index () == nDbgObj))
-	nDbgObj = nDbgObj;
 BRP ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)));
-#endif
 
 if ((objP == gameData.objs.consoleP) &&
 	 gameData.objs.speedBoost [objP->Index ()].bBoosted &&
