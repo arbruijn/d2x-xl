@@ -88,7 +88,7 @@ pthread_t			threadId;
 pthread_mutex_t	mutex;
 #endif
 
-#define MAKE_WAV	0
+#define MAKE_WAV	1
 #if MAKE_WAV
 #	define	WAVINFO_SIZE	sizeof (tWAVInfo)
 #else
@@ -273,7 +273,7 @@ infoP->format.format = 1; //PCM
 infoP->format.channels = 2;
 infoP->format.sampleRate = SAMPLE_RATE_22K;
 infoP->format.bitsPerSample = (audio.Format () == AUDIO_U8) ? 8 : 16;
-infoP->format.blockAlign = infoP->format.channels * (infoP->format.bitsPerSample / 8);
+infoP->format.blockAlign = infoP->format.channels * ((infoP->format.bitsPerSample + 7) / 8);
 infoP->format.avgBytesPerSec = infoP->format.sampleRate * infoP->format.blockAlign;
 
 memcpy (infoP->data.chunkID, "data", 4);
@@ -287,7 +287,11 @@ infoP->data.chunkSize = nLength;
 static int ResampleFormat (ushort *destP, ubyte* srcP, int nSrcLen)
 {
 for (int i = nSrcLen; i; i--)
-	*destP++ = ushort (float (*srcP++) * 32767.0f / 255.0f);
+#if 1 
+	*destP++ = ushort (*srcP++) * 128;
+#else
+	*destP++ = ushort (float (*srcP++) * (32767.0f / 255.0f));
+#endif
 return nSrcLen;
 }
 
@@ -365,14 +369,14 @@ if (soundP->bCustom)
 l = soundP->nLength [soundP->bCustom];
 i = gameOpts->sound.audioSampleRate / gameOpts->sound.soundSampleRate;
 h = l * 2 * i;
-if (audio.Format () == AUDIO_S16LSB)
+if (audio.Format () == AUDIO_S16SYS)
 	h *= 2;
 
 if (!m_info.sample.Create (h + WAVINFO_SIZE))
 	return -1;
 m_info.bResampled = 1;
 
-if (audio.Format () == AUDIO_S16LSB) {
+if (audio.Format () == AUDIO_S16SYS) {
 	ushort* bufP = reinterpret_cast<ushort*> (m_info.sample.Buffer () + WAVINFO_SIZE);
 	l = ResampleFormat (bufP, soundP->data [soundP->bCustom].Buffer (), l);
 	for (; i > 1; i >>= 1)
@@ -390,7 +394,7 @@ else {
 	}
 
 #if MAKE_WAV
-SetupWAVInfo (m_info.sample.Buffer (), l);
+SetupWAVInfo (m_info.sample.Buffer (), h);
 #endif
 return m_info.nLength = h;
 }
@@ -570,14 +574,15 @@ if (gameOpts->sound.bUseSDLMixer) {
 			return -1;
 		}
 	else {
-		int l;
-		if (soundP->bHires) {
-			l = soundP->nLength [soundP->bCustom];
+		if (!gameOpts->sound.bHires [0]) 
+			m_info.mixChunkP = Mix_QuickLoad_RAW (reinterpret_cast<Uint8*> (soundP->data [soundP->bCustom].Buffer ()), soundP->nLength [soundP->bCustom]);
+		else if (soundP->bHires) {
+			int l = soundP->nLength [soundP->bCustom];
 			m_info.sample.SetBuffer (soundP->data [soundP->bCustom].Buffer (), 1, l);
 			m_info.mixChunkP = Mix_QuickLoad_WAV (reinterpret_cast<Uint8*> (m_info.sample.Buffer ()));
 			}
 		else {
-			l = Resample (soundP, (gameStates.sound.bD1Sound || gameStates.app.bDemoData) && (gameOpts->sound.audioSampleRate != SAMPLE_RATE_11K), songManager.MP3 ());
+			int l = Resample (soundP, (gameStates.sound.bD1Sound || gameStates.app.bDemoData) && (gameOpts->sound.audioSampleRate != SAMPLE_RATE_11K), songManager.MP3 ());
 			if (l <= 0)
 				return -1;
 			if (nSpeed < I2X (1))
@@ -674,7 +679,7 @@ CAudio::CAudio ()
 {
 memset (&m_info, 0, sizeof (m_info));
 #if 0
-m_info.nFormat = AUDIO_S16LSB; 
+m_info.nFormat = AUDIO_S16SYS; 
 #else
 m_info.nFormat = AUDIO_U8;
 #endif
@@ -785,11 +790,11 @@ if (gameOpts->sound.bUseSDLMixer) {
 	else 
 #endif
 	if (gameOpts->UseHiresSound ())
-		h = Mix_OpenAudio (int ((gameOpts->sound.audioSampleRate = SAMPLE_RATE_44K) / fSlowDown), m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE);
+		h = Mix_OpenAudio (int ((gameOpts->sound.audioSampleRate = SAMPLE_RATE_44K) / fSlowDown), m_info.nFormat = AUDIO_S16SYS, 2, SOUND_BUFFER_SIZE);
 	else if (songManager.MP3 ())
-		h = Mix_OpenAudio (32000, m_info.nFormat = AUDIO_S16LSB, 2, SOUND_BUFFER_SIZE * 10);
+		h = Mix_OpenAudio (32000, m_info.nFormat = AUDIO_S16SYS, 2, SOUND_BUFFER_SIZE * 10);
 	else 
-		h = Mix_OpenAudio (int (gameOpts->sound.audioSampleRate / fSlowDown), m_info.nFormat, 2, SOUND_BUFFER_SIZE);
+		h = Mix_OpenAudio (int ((gameOpts->sound.audioSampleRate = SAMPLE_RATE_22K) / fSlowDown), m_info.nFormat = AUDIO_U8, 1, SOUND_BUFFER_SIZE);
 	if (h < 0)
 		return 1;
 #if 1

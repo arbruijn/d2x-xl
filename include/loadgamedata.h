@@ -101,6 +101,7 @@ void FreeModelExtensions (void);
 int LoadRobotReplacements (const char *pszLevel, const char* pszFolder, int bAddBots, int bOnlyModels, bool bCustom = false, bool bUseHog = true);
 int ReadHamFile (bool bDefault = true);
 int LoadD2Sounds (bool bCustom = false);
+void UnloadSounds (int bD1);
 void _CDECL_ FreeObjExtensionBitmaps (void);
 
 void InitDefaultShipProps (void);

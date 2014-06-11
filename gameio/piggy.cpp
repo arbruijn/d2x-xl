@@ -989,26 +989,12 @@ return bmP;
 
 void _CDECL_ PiggyClose (void)
 {
-	int				i, j;
-	CSoundSample*	dsP;
-
-PrintLog (1, "unloading textures\n");
+PrintLog (1, "unloading sounds and textures\n");
 PiggyCloseFile ();
 PrintLog (-1);
-PrintLog (1, "unloading sounds\n");
-for (i = 0; i < 2; i++) {
-	for (j = 0, dsP = gameData.pig.sound.sounds [i].Buffer (); j < MAX_SOUND_FILES; j++, dsP++)
-		if (dsP->bHires) {
-			dsP->data [0].Destroy ();
-			dsP->bHires = 0;
-			}
-		else if (dsP->bCustom) {
-			dsP->data [1].Destroy ();
-			dsP->bCustom = 0;
-			}
-	gameData.pig.sound.data [i].Destroy ();
+for (int i = 0; i < 2; i++) {
+	UnloadSounds (i);
 	bitmapNames [i].Destroy ();
-	soundNames [i].Destroy ();
 	}
 PrintLog (-1);
 }

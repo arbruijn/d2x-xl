@@ -264,10 +264,6 @@ for (i = 0; i < nSounds; i++) {
 		nLoadedSounds [0]++;
 		}
 	memcpy (soundP->szName, szSoundName, sizeof (soundP->szName));
-#if DBG
-	if (strstr (soundP->szName, "dexp"))
-		soundP = soundP;
-#endif
 	soundP->bCustom = 0;
 	if (!bCustom)
 		PiggyRegisterSound (szSoundName, 1, bCustom);
@@ -343,6 +339,25 @@ for (int i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission]; i; i--,
 	}
 }
 
+
+//------------------------------------------------------------------------------
+
+void UnloadSounds (int bD1)
+{
+PrintLog (1, "unloading sounds\n");
+CSoundSample* soundP = gameData.pig.sound.sounds [bD1].Buffer ();
+for (int j = 0; j < MAX_SOUND_FILES; j++, soundP++)
+	if (soundP->bHires) {
+		soundP->data [0].Destroy ();
+		soundP->bHires = 0;
+		}
+	else if (soundP->bCustom) {
+		soundP->data [1].Destroy ();
+		soundP->bCustom = 0;
+		}
+soundNames [bD1].Destroy ();
+}
+
 //------------------------------------------------------------------------------
 
 int LoadD2Sounds (bool bCustom)
@@ -360,8 +375,12 @@ if (!(gameData.pig.sound.nType || bCustom))
 
 if (gameStates.app.bNostalgia)
 	gameOpts->sound.bHires [0] = 0;
+#if 0
+else if (gameOpts->sound.bHires [0] < 0)
+	gameOpts->sound.bHires [0] = 0;
 else
 	gameOpts->sound.bHires [0] = gameOpts->sound.bHires [1];
+#endif
 if (bCustom) {
 	if (!*gameFolders.mods.szName)
 		return 0;
@@ -400,13 +419,20 @@ else {
 
 	nLoadedSounds = SetupSounds (cf, nSounds, (int) cf.Tell (), bCustom, bUseLowRes);
 #if 1
-	if (gameOpts->sound.bHires [0] && ((nLoadedSounds & 0xFFFF))) // loaded some low res sounds because the corresponding hires sounds weren't found
-		gameOpts->sound.bHires [0] = 0;
+	
+	if (bCustom) {
+		if (!(nLoadedSounds & 0xFFFF))	// -> all default sounds are hires
+			gameOpts->sound.bHires [0] = 0;
+		}
+	else { 
+		if (nLoadedSounds & 0xFFFF)	// -> not all default sounds are hires
+			gameOpts->sound.bHires [0] = gameOpts->sound.bHires [1];
+		}
 #else
 	if (bCustom)
 		gameOpts->sound.bHires [0] = (nLoadedSounds & 0xffff) ? 0 : 2;
 	else if (gameOpts->sound.bHires [0] && ((nLoadedSounds >> 16) == 0))
-		gameOpts->sound.bHires [0] = 0;
+		gameOpts->sound.bHires [0] = gameOpts->sound.bHires [1] = 0;
 #endif
 	}
 
