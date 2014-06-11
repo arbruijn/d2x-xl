@@ -199,7 +199,7 @@ else
         :,
         AC_MSG_ERROR(SDL not found. Make sure sdl-config is in your PATH, or specify with --with-sdl-prefix)
     )
-    CFLAGS="$SDL_CFLAGS $CFLAGS"
+    CFLAGS="$SDL_CFLAGS -I /usr/include/SDL $CFLAGS"
     CXXFLAGS="$SDL_CFLAGS $CXXFLAGS"
     LIBS="$SDL_LIBS $LIBS"
 

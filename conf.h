@@ -11,7 +11,7 @@
 #define D2XMAJOR 1
 
 /* d2x micro version */
-#define D2XMICRO 34
+#define D2XMICRO 35
 
 /* d2x minor version */
 #define D2XMINOR 17
@@ -78,7 +78,7 @@
 #define NATIVE_IPX /**/
 
 /* Define to disable asserts, int3, etc. */
-#define NDEBUG /**/
+/* #undef NDEBUG */
 
 /* Define if you want a network build */
 #define NETWORK /**/
@@ -102,7 +102,7 @@
 #define PACKAGE_NAME "d2x-xl"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "d2x-xl 1.17.34"
+#define PACKAGE_STRING "d2x-xl 1.17.35"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "d2x-xl"
@@ -111,10 +111,10 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.17.34"
+#define PACKAGE_VERSION "1.17.35"
 
 /* Define for a "release" build */
-#define RELEASE /**/
+/* #undef RELEASE */
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -135,7 +135,7 @@
 #define USE_SDL_NET 1
 
 /* Version number of package */
-#define VERSION "1.17.34"
+#define VERSION "1.17.35"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
@@ -153,12 +153,12 @@
 /* #undef WORDS_NEED_ALIGNMENT */
 
 /* Define to enable asserts, int3, etc. */
-/* #undef _DEBUG */
+#define _DEBUG /**/
 
 
         /* General defines */
 #ifndef PACKAGE_STRING
-#define PACKAGE_STRING "d2x-xl 1.17.34"
+#define PACKAGE_STRING "d2x-xl 1.17.35"
 #endif
 #define VERSION_NAME PACKAGE_STRING
 #define NMONO 1

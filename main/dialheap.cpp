@@ -2,6 +2,7 @@
 // Heap management for Dijkstra Address Calculation Sort shortest path determination
 
 #include "dialheap.h"
+#include "error.h"
 
 #define SPARSE_RESET 1
 #define FAST_SCAN 1
