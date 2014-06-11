@@ -360,6 +360,25 @@ soundNames [bD1].Destroy ();
 
 //------------------------------------------------------------------------------
 
+bool VerifyHiresSound (bool bCustom, int nLoadedSounds)
+{
+if (bCustom) {
+	if (!(nLoadedSounds & 0xFFFF)) {	// -> all default sounds are hires
+		gameOpts->sound.bHires [0] = gameOpts->sound.bHires [1];
+		}
+	}
+else if (gameOpts->sound.bHires [0]) { 
+	if (nLoadedSounds & 0xFFFF) {	// -> not all default sounds are hires
+		gameOpts->sound.bHires [0] = 0;
+		audio.Reset ();
+		return false;
+		}
+	}
+return true;
+}
+
+//------------------------------------------------------------------------------
+
 int LoadD2Sounds (bool bCustom)
 {
 if (!(gameData.pig.sound.nType || bCustom))
@@ -418,16 +437,10 @@ else {
 	nSounds = cf.ReadInt ();
 
 	nLoadedSounds = SetupSounds (cf, nSounds, (int) cf.Tell (), bCustom, bUseLowRes);
+
 #if 1
-	
-	if (bCustom) {
-		if (!(nLoadedSounds & 0xFFFF))	// -> all default sounds are hires
-			gameOpts->sound.bHires [0] = 0;
-		}
-	else { 
-		if (nLoadedSounds & 0xFFFF)	// -> not all default sounds are hires
-			gameOpts->sound.bHires [0] = gameOpts->sound.bHires [1];
-		}
+	if (!VerifyHiresSound (bCustom, nLoadedSounds))
+		return LoadD2Sounds (bCustom);
 #else
 	if (bCustom)
 		gameOpts->sound.bHires [0] = (nLoadedSounds & 0xffff) ? 0 : 2;
@@ -439,6 +452,38 @@ else {
 LoadSounds (cf, false);
 cf.Close ();
 return nLoadedSounds != 0;
+}
+
+//------------------------------------------------------------------------------
+
+bool LoadD1Sounds (bool bCustom)
+{
+	int	nBmHdrOffs, nBmDataOffs, nSounds, nBitmaps;
+
+if (cfPiggy [1].File ())
+	cfPiggy [1].Seek (0, SEEK_SET);
+else if (!cfPiggy [1].Open (D1_PIGFILE, gameFolders.game.szData [0], "rb", 0)) {
+	Warning (D1_PIG_LOAD_FAILED);
+	return false;
+	}
+LoadD1PigHeader (cfPiggy [1], &nSounds, &nBmHdrOffs, &nBmDataOffs, &nBitmaps, 1);
+if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data) {
+	gameStates.app.bD1Data = 1;
+	SetDataVersion (1);
+	SetD1Sound ();
+	if ((gameData.pig.sound.nType != 1) || gameStates.app.bCustomSounds || bCustom) {
+		if (bCustom)
+			sprintf (gameFolders.mods.szSounds [1], "%s/slevel%02d", gameFolders.mods.szSounds [0], abs (missionManager.nCurrentLevel));
+		int nLoadedSounds = SetupSounds (cfPiggy [1], nSounds, nBmHdrOffs + nBitmaps * PIGBITMAPHEADER_D1_SIZE, bCustom, false);
+		if (!VerifyHiresSound (bCustom, nLoadedSounds))
+			return LoadD1Sounds (bCustom);
+		LoadSounds (cfPiggy [1]);
+		gameData.pig.sound.nType = 1;
+		if (gameStates.sound.bD1Sound)
+			gameOpts->sound.soundSampleRate = SAMPLE_RATE_11K;
+		}
+	}
+return nSounds > 0;
 }
 
 //------------------------------------------------------------------------------

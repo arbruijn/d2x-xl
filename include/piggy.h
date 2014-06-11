@@ -211,7 +211,6 @@ void piggy_new_pigfile (const char *pigname);
 void LoadReplacementBitmaps (const char *level_name);
 //if descent.pig exists, loads descent 1 texture bitmaps
 void LoadD1Textures (void);
-bool LoadD1Sounds (bool bCustom);
 
 /*
  * reads a tBitmapIndex structure from a CFILE
@@ -248,6 +247,9 @@ void PiggyCriticalError (void);
 void swap_0_255 (CBitmap *bmP);
 
 #define HIRES_SOUND_FOLDER(_bD1)		((_bD1) ? 3 : gameOpts->UseHiresSound ())
+
+#define D1_PIG_LOAD_FAILED "Failed loading " D1_PIGFILE
+
 
 //------------------------------------------------------------------------------
 
@@ -305,6 +307,8 @@ void LoadGameBackground (void);
 char* DefaultPigFile (int bDemoData = 0);
 char* DefaultHamFile (void);
 char* DefaultSoundFile (void);
+
+void LoadD1PigHeader (CFile& cf, int *pSoundNum, int *pBmHdrOffs, int *pBmDataOffs, int *pBitmapNum, int bReadTMapNums);
 
 //------------------------------------------------------------------------------
 

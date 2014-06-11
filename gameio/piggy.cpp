@@ -713,9 +713,6 @@ short D2IndexForD1Index (short d1_index)
 
 void LoadD1PigHeader (CFile& cf, int *pSoundNum, int *pBmHdrOffs, int *pBmDataOffs, int *pBitmapNum, int bReadTMapNums)
 {
-
-#	define D1_PIG_LOAD_FAILED "Failed loading " D1_PIGFILE
-
 	int	nPigDataStart,
 			nHeaderSize,
 			nBmHdrOffs,
@@ -764,36 +761,6 @@ if (pSoundNum)
 CBitmap bmTemp;
 
 #define D1_BITMAPS_SIZE (128 * 1024 * 1024)
-
-//------------------------------------------------------------------------------
-
-bool LoadD1Sounds (bool bCustom)
-{
-	int	nBmHdrOffs, nBmDataOffs, nSounds, nBitmaps;
-
-if (cfPiggy [1].File ())
-	cfPiggy [1].Seek (0, SEEK_SET);
-else if (!cfPiggy [1].Open (D1_PIGFILE, gameFolders.game.szData [0], "rb", 0)) {
-	Warning (D1_PIG_LOAD_FAILED);
-	return false;
-	}
-LoadD1PigHeader (cfPiggy [1], &nSounds, &nBmHdrOffs, &nBmDataOffs, &nBitmaps, 1);
-if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data) {
-	gameStates.app.bD1Data = 1;
-	SetDataVersion (1);
-	SetD1Sound ();
-	if ((gameData.pig.sound.nType != 1) || gameStates.app.bCustomSounds || bCustom) {
-		if (bCustom)
-			sprintf (gameFolders.mods.szSounds [1], "%s/slevel%02d", gameFolders.mods.szSounds [0], abs (missionManager.nCurrentLevel));
-		SetupSounds (cfPiggy [1], nSounds, nBmHdrOffs + nBitmaps * PIGBITMAPHEADER_D1_SIZE, bCustom, false);
-		LoadSounds (cfPiggy [1]);
-		gameData.pig.sound.nType = 1;
-		if (gameStates.sound.bD1Sound)
-			gameOpts->sound.soundSampleRate = SAMPLE_RATE_11K;
-		}
-	}
-return nSounds > 0;
-}
 
 //------------------------------------------------------------------------------
 
