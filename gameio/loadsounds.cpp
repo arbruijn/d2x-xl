@@ -257,6 +257,8 @@ for (i = 0; i < nSounds; i++) {
 		soundP->nOffset [0] = 0;
 		}
 	else {
+		if (!bUseLowRes)
+			PrintLog (0, "Couldn't find hires sound %s.wav.\n", szSoundName);
 		soundP->bHires = 0;
 		soundP->nLength [0] = sndh.length;
 		soundP->data [0].Create (sndh.length);
