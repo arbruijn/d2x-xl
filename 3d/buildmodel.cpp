@@ -130,7 +130,7 @@ void CModel::Destroy (void)
 {
 #if DBG
 if (m_nModel > -1)
-	m_nModel = m_nModel;
+	BRP;
 if ((nDbgModel >= 0) && (m_nModel == nDbgModel))
 	BRP;
 #endif

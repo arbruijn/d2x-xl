@@ -1125,9 +1125,9 @@ for (nLights = 0;
 	if (faceP - FACES == nDbgFace)
 		BRP;
 	if ((psl->nTarget < 0) && (-psl->nTarget - 1 != faceP->m_info.nSegment))
-		faceP = faceP;
+		BRP;
 	else if ((psl->nTarget > 0) && (psl->nTarget != faceP - FACES + 1))
-		faceP = faceP;
+		BRP;
 	if (!psl->nTarget)
 		psl = psl;
 #endif

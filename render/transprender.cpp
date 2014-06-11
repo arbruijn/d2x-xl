@@ -792,7 +792,7 @@ if (m_data.bAllowAdd > 0)
 	m_data.zMax = zMax;
 #if DBG
 	if (zMax < 0)
-		zMax = zMax;
+		BRP;
 #endif
 	m_data.zScale = (double) (ITEM_DEPTHBUFFER_SIZE - 1) / (double) (m_data.zMax * sqrt (double (gameStates.app.nThreads)));
 	if (m_data.zScale < 0.0)
@@ -1104,7 +1104,7 @@ if (bmP)
 	bmP = bmP->Override (-1);
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	faceP = faceP;
+	BRP;
 #endif
 triP = FACES.tris + faceP->m_info.nTriIndex;
 for (h = faceP->m_info.nTris; h; h--, triP++) {
@@ -1142,7 +1142,7 @@ if (bmP)
 	bmP = bmP->Override (-1);
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
-	faceP = faceP;
+	BRP;
 #endif
 for (i = 0, j = faceP->m_info.nIndex; i < 4; i++, j++) {
 #if 1
@@ -1543,7 +1543,7 @@ prevP = NULL;
 do {
 #if DBG
 	if (currentP->nItem == nDbgItem)
-		nDbgItem = nDbgItem;
+		BRP;
 #endif
 	buffer.nItems [0]--;
 #if 0

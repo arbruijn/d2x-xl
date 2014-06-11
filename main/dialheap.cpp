@@ -86,7 +86,7 @@ if (nNewCost >= nOldCost)
 
 #if DBG
 if (!nNewCost)
-	nNewCost = nNewCost;
+	BRP;
 #endif
 
 	ushort nIndex = ushort (nNewCost & 0xFFFF);

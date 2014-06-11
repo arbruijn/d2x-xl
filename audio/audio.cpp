@@ -192,7 +192,7 @@ if (m_info.bPlaying) {
 		m_info.nVolume = nVolume;
 #if DBG
 		if (nVolume == 0)
-			nVolume = nVolume;
+			BRP;
 #endif
 #if USE_SDL_MIXER
 		if (gameOpts->sound.bUseSDLMixer)
@@ -224,7 +224,7 @@ void CAudioChannel::Stop (void)
 audio.UnregisterChannel (m_info.nIndex);
 #if DBG
 if (m_info.nChannel == nDbgChannel)
-	nDbgChannel = nDbgChannel;
+	BRP;
 #endif
 m_info.nIndex = -1;
 m_info.bPlaying = 0;
@@ -507,7 +507,7 @@ if (!(pszWAV && *pszWAV && gameOpts->sound.bUseSDLMixer)) {
 	}
 #if DBG
 if ((nDbgSound >= 0) && (nSound == nDbgSound))
-	nDbgSound = nDbgSound;
+	BRP;
 #endif
 if (m_info.bPlaying) {
 	SetPlaying (0);
@@ -889,7 +889,7 @@ if (gameStates.sound.bDynamic && m_info.bAvailable) {
 	int nVolume = m_info.nVolume [0];
 	SetFxVolume (0);
 	m_info.nVolume [0] = nVolume;
-	m_info.bAvailable = 0;
+	//m_info.bAvailable = 0;
 	Close ();
 	}
 }

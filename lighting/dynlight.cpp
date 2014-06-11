@@ -337,7 +337,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 if ((nDbgObj >= 0) && (nObject == nDbgObj))
 	BRP;
 if (colorP && ((colorP->Red () > 1) || (colorP->Green () > 1) || (colorP->Blue () > 1)))
-	colorP = colorP;
+	BRP;
 #endif
 
 if (gameStates.render.nLightingMethod && (nSegment >= 0) && (nSide >= 0)) {

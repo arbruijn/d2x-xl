@@ -69,7 +69,7 @@ static inline int NetworkFilterObject (CObject *objP)
 	short t = objP->info.nType;
 #if DBG
 if (t == nDbgObjType)
-	nDbgObjType = nDbgObjType;
+	BRP;
 #endif
 if (t >= MAX_OBJECT_TYPES)
 	return 1;
