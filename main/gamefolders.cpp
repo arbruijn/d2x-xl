@@ -233,7 +233,7 @@ return
 	MakeFolder (gameFolders.var.szLightmaps, gameFolders.var.szCache, LIGHTMAP_FOLDER) &&
 	MakeFolder (gameFolders.var.szLightData, gameFolders.var.szCache, LIGHTDATA_FOLDER) &&
 	MakeFolder (gameFolders.var.szMeshes, gameFolders.var.szCache, MESH_FOLDER) &&
-	MakeFolder (gameFolders.mods.szRoot, gameFolders.var.szRoot, MOD_FOLDER) &&
+	MakeFolder (gameFolders.mods.szRoot, gameFolders.var.szCache, MOD_FOLDER) &&
 	MakeFolder (gameFolders.mods.szCache, gameFolders.var.szCache, MOD_FOLDER) &&
 	MakeTexSubFolders (gameFolders.var.szTextures [1]) &&
 	MakeTexSubFolders (gameFolders.var.szTextures [2]) &&
@@ -402,7 +402,7 @@ MakeFolder (gameFolders.user.szWallpapers, gameFolders.user.szCache, WALLPAPER_F
 #endif
 
 if (!MakeSharedDataFolders () && strcmp (gameFolders.var.szCache, gameFolders.user.szCache)) {
-	strcpy (gameFolders.user.szCache, gameFolders.var.szCache);
+	strcpy (gameFolders.var.szCache, gameFolders.user.szCache);
 	MakeSharedDataFolders ();
 	}
 }
