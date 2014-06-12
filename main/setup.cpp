@@ -396,6 +396,8 @@ static void CreateFileListMessage (char* szMsg, tFileDesc* fileList, int nFiles,
 for (int i = 0, j = -1; i < nFiles; i++) {
 	if (/*DBG ||*/ !(fileList [i].bFound || fileList [i].bOptional)) {
 		for (int h = 0; h < 2; h++) {
+			if (!*fileList [i].pszFolders [h])
+				continue;
 			if (bShowFolders && ((j < 0) || strcmp (fileList [i].pszFolders [h], fileList [j].pszFolders [h]))) {
 				j = i;
 				if (!bFirst) {
