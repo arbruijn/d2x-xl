@@ -1,6 +1,7 @@
 // DialHeap.cpp
 // Heap management for Dijkstra Address Calculation Sort shortest path determination
 
+#include "error.h"
 #include "dialheap.h"
 #include "error.h"
 
