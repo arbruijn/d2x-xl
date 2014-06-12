@@ -930,10 +930,10 @@ switch (m_list [nMission].location) {
 		*szFolder = '\0';
 		break;
 	case ML_MSNROOTDIR:
-		sprintf (szFolder, "%s%s", gameFolders.missions.szRoot, *gameFolders.missions.szRoot ? "/" : "");
+		strcpy (szFolder, gameFolders.missions.szRoot);
 		break;
 	case ML_DATADIR:
-		sprintf (szFolder, "%s%s", gameFolders.game.szData [0], *gameFolders.game.szData [0] ? "/" : "");
+		strcpy (szFolder, gameFolders.game.szData [0]);
 		break;
 	}
 sprintf (szFile, "%s%s", m_list [nMission].filename, (m_list [nMission].nDescentVersion == 2) ? ".mn2" : ".msn");

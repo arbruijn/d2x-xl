@@ -1036,9 +1036,7 @@ for (;;) {
 		break;
 	if (strstr (hogFileManager.AltFiles ().szName, ".hog"))
 		break;
-	sprintf (szHogName, "%s%s%s%s",
-				gameFolders.missions.szRoot, *gameFolders.missions.szRoot ? "/" : "",
-				gameFolders.missions.szSubFolder, pszLevelName);
+	sprintf (szHogName, "%s%s%s", gameFolders.missions.szRoot, gameFolders.missions.szSubFolder, pszLevelName);
 	if (!hogFileManager.UseMission (szHogName))
 		break;
 	bRetry = 1;

@@ -145,7 +145,7 @@ int CHogFile::Setup (const char *pszFile, const char *folder, tHogFile *hogFiles
 if (*folder) {
 	char filename [FILENAME_LEN], extension [FILENAME_LEN];
 	CFile::SplitPath (pszFile, NULL, filename, extension);
-	sprintf (fn, "%s/%s%s", folder, filename, extension);
+	sprintf (fn, "%s%s%s", folder, filename, extension);
 	pszFile = fn;
 	}
 *nFiles = 0;
@@ -301,7 +301,7 @@ if (! (hogP->bInitialized && *hogFilename))
 if (*folder) {
 	char fn [FILENAME_LEN];
 
-	sprintf (fn, "%s/%s", folder, hogP->szName);
+	sprintf (fn, "%s%s", folder, hogP->szName);
 	hogFilename = fn;
 	}
 if ((phf = BinSearch (hogP->files, hogP->nFiles, name))) {
