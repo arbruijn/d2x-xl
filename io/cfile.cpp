@@ -337,7 +337,7 @@ int CFile::MkDir (const char *pathname)
 #if defined (_WIN32_WCE) || defined (_WIN32)
 return CreateDirectory (pathname, NULL) ? 0 : -1;
 #else
-return mkdir (pathname, 0755);
+return mkdir (pathname, 0666); // rw-rw-rw-
 #endif
 }
 
@@ -458,7 +458,7 @@ if (m_info.bufPos >= m_info.bufLen) {
 	if (h > sizeof (m_info.buffer))
 		h = sizeof (m_info.buffer);
 	m_info.bufPos = 0;
-	m_info.bufLen = int (this->Read (m_info.buffer, 1, h));
+	m_info.bufLen = int (Read (m_info.buffer, 1, h));
 	m_info.rawPosition = ftell (m_info.file) - m_info.libOffset;
 	if (m_info.bufLen < (int) h)
 		m_info.size = m_info.rawPosition;
@@ -540,8 +540,8 @@ size_t CFile::ReadCompressed (const void* buf, uint bufLen)
 {
 //PrintLog (0, "ReadCompressed: %d bytes @ %d\n", bufLen, (int) m_info.rawPosition);
 uLongf nSize, nCompressedSize;
-size_t h = this->Read (&nSize, 1, sizeof (nSize), -1);
-h += this->Read (&nCompressedSize, 1, sizeof (nCompressedSize), -1);
+size_t h = Read (&nSize, 1, sizeof (nSize), -1);
+h += Read (&nCompressedSize, 1, sizeof (nCompressedSize), -1);
 if (h != sizeof (nSize) + sizeof (nCompressedSize)) {
 	// PrintLog (0, "ReadCompressed: error reading buffer sizes\n");
 	return -1;
@@ -555,7 +555,7 @@ if (!compressedBuffer.Create (nCompressedSize)) {
 	// PrintLog (0, "ReadCompressed: couldn't create decompression buffer\n");
 	return -1;
 	}
-if (this->Read (compressedBuffer.Buffer (), sizeof (ubyte), nCompressedSize, -1) != nCompressedSize) {
+if (Read (compressedBuffer.Buffer (), sizeof (ubyte), nCompressedSize, -1) != nCompressedSize) {
 	// PrintLog (0, "ReadCompressed: error reading data\n");
 	return -1;
 	}
@@ -640,7 +640,7 @@ int CFile::ReadInt (void)
 {
 	int32_t i;
 
-this->Read (&i, sizeof (i), 1);
+Read (&i, sizeof (i), 1);
 //Error ("Error reading int in CFile::ReadInt ()");
 return INTEL_INT (i);
 }
@@ -651,7 +651,7 @@ uint CFile::ReadUInt (void)
 {
 	uint32_t i;
 
-this->Read (&i, sizeof (i), 1);
+Read (&i, sizeof (i), 1);
 //Error ("Error reading int in CFile::ReadInt ()");
 return INTEL_INT (i);
 }
@@ -662,7 +662,7 @@ short CFile::ReadShort (void)
 {
 	int16_t s;
 
-this->Read (&s, sizeof (s), 1);
+Read (&s, sizeof (s), 1);
 //Error ("Error reading short in CFile::ReadShort ()");
 return INTEL_SHORT (s);
 }
@@ -673,7 +673,7 @@ ushort CFile::ReadUShort (void)
 {
 	uint16_t s;
 
-this->Read (&s, sizeof (s), 1);
+Read (&s, sizeof (s), 1);
 //Error ("Error reading short in CFile::ReadShort ()");
 return INTEL_SHORT (s);
 }
@@ -684,7 +684,7 @@ sbyte CFile::ReadByte (void)
 {
 	sbyte b;
 
-if (this->Read (&b, sizeof (b), 1) != 1)
+if (Read (&b, sizeof (b), 1) != 1)
 	return nCFileError;
 //Error ("Error reading byte in CFile::ReadByte ()");
 return b;
@@ -696,7 +696,7 @@ ubyte CFile::ReadUByte (void)
 {
 	ubyte b;
 
-if (this->Read (&b, sizeof (b), 1) != 1)
+if (Read (&b, sizeof (b), 1) != 1)
 	return nCFileError;
 //Error ("Error reading byte in CFile::ReadByte ()");
 return b;
@@ -708,7 +708,7 @@ float CFile::ReadFloat (void)
 {
 	float f;
 
-this->Read (&f, sizeof (f), 1) ;
+Read (&f, sizeof (f), 1) ;
 //Error ("Error reading float in CFile::ReadFloat ()");
 return INTEL_FLOAT (f);
 }
@@ -720,7 +720,7 @@ double CFile::ReadDouble (void)
 {
 	double d;
 
-this->Read (&d, sizeof (d), 1);
+Read (&d, sizeof (d), 1);
 return INTEL_DOUBLE (d);
 }
 
@@ -730,7 +730,7 @@ fix CFile::ReadFix (void)
 {
 	fix f;
 
-this->Read (&f, sizeof (f), 1) ;
+Read (&f, sizeof (f), 1) ;
 //Error ("Error reading fix in CFile::ReadFix ()");
 return (fix) INTEL_INT ((int) f);
 return f;
@@ -742,7 +742,7 @@ fixang CFile::ReadFixAng (void)
 {
 	fixang f;
 
-this->Read (&f, 2, 1);
+Read (&f, 2, 1);
 //Error ("Error reading fixang in CFile::ReadFixAng ()");
 return (fixang) INTEL_SHORT ((int) f);
 }
@@ -933,7 +933,7 @@ if (! (fp = fopen (szDest, "wb"))) {
 for (h = sizeof (buf), l = m_info.size; l; l -= h) {
 	if (h > l)
 		h = l;
-	this->Read (buf, h, 1);
+	Read (buf, h, 1);
 	fwrite (buf, h, 1, fp);
 	}
 Close ();
@@ -956,7 +956,7 @@ if (!cf.Open (pszDest, gameFolders.user.szSavegames, "wb", 0))
 if (!Open (pszSrc, gameFolders.user.szSavegames, "rb", 0))
 	return -2;
 while (!EoF ()) {
-	int bytes_read = (int) this->Read (buf, 1, COPY_BUF_SIZE);
+	int bytes_read = (int) Read (buf, 1, COPY_BUF_SIZE);
 	if (Error ())
 		::Error (TXT_FILEREAD_ERROR, pszSrc, strerror (errno));
 	Assert (bytes_read == COPY_BUF_SIZE || EoF ());
@@ -985,7 +985,7 @@ if (!Open (filename, folder, "rb", bUseD1Hog))
 nSize = Length ();
 if (!(pData = new char [nSize]))
 	return NULL;
-if (!this->Read (pData, nSize, 1)) {
+if (!Read (pData, nSize, 1)) {
 	delete[] pData;
 	pData = NULL;
 	}
@@ -1065,7 +1065,7 @@ while (!EoF () || (i < h)) {
 		h = m_info.size - m_info.rawPosition;
 		if (h > sizeof (buf))
 			h = sizeof (buf);
-		this->Read (buf, h, 1);
+		Read (buf, h, 1);
 		i = 0;
 		}
 	if (bNewl && !strchr (delims, buf [i]))

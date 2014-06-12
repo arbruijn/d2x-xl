@@ -204,7 +204,7 @@ typedef struct tGameFolders {
 
 int GetAppFolder (const char *szMainFolder, char *szDestFolder, const char *szSubFolder, const char *szFilter);
 char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int nType);
-void MakeTexSubFolders (char* pszParentFolder);
+int MakeTexSubFolders (char* pszParentFolder);
 void MakeModFolders (const char* pszMission, int nLevel = 0);
 void ResetModFolders (void);
 char* FlipBackslash (char* pszFile);

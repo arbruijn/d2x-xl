@@ -81,6 +81,8 @@
 #	define	TEXTURE_FOLDER_D1			"D1"
 #	define	WALLPAPER_FOLDER			"Wallpapers"
 #	define	CACHE_FOLDER				"Cache"
+#	define	SHARED_CACHE_FOLDER			"d2x-xl"
+#	define	USER_CACHE_FOLDER			".d2x-xl"
 #	define	LIGHTMAP_FOLDER			"Lightmaps"
 #	define	LIGHTDATA_FOLDER			"Lights"
 #	define	MESH_FOLDER					"Meshes"
@@ -173,10 +175,12 @@ return GetAppFolder ("", gameFolders.game.szData [0], pszDataRootDir, "descent2.
 int MakeFolder (char* pszAppFolder, const char* pszFolder = "", const char* pszSubFolder = "")
 {
 if (pszSubFolder && *pszSubFolder) {
+#if 0
 	if (!GetAppFolder (pszFolder, pszAppFolder, pszSubFolder, "")) {
 		AppendSlash (pszAppFolder);
 		return 1;
 		}
+#endif
 	if (pszFolder && *pszFolder) {
 		char szFolder [FILENAME_LEN];
 		strcpy (szFolder, pszFolder);
@@ -184,30 +188,56 @@ if (pszSubFolder && *pszSubFolder) {
 		sprintf (pszAppFolder, "%s%s", szFolder, pszSubFolder);
 		}
 	}
-else {
-	FFS	ffs;
-	if (!FFF (pszAppFolder, &ffs, 1))
-		return 1;
-	}
-int i = (*pszAppFolder != '\0') || CFile::MkDir (pszAppFolder);
 AppendSlash (pszAppFolder);
-return i;
+
+FFS	ffs;
+
+if (!FFF (pszAppFolder, &ffs, 1))
+	return 1;
+
+pszAppFolder [strlen (pszAppFolder) - 1] = '\0'; // remove trailing slash
+int nResult = CFile::MkDir (pszAppFolder) > -1;
+AppendSlash (pszAppFolder);
+return nResult;
 }
 
 // ----------------------------------------------------------------------------
 
-void MakeTexSubFolders (char* pszParentFolder)
+int MakeTexSubFolders (char* pszParentFolder)
 {
-if (*pszParentFolder) {
-		static char szTexSubFolders [4][4] = {"256", "128", "64", "dxt"};
+if (!*pszParentFolder)
+	return 0;
 
-		char	szFolder [FILENAME_LEN];
+	static char szTexSubFolders [4][4] = {"256", "128", "64", "dxt"};
 
-	for (int i = 0; i < 4; i++) {
-		sprintf (szFolder, "%s/%s", pszParentFolder, szTexSubFolders [i]);
-		CFile::MkDir (szFolder);
-		}
+	char	szFolder [FILENAME_LEN];
+
+for (int i = 0; i < 4; i++) {
+	sprintf (szFolder, "%s/%s", pszParentFolder, szTexSubFolders [i]);
+	if (CFile::MkDir (szFolder) < 0)
+		return 0;
 	}
+return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+int MakeSharedDataFolders (void)
+{
+return
+	MakeFolder (gameFolders.var.szModels [0], gameFolders.var.szCache, MODEL_FOLDER) &&
+	MakeFolder (gameFolders.var.szTextures [0], gameFolders.var.szCache, TEXTURE_FOLDER) &&
+	MakeFolder (gameFolders.var.szTextures [1], gameFolders.var.szTextures [0], TEXTURE_FOLDER_D2) &&
+	MakeFolder (gameFolders.var.szTextures [2], gameFolders.var.szTextures [0], TEXTURE_FOLDER_D1) &&
+	MakeFolder (gameFolders.var.szDownloads, gameFolders.var.szCache, DOWNLOAD_FOLDER) &&
+	MakeFolder (gameFolders.var.szLightmaps, gameFolders.var.szCache, LIGHTMAP_FOLDER) &&
+	MakeFolder (gameFolders.var.szLightData, gameFolders.var.szCache, LIGHTDATA_FOLDER) &&
+	MakeFolder (gameFolders.var.szMeshes, gameFolders.var.szCache, MESH_FOLDER) &&
+	MakeFolder (gameFolders.mods.szRoot, gameFolders.var.szRoot, MOD_FOLDER) &&
+	MakeFolder (gameFolders.mods.szCache, gameFolders.var.szCache, MOD_FOLDER) &&
+	MakeTexSubFolders (gameFolders.var.szTextures [1]) &&
+	MakeTexSubFolders (gameFolders.var.szTextures [2]) &&
+	MakeTexSubFolders (gameFolders.var.szModels [0]);
 }
 
 // ----------------------------------------------------------------------------
@@ -349,27 +379,9 @@ MakeFolder (gameFolders.game.szSounds [2], gameFolders.game.szSounds [3], SOUND_
 MakeFolder (gameFolders.game.szSounds [3], gameFolders.game.szSounds [0], SOUND_FOLDER_D1);
 MakeFolder (gameFolders.game.szSounds [4], gameFolders.game.szSounds [0], SOUND_FOLDER_D2X);
 
-MakeFolder (gameFolders.var.szModels [0], gameFolders.var.szCache, MODEL_FOLDER);
-
-MakeFolder (gameFolders.var.szTextures [0], gameFolders.var.szCache, TEXTURE_FOLDER);
-MakeFolder (gameFolders.var.szTextures [1], gameFolders.var.szTextures [0], TEXTURE_FOLDER_D2);
-MakeFolder (gameFolders.var.szTextures [2], gameFolders.var.szTextures [0], TEXTURE_FOLDER_D1);
-
-MakeFolder (gameFolders.var.szDownloads, gameFolders.var.szCache, DOWNLOAD_FOLDER);
-MakeFolder (gameFolders.var.szLightmaps, gameFolders.var.szCache, LIGHTMAP_FOLDER);
-MakeFolder (gameFolders.var.szLightData, gameFolders.var.szCache, LIGHTDATA_FOLDER);
-MakeFolder (gameFolders.var.szMeshes, gameFolders.var.szCache, MESH_FOLDER);
-
-MakeFolder (gameFolders.mods.szRoot, gameFolders.var.szRoot, MOD_FOLDER);
-MakeFolder (gameFolders.mods.szCache, gameFolders.var.szCache, MOD_FOLDER);
-
 MakeFolder (gameFolders.missions.szCache, gameFolders.user.szCache, MISSION_FOLDER);
 MakeFolder (gameFolders.missions.szStates, gameFolders.missions.szCache, MISSIONSTATE_FOLDER);
 MakeFolder (gameFolders.missions.szDownloads, gameFolders.missions.szCache, DOWNLOAD_FOLDER);
-
-MakeTexSubFolders (gameFolders.var.szTextures [1]);
-MakeTexSubFolders (gameFolders.var.szTextures [2]);
-MakeTexSubFolders (gameFolders.var.szModels [0]);
 
 #ifdef _WIN32
 #	define PRIVATE_DATA_FOLDER	gameFolders.user.szRoot
@@ -388,6 +400,11 @@ MakeFolder (gameFolders.user.szWallpapers, strcmp (gameFolders.game.szRoot, game
 #else
 MakeFolder (gameFolders.user.szWallpapers, gameFolders.user.szCache, WALLPAPER_FOLDER);
 #endif
+
+if (!MakeSharedDataFolders () && strcmp (gameFolders.var.szCache, gameFolders.user.szCache)) {
+	strcpy (gameFolders.user.szCache, gameFolders.var.szCache);
+	MakeSharedDataFolders ();
+	}
 }
 
 // ----------------------------------------------------------------------------
