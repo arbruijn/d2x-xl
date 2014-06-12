@@ -56,62 +56,62 @@ typedef struct tFileDesc {
 
 static tFileDesc gameFilesD2 [] = {
 	// basic game files
-	{"\002descent.cfg", {"config", ""}, true, true, false},
-	{"\002alien1.pig", {"data", ""}, false, false, false},
-	{"\002alien2.pig", {"data", ""}, false, false, false},
-	{"\002fire.pig", {"data", ""}, false, false, false},
-	{"\002groupa.pig", {"data", ""}, false, false, false},
-	{"\002ice.pig", {"data", ""}, false, false, false},
-	{"\002water.pig", {"data", ""}, false, false, false},
-	{"\002descent2.hog", {"data", ""}, false, false, false},
-	{"\002descent2.ham", {"data", ""}, false, false, false},
-	{"\002descent2.s11", {"data", ""}, false, false, false},
-	{"\002descent2.s22", {"data", ""}, false, false, false},
-	{"\002intro-h.mvl", {"movies", ""}, true, false, false},
-	{"\002intro-l.mvl", {"movies", ""}, true, false, false},
-	{"\002other-h.mvl", {"movies", ""}, true, false, false},
-	{"\002other-l.mvl", {"movies", ""}, true, false, false},
-	{"\002robots-h.mvl", {"movies", ""}, true, false, false},
-	{"\002robots-l.mvl", {"movies", ""}, true, false, false}
+	{"\002descent.cfg", {"config/", ""}, true, true, false},
+	{"\002alien1.pig", {"data/", ""}, false, false, false},
+	{"\002alien2.pig", {"data/", ""}, false, false, false},
+	{"\002fire.pig", {"data/", ""}, false, false, false},
+	{"\002groupa.pig", {"data/", ""}, false, false, false},
+	{"\002ice.pig", {"data/", ""}, false, false, false},
+	{"\002water.pig", {"data/", ""}, false, false, false},
+	{"\002descent2.hog", {"data/", ""}, false, false, false},
+	{"\002descent2.ham", {"data/", ""}, false, false, false},
+	{"\002descent2.s11", {"data/", ""}, false, false, false},
+	{"\002descent2.s22", {"data/", ""}, false, false, false},
+	{"\002intro-h.mvl", {"movies/", ""}, true, false, false},
+	{"\002intro-l.mvl", {"movies/", ""}, true, false, false},
+	{"\002other-h.mvl", {"movies/", ""}, true, false, false},
+	{"\002other-l.mvl", {"movies/", ""}, true, false, false},
+	{"\002robots-h.mvl", {"movies/", ""}, true, false, false},
+	{"\002robots-l.mvl", {"movies/", ""}, true, false, false}
 };
 
 static tFileDesc demoFilesD2 [] = {
 	// Descent 2 demo files
-	{"d2demo.hog", {"data", ""}, false, false, false},
-	{"d2demo.ham", {"data", ""}, false, false, false},
-	{"d2demo.pig", {"data", ""}, false, false, false}
+	{"d2demo.hog", {"data/", ""}, false, false, false},
+	{"d2demo.ham", {"data/", ""}, false, false, false},
+	{"d2demo.pig", {"data/", ""}, false, false, false}
 };
 
 static tFileDesc gameFilesD1 [] = {
 	// Descent 1 game files
-	{"\002descent.pig", {"data", ""}, false, false, false},
-	{"\002descent.hog", {"data", ""}, false, false, false}
+	{"\002descent.pig", {"data/", ""}, false, false, false},
+	{"\002descent.hog", {"data/", ""}, false, false, false}
 };
 
 static tFileDesc vertigoFiles [] = {
 	// Vertigo expansion
-	{"\002hoard.ham", {"data", ""}, false, false, false},
-	{"\002d2x.hog", {"missions", ""}, false, false, false},
-	{"\002d2x.mn2", {"missions", ""}, false, false, false},
-	{"\002d2x-h.mvl", {"movies", ""}, true, false, false},
-	{"\002d2x-l.mvl", {"movies", ""}, true, false, false},
+	{"\002hoard.ham", {"data/", ""}, false, false, false},
+	{"\002d2x.hog", {"missions/", ""}, false, false, false},
+	{"\002d2x.mn2", {"missions/", ""}, false, false, false},
+	{"\002d2x-h.mvl", {"movies/", ""}, true, false, false},
+	{"\002d2x-l.mvl", {"movies/", ""}, true, false, false},
 };
 
 static tFileDesc addonFiles [] = {
 	// D2X-XL addon files
-	{"\002d2x-default.ini", {"config", ""}, false, true, false},
-	{"\002d2x.ini", {"config", ""}, true, true, false},
+	{"\002d2x-default.ini", {"config/", ""}, false, true, false},
+	{"\002d2x.ini", {"config/", ""}, true, true, false},
 
-	{"\002d2x-xl.hog", {"data", ""}, false, false, false},
-	{"\002exit.ham", {"data", ""}, true, false, false},
+	{"\002d2x-xl.hog", {"data/", ""}, false, false, false},
+	{"\002exit.ham", {"data/", ""}, true, false, false},
 
-	{"*.plx", {"profiles", ""}, true, true, false},
-	{"*.plr", {"profiles", ""}, true, true, false},
+	{"*.plx", {"profiles/", ""}, true, true, false},
+	{"*.plr", {"profiles/", ""}, true, true, false},
 
-	{"\002bullet.ase", {"models", ""}, false, false, false},
-	{"\002bullet.tga", {"models", ""}, false, false, false},
+	{"\002bullet.ase", {"models/", ""}, false, false, false},
+	{"\002bullet.tga", {"models/", ""}, false, false, false},
 
-	{"*.sg?", {"savegames", ""}, true, true, false}
+	{"*.sg?", {"savegames/", ""}, true, true, false}
 	};
 
 static tFileDesc addonTextureFiles [] = {
@@ -493,7 +493,7 @@ if (nResult) {
 		CreateFileListMessage (szMsg, addonSoundFiles, int (sizeofa (addonSoundFiles)), true);
 		}
 	if (nResult & (1 | 8)) {
-		strcat (szMsg, "\n\nD2X-XL cannot run because files are missing.\n");
+		strcat (szMsg, "\n\nD2X-XL may not be able to run because files are missing.\n");
 			strcat (szMsg, "\nPlease download the required files. Download locations are\n");
 		if (nResult & 8)
 			strcat (szMsg, " - http://www.descent2.de/d2x.html\n - http://www.sourceforge.net/projects/d2x-xl\n");
