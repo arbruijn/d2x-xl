@@ -78,7 +78,7 @@
 #define NATIVE_IPX /**/
 
 /* Define to disable asserts, int3, etc. */
-#define NDEBUG /**/
+/* #undef NDEBUG */
 
 /* Define if you want a network build */
 #define NETWORK /**/
@@ -114,7 +114,7 @@
 #define PACKAGE_VERSION "1.17.35"
 
 /* Define for a "release" build */
-#define RELEASE /**/
+/* #undef RELEASE */
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -153,7 +153,7 @@
 /* #undef WORDS_NEED_ALIGNMENT */
 
 /* Define to enable asserts, int3, etc. */
-/* #undef _DEBUG */
+#define _DEBUG /**/
 
 
         /* General defines */
