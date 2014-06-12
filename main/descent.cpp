@@ -169,8 +169,14 @@ if (++nErrors > 4)
 
 void D2SetCaption (void)
 {
-#if !defined(__linux__)
-#if USE_IRRLICHT
+#if defined(__linux__)
+
+SDL_WM_SetCaption ("", "D2X-XL");
+
+#else
+
+#	if USE_IRRLICHT
+
 	char		szCaption [200];
 	wchar_t	wszCaption [200];
 	int		i;
@@ -190,7 +196,8 @@ for (i = 0; szCaption [i]; i++)
 	wszCaption [i] = (wchar_t) szCaption [i];
 wszCaption [i] = (wchar_t) 0;
 IRRDEVICE->setWindowCaption (wszCaption);
-#else
+
+#	else
 	char	szCaption [200];
 	strcpy (szCaption, DESCENT_VERSION);
 
@@ -204,8 +211,9 @@ if (*missionManager.szCurrentLevel) {
 	strcat (szCaption, " - ");
 	strcat (szCaption, missionManager.szCurrentLevel);
 	}
-#endif
-SDL_WM_SetCaption (szCaption, "Descent II");
+
+#	endif
+SDL_WM_SetCaption (szCaption, "D2X-XL");
 #endif
 }
 

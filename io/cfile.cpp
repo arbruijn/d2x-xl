@@ -198,7 +198,7 @@ if (!*filename || (strlen (filename) + (folder ? strlen (folder) : 0) >= FILENAM
 	return NULL;
 	}
 if ((*filename != '/') && (strstr (filename, "./") != filename) && folder && *folder) {
-	sprintf (fn, "%s/%s", folder, filename);
+	sprintf (fn, "%s%s", folder, filename);
    pfn = fn;
 	}
  else
@@ -211,7 +211,7 @@ if ((fp = fopen (pfn, mode))) {
 		}
 	}
 else if (gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.game.szAltHogs)) {
-   sprintf (fn, "%s/%s", gameFolders.game.szAltHogs, filename);
+   sprintf (fn, "%s%s", gameFolders.game.szAltHogs, filename);
    pfn = fn;
    fp = fopen (pfn, mode);
 	}

@@ -889,8 +889,10 @@ bool CTriMeshBuilder::Save (int nLevel)
 
 if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
 	return 0;
-if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.var.szMeshes, "wb", 0))
+if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.var.szMeshes, "wb", 0)) {
+	PrintLog (0, "Couldn't save mesh data (check access rights of '%s')\n", gameFolders.var.szMeshes);
 	return 0;
+	}
 bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
 		(gameData.segs.vertices.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint (mdh.nVertices)) &&
 		(gameData.segs.fVertices.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint (mdh.nVertices));
