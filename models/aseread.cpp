@@ -783,6 +783,7 @@ if (m_nModel >= 0)
 	return 0;
 
 if (gameStates.app.bCacheModelData) {
+	Destroy ();
 	try {
 		if ((IsPlayerShip (nModel) || (nModel == COCKPIT_MODEL))
 			 ? ReadBinary (filename, bCustom, cf.Date (filename, gameFolders.var.szModels [bCustom], 0))
@@ -791,13 +792,15 @@ if (gameStates.app.bCacheModelData) {
 		}
 	catch(...) {
 		PrintLog (0, "Compiled model file 'model%03d.bin' is damaged and will be replaced\n", nModel);
-		Destroy ();
 		}
 	}
 
-if (!cf.Open (filename, gameFolders.game.szModels, "rb", 0)) {
+Destroy ();
+if (bCustom 
+	 ? !cf.Open (filename, gameFolders.mods.szModels [bCustom - 1], "rb", 0)
+	 : !cf.Open (filename, gameFolders.game.szModels, "rb", 0))
 	return 0;
-	}
+
 bErrMsg = 0;
 aseFile = &cf;
 Init ();

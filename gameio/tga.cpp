@@ -1007,14 +1007,9 @@ CBitmap* CTGA::ReadModelTexture (const char *pszFile, int bCustom)
 if (!pszFile)
 	return NULL;
 CFile::SplitPath (pszFile, NULL, fn, en);
-#if DBG
-sprintf (m_bmP->Name (), "%s%s", fn, en);
-if (!strcmp (fn, "fusionblobouter2"))
-	pszFile = pszFile;
-#endif
 if (nShrinkFactor > 1) {
 	sprintf (fnBase, "%s.tga", fn);
-	sprintf (szShrunkFolder, "%s/%d", gameFolders.var.szModels [bCustom], 512 / nShrinkFactor);
+	sprintf (szShrunkFolder, "%s%d", gameFolders.var.szModels [bCustom], 512 / nShrinkFactor);
 	tBase = m_cf.Date (fnBase, bCustom ? gameFolders.mods.szModels [0] : gameFolders.game.szModels, 0);
 	tShrunk = m_cf.Date (fnBase, szShrunkFolder, 0);
 	if ((tShrunk > tBase) && Read (fnBase, szShrunkFolder, -1, 1.0, 0)) {
@@ -1022,14 +1017,14 @@ if (nShrinkFactor > 1) {
 		return m_bmP;
 		}
 	}
-if (!(Read (pszFile, bCustom ? gameFolders.mods.szModels [0] : gameFolders.game.szModels, -1, 1.0, 0, false) ||
-	   Read (pszFile, bCustom ? gameFolders.mods.szModels [0] : gameFolders.game.szModels, -1, 1.0, 0, true)))
+if (!(Read (pszFile, bCustom ? gameFolders.mods.szModels [bCustom - 1] : gameFolders.game.szModels, -1, 1.0, 0, false) ||
+	   Read (pszFile, bCustom ? gameFolders.mods.szModels [bCustom - 1] : gameFolders.game.szModels, -1, 1.0, 0, true)))
 	return NULL;
 UseBitmapCache (m_bmP, int (m_bmP->Height ()) * int (m_bmP->RowSize ()));
 if (gameStates.app.bCacheTextures && (nShrinkFactor > 1) &&
 	 (m_bmP->Width () == 512) && Shrink (nShrinkFactor, nShrinkFactor, 1)) {
 	strcat (fn, ".tga");
-	if (!m_cf.Open (fn, bCustom ? gameFolders.mods.szModels [0] : gameFolders.game.szModels, "rb", 0))
+	if (!m_cf.Open (fn, bCustom ? gameFolders.mods.szModels [bCustom - 1] : gameFolders.game.szModels, "rb", 0))
 		return m_bmP;
 	if (m_header.Read (m_cf, NULL))
 		Save (fn, gameFolders.var.szModels [bCustom]);

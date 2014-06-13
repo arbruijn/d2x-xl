@@ -1578,6 +1578,8 @@ if (strncmp (fileId, "PSPO", 4)) {
 	cf.Close ();
 	return 0;
 	}
+
+Destroy ();
 Init ();
 
 m_nModel = nModel;

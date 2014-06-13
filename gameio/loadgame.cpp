@@ -871,12 +871,12 @@ else {
 	PrintLog (-1);
 
 	/*---*/PrintLog (1, "loading replacement models\n");
+	LoadHiresModels (1);
 	if (*gameFolders.mods.szModels [0]) {
-		sprintf (gameFolders.mods.szModels [1], "%s/slevel%02d", gameFolders.mods.szModels [0], abs (missionManager.nCurrentLevel));
+		sprintf (gameFolders.mods.szModels [1], "%sslevel%02d", gameFolders.mods.szModels [0], abs (missionManager.nCurrentLevel));
 		sprintf (gameFolders.var.szModels [2], "%sslevel%02d", gameFolders.var.szModels [1], abs (missionManager.nCurrentLevel));
 		LoadHiresModels (2);
 		}
-	LoadHiresModels (1);
 	PrintLog (-1);
 
 	/*---*/PrintLog (1, "initializing cambot\n");

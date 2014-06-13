@@ -196,7 +196,7 @@ PrintLog (0, "looking for folder '%s' ...", pszAppFolder);
 if (!FFF (pszAppFolder, &ffs, 1)) {
 	PrintLog (0, "found\n");
 	return 1;
-}
+	}
 
 PrintLog (0, "failed\n");
 PrintLog (0, "trying to create folder '%s' ...", pszAppFolder);
@@ -231,7 +231,46 @@ return 1;
 
 // ----------------------------------------------------------------------------
 
-int MakeSharedDataFolders (void)
+int MakeGameFolders (void)
+{
+if (GetAppFolder (gameFolders.game.szRoot, "", "", "")) {
+	Error ("Game data could not be found");
+	return 0;
+	}
+if (GetAppFolder (gameFolders.game.szRoot, gameFolders.missions.szRoot, BASE_MISSION_FOLDER, "")) {
+	Error ("Missions could not be found");
+	return 0;
+	}
+
+MakeFolder (gameFolders.game.szData [0], gameFolders.game.szRoot, DATA_FOLDER);
+MakeFolder (gameFolders.game.szData [1], gameFolders.game.szData [0], "d2x-xl");
+
+MakeFolder (gameFolders.mods.szRoot, gameFolders.game.szRoot, MOD_FOLDER);
+MakeFolder (gameFolders.game.szShaders, gameFolders.game.szRoot, SHADER_FOLDER);
+
+if (!GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szTextures [0], TEXTURE_FOLDER, "")) {
+	if (GetAppFolder (gameFolders.game.szTextures [0], gameFolders.game.szTextures [1], TEXTURE_FOLDER_D2, ""))
+		MakeFolder (gameFolders.game.szTextures [0], gameFolders.game.szTextures [0], TEXTURE_FOLDER_D2); // older D2X-XL installations may have a different D2 texture folder
+	GetAppFolder (gameFolders.game.szTextures [0], gameFolders.game.szTextures [2], TEXTURE_FOLDER_D1, "*.tga");
+	}
+
+GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szMovies, MOVIE_FOLDER, "*.mvl");
+
+if (GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.ase"))
+	GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.oof");
+
+MakeFolder (gameFolders.game.szSounds [0], gameFolders.game.szRoot, SOUND_FOLDER);
+MakeFolder (gameFolders.game.szSounds [3], gameFolders.game.szSounds [0], SOUND_FOLDER_D2); // temp usage
+MakeFolder (gameFolders.game.szSounds [1], gameFolders.game.szSounds [3], SOUND_FOLDER_22KHZ);
+MakeFolder (gameFolders.game.szSounds [2], gameFolders.game.szSounds [3], SOUND_FOLDER_44KHZ);
+MakeFolder (gameFolders.game.szSounds [3], gameFolders.game.szSounds [0], SOUND_FOLDER_D1);
+MakeFolder (gameFolders.game.szSounds [4], gameFolders.game.szSounds [0], SOUND_FOLDER_D2X);
+return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+int MakeSharedFolders (void)
 {
 return
 	MakeFolder (gameFolders.var.szModels [0], gameFolders.var.szCache, MODEL_FOLDER) &&
@@ -242,11 +281,38 @@ return
 	MakeFolder (gameFolders.var.szLightmaps, gameFolders.var.szCache, LIGHTMAP_FOLDER) &&
 	MakeFolder (gameFolders.var.szLightData, gameFolders.var.szCache, LIGHTDATA_FOLDER) &&
 	MakeFolder (gameFolders.var.szMeshes, gameFolders.var.szCache, MESH_FOLDER) &&
-	MakeFolder (gameFolders.mods.szRoot, gameFolders.var.szCache, MOD_FOLDER) &&
-	MakeFolder (gameFolders.mods.szCache, gameFolders.var.szCache, MOD_FOLDER) &&
+	MakeFolder (gameFolders.var.szMods, gameFolders.var.szCache, MOD_FOLDER) &&
 	MakeTexSubFolders (gameFolders.var.szTextures [1]) &&
 	MakeTexSubFolders (gameFolders.var.szTextures [2]) &&
 	MakeTexSubFolders (gameFolders.var.szModels [0]);
+}
+
+// ----------------------------------------------------------------------------
+
+int MakeUserFolders (void)
+{
+#ifdef _WIN32
+#	define PRIVATE_DATA_FOLDER	gameFolders.user.szRoot
+#else
+#	define PRIVATE_DATA_FOLDER	gameFolders.user.szCache
+#endif
+
+MakeFolder (gameFolders.user.szConfig, PRIVATE_DATA_FOLDER, CONFIG_FOLDER);
+MakeFolder (gameFolders.user.szProfiles, PRIVATE_DATA_FOLDER, PROF_FOLDER);
+MakeFolder (gameFolders.user.szSavegames, PRIVATE_DATA_FOLDER, SAVE_FOLDER);
+MakeFolder (gameFolders.user.szScreenshots, PRIVATE_DATA_FOLDER, SCRSHOT_FOLDER);
+MakeFolder (gameFolders.user.szDemos, PRIVATE_DATA_FOLDER, DEMO_FOLDER);
+
+MakeFolder (gameFolders.missions.szCache, gameFolders.user.szCache, MISSION_FOLDER);
+MakeFolder (gameFolders.missions.szStates, gameFolders.missions.szCache, MISSIONSTATE_FOLDER);
+MakeFolder (gameFolders.missions.szDownloads, gameFolders.missions.szCache, DOWNLOAD_FOLDER);
+
+#ifdef _WIN32
+MakeFolder (gameFolders.user.szWallpapers, strcmp (gameFolders.game.szRoot, gameFolders.user.szRoot) ? gameFolders.user.szCache : gameFolders.game.szTextures [0], WALLPAPER_FOLDER);
+#else
+MakeFolder (gameFolders.user.szWallpapers, gameFolders.user.szCache, WALLPAPER_FOLDER);
+#endif
+return 1;
 }
 
 // ----------------------------------------------------------------------------
@@ -269,11 +335,15 @@ if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APP
 	 !*CheckFolder (gameFolders.game.szRoot, appConfig [1], D2X_APPNAME, false))
 	CheckFolder (gameFolders.game.szRoot, DEFAULT_GAME_FOLDER, "");
 
-if (!*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), ""))
+int nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
+
+if (nUserFolderMode)
 	strcpy (gameFolders.user.szRoot, gameFolders.game.szRoot);
 
-if (!*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), ""))
-	strcpy (gameFolders.var.szRoot, gameFolders.game.szRoot);
+int nSharedFolderMode = !*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "");
+
+if (nSharedFolderMode)
+	*gameFolders.var.szRoot = '\0';
 
 #else // Linux, OS X
 
@@ -292,12 +362,12 @@ if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APP
 	CheckFolder (gameFolders.game.szRoot, DEFAULT_GAME_FOLDER, "");
 
 
-int bSysUserFolder = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
-if (bSysUserFolder && !*CheckFolder (gameFolders.user.szRoot, getenv ("HOME"), ""))
+int nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
+if (nUserFolderMode && !*CheckFolder (gameFolders.user.szRoot, getenv ("HOME"), ""))
 	*gameFolders.user.szRoot = '\0';
 
-int bSysSharedFolder = !*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "");
-if (bSysSharedFolder &&	!*CheckFolder (gameFolders.var.szRoot, "/var/cache", ""))
+int nSharedFolderMode = !*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "");
+if (nSharedFolderMode &&	!*CheckFolder (gameFolders.var.szRoot, "/var/cache", ""))
 	*gameFolders.var.szRoot = '\0';
 
 #endif
@@ -315,22 +385,23 @@ if (CheckDataFolder (gameFolders.game.szRoot)) {
 /*---*/PrintLog (0, "expected game app folder = '%s'\n", gameFolders.game.szRoot);
 /*---*/PrintLog (0, "expected game data folder = '%s'\n", gameFolders.game.szData [0]);
 
+#ifndef _WIN32
 if (*gameFolders.game.szRoot)
 	chdir (gameFolders.game.szRoot);
+#endif
 
 if (!*gameFolders.user.szRoot)
 	strcpy (gameFolders.user.szRoot, *gameFolders.var.szRoot ? gameFolders.var.szRoot : gameFolders.game.szRoot);
-if (!*gameFolders.var.szRoot)
-#ifdef _WINDOWS
-	strcpy (gameFolders.var.szRoot, gameFolders.game.szRoot);
-#else
-strcpy (gameFolders.var.szRoot, *gameFolders.user.szRoot ? gameFolders.user.szRoot : gameFolders.game.szRoot);
-#endif
-
-if (bSysUserFolder)
+if (nUserFolderMode)
 	MakeFolder (gameFolders.user.szCache, gameFolders.user.szRoot, USER_CACHE_FOLDER);
 else
 	strcpy (gameFolders.user.szCache, gameFolders.user.szRoot);
+
+if (!*gameFolders.var.szRoot) {
+	strcpy (gameFolders.var.szRoot, *gameFolders.user.szRoot ? gameFolders.user.szRoot : gameFolders.game.szRoot);
+	strcpy (gameFolders.var.szCache, *gameFolders.user.szCache ? gameFolders.user.szCache : gameFolders.game.szRoot);
+	nSharedFolderMode = -1;
+	}
 
 #ifdef __macosx__
 
@@ -340,68 +411,23 @@ strcpy (gameFolders.user.szCache, gameFolders.var.szCache);
 
 #else
 
-MakeFolder (gameFolders.game.szRoot);
-MakeFolder (gameFolders.game.szData [0], gameFolders.game.szRoot, DATA_FOLDER);
-MakeFolder (gameFolders.game.szData [1], gameFolders.game.szData [0], "d2x-xl");
-MakeFolder (gameFolders.game.szShaders, gameFolders.game.szRoot, SHADER_FOLDER);
-
-if (bSysSharedFolder && !MakeFolder (gameFolders.var.szCache, gameFolders.var.szRoot, SHARED_CACHE_FOLDER)) {
+if (!nSharedFolderMode)
+	strcpy (gameFolders.var.szCache, gameFolders.var.szRoot);
+else if ((nSharedFolderMode > 0) && !MakeFolder (gameFolders.var.szCache, gameFolders.var.szRoot, SHARED_CACHE_FOLDER)) {
 	strcpy (gameFolders.var.szRoot, gameFolders.user.szRoot);	 // fall back
 	strcpy (gameFolders.var.szCache, gameFolders.user.szCache);
 	}
-else
-	strcpy (gameFolders.var.szCache, gameFolders.var.szRoot);
 
 #endif // __macosx__
 
-GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szTextures [0], TEXTURE_FOLDER, "");
+if (!MakeGameFolders ())
+	return;
 
-if (GetAppFolder (gameFolders.game.szTextures [0], gameFolders.game.szTextures [1], TEXTURE_FOLDER_D2, "*.tga") &&
-	 GetAppFolder (gameFolders.game.szTextures [0], gameFolders.game.szTextures [1], TEXTURE_FOLDER_D2, ""))
-	MakeFolder (gameFolders.game.szTextures [0], gameFolders.game.szTextures [0], TEXTURE_FOLDER_D2); // older D2X-XL installations may have a different D2 texture folder
-GetAppFolder (gameFolders.game.szTextures [0], gameFolders.game.szTextures [2], TEXTURE_FOLDER_D1, "*.tga");
-GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szMovies, MOVIE_FOLDER, "*.mvl");
-if (GetAppFolder (gameFolders.game.szRoot, gameFolders.missions.szRoot, BASE_MISSION_FOLDER, ""))
-	GetAppFolder (gameFolders.game.szRoot, gameFolders.missions.szRoot, BASE_MISSION_FOLDER, "");
-
-if (GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.ase"))
-	GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.oof");
-GetAppFolder (gameFolders.var.szRoot, gameFolders.mods.szRoot, MOD_FOLDER, "");
-
-MakeFolder (gameFolders.game.szTextures [0], gameFolders.game.szRoot, TEXTURE_FOLDER);
-MakeFolder (gameFolders.game.szSounds [0], gameFolders.game.szRoot, SOUND_FOLDER);
-MakeFolder (gameFolders.game.szSounds [3], gameFolders.game.szSounds [0], SOUND_FOLDER_D2); // temp usage
-MakeFolder (gameFolders.game.szSounds [1], gameFolders.game.szSounds [3], SOUND_FOLDER_22KHZ);
-MakeFolder (gameFolders.game.szSounds [2], gameFolders.game.szSounds [3], SOUND_FOLDER_44KHZ);
-MakeFolder (gameFolders.game.szSounds [3], gameFolders.game.szSounds [0], SOUND_FOLDER_D1);
-MakeFolder (gameFolders.game.szSounds [4], gameFolders.game.szSounds [0], SOUND_FOLDER_D2X);
-
-MakeFolder (gameFolders.missions.szCache, gameFolders.user.szCache, MISSION_FOLDER);
-MakeFolder (gameFolders.missions.szStates, gameFolders.missions.szCache, MISSIONSTATE_FOLDER);
-MakeFolder (gameFolders.missions.szDownloads, gameFolders.missions.szCache, DOWNLOAD_FOLDER);
-
-#ifdef _WIN32
-#	define PRIVATE_DATA_FOLDER	gameFolders.user.szRoot
-#else
-#	define PRIVATE_DATA_FOLDER	gameFolders.user.szCache
-#endif
-
-MakeFolder (gameFolders.user.szConfig, PRIVATE_DATA_FOLDER, CONFIG_FOLDER);
-MakeFolder (gameFolders.user.szProfiles, PRIVATE_DATA_FOLDER, PROF_FOLDER);
-MakeFolder (gameFolders.user.szSavegames, PRIVATE_DATA_FOLDER, SAVE_FOLDER);
-MakeFolder (gameFolders.user.szScreenshots, PRIVATE_DATA_FOLDER, SCRSHOT_FOLDER);
-MakeFolder (gameFolders.user.szDemos, PRIVATE_DATA_FOLDER, DEMO_FOLDER);
-
-#ifdef _WIN32
-MakeFolder (gameFolders.user.szWallpapers, strcmp (gameFolders.game.szRoot, gameFolders.user.szRoot) ? gameFolders.user.szCache : gameFolders.game.szTextures [0], WALLPAPER_FOLDER);
-#else
-MakeFolder (gameFolders.user.szWallpapers, gameFolders.user.szCache, WALLPAPER_FOLDER);
-#endif
-
-if (!MakeSharedDataFolders () && strcmp (gameFolders.var.szCache, gameFolders.user.szCache)) {
+if (!MakeSharedFolders () && strcmp (gameFolders.var.szCache, gameFolders.user.szCache)) {
 	strcpy (gameFolders.var.szCache, gameFolders.user.szCache);
-	MakeSharedDataFolders ();
+	MakeSharedFolders ();
 	}
+MakeUserFolders ();
 }
 
 // ----------------------------------------------------------------------------
@@ -410,6 +436,7 @@ void ResetModFolders (void)
 {
 gameStates.app.bHaveMod = 0;
 *gameFolders.mods.szName =
+*gameFolders.mods.szCache =
 *gameFolders.game.szMusic =
 *gameFolders.mods.szSounds [0] =
 *gameFolders.mods.szSounds [1] =
@@ -464,22 +491,25 @@ if (bBuiltIn && !gameOpts->app.bEnableMods)
 if (GetAppFolder (gameFolders.mods.szRoot, gameFolders.mods.szCurrent, gameFolders.mods.szName, "")) 
 	*gameFolders.mods.szName = '\0';
 else {
+	sprintf (gameFolders.mods.szCache, "%s%s/", gameFolders.var.szMods, gameFolders.mods.szName);	// e.g. /var/cache/d2x-xl/mods/mymod/
+	MakeFolder (gameFolders.mods.szCache);
 	sprintf (gameFolders.mods.szSounds [0], "%s%s/", gameFolders.mods.szCurrent, SOUND_FOLDER);
-	if (GetAppFolder (gameFolders.mods.szCurrent, gameFolders.mods.szTextures [0], TEXTURE_FOLDER, "*.tga"))
+	if (GetAppFolder (gameFolders.mods.szCurrent, gameFolders.mods.szTextures [0], TEXTURE_FOLDER, ""))
 		*gameFolders.mods.szTextures [0] = '\0';
 	else {
-		sprintf (gameFolders.var.szTextures [3], "%s%s/", gameFolders.mods.szCache, gameFolders.mods.szName);	// e.g. /var/cache/d2x-xl/mods/mymod/
-		MakeFolder (gameFolders.var.szTextures [3]);
-		sprintf (gameFolders.var.szTextures [3], "%s%s/%s/", gameFolders.mods.szCache, gameFolders.mods.szName, TEXTURE_FOLDER);	// e.g. /var/cache/d2x-xl/mods/mymod/textures/
+		sprintf (gameFolders.var.szTextures [3], "%s%s/", gameFolders.mods.szCache, TEXTURE_FOLDER);	// e.g. /var/cache/d2x-xl/mods/mymod/textures/
 		MakeFolder (gameFolders.var.szTextures [3]);
 		//gameOpts->render.textures.bUseHires [0] = 1;
 		}
+#if 0
 	if (GetAppFolder (gameFolders.mods.szCurrent, gameFolders.mods.szModels [0], MODEL_FOLDER, "*.ase") &&
 		 GetAppFolder (gameFolders.mods.szCurrent, gameFolders.mods.szModels [0], MODEL_FOLDER, "*.oof"))
+#else
+	if (GetAppFolder (gameFolders.mods.szCurrent, gameFolders.mods.szModels [0], MODEL_FOLDER, "*"))
+#endif
 		*gameFolders.mods.szModels [0] = '\0';
 	else {
-		sprintf (gameFolders.mods.szModels [0], "%s%s", gameFolders.mods.szCurrent, MODEL_FOLDER);
-		sprintf (gameFolders.var.szModels [1], "%s%s/%s/", gameFolders.mods.szCache, gameFolders.mods.szName, MODEL_FOLDER);
+		sprintf (gameFolders.var.szModels [1], "%s%s/", gameFolders.mods.szCache, MODEL_FOLDER);
 		MakeFolder (gameFolders.var.szModels [1]);
 		}
 	if (GetAppFolder (gameFolders.mods.szCurrent, gameFolders.mods.szWallpapers, WALLPAPER_FOLDER, "*.tga")) {
@@ -487,7 +517,6 @@ else {
 		*gameOpts->menus.altBg.szName [1] = '\0';
 		}
 	else {
-		sprintf (gameFolders.mods.szWallpapers, "%s%s/", gameFolders.mods.szCurrent, WALLPAPER_FOLDER);
 		if (nLevel < 0)
 			sprintf (gameOpts->menus.altBg.szName [1], "slevel%02d.tga", -nLevel);
 		else if (nLevel > 0) {

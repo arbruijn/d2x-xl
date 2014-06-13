@@ -21,6 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_LEVELS_PER_MISSION          100
 #define MAX_SECRET_LEVELS_PER_MISSION   (MAX_LEVELS_PER_MISSION / 5)
 #define MISSION_NAME_LEN                25
+#define MISSION_PREFIX_LEN					 5
 
 #define D1_MISSION_FILENAME             "descent"
 #define D1_MISSION_NAME                 "Descent: First Strike"
@@ -47,6 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OEM_MISSION_HOGSIZE				6132957 // v1.1
 
 #define FULL_MISSION_FILENAME				"d2"
+#define D2_MISSION_NAME                "Descent 2: Counterstrike"
 #define FULL_MISSION_HOGSIZE				7595079 // v1.1 - 1.2
 #define FULL_10_MISSION_HOGSIZE			7107354 // v1.0
 #define MAC_FULL_MISSION_HOGSIZE			7110007 // v1.1 - 1.2
@@ -70,7 +72,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //mission list entry
 typedef struct tMsnListEntry {
 	char    filename [FILENAME_LEN];                // path and filename without extension
-	char    szMissionName [MISSION_NAME_LEN+5];
+	char    szMissionName [MISSION_NAME_LEN + MISSION_PREFIX_LEN + 1];
 	ubyte   bAnarchyOnly;          // if true, mission is anarchy only
 	ubyte   location;                   // see defines below
 	ubyte   nDescentVersion;            // descent 1 or descent 2?

@@ -367,9 +367,9 @@ int ComputeVertexColor (int nSegment, int nSide, int nVertex, CFloatVector3 *col
 	
 #if DBG
 if (nThread == 0)
-	nThread = nThread;
+	BRP;
 if (nThread == 1)
-	nThread = nThread;
+	BRP;
 #endif
 colorSum [0] = *colorSumP;
 colorSum [1].SetZero ();

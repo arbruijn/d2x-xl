@@ -656,7 +656,7 @@ else {
 			AddBuiltinD1Mission ();
 		}
 	nBuiltIns = m_nCount;
-	sprintf (gameFolders.missions.szCurrent [0], "%s/%s", gameFolders.missions.szRoot, gameFolders.missions.szSubFolder);
+	sprintf (gameFolders.missions.szCurrent [0], "%s%s", gameFolders.missions.szRoot, gameFolders.missions.szSubFolder);
 	bHaveSubFolders = 0;
 	if (gameOpts->app.nVersionFilter & 2) {
 		Add (bAnarchy, 0, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
@@ -668,7 +668,7 @@ else {
 		}
 	if (gameFolders.bAltHogDirInited && strcmp (gameFolders.game.szAltHogs, gameFolders.game.szRoot)) {
 		bHaveSubFolders = 0;
-		sprintf (gameFolders.missions.szCurrent [1], "%s/%s%s", gameFolders.game.szAltHogs, MISSION_FOLDER, gameFolders.missions.szSubFolder);
+		sprintf (gameFolders.missions.szCurrent [1], "%s%s/%s", gameFolders.game.szAltHogs, MISSION_FOLDER, gameFolders.missions.szSubFolder);
 		if (gameOpts->app.nVersionFilter & 2) {
 			Add (bAnarchy, 0, bSubFolder, bHaveSubFolders, ML_ALTHOGDIR);
 			bHaveSubFolders = 1;

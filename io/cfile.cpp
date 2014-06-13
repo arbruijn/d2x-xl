@@ -68,7 +68,8 @@ int GetAppFolder (const char *szMainFolder, char *szDestFolder, const char *szSu
 	char	szFolder [FILENAME_LEN];
 
 if (!(szSubFolder && *szSubFolder))
-	return 1;
+	return !(szMainFolder && *szMainFolder && !FFF (szMainFolder, &ffs, 1));
+
 int i = (int) strlen (szMainFolder);
 int bAddSlash = i && (szMainFolder [i-1] != '\\') && (szMainFolder [i-1] != '/');
 PrintLog (0, "GetAppFolder ('%s', '%s', '%s', '%s')\n", szMainFolder, szDestFolder, szSubFolder, szFilter);
@@ -79,6 +80,8 @@ if (!(i = FFF (szFolder, &ffs, *szFilter == '\0'))) {
 	}
 else if (*szMainFolder)
 	strcpy (szDestFolder, szMainFolder);
+AppendSlash (szDestFolder);
+
 PrintLog (0, "GetAppFolder (%s) = '%s' (%d)\n", szSubFolder, szDestFolder, i);
 FFC (&ffs);
 return i;
