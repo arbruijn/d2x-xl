@@ -366,8 +366,14 @@ int nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-
 if (nUserFolderMode && !*CheckFolder (gameFolders.user.szRoot, getenv ("HOME"), ""))
 	*gameFolders.user.szRoot = '\0';
 
+#ifdef __linux__
+#	define SHARED_ROOT_FOLDER	"/var/cache"
+#else
+#	define SHARED_ROOT_FOLDER	"~/Library/Caches"
+#endif
+
 int nSharedFolderMode = !*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "");
-if (nSharedFolderMode &&	!*CheckFolder (gameFolders.var.szRoot, "/var/cache", ""))
+if (nSharedFolderMode && !*CheckFolder (gameFolders.var.szRoot, SHARED_ROOT_FOLDER, ""))
 	*gameFolders.var.szRoot = '\0';
 
 #endif
