@@ -348,12 +348,10 @@ if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APP
 	CheckFolder (gameFolders.game.szRoot, DEFAULT_GAME_FOLDER, "");
 
 int nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
-
 if (nUserFolderMode)
-	strcpy (gameFolders.user.szRoot, gameFolders.game.szRoot);
+	*gameFolders.user.szRoot = '\0';
 
 int nSharedFolderMode = !*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "");
-
 if (nSharedFolderMode)
 	*gameFolders.var.szRoot = '\0';
 
