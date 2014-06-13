@@ -360,8 +360,15 @@ if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APP
 	 !*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-gamedir"), D2X_APPNAME) &&
 	 !*CheckFolder (gameFolders.game.szRoot, gameFolders.szSharePath, D2X_APPNAME) &&
 	 !*CheckFolder (gameFolders.game.szRoot, getenv ("DESCENT2"), D2X_APPNAME))
+#ifdef __macosx__
+	GetOSXAppFolder (gameFolders.game.szRoot, gameFolders.game.szRoot);
+#else
 	CheckFolder (gameFolders.game.szRoot, DEFAULT_GAME_FOLDER, "");
+#endif
 
+#ifdef __macosx__
+GetOSXAppFolder (gameFolders.game.szRoot, gameFolders.game.szRoot);
+#endif
 
 int nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
 if (nUserFolderMode && !*CheckFolder (gameFolders.user.szRoot, getenv ("HOME"), ""))
@@ -379,15 +386,8 @@ if (nSharedFolderMode && !*CheckFolder (gameFolders.var.szRoot, SHARED_ROOT_FOLD
 
 #endif
 
-if (CheckDataFolder (gameFolders.game.szRoot)) {
-#ifdef __macosx__
-	GetOSXAppFolder (gameFolders.game.szRoot, gameFolders.game.szRoot);
-#else
-	strcpy (gameFolders.game.szRoot, gameFolders.game.szRoot);
-#endif //__macosx__
-	if (CheckDataFolder (gameFolders.game.szRoot))
-		Error (TXT_NO_HOG2);
-	}
+if (CheckDataFolder (gameFolders.game.szRoot))
+	Error (TXT_NO_HOG2);
 
 /*---*/PrintLog (0, "expected game app folder = '%s'\n", gameFolders.game.szRoot);
 /*---*/PrintLog (0, "expected game data folder = '%s'\n", gameFolders.game.szData [0]);
