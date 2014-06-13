@@ -508,8 +508,10 @@ if ((t = FindArg ("-autodemo"))) {
 else
 	gameData.demo.bAuto = 0;
 gameStates.app.bMacData = FindArg ("-macdata");
-if ((t = FindArg ("-compress_data")))
+if ((t = FindArg ("-compress_data"))) {
 	gameStates.app.bCompressData = (NumArg (t, 1) == 1);
+	PrintLog (0, "gameStates.app.bCompressData = 1\n");
+	}
 else
 	gameStates.app.bCompressData = 0;
 if (gameStates.app.bNostalgia)

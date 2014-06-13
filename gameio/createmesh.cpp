@@ -773,7 +773,7 @@ if (bOk)
 
 if (bOk) {
 	nExpectedSize = 0;
-	for (int i = 0; i < sizeofa (nSizes); i++)
+	for (int i = 0; i < (int) sizeofa (nSizes); i++)
 		nExpectedSize += abs (nSizes [i]);
 	}
 if (bOk)
@@ -782,7 +782,7 @@ if (bOk) {
 	if (!mdh.bCompressed)
 		bOk = cf.Read (ioBuffer, nExpectedSize, 1) == 1;
 	else {
-		PrintLog (0, "Mesh builder: reading compressed mesh data\n");
+		PrintLog (1, "Mesh builder: reading compressed mesh data\n");
 		nSize = 0;
 		int i;
 		for (i = 0; nSizes [i] > 0; i++) {
@@ -812,6 +812,7 @@ if (bOk) {
 			PrintLog (0, "Mesh builder: invalid mesh size\n");
 			bOk = false;
 			}
+		PrintLog (-1);
 		}
 	}
 if (bOk) {
@@ -895,7 +896,7 @@ if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.var.szMeshes, "wb",
 	return 0;
 	}
 if (mdh.bCompressed)
-	PrintLog (0, "Mesh builder: writing compressed mesh data\n");
+	PrintLog (0, "Mesh builder: writing compressed mesh data (%d)\n", gameStates.app.bCompressData);
 bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
 		(gameData.segs.vertices.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint (mdh.nVertices)) &&
 		(gameData.segs.fVertices.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint (mdh.nVertices));

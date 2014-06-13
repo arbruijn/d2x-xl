@@ -542,7 +542,8 @@ return i / elSize;
 size_t CFile::ReadCompressed (const void* buf, uint bufLen) 
 {
 //PrintLog (0, "ReadCompressed: %d bytes @ %d\n", bufLen, (int) m_info.rawPosition);
-uLongf nSize, nCompressedSize;
+uint nSize;
+uLongf nCompressedSize;
 size_t h = Read (&nSize, 1, sizeof (nSize), -1);
 h += Read (&nCompressedSize, 1, sizeof (nCompressedSize), -1);
 if (h != sizeof (nSize) + sizeof (nCompressedSize)) {
@@ -563,11 +564,12 @@ if (Read (compressedBuffer.Buffer (), sizeof (ubyte), nCompressedSize, -1) != nC
 	return -1;
 	}
 int i;
-if ((i = uncompress ((ubyte*) buf, &nSize, compressedBuffer.Buffer (), nCompressedSize)) != Z_OK) {
+uLongf nUncompressedSize = (uLongf) nSize;
+if ((i = uncompress ((ubyte*) buf, &nUncompressedSize, compressedBuffer.Buffer (), nCompressedSize)) != Z_OK) {
 	// PrintLog (0, "ReadCompressed: decompression error #%d\n", i);
 	return -1;
 	}
-return (size_t) nSize;
+return (size_t) nUncompressedSize;
 }
 
 // ----------------------------------------------------------------------------
