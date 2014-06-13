@@ -341,7 +341,7 @@ int CFile::MkDir (const char *pathname)
 return CreateDirectory (pathname, NULL) ? 0 : -1;
 #else
 int nMask = umask (0);
-int nResult = mkdir (pathname, S_IRWXU | S_IWGRP | S_IRGRP | S_IWOTH | S_IROTH); // rw-rw-rw-
+int nResult = mkdir (pathname, S_IRWXU | S_IRWCG | S_IRWXO); // rw-rw-rw-
 umask (nMask);
 return nResult;
 #endif
