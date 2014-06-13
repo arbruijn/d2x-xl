@@ -342,7 +342,7 @@ int CheckForUpdate (void)
 #endif
 	};
 
-sprintf (szDest, "%s/d2x-xl-version.txt", gameFolders.var.szDownloads);
+sprintf (szDest, "%sd2x-xl-version.txt", gameFolders.var.szDownloads);
 if (!DownloadFile ("http://www.descent2.de/files/d2x-xl-version.txt", szDest, false))
 	nLocation = 0;
 else if (!DownloadFile ("http://sourceforge.net/projects/d2x-xl/files/d2x-xl-version.txt/download", szDest, false))
@@ -370,11 +370,11 @@ if (D2X_IVER >= nVersion [0] * 100000 + nVersion [1] * 1000 + nVersion [2]) {
 
 if (TextBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_UPDATE_FOUND))
 	return 0;
-sprintf (szDest, "%s/d2x-xl-%s-%d.%d.%d.%s", gameFolders.var.szDownloads,
+sprintf (szDest, "%sd2x-xl-%s-%d.%d.%d.%s", gameFolders.var.szDownloads,
 			FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
 #if 1
 messageBox.Show ("Downloading...");
-sprintf (szSrc, "%s/d2x-xl-%s-%d.%d.%d.%s", pszSource [nLocation], FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
+sprintf (szSrc, "%sd2x-xl-%s-%d.%d.%d.%s", pszSource [nLocation], FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
 if (DownloadFile (szSrc, szDest, true)) {
 	messageBox.Clear ();
 	InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);

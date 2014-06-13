@@ -350,7 +350,7 @@ int CSongManager::PlayModSong (char pszSong[], int bLoop)
 
 if (!*gameFolders.game.szMusic)
 	return false;
-sprintf (szFilename, "%s/%s.ogg", gameFolders.game.szMusic, pszSong);
+sprintf (szFilename, "%s%s.ogg", gameFolders.game.szMusic, pszSong);
 return midi.PlaySong (szFilename, NULL, NULL, bLoop, 0);
 }
 
@@ -442,13 +442,13 @@ if (bFromHog) {
 // try the missions mod music folder next
 if (*gameFolders.game.szMusic) {
 	if (nLevel < 0)
-		sprintf (szFilename, "%s/slevel%02d.ogg", gameFolders.game.szMusic, -nLevel);
+		sprintf (szFilename, "%sslevel%02d.ogg", gameFolders.game.szMusic, -nLevel);
 	else
-		sprintf (szFilename, "%s/level%02d.ogg", gameFolders.game.szMusic, nLevel);
+		sprintf (szFilename, "%slevel%02d.ogg", gameFolders.game.szMusic, nLevel);
 	if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
 		return;
 	if (m_user.nLevelSongs [1]) {
-		sprintf (szFilename, "%s/%s", gameFolders.game.szMusic, m_user.levelSongs [1][nSong % m_user.nLevelSongs [1]]);
+		sprintf (szFilename, "%s%s", gameFolders.game.szMusic, m_user.levelSongs [1][nSong % m_user.nLevelSongs [1]]);
 		if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
 			return;
 		}

@@ -476,9 +476,9 @@ if (gameStates.app.nLogLevel > 0) {
 	static int nLogId = 0;
    char fnErr [FILENAME_LEN];
 #ifdef _WIN32
-	sprintf (fnErr, "%s/d2x.log", gameFolders.game.szRoot);
+	sprintf (fnErr, "%sd2x.log", gameFolders.user.szCache);
 	while (!(fLog = _fsopen (fnErr, "wt", _SH_DENYWR))) 
-		sprintf (fnErr, "%s/d2x.log.%d", gameFolders.game.szRoot, ++nLogId);
+		sprintf (fnErr, "%sd2x.log.%d", gameFolders.user.szCache, ++nLogId);
 #else
 	sprintf (fnErr, "%s/d2x.log", getenv ("HOME"));
 	fLog = fopen (fnErr, "wt");

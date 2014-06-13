@@ -232,7 +232,7 @@ else {
 	char	fn [FILENAME_LEN];
 
 	struct _stat statBuf;
-	sprintf (fn, "%s/%s", gameFolders.user.szSavegames, filename);
+	sprintf (fn, "%s%s", gameFolders.user.szSavegames, filename);
 	h = _stat (fn, &statBuf);
 #else
 	struct stat statBuf;

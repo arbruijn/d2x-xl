@@ -75,9 +75,9 @@ if (!*pszName)
 if (!m_bAvailable) {
 	char	szFilename [FILENAME_LEN];
 
-	sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.mods.szTextures [0], pszName);
+	sprintf (szFilename, "%sd2x-xl/%s", gameFolders.mods.szTextures [0], pszName);
 	if (!m_cf.Exist (szFilename, "", 0))
-		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.game.szTextures [0], pszName);
+		sprintf (szFilename, "%s%s", gameFolders.game.szTextures [4], pszName);
 	CreateAndRead (szFilename);
 	}
 if (!m_bmP)
@@ -171,9 +171,9 @@ if (!*bHaveP) {
 	CFile	cf;
 	CTGA	tga;
 
-	sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.mods.szTextures [0], pszName);
+	sprintf (szFilename, "%sd2x-xl/%s", gameFolders.mods.szTextures [0], pszName);
 	if (!cf.Exist (szFilename, "", 0))
-		sprintf (szFilename, "%s/d2x-xl/%s", gameFolders.game.szTextures [0], pszName);
+		sprintf (szFilename, "%s%s", gameFolders.game.szTextures [4], pszName);
 	CBitmap* bmP = tga.CreateAndRead (szFilename);
 	if (!bmP)
 		*bHaveP = -1;

@@ -242,7 +242,7 @@ if (!FFF (filespec, &ffs, 0)) {
 	}
 if ((m_nMode == 2) && gameFolders.bAltHogDirInited) {
 	char filespec2 [PATH_MAX + FILENAME_LEN];
-	sprintf (filespec2, "%s/%s", gameFolders.game.szAltHogs, filespec);
+	sprintf (filespec2, "%s%s", gameFolders.game.szAltHogs, filespec);
 	if (!FFF (filespec2, &ffs, 0)) {
 		do {
 			if (m_nFileCount < MENU_MAX_FILES) {

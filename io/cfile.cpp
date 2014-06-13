@@ -229,7 +229,6 @@ size_t CFile::Size (const char *hogname, const char *folder, int bUseD1Hog)
 #if ! (defined (_WIN32_WCE) || defined (_WIN32))
 	struct stat statbuf;
 
-//	sprintf (fn, "%s/%s", folder, hogname);
 if (!Open (hogname, gameFolders.game.szData [0], "rb", bUseD1Hog))
 	return -1;
 #ifdef _WIN32
@@ -1044,7 +1043,6 @@ time_t CFile::Date (const char *filename, const char *folder, int bUseD1Hog)
 {
 	struct stat statbuf;
 
-//	sprintf (fn, "%s/%s", folder, hogname);
 if (!Open (filename, folder, "rb", bUseD1Hog))
 	return -1;
 #ifdef _WIN32

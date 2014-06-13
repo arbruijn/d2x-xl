@@ -411,7 +411,7 @@ if (bCustom) {
 	if (!(bUseLowRes = cf.Exist (pszFile, pszFolder, 0) != 0)) {
 		pszFile = DefaultSoundFile ();
 		pszFolder = gameFolders.game.szData [0];
-		sprintf (gameFolders.mods.szSounds [1], "%s/slevel%02d", gameFolders.mods.szSounds [0], abs (missionManager.nCurrentLevel));
+		sprintf (gameFolders.mods.szSounds [1], "%sslevel%02d", gameFolders.mods.szSounds [0], abs (missionManager.nCurrentLevel));
 		}
 	}
 else {
@@ -421,7 +421,7 @@ else {
 	}
 
 if (!cf.Open (pszFile, pszFolder, "rb", 0)) {
-	PrintLog (0, "Couldn't open sound file '%s/%s'\n", pszFile ? pszFile : "", pszFolder ? pszFolder : "");
+	PrintLog (0, "Couldn't open sound file '%s%s'\n", pszFolder ? pszFolder : "", pszFile ? pszFile : "");
 	return 0;
 	}
 
@@ -433,7 +433,7 @@ else {
 	sndVersion = cf.ReadInt ();
 	if ((sndId != SNDFILE_ID) || (sndVersion != SNDFILE_VERSION)) {
 		cf.Close ();						//out of date sound file
-		PrintLog (0, "Invalid sound file '%s/%s'\n", pszFile ? pszFile : "", pszFolder ? pszFolder : "");
+		PrintLog (0, "Invalid sound file '%s%s'\n", pszFolder ? pszFolder : "", pszFile ? pszFile : "");
 		return 0;
 		}
 	nSounds = cf.ReadInt ();
@@ -475,7 +475,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data) {
 	SetD1Sound ();
 	if ((gameData.pig.sound.nType != 1) || gameStates.app.bCustomSounds || bCustom) {
 		if (bCustom)
-			sprintf (gameFolders.mods.szSounds [1], "%s/slevel%02d", gameFolders.mods.szSounds [0], abs (missionManager.nCurrentLevel));
+			sprintf (gameFolders.mods.szSounds [1], "%sslevel%02d", gameFolders.mods.szSounds [0], abs (missionManager.nCurrentLevel));
 		int nLoadedSounds = SetupSounds (cfPiggy [1], nSounds, nBmHdrOffs + nBitmaps * PIGBITMAPHEADER_D1_SIZE, bCustom, false);
 		if (!VerifyHiresSound (bCustom, nLoadedSounds))
 			return LoadD1Sounds (bCustom);
@@ -596,7 +596,7 @@ else {
 		return NULL;
 	pszFile = const_cast<char*>(pszSoundFile);
 	}
-sprintf (szWAV, "%s%s%s", pszFolder, *pszFolder ? "/" : "", pszFile);
+sprintf (szWAV, "%s%s", pszFolder, pszFile);
 if (!(chunkP = Mix_LoadWAV (szWAV)))
 	return NULL;
 if (i >= 0)

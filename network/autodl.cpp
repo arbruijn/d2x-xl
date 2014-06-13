@@ -510,7 +510,7 @@ switch (m_nState = m_data [0]) {
 			if (i == 2)
 				sprintf (szDest, "%s/%s%s", szFolder, szFile [0], szExt);
 			else
-				sprintf (szDest, "%s/%s%s", gameFolders.missions.szDownloads, *gameFolders.missions.szRoot ? "/" : "", pszFile);
+				sprintf (szDest, "%s%s%s", gameFolders.missions.szDownloads, *gameFolders.missions.szRoot ? "/" : "", pszFile);
 			if (m_cf.Open (szDest, "", "wb", 0))
 				break;
 			}
