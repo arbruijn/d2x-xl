@@ -81,7 +81,7 @@
 #	define	TEXTURE_FOLDER_D1			"D1"
 #	define	WALLPAPER_FOLDER			"Wallpapers"
 #	define	CACHE_FOLDER				"Cache"
-#	define	SHARED_CACHE_FOLDER			"d2x-xl"
+#	define	SHARED_CACHE_FOLDER		"d2x-xl"
 #	define	USER_CACHE_FOLDER			".d2x-xl"
 #	define	LIGHTMAP_FOLDER			"Lightmaps"
 #	define	LIGHTDATA_FOLDER			"Lights"
@@ -143,7 +143,7 @@
 
 // ----------------------------------------------------------------------------
 
-char* CheckFolder (char* pszAppFolder, const char* pszFolder, const char* pszFile, bool bFolder = true)
+static char* CheckFolder (char* pszAppFolder, const char* pszFolder, const char* pszFile, bool bFolder = true)
 {
 if (pszFolder && *pszFolder) {
 	char szFolder [FILENAME_LEN];
@@ -164,7 +164,7 @@ return pszAppFolder;
 
 // ----------------------------------------------------------------------------
 
-int CheckDataFolder (char* pszDataRootDir)
+static int CheckDataFolder (char* pszDataRootDir)
 {
 AppendSlash (FlipBackslash (pszDataRootDir));
 return /*GetAppFolder ("", gameFolders.game.szData [0], pszDataRootDir, "descent2.hog") &&
@@ -215,7 +215,7 @@ return nResult;
 
 // ----------------------------------------------------------------------------
 
-int MakeTexSubFolders (char* pszParentFolder)
+static int MakeTexSubFolders (char* pszParentFolder)
 {
 if (!*pszParentFolder)
 	return 0;
@@ -234,7 +234,112 @@ return 1;
 
 // ----------------------------------------------------------------------------
 
-int MakeGameFolders (void)
+static int GetSystemFolders (int& nSharedFolderMode, int& nUserFolderMode)
+{
+PrintLog (1, "Looking for system folders\n");
+
+#if defined (_WIN32)
+
+if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APPNAME) &&
+	 !*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-gamedir"), D2X_APPNAME) &&
+	 !*CheckFolder (gameFolders.game.szRoot, getenv ("DESCENT2"), D2X_APPNAME) &&
+	 !*CheckFolder (gameFolders.game.szRoot, appConfig [1], D2X_APPNAME, false))
+	CheckFolder (gameFolders.game.szRoot, DEFAULT_GAME_FOLDER, "");
+
+nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
+if (nUserFolderMode)
+	*gameFolders.user.szRoot = '\0';
+
+nSharedFolderMode = !*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "");
+if (nSharedFolderMode)
+	*gameFolders.var.szRoot = '\0';
+
+#else // Linux, OS X
+
+#	if defined (__linux__)
+
+*gameFolders.szSharePath = '\0';
+if (*SHAREPATH) {
+	if (strstr (SHAREPATH, "games"))
+		sprintf (gameFolders.szSharePath, "%s/d2x-xl", SHAREPATH);
+	else
+		sprintf (gameFolders.szSharePath, "%s/games/d2x-xl", SHAREPATH);
+	}
+
+if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APPNAME) &&
+	 !*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-gamedir"), D2X_APPNAME) &&
+	 !*CheckFolder (gameFolders.game.szRoot, gameFolders.szSharePath, D2X_APPNAME) &&
+	 !*CheckFolder (gameFolders.game.szRoot, getenv ("DESCENT2"), D2X_APPNAME))
+	CheckFolder (gameFolders.game.szRoot, DEFAULT_GAME_FOLDER, "");
+
+#	else //__macosx__
+
+if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APPNAME) &&
+	 !*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-gamedir"), D2X_APPNAME))
+	GetOSXAppFolder (gameFolders.game.szRoot, gameFolders.game.szRoot);
+
+#	endif
+
+nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
+if (nUserFolderMode && !*CheckFolder (gameFolders.user.szRoot, getenv ("HOME"), ""))
+	*gameFolders.user.szRoot = '\0';
+
+nSharedFolderMode = !*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "");
+if (nSharedFolderMode && !*CheckFolder (gameFolders.var.szRoot, SHARED_ROOT_FOLDER, ""))
+	*gameFolders.var.szRoot = '\0';
+
+#endif // !_WIN32
+
+return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+static int MakeCacheFolders (int nSharedFolderMode, int nUserFolderMode)
+{
+PrintLog (1, "Creating cache folders\n");
+
+#ifdef __macosx__
+
+if (!*gameFolders.user.szRoot)
+	strcpy (gameFolders.user.szRoot, GetMacOSXCacheFolder ());
+MakeFolder (gameFolders.user.szCache, gameFolders.user.szRoot, CACHE_FOLDER);
+if (!*gameFolders.var.szRoot)
+	strcpy (gameFolders.var.szRoot, GetMacOSXCacheFolder ());
+MakeFolder (gameFolders.var.szCache, gameFolders.var.szRoot, CACHE_FOLDER);
+
+#else
+
+if (!*gameFolders.user.szRoot) {
+	strcpy (gameFolders.user.szRoot, *gameFolders.var.szRoot ? gameFolders.var.szRoot : gameFolders.game.szRoot);
+	nUserFolderMode = 1;
+	}
+if (nUserFolderMode)
+	MakeFolder (gameFolders.user.szCache, gameFolders.user.szRoot, USER_CACHE_FOLDER);
+else
+	strcpy (gameFolders.user.szCache, gameFolders.user.szRoot);
+
+if (!*gameFolders.var.szRoot) {
+	strcpy (gameFolders.var.szRoot, *gameFolders.user.szRoot ? gameFolders.user.szRoot : gameFolders.game.szRoot);
+	strcpy (gameFolders.var.szCache, *gameFolders.user.szCache ? gameFolders.user.szCache : gameFolders.game.szRoot);
+	nSharedFolderMode = -1;
+	}
+
+if (!nSharedFolderMode)
+	strcpy (gameFolders.var.szCache, gameFolders.var.szRoot);
+else if ((nSharedFolderMode > 0) && !MakeFolder (gameFolders.var.szCache, gameFolders.var.szRoot, SHARED_CACHE_FOLDER)) {
+	strcpy (gameFolders.var.szRoot, gameFolders.user.szRoot);	 // fall back
+	strcpy (gameFolders.var.szCache, gameFolders.user.szCache);
+	}
+
+#endif // __macosx__
+
+return 1;
+}
+
+// ----------------------------------------------------------------------------
+
+static int MakeGameFolders (void)
 {
 PrintLog (0, "Setting up game folders\n");
 
@@ -275,7 +380,7 @@ return 1;
 
 // ----------------------------------------------------------------------------
 
-int MakeSharedFolders (void)
+static int MakeSharedFolders (void)
 {
 PrintLog (0, "Setting up shared folders\n");
 
@@ -296,7 +401,7 @@ return
 
 // ----------------------------------------------------------------------------
 
-int MakeUserFolders (void)
+static int MakeUserFolders (void)
 {
 PrintLog (0, "Setting up user folders\n");
 
@@ -337,59 +442,9 @@ if (bInit)
 *gameFolders.var.szCache =
 *gameFolders.user.szCache = '\0';
 
-PrintLog (1, "Looking for system folders\n");
+int nSharedFolderMode, nUserFolderMode;
 
-#if defined (_WIN32)
-
-if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-gamedir"), D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, getenv ("DESCENT2"), D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, appConfig [1], D2X_APPNAME, false))
-	CheckFolder (gameFolders.game.szRoot, DEFAULT_GAME_FOLDER, "");
-
-int nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
-if (nUserFolderMode)
-	*gameFolders.user.szRoot = '\0';
-
-int nSharedFolderMode = !*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "");
-if (nSharedFolderMode)
-	*gameFolders.var.szRoot = '\0';
-
-#else // Linux, OS X
-
-#	if defined (__linux__)
-
-*gameFolders.szSharePath = '\0';
-if (*SHAREPATH) {
-	if (strstr (SHAREPATH, "games"))
-		sprintf (gameFolders.szSharePath, "%s/d2x-xl", SHAREPATH);
-	else
-		sprintf (gameFolders.szSharePath, "%s/games/d2x-xl", SHAREPATH);
-	}
-
-if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-gamedir"), D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, gameFolders.szSharePath, D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, getenv ("DESCENT2"), D2X_APPNAME))
-	CheckFolder (gameFolders.game.szRoot, DEFAULT_GAME_FOLDER, "");
-
-#	else //__macosx__
-
-if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-gamedir"), D2X_APPNAME))
-	GetOSXAppFolder (gameFolders.game.szRoot, gameFolders.game.szRoot);
-
-#	endif
-
-int nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
-if (nUserFolderMode && !*CheckFolder (gameFolders.user.szRoot, getenv ("HOME"), ""))
-	*gameFolders.user.szRoot = '\0';
-
-int nSharedFolderMode = !*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "");
-if (nSharedFolderMode && !*CheckFolder (gameFolders.var.szRoot, SHARED_ROOT_FOLDER, ""))
-	*gameFolders.var.szRoot = '\0';
-
-#endif // !_WIN32
+GetSystemFolders (nSharedFolderMode, nUserFolderMode);
 
 if (CheckDataFolder (gameFolders.game.szRoot))
 	Error (TXT_NO_HOG2);
@@ -402,35 +457,7 @@ if (*gameFolders.game.szRoot)
 	chdir (gameFolders.game.szRoot);
 #endif
 
-if (!*gameFolders.user.szRoot)
-	strcpy (gameFolders.user.szRoot, *gameFolders.var.szRoot ? gameFolders.var.szRoot : gameFolders.game.szRoot);
-if (nUserFolderMode)
-	MakeFolder (gameFolders.user.szCache, gameFolders.user.szRoot, USER_CACHE_FOLDER);
-else
-	strcpy (gameFolders.user.szCache, gameFolders.user.szRoot);
-
-if (!*gameFolders.var.szRoot) {
-	strcpy (gameFolders.var.szRoot, *gameFolders.user.szRoot ? gameFolders.user.szRoot : gameFolders.game.szRoot);
-	strcpy (gameFolders.var.szCache, *gameFolders.user.szCache ? gameFolders.user.szCache : gameFolders.game.szRoot);
-	nSharedFolderMode = -1;
-	}
-
-#ifdef __macosx__
-
-strcpy (gameFolders.var.szRoot, GetMacOSXCacheFolder ());
-MakeFolder (gameFolders.var.szCache, gameFolders.var.szRoot, CACHE_FOLDER);
-strcpy (gameFolders.user.szCache, gameFolders.var.szCache);
-
-#else
-
-if (!nSharedFolderMode)
-	strcpy (gameFolders.var.szCache, gameFolders.var.szRoot);
-else if ((nSharedFolderMode > 0) && !MakeFolder (gameFolders.var.szCache, gameFolders.var.szRoot, SHARED_CACHE_FOLDER)) {
-	strcpy (gameFolders.var.szRoot, gameFolders.user.szRoot);	 // fall back
-	strcpy (gameFolders.var.szCache, gameFolders.user.szCache);
-	}
-
-#endif // __macosx__
+MakeCacheFolders (nSharedFolderMode, nUserFolderMode);
 
 if (!MakeGameFolders ())
 	return;
