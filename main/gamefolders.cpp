@@ -254,9 +254,7 @@ nSharedFolderMode = !*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cac
 if (nSharedFolderMode)
 	*gameFolders.var.szRoot = '\0';
 
-#else // Linux, OS X
-
-#	if defined (__linux__)
+#elif defined (__linux__)
 
 *gameFolders.szSharePath = '\0';
 if (*SHAREPATH) {
@@ -272,13 +270,19 @@ if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APP
 	 !*CheckFolder (gameFolders.game.szRoot, getenv ("DESCENT2"), D2X_APPNAME))
 	CheckFolder (gameFolders.game.szRoot, DEFAULT_GAME_FOLDER, "");
 
+nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
+if (nUserFolderMode && !*CheckFolder (gameFolders.user.szRoot, getenv ("HOME"), ""))
+	*gameFolders.user.szRoot = '\0';
+
+nSharedFolderMode = !*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "");
+if (nSharedFolderMode && !*CheckFolder (gameFolders.var.szRoot, SHARED_ROOT_FOLDER, ""))
+	*gameFolders.var.szRoot = '\0';
+
 #	else //__macosx__
 
 if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APPNAME) &&
 	 !*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-gamedir"), D2X_APPNAME))
 	GetOSXAppFolder (gameFolders.game.szRoot, gameFolders.game.szRoot);
-
-#	endif
 
 nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
 if (nUserFolderMode && !*CheckFolder (gameFolders.user.szRoot, getenv ("HOME"), ""))
@@ -288,7 +292,7 @@ nSharedFolderMode = !*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cac
 if (nSharedFolderMode && !*CheckFolder (gameFolders.var.szRoot, SHARED_ROOT_FOLDER, ""))
 	*gameFolders.var.szRoot = '\0';
 
-#endif // !_WIN32
+#endif // __macosx__
 
 return 1;
 }

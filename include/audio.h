@@ -21,7 +21,9 @@
 #		define USE_SDL_MIXER	1
 #	endif
 #else
-#	include "conf.h"
+#	if HAVE_CONFIG_H
+#		include "conf.h"
+#	endif
 #	if !defined (USE_SDL_MIXER)
 #		define USE_SDL_MIXER	0
 #	endif
