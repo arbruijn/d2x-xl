@@ -329,6 +329,7 @@ if (bInit)
 *gameFolders.user.szCache = '\0';
 
 #ifdef _WIN32
+
 if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APPNAME) &&
 	 !*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-gamedir"), D2X_APPNAME) &&
 	 !*CheckFolder (gameFolders.game.szRoot, getenv ("DESCENT2"), D2X_APPNAME) &&
