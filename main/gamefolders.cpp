@@ -167,8 +167,8 @@ return pszAppFolder;
 int CheckDataFolder (char* pszDataRootDir)
 {
 AppendSlash (FlipBackslash (pszDataRootDir));
-return GetAppFolder ("", gameFolders.game.szData [0], pszDataRootDir, "descent2.hog") &&
-		 GetAppFolder ("", gameFolders.game.szData [0], pszDataRootDir, "d2demo.hog") &&
+return /*GetAppFolder ("", gameFolders.game.szData [0], pszDataRootDir, "descent2.hog") &&
+		 GetAppFolder ("", gameFolders.game.szData [0], pszDataRootDir, "d2demo.hog") &&*/
 		 GetAppFolder (pszDataRootDir, gameFolders.game.szData [0], DATA_FOLDER, "descent2.hog") &&
 		 GetAppFolder (pszDataRootDir, gameFolders.game.szData [0], DATA_FOLDER, "d2demo.hog");
 }
@@ -236,6 +236,8 @@ return 1;
 
 int MakeGameFolders (void)
 {
+PrintLog (0, "Setting up game folders\n");
+
 if (GetAppFolder (gameFolders.game.szRoot, "", "", "")) {
 	Error ("Game data could not be found");
 	return 0;
@@ -275,6 +277,8 @@ return 1;
 
 int MakeSharedFolders (void)
 {
+PrintLog (0, "Setting up shared folders\n");
+
 return
 	MakeFolder (gameFolders.var.szModels [0], gameFolders.var.szCache, MODEL_FOLDER) &&
 	MakeFolder (gameFolders.var.szTextures [0], gameFolders.var.szCache, TEXTURE_FOLDER) &&
@@ -294,6 +298,8 @@ return
 
 int MakeUserFolders (void)
 {
+PrintLog (0, "Setting up user folders\n");
+
 #ifdef _WIN32
 #	define PRIVATE_DATA_FOLDER	gameFolders.user.szRoot
 #else
@@ -330,6 +336,8 @@ if (bInit)
 *gameFolders.game.szData [1] =
 *gameFolders.var.szCache =
 *gameFolders.user.szCache = '\0';
+
+PrintLog (1, "Looking for system folders\n");
 
 #if defined (_WIN32)
 
@@ -434,6 +442,7 @@ if (!MakeSharedFolders () && strcmp (gameFolders.var.szCache, gameFolders.user.s
 	MakeSharedFolders ();
 	}
 MakeUserFolders ();
+PrintLog (-1);
 }
 
 // ----------------------------------------------------------------------------
