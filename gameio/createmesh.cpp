@@ -779,9 +779,10 @@ if (bOk) {
 if (bOk)
 	bOk = ((ioBuffer = new char [nExpectedSize]) != NULL);
 if (bOk) {
-	if (!gameStates.app.bCompressData)
+	if (!mdh.bCompressed)
 		bOk = cf.Read (ioBuffer, nExpectedSize, 1) == 1;
 	else {
+		PrintLog (0, "Mesh builder: reading compressed mesh data\n");
 		nSize = 0;
 		int i;
 		for (i = 0; nSizes [i] > 0; i++) {
@@ -893,6 +894,8 @@ if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.var.szMeshes, "wb",
 	PrintLog (0, "Couldn't save mesh data (check access rights of '%s')\n", gameFolders.var.szMeshes);
 	return 0;
 	}
+if (mdh.bCompressed)
+	PrintLog (0, "Mesh builder: writing compressed mesh data\n");
 bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
 		(gameData.segs.vertices.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint (mdh.nVertices)) &&
 		(gameData.segs.fVertices.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint (mdh.nVertices));
