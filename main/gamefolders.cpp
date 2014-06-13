@@ -215,7 +215,7 @@ return nResult;
 
 // ----------------------------------------------------------------------------
 
-static int MakeTexSubFolders (char* pszParentFolder)
+int MakeTexSubFolders (char* pszParentFolder)
 {
 if (!*pszParentFolder)
 	return 0;
