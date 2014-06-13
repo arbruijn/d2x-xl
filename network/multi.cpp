@@ -1183,7 +1183,7 @@ void MultiSendData (char *buf, int len, int bUrgent)
 {
 #if DBG
 if (len != MultiMsgLen (int (buf [0])))
-	len = len;
+	BRP;
 #endif
 if (IsNetworkGame &&(buf [0] < 1))
 	return;
@@ -5139,7 +5139,7 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 	h = MissingPowerups (i, 1);
 #if DBG
 	if (i == nDbgPowerup)
-		nDbgPowerup = nDbgPowerup;
+		BRP;
 #endif
 	if (h < 0) {
 		if (gameData.multiplayer.powerupsInMine [i] > 0) 
@@ -5151,7 +5151,7 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 			}
 	#if DBG
 		if (j == nDbgPowerup)
-			nDbgPowerup = nDbgPowerup;
+			BRP;
 		MissingPowerups (i, 1);
 #endif
 		CObject* objP, * delObjP = NULL;
@@ -5173,7 +5173,7 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 			continue;
 	#if DBG
 		if (i == nDbgPowerup)
-			nDbgPowerup = nDbgPowerup;
+			BRP;
 		MissingPowerups (i, 1);
 	#endif
 		if (MultiPowerupIs4Pack (i + 1) && (MissingPowerups (i + 1) > 0)) {
