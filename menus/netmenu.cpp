@@ -1094,7 +1094,7 @@ if (key != -1) {
 			
 	for (j = 0; j < networkData.nActiveGames; j++)
 		if (!stricmp (activeNetGames [j].m_info.szGameName, szName)) {
-			InfoBox (TXT_ERROR, BG_STANDARD, NULL, 1, TXT_OK, TXT_DUPLICATE_NAME);
+			InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_DUPLICATE_NAME);
 			return 1;
 		}
 	strncpy (mpParams.szGameName, szName, sizeof (mpParams.szGameName));
