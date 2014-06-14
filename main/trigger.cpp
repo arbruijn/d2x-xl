@@ -525,7 +525,8 @@ if (m_info.flags & TF_DISABLED)
 	return 0;
 if (m_info.time [0] < 0) {
 	m_info.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, 1, -1, -1, -1, I2X (1), indexP->pszText);
-	m_info.flags |= TF_PLAYING_SOUND;
+	if (m_info.nChannel >= 0)
+		m_info.flags |= TF_PLAYING_SOUND;
 	}
 else if (gameData.time.xGame - m_info.tOperated > m_info.time [1]) {
 	m_info.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, 0, 0, m_info.time [0] - 1, -1, I2X (1), indexP->pszText);
