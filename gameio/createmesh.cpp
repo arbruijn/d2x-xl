@@ -60,7 +60,7 @@ void LoadFaceBitmaps (CSegment *segP, CSegFace *faceP);
 
 #define	MAX_EDGE_LEN(nMeshQuality)	fMaxEdgeLen [nMeshQuality]
 
-#define MESH_DATA_VERSION 15
+#define MESH_DATA_VERSION 16
 
 //------------------------------------------------------------------------------
 
@@ -425,7 +425,7 @@ memcpy (verts, edgeP->verts, sizeof (verts));
 int i = gameData.segs.fVertices.Length ();
 if (gameData.segs.nVertices >= i) {
 	i *= 2;
-	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.render.mine.Resize (i)))
+	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.segs.vertexOwners.Resize (i) && gameData.render.mine.Resize (i)))
 		return 0;
 	}
 gameData.segs.fVertices [gameData.segs.nVertices] = CFloatVector::Avg (gameData.segs.fVertices [verts [0]], gameData.segs.fVertices [verts [1]]);
@@ -772,6 +772,7 @@ if (bOk)
 		int (sizeof (FACES.color [0]) * nTriVerts),
 		int (sizeof (FACES.lMapTexCoord [0]) * FACES.lMapTexCoord.Length ()),
 		int (sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts),
+		int (sizeof (VERTEX_OWNERS [0]) * mdh.nVertices),
 		0
 		};
 
@@ -856,6 +857,9 @@ if (bOk) {
 	bufP += nSize;
 	FACES.faceVerts.Create (mdh.nFaceVerts);
 	memcpy (FACES.faceVerts.Buffer (), bufP, nSize = sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts);
+	bufP += nSize;
+	VERTEX_OWNERS.Resize (mdh.nVertices);
+	memcpy (VERTEX_OWNERS.Buffer (), bufP, nSize = sizeof (VERTEX_OWNERS [0]) * mdh.nVertices);
 	gameData.render.mine.Resize (mdh.nVertices);
 	}
 if (ioBuffer) {
@@ -921,7 +925,8 @@ if (bOk)
 			(FACES.ovlTexCoord.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
 			(FACES.color.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
 			(FACES.lMapTexCoord.Write (cf, FACES.lMapTexCoord.Length (), 0, mdh.bCompressed) == FACES.lMapTexCoord.Length ()) &&
-			(FACES.faceVerts.Write (cf, mdh.nFaceVerts, 0, mdh.bCompressed) == uint (mdh.nFaceVerts));
+			(FACES.faceVerts.Write (cf, mdh.nFaceVerts, 0, mdh.bCompressed) == uint (mdh.nFaceVerts)) &&
+			(VERTEX_OWNERS.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint (mdh.nVertices));
 cf.Close ();
 return bOk;
 }
