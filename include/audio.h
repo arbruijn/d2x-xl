@@ -387,7 +387,7 @@ class CAudio {
 			}
 		inline int MaxChannels (void) { return m_info.nMaxChannels; }
 		inline int FreeChannel (void) { return m_info.nFreeChannel; }
-		inline CAudioChannel* Channel (uint i = 0) { return (i < MaxChannels ()) ? m_channels + i : NULL; }
+		inline CAudioChannel* Channel (uint i = 0) { return (i < (uint) MaxChannels ()) ? m_channels + i : NULL; }
 		inline CStack<CSoundObject>& Objects (void) { return m_objects; }
 		inline float SlowDown (void) { return m_info.fSlowDown; }
 		inline void ActivateObject (void) { m_info.nActiveObjects++; }

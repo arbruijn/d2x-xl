@@ -1268,7 +1268,8 @@ m_info.prevCh = m_info.ch;
 m_info.bRedraw = !m_info.nDelayCount || (m_info.message <= m_info.pj);
 if (!m_info.bRedraw) {
 	m_info.nPrintingChannel = StartSound (m_info.nPrintingChannel, SOUND_BRIEFING_PRINTING, I2X (1), NULL);
-	m_info.bChattering = 1;
+	if (m_info.nPrintingChannel >= 0)
+		m_info.bChattering = 1;
 	}
 m_info.briefingTextX += PrintCharDelayed (m_info.nDelayCount);
 return 1;
