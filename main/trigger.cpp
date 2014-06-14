@@ -534,6 +534,10 @@ else if (gameData.time.xGame - m_info.tOperated > m_info.time [1]) {
 		m_info.time [1] = audio.Channel (m_info.nChannel)->Duration () * m_info.time [0];
 		m_info.flags |= TF_PLAYING_SOUND;
 		}
+#if DBG
+	else
+		indexP = FindTextData (&gameData.sounds, X2I (m_info.value));
+#endif
 	}
 else
 	return 0;
@@ -1112,9 +1116,9 @@ int CTrigger::Operate (short nObject, int nPlayer, int bShot, bool bObjTrigger)
 	static int nDepth = -1;
 #if DBG
 if (this - gameData.trigs.triggers.Buffer () == nDbgTrigger)
-	nDbgTrigger = nDbgTrigger;
+	BRP;
 if (bObjTrigger)
-	nDbgTrigger = nDbgTrigger;
+	BRP;
 #endif
 
 if (m_info.flags & TF_DISABLED)
