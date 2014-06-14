@@ -461,7 +461,7 @@ for (i = 0; i < 3; i++) {
 	}
 if (lMax <= MAX_EDGE_LEN (m_nQuality))
 	return -1;
-return SplitEdge (&m_edges [triP->lines [h]], nPass);
+return SplitEdge (faceP, &m_edges [triP->lines [h]], nPass);
 }
 
 //------------------------------------------------------------------------------
@@ -489,7 +489,7 @@ do {
 		if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 			BRP;
 #endif
-		nSplitRes = SplitTriangle (&m_triangles [i], nPass);
+		nSplitRes = SplitTriangle (faceP, &m_triangles [i], nPass);
 		if (gameData.segs.nVertices == 65536) {
 			PrintLog (-1, "Level too big for requested triangle mesh quality.\n");
 			return 0;
