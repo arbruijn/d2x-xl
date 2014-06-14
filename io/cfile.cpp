@@ -66,20 +66,30 @@ int GetAppFolder (const char *szMainFolder, char *szDestFolder, const char *szSu
 {
 	FFS	ffs;
 	char	szFolder [FILENAME_LEN];
+	int	i, l;
 
 if (!(szSubFolder && *szSubFolder))
 	return !(szMainFolder && *szMainFolder && !FFF (szMainFolder, &ffs, 1));
 
-int i = (int) strlen (szMainFolder) - 1;
-int bAddSlash = i && (szMainFolder [i] != '\\') && (szMainFolder [i] != '/');
-PrintLog (0, "GetAppFolder ('%s', '%s', '%s', '%s')\n", szMainFolder, szDestFolder, szSubFolder, szFilter);
-sprintf (szFolder, "%s%s%s%s%s", szMainFolder, bAddSlash ? "/" : "", szSubFolder, *szFilter ? "/" : "", szFilter);
-i = (int) strlen (szFolder) - 1;
-if ((szFolder [i] == '\\') || (szFolder [i] == '/'))
-	szFolder [i] = '\0';
+strcpy (szFolder, szMainFolder);
+if (*szFolder)
+	AppendSlash (szFolder);
+strcat (szFolder, szSubFolder);
+if ((l = strlen (szFolder))) {
+	if (*szFilter) {
+		AppendSlash (szFolder);
+		strcat (szFolder, szFilter);
+		}
+	else {
+		if ((szFolder [l-1] == '\\') || (szFolder [l-1] == '/'))
+			szFolder [l-1] = '\0';
+		}
+	}
 if (!(i = FFF (szFolder, &ffs, *szFilter == '\0'))) {
-	if (szDestFolder != szSubFolder)
-		sprintf (szDestFolder, "%s%s%s%s", szMainFolder, bAddSlash ? "/" : "", szSubFolder, *szSubFolder ? "/" : "");
+	if (szDestFolder != szSubFolder) {
+		memcpy (szDestFolder, szFolder, l);
+		szDestFolder [l] = '\0';
+		}
 	}
 else if (*szMainFolder)
 	strcpy (szDestFolder, szMainFolder);
@@ -101,7 +111,6 @@ return pszFile;
 }
 
 // ----------------------------------------------------------------------------
-
 
 char* AppendSlash (char* pszFile)
 {
