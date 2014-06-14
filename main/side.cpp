@@ -377,6 +377,18 @@ for (int i = 0; i < m_nCorners; i++)
 
 // -------------------------------------------------------------------------------
 
+int CSide::HasVertex (ushort nVertex) 
+{ 
+if (gameData.segs.vertexOwners [nVertex] == m_nSegment)
+	return 1;
+for (int i = 0; i < m_nCorners; i++)
+	if (m_corners [i] == nVertex)
+		return 1;
+return 0;
+}
+
+// -------------------------------------------------------------------------------
+
 CFixVector& CSide::Vertex (int nVertex)
 {
 return gameStates.render.bRendering ? RENDERPOINTS [nVertex].ViewPos () : VERTICES [nVertex];

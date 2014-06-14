@@ -415,7 +415,7 @@ return CFloatVector::Dist(gameData.segs.fVertices [h], gameData.segs.fVertices [
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::SplitEdge (tEdge *edgeP, short nPass)
+int CTriMeshBuilder::SplitEdge (CSegFace* faceP, tEdge *edgeP, short nPass)
 {
 	int		tris [2];
 	ushort	verts [2];
@@ -428,9 +428,9 @@ if (gameData.segs.nVertices >= i) {
 	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.render.mine.Resize (i)))
 		return 0;
 	}
-gameData.segs.fVertices [gameData.segs.nVertices] = 
-	CFloatVector::Avg (gameData.segs.fVertices [verts [0]], gameData.segs.fVertices [verts [1]]);
+gameData.segs.fVertices [gameData.segs.nVertices] = CFloatVector::Avg (gameData.segs.fVertices [verts [0]], gameData.segs.fVertices [verts [1]]);
 gameData.segs.vertices [gameData.segs.nVertices].Assign (gameData.segs.fVertices [gameData.segs.nVertices]);
+gameData.segs.vertexOwners [gameData.segs.nVertices] = faceP->m_info.nSegment;
 #if 0
 if (tris [1] >= 0) {
 	if (NewEdgeLen (tris [0], verts [0], verts [1]) + NewEdgeLen (tris [1], verts [0], verts [1]) < MAX_EDGE_LEN (m_nQuality))
@@ -447,7 +447,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::SplitTriangle (tTriangle *triP, short nPass)
+int CTriMeshBuilder::SplitTriangle (CSegFace* faceP, tTriangle *triP, short nPass)
 {
 	int	h = 0, i;
 	float	l, lMax = 0;
@@ -477,10 +477,15 @@ do {
 	j = m_nTriangles;
 	PrintLog (1, "splitting triangles (pass %d)\n", nPass);
 	for (i = h, h = 0; i < j; i++) {
+#if DBG
+		CSegFace *faceP = FACES.faces + m_triangles [i].nFace;
+		if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
+			BRP;
+#endif
 		if (m_triangles [i].nPass != nPass - 1)
 			continue;
 #if DBG
-		CSegFace *faceP = FACES.faces + m_triangles [i].nFace;
+		faceP = FACES.faces + m_triangles [i].nFace;
 		if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 			BRP;
 #endif

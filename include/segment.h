@@ -259,12 +259,7 @@ class CSide {
 			}
 		CFixVector* GetCornerVertices (CFixVector* vertices);
 		inline ushort* Corners (void) { return m_corners; }
-		inline int HasVertex (ushort nVertex) { 
-			for (int i = 0; i < m_nCorners; i++)
-				if (m_corners [i] == nVertex)
-					return 1;
-			return 0;
-			}
+		int HasVertex (ushort nVertex);
 		CFixVector& Vertex (int nVertex);
 		CFixVector& MinVertex (void);
 		CFixVector& Normal (int nFace);

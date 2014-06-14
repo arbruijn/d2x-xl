@@ -2041,6 +2041,7 @@ class CSegmentData {
 		int							nMaxSegments;
 		CArray<CFixVector>		vertices;
 		CArray<CFloatVector>		fVertices;
+		CArray<ushort>				vertexOwners;
 		CArray<CSegment>			segments;
 		CArray<tSegFaces>			segFaces;
 		CArray<fix>					segDists;
@@ -3837,6 +3838,7 @@ extern fix nDebrisLife [];
 #define SEGMENTS			gameData.segs.segments
 #define VERTICES			gameData.segs.vertices
 #define FVERTICES			gameData.segs.fVertices
+#define VERTEX_OWNERS	gameData.segs.vertexOwners
 #define SEGFACES			gameData.segs.segFaces
 #define OBJECTS			gameData.objs.objects
 #define WALLS				gameData.walls.walls

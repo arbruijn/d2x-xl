@@ -928,6 +928,7 @@ this->nSegments = nSegments;
 this->nVertices = nVertices;
 CREATE (vertices, LEVEL_VERTICES, 0);
 CREATE (fVertices, LEVEL_VERTICES, 0);
+CREATE (vertexOwners, LEVEL_VERTICES, 0xFF);
 CREATE (segments, LEVEL_SEGMENTS, 0);
 #if CALC_SEGRADS
 CREATE (segRads [0], LEVEL_SEGMENTS, 0);
@@ -963,7 +964,8 @@ bool CSegmentData::Resize (void)
 {
 return gameData.render.mine.Resize () &&
 		 gameData.segs.vertices.Resize (LEVEL_VERTICES) &&
-		 gameData.segs.fVertices.Resize (LEVEL_VERTICES);
+		 gameData.segs.fVertices.Resize (LEVEL_VERTICES) &&
+		 gameData.segs.vertexOwners.Resize (LEVEL_VERTICES);
 }
 
 // ----------------------------------------------------------------------------
@@ -972,6 +974,7 @@ void CSegmentData::Destroy (void)
 {
 DESTROY (gameData.segs.vertices);
 DESTROY (gameData.segs.fVertices);
+DESTROY (gameData.segs.vertexOwners);
 DESTROY (SEGMENTS);
 #if CALC_SEGRADS
 DESTROY (gameData.segs.segRads [0]);
