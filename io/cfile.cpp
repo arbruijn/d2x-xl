@@ -238,28 +238,13 @@ return fp;
 
 size_t CFile::Size (const char *hogname, const char *folder, int bUseD1Hog)
 {
-#if ! (defined (_WIN32_WCE) || defined (_WIN32))
-	struct stat statbuf;
-
-if (!Open (hogname, gameFolders.game.szData [0], "rb", bUseD1Hog))
-	return -1;
-#ifdef _WIN32
-fstat (_fileno (m_info.file), &statbuf);
-#else
-fstat (fileno (m_info.file), &statbuf);
-#endif
-Close ();
-return statbuf.st_size;
-#else
 	size_t size;
 
-//sprintf (fn, "%s%s%s", folder, *folder ? "/" : "", hogname);
 if (!Open (hogname, gameFolders.game.szData [0], "rb", bUseD1Hog))
 	return -1;
 size = m_info.size;
 Close ();
 return size;
-#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -399,7 +384,7 @@ m_info.size = (length < 0) ? ffilelength (fp) : length;
 m_info.libOffset = (length < 0) ? 0 : ftell (fp);
 m_info.filename = const_cast<char*> (filename);
 m_info.bufPos = m_info.bufLen = 0;
-return 1;
+return length;
 }
 
 // ----------------------------------------------------------------------------
