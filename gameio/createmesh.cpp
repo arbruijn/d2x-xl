@@ -490,7 +490,7 @@ do {
 		if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 			BRP;
 #endif
-		nSplitRes = SplitTriangle (faceP, &m_triangles [i], nPass);
+		nSplitRes = SplitTriangle (FACES.faces + m_triangles [i].nFace, &m_triangles [i], nPass);
 		if (gameData.segs.nVertices == 65536) {
 			PrintLog (-1, "Level too big for requested triangle mesh quality.\n");
 			return 0;
