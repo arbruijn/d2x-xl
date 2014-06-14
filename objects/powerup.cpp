@@ -697,7 +697,7 @@ if ((objP->cType.powerupInfo.nFlags & PF_SPAT_BY_PLAYER) &&
 	return 0;		//not enough time elapsed
 gameData.hud.bPlayerMessage = 0;	//	Prevent messages from going to HUD if -PlayerMessages switch is set
 nId = objP->info.nId;
-if ((abs (nId) >= sizeofa (pickupHandler)) || !pickupHandler [nId]) // unknown/unhandled powerup type
+if ((abs (nId) >= (int) sizeofa (pickupHandler)) || !pickupHandler [nId]) // unknown/unhandled powerup type
 	return 0;
 nType = powerupType [nId];
 if (nType == POWERUP_IS_GUN) {
