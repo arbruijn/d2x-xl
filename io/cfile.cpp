@@ -75,7 +75,7 @@ strcpy (szFolder, szMainFolder);
 if (*szFolder)
 	AppendSlash (szFolder);
 strcat (szFolder, szSubFolder);
-if ((l = strlen (szFolder))) {
+if ((l = (int) strlen (szFolder))) {
 	if (*szFilter) {
 		AppendSlash (szFolder);
 		strcat (szFolder, szFilter);
