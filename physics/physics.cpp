@@ -1006,7 +1006,7 @@ return 1;
 void CObject::FinishPhysicsSim (CPhysSimData& simData)
 {
 //Velocity () /*simData.velocity*/ /= I2X (extraGameInfo [IsMultiGame].nSpeedScale + 2) / 2;
-Velocity () = simData.velocity;
+//Velocity () = simData.velocity;
 }
 
 //	-----------------------------------------------------------------------------
