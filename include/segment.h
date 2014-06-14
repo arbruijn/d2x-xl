@@ -419,6 +419,8 @@ class CSegment {
 		void HitPointUV (int nSide, fix *u, fix *v, fix *l, CFixVector& intersection, int iFace)
 			{ m_sides [nSide].HitPointUV (u, v, l, intersection, iFace); }
 
+		int HasVertex (ubyte nSide, ushort nVertex);
+
 		fix MinRad (void) { return m_rads [0]; }
 		fix MaxRad (void) { return m_rads [1]; }
 		float MinRadf (void) { return X2F (m_rads [0]); }

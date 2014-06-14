@@ -425,8 +425,12 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		continue;
 
 	if (!gameStates.render.bHaveLightmaps && (bSelf = lightP->info.bAmbient)) {
-		if (!SEGMENTS [lightP->Segment ()].Side (lightP->Side ())->HasVertex (nVertex))
+		if (!SEGMENTS [lightP->Segment ()].HasVertex (lightP->Side (), nVertex))
 			continue;
+#if DBG
+		if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
+			BRP;
+#endif
 		nSelf++;
 		}
 
@@ -442,6 +446,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	lightRayDir = lightPos - *colorData.vertPosP;
 	fLightDist = lightRayDir.Mag ();
 
+#if DBG
+	if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
+		BRP;
+#endif
 #if DBG
 	CFloatVector3 hDir = *lightP->render.vPosf [bTransform].XYZ () - *colorData.vertPosP;
 	CFloatVector3::Normalize (hDir);

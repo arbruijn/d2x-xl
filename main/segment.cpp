@@ -48,6 +48,16 @@ int CSegment::Index (void)
 return this - SEGMENTS;
 }
 
+// -------------------------------------------------------------------------------
+
+int CSegment::HasVertex (ubyte nSide, ushort nVertex) 
+{ 
+if ((gameData.segs.vertexOwners [nVertex].nSegment == Index ()) && 
+	 (gameData.segs.vertexOwners [nVertex].nSide == nSide))
+	return 1;
+return Side (nSide)->HasVertex (nVertex);
+}
+
 //------------------------------------------------------------------------------
 
 void CSegment::ReadFunction (CFile& cf, ubyte flags)

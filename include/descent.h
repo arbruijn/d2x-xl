@@ -2035,13 +2035,17 @@ class CSegDistList : public CSegDistHeader {
 
 	};
 
+typedef struct tVertexOwner {
+	ushort	nSegment;
+	ubyte		nSide;
+} tVertexOwner;
 
 class CSegmentData {
 	public:
 		int							nMaxSegments;
 		CArray<CFixVector>		vertices;
 		CArray<CFloatVector>		fVertices;
-		CArray<ushort>				vertexOwners;
+		CArray<tVertexOwner>		vertexOwners;
 		CArray<CSegment>			segments;
 		CArray<tSegFaces>			segFaces;
 		CArray<fix>					segDists;

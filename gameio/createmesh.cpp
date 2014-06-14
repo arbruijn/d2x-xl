@@ -430,7 +430,8 @@ if (gameData.segs.nVertices >= i) {
 	}
 gameData.segs.fVertices [gameData.segs.nVertices] = CFloatVector::Avg (gameData.segs.fVertices [verts [0]], gameData.segs.fVertices [verts [1]]);
 gameData.segs.vertices [gameData.segs.nVertices].Assign (gameData.segs.fVertices [gameData.segs.nVertices]);
-gameData.segs.vertexOwners [gameData.segs.nVertices] = faceP->m_info.nSegment;
+gameData.segs.vertexOwners [gameData.segs.nVertices].nSegment = faceP->m_info.nSegment;
+gameData.segs.vertexOwners [gameData.segs.nVertices].nSide = faceP->m_info.nSide;
 #if 0
 if (tris [1] >= 0) {
 	if (NewEdgeLen (tris [0], verts [0], verts [1]) + NewEdgeLen (tris [1], verts [0], verts [1]) < MAX_EDGE_LEN (m_nQuality))
