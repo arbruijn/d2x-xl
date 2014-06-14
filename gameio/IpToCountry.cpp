@@ -83,7 +83,6 @@ return bSuccess;
 //------------------------------------------------------------------------------
 
 static CFile cf;
-static int nProgressStep;
 
 int ReadIpToCountryRecord (void)
 {
@@ -124,6 +123,8 @@ return 1;
 //------------------------------------------------------------------------------
 
 #if 0
+
+static int nProgressStep;
 
 static int LoadIpToCountryPoll (CMenu& menu, int& key, int nCurItem, int nState)
 {

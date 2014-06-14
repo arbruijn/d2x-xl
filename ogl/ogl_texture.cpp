@@ -181,8 +181,6 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static CTexture* dbgTexP = (CTexture*) 0x101fca30;
-
 uint CTextureManager::Register (CTexture* texP)
 {
 uint i = Find (texP);
@@ -1151,7 +1149,7 @@ if (!data)
 	GLubyte*		bufP = NULL;
 	CTexture		texture;
 	bool			bLocal;
-	int			funcRes = 1;
+	int			funcRes = 0;
 
 if ((bLocal = (m_info.texP == NULL))) {
 	texture.Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP);
@@ -1196,7 +1194,7 @@ if (!m_info.texP->IsRenderBuffer ())
 	if (bLocal)
 		m_info.texP->Destroy ();
 	}
-return 0;
+return funcRes;
 }
 
 //------------------------------------------------------------------------------
@@ -1474,11 +1472,12 @@ if (bMipMaps < 0)
 #endif
 switch (m_info.nType) {
 	case BM_TYPE_STD: // primary (low res) texture
-		if ((bmP = HasOverride ()))
+		if ((bmP = HasOverride ())) {
 			if (bmP == this)
 				m_info.overrideP = NULL;
 			else
 				return bmP->SetupTexture (bMipMaps, bLoad);
+			}
 		if (m_info.bSetup)
 			return Prepared () || !PrepareTexture (bMipMaps, 0);
 		return SetupFrames (bMipMaps, bLoad);

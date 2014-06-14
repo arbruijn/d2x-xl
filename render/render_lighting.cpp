@@ -43,6 +43,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // -----------------------------------------------------------------------------------
 
+#if LIGHTING_QUALITY == 1
+
 static void WaitWithUpdate (CFaceColor* colorP)
 {
 	int bUpdate = false;
@@ -61,6 +63,8 @@ for (;;) {
 	G3_SLEEP (0);
 	}
 }
+
+#endif
 
 // -----------------------------------------------------------------------------------
 

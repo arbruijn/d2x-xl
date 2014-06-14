@@ -19,6 +19,8 @@ class CPostEffect {
 			m_prev (0), m_next (0), m_nType (nType), m_bValid (false)
 			{}
 
+		virtual ~CPostEffect () {}
+
 		inline CPostEffect* Prev (void) { return m_prev; }
 
 		inline CPostEffect* Next (void) { return m_next; }

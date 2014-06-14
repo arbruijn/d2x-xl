@@ -346,16 +346,6 @@ return OOF_DrawShadowVolume (po, pso, 0) &&
 
 //------------------------------------------------------------------------------
 
-static int FlushBuffers (int* nVerts, int bTextured)
-{
-ogl.FlushBuffers (GL_TRIANGLE_FAN, nVerts [bTextured], 3, bTextured, bTextured);
-bTextured = !bTextured;
-nVerts [bTextured] = 0;
-return bTextured;
-}
-
-//------------------------------------------------------------------------------
-
 int CSubModel::Draw (CObject *objP, CModel *po, float *fLight)
 {
 	CFace*			faceP;
@@ -452,7 +442,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 				fl = 1;
 #if DBG
 			if (m_nFlags & OOF_SOF_LAYER)
-				m_nFlags = m_nFlags;
+				BRP;
 #endif
 			if (m_nFlags & (bDynLighting ? OOF_SOF_THRUSTER : (OOF_SOF_GLOW | OOF_SOF_THRUSTER))) {
 				colorP [nVerts].Red () = fl * m_glowInfo.m_color.Red ();

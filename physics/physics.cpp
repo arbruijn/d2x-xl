@@ -34,7 +34,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 //Global variables for physics system
+#if DBG
 static int bNewPhysCode = 1;
+#endif
 
 #define UNSTICK_OBJS		2
 
