@@ -528,61 +528,70 @@ void CFont::StringSizeTabbed (const char *s, int& stringWidth, int& stringHeight
 	float fScale = fontManager.Scale ();
 
 stringHeight = int (m_info.height * fScale);
-stringWidth = 0;
-stringHeight = 0;
 averageWidth = int (m_info.width * fScale);
 
 if (!(s && *s))
 	return;
+
+stringWidth = 0;
+stringHeight = 0;
 
 	char	*pi, *pj;
 	int	w, h, sw = 0, nTab = 0;
 	static char	hs [10000];
 
 strncpy (hs, s, sizeof (hs));
-for (pi = pj = hs; *pi; pi++) {
-	if (*pi == '\n') {
-		*pi++ = '\0';
-		fontManager.Current ()->StringSize (pj, w, h, averageWidth);
-		sw += w;
-		if (stringWidth < sw)
-			stringWidth = sw;
-		stringHeight += h;
-		sw = 0;
-		pj = pi;
-		nTab = 0;
-		}
-	else if (*pi == '\t') {
-		*pi++ = '\0';
-		fontManager.Current ()->StringSize (pj, w, h, averageWidth);
-		sw += w;
-		if (nTabs) {
-			if (!gameStates.multi.bSurfingNet && nMaxWidth) {
-				if (pj) {
-					stringWidth = nMaxWidth;
-					return;
-					}
-				}
-			else {
-				int xTab = LHX (int (nTabs [nTab] * fScale));
-				if (xTab > sw) {
-					if (nMaxWidth && (xTab < nMaxWidth))
-						sw = xTab;
-					else {
+for (pi = pj = hs; ; pi++) {
+	switch (*pi) {
+		case '\n':
+			*pi++ = '\0';
+
+		case '\0':
+			fontManager.Current ()->StringSize (pj, w, h, averageWidth);
+			sw += w;
+			if (stringWidth < sw)
+				stringWidth = sw;
+			stringHeight += h;
+			if (*pi == '\0')
+				return;
+			sw = 0;
+			pj = pi;
+			nTab = 0;
+			break;
+
+		case '\t':
+			*pi++ = '\0';
+			fontManager.Current ()->StringSize (pj, w, h, averageWidth);
+			sw += w;
+			if (stringHeight == 0)
+				stringHeight = h;
+			if (nTabs) {
+				if (!gameStates.multi.bSurfingNet && nMaxWidth) {
+					if (pj) {
 						stringWidth = nMaxWidth;
 						return;
 						}
 					}
+				else {
+					int xTab = LHX (int (nTabs [nTab] * fScale));
+					if (xTab > sw) {
+						if (nMaxWidth && (xTab < nMaxWidth))
+							sw = xTab;
+						else {
+							stringWidth = nMaxWidth;
+							return;
+							}
+						}
+					}
 				}
-			}
-		pj = pi;
-		nTab++;
+			pj = pi;
+			nTab++;
+			break;
+
+		default:
+			break;
 		}
 	} 
-fontManager.Current ()->StringSize (pj, w, stringHeight, averageWidth);
-sw += w;
-if (stringWidth < sw)
-	stringWidth = sw;
 }
 
 //------------------------------------------------------------------------------

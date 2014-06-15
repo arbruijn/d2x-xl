@@ -218,7 +218,7 @@ else if (!gameStates.render.nWindow [0]) {
 			fAlpha = (float) (msgP->nEndTime - gameStates.app.nSDLTicks [0]) / 500.0f;
 		else
 			fAlpha = 1.0f;
-		backgroundManager.DrawBox (x - 8, y - 8, x + w + 4, y + h + 4, 3, fAlpha, 1);
+		backgroundManager.DrawBox (x - 8, y - 8, x + w + 8, y + h + 8, 3, fAlpha, 1);
 		msgP->bmP->Render (CCanvas::Current (), x, y, w, h, 0, 0, w, h, 1, 0, 0, fAlpha);
 		}
 	}

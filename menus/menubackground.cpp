@@ -382,7 +382,7 @@ void CBackgroundManager::DrawBox (int left, int top, int right, int bottom, int 
 {
 	CCanvas	canvas;
 
-canvas.Setup (&gameData.render.frame, left - gameData.StereoOffset2D (), top, left + right - 1, top + bottom - 1, true);
+canvas.Setup (&gameData.render.frame, left - gameData.StereoOffset2D (), top, right - left + 1, bottom - top + 1, true);
 canvas.Activate ("CBackgroundManager::DrawBox", &gameData.render.frame);
 ::DrawBox (canvas);
 canvas.Deactivate ();
