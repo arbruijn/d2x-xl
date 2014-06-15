@@ -529,44 +529,60 @@ void CFont::StringSizeTabbed (const char *s, int& stringWidth, int& stringHeight
 
 stringHeight = int (m_info.height * fScale);
 stringWidth = 0;
+stringHeight = 0;
 averageWidth = int (m_info.width * fScale);
 
 if (!(s && *s))
 	return;
 
 	char	*pi, *pj;
-	int	w, nTab = 0;
+	int	w, h, sw = 0, nTab = 0;
 	static char	hs [10000];
 
 strncpy (hs, s, sizeof (hs));
-for (pi = hs; ; pi = pj + 1) {
-	if ((pj = strchr (pi, '\t')))
-		*pj = '\0';
-	fontManager.Current ()->StringSize (pi, w, stringHeight, averageWidth);
-	stringWidth += w;
-	if (/*nTab &&*/ nTabs) {
-		if (!gameStates.multi.bSurfingNet && nMaxWidth) {
-			if (pj) {
-				stringWidth = nMaxWidth;
-				return;
-				}
-			}
-		else {
-			int xTab = LHX (int (nTabs [nTab] * fScale));
-			if (xTab > stringWidth) {
-				if (nMaxWidth && (xTab < nMaxWidth))
-					stringWidth = xTab;
-				else {
+for (pi = pj = hs; *pi; pi++) {
+	if (*pi == '\n') {
+		*pi++ = '\0';
+		fontManager.Current ()->StringSize (pj, w, h, averageWidth);
+		sw += w;
+		if (stringWidth < sw)
+			stringWidth = sw;
+		stringHeight += h;
+		sw = 0;
+		pj = pi;
+		nTab = 0;
+		}
+	else if (*pi == '\t') {
+		*pi++ = '\0';
+		fontManager.Current ()->StringSize (pj, w, h, averageWidth);
+		sw += w;
+		if (nTabs) {
+			if (!gameStates.multi.bSurfingNet && nMaxWidth) {
+				if (pj) {
 					stringWidth = nMaxWidth;
 					return;
 					}
 				}
+			else {
+				int xTab = LHX (int (nTabs [nTab] * fScale));
+				if (xTab > sw) {
+					if (nMaxWidth && (xTab < nMaxWidth))
+						sw = xTab;
+					else {
+						stringWidth = nMaxWidth;
+						return;
+						}
+					}
+				}
 			}
+		pj = pi;
+		nTab++;
 		}
-	if (!pj)
-		break;
-	nTab++;
 	} 
+fontManager.Current ()->StringSize (pj, w, stringHeight, averageWidth);
+sw += w;
+if (stringWidth < sw)
+	stringWidth = sw;
 }
 
 //------------------------------------------------------------------------------

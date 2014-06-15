@@ -205,7 +205,7 @@ else if (!gameStates.render.nWindow [0]) {
 		fontManager.SetCurrent (NORMAL_FONT);
 		fontManager.SetColorRGBi (GOLD_RGBA, 1, 0, 0);
 		}
-	if (msgP->bmP || (msgP->bmP = CreateStringBitmap (indexP->pszText, 0, 0, NULL, 0, 0, -1))) {
+	if (msgP->bmP || (msgP->bmP = CreateStringBitmap (indexP->pszText, 0, 0, NULL, 0, 0, 0))) {
 		w = msgP->bmP->Width ();
 		h = msgP->bmP->Height ();
 		x = (CCanvas::Current ()->Width () - w) / 2;

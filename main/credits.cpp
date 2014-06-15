@@ -292,7 +292,7 @@ for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 
 			fontManager.Current ()->StringSize (s, w, h, aw);
 			if ((y >= 0) && (y + h <= 480)) {
-				CBitmap* bmP = CreateStringBitmap (s, 0, 0, NULL, 1, w, -1);
+				CBitmap* bmP = CreateStringBitmap (s, 0, 0, NULL, 1, w, 1);
 				if (bmP) {
 					float dy = float ((y < FADE_DIST) ? y : (480 - y - h < FADE_DIST) ? 480 - y - h : FADE_DIST);
 					colors [0].Alpha () = colors [1].Alpha () = dy / float (FADE_DIST);
