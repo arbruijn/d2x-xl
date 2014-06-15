@@ -125,7 +125,7 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 		HUDInitMessage (TXT_DROP_SLASER);
 		}
 	else if (!IsBuiltinWeapon (SUPER_LASER_INDEX) && LOCALPLAYER.DropStandardLaser ()) {
-		nObject = SpitPowerup (gameData.objs.consoleP, POW_SUPERLASER);
+		nObject = SpitPowerup (gameData.objs.consoleP, POW_LASER);
 		if (nObject < 0) {
 			LOCALPLAYER.AddStandardLaser ();
 			return;

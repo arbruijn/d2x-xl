@@ -17,7 +17,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "carray.h"
 #include "player.h"
 
-#define AM_SHOW_PLAYERS				(!IsMultiGame || IsTeamGame || IsCoopGame || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))
+#define AM_SHOW_PLAYERS				(!IsMultiGame || IsTeamGame || IsCoopGame)
 #define AM_SHOW_PLAYER(_i)			(!IsMultiGame || \
 											 IsCoopGame || \
 											 (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP) || \

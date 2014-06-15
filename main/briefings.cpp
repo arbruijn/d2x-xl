@@ -286,6 +286,7 @@ nDelayCount = KEY_DELAY_DEFAULT;
 nRobot = -1;
 nDoorDir = 1;
 nCurrentColor = 1;
+nFuncRes = 0;
 nEraseColor = BLACK_RGBA;
 *szBitmapName = '\0';
 strcpy (szSpinningRobot, "rba.mve");
