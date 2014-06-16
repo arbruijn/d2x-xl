@@ -363,6 +363,8 @@ if (gameStates.app.bNostalgia)
 	return;
 if (cockpit->Hide ())
 	return;
+if ((gameOpts->render.cockpit.bHUD < 2) && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN))
+	return;
 if (transformation.HaveHeadAngles ())
 	return;
 if (automap.Display ())
