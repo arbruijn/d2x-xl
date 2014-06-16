@@ -65,11 +65,11 @@
 #	define	SHADER_FOLDER				"Shaders"
 #	define	MODEL_FOLDER				"Models"
 #	define	SOUND_FOLDER				"Sounds"
-#	define	SOUND_FOLDER1				"Sounds1"
-#	define	SOUND_FOLDER2				"Sounds2"
-#	define	SOUND_FOLDER1_D1			"Sounds1/D1"
-#	define	SOUND_FOLDER2_D1			"Sounds2/D1"
-#	define	SOUND_FOLDER_D2X			"Sounds2/d2x-xl"
+#	define	SOUND_FOLDER_D1			"D1"
+#	define	SOUND_FOLDER_D2			"D2"
+#	define	SOUND_FOLDER_22KHZ		"22khz"
+#	define	SOUND_FOLDER_44KHZ		"44khz"
+#	define	SOUND_FOLDER_D2X			"D2X-XL"
 #	define	CONFIG_FOLDER				"Config"
 #	define	PROF_FOLDER					"Profiles"
 #	define	SCRSHOT_FOLDER				"Screenshots"
@@ -81,8 +81,8 @@
 #	define	TEXTURE_FOLDER_D1			"D1"
 #	define	WALLPAPER_FOLDER			"Wallpapers"
 #	define	CACHE_FOLDER				"Cache"
-#	define	SHARED_CACHE_FOLDER		"d2x-xl"
-#	define	USER_CACHE_FOLDER			".d2x-xl"
+#	define	SHARED_CACHE_FOLDER		"D2X-XL"
+#	define	USER_CACHE_FOLDER			CACHE_FOLDER
 #	define	LIGHTMAP_FOLDER			"Lightmaps"
 #	define	LIGHTDATA_FOLDER			"Lights"
 #	define	MESH_FOLDER					"Meshes"
@@ -285,11 +285,11 @@ if (!(*appConfig.Text ("-datadir") && *CheckFolder (gameFolders.game.szRoot, app
 	GetOSXAppFolder (gameFolders.game.szRoot, gameFolders.game.szRoot);
 
 nUserFolderMode = !(*appConfig.Text ("-userdir") && *CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), ""));
-if (nUserFolderMode && !*CheckFolder (gameFolders.user.szRoot, getenv ("HOME"), ""))
+if (nUserFolderMode)
 	*gameFolders.user.szRoot = '\0';
 
 nSharedFolderMode = !(*appConfig.Text ("-cachedir") && *CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), ""));
-if (nSharedFolderMode && !*CheckFolder (gameFolders.var.szRoot, SHARED_ROOT_FOLDER, ""))
+if (nSharedFolderMode)
 	*gameFolders.var.szRoot = '\0';
 
 #endif // __macosx__
@@ -305,14 +305,22 @@ PrintLog (1, "Creating cache folders\n");
 
 #ifdef __macosx__
 
-if (!*gameFolders.user.szRoot)
+if (*gameFolders.user.szRoot)
+	strcpy (gameFolders.user.szCache, gameFolders.user.szRoot);
+else {
 	strcpy (gameFolders.user.szRoot, gameFolders.game.szRoot);
-MakeFolder (gameFolders.user.szCache, gameFolders.user.szRoot, CACHE_FOLDER);
-if (*gameFolders.var.szRoot)
-	strcpy (gameFolders.var.szRoot, GetMacOSXCacheFolder ());
-MakeFolder (gameFolders.var.szCache, gameFolders.var.szRoot, CACHE_FOLDER);
+	MakeFolder (gameFolders.user.szCache, gameFolders.user.szRoot, CACHE_FOLDER);
+	}
+if (*gameFolders.var.szRoot) 
+	strcpy (gameFolders.var.szCache, gameFolders.var.szRoot); // user-supplied shared cache folder
 else
-	strcpy (gameFolders.var.szCache, gameFolders.var.szRoot); // the OS X cache folder already contains ./D2X-XL
+	{
+	strcpy (gameFolders.var.szRoot, GetMacOSXCacheFolder ());
+	if (!MakeFolder (gameFolders.var.szCache, gameFolders.var.szRoot, CACHE_FOLDER)) {	// fall back to user cache folder if folder cannot be created
+		strcpy (gameFolders.var.szRoot, gameFolders.user.szRoot);
+		strcpy (gameFolders.var.szCache, gameFolders.user.szCache);
+		}
+	}
 
 #else
 
@@ -443,10 +451,10 @@ MakeFolder (gameFolders.missions.szCache, gameFolders.user.szCache, MISSION_FOLD
 MakeFolder (gameFolders.missions.szStates, gameFolders.missions.szCache, MISSIONSTATE_FOLDER);
 MakeFolder (gameFolders.missions.szDownloads, gameFolders.missions.szCache, DOWNLOAD_FOLDER);
 
-#ifdef _WIN32
-MakeFolder (gameFolders.user.szWallpapers, strcmp (gameFolders.game.szRoot, gameFolders.user.szRoot) ? gameFolders.user.szCache : gameFolders.game.szTextures [0], WALLPAPER_FOLDER);
-#else
+#ifdef __linux__
 MakeFolder (gameFolders.user.szWallpapers, gameFolders.user.szCache, WALLPAPER_FOLDER);
+#else
+MakeFolder (gameFolders.user.szWallpapers, strcmp (gameFolders.game.szRoot, gameFolders.user.szRoot) ? gameFolders.user.szCache : gameFolders.game.szTextures [0], WALLPAPER_FOLDER);
 #endif
 return 1;
 }
