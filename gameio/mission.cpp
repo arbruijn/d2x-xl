@@ -511,7 +511,7 @@ void CMissionManager::Add (int bAnarchy, int bD1Mission, int bSubFolder, int bHa
 	char lvlName [255];
 	char searchName [255];
 	const char *lvlExt = ".hog";
-	int	bFindDirs;
+	int	bFindDirs, nFolderNameLen = (int) strlen (gameFolders.missions.szCurrent [nLocation]);
 
 	static const char *altLvlExt [2] = {".rdl", ".rl2"};
 
@@ -535,12 +535,19 @@ void CMissionManager::Add (int bAnarchy, int bD1Mission, int bSubFolder, int bHa
 			do {
 				if (!(strcmp (ffs.name, ".") && strcmp (ffs.name, "..")))
 					continue;
+				if (nFolderNameLen + strlen (m_list [m_nCount].szMissionName) > FILENAME_LEN) {
+					if (bFindDirs)
+						PrintLog (0, "   Error: Mission %s name length exceeds internal limits\n(%s%s)\n",
+									 bFindDirs ? "folder" : "file", 
+									 gameFolders.missions.szCurrent [nLocation], ffs.name);
+					continue;
+					}
 				if (bFindDirs) {
-						m_list [m_nCount].nDescentVersion = 0;	//directory
-						*m_list [m_nCount].filename = '\0';
-						sprintf (m_list [m_nCount].szMissionName, "[%s]", ffs.name);
-						m_nCount++;
-						}
+					m_list [m_nCount].nDescentVersion = 0;	//directory
+					*m_list [m_nCount].filename = '\0';
+					sprintf (m_list [m_nCount].szMissionName, "[%s]", ffs.name);
+					m_nCount++;
+					}
 				else {
 					if (strcmp (ffs.name, "d2x.mn2")) { // Vertigo added by default if present
 						sprintf (lvlName, "%s%s", gameFolders.missions.szCurrent [nLocation], ffs.name);
@@ -656,6 +663,13 @@ else {
 			AddBuiltinD1Mission ();
 		}
 	nBuiltIns = m_nCount;
+	if (nSubFolder >= -1)
+		PrintLog (0, "Collecting missions in %s%s\n", gameFolders.missions.szRoot, gameFolders.missions.szSubFolder);
+	if (strlen (gameFolders.missions.szRoot) + strlen (gameFolders.missions.szSubFolder) >= FILENAME_LEN - 5) {
+		PrintLog (0, "   Error: Current mission folder name length exceeds internal limits\n");
+		PrintLog (0, "   (%s%s)\n", gameFolders.missions.szRoot, gameFolders.missions.szSubFolder);
+		return 0;
+		}
 	sprintf (gameFolders.missions.szCurrent [0], "%s%s", gameFolders.missions.szRoot, gameFolders.missions.szSubFolder);
 	bHaveSubFolders = 0;
 	if (gameOpts->app.nVersionFilter & 2) {
@@ -668,6 +682,11 @@ else {
 		}
 	if (gameFolders.bAltHogDirInited && strcmp (gameFolders.game.szAltHogs, gameFolders.game.szRoot)) {
 		bHaveSubFolders = 0;
+		if (strlen (gameFolders.game.szAltHogs) + strlen (MISSION_FOLDER) + strlen (gameFolders.missions.szSubFolder) >= FILENAME_LEN - 5) {
+			PrintLog (0, "   Error: Current mission folder name length exceeds internal limits\n");
+			PrintLog (0, "   (%s%s%s)\n", gameFolders.game.szAltHogs, MISSION_FOLDER, gameFolders.missions.szSubFolder);
+			return 0;
+			}
 		sprintf (gameFolders.missions.szCurrent [1], "%s%s%s", gameFolders.game.szAltHogs, MISSION_FOLDER, gameFolders.missions.szSubFolder);
 		if (gameOpts->app.nVersionFilter & 2) {
 			Add (bAnarchy, 0, bSubFolder, bHaveSubFolders, ML_ALTHOGDIR);
@@ -1020,7 +1039,7 @@ for (i = 0; i < n; i++)
 			return j;
 			}
 		MoveFolderUp ();
-		n = BuildList (1, -1);
+		n = BuildList (1, -2);
 		}
 if (nSubFolder < 0)
 	PrintLog (-1);
