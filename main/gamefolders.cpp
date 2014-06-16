@@ -417,7 +417,13 @@ PrintLog (0, "Setting up user folders\n");
 #	define PRIVATE_DATA_FOLDER	gameFolders.user.szCache
 #endif
 
-#ifdef _WIN32
+#ifdef __linux__
+
+MakeFolder (gameFolders.user.szConfig, PRIVATE_DATA_FOLDER, CONFIG_FOLDER);
+MakeFolder (gameFolders.user.szProfiles, PRIVATE_DATA_FOLDER, PROF_FOLDER);
+
+#else // Windows, OS X
+
 if (nUserFolderMode) {
 	MakeFolder (gameFolders.user.szConfig, gameFolders.game.szRoot, CONFIG_FOLDER);
 	MakeFolder (gameFolders.user.szProfiles, gameFolders.game.szRoot, PROF_FOLDER);
@@ -426,10 +432,9 @@ else {
 	MakeFolder (gameFolders.user.szConfig, PRIVATE_DATA_FOLDER, CONFIG_FOLDER);
 	MakeFolder (gameFolders.user.szProfiles, PRIVATE_DATA_FOLDER, PROF_FOLDER);
 	}
-#else
-MakeFolder (gameFolders.user.szConfig, PRIVATE_DATA_FOLDER, CONFIG_FOLDER);
-MakeFolder (gameFolders.user.szProfiles, PRIVATE_DATA_FOLDER, PROF_FOLDER);
+
 #endif
+
 MakeFolder (gameFolders.user.szSavegames, PRIVATE_DATA_FOLDER, SAVE_FOLDER);
 MakeFolder (gameFolders.user.szScreenshots, PRIVATE_DATA_FOLDER, SCRSHOT_FOLDER);
 MakeFolder (gameFolders.user.szDemos, PRIVATE_DATA_FOLDER, DEMO_FOLDER);
