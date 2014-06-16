@@ -3352,107 +3352,73 @@ ndOutFile.Close ();
 
 //	-----------------------------------------------------------------------------
 
-char szAllowedDemoNameChars [] = "azAZ09__--";
+char szAllowedDemoNameChars [] = "azAZ09_-";
+
+static const char* demoMenuTitles [] = { TXT_SAVE_DEMO_AS, TXT_DEMO_SAVE_BAD, TXT_DEMO_SAVE_NOSPACE };
 
 void NDStopRecording (void)
 {
-	static char filename [15] = "", *s;
+	static char szSaveFile [FILENAME_LEN] = "", *s;
 	static ubyte nAnonymous = 0;
 
 	CMenu	m (6);
-	int	exit = 0;
+	int	nChoice = 0;
 	char	fullname [15 + FILENAME_LEN] = "";
 
 NDFinishRecording ();
 //paletteManager.ResumeEffect ();
-if (filename [0] != '\0') {
-	int num, i = (int) strlen (filename) - 1;
+if (szSaveFile [0] != '\0') {
+	int num, i = (int) strlen (szSaveFile) - 1;
 	char newfile [15];
 
-	while (::isdigit (filename [i])) {
+	while (::isdigit (szSaveFile [i])) {
 		i--;
 		if (i == -1)
 			break;
 		}
 	i++;
-	num = atoi (&(filename [i]));
+	num = atoi (&(szSaveFile [i]));
 	num++;
-	filename [i] = '\0';
-	sprintf (newfile, "%s%d", filename, num);
-	strncpy (filename, newfile, 8);
-	filename [8] = '\0';
+	szSaveFile [i] = '\0';
+	sprintf (newfile, "%s%d", szSaveFile, num);
+	strncpy (szSaveFile, newfile, 8);
+	szSaveFile [8] = '\0';
 	}
+
+m.Create (1);
+m.AddInput ("", szSaveFile, 8);
 
 do {
 	do {
-		m.Destroy ();
-		nmAllowedChars = szAllowedDemoNameChars;
-		if (!gameData.demo.bNoSpace) {
-			m.Create (1);
-			m.AddInput ("", filename, 8);
-			exit = m.Menu (NULL, TXT_SAVE_DEMO_AS);
-			}
-		else if (gameData.demo.bNoSpace == 1) {
-			m.Create (2);
-			m.AddText ("", const_cast<char*> (TXT_DEMO_SAVE_BAD));
-			m.AddInput ("", filename, 8);
-			exit = m.Menu (NULL, NULL);
-			} 
-		else if (gameData.demo.bNoSpace == 2) {
-			m.Create (3);
-			m.AddText ("", const_cast<char*> (TXT_DEMO_SAVE_NOSPACE));
-			m.AddInput ("", filename, 8);
-			exit = m.Menu (NULL, NULL);
-			}
-		nmAllowedChars = NULL;
-		if (exit == 0) {                   // got bumped out from network menu
-			char szSaveFile [7 + FILENAME_LEN];
+		nChoice = m.Menu (NULL, demoMenuTitles [gameData.demo.bNoSpace]);
 
-			if (filename [0] != '\0') {
-				strcpy (szSaveFile, filename);
-				strcat (szSaveFile, ".dem");
-				}
-			else
-				sprintf (szSaveFile, "tmp%d.dem", nAnonymous++);
-			exit = CFile::Exist (szSaveFile, gameFolders.user.szDemos, 0)
-					 ? InfoBox (NULL, NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE) - 1
-					 : -2;
-			if (exit != -2)
-				exit = 0;
-			else {
-				CFile::Delete (szSaveFile, gameFolders.user.szDemos);
-				CFile::Rename (DEMO_FILENAME, szSaveFile, gameFolders.user.szDemos);
-				}
+		if (nChoice != 0) {
+			CFile::Delete (DEMO_FILENAME, gameFolders.user.szDemos);
+			return;
+			}
+
+		if (!*szSaveFile) 
+			sprintf (szSaveFile, "tmp%d.dem", nAnonymous++);
+		else if (!strstr (szSaveFile, ".dem"))
+			strcat (szSaveFile, ".dem");
+		nChoice = CFile::Exist (szSaveFile, gameFolders.user.szDemos, 0)
+					 ? InfoBox (NULL, NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE)
+					 : 0;
+		} while (nChoice != 0);
+
+	//check to make sure name is ok
+	for (s = szSaveFile; *s; s++) {
+		if (!strchr (szAllowedDemoNameChars, *s)) {
+			TextBox (NULL, BG_STANDARD, 1, TXT_CONTINUE, TXT_DEMO_USE_LETTERS);
+			*szSaveFile = '\0';
 			break;
 			}
-		if (exit == -1) {               // pressed ESC
-			CFile::Delete (DEMO_FILENAME, gameFolders.user.szDemos);      // might as well remove the file
-			break;                     // return without doing anything
-			}
+		} 
+	} while (!*szSaveFile);
 
-		//check to make sure name is ok
-		for (s = filename; *s; s++)
-			if (!isalnum (*s) && (*s != '_')) {
-				TextBox (NULL, BG_STANDARD, 1, TXT_CONTINUE, TXT_DEMO_USE_LETTERS);
-				*filename = '\0';
-				break;
-				}
-		} while (!*filename);
-
-	gameData.demo.nState = ND_STATE_NORMAL;
-	if (exit < 0)
-		break;
-	strcpy (fullname, m [gameData.demo.bNoSpace].m_text);
-	strcat (fullname, ".dem");
-	if (CFile::Exist (fullname, gameFolders.user.szDemos, 0))
-		exit = InfoBox (NULL, NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE);
-	else
-		exit = 0;
-	if (!exit) {
-		CFile::Delete (fullname, gameFolders.user.szDemos);
-		CFile::Rename (DEMO_FILENAME, fullname, gameFolders.user.szDemos);
-		}
-	} while (exit);
+gameData.demo.nState = ND_STATE_NORMAL;
+CFile::Delete (fullname, gameFolders.user.szDemos);
+CFile::Rename (DEMO_FILENAME, fullname, gameFolders.user.szDemos);
 }
 
 //	-----------------------------------------------------------------------------
