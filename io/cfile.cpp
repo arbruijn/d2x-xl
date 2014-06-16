@@ -112,6 +112,16 @@ return pszFile;
 
 // ----------------------------------------------------------------------------
 
+char* FlipSlash (char* pszFile)
+{
+for (char* psz = pszFile; *psz; psz++)
+	if (*psz == '/')
+		*psz = '\\';
+return pszFile;
+}
+
+// ----------------------------------------------------------------------------
+
 char* AppendSlash (char* pszFile)
 {
 int l = (int) strlen (pszFile);
@@ -323,7 +333,7 @@ if (folder && *folder) {
 	sprintf (fnn, "%s%s", folder, newname);
 	}
 #ifndef _WIN32_WCE
-	return rename (oldname, newname);
+	return rename (fno, fnn);
 #else
 	return !MoveFile (oldname, newname);
 #endif

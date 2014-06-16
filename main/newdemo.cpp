@@ -1819,12 +1819,12 @@ gameData.bosses.ResetCloakTimes ();
 gameData.demo.xJasonPlaybackTotal = 0;
 gameData.demo.nGameMode = NDReadInt ();
 ChangePlayerNumTo ((gameData.demo.nGameMode >> 16) & 0x7);
-if (IsTeamGame) {
+if (gameData.demo.nGameMode & GM_TEAM) {
 	netGame.m_info.SetTeamVector (NDReadByte ());
 	NDReadString (netGame.m_info.szTeamName [0]);
 	NDReadString (netGame.m_info.szTeamName [1]);
 	}
-if (IsMultiGame) {
+if (gameData.demo.nGameMode & GM_MULTI) {
 	MultiNewGame ();
 	gameData.multiplayer.nPlayers = int (NDReadByte ());
 	// changed this to above two lines -- breaks on the mac because of
@@ -2049,8 +2049,8 @@ while (!bDone) {
 				if (nSegment > gameData.segs.nLastSegment)
 					break;
 				objP->LinkToSeg (nSegment);
-				if ((objP->info.nType == OBJ_PLAYER) && IsMultiGame) {
-					int nPlayer = IsTeamGame ? GetTeam (objP->info.nId) : (objP->info.nId % MAX_PLAYER_COLORS) + 1;
+				if ((objP->info.nType == OBJ_PLAYER) && (gameData.demo.nGameMode & GM_MULTI)) {
+					int nPlayer = (gameData.demo.nGameMode & GM_TEAM) ? GetTeam (objP->info.nId) : (objP->info.nId % MAX_PLAYER_COLORS) + 1;
 					if (nPlayer == 0)
 						break;
 					nPlayer--;
@@ -2575,14 +2575,14 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				gameData.multiplayer.players [nPlayer].netKillsTotal -= kill;
-				if (IsTeamGame)
+				if (gameData.demo.nGameMode & GM_TEAM)
 					gameData.multigame.score.nTeam [GetTeam (nPlayer)] -= kill;
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				gameData.multiplayer.players [nPlayer].netKillsTotal += kill;
-				if (IsTeamGame)
+				if (gameData.demo.nGameMode & GM_TEAM)
 					gameData.multigame.score.nTeam [GetTeam (nPlayer)] += kill;
 				}
 			gameData.app.SetGameMode (gameData.demo.nGameMode);
@@ -3423,6 +3423,10 @@ gameData.demo.nState = ND_STATE_NORMAL;
 if (CFile::Exist (szFullSaveName, gameFolders.user.szDemos, 0))
 	CFile::Delete (szFullSaveName, gameFolders.user.szDemos);
 CFile::Rename (DEMO_FILENAME, szFullSaveName, gameFolders.user.szDemos);
+#if DBG
+int nError = errno;
+char* szError = strerror (nError);
+#endif
 }
 
 //	-----------------------------------------------------------------------------
