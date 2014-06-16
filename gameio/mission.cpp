@@ -372,7 +372,8 @@ else
 m_list [m_nCount].szMissionName [sizeof (m_list [m_nCount].szMissionName) - 1] = '\0';
 
 while (cf.GetS (lineBuf, sizeof (lineBuf))) {
-	key = Trim (strtok (lineBuf, "="));
+	if (!(key = Trim (strtok (lineBuf, "="))))
+		continue;
 	if (stricmp (key, "type"))
 		continue;
 	if (!(value = Trim (strtok (NULL, "="))))
