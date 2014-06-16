@@ -533,14 +533,14 @@ for (bRead = 0; bRead < 2; bRead++) {
 					strcpy (szSongFolder, gameFolders.game.szMusic);
 				if (!*szSongFolder)
 					l += (int) strlen (szListFolder);
-				if (!(pszSong = new char [l])) {
+				if (!(pszSong = new char [l - bSecret])) {
 					cf.Close ();
 					return 0;
 					}
 				if (*szSongFolder)
-					memcpy (pszSong, szSong, l);
+					memcpy (pszSong, szSong + bSecret, l - bSecret);
 				else
-					sprintf (pszSong, "%s%s", szListFolder, szSong);
+					sprintf (pszSong, "%s%s", szListFolder, szSong + bSecret);
 				m_user.levelSongs [bMod][bSecret][nSongs [bSecret]] = pszSong;
 				}
 			nSongs [bSecret]++;
