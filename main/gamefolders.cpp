@@ -318,7 +318,7 @@ if (*gameFolders.var.szRoot)
 else {
 	strcpy (gameFolders.var.szRoot, GetMacOSXCacheFolder ());
 	if (MakeFolder (gameFolders.var.szRoot)) 
-		strcpy ((gameFolders.var.szCache, gameFolders.var.szRoot);
+		strcpy (gameFolders.var.szCache, gameFolders.var.szRoot);
 	else {	// fall back to user cache folder if folder cannot be created
 		strcpy (gameFolders.var.szRoot, gameFolders.user.szRoot);
 		strcpy (gameFolders.var.szCache, gameFolders.user.szCache);
