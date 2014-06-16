@@ -419,10 +419,10 @@ static int MakeUserFolders (int nUserFolderMode)
 {
 PrintLog (0, "Setting up user folders\n");
 
-#ifdef _WIN32
-#	define PRIVATE_DATA_FOLDER	gameFolders.user.szRoot
-#else
+#ifdef __linux__
 #	define PRIVATE_DATA_FOLDER	gameFolders.user.szCache
+#else
+#	define PRIVATE_DATA_FOLDER	gameFolders.user.szRoot
 #endif
 
 #ifdef __linux__

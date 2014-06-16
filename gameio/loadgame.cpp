@@ -670,7 +670,7 @@ PrintLog (-1);
 /*---*/PrintLog (1, "stopping sounds\n");
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
 audio.StopAllChannels ();
-songManager.FreeUserSongs (1);
+songManager.DestroyPlayLists ();
 PrintLog (-1);
 
 /*---*/PrintLog (1, "reconfiguring audio\n");

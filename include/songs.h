@@ -64,10 +64,10 @@ extern CRedbook redbook;
 
 class CUserMusicInfo {
 	public:
-		int					nLevelSongs [2];
+		int					nLevelSongs [2][2];
 		int					nCurrentSong;
 		int					bMP3;
-		CArray<char*>		levelSongs [2];
+		CArray<char*>		levelSongs [2][2];
 		char					szIntroSong [FILENAME_LEN];
 		char					szBriefingSong [FILENAME_LEN];
 		char					szCreditsSong [FILENAME_LEN];
@@ -119,7 +119,11 @@ class CSongManager {
 		void Prev (void);
 		void Next (void);
 		int LoadPlayList (char *pszPlayList, int bMod = 0);
-		void FreeUserSongs (int bMod = 0);
+		void DestroyPlayList (int bMod, int* nSongs = NULL);
+		inline void DestroyPlayLists (void) {
+			DestroyPlayList (0);
+			DestroyPlayList (1);
+			}
 		inline int Current (void) { return m_info.nCurrent; }
 		inline int Playing (void) { return m_info.bPlaying; }
 		inline void SetPlaying (int bPlaying) { m_info.bPlaying = bPlaying; }
