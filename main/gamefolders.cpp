@@ -309,14 +309,16 @@ if (*gameFolders.user.szRoot)
 	strcpy (gameFolders.user.szCache, gameFolders.user.szRoot);
 else {
 	strcpy (gameFolders.user.szRoot, gameFolders.game.szRoot);
-	MakeFolder (gameFolders.user.szCache, gameFolders.user.szRoot, CACHE_FOLDER);
+	if (!MakeFolder (gameFolders.user.szCache, gameFolders.user.szRoot, CACHE_FOLDER))
+		strcpy (gameFolders.user.szCache, gameFolders.user.szRoot);	// if user cache folder cannot be created, put everything in the application folder
 	}
 if (*gameFolders.var.szRoot) 
 	strcpy (gameFolders.var.szCache, gameFolders.var.szRoot); // user-supplied shared cache folder
-else
-	{
+else {
 	strcpy (gameFolders.var.szRoot, GetMacOSXCacheFolder ());
-	if (!MakeFolder (gameFolders.var.szCache, gameFolders.var.szRoot, CACHE_FOLDER)) {	// fall back to user cache folder if folder cannot be created
+	if (MakeFolder (gameFolders.var.szRoot)) 
+		strcpy ((gameFolders.var.szCache, gameFolders.var.szRoot);
+	else {	// fall back to user cache folder if folder cannot be created
 		strcpy (gameFolders.var.szRoot, gameFolders.user.szRoot);
 		strcpy (gameFolders.var.szCache, gameFolders.user.szCache);
 		}
