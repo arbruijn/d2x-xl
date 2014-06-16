@@ -304,7 +304,7 @@ int CFile::Delete (const char *filename, const char* folder)
 {
 	char	fn [FILENAME_LEN];
 
-sprintf (fn, "%s%s%s", folder, *folder ? "/" : "", filename);
+sprintf (fn, "%s%s", folder, filename);
 #ifndef _WIN32_WCE
 	return remove (fn);
 #else
@@ -319,8 +319,8 @@ int CFile::Rename (const char *oldname, const char *newname, const char *folder)
 	char	fno [FILENAME_LEN], fnn [FILENAME_LEN];
 
 if (folder && *folder) {
-	sprintf (fno, "%s%s%s", folder, *folder ? "/" : "", oldname);
-	sprintf (fnn, "%s%s%s", folder, *folder ? "/" : "", newname);
+	sprintf (fno, "%s%s", folder, oldname);
+	sprintf (fnn, "%s%s", folder, newname);
 	}
 #ifndef _WIN32_WCE
 	return rename (oldname, newname);
@@ -929,7 +929,7 @@ if (*szDestName) {
 	else
 		strcpy (fn, szDestName);
 	}
-sprintf (szDest, "%s%s%s", gameFolders.var.szCache, *gameFolders.var.szCache ? "/" : "", fn);
+sprintf (szDest, "%s%s", gameFolders.var.szCache, fn);
 if (! (fp = fopen (szDest, "wb"))) {
 	Close ();
 	return 0;

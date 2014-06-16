@@ -3403,7 +3403,7 @@ do {
 		else {
 			//check to make sure name is ok
 			for (s = szSaveName; *s; s++) {
-				if (!strchr (szAllowedDemoNameChars, *s)) {
+				if (!isalnum (*s) && (*s != '_') && (*s != '-')) {
 					TextBox (NULL, BG_STANDARD, 1, TXT_CONTINUE, TXT_DEMO_USE_LETTERS);
 					*szSaveName = '\0';
 					continue;

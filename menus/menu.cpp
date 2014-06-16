@@ -364,9 +364,9 @@ else
 	m_props.bIsScrollBox = 0;
 m_props.nMaxDisplayable = (m_props.nMaxOnMenu < int (ToS ())) ? m_props.nMaxOnMenu : int (ToS ());
 m_props.rightOffset = 0;
-if (m_props.userWidth > - 1)
+if (m_props.userWidth > -1)
 	m_props.width = Scaled (m_props.userWidth);
-if (m_props.userHeight > - 1)
+if (m_props.userHeight > -1)
 	m_props.height = Scaled (m_props.userHeight);
 
 for (i = 0; i < int (ToS ()); i++) {
@@ -599,7 +599,7 @@ if (m_props.bIsScrollBox) {
 			DrawRightStringWXY (Scaled (gameStates.menus.bHires ? 20 : 10), sx, sy, UP_ARROW_MARKER);
 		else
 			DrawRightStringWXY (Scaled (gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
-		i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll - 1;
+		i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll -1;
 		sy = Item (i).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
 		sx = Item (i).m_x - (gameStates.menus.bHires ? 24 : 12);
 		if (m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll < int (ToS ()))
@@ -697,7 +697,7 @@ m_props.bTinyMode = bTinyMode;
 controls.FlushInput ();
 
 if (int (ToS ()) < 1)
-	return - 1;
+	return -1;
 //if (gameStates.app.bGameRunning && !gameOpts->menus.nStyle)
 //	backgroundManager.LoadStars (true);
 SDL_ShowCursor (0);
@@ -811,7 +811,7 @@ while (!m_bDone) {
 		backgroundManager.Setup (m_background, m_props.width, m_props.height, nType, nWallpaper);
 		m_bRedraw = 0;
 		m_props.ty = m_props.yOffs;
-		if (m_nChoice > m_props.nScrollOffset + m_props.nMaxOnMenu - 1)
+		if (m_nChoice > m_props.nScrollOffset + m_props.nMaxOnMenu -1)
 			m_props.nScrollOffset = m_nChoice - m_props.nMaxOnMenu + 1;
 		}
 
@@ -831,12 +831,12 @@ while (!m_bDone) {
 			m_nKey = -2;
 		}
 
-	if (m_nKey < - 1) {
+	if (m_nKey < -1) {
 		m_bDontRestore = (m_nKey == -3);		// - 3 means don't restore
 		if (m_nChoice >= 0)
 			m_nChoice = m_nKey;
 		else {
-			m_nChoice = -m_nChoice - 1;
+			m_nChoice = -m_nChoice -1;
 			*nCurItemP = m_nChoice;
 			}
 		m_nKey = -1;
@@ -865,7 +865,7 @@ while (!m_bDone) {
 			 NetworkRequestPlayerNames (m_nChoice - 2 - tracker.m_bUse);
 		 if (gameStates.multi.bSurfingNet && bAlreadyShowingInfo) {
 			 m_bDone = 1;
-			 m_nChoice = - 1;
+			 m_nChoice = -1;
 			}
 		 break;
 
@@ -888,7 +888,7 @@ while (!m_bDone) {
 			if (bPauseableMenu) {
 				bPauseableMenu = 0;
 				m_bDone = 1;
-				m_nChoice = - 1;
+				m_nChoice = -1;
 				}
 			else
 				gameData.app.bGamePaused = !gameData.app.bGamePaused;
@@ -902,9 +902,9 @@ while (!m_bDone) {
 			do {
 				m_nChoice--;
  				if (m_props.bIsScrollBox) {
-					m_nLastScrollCheck = - 1;
+					m_nLastScrollCheck = -1;
 		 			if (m_nChoice < topChoice) { 
-						m_nChoice = int (ToS ()) - 1; 
+						m_nChoice = int (ToS ()) -1; 
 						m_props.nScrollOffset = int (ToS ()) - m_props.nMaxDisplayable + m_props.nMaxNoScroll;
 						if (m_props.nScrollOffset < m_props.nMaxNoScroll)
 							m_props.nScrollOffset = m_props.nMaxNoScroll;
@@ -922,17 +922,17 @@ while (!m_bDone) {
 					if (m_nChoice >= int (ToS ())) 
 						m_nChoice = 0;
 					else if (m_nChoice < 0) 
-						m_nChoice = int (ToS ()) - 1;
+						m_nChoice = int (ToS ()) -1;
 					}
 				} while (Item (m_nChoice).m_nType == NM_TYPE_TEXT);
 			if ((Item (m_nChoice).m_nType == NM_TYPE_INPUT) && (m_nChoice != oldChoice))
 				Item (m_nChoice).Value () = -1;
-			if ((oldChoice> - 1) && (Item (oldChoice).m_nType == NM_TYPE_INPUT_MENU) && (oldChoice != m_nChoice)) {
+			if ((oldChoice> -1) && (Item (oldChoice).m_nType == NM_TYPE_INPUT_MENU) && (oldChoice != m_nChoice)) {
 				Item (oldChoice).m_group = 0;
 				strcpy (Item (oldChoice).m_text, Item (oldChoice).m_savedText);
 				Item (oldChoice).Value () = -1;
 				}
-			if (oldChoice> - 1) 
+			if (oldChoice> -1) 
 				Item (oldChoice).m_bRedraw = 1;
 			Item (m_nChoice).m_bRedraw = 1;
 			break;
@@ -961,7 +961,7 @@ while (!m_bDone) {
 						}
 					else {
 						if (m_nChoice < 0) 
-							m_nChoice = int (ToS ()) - 1;
+							m_nChoice = int (ToS ()) -1;
 						else if (m_nChoice >= int (ToS ())) 
 							m_nChoice = 0;
 						}
@@ -969,12 +969,12 @@ while (!m_bDone) {
  
 			if ((Item (m_nChoice).m_nType == NM_TYPE_INPUT) && (m_nChoice != oldChoice))
 				Item (m_nChoice).Value () = -1;
-			if ((oldChoice> - 1) && (Item (oldChoice).m_nType == NM_TYPE_INPUT_MENU) && (oldChoice != m_nChoice)) {
+			if ((oldChoice> -1) && (Item (oldChoice).m_nType == NM_TYPE_INPUT_MENU) && (oldChoice != m_nChoice)) {
 				Item (oldChoice).m_group = 0;
 				strcpy (Item (oldChoice).m_text, Item (oldChoice).m_savedText);
 				Item (oldChoice).Value () = -1;
 			}
-			if (oldChoice> - 1)
+			if (oldChoice> -1)
 				Item (oldChoice).m_bRedraw = 1;
 			Item (m_nChoice).m_bRedraw = 1;
 			break;
@@ -982,7 +982,7 @@ while (!m_bDone) {
 		case KEY_SPACEBAR:
 checkOption:
 radioOption:
-			if (m_nChoice > - 1) {
+			if (m_nChoice > -1) {
 				switch (Item (m_nChoice).m_nType) {
 				case NM_TYPE_MENU:
 				case NM_TYPE_INPUT:
@@ -994,8 +994,8 @@ radioOption:
 					else
 						Item (m_nChoice).Value () = 1;
 					if (m_props.bIsScrollBox) {
-						if (m_nChoice == (m_props.nMaxOnMenu + m_props.nScrollOffset - 1) || m_nChoice == m_props.nScrollOffset)
-							m_nLastScrollCheck = - 1;				
+						if (m_nChoice == (m_props.nMaxOnMenu + m_props.nScrollOffset -1) || m_nChoice == m_props.nScrollOffset)
+							m_nLastScrollCheck = -1;				
 						 }
 			
 					Item (m_nChoice).m_bRedraw = 1;
@@ -1020,16 +1020,16 @@ radioOption:
 
 		case KEY_SHIFTED + KEY_UP:
 			if (gameStates.menus.bReordering && m_nChoice != topChoice) {
-				SwapText (m_nChoice, m_nChoice - 1);
-				::Swap (Item (m_nChoice).Value (), Item (m_nChoice - 1).Value ());
+				SwapText (m_nChoice, m_nChoice -1);
+				::Swap (Item (m_nChoice).Value (), Item (m_nChoice -1).Value ());
 				Item (m_nChoice).m_bRebuild = 
-				Item (m_nChoice - 1).m_bRebuild = 1;
+				Item (m_nChoice -1).m_bRebuild = 1;
 				m_nChoice--;
 				}
 			 break;
 
 		case KEY_SHIFTED + KEY_DOWN:
-			if (gameStates.menus.bReordering && m_nChoice !=(int (ToS ()) - 1)) {
+			if (gameStates.menus.bReordering && m_nChoice !=(int (ToS ()) -1)) {
 				SwapText (m_nChoice, m_nChoice + 1);
 				::Swap (Item (m_nChoice).Value (), Item (m_nChoice + 1).Value ());
 				Item (m_nChoice).m_bRebuild = 
@@ -1055,7 +1055,7 @@ radioOption:
 		case KEY_ENTER:
 		case KEY_PADENTER:
 launchOption:
-			if ((m_nChoice > - 1) && (Item (m_nChoice).m_nType == NM_TYPE_INPUT_MENU) && (Item (m_nChoice).m_group == 0)) {
+			if ((m_nChoice > -1) && (Item (m_nChoice).m_nType == NM_TYPE_INPUT_MENU) && (Item (m_nChoice).m_group == 0)) {
 				Item (m_nChoice).m_group = 1;
 				Item (m_nChoice).m_bRedraw = 1;
 				if (!strnicmp (Item (m_nChoice).m_savedText, TXT_EMPTY, strlen (TXT_EMPTY))) {
@@ -1074,7 +1074,7 @@ launchOption:
 			break;
 
 		case KEY_ESC:
-			if ((m_nChoice > - 1) && (Item (m_nChoice).m_nType == NM_TYPE_INPUT_MENU) && (Item (m_nChoice).m_group == 1)) {
+			if ((m_nChoice > -1) && (Item (m_nChoice).m_nType == NM_TYPE_INPUT_MENU) && (Item (m_nChoice).m_group == 1)) {
 				Item (m_nChoice).m_group = 0;
 				strcpy (Item (m_nChoice).m_text, Item (m_nChoice).m_savedText);
 				Item (m_nChoice).m_bRedraw = 1;
@@ -1099,7 +1099,7 @@ launchOption:
 
 		#if DBG
 		case KEY_BACKSPACE:
-			if ((m_nChoice > - 1) && (Item (m_nChoice).m_nType != NM_TYPE_INPUT) && (Item (m_nChoice).m_nType != NM_TYPE_INPUT_MENU))
+			if ((m_nChoice > -1) && (Item (m_nChoice).m_nType != NM_TYPE_INPUT) && (Item (m_nChoice).m_nType != NM_TYPE_INPUT_MENU))
 				Int3 (); 
 			break;
 		#endif
@@ -1131,7 +1131,7 @@ launchOption:
 								Item (m_nChoice).Value () = !Item (m_nChoice).Value ();
 								Item (m_nChoice).m_bRedraw = 1;
 								if (m_props.bIsScrollBox)
-									m_nLastScrollCheck = - 1;
+									m_nLastScrollCheck = -1;
 								break;
 							case NM_TYPE_RADIO:
 								for (i = 0; i < int (ToS ()); i++) {
@@ -1171,7 +1171,7 @@ launchOption:
 					y2 = y1 + arrowHeight;
 					if (((m_xMouse > x1) && (m_xMouse < x2)) && ((m_yMouse > y1) && (m_yMouse < y2))) {
 						m_nChoice--;
-						m_nLastScrollCheck = - 1;
+						m_nLastScrollCheck = -1;
 						if (m_nChoice < m_props.nScrollOffset) {
 							REDRAW_ALL;
 							m_props.nScrollOffset--;
@@ -1180,13 +1180,13 @@ launchOption:
 					}
 				if ((i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll) < int (ToS ()) && Item (i).Selectable ()) {
 					fontManager.Current ()->StringSize (DOWN_ARROW_MARKER, arrowWidth, arrowHeight, aw);
-					x2 = /*CCanvas::Current ()->Left () +*/ Item (i - 1).m_x - (gameStates.menus.bHires?24:12);
-					y1 = /*CCanvas::Current ()->Top () +*/ Item (i - 1).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
+					x2 = /*CCanvas::Current ()->Left () +*/ Item (i -1).m_x - (gameStates.menus.bHires?24:12);
+					y1 = /*CCanvas::Current ()->Top () +*/ Item (i -1).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
 					x1 = x2 - arrowWidth;
 					y2 = y1 + arrowHeight;
 					if ((m_xMouse > x1) && (m_xMouse < x2) && (m_yMouse > y1) && (m_yMouse < y2)) {
 						m_nChoice++;
-						m_nLastScrollCheck = - 1;
+						m_nLastScrollCheck = -1;
 						if (m_nChoice >= m_props.nMaxOnMenu + m_props.nScrollOffset) {
 							REDRAW_ALL;
 							m_props.nScrollOffset++;
@@ -1253,12 +1253,12 @@ launchOption:
 						break;
 					if ((Item (m_nChoice).m_nType == NM_TYPE_INPUT) && (m_nChoice != oldChoice))
 						Item (m_nChoice).Value () = -1;
-					if ((oldChoice> - 1) && (Item (oldChoice).m_nType == NM_TYPE_INPUT_MENU) && (oldChoice != m_nChoice)) {
+					if ((oldChoice> -1) && (Item (oldChoice).m_nType == NM_TYPE_INPUT_MENU) && (oldChoice != m_nChoice)) {
 						Item (oldChoice).m_group = 0;
 						strcpy (Item (oldChoice).m_text, Item (oldChoice).m_savedText);
 						Item (oldChoice).Value () = -1;
 					}
-					if (oldChoice> - 1) 
+					if (oldChoice> -1) 
 						Item (oldChoice).m_bRedraw = 1;
 					Item (m_nChoice).m_bRedraw = 1;
 					break;
@@ -1323,7 +1323,7 @@ launchOption:
 		if (bRestoringMenu) 
 			Item (0).m_bRedraw = 0;
 
-		if (m_nChoice > - 1) {
+		if (m_nChoice > -1) {
 			int ascii;
 
 			if (((Item (m_nChoice).m_nType == NM_TYPE_INPUT) || 
@@ -1385,14 +1385,14 @@ launchOption:
 								&& (ascii == toupper (ch))) {
 							m_nKey = 0;
 							m_nChoice = choice1;
-							if (oldChoice> - 1)
+							if (oldChoice> -1)
 								Item (oldChoice).m_bRedraw = 1;
 							Item (m_nChoice).m_bRedraw = 1;
 							if (m_nChoice < m_props.nScrollOffset) {
 								m_props.nScrollOffset = m_nChoice;
 								REDRAW_ALL;
 								}
-							else if (m_nChoice > m_props.nScrollOffset + m_props.nMaxDisplayable - 1) {
+							else if (m_nChoice > m_props.nScrollOffset + m_props.nMaxDisplayable -1) {
 								m_props.nScrollOffset = m_nChoice;
 								if (m_props.nScrollOffset + m_props.nMaxDisplayable >= int (ToS ())) {
 									m_props.nScrollOffset = int (ToS ()) - m_props.nMaxDisplayable;
@@ -1512,10 +1512,10 @@ item->m_nType = NM_TYPE_CHECK;
 item->m_pszText = NULL;
 item->SetText (szText);
 item->Value () = NMBOOL (nValue);
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText - 1));
+item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText -1));
 item->m_szHelp = szHelp;
 SetId (*item, szId);
-return ToS () - 1;
+return ToS () -1;
 }
 
 //------------------------------------------------------------------------------ 
@@ -1531,11 +1531,11 @@ item->m_nType = NM_TYPE_RADIO;
 item->m_pszText = NULL;
 item->SetText (szText);
 item->Value () = nValue;
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText - 1));
+item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText -1));
 item->m_group = m_nGroup;
 item->m_szHelp = szHelp;
 SetId (*item, szId);
-return ToS () - 1;
+return ToS () -1;
 }
 
 //------------------------------------------------------------------------------ 
@@ -1548,10 +1548,10 @@ if (!item)
 item->m_nType = NM_TYPE_MENU;
 item->m_pszText = NULL;
 item->SetText (szText);
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText - 1));
+item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText -1));
 item->m_szHelp = szHelp;
 SetId (*item, szId);
-return ToS () - 1;
+return ToS () -1;
 }
 
 //------------------------------------------------------------------------------ 
@@ -1564,9 +1564,9 @@ if (!item)
 item->m_nType = NM_TYPE_TEXT;
 item->m_pszText = NULL;
 item->SetText (szText);
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText - 1));
+item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText -1));
 SetId (*item, szId);
-return ToS () - 1;
+return ToS () -1;
 }
 
 //------------------------------------------------------------------------------ 
@@ -1582,10 +1582,10 @@ item->SetText (szText);
 item->Value () = NMCLAMP (nValue, nMin, nMax);
 item->MinValue () = nMin;
 item->MaxValue () = nMax;
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText - 1));
+item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText -1));
 item->m_szHelp = szHelp;
 SetId (*item, szId);
-return ToS () - 1;
+return ToS () -1;
 }
 
 //------------------------------------------------------------------------------ 
@@ -1601,7 +1601,7 @@ item->SetText (szText);
 item->m_nTextLen = nLen;
 item->m_szHelp = szHelp;
 SetId (*item, szId);
-return ToS () - 1;
+return ToS () -1;
 }
 
 //------------------------------------------------------------------------------ 
@@ -1632,10 +1632,10 @@ item->m_nType = NM_TYPE_INPUT_MENU;
 item->m_pszText = (char*) (szText);
 item->SetText (szText);
 item->m_nTextLen = nLen;
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText - 1));
+item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText -1));
 item->m_szHelp = szHelp;
 SetId (*item, szId);
-return ToS () - 1;
+return ToS () -1;
 }
 
 //------------------------------------------------------------------------------ 
@@ -1652,7 +1652,7 @@ item->Value () = NMCLAMP (nValue, nMin, nMax);
 item->MinValue () = nMin;
 item->MaxValue () = nMax;
 SetId (*item, szId);
-return ToS () - 1;
+return ToS () -1;
 }
 
 //------------------------------------------------------------------------------ 
@@ -1670,7 +1670,7 @@ item->Value () = NMCLAMP (nValue, 0, nMax);
 item->MaxValue () = nMax;
 SetId (*item, szId);
 m_bThrottle = false;
-return ToS () - 1;
+return ToS () -1;
 }
 
 //------------------------------------------------------------------------------ 
