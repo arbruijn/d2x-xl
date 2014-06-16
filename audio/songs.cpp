@@ -518,8 +518,8 @@ for (bRead = 0; bRead < 2; bRead++) {
 	nSongs [0] =
 	nSongs [1] = 0;
 	while (cf.GetS (szSong, sizeof (szSong))) {
-		bSecret = (*szSong == '-');
 		if ((bMP3 = (strstr (szSong, ".mp3") != NULL)) || strstr (szSong, ".ogg") || strstr (szSong, ".flac")) {
+			bSecret = (*szSong == '-');
 			if (bRead) {
 				if (bMP3)
 					m_user.bMP3 = 1;
