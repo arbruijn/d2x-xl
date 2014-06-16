@@ -518,6 +518,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 	nSongs [0] =
 	nSongs [1] = 0;
 	while (cf.GetS (szSong, sizeof (szSong))) {
+		bSecret = (*szSong == '-');
 		if ((bMP3 = (strstr (szSong, ".mp3") != NULL)) || strstr (szSong, ".ogg") || strstr (szSong, ".flac")) {
 			if (bRead) {
 				if (bMP3)
@@ -526,7 +527,6 @@ for (bRead = 0; bRead < 2; bRead++) {
 					*pszSong = '\0';
 				if ((pszSong = strchr (szSong, '\n')))
 					*pszSong = '\0';
-				bSecret = (*szSong == '-');
 				l = (int) strlen (szSong) + 1;
 				CFile::SplitPath (szSong, szSongFolder, NULL, NULL);
 				if (bMod)
