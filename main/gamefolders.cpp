@@ -511,6 +511,7 @@ if (!MakeSharedFolders () && strcmp (gameFolders.var.szCache, gameFolders.user.s
 	MakeSharedFolders ();
 	}
 MakeUserFolders (nUserFolderMode);
+PrintLog (0, "\n");
 }
 
 // ----------------------------------------------------------------------------
