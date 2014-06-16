@@ -68,8 +68,11 @@ int GetAppFolder (const char *szMainFolder, char *szDestFolder, const char *szSu
 	char	szFolder [FILENAME_LEN];
 	int	i, l;
 
-if (!(szSubFolder && *szSubFolder))
-	return !(szMainFolder && *szMainFolder && !FFF (szMainFolder, &ffs, 1));
+if (!(szSubFolder && *szSubFolder)) {
+	i = !(szMainFolder && *szMainFolder && !FFF (szMainFolder, &ffs, 1));
+	PrintLog (0, "GetAppFolder (%s) %s\n", szMainFolder, i ? "failed" : "succeeded");
+	return i;
+	}
 
 strcpy (szFolder, szMainFolder);
 if (*szFolder)
