@@ -69,7 +69,9 @@ int GetAppFolder (const char *szMainFolder, char *szDestFolder, const char *szSu
 	int	i, l;
 
 if (!(szSubFolder && *szSubFolder)) {
-	i = !(szMainFolder && *szMainFolder && !FFF (szMainFolder, &ffs, 1));
+	if (!(szMainFolder && *szMainFolder))
+		return 1;
+	i = FFF (szMainFolder, &ffs, 1);
 	PrintLog (0, "GetAppFolder (%s) %s\n", szMainFolder, i ? "failed" : "succeeded");
 	return i;
 	}
