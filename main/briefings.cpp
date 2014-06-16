@@ -1327,6 +1327,10 @@ if (!m_info.bRedraw && m_info.nDelayCount) {
 		return 1;
 	if (keypress == KEY_ESC)
 		return 0;
+	if (keypress == KEY_PRINT_SCREEN) {
+		gameStates.app.bSaveScreenShot = 1;
+		return 1;
+		}
 	if ((keypress == KEY_SPACEBAR) || (keypress == KEY_ENTER)) {
 		StopSound (m_info.nBotChannel);
 		m_info.nDelayCount = 0;
