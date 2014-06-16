@@ -306,11 +306,13 @@ PrintLog (1, "Creating cache folders\n");
 #ifdef __macosx__
 
 if (!*gameFolders.user.szRoot)
-	strcpy (gameFolders.user.szRoot, GetMacOSXCacheFolder ());
+	strcpy (gameFolders.user.szRoot, gameFolders.game.szRoot);
 MakeFolder (gameFolders.user.szCache, gameFolders.user.szRoot, CACHE_FOLDER);
-if (!*gameFolders.var.szRoot)
+if (*gameFolders.var.szRoot)
 	strcpy (gameFolders.var.szRoot, GetMacOSXCacheFolder ());
 MakeFolder (gameFolders.var.szCache, gameFolders.var.szRoot, CACHE_FOLDER);
+else
+	strcpy (gameFolders.var.szCache, gameFolders.var.szRoot); // the OS X cache folder already contains ./D2X-XL
 
 #else
 
