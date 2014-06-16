@@ -741,7 +741,7 @@ if (!setjmp (gameExitPoint)) {
 			fmode = gameStates.app.nFunctionMode;
 			SetFunctionMode (FMODE_GAME);
 			//paletteManager.SuspendEffect ();
-			choice = TextBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
+			choice = InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
 			//paletteManager.ResumeEffect ();
 			SetFunctionMode (fmode);
 			if (choice)

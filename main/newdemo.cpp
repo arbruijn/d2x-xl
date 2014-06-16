@@ -3405,7 +3405,7 @@ do {
 			exit = m.Menu (NULL, NULL);
 			}
 		nmAllowedChars = NULL;
-		if (exit == -2) {                   // got bumped out from network menu
+		if (exit == 0) {                   // got bumped out from network menu
 			char szSaveFile [7 + FILENAME_LEN];
 
 			if (filename [0] != '\0') {
@@ -3415,7 +3415,7 @@ do {
 			else
 				sprintf (szSaveFile, "tmp%d.dem", nAnonymous++);
 			if (CFile::Exist (szSaveFile, gameFolders.user.szDemos, 0))
-				exit = TextBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE) - 1;
+				exit = InfoBox (NULL, NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE) - 1;
 			if (exit != -2)
 				exit = 0;
 			else {
@@ -3444,7 +3444,7 @@ do {
 	strcpy (fullname, m [gameData.demo.bNoSpace].m_text);
 	strcat (fullname, ".dem");
 	if (CFile::Exist (fullname, gameFolders.user.szDemos, 0))
-		exit = TextBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE);
+		exit = InfoBox (NULL, NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE);
 	else
 		exit = 0;
 	if (!exit) {

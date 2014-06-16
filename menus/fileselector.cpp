@@ -138,7 +138,7 @@ char* pszFile = (char*) (&m_filenames [m_nChoice][0]);
 if (*pszFile == '$')
 	pszFile++;
 SDL_ShowCursor (0);
-if (TextBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, "%s %s?", (m_nMode == 1) ? TXT_DELETE_PILOT : TXT_DELETE_DEMO, pszFile)) {
+if (InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, "%s %s?", (m_nMode == 1) ? TXT_DELETE_PILOT : TXT_DELETE_DEMO, pszFile)) {
 	SDL_ShowCursor (1);
 	return 0;
 	}
@@ -156,7 +156,7 @@ else {
 	else {
 		pszFile [strlen (pszFile) - 1] = 'x'; //turn ".plr" to ".plx"
 		CFile::Delete (pszFile, gameFolders.user.szProfiles);
-		if (!TextBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, "%s?", TXT_DELETE_SAVEGAMES)) {
+		if (!InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, "%s?", TXT_DELETE_SAVEGAMES)) {
 			*p = '\0'; // hide extension
 			DeleteSaveGames (pszFile);
 			}

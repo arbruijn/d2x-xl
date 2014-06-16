@@ -76,6 +76,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------ 
 // Creates a message box with a brief notification in the message box' subtitle
+// The message box offers several choices to pick from (like 'yes' / 'no' / 'maybe'
 
 int _CDECL_ InfoBox (const char* pszTitle, pMenuCallback callback, int nWallpaper, int nChoices, ...)
 {
@@ -103,6 +104,8 @@ return mm.Menu (pszTitle, szSubTitle, callback, NULL, BG_SUBMENU, nWallpaper);
 //------------------------------------------------------------------------------ 
 // Creates a message box with a longer text placed in static text menu entries
 // of the message box's underlying menu
+// The text box doesn't offer choices to pick from, only an 'ok' button
+// since it's purpose is to display a longer text (e.g. a help text)
 
 int _CDECL_ TextBox (const char* pszTitle, int nWallpaper, int nChoices, ...)
 {

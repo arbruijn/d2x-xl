@@ -368,7 +368,7 @@ if (D2X_IVER >= nVersion [0] * 100000 + nVersion [1] * 1000 + nVersion [2]) {
 	}
 #endif
 
-if (TextBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_UPDATE_FOUND))
+if (InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_UPDATE_FOUND))
 	return 0;
 sprintf (szDest, "%sd2x-xl-%s-%d.%d.%d.%s", gameFolders.var.szDownloads,
 			FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);

@@ -1151,7 +1151,7 @@ if (!m_bQuick) {
 	PopSecretSave (nSaveSlot);
 	AutoSave (nSaveSlot);
 	if (!bSecret && bInGame) {
-		int choice = TextBox (NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_LOAD);
+		int choice = InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_LOAD);
 		if (choice != 0) {
 			gameData.app.bGamePaused = 0;
 			StartTime (1);
