@@ -3414,8 +3414,9 @@ do {
 				}
 			else
 				sprintf (szSaveFile, "tmp%d.dem", nAnonymous++);
-			if (CFile::Exist (szSaveFile, gameFolders.user.szDemos, 0))
-				exit = InfoBox (NULL, NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE) - 1;
+			exit = CFile::Exist (szSaveFile, gameFolders.user.szDemos, 0)
+					 ? InfoBox (NULL, NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_OVERWRITE) - 1
+					 : -2;
 			if (exit != -2)
 				exit = 0;
 			else {
