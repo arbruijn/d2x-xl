@@ -469,7 +469,7 @@ int PickupConverter (CObject *objP, int nPlayer)
 {
 	char		szTemp [50];
 
-sprintf (szTemp, TXT_GOT_CONVERTER, KeyToASCII (controls.GetKeyValue (54)));
+sprintf (szTemp, TXT_GOT_CONVERTER, KeyToASCII (controls.GetKeyValue (56)));
 HUDInitMessage (szTemp);
 return PickupEquipment (objP, PLAYER_FLAGS_CONVERTER, TXT_THE_CONVERTER, szTemp, nPlayer) != 0;
 }
