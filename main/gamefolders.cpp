@@ -169,15 +169,23 @@ static int CheckDataFolder (char* pszRootDir)
 {
 AppendSlash (FlipBackslash (pszRootDir));
 return GetAppFolder (pszRootDir, gameFolders.game.szData [0], DATA_FOLDER, "descent2.hog") &&
-		 GetAppFolder (pszRootDir, gameFolders.game.szData [0], DATA_FOLDER, "d2demo.hog");
+		 GetAppFolder (pszRootDir, gameFolders.game.szData [0], DATA_FOLDER, "d2demo.hog") &&
+		 GetAppFolder (pszRootDir, gameFolders.game.szData [0], "", "descent2.hog") &&
+		 GetAppFolder (pszRootDir, gameFolders.game.szData [0], "", "d2demo.hog");
 }
 
 // ----------------------------------------------------------------------------
 
-static int FindDataFolder (const char* pszRootDir)
+static int FindDataFolder (const char* pszRootDir, bool bSplitPath = false)
 {
-if (pszRootDir != gameFolders.game.szRoot)
-	strcpy (gameFolders.game.szRoot, pszRootDir);
+if (!(pszRootDir && *pszRootDir))
+	return 0;
+if (pszRootDir != gameFolders.game.szRoot) {
+	if (bSplitPath)
+		CFile::SplitPath (pszRootDir, gameFolders.game.szRoot, NULL, NULL);
+	else
+		strcpy (gameFolders.game.szRoot, pszRootDir);
+	}
 if (!CheckDataFolder (gameFolders.game.szRoot))
 	return 1;
 *gameFolders.game.szRoot = '\0';
@@ -253,7 +261,7 @@ PrintLog (1, "\nLooking for system folders\n");
 
 if (!FindDataFolder (appConfig.Text ("-datadir")) &&
 	 !FindDataFolder (getenv ("DESCENT2")) &&
-	 !FindDataFolder (appConfig [1]) &&
+	 !FindDataFolder (appConfig [1], true) &&
 	 !FindDataFolder (DEFAULT_GAME_FOLDER)) {
 	PrintLog (-1, "Could not locate game data\n");
 	return 0;
@@ -280,7 +288,7 @@ if (*SHAREPATH) {
 if (!FindDataFolder (appConfig.Text ("-datadir")) &&
 	 !FindDataFolder (gameFolders.szSharePath) &&
 	 !FindDataFolder (getenv ("DESCENT2")) &&
-	 !FindDataFolder (appConfig [1]) &&
+	 !FindDataFolder (appConfig [1], true) &&
 	 !FindDataFolder (DEFAULT_GAME_FOLDER)) {
 	PrintLog (-1, "Could not locate game data\n");
 	return 0;
@@ -297,6 +305,7 @@ if (nSharedFolderMode && !*CheckFolder (gameFolders.var.szRoot, SHARED_ROOT_FOLD
 #	else //__macosx__
 
 if (!FindDataFolder (appConfig.Text ("-datadir")) &&
+	 !FindDataFolder (appConfig [1], true) &&
 	 !FindDataFolder (DEFAULT_GAME_FOLDER)) {
 	GetOSXAppFolder (gameFolders.game.szRoot, gameFolders.game.szRoot);
 	if (!FindDataFolder (gameFolders.game.szRoot) {
@@ -513,8 +522,10 @@ int nSharedFolderMode, nUserFolderMode;
 
 GetSystemFolders (nSharedFolderMode, nUserFolderMode);
 
-if (CheckDataFolder (gameFolders.game.szRoot))
+if (CheckDataFolder (gameFolders.game.szRoot)) {
 	Error (TXT_NO_HOG2);
+	exit (1);
+	}
 
 /*---*/PrintLog (0, "\ngame app folder = '%s'\n", gameFolders.game.szRoot);
 /*---*/PrintLog (0, "game data folder = '%s'\n", gameFolders.game.szData [0]);

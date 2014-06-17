@@ -68,7 +68,7 @@ int GetAppFolder (const char *szMainFolder, char *szDestFolder, const char *szSu
 	char	szFolder [FILENAME_LEN];
 	int	i, l;
 
-if (!(szSubFolder && *szSubFolder)) {
+if (!((szSubFolder && *szSubFolder) || (szFilter && *szFilter))) {
 	if (!(szMainFolder && *szMainFolder))
 		return 1;
 	i = FFF (szMainFolder, &ffs, 1);
@@ -81,7 +81,7 @@ if (*szFolder)
 	AppendSlash (szFolder);
 strcat (szFolder, szSubFolder);
 if ((l = (int) strlen (szFolder))) {
-	if (*szFilter) {
+	if (szFilter && *szFilter) {
 		AppendSlash (szFolder);
 		strcat (szFolder, szFilter);
 		}
