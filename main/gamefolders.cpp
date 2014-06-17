@@ -267,7 +267,8 @@ if (*SHAREPATH) {
 if (!(*appConfig.Text ("-datadir") && *CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APPNAME)) &&
 	 !(*appConfig.Text ("-gamedir") && *CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-gamedir"), D2X_APPNAME)) &&
 	 !*CheckFolder (gameFolders.game.szRoot, gameFolders.szSharePath, D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, getenv ("DESCENT2"), D2X_APPNAME))
+	 !*CheckFolder (gameFolders.game.szRoot, getenv ("DESCENT2"), D2X_APPNAME) &&
+	 !*CheckFolder (gameFolders.game.szRoot, appConfig [1], D2X_APPNAME, false))
 	CheckFolder (gameFolders.game.szRoot, DEFAULT_GAME_FOLDER, "");
 
 nUserFolderMode = !(*appConfig.Text ("-userdir") && *CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), ""));
@@ -281,7 +282,8 @@ if (nSharedFolderMode && !*CheckFolder (gameFolders.var.szRoot, SHARED_ROOT_FOLD
 #	else //__macosx__
 
 if (!(*appConfig.Text ("-datadir") && *CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APPNAME)) &&
-	 !(*appConfig.Text ("-gamedir") && *CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-gamedir"), D2X_APPNAME)))
+	 !(*appConfig.Text ("-gamedir") && *CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-gamedir"), D2X_APPNAME)) &&
+	 !*CheckFolder (gameFolders.game.szRoot, appConfig [1], D2X_APPNAME, false))
 	GetOSXAppFolder (gameFolders.game.szRoot, gameFolders.game.szRoot);
 
 nUserFolderMode = !(*appConfig.Text ("-userdir") && *CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), ""));
