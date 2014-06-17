@@ -1106,7 +1106,7 @@ return RenderQuad (bmP, verts, nDimensions, bmP ?  bmP->GetTexCoord () : NULL, c
 int COGL::RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, CFloatVector* colorP, float alpha, int bAdditive)
 {
 	CFloatVector	vPosf;
-	CFloatVector		color = {1, 1, 1, alpha};
+	CFloatVector		color = {{{1, 1, 1, alpha}}};
 
 SelectTMU (GL_TEXTURE0);
 SetBlendMode (bAdditive);

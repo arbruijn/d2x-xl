@@ -472,17 +472,15 @@ return nOldIndent;
 
 void OpenLogFile (void)
 {
-if (gameStates.app.nLogLevel > 0) {
-	static int nLogId = 0;
-   char fnErr [FILENAME_LEN];
-#ifdef _WIN32
+if (*gameFolders.user.szCache && (gameStates.app.nLogLevel > 0)) {
+	if (CFile::Exist ("d2x.log.bak", gameFolders.user.szCache, 0))
+		CFile::Delete ("d2x.log.bak", gameFolders.user.szCache);
+	if (CFile::Exist ("d2x.log", gameFolders.user.szCache, 0))
+		CFile::Rename ("d2x.log", "d2x.log.bak", gameFolders.user.szCache);
+
+	char fnErr [FILENAME_LEN];
 	sprintf (fnErr, "%sd2x.log", gameFolders.user.szCache);
-	while (!(fLog = _fsopen (fnErr, "wt", _SH_DENYWR))) 
-		sprintf (fnErr, "%sd2x.log.%d", gameFolders.user.szCache, ++nLogId);
-#else
-	sprintf (fnErr, "%s/d2x.log", getenv ("HOME"));
-	fLog = fopen (fnErr, "wt");
-#endif
+	fLog = _fsopen (fnErr, "wt", _SH_DENYWR);
 	}
 }
 

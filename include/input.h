@@ -59,7 +59,9 @@ class CControlsManager {
 		int ReadJoyAxis (int i, int rawJoyAxis []);
 		void SetFCSButton (int btn, int button);
 		int ReadCyberman (int *mouseAxis, int *nMouseButtons);
+#ifdef USE_SIXENSE
 		int ReadSixense (int* joyAxis);
+#endif
 		int LimitTurnRate (int bUseMouse);
 		int CapSampleRate (void);
 

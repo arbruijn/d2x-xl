@@ -328,8 +328,13 @@ else {
 #else
 
 if (!*gameFolders.user.szRoot) {
+#	ifdef __linux__
 	strcpy (gameFolders.user.szRoot, *gameFolders.var.szRoot ? gameFolders.var.szRoot : gameFolders.game.szRoot);
+	nUserFolderMode = 0;
+#	else
+	strcpy (gameFolders.user.szRoot, gameFolders.game.szRoot);
 	nUserFolderMode = 1;
+#	endif
 	}
 if (nUserFolderMode)
 	MakeFolder (gameFolders.user.szCache, gameFolders.user.szRoot, USER_CACHE_FOLDER);

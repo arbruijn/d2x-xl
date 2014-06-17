@@ -527,13 +527,13 @@ void CFont::StringSizeTabbed (const char *s, int& stringWidth, int& stringHeight
 {
 	float fScale = fontManager.Scale ();
 
+stringWidth = 0;
 stringHeight = int (m_info.height * fScale);
 averageWidth = int (m_info.width * fScale);
 
 if (!(s && *s))
 	return;
 
-stringWidth = 0;
 stringHeight = 0;
 
 	char	*pi, *pj;
@@ -575,7 +575,7 @@ for (pi = pj = hs; ; pi++) {
 				else {
 					int xTab = LHX (int (nTabs [nTab] * fScale));
 					if (xTab > sw) {
-						if (nMaxWidth && (xTab < nMaxWidth))
+						if (!nMaxWidth || (xTab < nMaxWidth))
 							sw = xTab;
 						else {
 							stringWidth = nMaxWidth;
