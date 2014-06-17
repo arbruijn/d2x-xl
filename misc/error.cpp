@@ -480,7 +480,11 @@ if (*gameFolders.user.szCache && (gameStates.app.nLogLevel > 0)) {
 
 	char fnErr [FILENAME_LEN];
 	sprintf (fnErr, "%sd2x.log", gameFolders.user.szCache);
+#ifdef _WIN32
 	fLog = _fsopen (fnErr, "wt", _SH_DENYWR);
+#else
+	fLog = _fsopen (fnErr, "wt");
+#endif
 	}
 }
 
