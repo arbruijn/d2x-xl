@@ -165,13 +165,23 @@ return pszAppFolder;
 
 // ----------------------------------------------------------------------------
 
-static int CheckDataFolder (char* pszDataRootDir)
+static int CheckDataFolder (char* pszRootDir)
 {
-AppendSlash (FlipBackslash (pszDataRootDir));
-return /*GetAppFolder ("", gameFolders.game.szData [0], pszDataRootDir, "descent2.hog") &&
-		 GetAppFolder ("", gameFolders.game.szData [0], pszDataRootDir, "d2demo.hog") &&*/
-		 GetAppFolder (pszDataRootDir, gameFolders.game.szData [0], DATA_FOLDER, "descent2.hog") &&
-		 GetAppFolder (pszDataRootDir, gameFolders.game.szData [0], DATA_FOLDER, "d2demo.hog");
+AppendSlash (FlipBackslash (pszRootDir));
+return GetAppFolder (pszRootDir, gameFolders.game.szData [0], DATA_FOLDER, "descent2.hog") &&
+		 GetAppFolder (pszRootDir, gameFolders.game.szData [0], DATA_FOLDER, "d2demo.hog");
+}
+
+// ----------------------------------------------------------------------------
+
+static int FindDataFolder (const char* pszRootDir)
+{
+if (pszRootDir != gameFolders.game.szRoot)
+	strcpy (gameFolders.game.szRoot, pszRootDir);
+if (!CheckDataFolder (gameFolders.game.szRoot))
+	return 1;
+*gameFolders.game.szRoot = '\0';
+return 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -241,11 +251,13 @@ PrintLog (1, "\nLooking for system folders\n");
 
 #if defined (_WIN32)
 
-if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-gamedir"), D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, getenv ("DESCENT2"), D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, appConfig [1], D2X_APPNAME, false))
-	CheckFolder (gameFolders.game.szRoot, DEFAULT_GAME_FOLDER, "");
+if (!FindDataFolder (appConfig.Text ("-datadir")) &&
+	 !FindDataFolder (getenv ("DESCENT2")) &&
+	 !FindDataFolder (appConfig [1]) &&
+	 !FindDataFolder (DEFAULT_GAME_FOLDER)) {
+	PrintLog (-1, "Could not locate game data\n");
+	return 0;
+	}
 
 nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
 if (nUserFolderMode)
@@ -265,12 +277,14 @@ if (*SHAREPATH) {
 		sprintf (gameFolders.szSharePath, "%s/games/d2x-xl", SHAREPATH);
 	}
 
-if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-gamedir"), D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, gameFolders.szSharePath, D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, getenv ("DESCENT2"), D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, appConfig [1], D2X_APPNAME, false))
-	CheckFolder (gameFolders.game.szRoot, DEFAULT_GAME_FOLDER, "");
+if (!FindDataFolder (appConfig.Text ("-datadir")) &&
+	 !FindDataFolder (gameFolders.szSharePath) &&
+	 !FindDataFolder (getenv ("DESCENT2")) &&
+	 !FindDataFolder (appConfig [1]) &&
+	 !FindDataFolder (DEFAULT_GAME_FOLDER)) {
+	PrintLog (-1, "Could not locate game data\n");
+	return 0;
+	}
 
 nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
 if (nUserFolderMode && !*CheckFolder (gameFolders.user.szRoot, getenv ("HOME"), ""))
@@ -282,10 +296,14 @@ if (nSharedFolderMode && !*CheckFolder (gameFolders.var.szRoot, SHARED_ROOT_FOLD
 
 #	else //__macosx__
 
-if (!*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-datadir"), D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, appConfig.Text ("-gamedir"), D2X_APPNAME) &&
-	 !*CheckFolder (gameFolders.game.szRoot, DEFAULT_GAME_FOLDER, D2X_APPNAME, false))
+if (!FindDataFolder (appConfig.Text ("-datadir")) &&
+	 !FindDataFolder (DEFAULT_GAME_FOLDER)) {
 	GetOSXAppFolder (gameFolders.game.szRoot, gameFolders.game.szRoot);
+	if (!FindDataFolder (gameFolders.game.szRoot) {
+		PrintLog (-1, "Could not locate game data\n");
+		return 0;
+		}
+	}
 
 nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
 if (nUserFolderMode)
