@@ -483,7 +483,7 @@ if (*gameFolders.user.szCache && (gameStates.app.nLogLevel > 0)) {
 #ifdef _WIN32
 	fLog = _fsopen (fnErr, "wt", _SH_DENYWR);
 #else
-	fLog = _fsopen (fnErr, "wt");
+	fLog = fopen (fnErr, "wt");
 #endif
 	}
 }
