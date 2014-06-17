@@ -303,7 +303,7 @@ if (!FindDataFolder (appConfig.Text ("-datadir")) &&
 	 !FindDataFolder (appConfig [1], true) &&
 	 !FindDataFolder (DEFAULT_GAME_FOLDER)) {
 	GetOSXAppFolder (gameFolders.game.szRoot, gameFolders.game.szRoot);
-	if (!FindDataFolder (gameFolders.game.szRoot)
+	if (!FindDataFolder (gameFolders.game.szRoot))
 		return 0;
 	}
 
