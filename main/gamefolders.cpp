@@ -256,16 +256,13 @@ return 1;
 static int GetSystemFolders (int& nSharedFolderMode, int& nUserFolderMode)
 {
 PrintLog (1, "\nLooking for system folders\n");
-
 #if defined (_WIN32)
 
 if (!FindDataFolder (appConfig.Text ("-datadir")) &&
 	 !FindDataFolder (getenv ("DESCENT2")) &&
 	 !FindDataFolder (appConfig [1], true) &&
-	 !FindDataFolder (DEFAULT_GAME_FOLDER)) {
-	PrintLog (-1, "Could not locate game data\n");
+	 !FindDataFolder (DEFAULT_GAME_FOLDER))
 	return 0;
-	}
 
 nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
 if (nUserFolderMode)
@@ -289,10 +286,8 @@ if (!FindDataFolder (appConfig.Text ("-datadir")) &&
 	 !FindDataFolder (gameFolders.szSharePath) &&
 	 !FindDataFolder (getenv ("DESCENT2")) &&
 	 !FindDataFolder (appConfig [1], true) &&
-	 !FindDataFolder (DEFAULT_GAME_FOLDER)) {
-	PrintLog (-1, "Could not locate game data\n");
+	 !FindDataFolder (DEFAULT_GAME_FOLDER)) 
 	return 0;
-	}
 
 nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
 if (nUserFolderMode && !*CheckFolder (gameFolders.user.szRoot, getenv ("HOME"), ""))
@@ -308,10 +303,8 @@ if (!FindDataFolder (appConfig.Text ("-datadir")) &&
 	 !FindDataFolder (appConfig [1], true) &&
 	 !FindDataFolder (DEFAULT_GAME_FOLDER)) {
 	GetOSXAppFolder (gameFolders.game.szRoot, gameFolders.game.szRoot);
-	if (!FindDataFolder (gameFolders.game.szRoot) {
-		PrintLog (-1, "Could not locate game data\n");
+	if (!FindDataFolder (gameFolders.game.szRoot)
 		return 0;
-		}
 	}
 
 nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
@@ -506,6 +499,8 @@ return 1;
 }
 
 // ----------------------------------------------------------------------------
+// GetAppFolders is called two times; After the 1st and before the 2nd time, 
+// d2x-xl tries to read a config file that may change game folders.
 
 void GetAppFolders (bool bInit)
 {
@@ -520,7 +515,12 @@ if (bInit)
 
 int nSharedFolderMode, nUserFolderMode;
 
-GetSystemFolders (nSharedFolderMode, nUserFolderMode);
+if (!GetSystemFolders (nSharedFolderMode, nUserFolderMode)) {
+	if (bInit)
+		return;
+	PrintLog (-1, "Could not locate game data\n");
+	exit (1);
+	}
 
 if (CheckDataFolder (gameFolders.game.szRoot)) {
 	Error (TXT_NO_HOG2);
