@@ -621,29 +621,20 @@ float texCoord [4][2] = {
 
 float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
 
-#	if	0
-float texCoord [4][2] = {{0,0},{0,1},{1,1},{1,0}};
-#	else
+float l = (float) CCanvas::Current ()->Left ();
+float r = (float) CCanvas::Current ()->Right ();
 float w = (float) gameData.render.screen.Width ();
 float h = (float) gameData.render.screen.Height ();
-#if 0
-float t = (float) CCanvas::Current ()->Top ();
-#else
 float t = (float) h - (float) CCanvas::Current ()->Top () - (float) CCanvas::Current ()->Height ();
-#endif
 float b = t + (float) CCanvas::Current ()->Height ();
 
 float texCoord [4][2] = {
-	{ScreenCoord ((float) CCanvas::Current ()->Left (), (float) w),
-	 ScreenCoord (/*(float) CCanvas::Current ()->Top ()*/t, (float) h)},
-	{ScreenCoord ((float) CCanvas::Current ()->Left (), (float) w),
-	 ScreenCoord (/*(float) CCanvas::Current ()->Bottom ()*/b, (float) h)},
-	{ScreenCoord ((float) CCanvas::Current ()->Right (), (float) w),
-	 ScreenCoord (/*(float) CCanvas::Current ()->Bottom ()*/b, (float) h)},
-	{ScreenCoord ((float) CCanvas::Current ()->Right (), (float) w),
-	 ScreenCoord (/*(float) CCanvas::Current ()->Top ()*/t, (float) h)}
+	{ScreenCoord (l, w), ScreenCoord (t, h)},
+	{ScreenCoord (l, w), ScreenCoord (b, h)},
+	{ScreenCoord (r, w), ScreenCoord (b, h)},
+	{ScreenCoord (r, w), ScreenCoord (t, h)}
 	};
-#	endif
+
 #endif
 
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
