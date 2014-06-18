@@ -440,29 +440,27 @@ if (bFromHog) {
 		}
 	}
 
+int bSecret = (nLevel < 0);
 // try the missions mod music folder next
 if (*gameFolders.game.szMusic) {
-	if (nLevel < 0)
+	if (bSecret)
 		sprintf (szFilename, "%sslevel%02d.ogg", gameFolders.game.szMusic, -nLevel);
 	else
 		sprintf (szFilename, "%slevel%02d.ogg", gameFolders.game.szMusic, nLevel);
 	if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
 		return;
-	if (m_user.nLevelSongs [0][1]) {
-		sprintf (szFilename, "%s%s", gameFolders.game.szMusic, m_user.levelSongs [0][1][nSong % m_user.nLevelSongs [0][1]]);
+	if (m_user.nLevelSongs [1][bSecret]) {
+		sprintf (szFilename, "%s%s", gameFolders.game.szMusic, m_user.levelSongs [1][bSecret][nSong % m_user.nLevelSongs [0][1]]);
 		if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
 			return;
 		}
 	}
 
 // try the standard music
-int bSecret = (nLevel < 0);
-for (int bMod = 1; bMod >= 0; bMod--) {
-	if (m_user.levelSongs [bMod][bSecret].Buffer () &&
-		 m_user.nLevelSongs [bMod][bSecret] && 
-		 midi.PlaySong (m_user.levelSongs [bMod][bSecret][nSong % m_user.nLevelSongs [bMod][bSecret]], NULL, NULL, 1, 0))
-		return;
-	}
+if (m_user.levelSongs [0][bSecret].Buffer () &&
+	 m_user.nLevelSongs [0][bSecret] && 
+	 midi.PlaySong (m_user.levelSongs [0][bSecret][nSong % m_user.nLevelSongs [0][bSecret]], NULL, NULL, 1, 0))
+	return;
 
 if (redbook.Enabled () && rba.Enabled () && (nTracks = rba.GetNumberOfTracks ()) > 1)	//try to play redbook
 	redbook.PlayTrack (REDBOOK_FIRST_LEVEL_TRACK + (nSong % (nTracks - REDBOOK_FIRST_LEVEL_TRACK + 1)) , 1);
@@ -558,8 +556,8 @@ for (bRead = 0; bRead < 2; bRead++) {
 			}
 		}
 	}
-m_user.nLevelSongs [0][bMod] = nSongs [0];
-m_user.nLevelSongs [1][bMod] = nSongs [1];
+m_user.nLevelSongs [bMod][0] = nSongs [0];
+m_user.nLevelSongs [bMod][1] = nSongs [1];
 return nSongs [0] + nSongs [1];
 }
 
