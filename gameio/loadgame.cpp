@@ -873,14 +873,13 @@ else {
 	/*---*/PrintLog (1, "loading replacement models\n");
 	LoadHiresModels (1);
 	if (*gameFolders.mods.szModels [0]) {
-		if (missionManager.nCurrentLevel < 0) {
-			sprintf (gameFolders.mods.szModels [1], "%slevel%02d", gameFolders.mods.szModels [0], -missionManager.nCurrentLevel);
-			sprintf (gameFolders.var.szModels [2], "%slevel%02d", gameFolders.var.szModels [1], -missionManager.nCurrentLevel);
-			}
-		else {
-			sprintf (gameFolders.mods.szModels [1], "%slevel%02d", gameFolders.mods.szModels [0], missionManager.nCurrentLevel);
-			sprintf (gameFolders.var.szModels [2], "%slevel%02d", gameFolders.var.szModels [1], missionManager.nCurrentLevel);
-			}
+		char szLevelFolder [FILENAME_LEN];
+		if (missionManager.nCurrentLevel < 0)
+			sprintf (szLevelFolder, "slevel%02d", -missionManager.nCurrentLevel);
+		else
+			sprintf (szLevelFolder, "level%02d", missionManager.nCurrentLevel);
+		sprintf (gameFolders.mods.szModels [1], "%s%s", gameFolders.mods.szModels [0], szLevelFolder);
+		sprintf (gameFolders.var.szModels [2], "%s%s", gameFolders.var.szModels [1], szLevelFolder);
 		LoadHiresModels (2);
 		}
 	PrintLog (-1);
