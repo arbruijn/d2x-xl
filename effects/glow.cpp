@@ -10,7 +10,7 @@
 CGlowRenderer glowRenderer;
 
 #define USE_VIEWPORT 1
-#define BLUR 2
+#define BLUR 0
 #define START_RAD (m_bViewport ? 2.0f : 0.0f)
 #define RAD_INCR (m_bViewport ? 2.0f : 2.0f)
 
@@ -249,7 +249,11 @@ if (gameStates.render.cameras.bActive) {
 if (nType == BLUR_SHADOW) 
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 else 
+#if 0 && DBG
+	glClearColor (1.0f, 0.5f, 0.0f, 0.25f);
+#else
 	glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+#endif
 glClear (GL_COLOR_BUFFER_BIT);
 }
 
@@ -328,15 +332,15 @@ if (gameOpts->render.effects.bGlow != 1)
 if (!bTransformed)
 	transformation.Transform (v, v);
 tScreenPos s;
-#	if 1
+#	if 0
 ProjectPoint (v, s);
 #	else
 v = transformation.m_info.projection * v;
-float z = -v.v.coord.z;
-float w = (float) ScreenWidth () / 2.0f;
-float h = (float) ScreenHeight () / 2.0f;
-s.x = fix (w - float (v.v.coord.x) * w / v.v.coord.z);
-s.y = fix (h - float (v.v.coord.y) * h / v.v.coord.z);
+float z = fabs (v.v.coord.z);
+float w = (float) gameData.render.scene.Width () * 0.5f;
+float h = (float) gameData.render.scene.Height () * 0.5f;
+s.x = fix (w * (1.0f + v.v.coord.x / z));
+s.y = fix (h * (1.0f + v.v.coord.y / z));
 #	endif
 #	if 0
 if (gameStates.render.cockpit.nType == CM_LETTERBOX)
@@ -581,6 +585,8 @@ return c;
 
 void RenderTestImage (void);
 
+static int bEnableViewport = 1;
+
 void CGlowRenderer::Render (int const source, int const direction, float const radius, float const scale)
 {
 #if USE_VIEWPORT == 2 //DBG
@@ -619,14 +625,65 @@ float texCoord [4][2] = {
 
 #else
 
-float verts [4][2] = {{0,0},{0,1},{1,1},{1,0}};
+float verts [2][4][2] = {
+	{{0,0},{0,1},{1,1},{1,0}},
+	{{0,0},{0,1},{1,1},{1,0}},
+	};
 
-float l = (float) CCanvas::Current ()->Left ();
-float r = (float) CCanvas::Current ()->Right ();
 float w = (float) gameData.render.screen.Width ();
 float h = (float) gameData.render.screen.Height ();
-float t = (float) h - (float) CCanvas::Current ()->Top () - (float) CCanvas::Current ()->Height ();
-float b = t + (float) CCanvas::Current ()->Height ();
+
+float l, r, b, t;
+
+if (bEnableViewport && UseViewport ()) {
+	l = (float) m_renderMin.x - radius;
+	r = (float) m_renderMax.x + radius;
+	t = (float) m_renderMin.y + radius;
+	b = (float) m_renderMax.y - radius;
+#if 0
+	b = h - t;
+	t = b + (float) (m_renderMax.y + radius - m_renderMin.y + radius);
+#elif 0
+	b = (float) m_renderMax.y + radius + h - (float) CCanvas::Current ()->Bottom ();
+#endif
+
+	verts [1][0][0] = ScreenCoord (l, w);
+	verts [1][0][1] = ScreenCoord (t, h);
+	verts [1][1][0] = ScreenCoord (l, w);
+	verts [1][1][1] = ScreenCoord (b, h);
+	verts [1][2][0] = ScreenCoord (r, w);
+	verts [1][2][1] = ScreenCoord (b, h);
+	verts [1][3][0] = ScreenCoord (r, w);
+	verts [1][3][1] = ScreenCoord (t, h);
+
+	if (bEnableViewport < 0) {
+		l = (float) CCanvas::Current ()->Left ();
+		r = (float) CCanvas::Current ()->Right ();
+		b = h - (float) CCanvas::Current ()->Top ();
+		t = b - (float) CCanvas::Current ()->Height ();
+		}
+	else {
+		l = (float) m_renderMin.x - radius;
+		r = (float) m_renderMax.x + radius;
+		t = (float) m_renderMin.y - radius;
+		b = (float) m_renderMax.y + radius;
+		l += (float) CCanvas::Current ()->Left ();
+		r += (float) CCanvas::Current ()->Left ();
+		t += (float) CCanvas::Current ()->Top ();
+#	if 0
+		b += (float) CCanvas::Current ()->Top ();
+#	else
+		b = h - t;
+		t = b - (float) (m_renderMax.y + radius - m_renderMin.y + radius);
+#	endif
+		}
+	}
+else {
+	l = (float) CCanvas::Current ()->Left ();
+	r = (float) CCanvas::Current ()->Right ();
+	b = h - (float) CCanvas::Current ()->Top ();
+	t = b - (float) CCanvas::Current ()->Height ();
+	}
 
 float texCoord [4][2] = {
 	{ScreenCoord (l, w), ScreenCoord (t, h)},
@@ -637,7 +694,6 @@ float texCoord [4][2] = {
 
 #endif
 
-ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 #if 1 //!DBG
 if (direction >= 0) {
 #if 0 //DBG
@@ -651,10 +707,17 @@ else
 	{
 	shaderManager.Deploy (-1);
 	}
+#if DBG
+ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
+ogl.SetTexturing (false);
+glColor4f (0.0f, 0.5f, 1.0f, 0.25f);
+#else
+ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer (source < 0));
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
-OglVertexPointer (2, GL_FLOAT, 0, verts);
 glColor3f (1,1,1);
+#endif
+OglVertexPointer (2, GL_FLOAT, 0, verts [bEnableViewport && UseViewport ()]);
 OglDrawArrays (GL_QUADS, 0, 4);
 ogl.BindTexture (0);
 }
@@ -724,7 +787,7 @@ else
 	glMatrixMode (GL_PROJECTION);
 	glPushMatrix ();
 	glLoadIdentity ();//clear matrix
-	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+	glOrtho (0.0, 1.0, 1.0, 0.0, -1.0, 1.0);
 
 	GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
 	bool bDepthWrite = ogl.GetDepthWrite ();
@@ -732,6 +795,7 @@ else
 
 	ogl.SetDepthWrite (false);
 	ogl.SetAlphaTest (false);
+	ogl.SetFaceCulling (false);
 	ogl.ResetClientStates (1);
 
 	float radius = 0.0f;
@@ -794,6 +858,7 @@ else
 	ogl.SetAlphaTest (true);
 	ogl.SetDepthMode (nDepthMode);
 	ogl.SetStencilTest (false);
+	ogl.SetFaceCulling (true);
 	CCanvas::Current ()->Deactivate ();
 	}
 return Reset (gameOpts->render.effects.bGlow);
