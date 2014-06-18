@@ -478,12 +478,7 @@ fix CAudioChannel::Duration (void)
 {
 if (!m_info.mixChunkP)
 	return 0;
-
-	int nTime = m_info.mixChunkP->alen / 2;
-
-if (audio.Format () != AUDIO_U8)
-	nTime /= 2;
-return F2X (float (nTime) / float (gameOpts->sound.audioSampleRate));
+return F2X (float (m_info.mixChunkP->alen) / float (gameOpts->sound.audioSampleRate * ((audio.Format () == AUDIO_U8) ? 2 : 4)) + 0.5f);
 }
 
 //------------------------------------------------------------------------------
