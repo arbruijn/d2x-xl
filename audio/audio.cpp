@@ -483,7 +483,7 @@ if (!m_info.mixChunkP)
 
 if (audio.Format () != AUDIO_U8)
 	nTime /= 2;
-return I2X (nTime) / gameOpts->sound.audioSampleRate;
+return F2X (float (nTime) / float (gameOpts->sound.audioSampleRate));
 }
 
 //------------------------------------------------------------------------------
