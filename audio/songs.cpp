@@ -450,7 +450,7 @@ if (*gameFolders.game.szMusic) {
 	if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
 		return;
 	if (m_user.nLevelSongs [1][bSecret]) {
-		sprintf (szFilename, "%s%s", gameFolders.game.szMusic, m_user.levelSongs [1][bSecret][nSong % m_user.nLevelSongs [0][1]]);
+		sprintf (szFilename, "%s%s", gameFolders.game.szMusic, m_user.levelSongs [1][bSecret][nSong % m_user.nLevelSongs [1][bSecret]]);
 		if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
 			return;
 		}
