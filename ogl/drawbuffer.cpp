@@ -206,7 +206,7 @@ return m_data.drawBufferP->Enable (nColorBuffers) ? labs (nPrevBuffer) : -1;
 void COGL::ChooseDrawBuffer (void)
 {
 ogl.ClearError (0);
-if (/*gameStates.render.bBriefing ||*/ (gameStates.render.bRenderIndirect < 0) || (gameStates.render.nWindow [0] && !IsSideBySideDevice ())) {
+if ((gameStates.render.bRenderIndirect < 0) || ((gameStates.render.nWindow [0] || gameStates.render.bBriefing) && !IsSideBySideDevice ())) {
 	gameStates.render.bRenderIndirect = 0;
 	SetDrawBuffer (GL_BACK, 0);
 	}
