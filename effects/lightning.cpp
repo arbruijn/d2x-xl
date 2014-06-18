@@ -233,7 +233,7 @@ if (!m_nodes.Create (m_nNodes))
 	return false;
 if (nDepth && (m_bGlow > 0))
 	m_bGlow = 0;
-if (gameOpts->render.lightning.bGlow) {
+if (gameOpts->render.lightning.bGlow && m_bGlow) {
 	int h = ((m_bGlow > 0) ? 2 : 1) * (m_nNodes - 1) * 4;
 	if (!m_plasmaTexCoord.Create (h))
 		return false;
@@ -728,7 +728,7 @@ if (bGlow) {
 
 void CLightning::RenderSetup (int nDepth, int nThread)
 {
-if ((GlowType () == 1) && m_plasmaVerts.Buffer ()) {
+if ((GlowType () == 1) && m_bGlow && m_plasmaVerts.Buffer ()) {
 	ComputeGlow (nDepth, nThread);
 	if (m_coreVerts.Buffer ())
 		ComputeCore ();
@@ -992,15 +992,15 @@ if (nDepth)
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif
-if (GlowType () == 0) {
-	if (glowRenderer.SetViewport (GLOW_LIGHTNING, m_coreVerts.Buffer (), m_nNodes))
-		RenderCore (&color, nDepth, nThread);
-	}
-else {
+if ((GlowType () == 1) && m_bGlow && m_plasmaVerts.Buffer ()) {
 	if (glowRenderer.SetViewport (GLOW_LIGHTNING, m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1))) {
 		RenderGlow (&color, nDepth, nThread);
 		RenderCore (&color, nDepth, nThread);
 		}
+	}
+else {
+	if (glowRenderer.SetViewport (GLOW_LIGHTNING, m_coreVerts.Buffer (), m_nNodes))
+		RenderCore (&color, nDepth, nThread);
 	}
 if (bGlow)
 	glBlendEquation (GL_FUNC_ADD);

@@ -968,7 +968,7 @@ if (i < 0) {
 		return -1;
 	nLife = 1000 + RandShort () % 2000;
 	i = Create (1, &vPos, &vEnd, NULL /*&vDelta*/, nObject, nLife, 0,
-					h, I2X (1) / 2, 0, 0, 20, 0, 1, 5, 0, 1, -1, 0, 0, 1, 3.0f, &color);
+					h, I2X (1) / 2, 0, 0, 20, 0, 1, 5, 0, 1, /*-1*/0, 0, 0, 1, 3.0f, &color);
 	bUpdate = 1;
 	}
 if (i >= 0) {

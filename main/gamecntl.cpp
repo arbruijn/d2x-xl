@@ -174,9 +174,8 @@ void DoShowNetGameHelp (void);
 int DoGamePause (void)
 {
 	int			key = 0;
-	int			bScreenChanged;
-	char			msg [1000];
-	char			totalTime [9], xLevelTime [9];
+	char			szPauseMsg [1000];
+	char			szTotalTime [9], szLevelTime [9];
 
 if (gameData.app.bGamePaused) {		//unpause!
 	gameData.app.bGamePaused = 0;
@@ -189,7 +188,7 @@ if (gameData.app.bGamePaused) {		//unpause!
 	}
 
 if (IsNetworkGame) {
-	 DoShowNetGameHelp();
+	 DoShowNetGameHelp ();
     return (KEY_PAUSE);
 	}
 else if (IsMultiGame) {
@@ -197,27 +196,43 @@ else if (IsMultiGame) {
 	return (KEY_PAUSE);
 	}
 PauseGame ();
-SetPopupScreenMode ();
-//paletteManager.ResumeEffect ();
-formatTime (totalTime, X2I (LOCALPLAYER.timeTotal) + LOCALPLAYER.hoursTotal * 3600);
-formatTime (xLevelTime, X2I (LOCALPLAYER.timeLevel) + LOCALPLAYER.hoursLevel * 3600);
-  if (gameData.demo.nState!=ND_STATE_PLAYBACK)
-	sprintf (msg, TXT_PAUSE_MSG1, GAMETEXT (332 + gameStates.app.nDifficultyLevel), 
-			   LOCALPLAYER.hostages.nOnBoard, xLevelTime, totalTime);
-   else
-	  	sprintf (msg, TXT_PAUSE_MSG2, GAMETEXT (332 +  gameStates.app.nDifficultyLevel), 
-				   LOCALPLAYER.hostages.nOnBoard);
 
+formatTime (szTotalTime, X2I (LOCALPLAYER.timeTotal) + LOCALPLAYER.hoursTotal * 3600);
+formatTime (szLevelTime, X2I (LOCALPLAYER.timeLevel) + LOCALPLAYER.hoursLevel * 3600);
+
+if (gameData.demo.nState != ND_STATE_PLAYBACK)
+	sprintf (szPauseMsg, TXT_PAUSE_MSG1, GAMETEXT (332 + gameStates.app.nDifficultyLevel), LOCALPLAYER.hostages.nOnBoard, szLevelTime, szTotalTime);
+else
+	sprintf (szPauseMsg, TXT_PAUSE_MSG2, GAMETEXT (332 + gameStates.app.nDifficultyLevel), LOCALPLAYER.hostages.nOnBoard);
+
+CMenu	m (5);
+
+char* ps = szPauseMsg + strlen ("PAUSE\n\n");
+char* pszToken = strtok (szPauseMsg + strlen ("PAUSE\n\n"), "\n");
+while (pszToken) {
+	m.AddText ("", pszToken);
+	pszToken = strtok (NULL, "\n");
+	}
+
+#if 1
+
+key = m.Menu (NULL, "PAUSE");
+
+#else 
+
+int bScreenChanged;
+
+SetPopupScreenMode ();
 if (!gameOpts->menus.nStyle) {
 	gameStates.menus.nInMenu++;
 	GameRenderFrame ();
 	gameStates.menus.nInMenu--;
 	}
-messageBox.Show (pszPauseMsg = msg, false);	
+messageBox.Show (pszPauseMsg = szPauseMsg, false);	
 GrabMouse (0, 0);
 while (gameData.app.bGamePaused) {
 	if (!(gameOpts->menus.nStyle && gameStates.app.bGameRunning))
-		key = KeyGetChar();
+		key = KeyGetChar ();
 	else {
 		gameStates.menus.nInMenu++;
 		while (!(key = KeyInKey ())) {
@@ -227,22 +242,17 @@ while (gameData.app.bGamePaused) {
 			}
 		gameStates.menus.nInMenu--;
 		}
-#if DBG
-		HandleTestKey(key);
-#endif
 		bScreenChanged = HandleSystemKey (key);
 		if (bScreenChanged) {
 			GameRenderFrame ();
 			messageBox.Render ();
-#if 0		
-			show_extraViews ();
-			if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
-				RenderGauges();
-#endif			
 			}
 	}
-GrabMouse (1, 0);
 messageBox.Clear ();
+
+#endif
+
+GrabMouse (1, 0);
 ResumeGame ();
 return key;
 }

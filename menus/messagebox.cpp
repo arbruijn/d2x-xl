@@ -57,13 +57,12 @@ fontManager.SetScale (fontManager.Scale () * CMenu::GetScale ());
 fontManager.Current ()->StringSize (m_pszMsg, w, h, aw);
 m_x = (gameData.render.frame.Width (false) - w) / 2;
 m_y = (gameData.render.frame.Height (false) - h) / 2;
-backgroundManager.Setup (m_background, m_x - BOX_BORDER / 2, m_y - BOX_BORDER / 2, w + BOX_BORDER, h + BOX_BORDER);
+backgroundManager.Setup (m_background, w + BOX_BORDER, h + BOX_BORDER, BG_SUBMENU);
 gameStates.app.bClearMessage = 1;
 if (bFade)
 	do {
 		CMenu::Render (NULL, NULL);
-//		G3_SLEEP (33);
-	} while (SDL_GetTicks () - m_tEnter < gameOpts->menus.nFade);
+		} while (SDL_GetTicks () - m_tEnter < gameOpts->menus.nFade);
 fontManager.SetScale (fontManager.Scale () / CMenu::GetScale ());
 }
 
@@ -71,13 +70,50 @@ fontManager.SetScale (fontManager.Scale () / CMenu::GetScale ());
 
 void CMessageBox::Render (void)
 {
+#if 1
+
+	static	int t0 = 0;
+
+if (!(BeginRenderMenu () && MenuRenderTimeout (t0, -1)))
+	return;
+
 FadeIn ();
 backgroundManager.Activate (m_background);
 fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
 fontManager.SetCurrent (MEDIUM1_FONT);
-GrPrintF (NULL, m_x, /*BOX_BORDER / 2*/m_y, m_pszMsg); //(h / 2 + BOX_BORDER) / 2
+GrPrintF (NULL, m_x - CCanvas::Current ()->Left (), m_y - CCanvas::Current ()->Top (), m_pszMsg); 
+#if 0
+if (gameStates.app.bGameRunning)
+	ogl.ChooseDrawBuffer ();
+else
+	ogl.SetDrawBuffer (m_nDrawBuffer, 0);
+#endif
 gameStates.render.grAlpha = 1.0f;
 m_background.Deactivate ();
+
+#else
+
+	static	int t0 = 0;
+
+if (!(BeginRenderMenu () && MenuRenderTimeout (t0, -1)))
+	return;
+
+CCanvas::SetCurrent (backgroundManager.Canvas (1));
+FadeIn ();
+//backgroundManager.Redraw ();
+backgroundManager.Activate (m_background);
+fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
+fontManager.SetCurrent (MEDIUM1_FONT);
+GrPrintF (NULL, 0x8000, BOX_BORDER / 2, m_pszMsg); 
+GrUpdate (0);
+if (gameStates.app.bGameRunning)
+	ogl.ChooseDrawBuffer ();
+else
+	ogl.SetDrawBuffer (m_nDrawBuffer, 0);
+gameStates.render.grAlpha = 1.0f;
+m_background.Deactivate ();
+
+#endif
 }
 
 //------------------------------------------------------------------------------

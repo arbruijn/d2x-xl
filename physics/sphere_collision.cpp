@@ -1098,6 +1098,10 @@ gameData.collisions.hitResult.nNestCount = 0;
 if (hitQuery.flags & FQ_VISIBILITY)
 	extraGameInfo [IsMultiGame].nHitboxes = 0;
 ComputeHitpoint (curHit, hitQuery, hitResult.segList, &hitResult.nSegments, -2);
+#if DBG
+if (curHit.nSegment >= gameData.segs.nSegments)
+	ComputeHitpoint (curHit, hitQuery, hitResult.segList, &hitResult.nSegments, -2);
+#endif
 extraGameInfo [IsMultiGame].nHitboxes = nHitboxes;
 
 if ((curHit.nSegment == -1) || SEGMENTS [curHit.nSegment].Masks (curHit.vPoint, 0).m_center)
