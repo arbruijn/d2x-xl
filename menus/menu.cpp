@@ -675,6 +675,7 @@ int CMenu::Menu (const char* pszTitle, const char* pszSubTitle, pMenuCallback ca
 	int			x1 = 0, x2, y1, y2;
 	int			bLaunchOption = 0;
 	int			exception = 0;
+	int			bPauseMenu = gameData.app.bGamePaused;
 
 if (gameStates.menus.nInMenu > 0)
 	return -1;
@@ -882,18 +883,6 @@ while (!m_bDone) {
 			gameData.menu.alpha = (gameData.menu.alpha + 16) & 0xFF;
 			break;
 
-		case KEY_COMMAND + KEY_P:
-		case KEY_CTRLED + KEY_P:
-		case KEY_PAUSE:
-			if (bPauseableMenu) {
-				bPauseableMenu = 0;
-				m_bDone = 1;
-				m_nChoice = -1;
-				}
-			else
-				gameData.app.bGamePaused = !gameData.app.bGamePaused;
-			break;
-
 		case KEY_TAB + KEY_SHIFTED:
 		case KEY_UP:
 		case KEY_PAD8:
@@ -1072,6 +1061,22 @@ launchOption:
 				m_bDone = 1;
 				}
 			break;
+
+		case KEY_COMMAND + KEY_P:
+		case KEY_CTRLED + KEY_P:
+		case KEY_PAUSE:
+			if (bPauseMenu) 
+				m_nKey = KEY_ESC;	// quite pause menu
+			else {
+				if (bPauseableMenu) {
+					bPauseableMenu = 0;
+					m_bDone = 1;
+					m_nChoice = -1;
+					}
+				else 
+					gameData.app.bGamePaused = !gameData.app.bGamePaused;
+				break;
+				}
 
 		case KEY_ESC:
 			if ((m_nChoice > -1) && (Item (m_nChoice).m_nType == NM_TYPE_INPUT_MENU) && (Item (m_nChoice).m_group == 1)) {

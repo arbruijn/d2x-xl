@@ -528,7 +528,7 @@ if (m_info.time [0] < 0) {
 	if (m_info.nChannel >= 0)
 		m_info.flags |= TF_PLAYING_SOUND;
 	}
-else if (gameData.time.xGame - m_info.tOperated > m_info.time [1]) {
+else if (/*(m_info.time [1] > 0) &&*/ (gameData.time.xGame - m_info.tOperated > m_info.time [1])) {
 	m_info.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, 0, 0, m_info.time [0] - 1, -1, I2X (1), indexP->pszText);
 	if (m_info.nChannel >= 0) {
 		m_info.time [1] = audio.Channel (m_info.nChannel)->Duration () * m_info.time [0];
@@ -1590,6 +1590,10 @@ void TriggersFrameProcess (void)
 
 trigP = TRIGGERS.Buffer ();
 for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
+#if DBG
+	if (trigP->Index () == nDbgTrigger)
+		BRP;
+#endif
 	if (!gameStates.app.bD2XLevel)
 		continue;
 	if (trigP->m_info.flags & TF_DISABLED)
@@ -1603,8 +1607,9 @@ for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
 		 (trigP->m_info.flags & TF_PLAYING_SOUND) && 
 		 (trigP->m_info.time [1] > 0) &&
 		 (gameData.time.xGame - trigP->m_info.tOperated > trigP->m_info.time [1])) {
-		trigP->m_info.time [1] = 0;	// sound has been played; make sure it doesn't get played again when laoading a save game that may subsequently be now
+		//trigP->m_info.time [1] = 0;	// sound has been played; make sure it doesn't get played again when laoading a save game that may subsequently be now
 		trigP->m_info.flags &= ~TF_PLAYING_SOUND;
+		trigP->m_info.flags |= TF_DISABLED; // sound has been played; make sure it doesn't get played again when laoading a save game that may subsequently be now
 		}
 	trigP->Countdown (false);	
 	}

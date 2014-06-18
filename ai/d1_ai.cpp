@@ -417,7 +417,7 @@ void ai_turn_towards_vector (CFixVector *vGoal, CObject *objP, fix rate)
 
 	dot = CFixVector::Dot (*vGoal, objP->info.position.mOrient.m.dir.f);
 
-	if (dot < (I2X (1) - gameData.time.xFrame/2)) {
+	if (dot < (I2X (1) - gameData.time.xFrame / 2)) {
 		fix	mag;
 		fix	new_scale = FixDiv(gameData.time.xFrame * D1_AI_TURN_SCALE, rate);
 		new_fVec *= new_scale;
@@ -855,13 +855,13 @@ void move_towards_vector (CObject *objP, CFixVector *vec_goal)
 	if (dot < I2X (3)/4) {
 		//	This funny code is supposed to slow down the robotP and move his velocity towards his direction
 		//	more quickly than the general code
-		piP->velocity.v.coord.x = piP->velocity.v.coord.x/2 + FixMul((*vec_goal).v.coord.x, gameData.time.xFrame*32);
-		piP->velocity.v.coord.y = piP->velocity.v.coord.y/2 + FixMul((*vec_goal).v.coord.y, gameData.time.xFrame*32);
-		piP->velocity.v.coord.z = piP->velocity.v.coord.z/2 + FixMul((*vec_goal).v.coord.z, gameData.time.xFrame*32);
+		piP->velocity.v.coord.x = piP->velocity.v.coord.x/2 + FixMul((*vec_goal).v.coord.x, gameData.time.xFrame * 32);
+		piP->velocity.v.coord.y = piP->velocity.v.coord.y/2 + FixMul((*vec_goal).v.coord.y, gameData.time.xFrame * 32);
+		piP->velocity.v.coord.z = piP->velocity.v.coord.z/2 + FixMul((*vec_goal).v.coord.z, gameData.time.xFrame * 32);
 	} else {
-		piP->velocity.v.coord.x += FixMul((*vec_goal).v.coord.x, gameData.time.xFrame*64) * (gameStates.app.nDifficultyLevel+5)/4;
-		piP->velocity.v.coord.y += FixMul((*vec_goal).v.coord.y, gameData.time.xFrame*64) * (gameStates.app.nDifficultyLevel+5)/4;
-		piP->velocity.v.coord.z += FixMul((*vec_goal).v.coord.z, gameData.time.xFrame*64) * (gameStates.app.nDifficultyLevel+5)/4;
+		piP->velocity.v.coord.x += FixMul((*vec_goal).v.coord.x, gameData.time.xFrame * 64) * (gameStates.app.nDifficultyLevel + 5) / 4;
+		piP->velocity.v.coord.y += FixMul((*vec_goal).v.coord.y, gameData.time.xFrame * 64) * (gameStates.app.nDifficultyLevel + 5) / 4;
+		piP->velocity.v.coord.z += FixMul((*vec_goal).v.coord.z, gameData.time.xFrame * 64) * (gameStates.app.nDifficultyLevel + 5) / 4;
 	}
 
 	speed = piP->velocity.Mag();
@@ -872,9 +872,9 @@ void move_towards_vector (CObject *objP, CFixVector *vec_goal)
 		xMaxSpeed *= 2;
 
 	if (speed > xMaxSpeed) {
-		piP->velocity.v.coord.x = (piP->velocity.v.coord.x*3)/4;
-		piP->velocity.v.coord.y = (piP->velocity.v.coord.y*3)/4;
-		piP->velocity.v.coord.z = (piP->velocity.v.coord.z*3)/4;
+		piP->velocity.v.coord.x = (piP->velocity.v.coord.x * 3) / 4;
+		piP->velocity.v.coord.y = (piP->velocity.v.coord.y * 3) / 4;
+		piP->velocity.v.coord.z = (piP->velocity.v.coord.z * 3) / 4;
 	}
 }
 
@@ -922,24 +922,24 @@ void move_around_player(CObject *objP, CFixVector *vec_to_player, int fast_flag)
 
 	switch (dir) {
 			case 0:
-				vEvade.v.coord.x = FixMul((*vec_to_player).v.coord.z, gameData.time.xFrame*32);
-				vEvade.v.coord.y = FixMul((*vec_to_player).v.coord.y, gameData.time.xFrame*32);
-				vEvade.v.coord.z = FixMul(-(*vec_to_player).v.coord.x, gameData.time.xFrame*32);
+				vEvade.v.coord.x = FixMul((*vec_to_player).v.coord.z, gameData.time.xFrame * 32);
+				vEvade.v.coord.y = FixMul((*vec_to_player).v.coord.y, gameData.time.xFrame * 32);
+				vEvade.v.coord.z = FixMul(-(*vec_to_player).v.coord.x, gameData.time.xFrame * 32);
 				break;
 			case 1:
-				vEvade.v.coord.x = FixMul(-(*vec_to_player).v.coord.z, gameData.time.xFrame*32);
-				vEvade.v.coord.y = FixMul((*vec_to_player).v.coord.y, gameData.time.xFrame*32);
-				vEvade.v.coord.z = FixMul((*vec_to_player).v.coord.x, gameData.time.xFrame*32);
+				vEvade.v.coord.x = FixMul(-(*vec_to_player).v.coord.z, gameData.time.xFrame * 32);
+				vEvade.v.coord.y = FixMul((*vec_to_player).v.coord.y, gameData.time.xFrame * 32);
+				vEvade.v.coord.z = FixMul((*vec_to_player).v.coord.x, gameData.time.xFrame * 32);
 				break;
 			case 2:
-				vEvade.v.coord.x = FixMul(-(*vec_to_player).v.coord.y, gameData.time.xFrame*32);
-				vEvade.v.coord.y = FixMul((*vec_to_player).v.coord.x, gameData.time.xFrame*32);
-				vEvade.v.coord.z = FixMul((*vec_to_player).v.coord.z, gameData.time.xFrame*32);
+				vEvade.v.coord.x = FixMul(-(*vec_to_player).v.coord.y, gameData.time.xFrame * 32);
+				vEvade.v.coord.y = FixMul((*vec_to_player).v.coord.x, gameData.time.xFrame * 32);
+				vEvade.v.coord.z = FixMul((*vec_to_player).v.coord.z, gameData.time.xFrame * 32);
 				break;
 			case 3:
-				vEvade.v.coord.x = FixMul((*vec_to_player).v.coord.y, gameData.time.xFrame*32);
-				vEvade.v.coord.y = FixMul(-(*vec_to_player).v.coord.x, gameData.time.xFrame*32);
-				vEvade.v.coord.z = FixMul((*vec_to_player).v.coord.z, gameData.time.xFrame*32);
+				vEvade.v.coord.x = FixMul((*vec_to_player).v.coord.y, gameData.time.xFrame * 32);
+				vEvade.v.coord.y = FixMul(-(*vec_to_player).v.coord.x, gameData.time.xFrame * 32);
+				vEvade.v.coord.z = FixMul((*vec_to_player).v.coord.z, gameData.time.xFrame * 32);
 				break;
 		}
 
@@ -983,7 +983,7 @@ void move_away_from_player(CObject *objP, CFixVector *vec_to_player, int attackT
 	tRobotInfo		*botInfoP = &gameData.bots.info [1][objP->info.nId];
 	int				objref;
 
-	piP->velocity -= *vec_to_player * (gameData.time.xFrame*16);
+	piP->velocity -= *vec_to_player * (gameData.time.xFrame * 16);
 
 	if (attackType) {
 		//	Get value in 0..3 to choose evasion direction.
@@ -1780,7 +1780,7 @@ if (DoAnyRobotDyingFrame (objP))
 	//	Occasionally make non-still robots make a path to the playerP.  Based on agitation and distance from playerP.
 	if ((aiP->behavior != D1_AIB_RUN_FROM) && (aiP->behavior != D1_AIB_STILL) && !(IsMultiGame))
 		if (gameData.ai.nOverallAgitation > 70) {
-			if ((dist_to_player < I2X (200)) && (RandShort () < gameData.time.xFrame/4)) {
+			if ((dist_to_player < I2X (200)) && (RandShort () < gameData.time.xFrame / 4)) {
 				if (RandShort () * (gameData.ai.nOverallAgitation - 40) > I2X (5)) {
 					CreatePathToTarget(objP, 4 + gameData.ai.nOverallAgitation/8 + gameStates.app.nDifficultyLevel, 1);
 					// -- show_path_and_other(objP);
@@ -1875,7 +1875,7 @@ if (DoAnyRobotDyingFrame (objP))
 
 
 	if (gameStates.app.bPlayerIsDead && (ailP->targetAwarenessType == 0))
-		if ((dist_to_player < I2X (200)) && (RandShort () < gameData.time.xFrame/8)) {
+		if ((dist_to_player < I2X (200)) && (RandShort () < gameData.time.xFrame / 8)) {
 			if ((aiP->behavior != D1_AIB_STILL) && (aiP->behavior != D1_AIB_RUN_FROM)) {
 				if (!ai_multiplayer_awareness(objP, 30))
 					return;
@@ -1964,7 +1964,7 @@ if (DoAnyRobotDyingFrame (objP))
 			else if ((aiP->behavior != D1_AIB_STATION) || (ailP->mode != D1_AIM_FOLLOW_PATH) || (aiP->nHideSegment == objP->info.nSegment)) {
 				if ((dist_to_player > I2X (150)) && (ailP->timeSinceProcessed <= I2X (1)))
 					return;
-				if ((dist_to_player > I2X (100)) && (ailP->timeSinceProcessed <= I2X (1)/2))
+				if ((dist_to_player > I2X (100)) && (ailP->timeSinceProcessed <= I2X (1) / 2))
 					return;
 			}
 		#if DBG
@@ -1975,7 +1975,7 @@ if (DoAnyRobotDyingFrame (objP))
 	//	Reset time since processed, but skew objects so not everything processed synchronously, else
 	//	we get fast frames with the occasional very slow frame.
 	// D1_AI_proc_time = ailP->timeSinceProcessed;
-	ailP->timeSinceProcessed = - ((nObject & 0x03) * gameData.time.xFrame ) / 2;
+	ailP->timeSinceProcessed = - ((nObject & 0x03) * gameData.time.xFrame) / 2;
 
 	//	- -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -
 	//	Perform special ability

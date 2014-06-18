@@ -1033,7 +1033,7 @@ if (gameData.ai.nOverallAgitation < 71)
 	return 0;
 //if (!gameOpts->gameplay.nAIAggressivity || (siP->ailP->targetAwarenessType < PA_RETURN_FIRE) || (siP->ailP->mode == AIM_FOLLOW_PATH))
  {
-	if ((gameData.ai.target.xDist >= MAX_REACTION_DIST) || (RandShort () >= gameData.time.xFrame/4))
+	if ((gameData.ai.target.xDist >= MAX_REACTION_DIST) || (RandShort () >= gameData.time.xFrame / 4))
 		return 0;
 	if (RandShort () * (gameData.ai.nOverallAgitation - 40) <= I2X (5))
 		return 0;
