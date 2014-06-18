@@ -330,7 +330,7 @@ if (bitsize == 1) {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	format = AUDIO_S16MSB;
 #else
-	format = AUDIO_S16LSB;
+	format = AUDIO_S16SYS;
 #endif
 	}
 else
