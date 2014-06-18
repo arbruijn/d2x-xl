@@ -1602,8 +1602,10 @@ for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
 	if ((trigP->m_info.nType == TT_SOUND) && 
 		 (trigP->m_info.flags & TF_PLAYING_SOUND) && 
 		 (trigP->m_info.time [1] > 0) &&
-		 (gameData.time.xGame - trigP->m_info.tOperated > trigP->m_info.time [1]))
+		 (gameData.time.xGame - trigP->m_info.tOperated > trigP->m_info.time [1])) {
+		trigP->m_info.time [1] = 0;	// sound has been played; make sure it doesn't get played again when laoading a save game that may subsequently be now
 		trigP->m_info.flags &= ~TF_PLAYING_SOUND;
+		}
 	trigP->Countdown (false);	
 	}
 
