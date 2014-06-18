@@ -795,12 +795,12 @@ if (gameStates.app.bCacheModelData) {
 		}
 	}
 
-Destroy ();
 if (bCustom 
 	 ? !cf.Open (filename, gameFolders.mods.szModels [bCustom - 1], "rb", 0)
 	 : !cf.Open (filename, gameFolders.game.szModels, "rb", 0))
 	return 0;
 
+Destroy ();
 bErrMsg = 0;
 aseFile = &cf;
 Init ();
