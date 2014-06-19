@@ -34,8 +34,8 @@
 
 #ifndef DOSEMU
 #include "mono.h"
-#define enter_priv_on ()
-#define leave_priv_setting ()
+#define enter_priv_on()
+#define leave_priv_setting()
 #endif
 
 // ----------------------------------------------------------------------------
@@ -44,21 +44,6 @@ typedef union tIpxAddrCast {
 	ubyte	b [1];
 	uint	i;
 } tIpxAddrCast;
-
-// ----------------------------------------------------------------------------
-
-struct ipx_driver ipx_bsd = {
-	ipx_bsd_GetMyAddress,
-	ipx_bsd_OpenSocket,
-	ipx_bsd_CloseSocket,
-	ipx_bsd_SendPacket,
-	ipx_bsd_ReceivePacket,
-	IPXGeneralPacketReady,
-	NULL,	// InitNetgameAuxData
-	NULL,	// HandleNetgameAuxData
-	NULL,	// HandleLeaveGame
-	NULL	// SendGamePacket
-};
 
 //------------------------------------------------------------------------------
 
@@ -232,7 +217,6 @@ static int ipx_bsd_SendPacket (ipx_socket_t *mysock, IPXPacket_t *IPXHeader, u_c
 	memcpy (&ipxs.sipx_network, IPXHeader->Destination.Network, 4);
 	/* if destination address is 0, then send to my net */
 	if (ipxs.sipx_network == 0) {
-		ipxs.sipx_network = *((uint*) &ipx_MyAddress[0]);
 		tIpxAddrCast ipxAddrCast;
 
 		memcpy (ipxAddrCast.b, ipx_MyAddress, sizeof (ipx_MyAddress));
@@ -263,6 +247,21 @@ static int ipx_bsd_ReceivePacket (ipx_socket_t *s, char *buffer, int bufsize, IP
 
 	return size;
 }
+
+// ----------------------------------------------------------------------------
+
+struct ipx_driver ipx_bsd = {
+	ipx_bsd_GetMyAddress,
+	ipx_bsd_OpenSocket,
+	ipx_bsd_CloseSocket,
+	ipx_bsd_SendPacket,
+	ipx_bsd_ReceivePacket,
+	IPXGeneralPacketReady,
+	NULL,	// InitNetgameAuxData
+	NULL,	// HandleNetgameAuxData
+	NULL,	// HandleLeaveGame
+	NULL	// SendGamePacket
+};
 
 // ----------------------------------------------------------------------------
 
