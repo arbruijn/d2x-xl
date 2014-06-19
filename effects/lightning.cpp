@@ -657,8 +657,8 @@ if (!nodeP)
 #else
 	float					fWidth = bGlow ? m_width / 2.0f : (m_bGlow > 0) ? (m_width / 4.0f) : (m_bGlow < 0) ? (m_width / 16.0f) : (m_width / 8.0f);
 #endif
-
-fWidth *= ComputeDistScale (500.0f);
+	
+fWidth *= ComputeDistScale (-500.0f);
 if (nThread < 0)
 	vEye.SetZero ();
 else
@@ -849,8 +849,8 @@ if (zPivot < 0.0f) {
 else {
 	if (m_fAvgDist <= zPivot)
 		return m_fDistScale = 1.0f + sqrt ((zPivot - m_fAvgDist) /*/ Z_PIVOT * 10.0f*/);
-	if (m_fAvgDist <= 2 * zPivot)
-		return m_fDistScale = sqrt ((zPivot - m_fAvgDist * 0.5f) / zPivot);
+	if (m_fAvgDist <= 4 * zPivot)
+		return m_fDistScale = sqrt ((zPivot - m_fAvgDist * 0.25f) / zPivot);
 	}
 return m_fDistScale = 0.0f; //sqrt (((float) ZRANGE - Z_PIVOT - m_fAvgDist)) / ((float) ZRANGE - Z_PIVOT);
 }
