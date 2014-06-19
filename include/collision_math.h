@@ -227,7 +227,7 @@ fix CheckVectorHitboxCollision (CFixVector& intersection, CFixVector& normal, CF
 
 fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *objP1, CObject *objP2, CFixVector *p0, CFixVector *p1, short& nModel);
 
-fix CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, short nSegment, short nSide, CFixVector* p0, CFixVector* p1, CObject *objP);
+CSegMasks CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, short nSegment, short nSide, CFixVector* p0, CFixVector* p1, CObject *objP);
 
 ubyte PointIsOutsideFace (CFixVector* refP, CFixVector* vertices, short nVerts);
 

@@ -469,10 +469,11 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, short nSegment, short nSide, CFixVector* p0, CFixVector* p1, CObject *objP)
+CSegMasks CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, short nSegment, short nSide, CFixVector* p0, CFixVector* p1, CObject *objP)
 {
-	int					iModel, nModels, nHits = 0;
-	fix					dMin = 0x7fffffff;
+	int			iModel, nModels, nHits = 0;
+	fix			dMin = 0x7fffffff;
+	CSegMasks	masks;
 
 #if 1 // always only use the primary hitbox (containing the entire object) here
 iModel =
@@ -497,10 +498,15 @@ CSide* sideP = SEGMENTS [nSegment].Side (nSide);
 
 for (int i = 0; i < 2; i++) {
 	for (int j = iModel; j <= nModels; j++) {
-		nHits += FindTriangleHitboxIntersection (intersection, normal, sideP->m_vertices + 3 * i, sideP->m_normals + i, &hb [j].box, p0, dMin);
+		int h = FindTriangleHitboxIntersection (intersection, normal, sideP->m_vertices + 3 * i, sideP->m_normals + i, &hb [j].box, p0, dMin);
+		if (h) {
+			masks.m_side |= 1 << nSide;
+			masks.m_face |= (i + 1) << (nSide * 2);
+			nHits += h;
+			}
 		}
 	}
-return nHits ? 0 : 0x7FFFFFFF;
+return masks;
 }
 
 //	-----------------------------------------------------------------------------
