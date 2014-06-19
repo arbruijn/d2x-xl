@@ -786,6 +786,7 @@ else
 
 	GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
 	bool bDepthWrite = ogl.GetDepthWrite ();
+	bool bFaceCulling = ogl.GetFaceCulling ();
 	ogl.GetBlendMode (nBlendModes [0], nBlendModes [1]);
 
 	ogl.SetDepthWrite (false);
@@ -853,7 +854,7 @@ else
 	ogl.SetAlphaTest (true);
 	ogl.SetDepthMode (nDepthMode);
 	ogl.SetStencilTest (false);
-	ogl.SetFaceCulling (true);
+	ogl.SetFaceCulling (bFaceCulling);
 	CCanvas::Current ()->Deactivate ();
 	}
 return Reset (gameOpts->render.effects.bGlow);

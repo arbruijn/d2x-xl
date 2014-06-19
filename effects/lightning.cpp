@@ -930,7 +930,7 @@ if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ComputeDistScale (100.0f);
 	if (glowRenderer.Available (GLOW_LIGHTNING) && (m_fDistScale != 0.0f)) 
 		w *= 2.0f * m_fDistScale;
-	glLineWidth ((w > 1.0f) ? FRound (w) : 1.0f);
+	glLineWidth ((w > 1.0f) ? w : 1.0f);
 	OglVertexPointer (3, GL_FLOAT, 0, m_coreVerts.Buffer ());
 	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
 	ogl.DisableClientStates (0, 0, 0, -1);
@@ -1016,9 +1016,13 @@ if (nDepth)
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif
-if ((GlowType () == 1) && bGlow && m_bGlow && m_plasmaVerts.Buffer ()) {
-	if (glowRenderer.SetViewport (GLOW_LIGHTNING, m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1))) {
-		RenderGlow (&color, nDepth, nThread);
+#if DBG
+if (m_fDistScale > 1.0f)
+	BRP;
+#endif
+if ((GlowType () == 1) && m_bGlow && m_plasmaVerts.Buffer ()) {
+	if (!bGlow || glowRenderer.SetViewport (GLOW_LIGHTNING, m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1))) {
+		//RenderGlow (&color, nDepth, nThread);
 		RenderCore (&color, nDepth, nThread);
 		}
 	}

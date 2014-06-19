@@ -572,6 +572,7 @@ if (transparencyRenderer.Data ().nPrevType != transparencyRenderer.Data ().nCurT
 	ogl.ResetClientStates ();
 	shaderManager.Deploy (-1, true);
 	}
+shaderManager.Deploy (-1, false);
 lightning->Render (nDepth, 0);
 transparencyRenderer.ResetBitmaps ();
 #endif
