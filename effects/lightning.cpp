@@ -1020,9 +1020,9 @@ WaitForRenderThread (nThread);
 if (m_fDistScale > 1.0f)
 	BRP;
 #endif
-if ((GlowType () == 1) && m_bGlow && m_plasmaVerts.Buffer ()) {
-	if (!bGlow || glowRenderer.SetViewport (GLOW_LIGHTNING, m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1))) {
-		//RenderGlow (&color, nDepth, nThread);
+if ((GlowType () == 1) && bGlow && m_bGlow && m_plasmaVerts.Buffer ()) {
+	if (glowRenderer.SetViewport (GLOW_LIGHTNING, m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1))) {
+		RenderGlow (&color, nDepth, nThread);
 		RenderCore (&color, nDepth, nThread);
 		}
 	}
