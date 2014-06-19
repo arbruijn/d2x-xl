@@ -44,6 +44,10 @@ int nModexHUDMsgs;
 
 void ClearBackgroundMessages (void)
 {
+#if 0 
+	// Obsolete. You cannot shrink the game's output area below the screen or window size anymore in D2X-XL. 
+	// That feature has been removed because today's hardware is powerful enough to render Descent,
+	// and since you can run the program in windowed and fullscreen mode at lower than native screen resolution.
 if (((gameStates.render.cockpit.nType == CM_STATUS_BAR) || (gameStates.render.cockpit.nType == CM_FULL_SCREEN)) && 
 	  (nLastMsgYCrd != -1) && (gameData.render.scene.Top () >= 6)) {
 	gameData.render.frame.Activate ("ClearBackgroundMessages (frame)");
@@ -51,6 +55,7 @@ if (((gameStates.render.cockpit.nType == CM_STATUS_BAR) || (gameStates.render.co
 	gameData.render.frame.Deactivate ();
 	nLastMsgYCrd = -1;
 	}
+#endif
 szDisplayedBackgroundMsg [0][0] = 0;
 }
 
@@ -84,8 +89,7 @@ void HUDRenderMessages (ubyte nType)
 if (gameStates.app.bSaveScreenShot)
 	return;
 
-	int			h, i, n, w, y, aw, yStart, nMsg;
-	char			*pszMsg;
+	int			h, i, n, w, y, aw, yStart;
 	CHUDMessage *pMsgs = gameData.hud.msgs + nType;
 
 if ((pMsgs->nMessages < 0) || (pMsgs->nMessages > HUD_MAX_MSGS))
@@ -114,10 +118,14 @@ if (pMsgs->nMessages > 0) {
 	if (pMsgs->nColor == (uint) -1)
 		pMsgs->nColor = GREEN_RGBA;
 
+#if 0 
+	// Obsolete. You cannot shrink the game's output area below the screen or window size anymore in D2X-XL. 
+	// That feature has been removed because today's hardware is powerful enough to render Descent,
+	// and since you can run the program in windowed and fullscreen mode at lower than native screen resolution.
 	if (((gameStates.render.cockpit.nType == CM_STATUS_BAR) || (gameStates.render.cockpit.nType == CM_FULL_SCREEN)) && (gameData.render.scene.Top () >= (gameData.render.screen.Height () / 8))) {
 		// Only display the most recent pszMsg in this mode
-		nMsg = (pMsgs->nFirst + pMsgs->nMessages-1) % HUD_MAX_MSGS;
-		pszMsg = pMsgs->szMsgs [nMsg];
+		int nMsg = (pMsgs->nFirst + pMsgs->nMessages-1) % HUD_MAX_MSGS;
+		char* pszMsg = pMsgs->szMsgs [nMsg];
 
 		if (strcmp (szDisplayedBackgroundMsg [0], pszMsg)) {
 			int ycrd = /*CCanvas::Current ()->Top () -*/ (SMALL_FONT->Height () + 2);
@@ -135,7 +143,9 @@ if (pMsgs->nMessages > 0) {
 			nLastMsgHeight = h;
 			}
 		} 
-	else {
+	else 
+#endif // obsolete
+		{
 		fontManager.SetCurrent (SMALL_FONT);
 		if ((gameStates.render.cockpit.nType == CM_FULL_SCREEN) || 
 			 (gameStates.render.cockpit.nType == CM_LETTERBOX)) {

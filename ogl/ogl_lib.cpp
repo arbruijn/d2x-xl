@@ -936,8 +936,10 @@ cameraManager.Destroy ();
 m_data.Initialize ();
 SetupExtensions ();
 backgroundManager.Rebuild ();
+#if 0
 if (!gameStates.app.bGameRunning)
 	messageBox.Show (TXT_PREPARE_FOR_DESCENT);
+#endif
 ResetClientStates ();
 ResetTextures (1, bGame);
 if (bGame) {

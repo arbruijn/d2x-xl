@@ -128,9 +128,9 @@ static void gr_linear_rep_movsdm_faded(ubyte * src, ubyte * dest, uint num_pixel
 
 //------------------------------------------------------------------------------
 
-void gr_linear_rep_movsd_2x(ubyte *src, ubyte *dest, uint num_dest_pixels);
+void gr_linear_rep_movsd_2x (ubyte *src, ubyte *dest, uint num_dest_pixels);
 
-void gr_linear_rep_movsd_2x(ubyte *src, ubyte *dest, uint num_pixels)
+void gr_linear_rep_movsd_2x (ubyte *src, ubyte *dest, uint num_pixels)
 {
 	double*	d = reinterpret_cast<double*> (dest);
 	uint*		s = reinterpret_cast<uint*> (src);
@@ -140,7 +140,7 @@ void gr_linear_rep_movsd_2x(ubyte *src, ubyte *dest, uint num_pixels)
 
 if (num_pixels & 0x3) {
 	// not a multiple of 4?  do single pixel at a time
-	for (i=0; i<num_pixels; i++) {
+	for (i = 0; i < num_pixels; i++) {
 		*dest++ = *src;
 		*dest++ = *src++;
 		}
