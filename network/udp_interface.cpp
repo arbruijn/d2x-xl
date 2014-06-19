@@ -929,7 +929,7 @@ else {
 destAddr.sin_family = AF_INET;
 memcpy (&destAddr.sin_addr, ipxHeader->Destination.Node, 4);
 memcpy (ushortCast.b, ipxHeader->Destination.Node + 4, sizeof (ushortCast.b));
-destAddr.sin_port = ushortCast.b;
+destAddr.sin_port = ushortCast.i;
 memset (&(destAddr.sin_zero), '\0', 8);
 
 if (!(gameStates.multi.bTrackerCall || (clientManager.Add (&destAddr) >= 0))) {
