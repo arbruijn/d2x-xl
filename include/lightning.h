@@ -107,6 +107,8 @@ class CLightning : public tLightning {
 		CArray<CFloatVector3>	m_coreVerts;
 		CFloatVector				m_vMin, m_vMax;
 		float							m_width;
+		float							m_fAvgDist;
+		float							m_fDistScale;
 
 	public:
 		CLightning () { m_parent = NULL, m_nodes = NULL, m_nNodes = 0; };
@@ -149,6 +151,9 @@ class CLightning : public tLightning {
 		void Rotate (int nSteps);
 		void Scale (int nSteps, int nAmplitude);
 		void ComputeExtent (CFloatVector* vertexP);
+		float ComputeAvgDist (CFloatVector3* vertexP, int nVerts);
+		float ComputeDistScale (float zPivot);
+
 };
 
 //------------------------------------------------------------------------------

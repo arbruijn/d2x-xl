@@ -652,8 +652,13 @@ if (!nodeP)
 	tTexCoord2f*		texCoordP;
 	int					h, i, j;
 	bool					bGlow = !nDepth && (m_bGlow > 0) && gameOpts->render.lightning.bGlow; // && glowRenderer.Available (GLOW_LIGHTNING);
+#if 0
+	float					fWidth = bGlow ? 4.0f : (m_bGlow > 0) ? 2.0f : (m_bGlow < 0) ? (m_width / 16.0f) : (m_width / 8.0f);
+#else
 	float					fWidth = bGlow ? m_width / 2.0f : (m_bGlow > 0) ? (m_width / 4.0f) : (m_bGlow < 0) ? (m_width / 16.0f) : (m_width / 8.0f);
+#endif
 
+fWidth *= ComputeDistScale (500.0f);
 if (nThread < 0)
 	vEye.SetZero ();
 else
@@ -816,7 +821,7 @@ i = m_nNodes - 1;
 
 //------------------------------------------------------------------------------
 
-static float ZScale (CFloatVector3* vertexP, int nVerts)
+float CLightning::ComputeAvgDist (CFloatVector3* vertexP, int nVerts)
 {
 	CFloatVector3 v;
 	float zMin = 1e30f, zMax = -1e30f;
@@ -828,8 +833,29 @@ while (nVerts-- > 0) {
 	if (zMax < v.v.coord.z)
 		zMax = v.v.coord.z;
 	}
-return pow (1.0f - (zMin + zMax) / 2.0f / (float) ZRANGE, 50.0f);
+return m_fAvgDist = (zMin + zMax) / 2.0f;
 }
+
+//------------------------------------------------------------------------------
+
+float CLightning::ComputeDistScale (float zPivot)
+{
+//return 1.0f - pow (((zMin + zMax) / 2.0f - 100.0f) / (float) ZRANGE, 50.0f);
+if (zPivot < 0.0f) {
+	zPivot = -zPivot;
+	if (m_fAvgDist <= zPivot)
+		return m_fDistScale = sqrt ((zPivot - m_fAvgDist) / zPivot);
+	}
+else {
+	if (m_fAvgDist <= zPivot)
+		return m_fDistScale = 1.0f + sqrt ((zPivot - m_fAvgDist) /*/ Z_PIVOT * 10.0f*/);
+	if (m_fAvgDist <= 2 * zPivot)
+		return m_fDistScale = sqrt ((zPivot - m_fAvgDist * 0.5f) / zPivot);
+	}
+return m_fDistScale = 0.0f; //sqrt (((float) ZRANGE - Z_PIVOT - m_fAvgDist)) / ((float) ZRANGE - Z_PIVOT);
+}
+
+//------------------------------------------------------------------------------
 
 void RenderTestImage (void)
 {
@@ -895,21 +921,16 @@ ogl.SetBlendMode (OGL_BLEND_ADD);
 ogl.SetLineSmooth (true);
 if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
-	//glColor4f (colorP->Red () / 2, colorP->Green () / 2, colorP->Blue () / 2, colorP->Alpha ());
 	glColor4fv ((GLfloat*) colorP);
 	GLfloat w = nDepth ? m_width / 2.0f : m_width; // DEFAULT_CORE_WIDTH : DEFAULT_CORE_WIDTH * 1.5f;
-	if (glowRenderer.Available (GLOW_LIGHTNING))
-		w *= 2.0f * ZScale (m_coreVerts.Buffer (), m_nNodes);
-	glLineWidth (w);
-
-	//GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
-	//ogl.SetDepthMode (GL_ALWAYS);
-
+	ComputeAvgDist (m_coreVerts.Buffer (), m_nNodes);
+	ComputeDistScale (m_coreVerts.Buffer (), m_nNodes, 100.0f);
+	if (glowRenderer.Available (GLOW_LIGHTNING) && (m_fDistScale != 0.0f)) 
+		w *= m_fDistScale;
+	glLineWidth ((w > 1.0f) ? FRound (w) : 1.0);
 	OglVertexPointer (3, GL_FLOAT, 0, m_coreVerts.Buffer ());
 	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
 	ogl.DisableClientStates (0, 0, 0, -1);
-
-	//ogl.SetDepthMode (nDepthMode);
 	}
 #if GL_FALLBACK
 else {
@@ -983,7 +1004,7 @@ if (m_nLife > 0) {
 color.Red () *= (float) (0.9 + RandDouble () / 5);
 color.Green () *= (float) (0.9 + RandDouble () / 5);
 color.Blue () *= (float) (0.9 + RandDouble () / 5);
-if ((bGlow = SetupGlow ()) && glowRenderer.Available (GLOW_LIGHTNING))
+if ((bGlow = (m_fDistScale > 0.0f) && SetupGlow ()) && glowRenderer.Available (GLOW_LIGHTNING))
 	glBlendEquation (GL_MAX);
 else
 	color.Alpha () *= 1.5f;
@@ -992,14 +1013,14 @@ if (nDepth)
 #if 0 //!USE_OPENMP
 WaitForRenderThread (nThread);
 #endif
-if ((GlowType () == 1) && m_bGlow && m_plasmaVerts.Buffer ()) {
+if ((GlowType () == 1) && bGlow && m_bGlow && m_plasmaVerts.Buffer ()) {
 	if (glowRenderer.SetViewport (GLOW_LIGHTNING, m_plasmaVerts.Buffer (), 4 * (m_nNodes - 1))) {
 		RenderGlow (&color, nDepth, nThread);
 		RenderCore (&color, nDepth, nThread);
 		}
 	}
 else {
-	if (glowRenderer.SetViewport (GLOW_LIGHTNING, m_coreVerts.Buffer (), m_nNodes))
+	if (!bGlow || glowRenderer.SetViewport (GLOW_LIGHTNING, m_coreVerts.Buffer (), m_nNodes))
 		RenderCore (&color, nDepth, nThread);
 	}
 if (bGlow)
