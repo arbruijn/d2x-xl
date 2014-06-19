@@ -46,6 +46,58 @@ extern CPerlinNoise noiseX [MAX_THREADS], noiseY [MAX_THREADS];
 
 //------------------------------------------------------------------------------
 
+void RenderTestImage (void)
+{
+if (gameStates.render.cameras.bActive) {
+	//glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+	//glClear (GL_COLOR_BUFFER_BIT);
+	float vertices [4][4][2] = {
+		{{0.0, 0.0}, {0.0, 0.5}, {0.5, 0.5}, {0.5, 0.0}},
+		{{0.5, 0.0}, {0.5, 0.5}, {1.0, 0.5}, {1.0, 0.0}},
+		{{0.0, 0.5}, {0.0, 1.0}, {0.5, 1.0}, {0.5, 0.5}},
+		{{0.5, 0.5}, {0.5, 1.0}, {1.0, 1.0}, {1.0, 0.5}},
+		};
+	float colors [4][4] = {
+		{1.0, 0.5, 0.0, 0.5},
+		{0.0, 0.5, 1.0, 0.5},
+		{1.0, 0.0, 0.5, 0.5},
+		{0.0, 1.0, 0.5, 0.5}
+	};
+
+
+	glMatrixMode (GL_MODELVIEW);
+	glPushMatrix ();
+	glLoadIdentity ();//clear matrix
+	glMatrixMode (GL_PROJECTION);
+	glPushMatrix ();
+	glLoadIdentity ();//clear matrix
+	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+
+	GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
+	ogl.GetBlendMode (nBlendModes [0], nBlendModes [1]);
+	ogl.SetBlendMode (OGL_BLEND_REPLACE);
+	ogl.SetDepthMode (GL_ALWAYS);
+
+	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	ogl.SetTexturing (false);
+	for (int i = 0; i < 4; i++) {
+		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+		ogl.SetTexturing (false);
+		glColor3fv (colors [i]);
+		OglVertexPointer (2, GL_FLOAT, 0, vertices [i]);
+		OglDrawArrays (GL_QUADS, 0, 4);
+		}
+	ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
+	ogl.SetDepthMode (nDepthMode);
+	glMatrixMode (GL_PROJECTION);
+	glPopMatrix ();
+	glMatrixMode (GL_MODELVIEW);
+	glPopMatrix ();
+	}
+}
+
+//------------------------------------------------------------------------------
+
 CFixVector *VmRandomVector (CFixVector *vRand)
 {
 	CFixVector	vr;
@@ -634,6 +686,45 @@ return (gameOpts->render.lightning.bGlow || glowRenderer.Available (GLOW_LIGHTNI
 }
 
 //------------------------------------------------------------------------------
+
+float CLightning::ComputeAvgDist (CFloatVector3* vertexP, int nVerts)
+{
+	CFloatVector3 v;
+	float zMin = 1e30f, zMax = -1e30f;
+
+while (nVerts-- > 0) {
+	transformation.Transform (v, *vertexP++);
+	if (zMin > v.v.coord.z)
+		zMin = v.v.coord.z;
+	if (zMax < v.v.coord.z)
+		zMax = v.v.coord.z;
+	}
+return m_fAvgDist = (zMin + zMax) / 2.0f;
+}
+
+//------------------------------------------------------------------------------
+
+float CLightning::ComputeDistScale (float zPivot)
+{
+#if 1
+return m_fDistScale = pow (1.0f - m_fAvgDist / (float) ZRANGE, 50.0f);
+#else
+if (zPivot < 0.0f) {
+	zPivot = -zPivot;
+	if (m_fAvgDist <= zPivot)
+		return m_fDistScale = sqrt ((zPivot - m_fAvgDist) / zPivot);
+	}
+else {
+	if (m_fAvgDist <= zPivot)
+		return m_fDistScale = 1.0f + sqrt ((zPivot - m_fAvgDist) /*/ zPivot * 10.0f*/);
+	if (m_fAvgDist <= 4 * zPivot)
+		return m_fDistScale = sqrt ((zPivot - m_fAvgDist * 0.25f) / zPivot);
+	}
+return m_fDistScale = 0.0f; //sqrt (((float) ZRANGE - zPivot - m_fAvgDist)) / ((float) ZRANGE - zPivot);
+#endif
+}
+
+//------------------------------------------------------------------------------
 // Compute billboards around each lightning segment using the normal of the plane
 // spanned by the lightning segment and the vector from the camera (eye) position
 // to one lightning coordinate
@@ -818,96 +909,6 @@ i = m_nNodes - 1;
 *vPosf /= 100.0f * vPosf->Mag ();
 *vPosf += vertP [i];
 ComputeAvgDist (m_coreVerts.Buffer (), m_nNodes);
-}
-
-//------------------------------------------------------------------------------
-
-float CLightning::ComputeAvgDist (CFloatVector3* vertexP, int nVerts)
-{
-	CFloatVector3 v;
-	float zMin = 1e30f, zMax = -1e30f;
-
-while (nVerts-- > 0) {
-	transformation.Transform (v, *vertexP++);
-	if (zMin > v.v.coord.z)
-		zMin = v.v.coord.z;
-	if (zMax < v.v.coord.z)
-		zMax = v.v.coord.z;
-	}
-return m_fAvgDist = (zMin + zMax) / 2.0f;
-}
-
-//------------------------------------------------------------------------------
-
-float CLightning::ComputeDistScale (float zPivot)
-{
-#if DBG
-return m_fDistScale = pow (1.0f - m_fAvgDist / (float) ZRANGE, 50.0f);
-#endif
-if (zPivot < 0.0f) {
-	zPivot = -zPivot;
-	if (m_fAvgDist <= zPivot)
-		return m_fDistScale = sqrt ((zPivot - m_fAvgDist) / zPivot);
-	}
-else {
-	if (m_fAvgDist <= zPivot)
-		return m_fDistScale = 1.0f + sqrt ((zPivot - m_fAvgDist) /*/ zPivot * 10.0f*/);
-	if (m_fAvgDist <= 4 * zPivot)
-		return m_fDistScale = sqrt ((zPivot - m_fAvgDist * 0.25f) / zPivot);
-	}
-return m_fDistScale = 0.0f; //sqrt (((float) ZRANGE - Z_PIVOT - m_fAvgDist)) / ((float) ZRANGE - Z_PIVOT);
-}
-
-//------------------------------------------------------------------------------
-
-void RenderTestImage (void)
-{
-if (gameStates.render.cameras.bActive) {
-	//glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-	//glClear (GL_COLOR_BUFFER_BIT);
-	float vertices [4][4][2] = {
-		{{0.0, 0.0}, {0.0, 0.5}, {0.5, 0.5}, {0.5, 0.0}},
-		{{0.5, 0.0}, {0.5, 0.5}, {1.0, 0.5}, {1.0, 0.0}},
-		{{0.0, 0.5}, {0.0, 1.0}, {0.5, 1.0}, {0.5, 0.5}},
-		{{0.5, 0.5}, {0.5, 1.0}, {1.0, 1.0}, {1.0, 0.5}},
-		};
-	float colors [4][4] = {
-		{1.0, 0.5, 0.0, 0.5},
-		{0.0, 0.5, 1.0, 0.5},
-		{1.0, 0.0, 0.5, 0.5},
-		{0.0, 1.0, 0.5, 0.5}
-	};
-
-
-	glMatrixMode (GL_MODELVIEW);
-	glPushMatrix ();
-	glLoadIdentity ();//clear matrix
-	glMatrixMode (GL_PROJECTION);
-	glPushMatrix ();
-	glLoadIdentity ();//clear matrix
-	glOrtho (0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-
-	GLenum nBlendModes [2], nDepthMode = ogl.GetDepthMode ();
-	ogl.GetBlendMode (nBlendModes [0], nBlendModes [1]);
-	ogl.SetBlendMode (OGL_BLEND_REPLACE);
-	ogl.SetDepthMode (GL_ALWAYS);
-
-	ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	ogl.SetTexturing (false);
-	for (int i = 0; i < 4; i++) {
-		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-		ogl.SetTexturing (false);
-		glColor3fv (colors [i]);
-		OglVertexPointer (2, GL_FLOAT, 0, vertices [i]);
-		OglDrawArrays (GL_QUADS, 0, 4);
-		}
-	ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
-	ogl.SetDepthMode (nDepthMode);
-	glMatrixMode (GL_PROJECTION);
-	glPopMatrix ();
-	glMatrixMode (GL_MODELVIEW);
-	glPopMatrix ();
-	}
 }
 
 //------------------------------------------------------------------------------

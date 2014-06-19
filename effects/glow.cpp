@@ -300,12 +300,12 @@ return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ?
 
 inline int ScreenWidth (void)
 {
-return gameData.render.screen.Width () /*/ ScreenScale ()*/;
+return gameData.render.screen.Width ();
 }
 
 inline int ScreenHeight (void)
 {
-return gameData.render.screen.Height () /*/ ScreenScale ()*/;
+return gameData.render.screen.Height ();
 }
 
 #else
@@ -332,22 +332,7 @@ if (gameOpts->render.effects.bGlow != 1)
 if (!bTransformed)
 	transformation.Transform (v, v);
 tScreenPos s;
-#	if 0
 ProjectPoint (v, s);
-#	else
-v = transformation.m_info.projection * v;
-float z = fabs (v.v.coord.z);
-float w = (float) gameData.render.scene.Width () * 0.5f;
-float h = (float) gameData.render.scene.Height () * 0.5f;
-s.x = fix (w * (1.0f + v.v.coord.x / z));
-s.y = fix (h * (1.0f + v.v.coord.y / z));
-#	endif
-#	if 0
-if (gameStates.render.cockpit.nType == CM_LETTERBOX)
-	s.y += (gameData.render.screen.Height () - CCanvas::Current ()->Height ()) / 2;
-else if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
-	s.y += gameData.render.screen.Height () - CCanvas::Current ()->Height ();
-#	endif
 #pragma omp critical
 {
 if (m_itemMin.x > s.x)
@@ -652,7 +637,7 @@ if (bEnableViewport && UseViewport ()) {
 
 	if (bClear) {
 		ogl.SaveViewport ();
-		glViewport ((GLint) (l + CCanvas::Current ()->Width ()), (GLint) (t + CCanvas::Current ()->Top ()), (GLsizei) r - l, (GLsizei) b - t);
+		glViewport ((GLint) (l + CCanvas::Current ()->Width ()), (GLint) (t + CCanvas::Current ()->Top ()), (GLsizei) (r - l), (GLsizei) (b - t));
 		ClearDrawBuffer (m_nType);
 		ogl.RestoreViewport ();
 		}
@@ -848,12 +833,12 @@ else
 	ogl.ChooseDrawBuffer ();
 	ogl.SetDepthMode (GL_ALWAYS);
 
-	float scale = (float) ScreenScale ();
+	//float scale = (float) ScreenScale ();
 #if BLUR
 	ogl.SetBlendMode ((m_nType == BLUR_SHADOW) ? OGL_BLEND_MULTIPLY : OGL_BLEND_ADD);
-	Render (1, -1, radius, (scale == 1.0f) ? 1.0f : 8.0f); // Glow -> back buffer
+	Render (1, -1, radius/*, (scale == 1.0f) ? 1.0f : 8.0f*/); // Glow -> back buffer
 	if (!m_bReplace)
-		Render (-1, -1, radius, scale); // render the unblurred stuff on top of the blur
+		Render (-1, -1, radius/*, scale*/); // render the unblurred stuff on top of the blur
 #else
 	ogl.SetBlendMode ((m_nType == BLUR_SHADOW) ? OGL_BLEND_MULTIPLY : OGL_BLEND_ADD);
 	Render (-1, -1, radius, scale); // render the unblurred stuff on top of the blur
