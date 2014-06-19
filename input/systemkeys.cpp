@@ -466,11 +466,11 @@ if (!gameStates.app.bPlayerIsDead)
 
 if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 	switch (key) {
-/*
+
 		case KEY_SHIFTED + KEY_ESC:
 			console.Show ();
 			break;
-*/
+
 		//case KEY_COMMAND + KEY_P:
 		//case KEY_CTRLED + KEY_P:
 		case KEY_PAUSE:
