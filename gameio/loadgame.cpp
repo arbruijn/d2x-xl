@@ -642,9 +642,9 @@ return pszFilename;
 
 char *LevelSongName (int nLevel)
 {
-	char szNoSong[] = "";
+	char szNoSong [] = "";
 
-return gameStates.app.bAutoRunMission ? szNoSong : missionManager.szSongNames [nLevel];
+return (gameStates.app.bAutoRunMission || !missionManager.nSongs) ? szNoSong : missionManager.szSongNames [missionManager.songIndex [nLevel & missionManager.nSongs]];
 }
 
 //------------------------------------------------------------------------------
@@ -670,7 +670,7 @@ PrintLog (-1);
 /*---*/PrintLog (1, "stopping sounds\n");
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
 audio.StopAllChannels ();
-songManager.DestroyPlayLists ();
+songManager.DestroyPlaylists ();
 PrintLog (-1);
 
 /*---*/PrintLog (1, "reconfiguring audio\n");

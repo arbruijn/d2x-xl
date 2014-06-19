@@ -861,7 +861,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void CMissionManager::LoadSongList (char *szFile)
+int CMissionManager::LoadSongList (char *szFile)
 {
 	CFile	cf;
 	char	pn [FILENAME_LEN], fn [FILENAME_LEN] = {'\x01'};
@@ -871,10 +871,11 @@ memset (szSongNames, 0, sizeof (szSongNames));
 CFile::SplitPath (szFile, pn, fn + 1, NULL);
 strcat (fn, ".sng");
 if (!cf.Open (fn, pn, "rb", 0))
-	return;
+	return 0;
 for (i = 0; cf.GetS (szSongNames [i], SHORT_FILENAME_LEN) && (i < MAX_LEVELS_PER_MISSION); i++)
 	;
 cf.Close ();
+return i;
 }
 
 //------------------------------------------------------------------------------
@@ -1006,7 +1007,8 @@ if (!bFoundHogFile || (nLastLevel <= 0)) {
 	}
 gameStates.app.szCurrentMissionFile = m_list [nCurrentMission].filename;
 gameStates.app.szCurrentMission = m_list [nCurrentMission].szMissionName;
-LoadSongList (szFile);
+nSongs = LoadSongList (szFile);
+songManager.AlignSongs ();
 return 1;
 }
 

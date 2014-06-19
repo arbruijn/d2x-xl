@@ -64,17 +64,25 @@ extern CRedbook redbook;
 
 class CCustomMusicInfo {
 	public:
-		int					nLevelSongs [2][2];
 		int					nCurrentSong;
 		int					bMP3;
 		CArray<char*>		levelSongs [2][2];
+		CArray<int>			songIndex [2][2];
 		char					szIntroSong [FILENAME_LEN];
 		char					szBriefingSong [FILENAME_LEN];
 		char					szCreditsSong [FILENAME_LEN];
 		char					szMenuSong [FILENAME_LEN];
 
 	public:
-		int Count (int bMod, int bSecret);
+		int SongCount (int bMod, int bSecret);
+		void ShuffleSongs (void);
+		void SortSongs (void);
+		void AlignSongs (void);
+		int SongIndex (int nSong, int bMod, int bSecret);
+
+	private:
+		void Shuffle (int bMod, int bSecret);
+		void Sort (int bMod, int bSecret);
 	};
 
 class CSongData {
@@ -87,6 +95,7 @@ class CSongData {
 class CSongInfo {
 	public:
 		CSongData			data [MAX_NUM_SONGS];
+		int					songIndex [2][MAX_NUM_SONGS];
 		int					bInitialized;
 		int					bPlaying;
 		int					bMP3;
@@ -100,6 +109,9 @@ class CSongInfo {
 		time_t				tStart;
 		time_t				tSlowDown;
 		time_t				tPos;
+
+	public:
+		inline int SongIndex (int nSong, int bD1) { return songIndex [bD1][nSong % nLevelSongs [bD1]]; }
 	};
 
 class CSongManager {
@@ -121,27 +133,30 @@ class CSongManager {
 		void PlayCurrent (int repeat = 0);
 		void Prev (void);
 		void Next (void);
-		int LoadPlayList (char *pszPlayList, int bMod = 0);
-		void DestroyPlayList (int bMod, int* nSongs = NULL);
-		inline void DestroyPlayLists (void) {
-			DestroyPlayList (0);
-			DestroyPlayList (1);
+		void ShuffleSongs (void);
+		void SortSongs (void);
+		void AlignSongs (void);
+		int LoadPlaylist (char *pszPlaylist, int bMod = 0);
+		void DestroyPlaylist (int bMod, int* nSongs = NULL);
+		inline void DestroyPlaylists (void) {
+			DestroyPlaylist (0);
+			DestroyPlaylist (1);
 			}
 		inline int Current (void) { return m_info.nCurrent; }
 		inline int Playing (void) { return m_info.bPlaying; }
 		inline void SetPlaying (int bPlaying) { m_info.bPlaying = bPlaying; }
-		inline int MP3 (void) { return m_user.bMP3; }
-		inline void SetMP3 (int bMP3) { m_user.bMP3 = bMP3; }
+		inline int MP3 (void) { return m_custom.bMP3; }
+		inline void SetMP3 (int bMP3) { m_custom.bMP3 = bMP3; }
 		inline time_t Pos (void) { return m_info.tPos; }
 		inline time_t Start (void) { return m_info.tStart; }
 		inline time_t SlowDown (void) { return m_info.tSlowDown; }
 		inline void SetPos (time_t t) { m_info.tPos = t; }
 		inline void SetStart (time_t t) { m_info.tStart = t; }
 		inline void SetSlowDown (time_t t) { m_info.tSlowDown = t; }
-		inline char* IntroSong (void) { return m_user.szIntroSong; }
-		inline char* BriefingSong (void) { return m_user.szBriefingSong; }
-		inline char* CreditsSong (void) { return m_user.szCreditsSong; }
-		inline char* MenuSong (void) { return m_user.szMenuSong; }
+		inline char* IntroSong (void) { return m_custom.szIntroSong; }
+		inline char* BriefingSong (void) { return m_custom.szBriefingSong; }
+		inline char* CreditsSong (void) { return m_custom.szCreditsSong; }
+		inline char* MenuSong (void) { return m_custom.szMenuSong; }
 		inline int TotalCount (void) { return m_info.nTotalSongs; }
 		inline int Count (uint i) { return m_info.nSongs [i]; }
 		inline CSongData& SongData (uint i = 0) { return m_info.data [i]; }

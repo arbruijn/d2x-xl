@@ -453,7 +453,7 @@ const char *HELPTEXT (int _i);
 #define TXT_ENTER_PILOT_NAME    GAMETEXT (442)
 #define TXT_PLAYER              GAMETEXT (443)
 #define TXT_ALREADY_EXISTS      GAMETEXT (444)
-#define TXT_PREP_DESCENT GAMETEXT (445)
+#define TXT_PREP_DESCENT		  GAMETEXT (445)
 #define TXT_FULL_RESCUE_BONUS   GAMETEXT (446)
 #define TXT_SHIELD_BONUS        GAMETEXT (447)
 #define TXT_ENERGY_BONUS        GAMETEXT (448)
@@ -1978,10 +1978,10 @@ void LoadGameTexts(void);
 #define TXT_MINIMAL						GT(1220)
 #define TXT_MAXIMAL						GT(1221)
 #define TXT_CHROM_AB_CORR				GT(1222)
+#define TXT_SHUFFLE_MUSIC				GT(1223)
 
 #if 0
 
-#define TXT_					GT(1223)
 #define TXT_					GT(1224)
 #define TXT_					GT(1225)
 #define TXT_					GT(1226)
@@ -2615,10 +2615,10 @@ void LoadGameTexts(void);
 #define HTX_RIFT_DEADZONE				HT(435)
 #define HTX_RIFT_CONFIG					HT(436)
 #define HTX_CHROM_AB_CORR				HT(437)
+#define HTX_SHUFFLE_MUSIC				HT(438)
 
 #if 0
 
-#define HTX_						HT(438)
 #define HTX_						HT(439)
 #define HTX_						HT(440)
 #define HTX_						HT(441)

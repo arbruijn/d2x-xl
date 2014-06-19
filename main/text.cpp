@@ -1969,6 +1969,7 @@ const char *defaultGameTexts [][2] = {
  {"minimal", "minimal"},
  {"maximal", "maximal"},
  {"Farbabweichungs-~Korrektur", "~Chromatic Aberration Correction"},
+ {"M~Usik mischen", "sh~Uffle music"},
  
 #if 0
  {"", ""},
@@ -2702,6 +2703,7 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann die Empfindlichkeit des Positionssensors eingestellt werden.", "Adjust the sensitivity of the head tracking sensor here."},
  {"Hier kann ein Oculus Rift konfiguriert werden.", "Configure an Oculus Rift here."},
  {"Wenn angekreuzt, werden auf dem Oculus Rift auftretende\nFarbabweichungen korrigiert.", "When checked, chromatic aberrations (color seams) appearing\non the Oculus Rift are corrected."},
+ {"Wenn angekreuzt, wird die Levelmusik in zufaelliger\nReihenfolge abgespielt.", "If checked, level music will be played in random sequence."},
 #if 0
  {"", ""},
 #endif

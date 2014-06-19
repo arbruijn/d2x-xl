@@ -247,6 +247,7 @@ void SoundMenu (void)
 #endif
 	int	i;
 	int	bSongPlaying = (gameConfig.nMidiVolume > 0);
+	int	bShuffleMusic = gameOpts->sound.bShuffleMusic;
 
 InitStrings ();
 
@@ -270,6 +271,7 @@ do {
 	m.AddCheck ("link volumes", TXT_LINK_AUDIO_VOLUMES, gameOpts->sound.bLinkVolumes, KEY_L, HTX_SYNC_VOLUME);
 	m.AddCheck ("redbook sound", TXT_REDBOOK_ENABLED, redbook.Enabled (), KEY_C, HTX_ONLINE_MANUAL);
 	m.AddCheck ("reverse stereo", TXT_REVERSE_STEREO, gameConfig.bReverseChannels, KEY_R, HTX_ONLINE_MANUAL);
+	m.AddCheck ("shuffle music", TXT_SHUFFLE_MUSIC, gameOpts->sound.bShuffleMusic, KEY_U, HTX_ONLINE_MANUAL);
 	if (!gameStates.app.bNostalgia) {
 #if 1
 		if (!redbook.Enabled () && gameConfig.nMidiVolume)
@@ -286,6 +288,7 @@ do {
 	i = m.Menu (NULL, TXT_SOUND_OPTS, SoundMenuCallback, &choice);
 	redbook.Enable (m.Value ("redbook sound"));
 	gameConfig.bReverseChannels = m.Value ("reverse stereo");
+	gameOpts->sound.bShuffleMusic = m.Value ("shuffle music");
 	if (!gameStates.app.bNostalgia) {
 		if (!redbook.Enabled () && gameConfig.nMidiVolume)
 			GET_VAL (gameOpts->sound.bFadeMusic, "fade music");
@@ -303,6 +306,8 @@ if (gameConfig.nMidiVolume < 1)
 else if (!bSongPlaying)
 	songManager.PlayCurrent (1);
 audio.SetMaxChannels (32 << (gameStates.sound.nSoundChannels - 2));
+if (bShuffleMusic != gameOpts->sound.bShuffleMusic)
+	songManager.AlignSongs ();
 }
 
 //------------------------------------------------------------------------------

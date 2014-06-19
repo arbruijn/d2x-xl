@@ -104,6 +104,8 @@ class CMissionData {
 		char					szSecretLevelNames [MAX_SECRET_LEVELS_PER_MISSION][FILENAME_LEN];
 		int					secretLevelTable [MAX_SECRET_LEVELS_PER_MISSION];
 		char					szSongNames [MAX_LEVELS_PER_MISSION][FILENAME_LEN];
+		int					songIndex [MAX_LEVELS_PER_MISSION];
+		int					nSongs;
 		char					nLevelState [MAX_LEVELS_PER_MISSION];
 
 	protected:
@@ -171,7 +173,7 @@ class CMissionManager : public CMissionData {
 		void MoveFolderUp (void);
 		void MoveFolderDown (int nSubFolder);
 		int Parse (CFile& cf);
-		void LoadSongList (char *szFile);
+		int LoadSongList (char *szFile);
 };
 
 extern CMissionManager missionManager;

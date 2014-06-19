@@ -478,6 +478,7 @@ bLinkVolumes = 1;
 bShip = 0;
 bMissiles = 0;
 bFadeMusic = 1;
+bShuffleMusic = 0;
 bUseD1Sounds = 1;
 }
 

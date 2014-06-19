@@ -525,6 +525,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].app.bColorblindFriendly, i, 0);
 		RP (gameOptions [i].app.bNotebookFriendly, i, 0);
 		RP (gameOptions [i].sound.bFadeMusic, i, 1);
+		RP (gameOptions [i].sound.bShuffleMusic, i, 0);
 		RP (gameOptions [i].sound.bLinkVolumes, i, 1);
 		RP (gameOptions [i].sound.bGatling, i, 0);
 		RP (gameOptions [i].sound.bMissiles, i, 0);
@@ -1051,6 +1052,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.nImageQuality", "3"},
 	 {"gameOptions[0].render.cockpit.bFlashGauges", "1"},
 	 {"gameOptions[0].sound.bFadeMusic", "1"},
+	 {"gameOptions[0].sound.bShuffleMusic", "0"},
 	 {"gameOptions[0].sound.bLinkVolumes", "1"},
 	 {"gameOptions[0].sound.bGatling", "0"},
 	 {"gameOptions[0].sound.bMissiles", "0"},

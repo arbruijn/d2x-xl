@@ -601,6 +601,7 @@ class CSoundOptions {
 		int bUseSDLMixer;
 		int bUseOpenAL;
 		int bFadeMusic;
+		int bShuffleMusic;
 		int bLinkVolumes;
 		int audioSampleRate;	// what's used by the audio system
 		int soundSampleRate;	// what the default sounds are in
