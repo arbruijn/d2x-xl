@@ -658,7 +658,7 @@ if (!nodeP)
 	float					fWidth = bGlow ? m_width / 2.0f : (m_bGlow > 0) ? (m_width / 4.0f) : (m_bGlow < 0) ? (m_width / 16.0f) : (m_width / 8.0f);
 #endif
 	
-fWidth *= ComputeDistScale (-500.0f);
+fWidth *= ComputeDistScale (-100.0f);
 if (nThread < 0)
 	vEye.SetZero ();
 else
@@ -734,9 +734,9 @@ if (bGlow) {
 void CLightning::RenderSetup (int nDepth, int nThread)
 {
 if ((GlowType () == 1) && m_bGlow && m_plasmaVerts.Buffer ()) {
-	ComputeGlow (nDepth, nThread);
 	if (m_coreVerts.Buffer ())
 		ComputeCore ();
+	ComputeGlow (nDepth, nThread);
 	}
 else if (m_coreVerts.Buffer ())
 	ComputeCore ();
@@ -817,6 +817,7 @@ i = m_nNodes - 1;
 *++vPosf = vertP [i] - vertP [i - 1];
 *vPosf /= 100.0f * vPosf->Mag ();
 *vPosf += vertP [i];
+ComputeAvgDist (m_coreVerts.Buffer (), m_nNodes);
 }
 
 //------------------------------------------------------------------------------
@@ -840,7 +841,9 @@ return m_fAvgDist = (zMin + zMax) / 2.0f;
 
 float CLightning::ComputeDistScale (float zPivot)
 {
-//return 1.0f - pow (m_fAvgDist / (float) ZRANGE, 50.0f);
+#if DBG
+return m_fDistScale = pow (1.0f - m_fAvgDist / (float) ZRANGE, 50.0f);
+#endif
 if (zPivot < 0.0f) {
 	zPivot = -zPivot;
 	if (m_fAvgDist <= zPivot)
@@ -923,7 +926,6 @@ if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
 	glColor4fv ((GLfloat*) colorP);
 	GLfloat w = nDepth ? m_width / 2.0f : m_width; // DEFAULT_CORE_WIDTH : DEFAULT_CORE_WIDTH * 1.5f;
-	ComputeAvgDist (m_coreVerts.Buffer (), m_nNodes);
 	ComputeDistScale (100.0f);
 	if (glowRenderer.Available (GLOW_LIGHTNING) && (m_fDistScale != 0.0f)) 
 		w *= m_fDistScale;
