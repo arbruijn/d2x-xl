@@ -658,7 +658,7 @@ if (!nodeP)
 	float					fWidth = bGlow ? m_width / 2.0f : (m_bGlow > 0) ? (m_width / 4.0f) : (m_bGlow < 0) ? (m_width / 16.0f) : (m_width / 8.0f);
 #endif
 	
-fWidth *= ComputeDistScale (-100.0f);
+fWidth = m_width * ComputeDistScale (-100.0f) * 0.25f;
 if (nThread < 0)
 	vEye.SetZero ();
 else
@@ -928,7 +928,7 @@ if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	GLfloat w = nDepth ? m_width / 2.0f : m_width; // DEFAULT_CORE_WIDTH : DEFAULT_CORE_WIDTH * 1.5f;
 	ComputeDistScale (100.0f);
 	if (glowRenderer.Available (GLOW_LIGHTNING) && (m_fDistScale != 0.0f)) 
-		w *= m_fDistScale;
+		w *= 2.0f * m_fDistScale;
 	glLineWidth ((w > 1.0f) ? FRound (w) : 1.0f);
 	OglVertexPointer (3, GL_FLOAT, 0, m_coreVerts.Buffer ());
 	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);

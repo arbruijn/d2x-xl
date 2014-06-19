@@ -589,7 +589,7 @@ void RenderTestImage (void);
 
 static int bEnableViewport = 1;
 
-void CGlowRenderer::Render (int const source, int const direction, float const radius, float const scale)
+void CGlowRenderer::Render (int const source, int const direction, float const radius, bool const bClear)
 {
 #if USE_VIEWPORT == 2 //DBG
 
@@ -649,6 +649,13 @@ if (bEnableViewport && UseViewport ()) {
 	b = (float) CCanvas::Current ()->Height () - b;
 	t = (float) m_renderMax.y + radius;
 	t = (float) CCanvas::Current ()->Height () - t;
+
+	if (bClear) {
+		ogl.SaveViewport ();
+		glViewport ((GLint) (l + CCanvas::Current ()->Width ()), (GLint) (t + CCanvas::Current ()->Top ()), (GLsizei) r - l, (GLsizei) b - t);
+		ClearDrawBuffer (m_nType);
+		ogl.RestoreViewport ();
+		}
 
 	verts [1][0][0] = ScreenCoord (l, w);
 	verts [1][0][1] = ScreenCoord (t, h);
@@ -816,12 +823,12 @@ else
 	radius += RAD_INCR;
 	if (!ogl.SelectBlurBuffer (0))
 		return Reset (0, 1);
-	ClearViewport (radius);
-	Render (-1, 0, radius); // Glow -> Blur 0
+	//ClearViewport (radius);
+	Render (-1, 0, radius, true); // Glow -> Blur 0
 	if (!ogl.SelectBlurBuffer (1))
 		return Reset (0, 1);
-	ClearViewport (radius);
-	Render (0, 1, radius); // Blur 0 -> Blur 1
+	//ClearViewport (radius);
+	Render (0, 1, radius, true); // Blur 0 -> Blur 1
 	if (m_nType != BLUR_SHADOW)
 		ogl.SetBlendMode (OGL_BLEND_ADD);
 #	if BLUR > 1
