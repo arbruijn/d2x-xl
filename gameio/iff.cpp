@@ -122,27 +122,25 @@ return PutWord (n1, fp);
 
 int CIFF::GetSig (void)
 {
-	char s[4];
+union ciffSig {
+	char	szId [4];
+	int	nId;
+} ciffSig;
 
-//	if ((s[3]=CFGetC(f))==EOF) return(EOF);
-//	if ((s[2]=CFGetC(f))==EOF) return(EOF);
-//	if ((s[1]=CFGetC(f))==EOF) return(EOF);
-//	if ((s[0]=CFGetC(f))==EOF) return(EOF);
-
+if (Pos () >= Len () - 4) 
+		return EOF;
 #if !(defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__))
-	if (Pos() >= Len() - 4) return EOF;
-	s[3] = Data() [NextPos()];
-	s[2] = Data() [NextPos()];
-	s[1] = Data() [NextPos()];
-	s[0] = Data() [NextPos()];
+	ciffSig.szId [3] = Data () [NextPos ()];
+	ciffSig.szId [2] = Data () [NextPos ()];
+	ciffSig.szId [1] = Data () [NextPos ()];
+	ciffSig.szId [0] = Data () [NextPos ()];
 #else
-	if (Pos() > Len() - 4) return EOF;
-	s[0] = Data() [NextPos()];
-	s[1] = Data() [NextPos()];
-	s[2] = Data() [NextPos()];
-	s[3] = Data() [NextPos()];
+	ciffSig.szId [0] = Data () [NextPos ()];
+	ciffSig.szId [1] = Data () [NextPos ()];
+	ciffSig.szId [2] = Data () [NextPos ()];
+	ciffSig.szId [3] = Data () [NextPos ()];
 #endif
-	return *((int*) &s [0]);
+return ciffSig.nId;
 }
 
 //------------------------------------------------------------------------------

@@ -905,6 +905,10 @@ static int UDPSendPacket
 #endif
 	static ubyte	buf [MAX_PACKET_SIZE];
 	ubyte*			bufP = buf;
+	union {
+		ubyte		b [2];
+		ushort	i;
+	} ushortCast;
 
 #ifdef UDPDEBUG
 PrintLog (1, "UDP interface: SendPacket enter, dataLen=%d",dataLen);
@@ -924,7 +928,8 @@ else {
 	}
 destAddr.sin_family = AF_INET;
 memcpy (&destAddr.sin_addr, ipxHeader->Destination.Node, 4);
-destAddr.sin_port = *(reinterpret_cast<ushort*> (ipxHeader->Destination.Node + 4));
+memcpy (ushortCast.b, ipxHeader->Destination.Node + 4, sizeof (ushortCast.b));
+destAddr.sin_port = ushortCast.b;
 memset (&(destAddr.sin_zero), '\0', 8);
 
 if (!(gameStates.multi.bTrackerCall || (clientManager.Add (&destAddr) >= 0))) {
@@ -1154,7 +1159,8 @@ if (0 > dataLen) {
 #endif
 	return -1;
 	}
-bTracker = tracker.IsTracker (*reinterpret_cast<ulong*> (&fromAddr.sin_addr), *reinterpret_cast<ushort*> (&fromAddr.sin_port), (char*) outBuf);
+//bTracker = tracker.IsTracker (*reinterpret_cast<ulong*> (&fromAddr.sin_addr), *reinterpret_cast<ushort*> (&fromAddr.sin_port), (char*) outBuf);
+bTracker = tracker.IsTracker (fromAddr.sin_addr.s_addr, fromAddr.sin_port, (char*) outBuf);
 if (fromAddr.sin_family != AF_INET)
 	return -1;
 if ((dataLen < 6) || (!bTracker && (memcmp (outBuf, D2XUDP, 6)

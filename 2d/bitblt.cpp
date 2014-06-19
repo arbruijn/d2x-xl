@@ -134,31 +134,34 @@ void gr_linear_rep_movsd_2x (ubyte *src, ubyte *dest, uint num_pixels)
 {
 	double*	d = reinterpret_cast<double*> (dest);
 	uint*		s = reinterpret_cast<uint*> (src);
-	uint		doubletemp[2];
-	uint		temp, work;
-	uint     i;
 
 if (num_pixels & 0x3) {
 	// not a multiple of 4?  do single pixel at a time
-	for (i = 0; i < num_pixels; i++) {
+	for (uint i = 0; i < num_pixels; i++) {
 		*dest++ = *src;
 		*dest++ = *src++;
 		}
 	return;
 	}
 
-for (i = 0; i < num_pixels / 4; i++) {
+union doubleCast {
+	uint		u [2];
+	double	d;
+} doubleCast;
+
+for (uint i = 0; i < num_pixels / 4; i++) {
+	uint	temp, work;
 	temp = work = *s++;
 
 	temp = ((temp >> 8) & 0x00FFFF00) | (temp & 0xFF0000FF); // 0xABCDEFGH -> 0xABABCDEF
 	temp = ((temp >> 8) & 0x000000FF) | (temp & 0xFFFFFF00); // 0xABABCDEF -> 0xABABCDCD
-	doubletemp[0] = temp;
+	doubleCast.u [0] = temp;
 
 	work = ((work << 8) & 0x00FFFF00) | (work & 0xFF0000FF); // 0xABCDEFGH -> 0xABEFGHGH
 	work = ((work << 8) & 0xFF000000) | (work & 0x00FFFFFF); // 0xABEFGHGH -> 0xEFEFGHGH
-	doubletemp[1] = work;
+	doubleCast.u [1] = work;
 
-	*d = *((double*) &doubletemp [0]);
+	*d = doubleCast.d;
 	d++;
 	}
 }

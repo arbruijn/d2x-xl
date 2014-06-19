@@ -228,27 +228,63 @@ return m;
 #define BE_SHORT(_x)			SwapShort(_x,0)
 
 #ifndef WORDS_NEED_ALIGNMENT
+
+#if 0
+
+// this causes dereferencing type punned pointer warnings from g++
 #define GET_INTEL_INT(s)        INTEL_INT(*reinterpret_cast<uint *>(s))
 #define GET_INTEL_SHORT(s)      INTEL_SHORT(*reinterpret_cast<ushort *>(s))
 #define PUT_INTEL_INT(d, s)     { *reinterpret_cast<uint *>(d) = INTEL_INT((uint)(s)); }
 #define PUT_INTEL_SHORT(d, s)   { *reinterpret_cast<ushort *>(d) = INTEL_SHORT((ushort)(s)); }
+
+#else
+
+static inline uint GET_INTEL_INT (void *s)
+{
+uint *tmp = reinterpret_cast<uint*> (s);
+return INTEL_INT (*tmp);
+}
+
+static inline ushort GET_INTEL_SHORT (void *s)
+{
+ushort *tmp = reinterpret_cast<ushort*> (s);
+return INTEL_SHORT (*tmp);
+}
+
+static inline void PUT_INTEL_INT (void *d, uint s)
+{
+uint *tmp = reinterpret_cast<uint*> (d);
+*tmp = INTEL_INT (s);
+}
+
+static inline void PUT_INTEL_SHORT (void *d, ushort s)
+{
+ushort *tmp = reinterpret_cast<ushort*> (d);
+*tmp = INTEL_SHORT (s);
+}
+
+#endif
+
 #else // ! WORDS_NEED_ALIGNMENT
+
 static inline uint GET_INTEL_INT(void *s)
 {
-	uint tmp;
-	memcpy(reinterpret_cast<void *>&tmp, s, 4);
-	return INTEL_INT(tmp);
+uint tmp;
+memcpy (reinterpret_cast<void *>&tmp, s, 4);
+return INTEL_INT (tmp);
 }
-static inline uint GET_INTEL_SHORT(void *s)
+
+static inline uint GET_INTEL_SHORT (void *s)
 {
-	ushort tmp;
-	memcpy(reinterpret_cast<void *>&tmp, s, 2);
-	return INTEL_SHORT(tmp);
+ushort tmp;
+memcpy (reinterpret_cast<void *>&tmp, s, 2);
+return INTEL_SHORT (tmp);
 }
-#define PUT_INTEL_INT(d, s)     { uint tmp = INTEL_INT(s); \
-                                  memcpy(reinterpret_cast<void *>(d), reinterpret_cast<void *>&tmp, 4); }
-#define PUT_INTEL_SHORT(d, s)   { ushort tmp = INTEL_SHORT(s); \
-                                  memcpy(reinterpret_cast<void *>(d), reinterpret_cast<void *>&tmp, 2); }
+
+#define PUT_INTEL_INT(d, s)     { uint tmp = INTEL_INT(s); memcpy(reinterpret_cast<void *>(d), reinterpret_cast<void *>&tmp, 4); }
+
+#define PUT_INTEL_SHORT(d, s)   { ushort tmp = INTEL_SHORT(s); memcpy(reinterpret_cast<void *>(d), reinterpret_cast<void *>&tmp, 2); }
+
 #endif // ! WORDS_NEED_ALIGNMENT
 
 #endif // ! _BYTESWAP_H

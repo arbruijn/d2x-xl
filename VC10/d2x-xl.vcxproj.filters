@@ -217,13 +217,13 @@
     <Filter Include="Source Files\effects\Source Files\audio\Header Files">
       <UniqueIdentifier>{161c4733-62e7-43a6-a3a8-e8a152db870c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gameio\input">
+    <Filter Include="Source Files\input">
       <UniqueIdentifier>{dc29749a-7e4c-4701-8cae-4f49dc9af809}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gameio\input\Source Files">
+    <Filter Include="Source Files\input\Source Files">
       <UniqueIdentifier>{37992a09-03a9-452c-80ab-5895e80b754f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\gameio\input\Header Files">
+    <Filter Include="Source Files\input\Header Files">
       <UniqueIdentifier>{09df1528-ab19-4589-8966-9a8556ae217c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -604,25 +604,25 @@
       <Filter>Source Files\weapons\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\input\include\event.h">
-      <Filter>Source Files\gameio\input\Header Files</Filter>
+      <Filter>Source Files\input\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\input.h">
-      <Filter>Source Files\gameio\input\Header Files</Filter>
+      <Filter>Source Files\input\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\input\include\joy.h">
-      <Filter>Source Files\gameio\input\Header Files</Filter>
+      <Filter>Source Files\input\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\kconfig.h">
-      <Filter>Source Files\gameio\input\Header Files</Filter>
+      <Filter>Source Files\input\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\input\include\key.h">
-      <Filter>Source Files\gameio\input\Header Files</Filter>
+      <Filter>Source Files\input\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\input\include\mouse.h">
-      <Filter>Source Files\gameio\input\Header Files</Filter>
+      <Filter>Source Files\input\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\systemkeys.h">
-      <Filter>Source Files\gameio\input\Header Files</Filter>
+      <Filter>Source Files\input\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\fbuffer.h">
       <Filter>Source Files\ogl\Header Files</Filter>
@@ -910,7 +910,7 @@
       <Filter>Source Files\main\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\input\include\sixense_wrapper.h">
-      <Filter>Source Files\gameio\input\Header Files</Filter>
+      <Filter>Source Files\input\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1497,25 +1497,25 @@
       <Filter>Source Files\weapons\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\input\event.cpp">
-      <Filter>Source Files\gameio\input\Source Files</Filter>
+      <Filter>Source Files\input\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\input\input.cpp">
-      <Filter>Source Files\gameio\input\Source Files</Filter>
+      <Filter>Source Files\input\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\input\joy.cpp">
-      <Filter>Source Files\gameio\input\Source Files</Filter>
+      <Filter>Source Files\input\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\main\kconfig.cpp">
-      <Filter>Source Files\gameio\input\Source Files</Filter>
+      <Filter>Source Files\input\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\input\key.cpp">
-      <Filter>Source Files\gameio\input\Source Files</Filter>
+      <Filter>Source Files\input\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\input\mouse.cpp">
-      <Filter>Source Files\gameio\input\Source Files</Filter>
+      <Filter>Source Files\input\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\input\systemkeys.cpp">
-      <Filter>Source Files\gameio\input\Source Files</Filter>
+      <Filter>Source Files\input\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\ogl\clientstates.cpp">
       <Filter>Source Files\ogl\Source Files</Filter>
@@ -1860,7 +1860,7 @@
       <Filter>Source Files\cockpit\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\input\sixense_wrapper.cpp">
-      <Filter>Source Files\gameio\input\Source Files</Filter>
+      <Filter>Source Files\input\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

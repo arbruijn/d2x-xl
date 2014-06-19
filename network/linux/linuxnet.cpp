@@ -84,6 +84,16 @@ user_address ipxUsers[MAX_USERS];
 int nIpxNetworks = 0;
 uint ipxNetworks[MAX_NETWORKS];
 
+typedef union tUintCast {
+	u_char	b [4];
+	uint		i;
+} tUintCast;
+
+typedef union tUshortCast {
+	u_char	b [2];
+	ushort	i;
+} tUshortCast;
+
 //------------------------------------------------------------------------------
 
 int IPXGeneralPacketReady (ipx_socket_t *s) 
@@ -188,8 +198,13 @@ while (driver->PacketReady (&ipxSocketData)) {
 		break;
 	if (dataSize < 6)
 		continue;
-	dataOffs = tracker.IsTracker (*((uint*) &networkData.packetSource.src_node [0]),
-                                  *((ushort*) &networkData.packetSource.src_node [4])) ? 0 : 4;
+
+	tUintCast	uintCast;
+	tUshortCast	ushortCast;
+
+	memcpy (uintCast.b, &networkData.packetSource.src_node [0], sizeof (uintCast));
+	memcpy (ushortCast.b, &networkData.packetSource.src_node [4], sizeof (ushortCast));
+	dataOffs = tracker.IsTracker (uintCast.i, ushortCast.i) ? 0 : 4;
 	if (dataSize > MAX_PAYLOAD_SIZE + dataOffs) {
 		PrintLog (0, "incoming data package too large (%d bytes)\n", dataSize);
 		continue;
@@ -202,8 +217,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void IPXSendPacketData
-	 (ubyte * data, int dataSize, ubyte *network, ubyte *source, ubyte *dest)
+void IPXSendPacketData (ubyte * data, int dataSize, ubyte *network, ubyte *source, ubyte *dest)
 {
 	static u_char buf [MAX_PACKET_SIZE];
 	IPXPacket_t ipxHeader;
@@ -213,12 +227,16 @@ if (dataSize > MAX_PAYLOAD_SIZE)
 else {
 	memcpy (ipxHeader.Destination.Network, network, 4);
 	memcpy (ipxHeader.Destination.Node, dest, 6);
-	*((u_short*) &ipxHeader.Destination.Socket [0]) = htons (ipxSocketData.socket);
+	tUshortCast	ushortCast;
+	ushortCast.i = htons (ipxSocketData.socket);
+	memcpy (&ipxHeader.Destination.Socket [0], ushortCast.b, sizeof (ushortCast.b));
 	ipxHeader.PacketType = 4; /* Packet Exchange */
 	if (gameStates.multi.bTrackerCall)
 		memcpy (buf, data, dataSize);
 	else {
-		*((uint*) &buf [0]) = nIpxPacket++;
+		tUintCast uintCast;
+		uintCast.i = (uint) nIpxPacket++;
+		memcpy (buf, uintCast.b, sizeof (uintCast.b));
 		memcpy (buf + 4, data, dataSize);
 		}
 	driver->SendPacket (&ipxSocketData, &ipxHeader, buf, dataSize + (gameStates.multi.bTrackerCall ? 0 : 4));
@@ -259,7 +277,9 @@ else {
 	memcpy (ipxHeader.Destination.Node, immediate_address, 6);
 	*reinterpret_cast<u_short*> (ipxHeader.Destination.Socket) = htons (ipxSocketData.socket);
 	ipxHeader.PacketType = 4; /* Packet Exchange */
-	*reinterpret_cast<uint*> (buf) = INTEL_INT (nIpxPacket);
+	tUintCast uintCast;
+	uintCast.i = (uint) INTEL_INT (nIpxPacket);
+	memcpy (buf, uintCast.b, sizeof (uintCast.b));
 	nIpxPacket++;
 	memcpy (buf + 4, data, dataSize);
 	driver->SendPacket (&ipxSocketData, &ipxHeader, buf, dataSize + 4);
@@ -495,7 +515,9 @@ if (driver->SendGamePacket) {
 		PrintLog (0, "IpxSendGamePacket: packet too large (%d bytes)\n", dataSize);
 	else {
 		static u_char buf [MAX_PACKET_SIZE];
-		*((uint*) &buf [0]) = nIpxPacket++;
+		tUintCast uintCast;
+		uintCast.i = (uint) nIpxPacket++;
+		memcpy (buf, uintCast.b, sizeof (uintCast.b));
 		memcpy (buf + 4, data, dataSize);
 		*reinterpret_cast<uint*> (data) = nIpxPacket++;
 		return driver->SendGamePacket (&ipxSocketData, buf, dataSize + 4);
@@ -503,9 +525,8 @@ if (driver->SendGamePacket) {
 	}
 else {
 	// Loop through all the players unicasting the packet.
-	int i;
 	//printf ("Sending game packet: gameData.multiplayer.nPlayers = %i\n", gameData.multiplayer.nPlayers);
-	for (i=0; i<gameData.multiplayer.nPlayers; i++) {
+	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (gameData.multiplayer.players [i].connected && (i != gameData.multiplayer.nLocalPlayer))
 			IPXSendPacketData (
 				data, dataSize, 

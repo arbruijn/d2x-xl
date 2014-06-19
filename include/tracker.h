@@ -6,8 +6,27 @@
 
 typedef ubyte tUdpAddress [6];
 
+#if 0
+
+// this causes dereferencing type punned pointer warnings from g++
 #define UDP_ADDR(_a)	*((uint *) (_a))
 #define UDP_PORT(_a)	*((ushort *) ((char *) (_a) + 4))
+
+#else
+
+static inline uint& UDP_ADDR(void *a)
+{
+uint *tmp = reinterpret_cast<uint*> (a);
+return *tmp;
+}
+
+static inline ushort& UDP_PORT(void *a)
+{
+ushort *tmp = reinterpret_cast<ushort*> (a);
+return *tmp;
+}
+
+#endif
 
 #define	MAX_TRACKER_SERVERS	(512 / sizeof (tUdpAddress))
 

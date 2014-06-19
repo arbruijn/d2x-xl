@@ -586,7 +586,7 @@ while (networkData.bWaitingForPlayerInfo && (retries < 50) && (SDL_GetTicks () <
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 		ReceiveNetPlayersPacket (packet, &playerData);
 #else
-		playerData = *((tAllNetPlayersInfo*) &packet [0]);
+		memcpy (&playerData.m_info, &packet [0], sizeof (playerData.m_info));
 #endif
 		retries++;
 		if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_PLAYERS) {

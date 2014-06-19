@@ -1384,7 +1384,7 @@ playerP->SetShield (shield);
 gameData.multigame.create.nCount = 0;
 int i;
 for (i = 0; (i < nRemoteCreated) && (i < gameData.multigame.create.nCount); i++) {
-	short nRemoteObj = GET_INTEL_SHORT (*objList);
+	short nRemoteObj = GET_INTEL_SHORT (objList);
 	if (nRemoteObj > 0)
 		MapObjnumLocalToRemote ((short) gameData.multigame.create.nObjNums [i], nRemoteObj, nPlayer);
 	objList--;
@@ -3330,6 +3330,10 @@ void MultiInitiateSaveGame (int bSecret)
 	uint	gameId;
 	int	i;
 	char	slot;
+	union {
+		u_char	b [4];
+		uint		i;
+	} uintCast;
 
 if ((gameStates.app.bEndLevelSequence) || (gameData.reactor.bDestroyed))
 	return;
@@ -3346,8 +3350,10 @@ else if (0 > (slot = saveGameManager.GetSaveFile (1) - 1))
 // Make a unique game id (two separate operations because of data type mix)
 gameId = TimerGetFixedSeconds ();
 gameId ^= gameData.multiplayer.nPlayers << 4;
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	gameId ^= *((uint*) &gameData.multiplayer.players [i].callsign [0]);
+for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	memcpy (uintCast.b, &gameData.multiplayer.players [i].callsign [0], sizeof (uintCast.b));
+	gameId ^= uintCast.i;
+	}
 if (gameId == 0)
 	gameId = 1; // 0 is invalid
 if (slot >= 0)
@@ -5087,9 +5093,15 @@ MultiSendData (gameData.multigame.msg.buf, 4, 0);
 
 void MultiSendTeleport (char nPlayer, short nSegment, char nSide)
 {
+	union {
+		u_char	b [2];
+		ushort	i;
+	} ushortCast;
+
 gameData.multigame.msg.buf [0] = (char) MULTI_TELEPORT;
 gameData.multigame.msg.buf [1] = nPlayer; // dummy values
-*reinterpret_cast<short*> (gameData.multigame.msg.buf + 2) = INTEL_SHORT (nSegment);
+ushortCast.i = INTEL_SHORT (nSegment);
+memcpy (gameData.multigame.msg.buf + 2, ushortCast.b, sizeof (ushortCast.b));
 gameData.multigame.msg.buf [4] = nSide; // dummy values
 MultiSendData (gameData.multigame.msg.buf, 5, 0);
 }
