@@ -549,7 +549,8 @@ if ((gameOptions [0].render.nQuality < 3) && automap.Display ())
 if (nType != m_nType) {
 #else
 if ((m_bReplace == bReplace) && (m_nStrength == nStrength) && (m_brightness == brightness) && ((nType == GLOW_LIGHTNING) == (m_nType == GLOW_LIGHTNING))) {
-	gameOpts->render.effects.bGlow = (ogl.SelectGlowBuffer () >= 0);
+	if (ogl.SelectGlowBuffer () < 0)
+		gameOpts->render.effects.bGlow = 0;
 	CCanvas::Current ()->SetViewport ();
 	}
 else {
@@ -561,7 +562,8 @@ else {
 	m_brightness = brightness;
 	m_bViewport = 0;
 	InitViewport ();
-	gameOpts->render.effects.bGlow = Activate ();
+	if (!Activate ())
+		gameOpts->render.effects.bGlow = 0;
 	}
 if (gameOpts->render.effects.bGlow)
 	return true;
@@ -647,12 +649,6 @@ if (bEnableViewport && UseViewport ()) {
 	b = (float) CCanvas::Current ()->Height () - b;
 	t = (float) m_renderMax.y + radius;
 	t = (float) CCanvas::Current ()->Height () - t;
-#if 0
-	b = h - t;
-	t = b + (float) (m_renderMax.y + radius - m_renderMin.y + radius);
-#elif 0
-	b = (float) m_renderMax.y + radius + h - (float) CCanvas::Current ()->Bottom ();
-#endif
 
 	verts [1][0][0] = ScreenCoord (l, w);
 	verts [1][0][1] = ScreenCoord (t, h);
@@ -665,7 +661,7 @@ if (bEnableViewport && UseViewport ()) {
 
 	w = (float) gameData.render.screen.Width ();
 	h = (float) gameData.render.screen.Height ();
-#if 1
+
 	if (bEnableViewport < 0) {
 		l = (float) CCanvas::Current ()->Left ();
 		r = (float) CCanvas::Current ()->Right ();
@@ -673,43 +669,23 @@ if (bEnableViewport && UseViewport ()) {
 		t = b - (float) CCanvas::Current ()->Height ();
 		}
 	else {
-#if 0
-		l = (float) m_renderMin.x - radius;
-		r = (float) m_renderMax.x + radius;
-		t = (float) m_renderMin.y - radius;
-		b = (float) m_renderMax.y + radius;
-#endif
 		l += (float) CCanvas::Current ()->Left ();
 		r += (float) CCanvas::Current ()->Left ();
 		t += (float) CCanvas::Current ()->Top ();
 		b += (float) CCanvas::Current ()->Top ();
-#	if 1
 		t = h - t;
 		b = h - b;
 		if (b > t)
 			Swap (b, t);
-#endif
-#	if 0
-		b += (float) CCanvas::Current ()->Top ();
-#	elif 0
-		b = h - t;
-		t = b - (float) (m_renderMax.y + radius - m_renderMin.y + radius);
-#	endif
 		}
-#	endif
 	}
 else {
 	w = (float) gameData.render.screen.Width ();
 	h = (float) gameData.render.screen.Height ();
 	l = (float) CCanvas::Current ()->Left ();
 	r = (float) CCanvas::Current ()->Right ();
-#if 0
-	t = (float) CCanvas::Current ()->Top ();
-	b = (float) CCanvas::Current ()->Bottom ();
-#else
 	t = h - (float) CCanvas::Current ()->Top ();
 	b = t - (float) CCanvas::Current ()->Height ();
-#endif
 	}
 
 float texCoord [4][2] = {
