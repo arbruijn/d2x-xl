@@ -924,10 +924,10 @@ if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	glColor4fv ((GLfloat*) colorP);
 	GLfloat w = nDepth ? m_width / 2.0f : m_width; // DEFAULT_CORE_WIDTH : DEFAULT_CORE_WIDTH * 1.5f;
 	ComputeAvgDist (m_coreVerts.Buffer (), m_nNodes);
-	ComputeDistScale (m_coreVerts.Buffer (), m_nNodes, 100.0f);
+	ComputeDistScale (100.0f);
 	if (glowRenderer.Available (GLOW_LIGHTNING) && (m_fDistScale != 0.0f)) 
 		w *= m_fDistScale;
-	glLineWidth ((w > 1.0f) ? FRound (w) : 1.0);
+	glLineWidth ((w > 1.0f) ? FRound (w) : 1.0f);
 	OglVertexPointer (3, GL_FLOAT, 0, m_coreVerts.Buffer ());
 	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
 	ogl.DisableClientStates (0, 0, 0, -1);
