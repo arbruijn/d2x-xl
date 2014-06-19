@@ -2277,8 +2277,10 @@ gameOptions [0].render.effects.bTransparent = 1;
 //gameOptions [0].render.effects.nShockwaves = 1;
 gameOptions [0].render.effects.bEnergySparks = (gameOptions [0].render.nQuality > 0);
 gameOptions [0].render.effects.bMovingSparks = 1;
+#if 0
 if (gameOptions [0].render.nQuality < 2)
 	gameOptions [0].render.effects.bGlow = 0;
+#endif
 extraGameInfo [0].bPlayerShield = 1;
 gameOptions [0].render.effects.bRobotShields = 1;
 gameOptions [0].render.effects.bOnlyShieldHits = 1;

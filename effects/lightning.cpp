@@ -840,7 +840,7 @@ return m_fAvgDist = (zMin + zMax) / 2.0f;
 
 float CLightning::ComputeDistScale (float zPivot)
 {
-//return 1.0f - pow (((zMin + zMax) / 2.0f - 100.0f) / (float) ZRANGE, 50.0f);
+//return 1.0f - pow (m_fAvgDist / (float) ZRANGE, 50.0f);
 if (zPivot < 0.0f) {
 	zPivot = -zPivot;
 	if (m_fAvgDist <= zPivot)
@@ -848,7 +848,7 @@ if (zPivot < 0.0f) {
 	}
 else {
 	if (m_fAvgDist <= zPivot)
-		return m_fDistScale = 1.0f + sqrt ((zPivot - m_fAvgDist) /*/ Z_PIVOT * 10.0f*/);
+		return m_fDistScale = 1.0f + sqrt ((zPivot - m_fAvgDist) /*/ zPivot * 10.0f*/);
 	if (m_fAvgDist <= 4 * zPivot)
 		return m_fDistScale = sqrt ((zPivot - m_fAvgDist * 0.25f) / zPivot);
 	}
