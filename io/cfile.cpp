@@ -253,11 +253,9 @@ return fp;
 
 size_t CFile::Size (const char *hogname, const char *folder, int bUseD1Hog)
 {
-	size_t size;
-
 if (!Open (hogname, gameFolders.game.szData [0], "rb", bUseD1Hog))
 	return -1;
-size = m_info.size;
+size_t size = m_info.size;
 Close ();
 return size;
 }
