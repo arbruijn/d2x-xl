@@ -979,7 +979,7 @@ MakeModFolders (hogFileManager.MissionName (), nLevel);
 if (!(gameStates.app.bHaveMod || missionManager.IsBuiltIn (hogFileManager.MissionName ())))
 	 MakeModFolders (gameStates.app.bD1Mission ? "Descent: First Strike" : "Descent 2: Counterstrike!", nLevel);
 if (gameStates.app.bHaveMod)
-	songManager.LoadPlayList (szDefaultPlayList, 1);
+	songManager.LoadPlaylist (szDefaultPlayList, 1);
 songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
 lightManager.SetMethod ();
 #if 1
