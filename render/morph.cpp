@@ -262,9 +262,9 @@ if (!pmP->Data ())
 	return;
 G3CheckAndSwap (reinterpret_cast<void*> (pmP->Data ()));
 MorphFindModelBounds (pmP, 0, pmmin, pmmax);
-vBoxSize.v.coord.x = max (-pmmin.v.coord.x, pmmax.v.coord.x) / 2;
-vBoxSize.v.coord.y = max (-pmmin.v.coord.y, pmmax.v.coord.y) / 2;
-vBoxSize.v.coord.z = max (-pmmin.v.coord.z, pmmax.v.coord.z) / 2;
+vBoxSize.v.coord.x = Max (-pmmin.v.coord.x, pmmax.v.coord.x) / 2;
+vBoxSize.v.coord.y = Max (-pmmin.v.coord.y, pmmax.v.coord.y) / 2;
+vBoxSize.v.coord.z = Max (-pmmin.v.coord.z, pmmax.v.coord.z) / 2;
 for (i = 0; i < MAX_VECS; i++)		//clear all points
 	mdP->times [i] = 0;
 for (i = 1; i < MAX_SUBMODELS; i++)		//clear all parts

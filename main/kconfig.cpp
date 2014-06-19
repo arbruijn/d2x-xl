@@ -1021,7 +1021,7 @@ MouseGetDeltaZ (&dx, &dy, &dz);
 console.printf (CON_VERBOSE, "mouse: %3d %3d\n", dx, dy);
 dx = abs (dx);
 dy = abs (dy);
-if (max (dx, dy) > 20) {
+if (Max (dx, dy) > 20) {
 	code = dy > dx;
 	}
 dz = abs (dz);

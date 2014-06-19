@@ -37,7 +37,6 @@ class CGlowRenderer {
 		void SetupProjection (void);
 		void SetItemExtent (CFloatVector3 v, bool bTransformed = false);
 		void InitViewport (void);
-		void ClearViewport (float const radius);
 		void ChooseDrawBuffer (void);
 		bool Reset (int bGlow, int bOgl = 0);
 		bool UseViewport (void);

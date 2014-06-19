@@ -97,7 +97,7 @@ textArea.Setup (&gameData.render.frame, m_nOffset, m_nOffset + m_nTitleHeight, m
 textArea.Activate ("CListbox::Render (textArea)", &m_background);
 
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-for (int i = max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
+for (int i = Max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
 	int w, h, aw, x, y;
 
 	x = 0;

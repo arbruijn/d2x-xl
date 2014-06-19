@@ -750,7 +750,7 @@ if (nStartSeg == nDbgSeg)
 	BRP;
 int nIterations = 0;
 #endif
-int nRenderDepth = min (4 * (int (gameStates.render.detail.nRenderDepth) + 1), gameData.segs.nSegments);
+int nRenderDepth = Min (4 * (int (gameStates.render.detail.nRenderDepth) + 1), gameData.segs.nSegments);
 
 // Starting at the viewer's segment, the following code looks through each open side of a segment
 // the projected rectangular area of that side is that side's "portal".
@@ -909,10 +909,10 @@ for (l = 0; l < nRenderDepth; l++) {
 			if (!bProjected)
 				newPortal = curPortal;
 			else {
-				newPortal.left = max (curPortal.left, facePortal.left);
-				newPortal.right = min (curPortal.right, facePortal.right);
-				newPortal.top = max (curPortal.top, facePortal.top);
-				newPortal.bot = min (curPortal.bot, facePortal.bot);
+				newPortal.left = Max (curPortal.left, facePortal.left);
+				newPortal.right = Min (curPortal.right, facePortal.right);
+				newPortal.top = Max (curPortal.top, facePortal.top);
+				newPortal.bot = Min (curPortal.bot, facePortal.bot);
 				}
 			//see if this segment has already been visited, and if so, does the current portal expand the old portal?
 			if (nPos == -1) {

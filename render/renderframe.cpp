@@ -586,9 +586,9 @@ yDest = top;
 for (y = tileTop;y <= tileBot; y++) {
 	xOffs = left % bmBackground.Width ();
 	xDest = left;
-	int h = min (bot - yDest + 1, bmBackground.Height () - yOffs);
+	int h = Min (bot - yDest + 1, bmBackground.Height () - yOffs);
 	for (x = tileLeft; x <= tileRight; x++) {
-		int w = min (right - xDest + 1, bmBackground.Width () - xOffs);
+		int w = Min (right - xDest + 1, bmBackground.Width () - xOffs);
 		bmBackground.Blit (CCanvas::Current (), xDest, yDest, w, h, xOffs, yOffs, 1);
 		xOffs = 0;
 		xDest += w;

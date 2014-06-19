@@ -96,7 +96,7 @@ head = 1;
 tail = 0;
 queue [0] = nBossHomeSeg;
 bossSegs [nSegments++] = nBossHomeSeg;
-nMaxSegments = min (MAX_BOSS_TELEPORT_SEGS, LEVEL_SEGMENTS);
+nMaxSegments = Min (MAX_BOSS_TELEPORT_SEGS, LEVEL_SEGMENTS);
 gameData.render.mine.visibility [0].BumpVisitedFlag ();
 
 while (tail != head) {

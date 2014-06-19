@@ -97,8 +97,8 @@ void TransferEnergyToShield (fix time)
 
 if (time <= 0)
 	return;
-fix e = min (time * CONVERTER_RATE, LOCALPLAYER.Energy () - LOCALPLAYER.InitialEnergy ());
-e = min (e, (LOCALPLAYER.MaxShield () - LOCALPLAYER.Shield ()) * CONVERTER_SCALE);
+fix e = Min (time * CONVERTER_RATE, LOCALPLAYER.Energy () - LOCALPLAYER.InitialEnergy ());
+e = Min (e, (LOCALPLAYER.MaxShield () - LOCALPLAYER.Shield ()) * CONVERTER_SCALE);
 if (e <= 0) {
 	if (LOCALPLAYER.Energy () <= INITIAL_ENERGY)
 		HUDInitMessage (TXT_TRANSFER_ENERGY, X2I (LOCALPLAYER.InitialEnergy ()));

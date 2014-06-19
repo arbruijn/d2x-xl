@@ -1613,7 +1613,7 @@ if (cType.laserInfo.parent.nSignature == robotP->info.nSignature)
 //	Also, only a this hit from a tPlayer this causes smart blobs.
 if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 	if (!robotP->IsStatic () && (robotP->info.xShield > 0) && IsEnergyWeapon ()) {
-		fix xProb = (gameStates.app.nDifficultyLevel+2) * min (info.xShield, robotP->info.xShield);
+		fix xProb = (gameStates.app.nDifficultyLevel+2) * Min (info.xShield, robotP->info.xShield);
 		xProb = botInfoP->energyBlobs * xProb / (NDL * 32);
 		int nBlobs = xProb >> 16;
 		if (2 * RandShort () < (xProb & 0xffff))
@@ -1999,7 +1999,7 @@ if (!gameData.weapons.info [info.nId].xDamageRadius)
 	return 0;
 fix xDist = CFixVector::Dist (info.position.vPos, otherP->info.position.vPos);
 if (xDist >= I2X (5))
-	SetLife (min (xDist / 64, I2X (1)));
+	SetLife (Min (xDist / 64, I2X (1)));
 else {
 	MaybeKillWeapon (otherP);
 	if (info.nFlags & OF_SHOULD_BE_DEAD) {

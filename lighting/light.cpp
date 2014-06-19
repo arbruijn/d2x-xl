@@ -427,10 +427,10 @@ switch (nObjType) {
 		   return (xLight);
 		  }
 		else if (objP->info.nId == N_LOCALPLAYER) {
-			return max (gameData.physics.playerThrust.Mag () / 4, I2X (2)) + I2X (1) / 2;
+			return Max (gameData.physics.playerThrust.Mag () / 4, I2X (2)) + I2X (1) / 2;
 			}
 		else {
-			return max (objP->mType.physInfo.thrust.Mag () / 4, I2X (2)) + I2X (1) / 2;
+			return Max (objP->mType.physInfo.thrust.Mag () / 4, I2X (2)) + I2X (1) / 2;
 			}
 		break;
 
@@ -521,8 +521,7 @@ switch (nObjType) {
 				if (RandShort () > 8192)
 					return 0;		//	3/4 of time, omega blobs will cast 0 light!
 		if (objP->info.nId == FLARE_ID) {
-			//return 2 * (min (xLight, objP->info.xLifeLeft) + ((gameData.time.xGame ^ objLightXlat [nObject & 0x0f]) & 0x3fff));
-			return fix ((1.75f + RandFloat (4.0f)) * min (xLight, objP->info.xLifeLeft));
+			return fix ((1.75f + RandFloat (4.0f)) * Min (xLight, objP->info.xLifeLeft));
 			}
 		else
 			return xLight;

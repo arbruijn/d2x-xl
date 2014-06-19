@@ -259,7 +259,7 @@ int DoAnyRobotDyingFrame (CObject *objP)
 {
 if (objP->cType.aiInfo.xDyingStartTime) {
 	int bDeathRoll = ROBOTINFO (objP->info.nId).bDeathRoll;
-	int rval = DoRobotDyingFrame (objP, objP->cType.aiInfo.xDyingStartTime, I2X (min (bDeathRoll / 2 + 1, 6)), 
+	int rval = DoRobotDyingFrame (objP, objP->cType.aiInfo.xDyingStartTime, I2X (Min (bDeathRoll / 2 + 1, 6)), 
 											&objP->cType.aiInfo.bDyingSoundPlaying, ROBOTINFO (objP->info.nId).deathrollSound, 
 											I2X (bDeathRoll) / 8, I2X (bDeathRoll) / 2);
 	if (rval) {

@@ -170,7 +170,7 @@ if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
 		}
 	if ((m_info.weaponBoxUser [0] != WBU_WEAPON) || (m_info.weaponBoxUser [1] != WBU_WEAPON)) {
 		int wy = (m_info.weaponBoxUser [0] != WBU_WEAPON) ? SW_y [0] : SW_y [1];
-		y = min (y, (wy - LineSpacing () - gameData.render.frame.Top ()));
+		y = Min (y, (wy - LineSpacing () - gameData.render.frame.Top ()));
 		}
 	SetFontColor (RED_RGBA);
 	nIdLock = DrawHUDText (&nIdLock, x, y, TXT_LOCK);

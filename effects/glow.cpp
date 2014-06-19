@@ -719,30 +719,6 @@ ogl.BindTexture (0);
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::ClearViewport (float const radius)
-{
-#if USE_VIEWPORT
-if ((m_bViewport > 0) && (radius > 0.0f)) {
-	ogl.SaveViewport ();
-	float r = radius * 4.0f * m_nStrength; // scale with a bit more than the max. offset from the blur shader
-	m_renderMin.x = max (m_renderMin.x, 0);
-	m_renderMin.y = max (m_renderMin.y, 0);
-	glViewport ((GLint) max (m_renderMin.x - r, 0), 
-					(GLint) max (m_renderMin.y - r, 0), 
-					(GLsizei) min (m_renderMax.x - m_renderMin.x + 1 + 2 * r, ScreenWidth ()), 
-					(GLsizei) min (m_renderMax.y - m_renderMin.y + 1 + 2 * r, ScreenHeight ()));
-	}
-
-ClearDrawBuffer (m_nType);
-if (radius > 0.0f)
-	ogl.RestoreViewport ();
-#else
-glClear (GL_COLOR_BUFFER_BIT);
-#endif
-}
-
-//------------------------------------------------------------------------------
-
 void CGlowRenderer::ChooseDrawBuffer (void)
 {
 ogl.ChooseDrawBuffer ();
@@ -809,11 +785,9 @@ else
 	radius += RAD_INCR;
 	if (!ogl.SelectBlurBuffer (0))
 		return Reset (0, 1);
-	//ClearViewport (radius);
 	Render (-1, 0, radius, true); // Glow -> Blur 0
 	if (!ogl.SelectBlurBuffer (1))
 		return Reset (0, 1);
-	//ClearViewport (radius);
 	Render (0, 1, radius, true); // Blur 0 -> Blur 1
 	if (m_nType != BLUR_SHADOW)
 		ogl.SetBlendMode (OGL_BLEND_ADD);

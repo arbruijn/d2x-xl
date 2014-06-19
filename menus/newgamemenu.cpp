@@ -379,7 +379,7 @@ for (;;) {
 	else {
 		i = m.ToInt ("initial lives");
 		if (i > 0)
-			gameStates.gameplay.nInitialLives = min (i, 255);
+			gameStates.gameplay.nInitialLives = Min (i, 255);
 		}
 #endif
 	}

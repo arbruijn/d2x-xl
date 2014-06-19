@@ -1174,7 +1174,7 @@ for (nLights = 0;
 		glLightfv (hLight, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (&psl->info.vDirf));
 		ambient = psl->info.color * PPL_AMBIENT_LIGHT;
 		ambient.Alpha () = 1.0f;
-		fBrightness = min (fBrightness, 1.0f) * PPL_DIFFUSE_LIGHT;
+		fBrightness = Min (fBrightness, 1.0f) * PPL_DIFFUSE_LIGHT;
 		diffuse = psl->info.color * fBrightness;
 		diffuse.Alpha () = 1.0f;
 		}

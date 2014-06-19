@@ -54,7 +54,7 @@ if ((nGun != 0) || (botInfoP->nSecWeaponType == -1))
 	if ((objP->cType.aiInfo.behavior != AIB_SNIPE) || (RandShort () > 16384))
 		ailP->nRapidFireCount++;
 if (((nGun != 0) || (botInfoP->nSecWeaponType == -1)) && (ailP->nRapidFireCount < botInfoP->nRapidFireCount [gameStates.app.nDifficultyLevel])) {
-	ailP->nextPrimaryFire = min (I2X (1)/8, botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel]/2);
+	ailP->nextPrimaryFire = Min (I2X (1) / 8, botInfoP->primaryFiringWait [gameStates.app.nDifficultyLevel]/2);
 	}
 else {
 	if ((botInfoP->nSecWeaponType == -1) || (nGun != 0)) {

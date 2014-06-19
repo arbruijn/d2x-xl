@@ -636,7 +636,7 @@ return -1;
 
 static int ShrinkFactor (const char* bmName)
 {
-int nShrinkFactor = 8 >> min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality);
+int nShrinkFactor = 8 >> Min (gameOpts->render.textures.nQuality, gameStates.render.nMaxTextureQuality);
 if (nShrinkFactor < 4) {
 	if (nShrinkFactor == 1)
 		nShrinkFactor = 2;	// cap texture quality at 256x256 (x frame#)

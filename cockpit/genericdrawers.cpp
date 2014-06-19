@@ -593,7 +593,7 @@ int nBombType, nBombs = BombCount (nBombType);
 if ((nBombs < 0) || ((nBombs == 0) && !bShowAlways))		//no bombs, draw nothing on HUD
 	return;
 #if DBG
-nBombs = min (nBombs, 99);	//only have room for 2 digits - cheating give 200
+nBombs = Min (nBombs, 99);	//only have room for 2 digits - cheating give 200
 #endif
 sprintf (szBombCount, "B:%02d", nBombs);
 for (t = szBombCount; *t; t++)
@@ -1267,7 +1267,7 @@ if (ShowTextGauges ()) {
 	dmgColor.index = -1;
 	dmgColor.rgb = 1;
 
-	fontManager.SetScale (max (1.0f, floor (FRound (fScale))));
+	fontManager.SetScale (Max (1.0f, floor (FRound (fScale))));
 	for (i = 0; i < 3; i++) {
 		nDamage [i] = (int) FRound (X2F (m_info.nDamage [i]) * 200.0f);
 #if 1

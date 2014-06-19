@@ -293,8 +293,8 @@ XtSetArg (args [n], XmNeditable, False); n++;
 XtSetArg (args [n], XmNcursorPositionVisible, False); n++;
 XtSetArg (args [n], XmNwordWrap, True); n++;
 XtSetArg (args [n], XmNvalue, pszMsg); n++;
-XtSetArg (args [n], XmNrows, min (nRows, 30)); n++;
-XtSetArg (args [n], XmNcolumns, min (nCols, 120)); n++;
+XtSetArg (args [n], XmNrows, Min (nRows, 30)); n++;
+XtSetArg (args [n], XmNcolumns, Min (nCols, 120)); n++;
 msgText = XmCreateScrolledText (form, const_cast<char*>("help_text"), args, n);
 // Attachment values must be set on the Text widget's PARENT, the ScrolledWindow. This is the object that is positioned.
 XtVaSetValues (XtParent (msgText),

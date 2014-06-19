@@ -520,7 +520,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		fAttenuation = 1.0f / lightP->info.fBrightness;
 		}
 	else {	//make it decay faster
-		float decay = min (fLightAngle, NdotL);
+		float decay = Min (fLightAngle, NdotL);
 		if (decay < 0.0f) {
 			decay += 1.0000001f;
 			fLightDist /= decay * decay;

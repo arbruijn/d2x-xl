@@ -298,8 +298,7 @@ else
 	blue = m_data.effect.Blue ();
 #endif
 
-float maxColor = max (red, green);
-maxColor = max (maxColor, blue);
+float maxColor = Max (Max (red, green), blue);
 SetFadeDuration (F2X (maxColor * 64.0 / FADE_RATE));
 m_data.bDoEffect = (maxColor > 0.0f); //if we arrive here, brightness needs adjustment
 }
@@ -389,9 +388,9 @@ red = Clamp (m_data.effect.Red () * fFade + red, 0.0f, maxVal);
 green = Clamp (m_data.effect.Green () * fFade + green, 0.0f, maxVal);
 blue = Clamp (m_data.effect.Blue () * fFade + blue, 0.0f, maxVal);
 
-SetEffect (max (red, m_data.effect.Red () * fFade), 
-			  max (green, m_data.effect.Green () * fFade), 
-			  max (blue, m_data.effect.Blue () * fFade),
+SetEffect (Max (red, m_data.effect.Red () * fFade), 
+			  Max (green, m_data.effect.Green () * fFade), 
+			  Max (blue, m_data.effect.Blue () * fFade),
 			  true);
 }
 

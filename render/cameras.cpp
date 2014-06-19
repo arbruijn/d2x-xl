@@ -176,7 +176,7 @@ SetHeight (Pow2ize (gameData.render.screen.Height () / (2 - gameOpts->render.cam
 #	if 1
 if (bShadowMap) {
 #if 0
-	int nSize = max (gameData.render.screen.Width (), gameData.render.screen.Height ());
+	int nSize = Max (gameData.render.screen.Width (), gameData.render.screen.Height ());
 #else
 	int nSize = Pow2ize (int (sqrt (double (gameData.render.screen.Width () * gameData.render.screen.Height ()))));
 	while ((nSize > gameData.render.screen.Width ()) || (nSize > gameData.render.screen.Height ()))
@@ -196,7 +196,6 @@ else
 	}
 #endif
 SetBPP (4);
-//SetRowSize (max (CCanvas::Current ()->Width (), Width ()));
 if (!CreateBuffer ()) 
 	return 0;
 Setup (nId, srcSeg, srcSide, tgtSeg, tgtSide, objP, bTeleport);

@@ -252,19 +252,28 @@ return 0;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+int CCustomMusicInfo::Count (int bMod, int bSecret)
+{
+return (bMod < 0) ? Max (levelSongs [0][bSecret].Length (), levelSongs [1][bSecret].Length ()) : levelSongs [bMod][bSecret].Length ();
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 void CSongManager::Init (void)
 {
 memset (&m_info, 0, sizeof (m_info));
-m_user.nLevelSongs [0][0] =
-m_user.nLevelSongs [0][1] =
-m_user.nLevelSongs [1][0] =
-m_user.nLevelSongs [1][1] = 0;
-m_user.nCurrentSong = 0;
-m_user.bMP3 = 0;
-*m_user.szIntroSong = '\0';
-*m_user.szBriefingSong = '\0';
-*m_user.szCreditsSong = '\0';
-*m_user.szMenuSong = '\0';
+m_custom.nLevelSongs [0][0] =
+m_custom.nLevelSongs [0][1] =
+m_custom.nLevelSongs [1][0] =
+m_custom.nLevelSongs [1][1] = 0;
+m_custom.nCurrentSong = 0;
+m_custom.bMP3 = 0;
+*m_custom.szIntroSong = '\0';
+*m_custom.szBriefingSong = '\0';
+*m_custom.szCreditsSong = '\0';
+*m_custom.szMenuSong = '\0';
 }
 
 //------------------------------------------------------------------------------
@@ -372,21 +381,21 @@ m_info.nCurrent = nSong;
 if (nSong == SONG_TITLE) {
 	if (PlayModSong (const_cast<char*>("title"), bLoop))
 		return;
-	if (*m_user.szIntroSong && midi.PlaySong (m_user.szIntroSong, NULL, NULL, bLoop, 0))
+	if (*m_custom.szIntroSong && midi.PlaySong (m_custom.szIntroSong, NULL, NULL, bLoop, 0))
 		return;
 	m_info.bPlaying = redbook.PlayTrack (REDBOOK_TITLE_TRACK, 0);
 	}
 else if (nSong == SONG_CREDITS) {
 	if (PlayModSong (const_cast<char*>("credits"), bLoop))
 		return;
-	if (*m_user.szCreditsSong && midi.PlaySong (m_user.szCreditsSong, NULL, NULL, bLoop, 0))
+	if (*m_custom.szCreditsSong && midi.PlaySong (m_custom.szCreditsSong, NULL, NULL, bLoop, 0))
 		return;
 	m_info.bPlaying = redbook.PlayTrack (REDBOOK_CREDITS_TRACK, 0);
 	}
 else if (nSong == SONG_BRIEFING) {
 	if (PlayModSong (const_cast<char*>("briefing"), bLoop))
 		return;
-	if (*m_user.szBriefingSong && midi.PlaySong (m_user.szBriefingSong, NULL, NULL, bLoop, 0))
+	if (*m_custom.szBriefingSong && midi.PlaySong (m_custom.szBriefingSong, NULL, NULL, bLoop, 0))
 		return;
 	}
 if (!m_info.bPlaying) {		//not playing redbook, so play midi
@@ -449,17 +458,17 @@ if (*gameFolders.game.szMusic) {
 		sprintf (szFilename, "%slevel%02d.ogg", gameFolders.game.szMusic, nLevel);
 	if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
 		return;
-	if (m_user.nLevelSongs [1][bSecret]) {
-		sprintf (szFilename, "%s%s", gameFolders.game.szMusic, m_user.levelSongs [1][bSecret][nSong % m_user.nLevelSongs [1][bSecret]]);
+	if (m_custom.nLevelSongs [1][bSecret]) {
+		sprintf (szFilename, "%s%s", gameFolders.game.szMusic, m_custom.levelSongs [1][bSecret][nSong % m_custom.nLevelSongs [1][bSecret]]);
 		if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
 			return;
 		}
 	}
 
 // try the standard music
-if (m_user.levelSongs [0][bSecret].Buffer () &&
-	 m_user.nLevelSongs [0][bSecret] && 
-	 midi.PlaySong (m_user.levelSongs [0][bSecret][nSong % m_user.nLevelSongs [0][bSecret]], NULL, NULL, 1, 0))
+if (m_custom.levelSongs [0][bSecret].Buffer () &&
+	 m_custom.nLevelSongs [0][bSecret] && 
+	 midi.PlaySong (m_custom.levelSongs [0][bSecret][nSong % m_custom.nLevelSongs [0][bSecret]], NULL, NULL, 1, 0))
 	return;
 
 if (redbook.Enabled () && rba.Enabled () && (nTracks = rba.GetNumberOfTracks ()) > 1)	//try to play redbook
@@ -520,7 +529,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 			bSecret = (*szSong == '-');
 			if (bRead) {
 				if (bMP3)
-					m_user.bMP3 = 1;
+					m_custom.bMP3 = 1;
 				if ((pszSong = strchr (szSong, '\r')))
 					*pszSong = '\0';
 				if ((pszSong = strchr (szSong, '\n')))
@@ -539,7 +548,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 					memcpy (pszSong, szSong + bSecret, l - bSecret);
 				else
 					sprintf (pszSong, "%s%s", szListFolder, szSong + bSecret);
-				m_user.levelSongs [bMod][bSecret][nSongs [bSecret]] = pszSong;
+				m_custom.levelSongs [bMod][bSecret][nSongs [bSecret]] = pszSong;
 				}
 			nSongs [bSecret]++;
 			}
@@ -547,17 +556,17 @@ for (bRead = 0; bRead < 2; bRead++) {
 	cf.Close ();
 	if (!bRead) {
 		for (bSecret = 0; bSecret < 2; bSecret++) {
-			m_user.levelSongs [bMod][bSecret].Destroy ();
-			if (nSongs [bSecret] && !m_user.levelSongs [bMod][bSecret].Create (nSongs [bSecret])) {
+			m_custom.levelSongs [bMod][bSecret].Destroy ();
+			if (nSongs [bSecret] && !m_custom.levelSongs [bMod][bSecret].Create (nSongs [bSecret])) {
 				DestroyPlayList (bMod, nSongs);
 				return 0;
 				}
-			m_user.levelSongs [bMod][bSecret].Clear (0);
+			m_custom.levelSongs [bMod][bSecret].Clear (0);
 			}
 		}
 	}
-m_user.nLevelSongs [bMod][0] = nSongs [0];
-m_user.nLevelSongs [bMod][1] = nSongs [1];
+m_custom.nLevelSongs [bMod][0] = nSongs [0];
+m_custom.nLevelSongs [bMod][1] = nSongs [1];
 return nSongs [0] + nSongs [1];
 }
 
@@ -566,16 +575,16 @@ return nSongs [0] + nSongs [1];
 void CSongManager::DestroyPlayList (int bMod, int* nSongs)
 {
 if (!nSongs)
-	nSongs = m_user.nLevelSongs [bMod];
+	nSongs = m_custom.nLevelSongs [bMod];
 for (int bSecret = 0; bSecret < 2; bSecret++) {
-	if (m_user.levelSongs [bMod][bSecret].Buffer ()) {
+	if (m_custom.levelSongs [bMod][bSecret].Buffer ()) {
 		for (int i = 0; i < nSongs [bSecret]; i++) {
-			if (m_user.levelSongs [bMod][bSecret][i])
-				delete[] m_user.levelSongs [bMod][bSecret][i];
+			if (m_custom.levelSongs [bMod][bSecret][i])
+				delete[] m_custom.levelSongs [bMod][bSecret][i];
 			}
-		m_user.levelSongs [bMod][bSecret].Destroy ();
+		m_custom.levelSongs [bMod][bSecret].Destroy ();
 		}
-	m_user.nLevelSongs [bMod][bSecret] = 0;
+	m_custom.nLevelSongs [bMod][bSecret] = 0;
 	}
 }
 

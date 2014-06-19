@@ -342,7 +342,7 @@ if (gameStates.render.nLightingMethod) {
 			if (!bStatic)
 				continue;
 			}
-		lightP->render.xDistance [nThread] = (fix) ((CFixVector::Dist (c, lightP->info.vPos) /*- F2X (lightP->info.fRad)*/) / (lightP->info.fRange * max (lightP->info.fRad, 1.0f)));
+		lightP->render.xDistance [nThread] = (fix) ((CFixVector::Dist (c, lightP->info.vPos) /*- F2X (lightP->info.fRad)*/) / (lightP->info.fRange * Max (lightP->info.fRad, 1.0f)));
 		if (lightP->render.xDistance [nThread] > xMaxLightRange)
 			continue;
 		lightP->info.bDiffuse [nThread] = 1;
@@ -414,7 +414,7 @@ if (gameStates.render.nLightingMethod) {
 #endif
 			}
 #if 1
-		if (!lightP->Contribute (nSegment, -1, -1, vDestPos, NULL, xMaxLightRange, max (lightP->info.fRad, 1.0f), 0, nThread))
+		if (!lightP->Contribute (nSegment, -1, -1, vDestPos, NULL, xMaxLightRange, Max (lightP->info.fRad, 1.0f), 0, nThread))
 			continue;
 #else
 		short nLightSeg = lightP->info.nSegment;
@@ -426,7 +426,7 @@ if (gameStates.render.nLightingMethod) {
 			lightP->info.bDiffuse [nThread] = gameData.segs.SegVis (lightP->info.nSegment, nSegment);
 		else
 			continue;
-		lightP->render.xDistance [nThread] = (fix) ((float) CFixVector::Dist (vDestPos, lightP->info.vPos) / (lightP->info.fRange * max (lightP->info.fRad, 1.0f)));
+		lightP->render.xDistance [nThread] = (fix) ((float) CFixVector::Dist (vDestPos, lightP->info.vPos) / (lightP->info.fRange * Max (lightP->info.fRad, 1.0f)));
 		if (lightP->render.xDistance [nThread] > xMaxLightRange)
 			continue;
 		if (lightP->info.bDiffuse [nThread])

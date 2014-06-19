@@ -62,7 +62,7 @@ extern CRedbook redbook;
 
 //------------------------------------------------------------------------------
 
-class CUserMusicInfo {
+class CCustomMusicInfo {
 	public:
 		int					nLevelSongs [2][2];
 		int					nCurrentSong;
@@ -72,6 +72,9 @@ class CUserMusicInfo {
 		char					szBriefingSong [FILENAME_LEN];
 		char					szCreditsSong [FILENAME_LEN];
 		char					szMenuSong [FILENAME_LEN];
+
+	public:
+		int Count (int bMod, int bSecret);
 	};
 
 class CSongData {
@@ -101,8 +104,8 @@ class CSongInfo {
 
 class CSongManager {
 	private:
-		CSongInfo		m_info;
-		CUserMusicInfo	m_user;
+		CSongInfo			m_info;
+		CCustomMusicInfo	m_custom;
 
 	public:
 		CSongManager () { Init (); }

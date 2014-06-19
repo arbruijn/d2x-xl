@@ -137,7 +137,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (RandShort () < OBJECTS [N
 		int oldCount, newCount;
 
 		//add in value from 0..1
-		xAfterburnerScale = I2X (1) + min (I2X (1) / 2, gameData.physics.xAfterburnerCharge) * 2;
+		xAfterburnerScale = I2X (1) + Min (I2X (1) / 2, gameData.physics.xAfterburnerCharge) * 2;
 		forwardThrustTime = FixMul (gameData.time.xFrame, xAfterburnerScale);	//based on full thrust
 		oldCount = (gameData.physics.xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
 		if (!gameStates.gameplay.bAfterburnerCheat)
@@ -149,12 +149,12 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (RandShort () < OBJECTS [N
 			gameStates.render.bDropAfterburnerBlob = 1;	//drop blob (after physics called)
 		}
 	else {
-		fix xChargeUp = min (gameData.time.xFrame / 8, I2X (1) - gameData.physics.xAfterburnerCharge);	//recharge over 8 seconds
+		fix xChargeUp = Min (gameData.time.xFrame / 8, I2X (1) - gameData.physics.xAfterburnerCharge);	//recharge over 8 seconds
 		if (xChargeUp > 0) {
 			fix xCurEnergy = LOCALPLAYER.Energy () - I2X (10);
-			xCurEnergy = max (xCurEnergy, 0) / 10;	//don't drop below 10
+			xCurEnergy = Max (xCurEnergy, 0) / 10;	//don't drop below 10
 			if (xCurEnergy > 0) {	//maybe limit charge up by energy
-				xChargeUp = min (xChargeUp, xCurEnergy / 10);
+				xChargeUp = Min (xChargeUp, xCurEnergy / 10);
 				if (xChargeUp > 0) {
 					gameData.physics.xAfterburnerCharge += xChargeUp;
 					LOCALPLAYER.UpdateEnergy (-100 * xChargeUp / 10);	//full charge uses 10% of energy

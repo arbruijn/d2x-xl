@@ -1561,7 +1561,7 @@ nDeadControlCenter = 0;
 nVertigoBotFlags = 0;
 nFrameCount = 0;
 nEffects = 0;
-nMaxObjects = max (gameFileInfo.objects.count + 1000, gameFileInfo.objects.count * 2);
+nMaxObjects = Max (gameFileInfo.objects.count + 1000, gameFileInfo.objects.count * 2);
 nMaxUsedObjects = LEVEL_OBJECTS - 20;
 }
 

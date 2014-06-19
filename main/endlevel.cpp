@@ -1016,9 +1016,9 @@ if (bStart || (exitFlightData.pathDot <= 0)) {
 		exitFlightData.angles = objP->info.position.mOrient.ComputeAngles ();
 	xSegTime = FixDiv (xStepSize, exitFlightData.speed);	//how long through seg
 	if (xSegTime) {
-		exitFlightData.aStep.v.coord.x = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightData.angles.v.coord.p, aDest.v.coord.p), xSegTime)));
-		exitFlightData.aStep.v.coord.z = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightData.angles.v.coord.b, aDest.v.coord.b), xSegTime)));
-		exitFlightData.aStep.v.coord.y = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightData.angles.v.coord.h, aDest.v.coord.h), xSegTime)));
+		exitFlightData.aStep.v.coord.x = Max (-MAX_ANGSTEP, Min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightData.angles.v.coord.p, aDest.v.coord.p), xSegTime)));
+		exitFlightData.aStep.v.coord.z = Max (-MAX_ANGSTEP, Min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightData.angles.v.coord.b, aDest.v.coord.b), xSegTime)));
+		exitFlightData.aStep.v.coord.y = Max (-MAX_ANGSTEP, Min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightData.angles.v.coord.h, aDest.v.coord.h), xSegTime)));
 		}
 	else {
 		exitFlightData.angles = aDest;
@@ -2300,9 +2300,9 @@ if (exitFlightDataP->bStart || (UpdateObjectSeg (objP, false) > 0)) {
 				exitFlightDataP->angles = objP->info.position.mOrient.ComputeAngles ();
 			xSegTime = FixDiv (xStepSize, exitFlightDataP->speed);	//how long through seg
 			if (xSegTime) {
-				exitFlightDataP->aStep.v.coord.x = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.coord.p, aDest.v.coord.p), xSegTime)));
-				exitFlightDataP->aStep.v.coord.z = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.coord.b, aDest.v.coord.b), xSegTime)));
-				exitFlightDataP->aStep.v.coord.y = max (-MAX_ANGSTEP, min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.coord.h, aDest.v.coord.h), xSegTime)));
+				exitFlightDataP->aStep.v.coord.x = Max (-MAX_ANGSTEP, Min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.coord.p, aDest.v.coord.p), xSegTime)));
+				exitFlightDataP->aStep.v.coord.z = Max (-MAX_ANGSTEP, Min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.coord.b, aDest.v.coord.b), xSegTime)));
+				exitFlightDataP->aStep.v.coord.y = Max (-MAX_ANGSTEP, Min (MAX_ANGSTEP, FixDiv (DeltaAng (exitFlightDataP->angles.v.coord.h, aDest.v.coord.h), xSegTime)));
 				}
 			else {
 				exitFlightDataP->angles = aDest;

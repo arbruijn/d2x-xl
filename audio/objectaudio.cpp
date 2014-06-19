@@ -72,7 +72,7 @@ if (gameStates.sound.bDontStartObjects)
 if ((m_nSound < 0) && !*m_szSound)
 	return false;
 // only use up to 1/4 the sound channels for "permanent" sounts
-if ((m_flags & SOF_PERMANENT) && (audio.ActiveObjects () >= max (1, 33 * audio.GetMaxChannels () / 100)) && !audio.SuspendObjectSound (m_volume))
+if ((m_flags & SOF_PERMANENT) && (audio.ActiveObjects () >= Max (1, 33 * audio.GetMaxChannels () / 100)) && !audio.SuspendObjectSound (m_volume))
 	return false;
 // start the sample playing
 m_channel =

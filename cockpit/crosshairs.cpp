@@ -406,7 +406,7 @@ if (ogl.IsOculusRift ()) {
 	//if ((fabs (X2F (transformation.m_info.playerHeadAngles.v.coord.h)) > 0.1f) || 
 	//	 (fabs (X2F (transformation.m_info.playerHeadAngles.v.coord.p)) > 0.1f)) 
 		{
-		float fade = 1.0f - 2.0f * X2F (max (abs (transformation.m_info.playerHeadAngles.v.coord.h), 
+		float fade = 1.0f - 2.0f * X2F (Max (abs (transformation.m_info.playerHeadAngles.v.coord.h), 
 														 abs (transformation.m_info.playerHeadAngles.v.coord.p)));
 		fade *= fade;
 		if (gameOpts->input.oculusRift.nDeadzone) { // display a reference image of the reticle

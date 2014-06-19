@@ -1940,7 +1940,7 @@ paletteManager.SetFadeDelay (m_cf.ReadFix ());
 paletteManager.SetLastEffectTime (m_cf.ReadFix ());
 paletteManager.SetEffect ((int) m_cf.ReadShort (), (int) m_cf.ReadShort (), (int) m_cf.ReadShort ());
 h = (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
-j = min (h, LEVEL_SEGMENTS);
+j = Min (h, LEVEL_SEGMENTS);
 gameData.render.lights.subtracted.Read (m_cf, j);
 if (h > j)
 	m_cf.Seek ((h - j) * sizeof (gameData.render.lights.subtracted [0]), SEEK_CUR);
@@ -2250,7 +2250,7 @@ else {
 //	Load gameData.render.lights.subtracted
 if (m_nVersion >= 16) {
 	int h = (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
-	int j = min (LEVEL_SEGMENTS, h);
+	int j = Min (LEVEL_SEGMENTS, h);
 	gameData.render.lights.subtracted.Read (m_cf, j);
 	if (j < h)
 		m_cf.Seek ((h - j) * sizeof (ubyte), SEEK_CUR);

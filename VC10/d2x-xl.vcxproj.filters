@@ -208,15 +208,6 @@
     <Filter Include="Source Files\io\Header Files">
       <UniqueIdentifier>{a4618a0d-052a-4734-8ea0-f2d959f127ee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\effects\Source Files\audio">
-      <UniqueIdentifier>{f9a1d089-ed52-4542-9859-6268069b9822}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\effects\Source Files\audio\Source Files">
-      <UniqueIdentifier>{76d1491c-3523-4180-9549-76f9cc773a30}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\effects\Source Files\audio\Header Files">
-      <UniqueIdentifier>{161c4733-62e7-43a6-a3a8-e8a152db870c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\input">
       <UniqueIdentifier>{dc29749a-7e4c-4701-8cae-4f49dc9af809}</UniqueIdentifier>
     </Filter>
@@ -225,6 +216,15 @@
     </Filter>
     <Filter Include="Source Files\input\Header Files">
       <UniqueIdentifier>{09df1528-ab19-4589-8966-9a8556ae217c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio">
+      <UniqueIdentifier>{f9a1d089-ed52-4542-9859-6268069b9822}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio\Source Files">
+      <UniqueIdentifier>{76d1491c-3523-4180-9549-76f9cc773a30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\audio\Header Files">
+      <UniqueIdentifier>{161c4733-62e7-43a6-a3a8-e8a152db870c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -574,25 +574,25 @@
       <Filter>Source Files\gamemodes\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\audio.h">
-      <Filter>Source Files\effects\Source Files\audio\Header Files</Filter>
+      <Filter>Source Files\audio\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\hmpfile.h">
-      <Filter>Source Files\effects\Source Files\audio\Header Files</Filter>
+      <Filter>Source Files\audio\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\midi.h">
-      <Filter>Source Files\effects\Source Files\audio\Header Files</Filter>
+      <Filter>Source Files\audio\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\rbaudio.h">
-      <Filter>Source Files\effects\Source Files\audio\Header Files</Filter>
+      <Filter>Source Files\audio\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\songs.h">
-      <Filter>Source Files\effects\Source Files\audio\Header Files</Filter>
+      <Filter>Source Files\audio\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\sounds.h">
-      <Filter>Source Files\effects\Source Files\audio\Header Files</Filter>
+      <Filter>Source Files\audio\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\soundthreads.h">
-      <Filter>Source Files\effects\Source Files\audio\Header Files</Filter>
+      <Filter>Source Files\audio\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\fireweapon.h">
       <Filter>Source Files\weapons\Header Files</Filter>
@@ -1446,25 +1446,25 @@
       <Filter>Source Files\gamemodes\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\audio.cpp">
-      <Filter>Source Files\effects\Source Files\audio\Source Files</Filter>
+      <Filter>Source Files\audio\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\win32\hmpfile.cpp">
-      <Filter>Source Files\effects\Source Files\audio\Source Files</Filter>
+      <Filter>Source Files\audio\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\win32\midi.cpp">
-      <Filter>Source Files\effects\Source Files\audio\Source Files</Filter>
+      <Filter>Source Files\audio\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\objectaudio.cpp">
-      <Filter>Source Files\effects\Source Files\audio\Source Files</Filter>
+      <Filter>Source Files\audio\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\rbaudio.cpp">
-      <Filter>Source Files\effects\Source Files\audio\Source Files</Filter>
+      <Filter>Source Files\audio\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\songs.cpp">
-      <Filter>Source Files\effects\Source Files\audio\Source Files</Filter>
+      <Filter>Source Files\audio\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\soundthreads.cpp">
-      <Filter>Source Files\effects\Source Files\audio\Source Files</Filter>
+      <Filter>Source Files\audio\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\weapons\controlweapon.cpp">
       <Filter>Source Files\weapons\Source Files</Filter>

@@ -176,7 +176,7 @@ else {
 	nBmFrames = bmP->FrameCount ();
 	if ((bmfP = bmP->Frames ())) {
 		nFrameStep = (nBmFrames > nFrames) ? nBmFrames / nFrames : 1;
-		h = min (nFrames, nBmFrames);
+		h = Min (nFrames, nBmFrames);
 		for (i = 0; i < h; i++) {
 			j = BM_INDEX (frameP, i, bIndirect, bObject);
 			hbmP = (bObject ? gameData.pig.tex.bitmaps [0] : gameData.pig.tex.bitmapP) + j;
@@ -277,7 +277,7 @@ xEffectTime += gameData.time.xFrame;
 			if (!bmP->Frames ())
 				bmP->NeedSetup ();
 			bmP->SetupTexture (1, 1);
-			CBitmap* bmfP = bmP->SetCurFrame (bmP->Frames () + min (ecP->nCurFrame, bmP->FrameCount () - 1));
+			CBitmap* bmfP = bmP->SetCurFrame (bmP->Frames () + Min (ecP->nCurFrame, bmP->FrameCount () - 1));
 			bmfP->SetTranspType (-1);
 			bmfP->SetupTexture (1, 1);
 			}
