@@ -231,6 +231,11 @@ class CWall {
 		void LoadState (CFile& cf);
 		void SaveState (CFile& cf);
 		inline bool IgnoreMarker (void) { return (flags & WALL_IGNORE_MARKER) != 0; }
+
+		inline ushort& Flags (void) { return flags; }
+		inline void SetFlags (ushort flags) { Flags () |= flags; }
+		inline void ClearFlags (ushort flags) { Flags () &= ~flags; }
+
 	};
 
 inline int operator- (CWall* o, CArray<CWall>& a) { return a.Index (o); }

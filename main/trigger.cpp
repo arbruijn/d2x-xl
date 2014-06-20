@@ -184,8 +184,8 @@ for (int i = 0; i < m_nLinks; i++)
 
 void CTrigger::DoChangeTexture (void)
 {
-	int	baseTex = m_info.value & 0xffff,
-			ovlTex = (m_info.value >> 16);
+	int	baseTex = GetValue () & 0xffff,
+			ovlTex = (GetValue () >> 16);
 
 for (int i = 0; i < m_nLinks; i++)
 	SEGMENTS [m_segments [i]].SetTextures (m_sides [i], baseTex, ovlTex);
@@ -196,12 +196,12 @@ audio.Update (); // react to a wall becoming passable / impassable
 
 inline int CTrigger::DoExecObjTrigger (short nObject, int bDamage)
 {
-	fix	v = m_info.value;
+	fix	v = GetValue ();
 
 if (v >= I2X (1))
 v = X2I (v);
 v = 10 - v;
-if (bDamage != ((m_info.nType == TT_TELEPORT) || (m_info.nType == TT_SPAWN_BOT)))
+if (bDamage != ((Type () == TT_TELEPORT) || (Type () == TT_SPAWN_BOT)))
 	return 0;
 if (!bDamage)
 	return 1;
@@ -209,8 +209,8 @@ if (v >= 10)
 	return 0;
 if (fix (OBJECTS [nObject].Damage () * 100) > v * 10)
 	return 0;
-if (!(m_info.flags & TF_PERMANENT))
-	m_info.value = 0;
+if (!Flagged (TF_PERMANENT))
+	SetValue (0);
 return 1;
 }
 
@@ -339,7 +339,7 @@ void FlagTriggeredDoors (void)
 {
 for (int i = 0; i < gameData.walls.nWalls; i++)
 	if (DoorSwitch (i) >= 0)
-		WALLS [i].flags |= WALL_WALL_SWITCH;
+		WALLS [i].SetFlags (WALL_WALL_SWITCH);
 }
 
 //------------------------------------------------------------------------------
@@ -350,7 +350,7 @@ void CTrigger::DoLockDoors (void)
 
 for (int i = 0; i < m_nLinks; i++)
 	if ((wallP = SEGMENTS [m_segments [i]].Wall (m_sides [i])))
-		wallP->flags |= WALL_DOOR_LOCKED;
+		wallP->SetFlags (WALL_DOOR_LOCKED);
 }
 
 //------------------------------------------------------------------------------
@@ -404,15 +404,15 @@ int CTrigger::DoEnableTrigger (void)
 for (int i = 0; i < m_nLinks; i++) {
 	if (m_sides [i] >= 0) {
 		if ((trigP = SEGMENTS [m_segments [i]].Trigger (m_sides [i]))) {
-			if (trigP->m_info.nType != TT_MASTER)
-				trigP->m_info.flags &= ~TF_DISABLED;
+			if (trigP->Type () != TT_MASTER)
+				trigP->ClearFlags (TF_DISABLED);
 			else {
-				if (trigP->m_info.value > 0)
-					(trigP->m_info.value)--;
-				if (trigP->m_info.value <= 0)
-					trigP->m_info.flags &= ~TF_DISABLED;
+				if (trigP->GetValue () > 0)
+					trigP->Value ()--;
+				if (trigP->GetValue () <= 0)
+					trigP->ClearFlags (TF_DISABLED);
 				}
-			if ((m_info.flags & (TF_PERMANENT | TF_DISABLED)) == TF_PERMANENT)
+			if (Flagged (TF_PERMANENT | TF_DISABLED, TF_PERMANENT))
 				m_info.tOperated = -1;
 			}
 		}
@@ -444,9 +444,9 @@ int CTrigger::DoDisableTrigger (void)
 for (int i = 0; i < m_nLinks; i++) {
 	if (m_sides [i] >= 0) {
 		if ((trigP = SEGMENTS [m_segments [i]].Trigger (m_sides [i]))) {
-			trigP->m_info.flags |= TF_DISABLED;
-			if (trigP->m_info.nType == TT_MASTER)
-				(trigP->m_info.value)++;
+			trigP->SetFlags (TF_DISABLED);
+			if (trigP->Type () == TT_MASTER)
+				trigP->Value ()++;
 			}
 		}
 	else {
@@ -500,7 +500,7 @@ return 1;
 
 int CTrigger::DoShowMessage (void)
 {
-ShowGameMessage (gameData.messages, X2I (m_info.value), m_info.time [0]);
+ShowGameMessage (gameData.messages, X2I (GetValue ()), GetTime (0));
 return 1;
 }
 
@@ -508,8 +508,8 @@ return 1;
 
 int CTrigger::DoShakeMine (void)
 {
-gameStates.gameplay.seismic.nShakeFrequency = (m_info.value < 0) ? 0 : m_info.value;
-gameStates.gameplay.seismic.nShakeDuration = I2X ((m_info.time [0] < 0) ? 10 : m_info.time [0]);
+gameStates.gameplay.seismic.nShakeFrequency = (GetValue () < 0) ? 0 : GetValue ();
+gameStates.gameplay.seismic.nShakeDuration = I2X ((GetTime (0) < 0) ? 10 : GetTime (0));
 return 1;
 }
 
@@ -517,26 +517,26 @@ return 1;
 
 int CTrigger::DoPlaySound (short nObject)
 {
-	tTextIndex	*indexP = FindTextData (&gameData.sounds, X2I (m_info.value));
+	tTextIndex	*indexP = FindTextData (&gameData.sounds, X2I (GetValue ()));
 
 if (!indexP)
 	return 0;
-if (m_info.flags & TF_DISABLED)
+if (Flagged (TF_DISABLED))
 	return 0;
-if (m_info.time [0] < 0) {
+if (GetTime (0) < 0) {
 	m_info.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, 1, -1, -1, -1, I2X (1), indexP->pszText);
 	if (m_info.nChannel >= 0)
-		m_info.flags |= TF_PLAYING_SOUND;
+		SetFlags (TF_PLAYING_SOUND);
 	}
-else if (/*(m_info.time [1] > 0) &&*/ (gameData.time.xGame - m_info.tOperated > m_info.time [1])) {
-	m_info.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, 0, 0, m_info.time [0] - 1, -1, I2X (1), indexP->pszText);
+else if (/*(GetTime (1) > 0) &&*/ (gameData.time.xGame - m_info.tOperated > GetTime (1))) {
+	m_info.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xffff / 2, 0, 0, GetTime (0) - 1, -1, I2X (1), indexP->pszText);
 	if (m_info.nChannel >= 0) {
-		m_info.time [1] = audio.Channel (m_info.nChannel)->Duration () * m_info.time [0];
-		m_info.flags |= TF_PLAYING_SOUND;
+		SetTime (1, audio.Channel (m_info.nChannel)->Duration () * GetTime (0));
+		SetFlags (TF_PLAYING_SOUND);
 		}
 #if DBG
 	else
-		indexP = FindTextData (&gameData.sounds, X2I (m_info.value));
+		indexP = FindTextData (&gameData.sounds, X2I (GetValue ()));
 #endif
 	}
 else
@@ -574,7 +574,7 @@ for (int i = 0; i < m_nLinks; i++) {
 		connSegP = SEGMENTS + segP->m_children [nSide];
 		nConnSide = segP->ConnectedSide (connSegP);
 		}
-	switch (m_info.nType) {
+	switch (Type ()) {
 		case TT_OPEN_WALL:
 			nNewWallType = WALL_OPEN;
 			break;
@@ -602,13 +602,13 @@ for (int i = 0; i < m_nLinks; i++) {
 		continue;		//already in correct state, so skip
 
 	bChanged = 1;
-	switch (m_info.nType) {
+	switch (Type ()) {
 		case TT_OPEN_WALL:
 			if (!bForceField)
 				segP->StartCloak (nSide);
 			else {
 				CFixVector vPos = segP->SideCenter (nSide);
-				if (!(m_info.flags & TF_SILENT))
+				if (!Flagged (TF_SILENT))
 					audio.CreateSegmentSound (SOUND_FORCEFIELD_OFF, segP->Index (), nSide, vPos, 0, I2X (1));
 				wallP->nType = nNewWallType;
 				audio.DestroySegmentSound (segP->Index (), nSide, SOUND_FORCEFIELD_HUM);
@@ -661,7 +661,7 @@ void CTrigger::PrintMessage (int nPlayer, int bShot, const char *message)
 	static char	pluralSuffix [2][2] = {"", "s"};		//points to 's' or nothing for plural word
 
 if (!gameStates.app.bD1Mission && ((nPlayer < 0) || (nPlayer == N_LOCALPLAYER))) {
-	if (!(m_info.flags & TF_NO_MESSAGE) && bShot)	// only display if not a silent trigger and the trigger has been shot (not flown through)
+	if (!Flagged (TF_NO_MESSAGE) && bShot)	// only display if not a silent trigger and the trigger has been shot (not flown through)
 		HUDInitMessage (message, pluralSuffix [m_nLinks > 1]);
 	}
 }
@@ -701,7 +701,7 @@ for (int i = 0; i < m_nLinks; i++) {
 	segP = SEGMENTS + m_segments [i];
 	nSide = m_sides [i];
 	segP->IllusionOff (nSide);
-	if (!(m_info.flags & TF_SILENT))
+	if (Flagged (TF_SILENT))
 		audio.CreateSegmentSound (SOUND_WALL_REMOVED, segP->Index (), nSide, segP->SideCenter (nSide), 0, I2X (1));
   	}
 }
@@ -969,10 +969,10 @@ void CTrigger::DoSpeedBoost (short nObject)
 {
 if (!(COMPETITION /*|| IsCoopGame*/) || extraGameInfo [IsMultiGame].nSpeedBoost) {
 	CWall* wallP = TriggerParentWall (Index ());
-	gameData.objs.speedBoost [nObject].bBoosted = (m_info.value && (m_nLinks > 0));
-	SetSpeedBoostVelocity ((short) nObject, m_info.value,
+	gameData.objs.speedBoost [nObject].bBoosted = (GetValue () && (m_nLinks > 0));
+	SetSpeedBoostVelocity ((short) nObject, GetValue (),
 								  (short) (wallP ? wallP->nSegment : -1), (short) (wallP ? wallP->nSide : -1),
-								  m_segments [0], m_sides [0], NULL, NULL, (m_info.flags & TF_SET_ORIENT) != 0);
+								  m_segments [0], m_sides [0], NULL, NULL, Flagged (TF_SET_ORIENT) != 0);
 	}
 }
 
@@ -982,11 +982,11 @@ bool CTrigger::DoExit (int nPlayer)
 {
 if (nPlayer != N_LOCALPLAYER)
 	return false;
-if (m_info.flags & TF_DISABLED)
+if (Flagged (TF_DISABLED))
 	return false;
 audio.StopAll ();		//kill the sounds
 StopSpeedBoost (gameData.multiplayer.players [nPlayer].nObject);
-missionManager.AdvanceLevel (X2I (m_info.value));
+missionManager.AdvanceLevel (X2I (GetValue ()));
 if (gameStates.app.bD1Mission) {
 	StartEndLevelSequence (0);
 	return true;
@@ -994,8 +994,8 @@ if (gameStates.app.bD1Mission) {
 else if (missionManager.nCurrentLevel > 0) {
 	if ((gameData.segs.nLevelVersion > 20) && (missionManager.GetLevelState (missionManager.NextLevel ()) < 0))
 		return false;
-	if (!(m_info.flags & TF_PERMANENT))
-		m_info.flags |= TF_DISABLED;
+	if (!Flagged (TF_PERMANENT))
+		SetFlags (TF_DISABLED);
 	StartEndLevelSequence (0);
 	return true;
 	}
@@ -1057,7 +1057,7 @@ return 0;
 
 bool CTrigger::IsExit (void)
 {
-return (m_info.nType == TT_EXIT) || ((m_info.nType == TT_DESCENT1) && ((m_info.flagsD1 & TRIGGER_EXIT) != 0));
+return (Type () == TT_EXIT) || ((Type () == TT_DESCENT1) && ((m_info.flagsD1 & TRIGGER_EXIT) != 0));
 }
 
 //------------------------------------------------------------------------------
@@ -1091,14 +1091,14 @@ int CTrigger::OperateD1 (short nObject, int nPlayer, int bShot)
 
 for (int i = 0; i < int (sizeofa (xlatTriggers)); i++)
 	if (m_info.flagsD1 & xlatTriggers [i].nFlag) {
-		m_info.nType = xlatTriggers [i].nType;
+		Type () = xlatTriggers [i].nType;
 		gameData.trigs.delay [nTrigger] = -1;
 		if (!Operate (nObject, nPlayer, bShot, false))
 			h = 0;
 		if ((xlatTriggers [i].nFlag == TRIGGER_EXIT) || (xlatTriggers [i].nFlag == TRIGGER_SECRET_EXIT))
 			break;
 		}
-m_info.nType = TT_DESCENT1;
+Type () = TT_DESCENT1;
 if (!h)
 	gameData.trigs.delay [nTrigger] = gameStates.app.nSDLTicks [0];
 return h;
@@ -1121,7 +1121,7 @@ if (bObjTrigger)
 	BRP;
 #endif
 
-if (m_info.flags & TF_DISABLED)
+if (Flagged (TF_DISABLED))
 	return 1;		//1 means don't send trigger hit to other players
 
 if (nDepth > 15)
@@ -1159,7 +1159,7 @@ else {
 		nDepth--;
 		return 1;
 		}
-	if (!bObjTrigger && (m_info.nType != TT_TELEPORT) && (m_info.nType != TT_SPEEDBOOST && (m_info.nType != TT_MASTER))) {
+	if (!bObjTrigger && (Type () != TT_TELEPORT) && (Type () != TT_SPEEDBOOST && (Type () != TT_MASTER))) {
 		nDepth--;
 		return 1;
 		}
@@ -1171,7 +1171,7 @@ if (nTrigger < 0) {
 	return 1;
 	}
 
-if (!nDepth && !bObjTrigger && (m_info.nType != TT_TELEPORT) && (m_info.nType != TT_SPEEDBOOST)) {
+if (!nDepth && !bObjTrigger && (Type () != TT_TELEPORT) && (Type () != TT_SPEEDBOOST)) {
 	int t = gameStates.app.nSDLTicks [0];
 	if ((gameData.trigs.delay [nTrigger] >= 0) && (t - gameData.trigs.delay [nTrigger] < 750)) {
 		nDepth--;
@@ -1186,11 +1186,11 @@ if (m_info.tOperated < 0) {
 	m_info.nPlayer = nPlayer;
 	m_info.bShot = bShot;
 	if (IsDelayed ()) {
-		if (m_info.time [0] > 0)
-			m_info.time [1] = m_info.time [0];
+		if (GetTime (0) > 0)
+			SetTime (1, GetTime (0));
 		else {
-			fix h = -m_info.time [0] / 10;
-			m_info.time [1] = h + h * (RandShort () % 10);
+			fix h = -GetTime (0) / 10;
+			SetTime (1, h + h * (RandShort () % 10));
 			}
 		}
 	}
@@ -1201,7 +1201,7 @@ if (Delay () > 0) {
 	return 1;
 	}
 
-switch (m_info.nType) {
+switch (Type ()) {
 
 	case TT_EXIT:
 		if (DoExit (nPlayer)) {
@@ -1320,9 +1320,9 @@ switch (m_info.nType) {
 	case TT_SHIELD_DAMAGE:
 		if (!gameStates.app.bPlayerIsDead) {
 			if (gameStates.app.bD1Mission)
-				LOCALPLAYER.UpdateShield (-TRIGGERS [nTrigger].m_info.value);
+				LOCALPLAYER.UpdateShield (-TRIGGERS [nTrigger].GetValue ());
 			else
-				LOCALPLAYER.UpdateShield (-fix ((float (I2X (1)) * X2F (TRIGGERS [nTrigger].m_info.value))));
+				LOCALPLAYER.UpdateShield (-fix ((float (I2X (1)) * X2F (TRIGGERS [nTrigger].GetValue ()))));
 			if (LOCALPLAYER.Shield () < 0)
 				StartPlayerDeathSequence (OBJECTS + gameData.multiplayer.players [N_LOCALPLAYER].nObject);
 			}
@@ -1331,9 +1331,9 @@ switch (m_info.nType) {
 	case TT_ENERGY_DRAIN:
 		if (!gameStates.app.bPlayerIsDead) {
 			if (gameStates.app.bD1Mission)
-				LOCALPLAYER.UpdateEnergy (-TRIGGERS [nTrigger].m_info.value);
+				LOCALPLAYER.UpdateEnergy (-TRIGGERS [nTrigger].GetValue ());
 			else
-				LOCALPLAYER.UpdateEnergy (-fix (LOCALPLAYER.Energy () * X2F (TRIGGERS [nTrigger].m_info.value) / 100));
+				LOCALPLAYER.UpdateEnergy (-fix (LOCALPLAYER.Energy () * X2F (TRIGGERS [nTrigger].GetValue ()) / 100));
 			}
 		break;
 
@@ -1412,14 +1412,14 @@ switch (m_info.nType) {
 		break;
 	}
 
-if (m_info.flags & TF_ONE_SHOT)		//if this is a one-shot...
-	m_info.flags |= TF_DISABLED;		//..then don't let it happen again
-if (m_info.flags & TF_ALTERNATE)
-	m_info.nType = oppTrigTypes [m_info.nType];
+if (Flagged (TF_ONE_SHOT))		//if this is a one-shot...
+	SetFlags (TF_DISABLED);		//..then don't let it happen again
+if (Flagged (TF_ALTERNATE))
+	Type () = oppTrigTypes [Type ()];
 #if DBG
-if ((this - gameData.trigs.triggers.Buffer () == nDbgTrigger) && (nDbgType == m_info.nType))
+if ((this - gameData.trigs.triggers.Buffer () == nDbgTrigger) && (nDbgType == Type ()))
 	nDbgTrigger = nDbgTrigger;
-nDbgType = m_info.nType;
+nDbgType = Type ();
 #endif
 nDepth--;
 return 0;
@@ -1431,9 +1431,9 @@ bool CTrigger::IsDelayed (void)
 {
 if (!gameStates.app.bD2XLevel)
 	return 0;
-if ((m_info.nType == TT_COUNTDOWN) || (m_info.nType == TT_MESSAGE) || (m_info.nType == TT_SOUND))
+if ((Type () == TT_COUNTDOWN) || (Type () == TT_MESSAGE) || (Type () == TT_SOUND))
 	return 0;
-if ((abs (m_info.time [0]) < 100) || (abs (m_info.time [0]) > 900000))
+if ((abs (GetTime (0)) < 100) || (abs (GetTime (0)) > 900000))
 	return 0;
 return 1;
 }
@@ -1444,7 +1444,7 @@ int CTrigger::Delay (void)
 { 
 if (!IsDelayed ())
 	return -1;
-return gameData.time.xGame - m_info.tOperated < MSEC2X (m_info.time [1]);
+return gameData.time.xGame - m_info.tOperated < MSEC2X (GetTime (1));
 }
 
 //------------------------------------------------------------------------------
@@ -1453,11 +1453,11 @@ void CTrigger::Countdown (bool bObjTrigger)
 {
 if ((m_info.tOperated > 0) && !Delay ()) {
 	Operate (m_info.nObject, m_info.nPlayer, m_info.bShot, bObjTrigger);
-	if (m_info.flags & TF_PERMANENT)
+	if (Flagged (TF_PERMANENT))
 		m_info.tOperated = -1;
 	else {
-		m_info.time [0] = 0;
-		m_info.flags |= TF_DISABLED;
+		SetTime (0, 0);
+		SetFlags (TF_DISABLED);
 		}	
 	}
 }
@@ -1468,30 +1468,30 @@ if ((m_info.tOperated > 0) && !Delay ()) {
 
 void CTrigger::Read (CFile& cf, int bObjTrigger)
 {
-m_info.nType = cf.ReadByte ();
+Type () = cf.ReadByte ();
 if (bObjTrigger)
-	m_info.flags = cf.ReadShort ();
+	SetFlags (cf.ReadUShort ());
 else
-	m_info.flags = short (cf.ReadByte ());
+	SetFlags (ushort (cf.ReadByte ()));
 m_nLinks = (short) cf.ReadByte ();
 cf.ReadByte ();
-m_info.value = cf.ReadFix ();
+SetValue (cf.ReadFix ());
 #if 1
-if (m_info.nType == TT_MASTER) {	//patch master trigger value (which acts as semaphore)
+if (Type () == TT_MASTER) {	//patch master trigger value (which acts as semaphore)
 	if (bObjTrigger || (gameTopFileInfo.fileinfoVersion < 39))
-		m_info.value = 0;
-	else if (m_info.value > 0) {
-		m_info.value = X2I (m_info.value);
-		m_info.flags |= TF_DISABLED;
-		if (m_info.flags & TF_AUTOPLAY)
-			m_info.flags &= ~TF_PERMANENT;
+		SetValue (0);
+	else if (GetValue () > 0) {
+		SetValue (X2I (GetValue ()));
+		SetFlags (TF_DISABLED);
+		if (Flagged (TF_AUTOPLAY))
+			ClearFlags (TF_PERMANENT);
 		}
 	}
 #endif
-m_info.time [0] = cf.ReadFix ();
-if (bObjTrigger && (m_info.nType != TT_COUNTDOWN) && (m_info.nType != TT_MESSAGE) && (m_info.nType != TT_SOUND))
-	m_info.time [0] = -1;
-m_info.time [1] = -1;
+SetTime (0, cf.ReadFix ());
+if (bObjTrigger && (Type () != TT_COUNTDOWN) && (Type () != TT_MESSAGE) && (Type () != TT_SOUND))
+	SetTime (0, -1);
+SetTime (1, -1);
 CTriggerTargets::Read (cf);
 // remove invalid trigger targets
 m_info.nObject = -1;
@@ -1506,19 +1506,19 @@ void CTrigger::LoadState (CFile& cf, bool bObjTrigger)
 {
 if (saveGameManager.Version () > 50) 
 	m_info.nObject = cf.ReadShort ();
-m_info.nType = ubyte (cf.ReadByte ());
+Type () = ubyte (cf.ReadByte ());
 if ((saveGameManager.Version () >= 48) || (bObjTrigger && (saveGameManager.Version () >= 41)))
-	m_info.flags = cf.ReadShort ();
+	SetFlags (cf.ReadUShort ());
 else
-	m_info.flags = short (cf.ReadByte ());
+	SetFlags (ushort (cf.ReadByte ()));
 m_nLinks = (short) cf.ReadByte ();
-m_info.value = cf.ReadFix ();
+SetValue (cf.ReadFix ());
 #if 1
-if ((saveGameManager.Version () < 50) && (m_info.nType == TT_MASTER))	//patch master trigger value (which acts as semaphore)
-	m_info.value = 0;
+if ((saveGameManager.Version () < 50) && (Type () == TT_MASTER))	//patch master trigger value (which acts as semaphore)
+	SetValue (0);
 #endif
-m_info.time [0] = cf.ReadFix ();
-m_info.time [1] = -1;
+SetTime (0, cf.ReadFix ());
+SetTime (1, -1);
 CTriggerTargets::LoadState (cf);
 m_info.nChannel = -1;
 m_info.tOperated = (saveGameManager.Version () < 44) ? -1 : cf.ReadFix ();
@@ -1529,11 +1529,11 @@ m_info.tOperated = (saveGameManager.Version () < 44) ? -1 : cf.ReadFix ();
 void CTrigger::SaveState (CFile& cf, bool bObjTrigger)
 {
 cf.WriteShort (m_info.nObject);
-cf.WriteByte (sbyte (m_info.nType));
-cf.WriteShort (m_info.flags);
+cf.WriteByte (sbyte (Type ()));
+cf.WriteShort (Flags ());
 cf.WriteByte ((sbyte) m_nLinks);
-cf.WriteFix (m_info.value);
-cf.WriteFix (m_info.time [0]);
+cf.WriteFix (GetValue ());
+cf.WriteFix (GetTime (0));
 CTriggerTargets::SaveState (cf);
 cf.WriteFix (m_info.tOperated);
 }
@@ -1596,28 +1596,29 @@ for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
 #endif
 	if (!gameStates.app.bD2XLevel)
 		continue;
-	if (trigP->m_info.flags & TF_DISABLED)
+	if (trigP->Flagged (TF_DISABLED))
 		continue;
-	if ((trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.tOperated < 0) && (trigP->IsDelayed () || !(trigP->m_info.flags & TF_PERMANENT))) {
+	if (trigP->Flagged (TF_AUTOPLAY) && (trigP->m_info.tOperated < 0) && (trigP->IsDelayed () || !trigP->Flagged (TF_PERMANENT))) {
 		trigP->Operate (LOCALPLAYER.nObject, N_LOCALPLAYER, 0, false);
 		if (!trigP->IsDelayed ())
-			trigP->m_info.flags |= TF_DISABLED;
+			trigP->SetFlags (TF_DISABLED);
 		}
-	if ((trigP->m_info.nType == TT_SOUND) && 
-		 (trigP->m_info.flags & TF_PLAYING_SOUND) && 
-		 (trigP->m_info.time [1] > 0) &&
-		 (gameData.time.xGame - trigP->m_info.tOperated > trigP->m_info.time [1])) {
-		trigP->m_info.flags &= ~TF_PLAYING_SOUND;
-		trigP->m_info.flags |= TF_DISABLED; // sound has been played; make sure it doesn't get played again when laoading a save game that may subsequently be now
+	if ((trigP->Type () == TT_SOUND) && 
+		 (trigP->Flagged (TF_PLAYING_SOUND)) && 
+		 (trigP->GetTime (1) > 0) &&
+		 (gameData.time.xGame - trigP->m_info.tOperated > trigP->GetTime (1))) {
+		trigP->ClearFlags (TF_PLAYING_SOUND);
+		if ((trigP->Flagged (TF_FLY_THROUGH) ? !trigP->Flagged (TF_ONE_SHOT) : trigP->Flagged (TF_PERMANENT))) 
+			trigP->SetFlags (TF_DISABLED); // sound has been played; make sure it doesn't get played again when laoading a save game that may subsequently be now
 		}
 	trigP->Countdown (false);	
 	}
 
 trigP = OBJTRIGGERS.Buffer ();
 for (i = gameData.trigs.m_nObjTriggers; i > 0; i--, trigP++) {
-	if ((trigP->m_info.flags & TF_AUTOPLAY) && (trigP->m_info.nObject >= 0) && (trigP->m_info.tOperated < 0) && (!IsMultiGame || IAmGameHost ())) {
+	if (trigP->Flagged (TF_AUTOPLAY) && (trigP->m_info.nObject >= 0) && (trigP->m_info.tOperated < 0) && (!IsMultiGame || IAmGameHost ())) {
 		trigP->Operate (trigP->m_info.nObject, -1, 0, true);
-		trigP->m_info.flags |= TF_DISABLED;
+		trigP->SetFlags (TF_DISABLED);
 		}
 	trigP->Countdown (true);	
 	}
@@ -1630,7 +1631,7 @@ static void StartTriggeredSounds (CArray<CTrigger>& triggers)
 	CTrigger	*trigP = triggers.Buffer ();
 
 for (int i = triggers.Length (); i > 0; i--, trigP++)
-	if ((trigP->m_info.nType == TT_SOUND) && ((trigP->m_info.flags & (TF_PLAYING_SOUND | TF_DISABLED)) == TF_PLAYING_SOUND) && (trigP->m_info.nChannel < 0))
+	if ((trigP->Type () == TT_SOUND) && trigP->Flagged (TF_PLAYING_SOUND | TF_DISABLED, TF_PLAYING_SOUND) && (trigP->m_info.nChannel < 0))
 		trigP->DoPlaySound (-1);
 }
 
@@ -1828,7 +1829,7 @@ int OpenExits (void)
 	int		nExits = 0;
 
 for (int i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
-	if (trigP->m_info.nType == TT_EXIT) {
+	if (trigP->Type () == TT_EXIT) {
 		wallP = FindTriggerWall (i);
 		if (wallP) {
 			SEGMENTS [wallP->nSegment].ToggleWall (wallP->nSide);
@@ -1851,8 +1852,8 @@ if (gameData.segs.nLevelVersion > 20) {
 	int nLevelState = 0x7FFFFFFF;
 
 	for (int i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
-		if (trigP->m_info.nType == TT_EXIT) {
-			int l = (X2I (trigP->m_info.value) > 0) ? X2I (trigP->m_info.value) : missionManager.nCurrentLevel + 1;
+		if (trigP->Type () == TT_EXIT) {
+			int l = (X2I (trigP->GetValue ()) > 0) ? X2I (trigP->GetValue ()) : missionManager.nCurrentLevel + 1;
 			int s = missionManager.GetLevelState (l);
 			if ((s >= 0) && ((s < nLevelState) || ((s == nLevelState) && (l < nNextLevel)))) {
 				nLevelState = s;

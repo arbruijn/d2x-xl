@@ -68,15 +68,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //could also use flags for one-shots
 
-#define TF_NO_MESSAGE       1   // Don't show a message when triggered
-#define TF_ONE_SHOT         2   // Only CTrigger once
-#define TF_DISABLED         4   // Set after one-shot fires
-#define TF_PERMANENT			 8
+#define TF_NO_MESSAGE        1   // Don't show a message when triggered
+#define TF_ONE_SHOT          2   // Only trigger once
+#define TF_DISABLED          4   // Set after one-shot fires
+#define TF_PERMANENT			  8
 #define TF_ALTERNATE			 16
 #define TF_SET_ORIENT		 32
 #define TF_SILENT				 64
 #define TF_AUTOPLAY			128
-#define TF_PLAYING_SOUND	256  // only used internally
+#define TF_PLAYING_SOUND	256	// only used internally
+#define TF_FLY_THROUGH		512	// helper flag to quickly identify non-wall switch based triggers
 
 //old CTrigger structs
 
@@ -135,12 +136,12 @@ typedef struct tCompatibleTrigger {
 class __pack__ CTriggerInfo {
 	public:
 		ubyte		nType;   //what this CTrigger does
-		short		flags;   
-		short		flagsD1;
+		ushort	flags;   
+		ushort	flagsD1;
 		fix		value;
 		fix		time [2];
 
-		short		nSegment;
+		ushort	nSegment;
 		int		nChannel;
 		int		nObject;
 		int		nPlayer;
@@ -209,6 +210,21 @@ class CTrigger : public CTriggerTargets {
 		bool IsExit (void);
 		void LoadState (CFile& cf, bool bObjTrigger = false);
 		void SaveState (CFile& cf, bool bObjTrigger = false);
+
+		inline byte& Type (void) { return m_info.nType; }
+		inline ushort& Flags (void) { return m_info.flags; }
+		inline fix& Value (void) { return m_info.value; }
+		inline fix GetValue (void) { return m_info.value; }
+		inline void SetValue (fix value) { m_info.value = value; }
+		inline fix GetTime (int i) { return m_info.time [i]; }
+		inline fix SetTime (int i, fix time) { m_info.time [i] = time; }
+		inline ushort& Segment (void) { return m_info.nSegment; }
+		inline int& Player (void) { return m_info.nPlayer; }
+		inline int& Object (void) { return m_info.nObject; }
+		inline int& Channel (void) { return m_info.nChannel; }
+		inline bool Flagged (ushort mask, ushort match = 0) { return match ? (Flags () & mask) == match : (Flags () & mask) != 0; }
+		inline void SetFlags (ushort flags) { Flags () |= flags; }
+		inline void ClearFlags (ushort flags) { Flags () &= ~flags; }
 
 	private:
 		int WallIsForceField (void);
