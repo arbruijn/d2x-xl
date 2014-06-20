@@ -220,7 +220,7 @@ class CTrigger : public CTriggerTargets {
 		inline fix GetValue (void) { return m_info.value; }
 		inline void SetValue (fix value) { m_info.value = value; }
 		inline fix GetTime (int i) { return m_info.time [i]; }
-		inline fix SetTime (int i, fix time) { m_info.time [i] = time; }
+		inline void SetTime (int i, fix time) { m_info.time [i] = time; }
 		//inline ushort& Segment (void) { return m_info.nTeleportDest; }
 		inline int& Player (void) { return m_info.nPlayer; }
 		inline int& Object (void) { return m_info.nObject; }
