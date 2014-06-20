@@ -940,10 +940,11 @@ static void CheckAndFixWalls (void)
 for (i = 0; i < gameData.walls.nWalls; i++)
 	if (WALLS [i].nTrigger >= gameData.trigs.m_nTriggers) {
 #if TRACE
-		console.printf (CON_DBG,"Removing reference to invalid CTrigger %d from CWall %d\n",WALLS [i].nTrigger,i);
+		PrintLog (0, "Removing reference to invalid CTrigger %d from CWall %d\n", WALLS [i].nTrigger,i);
 #endif
 		WALLS [i].nTrigger = NO_TRIGGER;	//kill CTrigger
 		}
+
 if (gameTopFileInfo.fileinfoVersion < 17) {
 	CSegment* segP = SEGMENTS.Buffer ();
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++, segP++) {
@@ -954,6 +955,18 @@ if (gameTopFileInfo.fileinfoVersion < 17) {
 				}
 			}
 		}
+	}
+
+// mark all triggers on "open" segment sides (i.e. which are connected to an adjacent segment) as "fly through" 
+// to simplify internal trigger management
+for (i = 0; i < gameData.walls.nWalls; i++) {
+	ubyte nTrigger = WALLS [i].nTrigger;
+	if (nTrigger == NO_TRIGGER)
+		continue;
+	if (SEGMENTS [WALLS [i].nSegment].ChildId (WALLS [i].nSide) < 0)
+		TRIGGERS [nTrigger].ClearFlags (TF_FLY_THROUGH);
+	else
+		TRIGGERS [nTrigger].SetFlags (TF_FLY_THROUGH);
 	}
 }
 
