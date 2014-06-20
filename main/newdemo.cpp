@@ -2378,7 +2378,7 @@ while (!bDone) {
 			nSide = NDReadByte ();
 			NDReadVector (pnt);
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-				SEGMENTS [nSegment].CheckEffectBlowup (nSide, pnt, &dummy, 0);
+				SEGMENTS [nSegment].BlowupTexture (nSide, pnt, &dummy, 0);
 			}
 			break;
 

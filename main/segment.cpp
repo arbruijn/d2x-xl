@@ -1081,70 +1081,82 @@ if (IsMultiGame && !trigP->ClientOnly ())
 //	-----------------------------------------------------------------------------
 //if an effect is hit, and it can blow up, then blow it up
 //returns true if it blew up
-int CSegment::CheckEffectBlowup (int nSide, CFixVector& vHit, CObject* blowerP, int bForceBlowup)
+int CSegment::TextureIsDestructable (int nSide, tDestructableTextureProps* dtpP)
 {
-	int				tm, tmf, ec, nBitmap = 0;
-	int				bOkToBlow = 0, nSwitchType = -1;
+	tDestructableTextureProps	dtp;
+
+if (!dtpP)
+	dtpP = &dtp;
+dtpP->nOvlTex = m_sides [nSide].m_nOvlTex;
+if (!dtpP->nOvlTex)
+	return 0;
+dtpP->nOvlOrient = m_sides [nSide].m_nOvlOrient;	//nOvlTex flags
+dtpP->nEffect = gameData.pig.tex.tMapInfoP [dtpP->nOvlTex].nEffectClip;
+if (dtpP->nEffect < 0) {
+	if (IsMultiGame && netGame.m_info.bIndestructibleLights)
+		return 0;
+	dtpP->nBitmap = gameData.pig.tex.tMapInfoP [dtpP->nOvlTex].destroyed;
+	if (dtpP->nBitmap < 0)
+		return 0;
+	dtpP->nSwitchType = 0;
+	}
+else {
+	tEffectClip* ecP = gameData.effects.effectP + dtpP->nEffect;
+	if (ecP->flags & EF_ONE_SHOT)
+		return 0;
+	dtpP->nBitmap = ecP->nDestBm;
+	if (dtpP->nBitmap < 0)
+		return 0;
+	dtpP->nSwitchType = 1;
+	}
+return 1;
+}
+
+//	-----------------------------------------------------------------------------
+//if an effect is hit, and it can blow up, then blow it up
+//returns true if it blew up
+
+int CSegment::BlowupTexture (int nSide, CFixVector& vHit, CObject* blowerP, int bForceBlowup)
+{
+	tDestructableTextureProps	dtp;
 	short				nSound, bPermaTrigger;
 	ubyte				vc;
 	fix				u, v;
 	fix				xDestSize;
 	tEffectClip*	ecP = NULL;
-	CWall*			wallP;
+	CWall*			wallP = Wall (nSide);
 	CTrigger*		trigP;
 	CObject*			parentP = (!blowerP || (blowerP->cType.laserInfo.parent.nObject < 0)) ? NULL : OBJECTS + blowerP->cType.laserInfo.parent.nObject;
 	//	If this CWall has a CTrigger and the blowerP-upper is not the player or the buddy, abort!
 
 if (parentP) {
-	if ((parentP->info.nType == OBJ_ROBOT) && ROBOTINFO (parentP->info.nId).companion)
-		bOkToBlow = 1;
-	if (!(bOkToBlow || (parentP->info.nType == OBJ_PLAYER)) &&
-		 ((wallP = Wall (nSide)) && (wallP->nTrigger < gameData.trigs.m_nTriggers)))
+	// only the player and the guidebot may blow a texture up if a trigger is attached to it
+	if (parentP && (parentP->info.nType != OBJ_PLAYER) && ((parentP->info.nType != OBJ_ROBOT) || !ROBOTINFO (parentP->info.nId).companion) && wallP && (wallP->nTrigger < gameData.trigs.m_nTriggers))
 		return 0;
 	}
 
-if (!(tm = m_sides [nSide].m_nOvlTex))
+if (!TextureIsDestructable (nSide, &dtp))
 	return 0;
-
-tmf = m_sides [nSide].m_nOvlOrient;		//tm flags
-ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip;
-if (ec < 0) {
-	if (gameData.pig.tex.tMapInfoP [tm].destroyed == -1)
-		return 0;
-	nBitmap = -1;
-	nSwitchType = 0;
-	}
-else {
-	ecP = gameData.effects.effectP + ec;
-	if (ecP->flags & EF_ONE_SHOT)
-		return 0;
-	nBitmap = ecP->nDestBm;
-	if (nBitmap < 0)
-		return 0;
-	nSwitchType = 1;
-	}
 //check if it's an animation (monitor) or casts light
-LoadTexture (gameData.pig.tex.bmIndexP [tm].index, 0, gameStates.app.bD1Data);
+LoadTexture (gameData.pig.tex.bmIndexP [dtp.nOvlTex].index, 0, gameStates.app.bD1Data);
 //this can be blown up...did we hit it?
 if (!bForceBlowup) {
 	HitPointUV (nSide, &u, &v, NULL, vHit, 0);	//evil: always say face zero
-	bForceBlowup = !PixelTranspType (tm, tmf,  m_sides [nSide].m_nFrame, u, v);
+	bForceBlowup = !PixelTranspType (dtp.nOvlTex, dtp.nOvlOrient, m_sides [nSide].m_nFrame, u, v);
 	}
 if (!bForceBlowup)
 	return 0;
 
-if (IsMultiGame && netGame.m_info.bIndestructibleLights && !nSwitchType)
-	return 0;
 //note: this must get called before the texture changes,
 //because we use the light value of the texture to change
 //the static light in the CSegment
-wallP = Wall (nSide);
-bPermaTrigger = (trigP = Trigger (nSide)) && (trigP->m_info.flags & TF_PERMANENT);
+bPermaTrigger = (trigP = Trigger (nSide)) && trigP->Flagged (TF_PERMANENT);
 if (!bPermaTrigger)
 	SubtractLight (Index (), nSide);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordEffectBlowup (Index (), nSide, vHit);
-if (nSwitchType) {
+if (dtp.nSwitchType) {
+	ecP = gameData.effects.effectP + dtp.nEffect;
 	xDestSize = ecP->xDestSize;
 	vc = ecP->nDestVClip;
 	}
@@ -1152,14 +1164,15 @@ else {
 	xDestSize = I2X (20);
 	vc = 3;
 	}
+
 CreateExplosion (short (Index ()), vHit, xDestSize, vc);
-if (nSwitchType) {
+if (dtp.nSwitchType) {
 	if ((nSound = gameData.effects.vClipP [vc].nSound) != -1)
 		audio.CreateSegmentSound (nSound, Index (), 0, vHit);
 	if ((nSound = ecP->nSound) != -1)		//kill sound
 		audio.DestroySegmentSound (Index (), nSide, nSound);
-	if (!bPermaTrigger && (ecP->nDestEClip != -1) && (gameData.effects.effectP [ecP->nDestEClip].nSegment == -1)) {
-		tEffectClip	*newEcP = gameData.effects.effectP + ecP->nDestEClip;
+	if (!bPermaTrigger && (ecP->nDestroyedClip != -1) && (gameData.effects.effectP [ecP->nDestroyedClip].nSegment == -1)) {
+		tEffectClip	*newEcP = gameData.effects.effectP + ecP->nDestroyedClip;
 		int nNewBm = newEcP->changingWallTexture;
 		if (ChangeTextures (-1, nNewBm, nSide)) {
 			newEcP->xTimeLeft = EffectFrameTime (newEcP);
@@ -1175,14 +1188,13 @@ if (nSwitchType) {
 			}
 		}
 	else {
-		Assert ((nBitmap != 0) && (m_sides [nSide].m_nOvlTex != 0));
 		if (!bPermaTrigger)
-			m_sides [nSide].m_nOvlTex = nBitmap;		//replace with destoyed
+			m_sides [nSide].m_nOvlTex = dtp.nBitmap;		//replace with destoyed
 		}
 	}
 else {
 	if (!bPermaTrigger)
-		m_sides [nSide].m_nOvlTex = gameData.pig.tex.tMapInfoP [tm].destroyed;
+		m_sides [nSide].m_nOvlTex = gameData.pig.tex.tMapInfoP [dtp.nOvlTex].destroyed;
 	//assume this is a light, and play light sound
 	audio.CreateSegmentSound (SOUND_LIGHT_BLOWNUP, Index (), 0, vHit);
 	}

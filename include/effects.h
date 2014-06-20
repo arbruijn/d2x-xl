@@ -38,7 +38,7 @@ typedef struct tEffectClip {
 	int			nCritClip;			//use this clip instead of above one when mine critical
 	int			nDestBm;				//use this bitmap when monitor destroyed
 	int			nDestVClip;			//what tVideoClip to play when exploding
-	int			nDestEClip;			//what tEffectClip to play when exploding
+	int			nDestroyedClip;			//what tEffectClip to play when exploding
 	fix			xDestSize;			//3d size of explosion
 	int			nSound;				//what sound this makes
 	int			nSegment, nSide;	//what seg & CSide, for one-shot clips

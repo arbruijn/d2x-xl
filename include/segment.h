@@ -294,6 +294,16 @@ class CSide {
 
 //------------------------------------------------------------------------------
 
+typedef struct tDestructableTextureProps {
+	ushort			nOvlTex;
+	ushort			nOvlOrient;
+	int				nEffect;
+	int				nBitmap;
+	int				nSwitchType;
+} tDestructableTextureProps;
+
+//------------------------------------------------------------------------------
+
 class CSegment {
 	public:
 		CSide			m_sides [SEGMENT_SIDE_COUNT];       // 6 sides
@@ -351,7 +361,8 @@ class CSegment {
 		void ToggleWall (int nSide);
 		int ProcessWallHit (int nSide, fix damage, int nPlayer, CObject *objP);
 		int DoorIsBlocked (int nSide, bool bIgnoreMarker = false);
-		int CheckEffectBlowup (int nSide, CFixVector& vHit, CObject* blower, int bForceBlowup);
+		int TextureIsDestructable (int nSide, tDestructableTextureProps* dtpP = NULL);
+		int BlowupTexture (int nSide, CFixVector& vHit, CObject* blower, int bForceBlowup);
 		void CreateSound (short nSound, int nSide);
 
 		fix Refuel (fix xMaxFuel);

@@ -782,25 +782,6 @@ if (sideP && (gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_FORCE_F
 	return 1;	//bail here. physics code will bounce this CObject
 	}
 
-#if DBG
-if (gameStates.input.keys.pressed [KEY_LAPOSTRO])
-	if (cType.laserInfo.parent.nObject == LOCALPLAYER.nObject) {
-		//	MK: Real pain when you need to know a segP:CSide and you've got quad lasers.
-#if TRACE
-		console.printf (CON_DBG, "Your laser hit at CSegment = %i, CSide = %i \n", nHitSeg, nHitSide);
-#endif
-		//HUDInitMessage ("Hit at segment = %i, side = %i", nHitSeg, nHitSide);
-		if (info.nId < 4)
-			SubtractLight (nHitSeg, nHitSide);
-		else if (info.nId == FLARE_ID)
-			AddLight (nHitSeg, nHitSide);
-		}
-if (mType.physInfo.velocity.IsZero ()) {
-	Int3 ();	//	Contact Matt: This is impossible.  A this with 0 velocity hit a CWall, which doesn't move.
-	return 1;
-	}
-#endif
-int bBlewUp = (nHitSide < 0) ? 0 : segP->CheckEffectBlowup (nHitSide, vHitPt, this, 0);
 int bEscort = parentObjP->IsGuideBot ();
 if (bEscort) {
 	if (IsMultiGame) {
@@ -813,6 +794,8 @@ if (bEscort) {
 else {
 	nPlayer = parentObjP->IsPlayer () ? parentObjP->info.nId : -1;
 	}
+
+int bBlewUp = (nHitSide < 0) ? 0 : segP->BlowupTexture (nHitSide, vHitPt, this, 0);
 if (bBlewUp) {		//could be a wall switch - only player or guidebot can activate it
 	segP->OperateTrigger (nHitSide, parentObjP, 1);
 	}

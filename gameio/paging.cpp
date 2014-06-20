@@ -76,8 +76,8 @@ for (int i = gameData.effects.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) 
 			LoadTexture (gameData.pig.tex.bmIndexP [ecP->nDestBm].index, 0, gameStates.app.bD1Data);	//use this bitmap when monitor destroyed
 		if (ecP->nDestVClip >= 0)
 			LoadVClipTextures (&gameData.effects.vClipP [ecP->nDestVClip], gameStates.app.bD1Data);		  //what tVideoClip to play when exploding
-		if (ecP->nDestEClip >= 0)
-			LoadVClipTextures (&gameData.effects.effectP [ecP->nDestEClip].vClipInfo, gameStates.app.bD1Data); //what tEffectClip to play when exploding
+		if (ecP->nDestroyedClip >= 0)
+			LoadVClipTextures (&gameData.effects.effectP [ecP->nDestroyedClip].vClipInfo, gameStates.app.bD1Data); //what tEffectClip to play when exploding
 		if (ecP->nCritClip >= 0)
 			LoadVClipTextures (&gameData.effects.effectP [ecP->nCritClip].vClipInfo, gameStates.app.bD1Data); //what tEffectClip to play when mine critical
 		}
