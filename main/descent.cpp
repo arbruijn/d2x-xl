@@ -388,7 +388,7 @@ void PrintVersion (void)
 	FILE	*f;
 	char	fn [FILENAME_LEN];
 
-sprintf (fn, "%s%sd2x-xl-version.txt", gameFolders.game.szData [0], *gameFolders.game.szData [0] ? "/" : "");
+sprintf (fn, "%sd2x-xl-version.txt", gameFolders.game.szData [0]);
 if ((f = fopen (fn, "wa"))) {
 	fprintf (f, "%s\n", VERSION);
 	fclose (f);

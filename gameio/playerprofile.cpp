@@ -1990,7 +1990,7 @@ if (bAutoPlr) {
 callMenu:
 
 bStartup = 0;
-sprintf (filespec, "%s%s*.plr", gameFolders.user.szProfiles, *gameFolders.user.szProfiles ? "/" : "");
+sprintf (filespec, "%s*.plr", gameFolders.user.szProfiles);
 if (!fs.FileSelector (TXT_SELECT_PILOT, filespec, filename, bAllowAbort)) {
 	if (bAllowAbort) {
 		return 0;

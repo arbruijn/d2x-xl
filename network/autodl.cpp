@@ -327,9 +327,7 @@ int CDownloadManager::OpenFile (tClient& client, const char *pszExt)
 	char	szFile [FILENAME_LEN];
 	int	l = (int) strlen (gameFolders.missions.szRoot);
 
-sprintf (szFile, "%s%s%s%s", 
-			gameFolders.missions.szRoot, (l && (gameFolders.missions.szRoot[l-1] != '/')) ? "/" : "", 
-			netGame.m_info.szMissionName, pszExt);
+sprintf (szFile, "%s%s%s", gameFolders.missions.szRoot, netGame.m_info.szMissionName, pszExt);
 if (client.cf.File ())
 	client.cf.Close ();
 if (!client.cf.Open (szFile, "", "rb", 0))
@@ -510,7 +508,7 @@ switch (m_nState = m_data [0]) {
 			if (i == 2)
 				sprintf (szDest, "%s/%s%s", szFolder, szFile [0], szExt);
 			else
-				sprintf (szDest, "%s%s%s", gameFolders.missions.szDownloads, *gameFolders.missions.szRoot ? "/" : "", pszFile);
+				sprintf (szDest, "%s%s", gameFolders.missions.szDownloads, pszFile);
 			if (m_cf.Open (szDest, "", "wb", 0))
 				break;
 			}

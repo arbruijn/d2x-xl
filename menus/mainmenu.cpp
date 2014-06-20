@@ -316,7 +316,7 @@ else if (nChoice == m.IndexOf ("choose pilot"))
 else if (nChoice == m.IndexOf ("view demo")) {
 	char demoPath [FILENAME_LEN], demoFile [FILENAME_LEN];
 
-	sprintf (demoPath, "%s%s*.dem", gameFolders.user.szDemos, *gameFolders.user.szDemos ? "/" : ""); 
+	sprintf (demoPath, "%s*.dem", gameFolders.user.szDemos); 
 	if (fs.FileSelector (TXT_SELECT_DEMO, demoPath, demoFile, 1))
 		NDStartPlayback (demoFile);
 	}

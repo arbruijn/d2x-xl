@@ -3437,7 +3437,7 @@ int NDCountDemos (void)
 	int 	nFiles=0;
 	char	searchName [FILENAME_LEN];
 
-sprintf (searchName, "%s%s*.dem", gameFolders.user.szDemos, *gameFolders.user.szDemos ? "/" : "");
+sprintf (searchName, "%s*.dem", gameFolders.user.szDemos);
 if (!FFF (searchName, &ffs, 0)) {
 	do {
 		nFiles++;
@@ -3445,7 +3445,7 @@ if (!FFF (searchName, &ffs, 0)) {
 	FFC (&ffs);
 	}
 if (gameFolders.bAltHogDirInited) {
-	sprintf (searchName, "%s%s%s*.dem", gameFolders.game.szAltHogs, gameFolders.user.szDemos, gameFolders.user.szDemos ? "/" : "");
+	sprintf (searchName, "%s%s*.dem", gameFolders.game.szAltHogs, gameFolders.user.szDemos);
 	if (!FFF (searchName, &ffs, 0)) {
 		do {
 			nFiles++;
@@ -3479,7 +3479,7 @@ if (!filename) {
 		}
 	nRandFiles = RandShort () % nFiles;
 	nFiles = 0;
-	sprintf (searchName, "%s%s*.dem", gameFolders.user.szDemos, *gameFolders.user.szDemos ? "/" : "");
+	sprintf (searchName, "%s*.dem", gameFolders.user.szDemos);
 	if (!FFF (searchName, &ffs, 0)) {
 		do {
 			if (nFiles == nRandFiles) {
@@ -3491,7 +3491,7 @@ if (!filename) {
 		FFC (&ffs);
 		}
 	if (!filename && gameFolders.bAltHogDirInited) {
-		sprintf (searchName, "%s%s%s*.dem", gameFolders.game.szAltHogs, gameFolders.user.szDemos, gameFolders.user.szDemos ? "/" : "");
+		sprintf (searchName, "%s%s*.dem", gameFolders.game.szAltHogs, gameFolders.user.szDemos);
 		if (!FFF (searchName, &ffs, 0)) {
 			do {
 				if (nFiles==nRandFiles) {

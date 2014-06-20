@@ -575,27 +575,27 @@ m_info.nCurrent = nSong;
 if (nSong == SONG_TITLE) {
 	if (PlayCustomSong (gameFolders.mods.szMusic, const_cast<char*>("title"), bLoop))
 		return;
-	if (PlayCustomSong (gameFolders.game.szMusic [gameStates.app.bD1Mission], const_cast<char*>("title"), bLoop))
-		return;
 	if (PlayCustomSong (NULL, m_info.szIntroSong, bLoop))
+		return;
+	if (PlayCustomSong (gameFolders.game.szMusic [gameStates.app.bD1Mission], const_cast<char*>("title"), bLoop))
 		return;
 	m_info.bPlaying = redbook.PlayTrack (REDBOOK_TITLE_TRACK, 0);
 	}
 else if (nSong == SONG_CREDITS) {
 	if (PlayCustomSong (gameFolders.mods.szMusic, const_cast<char*>("credits"), bLoop))
 		return;
-	if (PlayCustomSong (gameFolders.game.szMusic [gameStates.app.bD1Mission], const_cast<char*>("credits"), bLoop))
-		return;
 	if (PlayCustomSong (NULL, m_info.szCreditsSong, bLoop))
+		return;
+	if (PlayCustomSong (gameFolders.game.szMusic [gameStates.app.bD1Mission], const_cast<char*>("credits"), bLoop))
 		return;
 	m_info.bPlaying = redbook.PlayTrack (REDBOOK_CREDITS_TRACK, 0);
 	}
 else if (nSong == SONG_BRIEFING) {
 	if (PlayCustomSong (gameFolders.mods.szMusic, const_cast<char*>("briefing"), bLoop))
 		return;
-	if (PlayCustomSong (gameFolders.game.szMusic [gameStates.app.bD1Mission], const_cast<char*>("briefing"), bLoop))
-		return;
 	if (PlayCustomSong (NULL, m_info.szBriefingSong, bLoop))
+		return;
+	if (PlayCustomSong (gameFolders.game.szMusic [gameStates.app.bD1Mission], const_cast<char*>("briefing"), bLoop))
 		return;
 	}
 if (!m_info.bPlaying) {		//not playing redbook, so play midi
@@ -660,7 +660,7 @@ if (bFromHog) {
 	if (*szFilename && cf.Extract (szFilename, gameFolders.game.szData [0], 0, szFilename)) {
 		char	szSong [FILENAME_LEN];
 
-		sprintf (szSong, "%s%s%s", gameFolders.var.szCache, *gameFolders.var.szCache ? "/" : "", szFilename);
+		sprintf (szSong, "%s%s", gameFolders.var.szCache, szFilename);
 		if (midi.PlaySong (szSong, NULL, NULL, 1, 0))
 			return;
 		}

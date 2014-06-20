@@ -603,12 +603,12 @@ else {
 	CFile		cf;
 	time_t	tBase, tShrunk;
 
-	sprintf (fn, "%s%s%s.tga", rootFolder, *rootFolder ? "/" : "", bmName);
+	sprintf (fn, "%s%s.tga", rootFolder, bmName);
 	tBase = cf.Date (fn, "", 0);
 	if (tBase < 0)
 		*fn = *fnShrunk = '\0';
 	else if (*cacheFolder && gameStates.app.bCacheTextures && (nShrinkFactor > 1)) {
-		sprintf (fnShrunk, "%s%s%d/%s.tga", cacheFolder, *cacheFolder ? "/" : "", 512 / nShrinkFactor, bmName);
+		sprintf (fnShrunk, "%s%d/%s.tga", cacheFolder, 512 / nShrinkFactor, bmName);
 		tShrunk = cf.Date (fnShrunk, "", 0);
 		if (tShrunk < tBase)
 			*fnShrunk = '\0';
