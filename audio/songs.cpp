@@ -456,14 +456,17 @@ redbook.Stop ();			// Stop CD, if playing
 
 //------------------------------------------------------------------------------
 
-int CSongManager::PlayModSong (char pszSong[], int bLoop)
+int CSongManager::PlayCustomSong (char* pszFolder, char* pszSong, int bLoop)
 {
 	char	szFilename [FILENAME_LEN];
 
-if (!*gameFolders.game.szMusic)
-	return false;
-sprintf (szFilename, "%s%s.ogg", gameFolders.game.szMusic, pszSong);
-return midi.PlaySong (szFilename, NULL, NULL, bLoop, 0);
+if (pszFolder && *pszFolder) {
+	sprintf (szFilename, "%s%s.ogg", pszFolder, pszSong);
+	pszSong = szFilename;
+	}
+else if (!*pszSong)
+	return m_info.bPlaying = 0;
+return m_info.bPlaying = midi.PlaySong (pszSong, NULL, NULL, bLoop, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -481,23 +484,29 @@ WaitForSoundThread ();
 //do we want any of these to be redbook songs?
 m_info.nCurrent = nSong;
 if (nSong == SONG_TITLE) {
-	if (PlayModSong (const_cast<char*>("title"), bLoop))
+	if (PlayCustomSong (gameFolders.mods.szMusic, const_cast<char*>("title"), bLoop))
 		return;
-	if (*m_custom.szIntroSong && midi.PlaySong (m_custom.szIntroSong, NULL, NULL, bLoop, 0))
+	if (PlayCustomSong (gameFolders.game.szMusic [gameStates.app.bD1Mission], const_cast<char*>("title"), bLoop))
+		return;
+	if (PlayCustomSong (NULL, m_custom.szIntroSong, bLoop))
 		return;
 	m_info.bPlaying = redbook.PlayTrack (REDBOOK_TITLE_TRACK, 0);
 	}
 else if (nSong == SONG_CREDITS) {
-	if (PlayModSong (const_cast<char*>("credits"), bLoop))
+	if (PlayCustomSong (gameFolders.mods.szMusic, const_cast<char*>("credits"), bLoop))
 		return;
-	if (*m_custom.szCreditsSong && midi.PlaySong (m_custom.szCreditsSong, NULL, NULL, bLoop, 0))
+	if (PlayCustomSong (gameFolders.game.szMusic [gameStates.app.bD1Mission], const_cast<char*>("credits"), bLoop))
+		return;
+	if (PlayCustomSong (NULL, m_custom.szCreditsSong, bLoop))
 		return;
 	m_info.bPlaying = redbook.PlayTrack (REDBOOK_CREDITS_TRACK, 0);
 	}
 else if (nSong == SONG_BRIEFING) {
-	if (PlayModSong (const_cast<char*>("briefing"), bLoop))
+	if (PlayCustomSong (gameFolders.mods.szMusic, const_cast<char*>("briefing"), bLoop))
 		return;
-	if (*m_custom.szBriefingSong && midi.PlaySong (m_custom.szBriefingSong, NULL, NULL, bLoop, 0))
+	if (PlayCustomSong (gameFolders.game.szMusic [gameStates.app.bD1Mission], const_cast<char*>("briefing"), bLoop))
+		return;
+	if (PlayCustomSong (NULL, m_custom.szBriefingSong, bLoop))
 		return;
 	}
 if (!m_info.bPlaying) {		//not playing redbook, so play midi
@@ -513,6 +522,28 @@ if (!m_info.bPlaying) {		//not playing redbook, so play midi
 void CSongManager::PlayCurrent (int bLoop)
 {
 songManager.Play (m_info.nCurrent, bLoop);
+}
+
+//------------------------------------------------------------------------------
+
+int CSongManager::PlayCustomLevelSong (char* pszFolder, int bMod, int nLevel, int nSong)
+{
+	char	szFilename [FILENAME_LEN];
+	int	bSecret = nLevel < 0;
+
+if (m_custom.SongCount (bMod, bSecret) &&
+	 midi.PlaySong (m_custom.levelSongs [bMod][bSecret][m_custom.SongIndex (bMod, bSecret, nSong)], NULL, NULL, 1, 0))
+	return 1;
+// try a standard song name derived from the level name next
+if (*pszFolder) {
+	if (bSecret)
+		sprintf (szFilename, "%sslevel%02d.ogg", pszFolder, -nLevel);
+	else
+		sprintf (szFilename, "%slevel%02d.ogg", pszFolder, nLevel);
+	if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
+		return 1;
+	}
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -551,26 +582,9 @@ if (bFromHog) {
 		}
 	}
 
-int bSecret = (nLevel < 0);
-// try the missions mod music folder next
-if (*gameFolders.game.szMusic) {
-	if (bSecret)
-		sprintf (szFilename, "%sslevel%02d.ogg", gameFolders.game.szMusic, -nLevel);
-	else
-		sprintf (szFilename, "%slevel%02d.ogg", gameFolders.game.szMusic, nLevel);
-	if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
-		return;
-	if (m_custom.SongCount (1, bSecret)) {
-		sprintf (szFilename, "%s%s", gameFolders.game.szMusic, m_custom.levelSongs [1][bSecret][m_custom.SongIndex (1, bSecret, nSong)]);
-		if (midi.PlaySong (szFilename, NULL, NULL, 1, 0))
-			return;
-		}
-	}
-
-// try the standard music
-if (m_custom.levelSongs [0][bSecret].Buffer () &&
-	 m_custom.SongCount (0, bSecret) && 
-	 midi.PlaySong (m_custom.levelSongs [0][bSecret][nSong % m_custom.SongCount (0, bSecret)], NULL, NULL, 1, 0))
+if (PlayCustomLevelSong (gameFolders.mods.szMusic, 1, nLevel, nSong))
+	return;
+if (PlayCustomLevelSong (gameFolders.game.szMusic [gameStates.app.bD1Mission], 0, nLevel, nSong))
 	return;
 
 if (redbook.Enabled () && rba.Enabled () && (nTracks = rba.GetNumberOfTracks ()) > 1)	//try to play redbook
@@ -639,7 +653,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 				l = (int) strlen (szSong) + 1;
 				CFile::SplitPath (szSong, szSongFolder, NULL, NULL);
 				if (bMod)
-					strcpy (szSongFolder, gameFolders.game.szMusic);
+					strcpy (szSongFolder, gameFolders.mods.szMusic);
 				if (!*szSongFolder)
 					l += (int) strlen (szListFolder);
 				if (!(pszSong = new char [l - bSecret])) {

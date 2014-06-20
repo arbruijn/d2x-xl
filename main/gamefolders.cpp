@@ -89,6 +89,8 @@
 #	define	MISSIONSTATE_FOLDER		"States"
 #	define	MOD_FOLDER					"Mods"
 #	define	MUSIC_FOLDER				"Music"
+#	define	MUSIC_FOLDER_D2			"D2"
+#	define	MUSIC_FOLDER_D1			"D1"
 #	define	DOWNLOAD_FOLDER			"Downloads"
 
 #	define	SHARED_ROOT_FOLDER		"~/Library/Caches"
@@ -116,6 +118,8 @@
 #	define	WALLPAPER_FOLDER			"wallpapers"
 #	define	MOD_FOLDER					"mods"
 #	define	MUSIC_FOLDER				"music"
+#	define	MUSIC_FOLDER_D2			"d2"
+#	define	MUSIC_FOLDER_D1			"d1"
 #	define	DOWNLOAD_FOLDER			"downloads"
 #	define	LIGHTMAP_FOLDER			"lightmaps"
 #	define	LIGHTDATA_FOLDER			"lights"
@@ -417,6 +421,10 @@ GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szMovies, MOVIE_FOLDER, 
 if (GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.ase"))
 	GetAppFolder (gameFolders.game.szRoot, gameFolders.game.szModels, MODEL_FOLDER, "*.oof");
 
+MakeFolder (gameFolders.game.szSounds [0], gameFolders.game.szRoot, MUSIC_FOLDER);
+MakeFolder (gameFolders.game.szMusic [0], gameFolders.game.szSounds [0], MUSIC_FOLDER_D2);
+MakeFolder (gameFolders.game.szMusic [1], gameFolders.game.szSounds [0], MUSIC_FOLDER_D1);
+
 MakeFolder (gameFolders.game.szSounds [0], gameFolders.game.szRoot, SOUND_FOLDER);
 MakeFolder (gameFolders.game.szSounds [3], gameFolders.game.szSounds [0], SOUND_FOLDER_D2); // temp usage
 MakeFolder (gameFolders.game.szSounds [1], gameFolders.game.szSounds [3], SOUND_FOLDER_22KHZ);
@@ -558,7 +566,7 @@ void ResetModFolders (void)
 gameStates.app.bHaveMod = 0;
 *gameFolders.mods.szName =
 *gameFolders.mods.szCache =
-*gameFolders.game.szMusic =
+*gameFolders.mods.szMusic =
 *gameFolders.mods.szSounds [0] =
 *gameFolders.mods.szSounds [1] =
 *gameFolders.mods.szCurrent =
@@ -663,8 +671,8 @@ else {
 			sprintf (gameOpts->menus.altBg.szName [1], "default.tga");
 		backgroundManager.Rebuild ();
 		}
-	if (GetAppFolder (gameFolders.mods.szCurrent, gameFolders.game.szMusic, MUSIC_FOLDER, "*.ogg"))
-		*gameFolders.game.szMusic = '\0';
+	if (GetAppFolder (gameFolders.mods.szCurrent, gameFolders.mods.szMusic, MUSIC_FOLDER, "*.ogg"))
+		*gameFolders.mods.szMusic = '\0';
 	MakeTexSubFolders (gameFolders.var.szTextures [3]);
 	MakeTexSubFolders (gameFolders.var.szModels [1]);
 	gameStates.app.bHaveMod = 1;

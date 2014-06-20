@@ -140,7 +140,7 @@ typedef struct tStaticFolders {
 	char	szTextures [3][FILENAME_LEN];
 	char	szModels [FILENAME_LEN];
 	char	szSounds [5][FILENAME_LEN];
-	char	szMusic [FILENAME_LEN];
+	char	szMusic [2][FILENAME_LEN];
 	char	szMovies [FILENAME_LEN];
 	char	szShaders [FILENAME_LEN];
 	char	szAltHogs [FILENAME_LEN];
@@ -178,6 +178,7 @@ typedef struct tModFolders {
 	char	szSounds [2][FILENAME_LEN];
 	char	szModels [2][FILENAME_LEN];
 	char	szWallpapers [FILENAME_LEN];
+	char	szMusic [FILENAME_LEN];
 	char	szLevel [FILENAME_LEN];
 	} tModFolders;
 
