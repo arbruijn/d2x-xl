@@ -234,7 +234,7 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 	if (nConnSide != -1) {
 		//	They are connected via nConnSide in CSegment objP->info.nSegment.
 		//	See if they are unobstructed.
-		if (!(SEGMENTS [objP->info.nSegment].IsDoorWay (nConnSide, NULL) & WID_PASSABLE_FLAG)) {
+		if (!(SEGMENTS [objP->info.nSegment].IsPassable (nConnSide, NULL) & WID_PASSABLE_FLAG)) {
 			//	Can't fly through, so don't let this bot fire through!
 			return;
 			}

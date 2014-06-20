@@ -253,7 +253,7 @@ void CSegment::LoadSideTextures (int nSide)
 if ((Index () == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	BRP;
 #endif
-if (!(IsDoorWay (nSide, NULL) & WID_VISIBLE_FLAG))
+if (!(IsPassable (nSide, NULL) & WID_VISIBLE_FLAG))
 	return;
 m_sides [nSide].LoadTextures ();
 }

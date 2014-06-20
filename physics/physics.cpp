@@ -930,7 +930,7 @@ if (info.controlType == CT_AI) {
 	if (((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && (info.nSegment != simData.nStartSeg) && (gameStates.app.cheats.bPhysics != 0xBADA55)) {
 		int nSide = SEGMENTS [info.nSegment].ConnectedSide (SEGMENTS + simData.nStartSeg);
 		if (nSide != -1) {
-			if (!(SEGMENTS [simData.nStartSeg].IsDoorWay (nSide, (info.nType == OBJ_PLAYER) ? this : NULL) & WID_PASSABLE_FLAG)) {
+			if (!(SEGMENTS [simData.nStartSeg].IsPassable (nSide, (info.nType == OBJ_PLAYER) ? this : NULL) & WID_PASSABLE_FLAG)) {
 				//bump object back
 				CSide* sideP = SEGMENTS [simData.nStartSeg].m_sides + nSide;
 				if (simData.nStartSeg == -1)
@@ -1835,7 +1835,7 @@ else {
 			 (gameStates.app.cheats.bPhysics != 0xBADA55)) {
 			int nSide = SEGMENTS [info.nSegment].ConnectedSide (SEGMENTS + simData.nStartSeg);
 			if (nSide != -1) {
-				if (!(SEGMENTS [simData.nStartSeg].IsDoorWay (nSide, (info.nType == OBJ_PLAYER) ? this : NULL) & WID_PASSABLE_FLAG)) {
+				if (!(SEGMENTS [simData.nStartSeg].IsPassable (nSide, (info.nType == OBJ_PLAYER) ? this : NULL) & WID_PASSABLE_FLAG)) {
 					//bump object back
 					CSide* sideP = SEGMENTS [simData.nStartSeg].m_sides + nSide;
 					if (simData.nStartSeg == -1)

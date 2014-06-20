@@ -730,7 +730,7 @@ for (int nSide = 0; nSide < 6; nSide++) {
 	if (0 > nSegment)
 		continue;
 	CWall* wallP = segP->Wall (nSide);
-	if (wallP && (wallP->IsDoorWay (NULL) & (WID_TRANSPARENT_WALL | WID_SOLID_WALL)))
+	if (wallP && (wallP->IsPassable (NULL) & (WID_TRANSPARENT_WALL | WID_SOLID_WALL)))
 		continue;
 	for (i = 0; i < gameData.collisions.nSegsVisited && (nSegment != gameData.collisions.segsVisited [i]); i++)
 		;
@@ -823,7 +823,7 @@ return dMin;
 static inline int PassThrough (short nObject, short nSegment, short nSide, short nFace, int flags, CFixVector& vHitPoint)
 {
 CSegment* segP = SEGMENTS + nSegment;
-int widResult = segP->IsDoorWay (nSide, (nObject < 0) ? NULL : OBJECTS + nObject);
+int widResult = segP->IsPassable (nSide, (nObject < 0) ? NULL : OBJECTS + nObject);
 
 if (widResult & WID_PASSABLE_FLAG) // check whether side can be passed through
 	return 1; 
@@ -1277,7 +1277,7 @@ for (;;) {
 				return 1; // any segment acceptable
 			if (nStartSeg == nDestSeg)
 				return 1; // point is in desired segment
-			if ((nChildSeg == nDestSeg) && !((wallP = sideP->Wall ()) && !(wallP->IsVolatile () || wallP->IsDoorWay (NULL, false) & WID_TRANSPARENT_FLAG)))
+			if ((nChildSeg == nDestSeg) && !((wallP = sideP->Wall ()) && !(wallP->IsVolatile () || wallP->IsPassable (NULL, false) & WID_TRANSPARENT_FLAG)))
 				return 1; // point at border to destination segment and the portal to that segment is passable
 			nFace = nFaceCount; // no eligible child segment, so try next segment side
 			break; 
@@ -1286,7 +1286,7 @@ for (;;) {
 			continue; // line doesn't intersect with this side
 		if (0 > nChildSeg) // solid wall
 			continue;
-		if ((wallP = sideP->Wall ()) && !(wallP->IsVolatile () || wallP->IsDoorWay (NULL, false) & WID_TRANSPARENT_FLAG)) // impassable
+		if ((wallP = sideP->Wall ()) && !(wallP->IsVolatile () || wallP->IsPassable (NULL, false) & WID_TRANSPARENT_FLAG)) // impassable
 			continue;
 		if (PointSeesPoint (p0, p1, nChildSeg, nDestSeg, nDepth + 1, nThread))
 			return 1;

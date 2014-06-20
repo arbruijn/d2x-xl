@@ -749,7 +749,7 @@ for (int i = 0, j = 1; nRadius; nRadius--) {
 		CSegment* segP = SEGMENTS + nSegment;
 		for (int nChild = 0; nChild < SEGMENT_SIDE_COUNT; nChild++) {
 			int nChildSeg = segP->m_children [nChild];
-			if ((nChildSeg >= 0) && (visitedP [nChildSeg] != nVisited) && (segP->IsDoorWay (nChild, NULL) & WID_TRANSPARENT_FLAG)) {
+			if ((nChildSeg >= 0) && (visitedP [nChildSeg] != nVisited) && (segP->IsPassable (nChild, NULL) & WID_TRANSPARENT_FLAG)) {
 				segListP [j++] = nChildSeg;
 				visitedP [nChildSeg] = nVisited;
 				}

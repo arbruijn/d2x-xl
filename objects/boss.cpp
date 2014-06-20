@@ -104,7 +104,7 @@ while (tail != head) {
 	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 		childSeg = segP->m_children [nSide];
 		if (!bOneWallHack) {
-			w = segP->IsDoorWay (nSide, NULL);
+			w = segP->IsPassable (nSide, NULL);
 			if (!(w & WID_PASSABLE_FLAG))
 				continue;
 			}

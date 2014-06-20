@@ -148,7 +148,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 				short nSide = segP->ConnectedSide (SEGMENTS + nDestSeg);
 				if (0 > nSide)
 					continue;
-				if (!((segP->IsDoorWay (nSide, NULL) & WID_PASSABLE_FLAG) || (AIDoorIsOpenable (objP, segP, nSide))))
+				if (!((segP->IsPassable (nSide, NULL) & WID_PASSABLE_FLAG) || (AIDoorIsOpenable (objP, segP, nSide))))
 					continue;
 
 				CHitResult hitResult;
@@ -417,7 +417,7 @@ if (bMoveToCenter) {
 	}
 else {
 	for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
-		if (segP->IsDoorWay ((short) i, objP) & WID_PASSABLE_FLAG) {
+		if (segP->IsPassable ((short) i, objP) & WID_PASSABLE_FLAG) {
 			vSegCenter = SEGMENTS [segP->m_children [i]].Center ();
 			objP->info.position.vPos = vSegCenter;
 			if (ObjectIntersectsWall (objP))

@@ -436,7 +436,7 @@ return -1;
 
 #if 1
 
-int CSegment::IsDoorWay (int nSide, CObject *objP, bool bIgnoreDoors)
+int CSegment::IsPassable (int nSide, CObject *objP, bool bIgnoreDoors)
 {
 	int	nChildSeg = m_children [nSide];
 
@@ -457,7 +457,7 @@ if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 #endif
 
 if (!objP) 
-	return wallP ? wallP->IsDoorWay (NULL, bIgnoreDoors) : WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG;
+	return wallP ? wallP->IsPassable (NULL, bIgnoreDoors) : WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG;
 
 ubyte nChildType = SEGMENTS [nChildSeg].m_function;
 if (SEGMENTS [nChildSeg].HasBlockedProp ()) {
@@ -472,15 +472,15 @@ else if ((m_function == SEGMENT_FUNC_SPEEDBOOST) && (nChildType != SEGMENT_FUNC_
 		CTrigger* trigP = wallP->Trigger ();
 		if (!trigP || (trigP->m_info.nType != TT_SPEEDBOOST))
 			return WID_VISIBLE_FLAG;
-		return wallP->IsDoorWay (objP, bIgnoreDoors);
+		return wallP->IsPassable (objP, bIgnoreDoors);
 		}
 	}
-return wallP ? wallP->IsDoorWay (objP, bIgnoreDoors) : WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG;
+return wallP ? wallP->IsPassable (objP, bIgnoreDoors) : WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG;
 }
 
 #else
 
-int CSegment::IsDoorWay (int nSide, CObject *objP, bool bIgnoreDoors)
+int CSegment::IsPassable (int nSide, CObject *objP, bool bIgnoreDoors)
 {
 	int	nChild = m_children [nSide];
 
@@ -506,12 +506,12 @@ if ((objP == gameData.objs.consoleP) &&
 if (childP->HasBlockedProp ())
 	return (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_POWERUP)))
 			 ? WID_VISIBLE_FLAG
-			 : wallP ? wallP->IsDoorWay (objP, bIgnoreDoors) : WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG;
+			 : wallP ? wallP->IsPassable (objP, bIgnoreDoors) : WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG;
 
 if (!wallP)
 	return WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG;
 
-return wallP->IsDoorWay (objP, bIgnoreDoors);
+return wallP->IsPassable (objP, bIgnoreDoors);
 }
 
 #endif

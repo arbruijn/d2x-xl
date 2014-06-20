@@ -135,13 +135,15 @@ typedef struct tCompatibleTrigger {
 
 class __pack__ CTriggerInfo {
 	public:
+		ushort	nWall;
+
 		ubyte		nType;   //what this CTrigger does
 		ushort	flags;   
 		ushort	flagsD1;
 		fix		value;
 		fix		time [2];
 
-		ushort	nSegment;
+		ushort	nTeleportDest;
 		int		nChannel;
 		int		nObject;
 		int		nPlayer;
@@ -208,6 +210,7 @@ class CTrigger : public CTriggerTargets {
 		int Delay (void);
 		bool IsDelayed (void);
 		bool IsExit (void);
+		bool IsFlyThrough (void);
 		void LoadState (CFile& cf, bool bObjTrigger = false);
 		void SaveState (CFile& cf, bool bObjTrigger = false);
 
@@ -218,7 +221,7 @@ class CTrigger : public CTriggerTargets {
 		inline void SetValue (fix value) { m_info.value = value; }
 		inline fix GetTime (int i) { return m_info.time [i]; }
 		inline fix SetTime (int i, fix time) { m_info.time [i] = time; }
-		inline ushort& Segment (void) { return m_info.nSegment; }
+		//inline ushort& Segment (void) { return m_info.nTeleportDest; }
 		inline int& Player (void) { return m_info.nPlayer; }
 		inline int& Object (void) { return m_info.nObject; }
 		inline int& Channel (void) { return m_info.nChannel; }

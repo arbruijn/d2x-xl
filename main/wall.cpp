@@ -173,7 +173,7 @@ return NULL;
 //		WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory wall
 //		WID_NO_WALL					5	//	1/0/1		no wall, can fly through
 
-int CWall::IsDoorWay (CObject *objP, bool bIgnoreDoors)
+int CWall::IsPassable (CObject *objP, bool bIgnoreDoors)
 {
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -234,9 +234,9 @@ return WID_SOLID_WALL; // There are children behind the door.
 
 //------------------------------------------------------------------------------
 
-bool CWall::IsSolid (void)
+bool CWall::IsSolid (bool bIgnoreDoors)
 {
-return (IsDoorWay (NULL, false) & (WID_TRANSPARENT_WALL | WID_SOLID_WALL)) != 0;
+return (IsPassable (NULL, bIgnoreDoors) & (WID_TRANSPARENT_WALL | WID_SOLID_WALL)) != 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1036,7 +1036,7 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 	short nSegment = segP->m_children [i];
 
-	if ((nSegment != -1) && !visited [nSegment] && (segP->IsDoorWay (i, NULL) & WID_PASSABLE_FLAG)) {
+	if ((nSegment != -1) && !visited [nSegment] && (segP->IsPassable (i, NULL) & WID_PASSABLE_FLAG)) {
 		visited [nSegment] = 1;
 		BngProcessSegment (objP, damage, &SEGMENTS [nSegment], depth, visited);
 		}

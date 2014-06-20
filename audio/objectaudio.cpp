@@ -1038,7 +1038,7 @@ gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameOpts->sound.bUseD1S
 static int SideIsSoundSource (short nSegment, short nSide)
 {
 CSegment* segP = &SEGMENTS [nSegment];
-if (!(segP->IsDoorWay (nSide, NULL) & WID_VISIBLE_FLAG))
+if (!(segP->IsPassable (nSide, NULL) & WID_VISIBLE_FLAG))
 	return -1;
 short nOvlTex = segP->m_sides [nSide].m_nOvlTex;
 short nEffect = nOvlTex ? gameData.pig.tex.tMapInfoP [nOvlTex].nEffectClip : -1;
@@ -1057,7 +1057,7 @@ short nConnSeg = segP->m_children [nSide];
 //CSegment.
 
 if (IS_CHILD (nConnSeg) && (nConnSeg < nSegment) &&
-	 (segP->IsDoorWay (nSide, NULL) & (WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG))) {
+	 (segP->IsPassable (nSide, NULL) & (WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG))) {
 	CSegment* connSegP = SEGMENTS + segP->m_children [nSide];
 	short nConnSide = segP->ConnectedSide (connSegP);
 	if (connSegP->m_sides [nConnSide].m_nOvlTex == segP->m_sides [nSide].m_nOvlTex)

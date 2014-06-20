@@ -1420,7 +1420,7 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 				break;
 			case WALL_CLOSED:
 				// Make bGrates draw properly
-				if (segP->IsDoorWay (nSide, NULL) & WID_TRANSPARENT_FLAG)
+				if (segP->IsPassable (nSide, NULL) & WID_TRANSPARENT_FLAG)
 					bIsGrate = 1;
 				else
 					bHidden = 1;

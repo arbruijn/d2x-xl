@@ -483,7 +483,7 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 				for (nSide = 0, sideFlag = 1; nSide < SEGMENT_SIDE_COUNT; nSide++, sideFlag <<= 1) {
 					if (!(mask.m_side & sideFlag))
 						continue;
-					if (newSegP->IsDoorWay (nSide, NULL) & WID_PASSABLE_FLAG) {	//can explosion migrate through
+					if (newSegP->IsPassable (nSide, NULL) & WID_PASSABLE_FLAG) {	//can explosion migrate through
 						nChild = newSegP->m_children [nSide];
 						if (gameData.render.mine.Visible (nChild, nThread)) {
 							nNewSeg = nChild;	// only migrate to segment in render list
@@ -786,7 +786,7 @@ for (l = 0; l < nRenderDepth; l++) {
 			nChildSeg = segP->m_children [nChild];
 			if (nChildSeg < 0)
 				continue;
-			if (!(segP->IsDoorWay (nChild, NULL, bIgnoreDoors) & WID_TRANSPARENT_FLAG))
+			if (!(segP->IsPassable (nChild, NULL, bIgnoreDoors) & WID_TRANSPARENT_FLAG))
 				continue;
 #if DBG
 			if (nChildSeg == nDbgSeg)

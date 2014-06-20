@@ -211,12 +211,12 @@ class CWall {
 		void Init (void);
 		void Read (CFile& cf);
 		void LoadTextures (void);
-		int IsDoorWay (CObject* objP, bool bIgnoreDoors = false);
+		int IsPassable (CObject* objP, bool bIgnoreDoors = false);
 		bool IsOpenableDoor (void);
 		int IsTriggerTarget (int i = 0);
 		bool IsVolatile (void);
 		bool IsInvisible (void);
-		bool IsSolid (void);
+		bool IsSolid (bool bIgnoreDoors = false);
 		CActiveDoor* OpenDoor (void);
 		CActiveDoor* CloseDoor (bool bForce = false);
 		CCloakingWall* StartCloak (void);

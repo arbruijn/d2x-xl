@@ -810,7 +810,7 @@ for (l = gameData.render.lights.flicker.Length (); l; l--, flP++) {
 	//make sure this is actually a light
 	nSegment = flP->m_nSegment;
 	nSide = flP->m_nSide;
-	if (!(SEGMENTS [nSegment].IsDoorWay (nSide, NULL) & WID_VISIBLE_FLAG)) {
+	if (!(SEGMENTS [nSegment].IsPassable (nSide, NULL) & WID_VISIBLE_FLAG)) {
 		flP->m_timer = (fix) 0x80000000;		//disabled
 		continue;
 		}
@@ -920,7 +920,7 @@ if (i == nChangedSegs) {
 
 if (nCallDepth < 2)
 	for (nSide=0; nSide<6; nSide++) {
-		if (segP->IsDoorWay (nSide, NULL) & WID_TRANSPARENT_FLAG)
+		if (segP->IsPassable (nSide, NULL) & WID_TRANSPARENT_FLAG)
 			ApplyLightToSegment (&SEGMENTS [segP->m_children [nSide]], vSegCenter, xBrightness, nCallDepth+1);
 		}
 }
@@ -934,7 +934,7 @@ void ChangeSegmentLight (short nSegment, short nSide, int dir)
 {
 	CSegment *segP = SEGMENTS + nSegment;
 
-if (segP->IsDoorWay (nSide, NULL) & WID_VISIBLE_FLAG) {
+if (segP->IsPassable (nSide, NULL) & WID_VISIBLE_FLAG) {
 	CSide	*sideP = segP->m_sides+nSide;
 	fix	xBrightness;
 	xBrightness = gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].lighting + gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].lighting;

@@ -395,7 +395,7 @@ return 0;
 // --
 // -- 	nSide = (rand () * 6) >> 15;
 // --
-// -- 	while (!(segP->IsDoorWay (nSide) & WID_PASSABLE_FLAG))
+// -- 	while (!(segP->IsPassable (nSide) & WID_PASSABLE_FLAG))
 // -- 		nSide = (rand () * 6) >> 15;
 // --
 // -- 	nSegment = segP->m_children [nSide];

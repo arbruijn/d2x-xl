@@ -157,11 +157,11 @@ for (short nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	if (m_nDir) {
 		CSegment* otherSegP = SEGMENTS + nSuccSeg;
 		short nOtherSide = SEGMENTS [nPredSeg].ConnectedSide (otherSegP);
-		if ((nOtherSide == -1) || !(otherSegP->IsDoorWay (nOtherSide, NULL) & scanInfo.m_widFlag))
+		if ((nOtherSide == -1) || !(otherSegP->IsPassable (nOtherSide, NULL) & scanInfo.m_widFlag))
 			continue;
 		}
 	else {
-		if (!(segP->IsDoorWay (nSide, NULL) & scanInfo.m_widFlag))
+		if (!(segP->IsPassable (nSide, NULL) & scanInfo.m_widFlag))
 			continue;
 		}
 
@@ -271,7 +271,7 @@ if (m_nDestSeg >= 0) {
 	// adjacent segments?
 	if (m_cacheType >= 0) {
 		short nSide = SEGMENTS [m_nStartSeg].ConnectedSide (SEGMENTS + m_nDestSeg);
-		if ((nSide != -1) && (SEGMENTS [m_nDestSeg].IsDoorWay (nSide, NULL) & m_widFlag)) {
+		if ((nSide != -1) && (SEGMENTS [m_nDestSeg].IsPassable (nSide, NULL) & m_widFlag)) {
 			m_cache [m_cacheType].SetPathLength (1);
 			return CFixVector::Dist (m_p0, m_p1);
 			}
@@ -522,7 +522,7 @@ for (;;) {
 		BRP;
 #endif
 	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
-		if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & m_widFlag)) {
+		if ((segP->m_children [nSide] >= 0) && (segP->IsPassable (nSide, NULL) & m_widFlag)) {
 #if DBG
 			if (segP->m_children [nSide] == nDbgSeg)
 				BRP;
@@ -566,7 +566,7 @@ if (m_heap [!nDir].Popped (nSegment))
 	return nSegment;
 CSegment* segP = SEGMENTS + nSegment;
 for (short nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
-	if ((segP->m_children [nSide] >= 0) && (segP->IsDoorWay (nSide, NULL) & m_widFlag)) {
+	if ((segP->m_children [nSide] >= 0) && (segP->IsPassable (nSide, NULL) & m_widFlag)) {
 		uint nNewDist = nDist + ushort (segP->m_childDists [1][nSide]);
 		if (nNewDist < uint (m_maxDist))
 			m_heap [nDir].Push (segP->m_children [nSide], nSegment, nSide, nNewDist);

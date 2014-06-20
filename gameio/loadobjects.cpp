@@ -963,10 +963,7 @@ for (i = 0; i < gameData.walls.nWalls; i++) {
 	ubyte nTrigger = WALLS [i].nTrigger;
 	if (nTrigger == NO_TRIGGER)
 		continue;
-	if (SEGMENTS [WALLS [i].nSegment].ChildId (WALLS [i].nSide) < 0)
-		TRIGGERS [nTrigger].ClearFlags (TF_FLY_THROUGH);
-	else
-		TRIGGERS [nTrigger].SetFlags (TF_FLY_THROUGH);
+	TRIGGERS [nTrigger].m_info.nWall = i;
 	}
 }
 

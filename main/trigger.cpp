@@ -232,8 +232,8 @@ if (m_nLinks) {
 	else {
 		do {
 			nSegment = m_segments [RandShort () % m_nLinks];
-			} while (nSegment == m_info.nSegment);
-		m_info.nSegment = nSegment;
+			} while (nSegment == m_info.nTeleportDest);
+		m_info.nTeleportDest = nSegment;
 		}
 	if (objP->info.nSegment != nSegment) {
 		objP->info.nSegment = nSegment;
@@ -1463,6 +1463,13 @@ if ((m_info.tOperated > 0) && !Delay ()) {
 }
 
 //------------------------------------------------------------------------------
+
+bool CTrigger::IsFlyThrough (void)
+{
+return !WALLS [m_info.nWall].IsSolid (true);
+}
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -1608,7 +1615,7 @@ for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
 		 (trigP->GetTime (1) > 0) &&
 		 (gameData.time.xGame - trigP->m_info.tOperated > trigP->GetTime (1))) {
 		trigP->ClearFlags (TF_PLAYING_SOUND);
-		if ((trigP->Flagged (TF_FLY_THROUGH) ? !trigP->Flagged (TF_ONE_SHOT) : trigP->Flagged (TF_PERMANENT))) 
+		if ((trigP->IsFlyThrough () ? !trigP->Flagged (TF_ONE_SHOT) : trigP->Flagged (TF_PERMANENT))) 
 			trigP->SetFlags (TF_DISABLED); // sound has been played; make sure it doesn't get played again when laoading a save game that may subsequently be now
 		}
 	trigP->Countdown (false);	

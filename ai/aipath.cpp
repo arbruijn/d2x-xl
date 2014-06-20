@@ -320,7 +320,7 @@ while (nCurSeg != nEndSeg) {
 		hSide = bRandom ? randomXlate [nSide] : nSide;
 		if (!IS_CHILD (segP->m_children [hSide]))
 			continue;
-		if (!((segP->IsDoorWay (hSide, NULL) & WID_PASSABLE_FLAG) ||
+		if (!((segP->IsPassable (hSide, NULL) & WID_PASSABLE_FLAG) ||
 			  (AIDoorIsOpenable (objP, segP, hSide))))
 			continue;
 		nDestSeg = segP->m_children [hSide];

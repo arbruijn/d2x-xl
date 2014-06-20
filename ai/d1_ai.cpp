@@ -1268,7 +1268,7 @@ void move_object_to_legal_spot(CObject *objP)
 	CSegment*	segP = SEGMENTS + objP->info.nSegment;
 
 	for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
-		if (segP->IsDoorWay (i, objP) & WID_PASSABLE_FLAG) {
+		if (segP->IsPassable (i, objP) & WID_PASSABLE_FLAG) {
 			CFixVector	vSegCenter, goal_dir;
 
 			vSegCenter = SEGMENTS [segP->m_children [i]].Center ();
@@ -1379,7 +1379,7 @@ int get_random_child(int nSegment)
 {
 CSegment	*segP = SEGMENTS + nSegment;
 int sidenum = (RandShort () * 6) >> 15;
-while (!(segP->IsDoorWay (sidenum, NULL) & WID_PASSABLE_FLAG))
+while (!(segP->IsPassable (sidenum, NULL) & WID_PASSABLE_FLAG))
 	sidenum = (RandShort () * 6) >> 15;
 return segP->m_children [sidenum];
 }
