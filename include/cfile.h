@@ -178,6 +178,7 @@ typedef struct tModFolders {
 	char	szSounds [2][FILENAME_LEN];
 	char	szModels [2][FILENAME_LEN];
 	char	szWallpapers [FILENAME_LEN];
+	char	szLevel [FILENAME_LEN];
 	} tModFolders;
 
 typedef struct tMissionFolders {
@@ -195,7 +196,6 @@ typedef struct tGameFolders {
 	tStaticFolders		game;
 	tSharedFolders		var;
 	tPrivateFolders	user;
-	char szUser [FILENAME_LEN];
 #if defined (__unix__) || defined (__macosx__)
 	char szSharePath [FILENAME_LEN];
 #endif
@@ -207,7 +207,9 @@ char *GameDataFilename (char *pszFilename, const char *pszExt, int nLevel, int n
 int MakeTexSubFolders (char* pszParentFolder);
 void MakeModFolders (const char* pszMission, int nLevel = 0);
 void ResetModFolders (void);
+char* LevelFolder (int nLevel);
 char* FlipBackslash (char* pszFile);
+char* FlipSlash (char* pszFile);
 char* AppendSlash (char* pszFile);
 
 #ifdef _WIN32

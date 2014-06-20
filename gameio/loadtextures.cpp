@@ -671,13 +671,8 @@ for (int i = 0; i < 2; i++) {
 		}
 #endif
 	if (*gameFolders.mods.szTextures [0]) {
-		char szLevelFolder [FILENAME_LEN];
-		if (missionManager.nCurrentLevel < 0)
-			sprintf (szLevelFolder, "slevel%02d", -missionManager.nCurrentLevel);
-		else
-			sprintf (szLevelFolder, "level%02d", missionManager.nCurrentLevel);
-		sprintf (gameFolders.mods.szTextures [1], "%s%s", gameFolders.mods.szTextures [0], szLevelFolder);
-		sprintf (gameFolders.var.szTextures [4], "%s%s", gameFolders.var.szTextures [3], szLevelFolder); // e.g. /var/cache/d2x-xl/mods/mymod/textures/level01
+		sprintf (gameFolders.mods.szTextures [1], "%s%s", gameFolders.mods.szTextures [0], LevelFolder (missionManager.nCurrentLevel));
+		sprintf (gameFolders.var.szTextures [4], "%s%s", gameFolders.var.szTextures [3], gameFolders.mods.szLevel); // e.g. /var/cache/d2x-xl/mods/mymod/textures/level01
 		}
 	else
 		*gameFolders.mods.szTextures [1] =

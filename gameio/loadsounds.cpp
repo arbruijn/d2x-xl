@@ -411,10 +411,7 @@ if (bCustom) {
 	if (!(bUseLowRes = cf.Exist (pszFile, pszFolder, 0) != 0)) {
 		pszFile = DefaultSoundFile ();
 		pszFolder = gameFolders.game.szData [0];
-		if (missionManager.nCurrentLevel < 0)
-			sprintf (gameFolders.mods.szSounds [1], "%sslevel%02d", gameFolders.mods.szSounds [0], -missionManager.nCurrentLevel);
-		else
-			sprintf (gameFolders.mods.szSounds [1], "%slevel%02d", gameFolders.mods.szSounds [0], missionManager.nCurrentLevel);
+		sprintf (gameFolders.mods.szSounds [1], "%s%s", gameFolders.mods.szSounds [0], LevelFolder (missionManager.nCurrentLevel));
 		}
 	}
 else {
@@ -477,12 +474,8 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data) {
 	SetDataVersion (1);
 	SetD1Sound ();
 	if ((gameData.pig.sound.nType != 1) || gameStates.app.bCustomSounds || bCustom) {
-		if (bCustom) {
-			if (missionManager.nCurrentLevel < 0)
-				sprintf (gameFolders.mods.szSounds [1], "%sslevel%02d", gameFolders.mods.szSounds [0], -missionManager.nCurrentLevel);
-			else
-				sprintf (gameFolders.mods.szSounds [1], "%slevel%02d", gameFolders.mods.szSounds [0], missionManager.nCurrentLevel);
-			}
+		if (bCustom)
+			sprintf (gameFolders.mods.szSounds [1], "%s%s", gameFolders.mods.szSounds [0], LevelFolder (missionManager.nCurrentLevel));
 		int nLoadedSounds = SetupSounds (cfPiggy [1], nSounds, nBmHdrOffs + nBitmaps * PIGBITMAPHEADER_D1_SIZE, bCustom, false);
 		if (!VerifyHiresSound (bCustom, nLoadedSounds))
 			return LoadD1Sounds (bCustom);

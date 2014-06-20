@@ -672,3 +672,14 @@ else {
 }
 
 // ----------------------------------------------------------------------------
+
+char* LevelFolder (int nLevel)
+{
+if (nLevel < 0)
+	sprintf (gameFolders.mods.szLevel, "slevel%02d/", -nLevel);
+else
+	sprintf (gameFolders.mods.szLevel, "level%02d/", nLevel);
+return gameFolders.mods.szLevel;
+}
+
+// ----------------------------------------------------------------------------

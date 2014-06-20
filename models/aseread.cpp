@@ -901,6 +901,8 @@ if (!*gameFolders.var.szModels [m_bCustom])
 strcpy (szBin, szFilename);
 strcpy (strrchr (szBin, '.'), ".bin");
 
+if (m_bCustom == 2)
+	CFile::MkDir (gameFolders.var.szModels [m_bCustom]);
 if (!cf.Open (szBin, gameFolders.var.szModels [m_bCustom], "wb", 0))
 	return 0;
 cf.WriteInt (MODEL_DATA_VERSION);
