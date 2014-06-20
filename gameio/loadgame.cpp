@@ -1752,7 +1752,7 @@ int PrepareLevel (int nLevel, bool bLoadTextures, bool bSecret, bool bRestore, b
 	int funcRes;
 
 gameStates.multi.bTryAutoDL = 1;
-songManager.LoadModPlaylist (gameFolders.mods.szMusic, "playlist.txt");
+songManager.LoadModPlaylist ();
 
 reloadLevel:
 
