@@ -670,7 +670,6 @@ PrintLog (-1);
 /*---*/PrintLog (1, "stopping sounds\n");
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
 audio.StopAllChannels ();
-songManager.DestroyPlaylists ();
 PrintLog (-1);
 
 /*---*/PrintLog (1, "reconfiguring audio\n");
@@ -963,8 +962,6 @@ int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
 	CPlayerInfo	savePlayer;
 	int			nRooms, bRetry = 0, nLoadRes, nCurrentLevel = missionManager.nCurrentLevel;
 
-	static char szDefaultPlayList [] = "playlist.txt";
-
 strlwr (pszLevelName = LevelName (nLevel));
 /*---*/PrintLog (1, "loading level '%s'\n", pszLevelName);
 CleanupBeforeGame (nLevel, bRestore);
@@ -973,8 +970,6 @@ gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMiss
 MakeModFolders (hogFileManager.MissionName (), nLevel);
 if (!(gameStates.app.bHaveMod || missionManager.IsBuiltIn (hogFileManager.MissionName ())))
 	 MakeModFolders (gameStates.app.bD1Mission ? "Descent: First Strike" : "Descent 2: Counterstrike!", nLevel);
-if (gameStates.app.bHaveMod)
-	songManager.LoadPlaylist (szDefaultPlayList, 1);
 songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
 lightManager.SetMethod ();
 #if 1
@@ -1757,6 +1752,7 @@ int PrepareLevel (int nLevel, bool bLoadTextures, bool bSecret, bool bRestore, b
 	int funcRes;
 
 gameStates.multi.bTryAutoDL = 1;
+songManager.LoadModPlaylist (gameFolders.mods.szMusic, "playlist.txt");
 
 reloadLevel:
 

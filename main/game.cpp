@@ -530,6 +530,7 @@ void CleanupAfterGame (bool bHaveLevel)
 ProfilerSetStatus (0);
 #endif
 DestroyEffectsThread ();
+songManager.DestroyPlaylists ();
 gameData.time.xGameTotal = (SDL_GetTicks () - gameData.time.xGameStart) / 1000;
 gameStates.render.bRenderIndirect = 0;
 G3EndFrame (transformation, 0);

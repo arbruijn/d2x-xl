@@ -157,18 +157,8 @@ if (gameOpts->sound.bUseSDLMixer) {
 
 	if (bCustom) {
 		pfnSong = pszSong;
-		if (strstr (pszSong, ".mp3") && !songManager.MP3 ()) {
-			audio.Shutdown ();
-			songManager.SetMP3 (1);
-			audio.Setup (1);
-			}
 		}
 	else {
-		if (!strstr (pszSong, ".mp3") && songManager.MP3 ()) {
-			audio.Shutdown ();
-			songManager.SetMP3 (0);
-			audio.Setup (1);
-			}
 #if defined (_WIN32)
 		sprintf (fnSong, "%sd2x-temp.mid", *gameFolders.var.szCache ? gameFolders.var.szCache : gameFolders.user.szCache);
 #else

@@ -242,7 +242,7 @@ void EvalMusicArgs (void)
 if ((t = FindArg ("-nomusic")))
 	gameStates.sound.audio.bNoMusic = NumArg (t, 0) == 0;
 if ((t = FindArg ("-playlist")) && (p = appConfig [t+1]))
-	songManager.LoadPlaylist (p);
+	songManager.LoadUserPlaylist (NULL, p);
 if ((t = FindArg ("-introsong")) && (p = appConfig [t+1]))
 	strncpy (songManager.IntroSong (), p, FILENAME_LEN);
 if ((t = FindArg ("-briefingsong")) && (p = appConfig [t+1]))
