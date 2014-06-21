@@ -214,7 +214,7 @@ class CTrigger : public CTriggerTargets {
 		void LoadState (CFile& cf, bool bObjTrigger = false);
 		void SaveState (CFile& cf, bool bObjTrigger = false);
 
-		inline byte& Type (void) { return m_info.nType; }
+		inline ubyte& Type (void) { return m_info.nType; }
 		inline ushort& Flags (void) { return m_info.flags; }
 		inline fix& Value (void) { return m_info.value; }
 		inline fix GetValue (void) { return m_info.value; }
