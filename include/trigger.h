@@ -133,7 +133,7 @@ typedef struct tCompatibleTrigger {
 	short   side [MAX_TRIGGER_TARGETS];
 } __pack__ tCompatibleTrigger;
 
-class __pack__ CTriggerInfo {
+class CTriggerInfo {
 	public:
 		ushort	nWall;
 
