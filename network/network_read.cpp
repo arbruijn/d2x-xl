@@ -538,7 +538,7 @@ return !gameStates.app.bHaveExtraGameInfo [1] && (nRemoteObj - nLocalObjs > 10) 
 int NetworkVerifyPlayers (void)
 {
 	int				i, j, t, bCoop = IsCoopGame;
-	int				nPlayers, nPlayerObjs [MAX_PLAYERS], bHaveReactor = !bCoop;
+	int				nPlayers, nPlayerObjs [MAX_PLAYERS];
 	CObject*			objP;
 	CPlayerData*	playerP;
 
@@ -547,7 +547,6 @@ for (j = 0, playerP = gameData.multiplayer.players; j < MAX_PLAYERS; j++, player
 #if 0
 if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 #endif
-//	bHaveReactor = 1;	// multiplayer maps do not need a control center ...
 nPlayers = 0;
 FORALL_OBJS (objP, i) {
 	i = objP->Index ();
@@ -568,14 +567,14 @@ FORALL_OBJS (objP, i) {
 		if (bCoop)
 			nPlayers++;
 		}
+#if 0
 	else if (bCoop) {
-		if ((t == OBJ_REACTOR) || ((t == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).bossFlag))
-			bHaveReactor = 1;
 		}
+#endif
 	if (nPlayers > gameData.multiplayer.nMaxPlayers)
 		return 1;
 	}
-return 0; //!bHaveReactor;
+return 0;
 }
 
 //------------------------------------------------------------------------------
