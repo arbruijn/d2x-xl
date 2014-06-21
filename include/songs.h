@@ -64,23 +64,24 @@ extern CRedbook redbook;
 
 class CPlaylist {
 	public:
-		CArray<char*>		levelSongs [2];
-		CArray<int>			songIndex [2];
+		CArray<char*>		m_levelSongs;
+		CArray<int>			m_songIndex;
+		short					m_nSongs [2];
 
 	public:
-		int SongCount (int bSecret);
+		int SongCount (void);
 		void ShuffleSongs (void);
 		void SortSongs (void);
 		void AlignSongs (void);
-		int SongIndex (int nSong, int bSecret);
+		int SongIndex (int nLevel);
 		int LoadPlaylist (char* pszFolder, char *pszPlaylist = "playlist.txt");
 		void DestroyPlaylist (int* nSongs = NULL);
-		inline char* LevelSong (int nSong, int bSecret) { return levelSongs [bSecret][SongIndex (bSecret, nSong)]; }
-		int PlayLevelSong (int nSong, int bSecret, int bD1 = 0);
+		char* LevelSong (int nLevel);
+		int PlayLevelSong (int nSong, int bD1 = 0);
 
 	private:
-		void Shuffle (int bSecret);
-		void Sort (int bSecret);
+		void Shuffle (void);
+		void Sort (void);
 	};
 
 class CSongData {
@@ -132,7 +133,7 @@ class CSongManager {
 		void StopAll (void);
 		int PlayCustomSong (char* pszFolder, char* pszSong, int bLoop);
 		void Play (int nSong, int repeat);
-		int PlayCustomLevelSong (char* pszFolder, int nLevel, int nSong);
+		int PlayCustomLevelSong (char* pszFolder, int nLevel);
 		void PlayLevelSong (int nLevel, int bFromHog, bool bWaitForThread = true);
 		void PlayCurrent (int repeat = 0);
 		void Prev (void);
