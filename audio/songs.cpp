@@ -288,14 +288,14 @@ return m_levelSongs.Length ();
 
 //------------------------------------------------------------------------------
 
-void CPlaylist::Shuffle (void)
+void CPlaylist::ShuffleSongs (void)
 {
 ShuffleIntegers (m_songIndex.Buffer (), m_songIndex.Length ());
 }
 
 //------------------------------------------------------------------------------
 
-void CPlaylist::Sort (void)
+void CPlaylist::SortSongs (void)
 {
 SortIntegers (m_songIndex.Buffer (), m_songIndex.Length ());
 }
@@ -649,7 +649,7 @@ StopAll ();
 if (bWaitForThread)
 	WaitForSoundThread ();
 m_info.nLevel = nLevel;
-nSong = (nLevel > 0) ? nLevel : -nLevel - 1;
+nSong = (nLevel < 0) ? -nLevel - 1 : nLevel;
 m_info.nCurrent = nSong;
 if (!rba.Enabled () && redbook.Enabled () && gameOpts->sound.bUseRedbook)
 	redbook.ReInit ();
@@ -724,7 +724,7 @@ int CSongManager::LoadUserPlaylist (char *pszPlaylist) {
 }
 
 int CSongManager::LoadModPlaylist (void) { 
-	return m_mod.LoadPlaylist (gameFolders.mods.szMusic); 
+	return *gameFolders.mods.szMusic ? m_mod.LoadPlaylist (gameFolders.mods.szMusic) : 0; 
 }
 
 //------------------------------------------------------------------------------

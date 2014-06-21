@@ -306,8 +306,11 @@ if (gameConfig.nMidiVolume < 1)
 else if (!bSongPlaying)
 	songManager.PlayCurrent (1);
 audio.SetMaxChannels (32 << (gameStates.sound.nSoundChannels - 2));
-if (bShuffleMusic != gameOpts->sound.bShuffleMusic)
+if (bShuffleMusic != gameOpts->sound.bShuffleMusic) {
 	songManager.AlignSongs ();
+	if (gameStates.app.bGameRunning)
+		songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
+	}
 }
 
 //------------------------------------------------------------------------------

@@ -78,10 +78,6 @@ class CPlaylist {
 		void DestroyPlaylist (int* nSongs = NULL);
 		char* LevelSong (int nLevel);
 		int PlayLevelSong (int nSong, int bD1 = 0);
-
-	private:
-		void Shuffle (void);
-		void Sort (void);
 	};
 
 class CSongData {
