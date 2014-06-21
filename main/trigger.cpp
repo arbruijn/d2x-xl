@@ -1119,6 +1119,8 @@ if (this - gameData.trigs.triggers.Buffer () == nDbgTrigger)
 	BRP;
 if (bObjTrigger)
 	BRP;
+else
+	BRP;
 #endif
 
 if (Flagged (TF_DISABLED))
@@ -1475,6 +1477,7 @@ return !WALLS [m_info.nWall].IsSolid (true);
 
 void CTrigger::Read (CFile& cf, int bObjTrigger)
 {
+m_info.Clear ();
 Type () = cf.ReadByte ();
 if (bObjTrigger)
 	SetFlags (cf.ReadUShort ());
@@ -1511,9 +1514,16 @@ m_info.tOperated = -1;
 
 void CTrigger::LoadState (CFile& cf, bool bObjTrigger)
 {
+m_info.Clear ();
 if (saveGameManager.Version () > 50) 
 	m_info.nObject = cf.ReadShort ();
 Type () = ubyte (cf.ReadByte ());
+#if DBG
+if (bObjTrigger)
+	BRP;
+else
+	BRP;
+#endif
 if ((saveGameManager.Version () >= 48) || (bObjTrigger && (saveGameManager.Version () >= 41)))
 	SetFlags (cf.ReadUShort ());
 else

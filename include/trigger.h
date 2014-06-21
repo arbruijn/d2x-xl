@@ -149,6 +149,9 @@ class CTriggerInfo {
 		int		nPlayer;
 		int		bShot;
 		fix		tOperated;
+
+	public:
+		inline void Clear (void) { memset (this, 0, sizeof (*this)); }
 	};
 
 class CTriggerTargets {
