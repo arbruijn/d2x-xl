@@ -76,7 +76,7 @@ class CPlaylist {
 		int SongIndex (int nLevel);
 		int LoadPlaylist (char* pszFolder, char *pszPlaylist = "playlist.txt");
 		void DestroyPlaylist (int* nSongs = NULL);
-		char* LevelSong (int nLevel);
+		const char* LevelSong (int nLevel);
 		int PlayLevelSong (int nSong, int bD1 = 0);
 	};
 

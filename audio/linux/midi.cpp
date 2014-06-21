@@ -87,7 +87,7 @@ if (!gameOpts->sound.bUseSDLMixer)
 
 //------------------------------------------------------------------------------
 
-int DigiPlayMidiSong (char *pszSong, char *melodic_bank, char *drum_bank, int loop, int bD1Song)
+int DigiPlayMidiSong (const char *pszSong, char *melodic_bank, char *drum_bank, int loop, int bD1Song)
 {
 	int	bCustom;
 #if 0
@@ -100,7 +100,7 @@ if (!(pszSong && *pszSong))
 	return 0;
 if (midiVolume < 1)
 	return 0;
-bCustom = ((strstr (pszSong, ".mp3") != NULL) || (strstr (pszSong, ".ogg") != NULL) || strstr (pszSong, ".flac"));
+bCustom = ((strstr (pszSong, ".ogg") != NULL) || strstr (pszSong, ".flac"));
 if (!(bCustom || (hmp = hmp_open (pszSong, bD1Song))))
 	return 0;
 #if USE_SDL_MIXER

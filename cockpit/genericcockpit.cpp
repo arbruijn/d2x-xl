@@ -172,7 +172,6 @@ if ((gameStates.render.cockpit.nType >= CM_FULL_SCREEN) && (gameStates.zoom.nFac
 	float		nZoomSave;
 
 	static int bOverlapDirty [2] = {0, 0};
-	static int y, x;
 
 if (!viewerP) {								//this nUser is done
 	Assert (nUser == WBU_WEAPON || nUser == WBU_STATIC);
@@ -232,6 +231,8 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 	OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height ());
 	glLineWidth (1);
 #if 0
+	static int y, x;
+
 	int smallWindowBottom, bigWindowBottom, extraPartHeight;
 
 	//if the window only partially overlaps the big 3d window, copy

@@ -275,7 +275,7 @@ if ((gameData.demo.nState == ND_STATE_PLAYBACK) || (gameData.demo.nState == ND_S
 		char message [128];
 		int h, w, aw;
 
-		sprintf (message, TXT_DEMO_RECORDING);
+		strcpy (message, TXT_DEMO_RECORDING);
 		SetFontColor (RGBA_PAL2 (27, 0, 0));
 		fontManager.Current ()->StringSize (message, w, h, aw);
 		DrawHUDText (NULL, (CCanvas::Current ()->Width () - w) / 2, -y - h - 2, message);
@@ -602,7 +602,7 @@ for (t = szBombCount; *t; t++)
 m_history [0].bombCount = (nBombType == PROXMINE_INDEX) ? nBombs : -nBombs;
 //ClearBombCount (bgColor);
 if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
-	fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
+	fontManager.SetScale ((float) floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 nIdBombCount = DrawBombCount (nIdBombCount, x, y, nBombs ? (nBombType == PROXMINE_INDEX) ? RED_RGBA : GOLD_RGBA : GREEN_RGBA, szBombCount);
 fontManager.SetScale (1.0f);
 }
@@ -853,7 +853,7 @@ for (x = hudWindowAreas [h].left; x < hudWindowAreas [h].right; x += bmp->Width 
 void CGenericCockpit::DrawWeapons (void)
 {
 if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
-	fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
+	fontManager.SetScale ((float) floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 
 if (m_info.weaponBoxUser [0] == WBU_WEAPON) {
 	if (DrawWeaponDisplay (0, gameData.weapons.nPrimary) && (m_info.weaponBoxStates [0] == WS_SET)) {
@@ -1267,7 +1267,7 @@ if (ShowTextGauges ()) {
 	dmgColor.index = -1;
 	dmgColor.rgb = 1;
 
-	fontManager.SetScale (Max (1.0f, floor (FRound (fScale))));
+	fontManager.SetScale (Max (1.0f, (float) floor (FRound (fScale))));
 	for (i = 0; i < 3; i++) {
 		nDamage [i] = (int) FRound (X2F (m_info.nDamage [i]) * 200.0f);
 #if 1

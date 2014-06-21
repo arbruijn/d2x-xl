@@ -122,7 +122,7 @@ if (gameStates.sound.bMidiFix && (songManager.Playing () <= 0)) {
 
 //------------------------------------------------------------------------------
 
-int CMidi::PlaySong (char* pszSong, char* melodicBank, char* drumBank, int bLoop, int bD1Song)
+int CMidi::PlaySong (const char* pszSong, char* melodicBank, char* drumBank, int bLoop, int bD1Song)
 {
 if (gameStates.sound.audio.bNoMusic)
 	return 0;
@@ -141,7 +141,7 @@ if (m_nVolume < 1) {
 	return 0;
 	}
 
-bCustom = ((strstr (pszSong, ".mp3") != NULL) || (strstr (pszSong, ".ogg") != NULL) || strstr (pszSong, ".flac"));
+bCustom = ((strstr (pszSong, ".ogg") != NULL) || strstr (pszSong, ".flac"));
 if (bCustom) {
 	if (audio.Format () != AUDIO_S16SYS) {
 		audio.Shutdown ();
@@ -153,7 +153,8 @@ else if (!(m_hmp = hmp_open (pszSong, bD1Song)))
 
 #	if USE_SDL_MIXER
 if (gameOpts->sound.bUseSDLMixer) {
-	char	fnSong [FILENAME_LEN], *pfnSong;
+	char			fnSong [FILENAME_LEN];
+	const char*	pfnSong;
 
 	if (bCustom) {
 		pfnSong = pszSong;

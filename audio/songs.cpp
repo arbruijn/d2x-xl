@@ -326,7 +326,7 @@ return m_nSongs [1] ? m_songIndex [l - (-nLevel - 1) % m_nSongs [1] - 1] : -1;
 
 //------------------------------------------------------------------------------
 
-char* CPlaylist::LevelSong (int nLevel) 
+const char* CPlaylist::LevelSong (int nLevel)
 { 
 int i = SongIndex (nLevel);
 return (i < 0) ? "" : m_levelSongs [i]; 
@@ -668,7 +668,6 @@ if (bFromHog) {
 		}
 	}
 
-int bSecret = nLevel < 0;
 if (m_mod.PlayLevelSong (nLevel))
 	return;
 if (PlayCustomLevelSong (gameFolders.mods.szMusic, nLevel))
