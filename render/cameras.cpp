@@ -535,6 +535,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return 0;
 #endif
 PrintLog (1, "creating cameras\n");
+Destroy ();
 if (!m_cameras.Create (MAX_CAMERAS)) {
 	PrintLog (-1);
 	return 0;
@@ -565,7 +566,7 @@ if (gameData.trigs.m_nTriggers) {
 					SetFaceCamera (triggerP->m_segments [j] * 6 + triggerP->m_sides [j], (char) m_cameras.ToS () - 1);
 			}
 #if TELEPORT_CAMERAS
-		else if (/*EGI_FLAG (bTeleporterCams, 0, 0) &&*/ (triggerP->m_info.nType == TT_TELEPORT)) {
+		else if (EGI_FLAG (bTeleporterCams, 0, 1, 0) && (triggerP->m_info.nType == TT_TELEPORT)) {
 			if (m_cameras.Grow () &&
 				 m_cameras.Top ()->Create (m_cameras.ToS () - 1, triggerP->m_segments [0], triggerP->m_sides [0], (short) wallP->nSegment, (short) wallP->nSide, NULL, 0, 1))
 				SetFaceCamera (wallP->nSegment * 6 + wallP->nSide, (char) m_cameras.ToS () + 1);
