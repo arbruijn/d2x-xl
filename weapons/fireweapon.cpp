@@ -1020,7 +1020,7 @@ else {
 	j = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 0, 1, 0)) ? 2 : 1;
 	h = gameData.laser.nMissileGun & 1;
 	}
-viewP = gameData.objs.consoleP->View ();
+viewP = gameData.objs.consoleP->View (0);
 for (i = 0; i < j; i++, h = !h) {
 	nGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary] + h;
 	if ((vGunPoints = GetGunPoints (gameData.objs.consoleP, nGun))) {

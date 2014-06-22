@@ -9,13 +9,14 @@
 #include <string.h>
 
 #ifdef __macosx__
-# include <SDL/SDL.h>
-# include <SDL/SDL_thread.h>
-# include <SDL_net/SDL_net.h>
+#	include <SDL/SDL.h>
+#	include <SDL/SDL_thread.h>
+#	include <SDL_net/SDL_net.h>
 #else
-# include <SDL.h>
-# include <SDL_thread.h>
-# include <SDL_net.h>
+#	include <WinSock.h>
+#	include <SDL.h>
+#	include <SDL_thread.h>
+#	include <SDL_net.h>
 #endif
 #include "descent.h"
 #include "network.h"
