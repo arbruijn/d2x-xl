@@ -43,8 +43,6 @@ ScaleTransformation (transformation, 1);
 
 void SetupTransformation (CTransformation& transformation, const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale, fix xStereoSeparation, bool bSetupRenderer)
 {
-	static int ipdScale = 2;
-
 transformation.m_info.zoom = (ogl.IsOculusRift () && !(gameStates.render.nWindow [0] || gameStates.render.bBriefing)) ? F2X (X2F (xZoom) / X2F (DEFAULT_ZOOM) * float (RIFT_DEFAULT_ZOOM)) : xZoom;
 transformation.m_info.zoomf = (float) xZoom / 65536.0f;
 transformation.m_info.pos = vPos;

@@ -711,7 +711,7 @@ short D2IndexForD1Index (short d1_index)
 
 //------------------------------------------------------------------------------
 
-void LoadD1PigHeader (CFile& cf, int *pSoundNum, int *pBmHdrOffs, int *pBmDataOffs, int *pBitmapNum, int bReadTMapNums)
+int LoadD1PigHeader (CFile& cf, int *pSoundNum, int *pBmHdrOffs, int *pBmDataOffs, int *pBitmapNum, int bReadTMapNums)
 {
 	int	nPigDataStart,
 			nHeaderSize,
@@ -728,7 +728,7 @@ switch (cf.Length ()) {
 	case D1_10_PIGSIZE:
 		nPigDataStart = 0;
 		Warning ("%s %s. %s", TXT_LOAD_FAILED, D1_PIGFILE, TXT_D1_SUPPORT);
-		return;
+		return 0;
 	default:
 		Warning ("%s %s", TXT_UNKNOWN_SIZE, D1_PIGFILE);
 		Int3 ();
@@ -754,6 +754,7 @@ if (pSoundNum)
 *pBmHdrOffs = nBmHdrOffs;
 *pBmDataOffs = nBmDataOffs;
 *pBitmapNum = nBitmapNum;
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -781,7 +782,8 @@ else if (!cfPiggy [1].Open (D1_PIGFILE, gameFolders.game.szData [0], "rb", 0)) {
 //first, free up data allocated for old bitmaps
 paletteManager.LoadD1 ();
 
-LoadD1PigHeader (cfPiggy [1], &nSounds, &nBmHdrOffs, &nBmDataOffs, &nBitmaps, 1);
+if (!LoadD1PigHeader (cfPiggy [1], &nSounds, &nBmHdrOffs, &nBmDataOffs, &nBitmaps, 1))
+	return;
 gameStates.app.bD1Data = 1;
 if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.bHaveD1Textures) {
 	cfPiggy [1].Seek (nBmHdrOffs, SEEK_SET);
@@ -843,7 +845,8 @@ if (!cf.Open (D1_PIGFILE, gameFolders.game.szData [0], "rb", 0)) {
 	}
 if (!gameStates.app.bHaveD1Data)
 	paletteManager.LoadD1 ();
-LoadD1PigHeader (cf, NULL, &nBmHdrOffs, &nBmDataOffs, &nBitmapNum, 0);
+if (!LoadD1PigHeader (cf, NULL, &nBmHdrOffs, &nBmDataOffs, &nBitmapNum, 0))
+	return bmi;
 for (i = 0; i < nBitmapNum; i++) {
 	PIGBitmapHeaderD1Read (&bmh, cf);
 	if (!strnicmp (bmh.name, name, 8))

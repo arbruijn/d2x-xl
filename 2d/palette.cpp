@@ -450,7 +450,6 @@ m_data.flash.Blue () = m_data.effect.Blue () * fFade;
 
 void CPaletteManager::FadeEffect (void)
 {
-	float	nDelta = 0;
 	bool	bForce = false;
 
 if (m_data.xFadeDelay) {
