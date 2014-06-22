@@ -72,13 +72,13 @@ class CPlaylist {
 
 	public:
 		CPlaylist ();
-		int SongCount (void);
-		void ShuffleSongs (void);
-		void SortSongs (void);
-		void AlignSongs (void);
+		int Size (void);
+		void Shuffle (void);
+		void Sort (void);
+		void Align (void);
 		int SongIndex (int nLevel);
-		int LoadPlaylist (char* pszFolder, char *pszPlaylist = m_szDefaultPlaylist);
-		void DestroyPlaylist (int* nSongs = NULL);
+		int Load (char* pszFolder, char *pszPlaylist = m_szDefaultPlaylist);
+		void Destroy (int* nSongs = NULL);
 		const char* LevelSong (int nLevel);
 		int PlayLevelSong (int nSong, int bD1 = 0);
 	};
@@ -137,17 +137,17 @@ class CSongManager {
 		void PlayCurrent (int repeat = 0);
 		void Prev (void);
 		void Next (void);
-		void ShuffleSongs (void);
-		void SortSongs (void);
-		void AlignSongs (void);
+		void Shuffle (void);
+		void Sort (void);
+		void Align (void);
 		int LoadDescentPlaylists (void);
 		int LoadUserPlaylist (char *pszPlaylist);
 		int LoadModPlaylist (void);
 		inline void DestroyPlaylist (int* nSongs = NULL) {
-			m_mod.DestroyPlaylist (nSongs);
+			m_mod.Destroy (nSongs);
 			}
 		inline void DestroyPlaylists (void) {
-			m_mod.DestroyPlaylist ();
+			m_mod.Destroy ();
 			}
 		inline int Current (void) { return m_info.nCurrent; }
 		inline int Playing (void) { return m_info.bPlaying; }

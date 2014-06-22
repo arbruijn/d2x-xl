@@ -1008,7 +1008,7 @@ if (!bFoundHogFile || (nLastLevel <= 0)) {
 gameStates.app.szCurrentMissionFile = m_list [nCurrentMission].filename;
 gameStates.app.szCurrentMission = m_list [nCurrentMission].szMissionName;
 nSongs = LoadSongList (szFile);
-songManager.AlignSongs ();
+songManager.Align ();
 return 1;
 }
 

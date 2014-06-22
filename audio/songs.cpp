@@ -289,33 +289,33 @@ strcpy (m_szDefaultPlaylist, "playlist.txt");
 
 //------------------------------------------------------------------------------
 
-int CPlaylist::SongCount (void)
+int CPlaylist::Size (void)
 {
 return m_levelSongs.Length ();
 }
 
 //------------------------------------------------------------------------------
 
-void CPlaylist::ShuffleSongs (void)
+void CPlaylist::Shuffle (void)
 {
 ShuffleIntegers (m_songIndex.Buffer (), m_songIndex.Length ());
 }
 
 //------------------------------------------------------------------------------
 
-void CPlaylist::SortSongs (void)
+void CPlaylist::Sort (void)
 {
 SortIntegers (m_songIndex.Buffer (), m_songIndex.Length ());
 }
 
 //------------------------------------------------------------------------------
 
-void CPlaylist::AlignSongs (void)
+void CPlaylist::Align (void)
 {
 if (gameOpts->sound.bShuffleMusic)
-	ShuffleSongs ();
+	Shuffle ();
 else
-	SortSongs ();
+	Sort ();
 }
 
 //------------------------------------------------------------------------------
@@ -326,7 +326,7 @@ int l = m_songIndex.Length ();
 if (!l)
 	return -1;
 if (nLevel >= 0)
-	return m_nSongs [0] ? m_songIndex [nLevel % m_nSongs [0]] : -1;
+	return m_nSongs [0] ? m_songIndex [(nLevel - 1) % m_nSongs [0]] : -1;
 // nLevel < 0 denotes a secret level.
 // Secret level song indices are stored in reverse order at the end of the song index.
 return m_nSongs [1] ? m_songIndex [l - (-nLevel - 1) % m_nSongs [1] - 1] : -1;
@@ -344,16 +344,16 @@ return (i < 0) ? "" : m_levelSongs [i];
 
 int CPlaylist::PlayLevelSong (int nLevel, int bD1)
 {
-return SongCount () && midi.PlaySong (LevelSong (nLevel), NULL, NULL, 1, bD1);
+return Size () && midi.PlaySong (LevelSong (nLevel), NULL, NULL, 1, bD1);
 }
 
 //------------------------------------------------------------------------------
 
-int CPlaylist::LoadPlaylist (char* pszFolder, char* pszPlaylist)
+int CPlaylist::Load (char* pszFolder, char* pszPlaylist)
 {
 	CFile	cf;
-	char	szPlaylist [FILENAME_LEN], szSong [FILENAME_LEN], szListFolder [FILENAME_LEN], szSongFolder [FILENAME_LEN], *pszSong;
-	int	bRead, nSongs [3], l;
+	char	szPlaylist [FILENAME_LEN], szSong [FILENAME_LEN], szListFolder [FILENAME_LEN], szSongFolder [FILENAME_LEN];
+	int	bRead, nSongs [3], i;
 
 if (pszFolder && *pszFolder) {
 	strcpy (szListFolder, pszFolder);
@@ -363,9 +363,9 @@ if (pszFolder && *pszFolder) {
 else
 	CFile::SplitPath (pszPlaylist, szListFolder, NULL, NULL);
 
-for (l = (int) strlen (pszPlaylist) - 1; (l >= 0) && isspace (pszPlaylist [l]); l--)
+for (i = (int) strlen (pszPlaylist) - 1; (i >= 0) && isspace (pszPlaylist [i]); i--)
 	;
-pszPlaylist [++l] = '\0';
+pszPlaylist [++i] = '\0';
 
 for (bRead = 0; bRead < 2; bRead++) {
 	if (!cf.Open (pszPlaylist, "", "rb", 0))
@@ -377,25 +377,29 @@ for (bRead = 0; bRead < 2; bRead++) {
 		if (strstr (szSong, ".ogg") || strstr (szSong, ".flac")) {
 			int bSecret = (*szSong == '-');
 			if (bRead) {
+				char* pszSong;
 				if ((pszSong = strchr (szSong, '\r')))
 					*pszSong = '\0';
 				if ((pszSong = strchr (szSong, '\n')))
 					*pszSong = '\0';
-				l = (int) strlen (szSong) + 1;
+				i = (int) strlen (szSong) + 1;
 				CFile::SplitPath (szSong, szSongFolder, NULL, NULL);
 				if (!*szSongFolder)
-					l += (int) strlen (szListFolder);
-				if (!(pszSong = new char [l - bSecret])) {
+					i += (int) strlen (szListFolder);
+				pszSong = new char [i - bSecret];
+				if (!pszSong) {
 					cf.Close ();
+					Destroy ();
 					return 0;
 					}
 				if (*szSongFolder)
-					memcpy (pszSong, szSong + bSecret, l - bSecret);
+					memcpy (pszSong, szSong + bSecret, i - bSecret);
 				else
 					sprintf (pszSong, "%s%s", szListFolder, szSong + bSecret);
-				int i = bSecret ? nSongs [0] : m_levelSongs.Length () - nSongs [1] - 1;
+				i = bSecret ? m_levelSongs.Length () - nSongs [1] - 1 : nSongs [0];
 				m_levelSongs [i] = pszSong;
-				m_songIndex [i] = nSongs [nSongs [2]];
+				m_songIndex [i] = nSongs [2];
+				pszSong = NULL;
 				}
 			nSongs [bSecret]++;
 			nSongs [2]++;
@@ -405,7 +409,7 @@ for (bRead = 0; bRead < 2; bRead++) {
 	if (!bRead && nSongs [2]) {
 		m_levelSongs.Destroy ();
 		if (!m_levelSongs.Create (nSongs [2])) {
-			DestroyPlaylist ();
+			Destroy ();
 			return 0;
 			}
 		m_songIndex.Create (nSongs [2]);
@@ -420,10 +424,10 @@ return nSongs [2];
 
 //------------------------------------------------------------------------------
 
-void CPlaylist::DestroyPlaylist (int* nSongs)
+void CPlaylist::Destroy (int* nSongs)
 {
 if (m_levelSongs.Buffer ()) {
-	int j = nSongs ? *nSongs : SongCount ();
+	int j = nSongs ? *nSongs : Size ();
 	for (int i = 0; i < j; i++) {
 		if (m_levelSongs [i])
 			delete[] m_levelSongs [i];
@@ -456,7 +460,7 @@ songManager.DestroyPlaylists ();
 
 //------------------------------------------------------------------------------
 
-void CSongManager::ShuffleSongs (void)
+void CSongManager::Shuffle (void)
 {
 for (int i = 0; i < 2; i++)
 	ShuffleIntegers (m_info.songIndex [i], m_info.nLevelSongs [i]);
@@ -465,7 +469,7 @@ ShuffleIntegers (missionManager.songIndex, missionManager.nSongs);
 
 //------------------------------------------------------------------------------
 
-void CSongManager::SortSongs (void)
+void CSongManager::Sort (void)
 {
 for (int i = 0; i < 2; i++)
 	SortIntegers (m_info.songIndex [i], m_info.nLevelSongs [i]);
@@ -474,16 +478,16 @@ SortIntegers (missionManager.songIndex, missionManager.nSongs);
 
 //------------------------------------------------------------------------------
 
-void CSongManager::AlignSongs (void)
+void CSongManager::Align (void)
 {
 if (gameOpts->sound.bShuffleMusic)
-	ShuffleSongs ();
+	Shuffle ();
 else
-	SortSongs ();
-m_descent [0].AlignSongs ();
-m_descent [1].AlignSongs ();
-m_user.AlignSongs ();
-m_mod.AlignSongs ();
+	Sort ();
+m_descent [0].Align ();
+m_descent [1].Align ();
+m_user.Align ();
+m_mod.Align ();
 }
 
 //------------------------------------------------------------------------------
@@ -541,7 +545,8 @@ for (i = 0, bD1Songs = 0; bD1Songs < 2; bD1Songs++) {
 			}
 		}
 	}
-AlignSongs ();
+LoadDescentPlaylists ();
+Align ();
 }
 
 //------------------------------------------------------------------------------
@@ -657,7 +662,7 @@ StopAll ();
 if (bWaitForThread)
 	WaitForSoundThread ();
 m_info.nLevel = nLevel;
-nSong = (nLevel < 0) ? -nLevel - 1 : nLevel;
+nSong = (nLevel < 0) ? -nLevel - 1 : nLevel - 1;
 m_info.nCurrent = nSong;
 if (!rba.Enabled () && redbook.Enabled () && gameOpts->sound.bUseRedbook)
 	redbook.ReInit ();
@@ -682,7 +687,7 @@ if (PlayCustomLevelSong (gameFolders.mods.szMusic, nLevel))
 	return;
 if (m_user.PlayLevelSong (nLevel))
 	return;
-if (m_descent [bD1Song].PlayLevelSong (nLevel), bD1Song)
+if (m_descent [bD1Song].PlayLevelSong (nLevel, bD1Song))
 	return;
 if (PlayCustomLevelSong (gameFolders.game.szMusic [bD1Song], nLevel))
 	return;
@@ -723,15 +728,15 @@ if (m_info.nLevel > 1)
 //------------------------------------------------------------------------------
 
 int CSongManager::LoadDescentPlaylists (void) { 
-	return m_descent [0].LoadPlaylist (gameFolders.game.szMusic [0]) && m_descent [1].LoadPlaylist (gameFolders.game.szMusic [1]); 
+	return m_descent [0].Load (gameFolders.game.szMusic [0]) & (m_descent [1].Load (gameFolders.game.szMusic [1]) << 1); 
 }
 
 int CSongManager::LoadUserPlaylist (char *pszPlaylist) { 
-	return m_user.LoadPlaylist (NULL, pszPlaylist); 
+	return m_user.Load (NULL, pszPlaylist); 
 }
 
 int CSongManager::LoadModPlaylist (void) { 
-	return *gameFolders.mods.szMusic ? m_mod.LoadPlaylist (gameFolders.mods.szMusic) : 0; 
+	return *gameFolders.mods.szMusic ? m_mod.Load (gameFolders.mods.szMusic) : 0; 
 }
 
 //------------------------------------------------------------------------------

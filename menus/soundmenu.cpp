@@ -307,7 +307,7 @@ else if (!bSongPlaying)
 	songManager.PlayCurrent (1);
 audio.SetMaxChannels (32 << (gameStates.sound.nSoundChannels - 2));
 if (bShuffleMusic != gameOpts->sound.bShuffleMusic) {
-	songManager.AlignSongs ();
+	songManager.Align ();
 	if (gameStates.app.bGameRunning)
 		songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
 	}
