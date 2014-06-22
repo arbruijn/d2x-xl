@@ -1003,6 +1003,8 @@ class CObject : public CObjectInfo {
 		void ExplodePolyModel (void);
 		CObject* CreateDebris (int nSubObj);
 
+		float CollisionPoint (CFloatVector* vDir, CFloatVector* vHit = NULL);
+
 		void CollidePlayerAndWall (fix xHitSpeed, short nHitSeg, short nHitSide, CFixVector& vHitPt);
 		void CollideRobotAndWall (fix xHitSpeed, short nHitSeg, short nHitSide, CFixVector& vHitPt);
 		int CollideWeaponAndWall (fix xHitSpeed, short nHitSeg, short nHitWall, CFixVector& vHitPt);

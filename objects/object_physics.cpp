@@ -259,4 +259,16 @@ if (IsMultiGame && memcmp (nOldThrusters, ws.nThrusters, sizeof (nOldThrusters))
 }
 
 // ----------------------------------------------------------------------------
+// For standard collision model, return the point on the objects hit sphere traversed by vector vDir
+// as hit location and the sphere radius as distance
+// For enhanced collision model, compute intersection of vDir with ellipsoid
+// around the object determined by the three axes of its hit box as hit location
+// and the distance of that point from the object's center
+
+float CObject::CollisionPoint (CFloatVector* vDir, CFloatVector* vHit)
+{
+return 0.0f;
+}
+
+// ----------------------------------------------------------------------------
 //eof
