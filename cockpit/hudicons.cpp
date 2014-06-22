@@ -382,7 +382,6 @@ void CHUDIcons::DrawWeapons (void)
 	int	nWeaponIcons = /*(gameStates.render.cockpit.nType == CM_STATUS_BAR) ? 3 :*/ extraGameInfo [0].nWeaponIcons;
 	int	nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) ? 4 : 3;
 	int	nIconPos = nWeaponIcons - 1;
-	int	nHiliteColor = gameOpts->app.bColorblindFriendly;
 	int	nMaxAutoSelect;
 	int	nDmgIconWidth = 0;
 	int	nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
@@ -393,7 +392,7 @@ void CHUDIcons::DrawWeapons (void)
 #endif
 	int	ox = 6, 
 			oy = 6, 
-			x, dx, y = 0, dy = 0;
+			x = 0, dx = 0, y = 0, dy = 0;
 	//float	fLineWidth = (gameData.render.scene.Width () >= 1200) ? 2.0f : 1.0f;
 	float	fLineWidth = float (gameData.render.scene.Width ()) / 640.0f;
 	ubyte	alpha = gameOpts->render.weaponIcons.alpha;

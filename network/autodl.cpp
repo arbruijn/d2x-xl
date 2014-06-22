@@ -328,7 +328,6 @@ return SDLNet_TCP_Send (client.socket, (void *) client.data, DL_PACKET_SIZE) == 
 int CDownloadManager::OpenFile (tClient& client, const char *pszExt)
 {
 	char	szFile [FILENAME_LEN];
-	int	l = (int) strlen (gameFolders.missions.szRoot);
 
 sprintf (szFile, "%s%s%s", gameFolders.missions.szRoot, netGame.m_info.szMissionName, pszExt);
 if (client.cf.File ())

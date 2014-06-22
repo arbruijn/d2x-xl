@@ -753,9 +753,11 @@ if (!gameStates.multi.bServer [0]) {		//set up server address and add it to dest
 	if (!clientManager.CheckClientSize ())
 		FAIL ("error allocating client table");
 	sin.sin_family = AF_INET;
-	*(reinterpret_cast<u_short*> (networkData.serverAddress + 8)) = htons (nServerPort);
+
+	u_short nPort = htons (nServerPort);
+	memcpy (networkData.serverAddress + 8, &nPort, sizeof (nPort));
 	memcpy (&sin.sin_addr.s_addr, networkData.serverAddress + 4, 4);
-	sin.sin_port = htons (nServerPort);
+	sin.sin_port = nPort;
 	if (!tracker.m_bUse)
 		clientManager.Add (&sin);
 	}

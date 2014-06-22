@@ -1062,7 +1062,7 @@ return 1;
 
 static CObject *NearestRobot (CObject* objP, tAIStateInfo *siP)
 {
-	int			j, nMinObj = -1;
+	int			j;
 	fix			curDist, minDist = MAX_WAKEUP_DIST, bestAngle = -1;
 	CObject*		robotP, *targetP = NULL;
 	CFixVector	vPos = objP->AttacksRobots ()
