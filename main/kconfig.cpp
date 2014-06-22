@@ -1273,6 +1273,7 @@ return m_nChangeMode;
 int CControlConfig::HandleInput (void)
 {
 	int		i, k;
+	ubyte*	controlsP; // required to make sure the g++ optimizer doesn't break the loops below
 
 k = KeyInKey ();
 if (!m_bTimeStopped && (MultiMenuPoll () == -1))
@@ -1295,26 +1296,30 @@ switch (k) {
 
 	case KEY_CTRLED+KEY_R:
 		if (m_items == kcKeyboard) {
+			controlsP = controlSettings.defaults [0];
 			for (i = 0; i < NUM_KEY_CONTROLS; i++) {
-				m_items [i].value = controlSettings.defaults [0][i];
+				m_items [i].value = controlsP [i];
 				DrawItem (m_items + i, 0);
 				}
 			}
 		else if (m_items == kcHotkeys) {
+			controlsP = controlSettings.d2xDefaults;
 			for (i = 0; i < NUM_HOTKEY_CONTROLS; i++) {
-				m_items [i].value = controlSettings.d2xDefaults [i];
+				m_items [i].value = controlsP [i];
 				DrawItem (m_items + i, 0);
 				}
 			}
 		else if (m_items == kcMouse) {
 			for (i = 0; i < NUM_MOUSE_CONTROLS; i++) {
-				m_items [i].value = controlSettings.defaults [gameConfig.nControlType][i];
+				controlsP = controlSettings.defaults [gameConfig.nControlType];
+				m_items [i].value = controlsP [i];
 				DrawItem (m_items + i, 0);
 				}
 			}
 		else {
 			for (i = 0; i < NUM_JOY_CONTROLS; i++) {
-				m_items [i].value = controlSettings.defaults [gameConfig.nControlType][i];
+				controlsP = controlSettings.defaults [gameConfig.nControlType];
+				m_items [i].value = controlsP [i];
 				DrawItem (m_items + i, 0);
 				}
 			}
@@ -1480,6 +1485,7 @@ void CControlConfig::Run (int nType, const char* pszTitle)
 {
 CBitmap*	bmSave;
 int		i, j, b = gameOpts->legacy.bInput;
+ubyte*	controlsP; // required to make sure the g++ optimizer doesn't break the loops below
 
 m_pszTitle = pszTitle;
 m_xOffs = (CCanvas::Current ()->Width () - 640) / 2;
@@ -1528,23 +1534,30 @@ if (bmSave) {
 	}
 // Update save values...
 if (nType == 0) {
+	controlsP = controlSettings.custom [0];
 	for (i = 0, j = NUM_KEY_CONTROLS; i < j; i++)
-		controlSettings.custom [0][i] = kcKeyboard [i].value;
+		controlsP [i] = kcKeyboard [i].value;
 	}
 else if (nType == 1) {
-	if (gameOpts->input.joystick.bUse)
+	if (gameOpts->input.joystick.bUse) {
+		controlsP = controlSettings.custom [gameStates.input.nJoyType];
 		for (i = 0, j = NUM_JOY_CONTROLS; i < j; i++)
-			controlSettings.custom [gameStates.input.nJoyType][i] = kcJoystick [i].value;
+			controlsP [i] = kcJoystick [i].value;
+		}
 	}
 else if (nType == 2) {
-	if (gameOpts->input.mouse.bUse)
+	if (gameOpts->input.mouse.bUse) {
+		controlsP = controlSettings.custom [gameStates.input.nMouseType];
 		for (i = 0, j = NUM_MOUSE_CONTROLS; i < j; i++)
-			controlSettings.custom [gameStates.input.nMouseType][i] = kcMouse [i].value;
+			controlsP [i] = kcMouse [i].value;
+		}
 	}
 else if (nType == 3) {
-	if (gameConfig.nControlType == CONTROL_WINJOYSTICK)
+	if (gameConfig.nControlType == CONTROL_WINJOYSTICK) {
+		controlsP = controlSettings.custom [gameConfig.nControlType];
 		for (i = 0, j = NUM_JOY_CONTROLS; i < j; i++)
-			controlSettings.custom [gameConfig.nControlType][i] = kcSuperJoy [i].value;
+			controlsP [i] = kcSuperJoy [i].value;
+		}
 	}
 else if (nType == 4) {
 	for (i=0, j = NUM_HOTKEY_CONTROLS; i < j; i++)

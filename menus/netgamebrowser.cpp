@@ -196,7 +196,7 @@ if (networkData.bGamesChanged || (networkData.nActiveGames != networkData.nLastA
 	for (i = 0; i < networkData.nActiveGames; i++, h++) {
 			int gameStatus = activeNetGames [i].m_info.gameStatus;
 			int nplayers = 0;
-			char szLevelName [20], szMissionName [50], szGameName [50];
+			char szLevelName [100], szMissionName [100], szGameName [100];
 			int nLevelVersion = gameOpts->menus.bShowLevelVersion ? missionManager.FindByName (activeNetGames [i].m_info.szMissionName, -1) : -1;
 
 		// These next two loops protect against menu skewing

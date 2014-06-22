@@ -657,7 +657,7 @@ const CFloatVector CFloatMatrix::ComputeAngles (void) const
 {
 	CFloatVector	a;
 
-a.v.coord.z = ((m.dir.f.v.coord.x == 0.0f) && (m.dir.f.v.coord.z == 0.0f)) ? 0.0f : a.v.coord.z = atan2 (m.dir.f.v.coord.z, m.dir.f.v.coord.x);
+a.v.coord.z = ((m.dir.f.v.coord.x == 0.0f) && (m.dir.f.v.coord.z == 0.0f)) ? 0.0f : atan2 (m.dir.f.v.coord.z, m.dir.f.v.coord.x);
 float sinh = sin (a.v.coord.z);
 float cosh = cos (a.v.coord.z);
 float cosp = (fabs (sinh) > fabs (cosh))	? m.dir.f.v.coord.x / sinh : m.dir.f.v.coord.z / cosh;
@@ -667,7 +667,7 @@ if (cosp == 0)	//the cosine of pitch is zero.  we're pitched straight up. say no
 else {
 	float sinb = m.dir.r.v.coord.y / cosp;
 	float cosb = m.dir.u.v.coord.y / cosp;
-	a.v.coord.y = ((sinb == 0.0f) && (cosb == 0.0f)) ? 0.0f : a.v.coord.y = atan2 (cosb, sinb);
+	a.v.coord.y = ((sinb == 0.0f) && (cosb == 0.0f)) ? 0.0f : atan2 (cosb, sinb);
 	}
 return a;
 }

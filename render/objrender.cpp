@@ -515,8 +515,7 @@ int DrawCloakedObject (CObject *objP, fix light, fix *glow, fix xCloakStartTime,
 	tCloakInfo	ci;
 	int			bOk = 0;
 
-GetCloakInfo (objP, xCloakStartTime, xCloakEndTime, &ci);
-if (ci.bFading < 0) {
+if (!GetCloakInfo (objP, xCloakStartTime, xCloakEndTime, &ci) || (ci.bFading < 0)) {
 	fix xNewLight, xSaveGlow;
 	tBitmapIndex * altTextures = NULL;
 

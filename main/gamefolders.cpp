@@ -393,7 +393,7 @@ static int MakeGameFolders (void)
 {
 PrintLog (1, "\nSetting up game folders\n");
 
-char szNoFolder [FiLENAME_LEN] = "";
+char szNoFolder [FILENAME_LEN] = "";
 
 if (GetAppFolder (gameFolders.game.szRoot, szNoFolder, "", "")) {
 	Error ("Game data could not be found");

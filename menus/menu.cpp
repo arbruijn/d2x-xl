@@ -546,7 +546,7 @@ void CMenu::Render (void)
 if (m_bDone)
 	return;
 
-	int x = 0, y = 0;
+	int y = 0;
 
 ogl.SetDepthTest (false);
 FadeIn ();

@@ -207,7 +207,6 @@ else
 
 CMenu	m (5);
 
-char* ps = szPauseMsg + strlen ("PAUSE\n\n");
 char* pszToken = strtok (szPauseMsg + strlen ("PAUSE\n\n"), "\n");
 while (pszToken) {
 	m.AddText ("", pszToken);

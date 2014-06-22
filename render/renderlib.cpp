@@ -340,7 +340,6 @@ return 1;
 
 fix SetVertexLight (int nSegment, int nSide, int nVertex, CFaceColor *colorP, fix light)
 {
-	CFloatVector	dynColor;
 	fix				dynLight;
 	float				fl, dl, hl;
 
@@ -376,6 +375,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 		if (nVertex == nDbgVertex)
 			BRP;
 #endif
+		CFloatVector dynColor;
 		dynColor.Assign (gameData.render.lights.dynamicColor [nVertex]);
 		if (gameOpts->render.color.bMix) {
 			if (gameOpts->render.color.nLevel) {
@@ -438,11 +438,9 @@ return light;
 
 int SetFaceLight (tFaceProps *propsP)
 {
-	int	i;
-
 if (SHOW_DYN_LIGHT)
 	return 0;
-for (i = 0; i < propsP->nVertices; i++) {
+for (int i = 0; i < propsP->nVertices; i++) {
 	propsP->uvls [i].l = SetVertexLight (propsP->segNum, propsP->sideNum, propsP->vp [i], vertColors + i, propsP->uvls [i].l);
 	vertColors [i].index = -1;
 	}

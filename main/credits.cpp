@@ -350,7 +350,6 @@ if (!Open (creditsFilename))
 memset (m_buffer, 0, sizeof (m_buffer));
 
 SetScreenMode (SCREEN_MENU);
-int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 backgroundManager.Setup (m_background, 640, 480, BG_TOPMENU, BG_STARS);
 creditsPalette = paletteManager.Load ("credits.256", NULL);
 //paletteManager.ResumeEffect ();

@@ -13,7 +13,9 @@
 #	include <SDL/SDL_thread.h>
 #	include <SDL_net/SDL_net.h>
 #else
-#	include <WinSock.h>
+#	ifdef _WIN32
+#		include <WinSock.h>
+#	endif
 #	include <SDL.h>
 #	include <SDL_thread.h>
 #	include <SDL_net.h>

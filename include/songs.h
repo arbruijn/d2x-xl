@@ -68,13 +68,16 @@ class CPlaylist {
 		CArray<int>			m_songIndex;
 		short					m_nSongs [2];
 
+		static char m_szDefaultPlaylist [FILENAME_LEN];
+
 	public:
+		CPlaylist ();
 		int SongCount (void);
 		void ShuffleSongs (void);
 		void SortSongs (void);
 		void AlignSongs (void);
 		int SongIndex (int nLevel);
-		int LoadPlaylist (char* pszFolder, char *pszPlaylist = "playlist.txt");
+		int LoadPlaylist (char* pszFolder, char *pszPlaylist = m_szDefaultPlaylist);
 		void DestroyPlaylist (int* nSongs = NULL);
 		const char* LevelSong (int nLevel);
 		int PlayLevelSong (int nSong, int bD1 = 0);

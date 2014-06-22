@@ -295,7 +295,6 @@ while (!m_bDone) {
 					do {
 						pszFn = items [cc];
 						const char* versionIds [] = {"(D1)", "(D2)", "(XL)"};
-						int nSkip = 0;
 						for (int i = 0; i < 3; i++)
 							if (strstr (pszFn, versionIds [i]) == pszFn) {
 								pszFn += 5;

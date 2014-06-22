@@ -37,6 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 char CDROM_dir[40] = ".\\";
 
+char CPlaylist::m_szDefaultPlaylist [FILENAME_LEN];
 
 //------------------------------------------------------------------------------
 /*
@@ -277,6 +278,13 @@ if (!l || !v)
 	return;
 while (--l >= 0)
 	v [l] = l;
+}
+
+//------------------------------------------------------------------------------
+
+CPlaylist::CPlaylist ()
+{
+strcpy (m_szDefaultPlaylist, "playlist.txt");
 }
 
 //------------------------------------------------------------------------------
