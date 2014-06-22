@@ -1501,10 +1501,14 @@ CFixMatrix *CObject::View (int i)
 {
 	tObjectViewData* viewP = gameData.objs.viewData + Index ();
 
-if (viewP->nFrame != gameData.objs.nFrameCount) {
-	viewP->mView [0] = OBJPOS (this)->mOrient.Transpose ();
-	viewP->mView [1] = viewP->mView [0].Inverse ();
-	viewP->nFrame = gameData.objs.nFrameCount;
+if (viewP->nFrame [i] != gameData.objs.nFrameCount) {
+	if (i == 0)
+		viewP->mView [0] = OBJPOS (this)->mOrient.Transpose ();
+	else {
+		View (0);
+		viewP->mView [1] = viewP->mView [0].Inverse ();
+		}
+	viewP->nFrame [i] = gameData.objs.nFrameCount;
 	}
 return &viewP->mView [i];
 }
