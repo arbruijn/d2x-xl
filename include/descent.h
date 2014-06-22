@@ -2251,7 +2251,7 @@ typedef struct tHitbox {
 
 typedef struct tObjectViewData {
 	CFixMatrix			mView [2];
-	int					nFrame [i];
+	int					nFrame [2];
 } tObjectViewData;
 
 typedef struct tGuidedMissileInfo {
