@@ -35,7 +35,9 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #	include "SDL_net/SDL_net.h"
 #	include "FolderDetector.h"
 #else
-#	include <WinSock.h>
+#	ifdef _WIN32
+#		include <WinSock.h>
+#	endif
 #	include "SDL_main.h"
 #	include "SDL_keyboard.h"
 #	include "SDL_net.h"

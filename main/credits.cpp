@@ -364,7 +364,6 @@ m_xTimeout = SDL_GetTicks () + m_xDelay;
 ogl.SetBlending (true);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 gameStates.menus.nInMenu = 1;
-int nFrames = ogl.IsSideBySideDevice () ? 2 : 1;
 m_nExtraInc = 1;
 
 for (;;) {

@@ -503,7 +503,6 @@ fix CDACSUniDirRouter::FindPath (void)
 {
 	uint			nDist;
 	short			nSegment, nSide;
-	int			nSegCount = gameData.segs.nSegments - 1;
 	CSegment*	segP;
 
 m_heap.Setup (m_nStartSeg);

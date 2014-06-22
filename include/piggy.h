@@ -308,7 +308,7 @@ char* DefaultPigFile (int bDemoData = 0);
 char* DefaultHamFile (void);
 char* DefaultSoundFile (void);
 
-void LoadD1PigHeader (CFile& cf, int *pSoundNum, int *pBmHdrOffs, int *pBmDataOffs, int *pBitmapNum, int bReadTMapNums);
+int LoadD1PigHeader (CFile& cf, int *pSoundNum, int *pBmHdrOffs, int *pBmDataOffs, int *pBitmapNum, int bReadTMapNums);
 
 //------------------------------------------------------------------------------
 

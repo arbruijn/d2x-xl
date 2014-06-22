@@ -164,7 +164,10 @@ if ((psz = strstr (pszFile, ".rdl")) || (psz = strstr (pszFile, ".rl2"))) {
 	}
 
 char sig [4];
-fread (sig, 3, 1, fp);
+if (fread (sig, 3, 1, fp) != 1) {
+	fclose (fp);
+	return 0;
+	}
 if (strncmp (sig, "DHF", 3) && strncmp (sig, "D2X", 3)) {
 	fclose (fp);
 	return 0;
