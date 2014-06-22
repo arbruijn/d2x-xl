@@ -230,8 +230,6 @@ PrintLog (-1);
 InitDefaultShipProps ();
 PrintLog (-1);
 nClearWindow = 2;		//	do portal only window clear.
-/*---*/PrintLog (1, "Default settings...\n");
-DefaultAllSettings ();
 PrintLog (-1);
 /*---*/PrintLog (1, "Detail levels (%d)...\n", gameStates.app.nDetailLevel);
 gameStates.app.nDetailLevel = InitDetailLevels (gameStates.app.nDetailLevel);

@@ -1674,6 +1674,8 @@ if (!nHighestLevels)
 if (nStage < 1)
 	return funcRes;
 
+DefaultAllSettings ();
+
 if (!profile.Load (nStage < 2))
 	funcRes = errno;
 
@@ -1692,8 +1694,6 @@ SetSideBySideDisplayMode ();
 
 if (nStage < 2)
 	return funcRes;
-
-DefaultAllSettings ();
 
 if (funcRes != EZERO) {
 	InfoBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, 1, TXT_OK, "%s\n\n%s", TXT_ERROR_READING_PLR, strerror (funcRes));
@@ -1760,7 +1760,7 @@ if ((extraGameInfo [0].bFastPitch < 1) || (extraGameInfo [0].bFastPitch > 2))
 extraGameInfo [1].bFastPitch = 2;
 for (i = 0; i < UNIQUE_JOY_AXES; i++)
 	JoySetDeadzone (gameOpts->input.joystick.deadzones [i], i);
-DefaultAllSettings ();
+//DefaultAllSettings ();
 #if _WIN32
 if (gameStates.render.bVSyncOk)
 	wglSwapIntervalEXT (gameOpts->render.nMaxFPS < 0);
