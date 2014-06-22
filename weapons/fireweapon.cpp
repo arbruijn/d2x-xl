@@ -271,7 +271,7 @@ if (bSpectate) {
 	*viewP = posP->mOrient.Transpose ();
 }
 else
-   viewP = objP->View ();
+   viewP = objP->View (0);
 v[1] = *viewP * v [0];
 memcpy (mP, &posP->mOrient, sizeof (CFixMatrix));
 if (nGun < 0)

@@ -1497,15 +1497,16 @@ return GetChildObjN (OBJ_IDX (pParent), pChildRef);
 
 //------------------------------------------------------------------------------
 
-CFixMatrix *CObject::View (void)
+CFixMatrix *CObject::View (int i)
 {
 	tObjectViewData* viewP = gameData.objs.viewData + Index ();
 
 if (viewP->nFrame != gameData.objs.nFrameCount) {
-	viewP->mView = OBJPOS (this)->mOrient.Transpose ();
+	viewP->mView [0] = OBJPOS (this)->mOrient.Transpose ();
+	viewP->mView [1] = viewP->mView [0].Inverse ();
 	viewP->nFrame = gameData.objs.nFrameCount;
 	}
-return &viewP->mView;
+return &viewP->mView [i];
 }
 
 //------------------------------------------------------------------------------

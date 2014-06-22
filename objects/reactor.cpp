@@ -41,7 +41,7 @@ void DoCountdownFrame ();
 void CalcReactorGunPoint (CFixVector *vGunPoint, CFixVector *vGunDir, CObject *objP, int nGun)
 {
 	tReactorProps	*props;
-	CFixMatrix		*viewP = objP->View ();
+	CFixMatrix		*viewP = objP->View (0);
 
 Assert (objP->info.nType == OBJ_REACTOR);
 Assert (objP->info.renderType == RT_POLYOBJ);

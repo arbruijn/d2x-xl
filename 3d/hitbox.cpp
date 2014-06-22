@@ -243,7 +243,7 @@ gameData.models.hitboxes [nId].nFrame = gameData.objs.nFrameCount;
 #endif
 	tQuad*		pf;
 	CFixVector	rotVerts [8];
-	CFixMatrix*	viewP = objP->View ();
+	CFixMatrix*	viewP = objP->View (0);
 	int			i, j, iBox, nBoxes;
 
 if (CollisionModel () == 1) {

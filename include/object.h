@@ -1114,7 +1114,7 @@ class CObject : public CObjectInfo {
 		inline CObjHitInfo& HitInfo (void) { return m_hitInfo; }
 		inline CFixVector HitPoint (int i) { return m_hitInfo.v [i]; }
 
-		CFixMatrix* View (void);
+		CFixMatrix* View (int i);
 
 		void Bash (ubyte nId);
 		void BashToShield (bool bBash);

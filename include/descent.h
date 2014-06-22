@@ -2250,7 +2250,7 @@ typedef struct tHitbox {
 //------------------------------------------------------------------------------
 
 typedef struct tObjectViewData {
-	CFixMatrix			mView;
+	CFixMatrix			mView [2];
 	int					nFrame;
 } tObjectViewData;
 
@@ -3863,7 +3863,7 @@ static inline CFixVector *PolyObjPos (CObject *objP, CFixVector *vPosP)
 {
 CFixVector vPos = OBJPOS (objP)->vPos;
 if (objP->info.renderType == RT_POLYOBJ) {
-	*vPosP = *objP->View () * gameData.models.offsets [objP->ModelId ()];
+	*vPosP = *objP->View (0) * gameData.models.offsets [objP->ModelId ()];
 	*vPosP += vPos;
 	return vPosP;
 	}

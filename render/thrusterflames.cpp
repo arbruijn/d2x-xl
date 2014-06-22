@@ -209,7 +209,7 @@ else if ((objP->info.nType == OBJ_PLAYER) ||
 			mView = posP->mOrient.Transpose ();
 			}
 		else
-			viewP = objP->View ();
+			viewP = objP->View (0);
 		for (i = 0; i < m_nThrusters; i++) {
 			ti.fSize [i] = ti.mtP->fSize [i];
 			ti.nType [i] = ti.mtP->nType [i];
