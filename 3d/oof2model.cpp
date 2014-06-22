@@ -156,7 +156,7 @@ for (i = 0, bmP = m_textures.Buffer (); i < m_nTextures; i++, bmP++) {
 	}
 memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
 m_nType = -1;
-gameData.models.polyModels [0][nModel].SetRad (Size (objP, 1));
+gameData.models.polyModels [0][nModel].SetRad (Size (objP, 1), 1);
 Setup (1, 1);
 #if 1
 SetGunPoints (objP, 0);

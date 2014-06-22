@@ -165,7 +165,7 @@ memset (camBotInfo.nRapidFireCount, 0, sizeof (camBotInfo.nRapidFireCount));
 FORALL_STATIC_OBJS (objP, i) 
 	if (objP->info.nType == OBJ_CAMBOT) {
 		objP->info.nId	= gameData.bots.nCamBotId;
-		objP->SetSizeFromModel ();
+		objP->AdjustSize ();
 		objP->SetLife (IMMORTAL_TIME);
 		objP->info.controlType = CT_CAMERA;
 		objP->info.movementType = MT_NONE;

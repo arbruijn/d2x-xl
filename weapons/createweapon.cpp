@@ -73,13 +73,13 @@ if (nObject == nDbgObj)
 objP = OBJECTS + nObject;
 if (gameData.weapons.info [nWeaponType].renderType == WEAPON_RENDER_POLYMODEL) {
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel;
-	objP->SetSizeFromModel (1, gameData.weapons.info [objP->info.nId].poLenToWidthRatio);
+	objP->AdjustSize (1, gameData.weapons.info [objP->info.nId].poLenToWidthRatio);
 	}
 else if (EGI_FLAG (bTracers, 0, 1, 0) && objP->IsGatlingRound ()) {
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [SUPERLASER_ID + 1].nModel;
 	objP->rType.polyObjInfo.nTexOverride = -1;
 	objP->rType.polyObjInfo.nAltTextures = 0;
-	objP->SetSizeFromModel (1, gameData.weapons.info [SUPERLASER_ID].poLenToWidthRatio);
+	objP->AdjustSize (1, gameData.weapons.info [SUPERLASER_ID].poLenToWidthRatio);
 	objP->info.renderType = RT_POLYOBJ;
 	}
 objP->mType.physInfo.mass = WI_mass (nWeaponType);

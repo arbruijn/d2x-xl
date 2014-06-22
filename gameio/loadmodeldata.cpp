@@ -335,11 +335,11 @@ for (j = 0; j < t; j++) {
 #endif
 	modelP = &gameData.models.polyModels [bAltModels ? 2 : 0][i];
 	modelP->Destroy ();
-	if (!modelP->Read (0, cf))
+	if (!modelP->Read (0, 1, cf))
 		return -1;
 	modelP->ReadData (NULL, cf);
 	modelP->SetType (bAltModels ? 1 : -1);
-	modelP->SetRad (modelP->Size ());
+	modelP->SetRad (modelP->Size (), 1);
 	modelP->SetCustom (bCustom);
 	if (bAltModels) {
 #	if DBG
@@ -480,9 +480,9 @@ int LoadExitModels (void)
 		gameData.endLevel.exit.nDestroyedModel = gameData.models.nPolyModels++;
 		CPolyModel& exitModel = gameData.models.polyModels [0][gameData.endLevel.exit.nModel];
 		CPolyModel& destrModel = gameData.models.polyModels [0][gameData.endLevel.exit.nDestroyedModel];
-		if (!exitModel.Read (0, cf))
+		if (!exitModel.Read (0, 0, cf))
 			return 0;
-		if (!destrModel.Read (0, cf))
+		if (!destrModel.Read (0, 0, cf))
 			return 0;
 		exitModel.SetFirstTexture (start_num);
 		exitModel.SetBuffer (NULL);
@@ -528,9 +528,9 @@ int LoadExitModels (void)
 		gameData.endLevel.exit.nDestroyedModel = gameData.models.nPolyModels++;
 		CPolyModel& exitModel = gameData.models.polyModels [0][gameData.endLevel.exit.nModel];
 		CPolyModel& destrModel = gameData.models.polyModels [0][gameData.endLevel.exit.nDestroyedModel];
-		if (!exitModel.Read (0, cf))
+		if (!exitModel.Read (0, 0, cf))
 			return 0;
-		if (!destrModel.Read (0, cf))
+		if (!destrModel.Read (0, 0, cf))
 			return 0;
 		exitModel.SetFirstTexture (start_num);
 		destrModel.SetFirstTexture (start_num+3);

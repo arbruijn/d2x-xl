@@ -592,7 +592,7 @@ Setup ();
 
 //------------------------------------------------------------------------------
 
-int CPolyModel::Read (int bHMEL, CFile& cf)
+int CPolyModel::Read (int bHMEL, int bCustom, CFile& cf)
 {
 	int	i;
 
@@ -600,7 +600,7 @@ int CPolyModel::Read (int bHMEL, CFile& cf)
 if (m_info.nId == nDbgModel)
 	BRP;
 #endif
-if (bHMEL) {
+if (bHMEL) { // HMEL
 	char	szId [4];
 
 	cf.Read (szId, sizeof (szId), 1);
@@ -634,7 +634,7 @@ for (i = 0; i < MAX_SUBMODELS; i++)
 	cf.ReadVector (m_info.subModels.maxs [i]);
 cf.ReadVector (m_info.mins);
 cf.ReadVector (m_info.maxs);
-SetRad (cf.ReadFix (), 1);
+SetRad (cf.ReadFix (), bCustom);
 m_info.nTextures = cf.ReadByte ();
 m_info.nFirstTexture = cf.ReadShort ();
 m_info.nSimplerModel = cf.ReadByte ();
@@ -738,7 +738,7 @@ int ReadPolyModels (CArray<CPolyModel>& models, int nModels, CFile& cf, int nOff
 	int i;
 
 for (i = nOffset, nModels += nOffset; i < nModels; i++)
-	if (!models [i].Read (0, cf))
+	if (!models [i].Read (0, 0, cf))
 		break;
 return i;
 }

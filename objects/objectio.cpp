@@ -55,7 +55,7 @@ if (OBJ_IDX (this) == nDbgObj)
 info.nType = cf.ReadByte ();
 #if DBG
 if (info.nType == nDbgObjType)
-	nDbgObjType = nDbgObjType;
+	BRP;
 #endif
 info.nId = cf.ReadByte ();
 #if DBG

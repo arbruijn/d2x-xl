@@ -191,7 +191,7 @@ info.movementType = MT_PHYSICS;
 mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
 rType.polyObjInfo.nModel = nModel;
 if (bHasModel)
-	SetSizeFromModel ();
+	AdjustSize ();
 rType.polyObjInfo.nTexOverride = -1;
 SetLife (IMMORTAL_TIME);
 return 1;

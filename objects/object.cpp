@@ -1272,9 +1272,9 @@ void FixObjectSizes (void)
 	CObject	*objP = OBJECTS.Buffer ();
 
 FORALL_PLAYER_OBJS (objP, i)
-	objP->SetSizeFromModel ();
+	objP->AdjustSize ();
 FORALL_ROBOT_OBJS (objP, i)
-	objP->SetSizeFromModel ();
+	objP->AdjustSize ();
 }
 
 //------------------------------------------------------------------------------

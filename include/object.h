@@ -1155,9 +1155,12 @@ class CObject : public CObjectInfo {
 		inline bool Ignored (int bFlag, int nType = 0) { return m_bIgnore [nType] == bFlag; }
 
 		inline void SetSize (fix xSize) { info.xSize = xSize; }
-		inline void SetSizeFromModel (int i = 0, fix scale = 0) { 
+		inline void AdjustSize (int i = 0, fix scale = 0) { 
 			fix size = ModelRadius (i);
-			SetSize (scale ? FixDiv (size, scale) : size); 
+			if (!size)
+				size = ModelRadius (!i);
+			if (size)
+				SetSize (scale ? FixDiv (size, scale) : size); 
 			}
 
 		void Verify (void);

@@ -331,7 +331,7 @@ objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
 if (0 > (objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel))
 	objP->rType.polyObjInfo.nModel = nModel;
 #if 0
-objP->SetSizeFromModel (0, gameData.weapons.info [objP->info.nId].poLenToWidthRatio);
+objP->AdjustSize (0, gameData.weapons.info [objP->info.nId].poLenToWidthRatio);
 #endif
 objP->rType.polyObjInfo.nTexOverride = -1;
 if (objP->info.nType == OBJ_POWERUP)

@@ -116,7 +116,7 @@ if (Type () == OBJ_ROBOT) {
 			//it's marked as non-shareware.  To see what robot number,
 			//print Id ().
 		rType.polyObjInfo.nModel = ROBOTINFO (Id ()).nModel;
-		SetSizeFromModel ();
+		AdjustSize ();
 		}
 	if (Id () == 65)						//special "reactor" robots
 		info.movementType = MT_NONE;
@@ -173,7 +173,7 @@ else if (Type () == OBJ_WEAPON) {
 		// Make sure model number & size are correct...	
 		Assert(info.renderType == RT_POLYOBJ);
 		rType.polyObjInfo.nModel = gameData.weapons.info [Id ()].nModel;
-		SetSizeFromModel ();
+		AdjustSize ();
 		}
 	}
 else if (Type () == OBJ_REACTOR) {

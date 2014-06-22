@@ -239,13 +239,13 @@ if (nModel == nDbgModel)
 #endif
 modelP = ((gameStates.app.bFixModels && gameStates.app.bAltModels) ? gameData.models.polyModels [2] : gameData.models.polyModels [0]) + nModel;
 modelP->Destroy ();
-if (!modelP->Read (1, cf)) {
+if (!modelP->Read (1, 0, cf)) {
 	cf.Close ();
 	return ++i;
 	}
 modelP->ReadData (gameData.models.polyModels [1] + nModel, cf);
 cf.Close ();
-modelP->SetRad (modelP->Size ());
+modelP->SetRad (modelP->Size (), 1);
 do {
 	gameData.models.modelToPOL [nModel] = modelP;
 	} while ((++i < j) && !replacementModels [i].pszHires);

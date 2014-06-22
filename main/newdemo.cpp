@@ -608,7 +608,7 @@ switch (objP->info.nType) {
 		else
 			objP->info.movementType = MT_NONE;
 		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId).nModel;
-		objP->SetSizeFromModel ();
+		objP->AdjustSize ();
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
 		objP->cType.aiInfo.CLOAKED = (ROBOTINFO (objP->info.nId).cloakType?1:0);
 		break;
@@ -623,7 +623,7 @@ switch (objP->info.nType) {
 		objP->info.controlType = CT_NONE;
 		objP->info.movementType = MT_PHYSICS;
 		objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;
-		objP->SetSizeFromModel ();
+		objP->AdjustSize ();
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
 		break;
 
@@ -631,7 +631,7 @@ switch (objP->info.nType) {
 		objP->info.controlType = CT_NONE;
 		objP->info.movementType = MT_NONE;
 		objP->rType.polyObjInfo.nModel = objP->info.nId;
-		objP->SetSizeFromModel ();
+		objP->AdjustSize ();
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
 		break;
 
