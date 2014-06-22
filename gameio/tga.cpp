@@ -706,7 +706,7 @@ int CTGA::Save (const char *pszFile, const char *pszFolder)
 if (!pszFolder)
 	pszFolder = gameFolders.game.szData [0];
 CFile::SplitPath (pszFile, NULL, fn, NULL);
-sprintf (szFolder, "%s/%d/", pszFolder, m_bmP->Width ());
+sprintf (szFolder, "%s%d/", pszFolder, m_bmP->Width ());
 strcat (fn, ".tga");
 r = m_cf.Open (fn, szFolder, "wb", 0) && Write ();
 if (m_cf.File ())
