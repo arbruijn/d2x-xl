@@ -3038,7 +3038,7 @@ typedef struct tProfilerData {
 #define PROF_END(_tag)		(gameData.profiler.t [_tag]) += clock () - tProf;
 #define PROF_RESET(_tag)	(gameData.profiler.t [_tag]) = 0;
 #define PROF_TOGGLE			if (gameData.profiler.bToggle) { \
-										gameStates.render.bShowProfiler + 1 = (gameStates.render.bShowProfiler + 1) % 3; \
+										gameStates.render.bShowProfiler = (gameStates.render.bShowProfiler + 1) % 3; \
 										PROF_INIT; \
 										}
 

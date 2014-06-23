@@ -134,7 +134,7 @@ for (i = (int) ptFrame; i < (int) ptTagCount; i++) {
 		profilerValueOffset = w;
 	}
 fontP->StringSize (" .", w, h, aw);
-profilerValueOffset += w;
+profilerValueOffset += w + 5;
 
 for (i = (int) ptFrame; i < (int) ptTagCount; i++) {
 	fontP->PadString (szTags [i].szPad, szTags [i].szLabel, " .", profilerValueOffset);
@@ -147,11 +147,11 @@ for (i = (int) ptFrame; i < (int) ptTagCount; i++) {
 
 //------------------------------------------------------------------------------
 
-static float PrintTime (tProfilerTags tag, int nLine)
+static float PrintTime (tProfilerTags tag, int nLine, int bStyle = 0)
 {
 	char szValue [200];
 	int h = fontManager.Current ()->Height () + 3;
-	float t;
+	float t = 0.0f;
 
 #if 0
 
@@ -162,7 +162,13 @@ GrString (5, h * nLine, szTags [tag].szLabel);
 GrString (szTags [tag].nPadOffset, h * nLine, szTags [tag].pszPad);
 #endif
 
-sprintf (szValue, ": %05.2f %c (%05.2f)", t = 100.0f * float (p [0].t [tag]) / float (p [0].t [ptFrame]), '%', float (p [0].t [tag]) / p [0].nFrameCount);
+if (bStyle == 0)
+	sprintf (szValue, ": %05.2f %c (%05.2f)", t = 100.0f * float (p [0].t [tag]) / float (p [0].t [ptFrame]), '%', float (p [0].t [tag]) / p [0].nFrameCount);
+else if (bStyle == 1)
+	sprintf (szValue, ": %05.2f", float (p [0].t [tag]) / p [0].nFrameCount);
+else
+	sprintf (szValue, ": %05.2f %c", t = 100.0f * float (p [0].t [tag]) / float (p [0].t [ptFrame]), '%');
+
 
 int x = profilerValueOffset + 1;
 char c [2] = {'\0', '\0'};
@@ -192,11 +198,11 @@ if (gameStates.render.bShowProfiler && !gameStates.menus.nInMenu && fontManager.
 	static time_t t0 = -1000;
 	time_t t1 = clock ();
 
+	if (gameStates.render.bShowProfiler == 1)
+		gameData.profiler.nFrameCount = 1;
+	else
+		gameData.profiler.nFrameCount++;
 	if (((gameStates.render.bShowProfiler == 1) && (t1 - t0 >= 10)) || ((gameStates.render.bShowProfiler == 2) && (t1 - t0 >= 1000))) {
-		if (gameStates.render.bShowProfiler == 1)
-			gameData.profiler.nFrameCount = 1;
-		else
-			gameData.profiler.nFrameCount++;
 		memcpy (&p [1], &p [0], sizeof (tProfilerData));
 		memcpy (&p [0], &gameData.profiler, sizeof (tProfilerData));
 		t0 = t1;
@@ -209,10 +215,8 @@ if (gameStates.render.bShowProfiler && !gameStates.menus.nInMenu && fontManager.
 
 	int nLine = 3;
 	float s = 0;
-	char szPad [200];
 
-	GrPrintF (NULL, 5, h * nLine, fontManager.Current ()->PadString (szPad, "  frame ", " .", 190));
-	GrPrintF (NULL, 196, h * nLine++, ": %05.2f", float (p [0].t [ptFrame]) / p [0].nFrameCount);
+	PrintTime (ptFrame, nLine++, 1);
 	if (p [0].t [ptRenderFrame]) {
 		PrintTime (ptGameStates, nLine++);
 		fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
@@ -239,8 +243,9 @@ if (gameStates.render.bShowProfiler && !gameStates.menus.nInMenu && fontManager.
 		s += PrintTime (ptBuildObjList, nLine++);
 
 		fontManager.SetColorRGBi (GOLD_RGBA, 1, 0, 0);
-		GrPrintF (NULL, 5, h * nLine, fontManager.Current ()->PadString (szPad, "      total", " .", 190));
-		GrPrintF (NULL, 196, h * nLine++, ": %05.2f %c", s, '%');
+		char szPad [200];
+		GrPrintF (NULL, 5, h * nLine, fontManager.Current ()->PadString (szPad, "      total", " .", profilerValueOffset));
+		GrPrintF (NULL, profilerValueOffset + 1, h * nLine++, ": %05.2f %c", s, '%');
 		}
 	if (gameStates.render.bShowProfiler == 1)
 		memset (&gameData.profiler, 0, sizeof (gameData.profiler));
