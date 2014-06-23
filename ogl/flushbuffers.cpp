@@ -80,6 +80,8 @@ float quadVerts [5][4][2] = {
 
 //------------------------------------------------------------------------------
 
+#if PROFILING
+
 static tProfilerData p [2];
 
 typedef struct tProfilerTagLabels {
@@ -188,6 +190,8 @@ for (char* ps = szValue; *ps; ps++) {
 	}
 return t;
 }
+
+#endif //PROFILING
 
 //------------------------------------------------------------------------------
 
