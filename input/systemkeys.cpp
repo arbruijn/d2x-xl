@@ -738,7 +738,7 @@ void HandleGameKey(int key)
 
 		case KEY_ALTED + KEY_P:
 #if PROFILING
-			gameStates.render.bToggle = 1;
+			gameData.profiler.bToggle = 1;
 #endif
 			break;
 
