@@ -657,6 +657,7 @@ if (pfnTIRStart)
 
 if (!setjmp (gameExitPoint)) {
 	for (;;) {
+		PROF_TOGGLE
 		PROF_START
 		// GAME LOOP!
 #if DBG

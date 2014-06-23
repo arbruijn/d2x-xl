@@ -3029,13 +3029,18 @@ typedef enum tProfilerTags {
 typedef struct tProfilerData {
 	time_t				t [ptTagCount];
 	int					nFrameCount;
+	int					bToggle;
 } tProfilerData;
 
-#define PROF_INIT				memset(&gameData.profiler.t, 0, sizeof (gameData.profiler.t));
+#define PROF_INIT				memset(&gameData.profiler, 0, sizeof (gameData.profiler));
 #define PROF_START			time_t tProf = clock ();
 #define PROF_CONT				tProf = clock ();
 #define PROF_END(_tag)		(gameData.profiler.t [_tag]) += clock () - tProf;
 #define PROF_RESET(_tag)	(gameData.profiler.t [_tag]) = 0;
+#define PROF_TOGGLE			if (gameData.profiler.bToggle) { \
+										gameStates.render.bShowProfiler + 1 = (gameStates.render.bShowProfiler + 1) % 3; \
+										PROF_INIT; \
+										}
 
 #else
 
@@ -3043,6 +3048,7 @@ typedef struct tProfilerData {
 #define PROF_START	
 #define PROF_CONT	
 #define PROF_END(_tAcc)
+#define PROF_TOGGLE			
 
 #endif
 

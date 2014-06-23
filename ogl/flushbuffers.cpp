@@ -197,8 +197,8 @@ if (gameStates.render.bShowProfiler && !gameStates.menus.nInMenu && fontManager.
 			gameData.profiler.nFrameCount = 1;
 		else
 			gameData.profiler.nFrameCount++;
-		memcpy (&p [1], &p [0], sizeof (p));
-		memcpy (&p [0], &gameData.profiler, sizeof (p));
+		memcpy (&p [1], &p [0], sizeof (tProfilerData));
+		memcpy (&p [0], &gameData.profiler, sizeof (tProfilerData));
 		t0 = t1;
 		}
 	fontManager.SetCurrent (SMALL_FONT);

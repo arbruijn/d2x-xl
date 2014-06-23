@@ -738,8 +738,7 @@ void HandleGameKey(int key)
 
 		case KEY_ALTED + KEY_P:
 #if PROFILING
-			gameStates.render.bShowProfiler = (gameStates.render.bShowProfiler + 1) % 3;
-			memset (&gameData.profiler, 0, sizeof (gameData.profiler));
+			gameStates.render.bToggle = 1;
 #endif
 			break;
 
