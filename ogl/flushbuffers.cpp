@@ -83,7 +83,7 @@ float quadVerts [5][4][2] = {
 static tProfilerData p [2];
 
 typedef struct tProfilerTagLabels {
-	char	szLabel [24];
+	char	szLabel [30];
 	char	szPad [200];
 	char*	pszPad;
 	int	nPadOffset;
@@ -100,6 +100,7 @@ static tProfilerTagLabels szTags [ptTagCount] = {
 	{"        face list", "", NULL, 0},
 	{"        faces", "", NULL, 0},
 	{"          vertex color", "", NULL, 0},
+	{"          per pixel light", "", NULL, 0},
 	{"        objects", "", NULL, 0},
 	{"          object meshes", "", NULL, 0},
 	{"        states", "", NULL, 0},
