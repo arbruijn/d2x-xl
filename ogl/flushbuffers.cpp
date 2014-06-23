@@ -122,12 +122,11 @@ static int profilerValueOffset = 0;
 
 static void PrepareTagLabels (void)
 {
-if (szTags [0].pszPad)
+if (profilerValueOffset)
 	return;
 
 int	i, w, h, aw, wMax = 0;
 CFont* fontP = fontManager.Current ();
-
 
 for (i = (int) ptFrame; i < (int) ptTagCount; i++) {
 	fontP->StringSize (szTags [i].szLabel, w, h, aw);
