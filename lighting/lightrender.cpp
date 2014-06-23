@@ -215,7 +215,6 @@ return h;
 void CLightManager::SetNearestToVertex (int nSegment, int nSide, int nVertex, CFixVector *vNormal, ubyte nType, int bStatic, int bVariable, int nThread)
 {
 if (bStatic || m_data.variableVertLights [nVertex]) {
-	PROF_START
 	short*				nearestLightP = m_data.nearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	CDynLightIndex*	sliP = &m_data.index [0][nThread];
 	short					i, j, nActiveLightI = sliP->nActive;
@@ -269,7 +268,6 @@ if (nVertex == nDbgVertex)
 			//lightP->render.bState = 1;
 			}
 		}
-	PROF_END(ptVertexLighting)
 	}
 }
 
@@ -358,7 +356,6 @@ if (gameStates.render.nLightingMethod) {
 
 short CLightManager::SetNearestToSegment (int nSegment, int nFace, int bVariable, int nType, int nThread)
 {
-PROF_START
 	CDynLightIndex*	sliP = &m_data.index [0][nThread];
 
 #if DBG
@@ -460,7 +457,6 @@ if (gameStates.render.nLightingMethod) {
 #if DBG
 nPrevSeg = nSegment;
 #endif
-PROF_END(ptSegmentLighting)
 return sliP->nActive;
 }
 
