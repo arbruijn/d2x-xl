@@ -292,6 +292,7 @@ gameStates.render.bDoLightmaps = 0;
 
 void ComputeMineLighting (short nStartSeg, fix xStereoSeparation, int nWindow)
 {
+PROF_START
 ogl.m_states.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
 	gameData.render.mine.bSetAutomapVisited = BeginRenderMine (nStartSeg, xStereoSeparation, nWindow);
@@ -354,6 +355,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 		}
 	transparencyRenderer.InitBuffer (gameData.render.zMin, gameData.render.zMax, nWindow);
 	}
+PROF_END(ptLighting)
 }
 
 //------------------------------------------------------------------------------

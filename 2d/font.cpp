@@ -108,7 +108,7 @@ return NULL;
 //takes the character AFTER being offset into font
 //takes the character BEFORE being offset into current font
 
-void CFont::GetCharWidth (ubyte c, ubyte c2, int& width, int& spacing)
+void CFont::GetCharWidth (ubyte c, ubyte cNext, int& width, int& spacing)
 {
 	int letter = c - m_info.minChar;
 
@@ -127,8 +127,8 @@ else {
 	spacing = width;
 
 	if (m_info.flags & FT_KERNED) {
-		if ((c2 != 0) && (c2 != '\n')) {
-			int letter2 = c2 - m_info.minChar;
+		if ((cNext != 0) && (cNext != '\n')) {
+			int letter2 = cNext - m_info.minChar;
 			if (InFont (letter2)) {
 				ubyte *p = FindKernEntry ((ubyte) letter, (ubyte) letter2);
 				if (p)

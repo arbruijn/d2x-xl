@@ -637,8 +637,8 @@ gameData.objs.update.Reset ();
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->Links (0).next;
 	if ((objP->info.nType != OBJ_NONE) && (objP->info.nType != OBJ_GHOST) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !objP->Update ()) {
-		return 0;
 		PROF_END(ptUpdateObjects)
+		return 0;
 		}
 #if DBG
 	if (objP->IsRobot ()) 

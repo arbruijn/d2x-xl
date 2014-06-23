@@ -704,6 +704,7 @@ if (!setjmp (gameExitPoint)) {
 		if (i == 0)
 			continue;
 
+		PROF_CONT
 		if (gameStates.app.bSingleStep) {
 			while (!(c = KeyInKey ()))
 				;
@@ -760,10 +761,6 @@ if (!setjmp (gameExitPoint)) {
 			}
 		gameStates.multi.bIWasKicked = 0;
 		PROF_END(ptFrame);
-#if PROFILING
-		if (gameData.app.nFrameCount % 10000 == 0)
-			memset (&gameData.profiler, 0, sizeof (gameData.profiler));
-#endif
 		if (gameStates.app.nFunctionMode != FMODE_GAME)
 			break; //longjmp (gameExitPoint, 0);
 		}
@@ -957,6 +954,7 @@ int DoGameFrame (int bRenderFrame, int bReadControls, int bFrameTime)
 int GameFrame (int bRenderFrame, int bReadControls, int bFrameTime)
 #endif
 {
+PROF_START
 gameStates.app.bGameRunning = 1;
 //gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
@@ -976,12 +974,14 @@ RemoveObsoleteStuckObjects ();
 InitAIFrame ();
 DoFinalBossFrame ();
 DrainHeadlightPower ();
+PROF_END(ptGameStates)
 
 if (IsMultiGame) {
 	if (!MultiProtectGame ()) {
 		SetFunctionMode (FMODE_MENU);
 		return -1;
 		}
+	PROF_CONT
 	AutoBalanceTeams ();
 	MultiSendTyping ();
 	MultiSendWeapons (0);
@@ -993,20 +993,24 @@ if (IsMultiGame) {
 	MultiCheckForScoreGoalWinner (netGame.GetPlayTimeAllowed () && (gameStates.app.xThisLevelTime >= I2X ((netGame.GetPlayTimeAllowed () * 5 * 60))));
 	MultiCheckForEntropyWinner ();
 	MultiRemoveGhostShips ();
+	PROF_END (ptGameStates)
 	}
 
 #if PHYSICS_FPS < 0
+PROF_CONT
 DoEffectsFrame ();
+PROF_END(ptGameStates)
 #endif
 if (bRenderFrame)
 	DoRenderFrame ();
+
+PROF_CONT
 if (bFrameTime)
 	CalcFrameTime ();
 if (bReadControls > 0)
 	ReadControls ();
 else if (bReadControls < 0)
 	controls.Reset ();
-
 DeadPlayerFrame ();
 if (gameData.demo.nState != ND_STATE_PLAYBACK) 
 	DoReactorDeadFrame ();
@@ -1020,12 +1024,16 @@ if ((gameData.time.xGame < 0) || (gameData.time.xGame > I2X (0x7fff - 600)))
 if (IsMultiGame && netGame.GetPlayTimeAllowed ())
 	gameStates.app.xThisLevelTime += gameData.time.xFrame;
 audio.SyncSounds ();
+PROF_END (ptGameStates)
+
 if (gameStates.app.bEndLevelSequence) {
 	DoEndLevelFrame ();
 	PowerupGrabCheatAll ();
 	DoSpecialEffects ();
 	return 1;					//skip everything else
 	}
+
+PROF_CONT
 if (gameData.demo.nState != ND_STATE_PLAYBACK) 
 	DoExplodingWallFrame ();
 if ((gameData.demo.nState != ND_STATE_PLAYBACK) || (gameData.demo.nVcrState != ND_STATE_PAUSED)) {
@@ -1039,12 +1047,15 @@ UpdateFlagClips ();
 MultiSetFlagPos ();
 SetPlayerPaths ();
 FlashFrame ();
+PROF_END (ptGameStates)
+
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	NDPlayBackOneFrame ();
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)
 		longjmp (gameExitPoint, 0);		// Go back to menu
 	}
 else { // Note the link to above!
+	PROF_CONT
 	LOCALPLAYER.homingObjectDist = -1;		//	Assume not being tracked.  CObject::UpdateWeapon modifies this.
 	if (!UpdateAllObjects ())
 		return 0;
@@ -1061,7 +1072,10 @@ else { // Note the link to above!
 		gameData.laser.nGlobalFiringCount -= LocalPlayerFireGun ();	
 	if (gameData.laser.nGlobalFiringCount < 0)
 		gameData.laser.nGlobalFiringCount = 0;
+	PROF_END (ptGameStates)
 	}
+
+PROF_CONT
 if (gameStates.render.bDoAppearanceEffect) {
 	gameData.objs.consoleP->CreateAppearanceEffect ();
 	gameStates.render.bDoAppearanceEffect = 0;
@@ -1072,11 +1086,13 @@ if (gameStates.render.bDoAppearanceEffect) {
 		SetupSpherePulse (gameData.multiplayer.spherePulse + N_LOCALPLAYER, 0.02f, 0.5f);
 		}
 	}
+
 DoSlowMotionFrame ();
 CheckInventory ();
 OmegaChargeFrame ();
 SlideTextures ();
 FlickerLights ();
+PROF_END (ptGameStates)
 return 1;
 }
 

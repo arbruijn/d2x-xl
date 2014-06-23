@@ -72,7 +72,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define GEOMETRY_VBOS	0
 
 #if DBG
-#	define	PROFILING 0
+#	define	PROFILING 1
 #else
 #	define	PROFILING 0
 #endif
@@ -3021,7 +3021,9 @@ typedef enum tProfilerTags {
 	ptTransform,
 	ptVertexColor,
 	ptFaceList,
+	ptGameStates,
 	ptUpdateObjects,
+	ptPhysics,
 	ptAux,
 	ptTagCount
 	} tProfilerTags;
@@ -3030,10 +3032,11 @@ typedef struct tProfilerData {
 	time_t				t [ptTagCount];
 } tProfilerData;
 
-#define PROF_INIT			memset(&gameData.profiler.t, 0, sizeof (gameData.profiler.t));
-#define PROF_START		time_t tProf = clock ();
-#define PROF_CONT			tProf = clock ();
-#define PROF_END(_tag)	(gameData.profiler.t [_tag]) += clock () - tProf;
+#define PROF_INIT				memset(&gameData.profiler.t, 0, sizeof (gameData.profiler.t));
+#define PROF_START			time_t tProf = clock ();
+#define PROF_CONT				tProf = clock ();
+#define PROF_END(_tag)		(gameData.profiler.t [_tag]) += clock () - tProf;
+#define PROF_RESET(_tag)	(gameData.profiler.t [_tag]) = 0;
 
 #else
 

@@ -428,6 +428,29 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+char* CFont::PadString (char* pszDest, const char* pszText, const char* pszFiller, int nLength)
+{
+int sw, swf, sh, aw;
+fontManager.Current ()->StringSize (pszText, sw, sh, aw);
+fontManager.Current ()->StringSize (pszFiller, swf, sh, aw);
+*pszDest = '\0';
+if (sw + swf <= nLength) {
+	int i = (nLength - sw) / swf;
+	if (i > 0) {
+		int l = sw + i * swf;
+		if (l < nLength)
+			PadString (pszDest, pszText, " ", nLength - l);
+		if (!*pszDest);
+			strcpy (pszDest, pszText);
+		for (; i; i--)
+			strcat (pszDest, pszFiller);
+		}
+	}
+return pszDest;
+}
+
+//------------------------------------------------------------------------------
+
 int CFont::DrawString (int left, int top, const char *s)
 {
 	const char*		textP, * nextRowP, * text_ptr1;

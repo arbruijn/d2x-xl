@@ -1024,6 +1024,7 @@ if (!(bNewPhysCode & 1)) {
 	return;
 	}
 #endif
+PROF_START
 
 	CPhysSimData simData (OBJ_IDX (this)); // must be called after initializing gameData.physics.xTime! Will call simData.Setup ()!
 
@@ -1046,6 +1047,7 @@ if (Velocity () /*simData.velocity*/.IsZero ()) {
 		return;
 #endif
 	}
+PROF_END(ptPhysics)
 
 #if DBG
 if (Index () == nDbgObj) {
@@ -1058,6 +1060,7 @@ if (Index () == nDbgObj) {
 	}
 #endif
 
+PROF_CONT
 ProcessDrag (simData);
 
 #if DBG
@@ -1120,10 +1123,12 @@ for (;;) {	//Move the object
 			if (info.nType == OBJ_WEAPON)
 				Die ();
 			FinishPhysicsSim (simData);
+			PROF_END(ptPhysics)
 			return;
 			}
 		if (!ProcessOffset (simData)) {
 			FinishPhysicsSim (simData);
+			PROF_END(ptPhysics)
 			return;
 			}
 		} while (!UpdateSimTime (simData));
@@ -1137,6 +1142,7 @@ for (;;) {	//Move the object
 		bRetry = ProcessObjectCollision (simData);
 	if (bRetry < 0) {
 		FinishPhysicsSim (simData);
+		PROF_END(ptPhysics)
 		return;
 		}
 	if (!bRetry) 
@@ -1147,6 +1153,7 @@ FixPosition (simData);
 FinishPhysicsSim (simData);
 if (CriticalHit ())
 	RandomBump (I2X (1), I2X (8), true);
+PROF_END(ptPhysics)
 }
 
 //	----------------------------------------------------------------

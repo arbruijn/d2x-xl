@@ -112,6 +112,7 @@ class CFont {
 		inline int Scaled (int v, float scale) { return int (ceil (float (v) * scale)); }
 
 		int DrawString (int x, int y, const char *s);
+		char* PadString (char* pszDest, const char* pszText, const char* pszFiller, int nLength);
 
 	private:
 		ubyte *FindKernEntry (ubyte first, ubyte second);

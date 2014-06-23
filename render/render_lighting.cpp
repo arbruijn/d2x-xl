@@ -215,7 +215,6 @@ return nColor;
 
 void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
 {
-PROF_START
 	CSegFace*		faceP;
 	CFloatVector*	colorP;
 	CFaceColor		faceColor [3];
@@ -308,7 +307,6 @@ for (i = nStart; i < nEnd; i++) {
 		}
 	lightManager.Material ().bValid = 0;
 	}
-PROF_END(ptLighting)
 ogl.SetTransform (0);
 }
 
@@ -362,7 +360,6 @@ while (bSemaphore [nThread])
 	G3_SLEEP (0);
 bSemaphore [nThread] = 1;
 #endif
-PROF_START
 	CSegment*		segP;
 	tSegFaces*		segFaceP;
 	CSegFace*		faceP;
@@ -471,7 +468,6 @@ for (i = nStart; i < nEnd; i++) {
 if (ogl.m_states.bVertexLighting)
 	gpgpuLighting.Compute (-1, 2, NULL);
 #endif
-PROF_END(ptLighting)
 ogl.SetTransform (0);
 #if 0
 bSemaphore [nThread] = 0;
@@ -482,7 +478,6 @@ bSemaphore [nThread] = 0;
 
 void ComputeDynamicTriangleLight (int nStart, int nEnd, int nThread)
 {
-PROF_START
 	CSegment*		segP;
 	tSegFaces*		segFaceP;
 	CSegFace*		faceP;
@@ -615,7 +610,6 @@ for (i = nStart; i < nEnd; i++) {
 if (ogl.m_states.bVertexLighting)
 	gpgpuLighting.Compute (-1, 2, NULL);
 #endif
-PROF_END(ptLighting)
 ogl.SetTransform (0);
 }
 
