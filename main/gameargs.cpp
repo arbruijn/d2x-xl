@@ -325,11 +325,16 @@ void EvalOglArgs (void)
 if ((t = FindArg ("-gl_alttexmerge")))
 	gameOpts->ogl.bGlTexMerge = NumArg (t, 1);
 #endif
+#if 0 
+// lowmem only really makes senes together with limiting texture preloading
 if ((t = FindArg ("-lowmem")))
 	ogl.m_states.bLowMemory = NumArg (t, 1);
+// this parameter can lead to the game briefly pausing everytime a new weapon, robot etc. becomes visible
+// that is very annoying and not immediately understandable to players
 if ((t = FindArg ("-preload_textures")))
 	ogl.m_states.nPreloadTextures = NumArg (t, 6);
 else
+#endif
 	ogl.m_states.nPreloadTextures = 6;
 if ((t = FindArg ("-FSAA")))
 	ogl.m_states.bFSAA = NumArg (t, 1);
