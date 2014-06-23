@@ -328,9 +328,9 @@ if ((t = FindArg ("-gl_alttexmerge")))
 if ((t = FindArg ("-lowmem")))
 	ogl.m_states.bLowMemory = NumArg (t, 1);
 if ((t = FindArg ("-preload_textures")))
-	ogl.m_states.nPreloadTextures = NumArg (t, 3);
+	ogl.m_states.nPreloadTextures = NumArg (t, 6);
 else
-	ogl.m_states.nPreloadTextures = 5;
+	ogl.m_states.nPreloadTextures = 6;
 if ((t = FindArg ("-FSAA")))
 	ogl.m_states.bFSAA = NumArg (t, 1);
 if ((t = FindArg ("-quad_buffering")))
