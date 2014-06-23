@@ -3004,14 +3004,12 @@ typedef enum tProfilerTags {
 	ptRenderMine,
 	ptBuildSegList,
 	ptBuildObjList,
-	ptRenderObjects,
-	ptRenderObjectsFast,
 	ptLighting,
 	ptRenderPass,
-	ptSegmentLighting,
-	ptVertexLighting,
-	ptPerPixelLighting,
+	ptFaceList,
 	ptRenderFaces,
+	ptVertexColor,
+	ptRenderObjects,
 	ptRenderStates,
 	ptShaderStates,
 	ptTranspPolys,
@@ -3019,17 +3017,16 @@ typedef enum tProfilerTags {
 	ptParticles,
 	ptCockpit,
 	ptTransform,
-	ptVertexColor,
-	ptFaceList,
-	ptGameStates,
-	ptUpdateObjects,
-	ptPhysics,
 	ptAux,
+	ptGameStates,
+	ptObjectStates,
+	ptPhysics,
 	ptTagCount
 	} tProfilerTags;
 
 typedef struct tProfilerData {
 	time_t				t [ptTagCount];
+	int					nFrameCount;
 } tProfilerData;
 
 #define PROF_INIT				memset(&gameData.profiler.t, 0, sizeof (gameData.profiler.t));

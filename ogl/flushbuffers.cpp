@@ -62,6 +62,8 @@
 
 //#define _WIN32_WINNT		0x0600
 
+//------------------------------------------------------------------------------
+
 tTexCoord2f quadTexCoord [3][4] = {
 	{{{0,0}},{{1,0}},{{1,1}},{{0,1}}},
 	{{{0,0}},{{0.5f,0}},{{0.5f,1}},{{0,1}}},
@@ -78,22 +80,93 @@ float quadVerts [5][4][2] = {
 
 //------------------------------------------------------------------------------
 
-static tProfilerData p;
-static float nFrameCount = 1;
+static tProfilerData p [2];
 
-static float PrintTime (char* pszLabel, tProfilerTags tag, int nLine)
+typedef struct tProfilerTagLabels {
+	char	szLabel [24];
+	char	szPad [200];
+	char*	pszPad;
+	int	nPadOffset;
+} tProfilerTagLabels;
+
+static tProfilerTagLabels szTags [ptTagCount] = {
+	{"  frame", "", NULL, 0},
+	{"  scene", "", NULL, 0},
+	{"    mine", "", NULL, 0},
+	{"      seg list", "", NULL, 0},
+	{"      obj list", "", NULL, 0},
+	{"      light", "", NULL, 0},
+	{"      render", "", NULL, 0},
+	{"        face list", "", NULL, 0},
+	{"        faces", "", NULL, 0},
+	{"          vertex color", "", NULL, 0},
+	{"        objects", "", NULL, 0},
+	{"        states", "", NULL, 0},
+	{"        shaders", "", NULL, 0},
+	{"        transparency", "", NULL, 0},
+	{"      effects", "", NULL, 0},
+	{"        particles", "", NULL, 0},
+	{"      cockpit", "", NULL, 0},
+	{"      transform", "", NULL, 0},
+	{"      other", "", NULL, 0},
+	{"    game states", "", NULL, 0},
+	{"      object states",  "", NULL, 0},
+	{"        physics", "", NULL, 0}
+};
+
+static int profilerValueOffset = 0;
+
+//------------------------------------------------------------------------------
+
+static void PrepareTagLabels (void)
 {
-	char szPad [200];
+if (szTags [0].pszPad)
+	return;
 
-int h = fontManager.Current ()->Height () + 3;
-float t;
-GrPrintF (NULL, 5, h * nLine, fontManager.Current ()->PadString (szPad, pszLabel, " .", 190));
-sprintf (szPad, ": %05.2f %c (%05.2f)", t = 100.0f * float (p.t [tag]) / float (p.t [ptFrame]), '%', float (p.t [tag]) / nFrameCount);
+int	i, w, h, aw, wMax = 0;
+CFont* fontP = fontManager.Current ();
 
-int x = 196;
+
+for (i = (int) ptFrame; i < (int) ptTagCount; i++) {
+	fontP->StringSize (szTags [i].szLabel, w, h, aw);
+	if (profilerValueOffset < w)
+		profilerValueOffset = w;
+	}
+fontP->StringSize (" .", w, h, aw);
+profilerValueOffset += w;
+
+for (i = (int) ptFrame; i < (int) ptTagCount; i++) {
+	fontP->PadString (szTags [i].szPad, szTags [i].szLabel, " .", profilerValueOffset);
+	szTags [i].pszPad = strstr (szTags [i].szPad, " .");
+	*szTags [i].pszPad++ = '\0';
+	fontP->StringSize (szTags [i].pszPad, w, h, aw);
+	szTags [i].nPadOffset = profilerValueOffset - w;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+static float PrintTime (tProfilerTags tag, int nLine)
+{
+	char szValue [200];
+	int h = fontManager.Current ()->Height () + 3;
+	float t;
+
+#if 0
+
+GrPrintF (NULL, 5, h * nLine, fontManager.Current ()->PadString (szValue, pszLabel, " .", 190));
+#else
+PrepareTagLabels ();
+GrString (5, h * nLine, szTags [tag].szLabel);
+GrString (szTags [tag].nPadOffset, h * nLine, szTags [tag].pszPad);
+#endif
+
+sprintf (szValue, ": %05.2f %c (%05.2f)", t = 100.0f * float (p [0].t [tag]) / float (p [0].t [ptFrame]), '%', float (p [0].t [tag]) / p [0].nFrameCount);
+
+int x = profilerValueOffset + 1;
 char c [2] = {'\0', '\0'};
 
-for (char* ps = szPad; *ps; ps++) {
+for (char* ps = szValue; *ps; ps++) {
 	int sw, sh, aw;
 	c [0] = *ps;
 	fontManager.Current ()->StringSize (c, sw, sh, aw);
@@ -119,8 +192,12 @@ if (gameStates.render.bShowProfiler && !gameStates.menus.nInMenu && fontManager.
 	time_t t1 = clock ();
 
 	if (((gameStates.render.bShowProfiler == 1) && (t1 - t0 >= 10)) || ((gameStates.render.bShowProfiler == 2) && (t1 - t0 >= 1000))) {
-		memcpy (&p, &gameData.profiler, sizeof (p));
-		nFrameCount = float (gameData.app.nFrameCount);
+		if (gameStates.render.bShowProfiler == 1)
+			gameData.profiler.nFrameCount = 1;
+		else
+			gameData.profiler.nFrameCount++;
+		memcpy (&p [1], &p [0], sizeof (p));
+		memcpy (&p [0], &gameData.profiler, sizeof (p));
 		t0 = t1;
 		}
 	fontManager.SetCurrent (SMALL_FONT);
@@ -134,31 +211,31 @@ if (gameStates.render.bShowProfiler && !gameStates.menus.nInMenu && fontManager.
 	char szPad [200];
 
 	GrPrintF (NULL, 5, h * nLine, fontManager.Current ()->PadString (szPad, "  frame ", " .", 190));
-	GrPrintF (NULL, 196, h * nLine++, ": %05.2f", float (p.t [ptFrame]) / nFrameCount);
-	if (p.t [ptRenderFrame]) {
-		PrintTime ("  game states", ptGameStates, nLine++);
+	GrPrintF (NULL, 196, h * nLine++, ": %05.2f", float (p [0].t [ptFrame]) / p [0].nFrameCount);
+	if (p [0].t [ptRenderFrame]) {
+		PrintTime (ptGameStates, nLine++);
 		fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
-		PrintTime ("     object states", ptUpdateObjects, nLine++);
-		PrintTime ("        physics", ptPhysics, nLine++);
+		PrintTime (ptObjectStates, nLine++);
+		PrintTime (ptPhysics, nLine++);
 		fontManager.SetColorRGBi (GOLD_RGBA, 1, 0, 0);
-		PrintTime ("  scene", ptRenderFrame, nLine++);
-		PrintTime ("    mine", ptRenderMine, nLine++);
+		PrintTime (ptRenderFrame, nLine++);
+		PrintTime (ptRenderMine, nLine++);
 		fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
-		s += PrintTime ("      light", ptLighting, nLine++);
-		s += PrintTime ("      render", ptRenderPass, nLine++);
-		s += PrintTime ("      face list", ptFaceList, nLine++);
-		s += PrintTime ("      faces", ptRenderFaces, nLine++);
-		s += PrintTime ("      objects", ptRenderObjects, nLine++);
-		s += PrintTime ("      transparency", ptTranspPolys, nLine++);
-		s += PrintTime ("      effects", ptEffects, nLine++);
-		s += PrintTime ("        particles", ptParticles, nLine++);
-		s += PrintTime ("      cockpit", ptCockpit, nLine++);
-		s += PrintTime ("      states", ptRenderStates, nLine++);
-		s += PrintTime ("      shaders", ptShaderStates, nLine++);
-		s += PrintTime ("      other", ptAux, nLine++);
-		s += PrintTime ("      transform", ptTransform, nLine++);
-		s += PrintTime ("      seg list", ptBuildSegList, nLine++);
-		s += PrintTime ("      obj list", ptBuildObjList, nLine++);
+		s += PrintTime (ptLighting, nLine++);
+		s += PrintTime (ptRenderPass, nLine++);
+		s += PrintTime (ptFaceList, nLine++);
+		s += PrintTime (ptRenderFaces, nLine++);
+		s += PrintTime (ptRenderObjects, nLine++);
+		s += PrintTime (ptTranspPolys, nLine++);
+		s += PrintTime (ptEffects, nLine++);
+		s += PrintTime (ptParticles, nLine++);
+		s += PrintTime (ptCockpit, nLine++);
+		s += PrintTime (ptRenderStates, nLine++);
+		s += PrintTime (ptShaderStates, nLine++);
+		s += PrintTime (ptAux, nLine++);
+		s += PrintTime (ptTransform, nLine++);
+		s += PrintTime (ptBuildSegList, nLine++);
+		s += PrintTime (ptBuildObjList, nLine++);
 
 		fontManager.SetColorRGBi (GOLD_RGBA, 1, 0, 0);
 		GrPrintF (NULL, 5, h * nLine, fontManager.Current ()->PadString (szPad, "      total", " .", 190));

@@ -658,8 +658,7 @@ if (pfnTIRStart)
 if (!setjmp (gameExitPoint)) {
 	for (;;) {
 		PROF_START
-		int playerShield;
-			// GAME LOOP!
+		// GAME LOOP!
 #if DBG
 		if (automap.Display ())
 #endif
@@ -671,7 +670,7 @@ if (!setjmp (gameExitPoint)) {
 #endif
 			 //Assert (gameData.objs.consoleP == &OBJECTS[LOCALPLAYER.nObject]);
 			}
-		playerShield = LOCALPLAYER.Shield ();
+		int playerShield = LOCALPLAYER.Shield ();
 		gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
 
 		try {

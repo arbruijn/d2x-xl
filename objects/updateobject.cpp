@@ -637,7 +637,7 @@ gameData.objs.update.Reset ();
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->Links (0).next;
 	if ((objP->info.nType != OBJ_NONE) && (objP->info.nType != OBJ_GHOST) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !objP->Update ()) {
-		PROF_END(ptUpdateObjects)
+		PROF_END(ptObjectStates)
 		return 0;
 		}
 #if DBG
@@ -658,7 +658,7 @@ if (gameStates.app.bMultiThreaded) {
 	}
 #endif
 
-PROF_END(ptUpdateObjects)
+PROF_END(ptObjectStates)
 return 1;
 }
 
