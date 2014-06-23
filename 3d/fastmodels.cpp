@@ -1014,7 +1014,7 @@ if (gameOpts->render.debug.bWireFrame)
 	glLineWidth (1.0f);
 #endif
 ogl.ClearError (0);
-PROF_END(ptRenderObjectsFast)
+PROF_END(ptRenderObjectMeshes)
 }
 return 1;
 }

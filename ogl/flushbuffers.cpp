@@ -101,6 +101,7 @@ static tProfilerTagLabels szTags [ptTagCount] = {
 	{"        faces", "", NULL, 0},
 	{"          vertex color", "", NULL, 0},
 	{"        objects", "", NULL, 0},
+	{"          object meshes", "", NULL, 0},
 	{"        states", "", NULL, 0},
 	{"        shaders", "", NULL, 0},
 	{"        transparency", "", NULL, 0},

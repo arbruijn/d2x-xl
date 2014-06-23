@@ -3010,6 +3010,7 @@ typedef enum tProfilerTags {
 	ptRenderFaces,
 	ptVertexColor,
 	ptRenderObjects,
+	ptRenderObjectMeshes,
 	ptRenderStates,
 	ptShaderStates,
 	ptTranspPolys,
