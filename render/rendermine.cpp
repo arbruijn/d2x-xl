@@ -335,8 +335,7 @@ int _CDECL_ LightObjectsThread (void* nThreadP)
 
 #if PERSISTENT_THREADS
 for (;;) {
-	while (bIlluminated [nThread] < 0)
-		G3_SLEEP (1);
+	SDL_SemWait (bRendered [nThread]);
 #endif
 	for (int i = nThread; i < gameData.render.mine.nObjRenderSegs; i += gameStates.app.nThreads - 1) {
 		nSegment = gameData.render.mine.objRenderSegList [i];
@@ -353,7 +352,6 @@ for (;;) {
 	nThreads--;
 	SDL_mutexV (threadLock);
 #if PERSISTENT_THREADS
-	bIlluminated [nThread] = -1;
 	}
 #endif
 return 1;
@@ -512,7 +510,11 @@ else {
 		if (!threads [i])
 #endif
 		bRendered [i] = SDL_CreateSemaphore (0);
-		threads [i] = SDL_CreateThread (LightObjectsThread, nThreadIds + i);
+			threads [i] = SDL_CreateThread (LightObjectsThread, nThreadIds + i);
+		if (!bRendered [i])
+			bRendered [i] = SDL_CreateSemaphore (0);
+		else
+			SDL_SemPost (bRendered [i]);
 		}
 	RenderObjectsMT ();
 #if !PERSISTENT_THREADS
