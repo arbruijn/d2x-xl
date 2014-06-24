@@ -11,12 +11,12 @@ typedef struct FILEFINDSTRUCT {
 	char name [256];
 } FILEFINDSTRUCT;
 
-int FileFindFirst(const char *search_str, FILEFINDSTRUCT *ffstruct, int bFindDirs);
-int FileFindNext(FILEFINDSTRUCT *ffstruct, int bFindDirs);
-int FileFindClose(void);
+int FileFindFirst (const char *search_str, FILEFINDSTRUCT *ffstruct, int bFindDirs);
+int FileFindNext (FILEFINDSTRUCT *ffstruct, int bFindDirs);
+int FileFindClose (void);
 
 typedef struct FILETIMESTRUCT {
-	ushort date,time;
+	ushort date, time;
 } FILETIMESTRUCT;
 
 #else //!defined (_WIN32)
@@ -39,7 +39,7 @@ typedef struct FILEFINDSTRUCT {
 
 int FileFindNext (FILEFINDSTRUCT *ffsP, int nFlags);
 int FileFindFirst (const char *pszFilter, FILEFINDSTRUCT *ffsP, int nFlags);
-void FileFindClose(FILEFINDSTRUCT *ffsP);
+void FileFindClose (FILEFINDSTRUCT *ffsP);
 
 #endif //_WIN32
 
