@@ -1224,7 +1224,7 @@ if (!(bTracker
 	} //bTracker
 #if DBG
 else
-	bTracker = bTracker;
+	BRP;
 #endif
 memset (rd->src_network, 0, 4);
 memcpy (rd->src_node, &fromAddr.sin_addr, 4);

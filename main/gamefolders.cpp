@@ -150,7 +150,7 @@
 static char* CheckFolder (char* pszAppFolder, const char* pszFolder, const char* pszFile, bool bFolder = true)
 {
 if ((!pszFolder && *pszFolder))
-	return "";
+	return NULL;
 
 char szFolder [FILENAME_LEN];
 if (bFolder) {
@@ -268,11 +268,11 @@ if (!FindDataFolder (appConfig.Text ("-datadir")) &&
 	 !FindDataFolder (DEFAULT_GAME_FOLDER))
 	return 0;
 
-nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
+nUserFolderMode = !CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
 if (nUserFolderMode)
 	*gameFolders.user.szRoot = '\0';
 
-nSharedFolderMode = !*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "");
+nSharedFolderMode = !CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "");
 if (nSharedFolderMode)
 	*gameFolders.var.szRoot = '\0';
 
@@ -293,12 +293,12 @@ if (!FindDataFolder (appConfig.Text ("-datadir")) &&
 	 !FindDataFolder (DEFAULT_GAME_FOLDER)) 
 	return 0;
 
-nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
-if (nUserFolderMode && !*CheckFolder (gameFolders.user.szRoot, getenv ("HOME"), ""))
+nUserFolderMode = !CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
+if (nUserFolderMode && !CheckFolder (gameFolders.user.szRoot, getenv ("HOME"), ""))
 	*gameFolders.user.szRoot = '\0';
 
-nSharedFolderMode = !*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "");
-if (nSharedFolderMode && !*CheckFolder (gameFolders.var.szRoot, SHARED_ROOT_FOLDER, ""))
+nSharedFolderMode = !CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "");
+if (nSharedFolderMode && !CheckFolder (gameFolders.var.szRoot, SHARED_ROOT_FOLDER, ""))
 	*gameFolders.var.szRoot = '\0';
 
 #	else //__macosx__
@@ -311,11 +311,11 @@ if (!FindDataFolder (appConfig.Text ("-datadir")) &&
 		return 0;
 	}
 
-nUserFolderMode = !*CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
+nUserFolderMode = !CheckFolder (gameFolders.user.szRoot, appConfig.Text ("-userdir"), "");
 if (nUserFolderMode)
 	*gameFolders.user.szRoot = '\0';
 
-nSharedFolderMode = !*CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "");
+nSharedFolderMode = !CheckFolder (gameFolders.var.szRoot, appConfig.Text ("-cachedir"), "");
 if (nSharedFolderMode)
 	*gameFolders.var.szRoot = '\0';
 

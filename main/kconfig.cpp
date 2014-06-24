@@ -1426,7 +1426,6 @@ m_nPrevChangeMode =
 m_nChangeMode = BT_NONE;
 m_bTimeStopped = 0;
 m_bRedraw = 0;
-m_pszTitle = m_pszTitle;
 
 paletteManager.SetEffect (0, 0, 0);
 gameStates.menus.nInMenu++;

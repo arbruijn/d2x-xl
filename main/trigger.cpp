@@ -1420,7 +1420,7 @@ if (Flagged (TF_ALTERNATE))
 	Type () = oppTrigTypes [Type ()];
 #if DBG
 if ((this - gameData.trigs.triggers.Buffer () == nDbgTrigger) && (nDbgType == Type ()))
-	nDbgTrigger = nDbgTrigger;
+	BRP;
 nDbgType = Type ();
 #endif
 nDepth--;

@@ -1242,7 +1242,7 @@ if (ailP->targetAwarenessType) {
 	siP->nNewGoalState = aiTransitionTable [ailP->targetAwarenessType - 1][aiP->CURRENT_STATE][aiP->GOAL_STATE];
 #if DBG
 	if (siP->nNewGoalState == AIS_LOCK)
-		siP->nNewGoalState = siP->nNewGoalState;
+		BRP;
 #endif
 	if (ailP->targetAwarenessType == PA_WEAPON_ROBOT_COLLISION) {
 		// Decrease awareness, else this robot will flinch every frame.

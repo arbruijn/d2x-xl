@@ -193,7 +193,7 @@ tBitmapIndex PiggyRegisterBitmap (CBitmap *bmP, const char *name, int bInFile)
 
 #if DBG
 if (strstr (name, "door13"))
-	name = name;
+	BRP;
 #endif
 bmi.index = gameData.pig.tex.nBitmaps [gameStates.app.bD1Data];
 if (!bInFile) {

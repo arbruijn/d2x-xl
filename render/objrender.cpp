@@ -267,7 +267,7 @@ static float ObjectBlobColor (CObject *objP, CBitmap *bmP, CFloatVector *colorP,
 bmP->GetAvgColor (colorP);
 #if DBG
 if ((objP->info.nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->info.nId == nDbgObjId)))
-	nDbgObjType = nDbgObjType;
+	BRP;
 #endif
 if (bMaxOut) {
 	float h = colorP->Red ();
@@ -313,7 +313,7 @@ if ((nType == OBJ_WEAPON) && (objP->info.nId == OMEGA_ID) && omegaLightning.Exis
 	return;
 #if DBG
 if ((nType == nDbgObjType) && ((nDbgObjId < 0) || (objP->info.nId == nDbgObjId)))
-	nDbgObjType = nDbgObjType;
+	BRP;
 #endif
 if (gameOpts->render.textures.bUseHires [0] || gameOpts->render.effects.bTransparent) {
 	if (fAlpha) {
