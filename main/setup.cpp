@@ -56,7 +56,7 @@ typedef struct tFileDesc {
 
 static tFileDesc gameFilesD2 [] = {
 	// basic game files
-	{"\002descent.cfg", {"config/", ""}, 1, -1, 0},
+	{"\002descent.cfg", {"config/", ""}, 1, 1, 0},
 	{"\002alien1.pig", {"data/", ""}, 0, 0, 0},
 	{"\002alien2.pig", {"data/", ""}, 0, 0, 0},
 	{"\002fire.pig", {"data/", ""}, 0, 0, 0},
@@ -99,8 +99,8 @@ static tFileDesc vertigoFiles [] = {
 
 static tFileDesc addonFiles [] = {
 	// D2X-XL addon files
-	{"\002d2x-default.ini", {"config/", ""}, 0, -1, 0},
-	{"\002d2x.ini", {"config/", ""}, 1, -1, 0},
+	{"\002d2x-default.ini", {"config/", ""}, 0, 1, 0},
+	{"\002d2x.ini", {"config/", ""}, 1, 1, 0},
 
 	{"\002d2x-xl.hog", {"data/", ""}, 0, 0, 0},
 	{"\002exit.ham", {"data/", ""}, 1, 0, 0},
