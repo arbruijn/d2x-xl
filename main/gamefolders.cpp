@@ -529,6 +529,7 @@ if (!GetSystemFolders (nSharedFolderMode, nUserFolderMode)) {
 	if (bInit)
 		return;
 	PrintLog (-1, "Could not locate game data\n");
+	Error ("Could not locate game data");
 	exit (1);
 	}
 

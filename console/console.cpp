@@ -521,23 +521,25 @@ return (m_Visible == CON_OPEN) || (m_Visible == CON_OPENING);
 /* Frees all the memory loaded by the console */
 void CConsole::Destroy (void)
 {
-	int i;
-
-	//CConsole::DestroyCommands ();
-for (i = 0; i <= m_LineBuffer - 1; i++) {
+//CConsole::DestroyCommands ();
+for (int i = 0; i < m_LineBuffer; i++) {
 	m_ConsoleLines [i].Destroy ();
 	m_CommandLines [i].Destroy ();
 	}
 m_ConsoleLines.Destroy ();
 m_CommandLines.Destroy ();
-m_surface->Destroy ();
-m_surface = NULL;
-if (m_background)
+if (m_surface) {
+	m_surface->Destroy ();
+	m_surface = NULL;
+	}
+if (m_background) {
 	delete m_background;
-m_background = NULL;
-if (m_input)
+	m_background = NULL;
+	}
+if (m_input) {
 	delete m_input;
-m_input = NULL;
+	m_input = NULL;
+	}
 }
 
 //------------------------------------------------------------------------------
