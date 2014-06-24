@@ -311,7 +311,8 @@ for (int i = 0; i < gameData.render.mine.nObjRenderSegs; i++) {
 #	pragma auto_inline(off)
 #endif
 
-static sbyte bSemaphore [MAX_THREADS] = {0,0,0,0,0,0,0,0};
+static sbyte bIlluminated [MAX_THREADS] = {0,0,0,0,0,0,0,0};
+static SDL_sem* bRendered [MAX_THREADS] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 static SDL_mutex* threadLock = NULL;
 static int nThreads = 0;
 
@@ -334,7 +335,7 @@ int _CDECL_ LightObjectsThread (void* nThreadP)
 
 #if PERSISTENT_THREADS
 for (;;) {
-	while (bSemaphore [nThread] < 0)
+	while (bIlluminated [nThread] < 0)
 		G3_SLEEP (1);
 #endif
 	for (int i = nThread; i < gameData.render.mine.nObjRenderSegs; i += gameStates.app.nThreads - 1) {
@@ -343,9 +344,8 @@ for (;;) {
 			lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
 			lightManager.SetNearestStatic (nSegment, 1, nThread);
 			}
-		bSemaphore [nThread] = 1;
-		while (bSemaphore [nThread])
-			G3_SLEEP (0);
+		bIlluminated [nThread] = 1;
+		SDL_SemWait (bRendered [nThread]);
 		if (gameStates.render.bApplyDynLight)
 			lightManager.ResetNearestStatic (nSegment, nThread);
 		}	
@@ -353,7 +353,7 @@ for (;;) {
 	nThreads--;
 	SDL_mutexV (threadLock);
 #if PERSISTENT_THREADS
-	bSemaphore [nThread] = -1;
+	bIlluminated [nThread] = -1;
 	}
 #endif
 return 1;
@@ -364,7 +364,7 @@ return 1;
 // process because only the main process has a valid OpenGL context. It communicates
 // with the object lighting threads via a semaphore. If a lighting thread's semaphore
 // is set, that thread has finished lighting calculations for its current segment
-// and all objects in that segment can be rendered. The lighting thread waits for 
+// and all objects in that segment can be rendered. The lighting thread waits for the
 // semaphore to be reset by the render process after the objects have been rendered.
 // Since the object render process needs to run full throttle, only gameStates.app.nThreads - 1
 // lighting threads are executed.
@@ -375,16 +375,17 @@ void RenderObjectsMT (void)
 	int	i, nListPos [MAX_THREADS];
 	
 for (i = 0; i < MAX_THREADS; i++)
- nListPos [i] = i;
+	nListPos [i] = i;
 
 i = 0;
 while (nThreads > 0) {
-	if (bSemaphore [i] > 0) {
+	if (bIlluminated [i] > 0) {
 		lightManager.SetThreadId (i);
 		RenderObjList (nListPos [i], gameStates.render.nWindow [0]);
 		lightManager.SetThreadId (-1);
 		nListPos [i] += (gameStates.app.nThreads - 1);
-		bSemaphore [i] = 0;
+		bIlluminated [i] = 0;
+		SDL_SemPost (bRendered [i]);
 		}
 	i = (i + 1) % (gameStates.app.nThreads - 1);
 	}
@@ -478,7 +479,7 @@ for (i = 0; i < gameData.render.mine.visibility [0].nSegments; i++)
 	if (0 <= (nSegment = ObjectRenderSegment (i)))
 		gameData.render.mine.objRenderSegList [gameData.render.mine.nObjRenderSegs++] = nSegment;
 
-#if 1
+#if 0
 
 RenderObjectsST ();
 
@@ -491,7 +492,7 @@ else {
 	if (!threadLock)
 		threadLock = SDL_CreateMutex ();
 	nThreads = gameStates.app.nThreads - 1;
-	memset (bSemaphore, 0, sizeof (bSemaphore));
+	memset (bIlluminated, 0, sizeof (bIlluminated));
 	int nThreadIds [MAX_THREADS];
 #if PERSISTENT_THREADS
 	static bool bInit = true;
@@ -499,17 +500,20 @@ else {
 	if (bInit) {
 		bInit = false;
 		memset (threads, 0, sizeof (threads));
+		memset (bRendered, 0, sizeof (bRendered));
 		}
 #else
 	SDL_Thread* threads [MAX_THREADS];
 #endif
 	for (i = 0; i < MAX_THREADS; i++) 
 		nThreadIds [i] = i;
-	for (i = 0; i < nThreads; i++) 
+	for (i = 0; i < nThreads; i++) {
 #if PERSISTENT_THREADS
 		if (!threads [i])
 #endif
+		bRendered [i] = SDL_CreateSemaphore (0);
 		threads [i] = SDL_CreateThread (LightObjectsThread, nThreadIds + i);
+		}
 	RenderObjectsMT ();
 #if !PERSISTENT_THREADS
 	for (i = 0; i < gameStates.app.nThreads; i++) 
@@ -519,7 +523,7 @@ else {
 	if (!threadLock)
 		threadLock = SDL_CreateMutex ();
 	nThreads = gameStates.app.nThreads - 1;
-	memset (bSemaphore, 0, sizeof (bSemaphore));
+	memset (bIlluminated, 0, sizeof (bIlluminated));
 	RunRenderThreads (-int (rtPolyModel) - 1, nThreads);
 	RenderObjectsMT ();
 #else
