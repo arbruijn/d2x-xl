@@ -496,7 +496,9 @@ return NULL;
 int CLightningManager::Enable (CObject* objP)
 {
 int h = m_objects [objP->Index ()];
-if ((h >= 0) && m_emitters [h].m_bValid)
+if (h < 0)
+	return 0;
+if (m_emitters [h].m_bValid)
 	m_emitters [h].m_bValid = objP->rType.lightningInfo.bEnabled ? 1 : -1;
 return m_emitters [h].m_bValid;
 }
