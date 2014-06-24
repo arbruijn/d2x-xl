@@ -162,9 +162,6 @@ if (shaderManager.Rebuild (m_shaderProg))
 shaderManager.Set ("sceneTex", 0);
 shaderManager.Set ("depthTex", 1);
 shaderManager.Set ("effectStrength", effectStrength);
-float viewport [4] = {
-	(float) gameData.render.frame.Left (), (float) gameData.render.scene.Top (), (float) gameData.render.scene.Width (), (float) gameData.render.scene.Height ()
-	};
 float screenSize [2] = { (float) gameData.render.screen.Width (), (float) gameData.render.screen.Height () };
 shaderManager.Set ("screenSize", screenSize);
 ogl.SetLighting (true);
