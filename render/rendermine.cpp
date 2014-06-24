@@ -509,7 +509,6 @@ else {
 #if PERSISTENT_THREADS
 		if (!threads [i])
 #endif
-		bRendered [i] = SDL_CreateSemaphore (0);
 			threads [i] = SDL_CreateThread (LightObjectsThread, nThreadIds + i);
 		if (!bRendered [i])
 			bRendered [i] = SDL_CreateSemaphore (0);
