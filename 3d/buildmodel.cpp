@@ -377,6 +377,9 @@ if (ogl.m_features.bVertexBufferObjects) {
 	glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 	}
 m_sortedVerts.Destroy ();
+
+for (i = 0; i < m_textures.Length (); i++)
+	m_textures [i].PrepareTexture (1, 0);
 }
 
 //------------------------------------------------------------------------------
