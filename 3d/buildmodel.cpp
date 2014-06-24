@@ -378,7 +378,7 @@ if (ogl.m_features.bVertexBufferObjects) {
 	}
 m_sortedVerts.Destroy ();
 
-for (i = 0; i < m_textures.Length (); i++)
+for (i = 0; i < (int) m_textures.Length (); i++)
 	m_textures [i].PrepareTexture (1, 0);
 }
 
