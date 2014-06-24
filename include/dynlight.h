@@ -260,7 +260,7 @@ class CLightManager {
 		int SetMethod (void);
 
 		inline void SetThreadId (int nThread = -1) { m_data.nThread = nThread; }
-		inline int ThreadId (uint i) { return (m_data.nThread < 0) ? i : m_data.nThread; }
+		inline int ThreadId (int i) { return (m_data.nThread < 0) ? i : m_data.nThread; }
 		inline CDynLight* Lights (uint i = 0) { return &m_data.lights [i]; }
 		inline CDynLight* RenderLights (uint i) { return m_data.renderLights [i]; }
 		inline CDynLight** RenderLights (void) { return m_data.renderLights.Buffer (); }
