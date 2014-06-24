@@ -49,155 +49,155 @@
 typedef struct tFileDesc {
 	const char*	pszFile;
 	const char*	pszFolders [2];
-	bool	bOptional;
-	bool	bUser;
-	bool	bFound;
+	int bOptional;
+	int bUser;
+	int bFound;
 } tFileDesc;
 
 static tFileDesc gameFilesD2 [] = {
 	// basic game files
-	{"\002descent.cfg", {"config/", ""}, true, true, false},
-	{"\002alien1.pig", {"data/", ""}, false, false, false},
-	{"\002alien2.pig", {"data/", ""}, false, false, false},
-	{"\002fire.pig", {"data/", ""}, false, false, false},
-	{"\002groupa.pig", {"data/", ""}, false, false, false},
-	{"\002ice.pig", {"data/", ""}, false, false, false},
-	{"\002water.pig", {"data/", ""}, false, false, false},
-	{"\002descent2.hog", {"data/", ""}, false, false, false},
-	{"\002descent2.ham", {"data/", ""}, false, false, false},
-	{"\002descent2.s11", {"data/", ""}, false, false, false},
-	{"\002descent2.s22", {"data/", ""}, false, false, false},
-	{"\002intro-h.mvl", {"movies/", ""}, true, false, false},
-	{"\002intro-l.mvl", {"movies/", ""}, true, false, false},
-	{"\002other-h.mvl", {"movies/", ""}, true, false, false},
-	{"\002other-l.mvl", {"movies/", ""}, true, false, false},
-	{"\002robots-h.mvl", {"movies/", ""}, true, false, false},
-	{"\002robots-l.mvl", {"movies/", ""}, true, false, false}
+	{"\002descent.cfg", {"config/", ""}, 1, -1, 0},
+	{"\002alien1.pig", {"data/", ""}, 0, 0, 0},
+	{"\002alien2.pig", {"data/", ""}, 0, 0, 0},
+	{"\002fire.pig", {"data/", ""}, 0, 0, 0},
+	{"\002groupa.pig", {"data/", ""}, 0, 0, 0},
+	{"\002ice.pig", {"data/", ""}, 0, 0, 0},
+	{"\002water.pig", {"data/", ""}, 0, 0, 0},
+	{"\002descent2.hog", {"data/", ""}, 0, 0, 0},
+	{"\002descent2.ham", {"data/", ""}, 0, 0, 0},
+	{"\002descent2.s11", {"data/", ""}, 0, 0, 0},
+	{"\002descent2.s22", {"data/", ""}, 0, 0, 0},
+	{"\002intro-h.mvl", {"movies/", ""}, 1, 0, 0},
+	{"\002intro-l.mvl", {"movies/", ""}, 1, 0, 0},
+	{"\002other-h.mvl", {"movies/", ""}, 1, 0, 0},
+	{"\002other-l.mvl", {"movies/", ""}, 1, 0, 0},
+	{"\002robots-h.mvl", {"movies/", ""}, 1, 0, 0},
+	{"\002robots-l.mvl", {"movies/", ""}, 1, 0, 0}
 };
 
 static tFileDesc demoFilesD2 [] = {
 	// Descent 2 demo files
-	{"d2demo.hog", {"data/", ""}, false, false, false},
-	{"d2demo.ham", {"data/", ""}, false, false, false},
-	{"d2demo.pig", {"data/", ""}, false, false, false}
+	{"d2demo.hog", {"data/", ""}, 0, 0, 0},
+	{"d2demo.ham", {"data/", ""}, 0, 0, 0},
+	{"d2demo.pig", {"data/", ""}, 0, 0, 0}
 };
 
 static tFileDesc gameFilesD1 [] = {
 	// Descent 1 game files
-	{"\002descent.pig", {"data/", ""}, false, false, false},
-	{"\002descent.hog", {"data/", ""}, false, false, false}
+	{"\002descent.pig", {"data/", ""}, 0, 0, 0},
+	{"\002descent.hog", {"data/", ""}, 0, 0, 0}
 };
 
 static tFileDesc vertigoFiles [] = {
 	// Vertigo expansion
-	{"\002hoard.ham", {"data/", ""}, false, false, false},
-	{"\002d2x.hog", {"missions/", ""}, false, false, false},
-	{"\002d2x.mn2", {"missions/", ""}, false, false, false},
-	{"\002d2x-h.mvl", {"movies/", ""}, true, false, false},
-	{"\002d2x-l.mvl", {"movies/", ""}, true, false, false},
+	{"\002hoard.ham", {"data/", ""}, 0, 0, 0},
+	{"\002d2x.hog", {"missions/", ""}, 0, 0, 0},
+	{"\002d2x.mn2", {"missions/", ""}, 0, 0, 0},
+	{"\002d2x-h.mvl", {"movies/", ""}, 1, 0, 0},
+	{"\002d2x-l.mvl", {"movies/", ""}, 1, 0, 0},
 };
 
 static tFileDesc addonFiles [] = {
 	// D2X-XL addon files
-	{"\002d2x-default.ini", {"config/", ""}, false, true, false},
-	{"\002d2x.ini", {"config/", ""}, true, true, false},
+	{"\002d2x-default.ini", {"config/", ""}, 0, -1, 0},
+	{"\002d2x.ini", {"config/", ""}, 1, -1, 0},
 
-	{"\002d2x-xl.hog", {"data/", ""}, false, false, false},
-	{"\002exit.ham", {"data/", ""}, true, false, false},
+	{"\002d2x-xl.hog", {"data/", ""}, 0, 0, 0},
+	{"\002exit.ham", {"data/", ""}, 1, 0, 0},
 
-	{"*.plx", {"profiles/", ""}, true, true, false},
-	{"*.plr", {"profiles/", ""}, true, true, false},
+	{"*.plx", {"profiles/", ""}, 1, -1, 0},
+	{"*.plr", {"profiles/", ""}, 1, -1, 0},
 
-	{"\002bullet.ase", {"models/", ""}, false, false, false},
-	{"\002bullet.tga", {"models/", ""}, false, false, false},
+	{"\002bullet.ase", {"models/", ""}, 0, 0, 0},
+	{"\002bullet.tga", {"models/", ""}, 0, 0, 0},
 
-	{"*.sg?", {"savegames/", ""}, true, true, false}
+	{"*.sg?", {"savegames/", ""}, 1, 1, 0}
 	};
 
 static tFileDesc addonTextureFiles [] = {
-	{"\002bullettime#0.tga", {"textures/d2/", ""}, false, false, false},
-	{"\002cockpit.tga", {"textures/d2/", ""}, false, false, false},
-	{"\002cockpitb.tga", {"textures/d2/", ""}, false, false, false},
-	{"\002monsterball.tga", {"textures/d2/", ""}, false, false, false},
-	{"\002slowmotion#0.tga", {"textures/d2/", ""}, false, false, false},
-	{"\002status.tga", {"textures/d2/", ""}, false, false, false},
-	{"\002statusb.tga", {"textures/d2/", ""}, false, false, false},
+	{"\002bullettime#0.tga", {"textures/d2/", ""}, 0, 0, 0},
+	{"\002cockpit.tga", {"textures/d2/", ""}, 0, 0, 0},
+	{"\002cockpitb.tga", {"textures/d2/", ""}, 0, 0, 0},
+	{"\002monsterball.tga", {"textures/d2/", ""}, 0, 0, 0},
+	{"\002slowmotion#0.tga", {"textures/d2/", ""}, 0, 0, 0},
+	{"\002status.tga", {"textures/d2/", ""}, 0, 0, 0},
+	{"\002statusb.tga", {"textures/d2/", ""}, 0, 0, 0},
 
-	{"\002aimdmg.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002blast.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002blast-hard.tga", {"textures/d2x-xl/", ""}, true, false, false},
-	{"\002blast-medium.tga", {"textures/d2x-xl/", ""}, true, false, false},
-	{"\002blast-soft.tga", {"textures/d2x-xl/", ""}, true, false, false},
-	{"\002bubble.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002bullcase.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002corona.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002deadzone.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002drivedmg.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002fire.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002glare.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002gundmg.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002halfhalo.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002halo.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002joymouse.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002pwupicon.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002rboticon.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002scope.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002shield.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002smoke.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002smoke-hard.tga", {"textures/d2x-xl/", ""}, true, false, false},
-	{"\002smoke-medium.tga", {"textures/d2x-xl/", ""}, true, false, false},
-	{"\002smoke-soft.tga", {"textures/d2x-xl/", ""}, true, false, false},
-	{"\002sparks.tga", {"textures/d2x-xl/", ""}, false, false, false},
-	{"\002thruster.tga", {"textures/d2x-xl/", ""}, false, false, false}
+	{"\002aimdmg.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002blast.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002blast-hard.tga", {"textures/d2x-xl/", ""}, 1, 0, 0},
+	{"\002blast-medium.tga", {"textures/d2x-xl/", ""}, 1, 0, 0},
+	{"\002blast-soft.tga", {"textures/d2x-xl/", ""}, 1, 0, 0},
+	{"\002bubble.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002bullcase.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002corona.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002deadzone.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002drivedmg.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002fire.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002glare.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002gundmg.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002halfhalo.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002halo.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002joymouse.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002pwupicon.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002rboticon.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002scope.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002shield.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002smoke.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002smoke-hard.tga", {"textures/d2x-xl/", ""}, 1, 0, 0},
+	{"\002smoke-medium.tga", {"textures/d2x-xl/", ""}, 1, 0, 0},
+	{"\002smoke-soft.tga", {"textures/d2x-xl/", ""}, 1, 0, 0},
+	{"\002sparks.tga", {"textures/d2x-xl/", ""}, 0, 0, 0},
+	{"\002thruster.tga", {"textures/d2x-xl/", ""}, 0, 0, 0}
 };
 
 static tFileDesc addonSoundFiles [] = {
-	{"\002afbr_1.wav", {"sounds/d2/44khz/", "sounds/d2/22khz/"}, false, false, false},
-	{"\002airbubbles.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002fire.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002gatling-slowdown.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002gatling-speedup.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002gauss-firing.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002headlight.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002highping.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002lightning.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002lowping.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002missileflight-big.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002missileflight-small.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002slowdown.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002speedup.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002vulcan-firing.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002zoom1.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002zoom2.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002boiling-lava.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002busy-machine.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002computer.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002deep-hum.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002dripping-water.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002dripping-water-2.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002dripping-water-3.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002earthquake.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002energy.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002falling-rocks.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002falling-rocks-2.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002fast-fan.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002flowing-lava.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002flowing-water.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002insects.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002machine-gear.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002mighty-machine.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002static-buzz.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002steam.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002teleporter.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002waterfall.wav", {"sounds/d2x-xl/", ""}, false, false, false},
-	{"\002jet-engine.wav", {"sounds/d2x-xl/", ""}, false, false, false}
+	{"\002afbr_1.wav", {"sounds/d2/44khz/", "sounds/d2/22khz/"}, 0, 0, 0},
+	{"\002airbubbles.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002fire.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002gatling-slowdown.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002gatling-speedup.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002gauss-firing.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002headlight.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002highping.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002lightning.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002lowping.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002missileflight-big.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002missileflight-small.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002slowdown.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002speedup.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002vulcan-firing.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002zoom1.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002zoom2.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002boiling-lava.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002busy-machine.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002computer.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002deep-hum.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002dripping-water.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002dripping-water-2.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002dripping-water-3.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002earthquake.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002energy.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002falling-rocks.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002falling-rocks-2.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002fast-fan.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002flowing-lava.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002flowing-water.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002insects.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002machine-gear.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002mighty-machine.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002static-buzz.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002steam.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002teleporter.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002waterfall.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0},
+	{"\002jet-engine.wav", {"sounds/d2x-xl/", ""}, 0, 0, 0}
 
 };
 
-static inline bool User (tFileDesc& fd)
+static inline int User (tFileDesc& fd)
 {
 #ifdef _WIN32
-return false;
+return 0;
 #else
 return fd.bUser; 
 #endif
@@ -275,6 +275,14 @@ for (int i = 0; i < 6; i++) {
 
 // ----------------------------------------------------------------------------
 
+static inline const char* GetFolder (tFileDesc* fileDesc)
+{
+int bUser = User (*fileDesc);
+return (bUser < 0) ? gameFolders.user.szRoot : (bUser > 0) ? gameFolders.user.szCache : gameFolders.game.szRoot;
+}
+
+// ----------------------------------------------------------------------------
+
 static bool CheckAndCopyWildcards (tFileDesc* fileDesc)
 {
 	FFS	ffs;
@@ -286,7 +294,7 @@ static bool CheckAndCopyWildcards (tFileDesc* fileDesc)
 if ((i = FFF (fileDesc->pszFile, &ffs, 0))) {
 	for (int j = 0; j < 2; j++)
 		if (*fileDesc->pszFolders [j]) {
-			sprintf (szFilter, "%s%s%s", fileDesc->bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, fileDesc->pszFolders [j], fileDesc->pszFile);
+			sprintf (szFilter, "%s%s%s", GetFolder (fileDesc), fileDesc->pszFolders [j], fileDesc->pszFile);
 			if (!FFF (szFilter, &ffs, 0))
 				return true;
 			}
@@ -296,10 +304,10 @@ do {
 	for (int j = 0; j < 2; j++)
 		if (*fileDesc->pszFolders [j]) {
 			sprintf (szDest, "\002%s", ffs.name);
-			sprintf (szFilter, "%s%s", fileDesc->bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, fileDesc->pszFolders [j]);
+			sprintf (szFilter, "%s%s", GetFolder (fileDesc), fileDesc->pszFolders [j]);
 			if (!CFile::Exist (szDest, szFilter, 0)) {	// if the file doesn't exist in the destination folder copy it
-				sprintf (szSrc, "%s%s", fileDesc->bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, ffs.name);
-				sprintf (szDest, "%s%s%s", fileDesc->bUser ? gameFolders.user.szCache : gameFolders.game.szRoot, fileDesc->pszFolders [j], ffs.name);
+				sprintf (szSrc, "%s%s", GetFolder (fileDesc), ffs.name);
+				sprintf (szDest, "%s%s%s", GetFolder (fileDesc), fileDesc->pszFolders [j], ffs.name);
 				cf.Copy (szSrc, szDest);
 				}
 			}
@@ -324,23 +332,23 @@ for (int i = 0; i < nFiles; i++) {
 	else {
 		for (int j = 0; j < 2; j++)
 			if (*fileList [i].pszFolders [j]) {
-				sprintf (szDest, "%s%s", User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot, fileList [i].pszFolders [j]);
+				sprintf (szDest, "%s%s", GetFolder (fileList + i), fileList [i].pszFolders [j]);
 				fileList [i].bFound = CFile::Exist (fileList [i].pszFile, szDest, false) == 1;
 				if (fileList [i].bFound)
 					break;
 				}
 		if (fileList [i].bFound)
 			continue;	// file exists in the destination folder
-		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot, false) == 1;
+		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, GetFolder (fileList + i), false) == 1;
 		if (fileList [i].bFound) {	// file exists in the source folder
 			sprintf (szSrc, "%s%s", gameFolders.game.szRoot, fileList [i].pszFile + 1);
-			sprintf (szDest, "%s%s", User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot, fileList [i].pszFile + 1);
+			sprintf (szDest, "%s%s", GetFolder (fileList + i), fileList [i].pszFile + 1);
 			cf.Copy (szSrc, szDest);
 			}
 		else if (!fileList [i].bOptional) {
 			for (int j = 0; j < 2; j++)
 				if (*fileList [i].pszFolders [j]) {
-				sprintf (szDest, "%s%s", User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot, fileList [i].pszFolders [j]);
+				sprintf (szDest, "%s%s", GetFolder (fileList + i), fileList [i].pszFolders [j]);
 				fileList [i].bFound = CFile::Exist (fileList [i].pszFile, szDest, false) == 1;
 				}
 			nErrors++;
@@ -405,9 +413,9 @@ for (int i = 0, j = -1; i < nFiles; i++) {
 					strcat (szMsg, "\n\n");
 					bFirst = true;
 					}
-				if (strcmp (User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot, ".\\")) {
-					strcat (szMsg, User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot);
-					l += int (strlen (User (fileList [i]) ? gameFolders.user.szCache : gameFolders.game.szRoot));
+				if (strcmp (GetFolder (fileList + i), ".\\")) {
+					strcat (szMsg, GetFolder (fileList + i));
+					l += int (strlen (GetFolder (fileList + i)));
 					}
 				strcat (szMsg, fileList [i].pszFolders [h]);
 				strcat (szMsg, ": ");
