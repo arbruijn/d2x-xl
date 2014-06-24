@@ -72,7 +72,7 @@ ffsP->szDir [i] = '\0';
 //PrintLog (0, "opendir (%s)\n", ffsP->szDir);
 if (!(ffsP->dirP = opendir (ffsP->szDir)))
 	return -1;
-if (!*pszFilter) // only looking for a folder
+if (!pszFilter [j]) // only looking for a folder
 	return 0;
 //PrintLog (0, "FileFindFirst (%s, %s)\n", ffsP->szDir, pszFilter);
 // create regular search expression, "*" -> ".*", "." -> "\."
