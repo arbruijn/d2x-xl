@@ -418,7 +418,7 @@ if (!m_bInited) {
 		}
 	}
 #if !PERSISTENT_THREADS
-for (int i = 0; i < m_nRenderThreads; i++) {
+for (int i = 0; i < m_nRenderThreads; i++)
 	m_threads [i] = SDL_CreateThread (LightObjectsThread, m_nThreadIds + i);
 #endif
 m_nRenderThreads = Min (gameData.render.mine.nObjRenderSegs, gameStates.app.nThreads);
