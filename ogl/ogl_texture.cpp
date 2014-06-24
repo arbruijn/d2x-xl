@@ -1001,8 +1001,6 @@ if (!m_info.handle) {
 	return 1;
 	}
 #if DBG
-	if (m_info.handle == 228)
-		BRP;
 	if (!usedHandles [m_info.handle])
 		usedHandles [m_info.handle] = 1;
 	else
@@ -1040,12 +1038,14 @@ else
 	catch (...) {
 		Release ();
 		}
+#if 0
 	try {
 		if (ogl.m_states.bLowMemory && m_info.bMipMaps && (!m_info.bmP->Static () || (m_info.format == GL_RGB)))
 			m_info.bmP->FreeData ();
 		}
 	catch (...) {
 		}
+#endif
 #if TEXTURE_COMPRESSION
 	Compress ();
 #endif

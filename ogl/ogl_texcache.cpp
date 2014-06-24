@@ -36,7 +36,7 @@
 #include "renderlib.h"
 #include "menu.h"
 
-static int bLoadTextures = 0;
+static int bLoadTextures = 1;
 
 static CStaticArray< bool, MAX_VCLIPS >	bVClipLoaded;
 
@@ -259,7 +259,7 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 	}
 PrintLog (-1);
 PrintLog (1, "caching geometry textures\n");
-bLoadTextures = (ogl.m_states.nPreloadTextures > 0);
+// bLoadTextures = (ogl.m_states.nPreloadTextures > 0);
 for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
 	for (nSide = 0, sideP = segP->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 		if (!sideP->FaceCount ())
@@ -293,7 +293,7 @@ CacheAddonTextures ();
 PrintLog (-1);
 
 PrintLog (1, "caching model textures\n");
-bLoadTextures = (ogl.m_states.nPreloadTextures > 1);
+// bLoadTextures = (ogl.m_states.nPreloadTextures > 1);
 bModelLoaded.Clear ();
 bVClipLoaded.Clear ();
 FORALL_OBJS (objP, i) {
@@ -307,18 +307,18 @@ FORALL_OBJS (objP, i) {
 PrintLog (-1);
 
 PrintLog (1, "caching hostage sprites\n");
-bLoadTextures = (ogl.m_states.nPreloadTextures > 3);
+// bLoadTextures = (ogl.m_states.nPreloadTextures > 3);
 OglCacheVClipTextures (33, 3);    
 PrintLog (-1);
 
 PrintLog (1, "caching weapon sprites\n");
-bLoadTextures = (ogl.m_states.nPreloadTextures > 5);
+// bLoadTextures = (ogl.m_states.nPreloadTextures > 5);
 for (i = 0; i < EXTRA_OBJ_IDS; i++)
 	OglCacheWeaponTextures (gameData.weapons.info + i);
 PrintLog (-1);
 
 PrintLog (1, "caching powerup sprites\n");
-bLoadTextures = (ogl.m_states.nPreloadTextures > 4);
+// bLoadTextures = (ogl.m_states.nPreloadTextures > 4);
 for (i = 0; i < MAX_POWERUP_TYPES; i++)
 	if (i != 9)
 		OglCacheVClipTextures (gameData.objs.pwrUp.info [i].nClipIndex, 3);
@@ -326,7 +326,7 @@ PrintLog (-1);
 
 PrintLog (1, "caching effect textures\n");
 CacheObjectEffects ();
-bLoadTextures = (ogl.m_states.nPreloadTextures > 2);
+// bLoadTextures = (ogl.m_states.nPreloadTextures > 2);
 for (i = 0; i < gameData.effects.nClips [0]; i++)
 	OglCacheVClipTextures (i, 1);
 PrintLog (-1);
