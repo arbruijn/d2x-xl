@@ -44,9 +44,7 @@ if (gameData.fusion.xAutoFireTime) {
 			return 0;
 		t0 = t;
 		gameData.laser.nGlobalFiringCount = 0;
-#if !DBG
 		gameData.objs.consoleP->RandomBump (I2X (1) / 8, (gameData.FusionCharge () > I2X (2)) ? gameData.FusionCharge () * 4 : I2X (4));
-#endif
 		}
 	}
 return 1;
