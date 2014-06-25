@@ -327,11 +327,16 @@ if (nEffects & 5) {
 		gameData.render.screen.Deactivate ();
 		}
 	else {
+		ogl.DisableClientStates (1, 1, 1, GL_TEXTURE1);
+#if 0
 		if (StereoDevice () == -GLASSES_SHUTTER_HDMI)
 			SetDrawBuffer (GL_BACK, 0);
 		else
+#endif
 			SelectBlurBuffer (0); 
 #if DBG
+		glClearDepth (1.0);
+		glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
 		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 #endif
 		SetBlendMode (OGL_BLEND_REPLACE);
@@ -339,18 +344,19 @@ if (nEffects & 5) {
 		for (int i = 0; i < 2; i++) {
 			gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
 			SetupCanvasses ();
-			gameData.render.frame.Activate ("COGL::FlushEffects (frame)");
+			gameData.render.screen.Activate ("COGL::FlushEffects (frame)");
 			ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 			ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
 			OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [i + 1]);
-			OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+			OglVertexPointer (2, GL_FLOAT, 0, quadVerts [/*0*/i + 1]);
+			glColor3f (1, 1, 1);
 			if (nEffects & 1) {
 				postProcessManager.Setup ();
 				postProcessManager.Render ();
 				}
 			else
 				OglDrawArrays (GL_QUADS, 0, 4);
-			gameData.render.frame.Deactivate ();
+			gameData.render.screen.Deactivate ();
 			}
 		gameData.render.screen.SetScale (1.0f);
 		}

@@ -194,7 +194,10 @@ void COGL::FlushStereoBuffers (int nEffects)
 int nDevice = StereoDevice ();
 
 if (IsSideBySideDevice (nDevice)) {
-	if (nDevice != -GLASSES_SHUTTER_HDMI) {
+#if 0
+	if (nDevice != -GLASSES_SHUTTER_HDMI) 
+#endif
+		{
 		SetDrawBuffer (GL_BACK, 0);
 		SetBlendMode (OGL_BLEND_REPLACE);
 		SetDepthMode (GL_ALWAYS);

@@ -95,7 +95,7 @@ const char* shockwaveFS =
 	"#define ZEYE(z) (C / (A + D (z)))\r\n" \
 	"void main() {\r\n" \
 	"vec2 tcSrc = gl_TexCoord [0].xy * screenSize;\r\n" \
-	"vec2 tcDest = tcSrc; //vec2 (0.0, 0.0);\r\n" \
+	"vec2 tcDest = tcSrc;\r\n" \
 	"vec4 frag = texture2D (sceneTex, tcDest / screenSize);" \
 	"int i;\r\n" \
 	"for (i = 0; i < 8; i++) if (i < nShockwaves) {\r\n" \
@@ -110,11 +110,10 @@ const char* shockwaveFS =
 	"      offset /= screenSize.x;\r\n" \
 	"      offset *= (1.0 - pow (abs (offset) * effectStrength.x, effectStrength.y));\r\n" \
 	"      tcDest -= v * (gl_LightSource [i].quadraticAttenuation * offset / d * screenSize);\r\n" \
-	"      frag = vec4 (1.0, 0.5, 0.0, 1.0);" \
 	"      }\r\n" \
 	"    }\r\n" \
 	"  }\r\n" \
-	"gl_FragColor = frag; //texture2D (sceneTex, tcDest / screenSize);\r\n" \
+	"gl_FragColor = texture2D (sceneTex, tcDest / screenSize);\r\n" \
 	"}\r\n";
 
 #endif
@@ -156,9 +155,16 @@ if (hShockwaveShader < 0) {
 #endif
 if (!ogl.CopyDepthTexture (1))
 	return false;
+ogl.SelectTMU (GL_TEXTURE0);
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hShockwaveShader /*[direction]*/));
-if (!m_shaderProg)
+if (!m_shaderProg) {
+	ogl.ClearError (false);
+#if DBG
+	m_shaderProg = GLhandleARB (shaderManager.Deploy (hShockwaveShader /*[direction]*/));
+	ogl.ClearError (false);
+#endif
 	return false;
+	}
 if (shaderManager.Rebuild (m_shaderProg))
 	/*nothing*/;
 shaderManager.Set ("sceneTex", 0);

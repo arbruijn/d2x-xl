@@ -1046,7 +1046,7 @@ if (nError) {
 	const char* pszError = reinterpret_cast<const char*> (gluErrorString (nError));
 	PrintLog (0, "%s\n", pszError);
 	if (bTrapError)
-		nError = nError;
+		BRP;
 	}
 #endif
 return nError;
