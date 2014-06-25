@@ -178,7 +178,7 @@ if (pii.bAnimate && (pii.nFrames > 1)) {
 
 	if (gameStates.app.nSDLTicks [0] - t0 [nType] >= to [nType]) {
 		CBitmap*	bmP = ParticleImageInfo (GetType (nType)).bmP;
-		if (!bmP->Frames ())
+		if (!(bmP && bmP->Frames ()))
 			return;
 		bmP->SetCurFrame (pii.iFrame);
 		t0 [nType] = gameStates.app.nSDLTicks [0];
@@ -230,7 +230,7 @@ nType = particleImageManager.GetType (nType);
 	tParticleImageInfo&	pii = ParticleImageInfo (nType);
 
 if (pii.bHave && !bForce)
-	return 1;
+	return pii.bHave > 0;
 pii.bHave = 0;
 if (!LoadAddonBitmap (&pii.bmP, pii.szName, &pii.bHave, Bind (nType)))
 	return 0;
