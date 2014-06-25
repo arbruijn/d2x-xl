@@ -344,11 +344,11 @@ if (nEffects & 5) {
 		for (int i = 0; i < 2; i++) {
 			gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
 			SetupCanvasses ();
-			gameData.render.screen.Activate ("COGL::FlushEffects (frame)");
+			gameData.render.frame.Activate ("COGL::FlushEffects (frame)");
 			ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 			ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
 			OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [i + 1]);
-			OglVertexPointer (2, GL_FLOAT, 0, quadVerts [/*0*/i + 1]);
+			OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 			glColor3f (1, 1, 1);
 			if (nEffects & 1) {
 				postProcessManager.Setup ();
@@ -356,7 +356,7 @@ if (nEffects & 5) {
 				}
 			else
 				OglDrawArrays (GL_QUADS, 0, 4);
-			gameData.render.screen.Deactivate ();
+			gameData.render.frame.Deactivate ();
 			}
 		gameData.render.screen.SetScale (1.0f);
 		}
