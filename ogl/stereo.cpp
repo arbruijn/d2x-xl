@@ -194,7 +194,7 @@ void COGL::FlushStereoBuffers (int nEffects)
 int nDevice = StereoDevice ();
 
 if (IsSideBySideDevice (nDevice)) {
-#if 0
+#if 1
 	if (nDevice != -GLASSES_SHUTTER_HDMI) 
 #endif
 		{

@@ -328,7 +328,7 @@ if (nEffects & 5) {
 		}
 	else {
 		ogl.DisableClientStates (1, 1, 1, GL_TEXTURE1);
-#if 0
+#if 1
 		if (StereoDevice () == -GLASSES_SHUTTER_HDMI)
 			SetDrawBuffer (GL_BACK, 0);
 		else
