@@ -562,7 +562,7 @@ return colorP;
 
 //------------------------------------------------------------------------------
 
-void CBitmap::Swap_0_255 (void)
+void CBitmap::SwapTransparencyColor (void)
 {
 	ubyte*	p = Buffer ();
 

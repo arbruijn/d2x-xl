@@ -390,10 +390,10 @@ if (m_info.flags & FT_KERNED)
 	m_info.kernData = reinterpret_cast<ubyte*> (fontData + (size_t) m_info.kernDataOffs - GRS_FONT_SIZE);
 
 if (m_info.flags & FT_COLOR) {		//remap palette
-#ifdef SWAP_0_255			// swap the first and last palette entries (black and white)
+#ifdef SWAP_TRANSPARENCY_COLOR			// swap the first and last palette entries (black and white)
 	palette.SwapTransparency ();
 	// we also need to swap the data entries. black is white and white is black
-	for (i = 0; i < ptr-m_info.data; i++) {
+	for (i = 0; i < ptr - m_info.data; i++) {
 		if (m_info.data [i] == 0)
 			m_info.data [i] = 255;
 		else if (m_info.data [i] == 255)

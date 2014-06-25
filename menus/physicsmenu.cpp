@@ -303,7 +303,7 @@ if (gameOpts->app.bExpertMode == SUPERUSER) {
 	if (m.Available ("wiggle"))
 		extraGameInfo [0].bWiggle = m.Value ("wiggle");
 	}
-DefaultPhysicsSettings ();
+DefaultPhysicsSettings (false);
 if (IsMultiGame)
 	NetworkSendExtraGameInfo (NULL);
 }

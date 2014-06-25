@@ -72,7 +72,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 CPlayerProfile profile;
 CDisplayModeInfo customDisplayMode;
 
-void DefaultAllSettings (void);
+void DefaultAllSettings (bool bSetup);
 int FindDisplayMode (short w, short h);
 
 //------------------------------------------------------------------------------
@@ -1674,7 +1674,7 @@ if (!nHighestLevels)
 if (nStage < 1)
 	return funcRes;
 
-DefaultAllSettings ();
+DefaultAllSettings (true);
 
 if (!profile.Load (nStage < 2))
 	funcRes = errno;
@@ -1752,6 +1752,7 @@ gameOpts->sound.xCustomSoundVolume = (fix) FRound (float (gameConfig.nAudioVolum
 if ((gameOpts->render.stereo.nRiftFOV < RIFT_MIN_FOV) || (gameOpts->render.stereo.nRiftFOV > RIFT_MAX_FOV))
 	gameOpts->render.stereo.nRiftFOV = RIFT_DEFAULT_FOV;
 #endif
+gameOptions [0].render.textures.nQuality = gameOptions [0].render.nQuality;
 if ((gameOpts->render.stereo.xSeparation [1] < MM2X (RIFT_MIN_IPD)) || (gameOpts->render.stereo.xSeparation [1] > MM2X (RIFT_MAX_IPD)))
 	gameOpts->render.stereo.xSeparation [1] = MM2X (RIFT_DEFAULT_IPD);
 extraGameInfo [0].bFlickerLights = gameOpts->app.bEpilepticFriendly;
@@ -1760,7 +1761,7 @@ if ((extraGameInfo [0].bFastPitch < 1) || (extraGameInfo [0].bFastPitch > 2))
 extraGameInfo [1].bFastPitch = 2;
 for (i = 0; i < UNIQUE_JOY_AXES; i++)
 	JoySetDeadzone (gameOpts->input.joystick.deadzones [i], i);
-//DefaultAllSettings ();
+DefaultAllSettings (false);
 #if _WIN32
 if (gameStates.render.bVSyncOk)
 	wglSwapIntervalEXT (gameOpts->render.nMaxFPS < 0);
@@ -1931,7 +1932,7 @@ for (;;) {
 	break;
 	}
 strncpy (LOCALPLAYER.callsign, text, CALLSIGN_LEN);
-DefaultAllSettings ();
+DefaultAllSettings (false);
 SavePlayerProfile ();
 return 1;
 }

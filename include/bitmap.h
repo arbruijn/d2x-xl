@@ -208,10 +208,10 @@ class CBitmap : public CArray< ubyte > {
 		CFloatVector *GetAvgColor (CFloatVector *colorP);
 		int AvgColorIndex (void);
 
-		void Swap_0_255 (void);
-		void RLESwap_0_255 (void);
+		void SwapTransparencyColor (void);
+		void RLESwapTransparencyColor (void);
 		int RLERemap (ubyte *colorMap, int maxLen);
-		int RLEExpand (ubyte *colorMap, int bSwap0255);
+		int RLEExpand (ubyte *colorMap, int bSwapTranspColor);
 		int RLECompress (void);
 		void ExpandTo (CBitmap *destP);
 

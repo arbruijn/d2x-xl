@@ -471,33 +471,32 @@ return nShrinkFactor / 2;
 
 //------------------------------------------------------------------------------
 
-static int ReadBitmap (CBitmap* bmP, int nSize, CFile* cfP, bool bD1)
+int ReadBitmap (CFile* cfP, CBitmap* bmP, int nSize, bool bD1)
 {
 nDescentCriticalError = 0;
 if (bmP->Flags () & BM_FLAG_RLE) {
-	int zSize = cfP->ReadInt ();
+	int nSize = cfP->ReadInt () - 4;
 	if (nDescentCriticalError) {
 		PiggyCriticalError ();
 		return -1;
 		}
-	#if DBG
-	if (zSize > int (bmP->Size ()))
-		bmP->Resize (zSize);
-	#endif
-	#if 1
-	if (bmP->Read (*cfP, zSize - 4, 4) != uint (zSize - 4))
+
+#if DBG
+	if (nSize > int (bmP->Size ()))
+		bmP->Resize (nSize);
+#endif
+	if (bmP->Read (*cfP, nSize, 0) != uint (nSize))
 		return -2;
-	zSize = bmP->RLEExpand (NULL, 0);
-	#endif
+	nSize = bmP->RLEExpand (NULL, IsMacDataFile (cfP, bD1));
 	}
 else {
-	if (bmP->Read (*cfP, nSize) != (size_t) nSize)
+	if (bmP->Read (*cfP, bmP->FrameSize ()) != (size_t) bmP->FrameSize ())
 		return -2;
+	if (IsMacDataFile (cfP, bD1))
+		bmP->SwapTransparencyColor ();
 	}
-#ifndef MACDATA
-if (IsMacDataFile (cfP, bD1))
-	bmP->Swap_0_255 ();
-#endif
+
+
 if (bD1)
 	bmP->SetPalette (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
 else
@@ -524,19 +523,9 @@ bmP->CreateBuffer ();
 if (!bmP->Buffer () || (bitmapCacheUsed > bitmapCacheSize))
 	throw (EX_OUT_OF_MEMORY);
 bmP->SetFlags (gameData.pig.tex.bitmapFlags [bD1][nIndex]);
-if (0 > ReadBitmap (bmP, bmP->FrameSize (), cfP, bD1 != 0)) 
+if (0 > ReadBitmap (cfP, bmP, bmP->FrameSize (), bD1 != 0)) 
 	throw (EX_IO_ERROR);
 UseBitmapCache (bmP, int (bmP->FrameSize ()));
-
-#ifndef MACDATA
-if (IsMacDataFile (cfP, bD1))
-	bmP->Swap_0_255 ();
-#endif
-if (bD1)
-	bmP->SetPalette (paletteManager.D1 (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
-else
-	bmP->SetPalette (paletteManager.Game (), TRANSPARENCY_COLOR, SUPER_TRANSP_COLOR);
-bmP->SetTranspType ((bmP->Flags () | (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)) ? 3 : 0);
 return 1;
 }
 
@@ -858,6 +847,7 @@ else
 #endif
 		int nBestShrinkFactor = BestShrinkFactor (bmP, ShrinkFactor (bmName));
 		CTGA tga (bmP);
+		//PrintLog (0, "shrinking '%s' by factor %d (%d)\n", bmName, nBestShrinkFactor, bmP->Width () >> (nBestShrinkFactor - 1));
 		if ((nBestShrinkFactor > 1) && tga.Shrink (nBestShrinkFactor, nBestShrinkFactor, 1)) {
 			nSize /= (nBestShrinkFactor * nBestShrinkFactor);
 			if (gameStates.app.bCacheTextures) {
@@ -1086,7 +1076,7 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 			bm.SetKey (j);
 			}
 		else {
-			ReadBitmap (&bm, int (bm.Width ()) * int (bm.Height ()), &cf, false);
+			ReadBitmap (&cf, &bm, int (bm.Width ()) * int (bm.Height ()), false);
 			j = indices [i];
 #if DBG
 			if (j == nDbgTexture)

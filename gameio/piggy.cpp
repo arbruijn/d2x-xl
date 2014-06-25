@@ -586,11 +586,8 @@ if (i == 1)
 
 int IsMacDataFile (CFile *cfP, int bD1)
 {
-if (cfP == cfPiggy + bD1)
+if (cfP == cfPiggy + bD1) {
 	switch (cfP->Length ()) {
-		default:
-			if (!FindArg ("-macdata"))
-				break;
 		case MAC_ALIEN1_PIGSIZE:
 		case MAC_ALIEN2_PIGSIZE:
 		case MAC_FIRE_PIGSIZE:
@@ -598,16 +595,23 @@ if (cfP == cfPiggy + bD1)
 		case MAC_ICE_PIGSIZE:
 		case MAC_WATER_PIGSIZE:
 			return !bD1;
+
 		case D1_MAC_PIGSIZE:
 		case D1_MAC_SHARE_PIGSIZE:
 			return bD1;
+
+		default:
+			return gameStates.app.bMacData;
 		}
+	}
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-void PiggyBitmapReadD1 (
+int ReadBitmap (CFile* cfP, CBitmap* bmP, int nSize, bool bD1);
+
+int PiggyBitmapReadD1 (
 	CFile					&cf,
 	CBitmap				*bmP, /* read into this bmP */
 	int					nBmDataOffs, /* specific to file */
@@ -615,7 +619,7 @@ void PiggyBitmapReadD1 (
    ubyte					**pNextBmP, /* where to write it (if 0, use reinterpret_cast<ubyte*> (D2_ALLOC) */
    ubyte					*colorMap) /* how to translate bmP's colors */
 {
-	int zSize, bSwap0255;
+	int zSize;
 
 memset (bmP, 0, sizeof (CBitmap));
 bmP->SetWidth (bmh->width + ((short) (bmh->wh_extra&0x0f)<<8));
@@ -625,10 +629,16 @@ bmP->SetAvgColorIndex (bmh->avgColor);
 bmP->AddFlags (bmh->flags & BM_FLAGS_TO_COPY);
 
 cf.Seek (nBmDataOffs + bmh->offset, SEEK_SET);
-if (bmh->flags & BM_FLAG_RLE) {
-	zSize = cf.ReadInt ();
-	cf.Seek (-4, SEEK_CUR);
-	}
+
+#if 1
+
+if (ReadBitmap (&cf, bmP, bmP->FrameSize (), 1) < 0)
+	return 0;
+
+#else
+
+if (bmh->flags & BM_FLAG_RLE) 
+	zSize = cf.ReadInt () - 4;
 else
 	zSize = bmP->Width () * bmP->Width ();
 
@@ -640,21 +650,25 @@ else {
 	if (bmP->CreateBuffer ())
 		UseBitmapCache (bmP, (int) bmP->FrameSize ());
 	else
-		return;
+		return 0;
 	}
 bmP->Read (cf, zSize);
-bSwap0255 = 0;
+int bSwapTranspColor = 0;
 switch (cf.Length ()) {
 	case D1_MAC_PIGSIZE:
 	case D1_MAC_SHARE_PIGSIZE:
 		if (bmh->flags & BM_FLAG_RLE)
-			bSwap0255 = 1;
+			bSwapTranspColor = 1;
 		else
-			bmP->Swap_0_255 ();
+			bmP->SwapTransparencyColor ();
 		}
 if (bmh->flags & BM_FLAG_RLE)
-	bmP->RLEExpand (NULL, bSwap0255);
+	bmP->RLEExpand (NULL, bSwapTranspColor);
+
+#endif
+
 bmP->SetPalette (paletteManager.D1 (), TRANSPARENCY_COLOR, -1);
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -836,7 +850,7 @@ tBitmapIndex ReadExtraBitmapD1Pig (const char *name)
 	tPIGBitmapHeader	bmh;
 	int					i, nBmHdrOffs, nBmDataOffs, nBitmapNum;
 	tBitmapIndex		bmi;
-	CBitmap			*newBm = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
+	CBitmap*				newBm = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
 
 bmi.index = 0;
 if (!cf.Open (D1_PIGFILE, gameFolders.game.szData [0], "rb", 0)) {
@@ -858,11 +872,13 @@ if (i >= nBitmapNum) {
 #endif
 	return bmi;
 	}
-PiggyBitmapReadD1 (cf, newBm, nBmDataOffs, &bmh, 0, d1ColorMap);
+bmi.index = (ushort) PiggyBitmapReadD1 (cf, newBm, nBmDataOffs, &bmh, 0, d1ColorMap);
 cf.Close ();
-newBm->SetAvgColorIndex (0);
-bmi.index = gameData.pig.tex.nExtraBitmaps;
-gameData.pig.tex.bitmapP [gameData.pig.tex.nExtraBitmaps++] = *newBm;
+if (bmi.index) {
+	newBm->SetAvgColorIndex (0);
+	bmi.index = gameData.pig.tex.nExtraBitmaps;
+	gameData.pig.tex.bitmapP [gameData.pig.tex.nExtraBitmaps++] = *newBm;
+	}
 return bmi;
 }
 

@@ -126,7 +126,7 @@ void PowerupGrabCheatAll (void);
 void MultiCheckForScoreGoalWinner (bool bForce);
 void MultiCheckForEntropyWinner (void);
 void MultiSendSoundFunction (char, char);
-void DefaultAllSettings (void);
+void DefaultAllSettings (bool bSetup);
 void ProcessSmartMinesFrame (void);
 void DoSeismicStuff (void);
 void ReadControls (void);		// located in gamecntl.c

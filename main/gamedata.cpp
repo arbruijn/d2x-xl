@@ -2445,15 +2445,15 @@ gameOptions [0].app.nVersionFilter = 3;
 
 // ----------------------------------------------------------------------------
 
-void DefaultAllSettings (void)
+void DefaultAllSettings (bool bSetup)
 {
-DefaultApplicationSettings (true);
-DefaultCockpitSettings (true);
-DefaultGameplaySettings (true);
-DefaultKeyboardSettings (true);
-DefaultMiscSettings (true);
-DefaultPhysicsSettings (true);
-DefaultRenderSettings (true);
+DefaultApplicationSettings (bSetup);
+DefaultCockpitSettings (bSetup);
+DefaultGameplaySettings (bSetup);
+DefaultKeyboardSettings (bSetup);
+DefaultMiscSettings (bSetup);
+DefaultPhysicsSettings (bSetup);
+DefaultRenderSettings (bSetup);
 //DefaultSettings ();
 }
 

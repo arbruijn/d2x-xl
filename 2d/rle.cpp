@@ -596,7 +596,7 @@ for (i=0; i < m_info.props.h; i++) {
 //------------------------------------------------------------------------------
 // swaps entries 0 and 255 in an RLE bitmap without uncompressing it
 
-void CBitmap::RLESwap_0_255 (void)
+void CBitmap::RLESwapTransparencyColor (void)
 {
 	int h, i, j, len, rle_big;
 	ubyte *ptr, *ptr2, *temp, *start;
@@ -707,12 +707,12 @@ return len;
 
 //------------------------------------------------------------------------------
 
-int CBitmap::RLEExpand (ubyte *colorMap, int bSwap0255)
+int CBitmap::RLEExpand (ubyte *colorMap, int bSwapTranspColor)
 {
-	ubyte		*pSrc, *destP;
+	ubyte		*srcP, *destP;
 	ubyte		c, h;
 	int		i, j, l, n, bWideRLE;
-	ushort	nLineSize;
+	ushort	nRowSize;
 
 	static int	rleBufSize = 0;
 
@@ -720,25 +720,25 @@ if (!(m_info.props.flags & BM_FLAG_RLE))
 	return m_info.props.h * m_info.props.rowSize;
 bWideRLE = (m_info.props.flags & BM_FLAG_RLE_BIG) != 0;
 i = (bWideRLE + 1) * m_info.props.h;
-pSrc = Buffer () + 4 + i;
+srcP = Buffer () + i; // first row contains uncompressed row lengths
 i *= 2 * m_info.props.rowSize;
 if (!gameData.pig.tex.rleBuffer || (rleBufSize < i)) {
 	gameData.pig.tex.rleBuffer.Resize (rleBufSize = i);
+	if (!gameData.pig.tex.rleBuffer) 
+		return -1;
 	}
-if (!gameData.pig.tex.rleBuffer) {
-	return -1;
-	}
+
 destP = gameData.pig.tex.rleBuffer.Buffer ();
-for (i = 0; i < m_info.props.h; i++, pSrc += nLineSize) {
+for (i = 0; i < m_info.props.h; i++, srcP += nRowSize) {
 	if (bWideRLE)
-		nLineSize = INTEL_SHORT (*(reinterpret_cast<ushort*> (Buffer () + 4 + 2 * i)));
+		nRowSize = INTEL_SHORT (*(reinterpret_cast<ushort*> (Buffer () + 4 + 2 * i)));
 	else
-		nLineSize = Buffer () [4 + i];
-	for (j = 0, n = m_info.props.w; (j < nLineSize) && n; j++) {
-		h = pSrc [j];
+		nRowSize = *Buffer (i);
+	for (j = 0, n = m_info.props.w; (j < nRowSize) && n; j++) {
+		h = srcP [j];
 		if (!IS_RLE_CODE (h)) {
 			c = colorMap ? colorMap [h] : h; // translate
-			if (bSwap0255) {
+			if (bSwapTranspColor) {
 				if (c == 0)
 					c = 255;
 				else if (c == 255)
@@ -752,10 +752,10 @@ for (i = 0; i < m_info.props.h; i++, pSrc += nLineSize) {
 			n--;
 			}
 		else if ((l = (h & NOT_RLE_CODE))) {
-			c = pSrc [++j];
+			c = srcP [++j];
 			if (colorMap)
 				c = colorMap [c];
-			if (bSwap0255) {
+			if (bSwapTranspColor) {
 				if (c == 0)
 					c = 255;
 				else if (c == 255)

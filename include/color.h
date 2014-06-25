@@ -72,18 +72,24 @@ class CStaticCanvasColor : public CCanvasColor {
 
 //-----------------------------------------------------------------------------
 
-#ifdef MACDATA
-#	define SWAP_0_255              // swap black and white
-#	define DEFAULT_TRANSPARENCY_COLOR  0 // palette entry of transparency color -- 255 on the PC
-#	define TRANSPARENCY_COLOR_STR  "0"
-#else
-/* #undef  SWAP_0_255 */        // no swapping for PC people
+#if 1
+
 #	define DEFAULT_TRANSPARENCY_COLOR  255 // palette entry of transparency color -- 255 on the PC
-#	define TRANSPARENCY_COLOR_STR  "255"
+
+#else
+
+#ifdef MACDATA
+#	define SWAP_TRANSPARENCY_COLOR       // swap black and transparency color codes in palettes
+#	define DEFAULT_TRANSPARENCY_COLOR  0 // palette entry of transparency color -- 255 on the PC
+#else
+//#undef  SWAP_TRANSPARENCY_COLOR         // no swapping for PC people
+#	define DEFAULT_TRANSPARENCY_COLOR  255 // palette entry of transparency color -- 255 on the PC
 #endif /* MACDATA */
 
-#define TRANSPARENCY_COLOR  gameData.render.transpColor // palette entry of transparency color -- 255 on the PC
-#define SUPER_TRANSP_COLOR  254   // palette entry of super transparency color
+#endif
+
+#define TRANSPARENCY_COLOR			gameData.render.transpColor // palette entry of transparency color -- 255 on the PC
+#define SUPER_TRANSP_COLOR			254   // palette entry of super transparency color
 
 #define RGBA(_r,_g,_b,_a)			((uint (_r) << 24) | (uint (_g) << 16) | (uint (_b) << 8) | (uint (_a)))
 #define RGBA_RED(_i)					((uint (_i) >> 24) & 0xff)

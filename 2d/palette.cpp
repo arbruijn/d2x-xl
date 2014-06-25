@@ -172,11 +172,8 @@ return nBestIndex;
 
 void CPalette::SwapTransparency (void)
 {
-for (int i = 0; i < 3; i++) {
-	ubyte h = m_data.raw [i];
-	m_data.raw [i] = m_data.raw [765 + i];
-	m_data.raw [765 + i] = h;
-	}
+for (int i = 0; i < 3; i++)
+	Swap (m_data.raw [i], m_data.raw [765 + i]);
 }
 
 //	-----------------------------------------------------------------------------
@@ -519,9 +516,6 @@ CPalette *CPaletteManager::Load (const char *pszFile, const char *pszLevel)
 	CFile		cf;
 	int		i = 0;
 	CPalette	palette;
-#ifdef SWAP_0_255
-	ubyte		coord;
-#endif
 
 if (pszLevel) {
 	char ifile_name [FILENAME_LEN];
@@ -548,7 +542,7 @@ cf.Close ();
 for (i = 0; i < MAX_FADE_LEVELS; i++)
 	m_data.fadeTable [i * 256 + 255] = 255;
 // swap colors 0 and 255 of the palette along with fade table entries
-#ifdef SWAP_0_255
+#ifdef SWAP_TRANSPARENCY_COLOR
 palette.SwapTransparency ();
 for (i = 0; i < MAX_FADE_LEVELS * 256; i++)
 	if (m_data.fadeTable [i] == 0)

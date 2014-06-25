@@ -117,7 +117,7 @@ CGameData		gameData;
 
 //static const char desc_id_checksum_str[] = DESC_ID_CHKSUM_TAG "0000"; // 4-byte checksum
 
-void DefaultAllSettings (void);
+void DefaultAllSettings (bool bSetup);
 void CheckJoystickCalibration (void);
 void ShowOrderForm (void);
 
@@ -851,7 +851,7 @@ error_init (NULL, NULL);
 EvalArgs ();
 gameOptions [1].Init ();
 GetNumThreads ();
-DefaultAllSettings ();
+DefaultAllSettings (true);
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 /*---*/PrintLog (0, "Loading text resources\n");
 /*---*/PrintLog (0, "Loading main hog file\n");

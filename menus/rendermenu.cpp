@@ -708,7 +708,7 @@ if (ogl.IsOculusRift ())
 	gameData.render.rift.m_magCalTO.Start (-1, true);
 #endif
 lightManager.SetMethod ();
-DefaultRenderSettings ();
+DefaultRenderSettings (false);
 }
 
 //------------------------------------------------------------------------------

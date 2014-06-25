@@ -55,7 +55,7 @@ void rle_swap_0_255(CBitmap *bmP);
 
 int rle_remap (CBitmap *bmP, ubyte *colorMap, int maxLen);
 
-int rle_expand (CBitmap *bmP, ubyte *colorMap, int bSwap0255);
+int rle_expand (CBitmap *bmP, ubyte *colorMap, int bSwapTranspColor);
 
 void _CDECL_ RLECacheClose (void);
 
