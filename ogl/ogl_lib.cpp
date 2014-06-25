@@ -794,12 +794,12 @@ else
 void COGL::EndFrame (int nWindow)
 {
 //SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
-if (nWindow == 0) {
+#if 1
+if ((nWindow == 0) && (ogl.StereoSeparation () <= 0)) 
 	postProcessManager.Update ();
-	if (postProcessManager.Effects ())
-		ogl.CopyDepthTexture (1);
-	}
+#endif
 
+CCanvas::Current ()->Deactivate ();
 if ((nWindow >= 0) && !(gameStates.render.cameras.bActive || gameStates.render.bBriefing)) {
 	if (gameStates.render.bRenderIndirect > 0)
 		SelectDrawBuffer (0);

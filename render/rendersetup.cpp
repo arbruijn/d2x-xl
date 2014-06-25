@@ -162,6 +162,17 @@ if (nStartSegP)
 	*nStartSegP = nStartSeg;
 
 SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView, xZoom, bOglScale, xStereoSeparation);
+#if DBG
+{
+CFixVector p, m_pos = OBJECTS [0].FrontPosition ();
+tScreenPos s;
+transformation.TransformAndEncode (p, m_pos);
+SetupCanvasses ();
+gameData.render.frame.Activate ("");
+ProjectPoint (p, s, 0, 0);
+gameData.render.frame.Deactivate ();
+}
+#endif
 CCanvas::Current ()->Reactivate ();
 if (gameStates.render.cameras.bActive && (gameStates.render.nShadowMap > 0))
 	ComputeShadowTransformation (gameStates.render.nShadowMap - 1);

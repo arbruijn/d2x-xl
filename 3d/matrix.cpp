@@ -48,7 +48,7 @@ transformation.m_info.zoomf = (float) xZoom / 65536.0f;
 transformation.m_info.pos = vPos;
 if (ogl.IsOculusRift ())
 	transformation.m_info.view [0] = mOrient;
-else if (gameOpts->render.stereo.nMethod == STEREO_TOE_IN) {
+else if (ogl.StereoDevice () && (gameOpts->render.stereo.nMethod == STEREO_TOE_IN)) {
 	fix zScreen = F2X (ogl.ZScreen () * 10.0);
 	CFixVector o = CFixVector::Create (fix (xStereoSeparation / 2), 0, 0);
 	CFixVector h = CFixVector::Create (fix (xStereoSeparation / 2), 0, zScreen);

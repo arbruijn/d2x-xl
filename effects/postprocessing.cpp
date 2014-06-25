@@ -96,6 +96,7 @@ const char* shockwaveFS =
 	"void main() {\r\n" \
 	"vec2 tcSrc = gl_TexCoord [0].xy * screenSize;\r\n" \
 	"vec2 tcDest = tcSrc; //vec2 (0.0, 0.0);\r\n" \
+	"vec4 frag = texture2D (sceneTex, tcDest / screenSize);" \
 	"int i;\r\n" \
 	"for (i = 0; i < 8; i++) if (i < nShockwaves) {\r\n" \
 	"  vec2 v = tcSrc - gl_LightSource [i].position.xy;\r\n" \
@@ -109,10 +110,11 @@ const char* shockwaveFS =
 	"      offset /= screenSize.x;\r\n" \
 	"      offset *= (1.0 - pow (abs (offset) * effectStrength.x, effectStrength.y));\r\n" \
 	"      tcDest -= v * (gl_LightSource [i].quadraticAttenuation * offset / d * screenSize);\r\n" \
+	"      frag = vec4 (1.0, 0.5, 0.0, 1.0);" \
 	"      }\r\n" \
 	"    }\r\n" \
 	"  }\r\n" \
-	"gl_FragColor = texture2D (sceneTex, tcDest / screenSize);\r\n" \
+	"gl_FragColor = frag; //texture2D (sceneTex, tcDest / screenSize);\r\n" \
 	"}\r\n";
 
 #endif
@@ -179,14 +181,21 @@ return float (m_nLife) * gameStates.gameplay.slowmo [0].fSpeed;
 
 bool CPostEffectShockwave::Update (void)
 {
-int i;
-CFixVector p [5];
-
 m_bValid = false;
 
-if (m_nObject >= 0)
-	m_pos = OBJECTS [m_nObject].FrontPosition ();
-if (transformation.TransformAndEncode (p [0], m_pos) & CC_BEHIND)
+CFixVector p [5];
+
+bool bTransform = true;
+
+if (m_nObject >= 0) {
+	if ((gameData.objs.viewerP != OBJECTS + m_nObject) || SPECTATOR (gameData.objs.viewerP))
+		m_pos = OBJECTS [m_nObject].FrontPosition ();
+	else {
+		p [0].Set (0, 0, OBJECTS [m_nObject].Size ());
+		bTransform = false;
+		}
+	}
+if (bTransform && (transformation.TransformAndEncode (p [0], m_pos) & CC_BEHIND))
 	return false;
 
 m_ttl = float (SDL_GetTicks () - m_nStart) / Life ();
@@ -205,6 +214,8 @@ p [1].v.coord.z =
 p [2].v.coord.z =
 p [3].v.coord.z =
 p [4].v.coord.z = p [0].v.coord.z;
+
+int i;
 
 for (i = 1; i < 5; i++) {
 	if (!(transformation.Codes (p [i]) & CC_BEHIND))

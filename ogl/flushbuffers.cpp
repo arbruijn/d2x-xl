@@ -327,7 +327,13 @@ if (nEffects & 5) {
 		gameData.render.screen.Deactivate ();
 		}
 	else {
-		SelectBlurBuffer (0); 
+		if (StereoDevice () == -GLASSES_SHUTTER_HDMI)
+			SetDrawBuffer (GL_BACK, 0);
+		else
+			SelectBlurBuffer (0); 
+#if DBG
+		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#endif
 		SetBlendMode (OGL_BLEND_REPLACE);
 		SetDepthMode (GL_ALWAYS);
 		for (int i = 0; i < 2; i++) {
@@ -335,9 +341,9 @@ if (nEffects & 5) {
 			SetupCanvasses ();
 			gameData.render.frame.Activate ("COGL::FlushEffects (frame)");
 			ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
+			ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
 			OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [i + 1]);
 			OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
-			ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
 			if (nEffects & 1) {
 				postProcessManager.Setup ();
 				postProcessManager.Render ();
@@ -365,7 +371,6 @@ if (HaveDrawBuffer ()) {
 						;
 
 	glColor3f (1,1,1);
-
 	EnableClientStates (1, 0, 0, GL_TEXTURE0);
 	BindTexture (DrawBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
 	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);

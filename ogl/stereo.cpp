@@ -194,19 +194,21 @@ void COGL::FlushStereoBuffers (int nEffects)
 int nDevice = StereoDevice ();
 
 if (IsSideBySideDevice (nDevice)) {
-	SetDrawBuffer (GL_BACK, 0);
-	SetBlendMode (OGL_BLEND_REPLACE);
-	SetDepthMode (GL_ALWAYS);
-	gameData.render.screen.SetScale (1.0f);
-	BindTexture (BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
-	if (!RiftWarpScene () /*&& (nEffects & 1)*/) {
-		gameData.render.screen.Activate ("FlushStereoBuffers (screen, 1)");
-		shaderManager.Deploy (-1);
-		EnableClientStates (1, 0, 0, GL_TEXTURE0);
-		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
-		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
-		OglDrawArrays (GL_QUADS, 0, 4);
-		gameData.render.screen.Deactivate ();
+	if (nDevice != -GLASSES_SHUTTER_HDMI) {
+		SetDrawBuffer (GL_BACK, 0);
+		SetBlendMode (OGL_BLEND_REPLACE);
+		SetDepthMode (GL_ALWAYS);
+		gameData.render.screen.SetScale (1.0f);
+		BindTexture (BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
+		if (!RiftWarpScene () /*&& (nEffects & 1)*/) {
+			gameData.render.screen.Activate ("FlushStereoBuffers (screen, 1)");
+			shaderManager.Deploy (-1);
+			EnableClientStates (1, 0, 0, GL_TEXTURE0);
+			OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+			OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+			OglDrawArrays (GL_QUADS, 0, 4);
+			gameData.render.screen.Deactivate ();
+			}
 		}
 	}
 else if (nDevice == -GLASSES_SHUTTER_NVIDIA) {

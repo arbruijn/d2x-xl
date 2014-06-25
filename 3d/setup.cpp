@@ -41,7 +41,6 @@ gameStates.render.bDepthSort = 1;
 //this doesn't do anything, but is here for completeness
 void G3EndFrame (CTransformation& transformation, int nWindow)
 {
-CCanvas::Current ()->Deactivate ();
 ogl.EndFrame (nWindow);
 transformation.ComputeAspect ();
 }

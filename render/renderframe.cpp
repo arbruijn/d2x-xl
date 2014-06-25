@@ -157,8 +157,10 @@ if (gameStates.app.bGameRunning) {
 		PROF_END(ptCockpit)
 		}
 	}
-paletteManager.RenderEffect ();
-FlashMine ();
+if (xStereoSeparation >= 0) {
+	paletteManager.RenderEffect ();
+	FlashMine ();
+	}
 #endif
 
 console.Draw ();

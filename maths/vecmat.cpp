@@ -357,6 +357,7 @@ void CFloatMatrix::Flip (void)
 Swap (m.vec [1], m.vec [4]);
 Swap (m.vec [2], m.vec [8]);
 Swap (m.vec [3], m.vec [12]);
+Swap (m.vec [6], m.vec [9]);
 Swap (m.vec [7], m.vec [13]);
 Swap (m.vec [11], m.vec [14]);
 }
