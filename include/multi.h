@@ -425,7 +425,11 @@ typedef struct tNetGameInfoLite {
 		char                         szGameName [NETGAME_NAME_LEN+1];
 		char                         szMissionTitle [MISSION_NAME_LEN+1];
 		char                         szMissionName [9];
+
+	private:
 		int                          nLevel;
+
+	public:
 		ubyte                        gameMode;
 		ubyte                        bRefusePlayers;
 		ubyte                        difficulty;
@@ -441,7 +445,7 @@ typedef struct tNetGameInfoLite {
 
    public:
 		inline int GetLevel (void) { return nLevel & 0xFFFF; }
-		inline void SetLevel (int n) { nLevel = (nLevel & 0xFFFF0000) | (n & 0xFFFF); }
+		void SetLevel (int n);
 		ushort GetTeamVector (void);
 		void SetTeamVector (ushort n);
 		inline void AddTeamPlayer (int n) { SetTeamVector (GetTeamVector () | (1 << n)); }

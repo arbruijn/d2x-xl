@@ -244,6 +244,13 @@ return (l > 0) ? l : multiMessageLengths [nMsg][0];
 
 //-----------------------------------------------------------------------------
 
+void tNetGameInfoLite::SetLevel (int n) 
+{
+nLevel = ((gameStates.multi.nGameType == UDP_GAME) && !IsCoopGame) ? (nLevel & 0xFFFF0000) | (n & 0xFFFF) : n; 
+}
+
+//-----------------------------------------------------------------------------
+
 ushort tNetGameInfoLite::GetTeamVector (void) 
 { 
 return ((gameStates.multi.nGameType == UDP_GAME) && !IsCoopGame) ? ushort (nLevel >> 16) : ushort (teamVector); 

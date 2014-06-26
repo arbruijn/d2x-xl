@@ -483,6 +483,7 @@ npiP->versionMinor = player->player.versionMinor;
 npiP->rank = player->player.rank;
 npiP->connected = CONNECT_PLAYING;
 NetworkCheckForOldVersion ((char) gameData.multiplayer.nPlayers);
+memcpy (gameData.multiplayer.players [gameData.multiplayer.nPlayers].callsign, npiP->callsign, CALLSIGN_LEN + 1);
 gameData.multiplayer.players [gameData.multiplayer.nPlayers].nScoreGoalCount = 0;
 CONNECT (gameData.multiplayer.nPlayers, CONNECT_PLAYING);
 ResetPlayerTimeout (gameData.multiplayer.nPlayers, -1);

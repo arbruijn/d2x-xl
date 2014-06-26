@@ -237,7 +237,7 @@ int AllowedToFireMissile (int nPlayer, int bCheckSegment)
 
 //	Make sure enough time has elapsed to fire missile, but if it looks like it will
 //	be a long while before missile can be fired, then there must be some mistake!
-if (gameStates.app.bD2XLevel && bCheckSegment && 
+if (gameStates.app.bD2XLevel && bCheckSegment && (gameData.objs.consoleP->info.nSegment != -1) &&
     (SEGMENTS [gameData.objs.consoleP->info.nSegment].HasNoDamageProp ()))
 	return 0;
 if (!IsMultiGame && ((s = gameStates.gameplay.slowmo [0].fSpeed) > 1)) {
