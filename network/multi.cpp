@@ -5026,8 +5026,8 @@ void MultiDoReturnFlagHome (char *buf)
 	ushort	nType = buf [1];
 	ushort	id = buf [2];
 
-for (i = 0; i < gameFileInfo.objects.count; i++, objP = OBJECTS + objP->info.nNextInSeg) {
-	if ((objP->info.nType == nType) &&(objP->info.nId == id)) {
+FORALL_POWERUP_OBJS (objP, i) {
+	if ((objP->info.nType == nType) && (objP->info.nId == id)) {
 		ReturnFlagHome (objP);
 		break;
 		}
