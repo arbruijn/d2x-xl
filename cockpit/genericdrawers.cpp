@@ -984,6 +984,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 					SetFontColor (RGBA_PAL2 (colorP->Red (), colorP->Green (), colorP->Blue ()));
 					x1 = x - w / 2;
 					y1 = y - h / 2;
+					fontManager.SetColorRGBi (FontColor (), 1, 0, 0);
 					nIdNames [nCurColor][nPlayer] = GrString (x1, y1, s, nIdNames [nCurColor] + nPlayer);
 					CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (colorP->Red (), colorP->Green (), colorP->Blue ()));
 					glLineWidth ((GLfloat) 2.0f);
