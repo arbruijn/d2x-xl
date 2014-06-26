@@ -425,11 +425,7 @@ typedef struct tNetGameInfoLite {
 		char                         szGameName [NETGAME_NAME_LEN+1];
 		char                         szMissionTitle [MISSION_NAME_LEN+1];
 		char                         szMissionName [9];
-
-	private:
 		int                          nLevel;
-
-	public:
 		ubyte                        gameMode;
 		ubyte                        bRefusePlayers;
 		ubyte                        difficulty;
