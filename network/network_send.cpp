@@ -323,6 +323,7 @@ void NetworkSendGameInfo (tSequencePacket *their)
    fix timevar;
    int i;
 
+
 NetworkUpdateNetGame (); // Update the values in the netgame struct
 oldType = netGame.m_info.nType;
 oldStatus = netGame.m_info.gameStatus;

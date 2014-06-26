@@ -619,7 +619,7 @@ MultiSendData (gameData.multigame.msg.buf, 4, 0);
 
 //-----------------------------------------------------------------------------
 
-static const char *szTeamColors [2] = {"blue", "red"};
+static const char *szTeamColors [2] = {TXT_BLUE, TXT_RED};
 
 void SetTeam (int nPlayer, int team)
 {

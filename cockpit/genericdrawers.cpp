@@ -1124,7 +1124,7 @@ for (i = 0; i < nPlayers; i++) {
 	else
 		SetFontColor (RGBA_PAL2 (playerColors [nPlayer].Red (), playerColors [nPlayer].Green (), playerColors [nPlayer].Blue ()));
 	if (gameData.multigame.score.bShowList == 3) {
-		if (GetTeam (N_LOCALPLAYER) == i) {
+		if (N_LOCALPLAYER == i) {
 #if 0//DBG
 			sprintf (name, "%c%-8s %d.%d.%d.%d:%d",
 						teamInd [0], netGame.m_info.szTeamName [i],
@@ -1135,7 +1135,7 @@ for (i = 0; i < nPlayers; i++) {
 						netPlayers [0].m_info.players [i].network.Node () [5] +
 						 (unsigned) netPlayers [0].m_info.players [i].network.Node () [4] * 256);
 #else
-			sprintf (name, "%c%s", teamInd [0], netGame.m_info.szTeamName [i]);
+			sprintf (name, "%c%s", teamInd [0], netGame.m_info.szTeamName [GetTeam (i)]);
 #endif
 			indent = 0;
 			}
