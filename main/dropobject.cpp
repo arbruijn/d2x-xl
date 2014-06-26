@@ -1104,7 +1104,6 @@ if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
 	if (SEGMENTS [objP->info.nSegment].m_function == ((objP->info.nId == POW_REDFLAG) ? SEGMENT_FUNC_GOAL_RED : SEGMENT_FUNC_GOAL_BLUE))
 		return objP->info.nSegment;
 	if ((initObjP = FindInitObject (objP))) {
-	//objP->info.nSegment = initObjP->info.nSegment;
 		objP->info.position.vPos = initObjP->info.position.vPos;
 		objP->info.position.mOrient = initObjP->info.position.mOrient;
 		objP->RelinkToSeg (initObjP->info.nSegment);
