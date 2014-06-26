@@ -436,6 +436,8 @@ if (0 > (nPlayer = FindNetworkPlayer (player, newAddress))) {
 		return;
 		}
 	gameData.multiplayer.bAdjustPowerupCap [nPlayer] = true;
+	if (IsTeamGame)
+		ChoseTeam (nPlayer, true);
 	}
 else {
 	// Player is reconnecting
@@ -449,8 +451,6 @@ else {
 		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers [0].m_info.players [nPlayer].rank], 
 							 gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	}
-if (IsTeamGame)
-	ChoseTeam (nPlayer, true);
 gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
 CONNECT (nPlayer, CONNECT_DISCONNECTED);
 // Send updated OBJECTS data to the new/returning CPlayerData
