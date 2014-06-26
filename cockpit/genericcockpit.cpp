@@ -436,9 +436,10 @@ m_info.yScale = gameData.render.scene.YScale ();
 m_info.xScale = Canvas ()->XScale ();
 m_info.yScale = Canvas ()->YScale ();
 #endif
+fontManager.PushScale ();
 fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 m_info.nLineSpacing = int (GAME_FONT->Height () + GAME_FONT->Height () * fontManager.Scale () / 4);
-fontManager.SetScale (1.0f);
+fontManager.PopScale ();
 m_info.heightPad = (ScaleY (m_info.fontHeight) - m_info.fontHeight) / 2;
 m_info.nDamage [0] = gameData.objs.consoleP->AimDamage ();
 m_info.nDamage [1] = gameData.objs.consoleP->DriveDamage ();

@@ -603,6 +603,8 @@ void CFontManager::Init (void)
 memset (m_fonts, 0, sizeof (m_fonts));
 m_save.Create (10);
 SetScale (1.0f);
+m_scaleStack.Create (10);
+m_scaleStack.SetGrowth (10);
 }
 
 //------------------------------------------------------------------------------
@@ -696,11 +698,11 @@ return m_scale;
 
 //------------------------------------------------------------------------------
 
-void CFontManager::SetScale (float fScale) 
+float CFontManager::SetScale (float fScale) 
 { 
-m_scale = fScale * (gameStates.app.bDemoData + 1); 
-if (m_scale < 0.01f)
-	m_scale = 1.0f;
+float fOldScale = m_scale;
+m_scale = Clamp (fScale * (gameStates.app.bDemoData + 1), 0.1f, 10.0f); 
+return fOldScale;
 }
 
 //------------------------------------------------------------------------------

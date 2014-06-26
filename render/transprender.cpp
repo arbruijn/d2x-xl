@@ -29,6 +29,7 @@
 #include "transprender.h"
 #include "renderthreads.h"
 #include "addon_bitmaps.h"
+#include "postprocessing.h"
 
 #define RENDER_TRANSPARENCY  1
 #define RENDER_TRANSP_DECALS 1
@@ -151,9 +152,9 @@ else {
 		//ogl.SetTexturing (false);
 		//glLineWidth (5);
 		ogl.SetFaceCulling (false);
-		ogl.SetupTransform (0);
+		//ogl.SetupTransform (0);
 		OglDrawArrays (nPrimitive, 0, nVertices);
-		ogl.ResetTransform (0);
+		//ogl.ResetTransform (0);
 		ogl.SetFaceCulling (true);
 		//glLineWidth (1);
 		}
@@ -1523,7 +1524,7 @@ if (!ogl.m_states.bGlowRendering)
 	return true;
 if (gameStates.render.cameras.bActive && !gameOpts->render.cameras.bHires)
 	return 0;
-return int (m_data.bRenderGlow || m_data.bSoftBlend);
+return int (m_data.bRenderGlow || m_data.bSoftBlend /*|| postProcessManager.HaveEffects ()*/);
 }
 
 //------------------------------------------------------------------------------

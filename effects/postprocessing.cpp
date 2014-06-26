@@ -153,8 +153,10 @@ if (hShockwaveShader < 0) {
 #if DBG
 //	ogl.m_states.bDepthBuffer [1] = 0;
 #endif
+#if 1
 if (!ogl.CopyDepthTexture (1))
 	return false;
+#endif
 ogl.SelectTMU (GL_TEXTURE0);
 m_shaderProg = GLhandleARB (shaderManager.Deploy (hShockwaveShader /*[direction]*/));
 if (!m_shaderProg) {
@@ -341,9 +343,11 @@ m_nEffects = 0;
 
 //------------------------------------------------------------------------------
 
+static inline bool Available (void) { return ogl.m_features.bShaders && ogl.m_features.bRenderToTexture && (gameOpts->render.nQuality > 1); }
+
 void CPostProcessManager::Add (CPostEffect* e) 
 {
-if (!(ogl.m_features.bShaders && ogl.m_features.bRenderToTexture && e->Enabled ()))
+if (!Available () && e->Enabled ())
 	delete e;
 else {
 	e->Link (NULL, m_effects);
@@ -378,6 +382,18 @@ bool CPostProcessManager::HaveEffects (void)
 for (CPostEffect* e = m_effects; e; e = e->Next ()) 
 	if (e->Valid ())
 		return true;
+return false;
+}
+
+//------------------------------------------------------------------------------
+
+bool CPostProcessManager::Prepare (void)
+{
+if (!postProcessManager.HaveEffects ()) 
+	return true;
+if (ogl.CopyDepthTexture (1)) // need to get the depth texture before switching the render target!
+	return true;
+postProcessManager.Destroy ();
 return false;
 }
 

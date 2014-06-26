@@ -152,7 +152,7 @@ return true;
 static bool bWarpFrame = true;
 #endif
 
-static bool RiftWarpScene (void)
+bool RiftWarpScene (void)
 {
 #if !DBG
 if (!gameData.render.rift.Available ())
@@ -185,73 +185,6 @@ for (int i = 0; i < 2; i++) {
 
 #endif
 return true;
-}
-
-//-----------------------------------------------------------------------------------
-
-void COGL::FlushStereoBuffers (int nEffects)
-{
-int nDevice = StereoDevice ();
-
-if (IsSideBySideDevice (nDevice)) {
-#if 1
-	if (nDevice != -GLASSES_SHUTTER_HDMI) 
-#endif
-		{
-		SetDrawBuffer (GL_BACK, 0);
-		SetBlendMode (OGL_BLEND_REPLACE);
-		SetDepthMode (GL_ALWAYS);
-		gameData.render.screen.SetScale (1.0f);
-		BindTexture (BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
-		if (!RiftWarpScene () /*&& (nEffects & 1)*/) {
-			gameData.render.screen.Activate ("FlushStereoBuffers (screen, 1)");
-			shaderManager.Deploy (-1);
-			EnableClientStates (1, 0, 0, GL_TEXTURE0);
-			OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
-			OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
-			OglDrawArrays (GL_QUADS, 0, 4);
-			gameData.render.screen.Deactivate ();
-			}
-		}
-	}
-else if (nDevice == -GLASSES_SHUTTER_NVIDIA) {
-	SetDrawBuffer ((m_data.xStereoSeparation < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
-	OglDrawArrays (GL_QUADS, 0, 4);
-	}
-else { // merge left and right anaglyph buffers
-	gameData.render.screen.Activate ("FlushStereoBuffers (screen, 2)");
-	if (m_data.xStereoSeparation > 0) {
-		static float gain [4] = {1.0, 4.0, 2.0, 1.0};
-		int h = gameOpts->render.stereo.bDeghost;
-		int i = (gameOpts->render.stereo.bColorGain > 0);
-		if (nEffects & 1) // additional effect and/or shadow map rendering
-			SelectDrawBuffer (2); // use as temporary render buffer
-		else
-			SetDrawBuffer (GL_BACK, 0);
-		if ((nDevice > 0) && (nDevice <= 3) && ((h < 4) || (nDevice == 2))) {
-			GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ((h == 4) ? duboisShaderProg : enhance3DShaderProg [h > 0][i][--nDevice]));
-			if (shaderProg) {
-				shaderManager.Rebuild (shaderProg);
-				ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
-				ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
-				OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
-				OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
-
-				glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.stereo.bFlipFrames);
-				glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.stereo.bFlipFrames);
-				if (h < 4) {
-					if (h)
-						glUniform2fv (glGetUniformLocation (shaderProg, "strength"), 1, reinterpret_cast<GLfloat*> (&nDeghostThresholds [gameOpts->render.stereo.bDeghost]));
-					if (i)
-						glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.stereo.bColorGain]);
-					}
-				ClearError (0);
-				}
-			}
-		OglDrawArrays (GL_QUADS, 0, 4);
-		}
-	gameData.render.screen.Deactivate ();
-	}	
 }
 
 //-----------------------------------------------------------------------------------
@@ -573,6 +506,48 @@ if (duboisShaderProg >= 0) {
 				}
 			}
 		}
+	}
+}
+
+//-----------------------------------------------------------------------------------
+
+void COGL::MergeAnaglyphBuffers (void)
+{
+if (m_data.xStereoSeparation > 0) {
+	static float gain [4] = {1.0, 4.0, 2.0, 1.0};
+
+	int nDevice = StereoDevice ();
+	int h = gameOpts->render.stereo.bDeghost;
+	int i = (gameOpts->render.stereo.bColorGain > 0);
+	if (postProcessManager.HaveEffects ()) // additional effect and/or shadow map rendering
+		SelectDrawBuffer (2); // use as temporary render buffer
+	else
+		SetDrawBuffer (GL_BACK, 0);
+	EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	BindTexture (DrawBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
+	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+	if ((nDevice > 0) && (nDevice <= 3) && ((h < 4) || (nDevice == 2))) {
+		GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy ((h == 4) ? duboisShaderProg : enhance3DShaderProg [h > 0][i][--nDevice]));
+		if (shaderProg) {
+			shaderManager.Rebuild (shaderProg);
+			ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
+			ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
+			OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+			OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+
+			glUniform1i (glGetUniformLocation (shaderProg, "leftFrame"), gameOpts->render.stereo.bFlipFrames);
+			glUniform1i (glGetUniformLocation (shaderProg, "rightFrame"), !gameOpts->render.stereo.bFlipFrames);
+			if (h < 4) {
+				if (h)
+					glUniform2fv (glGetUniformLocation (shaderProg, "strength"), 1, reinterpret_cast<GLfloat*> (&nDeghostThresholds [gameOpts->render.stereo.bDeghost]));
+				if (i)
+					glUniform1f (glGetUniformLocation (shaderProg, "gain"), gain [gameOpts->render.stereo.bColorGain]);
+				}
+			ClearError (0);
+			}
+		}
+	OglDrawArrays (GL_QUADS, 0, 4);
 	}
 }
 

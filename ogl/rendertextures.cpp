@@ -136,10 +136,12 @@ if (!m_states.hDepthBuffer [nId])
 if (m_states.hDepthBuffer [nId] || (m_states.hDepthBuffer [nId] = CreateDepthTexture (-1, nId, nId))) {
 	BindTexture (m_states.hDepthBuffer [nId]);
 	if (!m_states.bDepthBuffer [nId]) {
+#if 0
 		if (ogl.StereoDevice () == -GLASSES_SHUTTER_NVIDIA)
 			ogl.SetReadBuffer ((ogl.StereoSeparation () < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
 		else
-			ogl.SetReadBuffer (GL_BACK, (gameStates.render.bRenderIndirect > 0) || gameStates.render.cameras.bActive);
+#endif
+			ogl.SetReadBuffer (GL_BACK, (gameStates.render.bRenderIndirect > 0) || gameStates.render.cameras.bActive); // side effect: If the current render target is an FBO, it will be activated!
 		SaveViewport ();
 		SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
 		glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());

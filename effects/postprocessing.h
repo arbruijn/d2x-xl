@@ -135,6 +135,8 @@ class CPostProcessManager {
 
 		void Update (void);
 
+		bool Prepare (void);
+
 		bool Setup (void);
 
 		void Render (void);

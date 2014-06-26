@@ -146,6 +146,7 @@ class CFontManager {
 		CFont*					m_current;
 		CStack<tFontBackup>	m_save;
 		float						m_scale;
+		CStack<float>			m_scaleStack;
 
 	public:
 		CFontManager () { Init (); }
@@ -157,8 +158,13 @@ class CFontManager {
 		void Unload (CFont* font);
 		inline CFont* Current (void) { return m_current; }
 		inline CFont* GameFont (int i) { return ((i >= 0) && (i < MAX_FONTS)) ? m_gameFonts [i] : NULL; }
-		void SetScale (float fScale);
+		float SetScale (float fScale);
 		float Scale (void);
+		inline void PushScale (void) { m_scaleStack.Push (m_scale); }
+		inline void PopScale (void) { 
+			if (m_scaleStack.ToS ()) 
+				m_scale = m_scaleStack.Pop (); 
+			}
 		void SetCurrent (CFont* fontP);
 		void SetColor (int fgColor, int bgColor);
 		void SetColorRGB (CRGBAColor *fgColor, CRGBAColor *bgColor);

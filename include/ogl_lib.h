@@ -343,8 +343,13 @@ class COGL {
 		void SetReadBuffer (int nBuffer, int bFBO);
 		int DrawBufferWidth (void);
 		int DrawBufferHeight (void);
-		void FlushStereoBuffers (int nEffects);
-		void FlushEffects (int nEffects);
+		void MergeAnaglyphBuffers (void);
+		void FlushOculusRiftBuffers (void);
+		void FlushSideBySideBuffers (void);
+		void FlushNVidiaStereoBuffers (void);
+		void FlushAnaglyphBuffers (void);
+		void FlushMonoFrameBuffer (void);
+		void FlushEffectsSideBySide (void);
 #if MAX_SHADOWMAPS
 		void FlushShadowMaps (int nEffects);
 #endif
@@ -543,7 +548,11 @@ class COGL {
 		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
 		int StereoDevice (int bForce = 0);
 
-		inline int IsAnaglyphDevice (void) { return StereoDevice () > 0; }
+		inline int IsAnaglyphDevice (int nDevice = 0x7fffffff) { 
+			if (nDevice == 0x7fffffff)
+				nDevice = StereoDevice ();
+			return nDevice > 0; 
+			}
 
 		inline int IsOculusRift (int nDevice = 0x7fffffff) {
 			if (nDevice == 0x7fffffff)

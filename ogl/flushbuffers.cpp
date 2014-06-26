@@ -62,6 +62,8 @@
 
 //#define _WIN32_WINNT		0x0600
 
+bool RiftWarpScene (void);
+
 //------------------------------------------------------------------------------
 
 tTexCoord2f quadTexCoord [3][4] = {
@@ -305,61 +307,114 @@ if (gameStates.menus.nInMenu || bClear)
 // if hardware (shutter glasses / Oculus Rift) based stereo rendering,
 // use render buffer 1 as destination, otherwise use hardware draw buffer as destination
 
-void COGL::FlushEffects (int nEffects)
+void COGL::FlushEffectsSideBySide (void)
 {
-//ogl.EnableClientStates (1, 0, 0, GL_TEXTURE1);
-if (nEffects & 5) {
-	if (StereoDevice () > -DEVICE_STEREO_SIDEBYSIDE) {
-		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-		OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
-		OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
-		if (nEffects & 4) // shutter glasses or Oculus Rift
-			SelectDrawBuffer (1); // render effects to texture 1
-		else
-			SetDrawBuffer (GL_BACK, 0);
-		ogl.BindTexture (DrawBuffer ((nEffects & 2) ? 2 : 0)->ColorBuffer ());
-		gameData.render.screen.SetScale (1.0f);
-		gameData.render.screen.Activate ("COGL::FlushEffects (screen)");
-		postProcessManager.Setup ();
-		postProcessManager.Render ();
-		if (nEffects & 4) // shutter glasses
-			ogl.BindTexture (DrawBuffer (1)->ColorBuffer ());
-		gameData.render.screen.Deactivate ();
-		}
-	else {
-		ogl.DisableClientStates (1, 1, 1, GL_TEXTURE1);
+int nDevice = StereoDevice ();
+
 #if 1
-		if (StereoDevice () == -GLASSES_SHUTTER_HDMI)
-			SetDrawBuffer (GL_BACK, 0);
-		else
+if (nDevice == -GLASSES_SHUTTER_HDMI)
+	SetDrawBuffer (GL_BACK, 0);
+else
 #endif
-			SelectBlurBuffer (0); 
-#if DBG
-		glClearDepth (1.0);
-		glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
-		glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-#endif
-		SetBlendMode (OGL_BLEND_REPLACE);
-		SetDepthMode (GL_ALWAYS);
-		for (int i = 0; i < 2; i++) {
-			gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
-			SetupCanvasses ();
-			gameData.render.frame.Activate ("COGL::FlushEffects (frame)");
-			ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
-			ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
-			OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [i + 1]);
-			OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
-			glColor3f (1, 1, 1);
-			if (nEffects & 1) {
-				postProcessManager.Setup ();
-				postProcessManager.Render ();
-				}
-			else
-				OglDrawArrays (GL_QUADS, 0, 4);
-			gameData.render.frame.Deactivate ();
-			}
-		gameData.render.screen.SetScale (1.0f);
-		}
+	SelectBlurBuffer (0); 
+ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
+for (int i = 0; i < 2; i++) {
+	gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
+	SetupCanvasses ();
+	gameData.render.frame.Activate ("COGL::FlushEffects (frame)");
+	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [i + 1]);
+	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+	postProcessManager.Setup ();
+	postProcessManager.Render ();
+	gameData.render.frame.Deactivate ();
+	}
+}
+
+//-----------------------------------------------------------------------------------
+
+void COGL::FlushAnaglyphBuffers (void)
+{
+MergeAnaglyphBuffers ();
+if (postProcessManager.HaveEffects ()) {
+	SetDrawBuffer (GL_BACK, 0);
+	EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	BindTexture (DrawBuffer (2)->ColorBuffer ()); // set source for subsequent rendering step
+	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+	postProcessManager.Setup ();
+	postProcessManager.Render ();
+	}
+}
+
+//-----------------------------------------------------------------------------------
+
+void COGL::FlushSideBySideBuffers (void)
+{
+if (postProcessManager.HaveEffects ()) 
+	FlushEffectsSideBySide ();
+else {
+	SetDrawBuffer (GL_BACK, 0);
+	EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	BindTexture (DrawBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
+	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+	OglDrawArrays (GL_QUADS, 0, 4);
+	}
+}
+
+//-----------------------------------------------------------------------------------
+
+void COGL::FlushOculusRiftBuffers (void)
+{
+gameData.render.screen.SetScale (1.0f);
+if (!postProcessManager.HaveEffects ()) 
+	BindTexture (DrawBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
+else {
+	FlushEffectsSideBySide ();
+	BindTexture (BlurBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
+	}	
+SetDrawBuffer (GL_BACK, 0);
+
+if (!RiftWarpScene ()) {
+	shaderManager.Deploy (-1);
+	EnableClientStates (1, 0, 0, GL_TEXTURE0);
+	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+	OglDrawArrays (GL_QUADS, 0, 4);
+	}
+}
+
+//-----------------------------------------------------------------------------------
+
+void COGL::FlushNVidiaStereoBuffers (void)
+{
+SetDrawBuffer ((m_data.xStereoSeparation < 0) ? GL_BACK_LEFT : GL_BACK_RIGHT, 0);
+BindTexture (DrawBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
+OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+if (!postProcessManager.HaveEffects ()) 
+	OglDrawArrays (GL_QUADS, 0, 4);
+else {
+	postProcessManager.Setup ();
+	postProcessManager.Render ();
+	}
+}
+
+//-----------------------------------------------------------------------------------
+
+void COGL::FlushMonoFrameBuffer (void)
+{
+SetDrawBuffer (GL_BACK, 0);
+glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
+glClear (GL_COLOR_BUFFER_BIT);
+OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
+OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
+BindTexture (DrawBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
+if (!postProcessManager.HaveEffects ()) 
+	OglDrawArrays (GL_QUADS, 0, 4);
+else {
+	postProcessManager.Setup ();
+	postProcessManager.Render ();
 	}
 }
 
@@ -368,41 +423,61 @@ if (nEffects & 5) {
 void COGL::FlushDrawBuffer (bool bAdditive)
 {
 if (HaveDrawBuffer ()) {
-	int nEffects = postProcessManager.HaveEffects () 
-						+ (int (StereoDevice () > 0) << 1)
-						+ (int (StereoDevice () < 0) << 2)
-#if MAX_SHADOWMAPS
-						+ (int (EGI_FLAG (bShadows, 0, 1, 0) != 0) << 3)
-#endif
-						;
+
+	GLenum nBlendModes [2], nDepthMode;
+	ogl.GetBlendMode (nBlendModes [0], nBlendModes [1]);
+	nDepthMode = ogl.GetDepthMode ();
 
 	glColor3f (1,1,1);
+	SetBlendMode (OGL_BLEND_REPLACE);
+	SetDepthMode (GL_ALWAYS);
+	ResetClientStates (1);
 	EnableClientStates (1, 0, 0, GL_TEXTURE0);
-	BindTexture (DrawBuffer (0)->ColorBuffer ()); // set source for subsequent rendering step
-	OglTexCoordPointer (2, GL_FLOAT, 0, quadTexCoord [0]);
-	OglVertexPointer (2, GL_FLOAT, 0, quadVerts [0]);
 
-	if (nEffects & 5) {
-		FlushEffects (nEffects);
-		FlushStereoBuffers (nEffects);
+	int nDevice = abs (StereoDevice ());
+
+	gameData.render.screen.Activate ("FlushDrawBuffer");
+
+#if 0 // need to get the depth texture before switching the render target!
+	if (postProcessManager.HaveEffects ()) {
+		ChooseDrawBuffer ();
+		if (!ogl.CopyDepthTexture (1)) // doesn't work when called here
+			postProcessManager.Destroy ();
 		}
-	else if (nEffects & 3) {
-		FlushStereoBuffers (nEffects);
-		FlushEffects (nEffects);
-#if MAX_SHADOWMAPS
-		FlushShadowMaps (nEffects);
 #endif
+
+	switch (nDevice) {
+		case GLASSES_AMBER_BLUE:
+		case GLASSES_RED_CYAN:
+		case GLASSES_GREEN_MAGENTA:
+			FlushAnaglyphBuffers ();
+			break;
+
+		case GLASSES_SHUTTER_HDMI:
+			FlushSideBySideBuffers ();
+			break;
+
+		case GLASSES_OCULUS_RIFT:
+			FlushOculusRiftBuffers ();
+			break;
+
+		case GLASSES_SHUTTER_NVIDIA:
+			FlushNVidiaStereoBuffers ();
+			break;
+
+		case GLASSES_NONE:
+		default:
+			FlushMonoFrameBuffer ();
+			break;
 		}
-	else {
-		SetDrawBuffer (GL_BACK, 0);
-		gameData.render.screen.Activate ("COGL::FlushDrawBuffer (screen)");
-		OglDrawArrays (GL_QUADS, 0, 4);
-		gameData.render.screen.Deactivate ();
-		}
+
+	gameData.render.screen.Deactivate ();
 	ResetClientStates (0);
 	SelectDrawBuffer (0);
-	//if (bStereo)
-		shaderManager.Deploy (-1);
+	shaderManager.Deploy (-1);
+
+	ogl.SetBlendMode (nBlendModes [0], nBlendModes [1]);
+	ogl.SetDepthMode (nDepthMode);
 	}
 }
 

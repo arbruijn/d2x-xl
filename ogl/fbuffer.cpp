@@ -130,7 +130,7 @@ if (m_info.nType == 3) { // depth buffer for shadow map
 	}
 else if (m_info.nType != 2) { // 2 -> GPGPU
 	// depth buffer
-#if 0
+#if 1
 	if (abs (m_info.nType) != 1) // -> no stencil buffer
 		glGenRenderbuffersEXT (1, &m_info.hDepthBuffer);
 	else 
@@ -159,7 +159,7 @@ else if (m_info.nType != 2) { // 2 -> GPGPU
 	for (int i = 0; i < m_info.nColorBuffers; i++)
 		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, m_info.bufferIds [i], GL_TEXTURE_2D, m_info.hColorBuffer [i], 0);
 	// depth + stencil buffer
-#if 1
+#if 0
 	glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, m_info.hDepthBuffer, 0);
 	glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_TEXTURE_2D, m_info.hStencilBuffer = m_info.hDepthBuffer, 0);
 #else

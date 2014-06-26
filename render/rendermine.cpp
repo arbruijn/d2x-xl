@@ -60,6 +60,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sparkeffect.h"
 #include "createmesh.h"
 #include "systemkeys.h"
+#include "postprocessing.h"
 
 #if USE_OPENMP
 #	define PERSISTENT_THREADS 1
@@ -707,6 +708,8 @@ if (!ogl.StereoDevice () || (ogl.StereoSeparation () < 0) || nWindow || gameStat
 		lightningManager.Render ();
 	}
 transparencyRenderer.Render (nWindow);
+if (!nWindow) 
+	postProcessManager.Prepare ();
 
 PROF_END(ptEffects)
 }

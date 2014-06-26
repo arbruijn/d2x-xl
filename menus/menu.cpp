@@ -553,6 +553,7 @@ FadeIn ();
 ogl.ColorMask (1,1,1,1,0);
 backgroundManager.Activate (m_background);
 int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
+fontManager.PushScale ();
 fontManager.SetScale (fontManager.Scale () * GetScale ());
 int i = DrawTitle (m_props.pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
 DrawTitle (m_props.pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
@@ -614,7 +615,7 @@ if (m_bCloseBox) {
 	}
 #endif
 m_background.Deactivate ();
-fontManager.SetScale (fontManager.Scale () / GetScale ());
+fontManager.PopScale ();
 m_bRedraw = 1;
 m_bStart = 0;
 #if 0
