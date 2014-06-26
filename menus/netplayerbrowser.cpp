@@ -91,6 +91,7 @@ for (;;) {
 		netGame.m_info.SetTeamVector (teamVector);
 		strcpy (netGame.m_info.szTeamName [0], teamNames [0]);
 		strcpy (netGame.m_info.szTeamName [1], teamNames [1]);
+		NetworkSendGameInfo (NULL);
 		return 1;
 		}
 	else if ((choice > redTeam) && (choice < blueTeam)) 
