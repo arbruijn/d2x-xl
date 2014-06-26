@@ -105,6 +105,7 @@ sprintf (szScore, "%5d", (IsMultiGame && !IsCoopGame) ? LOCALPLAYER.netKillsTota
 fontManager.Current ()->StringSize (szScore, w, h, aw);
 SetFontColor ((IsMultiGame && !IsCoopGame) ? MEDGREEN_RGBA : GREEN_RGBA);
 nIdScore = DrawHUDText (&nIdScore, ScaleX (SB_SCORE_RIGHT- w) - LHY (2), ScaleY (SB_SCORE_Y), szScore);
+SetFontScale (fontScale);
 }
 
 //	-----------------------------------------------------------------------------

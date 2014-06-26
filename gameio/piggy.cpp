@@ -619,8 +619,6 @@ int PiggyBitmapReadD1 (
    ubyte					**pNextBmP, /* where to write it (if 0, use reinterpret_cast<ubyte*> (D2_ALLOC) */
    ubyte					*colorMap) /* how to translate bmP's colors */
 {
-	int zSize;
-
 memset (bmP, 0, sizeof (CBitmap));
 bmP->SetWidth (bmh->width + ((short) (bmh->wh_extra&0x0f)<<8));
 bmP->SetHeight (bmh->height + ((short) (bmh->wh_extra&0xf0)<<4));
@@ -636,6 +634,8 @@ if (ReadBitmap (&cf, bmP, bmP->FrameSize (), 1) < 0)
 	return 0;
 
 #else
+
+int zSize;
 
 if (bmh->flags & BM_FLAG_RLE) 
 	zSize = cf.ReadInt () - 4;
