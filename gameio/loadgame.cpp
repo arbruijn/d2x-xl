@@ -2276,8 +2276,8 @@ gameStates.app.SRand ();
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	if (!(nTeam & GetSegmentTeam (gameData.multiplayer.playerInit [i].nSegType)))
 		continue; // exclude team specific spawn points of the wrong team
-	spawnTable [i].i = i;
-	spawnTable [i].xDist = 0x7fffffff;
+	spawnTable [nSpawnSegs].i = i;
+	spawnTable [nSpawnSegs].xDist = 0x7fffffff;
 	for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
 		if (j != N_LOCALPLAYER) {
 			objP = OBJECTS + gameData.multiplayer.players [j].nObject;
@@ -2287,11 +2287,12 @@ for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 																 10, WID_PASSABLE_FLAG, -1);	//	Used to be 5, search up to 10 segments
 				if (xDist < 0)
 					continue;
-				if (spawnTable [i].xDist > xDist)
-					spawnTable [i].xDist = xDist;
+				if (spawnTable [nSpawnSegs].xDist > xDist)
+					spawnTable [nSpawnSegs].xDist = xDist;
 				}
 			}
 		}
+	++nSpawnSegs;
 	}
 
 // sort by descending distance from closest player in mine

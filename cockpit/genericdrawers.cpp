@@ -1147,7 +1147,7 @@ for (i = 0; i < nPlayers; i++) {
 						netPlayers [0].m_info.players [i].network.Node () [5] +
 						 (unsigned) netPlayers [0].m_info.players [i].network.Node () [4] * 256);
 #else
-			strcpy (name, netGame.m_info.szTeamName [i]);
+			strcpy (name, netGame.m_info.szTeamName [GetTeam (i)]);
 #endif
 			fontManager.Current ()->StringSize (teamInd, indent, sh, aw);
 			}
