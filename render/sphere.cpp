@@ -857,10 +857,10 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-void DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha, char bAdditive, fix nSize)
+int DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha, char bAdditive, fix nSize)
 {
 if (!CreateShieldSphere ())
-	return;
+	return 0;
 #if !RINGED_SPHERE
 if (gameData.render.shield.nFaces > 0)
 #endif
@@ -883,6 +883,7 @@ if (gameData.render.shield.nFaces > 0)
 	else
 		transparencyRenderer.AddSphere (riSphereShield, red, green, blue, alpha, objP, bAdditive, nSize);
 	}
+return 1;
 }
 
 // -----------------------------------------------------------------------------

@@ -291,6 +291,22 @@ return fScale;
 }
 
 //------------------------------------------------------------------------------
+
+static int DrawShield3D (CObject* objP, CFloatVector& color)
+{
+bool b3DShield = ((objP->Type () == OBJ_POWERUP) && ((objP->Id () == POW_SHIELD_BOOST) || (objP->Id () == POW_HOARD_ORB)) &&
+					   gameOpts->Use3DPowerups () && gameOpts->render.powerups.b3DShields);
+if (!b3DShield) 
+	return 0;
+if ((objP->mType.physInfo.velocity.IsZero ()) && (objP->info.movementType != MT_SPINNING)) {
+	objP->info.movementType = MT_SPINNING;
+	objP->mType.spinRate = objP->info.position.mOrient.m.dir.u * (I2X (1) / 8);
+	}
+//the actual shield in the sprite texture has 3/4 of the textures size
+return DrawShieldSphere (objP, color.Red (), color.Green (), color.Blue (), 1.0f, 0, 3 * objP->info.xSize / 4);
+}
+
+//------------------------------------------------------------------------------
 //draw an CObject that has one bitmap & doesn't rotate
 
 void DrawObjectBitmap (CObject *objP, int bmi0, int bmi, int iFrame, CFloatVector *colorP, float fAlpha)
@@ -373,14 +389,8 @@ if (nType == OBJ_POWERUP) {
 		RenderPowerupCorona (objP, color.Red (), color.Green (), color.Blue (), coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 	}
 
-if (b3DShield) {
-	if ((objP->mType.physInfo.velocity.IsZero ()) && (objP->info.movementType != MT_SPINNING)) {
-		objP->info.movementType = MT_SPINNING;
-		objP->mType.spinRate = objP->info.position.mOrient.m.dir.u * (I2X (1) / 8);
-		}
-	//the actual shield in the sprite texture has 3/4 of the textures size
-	DrawShieldSphere (objP, color.Red (), color.Green (), color.Blue (), 1.0f, 0, 3 * objP->info.xSize / 4);
-	}
+if (DrawShield3D (objP, color))
+	/*nothing*/;
 else if (fAlpha < 1) {
 	if (bAdditive) {
 		color.Red () =
@@ -397,7 +407,7 @@ else if (fAlpha < 1) {
 	else
 		transparencyRenderer.AddSprite (bmP, vPos, &color, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize,
 												  iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
-}
+	}
 else {
 	if (bmP->Width () > bmP->Height ())
 		ogl.RenderBitmap (bmP, objP->info.position.vPos, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()), NULL, fAlpha, bAdditive);
