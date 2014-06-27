@@ -370,8 +370,10 @@ void ResetPlayerTimeout (int nPlayer, fix t)
 {
 	static int nDbgPlayer = -1;
 
-if (nPlayer == nDbgPlayer)
+if (nPlayer == nDbgPlayer) {
 	BRP;
+	audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (2) / 3, 0xFFFF / 2, 0, -1, -1, -1, I2X (1), AddonSoundName (SND_ADDON_LOW_SHIELDS1));
+	}
 networkData.nLastPacketTime [nPlayer] = (t < 0) ? (fix) SDL_GetTicks () : t;
 }
 

@@ -351,7 +351,7 @@ typedef struct tNetPlayerInfo {
 	ushort  socket;
 	ubyte   rank;
 
-	int Connected (void) { return *callsign ? connected : 0; }
+	int IsConnected (void) { return *callsign ? connected : 0; }
 } __pack__ tNetPlayerInfo;
 
 

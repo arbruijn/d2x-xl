@@ -102,7 +102,7 @@ if (networkData.bPlayerAdded) {
 	NetworkNewPlayer (&syncP->player [1]);
 
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if ((i != nPlayer) && (i != N_LOCALPLAYER) && gameData.multiplayer.players [i].Connected () && (gameStates.multi.nGameType >= IPX_GAME)) {
+		if ((i != nPlayer) && (i != N_LOCALPLAYER) && gameData.multiplayer.players [i].IsConnected () && (gameStates.multi.nGameType >= IPX_GAME)) {
 			SendSequencePacket (
 				syncP->player [1], 
 				netPlayers [0].m_info.players [i].network.Server (), 
@@ -249,7 +249,7 @@ void NetworkSendEndLevelSub (int nPlayer)
 	// Send an endlevel packet for a player
 *end.Type () = PID_ENDLEVEL;
 *end.Player () = nPlayer;
-*end.Connected () = gameData.multiplayer.players [nPlayer].Connected ();
+end.SetConnected ((sbyte) gameData.multiplayer.players [nPlayer].IsConnected ());
 *end.Kills () = INTEL_SHORT (gameData.multiplayer.players [nPlayer].netKillsTotal);
 *end.Killed () = INTEL_SHORT (gameData.multiplayer.players [nPlayer].netKilledTotal);
 memcpy (end.ScoreMatrix (), gameData.multigame.score.matrix [nPlayer], MAX_NUM_NET_PLAYERS * sizeof (short));
@@ -258,13 +258,13 @@ for (i = 0; i < MAX_PLAYERS; i++)
 	for (int j = 0; j < MAX_PLAYERS; j++)
 		*end.ScoreMatrix (i, j) = INTEL_SHORT (*end.ScoreMatrix (i, j));
 #endif
-if (gameData.multiplayer.players [nPlayer].Connected () == 1) {// Still playing
+if (gameData.multiplayer.players [nPlayer].Connected (CONNECT_PLAYING)) {// Still playing
 	Assert (gameData.reactor.bDestroyed);
 	*end.SecondsLeft () = gameData.reactor.countdown.nSecsLeft;
 	}
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {       
-	if ((i != N_LOCALPLAYER) && (i != nPlayer) && (gameData.multiplayer.players [i].Connected ())) {
-		if (gameData.multiplayer.players [i].Connected () == 1)
+	if ((i != N_LOCALPLAYER) && (i != nPlayer) && (gameData.multiplayer.players [i].IsConnected ())) {
+		if (gameData.multiplayer.players [i].Connected (CONNECT_PLAYING))
 			NetworkSendEndLevelShortSub (nPlayer, i);
 		else if (gameStates.multi.nGameType >= IPX_GAME)
 			IPXSendPacketData (
@@ -273,6 +273,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 				netPlayers [0].m_info.players [i].network.Node (), gameData.multiplayer.players [i].netAddress);
 		}
 	}
+audio.PlaySound (SOUND_HUD_MESSAGE);
 }
 
 //------------------------------------------------------------------------------
@@ -290,7 +291,7 @@ void NetworkSendEndLevelShortSub (int nSrcPlayer, int nDestPlayer)
 {
 if (gameStates.multi.nGameType < IPX_GAME)
 	return;
-if (!gameData.multiplayer.players [nDestPlayer].Connected ())
+if (!gameData.multiplayer.players [nDestPlayer].IsConnected ())
 	return;
 if (nDestPlayer == N_LOCALPLAYER)
 	return;
@@ -482,7 +483,7 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed)
 	netGame.m_info.gameStatus = NETSTAT_ENDLEVEL;
 PrintLog (1, "sending netgame update:\n");
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (gameData.multiplayer.players [i].Connected () && (i != N_LOCALPLAYER)) {
+	if (gameData.multiplayer.players [i].IsConnected () && (i != N_LOCALPLAYER)) {
 		if (gameStates.multi.nGameType >= IPX_GAME) {
 			PrintLog (1, "%s (%s)\n", netPlayers [0].m_info.players [i].callsign, 
 				iptos (szIP, reinterpret_cast<char*> (netPlayers [0].m_info.players [i].network.Node ())));
@@ -508,7 +509,7 @@ int NetworkSendRequest (void)
 if (netGame.m_info.nNumPlayers < 1)
 	return 1;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	if (netPlayers [0].m_info.players [i].Connected ())
+	if (netPlayers [0].m_info.players [i].IsConnected ())
 	   break;
 Assert (i < MAX_NUM_NET_PLAYERS);
 networkData.thisPlayer.nType = PID_REQUEST;
@@ -534,7 +535,7 @@ void NetworkSendSync (void)
 gameStates.app.SRand ();
 	// Randomize their starting locations...
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
-	if (gameData.multiplayer.players [i].Connected ())
+	if (gameData.multiplayer.players [i].IsConnected ())
 		CONNECT (i, CONNECT_PLAYING); // Get rid of endlevel connect statuses
 if (IsCoopGame) {
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++)
@@ -556,7 +557,7 @@ netGame.m_info.gameStatus = NETSTAT_PLAYING;
 netGame.m_info.nType = PID_SYNC;
 netGame.SetSegmentCheckSum (networkData.nSegmentCheckSum);
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (!gameData.multiplayer.players [i].Connected () || (i == N_LOCALPLAYER))
+	if (!gameData.multiplayer.players [i].IsConnected () || (i == N_LOCALPLAYER))
 		continue;
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 	// Send several times, extras will be ignored
@@ -701,11 +702,11 @@ if (!bNameReturning) {
 	goto sendit;
 	}
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].Connected ())
+	if (gameData.multiplayer.players [i].IsConnected ())
 		nConnected++;
 buf [count++] = nConnected; 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].Connected ()) {
+	if (gameData.multiplayer.players [i].IsConnected ()) {
 		buf [count++] = netPlayers [0].m_info.players [i].rank; 
 		memcpy (buf + count, netPlayers [0].m_info.players [i].callsign, CALLSIGN_LEN + 1);
 		count += CALLSIGN_LEN + 1;

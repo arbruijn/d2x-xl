@@ -929,7 +929,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 	bShowName = (nState ||
 					 (bShowAllNames && !(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)) ||
 					 (!IsCoopGame && (bShowTeamNames && GetTeam (nPlayer) == nTeam)));
-	bHasFlag = (gameData.multiplayer.players [nPlayer].Connected () && (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FLAG));
+	bHasFlag = (gameData.multiplayer.players [nPlayer].IsConnected () && (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FLAG));
 
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)
 		nObject = gameData.multiplayer.players [nPlayer].nObject;
@@ -1114,7 +1114,7 @@ for (i = 0; i < nPlayers; i++) {
 	nPlayer = (gameData.multigame.score.bShowList == 3) ? i : playerList [i];
 	if (gameData.multiplayer.players [nPlayer].HasLeft ())
 		continue;
-	if (!gameData.multiplayer.players [nPlayer].Connected ()) 
+	if (!gameData.multiplayer.players [nPlayer].IsConnected ()) 
 		SetFontColor (RGBA_PAL2 (12, 12, 12));
 	else {
 		int color = IsTeamGame ? GetTeam (nPlayer) : nPlayer % MAX_PLAYER_COLORS;

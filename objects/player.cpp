@@ -106,7 +106,7 @@ void UpdateFiringSounds (void)
 
 bGatlingSound = (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++, wsP++) {
-	if (!IsMultiGame || gameData.multiplayer.players [i].Connected ()) {
+	if (!IsMultiGame || gameData.multiplayer.players [i].IsConnected ()) {
 		bGatling = (wsP->nPrimary == VULCAN_INDEX) || (wsP->nPrimary == GAUSS_INDEX);
 		fP = wsP->firing;
 		if (bGatling && bGatlingSound && (fP->bSound == 1)) {
@@ -399,14 +399,14 @@ return (nObject < 0) ? NULL : OBJECTS + nObject;
 
 bool CPlayerData::WaitingForExplosion (void) 
 { 
-return m_tDeath && (gameStates.app.nSDLTicks [0] - m_tDeath < 30000) && !m_bExploded && Connected ();  
+return m_tDeath && (gameStates.app.nSDLTicks [0] - m_tDeath < 30000) && !m_bExploded && IsConnected ();  
 }
 
 //-------------------------------------------------------------------------
 
 bool CPlayerData::WaitingForWeaponInfo (void) 
 { 
-return !m_tWeaponInfo || ((gameStates.app.nSDLTicks [0] - m_tWeaponInfo > 15000) && (gameStates.app.nSDLTicks [0] - m_tWeaponInfo < 180000) && !m_bExploded && Connected ());
+return !m_tWeaponInfo || ((gameStates.app.nSDLTicks [0] - m_tWeaponInfo > 15000) && (gameStates.app.nSDLTicks [0] - m_tWeaponInfo < 180000) && !m_bExploded && IsConnected ());
 }
 
 //-------------------------------------------------------------------------

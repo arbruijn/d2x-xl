@@ -515,7 +515,13 @@ class CEndLevelInfo {
 
 		inline ubyte* Type (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.nType : &m_info.d2.nType; }
 		inline ubyte* Player (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.nPlayer : &m_info.d2.nPlayer; }
-		inline sbyte* Connected (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.connected : &m_info.d2.connected; }
+		inline sbyte Connected (void) { return gameStates.app.bD2XLevel ? m_info.d2x.connected : m_info.d2.connected; }
+		inline void SetConnected (sbyte nStatus) { 
+			if (gameStates.app.bD2XLevel)
+				m_info.d2x.connected = nStatus;
+			else
+				m_info.d2.connected = nStatus; 
+			}
 		inline ubyte* SecondsLeft (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.secondsLeft : &m_info.d2.secondsLeft; }
 		inline short* ScoreMatrix (int i = 0, int j = 0) { return gameStates.app.bD2XLevel ? m_info.d2x.scoreMatrix [i] + j : m_info.d2.scoreMatrix [i] + j; }
 		inline short* Kills (void) { return gameStates.app.bD2XLevel ? &m_info.d2x.kills : &m_info.d2.kills; }
