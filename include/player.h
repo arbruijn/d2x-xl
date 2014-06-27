@@ -209,7 +209,7 @@ class CPlayerInfo {
 			connected = nStatus;
 			}
 		inline bool HasLeft (void) { return (connected == 0) && (*callsign == '\0'); }
-		inline bool IsConnected (void) { return (connected == 1) && (*callsign != '\0'); }
+		inline bool IsConnected (void) { return (connected != 0) && (*callsign != '\0'); }
 		inline bool Connected (int nState) { return (connected == nState) && (*callsign != '\0'); }
 	};
 

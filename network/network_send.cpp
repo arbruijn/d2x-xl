@@ -247,6 +247,8 @@ void NetworkSendEndLevelSub (int nPlayer)
 	int i;
 
 	// Send an endlevel packet for a player
+if (!N_LOCALPLAYER)
+	audio.PlaySound (SOUND_HOMING_WARNING);
 *end.Type () = PID_ENDLEVEL;
 *end.Player () = nPlayer;
 end.SetConnected ((sbyte) gameData.multiplayer.players [nPlayer].IsConnected ());

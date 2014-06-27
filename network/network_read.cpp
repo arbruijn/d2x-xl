@@ -53,6 +53,7 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 *eli.Kills () = INTEL_SHORT (*eli.Kills ());
 *eli.Killed () = INTEL_SHORT (*eli.Killed ());
 #endif
+audio.PlaySound (SOUND_HUD_MESSAGE);
 nPlayer = *eli.Player ();
 Assert (nPlayer != N_LOCALPLAYER);
 if (nPlayer >= gameData.multiplayer.nPlayers) {
@@ -79,7 +80,8 @@ void NetworkReadEndLevelShortPacket (ubyte *dataP)
 	int						nPlayer;
 	tEndLevelInfoShort*	eli;
 
-audio.PlaySound (SOUND_HUD_MESSAGE);
+if (N_LOCALPLAYER)
+	audio.PlaySound (SOUND_HUD_MESSAGE);
 eli = reinterpret_cast<tEndLevelInfoShort*> (dataP);
 nPlayer = eli->nPlayer;
 Assert (nPlayer != N_LOCALPLAYER);
