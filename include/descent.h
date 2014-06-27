@@ -2751,9 +2751,13 @@ class CMultiplayerData {
 		CMultiplayerData ();
 		bool Create (void);
 		void Destroy (void);
+#if DBG
+		void Connect (int nPlayer, sbyte nStatus);
+#else
 		inline void Connect (int nPlayer, sbyte nStatus) {
 			players [nPlayer].Connect (nStatus);
 			}
+#endif
 
 		bool WaitingForExplosion (void) {
 			for (int i = 0; i < nPlayers; i++)

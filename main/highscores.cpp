@@ -138,7 +138,7 @@ for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
 	else
 		color = m_sorted [j];
 	x = LHX (70 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + j*25) + xOffs;
-	if (gameData.multiplayer.players [m_sorted [j]].connected == 0)
+	if (gameData.multiplayer.players [m_sorted [j]].connected == CONNECT_DISCONNECTED)
 		fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
    else
       fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].Red (), playerColors [color].Green (), playerColors [color].Blue ()), 1, 0, 0);
@@ -184,7 +184,7 @@ if (! (gameData.app.GameMode (GM_MODEM | GM_SERIAL)))
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"V-Viewing scores W-Waiting");
 y+=LHY (20);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
-if (LOCALPLAYER.connected == 7) {
+if (LOCALPLAYER.connected == CONNECT_ADVANCE_LEVEL) {
    fontManager.Current ()->StringSize ("Waiting for other players...",sw, sh, aw);
    GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"Waiting for other players...");
    }
@@ -231,7 +231,7 @@ if (! (gameData.app.GameMode (GM_MODEM | GM_SERIAL)))
    GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"V-Viewing scores W-Waiting");
 y+=LHY (20);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
-if (LOCALPLAYER.connected == 7) {
+if (LOCALPLAYER.connected == CONNECT_ADVANCE_LEVEL) {
 	fontManager.Current ()->StringSize ("Waiting for other players...",sw, sh, aw);
 	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"Waiting for other players...");
 	}
@@ -343,7 +343,7 @@ gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 DrawCoopNames ();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	color = m_sorted [i];
-	if (gameData.multiplayer.players [m_sorted [i]].connected == 0)
+	if (gameData.multiplayer.players [m_sorted [i]].connected == CONNECT_DISCONNECTED)
 		fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 	else
 		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].Red (), playerColors [color].Green (), playerColors [color].Blue ()), 1, 0, 0);
@@ -467,9 +467,9 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		NetworkSendEndLevelPacket ();
 		}
 
-	if (gameData.multiplayer.players [i].connected != 1) {
+	if (gameData.multiplayer.players [i].connected != CONNECT_PLAYING) {
 		m_nEscaped++;
-		if ((gameData.multiplayer.players [i].connected == 0) || (gameData.multiplayer.players [i].connected == 7))
+		if ((gameData.multiplayer.players [i].connected == CONNECT_DISCONNECTED) || (gameData.multiplayer.players [i].connected == CONNECT_ADVANCE_LEVEL))
 			m_nReady++;
 		}
 

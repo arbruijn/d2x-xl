@@ -165,7 +165,6 @@ gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration =
 gameData.multiplayer.weaponStates [nPlayer].firing [1].nDuration = 0;
 KillPlayerBullets (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
 KillGatlingSmoke (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
-netPlayers [0].m_info.players [nPlayer].connected = CONNECT_DISCONNECTED;
 for (short i = 0; i < networkData.nJoining; i++)
 	if (networkData.sync [i].nPlayer == nPlayer)
 		DeleteSyncData (i);
@@ -468,19 +467,19 @@ NetworkDoSyncFrame ();
 
 //------------------------------------------------------------------------------
 
-void NetworkAddPlayer (tSequencePacket *player)
+void NetworkAddPlayer (tSequencePacket* playerInfoP)
 {
 	tNetPlayerInfo	*npiP;
 
-if (NetworkFindPlayer (&player->player) > -1)
+if (NetworkFindPlayer (&playerInfoP->player) > -1)
 	return;
 npiP = netPlayers [0].m_info.players + gameData.multiplayer.nPlayers;
-memcpy (&npiP->network, &player->player.network, sizeof (CNetworkInfo));
-ClipRank (reinterpret_cast<char*> (&player->player.rank));
-memcpy (npiP->callsign, player->player.callsign, CALLSIGN_LEN + 1);
-npiP->versionMajor = player->player.versionMajor;
-npiP->versionMinor = player->player.versionMinor;
-npiP->rank = player->player.rank;
+memcpy (&npiP->network, &playerInfoP->player.network, sizeof (CNetworkInfo));
+ClipRank (reinterpret_cast<char*> (&playerInfoP->player.rank));
+memcpy (npiP->callsign, playerInfoP->player.callsign, CALLSIGN_LEN + 1);
+npiP->versionMajor = playerInfoP->player.versionMajor;
+npiP->versionMinor = playerInfoP->player.versionMinor;
+npiP->rank = playerInfoP->player.rank;
 npiP->connected = CONNECT_PLAYING;
 NetworkCheckForOldVersion ((char) gameData.multiplayer.nPlayers);
 memcpy (gameData.multiplayer.players [gameData.multiplayer.nPlayers].callsign, npiP->callsign, CALLSIGN_LEN + 1);
@@ -634,6 +633,21 @@ if (gameStates.multi.nGameType >= IPX_GAME)
 else
 	Int3 ();
 }
+
+//------------------------------------------------------------------------------
+
+#if DBG
+
+void CMultiplayerData::Connect (int nPlayer, sbyte nStatus) 
+{
+	static int nDbgStatus = -1;
+
+if (nStatus == nDbgStatus)
+	BRP;
+players [nPlayer].Connect (nStatus);
+}
+
+#endif
 
 //------------------------------------------------------------------------------
 
