@@ -502,6 +502,7 @@ void CScoreTable::Display (void)
    int	i;
 	int	key;
 	int	bRedraw = 0;
+	uint	t0 = SDL_GetTicks ();
 
 m_bNetwork = IsNetworkGame != 0;
 m_nPrevSecsLeft = -1;
