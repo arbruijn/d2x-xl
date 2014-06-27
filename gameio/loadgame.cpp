@@ -2208,6 +2208,7 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
+// Sort descending
 
 typedef struct tSpawnTable {
 	int	i;
@@ -2243,19 +2244,38 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
+int GetSegmentTeam (int nSegType)
+{
+switch (nSegType) {
+	case SEGMENT_FUNC_GOAL_RED:
+	case SEGMENT_FUNC_TEAM_RED:
+		return 2;
+	case SEGMENT_FUNC_GOAL_BLUE:
+	case SEGMENT_FUNC_TEAM_BLUE:
+		return 1;
+	default:
+		return 3;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 int GetRandomPlayerPosition (int nPlayer)
 {
 	CObject		*objP;
 	tSpawnTable	spawnTable [MAX_PLAYERS];
 	int			nSpawnPos = 0;
 	int			nSpawnSegs = 0;
-	int			i, j, bRandom;
+	int			nTeam = IsTeamGame ? GetTeam (nPlayer) + 1 : 3;
+	int			i, j;
 	fix			xDist;
 
 // Put the indices of all spawn point in the spawn table that are sufficiently far away from any player in the match
 gameStates.app.SRand ();
-for (int h = 0; h < 100; h++)
+
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
+	if (!(nTeam & GetSegmentTeam (gameData.multiplayer.playerInit [i].nSegType)))
+		continue; // exclude team specific spawn points of the wrong team
 	spawnTable [i].i = i;
 	spawnTable [i].xDist = 0x7fffffff;
 	for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
@@ -2273,37 +2293,14 @@ for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 			}
 		}
 	}
-nSpawnSegs = gameData.multiplayer.nPlayerPositions;
-SortSpawnTable (spawnTable, 0, nSpawnSegs - 1);
-bRandom = (spawnTable [0].xDist >= SPAWN_MIN_DIST);
 
-// now pick a spawn point for player # nPlayer from the spawn table
-j = 0;
-for (;;) {
-	i = bRandom ? RandShort () % nSpawnSegs : j++;
-	nSpawnPos = spawnTable [i].i;
-	if (IsTeamGame) {
-		switch (gameData.multiplayer.playerInit [nSpawnPos].nSegType) {
-			case SEGMENT_FUNC_GOAL_RED:
-			case SEGMENT_FUNC_TEAM_RED:
-				if (GetTeam (nPlayer) != TEAM_RED)
-					continue;
-				break;
-			case SEGMENT_FUNC_GOAL_BLUE:
-			case SEGMENT_FUNC_TEAM_BLUE:
-				if (GetTeam (nPlayer) != TEAM_BLUE)
-					continue;
-				break;
-			default:
-				break;
-			}
-		}
-	if (!bRandom || (spawnTable [i].xDist > SPAWN_MIN_DIST))
+// sort by descending distance from closest player in mine
+SortSpawnTable (spawnTable, 0, nSpawnSegs - 1);
+
+for (j = 0; j < nSpawnSegs; j++)
+	if (spawnTable [j].xDist < SPAWN_MIN_DIST)
 		break;
-	if (i < --nSpawnSegs)
-		memcpy (spawnTable + i, spawnTable + i + 1, nSpawnSegs - i);
-	}
-return nSpawnPos;
+return spawnTable [(j > 1) ? RandShort () % j : 0].i;
 }
 
 //------------------------------------------------------------------------------
