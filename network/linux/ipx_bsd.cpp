@@ -18,7 +18,7 @@
 #ifdef HAVE_NETIPX_IPX_H
 #include <netipx/ipx.h>
 #else
-# include <linux/ipx.h>
+# include "ipx.h"
 # ifndef IPX_TYPE
 #  define IPX_TYPE 1
 # endif
