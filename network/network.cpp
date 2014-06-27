@@ -421,6 +421,16 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 
 //------------------------------------------------------------------------------
 
+static void NetworkUpdateWaitingPlayers (void)
+{
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	if ((i != N_LOCALPLAYER) && gameData.multiplayer.players [i].Connected (CONNECT_END_MENU))
+		NetworkSendEndLevelSub (i);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void NetworkAdjustPPS (void)
 {
 	static CTimeout to (10000);
@@ -538,6 +548,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 
 	if (!bListen)
 		return;
+	NetworkUpdateWaitingPlayers ();
 	NetworkCheckPlayerTimeouts ();
 	}
 

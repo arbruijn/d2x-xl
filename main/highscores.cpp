@@ -39,12 +39,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menubackground.h"
 #include "songs.h"
 
-#if DBG
+#if 0 //DBG
 #define MAX_VIEW_TIME   		150000
 #	define ENDLEVEL_IDLE_TIME	100000
 #else
 #	define MAX_VIEW_TIME			15000
 #	define ENDLEVEL_IDLE_TIME	10000
+#	define LEVEL_LOAD_TIME		180000
 #endif
 
 #define CENTERING_OFFSET(x) ((300 - (70 + (x)*25))/2)
@@ -417,7 +418,7 @@ switch (k) {
 			return 1;
 		if (Exit ())
 			return -1;
-		break;
+		return 1;
 
 	case KEY_ESC:
 		if (IsNetworkGame) {
@@ -456,9 +457,9 @@ int CScoreTable::WaitForPlayers (void)
 {
 m_nEscaped = m_nReady = 0;
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (gameData.multiplayer.players [i].connected && (i != N_LOCALPLAYER)) {
+	if ((i != N_LOCALPLAYER) && gameData.multiplayer.players [i].connected) {
 	// Check timeout for idle players
-		if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [i] + ENDLEVEL_IDLE_TIME) {
+		if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [i] + ((gameData.multiplayer.players [i].connected == CONNECT_ADVANCE_LEVEL) ? LEVEL_LOAD_TIME : ENDLEVEL_IDLE_TIME)) {
 			CONNECT (i, CONNECT_DISCONNECTED);
 			if ((gameStates.multi.nGameType != UDP_GAME) || IAmGameHost ())
 				NetworkSendEndLevelSub (i);
@@ -499,7 +500,6 @@ return 1;
 void CScoreTable::Display (void)
 {											 
    int	i;
-	uint	t0 = SDL_GetTicks ();
 	int	key;
 	int	bRedraw = 0;
 
@@ -521,6 +521,10 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	m_oldStates [i] = gameData.multiplayer.players [i].connected;
 if (m_bNetwork)
 	NetworkEndLevel (&key);
+
+
+CMenu m (1);
+m.AddGauge ("", "", -1, 1000); //dummy for NetworkEndLevelPoll2()
 
 while (true) {
 	if (!bRedraw || (ogl.m_states.nDrawBuffer == GL_BACK)) {
@@ -550,14 +554,13 @@ while (true) {
 #endif
 		}
 	if (m_bNetwork) {
-		CMenu m (1);
-		m.AddGauge ("", "", -1, 1000); //dummy for NetworkEndLevelPoll2()
 		NetworkEndLevelPoll2 (m, key, 0, 0); // check the states of the other players
 		if (!WaitForPlayers ())
 			break;
 		}
 	}
 CONNECT (N_LOCALPLAYER, CONNECT_ADVANCE_LEVEL);
+NetworkSendEndLevelPacket ();
 // Restore background and exit
 paletteManager.DisableEffect ();
 GameFlushInputs ();

@@ -207,7 +207,7 @@ WF (netGame.m_info.invul, 27);
 
 //------------------------------------------------------------------------------
 
-#define ENDLEVEL_SEND_INTERVAL  1000
+#define ENDLEVEL_SEND_INTERVAL  500
 #define ENDLEVEL_IDLE_TIME      20000
 
 int NetworkEndLevelPoll2 (CMenu& menu, int& key, int nCurItem, int nState)
@@ -230,11 +230,11 @@ if ((t = SDL_GetTicks ()) > (t1 + ENDLEVEL_SEND_INTERVAL)) {
 	}
 NetworkListen ();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if ((gameData.multiplayer.players [i].connected != 1) && 
-		 (gameData.multiplayer.players [i].connected != 5) && 
-		 (gameData.multiplayer.players [i].connected != 6)) {
+	if ((gameData.multiplayer.players [i].connected != CONNECT_PLAYING) && 
+		 (gameData.multiplayer.players [i].connected != CONNECT_ESCAPE_TUNNEL) && 
+		 (gameData.multiplayer.players [i].connected != CONNECT_END_MENU)) {
 		nReady++;
-		if (gameData.multiplayer.players [i].connected == 4)
+		if (gameData.multiplayer.players [i].connected == CONNECT_FOUND_SECRET)
 			bSecret = 1;                                        
 		}
 	}
@@ -261,9 +261,9 @@ if (TimerGetApproxSeconds () > (gameData.multiplayer.xStartAbortMenuTime + (I2X 
 	key = -2;
 NetworkListen ();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if ((gameData.multiplayer.players [i].connected != 1) && 
-		 (gameData.multiplayer.players [i].connected != 5) && 
-		 (gameData.multiplayer.players [i].connected != 6))
+	if ((gameData.multiplayer.players [i].connected != CONNECT_PLAYING) && 
+		 (gameData.multiplayer.players [i].connected != CONNECT_ESCAPE_TUNNEL) && 
+		 (gameData.multiplayer.players [i].connected != CONNECT_END_MENU))
 		nReady++;
 if (nReady == gameData.multiplayer.nPlayers) // All players have checked in or are disconnected
 	key = -2;
