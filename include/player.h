@@ -117,7 +117,7 @@ class __pack__ CShipEnergy {
 				e = (fix) FRound (e * Scale ());
 			if (e > Max ())
 				e = Max ();
-			if (*m_current == e)
+			if (m_current && (*m_current == e))
 				return false;
 			*m_current = e;
 			return true;
