@@ -256,6 +256,24 @@ return h;
 
 //------------------------------------------------------------------------------
 
+static bool PlayerInSegment (short nSegment)
+{
+if (nSegment < 0)
+	return true;
+
+CObject*	objP;
+int		i;
+
+FORALL_PLAYER_OBJS (objP, i)
+	if (objP->Segment () == nSegment)
+		return true;
+return false;
+}
+
+//------------------------------------------------------------------------------
+
+CFixVector *VmRandomVector (CFixVector *vRand); // from lightning.cpp
+
 void GetPlayerSpawn (int nSpawnPos, CObject *objP)
 {
 	CObject	*markerP = markerManager.SpawnObject (-1);
@@ -265,11 +283,37 @@ if (markerP) {
  	objP->RelinkToSeg (markerP->info.nSegment);
 	}
 else {
-	if ((gameData.multiplayer.playerInit [nSpawnPos].nSegment < 0) || 
-		 (gameData.multiplayer.playerInit [nSpawnPos].nSegment >= gameData.segs.nSegments))
+	short nSegment = gameData.multiplayer.playerInit [nSpawnPos].nSegment;
+	if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments))
 		GameStartInitNetworkPlayers ();
 	objP->info.position = gameData.multiplayer.playerInit [nSpawnPos].position;
- 	objP->RelinkToSeg (gameData.multiplayer.playerInit [nSpawnPos].nSegment);
+
+	nSegment = gameData.multiplayer.playerInit [nSpawnPos].nSegment;
+
+	// If the chosen spawn segment is occupied by another player,
+	// try to place this player in an unoccupied adjacent segment
+	if (PlayerInSegment (nSegment)) {
+		CSegment* segP = SEGMENTS + nSegment;
+		for (short nSide = 0; nSide < 6; nSide++) {
+			nSegment = segP->ChildId (nSide);
+			if (!PlayerInSegment (nSegment)) {
+				objP->info.position.vPos = SEGMENTS [nSegment].Center ();
+			 	objP->RelinkToSeg (nSegment);
+				nSegment = -1;
+				break;
+				}
+			}
+		}
+	if (nSegment >= 0) {
+	 	objP->RelinkToSeg (nSegment);
+		// If the chosen spawn segment and all adjacent sements are occupied by another player,
+		// chose a random spawn position in the segment 
+		if (PlayerInSegment (nSegment)) {
+			CFixVector v;
+			fix r = SEGMENTS [nSegment].MinRad () / 2;
+			objP->info.position.vPos = SEGMENTS [nSegment].Center () + *VmRandomVector (&v) * (r + fix (r * RandFloat (2.0f)));
+			}
+		}
 	}
 }
 
