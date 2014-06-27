@@ -256,16 +256,12 @@ return h;
 
 //------------------------------------------------------------------------------
 
-static bool PlayerInSegment (short nSegment, CObject* playerObjP)
+static bool PlayerInSegment (short nSegment)
 {
 if (nSegment < 0)
 	return true;
-
-CObject*	objP;
-int		i;
-
-FORALL_PLAYER_OBJS (objP, i)
-	if ((objP != playerObjP) && (objP->Segment () == nSegment))
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++) 
+	if ((i != N_LOCALPLAYER) && (OBJECTS [gameData.multiplayer.players [i].nObject].Segment () == nSegment))
 		return true;
 return false;
 }
@@ -292,11 +288,11 @@ else {
 
 	// If the chosen spawn segment is occupied by another player,
 	// try to place this player in an unoccupied adjacent segment
-	if (PlayerInSegment (nSegment, objP)) {
+	if (PlayerInSegment (nSegment)) {
 		CSegment* segP = SEGMENTS + nSegment;
 		for (short nSide = 0; nSide < 6; nSide++) {
 			nSegment = segP->ChildId (nSide);
-			if (!PlayerInSegment (nSegment, objP)) {
+			if (!PlayerInSegment (nSegment)) {
 				objP->info.position.vPos = SEGMENTS [nSegment].Center ();
 			 	objP->RelinkToSeg (nSegment);
 				nSegment = -1;
@@ -308,7 +304,7 @@ else {
 	 	objP->RelinkToSeg (nSegment);
 		// If the chosen spawn segment and all adjacent sements are occupied by another player,
 		// chose a random spawn position in the segment 
-		if (PlayerInSegment (nSegment, objP)) {
+		if (PlayerInSegment (nSegment)) {
 			CFixVector v;
 			fix r = SEGMENTS [nSegment].MinRad () / 2;
 			objP->info.position.vPos = SEGMENTS [nSegment].Center () + *VmRandomVector (&v) * (r + fix (r * RandFloat (2.0f)));
