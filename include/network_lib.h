@@ -266,10 +266,18 @@ void NetworkSendPing (ubyte);
 
 //------------------------------------------------------------------------------
 
+#if DBG
+
+void ResetPlayerTimeout (int nPlayer, fix t);
+
+#else
+
 static inline void ResetPlayerTimeout (int nPlayer, fix t)
 {
 networkData.nLastPacketTime [nPlayer] = (t < 0) ? (fix) SDL_GetTicks () : t;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 

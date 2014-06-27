@@ -364,6 +364,13 @@ NW_SET_BYTES (data, bufI, old_info.data, old_info.dataSize);
 #endif
 
 //------------------------------------------------------------------------------
+
+void ResetPlayerTimeout (int nPlayer, fix t)
+{
+networkData.nLastPacketTime [nPlayer] = (t < 0) ? (fix) SDL_GetTicks () : t;
+}
+
+//------------------------------------------------------------------------------
 // Check for player timeouts
 
 static void NetworkCheckPlayerTimeouts (void)
