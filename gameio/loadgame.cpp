@@ -2209,36 +2209,36 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-typedef struct tSpawnMap {
+typedef struct tSpawnTable {
 	int	i;
 	fix	xDist;
-	} tSpawnMap;
+	} tSpawnTable;
 
-void SortSpawnMap (tSpawnMap *spawnMap, int left, int right)
+void SortSpawnTable (tSpawnTable *spawnTable, int left, int right)
 {
 	int	l = left,
 			r = right;
-	fix	m = spawnMap [(l + r) / 2].xDist;
+	fix	m = spawnTable [(l + r) / 2].xDist;
 
 do {
-	while (spawnMap [l].xDist > m)
+	while (spawnTable [l].xDist > m)
 		l++;
-	while (spawnMap [r].xDist < m)
+	while (spawnTable [r].xDist < m)
 		r--;
 	if (l <= r) {
 		if (l < r) {
-			tSpawnMap h = spawnMap [l];
-			spawnMap [l] = spawnMap [r];
-			spawnMap [r] = h;
+			tSpawnTable h = spawnTable [l];
+			spawnTable [l] = spawnTable [r];
+			spawnTable [r] = h;
 			}
 		l++;
 		r--;
 		}
 	} while (l <= r);
 if (l < right)
-	SortSpawnMap (spawnMap, l, right);
+	SortSpawnTable (spawnTable, l, right);
 if (left < r)
-	SortSpawnMap (spawnMap, left, r);
+	SortSpawnTable (spawnTable, left, r);
 }
 
 //------------------------------------------------------------------------------
@@ -2246,18 +2246,18 @@ if (left < r)
 int GetRandomPlayerPosition (int nPlayer)
 {
 	CObject		*objP;
-	tSpawnMap	spawnMap [MAX_PLAYERS];
+	tSpawnTable	spawnTable [MAX_PLAYERS];
 	int			nSpawnPos = 0;
 	int			nSpawnSegs = 0;
 	int			i, j, bRandom;
 	fix			xDist;
 
-// find the smallest distance between each spawn point and any player in the mine
+// Put the indices of all spawn point in the spawn table that are sufficiently far away from any player in the match
 gameStates.app.SRand ();
 for (int h = 0; h < 100; h++)
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
-	spawnMap [i].i = i;
-	spawnMap [i].xDist = 0x7fffffff;
+	spawnTable [i].i = i;
+	spawnTable [i].xDist = 0x7fffffff;
 	for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
 		if (j != N_LOCALPLAYER) {
 			objP = OBJECTS + gameData.multiplayer.players [j].nObject;
@@ -2267,20 +2267,21 @@ for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 																 10, WID_PASSABLE_FLAG, -1);	//	Used to be 5, search up to 10 segments
 				if (xDist < 0)
 					continue;
-				if (spawnMap [i].xDist > xDist)
-					spawnMap [i].xDist = xDist;
+				if (spawnTable [i].xDist > xDist)
+					spawnTable [i].xDist = xDist;
 				}
 			}
 		}
 	}
 nSpawnSegs = gameData.multiplayer.nPlayerPositions;
-SortSpawnMap (spawnMap, 0, nSpawnSegs - 1);
-bRandom = (spawnMap [0].xDist >= SPAWN_MIN_DIST);
+SortSpawnTable (spawnTable, 0, nSpawnSegs - 1);
+bRandom = (spawnTable [0].xDist >= SPAWN_MIN_DIST);
 
+// now pick a spawn point for player # nPlayer from the spawn table
 j = 0;
 for (;;) {
 	i = bRandom ? RandShort () % nSpawnSegs : j++;
-	nSpawnPos = spawnMap [i].i;
+	nSpawnPos = spawnTable [i].i;
 	if (IsTeamGame) {
 		switch (gameData.multiplayer.playerInit [nSpawnPos].nSegType) {
 			case SEGMENT_FUNC_GOAL_RED:
@@ -2297,10 +2298,10 @@ for (;;) {
 				break;
 			}
 		}
-	if (!bRandom || (spawnMap [i].xDist > SPAWN_MIN_DIST))
+	if (!bRandom || (spawnTable [i].xDist > SPAWN_MIN_DIST))
 		break;
 	if (i < --nSpawnSegs)
-		memcpy (spawnMap + i, spawnMap + i + 1, nSpawnSegs - i);
+		memcpy (spawnTable + i, spawnTable + i + 1, nSpawnSegs - i);
 	}
 return nSpawnPos;
 }
