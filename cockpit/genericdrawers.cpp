@@ -194,7 +194,7 @@ void CGenericCockpit::DrawMarkerMessage (void)
 	char szTemp [MAX_MARKER_MESSAGE_LEN+25];
 
 if (markerManager.DefiningMsg ()) {
-	SetFontColor (GREEN_RGBA);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
    sprintf (szTemp, TXT_DEF_MARKER, markerManager.Input ());
 	GrString (CenteredStringPos (szTemp), CCanvas::Current ()->Height () / 2 - 16, szTemp);
    }
@@ -207,12 +207,12 @@ void CGenericCockpit::DrawMultiMessage (void)
 	char szMessage [MAX_MULTI_MESSAGE_LEN + 25];
 
 if (IsMultiGame && (gameData.multigame.msg.bSending)) {
-	SetFontColor (GREEN_RGBA);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	sprintf (szMessage, "%s: %s_", TXT_MESSAGE, gameData.multigame.msg.szMsg);
 	GrString (CenteredStringPos (szMessage), CCanvas::Current ()->Height () / 2 - 16, szMessage);
 	}
 if (IsMultiGame && gameData.multigame.msg.bDefining) {
-	SetFontColor (GREEN_RGBA);
+	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	sprintf (szMessage, "%s #%d: %s_", TXT_MACRO, gameData.multigame.msg.bDefining, gameData.multigame.msg.szMsg);
 	GrString (CenteredStringPos (szMessage), CCanvas::Current ()->Height () / 2 - 16, szMessage);
 	}
@@ -440,7 +440,7 @@ if (gameStates.render.bRearView)
 
 if (!gameOpts->render.cockpit.bPlayerStats)
 	return;
-SetFontColor (ORANGE_RGBA);
+fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
 if (gameStates.render.cockpit.nType == CM_STATUS_BAR)
 	y = 6 + m_info.nLineSpacing;
 else
@@ -1114,16 +1114,12 @@ for (i = 0; i < nPlayers; i++) {
 	nPlayer = (gameData.multigame.score.bShowList == 3) ? i : playerList [i];
 	if (gameData.multiplayer.players [nPlayer].HasLeft ())
 		continue;
-	if ((gameData.multigame.score.bShowList == 1) || (gameData.multigame.score.bShowList == 2)) {
-		if (!gameData.multiplayer.players [nPlayer].Connected ()) 
-			SetFontColor (RGBA_PAL2 (12, 12, 12));
-		else {
-			int color = IsTeamGame ? GetTeam (nPlayer) : nPlayer % MAX_PLAYER_COLORS;
-			SetFontColor (RGBA_PAL2 (playerColors [color].Red (), playerColors [color].Green (), playerColors [color].Blue ()));
-			}
+	if (!gameData.multiplayer.players [nPlayer].Connected ()) 
+		SetFontColor (RGBA_PAL2 (12, 12, 12));
+	else {
+		int color = IsTeamGame ? GetTeam (nPlayer) : nPlayer % MAX_PLAYER_COLORS;
+		SetFontColor (RGBA_PAL2 (playerColors [color].Red (), playerColors [color].Green (), playerColors [color].Blue ()));
 		}
-	else
-		SetFontColor (RGBA_PAL2 (playerColors [nPlayer].Red (), playerColors [nPlayer].Green (), playerColors [nPlayer].Blue ()));
 	if (gameData.multigame.score.bShowList == 3) {
 		if (N_LOCALPLAYER == i) {
 #if 0//DBG
