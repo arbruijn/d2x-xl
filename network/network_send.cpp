@@ -273,7 +273,6 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 				netPlayers [0].m_info.players [i].network.Node (), gameData.multiplayer.players [i].netAddress);
 		}
 	}
-audio.PlaySound (SOUND_HUD_MESSAGE);
 }
 
 //------------------------------------------------------------------------------

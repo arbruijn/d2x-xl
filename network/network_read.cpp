@@ -79,6 +79,7 @@ void NetworkReadEndLevelShortPacket (ubyte *dataP)
 	int						nPlayer;
 	tEndLevelInfoShort*	eli;
 
+audio.PlaySound (SOUND_HUD_MESSAGE);
 eli = reinterpret_cast<tEndLevelInfoShort*> (dataP);
 nPlayer = eli->nPlayer;
 Assert (nPlayer != N_LOCALPLAYER);
