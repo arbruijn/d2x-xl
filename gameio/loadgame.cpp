@@ -2243,7 +2243,7 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-int GetRandomPlayerPosition (void)
+int GetRandomPlayerPosition (int nPlayer)
 {
 	CObject		*objP;
 	tSpawnMap	spawnMap [MAX_PLAYERS];
@@ -2285,12 +2285,12 @@ for (;;) {
 		switch (gameData.multiplayer.playerInit [nSpawnPos].nSegType) {
 			case SEGMENT_FUNC_GOAL_RED:
 			case SEGMENT_FUNC_TEAM_RED:
-				if (GetTeam (N_LOCALPLAYER) != TEAM_RED)
+				if (GetTeam (nPlayer) != TEAM_RED)
 					continue;
 				break;
 			case SEGMENT_FUNC_GOAL_BLUE:
 			case SEGMENT_FUNC_TEAM_BLUE:
-				if (GetTeam (N_LOCALPLAYER) != TEAM_BLUE)
+				if (GetTeam (nPlayer) != TEAM_BLUE)
 					continue;
 				break;
 			default:
@@ -2314,7 +2314,7 @@ void InitPlayerPosition (int bRandom)
 if (!(IsMultiGame || IsCoopGame)) // If not deathmatch
 	nSpawnPos = N_LOCALPLAYER;
 else if (bRandom == 1) {
-	nSpawnPos = GetRandomPlayerPosition ();
+	nSpawnPos = GetRandomPlayerPosition (N_LOCALPLAYER);
 	}
 else {
 	goto done; // If deathmatch and not Random, positions were already determined by sync packet

@@ -226,7 +226,7 @@ if (gameOpts->multi.bNoRankings)
 else   
    HUDInitMessage ("%s'%s' %s\n", pszRankStrings [their->player.rank], their->player.callsign, TXT_JOINING);
 MultiMakeGhostPlayer (nPlayer);
-GetPlayerSpawn (GetRandomPlayerPosition (), OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
+GetPlayerSpawn (GetRandomPlayerPosition (nPlayer), OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
 MultiSendScore ();
 MultiSortKillList ();
 // OBJECTS [nObject].CreateAppearanceEffect ();
