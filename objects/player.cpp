@@ -296,7 +296,7 @@ else {
 		CSegment* segP = SEGMENTS + nSegment;
 		for (short nSide = 0; nSide < 6; nSide++) {
 			nSegment = segP->ChildId (nSide);
-			if (!PlayerInSegment (nSegment)) {
+			if (!PlayerInSegment (nSegment, objP)) {
 				objP->info.position.vPos = SEGMENTS [nSegment].Center ();
 			 	objP->RelinkToSeg (nSegment);
 				nSegment = -1;
