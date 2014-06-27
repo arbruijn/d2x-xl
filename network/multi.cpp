@@ -468,7 +468,7 @@ void MultiEndLevelScore (void)
 	int i;
 
 if (IsNetworkGame) {
-	oldConnect = LOCALPLAYER.Connected () ? LOCALPLAYER.connected : 0;
+	oldConnect = LOCALPLAYER.IsConnected () ? LOCALPLAYER.connected : 0;
 	if (LOCALPLAYER.connected != CONNECT_DIED_IN_MINE)
 		CONNECT (N_LOCALPLAYER, CONNECT_END_MENU);
 	networkData.nStatus = NETSTAT_ENDLEVEL;
@@ -631,7 +631,7 @@ static const char *szTeamColors [2] = {TXT_BLUE, TXT_RED};
 void SetTeam (int nPlayer, int team)
 {
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].Connected ())
+	if (gameData.multiplayer.players [i].IsConnected ())
 		MultiSetObjectTextures (OBJECTS + gameData.multiplayer.players [i].nObject);
 
 if (team >= 0) {
@@ -1161,7 +1161,7 @@ if (!IsMultiGame) {
 
 if (IsNetworkGame && netGame.GetPlayTimeAllowed () && (lasttime != X2I (gameStates.app.xThisLevelTime))) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-		if (gameData.multiplayer.players [i].Connected ()) {
+		if (gameData.multiplayer.players [i].IsConnected ()) {
 			if (i == N_LOCALPLAYER) {
 				MultiSendHeartBeat ();
 				lasttime = X2I (gameStates.app.xThisLevelTime);
@@ -1614,7 +1614,7 @@ if (IsNetworkGame) {
 		return;
 	int nPlayers = 0;
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
-		if (gameData.multiplayer.players [i].Connected ())
+		if (gameData.multiplayer.players [i].IsConnected ())
 			nPlayers++;
 	if (nPlayers == 1)
 		MultiOnlyPlayerMsg (0);
@@ -1837,7 +1837,7 @@ void MultiDoPlaySound (char *buf)
 	short nSound = (int) (buf [2]);
 	fix volume = (int) (buf [3]) << 12;
 
-if (!gameData.multiplayer.players [nPlayer].Connected ())
+if (!gameData.multiplayer.players [nPlayer].IsConnected ())
 	return;
 if ((gameData.multiplayer.players [nPlayer].nObject >= 0) &&
 	 (gameData.multiplayer.players [nPlayer].nObject <= gameData.objs.nLastObject [0]))
@@ -2415,7 +2415,7 @@ void MultiAdjustPowerupCap (void)
 {
 if (IAmGameHost ()) {
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if ((i != N_LOCALPLAYER) && gameData.multiplayer.players [i].Connected () && gameData.multiplayer.bAdjustPowerupCap [i]) {
+		if ((i != N_LOCALPLAYER) && gameData.multiplayer.players [i].IsConnected () && gameData.multiplayer.bAdjustPowerupCap [i]) {
 			MultiAdjustCapForPlayer (i);
 			gameData.multiplayer.bAdjustPowerupCap [i] = false;
 			}
@@ -3331,7 +3331,7 @@ int MultiAllPlayersAlive (void)
 	int i;
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multigame.score.pFlags [i] && gameData.multiplayer.players [i].Connected ())
+	if (gameData.multigame.score.pFlags [i] && gameData.multiplayer.players [i].IsConnected ())
 		return 0;
 return 1;
 }
@@ -3846,7 +3846,7 @@ FORALL_PLAYER_OBJS (objP, i) {
 	if (bHaveObject [objP->info.nId] || (objP->info.nId >= gameData.multiplayer.nPlayers))
 		objP->Die ();
 	else {
-		if (!gameData.multiplayer.players [objP->info.nId].Connected ()) {
+		if (!gameData.multiplayer.players [objP->info.nId].IsConnected ()) {
 			objP->SetType (OBJ_GHOST);
 			objP->info.renderType = RT_NONE;
 			objP->info.movementType = MT_NONE;
@@ -4263,7 +4263,7 @@ MultiSendData (gameData.multigame.msg.buf, 4, 0);
 void MultiDoSoundFunction (char *buf)
 {
 // for afterburner
-if (LOCALPLAYER.Connected () != 1)
+if (!LOCALPLAYER.Connected (CONNECT_PLAYING))
 	return;
 int nPlayer = int (buf [1]);
 int nFunction = int (buf [2]);

@@ -59,9 +59,9 @@ if (nPlayer >= gameData.multiplayer.nPlayers) {
 	Int3 (); // weird, but it an happen in a coop restore game
 	return; // if it happens in a coop restore, don't worry about it
 	}
-if ((networkData.nStatus == NETSTAT_PLAYING) && (*eli.Connected () != 0))
+if ((networkData.nStatus == NETSTAT_PLAYING) && (eli.Connected () != 0))
 	return; // Only accept disconnect packets if we're not out of the level yet
-CONNECT (nPlayer, *eli.Connected ());
+CONNECT (nPlayer, eli.Connected ());
 memcpy (&gameData.multigame.score.matrix [nPlayer][0], eli.ScoreMatrix (), MAX_NUM_NET_PLAYERS * sizeof (short));
 gameData.multiplayer.players [nPlayer].netKillsTotal = *eli.Kills ();
 gameData.multiplayer.players [nPlayer].netKilledTotal = *eli.Killed ();

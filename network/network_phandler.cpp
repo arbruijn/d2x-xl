@@ -369,7 +369,7 @@ if (networkData.nStatus == NETSTAT_PLAYING) {
 	}
 if (IsTeamGame) {
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
-		if (gameData.multiplayer.players [i].Connected ())
+		if (gameData.multiplayer.players [i].IsConnected ())
 		   MultiSetObjectTextures (OBJECTS + gameData.multiplayer.players [i].nObject);
 	}
 return 1;

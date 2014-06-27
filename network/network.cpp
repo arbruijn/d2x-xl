@@ -292,7 +292,7 @@ OBJECTS [gameData.multiplayer.players [nPlayer].nObject].CreateAppearanceEffect 
 audio.PlaySound (SOUND_HUD_MESSAGE);
 HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_DISCONNECTING);
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].Connected ()) 
+	if (gameData.multiplayer.players [i].IsConnected ()) 
 		n++;
 #if !DBG
 if (n == 1)
@@ -466,7 +466,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 
 	// Send out packet PacksPerSec times per second maximum... unless they fire, then send more often...
 	if ((networkData.xLastSendTime > I2X (1) / PacketsPerSec ()) || gameData.multigame.laser.bFired || bForce || networkData.bPacketUrgent) {        
-		if (LOCALPLAYER.Connected ()) {
+		if (LOCALPLAYER.IsConnected ()) {
 			int nObject = LOCALPLAYER.nObject;
 			networkData.bPacketUrgent = 0;
 			if (bListen) {
