@@ -558,7 +558,7 @@ CGenericCockpit::DrawBombCount (0, 0, BLACK_RGBA, 0);
 
 int CHUD::DrawBombCount (int& nIdBombCount, int x, int y, int nColor, char* pszBombCount)
 {
-SetFontColor (nColor);
+fontManager.SetColorRGBi (nColor, 1, 0, 0);
 x = gameData.render.scene.Width () - 3 * GAME_FONT->Width () - gameStates.render.fonts.bHires - 1;
 y = gameData.render.scene.Height () - 3 * LineSpacing ();
 if ((extraGameInfo [0].nWeaponIcons >= 3) && (gameData.render.scene.Height () < 670))

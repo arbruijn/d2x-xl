@@ -370,10 +370,8 @@ void ResetPlayerTimeout (int nPlayer, fix t)
 {
 	static int nDbgPlayer = -1;
 
-if (nPlayer == nDbgPlayer) {
+if (nPlayer == nDbgPlayer)
 	BRP;
-	audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (2) / 3, 0xFFFF / 2, 0, -1, -1, -1, I2X (1), AddonSoundName (SND_ADDON_LOW_SHIELDS1));
-	}
 networkData.nLastPacketTime [nPlayer] = (t < 0) ? (fix) SDL_GetTicks () : t;
 }
 
@@ -386,7 +384,7 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 	fix t = (fix) SDL_GetTicks ();
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (i != N_LOCALPLAYER) {
-			int bConnected = (gameData.multiplayer.players [i].connected == CONNECT_PLAYING) ? 1 : downloadManager.Downloading (i) ? -1 : 0;
+			int bConnected = (gameData.multiplayer.players [i].connected/* == CONNECT_PLAYING*/) ? 1 : downloadManager.Downloading (i) ? -1 : 0;
 			if (!bConnected) { 
 				if (gameData.multiplayer.players [i].callsign [0]) {
 #if 0 //DBG
@@ -423,9 +421,13 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 
 static void NetworkUpdateWaitingPlayers (void)
 {
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if ((i != N_LOCALPLAYER) && gameData.multiplayer.players [i].Connected (CONNECT_END_MENU))
-		NetworkSendEndLevelSub (i);
+		static CTimeout to (500);
+
+if (to.Expired ()) {
+	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		if ((i != N_LOCALPLAYER) && gameData.multiplayer.players [i].Connected (CONNECT_END_MENU))
+			NetworkSendEndLevelPacket ();
+		}
 	}
 }
 
