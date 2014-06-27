@@ -276,6 +276,8 @@ if (IsTeamGame)
 }
 
 //------------------------------------------------------------------------------
+// Check whether all spawn positions are assigned to a team
+// Team specific spawn positions will only be used if this applies
 
 int GotTeamSpawnPos (void)
 {
@@ -291,6 +293,7 @@ for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 		case SEGMENT_FUNC_TEAM_RED:
 			break;
 		default:
+			PrintLog (0, "Warning: Not all spawn positions are assigned to a team. Random spawn positions will be used.\n");
 			return 0;
 		}
 	}
