@@ -366,6 +366,8 @@ NW_SET_BYTES (data, bufI, old_info.data, old_info.dataSize);
 
 //------------------------------------------------------------------------------
 
+#if DBG
+
 void ResetPlayerTimeout (int nPlayer, fix t)
 {
 	static int nDbgPlayer = -1;
@@ -374,6 +376,8 @@ if (nPlayer == nDbgPlayer)
 	BRP;
 networkData.nLastPacketTime [nPlayer] = (t < 0) ? (fix) SDL_GetTicks () : t;
 }
+
+#endif
 
 //------------------------------------------------------------------------------
 // Check for player timeouts
