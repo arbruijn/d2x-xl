@@ -484,7 +484,6 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	SendInternetSequencePacket (me, netPlayers [0].m_info.players [0].network.Server (), 
 										 netPlayers [0].m_info.players [0].network.Node ());
 }
-gameData.multiplayer.nPlayers = 0;
 SetFunctionMode (FMODE_MENU);
 gameData.app.SetGameMode (GM_GAME_OVER);
 return -1;     // they cancelled               
@@ -790,7 +789,7 @@ for (;;) {
 		}
 	}
 if (result < 0) {
-	CONNECT (N_LOCALPLAYER, CONNECT_DISCONNECTED);
+	NetworkLeaveGame (false);
 	NetworkSendEndLevelPacket ();
 	//longjmp (gameExitPoint, 0);
 	}

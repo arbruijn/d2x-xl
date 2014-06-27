@@ -225,42 +225,43 @@ networkData.bGamesChanged = 1;
 
 //------------------------------------------------------------------------------
 
-void NetworkLeaveGame (void)
+void NetworkLeaveGame (bool bDisconnect)
 { 
-   int nsave;
-	
-NetworkDoFrame (1, 1);
-#ifdef NETPROFILING
-fclose (SendLogFile);
-	fclose (ReceiveLogFile);
-#endif
-if ((IAmGameHost ())) {
-	bool bSyncExtras = true;
+if (bDisconnect) { 
+	NetworkDoFrame (1, 1);
+	#ifdef NETPROFILING
+	fclose (SendLogFile);
+		fclose (ReceiveLogFile);
+	#endif
+	if ((IAmGameHost ())) {
+		bool bSyncExtras = true;
 
-	while (bSyncExtras) {
-		bSyncExtras = false;
-		for (short i = 0; i < networkData.nJoining; i++)
-			if (networkData.sync [i].nExtras && (networkData.sync [i].nExtrasPlayer != -1)) {
-				NetworkSyncExtras (networkData.sync + i);
-				bSyncExtras  = true;
-				}
+		while (bSyncExtras) {
+			bSyncExtras = false;
+			for (short i = 0; i < networkData.nJoining; i++)
+				if (networkData.sync [i].nExtras && (networkData.sync [i].nExtrasPlayer != -1)) {
+					NetworkSyncExtras (networkData.sync + i);
+					bSyncExtras  = true;
+					}
+			}
+
+		netGame.m_info.nNumPlayers = 0;
+		int h = gameData.multiplayer.nPlayers;
+		gameData.multiplayer.nPlayers = 0;
+		NetworkSendGameInfo (NULL);
+		gameData.multiplayer.nPlayers = h;
 		}
-
-	netGame.m_info.nNumPlayers = 0;
-	nsave = gameData.multiplayer.nPlayers;
-	gameData.multiplayer.nPlayers = 0;
-	NetworkSendGameInfo (NULL);
-	gameData.multiplayer.nPlayers = nsave;
 	}
 CONNECT (N_LOCALPLAYER, CONNECT_DISCONNECTED);
 NetworkSendEndLevelPacket ();
-ChangePlayerNumTo (0);
 gameData.app.SetGameMode (GM_GAME_OVER);
-if (gameStates.multi.nGameType != UDP_GAME)
-	SavePlayerProfile ();
 IpxHandleLeaveGame ();
 NetworkFlush ();
+ChangePlayerNumTo (0);
+if (gameStates.multi.nGameType != UDP_GAME)
+	SavePlayerProfile ();
 memcpy (extraGameInfo, extraGameInfo + 2, sizeof (extraGameInfo [0]));
+gameData.multiplayer.nPlayers = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -367,6 +368,10 @@ NW_SET_BYTES (data, bufI, old_info.data, old_info.dataSize);
 
 void ResetPlayerTimeout (int nPlayer, fix t)
 {
+	static int nDbgPlayer = -1;
+
+if (nPlayer == nDbgPlayer)
+	BRP;
 networkData.nLastPacketTime [nPlayer] = (t < 0) ? (fix) SDL_GetTicks () : t;
 }
 

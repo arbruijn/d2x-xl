@@ -382,7 +382,7 @@ return missionConfig.m_nCollisionModel ? COLLISION_MODEL_BOXES : EGI_FLAG (nHitb
 
 int NetworkStartGame (void);
 void NetworkRejoinGame (void);
-void NetworkLeaveGame (void);
+void NetworkLeaveGame (bool bDisconnect = true);
 int NetworkEndLevel (int *secret);
 int NetworkEndLevelPoll2 (CMenu& menu, int& key, int nCurItem, int nState);
 

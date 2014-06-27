@@ -1217,6 +1217,12 @@ if (IsNetworkGame) {
 	MultiSendPlayerExplode (MULTI_PLAYER_DROP);
 	}
 MultiSendQuit (MULTI_QUIT);
+#if 0
+if (N_LOCALPLAYER != 0) {
+	memcpy (&gameData.multiplayer.players [0], &LOCALPLAYER, sizeof (LOCALPLAYER));
+	N_LOCALPLAYER = 0;
+	}
+#endif
 ResetPlayerData (true, false, false, -1);
 if (IsNetworkGame)
 	NetworkLeaveGame ();
