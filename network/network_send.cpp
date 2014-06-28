@@ -653,7 +653,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 
 //------------------------------------------------------------------------------
 
-void NetworkSendNakedPacket (char *buf, short len, int who)
+void NetworkSendNakedPacket (char *buf, short len, int receiver)
 {
 if (!IsNetworkGame) 
 	return;
@@ -667,17 +667,17 @@ if (len + nakedData.nLength>networkData.nMaxXDataSize) {
 		IPXSendPacketData (
 			reinterpret_cast<ubyte*> (nakedData.buf), 
 			nakedData.nLength, 
-			netPlayers [0].m_info.players [who].network.Server (), 
-			netPlayers [0].m_info.players [who].network.Node (), gameData.multiplayer.players [who].netAddress);
+			netPlayers [0].m_info.players [receiver].network.Server (), 
+			netPlayers [0].m_info.players [receiver].network.Node (), gameData.multiplayer.players [receiver].netAddress);
 	nakedData.nLength = 2;
 	memcpy (&nakedData.buf [nakedData.nLength], buf, len);     
-	nakedData.nLength+=len;
-	nakedData.nDestPlayer=who;
+	nakedData.nLength += len;
+	nakedData.nDestPlayer = receiver;
 	}
 else {
 	memcpy (&nakedData.buf [nakedData.nLength], buf, len);     
-	nakedData.nLength+=len;
-	nakedData.nDestPlayer=who;
+	nakedData.nLength += len;
+	nakedData.nDestPlayer = receiver;
 	}
  }
 

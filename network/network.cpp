@@ -428,9 +428,14 @@ static void NetworkUpdateWaitingPlayers (void)
 		static CTimeout to (500);
 
 if (to.Expired ()) {
+	bool bDownloading = downloadManager.Downloading (N_LOCALPLAYER);
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if ((i != N_LOCALPLAYER) && gameData.multiplayer.players [i].Connected (CONNECT_END_MENU))
+		if (i == N_LOCALPLAYER) 
+			continue;
+		if (gameData.multiplayer.players [i].Connected (CONNECT_END_MENU))
 			NetworkSendEndLevelPacket ();
+		else if (bDownloading)
+			NetworkSendPing (i);
 		}
 	}
 }
@@ -469,14 +474,14 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		Assert (nakedData.nDestPlayer >- 1);
 		if (gameStates.multi.nGameType >= IPX_GAME) 
 			IPXSendPacketData (reinterpret_cast<ubyte*> (nakedData.buf), nakedData.nLength, 
-									netPlayers [0].m_info.players [nakedData.nDestPlayer].network.Server (), 
-									netPlayers [0].m_info.players [nakedData.nDestPlayer].network.Node (), 
-									gameData.multiplayer.players [nakedData.nDestPlayer].netAddress);
+									 netPlayers [0].m_info.players [nakedData.nDestPlayer].network.Server (), 
+									 netPlayers [0].m_info.players [nakedData.nDestPlayer].network.Node (), 
+									 gameData.multiplayer.players [nakedData.nDestPlayer].netAddress);
 		nakedData.nLength = 0;
 		nakedData.nDestPlayer = -1;
 		}
 	if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds ()> (networkData.refuse.xTimeLimit + (I2X (12))))
-		networkData.refuse.bWaitForAnswer=0;
+		networkData.refuse.bWaitForAnswer = 0;
 	networkData.xLastSendTime += gameData.time.xFrame;
 	networkData.xLastTimeoutCheck += gameData.time.xFrame;
 
@@ -552,9 +557,9 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 			}
 		}
 
+	NetworkUpdateWaitingPlayers ();
 	if (!bListen)
 		return;
-	NetworkUpdateWaitingPlayers ();
 	NetworkCheckPlayerTimeouts ();
 	}
 

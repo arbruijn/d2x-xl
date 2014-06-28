@@ -94,7 +94,7 @@ m_iTimeout = 4;
 memset (m_clients, 0, sizeof (m_clients));
 m_nClients = 0;
 m_socket = 0;
-m_nState = DL_CONNECT;
+m_nState = DL_DONE; //DL_CONNECT;
 m_nResult = 1;
 }
 
@@ -131,6 +131,20 @@ return m_iTimeout;
 
 //------------------------------------------------------------------------------
 
+bool CDownloadManager::Downloading (uint nPlayer) 
+{ 
+if (nPlayer == N_LOCALPLAYER)
+	return m_bDownloading [MAX_PLAYERS - 1];
+if (nPlayer >= MAX_PLAYERS) 
+	return false;
+int i = FindClient (netPlayers [0].m_info.players [i].network.Server (), netPlayers [0].m_info.players [i].network.Node ());
+if (i < 0)
+	return false;
+return m_bDownloading [i]; 
+}
+
+//------------------------------------------------------------------------------
+
 void CDownloadManager::SetDownloadFlag (int nPlayer, bool bFlag)
 {
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
@@ -144,16 +158,23 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::FindClient (void)
+int CDownloadManager::FindClient (ubyte* server, ubyte* node)
 {
 for (int i = 0; i < m_nClients; i++)
 	if (m_clients [i].nState &&
-		 !memcmp (&m_clients [i].addr.server, networkData.packetSource.src_network, 4) &&
-		 !memcmp (&m_clients [i].addr.node, networkData.packetSource.src_node, 6)) {
+		 !memcmp (&m_clients [i].addr.server, server, 4) &&
+		 !memcmp (&m_clients [i].addr.node, node, 6)) {
 		m_clients [i].nTimeout = SDL_GetTicks ();
 		return i;
 		}
 return -1;
+}
+
+//------------------------------------------------------------------------------
+
+int CDownloadManager::FindClient (void)
+{
+return FindClient ((ubyte*) networkData.packetSource.src_network, (ubyte*) networkData.packetSource.src_node);
 }
 
 //------------------------------------------------------------------------------
@@ -640,6 +661,7 @@ if (!gameStates.app.bHaveSDLNet)
 	int	i;
 
 PrintLog (1, "trying to download mission '%s'\n", pszMission);
+m_bDownloading [MAX_PLAYERS - 1] = true;
 gameStates.multi.bTryAutoDL = 0;
 #if 0
 if (!(/*gameStates.app.bHaveExtraGameInfo [1] &&*/ extraGameInfo [0].bAutoDownload))
@@ -676,6 +698,7 @@ if (i != -3) {
 	PrintLog (-1);
 	return 0;
 	}
+m_bDownloading [MAX_PLAYERS - 1] = false;
 PrintLog (-1);
 return 1;
 }

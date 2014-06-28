@@ -129,9 +129,13 @@ if (dataP && (networkData.xmlGameInfoRequestTime <= 0)) {
 	if (to.Expired () && !strcmp ((char*) dataP + 1, "Descent Game Info Request")) {
 		networkData.xmlGameInfoRequestTime = SDL_GetTicks ();
 		for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			pingStats [i].ping = -1;
-			pingStats [i].launchTime = -networkData.xmlGameInfoRequestTime; // negative value suppresses display of returned ping on HUD
-			NetworkSendPing (i);
+			if (i == N_LOCALPLAYER)
+				pingStats [i].ping = 0;
+			else {
+				pingStats [i].ping = -1;
+				pingStats [i].launchTime = -networkData.xmlGameInfoRequestTime; // negative value suppresses display of returned ping on HUD
+				NetworkSendPing (i);
+				}
 			}
 		}
 	}

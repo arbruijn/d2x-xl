@@ -3,7 +3,7 @@
 
 #define PID_DL_START		68
 #define PID_DL_OPEN		69
-#define PID_DL_DATA    70
+#define PID_DL_DATA     70
 #define PID_DL_CLOSE		71
 #define PID_DL_END		72
 #define PID_DL_ERROR		73
@@ -89,12 +89,19 @@ class CDownloadManager {
 		void CleanUp (void);
 		int Poll (CMenu& menu, int& key, int nCurItem);
 
-		inline bool Downloading (uint i) { return (i < MAX_PLAYERS) ? m_bDownloading [i] : false; }
+		bool Downloading (uint i);
 		inline int Timeout (void) { return m_nTimeout; }
 		inline tClient& Client (int i) { return m_clients [i]; }
+		inline int GetState (void) { return m_nState; }
+		inline int SetState (int nState) {
+			int nOldState = m_nState;
+			m_nState = nState;
+			return nOldState;
+			}
 
 	private:
 		void SetDownloadFlag (int nPlayer, bool bFlag);
+		int FindClient (ubyte* server, ubyte* node);
 		int FindClient (void);
 		int AcceptClient (void);
 		int RemoveClient (int i);
