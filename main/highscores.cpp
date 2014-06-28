@@ -561,12 +561,6 @@ while (true) {
 		}
 	}
 
-// since we are moving to the next level, assume all other players are doing so, too
-// this will aid in proper player timeout handling (players who do not have connection status CONNECT_PLAYING
-// will timeout immediately once we have arrived in the level and are ready to continue playing
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].connected)
-	CONNECT (i, CONNECT_ADVANCE_LEVEL); 
 NetworkSendEndLevelPacket ();
 // Restore background and exit
 paletteManager.DisableEffect ();

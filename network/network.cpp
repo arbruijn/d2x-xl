@@ -402,6 +402,8 @@ networkData.nLastPacketTime [nPlayer] = (t < 0) ? (fix) SDL_GetTicks () : t;
 
 static int ConnectionStatus (int nPlayer)
 {
+if (gameData.multiplayer.players [nPlayer].m_nLevel != missionManager.nCurrentLevel)
+	return 3;
 switch (gameData.multiplayer.players [nPlayer].connected) {
 	case CONNECT_DISCONNECTED:
 		return 0;
@@ -505,7 +507,7 @@ if (to.Expired ()) {
 void NetworkDoFrame (int bForce, int bListen)
 {
 	tFrameInfoShort shortSyncPack;
-	static fix xLastEndlevel = 0;
+	static int tLastEndlevel = 0;
 
 if (!IsNetworkGame) 
 	return;
@@ -589,9 +591,10 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 			if (gameData.reactor.bDestroyed) {
 				if (gameStates.app.bPlayerIsDead)
 					CONNECT (N_LOCALPLAYER, CONNECT_DIED_IN_MINE);
-				if (TimerGetApproxSeconds () > (xLastEndlevel + (I2X (1) / 2))) {
+				int t = SDL_GetTicks ();
+				if (t > tLastEndlevel) {
 					NetworkSendEndLevelPacket ();
-					xLastEndlevel = TimerGetApproxSeconds ();
+					tLastEndlevel = t + 500;
 					}
 				}
 			}

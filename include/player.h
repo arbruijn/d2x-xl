@@ -214,6 +214,7 @@ class __pack__ CPlayerData : public CPlayerInfo {
 		CShipEnergy	m_energy;
 		ubyte			m_laserLevels [2];
 		ubyte			m_bExploded;
+		ubyte			m_nLevel;
 		int			m_tDisconnect;
 		int			m_tDeath;
 		int			m_tWeaponInfo;

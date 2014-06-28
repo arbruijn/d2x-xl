@@ -377,7 +377,7 @@ return 1;
    
 int PingSendHandler (ubyte *dataP, int nLength)
 {
-CONNECT ((int) dataP [1], (gameStates.multi.nGameType == UDP_GAME) ? dataP [2] : CONNECT_PLAYING);
+//CONNECT ((int) dataP [1], (gameStates.multi.nGameType == UDP_GAME) ? dataP [2] : CONNECT_PLAYING);
 NetworkPing (PID_PING_RETURN, dataP [1]);
 ResetPlayerTimeout ((int) dataP [1], -1);
 return 1;
@@ -387,7 +387,7 @@ return 1;
 
 int PingReturnHandler (ubyte *dataP, int nLength)
 {
-CONNECT ((int) dataP [1], (gameStates.multi.nGameType == UDP_GAME) ? dataP [2] : CONNECT_PLAYING);
+//CONNECT ((int) dataP [1], (gameStates.multi.nGameType == UDP_GAME) ? dataP [2] : CONNECT_PLAYING);
 NetworkHandlePingReturn (dataP [1]);  // dataP [1] is CPlayerData who told us of THEIR ping time
 ResetPlayerTimeout ((int) dataP [1], -1);
 return 1;

@@ -434,18 +434,19 @@ void NetworkReadPDataShortPacket (tFrameInfoShort *pd)
 	int nPlayer;
 	int nObject;
 	CObject * objP = NULL;
-	tFrameInfoShort new_pd;
 
 // short frame info is not aligned because of tShortPos.  The mac
 // will call totally hacked and gross function to fix this up.
-
+#if 0
+tFrameInfoShort new_pd;
 if (gameStates.multi.nGameType >= IPX_GAME)
 	GetShortFrameInfo (reinterpret_cast<ubyte*> (pd), &new_pd);
 else
 	memcpy (&new_pd, reinterpret_cast<ubyte*> (pd), sizeof (tFrameInfoShort));
+#endif
 
-nPlayer = new_pd.nPlayer;
-nObject = gameData.multiplayer.players [new_pd.nPlayer].nObject;
+nPlayer = pd->nPlayer;
+nObject = gameData.multiplayer.players [pd->nPlayer].nObject;
 if (nPlayer < 0) {
 	Int3 (); // This packet is bogus!!
 	return;
@@ -465,24 +466,25 @@ if ((networkData.sync [0].nPlayer != -1) && (nPlayer == networkData.sync [0].nPl
 if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL)) {
 	int oldEndlevelSequence = gameStates.app.bEndLevelSequence;
 	gameStates.app.bEndLevelSequence = 1;
-	if (new_pd.dataSize > 0) {
+	if (pd->dataSize > 0) {
 		// pass pd->data to some parser function....
-		MultiProcessBigData (reinterpret_cast<char*> (new_pd.data), new_pd.dataSize);
+		MultiProcessBigData (reinterpret_cast<char*> (pd->data), pd->dataSize);
 		}
 	gameStates.app.bEndLevelSequence = oldEndlevelSequence;
 	return;
 	}
-if ((sbyte) new_pd.nLevel != missionManager.nCurrentLevel) {
+gameData.multiplayer.players [pd->nPlayer].m_nLevel = pd->nLevel;
+if ((sbyte) pd->nLevel != missionManager.nCurrentLevel) {
 #if 1
-	console.printf (CON_DBG, "Got frame packet from player %d wrong level %d!\n", new_pd.nPlayer, new_pd.nLevel);
+	console.printf (CON_DBG, "Got frame packet from player %d wrong level %d!\n", pd->nPlayer, pd->nLevel);
 #endif
 	return;
 	}
 objP = OBJECTS + nObject;
-NetworkTrackPackets (nPlayer, new_pd.nPackets);
+NetworkTrackPackets (nPlayer, pd->nPackets);
 //------------ Read the player's ship's CObject info ----------------------
-ExtractShortPos (objP, &new_pd.objPos, 0);
-if ((objP->info.renderType != new_pd.objRenderType) && (new_pd.objRenderType == RT_POLYOBJ))
+ExtractShortPos (objP, &pd->objPos, 0);
+if ((objP->info.renderType != pd->objRenderType) && (pd->objRenderType == RT_POLYOBJ))
 	MultiMakeGhostPlayer (nPlayer);
 if (objP->info.movementType == MT_PHYSICS)
 	objP->SetThrustFromVelocity ();
@@ -506,9 +508,9 @@ if (!gameData.multiplayer.players [nPlayer].connected) {
 	MultiSendScore ();
 	}
 //------------ Parse the extra dataP at the end ---------------
-if (new_pd.dataSize > 0) {
+if (pd->dataSize > 0) {
 	// pass pd->data to some parser function....
-	MultiProcessBigData (reinterpret_cast<char*> (new_pd.data), new_pd.dataSize);
+	MultiProcessBigData (reinterpret_cast<char*> (pd->data), pd->dataSize);
 	}
 }
 

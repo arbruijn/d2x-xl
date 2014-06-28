@@ -642,9 +642,10 @@ else
 
 void CMultiplayerData::Connect (int nPlayer, sbyte nStatus) 
 {
-	static int nDbgStatus = -1;
+	static int nDbgPlayer = 1;
+	static int nDbgStatus = 1;
 
-if (nStatus == nDbgStatus)
+if (((nDbgPlayer != -1) || (nDbgStatus != -1)) && ((nDbgPlayer < 0) || (nPlayer == nDbgPlayer)) && ((nDbgStatus < 0) || (nStatus == nDbgStatus)))
 	BRP;
 players [nPlayer].Connect (nStatus);
 }
