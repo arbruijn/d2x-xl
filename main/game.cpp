@@ -802,7 +802,7 @@ FreeObjExtensionBitmaps ();
 FreeModelExtensions ();
 PrintLog (1, "unloading render buffers\n");
 transparencyRenderer.FreeBuffers ();
-PrintLog (-1);
+PrintLog (-1);	
 PrintLog (1, "unloading string pool\n");
 FreeStringPool ();
 PrintLog (-1);

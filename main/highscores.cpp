@@ -375,8 +375,7 @@ if (bQuit) {
 gameData.score.bNoMovieMessage = 0;
 backgroundManager.Draw ();
 gameStates.menus.nInMenu--;
-if ((missionManager.nCurrentLevel >= missionManager.nLastLevel) &&
-	 !extraGameInfo [IsMultiGame].bRotateLevels)
+if (bQuit || (((missionManager.nCurrentLevel >= missionManager.nLastLevel) && !extraGameInfo [IsMultiGame].bRotateLevels))
 	longjmp (gameExitPoint, 0);
 }
 
@@ -400,7 +399,7 @@ return false;
 
 int CScoreTable::Input (void)
 {
-	int i;
+	int i, nChoice;
 
 for (i = 0; i < 4; i++)
 	if (JoyGetButtonDownCnt (i) && Exit ())
@@ -426,20 +425,20 @@ switch (k) {
 			gameData.multiplayer.xStartAbortMenuTime = TimerGetApproxSeconds ();
 			int nInMenu = gameStates.menus.nInMenu;
 			gameStates.menus.nInMenu = 0;
-			InfoBox (NULL, NetworkEndLevelPoll3, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
+			nChoice = InfoBox (NULL, NetworkEndLevelPoll3, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
 			gameStates.menus.nInMenu = nInMenu;
 			}
 		else {
 			int nInMenu = gameStates.menus.nInMenu;
 			gameStates.menus.nInMenu = 0;
-			int choice = InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
+			int choice = InfoBox (NULL, NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
 			gameStates.menus.nInMenu = nInMenu;
-			if (choice == 0) {
-				Cleanup (1);
-				return -1;
-				}
-			gameData.score.nKillsChanged = 1;
 			}
+		if (nChoice == 0) {
+			Cleanup (1);
+			return -1;
+			}
+		gameData.score.nKillsChanged = 1;
 		break;
 
 	case KEY_PRINT_SCREEN:

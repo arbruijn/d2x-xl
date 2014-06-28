@@ -1,16 +1,3 @@
-/*
-THE COMPUTER CODE CONTAINED HEREIN IS THE SOLE PROPERTY OF PARALLAX
-SOFTWARE CORPORATION ("PARALLAX").  PARALLAX, IN DISTRIBUTING THE CODE TO
-END-USERS, AND SUBJECT TO ALL OF THE TERMS AND CONDITIONS HEREIN, GRANTS A
-ROYALTY-FREE, PERPETUAL LICENSE TO SUCH END-USERS FOR USE BY SUCH END-USERS
-IN USING, DISPLAYING,  AND CREATING DERIVATIVE WORKS THEREOF, SO LONG AS
-SUCH USE, DISPLAY OR CREATION IS FOR NON-COMMERCIAL, ROYALTY OR REVENUE
-FREE PURPOSES.  IN NO EVENT SHALL THE END-USER USE THE COMPUTER CODE
-CONTAINED HEREIN FOR REVENUE-BEARING PURPOSES.  THE END-USER UNDERSTANDS
-AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
-COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
-*/
-
 #ifdef HAVE_CONFIG_H
 #	include <conf.h>
 #endif
@@ -33,7 +20,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "timeout.h"
 #include "console.h"
 
-//-----------------------------------------------------------------------------------------------------------------
+#define THEIR	reinterpret_cast<tSequencePacket*>(dataP)
+
+//------------------------------------------------------------------------------
 
 #if defined(_WIN32) && !DBG
 typedef int ( __fastcall * pPacketHandler) (ubyte *dataP, int nLength);
@@ -54,7 +43,7 @@ static ubyte addressFilter [256];
 
 void InitPacketHandlers (void);
 
-//-----------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // Set a flag for packet types that do not carry a sender IP address
 // All other packets need to be patched with the IP address retrieved when
 // receiving the packet from the network adapter
@@ -81,7 +70,7 @@ memset (addressFilter, 0, sizeof (addressFilter));
 	 addressFilter [(int) PID_TRACKER_GET_SERVERLIST] = 1;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 int NetworkBadPacketSize (int nLength, int nExpectedLength, const char *pszId)
 {
@@ -97,7 +86,7 @@ if (nLength == nExpectedLength - 4)
 return 1;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 int NetworkBadSecurity (int nSecurity, const char *pszId)
 {
@@ -110,9 +99,14 @@ PrintLog (0, "Networking: Bad security id for %s\n", pszId);
 return 1;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-#define THEIR	reinterpret_cast<tSequencePacket*>(dataP)
+int IgnoreDataHandler (ubyte *dataP, int nLength)
+{
+return 1;
+}
+
+//------------------------------------------------------------------------------
 
 int GameInfoHandler (ubyte *dataP, int nLength)
 {
