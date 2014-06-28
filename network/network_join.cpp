@@ -454,6 +454,7 @@ else {
 							 gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	}
 gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
+gameData.multiplayer.players [nPlayer].m_nLevel = missionManager.nCurrentLevel;
 CONNECT (nPlayer, CONNECT_DISCONNECTED);
 // Send updated OBJECTS data to the new/returning CPlayerData
 syncP->player [0] = 
