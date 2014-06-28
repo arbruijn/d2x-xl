@@ -294,10 +294,6 @@ return fScale;
 
 static int DrawShield3D (CObject* objP, CFloatVector& color)
 {
-bool b3DShield = ((objP->Type () == OBJ_POWERUP) && ((objP->Id () == POW_SHIELD_BOOST) || (objP->Id () == POW_HOARD_ORB)) &&
-					   gameOpts->Use3DPowerups () && gameOpts->render.powerups.b3DShields);
-if (!b3DShield) 
-	return 0;
 if ((objP->mType.physInfo.velocity.IsZero ()) && (objP->info.movementType != MT_SPINNING)) {
 	objP->info.movementType = MT_SPINNING;
 	objP->mType.spinRate = objP->info.position.mOrient.m.dir.u * (I2X (1) / 8);
@@ -374,7 +370,8 @@ else {
 	}
 if (!bmP || bmP->Bind (1))
 	return;
-bool b3DShield = ((nType == OBJ_POWERUP) && ((objP->info.nId == POW_SHIELD_BOOST) || (objP->info.nId == POW_HOARD_ORB)) &&
+
+bool b3DShield = ((objP->Type () == OBJ_POWERUP) && ((objP->Id () == POW_SHIELD_BOOST) || (objP->Id () == POW_HOARD_ORB)) &&
 					   gameOpts->Use3DPowerups () && gameOpts->render.powerups.b3DShields);
 
 ObjectBlobColor (objP, bmP, &color, b3DShield);
@@ -389,32 +386,32 @@ if (nType == OBJ_POWERUP) {
 		RenderPowerupCorona (objP, color.Red (), color.Green (), color.Blue (), coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
 	}
 
-if (DrawShield3D (objP, color))
-	/*nothing*/;
-else if (fAlpha < 1) {
-	if (bAdditive) {
-		color.Red () =
-		color.Green () =
-		color.Blue () = 0.5f;
+if (!b3DShield || !DrawShield3D (objP, color)) {
+	if (fAlpha < 1) {
+		if (bAdditive) {
+			color.Red () =
+			color.Green () =
+			color.Blue () = 0.5f;
+			}
+		else
+			color.Red () = color.Green () = color.Blue () = 1.0f;
+		color.Alpha () = fAlpha;
+		CFixVector vPos = objP->info.position.vPos;
+		if (bmP->Width () > bmP->Height ())
+			transparencyRenderer.AddSprite (bmP, vPos, &color, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()),
+													  iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
+		else
+			transparencyRenderer.AddSprite (bmP, vPos, &color, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize,
+													  iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
 		}
-	else
-		color.Red () = color.Green () = color.Blue () = 1.0f;
-	color.Alpha () = fAlpha;
-	CFixVector vPos = objP->info.position.vPos;
-	if (bmP->Width () > bmP->Height ())
-		transparencyRenderer.AddSprite (bmP, vPos, &color, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()),
-												  iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
-	else
-		transparencyRenderer.AddSprite (bmP, vPos, &color, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize,
-												  iFrame, bAdditive, (nType == OBJ_FIREBALL) ? 10.0f : 0.0f);
+	else {
+		if (bmP->Width () > bmP->Height ())
+			ogl.RenderBitmap (bmP, objP->info.position.vPos, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()), NULL, fAlpha, bAdditive);
+		else
+			ogl.RenderBitmap (bmP, objP->info.position.vPos, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize, NULL, fAlpha, bAdditive);
+		}
+	gameData.render.nTotalSprites++;
 	}
-else {
-	if (bmP->Width () > bmP->Height ())
-		ogl.RenderBitmap (bmP, objP->info.position.vPos, xSize, FixMulDiv (xSize, bmP->Height (), bmP->Width ()), NULL, fAlpha, bAdditive);
-	else
-		ogl.RenderBitmap (bmP, objP->info.position.vPos, FixMulDiv (xSize, bmP->Width (), bmP->Height ()), xSize, NULL, fAlpha, bAdditive);
-	}
-gameData.render.nTotalSprites++;
 }
 
 //------------------------------------------------------------------------------
