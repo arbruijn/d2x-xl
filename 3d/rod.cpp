@@ -137,8 +137,8 @@ if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
 	bmP = bmP->Override (iFrame);
 #if ADJUST_HIRES_HOSTAGE
 	if (objP->Type () == OBJ_HOSTAGE)
-		xSize = 5 * xSize / 4;
-	vOffset = objP->info.position.mOrient.m.dir.u * (xSize / 8);
+		xSize = 7 * xSize / 6;
+	vOffset = objP->info.position.mOrient.m.dir.u * (xSize / 12);
 #endif
 	}
 CFixVector delta = objP->info.position.mOrient.m.dir.u * xSize;
