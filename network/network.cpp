@@ -125,7 +125,11 @@ tNetworkData networkData;
 
 #if 1
 
-#define TIMEOUT_DISCONNECT	15000
+#	if 1
+#	define TIMEOUT_DISCONNECT	3000
+#	else
+#	define TIMEOUT_DISCONNECT	15000
+#endif
 #define TIMEOUT_KICK			180000
 
 #else
@@ -294,7 +298,7 @@ while (IpxGetPacketData (packet) > 0)
 
 void NetworkTimeoutPlayer (int nPlayer, int t)
 {
-if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [nPlayer] > TIMEOUT_DISCONNECT)) {
+if (gameOpts->multi.bTimeoutPlayers && !gameData.multiplayer.players [nPlayer].TimedOut () && (t - networkData.nLastPacketTime [nPlayer] > TIMEOUT_DISCONNECT)) {
 // Remove a player from the game if we haven't heard from them in a long time.
 	NetworkDisconnectPlayer (nPlayer);
 	OBJECTS [gameData.multiplayer.players [nPlayer].nObject].CreateAppearanceEffect ();

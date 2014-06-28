@@ -201,13 +201,6 @@ class CPlayerInfo {
 		sbyte   hoursTotal;           // Hours played (since timeTotal can only go up to 9 hours)
 
 	public:
-		inline void Connect (sbyte nStatus) {
-#if DBG
-			if (nStatus < 2)
-				nStatus = nStatus;
-#endif
-			connected = nStatus;
-			}
 		inline bool HasLeft (void) { return (connected == 0) && (*callsign == '\0'); }
 		inline bool IsConnected (void) { return (connected != 0) && (*callsign != '\0'); }
 		inline bool Connected (int nState) { return (abs (connected) == nState) && (*callsign != '\0'); }
@@ -237,6 +230,10 @@ class __pack__ CPlayerData : public CPlayerInfo {
 			m_shield.Setup (0, Index (), INITIAL_SHIELD, &shield);
 			m_energy.Setup (1, Index (), INITIAL_ENERGY, &energy);
 			}
+
+		void Connect (sbyte nStatus);
+
+		bool TimedOut (void) { return m_tDisconnect > 0; }
 
 		bool WaitingForExplosion (void);
 		bool WaitingForWeaponInfo (void);

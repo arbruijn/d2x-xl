@@ -476,17 +476,18 @@ void NetworkAddPlayer (tSequencePacket* playerInfoP)
 
 if (NetworkFindPlayer (&playerInfoP->player) > -1)
 	return;
-npiP = netPlayers [0].m_info.players + gameData.multiplayer.nPlayers;
-memcpy (&npiP->network, &playerInfoP->player.network, sizeof (CNetworkInfo));
+tNetPlayerInfo& playerInfo = netPlayers [0].m_info.players [gameData.multiplayer.nPlayers];
+memcpy (&playerInfo.network, &playerInfoP->player.network, sizeof (CNetworkInfo));
 ClipRank (reinterpret_cast<char*> (&playerInfoP->player.rank));
-memcpy (npiP->callsign, playerInfoP->player.callsign, CALLSIGN_LEN + 1);
-npiP->versionMajor = playerInfoP->player.versionMajor;
-npiP->versionMinor = playerInfoP->player.versionMinor;
-npiP->rank = playerInfoP->player.rank;
-npiP->connected = CONNECT_PLAYING;
+memcpy (playerInfo.callsign, playerInfoP->player.callsign, CALLSIGN_LEN + 1);
+playerInfo.versionMajor = playerInfoP->player.versionMajor;
+playerInfo.versionMinor = playerInfoP->player.versionMinor;
+playerInfo.rank = playerInfoP->player.rank;
+playerInfo.connected = CONNECT_PLAYING;
 NetworkCheckForOldVersion ((char) gameData.multiplayer.nPlayers);
-memcpy (gameData.multiplayer.players [gameData.multiplayer.nPlayers].callsign, npiP->callsign, CALLSIGN_LEN + 1);
-gameData.multiplayer.players [gameData.multiplayer.nPlayers].nScoreGoalCount = 0;
+CPlayerData& player = gameData.multiplayer.players [gameData.multiplayer.nPlayers];
+memcpy (player.callsign, playerInfo.callsign, CALLSIGN_LEN + 1);
+player.nScoreGoalCount = 0;
 CONNECT (gameData.multiplayer.nPlayers, CONNECT_PLAYING);
 ResetPlayerTimeout (gameData.multiplayer.nPlayers, -1);
 netGame.m_info.nNumPlayers = ++gameData.multiplayer.nPlayers;
