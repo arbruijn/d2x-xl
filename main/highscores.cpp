@@ -39,9 +39,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menubackground.h"
 #include "songs.h"
 
-#if 0 //DBG
+#if 1 //DBG
 #define MAX_VIEW_TIME   		150000
 #	define ENDLEVEL_IDLE_TIME	100000
+#	define LEVEL_LOAD_TIME		180000
 #else
 #	define MAX_VIEW_TIME			15000
 #	define ENDLEVEL_IDLE_TIME	10000

@@ -263,8 +263,13 @@ for (i = 0; i < MAX_PLAYERS; i++)
 		*end.ScoreMatrix (i, j) = INTEL_SHORT (*end.ScoreMatrix (i, j));
 #endif
 if (gameData.multiplayer.players [nPlayer].Connected (CONNECT_PLAYING)) {// Still playing
+#if DBG
+	BRP;
+#endif
+#if 0
 	Assert (gameData.reactor.bDestroyed);
 	*end.SecondsLeft () = gameData.reactor.countdown.nSecsLeft;
+#endif
 	}
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {       
 	if ((i != N_LOCALPLAYER) && (i != nPlayer) && (gameData.multiplayer.players [i].IsConnected ())) {

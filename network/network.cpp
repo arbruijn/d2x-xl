@@ -126,16 +126,17 @@ tNetworkData networkData;
 #if 1
 
 #	if 1
-#	define TIMEOUT_DISCONNECT	3000
+#		define TIMEOUT_DISCONNECT	3000
 #	else
-#	define TIMEOUT_DISCONNECT	15000
+#		define TIMEOUT_DISCONNECT	15000
 #endif
-#define TIMEOUT_KICK			180000
+
+#	define TIMEOUT_KICK			180000
 
 #else
 
-#define TIMEOUT_DISCONNECT	3000
-#define TIMEOUT_KICK			30000
+#	define TIMEOUT_DISCONNECT	3000
+#	define TIMEOUT_KICK			30000
 
 #endif
 
@@ -437,7 +438,7 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 						}
 
 				case 2:
-					if (networkData.nLastPacketTime [i] == 0) {
+					if ((networkData.nLastPacketTime [i] == 0) || (t - networkData.nLastPacketTime [i] > TIMEOUT_DISCONNECT)) {
 						ResetPlayerTimeout (i, t);
 						break;
 						}
@@ -456,19 +457,25 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 
 static void NetworkUpdatePlayers (void)
 {
-		static CTimeout to (500);
+	static CTimeout toUpdate (500);
 
-if (to.Expired ()) {
+if (toUpdate.Expired ()) {
 	bool bDownloading = downloadManager.Downloading (N_LOCALPLAYER);
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (i == N_LOCALPLAYER) 
 			continue;
 		if (gameData.multiplayer.players [i].Connected (CONNECT_END_MENU))
-			NetworkSendEndLevelPacket ();
+			//NetworkSendEndLevelPacket ();
+			NetworkSendPing (i);
 		else if (bDownloading)
 			NetworkSendPing (i);
 		}
 	}
+
+	static CTimeout toListen (20);
+
+if (!gameData.multiplayer.players [N_LOCALPLAYER].Connected (CONNECT_PLAYING) && toListen.Expired ())
+	NetworkListen ();
 }
 
 //------------------------------------------------------------------------------
@@ -482,7 +489,7 @@ if (to.Expired ()) {
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (i == N_LOCALPLAYER)
 			continue;
-		if (gameData.multiplayer.players [i].connected != CONNECT_PLAYING)
+		if (!gameData.multiplayer.players [i].Connected (CONNECT_PLAYING))
 			continue;
 		if (nMaxPing < pingStats [i].averagePing)
 			nMaxPing = pingStats [i].averagePing;
@@ -744,6 +751,7 @@ int _CDECL_ NetworkThread (void* nThreadP)
 {
 for (;;) {
 	NetworkUpdatePlayers ();
+	G3_SLEEP (10);
 	}
 return 0;
 }
