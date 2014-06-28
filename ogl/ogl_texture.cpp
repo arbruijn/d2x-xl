@@ -1483,7 +1483,7 @@ switch (m_info.nType) {
 		return SetupFrames (bMipMaps, bLoad);
 
 	case BM_TYPE_ALT:	// alternative (hires) textures
-		if (!(m_info.bSetup || SetupFrames (bMipMaps, 0)))
+		if (!(m_info.bSetup || SetupFrames (bMipMaps, bLoad)))
 			return false;
 		if ((bmP = HasOverride ()))
 			return bmP->SetupTexture (bMipMaps, bLoad);
