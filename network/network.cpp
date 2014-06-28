@@ -125,6 +125,11 @@ tNetworkData networkData;
 
 //------------------------------------------------------------------------------
 
+SDL_Thread*	networkThread = NULL;
+SDL_sem*		networkSemaphore = NULL;
+
+//------------------------------------------------------------------------------
+
 void ResetAllPlayerTimeouts (void)
 {
 	int	i, t = SDL_GetTicks ();
@@ -672,7 +677,7 @@ for (i = 0; i < 100; i++)
 
 int GetMyNetRanking (void)
  {
-if (networkData.nNetLifeKills+networkData.nNetLifeKilled == 0)
+if (networkData.nNetLifeKills + networkData.nNetLifeKilled == 0)
 	return 1;
 int rank = (int) (((double) networkData.nNetLifeKills / 3000.0) * 8.0);
 int eff = (int) ((double) ((double)networkData.nNetLifeKills / ((double) networkData.nNetLifeKilled + (double) networkData.nNetLifeKills)) * 100.0);
@@ -695,11 +700,11 @@ return rank + 1;
 
 //------------------------------------------------------------------------------
 
-void NetworkCheckForOldVersion (char pnum)
+void NetworkCheckForOldVersion (char nPlayer)
 {  
-if ((netPlayers [0].m_info.players [(int) pnum].versionMajor == 1) && 
-	 !(netPlayers [0].m_info.players [(int) pnum].versionMinor & 0x0F))
-	netPlayers [0].m_info.players [ (int) pnum].rank = 0;
+if ((netPlayers [0].m_info.players [(int) nPlayer].versionMajor == 1) && 
+	 !(netPlayers [0].m_info.players [(int) nPlayer].versionMinor & 0x0F))
+	netPlayers [0].m_info.players [(int) nPlayer].rank = 0;
 }
 
 //------------------------------------------------------------------------------
