@@ -210,7 +210,9 @@ class CPlayerInfo {
 			}
 		inline bool HasLeft (void) { return (connected == 0) && (*callsign == '\0'); }
 		inline bool IsConnected (void) { return (connected != 0) && (*callsign != '\0'); }
-		inline bool Connected (int nState) { return (connected == nState) && (*callsign != '\0'); }
+		inline bool Connected (int nState) { return (abs (connected) == nState) && (*callsign != '\0'); }
+		inline void SetConnected (int nState) { connected = nState; }
+		inline int GetConnected (void) { return connected; }
 	};
 
 class __pack__ CPlayerData : public CPlayerInfo {

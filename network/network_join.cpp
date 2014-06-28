@@ -153,23 +153,26 @@ for (short i = 0; i < networkData.nJoining; i++)
 
 void NetworkDisconnectPlayer (int nPlayer)
 {
+CPlayerData& player = gameData.multiplayer.players [nPlayer];
 
-if (nPlayer == N_LOCALPLAYER) {
-	Int3 (); // Weird, see Rob
-	return;
-	}
-CONNECT (nPlayer, CONNECT_DISCONNECTED);
-gameData.multiplayer.players [nPlayer].m_tDisconnect = SDL_GetTicks ();
+if (player.Connected (CONNECT_PLAYING))
+	CONNECT (nPlayer, CONNECT_DISCONNECTED);
+#if 0
+else 
+	CONNECT (nPlayer, - abs (player.GetConnected ()));
+#endif
+player.m_tDisconnect = SDL_GetTicks ();
 KillPlayerSmoke (nPlayer);
 gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration =
 gameData.multiplayer.weaponStates [nPlayer].firing [1].nDuration = 0;
-KillPlayerBullets (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
-KillGatlingSmoke (OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
+KillPlayerBullets (OBJECTS + player.nObject);
+KillGatlingSmoke (OBJECTS + player.nObject);
 for (short i = 0; i < networkData.nJoining; i++)
-	if (networkData.sync [i].nPlayer == nPlayer)
+	if (networkData.sync [i].nPlayer == nPlayer) {
 		DeleteSyncData (i);
-	NetworkResetSyncStates ();
-// OBJECTS [gameData.multiplayer.players [nPlayer].nObject].CreateAppearanceEffect ();
+		NetworkResetSyncStates ();
+		}
+// OBJECTS [player.nObject].CreateAppearanceEffect ();
 MultiMakePlayerGhost (nPlayer);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordMultiDisconnect (nPlayer);

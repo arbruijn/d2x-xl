@@ -280,25 +280,27 @@ while (IpxGetPacketData (packet) > 0)
 
 //------------------------------------------------------------------------------
 
-void NetworkTimeoutPlayer (int nPlayer)
+void NetworkTimeoutPlayer (int nPlayer, int t)
 {
-	// Remove a player from the game if we haven't heard from them in 
-	// a long time.
-	int i, n = 0;
-
-Assert (nPlayer < gameData.multiplayer.nPlayers);
-Assert (nPlayer > -1);
-NetworkDisconnectPlayer (nPlayer);
-OBJECTS [gameData.multiplayer.players [nPlayer].nObject].CreateAppearanceEffect ();
-audio.PlaySound (SOUND_HUD_MESSAGE);
-HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_DISCONNECTING);
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].IsConnected ()) 
-		n++;
-#if !DBG
-if (n == 1)
-	MultiOnlyPlayerMsg (0);
+#if 0 //DBG
+if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [nPlayer] > 3000)) {
+#else
+if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [nPlayer] > 15000)) {
 #endif
+// Remove a player from the game if we haven't heard from them in a long time.
+	NetworkDisconnectPlayer (nPlayer);
+	OBJECTS [gameData.multiplayer.players [nPlayer].nObject].CreateAppearanceEffect ();
+	audio.PlaySound (SOUND_HUD_MESSAGE);
+	HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_DISCONNECTING);
+#if !DBG
+	int n;
+	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
+		if (gameData.multiplayer.players [i].IsConnected ()) 
+			n++;
+	if (n == 1)
+		MultiOnlyPlayerMsg (0);
+#endif
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -383,15 +385,32 @@ networkData.nLastPacketTime [nPlayer] = (t < 0) ? (fix) SDL_GetTicks () : t;
 //------------------------------------------------------------------------------
 // Check for player timeouts
 
+static int ConnectionStatus (int nPlayer)
+{
+switch (gameData.multiplayer.players [nPlayer].connected) {
+	case CONNECT_DISCONNECTED:
+		return 0;
+	case CONNECT_PLAYING:
+		return 2;
+	default:
+		if (downloadManager.Downloading (nPlayer))
+			return 1;
+		return 3;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 static void NetworkCheckPlayerTimeouts (void)
 {
 if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
-	fix t = (fix) SDL_GetTicks ();
+	int t = SDL_GetTicks ();
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (i != N_LOCALPLAYER) {
-			int bConnected = (gameData.multiplayer.players [i].connected/* == CONNECT_PLAYING*/) ? 1 : downloadManager.Downloading (i) ? -1 : 0;
-			if (!bConnected) { 
-				if (gameData.multiplayer.players [i].callsign [0]) {
+			switch (ConnectionStatus (i)) {
+				case 0:
+					if (!gameData.multiplayer.players [i].callsign [0])
+						break;
 #if 0 //DBG
 					if (t - gameData.multiplayer.players [i].m_tDisconnect > 3000) {
 #else
@@ -401,19 +420,31 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 						memset (gameData.multiplayer.players [i].netAddress, 0, sizeof (gameData.multiplayer.players [i].netAddress));
 						MultiDestroyPlayerShip (i);
 						}
-					}
-				}
-			else {
-				if ((networkData.nLastPacketTime [i] == 0) || ((bConnected < 0) && (networkData.nLastPacketTime [i] + downloadManager.GetTimeoutSecs () * 1000 > t))) {
-					ResetPlayerTimeout (i, t);
-					continue;
-					}
+					break;
+
+				case 1:
+					if (networkData.nLastPacketTime [i] + downloadManager.GetTimeoutSecs () * 1000 > t) {
+						ResetPlayerTimeout (i, t);
+						break;
+						}
+
+				case 2:
+					if (networkData.nLastPacketTime [i] == 0) {
+						ResetPlayerTimeout (i, t);
+						break;
+						}
+					if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] <= 15000))
+						break;
+
+				default:
+					NetworkTimeoutPlayer (i, t);
+					break;
 #if 0 //DBG
 				if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 3000))
 					NetworkTimeoutPlayer (i);
 #else
 				if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 15000))
-					NetworkTimeoutPlayer (i);
+					NetworkTimeoutPlayer (i, t);
 #endif
 				}
 			}
