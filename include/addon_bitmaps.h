@@ -12,13 +12,20 @@ class CAddonBitmap : public CTGA {
 		int		m_bAvailable;
 		char		m_szName [FILENAME_LEN];
 
+		static CStack<CAddonBitmap*>	m_list;
+
+	public:
+		static void Register (CAddonBitmap* bmP);
+		static void Unregister (CAddonBitmap* bmP);
+		static void Prepare (void);
+
 	public:
 		CAddonBitmap (char *pszName = NULL);
 		int Load (char *pszName = NULL);
 		void Unload (void);
 		inline CBitmap* Bitmap (void) { return m_bmP; }
-		inline CTexture* Texture (void) { return m_bmP->Texture (); }
-		inline int Bind (int bMipMaps) { return m_bmP->Bind (bMipMaps); }
+		inline CTexture* Texture (void) { return m_bmP ? m_bmP->Texture () : NULL; }
+		inline int Bind (int bMipMaps) { return m_bmP ? m_bmP->Bind (bMipMaps) : -1; }
 		~CAddonBitmap () { Unload (); }
 };
 

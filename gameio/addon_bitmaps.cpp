@@ -27,6 +27,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+CStack<CAddonBitmap*>	CAddonBitmap::m_list;
+
 CAddonBitmap explBlast (const_cast<char*>("blast.tga"));
 CAddonBitmap corona (const_cast<char*>("corona.tga"));
 CAddonBitmap glare (const_cast<char*>("glare.tga"));
@@ -43,6 +45,36 @@ CAnimation shockwave (const_cast<char*>("shockwave1.tga"), 96);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CAddonBitmap::Register (CAddonBitmap* bmP)
+{
+if (!m_list.Buffer ()) {
+	m_list.Create (10);
+	m_list.SetGrowth (10);
+	}
+m_list.Push (bmP);
+}
+
+//------------------------------------------------------------------------------
+
+void CAddonBitmap::Unregister (CAddonBitmap* bmP)
+{
+if (m_list.Buffer ()) {
+	uint i = m_list.Find (bmP);
+	if (i < m_list.ToS ())
+		m_list.Delete (i);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CAddonBitmap::Prepare (void)
+{
+for (uint i = 0; i < m_list.ToS (); i++)
+	m_list [i]->Bitmap ()->SetupFrames (1, 1);
+}
+
 //------------------------------------------------------------------------------
 
 CAddonBitmap::CAddonBitmap (char *pszName) 
@@ -84,6 +116,7 @@ if (!m_bmP)
 	m_bAvailable = -1;
 else {
 	m_bAvailable = 1;
+	Register (this);
 	m_bmP->SetFrameCount ();
 	m_bmP->SetTranspType (-1);
 	//m_bmP->Bind (1);
@@ -97,6 +130,7 @@ return (m_bAvailable > 0);
 void CAddonBitmap::Unload (void)
 {
 if (m_bmP) {
+	Unregister (this);
 	delete (m_bmP);
 	m_bmP = NULL;
 	m_bAvailable = 0;

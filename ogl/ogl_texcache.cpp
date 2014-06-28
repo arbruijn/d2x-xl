@@ -32,6 +32,7 @@
 #include "ogl_lib.h"
 #include "ogl_texture.h"
 #include "ogl_texcache.h"
+#include "addon_bitmaps.h"
 #include "texmerge.h"
 #include "renderlib.h"
 #include "menu.h"
@@ -212,13 +213,12 @@ return 1;
 
 static void CacheAddonTextures (void)
 {
-	int	i;
-
-for (i = 0; i < MAX_ADDON_BITMAP_FILES; i++) {
+for (int i = 0; i < MAX_ADDON_BITMAP_FILES; i++) {
 	PageInAddonBitmap (-i - 1);
 	BM_ADDON (i)->SetTranspType (0);
 	BM_ADDON (i)->SetupTexture (1, 1); 
 	}
+CAddonBitmap::Prepare ();
 }
 
 //------------------------------------------------------------------------------
