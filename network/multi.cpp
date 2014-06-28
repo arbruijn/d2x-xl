@@ -902,7 +902,7 @@ void MultiComputeKill (int nKiller, int nKilled, int nKillerPlayer = -1)
 	int				killerType, nKillerId;
 	char				szKilled [CALLSIGN_LEN * 2 + 4];
 	char				szKiller [CALLSIGN_LEN * 2 + 4];
-	CPlayerInfo*	killerP, * killedP;
+	CPlayerData*	killerP, * killedP;
 	CObject*			objP;
 
 gameData.score.nKillsChanged = 1;

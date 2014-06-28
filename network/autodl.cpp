@@ -137,7 +137,7 @@ if (nPlayer == N_LOCALPLAYER)
 	return m_bDownloading [MAX_PLAYERS - 1];
 if (nPlayer >= MAX_PLAYERS) 
 	return false;
-int i = FindClient (netPlayers [0].m_info.players [i].network.Server (), netPlayers [0].m_info.players [i].network.Node ());
+int i = FindClient (netPlayers [0].m_info.players [nPlayer].network.Server (), netPlayers [0].m_info.players [nPlayer].network.Node ());
 if (i < 0)
 	return false;
 return m_bDownloading [i]; 
