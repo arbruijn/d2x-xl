@@ -118,26 +118,43 @@ return G3DrawTexPoly (4, rodPointList, uvlList, bmP, NULL, 1, bAdditive, -1);
 
 //------------------------------------------------------------------------------
 //draw an CObject that is a texture-mapped rod
+
+#define ADJUST_HIRES_HOSTAGE	0
+
 void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int bLit, int iFrame)
 {
 	CBitmap*			bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
+	fix				xSize = objP->info.xSize;
 	CRenderPoint	pTop, pBottom;
-
+#if ADJUST_HIRES_HOSTAGE
+	CFixVector		vOffset;
+	
+vOffset.SetZero ();
+#endif
 LoadTexture (bmi.index, 0, 0);
 if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
 	bmP->SetupTexture (1, 0);
 	bmP = bmP->Override (iFrame);
+#if ADJUST_HIRES_HOSTAGE
+	if (objP->Type () == OBJ_HOSTAGE)
+		xSize = 5 * xSize / 4;
+	vOffset = objP->info.position.mOrient.m.dir.u * (xSize / 8);
+#endif
 	}
-CFixVector delta = objP->info.position.mOrient.m.dir.u * objP->info.xSize;
+CFixVector delta = objP->info.position.mOrient.m.dir.u * xSize;
 CFixVector vTop = objP->info.position.vPos + delta;
 CFixVector vBottom = objP->info.position.vPos - delta;
+#if ADJUST_HIRES_HOSTAGE
+vTop += vOffset;
+vBottom += vOffset;
+#endif
 pTop.TransformAndEncode (vTop);
 pBottom.TransformAndEncode (vBottom);
 fix light = bLit ? ComputeObjectLight (objP, &pTop.ViewPos ()) : I2X (1);
 if (!gameStates.render.bPerPixelLighting)
-	G3DrawRodTexPoly (bmP, &pBottom, objP->info.xSize, &pTop, objP->info.xSize, light, NULL, objP->info.nType == OBJ_FIREBALL);
+	G3DrawRodTexPoly (bmP, &pBottom, xSize, &pTop, xSize, light, NULL, objP->info.nType == OBJ_FIREBALL);
 else {
-	if (CalcRodCorners (&pBottom, objP->info.xSize, &pTop, objP->info.xSize))
+	if (CalcRodCorners (&pBottom, xSize, &pTop, xSize))
 		return;
 
 	CFloatVector	vertices [4];

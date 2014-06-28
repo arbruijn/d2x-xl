@@ -746,6 +746,10 @@ return false;
 
 int ReadHiresBitmap (CBitmap* bmP, const char* bmName, int nIndex, int bD1)
 {
+#if DBG
+if (strstr (bmName, "hostage#0"))
+	BRP;
+#endif
 
 if (gameOpts->Use3DPowerups () && IsWeapon (bmName) && !gameStates.app.bHaveMod)
 	return -1;
@@ -757,7 +761,7 @@ if (!pszFile)
 	return (nIndex < 0) ? -1 : 0;
 
 #if DBG
-if (!strcmp (bmName, "key01#0"))
+if (!strcmp (bmName, "hostage#0"))
 	BRP;
 const char* s = strchr (bmName, '#');
 if (s && (s [1] != '0'))
