@@ -123,6 +123,18 @@ tNakedData nakedData = {0, -1};
 
 tNetworkData networkData;
 
+#if 1
+
+#define TIMEOUT_DISCONNECT	15000
+#define TIMEOUT_KICK			180000
+
+#else
+
+#define TIMEOUT_DISCONNECT	3000
+#define TIMEOUT_KICK			30000
+
+#endif
+
 //------------------------------------------------------------------------------
 
 void ResetAllPlayerTimeouts (void)
@@ -282,11 +294,7 @@ while (IpxGetPacketData (packet) > 0)
 
 void NetworkTimeoutPlayer (int nPlayer, int t)
 {
-#if 0 //DBG
-if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [nPlayer] > 3000)) {
-#else
-if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [nPlayer] > 15000)) {
-#endif
+if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [nPlayer] > TIMEOUT_DISCONNECT)) {
 // Remove a player from the game if we haven't heard from them in a long time.
 	NetworkDisconnectPlayer (nPlayer);
 	OBJECTS [gameData.multiplayer.players [nPlayer].nObject].CreateAppearanceEffect ();
@@ -411,11 +419,7 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 				case 0:
 					if (!gameData.multiplayer.players [i].callsign [0])
 						break;
-#if 0 //DBG
-					if (t - gameData.multiplayer.players [i].m_tDisconnect > 3000) {
-#else
-					if (t - gameData.multiplayer.players [i].m_tDisconnect > 180000) { // drop player when he disconnected for 3 minutes
-#endif
+					if (t - gameData.multiplayer.players [i].m_tDisconnect > TIMEOUT_KICK) { // drop player when he disconnected for 3 minutes
 						gameData.multiplayer.players [i].callsign [0] = '\0';
 						memset (gameData.multiplayer.players [i].netAddress, 0, sizeof (gameData.multiplayer.players [i].netAddress));
 						MultiDestroyPlayerShip (i);
@@ -433,19 +437,10 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 						ResetPlayerTimeout (i, t);
 						break;
 						}
-					if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] <= 15000))
-						break;
 
 				default:
 					NetworkTimeoutPlayer (i, t);
 					break;
-#if 0 //DBG
-				if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 3000))
-					NetworkTimeoutPlayer (i);
-#else
-				if (gameOpts->multi.bTimeoutPlayers && (t - networkData.nLastPacketTime [i] > 15000))
-					NetworkTimeoutPlayer (i, t);
-#endif
 				}
 			}
 		}
