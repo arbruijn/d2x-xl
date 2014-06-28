@@ -375,7 +375,7 @@ if (bQuit) {
 gameData.score.bNoMovieMessage = 0;
 backgroundManager.Draw ();
 gameStates.menus.nInMenu--;
-if (bQuit || (((missionManager.nCurrentLevel >= missionManager.nLastLevel) && !extraGameInfo [IsMultiGame].bRotateLevels))
+if (bQuit || ((missionManager.nCurrentLevel >= missionManager.nLastLevel) && !extraGameInfo [IsMultiGame].bRotateLevels))
 	longjmp (gameExitPoint, 0);
 }
 
