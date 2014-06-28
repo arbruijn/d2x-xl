@@ -472,8 +472,6 @@ NetworkDoSyncFrame ();
 
 void NetworkAddPlayer (tSequencePacket* playerInfoP)
 {
-	tNetPlayerInfo	*npiP;
-
 if (NetworkFindPlayer (&playerInfoP->player) > -1)
 	return;
 tNetPlayerInfo& playerInfo = netPlayers [0].m_info.players [gameData.multiplayer.nPlayers];

@@ -595,7 +595,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 			}
 		}
 
-	if (!HaveNetworkThread ())
+	if (!networkThread.Available ())
 		NetworkUpdatePlayers ();
 	if (!bListen)
 		return;
