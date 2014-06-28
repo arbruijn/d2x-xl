@@ -440,7 +440,7 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 						}
 
 				case 2:
-					if ((networkData.nLastPacketTime [i] == 0) || (t - networkData.nLastPacketTime [i] > TIMEOUT_DISCONNECT)) {
+					if ((networkData.nLastPacketTime [i] == 0) || (t - networkData.nLastPacketTime [i] < TIMEOUT_DISCONNECT)) {
 						ResetPlayerTimeout (i, t);
 						break;
 						}

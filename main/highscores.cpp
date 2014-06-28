@@ -459,7 +459,7 @@ m_nEscaped = m_nReady = 0;
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if ((i != N_LOCALPLAYER) && gameData.multiplayer.players [i].connected) {
 	// Check timeout for idle players
-		if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [i] + ENDLEVEL_IDLE_TIME) {
+		if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [i] + ((gameData.multiplayer.players [i].connected == CONNECT_ADVANCE_LEVEL) ? LEVEL_LOAD_TIME : ENDLEVEL_IDLE_TIME)) {
 			CONNECT (i, CONNECT_DISCONNECTED);
 			if ((gameStates.multi.nGameType != UDP_GAME) || IAmGameHost ())
 				NetworkSendEndLevelSub (i);
