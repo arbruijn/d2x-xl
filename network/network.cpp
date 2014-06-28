@@ -218,7 +218,7 @@ if (NetworkSelectPlayers (bAutoRun)) {
 	missionManager.DeleteLevelStates ();
 	missionManager.SaveLevelStates ();
 	SetupPowerupFilter ();
-	StartNetworkThread ();
+	networkThread.Start ();
 	StartNewLevel (netGame.m_info.GetLevel (), true);
 	ResetAllPlayerTimeouts ();
 	PrintLog (-1);
