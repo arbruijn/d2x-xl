@@ -301,7 +301,7 @@ while (IpxGetPacketData (packet) > 0)
 
 void NetworkTimeoutPlayer (int nPlayer, int t)
 {
-if (gameOpts->multi.bTimeoutPlayers && !gameData.multiplayer.players [nPlayer].TimedOut () && (t - networkData.nLastPacketTime [nPlayer] > TIMEOUT_DISCONNECT)) {
+if (gameOpts->multi.bTimeoutPlayers && !gameData.multiplayer.players [nPlayer].TimedOut ()) {
 // Remove a player from the game if we haven't heard from them in a long time.
 	NetworkDisconnectPlayer (nPlayer);
 	OBJECTS [gameData.multiplayer.players [nPlayer].nObject].CreateAppearanceEffect ();
