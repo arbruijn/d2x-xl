@@ -123,6 +123,8 @@ tNakedData nakedData = {0, -1};
 
 tNetworkData networkData;
 
+CNetworkThread networkThread;
+
 #if 1
 
 #	if 1

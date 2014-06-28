@@ -620,8 +620,7 @@ class CNetworkThread {
 		void End (void);
 };
 
-CNetworkThread networkThread;
-
+extern CNetworkThread networkThread;
 
 //------------------------------------------------------------------------------
 
