@@ -595,6 +595,8 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 			}
 		}
 
+	if (!HaveNetworkThread ())
+		NetworkUpdatePlayers ();
 	if (!bListen)
 		return;
 	NetworkCheckPlayerTimeouts ();
@@ -741,35 +743,36 @@ if ((netPlayers [0].m_info.players [(int) nPlayer].versionMajor == 1) &&
 
 //------------------------------------------------------------------------------
 
-SDL_Thread*	networkThread = NULL;
-SDL_sem*		networkSemaphore = NULL;
-int			networkThreadId = 0;
-
-//------------------------------------------------------------------------------
-
-int _CDECL_ NetworkThread (void* nThreadP)
+static int _CDECL_ NetworkThreadHandler (void* nThreadP)
 {
-for (;;) {
-	NetworkUpdatePlayers ();
-	G3_SLEEP (10);
-	}
+networkThread.Process ();
 return 0;
 }
 
 //------------------------------------------------------------------------------
 
-void StartNetworkThread (void)
+void CNetworkThread::Process (void)
 {
-networkThread = SDL_CreateThread (NetworkThread, &networkThreadId);
+for (;;) {
+	NetworkUpdatePlayers ();
+	G3_SLEEP (10);
+	}
 }
 
 //------------------------------------------------------------------------------
 
-void EndNetworkThread (void)
+void CNetworkThread::Start (void)
 {
-if (networkThread) {
-	SDL_KillThread (networkThread);
-	networkThread = NULL;
+m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
+}
+
+//------------------------------------------------------------------------------
+
+void CNetworkThread::End (void)
+{
+if (m_thread) {
+	SDL_KillThread (m_thread);
+	m_thread = NULL;
 	}
 }
 

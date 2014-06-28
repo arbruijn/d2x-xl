@@ -218,15 +218,15 @@ if (nState)
 	// Polling loop for End-of-level menu
 
 // Send our endlevel packet at regular intervals
-#if 0 // handled by the network thread now
-static fix t1 = 0;
-fix t = SDL_GetTicks ();
-if ( > (t1 + ENDLEVEL_SEND_INTERVAL)) {
-	NetworkSendEndLevelPacket (); // tell other players that I have left the level and am waiting in the score screen
-	t1 = t;
+if (!networkThread.Available ()) {
+	static fix t1 = 0;
+	fix t = SDL_GetTicks ();
+	if (t > (t1 + ENDLEVEL_SEND_INTERVAL)) {
+		NetworkSendEndLevelPacket (); // tell other players that I have left the level and am waiting in the score screen
+		t1 = t;
+		}
+	NetworkListen ();
 	}
-NetworkListen ();
-#endif
 
 	int nReady = 0;
 	int bSecret = 0;
@@ -261,9 +261,8 @@ if (nState)
  
 if (TimerGetApproxSeconds () > (gameData.multiplayer.xStartAbortMenuTime + (I2X (8))))
 	key = -2;
-#if 0 // handled by the network thread now
-NetworkListen ();
-#endif
+if (!networkThread.Available ())
+	NetworkListen ();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if ((gameData.multiplayer.players [i].connected != CONNECT_PLAYING) && 
 		 (gameData.multiplayer.players [i].connected != CONNECT_ESCAPE_TUNNEL) && 

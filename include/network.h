@@ -606,6 +606,23 @@ if ((i < MIN_PPS) || (i > MAX_PPS))
 return netGame.GetPacketsPerSec ();
 }
 
+
+class CNetworkThread {
+	private:
+		SDL_Thread*	m_thread;
+		int			m_nThreadId;
+
+	public:
+		CNetworkThread () : m_thread (NULL), m_nThreadId (0) {}
+		bool Available (void) { return m_thread != NULL; }
+		void Process (void);
+		void Start (void);
+		void End (void);
+};
+
+CNetworkThread networkThread;
+
+
 //------------------------------------------------------------------------------
 
 #endif /* _NETWORK_H */
