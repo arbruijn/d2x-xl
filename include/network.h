@@ -570,6 +570,9 @@ void NetworkResetObjSync (short nObject);
 void DeleteSyncData (short nConnection);
 char *iptos (char *pszIP, char *addr);
 
+void StartNetworkThread (void);
+void EndNetworkThread (void);
+
 #define DUMP_CLOSED     0 // no new players allowed after game started
 #define DUMP_FULL       1 // player cound maxed out
 #define DUMP_ENDLEVEL   2

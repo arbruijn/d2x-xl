@@ -125,11 +125,6 @@ tNetworkData networkData;
 
 //------------------------------------------------------------------------------
 
-SDL_Thread*	networkThread = NULL;
-SDL_sem*		networkSemaphore = NULL;
-
-//------------------------------------------------------------------------------
-
 void ResetAllPlayerTimeouts (void)
 {
 	int	i, t = SDL_GetTicks ();
@@ -204,6 +199,7 @@ if (NetworkSelectPlayers (bAutoRun)) {
 	missionManager.DeleteLevelStates ();
 	missionManager.SaveLevelStates ();
 	SetupPowerupFilter ();
+	StartNetworkThread ();
 	StartNewLevel (netGame.m_info.GetLevel (), true);
 	ResetAllPlayerTimeouts ();
 	PrintLog (-1);
@@ -428,7 +424,7 @@ if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
 
 //------------------------------------------------------------------------------
 
-static void NetworkUpdateWaitingPlayers (void)
+static void NetworkUpdatePlayers (void)
 {
 		static CTimeout to (500);
 
@@ -562,7 +558,6 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 			}
 		}
 
-	NetworkUpdateWaitingPlayers ();
 	if (!bListen)
 		return;
 	NetworkCheckPlayerTimeouts ();
@@ -705,6 +700,39 @@ void NetworkCheckForOldVersion (char nPlayer)
 if ((netPlayers [0].m_info.players [(int) nPlayer].versionMajor == 1) && 
 	 !(netPlayers [0].m_info.players [(int) nPlayer].versionMinor & 0x0F))
 	netPlayers [0].m_info.players [(int) nPlayer].rank = 0;
+}
+
+//------------------------------------------------------------------------------
+
+SDL_Thread*	networkThread = NULL;
+SDL_sem*		networkSemaphore = NULL;
+int			networkThreadId = 0;
+
+//------------------------------------------------------------------------------
+
+int _CDECL_ NetworkThread (void* nThreadP)
+{
+for (;;) {
+	NetworkUpdatePlayers ();
+	}
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+void StartNetworkThread (void)
+{
+networkThread = SDL_CreateThread (NetworkThread, &networkThreadId);
+}
+
+//------------------------------------------------------------------------------
+
+void EndNetworkThread (void)
+{
+if (networkThread) {
+	SDL_KillThread (networkThread);
+	networkThread = NULL;
+	}
 }
 
 //------------------------------------------------------------------------------

@@ -310,111 +310,118 @@ if (!bAutoLaunch) {
 	}
 networkData.bGamesChanged = 1;    
 
-doMenu:
-
-gameStates.app.nExtGameStatus = GAMESTAT_JOIN_NETGAME;
-if (bAutoLaunch) {
-	static CTimeout to (1000, true);
-
-	do {
-		if (to.Expired ())
-			NetworkSendGameListRequest (bAutoLaunch);
-		G3_SLEEP (5);
-		NetworkListen ();
-		if (KeyInKey () == KEY_ESC)
-			return 0;
-		} while (!networkData.nActiveGames);
-	choice = 2 + tracker.m_bUse;
-	}
-else {
-	gameStates.multi.bSurfingNet = 1;
-	choice = menu.Menu (TXT_NETGAMES, NULL, NetworkJoinPoll, NULL, BG_SUBMENU, BG_STANDARD, LHX (340), -1, 1);
-	gameStates.multi.bSurfingNet = 0;
-	}
-
-if (choice == -1) {
-	ChangePlayerNumTo (0);
-	memcpy (LOCALPLAYER.callsign, callsign, sizeof (callsign));
-	networkData.nStatus = NETSTAT_MENU;
-	return 0; // they cancelled               
-	}               
-choice -= (2 + tracker.m_bUse);
-if ((choice < 0) || (choice >= networkData.nActiveGames)) {
-	//InfoBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_INVALID_CHOICE);
-	goto doMenu;
-	}
-
-// Choice has been made and looks legit
-if (AGI.m_info.gameStatus == NETSTAT_ENDLEVEL) {
-	TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_NET_GAME_BETWEEN2);
-	goto doMenu;
-	}
-if (AGI.m_info.protocolVersion != MULTI_PROTO_VERSION) {
-	if (AGI.m_info.protocolVersion == 3) {
-		TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_INCOMPAT1);
-		}
-	else if (AGI.m_info.protocolVersion == 4) {
-		}
-	else {
-		char	szFmt [200], szError [200];
-
-		sprintf (szFmt, "%s%s", TXT_VERSION_MISMATCH, TXT_NETGAME_VERSIONS);
-		sprintf (szError, szFmt, MULTI_PROTO_VERSION, AGI.m_info.protocolVersion);
-		TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, szError);
-		}
-	goto doMenu;
-	}
-
-// Check for valid mission name
-memcpy (networkData.serverAddress, activeNetGames [choice].m_server, sizeof (networkData.serverAddress));
-console.printf (CON_DBG, TXT_LOADING_MSN, AGI.m_info.szMissionName);
-if (!(missionManager.LoadByName (AGI.m_info.szMissionName, 0, "downloads/") || missionManager.LoadByName (AGI.m_info.szMissionName, -1) ||	
-	   (downloadManager.DownloadMission (AGI.m_info.szMissionName) && missionManager.LoadByName (AGI.m_info.szMissionName, 0, "downloads/")))) {
-	PrintLog (0, "Mission '%s' not found\n", AGI.m_info.szMissionName);
-	TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
-	goto doMenu;
-	}
-if (IS_D2_OEM && (AGI.m_info.nLevel > 8)) {
-	TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_OEM_ONLY8);
-	goto doMenu;
-	}
-if (IS_MAC_SHARE && (AGI.m_info.nLevel > 4)) {
-	TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_SHARE_ONLY4);
-	goto doMenu;
-	}
-if (!NetworkWaitForAllInfo (choice)) {
-	TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_JOIN_ERROR);
-	networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
-	goto doMenu;
-	}       
-
-networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
-  if (!CanJoinNetGame (activeNetGames + choice, activeNetPlayers + choice)) {
-	if (AGI.m_info.nNumPlayers == AGI.m_info.nMaxPlayers)
-		TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_GAME_FULL);
-	else
-		TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_IN_PROGRESS);
-	goto doMenu;
-	}
-// Choice is valid, prepare to join in
-netGame = activeNetGames [choice];
-netPlayers [0] = activeNetPlayers [choice];
-gameStates.app.nDifficultyLevel = netGame.m_info.difficulty;
-gameData.multiplayer.nMaxPlayers = netGame.m_info.nMaxPlayers;
-
-if (SetLocalPlayer (&netPlayers [0], netGame.m_info.nNumPlayers, 1) < 0)
-	return 0;
-ResetPlayerData (true, false, false, -1);
-memcpy (LOCALPLAYER.callsign, callsign, sizeof (callsign));
-// Handle the extra data for the network driver
-// For the mcast4 driver, this is the game's multicast address, to
-// which the driver subscribes.
-if (IpxHandleNetGameAuxData (netGame.AuxData ()) < 0) {
+do {
 	networkData.nStatus = NETSTAT_BROWSING;
-	goto doMenu;
-	}
+	for (;;) {
+		gameStates.app.nExtGameStatus = GAMESTAT_JOIN_NETGAME;
+		if (bAutoLaunch) {
+			static CTimeout to (1000, true);
+
+			do {
+				if (to.Expired ())
+					NetworkSendGameListRequest (bAutoLaunch);
+				G3_SLEEP (5);
+				NetworkListen ();
+				if (KeyInKey () == KEY_ESC)
+					return 0;
+				} while (!networkData.nActiveGames);
+			choice = 2 + tracker.m_bUse;
+			}
+		else {
+			gameStates.multi.bSurfingNet = 1;
+			choice = menu.Menu (TXT_NETGAMES, NULL, NetworkJoinPoll, NULL, BG_SUBMENU, BG_STANDARD, LHX (340), -1, 1);
+			gameStates.multi.bSurfingNet = 0;
+			}
+
+		if (choice == -1) {
+			ChangePlayerNumTo (0);
+			memcpy (LOCALPLAYER.callsign, callsign, sizeof (callsign));
+			networkData.nStatus = NETSTAT_MENU;
+			return 0; // they cancelled               
+			}               
+		choice -= (2 + tracker.m_bUse);
+		if ((choice < 0) || (choice >= networkData.nActiveGames)) {
+			//InfoBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_INVALID_CHOICE);
+			continue;
+			}
+
+		// Choice has been made and looks legit
+		if (AGI.m_info.gameStatus == NETSTAT_ENDLEVEL) {
+			TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_NET_GAME_BETWEEN2);
+			continue;
+			}
+
+		if (AGI.m_info.protocolVersion != MULTI_PROTO_VERSION) {
+			if (AGI.m_info.protocolVersion == 3) {
+				TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_INCOMPAT1);
+				}
+			else if (AGI.m_info.protocolVersion == 4) {
+				}
+			else {
+				char	szFmt [200], szError [200];
+
+				sprintf (szFmt, "%s%s", TXT_VERSION_MISMATCH, TXT_NETGAME_VERSIONS);
+				sprintf (szError, szFmt, MULTI_PROTO_VERSION, AGI.m_info.protocolVersion);
+				TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, szError);
+				}
+			continue;
+			}
+
+		// Check for valid mission name
+		memcpy (networkData.serverAddress, activeNetGames [choice].m_server, sizeof (networkData.serverAddress));
+		console.printf (CON_DBG, TXT_LOADING_MSN, AGI.m_info.szMissionName);
+		if (!(missionManager.LoadByName (AGI.m_info.szMissionName, 0, "downloads/") || missionManager.LoadByName (AGI.m_info.szMissionName, -1) ||	
+				(downloadManager.DownloadMission (AGI.m_info.szMissionName) && missionManager.LoadByName (AGI.m_info.szMissionName, 0, "downloads/")))) {
+			PrintLog (0, "Mission '%s' not found\n", AGI.m_info.szMissionName);
+			TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
+			continue;
+			}
+
+		if (IS_D2_OEM && (AGI.m_info.nLevel > 8)) {
+			TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_OEM_ONLY8);
+			continue;
+			}
+
+		if (IS_MAC_SHARE && (AGI.m_info.nLevel > 4)) {
+			TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_SHARE_ONLY4);
+			continue;
+			}
+
+		if (!NetworkWaitForAllInfo (choice)) {
+			TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_JOIN_ERROR);
+			networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
+			continue;
+			}       
+
+		networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
+		  if (!CanJoinNetGame (activeNetGames + choice, activeNetPlayers + choice)) {
+			if (AGI.m_info.nNumPlayers == AGI.m_info.nMaxPlayers)
+				TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_GAME_FULL);
+			else
+				TextBox (TXT_SORRY, BG_STANDARD, 1, TXT_OK, TXT_IN_PROGRESS);
+			continue;
+			}
+		break;
+		}
+
+	// Choice is valid, prepare to join in
+	netGame = activeNetGames [choice];
+	netPlayers [0] = activeNetPlayers [choice];
+	gameStates.app.nDifficultyLevel = netGame.m_info.difficulty;
+	gameData.multiplayer.nMaxPlayers = netGame.m_info.nMaxPlayers;
+
+	if (SetLocalPlayer (&netPlayers [0], netGame.m_info.nNumPlayers, 1) < 0)
+		return 0;
+	ResetPlayerData (true, false, false, -1);
+	memcpy (LOCALPLAYER.callsign, callsign, sizeof (callsign));
+	// Handle the extra data for the network driver
+	// For the mcast4 driver, this is the game's multicast address, to
+	// which the driver subscribes.
+	} while (IpxHandleNetGameAuxData (netGame.AuxData ()) < 0);
+
 NetworkSetGameMode (netGame.m_info.gameMode);
 NetworkAdjustMaxDataSize ();
+StartNetworkThread ();
 return StartNewLevel (netGame.m_info.GetLevel (), true);
 }
 
