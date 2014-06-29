@@ -455,7 +455,7 @@ class CParticleManager {
 		inline CParticleSystem& GetSystem (int i) { return m_systems [i]; }
 		inline CParticleSystem* GetFirst (int& nCurrent) { return m_systems.GetFirst (nCurrent); }
 		inline CParticleSystem* GetNext (int& nCurrent) { return m_systems.GetNext (nCurrent); }
-		inline short GetObjectSystem (short nObject) { return m_objectSystems [nObject]; }
+		inline short GetObjectSystem (short nObject) { return  m_objectSystems.Buffer () ? m_objectSystems [nObject] : -1; }
 
 		inline CParticleEmitter* GetEmitter (int i, int j)
 		 { return GetSystem (i).GetEmitter (j); }

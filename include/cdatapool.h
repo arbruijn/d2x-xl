@@ -90,7 +90,7 @@ class CDataPool {
 		inline int LastIndex (void) { return m_used; }
 
 		inline _T* GetNext (int& nCurrent) { 
-			if (nCurrent < 0)
+			if ((nCurrent < 0) || !m_buffer.Buffer ())
 				return NULL;
 			CPoolElem<_T>* e;
 			try {
