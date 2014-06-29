@@ -3694,6 +3694,7 @@ class CGameData {
 				render.nStereoOffsetType = nType; 
 			return nOldType;
 			}
+		inline CObject* Object (int nObject) { return (objs.objects.Buffer () && (nObject < objs.nObjects)) ? objs.objects + nObject : NULL; }
 		inline int X (int x, bool bForce = false) { return render.nStereoOffsetType ? x - ((render.nStereoOffsetType == STEREO_OFFSET_FLOATING) ? FloatingStereoOffset2D (x, bForce) : StereoOffset2D ()) : x; }
 };
 

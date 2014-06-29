@@ -161,8 +161,8 @@ player.m_tDisconnect = SDL_GetTicks ();
 KillPlayerSmoke (nPlayer);
 gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration =
 gameData.multiplayer.weaponStates [nPlayer].firing [1].nDuration = 0;
-KillPlayerBullets (OBJECTS + player.nObject);
-KillGatlingSmoke (OBJECTS + player.nObject);
+KillPlayerBullets (gameData.Object (player.nObject));
+KillGatlingSmoke (gameData.Object (player.nObject));
 for (short i = 0; i < networkData.nJoining; i++)
 	if (networkData.sync [i].nPlayer == nPlayer) {
 		DeleteSyncData (i);
