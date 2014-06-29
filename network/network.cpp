@@ -301,25 +301,36 @@ while (IpxGetPacketData (packet) > 0)
 
 int NetworkTimeoutPlayer (int nPlayer, int t)
 {
-if (gameOpts->multi.bTimeoutPlayers && !gameData.multiplayer.players [nPlayer].TimedOut ()) {
-// Remove a player from the game if we haven't heard from them in a long time.
-	NetworkDisconnectPlayer (nPlayer);
-	if (((LOCALPLAYER.connected == CONNECT_END_MENU) || (LOCALPLAYER.connected == CONNECT_ADVANCE_LEVEL)) && 
-		 ((gameStates.multi.nGameType != UDP_GAME) || IAmGameHost ()))
-		NetworkSendEndLevelSub (nPlayer);
+if (!gameOpts->multi.bTimeoutPlayers)
+	return 0;
 
-	OBJECTS [gameData.multiplayer.players [nPlayer].nObject].CreateAppearanceEffect ();
-	audio.PlaySound (SOUND_HUD_MESSAGE);
-	HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_DISCONNECTING);
-#if !DBG
-	int n = 0;
-	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
-		if (gameData.multiplayer.players [i].IsConnected ()) 
-			n++;
-	if (n == 1)
-		MultiOnlyPlayerMsg (0);
-#endif
+if (gameData.multiplayer.players [nPlayer].TimedOut ()) {
+	if (t - gameData.multiplayer.players [nPlayer].m_tDisconnect > TIMEOUT_KICK) { // drop player when he disconnected for 3 minutes
+		gameData.multiplayer.players [nPlayer].callsign [0] = '\0';
+		memset (gameData.multiplayer.players [nPlayer].netAddress, 0, sizeof (gameData.multiplayer.players [nPlayer].netAddress));
+		MultiDestroyPlayerShip (nPlayer);
+		}
+	return 0;
 	}
+
+// Remove a player from the game if we haven't heard from them in a long time.
+NetworkDisconnectPlayer (nPlayer);
+if (((LOCALPLAYER.connected == CONNECT_END_MENU) || (LOCALPLAYER.connected == CONNECT_ADVANCE_LEVEL)) && 
+		((gameStates.multi.nGameType != UDP_GAME) || IAmGameHost ()))
+	NetworkSendEndLevelSub (nPlayer);
+
+OBJECTS [gameData.multiplayer.players [nPlayer].nObject].CreateAppearanceEffect ();
+audio.PlaySound (SOUND_HUD_MESSAGE);
+HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_DISCONNECTING);
+#if !DBG
+int n = 0;
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
+	if (gameData.multiplayer.players [i].IsConnected ()) 
+		n++;
+if (n == 1)
+	MultiOnlyPlayerMsg (0);
+#endif
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -403,24 +414,6 @@ networkData.nLastPacketTime [nPlayer] = (t < 0) ? (fix) SDL_GetTicks () : t;
 
 //------------------------------------------------------------------------------
 // Check for player timeouts
-
-static int ConnectionStatus (int nPlayer)
-{
-if (gameData.multiplayer.players [nPlayer].m_nLevel != missionManager.nCurrentLevel)
-	return 3;
-switch (gameData.multiplayer.players [nPlayer].connected) {
-	case CONNECT_DISCONNECTED:
-		return 0;
-	case CONNECT_PLAYING:
-		return 2;
-	default:
-		if (downloadManager.Downloading (nPlayer))
-			return 1;
-		return 3;
-	}
-}
-
-//------------------------------------------------------------------------------
 
 static void NetworkUpdatePlayers (void)
 {
@@ -771,6 +764,25 @@ if (m_semaphore)
 
 //------------------------------------------------------------------------------
 
+static int ConnectionStatus (int nPlayer)
+{
+if (!gameData.multiplayer.players [nPlayer].callsign [0])
+	return 0;
+if (gameData.multiplayer.players [nPlayer].m_nLevel != missionManager.nCurrentLevel)
+	return 3;
+switch (gameData.multiplayer.players [nPlayer].connected) {
+	case CONNECT_DISCONNECTED:
+	case CONNECT_PLAYING:
+		return 2;
+	default:
+		if (downloadManager.Downloading (nPlayer))
+			return 1;
+		return 3;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 int CNetworkThread::CheckPlayerTimeouts (void)
 {
 SemWait ();
@@ -784,14 +796,7 @@ if (to.Expired () /*&& !gameData.reactor.bDestroyed*/)
 		if (nPlayer != N_LOCALPLAYER) {
 			switch (ConnectionStatus (nPlayer)) {
 				case 0:
-					if (!gameData.multiplayer.players [nPlayer].callsign [0])
-						break;
-					if (t - gameData.multiplayer.players [nPlayer].m_tDisconnect > TIMEOUT_KICK) { // drop player when he disconnected for 3 minutes
-						gameData.multiplayer.players [nPlayer].callsign [0] = '\0';
-						memset (gameData.multiplayer.players [nPlayer].netAddress, 0, sizeof (gameData.multiplayer.players [nPlayer].netAddress));
-						MultiDestroyPlayerShip (nPlayer);
-						}
-					break;
+					break; // kicked
 
 				case 1:
 					if (networkData.nLastPacketTime [nPlayer] + downloadManager.GetTimeoutSecs () * 1000 > t) {
