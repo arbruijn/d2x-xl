@@ -714,12 +714,18 @@ int CBitmap::RLEExpand (ubyte *colorMap, int bSwapTranspColor)
 	int		i, j, l, n, bWideRLE;
 	ushort	nRowSize;
 
+	union {
+		ubyte*	b;
+		ushort*	w;
+	} rowSizeTable;
+
 	static int	rleBufSize = 0;
 
 if (!(m_info.props.flags & BM_FLAG_RLE))
 	return m_info.props.h * m_info.props.rowSize;
 bWideRLE = (m_info.props.flags & BM_FLAG_RLE_BIG) != 0;
 i = (bWideRLE + 1) * m_info.props.h;
+rowSizeTable.b = Buffer ();
 srcP = Buffer () + i; // first row contains uncompressed row lengths
 i *= 2 * m_info.props.rowSize;
 if (!gameData.pig.tex.rleBuffer || (rleBufSize < i)) {
@@ -730,10 +736,7 @@ if (!gameData.pig.tex.rleBuffer || (rleBufSize < i)) {
 
 destP = gameData.pig.tex.rleBuffer.Buffer ();
 for (i = 0; i < m_info.props.h; i++, srcP += nRowSize) {
-	if (bWideRLE)
-		nRowSize = INTEL_SHORT (*(reinterpret_cast<ushort*> (Buffer () + 4 + 2 * i)));
-	else
-		nRowSize = *Buffer (i);
+	nRowSize = bWideRLE ? INTEL_SHORT (rowSizeTable.w [i]) : (ushort) rowSizeTable.b [i];
 	for (j = 0, n = m_info.props.w; (j < nRowSize) && n; j++) {
 		h = srcP [j];
 		if (!IS_RLE_CODE (h)) {

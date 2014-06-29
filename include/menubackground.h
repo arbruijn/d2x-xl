@@ -45,7 +45,7 @@ class CBackground : public CCanvas {
 		inline CBitmap* SetBitmap (CBitmap* bmP) { return m_bitmap = bmP; }
 		inline CBitmap* Background (void) { return &m_saved; }
 		inline CBitmap* Saved (void) { return &m_saved; }
-		inline void GetExtent (int& x, int& y, int& w, int& h) { CViewport::GetExtent (x, y, w, h); }
+		inline void GetExtent (int& x, int& y, int& w, int& h) { CCanvas::CViewport::GetExtent (x, y, w, h); }
 		inline char* GetFilename (void) { return m_bitmap ? m_bitmap->Name () : NULL; }
 		inline int Wallpaper (void) { return m_nWallpaper; }
 
