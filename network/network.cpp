@@ -366,9 +366,7 @@ networkData.nSecurityFlag = NETSECURITY_OFF;
 t = SDL_GetTicks ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	for (i = nPackets = 0; (i < nMaxLoops) && (SDL_GetTicks () - t < 50); i++) {
-		networkThread.LockMutex ();
 		size = IpxGetPacketData (packet);
-		networkThread.UnlockMutex ();
 		if (size <= 0)
 			break;
 		if (NetworkProcessPacket (packet, size))
