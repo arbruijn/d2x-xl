@@ -59,8 +59,10 @@ if (nPlayer >= gameData.multiplayer.nPlayers) {
 	Int3 (); // weird, but it an happen in a coop restore game
 	return; // if it happens in a coop restore, don't worry about it
 	}
-if ((networkData.nStatus == NETSTAT_PLAYING) && (eli.Connected () != 0))
+if ((networkData.nStatus == NETSTAT_PLAYING) && (eli.Connected () != 0)) {
+	CONNECT (nPlayer, eli->connected); // allow to change connection status
 	return; // Only accept disconnect packets if we're not out of the level yet
+	}
 CONNECT (nPlayer, eli.Connected ());
 memcpy (&gameData.multigame.score.matrix [nPlayer][0], eli.ScoreMatrix (), MAX_NUM_NET_PLAYERS * sizeof (short));
 gameData.multiplayer.players [nPlayer].netKillsTotal = *eli.Kills ();
@@ -91,8 +93,10 @@ if (nPlayer >= gameData.multiplayer.nPlayers) {
 	return; // if it happens in a coop restore, don't worry about it
 	}
 
-if ((networkData.nStatus == NETSTAT_PLAYING) && (eli->connected != 0))
+if ((networkData.nStatus == NETSTAT_PLAYING) && (eli->connected != 0)) {
+	CONNECT (nPlayer, eli->connected); // allow to change connection status
 	return; // Only accept disconnect packets if we're not out of the level yet
+	}
 CONNECT (nPlayer, eli->connected);
 if ((gameData.multiplayer.players [nPlayer].connected == 1) && (eli->secondsLeft < gameData.reactor.countdown.nSecsLeft))
 	gameData.reactor.countdown.nSecsLeft = eli->secondsLeft;
