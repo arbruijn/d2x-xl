@@ -155,7 +155,7 @@ void NetworkDisconnectPlayer (int nPlayer)
 {
 CPlayerData& player = gameData.multiplayer.players [nPlayer];
 
-if (player.Connected (CONNECT_PLAYING))
+if (player.Connected (CONNECT_PLAYING) && (player.m_nLevel == missionManager.nCurrentLevel))
 	CONNECT (nPlayer, CONNECT_DISCONNECTED);
 #if 0
 else 
