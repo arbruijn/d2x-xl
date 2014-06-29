@@ -310,8 +310,8 @@ if (gameData.multiplayer.players [nPlayer].TimedOut ()) {
 		memset (gameData.multiplayer.players [nPlayer].netAddress, 0, sizeof (gameData.multiplayer.players [nPlayer].netAddress));
 		MultiDestroyPlayerShip (nPlayer);
 		}
-	if (OBJECTS [gameData.multiplayer.players [nPlayer].nObject].Type () == OBJ_GHOST)
-	return 0;
+	if (OBJECTS.Buffer () && (gameData.multiplayer.players [nPlayer].nObject < gameData.objs.nObjects) && (OBJECTS [gameData.multiplayer.players [nPlayer].nObject].Type () == OBJ_GHOST))
+		return 0;
 	}
 
 // Remove a player from the game if we haven't heard from them in a long time.
