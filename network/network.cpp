@@ -310,7 +310,8 @@ if (gameData.multiplayer.players [nPlayer].TimedOut ()) {
 	if (t - gameData.multiplayer.players [nPlayer].m_tDisconnect > TIMEOUT_KICK) { // drop player when he disconnected for 3 minutes
 		gameData.multiplayer.players [nPlayer].callsign [0] = '\0';
 		memset (gameData.multiplayer.players [nPlayer].netAddress, 0, sizeof (gameData.multiplayer.players [nPlayer].netAddress));
-		MultiDestroyPlayerShip (nPlayer);
+		if (objP)
+			MultiDestroyPlayerShip (nPlayer);
 		}
 	if (objP && (objP->Type () == OBJ_GHOST))
 		return 0;
