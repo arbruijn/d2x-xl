@@ -696,7 +696,7 @@ return 0;
 void CNetworkThread::Process (void)
 {
 for (;;) {
-	//UpdatePlayers ();
+	UpdatePlayers ();
 	G3_SLEEP (10);
 	}
 }

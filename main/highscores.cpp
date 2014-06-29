@@ -484,8 +484,7 @@ for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 	if (gameData.multiplayer.players [nPlayer].connected != CONNECT_PLAYING) {
 		nEscaped++;
 		if ((gameData.multiplayer.players [nPlayer].connected == CONNECT_DISCONNECTED) || 
-			 (gameData.multiplayer.players [nPlayer].connected == CONNECT_ADVANCE_LEVEL || 
-			 (gameData.multiplayer.players [nPlayer].connected == CONNECT_WAITING)))
+			 (gameData.multiplayer.players [nPlayer].connected == CONNECT_ADVANCE_LEVEL))
 			nReady++;
 		}
 
