@@ -455,7 +455,11 @@ return 0;
 
 int CScoreTable::WaitForPlayers (void)
 {
-m_nEscaped = m_nReady = 0;
+int nEscaped = 0;
+int nReady = 0;
+int nConnected = 0;
+int bServer = gameStates.multi.bServer [0];
+
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if ((i != N_LOCALPLAYER) && gameData.multiplayer.players [i].connected) {
 	// Check timeout for idle players
@@ -474,14 +478,17 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		}
 
 	if (gameData.multiplayer.players [i].connected != CONNECT_PLAYING) {
-		m_nEscaped++;
+		nEscaped++;
 		if ((gameData.multiplayer.players [i].connected == CONNECT_DISCONNECTED) || (gameData.multiplayer.players [i].connected == CONNECT_ADVANCE_LEVEL))
-			m_nReady++;
+			nReady++;
 		}
 
-	if (m_nReady >= gameData.multiplayer.nPlayers)
+	if (gameData.multiplayer.players [i].connected != CONNECT_DISCONNECTED)
+		nConnected++;
+
+	if (nReady >= gameData.multiplayer.nPlayers)
 		return 0;
-	if (m_nEscaped >= gameData.multiplayer.nPlayers)
+	if (nEscaped >= gameData.multiplayer.nPlayers)
 		gameData.reactor.countdown.nSecsLeft = -1;
 	if (m_nPrevSecsLeft != gameData.reactor.countdown.nSecsLeft) {
 		m_nPrevSecsLeft = gameData.reactor.countdown.nSecsLeft;
@@ -492,6 +499,16 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		gameData.score.nKillsChanged = 0;
 		}
 	}
+
+if (!bServer && (nConnected < 2)) {
+	int nInMenu = gameStates.menus.nInMenu;
+	gameStates.menus.nInMenu = 0;
+	int choice = InfoBox (NULL, NULL, BG_STANDARD, 1, TXT_YES, TXT_CONNECT_LOST);
+	gameStates.menus.nInMenu = nInMenu;
+	Cleanup (1);
+	return -1;
+	}
+
 return 1;
 }
 
@@ -556,7 +573,10 @@ while (true) {
 		}
 	if (m_bNetwork) {
 		NetworkEndLevelPoll2 (m, key, 0, 0); // check the states of the other players
-		if (!WaitForPlayers ())
+		i = WaitForPlayers ();
+		if (i < 0)
+			return;
+		if (i == 0)
 			break;
 		}
 	}
