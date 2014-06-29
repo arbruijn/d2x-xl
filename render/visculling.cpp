@@ -434,6 +434,8 @@ void GatherLeftoutVisibleObjects (void)
 	//int		i;
 
 FORALL_OBJS (objP, i) {
+	if ((objP->Type () == OBJ_NONE) || (objP->Segment () < 0))
+		continue;
 	if (objP->Frame () == gameData.app.nFrameCount)
 		continue;
 	short nSegment = objP->Visible ();
