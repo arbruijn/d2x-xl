@@ -578,6 +578,7 @@ for (;;) {
 		if ((gameData.app.GameMode (GM_SERIAL | GM_MODEM)) != 0) 
 			break;
 		CONNECT (N_LOCALPLAYER, CONNECT_ADVANCE_LEVEL); // player is idling in score screen for MAX_VIEW_TIMES secs 
+		NetworkSendEndLevelPacket ();
 		}
 
 	i = WaitForPlayers ();
@@ -587,6 +588,7 @@ for (;;) {
 		break;
 	}
 
+CONNECT (N_LOCALPLAYER, CONNECT_ADVANCE_LEVEL); // player is idling in score screen for MAX_VIEW_TIMES secs 
 NetworkSendEndLevelPacket ();
 // Restore background and exit
 paletteManager.DisableEffect ();
