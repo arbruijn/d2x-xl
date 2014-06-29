@@ -465,12 +465,16 @@ static void NetworkUpdatePlayers (void)
 
 if (toUpdate.Expired ()) {
 	bool bDownloading = downloadManager.Downloading (N_LOCALPLAYER);
+	bool bWaiting = gameData.multiplayer.players [N_LOCALPLAYER].Connected (CONNECT_END_MENU) || gameData.multiplayer.players [N_LOCALPLAYER].Connected (CONNECT_ADVANCE_LEVEL);
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (i == N_LOCALPLAYER) 
 			continue;
-		if (gameData.multiplayer.players [i].Connected (CONNECT_END_MENU))
-			//NetworkSendEndLevelPacket ();
-			NetworkSendPing (i);
+		if (gameData.multiplayer.players [i].Connected (CONNECT_END_MENU) || gameData.multiplayer.players [i].Connected (CONNECT_ADVANCE_LEVEL)) {
+			if (bWaiting) 
+				NetworkSendEndLevelPacket ();
+			else
+				NetworkSendPing (i);
+			}
 		else if (bDownloading)
 			NetworkSendPing (i);
 		}
