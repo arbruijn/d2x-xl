@@ -704,6 +704,7 @@ void CNetworkThread::Start (void)
 if (!m_thread) {
 	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
 	m_semaphore = SDL_CreateSemaphore (1);
+	m_bListen = true;
 	}
 }
 
@@ -714,6 +715,7 @@ void CNetworkThread::End (void)
 if (m_thread) {
 	SDL_KillThread (m_thread);
 	m_thread = NULL;
+	m_bListen = false;
 	}
 }
 
