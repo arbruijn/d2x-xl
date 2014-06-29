@@ -157,10 +157,6 @@ CPlayerData& player = gameData.multiplayer.players [nPlayer];
 
 if (player.Connected (CONNECT_PLAYING) && (player.m_nLevel == missionManager.nCurrentLevel))
 	CONNECT (nPlayer, CONNECT_DISCONNECTED);
-#if 0
-else 
-	CONNECT (nPlayer, - abs (player.GetConnected ()));
-#endif
 player.m_tDisconnect = SDL_GetTicks ();
 KillPlayerSmoke (nPlayer);
 gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration =

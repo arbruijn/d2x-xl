@@ -315,13 +315,15 @@ if (gameData.multiplayer.players [nPlayer].TimedOut ()) {
 
 // Remove a player from the game if we haven't heard from them in a long time.
 NetworkDisconnectPlayer (nPlayer);
-if (((LOCALPLAYER.connected == CONNECT_END_MENU) || (LOCALPLAYER.connected == CONNECT_ADVANCE_LEVEL)) && 
-		((gameStates.multi.nGameType != UDP_GAME) || IAmGameHost ()))
-	NetworkSendEndLevelSub (nPlayer);
-
-OBJECTS [gameData.multiplayer.players [nPlayer].nObject].CreateAppearanceEffect ();
-audio.PlaySound (SOUND_HUD_MESSAGE);
-HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_DISCONNECTING);
+if ((LOCALPLAYER.connected == CONNECT_END_MENU) || (LOCALPLAYER.connected == CONNECT_ADVANCE_LEVEL)) {
+	if ((gameStates.multi.nGameType != UDP_GAME) || IAmGameHost ())
+		NetworkSendEndLevelSub (nPlayer);
+	}
+else if (LOCALPLAYER.connected == CONNECT_PLAYING) {
+	OBJECTS [gameData.multiplayer.players [nPlayer].nObject].CreateAppearanceEffect ();
+	audio.PlaySound (SOUND_HUD_MESSAGE);
+	HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_DISCONNECTING);
+	}
 #if !DBG
 int n = 0;
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
