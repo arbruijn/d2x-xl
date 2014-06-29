@@ -310,6 +310,7 @@ if (gameData.multiplayer.players [nPlayer].TimedOut ()) {
 		memset (gameData.multiplayer.players [nPlayer].netAddress, 0, sizeof (gameData.multiplayer.players [nPlayer].netAddress));
 		MultiDestroyPlayerShip (nPlayer);
 		}
+	if (OBJECTS [gameData.multiplayer.players [nPlayer].nObject].Type () == OBJ_GHOST)
 	return 0;
 	}
 
@@ -780,7 +781,7 @@ if (downloadManager.Downloading (nPlayer))
 	return 1;	// try to reconnect, using relaxed timeout values
 if ((gameData.multiplayer.players [nPlayer].connected == CONNECT_DISCONNECTED) || (gameData.multiplayer.players [nPlayer].connected == CONNECT_PLAYING))
 	return 2;	// try to reconnect
-if (LOCALPLAYER.connected == CONNECT_PLAYING) // 
+if (LOCALPLAYER.connected == CONNECT_PLAYING)
 	return 3; // the client being tested is in some level transition mode, so immediately disconnect him to make his ship disappear until he enters the current level
 return 2;	// we are in some level transition mode too, so try to reconnect
 }
