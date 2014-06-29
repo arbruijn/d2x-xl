@@ -591,7 +591,10 @@ for (;;) {
 	}
 
 CONNECT (N_LOCALPLAYER, CONNECT_ADVANCE_LEVEL); // player is idling in score screen for MAX_VIEW_TIMES secs 
-NetworkSendEndLevelPacket ();
+for (i = 0; i < 3; i++) {
+	NetworkSendEndLevelPacket ();
+	G3_SLEEP (33);
+	}
 // Restore background and exit
 paletteManager.DisableEffect ();
 GameFlushInputs ();
