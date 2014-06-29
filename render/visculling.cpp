@@ -434,7 +434,9 @@ void GatherLeftoutVisibleObjects (void)
 	//int		i;
 
 FORALL_OBJS (objP, i) {
-	if ((objP->Type () == OBJ_NONE) || (objP->Segment () < 0))
+	if (objP->Type () >= MAX_OBJECT_TYPES) 
+		continue;
+	if (objP->Segment () < 0)
 		continue;
 	if (objP->Frame () == gameData.app.nFrameCount)
 		continue;
