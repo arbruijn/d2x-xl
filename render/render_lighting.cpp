@@ -75,14 +75,10 @@ static int UpdateColor (CFaceColor* colorP)
 #pragma omp critical
 {
 bUpdate = (colorP->index >= 0) && (colorP->index != gameStates.render.nFrameFlipFlop + 1);
-}
-if (bUpdate) { // another thread is already updating this vertex
+if (bUpdate)
 	colorP->index = -1;
-	return 1;
-	}
-while (colorP->index < 0) // wait until that thread is done
-	G3_SLEEP (0);
-return 0;
+}
+return bUpdate;
 }
 
 // -----------------------------------------------------------------------------------
