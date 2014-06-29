@@ -732,7 +732,7 @@ void CNetworkThread::Start (void)
 {
 if (!m_thread) {
 	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
-	m_semaphore = SDL_CreateSemaphore (0);
+	m_semaphore = SDL_CreateSemaphore (1);
 	}
 }
 
