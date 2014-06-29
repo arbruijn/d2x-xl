@@ -416,38 +416,6 @@ networkData.nLastPacketTime [nPlayer] = (t < 0) ? (fix) SDL_GetTicks () : t;
 #endif
 
 //------------------------------------------------------------------------------
-// Check for player timeouts
-
-static void NetworkUpdatePlayers (void)
-{
-	static CTimeout toUpdate (500);
-
-if (toUpdate.Expired ()) {
-	bool bDownloading = downloadManager.Downloading (N_LOCALPLAYER);
-	
-	if (LOCALPLAYER.Connected (CONNECT_END_MENU) || LOCALPLAYER.Connected (CONNECT_ADVANCE_LEVEL))
-		NetworkSendEndLevelPacket ();
-	else {
-		for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if (i == N_LOCALPLAYER) 
-				continue;
-			if (gameData.multiplayer.players [i].Connected (CONNECT_END_MENU) || gameData.multiplayer.players [i].Connected (CONNECT_ADVANCE_LEVEL)) 
-				NetworkSendPing (i);
-			else if (bDownloading)
-				NetworkSendPing (i);
-			}
-		}
-	}
-
-	static CTimeout toListen (20);
-
-if (!LOCALPLAYER.Connected (CONNECT_PLAYING) && toListen.Expired ())
-	NetworkListen ();
-
-networkThread.CheckPlayerTimeouts ();
-}
-
-//------------------------------------------------------------------------------
 
 void NetworkAdjustPPS (void)
 {
@@ -566,7 +534,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		}
 
 	if (!networkThread.Available ())
-		NetworkUpdatePlayers ();
+		networkThread.UpdatePlayers ();
 	if (!bListen)
 		return;
 	//NetworkCheckPlayerTimeouts ();
@@ -724,7 +692,7 @@ return 0;
 void CNetworkThread::Process (void)
 {
 for (;;) {
-	NetworkUpdatePlayers ();
+	UpdatePlayers ();
 	G3_SLEEP (10);
 	}
 }
@@ -771,7 +739,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static int ConnectionStatus (int nPlayer)
+int CNetworkThread::ConnectionStatus (int nPlayer)
 {
 if (!gameData.multiplayer.players [nPlayer].callsign [0])
 	return 0;
@@ -784,6 +752,38 @@ if ((gameData.multiplayer.players [nPlayer].connected == CONNECT_DISCONNECTED) |
 if (LOCALPLAYER.connected == CONNECT_PLAYING)
 	return 3; // the client being tested is in some level transition mode, so immediately disconnect him to make his ship disappear until he enters the current level
 return 2;	// we are in some level transition mode too, so try to reconnect
+}
+
+//------------------------------------------------------------------------------
+// Check for player timeouts
+
+void CNetworkThread::UpdatePlayers (void)
+{
+	static CTimeout toUpdate (500);
+
+if (toUpdate.Expired ()) {
+	bool bDownloading = downloadManager.Downloading (N_LOCALPLAYER);
+	
+	if (LOCALPLAYER.Connected (CONNECT_END_MENU) || LOCALPLAYER.Connected (CONNECT_ADVANCE_LEVEL))
+		NetworkSendEndLevelPacket ();
+	else {
+		for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+			if (i == N_LOCALPLAYER) 
+				continue;
+			if (gameData.multiplayer.players [i].Connected (CONNECT_END_MENU) || gameData.multiplayer.players [i].Connected (CONNECT_ADVANCE_LEVEL)) 
+				NetworkSendPing (i);
+			else if (bDownloading)
+				NetworkSendPing (i);
+			}
+		}
+	}
+
+	static CTimeout toListen (20);
+
+if (!LOCALPLAYER.Connected (CONNECT_PLAYING) && Listen () && toListen.Expired ())
+	NetworkListen ();
+
+networkThread.CheckPlayerTimeouts ();
 }
 
 //------------------------------------------------------------------------------

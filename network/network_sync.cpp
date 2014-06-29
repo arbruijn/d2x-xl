@@ -407,7 +407,7 @@ if (gameData.multiplayer.nPlayers && IAmGameHost ()) {
 if (nState)
 	return nCurItem;
 
-	/*int nPackets =*/ NetworkListen ();
+NetworkListen ();
 
 if (networkData.nStatus != NETSTAT_WAITING) { // Status changed to playing, exit the menu
 	if (NetworkVerifyPlayers ())
@@ -455,6 +455,7 @@ if (i < 0) {
 	}
 sprintf (m [0].m_text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers [0].m_info.players [i].callsign, TXT_NET_TO_ENTER);
 ResetSyncTimeout (true);
+networkThread.SetListen (false);
 do {
 	gameStates.menus.nInMenu = -gameStates.menus.nInMenu;
 	choice = m.Menu (NULL, TXT_HOST_WAIT, NetworkSyncPoll);
@@ -473,6 +474,7 @@ else if (networkData.nStatus == NETSTAT_AUTODL) {
 		return 1;
 		}
 	}
+networkThread.SetListen (true);
 #if 1			
 console.printf (CON_DBG, "Aborting join.\n");
 #endif
@@ -772,6 +774,7 @@ int NetworkLevelSync (void)
 	int result;
 	networkData.bSyncPackInited = 0;
 
+networkThread.SetListen (false);
 NetworkFlush (); // Flush any old packets
 for (;;) {
 	if (gameData.multiplayer.nPlayers && IAmGameHost ()) {
@@ -795,6 +798,7 @@ if (result < 0) {
 	}
 else
 	NetworkCountPowerupsInMine ();
+networkThread.SetListen (true);
 return result;
 }
 
