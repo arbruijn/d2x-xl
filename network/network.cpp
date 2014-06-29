@@ -748,18 +748,22 @@ if (m_thread) {
 
 //------------------------------------------------------------------------------
 
-void CNetworkThread::SemWait (void) 
+int CNetworkThread::SemWait (void) 
 { 
-if (m_semaphore)
-	SDL_SemWait (m_semaphore); 
+if (!m_semaphore)
+	return 0;
+SDL_SemWait (m_semaphore); 
+return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void CNetworkThread::SemPost (void) 
+int CNetworkThread::SemPost (void) 
 { 
-if (m_semaphore)
-	SDL_SemPost (m_semaphore); 
+if (!m_semaphore)
+	return 0;
+SDL_SemPost (m_semaphore); 
+return 1;
 }
 
 //------------------------------------------------------------------------------

@@ -617,8 +617,8 @@ class CNetworkThread {
 		void Start (void);
 		void End (void);
 		int CheckPlayerTimeouts (void);
-		void SemWait (void);
-		void SemPost (void);
+		int SemWait (void);
+		int SemPost (void);
 };
 
 extern CNetworkThread networkThread;

@@ -460,22 +460,20 @@ int nReady = 0;
 int nConnected = 0;
 int bServer = gameStates.multi.bServer [0];
 
-networkThread.SemWait (); // wait for eventual player timeout checking to complete
+if (!networkThread.SemWait ())
+	networkThread.CheckPlayerTimeouts (); // wait for eventual player timeout checking to complete
 for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
+	// check timeouts for idle players
+#if 0 // handled by networkThread.CheckPlayerTimeouts () now
 	if ((nPlayer != N_LOCALPLAYER) && gameData.multiplayer.players [nPlayer].connected) {
-		if (!networkThread.Available ()) {
-#if 1
-			networkThread.CheckPlayerTimeouts ();
-#else
-		// Check timeout for idle players
-			if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [nPlayer] + ((gameData.multiplayer.players [nPlayer].connected == CONNECT_ADVANCE_LEVEL) ? LEVEL_LOAD_TIME : ENDLEVEL_IDLE_TIME)) {
-				CONNECT (nPlayer, CONNECT_DISCONNECTED);
-				if ((gameStates.multi.nGameType != UDP_GAME) || IAmGameHost ())
-					NetworkSendEndLevelSub (nPlayer);
-				}	
+		if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [nPlayer] + ((gameData.multiplayer.players [nPlayer].connected == CONNECT_ADVANCE_LEVEL) ? LEVEL_LOAD_TIME : ENDLEVEL_IDLE_TIME)) {
+			CONNECT (nPlayer, CONNECT_DISCONNECTED);
+			if ((gameStates.multi.nGameType != UDP_GAME) || IAmGameHost ())
+				NetworkSendEndLevelSub (nPlayer);
 			}
-#endif
 		}
+#endif
+
 	if (gameData.multiplayer.players [nPlayer].connected != m_oldStates [nPlayer]) {
 		if (szConditionLetters [gameData.multiplayer.players [nPlayer].connected] != szConditionLetters [m_oldStates [nPlayer]])
 			gameData.score.nKillsChanged = 1;
