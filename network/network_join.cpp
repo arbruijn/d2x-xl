@@ -155,24 +155,26 @@ void NetworkDisconnectPlayer (int nPlayer)
 {
 CPlayerData& player = gameData.multiplayer.players [nPlayer];
 
-if (player.Connected (CONNECT_PLAYING) && (player.m_nLevel == missionManager.nCurrentLevel))
-	CONNECT (nPlayer, CONNECT_DISCONNECTED);
 player.m_tDisconnect = SDL_GetTicks ();
-KillPlayerSmoke (nPlayer);
-gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration =
-gameData.multiplayer.weaponStates [nPlayer].firing [1].nDuration = 0;
-KillPlayerBullets (gameData.Object (player.nObject));
-KillGatlingSmoke (gameData.Object (player.nObject));
-for (short i = 0; i < networkData.nJoining; i++)
-	if (networkData.sync [i].nPlayer == nPlayer) {
-		DeleteSyncData (i);
-		NetworkResetSyncStates ();
-		}
-// OBJECTS [player.nObject].CreateAppearanceEffect ();
-MultiMakePlayerGhost (nPlayer);
-if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordMultiDisconnect (nPlayer);
-MultiStripRobots (nPlayer);
+if (player.Connected (CONNECT_PLAYING)) {
+	if (player.m_nLevel == missionManager.nCurrentLevel)
+		CONNECT (nPlayer, CONNECT_DISCONNECTED);
+	KillPlayerSmoke (nPlayer);
+	gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration =
+	gameData.multiplayer.weaponStates [nPlayer].firing [1].nDuration = 0;
+	KillPlayerBullets (gameData.Object (player.nObject));
+	KillGatlingSmoke (gameData.Object (player.nObject));
+	for (short i = 0; i < networkData.nJoining; i++)
+		if (networkData.sync [i].nPlayer == nPlayer) {
+			DeleteSyncData (i);
+			NetworkResetSyncStates ();
+			}
+	// OBJECTS [player.nObject].CreateAppearanceEffect ();
+	MultiMakePlayerGhost (nPlayer);
+	if (gameData.demo.nState == ND_STATE_RECORDING)
+		NDRecordMultiDisconnect (nPlayer);
+	MultiStripRobots (nPlayer);
+	}
 }
 	
 //------------------------------------------------------------------------------

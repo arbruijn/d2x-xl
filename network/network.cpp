@@ -843,23 +843,6 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-
-int CNetworkThread::ConnectionStatus (int nPlayer)
-{
-if (!gameData.multiplayer.players [nPlayer].callsign [0])
-	return 0;
-if (gameData.multiplayer.players [nPlayer].m_nLevel != missionManager.nCurrentLevel)
-	return 3;	// the client being tested is in a different level (e.g. trying to reach the exit), so immediately disconnect him to make his ship disappear until he enters the current level
-if (downloadManager.Downloading (nPlayer))
-	return 1;	// try to reconnect, using relaxed timeout values
-if ((gameData.multiplayer.players [nPlayer].connected == CONNECT_DISCONNECTED) || (gameData.multiplayer.players [nPlayer].connected == CONNECT_PLAYING))
-	return 2;	// try to reconnect
-if (LOCALPLAYER.connected == CONNECT_PLAYING)
-	return 3; // the client being tested is in some level transition mode, so immediately disconnect him to make his ship disappear until he enters the current level
-return 2;	// we are in some level transition mode too, so try to reconnect
-}
-
-//------------------------------------------------------------------------------
 // Check for player timeouts
 
 void CNetworkThread::UpdatePlayers (void)
@@ -895,12 +878,26 @@ networkThread.CheckPlayerTimeouts ();
 
 //------------------------------------------------------------------------------
 
-static int nwptCalls = 0;
+int CNetworkThread::ConnectionStatus (int nPlayer)
+{
+if (!gameData.multiplayer.players [nPlayer].callsign [0])
+	return 0;
+if (gameData.multiplayer.players [nPlayer].m_nLevel != missionManager.nCurrentLevel)
+	return 3;	// the client being tested is in a different level (e.g. trying to reach the exit), so immediately disconnect him to make his ship disappear until he enters the current level
+if (downloadManager.Downloading (nPlayer))
+	return 1;	// try to reconnect, using relaxed timeout values
+if ((gameData.multiplayer.players [nPlayer].connected == CONNECT_DISCONNECTED) || (gameData.multiplayer.players [nPlayer].connected == CONNECT_PLAYING))
+	return 2;	// try to reconnect
+if (LOCALPLAYER.connected == CONNECT_PLAYING)
+	return 3; // the client being tested is in some level transition mode, so immediately disconnect him to make his ship disappear until he enters the current level
+return 2;	// we are in some level transition mode too, so try to reconnect
+}
+
+//------------------------------------------------------------------------------
 
 int CNetworkThread::CheckPlayerTimeouts (void)
 {
 SemWait ();
-nwptCalls++;
 int nTimedOut = 0;
 //if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) 
 static CTimeout to (500);
@@ -934,7 +931,6 @@ if (to.Expired () /*&& !gameData.reactor.bDestroyed*/)
 		}
 	//networkData.xLastTimeoutCheck = 0;
 	}
-nwptCalls--;
 SemPost ();
 return nTimedOut;
 }
