@@ -308,7 +308,7 @@ if (gameOpts->multi.bTimeoutPlayers && !gameData.multiplayer.players [nPlayer].T
 	audio.PlaySound (SOUND_HUD_MESSAGE);
 	HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_DISCONNECTING);
 #if !DBG
-	int n;
+	int n = 0;
 	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 		if (gameData.multiplayer.players [i].IsConnected ()) 
 			n++;
