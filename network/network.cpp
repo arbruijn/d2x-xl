@@ -774,10 +774,10 @@ if (!gameData.multiplayer.players [nPlayer].callsign [0])
 	return 0;
 if (gameData.multiplayer.players [nPlayer].m_nLevel != missionManager.nCurrentLevel)
 	return 3;	// the client being tested is in a different level (e.g. trying to reach the exit), so immediately disconnect him to make his ship disappear until he enters the current level
-if ((gameData.multiplayer.players [nPlayer].connected == CONNECT_DISCONNECTED) || (gameData.multiplayer.players [nPlayer].connected == CONNECT_PLAYING))
-	return 2;	// try to reconnect
 if (downloadManager.Downloading (nPlayer))
 	return 1;	// try to reconnect, using relaxed timeout values
+if ((gameData.multiplayer.players [nPlayer].connected == CONNECT_DISCONNECTED) || (gameData.multiplayer.players [nPlayer].connected == CONNECT_PLAYING))
+	return 2;	// try to reconnect
 if (LOCALPLAYER.connected == CONNECT_PLAYING) // 
 	return 3; // the client being tested is in some level transition mode, so immediately disconnect him to make his ship disappear until he enters the current level
 return 2;	// we are in some level transition mode too, so try to reconnect
@@ -798,7 +798,7 @@ if (to.Expired () /*&& !gameData.reactor.bDestroyed*/)
 		if (nPlayer != N_LOCALPLAYER) {
 			switch (ConnectionStatus (nPlayer)) {
 				case 0:
-					break; // kicked 
+					break; // no action 
 
 				case 1:
 					if (networkData.nLastPacketTime [nPlayer] + downloadManager.GetTimeoutSecs () * 1000 > t) {
