@@ -253,7 +253,7 @@ if (!N_LOCALPLAYER)
 #endif
 *end.Type () = PID_ENDLEVEL;
 *end.Player () = nPlayer;
-end.SetConnected ((sbyte) gameData.multiplayer.players [nPlayer].IsConnected ());
+end.SetConnected ((sbyte) gameData.multiplayer.players [nPlayer].GetConnected ());
 *end.Kills () = INTEL_SHORT (gameData.multiplayer.players [nPlayer].netKillsTotal);
 *end.Killed () = INTEL_SHORT (gameData.multiplayer.players [nPlayer].netKilledTotal);
 memcpy (end.ScoreMatrix (), gameData.multigame.score.matrix [nPlayer], MAX_NUM_NET_PLAYERS * sizeof (short));

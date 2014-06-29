@@ -60,7 +60,7 @@ if (nPlayer >= gameData.multiplayer.nPlayers) {
 	return; // if it happens in a coop restore, don't worry about it
 	}
 if ((networkData.nStatus == NETSTAT_PLAYING) && (eli.Connected () != 0)) {
-	CONNECT (nPlayer, eli->connected); // allow to change connection status
+	CONNECT (nPlayer, eli.Connected ()); // allow to change connection status
 	return; // Only accept disconnect packets if we're not out of the level yet
 	}
 CONNECT (nPlayer, eli.Connected ());
