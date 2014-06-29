@@ -402,12 +402,12 @@ int CScoreTable::Input (void)
 	int i, nChoice;
 
 for (i = 0; i < 4; i++)
-	if (JoyGetButtonDownCnt (i) && Exit ())
-		return -1;
+	if (JoyGetButtonDownCnt (i))
+		return Exit () ? -1 : 1;
 
 for (i = 0; i < 3; i++)
-	if (MouseButtonDownCount (i) && Exit ())
-		return -1;
+	if (MouseButtonDownCount (i))
+		return Exit () ? -1 : 1;
 
 //see if redbook song needs to be restarted
 int k = KeyInKey ();
@@ -418,11 +418,7 @@ switch (k) {
 			return IAmGameHost ();
 		if (Exit ())
 			return -1;
-		if (IAmGameHost ())
-			return 1;
-		if (gameData.multiplayer.players [WhoIsGameHost ()].connected == CONNECT_ADVANCE_LEVEL)
-			return 1;
-		return 0;
+		return 1;
 		
 	case KEY_ESC:
 		if (IsNetworkGame) {
@@ -496,8 +492,9 @@ for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 
 	if (nReady >= gameData.multiplayer.nPlayers) {
 		networkThread.SemPost ();
-		return 0;
+		return 1;
 		}
+
 	if (nEscaped >= gameData.multiplayer.nPlayers)
 		gameData.reactor.countdown.nSecsLeft = -1;
 	if (m_nPrevSecsLeft != gameData.reactor.countdown.nSecsLeft) {
@@ -520,7 +517,7 @@ if (!bServer && (nConnected < 2)) {
 	return -1;
 	}
 
-return 1;
+return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -555,21 +552,25 @@ if (m_bNetwork)
 CMenu m (1);
 m.AddGauge ("", "", -1, 1000); //dummy for NetworkEndLevelPoll2()
 
-while (true) {
+for (;;) {
 	if (!bRedraw || (ogl.m_states.nDrawBuffer == GL_BACK)) {
 		Render ();
 		bRedraw = 1;
 		}
 	gameData.score.nKillsChanged = 0;
+
+	if (m_bNetwork)
+		NetworkEndLevelPoll2 (m, key, 0, 0); // check the states of the other players
+
 	redbook.CheckRepeat ();
 	i = Input ();
 	if (i < 0)
 		return;
-	if (i > 0)
+	if ((i > 1) && !m_bNetwork)
 		break;
 
 	uint t = SDL_GetTicks ();
-	if (t >= t0 + MAX_VIEW_TIME) {
+	if ((t >= t0 + MAX_VIEW_TIME) && (LOCALPLAYER.GetConnected () != CONNECT_ADVANCE_LEVEL)) {
 		if (LAST_OEM_LEVEL) {
 			Cleanup (1);
 			return;
@@ -577,25 +578,13 @@ while (true) {
 		if ((gameData.app.GameMode (GM_SERIAL | GM_MODEM)) != 0) 
 			break;
 		CONNECT (N_LOCALPLAYER, CONNECT_ADVANCE_LEVEL); // player is idling in score screen for MAX_VIEW_TIMES secs 
-		if (gameData.multiplayer.players [WhoIsGameHost ()].m_nLevel > missionManager.nCurrentLevel)
-			break;
-#if 1
-		if (t >= t0 + 2 * MAX_VIEW_TIME) { // player wants to proceed and has waited for MAX_VIEW_TIME secs, so proceed
-			if (IAmGameHost ())
-				break;
-			if (gameData.multiplayer.players [WhoIsGameHost ()].connected == CONNECT_ADVANCE_LEVEL)
-				break;
-			}
-#endif
 		}
-	if (m_bNetwork) {
-		NetworkEndLevelPoll2 (m, key, 0, 0); // check the states of the other players
-		i = WaitForPlayers ();
-		if (i < 0)
-			return;
-		if (i == 0)
-			break;
-		}
+
+	i = WaitForPlayers ();
+	if (i < 0)
+		return;
+	if ((i > 0) && (LOCALPLAYER.GetConnected () == CONNECT_ADVANCE_LEVEL))
+		break;
 	}
 
 NetworkSendEndLevelPacket ();

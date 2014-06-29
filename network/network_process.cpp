@@ -223,13 +223,12 @@ else {
 
 void NetworkProcessRequest (tSequencePacket *their)
 {
-	// Player is ready to receieve a sync packet
-	int i;
-
-for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (!CmpNetPlayers (their->player.callsign, netPlayers [0].m_info.players [i].callsign, 
-								&their->player.network, &netPlayers [0].m_info.players [i].network)) {
-		CONNECT (i, CONNECT_PLAYING);
+// Player is ready to receieve a sync packet
+for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
+	if (!CmpNetPlayers (their->player.callsign, netPlayers [0].m_info.players [nPlayer].callsign, 
+							  &their->player.network, &netPlayers [0].m_info.players [nPlayer].network)) {
+		CONNECT (nPlayer, CONNECT_PLAYING);
+		gameData.multiplayer.players [nPlayer].m_nLevel = missionManager.nCurrentLevel;
 		break;
 		}
 	}                       
