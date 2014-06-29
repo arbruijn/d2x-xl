@@ -1207,7 +1207,7 @@ short PowerupsOnShips (int nPowerup)
 if (!nClass || ((nClass < 3) && (nIndex < 0)))
 	return 0;
 for (short i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
-	//if ((i == N_LOCALPLAYER) && (gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded || gameStates.app.bPlayerIsDead))
+	//if ((i == N_LOCALPLAYER) && (LOCALPLAYER.m_bExploded || gameStates.app.bPlayerIsDead))
 	//	continue;
 	if (playerP->Shield () < 0)
 		continue; 

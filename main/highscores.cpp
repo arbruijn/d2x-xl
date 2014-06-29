@@ -460,30 +460,32 @@ int nReady = 0;
 int nConnected = 0;
 int bServer = gameStates.multi.bServer [0];
 
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if ((i != N_LOCALPLAYER) && gameData.multiplayer.players [i].connected) {
+networkThread.SemWait (); // wait for eventual player timeout checking to complete
+for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
+	if ((nPlayer != N_LOCALPLAYER) && gameData.multiplayer.players [nPlayer].connected) {
 	// Check timeout for idle players
-		if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [i] + ((gameData.multiplayer.players [i].connected == CONNECT_ADVANCE_LEVEL) ? LEVEL_LOAD_TIME : ENDLEVEL_IDLE_TIME)) {
-			CONNECT (i, CONNECT_DISCONNECTED);
+#if 0
+		if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [nPlayer] + ((gameData.multiplayer.players [nPlayer].connected == CONNECT_ADVANCE_LEVEL) ? LEVEL_LOAD_TIME : ENDLEVEL_IDLE_TIME)) {
+			CONNECT (nPlayer, CONNECT_DISCONNECTED);
 			if ((gameStates.multi.nGameType != UDP_GAME) || IAmGameHost ())
-				NetworkSendEndLevelSub (i);
+				NetworkSendEndLevelSub (nPlayer);
 			}
 		}
-
-	if (gameData.multiplayer.players [i].connected != m_oldStates [i]) {
-		if (szConditionLetters [gameData.multiplayer.players [i].connected] != szConditionLetters [m_oldStates [i]])
+#endif
+	if (gameData.multiplayer.players [nPlayer].connected != m_oldStates [nPlayer]) {
+		if (szConditionLetters [gameData.multiplayer.players [nPlayer].connected] != szConditionLetters [m_oldStates [nPlayer]])
 			gameData.score.nKillsChanged = 1;
-		m_oldStates [i] = gameData.multiplayer.players [i].connected;
+		m_oldStates [nPlayer] = gameData.multiplayer.players [nPlayer].connected;
 		NetworkSendEndLevelPacket ();
 		}
 
-	if (gameData.multiplayer.players [i].connected != CONNECT_PLAYING) {
+	if (gameData.multiplayer.players [nPlayer].connected != CONNECT_PLAYING) {
 		nEscaped++;
-		if ((gameData.multiplayer.players [i].connected == CONNECT_DISCONNECTED) || (gameData.multiplayer.players [i].connected == CONNECT_ADVANCE_LEVEL))
+		if ((gameData.multiplayer.players [nPlayer].connected == CONNECT_DISCONNECTED) || (gameData.multiplayer.players [nPlayer].connected == CONNECT_ADVANCE_LEVEL))
 			nReady++;
 		}
 
-	if (gameData.multiplayer.players [i].connected != CONNECT_DISCONNECTED)
+	if (gameData.multiplayer.players [nPlayer].connected != CONNECT_DISCONNECTED)
 		nConnected++;
 
 	if (nReady >= gameData.multiplayer.nPlayers)
@@ -499,6 +501,7 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		gameData.score.nKillsChanged = 0;
 		}
 	}
+networkThread.SemPost ();
 
 if (!bServer && (nConnected < 2)) {
 	int nInMenu = gameStates.menus.nInMenu;

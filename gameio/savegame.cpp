@@ -2032,7 +2032,7 @@ if (!PrepareLevel (nCurrentLevel, true, m_bSecret == 1, true, false)) {
 	}
 nLocalObjNum = LOCALPLAYER.nObject;
 if (m_bSecret != 1)	//either no secret restore, or CPlayerData died in scret level
-	m_cf.Read (&gameData.multiplayer.players [N_LOCALPLAYER].callsign, sizeof (CPlayerInfo), 1);
+	m_cf.Read (&LOCALPLAYER.callsign, sizeof (CPlayerInfo), 1);
 else {
 	CPlayerData	retPlayer;
 	m_cf.Read (&retPlayer.callsign, sizeof (CPlayerInfo), 1);

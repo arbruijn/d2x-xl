@@ -310,7 +310,7 @@ char* XMLGameInfo (void)
 sprintf (xmlGameInfo, "<?xml version=\"1.0\"?>\n<GameInfo>\n  <Descent>\n");
 
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Host Name=\"%s\" />\n",
-			 gameData.multiplayer.players [N_LOCALPLAYER].callsign);
+			 LOCALPLAYER.callsign);
 
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mission Type=\"%s\" Name=\"%s\" Level=\"%d\" ",
 			 gameStates.app.bD1Mission ? "D1" : gameStates.app.bD2XLevel ? "D2X" : "D2", AGI.szMissionTitle, AGI.nLevel);

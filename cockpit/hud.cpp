@@ -236,7 +236,7 @@ int CHUD::FlashGauge (int h, int *bFlash, int tToggle)
 	time_t t = gameStates.app.nSDLTicks [0];
 	int b = *bFlash;
 
-if (gameOpts->app.bEpilepticFriendly || gameStates.app.bPlayerIsDead || gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded)
+if (gameOpts->app.bEpilepticFriendly || gameStates.app.bPlayerIsDead || LOCALPLAYER.m_bExploded)
 	b = 0;
 else {
 	if (!b)

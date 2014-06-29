@@ -299,11 +299,15 @@ while (IpxGetPacketData (packet) > 0)
 
 //------------------------------------------------------------------------------
 
-void NetworkTimeoutPlayer (int nPlayer, int t)
+int NetworkTimeoutPlayer (int nPlayer, int t)
 {
 if (gameOpts->multi.bTimeoutPlayers && !gameData.multiplayer.players [nPlayer].TimedOut ()) {
 // Remove a player from the game if we haven't heard from them in a long time.
 	NetworkDisconnectPlayer (nPlayer);
+	if (((LOCALPLAYER.connected == CONNECT_END_MENU) || (LOCALPLAYER.connected == CONNECT_ADVANCE_LEVEL)) && 
+		 ((gameStates.multi.nGameType != UDP_GAME) || IAmGameHost ()))
+		NetworkSendEndLevelSub (nPlayer);
+
 	OBJECTS [gameData.multiplayer.players [nPlayer].nObject].CreateAppearanceEffect ();
 	audio.PlaySound (SOUND_HUD_MESSAGE);
 	HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_DISCONNECTING);
@@ -418,47 +422,6 @@ switch (gameData.multiplayer.players [nPlayer].connected) {
 
 //------------------------------------------------------------------------------
 
-static void NetworkCheckPlayerTimeouts (void)
-{
-if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) {
-	int t = SDL_GetTicks ();
-	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if (i != N_LOCALPLAYER) {
-			switch (ConnectionStatus (i)) {
-				case 0:
-					if (!gameData.multiplayer.players [i].callsign [0])
-						break;
-					if (t - gameData.multiplayer.players [i].m_tDisconnect > TIMEOUT_KICK) { // drop player when he disconnected for 3 minutes
-						gameData.multiplayer.players [i].callsign [0] = '\0';
-						memset (gameData.multiplayer.players [i].netAddress, 0, sizeof (gameData.multiplayer.players [i].netAddress));
-						MultiDestroyPlayerShip (i);
-						}
-					break;
-
-				case 1:
-					if (networkData.nLastPacketTime [i] + downloadManager.GetTimeoutSecs () * 1000 > t) {
-						ResetPlayerTimeout (i, t);
-						break;
-						}
-
-				case 2:
-					if ((networkData.nLastPacketTime [i] == 0) || (t - networkData.nLastPacketTime [i] < TIMEOUT_DISCONNECT)) {
-						ResetPlayerTimeout (i, t);
-						break;
-						}
-
-				default:
-					NetworkTimeoutPlayer (i, t);
-					break;
-				}
-			}
-		}
-	networkData.xLastTimeoutCheck = 0;
-	}
-}
-
-//------------------------------------------------------------------------------
-
 static void NetworkUpdatePlayers (void)
 {
 	static CTimeout toUpdate (500);
@@ -466,7 +429,7 @@ static void NetworkUpdatePlayers (void)
 if (toUpdate.Expired ()) {
 	bool bDownloading = downloadManager.Downloading (N_LOCALPLAYER);
 	
-	if (gameData.multiplayer.players [N_LOCALPLAYER].Connected (CONNECT_END_MENU) || gameData.multiplayer.players [N_LOCALPLAYER].Connected (CONNECT_ADVANCE_LEVEL))
+	if (LOCALPLAYER.Connected (CONNECT_END_MENU) || LOCALPLAYER.Connected (CONNECT_ADVANCE_LEVEL))
 		NetworkSendEndLevelPacket ();
 	else {
 		for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
@@ -482,8 +445,10 @@ if (toUpdate.Expired ()) {
 
 	static CTimeout toListen (20);
 
-if (!gameData.multiplayer.players [N_LOCALPLAYER].Connected (CONNECT_PLAYING) && toListen.Expired ())
+if (!LOCALPLAYER.Connected (CONNECT_PLAYING) && toListen.Expired ())
 	NetworkListen ();
+
+NetworkCheckPlayerTimeouts ();
 }
 
 //------------------------------------------------------------------------------
@@ -529,7 +494,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 	if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds ()> (networkData.refuse.xTimeLimit + (I2X (12))))
 		networkData.refuse.bWaitForAnswer = 0;
 	networkData.xLastSendTime += gameData.time.xFrame;
-	networkData.xLastTimeoutCheck += gameData.time.xFrame;
+	//networkData.xLastTimeoutCheck += gameData.time.xFrame;
 
 	// Send out packet PacksPerSec times per second maximum... unless they fire, then send more often...
 	if ((networkData.xLastSendTime > I2X (1) / PacketsPerSec ()) || gameData.multigame.laser.bFired || bForce || networkData.bPacketUrgent) {        
@@ -608,7 +573,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		NetworkUpdatePlayers ();
 	if (!bListen)
 		return;
-	NetworkCheckPlayerTimeouts ();
+	//NetworkCheckPlayerTimeouts ();
 	}
 
 if (!bListen) {
@@ -772,8 +737,10 @@ for (;;) {
 
 void CNetworkThread::Start (void)
 {
-if (!m_thread)
+if (!m_thread) {
 	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
+	m_semaphore = SDL_CreateSemaphore (0);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -784,6 +751,70 @@ if (m_thread) {
 	SDL_KillThread (m_thread);
 	m_thread = NULL;
 	}
+}
+
+//------------------------------------------------------------------------------
+
+void CNetworkThread::SemWait (void) 
+{ 
+if (m_semaphore)
+	SDL_SemWait (m_semaphore); 
+}
+
+//------------------------------------------------------------------------------
+
+void CNetworkThread::SemPost (void) 
+{ 
+if (m_semaphore)
+	SDL_SemPost (m_semaphore); 
+}
+
+//------------------------------------------------------------------------------
+
+int CNetworkThread::CheckPlayerTimeouts (void)
+{
+SemWait ();
+int nTimedOut = 0;
+//if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) 
+static CTimeout to (500);
+if (to.Expired () /*&& !gameData.reactor.bDestroyed*/) 
+	{
+	int t = SDL_GetTicks ();
+	for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
+		if (nPlayer != N_LOCALPLAYER) {
+			switch (ConnectionStatus (nPlayer)) {
+				case 0:
+					if (!gameData.multiplayer.players [nPlayer].callsign [0])
+						break;
+					if (t - gameData.multiplayer.players [nPlayer].m_tDisconnect > TIMEOUT_KICK) { // drop player when he disconnected for 3 minutes
+						gameData.multiplayer.players [nPlayer].callsign [0] = '\0';
+						memset (gameData.multiplayer.players [nPlayer].netAddress, 0, sizeof (gameData.multiplayer.players [nPlayer].netAddress));
+						MultiDestroyPlayerShip (nPlayer);
+						}
+					break;
+
+				case 1:
+					if (networkData.nLastPacketTime [nPlayer] + downloadManager.GetTimeoutSecs () * 1000 > t) {
+						ResetPlayerTimeout (nPlayer, t);
+						break;
+						}
+
+				case 2:
+					if ((networkData.nLastPacketTime [nPlayer] == 0) || (t - networkData.nLastPacketTime [nPlayer] < TIMEOUT_DISCONNECT)) {
+						ResetPlayerTimeout (nPlayer, t);
+						break;
+						}
+
+				default:
+					if (NetworkTimeoutPlayer (nPlayer, t))
+						nTimedOut++;
+					break;
+				}
+			}
+		}
+	//networkData.xLastTimeoutCheck = 0;
+	}
+SemPost ();
 }
 
 //------------------------------------------------------------------------------

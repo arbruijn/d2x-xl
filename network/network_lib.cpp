@@ -56,7 +56,7 @@ int WhoIsGameHost (void)
 if (!IsMultiGame)
 	return N_LOCALPLAYER;
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (gameData.multiplayer.players [i].connected) {
+	if (gameData.multiplayer.players [i].callsign [0]/*gameData.multiplayer.players [i].connected*/) { // if a player gets kicked, his callsign will be cleared
 		if (gameStates.multi.nGameType == IPX_GAME)
 			return i;
 		if (htons (*netPlayers [0].m_info.players [i].network.Port ()) == ushort (mpParams.udpPorts [0] + networkData.nPortOffset))

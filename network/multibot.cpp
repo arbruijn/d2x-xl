@@ -66,7 +66,7 @@ int MultiCanRemoveRobot (int nObject, int agitation)
 	CObject *objP = OBJECTS + nObject;
 
 	// Claim robot if necessary.
-if (gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded)
+if (LOCALPLAYER.m_bExploded)
 	return 0;
 #if DBG
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {

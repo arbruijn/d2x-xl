@@ -789,7 +789,7 @@ gameData.multigame.menu.bInvoked = 0;
 gameData.multigame.menu.bLeave = 0;
 gameData.multigame.bQuitGame = 0;
 GameDisableCheats ();
-gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded = 0;
+LOCALPLAYER.m_bExploded = 0;
 gameData.objs.deadPlayerCamera = 0;
 }
 

@@ -223,7 +223,7 @@ if (!(bSpawn && markerManager.MoveSpawnPoint (&playerP->info.position, playerP->
 
 void CMarkerManager::DropSpawnPoint (void)
 {
-if ((!IsMultiGame || IsCoopGame) && !(gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded || gameStates.app.bPlayerIsDead)) {
+if ((!IsMultiGame || IsCoopGame) && !(LOCALPLAYER.m_bExploded || gameStates.app.bPlayerIsDead)) {
 		char nMarker = (char) markerManager.SpawnIndex (-1);
 
 	if (nMarker < 0)

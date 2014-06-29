@@ -195,7 +195,7 @@ int CanJoinNetGame (CNetGameInfo *game, CAllNetPlayersInfo *people);
 void NetworkWelcomePlayer (tSequencePacket *their);
 void NetworkNewPlayer (tSequencePacket *their);
 void NetworkAddPlayer (tSequencePacket *seqP);
-void NetworkTimeoutPlayer (int nPlayer, int t);
+int NetworkTimeoutPlayer (int nPlayer, int t);
 void NetworkDisconnectPlayer (int nPlayer);
 void NetworkRemovePlayer (tSequencePacket *seqP);
 void DoRefuseStuff (tSequencePacket *their);

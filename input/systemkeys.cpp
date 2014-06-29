@@ -306,7 +306,7 @@ void HandleDeathKey(int key)
 	doesn't work in the DOS version anyway.   -Samir
 */
 
-if (gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded && !key_isfunc (key) && !key_ismod (key))
+if (LOCALPLAYER.m_bExploded && !key_isfunc (key) && !key_ismod (key))
 	gameStates.app.bDeathSequenceAborted  = 1;		//Any key but func or modifier aborts
 
 if (key == KEY_COMMAND + KEY_SHIFTED + KEY_P) {
@@ -1064,7 +1064,7 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 	DoWeaponStuff ();
 	hudIcons.ToggleWeaponIcons ();
 	}
-if (gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.consoleP->flags & OF_EXPLODING)) {
+if (LOCALPLAYER.m_bExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.consoleP->flags & OF_EXPLODING)) {
 	if (!explodingFlag)  {
 		explodingFlag = 1;			// When player starts exploding, clear all input devices...
 		GameFlushInputs ();

@@ -1326,7 +1326,7 @@ switch (Type ()) {
 			else
 				LOCALPLAYER.UpdateShield (-fix ((float (I2X (1)) * X2F (TRIGGERS [nTrigger].GetValue ()))));
 			if (LOCALPLAYER.Shield () < 0)
-				StartPlayerDeathSequence (OBJECTS + gameData.multiplayer.players [N_LOCALPLAYER].nObject);
+				StartPlayerDeathSequence (OBJECTS + LOCALPLAYER.nObject);
 			}
 		break;
 

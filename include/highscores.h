@@ -16,8 +16,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 class CScoreTable {
 	private:
-		int	m_nReady;
-		int	m_nEscaped;
 		int	m_nPrevSecsLeft;
 		int	m_oldStates [MAX_PLAYERS];
 		int	m_sorted [MAX_PLAYERS];

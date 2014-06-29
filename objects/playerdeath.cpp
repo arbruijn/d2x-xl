@@ -130,7 +130,7 @@ if (gameData.objs.deadPlayerCamera) {
 	}
 CGenericCockpit::Rewind ();
 gameStates.app.bPlayerIsDead = 0;
-gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded = 0;
+LOCALPLAYER.m_bExploded = 0;
 gameData.objs.viewerP = viewerSaveP;
 gameData.objs.consoleP->SetType (OBJ_PLAYER);
 gameData.objs.consoleP->info.nFlags = nPlayerFlagsSave;
@@ -169,7 +169,7 @@ if (gameStates.app.bPlayerIsDead) {
 	gameData.objs.deadPlayerCamera->info.position.mOrient = CFixMatrix::CreateF(fVec);
 
 	if (xTimeDead > DEATH_SEQUENCE_EXPLODE_TIME) {
-		if (!gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded) {
+		if (!LOCALPLAYER.m_bExploded) {
 			if (LOCALPLAYER.hostages.nOnBoard > 1)
 				HUDInitMessage (TXT_SHIP_DESTROYED_2, LOCALPLAYER.hostages.nOnBoard);
 			else if (LOCALPLAYER.hostages.nOnBoard == 1)
@@ -181,7 +181,7 @@ if (gameStates.app.bPlayerIsDead) {
 			if (TactileStick)
 				ClearForces ();
 #endif
-			gameData.multiplayer.players [N_LOCALPLAYER].m_bExploded = 1;
+			LOCALPLAYER.m_bExploded = 1;
 			if (IsNetworkGame) {
 				AdjustMineSpawn ();
 				MultiCapObjects ();

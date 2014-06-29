@@ -607,14 +607,18 @@ return netGame.GetPacketsPerSec ();
 class CNetworkThread {
 	private:
 		SDL_Thread*	m_thread;
+		SDL_sem*		m_semaphore;
 		int			m_nThreadId;
 
 	public:
-		CNetworkThread () : m_thread (NULL), m_nThreadId (0) {}
+		CNetworkThread () : m_thread (NULL), m_semaphore (NULL), m_nThreadId (0) {}
 		bool Available (void) { return m_thread != NULL; }
 		void Process (void);
 		void Start (void);
 		void End (void);
+		int CheckPlayerTimeouts (void);
+		void SemWait (void);
+		void SemPost (void);
 };
 
 extern CNetworkThread networkThread;
