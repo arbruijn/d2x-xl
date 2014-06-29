@@ -772,7 +772,8 @@ for (;;) {
 
 void CNetworkThread::Start (void)
 {
-m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
+if (!m_thread)
+	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
 }
 
 //------------------------------------------------------------------------------
