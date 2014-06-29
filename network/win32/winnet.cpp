@@ -220,18 +220,13 @@ bIpxInstalled = 0;
 
 								/*---------------------------*/
 
-static int nGetPacketData = 0;
-
 int IpxGetPacketData (ubyte *data)
 {
 	static ubyte	buf [MAX_PACKET_SIZE];
 
 	int dataSize, dataOffs;
 
-if (nGetPacketData)
-	BRP;
 networkThread.LockRecv ();
-nGetPacketData++;
 while (driver->PacketReady (&ipxSocketData)) {
 	dataSize = driver->ReceivePacket (reinterpret_cast<ipx_socket_t*> (&ipxSocketData), buf, sizeof (buf), &networkData.packetSource);
 #if 0//DBG
@@ -256,7 +251,6 @@ while (driver->PacketReady (&ipxSocketData)) {
 	networkThread.UnlockRecv ();
 	return dataSize - dataOffs;
 	}
-nGetPacketData--;
 networkThread.UnlockRecv ();
 return 0;
 }

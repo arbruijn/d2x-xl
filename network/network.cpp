@@ -694,8 +694,6 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static int nwThreadFrames = 0;
-
 #define SENDLOCK 1
 #define RECVLOCK 1
 #define PROCLOCK 1
@@ -703,7 +701,6 @@ static int nwThreadFrames = 0;
 void CNetworkThread::Process (void)
 {
 for (;;) {
-	nwThreadFrames++;
 	UpdatePlayers ();
 	G3_SLEEP (10);
 	}
