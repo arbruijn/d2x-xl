@@ -797,13 +797,11 @@ gameData.objs.deadPlayerCamera = 0;
 
 void MultiMakePlayerGhost (int nPlayer)
 {
-	CObject *objP;
-
 if ((nPlayer == N_LOCALPLAYER) || (nPlayer >= MAX_NUM_NET_PLAYERS) || (nPlayer < 0)) {
 	Int3 (); // Non-terminal, see Rob
 	return;
 	}
-objP = gameData.Object (gameData.multiplayer.players [nPlayer].nObject);
+CObject *objP = gameData.Object (gameData.multiplayer.players [nPlayer].nObject);
 if (objP) {
 	objP->SetType (OBJ_GHOST);
 	objP->info.renderType = RT_NONE;

@@ -470,6 +470,8 @@ PHINIT (PID_MISSING_OBJ_FRAMES, MissingObjFramesHandler, 0, (1 << NETSTAT_WAITIN
 
 //-----------------------------------------------------------------------------------------------------------------
 
+static int nProcCalls = 0;
+
 int NetworkProcessPacket (ubyte *dataP, int nLength)
 {
 	ubyte						pId = dataP [0];
@@ -485,7 +487,12 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	}
 #endif
 
+#if DBG
+if (nProcCalls)
+	BRP;
+#endif
 networkThread.LockProcess ();
+nProcCalls++;
 if (!piP->packetHandler)
 	PrintLog (0, "invalid packet id %d\n", pId);
 else if (!(piP->nStatusFilter & (1 << networkData.nStatus)))
@@ -496,6 +503,7 @@ else if (!NetworkBadPacketSize (nLength, piP->nLength, piP->pszInfo)) {
 		memcpy (&THEIR->player.network, &networkData.packetSource.src_network, 10);
 	nFuncRes = piP->packetHandler (dataP, nLength);
 	}
+nProcCalls--;
 networkThread.UnlockProcess ();
 return nFuncRes;
 }

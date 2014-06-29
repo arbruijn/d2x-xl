@@ -304,7 +304,7 @@ int NetworkTimeoutPlayer (int nPlayer, int t)
 if (!gameOpts->multi.bTimeoutPlayers)
 	return 0;
 
-CObject* objP = gameData.Object (gameData.multiplayer.players [nPlayer].nObject);
+CObject* objP = (LOCALPLAYER.connected == CONNECT_PLAYING) ? gameData.Object (gameData.multiplayer.players [nPlayer].nObject) : NULL;
 
 if (gameData.multiplayer.players [nPlayer].TimedOut ()) {
 	if (t - gameData.multiplayer.players [nPlayer].m_tDisconnect > TIMEOUT_KICK) { // drop player when he disconnected for 3 minutes
@@ -313,7 +313,9 @@ if (gameData.multiplayer.players [nPlayer].TimedOut ()) {
 		if (objP)
 			MultiDestroyPlayerShip (nPlayer);
 		}
+#if 0
 	if (objP && (objP->Type () == OBJ_GHOST))
+#endif
 		return 0;
 	}
 
@@ -323,9 +325,8 @@ if ((LOCALPLAYER.connected == CONNECT_END_MENU) || (LOCALPLAYER.connected == CON
 	if ((gameStates.multi.nGameType != UDP_GAME) || IAmGameHost ())
 		NetworkSendEndLevelSub (nPlayer);
 	}
-else if (LOCALPLAYER.connected == CONNECT_PLAYING) {
-	if (objP)
-		objP->CreateAppearanceEffect ();
+else if (objP) {
+	objP->CreateAppearanceEffect ();
 	audio.PlaySound (SOUND_HUD_MESSAGE);
 	HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_DISCONNECTING);
 	}
@@ -693,9 +694,16 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+static int nwThreadFrames = 0;
+
+#define SENDLOCK 1
+#define RECVLOCK 1
+#define PROCLOCK 1
+
 void CNetworkThread::Process (void)
 {
 for (;;) {
+	nwThreadFrames++;
 	UpdatePlayers ();
 	G3_SLEEP (10);
 	}
@@ -766,9 +774,11 @@ return 1;
 
 int CNetworkThread::LockSend (void) 
 { 
+#if SENDLOCK
 if (!m_sendLock)
 	return 0;
 SDL_LockMutex (m_sendLock); 
+#endif
 return 1;
 }
 
@@ -776,9 +786,11 @@ return 1;
 
 int CNetworkThread::UnlockSend (void) 
 { 
+#if SENDLOCK
 if (!m_sendLock)
 	return 0;
 SDL_UnlockMutex (m_sendLock); 
+#endif
 return 1;
 }
 
@@ -786,9 +798,11 @@ return 1;
 
 int CNetworkThread::LockRecv (void) 
 { 
+#if RECVLOCK
 if (!m_recvLock)
 	return 0;
 SDL_LockMutex (m_recvLock); 
+#endif
 return 1;
 }
 
@@ -796,9 +810,11 @@ return 1;
 
 int CNetworkThread::UnlockRecv (void) 
 { 
+#if RECVLOCK
 if (!m_recvLock)
 	return 0;
 SDL_UnlockMutex (m_recvLock); 
+#endif
 return 1;
 }
 
@@ -806,9 +822,11 @@ return 1;
 
 int CNetworkThread::LockProcess (void) 
 { 
+#if PROCLOCK
 if (!m_processLock)
 	return 0;
 SDL_LockMutex (m_processLock); 
+#endif
 return 1;
 }
 
@@ -816,9 +834,11 @@ return 1;
 
 int CNetworkThread::UnlockProcess (void) 
 { 
+#if PROCLOCK
 if (!m_processLock)
 	return 0;
 SDL_UnlockMutex (m_processLock); 
+#endif
 return 1;
 }
 
@@ -852,7 +872,7 @@ if (toUpdate.Expired ()) {
 	if (LOCALPLAYER.Connected (CONNECT_END_MENU) || LOCALPLAYER.Connected (CONNECT_ADVANCE_LEVEL))
 		NetworkSendEndLevelPacket ();
 	else {
-		SemWait ();
+		//SemWait ();
 		for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if (i == N_LOCALPLAYER) 
 				continue;
@@ -861,7 +881,7 @@ if (toUpdate.Expired ()) {
 			else if (bDownloading)
 				NetworkSendPing (i);
 			}
-		SemPost ();
+		//SemPost ();
 		}
 	}
 
@@ -875,9 +895,12 @@ networkThread.CheckPlayerTimeouts ();
 
 //------------------------------------------------------------------------------
 
+static int nwptCalls = 0;
+
 int CNetworkThread::CheckPlayerTimeouts (void)
 {
 SemWait ();
+nwptCalls++;
 int nTimedOut = 0;
 //if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) 
 static CTimeout to (500);
@@ -911,6 +934,7 @@ if (to.Expired () /*&& !gameData.reactor.bDestroyed*/)
 		}
 	//networkData.xLastTimeoutCheck = 0;
 	}
+nwptCalls--;
 SemPost ();
 return nTimedOut;
 }
