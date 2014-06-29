@@ -421,7 +421,7 @@ switch (k) {
 		return 1;
 		
 	case KEY_ESC:
-		if (IsNetworkGame) {
+		if (IsNetworkGame && !networkThread.Available ()) {
 			gameData.multiplayer.xStartAbortMenuTime = TimerGetApproxSeconds ();
 			int nInMenu = gameStates.menus.nInMenu;
 			gameStates.menus.nInMenu = 0;

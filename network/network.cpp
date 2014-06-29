@@ -784,7 +784,7 @@ if (toUpdate.Expired ()) {
 		}
 	}
 
-	static CTimeout toListen (20);
+	static CTimeout toListen (10);
 
 if (!LOCALPLAYER.Connected (CONNECT_PLAYING) && Listen () && toListen.Expired ())
 	NetworkListen ();

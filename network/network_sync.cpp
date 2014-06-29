@@ -455,7 +455,7 @@ if (i < 0) {
 	}
 sprintf (m [0].m_text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers [0].m_info.players [i].callsign, TXT_NET_TO_ENTER);
 ResetSyncTimeout (true);
-networkThread.SetListen (false);
+
 do {
 	gameStates.menus.nInMenu = -gameStates.menus.nInMenu;
 	choice = m.Menu (NULL, TXT_HOST_WAIT, NetworkSyncPoll);
@@ -474,7 +474,7 @@ else if (networkData.nStatus == NETSTAT_AUTODL) {
 		return 1;
 		}
 	}
-networkThread.SetListen (true);
+
 #if 1			
 console.printf (CON_DBG, "Aborting join.\n");
 #endif
