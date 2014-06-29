@@ -350,6 +350,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	gameStates.app.bEndLevelSequence = oldEndlevelSequence;
 	return;
 	}
+gameData.multiplayer.players [pd->nPlayer].m_nLevel = pd->nLevel;
 if ((sbyte)pd->nLevel != missionManager.nCurrentLevel) {
 #if 1
 	console.printf (CON_DBG, "Got frame packet from CPlayerData %d wrong level %d!\n", pd->nPlayer, pd->nLevel);
