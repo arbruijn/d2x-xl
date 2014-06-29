@@ -474,6 +474,7 @@ int NetworkProcessPacket (ubyte *dataP, int nLength)
 {
 	ubyte						pId = dataP [0];
 	tPacketHandlerInfo	*piP = packetHandlers + pId;
+	int						nFuncRes = 0;
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	tSequencePacket tmpPacket;
@@ -484,6 +485,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	}
 #endif
 
+networkThread.LockProcess ();
 if (!piP->packetHandler)
 	PrintLog (0, "invalid packet id %d\n", pId);
 else if (!(piP->nStatusFilter & (1 << networkData.nStatus)))
@@ -492,9 +494,10 @@ else if (!NetworkBadPacketSize (nLength, piP->nLength, piP->pszInfo)) {
 	console.printf (0, "received %s\n", piP->pszInfo);
 	if (!addressFilter [pId])	// patch the proper IP address into the packet header
 		memcpy (&THEIR->player.network, &networkData.packetSource.src_network, 10);
-	return piP->packetHandler (dataP, nLength);
+	nFuncRes = piP->packetHandler (dataP, nLength);
 	}
-return 0;
+networkThread.UnlockProcess ();
+return nFuncRes;
 }
 
 //-----------------------------------------------------------------------------------------------------------------

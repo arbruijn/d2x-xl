@@ -366,7 +366,9 @@ networkData.nSecurityFlag = NETSECURITY_OFF;
 t = SDL_GetTicks ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	for (i = nPackets = 0; (i < nMaxLoops) && (SDL_GetTicks () - t < 50); i++) {
+		networkThread.LockMutex ();
 		size = IpxGetPacketData (packet);
+		networkThread.UnlockMutex ();
 		if (size <= 0)
 			break;
 		if (NetworkProcessPacket (packet, size))
@@ -708,6 +710,9 @@ void CNetworkThread::Start (void)
 if (!m_thread) {
 	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
 	m_semaphore = SDL_CreateSemaphore (1);
+	m_sendLock = SDL_CreateMutex ();
+	m_recvLock = SDL_CreateMutex ();
+	m_processLock = SDL_CreateMutex ();
 	m_bListen = true;
 	}
 }
@@ -718,6 +723,22 @@ void CNetworkThread::End (void)
 {
 if (m_thread) {
 	SDL_KillThread (m_thread);
+	if (m_semaphore) {
+		SDL_DestroySemaphore (m_semaphore);
+		m_semaphore = NULL;
+		}
+	if (m_sendLock) {
+		SDL_DestroyMutex (m_sendLock);
+		m_sendLock = NULL;
+		}
+	if (m_recvLock) {
+		SDL_DestroyMutex (m_recvLock);
+		m_recvLock = NULL;
+		}
+	if (m_processLock) {
+		SDL_DestroyMutex (m_processLock);
+		m_processLock = NULL;
+		}
 	m_thread = NULL;
 	m_bListen = false;
 	}
@@ -740,6 +761,66 @@ int CNetworkThread::SemPost (void)
 if (!m_semaphore)
 	return 0;
 SDL_SemPost (m_semaphore); 
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CNetworkThread::LockSend (void) 
+{ 
+if (!m_sendLock)
+	return 0;
+SDL_LockMutex (m_sendLock); 
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CNetworkThread::UnlockSend (void) 
+{ 
+if (!m_sendLock)
+	return 0;
+SDL_UnlockMutex (m_sendLock); 
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CNetworkThread::LockRecv (void) 
+{ 
+if (!m_sendLock)
+	return 0;
+SDL_LockMutex (m_sendLock); 
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CNetworkThread::UnlockRecv (void) 
+{ 
+if (!m_sendLock)
+	return 0;
+SDL_UnlockMutex (m_sendLock); 
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CNetworkThread::LockProcess (void) 
+{ 
+if (!m_processLock)
+	return 0;
+SDL_LockMutex (m_processLock); 
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CNetworkThread::UnlockProcess (void) 
+{ 
+if (!m_processLock)
+	return 0;
+SDL_UnlockMutex (m_processLock); 
 return 1;
 }
 

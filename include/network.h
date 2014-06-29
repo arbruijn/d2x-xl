@@ -608,11 +608,14 @@ class CNetworkThread {
 	private:
 		SDL_Thread*	m_thread;
 		SDL_sem*		m_semaphore;
+		SDL_mutex*	m_sendLock;
+		SDL_mutex*	m_recvLock;
+		SDL_mutex*	m_processLock;
 		int			m_nThreadId;
 		bool			m_bListen;
 
 	public:
-		CNetworkThread () : m_thread (NULL), m_semaphore (NULL), m_nThreadId (0), m_bListen (false) {}
+		CNetworkThread () : m_thread (NULL), m_semaphore (NULL), m_sendLock (NULL), m_recvLock (NULL), m_processLock (NULL), m_nThreadId (0), m_bListen (false) {}
 		bool Available (void) { return m_thread != NULL; }
 		void Process (void);
 		void Start (void);
@@ -621,6 +624,12 @@ class CNetworkThread {
 		void UpdatePlayers (void);
 		int SemWait (void);
 		int SemPost (void);
+		int LockSend (void);
+		int UnlockSend (void);
+		int LockRecv (void);
+		int UnlockRecv (void);
+		int LockProcess (void);
+		int UnlockProcess (void);
 		inline void SetListen (bool bListen) { m_bListen = bListen; }
 
 	private:

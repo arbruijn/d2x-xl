@@ -226,6 +226,7 @@ int IpxGetPacketData (ubyte *data)
 
 	int dataSize, dataOffs;
 
+networkThread.LockRecv ();
 while (driver->PacketReady (&ipxSocketData)) {
 	dataSize = driver->ReceivePacket (reinterpret_cast<ipx_socket_t*> (&ipxSocketData), buf, sizeof (buf), &networkData.packetSource);
 #if 0//DBG
@@ -249,14 +250,15 @@ while (driver->PacketReady (&ipxSocketData)) {
 	memcpy (data, buf + dataOffs, dataSize - dataOffs);
 	return dataSize - dataOffs;
 	}
+networkThread.UnlockRecv ();
 return 0;
 }
 
 								/*---------------------------*/
 
-void IPXSendPacketData
-	 (ubyte *data, int dataSize, ubyte *network, ubyte *source, ubyte *dest)
+void IPXSendPacketData (ubyte *data, int dataSize, ubyte *network, ubyte *source, ubyte *dest)
 {
+networkThread.LockSend ();
 if (dataSize > MAX_PAYLOAD_SIZE) 
 	PrintLog (0, "IpxSendPacketData: packet too large (%d bytes)\n", dataSize);
 else {
@@ -275,6 +277,7 @@ else {
 		}
 	driver->SendPacket (&ipxSocketData, &ipxHeader, buf, dataSize + (gameStates.multi.bTrackerCall ? 0 : 4));
 	}
+networkThread.UnlockSend ();
 }
 
 								/*---------------------------*/
@@ -293,6 +296,7 @@ void IPXSendBroadcastData (ubyte *data, int dataSize)
 	ubyte broadcast [] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 	ubyte localAddress [6];
 
+networkThread.LockSend ();
 if (gameStates.multi.nGameType > IPX_GAME)
 	IPXSendPacketData (data, dataSize, reinterpret_cast<ubyte*> (ipxNetworks), broadcast, broadcast);
 else {
@@ -318,6 +322,7 @@ else {
 			}
 		}
 	}
+networkThread.UnlockSend ();
 }
 
 								/*---------------------------*/
