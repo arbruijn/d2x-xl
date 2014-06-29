@@ -853,13 +853,17 @@ if (toUpdate.Expired ()) {
 		NetworkSendEndLevelPacket ();
 	else {
 		//SemWait ();
-		for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if (i == N_LOCALPLAYER) 
+		for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
+			if (nPlayer == N_LOCALPLAYER) 
 				continue;
-			if (gameData.multiplayer.players [i].Connected (CONNECT_END_MENU) || gameData.multiplayer.players [i].Connected (CONNECT_ADVANCE_LEVEL)) 
-				NetworkSendPing (i);
-			else if (bDownloading)
-				NetworkSendPing (i);
+			if (gameData.multiplayer.players [nPlayer].Connected (CONNECT_END_MENU) || gameData.multiplayer.players [nPlayer].Connected (CONNECT_ADVANCE_LEVEL)) {
+				pingStats [nPlayer].launchTime = -1;
+				NetworkSendPing (nPlayer);
+				}
+			else if (bDownloading) {
+				pingStats [nPlayer].launchTime = -1;
+				NetworkSendPing (nPlayer);
+				}	
 			}
 		//SemPost ();
 		}
@@ -879,7 +883,7 @@ int CNetworkThread::ConnectionStatus (int nPlayer)
 {
 if (!gameData.multiplayer.players [nPlayer].callsign [0])
 	return 0;
-if (gameData.multiplayer.players [nPlayer].m_nLevel != missionManager.nCurrentLevel)
+if (gameData.multiplayer.players [nPlayer].m_nLevel && (gameData.multiplayer.players [nPlayer].m_nLevel != missionManager.nCurrentLevel))
 	return 3;	// the client being tested is in a different level (e.g. trying to reach the exit), so immediately disconnect him to make his ship disappear until he enters the current level
 if (downloadManager.Downloading (nPlayer))
 	return 1;	// try to reconnect, using relaxed timeout values
@@ -898,12 +902,13 @@ SemWait ();
 int nTimedOut = 0;
 //if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) 
 static CTimeout to (500);
+int s = -1;
 if (to.Expired () /*&& !gameData.reactor.bDestroyed*/) 
 	{
 	int t = SDL_GetTicks ();
 	for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 		if (nPlayer != N_LOCALPLAYER) {
-			switch (ConnectionStatus (nPlayer)) {
+			switch (s = ConnectionStatus (nPlayer)) {
 				case 0:
 					break; // no action 
 
