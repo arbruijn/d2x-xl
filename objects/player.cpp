@@ -414,7 +414,7 @@ return !m_tWeaponInfo || ((gameStates.app.nSDLTicks [0] - m_tWeaponInfo > 15000)
 void CPlayerData::Connect (sbyte nStatus) 
 {
 connected = nStatus;
-if (nStatus == CONNECT_PLAYING)
+if ((nStatus == CONNECT_PLAYING) && (m_nLevel == missionManager.nCurrentLevel))
 	m_tDisconnect = 0;
 }
 
