@@ -803,11 +803,13 @@ if ((nPlayer == N_LOCALPLAYER) || (nPlayer >= MAX_NUM_NET_PLAYERS) || (nPlayer <
 	Int3 (); // Non-terminal, see Rob
 	return;
 	}
-objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
-objP->SetType (OBJ_GHOST);
-objP->info.renderType = RT_NONE;
-objP->info.movementType = MT_NONE;
-MultiResetPlayerObject (objP);
+objP = gameData.Object (gameData.multiplayer.players [nPlayer].nObject);
+if (objP) {
+	objP->SetType (OBJ_GHOST);
+	objP->info.renderType = RT_NONE;
+	objP->info.movementType = MT_NONE;
+	MultiResetPlayerObject (objP);
+	}
 if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 	MultiStripRobots (nPlayer);
 }

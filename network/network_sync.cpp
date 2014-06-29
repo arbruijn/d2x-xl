@@ -720,7 +720,7 @@ NetworkListen ();
 int nReady = 0;
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (((ubyte) gameData.multiplayer.players [i].connected < 2) && (gameData.multiplayer.players [i].m_nLevel == missionManager.nCurrentLevel))
+	if ((ubyte) gameData.multiplayer.players [i].connected < 2)
 		nReady++;
 	}
 if (nReady == gameData.multiplayer.nPlayers) // All players have checked in or are disconnected

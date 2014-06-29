@@ -231,12 +231,15 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 	return;
 for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++)
 	if (gameData.multigame.robots.controlled [i] == nObject) {
-		if (OBJECTS [nObject].cType.aiInfo.REMOTE_SLOT_NUM != i) {
-			Int3 ();  // can't release this bot!
-			return;
+		CObject* objP = gameData.Object (nObject);
+		if (objP) {
+			if (objP->cType.aiInfo.REMOTE_SLOT_NUM != i) {
+				Int3 ();  // can't release this bot!
+				return;
+				}
+			objP->cType.aiInfo.REMOTE_OWNER = -1;
+			objP->cType.aiInfo.REMOTE_SLOT_NUM = 0;
 			}
-		OBJECTS [nObject].cType.aiInfo.REMOTE_OWNER = -1;
-		OBJECTS [nObject].cType.aiInfo.REMOTE_SLOT_NUM = 0;
 		gameData.multigame.robots.controlled [i] = -1;
 		gameData.multigame.robots.sendPending [i] = 0;
 		gameData.multigame.robots.fired [i] = 0;
