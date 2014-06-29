@@ -415,11 +415,15 @@ switch (k) {
 	case KEY_ENTER:
 	case KEY_SPACEBAR:
 		if ((gameData.app.GameMode (GM_SERIAL | GM_MODEM)) != 0)
-			return 1;
+			return IAmGameHost ();
 		if (Exit ())
 			return -1;
-		return 1;
-
+		if (IAmGameHost ())
+			return 1;
+		if (gameData.multiplayer.players [WhoIsGameHost ()].connected == CONNECT_ADVANCE_LEVEL)
+			return 1;
+		return 0;
+		
 	case KEY_ESC:
 		if (IsNetworkGame) {
 			gameData.multiplayer.xStartAbortMenuTime = TimerGetApproxSeconds ();
@@ -490,8 +494,10 @@ for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 	if (gameData.multiplayer.players [nPlayer].connected != CONNECT_DISCONNECTED)
 		nConnected++;
 
-	if (nReady >= gameData.multiplayer.nPlayers)
+	if (nReady >= gameData.multiplayer.nPlayers) {
+		networkThread.SemPost ();
 		return 0;
+		}
 	if (nEscaped >= gameData.multiplayer.nPlayers)
 		gameData.reactor.countdown.nSecsLeft = -1;
 	if (m_nPrevSecsLeft != gameData.reactor.countdown.nSecsLeft) {
@@ -571,9 +577,14 @@ while (true) {
 		if ((gameData.app.GameMode (GM_SERIAL | GM_MODEM)) != 0) 
 			break;
 		CONNECT (N_LOCALPLAYER, CONNECT_ADVANCE_LEVEL); // player is idling in score screen for MAX_VIEW_TIMES secs 
-#if 1
-		if (t >= t0 + 2 * MAX_VIEW_TIME) // player wants to proceed and has waited for MAX_VIEW_TIME secs, so proceed
+		if (gameData.multiplayer.players [WhoIsGameHost ()].m_nLevel > missionManager.nCurrentLevel)
 			break;
+#if 1
+		if (t >= t0 + 2 * MAX_VIEW_TIME) { // player wants to proceed and has waited for MAX_VIEW_TIME secs, so proceed
+			if (IAmGameHost ())
+				break;
+			if (gameData.multiplayer.players [WhoIsGameHost ()].connected == CONNECT_ADVANCE_LEVEL)
+				break;
 #endif
 		}
 	if (m_bNetwork) {

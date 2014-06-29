@@ -194,7 +194,7 @@ void NetworkProcessDump (tSequencePacket *their)
 {
 	// Our request for join was denied.  Tell the user why.
 
-if (their->player.connected != 7) {
+if (their->player.connected != CONNECT_ADVANCE_LEVEL) {
 	TextBox (NULL, BG_STANDARD, 1, TXT_OK, NET_DUMP_STRINGS (their->player.connected));
 	networkData.nStatus = NETSTAT_MENU;
 	}
