@@ -696,7 +696,7 @@ return 0;
 void CNetworkThread::Process (void)
 {
 for (;;) {
-	UpdatePlayers ();
+	//UpdatePlayers ();
 	G3_SLEEP (10);
 	}
 }
@@ -786,9 +786,9 @@ return 1;
 
 int CNetworkThread::LockRecv (void) 
 { 
-if (!m_sendLock)
+if (!m_recvLock)
 	return 0;
-SDL_LockMutex (m_sendLock); 
+SDL_LockMutex (m_recvLock); 
 return 1;
 }
 
@@ -796,9 +796,9 @@ return 1;
 
 int CNetworkThread::UnlockRecv (void) 
 { 
-if (!m_sendLock)
+if (!m_recvLock)
 	return 0;
-SDL_UnlockMutex (m_sendLock); 
+SDL_UnlockMutex (m_recvLock); 
 return 1;
 }
 
@@ -852,6 +852,7 @@ if (toUpdate.Expired ()) {
 	if (LOCALPLAYER.Connected (CONNECT_END_MENU) || LOCALPLAYER.Connected (CONNECT_ADVANCE_LEVEL))
 		NetworkSendEndLevelPacket ();
 	else {
+		SemWait ();
 		for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if (i == N_LOCALPLAYER) 
 				continue;
@@ -860,6 +861,7 @@ if (toUpdate.Expired ()) {
 			else if (bDownloading)
 				NetworkSendPing (i);
 			}
+		SemPost ();
 		}
 	}
 

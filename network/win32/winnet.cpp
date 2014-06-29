@@ -296,7 +296,6 @@ void IPXSendBroadcastData (ubyte *data, int dataSize)
 	ubyte broadcast [] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 	ubyte localAddress [6];
 
-networkThread.LockSend ();
 if (gameStates.multi.nGameType > IPX_GAME)
 	IPXSendPacketData (data, dataSize, reinterpret_cast<ubyte*> (ipxNetworks), broadcast, broadcast);
 else {
@@ -322,7 +321,6 @@ else {
 			}
 		}
 	}
-networkThread.UnlockSend ();
 }
 
 								/*---------------------------*/

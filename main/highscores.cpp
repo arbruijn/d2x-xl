@@ -366,7 +366,7 @@ ogl.Update (1);
 
 void CScoreTable::Cleanup (int bQuit)
 {
-if (m_bNetwork)
+if (m_bNetwork) 
 	NetworkSendEndLevelPacket ();
 if (bQuit) {
 	CONNECT (N_LOCALPLAYER, CONNECT_DISCONNECTED);
@@ -580,7 +580,8 @@ for (;;) {
 		if ((gameData.app.GameMode (GM_SERIAL | GM_MODEM)) != 0) 
 			break;
 		CONNECT (N_LOCALPLAYER, CONNECT_ADVANCE_LEVEL); // player is idling in score screen for MAX_VIEW_TIMES secs 
-		NetworkSendEndLevelPacket ();
+		if (m_bNetwork)
+			NetworkSendEndLevelPacket ();
 		}
 
 	i = WaitForPlayers ();
