@@ -585,6 +585,7 @@ while (true) {
 				break;
 			if (gameData.multiplayer.players [WhoIsGameHost ()].connected == CONNECT_ADVANCE_LEVEL)
 				break;
+			}
 #endif
 		}
 	if (m_bNetwork) {
