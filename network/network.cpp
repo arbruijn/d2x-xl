@@ -441,7 +441,7 @@ if (toUpdate.Expired ()) {
 if (!LOCALPLAYER.Connected (CONNECT_PLAYING) && toListen.Expired ())
 	NetworkListen ();
 
-NetworkCheckPlayerTimeouts ();
+networkThread.CheckPlayerTimeouts ();
 }
 
 //------------------------------------------------------------------------------
