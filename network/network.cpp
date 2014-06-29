@@ -824,6 +824,7 @@ if (to.Expired () /*&& !gameData.reactor.bDestroyed*/)
 	//networkData.xLastTimeoutCheck = 0;
 	}
 SemPost ();
+return nTimedOut;
 }
 
 //------------------------------------------------------------------------------
