@@ -69,18 +69,18 @@ typedef struct IPXRecvData {
 	public:
 		inline u_int32_t Server (void) { return src_addr.address.portAddress.ip.a; }
 		inline u_int16_t Port (void) { return src_addr.address.portAddress.port.s; }
-		inline u_char* Network (void) { return src_addr.network; }
+		inline u_char* Network (void) { return src_addr.network.b; }
 		inline u_char* Node (void) { return src_addr.address.node; }
 		inline int Type (void) { return packetType; }
 
 		inline void SetServer (void* server) { memcpy (src_addr.address.portAddress.ip.octets, (byte*) server, sizeof (src_addr.address.portAddress.ip.octets)); }
-		inline void SetNetwork (void* network) { memcpy (src_addr.network, (byte*) network, sizeof (src_addr.network)); }
+		inline void SetNetwork (void* network) { memcpy (src_addr.network.b, (byte*) network, sizeof (src_addr.network)); }
 		inline void SetNode (void* node) { memcpy (src_addr.address.node, (byte*) node, sizeof (src_addr.address.node)); }
 		inline void SetPort (void* port) { memcpy (src_addr.address.portAddress.port.b, (byte*) port, sizeof (src_addr.address.portAddress.port)); }
 		inline void SetType (int nType) { packetType = nType; }
 
 		inline void ResetServer (byte filler = 0) { memset (src_addr.address.portAddress.ip.octets, filler, sizeof (src_addr.address.portAddress.ip.octets)); }
-		inline void ResetNetwork (byte filler = 0) { memset (src_addr.network, filler, sizeof (src_addr.network)); }
+		inline void ResetNetwork (byte filler = 0) { memset (src_addr.network.b, filler, sizeof (src_addr.network)); }
 		inline void ResetNode (byte filler = 0) { memset (src_addr.address.node, filler, sizeof (src_addr.address.node)); }
 		inline void ResetPort (byte filler = 0) { memset (src_addr.address.portAddress.port.b, filler, sizeof (src_addr.address.portAddress.port)); }
 
