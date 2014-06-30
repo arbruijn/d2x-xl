@@ -70,7 +70,8 @@ CNetworkThread::CNetworkThread ()
 	: m_thread (NULL), m_semaphore (NULL), m_sendLock (NULL), m_recvLock (NULL), m_processLock (NULL), m_nThreadId (0), m_bListen (false), m_nPackets (0)
 {
 m_packets [0] = 
-m_packets [1] = NULL;
+m_packets [1] = 
+m_packet = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -108,6 +109,10 @@ if (m_thread) {
 	if (m_processLock) {
 		SDL_DestroyMutex (m_processLock);
 		m_processLock = NULL;
+		}
+	if (m_packet) {
+		delete m_packet;
+		m_packet = NULL;
 		}
 	FlushPackets ();
 	m_thread = NULL;
@@ -273,21 +278,23 @@ if (!toListen.Expired ())
 #if 1 // network reads all network packets independently of main thread
 
 // read all available network packets and append them to the end of the list of unprocessed network packets
-ubyte data [MAX_PACKET_SIZE];
-int size;
-while (size = IpxGetPacketData (data)) {
-	tNetworkPacket* packet = new tNetworkPacket;
-	if (!packet)
+for (;;) {
+	if (!m_packet) {
+		m_packet = new tNetworkPacket;
+		if (!m_packet)
+			break;
+		}
+	if (!(m_packet->size = IpxGetPacketData (m_packet->data)))
 		break;
 	++m_nPackets;
 	if (m_packets [1]) // list tail
-		m_packets [1]->nextPacket = packet;
+		m_packets [1]->nextPacket = m_packet;
 	else 
-		m_packets [0] = packet; // list head
-	m_packets [1] = packet;
-	packet->nextPacket = NULL;
-	memcpy (packet->data, data, size);
-	memcpy (&packet->owner.address, &networkData.packetSource, sizeof (networkData.packetSource));
+		m_packets [0] = m_packet; // list head
+	m_packets [1] = m_packet;
+	m_packet->nextPacket = NULL;
+	memcpy (&m_packet->owner.address, &networkData.packetSource, sizeof (networkData.packetSource));
+	m_packet = NULL;
 	}
 
 return m_nPackets;

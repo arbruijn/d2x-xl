@@ -29,6 +29,7 @@ class CNetworkThread {
 		int						m_nPackets;
 		tNetworkPacketOwner	m_owner;
 		tNetworkPacket*		m_packets [2];
+		tNetworkPacket*		m_packet;
 
 	public:
 		CNetworkThread ();
