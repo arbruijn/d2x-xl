@@ -159,10 +159,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 				objBuf [2] = (ubyte) syncP->objs.nFrame;
 			Assert (bufI <= MAX_PAYLOAD_SIZE);
 			if (gameStates.multi.nGameType >= IPX_GAME)
-				IPXSendInternetPacketData (
-					objBuf, bufI, 
-					syncP->player [1].player.network.Network (), 
-					syncP->player [1].player.network.Node ());
+				IPXSendInternetPacketData (objBuf, bufI, syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node ());
 			 }
 		}
 	if (nLocalObj > gameData.objs.nLastObject [0]) {
@@ -202,9 +199,7 @@ void NetworkSyncPlayer (tNetworkSyncData *syncP)
 
 //OLD IPXSendPacketData (objBuf, 8, &syncP->player [1].player.node);
 if (gameStates.multi.nGameType >= IPX_GAME)
-	IPXSendInternetPacketData (objBuf, 8, 
-										syncP->player [1].player.network.Network (), 
-										syncP->player [1].player.network.Node ());
+	IPXSendInternetPacketData (objBuf, 8, syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node ());
 // Send sync packet which tells the player who he is and to start!
 NetworkSendRejoinSync (nPlayer, syncP);
 
@@ -479,10 +474,9 @@ console.printf (CON_DBG, "Aborting join.\n");
 me.nType = PID_QUIT_JOINING;
 memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	memcpy (me.player.network.Node (), IpxGetMyLocalAddress (), 6);
-	memcpy (me.player.network.Network (), IpxGetMyServerAddress (), 4);
-	SendInternetSequencePacket (me, netPlayers [0].m_info.players [0].network.Network (), 
-										 netPlayers [0].m_info.players [0].network.Node ());
+	me.player.network.SetNode (IpxGetMyLocalAddress ());
+	me.player.network.SetNetwork (IpxGetMyServerAddress ());
+	SendInternetSequencePacket (me, netPlayers [0].m_info.players [0].network.Network (), netPlayers [0].m_info.players [0].network.Node ());
 }
 SetFunctionMode (FMODE_MENU);
 gameData.app.SetGameMode (GM_GAME_OVER);
@@ -770,7 +764,7 @@ int NetworkLevelSync (void)
 	int result;
 	networkData.bSyncPackInited = 0;
 
-networkThread.SetListen (false);
+//networkThread.SetListen (false);
 NetworkFlush (); // Flush any old packets
 for (;;) {
 	if (gameData.multiplayer.nPlayers && IAmGameHost ()) {
@@ -794,7 +788,7 @@ if (result < 0) {
 	}
 else
 	NetworkCountPowerupsInMine ();
-networkThread.SetListen (true);
+//networkThread.SetListen (true);
 return result;
 }
 

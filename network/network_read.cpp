@@ -201,7 +201,7 @@ for (i = 0, playerP = playerInfoP->m_info.players; i < gameData.multiplayer.nPla
 				playerInfoP->m_info.players [i].network.Node (),
 				gameData.multiplayer.players [i].netAddress);
 #else // WORDS_NEED_ALIGNMENT
-		if (*reinterpret_cast<uint*> (playerInfoP->m_info.players [i].network.Network ()) != 0)
+		if (playerInfoP->m_info.players [i].network.HaveNetwork ())
 			IpxGetLocalTarget (
 				playerInfoP->m_info.players [i].network.Network (),
 				playerInfoP->m_info.players [i].network.Node (),

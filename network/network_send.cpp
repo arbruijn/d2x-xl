@@ -88,10 +88,7 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 	// have to stop and try again after the level.
 
 	if (gameStates.multi.nGameType >= IPX_GAME)
-		NetworkDumpPlayer (
-			syncP->player [1].player.network.Network (), 
-			syncP->player [1].player.network.Node (), 
-			DUMP_ENDLEVEL);
+		NetworkDumpPlayer (syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node (), DUMP_ENDLEVEL);
 	syncP->nState = 0; 
 	syncP->nExtras = 0;
 	return;
@@ -197,8 +194,8 @@ memset (&me, 0, sizeof (me));
 me.nType = PID_GAME_LIST;
 memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN + 1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	memcpy (me.player.network.Node (), IpxGetMyLocalAddress (), 6);
-	memcpy (me.player.network.Network (), IpxGetMyServerAddress (), 4);
+	me.player.network.SetNode (IpxGetMyLocalAddress ());
+	me.player.network.SetNetwork (IpxGetMyServerAddress ());
 	if (gameStates.multi.nGameType != UDP_GAME) 
 		SendBroadcastSequencePacket (me);
 	else {
@@ -233,8 +230,8 @@ me.nSecurity = nSecurity;
 me.nType = nType;
 memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN + 1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	memcpy (me.player.network.Node (), IpxGetMyLocalAddress (), 6);
-	memcpy (me.player.network.Network (), IpxGetMyServerAddress (), 4);
+	me.player.network.SetNode (IpxGetMyLocalAddress ());
+	me.player.network.SetNetwork (IpxGetMyServerAddress ());
 	SendBroadcastSequencePacket (me);
 	}
 }
@@ -279,7 +276,8 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			IPXSendPacketData (
 				reinterpret_cast<ubyte*> (&end), sizeof (tEndLevelInfo), 
 				netPlayers [0].m_info.players [i].network.Network (), 
-				netPlayers [0].m_info.players [i].network.Node (), gameData.multiplayer.players [i].netAddress);
+				netPlayers [0].m_info.players [i].network.Node (), 
+				gameData.multiplayer.players [i].netAddress);
 		}
 	}
 }
@@ -319,7 +317,8 @@ eli.secondsLeft = gameData.reactor.countdown.nSecsLeft;
 IPXSendPacketData (
 	reinterpret_cast<ubyte*> (&eli), sizeof (tEndLevelInfoShort), 
 	netPlayers [0].m_info.players [nDestPlayer].network.Network (), 
-	netPlayers [0].m_info.players [nDestPlayer].network.Node (), gameData.multiplayer.players [nDestPlayer].netAddress);
+	netPlayers [0].m_info.players [nDestPlayer].network.Node (), 
+	gameData.multiplayer.players [nDestPlayer].netAddress);
 }
 
 //------------------------------------------------------------------------------
@@ -673,7 +672,8 @@ if (len + nakedData.nLength>networkData.nMaxXDataSize) {
 			reinterpret_cast<ubyte*> (nakedData.buf), 
 			nakedData.nLength, 
 			netPlayers [0].m_info.players [receiver].network.Network (), 
-			netPlayers [0].m_info.players [receiver].network.Node (), gameData.multiplayer.players [receiver].netAddress);
+			netPlayers [0].m_info.players [receiver].network.Node (), 
+			gameData.multiplayer.players [receiver].netAddress);
 	nakedData.nLength = 2;
 	memcpy (&nakedData.buf [nakedData.nLength], buf, len);     
 	nakedData.nLength += len;
@@ -725,9 +725,7 @@ buf [count++] = char (PacketsPerSec ());
  
 sendit:	   
 
-IPXSendInternetPacketData (reinterpret_cast<ubyte*> (buf), count, 
-									their->player.network.Network (), 
-									their->player.network.Node ());
+IPXSendInternetPacketData (reinterpret_cast<ubyte*> (buf), count, their->player.network.Network (), their->player.network.Node ());
 }
 
 //------------------------------------------------------------------------------

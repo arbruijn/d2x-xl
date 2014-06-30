@@ -107,7 +107,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	//	networkData.thisPlayer.player.network.Port () = htons (networkData.thisPlayer.player.network.Port ());
 //		if (gameStates.multi.nGameType == UDP_GAME)
 //			memcpy (networkData.thisPlayer.player.network.Node (), networkData.localAddress + 4, 4);
-	memcpy (networkData.thisPlayer.player.network.Network (), IpxGetMyServerAddress (), 4);
+	networkData.thisPlayer.player.network.SetNetwork (IpxGetMyServerAddress ());
 	}
 networkData.thisPlayer.player.computerType = DOS;
 N_LOCALPLAYER = nPlayerSave;         

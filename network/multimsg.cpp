@@ -276,10 +276,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if ((!strnicmp (gameData.multiplayer.players [i].callsign, &gameData.multigame.msg.szMsg [name_index], strlen (gameData.multigame.msg.szMsg)-name_index)) && (i != N_LOCALPLAYER) && (gameData.multiplayer.players [i].connected)) {
 kick_player:;
 		if (gameStates.multi.nGameType  >= IPX_GAME)
-			NetworkDumpPlayer (
-				netPlayers [0].m_info.players [i].network.Network (), 
-				netPlayers [0].m_info.players [i].network.Node (), 
-				7);
+			NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.Network (), netPlayers [0].m_info.players [i].network.Node (), DUMP_KICKED);
 
 		HUDInitMessage (TXT_DUMPING, gameData.multiplayer.players [i].callsign);
 		if (bBan)
