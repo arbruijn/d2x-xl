@@ -226,7 +226,7 @@ extern void mprintf_animation_info (CObject *objP);
 #endif //if DBG
 
 void AIFrameAnimation (CObject *objP);
-void AIIdleAnimation (CObject *objP);
+void AIDoRandomPatrol (CObject *objP);
 int DoSillyAnimation (CObject *objP);
 void ComputeVisAndVec (CObject *objP, CFixVector *pos, tAILocalInfo *ailp, tRobotInfo *robptr, int *flag, fix xMaxVisibleDist);
 void DoFiringStuff (CObject *obj, int player_visibility, CFixVector *vec_to_player);

@@ -658,7 +658,7 @@ else {
 					int i;
 					for (i = 0; i < 24; i++)
 						nShuffledLevels [i] = i + 1;
-					gameStates.app.SRand ();
+					//gameStates.app.SRand ();
 					for (i = 0; i < 23; i++) {
 						int h = 23 - i;
 						int j = h ? rand () % h : 0;

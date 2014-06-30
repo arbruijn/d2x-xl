@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void AIIdleAnimation (CObject *objP)
+void AIDoRandomPatrol (CObject *objP)
 {
 #if DBG
 if (objP->Index () == nDbgObj)

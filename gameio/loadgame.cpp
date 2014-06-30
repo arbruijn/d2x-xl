@@ -2271,7 +2271,7 @@ int GetRandomPlayerPosition (int nPlayer)
 	fix			xDist;
 
 // Put the indices of all spawn point in the spawn table that are sufficiently far away from any player in the match
-gameStates.app.SRand ();
+//gameStates.app.SRand ();
 
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	if (!(nTeam & GetSegmentTeam (gameData.multiplayer.playerInit [i].nSegType)))

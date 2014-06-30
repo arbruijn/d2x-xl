@@ -319,7 +319,7 @@ if ((aiP->CURRENT_STATE == AIS_REST) && (aiP->GOAL_STATE == AIS_REST)) {
 		aiP->CURRENT_STATE = AIS_SEARCH;
 		}
 	else
-		AIIdleAnimation (objP);
+		AIDoRandomPatrol (objP);
 	}
 
 if (gameData.time.xGame - siP->ailP->timeTargetSeen > CHASE_TIME_LENGTH) {
@@ -993,12 +993,12 @@ if (siP->ailP->targetAwarenessType >= PA_RETURN_FIRE - 1) // If robot got hit, h
 	return 0;
 if ((siP->aiP->behavior == AIB_STATION) && (siP->ailP->mode == AIM_FOLLOW_PATH) && (siP->aiP->nHideSegment != objP->info.nSegment)) {
 	if (gameData.ai.target.xDist > MAX_SNIPE_DIST / 2) {  // station guys not at home always processed until 250 units away.
-		AIIdleAnimation (objP);
+		AIDoRandomPatrol (objP);
 		return 1;
 		}
 	}
 else if ((siP->aiP->behavior != AIB_STILL) && !siP->ailP->nPrevVisibility && ((gameData.ai.target.xDist >> 7) > siP->ailP->timeSinceProcessed)) {  // 128 units away (6.4 segments) processed after 1 second.
-	AIIdleAnimation (objP);
+	AIDoRandomPatrol (objP);
 	return 1;
 	}
 return 0;
@@ -1215,7 +1215,7 @@ int AIWakeupHandler (CObject *objP, tAIStateInfo *siP)
 if (!gameData.ai.nTargetVisibility &&
 	 (siP->ailP->targetAwarenessType < PA_WEAPON_WALL_COLLISION) &&
 	 (gameData.ai.target.xDist > MAX_WAKEUP_DIST)) {
-	AIIdleAnimation (objP);
+	AIDoRandomPatrol (objP);
 	return 1;
 	}
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);

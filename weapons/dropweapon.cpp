@@ -41,9 +41,7 @@ int SpitPowerup (CObject *spitterP, ubyte id, int seed)
 	CFixVector	newVelocity, newPos;
 	tObjTransformation	*posP = OBJPOS (spitterP);
 
-if (seed < 0)
-	gameStates.app.SRand ();
-else
+if (seed > 0)
 	gameStates.app.SRand (seed);
 newVelocity = spitterP->mType.physInfo.velocity + spitterP->info.position.mOrient.m.dir.f * I2X (SPIT_SPEED);
 newVelocity.v.coord.x += (SRandShort ()) * SPIT_SPEED * 2;
@@ -105,6 +103,9 @@ void DropCurrentWeapon (void)
 {
 	int	nObject = -1,
 			ammo = 0;
+
+if (IsMultiGame)
+	gameStates.app.SRand ();
 
 if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 	if ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) && !IsBuiltInDevice (PLAYER_FLAGS_QUAD_LASERS)) {

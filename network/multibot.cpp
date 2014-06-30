@@ -922,7 +922,7 @@ delObjP.info.position.vPos.v.coord.x = (fix) INTEL_INT ((int) delObjP.info.posit
 delObjP.info.position.vPos.v.coord.y = (fix) INTEL_INT ((int) delObjP.info.position.vPos.v.coord.y);
 delObjP.info.position.vPos.v.coord.z = (fix) INTEL_INT ((int) delObjP.info.position.vPos.v.coord.z);
 if (gameStates.multi.nGameType != UDP_GAME)
-	gameStates.app.nRandSeed = 8321L;
+	gameStates.app.nRandSeed = 1245L;
 else {
 	gameStates.app.nRandSeed = (uint) GET_INTEL_INT (buf + bufP);
 	bufP += 4;
@@ -966,7 +966,8 @@ if (delObjP->info.nType != OBJ_ROBOT) {
 	}
 botInfoP = &ROBOTINFO (delObjP->info.nId);
 gameData.multigame.create.nCount = 0;
-if (gameStates.multi.nGameType == UDP_GAME)
+
+if (gameStates.multi.nGameType == UDP_GAME) // nRandSeed will be transmitted to other players by MultiSendCreateRobotPowerups below
 	gameStates.app.SRand ();
 
 if (delObjP->info.contains.nCount > 0) { 
