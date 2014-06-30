@@ -762,16 +762,15 @@ void MultiDoCreateRobot (char *buf)
 
 	int		nProducer = buf [2];
 	int		nPlayer = buf [1];
-	short		nObject;
+	short		nRemoteObj;
 	ubyte		nType = buf [5];
 
 	tProducerInfo*	robotGenP;
 	CFixVector		vObjPos, direction;
 	CObject*			objP;
 
-nObject = GET_INTEL_SHORT (buf + 3);
-if ((nPlayer < 0) || (nObject < 0) || (nProducer < 0) || 
-	 (nProducer >= gameData.producers.nProducers) || (nPlayer >= gameData.multiplayer.nPlayers)) {
+nRemoteObj = GET_INTEL_SHORT (buf + 3);
+if ((nPlayer < 0) || (nRemoteObj < 0) || (nProducer < 0) || (nProducer >= gameData.producers.nProducers) || (nPlayer >= gameData.multiplayer.nPlayers)) {
 	Int3 (); // Bogus data
 	return;
 	}
@@ -795,7 +794,7 @@ direction = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPo
 objP->info.position.mOrient = CFixMatrix::CreateFU(direction, objP->info.position.mOrient.m.dir.u);
 //objP->info.position.mOrient = CFixMatrix::CreateFU(direction, &objP->info.position.mOrient.m.v.u, NULL);
 objP->MorphStart ();
-SetObjNumMapping (objP->Index (), nObject, nPlayer);
+SetObjNumMapping (objP->Index (), nRemoteObj, nPlayer);
 Assert (objP->cType.aiInfo.REMOTE_OWNER == -1);
 }
 
