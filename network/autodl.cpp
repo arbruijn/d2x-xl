@@ -248,7 +248,7 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-// ask the game host for the next data packet
+// ask the game host to accept a TCP connection from us
 
 int CDownloadManager::RequestUpload (void)
 {
@@ -265,6 +265,7 @@ return SendRequest (PID_DOWNLOAD, PID_DL_START, clientP);
 }
 
 //------------------------------------------------------------------------------
+// Connect the server with a client
 
 int CDownloadManager::ConnectToClient (tClient& client)
 {
@@ -273,12 +274,12 @@ if (!m_socket) {
 
 	if (SDLNet_ResolveHost (&ip, NULL, UDP_BASEPORT) < 0)
 		return DL_DONE;
-	if (!(m_socket = SDLNet_TCP_Open (&ip)))
+	if (!(m_socket = SDLNet_TCP_Open (&ip))) // allow all incoming TCP connections on our socket
 		return DL_DONE;
 	}
 RequestDownload (&client);
 for (CTimeout to1 (30000), to2 (3000); !to1.Expired ();) {
-	if ((client.socket = SDLNet_TCP_Accept (m_socket)))
+	if ((client.socket = SDLNet_TCP_Accept (m_socket))) // accept incoming connections on our socket
 		return DL_OPEN_HOG;
 	G3_SLEEP (10);
 	if (to2.Expired ())
@@ -288,6 +289,7 @@ return DL_DONE;
 }
 
 //------------------------------------------------------------------------------
+// Connect the client (local player) with the server (game host)
 
 int CDownloadManager::ConnectToServer (void)
 {
@@ -299,12 +301,12 @@ if (m_socket) {
 	m_socket = 0;
 	}
 sprintf (szIp, "%d.%d.%d.%d",
-			 networkData.serverAddress [4], networkData.serverAddress [5], networkData.serverAddress [6], networkData.serverAddress [7]);
+			networkData.serverAddress [4], networkData.serverAddress [5], networkData.serverAddress [6], networkData.serverAddress [7]);
 if (SDLNet_ResolveHost (&ip, szIp, UDP_BASEPORT) < 0)
 	return 0;
 
 for (CTimeout to (30000); !to.Expired (); ) {
-	if ((m_socket = SDLNet_TCP_Open (&ip)))
+	if ((m_socket = SDLNet_TCP_Open (&ip))) // open TCP connection to the server
 		return 1;
 	G3_SLEEP (10);
 	}
@@ -589,7 +591,7 @@ if (t - m_nPollTime > m_nTimeout) {
 
 if (m_nState == DL_CONNECT) {
 	if (t - m_nRequestTime > 3000) {
-		if (!RequestUpload ())
+		if (!RequestUpload ()) // tell the server we want to download from it
 			return 0;
 		m_nRequestTime = t;
 		}
@@ -647,6 +649,13 @@ return downloadManager.Poll (menu, key, nCurItem);
 }
 
 //------------------------------------------------------------------------------
+// Negotiating a download
+// 1. The client requests the server to upload to it
+// 2. The server starts a client specific upload thread which runs the upload process
+//    The upload process opens a TCP socket allowing incoming TCP connections from anywhere
+//    and tells the client to start downloading
+// 3. The client opens a TCP connection to the server
+// 4. The actual download begins
 
 int CDownloadManager::DownloadMission (char *pszMission)
 {

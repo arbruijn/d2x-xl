@@ -19,6 +19,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "multi.h"
 #include "menu.h"
 #include "loadgame.h"
+#include "network_thread.h"
 
 #define EGI_DATA_VERSION				6
 
@@ -602,42 +603,6 @@ if ((i < MIN_PPS) || (i > MAX_PPS))
 	netGame.SetPacketsPerSec (DEFAULT_PPS);
 return netGame.GetPacketsPerSec ();
 }
-
-
-class CNetworkThread {
-	private:
-		SDL_Thread*	m_thread;
-		SDL_sem*		m_semaphore;
-		SDL_mutex*	m_sendLock;
-		SDL_mutex*	m_recvLock;
-		SDL_mutex*	m_processLock;
-		int			m_nThreadId;
-		bool			m_bListen;
-
-	public:
-		CNetworkThread () : m_thread (NULL), m_semaphore (NULL), m_sendLock (NULL), m_recvLock (NULL), m_processLock (NULL), m_nThreadId (0), m_bListen (false) {}
-		bool Available (void) { return m_thread != NULL; }
-		void Process (void);
-		void Start (void);
-		void End (void);
-		int CheckPlayerTimeouts (void);
-		void UpdatePlayers (void);
-		int SemWait (void);
-		int SemPost (void);
-		int LockSend (void);
-		int UnlockSend (void);
-		int LockRecv (void);
-		int UnlockRecv (void);
-		int LockProcess (void);
-		int UnlockProcess (void);
-		inline void SetListen (bool bListen) { m_bListen = bListen; }
-
-	private:
-		int ConnectionStatus (int nPlayer);
-		inline bool Listen (void) { return m_bListen; }
-};
-
-extern CNetworkThread networkThread;
 
 //------------------------------------------------------------------------------
 

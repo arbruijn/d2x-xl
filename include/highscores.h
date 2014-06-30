@@ -41,6 +41,8 @@ class CScoreTable {
 		bool Exit (void);
 		int Input (void);
 		int WaitForPlayers (void);
+		bool CapFramerate (void);
+
 	};
 
 extern CScoreTable scoreTable;

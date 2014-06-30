@@ -912,6 +912,9 @@
     <ClInclude Include="..\input\include\sixense_wrapper.h">
       <Filter>Source Files\input\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\network_thread.h">
+      <Filter>Source Files\network\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\3d\ase2model.cpp">
@@ -1861,6 +1864,9 @@
     </ClCompile>
     <ClCompile Include="..\input\sixense_wrapper.cpp">
       <Filter>Source Files\input\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\network\network_thread.cpp">
+      <Filter>Source Files\network\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

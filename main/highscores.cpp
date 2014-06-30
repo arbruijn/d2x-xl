@@ -295,12 +295,24 @@ fontManager.Current ()->StringSize (message, sw, sh, aw);
 GrPrintF (NULL, CENTERSCREEN - sw / 2, LHY (55+72+3), message);
 }
 
+//-----------------------------------------------------------------------------
+
+bool CScoreTable::CapFramerate (void)
+{
+	static CTimeout to (30);
+
+if (to.Expired ())
+	return false;
+G3_SLEEP (1);
+return true;
+}
 
 //-----------------------------------------------------------------------------
 
 void CScoreTable::Render (void)
 {
-	int			i, color;
+if (CapFramerate ())
+	return;
 
 backgroundManager.Draw (&m_background);
 
@@ -317,15 +329,13 @@ MultiGetKillList (m_sorted);
 m_background.Activate ();
 gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 DrawNames ();
-for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (IsTeamGame)
-		color = GetTeam (m_sorted [i]);
-	else
-		color = m_sorted [i];
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (!gameData.multiplayer.players [m_sorted [i]].connected)
 		fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
-	else
+	else {
+		int color = IsTeamGame ? GetTeam (m_sorted [i]) : m_sorted [i];
 		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].Red (), playerColors [color].Green (), playerColors [color].Blue ()), 1, 0, 0);
+		}
 	DrawItem (i);
 	}
 DrawDeaths ();
@@ -338,8 +348,6 @@ ogl.Update (1);
 
 void CScoreTable::RenderCoop (void)
 {
-	int i, color;
-
 MultiSortKillList ();
 fontManager.SetCurrent (MEDIUM3_FONT);
 GrString (0x8000, LHY (10), "COOPERATIVE SUMMARY");
@@ -348,12 +356,13 @@ MultiGetKillList (m_sorted);
 m_background.Activate ();
 gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 DrawCoopNames ();
-for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	color = m_sorted [i];
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (gameData.multiplayer.players [m_sorted [i]].connected == CONNECT_DISCONNECTED)
 		fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
-	else
+	else {
+		int color = m_sorted [i];
 		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].Red (), playerColors [color].Green (), playerColors [color].Blue ()), 1, 0, 0);
+		}
 	DrawCoopItem (i);
 	}
 DrawDeaths ();

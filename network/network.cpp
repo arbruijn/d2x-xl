@@ -123,25 +123,6 @@ tNakedData nakedData = {0, -1};
 
 tNetworkData networkData;
 
-CNetworkThread networkThread;
-
-#if 1
-
-#	if 1
-#		define TIMEOUT_DISCONNECT	3000
-#	else
-#		define TIMEOUT_DISCONNECT	15000
-#endif
-
-#	define TIMEOUT_KICK			180000
-
-#else
-
-#	define TIMEOUT_DISCONNECT	3000
-#	define TIMEOUT_KICK			30000
-
-#endif
-
 //------------------------------------------------------------------------------
 
 void ResetAllPlayerTimeouts (void)
@@ -288,13 +269,16 @@ gameData.multiplayer.nPlayers = 1;
 
 void NetworkFlush (void)
 {
-	ubyte packet [MAX_PACKET_SIZE];
+if ((gameStates.multi.nGameType >= IPX_GAME) && !networkData.bActive) 
+	return;
 
-if (gameStates.multi.nGameType >= IPX_GAME)
-	if (!networkData.bActive) 
-		return;
-while (IpxGetPacketData (packet) > 0) 
-	 ;
+if (networkThread.Available ())
+	networkThread.FlushPackets ();
+else {
+	ubyte packet [MAX_PACKET_SIZE];
+	while (IpxGetPacketData (packet) > 0) 
+		 ;
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -345,35 +329,36 @@ return 1;
 
 int NetworkListen (void)
 {
-	int size;
-	ubyte packet [MAX_PACKET_SIZE];
-	int i, t, nPackets = 0, nMaxLoops = 999;
-
-//downloadManager.CleanUp ();
-tracker.AddServer ();
-if ((networkData.nStatus == NETSTAT_PLAYING) && netGame.GetShortPackets () && !networkData.nJoining)
-	nMaxLoops = gameData.multiplayer.nPlayers * PacketsPerSec ();
-
-if (gameStates.multi.nGameType >= IPX_GAME)
-	if (!networkData.bActive) 
-		return -1;
-#if 1			
+#if DBG
 if (!IsNetworkGame && (gameStates.app.nFunctionMode == FMODE_GAME))
 	console.printf (CON_DBG, "Calling NetworkListen () when not in net game.\n");
 #endif
+
+if ((gameStates.multi.nGameType < IPX_GAME) || !networkData.bActive) 
+	return -1;
+
 networkData.bWaitingForPlayerInfo = 1;
 networkData.nSecurityFlag = NETSECURITY_OFF;
 
-t = SDL_GetTicks ();
-if (gameStates.multi.nGameType >= IPX_GAME) {
-	for (i = nPackets = 0; (i < nMaxLoops) && (SDL_GetTicks () - t < 50); i++) {
-		size = IpxGetPacketData (packet);
-		if (size <= 0)
-			break;
-		if (NetworkProcessPacket (packet, size))
-			nPackets++;
-		}
-	}
+if (networkThread.Available ())
+	return networkThread.ProcessPackets ();
+
+tracker.AddServer ();
+
+int nQueries = 
+	((networkData.nStatus == NETSTAT_PLAYING) && netGame.GetShortPackets () && !networkData.nJoining)
+	? gameData.multiplayer.nPlayers * PacketsPerSec ()
+	: 999;
+
+ubyte packet [MAX_PACKET_SIZE];
+int nPackets = 0;
+int t = SDL_GetTicks ();
+int size;
+
+for (; (size = IpxGetPacketData (packet)) && nQueries && (SDL_GetTicks () - t < 50); nQueries--)
+	if (NetworkProcessPacket (packet, size))
+		nPackets++;
+
 return nPackets;
 }
 
@@ -557,7 +542,6 @@ if ((networkData.sync [0].nPlayer != -1) && !(gameData.app.nFrameCount & 63))
 XMLGameInfoHandler ();
 NetworkDoSyncFrame ();
 //NetworkAdjustPPS ();
-tracker.AddServer ();
 }
 
 //------------------------------------------------------------------------------
@@ -682,259 +666,6 @@ void NetworkCheckForOldVersion (char nPlayer)
 if ((netPlayers [0].m_info.players [(int) nPlayer].versionMajor == 1) && 
 	 !(netPlayers [0].m_info.players [(int) nPlayer].versionMinor & 0x0F))
 	netPlayers [0].m_info.players [(int) nPlayer].rank = 0;
-}
-
-//------------------------------------------------------------------------------
-
-static int _CDECL_ NetworkThreadHandler (void* nThreadP)
-{
-networkThread.Process ();
-return 0;
-}
-
-//------------------------------------------------------------------------------
-
-#define SENDLOCK 1
-#define RECVLOCK 1
-#define PROCLOCK 1
-
-void CNetworkThread::Process (void)
-{
-for (;;) {
-	UpdatePlayers ();
-	G3_SLEEP (10);
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void CNetworkThread::Start (void)
-{
-if (!m_thread) {
-	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
-	m_semaphore = SDL_CreateSemaphore (1);
-	m_sendLock = SDL_CreateMutex ();
-	m_recvLock = SDL_CreateMutex ();
-	m_processLock = SDL_CreateMutex ();
-	m_bListen = true;
-	}
-}
-
-//------------------------------------------------------------------------------
-
-void CNetworkThread::End (void)
-{
-if (m_thread) {
-	SDL_KillThread (m_thread);
-	if (m_semaphore) {
-		SDL_DestroySemaphore (m_semaphore);
-		m_semaphore = NULL;
-		}
-	if (m_sendLock) {
-		SDL_DestroyMutex (m_sendLock);
-		m_sendLock = NULL;
-		}
-	if (m_recvLock) {
-		SDL_DestroyMutex (m_recvLock);
-		m_recvLock = NULL;
-		}
-	if (m_processLock) {
-		SDL_DestroyMutex (m_processLock);
-		m_processLock = NULL;
-		}
-	m_thread = NULL;
-	m_bListen = false;
-	}
-}
-
-//------------------------------------------------------------------------------
-
-int CNetworkThread::SemWait (void) 
-{ 
-if (!m_semaphore)
-	return 0;
-SDL_SemWait (m_semaphore); 
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int CNetworkThread::SemPost (void) 
-{ 
-if (!m_semaphore)
-	return 0;
-SDL_SemPost (m_semaphore); 
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int CNetworkThread::LockSend (void) 
-{ 
-#if SENDLOCK
-if (!m_sendLock)
-	return 0;
-SDL_LockMutex (m_sendLock); 
-#endif
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int CNetworkThread::UnlockSend (void) 
-{ 
-#if SENDLOCK
-if (!m_sendLock)
-	return 0;
-SDL_UnlockMutex (m_sendLock); 
-#endif
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int CNetworkThread::LockRecv (void) 
-{ 
-#if RECVLOCK
-if (!m_recvLock)
-	return 0;
-SDL_LockMutex (m_recvLock); 
-#endif
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int CNetworkThread::UnlockRecv (void) 
-{ 
-#if RECVLOCK
-if (!m_recvLock)
-	return 0;
-SDL_UnlockMutex (m_recvLock); 
-#endif
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int CNetworkThread::LockProcess (void) 
-{ 
-#if PROCLOCK
-if (!m_processLock)
-	return 0;
-SDL_LockMutex (m_processLock); 
-#endif
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int CNetworkThread::UnlockProcess (void) 
-{ 
-#if PROCLOCK
-if (!m_processLock)
-	return 0;
-SDL_UnlockMutex (m_processLock); 
-#endif
-return 1;
-}
-
-//------------------------------------------------------------------------------
-// Check for player timeouts
-
-void CNetworkThread::UpdatePlayers (void)
-{
-	static CTimeout toUpdate (500);
-
-if (toUpdate.Expired ()) {
-	bool bDownloading = downloadManager.Downloading (N_LOCALPLAYER);
-	
-	if (LOCALPLAYER.Connected (CONNECT_END_MENU) || LOCALPLAYER.Connected (CONNECT_ADVANCE_LEVEL))
-		NetworkSendEndLevelPacket ();
-	else {
-		//SemWait ();
-		for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
-			if (nPlayer == N_LOCALPLAYER) 
-				continue;
-			if (gameData.multiplayer.players [nPlayer].Connected (CONNECT_END_MENU) || gameData.multiplayer.players [nPlayer].Connected (CONNECT_ADVANCE_LEVEL)) {
-				pingStats [nPlayer].launchTime = -1;
-				NetworkSendPing (nPlayer);
-				}
-			else if (bDownloading) {
-				pingStats [nPlayer].launchTime = -1;
-				NetworkSendPing (nPlayer);
-				}	
-			}
-		//SemPost ();
-		}
-	}
-
-	static CTimeout toListen (10);
-
-if (!LOCALPLAYER.Connected (CONNECT_PLAYING) && Listen () && toListen.Expired ())
-	NetworkListen ();
-
-networkThread.CheckPlayerTimeouts ();
-}
-
-//------------------------------------------------------------------------------
-
-int CNetworkThread::ConnectionStatus (int nPlayer)
-{
-if (!gameData.multiplayer.players [nPlayer].callsign [0])
-	return 0;
-if (gameData.multiplayer.players [nPlayer].m_nLevel && (gameData.multiplayer.players [nPlayer].m_nLevel != missionManager.nCurrentLevel))
-	return 3;	// the client being tested is in a different level, so immediately disconnect him to make his ship disappear until he enters the current level
-if (downloadManager.Downloading (nPlayer))
-	return 1;	// try to reconnect, using relaxed timeout values
-if ((gameData.multiplayer.players [nPlayer].connected == CONNECT_DISCONNECTED) || (gameData.multiplayer.players [nPlayer].connected == CONNECT_PLAYING))
-	return 2;	// try to reconnect
-if (LOCALPLAYER.connected == CONNECT_PLAYING)
-	return 3; // the client being tested is in some level transition mode, so immediately disconnect him to make his ship disappear until he enters the current level
-return 2;	// we are in some level transition mode too, so try to reconnect
-}
-
-//------------------------------------------------------------------------------
-
-int CNetworkThread::CheckPlayerTimeouts (void)
-{
-SemWait ();
-int nTimedOut = 0;
-//if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) 
-static CTimeout to (500);
-int s = -1;
-if (to.Expired () /*&& !gameData.reactor.bDestroyed*/) 
-	{
-	int t = SDL_GetTicks ();
-	for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
-		if (nPlayer != N_LOCALPLAYER) {
-			switch (s = ConnectionStatus (nPlayer)) {
-				case 0:
-					break; // no action 
-
-				case 1:
-					if (networkData.nLastPacketTime [nPlayer] + downloadManager.GetTimeoutSecs () * 1000 > t) {
-						ResetPlayerTimeout (nPlayer, t);
-						break;
-						}
-
-				case 2:
-					if ((networkData.nLastPacketTime [nPlayer] == 0) || (t - networkData.nLastPacketTime [nPlayer] < TIMEOUT_DISCONNECT)) {
-						ResetPlayerTimeout (nPlayer, t);
-						break;
-						}
-
-				default:
-					if (NetworkTimeoutPlayer (nPlayer, t))
-						nTimedOut++;
-					break;
-				}
-			}
-		}
-	//networkData.xLastTimeoutCheck = 0;
-	}
-SemPost ();
-return nTimedOut;
 }
 
 //------------------------------------------------------------------------------

@@ -648,6 +648,7 @@
     <ClInclude Include="..\3d\globvars.h" />
     <ClInclude Include="..\include\hitbox.h" />
     <ClInclude Include="..\include\interp.h" />
+    <ClInclude Include="..\include\network_thread.h" />
     <ClInclude Include="..\include\producers.h" />
     <ClInclude Include="..\include\rectangle.h" />
     <ClInclude Include="..\include\rendermodel.h" />
@@ -1468,6 +1469,7 @@
     </ClCompile>
     <ClCompile Include="..\network\autodl.cpp" />
     <ClCompile Include="..\network\banlist.cpp" />
+    <ClCompile Include="..\network\network_thread.cpp" />
     <ClCompile Include="..\network\win32\ipx_mcast4.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>

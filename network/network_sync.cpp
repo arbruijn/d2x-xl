@@ -554,19 +554,16 @@ return 0;
 
 int NetworkWaitForPlayerInfo (void)
 {
-	int						size = 0, retries = 0;
 	ubyte						packet [MAX_PACKET_SIZE];
 	CAllNetPlayersInfo	playerData;
-	uint						xTimeout;
-	ubyte						id = 0;
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	CAllNetPlayersInfo info_struct;
 #endif
-
-if (gameStates.multi.nGameType >= IPX_GAME)
-	if (!networkData.bActive) 
-		return 0;
+if (!networkData.bWaitingForPlayerInfo)
+	return 0;
+if ((gameStates.multi.nGameType < IPX_GAME) || !networkData.bActive) 
+	return 0;
 #if 1			
 if (!IsNetworkGame && (gameStates.app.nFunctionMode == FMODE_GAME))
 	console.printf (CON_DBG, "Calling NetworkWaitForPlayerInfo () when not in net game.\n");
@@ -575,23 +572,23 @@ if (networkData.nStatus == NETSTAT_PLAYING) {
 	Int3 (); //MY GOD! Get Jason...this is the source of many problems
 	return 0;
 	}
-xTimeout = SDL_GetTicks () + 5000;
-while (networkData.bWaitingForPlayerInfo && (retries < 50) && (SDL_GetTicks () < xTimeout)) {
-	if (gameStates.multi.nGameType >= IPX_GAME) {
-		size = IpxGetPacketData (packet);
-		id = packet [0];
-		}
+
+uint xTimeout = SDL_GetTicks () + 5000;
+while (SDL_GetTicks () < xTimeout) {
+	int size = networkThread.GetPacketData (packet);
+	ubyte id = packet [0];
 	if ((size > 0) && (id == PID_PLAYERSINFO)) {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 		ReceiveNetPlayersPacket (packet, &playerData);
 #else
 		memcpy (&playerData.m_info, &packet [0], sizeof (playerData.m_info));
 #endif
-		retries++;
 		if (networkData.nSecurityFlag == NETSECURITY_WAIT_FOR_PLAYERS) {
 #if SECURITY_CHECK
-			if (networkData.nSecurityNum != playerData.m_info.nSecurity)
+			if (networkData.nSecurityNum != playerData.m_info.nSecurity) {
+				G3_SLEEP (1);
 				continue;
+				}
 #endif
 			networkData.nSecurityFlag = NETSECURITY_OFF;
 			networkData.nSecurityNum = 0;
@@ -605,6 +602,7 @@ while (networkData.bWaitingForPlayerInfo && (retries < 50) && (SDL_GetTicks () <
 		networkData.bWaitingForPlayerInfo = 0;
 		return 1;
 		}
+	G3_SLEEP (1);
 	}
 return 0;
 }
@@ -617,7 +615,7 @@ void NetworkDoBigWait (int choice)
 	ubyte						packet [MAX_PACKET_SIZE], *data;
 	CAllNetPlayersInfo	playerData;
   
-while (0 < (size = IpxGetPacketData (packet))) {
+while (0 < (size = networkThread.GetPacketData (packet))) {
 	data = &packet [0];
 
 	switch (data [0]) {  
