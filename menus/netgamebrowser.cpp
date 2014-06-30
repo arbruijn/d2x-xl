@@ -421,7 +421,7 @@ do {
 
 NetworkSetGameMode (netGame.m_info.gameMode);
 NetworkAdjustMaxDataSize ();
-networkThread.Start ();
+//networkThread.Start ();
 return StartNewLevel (netGame.m_info.GetLevel (), true);
 }
 
