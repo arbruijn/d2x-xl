@@ -285,6 +285,7 @@ while (size = IpxGetPacketData (data)) {
 	else 
 		m_packets [0] = packet; // list head
 	m_packets [1] = packet;
+	packet->nextPacket = NULL;
 	memcpy (&packet->owner.address, &networkData.packetSource, sizeof (networkData.packetSource));
 
 	}
