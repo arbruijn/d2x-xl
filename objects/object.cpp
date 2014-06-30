@@ -411,8 +411,6 @@ CollideInit ();
 ResetSegObjLists ();
 gameData.objs.lists.Init ();
 gameData.objs.InitFreeList ();
-for (int i = 0; i < LEVEL_OBJECTS; i++)
-	OBJECTS [i].Init ();
 gameData.objs.consoleP =
 gameData.objs.viewerP = OBJECTS.Buffer ();
 if (bInitPlayer) {

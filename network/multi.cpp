@@ -308,18 +308,18 @@ return nObject;
 //-----------------------------------------------------------------------------
 // Map a local CObject number to a remote + nOwner
 
-int GetRemoteObjNum (int nLocalObj, sbyte& nOwner)
+int GetRemoteObjNum (int nLocalObj, sbyte& nObjOwner)
 {
 if ((nLocalObj < 0) || (nLocalObj > gameData.objs.nLastObject [0])) {
-	nOwner = -1;
+	nObjOwner = -1;
 	return -1;
 	}
-nOwner = gameData.multigame.nObjOwner [nLocalObj];
-if (nOwner == -1)
+nObjOwner = gameData.multigame.nObjOwner [nLocalObj];
+if (nObjOwner == -1)
 	return nLocalObj;
-if ((nOwner >= gameData.multiplayer.nPlayers) || (nOwner < -1)) {
+if ((nObjOwner >= gameData.multiplayer.nPlayers) || (nObjOwner < -1)) {
 	Int3 (); // Illegal!
-	nOwner = -1;
+	nObjOwner = -1;
 	return nLocalObj;
 	}
 return gameData.multigame.localToRemote [nLocalObj];
@@ -342,13 +342,14 @@ if (nLocalObj != nRemoteObj)
 //-----------------------------------------------------------------------------
 // Add a mapping from a network remote object number to a local one
 
-void SetObjNumMapping (int nLocalObj, int nRemoteObj, int nOwner)
+void SetObjNumMapping (int nLocalObj, int nRemoteObj, int nObjOwner)
 {
 if ((nLocalObj > -1) && (nLocalObj < LEVEL_OBJECTS) && 
-	 (nRemoteObj > -1) && (nRemoteObj < LEVEL_OBJECTS) && 
-	 (nOwner > -1) && (nOwner != N_LOCALPLAYER)) {
-	gameData.multigame.nObjOwner [nLocalObj] = nOwner;
-	gameData.multigame.remoteToLocal [nOwner][nRemoteObj] = nLocalObj;
+	 (nRemoteObj > -1) && (nRemoteObj < LEVEL_OBJECTS)/* && 
+	 (nOwner > -1) && (nOwner != N_LOCALPLAYER)*/) {
+	gameData.multigame.nObjOwner [nLocalObj] = nObjOwner;
+	if ((nObjOwner > -1) && (nObjOwner < gameData.multiplayer.nPlayers))
+		gameData.multigame.remoteToLocal [nObjOwner][nRemoteObj] = nLocalObj;
 	gameData.multigame.localToRemote [nLocalObj] = nRemoteObj;
 	}
 }

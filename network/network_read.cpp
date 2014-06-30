@@ -621,7 +621,7 @@ void NetworkReadObjectPacket (ubyte *dataP)
 
 	// Object from another net CPlayerData we need to sync with
 	CObject		*objP;
-	short			nObject, nRemoteObj;
+	short			nLocalObj, nRemoteObj;
 	sbyte			nObjOwner;
 	short			nSegment, i;
 	ushort		nFrame;
@@ -649,15 +649,15 @@ ResetSyncTimeout (true);
 networkData.sync [0].objs.nFrame = nFrame;
  for (i = 0; i < nObjects; i++) {
 	objP = NULL;
-	NW_GET_SHORT (dataP, bufI, nObject);
+	NW_GET_SHORT (dataP, bufI, nLocalObj);
 	NW_GET_BYTE (dataP, bufI, nObjOwner);
 	NW_GET_SHORT (dataP, bufI, nRemoteObj);
-	if ((nObject == -1) || (nObject == -3)) {
-		// Clear CObject array
+	if ((nLocalObj == -1) || (nLocalObj == -3)) {
+		// Clear object list
 		nPlayer = nObjOwner;
 		nMode = 1;
 		networkData.nPrevFrame = networkData.sync [0].objs.nFrame - 1;
-		if (nObject == -3) {
+		if (nLocalObj == -3) {
 			if (networkData.nJoinState != 2)
 				return;
 #if DBG
@@ -676,7 +676,7 @@ networkData.sync [0].objs.nFrame = nFrame;
 			}
 		networkData.sync [0].objs.missingFrames.nFrame = 0;
 		}
-	else if ((nObject == -2) || (nObject == -4)) {	// Special debug checksum marker for entire send
+	else if ((nLocalObj == -2) || (nLocalObj == -4)) {	// Special debug checksum marker for entire send
  		if (!nMode && NetworkVerifyObjects (nRemoteObj, gameData.objs.nObjects)) {
 			NetworkAbortSync ();
 			return;
@@ -693,25 +693,29 @@ networkData.sync [0].objs.nFrame = nFrame;
 #if 1
 		console.printf (CON_DBG, "Got a type 3 object packet!\n");
 #endif
-		nObject = nRemoteObj;
-		if (!InsertObject (nObject)) {
+#if 1
+		nLocalObj = AllocObject ();
+#else
+		nLocalObj = nRemoteObj;
+		if (!InsertObject (nLocalObj)) {
 			if (networkData.nJoinState == 3) {
-				FreeObject (nObject);
-				if (!InsertObject (nObject))
-					nObject = -1;
+				FreeObject (nLocalObj);
+				if (!InsertObject (nLocalObj))
+					nLocalObj = -1;
 				}
 			else
-				nObject = AllocObject ();
+				nLocalObj = AllocObject ();
 			}
+#endif
 		if ((nObjOwner != nPlayer) && (nObjOwner != -1)) {
 			if (nMode == 1)
 				nMode = 0;
 			else
 				Int3 (); // SEE ROB
 			}
-		if (nObject != -1) {
-			Assert (nObject < LEVEL_OBJECTS);
-			objP = OBJECTS + nObject;
+		if (nLocalObj != -1) {
+			Assert (nLocalObj < LEVEL_OBJECTS);
+			objP = OBJECTS + nLocalObj;
 			objP->Unlink (true);
 			while (ObjectIsLinked (objP, objP->info.nSegment))
 				objP->UnlinkFromSeg ();
@@ -722,7 +726,7 @@ networkData.sync [0].objs.nFrame = nFrame;
 					SwapObject (objP);
 #endif
 				nSegment = objP->info.nSegment;
-				PrintLog (0, "receiving object %d (type: %d, segment: %d)\n", nObject, objP->info.nType, nSegment);
+				PrintLog (0, "receiving object %d (type: %d, segment: %d)\n", nLocalObj, objP->info.nType, nSegment);
 				objP->ResetSgmLinks ();
 				objP->ResetLinks ();
 				objP->info.nAttachedObj = -1;
@@ -743,13 +747,17 @@ networkData.sync [0].objs.nFrame = nFrame;
 				if (!ObjectIsLinked (objP, nSegment))
 					objP->LinkToSeg (nSegment);
 				if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_GHOST))
-					RemapLocalPlayerObject (nObject, nRemoteObj);
+					RemapLocalPlayerObject (nLocalObj, nRemoteObj);
+#if 1
+				SetObjNumMapping (nLocalObj, nRemoteObj, nObjOwner);
+#else
 				if (nObjOwner == nPlayer)
-					SetLocalObjNumMapping (nObject);
+					SetLocalObjNumMapping (nLocalObj);
 				else if (nObjOwner != -1)
-					SetObjNumMapping (nObject, nRemoteObj, nObjOwner);
+					SetObjNumMapping (nLocalObj, nRemoteObj, nObjOwner);
 				else
-					gameData.multigame.nObjOwner [nObject] = -1;
+					gameData.multigame.nObjOwner [nLocalObj] = -1;
+#endif
 				if (objP->Type () == OBJ_MONSTERBALL) {
 					gameData.hoard.monsterballP = objP;
 					gameData.hoard.nMonsterballSeg = nSegment;
