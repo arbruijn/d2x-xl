@@ -195,11 +195,11 @@ NetworkSetGameMode (netGame.m_info.gameMode);
 gameStates.app.SRand ();
 netGame.m_info.nSecurity = RandShort ();  // For syncing NetGames with player packets
 downloadManager.Init ();
+networkThread.Start ();
 if (NetworkSelectPlayers (bAutoRun)) {
 	missionManager.DeleteLevelStates ();
 	missionManager.SaveLevelStates ();
 	SetupPowerupFilter ();
-	//networkThread.Start ();
 	StartNewLevel (netGame.m_info.GetLevel (), true);
 	ResetAllPlayerTimeouts ();
 	PrintLog (-1);

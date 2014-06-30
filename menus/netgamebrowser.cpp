@@ -310,6 +310,7 @@ if (!bAutoLaunch) {
 	}
 networkData.bGamesChanged = 1;    
 
+networkThread.Start ();
 do {
 	networkData.nStatus = NETSTAT_BROWSING;
 	for (;;) {

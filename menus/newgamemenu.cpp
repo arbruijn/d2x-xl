@@ -469,7 +469,7 @@ else if ((nChoice == m.IndexOf ("start mcast4 game")) || (nChoice == m.IndexOf (
 	IpxSetDriver (IPX_DRIVER_MCAST4); 
 	}
 gameData.app.SetGameMode (GM_MULTI);
-networkThread.Start ();
+
 if (bStart ? NetworkStartGame () : NetworkBrowseGames ()) {
 	if (gameData.multiplayer.autoNG.bValid > 0)
 		gameData.multiplayer.autoNG.bValid = -1;

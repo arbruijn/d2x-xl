@@ -117,6 +117,7 @@ gameData.reactor.bDestroyed = 0;
 NetworkFlush ();
 netGame.SetPacketsPerSec (mpParams.nPPS);
 memcpy (extraGameInfo + 2, extraGameInfo, sizeof (extraGameInfo [0]));
+//networkThread.Start ();
 }
 
 //------------------------------------------------------------------------------
