@@ -81,7 +81,7 @@ typedef struct tNetworkSyncData {
 typedef struct tNetworkData {
 	ubyte					localAddress [10];
 	ubyte					serverAddress [10];
-	IPXRecvData_t		packetSource;
+	tIPXRecvData		packetSource;
 	int					nActiveGames;
 	int					nLastActiveGames;
 	int					nNamesInfoSecurity;

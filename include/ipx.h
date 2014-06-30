@@ -43,6 +43,64 @@ extern void ArchIpxSetDriver(int ipx_driver);
 #define IPX_NO_LOW_DOS_MEM      -4 // couldn't allocate low dos memory
 #define IPX_ERROR_GETTING_ADDR  -5 // error with getting internetwork address
 
+//------------------------------------------------------------------------------
+
+typedef union tPort {
+	ubyte			b [2];
+	u_int16_t	s;
+} __pack__ tPort;
+
+typedef union tIP {
+	u_int32_t	a;
+	ubyte			octets [4];
+} __pack__ tIP;
+
+typedef struct tPortAddress {
+	tIP		ip;
+	tPort		port;
+} __pack__ tPortAddress;
+
+typedef union tNetworkAddr {
+	tPortAddress	portAddress;
+	ubyte				node [6];
+} tNetworkAddr;
+
+typedef struct tNetworkNode {
+	ubyte				network [4];
+	tNetworkAddr	address;
+} __pack__ tNetworkNode;
+
+typedef struct tAppleTalkAddr {
+	ushort  net;
+	ubyte   node;
+	ubyte   socket;
+} __pack__ tAppleTalkAddr;
+
+typedef union {
+	public:
+		tNetworkNode	node;
+		tAppleTalkAddr	appletalk;
+} __pack__ tNetworkInfo;
+
+class CNetworkInfo {
+	public:
+		tNetworkInfo	m_info;
+
+	public:
+		inline ubyte* Network (void) { return m_info.node.network; }
+		inline ubyte* Node (void) { return m_info.node.address.node; }
+		inline ubyte* IP (void) { return m_info.node.address.portAddress.ip.octets; }
+		inline ushort* Port (void) { return &m_info.node.address.portAddress.port.s; }
+		inline tAppleTalkAddr& AppleTalk (void) { return m_info.appletalk; }
+		inline tNetworkInfo& operator= (tNetworkInfo& other) {
+			m_info = other;
+			return m_info;
+			}
+	};
+
+
+//------------------------------------------------------------------------------
+
 /* returns one of the above constants */
 extern int IpxInit(int socket_number);
 
@@ -80,5 +138,7 @@ void IpxHandleLeaveGame();
 
 void IpxReadUserFile (const char * filename);
 void IpxReadNetworkFile (const char * filename);
+
+//------------------------------------------------------------------------------
 
 #endif

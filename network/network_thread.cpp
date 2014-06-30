@@ -16,11 +16,11 @@
 #endif
 
 #include "descent.h"
+#include "ipx.h"
 #include "byteswap.h"
 #include "timer.h"
 #include "error.h"
 #include "objeffects.h"
-#include "ipx.h"
 #include "network.h"
 #include "network_lib.h"
 #include "netmisc.h"

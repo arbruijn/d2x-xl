@@ -16,6 +16,7 @@
 #include <errno.h>
 #include <stdio.h>
 
+#include "ipx.h"
 #include "../win32/include/ipx_drv.h"
 #include "mono.h"
 #include "error.h"
@@ -194,7 +195,7 @@ return sendto (mysock->fd, reinterpret_cast<const char*> (data), dataLen, 0,
 
 //------------------------------------------------------------------------------
 
-static int ipx_win_ReceivePacket (ipx_socket_t *s, ubyte *buffer, int bufsize, IPXRecvData_t *rd) 
+static int ipx_win_ReceivePacket (ipx_socket_t *s, ubyte *buffer, int bufsize, tIPXRecvData *rd) 
 {
 	struct sockaddr_ipx ipxs;
  

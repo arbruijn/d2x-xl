@@ -41,7 +41,7 @@ class CDownloadManager {
 	public:
 		typedef struct tClient {
 			ubyte			data [DL_PACKET_SIZE];
-			tIpxAddr		addr;
+			tNetworkNode		addr;
 			ubyte			nState;
 			CFile			cf;
 			int			fLen;

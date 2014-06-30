@@ -4,7 +4,7 @@
 //------------------------------------------------------------------------------
 
 typedef struct tNetworkPacketOwner {
-	tIPv4Address				address;
+	tIPXRecvData				address;
 	ubyte							nPlayer;
 } tNetworkPacketOwner;
 

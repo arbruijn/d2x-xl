@@ -495,7 +495,7 @@ else {
 		if (gameData.multiplayer.players [i].IsConnected () && (i != N_LOCALPLAYER))
 			IPXSendPacketData (
 				data, dataSize, 
-				netPlayers [0].m_info.players [i].network.Server (), 
+				netPlayers [0].m_info.players [i].network.IP (), 
 				netPlayers [0].m_info.players [i].network.Node (),
 				gameData.multiplayer.players [i].netAddress);
 		}
