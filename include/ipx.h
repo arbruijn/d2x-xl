@@ -82,6 +82,23 @@ typedef union {
 		tAppleTalkAddr	appletalk;
 } __pack__ tNetworkInfo;
 
+class CNetworkNode {
+	public:
+		tNetworkNode	m_address;
+
+		inline ubyte* Network (void) { return m_address.network; }
+		inline ubyte* Node (void) { return m_address.address.node; }
+		inline ubyte* IP (void) { return m_address.address.portAddress.ip.octets; }
+		inline ushort* Port (void) { return &m_address.address.portAddress.port.s; }
+
+		inline void SetNetwork (void* network) { memcpy (m_address.network, (byte*) network, sizeof (m_address.network)); }
+		inline void SetNode (void* node) { memcpy (m_address.address.node, (byte*) node, sizeof (m_address.address.node)); }
+		inline void SetIP (void* ip) { memcpy (m_address.address.portAddress.ip.octets, (byte*) ip, sizeof (m_address.address.portAddress.ip.octets)); }
+		inline void SetIP (u_int32_t ip) { m_address.address.portAddress.ip.a = ip; }
+		inline void SetPort (void* port) { memcpy (m_address.address.portAddress.port.b, (byte*) port, sizeof (m_address.address.portAddress.port.b)); }
+		inline void SetPort (u_int16_t port) { m_address.address.portAddress.port.s = port; }
+	};
+
 class CNetworkInfo {
 	public:
 		tNetworkInfo	m_info;

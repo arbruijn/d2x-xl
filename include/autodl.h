@@ -40,14 +40,14 @@
 class CDownloadManager {
 	public:
 		typedef struct tClient {
-			ubyte			data [DL_PACKET_SIZE];
-			tNetworkNode		addr;
-			ubyte			nState;
-			CFile			cf;
-			int			fLen;
-			int			nTimeout;
-			TCPsocket	socket;	// 0: host, 1: client
-			SDL_Thread*	thread;
+			ubyte				data [DL_PACKET_SIZE];
+			CNetworkNode	addr;
+			ubyte				nState;
+			CFile				cf;
+			int				fLen;
+			int				nTimeout;
+			TCPsocket		socket;	// 0: host, 1: client
+			SDL_Thread*		thread;
 		} tUploadDest;
 
 	private:

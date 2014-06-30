@@ -137,7 +137,7 @@ if (nPlayer == N_LOCALPLAYER)
 	return m_bDownloading [MAX_PLAYERS - 1];
 if (nPlayer >= MAX_PLAYERS) 
 	return false;
-int i = FindClient (netPlayers [0].m_info.players [nPlayer].network.Server (), netPlayers [0].m_info.players [nPlayer].network.Node ());
+int i = FindClient (netPlayers [0].m_info.players [nPlayer].network.Network (), netPlayers [0].m_info.players [nPlayer].network.Node ());
 if (i < 0)
 	return false;
 return m_bDownloading [i]; 
@@ -148,8 +148,8 @@ return m_bDownloading [i];
 void CDownloadManager::SetDownloadFlag (int nPlayer, bool bFlag)
 {
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (!memcmp (&m_clients [nPlayer].addr.server, netPlayers [0].m_info.players [i].network.Server (), 4) &&
-		 !memcmp (&m_clients [nPlayer].addr.node, netPlayers [0].m_info.players [i].network.Node (), 6)) {
+	if (!memcmp (m_clients [nPlayer].addr.Network (), netPlayers [0].m_info.players [i].network.Network (), 4) &&
+		 !memcmp (m_clients [nPlayer].addr.Node (), netPlayers [0].m_info.players [i].network.Node (), 6)) {
 		m_bDownloading [i] = bFlag;
 		return;
 		}
@@ -162,8 +162,8 @@ int CDownloadManager::FindClient (ubyte* server, ubyte* node)
 {
 for (int i = 0; i < m_nClients; i++)
 	if (m_clients [i].nState &&
-		 !memcmp (&m_clients [i].addr.server, server, 4) &&
-		 !memcmp (&m_clients [i].addr.node, node, 6)) {
+		 !memcmp (m_clients [i].addr.Network (), server, 4) &&
+		 !memcmp (m_clients [i].addr.Node (), node, 6)) {
 		m_clients [i].nTimeout = SDL_GetTicks ();
 		return i;
 		}
@@ -188,8 +188,8 @@ if (i >= 0)
 else if (m_nClients >= MAX_PLAYERS)
 	return -1;
 i = m_freeList [MAX_PLAYERS - ++m_nClients];
-memcpy (&m_clients [i].addr.server, networkData.packetSource.Network (), 4);
-memcpy (&m_clients [i].addr.node, networkData.packetSource.Node (), 6);
+m_clients [i].addr.SetNetwork (networkData.packetSource.Network ());
+m_clients [i].addr.SetNode (networkData.packetSource.Node ());
 SetDownloadFlag (i, 1);
 m_clients [i].nTimeout = SDL_GetTicks ();
 m_clients [i].nState = DL_CONNECT;
@@ -243,7 +243,7 @@ if (pId == PID_UPLOAD) {
 		IPXSendInternetPacketData (m_data, 2, networkData.serverAddress, networkData.serverAddress + 4);
 	}
 else
-	IPXSendInternetPacketData (m_data, 2, clientP->addr.server, clientP->addr.node.v);
+	IPXSendInternetPacketData (m_data, 2, clientP->addr.Network (), clientP->addr.Node ());
 return 1;
 }
 
