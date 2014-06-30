@@ -143,10 +143,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // Exported functions
 
-int ObjnumRemoteToLocal (int remote_obj, int owner);
-int ObjnumLocalToRemote (int local_obj, sbyte *owner);
-void MapObjnumLocalToRemote (int local, int remote, int owner);
-void MapObjnumLocalToLocal (int nObject);
+int GetLocalObjNum (int remote_obj, int owner);
+int GetRemoteObjNum (int local_obj, sbyte *owner);
+void SetObjNumMapping (int local, int remote, int owner);
+void SetLocalObjNumMapping (int nObject);
 void ResetNetworkObjects ();
 
 void MultiInitObjects (void);

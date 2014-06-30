@@ -473,10 +473,8 @@ void LoadHoardData (void)
 
 void GrabMouse (int bGrab, int bForce)
 {
-#if defined (SDL_INPUT) && !(defined (__linux__) && DBG)
-if (gameStates.input.bGrabMouse && (bForce || gameStates.app.bGameRunning))
-	SDL_WM_GrabInput ((bGrab || ogl.m_states.bFullScreen) ? SDL_GRAB_ON : SDL_GRAB_OFF);
-#endif
+//if (gameStates.input.bGrabMouse && (bForce || gameStates.app.bGameRunning))
+SDL_WM_GrabInput (((bGrab && gameStates.input.bGrabMouse) || ogl.m_states.bFullScreen) ? SDL_GRAB_ON : SDL_GRAB_OFF);
 }
 
 // ----------------------------------------------------------------------------

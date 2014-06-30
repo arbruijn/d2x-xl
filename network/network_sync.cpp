@@ -139,7 +139,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 			break; // Not enough room for another CObject
 		nObjFrames++;
 		syncP->objs.nSent++;
-		nRemoteObj = ObjnumLocalToRemote (short (i), &owner);
+		nRemoteObj = GetRemoteObjNum (short (i), &owner);
 		Assert (owner == gameData.multigame.nObjOwner [i]);
 		Assert (nRemoteObj >= 0);
 		NW_SET_SHORT (objBuf, bufI, i);      

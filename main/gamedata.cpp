@@ -1852,7 +1852,8 @@ nTypingTimeout = 0;
 
 bool CMultiGameData::Create (void)
 {
-CREATE (gameData.multigame.remoteToLocal, MAX_NUM_NET_PLAYERS * LEVEL_OBJECTS, 0xff);  // Remote CObject number for each local CObject
+for (int i = 0; i < MAX_NUM_NET_PLAYERS; i++)
+	CREATE (gameData.multigame.remoteToLocal [i], LEVEL_OBJECTS, 0xff);  // Remote CObject number for each local CObject
 CREATE (gameData.multigame.localToRemote, LEVEL_OBJECTS, 0xff);
 CREATE (gameData.multigame.nObjOwner, LEVEL_OBJECTS, 0xff);   // Who created each CObject in my universe, -1 = loaded at start
 return true;
@@ -1862,7 +1863,8 @@ return true;
 
 void CMultiGameData::Destroy (void)
 {
-DESTROY (gameData.multigame.remoteToLocal);  // Remote CObject number for each local CObject
+for (int i = 0; i < MAX_NUM_NET_PLAYERS; i++)
+	DESTROY (gameData.multigame.remoteToLocal [i]);  // Remote CObject number for each local CObject
 DESTROY (gameData.multigame.localToRemote);
 DESTROY (gameData.multigame.nObjOwner);   // Who created each CObject in my universe, -1 = loaded at start
 }

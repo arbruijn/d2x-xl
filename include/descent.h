@@ -2866,7 +2866,7 @@ class CMultiGameData {
 		CMultiMenuData		menu;
 		CMultiScoreData	score;
 		tMultiRobotData	robots;
-		CArray<short>		remoteToLocal;  // Remote CObject number for each local CObject
+		CArray<short>		remoteToLocal [MAX_PLAYERS];  // Remote CObject number for each local CObject
 		CArray<short>		localToRemote;
 		CArray<sbyte>		nObjOwner;   // Who created each CObject in my universe, -1 = loaded at start
 		int					bGotoSecret;

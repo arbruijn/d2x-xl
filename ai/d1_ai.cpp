@@ -1592,7 +1592,7 @@ void do_super_boss_stuff(CObject *objP, fix dist_to_player, int player_visibilit
 				if ((nObject >= 0) && (IsMultiGame))
 			 {
 					MultiSendBossActions(objP->Index (), 3, randtype, nObject);
-					MapObjnumLocalToLocal (nObject);
+					SetLocalObjNumMapping (nObject);
 
 				}
 			}

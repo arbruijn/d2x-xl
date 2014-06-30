@@ -745,9 +745,9 @@ networkData.sync [0].objs.nFrame = nFrame;
 				if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_GHOST))
 					RemapLocalPlayerObject (nObject, nRemoteObj);
 				if (nObjOwner == nPlayer)
-					MapObjnumLocalToLocal (nObject);
+					SetLocalObjNumMapping (nObject);
 				else if (nObjOwner != -1)
-					MapObjnumLocalToRemote (nObject, nRemoteObj, nObjOwner);
+					SetObjNumMapping (nObject, nRemoteObj, nObjOwner);
 				else
 					gameData.multigame.nObjOwner [nObject] = -1;
 				if (objP->Type () == OBJ_MONSTERBALL) {

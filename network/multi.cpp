@@ -287,7 +287,7 @@ return 1;
 
 // Map a remote object number from nOwner to a local object number
 
-int ObjnumRemoteToLocal (int nRemoteObj, int nOwner)
+int GetLocalObjNum (int nRemoteObj, int nOwner)
 {
 	int nObject;
 
@@ -299,7 +299,7 @@ if (nOwner == -1)
 	return nRemoteObj;
 if ((nRemoteObj < 0) || (nRemoteObj >= LEVEL_OBJECTS))
 	return -1;
-nObject = gameData.multigame.remoteToLocal [nOwner * LEVEL_OBJECTS + nRemoteObj];
+nObject = gameData.multigame.remoteToLocal [nOwner][nRemoteObj];
 if (nObject < 0)
 	return -1;
 return nObject;
@@ -308,7 +308,7 @@ return nObject;
 //-----------------------------------------------------------------------------
 // Map a local CObject number to a remote + nOwner
 
-int ObjnumLocalToRemote (int nLocalObj, sbyte *nOwner)
+int GetRemoteObjNum (int nLocalObj, sbyte *nOwner)
 {
 if ((nLocalObj < 0) || (nLocalObj > gameData.objs.nLastObject [0])) {
 	*nOwner = -1;
@@ -342,13 +342,13 @@ if (nLocalObj != nRemoteObj)
 //-----------------------------------------------------------------------------
 // Add a mapping from a network remote object number to a local one
 
-void MapObjnumLocalToRemote (int nLocalObj, int nRemoteObj, int nOwner)
+void SetObjNumMapping (int nLocalObj, int nRemoteObj, int nOwner)
 {
 if ((nLocalObj > -1) && (nLocalObj < LEVEL_OBJECTS) && 
 	 (nRemoteObj > -1) && (nRemoteObj < LEVEL_OBJECTS) && 
 	 (nOwner > -1) && (nOwner != N_LOCALPLAYER)) {
 	gameData.multigame.nObjOwner [nLocalObj] = nOwner;
-	gameData.multigame.remoteToLocal [nOwner * LEVEL_OBJECTS + nRemoteObj] = nLocalObj;
+	gameData.multigame.remoteToLocal [nOwner][nRemoteObj] = nLocalObj;
 	gameData.multigame.localToRemote [nLocalObj] = nRemoteObj;
 	}
 }
@@ -356,11 +356,11 @@ if ((nLocalObj > -1) && (nLocalObj < LEVEL_OBJECTS) &&
 //-----------------------------------------------------------------------------
 // Add a mapping for our locally created OBJECTS
 
-void MapObjnumLocalToLocal (int nLocalObj)
+void SetLocalObjNumMapping (int nLocalObj)
 {
 if ((nLocalObj > -1) && (nLocalObj < LEVEL_OBJECTS)) {
 	gameData.multigame.nObjOwner [nLocalObj] = N_LOCALPLAYER;
-	gameData.multigame.remoteToLocal [N_LOCALPLAYER * LEVEL_OBJECTS + nLocalObj] = nLocalObj;
+	gameData.multigame.remoteToLocal [N_LOCALPLAYER][nLocalObj] = nLocalObj;
 	gameData.multigame.localToRemote [nLocalObj] = nLocalObj;
 	}
 }
@@ -370,7 +370,8 @@ if ((nLocalObj > -1) && (nLocalObj < LEVEL_OBJECTS)) {
 void ResetNetworkObjects (void)
 {
 gameData.multigame.localToRemote.Clear (0xff);
-gameData.multigame.remoteToLocal.Clear (0xff);
+for (int i = 0; i < MAX_NUM_NET_PLAYERS; i++)
+	gameData.multigame.remoteToLocal [i].Clear (0xff);
 gameData.multigame.nObjOwner.Clear (0xff);
 }
 
@@ -1399,7 +1400,7 @@ int i;
 for (i = 0; (i < nRemoteCreated) && (i < gameData.multigame.create.nCount); i++) {
 	short nRemoteObj = GET_INTEL_SHORT (objList);
 	if (nRemoteObj > 0)
-		MapObjnumLocalToRemote ((short) gameData.multigame.create.nObjNums [i], nRemoteObj, nPlayer);
+		SetObjNumMapping ((short) gameData.multigame.create.nObjNums [i], nRemoteObj, nPlayer);
 	objList--;
 	}
 for (; i < gameData.multigame.create.nCount; i++)
@@ -1487,7 +1488,7 @@ int nKiller = GET_INTEL_SHORT (buf + 2);
 if (nKiller < 0) 
 	nPlayer = -1;
 else
-	nKiller = ObjnumRemoteToLocal (nKiller, sbyte (nPlayer = int (buf [4])));
+	nKiller = GetLocalObjNum (nKiller, sbyte (nPlayer = int (buf [4])));
 #if DBG
 MultiComputeKill (nKiller, nKilled);
 #else
@@ -1563,7 +1564,7 @@ short nObject = GET_INTEL_SHORT (buf + 1);
 if (nObject < 1)
 	return;
 sbyte nObjOwner = buf [3];
-short nLocalObj = ObjnumRemoteToLocal (nObject, nObjOwner); // translate to local nObject
+short nLocalObj = GetLocalObjNum (nObject, nObjOwner); // translate to local nObject
 if (nLocalObj < 0)
 	return;
 CObject* objP = OBJECTS + nLocalObj;
@@ -1773,7 +1774,7 @@ NetworkResetObjSync (nLocalObj);
 OBJECTS [nLocalObj].info.position.vPos = vPos;
 OBJECTS [nLocalObj].mType.physInfo.velocity = vVel;
 OBJECTS [nLocalObj].RelinkToSeg (nSegment);
-MapObjnumLocalToRemote (nLocalObj, nObject, nPlayer);
+SetObjNumMapping (nLocalObj, nObject, nPlayer);
 return;
 }
 
@@ -1815,7 +1816,7 @@ NetworkResetObjSync (nLocalObj);
 OBJECTS [nLocalObj].info.position.vPos = vPos;
 OBJECTS [nLocalObj].mType.physInfo.velocity.SetZero ();
 OBJECTS [nLocalObj].RelinkToSeg (nSegment);
-MapObjnumLocalToRemote (nLocalObj, nObject, nPlayer);
+SetObjNumMapping (nLocalObj, nObject, nPlayer);
 CreateExplosion (nSegment, vPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
 return nLocalObj;
 }
@@ -2256,7 +2257,7 @@ for (i = 0; i < gameData.multigame.create.nCount; i++) {
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufI, gameData.multigame.create.nObjNums [i]);
 	bufI += 2;
 	// We created these objs so our local number = the network number
-	MapObjnumLocalToLocal (short (gameData.multigame.create.nObjNums [i]));
+	SetLocalObjNumMapping (short (gameData.multigame.create.nObjNums [i]));
 	}
 gameData.multigame.create.nCount = 0;
 #if DBG
@@ -2471,7 +2472,7 @@ gameData.multigame.msg.buf [0] = (char) MULTI_KILL;
 gameData.multigame.msg.buf [1] = N_LOCALPLAYER;
 if (nKillerObj > -1) {
 	// do it with variable player since INTEL_SHORT won't work on return val from function.
-	short s = (short) ObjnumLocalToRemote (nKillerObj, reinterpret_cast<sbyte*> (&gameData.multigame.msg.buf [4]));
+	short s = (short) GetRemoteObjNum (nKillerObj, reinterpret_cast<sbyte*> (&gameData.multigame.msg.buf [4]));
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + 2, s);
 	}
 else {
@@ -2551,7 +2552,7 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 //if ((OBJECTS [nObject].info.nType == OBJ_POWERUP) && IsNetworkGame)
 //	RemovePowerupInMine (OBJECTS [nObject].info.nId);
 gameData.multigame.msg.buf [0] = char (MULTI_REMOVE_OBJECT);
-nRemoteObj = ObjnumLocalToRemote (short (nObject), &nObjOwner);
+nRemoteObj = GetRemoteObjNum (short (nObject), &nObjOwner);
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nRemoteObj); // Map to network objnums
 gameData.multigame.msg.buf [3] = nObjOwner;
 if (gameStates.multi.nGameType == UDP_GAME)
@@ -2721,7 +2722,7 @@ count += 12;
 #endif
 MultiSendData (gameData.multigame.msg.buf, count, 1);
 NetworkResetObjSync (nObject);
-MapObjnumLocalToLocal (nObject);
+SetLocalObjNumMapping (nObject);
 }
 
 //-----------------------------------------------------------------------------
@@ -2756,7 +2757,7 @@ count += 12;
 #endif
 MultiSendData (gameData.multigame.msg.buf, count, 1);
 NetworkResetObjSync (nObject);
-MapObjnumLocalToLocal (nObject);
+SetLocalObjNumMapping (nObject);
 }
 
 //-----------------------------------------------------------------------------
@@ -2798,7 +2799,7 @@ count += 12;
 #endif
 MultiSendData (gameData.multigame.msg.buf, count, 1);
 NetworkResetObjSync (nObject);
-MapObjnumLocalToLocal (nObject);
+SetLocalObjNumMapping (nObject);
 }
 
 //-----------------------------------------------------------------------------
@@ -3550,7 +3551,7 @@ count += 2;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, ammoCount);
 count += 2;
 PUT_INTEL_INT (gameData.multigame.msg.buf + count, gameStates.app.nRandSeed);
-MapObjnumLocalToLocal (nObject);
+SetLocalObjNumMapping (nObject);
 MultiSendData (gameData.multigame.msg.buf, 12, 2);
 }
 
@@ -3570,7 +3571,7 @@ seed = GET_INTEL_INT (buf + 8);
 objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
 nObject = SpitPowerup (objP, powerupId, seed);
 if (nObject >= 0) {
-	MapObjnumLocalToRemote (nObject, nRemoteObj, nPlayer);
+	SetObjNumMapping (nObject, nRemoteObj, nPlayer);
 	OBJECTS [nObject].cType.powerupInfo.nCount = ammo;
 	}
 }
@@ -4565,7 +4566,7 @@ count += 2;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, objP->cType.powerupInfo.nCount);
 count += 2;
 PUT_INTEL_INT (gameData.multigame.msg.buf + count, seed);
-MapObjnumLocalToLocal (nObject);
+SetLocalObjNumMapping (nObject);
 MultiSendData (gameData.multigame.msg.buf, 12, 2);
 }
 
@@ -4585,7 +4586,7 @@ seed = GET_INTEL_INT (buf + 8);
 
 objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
 nObject = SpitPowerup (objP, powerupId, seed);
-MapObjnumLocalToRemote (nObject, nRemoteObj, nPlayer);
+SetObjNumMapping (nObject, nRemoteObj, nPlayer);
 if (nObject!=-1)
 	OBJECTS [nObject].cType.powerupInfo.nCount = ammo;
 if (IsEntropyGame)

@@ -73,7 +73,7 @@ void TrackWeaponObject (short nObject, int nOwner)
 {
 if (gameData.multigame.laser.nFired [0] < sizeofa (gameData.multigame.laser.nObjects)) {
 	if (gameData.multigame.laser.nFired [0] < gameData.multigame.laser.nFired [1])
-		MapObjnumLocalToRemote (nObject, gameData.multigame.laser.nObjects [1][gameData.multigame.laser.nFired [0]], nOwner);
+		SetObjNumMapping (nObject, gameData.multigame.laser.nObjects [1][gameData.multigame.laser.nFired [0]], nOwner);
 	gameData.multigame.laser.nObjects [0][gameData.multigame.laser.nFired [0]++] = nObject;
 	}
 }

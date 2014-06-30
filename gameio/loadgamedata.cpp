@@ -525,7 +525,7 @@ void BMReadGameDataD1 (CFile& cf)
 {
 	int				h, i, j;
 #if 1
-	D1_tmap_info	t;
+	D1_tmap_info	t; // only needed for sizeof term below
 	//D1Robot_info	r;
 #endif
 	tWallClip		*pw;	
