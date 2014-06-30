@@ -194,7 +194,7 @@ return sendto (mysock->fd, reinterpret_cast<const char*> (data), dataLen, 0,
 
 //------------------------------------------------------------------------------
 
-static int ipx_win_ReceivePacket(ipx_socket_t *s, ubyte *buffer, int bufsize, IPXRecvData_t *rd) 
+static int ipx_win_ReceivePacket (ipx_socket_t *s, ubyte *buffer, int bufsize, IPXRecvData_t *rd) 
 {
 	struct sockaddr_ipx ipxs;
  
@@ -202,8 +202,8 @@ int sz = sizeof(ipxs);
 int size = recvfrom (s->fd, reinterpret_cast<char*> (buffer), bufsize, 0,  reinterpret_cast<struct sockaddr*> (&ipxs), &sz);
 if (size <= 0)
    return size;
-memcpy (rd->src_network, ipxs.sa_netnum, 4);
-memcpy (rd->src_node, ipxs.sa_nodenum, 6);
+rd->SetNetwork (ipxs.sa_netnum);
+rd->SetNode (ipxs.sa_nodenum);
 rd->src_socket = ipxs.sa_socket;
 rd->dst_socket = s->socket;
 return size;

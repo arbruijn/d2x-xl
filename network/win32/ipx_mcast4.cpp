@@ -231,7 +231,7 @@ return sendto (sk->fd, reinterpret_cast<const char*> (data), dataLen, 0, reinter
 
 //------------------------------------------------------------------------------
 
-static int ipx_mcast4_ReceivePacket (ipx_socket_t *sk, ubyte *outbuf, int outbufsize, IPXRecvData_t *rd)
+static int ipx_mcast4_ReceivePacket (ipx_socket_t *sk, ubyte *outbuf, int outbufsize, IPXRecvData_t* rd)
 {
 	int size;
 	struct sockaddr_in fromaddr;
@@ -248,9 +248,9 @@ dumpaddr (&fromaddr);
 
 // We have the packet, now fill out the receive data.
 memset (rd, 0, sizeof (*rd));
-memcpy (rd->src_node, &fromaddr.sin_addr, 4);
+rd->SetServer (&fromaddr.sin_addr);
 // TODO: Include the port like in ipx_udp.c
-rd->pktType = 0;
+rd->SetType (0);
 return size;
 }
 

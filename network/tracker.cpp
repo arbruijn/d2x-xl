@@ -149,7 +149,7 @@ return 1;
 int CTracker::ReceiveServerList (ubyte *data)
 {
 	tServerListTable	*pslt;
-	int					i = Find (reinterpret_cast<tUdpAddress*> (&networkData.packetSource.src_node));
+	int					i = Find (reinterpret_cast<tUdpAddress*> (networkData.packetSource.Node ()));
 
 if (i < 0)
 	return 0;

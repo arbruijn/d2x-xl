@@ -242,7 +242,7 @@ while (driver->PacketReady (&ipxSocketData)) {
 		break;
 	if (dataSize < 6)
 		continue;
-	dataOffs = tracker.IsTracker (*reinterpret_cast<uint*> (networkData.packetSource.src_node), *reinterpret_cast<ushort*> (networkData.packetSource.src_node + 4), (char*) buf) ? 0 : 4;
+	dataOffs = tracker.IsTracker (networkData.packetSource.Server (), networkData.packetSource.Port (), (char*) buf) ? 0 : 4;
 	if (dataSize > MAX_PAYLOAD_SIZE + dataOffs) {
 		PrintLog (0, "incoming data package too large (%d bytes)\n", dataSize);
 		continue;

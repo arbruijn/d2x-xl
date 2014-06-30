@@ -1135,8 +1135,7 @@ return 1;
 //------------------------------------------------------------------------------
 // Here we will receive a new packet and place it in the buffer passed.
 
-static int UDPReceivePacket
-	(ipx_socket_t *s, ubyte *outBuf, int outBufSize, IPXRecvData_t *rd)
+static int UDPReceivePacket (ipx_socket_t *s, ubyte *outBuf, int outBufSize, IPXRecvData_t *rd)
 {
 	struct sockaddr_in	fromAddr;
 	int						i, dataLen, bTracker;
@@ -1226,10 +1225,10 @@ if (!(bTracker
 else
 	BRP;
 #endif
-memset (rd->src_network, 0, 4);
-memcpy (rd->src_node, &fromAddr.sin_addr, 4);
-memcpy (rd->src_node + 4, &fromAddr.sin_port, 2);
-rd->pktType = 0;
+rd->ResetNetwork ();
+rd->SetServer (&fromAddr.sin_addr); // SetPort () ?
+rd->SetPort (&fromAddr.sin_port);
+rd->SetType (0);
 return dataLen;
 }
 

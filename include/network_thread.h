@@ -3,25 +3,32 @@
 
 //------------------------------------------------------------------------------
 
+typedef struct tNetworkPacketOwner {
+	tIPv4Address				address;
+	ubyte							nPlayer;
+} tNetworkPacketOwner;
+
 typedef struct tNetworkPacket {
 	struct tNetworkPacket*	nextPacket;
 	ushort						size;
 	ubyte							data [MAX_PACKET_SIZE];
+	tNetworkPacketOwner		owner;
 } tNetworkPacket;
 
 //------------------------------------------------------------------------------
 
 class CNetworkThread {
 	private:
-		SDL_Thread*			m_thread;
-		SDL_sem*				m_semaphore;
-		SDL_mutex*			m_sendLock;
-		SDL_mutex*			m_recvLock;
-		SDL_mutex*			m_processLock;
-		int					m_nThreadId;
-		bool					m_bListen;
-		int					m_nPackets;
-		tNetworkPacket*	m_packets [2];
+		SDL_Thread*				m_thread;
+		SDL_sem*					m_semaphore;
+		SDL_mutex*				m_sendLock;
+		SDL_mutex*				m_recvLock;
+		SDL_mutex*				m_processLock;
+		int						m_nThreadId;
+		bool						m_bListen;
+		int						m_nPackets;
+		tNetworkPacketOwner	m_owner;
+		tNetworkPacket*		m_packets [2];
 
 	public:
 		CNetworkThread ();
