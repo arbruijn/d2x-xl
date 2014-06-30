@@ -277,7 +277,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 kick_player:;
 		if (gameStates.multi.nGameType  >= IPX_GAME)
 			NetworkDumpPlayer (
-				netPlayers [0].m_info.players [i].network.Server (), 
+				netPlayers [0].m_info.players [i].network.Network (), 
 				netPlayers [0].m_info.players [i].network.Node (), 
 				7);
 
