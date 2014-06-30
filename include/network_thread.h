@@ -37,7 +37,7 @@ class CNetworkThread {
 		void Start (void);
 		void End (void);
 		int CheckPlayerTimeouts (void);
-		void UpdatePlayers (void);
+		void Update (void);
 		int Listen (void);
 		tNetworkPacket* GetPacket (void);
 		int GetPacketData (ubyte* data);

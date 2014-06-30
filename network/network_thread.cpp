@@ -59,7 +59,7 @@ return 0;
 void CNetworkThread::Process (void)
 {
 for (;;) {
-	UpdatePlayers ();
+	Update ();
 	G3_SLEEP (10);
 	}
 }
@@ -224,7 +224,7 @@ return 1;
 //------------------------------------------------------------------------------
 // Check for player timeouts
 
-void CNetworkThread::UpdatePlayers (void)
+void CNetworkThread::Update (void)
 {
 	static CTimeout toUpdate (500);
 
@@ -256,7 +256,7 @@ if (toUpdate.Expired ()) {
 		//SemPost ();
 		}
 	}
-
+Listen ();
 CheckPlayerTimeouts ();
 }
 
