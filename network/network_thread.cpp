@@ -309,7 +309,8 @@ tNetworkPacket* CNetworkThread::GetPacket (void)
 {
 tNetworkPacket* packet;
 if (packet = m_packets [0]) {
-	m_packets [0] = packet->nextPacket;
+	if (!(m_packets [0] = packet->nextPacket))
+		m_packets [1] = NULL;
 	--m_nPackets;
 	}
 return packet;
