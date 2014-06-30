@@ -91,6 +91,14 @@ class CNetworkInfo {
 		inline ubyte* Node (void) { return m_info.node.address.node; }
 		inline ubyte* IP (void) { return m_info.node.address.portAddress.ip.octets; }
 		inline ushort* Port (void) { return &m_info.node.address.portAddress.port.s; }
+
+		inline void SetNetwork (void* network) { memcpy (m_info.node.network, (byte*) network, sizeof (m_info.node.network)); }
+		inline void SetNode (void* node) { memcpy (m_info.node.address.node, (byte*) node, sizeof (m_info.node.address.node)); }
+		inline void SetIP (void* ip) { memcpy (m_info.node.address.portAddress.ip.octets, (byte*) ip, sizeof (m_info.node.address.portAddress.ip.octets)); }
+		inline void SetIP (u_int32_t ip) { m_info.node.address.portAddress.ip.a = ip; }
+		inline void SetPort (void* port) { memcpy (m_info.node.address.portAddress.port.b, (byte*) port, sizeof (m_info.node.address.portAddress.port.b)); }
+		inline void SetPort (u_int16_t port) { m_info.node.address.portAddress.port.s = port; }
+
 		inline tAppleTalkAddr& AppleTalk (void) { return m_info.appletalk; }
 		inline tNetworkInfo& operator= (tNetworkInfo& other) {
 			m_info = other;

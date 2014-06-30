@@ -150,7 +150,7 @@ int AbortPlayerSelection (int nSavePlayers)
 for (int i = 1; i < nSavePlayers; i++) {
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
-			netPlayers [0].m_info.players [i].network.Server (), 
+			netPlayers [0].m_info.players [i].network.Network (), 
 			netPlayers [0].m_info.players [i].network.Node (), 
 			DUMP_ABORTED);
 	}
@@ -206,10 +206,8 @@ for (i = 0; i < nSavePlayers; i++) {
 	if (m [i].Value ()) {
 		if (i > gameData.multiplayer.nPlayers) {
 			if (gameStates.multi.nGameType >= IPX_GAME) {
-				memcpy (netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.Node (), 
-						  netPlayers [0].m_info.players [i].network.Node (), 6);
-				memcpy (netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.Server (), 
-						  netPlayers [0].m_info.players [i].network.Server (), 4);
+				netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.SetNode (netPlayers [0].m_info.players [i].network.Node ());
+				netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.SetIP (netPlayers [0].m_info.players [i].network.IP ());
 				}
 			else {
 				memcpy (&netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.AppleTalk (), 
@@ -230,14 +228,14 @@ for (i = 0; i < nSavePlayers; i++) {
 		}
 	else {
 		if (gameStates.multi.nGameType >= IPX_GAME)
-			NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.Server (), netPlayers [0].m_info.players [i].network.Node (), DUMP_DORK);
+			NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.Network (), netPlayers [0].m_info.players [i].network.Node (), DUMP_DORK);
 		}
 	}
 
 for (i = gameData.multiplayer.nPlayers; i < MAX_NUM_NET_PLAYERS; i++) {
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 		memset (netPlayers [0].m_info.players [i].network.Node (), 0, 6);
-		memset (netPlayers [0].m_info.players [i].network.Server (), 0, 4);
+		memset (netPlayers [0].m_info.players [i].network.Network (), 0, 4);
 	   }
 	else {
 		netPlayers [0].m_info.players [i].network.AppleTalk ().node = 0;

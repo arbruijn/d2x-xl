@@ -643,7 +643,7 @@ m_cf.WriteByte ((sbyte) netPlayers [0].m_info.nType);
 m_cf.WriteInt (netPlayers [0].m_info.nSecurity);
 for (i = 0; i < MAX_NUM_NET_PLAYERS + 4; i++) {
 	m_cf.Write (netPlayers [0].m_info.players [i].callsign, 1, CALLSIGN_LEN + 1);
-	m_cf.Write (netPlayers [0].m_info.players [i].network.Server (), 1, 4);
+	m_cf.Write (netPlayers [0].m_info.players [i].network.Network (), 1, 4);
 	m_cf.Write (netPlayers [0].m_info.players [i].network.Node (), 1, 6);
 	m_cf.WriteByte ((sbyte) netPlayers [0].m_info.players [i].versionMajor);
 	m_cf.WriteByte ((sbyte) netPlayers [0].m_info.players [i].versionMinor);
@@ -1485,7 +1485,7 @@ netPlayers [0].m_info.nType = (ubyte) m_cf.ReadByte ();
 netPlayers [0].m_info.nSecurity = m_cf.ReadInt ();
 for (int i = 0; i < MAX_NUM_NET_PLAYERS + 4; i++) {
 	m_cf.Read (netPlayers [0].m_info.players [i].callsign, 1, CALLSIGN_LEN + 1);
-	m_cf.Read (netPlayers [0].m_info.players [i].network.Server (), 1, 4);
+	m_cf.Read (netPlayers [0].m_info.players [i].network.Network (), 1, 4);
 	m_cf.Read (netPlayers [0].m_info.players [i].network.Node (), 1, 6);
 	netPlayers [0].m_info.players [i].versionMajor = (ubyte) m_cf.ReadByte ();
 	netPlayers [0].m_info.players [i].versionMinor = (ubyte) m_cf.ReadByte ();
