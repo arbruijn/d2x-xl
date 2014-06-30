@@ -256,7 +256,8 @@ if (toUpdate.Expired ()) {
 		//SemPost ();
 		}
 	}
-Listen ();
+if (Available ())
+	Listen ();
 CheckPlayerTimeouts ();
 }
 
