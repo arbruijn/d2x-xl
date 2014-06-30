@@ -493,7 +493,7 @@ else if (!(piP->nStatusFilter & (1 << networkData.nStatus)))
 else if (!NetworkBadPacketSize (nLength, piP->nLength, piP->pszInfo)) {
 	console.printf (0, "received %s\n", piP->pszInfo);
 	if (!addressFilter [pId])	// patch the proper IP address into the packet header
-		memcpy (&THEIR->player.network, &networkData.packetSource.src_addr, sizeof (networkData.packetSource.src_addr));
+		memcpy (&THEIR->player.network, &networkData.packetSource.Address (), sizeof (tNetworkNode));
 	nFuncRes = piP->packetHandler (dataP, nLength);
 	}
 networkThread.UnlockProcess ();

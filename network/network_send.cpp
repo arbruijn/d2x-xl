@@ -89,7 +89,7 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
-			syncP->player [1].player.network.Server (), 
+			syncP->player [1].player.network.Network (), 
 			syncP->player [1].player.network.Node (), 
 			DUMP_ENDLEVEL);
 	syncP->nState = 0; 
@@ -105,7 +105,7 @@ if (networkData.bPlayerAdded) {
 		if ((i != nPlayer) && (i != N_LOCALPLAYER) && gameData.multiplayer.players [i].IsConnected () && (gameStates.multi.nGameType >= IPX_GAME)) {
 			SendSequencePacket (
 				syncP->player [1], 
-				netPlayers [0].m_info.players [i].network.Server (), 
+				netPlayers [0].m_info.players [i].network.Network (), 
 				netPlayers [0].m_info.players [i].network.Node (), 
 				gameData.multiplayer.players [i].netAddress);
 			}
@@ -125,8 +125,8 @@ for (j = 0; j < MAX_PLAYERS; j++) {
 netGame.SetLevelTime (LOCALPLAYER.timeLevel);
 netGame.SetMonitorVector (NetworkCreateMonitorVector ());
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	SendInternetFullNetGamePacket (syncP->player [1].player.network.Server (), syncP->player [1].player.network.Node ());
-	SendNetPlayersPacket (syncP->player [1].player.network.Server (), syncP->player [1].player.network.Node ());
+	SendInternetFullNetGamePacket (syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node ());
+	SendNetPlayersPacket (syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node ());
 	MultiSendMonsterball (1, 1);
 	}
 }
@@ -152,10 +152,10 @@ netGame.LevelTime () = LOCALPLAYER.timeLevel;
 netGame.MonitorVector () = NetworkCreateMonitorVector ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	SendInternetFullNetGamePacket (
-		networkData.sync [0].player [1].player.network.Server (), 
+		networkData.sync [0].player [1].player.network.Network (), 
 		networkData.sync [0].player [1].player.network.Node ());
 	SendNetPlayersPacket (
-		networkData.sync [0].player [1].player.network.Server (), 
+		networkData.sync [0].player [1].player.network.Network (), 
 		networkData.sync [0].player [1].player.network.Node ());
 	}
 }
@@ -198,7 +198,7 @@ me.nType = PID_GAME_LIST;
 memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN + 1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (me.player.network.Node (), IpxGetMyLocalAddress (), 6);
-	memcpy (me.player.network.Server (), IpxGetMyServerAddress (), 4);
+	memcpy (me.player.network.Network (), IpxGetMyServerAddress (), 4);
 	if (gameStates.multi.nGameType != UDP_GAME) 
 		SendBroadcastSequencePacket (me);
 	else {
@@ -234,7 +234,7 @@ me.nType = nType;
 memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN + 1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (me.player.network.Node (), IpxGetMyLocalAddress (), 6);
-	memcpy (me.player.network.Server (), IpxGetMyServerAddress (), 4);
+	memcpy (me.player.network.Network (), IpxGetMyServerAddress (), 4);
 	SendBroadcastSequencePacket (me);
 	}
 }
@@ -278,7 +278,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		else if (gameStates.multi.nGameType >= IPX_GAME)
 			IPXSendPacketData (
 				reinterpret_cast<ubyte*> (&end), sizeof (tEndLevelInfo), 
-				netPlayers [0].m_info.players [i].network.Server (), 
+				netPlayers [0].m_info.players [i].network.Network (), 
 				netPlayers [0].m_info.players [i].network.Node (), gameData.multiplayer.players [i].netAddress);
 		}
 	}
@@ -318,7 +318,7 @@ eli.connected = gameData.multiplayer.players [nSrcPlayer].connected;
 eli.secondsLeft = gameData.reactor.countdown.nSecsLeft;
 IPXSendPacketData (
 	reinterpret_cast<ubyte*> (&eli), sizeof (tEndLevelInfoShort), 
-	netPlayers [0].m_info.players [nDestPlayer].network.Server (), 
+	netPlayers [0].m_info.players [nDestPlayer].network.Network (), 
 	netPlayers [0].m_info.players [nDestPlayer].network.Node (), gameData.multiplayer.players [nDestPlayer].netAddress);
 }
 
@@ -354,8 +354,8 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		SendBroadcastNetPlayersPacket ();
 		}
 	else {
-		SendInternetFullNetGamePacket (their->player.network.Server (), their->player.network.Node ());
-		SendNetPlayersPacket (their->player.network.Server (), their->player.network.Node ());
+		SendInternetFullNetGamePacket (their->player.network.Network (), their->player.network.Node ());
+		SendNetPlayersPacket (their->player.network.Network (), their->player.network.Node ());
 		}
 	}
 netGame.m_info.nType = oldType;
@@ -407,7 +407,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (!their)
 		SendBroadcastExtraGameInfoPacket ();
 	else
-		SendInternetExtraGameInfoPacket (their->player.network.Server (), their->player.network.Node ());
+		SendInternetExtraGameInfoPacket (their->player.network.Network (), their->player.network.Node ());
 	} 
 SetMonsterballForces ();
 MultiSendWeaponStates ();
@@ -454,7 +454,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (!their)
 		SendBroadcastLiteNetGamePacket ();
 	else
-		SendInternetLiteNetGamePacket (their->player.network.Server (), their->player.network.Node ());
+		SendInternetLiteNetGamePacket (their->player.network.Network (), their->player.network.Node ());
 	}  
 //  Restore the pre-hoard mode
 if (HoardEquipped ()) {
@@ -496,7 +496,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			PrintLog (1, "%s (%s)\n", netPlayers [0].m_info.players [i].callsign, 
 				iptos (szIP, reinterpret_cast<char*> (netPlayers [0].m_info.players [i].network.Node ())));
 			SendLiteNetGamePacket (
-				netPlayers [0].m_info.players [i].network.Server (), 
+				netPlayers [0].m_info.players [i].network.Network (), 
 				netPlayers [0].m_info.players [i].network.Node (), 
 				gameData.multiplayer.players [i].netAddress);
 			}
@@ -529,7 +529,7 @@ networkData.sync [0].objs.missingFrames.nFrame = 0;
 networkData.bTraceFrames = 1;
 ResetWalls (); // may have been changed by players transmitting game state changes like doors opening or exploding etc.
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	SendInternetSequencePacket (networkData.thisPlayer, netPlayers [0].m_info.players [i].network.Server (), netPlayers [0].m_info.players [i].network.Node ());
+	SendInternetSequencePacket (networkData.thisPlayer, netPlayers [0].m_info.players [i].network.Network (), netPlayers [0].m_info.players [i].network.Node ());
 	}
 return i;
 }
@@ -569,8 +569,8 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		continue;
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 	// Send several times, extras will be ignored
-		SendInternetFullNetGamePacket (netPlayers [0].m_info.players [i].network.Server (), netPlayers [0].m_info.players [i].network.Node ());
-		SendNetPlayersPacket (netPlayers [0].m_info.players [i].network.Server (), netPlayers [0].m_info.players [i].network.Node ());
+		SendInternetFullNetGamePacket (netPlayers [0].m_info.players [i].network.Network (), netPlayers [0].m_info.players [i].network.Node ());
+		SendNetPlayersPacket (netPlayers [0].m_info.players [i].network.Network (), netPlayers [0].m_info.players [i].network.Node ());
 		}
 	}
 NetworkProcessSyncPacket (&netGame, 1); // Read it myself, as if I had sent it
@@ -672,7 +672,7 @@ if (len + nakedData.nLength>networkData.nMaxXDataSize) {
 		IPXSendPacketData (
 			reinterpret_cast<ubyte*> (nakedData.buf), 
 			nakedData.nLength, 
-			netPlayers [0].m_info.players [receiver].network.Server (), 
+			netPlayers [0].m_info.players [receiver].network.Network (), 
 			netPlayers [0].m_info.players [receiver].network.Node (), gameData.multiplayer.players [receiver].netAddress);
 	nakedData.nLength = 2;
 	memcpy (&nakedData.buf [nakedData.nLength], buf, len);     
@@ -726,7 +726,7 @@ buf [count++] = char (PacketsPerSec ());
 sendit:	   
 
 IPXSendInternetPacketData (reinterpret_cast<ubyte*> (buf), count, 
-									their->player.network.Server (), 
+									their->player.network.Network (), 
 									their->player.network.Node ());
 }
 

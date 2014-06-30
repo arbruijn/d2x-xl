@@ -198,9 +198,9 @@ netPlayers [0].m_info.players [nPlayer].versionMinor = their->player.versionMino
 NetworkCheckForOldVersion ((char) nPlayer);
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	if (*reinterpret_cast<uint*> (their->player.network.Server ()) != 0)
+	if (*reinterpret_cast<uint*> (their->player.network.Network ()) != 0)
 		IpxGetLocalTarget (
-			their->player.network.Server (), 
+			their->player.network.Network (), 
 			their->player.network.Node (), 
 			gameData.multiplayer.players [nPlayer].netAddress);
 	else
@@ -277,7 +277,7 @@ if (netGame.m_info.gameFlags & NETGAME_FLAG_CLOSED) {
 	// Slots are open but game is closed
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
-			player->player.network.Server (), 
+			player->player.network.Network (), 
 			player->player.network.Node (), 
 			DUMP_CLOSED);
 	return -1;
@@ -302,7 +302,7 @@ if (oldestPlayer == -1) {
 	// Everyone is still connected 
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
-			player->player.network.Server (), 
+			player->player.network.Network (), 
 			player->player.network.Node (), 
 			DUMP_FULL);
 	return -1;
@@ -351,7 +351,7 @@ console.printf (CON_DBG, "Ignored request from new player to join during endgame
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
-			player->player.network.Server (), 
+			player->player.network.Network (), 
 			player->player.network.Node (), 
 			DUMP_ENDLEVEL);
 	return NULL; 
@@ -363,7 +363,7 @@ if (player->player.connected != missionManager.nCurrentLevel) {
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
-			player->player.network.Server (), 
+			player->player.network.Network (), 
 			player->player.network.Node (), 
 			DUMP_LEVEL);
 	return NULL;
@@ -399,7 +399,7 @@ networkData.refuse.bWaitForAnswer = 0;
 if (FindArg ("-NoMatrixCheat")) {
 	if ((player->player.versionMinor & 0x0F) < 3) {
 		NetworkDumpPlayer (
-			player->player.network.Server (), 
+			player->player.network.Network (), 
 			player->player.network.Node (), 
 			DUMP_DORK);
 		return;
@@ -410,7 +410,7 @@ if (HoardEquipped ()) {
 	if (IsHoardGame && ((player->player.versionMinor & 0x0F) < 2)) {
 		if (gameStates.multi.nGameType >= IPX_GAME)
 			NetworkDumpPlayer (
-				player->player.network.Server (), 
+				player->player.network.Network (), 
 				player->player.network.Node (), 
 				DUMP_DORK);
 		return;
@@ -421,9 +421,9 @@ if (!(syncP = AcceptJoinRequest (player)))
 memset (&syncP->player [1], 0, sizeof (tSequencePacket));
 networkData.bPlayerAdded = 0;
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	if (*reinterpret_cast<uint*> (player->player.network.Server ()) != 0)
+	if (*reinterpret_cast<uint*> (player->player.network.Network ()) != 0)
 		IpxGetLocalTarget (
-			player->player.network.Server (), 
+			player->player.network.Network (), 
 			player->player.network.Node (), 
 			newAddress);
 	else
@@ -610,7 +610,7 @@ else {
 		if (!strcmp (their->player.callsign, networkData.refuse.szPlayer)) {
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				NetworkDumpPlayer (
-					their->player.network.Server (), 
+					their->player.network.Network (), 
 					their->player.network.Node (), 
 					DUMP_DORK);
 			}

@@ -83,6 +83,8 @@ typedef struct IPXRecvData {
 		inline void ResetNetwork (byte filler = 0) { memset (src_addr.network, filler, sizeof (src_addr.network)); }
 		inline void ResetNode (byte filler = 0) { memset (src_addr.address.node, filler, sizeof (src_addr.address.node)); }
 		inline void ResetPort (byte filler = 0) { memset (src_addr.address.portAddress.port.b, filler, sizeof (src_addr.address.portAddress.port)); }
+
+		inline tNetworkNode& Address (void) { return src_addr; }
 } tIPXRecvData;
 
 struct ipx_driver {

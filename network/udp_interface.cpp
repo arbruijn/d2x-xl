@@ -58,7 +58,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 		(pid != PID_TRACKER_ADD_SERVER)
 	)
  {
-	memcpy (&their->player.network.Server (), &networkData.packetSource.src_network, 10);
+	memcpy (&their->player.network.Network (), &networkData.packetSource.src_network, 10);
 	}
 */
 //------------------------------------------------------------------------------

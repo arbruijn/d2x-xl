@@ -161,7 +161,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				IPXSendInternetPacketData (
 					objBuf, bufI, 
-					syncP->player [1].player.network.Server (), 
+					syncP->player [1].player.network.Network (), 
 					syncP->player [1].player.network.Node ());
 			 }
 		}
@@ -203,7 +203,7 @@ void NetworkSyncPlayer (tNetworkSyncData *syncP)
 //OLD IPXSendPacketData (objBuf, 8, &syncP->player [1].player.node);
 if (gameStates.multi.nGameType >= IPX_GAME)
 	IPXSendInternetPacketData (objBuf, 8, 
-										syncP->player [1].player.network.Server (), 
+										syncP->player [1].player.network.Network (), 
 										syncP->player [1].player.network.Node ());
 // Send sync packet which tells the player who he is and to start!
 NetworkSendRejoinSync (nPlayer, syncP);
@@ -480,8 +480,8 @@ me.nType = PID_QUIT_JOINING;
 memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (me.player.network.Node (), IpxGetMyLocalAddress (), 6);
-	memcpy (me.player.network.Server (), IpxGetMyServerAddress (), 4);
-	SendInternetSequencePacket (me, netPlayers [0].m_info.players [0].network.Server (), 
+	memcpy (me.player.network.Network (), IpxGetMyServerAddress (), 4);
+	SendInternetSequencePacket (me, netPlayers [0].m_info.players [0].network.Network (), 
 										 netPlayers [0].m_info.players [0].network.Node ());
 }
 SetFunctionMode (FMODE_MENU);
@@ -751,7 +751,7 @@ for (;;) {
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if (gameData.multiplayer.players [i].IsConnected () && (i != N_LOCALPLAYER)) {
 				if (gameStates.multi.nGameType >= IPX_GAME)
-					NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.Server (), netPlayers [0].m_info.players [i].network.Node (), DUMP_ABORTED);
+					NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.Network (), netPlayers [0].m_info.players [i].network.Node (), DUMP_ABORTED);
 				}
 			}
 			longjmp (gameExitPoint, 0);  
