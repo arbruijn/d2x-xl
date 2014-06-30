@@ -308,18 +308,18 @@ return nObject;
 //-----------------------------------------------------------------------------
 // Map a local CObject number to a remote + nOwner
 
-int GetRemoteObjNum (int nLocalObj, sbyte *nOwner)
+int GetRemoteObjNum (int nLocalObj, sbyte& nOwner)
 {
 if ((nLocalObj < 0) || (nLocalObj > gameData.objs.nLastObject [0])) {
-	*nOwner = -1;
+	nOwner = -1;
 	return -1;
 	}
-*nOwner = gameData.multigame.nObjOwner [nLocalObj];
-if (*nOwner == -1)
+nOwner = gameData.multigame.nObjOwner [nLocalObj];
+if (nOwner == -1)
 	return nLocalObj;
-if ((*nOwner >= gameData.multiplayer.nPlayers) || (*nOwner < -1)) {
+if ((nOwner >= gameData.multiplayer.nPlayers) || (nOwner < -1)) {
 	Int3 (); // Illegal!
-	*nOwner = -1;
+	nOwner = -1;
 	return nLocalObj;
 	}
 return gameData.multigame.localToRemote [nLocalObj];
@@ -2472,8 +2472,8 @@ gameData.multigame.msg.buf [0] = (char) MULTI_KILL;
 gameData.multigame.msg.buf [1] = N_LOCALPLAYER;
 if (nKillerObj > -1) {
 	// do it with variable player since INTEL_SHORT won't work on return val from function.
-	short s = (short) GetRemoteObjNum (nKillerObj, reinterpret_cast<sbyte*> (&gameData.multigame.msg.buf [4]));
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + 2, s);
+	short nRemoteObj = (short) GetRemoteObjNum (nKillerObj, reinterpret_cast<sbyte&> (gameData.multigame.msg.buf [4]));
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + 2, nRemoteObj);
 	}
 else {
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + 2, -1);
@@ -2552,7 +2552,7 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 //if ((OBJECTS [nObject].info.nType == OBJ_POWERUP) && IsNetworkGame)
 //	RemovePowerupInMine (OBJECTS [nObject].info.nId);
 gameData.multigame.msg.buf [0] = char (MULTI_REMOVE_OBJECT);
-nRemoteObj = GetRemoteObjNum (short (nObject), &nObjOwner);
+nRemoteObj = GetRemoteObjNum (short (nObject), nObjOwner);
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nRemoteObj); // Map to network objnums
 gameData.multigame.msg.buf [3] = nObjOwner;
 if (gameStates.multi.nGameType == UDP_GAME)

@@ -98,9 +98,9 @@ ubyte objBuf [MAX_PACKET_SIZE];
 void NetworkSyncObjects (tNetworkSyncData *syncP)
 {
 	CObject	*objP;
-	sbyte		owner;
+	sbyte		nObjOwner;
 	short		nRemoteObj;
-	int		bufI, i, h;
+	int		bufI, nLocalObj, h;
 	int		nObjFrames = 0;
 	int		nPlayer = syncP->player [1].player.connected;
 
@@ -124,26 +124,24 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 		nObjFrames = 1;		// first frame contains "reset object data" info
 		}
 
-	for (i = syncP->objs.nCurrent, objP = OBJECTS + i; i <= gameData.objs.nLastObject [0]; i++, objP++) {
+	for (nLocalObj = syncP->objs.nCurrent, objP = OBJECTS + nLocalObj; nLocalObj <= gameData.objs.nLastObject [0]; nLocalObj++, objP++) {
 		if (NetworkFilterObject (objP))
 			continue;
 		if (syncP->objs.nMode) { 
-			 if ((gameData.multigame.nObjOwner [i] != -1) && (gameData.multigame.nObjOwner [i] != nPlayer))
+			 if ((gameData.multigame.nObjOwner [nLocalObj] != -1) && (gameData.multigame.nObjOwner [nLocalObj] != nPlayer))
 				continue;
 			}
 		else {
-			if ((gameData.multigame.nObjOwner [i] == -1) || (gameData.multigame.nObjOwner [i] == nPlayer))
+			if ((gameData.multigame.nObjOwner [nLocalObj] == -1) || (gameData.multigame.nObjOwner [nLocalObj] == nPlayer))
 				continue;
 			}
 		if ((MAX_PAYLOAD_SIZE - bufI - 1) < int (sizeof (tBaseObject)) + 5)
 			break; // Not enough room for another CObject
 		nObjFrames++;
 		syncP->objs.nSent++;
-		nRemoteObj = GetRemoteObjNum (short (i), &owner);
-		Assert (owner == gameData.multigame.nObjOwner [i]);
-		Assert (nRemoteObj >= 0);
-		NW_SET_SHORT (objBuf, bufI, i);      
-		NW_SET_BYTE (objBuf, bufI, owner);                                 
+		nRemoteObj = GetRemoteObjNum (short (nLocalObj), nObjOwner);
+		NW_SET_SHORT (objBuf, bufI, nLocalObj);      
+		NW_SET_BYTE (objBuf, bufI, nObjOwner);                                 
 		NW_SET_SHORT (objBuf, bufI, nRemoteObj); 
 		NW_SET_BYTES (objBuf, bufI, &objP->info, sizeof (tBaseObject));
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
@@ -152,7 +150,7 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 #endif
 		}
 	if (nObjFrames) {	// Send any objects we've buffered
-		syncP->objs.nCurrent = i;	
+		syncP->objs.nCurrent = nLocalObj;	
 		if (NetworkObjFrameFilter (syncP)) {
 			objBuf [1] = nObjFrames;  
 			if (gameStates.multi.nGameType == UDP_GAME)
@@ -167,9 +165,9 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 					syncP->player [1].player.network.Node ());
 			 }
 		}
-	if (i > gameData.objs.nLastObject [0]) {
+	if (nLocalObj > gameData.objs.nLastObject [0]) {
 		if (syncP->objs.nMode) {
-			syncP->objs.nCurrent = i;
+			syncP->objs.nCurrent = nLocalObj;
 			// Send count so other CSide can make sure he got them all
 			objBuf [0] = PID_OBJECT_DATA;
 			objBuf [1] = 1;
