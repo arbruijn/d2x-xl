@@ -272,8 +272,6 @@ MultiSendData (gameData.multigame.msg.buf, 5, 2);
 
 void MultiSendReleaseRobot (int nObject)
 {
-	short s;
-
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 (); // See rob
 	return;
@@ -285,8 +283,8 @@ if (OBJECTS [nObject].info.nType != OBJ_ROBOT) {
 MultiDeleteControlledRobot (nObject);
 	gameData.multigame.msg.buf [0] = (char)MULTI_ROBOT_RELEASE;
 gameData.multigame.msg.buf [1] = N_LOCALPLAYER;
-s = GetRemoteObjNum (nObject, reinterpret_cast<sbyte&> (gameData.multigame.msg.buf [4]));
-PUT_INTEL_SHORT (gameData.multigame.msg.buf+2, s);
+short nRemoteObj = GetRemoteObjNum (nObject, reinterpret_cast<sbyte&> (gameData.multigame.msg.buf [4]));
+PUT_INTEL_SHORT (gameData.multigame.msg.buf+2, nRemoteObj);
 MultiSendData (gameData.multigame.msg.buf, 5, 2);
 MultiSendData (gameData.multigame.msg.buf, 5, 2);
 MultiSendData (gameData.multigame.msg.buf, 5, 2);
