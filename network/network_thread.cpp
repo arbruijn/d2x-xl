@@ -41,7 +41,7 @@
 #define LISTEN_TIMEOUT		5
 #define SYNC_TIMEOUT			5
 #define UPDATE_TIMEOUT		500
-#define MAX_PACKET_AGE		3000
+#define MAX_PACKET_AGE		30000
 
 //------------------------------------------------------------------------------
 
@@ -405,7 +405,7 @@ m_rxPacketQueue.Lock ();
 uint t = SDL_GetTicks () - MAX_PACKET_AGE; // drop packets older than 3 seconds
 for (m_rxPacketQueue.Start (); m_rxPacketQueue.Current (); m_rxPacketQueue.Next ()) {
 	if (m_rxPacketQueue.Current ()->timeStamp < t) 
-		m_rxPacketQueue.Pop ();
+		m_rxPacketQueue.Pop (false);
 	}
 m_rxPacketQueue.Unlock ();
 }
