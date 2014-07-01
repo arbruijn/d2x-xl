@@ -840,8 +840,10 @@ if (link.prev || link.next) {
 	}
 else if ((ref.head == this) && (ref.tail == this))
 	ref.head = ref.tail = NULL;
+#if 0
 else if (ref.head || ref.tail)
 	bRebuild = true;
+#endif
 if (bRebuild) { //this actually means the list is corrupted -> rebuild all object lists
 	RebuildObjectLists ();
 	Unlink ();
