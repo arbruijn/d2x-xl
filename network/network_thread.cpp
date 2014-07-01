@@ -268,6 +268,22 @@ CheckPlayerTimeouts ();
 
 //------------------------------------------------------------------------------
 
+void CNetworkThread::Cleanup (void)
+{
+tNetworkPacket* packet;
+SemWait ();
+uint t = SDL_GetTicks () - 3000; // drop packets older than 3 seconds
+while ((packet = m_packets [0]) && (packet->timeStamp < t)) {
+	delete packet;
+	if (!(m_packets [0] = packet->nextPacket))
+		m_packets [1] = NULL;
+	--m_nPackets;
+	}
+SemPost ();
+}
+
+//------------------------------------------------------------------------------
+
 int CNetworkThread::Listen (void)
 {
 	static CTimeout toListen (10);
@@ -276,7 +292,7 @@ if (!toListen.Expired ())
 	return 0;
 
 #if 1 // network reads all network packets independently of main thread
-
+Cleanup ();
 // read all available network packets and append them to the end of the list of unprocessed network packets
 for (;;) {
 	if (!m_packet) {
@@ -297,6 +313,7 @@ for (;;) {
 	else 
 		m_packets [0] = m_packet; // list head
 	m_packets [1] = m_packet;
+	m_packet->timeStamp = SDL_GetTicks ();
 	m_packet->nextPacket = NULL;
 	memcpy (&m_packet->owner.address, &networkData.packetSource, sizeof (networkData.packetSource));
 	SemPost ();

@@ -10,9 +10,10 @@ typedef struct tNetworkPacketOwner {
 
 typedef struct tNetworkPacket {
 	struct tNetworkPacket*	nextPacket;
+	uint							timeStamp;
+	tNetworkPacketOwner		owner;
 	ushort						size;
 	ubyte							data [MAX_PACKET_SIZE];
-	tNetworkPacketOwner		owner;
 } tNetworkPacket;
 
 //------------------------------------------------------------------------------
@@ -44,6 +45,7 @@ class CNetworkThread {
 		int GetPacketData (ubyte* data);
 		int ProcessPackets (void);
 		void FlushPackets (void);
+		void Cleanup (void);
 		int SemWait (void);
 		int SemPost (void);
 		int LockSend (void);
