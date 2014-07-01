@@ -202,7 +202,10 @@ return 0;
 void CNetworkThread::Run (void)
 {
 for (;;) {
+	Listen ();
+	SendSync ();
 	Update ();
+	CheckPlayerTimeouts ();
 	G3_SLEEP (1);
 	}
 }
@@ -386,46 +389,6 @@ if (!m_syncLock)
 SDL_SemPost (m_syncLock); 
 #endif
 return 1;
-}
-
-//------------------------------------------------------------------------------
-// Check for player timeouts
-
-void CNetworkThread::Update (void)
-{
-	static CTimeout toUpdate (UPDATE_TIMEOUT);
-
-if (toUpdate.Expired ()) {
-	tracker.AddServer ();
-
-	bool bDownloading = downloadManager.Downloading (N_LOCALPLAYER);
-	
-	if (LOCALPLAYER.Connected (CONNECT_END_MENU) || LOCALPLAYER.Connected (CONNECT_ADVANCE_LEVEL))
-		NetworkSendEndLevelPacket ();
-	else {
-		//Lock ();
-		for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
-			if (nPlayer == N_LOCALPLAYER) 
-				continue;
-			if (gameData.multiplayer.players [nPlayer].Connected (CONNECT_END_MENU) || gameData.multiplayer.players [nPlayer].Connected (CONNECT_ADVANCE_LEVEL)) {
-#if 1
-				NetworkSendEndLevelPacket ();
-#else
-				pingStats [nPlayer].launchTime = -1;
-				NetworkSendPing (nPlayer);
-#endif
-				}
-			else if (bDownloading) {
-				pingStats [nPlayer].launchTime = -1;
-				NetworkSendPing (nPlayer);
-				}	
-			}
-		//Unlock ();
-		}
-	}
-if (Available ())
-	Listen ();
-CheckPlayerTimeouts ();
 }
 
 //------------------------------------------------------------------------------
@@ -656,6 +619,43 @@ if (to.Expired () /*&& !gameData.reactor.bDestroyed*/)
 	}
 Unlock ();
 return nTimedOut;
+}
+
+//------------------------------------------------------------------------------
+// Check for player timeouts
+
+void CNetworkThread::Update (void)
+{
+	static CTimeout toUpdate (UPDATE_TIMEOUT);
+
+if (toUpdate.Expired ()) {
+	tracker.AddServer ();
+
+	bool bDownloading = downloadManager.Downloading (N_LOCALPLAYER);
+	
+	if (LOCALPLAYER.Connected (CONNECT_END_MENU) || LOCALPLAYER.Connected (CONNECT_ADVANCE_LEVEL))
+		NetworkSendEndLevelPacket ();
+	else {
+		//Lock ();
+		for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
+			if (nPlayer == N_LOCALPLAYER) 
+				continue;
+			if (gameData.multiplayer.players [nPlayer].Connected (CONNECT_END_MENU) || gameData.multiplayer.players [nPlayer].Connected (CONNECT_ADVANCE_LEVEL)) {
+#if 1
+				NetworkSendEndLevelPacket ();
+#else
+				pingStats [nPlayer].launchTime = -1;
+				NetworkSendPing (nPlayer);
+#endif
+				}
+			else if (bDownloading) {
+				pingStats [nPlayer].launchTime = -1;
+				NetworkSendPing (nPlayer);
+				}	
+			}
+		//Unlock ();
+		}
+	}
 }
 
 //------------------------------------------------------------------------------

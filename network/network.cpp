@@ -524,7 +524,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		}
 
 	if (!networkThread.Available ())
-		networkThread.Update ();
+		networkThread.CheckPlayerTimeouts ();
 	if (!bListen)
 		return;
 	//NetworkCheckPlayerTimeouts ();
