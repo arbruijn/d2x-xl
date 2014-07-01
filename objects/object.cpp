@@ -407,6 +407,12 @@ m_vStartVel.SetZero ();
 //sets up the free list, init player data etc.
 void InitObjects (bool bInitPlayer)
 {
+CObject* objP, * nextObjP = NULL;
+for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
+	nextObjP = objP->Links (0).next;
+	objP->Unlink ();
+	objP->UnlinkFromSeg ();
+	}
 CollideInit ();
 ResetSegObjLists ();
 gameData.objs.lists.Init ();

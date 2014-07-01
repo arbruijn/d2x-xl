@@ -672,7 +672,7 @@ networkData.sync [0].objs.nFrame = nFrame;
  for (i = 0; i < nObjects; i++) {
 	objP = NULL;
 #if DBG
-	VerifyObjLists ();
+	VerifyObjLists (LOCALPLAYER.nObject);
 #endif
 	NW_GET_SHORT (dataP, bufI, nLocalObj);
 	NW_GET_BYTE (dataP, bufI, nObjOwner);
