@@ -864,12 +864,16 @@ else
 
 #if DBG
 
-int VerifyObjLists (void)
+int VerifyObjLists (CObject* refObjP = NULL);
+
+int VerifyObjLists (CObject* refObjP)
 {
 	CObject* objP, * firstObjP = gameData.objs.lists.all.head;
 	int		i = 0;
 
 FORALL_OBJS (objP, i) {
+	if (objP == refObjP)
+		refObjP = NULL;
 	if (objP->Type () < MAX_OBJECT_TYPES) {
 		CObjListLink& link = objP->Links (0);
 		if (link.prev && (link.prev->Links (0).next != objP)) {
@@ -886,7 +890,10 @@ FORALL_OBJS (objP, i) {
 		return 0;
 		}
 	}
-return 1;
+if (refObjP == NULL)
+	return 1;
+RebuildObjectLists ();
+return 0;
 }
 
 #endif
@@ -900,11 +907,11 @@ void CObject::Link (void)
 Unlink (true);
 m_nLinkedType = nType;
 #if DBG
-VerifyObjLists ();
+VerifyObjLists (this);
 #endif
 Link (gameData.objs.lists.all, 0);
 #if DBG
-VerifyObjLists ();
+VerifyObjLists (this);
 #endif
 if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST))
 	Link (gameData.objs.lists.players, 1);
@@ -942,11 +949,11 @@ void CObject::Unlink (bool bForce)
 if (bForce || (nType != OBJ_NONE)) {
 	m_nLinkedType = OBJ_NONE;
 #if DBG
-	VerifyObjLists ();
+	VerifyObjLists (this);
 #endif
 	Unlink (gameData.objs.lists.all, 0);
 #if DBG
-	VerifyObjLists ();
+	VerifyObjLists (this);
 #endif
 	if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST))
 		Unlink (gameData.objs.lists.players, 1);

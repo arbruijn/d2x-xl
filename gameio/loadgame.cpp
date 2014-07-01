@@ -147,7 +147,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SPAWN_MIN_DIST	I2X (15 * 20)
 
 #if DBG
-int VerifyObjLists (void);
+int VerifyObjLists (CObject* refObjP = NULL);
 #endif
 
 //------------------------------------------------------------------------------
@@ -248,7 +248,7 @@ nPlayers = 0;
 j = 0;
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 #if DBG
-	VerifyObjLists ();
+	VerifyObjLists (objP);
 #endif
 	i = objP->Index ();
 	nextObjP = objP->Links (0).next;
