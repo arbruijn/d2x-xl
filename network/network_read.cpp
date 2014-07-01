@@ -830,7 +830,7 @@ int CObjectSynchronizer::Run (ubyte* dataP)
 {
 m_data = dataP;
 
-int syncRes = ValidateFrame ())
+int syncRes = ValidateFrame ();
 if (syncRes < 1)
 	return syncRes;
 
