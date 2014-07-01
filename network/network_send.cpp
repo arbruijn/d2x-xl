@@ -520,10 +520,11 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 Assert (i < MAX_NUM_NET_PLAYERS);
 networkData.thisPlayer.nType = PID_REQUEST;
 networkData.thisPlayer.player.connected = missionManager.nCurrentLevel;
-networkData.nJoinState = 0;
 networkData.bHaveSync = 0;
-networkData.sync [0].objs.nFrame = 0;
-networkData.sync [0].objs.missingFrames.nFrame = 0;
+if (networkData.nJoinState == 0) {
+	networkData.sync [0].objs.nFrame = 0;
+	networkData.sync [0].objs.missingFrames.nFrame = 0;
+	}
 networkData.bTraceFrames = 1;
 ResetWalls (); // may have been changed by players transmitting game state changes like doors opening or exploding etc.
 if (gameStates.multi.nGameType >= IPX_GAME) {
