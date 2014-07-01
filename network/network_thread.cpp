@@ -348,6 +348,10 @@ int CNetworkThread::ProcessPackets (void)
 	int nProcessed = 0;
 	tNetworkPacket* packet;
 
+#if DBG
+if (LOCALPLAYER.connected == CONNECT_WAITING)
+	BRP;
+#endif
 while (packet = GetPacket ()) {
 	if (NetworkProcessPacket (packet->data, packet->size))
 		++nProcessed;

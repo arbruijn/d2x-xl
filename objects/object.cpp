@@ -785,41 +785,90 @@ ref.nObjects++;
 
 //------------------------------------------------------------------------------
 
+void RebuildObjectLists (void)
+{
+PrintLog (0, "Rebuilding corrupted object lists ...\n");
+
+CObject* objP = &OBJECTS [0];
+for (int nObject = gameData.objs.nLastObject [0]; nObject; nObject--, objP++) {
+	for (int nLink = 0; nLink < 3; nLink++)
+		objP->ResetLinks ();
+	}
+gameData.objs.lists.Init ();
+objP = &OBJECTS [0];
+for (int nObject = gameData.objs.nLastObject [0]; nObject; nObject--, objP++) {
+	if (objP->Type () < MAX_OBJECT_TYPES) {
+		for (int nLink = 0; nLink < 3; nLink++)
+			objP->Link ();
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void CObject::Unlink (tObjListRef& ref, int nLink)
 {
 	CObjListLink& link = m_links [nLink];
+	bool bRebuild = false;
 
 if (link.prev || link.next) {
-	if (ref.nObjects <= 0)
+	if (ref.nObjects <= 0) {
+		link.prev = link.next = NULL;
 		return;
+		}
 	if (link.next)
 		link.next->m_links [nLink].prev = link.prev;
-	else
-		ref.tail = link.prev;
+	else {
+		if (ref.tail != this) {
+			bRebuild = true;
+			PrintLog (0, "Object list %d is corrupted!\n", nLink);
+			}
+		else if ((ref.tail = link.prev))
+			ref.tail->m_links [nLink].next = NULL;
+		}
 	if (link.prev)
 		link.prev->m_links [nLink].next = link.next;
-	else
-		ref.head = link.next;
+	else {
+		if (ref.head != this) {
+			bRebuild = true;
+			PrintLog (0, "Object list %d is corrupted!\n", nLink);
+			}
+		else if ((ref.head = link.next))
+			ref.head->m_links [nLink].prev = NULL;
+		}
 	ref.nObjects--;
 	}
 else if ((ref.head == this) && (ref.tail == this))
-		ref.head = ref.tail = NULL;
-else if (ref.head == this) { //this actually means the list is corrupted
-	if (!ref.tail)
-		ref.head = NULL;
-	else
-		for (ref.head = ref.tail; ref.head->m_links [nLink].prev; ref.head = ref.head->m_links [nLink].prev)
-			;
+	ref.head = ref.tail = NULL;
+else
+	bRebuild = true;
+if (bRebuild) { //this actually means the list is corrupted -> rebuild all object lists
+	RebuildObjectLists ();
+	Unlink ();
 	}
-else if (ref.tail == this) { //this actually means the list is corrupted
-	if (!ref.head)
-		ref.head = NULL;
-	else
-		for (ref.tail = ref.head; ref.tail->m_links [nLink].next; ref.tail = ref.tail->m_links [nLink].next)
-			;
-	}
-link.prev = link.next = NULL;
+else 
+	link.prev = link.next = NULL;
 }
+
+//------------------------------------------------------------------------------
+
+#if DBG
+
+static int VerifyObjLists (void)
+{
+	CObject* objP, * firstObjP = gameData.objs.lists.all.head;
+	int		i = 0;
+
+FORALL_OBJS (objP, i) {
+	if ((objP == firstObjP) && (++i > 1)) {
+		RebuildObjectLists ();
+		return 0;
+		}
+	}
+return 1;
+}
+
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -829,7 +878,13 @@ void CObject::Link (void)
 
 Unlink (true);
 m_nLinkedType = nType;
+#if DBG
+VerifyObjLists ();
+#endif
 Link (gameData.objs.lists.all, 0);
+#if DBG
+VerifyObjLists ();
+#endif
 if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST))
 	Link (gameData.objs.lists.players, 1);
 else if (nType == OBJ_ROBOT)
@@ -865,7 +920,13 @@ void CObject::Unlink (bool bForce)
 
 if (bForce || (nType != OBJ_NONE)) {
 	m_nLinkedType = OBJ_NONE;
+#if DBG
+	VerifyObjLists ();
+#endif
 	Unlink (gameData.objs.lists.all, 0);
+#if DBG
+	VerifyObjLists ();
+#endif
 	if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST))
 		Unlink (gameData.objs.lists.players, 1);
 	else if (nType == OBJ_ROBOT)
