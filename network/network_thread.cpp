@@ -368,7 +368,7 @@ return 1;
 
 int CNetworkThread::LockSync (void) 
 { 
-#if SYNCCLOCK
+#if SYNCLOCK
 if (!m_syncLock)
 	return 0;
 SDL_SemWait (m_syncLock); 
