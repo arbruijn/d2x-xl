@@ -269,7 +269,7 @@ if (m_thread) {
 
 void CNetworkThread::FlushPackets (void)
 {
-m_packetList.Flush ();
+m_rxPacketQueue.Flush ();
 }
 
 //------------------------------------------------------------------------------
@@ -432,13 +432,13 @@ CheckPlayerTimeouts ();
 
 void CNetworkThread::Cleanup (void)
 {
-m_packetList.Lock ();
+m_rxPacketQueue.Lock ();
 uint t = SDL_GetTicks () - 3000; // drop packets older than 3 seconds
-for (m_packetList.Start (); m_packetList.Current (); m_packetList.Next ()) {
-	if (m_packetList.Current ()->timeStamp < t) 
-		m_packetList.Pop ();
+for (m_rxPacketQueue.Start (); m_rxPacketQueue.Current (); m_rxPacketQueue.Next ()) {
+	if (m_rxPacketQueue.Current ()->timeStamp < t) 
+		m_rxPacketQueue.Pop ();
 	}
-m_packetList.Unlock ();
+m_rxPacketQueue.Unlock ();
 }
 
 //------------------------------------------------------------------------------
@@ -462,17 +462,17 @@ for (;;) {
 		}
 	if (!m_packet->SetSize (IpxGetPacketData (m_packet->data)))
 		break;
-	m_packetList.Lock ();
+	m_rxPacketQueue.Lock ();
 #if DBG
-	if (!m_packetList.Validate ())
+	if (!m_rxPacketQueue.Validate ())
 		FlushPackets ();
 #endif
 	memcpy (&m_packet->owner.address, &networkData.packetSource, sizeof (networkData.packetSource));
-	m_packetList.Append (m_packet, false);
+	m_rxPacketQueue.Append (m_packet, false);
 	m_packet = NULL;
 	}
 
-return m_packetList.Length ();
+return m_rxPacketQueue.Length ();
 
 #else
 
@@ -489,7 +489,7 @@ return NetworkListen ();
 
 CNetworkPacket* CNetworkThread::GetPacket (void)
 {
-return m_packetList.Pop ();
+return m_rxPacketQueue.Pop ();
 }
 
 //------------------------------------------------------------------------------
@@ -535,7 +535,7 @@ int CNetworkThread::InitSync (void)
 {
 if (!Available ())
 	return 0;
-m_syncData.Flush ();
+m_txPacketQueue.Flush ();
 return m_syncLock != NULL;
 }
 
@@ -546,10 +546,10 @@ bool CNetworkThread::StartSync (int nPacket)
 {
 if (!Available ())
 	return 0;
-m_syncData.Start ();
-m_syncData.Lock ();
-m_bSendSync = m_syncData.Current () != NULL;
-m_syncData.Unlock ();
+m_txPacketQueue.Start ();
+m_txPacketQueue.Lock ();
+m_bSendSync = m_txPacketQueue.Current () != NULL;
+m_txPacketQueue.Unlock ();
 return m_bSendSync;
 }
 
@@ -564,24 +564,24 @@ if (!SyncInProgress ())
 if (!toSync.Expired ())
 	return;
 
-m_syncData.Lock ();
-if (!m_syncData.Current ()) 
+m_txPacketQueue.Lock ();
+if (!m_txPacketQueue.Current ()) 
 	m_bSendSync = false;
 else {
-	m_syncData.Current ()->Send ();
-	m_syncData.Next ();
+	m_txPacketQueue.Current ()->Send ();
+	m_txPacketQueue.Next ();
 	}
-m_syncData.Unlock ();
+m_txPacketQueue.Unlock ();
 }
 
 //------------------------------------------------------------------------------
 
 void CNetworkThread::StopSync (void)
 {
-m_syncData.Lock ();
+m_txPacketQueue.Lock ();
 m_bSendSync = false;
-m_syncData.Unlock ();
-m_syncData.Flush ();
+m_txPacketQueue.Unlock ();
+m_txPacketQueue.Flush ();
 }
 
 //------------------------------------------------------------------------------
@@ -590,7 +590,7 @@ bool CNetworkThread::AddSyncPacket (ubyte* data, int size, ubyte* network, ubyte
 {
 if (!Available ())
 	return false;
-CNetworkPacket* packet = m_syncData.Append ();
+CNetworkPacket* packet = m_txPacketQueue.Append ();
 if (!packet)
 	return false;
 packet->SetData (data, size);

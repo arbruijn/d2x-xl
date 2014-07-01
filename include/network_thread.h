@@ -90,8 +90,8 @@ class CNetworkThread {
 		bool						m_bListen;
 		bool						m_bSendSync;
 		tNetworkPacketOwner	m_owner;
-		CNetworkPacketList	m_syncData;
-		CNetworkPacketList	m_packetList;
+		CNetworkPacketList	m_txPacketQueue; // transmit
+		CNetworkPacketList	m_rxPacketQueue; // receive
 		CNetworkPacket*		m_packet;
 
 	public:
