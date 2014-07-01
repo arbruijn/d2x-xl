@@ -284,9 +284,9 @@ for (;;) {
 		if (!m_packet)
 			break;
 		}
-	SemWait ();
 	if (!(m_packet->size = IpxGetPacketData (m_packet->data)))
 		break;
+	SemWait ();
 	++m_nPackets;
 #if DBG
 	if (!m_packets [0] != !m_packets [1])
