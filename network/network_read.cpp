@@ -618,22 +618,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-inline bool ObjectIsLinked (CObject *objP, short nSegment)
-{
-if ((nSegment >= 0) && (nSegment < gameData.segs.nSegments)) {
-	short nObject = objP->Index ();
-	for (short i = SEGMENTS [nSegment].m_objects, j = -1; i >= 0; j = i, i = OBJECTS [i].info.nNextInSeg) {
-		if (i == nObject) {
-			objP->info.nPrevInSeg = j;
-			return true;
-			}
-		}
-	}
-return false;
-}
-
-//------------------------------------------------------------------------------
-
+bool ObjectIsLinked (CObject *objP, short nSegment);
 void ResetSyncTimeout (bool bInit = false);
 
 void NetworkReadObjectPacket (ubyte *dataP)

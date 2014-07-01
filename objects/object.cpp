@@ -404,6 +404,22 @@ m_vStartVel.SetZero ();
 }
 
 //------------------------------------------------------------------------------
+
+bool ObjectIsLinked (CObject *objP, short nSegment)
+{
+if ((nSegment >= 0) && (nSegment < gameData.segs.nSegments)) {
+	short nObject = objP->Index ();
+	for (short i = SEGMENTS [nSegment].m_objects, j = -1; i >= 0; j = i, i = OBJECTS [i].info.nNextInSeg) {
+		if (i == nObject) {
+			objP->info.nPrevInSeg = j;
+			return true;
+			}
+		}
+	}
+return false;
+}
+
+//------------------------------------------------------------------------------
 //sets up the free list, init player data etc.
 void InitObjects (bool bInitPlayer)
 {
@@ -411,7 +427,8 @@ CObject* objP, * nextObjP = NULL;
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->Links (0).next;
 	objP->Unlink ();
-	objP->UnlinkFromSeg ();
+	while (ObjectIsLinked (objP, objP->info.nSegment))
+		objP->UnlinkFromSeg ();
 	}
 CollideInit ();
 ResetSegObjLists ();
