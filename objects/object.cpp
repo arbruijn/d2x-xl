@@ -864,10 +864,11 @@ else
 
 #if DBG
 
-int VerifyObjLists (CObject* refObjP = NULL);
+int VerifyObjLists (int nObject = -1);
 
-int VerifyObjLists (CObject* refObjP)
+int VerifyObjLists (int nObject)
 {
+	CObject* refObjP = (nObject < 0) ? NULL : gameData.Object (nObject);
 	CObject* objP, * firstObjP = gameData.objs.lists.all.head;
 	int		i = 0;
 
@@ -909,11 +910,11 @@ void CObject::Link (void)
 Unlink (true);
 m_nLinkedType = nType;
 #if DBG
-VerifyObjLists (this);
+VerifyObjLists (Index ());
 #endif
 Link (gameData.objs.lists.all, 0);
 #if DBG
-VerifyObjLists (this);
+VerifyObjLists (Index ());
 #endif
 if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST))
 	Link (gameData.objs.lists.players, 1);
@@ -951,11 +952,11 @@ void CObject::Unlink (bool bForce)
 if (bForce || (nType != OBJ_NONE)) {
 	m_nLinkedType = OBJ_NONE;
 #if DBG
-	VerifyObjLists (this);
+	VerifyObjLists (Index ());
 #endif
 	Unlink (gameData.objs.lists.all, 0);
 #if DBG
-	VerifyObjLists (this);
+	VerifyObjLists (Index ());
 #endif
 	if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST))
 		Unlink (gameData.objs.lists.players, 1);

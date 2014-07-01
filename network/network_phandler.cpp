@@ -22,6 +22,10 @@
 
 #define THEIR	reinterpret_cast<tSequencePacket*>(dataP)
 
+#if DBG
+int VerifyObjLists (int nObject = -1);
+#endif
+
 //------------------------------------------------------------------------------
 
 #if defined(_WIN32) && !DBG
@@ -494,7 +498,13 @@ else if (!NetworkBadPacketSize (nLength, piP->nLength, piP->pszInfo)) {
 	console.printf (0, "received %s\n", piP->pszInfo);
 	if (!addressFilter [pId])	// patch the proper IP address into the packet header
 		memcpy (&THEIR->player.network, &networkData.packetSource.Address (), sizeof (tNetworkNode));
+#if DBG
+	VerifyObjLists ();
+#endif
 	nFuncRes = piP->packetHandler (dataP, nLength);
+#if DBG
+	VerifyObjLists ();
+#endif
 	}
 networkThread.UnlockProcess ();
 return nFuncRes;
