@@ -56,7 +56,7 @@ class CNetworkPacketList {
 		inline CNetworkPacket* Tail (void) { return m_packets [1]; }
 		inline void SetHead (CNetworkPacket* packet) { m_packets [0] = packet; }
 		inline void SetTail (CNetworkPacket* packet) { m_packets [1] = packet; }
-		CNetworkPacket* Start (int nPacket = 1);
+		CNetworkPacket* Start (int nPacket = 0);
 		inline CNetworkPacket* Next (void) { return m_current ? m_current = m_current->nextPacket : NULL; }
 		inline CNetworkPacket* Current (void) { return m_current; }
 		void Flush (void);

@@ -165,10 +165,8 @@ Unlock ();
 
 CNetworkPacket* CNetworkPacketList::Start (int nPacket) 
 { 
-Lock ();
 for (m_current = Head (); m_current && nPacket--; Next ())
 	;
-Unlock ();
 return m_current;
 }
 
@@ -433,7 +431,7 @@ CheckPlayerTimeouts ();
 void CNetworkThread::Cleanup (void)
 {
 m_rxPacketQueue.Lock ();
-uint t = SDL_GetTicks () - 3000; // drop packets older than 3 seconds
+uint t = SDL_GetTicks () - MAX_PACKET_AGE; // drop packets older than 3 seconds
 for (m_rxPacketQueue.Start (); m_rxPacketQueue.Current (); m_rxPacketQueue.Next ()) {
 	if (m_rxPacketQueue.Current ()->timeStamp < t) 
 		m_rxPacketQueue.Pop ();
