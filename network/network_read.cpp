@@ -830,10 +830,10 @@ int CObjectSynchronizer::Run (ubyte* dataP)
 {
 m_data = dataP;
 
-if (0 > ValidateFrame ())
-	return -1;
+int syncRes = ValidateFrame ())
+if (syncRes < 1)
+	return syncRes;
 
-int syncRes = 0;
 int nObjects = m_data [1];
 
 for (int i = 0; (i < nObjects) && (syncRes > -1); i++) {
