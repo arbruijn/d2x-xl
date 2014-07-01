@@ -36,6 +36,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "physics.h"
 #include "console.h"
 
+#if DBG
+int VerifyObjLists (CObject* refObjP = NULL);
+#endif
+
 //------------------------------------------------------------------------------
 
 void NetworkReadEndLevelPacket (ubyte *dataP)
@@ -649,6 +653,9 @@ ResetSyncTimeout (true);
 networkData.sync [0].objs.nFrame = nFrame;
  for (i = 0; i < nObjects; i++) {
 	objP = NULL;
+#if DBG
+	VerifyObjLists ();
+#endif
 	NW_GET_SHORT (dataP, bufI, nLocalObj);
 	NW_GET_BYTE (dataP, bufI, nObjOwner);
 	NW_GET_SHORT (dataP, bufI, nRemoteObj);
@@ -763,6 +770,9 @@ networkData.sync [0].objs.nFrame = nFrame;
 					gameData.hoard.nMonsterballSeg = nSegment;
 					}
 				}
+#if DBG
+			VerifyObjLists (objP);
+#endif
 			}
 		} // For a standard onbject
 	} // For each CObject in packet
