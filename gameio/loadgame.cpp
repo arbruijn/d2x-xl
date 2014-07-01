@@ -146,6 +146,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define SPAWN_MIN_DIST	I2X (15 * 20)
 
+#if DBG
+int VerifyObjLists (void);
+#endif
+
 //------------------------------------------------------------------------------
 
 void InitStuckObjects (void);
@@ -243,6 +247,9 @@ memset (gameStates.multi.bPlayerIsTyping, 0, sizeof (gameStates.multi.bPlayerIsT
 nPlayers = 0;
 j = 0;
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
+#if DBG
+	VerifyObjLists ();
+#endif
 	i = objP->Index ();
 	nextObjP = objP->Links (0).next;
 	t = objP->info.nType;
@@ -260,6 +267,9 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 		if (ROBOTINFO (objP->info.nId).companion && IsMultiGame)
 			ReleaseObject (short (i));		//kill the buddy in netgames
 		}
+#if DBG
+	VerifyObjLists ();
+#endif
 	}
 
 for (i = 0; i < nMaxPlayers; i++)

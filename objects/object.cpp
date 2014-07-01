@@ -816,23 +816,27 @@ if (link.prev || link.next) {
 		link.prev = link.next = NULL;
 		return;
 		}
-	if (link.next)
-		link.next->m_links [nLink].prev = link.prev;
-	else {
-		if (ref.tail != this) {
+	if (link.next) {
+		if (link.next->m_links [nLink].prev != this)
 			bRebuild = true;
-			PrintLog (0, "Object list %d is corrupted!\n", nLink);
-			}
+		else
+			link.next->m_links [nLink].prev = link.prev;
+		}
+	else {
+		if (ref.tail != this)
+			bRebuild = true;
 		else if ((ref.tail = link.prev))
 			ref.tail->m_links [nLink].next = NULL;
 		}
-	if (link.prev)
-		link.prev->m_links [nLink].next = link.next;
-	else {
-		if (ref.head != this) {
+	if (link.prev) {
+		if (link.prev->m_links [nLink].next != this)
 			bRebuild = true;
-			PrintLog (0, "Object list %d is corrupted!\n", nLink);
-			}
+		else
+			link.prev->m_links [nLink].next = link.next;
+		}
+	else {
+		if (ref.head != this)
+			bRebuild = true;
 		else if ((ref.head = link.next))
 			ref.head->m_links [nLink].prev = NULL;
 		}
@@ -856,12 +860,23 @@ else
 
 #if DBG
 
-static int VerifyObjLists (void)
+int VerifyObjLists (void)
 {
 	CObject* objP, * firstObjP = gameData.objs.lists.all.head;
 	int		i = 0;
 
 FORALL_OBJS (objP, i) {
+	if (objP->Type () < MAX_OBJECT_TYPES) {
+		CObjListLink& link = objP->Links (0);
+		if (link.prev && (link.prev->Links (0).next != objP)) {
+			RebuildObjectLists ();
+			return 0;
+			}
+		if (link.next && (link.next->Links (0).prev != objP)) {
+			RebuildObjectLists ();
+			return 0;
+			}
+		}
 	if ((objP == firstObjP) && (++i > 1)) {
 		RebuildObjectLists ();
 		return 0;
