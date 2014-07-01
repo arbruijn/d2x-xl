@@ -871,6 +871,8 @@ int VerifyObjLists (CObject* refObjP)
 	CObject* objP, * firstObjP = gameData.objs.lists.all.head;
 	int		i = 0;
 
+if (refObjP && !refObjP->Links (0).prev  && !refObjP->Links (0).next)
+	refObjP = NULL;
 FORALL_OBJS (objP, i) {
 	if (objP == refObjP)
 		refObjP = NULL;
