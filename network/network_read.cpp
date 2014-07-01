@@ -856,6 +856,9 @@ return syncRes;
 
 void NetworkReadObjectPacket (ubyte* dataP)
 {
+#if DBG
+G3_SLEEP (100); // let some packets arrive
+#endif
 objectSynchronizer.Run (dataP);
 }
 
