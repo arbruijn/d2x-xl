@@ -406,6 +406,9 @@ if (gameData.multiplayer.nPlayers && IAmGameHost ()) {
 if (nState)
 	return nCurItem;
 
+#if DBG
+G3_SLEEP (100);
+#endif
 NetworkListen ();
 
 if (networkData.nStatus != NETSTAT_WAITING) { // Status changed to playing, exit the menu

@@ -697,7 +697,6 @@ if (networkData.nJoinState)
 #endif
 // Clear object list
 m_nPlayer = m_nObjOwner;
-networkData.nPrevFrame = networkData.sync [0].objs.nFrame - 1;
 InitObjects (false);
 ChangePlayerNumTo (m_nPlayer);
 InitMultiPlayerObject (1);
@@ -705,6 +704,8 @@ m_nLocalObj =
 m_nRemoteObj = -1;
 gameData.objs.nObjects = 0;
 networkData.nJoinState = 1;
+if (m_nLocalObj == -1)
+	networkData.nPrevFrame = 0;
 networkData.sync [0].objs.missingFrames.nFrame = 0;
 m_nState = 1;
 #if DBG
@@ -856,9 +857,6 @@ return syncRes;
 
 void NetworkReadObjectPacket (ubyte* dataP)
 {
-#if DBG
-G3_SLEEP (100); // let some packets arrive
-#endif
 objectSynchronizer.Run (dataP);
 }
 
