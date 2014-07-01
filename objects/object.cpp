@@ -825,8 +825,8 @@ if (link.prev || link.next) {
 	else {
 		if (ref.tail != this)
 			bRebuild = true;
-		else if ((ref.tail = link.prev))
-			ref.tail->m_links [nLink].next = NULL;
+		else 
+			ref.tail = link.prev;
 		}
 	if (link.prev) {
 		if (link.prev->m_links [nLink].next != this)
@@ -837,9 +837,13 @@ if (link.prev || link.next) {
 	else {
 		if (ref.head != this)
 			bRebuild = true;
-		else if ((ref.head = link.next))
-			ref.head->m_links [nLink].prev = NULL;
+		else 
+			ref.head = link.next;
 		}
+	if (ref.head = link.next)
+		ref.head->m_links [nLink].prev = NULL;
+	if (ref.tail)
+		ref.tail->m_links [nLink].next = NULL;
 	ref.nObjects--;
 	}
 else if ((ref.head == this) && (ref.tail == this))
