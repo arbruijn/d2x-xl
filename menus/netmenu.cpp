@@ -225,11 +225,11 @@ if (!networkThread.Available ()) {
 		NetworkSendEndLevelPacket (); // tell other players that I have left the level and am waiting in the score screen
 		t1 = t;
 		}
-	NetworkListen ();
 	}
+NetworkListen ();
 
-	int nReady = 0;
-	int bSecret = 0;
+int nReady = 0;
+int bSecret = 0;
 
 for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if ((gameData.multiplayer.players [i].connected != CONNECT_PLAYING) && 
@@ -261,7 +261,7 @@ if (nState)
  
 if (TimerGetApproxSeconds () > (gameData.multiplayer.xStartAbortMenuTime + (I2X (8))))
 	key = -2;
-if (!networkThread.Available ())
+//if (!networkThread.Available ())
 	NetworkListen ();
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if ((gameData.multiplayer.players [i].connected != CONNECT_PLAYING) && 
