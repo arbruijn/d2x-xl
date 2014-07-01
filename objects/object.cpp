@@ -840,7 +840,7 @@ if (link.prev || link.next) {
 		else 
 			ref.head = link.next;
 		}
-	if (ref.head = link.next)
+	if (ref.head)
 		ref.head->m_links [nLink].prev = NULL;
 	if (ref.tail)
 		ref.tail->m_links [nLink].next = NULL;
