@@ -60,7 +60,7 @@ IPXSendInternetPacketData (m_data, m_size, owner.address.Network (), owner.addre
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-CNetworkPacketList::CNetworkPacketList ()
+CNetworkPacketQueue::CNetworkPacketQueue ()
 	: m_nPackets (0)
 {
 m_packets [0] = 
@@ -71,7 +71,7 @@ m_semaphore = SDL_CreateSemaphore (1);
 
 //------------------------------------------------------------------------------
 
-CNetworkPacketList::~CNetworkPacketList ()
+CNetworkPacketQueue::~CNetworkPacketQueue ()
 {
 Flush ();
 if (m_semaphore) {
@@ -82,7 +82,7 @@ if (m_semaphore) {
 
 //------------------------------------------------------------------------------
 
-int CNetworkPacketList::Lock (void) 
+int CNetworkPacketQueue::Lock (void) 
 { 
 if (!m_semaphore)
 	return 0;
@@ -92,7 +92,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CNetworkPacketList::Unlock (void) 
+int CNetworkPacketQueue::Unlock (void) 
 { 
 if (!m_semaphore)
 	return 0;
@@ -102,7 +102,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-CNetworkPacket* CNetworkPacketList::Append (CNetworkPacket* packet, bool bAllowDuplicates)
+CNetworkPacket* CNetworkPacketQueue::Append (CNetworkPacket* packet, bool bAllowDuplicates)
 {
 Lock ();
 if (!packet) {
@@ -133,7 +133,7 @@ return packet;
 
 //------------------------------------------------------------------------------
 
-CNetworkPacket* CNetworkPacketList::Pop (void)
+CNetworkPacket* CNetworkPacketQueue::Pop (void)
 {
 CNetworkPacket* packet;
 Lock ();
@@ -148,7 +148,7 @@ return packet;
 
 //------------------------------------------------------------------------------
 
-void CNetworkPacketList::Flush (void)
+void CNetworkPacketQueue::Flush (void)
 {
 Lock ();
 while (m_packets [0]) {
@@ -163,7 +163,7 @@ Unlock ();
 
 //------------------------------------------------------------------------------
 
-CNetworkPacket* CNetworkPacketList::Start (int nPacket) 
+CNetworkPacket* CNetworkPacketQueue::Start (int nPacket) 
 { 
 for (m_current = Head (); m_current && nPacket--; Next ())
 	;
@@ -172,7 +172,7 @@ return m_current;
 
 //------------------------------------------------------------------------------
 
-bool CNetworkPacketList::Validate (void) 
+bool CNetworkPacketQueue::Validate (void) 
 { 
 Lock ();
 bool bOk = (!Head () == !Tail ()); // both must be either NULL or not NULL

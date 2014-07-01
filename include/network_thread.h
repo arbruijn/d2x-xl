@@ -42,7 +42,7 @@ class CNetworkPacket : public CNetworkData {
 
 //------------------------------------------------------------------------------
 
-class CNetworkPacketList {
+class CNetworkPacketQueue {
 	private:
 		int						m_nPackets;
 		CNetworkPacket*		m_packets [2];
@@ -50,8 +50,8 @@ class CNetworkPacketList {
 		SDL_sem*					m_semaphore;
 
 	public:
-		CNetworkPacketList ();
-		~CNetworkPacketList ();
+		CNetworkPacketQueue ();
+		~CNetworkPacketQueue ();
 		inline CNetworkPacket* Head (void) { return m_packets [0]; }
 		inline CNetworkPacket* Tail (void) { return m_packets [1]; }
 		inline void SetHead (CNetworkPacket* packet) { m_packets [0] = packet; }
@@ -90,8 +90,8 @@ class CNetworkThread {
 		bool						m_bListen;
 		bool						m_bSendSync;
 		tNetworkPacketOwner	m_owner;
-		CNetworkPacketList	m_txPacketQueue; // transmit
-		CNetworkPacketList	m_rxPacketQueue; // receive
+		CNetworkPacketQueue	m_txPacketQueue; // transmit
+		CNetworkPacketQueue	m_rxPacketQueue; // receive
 		CNetworkPacket*		m_packet;
 
 	public:
