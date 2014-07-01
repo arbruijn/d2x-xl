@@ -186,6 +186,8 @@ return bOk;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+static char* pszFunc = "";
+
 static int _CDECL_ NetworkThreadHandler (void* nThreadP)
 {
 networkThread.Run ();
@@ -202,9 +204,13 @@ return 0;
 void CNetworkThread::Run (void)
 {
 for (;;) {
+	pszFunc = "Listen";
 	Listen ();
+	pszFunc = "SendSync";
 	SendSync ();
+	pszFunc = "Update";
 	Update ();
+	pszFunc = "CheckPlayerTimeouts";
 	CheckPlayerTimeouts ();
 	G3_SLEEP (1);
 	}

@@ -738,7 +738,6 @@ int nUnusedObjectsSlots;
 //returns -1 if no free objects
 int AllocObject (int nRequestedObject)
 {
-	CObject *objP;
 	int		nObject;
 
 if (nRequestedObject)
@@ -758,7 +757,7 @@ if (nObject > gameData.objs.nLastObject [0]) {
 	if (gameData.objs.nLastObject [1] < gameData.objs.nLastObject [0])
 		gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
 	}
-objP = OBJECTS + nObject;
+CObject* objP = OBJECTS + nObject;
 #if DBG
 if (objP->info.nType != OBJ_NONE)
 	BRP;
