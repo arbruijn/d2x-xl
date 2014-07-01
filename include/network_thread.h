@@ -97,7 +97,7 @@ class CNetworkThread {
 	public:
 		CNetworkThread ();
 		bool Available (void) { return m_thread != NULL; }
-		void Process (void);
+		void Run (void);
 		void Start (void);
 		void End (void);
 		int CheckPlayerTimeouts (void);

@@ -188,7 +188,7 @@ return bOk;
 
 static int _CDECL_ NetworkThreadHandler (void* nThreadP)
 {
-networkThread.Process ();
+networkThread.Run ();
 return 0;
 }
 
@@ -199,7 +199,7 @@ return 0;
 #define PROCLOCK 0
 #define SYNCLOCK 1
 
-void CNetworkThread::Process (void)
+void CNetworkThread::Run (void)
 {
 for (;;) {
 	Update ();
