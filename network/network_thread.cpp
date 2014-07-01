@@ -203,7 +203,7 @@ void CNetworkThread::Process (void)
 {
 for (;;) {
 	Update ();
-	G3_SLEEP (10);
+	G3_SLEEP (1);
 	}
 }
 
