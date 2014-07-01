@@ -104,7 +104,7 @@ void NetworkSyncObjects (tNetworkSyncData *syncP)
 	int		bufI, nLocalObj, h;
 	int		nObjFrames = 0;
 	int		nPlayer = syncP->player [1].player.connected;
-	
+	int		bResync = syncP->objs.missingFrames.nFrame > 0;
 	
 syncP->bDeferredSync = false; //networkThread.Available ();
 
@@ -117,13 +117,13 @@ for (h = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACKETS_PER_FRA
 	objBuf [0] = PID_OBJECT_DATA;
 	bufI = (gameStates.multi.nGameType == UDP_GAME) ? 4 : 3;
 
-	if (syncP->objs.nCurrent == -1) {	// first packet tells the receiver to reset it's object data
-		if (networkThread.Available ())
+	if (bResync || (syncP->objs.nCurrent == -1)) {	// first packet tells the receiver to reset it's object data
+		if (!bResync && syncP->bDeferredSync && networkThread.Available ())
 			networkThread.InitSync ();
 		syncP->objs.nSent = 0;
 		syncP->objs.nMode = 0;
 		syncP->objs.nFrame = 0;
-		NW_SET_SHORT (objBuf, bufI, -1);		// object number -1          
+		NW_SET_SHORT (objBuf, bufI, bResync ? -3 : -1);		// object number -1          
 		NW_SET_BYTE (objBuf, bufI, nPlayer);                            
 		bufI += 2;									// Placeholder for nRemoteObj, not used here
 		syncP->objs.nCurrent = 0;
@@ -135,7 +135,7 @@ for (h = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACKETS_PER_FRA
 			continue;
 		// objects are sent in two passes; // nMode controls what types of objects to send in which pass
 		if (syncP->objs.nMode) { 
-			 if ((gameData.multigame.nObjOwner [nLocalObj] != -1) && (gameData.multigame.nObjOwner [nLocalObj] != nPlayer))
+				if ((gameData.multigame.nObjOwner [nLocalObj] != -1) && (gameData.multigame.nObjOwner [nLocalObj] != nPlayer))
 				continue;
 			}
 		else {

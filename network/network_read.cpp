@@ -607,7 +607,7 @@ class CObjectSynchronizer {
 		ubyte*	m_data;
 
 	public:
-		int Process (ubyte* dataP);
+		int Run (ubyte* dataP);
 
 	private:
 		void Abort (void);
@@ -647,24 +647,24 @@ int CObjectSynchronizer::CompareFrames (void)
 if (networkData.nPrevFrame == m_nFrame - 1)
 	return 1;
 if (networkData.nPrevFrame >= m_nFrame)
-	return 0;
+	return -1;
 if (networkData.nPrevFrame < 0)
 	return -1;
-if (m_nRemoteObj < 1)
-	return 0;
 #if 0
 networkData.sync [0].objs.missingFrames.nFrame = m_nRemoteObj + 1; 
 #else
 networkData.sync [0].objs.missingFrames.nFrame = networkData.nPrevFrame + 1;
 #endif
 RequestResync ();
-return -1;
+return 0;
 }
 
 //------------------------------------------------------------------------------
 
 int CObjectSynchronizer::ValidateFrame (void)
 {
+if (networkData.nJoinState > 1)
+	return 0;
 networkData.nPrevFrame = networkData.sync [0].objs.nFrame;
 if (gameStates.multi.nGameType == UDP_GAME) {
 	m_bufI = 2;
@@ -675,10 +675,10 @@ else {
 	m_bufI = 3;
 	}
 int syncRes = CompareFrames ();
-if (syncRes <= 0) {
+if (syncRes < 0) {
 	if (!syncRes) 
 		networkData.toSyncPoll.Start (0);
-	return -1;
+	return syncRes;
 	}
 ResetSyncTimeout (true);
 networkData.sync [0].objs.nFrame = m_nFrame;
@@ -689,7 +689,7 @@ return 1;
 
 int CObjectSynchronizer::Start (void)
 {
-if (m_nLocalObj != -1)
+if ((m_nLocalObj != -1) && (m_nLocalObj != -3))
 	return 0;
 #if 0 // disallow sync restart
 if (networkData.nJoinState)
@@ -826,7 +826,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CObjectSynchronizer::Process (ubyte* dataP)
+int CObjectSynchronizer::Run (ubyte* dataP)
 {
 m_data = dataP;
 
@@ -856,7 +856,7 @@ return syncRes;
 
 void NetworkReadObjectPacket (ubyte* dataP)
 {
-objectSynchronizer.Process (dataP);
+objectSynchronizer.Run (dataP);
 }
 
 //------------------------------------------------------------------------------
