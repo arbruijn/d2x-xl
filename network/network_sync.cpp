@@ -128,6 +128,7 @@ for (h = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACKETS_PER_FRA
 		bufI += 2;									// Placeholder for nRemoteObj, not used here
 		syncP->objs.nCurrent = 0;
 		nObjFrames = 1;		// first frame contains "reset object data" info
+		bResync = 0;
 		}
 
 	for (nLocalObj = syncP->objs.nCurrent, objP = OBJECTS + nLocalObj; nLocalObj <= gameData.objs.nLastObject [0]; nLocalObj++, objP++) {

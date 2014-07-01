@@ -41,7 +41,7 @@
 #define LISTEN_TIMEOUT		5
 #define SYNC_TIMEOUT			5
 #define UPDATE_TIMEOUT		500
-#define MAX_PACKET_AGE		30000
+#define MAX_PACKET_AGE		300000
 
 //------------------------------------------------------------------------------
 
@@ -401,8 +401,11 @@ return 1;
 
 void CNetworkThread::Cleanup (void)
 {
+uint t = SDL_GetTicks ();
+if (t <= MAX_PACKET_AGE)
+	return; // drop packets older than 3 seconds
+t -= MAX_PACKET_AGE;
 m_rxPacketQueue.Lock ();
-uint t = SDL_GetTicks () - MAX_PACKET_AGE; // drop packets older than 3 seconds
 for (m_rxPacketQueue.Start (); m_rxPacketQueue.Current (); m_rxPacketQueue.Next ()) {
 	if (m_rxPacketQueue.Current ()->timeStamp < t) 
 		m_rxPacketQueue.Pop (false);
