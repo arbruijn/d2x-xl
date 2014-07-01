@@ -284,9 +284,14 @@ for (;;) {
 		if (!m_packet)
 			break;
 		}
+	SemWait ();
 	if (!(m_packet->size = IpxGetPacketData (m_packet->data)))
 		break;
 	++m_nPackets;
+#if DBG
+	if (!m_packets [0] != !m_packets [1])
+		FlushPackets ();
+#endif
 	if (m_packets [1]) // list tail
 		m_packets [1]->nextPacket = m_packet;
 	else 
@@ -294,6 +299,7 @@ for (;;) {
 	m_packets [1] = m_packet;
 	m_packet->nextPacket = NULL;
 	memcpy (&m_packet->owner.address, &networkData.packetSource, sizeof (networkData.packetSource));
+	SemPost ();
 	m_packet = NULL;
 	}
 
@@ -315,11 +321,13 @@ return NetworkListen ();
 tNetworkPacket* CNetworkThread::GetPacket (void)
 {
 tNetworkPacket* packet;
+SemWait ();
 if (packet = m_packets [0]) {
 	if (!(m_packets [0] = packet->nextPacket))
 		m_packets [1] = NULL;
 	--m_nPackets;
 	}
+SemPost ();
 return packet;
 }
 
