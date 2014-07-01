@@ -131,7 +131,7 @@ user_address ipxUsers [MAX_USERS];
 int nIpxNetworks = 0;
 uint ipxNetworks [MAX_NETWORKS];
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 int IPXGeneralPacketReady (ipx_socket_t *s) 
 {
@@ -143,7 +143,7 @@ FD_SET (s->fd, &set);
 return (select (FD_SETSIZE, &set, NULL, NULL, &tv) > 0);
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 struct ipx_driver *driver = &ipx_win;
 
@@ -152,14 +152,14 @@ ubyte *IpxGetMyServerAddress ()
 return reinterpret_cast<ubyte*> (&ipx_network);
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 ubyte *IpxGetMyLocalAddress ()
 {
 return reinterpret_cast<ubyte*> (ipx_MyAddress + 4);
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 void ArchIpxSetDriver (int ipx_driver)
 {
@@ -178,7 +178,7 @@ switch (ipx_driver) {
 	}
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 int IpxInit (int nSocket)
 {
@@ -205,7 +205,7 @@ atexit (IpxClose);
 return IPX_INIT_OK;
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 void _CDECL_ IpxClose (void)
 {
@@ -218,7 +218,7 @@ if (bIpxInstalled) {
 bIpxInstalled = 0;
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 int IpxGetPacketData (ubyte *data)
 {
@@ -242,7 +242,7 @@ while (driver->PacketReady (&ipxSocketData)) {
 		break;
 	if (dataSize < 6)
 		continue;
-	dataOffs = tracker.IsTracker (networkData.packetSource.Server (), networkData.packetSource.Port (), (char*) buf) ? 0 : 4;
+	dataOffs = tracker.IsTracker (networkData.packetSource.m_address.address.portAddress.ip.a, networkData.packetSource.Port (), (char*) buf) ? 0 : 4;
 	if (dataSize > MAX_PAYLOAD_SIZE + dataOffs) {
 		PrintLog (0, "incoming data package too large (%d bytes)\n", dataSize);
 		continue;
@@ -255,7 +255,7 @@ networkThread.UnlockRecv ();
 return 0;
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 void IPXSendPacketData (ubyte *data, int dataSize, ubyte *network, ubyte *source, ubyte *dest)
 {
@@ -281,7 +281,7 @@ else {
 networkThread.UnlockSend ();
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 void IpxGetLocalTarget (ubyte *server, ubyte *node, ubyte *local_target)
 {
@@ -289,7 +289,7 @@ void IpxGetLocalTarget (ubyte *server, ubyte *node, ubyte *local_target)
 memcpy (local_target, node, 6);
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 void IPXSendBroadcastData (ubyte *data, int dataSize)	
 {
@@ -324,7 +324,7 @@ else {
 	}
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 // Sends a non-localized packet... needs 4 byte server, 6 byte address
 void IPXSendInternetPacketData (ubyte *data, int dataSize, ubyte *server, ubyte *address)
@@ -341,7 +341,7 @@ else {
 	}
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 int IpxChangeDefaultSocket (ushort nSocket, int bKeepClients)
 {
@@ -353,7 +353,7 @@ gameStates.multi.bKeepClients = 0;
 return (driver->OpenSocket (&ipxSocketData, nSocket)) ? -3 : 0;
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 void IpxReadUserFile (const char * filename)
 {
@@ -402,7 +402,7 @@ while (fgets (szTemp, sizeof (szTemp), fp)) {
 fclose (fp);
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 void IpxReadNetworkFile (const char * filename)
 {
@@ -443,7 +443,7 @@ while (fgets (szTemp, sizeof (szTemp), fp)) {
 fclose (fp);
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 // Initalizes the protocol-specific member of the netgame packet.
 void IpxInitNetGameAuxData (ubyte buf [])
@@ -452,7 +452,7 @@ if (driver->InitNetGameAuxData)
 	driver->InitNetGameAuxData (&ipxSocketData, buf);
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 // Handles the protocol-specific member of the netgame packet.
 int IpxHandleNetGameAuxData (const ubyte buf [])
@@ -462,7 +462,7 @@ if (driver->HandleNetGameAuxData)
 return 0;
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 // Notifies the protocol that we're done with a particular game
 void IpxHandleLeaveGame ()
@@ -471,7 +471,7 @@ if (driver->HandleLeaveGame)
 	driver->HandleLeaveGame (&ipxSocketData);
 }
 
-								/*---------------------------*/
+//------------------------------------------------------------------------------
 
 // Send a packet to every member of the game.
 int IpxSendGamePacket (ubyte *data, int dataSize)
@@ -503,3 +503,5 @@ else {
 	}
 return 0;
 }
+
+//------------------------------------------------------------------------------

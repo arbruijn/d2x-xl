@@ -427,25 +427,25 @@ if (pd->dataSize > 0)
 
 void GetShortFrameInfo (ubyte *old_info, tFrameInfoShort *new_info)
 {
-	int bufI = 0;
+	int m_bufI = 0;
 
-NW_GET_BYTE (old_info, bufI, new_info->nType);
+NW_GET_BYTE (old_info, m_bufI, new_info->nType);
 /* skip three for pad byte */
-bufI += 3;
-NW_GET_INT (old_info, bufI, new_info->nPackets);
-NW_GET_BYTES (old_info, bufI, new_info->objPos.orient, 9);
-NW_GET_SHORT (old_info, bufI, new_info->objPos.coord [0]);
-NW_GET_SHORT (old_info, bufI, new_info->objPos.coord [1]);
-NW_GET_SHORT (old_info, bufI, new_info->objPos.coord [2]);
-NW_GET_SHORT (old_info, bufI, new_info->objPos.nSegment);
-NW_GET_SHORT (old_info, bufI, new_info->objPos.vel [0]);
-NW_GET_SHORT (old_info, bufI, new_info->objPos.vel [1]);
-NW_GET_SHORT (old_info, bufI, new_info->objPos.vel [2]);
-NW_GET_SHORT (old_info, bufI, new_info->dataSize);
-NW_GET_BYTE (old_info, bufI, new_info->nPlayer);
-NW_GET_BYTE (old_info, bufI, new_info->objRenderType);
-NW_GET_BYTE (old_info, bufI, new_info->nLevel);
-NW_GET_BYTES (old_info, bufI, new_info->data, new_info->dataSize);
+m_bufI += 3;
+NW_GET_INT (old_info, m_bufI, new_info->nPackets);
+NW_GET_BYTES (old_info, m_bufI, new_info->objPos.orient, 9);
+NW_GET_SHORT (old_info, m_bufI, new_info->objPos.coord [0]);
+NW_GET_SHORT (old_info, m_bufI, new_info->objPos.coord [1]);
+NW_GET_SHORT (old_info, m_bufI, new_info->objPos.coord [2]);
+NW_GET_SHORT (old_info, m_bufI, new_info->objPos.nSegment);
+NW_GET_SHORT (old_info, m_bufI, new_info->objPos.vel [0]);
+NW_GET_SHORT (old_info, m_bufI, new_info->objPos.vel [1]);
+NW_GET_SHORT (old_info, m_bufI, new_info->objPos.vel [2]);
+NW_GET_SHORT (old_info, m_bufI, new_info->dataSize);
+NW_GET_BYTE (old_info, m_bufI, new_info->nPlayer);
+NW_GET_BYTE (old_info, m_bufI, new_info->objRenderType);
+NW_GET_BYTE (old_info, m_bufI, new_info->nLevel);
+NW_GET_BYTES (old_info, m_bufI, new_info->data, new_info->dataSize);
 }
 #else
 
@@ -543,13 +543,6 @@ if (pd->dataSize > 0) {
 
 //------------------------------------------------------------------------------
 
-int NetworkVerifyObjects (int nRemoteObj, int nLocalObjs)
-{
-return !gameStates.app.bHaveExtraGameInfo [1] && (nRemoteObj - nLocalObjs > 10) ? -1 : 0;
-}
-
-//------------------------------------------------------------------------------
-
 int NetworkVerifyPlayers (void)
 {
 	int				i, j, t, bCoop = IsCoopGame;
@@ -602,7 +595,46 @@ networkData.nStatus = NETSTAT_MENU;
 
 //------------------------------------------------------------------------------
 
-static void NetworkRequestResync (void)
+class CObjectSynchronizer {
+	private:
+		int		m_nPlayer;
+		sbyte		m_nObjOwner;
+		short		m_nLocalObj;
+		short		m_nRemoteObj;
+		ushort	m_nFrame;
+		int		m_nState;
+		int		m_bufI;
+		ubyte*	m_data;
+
+	public:
+		int Process (ubyte* dataP);
+
+	private:
+		void Abort (void);
+		void RequestResync (void);
+		int CompareFrames (void);
+		int ValidateFrame (void);
+		int Start (void);
+		int Finish (void);
+		int Sync (void);
+		int Validate (void);
+};
+
+CObjectSynchronizer objectSynchronizer;
+
+bool ObjectIsLinked (CObject *objP, short nSegment);
+void ResetSyncTimeout (bool bInit = false);
+
+//------------------------------------------------------------------------------
+
+void CObjectSynchronizer::Abort (void)
+{
+NetworkAbortSync ();
+}
+
+//------------------------------------------------------------------------------
+
+void CObjectSynchronizer::RequestResync (void)
 {
 networkData.nJoinState = 2;
 NetworkSendMissingObjFrames ();
@@ -610,187 +642,221 @@ NetworkSendMissingObjFrames ();
 
 //------------------------------------------------------------------------------
 
-static int NetworkCheckMissingFrames (ushort nFrame)
+int CObjectSynchronizer::CompareFrames (void)
 {
-if (networkData.nPrevFrame == nFrame - 1)
+if (networkData.nPrevFrame == m_nFrame - 1)
 	return 1;
-if (networkData.nPrevFrame >= nFrame)
+if (networkData.nPrevFrame >= m_nFrame)
 	return 0;
 if (networkData.nPrevFrame < 0)
 	return -1;
+if (m_nRemoteObj < 1)
+	return 0;
+#if 0
+networkData.sync [0].objs.missingFrames.nFrame = m_nRemoteObj + 1; 
+#else
 networkData.sync [0].objs.missingFrames.nFrame = networkData.nPrevFrame + 1;
-NetworkRequestResync ();
+#endif
+RequestResync ();
 return -1;
 }
 
 //------------------------------------------------------------------------------
 
-bool ObjectIsLinked (CObject *objP, short nSegment);
-void ResetSyncTimeout (bool bInit = false);
-
-void NetworkReadObjectPacket (ubyte *dataP)
+int CObjectSynchronizer::ValidateFrame (void)
 {
-	static int	nPlayer = 0;
-	static int	nState = 0;
-
-	// Object from another net CPlayerData we need to sync with
-	CObject		*objP;
-	short			nLocalObj, nRemoteObj;
-	sbyte			nObjOwner;
-	short			nSegment, i;
-	ushort		nFrame;
-
-	int			nObjects = dataP [1];
-	int			bufI;
-
 networkData.nPrevFrame = networkData.sync [0].objs.nFrame;
 if (gameStates.multi.nGameType == UDP_GAME) {
-	bufI = 2;
-	NW_GET_SHORT (dataP, bufI, nFrame);
+	m_bufI = 2;
+	NW_GET_SHORT (m_data, m_bufI, m_nFrame);
 	}
 else {
-	nFrame = dataP [2];
-	bufI = 3;
+	m_nFrame = m_data [2];
+	m_bufI = 3;
 	}
-i = NetworkCheckMissingFrames (nFrame);
-if (!i) {
-	networkData.toSyncPoll.Start (0);
-	return;
+int syncRes = CompareFrames ();
+if (syncRes <= 0) {
+	if (!syncRes) 
+		networkData.toSyncPoll.Start (0);
+	return -1;
 	}
-else if (i < 0)
-	return;
 ResetSyncTimeout (true);
-networkData.sync [0].objs.nFrame = nFrame;
- for (i = 0; i < nObjects; i++) {
-	objP = NULL;
+networkData.sync [0].objs.nFrame = m_nFrame;
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CObjectSynchronizer::Start (void)
+{
+if (m_nLocalObj != -1)
+	return 0;
+#if 0 // disallow sync restart
+if (networkData.nJoinState)
+	return -1;
+#endif
+// Clear object list
+m_nPlayer = m_nObjOwner;
+networkData.nPrevFrame = networkData.sync [0].objs.nFrame - 1;
+InitObjects (false);
+ChangePlayerNumTo (m_nPlayer);
+InitMultiPlayerObject (1);
+m_nLocalObj =
+m_nRemoteObj = -1;
+gameData.objs.nObjects = 0;
+networkData.nJoinState = 1;
+networkData.sync [0].objs.missingFrames.nFrame = 0;
+m_nState = 1;
+#if DBG
+VerifyObjLists (N_LOCALPLAYER);
+#endif
+return 1;
+}
+
+//------------------------------------------------------------------------------
+// The object sync'er places all incoming objects at the same object table
+// entries as on the remote sync'ing system. If the table entries of the current
+// local and remote objects are too far apart, too much has changed in the 
+// remote (reference's) system's game state and the local game state
+
+int CObjectSynchronizer::Validate (void)
+{
+return (/*!gameStates.app.bHaveExtraGameInfo [1] &&*/ (m_nRemoteObj - m_nLocalObj > 10)) ? -1 : 0;
+}
+
+//------------------------------------------------------------------------------
+
+int CObjectSynchronizer::Finish (void)
+{
+if (m_nLocalObj != -2) 
+	return 0;
+
+if (!m_nState || !Validate ()) {
+	Abort ();
+	return -1;
+	}
+
+NetworkCountPowerupsInMine ();
+gameData.objs.RebuildEffects ();
+networkData.sync [0].objs.nFrame = 0;
+m_nState = 0;
+if (networkData.bHaveSync)
+	networkData.nStatus = NETSTAT_PLAYING;
+networkData.nJoinState = 4;
+#if DBG
+VerifyObjLists (N_LOCALPLAYER);
+#endif
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CObjectSynchronizer::Sync (void)
+{
+if (networkData.nJoinState != 1)
+	return 0;
+
+// try to allocate each object in the same object list slot as the game host
+// this is particularly important for the player objects, as these get used before they actually get allocated
+m_nLocalObj = AllocObject (m_nRemoteObj); 
+if ((m_nObjOwner != N_LOCALPLAYER) && (m_nObjOwner != -1)) 
+	m_nState = 0;
+else { // for the local player and for unknown object owners, the new object must be allocated at the same object list position as on the remote server!
+	if (/*(m_nState != 1) ||*/ (m_nLocalObj != m_nRemoteObj)) { // since the object allocator tries its best to do so, ignore the sync state here if that requirement could me met
+		RequestResync ();
+		return -1;
+		}
+	}
+if (m_nLocalObj < 0) 
+	return 0;
+
+CObject* objP = OBJECTS + m_nLocalObj;
+objP->Unlink (true);
+while (ObjectIsLinked (objP, objP->info.nSegment))
+	objP->UnlinkFromSeg ();
+NW_GET_BYTES (m_data, m_bufI, &objP->info, sizeof (tBaseObject));
+if (objP->info.nType != OBJ_NONE) {
+#if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
+	if (gameStates.multi.nGameType >= IPX_GAME)
+		SwapObject (objP);
+#endif
+	int nSegment = objP->info.nSegment;
+	PrintLog (0, "receiving object %d (type: %d, segment: %d)\n", m_nLocalObj, objP->info.nType, nSegment);
+	objP->ResetSgmLinks ();
+	objP->ResetLinks ();
+	objP->info.nAttachedObj = -1;
+	objP->Link ();
+	if (nSegment < 0) {
+		nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0);
+		if (nSegment < 0) {
+#if DBG
+			nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0); 
+#endif
+			nSegment = FindSegByPos (objP->info.position.vPos, -1, 0, 0);
+			if (nSegment < 0) {
+				NetworkAbortSync ();
+				return -1;
+				}
+			}
+		}
+	if (!ObjectIsLinked (objP, nSegment))
+		objP->LinkToSeg (nSegment);
+	if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_GHOST))
+		RemapLocalPlayerObject (m_nLocalObj, m_nRemoteObj);
+#if 1
+	SetObjNumMapping (m_nLocalObj, m_nRemoteObj, m_nObjOwner);
+#else
+	if (m_nObjOwner == m_nPlayer)
+		SetLocalObjNumMapping (m_nLocalObj);
+	else if (m_nObjOwner != -1)
+		SetObjNumMapping (m_nLocalObj, m_nRemoteObj, m_nObjOwner);
+	else
+		gameData.multigame.m_nObjOwner [m_nLocalObj] = -1;
+#endif
+	if (objP->Type () == OBJ_MONSTERBALL) {
+		gameData.hoard.monsterballP = objP;
+		gameData.hoard.nMonsterballSeg = nSegment;
+		}
+	}
+#if DBG
+VerifyObjLists (objP->Index ());
+#endif
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CObjectSynchronizer::Process (ubyte* dataP)
+{
+m_data = dataP;
+
+if (0 > ValidateFrame ())
+	return -1;
+
+int syncRes = 0;
+int nObjects = m_data [1];
+
+for (int i = 0; (i < nObjects) && (syncRes > -1); i++) {
 #if DBG
 	VerifyObjLists (LOCALPLAYER.nObject);
 #endif
-	NW_GET_SHORT (dataP, bufI, nLocalObj);
-	NW_GET_BYTE (dataP, bufI, nObjOwner);
-	NW_GET_SHORT (dataP, bufI, nRemoteObj);
-	if ((nLocalObj == -1) || (nLocalObj == -3)) {
-		// Clear object list
-		nPlayer = nObjOwner;
-		nState = 1;
-		networkData.nPrevFrame = networkData.sync [0].objs.nFrame - 1;
-		if (nLocalObj == -3) {
-			if (networkData.nJoinState != 2)
-				return;
-#if DBG
-			PrintLog (0, "Receiving missing object packets\n");
-#endif
-			networkData.nJoinState = 3;
-			}
-		else {
-			if (networkData.nJoinState)
-				return;
-			InitObjects (false);
-			ChangePlayerNumTo (nPlayer);
-			InitMultiPlayerObject (1);
-			gameData.objs.nObjects = 0;
-			networkData.nJoinState = 1;
-			}
-		networkData.sync [0].objs.missingFrames.nFrame = 0;
-		}
-	else if ((nLocalObj == -2) || (nLocalObj == -4)) {	// Special debug checksum marker for entire send
- 		if (!nState && NetworkVerifyObjects (nRemoteObj, gameData.objs.nObjects)) {
-			NetworkAbortSync ();
-			return;
-			}
-		NetworkCountPowerupsInMine ();
-		gameData.objs.RebuildEffects ();
-		networkData.sync [0].objs.nFrame = 0;
-		nState = 0;
-		if (networkData.bHaveSync)
-			networkData.nStatus = NETSTAT_PLAYING;
-		networkData.nJoinState = 4;
-		}
-	else if (networkData.nJoinState & 1) {
-#if 1
-		console.printf (CON_DBG, "Got a type 3 object packet!\n");
-#endif
-#if 1
-		// try to allocate each object in the same object list slot as the game host
-		// this is particularly important for the player objects, as these get used before they actually get allocated
-		nLocalObj = AllocObject (nRemoteObj); 
-#else
-		nLocalObj = nRemoteObj;
-		if (!ClaimObject (nLocalObj)) {
-			if (networkData.nJoinState == 3) {
-				FreeObject (nLocalObj);
-				if (!ClaimObject (nLocalObj))
-					nLocalObj = -1;
-				}
-			else
-				nLocalObj = AllocObject ();
-			}
-#endif
-		if ((nObjOwner != N_LOCALPLAYER) && (nObjOwner != -1)) 
-			nState = 0;
-		else { // for the local player and for unknown object owners, the new object must be allocated at the same object list position as on the remote server!
-			if (/*(nState != 1) ||*/ (nLocalObj != nRemoteObj)) { // since the object allocator tries its best to do so, ignore the sync state here if that requirement could me met
-				NetworkRequestResync ();
-				return;
-				}
-			}
-		if (nLocalObj != -1) {
-			Assert (nLocalObj < LEVEL_OBJECTS);
-			objP = OBJECTS + nLocalObj;
-			objP->Unlink (true);
-			while (ObjectIsLinked (objP, objP->info.nSegment))
-				objP->UnlinkFromSeg ();
-			NW_GET_BYTES (dataP, bufI, &objP->info, sizeof (tBaseObject));
-			if (objP->info.nType != OBJ_NONE) {
-#if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
-				if (gameStates.multi.nGameType >= IPX_GAME)
-					SwapObject (objP);
-#endif
-				nSegment = objP->info.nSegment;
-				PrintLog (0, "receiving object %d (type: %d, segment: %d)\n", nLocalObj, objP->info.nType, nSegment);
-				objP->ResetSgmLinks ();
-				objP->ResetLinks ();
-				objP->info.nAttachedObj = -1;
-				objP->Link ();
-				if (nSegment < 0) {
-					nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0);
-					if (nSegment < 0) {
-#if DBG
-						nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0); 
-#endif
-						nSegment = FindSegByPos (objP->info.position.vPos, -1, 0, 0);
-						if (nSegment < 0) {
-							NetworkAbortSync ();
-							return;
-							}
-						}
-					}
-				if (!ObjectIsLinked (objP, nSegment))
-					objP->LinkToSeg (nSegment);
-				if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_GHOST))
-					RemapLocalPlayerObject (nLocalObj, nRemoteObj);
-#if 1
-				SetObjNumMapping (nLocalObj, nRemoteObj, nObjOwner);
-#else
-				if (nObjOwner == nPlayer)
-					SetLocalObjNumMapping (nLocalObj);
-				else if (nObjOwner != -1)
-					SetObjNumMapping (nLocalObj, nRemoteObj, nObjOwner);
-				else
-					gameData.multigame.nObjOwner [nLocalObj] = -1;
-#endif
-				if (objP->Type () == OBJ_MONSTERBALL) {
-					gameData.hoard.monsterballP = objP;
-					gameData.hoard.nMonsterballSeg = nSegment;
-					}
-				}
-#if DBG
-			VerifyObjLists (objP->Index ());
-#endif
-			}
-		} // For a standard onbject
-	} // For each CObject in packet
-//gameData.objs.nLastObject [0] = gameData.objs.nObjects - 1;
+	NW_GET_SHORT (m_data, m_bufI, m_nLocalObj);
+	NW_GET_BYTE (m_data, m_bufI, m_nObjOwner);
+	NW_GET_SHORT (m_data, m_bufI, m_nRemoteObj);
+	if ((syncRes = Start ()))
+		continue;
+	if ((syncRes = Finish ()))
+		continue;
+	Sync ();
+	} 
+return syncRes;
+}
+
+//------------------------------------------------------------------------------
+
+void NetworkReadObjectPacket (ubyte* dataP)
+{
+objectSynchronizer.Process (dataP);
 }
 
 //------------------------------------------------------------------------------

@@ -88,6 +88,7 @@ if (!syncP->objs.nFrame++)
 	return 1;
 if (syncP->objs.nFrame < syncP->objs.missingFrames.nFrame)
 	return 0;
+syncP->objs.missingFrames.nFrame = 0;
 return 1;
 }
 
@@ -103,10 +104,13 @@ void NetworkSyncObjects (tNetworkSyncData *syncP)
 	int		bufI, nLocalObj, h;
 	int		nObjFrames = 0;
 	int		nPlayer = syncP->player [1].player.connected;
+	
+	
+syncP->bDeferredSync = networkThread.Available ();
 
 // Send clear OBJECTS array CTrigger and send player num
 objFilter [OBJ_MARKER] = !gameStates.app.bHaveExtraGameInfo [1];
-for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try to speed it up without
+for (h = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACKETS_PER_FRAME; h; h--) {	// Do more than 1 per frame, try to speed it up without
 																// over-stressing the receiver.
 	nObjFrames = 0;
 	memset (objBuf, 0, MAX_PAYLOAD_SIZE);
@@ -114,10 +118,12 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 	bufI = (gameStates.multi.nGameType == UDP_GAME) ? 4 : 3;
 
 	if (syncP->objs.nCurrent == -1) {	// first packet tells the receiver to reset it's object data
+		if (networkThread.Available ())
+			networkThread.InitSync ();
 		syncP->objs.nSent = 0;
 		syncP->objs.nMode = 0;
 		syncP->objs.nFrame = 0;
-		NW_SET_SHORT (objBuf, bufI, syncP->objs.missingFrames.nFrame ? -3 : -1);		// object number -1          
+		NW_SET_SHORT (objBuf, bufI, -1);		// object number -1          
 		NW_SET_BYTE (objBuf, bufI, nPlayer);                            
 		bufI += 2;									// Placeholder for nRemoteObj, not used here
 		syncP->objs.nCurrent = 0;
@@ -125,8 +131,9 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 		}
 
 	for (nLocalObj = syncP->objs.nCurrent, objP = OBJECTS + nLocalObj; nLocalObj <= gameData.objs.nLastObject [0]; nLocalObj++, objP++) {
-		if (NetworkFilterObject (objP))
+		if (NetworkFilterObject (objP)) 
 			continue;
+		// objects are sent in two passes; // nMode controls what types of objects to send in which pass
 		if (syncP->objs.nMode) { 
 			 if ((gameData.multigame.nObjOwner [nLocalObj] != -1) && (gameData.multigame.nObjOwner [nLocalObj] != nPlayer))
 				continue;
@@ -149,21 +156,34 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 			SwapObject (reinterpret_cast<CObject*> (objBuf + bufI - sizeof (tBaseObject)));
 #endif
 		}
+
 	if (nObjFrames) {	// Send any objects we've buffered
 		syncP->objs.nCurrent = nLocalObj;	
-		if (NetworkObjFrameFilter (syncP)) {
+		if (NetworkObjFrameFilter (syncP)) { // this statement skips any objects successfully sync'd in case the client has reported missing frames
 			objBuf [1] = nObjFrames;  
 			if (gameStates.multi.nGameType == UDP_GAME)
 				*reinterpret_cast<short*> (objBuf + 2) = INTEL_SHORT (syncP->objs.nFrame);
 			else
 				objBuf [2] = (ubyte) syncP->objs.nFrame;
 			Assert (bufI <= MAX_PAYLOAD_SIZE);
-			if (gameStates.multi.nGameType >= IPX_GAME)
-				IPXSendInternetPacketData (objBuf, bufI, syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node ());
-			 }
+			if (gameStates.multi.nGameType >= IPX_GAME) {
+				if (!syncP->bDeferredSync)
+					IPXSendInternetPacketData (objBuf, bufI, syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node ());
+				else if (!networkThread.AddSyncPacket (objBuf, bufI, syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node ())) {
+					syncP->bDeferredSync = false;
+					h = OBJ_PACKETS_PER_FRAME;
+					syncP->objs.nCurrent = -1;
+					break;
+					}
+				}	
+			}
 		}
+
+	if (syncP->objs.nCurrent < 0)
+		continue;
+
 	if (nLocalObj > gameData.objs.nLastObject [0]) {
-		if (syncP->objs.nMode) {
+		if (syncP->objs.nMode) { // need to send the finishing object data
 			syncP->objs.nCurrent = nLocalObj;
 			// Send count so other CSide can make sure he got them all
 			objBuf [0] = PID_OBJECT_DATA;
@@ -177,10 +197,12 @@ for (h = 0; h < OBJ_PACKETS_PER_FRAME; h++) {	// Do more than 1 per frame, try t
 				objBuf [2] = (ubyte) syncP->objs.nFrame;
 				bufI = 3;
 				}
-			nRemoteObj = syncP->objs.missingFrames.nFrame ? -4 : -2;
+			nRemoteObj = -2;
 			NW_SET_SHORT (objBuf, bufI, nRemoteObj);
 			NW_SET_SHORT (objBuf, bufI, syncP->objs.nSent);
-			syncP->nState = syncP->objs.missingFrames.nFrame ? 1 : 2;
+			if (syncP->bDeferredSync)
+				networkThread.StartSync ();
+			syncP->nState = 2;
 			}
 		else {
 			syncP->objs.nCurrent = 0;
@@ -275,26 +297,18 @@ if (syncP->bAllowedPowerups) {
 	syncP->bAllowedPowerups = false;
 	}
 else if (syncP->nState == 1) {
-	syncP->objs.missingFrames.nFrame = 0;
 	NetworkSyncObjects (syncP);
 	syncP->bExtraGameInfo = false;
 	syncP->bAllowedPowerups = false;
 	}
 else if (syncP->nState == 2) {
-	NetworkSyncPlayer (syncP);
-	syncP->bExtraGameInfo = true;
-	syncP->bAllowedPowerups = true;
+	if (!networkThread.SyncInProgress ()) {
+		NetworkSyncPlayer (syncP);
+		syncP->bExtraGameInfo = true;
+		syncP->bAllowedPowerups = true;
+		}
 	}
 else if (syncP->nState == 3) {
-	if (syncP->objs.missingFrames.nFrame) {
-		NetworkSyncObjects (syncP);
-		if (!syncP->nState)
-			syncP->objs.missingFrames.nFrame = 0;
-		}
-	else
-		syncP->nState = 4;
-	}
-else if (syncP->nState == 4) {
 	if (syncP->nExtras) {
 		NetworkSyncExtras (syncP);
 		if ((syncP->bExtraGameInfo = (syncP->nExtras == 0))) {
@@ -382,7 +396,7 @@ networkData.toSyncPoll.Start ();
 
 //------------------------------------------------------------------------------
 
-void NetworkPackObjects (void)
+void NetworkFixObjectLists (void)
 {
 // Switching modes, pack the CObject array
 SpecialResetObjects ();

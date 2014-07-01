@@ -446,33 +446,23 @@ gameData.objs.nLastObject [0] = 0;
 }
 
 //------------------------------------------------------------------------------
-//after calling InitObject (), the network code has grabbed specific
-//object slots without allocating them.  Go through the objects and build
-//the free list, then set the appropriate globals
+// During sync'ing of multiplayer games and after loading savegames, object
+// table entries have been used without removing them from the object free list.
+// This is done here, and the affected objects are linked to the object lists.
+// The object free list must have been initialized before calling this function.
+
 void SpecialResetObjects (void)
 {
-	CObject	*objP;
-	int		i;
-
 gameData.objs.nObjects = LEVEL_OBJECTS;
 gameData.objs.nLastObject [0] = 0;
 gameData.objs.lists.Init ();
 Assert (OBJECTS [0].info.nType != OBJ_NONE);		//0 should be used
-for (objP = OBJECTS.Buffer () + LEVEL_OBJECTS, i = LEVEL_OBJECTS; i; ) {
-	objP--, i--;
-#if DBG
-	if (i == nDbgObj) {
-		BRP;
-		if (objP->info.nType != OBJ_NONE)
-			dbgObjInstances++;
-		}
-#endif
+
+CObject* objP = &OBJECTS [0];
+for (int i = gameData.objs.nLastObject [0]; i; i--, objP++) {
 	objP->InitLinks ();
-	if (objP->info.nType == OBJ_NONE)
-		gameData.objs.freeList [--gameData.objs.nObjects] = i;
-	else {
-		if (i > gameData.objs.nLastObject [0])
-			gameData.objs.nLastObject [0] = i;
+	if (objP->info.nType < MAX_OBJECT_TYPES) {
+		ClaimObject (objP->Index ()); // allocate object list entry #i - should always work here
 		objP->Link ();
 		}
 	}
@@ -784,6 +774,8 @@ return nObject;
 }
 
 //------------------------------------------------------------------------------
+// D2X-XL keeps several object lists where it sorts objects by certain categories.
+// The following code manages these lists.
 
 #if DBG
 

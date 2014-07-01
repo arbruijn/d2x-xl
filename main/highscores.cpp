@@ -469,7 +469,7 @@ int nReady = 0;
 int nConnected = 0;
 int bServer = gameStates.multi.bServer [0];
 
-if (!networkThread.SemWait ())
+if (!networkThread.Lock ())
 	networkThread.CheckPlayerTimeouts (); // wait for eventual player timeout checking to complete
 for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 	// check timeouts for idle players
@@ -501,7 +501,7 @@ for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 		nConnected++;
 
 	if (nReady >= gameData.multiplayer.nPlayers) {
-		networkThread.SemPost ();
+		networkThread.Unlock ();
 		return 1;
 		}
 
@@ -516,7 +516,7 @@ for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 		gameData.score.nKillsChanged = 0;
 		}
 	}
-networkThread.SemPost ();
+networkThread.Unlock ();
 
 if (!bServer && (nConnected < 2)) {
 	int nInMenu = gameStates.menus.nInMenu;

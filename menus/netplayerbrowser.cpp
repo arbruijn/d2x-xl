@@ -204,7 +204,7 @@ for (i = 0; i < nSavePlayers; i++) {
 		if (i > gameData.multiplayer.nPlayers) {
 			if (gameStates.multi.nGameType >= IPX_GAME) {
 				netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.SetNode (netPlayers [0].m_info.players [i].network.Node ());
-				netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.SetIP (netPlayers [0].m_info.players [i].network.IP ());
+				netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.SetNetwork (netPlayers [0].m_info.players [i].network.Network ());
 				}
 			else {
 				memcpy (&netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.AppleTalk (), 

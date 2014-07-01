@@ -4,17 +4,77 @@
 //------------------------------------------------------------------------------
 
 typedef struct tNetworkPacketOwner {
-	tIPXRecvData				address;
+	CPacketOrigin				address;
 	ubyte							nPlayer;
 } tNetworkPacketOwner;
 
-typedef struct tNetworkPacket {
-	struct tNetworkPacket*	nextPacket;
-	uint							timeStamp;
-	tNetworkPacketOwner		owner;
-	ushort						size;
-	ubyte							data [MAX_PACKET_SIZE];
-} tNetworkPacket;
+class CNetworkData {
+	public:
+		ushort					m_size;
+		ubyte						m_data [MAX_PACKET_SIZE];
+
+	public:
+		CNetworkData () : m_size (0) {}
+		inline void SetData (ubyte* data, int size) { memcpy (m_data, data, m_size = size); }
+		inline CNetworkData& operator= (CNetworkData& other) { 
+			SetData (other.m_data, other.m_size); 
+			return *this;
+			}
+		inline int Size (void) { return m_size; }
+		inline int SetSize (int size) { return m_size = size; }
+		inline bool operator== (CNetworkData& other)  { return (m_size == other.m_size) && !memcmp (m_data, other.m_data, m_size); }
+};
+
+//------------------------------------------------------------------------------
+
+class CNetworkPacket : public CNetworkData {
+	public:	
+		CNetworkPacket*		nextPacket;
+		uint						timeStamp;
+		tNetworkPacketOwner	owner;
+		ubyte						data [MAX_PACKET_SIZE];
+
+	public:
+		CNetworkPacket () : nextPacket (NULL), timeStamp (0) {}
+		void Send (void);
+		inline bool operator== (CNetworkPacket& other) { return (owner.address == other.owner.address) && ((CNetworkData) *this == (CNetworkData) other); }
+};
+
+//------------------------------------------------------------------------------
+
+class CNetworkPacketList {
+	private:
+		int						m_nPackets;
+		CNetworkPacket*		m_packets [2];
+		CNetworkPacket*		m_current;
+		SDL_sem*					m_semaphore;
+
+	public:
+		CNetworkPacketList ();
+		~CNetworkPacketList ();
+		inline CNetworkPacket* Head (void) { return m_packets [0]; }
+		inline CNetworkPacket* Tail (void) { return m_packets [1]; }
+		inline void SetHead (CNetworkPacket* packet) { m_packets [0] = packet; }
+		inline void SetTail (CNetworkPacket* packet) { m_packets [1] = packet; }
+		CNetworkPacket* Start (int nPacket = 1);
+		inline CNetworkPacket* Next (void) { return m_current ? m_current = m_current->nextPacket : NULL; }
+		inline CNetworkPacket* Current (void) { return m_current; }
+		void Flush (void);
+		CNetworkPacket* Append (CNetworkPacket* packet = NULL, bool bAllowDuplicates = true);
+		CNetworkPacket* Pop (void);
+		CNetworkPacket* Get (void);
+		int Lock (void);
+		int Unlock (void);
+		bool Validate (void);
+		inline int Length (void) { return m_nPackets; }
+};
+
+//------------------------------------------------------------------------------
+
+class CSyncThread {
+	private:
+		CNetworkInfo			m_client;
+};
 
 //------------------------------------------------------------------------------
 
@@ -22,15 +82,17 @@ class CNetworkThread {
 	private:
 		SDL_Thread*				m_thread;
 		SDL_sem*					m_semaphore;
+		SDL_sem*					m_syncLock;
 		SDL_mutex*				m_sendLock;
 		SDL_mutex*				m_recvLock;
 		SDL_mutex*				m_processLock;
 		int						m_nThreadId;
 		bool						m_bListen;
-		int						m_nPackets;
+		bool						m_bSendSync;
 		tNetworkPacketOwner	m_owner;
-		tNetworkPacket*		m_packets [2];
-		tNetworkPacket*		m_packet;
+		CNetworkPacketList	m_syncData;
+		CNetworkPacketList	m_packetList;
+		CNetworkPacket*		m_packet;
 
 	public:
 		CNetworkThread ();
@@ -41,13 +103,15 @@ class CNetworkThread {
 		int CheckPlayerTimeouts (void);
 		void Update (void);
 		int Listen (void);
-		tNetworkPacket* GetPacket (void);
+		CNetworkPacket* GetPacket (void);
 		int GetPacketData (ubyte* data);
 		int ProcessPackets (void);
 		void FlushPackets (void);
 		void Cleanup (void);
-		int SemWait (void);
-		int SemPost (void);
+		int Lock (void);
+		int Unlock (void);
+		int LockSync (void);
+		int UnlockSync (void);
 		int LockSend (void);
 		int UnlockSend (void);
 		int LockRecv (void);
@@ -55,6 +119,13 @@ class CNetworkThread {
 		int LockProcess (void);
 		int UnlockProcess (void);
 		inline void SetListen (bool bListen) { m_bListen = bListen; }
+		int InitSync (void);
+		bool AddSyncPacket (ubyte* data, int size, ubyte* network, ubyte* node);
+		bool StartSync (int nPacket = 0);
+		void SendSync (void);
+		void UpdateSync (int nPacket);
+		void StopSync (void);
+		inline bool SyncInProgress (void) { return Available () && m_bSendSync; }
 
 	private:
 		int ConnectionStatus (int nPlayer);

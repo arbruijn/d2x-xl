@@ -41,11 +41,10 @@ void NetworkSendDoorUpdates (int nPlayer)
 {
 	// Send door status when new player joins
 
-	int i;
-	CWall *wallP;
+	CWall* wallP = WALLS.Buffer ();
    
 //   Assert (nPlayer>-1 && nPlayer<gameData.multiplayer.nPlayers);
-for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
+for (int i = 0; i < gameData.walls.nWalls; i++, wallP++) {
    if ((wallP->nType == WALL_DOOR) && 
 		 ((wallP->state == WALL_DOOR_OPENING) || 
 		  (wallP->state == WALL_DOOR_WAITING) || 
@@ -637,10 +636,8 @@ for (int i = 0; i <= gameData.segs.nLastSegment; i++)
 
 void NetworkSendFlyThruTriggers (int nPlayer) 
  {
-  // send the fly thru triggers that have been disabled
-  int i;
-
-for (i = 0; i < gameData.trigs.m_nTriggers; i++)
+// send the fly thru triggers that have been disabled
+for (int i = 0; i < gameData.trigs.m_nTriggers; i++)
 	if (TRIGGERS [i].m_info.flags & TF_DISABLED)
 		MultiSendTriggerSpecific ((char) nPlayer, (ubyte) i);
  }
@@ -649,9 +646,7 @@ for (i = 0; i < gameData.trigs.m_nTriggers; i++)
 
 void NetworkSendPlayerFlags (void)
 {
-int i;
-
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
 	MultiSendFlags ((char) i);
  }
 

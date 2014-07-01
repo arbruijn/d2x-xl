@@ -4010,16 +4010,17 @@ gameData.multiplayer.weaponStates [int (buf [1])].xFusionCharge = GET_INTEL_INT 
 
 void MultiSendWeapons (int bForce)
 {
-	int t = gameStates.app.nSDLTicks [0];
 
-	static int nTimeout = 0;
+	static int t0 = 0;
 
 if (!IsMultiGame || (gameStates.multi.nGameType != UDP_GAME))
 	return;
-if (bForce || (t - nTimeout > 1000)) {
+
+int t = gameStates.app.nSDLTicks [0];
+if (bForce || (t - t0 > 1000)) {
 		int i, bufP = 0;
 
-	nTimeout = t;
+	t0 = t;
 	gameData.multigame.msg.buf [bufP++] = (char) MULTI_WEAPONS;
 	gameData.multigame.msg.buf [bufP++] = (char) N_LOCALPLAYER;
 	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.Shield ());

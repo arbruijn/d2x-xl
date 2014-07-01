@@ -195,7 +195,7 @@ return sendto (mysock->fd, reinterpret_cast<const char*> (data), dataLen, 0,
 
 //------------------------------------------------------------------------------
 
-static int ipx_win_ReceivePacket (ipx_socket_t *s, ubyte *buffer, int bufsize, tIPXRecvData *rd) 
+static int ipx_win_ReceivePacket (ipx_socket_t *s, ubyte *buffer, int bufsize, CPacketOrigin *rd) 
 {
 	struct sockaddr_ipx ipxs;
  

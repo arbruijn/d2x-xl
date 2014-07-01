@@ -38,10 +38,152 @@
 #	include "linux/include/ipx_drv.h"
 #endif
 
+#define LISTEN_TIMEOUT		5
+#define SYNC_TIMEOUT			5
+#define UPDATE_TIMEOUT		500
+#define MAX_PACKET_AGE		3000
+
 //------------------------------------------------------------------------------
 
 CNetworkThread networkThread;
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CNetworkPacket::Send (void)
+{
+IPXSendInternetPacketData (m_data, m_size, owner.address.Network (), owner.address.Node ());
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+CNetworkPacketList::CNetworkPacketList ()
+	: m_nPackets (0)
+{
+m_packets [0] = 
+m_packets [1] = 
+m_current = NULL;
+m_semaphore = SDL_CreateSemaphore (1);
+}
+
+//------------------------------------------------------------------------------
+
+CNetworkPacketList::~CNetworkPacketList ()
+{
+Flush ();
+if (m_semaphore) {
+	SDL_DestroySemaphore (m_semaphore);
+	m_semaphore = NULL;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int CNetworkPacketList::Lock (void) 
+{ 
+if (!m_semaphore)
+	return 0;
+SDL_SemWait (m_semaphore); 
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CNetworkPacketList::Unlock (void) 
+{ 
+if (!m_semaphore)
+	return 0;
+SDL_SemPost (m_semaphore); 
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+CNetworkPacket* CNetworkPacketList::Append (CNetworkPacket* packet, bool bAllowDuplicates)
+{
+Lock ();
+if (!packet) {
+	packet = new CNetworkPacket;
+	if (!packet) {
+		Unlock ();
+		return NULL;
+		}
+	}
+
+if (Tail ()) {// list tail
+	if (!bAllowDuplicates && (*Tail () == *packet)) {
+		Tail ()->timeStamp = SDL_GetTicks ();
+		Unlock ();
+		return packet;
+		}
+	Tail ()->nextPacket = packet;
+	}
+else 
+	SetHead (packet); // list head
+SetTail (packet);
+Tail ()->timeStamp = SDL_GetTicks ();
+Tail ()->nextPacket = NULL;
+++m_nPackets;
+Unlock ();
+return packet;
+}
+
+//------------------------------------------------------------------------------
+
+CNetworkPacket* CNetworkPacketList::Pop (void)
+{
+CNetworkPacket* packet;
+Lock ();
+if (packet = m_packets [0]) {
+	if (!(m_packets [0] = packet->nextPacket))
+		m_packets [1] = NULL;
+	--m_nPackets;
+	}
+Unlock ();
+return packet;
+}
+
+//------------------------------------------------------------------------------
+
+void CNetworkPacketList::Flush (void)
+{
+Lock ();
+while (m_packets [0]) {
+	m_packets [1] = m_packets [0];
+	m_packets [0] = m_packets [0]->nextPacket;
+	delete m_packets [1];
+	}
+m_packets [1] = NULL;
+m_nPackets = 0;
+Unlock ();
+}
+
+//------------------------------------------------------------------------------
+
+CNetworkPacket* CNetworkPacketList::Start (int nPacket) 
+{ 
+Lock ();
+for (m_current = Head (); m_current && nPacket--; Next ())
+	;
+Unlock ();
+return m_current;
+}
+
+//------------------------------------------------------------------------------
+
+bool CNetworkPacketList::Validate (void) 
+{ 
+Lock ();
+bool bOk = (!Head () == !Tail ()); // both must be either NULL or not NULL
+Unlock ();
+return bOk;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 static int _CDECL_ NetworkThreadHandler (void* nThreadP)
@@ -52,9 +194,10 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-#define SENDLOCK 1
-#define RECVLOCK 1
-#define PROCLOCK 1
+#define SENDLOCK 0
+#define RECVLOCK 0
+#define PROCLOCK 0
+#define SYNCLOCK 1
 
 void CNetworkThread::Process (void)
 {
@@ -67,11 +210,8 @@ for (;;) {
 //------------------------------------------------------------------------------
 
 CNetworkThread::CNetworkThread () 
-	: m_thread (NULL), m_semaphore (NULL), m_sendLock (NULL), m_recvLock (NULL), m_processLock (NULL), m_nThreadId (0), m_bListen (false), m_nPackets (0)
+	: m_thread (NULL), m_semaphore (NULL), m_sendLock (NULL), m_recvLock (NULL), m_processLock (NULL), m_nThreadId (0), m_bListen (false)
 {
-m_packets [0] = 
-m_packets [1] = 
-m_packet = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -81,6 +221,7 @@ void CNetworkThread::Start (void)
 if (!m_thread) {
 	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
 	m_semaphore = SDL_CreateSemaphore (1);
+	m_syncLock = SDL_CreateSemaphore (0);
 	m_sendLock = SDL_CreateMutex ();
 	m_recvLock = SDL_CreateMutex ();
 	m_processLock = SDL_CreateMutex ();
@@ -97,6 +238,10 @@ if (m_thread) {
 	if (m_semaphore) {
 		SDL_DestroySemaphore (m_semaphore);
 		m_semaphore = NULL;
+		}
+	if (m_syncLock) {
+		SDL_DestroySemaphore (m_syncLock);
+		m_syncLock = NULL;
 		}
 	if (m_sendLock) {
 		SDL_DestroyMutex (m_sendLock);
@@ -124,19 +269,12 @@ if (m_thread) {
 
 void CNetworkThread::FlushPackets (void)
 {
-while (m_packets [0]) {
-	m_packets [1] = m_packets [0];
-	m_packets [0] = m_packets [0]->nextPacket;
-	delete m_packets [1];
-	}
-m_packets [1] = NULL;
-m_nPackets = 0;
-
+m_packetList.Flush ();
 }
 
 //------------------------------------------------------------------------------
 
-int CNetworkThread::SemWait (void) 
+int CNetworkThread::Lock (void) 
 { 
 if (!m_semaphore)
 	return 0;
@@ -146,7 +284,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CNetworkThread::SemPost (void) 
+int CNetworkThread::Unlock (void) 
 { 
 if (!m_semaphore)
 	return 0;
@@ -227,11 +365,35 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
+
+int CNetworkThread::LockSync (void) 
+{ 
+#if SYNCCLOCK
+if (!m_syncLock)
+	return 0;
+SDL_SemWait (m_syncLock); 
+#endif
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int CNetworkThread::UnlockSync (void) 
+{ 
+#if SYNCLOCK
+if (!m_syncLock)
+	return 0;
+SDL_SemPost (m_syncLock); 
+#endif
+return 1;
+}
+
+//------------------------------------------------------------------------------
 // Check for player timeouts
 
 void CNetworkThread::Update (void)
 {
-	static CTimeout toUpdate (500);
+	static CTimeout toUpdate (UPDATE_TIMEOUT);
 
 if (toUpdate.Expired ()) {
 	tracker.AddServer ();
@@ -241,7 +403,7 @@ if (toUpdate.Expired ()) {
 	if (LOCALPLAYER.Connected (CONNECT_END_MENU) || LOCALPLAYER.Connected (CONNECT_ADVANCE_LEVEL))
 		NetworkSendEndLevelPacket ();
 	else {
-		//SemWait ();
+		//Lock ();
 		for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 			if (nPlayer == N_LOCALPLAYER) 
 				continue;
@@ -258,7 +420,7 @@ if (toUpdate.Expired ()) {
 				NetworkSendPing (nPlayer);
 				}	
 			}
-		//SemPost ();
+		//Unlock ();
 		}
 	}
 if (Available ())
@@ -270,23 +432,20 @@ CheckPlayerTimeouts ();
 
 void CNetworkThread::Cleanup (void)
 {
-tNetworkPacket* packet;
-SemWait ();
+m_packetList.Lock ();
 uint t = SDL_GetTicks () - 3000; // drop packets older than 3 seconds
-while ((packet = m_packets [0]) && (packet->timeStamp < t)) {
-	delete packet;
-	if (!(m_packets [0] = packet->nextPacket))
-		m_packets [1] = NULL;
-	--m_nPackets;
+for (m_packetList.Start (); m_packetList.Current (); m_packetList.Next ()) {
+	if (m_packetList.Current ()->timeStamp < t) 
+		m_packetList.Pop ();
 	}
-SemPost ();
+m_packetList.Unlock ();
 }
 
 //------------------------------------------------------------------------------
 
 int CNetworkThread::Listen (void)
 {
-	static CTimeout toListen (10);
+	static CTimeout toListen (LISTEN_TIMEOUT);
 
 if (!toListen.Expired ())
 	return 0;
@@ -295,32 +454,25 @@ if (!toListen.Expired ())
 Cleanup ();
 // read all available network packets and append them to the end of the list of unprocessed network packets
 for (;;) {
-	if (!m_packet) {
-		m_packet = new tNetworkPacket;
+	// pre-allocate packet so IpxGetPacketData can directly fill its buffer and no extra copy operation is necessary
+	if (!m_packet) { 
+		m_packet = new CNetworkPacket;
 		if (!m_packet)
 			break;
 		}
-	if (!(m_packet->size = IpxGetPacketData (m_packet->data)))
+	if (!m_packet->SetSize (IpxGetPacketData (m_packet->data)))
 		break;
-	SemWait ();
-	++m_nPackets;
+	m_packetList.Lock ();
 #if DBG
-	if (!m_packets [0] != !m_packets [1])
+	if (!m_packetList.Validate ())
 		FlushPackets ();
 #endif
-	if (m_packets [1]) // list tail
-		m_packets [1]->nextPacket = m_packet;
-	else 
-		m_packets [0] = m_packet; // list head
-	m_packets [1] = m_packet;
-	m_packet->timeStamp = SDL_GetTicks ();
-	m_packet->nextPacket = NULL;
 	memcpy (&m_packet->owner.address, &networkData.packetSource, sizeof (networkData.packetSource));
-	SemPost ();
+	m_packetList.Append (m_packet, false);
 	m_packet = NULL;
 	}
 
-return m_nPackets;
+return m_packetList.Length ();
 
 #else
 
@@ -335,17 +487,9 @@ return NetworkListen ();
 
 //------------------------------------------------------------------------------
 
-tNetworkPacket* CNetworkThread::GetPacket (void)
+CNetworkPacket* CNetworkThread::GetPacket (void)
 {
-tNetworkPacket* packet;
-SemWait ();
-if (packet = m_packets [0]) {
-	if (!(m_packets [0] = packet->nextPacket))
-		m_packets [1] = NULL;
-	--m_nPackets;
-	}
-SemPost ();
-return packet;
+return m_packetList.Pop ();
 }
 
 //------------------------------------------------------------------------------
@@ -355,13 +499,13 @@ int CNetworkThread::GetPacketData (ubyte* data)
 if (!Available ())
 	return IpxGetPacketData (data);
 
-tNetworkPacket* packet = GetPacket ();
+CNetworkPacket* packet = GetPacket ();
 if (!packet)
 	return 0;
 
-memcpy (data, packet->data, packet->size);
+memcpy (data, packet->data, packet->Size ());
 memcpy (&networkData.packetSource, &packet->owner.address, sizeof (networkData.packetSource));
-int size = packet->size;
+int size = packet->Size ();
 delete packet;
 return size;
 }
@@ -371,18 +515,88 @@ return size;
 int CNetworkThread::ProcessPackets (void)
 {
 	int nProcessed = 0;
-	tNetworkPacket* packet;
+	CNetworkPacket* packet;
 
 #if DBG
 if (LOCALPLAYER.connected == CONNECT_WAITING)
 	BRP;
 #endif
 while (packet = GetPacket ()) {
-	if (NetworkProcessPacket (packet->data, packet->size))
+	if (NetworkProcessPacket (packet->data, packet->Size ()))
 		++nProcessed;
 	delete packet;
 	}
 return nProcessed;
+}
+
+//------------------------------------------------------------------------------
+
+int CNetworkThread::InitSync (void)
+{
+if (!Available ())
+	return 0;
+m_syncData.Flush ();
+return m_syncLock != NULL;
+}
+
+//------------------------------------------------------------------------------
+// (Re-) Start sending sync packets with packet # nPacket
+
+bool CNetworkThread::StartSync (int nPacket)
+{
+if (!Available ())
+	return 0;
+m_syncData.Start ();
+m_syncData.Lock ();
+m_bSendSync = m_syncData.Current () != NULL;
+m_syncData.Unlock ();
+return m_bSendSync;
+}
+
+//------------------------------------------------------------------------------
+
+void CNetworkThread::SendSync (void)
+{
+	static CTimeout toSync (SYNC_TIMEOUT);
+
+if (!SyncInProgress ())
+	return;
+if (!toSync.Expired ())
+	return;
+
+m_syncData.Lock ();
+if (!m_syncData.Current ()) 
+	m_bSendSync = false;
+else {
+	m_syncData.Current ()->Send ();
+	m_syncData.Next ();
+	}
+m_syncData.Unlock ();
+}
+
+//------------------------------------------------------------------------------
+
+void CNetworkThread::StopSync (void)
+{
+m_syncData.Lock ();
+m_bSendSync = false;
+m_syncData.Unlock ();
+m_syncData.Flush ();
+}
+
+//------------------------------------------------------------------------------
+
+bool CNetworkThread::AddSyncPacket (ubyte* data, int size, ubyte* network, ubyte* node)
+{
+if (!Available ())
+	return false;
+CNetworkPacket* packet = m_syncData.Append ();
+if (!packet)
+	return false;
+packet->SetData (data, size);
+packet->owner.address.SetNetwork (network);
+packet->owner.address.SetNode (node);
+return true;
 }
 
 //------------------------------------------------------------------------------
@@ -406,10 +620,10 @@ return 2;	// we are in some level transition mode too, so try to reconnect
 
 int CNetworkThread::CheckPlayerTimeouts (void)
 {
-SemWait ();
+Lock ();
 int nTimedOut = 0;
 //if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) 
-static CTimeout to (500);
+static CTimeout to (UPDATE_TIMEOUT);
 int s = -1;
 if (to.Expired () /*&& !gameData.reactor.bDestroyed*/) 
 	{
@@ -441,7 +655,7 @@ if (to.Expired () /*&& !gameData.reactor.bDestroyed*/)
 		}
 	//networkData.xLastTimeoutCheck = 0;
 	}
-SemPost ();
+Unlock ();
 return nTimedOut;
 }
 

@@ -354,11 +354,26 @@ void NetworkProcessMissingObjFrames (char *dataP)
 
 ReceiveMissingObjFramesPacket (reinterpret_cast<ubyte*> (dataP), &missingObjFrames);
 tNetworkSyncData *syncP = FindJoiningPlayer (missingObjFrames.nPlayer);
-if (syncP) {
-	syncP->objs.missingFrames = missingObjFrames;
-	syncP->objs.nCurrent = -1;				
-	syncP->nState = 3;
+if (syncP && (missingObjFrames.nFrame < syncP->objs.missingFrames.nFrame)) {
+#if 1
+	if (networkThread.SyncInProgress ()) 
+		networkThread.StartSync (missingObjFrames.nFrame);
+	else {
+		syncP->objs.missingFrames = missingObjFrames; // restart at the first missing frame
+		syncP->objs.nFrame = 0;
+		syncP->objs.nCurrent = 0;				
+		syncP->nState = 1;
+		}
 	}
+#else
+else {
+	if (syncP && (missingObjFrames.nFrame < syncP->objs.nCurrent)) {
+		syncP->objs.nFrame = 0;
+		syncP->objs.nCurrent = missingObjFrames.nFrame; // restarted at the first missing object
+		syncP->nState = 1;
+		}
+	}
+#endif
 }
 
 //------------------------------------------------------------------------------

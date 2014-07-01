@@ -71,6 +71,7 @@ typedef struct tNetworkSyncData {
 	short					nExtras;
 	bool					bExtraGameInfo;
 	bool					bAllowedPowerups;
+	bool					bDeferredSync;
 	tSyncObjectsData	objs;
 } __pack__ tNetworkSyncData;
 
@@ -81,7 +82,7 @@ typedef struct tNetworkSyncData {
 typedef struct tNetworkData {
 	ubyte					localAddress [10];
 	ubyte					serverAddress [10];
-	tIPXRecvData		packetSource;
+	CPacketOrigin		packetSource;
 	int					nActiveGames;
 	int					nLastActiveGames;
 	int					nNamesInfoSecurity;

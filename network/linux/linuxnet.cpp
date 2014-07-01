@@ -198,13 +198,7 @@ while (driver->PacketReady (&ipxSocketData)) {
 		break;
 	if (dataSize < 6)
 		continue;
-
-	tUintCast	uintCast;
-	tUshortCast	ushortCast;
-
-	memcpy (uintCast.b, &networkData.packetSource.src_node [0], sizeof (uintCast));
-	memcpy (ushortCast.b, &networkData.packetSource.src_node [4], sizeof (ushortCast));
-	dataOffs = tracker.IsTracker (uintCast.i, ushortCast.i) ? 0 : 4;
+	dataOffs = tracker.IsTracker (networkData.packetSource.Server (), networkData.packetSource.Port (), (char*) buf) ? 0 : 4;
 	if (dataSize > MAX_PAYLOAD_SIZE + dataOffs) {
 		PrintLog (0, "incoming data package too large (%d bytes)\n", dataSize);
 		continue;
@@ -227,17 +221,15 @@ if (dataSize > MAX_PAYLOAD_SIZE)
 else {
 	memcpy (ipxHeader.Destination.Network, network, 4);
 	memcpy (ipxHeader.Destination.Node, dest, 6);
-	tUshortCast	ushortCast;
-	ushortCast.i = htons (ipxSocketData.socket);
-	memcpy (&ipxHeader.Destination.Socket [0], ushortCast.b, sizeof (ushortCast.b));
+	ushort s = htons (ipxSocketData.socket);
+	memcpy (&ipxHeader.Destination.Socket [0], s, sizeof (s));
 	ipxHeader.PacketType = 4; /* Packet Exchange */
 	if (gameStates.multi.bTrackerCall)
 		memcpy (buf, data, dataSize);
 	else {
-		tUintCast uintCast;
-		uintCast.i = (uint) nIpxPacket++;
-		memcpy (buf, uintCast.b, sizeof (uintCast.b));
+		memcpy (buf, nIpxPacket, sizeof (nIpxPacket));
 		memcpy (buf + 4, data, dataSize);
+		nIpxPacket++;
 		}
 	driver->SendPacket (&ipxSocketData, &ipxHeader, buf, dataSize + (gameStates.multi.bTrackerCall ? 0 : 4));
 	}
@@ -277,9 +269,8 @@ else {
 	memcpy (ipxHeader.Destination.Node, immediate_address, 6);
 	*reinterpret_cast<u_short*> (ipxHeader.Destination.Socket) = htons (ipxSocketData.socket);
 	ipxHeader.PacketType = 4; /* Packet Exchange */
-	tUintCast uintCast;
-	uintCast.i = (uint) INTEL_INT (nIpxPacket);
-	memcpy (buf, uintCast.b, sizeof (uintCast.b));
+	u_int32_t i = INTEL_INT (nIpxPacket);
+	memcpy (buf, i, sizeof (i));
 	nIpxPacket++;
 	memcpy (buf + 4, data, dataSize);
 	driver->SendPacket (&ipxSocketData, &ipxHeader, buf, dataSize + 4);
