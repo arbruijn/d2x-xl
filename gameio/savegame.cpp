@@ -1750,6 +1750,8 @@ if (!m_bBetweenLevels) {
 	extraGameInfo [0].nBossCount [0] = 0;
 	for (i = 0; i < h; i++) {
 		OBJECTS [i].LoadState (m_cf);
+		if (OBJECTS [i].Type () < MAX_OBJECT_TYPES)
+			ClaimObjectSlot (i);
 		if ((m_nVersion < 32) && IS_BOSS (OBJECTS + i))
 			gameData.bosses.Add (i);
 		}
@@ -1894,7 +1896,7 @@ if (!m_bBetweenLevels) {
 	LoadAIUniFormat ();
 	// Restore the automap visited info
 	FixObjects ();
-	SpecialResetObjects ();
+	//ClaimObjectSlots ();
 	if (m_nVersion > 39) {
 		for (i = 0; i < LEVEL_SEGMENTS; i++)
 			automap.m_visited [i] = (ushort) m_cf.ReadShort ();
@@ -2064,7 +2066,7 @@ if (!m_bBetweenLevels) {
 		m_cf.Read (&OBJECTS [i].info, sizeof (tBaseObject), 1);
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	FixObjects ();
-	SpecialResetObjects ();
+	ClaimObjectSlots ();
 	InitCamBots (1);
 	gameData.objs.nNextSignature++;
 	//	1 = Didn't die on secret level.

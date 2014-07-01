@@ -395,14 +395,6 @@ networkData.toSyncPoll.Start ();
 }
 
 //------------------------------------------------------------------------------
-
-void NetworkFixObjectLists (void)
-{
-// Switching modes, pack the CObject array
-SpecialResetObjects ();
-}                               
-
-//------------------------------------------------------------------------------
 // wait for sync packets from the game host after having sent join request
 
 int NetworkSyncPoll (CMenu& menu, int& key, int nCurItem, int nState)

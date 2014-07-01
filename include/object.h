@@ -1483,7 +1483,7 @@ void ClearTransientObjects(int clear_all);
 // fills in important fields and does the linking.  returns -1 if no
 // free objects
 int AllocObject(int nRequestedObject = -1);
-int ClaimObject (int nObject);
+int ClaimObjectSlot (int nObject);
 
 // frees up an CObject.  Generally, ReleaseObject() should be called to
 // get rid of an CObject.  This function deallocates the CObject entry
@@ -1494,7 +1494,7 @@ void FreeObject(int nObject);
 // CObject slots without allocating them.  Go though the objects &
 // build the free list, then set the apporpriate globals Don't call
 // this function if you don't know what you're doing.
-void SpecialResetObjects(void);
+void ClaimObjectSlots(void);
 
 // attaches an CObject, such as a fireball, to another CObject, such as
 // a robot

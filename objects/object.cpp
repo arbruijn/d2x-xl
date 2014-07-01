@@ -451,7 +451,7 @@ gameData.objs.nLastObject [0] = 0;
 // This is done here, and the affected objects are linked to the object lists.
 // The object free list must have been initialized before calling this function.
 
-void SpecialResetObjects (void)
+void ClaimObjectSlots (void)
 {
 gameData.objs.nObjects = LEVEL_OBJECTS;
 gameData.objs.nLastObject [0] = 0;
@@ -462,7 +462,7 @@ CObject* objP = &OBJECTS [0];
 for (int i = gameData.objs.nLastObject [0]; i; i--, objP++) {
 	objP->InitLinks ();
 	if (objP->info.nType < MAX_OBJECT_TYPES) {
-		ClaimObject (objP->Index ()); // allocate object list entry #i - should always work here
+		ClaimObjectSlot (objP->Index ()); // allocate object list entry #i - should always work here
 		objP->Link ();
 		}
 	}
@@ -713,7 +713,7 @@ objP->rType.particleInfo = *CSmokeInfo::GetInfo ();
 // This is only possible if that object is in the list of unallocated objects
 // Because otherwise that object is already allocated (live)
 
-int ClaimObject (int nObject)
+int ClaimObjectSlot (int nObject)
 {
 for (int i = gameData.objs.nObjects; i < LEVEL_OBJECTS; i++)
 	if (gameData.objs.freeList [i] == nObject) {
@@ -742,7 +742,7 @@ int AllocObject (int nRequestedObject)
 	int		nObject;
 
 if (nRequestedObject)
-	nObject = ClaimObject (nRequestedObject);
+	nObject = ClaimObjectSlot (nRequestedObject);
 else {
 	if (gameData.objs.nObjects >= LEVEL_OBJECTS - 2) {
 		FreeObjectSlots (LEVEL_OBJECTS - 10);
