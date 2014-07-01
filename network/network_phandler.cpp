@@ -499,11 +499,11 @@ else if (!NetworkBadPacketSize (nLength, piP->nLength, piP->pszInfo)) {
 	if (!addressFilter [pId])	// patch the proper IP address into the packet header
 		memcpy (&THEIR->player.network, &networkData.packetSource.Address (), sizeof (tNetworkNode));
 #if DBG
-	VerifyObjLists ();
+	VerifyObjLists (LOCALPLAYER.nObject);
 #endif
 	nFuncRes = piP->packetHandler (dataP, nLength);
 #if DBG
-	VerifyObjLists ();
+	VerifyObjLists (LOCALPLAYER.nObject);
 #endif
 	}
 networkThread.UnlockProcess ();
