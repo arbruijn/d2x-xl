@@ -106,7 +106,7 @@ void NetworkSyncObjects (tNetworkSyncData *syncP)
 	int		nPlayer = syncP->player [1].player.connected;
 	
 	
-syncP->bDeferredSync = networkThread.Available ();
+syncP->bDeferredSync = false; //networkThread.Available ();
 
 // Send clear OBJECTS array CTrigger and send player num
 objFilter [OBJ_MARKER] = !gameStates.app.bHaveExtraGameInfo [1];

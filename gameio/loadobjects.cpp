@@ -358,6 +358,7 @@ if ((gameFileInfo.objects.offset > -1) && gameFileInfo.objects.count) {
 	OBJECTS.Clear (0, gameFileInfo.objects.count);
 	i = 0;
 	while (i < gameFileInfo.objects.count) {
+		ClaimObjectSlot (i);
 		objP->Read (cf);
 		if (!IsMultiGame && objP->Multiplayer ())
 			gameFileInfo.objects.count--;

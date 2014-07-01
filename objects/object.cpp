@@ -723,9 +723,9 @@ for (int i = gameData.objs.nObjects; i < LEVEL_OBJECTS; i++)
 			if (gameData.objs.nLastObject [1] < gameData.objs.nLastObject [0])
 				gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
 		}
-	return 1;
+	return nObject;
 	}
-return 0;
+return -1;
 }
 
 //------------------------------------------------------------------------------
@@ -738,11 +738,9 @@ int nUnusedObjectsSlots;
 //returns -1 if no free objects
 int AllocObject (int nRequestedObject)
 {
-	int		nObject;
+	int nObject = (nRequestedObject < 0) ? -1 : ClaimObjectSlot (nRequestedObject);
 
-if (nRequestedObject)
-	nObject = ClaimObjectSlot (nRequestedObject);
-else {
+if (nObject < 0) {
 	if (gameData.objs.nObjects >= LEVEL_OBJECTS - 2) {
 		FreeObjectSlots (LEVEL_OBJECTS - 10);
 		CleanupObjects ();
