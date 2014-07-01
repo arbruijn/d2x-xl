@@ -359,7 +359,9 @@ if (nStage == 0) {
 	}
 else {
 	gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
-	gameData.objs.consoleP->SetType (OBJ_PLAYER);
+	// at this point, SetType () must not be called, as it links the object to the internal object lists 
+	// which causes list corruption during multiplayer object sync'ing
+	gameData.objs.consoleP->info.nType = OBJ_PLAYER; 
 	gameData.objs.consoleP->info.nId = N_LOCALPLAYER;
 	gameData.objs.consoleP->info.controlType = CT_FLYING;
 	gameData.objs.consoleP->info.movementType = MT_PHYSICS;
@@ -426,9 +428,7 @@ void InitObjects (bool bInitPlayer)
 CObject* objP, * nextObjP = NULL;
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->Links (0).next;
-	objP->Unlink ();
-	while (ObjectIsLinked (objP, objP->info.nSegment))
-		objP->UnlinkFromSeg ();
+	ReleaseObject (objP->Index ());
 	}
 CollideInit ();
 ResetSegObjLists ();
@@ -719,8 +719,11 @@ objP->rType.particleInfo = *CSmokeInfo::GetInfo ();
 #endif
 
 //------------------------------------------------------------------------------
+// Try to allocate the object with the index nObject in the object list
+// This is only possible if that object is in the list of unallocated objects
+// Because otherwise that object is already allocated (live)
 
-int InsertObject (int nObject)
+int ClaimObject (int nObject)
 {
 for (int i = gameData.objs.nObjects; i < LEVEL_OBJECTS; i++)
 	if (gameData.objs.freeList [i] == nObject) {
@@ -743,18 +746,23 @@ int nUnusedObjectsSlots;
 //Generally, CObject::Create() should be called to get an CObject, since it
 //fills in important fields and does the linking.
 //returns -1 if no free objects
-int AllocObject (void)
+int AllocObject (int nRequestedObject)
 {
 	CObject *objP;
 	int		nObject;
 
-if (gameData.objs.nObjects >= LEVEL_OBJECTS - 2) {
-	FreeObjectSlots (LEVEL_OBJECTS - 10);
-	CleanupObjects ();
+if (nRequestedObject)
+	nObject = ClaimObject (nRequestedObject);
+else {
+	if (gameData.objs.nObjects >= LEVEL_OBJECTS - 2) {
+		FreeObjectSlots (LEVEL_OBJECTS - 10);
+		CleanupObjects ();
+		}
+	if (gameData.objs.nObjects >= LEVEL_OBJECTS)
+		return -1;
+	nObject = gameData.objs.freeList [gameData.objs.nObjects++];
 	}
-if (gameData.objs.nObjects >= LEVEL_OBJECTS)
-	return -1;
-nObject = gameData.objs.freeList [gameData.objs.nObjects++];
+
 if (nObject > gameData.objs.nLastObject [0]) {
 	gameData.objs.nLastObject [0] = nObject;
 	if (gameData.objs.nLastObject [1] < gameData.objs.nLastObject [0])

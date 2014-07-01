@@ -602,6 +602,14 @@ networkData.nStatus = NETSTAT_MENU;
 
 //------------------------------------------------------------------------------
 
+static void NetworkRequestResync (void)
+{
+networkData.nJoinState = 2;
+NetworkSendMissingObjFrames ();
+}
+
+//------------------------------------------------------------------------------
+
 static int NetworkCheckMissingFrames (ushort nFrame)
 {
 if (networkData.nPrevFrame == nFrame - 1)
@@ -611,8 +619,7 @@ if (networkData.nPrevFrame >= nFrame)
 if (networkData.nPrevFrame < 0)
 	return -1;
 networkData.sync [0].objs.missingFrames.nFrame = networkData.nPrevFrame + 1;
-networkData.nJoinState = 2;
-NetworkSendMissingObjFrames ();
+NetworkRequestResync ();
 return -1;
 }
 
@@ -624,7 +631,7 @@ void ResetSyncTimeout (bool bInit = false);
 void NetworkReadObjectPacket (ubyte *dataP)
 {
 	static int	nPlayer = 0;
-	static int	nMode = 0;
+	static int	nState = 0;
 
 	// Object from another net CPlayerData we need to sync with
 	CObject		*objP;
@@ -665,7 +672,7 @@ networkData.sync [0].objs.nFrame = nFrame;
 	if ((nLocalObj == -1) || (nLocalObj == -3)) {
 		// Clear object list
 		nPlayer = nObjOwner;
-		nMode = 1;
+		nState = 1;
 		networkData.nPrevFrame = networkData.sync [0].objs.nFrame - 1;
 		if (nLocalObj == -3) {
 			if (networkData.nJoinState != 2)
@@ -687,14 +694,14 @@ networkData.sync [0].objs.nFrame = nFrame;
 		networkData.sync [0].objs.missingFrames.nFrame = 0;
 		}
 	else if ((nLocalObj == -2) || (nLocalObj == -4)) {	// Special debug checksum marker for entire send
- 		if (!nMode && NetworkVerifyObjects (nRemoteObj, gameData.objs.nObjects)) {
+ 		if (!nState && NetworkVerifyObjects (nRemoteObj, gameData.objs.nObjects)) {
 			NetworkAbortSync ();
 			return;
 			}
 		NetworkCountPowerupsInMine ();
 		gameData.objs.RebuildEffects ();
 		networkData.sync [0].objs.nFrame = 0;
-		nMode = 0;
+		nState = 0;
 		if (networkData.bHaveSync)
 			networkData.nStatus = NETSTAT_PLAYING;
 		networkData.nJoinState = 4;
@@ -704,24 +711,28 @@ networkData.sync [0].objs.nFrame = nFrame;
 		console.printf (CON_DBG, "Got a type 3 object packet!\n");
 #endif
 #if 1
-		nLocalObj = AllocObject ();
+		// try to allocate each object in the same object list slot as the game host
+		// this is particularly important for the player objects, as these get used before they actually get allocated
+		nLocalObj = AllocObject (nRemoteObj); 
 #else
 		nLocalObj = nRemoteObj;
-		if (!InsertObject (nLocalObj)) {
+		if (!ClaimObject (nLocalObj)) {
 			if (networkData.nJoinState == 3) {
 				FreeObject (nLocalObj);
-				if (!InsertObject (nLocalObj))
+				if (!ClaimObject (nLocalObj))
 					nLocalObj = -1;
 				}
 			else
 				nLocalObj = AllocObject ();
 			}
 #endif
-		if ((nObjOwner != nPlayer) && (nObjOwner != -1)) {
-			if (nMode == 1)
-				nMode = 0;
-			else
-				Int3 (); // SEE ROB
+		if ((nObjOwner != N_LOCALPLAYER) && (nObjOwner != -1)) 
+			nState = 0;
+		else { // for the local player and for unknown object owners, the new object must be allocated at the same object list position as on the remote server!
+			if (/*(nState != 1) ||*/ (nLocalObj != nRemoteObj)) { // since the object allocator tries its best to do so, ignore the sync state here if that requirement could me met
+				NetworkRequestResync ();
+				return;
+				}
 			}
 		if (nLocalObj != -1) {
 			Assert (nLocalObj < LEVEL_OBJECTS);

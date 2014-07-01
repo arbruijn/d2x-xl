@@ -1482,8 +1482,8 @@ void ClearTransientObjects(int clear_all);
 // Generally, CObject::Create() should be called to get an CObject, since it
 // fills in important fields and does the linking.  returns -1 if no
 // free objects
-int AllocObject(void);
-int InsertObject (int nObject);
+int AllocObject(int nRequestedObject = -1);
+int ClaimObject (int nObject);
 
 // frees up an CObject.  Generally, ReleaseObject() should be called to
 // get rid of an CObject.  This function deallocates the CObject entry
