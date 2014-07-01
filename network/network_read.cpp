@@ -637,7 +637,7 @@ NetworkAbortSync ();
 void CObjectSynchronizer::RequestResync (void)
 {
 networkData.nJoinState = 2;
-NetworkSendMissingObjFrames ();
+//NetworkSendMissingObjFrames ();
 }
 
 //------------------------------------------------------------------------------
