@@ -133,16 +133,18 @@ return packet;
 
 //------------------------------------------------------------------------------
 
-CNetworkPacket* CNetworkPacketQueue::Pop (void)
+CNetworkPacket* CNetworkPacketQueue::Pop (bool bLock)
 {
 CNetworkPacket* packet;
-Lock ();
+if (bLock)
+	Lock ();
 if (packet = m_packets [0]) {
 	if (!(m_packets [0] = packet->nextPacket))
 		m_packets [1] = NULL;
 	--m_nPackets;
 	}
-Unlock ();
+if (bLock)
+	Unlock ();
 return packet;
 }
 
@@ -460,7 +462,6 @@ for (;;) {
 		}
 	if (!m_packet->SetSize (IpxGetPacketData (m_packet->data)))
 		break;
-	m_rxPacketQueue.Lock ();
 #if DBG
 	if (!m_rxPacketQueue.Validate ())
 		FlushPackets ();
