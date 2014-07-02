@@ -47,6 +47,12 @@
 #	define MAX_PACKET_AGE	3000
 #endif
 
+#if 1
+#	define PPS		MAX_PPS
+#else
+#	define PPS		netGame.GetPacketsPerSec ()
+#endif
+
 //------------------------------------------------------------------------------
 
 CNetworkThread networkThread;
@@ -238,6 +244,8 @@ if (!m_thread) {
 	m_sendLock = SDL_CreateMutex ();
 	m_recvLock = SDL_CreateMutex ();
 	m_processLock = SDL_CreateMutex ();
+	m_toSend.Setup (PPS);
+	m_toSend.Start ();
 	m_bListen = true;
 	}
 }
@@ -527,11 +535,14 @@ m_txPacketQueue.Unlock ();
 
 void CNetworkThread::Transmit (void)
 {
-	static CTimeout toSend (SEND_TIMEOUT);
+if (m_toSend.Duration () != PPS) {
+	m_toSend.Setup (PPS);
+	m_toSend.Start ();
+	}
 
 if (m_txPacketQueue.Empty ())
 	return;
-if (!toSend.Expired ())
+if (!m_toSend.Expired ())
 	return;
 
 CNetworkPacket* packet = m_txPacketQueue.Pop ();

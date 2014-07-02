@@ -96,6 +96,8 @@ class CNetworkThread {
 		CNetworkPacketQueue	m_rxPacketQueue; // receive
 		CNetworkPacket*		m_packet;
 		CNetworkPacket*		m_syncPackets;
+		CTimeout					m_toSend;
+		int						m_pps;
 
 	public:
 		CNetworkThread ();

@@ -63,6 +63,8 @@ class CTimeout {
 			else
 				m_t0 = t;
 			}
+
+		inline time_t Duration (void) { return m_duration; }
 	};
 
 
