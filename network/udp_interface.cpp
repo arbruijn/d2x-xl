@@ -1136,7 +1136,7 @@ return 1;
 //------------------------------------------------------------------------------
 // Here we will receive a new packet and place it in the buffer passed.
 
-static int32_t UDPReceivePacket (ipx_socket_t *s, uint8_t *outBuf, int32_t outBufSize, CPacketOrigin *rd)
+static int32_t UDPReceivePacket (ipx_socket_t *s, uint8_t *outBuf, int32_t outBufSize, CPacketAddress *rd)
 {
 	struct sockaddr_in	fromAddr;
 	int32_t						i, dataLen, bTracker;

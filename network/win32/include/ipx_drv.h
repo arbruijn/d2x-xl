@@ -56,7 +56,7 @@ typedef struct ipx_socket_struct {
 	UINT_PTR	fd;
 } ipx_socket_t;
 
-class CPacketOrigin : public CNetworkNode {
+class CPacketAddress : public CNetworkNode {
 	/* all network order */
 	private:
 		//tNetworkNode	src_addr;
@@ -87,8 +87,8 @@ class CPacketOrigin : public CNetworkNode {
 #endif
 		inline tNetworkNode& Address (void) { return m_address; }
 
-		inline bool operator== (CPacketOrigin& other) { return !memcmp (&Address (), &other.Address (), sizeof (tNetworkNode)); }
-		inline CPacketOrigin& operator= (CPacketOrigin& other) { 
+		inline bool operator== (CPacketAddress& other) { return !memcmp (&Address (), &other.Address (), sizeof (tNetworkNode)); }
+		inline CPacketAddress& operator= (CPacketAddress& other) { 
 			memcpy (this, &other, sizeof (*this));
 			return *this;
 			}
@@ -99,7 +99,7 @@ struct ipx_driver {
 	int32_t (*OpenSocket)(ipx_socket_t *, int32_t);
 	void (*CloseSocket)(ipx_socket_t *);
 	int32_t (*SendPacket)(ipx_socket_t *, IPXPacket_t *, uint8_t *, int32_t);
-	int32_t (*ReceivePacket)(ipx_socket_t *, uint8_t *, int32_t, CPacketOrigin *);
+	int32_t (*ReceivePacket)(ipx_socket_t *, uint8_t *, int32_t, CPacketAddress *);
 	int32_t (*PacketReady)(ipx_socket_t *s);
 	void (*InitNetGameAuxData)(ipx_socket_t *, uint8_t []);
 	int32_t (*HandleNetGameAuxData)(ipx_socket_t *, const uint8_t []);

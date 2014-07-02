@@ -70,10 +70,10 @@ CNetworkThread networkThread;
 
 void CNetworkPacket::Transmit (void)
 {
-if (m_owner.m_bHaveDest)
-	IPXSendPacketData (m_data, m_size, m_owner.SrcNetwork (), m_owner.SrcNode (), m_owner.DestNode ());
+if (m_owner.m_bHaveLocalAddress)
+	IPXSendPacketData (m_data, m_size, m_owner.Network (), m_owner.Node (), m_owner.LocalNode ());
 else
-	IPXSendInternetPacketData (m_data, m_size, m_owner.SrcNetwork (), m_owner.SrcNode ());
+	IPXSendInternetPacketData (m_data, m_size, m_owner.Network (), m_owner.Node ());
 }
 
 //------------------------------------------------------------------------------
@@ -85,6 +85,7 @@ CNetworkPacketQueue::CNetworkPacketQueue ()
 {
 m_packets [0] = 
 m_packets [1] = 
+m_packets [2] = 
 m_current = NULL;
 m_semaphore = SDL_CreateSemaphore (1);
 }
@@ -94,10 +95,43 @@ m_semaphore = SDL_CreateSemaphore (1);
 CNetworkPacketQueue::~CNetworkPacketQueue ()
 {
 Flush ();
+
+Lock ();
+CNetworkPacket* packet;
+while ((packet = m_packets [2])) {
+	m_packets [2] = m_packets [2]->Next ();
+	delete packet;
+	}
+Unlock ();
+
 if (m_semaphore) {
 	SDL_DestroySemaphore (m_semaphore);
 	m_semaphore = NULL;
 	}
+}
+
+//------------------------------------------------------------------------------
+
+CNetworkPacket* CNetworkPacketQueue::Alloc (void)
+{
+Lock ();
+CNetworkPacket* packet = m_packets [2];
+if (m_packets [2])
+	m_packets [2] = m_packets [2]->Next ();
+else
+	packet = new CNetworkPacket;
+Unlock ();
+return packet;
+}
+
+//------------------------------------------------------------------------------
+
+void CNetworkPacketQueue::Free (CNetworkPacket* packet)
+{
+Lock ();
+packet->m_nextPacket = m_packets [2];
+m_packets [2] = packet;
+Unlock ();
 }
 
 //------------------------------------------------------------------------------
@@ -163,7 +197,7 @@ if (packet = m_packets [0]) {
 		m_packets [1] = NULL;
 	--m_nPackets;
 	if (bDrop) {
-		delete packet;
+		Free (packet);
 		packet = NULL;
 		}
 	}
@@ -248,7 +282,7 @@ if (!m_thread) {
 	m_sendLock = SDL_CreateMutex ();
 	m_recvLock = SDL_CreateMutex ();
 	m_processLock = SDL_CreateMutex ();
-	m_toSend.Setup (PPS);
+	m_toSend.Setup (1000 / PPS);
 	m_toSend.Start ();
 	m_bUrgent = false;
 	}
@@ -417,7 +451,7 @@ Cleanup ();
 for (;;) {
 	// pre-allocate packet so IpxGetPacketData can directly fill its buffer and no extra copy operation is necessary
 	if (!m_packet) { 
-		m_packet = new CNetworkPacket;
+		m_packet = m_rxPacketQueue.Alloc ();
 		if (!m_packet)
 			break;
 		}
@@ -427,7 +461,7 @@ for (;;) {
 	if (!m_rxPacketQueue.Validate ())
 		FlushPackets ();
 #endif
-	memcpy (&m_packet->m_owner.m_source, &networkData.packetSource, sizeof (networkData.packetSource));
+	memcpy (&m_packet->Owner ().m_address, &networkData.packetSource, sizeof (networkData.packetSource));
 	m_rxPacketQueue.Append (m_packet, false);
 	m_packet = NULL;
 	}
@@ -464,9 +498,9 @@ if (!packet)
 	return 0;
 
 memcpy (data, packet->m_data, packet->Size ());
-memcpy (&networkData.packetSource, &packet->m_owner.m_source, sizeof (networkData.packetSource));
+memcpy (&networkData.packetSource, &packet->Owner ().m_address, sizeof (networkData.packetSource));
 int32_t size = packet->Size ();
-delete packet;
+m_rxPacketQueue.Free (packet);
 return size;
 }
 
@@ -484,7 +518,7 @@ if (LOCALPLAYER.connected == CONNECT_WAITING)
 while (packet = GetPacket ()) {
 	if (NetworkProcessPacket (packet->m_data, packet->Size ()))
 		++nProcessed;
-	delete packet;
+	m_rxPacketQueue.Free (packet);
 	}
 return nProcessed;
 }
@@ -511,8 +545,8 @@ m_txPacketQueue.Unlock ();
 
 void CNetworkThread::Transmit (void)
 {
-if (m_toSend.Duration () != PPS) {
-	m_toSend.Setup (PPS);
+if (m_toSend.Duration () != 1000 / PPS) {
+	m_toSend.Setup (1000 / PPS);
 	m_toSend.Start ();
 	}
 
@@ -544,25 +578,36 @@ return (packet && packet->Type () == PID_OBJECT_DATA);
 
 //------------------------------------------------------------------------------
 
-bool CNetworkThread::Send (uint8_t* data, int32_t size, uint8_t* network, uint8_t* srcNode, uint8_t* destNode)
+bool CNetworkThread::Send (uint8_t* data, int32_t size, uint8_t* network, uint8_t* node, uint8_t* localAddress)
 {
 if (!Available ()) {
-	if (destNode)
-		IPXSendPacketData (data, size, network, srcNode, destNode);
+	if (localAddress)
+		IPXSendPacketData (data, size, network, node, localAddress);
 	else
-		IPXSendInternetPacketData (data, size, network, srcNode);
+		IPXSendInternetPacketData (data, size, network, node);
 	return true;
 	}
 
-CNetworkPacket* packet = m_txPacketQueue.Append ();
-if (!packet)
-	return false;
+CNetworkPacket* packet;
 
-packet->SetTime (SDL_GetTicks ());
-packet->SetData (data, size);
-packet->m_owner.SetSource (network, srcNode);
-packet->m_owner.SetDest (destNode);
+m_txPacketQueue.Lock ();
+// try to combine data sent to the same player
+if ((packet = m_txPacketQueue.Head ()) && (packet->Size () + size <= MAX_PACKET_SIZE) && !packet->Owner ().CmpAddress (network, node)) {
+	packet->SetData (data, size, packet->Size ());
+	m_txPacketQueue.Unlock ();
+	}
+else {
+	packet = m_txPacketQueue.Append ();
+	m_txPacketQueue.Unlock ();
+	if (!packet)
+		return false;
+	packet->SetData (data, size);
+	packet->Owner ().SetAddress (network, node);
+	packet->Owner ().SetLocalAddress (localAddress);
+	}
+
 packet->SetUrgent (m_bUrgent);
+packet->SetTime (SDL_GetTicks ());
 m_bUrgent = false;
 return true;
 }
