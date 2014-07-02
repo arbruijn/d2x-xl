@@ -715,14 +715,11 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-// The object sync'er places all incoming objects at the same object table
-// entries as on the remote sync'ing system. If the table entries of the current
-// local and remote objects are too far apart, too much has changed in the 
-// remote (reference's) system's game state and the local game state
+// If the client is missing 10 or more objects, reject the sync data
 
 int CObjectSynchronizer::Validate (void)
 {
-return (/*!gameStates.app.bHaveExtraGameInfo [1] &&*/ (m_nRemoteObj - m_nLocalObj > 10)) ? -1 : 0;
+return abs (m_nRemoteObj - gameData.objs.nObjects) > 10;
 }
 
 //------------------------------------------------------------------------------
