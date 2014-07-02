@@ -37,13 +37,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //----------------- Variables for video clips -------------------
 
-inline int CurFrame (CObject *objP, int nClip, fix timeToLive, int nFrames = -1)
+inline int32_t CurFrame (CObject *objP, int32_t nClip, fix timeToLive, int32_t nFrames = -1)
 {
 tVideoClip	*vcP = gameData.effects.vClips [0] + nClip;
 if (nFrames < 0)
 	nFrames = vcP->nFrameCount;
 //	iFrame = (nFrames - X2I (FixDiv ((nFrames - 1) * timeToLive, vcP->xTotalTime))) - 1;
-int iFrame;
+int32_t iFrame;
 if (timeToLive > vcP->xTotalTime)
 	timeToLive = timeToLive % vcP->xTotalTime;
 if ((nClip == VCLIP_AFTERBURNER_BLOB) && objP->rType.vClipInfo.xFrameTime)
@@ -57,7 +57,7 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 
 CRGBColor *VClipColor (CObject *objP)
 {
-	int				nVClip = gameData.weapons.info [objP->info.nId].nVClipIndex;
+	int32_t				nVClip = gameData.weapons.info [objP->info.nId].nVClipIndex;
 	tBitmapIndex	bmi;
 	CBitmap			*bmP;
 
@@ -77,9 +77,9 @@ return bmP->GetAvgColor ();
 
 //------------------------------------------------------------------------------
 
-int SetupHiresVClip (tVideoClip *vcP, tVideoClipInfo *vciP, CBitmap* bmP)
+int32_t SetupHiresVClip (tVideoClip *vcP, tVideoClipInfo *vciP, CBitmap* bmP)
 {
-	int nFrames = vcP->nFrameCount;
+	int32_t nFrames = vcP->nFrameCount;
 
 if (vcP->flags & WCF_ALTFMT) {
 	if (vcP->flags & WCF_INITIALIZED) {
@@ -87,7 +87,7 @@ if (vcP->flags & WCF_ALTFMT) {
 		nFrames = ((bmP->Type () != BM_TYPE_ALT) && bmP->Parent ()) ? bmP->Parent ()->FrameCount () : bmP->FrameCount ();
 		}
 	else {
-		bmP = SetupHiresAnim (reinterpret_cast<short*> (vcP->frames), nFrames, -1, 0, vciP ? 1 : -1, &nFrames, bmP);
+		bmP = SetupHiresAnim (reinterpret_cast<int16_t*> (vcP->frames), nFrames, -1, 0, vciP ? 1 : -1, &nFrames, bmP);
 		if (!bmP)
 			vcP->flags &= ~WCF_ALTFMT;
 		else if (!gameOpts->ogl.bGlTexMerge)
@@ -108,13 +108,13 @@ return nFrames;
 #define	THRUSTER_ALPHA		(1.0 / 4.0)
 #define	WEAPON_ALPHA		0.7
 
-void DrawVClipObject (CObject *objP, fix timeToLive, int bLit, int nVClip, CFloatVector *color)
+void DrawVClipObject (CObject *objP, fix timeToLive, int32_t bLit, int32_t nVClip, CFloatVector *color)
 {
 	double		ta = 0, alpha = 0;
 	tVideoClip*	vcP = gameData.effects.vClips [0] + nVClip;
-	int			nFrames = SetupHiresVClip (vcP, &objP->rType.vClipInfo);
-	int			iFrame = CurFrame (objP, nVClip, timeToLive, nFrames);
-	int			bThruster = (objP->info.renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
+	int32_t			nFrames = SetupHiresVClip (vcP, &objP->rType.vClipInfo);
+	int32_t			iFrame = CurFrame (objP, nVClip, timeToLive, nFrames);
+	int32_t			bThruster = (objP->info.renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
 
 if ((iFrame < 0) || (iFrame >= VCLIP_MAX_FRAMES))
 	return;
@@ -157,11 +157,11 @@ void DrawExplBlast (CObject *objP)
 	fix			xSize;
 	CFixVector	vPos, vDir;
 #if BLAST_TYPE == 1
-	int			i;
+	int32_t			i;
 	fix			xSize2;
 #elif BLAST_TYPE == 2
 	float			r;
-	int			i;
+	int32_t			i;
 	CSphereData	sd;
 	CFloatVector	p = {0,0,0};
 #endif
@@ -259,7 +259,7 @@ bmP->SetColor (&color);
 #if 0
 ogl.RenderSprite (bmP, objP->Position (), objP->info.xSize * 5, objP->info.xSize * 5, 1.0f, 2, 10.0f);
 #else
-for (int i = 0; i < 4; i++)
+for (int32_t i = 0; i < 4; i++)
 	transformation.Transform (vertices [i], vertices [i], 0);
 transparencyRenderer.AddPoly (NULL, NULL, bmP, vertices, 4, texCoord, &color, NULL, 1, 0, GL_QUADS, GL_CLAMP, 2, -1);
 #endif
@@ -296,13 +296,13 @@ objP->info.movementType = MT_PHYSICS;
 
 // -----------------------------------------------------------------------------
 
-int ConvertVClipToPolymodel (CObject *objP)
+int32_t ConvertVClipToPolymodel (CObject *objP)
 {
 if (gameStates.app.bNostalgia || !gameOpts->Use3DPowerups ())
 	return 0;
 if (objP->info.renderType == RT_POLYOBJ)
 	return 1;
-short	nModel = WeaponToModel (objP->info.nId);
+int16_t	nModel = WeaponToModel (objP->info.nId);
 if (!(nModel && HaveReplacementModel (nModel)))
 	return 0;
 #if 0 //DBG
@@ -343,7 +343,7 @@ return 1;
 
 void DrawWeaponVClip (CObject *objP)
 {
-int nVClip = gameData.weapons.info [objP->info.nId].nVClipIndex;
+int32_t nVClip = gameData.weapons.info [objP->info.nId].nVClipIndex;
 fix modTime = objP->info.xLifeLeft;
 fix playTime = gameData.effects.vClipP [nVClip].xTotalTime;
 if (!playTime)
@@ -355,7 +355,7 @@ if (modTime == IMMORTAL_TIME)
 if (modTime == ONE_FRAME_TIME)
 	modTime = RandShort ();
 if (objP->info.nId == PROXMINE_ID) {		//make prox bombs spin out of sync
-	int nObject = objP->Index ();
+	int32_t nObject = objP->Index ();
 	modTime += (modTime * (nObject & 7)) / 16;	//add variance to spin rate
 	while (modTime > playTime)
 		modTime -= playTime;
@@ -384,15 +384,15 @@ vc.nFrameCount = cf.ReadInt ();
 vc.xFrameTime = cf.ReadFix ();
 vc.flags = cf.ReadInt ();
 vc.nSound = cf.ReadShort ();
-for (int j = 0; j < VCLIP_MAX_FRAMES; j++)
+for (int32_t j = 0; j < VCLIP_MAX_FRAMES; j++)
 	vc.frames [j].index = cf.ReadShort ();
 vc.lightValue = cf.ReadFix ();
 }
 
 
-int ReadVideoClips (CArray<tVideoClip>& vc, int n, CFile& cf)
+int32_t ReadVideoClips (CArray<tVideoClip>& vc, int32_t n, CFile& cf)
 {
-	int i;
+	int32_t i;
 
 for (i = 0; i < n; i++)
 	ReadVideoClip (vc [i], cf);

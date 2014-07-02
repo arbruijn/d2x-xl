@@ -16,7 +16,7 @@ CSoundThreadInfo tiSound;
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ SoundThread (void *pThreadId)
+int32_t _CDECL_ SoundThread (void *pThreadId)
 {
 do {
 	while (!tiSound.bExec) {
@@ -102,7 +102,7 @@ if (tiSound.pThread) {
 
 //------------------------------------------------------------------------------
 
-int StartSoundThread (tSoundTask nTask)
+int32_t StartSoundThread (tSoundTask nTask)
 {
 #if 1
 if (tiSound.pThread) {

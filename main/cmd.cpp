@@ -20,8 +20,8 @@ void cmd_parse(char *input)
 {
 	char buffer[CMD_MAX_LENGTH];
 	char *tokens[CMD_MAX_TOKENS];
-	int num_tokens;
-	int i, l;
+	int32_t num_tokens;
+	int32_t i, l;
 
 	Assert(input != NULL);
 
@@ -30,7 +30,7 @@ void cmd_parse(char *input)
 	strncpy( buffer, &input[i], CMD_MAX_LENGTH );
 
 	//printf("lead strip \"%s\"\n",buffer);
-	l = (int) strlen(buffer);
+	l = (int32_t) strlen(buffer);
 	/* If command is empty, give up */
 	if (l==0) return;
 
@@ -40,7 +40,7 @@ void cmd_parse(char *input)
 	//printf("trail strip \"%s\"\n",buffer);
 
 	/* Split into tokens */
-	l = (int) strlen(buffer);
+	l = (int32_t) strlen(buffer);
 	num_tokens = 1;
 
 	tokens[0] = buffer;

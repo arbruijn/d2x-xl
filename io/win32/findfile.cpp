@@ -17,7 +17,7 @@ char *UnicodeToAsc (char *str, const wchar_t *w_str)
 {
 if (!w_str)
 	return NULL;
-int len = wcslen (w_str) + 1;
+int32_t len = wcslen (w_str) + 1;
 if (WideCharToMultiByte (CP_ACP, 0, w_str, -1, str, len, NULL, NULL)) 
 	return str;
 return NULL;
@@ -30,7 +30,7 @@ wchar_t *AscToUnicode (wchar_t *w_str, const char *str)
 	bool bAlloc = false;
 if (!str)
 	return NULL;
-int len = (int) strlen (str) + 1;
+int32_t len = (int32_t) strlen (str) + 1;
 if (!w_str) {
 	bAlloc = true;
 	w_str = new wchar_t [len];
@@ -50,7 +50,7 @@ return NULL;
 
 // ----------------------------------------------------------------------------
 
-int FileFindFirst (const char *pszFilter, FILEFINDSTRUCT *ffstruct, int bFindDirs)
+int32_t FileFindFirst (const char *pszFilter, FILEFINDSTRUCT *ffstruct, int32_t bFindDirs)
 {
 	WIN32_FIND_DATA find;
 	char		szFilter [FILENAME_LEN];
@@ -61,7 +61,7 @@ int FileFindFirst (const char *pszFilter, FILEFINDSTRUCT *ffstruct, int bFindDir
 
 find.dwFileAttributes = bFindDirs ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_NORMAL;
 if (bFindDirs) {
-	int l = (int) strlen (pszFilter);
+	int32_t l = (int32_t) strlen (pszFilter);
 	if (!l)
 		return 1;
 	if ((pszFilter [l - 1] == '/') || (pszFilter [l - 1] == '\\')) {
@@ -82,7 +82,7 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int FileFindNext (FILEFINDSTRUCT *ffstruct, int bFindDirs)
+int32_t FileFindNext (FILEFINDSTRUCT *ffstruct, int32_t bFindDirs)
 {
 	WIN32_FIND_DATA find;
 #ifdef _WIN32_WCE
@@ -101,7 +101,7 @@ return 1;
  
 // ----------------------------------------------------------------------------
 
-int FileFindClose(void)
+int32_t FileFindClose(void)
 {
 return FindClose (_FindFileHandle) ? 0 : 1;
 }
@@ -109,10 +109,10 @@ return FindClose (_FindFileHandle) ? 0 : 1;
 // ----------------------------------------------------------------------------
 
 #if 0
-int GetFileDateTime(int filehandle, FILETIMESTRUCT *ftstruct)
+int32_t GetFileDateTime(int32_t filehandle, FILETIMESTRUCT *ftstruct)
 {
 	FILETIME filetime;
-	int retval;
+	int32_t retval;
 
 	retval = GetFileTime((HANDLE)filehandle, NULL, NULL, &filetime);
 	if (retval) {
@@ -124,10 +124,10 @@ int GetFileDateTime(int filehandle, FILETIMESTRUCT *ftstruct)
 
 // ----------------------------------------------------------------------------
 //returns 0 if no error
-int SetFileDateTime(int filehandle, FILETIMESTRUCT *ftstruct)
+int32_t SetFileDateTime(int32_t filehandle, FILETIMESTRUCT *ftstruct)
 {
 	FILETIME ft;
-	int retval;
+	int32_t retval;
 
 	DosDateTimeToFileTime(ftstruct->date, ftstruct->time, &ft);
 	retval = SetFileTime((HANDLE)filehandle, NULL, NULL, &ft);

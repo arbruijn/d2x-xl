@@ -144,10 +144,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // Exported functions
 
-int GetLocalObjNum (int remote_obj, int owner);
-int GetRemoteObjNum (int local_obj, sbyte& owner);
-void SetObjNumMapping (int local, int remote, int owner);
-void SetLocalObjNumMapping (int nObject);
+int32_t GetLocalObjNum (int32_t remote_obj, int32_t owner);
+int32_t GetRemoteObjNum (int32_t local_obj, int8_t& owner);
+void SetObjNumMapping (int32_t local, int32_t remote, int32_t owner);
+void SetLocalObjNumMapping (int32_t nObject);
 void ResetNetworkObjects ();
 
 void MultiInitObjects (void);
@@ -158,41 +158,41 @@ void MultiCapObjects (void);
 void MultiSendWeaponStates (void);
 void MultiSendPlayerThrust (void);
 void MultiSendFlags (char);
-void MultiSendWeapons (int bForce);
+void MultiSendWeapons (int32_t bForce);
 void MultiSendAmmo (void);
-void MultiSendMonsterball (int bForce, int bCreate);
+void MultiSendMonsterball (int32_t bForce, int32_t bCreate);
 void MultiSendFire (void);
-void MultiSendDestroyReactor (int nObject, int nPlayer);
+void MultiSendDestroyReactor (int32_t nObject, int32_t nPlayer);
 void MultiSendCountdown (void);
-void MultiSendEndLevelStart (int);
+void MultiSendEndLevelStart (int32_t);
 void MultiSendPlayerExplode (char nType);
 void MultiSendMessage (void);
-void MultiSendPosition (int nObject);
+void MultiSendPosition (int32_t nObject);
 void MultiSendReappear ();
-void MultiSendKill (int nObject);
-void MultiSendRemoveObj (int nObject);
-void MultiSendQuit (int nReason);
-void MultiSendDoorOpen (int nSegment, int nSide, ushort flags);
-void MultiSendCreateExplosion (int nPlayer);
-void MultiSendCtrlcenFire (CFixVector *to_target, int nGun, int nObject);
+void MultiSendKill (int32_t nObject);
+void MultiSendRemoveObj (int32_t nObject);
+void MultiSendQuit (int32_t nReason);
+void MultiSendDoorOpen (int32_t nSegment, int32_t nSide, uint16_t flags);
+void MultiSendCreateExplosion (int32_t nPlayer);
+void MultiSendCtrlcenFire (CFixVector *to_target, int32_t nGun, int32_t nObject);
 void MultiSendInvul (void);
 void MultiSendDeInvul (void);
 void MultiSendCloak (void);
 void MultiSendDeCloak (void);
-void MultiSendCreateWeapon (int nObject);
-void MultiSendCreatePowerup (int powerupType, int nSegment, int nObject, const CFixVector *vPos);
-void MultiSendDropPowerup (int powerupType, int nSegment, int nObject, const CFixVector *vPos, const CFixVector *vVel);
-void MultiSendPlaySound (int nSound, fix volume);
-void MultiSendAudioTaunt (int taunt_num);
+void MultiSendCreateWeapon (int32_t nObject);
+void MultiSendCreatePowerup (int32_t powerupType, int32_t nSegment, int32_t nObject, const CFixVector *vPos);
+void MultiSendDropPowerup (int32_t powerupType, int32_t nSegment, int32_t nObject, const CFixVector *vPos, const CFixVector *vVel);
+void MultiSendPlaySound (int32_t nSound, fix volume);
+void MultiSendAudioTaunt (int32_t taunt_num);
 void MultiSendScore (void);
-void MultiSendTrigger (int nTrigger, int nObject);
-void MultiSendObjTrigger (int CTrigger);
-void MultiSendHostageDoorStatus (int wallnum);
-void MultiSendNetPlayerStatsRequest (ubyte nPlayer);
-void MultiSendDropWeapon (int nObject);
-void MultiSendDropMarker (int nPlayer,CFixVector position,char messagenum,char text[]);
+void MultiSendTrigger (int32_t nTrigger, int32_t nObject);
+void MultiSendObjTrigger (int32_t CTrigger);
+void MultiSendHostageDoorStatus (int32_t wallnum);
+void MultiSendNetPlayerStatsRequest (uint8_t nPlayer);
+void MultiSendDropWeapon (int32_t nObject);
+void MultiSendDropMarker (int32_t nPlayer,CFixVector position,char messagenum,char text[]);
 void MultiSendGuidedInfo (CObject *miss,char);
-void MultiSendReturnFlagHome (short nObject);
+void MultiSendReturnFlagHome (int16_t nObject);
 void MultiSendCaptureBonus (char pnum);
 void MultiSendShield (void);
 void MultiSendCheating (void);
@@ -200,60 +200,60 @@ void MultiSendFusionCharge (void);
 
 void MultiEndLevelScore (void);
 void MultiPrepLevel (void);
-int MultiEndLevel (int *secret);
-int MultiMenuPoll (void);
+int32_t MultiEndLevel (int32_t *secret);
+int32_t MultiMenuPoll (void);
 void MultiLeaveGame (void);
-void MultiProcessData (char *dat, int len);
-void MultiProcessBigData (char *buf, int len);
-void MultiDoDeath (int nObject);
+void MultiProcessData (char *dat, int32_t len);
+void MultiProcessBigData (char *buf, int32_t len);
+void MultiDoDeath (int32_t nObject);
 void MultiSendMsgDialog (void);
-int MultiDeleteExtraObjects (void);
-void MultiMakeGhostPlayer (int nObject);
-void MultiMakePlayerGhost (int nObject);
-void MultiDefineMacro (int key);
-void MultiSendMacro (int key);
-int MultiGetKillList (int *plist);
+int32_t MultiDeleteExtraObjects (void);
+void MultiMakeGhostPlayer (int32_t nObject);
+void MultiMakePlayerGhost (int32_t nObject);
+void MultiDefineMacro (int32_t key);
+void MultiSendMacro (int32_t key);
+int32_t MultiGetKillList (int32_t *plist);
 void MultiNewGame (void);
 void MultiSortKillList (void);
-int MultiChooseMission (int *anarchy_only);
+int32_t MultiChooseMission (int32_t *anarchy_only);
 void MultiResetStuff (void);
 void MultiSendConquerRoom (char owner, char prevOwner, char group);
 void MultiSendConquerWarning ();
 void MultiSendStopConquerWarning ();
-void MultiSendData (char *buf, int len, int repeat);
-void ChoseTeam (int nPlayer, bool bForce = false);
+void MultiSendData (char *buf, int32_t len, int32_t repeat);
+void ChoseTeam (int32_t nPlayer, bool bForce = false);
 void AutoBalanceTeams ();
 
-short GetTeam (int nPlayer);
-bool SameTeam (int nPlayer1, int nPlayer2);
+int16_t GetTeam (int32_t nPlayer);
+bool SameTeam (int32_t nPlayer1, int32_t nPlayer2);
 
 // Exported variables
 
 
-extern int Network_active;
-extern int NetlifeKills,NetlifeKilled;
+extern int32_t Network_active;
+extern int32_t NetlifeKills,NetlifeKilled;
 
-extern int bUseMacros;
+extern int32_t bUseMacros;
 
-extern int message_length[MULTI_MAX_TYPE+1];
+extern int32_t message_length[MULTI_MAX_TYPE+1];
 
 extern CShortArray scoreMatrix;
-//extern short scoreMatrix[MAX_PLAYERS][MAX_PLAYERS];
+//extern int16_t scoreMatrix[MAX_PLAYERS][MAX_PLAYERS];
 
 
-extern void MultiMsgInputSub (int key);
+extern void MultiMsgInputSub (int32_t key);
 extern void MultiSendMsgStart (char nMsg);
 extern void MultiSendMsgQuit (void);
 extern void MultiSendTyping (void);
 
-extern int MultiPowerupIs4Pack (int);
+extern int32_t MultiPowerupIs4Pack (int32_t);
 extern void MultiSendOrbBonus (char pnum);
 extern void MultiSendGotOrb (char pnum);
 extern void MultiAddLifetimeKills (void);
 
-extern void MultiSendTeleport (char pnum, short nSegment, char nSide);
+extern void MultiSendTeleport (char pnum, int16_t nSegment, char nSide);
 
-extern int controlInvulTime;
+extern int32_t controlInvulTime;
 
 #define N_PLAYER_SHIP_TEXTURES 6
 
@@ -295,21 +295,21 @@ enum compType {DOS,WIN_32,WIN_95,MAC} __pack__ ;
 typedef struct tNetPlayerInfo {
 	char				callsign [CALLSIGN_LEN+1];
 	CNetworkInfo	network;
-	ubyte				versionMajor;
-	ubyte				versionMinor;
-	ubyte				computerType;
-	sbyte				connected;
-	ushort			socket;
-	ubyte				rank;
+	uint8_t				versionMajor;
+	uint8_t				versionMinor;
+	uint8_t				computerType;
+	int8_t				connected;
+	uint16_t			socket;
+	uint8_t				rank;
 
-	int IsConnected (void) { return *callsign ? connected : 0; }
+	int32_t IsConnected (void) { return *callsign ? connected : 0; }
 } __pack__ tNetPlayerInfo;
 
 
 typedef struct tAllNetPlayersInfo
 {
 	char    nType;
-	int     nSecurity;
+	int32_t     nSecurity;
 	struct tNetPlayerInfo players [MAX_PLAYERS_D2X + 4];
 } __pack__ tAllNetPlayersInfo;
 
@@ -330,73 +330,73 @@ class CAllNetPlayersInfo {
 };
 
 typedef struct tNetGameInfoD2 {
-	int     locations [MAX_PLAYERS_D2];			// 32 bytes
-	short   kills [MAX_PLAYERS_D2][MAX_PLAYERS_D2];	// 128 bytes
-	ushort  nSegmentCheckSum;						// 2 bytes
-	short   teamKills [2];							// 4 bytes
-	short   killed [MAX_PLAYERS_D2];				// 16 bytes
-	short   playerKills [MAX_PLAYERS_D2];		// 16 bytes
-	int     nScoreGoal;								// 4 bytes
+	int32_t     locations [MAX_PLAYERS_D2];			// 32 bytes
+	int16_t   kills [MAX_PLAYERS_D2][MAX_PLAYERS_D2];	// 128 bytes
+	uint16_t  nSegmentCheckSum;						// 2 bytes
+	int16_t   teamKills [2];							// 4 bytes
+	int16_t   killed [MAX_PLAYERS_D2];				// 16 bytes
+	int16_t   playerKills [MAX_PLAYERS_D2];		// 16 bytes
+	int32_t     nScoreGoal;								// 4 bytes
 	fix     xPlayTimeAllowed;						// 4 bytes
 	fix     xLevelTime;								// 4 bytes
-	int     controlInvulTime;						// 4 bytes
-	int     monitorVector;							// 4 bytes
-	int     playerScore [MAX_PLAYERS_D2];		// 32 bytes
-	ubyte   playerFlags [MAX_PLAYERS_D2];		// 8 bytes
-	short   nPacketsPerSec;							// 2 bytes
-	ubyte   bShortPackets;							// 1 bytes
+	int32_t     controlInvulTime;						// 4 bytes
+	int32_t     monitorVector;							// 4 bytes
+	int32_t     playerScore [MAX_PLAYERS_D2];		// 32 bytes
+	uint8_t   playerFlags [MAX_PLAYERS_D2];		// 8 bytes
+	int16_t   nPacketsPerSec;							// 2 bytes
+	uint8_t   bShortPackets;							// 1 bytes
 // 279 bytes
 // 355 bytes total
-	ubyte   auxData[NETGAME_AUX_SIZE];  // Storage for protocol-specific data (e.g., multicast session and port)
+	uint8_t   auxData[NETGAME_AUX_SIZE];  // Storage for protocol-specific data (e.g., multicast session and port)
 } __pack__ tNetGameInfoD2;
 
 typedef struct tNetGameInfoD2X {
-	int     locations [MAX_PLAYERS_D2X];		// 32 bytes
-	short   kills [MAX_PLAYERS_D2X][MAX_PLAYERS_D2X];	// 128 bytes
-	ushort  nSegmentCheckSum;						// 2 bytes
-	short   teamKills [2];							// 4 bytes
-	short   killed [MAX_PLAYERS_D2X];			// 16 bytes
-	short   playerKills [MAX_PLAYERS_D2X];		// 16 bytes
-	int     nScoreGoal;								// 4 bytes
+	int32_t     locations [MAX_PLAYERS_D2X];		// 32 bytes
+	int16_t   kills [MAX_PLAYERS_D2X][MAX_PLAYERS_D2X];	// 128 bytes
+	uint16_t  nSegmentCheckSum;						// 2 bytes
+	int16_t   teamKills [2];							// 4 bytes
+	int16_t   killed [MAX_PLAYERS_D2X];			// 16 bytes
+	int16_t   playerKills [MAX_PLAYERS_D2X];		// 16 bytes
+	int32_t     nScoreGoal;								// 4 bytes
 	fix     xPlayTimeAllowed;						// 4 bytes
 	fix     xLevelTime;								// 4 bytes
-	int     controlInvulTime;						// 4 bytes
-	int     monitorVector;							// 4 bytes
-	int     playerScore [MAX_PLAYERS_D2X];		// 32 bytes
-	ubyte   playerFlags [MAX_PLAYERS_D2X];		// 8 bytes
-	short   nPacketsPerSec;							// 2 bytes
-	ubyte   bShortPackets;							// 1 bytes
-	ubyte   auxData [NETGAME_AUX_SIZE];  // Storage for protocol-specific data (e.g., multicast session and port)
+	int32_t     controlInvulTime;						// 4 bytes
+	int32_t     monitorVector;							// 4 bytes
+	int32_t     playerScore [MAX_PLAYERS_D2X];		// 32 bytes
+	uint8_t   playerFlags [MAX_PLAYERS_D2X];		// 8 bytes
+	int16_t   nPacketsPerSec;							// 2 bytes
+	uint8_t   bShortPackets;							// 1 bytes
+	uint8_t   auxData [NETGAME_AUX_SIZE];  // Storage for protocol-specific data (e.g., multicast session and port)
 } __pack__ tNetGameInfoD2X;
 
 typedef struct tNetGameInfoLite {
 	public:
-		ubyte                        nType;
-		int                          nSecurity;
+		uint8_t                        nType;
+		int32_t                          nSecurity;
 		char                         szGameName [NETGAME_NAME_LEN+1];
 		char                         szMissionTitle [MISSION_NAME_LEN+1];
 		char                         szMissionName [9];
-		int                          nLevel;
-		ubyte                        gameMode;
-		ubyte                        bRefusePlayers;
-		ubyte                        difficulty;
-		ubyte                        gameStatus;
-		ubyte                        nNumPlayers;
-		ubyte                        nMaxPlayers;
-		ubyte                        nConnected;
-		ubyte                        gameFlags;
-		ubyte                        protocolVersion;
-		ubyte                        versionMajor;
-		ubyte                        versionMinor;
-		ubyte                        teamVector;
+		int32_t                          nLevel;
+		uint8_t                        gameMode;
+		uint8_t                        bRefusePlayers;
+		uint8_t                        difficulty;
+		uint8_t                        gameStatus;
+		uint8_t                        nNumPlayers;
+		uint8_t                        nMaxPlayers;
+		uint8_t                        nConnected;
+		uint8_t                        gameFlags;
+		uint8_t                        protocolVersion;
+		uint8_t                        versionMajor;
+		uint8_t                        versionMinor;
+		uint8_t                        teamVector;
 
    public:
-		inline int GetLevel (void) { return nLevel & 0xFFFF; }
-		void SetLevel (int n);
-		ushort GetTeamVector (void);
-		void SetTeamVector (ushort n);
-		inline void AddTeamPlayer (int n) { SetTeamVector (GetTeamVector () | (1 << n)); }
-		inline void RemoveTeamPlayer (int n) { SetTeamVector (GetTeamVector () & ~(1 << n)); }
+		inline int32_t GetLevel (void) { return nLevel & 0xFFFF; }
+		void SetLevel (int32_t n);
+		uint16_t GetTeamVector (void);
+		void SetTeamVector (uint16_t n);
+		inline void AddTeamPlayer (int32_t n) { SetTeamVector (GetTeamVector () | (1 << n)); }
+		inline void RemoveTeamPlayer (int32_t n) { SetTeamVector (GetTeamVector () & ~(1 << n)); }
 } __pack__ tNetGameInfoLite;
 
 typedef struct tNetGameInfo : tNetGameInfoLite {
@@ -406,71 +406,71 @@ typedef struct tNetGameInfo : tNetGameInfoLite {
 // send this as network information
 
 #if ! (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-	short DoMegas:1;		//first word
-	short DoSmarts:1;
-	short DoFusions:1;
-	short DoHelix:1;
-	short DoPhoenix:1;
-	short DoAfterburner:1;
-	short DoInvulnerability:1;
-	short DoCloak:1;
-	short DoGauss:1;
-	short DoVulcan:1;
-	short DoPlasma:1;
-	short DoOmega:1;
-	short DoSuperLaser:1;
-	short DoProximity:1;
-	short DoSpread:1;
-	short DoSmartMine:1;
-	short DoFlash:1;		//second word
-	short DoGuided:1;
-	short DoEarthShaker:1;
-	short DoMercury:1;
-	short bAllowMarkerView:1;
-	short bIndestructibleLights:1;
-	short DoAmmoRack:1;
-	short DoConverter:1;
-	short DoHeadlight:1;
-	short DoHoming:1;
-	short DoLaserUpgrade:1;
-	short DoQuadLasers:1;
-	short bShowAllNames:1;
-	short BrightPlayers:1;
-	short invul:1;
-	short FriendlyFireOff:1;
+	int16_t DoMegas:1;		//first word
+	int16_t DoSmarts:1;
+	int16_t DoFusions:1;
+	int16_t DoHelix:1;
+	int16_t DoPhoenix:1;
+	int16_t DoAfterburner:1;
+	int16_t DoInvulnerability:1;
+	int16_t DoCloak:1;
+	int16_t DoGauss:1;
+	int16_t DoVulcan:1;
+	int16_t DoPlasma:1;
+	int16_t DoOmega:1;
+	int16_t DoSuperLaser:1;
+	int16_t DoProximity:1;
+	int16_t DoSpread:1;
+	int16_t DoSmartMine:1;
+	int16_t DoFlash:1;		//second word
+	int16_t DoGuided:1;
+	int16_t DoEarthShaker:1;
+	int16_t DoMercury:1;
+	int16_t bAllowMarkerView:1;
+	int16_t bIndestructibleLights:1;
+	int16_t DoAmmoRack:1;
+	int16_t DoConverter:1;
+	int16_t DoHeadlight:1;
+	int16_t DoHoming:1;
+	int16_t DoLaserUpgrade:1;
+	int16_t DoQuadLasers:1;
+	int16_t bShowAllNames:1;
+	int16_t BrightPlayers:1;
+	int16_t invul:1;
+	int16_t FriendlyFireOff:1;
 #else
-	short DoSmartMine:1;
-	short DoSpread:1;
-	short DoProximity:1;
-	short DoSuperLaser:1;
-	short DoOmega:1;
-	short DoPlasma:1;
-	short DoVulcan:1;
-	short DoGauss:1;
-	short DoCloak:1;
-	short DoInvulnerability:1;
-	short DoAfterburner:1;
-	short DoPhoenix:1;
-	short DoHelix:1;
-	short DoFusions:1;
-	short DoSmarts:1;
-	short DoMegas:1;
-	short FriendlyFireOff:1;
-	short invul:1;
-	short BrightPlayers:1;
-	short bShowAllNames:1;
-	short DoQuadLasers:1;
-	short DoLaserUpgrade:1;
-	short DoHoming:1;
-	short DoHeadlight:1;
-	short DoConverter:1;
-	short DoAmmoRack:1;
-	short bIndestructibleLights:1;
-	short bAllowMarkerView:1;
-	short DoMercury:1;
-	short DoEarthShaker:1;
-	short DoGuided:1;
-	short DoFlash:1;
+	int16_t DoSmartMine:1;
+	int16_t DoSpread:1;
+	int16_t DoProximity:1;
+	int16_t DoSuperLaser:1;
+	int16_t DoOmega:1;
+	int16_t DoPlasma:1;
+	int16_t DoVulcan:1;
+	int16_t DoGauss:1;
+	int16_t DoCloak:1;
+	int16_t DoInvulnerability:1;
+	int16_t DoAfterburner:1;
+	int16_t DoPhoenix:1;
+	int16_t DoHelix:1;
+	int16_t DoFusions:1;
+	int16_t DoSmarts:1;
+	int16_t DoMegas:1;
+	int16_t FriendlyFireOff:1;
+	int16_t invul:1;
+	int16_t BrightPlayers:1;
+	int16_t bShowAllNames:1;
+	int16_t DoQuadLasers:1;
+	int16_t DoLaserUpgrade:1;
+	int16_t DoHoming:1;
+	int16_t DoHeadlight:1;
+	int16_t DoConverter:1;
+	int16_t DoAmmoRack:1;
+	int16_t bIndestructibleLights:1;
+	int16_t bAllowMarkerView:1;
+	int16_t DoMercury:1;
+	int16_t DoEarthShaker:1;
+	int16_t DoGuided:1;
+	int16_t DoFlash:1;
 #endif
 
 	char    szTeamName [2][CALLSIGN_LEN+1];	// 18 bytes
@@ -483,7 +483,7 @@ typedef struct tNetGameInfo : tNetGameInfoLite {
 class CNetGameInfo {
 	public:
 		tNetGameInfo	m_info;
-		ubyte				m_server [10];
+		uint8_t				m_server [10];
 
 	public:
 		CNetGameInfo() { memset (&m_info, 0, sizeof (m_info)); }
@@ -501,84 +501,84 @@ class CNetGameInfo {
 			return m_info;
 			}
 
-		inline int* Locations (int i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.locations + i : m_info.versionSpecific.d2.locations + i; }
-		inline short* Kills (int i = 0, int j = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.kills [i] + j : m_info.versionSpecific.d2.kills [i] + j; }
-		inline short* TeamKills (int i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.teamKills + i : m_info.versionSpecific.d2.teamKills + i; }
-		inline short* Killed (int i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.killed  + i : m_info.versionSpecific.d2.killed  + i; }
-		inline short* PlayerKills (int i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerKills  + i : m_info.versionSpecific.d2.playerKills  + i; }
-		inline int* PlayerScore (int i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerScore  + i : m_info.versionSpecific.d2.playerScore  + i; }
-		inline ubyte* PlayerFlags (int i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerFlags  + i : m_info.versionSpecific.d2.playerFlags  + i; }
-		inline ubyte* AuxData (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.auxData : m_info.versionSpecific.d2.auxData; }
+		inline int32_t* Locations (int32_t i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.locations + i : m_info.versionSpecific.d2.locations + i; }
+		inline int16_t* Kills (int32_t i = 0, int32_t j = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.kills [i] + j : m_info.versionSpecific.d2.kills [i] + j; }
+		inline int16_t* TeamKills (int32_t i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.teamKills + i : m_info.versionSpecific.d2.teamKills + i; }
+		inline int16_t* Killed (int32_t i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.killed  + i : m_info.versionSpecific.d2.killed  + i; }
+		inline int16_t* PlayerKills (int32_t i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerKills  + i : m_info.versionSpecific.d2.playerKills  + i; }
+		inline int32_t* PlayerScore (int32_t i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerScore  + i : m_info.versionSpecific.d2.playerScore  + i; }
+		inline uint8_t* PlayerFlags (int32_t i = 0) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.playerFlags  + i : m_info.versionSpecific.d2.playerFlags  + i; }
+		inline uint8_t* AuxData (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.auxData : m_info.versionSpecific.d2.auxData; }
 
-		inline ushort GetSegmentCheckSum (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.nSegmentCheckSum : m_info.versionSpecific.d2.nSegmentCheckSum; }
-		inline int GetScoreGoal (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.nScoreGoal : m_info.versionSpecific.d2.nScoreGoal; }
+		inline uint16_t GetSegmentCheckSum (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.nSegmentCheckSum : m_info.versionSpecific.d2.nSegmentCheckSum; }
+		inline int32_t GetScoreGoal (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.nScoreGoal : m_info.versionSpecific.d2.nScoreGoal; }
 		inline fix GetPlayTimeAllowed (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.xPlayTimeAllowed : m_info.versionSpecific.d2.xPlayTimeAllowed; }
 		inline fix GetLevelTime (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.xLevelTime : m_info.versionSpecific.d2.xLevelTime; }
-		inline int GetControlInvulTime (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.controlInvulTime : m_info.versionSpecific.d2.controlInvulTime; }
-		inline int GetMonitorVector (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.monitorVector : m_info.versionSpecific.d2.monitorVector; }
-		inline short GetPacketsPerSec (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.nPacketsPerSec : m_info.versionSpecific.d2.nPacketsPerSec; }
-		inline ubyte GetShortPackets (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.bShortPackets : m_info.versionSpecific.d2.bShortPackets; }
+		inline int32_t GetControlInvulTime (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.controlInvulTime : m_info.versionSpecific.d2.controlInvulTime; }
+		inline int32_t GetMonitorVector (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.monitorVector : m_info.versionSpecific.d2.monitorVector; }
+		inline int16_t GetPacketsPerSec (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.nPacketsPerSec : m_info.versionSpecific.d2.nPacketsPerSec; }
+		inline uint8_t GetShortPackets (void) { return (gameStates.multi.nGameType == UDP_GAME) ? m_info.versionSpecific.d2x.bShortPackets : m_info.versionSpecific.d2.bShortPackets; }
 
-		inline void SetSegmentCheckSum (ushort n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.nSegmentCheckSum = n; else m_info.versionSpecific.d2.nSegmentCheckSum = n; }
-		inline void SetScoreGoal (int n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.nScoreGoal = n; else m_info.versionSpecific.d2.nScoreGoal = n; }
+		inline void SetSegmentCheckSum (uint16_t n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.nSegmentCheckSum = n; else m_info.versionSpecific.d2.nSegmentCheckSum = n; }
+		inline void SetScoreGoal (int32_t n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.nScoreGoal = n; else m_info.versionSpecific.d2.nScoreGoal = n; }
 		inline void SetPlayTimeAllowed (fix n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.xPlayTimeAllowed = n; else m_info.versionSpecific.d2.xPlayTimeAllowed = n; }
 		inline void SetLevelTime (fix n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.xLevelTime = n; else m_info.versionSpecific.d2.xLevelTime = n; }
-		inline void SetControlInvulTime (int n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.controlInvulTime = n; else m_info.versionSpecific.d2.controlInvulTime = n; }
-		inline void SetMonitorVector (int n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.monitorVector = n; else m_info.versionSpecific.d2.monitorVector = n; }
-		inline void SetPacketsPerSec (short n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.nPacketsPerSec = n; else m_info.versionSpecific.d2.nPacketsPerSec = n; }
-		inline void SetShortPackets (ubyte n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.bShortPackets = n; else m_info.versionSpecific.d2.bShortPackets = n; }
+		inline void SetControlInvulTime (int32_t n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.controlInvulTime = n; else m_info.versionSpecific.d2.controlInvulTime = n; }
+		inline void SetMonitorVector (int32_t n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.monitorVector = n; else m_info.versionSpecific.d2.monitorVector = n; }
+		inline void SetPacketsPerSec (int16_t n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.nPacketsPerSec = n; else m_info.versionSpecific.d2.nPacketsPerSec = n; }
+		inline void SetShortPackets (uint8_t n) { if (gameStates.multi.nGameType == UDP_GAME) m_info.versionSpecific.d2x.bShortPackets = n; else m_info.versionSpecific.d2.bShortPackets = n; }
 };
 
 #define MAX_ROBOTS_CONTROLLED 5
 
 typedef struct tMultiRobotData {
-	int controlled [MAX_ROBOTS_CONTROLLED];
-	int agitation [MAX_ROBOTS_CONTROLLED];
+	int32_t controlled [MAX_ROBOTS_CONTROLLED];
+	int32_t agitation [MAX_ROBOTS_CONTROLLED];
 	fix controlledTime [MAX_ROBOTS_CONTROLLED];
 	fix lastSendTime [MAX_ROBOTS_CONTROLLED];
 	fix lastMsgTime [MAX_ROBOTS_CONTROLLED];
-	int sendPending [MAX_ROBOTS_CONTROLLED];
-	int fired [MAX_ROBOTS_CONTROLLED];
-	sbyte fireBuf [MAX_ROBOTS_CONTROLLED][18+3];
+	int32_t sendPending [MAX_ROBOTS_CONTROLLED];
+	int32_t fired [MAX_ROBOTS_CONTROLLED];
+	int8_t fireBuf [MAX_ROBOTS_CONTROLLED][18+3];
 } __pack__ tMultiRobotData;
 
 extern CNetGameInfo netGame;
 extern CAllNetPlayersInfo netPlayers [2];
 
-int IAmGameHost (void);
-void ChangePlayerNumTo (int nPlayer);
-int SetLocalPlayer (CAllNetPlayersInfo* playerInfoP, int nPlayers, int nDefault = -1);
+int32_t IAmGameHost (void);
+void ChangePlayerNumTo (int32_t nPlayer);
+int32_t SetLocalPlayer (CAllNetPlayersInfo* playerInfoP, int32_t nPlayers, int32_t nDefault = -1);
 
 //how to encode missiles & flares in weapon packets
 #define MISSILE_ADJUST  100
 #define FLARE_ADJUST    127
 
-int PingPlayer (int n);
-int MultiProtectGame (void);
-void SwitchTeam (int nPlayer, int bForce);
-void SetTeam (int nPlayer, int team);
+int32_t PingPlayer (int32_t n);
+int32_t MultiProtectGame (void);
+void SwitchTeam (int32_t nPlayer, int32_t bForce);
+void SetTeam (int32_t nPlayer, int32_t team);
 void MultiSendModemPing ();
-int MultiFindGoalTexture (short t);
+int32_t MultiFindGoalTexture (int16_t t);
 void MultiSetFlagPos (void);
 void ResetPlayerPaths (void);
 void SetPlayerPaths (void);
 void MultiSyncKills (void);
 void MultiAdjustPowerups (void);
-void RemapLocalPlayerObject (int nLocalObj, int nRemoteObj);
-void MultiOnlyPlayerMsg (int bMsgBox);
+void RemapLocalPlayerObject (int32_t nLocalObj, int32_t nRemoteObj);
+void MultiOnlyPlayerMsg (int32_t bMsgBox);
 
 void MultiSendStolenItems ();
 void MultiSendScoreGoalCounts ();
 void MultiSendPowerupUpdate ();
-void MultiSendDoorOpenSpecific (int nPlayer, int nSegment, int nSide, ushort flags);
-void MultiSendWallStatusSpecific (int nPlayer, int wallnum, ubyte nType, ushort flags, ubyte state);
-void MultiSendLightSpecific (int nPlayer, int nSegment, ubyte val);
-void MultiSendTriggerSpecific (char nPlayer, ubyte trig);
+void MultiSendDoorOpenSpecific (int32_t nPlayer, int32_t nSegment, int32_t nSide, uint16_t flags);
+void MultiSendWallStatusSpecific (int32_t nPlayer, int32_t wallnum, uint8_t nType, uint16_t flags, uint8_t state);
+void MultiSendLightSpecific (int32_t nPlayer, int32_t nSegment, uint8_t val);
+void MultiSendTriggerSpecific (char nPlayer, uint8_t trig);
 void MultiSetObjectTextures (CObject *objP);
 void MultiSendSeismic (fix start, fix end);
 void MultiSendDropBlobs (char nPlayer);
 void InitDefaultShipProps (void);
 void SetupPowerupFilter (tNetGameInfo* infoP = NULL);
-void MultiDestroyPlayerShip (int nPlayer, int bExplode = 1, int nRemoteCreated = 0, short* objList = NULL);
+void MultiDestroyPlayerShip (int32_t nPlayer, int32_t bExplode = 1, int32_t nRemoteCreated = 0, int16_t* objList = NULL);
 
 #endif /* _MULTI_H */

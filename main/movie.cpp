@@ -90,7 +90,7 @@ void DecodeTextLine (char* p);
  */
 
 //search for next field following whitespace 
-ubyte* CSubTitles::NextField (ubyte* p)
+uint8_t* CSubTitles::NextField (uint8_t* p)
 {
 while (*p && !::isspace (*p))
 	p++;
@@ -105,12 +105,12 @@ return p;
 
 //-----------------------------------------------------------------------
 
-int CSubTitles::Init (const char* filename)
+int32_t CSubTitles::Init (const char* filename)
 {
 	CFile cf;
-	int 	size, readCount;
-	ubyte	*p;
-	int 	bHaveBinary = 0;
+	int32_t 	size, readCount;
+	uint8_t	*p;
+	int32_t 	bHaveBinary = 0;
 
 m_nCaptions = 0;
 if (!gameOpts->movies.bSubTitles)
@@ -123,9 +123,9 @@ if (!cf.Open (filename, gameFolders.game.szData [0], "rb", 0)) { // first try te
 	bHaveBinary = 1;
 	}
 
-size = (int) cf.Length ();
-m_rawDataP = new ubyte [size+1];
-readCount = (int) cf.Read (m_rawDataP, 1, size);
+size = (int32_t) cf.Length ();
+m_rawDataP = new uint8_t [size+1];
+readCount = (int32_t) cf.Read (m_rawDataP, 1, size);
 cf.Close ();
 m_rawDataP [size] = 0;
 if (readCount != size) {
@@ -155,7 +155,7 @@ while (p && (p < m_rawDataP + size)) {
 		Assert (m_captions [m_nCaptions].last_frame >= m_captions [m_nCaptions].first_frame);
 		m_nCaptions++;
 		}
-	p = reinterpret_cast<ubyte*> (endp + 1);
+	p = reinterpret_cast<uint8_t*> (endp + 1);
 	}
 return 1;
 }
@@ -173,12 +173,12 @@ m_nCaptions = 0;
 
 //-----------------------------------------------------------------------
 //draw the subtitles for this frame
-void CSubTitles::Draw (int nFrame)
+void CSubTitles::Draw (int32_t nFrame)
 {
-	static int activeSubTitleList [MAX_ACTIVE_SUBTITLES];
-	static int nActiveSubTitles, nNextSubTitle, nLineSpacing;
-	int t, y;
-	int bMustErase = 0;
+	static int32_t activeSubTitleList [MAX_ACTIVE_SUBTITLES];
+	static int32_t nActiveSubTitles, nNextSubTitle, nLineSpacing;
+	int32_t t, y;
+	int32_t bMustErase = 0;
 
 if (nFrame == 0) {
 	nActiveSubTitles = 0;
@@ -191,7 +191,7 @@ if (nFrame == 0) {
 //get rid of any subtitles that have expired
 for (t = 0; t <nActiveSubTitles; )
 	if (nFrame > m_captions [activeSubTitleList [t]].last_frame) {
-		int t2;
+		int32_t t2;
 		for (t2 = t; t2 < nActiveSubTitles - 1; t2++)
 			activeSubTitleList [t2] = activeSubTitleList [t2+1];
 		nActiveSubTitles--;
@@ -211,7 +211,7 @@ while (nNextSubTitle < m_nCaptions && nFrame >= m_captions [nNextSubTitle].first
 	CFrameController fc;
 	for (fc.Begin (); fc.Continue (); fc.End ()) {
 	if (ogl.IsOculusRift ()) {
-		int w, h;
+		int32_t w, h;
 		cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
 		}
 	else
@@ -244,20 +244,20 @@ while (nNextSubTitle < m_nCaptions && nFrame >= m_captions [nNextSubTitle].first
 
 void* CMovie::Alloc (unsigned size)
 {
-return reinterpret_cast<void*> (new ubyte [size]);
+return reinterpret_cast<void*> (new uint8_t [size]);
 }
 
 // ----------------------------------------------------------------------
 
 void CMovie::Free (void* p)
 {
-delete[] reinterpret_cast<ubyte*> (p);
+delete[] reinterpret_cast<uint8_t*> (p);
 }
 
 
 //-----------------------------------------------------------------------
 
-void CMovie::ShowFrame (ubyte* buf, uint wBuffer, uint hBuffer, uint xSrc, uint ySrc, uint w, uint h, uint xDest, uint yDest)
+void CMovie::ShowFrame (uint8_t* buf, uint32_t wBuffer, uint32_t hBuffer, uint32_t xSrc, uint32_t ySrc, uint32_t w, uint32_t h, uint32_t xDest, uint32_t yDest)
 {
 	CBitmap bmFrame;
 
@@ -269,7 +269,7 @@ TRANSPARENCY_COLOR = 0;
 CFrameController fc;
 for (fc.Begin (); fc.Continue (); fc.End ()) {
 	if (ogl.IsOculusRift ()) {
-		int w, h;
+		int32_t w, h;
 		cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
 		}
 	else
@@ -277,8 +277,8 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 
 	if (gameOpts->movies.bFullScreen > 0) {
 		double r = (double) hBuffer / (double) wBuffer;
-		int dh = (int) (CCanvas::Current ()->Width () * r);
-		int yOffs = (CCanvas::Current ()->Height () - dh) / 2;
+		int32_t dh = (int32_t) (CCanvas::Current ()->Width () * r);
+		int32_t yOffs = (CCanvas::Current ()->Height () - dh) / 2;
 
 		ogl.SetBlending (false);
 		bmFrame.AddFlags (BM_FLAG_OPAQUE);
@@ -288,11 +288,11 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 		}
 	else {
 		if (gameOpts->movies.bFullScreen < 0) {
-			w = gameData.render.frame.Width (false) * int (w) / 640;
-			h = gameData.render.frame.Width (false) * int (h) / 640;
+			w = gameData.render.frame.Width (false) * int32_t (w) / 640;
+			h = gameData.render.frame.Width (false) * int32_t (h) / 640;
 			}
-		int xOffs = (CCanvas::Current ()->Width () - w - xDest) / 2;
-		int yOffs = (CCanvas::Current ()->Height () - h - yDest) / 2;
+		int32_t xOffs = (CCanvas::Current ()->Width () - w - xDest) / 2;
+		int32_t yOffs = (CCanvas::Current ()->Height () - h - yDest) / 2;
 
 		if (xOffs < 0)
 			xOffs = 0;
@@ -302,7 +302,7 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 		yOffs += yDest;
 		//bmFrame.Blit (CCanvas::Current (), xOffs, yOffs, bufw, bufh, xSrc, ySrc, 1);
 		bmFrame.Render (NULL, xOffs, yOffs, w, h, xSrc, ySrc, wBuffer, hBuffer, 0, 0, gameOpts->movies.nQuality);
-		if (!gameOpts->movies.bFullScreen && (((uint) CCanvas::Current ()->Width () > w) || ((uint) CCanvas::Current ()->Height () > h))) {
+		if (!gameOpts->movies.bFullScreen && (((uint32_t) CCanvas::Current ()->Width () > w) || ((uint32_t) CCanvas::Current ()->Height () > h))) {
 			CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 32));
 			OglDrawEmptyRect (xDest - 1, yDest, xDest + w, yDest + h + 1);
 			}
@@ -318,7 +318,7 @@ bmFrame.SetBuffer (NULL);
 
 //-----------------------------------------------------------------------
 //our routine to set the palette, called from the movie code
-void CMovie::SetPalette (ubyte* p, unsigned start, unsigned count)
+void CMovie::SetPalette (uint8_t* p, unsigned start, unsigned count)
 {
 	CPalette	palette;
 
@@ -342,9 +342,9 @@ movieManager.m_palette = paletteManager.Add (palette);
 
 //-----------------------------------------------------------------------
 
-uint CMovie::Read (void* handle, void* buf, uint count)
+uint32_t CMovie::Read (void* handle, void* buf, uint32_t count)
 {
-uint numread = (uint) (reinterpret_cast<CFile*> (handle))->Read (buf, 1, count);
+uint32_t numread = (uint32_t) (reinterpret_cast<CFile*> (handle))->Read (buf, 1, count);
 return numread == count;
 }
 
@@ -354,7 +354,7 @@ void CMovie::Rewind (void)
 {
 if (m_cf.File ()) {
 	m_cf.Seek (m_offset, SEEK_SET);
-	m_pos = (int) m_cf.Tell ();
+	m_pos = (int32_t) m_cf.Tell ();
 	}
 }
 
@@ -366,8 +366,8 @@ if (m_cf.File ()) {
 
 void ShowPauseMessage (const char* msg)
 {
-	int w, h, aw;
-	int x, y;
+	int32_t w, h, aw;
+	int32_t x, y;
 
 fontManager.SetCurrent (SMALL_FONT);
 fontManager.Current ()->StringSize (msg, w, h, aw);
@@ -406,10 +406,10 @@ Init ();
 
 //-----------------------------------------------------------------------
 
-int CMovieLib::SetupMVL (CFile& cf)
+int32_t CMovieLib::SetupMVL (CFile& cf)
 {
-	int			nFiles, offset;
-	int			i, len;
+	int32_t			nFiles, offset;
+	int32_t			i, len;
 
 	//read movie file header
 
@@ -439,11 +439,11 @@ return nFiles;
 // old format libs do not have length info at start of file
 // so read and count movies
 
-int CMovieLib::Count (CFile& cf)
+int32_t CMovieLib::Count (CFile& cf)
 {
-	int	size = (int) cf.Size ();
-	int	nFiles = 0;
-	int	fPos = (int) cf.Tell ();
+	int32_t	size = (int32_t) cf.Size ();
+	int32_t	nFiles = 0;
+	int32_t	fPos = (int32_t) cf.Tell ();
 
 for (;;) {
 	if (size < 17) // name + length
@@ -458,18 +458,18 @@ return nFiles;
 
 //-----------------------------------------------------------------------
 
-int CMovieLib::SetupHF (CFile& cf)
+int32_t CMovieLib::SetupHF (CFile& cf)
 {
-	int nFiles = Count (cf);
+	int32_t nFiles = Count (cf);
 
 if (nFiles < 1)
 	return 0;
 if (!m_movies.Create (nFiles))
 	return 0;
-for (int i = 0; i < nFiles; i++) {
+for (int32_t i = 0; i < nFiles; i++) {
 	cf.Read (m_movies [i].m_name, 13, 1);
 	m_movies [i].m_len = cf.ReadInt ();
-	m_movies [i].m_offset = (int) cf.Tell ();
+	m_movies [i].m_offset = (int32_t) cf.Tell ();
 	cf.Seek (m_movies [i].m_len, SEEK_CUR);       //skip data
 	}
 return nFiles;
@@ -484,7 +484,7 @@ bool CMovieLib::Setup (const char* filename)
 
 	char	id [4];
 	CFile cf;
-	int	nFiles = 0;
+	int32_t	nFiles = 0;
 
 if (!cf.Open (filename, gameFolders.game.szMovies, "rb", 0))
 	return false;
@@ -505,9 +505,9 @@ return nFiles > 0;
 
 //looks through a movie library for a movie file
 //returns filehandle, with fileposition at movie, or -1 if can't find
-CMovie* CMovieLib::Open (char* filename, int bRequired)
+CMovie* CMovieLib::Open (char* filename, int32_t bRequired)
 {
-	int i, bFromCD;
+	int32_t i, bFromCD;
 
 for (i = 0; i < m_nMovies; i++)
 	if (!stricmp (filename, m_movies [i].m_name)) {	//found the movie in a library 
@@ -548,7 +548,7 @@ m_libs.Create (N_MOVIE_LIBS);
 void CMovieManager::Destroy (void)
 {
 PrintLog (1, "unloading movies\n");
-for (int i = 0; i < m_nLibs; i++)
+for (int32_t i = 0; i < m_nLibs; i++)
 	m_libs [i].Destroy ();
 Init ();
 PrintLog (-1);
@@ -558,16 +558,16 @@ PrintLog (-1);
 //ask user to put the D2 CD in.
 //returns -1 if ESC pressed, 0 if OK chosen
 //CD may not have been inserted
-int CMovieManager::RequestCD (void)
+int32_t CMovieManager::RequestCD (void)
 {
 return -1;
 }
 
 //-----------------------------------------------------------------------
 
-void CMovieManager::InitLib (const char* pszFilename, int nLibrary, int bRobotMovie, int bRequired)
+void CMovieManager::InitLib (const char* pszFilename, int32_t nLibrary, int32_t bRobotMovie, int32_t bRequired)
 {
-	int	bHires, nTries;
+	int32_t	bHires, nTries;
 	char	filename [FILENAME_LEN];
 	char	cdName [100];
 
@@ -610,15 +610,15 @@ if (bRobotMovie && m_libs [nLibrary].m_nMovies)
 //find and initialize the movie libraries
 void CMovieManager::InitLibs (void)
 {
-	int bRobotMovie;
+	int32_t bRobotMovie;
 
 m_nLibs = 0;
 
-int j = (m_bHaveExtras = !gameStates.app.bNostalgia) 
+int32_t j = (m_bHaveExtras = !gameStates.app.bNostalgia) 
 		  ? N_BUILTIN_MOVIE_LIBS 
 		  : FIRST_EXTRA_MOVIE_LIB;
 
-for (int i = 0; i < j; i++) {
+for (int32_t i = 0; i < j; i++) {
 	bRobotMovie = !strnicmp (pszMovieLibs [i], "robot", 5);
 	InitLib (pszMovieLibs [i], m_nLibs, bRobotMovie, 1);
 	if (m_libs [m_nLibs].m_nMovies) {
@@ -642,11 +642,11 @@ InitLib (filename, EXTRA_ROBOT_LIB, 1, 0);
 
 //-----------------------------------------------------------------------
 //returns file handle
-CMovie* CMovieManager::Open (char* filename, int bRequired)
+CMovie* CMovieManager::Open (char* filename, int32_t bRequired)
 {
 	CMovie*	movieP;
 
-for (int i = 0; i < m_nLibs; i++)
+for (int32_t i = 0; i < m_nLibs; i++)
 	if ((movieP = m_libs [i].Open (filename, bRequired)))
 		return movieP;
 return NULL;    //couldn't find it
@@ -656,10 +656,10 @@ return NULL;    //couldn't find it
 //filename will actually get modified to be either low-res or high-res
 //returns status.  see values in movie.h
 
-int CMovieManager::Play (const char* filename, int bRequired, int bForce, int bFullScreen)
+int32_t CMovieManager::Play (const char* filename, int32_t bRequired, int32_t bForce, int32_t bFullScreen)
 {
 	char name [FILENAME_LEN], *p;
-	int c, ret;
+	int32_t c, ret;
 
 #if 1//!DBG
 if (!bForce && (gameOpts->movies.nLevel < 2))
@@ -687,14 +687,14 @@ return ret;
 
 //-----------------------------------------------------------------------
 //returns status.  see movie.h
-int CMovieManager::Run (char* filename, int bHires, int bRequired, int dx, int dy)
+int32_t CMovieManager::Run (char* filename, int32_t bHires, int32_t bRequired, int32_t dx, int32_t dy)
 {
 	CFile			cf;
 	CMovie*		movieP = NULL;
-	int			result = 1, aborted = 0;
-	int			track = 0;
-	int			nFrame;
-	int			key;
+	int32_t			result = 1, aborted = 0;
+	int32_t			track = 0;
+	int32_t			nFrame;
+	int32_t			key;
 	CMovieLib*	libP = Find (filename);
 
 result = 1;
@@ -757,7 +757,7 @@ return (aborted ? MOVIE_ABORTED : MOVIE_PLAYED_FULL);
 
 //-----------------------------------------------------------------------
 
-char* CMovieManager::Cycle (int bRestart, int bPlayMovie)
+char* CMovieManager::Cycle (int32_t bRestart, int32_t bPlayMovie)
 {
 	char* pszMovieName;
 
@@ -798,7 +798,7 @@ CMovieLib* CMovieManager::FindLib (const char* pszLib)
 if (m_nLibs < 0)
 	InitLibs ();
 if (m_nLibs) 
-	for (int i = 0; i < m_nLibs; i++)
+	for (int32_t i = 0; i < m_nLibs; i++)
 		if (!strcmp (pszLib, m_libs [i].m_name))
 			return m_libs + i;
 return NULL;
@@ -811,8 +811,8 @@ CMovieLib* CMovieManager::Find (const char* pszMovie)
 if (m_nLibs < 0)
 	InitLibs ();
 if (m_nLibs)
-	for (int i = 0; i < m_nLibs; i++)
-		for (int j = 0; j < m_libs [i].m_nMovies; j++)
+	for (int32_t i = 0; i < m_nLibs; i++)
+		for (int32_t j = 0; j < m_libs [i].m_nMovies; j++)
 			if (!strcmp (pszMovie, m_libs [i].m_movies [j].m_name))
 				return m_libs + i;
 return NULL;
@@ -832,7 +832,7 @@ if (m_bHaveIntro) {
 
 //-----------------------------------------------------------------------
 
-int CMovieManager::StartRobot (char* filename)
+int32_t CMovieManager::StartRobot (char* filename)
 {
 	CMovieLib*	libP = movieManager.Find (filename);
 
@@ -849,14 +849,14 @@ if (!(m_robotP = movieManager.Open (filename, 1))) {
 #endif
 	return MOVIE_NOT_PLAYED;
 	}
-int bFullScreen = gameOpts->movies.bFullScreen;
+int32_t bFullScreen = gameOpts->movies.bFullScreen;
 gameOpts->movies.bFullScreen = -1;
 m_robotP->m_bLittleEndian = libP ? libP->m_bLittleEndian : 1;
 MVE_memCallbacks (CMovie::Alloc, CMovie::Free);
 MVE_ioCallbacks (CMovie::Read);
 MVE_sfCallbacks (CMovie::ShowFrame);
 MVE_palCallbacks (CMovie::SetPalette);
-int res = MVE_rmPrepMovie (reinterpret_cast<void*> (&m_robotP->m_cf), 
+int32_t res = MVE_rmPrepMovie (reinterpret_cast<void*> (&m_robotP->m_cf), 
 							      gameStates.menus.bHires ? 280 : 140, 
 									gameStates.menus.bHires ? 200 : 80, 0,
 									m_robotP->m_bLittleEndian);
@@ -866,14 +866,14 @@ return res ? 0 : 1;
 
 //-----------------------------------------------------------------------
 //returns 1 if frame updated ok
-int CMovieManager::RotateRobot (void)
+int32_t CMovieManager::RotateRobot (void)
 {
 if (!m_robotP)
 	return 0;
 
-int bFullScreen = gameOpts->movies.bFullScreen;
+int32_t bFullScreen = gameOpts->movies.bFullScreen;
 gameOpts->movies.bFullScreen = -1;
-int res = MVE_rmStepMovie ();
+int32_t res = MVE_rmStepMovie ();
 gameOpts->movies.bFullScreen = bFullScreen;
 
 if (!res)

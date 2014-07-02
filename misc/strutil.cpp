@@ -46,7 +46,7 @@ return str;
 char *StrDup (const char *source)
 {
 	char	*newstr;
-	int	l = (int) strlen (source) + 1;
+	int32_t	l = (int32_t) strlen (source) + 1;
 
 if ((newstr = new char [l]))
 	memcpy (newstr, source, l);
@@ -58,7 +58,7 @@ return newstr;
 #if 0
 // string compare without regard to case
 
-int stricmp( char *s1, char *s2 )
+int32_t stricmp( char *s1, char *s2 )
 {
 	char c1, c2;
 
@@ -77,7 +77,7 @@ if (c1 || *s2)
 return 0;
 }
 
-int strnicmp( char *s1, char *s2, int n )
+int32_t strnicmp( char *s1, char *s2, int32_t n )
 {
 	char c1, c2;
 

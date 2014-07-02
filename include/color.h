@@ -5,34 +5,34 @@
 
 class CRGBAColor {
 	public:
-		ubyte	r, g, b, a;
+		uint8_t	r, g, b, a;
 
-	inline void Set (ubyte red, ubyte green, ubyte blue, ubyte alpha = 255) {
+	inline void Set (uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha = 255) {
 		r = red, g = green, b = blue, a = alpha;
 		}
-	inline ubyte& Red (void) { return r; }
-	inline ubyte& Green (void) { return g; }
-	inline ubyte& Blue (void) { return b; }
-	inline ubyte& Alpha (void) { return a; }
+	inline uint8_t& Red (void) { return r; }
+	inline uint8_t& Green (void) { return g; }
+	inline uint8_t& Blue (void) { return b; }
+	inline uint8_t& Alpha (void) { return a; }
 
 	inline void Assign (CRGBAColor& other) { r = other.r, g = other.g, b = other.b, a = other.a;	}
 	};
 
 class CRGBColor {
 	public:
-		ubyte	r, g, b;
+		uint8_t	r, g, b;
 
-	inline ubyte& Red (void) { return r; }
-	inline ubyte& Green (void) { return g; }
-	inline ubyte& Blue (void) { return b; }
-	inline void Set (ubyte red, ubyte green, ubyte blue) {
+	inline uint8_t& Red (void) { return r; }
+	inline uint8_t& Green (void) { return g; }
+	inline uint8_t& Blue (void) { return b; }
+	inline void Set (uint8_t red, uint8_t green, uint8_t blue) {
 		r = red, g = green, b = blue;
 		}
-	inline void ToGrayScale (int bWeighted = 0) {
+	inline void ToGrayScale (int32_t bWeighted = 0) {
 		if (bWeighted)
-			r = g = b = (ubyte) FRound (((float) r + (float) g + (float) b) / 3.0f);
+			r = g = b = (uint8_t) FRound (((float) r + (float) g + (float) b) / 3.0f);
 		else
-			r = g = b = (ubyte) FRound ((float) r * 0.30f + (float) g * 0.584f + (float) b * 0.116f);
+			r = g = b = (uint8_t) FRound ((float) r * 0.30f + (float) g * 0.584f + (float) b * 0.116f);
 		}
 	inline void Assign (CRGBColor& other) { r = other.r, g = other.g, b = other.b;	}
 	};
@@ -46,11 +46,11 @@ class CFaceColor : public CFloatVector {
 
 class CCanvasColor : public CRGBAColor {
 	public:
-		short				index;       // current color
-		ubyte				rgb;
+		int16_t				index;       // current color
+		uint8_t				rgb;
 	};
 
-template <ubyte red, ubyte green, ubyte blue, ubyte alpha>
+template <uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha>
 class CStaticFaceColor : public CFaceColor {
 	public:
 		explicit CStaticFaceColor () { 
@@ -59,7 +59,7 @@ class CStaticFaceColor : public CFaceColor {
 			}
 	};
 
-template <ubyte red, ubyte green, ubyte blue, ubyte alpha>
+template <uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha>
 class CStaticCanvasColor : public CCanvasColor {
 	public:
 		explicit CStaticCanvasColor () { 
@@ -91,12 +91,12 @@ class CStaticCanvasColor : public CCanvasColor {
 #define TRANSPARENCY_COLOR			gameData.render.transpColor // palette entry of transparency color -- 255 on the PC
 #define SUPER_TRANSP_COLOR			254   // palette entry of super transparency color
 
-#define RGBA(_r,_g,_b,_a)			((uint (_r) << 24) | (uint (_g) << 16) | (uint (_b) << 8) | (uint (_a)))
-#define RGBA_RED(_i)					((uint (_i) >> 24) & 0xff)
-#define RGBA_GREEN(_i)				((uint (_i) >> 16) & 0xff)
-#define RGBA_BLUE(_i)				((uint (_i) >> 8) & 0xff)
-#define RGBA_ALPHA(_i)				((uint (_i)) & 0xff)
-#define PAL2RGBA(_c)					(((_c) >= 63) ? 255 : ubyte ((uint (_c) * 255) / 63))
+#define RGBA(_r,_g,_b,_a)			((uint32_t (_r) << 24) | (uint32_t (_g) << 16) | (uint32_t (_b) << 8) | (uint32_t (_a)))
+#define RGBA_RED(_i)					((uint32_t (_i) >> 24) & 0xff)
+#define RGBA_GREEN(_i)				((uint32_t (_i) >> 16) & 0xff)
+#define RGBA_BLUE(_i)				((uint32_t (_i) >> 8) & 0xff)
+#define RGBA_ALPHA(_i)				((uint32_t (_i)) & 0xff)
+#define PAL2RGBA(_c)					(((_c) >= 63) ? 255 : uint8_t ((uint32_t (_c) * 255) / 63))
 #define RGBA_PAL(_r,_g,_b,_a)		RGBA (PAL2RGBA (_r), PAL2RGBA (_g), PAL2RGBA (_b), _a)
 #define RGB_PAL(_r,_g,_b)			RGBA_PAL (_r, _g, _b, 255)
 #define RGBA_PALX(_r,_g,_b,_x)	RGB_PAL ((_r) * (_x), (_g) * (_x), (_b) * (_x))
@@ -124,7 +124,7 @@ class CStaticCanvasColor : public CCanvasColor {
 
 //-----------------------------------------------------------------------------
 
-static inline void CountColors (ubyte *data, int i, int *freq)
+static inline void CountColors (uint8_t *data, int32_t i, int32_t *freq)
 {
 if (data)
 	for (; i; i--)

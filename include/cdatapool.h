@@ -11,8 +11,8 @@ class CDataPool {
 	template < class _U > 
 	class CPoolElem {
 		public:
-			int	prev;
-			int	next;
+			int32_t	prev;
+			int32_t	next;
 			_U	data;
 		};
 
@@ -21,14 +21,14 @@ class CDataPool {
 	private:
 		CPoolBuffer		m_buffer;
 		//_T*				m_null;
-		int				m_free;
-		int				m_used;
+		int32_t				m_free;
+		int32_t				m_used;
 
 	public:
 		CDataPool () { Init (); }
 		~CDataPool() { Destroy (); }
 
-		//_T& operator[] (uint i) { return m_buffer [i].data; }
+		//_T& operator[] (uint32_t i) { return m_buffer [i].data; }
 
 		inline void Init (void) { 
 			m_buffer.Init ();
@@ -41,11 +41,11 @@ class CDataPool {
 			Init (); 
 			}
 
-		inline bool Create (uint size) { 
+		inline bool Create (uint32_t size) { 
 			Destroy ();
 			if (!m_buffer.Create (size))
 				return false;
-			uint i;
+			uint32_t i;
 			for (i = 0; i < size; i++) {
 				m_buffer [i].prev = i - 1;
 				m_buffer [i].next = i + 1;
@@ -60,7 +60,7 @@ class CDataPool {
 			if (m_free < 0)
 				return NULL;
 			CPoolElem<_T>& e = m_buffer [m_free];
-			int next = e.next;
+			int32_t next = e.next;
 			e.prev = -1;
 			e.next = m_used;
 			if (m_used >= 0)
@@ -70,7 +70,7 @@ class CDataPool {
 			return &e.data; 
 			}
 
-		void Push (uint i) {
+		void Push (uint32_t i) {
 			if (m_used < 0)
 				return;
 			CPoolElem<_T>& e = m_buffer [i];
@@ -87,9 +87,9 @@ class CDataPool {
 			m_free = i;
 			}
 
-		inline int LastIndex (void) { return m_used; }
+		inline int32_t LastIndex (void) { return m_used; }
 
-		inline _T* GetNext (int& nCurrent) { 
+		inline _T* GetNext (int32_t& nCurrent) { 
 			if ((nCurrent < 0) || !m_buffer.Buffer ())
 				return NULL;
 			CPoolElem<_T>* e;
@@ -106,19 +106,19 @@ class CDataPool {
 			return &e->data;
 			}
 
-		inline _T* GetFirst (int& nCurrent) { 
+		inline _T* GetFirst (int32_t& nCurrent) { 
 			if (nCurrent < 0)
 				nCurrent = m_used;
 			return GetNext (nCurrent);
 			}
 
-		inline int Size (void) { return m_buffer.Size (); }
+		inline int32_t Size (void) { return m_buffer.Size (); }
 
-		inline int UsedList (void) { return m_used; }
-		inline int FreeList (void) { return m_free; }
+		inline int32_t UsedList (void) { return m_used; }
+		inline int32_t FreeList (void) { return m_free; }
 
-		inline _T& operator[] (uint i) { return m_buffer [i].data; }
-		inline _T* operator+ (uint i) { return &m_buffer [i].data; }
+		inline _T& operator[] (uint32_t i) { return m_buffer [i].data; }
+		inline _T* operator+ (uint32_t i) { return &m_buffer [i].data; }
 	};
 
 

@@ -32,7 +32,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 //returns true if a plane is facing the viewer. takes the unrotated surface
 //Normal of the plane, and a point on it.  The Normal need not be normalized
-int G3CheckNormalFacing(const CFixVector& pv, const CFixVector& pnorm)
+int32_t G3CheckNormalFacing(const CFixVector& pv, const CFixVector& pnorm)
 {
 CFixVector v = transformation.m_info.pos - pv;
 return (CFixVector::Dot (v, pnorm) > 0);
@@ -40,7 +40,7 @@ return (CFixVector::Dot (v, pnorm) > 0);
 
 //------------------------------------------------------------------------------
 
-int DoFacingCheck (CFixVector *norm, CRenderPoint **vertlist, CFixVector *p)
+int32_t DoFacingCheck (CFixVector *norm, CRenderPoint **vertlist, CFixVector *p)
 {
 if (norm) {		//have Normal
 	return G3CheckNormalFacing (*p, *norm);
@@ -60,7 +60,7 @@ else {	//Normal not specified, so must compute
 //is passed, this function works like G3CheckNormalFacing () plus
 //G3DrawPoly ().
 //returns -1 if not facing, 1 if off screen, 0 if drew
-int G3CheckAndDrawPoly (int nv, CRenderPoint **pointlist, CFixVector *norm, CFixVector *pnt)
+int32_t G3CheckAndDrawPoly (int32_t nv, CRenderPoint **pointlist, CFixVector *norm, CFixVector *pnt)
 {
 	if (DoFacingCheck (norm, pointlist, pnt))
 		return G3DrawPoly (nv, pointlist);
@@ -70,8 +70,8 @@ int G3CheckAndDrawPoly (int nv, CRenderPoint **pointlist, CFixVector *norm, CFix
 
 //------------------------------------------------------------------------------
 
-int G3CheckAndDrawTMap (
-	int nv, CRenderPoint **pointlist, tUVL *uvl_list, CBitmap *bm, CFixVector *norm, CFixVector *pnt)
+int32_t G3CheckAndDrawTMap (
+	int32_t nv, CRenderPoint **pointlist, tUVL *uvl_list, CBitmap *bm, CFixVector *norm, CFixVector *pnt)
 {
 if (DoFacingCheck (norm, pointlist, pnt))
 	return !G3DrawTexPoly (nv, pointlist, uvl_list, bm, norm, 1, 0, -1);

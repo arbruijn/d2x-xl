@@ -147,7 +147,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SPAWN_MIN_DIST	I2X (15 * 20)
 
 #if DBG
-int VerifyObjLists (int nObject = -1);
+int32_t VerifyObjLists (int32_t nObject = -1);
 #endif
 
 //------------------------------------------------------------------------------
@@ -155,12 +155,12 @@ int VerifyObjLists (int nObject = -1);
 void InitStuckObjects (void);
 void ClearStuckObjects (void);
 void InitAIForShip (void);
-void ShowLevelIntro (int nLevel);
-void InitPlayerPosition (int bRandom);
+void ShowLevelIntro (int32_t nLevel);
+void InitPlayerPosition (int32_t bRandom);
 void ReturningToLevelMessage (void);
 void AdvancingToLevelMessage (void);
 void DoEndGame (void);
-void AdvanceLevel (int bSecret, int bFromSecret);
+void AdvanceLevel (int32_t bSecret, int32_t bFromSecret);
 void FilterObjectsFromLevel (void);
 
 // From allender -- you'll find these defines in state.c and cntrlcen.c
@@ -183,14 +183,14 @@ void CopyDefaultsToRobotsAll (void);
 void HUDClearMessages (); // From hud.c
 #endif
 
-void SetFunctionMode (int);
+void SetFunctionMode (int32_t);
 void InitHoardData (void);
 void FreeHoardData (void);
 
-extern int nLastLevelPathCreated;
-extern int nTimeLastMoved;
-extern int nDescentCriticalError;
-extern int nLastMsgYCrd;
+extern int32_t nLastLevelPathCreated;
+extern int32_t nTimeLastMoved;
+extern int32_t nDescentCriticalError;
+extern int32_t nLastMsgYCrd;
 
 //--------------------------------------------------------------------
 
@@ -205,10 +205,10 @@ Assert (gameData.objs.consoleP->info.nId == N_LOCALPLAYER);
 
 //------------------------------------------------------------------------------
 
-int CountRobotsInLevel (void)
+int32_t CountRobotsInLevel (void)
 {
-	int robotCount = 0;
-	//int 		i;
+	int32_t robotCount = 0;
+	//int32_t 		i;
 	CObject	*objP;
 
 FORALL_ROBOT_OBJS (objP, i)
@@ -218,10 +218,10 @@ return robotCount;
 
 //------------------------------------------------------------------------------
 
-int CountHostagesInLevel (void)
+int32_t CountHostagesInLevel (void)
 {
-	int 		count = 0;
-	//int 		i;
+	int32_t 		count = 0;
+	//int32_t 		i;
 	CObject	*objP;
 
 FORALL_STATIC_OBJS (objP, i)
@@ -234,7 +234,7 @@ return count;
 //added 10/12/95: delete buddy bot if coop game.  Probably doesn't really belong here. -MT
 void GameStartInitNetworkPlayers (void)
 {
-	int		i, j, t, bCoop = IsCoopGame,
+	int32_t		i, j, t, bCoop = IsCoopGame,
 				segNum, segType,
 				playerObjs [MAX_PLAYERS], startSegs [MAX_PLAYERS],
 				nPlayers, nMaxPlayers = bCoop ? MAX_COOP_PLAYERS + 1 : MAX_PLAYERS;
@@ -255,7 +255,7 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	t = objP->info.nType;
 	if ((t == OBJ_PLAYER) || (t == OBJ_GHOST) || (t == OBJ_COOP)) {
 		if ((nPlayers >= nMaxPlayers) || (bCoop ? (j && (t != OBJ_COOP)) : (t == OBJ_COOP)))
-			ReleaseObject (short (i));
+			ReleaseObject (int16_t (i));
 		else {
 			playerObjs [nPlayers] = i;
 			startSegs [nPlayers] = objP->info.nSegment;
@@ -265,7 +265,7 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 		}
 	else if (t == OBJ_ROBOT) {
 		if (ROBOTINFO (objP->info.nId).companion && IsMultiGame)
-			ReleaseObject (short (i));		//kill the buddy in netgames
+			ReleaseObject (int16_t (i));		//kill the buddy in netgames
 		}
 #if DBG
 	VerifyObjLists ();
@@ -346,7 +346,7 @@ if (IS_MAC_SHARE && IsMultiGame && (missionManager.nCurrentMission == missionMan
 
 void GameStartRemoveUnusedPlayers (void)
 {
-	int i;
+	int32_t i;
 
 	// 'Remove' the unused players
 
@@ -358,7 +358,7 @@ if (IsMultiGame) {
 	}
 else {		// Note link to above if!!!
 	for (i = 1; i < gameData.multiplayer.nPlayerPositions; i++)
-		ReleaseObject ((short) gameData.multiplayer.players [i].nObject);
+		ReleaseObject ((int16_t) gameData.multiplayer.players [i].nObject);
 	}
 }
 
@@ -385,7 +385,7 @@ OBJECTS [N_LOCALPLAYER].ResetDamage ();
 //------------------------------------------------------------------------------
 
 // Setup player for new game
-void ResetPlayerData (bool bNewGame, bool bSecret, bool bRestore, int nPlayer)
+void ResetPlayerData (bool bNewGame, bool bSecret, bool bRestore, int32_t nPlayer)
 {
 CPlayerData& player = gameData.multiplayer.players [(nPlayer < 0) ? N_LOCALPLAYER : nPlayer];
 
@@ -503,9 +503,9 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 //------------------------------------------------------------------------------
 
 // Setup player for a brand-new ship
-void ResetShipData (bool bRestore, int nPlayer)
+void ResetShipData (bool bRestore, int32_t nPlayer)
 {
-	int	i;
+	int32_t	i;
 
 if (nPlayer < 0)
 	nPlayer = N_LOCALPLAYER;
@@ -622,7 +622,7 @@ if (LOCALPLAYER.timeTotal > I2X (3600)) {
 void SetVertigoRobotFlags (void)
 {
 	CObject	*objP;
-	//int		i;
+	//int32_t		i;
 
 gameData.objs.nVertigoBotFlags = 0;
 FORALL_ROBOT_OBJS (objP, i)
@@ -633,7 +633,7 @@ FORALL_ROBOT_OBJS (objP, i)
 
 //------------------------------------------------------------------------------
 
-char *LevelName (int nLevel)
+char *LevelName (int32_t nLevel)
 {
 return (gameStates.app.bAutoRunMission && *szAutoMission) ? szAutoMission : (nLevel < 0) ?
 		 missionManager.szSecretLevelNames [-nLevel-1] :
@@ -642,7 +642,7 @@ return (gameStates.app.bAutoRunMission && *szAutoMission) ? szAutoMission : (nLe
 
 //------------------------------------------------------------------------------
 
-char *MakeLevelFilename (int nLevel, char *pszFilename, const char *pszFileExt)
+char *MakeLevelFilename (int32_t nLevel, char *pszFilename, const char *pszFileExt)
 {
 CFile::ChangeFilenameExtension (pszFilename, strlwr (LevelName (nLevel)), pszFileExt);
 return pszFilename;
@@ -650,7 +650,7 @@ return pszFilename;
 
 //------------------------------------------------------------------------------
 
-char *LevelSongName (int nLevel)
+char *LevelSongName (int32_t nLevel)
 {
 	char szNoSong [] = "";
 
@@ -659,7 +659,7 @@ return (gameStates.app.bAutoRunMission || !missionManager.nSongs) ? szNoSong : m
 
 //------------------------------------------------------------------------------
 
-void UnloadLevelData (int bRestore, bool bQuit)
+void UnloadLevelData (int32_t bRestore, bool bQuit)
 {
 paletteManager.EnableEffect (true);
 if (bQuit)
@@ -779,9 +779,9 @@ hudIcons.Destroy ();
 
 //------------------------------------------------------------------------------
 
-int LoadModData (char* pszLevelName, int bLoadTextures, int nStage)
+int32_t LoadModData (char* pszLevelName, int32_t bLoadTextures, int32_t nStage)
 {
-	int	nLoadRes = 0;
+	int32_t	nLoadRes = 0;
 	char	szFile [FILENAME_LEN];
 
 // try to read mod files, and load default files if that fails
@@ -901,7 +901,7 @@ return nLoadRes;
 
 //------------------------------------------------------------------------------
 
-static void CleanupBeforeGame (int nLevel, int bRestore)
+static void CleanupBeforeGame (int32_t nLevel, int32_t bRestore)
 {
 /*---*/PrintLog (1, "cleaning up...\n");
 DestroyRenderThreads ();
@@ -965,12 +965,12 @@ PrintLog (-1);
 
 extern char szAutoMission [255];
 
-int LoadLevel (int nLevel, bool bLoadTextures, bool bRestore)
+int32_t LoadLevel (int32_t nLevel, bool bLoadTextures, bool bRestore)
 {
 	char*			pszLevelName;
 	char			szHogName [FILENAME_LEN];
 	CPlayerInfo	savePlayer;
-	int			nRooms, bRetry = 0, nLoadRes, nCurrentLevel = missionManager.nCurrentLevel;
+	int32_t			nRooms, bRetry = 0, nLoadRes, nCurrentLevel = missionManager.nCurrentLevel;
 
 strlwr (pszLevelName = LevelName (nLevel));
 /*---*/PrintLog (1, "loading level '%s'\n", pszLevelName);
@@ -1181,7 +1181,7 @@ return 1;
 extern bool bRegisterBitmaps;
 
 //starts a new game on the given level
-int StartNewGame (int nLevel)
+int32_t StartNewGame (int32_t nLevel)
 {
 gameData.app.SetGameMode (GM_NORMAL);
 SetFunctionMode (FMODE_GAME);
@@ -1208,24 +1208,24 @@ return 1;
 //------------------------------------------------------------------------------
 
 #ifndef _NETWORK_H
-extern int NetworkEndLevelPoll2 (CMenu& menu, int& key, int nCurItem); // network.c
+extern int32_t NetworkEndLevelPoll2 (CMenu& menu, int32_t& key, int32_t nCurItem); // network.c
 #endif
 
 //	Does the bonus scoring.
 //	Call with deadFlag = 1 if player died, but deserves some portion of bonus (only skill points), anyway.
-void DoEndLevelScoreGlitz (int network)
+void DoEndLevelScoreGlitz (int32_t network)
 {
 	#define N_GLITZITEMS 11
 
-	int			nLevelPoints, nSkillPoints, nEnergyPoints, nShieldPoints, nHostagePoints, nAllHostagePoints, nEndGamePoints;
+	int32_t			nLevelPoints, nSkillPoints, nEnergyPoints, nShieldPoints, nHostagePoints, nAllHostagePoints, nEndGamePoints;
 	char			szAllHostages [64];
 	char			szEndGame [64];
 	char			szMenu [N_GLITZITEMS + 1][40];
 	CMenu			m (N_GLITZITEMS + 1);
-	int			i, c;
+	int32_t			i, c;
 	char			szTitle [128];
-	int			bIsLastLevel = 0;
-	int			nMineLevel = 0;
+	int32_t			bIsLastLevel = 0;
+	int32_t			nMineLevel = 0;
 
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
 audio.StopAllChannels ();
@@ -1320,7 +1320,7 @@ void DoEndlevelMenu ()
 //------------------------------------------------------------------------------
 
 //	Returns true if secret level has been destroyed.
-int PSecretLevelDestroyed (void)
+int32_t PSecretLevelDestroyed (void)
 {
 if (gameStates.app.bFirstSecretVisit)
 	return 0;		//	Never been there, can't have been destroyed.
@@ -1333,7 +1333,7 @@ return 1;
 
 void DoSecretMessage (const char *msg)
 {
-	int fMode = gameStates.app.nFunctionMode;
+	int32_t fMode = gameStates.app.nFunctionMode;
 
 StopTime ();
 SetFunctionMode (FMODE_MENU);
@@ -1344,7 +1344,7 @@ StartTime (0);
 
 //	-----------------------------------------------------------------------------------------------------
 
-void InitSecretLevel (int nLevel)
+void InitSecretLevel (int32_t nLevel)
 {
 Assert (missionManager.nCurrentLevel == nLevel);	//make sure level set right
 Assert (gameStates.app.nFunctionMode == FMODE_GAME);
@@ -1374,8 +1374,8 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_
 if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed))
 	saveGameManager.Save (0, 2, 0, SECRETC_FILENAME);
 if (!gameStates.app.bD1Mission && CFile::Exist (SECRETB_FILENAME, gameFolders.user.szSavegames, 0)) {
-	int pwSave = gameData.weapons.nPrimary;
-	int swSave = gameData.weapons.nSecondary;
+	int32_t pwSave = gameData.weapons.nPrimary;
+	int32_t swSave = gameData.weapons.nSecondary;
 
 	ReturningToLevelMessage ();
 	saveGameManager.Load (1, 1, 0, SECRETB_FILENAME);
@@ -1406,7 +1406,7 @@ else { // File doesn't exist, so can't return to base level.  Advance to next on
 //------------------------------------------------------------------------------
 
 //	Called from trigger.cpp when player is exiting via a directed exit
-int ReenterLevel (void)
+int32_t ReenterLevel (void)
 {
 	char nState = missionManager.GetLevelState (missionManager.NextLevel ());
 
@@ -1425,14 +1425,14 @@ else if (CFile::Exist (szFile, gameFolders.var.szCache, 0))
 szFile [0] = '\x02';
 missionManager.LevelStateName (szFile + 1, missionManager.NextLevel ());
 if (!gameStates.app.bD1Mission && (nState > 0) && CFile::Exist (szFile, gameFolders.var.szCache, 0)) {
-	int pwSave = gameData.weapons.nPrimary;
-	int swSave = gameData.weapons.nSecondary;
+	int32_t pwSave = gameData.weapons.nPrimary;
+	int32_t swSave = gameData.weapons.nSecondary;
 	saveGameManager.Load (1, -1, 0, szFile + 1);
 	SetD1Sound ();
 	SetDataVersion (-1);
 	InitPlayerPosition (1);
-	int nMaxPlayers = IsCoopGame ? MAX_COOP_PLAYERS + 1 : MAX_PLAYERS;
-	for (int i = 0; i < nMaxPlayers; i++)
+	int32_t nMaxPlayers = IsCoopGame ? MAX_COOP_PLAYERS + 1 : MAX_PLAYERS;
+	for (int32_t i = 0; i < nMaxPlayers; i++)
 		gameData.multiplayer.bAdjustPowerupCap [i] = true;
 	//LOCALPLAYER.lives--;	//	re-lose the life, LOCALPLAYER.lives got written over in restore.
 	gameData.weapons.nPrimary = pwSave;
@@ -1465,7 +1465,7 @@ if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 
 //------------------------------------------------------------------------------
 //called when the player has finished a level
-void PlayerFinishedLevel (int bSecret)
+void PlayerFinishedLevel (int32_t bSecret)
 {
 	Assert (!bSecret);
 
@@ -1483,7 +1483,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void PlayLevelMovie (const char *pszExt, int nLevel)
+void PlayLevelMovie (const char *pszExt, int32_t nLevel)
 {
 	char szFilename [FILENAME_LEN];
 
@@ -1492,14 +1492,14 @@ movieManager.Play (MakeLevelFilename (nLevel, szFilename, pszExt), MOVIE_OPTIONA
 
 //------------------------------------------------------------------------------
 
-void PlayLevelIntroMovie (int nLevel)
+void PlayLevelIntroMovie (int32_t nLevel)
 {
 PlayLevelMovie (".mvi", nLevel);
 }
 
 //------------------------------------------------------------------------------
 
-void PlayLevelExtroMovie (int nLevel)
+void PlayLevelExtroMovie (int32_t nLevel)
 {
 PlayLevelMovie (".mvx", nLevel);
 }
@@ -1519,7 +1519,7 @@ gameData.render.frame.Activate ("DoEndGame (frame, 1)");
 KeyFlush ();
 if (!IsMultiGame) {
 	if (missionManager.nCurrentMission == (gameStates.app.bD1Mission ? missionManager.nBuiltInMission [1] : missionManager.nBuiltInMission [0])) {
-		int bPlayed = MOVIE_NOT_PLAYED;	//default is not bPlayed
+		int32_t bPlayed = MOVIE_NOT_PLAYED;	//default is not bPlayed
 
 		if (!gameStates.app.bD1Mission) {
 			subTitles.Init (ENDMOVIE ".tex");
@@ -1580,9 +1580,9 @@ longjmp (gameExitPoint, 0);		// Exit out of game loop
 //called to go to the next level (if there is one)
 //if bSecret is true, advance to secret level, else next Normal one
 //	Return true if game over.
-void AdvanceLevel (int bSecret, int bFromSecret)
+void AdvanceLevel (int32_t bSecret, int32_t bFromSecret)
 {
-	int result;
+	int32_t result;
 
 gameStates.app.bBetweenLevels = 1;
 Assert (!bSecret);
@@ -1659,7 +1659,7 @@ if (IsMultiGame)
 StopTime ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 gameData.render.frame.Activate ("ReturningToLevelMessage (frame)");
-int nFunctionMode = gameStates.app.nFunctionMode;
+int32_t nFunctionMode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 if (missionManager.nEntryLevel < 0)
 	sprintf (msg, TXT_SECRET_LEVEL_RETURN);
@@ -1683,7 +1683,7 @@ if (IsMultiGame)
 StopTime ();
 SetScreenMode (SCREEN_MENU);		//go into menu mode
 gameData.render.frame.Activate ("AdvancingToLevelMessage (frame)");
-int nFunctionMode = gameStates.app.nFunctionMode;
+int32_t nFunctionMode = gameStates.app.nFunctionMode;
 SetFunctionMode (FMODE_MENU);
 sprintf (msg, "Base level destroyed.\nAdvancing to level %i", missionManager.nEntryLevel + 1);
 backgroundManager.SetShadow (false);
@@ -1694,9 +1694,9 @@ StartTime (0);
 
 //	-----------------------------------------------------------------------------------
 //	Set the player's position from the globals gameData.segs.secret.nReturnSegment and gameData.segs.secret.returnOrient.
-void SetPosFromReturnSegment (int bRelink)
+void SetPosFromReturnSegment (int32_t bRelink)
 {
-	int	nPlayerObj = LOCALPLAYER.nObject;
+	int32_t	nPlayerObj = LOCALPLAYER.nObject;
 
 OBJECTS [nPlayerObj].info.position.vPos = SEGMENTS [gameData.segs.secret.nReturnSegment].Center ();
 if (bRelink)
@@ -1707,7 +1707,7 @@ OBJECTS [nPlayerObj].info.position.mOrient = gameData.segs.secret.returnOrient;
 
 //------------------------------------------------------------------------------
 //called when the player is starting a level (new game or new ship)
-void StartLevel (int nLevel, int bRandom)
+void StartLevel (int32_t nLevel, int32_t bRandom)
 {
 if (nLevel == 0x7fffffff)
 	PrintLog (1, "restarting level\n");
@@ -1757,9 +1757,9 @@ PrintLog (-1);
 //called when the player is starting a new level for Normal game mode and restore state
 //	bSecret set if came from a secret level
 
-int PrepareLevel (int nLevel, bool bLoadTextures, bool bSecret, bool bRestore, bool bNewGame)
+int32_t PrepareLevel (int32_t nLevel, bool bLoadTextures, bool bSecret, bool bRestore, bool bNewGame)
 {
-	int funcRes;
+	int32_t funcRes;
 
 gameStates.multi.bTryAutoDL = 1;
 songManager.LoadModPlaylist ();
@@ -1783,7 +1783,7 @@ SetWarnFunc (ShowInGameWarning);
 try {
 	funcRes = LoadLevel (nLevel, bLoadTextures, bRestore);
 	}
-catch (int e) {
+catch (int32_t e) {
 	if (e == EX_OUT_OF_MEMORY)
 		Warning ("Couldn't load the level:\nNot enough memory.");
 	else if (e == EX_IO_ERROR)
@@ -1848,10 +1848,10 @@ Assert (gameStates.app.nFunctionMode == FMODE_GAME);
 HUDClearMessages ();
 automap.ClearVisited ();
 
-for (int i = 0; i < MAX_NUM_NET_PLAYERS; i++)
+for (int32_t i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	ResetPlayerData (bNewGame, bSecret, bRestore, i);
 if (IsCoopGame && networkData.nJoinState) {
-	for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
+	for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++)
 		gameData.multiplayer.players [i].flags |= netGame.PlayerFlags () [i];
 	}
 if (IsMultiGame)
@@ -1939,7 +1939,7 @@ if (gameStates.app.bD1Mission) {
 
 //------------------------------------------------------------------------------
 
-static int PrepareSecretLevel (int nLevel, bool bLoadTextures)
+static int32_t PrepareSecretLevel (int32_t nLevel, bool bLoadTextures)
 {
 	CMenu	menu (1);
 
@@ -1990,7 +1990,7 @@ if (gameStates.app.bFirstSecretVisit || (gameData.demo.nState == ND_STATE_PLAYBA
 	}
 else {
 	if (CFile::Exist (SECRETC_FILENAME, gameFolders.user.szSavegames, 0)) {
-		int	pw_save, sw_save, nCurrentLevel;
+		int32_t	pw_save, sw_save, nCurrentLevel;
 
 		pw_save = gameData.weapons.nPrimary;
 		sw_save = gameData.weapons.nSecondary;
@@ -2030,7 +2030,7 @@ return 1;
 //	Do a savegame.
 void EnterSecretLevel (void)
 {
-	int	i;
+	int32_t	i;
 
 Assert (!IsMultiGame);
 missionManager.nEntryLevel = missionManager.nCurrentLevel;
@@ -2056,7 +2056,7 @@ PrepareSecretLevel (missionManager.NextLevel (), true);
 
 //------------------------------------------------------------------------------
 
-void CObject::Bash (ubyte nId)
+void CObject::Bash (uint8_t nId)
 {
 gameData.multiplayer.powerupsInMine [info.nId] =
 gameData.multiplayer.maxPowerupsAllowed [info.nId] = 0;
@@ -2095,7 +2095,7 @@ if (bBash)
 
 void FilterObjectsFromLevel (void)
 {
-  //int 		i;
+  //int32_t 		i;
 	CObject	*objP;
 
 FORALL_POWERUP_OBJS (objP, i)
@@ -2105,7 +2105,7 @@ FORALL_POWERUP_OBJS (objP, i)
 //------------------------------------------------------------------------------
 
 struct tIntroMovieInfo {
-	int	nLevel;
+	int32_t	nLevel;
 	char	szMovieName [FILENAME_LEN];
 } szIntroMovies [] = {{ 1,"pla"},
 							 { 5,"plb"},
@@ -2117,11 +2117,11 @@ struct tIntroMovieInfo {
 
 #define NUM_INTRO_MOVIES (sizeof (szIntroMovies) / sizeof (*szIntroMovies))
 
-void ShowLevelIntro (int nLevel)
+void ShowLevelIntro (int32_t nLevel)
 {
 //if shareware, show a briefing?
 if (!IsMultiGame) {
-	uint i;
+	uint32_t i;
 
 	PlayLevelIntroMovie (nLevel);
 	if (!gameStates.app.bD1Mission && (missionManager.nCurrentMission == missionManager.nBuiltInMission [0])) {
@@ -2147,7 +2147,7 @@ if (!IsMultiGame) {
 					}
 				}
 			if (movieManager.m_nRobots) {
-				int hires_save = gameStates.menus.bHiresAvailable;
+				int32_t hires_save = gameStates.menus.bHiresAvailable;
 				if (movieManager.m_nRobots == 1) {		//lowres only
 					gameStates.menus.bHiresAvailable = 0;		//pretend we can't do highres
 					if (hires_save != gameStates.menus.bHiresAvailable)
@@ -2182,9 +2182,9 @@ if (!IsMultiGame) {
 // to reach before (in other words: No secret exits yet to come lead to
 // secret levels he's been to before), so set the proper flag.
 
-void MaybeSetFirstSecretVisit (int nLevel)
+void MaybeSetFirstSecretVisit (int32_t nLevel)
 {
-for (int i = 0; i < missionManager.nSecretLevels; i++) {
+for (int32_t i = 0; i < missionManager.nSecretLevels; i++) {
 	if (missionManager.secretLevelTable [i] == nLevel) {
 		gameStates.app.bFirstSecretVisit = 1;
 		}
@@ -2194,7 +2194,7 @@ for (int i = 0; i < missionManager.nSecretLevels; i++) {
 //------------------------------------------------------------------------------
 //called when the player is starting a new level for Normal game model
 //	bSecret if came from a secret level
-int StartNewLevel (int nLevel, bool bNewGame)
+int32_t StartNewLevel (int32_t nLevel, bool bNewGame)
 {
 	gameStates.app.xThisLevelTime = 0;
 
@@ -2221,13 +2221,13 @@ return 1;
 // Sort descending
 
 typedef struct tSpawnTable {
-	int	i;
+	int32_t	i;
 	fix	xDist;
 	} tSpawnTable;
 
-void SortSpawnTable (tSpawnTable *spawnTable, int left, int right)
+void SortSpawnTable (tSpawnTable *spawnTable, int32_t left, int32_t right)
 {
-	int	l = left,
+	int32_t	l = left,
 			r = right;
 	fix	m = spawnTable [(l + r) / 2].xDist;
 
@@ -2254,7 +2254,7 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-int GetSegmentTeam (int nSegType)
+int32_t GetSegmentTeam (int32_t nSegType)
 {
 switch (nSegType) {
 	case SEGMENT_FUNC_GOAL_RED:
@@ -2270,14 +2270,14 @@ switch (nSegType) {
 
 //------------------------------------------------------------------------------
 
-int GetRandomPlayerPosition (int nPlayer)
+int32_t GetRandomPlayerPosition (int32_t nPlayer)
 {
 	CObject		*objP;
 	tSpawnTable	spawnTable [MAX_PLAYERS];
-	int			nSpawnPos = 0;
-	int			nSpawnSegs = 0;
-	int			nTeam = IsTeamGame ? GetTeam (nPlayer) + 1 : 3;
-	int			i, j;
+	int32_t			nSpawnPos = 0;
+	int32_t			nSpawnSegs = 0;
+	int32_t			nTeam = IsTeamGame ? GetTeam (nPlayer) + 1 : 3;
+	int32_t			i, j;
 	fix			xDist;
 
 // Put the indices of all spawn point in the spawn table that are sufficiently far away from any player in the match
@@ -2316,9 +2316,9 @@ return spawnTable [(j > 1) ? RandShort () % j : 0].i;
 
 //------------------------------------------------------------------------------
 //initialize the player CObject position & orientation (at start of game, or new ship)
-void InitPlayerPosition (int bRandom)
+void InitPlayerPosition (int32_t bRandom)
 {
-	int nSpawnPos = 0;
+	int32_t nSpawnPos = 0;
 
 if (!(IsMultiGame || IsCoopGame)) // If not deathmatch
 	nSpawnPos = N_LOCALPLAYER;
@@ -2344,7 +2344,7 @@ controls.ResetCruise ();
 fix RobotDefaultShield (CObject *objP)
 {
 	tRobotInfo*	botInfoP;
-	int			objId, i;
+	int32_t			objId, i;
 	fix			shield;
 
 if (objP->info.nType != OBJ_ROBOT)
@@ -2397,7 +2397,7 @@ objP->SetShield (RobotDefaultShield (objP));
 //	This function should be called at level load time.
 void CopyDefaultsToRobotsAll (void)
 {
-	//int		i;
+	//int32_t		i;
 	CObject	*objP;
 
 FORALL_ROBOT_OBJS (objP, i)
@@ -2412,7 +2412,7 @@ void DoPlayerDead (void)
 if (gameStates.menus.nInMenu)
 	return;
 
-int bSecret = (missionManager.nCurrentLevel < 0);
+int32_t bSecret = (missionManager.nCurrentLevel < 0);
 
 gameStates.app.bGameRunning = 0;
 StopTriggeredSounds ();
@@ -2421,7 +2421,7 @@ DeadPlayerEnd ();		//terminate death sequence (if playing)
 paletteManager.ResetEffect ();
 if (IsCoopGame && gameStates.app.bHaveExtraGameInfo [1])
 	LOCALPLAYER.score =
-	(LOCALPLAYER.score * (100 - nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty])) / 100;
+	(LOCALPLAYER.score * (100 - nCoopPenalties [(int32_t) extraGameInfo [1].nCoopPenalty])) / 100;
 if (gameStates.multi.bPlayerIsTyping [N_LOCALPLAYER] && IsMultiGame)
 	MultiSendMsgQuit ();
 gameStates.entropy.bConquering = 0;

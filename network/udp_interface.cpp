@@ -114,7 +114,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 /* Packet format: first is the nSignature { 0xD1,'X' } which can be also
  * { 'D','1','X','u','d','p'} for old-fashioned packets.
  * Then follows virtual socket number (as changed during PgDOWN/PgUP)
- * in network-byte-order as 2 bytes (ushort). After such 4/8 byte header
+ * in network-byte-order as 2 bytes (uint16_t). After such 4/8 byte header
  * follows raw data as communicated with D1X network core functions.
  */
 
@@ -152,19 +152,19 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 
 //------------------------------------------------------------------------------
 
-static int nOpenSockets = 0;
-static const int val_one=1;
-static ubyte qhbuf [6];
+static int32_t nOpenSockets = 0;
+static const int32_t val_one=1;
+static uint8_t qhbuf [6];
 
-//ubyte networkData.localAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
-//ubyte networkData.serverAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
+//uint8_t networkData.localAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
+//uint8_t networkData.serverAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
 
 //------------------------------------------------------------------------------
 // OUR port. Can be changed by "@X[+=]..." argument (X is the shift value)
 
-static int HaveEmptyAddress (void)
+static int32_t HaveEmptyAddress (void)
 {
-for (int i = 0; i < 10; i++)
+for (int32_t i = 0; i < 10; i++)
 	if (ipx_MyAddress [i])
 		return 0;
 return 1;
@@ -174,7 +174,7 @@ return 1;
 
 static char szFailMsg [1024];
 
-static int _CDECL_ Fail (const char *fmt, ...)
+static int32_t _CDECL_ Fail (const char *fmt, ...)
 {
    va_list  argP;
 
@@ -194,9 +194,9 @@ return 1;
 #if UDP_SAFEMODE
 
 typedef struct tPacketProps {
-	int						id;
-	ubyte						*data;
-	short						len;
+	int32_t						id;
+	uint8_t						*data;
+	int16_t						len;
 	time_t					timeStamp;
 } tPacketProps;
 
@@ -207,12 +207,12 @@ class CClient {
 		struct sockaddr_in	addr;
 #if UDP_SAFEMODE
 		tPacketProps			packetProps [MAX_BUF_PACKETS];
-		ubyte						packetBuf [PACKET_BUF_SIZE];
-		int						nSent;
-		int						nReceived;
-		short						firstPacket;
-		short						numPackets;
-		int						fd;
+		uint8_t						packetBuf [PACKET_BUF_SIZE];
+		int32_t						nSent;
+		int32_t						nReceived;
+		int16_t						firstPacket;
+		int16_t						numPackets;
+		int32_t						fd;
 		char						bSafeMode;		//safe mode a peer of the local CPlayerData uses (unknown: -1)
 		char						bOurSafeMode;	//our safe mode as that peer knows it (unknown: -1)
 		char						modeCountdown;
@@ -222,30 +222,30 @@ class CClient {
 class CClientManager {
 	private:
 		CArray<CClient>				m_clients;
-		uint								m_nClients;
+		uint32_t								m_nClients;
 		struct sockaddr_in			m_masks [MAX_BRDINTERFACES];
-		uint								m_nMasks;
+		uint32_t								m_nMasks;
 		CArray<struct sockaddr_in>	m_broads;
-		uint								m_nBroads;
+		uint32_t								m_nBroads;
 
 	public:
 		CClientManager () { Init (); }
 		void Init (void);
 		void Destroy (void);
 		void Unify (void);
-		int Find (struct sockaddr_in *destAddr);
-		int Add (struct sockaddr_in *destAddr);
-		int BuildInterfaceList (void);
-		int CheckClientSize (void);
-		int CheckBroadSize (void);
+		int32_t Find (struct sockaddr_in *destAddr);
+		int32_t Add (struct sockaddr_in *destAddr);
+		int32_t BuildInterfaceList (void);
+		int32_t CheckClientSize (void);
+		int32_t CheckBroadSize (void);
 
-		inline int ClientCount (void) { return m_nClients; }
-		inline int MaskCount (void) { return m_nMasks; }
-		inline CClient& Client (uint i) { return m_clients [i]; }
+		inline int32_t ClientCount (void) { return m_nClients; }
+		inline int32_t MaskCount (void) { return m_nMasks; }
+		inline CClient& Client (uint32_t i) { return m_clients [i]; }
 
 	private:
-		int CmpAddrs (struct sockaddr_in *a, struct sockaddr_in *b);
-		int CmpAddrsMasked (struct sockaddr_in *a, struct sockaddr_in *b, struct sockaddr_in *m);
+		int32_t CmpAddrs (struct sockaddr_in *a, struct sockaddr_in *b);
+		int32_t CmpAddrsMasked (struct sockaddr_in *a, struct sockaddr_in *b, struct sockaddr_in *m);
 };
 
 CClientManager clientManager;
@@ -263,7 +263,7 @@ CheckClientSize ();
 // We'll check whether the "m_clients" array of destination addresses is now
 // full and so needs expanding.
 
-int CClientManager::CheckClientSize (void)
+int32_t CClientManager::CheckClientSize (void)
 {
 if (m_nClients < m_clients.Length ())
 	return 1;
@@ -273,7 +273,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CClientManager::CheckBroadSize (void)
+int32_t CClientManager::CheckBroadSize (void)
 {
 if (m_nBroads < m_broads.Length ())
 	return 1;
@@ -283,7 +283,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CClientManager::CmpAddrs (struct sockaddr_in *a, struct sockaddr_in *b)
+int32_t CClientManager::CmpAddrs (struct sockaddr_in *a, struct sockaddr_in *b)
 {
 if (a->sin_addr.s_addr != b->sin_addr.s_addr)
 	return (a->sin_port != b->sin_port) ? 3 : 2;
@@ -292,7 +292,7 @@ return (extraGameInfo [0].bCheckUDPPort && (a->sin_port != b->sin_port)) ? 1 : 0
 
 //------------------------------------------------------------------------------
 
-int CClientManager::CmpAddrsMasked (struct sockaddr_in *a, struct sockaddr_in *b, struct sockaddr_in *m)
+int32_t CClientManager::CmpAddrsMasked (struct sockaddr_in *a, struct sockaddr_in *b, struct sockaddr_in *m)
 {
 if ((a->sin_addr.s_addr & m->sin_addr.s_addr) != (b->sin_addr.s_addr & m->sin_addr.s_addr))
 	return (a->sin_port != b->sin_port) ? 3 : 2;
@@ -301,9 +301,9 @@ return (a->sin_port != b->sin_port) ? 1 : 0;
 
 //------------------------------------------------------------------------------
 
-int CClientManager::Find (struct sockaddr_in *destAddr)
+int32_t CClientManager::Find (struct sockaddr_in *destAddr)
 {
-for (uint i = 0; i < m_nClients; i++)
+for (uint32_t i = 0; i < m_nClients; i++)
 	if ((i < m_nMasks)
 		 ? !CmpAddrsMasked (destAddr, &m_clients [i].addr, m_masks + i)
 		 : !CmpAddrs (destAddr, &m_clients [i].addr))
@@ -313,9 +313,9 @@ return m_nClients;
 
 //------------------------------------------------------------------------------
 
-int CClientManager::Add (struct sockaddr_in *destAddr)
+int32_t CClientManager::Add (struct sockaddr_in *destAddr)
 {
-	uint		h, i;
+	uint32_t		h, i;
 	CClient*	clientP;
 
 if (!destAddr->sin_addr.s_addr)
@@ -369,7 +369,7 @@ m_nMasks = 0;
 
 #ifdef _WIN32
 
-int CClientManager::BuildInterfaceList (void)
+int32_t CClientManager::BuildInterfaceList (void)
 {
 #if 0
 	unsigned					i, j;
@@ -431,7 +431,7 @@ return m_nBroads;
 
 #elif defined(__macosx__) //----------------------------------------------------
 
-int CClientManager::BuildInterfaceList (void)
+int32_t CClientManager::BuildInterfaceList (void)
 {
 	unsigned 				j;
 	struct sockaddr_in	*sinp, *sinmp;
@@ -478,15 +478,15 @@ return m_nBroads;
 
 #else // !__maxosx__ -----------------------------------------------------------
 
-static int _ioRes;
+static int32_t _ioRes;
 
 #define	_IOCTL(_s,_f,_c)	((_ioRes = ioctl (_s, _f, _c)) != 0)
 
-int CClientManager::BuildInterfaceList (void)
+int32_t CClientManager::BuildInterfaceList (void)
 {
 	unsigned					i, cnt = MAX_BRDINTERFACES;
 	struct ifconf 			ifconf;
-	int 						sock;
+	int32_t 						sock;
 	unsigned 				j;
 	struct sockaddr_in	*sinp, *sinmp;
 
@@ -547,7 +547,7 @@ return m_nBroads;
 
 void CClientManager::Unify (void)
 {
-	uint i, s, d = 0;
+	uint32_t i, s, d = 0;
 
 for (s = 0; s < m_nBroads; s++) {
 	for (i = 0; i < s; i++)
@@ -566,12 +566,12 @@ m_nBroads = d;
 
 static void PortShift (const char *pszPort)
 {
-ushort srcPort = 0;
-int port = atoi (pszPort);
+uint16_t srcPort = 0;
+int32_t port = atoi (pszPort);
 if ((port < -PORTSHIFT_TOLERANCE) || (port > +PORTSHIFT_TOLERANCE))
 	PrintLog (0, "Invalid PortShift in \"%s\", tolerance is +/-%d\n", pszPort, PORTSHIFT_TOLERANCE);
 else
-	srcPort = (ushort) htons (ushort (port));
+	srcPort = (uint16_t) htons (uint16_t (port));
 memcpy (qhbuf + 4, &srcPort, 2);
 }
 
@@ -595,10 +595,10 @@ hints->ai_next = NULL;
 }
 
 
-ubyte *QueryHost (char *buf)
+uint8_t *QueryHost (char *buf)
 {
    struct addrinfo* info, * ip, hints;
-	int error, bufLen = int (strlen (buf));
+	int32_t error, bufLen = int32_t (strlen (buf));
 
 	char*	s;
 	char	c = 0;
@@ -643,7 +643,7 @@ return qhbuf;
 
 #else //------------------------------------------------------------------------
 
-ubyte *QueryHost (char *buf)
+uint8_t *QueryHost (char *buf)
 {
 	struct hostent *he;
 	char*	s;
@@ -682,13 +682,13 @@ return qhbuf;
 
 #if 0
 
-static void DumpRawAddr (ubyte *vec)
+static void DumpRawAddr (uint8_t *vec)
 {
-short port;
+int16_t port;
 
 PrintLog (0, "[%u.%u.%u.%u]", vec[0], vec[1], vec[2], vec[3]);
 console.printf (0, "[%u.%u.%u.%u]", vec[0], vec[1], vec[2], vec[3]);
-port=(signed short)ntohs (*reinterpret_cast<ushort*> (vec+4));
+port=(signed int16_t)ntohs (*reinterpret_cast<uint16_t*> (vec+4));
 if (port) {
 	PrintLog (0, ":%+d", port);
 	console.printf (0, ":%+d", port);
@@ -703,10 +703,10 @@ PrintLog (-1, "\n");
 #if 0
 static void dumpaddr(struct sockaddr_in *sin)
 {
-ushort srcPort;
+uint16_t srcPort;
 
 memcpy(qhbuf, &sin->sin_addr, 4);
-srcPort = htons ((ushort) (ntohs (sin->sin_port) - UDP_BASEPORT));
+srcPort = htons ((uint16_t) (ntohs (sin->sin_port) - UDP_BASEPORT));
 memcpy(qhbuf + 4, &srcPort, 2);
 DumpRawAddr (qhbuf);
 }
@@ -714,7 +714,7 @@ DumpRawAddr (qhbuf);
 //------------------------------------------------------------------------------
 // Startup... Uninteresting parsing...
 
-int UDPGetMyAddress (void)
+int32_t UDPGetMyAddress (void)
 {
 	char			buf [256];
 
@@ -733,16 +733,16 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static int UDPOpenSocket (ipx_socket_t *sk, int port)
+static int32_t UDPOpenSocket (ipx_socket_t *sk, int32_t port)
 {
 	struct sockaddr_in sin;
 #ifdef _WIN32
 	u_long sockBlockMode = 1;	//non blocking
 #endif
 #if 0 //for testing only
-	static ubyte inAddrLoopBack [4] = {127,0,0,1};
+	static uint8_t inAddrLoopBack [4] = {127,0,0,1};
 #endif
-	ushort	nServerPort = mpParams.udpPorts [0] + networkData.nPortOffset,
+	uint16_t	nServerPort = mpParams.udpPorts [0] + networkData.nPortOffset,
 				nLocalPort = gameStates.multi.bServer [0] ? nServerPort : mpParams.udpPorts [1];
 
 gameStates.multi.bHaveLocalAddress = 0;
@@ -755,7 +755,7 @@ if (!gameStates.multi.bServer [0]) {		//set up server address and add it to dest
 		FAIL ("error allocating client table");
 	sin.sin_family = AF_INET;
 
-	ushort nPort = htons (nServerPort);
+	uint16_t nPort = htons (nServerPort);
 	memcpy (networkData.serverAddress + 8, &nPort, sizeof (nPort));
 	memcpy (&sin.sin_addr.s_addr, networkData.serverAddress + 4, 4);
 	sin.sin_port = nPort;
@@ -773,7 +773,7 @@ ioctlsocket (sk->fd, FIONBIO, &sockBlockMode);
 #else
 fcntl (sk->fd, F_SETFL, O_NONBLOCK);
 #endif
-*(reinterpret_cast<ushort*> (ipx_MyAddress + 8)) = nLocalPort;
+*(reinterpret_cast<uint16_t*> (ipx_MyAddress + 8)) = nLocalPort;
 #ifdef UDP_BROADCAST
 if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*> (&val_one), sizeof (val_one))) {
 #ifdef _WIN32
@@ -788,7 +788,7 @@ if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*> (&val_
 if (gameStates.multi.bServer [0] || mpParams.udpPorts [1]) {
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = htonl (INADDR_ANY); //networkData.serverAddress + 4);
-	sin.sin_port = htons (ushort (nLocalPort));
+	sin.sin_port = htons (uint16_t (nLocalPort));
 	if (bind (sk->fd, reinterpret_cast<struct sockaddr*> (&sin), sizeof (sin))) {
 #ifdef _WIN32
 		closesocket (sk->fd);
@@ -834,9 +834,9 @@ PrintLog (-1);
 #define SAFEMODE_ID			"D2XUDP:SAFEMODE:??"
 #define SAFEMODE_ID_LEN		(sizeof (SAFEMODE_ID) - 1)
 
-int ReportSafeMode (CClient *clientP)
+int32_t ReportSafeMode (CClient *clientP)
 {
-	ubyte buf [40];
+	uint8_t buf [40];
 
 memcpy (buf, SAFEMODE_ID, SAFEMODE_ID_LEN);
 buf [SAFEMODE_ID_LEN - 2] = extraGameInfo [0].bSafeUDP;
@@ -850,8 +850,8 @@ return sendto (clientP->fd, buf, SAFEMODE_ID_LEN, 0, reinterpret_cast<struct soc
 static void QuerySafeMode (CClient *clientP)
 {
 if ((clientP->bSafeMode < 0) && (!--(clientP->modeCountdown))) {
-	ubyte buf [40];
-	int i;
+	uint8_t buf [40];
+	int32_t i;
 
 	memcpy (buf, SAFEMODE_ID, SAFEMODE_ID_LEN);
 	i = sendto (clientP->fd, buf, SAFEMODE_ID_LEN, 0, reinterpret_cast<struct sockaddr*> (&clientP->addr), sizeof (clientP->addr));
@@ -861,9 +861,9 @@ if ((clientP->bSafeMode < 0) && (!--(clientP->modeCountdown))) {
 
 //------------------------------------------------------------------------------
 
-static int EvalSafeMode (ipx_socket_t *s, struct sockaddr_in *fromAddr, ubyte *buf)
+static int32_t EvalSafeMode (ipx_socket_t *s, struct sockaddr_in *fromAddr, uint8_t *buf)
 {
-	int				i, bReport = 0;
+	int32_t				i, bReport = 0;
 	CClient	*clientP;
 
 if (strncmp (buf, SAFEMODE_ID, SAFEMODE_ID_LEN - 2))
@@ -896,21 +896,21 @@ return 1;
 // it to IP address/port as retrieved from IPX address. Otherwise (broadcast)
 // we'll repeat the same data to each host in our broadcasting list.
 
-static int UDPSendPacket
-	(ipx_socket_t *mysock, IPXPacket_t *ipxHeader, ubyte *data, int dataLen)
+static int32_t UDPSendPacket
+	(ipx_socket_t *mysock, IPXPacket_t *ipxHeader, uint8_t *data, int32_t dataLen)
 {
  	struct sockaddr_in destAddr, *dest;
-	int				iDest, nClients, nUdpRes, extraDataLen = 0, bBroadcast = 0;
+	int32_t				iDest, nClients, nUdpRes, extraDataLen = 0, bBroadcast = 0;
 	CClient*			clientP;
 #if UDP_SAFEMODE
 	tPacketProps	*ppp;
-	int				j;
+	int32_t				j;
 #endif
-	static ubyte	buf [MAX_PACKET_SIZE];
-	ubyte*			bufP = buf;
+	static uint8_t	buf [MAX_PACKET_SIZE];
+	uint8_t*			bufP = buf;
 	union {
-		ubyte		b [2];
-		ushort	i;
+		uint8_t		b [2];
+		uint16_t	i;
 	} ushortCast;
 
 #ifdef UDPDEBUG
@@ -967,7 +967,7 @@ for (nClients = clientManager.ClientCount (); iDest < nClients; iDest++) {
 #if UDP_SAFEMODE
 			}
 		else {
-			int bResend = 0;
+			int32_t bResend = 0;
 			memcpy (buf + 16 + dataLen, &dest->sin_addr, 4);
 			memcpy (buf + 20 + dataLen, &dest->sin_port, 2);
 			extraDataLen = 22;
@@ -989,7 +989,7 @@ for (nClients = clientManager.ClientCount (); iDest < nClients; iDest++) {
 				ppp = clientP->packetProps + j;
 				ppp->len = dataLen + extraDataLen;
 				ppp->data = clientP->packetBuf + j * MAX_PACKET_SIZE;
-				*(reinterpret_cast<int*> (buf + dataLen + 8)) = INTEL_INT (clientP->nSent);
+				*(reinterpret_cast<int32_t*> (buf + dataLen + 8)) = INTEL_INT (clientP->nSent);
 				memcpy (buf + dataLen + 12, "SAFE", 4);
 				memcpy (ppp->data, buf, ppp->len);
 				ppp->id = clientP->nSent++;
@@ -1011,7 +1011,7 @@ for (nClients = clientManager.ClientCount (); iDest < nClients; iDest++) {
 	nUdpRes = sendto (mysock->fd, reinterpret_cast<const char*> (bufP), dataLen + extraDataLen, 0, reinterpret_cast<struct sockaddr*> (dest), sizeof (*dest));
 #if DBG && defined (_WIN32)
 	if (!gameStates.multi.bTrackerCall && (nUdpRes < extraDataLen + 8))
-		int h = WSAGetLastError ();
+		int32_t h = WSAGetLastError ();
 #endif
 	if (bBroadcast <= 0) {
 #ifdef UDPDEBUG
@@ -1035,15 +1035,15 @@ return dataLen;
 #define RESEND_ID			"D2XUDP:RESEND:"
 #define RESEND_ID_LEN	(sizeof (RESEND_ID) - 1)
 
-static void RequestResend (struct CClient *clientP, int nLastPacket)
+static void RequestResend (struct CClient *clientP, int32_t nLastPacket)
 {
-	ubyte buf [40];
-	int i;
-	static int h = 0;
+	uint8_t buf [40];
+	int32_t i;
+	static int32_t h = 0;
 
 memcpy (buf, RESEND_ID, RESEND_ID_LEN);
-*(reinterpret_cast<int*> (buf + RESEND_ID_LEN)) = INTEL_INT (clientP->nReceived);
-*(reinterpret_cast<int*> (buf + RESEND_ID_LEN + 4)) = INTEL_INT (nLastPacket);
+*(reinterpret_cast<int32_t*> (buf + RESEND_ID_LEN)) = INTEL_INT (clientP->nReceived);
+*(reinterpret_cast<int32_t*> (buf + RESEND_ID_LEN + 4)) = INTEL_INT (nLastPacket);
 i = sendto (clientP->fd, buf, RESEND_ID_LEN + 8, 0, reinterpret_cast<struct sockaddr*> (&clientP->addr), sizeof (clientP->addr));
 }
 
@@ -1052,21 +1052,21 @@ i = sendto (clientP->fd, buf, RESEND_ID_LEN + 8, 0, reinterpret_cast<struct sock
 #define FORGET_ID			"D2XUDP:FORGET:"
 #define FORGET_ID_LEN	(sizeof (FORGET_ID) - 1)
 
-int DropData (CClient *clientP, int nDrop)
+int32_t DropData (CClient *clientP, int32_t nDrop)
 {
-	ubyte	buf [40];
+	uint8_t	buf [40];
 
 memcpy (buf, FORGET_ID, FORGET_ID_LEN);
-*(reinterpret_cast<int*> (buf + FORGET_ID_LEN)) = INTEL_INT (nDrop);
+*(reinterpret_cast<int32_t*> (buf + FORGET_ID_LEN)) = INTEL_INT (nDrop);
 sendto (clientP->fd, buf, FORGET_ID_LEN + 4, 0, reinterpret_cast<struct sockaddr*> (&clientP->addr), sizeof (clientP->addr));
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int ForgetData (struct sockaddr_in *fromAddr, ubyte *buf)
+int32_t ForgetData (struct sockaddr_in *fromAddr, uint8_t *buf)
 {
-	int				i, nDrop;
+	int32_t				i, nDrop;
 	CClient	*clientP;
 
 if (!extraGameInfo [0].bSafeUDP)
@@ -1076,16 +1076,16 @@ if (strncmp (buf, FORGET_ID, FORGET_ID_LEN))
 if (clientManager.ClientCount () <= (i = clientManager.Find (fromAddr)))
 	return 1;
 clientP = m_clients + i;
-nDrop = *(reinterpret_cast<int*> (buf + FORGET_ID_LEN));
+nDrop = *(reinterpret_cast<int32_t*> (buf + FORGET_ID_LEN));
 clientP->nReceived = INTEL_INT (nDrop);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int ResendData (struct sockaddr_in *fromAddr, ubyte *buf)
+int32_t ResendData (struct sockaddr_in *fromAddr, uint8_t *buf)
 {
-	int				i, j, nFirst, nLast, nDrop;
+	int32_t				i, j, nFirst, nLast, nDrop;
 	CClient	*clientP;
 	tPacketProps	*ppp;
 	time_t			t;
@@ -1096,9 +1096,9 @@ if (strncmp (buf, RESEND_ID, sizeof (RESEND_ID) - 1))
 	return 0;
 if (clientManager.ClientCount () <= (i = clientManager.Find (fromAddr)))
 	return 1;
-nFirst = *(reinterpret_cast<int*> (buf + RESEND_ID_LEN));
+nFirst = *(reinterpret_cast<int32_t*> (buf + RESEND_ID_LEN));
 nFirst = INTEL_INT (nFirst);
-nLast = *(reinterpret_cast<int*> (buf + RESEND_ID_LEN + 4));
+nLast = *(reinterpret_cast<int32_t*> (buf + RESEND_ID_LEN + 4));
 nLast = INTEL_INT (nLast);
 clientP = m_clients + i;
 if (!clientP->numPackets)
@@ -1136,19 +1136,19 @@ return 1;
 //------------------------------------------------------------------------------
 // Here we will receive a new packet and place it in the buffer passed.
 
-static int UDPReceivePacket (ipx_socket_t *s, ubyte *outBuf, int outBufSize, CPacketOrigin *rd)
+static int32_t UDPReceivePacket (ipx_socket_t *s, uint8_t *outBuf, int32_t outBufSize, CPacketOrigin *rd)
 {
 	struct sockaddr_in	fromAddr;
-	int						i, dataLen, bTracker;
+	int32_t						i, dataLen, bTracker;
 #ifdef _WIN32
-	int						fromAddrSize = sizeof (fromAddr);
+	int32_t						fromAddrSize = sizeof (fromAddr);
 #else
 	socklen_t				fromAddrSize = sizeof (fromAddr);
 #endif
-	ushort					srcPort;
+	uint16_t					srcPort;
 #if UDP_SAFEMODE
 	CClient*					clientP;
-	int						packetId = -1, bSafeMode = 0;
+	int32_t						packetId = -1, bSafeMode = 0;
 #endif
 #if DBG
 	//char						szIP [30];
@@ -1157,11 +1157,11 @@ static int UDPReceivePacket (ipx_socket_t *s, ubyte *outBuf, int outBufSize, CPa
 dataLen = recvfrom (s->fd, reinterpret_cast<char*> (outBuf), outBufSize, 0, reinterpret_cast<struct sockaddr*> (&fromAddr), &fromAddrSize);
 if (0 > dataLen) {
 #if DBG && defined (_WIN32)
-	int error = WSAGetLastError ();
+	int32_t error = WSAGetLastError ();
 #endif
 	return -1;
 	}
-//bTracker = tracker.IsTracker (*reinterpret_cast<ulong*> (&fromAddr.sin_addr), *reinterpret_cast<ushort*> (&fromAddr.sin_port), (char*) outBuf);
+//bTracker = tracker.IsTracker (*reinterpret_cast<ulong*> (&fromAddr.sin_addr), *reinterpret_cast<uint16_t*> (&fromAddr.sin_port), (char*) outBuf);
 bTracker = tracker.IsTracker (fromAddr.sin_addr.s_addr, fromAddr.sin_port, (char*) outBuf);
 if (fromAddr.sin_family != AF_INET)
 	return -1;
@@ -1176,7 +1176,7 @@ if (!(bTracker
 	 || ResendData (&fromAddr, outBuf) || ForgetData (&fromAddr, outBuf)
 #endif
 	 )) {
-	rd->src_socket = ntohs (*reinterpret_cast<ushort*> (outBuf + 6));
+	rd->src_socket = ntohs (*reinterpret_cast<uint16_t*> (outBuf + 6));
 	rd->dst_socket = s->socket;
 	srcPort = ntohs (fromAddr.sin_port);
 	// check if we already have sender of this packet in broadcast list
@@ -1198,7 +1198,7 @@ if (!(bTracker
 			ReportSafeMode (clientP);
 		if (clientP->bOurSafeMode == 1) {
 			bSafeMode = 1;
-			packetId = *(reinterpret_cast<int*> (outBuf + dataLen - 14));
+			packetId = *(reinterpret_cast<int32_t*> (outBuf + dataLen - 14));
 			packetId = INTEL_INT (packetId);
 			if (packetId == clientP->nReceived)
 				clientP->nReceived++;
@@ -1235,7 +1235,7 @@ return dataLen;
 
 //------------------------------------------------------------------------------
 
-int UDPPacketReady (ipx_socket_t *s)
+int32_t UDPPacketReady (ipx_socket_t *s)
 {
 	u_long nAvailBytes = 0;
 

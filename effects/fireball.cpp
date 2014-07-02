@@ -45,7 +45,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define EXPLOSION_SCALE (I2X (5)/2)		//explosion is the obj size times this
 
-int	PK1=1, PK2=8;
+int32_t	PK1=1, PK2=8;
 
 void DropStolenItems (CObject *objP);
 
@@ -57,7 +57,7 @@ CObject *CObject::CreateExplBlast (void)
 return NULL;
 #endif
 
-	short		nObject;
+	int16_t		nObject;
 	CObject	*objP;
 
 if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves))
@@ -91,7 +91,7 @@ return objP;
 
 CObject *CObject::CreateShockwave (void)
 {
-	short		nObject;
+	int16_t		nObject;
 	CObject	*objP;
 
 if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves))
@@ -131,15 +131,15 @@ return objP;
 
 //------------------------------------------------------------------------------
 
-CObject* CreateExplosion (CObject* parentP, short nSegment, CFixVector& vPos, fix xSize,
-								  ubyte nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, short nParent)
+CObject* CreateExplosion (CObject* parentP, int16_t nSegment, CFixVector& vPos, fix xSize,
+								  uint8_t nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, int16_t nParent)
 {
-	short			nObject;
+	int16_t			nObject;
 	CObject		*explObjP, *objP;
 	fix			dist, force, damage;
 	CFixVector	vHit, vForce;
-	int			nType, id;
-	int			flash = parentP ? static_cast<int> (gameData.weapons.info [parentP->info.nId].flash) : 0;
+	int32_t			nType, id;
+	int32_t			flash = parentP ? static_cast<int32_t> (gameData.weapons.info [parentP->info.nId].flash) : 0;
 
 nObject = CreateFireball (nVClip, nSegment, vPos, xSize, RT_FIREBALL);
 if (nObject < 0)
@@ -230,7 +230,7 @@ FORALL_OBJS (objP, i) {
 		//	If not a boss, stun for 2 seconds at 32 force, 1 second at 16 force
 		if (flash && !ROBOTINFO (objP->info.nId).bossFlag) {
 			tAIStaticInfo	*aip = &objP->cType.aiInfo;
-			int				nForce = X2I (FixDiv (vForce.Mag () * flash, gameData.time.xFrame) / 128) + 2;
+			int32_t				nForce = X2I (FixDiv (vForce.Mag () * flash, gameData.time.xFrame) / 128) + 2;
 
 			if (explObjP->cType.aiInfo.SKIP_AI_COUNT * gameData.time.xFrame >= I2X (1))
 				aip->SKIP_AI_COUNT--;
@@ -276,7 +276,7 @@ FORALL_OBJS (objP, i) {
 
 		//	Hack!Warning!Test code!
 		if (flash && (objP->info.nId == N_LOCALPLAYER)) {
-			int fe = Min (I2X (4), force * flash / 32);	//	For four seconds or less
+			int32_t fe = Min (I2X (4), force * flash / 32);	//	For four seconds or less
 			if (parentP->cType.laserInfo.parent.nSignature == gameData.objs.consoleP->info.nSignature) {
 				fe /= 2;
 				force /= 2;
@@ -317,8 +317,8 @@ return explObjP;
 
 //------------------------------------------------------------------------------
 
-CObject* CreateSplashDamageExplosion (CObject* objP, short nSegment, CFixVector& position, fix size, ubyte nVClip,
-												  fix maxDamage, fix maxDistance, fix maxForce, short parent)
+CObject* CreateSplashDamageExplosion (CObject* objP, int16_t nSegment, CFixVector& position, fix size, uint8_t nVClip,
+												  fix maxDamage, fix maxDistance, fix maxForce, int16_t parent)
 {
 CObject* explObjP = CreateExplosion (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
 if (explObjP) {
@@ -365,7 +365,7 @@ CObject* CObject::ExplodeSplashDamage (fix damage, fix distance, fix force)
 {
 
 CObject* explObjP = CreateSplashDamageExplosion (this, info.nSegment, info.position.vPos, info.xSize,
-													    (ubyte) GetExplosionVClip (this, 0), damage, distance, force, OBJ_IDX (this));
+													    (uint8_t) GetExplosionVClip (this, 0), damage, distance, force, OBJ_IDX (this));
 if (explObjP)
 	audio.CreateObjectSound (SOUND_BADASS_EXPLOSION_ACTOR, SOUNDCLASS_EXPLOSION, OBJ_IDX (explObjP));
 return explObjP;
@@ -393,7 +393,7 @@ return fabs (X2F (vMax.v.coord.x - vMin.v.coord.x)) *
 double ObjectVolume (CObject *objP)
 {
 	CPolyModel	*modelP;
-	int			i, j;
+	int32_t			i, j;
 	double		size;
 
 if (objP->info.renderType != RT_POLYOBJ)
@@ -438,7 +438,7 @@ mType.physInfo.rotThrust.SetZero ();
 
 fix nDebrisLife [] = {2, 5, 10, 15, 30, 60, 120, 180, 300};
 
-void CObject::SetupDebris (int nSubObj, int nId, int nTexOverride)
+void CObject::SetupDebris (int32_t nSubObj, int32_t nId, int32_t nTexOverride)
 {
 Assert (nSubObj < 32);
 info.nType = OBJ_DEBRIS;
@@ -471,9 +471,9 @@ mType.physInfo.flags &= ~(PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUS
 
 //------------------------------------------------------------------------------
 
-CObject* CObject::CreateDebris (int nSubObj)
+CObject* CObject::CreateDebris (int32_t nSubObj)
 {
-	int 			nObject;
+	int32_t 			nObject;
 
 Assert ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER));
 nObject = ::CreateDebris (this, nSubObj);
@@ -507,7 +507,7 @@ if (objP->info.xLifeLeft > 0)
 
 //------------------------------------------------------------------------------
 //what tVideoClip does this explode with?
-short GetExplosionVClip (CObject *objP, int stage)
+int16_t GetExplosionVClip (CObject *objP, int32_t stage)
 {
 if (objP->info.nType == OBJ_ROBOT) {
 	if ((stage == 0) && (ROBOTINFO (objP->info.nId).nExp1VClip > -1))
@@ -533,19 +533,19 @@ if (gameData.models.nDyingModels [ModelId ()] != -1)
 	rType.polyObjInfo.nModel = gameData.models.nDyingModels [ModelId ()];
 
 if ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER)) {
-	int nModels = gameData.models.polyModels [0][ModelId ()].ModelCount ();
+	int32_t nModels = gameData.models.polyModels [0][ModelId ()].ModelCount ();
 
 	if (gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShrapnels && (nModels > 1)) {
-		int j = (int) FRound (X2F (info.xSize)) * (gameOpts->render.effects.nShrapnels + 1);
-		for (int i = 0; i < j; i++) {// "i = int (j > 0)" => use the models fuselage only once
-			int h = i % nModels;
+		int32_t j = (int32_t) FRound (X2F (info.xSize)) * (gameOpts->render.effects.nShrapnels + 1);
+		for (int32_t i = 0; i < j; i++) {// "i = int32_t (j > 0)" => use the models fuselage only once
+			int32_t h = i % nModels;
 			if (/*((i == 0) || (h != 0)) &&*/
 				 ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (h != 5))) 	//energy sucker energy part
 					CreateDebris (h ? h : rand () % (nModels - 1) + 1);
 			}
 		}
 	else {
-		for (int i = 1; i < nModels; i++) // "i = int (j > 0)" => use the models fuselage only once
+		for (int32_t i = 1; i < nModels; i++) // "i = int32_t (j > 0)" => use the models fuselage only once
 			if ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (i != 5)) 	//energy sucker energy part
 				CreateDebris (i);
 		}
@@ -579,7 +579,7 @@ if (info.nFlags & OF_EXPLODING)
 	return;
 if (delayTime) {		//wait a little while before creating explosion
 	//create a placeholder CObject to do the delay, with id==-1
-	int nObject = CreateFireball (ubyte (-1), info.nSegment, info.position.vPos, 0, RT_NONE);
+	int32_t nObject = CreateFireball (uint8_t (-1), info.nSegment, info.position.vPos, 0, RT_NONE);
 	if (nObject < 0) {
 		MaybeDelete ();		//no explosion, die instantly
 #if TRACE
@@ -601,9 +601,9 @@ if (delayTime) {		//wait a little while before creating explosion
 	}
 else {
 	CObject	*explObjP;
-	ubyte		nVClip;
+	uint8_t		nVClip;
 
-	nVClip = (ubyte) GetExplosionVClip (this, 0);
+	nVClip = (uint8_t) GetExplosionVClip (this, 0);
 	explObjP = CreateExplosion (info.nSegment, info.position.vPos, FixMul (info.xSize, EXPLOSION_SCALE), nVClip);
 	if (!explObjP) {
 		MaybeDelete ();		//no explosion, die instantly
@@ -641,7 +641,7 @@ if (objP->info.xLifeLeft < 0)
 //do whatever needs to be done for this explosion for this frame
 void CObject::DoExplosionSequence (void)
 {
-	int nType;
+	int32_t nType;
 
 Assert (info.controlType == CT_EXPLOSION);
 //See if we should die of old age
@@ -668,7 +668,7 @@ if (m_xMoveTime) {
 //See if we should create a secondary explosion
 if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj >= 0)) {
 	CObject		*explObjP, *delObjP;
-	ubyte			nVClip;
+	uint8_t			nVClip;
 	CFixVector*	vSpawnPos;
 	fix			xSplashDamage;
 
@@ -689,7 +689,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 		Int3 ();	//pretty bad
 		return;
 		}
-	nVClip = (ubyte) GetExplosionVClip (delObjP, 1);
+	nVClip = (uint8_t) GetExplosionVClip (delObjP, 1);
 	if ((delObjP->info.nType == OBJ_ROBOT) && xSplashDamage)
 		explObjP = CreateSplashDamageExplosion (NULL, delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE),
 															 nVClip, I2X (xSplashDamage), I2X (4) * xSplashDamage, I2X (35) * xSplashDamage, -1);
@@ -707,7 +707,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 			tRobotInfo	*botInfoP = &ROBOTINFO (delObjP->info.nId);
 			if (botInfoP->containsCount && ((botInfoP->containsType != OBJ_ROBOT) || !(delObjP->info.nFlags & OF_ARMAGEDDON))) {
 #if DBG
-				int nProb = RandShort () % 16;
+				int32_t nProb = RandShort () % 16;
 				if (nProb < botInfoP->containsProb) {
 #else
 				if (RandShort () % 16 < botInfoP->containsProb) {

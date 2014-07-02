@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define	MAX_SPEW_BOT		3
 
-int spewBots [2][NUM_D2_BOSSES][MAX_SPEW_BOT] = {
+int32_t spewBots [2][NUM_D2_BOSSES][MAX_SPEW_BOT] = {
  {
  { 38, 40, -1},
  { 37, -1, -1},
@@ -57,24 +57,24 @@ int spewBots [2][NUM_D2_BOSSES][MAX_SPEW_BOT] = {
 	}
 };
 
-int	maxSpewBots [NUM_D2_BOSSES] = {2, 1, 2, 3, 3, 3, 3, 3};
+int32_t	maxSpewBots [NUM_D2_BOSSES] = {2, 1, 2, 3, 3, 3, 3, 3};
 
 // --------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------------------------------------------------------------------
 //	Return nObject if CObject created, else return -1.
 //	If pos == NULL, pick random spot in CSegment.
-int CObject::CreateGatedRobot (short nSegment, ubyte nObjId, CFixVector* vPos)
+int32_t CObject::CreateGatedRobot (int16_t nSegment, uint8_t nObjId, CFixVector* vPos)
 {
-	int			nObject, nTries = 5;
+	int32_t			nObject, nTries = 5;
 	CObject		*objP;
 	CSegment		*segP = SEGMENTS + nSegment;
 	CFixVector	vObjPos;
 	tRobotInfo	*botInfoP = &ROBOTINFO (nObjId);
-	int			nBoss, count = 0;
-	//int			i;
+	int32_t			nBoss, count = 0;
+	//int32_t			i;
 	fix			objsize = gameData.models.polyModels [0][botInfoP->nModel].Rad ();
-	ubyte			default_behavior;
+	uint8_t			default_behavior;
 
 #if !DBG
 if (gameStates.app.bGameSuspended & SUSP_ROBOTS)
@@ -141,10 +141,10 @@ return objP->Index ();
 
 //	----------------------------------------------------------------------------------------------------------
 //	objP points at a boss.  He was presumably just hit and he's supposed to create a bot at the hit location *pos.
-int CObject::BossSpewRobot (CFixVector *vPos, short objType, int bObjTrigger)
+int32_t CObject::BossSpewRobot (CFixVector *vPos, int16_t objType, int32_t bObjTrigger)
 {
-	short			nObject, nSegment, maxRobotTypes;
-	short			nBossIndex, nBossId = ROBOTINFO (info.nId).bossFlag;
+	int16_t			nObject, nSegment, maxRobotTypes;
+	int16_t			nBossIndex, nBossId = ROBOTINFO (info.nId).bossFlag;
 	tRobotInfo	*pri;
 
 if (!bObjTrigger && FindObjTrigger (OBJ_IDX (this), TT_SPAWN_BOT, -1))
@@ -171,11 +171,11 @@ if (objType == 255) {	// spawn an arbitrary robot
 					pri->companion || //the buddy bot isn't exactly an enemy ... ^_^
 					(pri->scoreValue < 700)); //avoid spawning a ... spawn nType bot
 	}
-nObject = CreateGatedRobot (nSegment, (ubyte) objType, vPos);
+nObject = CreateGatedRobot (nSegment, (uint8_t) objType, vPos);
 //	Make spewed robot come tumbling out as if blasted by a flash missile.
 if (nObject != -1) {
 	CObject	*newObjP = OBJECTS + nObject;
-	int		xForce = I2X (1) / (gameData.time.xFrame ? gameData.time.xFrame : 1);
+	int32_t		xForce = I2X (1) / (gameData.time.xFrame ? gameData.time.xFrame : 1);
 	if (xForce) {
 		newObjP->cType.aiInfo.SKIP_AI_COUNT += xForce;
 		newObjP->mType.physInfo.rotThrust.v.coord.x = (SRandShort () * xForce) / 16;
@@ -197,12 +197,12 @@ return nObject;
 //	The process of him bringing in a robot takes one second.
 //	Then a robot appears somewhere near the player.
 //	Return nObject if robot successfully created, else return -1
-int GateInRobot (short nObject, ubyte nType, short nSegment)
+int32_t GateInRobot (int16_t nObject, uint8_t nType, int16_t nSegment)
 {
 if (!gameData.bosses.ToS ())
 	return -1;
 if (nSegment < 0) {
-	int nBoss = gameData.bosses.Find (nObject);
+	int32_t nBoss = gameData.bosses.Find (nObject);
 	if (nBoss < 0)
 		return -1;
 	if (!(gameData.bosses [nBoss].m_gateSegs.Buffer () && gameData.bosses [nBoss].m_nGateSegs))
@@ -215,10 +215,10 @@ return OBJECTS [nObject].CreateGatedRobot (nSegment, nType, NULL);
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int BossFitsInSeg (CObject *bossObjP, int nSegment)
+int32_t BossFitsInSeg (CObject *bossObjP, int32_t nSegment)
 {
-	int			nObject = OBJ_IDX (bossObjP);
-	int			nPos;
+	int32_t			nObject = OBJ_IDX (bossObjP);
+	int32_t			nPos;
 	CFixVector	vSegCenter, vVertPos;
 	CSegment*	segP = SEGMENTS + nSegment;
 
@@ -242,10 +242,10 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int IsValidTeleportDest (CFixVector *vPos, int nMinDist)
+int32_t IsValidTeleportDest (CFixVector *vPos, int32_t nMinDist)
 {
 	CObject		*objP;
-	//int			i;
+	//int32_t			i;
 	CFixVector	vOffs;
 	fix			xDist;
 
@@ -262,7 +262,7 @@ return 0;
 
 void TeleportBoss (CObject *objP)
 {
-	short			i, nAttempts = 5, nRandSeg = 0, nRandIndex, nObject = objP->Index ();
+	int16_t			i, nAttempts = 5, nRandSeg = 0, nRandIndex, nObject = objP->Index ();
 	CFixVector	vBossDir, vNewPos;
 
 //	Pick a random CSegment from the list of boss-teleportable-to segments.
@@ -310,7 +310,7 @@ gameData.ai.localInfo [nObject].nextSecondaryFire = 0;
 void StartBossDeathSequence (CObject *objP)
 {
 if (ROBOTINFO (objP->info.nId).bossFlag) {
-	int	nObject = objP->Index (),
+	int32_t	nObject = objP->Index (),
 			i = gameData.bosses.Find (nObject);
 
 	if (i < 0)
@@ -326,7 +326,7 @@ if (ROBOTINFO (objP->info.nId).bossFlag) {
 
 void DoBossDyingFrame (CObject *objP)
 {
-	int	rval, i = gameData.bosses.Find (objP->Index ());
+	int32_t	rval, i = gameData.bosses.Find (objP->Index ());
 
 if (i < 0)
 	return;
@@ -348,9 +348,9 @@ if (rval) {
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Do special stuff for a boss.
-void DoBossStuff (CObject *objP, int nTargetVisibility)
+void DoBossStuff (CObject *objP, int32_t nTargetVisibility)
 {
-	int	i, nBossId, nBossIndex, nObject;
+	int32_t	i, nBossId, nBossIndex, nObject;
 
 nObject = objP->Index ();
 i = gameData.bosses.Find (nObject);

@@ -8,37 +8,37 @@ class CGlowRenderer {
 		GLhandleARB m_shaderProg;
 		tScreenPos m_renderMin, m_renderMax;
 		tScreenPos m_itemMin, m_itemMax;
-		int m_x, m_y, m_w, m_h;
-		int m_nType;
-		int m_nStrength;
+		int32_t m_x, m_y, m_w, m_h;
+		int32_t m_nType;
+		int32_t m_nStrength;
 		bool m_bReplace;
-		int m_bViewport;
+		int32_t m_bViewport;
 		float m_brightness;
 
 	public:
-		bool Available (int const nType, bool bForce = false);
+		bool Available (int32_t const nType, bool bForce = false);
 		void InitShader (void);
 		bool ShaderActive (void);
-		void Done (const int nType);
+		void Done (const int32_t nType);
 		bool End (void);
-		bool Begin (int const nType, int const nStrength = 1, bool const bReplace = true, float const brightness = 1.0f);
-		bool SetViewport (int const nType, CFloatVector3* vertexP, int nVerts);
-		bool SetViewport (int const nType, CFloatVector* vertexP, int nVerts);
-		bool SetViewport (int const nType, CFixVector pos, float radius);
-		bool SetViewport (int const nType, CFloatVector3 pos, float width, float height, bool bTransformed = false);
+		bool Begin (int32_t const nType, int32_t const nStrength = 1, bool const bReplace = true, float const brightness = 1.0f);
+		bool SetViewport (int32_t const nType, CFloatVector3* vertexP, int32_t nVerts);
+		bool SetViewport (int32_t const nType, CFloatVector* vertexP, int32_t nVerts);
+		bool SetViewport (int32_t const nType, CFixVector pos, float radius);
+		bool SetViewport (int32_t const nType, CFloatVector3 pos, float width, float height, bool bTransformed = false);
 		bool Visible (void);
 		CGlowRenderer () : m_shaderProg (0), m_nType (-1), m_nStrength (-1), m_bReplace (true), m_bViewport (0), m_brightness (1.1f) {}
 
 	private:
-		bool LoadShader (int const direction, float const radius);
-		void Render (int const source, int const direction = -1, float const radius = 1.0f, bool const bClear = false);
-		bool Blur (int const direction);
-		int Activate (void);
+		bool LoadShader (int32_t const direction, float const radius);
+		void Render (int32_t const source, int32_t const direction = -1, float const radius = 1.0f, bool const bClear = false);
+		bool Blur (int32_t const direction);
+		int32_t Activate (void);
 		void SetupProjection (void);
 		void SetItemExtent (CFloatVector3 v, bool bTransformed = false);
 		void InitViewport (void);
 		void ChooseDrawBuffer (void);
-		bool Reset (int bGlow, int bOgl = 0);
+		bool Reset (int32_t bGlow, int32_t bOgl = 0);
 		bool UseViewport (void);
 
 	};

@@ -42,7 +42,7 @@ memset (eshakerDetonateScales, 0, sizeof (eshakerDetonateScales));
 
 //	-----------------------------------------------------------------------------
 
-static void RockPlayerShip (int fc, float fScaleMod = 1.0f)
+static void RockPlayerShip (int32_t fc, float fScaleMod = 1.0f)
 {
 if (fc > 16)
 	fc = 16;
@@ -53,8 +53,8 @@ float fScale = X2F (I2X (3) / 16 + (I2X (16 - fc)) / 32);
 if (fScaleMod > 0.0f)
 	fScale *= fScaleMod;
 //HUDMessage (0, "shaker rock scale %d: %1.2f", i, fScale);
-int rx = (fix) FRound (SRandShort () * fScale);
-int rz = (fix) FRound (SRandShort () * fScale);
+int32_t rx = (fix) FRound (SRandShort () * fScale);
+int32_t rz = (fix) FRound (SRandShort () * fScale);
 gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.x += rx;
 gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.z += rz;
 //	Shake the buddy!
@@ -73,11 +73,11 @@ gameStates.gameplay.seismic.nMagnitude += rx;
 //	Maybe this should affect all robots, being called when they get their physics done.
 void RockTheMineFrame (void)
 {
-for (int i = 0; i < MAX_ESHAKER_DETONATES; i++) {
+for (int32_t i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 	if (eshakerDetonateTimes [i] != 0) {
 		fix deltaTime = gameData.time.xGame - eshakerDetonateTimes [i];
 		if (!gameStates.gameplay.seismic.bSound) {
-			audio.PlayLoopingSound ((short) gameStates.gameplay.seismic.nSound, I2X (1), -1, -1);
+			audio.PlayLoopingSound ((int16_t) gameStates.gameplay.seismic.nSound, I2X (1), -1, -1);
 			gameStates.gameplay.seismic.bSound = 1;
 			gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + RandShort () / 2;
 			}
@@ -90,7 +90,7 @@ for (int i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 			RockPlayerShip ((ESHAKER_SHAKE_TIME - deltaTime) / (ESHAKER_SHAKE_TIME / 16), eshakerDetonateScales [i]);
 #else
 			//	Control center destroyed, rock the player's ship.
-			int	fc, rx, rz;
+			int32_t	fc, rx, rz;
 			// -- fc = abs(deltaTime - ESHAKER_SHAKE_TIME/2);
 			//	Changed 10/23/95 to make decreasing for super mega missile.
 			fc = (ESHAKER_SHAKE_TIME - deltaTime) / (ESHAKER_SHAKE_TIME / 16);
@@ -125,7 +125,7 @@ for (int i = 0; i < MAX_ESHAKER_DETONATES; i++) {
 
 #define	SEISMIC_DISTURBANCE_DURATION	(I2X (5))
 
-int SeismicLevel (void)
+int32_t SeismicLevel (void)
 {
 return gameStates.gameplay.seismic.nLevel;
 }
@@ -140,12 +140,12 @@ gameStates.gameplay.seismic.nEndTime = 0;
 
 //	-----------------------------------------------------------------------------
 //	Return true if time to start a seismic disturbance.
-int StartSeismicDisturbance (void)
+int32_t StartSeismicDisturbance (void)
 {
 if (gameStates.gameplay.seismic.nShakeDuration < 1)
 	return 0;
 #if 0
-int rval = (2 * FixMul (RandShort (), gameStates.gameplay.seismic.nShakeFrequency)) < gameData.time.xFrame;
+int32_t rval = (2 * FixMul (RandShort (), gameStates.gameplay.seismic.nShakeFrequency)) < gameData.time.xFrame;
 if (rval) 
 #endif
 	{
@@ -153,7 +153,7 @@ if (rval)
 	gameStates.gameplay.seismic.nEndTime = gameData.time.xGame + gameStates.gameplay.seismic.nShakeDuration;
 	gameStates.gameplay.seismic.nShakeDuration = 0;
 	if (!gameStates.gameplay.seismic.bSound) {
-		audio.PlayLoopingSound ((short) gameStates.gameplay.seismic.nSound, I2X (1), -1, -1);
+		audio.PlayLoopingSound ((int16_t) gameStates.gameplay.seismic.nSound, I2X (1), -1, -1);
 		gameStates.gameplay.seismic.bSound = 1;
 		gameStates.gameplay.seismic.nNextSoundTime = gameData.time.xGame + RandShort () / 2;
 		}
@@ -173,7 +173,7 @@ if (gameStates.gameplay.seismic.nShakeFrequency) {
 #if 1
 		RockPlayerShip (abs (deltaTime - (gameStates.gameplay.seismic.nEndTime - gameStates.gameplay.seismic.nStartTime) / 2), X2F (gameStates.gameplay.seismic.nShakeFrequency));
 #else
-		int	fc, rx, rz;
+		int32_t	fc, rx, rz;
 		fix	h;
 
 		fc = abs (deltaTime - (gameStates.gameplay.seismic.nEndTime - gameStates.gameplay.seismic.nStartTime) / 2);
@@ -206,7 +206,7 @@ if (gameStates.gameplay.seismic.nShakeFrequency) {
 void ShakerRockStuff (CFixVector* vPos)
 {
 #if 1 //!DBG
-	int	i;
+	int32_t	i;
 
 for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
 	if (eshakerDetonateTimes [i] + ESHAKER_SHAKE_TIME < gameData.time.xGame)
@@ -235,7 +235,7 @@ for (i = 0; i < MAX_ESHAKER_DETONATES; i++)
 
 void DoSeismicStuff (void)
 {
-	int		stv_save;
+	int32_t		stv_save;
 
 if (gameStates.limitFPS.bSeismic && !gameStates.app.tick40fps.bTick)
 	return;
@@ -251,7 +251,7 @@ if (stv_save != 0) {
 		}
 
 	if ((gameData.time.xGame > gameStates.gameplay.seismic.nNextSoundTime) && gameStates.gameplay.seismic.nVolume) {
-		int volume = gameStates.gameplay.seismic.nVolume * 2048;
+		int32_t volume = gameStates.gameplay.seismic.nVolume * 2048;
 		if (volume > I2X (1))
 			volume = I2X (1);
 		audio.ChangeLoopingVolume (volume);

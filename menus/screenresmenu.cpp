@@ -64,13 +64,13 @@
 //------------------------------------------------------------------------------
 
 static struct {
-	int	nWideScreen;
-	int	nCustom;
+	int32_t	nWideScreen;
+	int32_t	nCustom;
 } screenResOpts;
 
 //------------------------------------------------------------------------------
 
-static int ScreenResMenuItemToMode (int menuItem)
+static int32_t ScreenResMenuItemToMode (int32_t menuItem)
 {
 if ((screenResOpts.nWideScreen >= 0) && (menuItem > screenResOpts.nWideScreen))
 	menuItem--;
@@ -79,11 +79,11 @@ return menuItem;
 
 //------------------------------------------------------------------------------
 
-static int ScreenResModeToMenuItem (int mode)
+static int32_t ScreenResModeToMenuItem (int32_t mode)
 {
-	int item = 0;
+	int32_t item = 0;
 
-for (int j = 0; j < mode; j++)
+for (int32_t j = 0; j < mode; j++)
 	if (displayModeInfo [j].bAvailable)
 		item++;
 if ((screenResOpts.nWideScreen >= 0) && (mode >= screenResOpts.nWideScreen))
@@ -93,12 +93,12 @@ return item;
 
 //------------------------------------------------------------------------------
 
-int ScreenResCallback (CMenu& menu, int& nKey, int nCurItem, int nState)
+int32_t ScreenResCallback (CMenu& menu, int32_t& nKey, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
-	int	h, i, j;
+	int32_t	h, i, j;
 
 if ((h = menu.IndexOf ("custom resolution")) && menu [h].Value () != (gameStates.video.nDisplayMode == CUSTOM_DISPLAY_MODE)) 
 	nKey = -2;
@@ -116,12 +116,12 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int SwitchDisplayMode (int dir)
+int32_t SwitchDisplayMode (int32_t dir)
 {
 if (ogl.IsSideBySideDevice ())
 	return 0;
 
-	int	i, h = NUM_DISPLAY_MODES;
+	int32_t	i, h = NUM_DISPLAY_MODES;
 
 for (i = 0; i < h; i++)
 	displayModeInfo [i].bAvailable = ((i < 2) || gameStates.menus.bHiresAvailable) && GrVideoModeOK (displayModeInfo [i].dim);
@@ -147,8 +147,8 @@ void ScreenResMenu (void)
 #	define N_SCREENRES_ITEMS (NUM_DISPLAY_MODES + 4)
 
 	CMenu		m;
-	int		choice;
-	int		i, j, key, nCustW, nCustH, bStdRes;
+	int32_t		choice;
+	int32_t		i, j, key, nCustW, nCustH, bStdRes;
 	char		szMode [40];
 	char		cShortCut, szCustX [7], szCustY [7];
 
@@ -220,8 +220,8 @@ do {
 		}
 	else 
 		{
-		int nCustom = m.IndexOf ("custom resolution");
-		int nWideScreen = m.IndexOf ("wide screen");
+		int32_t nCustom = m.IndexOf ("custom resolution");
+		int32_t nWideScreen = m.IndexOf ("wide screen");
 		for (i = 0; i <= nCustom; i++)
 			if ((i != nWideScreen) && (m [i].Value ())) {
 				bStdRes = 1;

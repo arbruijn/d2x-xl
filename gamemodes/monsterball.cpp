@@ -25,9 +25,9 @@ if (gameData.hoard.monsterballP) {
 
 //------------------------------------------------------------------------------
 
-int CreateMonsterball (void)
+int32_t CreateMonsterball (void)
 {
-	short	nDropSeg, nObject;
+	int16_t	nDropSeg, nObject;
 
 RemoveMonsterball ();
 if (!(IsMultiGame && (gameData.app.GameMode (GM_MONSTERBALL))))
@@ -86,9 +86,9 @@ return gameData.hoard.monsterballP;
 
 //------------------------------------------------------------------------------
 
-int ResetMonsterball (bool bCreate)
+int32_t ResetMonsterball (bool bCreate)
 {
-	//short		i;
+	//int16_t		i;
 	CObject	*objP;
 
 if (gameData.hoard.monsterballP) {
@@ -119,7 +119,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CheckMonsterballScore (void)
+int32_t CheckMonsterballScore (void)
 {
 if (!(gameData.app.GameMode (GM_MONSTERBALL)))
 	return 0;
@@ -127,7 +127,7 @@ if (!gameData.hoard.monsterballP)
 	return 0;
 if (gameData.hoard.nLastHitter != LOCALPLAYER.nObject)
 	return 0;
-ubyte segFunc = SEGMENTS [gameData.hoard.monsterballP->info.nSegment].m_function;
+uint8_t segFunc = SEGMENTS [gameData.hoard.monsterballP->info.nSegment].m_function;
 if ((segFunc != SEGMENT_FUNC_GOAL_BLUE) && (segFunc != SEGMENT_FUNC_GOAL_RED))
 	return 0;
 if ((GetTeam (N_LOCALPLAYER) == TEAM_RED) == (segFunc == SEGMENT_FUNC_GOAL_RED))
@@ -143,16 +143,16 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-short nMonsterballForces [100];
+int16_t nMonsterballForces [100];
 
-short nMonsterballPyroForce;
+int16_t nMonsterballPyroForce;
 
 void SetMonsterballForces (void)
 {
 	tMonsterballForce* forceP = extraGameInfo [IsMultiGame].monsterball.forces;
 
 memset (nMonsterballForces, 0, sizeof (nMonsterballForces));
-for (int i = 0; i < MAX_MONSTERBALL_FORCES - 1; i++, forceP++)
+for (int32_t i = 0; i < MAX_MONSTERBALL_FORCES - 1; i++, forceP++)
 	nMonsterballForces [forceP->nWeaponId] = forceP->nForce;
 nMonsterballPyroForce = forceP->nForce;
 gameData.objs.pwrUp.info [POW_MONSTERBALL].size =

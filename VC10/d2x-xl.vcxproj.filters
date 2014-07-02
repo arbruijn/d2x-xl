@@ -1826,9 +1826,6 @@
     <ClCompile Include="..\io\cfile.cpp">
       <Filter>Source Files\io\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\io\d_io.cpp">
-      <Filter>Source Files\io\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\io\win32\findfile.cpp">
       <Filter>Source Files\io\Source Files</Filter>
     </ClCompile>

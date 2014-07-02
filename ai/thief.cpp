@@ -60,10 +60,10 @@ HUDInitMessage (szMsg);
 
 //	------------------------------------------------------------------------------------------------------
 //	Choose CSegment to recreate thief in.
-int ChooseThiefRecreationSegment (void)
+int32_t ChooseThiefRecreationSegment (void)
 {
-	static int	nSegment = -1;
-	int	nDepth, nDropDepth;
+	static int32_t	nSegment = -1;
+	int32_t	nDepth, nDropDepth;
 
 nDepth = THIEF_DEPTH;
 while (nSegment == -1) {
@@ -87,7 +87,7 @@ return (RandShort () * gameData.segs.nLastSegment) >> 15;
 
 void RecreateThief (CObject *objP)
 {
-	int			nSegment;
+	int32_t			nSegment;
 	CFixVector	vCenter;
 	CObject*		newObjP;
 
@@ -102,7 +102,7 @@ gameData.thief.xReInitTime = gameData.time.xGame + I2X (10);		//	In 10 seconds, 
 
 void DoThiefFrame (CObject *objP)
 {
-	int				nObject = objP->Index ();
+	int32_t				nObject = objP->Index ();
 	tAILocalInfo*	ailP = gameData.ai.localInfo + nObject;
 	fix				connectedDistance;
 
@@ -161,7 +161,7 @@ switch (ailP->mode) {
 					ailP->targetAwarenessType = 0;
 					CreateNSegmentPath (objP, 10, gameData.objs.consoleP->info.nSegment);
 
-					//	If path is real short, try again, allowing to go through player's CSegment
+					//	If path is real int16_t, try again, allowing to go through player's CSegment
 					if (aiP->nPathLength < 4) {
 						CreateNSegmentPath (objP, 10, -1);
 						}
@@ -238,14 +238,14 @@ switch (ailP->mode) {
 
 //	----------------------------------------------------------------------------
 //	Return true if this item (whose presence is indicated by gameData.multiplayer.players [nPlayer].flags) gets stolen.
-int MaybeStealDevice (int nPlayer, int deviceFlag)
+int32_t MaybeStealDevice (int32_t nPlayer, int32_t deviceFlag)
 {
 if (extraGameInfo [IsMultiGame].loadout.nDevice & deviceFlag)
 	return 0;
 
 if (gameData.multiplayer.players [nPlayer].flags & deviceFlag) {
 	if (RandShort () < THIEF_PROBABILITY) {
-		int nPowerup = -1;
+		int32_t nPowerup = -1;
 		gameData.multiplayer.players [nPlayer].flags &= (~deviceFlag);
 		switch (deviceFlag) {
 			case PLAYER_FLAGS_INVULNERABLE:
@@ -292,7 +292,7 @@ return 0;
 
 //	----------------------------------------------------------------------------
 
-int MaybeStealSecondaryWeapon (int nPlayer, int nWeapon)
+int32_t MaybeStealSecondaryWeapon (int32_t nPlayer, int32_t nWeapon)
 {
 if ((gameData.multiplayer.players [nPlayer].secondaryWeaponFlags & HAS_FLAG(nWeapon)) && gameData.multiplayer.players [nPlayer].secondaryAmmo [nWeapon])
 	if (RandShort () < THIEF_PROBABILITY) {
@@ -316,7 +316,7 @@ return 0;
 
 //	----------------------------------------------------------------------------
 
-int MaybeStealPrimaryWeapon (int nPlayer, int nWeapon)
+int32_t MaybeStealPrimaryWeapon (int32_t nPlayer, int32_t nWeapon)
 {
 if ((gameData.multiplayer.players [nPlayer].primaryWeaponFlags & HAS_FLAG (nWeapon)) && 
 	 gameData.multiplayer.players [nPlayer].primaryAmmo [nWeapon] &&
@@ -354,10 +354,10 @@ return 0;
 //	If a item successfully stolen, returns true, else returns false.
 //	If a wapon successfully stolen, do everything, removing it from player,
 //	updating gameData.thief.stolenItems information, deselecting, etc.
-int AttemptToStealItem3(CObject *objP, int nPlayer)
+int32_t AttemptToStealItem3(CObject *objP, int32_t nPlayer)
 {
-	int i;
-	static int nDevices [] = {PLAYER_FLAGS_INVULNERABLE, PLAYER_FLAGS_CLOAKED, PLAYER_FLAGS_QUAD_LASERS, PLAYER_FLAGS_AFTERBURNER, 
+	int32_t i;
+	static int32_t nDevices [] = {PLAYER_FLAGS_INVULNERABLE, PLAYER_FLAGS_CLOAKED, PLAYER_FLAGS_QUAD_LASERS, PLAYER_FLAGS_AFTERBURNER, 
 									  PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_HEADLIGHT, PLAYER_FLAGS_FULLMAP, -1};
 
 if (gameData.ai.localInfo [objP->Index ()].mode != AIM_THIEF_ATTACK)
@@ -403,9 +403,9 @@ return 0;
 
 //	----------------------------------------------------------------------------
 
-int AttemptToStealItem2(CObject *objP, int nPlayer)
+int32_t AttemptToStealItem2(CObject *objP, int32_t nPlayer)
 {
-int rval = AttemptToStealItem3 (objP, nPlayer);
+int32_t rval = AttemptToStealItem3 (objP, nPlayer);
 if (rval) {
 	gameData.thief.nStolenItem = (gameData.thief.nStolenItem + 1) % MAX_STOLEN_ITEMS;
 	if (RandShort () > 20000)	//	Occasionally, boost the value again
@@ -419,10 +419,10 @@ return rval;
 //	If a item successfully stolen, returns true, else returns false.
 //	If a wapon successfully stolen, do everything, removing it from player,
 //	updating gameData.thief.stolenItems information, deselecting, etc.
-int AttemptToStealItem (CObject *objP, int nPlayer)
+int32_t AttemptToStealItem (CObject *objP, int32_t nPlayer)
 {
-	int	i;
-	int	rval = 0;
+	int32_t	i;
+	int32_t	rval = 0;
 
 if (objP->cType.aiInfo.xDyingStartTime)
 	return 0;
@@ -452,7 +452,7 @@ void InitThiefForLevel(void)
 gameData.thief.stolenItems.Clear (char (0xff));
 Assert (MAX_STOLEN_ITEMS >= 3*2);	//	Oops!  Loop below will overwrite memory!
 if (!IsMultiGame)
-	for (int i = 0; i < 3; i++) {
+	for (int32_t i = 0; i < 3; i++) {
 		gameData.thief.stolenItems [2 * i] = POW_SHIELD_BOOST;
 		gameData.thief.stolenItems [2 * i + 1] = POW_ENERGY;
 		}
@@ -465,7 +465,7 @@ void DropStolenItems (CObject *objP)
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return;
-for (int i = 0; i < MAX_STOLEN_ITEMS; i++) {
+for (int32_t i = 0; i < MAX_STOLEN_ITEMS; i++) {
 	if (gameData.thief.stolenItems [i] != 255)
 		DropPowerup (OBJ_POWERUP, gameData.thief.stolenItems [i], -1, 1, objP->mType.physInfo.velocity, objP->info.position.vPos, objP->info.nSegment);
 	gameData.thief.stolenItems [i] = 255;

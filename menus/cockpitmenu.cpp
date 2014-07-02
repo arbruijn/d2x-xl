@@ -59,31 +59,31 @@
 #define WEAPON_ICONS 0
 
 //typedef struct tWindowOpts {
-//	int	nPos;
-//	int	nSize;
-//	int	nAlign;
-//	int	nZoom;
-//	int	nType [2];
+//	int32_t	nPos;
+//	int32_t	nSize;
+//	int32_t	nAlign;
+//	int32_t	nZoom;
+//	int32_t	nType [2];
 //} tWindowOpts;
 //
 //typedef struct tRadarOpts {
-//	int	nPos;
-//	int	nSize;
-//	int	nRange;
-//	int	nColor;
-//	int	nStyle;
+//	int32_t	nPos;
+//	int32_t	nSize;
+//	int32_t	nRange;
+//	int32_t	nColor;
+//	int32_t	nStyle;
 //} tRadarOpts;
 //
 //static struct {
 //	tWindowOpts	windows;
 //	tRadarOpts	radar;
-//	int			nTgtInd;
+//	int32_t			nTgtInd;
 //} cockpitOpts;
 
-static int nWindowPos, nWindowAlign, nTgtInd;
+static int32_t nWindowPos, nWindowAlign, nTgtInd;
 
 #if WEAPON_ICONS
-static int	optWeaponIcons, bShowWeaponIcons, optIconAlpha;
+static int32_t	optWeaponIcons, bShowWeaponIcons, optIconAlpha;
 #endif
 
 static const char* szHUDType [3];
@@ -97,19 +97,19 @@ static const char* szRadarRange [5];
 static const char* szRadarColor [3];
 static const char* szRadarStyle [2];
 
-static int nWinFuncs, winFunc [2], winFuncList [CV_FUNC_COUNT], winFuncMap [CV_FUNC_COUNT];
+static int32_t nWinFuncs, winFunc [2], winFuncList [CV_FUNC_COUNT], winFuncMap [CV_FUNC_COUNT];
 
 //------------------------------------------------------------------------------
 
 static const char* windowTypeIds [2] = {"left window type", "right window type"};
 
-int CockpitOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t CockpitOptionsCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
 	CMenuItem*	m;
-	int			v;
+	int32_t			v;
 
 #if WEAPON_ICONS
 mat = menu + optWeaponIcons;
@@ -130,7 +130,7 @@ if ((m = menu ["show hud"])) {
 		}
 	}
 
-for (int i = 0; i < 2; i++) {
+for (int32_t i = 0; i < 2; i++) {
 	if ((m = menu [windowTypeIds [i]])) {
 		v = m->Value ();
 		if (v != winFunc [i]) {
@@ -287,9 +287,9 @@ szTgtInd [2] = TXT_FULL;
 //------------------------------------------------------------------------------
 // build a list of all available cockpit window functions
 
-int GatherWindowFunctions (int winFuncList [CV_FUNC_COUNT], int winFuncMap [CV_FUNC_COUNT])
+int32_t GatherWindowFunctions (int32_t winFuncList [CV_FUNC_COUNT], int32_t winFuncMap [CV_FUNC_COUNT])
 {
-	int	i = 0;
+	int32_t	i = 0;
 
 winFuncList [i++] = CV_NONE;
 if (FindEscort())
@@ -305,7 +305,7 @@ if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1
 	winFuncList [i++] = CV_RADAR_HEADSUP;
 	}
 memset (winFuncMap, 0xFF, sizeofa (winFuncMap));
-for (int j = 0; j < i; j++)
+for (int32_t j = 0; j < i; j++)
 	winFuncMap [winFuncList [j]] = j;
 return i;
 }
@@ -316,10 +316,10 @@ void DefaultCockpitSettings (bool bSetup = false);
 
 void CockpitOptionsMenu (void)
 {
-	static int choice = 0;
+	static int32_t choice = 0;
 
 	CMenu m;
-	int	i;
+	int32_t	i;
 
 	char	szSlider [50];
 
@@ -417,7 +417,7 @@ do {
 			break;
 #if WEAPON_ICONS
 		if (bShowWeaponIcons && (optIconPos >= 0)) {
-			for (int j = 0; j < 4; j++)
+			for (int32_t j = 0; j < 4; j++)
 				if (mat [optIconPos + j].Value ()) {
 					extraGameInfo [0].nWeaponIcons = j + 1;
 					break;
@@ -440,9 +440,9 @@ do {
 	extraGameInfo [IsMultiGame].nZoomMode = m.Value ("zoom style") + 1;
 #if WEAPON_ICONS
 	if (bShowWeaponIcons) {
-		int h = m.IndexOf ("weapon icons top");
+		int32_t h = m.IndexOf ("weapon icons top");
 		if (h >= 0) {
-			for (int j = 0; j < 4; j++)
+			for (int32_t j = 0; j < 4; j++)
 				if (mat [h + j].Value ()) {
 					extraGameInfo [0].nWeaponIcons = j + 1;
 					break;

@@ -34,25 +34,25 @@ class CTextureCache {
 		CBitmap*		bitmap;
 		CBitmap* 	bmBot;
 		CBitmap* 	bmTop;
-		int 			nOrient;
-		int			nLastFrameUsed;
+		int32_t 			nOrient;
+		int32_t			nLastFrameUsed;
 };
 
 CStaticArray < CTextureCache, MAX_NUM_CACHE_BITMAPS > texCache;
 
-static int nCacheEntries = 0;
-static int nCacheHits = 0;
-static int nCacheMisses = 0;
+static int32_t nCacheEntries = 0;
+static int32_t nCacheHits = 0;
+static int32_t nCacheMisses = 0;
 
-void MergeTextures (int nType, CBitmap *bmBot, CBitmap *bmTop, CBitmap *bmDest, int bSuperTransp);
-void MergeTexturesNormal (int nType, CBitmap *bmBot, CBitmap *bmTop, ubyte *destDataP);
+void MergeTextures (int32_t nType, CBitmap *bmBot, CBitmap *bmTop, CBitmap *bmDest, int32_t bSuperTransp);
+void MergeTexturesNormal (int32_t nType, CBitmap *bmBot, CBitmap *bmTop, uint8_t *destDataP);
 void _CDECL_ TexMergeClose (void);
 
 //----------------------------------------------------------------------
 
-int TexMergeInit (int nCacheSize)
+int32_t TexMergeInit (int32_t nCacheSize)
 {
-	int i;
+	int32_t i;
 	CTextureCache *cacheP = &texCache [0];
 
 nCacheEntries = ((nCacheSize > 0) && (nCacheSize <= MAX_NUM_CACHE_BITMAPS)) ? nCacheSize  : MAX_NUM_CACHE_BITMAPS;
@@ -71,7 +71,7 @@ return 1;
 
 void TexMergeFlush (void)
 {
-for (int i = 0; i < nCacheEntries; i++) {
+for (int32_t i = 0; i < nCacheEntries; i++) {
 	texCache [i].nLastFrameUsed = -1;
 	texCache [i].nOrient = -1;
 	texCache [i].bmTop =
@@ -86,7 +86,7 @@ void _CDECL_ TexMergeClose (void)
 PrintLog (1, "shutting down merged textures cache\n");
 TexMergeFlush ();
 PrintLog (0, "deleting %d bitmaps\n", nCacheEntries);
-for (int i = 0; i < nCacheEntries; i++) {
+for (int32_t i = 0; i < nCacheEntries; i++) {
 	if (texCache [i].bitmap) {
 		delete texCache [i].bitmap;
 		texCache [i].bitmap = NULL;
@@ -97,11 +97,11 @@ PrintLog (-1);
 }
 
 //-------------------------------------------------------------------------
-//--unused-- int info_printed = 0;
-CBitmap * TexMergeGetCachedBitmap (int tMapBot, int tMapTop, int nOrient)
+//--unused-- int32_t info_printed = 0;
+CBitmap * TexMergeGetCachedBitmap (int32_t tMapBot, int32_t tMapTop, int32_t nOrient)
 {
 	CBitmap*			bmTop, * bmBot, * bmP;
-	int				i, nLowestFrame, nLRU;
+	int32_t				i, nLowestFrame, nLRU;
 	char				szName [20];
 	CTextureCache*	cacheP;
 
@@ -197,10 +197,10 @@ return bmP;
 
 //-------------------------------------------------------------------------
 
-void MergeTexturesNormal (int nType, CBitmap * bmBot, CBitmap * bmTop, ubyte * destDataP)
+void MergeTexturesNormal (int32_t nType, CBitmap * bmBot, CBitmap * bmTop, uint8_t * destDataP)
 {
-	ubyte * topDataP, *btmDataP;
-	int scale;
+	uint8_t * topDataP, *btmDataP;
+	int32_t scale;
 
 if (gameOpts->ogl.bGlTexMerge)
 	return;
@@ -237,13 +237,13 @@ switch(nType) {
 //-------------------------------------------------------------------------
 
 typedef struct frac {
-	int	c, d;
+	int32_t	c, d;
 } frac;
 
-inline tRGBA *C (ubyte *palP, ubyte *b, int i, int bpp, int *pbST)
+inline tRGBA *C (uint8_t *palP, uint8_t *b, int32_t i, int32_t bpp, int32_t *pbST)
 {
 	static	tRGBA	c;
-	int bST;
+	int32_t bST;
 
 if (bpp == 4) {
 	c = reinterpret_cast<tRGBA*> (b) [i];
@@ -281,13 +281,13 @@ return &c;
 
 //-------------------------------------------------------------------------
 
-static inline int TexScale (int v, frac s)
+static inline int32_t TexScale (int32_t v, frac s)
 {
 return (v * s.c) / s.d;
 }
 
 
-static inline int TexIdx (int x, int y, int w, frac s)
+static inline int32_t TexIdx (int32_t x, int32_t y, int32_t w, frac s)
 {
 return TexScale (y * w + x, s);
 }
@@ -299,15 +299,15 @@ return TexScale (y * w + x, s);
 #define BTMIDX	TexIdx (x, y, bw, btmScale)
 
 
-void MergeTextures (int nType, CBitmap* bmBot, CBitmap* bmTop, CBitmap *bmDest, int bSuperTransp)
+void MergeTextures (int32_t nType, CBitmap* bmBot, CBitmap* bmTop, CBitmap *bmDest, int32_t bSuperTransp)
 {
 	tRGBA*	colorP;
-	int		i, x, y, bw, tw, th, dw, dh;
-	int		bTopBPP, bBtmBPP, bST = 0;
+	int32_t		i, x, y, bw, tw, th, dw, dh;
+	int32_t		bTopBPP, bBtmBPP, bST = 0;
 	frac		topScale, btmScale;
 	tRGBA		*destDataP = reinterpret_cast<tRGBA*> (bmDest->Buffer ());
 
-	ubyte		*topDataP, *btmDataP, *topPalette, *btmPalette;
+	uint8_t		*topDataP, *btmDataP, *topPalette, *btmPalette;
 
 bmBot = bmBot->Override (-1);
 bmTop = bmTop->Override (-1);
@@ -407,7 +407,7 @@ switch (nType) {
 
 //------------------------------------------------------------------------------
 
-int tmShaderProgs [6] = {-1,-1,-1,-1,-1,-1};
+int32_t tmShaderProgs [6] = {-1,-1,-1,-1,-1,-1};
 
 const char *texMergeFS [6] = {
 	// grayscale
@@ -507,7 +507,7 @@ const char *texMergeFSData =
 
 void InitTexMergeShaders (void)
 {
-	int	i, b;
+	int32_t	i, b;
 
 if (!(gameOpts->render.bUseShaders && ogl.m_features.bShaders))
 	gameOpts->ogl.bGlTexMerge = 0;
@@ -536,7 +536,7 @@ if (!gameOpts->ogl.bGlTexMerge) {
 
 //------------------------------------------------------------------------------
 
-int SetupTexMergeShader (int bColorKey, int bColored, int nType)
+int32_t SetupTexMergeShader (int32_t bColorKey, int32_t bColored, int32_t nType)
 {
 #if DBG
 if (nType < 2)
@@ -552,7 +552,7 @@ else
 	nType = 1;
 #endif
 
-	int nShader = nType + bColored * 3;
+	int32_t nShader = nType + bColored * 3;
 
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (tmShaderProgs [nShader]));
 if (!shaderProg)

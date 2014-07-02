@@ -54,12 +54,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE EVE.  ALL RIGHTS RESERVED.
 
 //added/removed by Victor Rachels for adding rebindable keys for these
 // KEY_0, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9, KEY_0
-ubyte system_keys [] = { (ubyte) KEY_ESC, (ubyte) KEY_F1, (ubyte) KEY_F2, (ubyte) KEY_F3, (ubyte) KEY_F4, (ubyte) KEY_F5, (ubyte) KEY_F6, (ubyte) KEY_F7, (ubyte) KEY_F8, (ubyte) KEY_F9, (ubyte) KEY_F10, (ubyte) KEY_F11, (ubyte) KEY_F12, (ubyte) KEY_MINUS, (ubyte) KEY_EQUALS, (ubyte) KEY_ALTED+KEY_F9 };
+uint8_t system_keys [] = { (uint8_t) KEY_ESC, (uint8_t) KEY_F1, (uint8_t) KEY_F2, (uint8_t) KEY_F3, (uint8_t) KEY_F4, (uint8_t) KEY_F5, (uint8_t) KEY_F6, (uint8_t) KEY_F7, (uint8_t) KEY_F8, (uint8_t) KEY_F9, (uint8_t) KEY_F10, (uint8_t) KEY_F11, (uint8_t) KEY_F12, (uint8_t) KEY_MINUS, (uint8_t) KEY_EQUALS, (uint8_t) KEY_ALTED+KEY_F9 };
 
 #define TABLE_CREATION 0
 
 // Array used to 'blink' the cursor while waiting for a keypress.
-sbyte fades [64] = { 1,1,1,2,2,3,4,4,5,6,8,9,10,12,13,15,16,17,19,20,22,23,24,26,27,28,28,29,30,30,31,31,31,31,31,30,30,29,28,28,27,26,24,23,22,20,19,17,16,15,13,12,10,9,8,6,5,4,4,3,2,2,1,1 };
+int8_t fades [64] = { 1,1,1,2,2,3,4,4,5,6,8,9,10,12,13,15,16,17,19,20,22,23,24,26,27,28,28,29,30,30,31,31,31,31,31,30,30,29,28,28,27,26,24,23,22,20,19,17,16,15,13,12,10,9,8,6,5,4,4,3,2,2,1,1 };
 
 //char * yesNoTextIndex [2] = { "N", "Y" };
 //char * joybutton_text [28] = { "TRIG", "BTN 1", "BTN 2", "BTN 3", "BTN 4", "", "LEFT", "HAT ", "RIGHT", "", "", "HAT ", "MID", "", "", "HAT ", "", "", "", "HAT ", "TRIG", "LEFT", "RIGHT", "", "UP","DOWN","LEFT", "RIGHT" };
@@ -67,10 +67,10 @@ sbyte fades [64] = { 1,1,1,2,2,3,4,4,5,6,8,9,10,12,13,15,16,17,19,20,22,23,24,26
 //char * mouseAxisTextIndex [2] = { "L/R", "F/B" };
 //char * mouseButtonTextIndex [3] = { "Left", "Right", "Mid" };
 
-int yesNoTextIndex [2] = { TNUM_N, TNUM_Y };
+int32_t yesNoTextIndex [2] = { TNUM_N, TNUM_Y };
 
 #ifndef USE_LINUX_JOY
-	int joybutton_text [28] =
+	int32_t joybutton_text [28] =
  { TNUM_BTN_1, TNUM_BTN_2, TNUM_BTN_3, TNUM_BTN_4,
 	  -1, TNUM_TRIG, TNUM_LEFT, TNUM_HAT_L,
 	 TNUM_RIGHT, -1, TNUM_HAT2_D, TNUM_HAT_R,
@@ -79,8 +79,8 @@ int yesNoTextIndex [2] = { TNUM_N, TNUM_Y };
 	 TNUM_TRIG, TNUM_LEFT, TNUM_RIGHT, -1,
 	 TNUM_UP, TNUM_DOWN, TNUM_LEFT, TNUM_RIGHT };
 
-	int joyaxis_text [7] = { TNUM_X1, TNUM_Y1, TNUM_Z1, TNUM_R1, TNUM_P1,TNUM_R1,TNUM_YA1 };
-//	int JOYAXIS_TEXT [4] = { TNUM_X1, TNUM_Y1, TNUM_X2, TNUM_Y2 };
+	int32_t joyaxis_text [7] = { TNUM_X1, TNUM_Y1, TNUM_Z1, TNUM_R1, TNUM_P1,TNUM_R1,TNUM_YA1 };
+//	int32_t JOYAXIS_TEXT [4] = { TNUM_X1, TNUM_Y1, TNUM_X2, TNUM_Y2 };
 #endif
 
 #if 0
@@ -88,8 +88,8 @@ int yesNoTextIndex [2] = { TNUM_N, TNUM_Y };
 #	define JOYBUTTON_TEXT(v)	joybutton_text [ (v) % MAX_BUTTONS_PER_JOYSTICK]
 #endif
 
-int mouseAxisTextIndex [3] = {TNUM_L_R, TNUM_F_B, TNUM_Z1};
-int mouseButtonTextIndex [3] = {TNUM_LEFT, TNUM_RIGHT, TNUM_MID};
+int32_t mouseAxisTextIndex [3] = {TNUM_L_R, TNUM_F_B, TNUM_Z1};
+int32_t mouseButtonTextIndex [3] = {TNUM_LEFT, TNUM_RIGHT, TNUM_MID};
 const char * extraMouseButtonTextIndex [13] = { "MW UP", "MW DN", "M6", "M7", "M8", "M9", "M10","M11","M12","M13","M14","M15","M16" };//text for buttons above 3. -MPM
 
 #define LHX(x)      (gameStates.menus.bHires?2* (x):x)
@@ -99,7 +99,7 @@ const char *btype_text [] = { "BT_KEY", "BT_MOUSE_BUTTON", "BT_MOUSE_AXIS", "BT_
 
 #define INFO_Y 28
 
-int m_nItems=28;
+int32_t m_nItems=28;
 kcItem *m_items;
 
 //----------- WARNING!!!!!!! -------------------------------------------
@@ -208,7 +208,7 @@ kcItem kcKeyboard [] = {
    { 65,158,189,112, 26, 58, 24, 61, 62,"Slowmo/Speed", 910, BT_KEY,255 }
 };
 
-ubyte kcKbdFlags [MAX_CONTROLS];
+uint8_t kcKbdFlags [MAX_CONTROLS];
 
 kcItem kcJoystick [] = {
  {  0, 15, 46, 71, 26, 15, 1, 24, 5,"Fire primary", 282, BT_JOY_BUTTON, 255 },
@@ -396,21 +396,21 @@ CExternalControls externalControls;
 CFixVector ExtForceVec;
 CFixMatrix ExtApplyForceMatrix;
 
-int ExtJoltInfo [3]={0,0,0};
-int ExtXVibrateInfo [2]={0,0};
-int ExtYVibrateInfo [2]={0,0};
-ubyte ExtXVibrateClear=0;
-ubyte ExtYVibrateClear=0;
+int32_t ExtJoltInfo [3]={0,0,0};
+int32_t ExtXVibrateInfo [2]={0,0};
+int32_t ExtYVibrateInfo [2]={0,0};
+uint8_t ExtXVibrateClear=0;
+uint8_t ExtYVibrateClear=0;
 
-int CControlConfig::m_startAxis [JOY_MAX_AXES];
+int32_t CControlConfig::m_startAxis [JOY_MAX_AXES];
 
 CControlConfig controlConfig;
 
 //------------------------------------------------------------------------------
 
-int CControlConfig::IsAxisUsed (int axis)
+int32_t CControlConfig::IsAxisUsed (int32_t axis)
 {
-for (int i = 0; i < NUM_JOY_CONTROLS; i++) {
+for (int32_t i = 0; i < NUM_JOY_CONTROLS; i++) {
 	if ((kcJoystick [i].nType == BT_JOY_AXIS) && (kcJoystick [i].value == axis))
 		return 1;
 	}
@@ -419,9 +419,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int CControlConfig::FindItemAt (int x, int y)
+int32_t CControlConfig::FindItemAt (int32_t x, int32_t y)
 {
-for (int i = 0; i < m_nItems; i++) {
+for (int32_t i = 0; i < m_nItems; i++) {
 	if (((m_items [i].x + m_items [i].w1) == x) && (m_items [i].y == y))
 		return i;
 	}
@@ -430,7 +430,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int CControlConfig::FindNextItemRight (int nItems, int nCurItem, tItemPos *pos, int *ref)
+int32_t CControlConfig::FindNextItemRight (int32_t nItems, int32_t nCurItem, tItemPos *pos, int32_t *ref)
 {
 nCurItem = ref [nCurItem];
 return pos [(nCurItem + 1) % nItems].i;
@@ -438,7 +438,7 @@ return pos [(nCurItem + 1) % nItems].i;
 
 //------------------------------------------------------------------------------
 
-int CControlConfig::FindNextItemLeft (int nItems, int nCurItem, tItemPos *pos, int *ref)
+int32_t CControlConfig::FindNextItemLeft (int32_t nItems, int32_t nCurItem, tItemPos *pos, int32_t *ref)
 {
 nCurItem = ref [nCurItem];
 return pos [nCurItem ? nCurItem - 1 : nItems - 1].i;
@@ -446,9 +446,9 @@ return pos [nCurItem ? nCurItem - 1 : nItems - 1].i;
 
 //------------------------------------------------------------------------------
 
-int CControlConfig::FindNextItemUp (int nItems, int nCurItem, tItemPos *pos, int *ref)
+int32_t CControlConfig::FindNextItemUp (int32_t nItems, int32_t nCurItem, tItemPos *pos, int32_t *ref)
 {
-	int l, r, x, y, yStart, h, i, j, dx, dy, dMin;
+	int32_t l, r, x, y, yStart, h, i, j, dx, dy, dMin;
 
 h = 0;
 i = j = ref [nCurItem];
@@ -489,9 +489,9 @@ return pos [h].i;
 
 //------------------------------------------------------------------------------
 
-int CControlConfig::FindNextItemDown (int nItems, int nCurItem, tItemPos *pos, int *ref)
+int32_t CControlConfig::FindNextItemDown (int32_t nItems, int32_t nCurItem, tItemPos *pos, int32_t *ref)
 {
-	int l, r, x, y, yStart, h, i, j, dx, dy, dMin;
+	int32_t l, r, x, y, yStart, h, i, j, dx, dy, dMin;
 
 h = 0;
 i = j = ref [nCurItem];
@@ -530,40 +530,40 @@ return pos [h].i;
 
 //------------------------------------------------------------------------------
 
-const char* CControlConfig::MouseButtonText (int i)
+const char* CControlConfig::MouseButtonText (int32_t i)
 {
 if (i < 0)
 	return "";
 if (i < 3)
 	return baseGameTexts [mouseButtonTextIndex [i]][0];
-if (i - 3 < (int) sizeofa (extraMouseButtonTextIndex))
+if (i - 3 < (int32_t) sizeofa (extraMouseButtonTextIndex))
 	return extraMouseButtonTextIndex [i - 3];
 return "";
 }
 
 //------------------------------------------------------------------------------
 
-const char* CControlConfig::MouseAxisText (int i)
+const char* CControlConfig::MouseAxisText (int32_t i)
 {
 if (i < 0)
 	return "";
-if (i < (int) sizeofa (mouseAxisTextIndex))
+if (i < (int32_t) sizeofa (mouseAxisTextIndex))
 	return baseGameTexts [mouseAxisTextIndex [i]][0];
 return "";
 }
 
 //------------------------------------------------------------------------------
 
-const char* CControlConfig::YesNoText (int i)
+const char* CControlConfig::YesNoText (int32_t i)
 {
 return baseGameTexts [yesNoTextIndex [i != 0]][0];
 }
 
 //------------------------------------------------------------------------------
 
-int CControlConfig::GetItemHeight (kcItem *item)
+int32_t CControlConfig::GetItemHeight (kcItem *item)
 {
-	int w, h, aw;
+	int32_t w, h, aw;
 	char szText [10];
 
 if (item->value == 255)
@@ -588,9 +588,9 @@ else {
 					  j_Get_joydev_button_number (item->value);
 #else
 		 {
-				int	nStick = item->value / MAX_BUTTONS_PER_JOYSTICK;
-				int	nBtn = item->value % MAX_BUTTONS_PER_JOYSTICK;
-				int	nHat = sdlJoysticks [nStick].nButtons;
+				int32_t	nStick = item->value / MAX_BUTTONS_PER_JOYSTICK;
+				int32_t	nBtn = item->value % MAX_BUTTONS_PER_JOYSTICK;
+				int32_t	nHat = sdlJoysticks [nStick].nButtons;
 				//static char szHatDirs [4] = {'U', 'L', 'D', 'R'};
 				static char cHatDirs [4] = { (char) 130, (char) 127, (char) 128, (char) 129};
 
@@ -608,8 +608,8 @@ else {
 					  j_Get_joydev_axis_number (item->value);
 #else
 		 {
-				int	nStick = item->value / MAX_AXES_PER_JOYSTICK;
-				int	nAxis = item->value % MAX_AXES_PER_JOYSTICK;
+				int32_t	nStick = item->value / MAX_AXES_PER_JOYSTICK;
+				int32_t	nAxis = item->value % MAX_AXES_PER_JOYSTICK;
 				static char	cAxis [4] = {'X', 'Y', 'Z', 'R'};
 
 			if (nAxis < 4)
@@ -641,9 +641,9 @@ void CControlConfig::DrawTitle (void)
 	const char *p = strchr (m_pszTitle, '\n');
 
 if (p) {
-	int l = (int) (p - m_pszTitle);
-	if (l >= (int) sizeof (szTitle))
-		l = (int) sizeof (szTitle) - 1;
+	int32_t l = (int32_t) (p - m_pszTitle);
+	if (l >= (int32_t) sizeof (szTitle))
+		l = (int32_t) sizeof (szTitle) - 1;
 	memcpy (szTitle, m_pszTitle, l);
 	szTitle [l] = '\0';
 	p = szTitle;
@@ -654,12 +654,12 @@ GrString (0x8000, KC_LHY (8), p);
 
 //------------------------------------------------------------------------------
 
-void CControlConfig::DrawItem (kcItem *item, int is_current, int bRedraw)
+void CControlConfig::DrawItem (kcItem *item, int32_t is_current, int32_t bRedraw)
 {
 	static char cHatDirs [4] = { (char) 130, (char) 127, (char) 128, (char) 129};
 	static char	cAxis [4] = {'X', 'Y', 'Z', 'R'};
 
-	int x, w, h, aw;
+	int32_t x, w, h, aw;
 	char szText [64];
 
 if (bRedraw)
@@ -693,9 +693,9 @@ if (item->value != 255) {
 			sprintf (szText, "J%d B%d",
 					  j_button [item->value].joydev, j_Get_joydev_button_number (item->value);
 #else
-				int	nStick = item->value / MAX_BUTTONS_PER_JOYSTICK;
-				int	nBtn = item->value % MAX_BUTTONS_PER_JOYSTICK;
-				int	nHat = sdlJoysticks [nStick].nButtons;
+				int32_t	nStick = item->value / MAX_BUTTONS_PER_JOYSTICK;
+				int32_t	nBtn = item->value % MAX_BUTTONS_PER_JOYSTICK;
+				int32_t	nHat = sdlJoysticks [nStick].nButtons;
 				//static char szHatDirs [4] = {'U', 'L', 'D', 'R'};
 			if (nBtn < nHat)
 				sprintf (szText, "J%d B%d", nStick + 1, nBtn + 1);
@@ -709,8 +709,8 @@ if (item->value != 255) {
 #if defined (USE_LINUX_JOY)
 			sprintf (szText, "J%d A%d", j_axis [item->value].joydev, j_Get_joydev_axis_number (item->value));
 #elif 1//defined (_WIN32)
-				int	nStick = item->value / MAX_AXES_PER_JOYSTICK;
-				int	nAxis = item->value % MAX_AXES_PER_JOYSTICK;
+				int32_t	nStick = item->value / MAX_AXES_PER_JOYSTICK;
+				int32_t	nAxis = item->value % MAX_AXES_PER_JOYSTICK;
 
 			if (nAxis < 4)
 				sprintf (szText, "J%d %c", nStick + 1, cAxis [nAxis]);
@@ -816,7 +816,7 @@ else if (m_items == kcHotkeys) {
 
 void CControlConfig::DrawTable (void)
 {
-	int	i;
+	int32_t	i;
 
 for (i = 0; i < m_nItems; i++)
 	DrawItem (m_items + i, 0, 0);
@@ -831,7 +831,7 @@ void CControlConfig::Render (void)
 //	RenderMenuGameFrame ()
 //
 //if (BeginRenderMenu ()) 
-int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+int32_t nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 
 backgroundManager.Activate (m_background);
 DrawTitle ();
@@ -859,9 +859,9 @@ gameData.SetStereoOffsetType (nOffsetSave);
 
 void CControlConfig::DrawQuestion (kcItem *item)
 {
-	static int looper = 0;
+	static int32_t looper = 0;
 
-	int x, w, h, aw;
+	int32_t x, w, h, aw;
 
 fontManager.Current ()->StringSize ("?", w, h, aw);
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (21 * fades [looper] / 31, 0, 24 * fades [looper] / 31));
@@ -892,14 +892,14 @@ paletteManager.SetEffect (0, 0, 0);
 
 //------------------------------------------------------------------------------
 
-int CControlConfig::AssignControl (kcItem *item, int nType, ubyte code)
+int32_t CControlConfig::AssignControl (kcItem *item, int32_t nType, uint8_t code)
 {
-	int	i, n;
+	int32_t	i, n;
 
 if (code == 255)
 	return nType;
 
-for (i = 0, n = (int) (item - m_items); i < m_nItems; i++) {
+for (i = 0, n = (int32_t) (item - m_items); i < m_nItems; i++) {
 	if ((i != n) && (m_items [i].nType == nType) && (m_items [i].value == code)) {
 		m_items [i].value = 255;
 		//if (ogl.m_states.nDrawBuffer == GL_FRONT)
@@ -918,18 +918,18 @@ return BT_NONE;
 
 //------------------------------------------------------------------------------
 
-ubyte CControlConfig::KeyCtrlFunc (void)
+uint8_t CControlConfig::KeyCtrlFunc (void)
 {
-	int	i, n, f;
+	int32_t	i, n, f;
 
 for (i = 0; i < 256; i++) {
 	if (gameStates.input.keys.pressed [i] && strlen (pszKeyText [i])) {
 		f = 0;
-		for (n = 0; n < (int) sizeof (system_keys); n++)
+		for (n = 0; n < (int32_t) sizeof (system_keys); n++)
 			if (system_keys [n] == i)
 				f = 1;
 		if (!f)
-			return (ubyte) i;
+			return (uint8_t) i;
 		}
 	}
 return 255;
@@ -937,13 +937,13 @@ return 255;
 
 //------------------------------------------------------------------------------
 
-ubyte CControlConfig::JoyBtnCtrlFunc (void)
+uint8_t CControlConfig::JoyBtnCtrlFunc (void)
 {
-	int	i;
-	ubyte code = 255;
+	int32_t	i;
+	uint8_t code = 255;
 
 if (gameStates.input.nJoyType == CONTROL_THRUSTMASTER_FCS) {
-	int axis [JOY_MAX_AXES];
+	int32_t axis [JOY_MAX_AXES];
 	JoyReadRawAxis (JOY_ALL_AXIS, axis);
 	controls.ReadFCS (axis [3]);
 	if (JoyGetButtonState (19))
@@ -956,18 +956,18 @@ if (gameStates.input.nJoyType == CONTROL_THRUSTMASTER_FCS) {
 		code = 7;
 	for (i = 0; i < 4; i++)
 		if (JoyGetButtonState (i))
-			return (ubyte) i;
+			return (uint8_t) i;
 	}
 else if (gameStates.input.nJoyType == CONTROL_FLIGHTSTICK_PRO) {
 	for (i = 4; i < 20; i++) {
 		if (JoyGetButtonState (i))
-			return (ubyte) i;
+			return (uint8_t) i;
 		}
 	}
 else {
 	for (i = 0; i < JOY_MAX_BUTTONS; i++) {
 		if (JoyGetButtonState (i))
-			return (ubyte) i;
+			return (uint8_t) i;
 		}
 	}
 return code;
@@ -975,23 +975,23 @@ return code;
 
 //------------------------------------------------------------------------------
 
-ubyte CControlConfig::MouseBtnCtrlFunc (void)
+uint8_t CControlConfig::MouseBtnCtrlFunc (void)
 {
-int i, b = MouseGetButtons ();
+int32_t i, b = MouseGetButtons ();
 for (i = 0; i < 16; i++)
 	if (b & (1 << i))
-		return (ubyte) i;
+		return (uint8_t) i;
 return 255;
 }
 
 //------------------------------------------------------------------------------
 
-ubyte CControlConfig::JoyAxisCtrlFunc (void)
+uint8_t CControlConfig::JoyAxisCtrlFunc (void)
 {
-	int curAxis [JOY_MAX_AXES];
-	int i, hd, dd;
-	int bLinJoySensSave = gameOpts->input.joystick.bLinearSens;
-	ubyte code = 255;
+	int32_t curAxis [JOY_MAX_AXES];
+	int32_t i, hd, dd;
+	int32_t bLinJoySensSave = gameOpts->input.joystick.bLinearSens;
+	uint8_t code = 255;
 
 memset (curAxis, 0, sizeof (curAxis));
 gameOpts->input.joystick.bLinearSens = 1;
@@ -1011,11 +1011,11 @@ return code;
 
 //------------------------------------------------------------------------------
 
-ubyte CControlConfig::MouseAxisCtrlFunc (void)
+uint8_t CControlConfig::MouseAxisCtrlFunc (void)
 {
-	int dx, dy;
-	int dz;
-	ubyte code = 255;
+	int32_t dx, dy;
+	int32_t dz;
+	uint8_t code = 255;
 
 MouseGetDeltaZ (&dx, &dy, &dz);
 console.printf (CON_VERBOSE, "mouse: %3d %3d\n", dx, dy);
@@ -1032,9 +1032,9 @@ return code;
 
 //------------------------------------------------------------------------------
 
-int CControlConfig::ChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, const char *pszMsg)
+int32_t CControlConfig::ChangeControl (kcItem *item, int32_t nType, kc_ctrlfunc_ptr ctrlfunc, const char *pszMsg)
 {
-	int k = 255;
+	int32_t k = 255;
 
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
 	GrString (0x8000, KC_LHY (INFO_Y), pszMsg);
@@ -1057,7 +1057,7 @@ return AssignControl (item, nType, ctrlfunc ());
 
 //------------------------------------------------------------------------------
 
-int CControlConfig::ChangeInvert (kcItem * item)
+int32_t CControlConfig::ChangeInvert (kcItem * item)
 {
 GameFlushInputs ();
 item->value = !item->value;
@@ -1068,9 +1068,9 @@ return BT_NONE;
 
 //------------------------------------------------------------------------------
 
-void CControlConfig::QSortItemPos (tItemPos *pos, int left, int right)
+void CControlConfig::QSortItemPos (tItemPos *pos, int32_t left, int32_t right)
 {
-	int			l = left,
+	int32_t			l = left,
 					r = right;
 	tItemPos	h, m = pos [(l + r) / 2];
 
@@ -1097,10 +1097,10 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-CControlConfig::tItemPos* CControlConfig::GetItemPos (kcItem* items, int nItems)
+CControlConfig::tItemPos* CControlConfig::GetItemPos (kcItem* items, int32_t nItems)
 {
 	tItemPos	*pos;
-	int			i;
+	int32_t			i;
 
 if (!(pos = new tItemPos [nItems]))
 	return NULL;
@@ -1116,12 +1116,12 @@ return pos;
 
 //------------------------------------------------------------------------------
 
-int* CControlConfig::GetItemRef (int nItems, tItemPos* pos)
+int32_t* CControlConfig::GetItemRef (int32_t nItems, tItemPos* pos)
 {
-	int	*ref;
-	int	i;
+	int32_t	*ref;
+	int32_t	i;
 
-if (!(ref = new int [nItems]))
+if (!(ref = new int32_t [nItems]))
 	return NULL;
 for (i = 0; i < nItems; i++)
 	ref [pos [i].i] = i;
@@ -1132,7 +1132,7 @@ return ref;
 
 void CControlConfig::LinkKbdEntries (void)
 {
-	int			i, j, *ref;
+	int32_t			i, j, *ref;
 	tItemPos*	pos = GetItemPos (kcKeyboard, NUM_KEY_CONTROLS);
 
 if (pos) {
@@ -1153,7 +1153,7 @@ if (pos) {
 
 void CControlConfig::LinkJoyEntries (void)
 {
-	int			i, j, *ref;
+	int32_t			i, j, *ref;
 	tItemPos*	pos = GetItemPos (kcJoystick, NUM_JOY_CONTROLS);
 
 if (pos) {
@@ -1174,7 +1174,7 @@ if (pos) {
 
 void CControlConfig::LinkMouseEntries (void)
 {
-	int			i, j, *ref;
+	int32_t			i, j, *ref;
 	tItemPos*	pos = GetItemPos (kcMouse, NUM_MOUSE_CONTROLS);
 
 if (pos) {
@@ -1195,7 +1195,7 @@ if (pos) {
 
 void CControlConfig::LinkHotkeyEntries (void)
 {
-	int			i, j, *ref;
+	int32_t			i, j, *ref;
 	tItemPos*	pos = GetItemPos (kcHotkeys, NUM_HOTKEY_CONTROLS);
 
 if (pos) {
@@ -1214,9 +1214,9 @@ if (pos) {
 
 //------------------------------------------------------------------------------
 
-void CControlConfig::LinkTableEntries (int tableFlags)
+void CControlConfig::LinkTableEntries (int32_t tableFlags)
 {
-	static int nLinked = 0;
+	static int32_t nLinked = 0;
 
 if ((tableFlags & 1) && !(nLinked & 1))
 	LinkKbdEntries ();
@@ -1231,7 +1231,7 @@ nLinked |= tableFlags;
 
 //------------------------------------------------------------------------------
 
-int CControlConfig::HandleControl (void)
+int32_t CControlConfig::HandleControl (void)
 {
 m_nPrevChangeMode = m_nChangeMode;
 do {
@@ -1270,10 +1270,10 @@ return m_nChangeMode;
 
 //------------------------------------------------------------------------------
 
-int CControlConfig::HandleInput (void)
+int32_t CControlConfig::HandleInput (void)
 {
-	int		i, k;
-	ubyte*	controlsP; // required to make sure the g++ optimizer doesn't break the loops below
+	int32_t		i, k;
+	uint8_t*	controlsP; // required to make sure the g++ optimizer doesn't break the loops below
 
 k = KeyInKey ();
 if (!m_bTimeStopped && (MultiMenuPoll () == -1))
@@ -1364,17 +1364,17 @@ switch (k) {
 m_nPrevMouseState = m_nMouseState;
 m_nMouseState = MouseButtonState (0);
 if ((m_nMouseState && !m_nPrevMouseState) || (m_nMouseState && m_nPrevMouseState)) {
-	int item_height, mx, my;
+	int32_t item_height, mx, my;
 	MouseGetPos (&mx, &my);
 	mx -= m_xOffs;
 	my -= m_yOffs;
 //			my = (my * 12) / 10;	//y mouse pos is off here, no clue why
 	for (i = 0; i < m_nItems; i++) {
 		item_height = GetItemHeight (m_items + i);
-		int x1 = /*CCanvas::Current ()->Left () +*/ LHX (m_items [i].x) + LHX (m_items [i].w1);
-		int x2 = x1 + LHX (m_items [i].w2);
-		int y1 = /*CCanvas::Current ()->Top () +*/ LHY (m_items [i].y);
-		int y2 = y1 + /*LHY*/ (item_height);
+		int32_t x1 = /*CCanvas::Current ()->Left () +*/ LHX (m_items [i].x) + LHX (m_items [i].w1);
+		int32_t x2 = x1 + LHX (m_items [i].w2);
+		int32_t y1 = /*CCanvas::Current ()->Top () +*/ LHY (m_items [i].y);
+		int32_t y2 = y1 + /*LHY*/ (item_height);
 		if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 			m_nCurItem = i;
 			break;
@@ -1382,26 +1382,26 @@ if ((m_nMouseState && !m_nPrevMouseState) || (m_nMouseState && m_nPrevMouseState
 		}
 	}
 else if (!m_nMouseState && m_nPrevMouseState) {
-	int item_height, mx, my;
+	int32_t item_height, mx, my;
 
 	MouseGetPos (&mx, &my);
 	mx -= m_xOffs;
 	my -= m_yOffs;
 	my = (my * 12) / 10;	//y mouse pos is off here, no clue why
 	item_height = GetItemHeight (m_items + m_nCurItem);
-	int x1 = /*CCanvas::Current ()->Left () +*/ LHX (m_items [m_nCurItem].x) + LHX (m_items [m_nCurItem].w1);
-	int x2 = x1 + LHX (m_items [m_nCurItem].w2);
-	int y1 = /*CCanvas::Current ()->Top () +*/ LHY (m_items [m_nCurItem].y);
-	int y2 = y1 + /*LHY*/ (item_height);
+	int32_t x1 = /*CCanvas::Current ()->Left () +*/ LHX (m_items [m_nCurItem].x) + LHX (m_items [m_nCurItem].w1);
+	int32_t x2 = x1 + LHX (m_items [m_nCurItem].w2);
+	int32_t y1 = /*CCanvas::Current ()->Top () +*/ LHY (m_items [m_nCurItem].y);
+	int32_t y2 = y1 + /*LHY*/ (item_height);
 	if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 		m_nChangeMode = m_items [m_nCurItem].nType;
 		GameFlushInputs ();
 		}
 	else {
-		int x1 = /*CCanvas::Current ()->Left () +*/ m_closeX + LHX (1);
-		int x2 = x1 + m_closeSize - LHX (1);
-		int y1 = /*CCanvas::Current ()->Top () +*/ m_closeY + LHX (1);
-		int y2 = y1 + m_closeSize - LHY (1);
+		int32_t x1 = /*CCanvas::Current ()->Left () +*/ m_closeX + LHX (1);
+		int32_t x2 = x1 + m_closeSize - LHX (1);
+		int32_t y1 = /*CCanvas::Current ()->Top () +*/ m_closeY + LHX (1);
+		int32_t y2 = y1 + m_closeSize - LHY (1);
 		if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
 			return -1;
 			}
@@ -1412,9 +1412,9 @@ return m_nCurItem;
 
 //------------------------------------------------------------------------------
 
-void CControlConfig::Edit (kcItem* items, int nItems)
+void CControlConfig::Edit (kcItem* items, int32_t nItems)
 {
-	int i;
+	int32_t i;
 
 m_items = items;
 m_nItems = nItems;
@@ -1480,11 +1480,11 @@ Quit ();
 
 #include "screens.h"
 
-void CControlConfig::Run (int nType, const char* pszTitle)
+void CControlConfig::Run (int32_t nType, const char* pszTitle)
 {
 CBitmap*	bmSave;
-int		i, j, b = gameOpts->legacy.bInput;
-ubyte*	controlsP; // required to make sure the g++ optimizer doesn't break the loops below
+int32_t		i, j, b = gameOpts->legacy.bInput;
+uint8_t*	controlsP; // required to make sure the g++ optimizer doesn't break the loops below
 
 m_pszTitle = pszTitle;
 m_xOffs = (CCanvas::Current ()->Width () - 640) / 2;
@@ -1570,15 +1570,15 @@ gameOpts->legacy.bInput = b;
 fix Last_angles_p = 0;
 fix Last_angles_b = 0;
 fix Last_angles_h = 0;
-ubyte Last_angles_read = 0;
+uint8_t Last_angles_read = 0;
 
-int VR_sense_range [3] = { 25, 50, 75 };
+int32_t VR_sense_range [3] = { 25, 50, 75 };
 
 #if 0
 read_head_tracker ()
 {
 	fix yaw, pitch, roll;
-	int buttons;
+	int32_t buttons;
 
 //------ read vfx1 helmet --------
 	if (vfx1_installed) {
@@ -1614,9 +1614,9 @@ read_head_tracker ()
 
 //------------------------------------------------------------------------------
 
-void CExternalControls::Init (int intno, int address)
+void CExternalControls::Init (int32_t intno, int32_t address)
 {
-	int i;
+	int32_t i;
 	m_intno = intno;
 	m_info = reinterpret_cast<ext_control_info*> ((size_t) address);
 	m_bUse = 1;
@@ -1628,7 +1628,7 @@ void CExternalControls::Init (int intno, int address)
 	else
 		m_name = StrDup ("External Controller");
 
-   for (i = 0; i < (int) strlen (reinterpret_cast<char*> (m_name)); i++)
+   for (i = 0; i < (int32_t) strlen (reinterpret_cast<char*> (m_name)); i++)
     if (m_name [i]=='_')
 	  m_name [i]=' ';
 
@@ -1642,7 +1642,7 @@ void CExternalControls::Init (int intno, int address)
 void CExternalControls::Read (void)
 {
 	//union REGS r;
-   int i;
+   int32_t i;
 
 	if (!m_bEnable) return;
 
@@ -1659,7 +1659,7 @@ else if (m_version > 0)  {
 
 	if (m_version > 1) {
 		// Write ship pos and angles to external controls...
-		ubyte *temp_ptr = reinterpret_cast<ubyte*> (m_info);
+		uint8_t *temp_ptr = reinterpret_cast<uint8_t*> (m_info);
 		CFixVector *ship_pos;
 		CFixMatrix *ship_orient;
 		memset (m_info, 0, sizeof (ext_control_info)+sizeof (CAngleVector) + 64 + sizeof (CFixVector)+sizeof (CFixMatrix));
@@ -1747,7 +1747,7 @@ else if (m_version > 0)  {
 
    if (m_version>=3)
 	 {
-		ubyte *temp_ptr = reinterpret_cast<ubyte*> (m_info);
+		uint8_t *temp_ptr = reinterpret_cast<uint8_t*> (m_info);
 		temp_ptr += (sizeof (ext_control_info) + sizeof (CAngleVector) + 64 + sizeof (CFixVector) + sizeof (CFixMatrix));
 
 	   if (* (temp_ptr))
@@ -1786,9 +1786,9 @@ if (m_name) {
 
 //------------------------------------------------------------------------------
 
-void KCSetControls (int bGet)
+void KCSetControls (int32_t bGet)
 {
-	int i, j;
+	int32_t i, j;
 
 controls.SetType ();
 return;
@@ -1855,11 +1855,11 @@ for (i = 0; i < 4; i++)
 
 //------------------------------------------------------------------------------
 
-int KcKeyboardSize (void) {return sizeofa (kcKeyboard);}
-int KcMouseSize (void) {return sizeofa (kcMouse);}
-int KcJoystickSize (void) {return sizeofa (kcJoystick);}
-int KcSuperJoySize (void) {return sizeofa (kcSuperJoy);}
-int KcHotkeySize (void) {return sizeofa (kcHotkeys);}
+int32_t KcKeyboardSize (void) {return sizeofa (kcKeyboard);}
+int32_t KcMouseSize (void) {return sizeofa (kcMouse);}
+int32_t KcJoystickSize (void) {return sizeofa (kcJoystick);}
+int32_t KcSuperJoySize (void) {return sizeofa (kcSuperJoy);}
+int32_t KcHotkeySize (void) {return sizeofa (kcHotkeys);}
 
 //------------------------------------------------------------------------------
 //eof

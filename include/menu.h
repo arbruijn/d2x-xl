@@ -25,10 +25,10 @@
 //------------------------------------------------------------------------------
 
 extern char *menu_difficulty_text[];
-extern int Max_debrisObjects;
-extern int MissileView_enabled;
-extern int EscortView_enabled;
-extern int Cockpit_rearView;
+extern int32_t Max_debrisObjects;
+extern int32_t MissileView_enabled;
+extern int32_t EscortView_enabled;
+extern int32_t Cockpit_rearView;
 extern char *nmAllowedChars;
 extern char bPauseableMenu;
 extern char bAlreadyShowingInfo;
@@ -100,20 +100,20 @@ typedef char tMenuText[MENU_MAX_TEXTLEN];
 
 class CMenuItem {
 public:
-	int m_nType; // What kind of item this is, see NM_TYPE_????? defines
-	int m_group; // What group this belongs to for radio buttons.
-	int m_nTextLen; // The maximum length of characters that can be entered by this inputboxes
-	uint m_color;
-	short m_nKey;
+	int32_t m_nType; // What kind of item this is, see NM_TYPE_????? defines
+	int32_t m_group; // What group this belongs to for radio buttons.
+	int32_t m_nTextLen; // The maximum length of characters that can be entered by this inputboxes
+	uint32_t m_color;
+	int16_t m_nKey;
 	// The rest of these are used internally by by the menu system, so don't set 'em!!
-	short m_x, m_y, m_xSave, m_ySave;
-	short m_w, m_h;
-	short m_rightOffset;
-	ubyte m_bRedraw;
-	ubyte m_bRebuild;
-	ubyte m_bNoScroll;
-	ubyte m_bUnavailable;
-	ubyte m_bCentered;
+	int16_t m_x, m_y, m_xSave, m_ySave;
+	int16_t m_w, m_h;
+	int16_t m_rightOffset;
+	uint8_t m_bRedraw;
+	uint8_t m_bRebuild;
+	uint8_t m_bNoScroll;
+	uint8_t m_bUnavailable;
+	uint8_t m_bCentered;
 	char m_text[MENU_MAX_TEXTLEN + 1];
 	char m_savedText[MENU_MAX_TEXTLEN + 1];
 	char* m_pszText;
@@ -122,8 +122,8 @@ public:
 	char* m_szId;
 
 protected:
-	int m_value; // For checkboxes and radio buttons, this is 1 if marked initially, else 0
-	int m_minValue, m_maxValue; // For sliders and number bars.
+	int32_t m_value; // For checkboxes and radio buttons, this is 1 if marked initially, else 0
+	int32_t m_minValue, m_maxValue; // For sliders and number bars.
 
 public:
 	CMenuItem () {
@@ -135,19 +135,19 @@ public:
 	void Destroy (void);
 	void FreeTextBms (void);
 	void FreeId (void);
-	int GetSize (int h, int aw, int& nStringWidth, int& nStringHeight,
-			int& nAverageWidth, int& nMenus, int& nOthers, int bTiny);
-	short SetColor (int bIsCurrent, int bTiny);
+	int32_t GetSize (int32_t h, int32_t aw, int32_t& nStringWidth, int32_t& nStringHeight,
+			int32_t& nAverageWidth, int32_t& nMenus, int32_t& nOthers, int32_t bTiny);
+	int16_t SetColor (int32_t bIsCurrent, int32_t bTiny);
 
-	void DrawHotKeyString (int bIsCurrent, int bTiny, int bCreateTextBms,
-			int nDepth);
-	void DrawString (int bIsCurrent, int bTiny);
-	void DrawSlider (int bIsCurrent, int bTiny);
-	void DrawRightString (int bIsCurrent, int bTiny, char* s);
-	void DrawInputBox (int w, int x, int y, char* text, int current, int bTiny);
-	void DrawBlackBox (int w1, int x, int y, const char* s, int bTiny);
-	void DrawGauge (int w, int x, int y, int val, int maxVal, int current);
-	void Draw (int bIsCurrent, int bTiny);
+	void DrawHotKeyString (int32_t bIsCurrent, int32_t bTiny, int32_t bCreateTextBms,
+			int32_t nDepth);
+	void DrawString (int32_t bIsCurrent, int32_t bTiny);
+	void DrawSlider (int32_t bIsCurrent, int32_t bTiny);
+	void DrawRightString (int32_t bIsCurrent, int32_t bTiny, char* s);
+	void DrawInputBox (int32_t w, int32_t x, int32_t y, char* text, int32_t current, int32_t bTiny);
+	void DrawBlackBox (int32_t w1, int32_t x, int32_t y, const char* s, int32_t bTiny);
+	void DrawGauge (int32_t w, int32_t x, int32_t y, int32_t val, int32_t maxVal, int32_t current);
+	void Draw (int32_t bIsCurrent, int32_t bTiny);
 
 	void ShowHelp (void);
 
@@ -158,19 +158,19 @@ public:
 	void RestoreText (void);
 	char* GetInput (void);
 
-	inline int& Value (void) {
+	inline int32_t& Value (void) {
 		return m_value;
 	}
-	inline void SetValue (int value) {
+	inline void SetValue (int32_t value) {
 		if (m_value == value)
 			return;
 		m_value = value;
 		Rebuild ();
 	}
-	inline int& MinValue (void) {
+	inline int32_t& MinValue (void) {
 		return m_minValue;
 	}
-	inline int& MaxValue (void) {
+	inline int32_t& MaxValue (void) {
 		return m_maxValue;
 	}
 	inline void Redraw (void) {
@@ -179,13 +179,13 @@ public:
 	inline void Rebuild (void) {
 		m_bRebuild = 1;
 	}
-	inline int Rebuilding (void) {
+	inline int32_t Rebuilding (void) {
 		return m_bRebuild;
 	}
 	inline char* Text (void) {
 		return m_text;
 	}
-	inline int ToInt (void) {
+	inline int32_t ToInt (void) {
 		return atol (m_text);
 	}
 
@@ -199,7 +199,7 @@ public:
 //------------------------------------------------------------------------------
 
 typedef struct tMenuProps {
-	int				screenWidth, screenHeight, x, y, xOffs, yOffs, userWidth, userHeight, width, height, aw, titleWidth, titleHeight,
+	int32_t				screenWidth, screenHeight, x, y, xOffs, yOffs, userWidth, userHeight, width, height, aw, titleWidth, titleHeight,
 						ty, titlePos, rightOffset, nStringHeight, bTinyMode, nMenus, nOthers,
 						nMaxNoScroll, nMaxOnMenu, nMaxDisplayable, nScrollOffset,
 						bIsScrollBox, nDisplayMode, bValid;
@@ -211,29 +211,29 @@ typedef struct tMenuProps {
 
 class CMenu;
 
-typedef int (*pMenuCallback) (CMenu& mat, int& lastKey, int nItem, int nState);
+typedef int32_t (*pMenuCallback) (CMenu& mat, int32_t& lastKey, int32_t nItem, int32_t nState);
 
 class CMenu : public CStack<CMenuItem> {
 private:
-	int				m_nGroup;
+	int32_t				m_nGroup;
 	CTimeout			m_to;
 	CMenu				* m_parent;
 	static CMenu	*m_active;
-	static int		m_level;
+	static int32_t		m_level;
 
 protected:
-	int				m_bStart;
-	int				m_bDone;
-	int				m_nLastScrollCheck;
-	int				m_bRedraw;
-	int				m_bCloseBox;
-	int				m_bDontRestore;
-	int				m_bAllText;
-	uint				m_tEnter;
-	int				m_nChoice;
-	int				m_nKey;
-	int				m_xMouse;
-	int				m_yMouse;
+	int32_t				m_bStart;
+	int32_t				m_bDone;
+	int32_t				m_nLastScrollCheck;
+	int32_t				m_bRedraw;
+	int32_t				m_bCloseBox;
+	int32_t				m_bDontRestore;
+	int32_t				m_bAllText;
+	uint32_t				m_tEnter;
+	int32_t				m_nChoice;
+	int32_t				m_nKey;
+	int32_t				m_xMouse;
+	int32_t				m_yMouse;
 	bool				m_bThrottle;
 	pMenuCallback	m_callback;
 	CMenuItem		m_null;
@@ -246,7 +246,7 @@ public:
 		Init ();
 	}
 
-	explicit CMenu (uint nLength) {
+	explicit CMenu (uint32_t nLength) {
 		Init ();
 		Create (nLength);
 		}
@@ -276,7 +276,7 @@ public:
 		m_current = NULL;
 	}
 
-	inline int NewGroup (int nGroup = 0) {
+	inline int32_t NewGroup (int32_t nGroup = 0) {
 		if (!nGroup)
 			m_nGroup++;
 		else if (nGroup > 0)
@@ -286,15 +286,15 @@ public:
 		return m_nGroup;
 	}
 
-	inline int IndexOf (const char* szId, bool bLogErrors = true) {
+	inline int32_t IndexOf (const char* szId, bool bLogErrors = true) {
 		if (szId && *szId) {
 			if (*szId == '?')
 				return IndexOf (szId + 1, false);
 			if (m_current && m_current->m_szId
 					&& !stricmp (szId, m_current->m_szId))
-				return (int) (m_current - Buffer ());
+				return (int32_t) (m_current - Buffer ());
 			m_current = Buffer ();
-			for (uint i = 0; i < m_tos; i++, m_current++) {
+			for (uint32_t i = 0; i < m_tos; i++, m_current++) {
 				if (m_current->m_szId && !stricmp (szId, m_current->m_szId))
 					return i;
 			}
@@ -311,86 +311,86 @@ public:
 		return IndexOf (szId, false) >= 0;
 		}
 
-	inline int Value (const char* szId) {
-		int i = IndexOf (szId);
+	inline int32_t Value (const char* szId) {
+		int32_t i = IndexOf (szId);
 		return (i < 0) ? 0 : Buffer (i)->Value ();
 		}
 
-	inline void SetValue (const char* szId, int value) {
-		int i = IndexOf (szId);
+	inline void SetValue (const char* szId, int32_t value) {
+		int32_t i = IndexOf (szId);
 		if (i >= 0)
 			Buffer (i)->Value () = value;
 		}
 
-	inline int MinValue (const char* szId) {
-		int i = IndexOf (szId);
+	inline int32_t MinValue (const char* szId) {
+		int32_t i = IndexOf (szId);
 		if (i >= 0)
 			return Buffer (i)->MinValue ();
 		return 0;
 		}
 
-	inline int MaxValue (const char* szId) {
-		int i = IndexOf (szId);
+	inline int32_t MaxValue (const char* szId) {
+		int32_t i = IndexOf (szId);
 		if (i >= 0)
 			return Buffer (i)->MaxValue ();
 		return 0;
 		}
 
 	inline char* Text (const char* szId) {
-		int i = IndexOf (szId);
+		int32_t i = IndexOf (szId);
 		if (i >= 0)
 			return Buffer (i)->Text ();
 		return NULL;
 		}
 
-	inline int ToInt (const char* szId) {
-		int i = IndexOf (szId);
+	inline int32_t ToInt (const char* szId) {
+		int32_t i = IndexOf (szId);
 		if (i >= 0)
 			return Buffer (i)->ToInt ();
 		return 0;
 		}
 
-	inline CMenuItem& operator[] (const int i) {
+	inline CMenuItem& operator[] (const int32_t i) {
 		return CStack<CMenuItem>::operator[] (i);
 		}
 
 	inline CMenuItem* operator[] (const char* szId) {
-		int i = IndexOf (szId);
+		int32_t i = IndexOf (szId);
 		return (i < 0) ? NULL : Buffer (i);
 		}
 
-	int AddCheck (const char* szId, const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL);
-	int AddRadio (const char* szId, const char* szText, int nValue, int nKey = 0, const char* szHelp = NULL);
-	int AddMenu (const char* szId, const char* szText, int nKey = 0, const char* szHelp = NULL);
-	int AddText (const char* szId, const char* szText, int nKey = 0);
-	int AddSlider (const char* szId, const char* szText, int nValue, int nMin, int nMax, int nKey = 0, const char* szHelp = NULL);
-	int AddInput (const char* szId, const char* szText, int nLen, const char* szHelp = NULL);
-	int AddInput (const char* szId, const char* szText, char* szValue, int nLen, const char* szHelp = NULL);
-	int AddInput (const char* szId, const char* szText, char* szValue, int nValue, int nLen, const char* szHelp = NULL);
-	int AddInputBox (const char* szId, const char* szText, int nLen, int nKey = 0, const char* szHelp = NULL);
-	int AddNumber (const char* szId, const char* szText, int nValue, int nMin, int nMax);
-	int AddGauge (const char* szId, const char* szText, int nValue, int nMax);
-	inline CMenuItem& Item (int i = -1) {return (i < 0) ? m_data.buffer [ToS () - 1] : m_data.buffer [i];	}
+	int32_t AddCheck (const char* szId, const char* szText, int32_t nValue, int32_t nKey = 0, const char* szHelp = NULL);
+	int32_t AddRadio (const char* szId, const char* szText, int32_t nValue, int32_t nKey = 0, const char* szHelp = NULL);
+	int32_t AddMenu (const char* szId, const char* szText, int32_t nKey = 0, const char* szHelp = NULL);
+	int32_t AddText (const char* szId, const char* szText, int32_t nKey = 0);
+	int32_t AddSlider (const char* szId, const char* szText, int32_t nValue, int32_t nMin, int32_t nMax, int32_t nKey = 0, const char* szHelp = NULL);
+	int32_t AddInput (const char* szId, const char* szText, int32_t nLen, const char* szHelp = NULL);
+	int32_t AddInput (const char* szId, const char* szText, char* szValue, int32_t nLen, const char* szHelp = NULL);
+	int32_t AddInput (const char* szId, const char* szText, char* szValue, int32_t nValue, int32_t nLen, const char* szHelp = NULL);
+	int32_t AddInputBox (const char* szId, const char* szText, int32_t nLen, int32_t nKey = 0, const char* szHelp = NULL);
+	int32_t AddNumber (const char* szId, const char* szText, int32_t nValue, int32_t nMin, int32_t nMax);
+	int32_t AddGauge (const char* szId, const char* szText, int32_t nValue, int32_t nMax);
+	inline CMenuItem& Item (int32_t i = -1) {return (i < 0) ? m_data.buffer [ToS () - 1] : m_data.buffer [i];	}
 
-	int XOffset (void);
-	int YOffset (void);
+	int32_t XOffset (void);
+	int32_t YOffset (void);
 
 	void GetMousePos (void);
 
-	int Menu (const char* pszTitle, const char* pszSubTitle,
-				 pMenuCallback callback = NULL, int* nCurItemP = NULL,
-				 int nType = BG_SUBMENU, int nWallpaper = BG_STANDARD, 
-				 int width = -1, int height = -1,
-				 int bTinyMode = 0);
+	int32_t Menu (const char* pszTitle, const char* pszSubTitle,
+				 pMenuCallback callback = NULL, int32_t* nCurItemP = NULL,
+				 int32_t nType = BG_SUBMENU, int32_t nWallpaper = BG_STANDARD, 
+				 int32_t width = -1, int32_t height = -1,
+				 int32_t bTinyMode = 0);
 
-	int TinyMenu (const char *pszTitle, const char *pszSubTitle, pMenuCallback callBack = NULL);
+	int32_t TinyMenu (const char *pszTitle, const char *pszSubTitle, pMenuCallback callBack = NULL);
 
-	int FixedFontMenu (const char* pszTitle, const char* pszSubTitle,
-							 pMenuCallback callback, int* nCurItemP,
-							 int nType = BG_SUBMENU, int nWallpaper = BG_STANDARD, 
-							 int width = -1, int height = -1);
+	int32_t FixedFontMenu (const char* pszTitle, const char* pszSubTitle,
+							 pMenuCallback callback, int32_t* nCurItemP,
+							 int32_t nType = BG_SUBMENU, int32_t nWallpaper = BG_STANDARD, 
+							 int32_t width = -1, int32_t height = -1);
 
-	void DrawCloseBox (int x, int y);
+	void DrawCloseBox (int32_t x, int32_t y);
 	void FadeIn (void);
 	void FadeOut (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
 
@@ -402,26 +402,26 @@ public:
 	virtual void Render (void);
 
 	static float GetScale (void);
-	static inline int Scaled (int v) { return (int) FRound ((float (v) * GetScale ())); }
-	static inline int Unscaled (int v) { return (int) FRound ((float (v) / GetScale ())); }
+	static inline int32_t Scaled (int32_t v) { return (int32_t) FRound ((float (v) * GetScale ())); }
+	static inline int32_t Unscaled (int32_t v) { return (int32_t) FRound ((float (v) / GetScale ())); }
 
 	static CMenu * Active (void) { return m_active; }
 
 private:
-	int InitProps (const char* pszTitle, const char* pszSubTitle);
-	void GetTitleSize (const char* pszTitle, CFont *font, int& tw, int& th);
-	int GetSize (int& w, int& h, int& aw, int& nMenus, int& nOthers);
-	void SetItemPos (int twidth, int xOffs, int yOffs, int right_offset);
+	int32_t InitProps (const char* pszTitle, const char* pszSubTitle);
+	void GetTitleSize (const char* pszTitle, CFont *font, int32_t& tw, int32_t& th);
+	int32_t GetSize (int32_t& w, int32_t& h, int32_t& aw, int32_t& nMenus, int32_t& nOthers);
+	void SetItemPos (int32_t twidth, int32_t xOffs, int32_t yOffs, int32_t right_offset);
 
-	void DrawRightStringWXY (int w1, int x, int y, const char* s);
-	int CharAllowed (char c);
+	void DrawRightStringWXY (int32_t w1, int32_t x, int32_t y, const char* s);
+	int32_t CharAllowed (char c);
 	void TrimWhitespace (char* text);
-	int DrawTitle (const char* pszTitle, CFont *font, uint color, int ty);
+	int32_t DrawTitle (const char* pszTitle, CFont *font, uint32_t color, int32_t ty);
 
 	void SaveScreen (CCanvas **gameCanvasP);
 	void RestoreScreen (void);
 	void FreeTextBms (void);
-	void SwapText (int i, int j);
+	void SwapText (int32_t i, int32_t j);
 
 	CMenuItem* AddItem (void);
 	void SetId (CMenuItem& item, const char* pszId);
@@ -431,49 +431,49 @@ private:
 
 class CFileSelector: public CMenu {
 private:
-	int m_nFirstItem;
-	int m_nVisibleItems;
-	int m_nMode;
-	int m_bDemosDeleted;
-	int m_nTextLeft;
-	int m_nTextTop;
-	int m_nTextWidth;
-	int m_nTextHeight;
-	int m_nFileCount;
+	int32_t m_nFirstItem;
+	int32_t m_nVisibleItems;
+	int32_t m_nMode;
+	int32_t m_bDemosDeleted;
+	int32_t m_nTextLeft;
+	int32_t m_nTextTop;
+	int32_t m_nTextWidth;
+	int32_t m_nTextHeight;
+	int32_t m_nFileCount;
 	CArray<CFilename> m_filenames;
 
 public:
-	int FileSelector (const char *pszTitle, const char *filespec, char *filename, int bAllowAbort);
-	int DeleteFile (void);
+	int32_t FileSelector (const char *pszTitle, const char *filespec, char *filename, int32_t bAllowAbort);
+	int32_t DeleteFile (void);
 	virtual void Render (void);
 };
 
 //------------------------------------------------------------------------------
 
-typedef int
-		 (*pListBoxCallback) (int* nItem, CArray<char*>& items, int* keypress);
+typedef int32_t
+		 (*pListBoxCallback) (int32_t* nItem, CArray<char*>& items, int32_t* keypress);
 
 class CListBox: public CMenu {
-	int m_nFirstItem;
-	int m_nVisibleItems;
-	int m_nWidth;
-	int m_nHeight;
-	int m_nTitleHeight;
-	int m_nOffset;
+	int32_t m_nFirstItem;
+	int32_t m_nVisibleItems;
+	int32_t m_nWidth;
+	int32_t m_nHeight;
+	int32_t m_nTitleHeight;
+	int32_t m_nOffset;
 	CStack<char*>* m_items;
 
 public:
-	int ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem = 0, int bAllowAbort = 1, pListBoxCallback callback = NULL);
+	int32_t ListBox (const char* pszTitle, CStack<char*>& items, int32_t nDefaultItem = 0, int32_t bAllowAbort = 1, pListBoxCallback callback = NULL);
 	virtual void Render (void);
 };
 
 //------------------------------------------------------------------------------
 
 class CMessageBox: public CMenu {
-	int m_nDrawBuffer;
+	int32_t m_nDrawBuffer;
 	const char* m_pszMsg;
-	int m_x;
-	int m_y;
+	int32_t m_x;
+	int32_t m_y;
 
 public:
 	~CMessageBox () {
@@ -490,18 +490,18 @@ extern CMessageBox messageBox;
 
 // This function pops up a messagebox and returns which choice was selected...
 // Example:
-int _CDECL_ TextBox (const char *pszTitle, int nWallpaper, int nChoices, ...);
+int32_t _CDECL_ TextBox (const char *pszTitle, int32_t nWallpaper, int32_t nChoices, ...);
 
 // Same as above, but you can pass a function
-int _CDECL_ InfoBox (const char *pszTitle, pMenuCallback callBack, int nWallpaper, int nChoices, ...);
+int32_t _CDECL_ InfoBox (const char *pszTitle, pMenuCallback callBack, int32_t nWallpaper, int32_t nChoices, ...);
 
-void ProgressBar (const char *szCaption, int nCurProgress, int nMaxProgress, pMenuCallback doProgress);
+void ProgressBar (const char *szCaption, int32_t nCurProgress, int32_t nMaxProgress, pMenuCallback doProgress);
 
-int FileList (const char *pszTitle, const char *filespec, char *filename);
+int32_t FileList (const char *pszTitle, const char *filespec, char *filename);
 
-int stoip (char *szServerIpAddr, ubyte *ipAddrP, int* portP = NULL);
-int stoport (char *szPort, int *pPort, int *pSign);
-int SetCustomDisplayMode (int x, int y);
+int32_t stoip (char *szServerIpAddr, uint8_t *ipAddrP, int32_t* portP = NULL);
+int32_t stoport (char *szPort, int32_t *pPort, int32_t *pSign);
+int32_t SetCustomDisplayMode (int32_t x, int32_t y);
 
 void AutomapOptionsMenu (void);
 void CameraOptionsMenu (void);
@@ -518,7 +518,7 @@ void LightningOptionsMenu (void);
 void MainOptionsMenu (void);
 void MiscellaneousMenu (void);
 void MovieOptionsMenu (void);
-int MultiplayerMenu (void);
+int32_t MultiplayerMenu (void);
 void NewGameMenu (void);
 void LegacyNewGameMenu (void);
 void PhysicsOptionsMenu (void);
@@ -534,23 +534,23 @@ void SmokeOptionsMenu (void);
 void SoundMenu (void);
 void LoadoutOptionsMenu (void);
 
-int MainMenu (void);
-int QuitSaveLoadMenu (void);
-int SelectAndLoadMission (int bMulti, int *bAnarchyOnly);
+int32_t MainMenu (void);
+int32_t QuitSaveLoadMenu (void);
+int32_t SelectAndLoadMission (int32_t bMulti, int32_t *bAnarchyOnly);
 
-int InitDetailLevels (int detailLevel);
+int32_t InitDetailLevels (int32_t detailLevel);
 
-int SwitchDisplayMode (int dir);
+int32_t SwitchDisplayMode (int32_t dir);
 
-void IpxSetDriver (int ipx_driver);
+void IpxSetDriver (int32_t ipx_driver);
 void DoNewIPAddress (void);
 
-bool MenuRenderTimeout (int& t0, int tFade);
+bool MenuRenderTimeout (int32_t& t0, int32_t tFade);
 bool BeginRenderMenu (void);
 void RenderMenuGameFrame (void);
 
-void AddShipSelection (CMenu& m, int& optShip);
-void GetShipSelection (CMenu& m, int& optShip);
+void AddShipSelection (CMenu& m, int32_t& optShip);
+void GetShipSelection (CMenu& m, int32_t& optShip);
 
 //------------------------------------------------------------------------------
 

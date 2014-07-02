@@ -20,21 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _PSTYPES_H
 #define _PSTYPES_H
 
-// define a dboolean
-typedef int dboolean;
-
 #include <stdint.h>
-
-typedef char				sbyte;
-typedef short				sshort;
-typedef int					sint;
-typedef long				slong;
-typedef int64_t			longlong;
-typedef unsigned char	ubyte;
-typedef unsigned short	ushort;
-typedef unsigned int		uint;
-typedef unsigned long	ulong;
-typedef uint64_t			ulonglong;
 
 #ifdef _WIN32
 # include <stdlib.h> // this is where minand max are defined
@@ -62,7 +48,7 @@ typedef uint64_t			ulonglong;
 #endif
 
 #ifdef __macosx__
-#	define ushort ushort
+#	define uint16_t uint16_t
 #endif
 
 #ifndef NULL

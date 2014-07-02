@@ -37,7 +37,7 @@
 
 #if RENDER2TEXTURE == 2
 
-int CFBO::Available (void)
+int32_t CFBO::Available (void)
 {
 if (!ogl.m_features.bRenderToTexture)
 	return 0;
@@ -63,7 +63,7 @@ m_info.nBuffer = 0x7FFFFFFF;
 
 //------------------------------------------------------------------------------
 
-int CFBO::CreateColorBuffers (int nBuffers)
+int32_t CFBO::CreateColorBuffers (int32_t nBuffers)
 {
 if (!nBuffers)
 	return 1;
@@ -88,7 +88,7 @@ if (nError)
 #endif
 
 ogl.GenTextures (nBuffers, m_info.hColorBuffer);
-for (int i = 0; i < nBuffers; i++) {
+for (int32_t i = 0; i < nBuffers; i++) {
 	PrintLog (0, "color buffer #%d handle = %d\n", i + 1, m_info.hColorBuffer [i]);
 	ogl.BindTexture (m_info.hColorBuffer [i]);
 	glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -119,7 +119,7 @@ return ogl.ClearError (false) ? 0 : 1;
 
 //------------------------------------------------------------------------------
 
-int CFBO::CreateDepthBuffer (void)
+int32_t CFBO::CreateDepthBuffer (void)
 {
 ogl.ClearError (false);
 PrintLog (0, "Creating depth buffer (type = %d)\n", m_info.nType);
@@ -156,7 +156,7 @@ if (m_info.nType == 3) { // depth buffer for shadow map
 	glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, m_info.hDepthBuffer, 0);
 	}
 else if (m_info.nType != 2) { // 2 -> GPGPU
-	for (int i = 0; i < m_info.nColorBuffers; i++)
+	for (int32_t i = 0; i < m_info.nColorBuffers; i++)
 		glFramebufferTexture2DEXT (GL_FRAMEBUFFER_EXT, m_info.bufferIds [i], GL_TEXTURE_2D, m_info.hColorBuffer [i], 0);
 	// depth + stencil buffer
 #if 0
@@ -179,7 +179,7 @@ else if (m_info.nType != 2) { // 2 -> GPGPU
 
 //------------------------------------------------------------------------------
 
-int CFBO::Create (int nWidth, int nHeight, int nType, int nColorBuffers)
+int32_t CFBO::Create (int32_t nWidth, int32_t nHeight, int32_t nType, int32_t nColorBuffers)
 {
 if (!ogl.m_features.bRenderToTexture)
 	return 0;
@@ -242,7 +242,7 @@ if (m_info.hFBO) {
 
 //------------------------------------------------------------------------------
 
-int CFBO::Enable (int nColorBuffers)
+int32_t CFBO::Enable (int32_t nColorBuffers)
 {
 if (!m_info.bActive) {
 	if (Available () <= 0)
@@ -263,7 +263,7 @@ return m_info.bActive = 1;
 
 //------------------------------------------------------------------------------
 
-int CFBO::Disable (void)
+int32_t CFBO::Disable (void)
 {
 if (!m_info.bActive)
 	return 1;
@@ -280,7 +280,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CFBO::IsBound (void) 
+int32_t CFBO::IsBound (void) 
 { 
 return m_info.hColorBuffer [0] && (m_info.hColorBuffer [0] == ogl.BoundTexture ()); 
 }

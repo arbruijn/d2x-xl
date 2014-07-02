@@ -93,7 +93,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define LEAVE_TIME				0x4000
 
-#define EDGE_IDX(_edgeP)		((int) ((_edgeP) - m_edges.Buffer ()))
+#define EDGE_IDX(_edgeP)		((int32_t) ((_edgeP) - m_edges.Buffer ()))
 
 CAutomap automap;
 
@@ -160,8 +160,8 @@ void CAutomap::DrawPlayer (CObject* objP)
 {
 	CFixVector	vArrowPos, vHeadPos;
 	CRenderPoint		spherePoint, arrowPoint, headPoint;
-	int			size = objP->info.xSize * (m_bRadar ? 2 : 1);
-//	int			bUseTransform = ogl.m_states.bUseTransform;
+	int32_t			size = objP->info.xSize * (m_bRadar ? 2 : 1);
+//	int32_t			bUseTransform = ogl.m_states.bUseTransform;
 
 spherePoint.SetIndex (-1);
 // Draw Console CPlayerData -- shaped like a ellipse with an arrow.
@@ -207,9 +207,9 @@ void CAutomap::DrawObjects (void)
 {
 if (!((gameOpts->render.automap.bTextured & 2) || m_bRadar))
 	return;
-int color = IsTeamGame ? GetTeam (N_LOCALPLAYER) : N_LOCALPLAYER % MAX_PLAYER_COLORS;	// Note link to above if!
+int32_t color = IsTeamGame ? GetTeam (N_LOCALPLAYER) : N_LOCALPLAYER % MAX_PLAYER_COLORS;	// Note link to above if!
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
-int bTextured = (gameOpts->render.automap.bTextured & 1) && !m_bRadar;
+int32_t bTextured = (gameOpts->render.automap.bTextured & 1) && !m_bRadar;
 ogl.SetFaceCulling (false);
 ogl.SetBlending (true);
 gameStates.render.grAlpha = gameStates.app.bNostalgia ? 1.0f : bTextured ? 0.5f : 0.9f;
@@ -229,7 +229,7 @@ if (!m_bRadar) {
 	}
 // Draw player(s)...
 if (AM_SHOW_PLAYERS) {
-	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if ((i != N_LOCALPLAYER) && AM_SHOW_PLAYER (i)) {
 			if (OBJECTS [gameData.multiplayer.players [i].nObject].info.nType == OBJ_PLAYER) {
 				color = IsTeamGame ? GetTeam (i) : i;
@@ -247,7 +247,7 @@ CObject* objP = OBJECTS.Buffer ();
 CRenderPoint	spherePoint;
 
 FORALL_OBJS (objP, i) {
-	int size = objP->info.xSize;
+	int32_t size = objP->info.xSize;
 	if (bTextured)
 		ogl.SetBlending (true);
 	switch (objP->info.nType) {
@@ -265,9 +265,9 @@ FORALL_OBJS (objP, i) {
 
 		case OBJ_ROBOT:
 			if (AM_SHOW_ROBOTS && ((gameStates.render.bAllVisited && bTextured) || m_visited [objP->info.nSegment])) {
-				static int t = 0;
-				static int d = 1;
-				int h = SDL_GetTicks ();
+				static int32_t t = 0;
+				static int32_t d = 1;
+				int32_t h = SDL_GetTicks ();
 				if (h - t > 333) {
 					t = h;
 					d = -d;
@@ -275,15 +275,15 @@ FORALL_OBJS (objP, i) {
 				float fScale = float (h - t) / 333.0f;
 				if (ROBOTINFO (objP->info.nId).companion) {
 					if (d < 0)
-						CCanvas::Current ()->SetColorRGB (0, 123 - (int) FRound ((123 - 78) * fScale), 151 - (int) FRound ((151 - 112) * fScale), 255);
+						CCanvas::Current ()->SetColorRGB (0, 123 - (int32_t) FRound ((123 - 78) * fScale), 151 - (int32_t) FRound ((151 - 112) * fScale), 255);
 					else
-						CCanvas::Current ()->SetColorRGB (0, 78 + (int) FRound ((123 - 78) * fScale), 122 + (int) FRound ((151 - 112) * fScale), 255);
+						CCanvas::Current ()->SetColorRGB (0, 78 + (int32_t) FRound ((123 - 78) * fScale), 122 + (int32_t) FRound ((151 - 112) * fScale), 255);
 					}
 				else {
 					if (d < 0)
-						CCanvas::Current ()->SetColorRGB (123 - (int) FRound ((123 - 78) * fScale), 0, 135 - (int) FRound ((135 - 96) * fScale), 255);
+						CCanvas::Current ()->SetColorRGB (123 - (int32_t) FRound ((123 - 78) * fScale), 0, 135 - (int32_t) FRound ((135 - 96) * fScale), 255);
 					else
-						CCanvas::Current ()->SetColorRGB (78 + (int) FRound ((123 - 78) * fScale), 0, 96 + (int) FRound ((135 - 96) * fScale), 255);
+						CCanvas::Current ()->SetColorRGB (78 + (int32_t) FRound ((123 - 78) * fScale), 0, 96 + (int32_t) FRound ((135 - 96) * fScale), 255);
 					}
 				spherePoint.TransformAndEncode (objP->info.position.vPos);
 				//transformation.Begin (&objP->info.position.vPos, &objP->info.position.mOrient);
@@ -340,7 +340,7 @@ if (gameStates.app.bSaveScreenShot && cockpit->Hide ())
 	return;
 
 	CFont*	curFont = CCanvas::Current ()->Font ();
-	int		w, h, aw, offs = m_data.bHires ? 10 : 5;
+	int32_t		w, h, aw, offs = m_data.bHires ? 10 : 5;
 	char		szInfo [3][200];
 
 #if 0
@@ -378,7 +378,7 @@ else {
 	fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 	offs /= 2;
 	}
-for (int i = 0; (i < 3) && *szInfo [i]; i++) {
+for (int32_t i = 0; (i < 3) && *szInfo [i]; i++) {
 	fontManager.Current ()->StringSize (szInfo [i], w, h, aw);
 	GrPrintF (NULL, (CCanvas::Current ()->Width () - w) / 2, CCanvas::Current ()->Height () - offs - (i + 1) * h - i * 2, szInfo [i]);
 	}
@@ -401,7 +401,7 @@ void CAutomap::Render (fix xStereoSeparation)
 {
 #if 1
 PROF_START
-	int	bAutomapFrame = !m_bRadar &&
+	int32_t	bAutomapFrame = !m_bRadar &&
 								 (gameStates.render.cockpit.nType != CM_FULL_SCREEN) &&
 								 (gameStates.render.cockpit.nType != CM_LETTERBOX);
 	CFixMatrix	mRadar;
@@ -472,7 +472,7 @@ if (gameStates.app.bSaveScreenShot)
 void CAutomap::RenderInfo (void)
 {
 PROF_START
-	int	bAutomapFrame = !m_bRadar &&
+	int32_t	bAutomapFrame = !m_bRadar &&
 								 (gameStates.render.cockpit.nType != CM_FULL_SCREEN) &&
 								 (gameStates.render.cockpit.nType != CM_LETTERBOX);
 if (bAutomapFrame) {
@@ -503,7 +503,7 @@ const char *pszSystemNames [] = {
 void CAutomap::CreateNameCanvas (void)
 {
 	char	szExplored [100];
-	int	h, i;
+	int32_t	h, i;
 
 if (missionManager.nCurrentLevel > 0)
 	sprintf (m_szLevelNum, "%s %i",TXT_LEVEL, missionManager.nCurrentLevel);
@@ -526,16 +526,16 @@ strcat (m_szLevelName, szExplored);
 //	-----------------------------------------------------------------------------
 //	Set the segment depth of all segments from nStartSeg in *segbuf.
 //	Returns maximum nDepth value.
-int CAutomap::SetSegmentDepths (int nStartSeg, ushort *depthBufP)
+int32_t CAutomap::SetSegmentDepths (int32_t nStartSeg, uint16_t *depthBufP)
 {
-	ubyte		bVisited [MAX_SEGMENTS_D2X];
-	short		queue [MAX_SEGMENTS_D2X];
-	int		head = 0;
-	int		tail = 0;
-	int		nDepth = 1;
-	int		nSegment, nSide, nChild;
-	ushort	nParentDepth = 0;
-	short*	childP;
+	uint8_t		bVisited [MAX_SEGMENTS_D2X];
+	int16_t		queue [MAX_SEGMENTS_D2X];
+	int32_t		head = 0;
+	int32_t		tail = 0;
+	int32_t		nDepth = 1;
+	int32_t		nSegment, nSide, nChild;
+	uint16_t	nParentDepth = 0;
+	int16_t*	childP;
 
 	head = 0;
 	tail = 0;
@@ -586,9 +586,9 @@ return (nParentDepth + 1) * gameStates.render.bViewDist;
 
 //------------------------------------------------------------------------------
 
-int CAutomap::Setup (int bPauseGame, fix& xEntryTime)
+int32_t CAutomap::Setup (int32_t bPauseGame, fix& xEntryTime)
 {
-	int		i;
+	int32_t		i;
 	CObject	*playerP;
 
 if (m_bDisplay < 0) {
@@ -666,7 +666,7 @@ return gameData.app.bGamePaused;
 
 //------------------------------------------------------------------------------
 
-int CAutomap::Update (void)
+int32_t CAutomap::Update (void)
 {
 	CObject*		playerP = OBJECTS + LOCALPLAYER.nObject;
 	CFixMatrix	m;
@@ -701,18 +701,18 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static inline int ViewDistStep (void)
+static inline int32_t ViewDistStep (void)
 {
-	int h = (automap.SegmentLimit () + 5) / 10;
+	int32_t h = (automap.SegmentLimit () + 5) / 10;
 
 return h ? h : 1;
 }
 
 //------------------------------------------------------------------------------
 
-int CAutomap::ReadControls (int nLeaveMode, int bDone, int& bPauseGame)
+int32_t CAutomap::ReadControls (int32_t nLeaveMode, int32_t bDone, int32_t& bPauseGame)
 {
-	int	c, nMarker, nMaxDrop, nColor = gameOpts->render.automap.bBright | (gameOpts->render.automap.bGrayOut << 1);
+	int32_t	c, nMarker, nMaxDrop, nColor = gameOpts->render.automap.bBright | (gameOpts->render.automap.bGrayOut << 1);
 
 controls.Read ();
 if (controls [0].automapDownCount && !nLeaveMode)
@@ -747,7 +747,7 @@ while ((c = KeyInKey ())) {
 
 #if DBG
 		case KEYDBGGED+KEY_F: {
-			int i;
+			int32_t i;
 			for (i = 0; i <= gameData.segs.nLastSegment; i++)
 				automap.m_visible [i] = 1;
 			BuildEdgeList ();
@@ -911,12 +911,12 @@ return bDone;
 
 //------------------------------------------------------------------------------
 
-int CAutomap::GameFrame (int bPauseGame, int bDone)
+int32_t CAutomap::GameFrame (int32_t bPauseGame, int32_t bDone)
 {
 	tControlInfo controlInfoSave;
 
 if (!bPauseGame) {
-	ushort bWiggleSave;
+	uint16_t bWiggleSave;
 	controlInfoSave = controls [0];				// Save controls so we can zero them
 	controls.Reset ();
 	bWiggleSave = gameData.objs.consoleP->mType.physInfo.flags & PF_WIGGLE;	// Save old wiggle
@@ -932,24 +932,24 @@ return bDone;
 
 //------------------------------------------------------------------------------
 
-void CAutomap::DoFrame (int nKeyCode, int bRadar)
+void CAutomap::DoFrame (int32_t nKeyCode, int32_t bRadar)
 {
-	int				bDone = 0;
-	int				nLeaveMode = 0;
-	int				bFirstTime = 1;
+	int32_t				bDone = 0;
+	int32_t				nLeaveMode = 0;
+	int32_t				bFirstTime = 1;
 	fix				xEntryTime;
-	int				bPauseGame = (gameOpts->menus.nStyle == 0);		// Set to 1 if everything is paused during automap...No pause during net.
+	int32_t				bPauseGame = (gameOpts->menus.nStyle == 0);		// Set to 1 if everything is paused during automap...No pause during net.
 	fix				t1 = 0, t2 = 0;
-	int				nContrast = ogl.m_states.nContrast;
+	int32_t				nContrast = ogl.m_states.nContrast;
 
-	//static ubyte	automapPal [256*3];
+	//static uint8_t	automapPal [256*3];
 
 m_nMaxSegsAway = 0;
 m_nSegmentLimit = 1;
 m_bRadar = bRadar;
 bPauseGame = Setup (bPauseGame, xEntryTime);
 if (bRadar) {
-	//int bRenderToTexture = ogl.m_features.bRenderToTexture.Apply ();
+	//int32_t bRenderToTexture = ogl.m_features.bRenderToTexture.Apply ();
 	//ogl.m_features.bRenderToTexture = 0;
 	Render ();
 	//ogl.m_features.bRenderToTexture = bRenderToTexture;
@@ -1015,7 +1015,7 @@ if (!--m_bDisplay) {
 
 void CAutomap::AdjustSegmentLimit (void)
 {
-	int i,e1;
+	int32_t i,e1;
 	tEdgeInfo * e;
 
 for (i = 0; i <= m_nLastEdge; i++) {
@@ -1032,7 +1032,7 @@ for (i = 0; i <= m_nLastEdge; i++) {
 
 //------------------------------------------------------------------------------
 
-void CAutomap::SetEdgeColor (int nColor, int bFade, float fScale)
+void CAutomap::SetEdgeColor (int32_t nColor, int32_t bFade, float fScale)
 {
 if ((bFade != m_bFade) || (nColor != m_nColor) || (fScale != m_fScale)) {
 	m_bFade = bFade;
@@ -1052,7 +1052,7 @@ if ((bFade != m_bFade) || (nColor != m_nColor) || (fScale != m_fScale)) {
 
 //------------------------------------------------------------------------------
 
-void CAutomap::DrawLine (short v0, short v1)
+void CAutomap::DrawLine (int16_t v0, int16_t v1)
 {
 if ((v0 < 0) || (v1 < 0))
 	return;
@@ -1077,14 +1077,14 @@ else {
 void CAutomap::DrawEdges (void)
 {
 	tRenderCodes	cc;
-	int				i, j, nbright = 0;
-	ubyte				nfacing, nnfacing;
+	int32_t				i, j, nbright = 0;
+	uint8_t				nfacing, nnfacing;
 	tEdgeInfo*		edgeP;
 	CFixVector		*tv1;
 	fix				distance;
 	fix				minDistance = 0x7fffffff;
 	CRenderPoint	*p1;
-	int				bUseTransform = ogl.UseTransform ();
+	int32_t				bUseTransform = ogl.UseTransform ();
 	
 m_bDrawBuffers = ogl.SizeBuffers (1000);
 ogl.SetTransform (1);
@@ -1133,7 +1133,7 @@ for (i = 0; i <= m_nLastEdge; i++) {
 			if (nfacing) 
 				m_brightEdges [nbright++] = edgeP;
 			else {
-				SetEdgeColor (int (edgeP->color), (edgeP->flags & EF_NO_FADE) != 0, 8.0f);
+				SetEdgeColor (int32_t (edgeP->color), (edgeP->flags & EF_NO_FADE) != 0, 8.0f);
 				DrawLine (edgeP->verts [0], edgeP->verts [1]);
 				}
 			}
@@ -1151,7 +1151,7 @@ m_bFade = m_nColor = -1;
 m_fScale = 1e10f;
 // Sort the bright ones using a shell sort
 {
-	int i, j, incr, v1, v2;
+	int32_t i, j, incr, v1, v2;
 
 incr = nbright / 2;
 while (incr > 0) {
@@ -1185,7 +1185,7 @@ for (i = 0; i < nbright; i++) {
 		xDist = 0;
 	else if (xDist >= m_data.nMaxDist)
 		continue;
-	SetEdgeColor (int (edgeP->color), (edgeP->flags & EF_NO_FADE) != 0, X2F (I2X (1) - FixDiv (xDist, m_data.nMaxDist)) * 31);
+	SetEdgeColor (int32_t (edgeP->color), (edgeP->flags & EF_NO_FADE) != 0, X2F (I2X (1) - FixDiv (xDist, m_data.nMaxDist)) * 31);
 	DrawLine (edgeP->verts [0], edgeP->verts [1]);
 	}
 if (m_bDrawBuffers && m_nVerts) {
@@ -1208,18 +1208,18 @@ ogl.SetTransform (bUseTransform);
 
 
 //finds edge, filling in edge_ptr. if found old edge, returns index, else return -1
-int CAutomap::FindEdge (int v0, int v1, tEdgeInfo*& edgeP)
+int32_t CAutomap::FindEdge (int32_t v0, int32_t v1, tEdgeInfo*& edgeP)
 {
-	int vv, evv;
-	int hash,oldhash;
-	int ret, ev0, ev1;
+	int32_t vv, evv;
+	int32_t hash,oldhash;
+	int32_t ret, ev0, ev1;
 
 vv = (v1<<16) + v0;
 oldhash = hash = ((v0*5+v1) % MAX_EDGES);
 ret = -1;
 while (ret == -1) {
-	ev0 = (int) (m_edges [hash].verts [0]);
-	ev1 = (int) (m_edges [hash].verts [1]);
+	ev0 = (int32_t) (m_edges [hash].verts [0]);
+	ev1 = (int32_t) (m_edges [hash].verts [1]);
 	evv = (ev1 << 16) + ev0;
 	if (m_edges [hash].nFaces == 0) 
 		ret = 0;
@@ -1238,7 +1238,7 @@ return ret ? hash : -1;
 
 //------------------------------------------------------------------------------
 
-void CAutomap::AddEdge (int va, int vb, uint color, ubyte nSide, short nSegment, int bHidden, int bGrate, int bNoFade)
+void CAutomap::AddEdge (int32_t va, int32_t vb, uint32_t color, uint8_t nSide, int16_t nSegment, int32_t bHidden, int32_t bGrate, int32_t bNoFade)
 {
 if (va == vb)
 	return;
@@ -1247,7 +1247,7 @@ if ((va < 0) || (vb < 0))
 if ((va == 0xFFFF) || (vb == 0xFFFF))
 	return;
 
-	int			found;
+	int32_t			found;
 	tEdgeInfo*	edgeP;
 
 	if (m_nEdges >= MAX_EDGES) {
@@ -1304,7 +1304,7 @@ if (bNoFade)
 
 //------------------------------------------------------------------------------
 
-void CAutomap::AddUnknownEdge (int va, int vb)
+void CAutomap::AddUnknownEdge (int32_t va, int32_t vb)
 {
 if (va == vb)
 	return;
@@ -1321,12 +1321,12 @@ if (FindEdge (va, vb, edgeP) != -1)
 
 void CAutomap::AddSegmentEdges (CSegment *segP)
 {
-	int		bIsGrate, bNoFade;
-	uint		color;
-	ubyte		nSide;
-	short		nSegment = segP->Index ();
-	int		bHidden;
-	ushort*	corners;
+	int32_t		bIsGrate, bNoFade;
+	uint32_t		color;
+	uint8_t		nSide;
+	int16_t		nSegment = segP->Index ();
+	int32_t		bHidden;
+	uint16_t*	corners;
 	CSide*	sideP = segP->Side (0);
 
 for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
@@ -1389,9 +1389,9 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 					color = m_colors.walls.nDoorRed;
 					}
 				else if (!(gameData.walls.animP [wallP->nClip].flags & WCF_HIDDEN)) {
-					short	nConnSeg = segP->m_children [nSide];
+					int16_t	nConnSeg = segP->m_children [nSide];
 					if (nConnSeg != -1) {
-						short nConnSide = segP->ConnectedSide (SEGMENTS + nConnSeg);
+						int16_t nConnSide = segP->ConnectedSide (SEGMENTS + nConnSeg);
 						CWall* connWallP = SEGMENTS [nConnSeg].Wall (nConnSide);
 						if (connWallP) {
 							switch (connWallP->keys) {
@@ -1445,8 +1445,8 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 addEdge:
 
 		corners = SEGMENTS [nSegment].Corners (nSide);
-		int nCorners = sideP->CornerCount ();
-		for (int i = 0; i < nCorners; i++)
+		int32_t nCorners = sideP->CornerCount ();
+		for (int32_t i = 0; i < nCorners; i++)
 			AddEdge (corners [i % nCorners], corners [(i + 1) % nCorners], color, nSide, nSegment, bHidden, 0, bNoFade);
 		if (bIsGrate && (nCorners == 4)) {
 			AddEdge (corners [0], corners [2], color, nSide, nSegment, bHidden, 1, bNoFade);
@@ -1461,14 +1461,14 @@ addEdge:
 
 void CAutomap::AddUnknownSegmentEdges (CSegment* segP)
 {
-for (int nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
+for (int32_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	// Only add edges that have no children
 	if (segP->Side (nSide)->m_nShape > SIDE_SHAPE_TRIANGLE)
 		continue;
 	if (segP->m_children [nSide] == -1) {
-		ushort* vertices = segP->m_vertices;
-		int nVertices = segP->m_nVertices;
-		for (int i = 0; i <= nVertices; i++)
+		uint16_t* vertices = segP->m_vertices;
+		int32_t nVertices = segP->m_nVertices;
+		for (int32_t i = 0; i <= nVertices; i++)
 			AddUnknownEdge (vertices [i], vertices [(i + 1) % nVertices]);
 		}
 	}
@@ -1478,7 +1478,7 @@ for (int nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 
 void CAutomap::BuildEdgeList (void)
 {
-	int	i, e1, e2, nSegment;
+	int32_t	i, e1, e2, nSegment;
 	tEdgeInfo * e;
 
 m_data.bCheat = 0;

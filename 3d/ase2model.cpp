@@ -28,7 +28,7 @@ m_nFaceVerts = pa->m_nFaces * 3;
 
 //------------------------------------------------------------------------------
 
-void CModel::GetASEModelItems (int nModel, ASE::CModel *pa, float fScale)
+void CModel::GetASEModelItems (int32_t nModel, ASE::CModel *pa, float fScale)
 {
 	ASE::CSubModel*	psa;
 	ASE::CFace*			pfa;
@@ -36,8 +36,8 @@ void CModel::GetASEModelItems (int nModel, ASE::CModel *pa, float fScale)
 	CFace*				pmf = m_faces.Buffer ();
 	CVertex*				pmv = m_faceVerts.Buffer ();
 	CBitmap*				bmP;
-	int					h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
-	int					bTextured;
+	int32_t					h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
+	int32_t					bTextured;
 
 for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 	psm = m_subModels + psa->m_nSubModel;
@@ -117,10 +117,10 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 
 //------------------------------------------------------------------------------
 
-int CModel::BuildFromASE (CObject *objP, int nModel)
+int32_t CModel::BuildFromASE (CObject *objP, int32_t nModel)
 {
 	ASE::CModel*	pa = gameData.models.modelToASE [1][nModel];
-	int				i, j;
+	int32_t				i, j;
 
 if (!pa) {
 	pa = gameData.models.modelToASE [0][nModel];
@@ -148,7 +148,7 @@ for (i = 0; i < m_nTextures; i++) {
 	}
 memset (m_teamTextures, 0xFF, sizeof (m_teamTextures));
 for (i = 0; i < m_nTextures; i++)
-	if ((j = (int) m_textures [i].Team ()))
+	if ((j = (int32_t) m_textures [i].Team ()))
 		m_teamTextures [j - 1] = i;
 m_nType = 2;
 gameData.models.polyModels [0][nModel].SetRad (Size (objP, 1), 1);

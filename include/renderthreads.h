@@ -17,16 +17,16 @@
 class CRenderThreadInfo {
 	public:
 		tRenderTask	nTask;
-		int						nMiddle;
-		int						nFaces;
-		int						zMin [MAX_THREADS];
-		int						zMax [MAX_THREADS];
+		int32_t						nMiddle;
+		int32_t						nFaces;
+		int32_t						zMin [MAX_THREADS];
+		int32_t						zMax [MAX_THREADS];
 		tLightning*				lightningP;
-		int						nLightnings;
+		int32_t						nLightnings;
 		CObject*					objP;
 		RenderModel::CModel*	modelP;
 		tParticleEmitter*		particleEmitters [MAX_THREADS];
-		int						nCurTime [MAX_THREADS];
+		int32_t						nCurTime [MAX_THREADS];
 		CThreadInfo				ti [MAX_THREADS];
 		SDL_mutex*				semaphore;
 	};
@@ -35,36 +35,36 @@ extern CRenderThreadInfo tiRender;
 
 class CEffectThreadInfo : public CThreadInfo {
 	public:
-		int nWindow;
+		int32_t nWindow;
 };
 
 extern CEffectThreadInfo tiEffects;
 
-int RunRenderThreads (int nTask, int nThreads = -1);
+int32_t RunRenderThreads (int32_t nTask, int32_t nThreads = -1);
 void CreateRenderThreads (void);
 void DestroyRenderThreads (void);
 bool WaitForRenderThreads (void);
 void CreateEffectsThread (void);
-bool StartEffectsThread (int nWindow);
+bool StartEffectsThread (int32_t nWindow);
 void DestroyEffectsThread (void);
 void ControlEffectsThread (void);
 bool WaitForEffectsThread (void);
 void ControlRenderThreads (void);
 
-int GetNumThreads (void);
+int32_t GetNumThreads (void);
 
 //------------------------------------------------------------------------------
 
-inline int RenderThreadsReady (void)
+inline int32_t RenderThreadsReady (void)
 {
 return !(gameStates.app.bMultiThreaded && (tiRender.ti [0].bExec || tiRender.ti [1].bExec));
 }
 
 //------------------------------------------------------------------------------
 
-inline void ComputeThreadRange (int nId, int nMax, int& nStart, int& nEnd, int nThreads = gameStates.app.nThreads)
+inline void ComputeThreadRange (int32_t nId, int32_t nMax, int32_t& nStart, int32_t& nEnd, int32_t nThreads = gameStates.app.nThreads)
 {
-int nRange = (nMax + nThreads - 1) / nThreads;
+int32_t nRange = (nMax + nThreads - 1) / nThreads;
 nStart = nId * nRange;
 nEnd = nStart + nRange;
 if (nEnd > nMax)

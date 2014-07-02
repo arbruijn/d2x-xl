@@ -68,7 +68,7 @@ tTransRotInfo	tirInfo;
 
 //------------------------------------------------------------------------------
 
-static inline int FastPitch (void)
+static inline int32_t FastPitch (void)
 {
 if (!gameStates.app.bHaveExtraGameInfo [IsMultiGame])
 	return 2;
@@ -89,7 +89,7 @@ fix	LastReadTime = 0;
 
 fix Next_toggleTime [3]={0,0,0};
 
-int CControlsManager::AllowToToggle (int i)
+int32_t CControlsManager::AllowToToggle (int32_t i)
 {
 //used for keeping tabs of when its ok to toggle headlight,primary,and secondary
 if (Next_toggleTime [i] > gameData.time.xGame)
@@ -102,42 +102,42 @@ return 1;
 
 #ifdef D2X_KEYS
 //added on 2/7/99 by Victor Rachels for jostick state setting
-int d2xJoystick_ostate [20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+int32_t d2xJoystick_ostate [20]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 //end this section adition - VR
 #endif
 
 //------------------------------------------------------------------------------
 
-int CControlsManager::ReadKeyboard (void)
+int32_t CControlsManager::ReadKeyboard (void)
 {
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int CControlsManager::ReadMouse (int *mouseAxis, int *nMouseButtons)
+int32_t CControlsManager::ReadMouse (int32_t *mouseAxis, int32_t *nMouseButtons)
 {
-	int	dx, dy;
-	int	dz;
+	int32_t	dx, dy;
+	int32_t	dz;
 
 MouseGetDeltaZ (&dx, &dy, &dz);
-mouseAxis [0] = (int) ((dx * m_pollTime) / 35);
-mouseAxis [1] = (int) ((dy * m_pollTime) / 25);
-mouseAxis [2] = (int) (dz * m_pollTime);
+mouseAxis [0] = (int32_t) ((dx * m_pollTime) / 35);
+mouseAxis [1] = (int32_t) ((dy * m_pollTime) / 25);
+mouseAxis [2] = (int32_t) (dz * m_pollTime);
 *nMouseButtons = MouseGetButtons ();
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-static int joySensMod [4] = {16, 16, 16, 16};
+static int32_t joySensMod [4] = {16, 16, 16, 16};
 
 static double dMaxAxis = 127.0;
 
-int CControlsManager::AttenuateAxis (double a, int nAxis)
+int32_t CControlsManager::AttenuateAxis (double a, int32_t nAxis)
 {
 if (gameOpts->input.joystick.bLinearSens)
-	return (int) a;
+	return (int32_t) a;
 else if (!a)
 	return 0;
 else {
@@ -162,34 +162,34 @@ else {
 		d = 1.0;
 	if (a < 0)
 		d = -d;
-	return (int) d;
+	return (int32_t) d;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-int CControlsManager::ReadJoyAxis (int i, int rawJoyAxis [])
+int32_t CControlsManager::ReadJoyAxis (int32_t i, int32_t rawJoyAxis [])
 {
-int dz = joyDeadzone [i % UNIQUE_JOY_AXES]; // / 128;
-int h = rawJoyAxis [i]; // JoyGetScaledReading (rawJoyAxis [i], i);
+int32_t dz = joyDeadzone [i % UNIQUE_JOY_AXES]; // / 128;
+int32_t h = rawJoyAxis [i]; // JoyGetScaledReading (rawJoyAxis [i], i);
 if (gameOpts->input.joystick.bSyncAxis && (dz < 16384) && ((kcJoystick [18].value == i) || (kcJoystick [48].value == i)))		// If this is the throttle
 	dz *= 2;				// Then use a larger dead-zone
 if (h > dz)
-	h = (int) FRound ((h - dz) * 32767.0f / float (32767 - dz));
+	h = (int32_t) FRound ((h - dz) * 32767.0f / float (32767 - dz));
 else if (h < -dz)
-	h = (int) FRound ((h + dz) * 32767.0f / float (32767 - dz));
+	h = (int32_t) FRound ((h + dz) * 32767.0f / float (32767 - dz));
 else
 	h = 0;
-return (int) ((AttenuateAxis (h / 256, i) * m_pollTime) / 128);
+return (int32_t) ((AttenuateAxis (h / 256, i) * m_pollTime) / 128);
 }
 
 //------------------------------------------------------------------------------
 
-int CControlsManager::ReadJoystick (int* joyAxis)
+int32_t CControlsManager::ReadJoystick (int32_t* joyAxis)
 {
-	int	rawJoyAxis [JOY_MAX_AXES];
-	uint	channelMasks;
-	int	i, bUseJoystick = 0;
+	int32_t	rawJoyAxis [JOY_MAX_AXES];
+	uint32_t	channelMasks;
+	int32_t	i, bUseJoystick = 0;
 	fix	ctime = 0;
 
 memset (joyAxis, 0, sizeof (*joyAxis) * JOY_MAX_AXES);
@@ -242,12 +242,12 @@ return bUseJoystick;
 
 #ifdef USE_SIXENSE
 
-int CControlsManager::ReadSixense (int* joyAxis)
+int32_t CControlsManager::ReadSixense (int32_t* joyAxis)
 {
 #if DBG
-	int nAxis = sixense.QueryAxis ();
+	int32_t nAxis = sixense.QueryAxis ();
 
-for (int i = 0; i < nAxis; i++)
+for (int32_t i = 0; i < nAxis; i++)
 	joyAxis [i] = sixense.GetAxis (i);
 return nAxis;
 #else
@@ -259,16 +259,16 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void CControlsManager::SetFCSButton (int btn, int button)
+void CControlsManager::SetFCSButton (int32_t btn, int32_t button)
 {
 JoyGetButtonState (btn);
 }
 
 //------------------------------------------------------------------------------
 
-void CControlsManager::ReadFCS (int rawAxis)
+void CControlsManager::ReadFCS (int32_t rawAxis)
 {
-	int raw_button, button;
+	int32_t raw_button, button;
 	tJoyAxisCal	cal [4];
 
 if (gameStates.input.nJoyType != CONTROL_THRUSTMASTER_FCS)
@@ -296,29 +296,29 @@ SetFCSButton (7, button);
 
 //------------------------------------------------------------------------------
 
-int CControlsManager::ReadCyberman (int *mouseAxis, int *nMouseButtons)
+int32_t CControlsManager::ReadCyberman (int32_t *mouseAxis, int32_t *nMouseButtons)
 {
-	int idx, idy;
+	int32_t idx, idy;
 
 MouseGetCybermanPos (&idx, &idy);
-mouseAxis [0] = (int) ((idx * m_pollTime) / 128);
-mouseAxis [1] = (int) ((idy * m_pollTime) / 128);
+mouseAxis [0] = (int32_t) ((idx * m_pollTime) / 128);
+mouseAxis [1] = (int32_t) ((idy * m_pollTime) / 128);
 *nMouseButtons = MouseGetButtons ();
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-inline int HaveKey (kcItem *k, int i)
+inline int32_t HaveKey (kcItem *k, int32_t i)
 {
 return k [i].value;
 }
 
 //------------------------------------------------------------------------------
 
-inline int HaveKeyCount (kcItem *k, int i)
+inline int32_t HaveKeyCount (kcItem *k, int32_t i)
 {
-	int	v = k [i].value;
+	int32_t	v = k [i].value;
 
 if (v == 255)
 	return 0;
@@ -334,9 +334,9 @@ return KeyDownCount (v);
 
 //------------------------------------------------------------------------------
 
-inline int HaveD2XKey (kcItem *k, int i)
+inline int32_t HaveD2XKey (kcItem *k, int32_t i)
 {
-	int	v = k [i].value;
+	int32_t	v = k [i].value;
 
 if (v == 255)
 	return 0;
@@ -353,14 +353,14 @@ return KeyDownCount (v);
 
 //------------------------------------------------------------------------------
 
-void CControlsManager::DoD2XKeys (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank)
+void CControlsManager::DoD2XKeys (int32_t *bSlideOn, int32_t *bBankOn, fix *pitchTimeP, fix *headingTimeP, int32_t *nCruiseSpeed, int32_t bGetSlideBank)
 {
 #ifdef D2X_KEYS
 //added on 2/4/99 by Victor Rachels for d1x keys
 //--------- Read primary weapon select -------------
 //the following "if" added by WraithX to stop deadies from switchin weapons, 4/14/00
 if (!(gameStates.app.bPlayerIsDead || automap.Display ())) { {
-		int i, d2xJoystickState [10];
+		int32_t i, d2xJoystickState [10];
 
 	for (i = 0; i < 10; i++)
 		d2xJoystickState [i] = JoyGetButtonState (kcHotkeys [i * 2+1].value);
@@ -369,7 +369,7 @@ if (!(gameStates.app.bPlayerIsDead || automap.Display ())) { {
 	if (HaveD2XKey (kcHotkeys, 0) ||
 			(JoyGetButtonState (kcHotkeys [1].value) && (d2xJoystickState [0] != d2xJoystick_ostate [0])))
  {
-		//int i, valu=0;
+		//int32_t i, valu=0;
 		DoSelectWeapon (0,0);
 		/*
 		for (i=MAX_PRIMARY_WEAPONS;i<MAX_PRIMARY_WEAPONS+NEWPRIMS;i++)
@@ -416,7 +416,7 @@ if (!(gameStates.app.bPlayerIsDead || automap.Display ())) { {
 	if (HaveD2XKey (kcHotkeys, 18) ||
 			(JoyGetButtonState (kcHotkeys [19].value) && (d2xJoystickState [9] != d2xJoystick_ostate [9])))
 		DoSelectWeapon (4,1);
-	memcpy (d2xJoystick_ostate, d2xJoystickState, 10 * sizeof (int));
+	memcpy (d2xJoystick_ostate, d2xJoystickState, 10 * sizeof (int32_t));
 	}
 	//end this section addition - VR
 }//end "if (!gameStates.app.bPlayerIsDead)" - WraithX
@@ -425,7 +425,7 @@ if (!(gameStates.app.bPlayerIsDead || automap.Display ())) { {
 
 //------------------------------------------------------------------------------
 
-int CControlsManager::LimitTurnRate (int bUseMouse)
+int32_t CControlsManager::LimitTurnRate (int32_t bUseMouse)
 {
 if (!(gameOpts->input.bLimitTurnRate || IsMultiGame))
 	return 0;
@@ -443,11 +443,11 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-extern fix KeyRamp (int scancode);
+extern fix KeyRamp (int32_t scancode);
 
-inline int DeltaCtrl (ubyte v, int speedFactor, int keyRampScale, int i)
+inline int32_t DeltaCtrl (uint8_t v, int32_t speedFactor, int32_t keyRampScale, int32_t i)
 {
-	int	h;
+	int32_t	h;
 
 if (v == 255)
 	return 0;
@@ -462,12 +462,12 @@ return h;
 
 #define DELTACTRL(_i,_b)	DeltaCtrl (kcKeyboard [_i].value, speedFactor, gameOpts->input.keyboard.nRamp, _b)
 
-void CControlsManager::DoKeyboard (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank)
+void CControlsManager::DoKeyboard (int32_t *bSlideOn, int32_t *bBankOn, fix *pitchTimeP, fix *headingTimeP, int32_t *nCruiseSpeed, int32_t bGetSlideBank)
 {
-	int	i, v, pitchScale = (!(gameStates.app.bNostalgia || COMPETITION) &&
+	int32_t	i, v, pitchScale = (!(gameStates.app.bNostalgia || COMPETITION) &&
 									 (FastPitch () == 1)) ? 2 * PH_SCALE : 1;
-	int	speedFactor = gameStates.app.cheats.bTurboMode ? 2 : 1;
-	static int key_signs [8] = {1,1,-1,-1,-1,-1,1,1};
+	int32_t	speedFactor = gameStates.app.cheats.bTurboMode ? 2 : 1;
+	static int32_t key_signs [8] = {1,1,-1,-1,-1,-1,1,1};
 
 if (bGetSlideBank == 0) {
 	for (i = 0; i < 2; i++) {
@@ -593,10 +593,10 @@ if (bGetSlideBank == 2)
 
 //------------------------------------------------------------------------------
 
-inline int ipower (int x, int y)
+inline int32_t ipower (int32_t x, int32_t y)
 {
-	int h = x;
-	int r = y % 2;
+	int32_t h = x;
+	int32_t r = y % 2;
 
 while (y > 1) {
 	h *= h;
@@ -609,10 +609,10 @@ return h;
 
 //------------------------------------------------------------------------------
 
-int CControlsManager::DeltaAxis (int v)
+int32_t CControlsManager::DeltaAxis (int32_t v)
 {
 #if 0 //DBG
-int vec = gameOpts->input.joystick.bLinearSens ? m_joyAxis [dir] * 16 / joySensMod [dir % 4] : m_joyAxis [dir];
+int32_t vec = gameOpts->input.joystick.bLinearSens ? m_joyAxis [dir] * 16 / joySensMod [dir % 4] : m_joyAxis [dir];
 if (vec)
 	HUDMessage (0, "%d", vec);
 return vec;
@@ -623,9 +623,9 @@ return gameOpts->input.joystick.bLinearSens ? m_joyAxis [v] * 16 / joySensMod [v
 
 //------------------------------------------------------------------------------
 
-void CControlsManager::DoJoystick (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank)
+void CControlsManager::DoJoystick (int32_t *bSlideOn, int32_t *bBankOn, fix *pitchTimeP, fix *headingTimeP, int32_t *nCruiseSpeed, int32_t bGetSlideBank)
 {
-	int	i, v;
+	int32_t	i, v;
 
 for (i = 0; i < 60; i += 30) {
 	if (bGetSlideBank == 0) {
@@ -758,19 +758,19 @@ for (i = 0; i < 60; i += 30) {
 
 //------------------------------------------------------------------------------
 
-int CControlsManager::CalcDeadzone (int d, int nDeadzone)
+int32_t CControlsManager::CalcDeadzone (int32_t d, int32_t nDeadzone)
 {
 double	r = 32 * nDeadzone;
-return (int) (r ? (d ? sqrt (fabs (r * r - d * d)) : r) : 0);
+return (int32_t) (r ? (d ? sqrt (fabs (r * r - d * d)) : r) : 0);
 }
 
 //------------------------------------------------------------------------------
 
-void CControlsManager::DoMouse (int *mouseAxis, int nMouseButtons,
-										  int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed,
-										  int bGetSlideBank)
+void CControlsManager::DoMouse (int32_t *mouseAxis, int32_t nMouseButtons,
+										  int32_t *bSlideOn, int32_t *bBankOn, fix *pitchTimeP, fix *headingTimeP, int32_t *nCruiseSpeed,
+										  int32_t bGetSlideBank)
 {
-	int	v, nMouseSensMod = 8;
+	int32_t	v, nMouseSensMod = 8;
 
 if (bGetSlideBank == 0) {
 	if ((v = kcMouse [5].value) < 255)
@@ -864,8 +864,8 @@ if (bGetSlideBank == 2) {
 	else {
 		SDL_GetMouseState (&mouseData.x, &mouseData.y);
 		if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick) {
-			int dx = mouseData.x - gameData.render.screen.Width () / 2;
-			int dz = CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
+			int32_t dx = mouseData.x - gameData.render.screen.Width () / 2;
+			int32_t dz = CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 			if (dx < 0) {
 				if (dx > -dz)
 					dx = 0;
@@ -900,8 +900,8 @@ if (bGetSlideBank == 2) {
 			}
 		else {
 			if (!gameStates.app.bNostalgia && gameOpts->input.mouse.bJoystick) {
-				int	dy = mouseData.y - gameData.render.screen.Height () / 2;
-				int	dz = CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
+				int32_t	dy = mouseData.y - gameData.render.screen.Height () / 2;
+				int32_t	dz = CalcDeadzone (0, gameOpts->input.mouse.nDeadzone);
 				if (kcMouse [14].value)
 					dy = -dy;
 				if (dy < 0) {
@@ -965,7 +965,7 @@ if (gameStates.input.nMouseType == CONTROL_CYBERMAN) {
 
 //------------------------------------------------------------------------------
 
-int CControlsManager::ReadOculusRift (void)
+int32_t CControlsManager::ReadOculusRift (void)
 {
 return transformation.m_info.bUsePlayerHeadAngles = ogl.IsOculusRift () && gameData.render.rift.GetHeadAngles (&transformation.m_info.playerHeadAngles);
 }
@@ -980,7 +980,7 @@ void CControlsManager::DoOculusRift (void)
 
 #ifdef _WIN32
 
-int CControlsManager::ReadTrackIR (void)
+int32_t CControlsManager::ReadTrackIR (void)
 {
 transformation.m_info.bUsePlayerHeadAngles = 0;
 if (!(gameStates.input.bHaveTrackIR && gameOpts->input.trackIR.bUse))
@@ -1001,17 +1001,17 @@ return 1;
 
 void CControlsManager::DoTrackIR (void)
 {
-	int	dx = (int) ((float) tirInfo.fvRot.z * (float) gameData.render.screen.Width () / 16384.0f),
-			dy = (int) ((float) tirInfo.fvRot.y * (float) gameData.render.screen.Height () / 16384.0f),
+	int32_t	dx = (int32_t) ((float) tirInfo.fvRot.z * (float) gameData.render.screen.Width () / 16384.0f),
+			dy = (int32_t) ((float) tirInfo.fvRot.y * (float) gameData.render.screen.Height () / 16384.0f),
 			dz;
-	int	x, y;
+	int32_t	x, y;
 	float	fDeadzone, fScale;
 
 if (gameOpts->input.trackIR.nMode == 0) {
 #if 1
 #else
-	dx = (int) tirInfo.fvRot.z * (gameOpts->input.trackIR.sensitivity [0] + 1);
-	dy = (int) tirInfo.fvRot.y * (gameOpts->input.trackIR.sensitivity [1] + 1);
+	dx = (int32_t) tirInfo.fvRot.z * (gameOpts->input.trackIR.sensitivity [0] + 1);
+	dy = (int32_t) tirInfo.fvRot.y * (gameOpts->input.trackIR.sensitivity [1] + 1);
 #endif
 	x = gameData.trackIR.x;
 	y = gameData.trackIR.y;
@@ -1037,11 +1037,11 @@ if (gameOpts->input.trackIR.nMode == 0) {
 		m_info [0].pitchTime += (fix) (dy * m_pollTime);
 		}
 	if (gameOpts->input.trackIR.bMove [1])
-		m_info [0].bankTime += (int) (tirInfo.fvRot.x * m_pollTime / 131072.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
+		m_info [0].bankTime += (int32_t) (tirInfo.fvRot.x * m_pollTime / 131072.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
 	}
 else if (gameOpts->input.trackIR.nMode == 1) {
-	dx = (int) ((float) tirInfo.fvRot.z * (float) gameData.render.screen.Width () / 16384.0f);
-	dy = (int) ((float) tirInfo.fvRot.y * (float) gameData.render.screen.Height () / 16384.0f);
+	dx = (int32_t) ((float) tirInfo.fvRot.z * (float) gameData.render.screen.Width () / 16384.0f);
+	dy = (int32_t) ((float) tirInfo.fvRot.y * (float) gameData.render.screen.Height () / 16384.0f);
 	dz = 0; //CalcDeadzone (dy, gameOpts->input.trackIR.nDeadzone);
 	if (dx < 0) {
 		if (dx > -dz)
@@ -1078,7 +1078,7 @@ else if (gameOpts->input.trackIR.nMode == 1) {
 		m_info [0].pitchTime += dy;
 		}
 	if (gameOpts->input.trackIR.bMove [1])
-		m_info [0].bankTime += (int) (tirInfo.fvRot.x * m_pollTime / 131072.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
+		m_info [0].bankTime += (int32_t) (tirInfo.fvRot.x * m_pollTime / 131072.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
 	}
 else {
 	transformation.m_info.bUsePlayerHeadAngles = 1;
@@ -1101,21 +1101,21 @@ if (gameOpts->input.trackIR.bMove [2] && (float (fabs (tirInfo.fvTrans.x) > fDea
 		tirInfo.fvTrans.x += fDeadzone;
 	else
 		tirInfo.fvTrans.x -= fDeadzone;
-	m_info [0].sidewaysThrustTime -= int ((tirInfo.fvTrans.x - fDeadzone) * m_pollTime / 65536.0f * (gameOpts->input.trackIR.sensitivity [0] + 1));
+	m_info [0].sidewaysThrustTime -= int32_t ((tirInfo.fvTrans.x - fDeadzone) * m_pollTime / 65536.0f * (gameOpts->input.trackIR.sensitivity [0] + 1));
 	}
 if (gameOpts->input.trackIR.bMove [3] && (float (fabs (tirInfo.fvTrans.y) > fDeadzone))) {
 	if (tirInfo.fvTrans.y < 0)
 		tirInfo.fvTrans.y += fDeadzone;
 	else
 		tirInfo.fvTrans.y -= fDeadzone;
-	m_info [0].verticalThrustTime += (int) ((tirInfo.fvTrans.y - fDeadzone) * m_pollTime / 65536.0f * (gameOpts->input.trackIR.sensitivity [1] + 1));
+	m_info [0].verticalThrustTime += (int32_t) ((tirInfo.fvTrans.y - fDeadzone) * m_pollTime / 65536.0f * (gameOpts->input.trackIR.sensitivity [1] + 1));
 	}
 if (gameOpts->input.trackIR.bMove [4] && ((float) fabs (tirInfo.fvTrans.z) > fDeadzone)) {
 	if (tirInfo.fvTrans.z < 0)
 		tirInfo.fvTrans.z += fDeadzone;
 	else
 		tirInfo.fvTrans.z -= fDeadzone;
-	m_info [0].forwardThrustTime -= (int) ((tirInfo.fvTrans.z - fDeadzone) * m_pollTime / 8192.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
+	m_info [0].forwardThrustTime -= (int32_t) ((tirInfo.fvTrans.z - fDeadzone) * m_pollTime / 8192.0f * (gameOpts->input.trackIR.sensitivity [2] + 1));
 	}
 }
 
@@ -1123,7 +1123,7 @@ if (gameOpts->input.trackIR.bMove [4] && ((float) fabs (tirInfo.fvTrans.z) > fDe
 
 //------------------------------------------------------------------------------
 
-void CControlsManager::DoSlideBank (int bSlideOn, int bBankOn, fix pitchTime, fix headingTime)
+void CControlsManager::DoSlideBank (int32_t bSlideOn, int32_t bBankOn, fix pitchTime, fix headingTime)
 {
 if (bSlideOn)
 	m_info [0].headingTime =
@@ -1162,7 +1162,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int CControlsManager::CapSampleRate (void)
+int32_t CControlsManager::CapSampleRate (void)
 {
 #if PHYSICS_FPS >= 0
 	float t = float (SDL_GetTicks ());
@@ -1172,7 +1172,7 @@ if (t - m_lastTick < 1000.0f / 30.0f)
 m_pollTime = time_t (gameData.physics.xTime);
 m_frameTime = float (gameData.physics.xTime);
 m_slackTurnRate += m_frameTime;
-m_maxTurnRate = int (m_slackTurnRate);
+m_maxTurnRate = int32_t (m_slackTurnRate);
 m_slackTurnRate -= float (m_maxTurnRate);
 m_lastTick = t;
 return 0;
@@ -1184,7 +1184,7 @@ m_pollTime += gameData.time.xFrame;
 if (!gameStates.app.tick40fps.bTick)
 	return 1;
 m_frameTime = float (m_pollTime) / m_frameCount;
-m_maxTurnRate = int (m_frameTime);
+m_maxTurnRate = int32_t (m_frameTime);
 #endif
 return 0;
 
@@ -1237,9 +1237,9 @@ m_info [0].rearViewDownCount = 0;
 
 //------------------------------------------------------------------------------
 
-int CControlsManager::Read (void)
+int32_t CControlsManager::Read (void)
 {
-	int	i;
+	int32_t	i;
 	fix	pitchTime, headingTime;
 	fix	mouseAxis [3];
 
@@ -1257,14 +1257,14 @@ if (!gameOpts->legacy.bInput)
 
 SetType ();
 
-	int nMouseButtons = 0;
-	int bSlideOn = 0;
-	int bBankOn = 0;
-	int bUseMouse = 0;
-	int bUseJoystick = gameOpts->input.joystick.bUse && ReadJoystick (m_joyAxis);
+	int32_t nMouseButtons = 0;
+	int32_t bSlideOn = 0;
+	int32_t bBankOn = 0;
+	int32_t bUseMouse = 0;
+	int32_t bUseJoystick = gameOpts->input.joystick.bUse && ReadJoystick (m_joyAxis);
 #ifdef USE_SIXENSE
 #	if DBG
-	int bUseSixense = gameOpts->input.joystick.bUse && ReadSixense (m_joyAxis);
+	int32_t bUseSixense = gameOpts->input.joystick.bUse && ReadSixense (m_joyAxis);
 #	endif
 #endif
 
@@ -1276,9 +1276,9 @@ if (gameOpts->input.mouse.bUse)
 #endif
 		}
 	else if (gameStates.input.nMouseType == CONTROL_CYBERMAN)
-		bUseMouse = ReadCyberman (reinterpret_cast<int*> (&mouseAxis [0]), &nMouseButtons);
+		bUseMouse = ReadCyberman (reinterpret_cast<int32_t*> (&mouseAxis [0]), &nMouseButtons);
 	else
-		bUseMouse = ReadMouse (reinterpret_cast<int*> (&mouseAxis [0]), &nMouseButtons);
+		bUseMouse = ReadMouse (reinterpret_cast<int32_t*> (&mouseAxis [0]), &nMouseButtons);
 else {
 	mouseAxis [0] =
 	mouseAxis [1] =
@@ -1289,12 +1289,12 @@ else {
 pitchTime = headingTime = 0;
 memset (m_info + 1, 0, sizeof (m_info) - sizeof (m_info [0]));
 for (i = 0; i < 3; i++) {
-	DoKeyboard (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
+	DoKeyboard (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int32_t*> (&gameStates.input.nCruiseSpeed), i);
 	if (bUseJoystick)
-		DoJoystick (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
+		DoJoystick (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int32_t*> (&gameStates.input.nCruiseSpeed), i);
 	if (bUseMouse)
-		DoMouse (reinterpret_cast<int*> (&mouseAxis [0]), nMouseButtons, &bSlideOn, &bBankOn, &pitchTime, &headingTime,
-					reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
+		DoMouse (reinterpret_cast<int32_t*> (&mouseAxis [0]), nMouseButtons, &bSlideOn, &bBankOn, &pitchTime, &headingTime,
+					reinterpret_cast<int32_t*> (&gameStates.input.nCruiseSpeed), i);
 	m_info [0].pitchTime = m_info [1].pitchTime + m_info [2].pitchTime + m_info [3].pitchTime;
 	m_info [0].headingTime = m_info [1].headingTime + m_info [2].headingTime + m_info [3].headingTime;
 	m_info [0].bankTime = m_info [1].bankTime + m_info [2].bankTime + m_info [3].bankTime;
@@ -1303,7 +1303,7 @@ for (i = 0; i < 3; i++) {
 		}
 	}
 if (gameOpts->input.bUseHotKeys)
-	DoD2XKeys (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int*> (&gameStates.input.nCruiseSpeed), i);
+	DoD2XKeys (&bSlideOn, &bBankOn, &pitchTime, &headingTime, reinterpret_cast<int32_t*> (&gameStates.input.nCruiseSpeed), i);
 gameData.render.rift.AutoCalibrate ();
 if (ReadOculusRift ())
 	DoOculusRift ();
@@ -1352,7 +1352,7 @@ else {
 	KCCLAMP (m_info [0].bankTime, m_maxTurnRate);
 	}
 if (gameStates.zoom.nFactor > I2X (1)) {
-		int r = int (gameStates.zoom.nFactor * 100 / I2X (1));
+		int32_t r = int32_t (gameStates.zoom.nFactor * 100 / I2X (1));
 
 	m_info [0].headingTime = (m_info [0].headingTime * 100) / r;
 	m_info [0].pitchTime = (m_info [0].pitchTime * 100) / r;
@@ -1386,14 +1386,14 @@ if (N_LOCALPLAYER > -1) {
 		CAngleVector * Kconfig_abs_movement;
 		char * oem_message;
 
-		Kconfig_abs_movement = reinterpret_cast<CAngleVector*> (((uint)externalControls.m_info + sizeof (tControlInfo));
+		Kconfig_abs_movement = reinterpret_cast<CAngleVector*> (((uint32_t)externalControls.m_info + sizeof (tControlInfo));
 
 		if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h) {
 			VmAngles2Matrix (&tempm,Kconfig_abs_movement);
 			VmMatMul (&ViewMatrix,&OBJECTS [LOCALPLAYER.nObject].info.position.mOrient,&tempm);
 			OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;
 			}
-		oem_message = reinterpret_cast<char*> (((uint)Kconfig_abs_movement + sizeof (CAngleVector));
+		oem_message = reinterpret_cast<char*> (((uint32_t)Kconfig_abs_movement + sizeof (CAngleVector));
 		if (oem_message [0] != '\0')
 			HUDInitMessage (oem_message);
 		}
@@ -1421,14 +1421,14 @@ if (N_LOCALPLAYER > -1) {
 
 char CControlsManager::GetKeyValue (char key)
 {
-return (kcKeyboard [int (key)].value);
+return (kcKeyboard [int32_t (key)].value);
  }
 
 //------------------------------------------------------------------------------
 
 void CControlsManager::FlushInput (void)
 {
-	int	b = gameOpts->legacy.bInput;
+	int32_t	b = gameOpts->legacy.bInput;
 
 gameOpts->legacy.bInput = 1;
 event_poll (SDL_ALLEVENTS);

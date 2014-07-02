@@ -8,13 +8,13 @@
 class CControlsManager {
 	private:
 		tControlInfo	m_info [4];
-		int				m_frameCount;
-		int				m_maxTurnRate;
+		int32_t				m_frameCount;
+		int32_t				m_maxTurnRate;
 		float				m_slackTurnRate;
 		time_t			m_pollTime;
 		float				m_frameTime;
 		float				m_lastTick;
-		int				m_joyAxis [JOY_MAX_AXES];
+		int32_t				m_joyAxis [JOY_MAX_AXES];
 
 	public:
 		CControlsManager () {
@@ -22,17 +22,17 @@ class CControlsManager {
 			m_lastTick = 0;
 			m_slackTurnRate = 0;
 			}
-		int ReadJoystick (int* joyAxis);
-		void ReadFCS (int nRawAxis);
-		int ReadAll (void);
+		int32_t ReadJoystick (int32_t* joyAxis);
+		void ReadFCS (int32_t nRawAxis);
+		int32_t ReadAll (void);
 		void FlushInput (void);
 		void ResetCruise (void);
 		char GetKeyValue (char key);
 		void SetType (void);
-		int CalcDeadzone (int d, int nDeadzone);
+		int32_t CalcDeadzone (int32_t d, int32_t nDeadzone);
 		void Reset (void);
 		void ResetTriggers (void);
-		int Read (void);
+		int32_t Read (void);
 
 		inline void StopPrimaryFire (void) {
 			m_info [0].firePrimaryState = 0;
@@ -47,35 +47,35 @@ class CControlsManager {
 		inline time_t PollTime (void) { return m_pollTime; }
 		inline void SetPollTime (time_t pollTime) { m_pollTime = pollTime; }
 
-		inline tControlInfo& operator[] (int i) { return m_info [i]; }
+		inline tControlInfo& operator[] (int32_t i) { return m_info [i]; }
 
-		inline int JoyAxis (int i) { return m_joyAxis [i]; }
+		inline int32_t JoyAxis (int32_t i) { return m_joyAxis [i]; }
 
 	private:
-		int AllowToToggle (int i);
-		int ReadKeyboard (void);
-		int ReadMouse (int * mouseAxis, int * nMouseButtons);
-		int AttenuateAxis (double a, int nAxis);
-		int ReadJoyAxis (int i, int rawJoyAxis []);
-		void SetFCSButton (int btn, int button);
-		int ReadCyberman (int *mouseAxis, int *nMouseButtons);
+		int32_t AllowToToggle (int32_t i);
+		int32_t ReadKeyboard (void);
+		int32_t ReadMouse (int32_t * mouseAxis, int32_t * nMouseButtons);
+		int32_t AttenuateAxis (double a, int32_t nAxis);
+		int32_t ReadJoyAxis (int32_t i, int32_t rawJoyAxis []);
+		void SetFCSButton (int32_t btn, int32_t button);
+		int32_t ReadCyberman (int32_t *mouseAxis, int32_t *nMouseButtons);
 #ifdef USE_SIXENSE
-		int ReadSixense (int* joyAxis);
+		int32_t ReadSixense (int32_t* joyAxis);
 #endif
-		int LimitTurnRate (int bUseMouse);
-		int CapSampleRate (void);
+		int32_t LimitTurnRate (int32_t bUseMouse);
+		int32_t CapSampleRate (void);
 
-		void DoD2XKeys (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank);
-		void DoKeyboard (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank);
-		void DoJoystick (int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank);
-		void DoMouse (int *mouseAxis, int nMouseButtons, int *bSlideOn, int *bBankOn, fix *pitchTimeP, fix *headingTimeP, int *nCruiseSpeed, int bGetSlideBank);
-		int ReadTrackIR (void);
+		void DoD2XKeys (int32_t *bSlideOn, int32_t *bBankOn, fix *pitchTimeP, fix *headingTimeP, int32_t *nCruiseSpeed, int32_t bGetSlideBank);
+		void DoKeyboard (int32_t *bSlideOn, int32_t *bBankOn, fix *pitchTimeP, fix *headingTimeP, int32_t *nCruiseSpeed, int32_t bGetSlideBank);
+		void DoJoystick (int32_t *bSlideOn, int32_t *bBankOn, fix *pitchTimeP, fix *headingTimeP, int32_t *nCruiseSpeed, int32_t bGetSlideBank);
+		void DoMouse (int32_t *mouseAxis, int32_t nMouseButtons, int32_t *bSlideOn, int32_t *bBankOn, fix *pitchTimeP, fix *headingTimeP, int32_t *nCruiseSpeed, int32_t bGetSlideBank);
+		int32_t ReadTrackIR (void);
 		void DoTrackIR (void);
-		int ReadOculusRift (void);
+		int32_t ReadOculusRift (void);
 		void DoOculusRift (void);
-		void DoSlideBank (int bSlideOn, int bBankOn, fix pitchTime, fix headingTime);
+		void DoSlideBank (int32_t bSlideOn, int32_t bBankOn, fix pitchTime, fix headingTime);
 		void CybermouseAdjust (void);
-		int DeltaAxis (int v);
+		int32_t DeltaAxis (int32_t v);
 };
 
 extern CControlsManager controls;

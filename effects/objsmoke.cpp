@@ -73,7 +73,7 @@ static CFloatVector smokeColors [] = {
 
 #if DBG
 
-void KillObjectSmoke (int nObject)
+void KillObjectSmoke (int32_t nObject)
 {
 if ((nObject >= 0) && (particleManager.GetObjectSystem (nObject) >= 0)) {
 	if (OBJECTS [nObject].Type () == OBJ_EFFECT)
@@ -88,7 +88,7 @@ if ((nObject >= 0) && (particleManager.GetObjectSystem (nObject) >= 0)) {
 
 //------------------------------------------------------------------------------
 
-void KillPlayerSmoke (int i)
+void KillPlayerSmoke (int32_t i)
 {
 KillObjectSmoke (gameData.multiplayer.players [i].nObject);
 }
@@ -97,7 +97,7 @@ KillObjectSmoke (gameData.multiplayer.players [i].nObject);
 
 void ResetPlayerSmoke (void)
 {
-	int	i;
+	int32_t	i;
 
 for (i = 0; i < MAX_PLAYERS; i++)
 	KillPlayerSmoke (i);
@@ -114,7 +114,7 @@ particleManager.InitObjects ();
 
 void ResetObjectSmoke (void)
 {
-	int	i;
+	int32_t	i;
 
 for (i = 0; i < LEVEL_OBJECTS; i++)
 	KillObjectSmoke (i);
@@ -123,16 +123,16 @@ InitObjectSmoke ();
 
 //------------------------------------------------------------------------------
 
-static inline int RandN (int n)
+static inline int32_t RandN (int32_t n)
 {
 if (!n)
 	return 0;
-return (int) ((double) rand () * (double) n / (double) RAND_MAX);
+return (int32_t) ((double) rand () * (double) n / (double) RAND_MAX);
 }
 
 //------------------------------------------------------------------------------
 
-void CreateDamageExplosion (int h, int i)
+void CreateDamageExplosion (int32_t h, int32_t i)
 {
 if (EGI_FLAG (bDamageExplosions, 1, 0, 0) &&
 	 (gameStates.app.nSDLTicks [0] - *particleManager.ObjExplTime (i) > 100)) {
@@ -146,10 +146,10 @@ if (EGI_FLAG (bDamageExplosions, 1, 0, 0) &&
 #if 0
 void CreateThrusterFlames (CObject *objP)
 {
-	static int nThrusters = -1;
+	static int32_t nThrusters = -1;
 
 	CFixVector	coord, dir = objP->info.position.mOrient.mat.dir.f;
-	int			d, j;
+	int32_t			d, j;
 	tParticleEmitter		*emitterP;
 
 VmVecNegate (&dir);
@@ -178,7 +178,7 @@ for (j = 0; j < 2; j++)
 void KillPlayerBullets (CObject *objP)
 {
 if (objP) {
-	int	i = gameData.multiplayer.bulletEmitters [objP->info.nId];
+	int32_t	i = gameData.multiplayer.bulletEmitters [objP->info.nId];
 
 	if ((i >= 0) && (i < MAX_PLAYERS)) {
 		particleManager.SetLife (i, 0);
@@ -192,7 +192,7 @@ if (objP) {
 void KillGatlingSmoke (CObject *objP)
 {
 if (objP) {
-	int	i = gameData.multiplayer.gatlingSmoke [objP->info.nId];
+	int32_t	i = gameData.multiplayer.gatlingSmoke [objP->info.nId];
 
 	if ((i >= 0) && (i < MAX_PLAYERS)) {
 		particleManager.SetLife (i, 0);
@@ -210,21 +210,21 @@ if (objP) {
 void DoPlayerBullets (CObject *objP)
 {
 if (gameOpts->render.ship.bBullets) {
-		int	nModel = objP->ModelId ();
-		int	bHires = G3HaveModel (nModel) - 1;
+		int32_t	nModel = objP->ModelId ();
+		int32_t	bHires = G3HaveModel (nModel) - 1;
 
 	if (bHires >= 0) {
 		RenderModel::CModel	*pm = gameData.models.renderModels [bHires] + nModel;
 
 		if (pm->m_bBullets) {
-				int			nPlayer = objP->info.nId;
-				int			nGun = EquippedPlayerGun (objP);
-				int			bDoEffect = (bHires >= 0) && ((nGun == VULCAN_INDEX) || (nGun == GAUSS_INDEX)) &&
+				int32_t			nPlayer = objP->info.nId;
+				int32_t			nGun = EquippedPlayerGun (objP);
+				int32_t			bDoEffect = (bHires >= 0) && ((nGun == VULCAN_INDEX) || (nGun == GAUSS_INDEX)) &&
 												(gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration >= GATLING_DELAY);
-				int			i = gameData.multiplayer.bulletEmitters [nPlayer];
+				int32_t			i = gameData.multiplayer.bulletEmitters [nPlayer];
 
 			if (bDoEffect) {
-					int			bSpectate = SPECTATOR (objP);
+					int32_t			bSpectate = SPECTATOR (objP);
 					tObjTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
 					CFixVector	vEmitter, vDir;
 					CFixMatrix	m, *viewP;
@@ -270,21 +270,21 @@ if (gameOpts->render.ship.bBullets) {
 void DoGatlingSmoke (CObject *objP)
 {
 #if GATLING_SMOKE
-	int	nModel = objP->ModelId ();
-	int	bHires = G3HaveModel (nModel) - 1;
+	int32_t	nModel = objP->ModelId ();
+	int32_t	bHires = G3HaveModel (nModel) - 1;
 
 if (bHires >= 0) {
 	RenderModel::CModel	*pm = gameData.models.renderModels [bHires] + nModel;
 
 	if (pm->m_bBullets) {
-			int			nPlayer = objP->info.nId;
-			int			nGun = EquippedPlayerGun (objP);
-			int			bDoEffect = (bHires >= 0) && ((nGun == VULCAN_INDEX) || (nGun == GAUSS_INDEX)) &&
+			int32_t			nPlayer = objP->info.nId;
+			int32_t			nGun = EquippedPlayerGun (objP);
+			int32_t			bDoEffect = (bHires >= 0) && ((nGun == VULCAN_INDEX) || (nGun == GAUSS_INDEX)) &&
 											(gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration >= GATLING_DELAY);
-			int			i = gameData.multiplayer.gatlingSmoke [nPlayer];
+			int32_t			i = gameData.multiplayer.gatlingSmoke [nPlayer];
 
 		if (bDoEffect) {
-				int			bSpectate = SPECTATOR (objP);
+				int32_t			bSpectate = SPECTATOR (objP);
 				tObjTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
 				CFixVector	*vGunPoints, vEmitter, vDir;
 				CFixMatrix	m, *viewP;
@@ -325,16 +325,16 @@ if (bHires >= 0) {
 
 //------------------------------------------------------------------------------
 
-void DoPlayerSmoke (CObject *objP, int nPlayer)
+void DoPlayerSmoke (CObject *objP, int32_t nPlayer)
 {
 #if PLAYER_SMOKE
-	int					nObject, nSmoke, d, nParts, nType;
+	int32_t					nObject, nSmoke, d, nParts, nType;
 	float					nScale;
 	CParticleEmitter	*emitterP;
 	CFixVector			fn, mn, vDir;
 	tThrusterInfo		ti;
 
-	static int	bForward = 1;
+	static int32_t	bForward = 1;
 
 if (nPlayer < 0)
 	nPlayer = objP->info.nId;
@@ -378,7 +378,7 @@ else if ((nPlayer == N_LOCALPLAYER) && (gameStates.app.bPlayerIsDead || (gameDat
 	nParts = 0;
 else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 	tObjTransformation* pos = OBJPOS (objP);
-	short nSegment = OBJSEG (objP);
+	int16_t nSegment = OBJSEG (objP);
 	CFixVector* vDirP = (SPECTATOR (objP) || objP->mType.physInfo.thrust.IsZero ()) ? &vDir : NULL;
 
 	nSmoke = X2IR (gameData.multiplayer.players [nPlayer].Shield ());
@@ -406,7 +406,7 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [1]);
 			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [1], nScale, 1);
 			}
-		int nLife = ((nType != 2) || vDirP) ? PLR_PART_LIFE : PLR_PART_LIFE / 7;
+		int32_t nLife = ((nType != 2) || vDirP) ? PLR_PART_LIFE : PLR_PART_LIFE / 7;
 		if (vDirP) {	// if the ship is standing still, let the thruster smoke move away from it
 			nParts /= 2;
 			if (nType != 2)
@@ -437,7 +437,7 @@ else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 											  objP->mType.physInfo.thrust.IsZero () ? PLR_PART_SPEED * 2 : PLR_PART_SPEED);
 			}
 		thrusterFlames.CalcPos (objP, &ti);
-		for (int i = 0; i < 2; i++)
+		for (int32_t i = 0; i < 2; i++)
 			if ((emitterP = particleManager.GetEmitter (nSmoke, i)))
 				emitterP->SetPos (ti.vPos + i, NULL, nSegment);
 		}
@@ -454,7 +454,7 @@ KillGatlingSmoke (objP);
 void DoRobotSmoke (CObject *objP)
 {
 #if ROBOT_SMOKE
-	int			h = -1, nObject, nSmoke, nShield = 0, nParts;
+	int32_t			h = -1, nObject, nSmoke, nShield = 0, nParts;
 	float			nScale;
 	CFixVector	pos, vDir;
 
@@ -522,7 +522,7 @@ else
 void DoReactorSmoke (CObject *objP)
 {
 #if REACTOR_SMOKE
-	int			h = -1, nObject, nSmoke, nShield = 0, nParts;
+	int32_t			h = -1, nObject, nSmoke, nShield = 0, nParts;
 	CFixVector	vDir, vPos;
 
 nObject = objP->Index ();
@@ -571,7 +571,7 @@ else
 void DoMissileSmoke (CObject *objP)
 {
 #if MISSILE_SMOKE
-	int				nParts, nSpeed, nObject, nSmoke;
+	int32_t				nParts, nSpeed, nObject, nSmoke;
 	float				nScale = 1.5f + float (gameOpts->render.particles.nQuality) / 2.0f, 
 						nLife;
 
@@ -586,7 +586,7 @@ if ((objP->info.xShield < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DES
 else {
 	nSpeed = WI_speed (objP->info.nId, gameStates.app.nDifficultyLevel);
 	nLife = float (gameOpts->render.particles.nLife [3]) * sqrt (float (nSpeed) / float (WI_speed (CONCUSSION_ID, gameStates.app.nDifficultyLevel)));
-	nParts = int (MSL_MAX_PARTS /** nLife*/); //int (MSL_MAX_PARTS * X2F (nSpeed) / (15.0f * (4 - nLife)));
+	nParts = int32_t (MSL_MAX_PARTS /** nLife*/); //int32_t (MSL_MAX_PARTS * X2F (nSpeed) / (15.0f * (4 - nLife)));
 #if 0
 	if ((objP->info.nId == EARTHSHAKER_MEGA_ID) || (objP->info.nId == ROBOT_SHAKER_MEGA_ID))
 		nParts /= 2;
@@ -598,9 +598,9 @@ if (nParts) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [3]);
 			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [3], nScale, 1);
 			}
-		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, int (nParts * nLife * nLife), nScale,
+		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, int32_t (nParts * nLife * nLife), nScale,
 													/*gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3], 1,*/ 
-													int (nLife * MSL_PART_LIFE * 0.5), MSL_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + 1, 1, -1);
+													int32_t (nLife * MSL_PART_LIFE * 0.5), MSL_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + 1, 1, -1);
 		if (nSmoke < 0)
 			return;
 		particleManager.SetObjectSystem (nObject, nSmoke);
@@ -623,7 +623,7 @@ else
 void DoDebrisSmoke (CObject *objP)
 {
 #if DEBRIS_SMOKE
-	int			nParts, nObject, nSmoke;
+	int32_t			nParts, nObject, nSmoke;
 	float			nScale = 2;
 	CFixVector	pos;
 
@@ -664,16 +664,16 @@ else
 void DoStaticParticles (CObject *objP)
 {
 #if STATIC_SMOKE
-	int			i, j, nObject, nSmoke, 
+	int32_t			i, j, nObject, nSmoke, 
 					nType, nFadeType;
 	CFixVector	pos, offs, dir;
 
 	static CFloatVector defaultColors [7] = {{{{0.5f, 0.5f, 0.5f, 0.0f}}}, {{{0.8f, 0.9f, 1.0f, 1.0f}}}, {{{1.0f, 1.0f, 1.0f, 1.0f}}},
 														 {{{1.0f, 1.0f, 1.0f, 1.0f}}}, {{{1.0f, 1.0f, 1.0f, 1.0f}}}, {{{1.0f, 1.0f, 1.0f, 1.0f}}},
 														 {{{1.0f, 1.0f, 1.0f, 1.0f}}}};
-	static int particleTypes [7] = {SMOKE_PARTICLES, BUBBLE_PARTICLES, FIRE_PARTICLES, WATERFALL_PARTICLES, SIMPLE_SMOKE_PARTICLES, RAIN_PARTICLES, SNOW_PARTICLES};
+	static int32_t particleTypes [7] = {SMOKE_PARTICLES, BUBBLE_PARTICLES, FIRE_PARTICLES, WATERFALL_PARTICLES, SIMPLE_SMOKE_PARTICLES, RAIN_PARTICLES, SNOW_PARTICLES};
 
-nObject = (int) objP->Index ();
+nObject = (int32_t) objP->Index ();
 if (objP->rType.particleInfo.nType == SMOKE_TYPE_WATERFALL) {
 	nType = 3;
 	nFadeType = 2;
@@ -701,7 +701,7 @@ if (!(SHOW_SMOKE && objP->rType.particleInfo.bEnabled && ((nType == 1) ? gameOpt
 	}
 if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		CFloatVector color;
-		int bColor;
+		int32_t bColor;
 
 	color.Red () = (float) objP->rType.particleInfo.color.Red () / 255.0f;
 	color.Green () = (float) objP->rType.particleInfo.color.Green () / 255.0f;
@@ -714,7 +714,7 @@ if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 												-objP->rType.particleInfo.nParts / ((nType == SMOKE_TYPE_RAIN) ? 10 : ((nType == SMOKE_TYPE_FIRE) || (nType == SMOKE_TYPE_SNOW)) ? 10 : 1),
 												-PARTICLE_SIZE (objP->rType.particleInfo.nSize [gameOpts->render.particles.bDisperse], (nType == 1) ? 4.0f : 2.0f, 1),
 												/*-1, 3,*/ 
-												(nType == 2) ? FIRE_PART_LIFE * int (sqrt (double (objP->rType.particleInfo.nLife))) : STATIC_SMOKE_PART_LIFE * objP->rType.particleInfo.nLife,
+												(nType == 2) ? FIRE_PART_LIFE * int32_t (sqrt (double (objP->rType.particleInfo.nLife))) : STATIC_SMOKE_PART_LIFE * objP->rType.particleInfo.nLife,
 												(nType == SMOKE_TYPE_RAIN) ? objP->rType.particleInfo.nDrift * 64 : objP->rType.particleInfo.nDrift, 
 												particleTypes [nType], 
 												nObject, bColor ? &color : defaultColors + nType, nType != 2, objP->rType.particleInfo.nSide - 1);
@@ -748,7 +748,7 @@ if (objP->rType.particleInfo.nSide <= 0) {	//don't vary emitter position for smo
 void DoBombSmoke (CObject *objP)
 {
 #if BOMB_SMOKE
-	int			nParts, nObject, nSmoke;
+	int32_t			nParts, nObject, nSmoke;
 	CFixVector	pos, offs;
 
 if (gameStates.app.bNostalgia || !gameStates.app.bHaveExtraGameInfo [IsMultiGame])
@@ -783,7 +783,7 @@ else
 void DoParticleTrail (CObject *objP)
 {
 #if PARTICLE_TRAIL
-	int			nParts, nObject, nSmoke, id = objP->info.nId, 
+	int32_t			nParts, nObject, nSmoke, id = objP->info.nId, 
 					bGatling = objP->IsGatlingRound (),
 					bOmega = (id == OMEGA_ID);
 	float			nScale;
@@ -856,10 +856,10 @@ particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
 
 //------------------------------------------------------------------------------
 
-int DoObjectSmoke (CObject *objP)
+int32_t DoObjectSmoke (CObject *objP)
 {
-int t = objP->info.nType;
-	ubyte nId = objP->info.nId;
+int32_t t = objP->info.nType;
+	uint8_t nId = objP->info.nId;
 
 if (t == OBJ_PLAYER)
 	DoPlayerSmoke (objP, -1);
@@ -895,7 +895,7 @@ void PlayerBulletFrame (void)
 {
 if (!gameOpts->render.ship.bBullets)
 	return;
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
+for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++)
 	DoPlayerBullets (OBJECTS + gameData.multiplayer.players [i].nObject);
 }
 
@@ -905,7 +905,7 @@ void PlayerParticleFrame (void)
 {
 if (!gameOpts->render.particles.bPlayers)
 	return;
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++)
+for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++)
 	DoPlayerSmoke (OBJECTS + gameData.multiplayer.players [i].nObject, i);
 }
 
@@ -919,7 +919,7 @@ if (!SHOW_SMOKE)
 #endif
 CObject	*objP = OBJECTS.Buffer ();
 
-for (int i = 0; i <= gameData.objs.nLastObject [1]; i++, objP++) {
+for (int32_t i = 0; i <= gameData.objs.nLastObject [1]; i++, objP++) {
 	if (gameData.objs.bWantEffect [i] & DESTROY_SMOKE) {
 		gameData.objs.bWantEffect [i] &= ~DESTROY_SMOKE;
 		KillObjectSmoke (i);

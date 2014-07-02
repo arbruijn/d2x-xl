@@ -35,11 +35,11 @@ CPerlinNoise noiseX [MAX_THREADS], noiseY [MAX_THREADS];
 //------------------------------------------------------------------------------
 
 bool CLightningNode::CreateChild (CFixVector *vEnd, CFixVector *vDelta,
-											 int nLife, int nLength, int nAmplitude,
-											 char nAngle, short nNodes, short nChildren, char nDepth, short nSteps,
-											 short nSmoothe, char bClamp, char bGlow, char bLight,
-											 char nStyle, float nWidth, CFloatVector *colorP, CLightning *parentP, short nNode,
-											 int nThread)
+											 int32_t nLife, int32_t nLength, int32_t nAmplitude,
+											 char nAngle, int16_t nNodes, int16_t nChildren, char nDepth, int16_t nSteps,
+											 int16_t nSmoothe, char bClamp, char bGlow, char bLight,
+											 char nStyle, float nWidth, CFloatVector *colorP, CLightning *parentP, int16_t nNode,
+											 int32_t nThread)
 {
 if (!(m_child = new CLightning))
 	return false;
@@ -68,7 +68,7 @@ else if (m_child)
 void CLightningNode::Destroy (void)
 {
 if (m_child) {
-	if (int (size_t (m_child)) == int (0xffffffff))
+	if (int32_t (size_t (m_child)) == int32_t (0xffffffff))
 		m_child = NULL;
 	else {
 		m_child->DestroyNodes ();
@@ -80,7 +80,7 @@ if (m_child) {
 
 //------------------------------------------------------------------------------
 
-void CLightningNode::Animate (bool bInit, short nSegment, int nDepth, int nThread)
+void CLightningNode::Animate (bool bInit, int16_t nSegment, int32_t nDepth, int32_t nThread)
 {
 if (bInit)
 	m_vPos = m_vNewPos;
@@ -94,7 +94,7 @@ if (m_child) {
 
 //------------------------------------------------------------------------------
 
-void CLightningNode::ComputeOffset (int nSteps)
+void CLightningNode::ComputeOffset (int32_t nSteps)
 {
 m_vOffs = m_vNewPos - m_vPos;
 m_vOffs *= (I2X (1) / nSteps);
@@ -102,10 +102,10 @@ m_vOffs *= (I2X (1) / nSteps);
 
 //------------------------------------------------------------------------------
 
-int CLightningNode::Clamp (CFixVector *vPos, CFixVector *vBase, int nAmplitude)
+int32_t CLightningNode::Clamp (CFixVector *vPos, CFixVector *vBase, int32_t nAmplitude)
 {
 	CFixVector	vRoot;
-	int			nDist = FindPointLineIntersection (vRoot, vBase [0], vBase [1], *vPos, 0);
+	int32_t			nDist = FindPointLineIntersection (vRoot, vBase [0], vBase [1], *vPos, 0);
 
 if (nDist < nAmplitude)
 	return nDist;
@@ -117,7 +117,7 @@ return nAmplitude;
 
 //------------------------------------------------------------------------------
 
-void CLightningNode::Rotate (CFloatVector &v0, float len0, CFloatVector &v1, float len1, CFloatVector& vBase, int nSteps)
+void CLightningNode::Rotate (CFloatVector &v0, float len0, CFloatVector &v1, float len1, CFloatVector& vBase, int32_t nSteps)
 {
 	CFloatVector	vi, vj, vPos;
 
@@ -134,7 +134,7 @@ m_vOffs *= (I2X (1) / nSteps);
 
 //------------------------------------------------------------------------------
 
-void CLightningNode::Scale (CFloatVector vStart, CFloatVector vEnd, float scale, int nSteps)
+void CLightningNode::Scale (CFloatVector vStart, CFloatVector vEnd, float scale, int32_t nSteps)
 {
 	CFloatVector	vPos, vi;
 
@@ -149,9 +149,9 @@ m_vOffs *= (I2X (1) / nSteps);
 
 //------------------------------------------------------------------------------
 
-int CLightningNode::ComputeAttractor (CFixVector *vAttract, CFixVector *vDest, CFixVector *vPos, int nMinDist, int i)
+int32_t CLightningNode::ComputeAttractor (CFixVector *vAttract, CFixVector *vDest, CFixVector *vPos, int32_t nMinDist, int32_t i)
 {
-	int nDist;
+	int32_t nDist;
 
 *vAttract = *vDest - *vPos;
 nDist = vAttract->Mag () / i;
@@ -167,10 +167,10 @@ return nDist;
 
 //------------------------------------------------------------------------------
 
-CFixVector *CLightningNode::Create (CFixVector *vOffs, CFixVector *vAttract, int nDist, int nAmplitude)
+CFixVector *CLightningNode::Create (CFixVector *vOffs, CFixVector *vAttract, int32_t nDist, int32_t nAmplitude)
 {
 	CFixVector	va = *vAttract;
-	int			i, nDot, nMinDot = I2X (1) / 45 + I2X (1) / 2 - FixDiv (I2X (1) / 2, nAmplitude);
+	int32_t			i, nDot, nMinDot = I2X (1) / 45 + I2X (1) / 2 - FixDiv (I2X (1) / 2, nAmplitude);
 
 if (nDist < I2X (1) / 16)
 	return VmRandomVector (vOffs);
@@ -187,10 +187,10 @@ return vOffs;
 
 //------------------------------------------------------------------------------
 
-CFixVector *CLightningNode::Smoothe (CFixVector *vOffs, CFixVector *vPrevOffs, int nDist, int nSmoothe)
+CFixVector *CLightningNode::Smoothe (CFixVector *vOffs, CFixVector *vPrevOffs, int32_t nDist, int32_t nSmoothe)
 {
 if (nSmoothe) {
-		int nMag = vOffs->Mag ();
+		int32_t nMag = vOffs->Mag ();
 
 	if (nSmoothe > 0)
 		*vOffs *= FixDiv (nSmoothe * nDist, nMag);	//scale offset vector with distance to attractor (the closer, the smaller)
@@ -207,9 +207,9 @@ return vOffs;
 
 //------------------------------------------------------------------------------
 
-CFixVector *CLightningNode::Attract (CFixVector *vOffs, CFixVector *vAttract, CFixVector *vPos, int nDist, int i, int bJoinPaths)
+CFixVector *CLightningNode::Attract (CFixVector *vOffs, CFixVector *vAttract, CFixVector *vPos, int32_t nDist, int32_t i, int32_t bJoinPaths)
 {
-	int nMag = vOffs->Mag ();
+	int32_t nMag = vOffs->Mag ();
 // attract offset vector by scaling it with distance from attracting node
 *vOffs *= FixDiv (i * nDist / 2, nMag);	//scale offset vector with distance to attractor (the closer, the smaller)
 *vOffs += *vAttract;	//add offset and attractor vectors (attractor is the bigger the closer)
@@ -222,10 +222,10 @@ return vPos;
 //------------------------------------------------------------------------------
 
 CFixVector CLightningNode::CreateJaggy (CFixVector *vPos, CFixVector *vDest, CFixVector *vBase, CFixVector *vPrevOffs,
-												   int nSteps, int nAmplitude, int nMinDist, int i, int nSmoothe, int bClamp)
+												   int32_t nSteps, int32_t nAmplitude, int32_t nMinDist, int32_t i, int32_t nSmoothe, int32_t bClamp)
 {
 	CFixVector	vAttract, vOffs;
-	int			nDist = ComputeAttractor (&vAttract, vDest, vPos, nMinDist, i);
+	int32_t			nDist = ComputeAttractor (&vAttract, vDest, vPos, nMinDist, i);
 
 Create (&vOffs, &vAttract, nDist, nAmplitude);
 if (vPrevOffs)
@@ -246,14 +246,14 @@ return vOffs;
 
 //------------------------------------------------------------------------------
 
-CFixVector CLightningNode::CreateErratic (CFixVector *vPos, CFixVector *vBase, int nSteps, int nAmplitude,
-													  int bInPlane, int bFromEnd, int bRandom, int i, int nNodes, int nSmoothe, int bClamp)
+CFixVector CLightningNode::CreateErratic (CFixVector *vPos, CFixVector *vBase, int32_t nSteps, int32_t nAmplitude,
+													  int32_t bInPlane, int32_t bFromEnd, int32_t bRandom, int32_t i, int32_t nNodes, int32_t nSmoothe, int32_t bClamp)
 {
-	int	h, j, nDelta;
+	int32_t	h, j, nDelta;
 
 m_vNewPos = m_vBase;
 for (j = 0; j < 2 - bInPlane; j++) {
-	nDelta = nAmplitude / 2 - int (RandDouble () * nAmplitude);
+	nDelta = nAmplitude / 2 - int32_t (RandDouble () * nAmplitude);
 	if (!bRandom) {
 		i -= bFromEnd;
 		nDelta *= 3;
@@ -288,7 +288,7 @@ return m_vOffs;
 // at the intended start and end points and then have increasing amplitude as 
 // moving out from them.
 
-void CLightningNode::CreatePerlin (double l, double i, int nThread)
+void CLightningNode::CreatePerlin (double l, double i, int32_t nThread)
 {
 double dx = ((l - i) * noiseX [nThread].ComputeNoise (i / l) + i * noiseX [nThread].ComputeNoise ((i - l) / l)) / l;
 double dy = ((l - i) * noiseY [nThread].ComputeNoise (i / l) + i * noiseY [nThread].ComputeNoise ((i - l) / l)) / l;
@@ -305,13 +305,13 @@ dx *= I2X (1);
 dy *= I2X (1);
 //dx *= nAmplitude;
 //dy *= nAmplitude;
-m_vNewPos = m_vBase + m_vDelta [0] * int (dx);
-m_vNewPos += m_vDelta [1] * int (dy);
+m_vNewPos = m_vBase + m_vDelta [0] * int32_t (dx);
+m_vNewPos += m_vDelta [1] * int32_t (dy);
 }
 
 //------------------------------------------------------------------------------
 
-void CLightningNode::Move (const CFixVector& vOffset, short nSegment)
+void CLightningNode::Move (const CFixVector& vOffset, int16_t nSegment)
 {
 m_vNewPos += vOffset;
 m_vBase += vOffset;
@@ -324,7 +324,7 @@ if (m_child)
 
 void CLightningNode::Move (const CFixVector& vOldPos, const CFixVector& vOldEnd, 
 									const CFixVector& vNewPos, const CFixVector& vNewEnd, 
-									float fScale, short nSegment)
+									float fScale, int16_t nSegment)
 {
 	CFixVector	vi, vj, vo;
 
@@ -341,7 +341,7 @@ Move (vj - vi, nSegment);
 
 //------------------------------------------------------------------------------
 
-bool CLightningNode::SetLight (short nSegment, CFloatVector *colorP)
+bool CLightningNode::SetLight (int16_t nSegment, CFloatVector *colorP)
 {
 if (0 > (nSegment = FindSegByPos (m_vPos, nSegment, 0, 0)))
 	return false;

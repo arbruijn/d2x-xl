@@ -68,7 +68,7 @@
 
 #if DBG_OGL
 
-void COGL::VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
+void COGL::VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int32_t nLine)
 {
 if (Locked ())
 	return;
@@ -82,7 +82,7 @@ glVertexPointer (size, type, stride, pointer);
 
 //------------------------------------------------------------------------------
 
-void COGL::NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
+void COGL::NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int32_t nLine)
 {
 if (Locked ())
 	return;
@@ -96,7 +96,7 @@ glNormalPointer (type, stride, pointer);
 
 //------------------------------------------------------------------------------
 
-void COGL::ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
+void COGL::ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int32_t nLine)
 {
 if (Locked ())
 	return;
@@ -110,7 +110,7 @@ glColorPointer (size, type, stride, pointer);
 
 //------------------------------------------------------------------------------
 
-void COGL::TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
+void COGL::TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int32_t nLine)
 {
 if (Locked ())
 	return;
@@ -126,10 +126,10 @@ glTexCoordPointer (size, type, stride, pointer);
 
 //------------------------------------------------------------------------------
 
-void COGL::SelectTMU (int nTMU, bool bClient)
+void COGL::SelectTMU (int32_t nTMU, bool bClient)
 {
 #if 0 //DBG
-	int	i = nTMU - GL_TEXTURE0;
+	int32_t	i = nTMU - GL_TEXTURE0;
 
 if ((i < 0) || (i > 3))
 	return;
@@ -151,7 +151,7 @@ ClearError (0);
 
 //------------------------------------------------------------------------------
 
-int COGL::EnableClientState (GLuint nState, int nTMU)
+int32_t COGL::EnableClientState (GLuint nState, int32_t nTMU)
 {
 #if DBG_OGL
 if (Locked ())
@@ -182,7 +182,7 @@ return glGetError () == 0;
 
 //------------------------------------------------------------------------------
 
-int COGL::DisableClientState (GLuint nState, int nTMU)
+int32_t COGL::DisableClientState (GLuint nState, int32_t nTMU)
 {
 #if DBG_OGL
 if (Locked ())
@@ -207,7 +207,7 @@ return glGetError () == 0;
 
 //------------------------------------------------------------------------------
 
-int COGL::EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
+int32_t COGL::EnableClientStates (int32_t bTexCoord, int32_t bColor, int32_t bNormals, int32_t nTMU)
 {
 if (nTMU >= GL_TEXTURE0) {
 	SelectTMU (nTMU, true);
@@ -236,7 +236,7 @@ return EnableClientState (GL_VERTEX_ARRAY, -1);
 
 //------------------------------------------------------------------------------
 
-void COGL::DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU)
+void COGL::DisableClientStates (int32_t bTexCoord, int32_t bColor, int32_t bNormals, int32_t nTMU)
 {
 if (nTMU >= GL_TEXTURE0)
 	SelectTMU (nTMU, true);
@@ -252,9 +252,9 @@ SetTexturing (false);
 
 //------------------------------------------------------------------------------
 
-void COGL::ResetClientStates (int nFirst)
+void COGL::ResetClientStates (int32_t nFirst)
 {
-for (int i = 3; i >= nFirst; i--) {
+for (int32_t i = 3; i >= nFirst; i--) {
 	DisableClientStates (1, 1, 1, GL_TEXTURE0 + i);
 	SetTexturing (true);
 	ogl.BindTexture (0);

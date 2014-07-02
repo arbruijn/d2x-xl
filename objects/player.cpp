@@ -33,17 +33,17 @@ ps->reverseThrust = cf.ReadFix ();
 ps->brakes = cf.ReadFix ();
 ps->wiggle = cf.ReadFix ();
 ps->maxRotThrust = cf.ReadFix ();
-for (int i = 0; i < N_PLAYER_GUNS; i++)
+for (int32_t i = 0; i < N_PLAYER_GUNS; i++)
 	cf.ReadVector (ps->gunPoints[i]);
 }
 
 //-------------------------------------------------------------------------
 
-int EquippedPlayerGun (CObject *objP)
+int32_t EquippedPlayerGun (CObject *objP)
 {
 if (objP->info.nType == OBJ_PLAYER) {
-		int		nPlayer = objP->info.nId;
-		int		nWeapon = gameData.multiplayer.weaponStates [nPlayer].nPrimary;
+		int32_t		nPlayer = objP->info.nId;
+		int32_t		nWeapon = gameData.multiplayer.weaponStates [nPlayer].nPrimary;
 
 	return (nWeapon || (gameData.multiplayer.weaponStates [nPlayer].nLaserLevel <= MAX_LASER_LEVEL)) ? nWeapon : SUPER_LASER_INDEX;
 	}
@@ -52,15 +52,15 @@ return 0;
 
 //-------------------------------------------------------------------------
 
-static int nBombIds [] = {SMART_INDEX, MEGA_INDEX, EARTHSHAKER_INDEX};
+static int32_t nBombIds [] = {SMART_INDEX, MEGA_INDEX, EARTHSHAKER_INDEX};
 
-int EquippedPlayerBomb (CObject *objP)
+int32_t EquippedPlayerBomb (CObject *objP)
 {
 if (objP->info.nType == OBJ_PLAYER) {
-		int		nPlayer = objP->info.nId;
-		int		i, nWeapon = gameData.multiplayer.weaponStates [nPlayer].nSecondary;
+		int32_t		nPlayer = objP->info.nId;
+		int32_t		i, nWeapon = gameData.multiplayer.weaponStates [nPlayer].nSecondary;
 
-	for (i = 0; i < (int) sizeofa (nBombIds); i++)
+	for (i = 0; i < (int32_t) sizeofa (nBombIds); i++)
 		if (nWeapon == nBombIds [i])
 			return i + 1;
 	}
@@ -69,15 +69,15 @@ return 0;
 
 //-------------------------------------------------------------------------
 
-static int nMissileIds [] = {CONCUSSION_INDEX, HOMING_INDEX, FLASHMSL_INDEX, GUIDED_INDEX, MERCURY_INDEX};
+static int32_t nMissileIds [] = {CONCUSSION_INDEX, HOMING_INDEX, FLASHMSL_INDEX, GUIDED_INDEX, MERCURY_INDEX};
 
-int EquippedPlayerMissile (CObject *objP, int *nMissiles)
+int32_t EquippedPlayerMissile (CObject *objP, int32_t *nMissiles)
 {
 if (objP->info.nType == OBJ_PLAYER) {
-		int		nPlayer = objP->info.nId;
-		int		i, nWeapon = gameData.multiplayer.weaponStates [nPlayer].nSecondary;
+		int32_t		nPlayer = objP->info.nId;
+		int32_t		i, nWeapon = gameData.multiplayer.weaponStates [nPlayer].nSecondary;
 
-	for (i = 0; i < (int) sizeofa (nMissileIds); i++)
+	for (i = 0; i < (int32_t) sizeofa (nMissileIds); i++)
 		if (nWeapon == nMissileIds [i]) {
 			*nMissiles = gameData.multiplayer.weaponStates [nPlayer].nMissiles;
 			return i + 1;
@@ -90,7 +90,7 @@ return 0;
 //-------------------------------------------------------------------------
 
 #if 0
-static inline int WIFireTicks (int nWeapon)
+static inline int32_t WIFireTicks (int32_t nWeapon)
 {
 return 1000 * WI_fire_wait (nWeapon) / I2X (1);
 }
@@ -102,7 +102,7 @@ void UpdateFiringSounds (void)
 {
 	CWeaponState	*wsP = gameData.multiplayer.weaponStates;
 	tFiringData		*fP;
-	int				bGatling, bGatlingSound, i;
+	int32_t				bGatling, bGatlingSound, i;
 
 bGatlingSound = (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++, wsP++) {
@@ -110,7 +110,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++, wsP++) {
 		bGatling = (wsP->nPrimary == VULCAN_INDEX) || (wsP->nPrimary == GAUSS_INDEX);
 		fP = wsP->firing;
 		if (bGatling && bGatlingSound && (fP->bSound == 1)) {
-			audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, (short) gameData.multiplayer.players [i].nObject, 0, 
+			audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, (int16_t) gameData.multiplayer.players [i].nObject, 0, 
 											 I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_GATLING_SPIN), 0);
 			fP->bSound = 0;
 			}
@@ -122,7 +122,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++, wsP++) {
 
 void UpdateFiringState (void)
 {
-	int	bGatling = (gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX);
+	int32_t	bGatling = (gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX);
 
 if ((controls [0].firePrimaryState != 0) || (controls [0].firePrimaryDownCount != 0)) {
 	if (gameData.weapons.firing [0].nStart <= 0) {
@@ -166,7 +166,7 @@ else if (gameData.weapons.firing [1].nDuration) {
 
 void UpdatePlayerWeaponInfo (void)
 {
-	int				i, bUpdate = 0;
+	int32_t				i, bUpdate = 0;
 	CWeaponState	*wsP = gameData.multiplayer.weaponStates + N_LOCALPLAYER;
 	tFiringData		*fP;
 
@@ -240,10 +240,10 @@ UpdateFiringSounds ();
 
 //------------------------------------------------------------------------------
 
-int CountPlayerObjects (int nPlayer, int nType, int nId)
+int32_t CountPlayerObjects (int32_t nPlayer, int32_t nType, int32_t nId)
 {
-	int		h = 0;
-	//int		i;
+	int32_t		h = 0;
+	//int32_t		i;
 	CObject	*objP;
 
 FORALL_OBJS (objP, i) 
@@ -256,11 +256,11 @@ return h;
 
 //------------------------------------------------------------------------------
 
-static bool PlayerInSegment (short nSegment)
+static bool PlayerInSegment (int16_t nSegment)
 {
 if (nSegment < 0)
 	return true;
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++) 
+for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) 
 	if ((i != N_LOCALPLAYER) && (OBJECTS [gameData.multiplayer.players [i].nObject].Segment () == nSegment))
 		return true;
 return false;
@@ -270,7 +270,7 @@ return false;
 
 CFixVector *VmRandomVector (CFixVector *vRand); // from lightning.cpp
 
-void GetPlayerSpawn (int nSpawnPos, CObject *objP)
+void GetPlayerSpawn (int32_t nSpawnPos, CObject *objP)
 {
 	CObject	*markerP = markerManager.SpawnObject (-1);
 
@@ -279,7 +279,7 @@ if (markerP) {
  	objP->RelinkToSeg (markerP->info.nSegment);
 	}
 else {
-	short nSegment = gameData.multiplayer.playerInit [nSpawnPos].nSegment;
+	int16_t nSegment = gameData.multiplayer.playerInit [nSpawnPos].nSegment;
 	if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments))
 		GameStartInitNetworkPlayers ();
 	objP->info.position = gameData.multiplayer.playerInit [nSpawnPos].position;
@@ -290,7 +290,7 @@ else {
 	// try to place this player in an unoccupied adjacent segment
 	if (PlayerInSegment (nSegment)) {
 		CSegment* segP = SEGMENTS + nSegment;
-		for (short nSide = 0; nSide < 6; nSide++) {
+		for (int16_t nSide = 0; nSide < 6; nSide++) {
 			nSegment = segP->ChildId (nSide);
 			if (!PlayerInSegment (nSegment)) {
 				objP->info.position.vPos = SEGMENTS [nSegment].Center ();
@@ -315,7 +315,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-CFixVector* PlayerSpawnPos (int nPlayer)
+CFixVector* PlayerSpawnPos (int32_t nPlayer)
 {
 	CObject	*markerP = markerManager.SpawnObject (nPlayer);
 
@@ -324,7 +324,7 @@ return markerP ? &markerP->info.position.vPos : &gameData.multiplayer.playerInit
 
 //------------------------------------------------------------------------------
 
-CFixMatrix *PlayerSpawnOrient (int nPlayer)
+CFixMatrix *PlayerSpawnOrient (int32_t nPlayer)
 {
 	CObject	*markerP = markerManager.SpawnObject (nPlayer);
 
@@ -335,9 +335,9 @@ return markerP ? &markerP->info.position.mOrient : &gameData.multiplayer.playerI
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 
-int CPlayerData::Index (void)
+int32_t CPlayerData::Index (void)
 {
-int i = int (this - gameData.multiplayer.players);
+int32_t i = int32_t (this - gameData.multiplayer.players);
 return ((i < 0) || (i > MAX_PLAYERS)) ? 0 : i;
 }
 
@@ -383,7 +383,7 @@ return energy;
 
 //-------------------------------------------------------------------------
 
-void CPlayerData::SetObject (short n)
+void CPlayerData::SetObject (int16_t n)
 {
 nObject = n;
 }
@@ -411,7 +411,7 @@ return !m_tWeaponInfo || ((gameStates.app.nSDLTicks [0] - m_tWeaponInfo > 15000)
 
 //-------------------------------------------------------------------------
 
-void CPlayerData::Connect (sbyte nStatus) 
+void CPlayerData::Connect (int8_t nStatus) 
 {
 connected = nStatus;
 if ((nStatus == CONNECT_PLAYING) && (m_nLevel == missionManager.nCurrentLevel))
@@ -424,7 +424,7 @@ if ((nStatus == CONNECT_PLAYING) && (m_nLevel == missionManager.nCurrentLevel))
 
 float CShipEnergy::Scale (void)
 {
-	ubyte nShip = gameData.multiplayer.weaponStates [m_index].nShip;
+	uint8_t nShip = gameData.multiplayer.weaponStates [m_index].nShip;
 
 return (nShip < MAX_SHIP_TYPES) ? shipModifiers [nShip].a [m_type] : 1.0f;
 }

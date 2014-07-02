@@ -18,10 +18,10 @@ extern mve_cb_SetPalette mve_setpalette;
 typedef struct MVEFILE
 {
     void    *stream;
-    ubyte	*cur_chunk;
-    int     buf_size;
-    int     cur_fill;
-    int     next_segment;
+    uint8_t	*cur_chunk;
+    int32_t     buf_size;
+    int32_t     cur_fill;
+    int32_t     next_segment;
 } MVEFILE;
 
 /*
@@ -37,23 +37,23 @@ void mvefile_close(MVEFILE *movie);
 /*
  * get size of next tSegment in chunk (-1 if no more segments in chunk)
  */
-int mvefile_get_next_segment_size(MVEFILE *movie);
+int32_t mvefile_get_next_segment_size(MVEFILE *movie);
 
 /*
  * get nType of next tSegment in chunk (0xff if no more segments in chunk)
  */
-ubyte mvefile_get_next_segmentMajor(MVEFILE *movie);
+uint8_t mvefile_get_next_segmentMajor(MVEFILE *movie);
 
 /*
  * get subtype (version) of next tSegment in chunk (0xff if no more segments in
  * chunk)
  */
-ubyte mvefile_get_next_segmentMinor(MVEFILE *movie);
+uint8_t mvefile_get_next_segmentMinor(MVEFILE *movie);
 
 /*
  * see next tSegment (return NULL if no next tSegment)
  */
-ubyte *mvefile_get_next_segment(MVEFILE *movie);
+uint8_t *mvefile_get_next_segment(MVEFILE *movie);
 
 /*
  * advance to next tSegment
@@ -63,12 +63,12 @@ void mvefile_advance_segment(MVEFILE *movie);
 /*
  * fetch the next chunk (return 0 if at end of stream)
  */
-int mvefile_fetch_next_chunk(MVEFILE *movie);
+int32_t mvefile_fetch_next_chunk(MVEFILE *movie);
 
 /*
  * callback for tSegment nType
  */
-typedef int (*MVESEGMENTHANDLER)(ubyte major, ubyte minor, ubyte *data, int len, void *context);
+typedef int32_t (*MVESEGMENTHANDLER)(uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context);
 
 /*
  * structure for maintaining an MVE stream
@@ -78,13 +78,13 @@ typedef struct MVESTREAM
     MVEFILE             *movie;
     void                *context;
     MVESEGMENTHANDLER   handlers[32];
-	 int						bLittleEndian;
+	 int32_t						bLittleEndian;
 } MVESTREAM;
 
 /*
  * open an MVE stream
  */
-MVESTREAM *mve_open(void *stream, int bLittleEndian);
+MVESTREAM *mve_open(void *stream, int32_t bLittleEndian);
 
 /*
  * close an MVE stream
@@ -99,7 +99,7 @@ void mve_reset(MVESTREAM *movie);
 /*
  * set tSegment nType handler
  */
-void mve_set_handler(MVESTREAM *movie, ubyte major, MVESEGMENTHANDLER handler);
+void mve_set_handler(MVESTREAM *movie, uint8_t major, MVESEGMENTHANDLER handler);
 
 /*
  * set tSegment handler context
@@ -109,9 +109,9 @@ void mve_set_handler_context(MVESTREAM *movie, void *context);
 /*
  * play next chunk
  */
-int mve_play_next_chunk(MVESTREAM *movie);
+int32_t mve_play_next_chunk(MVESTREAM *movie);
 
-void* MVE_Alloc (uint size);
+void* MVE_Alloc (uint32_t size);
 void MVE_Free(void* ptr);
 
 #endif /* INCLUDED_MVELIB_H */

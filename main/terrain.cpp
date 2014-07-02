@@ -45,7 +45,7 @@ void _CDECL_ FreeTerrainLightmap (void);
 
 // ------------------------------------------------------------------------
 
-void DrawTerrainCell (int i, int j, CRenderPoint *p0, CRenderPoint *p1, CRenderPoint *p2, CRenderPoint *p3)
+void DrawTerrainCell (int32_t i, int32_t j, CRenderPoint *p0, CRenderPoint *p1, CRenderPoint *p2, CRenderPoint *p3)
 {
 	CRenderPoint *pointList [3];
 
@@ -72,7 +72,7 @@ G3DrawTexPoly (3, pointList, gameData.render.terrain.uvlList [0], gameData.rende
 G3CheckAndDrawTMap (3, pointList, gameData.render.terrain.uvlList [0], gameData.render.terrain.bmP, NULL, NULL);
 #endif
 if (gameData.render.terrain.bOutline) {
-	int lSave = gameStates.render.nLighting;
+	int32_t lSave = gameStates.render.nLighting;
 	gameStates.render.nLighting = 0;
 	CCanvas::Current ()->SetColorRGB (255, 0, 0, 255);
 	G3DrawLine (pointList [0], pointList [1]);
@@ -99,7 +99,7 @@ G3DrawTexPoly (3, pointList, gameData.render.terrain.uvlList [1], gameData.rende
 G3CheckAndDrawTMap (3, pointList, gameData.render.terrain.uvlList [1], gameData.render.terrain.bmP, NULL, NULL);
 #endif
 if (gameData.render.terrain.bOutline) {
-	int lSave = gameStates.render.nLighting;
+	int32_t lSave = gameStates.render.nLighting;
 	gameStates.render.nLighting=0;
 	CCanvas::Current ()->SetColorRGB (255, 128, 0, 255);
 	G3DrawLine (pointList [0], pointList [1]);
@@ -126,11 +126,11 @@ if (gameData.render.terrain.nMineTilesDrawn == 0xf) {
 //-----------------------------------------------------------------------------
 
 CFixVector yCache [256];
-ubyte ycFlags [256];
+uint8_t ycFlags [256];
 
 extern CFixMatrix mSurfaceOrient;
 
-CFixVector *get_dy_vec (int h)
+CFixVector *get_dy_vec (int32_t h)
 {
 	CFixVector *dyp;
 
@@ -145,13 +145,13 @@ return dyp;
 
 //-----------------------------------------------------------------------------
 
-int im=1;
+int32_t im=1;
 
-void RenderTerrain (CFixVector *vOrgPoint, int org_2dx, int org_2dy)
+void RenderTerrain (CFixVector *vOrgPoint, int32_t org_2dx, int32_t org_2dy)
 {
 	CFixVector	tv, delta_i, delta_j;		//delta_y;
 	CRenderPoint		p, p2, pLast, p2Last, pLowSave, pHighSave;
-	int			i, j, iLow, iHigh, jLow, jHigh, iViewer, jViewer;
+	int32_t			i, j, iLow, iHigh, jLow, jHigh, iViewer, jViewer;
 
 #if 1
 memset (&p, 0, sizeof (CRenderPoint));
@@ -277,9 +277,9 @@ if (gameData.render.terrain.heightmap.Buffer ()) {
 void LoadTerrain (char *filename)
 {
 	CBitmap	bmHeight;
-	int		iffError;
-	int		i, j;
-	ubyte		h, hMin, hMax;
+	int32_t		iffError;
+	int32_t		i, j;
+	uint8_t		h, hMin, hMax;
 	CIFF		iff;
 
 PrintLog (1, "loading terrain height map\n");
@@ -331,7 +331,7 @@ PrintLog (-1);
 
 //-----------------------------------------------------------------------------
 
-static void GetTerrainPoint (CFixVector *p, int i, int j)
+static void GetTerrainPoint (CFixVector *p, int32_t i, int32_t j)
 {
 if (!gameData.render.terrain.heightmap) {
 	PrintLog (0, "no heightmap available\n");
@@ -360,11 +360,11 @@ return -CFixVector::Dot (vNormal, vLightDir);
 
 //-----------------------------------------------------------------------------
 
-fix GetAvgTerrainLight (int i, int j)
+fix GetAvgTerrainLight (int32_t i, int32_t j)
 {
 	CFixVector	pp, p [6];
 	fix			light, totalLight;
-	int			n;
+	int32_t			n;
 
 pp.SetZero();
 GetTerrainPoint (&pp, i, j);
@@ -396,7 +396,7 @@ if (gameData.render.terrain.lightmap.Buffer ()) {
 
 void ComputeTerrainPoints (void)
 {
-	int			i, j;
+	int32_t			i, j;
 	CFixVector	*p = gameData.render.terrain.points.Buffer ();
 
 for (i = 0; i < gameData.render.terrain.nGridW; i++) {
@@ -413,7 +413,7 @@ for (i = 0; i < gameData.render.terrain.nGridW; i++) {
 
 void BuildTerrainLightmap ()
 {
-	int i, j;
+	int32_t i, j;
 	fix l, l2, lMin = 0x7fffffff, lMax = 0;
 
 

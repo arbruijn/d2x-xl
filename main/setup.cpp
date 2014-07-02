@@ -49,9 +49,9 @@
 typedef struct tFileDesc {
 	const char*	pszFile;
 	const char*	pszFolders [2];
-	int bOptional;
-	int bUser;
-	int bFound;
+	int32_t bOptional;
+	int32_t bUser;
+	int32_t bFound;
 } tFileDesc;
 
 static tFileDesc gameFilesD2 [] = {
@@ -194,7 +194,7 @@ static tFileDesc addonSoundFiles [] = {
 
 };
 
-static inline int User (tFileDesc& fd)
+static inline int32_t User (tFileDesc& fd)
 {
 #ifdef _WIN32
 return 0;
@@ -245,12 +245,12 @@ void MoveD2Textures (void)
 
 sprintf (szSourceFolder, "%stextures/", gameFolders.game.szRoot);
 MoveFiles (gameFolders.game.szTextures [1], szSourceFolder, false);
-for (int i = 0; i < 3; i++) {
+for (int32_t i = 0; i < 3; i++) {
 	sprintf (szSourceFolder, "%stextures/%s", gameFolders.game.szRoot, szSubFolders [i]);
 	sprintf (szDestFolder, "%s%s", gameFolders.var.szTextures [1], szSubFolders [i]);
 	MoveFiles (szDestFolder, szSourceFolder, false);
 	}
-for (int i = 0; i < 3; i++) {
+for (int32_t i = 0; i < 3; i++) {
 	sprintf (szSourceFolder, "%stextures/d2/%s", gameFolders.game.szRoot, szSubFolders [i]);
 	sprintf (szDestFolder, "%s%s", gameFolders.var.szTextures [1], szSubFolders [i]);
 	MoveFiles (szDestFolder, szSourceFolder, false);
@@ -267,7 +267,7 @@ void MoveD2Sounds (void)
 
 	char szSourceFolder [FILENAME_LEN];
 
-for (int i = 0; i < 6; i++) {
+for (int32_t i = 0; i < 6; i++) {
 	sprintf (szSourceFolder, "%s%s", gameFolders.game.szRoot, szOldSoundFolders [i]);
 	MoveFiles (pszNewSoundFolders [i], szSourceFolder, false);
 	}
@@ -277,7 +277,7 @@ for (int i = 0; i < 6; i++) {
 
 static inline const char* GetFolder (tFileDesc* fileDesc)
 {
-int bUser = User (*fileDesc);
+int32_t bUser = User (*fileDesc);
 return (bUser < 0) ? gameFolders.user.szRoot : (bUser > 0) ? gameFolders.user.szCache : gameFolders.game.szRoot;
 }
 
@@ -286,13 +286,13 @@ return (bUser < 0) ? gameFolders.user.szRoot : (bUser > 0) ? gameFolders.user.sz
 static bool CheckAndCopyWildcards (tFileDesc* fileDesc)
 {
 	FFS	ffs;
-	int	i;
+	int32_t	i;
 	char	szFilter [FILENAME_LEN], szSrc [FILENAME_LEN], szDest [FILENAME_LEN];
 	CFile	cf;
 
 // quit if none of the specified files exist in the source folder
 if ((i = FFF (fileDesc->pszFile, &ffs, 0))) {
-	for (int j = 0; j < 2; j++)
+	for (int32_t j = 0; j < 2; j++)
 		if (*fileDesc->pszFolders [j]) {
 			sprintf (szFilter, "%s%s%s", GetFolder (fileDesc), fileDesc->pszFolders [j], fileDesc->pszFile);
 			if (!FFF (szFilter, &ffs, 0))
@@ -301,7 +301,7 @@ if ((i = FFF (fileDesc->pszFile, &ffs, 0))) {
 	return false;
 	}
 do {
-	for (int j = 0; j < 2; j++)
+	for (int32_t j = 0; j < 2; j++)
 		if (*fileDesc->pszFolders [j]) {
 			sprintf (szDest, "\002%s", ffs.name);
 			sprintf (szFilter, "%s%s", GetFolder (fileDesc), fileDesc->pszFolders [j]);
@@ -317,20 +317,20 @@ return true;
 
 // ----------------------------------------------------------------------------
 
-static int CheckAndCopyFiles (tFileDesc* fileList, int nFiles)
+static int32_t CheckAndCopyFiles (tFileDesc* fileList, int32_t nFiles)
 {
 	char	szSrc [FILENAME_LEN], szDest [FILENAME_LEN];
-	int	nErrors = 0;
+	int32_t	nErrors = 0;
 	CFile	cf;
 
-for (int i = 0; i < nFiles; i++) {
+for (int32_t i = 0; i < nFiles; i++) {
 	if (strstr (fileList [i].pszFile, "*") || strstr (fileList [i].pszFile, "?")) {
 		fileList [i].bFound = CheckAndCopyWildcards (fileList + i);
 		if (!(fileList [i].bFound || fileList [i].bOptional))
 			nErrors++;
 		}
 	else {
-		for (int j = 0; j < 2; j++)
+		for (int32_t j = 0; j < 2; j++)
 			if (*fileList [i].pszFolders [j]) {
 				sprintf (szDest, "%s%s", GetFolder (fileList + i), fileList [i].pszFolders [j]);
 				fileList [i].bFound = CFile::Exist (fileList [i].pszFile, szDest, false) == 1;
@@ -346,7 +346,7 @@ for (int i = 0; i < nFiles; i++) {
 			cf.Copy (szSrc, szDest);
 			}
 		else if (!fileList [i].bOptional) {
-			for (int j = 0; j < 2; j++)
+			for (int32_t j = 0; j < 2; j++)
 				if (*fileList [i].pszFolders [j]) {
 				sprintf (szDest, "%s%s", GetFolder (fileList + i), fileList [i].pszFolders [j]);
 				fileList [i].bFound = CFile::Exist (fileList [i].pszFile, szDest, false) == 1;
@@ -385,7 +385,7 @@ static const char* gameSubFolders [] = {
 	FFS	ffs;
 	char	szFolder [FILENAME_LEN];
 
-for (int i = 0; i < int (sizeofa (gameSubFolders)); i++) {
+for (int32_t i = 0; i < int32_t (sizeofa (gameSubFolders)); i++) {
 	sprintf (szFolder, "%s%s", gameFolders.game.szRoot, gameSubFolders [i]);
 	if (FFF (szFolder, &ffs, 1))
   		CFile::MkDir (szFolder);
@@ -396,14 +396,14 @@ for (int i = 0; i < int (sizeofa (gameSubFolders)); i++) {
 
 // ----------------------------------------------------------------------------
 
-static void CreateFileListMessage (char* szMsg, tFileDesc* fileList, int nFiles, bool bShowFolders = false)
+static void CreateFileListMessage (char* szMsg, tFileDesc* fileList, int32_t nFiles, bool bShowFolders = false)
 {
 	bool	bFirst = true;
-	int	l = 0, nListed = 0;
+	int32_t	l = 0, nListed = 0;
 
-for (int i = 0, j = -1; i < nFiles; i++) {
+for (int32_t i = 0, j = -1; i < nFiles; i++) {
 	if (/*DBG ||*/ !(fileList [i].bFound || fileList [i].bOptional)) {
-		for (int h = 0; h < 2; h++) {
+		for (int32_t h = 0; h < 2; h++) {
 			if (!*fileList [i].pszFolders [h])
 				continue;
 			if (bShowFolders && ((j < 0) || strcmp (fileList [i].pszFolders [h], fileList [j].pszFolders [h]))) {
@@ -415,11 +415,11 @@ for (int i = 0, j = -1; i < nFiles; i++) {
 					}
 				if (strcmp (GetFolder (fileList + i), ".\\")) {
 					strcat (szMsg, GetFolder (fileList + i));
-					l += int (strlen (GetFolder (fileList + i)));
+					l += int32_t (strlen (GetFolder (fileList + i)));
 					}
 				strcat (szMsg, fileList [i].pszFolders [h]);
 				strcat (szMsg, ": ");
-				l += int (strlen (fileList [i].pszFolders [h])) + 2;
+				l += int32_t (strlen (fileList [i].pszFolders [h])) + 2;
 				}
 			if (bFirst)
 				bFirst = false;
@@ -428,7 +428,7 @@ for (int i = 0, j = -1; i < nFiles; i++) {
 				l += 2;
 				}
 			strcat (szMsg, fileList [i].pszFile + (fileList [i].pszFile [0] == '\002'));
-			l += int (strlen (fileList [i].pszFile) + (fileList [i].pszFile [0] == '\002'));
+			l += int32_t (strlen (fileList [i].pszFile) + (fileList [i].pszFile [0] == '\002'));
 			nListed++;
 			}
 		}
@@ -437,12 +437,12 @@ for (int i = 0, j = -1; i < nFiles; i++) {
 
 // ----------------------------------------------------------------------------
 
-int CheckAndFixSetup (void)
+int32_t CheckAndFixSetup (void)
 {
 if (!gameStates.app.bCheckAndFixSetup)
 	return 0;
 
-	int	nResult = 0;
+	int32_t	nResult = 0;
 	bool	bDemoData = false;
 	char	szMsg [10000];
 
@@ -452,23 +452,23 @@ if (!gameStates.app.bCheckAndFixSetup)
 MoveD2Textures ();
 MoveD2Sounds ();
 
-if (CheckAndCopyFiles (gameFilesD2, int (sizeofa (gameFilesD2)))) {
-	if (CheckAndCopyFiles (demoFilesD2, int (sizeofa (demoFilesD2))))
+if (CheckAndCopyFiles (gameFilesD2, int32_t (sizeofa (gameFilesD2)))) {
+	if (CheckAndCopyFiles (demoFilesD2, int32_t (sizeofa (demoFilesD2))))
 		nResult |= 1;
 	else
 		bDemoData = true;
 	}
 if (!bDemoData) {
-	if (CheckAndCopyFiles (gameFilesD1, int (sizeofa (gameFilesD1))))
+	if (CheckAndCopyFiles (gameFilesD1, int32_t (sizeofa (gameFilesD1))))
 		nResult |= 2;
-	if (CheckAndCopyFiles (vertigoFiles, int (sizeofa (vertigoFiles))))
+	if (CheckAndCopyFiles (vertigoFiles, int32_t (sizeofa (vertigoFiles))))
 		nResult |= 4;
 	}
-if (CheckAndCopyFiles (addonFiles, int (sizeofa (addonFiles))))
+if (CheckAndCopyFiles (addonFiles, int32_t (sizeofa (addonFiles))))
 	nResult |= 8;
-if (CheckAndCopyFiles (addonTextureFiles, int (sizeofa (addonTextureFiles))))
+if (CheckAndCopyFiles (addonTextureFiles, int32_t (sizeofa (addonTextureFiles))))
 	nResult |= 16;
-if (CheckAndCopyFiles (addonSoundFiles, int (sizeofa (addonSoundFiles))))
+if (CheckAndCopyFiles (addonSoundFiles, int32_t (sizeofa (addonSoundFiles))))
 	nResult |= 32;
 
 #if 0 //DBG
@@ -478,27 +478,27 @@ if (nResult) {
 	*szMsg = '\0';
 	if (nResult & 1) {
 		strcat (szMsg, "\n\nCritical - D2X-XL couldn't find the following Descent 2 files:\n\n");
-		CreateFileListMessage (szMsg, gameFilesD2, int (sizeofa (gameFilesD2)));
+		CreateFileListMessage (szMsg, gameFilesD2, int32_t (sizeofa (gameFilesD2)));
 		}
 	if (nResult & 2) {
 		strcat (szMsg, "\n\nWarning - D2X-XL couldn't find the following Descent 1 files:\n\n");
-		CreateFileListMessage (szMsg, gameFilesD1, int (sizeofa (gameFilesD1)));
+		CreateFileListMessage (szMsg, gameFilesD1, int32_t (sizeofa (gameFilesD1)));
 		}
 	if (nResult & 4) {
 		strcat (szMsg, "\n\nWarning - D2X-XL couldn't find the following Vertigo files:\n\n");
-		CreateFileListMessage (szMsg, vertigoFiles, int (sizeofa (vertigoFiles)));
+		CreateFileListMessage (szMsg, vertigoFiles, int32_t (sizeofa (vertigoFiles)));
 		}
 	if (nResult & 8) {
 		strcat (szMsg, "\n\nCritical - D2X-XL couldn't find the following D2X-XL files:\n\n");
-		CreateFileListMessage (szMsg, addonFiles, int (sizeofa (addonFiles)), true);
+		CreateFileListMessage (szMsg, addonFiles, int32_t (sizeofa (addonFiles)), true);
 		}
 	if (nResult & 16) {
 		strcat (szMsg, "\n\nWarning - D2X-XL couldn't find the following D2X-XL texture files:\n\n");
-		CreateFileListMessage (szMsg, addonTextureFiles, int (sizeofa (addonTextureFiles)), true);
+		CreateFileListMessage (szMsg, addonTextureFiles, int32_t (sizeofa (addonTextureFiles)), true);
 		}
 	if (nResult & 32) {
 		strcat (szMsg, "\n\nWarning - D2X-XL couldn't find the following D2X-XL sound files:\n\n");
-		CreateFileListMessage (szMsg, addonSoundFiles, int (sizeofa (addonSoundFiles)), true);
+		CreateFileListMessage (szMsg, addonSoundFiles, int32_t (sizeofa (addonSoundFiles)), true);
 		}
 	if (nResult & (1 | 8)) {
 		strcat (szMsg, "\n\nD2X-XL may not be able to run because files are missing.\n");

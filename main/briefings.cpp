@@ -58,7 +58,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define KEY_DELAY_DEFAULT       ((I2X (20))/1000)
 
-int NMCheckButtonPress (void);
+int32_t NMCheckButtonPress (void);
 
 //Begin D1X modification
 #define MAX_BRIEFING_COLORS     9
@@ -68,7 +68,7 @@ int NMCheckButtonPress (void);
 #define	SHAREWARE_ENDING_FILENAME	"ending.tex"
 
 //	Can be set by -noscreens command line option.  Causes bypassing of all briefing screens.
-int	briefFgColorIndex [MAX_BRIEFING_COLORS], 
+int32_t	briefFgColorIndex [MAX_BRIEFING_COLORS], 
 		briefBgColorIndex [MAX_BRIEFING_COLORS];
 
 CBriefing briefing;
@@ -215,36 +215,36 @@ tBriefingScreen briefingScreens [] = {
 //-----------------------------------------------------------------------------
 
 #if defined(_WIN32) && !DBG
-typedef int (__fastcall * pBriefingHandler) (void);
+typedef int32_t (__fastcall * pBriefingHandler) (void);
 #else
-typedef int (* pBriefingHandler) (void);
+typedef int32_t (* pBriefingHandler) (void);
 #endif
 
 typedef struct tBriefingHandlerInfo {
-	int					ch;
-	int					prevCh;
+	int32_t					ch;
+	int32_t					prevCh;
 	pBriefingHandler	handlerP;
 	} tBriefingHandlerInfo;
 
-inline int HandleA (void) { return briefing.HandleA (); }
-inline int HandleB (void) { return briefing.HandleB (); }
-inline int HandleC (void) { return briefing.HandleC (); }
-inline int HandleD (void) { return briefing.HandleD (); }
-inline int HandleF (void) { return briefing.HandleF (); }
-inline int HandleN (void) { return briefing.HandleN (); }
-inline int HandleO (void) { return briefing.HandleO (); }
-inline int HandleP (void) { return briefing.HandleP (); }
-inline int HandleR (void) { return briefing.HandleR (); }
-inline int HandleS (void) { return briefing.HandleS (); }
-inline int HandleT (void) { return briefing.HandleT (); }
-inline int HandleU (void) { return briefing.HandleU (); }
-inline int HandleZ (void) { return briefing.HandleZ (); }
+inline int32_t HandleA (void) { return briefing.HandleA (); }
+inline int32_t HandleB (void) { return briefing.HandleB (); }
+inline int32_t HandleC (void) { return briefing.HandleC (); }
+inline int32_t HandleD (void) { return briefing.HandleD (); }
+inline int32_t HandleF (void) { return briefing.HandleF (); }
+inline int32_t HandleN (void) { return briefing.HandleN (); }
+inline int32_t HandleO (void) { return briefing.HandleO (); }
+inline int32_t HandleP (void) { return briefing.HandleP (); }
+inline int32_t HandleR (void) { return briefing.HandleR (); }
+inline int32_t HandleS (void) { return briefing.HandleS (); }
+inline int32_t HandleT (void) { return briefing.HandleT (); }
+inline int32_t HandleU (void) { return briefing.HandleU (); }
+inline int32_t HandleZ (void) { return briefing.HandleZ (); }
 
-inline int HandleTAB (void) { return briefing.HandleTAB (); }
-inline int HandleBS (void) { return briefing.HandleBS (); }
-inline int HandleNEWL (void) { return briefing.HandleNEWL (); }
-inline int HandleSEMI (void) { return briefing.HandleSEMI (); }
-inline int HandleANY (void) { return briefing.HandleANY (); }
+inline int32_t HandleTAB (void) { return briefing.HandleTAB (); }
+inline int32_t HandleBS (void) { return briefing.HandleBS (); }
+inline int32_t HandleNEWL (void) { return briefing.HandleNEWL (); }
+inline int32_t HandleSEMI (void) { return briefing.HandleSEMI (); }
+inline int32_t HandleANY (void) { return briefing.HandleANY (); }
 
 static tBriefingHandlerInfo briefingHandlers1 [] = {
 	{'A', 0, ::HandleA},
@@ -294,7 +294,7 @@ strcpy (szSpinningRobot, "rba.mve");
 
 //-----------------------------------------------------------------------------
 
-void CBriefingInfo::Setup (char* _message, int _nLevel, int _nScreen)
+void CBriefingInfo::Setup (char* _message, int32_t _nLevel, int32_t _nScreen)
 {
 Init ();
 message = _message;
@@ -333,10 +333,10 @@ briefingHandlers2 [0].handlerP = &CBriefing::HandleANY;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::StartSound (int nChannel, short nSound, fix nVolume, const char* pszWAV)
+int32_t CBriefing::StartSound (int32_t nChannel, int16_t nSound, fix nVolume, const char* pszWAV)
 {
 if (nChannel < 0) {
-	int bSound = gameStates.sound.bD1Sound;
+	int32_t bSound = gameStates.sound.bD1Sound;
 	gameStates.sound.bD1Sound = 0;
 	nChannel = audio.StartSound (audio.XlatSound (nSound), SOUNDCLASS_GENERIC, nVolume, 0xFFFF / 2, 1, -1, -1, -1, I2X (1), pszWAV);
 	gameStates.sound.bD1Sound = bSound;
@@ -346,7 +346,7 @@ return nChannel;
 
 //-----------------------------------------------------------------------------
 
-void CBriefing::StopSound (int& nChannel)
+void CBriefing::StopSound (int32_t& nChannel)
 {
 if (nChannel > -1) {
 	audio.StopSound (nChannel);
@@ -356,7 +356,7 @@ if (nChannel > -1) {
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::StartHum (int nChannel, int nLevel, int nScreen, int bExtraSounds)
+int32_t CBriefing::StartHum (int32_t nChannel, int32_t nLevel, int32_t nScreen, int32_t bExtraSounds)
 {
 if (bExtraSounds && (nScreen > 3)) {	//only play for the mission directives on a planet background
 	char	szWAV [20];
@@ -371,10 +371,10 @@ return StartSound (nChannel, SOUND_BRIEFING_HUM, I2X (1) / 2, NULL);
 
 //-----------------------------------------------------------------------------
 
-tD1ExtraBotSound* CBriefing::FindExtraBotSound (short nLevel, short nBotSig)
+tD1ExtraBotSound* CBriefing::FindExtraBotSound (int16_t nLevel, int16_t nBotSig)
 {
 	tD1ExtraBotSound*	p = extraBotSounds;
-	int					i = sizeof (extraBotSounds) / sizeof (tD1ExtraBotSound);
+	int32_t					i = sizeof (extraBotSounds) / sizeof (tD1ExtraBotSound);
 
 if (!gameStates.app.bD1Mission)
 	return NULL;
@@ -386,7 +386,7 @@ return NULL;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::StartExtraBotSound (int nChannel, short nLevel, short nBotSig)
+int32_t CBriefing::StartExtraBotSound (int32_t nChannel, int16_t nLevel, int16_t nBotSig)
 {
 	tD1ExtraBotSound*	p;
 
@@ -400,7 +400,7 @@ return StartSound (nChannel, -1, I2X (8), p->pszName);
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::RenderImage (char* pszImg)
+int32_t CBriefing::RenderImage (char* pszImg)
 {
 	char	*ps, c = '0';
 
@@ -439,7 +439,7 @@ return m_pcxError;
 
 //-----------------------------------------------------------------------------
 
-void CBriefing::InitCharPos (tBriefingScreen *bsP, int bRescale)
+void CBriefing::InitCharPos (tBriefingScreen *bsP, int32_t bRescale)
 {
 if (bRescale) {
 	bsP->textLeft = AdjustX (bsP->textLeft);
@@ -453,9 +453,9 @@ m_info.briefingTextY = gameStates.app.bD1Mission ? bsP->textTop : bsP->textTop -
 
 //-----------------------------------------------------------------------------
 
-void CBriefing::RenderBitmapFrame (int bRedraw)
+void CBriefing::RenderBitmapFrame (int32_t bRedraw)
 {
-int t = SDL_GetTicks ();
+int32_t t = SDL_GetTicks ();
 if (t - m_info.tAnimate < 10)
 	return;
 m_info.tAnimate = t;
@@ -467,7 +467,7 @@ if (!bRedraw && m_info.nDoorDivCount) {
 
 if (*m_info.szBitmapName) {
 	char		*poundSignP;
-	int		nFrame, dig1, dig2;
+	int32_t		nFrame, dig1, dig2;
 
 	//	Set supertransparency color to black
 	if (!bRedraw) {	//extract current bitmap frame number from bitmap name (<name>#<frame>)
@@ -517,7 +517,7 @@ if (*m_info.szBitmapName) {
 
 	paletteManager.Load ("", "", 0, 0, 1);
 	tBitmapIndex bmi = PiggyFindBitmap (m_info.szBitmapName, gameStates.app.bD1Mission);
-	if (0 > short (bmi.index))
+	if (0 > int16_t (bmi.index))
 		return;
 	m_bitmap = gameData.pig.tex.bitmaps [gameStates.app.bD1Mission] + bmi.index;
 
@@ -563,7 +563,7 @@ void CBriefing::RenderRobotFrame (void)
 {
 if (m_info.nRobot == -1)
 	return;
-int t = SDL_GetTicks ();
+int32_t t = SDL_GetTicks ();
 if (t - m_info.tAnimate < 10)
 	return;
 
@@ -615,7 +615,7 @@ m_info.tAnimate = SDL_GetTicks ();
 
 void CBriefing::SetupAnimationCanvas (CCanvas* baseCanv)
 {
-int x, y, w, h;
+int32_t x, y, w, h;
 if (ogl.IsOculusRift ()) {
 	y = gameData.render.window.Height (false) / 3;
 	w = gameData.render.window.Height (false) - y;
@@ -646,7 +646,7 @@ return (ogl.IsOculusRift () /*&& gameStates.app.bGameRunning*/) ? 0.5f : 1.0f;
 
 //---------------------------------------------------------------------------
 
-void CBriefing::RenderElement (int nElement)
+void CBriefing::RenderElement (int32_t nElement)
 {
 CFrameController fc;
 for (fc.Begin (); fc.Continue (); fc.End ()) {
@@ -654,7 +654,7 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 	if (!ogl.IsOculusRift ()) 
 		baseCanv = &gameData.render.frame;
 	else {
-		int w, h;
+		int32_t w, h;
 		cockpit->SetupSceneCenter (&gameData.render.frame, w, h);
 		baseCanv = &gameData.render.window;
 		}
@@ -748,12 +748,12 @@ fontManager.SetScale (fontManager.Scale () / GetScale ());
 // briefing screen up to the last currently visible character (required when
 // dual buffering is enabled). In that case there is no delay.
 
-int CBriefing::PrintCharDelayed (int delay)
+int32_t CBriefing::PrintCharDelayed (int32_t delay)
 {
 m_message [0] = char (m_info.ch);
 m_message [1] = 0;
 
-int	w, h, aw;
+int32_t	w, h, aw;
 fontManager.SetCurrent (GAME_FONT);
 fontManager.SetScale (fontManager.Scale () * GetScale ());
 fontManager.Current ()->StringSize (m_message, w, h, aw);
@@ -796,7 +796,7 @@ return w;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::LoadImage (char* szBriefScreen)
+int32_t CBriefing::LoadImage (char* szBriefScreen)
 {
 #if TRACE
 console.printf (CON_DBG, "Loading new briefing <%s>\n", szBriefScreen);
@@ -804,7 +804,7 @@ console.printf (CON_DBG, "Loading new briefing <%s>\n", szBriefScreen);
 strcpy (m_info.szCurImage, szBriefScreen);
 if (paletteManager.DisableEffect ())
 	return 0;
-int pcxResult = RenderImage (szBriefScreen);
+int32_t pcxResult = RenderImage (szBriefScreen);
 if (pcxResult != PCX_ERROR_NONE) {
 #if DBG
 	static char szErrScreen [15] = "";
@@ -822,7 +822,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::LoadImage (int nScreen)
+int32_t CBriefing::LoadImage (int32_t nScreen)
 {
 	char*	szBriefScreen;
 
@@ -837,7 +837,7 @@ return LoadImage (szBriefScreen);
 
 //-----------------------------------------------------------------------------
 
-void CBriefing::FlashCursor (int bCursor)
+void CBriefing::FlashCursor (int32_t bCursor)
 {
 if (bCursor == 0)
 	return;
@@ -865,7 +865,7 @@ return NULL;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::PageHasRobot (const char* message)
+int32_t CBriefing::PageHasRobot (const char* message)
 {
 	const char	*pEnd = NextPage (message);
 	const char	*pBot = strstr (message, "$R");
@@ -875,9 +875,9 @@ return pBot && (!pEnd || (pBot < pEnd));
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::InKey (void)
+int32_t CBriefing::InKey (void)
 {
-	int	funcRes = KeyInKey ();
+	int32_t	funcRes = KeyInKey ();
 
 if (funcRes == KEY_PRINT_SCREEN) {
 	gameStates.app.bSaveScreenShot = 1;
@@ -893,10 +893,10 @@ return funcRes;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::WaitForKeyPress (void)
+int32_t CBriefing::WaitForKeyPress (void)
 {
 	time_t t;
-	int keypress = 0;
+	int32_t keypress = 0;
 
 m_info.bChattering = 0;
 StopSound (m_info.nPrintingChannel);
@@ -918,9 +918,9 @@ return keypress;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::ParseMessageInt (char*& pszMsg, bool bSkip)
+int32_t CBriefing::ParseMessageInt (char*& pszMsg, bool bSkip)
 {
-	int i = 0;
+	int32_t i = 0;
 
 while (*pszMsg && (*pszMsg == ' '))
 	 pszMsg++;
@@ -938,12 +938,12 @@ return i;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::DefineBox (void)
+int32_t CBriefing::DefineBox (void)
 {
-	int i = 0, nScreen = ParseMessageInt (m_info.message);
+	int32_t i = 0, nScreen = ParseMessageInt (m_info.message);
 	char name [20];
 
-while (*m_info.message && (*m_info.message != ' ') && (i < int (sizeof (name)) - 1)) {
+while (*m_info.message && (*m_info.message != ' ') && (i < int32_t (sizeof (name)) - 1)) {
 	name [i++] = *m_info.message;
 	m_info.message++;
 	}
@@ -980,7 +980,7 @@ m_info.message++;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleA (void)
+int32_t CBriefing::HandleA (void)
 {
 m_info.nLineAdjustment = 1 - m_info.nLineAdjustment;
 return 1;
@@ -988,12 +988,12 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleB (void)
+int32_t CBriefing::HandleB (void)
 {
 	char     szBitmap [32];
 	CBitmap  bmGuy;
 	CIFF		iff;
-	int      iff_error;
+	int32_t      iff_error;
 
 ParseMessageText (szBitmap);
 strcat (szBitmap, ".bbm");
@@ -1010,7 +1010,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleC (void)
+int32_t CBriefing::HandleC (void)
 {
 	char c = *m_info.message;
 
@@ -1039,7 +1039,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleD (void)
+int32_t CBriefing::HandleD (void)
 {
 m_info.nScreen = DefineBox ();
 m_info.bsP = &m_info.curScreen;
@@ -1052,7 +1052,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleF (void)
+int32_t CBriefing::HandleF (void)
 {
 m_info.bFlashingCursor = !m_info.bFlashingCursor;
 m_info.prevCh = 10;
@@ -1063,7 +1063,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleN (void)
+int32_t CBriefing::HandleN (void)
 {
 if (m_info.message > m_info.pj) {
 	StopSound (m_info.nBotChannel);
@@ -1078,7 +1078,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleO (void)
+int32_t CBriefing::HandleO (void)
 {
 if (m_info.message > m_info.pj) {
 	ParseMessageText (m_info.szBitmapName);
@@ -1094,7 +1094,7 @@ return 1;
 
 static char szEndScreens [2][11] = {"end01b.pcx", "end01.pcx"};
 
-int CBriefing::HandleP (void)
+int32_t CBriefing::HandleP (void)
 {
 if (!m_info.bGotZ) {
 	Int3 (); // Hey ryan!!!!You gotta load a screen before you start printing to it!You know, $Z !!!
@@ -1111,7 +1111,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleR (void)
+int32_t CBriefing::HandleR (void)
 {
 if (m_info.message > m_info.pj) {
 	if (m_info.bRobotPlaying) {
@@ -1120,7 +1120,7 @@ if (m_info.message > m_info.pj) {
 		}
 	InitSpinningRobot ();
 	if (!songManager.Playing ()) {
-		m_info.nBotChannel = StartExtraBotSound (m_info.nBotChannel, (short) m_info.nLevel, m_info.nBotSig++);
+		m_info.nBotChannel = StartExtraBotSound (m_info.nBotChannel, (int16_t) m_info.nLevel, m_info.nBotSig++);
 		if (m_info.nBotChannel >= 0)
 			StopSound (m_info.nHumChannel);
 		}
@@ -1146,9 +1146,9 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleS (void)
+int32_t CBriefing::HandleS (void)
 {
-int keypress = WaitForKeyPress ();
+int32_t keypress = WaitForKeyPress ();
 
 if (!keypress)
 	return -1;
@@ -1160,7 +1160,7 @@ return 0;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleT (void)
+int32_t CBriefing::HandleT (void)
 {
 m_info.nTabStop = ParseMessageInt (m_info.message) * (1 + gameStates.menus.bHires);
 m_info.prevCh = 10;							//	read to eoln
@@ -1169,7 +1169,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleU (void)
+int32_t CBriefing::HandleU (void)
 {
 m_info.nScreen = ParseMessageInt (m_info.message);
 m_info.curScreen = briefingScreens [m_info.nScreen % MAX_BRIEFING_SCREENS];
@@ -1183,11 +1183,11 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleZ (void)
+int32_t CBriefing::HandleZ (void)
 {
 m_info.bGotZ = 1;
 m_info.bDumbAdjust = 1;
-int i = 0;
+int32_t i = 0;
 while ((m_info.szBriefScreen [i] = *m_info.message) != '\n') {
 	i++;
 	m_info.message++;
@@ -1210,7 +1210,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleTAB (void)
+int32_t CBriefing::HandleTAB (void)
 {
 if (m_info.briefingTextX - m_info.bsP->textLeft < m_info.nTabStop)
 	m_info.briefingTextX = m_info.bsP->textLeft + m_info.nTabStop;
@@ -1219,7 +1219,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleBS (void)
+int32_t CBriefing::HandleBS (void)
 {
 m_info.prevCh = m_info.ch;
 return 1;
@@ -1227,7 +1227,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleNEWL (void)
+int32_t CBriefing::HandleNEWL (void)
 {
 if (m_info.prevCh != '\\') {
 	m_info.prevCh = m_info.ch;
@@ -1252,7 +1252,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleSEMI (void)
+int32_t CBriefing::HandleSEMI (void)
 {
 while (*m_info.message != 10)
 	m_info.message++;
@@ -1262,7 +1262,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleANY (void)
+int32_t CBriefing::HandleANY (void)
 {
 if (!m_info.bGotZ) 
 	LoadImage (szEndScreens [gameStates.menus.bHires]);
@@ -1320,10 +1320,10 @@ return m_info.message;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleInput (void)
+int32_t CBriefing::HandleInput (void)
 {
 if (!m_info.bRedraw && m_info.nDelayCount) {
-	int keypress = InKey ();
+	int32_t keypress = InKey ();
 	if (!keypress)
 		return 1;
 	if (keypress == KEY_ESC)
@@ -1342,12 +1342,12 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int CBriefing::HandleNewPage (void)
+int32_t CBriefing::HandleNewPage (void)
 {
 if (!m_info.bNewPage && (m_info.briefingTextY <= m_info.bsP->textTop + m_info.bsP->textHeight))
 	return 1;
 m_info.bNewPage = 0;
-int keypress = WaitForKeyPress ();
+int32_t keypress = WaitForKeyPress ();
 if (!keypress)
 	return -1;
 if (m_info.bRobotPlaying)
@@ -1378,10 +1378,10 @@ return -1;
 //-----------------------------------------------------------------------------
 // Return true if message got aborted by user (pressed ESC), else return false.
 
-int CBriefing::ShowMessage (int nScreen, char* message, int nLevel)
+int32_t CBriefing::ShowMessage (int32_t nScreen, char* message, int32_t nLevel)
 {
 	tBriefingHandlerInfo	*bhP;
-	int						h, i;
+	int32_t						h, i;
 
 m_info.Setup (message, nLevel, nScreen);
 
@@ -1490,25 +1490,25 @@ return m_info.nFuncRes;
 //-----------------------------------------------------------------------------
 // Return a pointer to the start of text for screen #nScreen. Screens start with token '$S'.
 
-char* CBriefing::GetMessage (int nScreen)
+char* CBriefing::GetMessage (int32_t nScreen)
 {
 	char* pszMsg = &m_info.briefingText [0];
 
-for (int i = 0; i < m_info.nBriefingTextLen; ) {
+for (int32_t i = 0; i < m_info.nBriefingTextLen; ) {
 	if ((*pszMsg++ == '$') && (*pszMsg++ == 'S') && (ParseMessageInt (pszMsg) == nScreen))
 		return pszMsg;
-	i = int (pszMsg - m_info.briefingText.Buffer ());
+	i = int32_t (pszMsg - m_info.briefingText.Buffer ());
 	}
 return NULL;
 }
 
 //-----------------------------------------------------------------------------
 //	Load Descent briefing text.
-int CBriefing::LoadImageText (char* filename, CCharArray& textBuffer)
+int32_t CBriefing::LoadImageText (char* filename, CCharArray& textBuffer)
 {
 	CFile cf;
-	int	len, i;
-	int	bHaveBinary;
+	int32_t	len, i;
+	int32_t	bHaveBinary;
 	char	*bufP;
 	
 	static char fileModes [2][3] = {"rb", "rb"};
@@ -1527,7 +1527,7 @@ if (!(cf.Open (filename, gameFolders.mods.szCurrent, fileModes [bHaveBinary], ga
 		}
 	}
 if (bHaveBinary) {
-	len = (int) cf.Length ();
+	len = (int32_t) cf.Length ();
 	if (!textBuffer.Create (len))
 		return 0;
 	bufP = &textBuffer [0];
@@ -1542,7 +1542,7 @@ if (bHaveBinary) {
 			*bufP = EncodeRotateLeft ((char) (EncodeRotateLeft (*bufP) ^ BITMAP_TBL_XOR));
 	}
 else {
-	len = (int) cf.Length ();
+	len = (int32_t) cf.Length ();
 	if (!textBuffer.Create (len + 500))
 		return 0;
 	bufP = &textBuffer [0];
@@ -1554,17 +1554,17 @@ else {
 	*bufP = 0;
 	cf.Close ();
 	}
-m_info.nBriefingTextLen = (int) (bufP - textBuffer.Buffer ());
+m_info.nBriefingTextLen = (int32_t) (bufP - textBuffer.Buffer ());
 PrintLog (-1);
 return 1;
 }
 
 //-----------------------------------------------------------------------------
 // Return true if message got aborted, else return false.
-int CBriefing::ShowText (int nScreen, short nLevel)
+int32_t CBriefing::ShowText (int32_t nScreen, int16_t nLevel)
 {
 	char*	pszMsg;
-	int	i;
+	int32_t	i;
 
 pszMsg = GetMessage (gameStates.app.bD1Mission ? briefingScreens [nScreen % MAX_BRIEFING_SCREENS].nMessage : nScreen);
 if (!pszMsg)
@@ -1578,14 +1578,14 @@ return i;
 
 //-----------------------------------------------------------------------------
 // Return true if screen got aborted by user, else return false.
-int CBriefing::LoadLevelScreen (int nScreen, short nLevel)
+int32_t CBriefing::LoadLevelScreen (int32_t nScreen, int16_t nLevel)
 {
 if (gameOpts->gameplay.bSkipBriefingScreens) {
 	console.printf (CON_DBG, "Skipping briefing screen [%s]\n", &briefingScreens [nScreen % MAX_BRIEFING_SCREENS].szName);
 	return 0;
 	}
 if (gameStates.app.bD1Mission) {
-	int pcxResult = RenderImage (briefingScreens [nScreen % MAX_BRIEFING_SCREENS].szName);
+	int32_t pcxResult = RenderImage (briefingScreens [nScreen % MAX_BRIEFING_SCREENS].szName);
 	if (pcxResult != PCX_ERROR_NONE) {
 		console.printf (CON_DBG, "File '%s', PCX load error: %s (%i)\n  (It's a briefing gameData.render.screen.  Does this cause you pain?)\n", 
 							 briefingScreens [nScreen % MAX_BRIEFING_SCREENS].szName, PcxErrorMsg (pcxResult), pcxResult);
@@ -1642,11 +1642,11 @@ briefBgColorIndex [6] = paletteManager.ClosestColor (0, 19, 19);
 
 //-----------------------------------------------------------------------------
 
-void CBriefing::Run (const char* filename, int nLevel)
+void CBriefing::Run (const char* filename, int32_t nLevel)
 {
-	int	bAbortBriefing = 0;
-	int	nCurBriefingScreen = 0;
-	int	bEnding = strstr (filename, "endreg") || !stricmp (filename, missionManager.szBriefingFilename [1]);
+	int32_t	bAbortBriefing = 0;
+	int32_t	nCurBriefingScreen = 0;
+	int32_t	bEnding = strstr (filename, "endreg") || !stricmp (filename, missionManager.szBriefingFilename [1]);
 	char	fnBriefing [FILENAME_LEN];
 
 PrintLog (1, "Starting the briefing\n");
@@ -1673,7 +1673,7 @@ if (!*fnBriefing) {
 	ogl.ChooseDrawBuffer ();
 
 if (gameStates.app.bD1Mission && (missionManager.nCurrentMission != missionManager.nBuiltInMission [1])) {
-	int i;
+	int32_t i;
 	for (i = 0; i < 2; i++) {
 		char* psz = strchr (fnBriefing, '.');
 		if (psz)
@@ -1696,7 +1696,7 @@ if (!LoadImageText (fnBriefing, m_info.briefingText)) {
 	return;
 	}
 
-int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+int32_t nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 
 audio.StopAllChannels ();
 audio.SetFxVolume (gameConfig.nAudioVolume [1], 1);
@@ -1712,23 +1712,23 @@ if (gameStates.app.bD1Mission) {
 	LoadD1Textures ();
 	if (nLevel == 1) {
 		while (!bAbortBriefing && 
-				 (nCurBriefingScreen < int (MAX_BRIEFING_SCREENS)) && 
+				 (nCurBriefingScreen < int32_t (MAX_BRIEFING_SCREENS)) && 
 				 (briefingScreens [nCurBriefingScreen].nLevel == ((gameStates.app.bD1Mission && bEnding) ? nLevel : 0))) {
-			bAbortBriefing = LoadLevelScreen (nCurBriefingScreen, (short) nLevel);
+			bAbortBriefing = LoadLevelScreen (nCurBriefingScreen, (int16_t) nLevel);
 			nCurBriefingScreen++;
 			if (gameStates.app.bD1Mission && bEnding)
 				break;
 			}
 		}
 	if (!bAbortBriefing) {
-		for (nCurBriefingScreen = 0; nCurBriefingScreen < int (MAX_BRIEFING_SCREENS); nCurBriefingScreen++)
+		for (nCurBriefingScreen = 0; nCurBriefingScreen < int32_t (MAX_BRIEFING_SCREENS); nCurBriefingScreen++)
 			if (briefingScreens [nCurBriefingScreen].nLevel == nLevel)
-				if (LoadLevelScreen (nCurBriefingScreen, (short) nLevel))
+				if (LoadLevelScreen (nCurBriefingScreen, (int16_t) nLevel))
 					break;
 		}
 	}
 else
-	LoadLevelScreen (nLevel, (short) nLevel);
+	LoadLevelScreen (nLevel, (int16_t) nLevel);
 gameStates.render.bBriefing = 0;
 m_info.briefingText.Destroy ();
 KeyFlush ();

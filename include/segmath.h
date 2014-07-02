@@ -28,9 +28,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // 2. Recursively trace through attached segments
 // 3. Check all the segmentns
 //Returns nSegment if found, or -1
-int FindSegByPos (const CFixVector& vPos, int nSegment, int bExhaustive, int bSkyBox, fix xTolerance = 0, int nThread = 0);
-int FindSegByPosExhaustive (const CFixVector& vPos, int bSkyBox, int nStartSeg = -1);
-short FindClosestSeg (CFixVector& vPos);
+int32_t FindSegByPos (const CFixVector& vPos, int32_t nSegment, int32_t bExhaustive, int32_t bSkyBox, fix xTolerance = 0, int32_t nThread = 0);
+int32_t FindSegByPosExhaustive (const CFixVector& vPos, int32_t bSkyBox, int32_t nStartSeg = -1);
+int16_t FindClosestSeg (CFixVector& vPos);
 
 // -----------------------------------------------------------------------------
 // Determine whether seg0 and seg1 are reachable using widFlag to go through walls.
@@ -41,8 +41,8 @@ short FindClosestSeg (CFixVector& vPos);
 //create a matrix that describes the orientation of the given CSegment
 void ExtractOrientFromSegment (CFixMatrix *m,CSegment *seg);
 
-ushort SortVertsForNormal (ushort v0, ushort v1, ushort v2, ushort v3, ushort* vSorted);
-void AddToVertexNormal (int nVertex, CFixVector& vNormal);
+uint16_t SortVertsForNormal (uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3, uint16_t* vSorted);
+void AddToVertexNormal (int32_t nVertex, CFixVector& vNormal);
 void ComputeVertexNormals (void);
 void ResetVertexNormals (void);
 

@@ -27,26 +27,26 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "tga.h"
 #include "palette.h"
 
-int PCXEncodeByte (ubyte byt, ubyte cnt, CFile& cf);
-int PCXEncodeLine (ubyte *inBuff, int inLen, CFile& cf);
+int32_t PCXEncodeByte (uint8_t byt, uint8_t cnt, CFile& cf);
+int32_t PCXEncodeLine (uint8_t *inBuff, int32_t inLen, CFile& cf);
 
 /* PCX Header data nType */
 typedef struct {
-	ubyte   Manufacturer;
-	ubyte   Version;
-	ubyte   Encoding;
-	ubyte   BitsPerPixel;
-	short   Xmin;
-	short   Ymin;
-	short   Xmax;
-	short   Ymax;
-	short   Hdpi;
-	short   Vdpi;
-	ubyte   ColorMap[16][3];
-	ubyte   Reserved;
-	ubyte   Nplanes;
-	short   BytesPerLine;
-	ubyte   filler[60];
+	uint8_t   Manufacturer;
+	uint8_t   Version;
+	uint8_t   Encoding;
+	uint8_t   BitsPerPixel;
+	int16_t   Xmin;
+	int16_t   Ymin;
+	int16_t   Xmax;
+	int16_t   Ymax;
+	int16_t   Hdpi;
+	int16_t   Vdpi;
+	uint8_t   ColorMap[16][3];
+	uint8_t   Reserved;
+	uint8_t   Nplanes;
+	int16_t   BytesPerLine;
+	uint8_t   filler[60];
 } __pack__ PCXHeader;
 
 #define PCXHEADER_SIZE 128
@@ -77,9 +77,9 @@ cf.Read (&ph.filler, 60, 1);
 /*
  * reads n PCXHeader structs from a CFile
  */
-int ReadPCXHeaders (PCXHeader *ph, int n, CFile& cf)
+int32_t ReadPCXHeaders (PCXHeader *ph, int32_t n, CFile& cf)
 {
-	int i;
+	int32_t i;
 
 for (i = 0; i < n; i++)
 	ReadPCXHeader (ph [i], cf);
@@ -88,7 +88,7 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int PCXGetDimensions (const char *filename, int *width, int *height)
+int32_t PCXGetDimensions (const char *filename, int32_t *width, int32_t *height)
 {
 	CFile cf;
 	PCXHeader header;
@@ -110,12 +110,12 @@ if (!cf.Open (filename, gameFolders.game.szData [0], "rb", 0))
 
 //------------------------------------------------------------------------------
 
-int PCXReadBitmap (const char * filename, CBitmap * bmP, int bitmapType, int bD1Mission)
+int32_t PCXReadBitmap (const char * filename, CBitmap * bmP, int32_t bitmapType, int32_t bD1Mission)
 {
 	PCXHeader 	header;
 	CFile 		cf;
-	int 			i, row, col, count, xsize, ysize;
-	ubyte			data, *pixdata;
+	int32_t 			i, row, col, count, xsize, ysize;
+	uint8_t			data, *pixdata;
 	CPalette		palette;
 
 if (!cf.Open (filename, gameFolders.game.szData [0], "rb", bD1Mission))
@@ -226,11 +226,11 @@ return PCX_ERROR_NONE;
 
 //------------------------------------------------------------------------------
 
-int pcx_write_bitmap (const char * filename, CBitmap * bmP)
+int32_t pcx_write_bitmap (const char * filename, CBitmap * bmP)
 {
-	int retval;
-	int i;
-	ubyte data;
+	int32_t retval;
+	int32_t i;
+	uint8_t data;
 	PCXHeader header;
 	CFile cf;
 	CPalette	palette;
@@ -291,12 +291,12 @@ int pcx_write_bitmap (const char * filename, CBitmap * bmP)
 
 //------------------------------------------------------------------------------
 // returns number of bytes written into outBuff, 0 if failed
-int PCXEncodeLine (ubyte *inBuff, int inLen, CFile& cf)
+int32_t PCXEncodeLine (uint8_t *inBuff, int32_t inLen, CFile& cf)
 {
-	ubyte current, last;
-	int srcIndex, i;
-	int total;
-	ubyte runCount; 	// max single runlength is 63
+	uint8_t current, last;
+	int32_t srcIndex, i;
+	int32_t total;
+	uint8_t runCount; 	// max single runlength is 63
 	total = 0;
 	last = * (inBuff);
 	runCount = 1;
@@ -333,17 +333,17 @@ int PCXEncodeLine (ubyte *inBuff, int inLen, CFile& cf)
 //------------------------------------------------------------------------------
 // subroutine for writing an encoded byte pair
 // returns count of bytes written, 0 if error
-int PCXEncodeByte (ubyte byt, ubyte cnt, CFile& cf)
+int32_t PCXEncodeByte (uint8_t byt, uint8_t cnt, CFile& cf)
 {
 	if (cnt) {
 		if ( (cnt==1) && (0xc0 != (0xc0 & byt))) {
-			if (EOF == cf.PutC ( (int)byt))
+			if (EOF == cf.PutC ( (int32_t)byt))
 				return 0; 	// disk write error (probably full)
 			return 1;
 		} else {
-			if (EOF == cf.PutC ( (int)0xC0 | cnt))
+			if (EOF == cf.PutC ( (int32_t)0xC0 | cnt))
 				return 0; 	// disk write error
-			if (EOF == cf.PutC ( (int)byt))
+			if (EOF == cf.PutC ( (int32_t)byt))
 				return 0; 	// disk write error
 			return 2;
 		}
@@ -366,14 +366,14 @@ const char pcx_error_messages[] = {
 
 //------------------------------------------------------------------------------
 //function to return pointer to error message
-const char *PcxErrorMsg (int error_number)
+const char *PcxErrorMsg (int32_t error_number)
 {
 	const char *p = pcx_error_messages;
 
 while (error_number--) {
 	if (!p)
 		return NULL;
-	p += (int) strlen (p) + 1;
+	p += (int32_t) strlen (p) + 1;
 	}
 return p;
 }
@@ -381,9 +381,9 @@ return p;
 //------------------------------------------------------------------------------
 // fullscreen loading, 10/14/99 Jan Bobrowski
 
-int PcxReadFullScrImage (const char * filename, int bD1Mission)
+int32_t PcxReadFullScrImage (const char * filename, int32_t bD1Mission)
 {
-	int		pcxError;
+	int32_t		pcxError;
 	CBitmap	bm;
 	CTGA		tga (&bm);
 

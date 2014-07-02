@@ -115,15 +115,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // 20- gameStates.app.bFirstSecretVisit
 // 22- gameData.omega.xCharge
 
-void SetFunctionMode (int);
+void SetFunctionMode (int32_t);
 void DoCloakInvulSecretStuff (fix xOldGameTime);
 void CopyDefaultsToRobot (CObject *objP);
-void MultiInitiateSaveGame (int bSecret);
-void MultiInitiateRestoreGame (int bSecret);
+void MultiInitiateSaveGame (int32_t bSecret);
+void MultiInitiateRestoreGame (int32_t bSecret);
 void ApplyAllChangedLight (void);
 void DoLunacyOn (void);
 
-int m_nLastSlot= 0;
+int32_t m_nLastSlot= 0;
 
 char dgss_id [4] = {'D', 'G', 'S', 'S'};
 
@@ -161,7 +161,7 @@ class CSaveGameInfo {
 		inline char* Label (void) { return m_info.szLabel; }
 		inline char* Time (void) { return m_info.szTime; }
 		inline CBitmap* Image (void) { return m_info.image; }
-		bool Load (char *filename, int nSlot);
+		bool Load (char *filename, int32_t nSlot);
 		void Destroy (void);
 };
 
@@ -186,10 +186,10 @@ if (m_info.image) {
 
 //------------------------------------------------------------------------------
 
-bool CSaveGameInfo::Load (char *filename, int nSlot)
+bool CSaveGameInfo::Load (char *filename, int32_t nSlot)
 {
 	CFile	cf;
-	int	nId, nVersion;
+	int32_t	nId, nVersion;
 
 Init ();
 if (!cf.Open (filename, gameFolders.user.szSavegames, "rb", 0))
@@ -200,7 +200,7 @@ if (memcmp (&nId, dgss_id, 4)) {
 	cf.Close ();
 	return false;
 	}
-cf.Read (&nVersion, sizeof (int), 1);
+cf.Read (&nVersion, sizeof (int32_t), 1);
 if (nVersion < STATE_COMPATIBLE_VERSION) {
 	cf.Close ();
 	return false;
@@ -227,7 +227,7 @@ else {
 		m_info.image->SetPalette (&palette, -1, -1);
 		}
 	struct tm	*t;
-	int			h;
+	int32_t			h;
 #ifdef _WIN32
 	char	fn [FILENAME_LEN];
 
@@ -255,9 +255,9 @@ CSaveGameInfo saveGameInfo [NUM_SAVES + 1];
 
 #define NM_IMG_SPACE	6
 
-int SaveStateMenuCallback (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t SaveStateMenuCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
-	int		x, y, i = nCurItem - NM_IMG_SPACE;
+	int32_t		x, y, i = nCurItem - NM_IMG_SPACE;
 	char		c = KeyToASCII (key);
 
 if (nState) { // render
@@ -267,7 +267,7 @@ if (nState) { // render
 	if (!image)
 		return nCurItem;
 	if (gameStates.menus.bHires) {
-		int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
+		int32_t nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 		x = gameData.X ((CCanvas::Current ()->Width () - CMenu::Scaled (image->Width ())) / 2);
 		y = menu [0].m_y - CMenu::Scaled (16);
 		//paletteManager.ResumeEffect (gameStates.app.bGameRunning);
@@ -303,12 +303,12 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int LoadStateMenuCallback (int nitems, CMenuItem *menu, int key, int nCurItem, int nState)
+int32_t LoadStateMenuCallback (int32_t nitems, CMenuItem *menu, int32_t key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
-	int	i = nCurItem - NM_IMG_SPACE;
+	int32_t	i = nCurItem - NM_IMG_SPACE;
 	char	c = KeyToASCII (key);
 
 if (nCurItem < 2)
@@ -325,7 +325,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-char *strrpad (char * str, int len)
+char *strrpad (char * str, int32_t len)
 {
 str += len;
 *str = '\0';
@@ -351,13 +351,13 @@ m_nLastSlot = 0;
 
 //------------------------------------------------------------------------------
 
-int CSaveGameManager::GetSaveFile (int bMulti)
+int32_t CSaveGameManager::GetSaveFile (int32_t bMulti)
 {
 	CMenu	m (NUM_SAVES + 2);
-	int	i, menuRes;
+	int32_t	i, menuRes;
 	char	filename [NUM_SAVES + 1][30];
 
-	static int choice = 0;
+	static int32_t choice = 0;
 
 for (i = 0; i < NUM_SAVES; i++) {
 	sprintf (filename [i], bMulti ? "%s.mg%x" : "%s.sg%x", LOCALPLAYER.callsign, i);
@@ -385,12 +385,12 @@ return (menuRes < 0) ? 0 : choice + 1;
 
 //------------------------------------------------------------------------------
 
-int bRestoringMenu = 0;
+int32_t bRestoringMenu = 0;
 
-int CSaveGameManager::GetLoadFile (int bMulti)
+int32_t CSaveGameManager::GetLoadFile (int32_t bMulti)
 {
 	CMenu	m (NUM_SAVES + NM_IMG_SPACE + 1);
-	int	i, choice = -1, nSaves;
+	int32_t	i, choice = -1, nSaves;
 	char	filename [NUM_SAVES + 1][30];
 
 nSaves = 0;
@@ -446,7 +446,7 @@ if (!m_override) {
 
 		sprintf (newName, "%s.sg%x", LOCALPLAYER.callsign, NUM_SAVES);
 		cf.Seek (DESC_OFFSET, SEEK_SET);
-		int nWritten = (int) cf.Write (szBackup, 1, DESC_LENGTH);
+		int32_t nWritten = (int32_t) cf.Write (szBackup, 1, DESC_LENGTH);
 		cf.Close ();
 		if (nWritten == DESC_LENGTH) {
 			cf.Delete (newName, gameFolders.user.szSavegames);
@@ -461,7 +461,7 @@ if (!m_override) {
 //	If secret.sgc exists, then copy it to Nsecret.sgc (where N = nSaveSlot).
 //	If it doesn't exist, then delete Nsecret.sgc
 
-void CSaveGameManager::PushSecretSave (int nSaveSlot)
+void CSaveGameManager::PushSecretSave (int32_t nSaveSlot)
 {
 if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 	char	tempname [32];
@@ -479,14 +479,14 @@ if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 //	-----------------------------------------------------------------------------------
 //	blind_save means don't prompt user for any info.
 
-int CSaveGameManager::Save (int bBetweenLevels, int bSecret, int bQuick, const char *pszFilenameOverride)
+int32_t CSaveGameManager::Save (int32_t bBetweenLevels, int32_t bSecret, int32_t bQuick, const char *pszFilenameOverride)
 {
 if (gameStates.app.bReadOnly)
 	return 1;
 if (gameStates.app.bPlayerIsDead)
 	return 0;
 
-	int	rval,nSaveSlot = -1;
+	int32_t	rval,nSaveSlot = -1;
 
 m_override = pszFilenameOverride;
 m_bBetweenLevels = bBetweenLevels;
@@ -551,7 +551,7 @@ return rval;
 
 void CSaveGameManager::SaveNetGame (void)
 {
-	int	i, j;
+	int32_t	i, j;
 
 m_cf.WriteByte (netGame.m_info.nType);
 m_cf.WriteInt (netGame.m_info.nSecurity);
@@ -559,50 +559,50 @@ m_cf.Write (netGame.m_info.szGameName, 1, NETGAME_NAME_LEN + 1);
 m_cf.Write (netGame.m_info.szMissionTitle, 1, MISSION_NAME_LEN + 1);
 m_cf.Write (netGame.m_info.szMissionName, 1, 9);
 m_cf.WriteInt (netGame.m_info.GetLevel ());
-m_cf.WriteByte ((sbyte) netGame.m_info.gameMode);
-m_cf.WriteByte ((sbyte) netGame.m_info.bRefusePlayers);
-m_cf.WriteByte ((sbyte) netGame.m_info.difficulty);
-m_cf.WriteByte ((sbyte) netGame.m_info.gameStatus);
-m_cf.WriteByte ((sbyte) netGame.m_info.nNumPlayers);
-m_cf.WriteByte ((sbyte) netGame.m_info.nMaxPlayers);
-m_cf.WriteByte ((sbyte) netGame.m_info.nConnected);
-m_cf.WriteByte ((sbyte) netGame.m_info.gameFlags);
-m_cf.WriteByte ((sbyte) netGame.m_info.protocolVersion);
-m_cf.WriteByte ((sbyte) netGame.m_info.versionMajor);
-m_cf.WriteByte ((sbyte) netGame.m_info.versionMinor);
-m_cf.WriteByte ((sbyte) netGame.m_info.GetTeamVector ());
-m_cf.WriteByte ((sbyte) netGame.m_info.DoMegas);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoSmarts);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoFusions);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoHelix);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoPhoenix);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoAfterburner);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoInvulnerability);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoCloak);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoGauss);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoVulcan);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoPlasma);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoOmega);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoSuperLaser);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoProximity);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoSpread);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoSmartMine);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoFlash);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoGuided);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoEarthShaker);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoMercury);
-m_cf.WriteByte ((sbyte) netGame.m_info.bAllowMarkerView);
-m_cf.WriteByte ((sbyte) netGame.m_info.bIndestructibleLights);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoAmmoRack);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoConverter);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoHeadlight);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoHoming);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoLaserUpgrade);
-m_cf.WriteByte ((sbyte) netGame.m_info.DoQuadLasers);
-m_cf.WriteByte ((sbyte) netGame.m_info.bShowAllNames);
-m_cf.WriteByte ((sbyte) netGame.m_info.BrightPlayers);
-m_cf.WriteByte ((sbyte) netGame.m_info.invul);
-m_cf.WriteByte ((sbyte) netGame.m_info.FriendlyFireOff);
+m_cf.WriteByte ((int8_t) netGame.m_info.gameMode);
+m_cf.WriteByte ((int8_t) netGame.m_info.bRefusePlayers);
+m_cf.WriteByte ((int8_t) netGame.m_info.difficulty);
+m_cf.WriteByte ((int8_t) netGame.m_info.gameStatus);
+m_cf.WriteByte ((int8_t) netGame.m_info.nNumPlayers);
+m_cf.WriteByte ((int8_t) netGame.m_info.nMaxPlayers);
+m_cf.WriteByte ((int8_t) netGame.m_info.nConnected);
+m_cf.WriteByte ((int8_t) netGame.m_info.gameFlags);
+m_cf.WriteByte ((int8_t) netGame.m_info.protocolVersion);
+m_cf.WriteByte ((int8_t) netGame.m_info.versionMajor);
+m_cf.WriteByte ((int8_t) netGame.m_info.versionMinor);
+m_cf.WriteByte ((int8_t) netGame.m_info.GetTeamVector ());
+m_cf.WriteByte ((int8_t) netGame.m_info.DoMegas);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoSmarts);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoFusions);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoHelix);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoPhoenix);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoAfterburner);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoInvulnerability);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoCloak);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoGauss);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoVulcan);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoPlasma);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoOmega);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoSuperLaser);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoProximity);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoSpread);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoSmartMine);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoFlash);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoGuided);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoEarthShaker);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoMercury);
+m_cf.WriteByte ((int8_t) netGame.m_info.bAllowMarkerView);
+m_cf.WriteByte ((int8_t) netGame.m_info.bIndestructibleLights);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoAmmoRack);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoConverter);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoHeadlight);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoHoming);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoLaserUpgrade);
+m_cf.WriteByte ((int8_t) netGame.m_info.DoQuadLasers);
+m_cf.WriteByte ((int8_t) netGame.m_info.bShowAllNames);
+m_cf.WriteByte ((int8_t) netGame.m_info.BrightPlayers);
+m_cf.WriteByte ((int8_t) netGame.m_info.invul);
+m_cf.WriteByte ((int8_t) netGame.m_info.FriendlyFireOff);
 for (i = 0; i < 2; i++)
 	m_cf.Write (netGame.m_info.szTeamName [i], 1, CALLSIGN_LEN + 1);		// 18 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
@@ -625,9 +625,9 @@ m_cf.WriteInt (netGame.GetMonitorVector ());		// 4 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	m_cf.WriteInt (*netGame.PlayerScore (i));				// 32 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	m_cf.WriteByte ((sbyte) *netGame.PlayerFlags (i));	// 8 bytes
+	m_cf.WriteByte ((int8_t) *netGame.PlayerFlags (i));	// 8 bytes
 m_cf.WriteShort (PacketsPerSec ());							// 2 bytes
-m_cf.WriteByte (sbyte (netGame.GetShortPackets ()));		// 1 bytes
+m_cf.WriteByte (int8_t (netGame.GetShortPackets ()));		// 1 bytes
 // 279 bytes
 // 355 bytes total
 m_cf.Write (netGame.AuxData (), NETGAME_AUX_SIZE, 1);  // Storage for protocol-specific data (e.g., multicast session and port)
@@ -637,20 +637,20 @@ m_cf.Write (netGame.AuxData (), NETGAME_AUX_SIZE, 1);  // Storage for protocol-s
 
 void CSaveGameManager::SaveNetPlayers (void)
 {
-	int	i;
+	int32_t	i;
 
-m_cf.WriteByte ((sbyte) netPlayers [0].m_info.nType);
+m_cf.WriteByte ((int8_t) netPlayers [0].m_info.nType);
 m_cf.WriteInt (netPlayers [0].m_info.nSecurity);
 for (i = 0; i < MAX_NUM_NET_PLAYERS + 4; i++) {
 	m_cf.Write (netPlayers [0].m_info.players [i].callsign, 1, CALLSIGN_LEN + 1);
 	m_cf.Write (netPlayers [0].m_info.players [i].network.Network (), 1, 4);
 	m_cf.Write (netPlayers [0].m_info.players [i].network.Node (), 1, 6);
-	m_cf.WriteByte ((sbyte) netPlayers [0].m_info.players [i].versionMajor);
-	m_cf.WriteByte ((sbyte) netPlayers [0].m_info.players [i].versionMinor);
-	m_cf.WriteByte ((sbyte) netPlayers [0].m_info.players [i].computerType);
+	m_cf.WriteByte ((int8_t) netPlayers [0].m_info.players [i].versionMajor);
+	m_cf.WriteByte ((int8_t) netPlayers [0].m_info.players [i].versionMinor);
+	m_cf.WriteByte ((int8_t) netPlayers [0].m_info.players [i].computerType);
 	m_cf.WriteByte (netPlayers [0].m_info.players [i].connected);
-	m_cf.WriteShort ((short) netPlayers [0].m_info.players [i].socket);
-	m_cf.WriteByte ((sbyte) netPlayers [0].m_info.players [i].rank);
+	m_cf.WriteShort ((int16_t) netPlayers [0].m_info.players [i].socket);
+	m_cf.WriteByte ((int8_t) netPlayers [0].m_info.players [i].rank);
 	}
 }
 
@@ -658,31 +658,31 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS + 4; i++) {
 
 void CSaveGameManager::SavePlayer (CPlayerData *playerP)
 {
-	int	i;
+	int32_t	i;
 
 m_cf.Write (playerP->callsign, 1, CALLSIGN_LEN + 1); // The callsign of this CPlayerData, for net purposes.
 m_cf.Write (playerP->netAddress, 1, 6);					// The network address of the player.
 m_cf.WriteByte (playerP->connected);            // Is the player connected or not?
-m_cf.WriteInt (playerP->nObject);                // What CObject number this CPlayerData is. (made an int by mk because it's very often referenced)
+m_cf.WriteInt (playerP->nObject);                // What CObject number this CPlayerData is. (made an int32_t by mk because it's very often referenced)
 m_cf.WriteInt (playerP->nPacketsGot);         // How many packets we got from them
 m_cf.WriteInt (playerP->nPacketsSent);        // How many packets we sent to them
-m_cf.WriteInt ((int) playerP->flags);           // Powerup flags, see below...
+m_cf.WriteInt ((int32_t) playerP->flags);           // Powerup flags, see below...
 m_cf.WriteFix (playerP->energy);                // Amount of energy remaining.
 m_cf.WriteFix (playerP->Shield ());               // shield remaining (protection)
 m_cf.WriteByte (playerP->lives);                // Lives remaining, 0 = game over.
 m_cf.WriteByte (playerP->level);                // Current level CPlayerData is playing. (must be signed for secret levels)
-m_cf.WriteByte ((sbyte) playerP->LaserLevel ());  // Current level of the laser.
+m_cf.WriteByte ((int8_t) playerP->LaserLevel ());  // Current level of the laser.
 m_cf.WriteByte (playerP->startingLevel);       // What level the player started on.
 m_cf.WriteShort (playerP->nKillerObj);       // Who killed me.... (-1 if no one)
-m_cf.WriteShort ((short) playerP->primaryWeaponFlags);   // bit set indicates the player has this weapon.
-m_cf.WriteShort ((short) playerP->secondaryWeaponFlags); // bit set indicates the player has this weapon.
+m_cf.WriteShort ((int16_t) playerP->primaryWeaponFlags);   // bit set indicates the player has this weapon.
+m_cf.WriteShort ((int16_t) playerP->secondaryWeaponFlags); // bit set indicates the player has this weapon.
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
-	m_cf.WriteShort ((short) playerP->primaryAmmo [i]); // How much ammo of each nType.
+	m_cf.WriteShort ((int16_t) playerP->primaryAmmo [i]); // How much ammo of each nType.
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
-	m_cf.WriteShort ((short) playerP->secondaryAmmo [i]); // How much ammo of each nType.
+	m_cf.WriteShort ((int16_t) playerP->secondaryAmmo [i]); // How much ammo of each nType.
 #if 1 //for inventory system
-m_cf.WriteByte ((sbyte) playerP->nInvuls);
-m_cf.WriteByte ((sbyte) playerP->nCloaks);
+m_cf.WriteByte ((int8_t) playerP->nInvuls);
+m_cf.WriteByte ((int8_t) playerP->nCloaks);
 #endif
 m_cf.WriteInt (playerP->lastScore);             // Score at beginning of current level.
 m_cf.WriteInt (playerP->score);                  // Current score.
@@ -703,10 +703,10 @@ m_cf.WriteShort (playerP->numKillsLevel);        // Number of kills this level
 m_cf.WriteShort (playerP->numKillsTotal);        // Number of kills total
 m_cf.WriteShort (playerP->numRobotsLevel);       // Number of initial robots this level
 m_cf.WriteShort (playerP->numRobotsTotal);       // Number of robots total
-m_cf.WriteShort ((short) playerP->hostages.nRescued); // Total number of hostages rescued.
-m_cf.WriteShort ((short) playerP->hostages.nTotal);         // Total number of hostages.
-m_cf.WriteByte ((sbyte) playerP->hostages.nOnBoard);      // Number of hostages on ship.
-m_cf.WriteByte ((sbyte) playerP->hostages.nLevel);         // Number of hostages on this level.
+m_cf.WriteShort ((int16_t) playerP->hostages.nRescued); // Total number of hostages rescued.
+m_cf.WriteShort ((int16_t) playerP->hostages.nTotal);         // Total number of hostages.
+m_cf.WriteByte ((int8_t) playerP->hostages.nOnBoard);      // Number of hostages on ship.
+m_cf.WriteByte ((int8_t) playerP->hostages.nLevel);         // Number of hostages on this level.
 m_cf.WriteFix (playerP->homingObjectDist);     // Distance of nearest homing CObject.
 m_cf.WriteByte (playerP->hoursLevel);            // Hours played (since timeTotal can only go up to 9 hours)
 m_cf.WriteByte (playerP->hoursTotal);            // Hours played (since timeTotal can only go up to 9 hours)
@@ -729,7 +729,7 @@ m_cf.WriteShort (refP->nObject);
 
 void CSaveGameManager::SaveObjectProducer (tObjectProducerInfo *objProducerP)
 {
-	int	i;
+	int32_t	i;
 
 for (i = 0; i < 2; i++)
 	m_cf.WriteInt (objProducerP->objFlags [i]);
@@ -776,7 +776,7 @@ m_cf.WriteInt (stateP->nDeadObj);
 
 //------------------------------------------------------------------------------
 
-void CSaveGameManager::SaveSpawnPoint (int i)
+void CSaveGameManager::SaveSpawnPoint (int32_t i)
 {
 m_cf.WriteVector (gameData.multiplayer.playerInit [i].position.vPos);     
 m_cf.WriteMatrix (gameData.multiplayer.playerInit [i].position.mOrient);  
@@ -788,7 +788,7 @@ m_cf.WriteShort (gameData.multiplayer.playerInit [i].nSegType);
 
 void CSaveGameManager::SaveGameData (void)
 {
-	int		i, j;
+	int32_t		i, j;
 	CObject	*objP;
 
 m_cf.WriteInt (gameData.segs.nMaxSegments);
@@ -865,7 +865,7 @@ if (!m_bBetweenLevels) {
 	for (j = 0; j < i; j++)
 		WALLS [j].SaveState (m_cf);
 //Save exploding wall info
-	i = int (gameData.walls.exploding.ToS ());
+	i = int32_t (gameData.walls.exploding.ToS ());
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
 		gameData.walls.exploding [j].SaveState (m_cf);
@@ -937,7 +937,7 @@ if (!m_bBetweenLevels) {
 	for (i = 0; i < LEVEL_SEGMENTS; i++)
 		m_cf.WriteShort (automap.m_visited [i]);
 	}
-m_cf.WriteInt ((int) gameData.app.nStateGameId);
+m_cf.WriteInt ((int32_t) gameData.app.nStateGameId);
 m_cf.WriteInt (gameStates.app.cheats.bLaserRapidFire);
 m_cf.WriteInt (gameStates.app.bLunacy);		//	Yes, writing this twice.  Removed the Ugly robot system, but didn't want to change savegame format.
 m_cf.WriteInt (gameStates.gameplay.bMineMineCheat);
@@ -970,7 +970,7 @@ m_cf.WriteInt (gameOpts->gameplay.nShip [0]);
 void CSaveGameManager::SaveImage (void)
 {
 	CBitmap	bmIn, bmOut;
-	int		x, y;
+	int32_t		x, y;
 
 SetupCanvasses ();
 gameData.render.screen.Activate ("CSaveGameManager::SaveImage (screen)");
@@ -1007,11 +1007,11 @@ if (bmIn.Buffer () && bmOut.Buffer ()) {
 	tga.Shrink (bmIn.Width () / THUMBNAIL_LW, bmIn.Height () / THUMBNAIL_LH, 0);
 	//paletteManager.ResumeEffect ();
 	// convert the resized TGA to bmp
-	ubyte* inBuf = bmIn.Buffer ();
-	ubyte* outBuf = bmOut.Buffer ();
+	uint8_t* inBuf = bmIn.Buffer ();
+	uint8_t* outBuf = bmOut.Buffer ();
 	for (y = 0; y < THUMBNAIL_LH; y++) {
-		int i = y * THUMBNAIL_LW * 3;
-		int j = (THUMBNAIL_LH - y - 1) * THUMBNAIL_LW;
+		int32_t i = y * THUMBNAIL_LW * 3;
+		int32_t j = (THUMBNAIL_LH - y - 1) * THUMBNAIL_LW;
 		for (x = 0; x < THUMBNAIL_LW; x++, j++, i += 3)
 			outBuf [j] = paletteManager.Game ()->ClosestColor (inBuf [i] / 4, inBuf [i + 1] / 4, inBuf [i + 2] / 4);
 		}
@@ -1023,18 +1023,18 @@ if (bmIn.Buffer () && bmOut.Buffer ()) {
 	m_cf.Write (paletteManager.Game (), 3, 256);
 	}
 else {
- 	ubyte color = 0;
- 	for (int i = 0; i < THUMBNAIL_LW * THUMBNAIL_LH; i++)
-		m_cf.Write (&color, sizeof (ubyte), 1);
+ 	uint8_t color = 0;
+ 	for (int32_t i = 0; i < THUMBNAIL_LW * THUMBNAIL_LH; i++)
+		m_cf.Write (&color, sizeof (uint8_t), 1);
 	}
 gameData.render.screen.Deactivate ();
 }
 
 //------------------------------------------------------------------------------
 
-int CSaveGameManager::SaveState (int bSecret, char *filename, char *description)
+int32_t CSaveGameManager::SaveState (int32_t bSecret, char *filename, char *description)
 {
-	int	i;
+	int32_t	i;
 
 StopTime ();
 if (filename)
@@ -1053,15 +1053,15 @@ if (!m_cf.Open (m_filename, (bSecret < 0) ? gameFolders.var.szCache : gameFolder
 m_cf.Write (dgss_id, sizeof (char) * 4, 1);
 //Save m_nVersion
 i = STATE_VERSION;
-m_cf.Write (&i, sizeof (int), 1);
+m_cf.Write (&i, sizeof (int32_t), 1);
 //Save description
 m_cf.Write (m_description, sizeof (char) * DESC_LENGTH, 1);
 // Save the current screen shot...
 SaveImage ();
 SaveGameData ();
 if (!bSecret) {
-	for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
-		m_cf.WriteByte (sbyte (missionManager.GetLevelState (i)));
+	for (int32_t i = 0; i < MAX_LEVELS_PER_MISSION; i++)
+		m_cf.WriteByte (int8_t (missionManager.GetLevelState (i)));
 	}
 if (m_cf.Error ()) {
 	if (!IsMultiGame) {
@@ -1078,7 +1078,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------------
 
-void CSaveGameManager::AutoSave (int nSaveSlot)
+void CSaveGameManager::AutoSave (int32_t nSaveSlot)
 {
 if ((nSaveSlot != (NUM_SAVES + 1)) && m_bInGame) {
 	char	filename [FILENAME_LEN];
@@ -1093,7 +1093,7 @@ if ((nSaveSlot != (NUM_SAVES + 1)) && m_bInGame) {
 
 //	-----------------------------------------------------------------------------------
 
-void CSaveGameManager::PopSecretSave (int nSaveSlot)
+void CSaveGameManager::PopSecretSave (int32_t nSaveSlot)
 {
 if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 	char	tempname [32];
@@ -1109,12 +1109,12 @@ if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
 
 //	-----------------------------------------------------------------------------------
 
-int CSaveGameManager::Load (int bInGame, int bSecret, int bQuick, const char *pszFilenameOverride)
+int32_t CSaveGameManager::Load (int32_t bInGame, int32_t bSecret, int32_t bQuick, const char *pszFilenameOverride)
 {
 if (gameStates.app.bPlayerIsDead)
 	return 0;
 
-	int	i, nSaveSlot = -1;
+	int32_t	i, nSaveSlot = -1;
 
 m_bInGame = bInGame;
 m_bSecret = bSecret;
@@ -1151,7 +1151,7 @@ if (!m_bQuick) {
 	PopSecretSave (nSaveSlot);
 	AutoSave (nSaveSlot);
 	if (!bSecret && bInGame) {
-		int choice = InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_LOAD);
+		int32_t choice = InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_CONFIRM_LOAD);
 		if (choice != 0) {
 			gameData.app.bGamePaused = 0;
 			StartTime (1);
@@ -1176,9 +1176,9 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int CSaveGameManager::ReadBoundedInt (int nMax, int *nVal)
+int32_t CSaveGameManager::ReadBoundedInt (int32_t nMax, int32_t *nVal)
 {
-	int	i;
+	int32_t	i;
 
 i = m_cf.ReadInt ();
 if ((i < 0) || (i > nMax)) {
@@ -1192,10 +1192,10 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int CSaveGameManager::LoadMission (void)
+int32_t CSaveGameManager::LoadMission (void)
 {
 	char	szMission [16];
-	int	i, nVersionFilter = gameOpts->app.nVersionFilter;
+	int32_t	i, nVersionFilter = gameOpts->app.nVersionFilter;
 
 m_cf.Read (szMission, sizeof (char), 9);
 szMission [9] = '\0';
@@ -1212,7 +1212,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void CSaveGameManager::LoadMulti (char *pszOrgCallSign, int bMulti)
+void CSaveGameManager::LoadMulti (char *pszOrgCallSign, int32_t bMulti)
 {
 if (bMulti)
 	strcpy (pszOrgCallSign, LOCALPLAYER.callsign);
@@ -1230,10 +1230,10 @@ else {
 
 //------------------------------------------------------------------------------
 
-int CSaveGameManager::SetServerPlayer (
-	CPlayerData *restoredPlayers, int nPlayers, const char *pszServerCallSign, int *pnOtherObjNum, int *pnServerObjNum)
+int32_t CSaveGameManager::SetServerPlayer (
+	CPlayerData *restoredPlayers, int32_t nPlayers, const char *pszServerCallSign, int32_t *pnOtherObjNum, int32_t *pnServerObjNum)
 {
-	int	i,
+	int32_t	i,
 			nServerPlayer = -1,
 			nOtherObjNum = -1, 
 			nServerObjNum = -1;
@@ -1272,9 +1272,9 @@ return nServerPlayer;
 
 //------------------------------------------------------------------------------
 
-void CSaveGameManager::GetConnectedPlayers (CPlayerData *restoredPlayers, int nPlayers)
+void CSaveGameManager::GetConnectedPlayers (CPlayerData *restoredPlayers, int32_t nPlayers)
 {
-	int	i, j;
+	int32_t	i, j;
 
 for (i = 0; i < nPlayers; i++) {
 	for (j = 0; j < nPlayers; j++) {
@@ -1286,7 +1286,7 @@ for (i = 0; i < nPlayers; i++) {
 					memcpy (netPlayers [0].m_info.players [i].network.Node (), gameData.multiplayer.players [j].netAddress, 
 							  sizeof (gameData.multiplayer.players [j].netAddress));
 					}
-				restoredPlayers [i].Connect ((sbyte) CONNECT_PLAYING);
+				restoredPlayers [i].Connect ((int8_t) CONNECT_PLAYING);
 				break;
 				}
 			}
@@ -1312,7 +1312,7 @@ if (IAmGameHost ()) {
 
 //------------------------------------------------------------------------------
 
-void CSaveGameManager::FixNetworkObjects (int nServerPlayer, int nOtherObjNum, int nServerObjNum)
+void CSaveGameManager::FixNetworkObjects (int32_t nServerPlayer, int32_t nOtherObjNum, int32_t nServerObjNum)
 {
 if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 0)) {
 	CObject h = OBJECTS [nServerObjNum];
@@ -1336,7 +1336,7 @@ if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 
 void CSaveGameManager::FixObjects (void)
 {
 	CObject	*objP = OBJECTS.Buffer ();
-	int		i, j, nSegment;
+	int32_t		i, j, nSegment;
 
 ConvertObjects ();
 gameData.objs.nNextSignature = 0;
@@ -1395,7 +1395,7 @@ DoCloakInvulSecretStuff (xOldGameTime);
 
 void CSaveGameManager::LoadNetGame (void)
 {
-	int	i, j;
+	int32_t	i, j;
 
 netGame.m_info.nType = m_cf.ReadByte ();
 netGame.m_info.nSecurity = m_cf.ReadInt ();
@@ -1403,50 +1403,50 @@ m_cf.Read (netGame.m_info.szGameName, 1, NETGAME_NAME_LEN + 1);
 m_cf.Read (netGame.m_info.szMissionTitle, 1, MISSION_NAME_LEN + 1);
 m_cf.Read (netGame.m_info.szMissionName, 1, 9);
 netGame.m_info.SetLevel (m_cf.ReadInt ());
-netGame.m_info.gameMode = (ubyte) m_cf.ReadByte ();
-netGame.m_info.bRefusePlayers = (ubyte) m_cf.ReadByte ();
-netGame.m_info.difficulty = (ubyte) m_cf.ReadByte ();
-netGame.m_info.gameStatus = (ubyte) m_cf.ReadByte ();
-netGame.m_info.nNumPlayers = (ubyte) m_cf.ReadByte ();
-netGame.m_info.nMaxPlayers = (ubyte) m_cf.ReadByte ();
-netGame.m_info.nConnected = (ubyte) m_cf.ReadByte ();
-netGame.m_info.gameFlags = (ubyte) m_cf.ReadByte ();
-netGame.m_info.protocolVersion = (ubyte) m_cf.ReadByte ();
-netGame.m_info.versionMajor = (ubyte) m_cf.ReadByte ();
-netGame.m_info.versionMinor = (ubyte) m_cf.ReadByte ();
-netGame.m_info.SetTeamVector ((ubyte) m_cf.ReadByte ());
-netGame.m_info.DoMegas = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoSmarts = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoFusions = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoHelix = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoPhoenix = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoAfterburner = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoInvulnerability = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoCloak = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoGauss = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoVulcan = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoPlasma = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoOmega = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoSuperLaser = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoProximity = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoSpread = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoSmartMine = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoFlash = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoGuided = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoEarthShaker = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoMercury = (ubyte) m_cf.ReadByte ();
-netGame.m_info.bAllowMarkerView = (ubyte) m_cf.ReadByte ();
-netGame.m_info.bIndestructibleLights = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoAmmoRack = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoConverter = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoHeadlight = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoHoming = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoLaserUpgrade = (ubyte) m_cf.ReadByte ();
-netGame.m_info.DoQuadLasers = (ubyte) m_cf.ReadByte ();
-netGame.m_info.bShowAllNames = (ubyte) m_cf.ReadByte ();
-netGame.m_info.BrightPlayers = (ubyte) m_cf.ReadByte ();
-netGame.m_info.invul = (ubyte) m_cf.ReadByte ();
-netGame.m_info.FriendlyFireOff = (ubyte) m_cf.ReadByte ();
+netGame.m_info.gameMode = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.bRefusePlayers = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.difficulty = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.gameStatus = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.nNumPlayers = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.nMaxPlayers = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.nConnected = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.gameFlags = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.protocolVersion = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.versionMajor = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.versionMinor = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.SetTeamVector ((uint8_t) m_cf.ReadByte ());
+netGame.m_info.DoMegas = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoSmarts = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoFusions = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoHelix = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoPhoenix = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoAfterburner = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoInvulnerability = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoCloak = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoGauss = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoVulcan = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoPlasma = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoOmega = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoSuperLaser = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoProximity = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoSpread = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoSmartMine = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoFlash = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoGuided = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoEarthShaker = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoMercury = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.bAllowMarkerView = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.bIndestructibleLights = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoAmmoRack = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoConverter = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoHeadlight = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoHoming = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoLaserUpgrade = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.DoQuadLasers = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.bShowAllNames = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.BrightPlayers = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.invul = (uint8_t) m_cf.ReadByte ();
+netGame.m_info.FriendlyFireOff = (uint8_t) m_cf.ReadByte ();
 for (i = 0; i < 2; i++)
 	m_cf.Read (netGame.m_info.szTeamName [i], 1, CALLSIGN_LEN + 1);		// 18 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
@@ -1469,9 +1469,9 @@ netGame.SetMonitorVector (m_cf.ReadInt ());					// 4 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	*netGame.PlayerScore (i) = m_cf.ReadInt ();				// 32 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	*netGame.PlayerFlags (i) = ubyte (m_cf.ReadByte ());	// 8 bytes
+	*netGame.PlayerFlags (i) = uint8_t (m_cf.ReadByte ());	// 8 bytes
 netGame.SetPacketsPerSec (m_cf.ReadShort ());				// 2 bytes
-netGame.SetShortPackets (ubyte (m_cf.ReadByte ()));		// 1 bytes
+netGame.SetShortPackets (uint8_t (m_cf.ReadByte ()));		// 1 bytes
 // 279 bytes
 // 355 bytes total
 m_cf.Read (netGame.AuxData (), NETGAME_AUX_SIZE, 1);  // Storage for protocol-specific data (e.g., multicast session and port)
@@ -1481,18 +1481,18 @@ m_cf.Read (netGame.AuxData (), NETGAME_AUX_SIZE, 1);  // Storage for protocol-sp
 
 void CSaveGameManager::LoadNetPlayers (void)
 {
-netPlayers [0].m_info.nType = (ubyte) m_cf.ReadByte ();
+netPlayers [0].m_info.nType = (uint8_t) m_cf.ReadByte ();
 netPlayers [0].m_info.nSecurity = m_cf.ReadInt ();
-for (int i = 0; i < MAX_NUM_NET_PLAYERS + 4; i++) {
+for (int32_t i = 0; i < MAX_NUM_NET_PLAYERS + 4; i++) {
 	m_cf.Read (netPlayers [0].m_info.players [i].callsign, 1, CALLSIGN_LEN + 1);
 	m_cf.Read (netPlayers [0].m_info.players [i].network.Network (), 1, 4);
 	m_cf.Read (netPlayers [0].m_info.players [i].network.Node (), 1, 6);
-	netPlayers [0].m_info.players [i].versionMajor = (ubyte) m_cf.ReadByte ();
-	netPlayers [0].m_info.players [i].versionMinor = (ubyte) m_cf.ReadByte ();
+	netPlayers [0].m_info.players [i].versionMajor = (uint8_t) m_cf.ReadByte ();
+	netPlayers [0].m_info.players [i].versionMinor = (uint8_t) m_cf.ReadByte ();
 	netPlayers [0].m_info.players [i].computerType = m_cf.ReadByte ();
-	netPlayers [0].m_info.players [i].connected = ((sbyte) m_cf.ReadByte ());
-	netPlayers [0].m_info.players [i].socket = (ushort) m_cf.ReadShort ();
-	netPlayers [0].m_info.players [i].rank = (ubyte) m_cf.ReadByte ();
+	netPlayers [0].m_info.players [i].connected = ((int8_t) m_cf.ReadByte ());
+	netPlayers [0].m_info.players [i].socket = (uint16_t) m_cf.ReadShort ();
+	netPlayers [0].m_info.players [i].rank = (uint8_t) m_cf.ReadByte ();
 	}
 }
 
@@ -1500,15 +1500,15 @@ for (int i = 0; i < MAX_NUM_NET_PLAYERS + 4; i++) {
 
 void CSaveGameManager::LoadPlayer (CPlayerData *playerP)
 {
-	int	i;
+	int32_t	i;
 
 m_cf.Read (playerP->callsign, 1, CALLSIGN_LEN + 1); // The callsign of this CPlayerData, for net purposes.
 m_cf.Read (playerP->netAddress, 1, 6);					// The network address of the player.
-playerP->Connect ((sbyte) m_cf.ReadByte ());			// Is the player connected or not?
-playerP->nObject = m_cf.ReadInt ();						// What CObject number this CPlayerData is. (made an int by mk because it's very often referenced)
+playerP->Connect ((int8_t) m_cf.ReadByte ());			// Is the player connected or not?
+playerP->nObject = m_cf.ReadInt ();						// What CObject number this CPlayerData is. (made an int32_t by mk because it's very often referenced)
 playerP->nPacketsGot = m_cf.ReadInt ();				// How many packets we got from them
 playerP->nPacketsSent = m_cf.ReadInt ();				// How many packets we sent to them
-playerP->flags = (uint) m_cf.ReadInt ();           // Powerup flags, see below...
+playerP->flags = (uint32_t) m_cf.ReadInt ();           // Powerup flags, see below...
 playerP->Setup ();
 playerP->SetEnergy (m_cf.ReadFix (), false);			// Amount of energy remaining.
 playerP->SetShield (m_cf.ReadFix (), false);			// shield remaining (protection)
@@ -1517,15 +1517,15 @@ playerP->level = m_cf.ReadByte ();						// Current level CPlayerData is playing.
 playerP->ComputeLaserLevels (m_cf.ReadByte ());		// Current level of the laser.
 playerP->startingLevel = m_cf.ReadByte ();			// What level the player started on.
 playerP->nKillerObj = m_cf.ReadShort ();				// Who killed me.... (-1 if no one)
-playerP->primaryWeaponFlags = (ushort) m_cf.ReadShort ();   // bit set indicates the player has this weapon.
-playerP->secondaryWeaponFlags = (ushort) m_cf.ReadShort (); // bit set indicates the player has this weapon.
+playerP->primaryWeaponFlags = (uint16_t) m_cf.ReadShort ();   // bit set indicates the player has this weapon.
+playerP->secondaryWeaponFlags = (uint16_t) m_cf.ReadShort (); // bit set indicates the player has this weapon.
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++)
-	playerP->primaryAmmo [i] = (ushort) m_cf.ReadShort (); // How much ammo of each nType.
+	playerP->primaryAmmo [i] = (uint16_t) m_cf.ReadShort (); // How much ammo of each nType.
 for (i = 0; i < MAX_SECONDARY_WEAPONS; i++)
-	playerP->secondaryAmmo [i] = (ushort) m_cf.ReadShort (); // How much ammo of each nType.
+	playerP->secondaryAmmo [i] = (uint16_t) m_cf.ReadShort (); // How much ammo of each nType.
 #if 1 //for inventory system
-playerP->nInvuls = (ubyte) m_cf.ReadByte ();
-playerP->nCloaks = (ubyte) m_cf.ReadByte ();
+playerP->nInvuls = (uint8_t) m_cf.ReadByte ();
+playerP->nCloaks = (uint8_t) m_cf.ReadByte ();
 #endif
 playerP->lastScore = m_cf.ReadInt ();					// Score at beginning of current level.
 playerP->score = m_cf.ReadInt ();						// Current score.
@@ -1544,10 +1544,10 @@ playerP->numKillsLevel = m_cf.ReadShort ();        // Number of kills this level
 playerP->numKillsTotal = m_cf.ReadShort ();        // Number of kills total
 playerP->numRobotsLevel = m_cf.ReadShort ();       // Number of initial robots this level
 playerP->numRobotsTotal = m_cf.ReadShort ();       // Number of robots total
-playerP->hostages.nRescued = (ushort) m_cf.ReadShort (); // Total number of hostages rescued.
-playerP->hostages.nTotal = (ushort) m_cf.ReadShort ();         // Total number of hostages.
-playerP->hostages.nOnBoard = (ubyte) m_cf.ReadByte ();      // Number of hostages on ship.
-playerP->hostages.nLevel = (ubyte) m_cf.ReadByte ();         // Number of hostages on this level.
+playerP->hostages.nRescued = (uint16_t) m_cf.ReadShort (); // Total number of hostages rescued.
+playerP->hostages.nTotal = (uint16_t) m_cf.ReadShort ();         // Total number of hostages.
+playerP->hostages.nOnBoard = (uint8_t) m_cf.ReadByte ();      // Number of hostages on ship.
+playerP->hostages.nLevel = (uint8_t) m_cf.ReadByte ();         // Number of hostages on this level.
 playerP->homingObjectDist = m_cf.ReadFix ();			// Distance of nearest homing CObject.
 playerP->hoursLevel = m_cf.ReadByte ();            // Hours played (since timeTotal can only go up to 9 hours)
 playerP->hoursTotal = m_cf.ReadByte ();            // Hours played (since timeTotal can only go up to 9 hours)
@@ -1566,7 +1566,7 @@ m_cf.ReadShort ();
 
 void CSaveGameManager::LoadObjectProducer (tObjectProducerInfo *objProducerP)
 {
-	int	i;
+	int32_t	i;
 
 for (i = 0; i < 2; i++)
 	objProducerP->objFlags [i] = m_cf.ReadInt ();
@@ -1613,7 +1613,7 @@ stateP->nDeadObj = m_cf.ReadInt ();
 
 //------------------------------------------------------------------------------
 
-int CSaveGameManager::LoadSpawnPoint (int i)
+int32_t CSaveGameManager::LoadSpawnPoint (int32_t i)
 {
 m_cf.ReadVector (gameData.multiplayer.playerInit [i].position.vPos);     
 m_cf.ReadMatrix (gameData.multiplayer.playerInit [i].position.mOrient);  
@@ -1629,15 +1629,15 @@ return (gameData.multiplayer.playerInit [i].nSegment >= 0) &&
 
 //------------------------------------------------------------------------------
 
-int CSaveGameManager::LoadUniFormat (int bMulti, fix xOldGameTime, int *nLevel)
+int32_t CSaveGameManager::LoadUniFormat (int32_t bMulti, fix xOldGameTime, int32_t *nLevel)
 {
 	CPlayerData	restoredPlayers [MAX_PLAYERS];
-	int		nPlayers, nServerPlayer = -1;
-	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1;
-	int		nCurrentLevel, nNextLevel;
+	int32_t		nPlayers, nServerPlayer = -1;
+	int32_t		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1;
+	int32_t		nCurrentLevel, nNextLevel;
 	CWall		*wallP;
 	char		szOrgCallSign [CALLSIGN_LEN+16];
-	int		h, i, j;
+	int32_t		h, i, j;
 
 if (m_nVersion >= 39) {
 	h = m_cf.ReadInt ();
@@ -1674,7 +1674,7 @@ if (IsMultiGame) {
 	N_LOCALPLAYER = m_cf.ReadInt ();
 	for (i = 0; i < nPlayers; i++) {
 		CSaveGameManager::LoadPlayer (restoredPlayers + i);
-		restoredPlayers [i].Connect ((sbyte) CONNECT_DISCONNECTED);
+		restoredPlayers [i].Connect ((int8_t) CONNECT_DISCONNECTED);
 		}
 	// make sure the current game host is in CPlayerData slot #0
 	nServerPlayer = SetServerPlayer (restoredPlayers, nPlayers, szServerCallSign, &nOtherObjNum, &nServerObjNum);
@@ -1772,7 +1772,7 @@ if (!m_bBetweenLevels) {
 	for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
 		wallP->LoadState (m_cf);
 		if (wallP->nType == WALL_OPEN)
-			audio.DestroySegmentSound ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
+			audio.DestroySegmentSound ((int16_t) wallP->nSegment, (int16_t) wallP->nSide, -1);	//-1 means kill any sound
 		}
 	//Restore exploding wall info
 	if (ReadBoundedInt (MAX_EXPLODING_WALLS, &i))
@@ -1818,7 +1818,7 @@ if (!m_bBetweenLevels) {
 		if (m_nVersion < 51) {
 			for (i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
 #if 1
-				m_cf.Seek (2 * sizeof (short), SEEK_CUR);
+				m_cf.Seek (2 * sizeof (int16_t), SEEK_CUR);
 				OBJTRIGGERS [i].m_info.nObject = m_cf.ReadShort ();
 #else
 				CSaveGameManager::LoadObjTriggerRef (gameData.trigs.objTriggerRefs + i);
@@ -1826,7 +1826,7 @@ if (!m_bBetweenLevels) {
 				}
 			if (m_nVersion < 36) {
 #if 1
-				m_cf.Seek (((m_nVersion < 35) ? 700 : MAX_OBJECTS_D2X) * sizeof (short), SEEK_CUR);
+				m_cf.Seek (((m_nVersion < 35) ? 700 : MAX_OBJECTS_D2X) * sizeof (int16_t), SEEK_CUR);
 #else
 				j = (m_nVersion < 35) ? 700 : MAX_OBJECTS_D2X;
 				for (i = 0; i < j; i++)
@@ -1835,7 +1835,7 @@ if (!m_bBetweenLevels) {
 				}
 			else {
 #if 1
-				m_cf.Seek (m_cf.ReadShort () * 2 * sizeof (short), SEEK_CUR);
+				m_cf.Seek (m_cf.ReadShort () * 2 * sizeof (int16_t), SEEK_CUR);
 #else
 				for (i = m_cf.ReadShort (); i; i--) {
 					m_cf.ReadShort ();
@@ -1847,7 +1847,7 @@ if (!m_bBetweenLevels) {
 		BuildObjTriggerRef ();
 		}
 	else if (m_nVersion < 36)
-		m_cf.Seek (((m_nVersion < 35) ? 700 : MAX_OBJECTS_D2X) * sizeof (short), SEEK_CUR);
+		m_cf.Seek (((m_nVersion < 35) ? 700 : MAX_OBJECTS_D2X) * sizeof (int16_t), SEEK_CUR);
 	else
 		m_cf.ReadShort ();
 	//Restore tmap info
@@ -1886,7 +1886,7 @@ if (!m_bBetweenLevels) {
 		gameData.reactor.states [0].nDeadObj = m_cf.ReadInt ();
 		}
 	else {
-		int	i;
+		int32_t	i;
 
 		gameData.reactor.bPresent = m_cf.ReadInt ();
 		for (i = 0; i < MAX_BOSS_COUNT; i++)
@@ -1899,20 +1899,20 @@ if (!m_bBetweenLevels) {
 	//ClaimObjectSlots ();
 	if (m_nVersion > 39) {
 		for (i = 0; i < LEVEL_SEGMENTS; i++)
-			automap.m_visited [i] = (ushort) m_cf.ReadShort ();
+			automap.m_visited [i] = (uint16_t) m_cf.ReadShort ();
 		}
 	else if (m_nVersion > 37) {
 		for (i = 0; i < LEVEL_SEGMENTS; i++)
-			automap.m_visited [i] = (ushort) m_cf.ReadShort ();
+			automap.m_visited [i] = (uint16_t) m_cf.ReadShort ();
 		if (MAX_SEGMENTS > LEVEL_SEGMENTS)
-			m_cf.Seek ((MAX_SEGMENTS - LEVEL_SEGMENTS) * sizeof (ushort), SEEK_CUR);
+			m_cf.Seek ((MAX_SEGMENTS - LEVEL_SEGMENTS) * sizeof (uint16_t), SEEK_CUR);
 		}
 	else {
-		int	i, j = (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
+		int32_t	i, j = (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
 		for (i = 0; i < j; i++)
-			automap.m_visited [i] = (ushort) m_cf.ReadByte ();
+			automap.m_visited [i] = (uint16_t) m_cf.ReadByte ();
 		if (j > LEVEL_SEGMENTS)
-			m_cf.Seek ((j - LEVEL_SEGMENTS) * sizeof (ubyte), SEEK_CUR);
+			m_cf.Seek ((j - LEVEL_SEGMENTS) * sizeof (uint8_t), SEEK_CUR);
 		}
 	//	Restore hacked up weapon system stuff.
 	gameData.fusion.xNextSoundTime = gameData.time.xGame;
@@ -1922,7 +1922,7 @@ if (!m_bBetweenLevels) {
 	gameData.laser.xLastFiredTime = 
 	gameData.missiles.xLastFiredTime = gameData.time.xGame;
 	}
-gameData.app.nStateGameId = (uint) m_cf.ReadInt ();
+gameData.app.nStateGameId = (uint32_t) m_cf.ReadInt ();
 gameStates.app.cheats.bLaserRapidFire = m_cf.ReadInt ();
 gameStates.app.bLunacy = m_cf.ReadInt ();		//	Yes, reading this twice.  Removed the Ugly robot system, but didn't want to change savegame format.
 gameStates.gameplay.bMineMineCheat = m_cf.ReadInt ();
@@ -1940,7 +1940,7 @@ m_cf.Read (&bLastPrimaryWasSuper, sizeof (bLastPrimaryWasSuper), 1);
 m_cf.Read (&bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1);
 paletteManager.SetFadeDelay (m_cf.ReadFix ());
 paletteManager.SetLastEffectTime (m_cf.ReadFix ());
-paletteManager.SetEffect ((int) m_cf.ReadShort (), (int) m_cf.ReadShort (), (int) m_cf.ReadShort ());
+paletteManager.SetEffect ((int32_t) m_cf.ReadShort (), (int32_t) m_cf.ReadShort (), (int32_t) m_cf.ReadShort ());
 h = (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
 j = Min (h, LEVEL_SEGMENTS);
 gameData.render.lights.subtracted.Read (m_cf, j);
@@ -1977,7 +1977,7 @@ if (m_nVersion >= 37) {
 if (m_nVersion >= 54) {
 	gameOpts->gameplay.nShip [0] = m_cf.ReadInt ();
 	gameOpts->gameplay.nShip [1] = -1;
-	gameData.multiplayer.weaponStates [N_LOCALPLAYER].nShip = ubyte (gameOpts->gameplay.nShip [0]);
+	gameData.multiplayer.weaponStates [N_LOCALPLAYER].nShip = uint8_t (gameOpts->gameplay.nShip [0]);
 	}
 if (LOCALPLAYER.numRobotsLevel > LOCALPLAYER.numKillsLevel + CountRobotsInLevel ()) // fix for a bug affecting savegames
 	LOCALPLAYER.numRobotsLevel = LOCALPLAYER.numKillsLevel + CountRobotsInLevel ();
@@ -1989,25 +1989,25 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CSaveGameManager::LoadBinFormat (int bMulti, fix xOldGameTime, int *nLevel)
+int32_t CSaveGameManager::LoadBinFormat (int32_t bMulti, fix xOldGameTime, int32_t *nLevel)
 {
 	CPlayerData	restoredPlayers [MAX_PLAYERS];
-	int		nPlayers, nServerPlayer = -1;
-	int		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1;
-	int		nCurrentLevel, nNextLevel;
+	int32_t		nPlayers, nServerPlayer = -1;
+	int32_t		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1;
+	int32_t		nCurrentLevel, nNextLevel;
 	CWall		*wallP;
 	char		szOrgCallSign [CALLSIGN_LEN+16];
-	int		i, j;
-	short		nTexture;
+	int32_t		i, j;
+	int16_t		nTexture;
 
-m_cf.Read (&m_bBetweenLevels, sizeof (int), 1);
+m_cf.Read (&m_bBetweenLevels, sizeof (int32_t), 1);
 Assert (m_bBetweenLevels == 0);	//between levels save ripped out
 // Read the mission info...
 if (!LoadMission ())
 	return 0;
 //Read level info
-m_cf.Read (&nCurrentLevel, sizeof (int), 1);
-m_cf.Read (&nNextLevel, sizeof (int), 1);
+m_cf.Read (&nCurrentLevel, sizeof (int32_t), 1);
+m_cf.Read (&nNextLevel, sizeof (int32_t), 1);
 //Restore gameData.time.xGame
 m_cf.Read (&gameData.time.xGame, sizeof (fix), 1);
 // Start new game....
@@ -2016,7 +2016,7 @@ if (IsMultiGame) {
 		char szServerCallSign [CALLSIGN_LEN + 1];
 
 	strcpy (szServerCallSign, netPlayers [0].m_info.players [0].callsign);
-	m_cf.Read (&gameData.app.nStateGameId, sizeof (int), 1);
+	m_cf.Read (&gameData.app.nStateGameId, sizeof (int32_t), 1);
 	m_cf.Read (&netGame, sizeof (tNetGameInfo), 1);
 	m_cf.Read (&netPlayers [0], netPlayers [0].Size (), 1);
 	m_cf.Read (&nPlayers, sizeof (gameData.multiplayer.nPlayers), 1);
@@ -2046,21 +2046,21 @@ strcpy (LOCALPLAYER.callsign, szOrgCallSign);
 if (m_bBetweenLevels)
 	LOCALPLAYER.level = nNextLevel;
 // Restore the weapon states
-m_cf.Read (&gameData.weapons.nPrimary, sizeof (sbyte), 1);
-m_cf.Read (&gameData.weapons.nSecondary, sizeof (sbyte), 1);
+m_cf.Read (&gameData.weapons.nPrimary, sizeof (int8_t), 1);
+m_cf.Read (&gameData.weapons.nSecondary, sizeof (int8_t), 1);
 SelectWeapon (gameData.weapons.nPrimary, 0, 0, 0);
 SelectWeapon (gameData.weapons.nSecondary, 1, 0, 0);
 // Restore the difficulty level
-m_cf.Read (&gameStates.app.nDifficultyLevel, sizeof (int), 1);
+m_cf.Read (&gameStates.app.nDifficultyLevel, sizeof (int32_t), 1);
 // Restore the cheats enabled flag
-m_cf.Read (&gameStates.app.cheats.bEnabled, sizeof (int), 1);
+m_cf.Read (&gameStates.app.cheats.bEnabled, sizeof (int32_t), 1);
 if (!m_bBetweenLevels) {
 	gameStates.render.bDoAppearanceEffect = 0;			// Don't do this for middle o' game stuff.
 	//Clear out all the OBJECTS from the lvl file
 	ResetSegObjLists ();
 	ResetObjects (1);
 	//Read objects, and pop 'em into their respective segments.
-	m_cf.Read (&gameData.objs.nObjects, sizeof (int), 1);
+	m_cf.Read (&gameData.objs.nObjects, sizeof (int32_t), 1);
 	gameData.objs.nLastObject [0] = gameData.objs.nObjects - 1;
 	for (i = 0; i < gameData.objs.nObjects; i++)
 		m_cf.Read (&OBJECTS [i].info, sizeof (tBaseObject), 1);
@@ -2100,12 +2100,12 @@ if (!m_bBetweenLevels) {
 	//walls that are now open
 	for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++)
 		if (wallP->nType == WALL_OPEN)
-			audio.DestroySegmentSound ((short) wallP->nSegment, (short) wallP->nSide, -1);	//-1 means kill any sound
+			audio.DestroySegmentSound ((int16_t) wallP->nSegment, (int16_t) wallP->nSide, -1);	//-1 means kill any sound
 	//Restore exploding wall info
 	if (m_nVersion >= 10) {
-		m_cf.Read (&i, sizeof (int), 1);
+		m_cf.Read (&i, sizeof (int32_t), 1);
 		if (i > 0) {
-			gameData.walls.exploding.Grow (static_cast<uint> (i));
+			gameData.walls.exploding.Grow (static_cast<uint32_t> (i));
 			gameData.walls.exploding.Read (m_cf, i);
 			}
 		}
@@ -2113,14 +2113,14 @@ if (!m_bBetweenLevels) {
 	if (ReadBoundedInt (MAX_DOORS, &i))
 		return 0;
 	if (i > 0) {
-		gameData.walls.activeDoors.Grow (static_cast<uint> (i));
+		gameData.walls.activeDoors.Grow (static_cast<uint32_t> (i));
 		gameData.walls.activeDoors.Read (m_cf, gameData.walls.activeDoors.ToS ());
 		}
 	if (m_nVersion >= 14) {		//Restore cloaking CWall info
 		if (ReadBoundedInt (MAX_WALLS, &i))
 			return 0;
 		if (i > 0) {
-			gameData.walls.cloaking.Grow (static_cast<uint> (i));
+			gameData.walls.cloaking.Grow (static_cast<uint32_t> (i));
 			gameData.walls.cloaking.Read (m_cf, gameData.walls.cloaking.ToS ());
 			}
 		}
@@ -2145,12 +2145,12 @@ if (!m_bBetweenLevels) {
 		m_cf.Read (&gameData.trigs.m_nObjTriggers, sizeof (gameData.trigs.m_nObjTriggers), 1);
 		if (gameData.trigs.m_nObjTriggers > 0) {
 			OBJTRIGGERS.Read (m_cf, gameData.trigs.m_nObjTriggers);
-			m_cf.Seek (gameData.trigs.m_nObjTriggers * 6 * sizeof (short), SEEK_CUR);
-			m_cf.Seek (700 * sizeof (short), SEEK_CUR);
+			m_cf.Seek (gameData.trigs.m_nObjTriggers * 6 * sizeof (int16_t), SEEK_CUR);
+			m_cf.Seek (700 * sizeof (int16_t), SEEK_CUR);
 			BuildObjTriggerRef ();
 			}
 		else
-			m_cf.Seek (((m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 34) ? MAX_OBJECTS_D2X : 700) * sizeof (short), SEEK_CUR);
+			m_cf.Seek (((m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 34) ? MAX_OBJECTS_D2X : 700) * sizeof (int16_t), SEEK_CUR);
 		}
 	//Restore tmap info
 	CSegment* segP = SEGMENTS.Buffer ();
@@ -2171,7 +2171,7 @@ if (!m_bBetweenLevels) {
 	if (ReadBoundedInt (MAX_ROBOT_CENTERS, &gameData.producers.nRobotMakers))
 		return 0;
 	for (i = 0; i < gameData.producers.nRobotMakers; i++) {
-		m_cf.Read (gameData.producers.robotMakers [i].objFlags, sizeof (int), 2);
+		m_cf.Read (gameData.producers.robotMakers [i].objFlags, sizeof (int32_t), 2);
 		m_cf.Read (&gameData.producers.robotMakers [i].xHitPoints, 
 						sizeof (tObjectProducerInfo) - (reinterpret_cast<char*> (&gameData.producers.robotMakers [i].xHitPoints) - reinterpret_cast<char*> (&gameData.producers.robotMakers [i])), 1);
 		}
@@ -2194,9 +2194,9 @@ if (!m_bBetweenLevels) {
 	if (m_nVersion > 37)
 		automap.m_visited.Read (m_cf, MAX_SEGMENTS);
 	else {
-		int	i, j = (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
+		int32_t	i, j = (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
 		for (i = 0; i < j; i++)
-			automap.m_visited [i] = (ushort) m_cf.ReadByte ();
+			automap.m_visited [i] = (uint16_t) m_cf.ReadByte ();
 		}
 	//	Restore hacked up weapon system stuff.
 	gameData.fusion.xNextSoundTime = gameData.time.xGame;
@@ -2209,10 +2209,10 @@ if (!m_bBetweenLevels) {
 gameData.app.nStateGameId = 0;
 
 if (m_nVersion >= 7) {
-	m_cf.Read (&gameData.app.nStateGameId, sizeof (uint), 1);
-	m_cf.Read (&gameStates.app.cheats.bLaserRapidFire, sizeof (int), 1);
-	m_cf.Read (&gameStates.app.bLunacy, sizeof (int), 1);		//	Yes, writing this twice.  Removed the Ugly robot system, but didn't want to change savegame format.
-	m_cf.Read (&gameStates.app.bLunacy, sizeof (int), 1);
+	m_cf.Read (&gameData.app.nStateGameId, sizeof (uint32_t), 1);
+	m_cf.Read (&gameStates.app.cheats.bLaserRapidFire, sizeof (int32_t), 1);
+	m_cf.Read (&gameStates.app.bLunacy, sizeof (int32_t), 1);		//	Yes, writing this twice.  Removed the Ugly robot system, but didn't want to change savegame format.
+	m_cf.Read (&gameStates.app.bLunacy, sizeof (int32_t), 1);
 	if (gameStates.app.bLunacy)
 		DoLunacyOn ();
 }
@@ -2220,11 +2220,11 @@ if (m_nVersion >= 7) {
 if (m_nVersion >= 17)
 	markerManager.LoadState (m_cf, true);
 else {
-	int num, dummy;
+	int32_t num, dummy;
 
 	// skip dummy info
-	m_cf.Read (&num, sizeof (int), 1);       //was NumOfMarkers
-	m_cf.Read (&dummy, sizeof (int), 1);     //was CurMarker
+	m_cf.Read (&num, sizeof (int32_t), 1);       //was NumOfMarkers
+	m_cf.Read (&dummy, sizeof (int32_t), 1);     //was CurMarker
 	m_cf.Seek (num * (sizeof (CFixVector) + 40), SEEK_CUR);
 	for (num = 0; num < NUM_MARKERS; num++)
 		markerManager.SetObject (num, -1);
@@ -2246,16 +2246,16 @@ else {
 	m_cf.Read (&bLastSecondaryWasSuper, sizeof (bLastSecondaryWasSuper), 1);
 	paletteManager.SetFadeDelay ((fix) m_cf.ReadInt ());
 	paletteManager.SetLastEffectTime ((fix) m_cf.ReadInt ());
-	paletteManager.SetEffect ((int) m_cf.ReadInt (), (int) m_cf.ReadInt (), (int) m_cf.ReadInt ());
+	paletteManager.SetEffect ((int32_t) m_cf.ReadInt (), (int32_t) m_cf.ReadInt (), (int32_t) m_cf.ReadInt ());
 	}
 
 //	Load gameData.render.lights.subtracted
 if (m_nVersion >= 16) {
-	int h = (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
-	int j = Min (LEVEL_SEGMENTS, h);
+	int32_t h = (m_nVersion > 39) ? LEVEL_SEGMENTS : (m_nVersion > 22) ? MAX_SEGMENTS : MAX_SEGMENTS_D2;
+	int32_t j = Min (LEVEL_SEGMENTS, h);
 	gameData.render.lights.subtracted.Read (m_cf, j);
 	if (j < h)
-		m_cf.Seek ((h - j) * sizeof (ubyte), SEEK_CUR);
+		m_cf.Seek ((h - j) * sizeof (uint8_t), SEEK_CUR);
 	ApplyAllChangedLight ();
 	//ComputeAllStaticLight ();	//	set xAvgSegLight field in CSegment struct.  See note at that function.
 	}
@@ -2283,11 +2283,11 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CSaveGameManager::LoadState (int bMulti, int bSecret, char *filename)
+int32_t CSaveGameManager::LoadState (int32_t bMulti, int32_t bSecret, char *filename)
 {
 	char		szDescription [DESC_LENGTH + 1];
 	char		nId [5];
-	int		nLevel, i;
+	int32_t		nLevel, i;
 	fix		xOldGameTime = gameData.time.xGame;
 
 StopTime ();
@@ -2306,7 +2306,7 @@ if (memcmp (nId, dgss_id, 4)) {
 	return 0;
 	}
 //Read m_nVersion
-m_cf.Read (&m_nVersion, sizeof (int), 1);
+m_cf.Read (&m_nVersion, sizeof (int32_t), 1);
 if (m_nVersion < STATE_COMPATIBLE_VERSION) {
 	m_cf.Close ();
 	StartTime (1);
@@ -2325,7 +2325,7 @@ else
 if (bSecret < 0)
 	missionManager.LoadLevelStates ();
 else if (!bSecret && (m_nVersion >= 53)) {
-	for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
+	for (int32_t i = 0; i < MAX_LEVELS_PER_MISSION; i++)
 		missionManager.SetLevelState (i, char (m_cf.ReadByte ()));
 	missionManager.SaveLevelStates ();
 	}
@@ -2367,9 +2367,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CSaveGameManager::GetGameId (char *filename, int bSecret)
+int32_t CSaveGameManager::GetGameId (char *filename, int32_t bSecret)
 {
-	int	nId;
+	int32_t	nId;
 
 if (!m_cf.Open (filename, (bSecret < 0) ? gameFolders.var.szCache : gameFolders.user.szSavegames, "rb", 0))
 	return 0;
@@ -2386,7 +2386,7 @@ if (m_nVersion < STATE_COMPATIBLE_VERSION) {
 	return 0;
 	}
 // skip the description, current image, palette, mission name, between levels flag and mission info
-m_cf.Seek (DESC_LENGTH + ImageSize () + 768 + 9 * sizeof (char) + (5 + (m_nVersion >= 55)) * sizeof (int), SEEK_CUR);
+m_cf.Seek (DESC_LENGTH + ImageSize () + 768 + 9 * sizeof (char) + (5 + (m_nVersion >= 55)) * sizeof (int32_t), SEEK_CUR);
 m_nGameId = m_cf.ReadInt ();
 m_cf.Close ();
 return m_nGameId;

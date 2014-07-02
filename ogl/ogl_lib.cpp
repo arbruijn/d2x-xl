@@ -67,7 +67,7 @@
 #ifdef _WIN32
 
 typedef struct tLibList {
-	int	nLibs;
+	int32_t	nLibs;
 	DWORD	*libs;
 } tLibList;
 
@@ -84,12 +84,12 @@ COGL ogl;
 //------------------------------------------------------------------------------
 
 #if DBG_SHADOWS
-int bShadowTest = 0;
+int32_t bShadowTest = 0;
 #endif
 
-int bSingleStencil = 0;
+int32_t bSingleStencil = 0;
 
-extern int bZPass;
+extern int32_t bZPass;
 
 GLuint hBigSphere = 0;
 GLuint hSmallSphere = 0;
@@ -102,10 +102,10 @@ GLuint secondary_lh [5] = {0, 0, 0, 0, 0};
 GLuint g3InitTMU [4][2] = {{0,0},{0,0},{0,0},{0,0}};
 GLuint g3ExitTMU [2] = {0,0};
 
-int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc, r_tvertexc;
-int r_texcount = 0;
-int gr_renderstats = 0;
-int gr_badtexture = 0;
+int32_t r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc, r_tvertexc;
+int32_t r_texcount = 0;
+int32_t gr_renderstats = 0;
+int32_t gr_badtexture = 0;
 
 //------------------------------------------------------------------------------
 
@@ -122,7 +122,7 @@ tRenderQuality renderQualities [] = {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CViewport::Apply (int t) 
+void CViewport::Apply (int32_t t) 
 { 
 if (t > 0)
 	m_t = t;
@@ -135,7 +135,7 @@ ogl.SetScissorTest (ogl.m_states.bEnableScissor != 0);
 
 //------------------------------------------------------------------------------
 
-void CViewport::Setup (int x, int y, int w, int h) 
+void CViewport::Setup (int32_t x, int32_t y, int32_t w, int32_t h) 
 {
 CRectangle::Setup (x, y, w, h);
 m_t = gameData.render.screen.Height ();
@@ -152,9 +152,9 @@ return double (nScreenDists [gameOpts->render.stereo.nScreenDist] * (automap.Dis
 
 //------------------------------------------------------------------------------
 
-void COGL::SetRenderQuality (int nQuality)
+void COGL::SetRenderQuality (int32_t nQuality)
 {
-	static int nCurQual = -1;
+	static int32_t nCurQual = -1;
 
 if (nQuality < 0)
 	nQuality = gameOpts->render.nImageQuality;
@@ -174,7 +174,7 @@ ResetTextures (1, gameStates.app.bGameRunning);
 
 //------------------------------------------------------------------------------
 
-int COGL::StereoDevice (int bForce) 
+int32_t COGL::StereoDevice (int32_t bForce) 
 { 
 if (!m_features.bShaders)
 	return 0;
@@ -189,7 +189,7 @@ return (gameOpts->render.stereo.nGlasses < DEVICE_STEREO_PHYSICAL) ? gameOpts->r
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void OglDeleteLists (GLuint *lp, int n)
+void OglDeleteLists (GLuint *lp, int32_t n)
 {
 for (; n; n--, lp++) {
 	if (*lp) {
@@ -201,11 +201,11 @@ for (; n; n--, lp++) {
 
 //------------------------------------------------------------------------------
 
-void ComputeSinCosTable (int nSides, tSinCosf *sinCosP)
+void ComputeSinCosTable (int32_t nSides, tSinCosf *sinCosP)
 {
 	double	ang;
 
-for (int i = 0; i < nSides; i++, sinCosP++) {
+for (int32_t i = 0; i < nSides; i++, sinCosP++) {
 	ang = 2.0 * PI * i / nSides;
 	sinCosP->fSin = (float) sin (ang);
 	sinCosP->fCos = (float) cos (ang);
@@ -214,9 +214,9 @@ for (int i = 0; i < nSides; i++, sinCosP++) {
 
 //------------------------------------------------------------------------------
 
-int CircleListInit (int nSides, int nType, int mode)
+int32_t CircleListInit (int32_t nSides, int32_t nType, int32_t mode)
 {
-	int h = glGenLists (1);
+	int32_t h = glGenLists (1);
 
 glNewList (h, mode);
 /* draw a unit radius circle in xy plane centered on origin */
@@ -247,7 +247,7 @@ if (pvNormal) {
 else
 #endif
  {
-	ushort v [4], vSorted [4];
+	uint16_t v [4], vSorted [4];
 
 	v [0] = pointList [0]->Index ();
 	v [1] = pointList [1]->Index ();
@@ -257,7 +257,7 @@ else
 		glNormal3f ((GLfloat) X2F (vNormal.v.coord.x), (GLfloat) X2F (vNormal.v.coord.y), (GLfloat) X2F (vNormal.v.coord.z));
 		}
 	else {
-		int bFlip = SortVertsForNormal (v [0], v [1], v [2], 0xFFFF, vSorted);
+		int32_t bFlip = SortVertsForNormal (v [0], v [1], v [2], 0xFFFF, vSorted);
 		vNormal = CFixVector::Normal (gameData.segs.vertices [vSorted [0]],
 												gameData.segs.vertices [vSorted [1]],
 												gameData.segs.vertices [vSorted [2]]);
@@ -279,7 +279,7 @@ void G3CalcNormal (CRenderPoint **pointList, CFloatVector *pvNormal)
 if (gameStates.render.nState == 1)	// an object polymodel
 	vNormal = CFixVector::Normal (pointList [0]->ViewPos (), pointList [1]->ViewPos (), pointList [2]->ViewPos ());
 else {
-	ushort v [4], vSorted [4];
+	uint16_t v [4], vSorted [4];
 
 	v [0] = pointList [0]->Index ();
 	v [1] = pointList [1]->Index ();
@@ -289,7 +289,7 @@ else {
 		vNormal = CFixVector::Normal (pointList [0]->ViewPos (), pointList [1]->ViewPos (), pointList [2]->ViewPos ());
 		}
 	else {
-		int bFlip = SortVertsForNormal (v [0], v [1], v [2], 0xFFFF, vSorted);
+		int32_t bFlip = SortVertsForNormal (v [0], v [1], v [2], 0xFFFF, vSorted);
 		vNormal = CFixVector::Normal (gameData.segs.vertices [vSorted [0]],
 												gameData.segs.vertices [vSorted [1]],
 												gameData.segs.vertices [vSorted [2]]);
@@ -533,7 +533,7 @@ m_states.viewport [0].Apply ();
 
 //------------------------------------------------------------------------------
 
-void COGL::SetViewport (int x, int y, int w, int h)
+void COGL::SetViewport (int32_t x, int32_t y, int32_t w, int32_t h)
 {
 if (!gameOpts->render.cameras.bHires) {
 	x >>= gameStates.render.cameras.bActive;
@@ -541,7 +541,7 @@ if (!gameOpts->render.cameras.bHires) {
 	w >>= gameStates.render.cameras.bActive;
 	h >>= gameStates.render.cameras.bActive;
 	}
-int t = gameData.render.screen.Height ();
+int32_t t = gameData.render.screen.Height ();
 if (!gameOpts->render.cameras.bHires)
 	t >>= gameStates.render.cameras.bActive;
 CViewport vp = CViewport (x, y, w, h, t);
@@ -552,7 +552,7 @@ if (m_states.viewport [0] != vp) {
 	}
 #if DBG
 else {
-	int v [4];
+	int32_t v [4];
 	glGetIntegerv (GL_VIEWPORT, v);
 	y = t - y - h;
 	if ((x != v [0]) || (y != v [1]) || (w != v [2]) || (h != v [3])) {
@@ -606,7 +606,7 @@ else //GLASSES_SHUTTER_NVIDIA, GLASSES_OCULUS_RIFT or NONE
 
 #define GL_INFINITY	0
 
-void COGL::StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation)
+void COGL::StartFrame (int32_t bFlat, int32_t bResetColorBuf, fix xStereoSeparation)
 {
 SetStereoSeparation (xStereoSeparation);
 m_states.bEnableScissor = 1;
@@ -791,7 +791,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void COGL::EndFrame (int nWindow)
+void COGL::EndFrame (int32_t nWindow)
 {
 //SetViewport (0, 0, gameData.render.screen.Width (), gameData.render.screen.Height ());
 #if 1
@@ -839,7 +839,7 @@ if (m_features.bAntiAliasing/*.Apply ()*/)
 
 //------------------------------------------------------------------------------
 
-void COGL::EnableLighting (int bSpecular)
+void COGL::EnableLighting (int32_t bSpecular)
 {
 if (gameOpts->ogl.bObjLighting || (gameStates.render.bPerPixelLighting == 2)) {
 		static GLfloat fBlack [] = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -879,7 +879,7 @@ if (gameOpts->ogl.bObjLighting || (gameStates.render.bPerPixelLighting == 2)) {
 
 // -----------------------------------------------------------------------------------
 
-void COGL::SetupTransform (int bForce)
+void COGL::SetupTransform (int32_t bForce)
 {
 if (!m_states.nTransformCalls && (m_states.bUseTransform || bForce)) {
 	glMatrixMode (GL_MODELVIEW);
@@ -894,7 +894,7 @@ if (!m_states.nTransformCalls && (m_states.bUseTransform || bForce)) {
 
 // -----------------------------------------------------------------------------------
 
-void COGL::ResetTransform (int bForce)
+void COGL::ResetTransform (int32_t bForce)
 {
 if ((m_states.nTransformCalls > 0) && (m_states.bUseTransform || bForce) && !--m_states.nTransformCalls) {
 	glMatrixMode (GL_MODELVIEW);
@@ -929,7 +929,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void COGL::RebuildContext (int bGame)
+void COGL::RebuildContext (int32_t bGame)
 {
 m_states.bRebuilding = 1;
 cameraManager.Destroy ();
@@ -1017,7 +1017,7 @@ oglExtensions = reinterpret_cast<const char*> (glGetString (GL_EXTENSIONS));
 
 //------------------------------------------------------------------------------
 
-int COGL::StencilOff (void)
+int32_t COGL::StencilOff (void)
 {
 if (!(ogl.m_data.bStencilTest && SHOW_SHADOWS && (gameStates.render.nShadowPass == 3)))
 	return 0;
@@ -1028,7 +1028,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void COGL::StencilOn (int bStencil)
+void COGL::StencilOn (int32_t bStencil)
 {
 if (bStencil && !ogl.m_data.bStencilTest) {
 	ogl.SetStencilTest (true);
@@ -1038,7 +1038,7 @@ if (bStencil && !ogl.m_data.bStencilTest) {
 
 //------------------------------------------------------------------------------
 
-GLenum COGL::ClearError (int bTrapError) 
+GLenum COGL::ClearError (int32_t bTrapError) 
 {
 GLenum nError = glGetError ();
 #if DBG_OGL

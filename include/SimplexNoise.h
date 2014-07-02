@@ -9,10 +9,10 @@
 
 class CSimplexNoise : public CPerlinNoise {
 	private:
-		int m_random [2 * PERLIN_RANDOM_SIZE];
+		int32_t m_random [2 * PERLIN_RANDOM_SIZE];
 
 	public:
-		virtual void Setup (double amplitude, double persistence, int octaves, int randomize = -1);
+		virtual void Setup (double amplitude, double persistence, int32_t octaves, int32_t randomize = -1);
 
 	protected:
 		virtual double Noise (double x);
@@ -24,9 +24,9 @@ class CSimplexNoise : public CPerlinNoise {
 	private:
 		inline double Lerp (double t, double a, double b) { return a + t * (b - a); }
 		inline double Fade (double t) { return t * t * t * (t * (t * 6.0 - 15.0) + 10.0); }
-		inline double Grad (int bias, double x) { return ((bias & 1) == 0) ? x : -x; }
-		inline double Grad (int bias, double x, double y) { return (((bias & 2) == 0) ? x : -x) + (((bias & 1) == 0) ? y : -y); }
-		double Grad (int bias, double x, double y, double z);
+		inline double Grad (int32_t bias, double x) { return ((bias & 1) == 0) ? x : -x; }
+		inline double Grad (int32_t bias, double x, double y) { return (((bias & 2) == 0) ? x : -x) + (((bias & 1) == 0) ? y : -y); }
+		double Grad (int32_t bias, double x, double y, double z);
 
 	};
 

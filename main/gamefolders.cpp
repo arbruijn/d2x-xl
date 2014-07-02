@@ -171,7 +171,7 @@ return pszAppFolder;
 
 // ----------------------------------------------------------------------------
 
-static int CheckDataFolder (char* pszRootDir)
+static int32_t CheckDataFolder (char* pszRootDir)
 {
 AppendSlash (FlipBackslash (pszRootDir));
 return GetAppFolder (pszRootDir, gameFolders.game.szData [0], DATA_FOLDER, "descent2.hog") &&
@@ -182,7 +182,7 @@ return GetAppFolder (pszRootDir, gameFolders.game.szData [0], DATA_FOLDER, "desc
 
 // ----------------------------------------------------------------------------
 
-static int FindDataFolder (const char* pszRootDir, bool bSplitPath = false)
+static int32_t FindDataFolder (const char* pszRootDir, bool bSplitPath = false)
 {
 if (!(pszRootDir && *pszRootDir))
 	return 0;
@@ -200,7 +200,7 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int MakeFolder (char* pszAppFolder, const char* pszFolder = "", const char* pszSubFolder = "")
+int32_t MakeFolder (char* pszAppFolder, const char* pszFolder = "", const char* pszSubFolder = "")
 {
 if (pszSubFolder && *pszSubFolder) {
 #if 0
@@ -229,7 +229,7 @@ if (!FFF (pszAppFolder, &ffs, 1)) {
 PrintLog (0, "failed\n");
 PrintLog (0, "trying to create folder '%s' ...", pszAppFolder);
 pszAppFolder [strlen (pszAppFolder) - 1] = '\0'; // remove trailing slash
-int nResult = CFile::MkDir (pszAppFolder) > -1;
+int32_t nResult = CFile::MkDir (pszAppFolder) > -1;
 if (nResult)
 	PrintLog (0, "worked\n");
 else
@@ -240,7 +240,7 @@ return nResult;
 
 // ----------------------------------------------------------------------------
 
-int MakeTexSubFolders (char* pszParentFolder)
+int32_t MakeTexSubFolders (char* pszParentFolder)
 {
 if (!*pszParentFolder)
 	return 0;
@@ -249,7 +249,7 @@ if (!*pszParentFolder)
 
 	char	szFolder [FILENAME_LEN];
 
-for (int i = 0; i < 4; i++) {
+for (int32_t i = 0; i < 4; i++) {
 	sprintf (szFolder, "%s%s", pszParentFolder, szTexSubFolders [i]);
 	if (!MakeFolder (szFolder))
 		return 0;
@@ -259,7 +259,7 @@ return 1;
 
 // ----------------------------------------------------------------------------
 
-static int GetSystemFolders (int& nSharedFolderMode, int& nUserFolderMode)
+static int32_t GetSystemFolders (int32_t& nSharedFolderMode, int32_t& nUserFolderMode)
 {
 PrintLog (1, "\nLooking for system folders\n");
 #if defined (_WIN32)
@@ -329,7 +329,7 @@ return 1;
 
 // ----------------------------------------------------------------------------
 
-static int MakeCacheFolders (int nSharedFolderMode, int nUserFolderMode)
+static int32_t MakeCacheFolders (int32_t nSharedFolderMode, int32_t nUserFolderMode)
 {
 PrintLog (1, "\nCreating cache folders\n");
 
@@ -391,7 +391,7 @@ return 1;
 
 // ----------------------------------------------------------------------------
 
-static int MakeGameFolders (void)
+static int32_t MakeGameFolders (void)
 {
 PrintLog (1, "\nSetting up game folders\n");
 
@@ -440,11 +440,11 @@ return 1;
 
 // ----------------------------------------------------------------------------
 
-static int MakeSharedFolders (void)
+static int32_t MakeSharedFolders (void)
 {
 PrintLog (1, "\nSetting up shared folders\n");
 
-int i = MakeFolder (gameFolders.var.szModels [0], gameFolders.var.szCache, MODEL_FOLDER) &&
+int32_t i = MakeFolder (gameFolders.var.szModels [0], gameFolders.var.szCache, MODEL_FOLDER) &&
 		  MakeFolder (gameFolders.var.szTextures [0], gameFolders.var.szCache, TEXTURE_FOLDER) &&
 		  MakeFolder (gameFolders.var.szTextures [1], gameFolders.var.szTextures [0], TEXTURE_FOLDER_D2) &&
 		  MakeFolder (gameFolders.var.szTextures [2], gameFolders.var.szTextures [0], TEXTURE_FOLDER_D1) &&
@@ -462,7 +462,7 @@ return i;
 
 // ----------------------------------------------------------------------------
 
-static int MakeUserFolders (int nUserFolderMode)
+static int32_t MakeUserFolders (int32_t nUserFolderMode)
 {
 PrintLog (1, "\nSetting up user folders\n");
 
@@ -523,7 +523,7 @@ if (bInit)
 *gameFolders.var.szCache =
 *gameFolders.user.szCache = '\0';
 
-int nSharedFolderMode, nUserFolderMode;
+int32_t nSharedFolderMode, nUserFolderMode;
 
 if (!GetSystemFolders (nSharedFolderMode, nUserFolderMode)) {
 	if (bInit)
@@ -586,13 +586,13 @@ sprintf (gameOpts->menus.altBg.szName [1], "default.tga");
 
 // ----------------------------------------------------------------------------
 
-void MakeModFolders (const char* pszMission, int nLevel)
+void MakeModFolders (const char* pszMission, int32_t nLevel)
 {
 
-	static int nLoadingScreen = -1;
-	static int nShuffledLevels [24];
+	static int32_t nLoadingScreen = -1;
+	static int32_t nShuffledLevels [24];
 
-int bDefault, bBuiltIn;
+int32_t bDefault, bBuiltIn;
 
 ResetModFolders ();
 if (gameStates.app.bDemoData)
@@ -655,13 +655,13 @@ else {
 			// chose a random custom loading screen for missions other than D2:CS that do not have their own custom loading screens
 			if ((bBuiltIn == 2) && (missionManager.IsBuiltIn (hogFileManager.MissionName ()) != 2)) {
 				if (nLoadingScreen < 0) { // create a random offset the first time this function is called and use it later on
-					int i;
+					int32_t i;
 					for (i = 0; i < 24; i++)
 						nShuffledLevels [i] = i + 1;
 					//gameStates.app.SRand ();
 					for (i = 0; i < 23; i++) {
-						int h = 23 - i;
-						int j = h ? rand () % h : 0;
+						int32_t h = 23 - i;
+						int32_t j = h ? rand () % h : 0;
 						Swap (nShuffledLevels [i], nShuffledLevels [i + j]);
 						}
 					}
@@ -684,7 +684,7 @@ else {
 
 // ----------------------------------------------------------------------------
 
-char* LevelFolder (int nLevel)
+char* LevelFolder (int32_t nLevel)
 {
 if (nLevel < 0)
 	sprintf (gameFolders.mods.szLevel, "slevel%02d/", -nLevel);

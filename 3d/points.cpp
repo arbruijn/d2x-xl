@@ -27,7 +27,7 @@ COPYRIGHT 1993-1998PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifdef _WIN32
 inline
 #endif
-int CheckMulDiv (fix *r, fix a, fix b, fix c)
+int32_t CheckMulDiv (fix *r, fix a, fix b, fix c)
 {
 #ifdef _WIN32
 	int64_t	q;
@@ -60,24 +60,24 @@ int CheckMulDiv (fix *r, fix a, fix b, fix c)
 
 //------------------------------------------------------------------------------
 
-inline int ScreenScale (void)
+inline int32_t ScreenScale (void)
 {
 return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? 1 : 2;
 }
 
-inline int ScreenWidth (void)
+inline int32_t ScreenWidth (void)
 {
 return gameData.render.screen.Width () /*/ ScreenScale ()*/;
 }
 
-inline int ScreenHeight (void)
+inline int32_t ScreenHeight (void)
 {
 return gameData.render.screen.Height () /*/ ScreenScale ()*/;
 }
 
 // -----------------------------------------------------------------------------------
 
-ubyte OglProjectPoint (CFloatVector3& p, tScreenPos& s, ubyte flags, ubyte codes)
+uint8_t OglProjectPoint (CFloatVector3& p, tScreenPos& s, uint8_t flags, uint8_t codes)
 {
 if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
 	return flags;
@@ -104,7 +104,7 @@ return flags | PF_PROJECTED;
 // -----------------------------------------------------------------------------------
 //projects a point
 
-ubyte ProjectPoint (CFloatVector3& p, tScreenPos& s, ubyte flags, ubyte codes)
+uint8_t ProjectPoint (CFloatVector3& p, tScreenPos& s, uint8_t flags, uint8_t codes)
 {
 if ((flags & PF_PROJECTED) || (codes & CC_BEHIND))
 	return flags;
@@ -117,7 +117,7 @@ return flags | PF_PROJECTED;
 
 // -----------------------------------------------------------------------------------
 
-ubyte ProjectPoint (CFixVector& v, tScreenPos& s, ubyte flags, ubyte codes)
+uint8_t ProjectPoint (CFixVector& v, tScreenPos& s, uint8_t flags, uint8_t codes)
 {
 CFloatVector3 h;
 h.Assign (v);
@@ -128,7 +128,7 @@ return ProjectPoint (h, s, flags);
 // -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------
 
-void CRenderPoint::Transform (int nVertex) 
+void CRenderPoint::Transform (int32_t nVertex) 
 {
 if (nVertex >= 0)
 	m_vertex [0] = VERTICES [nVertex];
@@ -137,7 +137,7 @@ transformation.Transform (m_vertex [1], m_vertex [0]);
 
 // -----------------------------------------------------------------------------------
 
-ubyte CRenderPoint::Project (CTransformation& transformation, CFloatVector3& viewPos)
+uint8_t CRenderPoint::Project (CTransformation& transformation, CFloatVector3& viewPos)
 {
 if ((m_flags & PF_PROJECTED) || (m_codes & CC_BEHIND))
 	return m_flags;
@@ -165,7 +165,7 @@ m_flags = Project (transformation, viewPosf);
 
 // -----------------------------------------------------------------------------------
 
-ubyte CRenderPoint::ProjectAndEncode (CTransformation& transformation, int nVertex)
+uint8_t CRenderPoint::ProjectAndEncode (CTransformation& transformation, int32_t nVertex)
 {
 #if DBG
 if (nVertex == nDbgVertex)
@@ -196,7 +196,7 @@ return Codes ();
 
 // -----------------------------------------------------------------------------------
 
-ubyte CRenderPoint::Encode (void) 
+uint8_t CRenderPoint::Encode (void) 
 {
 if (!Projected ())
 	m_codes = transformation.Codes (m_vertex [1]); 
@@ -215,7 +215,7 @@ return m_codes;
 
 // -----------------------------------------------------------------------------------
 
-ubyte CRenderPoint::Add (CRenderPoint& src, CFixVector& vDelta)
+uint8_t CRenderPoint::Add (CRenderPoint& src, CFixVector& vDelta)
 {
 ViewPos () = src.ViewPos () + vDelta;
 m_flags = 0;		//not projected

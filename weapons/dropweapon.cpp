@@ -34,9 +34,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //this function is for when the player intentionally drops a powerup
 //this function is based on DropPowerup()
-int SpitPowerup (CObject *spitterP, ubyte id, int seed)
+int32_t SpitPowerup (CObject *spitterP, uint8_t id, int32_t seed)
 {
-	short			nObject;
+	int16_t			nObject;
 	CObject		*objP;
 	CFixVector	newVelocity, newPos;
 	tObjTransformation	*posP = OBJPOS (spitterP);
@@ -57,7 +57,7 @@ if (IsMultiGame && (id >= POW_KEY_BLUE) && (id <= POW_KEY_GOLD))
 newPos = posP->vPos + posP->mOrient.m.dir.f * spitterP->info.xSize;
 if (IsMultiGame && (gameData.multigame.create.nCount >= MAX_NET_CREATE_OBJECTS))
 	return -1;
-nObject = CreatePowerup (id, short (GetTeam (N_LOCALPLAYER) + 1), short (OBJSEG (spitterP)), newPos, 0);
+nObject = CreatePowerup (id, int16_t (GetTeam (N_LOCALPLAYER) + 1), int16_t (OBJSEG (spitterP)), newPos, 0);
 if (nObject < 0) {
 	Int3();
 	return nObject;
@@ -92,7 +92,7 @@ return nObject;
 
 //	-----------------------------------------------------------------------------
 
-static inline int IsBuiltInDevice (int nDeviceFlag)
+static inline int32_t IsBuiltInDevice (int32_t nDeviceFlag)
 {
 return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMultiGame].loadout.nDevice & nDeviceFlag) != 0);
 }
@@ -101,7 +101,7 @@ return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMul
 
 void DropCurrentWeapon (void)
 {
-	int	nObject = -1,
+	int32_t	nObject = -1,
 			ammo = 0;
 
 if (IsMultiGame)
@@ -177,7 +177,7 @@ if (gameData.weapons.nPrimary) //if selected weapon was not the laser
 
 extern void DropOrb (void);
 
-void DropSecondaryWeapon (int nWeapon, int nAmount, int bSilent)
+void DropSecondaryWeapon (int32_t nWeapon, int32_t nAmount, int32_t bSilent)
 {
 if (nWeapon < 0)
 	nWeapon = gameData.weapons.nSecondary;
@@ -188,9 +188,9 @@ if ((LOCALPLAYER.secondaryAmmo [nWeapon] == 0) ||
 	return;
 	}
 
-int nPowerup = secondaryWeaponToPowerup [0][nWeapon];
-int bHoardEntropy = (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) != 0;
-int bMine = (nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE);
+int32_t nPowerup = secondaryWeaponToPowerup [0][nWeapon];
+int32_t bHoardEntropy = (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)) != 0;
+int32_t bMine = (nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE);
 
 if (!bHoardEntropy && bMine && LOCALPLAYER.secondaryAmmo [nWeapon] < 4) {
 	HUDInitMessage(TXT_DROP_NEED4);
@@ -201,7 +201,7 @@ if (bHoardEntropy) {
 	return;
 	}
 
-int nItems = nAmount;
+int32_t nItems = nAmount;
 if (bMine)
 	LOCALPLAYER.secondaryAmmo [nWeapon] -= 4;
 else {
@@ -212,8 +212,8 @@ else {
 		}
 	}
 
-for (int i = 0; i < nItems; i++) {
-	int nObject = SpitPowerup (gameData.objs.consoleP, nPowerup);
+for (int32_t i = 0; i < nItems; i++) {
+	int32_t nObject = SpitPowerup (gameData.objs.consoleP, nPowerup);
 	if (nObject == -1) { // can't put any more objects in the mine
 		if (bMine)
 			LOCALPLAYER.secondaryAmmo [nWeapon] += 4;

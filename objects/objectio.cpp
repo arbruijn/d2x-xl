@@ -108,7 +108,7 @@ switch (info.movementType) {
 		PrintLog (0, "Object #%d (type=%d, id=%d), has invalid movement type %d", OBJ_IDX (this), info.nType, info.nId, info.movementType);
 	}
 
-int i;
+int32_t i;
 
 switch (info.controlType) {
 	case CT_AI: 
@@ -192,10 +192,10 @@ switch (info.renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		rType.polyObjInfo.nModel = cf.ReadInt ();
-		for (int i = 0; i <MAX_SUBMODELS; i++)
+		for (int32_t i = 0; i <MAX_SUBMODELS; i++)
 			cf.ReadAngVec(rType.polyObjInfo.animAngles [i]);
 		rType.polyObjInfo.nSubObjFlags = cf.ReadInt ();
-		int tmo = cf.ReadInt ();
+		int32_t tmo = cf.ReadInt ();
 		rType.polyObjInfo.nTexOverride = tmo;
 		rType.polyObjInfo.nAltTextures = 0;
 		break;
@@ -283,7 +283,7 @@ switch (info.renderType) {
 		cf.Read (rType.soundInfo.szFilename, 1, sizeof (rType.soundInfo.szFilename));
 		rType.soundInfo.szFilename [sizeof (rType.soundInfo.szFilename) - 1] = '\0';
 		strlwr (rType.soundInfo.szFilename);
-		rType.soundInfo.nVolume = (int) FRound (float (cf.ReadInt ()) * float (I2X (1)) / 10.0f);
+		rType.soundInfo.nVolume = (int32_t) FRound (float (cf.ReadInt ()) * float (I2X (1)) / 10.0f);
 		if (gameData.segs.nLevelVersion < 19)
 			rType.soundInfo.bEnabled = 1;
 		else
@@ -308,14 +308,14 @@ m_nAttackRobots = -1;
 void CObject::LoadState (CFile& cf)
 {
 info.nSignature = cf.ReadInt ();      
-info.nType = (ubyte) cf.ReadByte (); 
-info.nId = (ubyte) cf.ReadByte ();
+info.nType = (uint8_t) cf.ReadByte (); 
+info.nId = (uint8_t) cf.ReadByte ();
 info.nNextInSeg = cf.ReadShort ();
 info.nPrevInSeg = cf.ReadShort ();
-info.controlType = (ubyte) cf.ReadByte ();
-info.movementType = (ubyte) cf.ReadByte ();
-info.renderType = (ubyte) cf.ReadByte ();
-info.nFlags = (ubyte) cf.ReadByte ();
+info.controlType = (uint8_t) cf.ReadByte ();
+info.movementType = (uint8_t) cf.ReadByte ();
+info.renderType = (uint8_t) cf.ReadByte ();
+info.nFlags = (uint8_t) cf.ReadByte ();
 info.nSegment = cf.ReadShort ();
 info.nAttachedObj = cf.ReadShort ();
 cf.ReadVector (info.position.vPos);     
@@ -345,7 +345,7 @@ if (info.movementType == MT_PHYSICS) {
 	cf.ReadVector (mType.physInfo.rotVel);     
 	cf.ReadVector (mType.physInfo.rotThrust);  
 	mType.physInfo.turnRoll = cf.ReadFixAng ();   
-	mType.physInfo.flags = (ushort) cf.ReadShort ();      
+	mType.physInfo.flags = (uint16_t) cf.ReadShort ();      
 	}
 else if (info.movementType == MT_SPINNING) {
 	cf.ReadVector (mType.spinRate);  
@@ -378,7 +378,7 @@ switch (info.controlType) {
 		break;
 
 	case CT_AI:
-		cType.aiInfo.behavior = (ubyte) cf.ReadByte ();
+		cType.aiInfo.behavior = (uint8_t) cf.ReadByte ();
 		cf.Read (cType.aiInfo.flags, 1, MAX_AI_FLAGS);
 		cType.aiInfo.nHideSegment = cf.ReadShort ();
 		cType.aiInfo.nHideIndex = cf.ReadShort ();
@@ -404,7 +404,7 @@ switch (info.renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		rType.polyObjInfo.nModel = cf.ReadInt ();
-		for (int i = 0; i < MAX_SUBMODELS; i++)
+		for (int32_t i = 0; i < MAX_SUBMODELS; i++)
 			cf.ReadAngVec (rType.polyObjInfo.animAngles [i]);
 		rType.polyObjInfo.nSubObjFlags = cf.ReadInt ();
 		rType.polyObjInfo.nTexOverride = cf.ReadInt ();
@@ -456,14 +456,14 @@ else {
 void CObject::SaveState (CFile& cf)
 {
 cf.WriteInt (info.nSignature);      
-cf.WriteByte ((sbyte) info.nType); 
-cf.WriteByte ((sbyte) info.nId);
+cf.WriteByte ((int8_t) info.nType); 
+cf.WriteByte ((int8_t) info.nId);
 cf.WriteShort (info.nNextInSeg);
 cf.WriteShort (info.nPrevInSeg);
-cf.WriteByte ((sbyte) info.controlType);
-cf.WriteByte ((sbyte) info.movementType);
-cf.WriteByte ((sbyte) info.renderType);
-cf.WriteByte ((sbyte) info.nFlags);
+cf.WriteByte ((int8_t) info.controlType);
+cf.WriteByte ((int8_t) info.movementType);
+cf.WriteByte ((int8_t) info.renderType);
+cf.WriteByte ((int8_t) info.nFlags);
 cf.WriteShort (info.nSegment);
 cf.WriteShort (info.nAttachedObj);
 cf.WriteVector (OBJPOS (this)->vPos);     
@@ -487,7 +487,7 @@ if (info.movementType == MT_PHYSICS) {
 	cf.WriteVector (mType.physInfo.rotVel);     
 	cf.WriteVector (mType.physInfo.rotThrust);  
 	cf.WriteFixAng (mType.physInfo.turnRoll);   
-	cf.WriteShort ((short) mType.physInfo.flags);      
+	cf.WriteShort ((int16_t) mType.physInfo.flags);      
 	}
 else if (info.movementType == MT_SPINNING) {
 	cf.WriteVector(mType.spinRate);  
@@ -516,7 +516,7 @@ switch (info.controlType) {
 		break;
 
 	case CT_AI:
-		cf.WriteByte ((sbyte) cType.aiInfo.behavior);
+		cf.WriteByte ((int8_t) cType.aiInfo.behavior);
 		cf.Write (cType.aiInfo.flags, 1, MAX_AI_FLAGS);
 		cf.WriteShort (cType.aiInfo.nHideSegment);
 		cf.WriteShort (cType.aiInfo.nHideIndex);
@@ -541,7 +541,7 @@ switch (info.controlType) {
 switch (info.renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
-		int i;
+		int32_t i;
 		cf.WriteInt (rType.polyObjInfo.nModel);
 		for (i = 0; i < MAX_SUBMODELS; i++)
 			cf.WriteAngVec (rType.polyObjInfo.animAngles [i]);

@@ -65,14 +65,14 @@ void LoadFaceBitmaps (CSegment *segP, CSegFace *faceP);
 //------------------------------------------------------------------------------
 
 typedef struct tMeshDataHeader {
-	int	nVersion;
-	int	nCheckSum;
-	int	nSegments;
-	int	nVertices;
-	int	nFaceVerts;
-	int	nFaces;
-	int	nTris;
-	int	bCompressed;
+	int32_t	nVersion;
+	int32_t	nCheckSum;
+	int32_t	nSegments;
+	int32_t	nVertices;
+	int32_t	nFaceVerts;
+	int32_t	nFaces;
+	int32_t	nTris;
+	int32_t	bCompressed;
 	} tMeshHeaderData;
 
 //------------------------------------------------------------------------------
@@ -91,7 +91,7 @@ m_edges.Destroy ();
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::AllocData (void)
+int32_t CTriMeshBuilder::AllocData (void)
 {
 if (m_nMaxTriangles && m_nMaxEdges) {
 	if (!(m_edges.Resize (m_nMaxEdges * 2) && m_triangles.Resize (m_nMaxTriangles * 2))) {
@@ -124,7 +124,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-tEdge *CTriMeshBuilder::FindEdge (ushort nVert1, ushort nVert2, int i)
+tEdge *CTriMeshBuilder::FindEdge (uint16_t nVert1, uint16_t nVert2, int32_t i)
 {
 	tEdge	*edgeP = &m_edges [++i];
 
@@ -136,10 +136,10 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::AddEdge (int nTri, ushort nVert1, ushort nVert2)
+int32_t CTriMeshBuilder::AddEdge (int32_t nTri, uint16_t nVert1, uint16_t nVert2)
 {
 if (nVert2 < nVert1) {
-	ushort h = nVert1;
+	uint16_t h = nVert1;
 	nVert1 = nVert2;
 	nVert2 = h;
 	}
@@ -148,10 +148,10 @@ if ((nTri < 0) || (nTri >= m_nTriangles))
 	return -1;
 #endif
 tEdge *edgeP;
-for (int i = -1;;) {
+for (int32_t i = -1;;) {
 	if (!(edgeP = FindEdge (nVert1, nVert2, i)))
 		break;
-	i = int (edgeP - &m_edges [0]);
+	i = int32_t (edgeP - &m_edges [0]);
 	if (edgeP->tris [0] < 0) {
 		edgeP->tris [0] = nTri;
 		return i;
@@ -180,9 +180,9 @@ return m_edges.Index (edgeP);
 
 //------------------------------------------------------------------------------
 
-tTriangle *CTriMeshBuilder::CreateTriangle (tTriangle *triP, ushort index [], int nFace, int nIndex)
+tTriangle *CTriMeshBuilder::CreateTriangle (tTriangle *triP, uint16_t index [], int32_t nFace, int32_t nIndex)
 {
-	int	h, i;
+	int32_t	h, i;
 
 if (triP)
 	triP->nIndex = nIndex;
@@ -212,7 +212,7 @@ return triP;
 
 //------------------------------------------------------------------------------
 
-tTriangle *CTriMeshBuilder::AddTriangle (tTriangle *triP, ushort index [], tFaceTriangle *grsTriP)
+tTriangle *CTriMeshBuilder::AddTriangle (tTriangle *triP, uint16_t index [], tFaceTriangle *grsTriP)
 {
 return CreateTriangle (triP, index, grsTriP->nFace, grsTriP - TRIANGLES);
 }
@@ -226,7 +226,7 @@ edgeP->nNext = m_nFreeEdges;
 m_nFreeEdges = m_edges.Index (edgeP);
 #else
 	tTriangle	*triP;
-	int		h = edgeP - m_edges, i, j;
+	int32_t		h = edgeP - m_edges, i, j;
 
 if (h < --m_nEdges) {
 	*edgeP = m_edges [m_nEdges];
@@ -247,7 +247,7 @@ if (h < --m_nEdges) {
 void CTriMeshBuilder::DeleteTriangle (tTriangle *triP)
 {
 	tEdge	*edgeP;
-	int	i, nTri = m_triangles.Index (triP);
+	int32_t	i, nTri = m_triangles.Index (triP);
 
 for (i = 0; i < 3; i++) {
 	edgeP = &m_edges [triP->lines [i]];
@@ -261,7 +261,7 @@ for (i = 0; i < 3; i++) {
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::CreateTriangles (void)
+int32_t CTriMeshBuilder::CreateTriangles (void)
 {
 PrintLog (1, "adding existing triangles\n");
 m_nEdges = 0;
@@ -278,8 +278,8 @@ if (!AllocData ()) {
 CSegFace *faceP;
 tFaceTriangle *grsTriP;
 tTriangle *triP;
-int i, nFace = -1;
-short nId = 0;
+int32_t i, nFace = -1;
+int16_t nId = 0;
 
 #if 0
 if (gameStates.render.nMeshQuality) {
@@ -315,7 +315,7 @@ return m_nTris = m_nTriangles;
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::SplitTriangleByEdge (int nTri, ushort nVert1, ushort nVert2, short nPass)
+int32_t CTriMeshBuilder::SplitTriangleByEdge (int32_t nTri, uint16_t nVert1, uint16_t nVert2, int16_t nPass)
 {
 if (nTri < 0)
 	return 1;
@@ -332,8 +332,8 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 	BRP;
 #endif
 
-	int			h, i, nIndex = triP->nIndex;
-	ushort		nFace = triP->nFace, *indexP = triP->index, index [4];
+	int32_t			h, i, nIndex = triP->nIndex;
+	uint16_t		nFace = triP->nFace, *indexP = triP->index, index [4];
 	tTexCoord2f	texCoord [4], ovlTexCoord [4];
 	CFloatVector	color [4];
 
@@ -400,10 +400,10 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-float CTriMeshBuilder::NewEdgeLen (int nTri, int nVert1, int nVert2)
+float CTriMeshBuilder::NewEdgeLen (int32_t nTri, int32_t nVert1, int32_t nVert2)
 {
 	tTriangle	*triP = &m_triangles [nTri];
-	int			h, i;
+	int32_t			h, i;
 
 for (i = 0; i < 3; i++) {
 	h = triP->index [i];
@@ -415,14 +415,14 @@ return CFloatVector::Dist(gameData.segs.fVertices [h], gameData.segs.fVertices [
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::SplitEdge (CSegFace* faceP, tEdge *edgeP, short nPass)
+int32_t CTriMeshBuilder::SplitEdge (CSegFace* faceP, tEdge *edgeP, int16_t nPass)
 {
-	int		tris [2];
-	ushort	verts [2];
+	int32_t		tris [2];
+	uint16_t	verts [2];
 
 memcpy (tris, edgeP->tris, sizeof (tris));
 memcpy (verts, edgeP->verts, sizeof (verts));
-int i = gameData.segs.fVertices.Length ();
+int32_t i = gameData.segs.fVertices.Length ();
 if (gameData.segs.nVertices >= i) {
 	i *= 2;
 	if (!(gameData.segs.fVertices.Resize (i) && gameData.segs.vertices.Resize (i) && gameData.segs.vertexOwners.Resize (i) && gameData.render.mine.Resize (i)))
@@ -448,9 +448,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::SplitTriangle (CSegFace* faceP, tTriangle *triP, short nPass)
+int32_t CTriMeshBuilder::SplitTriangle (CSegFace* faceP, tTriangle *triP, int16_t nPass)
 {
-	int	h = 0, i;
+	int32_t	h = 0, i;
 	float	l, lMax = 0;
 
 for (i = 0; i < 3; i++) {
@@ -467,10 +467,10 @@ return SplitEdge (faceP, &m_edges [triP->lines [h]], nPass);
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::SplitTriangles (void)
+int32_t CTriMeshBuilder::SplitTriangles (void)
 {
-	int	bSplit = 0, h, i, j, nSplitRes;
-	short	nPass = 0, nMaxPasses = 10 * m_nQuality;
+	int32_t	bSplit = 0, h, i, j, nSplitRes;
+	int16_t	nPass = 0, nMaxPasses = 10 * m_nQuality;
 
 h = 0;
 do {
@@ -514,12 +514,12 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void CTriMeshBuilder::QSortTriangles (int left, int right)
+void CTriMeshBuilder::QSortTriangles (int32_t left, int32_t right)
 {
-	int	l = left,
+	int32_t	l = left,
 			r = right,
 			m = m_triangles [(l + r) / 2].nFace;
-	short i = m_triangles [(l + r) / 2].nId;
+	int16_t i = m_triangles [(l + r) / 2].nId;
 
 do {
 	while ((m_triangles [l].nFace < m) || ((m_triangles [l].nFace == m) && (m_triangles [l].nId < i)))
@@ -545,7 +545,7 @@ void CTriMeshBuilder::SetupVertexNormals (void)
 {
 	tFaceTriangle*	triP;
 	CRenderPoint*	pointP = RENDERPOINTS.Buffer ();
-	int				h, i, nVertex;
+	int32_t				h, i, nVertex;
 
 for (i = gameData.segs.nVertices; i; i--, pointP++) {
 /*
@@ -570,13 +570,13 @@ ComputeVertexNormals ();
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::InsertTriangles (void)
+int32_t CTriMeshBuilder::InsertTriangles (void)
 {
 	tTriangle*		triP = &m_triangles [0];
 	tFaceTriangle*	grsTriP = TRIANGLES.Buffer ();
 	CSegFace*		m_faceP = NULL;
 	CFixVector		vNormal;
-	int				h, i, nFace = -1;
+	int32_t				h, i, nFace = -1;
 	GLuint			nIndex = 0;
 
 PrintLog (1, "inserting new triangles\n");
@@ -638,9 +638,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void CTriMeshBuilder::SortFaceVertList (ushort *vertList, int left, int right)
+void CTriMeshBuilder::SortFaceVertList (uint16_t *vertList, int32_t left, int32_t right)
 {
-	int	l = left,
+	int32_t	l = left,
 			r = right,
 			m = vertList [(l + r) / 2];
 
@@ -651,7 +651,7 @@ do {
 		r--;
 	if (l <= r) {
 		if (l < r) {
-			int h = vertList [l];
+			int32_t h = vertList [l];
 			vertList [l] = vertList [r];
 			vertList [r] = h;
 			}
@@ -669,10 +669,10 @@ if (left < r)
 
 void CTriMeshBuilder::CreateSegFaceList (void)
 {
-	int			h = 0;
+	int32_t			h = 0;
 	tSegFaces*	segFaceP = SEGFACES.Buffer ();
 
-for (int i = gameData.segs.nSegments; i; i--, segFaceP++) {
+for (int32_t i = gameData.segs.nSegments; i; i--, segFaceP++) {
 	segFaceP->faceP = &FACES.faces [h];
 	h += segFaceP->nFaces;
 	}
@@ -682,10 +682,10 @@ for (int i = gameData.segs.nSegments; i; i--, segFaceP++) {
 
 void CTriMeshBuilder::CreateFaceVertLists (void)
 {
-	int*				bTags = new int [gameData.segs.nVertices];
+	int32_t*				bTags = new int32_t [gameData.segs.nVertices];
 	CSegFace*		faceP;
 	tFaceTriangle*	triP;
-	int				h, i, j, k, nFace;
+	int32_t				h, i, j, k, nFace;
 
 //count the vertices of each face
 memset (bTags, 0xFF, gameData.segs.nVertices * sizeof (bTags [0]));
@@ -731,7 +731,7 @@ for (i = FACES.nFaces, faceP = FACES.faces.Buffer (); i; i--, faceP++)
 
 //------------------------------------------------------------------------------
 
-char *CTriMeshBuilder::DataFilename (char *pszFilename, int nLevel)
+char *CTriMeshBuilder::DataFilename (char *pszFilename, int32_t nLevel)
 {
 return GameDataFilename (pszFilename, "mesh", nLevel,
 								 (gameStates.render.bTriangleMesh < 0) ? -1 : m_nQuality);
@@ -739,11 +739,11 @@ return GameDataFilename (pszFilename, "mesh", nLevel,
 
 //------------------------------------------------------------------------------
 
-bool CTriMeshBuilder::Load (int nLevel, bool bForce)
+bool CTriMeshBuilder::Load (int32_t nLevel, bool bForce)
 {
 	CFile					cf;
 	tMeshDataHeader	mdh;
-	int					nSize, nExpectedSize;
+	int32_t					nSize, nExpectedSize;
 	bool					bOk;
 	char					szFilename [FILENAME_LEN];
 	char					*ioBuffer = NULL, *bufP;
@@ -760,27 +760,27 @@ if (bOk)
 			(mdh.nSegments == gameData.segs.nSegments) &&
 			(mdh.nFaces == FACES.nFaces);
 
-	uint	nTriVerts = mdh.nTris * 3;
-	int nSizes [] = {
-		int (sizeof (gameData.segs.vertices [0]) * mdh.nVertices),
-		int (sizeof (gameData.segs.fVertices [0]) * mdh.nVertices),
-		-int (sizeof (CSegFaceInfo) * mdh.nFaces),
-		int (sizeof (FACES.tris [0]) * mdh.nTris),
-		int (sizeof (FACES.vertices [0]) * nTriVerts),
-		int (sizeof (FACES.normals [0]) * nTriVerts),
-		int (sizeof (FACES.texCoord [0]) * nTriVerts),
-		int (sizeof (FACES.ovlTexCoord [0]) * nTriVerts),
-		int (sizeof (FACES.color [0]) * nTriVerts),
-		int (sizeof (FACES.lMapTexCoord [0]) * FACES.lMapTexCoord.Length ()),
-		int (sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts),
-		int (sizeof (VERTEX_OWNERS [0]) * mdh.nVertices),
+	uint32_t	nTriVerts = mdh.nTris * 3;
+	int32_t nSizes [] = {
+		int32_t (sizeof (gameData.segs.vertices [0]) * mdh.nVertices),
+		int32_t (sizeof (gameData.segs.fVertices [0]) * mdh.nVertices),
+		-int32_t (sizeof (CSegFaceInfo) * mdh.nFaces),
+		int32_t (sizeof (FACES.tris [0]) * mdh.nTris),
+		int32_t (sizeof (FACES.vertices [0]) * nTriVerts),
+		int32_t (sizeof (FACES.normals [0]) * nTriVerts),
+		int32_t (sizeof (FACES.texCoord [0]) * nTriVerts),
+		int32_t (sizeof (FACES.ovlTexCoord [0]) * nTriVerts),
+		int32_t (sizeof (FACES.color [0]) * nTriVerts),
+		int32_t (sizeof (FACES.lMapTexCoord [0]) * FACES.lMapTexCoord.Length ()),
+		int32_t (sizeof (FACES.faceVerts [0]) * mdh.nFaceVerts),
+		int32_t (sizeof (VERTEX_OWNERS [0]) * mdh.nVertices),
 		0
 		};
 
 
 if (bOk) {
 	nExpectedSize = 0;
-	for (int i = 0; i < (int) sizeofa (nSizes); i++)
+	for (int32_t i = 0; i < (int32_t) sizeofa (nSizes); i++)
 		nExpectedSize += abs (nSizes [i]);
 	}
 if (bOk)
@@ -791,7 +791,7 @@ if (bOk) {
 	else {
 		PrintLog (1, "Mesh builder: reading compressed mesh data\n");
 		nSize = 0;
-		int i;
+		int32_t i;
 		for (i = 0; nSizes [i] > 0; i++) {
 			if (cf.Read (ioBuffer + nSize, nSizes [i], 1, 1) != 1) {
 				PrintLog (0, "Mesh builder: reading mesh element #%d failed\n", i + 1);
@@ -833,7 +833,7 @@ if (bOk) {
 	bufP += nSize;
 	FACES.faces.Create (mdh.nFaces);
 	FACES.faces.Clear ();
-	for (int i = 0; i < mdh.nFaces; i++, bufP += sizeof (CSegFaceInfo))
+	for (int32_t i = 0; i < mdh.nFaces; i++, bufP += sizeof (CSegFaceInfo))
 		memcpy (&FACES.faces [i].m_info, bufP, sizeof (CSegFaceInfo));
 	FACES.tris.Create (mdh.nTris);
 	memcpy (FACES.tris.Buffer (), bufP, nSize = sizeof (FACES.tris [0]) * mdh.nTris);
@@ -882,7 +882,7 @@ return bOk;
 
 //------------------------------------------------------------------------------
 
-bool CTriMeshBuilder::Save (int nLevel)
+bool CTriMeshBuilder::Save (int32_t nLevel)
 {
 	tMeshDataHeader mdh = {MESH_DATA_VERSION,
 								  CalcSegmentCheckSum (),
@@ -897,7 +897,7 @@ bool CTriMeshBuilder::Save (int nLevel)
 	CFile					cf;
 	bool					bOk;
 	char					szFilename [FILENAME_LEN];
-	uint					nTriVerts = uint (mdh.nTris * 3);
+	uint32_t					nTriVerts = uint32_t (mdh.nTris * 3);
 
 if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
 	return 0;
@@ -908,10 +908,10 @@ if (!cf.Open (DataFilename (szFilename, nLevel), gameFolders.var.szMeshes, "wb",
 if (mdh.bCompressed)
 	PrintLog (0, "Mesh builder: writing compressed mesh data (%d)\n", gameStates.app.bCompressData);
 bOk = (cf.Write (&mdh, sizeof (mdh), 1) == 1) &&
-		(gameData.segs.vertices.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint (mdh.nVertices)) &&
-		(gameData.segs.fVertices.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint (mdh.nVertices));
+		(gameData.segs.vertices.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint32_t (mdh.nVertices)) &&
+		(gameData.segs.fVertices.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint32_t (mdh.nVertices));
 if (bOk) {
-	for (int i = 0; i < mdh.nFaces; i++) {
+	for (int32_t i = 0; i < mdh.nFaces; i++) {
 		if (cf.Write (&FACES.faces [i].m_info, sizeof (CSegFaceInfo), 1) != 1) {
 			bOk = false;
 			break;
@@ -919,22 +919,22 @@ if (bOk) {
 		}
 	}
 if (bOk)
-	bOk = (FACES.tris.Write (cf, mdh.nTris, 0, mdh.bCompressed) == uint (mdh.nTris)) &&
+	bOk = (FACES.tris.Write (cf, mdh.nTris, 0, mdh.bCompressed) == uint32_t (mdh.nTris)) &&
 			(FACES.vertices.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
 			(FACES.normals.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
 			(FACES.texCoord.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
 			(FACES.ovlTexCoord.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
 			(FACES.color.Write (cf, nTriVerts, 0, mdh.bCompressed) == nTriVerts) &&
 			(FACES.lMapTexCoord.Write (cf, FACES.lMapTexCoord.Length (), 0, mdh.bCompressed) == FACES.lMapTexCoord.Length ()) &&
-			(FACES.faceVerts.Write (cf, mdh.nFaceVerts, 0, mdh.bCompressed) == uint (mdh.nFaceVerts)) &&
-			(VERTEX_OWNERS.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint (mdh.nVertices));
+			(FACES.faceVerts.Write (cf, mdh.nFaceVerts, 0, mdh.bCompressed) == uint32_t (mdh.nFaceVerts)) &&
+			(VERTEX_OWNERS.Write (cf, mdh.nVertices, 0, mdh.bCompressed) == uint32_t (mdh.nVertices));
 cf.Close ();
 return bOk;
 }
 
 //------------------------------------------------------------------------------
 
-int CTriMeshBuilder::Build (int nLevel, int nQuality)
+int32_t CTriMeshBuilder::Build (int32_t nLevel, int32_t nQuality)
 {
 PrintLog (1, "creating triangle mesh\n");
 m_nQuality = nQuality;
@@ -970,16 +970,16 @@ if (gameStates.app.bReadOnly) {
 	return 1;
 	}
 Save (nLevel);
-int nLoadRes = Load (nLevel, true); //Load will rebuild all face data buffers, reducing their memory footprint
+int32_t nLoadRes = Load (nLevel, true); //Load will rebuild all face data buffers, reducing their memory footprint
 PrintLog (-1);
 return nLoadRes;
 }
 
 //------------------------------------------------------------------------------
 
-int CQuadMeshBuilder::IsBigFace (ushort *sideVerts)
+int32_t CQuadMeshBuilder::IsBigFace (uint16_t *sideVerts)
 {
-for (int i = 0; i < 4; i++)
+for (int32_t i = 0; i < 4; i++)
 	if (CFloatVector::Dist (gameData.segs.fVertices [sideVerts [i]], gameData.segs.fVertices [sideVerts [(i + 1) % 4]]) > MAX_EDGE_LEN (gameStates.render.nMeshQuality))
 		return 1;
 return 0;
@@ -1001,7 +1001,7 @@ return m_normalP;
 
 //------------------------------------------------------------------------------
 
-void CQuadMeshBuilder::InitFace (short nSegment, ubyte nSide, bool bRebuild)
+void CQuadMeshBuilder::InitFace (int16_t nSegment, uint8_t nSide, bool bRebuild)
 {
 if (bRebuild)
 	m_faceP->m_info.nTris = 0;
@@ -1019,7 +1019,7 @@ m_faceP->m_info.nType = gameStates.render.bTriangleMesh ? m_sideP->m_nType : -1;
 m_faceP->m_info.nSegment = nSegment;
 m_faceP->m_info.nSide = nSide;
 m_faceP->m_info.nTriangles = sideP->FaceCount ();
-m_faceP->m_info.nWall = gameStates.app.bD2XLevel ? m_nWall : IS_WALL (m_nWall) ? m_nWall : (ushort) -1;
+m_faceP->m_info.nWall = gameStates.app.bD2XLevel ? m_nWall : IS_WALL (m_nWall) ? m_nWall : (uint16_t) -1;
 m_faceP->m_info.bAnimation = IsAnimatedTexture (m_faceP->m_info.nBaseTex) || IsAnimatedTexture (m_faceP->m_info.nOvlTex);
 m_faceP->m_info.bHasColor = 0;
 m_faceP->m_info.fRads [0] = X2F (sideP->m_rads [0]); //(float) sqrt ((rMinf * rMinf + rMaxf * rMaxf) / 2);
@@ -1038,10 +1038,10 @@ if ((m_faceP->m_info.nOvlTex = m_sideP->m_nOvlTex))
 m_faceP->m_info.bSlide = (gameData.pig.tex.tMapInfoP [m_faceP->m_info.nBaseTex].slide_u || gameData.pig.tex.tMapInfoP [m_faceP->m_info.nBaseTex].slide_v);
 m_faceP->m_info.nCamera = IsMonitorFace (m_faceP->m_info.nSegment, m_faceP->m_info.nSide, 1);
 m_faceP->m_info.bIsLight = IsLight (m_faceP->m_info.nBaseTex) || (m_faceP->m_info.nOvlTex && IsLight (m_faceP->m_info.nOvlTex));
-m_faceP->m_info.nOvlOrient = (ubyte) m_sideP->m_nOvlOrient;
+m_faceP->m_info.nOvlOrient = (uint8_t) m_sideP->m_nOvlOrient;
 m_faceP->m_info.bTextured = 1;
 m_faceP->m_info.bTransparent = 0;
-int nTexture = m_faceP->m_info.nOvlTex ? m_faceP->m_info.nOvlTex : m_faceP->m_info.nBaseTex;
+int32_t nTexture = m_faceP->m_info.nOvlTex ? m_faceP->m_info.nOvlTex : m_faceP->m_info.nBaseTex;
 char *pszName = (nTexture < MAX_WALL_TEXTURES)
 					 ? gameData.pig.tex.bitmapFiles [gameStates.app.bD1Mission][gameData.pig.tex.bmIndexP [nTexture].index].name
 					 : szEmpty;
@@ -1059,7 +1059,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void CQuadMeshBuilder::InitColoredFace (short nSegment)
+void CQuadMeshBuilder::InitColoredFace (int16_t nSegment)
 {
 m_faceP->m_info.nBaseTex = -1;
 m_faceP->m_info.bTransparent = 1;
@@ -1088,7 +1088,7 @@ void CQuadMeshBuilder::SetupLMapTexCoord (tTexCoord2f *texCoordP)
 if ((m_faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_faceP->m_info.nSide == nDbgSide)))
 	BRP;
 #endif
-int i = m_faceP->m_info.nLightmap % LIGHTMAP_BUFSIZE;
+int32_t i = m_faceP->m_info.nLightmap % LIGHTMAP_BUFSIZE;
 float x = (float) (i % LIGHTMAP_ROWSIZE);
 float y = (float) (i / LIGHTMAP_ROWSIZE);
 float step = 1.0f / (float) LIGHTMAP_ROWSIZE;
@@ -1111,20 +1111,20 @@ texCoordP [3].v.v = (y + 1) * step - border;
 
 void CQuadMeshBuilder::SetupFace (void)
 {
-	int				i;
+	int32_t				i;
 	CFixVector		vNormal;
 	CFloatVector3	vNormalf;
 
 vNormal = m_sideP->m_normals [2];
 vNormalf.Assign (vNormal);
 for (i = 0; i < 4; i++) {
-	ushort h = m_sideVerts [i];
+	uint16_t h = m_sideVerts [i];
 	if (h != 0xffff)
 		*m_vertexP++ = *gameData.segs.fVertices [h].XYZ ();
 	*m_normalP++ = vNormalf;
 	m_texCoordP->v.u = X2F (m_sideP->m_uvls [i].u);
 	m_texCoordP->v.v = X2F (m_sideP->m_uvls [i].v);
-	RotateTexCoord2f (*m_ovlTexCoordP, *m_texCoordP, (ubyte) m_sideP->m_nOvlOrient);
+	RotateTexCoord2f (*m_ovlTexCoordP, *m_texCoordP, (uint8_t) m_sideP->m_nOvlOrient);
 #if DBG
 	if (m_texCoordP > FACES.texCoord.Buffer () + FACES.texCoord.Length ())
 		return;
@@ -1151,10 +1151,10 @@ m_lMapTexCoordP += 4;
 
 void CQuadMeshBuilder::SplitIn1or2Tris (void)
 {
-	static short	n2TriVerts [2][2][3] = {{{0,1,2},{0,2,3}},{{0,1,3},{1,2,3}}};
+	static int16_t	n2TriVerts [2][2][3] = {{{0,1,2},{0,2,3}},{{0,1,3},{1,2,3}}};
 
-	int			h, i, j, k, v, nType;
-	short			*triVertP;
+	int32_t			h, i, j, k, v, nType;
+	int16_t			*triVertP;
 	tTexCoord2f	lMapTexCoord [4];
 
 #if DBG
@@ -1178,7 +1178,7 @@ for (i = 0; i < h; i++, m_triP++) {
 		*m_vertexP++ = *gameData.segs.fVertices [v].XYZ ();
 		m_texCoordP->v.u = X2F (m_sideP->m_uvls [k].u);
 		m_texCoordP->v.v = X2F (m_sideP->m_uvls [k].v);
-		RotateTexCoord2f (*m_ovlTexCoordP, *m_texCoordP, (ubyte) m_sideP->m_nOvlOrient);
+		RotateTexCoord2f (*m_ovlTexCoordP, *m_texCoordP, (uint8_t) m_sideP->m_nOvlOrient);
 		*m_lMapTexCoordP = lMapTexCoord [k];
 		m_texCoordP++;
 		m_ovlTexCoordP++;
@@ -1193,14 +1193,14 @@ for (i = 0; i < h; i++, m_triP++) {
 
 //------------------------------------------------------------------------------
 
-int CQuadMeshBuilder::CompareFaceKeys (const CSegFace** pf, const CSegFace** pm)
+int32_t CQuadMeshBuilder::CompareFaceKeys (const CSegFace** pf, const CSegFace** pm)
 {
 #if 1
-int i = (*pf)->m_info.nKey;
-int m = (*pm)->m_info.nKey;
+int32_t i = (*pf)->m_info.nKey;
+int32_t m = (*pm)->m_info.nKey;
 #else
-short i = (*pf)->m_info.nBaseTex;
-short mat = (*pm)->m_info.nBaseTex;
+int16_t i = (*pf)->m_info.nBaseTex;
+int16_t mat = (*pm)->m_info.nBaseTex;
 if (i < mat) 
 	return -1;
 if (i > mat)
@@ -1222,7 +1222,7 @@ void CQuadMeshBuilder::ComputeFaceKeys (void)
 	CArray<CSegFace*>	keyFaceRef;
 
 keyFaceRef.Create (FACES.nFaces);
-for (int i = 0; i < FACES.nFaces; i++, faceP++) {
+for (int32_t i = 0; i < FACES.nFaces; i++, faceP++) {
 #if DBG
 	if (i == nDbgFace)
 		BRP;
@@ -1231,20 +1231,20 @@ for (int i = 0; i < FACES.nFaces; i++, faceP++) {
 	if (faceP->m_info.nBaseTex < 0)
 		faceP->m_info.nKey = 0x7FFFFFFF;
 	else if (faceP->m_info.nOvlTex <= 0)
-		faceP->m_info.nKey = int (faceP->m_info.nBaseTex);
+		faceP->m_info.nKey = int32_t (faceP->m_info.nBaseTex);
 	else {
 		LoadFaceBitmaps (SEGMENTS + faceP->m_info.nSegment, faceP);
 		if (faceP->bmTop && (faceP->bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT))
-			faceP->m_info.nKey = int (faceP->m_info.nBaseTex) + int (faceP->m_info.nOvlTex) * MAX_WALL_TEXTURES * MAX_WALL_TEXTURES;
+			faceP->m_info.nKey = int32_t (faceP->m_info.nBaseTex) + int32_t (faceP->m_info.nOvlTex) * MAX_WALL_TEXTURES * MAX_WALL_TEXTURES;
 		else
-			faceP->m_info.nKey = int (faceP->m_info.nBaseTex) + int (faceP->m_info.nOvlTex) * MAX_WALL_TEXTURES;
+			faceP->m_info.nKey = int32_t (faceP->m_info.nBaseTex) + int32_t (faceP->m_info.nOvlTex) * MAX_WALL_TEXTURES;
 		}
 	}
 
 CQuickSort<CSegFace*> qs;
 qs.SortAscending (keyFaceRef.Buffer (), 0, FACES.nFaces - 1, reinterpret_cast<CQuickSort<CSegFace*>::comparator> (CQuadMeshBuilder::CompareFaceKeys));
 
-int i, nKey = -1;
+int32_t i, nKey = -1;
 gameData.segs.nFaceKeys = -1;
 
 for (i = 0; i < FACES.nFaces; i++, faceP++) {
@@ -1266,7 +1266,7 @@ void CQuadMeshBuilder::BuildSlidingFaceList (void)
 	CSegFace	*faceP = FACES.faces.Buffer ();
 
 FACES.slidingFaces = NULL;
-for (int i = FACES.nFaces; i; i--, faceP++)
+for (int32_t i = FACES.nFaces; i; i--, faceP++)
 	if (faceP->m_info.bSlide) {
 		faceP->nextSlidingFace = FACES.slidingFaces;
 		FACES.slidingFaces = faceP;
@@ -1277,10 +1277,10 @@ for (int i = FACES.nFaces; i; i--, faceP++)
 
 void CQuadMeshBuilder::RebuildLightmapTexCoord (void)
 {
-	static short	n2TriVerts [2][2][3] = {{{0,1,2},{0,2,3}},{{0,1,3},{1,2,3}}};
+	static int16_t	n2TriVerts [2][2][3] = {{{0,1,2},{0,2,3}},{{0,1,3},{1,2,3}}};
 
-	int			h, i, j, k, nFace;
-	short			*triVertP;
+	int32_t			h, i, j, k, nFace;
+	int16_t			*triVertP;
 	tTexCoord2f	lMapTexCoord [4];
 
 m_faceP = FACES.faces.Buffer ();
@@ -1303,13 +1303,13 @@ for (nFace = FACES.nFaces; nFace; nFace--, m_faceP++) {
 
 void CQuadMeshBuilder::SplitIn4Tris (void)
 {
-	static short	n4TriVerts [4][3] = {{0,1,4},{1,2,4},{2,3,4},{3,0,4}};
+	static int16_t	n4TriVerts [4][3] = {{0,1,4},{1,2,4},{2,3,4},{3,0,4}};
 
 	CFloatVector	vSide [4];
 	CFloatVector		color;
 	tTexCoord2f		texCoord;
-	short*			triVertP;
-	int				h, i, j, k, v;
+	int16_t*			triVertP;
+	int32_t				h, i, j, k, v;
 
 texCoord.v.u = texCoord.v.v = 0;
 color.Red () = color.Green () = color.Blue () = color.Alpha () = 0;
@@ -1353,7 +1353,7 @@ for (i = 0; i < 4; i++, m_triP++) {
 			m_colorP = gameData.render.color.ambient + v;
 			m_faceColorP [j] = *m_colorP;
 			}
-		RotateTexCoord2f (*m_ovlTexCoordP, m_texCoordP [j], (ubyte) m_sideP->m_nOvlOrient);
+		RotateTexCoord2f (*m_ovlTexCoordP, m_texCoordP [j], (uint8_t) m_sideP->m_nOvlOrient);
 		m_ovlTexCoordP++;
 		}
 	m_normalP = SetTriNormals (m_triP, m_normalP);
@@ -1370,7 +1370,7 @@ bool CQuadMeshBuilder::BuildVBOs (void)
 if (!ogl.m_features.bVertexBufferObjects)
 	return false;
 DestroyVBOs ();
-int h, i;
+int32_t h, i;
 glGenBuffersARB (1, &FACES.vboDataHandle);
 if ((i = glGetError ())) {
 	glGenBuffersARB (1, &FACES.vboDataHandle);
@@ -1392,18 +1392,18 @@ if ((i = glGetError ())) {
 	}
 FACES.nVertices = gameStates.render.bTriangleMesh ? FACES.nTriangles * 3 : FACES.nFaces * 4;
 glBufferDataARB (GL_ARRAY_BUFFER, FACES.nVertices * sizeof (tFaceRenderVertex), NULL, GL_STATIC_DRAW_ARB));
-FACES.vertexP = reinterpret_cast<ubyte*> (glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB));
+FACES.vertexP = reinterpret_cast<uint8_t*> (glMapBufferARB (GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB));
 FACES.vboIndexHandle = 0;
 glGenBuffersARB (1, &FACES.vboIndexHandle);
 if (FACES.vboIndexHandle) {
 	glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, FACES.vboIndexHandle);
-	glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, FACES.nVertices * sizeof (ushort), NULL, GL_STATIC_DRAW_ARB);
-	FACES.indexP = reinterpret_cast<ushort*> (glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB);
+	glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, FACES.nVertices * sizeof (uint16_t), NULL, GL_STATIC_DRAW_ARB);
+	FACES.indexP = reinterpret_cast<uint16_t*> (glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB);
 	}
 else
 	FACES.indexP = NULL;
 
-ubyte *vertexP = FACES.vertexP;
+uint8_t *vertexP = FACES.vertexP;
 i = 0;
 FACES.iVertices = 0;
 memcpy (vertexP, FACES.vertices, h = FACES.nVertices * sizeof (FACES.vertices [0]));
@@ -1422,7 +1422,7 @@ memcpy (vertexP + i, FACES.ovlTexCoord, h = FACES.nVertices * sizeof (FACES.ovlT
 i += h;
 FACES.iLMapTexCoord = i;
 memcpy (vertexP + i, FACES.lMapTexCoord, h = FACES.nVertices * sizeof (FACES.lMapTexCoord [0]));
-for (int i = 0; i < FACES.nVertices; i++)
+for (int32_t i = 0; i < FACES.nVertices; i++)
 	FACES.indexP [i] = i;
 
 glUnmapBufferARB (GL_ARRAY_BUFFER_ARB);
@@ -1455,10 +1455,10 @@ if (FACES.vboIndexHandle) {
 
 #define FACE_VERTS	6
 
-int CQuadMeshBuilder::Build (int nLevel, bool bRebuild)
+int32_t CQuadMeshBuilder::Build (int32_t nLevel, bool bRebuild)
 {
-	short			nSegment, i;
-	ubyte			nSide;
+	int16_t			nSegment, i;
+	uint8_t			nSide;
 
 #if !DBG
 if (gameStates.render.nMeshQuality > 3)
@@ -1562,7 +1562,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 			if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				BRP;
 #endif
-			memcpy (m_sideVerts, m_segP->Corners (nSide), 4 * sizeof (ushort));
+			memcpy (m_sideVerts, m_segP->Corners (nSide), 4 * sizeof (uint16_t));
 			InitFace (nSegment, nSide, bRebuild);
 			if ((bColoredSeg || bColoredChild) && 
 				 !(m_segP->IsWater (nSide) && (m_segP->HasWaterProp () || (childSegP && childSegP->HasWaterProp ()))) && 

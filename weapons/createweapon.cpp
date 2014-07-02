@@ -46,9 +46,9 @@ void NDRecordGuidedStart (void);
 
 //---------------------------------------------------------------------------------
 //creates a weapon CObject
-int CreateWeaponObject (ubyte nWeaponType, short nSegment, CFixVector *vPosition, short nParent)
+int32_t CreateWeaponObject (uint8_t nWeaponType, int16_t nSegment, CFixVector *vPosition, int16_t nParent)
 {
-	int		nObject;
+	int32_t		nObject;
 	CObject	*objP;
 
 switch (gameData.weapons.info [nWeaponType].renderType) {
@@ -96,9 +96,9 @@ return nObject;
 
 // Initializes a laser after Fire is pressed
 //	Returns CObject number.
-int CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, short nSegment, short nParent, ubyte nWeaponType, int bMakeSound)
+int32_t CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, int16_t nSegment, int16_t nParent, uint8_t nWeaponType, int32_t bMakeSound)
 {
-	int			nObject, nViewer, bBigMsl;
+	int32_t			nObject, nViewer, bBigMsl;
 	CObject		*objP, *parentP = (nParent < 0) ? NULL : OBJECTS + nParent;
 	CWeaponInfo	*weaponInfoP;
 	fix			xParentSpeed, xWeaponSpeed;
@@ -106,8 +106,8 @@ int CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, short nSegme
 	fix			xLaserLength = 0;
 	CFixVector	vDir = *vDirection;
 
-	static int	nMslSounds [2] = {SND_ADDON_MISSILE_SMALL, SND_ADDON_MISSILE_BIG};
-	static int	nGatlingSounds [2] = {SND_ADDON_VULCAN, SND_ADDON_GAUSS};
+	static int32_t	nMslSounds [2] = {SND_ADDON_MISSILE_SMALL, SND_ADDON_MISSILE_BIG};
+	static int32_t	nGatlingSounds [2] = {SND_ADDON_VULCAN, SND_ADDON_GAUSS};
 
 	if (RandShort () > parentP->GunDamage ())
 		return -1;
@@ -203,7 +203,7 @@ nViewer = OBJ_IDX (gameData.objs.viewerP);
 weaponInfoP = gameData.weapons.info + nWeaponType;
 if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
-	int bSpectator = SPECTATOR (parentP);
+	int32_t bSpectator = SPECTATOR (parentP);
 	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, bSpectator ? gameStates.app.playerPos.mOrient.m.dir.u : parentP->info.position.mOrient.m.dir.u);
 //	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, bSpectator ? &gameStates.app.playerPos.mOrient.m.v.u : &parentP->info.position.mOrient.m.v.u, NULL);
 	if (((nParent != nViewer) || bSpectator) && (parentP->info.nType != OBJ_WEAPON)) {
@@ -215,7 +215,7 @@ if (nWeaponType == OMEGA_ID) {
 	return nObject;
 	}
 else if (nWeaponType == FUSION_ID) {
-	static int nRotDir = 0;
+	static int32_t nRotDir = 0;
 	nRotDir = !nRotDir;
 	objP->mType.physInfo.rotVel.v.coord.x =
 	objP->mType.physInfo.rotVel.v.coord.y = 0;
@@ -261,12 +261,12 @@ objP->info.xLifeLeft	= WI_lifetime (nWeaponType);
 //	Assign nParent nType to highest level creator.  This propagates nParent nType down from
 //	the original creator through weapons which create children of their own (ie, smart missile)
 if (parentP && (parentP->info.nType == OBJ_WEAPON)) {
-	int		nRoot = nParent;
-	int		count = 0;
+	int32_t		nRoot = nParent;
+	int32_t		count = 0;
 	CObject*	rootP = OBJECTS + nRoot;
 
 	while ((count++ < 10) && (rootP->info.nType == OBJ_WEAPON)) {
-		int nNextParent = rootP->cType.laserInfo.parent.nObject;
+		int32_t nNextParent = rootP->cType.laserInfo.parent.nObject;
 		if (nNextParent < 0)
 			break;
 		if (OBJECTS [nNextParent].info.nSignature != rootP->cType.laserInfo.parent.nSignature)
@@ -294,7 +294,7 @@ if (((nParent != nViewer) || SPECTATOR (parentP)) && (parentP->info.nType != OBJ
 	}
 volume = I2X (1);
 if (bMakeSound && (weaponInfoP->flashSound > -1)) {
-	int bGatling = objP->IsGatlingRound ();
+	int32_t bGatling = objP->IsGatlingRound ();
 	if (nParent != nViewer) {
 		if (bGatling && (parentP->info.nType == OBJ_PLAYER) && (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling)
 			audio.CreateSegmentSound (weaponInfoP->flashSound, objP->info.nSegment, 0, objP->info.position.vPos, 0, volume, I2X (256),
@@ -386,11 +386,11 @@ return nObject;
 
 //	-----------------------------------------------------------------------------------------------------------
 //	Calls CreateNewWeapon, but takes care of the CSegment and point computation for you.
-int CreateNewWeaponSimple (CFixVector* vDirection, CFixVector* vPosition, short parent, ubyte nWeaponType, int bMakeSound)
+int32_t CreateNewWeaponSimple (CFixVector* vDirection, CFixVector* vPosition, int16_t parent, uint8_t nWeaponType, int32_t bMakeSound)
 {
 	CHitResult	hitResult;
 	CObject*		parentObjP = OBJECTS + parent;
-	int			fate;
+	int32_t			fate;
 
 	//	Find segment containing laser fire position.  If the robot is straddling a segment, the position from
 	//	which it fires may be in a different segment, which is bad news for FindHitpoint.  So, cast
@@ -419,7 +419,7 @@ if (!hitResult.nSegment) {
 	}
 #endif
 
-return CreateNewWeapon (vDirection, &hitResult.vPoint, (short) hitResult.nSegment, parent, nWeaponType, bMakeSound);
+return CreateNewWeapon (vDirection, &hitResult.vPoint, (int16_t) hitResult.nSegment, parent, nWeaponType, bMakeSound);
 }
 
 //	-------------------------------------------------------------------------------------------

@@ -108,7 +108,7 @@ if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (Type () == OBJ_P
 	if (!IsMissile ()) 
 		RemovePowerupInMine (Id ());
 	else {
-		int i = FindDropInfo (Signature ());
+		int32_t i = FindDropInfo (Signature ());
 		if (i >= 0)
 			DelDropInfo (i);
 #if DBG
@@ -175,18 +175,18 @@ if (m_bRotate && EGI_FLAG (bRotateMarkers, 0, 1, 0) && gameStates.app.tick40fps.
 
 // -----------------------------------------------------------------------------
 
-int CObject::CheckWallPhysics (void)
+int32_t CObject::CheckWallPhysics (void)
 {
-	int	nType = 0;
-	short nObject = OBJ_IDX (this);
+	int32_t	nType = 0;
+	int16_t nObject = OBJ_IDX (this);
 
 if (info.nType != OBJ_PLAYER)
 	return 0;
 CSegment* segP = SEGMENTS + info.nSegment;
-int sideMask = segP->Masks (info.position.vPos, info.xSize).m_side;
+int32_t sideMask = segP->Masks (info.position.vPos, info.xSize).m_side;
 if (sideMask) {
-	short		nSide;
-	int		bit;
+	int16_t		nSide;
+	int32_t		bit;
 	for (nSide = 0, bit = 1; nSide < SEGMENT_SIDE_COUNT; bit <<= 1, nSide++)
 		if ((sideMask & bit) && (nType = ApplyWallPhysics (info.nSegment, nSide)))
 			break;
@@ -197,10 +197,10 @@ if (!nType)
 // type 2,3: sound caused by ship touching a wall
 // type & 1: lava
 // type & 2: water
-int nSoundObj;
+int32_t nSoundObj;
 
 if (nType) {
-	short nSound;
+	int16_t nSound;
 
 	if (nType == 2)
 		nSound = mType.physInfo.thrust.IsZero () ? 0 : SOUND_SHIP_IN_WATER;
@@ -266,7 +266,7 @@ if ((info.nType == OBJ_PLAYER) && (N_LOCALPLAYER == info.nId)) {
 
 // -----------------------------------------------------------------------------
 
-int CObject::UpdateMovement (void)
+int32_t CObject::UpdateMovement (void)
 {
 switch (info.controlType) {
 	case CT_NONE:
@@ -344,7 +344,7 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-static inline int ShipVolume (int nSpeed)
+static inline int32_t ShipVolume (int32_t nSpeed)
 {
 return I2X (1) / 16 + nSpeed / 512;
 }
@@ -354,11 +354,11 @@ void CObject::UpdateShipSound (void)
 if (!gameOpts->sound.bShip)
 	return;
 
-int nObject = OBJ_IDX (this);
+int32_t nObject = OBJ_IDX (this);
 if (nObject != LOCALPLAYER.nObject)
 	return;
 
-int nSpeed = mType.physInfo.velocity.Mag();
+int32_t nSpeed = mType.physInfo.velocity.Mag();
 #if 0
 nSpeed -= I2X (2);
 if (nSpeed < 0)
@@ -406,10 +406,10 @@ switch (info.movementType) {
 
 // -----------------------------------------------------------------------------
 
-int CObject::CheckTriggerHits (short nPrevSegment)
+int32_t CObject::CheckTriggerHits (int16_t nPrevSegment)
 {
-		short	nConnSide, i;
-		int	nOldLevel;
+		int16_t	nConnSide, i;
+		int32_t	nOldLevel;
 
 if ((info.movementType != MT_PHYSICS) || (nPrevSegment == info.nSegment))
 	return 0;
@@ -439,12 +439,12 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-void CObject::CheckGuidedMissileThroughExit (short nPrevSegment)
+void CObject::CheckGuidedMissileThroughExit (int16_t nPrevSegment)
 {
 if ((this == gameData.objs.guidedMissile [N_LOCALPLAYER].objP) &&
 	 (info.nSignature == gameData.objs.guidedMissile [N_LOCALPLAYER].nSignature)) {
 	if (nPrevSegment != info.nSegment) {
-		short	nConnSide = SEGMENTS [info.nSegment].ConnectedSide (SEGMENTS + nPrevSegment);
+		int16_t	nConnSide = SEGMENTS [info.nSegment].ConnectedSide (SEGMENTS + nPrevSegment);
 		if (nConnSide != -1) {
 			CTrigger* trigP = SEGMENTS [nPrevSegment].Trigger (nConnSide);
 			if (trigP && (trigP->m_info.nType == TT_EXIT))
@@ -467,7 +467,7 @@ if (gameStates.render.bDropAfterburnerBlob) {
 	}
 
 if ((info.nType == OBJ_WEAPON) && (gameData.weapons.info [info.nId].nAfterburnerSize)) {
-	int	nObject, bSmoke;
+	int32_t	nObject, bSmoke;
 	fix	vel;
 	fix	delay, lifetime, nSize;
 
@@ -516,7 +516,7 @@ if ((info.nType == OBJ_WEAPON) && (gameData.weapons.info [info.nId].nAfterburner
 void CObject::UpdateEffects (void)
 {
 	bool bNeedEffect, bHaveEffect = lightningManager.GetObjectSystem (Index ()) >= 0;
-	ubyte nEffect;
+	uint8_t nEffect;
 
 if ((info.nType == OBJ_ROBOT) && gameOpts->render.lightning.bRobots) {
 	bNeedEffect = ROBOTINFO (info.nId).energyDrain && (gameStates.app.nSDLTicks [0] - m_xTimeEnergyDrain <= 1000);
@@ -524,7 +524,7 @@ if ((info.nType == OBJ_ROBOT) && gameOpts->render.lightning.bRobots) {
 	}
 else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 	nEffect = PLAYER_LIGHTNING;
-	int nType = SEGMENTS [OBJSEG (this)].m_function;
+	int32_t nType = SEGMENTS [OBJSEG (this)].m_function;
 	if (gameData.FusionCharge (info.nId) > I2X (2))
 		bNeedEffect = true;
 	else if (nType == SEGMENT_FUNC_FUELCENTER)
@@ -551,9 +551,9 @@ if (bHaveEffect != bNeedEffect)
 // -----------------------------------------------------------------------------
 //move an CObject for the current frame
 
-int CObject::Update (void)
+int32_t CObject::Update (void)
 {
-	short	nPrevSegment = (short) info.nSegment;
+	int16_t	nPrevSegment = (int16_t) info.nSegment;
 
 #if DBG
 if ((info.nType == OBJ_WEAPON) && (info.nId == SMARTMINE_BLOB_ID)) {
@@ -612,7 +612,7 @@ return 1;
 // -----------------------------------------------------------------------------
 //move all OBJECTS for the current frame
 
-int UpdateAllObjects (void)
+int32_t UpdateAllObjects (void)
 {
 PROF_START
 	CObject*	objP, * nextObjP;
@@ -649,10 +649,10 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 #if USE_OPENMP //> 1
 #pragma omp parallel 
 if (gameStates.app.bMultiThreaded) {
-	int h = int (gameData.objs.update.ToS ());
+	int32_t h = int32_t (gameData.objs.update.ToS ());
 	#pragma omp for
-	for (int nThread = 0; nThread < gameStates.app.nThreads; nThread++) {
-		for (int i = nThread; i < h; i += gameStates.app.nThreads)
+	for (int32_t nThread = 0; nThread < gameStates.app.nThreads; nThread++) {
+		for (int32_t i = nThread; i < h; i += gameStates.app.nThreads)
 			gameData.objs.update [i]->UpdateHomingWeapon (nThread);
 		}
 	}
@@ -666,7 +666,7 @@ return 1;
 
 //	*viewerP is a viewerP, probably a missile.
 //	wake up all robots that were rendered last frame subject to some constraints.
-void WakeupRenderedObjects (CObject *viewerP, int nWindow)
+void WakeupRenderedObjects (CObject *viewerP, int32_t nWindow)
 {
 //	Make sure that we are processing current data.
 if (gameData.app.nFrameCount != windowRenderedData [nWindow].nFrame) {
@@ -677,9 +677,9 @@ if (gameData.app.nFrameCount != windowRenderedData [nWindow].nFrame) {
 	}
 
 gameData.ai.nLastMissileCamera = OBJ_IDX (viewerP);
-int frameFilter = gameData.app.nFrameCount & 3;
-for (int i = windowRenderedData [nWindow].nObjects; i; ) {
-	int nObject = windowRenderedData [nWindow].renderedObjects [--i];
+int32_t frameFilter = gameData.app.nFrameCount & 3;
+for (int32_t i = windowRenderedData [nWindow].nObjects; i; ) {
+	int32_t nObject = windowRenderedData [nWindow].renderedObjects [--i];
 	if ((nObject & 3) == frameFilter) {
 		CObject* objP = OBJECTS + nObject;
 		if (objP->info.nType == OBJ_ROBOT) {
@@ -702,7 +702,7 @@ for (int i = windowRenderedData [nWindow].nObjects; i; ) {
 void CleanupObjects (void)
 {
 	CObject	*objP, *nextObjP = NULL;
-	int		nLocalDeadPlayerObj = -1;
+	int32_t		nLocalDeadPlayerObj = -1;
 
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->Links (0).next;

@@ -24,7 +24,7 @@ float CScreen::m_fScale = 1.0f;
 
 //	-----------------------------------------------------------------------------
 
-CCanvas *CCanvas::Create (int w, int h)
+CCanvas *CCanvas::Create (int32_t w, int32_t h)
 {
 	CCanvas *canvP;
 
@@ -46,7 +46,7 @@ SetName ("Canvas");
 
 //	-----------------------------------------------------------------------------
 
-void CCanvas::Setup (int w, int h)
+void CCanvas::Setup (int32_t w, int32_t h)
 {
 Init ();
 Setup (NULL, 0, 0, w, h);
@@ -55,7 +55,7 @@ Setup (NULL, 0, 0, w, h);
 
 //	-----------------------------------------------------------------------------
 
-CCanvas *CCanvas::CreatePane (int x, int y, int w, int h)
+CCanvas *CCanvas::CreatePane (int32_t x, int32_t y, int32_t w, int32_t h)
 {
 	CCanvas *paneP;
 
@@ -68,7 +68,7 @@ return paneP;
 
 //	-----------------------------------------------------------------------------
 
-void CCanvas::Init (int nType, int w, int h, ubyte *data)
+void CCanvas::Init (int32_t nType, int32_t w, int32_t h, uint8_t *data)
 {
 Init ();
 //CBitmap::Init (nType, 0, 0, w, h, 1, data);
@@ -90,7 +90,7 @@ SetHeight ();
 
 //	-----------------------------------------------------------------------------
 
-void CCanvas::Setup (CCanvas* parentP, int x, int y, int w, int h, bool bUnscale)
+void CCanvas::Setup (CCanvas* parentP, int32_t x, int32_t y, int32_t w, int32_t h, bool bUnscale)
 {
 if (parentP)
 	Setup (parentP);
@@ -109,7 +109,7 @@ delete this;
 
 //	-----------------------------------------------------------------------------
 
-void CCanvas::Clear (uint color)
+void CCanvas::Clear (uint32_t color)
 {
 SetColorRGBi (color);
 OglDrawFilledRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height () - 1);
@@ -117,7 +117,7 @@ OglDrawFilledRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()-
 
 //	-----------------------------------------------------------------------------
 
-void CCanvas::SetColor (int color)
+void CCanvas::SetColor (int32_t color)
 {
 m_info.color.index =color % 256;
 m_info.color.rgb = 0;
@@ -125,7 +125,7 @@ m_info.color.rgb = 0;
 
 //	-----------------------------------------------------------------------------
 
-void CCanvas::SetColorRGB (ubyte red, ubyte green, ubyte blue, ubyte alpha)
+void CCanvas::SetColorRGB (uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
 m_info.color.rgb = 1;
 m_info.color.Red () = red;
@@ -136,7 +136,7 @@ m_info.color.Alpha () = alpha;
 
 //	-----------------------------------------------------------------------------
 
-void CCanvas::SetColorRGB15bpp (ushort c, ubyte alpha)
+void CCanvas::SetColorRGB15bpp (uint16_t c, uint8_t alpha)
 {
 CCanvas::SetColorRGB (
 	PAL2RGBA (((c >> 10) & 31) * 2), 
@@ -150,10 +150,10 @@ CCanvas::SetColorRGB (
 void CCanvas::FadeColorRGB (double dFade)
 {
 if (dFade && m_info.color.rgb) {
-	m_info.color.Red () = (ubyte) (m_info.color.Red () * dFade);
-	m_info.color.Green () = (ubyte) (m_info.color.Green () * dFade);
-	m_info.color.Blue () = (ubyte) (m_info.color.Blue () * dFade);
-	//m_info.color.Alpha () = (ubyte) ((float) gameStates.render.grAlpha / (float) FADE_LEVELS * 255.0f);
+	m_info.color.Red () = (uint8_t) (m_info.color.Red () * dFade);
+	m_info.color.Green () = (uint8_t) (m_info.color.Green () * dFade);
+	m_info.color.Blue () = (uint8_t) (m_info.color.Blue () * dFade);
+	//m_info.color.Alpha () = (uint8_t) ((float) gameStates.render.grAlpha / (float) FADE_LEVELS * 255.0f);
 	}
 }
 
@@ -166,10 +166,10 @@ void CCanvas::GetExtent (CRectangle& rc, bool bScale, bool bDeep)
 if (!(bDeep && parent))
 	rc = *((CRectangle*) this);
 else {
-	int l = Left (false);
-	int t = Top (false);
-	int w = Width (false);
-	int h = Height (false);
+	int32_t l = Left (false);
+	int32_t t = Top (false);
+	int32_t w = Width (false);
+	int32_t h = Height (false);
 	while (parent) {
 		l += parent->Left ();
 		t += parent->Top ();
@@ -197,10 +197,10 @@ if (!parent)
 	ogl.SetViewport (Left (), Top (), Width (), Height ());
 else {
 	m_parent = parent;
-	int l = Left ();
-	int t = Top ();
-	int w = Width ();
-	int h = Height ();
+	int32_t l = Left ();
+	int32_t t = Top ();
+	int32_t w = Width ();
+	int32_t h = Height ();
 	while (parent) {
 		l += parent->Left ();
 		t += parent->Top ();

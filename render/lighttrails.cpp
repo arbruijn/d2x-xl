@@ -33,7 +33,7 @@
 
 // -----------------------------------------------------------------------------
 
-void RenderObjectHalo (CFixVector *vPos, fix xSize, float red, float green, float blue, float alpha, int bCorona)
+void RenderObjectHalo (CFixVector *vPos, fix xSize, float red, float green, float blue, float alpha, int32_t bCorona)
 {
 if ((gameOpts->render.coronas.bShots && (bCorona ? corona.Load () : halo.Load ()))) {
 	CFloatVector	c = {{{red, green, blue, alpha}}};
@@ -60,7 +60,7 @@ if ((IsEnergyPowerup (objP->info.nId) ? gameOpts->render.coronas.bPowerups : gam
 	fix			xSize;
 
 	if ((objP->info.nId >= POW_KEY_BLUE) && (objP->info.nId <= POW_KEY_GOLD)) {
-		int i = objP->info.nId - POW_KEY_BLUE;
+		int32_t i = objP->info.nId - POW_KEY_BLUE;
 
 		color = keyColors [(((i < 0) || (i > 2)) ? 3 : i)];
 		xSize = I2X (12);
@@ -106,7 +106,7 @@ if (gameOpts->render.coronas.bShots && glare.Load ()) {
 
 // -----------------------------------------------------------------------------
 
-static inline float WeaponBlobSize (int nId)
+static inline float WeaponBlobSize (int32_t nId)
 {
 if (nId == PHOENIX_ID)
 	return 2.25f;
@@ -132,8 +132,8 @@ else
 
 // -----------------------------------------------------------------------------
 
-int RenderWeaponCorona (CObject *objP, CFloatVector *colorP, float alpha, fix xOffset,
-								float fScale, int bSimple, int bViewerOffset, int bDepthSort)
+int32_t RenderWeaponCorona (CObject *objP, CFloatVector *colorP, float alpha, fix xOffset,
+								float fScale, int32_t bSimple, int32_t bViewerOffset, int32_t bDepthSort)
 {
 if (!SHOW_OBJ_FX)
 	return 0;
@@ -181,7 +181,7 @@ static CFloatVector vTrailOffs [2][4] = {{{{0,0,0}},{{0,-10,-5}},{{0,-10,-50}},{
 void RenderLightTrail (CObject *objP)
 {
 	CFloatVector	color, *colorP;
-	int				/*nTrailItem = -1, nCoronaItem = -1,*/ bGatling = 0;
+	int32_t				/*nTrailItem = -1, nCoronaItem = -1,*/ bGatling = 0;
 
 if (!SHOW_OBJ_FX)
 	return;

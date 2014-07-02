@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Resets all fuel center info
 void ResetGenerators (void)
 {
-	int i;
+	int32_t i;
 
 for (i = 0; i < LEVEL_SEGMENTS; i++)
 	SEGMENTS [i].m_function = SEGMENT_FUNC_NONE;
@@ -58,7 +58,7 @@ gameData.producers.nRepairCenters = 0;
 
 //------------------------------------------------------------
 // Turns a CSegment into a fully charged up fuel center...
-bool CSegment::CreateProducer (int nOldFunction)
+bool CSegment::CreateProducer (int32_t nOldFunction)
 {
 if ((m_function != SEGMENT_FUNC_FUELCENTER) &&
 	 (m_function != SEGMENT_FUNC_REPAIRCENTER) &&
@@ -93,7 +93,7 @@ return true;
 
 //------------------------------------------------------------
 
-bool CSegment::CreateObjectProducer (int nOldFunction, int nMaxCount)
+bool CSegment::CreateObjectProducer (int32_t nOldFunction, int32_t nMaxCount)
 {
 if ((nMaxCount > 0) && (m_nObjProducer >= nMaxCount)) {
 	m_function = SEGMENT_FUNC_NONE;
@@ -125,7 +125,7 @@ return true;
 //------------------------------------------------------------
 // Adds a producer that already is a special type into the gameData.producers.producers array.
 // This function is separate from other producers because we don't want values reset.
-bool CSegment::CreateRobotMaker (int nOldFunction)
+bool CSegment::CreateRobotMaker (int32_t nOldFunction)
 {
 m_nObjProducer = gameData.producers.nRobotMakers;
 if (!CreateObjectProducer (nOldFunction, gameFileInfo.botGen.count))
@@ -144,7 +144,7 @@ return true;
 //------------------------------------------------------------
 // Adds a producer that already is a special type into the gameData.producers.producers array.
 // This function is separate from other producers because we don't want values reset.
-bool CSegment::CreateEquipmentMaker (int nOldFunction)
+bool CSegment::CreateEquipmentMaker (int32_t nOldFunction)
 {
 m_nObjProducer = gameData.producers.nEquipmentMakers;
 if (!CreateObjectProducer (nOldFunction, gameFileInfo.equipGen.count))
@@ -163,14 +163,14 @@ return true;
 
 void SetEquipmentMakerStates (void)
 {
-for (int i = 0; i < gameData.producers.nEquipmentMakers; i++)
+for (int32_t i = 0; i < gameData.producers.nEquipmentMakers; i++)
 	gameData.producers.producers [gameData.producers.equipmentMakers [i].nProducer].bEnabled =
 		FindTriggerTarget (gameData.producers.producers [i].nSegment, -1) == 0;
 }
 
 //------------------------------------------------------------
 // Adds a CSegment that already is a special nType into the gameData.producers.producers array.
-bool CSegment::CreateGenerator (int nType)
+bool CSegment::CreateGenerator (int32_t nType)
 {
 m_function = nType;
 if (m_function == SEGMENT_FUNC_ROBOTMAKER)
@@ -194,13 +194,13 @@ return false;
 
 //------------------------------------------------------------
 //	Trigger (enable) the materialization center in CSegment nSegment
-int StartObjectProducer (short nSegment)
+int32_t StartObjectProducer (int16_t nSegment)
 {
 	// -- CSegment		*segP = &SEGMENTS [nSegment];
 	CSegment*		segP = &SEGMENTS [nSegment];
 	CFixVector		pos, delta;
 	tProducerInfo	*objProducerP;
-	int				nObject;
+	int32_t				nObject;
 
 if (segP->m_nObjProducer < 0)
 	return 0;
@@ -241,16 +241,16 @@ return 0;
 
 //	----------------------------------------------------------------------------------------------------------
 
-int GetObjProducerObjType (tProducerInfo *objProducerP, int *objFlags, int maxType)
+int32_t GetObjProducerObjType (tProducerInfo *objProducerP, int32_t *objFlags, int32_t maxType)
 {
-	int	i, nObjIndex, nTypes = 0;
-	uint	flags;
-	ubyte	objTypes [64];
+	int32_t	i, nObjIndex, nTypes = 0;
+	uint32_t	flags;
+	uint8_t	objTypes [64];
 
 memset (objTypes, 0, sizeof (objTypes));
 for (i = 0; i < 3; i++) {
 	nObjIndex = i * 32;
-	flags = (uint) objFlags [i];
+	flags = (uint32_t) objFlags [i];
 	while (flags && (nObjIndex < maxType)) {
 		if (flags & 1)
 			objTypes [nTypes++] = nObjIndex;
@@ -267,11 +267,11 @@ return objTypes [(RandShort () * nTypes) / 32768];
 
 //------------------------------------------------------------
 //	Trigger (enable) the materialization center in CSegment nSegment
-void OperateRobotMaker (CObject *objP, short nSegment)
+void OperateRobotMaker (CObject *objP, int16_t nSegment)
 {
 	CSegment*		segP = &SEGMENTS [nSegment];
 	tProducerInfo*	objProducerP;
-	short				nType;
+	int16_t				nType;
 
 if (nSegment < 0)
 	nType = 255;
@@ -286,12 +286,12 @@ objP->BossSpewRobot (NULL, nType, 1);
 
 //	----------------------------------------------------------------------------------------------------------
 
-CObject *CreateMorphRobot (CSegment *segP, CFixVector *vObjPosP, ubyte nObjId)
+CObject *CreateMorphRobot (CSegment *segP, CFixVector *vObjPosP, uint8_t nObjId)
 {
-	short			nObject;
+	int16_t			nObject;
 	CObject		*objP;
 	tRobotInfo	*botInfoP;
-	ubyte			default_behavior;
+	uint8_t			default_behavior;
 
 LOCALPLAYER.numRobotsLevel++;
 LOCALPLAYER.numRobotsTotal++;
@@ -322,23 +322,23 @@ gameData.ai.localInfo [nObject].mode = AIBehaviorToMode (default_behavior);
 return objP;
 }
 
-int Num_extryRobots = 15;
+int32_t Num_extryRobots = 15;
 
 #if DBG
-int	FrameCount_last_msg = 0;
+int32_t	FrameCount_last_msg = 0;
 #endif
 
 //	----------------------------------------------------------------------------------------------------------
 
-void CreateObjectProducerEffect (tProducerInfo *objProducerP, ubyte nVideoClip)
+void CreateObjectProducerEffect (tProducerInfo *objProducerP, uint8_t nVideoClip)
 {
 CFixVector vPos = SEGMENTS [objProducerP->nSegment].Center ();
 // HACK!!!The 10 under here should be something equal to the 1/2 the size of the CSegment.
-CObject* objP = CreateExplosion ((short) objProducerP->nSegment, vPos, I2X (10), nVideoClip);
+CObject* objP = CreateExplosion ((int16_t) objProducerP->nSegment, vPos, I2X (10), nVideoClip);
 if (objP) {
 	ExtractOrientFromSegment (&objP->info.position.mOrient, SEGMENTS + objProducerP->nSegment);
 	if (gameData.effects.vClips [0][nVideoClip].nSound > -1)
-		audio.CreateSegmentSound (gameData.effects.vClips [0][nVideoClip].nSound, (short) objProducerP->nSegment, 0, vPos, 0, I2X (1));
+		audio.CreateSegmentSound (gameData.effects.vClips [0][nVideoClip].nSound, (int16_t) objProducerP->nSegment, 0, vPos, 0, I2X (1));
 	objProducerP->bFlag	= 1;
 	objProducerP->xTimer = 0;
 	}
@@ -348,7 +348,7 @@ if (objP) {
 
 void EquipmentMakerHandler (tProducerInfo * objProducerP)
 {
-	int			nObject, nObjProducer, nType;
+	int32_t			nObject, nObjProducer, nType;
 	CObject		*objP;
 	CFixVector	vPos;
 	fix			topTime;
@@ -388,7 +388,7 @@ else if (objProducerP->bFlag == 1) {			// Wait until 1/2 second after VCLIP star
 		return;
 	vPos = SEGMENTS [objProducerP->nSegment].Center ();
 	// If this is the first materialization, set to valid robot.
-	nObject = CreatePowerup (nType, -1, (short) objProducerP->nSegment, vPos, 1, true);
+	nObject = CreatePowerup (nType, -1, (int16_t) objProducerP->nSegment, vPos, 1, true);
 	if (nObject < 0)
 		return;
 	objP = OBJECTS + nObject;
@@ -412,7 +412,7 @@ else {
 
 void VirusGenHandler (tProducerInfo * objProducerP)
 {
-	int			nObject, nObjProducer;
+	int32_t			nObject, nObjProducer;
 	CObject		*objP;
 	CFixVector	vPos;
 	fix			topTime;
@@ -449,7 +449,7 @@ else if (objProducerP->bFlag == 1) {			// Wait until 1/2 second after VCLIP star
 	objProducerP->xTimer = 0;
 	vPos = SEGMENTS [objProducerP->nSegment].Center ();
 	// If this is the first materialization, set to valid robot.
-	nObject = CreatePowerup (POW_ENTROPY_VIRUS, -1, (short) objProducerP->nSegment, vPos, 1);
+	nObject = CreatePowerup (POW_ENTROPY_VIRUS, -1, (int16_t) objProducerP->nSegment, vPos, 1);
 	if (nObject >= 0) {
 		objP = OBJECTS + nObject;
 		if (IsMultiGame)
@@ -469,7 +469,7 @@ else {
 
 //	----------------------------------------------------------------------------------------------------------
 
-inline int VertigoObjFlags (tObjectProducerInfo *miP)
+inline int32_t VertigoObjFlags (tObjectProducerInfo *miP)
 {
 return miP->objFlags [2] = gameData.objs.nVertigoBotFlags;
 }
@@ -480,11 +480,11 @@ void RobotMakerHandler (tProducerInfo * objProducerP)
 {
 	fix			xDistToPlayer;
 	CFixVector	vPos, vDir;
-	int			nObjProducer, nSegment, nObject;
+	int32_t			nObjProducer, nSegment, nObject;
 	CObject		*objP;
 	fix			topTime;
-	int			nType, nMyStation, nCount;
-	//int			i;
+	int32_t			nType, nMyStation, nCount;
+	//int32_t			i;
 
 if (gameStates.app.bGameSuspended & SUSP_ROBOTS)
 	return;
@@ -597,7 +597,7 @@ else if (objProducerP->bFlag == 1) {			// Wait until 1/2 second after VCLIP star
 	objProducerP->xTimer = 0;
 	vPos = SEGMENTS [objProducerP->nSegment].Center ();
 	// If this is the first materialization, set to valid robot.
-	nType = (int) GetObjProducerObjType (objProducerP, gameData.producers.robotMakers [nObjProducer].objFlags, MAX_ROBOT_TYPES);
+	nType = (int32_t) GetObjProducerObjType (objProducerP, gameData.producers.robotMakers [nObjProducer].objFlags, MAX_ROBOT_TYPES);
 	if (nType < 0)
 		return;
 #if TRACE
@@ -629,7 +629,7 @@ else {
 // Called once per frame, replenishes fuel supply.
 void UpdateAllProducers (void)
 {
-	int				i, t;
+	int32_t				i, t;
 	tProducerInfo*	producerP = &gameData.producers.producers [0];
 	fix				xAmountToReplenish = FixMul (gameData.time.xFrame, gameData.producers.xFuelRefillSpeed);
 
@@ -671,7 +671,7 @@ fix CSegment::ShieldDamage (fix xMaxDamage)
 
 if (!(m_xDamage [0] || IsEntropyGame))
 	return 0;
-int bEntropy = !m_xDamage [0];
+int32_t bEntropy = !m_xDamage [0];
 if (bEntropy && ((m_owner < 1) || (m_owner == GetTeam (N_LOCALPLAYER) + 1)))
 	return 0;
 fix rate = bEntropy ? I2X (extraGameInfo [1].entropy.nShieldDamageRate) : m_xDamage [0];
@@ -775,7 +775,7 @@ return amount;
 
 void DisableObjectProducers (void)
 {
-for (int i = 0; i < gameData.producers.nRobotMakers; i++) {
+for (int32_t i = 0; i < gameData.producers.nRobotMakers; i++) {
 	if (gameData.producers.producers [i].nType != SEGMENT_FUNC_EQUIPMAKER) {
 		gameData.producers.producers [i].bEnabled = 0;
 		gameData.producers.producers [i].xDisableTime = 0;
@@ -788,7 +788,7 @@ for (int i = 0; i < gameData.producers.nRobotMakers; i++) {
 //	Give them all the right number of lives.
 void InitAllObjectProducers (void)
 {
-for (int i = 0; i < gameData.producers.nProducers; i++)
+for (int32_t i = 0; i < gameData.producers.nProducers; i++)
 	if (gameData.producers.producers [i].nType == SEGMENT_FUNC_ROBOTMAKER) {
 		 gameData.producers.producers [i].nLives = 3;
 		 gameData.producers.producers [i].bEnabled = 0;
@@ -798,15 +798,15 @@ for (int i = 0; i < gameData.producers.nProducers; i++)
 
 //-----------------------------------------------------------------------------
 
-short flagGoalList [MAX_SEGMENTS_D2X];
-short flagGoalRoots [2] = {-1, -1};
-short blueFlagGoals = -1;
+int16_t flagGoalList [MAX_SEGMENTS_D2X];
+int16_t flagGoalRoots [2] = {-1, -1};
+int16_t blueFlagGoals = -1;
 
 // create linked lists of all segments with special nType blue and red goal
 
-int GatherFlagGoals (void)
+int32_t GatherFlagGoals (void)
 {
-	int			h, i, j;
+	int32_t			h, i, j;
 	CSegment*	segP = SEGMENTS.Buffer ();
 
 memset (flagGoalList, 0xff, sizeof (flagGoalList));
@@ -831,9 +831,9 @@ return h;
 
 void MultiSendCaptureBonus (char);
 
-int FlagAtHome (int nFlagId)
+int32_t FlagAtHome (int32_t nFlagId)
 {
-	int		i, j;
+	int32_t		i, j;
 	CObject	*objP;
 
 for (i = flagGoalRoots [nFlagId - POW_BLUEFLAG]; i >= 0; i = flagGoalList [i])
@@ -847,7 +847,7 @@ return 0;
 
 //--------------------------------------------------------------------
 
-int CSegment::CheckFlagDrop (int nTeamId, int nFlagId, int nGoalId)
+int32_t CSegment::CheckFlagDrop (int32_t nTeamId, int32_t nFlagId, int32_t nGoalId)
 {
 if (m_function != nGoalId)
 	return 0;

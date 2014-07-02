@@ -54,13 +54,13 @@ CDACSBiDirRouter biDacsRouter [MAX_THREADS];
 void CFCDCache::Flush (void)
 {
 m_nIndex = 0;
-for (int i = 0; i < MAX_FCD_CACHE; i++)
+for (int32_t i = 0; i < MAX_FCD_CACHE; i++)
 	m_cache [i].seg0 = -1;
 }
 
 // -----------------------------------------------------------------------------------
 
-void CFCDCache::Add (int seg0, int seg1, int nPathLen, fix dist)
+void CFCDCache::Add (int32_t seg0, int32_t seg1, int32_t nPathLen, fix dist)
 {
 if (dist > MIN_CACHE_FCD_DIST) {
 	m_cache [m_nIndex].seg0 = seg0;
@@ -73,7 +73,7 @@ if (dist > MIN_CACHE_FCD_DIST) {
 	}
 else {
 	//	If it's in the cache, remove it.
-	for (int i = 0; i < MAX_FCD_CACHE; i++) {
+	for (int32_t i = 0; i < MAX_FCD_CACHE; i++) {
 		if ((m_cache [i].seg0 == seg0) && (m_cache [i].seg1 == seg1)) {
 			m_cache [m_nIndex].seg0 = -1;
 			break;
@@ -84,11 +84,11 @@ else {
 
 // -----------------------------------------------------------------------------
 
-fix CFCDCache::Dist (short seg0, short seg1)
+fix CFCDCache::Dist (int16_t seg0, int16_t seg1)
 {
 	tFCDCacheData*	pc = m_cache.Buffer ();
 
-for (int i = int (m_cache.Length ()); i; i--, pc++) {
+for (int32_t i = int32_t (m_cache.Length ()); i; i--, pc++) {
 	if ((pc->seg0 == seg0) && (pc->seg1 == seg1)) {
 		SetPathLength (pc->pathLen);
 		return pc->dist;
@@ -101,7 +101,7 @@ return -1;
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-int CScanInfo::Setup (CSimpleHeap* heap, int nWidFlag, int nMaxDist)
+int32_t CScanInfo::Setup (CSimpleHeap* heap, int32_t nWidFlag, int32_t nMaxDist)
 {
 m_nLinkSeg = 0;
 m_bScanning = 3;
@@ -117,7 +117,7 @@ return m_bFlag;
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-void CSimpleHeap::Setup (short nStartSeg, short nDestSeg, uint flag, int dir)
+void CSimpleHeap::Setup (int16_t nStartSeg, int16_t nDestSeg, uint32_t flag, int32_t dir)
 {
 m_path [nStartSeg].m_bVisited = flag;
 m_path [nStartSeg].m_nDepth = 0;
@@ -134,29 +134,29 @@ m_nLinkSeg = 0;
 
 //	-----------------------------------------------------------------------------
 
-short CSimpleHeap::Expand (CScanInfo& scanInfo)
+int16_t CSimpleHeap::Expand (CScanInfo& scanInfo)
 {
 if (m_nTail >= m_nHead)
 	return m_nLinkSeg = -1;
-short nPredSeg = m_queue [m_nTail++];
+int16_t nPredSeg = m_queue [m_nTail++];
 
 #if DBG_SCAN
 if (nPredSeg == nDbgSeg)
 	BRP;
 #endif
 
-short m_nDepth = m_path [nPredSeg].m_nDepth + 1;
+int16_t m_nDepth = m_path [nPredSeg].m_nDepth + 1;
 if (m_nDepth > scanInfo.m_maxDist)
 	return m_nLinkSeg = scanInfo.Scanning (m_nDir) ? 0 : -1;
 
 CSegment* segP = SEGMENTS + nPredSeg;
-for (short nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
-	short nSuccSeg = segP->m_children [nSide];
+for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
+	int16_t nSuccSeg = segP->m_children [nSide];
 	if (nSuccSeg < 0)
 		continue;
 	if (m_nDir) {
 		CSegment* otherSegP = SEGMENTS + nSuccSeg;
-		short nOtherSide = SEGMENTS [nPredSeg].ConnectedSide (otherSegP);
+		int16_t nOtherSide = SEGMENTS [nPredSeg].ConnectedSide (otherSegP);
 		if ((nOtherSide == -1) || !(otherSegP->IsPassable (nOtherSide, NULL) & scanInfo.m_widFlag))
 			continue;
 		}
@@ -199,14 +199,14 @@ return 0;
 
 // -----------------------------------------------------------------------------
 
-bool CSimpleUniDirHeap::Match (short nSegment, CScanInfo& scanInfo)
+bool CSimpleUniDirHeap::Match (int16_t nSegment, CScanInfo& scanInfo)
 {
 return (nSegment == m_nDestSeg);
 }
 
 // -----------------------------------------------------------------------------
 
-bool CSimpleBiDirHeap::Match (short nSegment, CScanInfo& scanInfo)
+bool CSimpleBiDirHeap::Match (int16_t nSegment, CScanInfo& scanInfo)
 {
 return (scanInfo.m_heap [!m_nDir].m_path [nSegment].m_bVisited == m_bFlag);
 }
@@ -219,9 +219,9 @@ return (scanInfo.m_heap [!m_nDir].m_path [nSegment].m_bVisited == m_bFlag);
 
 #if MULTITHREADED_SCAN
 
-int _CDECL_ ExpandSegmentMT (void* nThreadP)
+int32_t _CDECL_ ExpandSegmentMT (void* nThreadP)
 {
-	int nDir = *((int *) nThreadP);
+	int32_t nDir = *((int32_t *) nThreadP);
 
 while (!(ExpandSegment (nDir) || m_heap [!nDir].nLinkSeg))
 	;
@@ -232,7 +232,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-int CRouter::SetSegment (const short nSegment, const CFixVector& p)
+int32_t CRouter::SetSegment (const int16_t nSegment, const CFixVector& p)
 {
 return (nSegment < 0) ? FindSegByPos (p, 0, 1, 0) : nSegment;
 }
@@ -242,8 +242,8 @@ return (nSegment < 0) ? FindSegByPos (p, 0, 1, 0) : nSegment;
 //	Search up to a maximum m_nDepth of m_maxDist.
 //	Return the distance.
 
-fix CRouter::PathLength (const CFixVector& p0, const short nStartSeg, const CFixVector& p1, 
-								 const short nDestSeg, const int nMaxDist, const int nWidFlag, const int nCacheType)
+fix CRouter::PathLength (const CFixVector& p0, const int16_t nStartSeg, const CFixVector& p1, 
+								 const int16_t nDestSeg, const int32_t nMaxDist, const int32_t nWidFlag, const int32_t nCacheType)
 {
 #if 0 //DBG
 //if (!m_cacheType) 
@@ -270,7 +270,7 @@ if (m_nDestSeg >= 0) {
 #endif
 	// adjacent segments?
 	if (m_cacheType >= 0) {
-		short nSide = SEGMENTS [m_nStartSeg].ConnectedSide (SEGMENTS + m_nDestSeg);
+		int16_t nSide = SEGMENTS [m_nStartSeg].ConnectedSide (SEGMENTS + m_nDestSeg);
 		if ((nSide != -1) && (SEGMENTS [m_nDestSeg].IsPassable (nSide, NULL) & m_widFlag)) {
 			m_cache [m_cacheType].SetPathLength (1);
 			return CFixVector::Dist (m_p0, m_p1);
@@ -308,8 +308,8 @@ return distance;
 fix CSimpleUniDirRouter::BuildPath (void)
 {
 	fix	xDist;
-	int	nLength = 0; 
-	short	nPredSeg, nSuccSeg = m_nDestSeg;
+	int32_t	nLength = 0; 
+	int16_t	nPredSeg, nSuccSeg = m_nDestSeg;
 
 nPredSeg = --m_scanInfo.m_nLinkSeg;
 xDist = CFixVector::Dist (m_p1, SEGMENTS [nPredSeg].Center ());
@@ -351,11 +351,11 @@ for (;;) {
 fix CSimpleBiDirRouter::BuildPath (void)
 {
 	fix	xDist = 0;
-	int	nLength = 0; 
-	short	nPredSeg, nSuccSeg;
+	int32_t	nLength = 0; 
+	int16_t	nPredSeg, nSuccSeg;
 
 --m_scanInfo.m_nLinkSeg;
-for (int nDir = 0; nDir < 2; nDir++) {
+for (int32_t nDir = 0; nDir < 2; nDir++) {
 	CSimpleBiDirHeap& heap = m_heap [nDir];
 	nSuccSeg = m_scanInfo.m_nLinkSeg;
 	for (;;) {
@@ -394,7 +394,7 @@ m_heap [1].Setup (m_nDestSeg, m_nStartSeg, m_scanInfo.m_bFlag, 1);
 #if MULTITHREADED_SCAN
 if (gameStates.app.nThreads > 1) {
 	SDL_Thread* threads [2];
-	int nThreadIds [2] = {0, 1};
+	int32_t nThreadIds [2] = {0, 1};
 	threads [0] = SDL_CreateThread (ExpandSegmentMT, nThreadIds);
 	threads [1] = SDL_CreateThread (ExpandSegmentMT, nThreadIds + 1);
 	SDL_WaitThread (threads [0], NULL);
@@ -408,7 +408,7 @@ else
 #endif
 	{
 	for (;;) {
-		for (int nDir = 0; nDir < 2; nDir++) {
+		for (int32_t nDir = 0; nDir < 2; nDir++) {
 			if (!(m_scanInfo.m_nLinkSeg = m_heap [nDir].Expand (m_scanInfo))) // nLinkSeg == 0 -> keep expanding
 				continue;
 			if (m_scanInfo.m_nLinkSeg < 0)
@@ -424,7 +424,7 @@ else
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-bool CDACSUniDirRouter::Create (int nNodes) 
+bool CDACSUniDirRouter::Create (int32_t nNodes) 
 { 
 if ((m_nNodes != nNodes) && !m_heap.Create (nNodes)) {
 	SetSize (0);
@@ -436,12 +436,12 @@ return true;
 
 // -----------------------------------------------------------------------------
 
-fix CDACSUniDirRouter::BuildPath (short nSegment)
+fix CDACSUniDirRouter::BuildPath (int16_t nSegment)
 {
 if (m_heap.Cost (nSegment) == 0xFFFFFFFF)
 	return -1;
 
-	int h = m_heap.BuildRoute (nSegment);
+	int32_t h = m_heap.BuildRoute (nSegment);
 	CDialHeap::tPathNode* route = m_heap.Route ();
 
 if (route [0].nNode == nSegment)
@@ -456,9 +456,9 @@ if (m_nDestSeg >= 0)
 	CHitResult		hitResult;
 #endif
 	CFixVector* p0, *p1;
-	short			nStartSeg, nDestSeg;
+	int16_t			nStartSeg, nDestSeg;
 
-for (int i = 0, j; i < h; i = j) {
+for (int32_t i = 0, j; i < h; i = j) {
 	// beginning at segment route [i].node, traverse the route until the center of route segment route [j].nNode cannot be seen from 
 	// the center of segment route [i].nNode. That way, the distance calculation is corrected by using direct lines of sight between
 	// segments of the route that can "see" each other even if they aren't directly connected.
@@ -474,7 +474,7 @@ for (int i = 0, j; i < h; i = j) {
 		p1 = &SEGMENTS [nDestSeg].Center ();
 #else
 		fq.p1 = &SEGMENTS [nDestSeg].Center ();
-		int nHitType = FindHitpoint (&fq, &hitResult);
+		int32_t nHitType = FindHitpoint (&fq, &hitResult);
 		if (nHitType && ((nHitType != HIT_WALL) || (hitResult.nSegment != nDestSeg)))
 			break;
 		p1 = fq.p1;
@@ -501,13 +501,13 @@ return xDist;
 
 fix CDACSUniDirRouter::FindPath (void)
 {
-	uint			nDist;
-	short			nSegment, nSide;
+	uint32_t			nDist;
+	int16_t			nSegment, nSide;
 	CSegment*	segP;
 
 m_heap.Setup (m_nStartSeg);
 
-	int nExpanded = 1;
+	int32_t nExpanded = 1;
 
 for (;;) {
 	nSegment = m_heap.Pop (nDist);
@@ -526,7 +526,7 @@ for (;;) {
 			if (segP->m_children [nSide] == nDbgSeg)
 				BRP;
 #endif
-			if (m_heap.Push (segP->m_children [nSide], nSegment, nSide, nDist + ushort (segP->m_childDists [1][nSide])))
+			if (m_heap.Push (segP->m_children [nSide], nSegment, nSide, nDist + uint16_t (segP->m_childDists [1][nSide])))
 				++nExpanded;
 			}
 		}
@@ -535,7 +535,7 @@ for (;;) {
 
 // -----------------------------------------------------------------------------
 
-fix CDACSUniDirRouter::Distance (short nSegment)
+fix CDACSUniDirRouter::Distance (int16_t nSegment)
 {
 return BuildPath (nSegment);
 }
@@ -544,7 +544,7 @@ return BuildPath (nSegment);
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-bool CDACSBiDirRouter::Create (int nNodes) 
+bool CDACSBiDirRouter::Create (int32_t nNodes) 
 { 
 if ((m_nNodes != nNodes) && !(m_heap [0].Create (nNodes) && m_heap [1].Create (nNodes)))
 	return false;
@@ -554,20 +554,20 @@ return true;
 
 // -----------------------------------------------------------------------------
 
-int CDACSBiDirRouter::Expand (int nDir)
+int32_t CDACSBiDirRouter::Expand (int32_t nDir)
 {
-	uint nDist;
+	uint32_t nDist;
 
-short nSegment = m_heap [nDir].Pop (nDist);
+int16_t nSegment = m_heap [nDir].Pop (nDist);
 if ((nSegment < 0) || (nSegment == m_nDestSeg))
 	return nSegment;
 if (m_heap [!nDir].Popped (nSegment))
 	return nSegment;
 CSegment* segP = SEGMENTS + nSegment;
-for (short nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
+for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	if ((segP->m_children [nSide] >= 0) && (segP->IsPassable (nSide, NULL) & m_widFlag)) {
-		uint nNewDist = nDist + ushort (segP->m_childDists [1][nSide]);
-		if (nNewDist < uint (m_maxDist))
+		uint32_t nNewDist = nDist + uint16_t (segP->m_childDists [1][nSide]);
+		if (nNewDist < uint32_t (m_maxDist))
 			m_heap [nDir].Push (segP->m_children [nSide], nSegment, nSide, nNewDist);
 		}
 	}
@@ -576,16 +576,16 @@ return nSegment;
 
 // -----------------------------------------------------------------------------
 
-fix CDACSBiDirRouter::BuildPath (short nSegment)
+fix CDACSBiDirRouter::BuildPath (int16_t nSegment)
 {
-	int j = -2;
+	int32_t j = -2;
 
 if (m_nSegments [0] >= 0)
 	j += m_heap [0].BuildRoute (nSegment, 0, m_route) - 1;
 if (m_nSegments [1] >= 0)
 	j += m_heap [1].BuildRoute (nSegment, 1, m_route + j);
 fix xDist = 0;
-for (int i = 1; i < j; i++)
+for (int32_t i = 1; i < j; i++)
 	xDist += SEGMENTS [m_route [i - 1].nNode].m_childDists [0][m_route [i].nEdge];
 xDist += CFixVector::Dist (m_p0, SEGMENTS [m_route [1].nNode].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [m_route [j].nNode].Center ());
 if (m_cacheType >= 0) 
@@ -602,7 +602,7 @@ if (0 > (m_nDestSeg = SetSegment (m_nDestSeg, m_p1)))
 m_heap [0].Setup (m_nSegments [0] = m_nStartSeg);
 m_heap [1].Setup (m_nSegments [1] = m_nDestSeg);
 
-	short	nSegment;
+	int16_t	nSegment;
 
 for (;;) {
 	if (m_nSegments [0] >= 0) {

@@ -15,7 +15,7 @@
 typedef struct tShaderData {
 	GLhandleARB		shaders [2];
 	GLhandleARB		program;
-	int*				refP;
+	int32_t*				refP;
 } tShaderData;
 
 #if defined(__macosx__) && defined(__LP64__)
@@ -27,7 +27,7 @@ typedef struct tShaderData {
 class CShaderManager {
 	private:
 		CStack<tShaderData>		m_shaders;
-		int							m_nCurrent;
+		int32_t							m_nCurrent;
 		bool							m_bSuspendable;
 
 	public:
@@ -36,17 +36,17 @@ class CShaderManager {
 		void Init (void);
 		void Destroy (bool bAll = true);
 		void Setup (void);
-		intptr_t Deploy (int nShader, bool bSuspendable = false);
-		int Alloc (int& nShader);
+		intptr_t Deploy (int32_t nShader, bool bSuspendable = false);
+		int32_t Alloc (int32_t& nShader);
 		char* Load (const char* filename);
-		int Create (int nShader);
-		int Compile (int nShader, const char* pszFragShader, const char* pszVertShader, bool bFromFile = 0);
-		int Link (int nShader);
-		int Build (int& nShader, const char* pszFragShader, const char* pszVertShader, bool bFromFile = 0);
-		void Reset (int nShader);
-		void Delete (int nShader);
-		inline int Current (void) { return m_nCurrent; }
-		inline bool IsCurrent (int nShader) { return m_nCurrent == nShader; }
+		int32_t Create (int32_t nShader);
+		int32_t Compile (int32_t nShader, const char* pszFragShader, const char* pszVertShader, bool bFromFile = 0);
+		int32_t Link (int32_t nShader);
+		int32_t Build (int32_t& nShader, const char* pszFragShader, const char* pszVertShader, bool bFromFile = 0);
+		void Reset (int32_t nShader);
+		void Delete (int32_t nShader);
+		inline int32_t Current (void) { return m_nCurrent; }
+		inline bool IsCurrent (int32_t nShader) { return m_nCurrent == nShader; }
 		inline bool Rebuild (GLhandleARB& nShaderProg) {
 			if (0 < intptr_t (nShaderProg))
 				return true;
@@ -57,7 +57,7 @@ class CShaderManager {
 
 		inline bool Active (void) { return (m_nCurrent >= 0) && !m_bSuspendable; }
 
-		inline bool Set (const char* name, int var) { 
+		inline bool Set (const char* name, int32_t var) { 
 			GLint addr = Addr (name);
 			if (addr < 0)
 				return false;
@@ -138,7 +138,7 @@ class CShaderManager {
 
 	private:
 		void Dispose (GLhandleARB& shaderProg);
-		void PrintLog (GLhandleARB handle, int bProgram);
+		void PrintLog (GLhandleARB handle, int32_t bProgram);
 };
 
 extern CShaderManager shaderManager;

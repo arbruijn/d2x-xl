@@ -49,7 +49,7 @@
 void GrPaletteStepClear(void); // Function prototype for GrInit;
 void ResetHoardData (void);
 
-extern int screenShotIntervals [];
+extern int32_t screenShotIntervals [];
 
 //------------------------------------------------------------------------------
 
@@ -57,17 +57,17 @@ CArray<CDisplayModeInfo> displayModeInfo;
 
 //------------------------------------------------------------------------------
 
-int GrVideoModeOK (uint mode)
+int32_t GrVideoModeOK (uint32_t mode)
 {
 return SdlGlVideoModeOK (SM_W (mode), SM_H (mode)); // platform specific code
 }
 
 //------------------------------------------------------------------------------
 
-int GrSetMode (uint mode)
+int32_t GrSetMode (uint32_t mode)
 {
-	uint w, h, i;
-	//int bForce = (nCurrentVGAMode < 0);
+	uint32_t w, h, i;
+	//int32_t bForce = (nCurrentVGAMode < 0);
 
 if (mode <= 0)
 	return 0;
@@ -88,7 +88,7 @@ gameData.render.screen.CBitmap::Init (BM_OGL, 0, 0, w, h, 1, NULL);
 gameData.render.screen.CreateBuffer ();
 gameData.render.screen.CCanvas::SetPalette (paletteManager.Default ()); //just need some valid palette here
 //gameData.render.screen.props.rowSize = screen->pitch;
-//gameData.render.screen.Buffer () = reinterpret_cast<ubyte*> (screen->pixels);
+//gameData.render.screen.Buffer () = reinterpret_cast<uint8_t*> (screen->pixels);
 /***/PrintLog (1, "initializing OpenGL window\n");
 i = SdlGlInitWindow (w, h, 0);	//platform specific code
 PrintLog (-1);
@@ -108,7 +108,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void ResetTextures (int bReload, int bGame)
+void ResetTextures (int32_t bReload, int32_t bGame)
 {
 if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
 	textureManager.Destroy (); 
@@ -132,7 +132,7 @@ if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
 				try {
 					OglCacheLevelTextures ();
 				}
-				catch (int e) {
+				catch (int32_t e) {
 					if (e == EX_OUT_OF_MEMORY) {
 						if (!gameOpts->render.textures.nQuality) {
 							throw (e);
@@ -157,10 +157,10 @@ if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
 
 //------------------------------------------------------------------------------
 
-int FindDisplayMode (short w, short h)
+int32_t FindDisplayMode (int16_t w, int16_t h)
 {
 	CDisplayModeInfo	dmi;
-	int					i;
+	int32_t					i;
 
 dmi.w = w;
 dmi.h = h;
@@ -174,7 +174,7 @@ return i - 1;
 
 //------------------------------------------------------------------------------
 
-int FindDisplayMode (int nScrSize)
+int32_t FindDisplayMode (int32_t nScrSize)
 {
 return FindDisplayMode (SM_W (nScrSize), SM_H (nScrSize));
 }
@@ -212,7 +212,7 @@ SDL_Rect defaultDisplayModes [] = {
 
 //------------------------------------------------------------------------------
 
-void CreateDisplayModeInfo (int i, int w, int h, int bFullScreen)
+void CreateDisplayModeInfo (int32_t i, int32_t w, int32_t h, int32_t bFullScreen)
 {
 displayModeInfo [i].w = w;
 displayModeInfo [i].h = h;
@@ -229,7 +229,7 @@ displayModeInfo [i].bAvailable = 1;
 void CreateDisplayModeInfoTable (void)
 {
 	SDL_Rect**	displayModes, * displayModeP;
-	int			h, i;
+	int32_t			h, i;
 
 displayModes = SDL_ListModes (NULL, SDL_FULLSCREEN | SDL_HWSURFACE);
 if (displayModes == (SDL_Rect**) -1) {
@@ -255,9 +255,9 @@ displayModeInfo.SortAscending (0, h - 1);
 
 //------------------------------------------------------------------------------
 
-int GrInit (void)
+int32_t GrInit (void)
 {
-	int i;
+	int32_t i;
 
 // Only do this function once!
 if (gameStates.gfx.bInstalled)
@@ -335,7 +335,7 @@ PrintLog (-1);
 
 //------------------------------------------------------------------------------
 
-char *ScrSizeArg (int x, int y)
+char *ScrSizeArg (int32_t x, int32_t y)
 {
 	static	char	szScrMode [20];
 
@@ -345,7 +345,7 @@ return szScrMode;
 
 //------------------------------------------------------------------------------
 
-int SetCustomDisplayMode (int w, int h, int bFullScreen)
+int32_t SetCustomDisplayMode (int32_t w, int32_t h, int32_t bFullScreen)
 {
 if (w && h)
 	CreateDisplayModeInfo (CUSTOM_DISPLAY_MODE, w, h, bFullScreen);
@@ -354,9 +354,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int GetDisplayMode (int mode)
+int32_t GetDisplayMode (int32_t mode)
 {
-	int h, i;
+	int32_t h, i;
 
 for (i = 0, h = NUM_DISPLAY_MODES; i < h; i++)
 	if (mode == displayModeInfo [i].dim)
@@ -374,7 +374,7 @@ return -1;
 #endif
 
 
-int SetDisplayMode (int nMode, int bOverride)
+int32_t SetDisplayMode (int32_t nMode, int32_t bOverride)
 {
 	CDisplayModeInfo *dmiP;
 
@@ -400,7 +400,7 @@ return nMode;
 
 //------------------------------------------------------------------------------
 
-int SetSideBySideDisplayMode (void)
+int32_t SetSideBySideDisplayMode (void)
 {
 if (gameOpts->render.stereo.nGlasses == GLASSES_OCULUS_RIFT)
 	SetCustomDisplayMode (gameData.render.rift.HResolution (), gameData.render.rift.VResolution (), 0);
@@ -433,9 +433,9 @@ if (!gameOpts->menus.nStyle)
 
 //------------------------------------------------------------------------------
 
-int SetMenuScreenMode (uint sm)
+int32_t SetMenuScreenMode (uint32_t sm)
 {
-	uint nMenuMode;
+	uint32_t nMenuMode;
 
 gameStates.menus.bHires = gameStates.menus.bHiresAvailable;		//do highres if we can
 nMenuMode = gameStates.gfx.bOverride 
@@ -461,7 +461,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int SetGameScreenMode (uint sm)
+int32_t SetGameScreenMode (uint32_t sm)
 {
 if (nCurrentVGAMode != gameData.render.screen.Scalar ()) {
 	if (GrSetMode (gameData.render.screen.Scalar ())) {
@@ -490,7 +490,7 @@ return 1;
 //called to change the screen mode. Parameter sm is the new mode, one of
 //SMODE_GAME or SMODE_EDITOR. returns mode acutally set (could be other
 //mode if cannot init requested mode)
-int SetScreenMode (uint sm)
+int32_t SetScreenMode (uint32_t sm)
 {
 #if 0
 	GLint nError = glGetError ();
@@ -526,11 +526,11 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int GrToggleFullScreenGame (void)
+int32_t GrToggleFullScreenGame (void)
 {
 	static char szFullscreen [2][30] = {"toggling fullscreen mode off", "toggling fullscreen mode on"};
 
-int i = ogl.ToggleFullScreen ();
+int32_t i = ogl.ToggleFullScreen ();
 controls.FlushInput ();
 if (gameStates.app.bGameRunning) {
 	HUDMessage (MSGC_GAME_FEEDBACK, szFullscreen [i]);

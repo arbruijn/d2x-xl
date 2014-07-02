@@ -56,7 +56,7 @@ if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_
 		CFloatVector	vPosf, verts [4];
 		tFlagData		*pf = gameData.pig.flags + !GetTeam (objP->info.nId);
 		tPathPoint		*pp = pf->path.GetPoint ();
-		int				i, bStencil;
+		int32_t				i, bStencil;
 		float				r;
 		CBitmap		*bmP;
 

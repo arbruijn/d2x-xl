@@ -65,19 +65,19 @@
 
 //------------------------------------------------------------------------------
 
-int COGL::DrawBufferWidth (void)
+int32_t COGL::DrawBufferWidth (void)
 {
-return int (gameData.render.screen.Scaled (m_states.nCurWidth));
+return int32_t (gameData.render.screen.Scaled (m_states.nCurWidth));
 }
 
-int COGL::DrawBufferHeight (void)
+int32_t COGL::DrawBufferHeight (void)
 {
-return int (gameData.render.screen.Scaled (m_states.nCurHeight));
+return int32_t (gameData.render.screen.Scaled (m_states.nCurHeight));
 }
 
 //------------------------------------------------------------------------------
 
-void COGL::CreateDrawBuffer (int nType)
+void COGL::CreateDrawBuffer (int32_t nType)
 {
 if (!m_features.bRenderToTexture)
 	return;
@@ -95,7 +95,7 @@ PrintLog (-1);
 void COGL::DestroyDrawBuffer (void)
 {
 #	if 1
-	static int bSemaphore = 0;
+	static int32_t bSemaphore = 0;
 
 if (bSemaphore)
 	return;
@@ -114,7 +114,7 @@ bSemaphore--;
 
 void COGL::DestroyDrawBuffers (void)
 {
-for (int i = m_data.drawBuffers.Length () - 1; i >= 0; i--) {
+for (int32_t i = m_data.drawBuffers.Length () - 1; i >= 0; i--) {
 	if (m_data.drawBuffers [i].Handle ()) {
 		SelectDrawBuffer (i);
 		DestroyDrawBuffer ();
@@ -124,10 +124,10 @@ for (int i = m_data.drawBuffers.Length () - 1; i >= 0; i--) {
 
 //------------------------------------------------------------------------------
 
-void COGL::SetDrawBuffer (int nBuffer, int bFBO)
+void COGL::SetDrawBuffer (int32_t nBuffer, int32_t bFBO)
 {
 #if 1
-	static int bSemaphore = 0;
+	static int32_t bSemaphore = 0;
 
 if (bSemaphore)
 	return;
@@ -156,7 +156,7 @@ bSemaphore--;
 
 //------------------------------------------------------------------------------
 
-void COGL::SetReadBuffer (int nBuffer, int bFBO)
+void COGL::SetReadBuffer (int32_t nBuffer, int32_t bFBO)
 {
 if (bFBO && (nBuffer == GL_BACK) && m_features.bRenderToTexture && DrawBuffer ()->Handle ()) {
 	if (DrawBuffer ()->Active () || DrawBuffer ()->Enable ())
@@ -173,14 +173,14 @@ else {
 
 //------------------------------------------------------------------------------
 
-int COGL::SelectDrawBuffer (int nBuffer, int nColorBuffers) 
+int32_t COGL::SelectDrawBuffer (int32_t nBuffer, int32_t nColorBuffers) 
 { 
 //if (gameStates.render.nShadowMap > 0)
 //	nBuffer = gameStates.render.nShadowMap + 5;
-int nPrevBuffer = (m_states.nCamera < 0) 
+int32_t nPrevBuffer = (m_states.nCamera < 0) 
 						? m_states.nCamera 
 						: (m_data.drawBufferP && m_data.drawBufferP->Active () && !m_data.drawBufferP->Resize (DrawBufferWidth (), DrawBufferHeight ())) 
-							? int (m_data.drawBufferP - m_data.drawBuffers.Buffer ()) 
+							? int32_t (m_data.drawBufferP - m_data.drawBuffers.Buffer ()) 
 							: 0x7FFFFFFF;
 
 CCamera* cameraP;
@@ -241,25 +241,25 @@ else {
 
 //------------------------------------------------------------------------------
 
-int COGL::SelectGlowBuffer (void) 
+int32_t COGL::SelectGlowBuffer (void) 
 { 
-return SelectDrawBuffer (gameStates.render.cameras.bActive ? -cameraManager.CurrentIndex () - 1 : int (!IsSideBySideDevice () && (m_data.xStereoSeparation > 0)), 1) > -1;
+return SelectDrawBuffer (gameStates.render.cameras.bActive ? -cameraManager.CurrentIndex () - 1 : int32_t (!IsSideBySideDevice () && (m_data.xStereoSeparation > 0)), 1) > -1;
 }
 
 //------------------------------------------------------------------------------
 
-int COGL::SelectBlurBuffer (int nBuffer) 
+int32_t COGL::SelectBlurBuffer (int32_t nBuffer) 
 { 
 return SelectDrawBuffer (nBuffer + 3) > -1;
 }
 
 //------------------------------------------------------------------------------
 
-CFBO* COGL::BlurBuffer (int nBuffer) 
+CFBO* COGL::BlurBuffer (int32_t nBuffer) 
 { 
 return (gameStates.render.cameras.bActive && (nBuffer < 0))
 		 ? &cameraManager.Current ()->FrameBuffer ()
-		 : m_data.GetDrawBuffer ((nBuffer >= 0) ? nBuffer + 3 : !IsSideBySideDevice () && int (m_data.xStereoSeparation > 0)); 
+		 : m_data.GetDrawBuffer ((nBuffer >= 0) ? nBuffer + 3 : !IsSideBySideDevice () && int32_t (m_data.xStereoSeparation > 0)); 
 }
 
 //------------------------------------------------------------------------------

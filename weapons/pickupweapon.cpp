@@ -29,7 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-----------------------------------------------------------------------------
 
-static void DuplicateWeaponMsg (int nWeaponIndex, int nPlayer)
+static void DuplicateWeaponMsg (int32_t nWeaponIndex, int32_t nPlayer)
 {
 if (ISLOCALPLAYER (nPlayer))
 	HUDInitMessage ("%s %s!", TXT_ALREADY_HAVE_THE, PRIMARY_WEAPON_NAMES (nWeaponIndex));
@@ -39,13 +39,13 @@ if (ISLOCALPLAYER (nPlayer))
 
 //called when a primary weapon is picked up
 //returns true if actually picked up
-int PickupPrimary (int nWeaponIndex, int nPlayer)
+int32_t PickupPrimary (int32_t nWeaponIndex, int32_t nPlayer)
 {
 	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
-	//ushort oldFlags = LOCALPLAYER.primaryWeaponFlags;
-	ushort flag = 1 << nWeaponIndex;
-	int nCutPoint;
-	int nSupposedWeapon = gameData.weapons.nPrimary;
+	//uint16_t oldFlags = LOCALPLAYER.primaryWeaponFlags;
+	uint16_t flag = 1 << nWeaponIndex;
+	int32_t nCutPoint;
+	int32_t nSupposedWeapon = gameData.weapons.nPrimary;
 
 if (nWeaponIndex == FUSION_INDEX) {
 	if (gameData.multiplayer.weaponStates [nPlayer].nShip == 1)
@@ -94,9 +94,9 @@ return 1;
 
 //	---------------------------------------------------------------------
 
-int MaxSecondaryAmmo (int nWeapon)
+int32_t MaxSecondaryAmmo (int32_t nWeapon)
 {
-int nMaxAmount = nMaxSecondaryAmmo [nWeapon];
+int32_t nMaxAmount = nMaxSecondaryAmmo [nWeapon];
 if (gameData.multiplayer.weaponStates [N_LOCALPLAYER].nShip == 1) {
 	if (nWeapon == EARTHSHAKER_INDEX)
 		nMaxAmount /= 2;
@@ -122,11 +122,11 @@ return nMaxAmount;
 //called when one of these weapons is picked up
 //when you pick up a secondary, you always get the weapon & ammo for it
 //	Returns true if powerup picked up, else returns false.
-int PickupSecondary (CObject *objP, int nWeaponIndex, int nAmount, int nPlayer)
+int32_t PickupSecondary (CObject *objP, int32_t nWeaponIndex, int32_t nAmount, int32_t nPlayer)
 {
-	int		nMaxAmount;
-	int		nPickedUp;
-	int		nCutPoint, bEmpty = 0, bSmokeGrens;
+	int32_t		nMaxAmount;
+	int32_t		nPickedUp;
+	int32_t		nCutPoint, bEmpty = 0, bSmokeGrens;
 	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
 
 if ((nWeaponIndex == PROXMINE_INDEX) && IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0)) {
@@ -152,7 +152,7 @@ if (playerP->secondaryAmmo [nWeaponIndex] > nMaxAmount) {
 	nPickedUp = nAmount - (playerP->secondaryAmmo [nWeaponIndex] - nMaxAmount);
 	playerP->secondaryAmmo [nWeaponIndex] = nMaxAmount;
 	if ((nPickedUp < nAmount) && (nWeaponIndex != PROXMINE_INDEX) && (nWeaponIndex != SMARTMINE_INDEX)) {
-		short nObject = objP->Index ();
+		int16_t nObject = objP->Index ();
 		gameData.multiplayer.leftoverPowerups [nObject].nCount = nAmount - nPickedUp;
 		gameData.multiplayer.leftoverPowerups [nObject].nType = secondaryWeaponToPowerup [0][nWeaponIndex];
 		gameData.multiplayer.leftoverPowerups [nObject].spitterP = OBJECTS + playerP->nObject;
@@ -174,7 +174,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 			//we want to do a mini-auto-selection that applies to the drop bomb key
 			if ((nWeaponIndex == PROXMINE_INDEX || nWeaponIndex == SMARTMINE_INDEX) &&
 				!(gameData.weapons.nSecondary == PROXMINE_INDEX || gameData.weapons.nSecondary == SMARTMINE_INDEX)) {
-				int cur = bLastSecondaryWasSuper [PROXMINE_INDEX] ? PROXMINE_INDEX : SMARTMINE_INDEX;
+				int32_t cur = bLastSecondaryWasSuper [PROXMINE_INDEX] ? PROXMINE_INDEX : SMARTMINE_INDEX;
 				if (SOrderList (nWeaponIndex) < SOrderList (cur))
 					bLastSecondaryWasSuper [PROXMINE_INDEX] = (nWeaponIndex == SMARTMINE_INDEX);
 				}
@@ -197,10 +197,10 @@ return 1;
 
 //called when ammo (for the vulcan cannon) is picked up
 //	Returns the amount picked up
-int PickupAmmo (int classFlag, int nWeaponIndex, int ammoCount, const char *pszMsg, int nPlayer)
+int32_t PickupAmmo (int32_t classFlag, int32_t nWeaponIndex, int32_t ammoCount, const char *pszMsg, int32_t nPlayer)
 {
-	int				nMaxAmmo, nCutPoint, nSupposedWeapon = gameData.weapons.nPrimary;
-	int				nOldAmmo = classFlag;		//kill warning
+	int32_t				nMaxAmmo, nCutPoint, nSupposedWeapon = gameData.weapons.nPrimary;
+	int32_t				nOldAmmo = classFlag;		//kill warning
 	CPlayerData*	playerP = gameData.multiplayer.players + nPlayer;
 
 nMaxAmmo = nMaxPrimaryAmmo [nWeaponIndex];
@@ -230,11 +230,11 @@ return ammoCount;	//return amount used
 
 //------------------------------------------------------------------------------
 
-int PickupVulcanAmmo (CObject *objP, int nPlayer)
+int32_t PickupVulcanAmmo (CObject *objP, int32_t nPlayer)
 {
-	int	bUsed = 0;
+	int32_t	bUsed = 0;
 
-int	pwSave = gameData.weapons.nPrimary;	
+int32_t	pwSave = gameData.weapons.nPrimary;	
 // Ugh, save selected primary weapon around the picking up of the ammo.  
 // I apologize for this code.  Matthew A. Toschlog
 if (PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, VULCAN_CLIP_CAPACITY, NULL, nPlayer)) {
@@ -244,7 +244,7 @@ if (PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, VULCAN_CLIP_CAPACITY, NULL, nPlayer
 	bUsed = 1;
 	} 
 else {
-	int nMaxAmmo = nMaxPrimaryAmmo [VULCAN_INDEX];
+	int32_t nMaxAmmo = nMaxPrimaryAmmo [VULCAN_INDEX];
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_AMMO_RACK)
 		nMaxAmmo *= 2;
 	if (ISLOCALPLAYER (nPlayer))
@@ -257,13 +257,13 @@ return bUsed;
 
 //------------------------------------------------------------------------------
 
-int PickupLaser (CObject *objP, int nId, int nPlayer)
+int32_t PickupLaser (CObject *objP, int32_t nId, int32_t nPlayer)
 {
 	CPlayerData *playerP = gameData.multiplayer.players + nPlayer;
 
 if (playerP->AddStandardLaser ()) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordLaserLevel ((sbyte) playerP->LaserLevel (0) - 1, (sbyte) playerP->LaserLevel (0));
+		NDRecordLaserLevel ((int8_t) playerP->LaserLevel (0) - 1, (int8_t) playerP->LaserLevel (0));
 	PowerupBasic (10, 0, 10, LASER_SCORE, "%s %s %d", TXT_LASER, TXT_BOOSTED_TO, playerP->LaserLevel () + 1);
 	cockpit->UpdateLaserWeaponInfo ();
 	PickupPrimary (LASER_INDEX, nPlayer);
@@ -278,7 +278,7 @@ return PickupEnergyBoost (objP, nPlayer);
 
 //------------------------------------------------------------------------------
 
-int PickupSuperLaser (CObject *objP, int nId, int nPlayer)
+int32_t PickupSuperLaser (CObject *objP, int32_t nId, int32_t nPlayer)
 {
 	CPlayerData *playerP = gameData.multiplayer.players + nPlayer;
 
@@ -303,7 +303,7 @@ return PickupEnergyBoost (objP, nPlayer);
 
 //------------------------------------------------------------------------------
 
-int PickupQuadLaser (CObject *objP, int nId, int nPlayer)
+int32_t PickupQuadLaser (CObject *objP, int32_t nId, int32_t nPlayer)
 {
 	CPlayerData *playerP = gameData.multiplayer.players + nPlayer;
 
@@ -322,7 +322,7 @@ return PickupEnergyBoost (objP, nPlayer);
 
 //------------------------------------------------------------------------------
 
-int PickupGun (CObject *objP, int nId, int nPlayer)
+int32_t PickupGun (CObject *objP, int32_t nId, int32_t nPlayer)
 {
 if (PickupPrimary (nId, nPlayer)) {
 	if ((nId == OMEGA_INDEX) && (nPlayer == N_LOCALPLAYER))
@@ -336,10 +336,10 @@ return PickupEnergyBoost (NULL, nPlayer);
 
 //	-----------------------------------------------------------------------------
 
-int PickupGatlingGun (CObject *objP, int nId, int nPlayer)
+int32_t PickupGatlingGun (CObject *objP, int32_t nId, int32_t nPlayer)
 {
-	int nAmmo = objP->cType.powerupInfo.nCount;
-	int bUsed = PickupPrimary (nId, nPlayer);
+	int32_t nAmmo = objP->cType.powerupInfo.nCount;
+	int32_t bUsed = PickupPrimary (nId, nPlayer);
 
 //didn't get the weapon (because we already have it), but
 //maybe snag some of the nAmmo.  if single-CPlayerData, grab all the nAmmo
@@ -348,7 +348,7 @@ int PickupGatlingGun (CObject *objP, int nId, int nPlayer)
 if (!bUsed && IsMultiGame)
 	nAmmo -= VULCAN_CLIP_CAPACITY;	//don't let take all ammo
 if (nAmmo > 0) {
-	int nAmmoUsed = PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, nAmmo, NULL, nPlayer);
+	int32_t nAmmoUsed = PickupAmmo (CLASS_PRIMARY, VULCAN_INDEX, nAmmo, NULL, nPlayer);
 	objP->cType.powerupInfo.nCount -= nAmmoUsed;
 	if (ISLOCALPLAYER (nPlayer)) {
 		if (!bUsed && nAmmoUsed) {

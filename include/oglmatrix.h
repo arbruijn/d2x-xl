@@ -32,16 +32,16 @@ class COGLMatrix {
 
 		void Mul (void) { glMultMatrixd ((GLdouble*) m_data); }
 
-		double& operator[] (int i) { return m_data [i]; }
+		double& operator[] (int32_t i) { return m_data [i]; }
 
 		GLfloat* ToFloat (void) {
-			for (int i = 0; i < 16; i++)
+			for (int32_t i = 0; i < 16; i++)
 				m_dataf [i] = GLfloat (m_data [i]);
 			return m_dataf;
 			}
 
 		COGLMatrix& operator* (double factor) {
-			for (int i = 0; i < 16; i++)
+			for (int32_t i = 0; i < 16; i++)
 				m_data [i] *= factor;
 			return *this;
 			}

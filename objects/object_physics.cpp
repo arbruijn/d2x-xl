@@ -56,7 +56,7 @@ return shipModifiers [gameData.multiplayer.weaponStates [info.nId].nShip].v.ener
 void CObject::Wiggle (void)
 {
 	fix		xWiggle;
-	int		nParent;
+	int32_t		nParent;
 	CObject	*parentP;
 
 if (gameStates.render.nShadowPass == 2)
@@ -134,7 +134,7 @@ forwardThrustTime = controls [0].forwardThrustTime;
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (RandShort () < OBJECTS [N_LOCALPLAYER].DriveDamage ())) {
 	if (controls [0].afterburnerState) {			//player has key down
 		fix xAfterburnerScale;
-		int oldCount, newCount;
+		int32_t oldCount, newCount;
 
 		//add in value from 0..1
 		xAfterburnerScale = I2X (1) + Min (I2X (1) / 2, gameData.physics.xAfterburnerCharge) * 2;
@@ -215,7 +215,7 @@ mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);
 
 CWeaponState& ws = gameData.multiplayer.weaponStates [N_LOCALPLAYER];
 
-ubyte nOldThrusters [5];
+uint8_t nOldThrusters [5];
 
 memcpy (nOldThrusters, ws.nThrusters, sizeof (nOldThrusters));
 memset (ws.nThrusters, 0, sizeof (ws.nThrusters));

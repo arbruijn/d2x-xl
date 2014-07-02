@@ -46,11 +46,11 @@ return xEnergyUsed;
 //	*objP is the CObject firing the omega cannon
 //	*pos is the location from which the omega bolt starts
 
-int nOmegaDuration [7] = {1, 2, 3, 5, 7, 10, 15};
+int32_t nOmegaDuration [7] = {1, 2, 3, 5, 7, 10, 15};
 
 void SetMaxOmegaCharge (void)
 {
-gameData.omega.xMaxCharge = DEFAULT_MAX_OMEGA_CHARGE * nOmegaDuration [int (extraGameInfo [0].nOmegaRamp)];
+gameData.omega.xMaxCharge = DEFAULT_MAX_OMEGA_CHARGE * nOmegaDuration [int32_t (extraGameInfo [0].nOmegaRamp)];
 if (gameData.omega.xCharge [IsMultiGame] > gameData.omega.xMaxCharge) {
 	LOCALPLAYER.UpdateEnergy (OmegaEnergy (gameData.omega.xCharge [IsMultiGame] - gameData.omega.xMaxCharge));
 	gameData.omega.xCharge [IsMultiGame] = gameData.omega.xMaxCharge;
@@ -61,7 +61,7 @@ if (gameData.omega.xCharge [IsMultiGame] > gameData.omega.xMaxCharge) {
 
 void DeleteOldOmegaBlobs (CObject *parentObjP)
 {
-	int		nParentObj = parentObjP->cType.laserInfo.parent.nObject;
+	int32_t		nParentObj = parentObjP->cType.laserInfo.parent.nObject;
 	CObject	*objP;
 
 FORALL_WEAPON_OBJS (objP, i)
@@ -71,17 +71,17 @@ FORALL_WEAPON_OBJS (objP, i)
 
 // ---------------------------------------------------------------------------------
 
-void CreateOmegaBlobs (short nFiringSeg, CFixVector *vMuzzle, CFixVector *vTargetPos, CObject *parentObjP, CObject *targetObjP)
+void CreateOmegaBlobs (int16_t nFiringSeg, CFixVector *vMuzzle, CFixVector *vTargetPos, CObject *parentObjP, CObject *targetObjP)
 {
-	short			nLastSeg, nLastCreatedObj = -1;
+	int16_t			nLastSeg, nLastCreatedObj = -1;
 	CFixVector	vGoal;
 	fix			xGoalDist;
-	int			nOmegaBlobs;
+	int32_t			nOmegaBlobs;
 	fix			xOmegaBlobDist;
 	CFixVector	vOmegaDelta;
 	CFixVector	vBlobPos, vPerturb;
 	fix			xPerturbArray [MAX_OMEGA_BLOBS];
-	int			i;
+	int32_t			i;
 
 if (IsMultiGame)
 	DeleteOldOmegaBlobs (parentObjP);
@@ -130,7 +130,7 @@ vPerturb = CFixVector::Random ();
 vPerturb += parentObjP->info.position.mOrient.m.dir.u * (-I2X (1) / 2);
 for (i = 0; i < nOmegaBlobs; i++) {
 	CFixVector	vTempPos;
-	short			nBlobObj, nSegment;
+	int16_t			nBlobObj, nSegment;
 
 	//	This will put the last blob right at the destination CObject, causing damage.
 	if (i == nOmegaBlobs - 1)
@@ -219,11 +219,11 @@ if (LOCALPLAYER.Energy ()) {
 
 void DoOmegaStuff (CObject *parentObjP, CFixVector *vMuzzle, CObject *weaponObjP)
 {
-	short			nTargetObj, nFiringSeg, nParentSeg;
+	int16_t			nTargetObj, nFiringSeg, nParentSeg;
 	CFixVector	vTargetPos;
-	int			nPlayer = (parentObjP->info.nType == OBJ_PLAYER) ? parentObjP->info.nId : -1;
-	int			bSpectate = SPECTATOR (parentObjP);
-	static		int nDelay = 0;
+	int32_t			nPlayer = (parentObjP->info.nType == OBJ_PLAYER) ? parentObjP->info.nId : -1;
+	int32_t			bSpectate = SPECTATOR (parentObjP);
+	static		int32_t nDelay = 0;
 
 #if 1
 if (gameStates.gameplay.bMineMineCheat && (gameData.omega.xCharge [IsMultiGame] < MAX_OMEGA_CHARGE))
@@ -290,7 +290,7 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 	vTargetPos = *vMuzzle + perturbed_fvec * MAX_OMEGA_DIST;
 	CHitQuery	hitQuery (FQ_IGNORE_POWERUPS | FQ_TRANSPOINT | FQ_CHECK_OBJS, vMuzzle, &vTargetPos, nFiringSeg, OBJ_IDX (parentObjP), 0, 0, ++gameData.physics.bIgnoreObjFlag);
 	CHitResult	hitResult;
-	int fate = FindHitpoint (hitQuery, hitResult);
+	int32_t fate = FindHitpoint (hitQuery, hitResult);
 	if (fate != HIT_NONE) {
 		if (hitResult.nSegment != -1)		//	How can this be?  We went from inside the mine to outside without hitting anything?
 			vTargetPos = hitResult.vPoint;

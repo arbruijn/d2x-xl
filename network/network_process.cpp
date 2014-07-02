@@ -35,11 +35,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessMonitorVector (int vector)
+void NetworkProcessMonitorVector (int32_t vector)
 {
-	int		i, j;
-	int		tm, ec, bm;
-	int		count = 0;
+	int32_t		i, j;
+	int32_t		tm, ec, bm;
+	int32_t		count = 0;
 	CSegment	*segP = SEGMENTS.Buffer ();
 	CSide		*sideP;
 
@@ -61,7 +61,7 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessGameInfo (ubyte *dataP)
+void NetworkProcessGameInfo (uint8_t *dataP)
 {
 	CNetGameInfo	newGame (reinterpret_cast<tNetGameInfo*> (dataP));
 
@@ -81,7 +81,7 @@ if (newGame.m_info.nSecurity != playerInfoP->m_info.nSecurity) {
    }
 #endif
 Assert (playerInfoP != NULL);
-int i = FindActiveNetGame (newGame.m_info.szGameName, newGame.m_info.nSecurity);
+int32_t i = FindActiveNetGame (newGame.m_info.szGameName, newGame.m_info.nSecurity);
 if (i == MAX_ACTIVE_NETGAMES) {
 #if 1
 	console.printf (CON_DBG, "Too many netgames.\n");
@@ -112,9 +112,9 @@ if (activeNetGames [i].m_info.nNumPlayers == 0) {	// Delete this game
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessLiteInfo (ubyte *dataP)
+void NetworkProcessLiteInfo (uint8_t *dataP)
 {
-	int					i;
+	int32_t					i;
 	CNetGameInfo*		actGameP;
 	tNetGameInfoLite*	newInfo = reinterpret_cast<tNetGameInfoLite*> (dataP);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
@@ -136,7 +136,7 @@ if (i == networkData.nActiveGames) {
 	networkData.nActiveGames++;
 	}
 actGameP = activeNetGames + i;
-memcpy (actGameP, reinterpret_cast<ubyte*> (newInfo), sizeof (tNetGameInfoLite));
+memcpy (actGameP, reinterpret_cast<uint8_t*> (newInfo), sizeof (tNetGameInfoLite));
 memcpy (actGameP->m_server, networkData.packetSource.Network (), sizeof (actGameP->m_server));
 nLastNetGameUpdate [i] = SDL_GetTicks ();
 // See if this is really a Hoard/Entropy/Monsterball game
@@ -164,7 +164,7 @@ if (actGameP->m_info.nNumPlayers == 0)
 
 //------------------------------------------------------------------------------
 
-int NetworkProcessExtraGameInfo (ubyte *dataP)
+int32_t NetworkProcessExtraGameInfo (uint8_t *dataP)
 {
 ReceiveExtraGameInfoPacket (dataP, extraGameInfo + 1);
 memcpy (extraGameInfo, extraGameInfo + 1, sizeof (extraGameInfo [0]));
@@ -178,7 +178,7 @@ if (!extraGameInfo [1].bAllowCustomWeapons)
 SetMonsterballForces ();
 LogExtraGameInfo ();
 gameStates.app.bHaveExtraGameInfo [1] = 1;
-int i = FindActiveNetGame (extraGameInfo [1].szGameName, extraGameInfo [1].nSecurity);
+int32_t i = FindActiveNetGame (extraGameInfo [1].szGameName, extraGameInfo [1].nSecurity);
 if (i < networkData.nActiveGames)
 	activeExtraGameInfo [i] = extraGameInfo [1];
 else
@@ -199,7 +199,7 @@ if (their->player.connected != CONNECT_ADVANCE_LEVEL) {
 	networkData.nStatus = NETSTAT_MENU;
 	}
 else {
-	for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (!stricmp (their->player.callsign, gameData.multiplayer.players [i].callsign)) {
 			if (i != WhoIsGameHost ()) 
 				HUDInitMessage (TXT_KICK_ATTEMPT, their->player.callsign);
@@ -224,7 +224,7 @@ else {
 void NetworkProcessRequest (tSequencePacket *their)
 {
 // Player is ready to receieve a sync packet
-for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
+for (int32_t nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 	if (!CmpNetPlayers (their->player.callsign, netPlayers [0].m_info.players [nPlayer].callsign, 
 							  &their->player.network, &netPlayers [0].m_info.players [nPlayer].network)) {
 		CONNECT (nPlayer, CONNECT_PLAYING);
@@ -246,9 +246,9 @@ else
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessNakedPData (char *dataP, int len)
+void NetworkProcessNakedPData (char *dataP, int32_t len)
  {
-   int nPlayer = dataP [1]; 
+   int32_t nPlayer = dataP [1]; 
    Assert (dataP [0] == PID_NAKED_PDATA);
 
 if (nPlayer < 0) {
@@ -267,7 +267,7 @@ if (!gameData.multigame.bQuitGame && (nPlayer >= gameData.multiplayer.nPlayers))
 	return;
 	}
 if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL)) {
-	int oldEndlevelSequence = gameStates.app.bEndLevelSequence;
+	int32_t oldEndlevelSequence = gameStates.app.bEndLevelSequence;
 	gameStates.app.bEndLevelSequence = 1;
 	MultiProcessBigData (reinterpret_cast<char*> (dataP + 2), len - 2);
 	gameStates.app.bEndLevelSequence = oldEndlevelSequence;
@@ -282,13 +282,13 @@ void NetworkProcessNamesReturn (char *dataP)
  {
 	CMenu	m (15);
    char	mText [15][50], temp [50];
-	int	i, l, nInMenu, gnum, num = 0, count = 5, nPlayers;
+	int32_t	i, l, nInMenu, gnum, num = 0, count = 5, nPlayers;
    
 memset (mText, 0, sizeof (mText));
-if (networkData.nNamesInfoSecurity != *reinterpret_cast<int*> (dataP + 1)) {
+if (networkData.nNamesInfoSecurity != *reinterpret_cast<int32_t*> (dataP + 1)) {
 #if 1			
   console.printf (CON_DBG, "Bad security on names return!\n");
-  console.printf (CON_DBG, "NIS=%d dataP=%d\n", networkData.nNamesInfoSecurity, *reinterpret_cast<int*> (dataP + 1));
+  console.printf (CON_DBG, "NIS=%d dataP=%d\n", networkData.nNamesInfoSecurity, *reinterpret_cast<int32_t*> (dataP + 1));
 #endif
 	return;
 	}
@@ -352,7 +352,7 @@ void NetworkProcessMissingObjFrames (char *dataP)
 {
 	tMissingObjFrames	missingObjFrames;
 
-ReceiveMissingObjFramesPacket (reinterpret_cast<ubyte*> (dataP), &missingObjFrames);
+ReceiveMissingObjFramesPacket (reinterpret_cast<uint8_t*> (dataP), &missingObjFrames);
 tNetworkSyncData *syncP = FindJoiningPlayer (missingObjFrames.nPlayer);
 if (syncP && (missingObjFrames.nFrame > syncP->objs.missingFrames.nFrame)) {
 #if 1

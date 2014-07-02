@@ -34,11 +34,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern bool bNewFileFormat;
 
-short ConvertD1Texture (short nD1Texture, int bForce);
+int16_t ConvertD1Texture (int16_t nD1Texture, int32_t bForce);
 
 // ------------------------------------------------------------------------------------------
 
-CFixVector& CSide::Normal (int nFace)
+CFixVector& CSide::Normal (int32_t nFace)
 { 
 return gameStates.render.bRendering ? m_rotNorms [nFace] : m_normals [nFace]; 
 }
@@ -52,7 +52,7 @@ if (!FaceCount ())
 	return;
 CFloatVector vCenter;
 vCenter.SetZero ();
-for (int i = 0; i < m_nCorners; i++)
+for (int32_t i = 0; i < m_nCorners; i++)
 	vCenter += FVERTICES [m_corners [i]];
 vCenter /= float (m_nCorners);
 m_vCenter.Assign (vCenter);
@@ -84,7 +84,7 @@ void CSide::ComputeRads (void)
 {
 m_rads [0] = 0x7fffffff;
 m_rads [1] = 0;
-for (int i = 0; i < m_nCorners; i++) {
+for (int32_t i = 0; i < m_nCorners; i++) {
 	CFixVector v = CFixVector::Avg (VERTICES [m_corners [i]], VERTICES [m_corners [(i + 1) % m_nCorners]]);
 	fix d = CFixVector::Dist (v, m_vCenter);
 	if (m_rads [0] > d)
@@ -97,15 +97,15 @@ for (int i = 0; i < m_nCorners; i++) {
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupCorners (ushort* verts, ushort* index)
+void CSide::SetupCorners (uint16_t* verts, uint16_t* index)
 {
-for (int i = 0; i < 4; i++)
+for (int32_t i = 0; i < 4; i++)
 	m_corners [i] = (index [i] == 0xff) ? 0xFFFF : verts [index [i]];
 }
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupVertexList (ushort* verts, ushort* index)
+void CSide::SetupVertexList (uint16_t* verts, uint16_t* index)
 {
 m_nFaces = -1;
 if (m_nShape) {
@@ -206,7 +206,7 @@ else if (m_nType == SIDE_IS_TRI_13) {
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, ushort* verts, ushort* index)
+void CSide::SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, uint16_t* verts, uint16_t* index)
 {
 m_nType = SIDE_IS_QUAD;
 m_normals [0] = 
@@ -218,7 +218,7 @@ SetupVertexList (verts, index);
 
 // -------------------------------------------------------------------------------
 
-void CSide::SetupAsTriangles (bool bSolid, ushort* verts, ushort* index)
+void CSide::SetupAsTriangles (bool bSolid, uint16_t* verts, uint16_t* index)
 {
 	CFixVector		vNormal;
 	fix				dot;
@@ -257,8 +257,8 @@ if (bSolid) {
 		}
 	}
 else {
-	ushort	vSorted [4];
-	int		bFlip;
+	uint16_t	vSorted [4];
+	int32_t		bFlip;
 
 	bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
 	if ((vSorted [0] == m_corners [0]) || (vSorted [0] == m_corners [2])) {
@@ -296,7 +296,7 @@ SetupVertexList (verts, index);
 
 // -------------------------------------------------------------------------------
 
-int sign (fix v)
+int32_t sign (fix v)
 {
 if (v > PLANE_DIST_TOLERANCE)
 	return 1;
@@ -307,12 +307,12 @@ return 0;
 
 // -------------------------------------------------------------------------------
 
-void CSide::Setup (short nSegment, ushort* verts, ushort* index, bool bSolid)
+void CSide::Setup (int16_t nSegment, uint16_t* verts, uint16_t* index, bool bSolid)
 {
 if (m_nShape > SIDE_SHAPE_TRIANGLE)
 	return;
 
-	ushort			vSorted [4], bFlip;
+	uint16_t			vSorted [4], bFlip;
 	CFixVector		vNormal;
 	CFloatVector	vNormalf;
 
@@ -362,8 +362,8 @@ else {
 		Assert (m_nFaces == 2);
 		fix dist0 = VERTICES [m_vertices [1]].DistToPlane (m_normals [1], VERTICES [m_nMinVertex [0]]);
 		fix dist1 = VERTICES [m_vertices [4]].DistToPlane (m_normals [0], VERTICES [m_nMinVertex [0]]);
-		int s0 = sign (dist0);
-		int s1 = sign (dist1);
+		int32_t s0 = sign (dist0);
+		int32_t s1 = sign (dist1);
 		if (s0 == 0 || s1 == 0 || s0 != s1)
 			SetupAsQuad (vNormal, vNormalf, verts, index);
 		}
@@ -371,15 +371,15 @@ else {
 #endif
 
 m_bIsQuad = !m_nShape && (m_normals [0] == m_normals [1]);
-for (int i = 0; i < m_nCorners; i++)
+for (int32_t i = 0; i < m_nCorners; i++)
 	AddToVertexNormal (m_corners [i], m_normals [2]);
 }
 
 // -------------------------------------------------------------------------------
 
-int CSide::HasVertex (ushort nVertex) 
+int32_t CSide::HasVertex (uint16_t nVertex) 
 { 
-for (int i = 0; i < m_nCorners; i++)
+for (int32_t i = 0; i < m_nCorners; i++)
 	if (m_corners [i] == nVertex)
 		return 1;
 return 0;
@@ -387,7 +387,7 @@ return 0;
 
 // -------------------------------------------------------------------------------
 
-CFixVector& CSide::Vertex (int nVertex)
+CFixVector& CSide::Vertex (int32_t nVertex)
 {
 return gameStates.render.bRendering ? RENDERPOINTS [nVertex].ViewPos () : VERTICES [nVertex];
 }
@@ -417,18 +417,18 @@ return (m_nFaces < 2) || (Height () <= PLANE_DIST_TOLERANCE);
 // -------------------------------------------------------------------------------
 //returns 3 different bitmasks with info telling if this sphere is in
 //this CSegment.  See CSegMasks structure for info on fields
-CSegMasks CSide::Masks (const CFixVector& refPoint, fix xRad, short sideBit, short faceBit, bool bCheckPoke)
+CSegMasks CSide::Masks (const CFixVector& refPoint, fix xRad, int16_t sideBit, int16_t faceBit, bool bCheckPoke)
 {
 	CSegMasks	masks;
 	fix			xDist;
 
 masks.m_valid = 1;
 if (m_nFaces == 2) {
-	int	nSideCount = 0, 
+	int32_t	nSideCount = 0, 
 			nCenterCount = 0;
 
 	CFixVector vMin = MinVertex ();
-	for (int nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
+	for (int32_t nFace = 0; nFace < 2; nFace++, faceBit <<= 1) {
 		xDist = refPoint.DistToPlane (Normal (nFace), vMin);
 		if (xDist < -PLANE_DIST_TOLERANCE) //in front of face
 			nCenterCount++;
@@ -453,7 +453,7 @@ if (m_nFaces == 2) {
 else {	
 #if DBG
 	fix vDist [3];
-	for (int i = 0;  i < m_nCorners; i++)
+	for (int32_t i = 0;  i < m_nCorners; i++)
 		vDist [i] = CFixVector::Dist (refPoint, VERTICES [m_corners [i]]);
 #endif
 	xDist = refPoint.DistToPlane (Normal (0), MinVertex ());
@@ -470,17 +470,17 @@ return masks;
 
 // -------------------------------------------------------------------------------
 
-ubyte CSide::Dist (const CFixVector& refPoint, fix& xSideDist, int bBehind, short sideBit)
+uint8_t CSide::Dist (const CFixVector& refPoint, fix& xSideDist, int32_t bBehind, int16_t sideBit)
 {
 	fix	xDist;
-	ubyte mask = 0;
+	uint8_t mask = 0;
 
 xSideDist = 0;
 if (m_nFaces == 2) {
-	int nCenterCount = 0;
+	int32_t nCenterCount = 0;
 
 	CFixVector vMin = MinVertex ();
-	for (int nFace = 0; nFace < 2; nFace++) {
+	for (int32_t nFace = 0; nFace < 2; nFace++) {
 		xDist = refPoint.DistToPlane (Normal (nFace), vMin);
 		if ((xDist < -PLANE_DIST_TOLERANCE) == bBehind) {	//in front of face
 			nCenterCount++;
@@ -513,18 +513,18 @@ return mask;
 
 // -------------------------------------------------------------------------------
 
-ubyte CSide::Distf (const CFloatVector& refPoint, float& fSideDist, int bBehind, short sideBit)
+uint8_t CSide::Distf (const CFloatVector& refPoint, float& fSideDist, int32_t bBehind, int16_t sideBit)
 {
 	float	fDist;
-	ubyte mask = 0;
+	uint8_t mask = 0;
 	CFloatVector vMin, vNormal;
 
 vMin.Assign (MinVertex ());
 fSideDist = 0;
 if (m_nFaces == 2) {
-	int nCenterCount = 0;
+	int32_t nCenterCount = 0;
 
-	for (int nFace = 0; nFace < 2; nFace++) {
+	for (int32_t nFace = 0; nFace < 2; nFace++) {
 		vNormal.Assign (Normal (nFace));
 		fDist = refPoint.DistToPlane (vNormal, vMin);
 		if ((fDist < -X2F (PLANE_DIST_TOLERANCE)) == bBehind) {	//in front of face
@@ -566,7 +566,7 @@ fix CSide::DistToPoint (CFixVector v)
 {
 	CFixVector		h, n;
 	fix				dist, minDist = 0x7fffffff;
-	int				i, j;
+	int32_t				i, j;
 
 // compute intersection of perpendicular through refP with the plane spanned up by the face
 for (i = j = 0; i < m_nFaces; i++, j += 3) {
@@ -597,7 +597,7 @@ float CSide::DistToPointf (CFloatVector v)
 {
 	CFloatVector	h, n;
 	float				dist, minDist = 1e30f;
-	int				i, j;
+	int32_t				i, j;
 
 // compute intersection of perpendicular through refP with the plane spanned up by the face
 for (i = j = 0; i < m_nFaces; i++, j += 3) {
@@ -633,12 +633,12 @@ return (m_nFaces && IS_WALL (m_nWall)) ? WALLS + m_nWall : NULL;
 // Check whether point vPoint in segment nDestSeg can be seen from this side.
 // Level 0: Check from side center, 1: check from center and corners, 2: check from center, corners, and edge centers
 
-int CSide::SeesPoint (CFixVector& vPoint, short nDestSeg, int nLevel, int nThread)
+int32_t CSide::SeesPoint (CFixVector& vPoint, int16_t nDestSeg, int32_t nLevel, int32_t nThread)
 {
-	static int nLevels [3] = {4, 0, -4};
+	static int32_t nLevels [3] = {4, 0, -4};
 
 	CFloatVector	v0, v1;
-	int				i, j;
+	int32_t				i, j;
 
 v1.Assign (vPoint);
 
@@ -665,14 +665,14 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 //see if a refP is inside a face by projecting into 2d
-uint CSide::PointToFaceRelation (CFixVector& intersection, short nFace, CFixVector vNormal)
+uint32_t CSide::PointToFaceRelation (CFixVector& intersection, int16_t nFace, CFixVector vNormal)
 {
 #if 0
 
 	CFixVector		t;
-	int				biggest;
-	int 				h, i, j, nEdge, nVerts;
-	uint 				nEdgeMask;
+	int32_t				biggest;
+	int32_t 				h, i, j, nEdge, nVerts;
+	uint32_t 				nEdgeMask;
 	fix 				check_i, check_j;
 	CFixVector		*v0, *v1;
 	CFixVector2		vEdge, vCheck;
@@ -727,8 +727,8 @@ return nEdgeMask;
 #else
 
 	CFixVector		t;
-	int 				h, i, j, nEdge, projPlane;
-	uint 				nEdgeMask;
+	int32_t 				h, i, j, nEdge, projPlane;
+	uint32_t 				nEdgeMask;
 	CFixVector*		v0, * v1;
 	CFixVector2		vEdge, vCheck, vRef;
 
@@ -771,15 +771,15 @@ return nEdgeMask;
 
 //	-----------------------------------------------------------------------------
 //check if a sphere intersects a face
-int CSide::SphereToFaceRelation (CFixVector& intersection, fix rad, short iFace, CFixVector vNormal)
+int32_t CSide::SphereToFaceRelation (CFixVector& intersection, fix rad, int16_t iFace, CFixVector vNormal)
 {
 	CFixVector	vEdge, vCheck;            //this time, real 3d vectors
 	CFixVector	vNearest;
 	fix			xEdgeLen, d, dist;
 	CFixVector	*v0, *v1;
-	int			iType;
-	int			nEdge;
-	uint			nEdgeMask;
+	int32_t			iType;
+	int32_t			nEdge;
+	uint32_t			nEdgeMask;
 
 //now do 2d check to see if refP is in side
 nEdgeMask = PointToFaceRelation (intersection, iFace, vNormal);
@@ -834,10 +834,10 @@ return IT_NONE;
 //refP on plane, whether or not line intersects CSide
 //iFace determines which of four possible faces we have
 //note: the seg parm is temporary, until the face itself has a refP field
-int CSide::CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal)
+int32_t CSide::CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int16_t iFace, CFixVector vNormal)
 {
 	CFixVector	v1;
-	int			pli, nVertex, bCheckRad = 0;
+	int32_t			pli, nVertex, bCheckRad = 0;
 
 //use lowest refP number
 #if DBG
@@ -871,7 +871,7 @@ if (rad)
 if ((pli = SphereToFaceRelation (vHit, rad, iFace, vNormal)))
 	return pli;
 if (bCheckRad) {
-	int			i, d;
+	int32_t			i, d;
 	CFixVector	*a, *b;
 
 	b = VERTICES + m_corners [0];
@@ -890,13 +890,13 @@ return IT_NONE;
 //this version is for when the start and end positions both poke through
 //the plane of a CSide.  In this case, we must do checks against the edge
 //of faces
-int CSide::CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal)
+int32_t CSide::CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int16_t iFace, CFixVector vNormal)
 {
 	CFixVector	vMove;
 	fix			edge_t, move_t, edge_t2, move_t2, closestDist;
 	fix			edge_len, move_len;
-	int			nEdge;
-	uint			nEdgeMask;
+	int32_t			nEdge;
+	uint32_t			nEdgeMask;
 	CFixVector	*edge_v0, *edge_v1, vEdge;
 	CFixVector	vClosestEdgePoint, vClosestMovePoint;
 
@@ -937,13 +937,13 @@ return IT_NONE;			//no hit
 //	-----------------------------------------------------------------------------
 //finds the uv coords of the given refP on the given seg & side
 //fills in u & v. if l is non-NULL fills it in also
-void CSide::HitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iFace)
+void CSide::HitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int32_t iFace)
 {
 	CFixVector*		vPoints;
 	CFixVector		vNormal;
-	int				projPlane, ii, jj;
+	int32_t				projPlane, ii, jj;
 	tUVL				uvls [3];
-	int				h;
+	int32_t				h;
 
 if (iFace >= m_nFaces) {
 	PrintLog (0, "invalid face number in CSide::HitPointUV\n");
@@ -1005,7 +1005,7 @@ return IS_WALL (m_nWall) ? WALLS [m_nWall].IsOpenableDoor () : false;
 
 CFixVector* CSide::GetCornerVertices (CFixVector* vertices) 
 { 
-	int i;
+	int32_t i;
 
 for (i = 0; i < m_nCorners; i++)
 	vertices [i] = VERTICES [m_corners [i]];
@@ -1017,9 +1017,9 @@ return vertices;
 //------------------------------------------------------------------------------
 // Move all vertex id indices > nDeletedIndex down one step
 
-void CSide::RemapVertices (ubyte* map)
+void CSide::RemapVertices (uint8_t* map)
 {
-for (int i = 0; i < m_nCorners; i++)
+for (int32_t i = 0; i < m_nCorners; i++)
 	m_corners [i] = map [m_corners [i]];
 }
 
@@ -1054,7 +1054,7 @@ return IsWall () && Wall ()->IsSolid ();
 
 //------------------------------------------------------------------------------
 
-int CSide::Physics (fix& damage, bool bSolid)
+int32_t CSide::Physics (fix& damage, bool bSolid)
 {
 if (!bSolid) {
 	CWall* wallP = Wall ();
@@ -1072,7 +1072,7 @@ return 0;
 
 //-----------------------------------------------------------------
 
-int CSide::CheckTransparency (void)
+int32_t CSide::CheckTransparency (void)
 {
 	CBitmap	*bmP;
 
@@ -1087,7 +1087,7 @@ bmP = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [m_nBaseTex].index].Ov
 if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 1;
 if (gameStates.app.bD2XLevel && IS_WALL (m_nWall)) {
-	short c = WALLS [m_nWall].cloakValue;
+	int16_t c = WALLS [m_nWall].cloakValue;
 	if (c && (c < FADE_LEVELS))
 		return 1;
 	}
@@ -1096,7 +1096,7 @@ return gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (m_nBa
 
 //------------------------------------------------------------------------------
 
-void CSide::SetTextures (int nBaseTex, int nOvlTex)
+void CSide::SetTextures (int32_t nBaseTex, int32_t nOvlTex)
 {
 if (nBaseTex >= 0)
 	m_nBaseTex = nBaseTex;
@@ -1113,27 +1113,27 @@ return IS_WALL (m_nWall);
 
 //------------------------------------------------------------------------------
 
-int CSide::Read (CFile& cf, ushort* segVerts, ushort* sideVerts, bool bSolid)
+int32_t CSide::Read (CFile& cf, uint16_t* segVerts, uint16_t* sideVerts, bool bSolid)
 {
-	int nType = bSolid ? 1 : IS_WALL (m_nWall) ? 2 : 0;
+	int32_t nType = bSolid ? 1 : IS_WALL (m_nWall) ? 2 : 0;
 
 m_nFrame = 0;
 m_nShape = 0;
 m_nCorners = 4;
 if (gameData.segs.nLevelVersion > 24) {
-	for (int i = 0; i < 4; i++) 
+	for (int32_t i = 0; i < 4; i++) 
 		if (0xff == (m_corners [i] = cf.ReadUByte ()))
 			m_nShape++;
 	m_nCorners = 4 - m_nShape;
-	for (int i = 0; i < m_nCorners; i++)
+	for (int32_t i = 0; i < m_nCorners; i++)
 		sideVerts [i] = segVerts [m_corners [i]];
 	}
 if (!nType)
 	m_nBaseTex =
 	m_nOvlTex = 0;
 else {
-	// Read short sideP->m_nBaseTex;
-	ushort nTexture;
+	// Read int16_t sideP->m_nBaseTex;
+	uint16_t nTexture;
 	if (bNewFileFormat) {
 		nTexture = cf.ReadUShort ();
 		m_nBaseTex = nTexture & 0x7fff;
@@ -1147,7 +1147,7 @@ else {
 	if (bNewFileFormat && !(nTexture & 0x8000))
 		m_nOvlTex = 0;
 	else {
-		// Read short m_nOvlTex;
+		// Read int16_t m_nOvlTex;
 		nTexture = cf.ReadShort ();
 		m_nOvlTex = nTexture & 0x3fff;
 		m_nOvlOrient = (nTexture >> 14) & 3;
@@ -1158,11 +1158,11 @@ else {
 	m_nBaseTex %= MAX_WALL_TEXTURES;	
 	m_nOvlTex %= MAX_WALL_TEXTURES;
 
-	// Read tUVL m_uvls [4] (u, v>>5, write as short, l>>1 write as short)
-	for (int i = 0; i < 4; i++) {
+	// Read tUVL m_uvls [4] (u, v>>5, write as int16_t, l>>1 write as int16_t)
+	for (int32_t i = 0; i < 4; i++) {
 		m_uvls [i].u = fix (cf.ReadShort ()) << 5;
 		m_uvls [i].v = fix (cf.ReadShort ()) << 5;
-		ushort l = cf.ReadUShort ();
+		uint16_t l = cf.ReadUShort ();
 		m_uvls [i].l = fix (l) << 1;
 		float fBrightness = X2F (m_uvls [i].l);
 		if ((i < m_nCorners) && (gameData.render.color.vertBright [sideVerts [i]] < fBrightness))
@@ -1177,7 +1177,7 @@ return nType;
 
 void CSide::ReadWallNum (CFile& cf, bool bWall)
 {
-m_nWall = ushort (bWall ? (gameData.segs.nLevelVersion >= 13) ? cf.ReadUShort () : cf.ReadUByte () : -1);
+m_nWall = uint16_t (bWall ? (gameData.segs.nLevelVersion >= 13) ? cf.ReadUShort () : cf.ReadUByte () : -1);
 }
 
 //------------------------------------------------------------------------------
@@ -1197,7 +1197,7 @@ void CSide::LoadState (CFile& cf)
 {
 m_nWall = cf.ReadShort ();
 m_nBaseTex = cf.ReadShort ();
-	short nTexture = cf.ReadShort ();
+	int16_t nTexture = cf.ReadShort ();
 m_nOvlTex = nTexture & 0x3fff;
 m_nOvlOrient = (nTexture >> 14) & 3;
 }

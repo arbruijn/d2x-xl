@@ -49,7 +49,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-#define MAKE_SIG(a, b, c, d) (((int)(a)<<24)+((int)(b)<<16)+((c)<<8)+(d))
+#define MAKE_SIG(a, b, c, d) (((int32_t)(a)<<24)+((int32_t)(b)<<16)+((c)<<8)+(d))
 
 #define form_sig MAKE_SIG('F', 'O', 'R', 'M')
 #define ilbm_sig MAKE_SIG('I', 'L', 'B', 'M')
@@ -65,7 +65,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 #if DBG
-//void printsig(int s)
+//void printsig(int32_t s)
 //{
 //	char *t=reinterpret_cast<char*> (&s);
 //
@@ -76,7 +76,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-int PutSig (int sig, FILE *fp)
+int32_t PutSig (int32_t sig, FILE *fp)
 {
 	char *s = reinterpret_cast<char*> (&sig);
 
@@ -89,16 +89,16 @@ return fputc(s[0], fp);
 
 //------------------------------------------------------------------------------
 
-int PutByte (ubyte c, FILE *fp)
+int32_t PutByte (uint8_t c, FILE *fp)
 {
 return fputc(c, fp);
 }
 
 //------------------------------------------------------------------------------
 
-int PutWord (int n, FILE *fp)
+int32_t PutWord (int32_t n, FILE *fp)
 {
-	ubyte c0, c1;
+	uint8_t c0, c1;
 
 c0 = (n & 0xff00) >> 8;
 c1 = n & 0xff;
@@ -108,23 +108,23 @@ return PutByte (c1, fp);
 
 //------------------------------------------------------------------------------
 
-int PutLong(int n, FILE *fp)
+int32_t PutLong(int32_t n, FILE *fp)
 {
-	int n0, n1;
+	int32_t n0, n1;
 
-n0 = (int) ((n & 0xffff0000l) >> 16);
-n1 = (int) (n & 0xffff);
+n0 = (int32_t) ((n & 0xffff0000l) >> 16);
+n1 = (int32_t) (n & 0xffff);
 PutWord (n0, fp);
 return PutWord (n1, fp);
 }
 
 //------------------------------------------------------------------------------
 
-int CIFF::GetSig (void)
+int32_t CIFF::GetSig (void)
 {
 union ciffSig {
 	char	szId [4];
-	int	nId;
+	int32_t	nId;
 } ciffSig;
 
 if (Pos () >= Len () - 4) 
@@ -145,9 +145,9 @@ return ciffSig.nId;
 
 //------------------------------------------------------------------------------
 
-int CIFF::GetBytes (char* dest, int len)
+int32_t CIFF::GetBytes (char* dest, int32_t len)
 {
-	int maxLen = Rem ();
+	int32_t maxLen = Rem ();
 
 if (len > maxLen)
 	len = maxLen;
@@ -165,34 +165,34 @@ return Data() [NextPos()];
 
 //------------------------------------------------------------------------------
 
-int CIFF::GetWord (void)
+int32_t CIFF::GetWord (void)
 {
 if (Rem () < 2) 
 	return EOF;
-ubyte c1 = Data() [NextPos()];
-ubyte c0 = Data() [NextPos()];
+uint8_t c1 = Data() [NextPos()];
+uint8_t c0 = Data() [NextPos()];
 if (c0 == 0xff) 
 	return EOF;
-return ((int) c1 << 8) + c0;
+return ((int32_t) c1 << 8) + c0;
 }
 
 //------------------------------------------------------------------------------
 
-int CIFF::GetLong (void)
+int32_t CIFF::GetLong (void)
 {
 if (Rem () < 4) 
 	return EOF;
 
-ubyte c3 = Data() [NextPos()];
-ubyte c2 = Data() [NextPos()];
-ubyte c1 = Data() [NextPos()];
-ubyte c0 = Data() [NextPos()];
-return ((int) c3 << 24) + ((int) c2 << 16) + ((int) c1 << 8) + c0;
+uint8_t c3 = Data() [NextPos()];
+uint8_t c2 = Data() [NextPos()];
+uint8_t c1 = Data() [NextPos()];
+uint8_t c0 = Data() [NextPos()];
+return ((int32_t) c3 << 24) + ((int32_t) c2 << 16) + ((int32_t) c1 << 8) + c0;
 }
 
 //------------------------------------------------------------------------------
 
-int CIFF::ParseHeader (int len, tIFFBitmapHeader *bmHeader)
+int32_t CIFF::ParseHeader (int32_t len, tIFFBitmapHeader *bmHeader)
 {
 bmHeader->w = GetWord ();
 bmHeader->h = GetWord ();
@@ -218,18 +218,18 @@ return IFF_NO_ERROR;
 //------------------------------------------------------------------------------
 //  the buffer pointed to by raw_data is stuffed with a pointer to decompressed pixel data
 
-int CIFF::ParseBody (int len, tIFFBitmapHeader *bmHeader)
+int32_t CIFF::ParseBody (int32_t len, tIFFBitmapHeader *bmHeader)
 {
-	ubyte*		p = bmHeader->raw_data;
-	int			width, depth;
+	uint8_t*		p = bmHeader->raw_data;
+	int32_t			width, depth;
 	signed char	n;
-	int			nn, wid_cnt, end_cnt, plane;
+	int32_t			nn, wid_cnt, end_cnt, plane;
 	char			ignore = 0;
-	ubyte*		data_end;
-	int			endPos;
+	uint8_t*		data_end;
+	int32_t			endPos;
 
 #if DBG
-	int rowCount=0;
+	int32_t rowCount=0;
 #endif
 
 width = 0;
@@ -248,11 +248,11 @@ else if (bmHeader->nType == TYPE_ILBM) {
 end_cnt = (width&1)?-1:0;
 data_end = p + width*bmHeader->h*depth;
 if (bmHeader->compression == cmpNone) {        /* no compression */
-	for (int y = bmHeader->h; y; y--) {
+	for (int32_t y = bmHeader->h; y; y--) {
 #if 1
 		p += GetBytes ((char*) p, width * depth);
 #else
-		for (int x = 0; x < width * depth; x++)
+		for (int32_t x = 0; x < width * depth; x++)
 			*p++= Data() [NextPos()];
 #endif
 		if (bmHeader->masking == mskHasMask)
@@ -263,7 +263,7 @@ if (bmHeader->compression == cmpNone) {        /* no compression */
 	}
 else if (bmHeader->compression == cmpByteRun1)
 	for (wid_cnt = width, plane = 0;Pos() < endPos && p < data_end;) {
-		ubyte c;
+		uint8_t c;
 		if (wid_cnt == end_cnt) {
 			wid_cnt = width;
 			plane++;
@@ -274,7 +274,7 @@ else if (bmHeader->compression == cmpByteRun1)
 		Assert(wid_cnt > end_cnt);
 	n=Data() [NextPos()];
 	if (n >= 0) {                       // copy next n+1 bytes from source, they are not compressed
-		nn = (int) n+1;
+		nn = (int32_t) n+1;
 		wid_cnt -= nn;
 		if (wid_cnt==-1) {
 			--nn; 
@@ -290,7 +290,7 @@ else if (bmHeader->compression == cmpByteRun1)
 		}
 	else if (n>=-127) {             // next -n + 1 bytes are following byte
 		c=Data() [NextPos()];
-		nn = (int) -n+1;
+		nn = (int32_t) -n+1;
 		wid_cnt -= nn;
 		if (wid_cnt==-1) {
 			--nn; 
@@ -322,24 +322,24 @@ return IFF_NO_ERROR;
 
 //------------------------------------------------------------------------------
 //modify passed bitmap
-int CIFF::ParseDelta (int len, tIFFBitmapHeader *bmHeader)
+int32_t CIFF::ParseDelta (int32_t len, tIFFBitmapHeader *bmHeader)
 {
-	ubyte  *p=bmHeader->raw_data;
-	int y;
-	int chunk_end = Pos() + len;
+	uint8_t  *p=bmHeader->raw_data;
+	int32_t y;
+	int32_t chunk_end = Pos() + len;
 
 	GetByte ();		//longword, seems to be equal to 4.  Don't know what it is
 
 for (y=0;y<bmHeader->h;y++) {
-	ubyte n_items;
-	int cnt = bmHeader->w;
-	ubyte code;
+	uint8_t n_items;
+	int32_t cnt = bmHeader->w;
+	uint8_t code;
 	n_items = GetByte ();
 	while (n_items--) {
 		code = GetByte ();
 		if (code==0) {				//repeat
-			ubyte rep = GetByte ();
-			ubyte val = GetByte ();
+			uint8_t rep = GetByte ();
+			uint8_t val = GetByte ();
 			cnt -= rep;
 			if (cnt==-1)
 				rep--;
@@ -378,10 +378,10 @@ return IFF_NO_ERROR;
 
 //------------------------------------------------------------------------------
 //  the buffer pointed to by raw_data is stuffed with a pointer to bitplane pixel data
-void CIFF::SkipChunk (int len)
+void CIFF::SkipChunk (int32_t len)
 {
-	//int c, i;
-	int ilen;
+	//int32_t c, i;
+	int32_t ilen;
 	ilen = (len+1) & ~1;
 
 ////printf("Skipping %d chunk\n", ilen);
@@ -393,11 +393,11 @@ if (Pos() >= Len())
 //------------------------------------------------------------------------------
 //read an ILBM or PBM file
 // Pass pointer to opened file, and to empty bitmap_header structure, and form length
-int CIFF::Parse (int formType, tIFFBitmapHeader *bmHeader, int formLen, CBitmap *prevBmP)
+int32_t CIFF::Parse (int32_t formType, tIFFBitmapHeader *bmHeader, int32_t formLen, CBitmap *prevBmP)
 {
-	int sig, len;
+	int32_t sig, len;
 	//char ignore=0;
-	int startPos, endPos;
+	int32_t startPos, endPos;
 
 startPos = Pos();
 endPos = startPos - 4 + formLen;
@@ -411,8 +411,8 @@ while ((Pos() < endPos) && (sig = GetSig ()) != EOF) {
 		break;
 	switch (sig) {
 		case bmhd_sig: {
-			int save_w = bmHeader->w, save_h = bmHeader->h;
-			int ret = ParseHeader (len, bmHeader);
+			int32_t save_w = bmHeader->w, save_h = bmHeader->h;
+			int32_t ret = ParseHeader (len, bmHeader);
 			if (ret != IFF_NO_ERROR)
 				return ret;
 			if (bmHeader->raw_data) {
@@ -420,7 +420,7 @@ while ((Pos() < endPos) && (sig = GetSig ()) != EOF) {
 					return IFF_BM_MISMATCH;
 				}
 			else {
-				bmHeader->raw_data = new ubyte [bmHeader->w * bmHeader->h];
+				bmHeader->raw_data = new uint8_t [bmHeader->w * bmHeader->h];
 				if (!bmHeader->raw_data)
 					return IFF_NO_MEM;
 				}
@@ -433,7 +433,7 @@ while ((Pos() < endPos) && (sig = GetSig ()) != EOF) {
 			bmHeader->w = prevBmP->Width ();
 			bmHeader->h = prevBmP->Height ();
 			bmHeader->nType = prevBmP->Mode ();
-			bmHeader->raw_data = new ubyte [bmHeader->w * bmHeader->h];
+			bmHeader->raw_data = new uint8_t [bmHeader->w * bmHeader->h];
 			memcpy (bmHeader->raw_data, prevBmP->Buffer (), bmHeader->w * bmHeader->h);
 			SkipChunk (len);
 			break;
@@ -441,7 +441,7 @@ while ((Pos() < endPos) && (sig = GetSig ()) != EOF) {
 		case cmap_sig: {
 #if 1
 			tPalEntry* p = bmHeader->palette;
-			for (int i = len / 3; i; i--, p++) {
+			for (int32_t i = len / 3; i; i--, p++) {
 				p->r = Data () [NextPos ()] / 4;
 				p->g = Data () [NextPos ()] / 4;
 				p->b = Data () [NextPos ()] / 4;
@@ -449,7 +449,7 @@ while ((Pos() < endPos) && (sig = GetSig ()) != EOF) {
 #else
 			char* p = (char*) &bmHeader->palette;
 			len = GetBytes (p, len);
-			for (int i = len; i; i--)
+			for (int32_t i = len; i; i--)
 				*p++ /= 4;
 #endif
 			if (len & 1) 
@@ -458,14 +458,14 @@ while ((Pos() < endPos) && (sig = GetSig ()) != EOF) {
 			}
 
 		case body_sig: {
-			int r;
+			int32_t r;
 			if ((r=ParseBody (len, bmHeader))!=IFF_NO_ERROR)
 				return r;
 			break;
 			}
 
 		case dlta_sig: {
-			int r;
+			int32_t r;
 			if ((r=ParseDelta (len, bmHeader))!=IFF_NO_ERROR)
 				return r;
 			break;
@@ -483,14 +483,14 @@ return IFF_NO_ERROR;    /* ok! */
 
 //------------------------------------------------------------------------------
 //convert an ILBM file to a PBM file
-int CIFF::ConvertToPBM (tIFFBitmapHeader *bmHeader)
+int32_t CIFF::ConvertToPBM (tIFFBitmapHeader *bmHeader)
 {
-	int x, y, p;
-	ubyte *new_data, *destptr, *rowptr;
-	int bytes_per_row, byteofs;
-	ubyte checkmask, newbyte, setbit;
+	int32_t x, y, p;
+	uint8_t *new_data, *destptr, *rowptr;
+	int32_t bytes_per_row, byteofs;
+	uint8_t checkmask, newbyte, setbit;
 
-new_data = new ubyte [bmHeader->w * bmHeader->h];
+new_data = new uint8_t [bmHeader->w * bmHeader->h];
 if (new_data == NULL) 
 	return IFF_NO_MEM;
 destptr = new_data;
@@ -516,17 +516,17 @@ return IFF_NO_ERROR;
 
 //------------------------------------------------------------------------------
 
-#define INDEX_TO_15BPP(i) ((short)((((palptr[(i)].r/2)&31)<<10)+(((palptr[(i)].g/2)&31)<<5)+((palptr[(i)].b/2)&31)))
+#define INDEX_TO_15BPP(i) ((int16_t)((((palptr[(i)].r/2)&31)<<10)+(((palptr[(i)].g/2)&31)<<5)+((palptr[(i)].b/2)&31)))
 
-int CIFF::ConvertRgb15 (CBitmap *bmP, tIFFBitmapHeader *bmHeader)
+int32_t CIFF::ConvertRgb15 (CBitmap *bmP, tIFFBitmapHeader *bmHeader)
 {
-	ushort *new_data;
-	int x, y;
-	int newptr = 0;
+	uint16_t *new_data;
+	int32_t x, y;
+	int32_t newptr = 0;
 	tPalEntry *palptr;
 
 palptr = bmHeader->palette;
-new_data = new ushort [bmP->FrameSize () * 2];
+new_data = new uint16_t [bmP->FrameSize () * 2];
 if (new_data == NULL)
 	return IFF_NO_MEM;
 for (y=0; y < bmP->Height (); y++) {
@@ -534,23 +534,23 @@ for (y=0; y < bmP->Height (); y++) {
 		new_data[newptr++] = INDEX_TO_15BPP(bmHeader->raw_data[y*bmHeader->w+x]);
 	}
 bmP->DestroyBuffer ();				//get rid of old-style data
-bmP->SetBuffer (reinterpret_cast<ubyte*> (new_data));			//..ccAnd point to new data
+bmP->SetBuffer (reinterpret_cast<uint8_t*> (new_data));			//..ccAnd point to new data
 bmP->SetRowSize (bmP->RowSize () * 2);				//two bytes per row
 return IFF_NO_ERROR;
 }
 
 //------------------------------------------------------------------------------
 //read in a entire file into a fake file structure
-int CIFF::Open (const char *cfname)
+int32_t CIFF::Open (const char *cfname)
 {
 	CFile cf;
-	int	ret;
+	int32_t	ret;
 
 Data() = NULL;
 if (!cf.Open (cfname, gameFolders.game.szData [0], "rb", gameStates.app.bD1Mission))
 	return IFF_NO_FILE;
-SetLen ((int) cf.Length ());
-Data() = new ubyte [Len ()];
+SetLen ((int32_t) cf.Length ());
+Data() = new uint8_t [Len ()];
 if (cf.Read (Data(), 1, Len()) < (size_t) Len())
 	ret = IFF_READ_ERROR;
 else
@@ -585,11 +585,11 @@ bmHeader->raw_data = NULL;
 //------------------------------------------------------------------------------
 //if bmP->Buffer () is set, use it (making sure w & h are correct), else
 //allocate the memory
-int CIFF::ParseBitmap (CBitmap *bmP, int bitmapType, CBitmap *prevBmP)
+int32_t CIFF::ParseBitmap (CBitmap *bmP, int32_t bitmapType, CBitmap *prevBmP)
 {
 	tIFFBitmapHeader	bmHeader;
-	int					ret, sig, formLen;
-	int					formType;
+	int32_t					ret, sig, formLen;
+	int32_t					formType;
 
 memset (&bmHeader, 0, sizeof (bmHeader));
 if ((bmHeader.raw_data = bmP->Buffer ())) {
@@ -621,9 +621,9 @@ if (bmHeader.nType == TYPE_ILBM) {
 //Copy data from tIFFBitmapHeader structure into CBitmap structure
 CopyIffToBitmap (bmP, &bmHeader);
 if ((bmHeader.masking != mskHasTransparentColor) || (bmHeader.transparentColor < 0))
-	bmP->SetPalette (paletteManager.Add (reinterpret_cast<ubyte*> (&bmHeader.palette)));
+	bmP->SetPalette (paletteManager.Add (reinterpret_cast<uint8_t*> (&bmHeader.palette)));
 else
-	bmP->SetPalette (paletteManager.Add (reinterpret_cast<ubyte*> (&bmHeader.palette), bmHeader.transparentColor, -1), bmHeader.transparentColor, -1);
+	bmP->SetPalette (paletteManager.Add (reinterpret_cast<uint8_t*> (&bmHeader.palette), bmHeader.transparentColor, -1), bmHeader.transparentColor, -1);
 //Now do post-process if required
 if (bitmapType == BM_RGB15)
 	ret = ConvertRgb15 (bmP, &bmHeader);
@@ -632,7 +632,7 @@ return ret;
 
 //------------------------------------------------------------------------------
 //returns error codes - see IFF.H.  see GR[HA] for bitmapType
-int CIFF::ReadBitmap (const char *cfname, CBitmap *bmP, int bitmapType)
+int32_t CIFF::ReadBitmap (const char *cfname, CBitmap *bmP, int32_t bitmapType)
 {
 #if 1
 	char* p, fn [FILENAME_LEN];
@@ -644,7 +644,7 @@ if ((p = strstr (fn, ".bbm")))
 if (ReadHiresBitmap (&gameData.endLevel.terrain.bmInstance, fn, 0x7FFFFFFF, 1) > 0)
 	return IFF_NO_ERROR;
 #endif
-int ret = Open (cfname);		//read in entire file
+int32_t ret = Open (cfname);		//read in entire file
 if (ret == IFF_NO_ERROR) {
 	ret = ParseBitmap (bmP, bitmapType, NULL);
 	}
@@ -655,9 +655,9 @@ return ret;
 //------------------------------------------------------------------------------
 //like iff_read_bitmap(), but reads into a bitmap that already exists, 
 //without allocating memory for the bitmap.
-int CIFF::ReplaceBitmap (const char *cfname, CBitmap *bmP)
+int32_t CIFF::ReplaceBitmap (const char *cfname, CBitmap *bmP)
 {
-	int ret;			//return code
+	int32_t ret;			//return code
 
 ret = Open (cfname);		//read in entire file
 if (ret == IFF_NO_ERROR)
@@ -670,10 +670,10 @@ return ret;
 
 //------------------------------------------------------------------------------
 
-int CIFF::WriteHeader (FILE *fp, tIFFBitmapHeader *bitmap_header)
+int32_t CIFF::WriteHeader (FILE *fp, tIFFBitmapHeader *bitmap_header)
 {
 PutSig(bmhd_sig, fp);
-PutLong ((int) BMHD_SIZE, fp);
+PutLong ((int32_t) BMHD_SIZE, fp);
 PutWord (bitmap_header->w, fp);
 PutWord (bitmap_header->h, fp);
 PutWord (bitmap_header->x, fp);
@@ -692,16 +692,16 @@ return IFF_NO_ERROR;
 
 //------------------------------------------------------------------------------
 
-int CIFF::WritePalette (FILE *fp, tIFFBitmapHeader *bitmap_header)
+int32_t CIFF::WritePalette (FILE *fp, tIFFBitmapHeader *bitmap_header)
 {
-	int	i;
+	int32_t	i;
 
-	int n_colors = 1 << bitmap_header->nplanes;
+	int32_t n_colors = 1 << bitmap_header->nplanes;
 
 PutSig(cmap_sig, fp);
 PutLong(3 * n_colors, fp);
 for (i=0; i<256; i++) {
-	ubyte r, g, b;
+	uint8_t r, g, b;
 	r = bitmap_header->palette [i].r * 4 + (bitmap_header->palette [i].r?3:0);
 	g = bitmap_header->palette [i].g * 4 + (bitmap_header->palette [i].g?3:0);
 	b = bitmap_header->palette [i].b * 4 + (bitmap_header->palette [i].b?3:0);
@@ -714,10 +714,10 @@ return IFF_NO_ERROR;
 
 //------------------------------------------------------------------------------
 
-int CIFF::RLESpan (ubyte *dest, ubyte *src, int len)
+int32_t CIFF::RLESpan (uint8_t *dest, uint8_t *src, int32_t len)
 {
-	int n, lit_cnt, rep_cnt;
-	ubyte last, *cnt_ptr, *dptr;
+	int32_t n, lit_cnt, rep_cnt;
+	uint8_t last, *cnt_ptr, *dptr;
 
 cnt_ptr = 0;
 dptr = dest;
@@ -765,7 +765,7 @@ if (lit_cnt==1) {
 	}
 else if (lit_cnt > 1)
 	*cnt_ptr = lit_cnt-1;
-return (int) (dptr - dest);
+return (int32_t) (dptr - dest);
 }
 
 #define EVEN(a) ((a+1)&0xfffffffel)
@@ -773,18 +773,18 @@ return (int) (dptr - dest);
 //------------------------------------------------------------------------------
 
 //returns length of chunk
-int CIFF::WriteBody (FILE *fp, tIFFBitmapHeader *bitmap_header, int bCompression)
+int32_t CIFF::WriteBody (FILE *fp, tIFFBitmapHeader *bitmap_header, int32_t bCompression)
 {
-	int w=bitmap_header->w, h=bitmap_header->h;
-	int y, odd=w&1;
-	int len = EVEN(w) * h, newlen, total_len=0;
-	ubyte *p=bitmap_header->raw_data, *new_span;
-	int save_pos;
+	int32_t w=bitmap_header->w, h=bitmap_header->h;
+	int32_t y, odd=w&1;
+	int32_t len = EVEN(w) * h, newlen, total_len=0;
+	uint8_t *p=bitmap_header->raw_data, *new_span;
+	int32_t save_pos;
 
 PutSig(body_sig, fp);
 save_pos = ftell(fp);
 PutLong(len, fp);
-new_span = new ubyte [bitmap_header->w + (bitmap_header->w/128+2)*2];
+new_span = new uint8_t [bitmap_header->w + (bitmap_header->w/128+2)*2];
 if (new_span == NULL) 
 	return IFF_NO_MEM;
 for (y=bitmap_header->h;y--;) {
@@ -809,16 +809,16 @@ return ((bCompression) ? (EVEN(total_len)+8) : (len+8));
 
 //------------------------------------------------------------------------------
 
-int CIFF::WritePbm (FILE *fp, tIFFBitmapHeader *bitmap_header, int bCompression)			/* writes a pbm iff file */
+int32_t CIFF::WritePbm (FILE *fp, tIFFBitmapHeader *bitmap_header, int32_t bCompression)			/* writes a pbm iff file */
 {
-	int ret;
-	int raw_size = EVEN(bitmap_header->w) * bitmap_header->h;
-	int body_size, tiny_size, pbm_size = 4 + BMHD_SIZE + 8 + EVEN(raw_size) + sizeof (tPalEntry) * int (1 << bitmap_header->nplanes) + 8;
+	int32_t ret;
+	int32_t raw_size = EVEN(bitmap_header->w) * bitmap_header->h;
+	int32_t body_size, tiny_size, pbm_size = 4 + BMHD_SIZE + 8 + EVEN(raw_size) + sizeof (tPalEntry) * int32_t (1 << bitmap_header->nplanes) + 8;
 
 ////printf("write_pbm\n");
 
 PutSig(form_sig, fp);
-int save_pos = ftell(fp);
+int32_t save_pos = ftell(fp);
 PutLong(pbm_size+8, fp);
 PutSig(pbm_sig, fp);
 ret = WriteHeader (fp, bitmap_header);
@@ -829,7 +829,7 @@ if (ret != IFF_NO_ERROR)
 	return ret;
 tiny_size = 0;
 body_size = WriteBody(fp, bitmap_header, bCompression);
-pbm_size = 4 + BMHD_SIZE + body_size + tiny_size + sizeof (tPalEntry) * int (1 << bitmap_header->nplanes) + 8;
+pbm_size = 4 + BMHD_SIZE + body_size + tiny_size + sizeof (tPalEntry) * int32_t (1 << bitmap_header->nplanes) + 8;
 fseek(fp, save_pos, SEEK_SET);
 PutLong(pbm_size+8, fp);
 fseek(fp, pbm_size+8, SEEK_CUR);
@@ -839,12 +839,12 @@ return ret;
 //------------------------------------------------------------------------------
 //writes an IFF file from a CBitmap structure. writes palette if not null
 //returns error codes - see IFF.H.
-int CIFF::WriteBitmap (const char *cfname, CBitmap *bmP, ubyte *palette)
+int32_t CIFF::WriteBitmap (const char *cfname, CBitmap *bmP, uint8_t *palette)
 {
 	FILE					*fp;
 	tIFFBitmapHeader	bmHeader;
-	int					ret;
-	int					bCompression;
+	int32_t					ret;
+	int32_t					bCompression;
 
 if (bmP->Mode () == BM_RGB15) return IFF_BAD_BM_TYPE;
 #if COMPRESS
@@ -883,11 +883,11 @@ return ret;
 //------------------------------------------------------------------------------
 //read in many brushes.  fills in array of pointers, and n_bitmaps.
 //returns iff error codes
-int CIFF::ReadAnimBrush (const char *cfname, CBitmap **bm_list, int max_bitmaps, int *n_bitmaps)
+int32_t CIFF::ReadAnimBrush (const char *cfname, CBitmap **bm_list, int32_t max_bitmaps, int32_t *n_bitmaps)
 {
-	int					ret;			//return code
-	int					sig, formLen;
-	int					formType;
+	int32_t					ret;			//return code
+	int32_t					sig, formLen;
+	int32_t					formType;
 
 *n_bitmaps=0;
 ret = Open (cfname);		//read in entire file
@@ -903,7 +903,7 @@ formType = GetSig();
 if ((formType == pbm_sig) || (formType == ilbm_sig))
 	ret = IFF_FORM_BITMAP;
 else if (formType == anim_sig) {
-	int anim_end = Pos() + formLen - 4;
+	int32_t anim_end = Pos() + formLen - 4;
 		while (Pos() < anim_end && *n_bitmaps < max_bitmaps) {
 			CBitmap *prevBmP;
 			prevBmP = *n_bitmaps>0?bm_list[*n_bitmaps-1]:NULL;
@@ -947,14 +947,14 @@ const char error_messages[] = {
 
 //------------------------------------------------------------------------------
 //function to return pointer to error message
-const char *CIFF::ErrorMsg (int nError)
+const char *CIFF::ErrorMsg (int32_t nError)
 {
 const char *p = error_messages;
 
 while (nError--) {
 	if (!p) 
 		return NULL;
-	p += (int) strlen(p)+1;
+	p += (int32_t) strlen(p)+1;
 	}
 return p;
 }

@@ -60,7 +60,7 @@ CFloatVector modelColor [2] = {{{{0.0f, 0.5f, 1.0f, 0.5f}}}, {{{0.0f, 1.0f, 0.5f
 
 //------------------------------------------------------------------------------
 
-void OglPalColor (CPalette *palette, int c, CFloatVector* colorP)
+void OglPalColor (CPalette *palette, int32_t c, CFloatVector* colorP)
 {
 	CFloatVector	color;
 
@@ -87,7 +87,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-CFloatVector GetPalColor (CPalette *palette, int c)
+CFloatVector GetPalColor (CPalette *palette, int32_t c)
 {
 	CFloatVector color;
 
@@ -169,7 +169,7 @@ else
 // exceed 1.0. If so, all three color values are scaled so that their maximum multiplied
 // with the max. brightness does not exceed 1.0.
 
-inline void CapTMapColor (tUVL *uvlList, int nVertices, CBitmap *bm)
+inline void CapTMapColor (tUVL *uvlList, int32_t nVertices, CBitmap *bm)
 {
 #if 0
 	CFaceColor *color = tMapColor.index ? &tMapColor : lightColor.index ? &lightColor : NULL;
@@ -177,7 +177,7 @@ inline void CapTMapColor (tUVL *uvlList, int nVertices, CBitmap *bm)
 if (! (bm->props.flags & BM_FLAG_NO_LIGHTING) && color) {
 		double	vec, mat = tMapColor.Red ();
 		double	h, l = 0;
-		int		i;
+		int32_t		i;
 
 	for (i = 0; i < nVertices; i++, uvlList++) {
 		h = (bm->props.flags & BM_FLAG_NO_LIGHTING) ? 1.0 : X2F (uvlList->l);
@@ -243,7 +243,7 @@ else {
 //------------------------------------------------------------------------------
 
 /*inline*/
-void SetTMapColor (tUVL *uvlList, int i, CBitmap *bmP, int bResetColor, CFloatVector* colorP)
+void SetTMapColor (tUVL *uvlList, int32_t i, CBitmap *bmP, int32_t bResetColor, CFloatVector* colorP)
 {
 	float l = (bmP->Flags () & BM_FLAG_NO_LIGHTING) ? 1.0f : X2F (uvlList->l);
 	float s = 1.0f;
@@ -269,7 +269,7 @@ else if (colorP) {
 		if (l >= 0)
 			tMapColor.Set (1.0f, 1.0f, 1.0f);
 		}
-	else if (i >= (int) (sizeofa (vertColors)))
+	else if (i >= (int32_t) (sizeofa (vertColors)))
 		return;
 	else if (vertColors [i].index) {
 			CFaceColor* vertColorP = vertColors + i;
@@ -291,7 +291,7 @@ else {
 		if (l >= 0)
 			tMapColor.Set (1.0f, 1.0f, 1.0f);
 		}
-	else if (i >= (int) (sizeofa (vertColors)))
+	else if (i >= (int32_t) (sizeofa (vertColors)))
 		return;
 	else if (vertColors [i].index) {
 			CFaceColor* vertColorP = vertColors + i;
@@ -322,7 +322,7 @@ else {
 */
 //------------------------------------------------------------------------------
 
-inline int sqri (int i)
+inline int32_t sqri (int32_t i)
 {
 return i * i;
 }
@@ -331,12 +331,12 @@ return i * i;
 
 #if CHECK_LIGHT_VERT
 
-static inline int IsLightVert (int nVertex, CDynLight *lightP)
+static inline int32_t IsLightVert (int32_t nVertex, CDynLight *lightP)
 {
 if ((nVertex >= 0) && lightP->info.faceP) {
-	ushort *pv = gameStates.render.bTriangleMesh ? lightP->info.faceP->triIndex : lightP->info.faceP->m_info.index;
-	for (int i = lightP->info.faceP->m_info.nVerts; i; i--, pv++)
-		if (*pv == (ushort) nVertex)
+	uint16_t *pv = gameStates.render.bTriangleMesh ? lightP->info.faceP->triIndex : lightP->info.faceP->m_info.index;
+	for (int32_t i = lightP->info.faceP->m_info.nVerts; i; i--, pv++)
+		if (*pv == (uint16_t) nVertex)
 			return 1;
 	}
 return 0;
@@ -350,17 +350,17 @@ return 0;
 
 float fLightRanges [5] = {0.5f, 0.7071f, 1.0f, 1.4142f, 2.0f};
 
-int ComputeVertexColor (int nSegment, int nSide, int nVertex, CFloatVector3 *colorSumP, CVertColorData *colorDataP, int nThread)
+int32_t ComputeVertexColor (int32_t nSegment, int32_t nSide, int32_t nVertex, CFloatVector3 *colorSumP, CVertColorData *colorDataP, int32_t nThread)
 {
 	CDynLight*			lightP;
 	CDynLightIndex*	sliP = &lightManager.Index (0, nThread);
 	CActiveDynLight*	activeLightsP = lightManager.Active (nThread) + sliP->nFirst;
 	CVertColorData		colorData = *colorDataP;
-	int					i, j, nType, nLights, 
+	int32_t					i, j, nType, nLights, 
 							bSelf, nSelf,
 							bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState,
 							bTransform = (gameStates.render.nState > 0) && !ogl.m_states.bUseTransform;
-	int					bDiffuse, bSpecular = gameStates.render.bSpecularColor && (colorData.fMatShininess > 0.0f);
+	int32_t					bDiffuse, bSpecular = gameStates.render.bSpecularColor && (colorData.fMatShininess > 0.0f);
 	float					fLightDist, fAttenuation, fLightAngle, spotEffect, NdotL, RdotE;
 	CFloatVector3		lightDir, lightRayDir, lightPos, vertPos, vReflect;
 	CFloatVector3		lightColor, colorSum [2], vertColor;
@@ -425,7 +425,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		continue;
 
 	if (!gameStates.render.bHaveLightmaps && (bSelf = lightP->info.bAmbient)) {
-		if ((lightP->Segment () >= 0) && !SEGMENTS [lightP->Segment ()].HasVertex ((ubyte) lightP->Side (), nVertex))
+		if ((lightP->Segment () >= 0) && !SEGMENTS [lightP->Segment ()].HasVertex ((uint8_t) lightP->Side (), nVertex))
 			continue;
 #if DBG
 		if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))
@@ -445,7 +445,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		}
 	else {
 		if (nType < 2)
-			DistToFace (*colorData.vertPosP, lightP->info.nSegment, ubyte (lightP->info.nSide), &lightPos); // returns 0 if a plane normal through the vertex position goes through the face
+			DistToFace (*colorData.vertPosP, lightP->info.nSegment, uint8_t (lightP->info.nSide), &lightPos); // returns 0 if a plane normal through the vertex position goes through the face
 		else 
 			lightPos = *lightP->render.vPosf [bTransform].XYZ ();
 		lightRayDir = lightPos - *colorData.vertPosP;
@@ -592,7 +592,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	if ((nSaturation < 2) || gameStates.render.bHaveLightmaps)//sum up color components
 		colorSum += vertColor;
 	else {	//use max. color components
-		int nBrightness = sqri ((int) (vertColor.Red () * 1000)) + sqri ((int) (vertColor.Green () * 1000)) + sqri ((int) (vertColor.Blue () * 1000));
+		int32_t nBrightness = sqri ((int32_t) (vertColor.Red () * 1000)) + sqri ((int32_t) (vertColor.Green () * 1000)) + sqri ((int32_t) (vertColor.Blue () * 1000));
 		if (nMaxBrightness < nBrightness) {
 			nMaxBrightness = nBrightness;
 			colorSum = vertColor;
@@ -679,19 +679,19 @@ else {
 
 //------------------------------------------------------------------------------
 
-extern int nDbgVertex;
+extern int32_t nDbgVertex;
 
 
-void GetVertexColor (int nSegment, int nSide, int nVertex,
+void GetVertexColor (int32_t nSegment, int32_t nSide, int32_t nVertex,
 						   CFloatVector3* vVertNormP, CFloatVector3* vVertPosP, 
 						   CFaceColor* vertColorP, CFaceColor* baseColorP,
-						   float fScale, int bSetColor, int nThread)
+						   float fScale, int32_t bSetColor, int32_t nThread)
 {
 PROF_START
 	CFloatVector3	colorSum = CFloatVector3::Create (0.0f, 0.0f, 0.0f);
 	CFloatVector3	vertPos;
 	CFaceColor*		colorP = NULL;
-	int				bVertexLights;
+	int32_t				bVertexLights;
 	CVertColorData	colorData;
 
 InitVertColorData (colorData);

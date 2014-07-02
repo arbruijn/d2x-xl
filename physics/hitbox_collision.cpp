@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-----------------------------------------------------------------------------
 
-ubyte PointIsInTriangle (CFixVector* vRef, CFixVector* vNormal, ushort* triangleVerts)
+uint8_t PointIsInTriangle (CFixVector* vRef, CFixVector* vNormal, uint16_t* triangleVerts)
 {
 CFloatVector v0, v1, v2;
 v0 = FVERTICES [triangleVerts [2]] - FVERTICES [triangleVerts [0]];
@@ -67,7 +67,7 @@ return PointIsInTriangle (&point, vNormal, vertP) || PointIsInTriangle (&point, 
 #else
 	CFixVector		t, v0, v1;
 	CFixVector2 	vEdge, vCheck, vRef;
-	int 				i, j, iEdge, projPlane;
+	int32_t 				i, j, iEdge, projPlane;
 
 //now do 2d check to see if vRef is in side
 //project polygon onto plane by finding largest component of Normal
@@ -113,7 +113,7 @@ if (PointIsInQuad (vRef, vertP, vNormal))
 	CFixVector	v;
 	fix			dist, minDist = 0x7fffffff;
 
-for (int i = 0; i < 4; i++) {
+for (int32_t i = 0; i < 4; i++) {
 	FindPointLineIntersection (v, vertP [i], vertP [(i + 1) % 4], vRef, 0);
 	dist = CFixVector::Dist (vRef, v);
 	if (minDist > dist)
@@ -126,7 +126,7 @@ return minDist;
 // Given: p3
 // Find: intersection with p1,p2 of the line through p3 that is perpendicular on p1,p2
 
-static int FindPointLineIntersectionf (CFixVector* pv1, CFixVector* pv2, CFixVector* pv3)
+static int32_t FindPointLineIntersectionf (CFixVector* pv1, CFixVector* pv2, CFixVector* pv3)
 {
 	CFloatVector	p1, p2, p3, d31, d21, h, v [2];
 	float				m, u;
@@ -157,7 +157,7 @@ return 0;
 // vPlanePoint & vPlaneNorm describe the plane
 // p0 & p1 are the ends of the line
 
-static int FindLinePlaneIntersection (CFixVector& intersection, CFixVector* vPlane, CFixVector* vNormal, CFixVector* p0, CFixVector* p1, fix rad)
+static int32_t FindLinePlaneIntersection (CFixVector& intersection, CFixVector* vPlane, CFixVector* vNormal, CFixVector* p0, CFixVector* p1, fix rad)
 {
 #if 1
 	CFloatVector n, u, w;
@@ -206,9 +206,9 @@ return 1;
 // of the quad must hit each edge between the edge's end points (provided vHit
 // is in the quad's plane).
 
-static int CheckLineHitsQuad (CFixVector& intersection, CFixVector* planeP)
+static int32_t CheckLineHitsQuad (CFixVector& intersection, CFixVector* planeP)
 {
-for (int i = 0; i < 4; i++)
+for (int32_t i = 0; i < 4; i++)
 	if (FindPointLineIntersectionf (planeP + i, planeP + ((i + 1) % 4), &intersection))
 		return 0;	//doesn't hit
 return 1;	//hits
@@ -216,7 +216,7 @@ return 1;	//hits
 
 //	-----------------------------------------------------------------------------
 
-static int FindLineQuadIntersection (CFixVector& intersection, CFixVector* planeP, CFixVector* planeNormP, CFixVector* p0, CFixVector* p1, fix rad)
+static int32_t FindLineQuadIntersection (CFixVector& intersection, CFixVector* planeP, CFixVector* planeNormP, CFixVector* p0, CFixVector* p1, fix rad)
 {
 	CFixVector	vHit;
 	fix			dist;
@@ -240,9 +240,9 @@ return dist;
 // Simple intersection check by checking whether any of the edges of plane p1
 // penetrate p2. Returns average of all penetration points.
 
-static int FindQuadQuadIntersectionSub (CFixVector& intersection, CFixVector* vQuad, CFixVector* vPlane, CFixVector* vNormal, CFixVector* vRef, fix& dMin)
+static int32_t FindQuadQuadIntersectionSub (CFixVector& intersection, CFixVector* vQuad, CFixVector* vPlane, CFixVector* vNormal, CFixVector* vRef, fix& dMin)
 {
-	int			i, nHits = 0;
+	int32_t			i, nHits = 0;
 	CFixVector	vHit;
 
 intersection.SetZero ();
@@ -261,10 +261,10 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-static int FindQuadQuadIntersection (CFixVector& intersection, CFixVector& normal, CFixVector* p0, CFixVector* vn1, CFixVector* p1, CFixVector* vn2, CFixVector* vRef, fix& dMin)
+static int32_t FindQuadQuadIntersection (CFixVector& intersection, CFixVector& normal, CFixVector* p0, CFixVector* vn1, CFixVector* p1, CFixVector* vn2, CFixVector* vRef, fix& dMin)
 {
 	CFixVector	vHit;
-	int			nHits = 0;
+	int32_t			nHits = 0;
 
 // test whether any edges of p0 penetrate p1
 if (FindQuadQuadIntersectionSub (vHit, p0, p1, vn2, vRef, dMin))
@@ -276,9 +276,9 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-static int FindLineHitboxIntersection (CFixVector& intersection, CFixVector& normal, tBox *phb, CFixVector* p0, CFixVector* p1, CFixVector* vRef, fix rad, fix& dMin)
+static int32_t FindLineHitboxIntersection (CFixVector& intersection, CFixVector& normal, tBox *phb, CFixVector* p0, CFixVector* p1, CFixVector* vRef, fix rad, fix& dMin)
 {
-	int			i, nHits = 0;
+	int32_t			i, nHits = 0;
 	fix			dist;
 	tQuad			*pf;
 	CFixVector	vHit;
@@ -295,9 +295,9 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-static int FindHitboxIntersection (CFixVector& intersection, CFixVector& normal, tBox *phb1, tBox *phb2, CFixVector* vRef, fix& dMin)
+static int32_t FindHitboxIntersection (CFixVector& intersection, CFixVector& normal, tBox *phb1, tBox *phb2, CFixVector* vRef, fix& dMin)
 {
-	int			i, j, nHits = 0;
+	int32_t			i, j, nHits = 0;
 	tQuad			*pf1, *pf2;
 
 // create all faces of hitbox 2 and their normals before testing because they will
@@ -319,12 +319,12 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-int DropMarkerObject (CFixVector& vPos, short nSegment, CFixMatrix& orient, ubyte nMarker);
+int32_t DropMarkerObject (CFixVector& vPos, int16_t nSegment, CFixMatrix& orient, uint8_t nMarker);
 
-fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *objP1, CObject *objP2, CFixVector* p0, CFixVector* p1, short& nModel)
+fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *objP1, CObject *objP2, CFixVector* p0, CFixVector* p1, int16_t& nModel)
 {
 	CFixVector		vRef = OBJPOS (objP2)->vPos;
-	int				iModel1, nModels1, iModel2, nModels2, nHits = 0, nTotalHits = 0;
+	int32_t				iModel1, nModels1, iModel2, nModels2, nHits = 0, nTotalHits = 0;
 	CModelHitboxList	*pmhb1 = gameData.models.hitboxes + objP1->ModelId ();
 	CModelHitboxList	*pmhb2 = gameData.models.hitboxes + objP2->ModelId ();
 	fix				dMin = 0x7fffffff;
@@ -345,7 +345,7 @@ else {
 tHitbox* hb1 = TransformHitboxes (objP1, p1);
 tHitbox* hb2 = TransformHitboxes (objP2, &vRef);
 
-int i, j;
+int32_t i, j;
 for (i = iModel1; i <= nModels1; i++) {
 	for (j = iModel2; j <= nModels2; j++) {
 		if ((nHits = FindHitboxIntersection (intersection, normal, &hb1 [i].box, &hb2 [j].box, p0, dMin))) {
@@ -381,9 +381,9 @@ return (nTotalHits) ? dMin ? dMin : 1 : 0;
 
 //	-----------------------------------------------------------------------------
 
-fix CheckVectorHitboxCollision (CFixVector& intersection, CFixVector& normal, CFixVector* p0, CFixVector* p1, CFixVector* vRef, CObject *objP, fix rad, short& nModel)
+fix CheckVectorHitboxCollision (CFixVector& intersection, CFixVector& normal, CFixVector* p0, CFixVector* p1, CFixVector* vRef, CObject *objP, fix rad, int16_t& nModel)
 {
-	int					iModel, nModels;
+	int32_t					iModel, nModels;
 	fix					dMin = 0x7fffffff;
 	CModelHitboxList*	pmhb = gameData.models.hitboxes + objP->ModelId ();
 
@@ -408,7 +408,7 @@ return dMin;
 
 //	-----------------------------------------------------------------------------
 
-int FindLineTriangleIntersection (CFixVector& intersection, ushort* triangleVerts, CFixVector* triangleNormal, CFixVector* p0, CFixVector* p1)
+int32_t FindLineTriangleIntersection (CFixVector& intersection, uint16_t* triangleVerts, CFixVector* triangleNormal, CFixVector* p0, CFixVector* p1)
 {
 	CFixVector	vHit;
 
@@ -428,9 +428,9 @@ return 0;
 // Simple intersection check by checking whether any of the edges of plane p1
 // penetrate p2. Returns average of all penetration points.
 
-int FindTriangleQuadIntersection (CFixVector& intersection, ushort* triangleVerts, CFixVector* triangleNormal, CFixVector* vQuad, CFixVector* vRef, fix& dMin)
+int32_t FindTriangleQuadIntersection (CFixVector& intersection, uint16_t* triangleVerts, CFixVector* triangleNormal, CFixVector* vQuad, CFixVector* vRef, fix& dMin)
 {
-	int			i, nHits = 0;
+	int32_t			i, nHits = 0;
 	CFixVector	vHit;
 
 intersection.SetZero ();
@@ -449,9 +449,9 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-int FindTriangleHitboxIntersection (CFixVector& intersection, CFixVector& normal, ushort* triangleVerts, CFixVector* triangleNormal, tBox *phb, CFixVector* vRef, fix& dMin)
+int32_t FindTriangleHitboxIntersection (CFixVector& intersection, CFixVector& normal, uint16_t* triangleVerts, CFixVector* triangleNormal, tBox *phb, CFixVector* vRef, fix& dMin)
 {
-	int			i, h, nHits = 0;
+	int32_t			i, h, nHits = 0;
 	tQuad*		pf;
 	CFixVector	vHit;
 
@@ -469,9 +469,9 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-CSegMasks CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, short nSegment, short nSide, CFixVector* p0, CFixVector* p1, CObject *objP)
+CSegMasks CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, int16_t nSegment, int16_t nSide, CFixVector* p0, CFixVector* p1, CObject *objP)
 {
-	int			iModel, nModels, nHits = 0;
+	int32_t			iModel, nModels, nHits = 0;
 	fix			dMin = 0x7fffffff;
 	CSegMasks	masks;
 
@@ -496,9 +496,9 @@ tHitbox* hb = TransformHitboxes (objP, p1);
 
 CSide* sideP = SEGMENTS [nSegment].Side (nSide);
 
-for (int i = 0; i < 2; i++) {
-	for (int j = iModel; j <= nModels; j++) {
-		int h = FindTriangleHitboxIntersection (intersection, normal, sideP->m_vertices + 3 * i, sideP->m_normals + i, &hb [j].box, p0, dMin);
+for (int32_t i = 0; i < 2; i++) {
+	for (int32_t j = iModel; j <= nModels; j++) {
+		int32_t h = FindTriangleHitboxIntersection (intersection, normal, sideP->m_vertices + 3 * i, sideP->m_normals + i, &hb [j].box, p0, dMin);
 		if (h) {
 			masks.m_side |= 1 << nSide;
 			masks.m_face |= (i + 1) << (nSide * 2);
@@ -511,7 +511,7 @@ return masks;
 
 //	-----------------------------------------------------------------------------
 
-int UseHitbox (CObject *objP)
+int32_t UseHitbox (CObject *objP)
 {
 return !gameStates.app.bNostalgia &&
 		 (objP->info.renderType == RT_POLYOBJ) && (objP->rType.polyObjInfo.nModel >= 0) && 

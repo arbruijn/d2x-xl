@@ -70,11 +70,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-void SortSidesByDist (double *sideDists, char *sideNums, int left, int right)
+void SortSidesByDist (double *sideDists, char *sideNums, int32_t left, int32_t right)
 {
-	int		l = left;
-	int		r = right;
-	int		h, m = (l + r) / 2;
+	int32_t		l = left;
+	int32_t		r = right;
+	int32_t		h, m = (l + r) / 2;
 	double	hd, md = sideDists [m];
 
 do {
@@ -103,9 +103,9 @@ if (r > left)
 
 //------------------------------------------------------------------------------
 
-ubyte CodePortalPoint (fix x, fix y, tPortal& curPortal)
+uint8_t CodePortalPoint (fix x, fix y, tPortal& curPortal)
 {
-	ubyte code = 0;
+	uint8_t code = 0;
 
 if (x <= curPortal.left)
 	code |= 1;
@@ -120,9 +120,9 @@ return code;
 
 //------------------------------------------------------------------------------
 
-ubyte CodePortal (tPortal& facePortal, tPortal& curPortal)
+uint8_t CodePortal (tPortal& facePortal, tPortal& curPortal)
 {
-	ubyte code = 0;
+	uint8_t code = 0;
 
 if (facePortal.right < curPortal.left)
 	code |= 1;
@@ -141,11 +141,11 @@ return code;
 #if !OLD_SEGLIST
 tPortal sidePortals [MAX_SEGMENTS_D2X * 6];
 #endif
-//ubyte bVisible [MAX_SEGMENTS_D2X];
+//uint8_t bVisible [MAX_SEGMENTS_D2X];
 
 //Given two sides of CSegment, tell the two verts which form the
 //edge between them
-short edgeBetweenTwoSides [6][6][2] = {
+int16_t edgeBetweenTwoSides [6][6][2] = {
 	{{-1, -1}, {3, 7}, {-1, -1}, {2, 6}, {6, 7}, {2, 3}},
 	{{3, 7}, {-1, -1}, {0, 4}, {-1, -1}, {4, 7}, {0, 3}},
 	{{-1, -1}, {0, 4}, {-1, -1}, {1, 5}, {4, 5}, {0, 1}},
@@ -155,7 +155,7 @@ short edgeBetweenTwoSides [6][6][2] = {
 	};
 
 //given an edge specified by two verts, give the two sides on that edge
-int edgeToSides [8][8][2] = {
+int32_t edgeToSides [8][8][2] = {
 	{{-1, -1}, {2, 5}, {-1, -1}, {1, 5}, {1, 2}, {-1, -1}, {-1, -1}, {-1, -1}},
 	{{2, 5}, {-1, -1}, {3, 5}, {-1, -1}, {-1, -1}, {2, 3}, {-1, -1}, {-1, -1}},
 	{{-1, -1}, {3, 5}, {-1, -1}, {0, 5}, {-1, -1}, {-1, -1}, {0, 3}, {-1, -1}},
@@ -171,14 +171,14 @@ int edgeToSides [8][8][2] = {
 
 #if SORT_RENDER_SEGS
 
-int FindOtherSideOnEdge (CSegment *segP, short *verts, int oppSide)
+int32_t FindOtherSideOnEdge (CSegment *segP, int16_t *verts, int32_t oppSide)
 {
-	int	i;
-	int	i0 = -1, i1 = -1;
-	int	side0, side1;
-	int	*eptr;
-	int	sv, v0, v1;
-	short	*vp;
+	int32_t	i;
+	int32_t	i0 = -1, i1 = -1;
+	int32_t	side0, side1;
+	int32_t	*eptr;
+	int32_t	sv, v0, v1;
+	int16_t	*vp;
 
 //@@	check_check();
 
@@ -211,16 +211,16 @@ return (side0 == oppSide) ? side1 : side0;
 typedef struct tSideNormData {
 	CFixVector	n [2];
 	CFixVector	*facePortal;
-	short			t;
+	int16_t			t;
 } tSideNormData;
 
-int FindAdjacentSideNorms (CSegment *segP, short s0, short s1, tSideNormData *s)
+int32_t FindAdjacentSideNorms (CSegment *segP, int16_t s0, int16_t s1, tSideNormData *s)
 {
 	CSegment	*seg0, *seg1;
 	CSide		*side0, *side1;
-	short		edgeVerts [2];
-	int		oppSide0, oppSide1;
-	int		otherSide0, otherSide1;
+	int16_t		edgeVerts [2];
+	int32_t		oppSide0, oppSide1;
+	int32_t		otherSide0, otherSide1;
 
 Assert(s0 != -1 && s1 != -1);
 seg0 = SEGMENTS + segP->m_children [s0];
@@ -246,7 +246,7 @@ return 1;
 //------------------------------------------------------------------------------
 //see if the order matters for these two children.
 //returns 0 if order doesn't matter, 1 if c0 before c1, -1 if c1 before c0
-static int CompareChildren (CSegment *segP, short c0, short c1)
+static int32_t CompareChildren (CSegment *segP, int16_t c0, int16_t c1)
 {
 	tSideNormData	s [2];
 	CFixVector		temp;
@@ -275,9 +275,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int QuickSortSegChildren (CSegment *segP, short left, short right, short *childList)
+int32_t QuickSortSegChildren (CSegment *segP, int16_t left, int16_t right, int16_t *childList)
 {
-	short	h,
+	int16_t	h,
 			l = left,
 			r = right,
 			mat = (l + r) / 2,
@@ -309,9 +309,9 @@ return bSwap;
 
 //------------------------------------------------------------------------------
 
-//short the children of CSegment to render in the correct order
+//int16_t the children of CSegment to render in the correct order
 //returns non-zero if swaps were made
-static inline int SortSegChildren (CSegment *segP, int nChildren, short *childList)
+static inline int32_t SortSegChildren (CSegment *segP, int32_t nChildren, int16_t *childList)
 {
 #if 1
 
@@ -320,17 +320,17 @@ if (nChildren < 2)
 if (nChildren == 2) {
 	if (CompareChildren (segP, childList [0], childList [1]) >= 0)
 		return 0;
-	short h = childList [0];
+	int16_t h = childList [0];
 	childList [0] = childList [1];
 	childList [1] = h;
 	return 1;
 	}
-return QuickSortSegChildren (segP, (short) 0, (short) (nChildren - 1), childList);
+return QuickSortSegChildren (segP, (int16_t) 0, (int16_t) (nChildren - 1), childList);
 
 #else
-	int i, j;
-	int r;
-	int made_swaps, count;
+	int32_t i, j;
+	int32_t r;
+	int32_t made_swaps, count;
 
 if (nChildren < 2)
 	return 0;
@@ -348,7 +348,7 @@ do {
 				r = CompareChildren(segP, childList [i], childList [j]);
 
 				if (r == 1) {
-					int temp = childList [i];
+					int32_t temp = childList [i];
 					childList [i] = childList [j];
 					childList [j] = temp;
 					made_swaps=1;
@@ -364,7 +364,7 @@ return count;
 
 //------------------------------------------------------------------------------
 
-void UpdateRenderedData (int nWindow, CObject *viewer, int rearViewFlag, int user)
+void UpdateRenderedData (int32_t nWindow, CObject *viewer, int32_t rearViewFlag, int32_t user)
 {
 Assert(nWindow < MAX_RENDERED_WINDOWS);
 windowRenderedData [nWindow].nFrame = gameData.app.nFrameCount;
@@ -375,7 +375,7 @@ windowRenderedData [nWindow].nUser = user;
 
 //------------------------------------------------------------------------------
 
-void AddObjectToSegList (short nObject, short nSegment)
+void AddObjectToSegList (int16_t nObject, int16_t nSegment)
 {
 	tObjRenderListItem *pi = gameData.render.mine.objRenderList.objs + gameData.render.mine.objRenderList.nUsed;
 
@@ -392,18 +392,18 @@ OBJECTS [nObject].SetFrame (gameData.app.nFrameCount);
 
 //------------------------------------------------------------------------------
 
-short CObject::Visible (void)
+int16_t CObject::Visible (void)
 {
-	short	segList [MAX_SEGMENTS_D2X];
-	ubyte bVisited [MAX_SEGMENTS_D2X];
-	short	head = 0, tail = 0;
+	int16_t	segList [MAX_SEGMENTS_D2X];
+	uint8_t bVisited [MAX_SEGMENTS_D2X];
+	int16_t	head = 0, tail = 0;
 
 memset (bVisited, 0, sizeof (bVisited [0]) * gameData.segs.nSegments);
 segList [tail++] = Segment ();
 while (head != tail) {
 	CSegment* segP = &SEGMENTS [segList [head++]];
-	for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
-		short nSegment = segP->m_children [i];
+	for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
+		int16_t nSegment = segP->m_children [i];
 		if (nSegment < 0)
 			continue;
 		if (bVisited [nSegment])
@@ -431,7 +431,7 @@ void GatherLeftoutVisibleObjects (void)
 {
 #if 1
 	CObject*	objP;
-	//int		i;
+	//int32_t		i;
 
 FORALL_OBJS (objP, i) {
 	if (objP->Type () >= MAX_OBJECT_TYPES) 
@@ -440,7 +440,7 @@ FORALL_OBJS (objP, i) {
 		continue;
 	if (objP->Frame () == gameData.app.nFrameCount)
 		continue;
-	short nSegment = objP->Visible ();
+	int16_t nSegment = objP->Visible ();
 	if (nSegment < 0)
 		continue;
 	AddObjectToSegList (objP->Index (), nSegment);
@@ -450,14 +450,14 @@ FORALL_OBJS (objP, i) {
 
 //------------------------------------------------------------------------------
 
-void BuildRenderObjLists (int nSegCount, int nThread)
+void BuildRenderObjLists (int32_t nSegCount, int32_t nThread)
 {
 PROF_START
 	CObject*		objP;
 	CSegMasks	mask;
-	short			nSegment, nNewSeg, nChild, nSide, sideFlag;
-	int			nListPos;
-	short			nObject;
+	int16_t			nSegment, nNewSeg, nChild, nSide, sideFlag;
+	int32_t			nListPos;
+	int16_t			nObject;
 
 gameData.render.mine.objRenderList.ref.Clear (char (0xff));
 gameData.render.mine.objRenderList.nUsed = 0;
@@ -532,7 +532,7 @@ gameData.render.zMax = vCenter.v.coord.z + d1 + r;
 void GetMaxDepth (void)
 {
 gameData.render.zMax = 0;
-for (int i = 0; i < gameStates.app.nThreads; i++) {
+for (int32_t i = 0; i < gameStates.app.nThreads; i++) {
 	if (gameData.render.zMax < tiRender.zMax [i])
 		gameData.render.zMax = tiRender.zMax [i];
 	if (gameData.render.zMin > tiRender.zMin [i])
@@ -546,12 +546,12 @@ for (int i = 0; i < gameStates.app.nThreads; i++) {
 
 //static tSegZRef zRef [2][MAX_SEGMENTS_D2X];
 
-void CVisibilityData::QSortZRef (short left, short right)
+void CVisibilityData::QSortZRef (int16_t left, int16_t right)
 {
 	tSegZRef	*ps = &zRef [0][0];
 	tSegZRef	m = ps [(left + right) / 2];
 	tSegZRef	h;
-	short		l = left,
+	int16_t		l = left,
 				r = right;
 do {
 	while ((ps [l].z > m.z))// || ((zRef [l].z == m.z) && (zRef [l].d > m.d)))
@@ -577,11 +577,11 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-void CVisibilityData::InitZRef (int i, int j, int nThread)
+void CVisibilityData::InitZRef (int32_t i, int32_t j, int32_t nThread)
 {
 	tSegZRef*		ps = &zRef [0][i];
 	CFloatVector	vViewer, vCenter;
-	int				r, z, zMin = 0x7fffffff, zMax = -0x7fffffff;
+	int32_t				r, z, zMin = 0x7fffffff, zMax = -0x7fffffff;
 	CSegment*		segP;
 
 vViewer.Assign (gameData.render.mine.viewer.vPos);
@@ -618,7 +618,7 @@ tiRender.zMax [nThread] = zMax;
 void CVisibilityData::MergeZRef (void)
 {
 	tSegZRef	*ps, *pi, *pj;
-	int		h, i, j;
+	int32_t		h, i, j;
 
 h = nSegments;
 for (i = h / 2, j = h - i, ps = &zRef [1][0], pi = &zRef [0][0], pj = pi + h / 2; h; h--) {
@@ -642,7 +642,7 @@ if (nSegments < 2)
 
 #if USE_OPENMP //> 1
 
-	int h, i, j;
+	int32_t h, i, j;
 
 if (gameStates.app.nThreads < 2) {
 	InitZRef (0, nSegments, 0);
@@ -671,16 +671,16 @@ else {
 
 //------------------------------------------------------------------------------
 
-int CVisibilityData::BuildAutomapSegList (void)
+int32_t CVisibilityData::BuildAutomapSegList (void)
 {
 if (!(automap.Display () && gameOpts->render.automap.bTextured && !automap.Radar ()))
 	return 0;
 
-	int nSegmentLimit = automap.SegmentLimit ();
-	int bUnlimited = nSegmentLimit == automap.MaxSegsAway ();
-	int bSkyBox = gameOpts->render.automap.bSkybox;
+	int32_t nSegmentLimit = automap.SegmentLimit ();
+	int32_t bUnlimited = nSegmentLimit == automap.MaxSegsAway ();
+	int32_t bSkyBox = gameOpts->render.automap.bSkybox;
 
-for (int i = nSegments = 0; i < gameData.segs.nSegments; i++)
+for (int32_t i = nSegments = 0; i < gameData.segs.nSegments; i++)
 	if (automap.Visible (i)
 		 && (bSkyBox || (SEGMENTS [i].m_function != SEGMENT_FUNC_SKYBOX)) 
 		 && (bUnlimited || (automap.m_visible [i] <= nSegmentLimit))) {
@@ -694,15 +694,15 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void CVisibilityData::BuildSegList (CTransformation& transformation, short nStartSeg, int nWindow, bool bIgnoreDoors)
+void CVisibilityData::BuildSegList (CTransformation& transformation, int16_t nStartSeg, int32_t nWindow, bool bIgnoreDoors)
 {
-	int				nCurrent, nHead, nTail, nStart, nSide;
-	int				l, i;
-	short				nChild;
-	short				nChildSeg;
-	int				nSegment;
-	short				childList [SEGMENT_SIDE_COUNT];		//list of ordered sides to process
-	int				nChildren, bCullIfBehind;					//how many sides in childList
+	int32_t				nCurrent, nHead, nTail, nStart, nSide;
+	int32_t				l, i;
+	int16_t				nChild;
+	int16_t				nChildSeg;
+	int32_t				nSegment;
+	int16_t				childList [SEGMENT_SIDE_COUNT];		//list of ordered sides to process
+	int32_t				nChildren, bCullIfBehind;					//how many sides in childList
 	CFixVector		viewDir, viewPos;
 #if DBG
 	CShortArray&	renderSegList = segments;
@@ -711,11 +711,11 @@ void CVisibilityData::BuildSegList (CTransformation& transformation, short nStar
 	CArray<CRenderPoint>& renderPoints = points;
 	CByteArray&		processed = bProcessed;
 #else
-	short*			renderSegList = segments.Buffer ();
-	short*			renderPos = position.Buffer ();
-	short*			renderDepth = nDepth.Buffer ();
+	int16_t*			renderSegList = segments.Buffer ();
+	int16_t*			renderPos = position.Buffer ();
+	int16_t*			renderDepth = nDepth.Buffer ();
 	CRenderPoint*	renderPoints = points.Buffer ();
-	ubyte*			processed = bProcessed.Buffer ();
+	uint8_t*			processed = bProcessed.Buffer ();
 #endif
 
 viewDir = transformation.m_info.view [0].m.dir.f;
@@ -752,9 +752,9 @@ for (i = 0; i < gameData.segs.nVertices; i++)
 #if DBG
 if (nStartSeg == nDbgSeg)
 	BRP;
-int nIterations = 0;
+int32_t nIterations = 0;
 #endif
-int nRenderDepth = Min (4 * (int (gameStates.render.detail.nRenderDepth) + 1), gameData.segs.nSegments);
+int32_t nRenderDepth = Min (4 * (int32_t (gameStates.render.detail.nRenderDepth) + 1), gameData.segs.nSegments);
 
 // Starting at the viewer's segment, the following code looks through each open side of a segment
 // the projected rectangular area of that side is that side's "portal".
@@ -782,10 +782,10 @@ for (l = 0; l < nRenderDepth; l++) {
 		nIterations++;
 #endif
 		CSegment* segP = SEGMENTS + nSegment;
-		int bRotated = 0;
+		int32_t bRotated = 0;
 		//look at all sides of this segment.
 		//tricky code to look at sides in correct order follows
-		int nSides = SEGMENT_SIDE_COUNT;
+		int32_t nSides = SEGMENT_SIDE_COUNT;
 		for (nChild = nChildren = 0; nChild < nSides; nChild++) {		//build list of sides
 			nChildSeg = segP->m_children [nChild];
 			if (nChildSeg < 0)
@@ -797,9 +797,9 @@ for (l = 0; l < nRenderDepth; l++) {
 				nChildSeg = nChildSeg;
 #endif
 			if (!bRotated) {
-				ushort* sv = segP->m_vertices;
-				int j = segP->m_nVertices;
-				for (int i = 0; i < j; i++) {
+				uint16_t* sv = segP->m_vertices;
+				int32_t j = segP->m_nVertices;
+				for (int32_t i = 0; i < j; i++) {
 #if DBG
 					if (sv [i] == nDbgVertex)
 						BRP;
@@ -811,8 +811,8 @@ for (l = 0; l < nRenderDepth; l++) {
 				}
 
 			if (bCullIfBehind) {
-				ushort* s2v = segP->Side (nChild)->m_corners;
-				int i, j = segP->Side (nChild)->m_nCorners;
+				uint16_t* s2v = segP->Side (nChild)->m_corners;
+				int32_t i, j = segP->Side (nChild)->m_nCorners;
 				for (i = 0; i < j; i++) {
 					if (s2v [i] == 0xFFFF)
 						continue;
@@ -835,13 +835,13 @@ for (l = 0; l < nRenderDepth; l++) {
 				nChildSeg = nChildSeg;
 #endif
 			tPortal facePortal = {32767, -32767, 32767, -32767};
-			int bProjected = 1;	//0 when at least one point wasn't projected
+			int32_t bProjected = 1;	//0 when at least one point wasn't projected
 			CSide* sideP = segP->Side (nSide);
-			ushort* s2v = sideP->m_corners;
-			ubyte offScreenFlags = 0xff;
-			int nCorners = sideP->m_nCorners;
-			for (int nCorner = 0; nCorner < nCorners; nCorner++) {
-				ushort nVertex = s2v [nCorner];
+			uint16_t* s2v = sideP->m_corners;
+			uint8_t offScreenFlags = 0xff;
+			int32_t nCorners = sideP->m_nCorners;
+			for (int32_t nCorner = 0; nCorner < nCorners; nCorner++) {
+				uint16_t nVertex = s2v [nCorner];
 				CRenderPoint& point = renderPoints [nVertex];
 #if DBG
 				point.Reset ();
@@ -907,7 +907,7 @@ for (l = 0; l < nRenderDepth; l++) {
 			}
 #endif
 			//maybe add this segment
-			int nPos = renderPos [nChildSeg];
+			int32_t nPos = renderPos [nChildSeg];
 			tPortal& newPortal = portals [nCurrent];
 
 			if (!bProjected)
@@ -928,7 +928,7 @@ for (l = 0; l < nRenderDepth; l++) {
 			else {
 				tPortal& oldPortal = portals [nPos];
 				bool bExpand = false;
-				int h;
+				int32_t h;
 				h = newPortal.left - oldPortal.left;
 				if (h > 0)
 					newPortal.left = oldPortal.left;
@@ -990,7 +990,7 @@ if (gameStates.render.nShadowMap) {
 
 //------------------------------------------------------------------------------
 
-void BuildRenderSegList (short nStartSeg, int nWindow, bool bIgnoreDoors, int nThread)
+void BuildRenderSegList (int16_t nStartSeg, int32_t nWindow, bool bIgnoreDoors, int32_t nThread)
 {
 return gameData.render.mine.visibility [nThread].BuildSegList (transformation, nStartSeg, nWindow, bIgnoreDoors);
 }

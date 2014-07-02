@@ -56,10 +56,10 @@ typedef SAMPLE
 class CSoundSample {
 	public:
 		char			szName [9];
-		ubyte			bHires;
-		ubyte			bCustom;
-		int			nLength [2];
-		int			nOffset [2];
+		uint8_t			bHires;
+		uint8_t			bCustom;
+		int32_t			nLength [2];
+		int32_t			nOffset [2];
 		CByteArray	data [2];
 #if USE_OPENAL
 		ALuint		buffer;
@@ -112,14 +112,14 @@ class CSoundSample {
 
 typedef struct tSoundQueueEntry {
 	fix	timeAdded;
-	short	nSound;
+	int16_t	nSound;
 } tSoundQueueEntry;
 
 typedef struct tSoundQueueData {
-	int	nHead;
-	int	nTail;
-	int	nSounds;
-	int	nChannel;
+	int32_t	nHead;
+	int32_t	nTail;
+	int32_t	nSounds;
+	int32_t	nChannel;
 	CArray<tSoundQueueEntry>	queue; // [MAX_SOUND_QUEUE];
 } tSoundQueueData;
 
@@ -135,8 +135,8 @@ class CSoundQueue {
 		void Pause (void);
 		void End (void);
 		void Process (void);
-		void StartSound (short nSound, fix nVolume);
-		inline int Channel (void) { return m_data.nChannel; }
+		void StartSound (int16_t nSound, fix nVolume);
+		inline int32_t Channel (void) { return m_data.nChannel; }
 	};
 
 extern CSoundQueue soundQueue;
@@ -147,28 +147,28 @@ class CAudioChannel {
 	private:
 		typedef struct tChannelInfo {
 			public:
-				int				nSound;
+				int32_t				nSound;
 				fix				nPan;				// 0 = far left, 1 = far right
 				fix				nVolume;			// 0 = nothing, 1 = fully on
 				CByteArray		sample;
-				uint				nLength;			// Length of the sample
-				uint				nPosition;		// Position we are at at the moment.
-				int				nSoundObj;		// Which soundobject is on this nChannel
-				int				nSoundClass;
-				int				nIndex;
-				ubyte				bPlaying;		// Is there a sample playing on this nChannel?
-				ubyte				bLooped;			// Play this sample looped?
-				ubyte				bPersistent;	// This can't be pre-empted
-				ubyte				bResampled;
-				ubyte				bBuiltIn;
-				ubyte				bAmbient;
+				uint32_t				nLength;			// Length of the sample
+				uint32_t				nPosition;		// Position we are at at the moment.
+				int32_t				nSoundObj;		// Which soundobject is on this nChannel
+				int32_t				nSoundClass;
+				int32_t				nIndex;
+				uint8_t				bPlaying;		// Is there a sample playing on this nChannel?
+				uint8_t				bLooped;			// Play this sample looped?
+				uint8_t				bPersistent;	// This can't be pre-empted
+				uint8_t				bResampled;
+				uint8_t				bBuiltIn;
+				uint8_t				bAmbient;
 #if USE_SDL_MIXER
 				Mix_Chunk*		mixChunkP;
-				int				nChannel;
+				int32_t				nChannel;
 #endif
 #if USE_OPENAL
 				ALuint			source;
-				int				loops;
+				int32_t				loops;
 #endif
 			} tChannelInfo;
 
@@ -179,61 +179,61 @@ class CAudioChannel {
 		~CAudioChannel () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
-		void SetVolume (int nVolume);
-		void SetPan (int nPan);
-		int Start (short nSound, int nSoundClass, fix nVolume, int nPan, int bLooping,
-					  int nLoopStart, int nLoopEnd, int nSoundObj, int nSpeed,
+		void SetVolume (int32_t nVolume);
+		void SetPan (int32_t nPan);
+		int32_t Start (int16_t nSound, int32_t nSoundClass, fix nVolume, int32_t nPan, int32_t bLooping,
+					  int32_t nLoopStart, int32_t nLoopEnd, int32_t nSoundObj, int32_t nSpeed,
 					  const char *pszWAV, CFixVector* vPos);
 		void Stop (void);
-		void Mix (ubyte* stream, int len);
-		inline int Playing (void) { return m_info.bPlaying && m_info.mixChunkP; }
-		void SetPlaying (int bPlaying);
-		inline void SetIndex (int nIndex) { m_info.nIndex = nIndex; }
+		void Mix (uint8_t* stream, int32_t len);
+		inline int32_t Playing (void) { return m_info.bPlaying && m_info.mixChunkP; }
+		void SetPlaying (int32_t bPlaying);
+		inline void SetIndex (int32_t nIndex) { m_info.nIndex = nIndex; }
 		fix Duration (void);
-		inline int SoundObject (void) { return m_info.nSoundObj; }
-		inline void SetSoundObj (int nSoundObj) { m_info.nSoundObj = nSoundObj; }
-		inline int Sound (void) { return m_info.nSound; }
-		inline int SoundClass (void) { return m_info.nSoundClass; }
-		inline int Volume (void) { return m_info.nVolume; }
-		inline int Persistent (void) { return m_info.bPersistent; }
-		inline int Resampled (void) { return m_info.bResampled; }
+		inline int32_t SoundObject (void) { return m_info.nSoundObj; }
+		inline void SetSoundObj (int32_t nSoundObj) { m_info.nSoundObj = nSoundObj; }
+		inline int32_t Sound (void) { return m_info.nSound; }
+		inline int32_t SoundClass (void) { return m_info.nSoundClass; }
+		inline int32_t Volume (void) { return m_info.nVolume; }
+		inline int32_t Persistent (void) { return m_info.bPersistent; }
+		inline int32_t Resampled (void) { return m_info.bResampled; }
 
 	private:
-		int Resample (CSoundSample *soundP, int bD1Sound, int bMP3);
-		int Speedup (CSoundSample *soundP, int speed);
-		int ReadWAV (void);
+		int32_t Resample (CSoundSample *soundP, int32_t bD1Sound, int32_t bMP3);
+		int32_t Speedup (CSoundSample *soundP, int32_t speed);
+		int32_t ReadWAV (void);
 	};
 
 //------------------------------------------------------------------------------
 
 class CSoundObject {
 	public:
-		short			m_nSignature;		// A unique nSignature to this sound
-		ubyte			m_flags;				// Used to tell if this slot is used and/or currently playing, and how long.
-		ubyte			m_bCustom;			//	Keep alignment
+		int16_t			m_nSignature;		// A unique nSignature to this sound
+		uint8_t			m_flags;				// Used to tell if this slot is used and/or currently playing, and how long.
+		uint8_t			m_bCustom;			//	Keep alignment
 		fix			m_maxVolume;		// Max volume that this sound is playing at
 		fix			m_maxDistance;		// The max distance that this sound can be heard at...
-		int			m_soundClass;
-		int			m_bAmbient;
-		short			m_nSound;			// The sound number that is playing
-		int			m_channel;			// What channel this is playing on, -1 if not playing
-		int			m_volume;			// Volume that this sound is playing at
-		int			m_audioVolume;		// audio volume set when the sound object was last updated
-		int			m_pan;				// Pan value that this sound is playing at
-		int			m_nDecay;			// type of decay (0: linear, 1: quadratic, 2: cubic)
+		int32_t			m_soundClass;
+		int32_t			m_bAmbient;
+		int16_t			m_nSound;			// The sound number that is playing
+		int32_t			m_channel;			// What channel this is playing on, -1 if not playing
+		int32_t			m_volume;			// Volume that this sound is playing at
+		int32_t			m_audioVolume;		// audio volume set when the sound object was last updated
+		int32_t			m_pan;				// Pan value that this sound is playing at
+		int32_t			m_nDecay;			// type of decay (0: linear, 1: quadratic, 2: cubic)
 		char			m_szSound [FILENAME_LEN];	// file name of custom sound to be played
-		int			m_nLoopStart;		// The start point of the loop. -1 means no loop
-		int			m_nLoopEnd;			// The end point of the loop
-		int			m_nMidiVolume;
+		int32_t			m_nLoopStart;		// The start point of the loop. -1 means no loop
+		int32_t			m_nLoopEnd;			// The end point of the loop
+		int32_t			m_nMidiVolume;
 		union {
 			struct {
-				short			nSegment;				// Used if SOF_LINK_TO_POS field is used
-				short			nSide;
+				int16_t			nSegment;				// Used if SOF_LINK_TO_POS field is used
+				int16_t			nSide;
 				CFixVector	position;
 			} pos;
 			struct {
-				short			nObject;				// Used if SOF_LINK_TO_OBJ field is used
-				short			nObjSig;
+				int16_t			nObject;				// Used if SOF_LINK_TO_OBJ field is used
+				int16_t			nObjSig;
 			} obj;
 		} m_linkType;
 
@@ -252,22 +252,22 @@ class CAudio {
 
 		class CAudioInfo {
 			public:
-				int		bInitialized;
-				int		bAvailable;
-				int		bNoObjects;
-				int		bLoMem;
-				int		nFormat;
-				int		nMaxChannels;
-				int		nFreeChannel;
-				int		nVolume [2];
-				int		nMidiVolume;
-				int		nNextSignature;
-				int		nActiveObjects;
-				short		nLoopingSound;
-				short		nLoopingVolume;
-				short		nLoopingStart;
-				short		nLoopingEnd;
-				short		nLoopingChannel;
+				int32_t		bInitialized;
+				int32_t		bAvailable;
+				int32_t		bNoObjects;
+				int32_t		bLoMem;
+				int32_t		nFormat;
+				int32_t		nMaxChannels;
+				int32_t		nFreeChannel;
+				int32_t		nVolume [2];
+				int32_t		nMidiVolume;
+				int32_t		nNextSignature;
+				int32_t		nActiveObjects;
+				int16_t		nLoopingSound;
+				int16_t		nLoopingVolume;
+				int16_t		nLoopingStart;
+				int16_t		nLoopingEnd;
+				int16_t		nLoopingChannel;
 				float		fSlowDown;
 			};
 
@@ -275,26 +275,26 @@ class CAudio {
 		CAudioInfo					m_info;
 		CArray<CAudioChannel>	m_channels;
 		CStack<CSoundObject>		m_objects;
-		CStack<int>					m_usedChannels;
+		CStack<int32_t>					m_usedChannels;
 		CDACSUniDirRouter			m_router [MAX_THREADS];
 		//CArray<fix>					m_segDists;
-		short							m_nListenerSeg;
+		int16_t							m_nListenerSeg;
 		bool							m_bSDLInitialized;
 
 	private:
-		int AudioError (void);
-		int InternalSetup (float fSlowDown, int nFormat, const char* driver);
+		int32_t AudioError (void);
+		int32_t InternalSetup (float fSlowDown, int32_t nFormat, const char* driver);
 
 	public:
 		CAudio ();
 		~CAudio () { Destroy (); }
 		void Init (void);
 #ifndef _WIN32
-		int InitThread (void);
+		int32_t InitThread (void);
 #endif
 		void Destroy (void);
 		void Prepare (void);
-		int Setup (float fSlowDown, int nFormat = -1);
+		int32_t Setup (float fSlowDown, int32_t nFormat = -1);
 		void SetupRouter (void);
 		void Cleanup (void);
 		void Shutdown (void);
@@ -306,65 +306,65 @@ class CAudio {
 #if DBG
 		void Debug (void);
 #endif
-		int SoundClassCount (int nSoundClass);
-		void SetVolume (int nChannel, int nVolume);
-		void SetPan (int nChannel, int nPan);
-		int ChannelIsPlaying (int nChannel);
-		int SoundIsPlaying (short nSound);
-		void SetMaxChannels (int nChannels);
-		int GetMaxChannels (void);
-		int FindChannel (short nSound);
-		void SetMidiVolume (int nVolume);
-		void SetFxVolume (int nVolume, int nType = 0);
-		void SetVolumes (int fxVolume, int midiVolume);
-		inline int Volume (int nType = 0) { return m_info.nVolume [nType]; }
+		int32_t SoundClassCount (int32_t nSoundClass);
+		void SetVolume (int32_t nChannel, int32_t nVolume);
+		void SetPan (int32_t nChannel, int32_t nPan);
+		int32_t ChannelIsPlaying (int32_t nChannel);
+		int32_t SoundIsPlaying (int16_t nSound);
+		void SetMaxChannels (int32_t nChannels);
+		int32_t GetMaxChannels (void);
+		int32_t FindChannel (int16_t nSound);
+		void SetMidiVolume (int32_t nVolume);
+		void SetFxVolume (int32_t nVolume, int32_t nType = 0);
+		void SetVolumes (int32_t fxVolume, int32_t midiVolume);
+		inline int32_t Volume (int32_t nType = 0) { return m_info.nVolume [nType]; }
 
-		int StartSound (short nSound, int nSoundClass = SOUNDCLASS_GENERIC, fix nVolume = DEFAULT_VOLUME, int nPan = DEFAULT_PAN,
-							 int bLooping = 0, int nLoopStart = -1, int nLoopEnd = -1, int nSoundObj = -1, int nSpeed = I2X (1),
+		int32_t StartSound (int16_t nSound, int32_t nSoundClass = SOUNDCLASS_GENERIC, fix nVolume = DEFAULT_VOLUME, int32_t nPan = DEFAULT_PAN,
+							 int32_t bLooping = 0, int32_t nLoopStart = -1, int32_t nLoopEnd = -1, int32_t nSoundObj = -1, int32_t nSpeed = I2X (1),
 							 const char *pszWAV = NULL, CFixVector* vPos = NULL);
-		void StopSound (int channel);
-		void StopActiveSound (int nChannel);
+		void StopSound (int32_t channel);
+		void StopActiveSound (int32_t nChannel);
 		void StopObjectSounds (void);
 		void StopAllChannels (bool bPause = false);
 
-		int PlaySound (short nSound, int nSoundClass = SOUNDCLASS_GENERIC, fix nVolume = I2X (1), int nPan = I2X (1) / 2 - 1,
-						   int bNoDups = 0, int nLoops = -1, const char* pszWAV = NULL, CFixVector* vPos = NULL);
+		int32_t PlaySound (int16_t nSound, int32_t nSoundClass = SOUNDCLASS_GENERIC, fix nVolume = I2X (1), int32_t nPan = I2X (1) / 2 - 1,
+						   int32_t bNoDups = 0, int32_t nLoops = -1, const char* pszWAV = NULL, CFixVector* vPos = NULL);
 
-		inline int PlayWAV (const char *pszWAV) {
+		inline int32_t PlayWAV (const char *pszWAV) {
 			return PlaySound (-1, SOUNDCLASS_GENERIC, DEFAULT_VOLUME, DEFAULT_PAN, 0, -1, pszWAV);
 			}
 
-		int CreateObjectSound (short nSound, int nSoundClass, short nObject, int bForever = 0, fix maxVolume = I2X (1), fix maxDistance = I2X (256),
-									  int nLoopStart = -1, int nLoopEnd = -1, const char *pszSound = NULL, int nDecay = 0, ubyte bCustom = 0, int nThread = 0);
-		int ChangeObjectSound (int nObject, fix nVolume);
-		int FindObjectSound (int nObject, short nSound);
-		int DestroyObjectSound (int nObject, short nSound = -1);
-		bool SuspendObjectSound (int nThreshold);
-		void DeleteSoundObject (int i);
+		int32_t CreateObjectSound (int16_t nSound, int32_t nSoundClass, int16_t nObject, int32_t bForever = 0, fix maxVolume = I2X (1), fix maxDistance = I2X (256),
+									  int32_t nLoopStart = -1, int32_t nLoopEnd = -1, const char *pszSound = NULL, int32_t nDecay = 0, uint8_t bCustom = 0, int32_t nThread = 0);
+		int32_t ChangeObjectSound (int32_t nObject, fix nVolume);
+		int32_t FindObjectSound (int32_t nObject, int16_t nSound);
+		int32_t DestroyObjectSound (int32_t nObject, int16_t nSound = -1);
+		bool SuspendObjectSound (int32_t nThreshold);
+		void DeleteSoundObject (int32_t i);
 
-		int CreateSegmentSound (short nOrgSound, short nSegment, short nSide, CFixVector& vPos, int forever = 0,
+		int32_t CreateSegmentSound (int16_t nOrgSound, int16_t nSegment, int16_t nSide, CFixVector& vPos, int32_t forever = 0,
 										fix maxVolume = I2X (1), fix maxDistance = I2X (256), const char *pszSound = NULL);
-		int DestroySegmentSound (short nSegment, short nSide, short nSound);
+		int32_t DestroySegmentSound (int16_t nSegment, int16_t nSide, int16_t nSound);
 
 		void StartLoopingSound (void);
-		void PlayLoopingSound (short nSound, fix nVolume, int nLoopStart, int nLoopEnd);
+		void PlayLoopingSound (int16_t nSound, fix nVolume, int32_t nLoopStart, int32_t nLoopEnd);
 		void ChangeLoopingVolume (fix nVolume);
 		void PauseLoopingSound (void);
 		void ResumeLoopingSound (void);
 		void StopLoopingSound (void);
 
-		void GetVolPan (CFixMatrix& mListener, CFixVector& vListenerPos, short nListenerSeg,
-							 CFixVector& vSoundPos, short nSoundSeg,
-							 fix maxVolume, int *volume, int *pan, fix maxDistance, int nDecay, 
-							 int nThread = 0);
+		void GetVolPan (CFixMatrix& mListener, CFixVector& vListenerPos, int16_t nListenerSeg,
+							 CFixVector& vSoundPos, int16_t nSoundSeg,
+							 fix maxVolume, int32_t *volume, int32_t *pan, fix maxDistance, int32_t nDecay, 
+							 int32_t nThread = 0);
 
 		void InitSounds (void);
 		void SyncSounds (void);
-		int GetSoundByName (const char *pszSound);
+		int32_t GetSoundByName (const char *pszSound);
 
-		int IsSoundPlaying (short nSound);
+		int32_t IsSoundPlaying (int16_t nSound);
 
-		void EndSoundObject (int i);
+		void EndSoundObject (int32_t i);
 
 		void PauseAll (void);
 		void ResumeAll (void);
@@ -372,52 +372,52 @@ class CAudio {
 		void ResumeSounds (void);
 		void StopAll (void);
 
-		short XlatSound (short nSound);
-		int UnXlatSound (int nSound);
+		int16_t XlatSound (int16_t nSound);
+		int32_t UnXlatSound (int32_t nSound);
 
-		inline int Format (void) { return m_info.nFormat; }
-		inline void SetFormat (int nFormat) { m_info.nFormat = nFormat; }
-		inline int Available (void) { return m_info.bAvailable; }
-		inline int ActiveObjects (void) { 
+		inline int32_t Format (void) { return m_info.nFormat; }
+		inline void SetFormat (int32_t nFormat) { m_info.nFormat = nFormat; }
+		inline int32_t Available (void) { return m_info.bAvailable; }
+		inline int32_t ActiveObjects (void) { 
 			m_info.nActiveObjects = 0;
-			for (int i = 0; i < int (m_objects.ToS ()); i++)
+			for (int32_t i = 0; i < int32_t (m_objects.ToS ()); i++)
 				if (m_objects [i].m_channel >= 0)
 					m_info.nActiveObjects++;
 				return m_info.nActiveObjects; 
 			}
-		inline int MaxChannels (void) { return m_info.nMaxChannels; }
-		inline int FreeChannel (void) { return m_info.nFreeChannel; }
-		inline CAudioChannel* Channel (uint i = 0) { return (i < (uint) MaxChannels ()) ? m_channels + i : NULL; }
+		inline int32_t MaxChannels (void) { return m_info.nMaxChannels; }
+		inline int32_t FreeChannel (void) { return m_info.nFreeChannel; }
+		inline CAudioChannel* Channel (uint32_t i = 0) { return (i < (uint32_t) MaxChannels ()) ? m_channels + i : NULL; }
 		inline CStack<CSoundObject>& Objects (void) { return m_objects; }
 		inline float SlowDown (void) { return m_info.fSlowDown; }
 		inline void ActivateObject (void) { m_info.nActiveObjects++; }
 		inline void DeactivateObject (void) { m_info.nActiveObjects--; }
-		int RegisterChannel (CAudioChannel* channelP);
-		void UnregisterChannel (int nIndex);
+		int32_t RegisterChannel (CAudioChannel* channelP);
+		void UnregisterChannel (int32_t nIndex);
 
 		void RecordSoundObjects (void);
 #if DBG
-		int VerifyChannelFree (int channel);
+		int32_t VerifyChannelFree (int32_t channel);
 #endif
-		static void _CDECL_ MixCallback (void* userdata, Uint8* stream, int len);
+		static void _CDECL_ MixCallback (void* userdata, Uint8* stream, int32_t len);
 
-		inline bool HaveRouter (int nThread) { return m_router [nThread].Size () > 0; }
-		int Distance (CFixVector& vListenerPos, short nListenerSeg, CFixVector& vSoundPos, short nSoundSeg, fix maxDistance, int nDecay, CFixVector& vecToSound, int nThread = 0);
+		inline bool HaveRouter (int32_t nThread) { return m_router [nThread].Size () > 0; }
+		int32_t Distance (CFixVector& vListenerPos, int16_t nListenerSeg, CFixVector& vSoundPos, int16_t nSoundSeg, fix maxDistance, int32_t nDecay, CFixVector& vecToSound, int32_t nThread = 0);
 
 		void Update (void) { 
-			for (int i = 0; i < MAX_THREADS; i++) {
+			for (int32_t i = 0; i < MAX_THREADS; i++) {
 				m_router [i].SetStartSeg (-1); 
 				m_router [i].SetDestSeg (-1);
 				}
 			}
 
 	private:
-		CAudioChannel* FindFreeChannel (int nSoundClass);
+		CAudioChannel* FindFreeChannel (int32_t nSoundClass);
 	};
 
 extern CAudio audio;
 
-void Mix_VolPan (int nChannel, int nVolume, int nPan);
+void Mix_VolPan (int32_t nChannel, int32_t nVolume, int32_t nPan);
 void SetSoundSources (void);
 void SetD1Sound (void);
 
@@ -425,24 +425,24 @@ void SetD1Sound (void);
 
 typedef struct tWAVHeader {
 	char		chunkID [4];
-	uint		chunkSize;
+	uint32_t		chunkSize;
 	char		riffType [4];
 } tRIFFChunk;
 
 typedef struct tWAVFormat {
 	char		chunkID [4];
-	uint		chunkSize;
-	ushort	format;
-	ushort	channels;
-	uint		sampleRate;
-	uint		avgBytesPerSec;
-	ushort	blockAlign;
-	ushort	bitsPerSample;
+	uint32_t		chunkSize;
+	uint16_t	format;
+	uint16_t	channels;
+	uint32_t		sampleRate;
+	uint32_t		avgBytesPerSec;
+	uint16_t	blockAlign;
+	uint16_t	bitsPerSample;
 	} tPCMFormatChunk;
 
 typedef struct tWAVData {
 	char		chunkID [4];
-	uint		chunkSize;
+	uint32_t		chunkSize;
 } tWAVData;
 
 typedef struct tWAVInfo {

@@ -41,15 +41,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 class CViewport : public CRectangle {
 	public:
-		int m_t;
+		int32_t m_t;
 
-		CViewport (int x = 0, int y = 0, int w = 0, int h = 0, int t = 0) : CRectangle (x, y, w, h), m_t (t) {}
+		CViewport (int32_t x = 0, int32_t y = 0, int32_t w = 0, int32_t h = 0, int32_t t = 0) : CRectangle (x, y, w, h), m_t (t) {}
 
 		CViewport (const CViewport& other) : CRectangle (other), m_t (other.m_t) {}
 
-		void Setup (int x, int y, int w, int h);
+		void Setup (int32_t x, int32_t y, int32_t w, int32_t h);
 
-		void Apply (int t = -1);
+		void Apply (int32_t t = -1);
 
 		inline CViewport& operator= (const CViewport other) {
 			*((CRectangle*) this) = (CRectangle&) other;
@@ -85,7 +85,7 @@ typedef struct tCanvas {
 	CPalette*		palette;
 	CFont*			font;				// the currently selected font
 	CCanvasColor	fontColors [2];   // current font background color (-1==Invisible)
-	short				nDrawMode;			// fill, XOR, etc.
+	int16_t				nDrawMode;			// fill, XOR, etc.
 	bool				bRelative;
 } tCanvas;
 
@@ -109,35 +109,35 @@ class CCanvas : public CViewport, public CBitmap {
 		static float				fCanvW2, fCanvH2;
 
 		CCanvas*						m_parent;
-		int							m_nActivations;
+		int32_t							m_nActivations;
 
 	public:
 		CCanvas () { Init (); }
 		~CCanvas () {}
 
-		static CCanvas* Create (int w, int h);
+		static CCanvas* Create (int32_t w, int32_t h);
 		void Init (void);
-		void Init (int nType, int w, int h, ubyte *data);
-		//void Setup (int w, int h);
+		void Init (int32_t nType, int32_t w, int32_t h, uint8_t *data);
+		//void Setup (int32_t w, int32_t h);
 		void Setup (CCanvas* parentP);
-		void Setup (int w, int h);
-		void Setup (CCanvas* parentP, int x, int y, int w, int h, bool bUnscale = false);
-		CCanvas* CreatePane (int x, int y, int w, int h);
-		//void SetupPane (CCanvas* childP, int x, int y, int w, int h);
+		void Setup (int32_t w, int32_t h);
+		void Setup (CCanvas* parentP, int32_t x, int32_t y, int32_t w, int32_t h, bool bUnscale = false);
+		CCanvas* CreatePane (int32_t x, int32_t y, int32_t w, int32_t h);
+		//void SetupPane (CCanvas* childP, int32_t x, int32_t y, int32_t w, int32_t h);
 		void Destroy (void);
 		void DestroyPane (void);
 		void Clear (void);
 
 		inline tCanvas& Info (void) { return m_info; }
 		inline CCanvasColor& Color (void) { return m_info.color; }
-		inline CCanvasColor& FontColor (int i) { return m_info.fontColors [i]; }
+		inline CCanvasColor& FontColor (int32_t i) { return m_info.fontColors [i]; }
 		inline CFont* Font (void) { return m_info.font; }
-		inline short DrawMode (void) { return m_info.nDrawMode; }
+		inline int16_t DrawMode (void) { return m_info.nDrawMode; }
 
 		inline void SetColor (CCanvasColor& color) { m_info.color = color; }
-		inline void SetFontColor (CCanvasColor& color, int i) { m_info.fontColors [i] = color; }
+		inline void SetFontColor (CCanvasColor& color, int32_t i) { m_info.fontColors [i] = color; }
 		inline void SetFont (CFont *font) { m_info.font = font; }
-		inline void SetDrawMode (short nDrawMode) { m_info.nDrawMode = nDrawMode; }
+		inline void SetDrawMode (int16_t nDrawMode) { m_info.nDrawMode = nDrawMode; }
 		inline void SetId (const char* pszId) { m_info.pszId = pszId; }
 		inline const char* Id (void) { return m_info.pszId; }
 
@@ -162,13 +162,13 @@ class CCanvas : public CViewport, public CBitmap {
 			fontManager.Pop ();
 			}
 
-		void Clear (uint color);
-		void SetColor (int color);
-		void SetColorRGB (ubyte red, ubyte green, ubyte blue, ubyte alpha);
-		void SetColorRGB15bpp (ushort c, ubyte alpha);
-		inline void SetColorRGBi (int i) { SetColorRGB (RGBA_RED (i), RGBA_GREEN (i), RGBA_BLUE (i), RGBA_ALPHA (i)); }
+		void Clear (uint32_t color);
+		void SetColor (int32_t color);
+		void SetColorRGB (uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha);
+		void SetColorRGB15bpp (uint16_t c, uint8_t alpha);
+		inline void SetColorRGBi (int32_t i) { SetColorRGB (RGBA_RED (i), RGBA_GREEN (i), RGBA_BLUE (i), RGBA_ALPHA (i)); }
 
-		inline void SetWidth (short w = -1) { 
+		inline void SetWidth (int16_t w = -1) { 
 			if (w > 0)
 				CViewport::SetWidth (w); 
 			else
@@ -178,7 +178,7 @@ class CCanvas : public CViewport, public CBitmap {
 				xCanvW2 = I2X (w) / 2;
 				}
 			}
-		inline void SetHeight (short h = -1) { 
+		inline void SetHeight (int16_t h = -1) { 
 			if (h > 0)
 				CViewport::SetHeight (h); 
 			else
@@ -192,23 +192,23 @@ class CCanvas : public CViewport, public CBitmap {
 		inline float XScale (void) { return (Width () > 640) ? float (Width ()) / 640.0f : 1.0f; }
 		inline float YScale (void) { return (Height () > 480) ? float (Height ()) / 480.0f : 1.0f; }
 
-		inline bool Clip (int x, int y) { return (x < 0) || (y < 0) || (x >= Width ()) || (y >= Width ()); }
-		//inline bool Clip (int x, int y) { return this->CBitmap::Clip (x, y); }
+		inline bool Clip (int32_t x, int32_t y) { return (x < 0) || (y < 0) || (x >= Width ()) || (y >= Width ()); }
+		//inline bool Clip (int32_t x, int32_t y) { return this->CBitmap::Clip (x, y); }
 
 		inline double AspectRatio (void) { return double (Width ()) / double (Height ()); }
 
 		void FadeColorRGB (double dFade);
 
 		inline float GetScale (void);
-		inline int Scaled (int v);
-		inline int Unscaled (int v);
+		inline int32_t Scaled (int32_t v);
+		inline int32_t Unscaled (int32_t v);
 
-		inline int Width (bool bScale = true) { return bScale ? Scaled (CViewport::Width ()) : CViewport::Width (); }
-		inline int Height (bool bScale = true) { return bScale ? Scaled (CViewport::Height ()) : CViewport::Height (); }
-		inline int Left (bool bScale = true) { return bScale ? Scaled (CViewport::Left ()) : CViewport::Left (); }
-		inline int Top (bool bScale = true) { return bScale ? Scaled (CViewport::Top ()) : CViewport::Top (); }
-		inline int Right (void) { return Left () + Width (); }
-		inline int Bottom (void) { return Top () + Height (); }
+		inline int32_t Width (bool bScale = true) { return bScale ? Scaled (CViewport::Width ()) : CViewport::Width (); }
+		inline int32_t Height (bool bScale = true) { return bScale ? Scaled (CViewport::Height ()) : CViewport::Height (); }
+		inline int32_t Left (bool bScale = true) { return bScale ? Scaled (CViewport::Left ()) : CViewport::Left (); }
+		inline int32_t Top (bool bScale = true) { return bScale ? Scaled (CViewport::Top ()) : CViewport::Top (); }
+		inline int32_t Right (void) { return Left () + Width (); }
+		inline int32_t Bottom (void) { return Top () + Height (); }
 
 		void GetExtent (CRectangle& rc, bool bScale = true, bool bDeep = false);
 
@@ -227,19 +227,19 @@ class CCanvas : public CViewport, public CBitmap {
 
 class CGameScreenData : public CCanvas {
 	public:
-		void Set (short l, short t, short w, short h) { CViewport::SetLeft (l), CViewport::SetTop (t), CViewport::SetWidth (w), CViewport::SetHeight (h); }
-		inline uint Scalar (void) { return (((uint) Width (false)) << 16) + (((uint) Height (false)) & 0xFFFF); }
-		inline uint Area (void) { return (uint) Width (false) * (uint) Height (false); }
-		void Set (uint scalar) { Set (0, 0, (short) (scalar >> 16), (short) (scalar & 0xFFFF)); }
+		void Set (int16_t l, int16_t t, int16_t w, int16_t h) { CViewport::SetLeft (l), CViewport::SetTop (t), CViewport::SetWidth (w), CViewport::SetHeight (h); }
+		inline uint32_t Scalar (void) { return (((uint32_t) Width (false)) << 16) + (((uint32_t) Height (false)) & 0xFFFF); }
+		inline uint32_t Area (void) { return (uint32_t) Width (false) * (uint32_t) Height (false); }
+		void Set (uint32_t scalar) { Set (0, 0, (int16_t) (scalar >> 16), (int16_t) (scalar & 0xFFFF)); }
 
-		static int StereoOffset (void);
+		static int32_t StereoOffset (void);
 	};
 
 //------------------------------------------------------------------------------
 
 typedef struct tScreen {		// This is a video screen
-	uint	mode;				// Video mode number
-	short   		width, height; // Actual Width and Height
+	uint32_t	mode;				// Video mode number
+	int16_t   		width, height; // Actual Width and Height
 	fix     		aspect;			//aspect ratio (w/h) for this screen
 	float			scale [2];		//size ratio compared to 640x480
 } tScreen;
@@ -263,37 +263,37 @@ class CScreen : public CGameScreenData {
 			}
 		void Destroy (void) { /*Canvas ()->CBitmap::Destroy ();*/ };
 
-		inline uint Mode (void) { return m_info.mode; }
+		inline uint32_t Mode (void) { return m_info.mode; }
 
-		inline short Width (bool bScale = true) { return bScale ? (short) FRound (m_info.width * GetScale ()) : m_info.width; }
-		inline short Height (bool bScale = true) { return bScale ? (short) FRound (m_info.height * GetScale ()) : m_info.height; }
+		inline int16_t Width (bool bScale = true) { return bScale ? (int16_t) FRound (m_info.width * GetScale ()) : m_info.width; }
+		inline int16_t Height (bool bScale = true) { return bScale ? (int16_t) FRound (m_info.height * GetScale ()) : m_info.height; }
 		inline fix Aspect (void) { return m_info.aspect; }
 
-		inline void SetMode (uint mode) { m_info.mode = mode; }
-		inline void SetWidth (short width) { 
+		inline void SetMode (uint32_t mode) { m_info.mode = mode; }
+		inline void SetWidth (int16_t width) { 
 			m_info.width = width; 
 			m_info.scale [0] = (width > 640) ? float (width) / 640.0f : 1.0f;
 			}
-		inline void SetHeight (short height) { 
+		inline void SetHeight (int16_t height) { 
 			m_info.height = height; 
 			m_info.scale [1] = (height > 480) ? float (height) / 480.0f : 1.0f;
 			}
 		inline void SetAspect (fix aspect) { m_info.aspect = aspect; }
-		inline float Scale (uint i = 0) { return m_info.scale [i] ? m_info.scale [i] : 1.0f; }
+		inline float Scale (uint32_t i = 0) { return m_info.scale [i] ? m_info.scale [i] : 1.0f; }
 
 		static float GetScale (void) { return m_fScale; }
 		static void SetScale (float scale) { m_fScale = scale; }
-		static int Scaled (int v) { return int (ceil (v * GetScale ())); }
-		static int Unscaled (int v) { return int (ceil (v / GetScale ())); }
+		static int32_t Scaled (int32_t v) { return int32_t (ceil (v * GetScale ())); }
+		static int32_t Unscaled (int32_t v) { return int32_t (ceil (v / GetScale ())); }
 };
 
 //extern CScreen screen;
 
 inline float CCanvas::GetScale (void) { return CScreen::GetScale (); }
 
-inline int CCanvas::Scaled (int v) { return CScreen::Scaled (v); }
+inline int32_t CCanvas::Scaled (int32_t v) { return CScreen::Scaled (v); }
 
-inline int CCanvas::Unscaled (int v) { return CScreen::Unscaled (v); }
+inline int32_t CCanvas::Unscaled (int32_t v) { return CScreen::Unscaled (v); }
 
 void SetupCanvasses (float scale = 0.0f);
 

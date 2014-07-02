@@ -78,7 +78,7 @@ networkData.bWaitingForPlayerInfo = 0;
 
 void NetworkInit (void)
 {
-	int nPlayerSave = N_LOCALPLAYER;
+	int32_t nPlayerSave = N_LOCALPLAYER;
 
 GameDisableCheats ();
 gameStates.multi.bIWasKicked = 0;
@@ -122,18 +122,18 @@ memcpy (extraGameInfo + 2, extraGameInfo, sizeof (extraGameInfo [0]));
 
 //------------------------------------------------------------------------------
 
-int NetworkCreateMonitorVector (void)
+int32_t NetworkCreateMonitorVector (void)
 {
 	#define MAX_BLOWN_BITMAPS 100
 	
-	int      blownBitmaps [MAX_BLOWN_BITMAPS];
-	int      nBlownBitmaps = 0;
-	int      nMonitor = 0;
-	int      vector = 0;
+	int32_t      blownBitmaps [MAX_BLOWN_BITMAPS];
+	int32_t      nBlownBitmaps = 0;
+	int32_t      nMonitor = 0;
+	int32_t      vector = 0;
 	CSegment *segP = SEGMENTS.Buffer ();
 	CSide    *sideP;
-	int      h, i, j, k;
-	int      tm, ec;
+	int32_t      h, i, j, k;
+	int32_t      tm, ec;
 
 for (i = 0; i < gameData.effects.nEffects [gameStates.app.bD1Data]; i++) {
 	if ((h = gameData.effects.effectP [i].nDestBm) > 0) {
@@ -240,7 +240,7 @@ monsterballP->nSizeMod = 7;	// that is actually shield orb size * 3, because it'
 
 //------------------------------------------------------------------------------
 
-void InitEntropySettings (int i)
+void InitEntropySettings (int32_t i)
 {
 extraGameInfo [i].entropy.nEnergyFillRate = 25;
 extraGameInfo [i].entropy.nShieldFillRate = 11;
@@ -264,7 +264,7 @@ extraGameInfo [i].entropy.bPlayerHandicap = 0;
 
 void InitExtraGameInfo (void)
 {
-	int	i;
+	int32_t	i;
 
 for (i = 0; i < 2; i++) {
 	extraGameInfo [i].nType = 0;
@@ -351,7 +351,7 @@ for (i = 0; i < 2; i++) {
 
 //------------------------------------------------------------------------------
 
-int InitAutoNetGame (void)
+int32_t InitAutoNetGame (void)
 {
 if (gameData.multiplayer.autoNG.bValid <= 0)
 	return 0;
@@ -476,7 +476,7 @@ else {
 	PrintLog (0, "bSmokeGrenades: %d\n", extraGameInfo [1].bSmokeGrenades);
 	PrintLog (0, "nMslTurnSpeed: %d\n", extraGameInfo [1].nMslTurnSpeed);
 	PrintLog (0, "nMslStartSpeed: %d\n", extraGameInfo [1].nMslStartSpeed);
-	PrintLog (0, "nCoopPenalty: %d\n", (int) nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty]);
+	PrintLog (0, "nCoopPenalty: %d\n", (int32_t) nCoopPenalties [(int32_t) extraGameInfo [1].nCoopPenalty]);
 	PrintLog (0, "bKillMissiles: %d\n", extraGameInfo [1].bKillMissiles);
 	PrintLog (0, "bTripleFusion: %d\n", extraGameInfo [1].bTripleFusion);
 	PrintLog (0, "bShowWeapons: %d\n", extraGameInfo [1].bShowWeapons);

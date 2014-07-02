@@ -42,12 +42,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-int	bOutLineMode = 0,
+int32_t	bOutLineMode = 0,
 		bShowOnlyCurSide = 0;
 
 //------------------------------------------------------------------------------
 
-int FaceIsVisible (short nSegment, short nSide)
+int32_t FaceIsVisible (int16_t nSegment, int16_t nSide)
 {
 #if SW_CULLING
 CSegment *segP = SEGMENTS + nSegment;
@@ -66,7 +66,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void RotateTexCoord2f (tTexCoord2f& dest, tTexCoord2f& src, ubyte nOrient)
+void RotateTexCoord2f (tTexCoord2f& dest, tTexCoord2f& src, uint8_t nOrient)
 {
 if (nOrient == 1) {
 	dest.v.u = 1.0f - src.v.v;
@@ -88,21 +88,21 @@ else {
 
 //------------------------------------------------------------------------------
 
-int ToggleOutlineMode (void)
+int32_t ToggleOutlineMode (void)
 {
 return bOutLineMode = !bOutLineMode;
 }
 
 //------------------------------------------------------------------------------
 
-int ToggleShowOnlyCurSide (void)
+int32_t ToggleShowOnlyCurSide (void)
 {
 return bShowOnlyCurSide = !bShowOnlyCurSide;
 }
 
 //------------------------------------------------------------------------------
 
-void DrawOutline (int nVertices, CRenderPoint **pointList)
+void DrawOutline (int32_t nVertices, CRenderPoint **pointList)
 {
 	GLint				depthFunc;
 	CRenderPoint	center, normal;
@@ -120,7 +120,7 @@ glGetIntegerv (GL_DEPTH_FUNC, &depthFunc);
 ogl.SetDepthMode (GL_ALWAYS);
 CCanvas::Current ()->SetColorRGB (255, 255, 255, 255);
 center.ViewPos ().SetZero ();
-for (int i = 0; i < nVertices; i++) {
+for (int32_t i = 0; i < nVertices; i++) {
 	G3DrawLine (pointList [i], pointList [(i + 1) % nVertices]);
 	center.ViewPos () += pointList [i]->ViewPos ();
 	n.Assign (*pointList [i]->GetNormal ());
@@ -142,7 +142,7 @@ ogl.SetDepthMode (depthFunc);
 
 // ----------------------------------------------------------------------------
 
-char IsColoredSeg (short nSegment)
+char IsColoredSeg (int16_t nSegment)
 {
 if (nSegment < 0)
 	return 0;
@@ -168,7 +168,7 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-char IsColoredSegFace (short nSegment, short nSide)
+char IsColoredSegFace (int16_t nSegment, int16_t nSide)
 {
 #if 0 //!DBG
 if (!gameStates.render.nLightingMethod)
@@ -216,7 +216,7 @@ CFloatVector segmentColors [4] = {
 	 {{{0, 1.0f / 16.0f, 0.5f, 0.333f}}},
 	 {{{0.5f, 0, 0, 0.333f}}}};
 
-CFloatVector *ColoredSegmentColor (int nSegment, int nSide, char nColor)
+CFloatVector *ColoredSegmentColor (int32_t nSegment, int32_t nSide, char nColor)
 {
 //if (!gameStates.render.nLightingMethod)
 //	return NULL;
@@ -294,7 +294,7 @@ dest.v.color.b = dest.v.color.b * da + src.v.color.b * fAlpha;
 
 //------------------------------------------------------------------------------
 
-int SetVertexColor (int nVertex, CFaceColor *colorP, int bBlend)
+int32_t SetVertexColor (int32_t nVertex, CFaceColor *colorP, int32_t bBlend)
 {
 #if DBG
 if (nVertex == nDbgVertex)
@@ -318,7 +318,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int SetVertexColors (tFaceProps *propsP)
+int32_t SetVertexColors (tFaceProps *propsP)
 {
 if (SHOW_DYN_LIGHT) {
 	// set material properties specific for certain textures here
@@ -327,7 +327,7 @@ if (SHOW_DYN_LIGHT) {
 	}
 memset (vertColors, 0, sizeof (vertColors));
 if (gameStates.render.bAmbientColor) {
-	int i, j = propsP->nVertices;
+	int32_t i, j = propsP->nVertices;
 	for (i = 0; i < j; i++)
 		SetVertexColor (propsP->vp [i], vertColors + i);
 	}
@@ -338,7 +338,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-fix SetVertexLight (int nSegment, int nSide, int nVertex, CFaceColor *colorP, fix light)
+fix SetVertexLight (int32_t nSegment, int32_t nSide, int32_t nVertex, CFaceColor *colorP, fix light)
 {
 	fix				dynLight;
 	float				fl, dl, hl;
@@ -436,11 +436,11 @@ return light;
 
 //------------------------------------------------------------------------------
 
-int SetFaceLight (tFaceProps *propsP)
+int32_t SetFaceLight (tFaceProps *propsP)
 {
 if (SHOW_DYN_LIGHT)
 	return 0;
-for (int i = 0; i < propsP->nVertices; i++) {
+for (int32_t i = 0; i < propsP->nVertices; i++) {
 	propsP->uvls [i].l = SetVertexLight (propsP->segNum, propsP->sideNum, propsP->vp [i], vertColors + i, propsP->uvls [i].l);
 	vertColors [i].index = -1;
 	}
@@ -449,7 +449,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int IsTransparentTexture (short nTexture)
+int32_t IsTransparentTexture (int16_t nTexture)
 {
 return !gameStates.app.bD1Mission &&
 		 ((nTexture == 378) ||
@@ -461,14 +461,14 @@ return !gameStates.app.bD1Mission &&
 
 //------------------------------------------------------------------------------
 
-float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, ubyte bAdditive,
-					  CFloatVector *colorP, int& nColor, ubyte& bTextured, ubyte& bCloaked, ubyte& bTransparent)
+float WallAlpha (int16_t nSegment, int16_t nSide, int16_t nWall, uint8_t widFlags, int32_t bIsMonitor, uint8_t bAdditive,
+					  CFloatVector *colorP, int32_t& nColor, uint8_t& bTextured, uint8_t& bCloaked, uint8_t& bTransparent)
 {
 	static CFloatVector cloakColor = {{{0.0f, 0.0f, 0.0f, 0}}};
 
 	CWall	*wallP;
 	float fAlpha, fMaxColor;
-	short	c;
+	int16_t	c;
 
 if (!IS_WALL (nWall))
 	return 1;
@@ -512,7 +512,7 @@ if (bCloaked || bTransparent || (widFlags & WID_TRANSPCOLOR_FLAG)) {
 		fAlpha = 1.0f - extraGameInfo [0].grWallTransparency / (float) FADE_LEVELS;
 	if (fAlpha < 1.0f) {
 		//fAlpha = (float) sqrt (fAlpha);
-		paletteManager.Game ()->ToRgbaf ((ubyte) c, *colorP);
+		paletteManager.Game ()->ToRgbaf ((uint8_t) c, *colorP);
 		if (bAdditive) {
 			colorP->Red () /= fAlpha;
 			colorP->Green () /= fAlpha;
@@ -540,14 +540,14 @@ return colorP->Alpha () = 1.0f;
 
 //------------------------------------------------------------------------------
 
-int IsMonitorFace (short nSegment, short nSide, int bForce)
+int32_t IsMonitorFace (int16_t nSegment, int16_t nSide, int32_t bForce)
 {
 return (bForce || gameStates.render.bDoCameras) ? cameraManager.GetFaceCamera (nSegment * 6 + nSide) : -1;
 }
 
 //------------------------------------------------------------------------------
 
-int SetupMonitorFace (short nSegment, short nSide, short nCamera, CSegFace *faceP)
+int32_t SetupMonitorFace (int16_t nSegment, int16_t nSide, int16_t nCamera, CSegFace *faceP)
 {
 	CCamera		*cameraP = cameraManager [nCamera];
 
@@ -556,14 +556,14 @@ if (!cameraP) {
 	return 0;
 	}
 
-	int			bHaveMonitorBg, bIsTeleCam = cameraP->GetTeleport ();
+	int32_t			bHaveMonitorBg, bIsTeleCam = cameraP->GetTeleport ();
 #if !DBG
-	int			i;
+	int32_t			i;
 #endif
 #if RENDER2TEXTURE
-	int			bCamBufAvail = cameraP->HaveBuffer (1) == 1;
+	int32_t			bCamBufAvail = cameraP->HaveBuffer (1) == 1;
 #else
-	int			bCamBufAvail = 0;
+	int32_t			bCamBufAvail = 0;
 #endif
 
 if (!gameStates.render.bDoCameras)
@@ -618,7 +618,7 @@ colorP->Alpha () = 1.0f;
 //cc.ccAnd and cc.ccOr will contain the position/orientation of the face that is determined
 //by the vertices passed relative to the viewer
 
-static inline CRenderPoint* TransformVertex (int i)
+static inline CRenderPoint* TransformVertex (int32_t i)
 {
 CRenderPoint& p = RENDERPOINTS [i];
 p.SetFlags (0);
@@ -634,13 +634,13 @@ return &p;
 //cc.ccAnd and cc.ccOr will contain the position/orientation of the face that is determined
 //by the vertices passed relative to the viewer
 
-tRenderCodes TransformVertexList (int nVertices, ushort* vertexIndexP)
+tRenderCodes TransformVertexList (int32_t nVertices, uint16_t* vertexIndexP)
 {
 	tRenderCodes cc = {0, 0xff};
 
-for (int i = 0; i < nVertices; i++) {
+for (int32_t i = 0; i < nVertices; i++) {
 	CRenderPoint* p = TransformVertex (vertexIndexP [i]);
-	ubyte c = p->Codes ();
+	uint8_t c = p->Codes ();
 	cc.ccAnd &= c;
 	cc.ccOr |= c;
 	}
@@ -651,7 +651,7 @@ return cc;
 
 void RotateSideNorms (void)
 {
-	int			i, j;
+	int32_t			i, j;
 	CSide			*sideP;
 
 for (i = 0; i < gameData.segs.nSegments; i++)
@@ -667,7 +667,7 @@ for (i = 0; i < gameData.segs.nSegments; i++)
 
 void TransformSideCenters (void)
 {
-	int	i;
+	int32_t	i;
 
 for (i = 0; i < gameData.segs.nSegments; i++)
 	transformation.Transform (gameData.segs.segCenters [1] + i, gameData.segs.segCenters [0] + i, 0);
@@ -677,7 +677,7 @@ for (i = 0; i < gameData.segs.nSegments; i++)
 
 //------------------------------------------------------------------------------
 
-ubyte CVisibilityData::BumpVisitedFlag (void)
+uint8_t CVisibilityData::BumpVisitedFlag (void)
 {
 #if USE_OPENMP // > 1
 #	pragma omp critical
@@ -693,7 +693,7 @@ return nVisited;
 
 //------------------------------------------------------------------------------
 
-ubyte CVisibilityData::BumpProcessedFlag (void)
+uint8_t CVisibilityData::BumpProcessedFlag (void)
 {
 #if USE_OPENMP // > 1
 #	pragma omp critical
@@ -709,7 +709,7 @@ return nProcessed;
 
 //------------------------------------------------------------------------------
 
-ubyte CVisibilityData::BumpVisibleFlag (void)
+uint8_t CVisibilityData::BumpVisibleFlag (void)
 {
 #if USE_OPENMP // > 1
 #	pragma omp critical
@@ -725,28 +725,28 @@ return nVisible;
 
 // ----------------------------------------------------------------------------
 
-int CVisibilityData::SegmentMayBeVisible (short nStartSeg, int nRadius, int nMaxDist)
+int32_t CVisibilityData::SegmentMayBeVisible (int16_t nStartSeg, int32_t nRadius, int32_t nMaxDist)
 {
 if (gameData.render.mine.Visible (nStartSeg))
 	return 1;
 
-	ubyte*		visitedP = bVisited.Buffer ();
-	short*		segListP = segments.Buffer ();
+	uint8_t*		visitedP = bVisited.Buffer ();
+	int16_t*		segListP = segments.Buffer ();
 
 segListP [0] = nStartSeg;
 bProcessed [nStartSeg] = BumpProcessedFlag ();
 bVisited [nStartSeg] = BumpVisitedFlag ();
 if (nMaxDist < 0)
 	nMaxDist = nRadius * I2X (20);
-for (int i = 0, j = 1; nRadius; nRadius--) {
-	for (int h = i, i = j; h < i; h++) {
-		int nSegment = segListP [h];
+for (int32_t i = 0, j = 1; nRadius; nRadius--) {
+	for (int32_t h = i, i = j; h < i; h++) {
+		int32_t nSegment = segListP [h];
 		if ((bVisible [nSegment] == nVisible) &&
 			 (!nMaxDist || (CFixVector::Dist (SEGMENTS [nStartSeg].Center (), SEGMENTS [nSegment].Center ()) <= nMaxDist)))
 			return 1;
 		CSegment* segP = SEGMENTS + nSegment;
-		for (int nChild = 0; nChild < SEGMENT_SIDE_COUNT; nChild++) {
-			int nChildSeg = segP->m_children [nChild];
+		for (int32_t nChild = 0; nChild < SEGMENT_SIDE_COUNT; nChild++) {
+			int32_t nChildSeg = segP->m_children [nChild];
 			if ((nChildSeg >= 0) && (visitedP [nChildSeg] != nVisited) && (segP->IsPassable (nChild, NULL) & WID_TRANSPARENT_FLAG)) {
 				segListP [j++] = nChildSeg;
 				visitedP [nChildSeg] = nVisited;
@@ -759,7 +759,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int SegmentMayBeVisible (short nStartSeg, int nRadius, int nMaxDist, int nThread)
+int32_t SegmentMayBeVisible (int16_t nStartSeg, int32_t nRadius, int32_t nMaxDist, int32_t nThread)
 {
 return gameData.render.mine.visibility [nThread + 2].SegmentMayBeVisible (nStartSeg, nRadius, nMaxDist);
 }

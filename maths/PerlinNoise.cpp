@@ -10,7 +10,7 @@
 
 double CPerlinNoise::Noise (double v)
 {
-int n = FastFloor (v);
+int32_t n = FastFloor (v);
 n = (n << 13) ^ n;
 return 1.0 - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0;    
 }
@@ -58,7 +58,7 @@ return Noise (v) / 2  +  Noise (v-1) / 4  +  Noise (v+1) / 4;
 
 double CPerlinNoise::InterpolatedNoise (double v)
 {
-//int i = FastFloor (v);
+//int32_t i = FastFloor (v);
 double v1 = SmoothedNoise (v);
 double v2 = SmoothedNoise (v + 1);
 #if INTERPOLATION_METHOD == 2
@@ -78,7 +78,7 @@ double CPerlinNoise::ComputeNoise (double v)
 {
 double total = 0, amplitude = m_amplitude, frequency = 1.0;
 v += m_randomize;
-for (int i = 0; i < m_octaves; i++) {
+for (int32_t i = 0; i < m_octaves; i++) {
 	total += InterpolatedNoise (v * frequency) * amplitude;
 	frequency *= 2.0;
 	amplitude *= m_persistence;
@@ -90,9 +90,9 @@ return total;
 
 double CPerlinNoise::Noise (double x, double y)
 {
-int n = FastFloor (x) + FastFloor (y) * 57;
+int32_t n = FastFloor (x) + FastFloor (y) * 57;
 n = (n << 13) ^ n;
-int nn = (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;
+int32_t nn = (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;
 return 1.0 - (double) nn / 1073741824.0;
 }
 
@@ -111,7 +111,7 @@ return corners + sides + center;
 double CPerlinNoise::InterpolatedNoise (double x, double y)
 {
 #if 1
-int xInt = FastFloor (x), yInt = FastFloor (y);
+int32_t xInt = FastFloor (x), yInt = FastFloor (y);
 double xFrac = x - xInt, yFrac = y - yInt;
 #else
 double xInt, yInt,
@@ -134,7 +134,7 @@ double CPerlinNoise::ComputeNoise (double x, double y)
 double total = 0, amplitude = m_amplitude, frequency = 1.0;
 x += m_randomize;
 y += m_randomize;
-for (int i = 0; i < m_octaves; i++) {
+for (int32_t i = 0; i < m_octaves; i++) {
 	total += InterpolatedNoise (x * frequency, y * frequency) * amplitude;
 	frequency *= 2.0;
 	amplitude *= m_persistence;
@@ -144,7 +144,7 @@ return total;
 
 //------------------------------------------------------------------------------
 
-void CPerlinNoise::Setup (double amplitude, double persistence, int octaves, int randomize)
+void CPerlinNoise::Setup (double amplitude, double persistence, int32_t octaves, int32_t randomize)
 {
 m_amplitude = (amplitude > 0.0) ? amplitude : 1.0;
 m_persistence = (persistence > 0.0) ? persistence : 2.0 / 3.0;

@@ -24,7 +24,7 @@ _inline
 #else
 inline
 #endif
-void _CDECL_ _do_mprintf(int n, char *fmt, ...)
+void _CDECL_ _do_mprintf(int32_t n, char *fmt, ...)
 {
 	char buffer[1024];
 	va_list arglist;

@@ -17,8 +17,8 @@
 //	Translate table to get opposite CSide of a face on a CSegment.
 char	oppSideTable [SEGMENT_SIDE_COUNT] = {WRIGHT, WBOTTOM, WLEFT, WTOP, WFRONT, WBACK};
 
-//	Note, this MUST be the same as sideVertIndex, it is an int for speed reasons.
-ushort sideVertIndex [SEGMENT_SIDE_COUNT][4] = {
+//	Note, this MUST be the same as sideVertIndex, it is an int32_t for speed reasons.
+uint16_t sideVertIndex [SEGMENT_SIDE_COUNT][4] = {
 		 {7,6,2,3},			// left
 		 {0,4,7,3},			// top
 		 {0,1,5,4},			// right
@@ -31,9 +31,9 @@ extern bool bNewFileFormat;
 
 // -----------------------------------------------------------------------------------
 // Fill in array with four absolute point numbers for a given CSide
-void CSegment::GetCornerIndex (int nSide, ushort* vertIndex)
+void CSegment::GetCornerIndex (int32_t nSide, uint16_t* vertIndex)
 {
-	ushort* s2v = sideVertIndex [nSide];
+	uint16_t* s2v = sideVertIndex [nSide];
 
 vertIndex [0] = m_vertices [s2v [0]];
 vertIndex [1] = m_vertices [s2v [1]];
@@ -43,14 +43,14 @@ vertIndex [3] = m_vertices [s2v [3]];
 
 //------------------------------------------------------------------------------
 
-int CSegment::Index (void)
+int32_t CSegment::Index (void)
 {
 return this - SEGMENTS;
 }
 
 // -------------------------------------------------------------------------------
 
-int CSegment::HasVertex (ubyte nSide, ushort nVertex) 
+int32_t CSegment::HasVertex (uint8_t nSide, uint16_t nVertex) 
 { 
 if ((gameData.segs.vertexOwners [nVertex].nSegment == Index ()) && 
 	 (gameData.segs.vertexOwners [nVertex].nSide == nSide))
@@ -60,7 +60,7 @@ return Side (nSide)->HasVertex (nVertex);
 
 //------------------------------------------------------------------------------
 
-void CSegment::ReadFunction (CFile& cf, ubyte flags)
+void CSegment::ReadFunction (CFile& cf, uint8_t flags)
 {
 if (flags & (1 << SEGMENT_SIDE_COUNT)) {
 	m_function = cf.ReadByte ();
@@ -81,7 +81,7 @@ void CSegment::ReadVerts (CFile& cf)
 {
 m_nShape = 0;
 m_nVertices = 8;
-for (int i = 0; i < SEGMENT_VERTEX_COUNT; i++)
+for (int32_t i = 0; i < SEGMENT_VERTEX_COUNT; i++)
 	if (0xFFF8 <= (m_vertices [i] = cf.ReadShort ()))
 		m_nShape++;
 m_nVertices = 8 - m_nShape;
@@ -89,15 +89,15 @@ m_nVertices = 8 - m_nShape;
 
 //------------------------------------------------------------------------------
 
-void CSegment::ReadChildren (CFile& cf, ubyte flags)
+void CSegment::ReadChildren (CFile& cf, uint8_t flags)
 {
-for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
+for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++)
 	m_children [i] = (flags & (1 << i)) ? cf.ReadShort () : -1;
 }
 
 //------------------------------------------------------------------------------
 
-static ubyte segFuncFromType [] = {
+static uint8_t segFuncFromType [] = {
 	SEGMENT_FUNC_NONE,
 	SEGMENT_FUNC_FUELCENTER,
 	SEGMENT_FUNC_REPAIRCENTER,
@@ -117,7 +117,7 @@ static ubyte segFuncFromType [] = {
 	SEGMENT_FUNC_NONE
 	};
 
-static ubyte segPropsFromType [] = {
+static uint8_t segPropsFromType [] = {
 	SEGMENT_PROP_NONE,
 	SEGMENT_PROP_NONE,
 	SEGMENT_PROP_NONE,
@@ -188,7 +188,7 @@ else {
 	m_group = -1;
 	}
 
-ubyte flags = bNewFileFormat ? cf.ReadByte () : 0x7f;
+uint8_t flags = bNewFileFormat ? cf.ReadByte () : 0x7f;
 
 if (gameData.segs.nLevelVersion == 5) { // d2 SHAREWARE level
 	ReadFunction (cf, flags);
@@ -208,14 +208,14 @@ if (gameData.segs.nLevelVersion <= 5) // descent 1 thru d2 SHAREWARE level
 	m_xAvgSegLight	= fix (cf.ReadShort ()) << 4;
 
 // Read the walls as a 6 byte array
-unsigned char wallFlags = bNewFileFormat ? cf.ReadByte () : 0x3f;
+uint8_t wallFlags = bNewFileFormat ? cf.ReadByte () : 0x3f;
 
-int i;
+int32_t i;
 
 for (i = 0; i < SEGMENT_SIDE_COUNT; i++)
 	m_sides [i].ReadWallNum (cf, (wallFlags & (1 << i)) != 0);
 
-ushort sideVerts [4];
+uint16_t sideVerts [4];
 
 for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 	if (gameData.segs.nLevelVersion < 25)
@@ -231,7 +231,7 @@ if (gameData.segs.nLevelVersion > 24)
 
 void CSegment::SaveState (CFile& cf)
 {
-for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
+for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++)
 	m_sides [i].SaveState (cf);
 }
 
@@ -240,7 +240,7 @@ for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
 
 void CSegment::LoadState (CFile& cf)
 {
-for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
+for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++)
 	m_sides [i].LoadState (cf);
 }
 
@@ -248,7 +248,7 @@ for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
 
 void CSegment::ComputeSideRads (void)
 {
-for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
+for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++)
 	m_sides [i].ComputeRads ();
 }
 
@@ -262,8 +262,8 @@ if (Index () == nDbgSeg)
 #endif
 CFloatVector vCenter;
 vCenter.SetZero ();
-int nVertices = 0;
-for (int i = 0; i < 8; i++) {
+int32_t nVertices = 0;
+for (int32_t i = 0; i < 8; i++) {
 	if (m_vertices [i] != 0xFFFF) {
 		vCenter += FVERTICES [m_vertices [i]];
 		nVertices++;
@@ -278,7 +278,7 @@ m_vCenter.Assign (vCenter);
 void CSegment::ComputeChildDists (void)
 {
 // unscaled distances from the segment's center to each adjacent segment's center
-for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
+for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 	fix& dist = m_childDists [0][i];
 	if (0 > m_children [i])
 		dist = -1;
@@ -292,7 +292,7 @@ for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 // scaled distances from the segment's center to each adjacent segment's center
 // scaled with 0xFFFF / max (child distance) of all child distances
 // this is needed for the DACS router to make sure no edge is longer than 0xFFFF units
-for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
+for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 	fix& dist = m_childDists [1][i];
 	if (0 > m_children [i])
 		dist = 0xFFFF;
@@ -315,7 +315,7 @@ m_rads [0] = xMinDist;
 m_rads [1] = 0;
 vMin.v.coord.x = vMin.v.coord.y = vMin.v.coord.z = 0x7FFFFFFF;
 vMax.v.coord.x = vMax.v.coord.y = vMax.v.coord.z = -0x7FFFFFFF;
-for (int i = 0; i < 8; i++) {
+for (int32_t i = 0; i < 8; i++) {
 	if (m_vertices [i] != 0xFFFF) {
 		v = gameData.segs.vertices [m_vertices [i]];
 		if (vMin.v.coord.x > v.v.coord.x)
@@ -343,10 +343,10 @@ m_extents [1] = vMax;
 // -----------------------------------------------------------------------------
 //	Given two segments, return the side index in the connecting segment which connects to the base segment
 
-int CSegment::ConnectedSide (CSegment* other)
+int32_t CSegment::ConnectedSide (CSegment* other)
 {
-	short		nSegment = SEG_IDX (this);
-	short*	childP = other->m_children;
+	int16_t		nSegment = SEG_IDX (this);
+	int16_t*	childP = other->m_children;
 
 if (childP [0] == nSegment)
 		return 0;
@@ -368,7 +368,7 @@ return -1;
 //this CSegment.  See CSegMasks structure for info on fields
 CSegMasks CSegment::Masks (const CFixVector& refP, fix xRad)
 {
-	short			nSide, faceBit;
+	int16_t			nSide, faceBit;
 	CSegMasks	masks;
 
 //check refPoint against each CSide of CSegment. return bitmask
@@ -382,9 +382,9 @@ return masks;
 // -------------------------------------------------------------------------------
 //returns 3 different bitmasks with info telling if this sphere is in
 //this CSegment.  See CSegMasks structure for info on fields
-CSegMasks CSegment::SideMasks (int nSide, const CFixVector& refP, fix xRad, bool bCheckPoke)
+CSegMasks CSegment::SideMasks (int32_t nSide, const CFixVector& refP, fix xRad, bool bCheckPoke)
 {
-	short faceBit = 1;
+	int16_t faceBit = 1;
 
 return m_sides [nSide].Masks (refP, xRad, 1, faceBit, bCheckPoke);
 }
@@ -395,7 +395,7 @@ return m_sides [nSide].Masks (refP, xRad, 1, faceBit, bCheckPoke);
 //		create new vector normals
 void CSegment::Setup (void)
 {
-for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
+for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 #if DBG
 	if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (i == nDbgSide)))
 		BRP;
@@ -403,7 +403,7 @@ for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 	m_sides [i].Setup (Index (), m_vertices, sideVertIndex [i], m_children [i] < 0);
 	if (!m_sides [i].FaceCount () && (m_children [i] >= 0)) {
 		PrintLog (0, "Segment %d, side %d is collapsed, but has child %d!\n", SEG_IDX (this), i, m_children [i]);
-		SEGMENTS [m_children [i]].m_children [(int) oppSideTable [i]] = -1;
+		SEGMENTS [m_children [i]].m_children [(int32_t) oppSideTable [i]] = -1;
 		m_children [i] = -1;
 		}
 	}
@@ -414,7 +414,7 @@ for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 //		From center, go up to 50% of way towards any of the 8 vertices.
 CFixVector CSegment::RandomPoint (void)
 {
-int nVertex;
+int32_t nVertex;
 do {
 	nVertex = RandShort () % m_nVertices;
 } while (m_vertices [nVertex] == 0xFFFF);
@@ -425,9 +425,9 @@ return v + m_vCenter;
 
 //------------------------------------------------------------------------------
 
-int CSegment::HasOpenableDoor (void)
+int32_t CSegment::HasOpenableDoor (void)
 {
-for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
+for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++)
 	if (m_sides [i].FaceCount () && m_sides [i].IsOpenableDoor ())
 		return i;
 return -1;
@@ -436,9 +436,9 @@ return -1;
 
 #if 1
 
-int CSegment::IsPassable (int nSide, CObject *objP, bool bIgnoreDoors)
+int32_t CSegment::IsPassable (int32_t nSide, CObject *objP, bool bIgnoreDoors)
 {
-	int	nChildSeg = m_children [nSide];
+	int32_t	nChildSeg = m_children [nSide];
 
 if (nChildSeg == -1)
 	return WID_VISIBLE_FLAG;
@@ -459,7 +459,7 @@ if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 if (!objP) 
 	return wallP ? wallP->IsPassable (NULL, bIgnoreDoors) : WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG;
 
-ubyte nChildType = SEGMENTS [nChildSeg].m_function;
+uint8_t nChildType = SEGMENTS [nChildSeg].m_function;
 if (SEGMENTS [nChildSeg].HasBlockedProp ()) {
 	if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_POWERUP))
 		return WID_VISIBLE_FLAG;
@@ -480,9 +480,9 @@ return wallP ? wallP->IsPassable (objP, bIgnoreDoors) : WID_PASSABLE_FLAG | WID_
 
 #else
 
-int CSegment::IsPassable (int nSide, CObject *objP, bool bIgnoreDoors)
+int32_t CSegment::IsPassable (int32_t nSide, CObject *objP, bool bIgnoreDoors)
 {
-	int	nChild = m_children [nSide];
+	int32_t	nChild = m_children [nSide];
 
 if (nChild == -1)
 	return WID_VISIBLE_FLAG;
@@ -518,9 +518,9 @@ return wallP->IsPassable (objP, bIgnoreDoors);
 
 //------------------------------------------------------------------------------
 
-bool CSegment::IsVertex (int nVertex)
+bool CSegment::IsVertex (int32_t nVertex)
 {
-for (int i = 0; i < 8; i++)
+for (int32_t i = 0; i < 8; i++)
 	if (nVertex == m_vertices [i])
 		return true;
 return false;
@@ -528,7 +528,7 @@ return false;
 
 //------------------------------------------------------------------------------
 
-int CSegment::Physics (fix& xDamage)
+int32_t CSegment::Physics (fix& xDamage)
 {
 if (HasLavaProp ()) {
 	xDamage = gameData.pig.tex.tMapInfo [0][404].damage / 2;
@@ -543,12 +543,12 @@ return 0;
 
 //-----------------------------------------------------------------
 //set the nBaseTex or nOvlTex field for a CWall/door
-void CSegment::SetTexture (int nSide, CSegment *connSegP, short nConnSide, int nAnim, int nFrame)
+void CSegment::SetTexture (int32_t nSide, CSegment *connSegP, int16_t nConnSide, int32_t nAnim, int32_t nFrame)
 {
 	tWallClip*	animP = gameData.walls.animP + nAnim;
-	short			nTexture = animP->frames [(animP->flags & WCF_ALTFMT) ? 0 : nFrame];
+	int16_t			nTexture = animP->frames [(animP->flags & WCF_ALTFMT) ? 0 : nFrame];
 	CBitmap*		bmP;
-	int			nFrames;
+	int32_t			nFrames;
 
 //if (gameData.demo.nState == ND_STATE_PLAYBACK)
 //	return;
@@ -556,9 +556,9 @@ if (nConnSide < 0)
 	connSegP = NULL;
 if (animP->flags & WCF_ALTFMT) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordWallSetTMapNum1 (SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture, nAnim, nFrame);
+		NDRecordWallSetTMapNum1 (SEG_IDX (this), (uint8_t) nSide, (int16_t) (connSegP ? SEG_IDX (connSegP) : -1), (uint8_t) nConnSide, nTexture, nAnim, nFrame);
 	nFrames = animP->nFrameCount;
-	bmP = SetupHiresAnim (reinterpret_cast<short*> (animP->frames), nFrames, -1, 1, 0, &nFrames);
+	bmP = SetupHiresAnim (reinterpret_cast<int16_t*> (animP->frames), nFrames, -1, 1, 0, &nFrames);
 	//if (animP->flags & WCF_TMAP1)
 	if (!bmP)
 		animP->flags &= ~WCF_ALTFMT;
@@ -587,14 +587,14 @@ else if ((animP->flags & WCF_TMAP1) || !m_sides [nSide].m_nOvlTex) {
 	if (connSegP)
 		connSegP->m_sides [nConnSide].m_nBaseTex = nTexture;
 	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordWallSetTMapNum1 (SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture, nAnim, nFrame);
+		NDRecordWallSetTMapNum1 (SEG_IDX (this), (uint8_t) nSide, (int16_t) (connSegP ? SEG_IDX (connSegP) : -1), (uint8_t) nConnSide, nTexture, nAnim, nFrame);
 	}
 else {
 	m_sides [nSide].m_nOvlTex = nTexture;
 	if (connSegP)
 		connSegP->m_sides [nConnSide].m_nOvlTex = nTexture;
 	if (gameData.demo.nState == ND_STATE_RECORDING)
-		NDRecordWallSetTMapNum2 (SEG_IDX (this), (ubyte) nSide, (short) (connSegP ? SEG_IDX (connSegP) : -1), (ubyte) nConnSide, nTexture, nAnim, nFrame);
+		NDRecordWallSetTMapNum2 (SEG_IDX (this), (uint8_t) nSide, (int16_t) (connSegP ? SEG_IDX (connSegP) : -1), (uint8_t) nConnSide, nTexture, nAnim, nFrame);
 	}
 m_sides [nSide].m_nFrame = -nFrame;
 if (connSegP)
@@ -603,7 +603,7 @@ if (connSegP)
 
 //-----------------------------------------------------------------
 
-int CSegment::PokesThrough (int nObject, int nSide)
+int32_t CSegment::PokesThrough (int32_t nObject, int32_t nSide)
 {
 	CObject *objP = OBJECTS + nObject;
 
@@ -612,11 +612,11 @@ return (objP->info.xSize && SideMasks (nSide, objP->info.position.vPos, objP->in
 
 //-----------------------------------------------------------------
 //returns true of door in unobjstructed (& thus can close)
-int CSegment::DoorIsBlocked (int nSide, bool bIgnoreMarker)
+int32_t CSegment::DoorIsBlocked (int32_t nSide, bool bIgnoreMarker)
 {
-	short		nConnSide;
+	int16_t		nConnSide;
 	CSegment *connSegP;
-	short		nObject, nType;
+	int16_t		nObject, nType;
 
 connSegP = SEGMENTS + m_children [nSide];
 nConnSide = ConnectedSide (connSegP);
@@ -637,12 +637,12 @@ return 0; 	//doorway is free!
 
 // -------------------------------------------------------------------------------
 //when the CWall has used all its hitpoints, this will destroy it
-void CSegment::BlastWall (int nSide)
+void CSegment::BlastWall (int32_t nSide)
 {
-	short			nConnSide;
+	int16_t			nConnSide;
 	CSegment*	connSegP;
-	int			a, n;
-	short			nConnWall;
+	int32_t			a, n;
+	int16_t			nConnWall;
 	CWall*		wallP = Wall (nSide);
 
 if (!wallP)
@@ -680,7 +680,7 @@ else {
 
 //-----------------------------------------------------------------
 // Destroys a blastable CWall.
-void CSegment::DestroyWall (int nSide)
+void CSegment::DestroyWall (int32_t nSide)
 {
 	CWall* wallP = Wall (nSide);
 
@@ -694,10 +694,10 @@ if (wallP) {
 
 //-----------------------------------------------------------------
 // Deteriorate appearance of CWall. (Changes bitmap (paste-ons))
-void CSegment::DamageWall (int nSide, fix damage)
+void CSegment::DamageWall (int32_t nSide, fix damage)
 {
-	int		a, i, n;
-	short		nConnSide, nConnWall;
+	int32_t		a, i, n;
+	int16_t		nConnSide, nConnWall;
 	CWall		*wallP = Wall (nSide);
 	CSegment *connSegP;
 
@@ -744,7 +744,7 @@ else {
 
 //-----------------------------------------------------------------
 // Opens a door
-void CSegment::OpenDoor (int nSide)
+void CSegment::OpenDoor (int32_t nSide)
 {
 CWall* wallP;
 if (!(wallP = Wall (nSide)))
@@ -754,7 +754,7 @@ CActiveDoor* doorP;
 if (!(doorP = wallP->OpenDoor ()))
 	return;
 
-	short			nConnSide, nConnWall = NO_WALL;
+	int16_t			nConnSide, nConnWall = NO_WALL;
 	CSegment		*connSegP;
 // So that door can't be shot while opening
 if (m_children [nSide] < 0) {
@@ -801,7 +801,7 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 
 //-----------------------------------------------------------------
 // Closes a door
-void CSegment::CloseDoor (int nSide, bool bForce)
+void CSegment::CloseDoor (int32_t nSide, bool bForce)
 {
 	CWall*	wallP;
 
@@ -820,7 +820,7 @@ if (!(doorP = wallP->CloseDoor (bForce)))
 	return;
 
 	CSegment*		connSegP;
-	short				nConnSide, nConnWall;
+	int16_t				nConnSide, nConnWall;
 
 connSegP = SEGMENTS + m_children [nSide];
 nConnSide = ConnectedSide (connSegP);
@@ -847,7 +847,7 @@ if (gameData.demo.nState != ND_STATE_PLAYBACK) {
 //-----------------------------------------------------------------
 
 // start the transition from closed -> open CWall
-void CSegment::StartCloak (int nSide)
+void CSegment::StartCloak (int32_t nSide)
 {
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return;
@@ -861,9 +861,9 @@ if (wallP->nType == WALL_OPEN || wallP->state == WALL_DOOR_CLOAKING)		//already 
 
 	CCloakingWall*	cloakWallP;
 	CSegment*		connSegP;
-	short				nConnSide;
-	int				i;
-	short				nConnWall;
+	int16_t				nConnSide;
+	int32_t				i;
+	int16_t				nConnWall;
 
 
 connSegP = SEGMENTS + m_children [nSide];
@@ -895,7 +895,7 @@ for (i = 0; i < 4; i++) {
 
 //-----------------------------------------------------------------
 // start the transition from open -> closed CWall
-void CSegment::StartDecloak (int nSide)
+void CSegment::StartDecloak (int32_t nSide)
 {
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return;
@@ -907,9 +907,9 @@ if (wallP->nType == WALL_CLOSED || wallP->state == WALL_DOOR_DECLOAKING)		//alre
 	return;
 
 	CCloakingWall	*cloakWallP;
-	short				nConnSide;
+	int16_t				nConnSide;
 	CSegment			*connSegP;
-	int				i;
+	int32_t				i;
 
 connSegP = SEGMENTS + m_children [nSide];
 nConnSide = ConnectedSide (connSegP);
@@ -936,7 +936,7 @@ for (i = 0; i < 4; i++) {
 
 //-----------------------------------------------------------------
 
-int CSegment::AnimateOpeningDoor (int nSide, fix xElapsedTime)
+int32_t CSegment::AnimateOpeningDoor (int32_t nSide, fix xElapsedTime)
 {
 CWall	*wallP = Wall (nSide);
 if (!wallP)
@@ -946,7 +946,7 @@ return wallP->AnimateOpeningDoor (xElapsedTime);
 
 //-----------------------------------------------------------------
 
-int CSegment::AnimateClosingDoor (int nSide, fix xElapsedTime)
+int32_t CSegment::AnimateClosingDoor (int32_t nSide, fix xElapsedTime)
 {
 	CWall	*wallP = Wall (nSide);
 
@@ -958,7 +958,7 @@ return wallP->AnimateClosingDoor (xElapsedTime);
 //-----------------------------------------------------------------
 // Turns on an illusionary CWall (This will be used primarily for
 //  CWall switches or triggers that can turn on/off illusionary walls.)
-void CSegment::IllusionOn (int nSide)
+void CSegment::IllusionOn (int32_t nSide)
 {
 	CWall* wallP = Wall (nSide);
 
@@ -966,7 +966,7 @@ if (!wallP)
 	return;
 
 	CSegment*	connSegP;
-	short			nConnSide;
+	int16_t			nConnSide;
 
 wallP->flags &= ~WALL_ILLUSION_OFF;
 if (m_children [nSide] < 0) {
@@ -986,7 +986,7 @@ else {
 //-----------------------------------------------------------------
 // Turns off an illusionary CWall (This will be used primarily for
 //  CWall switches or triggers that can turn on/off illusionary walls.)
-void CSegment::IllusionOff (int nSide)
+void CSegment::IllusionOff (int32_t nSide)
 {
 
 	CWall*	wallP = Wall (nSide);
@@ -1015,7 +1015,7 @@ else {
 
 //-----------------------------------------------------------------
 // Opens doors/destroys CWall/shuts off triggers.
-void CSegment::ToggleWall (int nSide)
+void CSegment::ToggleWall (int32_t nSide)
 {
 CWall	*wallP = Wall (nSide);
 if (!wallP)
@@ -1035,7 +1035,7 @@ if ((wallP->nType == WALL_DOOR) && (wallP->state == WALL_DOOR_CLOSED))
 //nPlayer is the number the player who hit the CWall or fired the weapon,
 //or -1 if a robot fired the weapon
 
-int CSegment::ProcessWallHit (int nSide, fix damage, int nPlayer, CObject *objP)
+int32_t CSegment::ProcessWallHit (int32_t nSide, fix damage, int32_t nPlayer, CObject *objP)
 {
 	CWall* wallP = Wall (nSide);
 
@@ -1063,7 +1063,7 @@ return wallP->ProcessHit (nPlayer, objP);
 
 //-----------------------------------------------------------------
 // Checks for a CTrigger whenever an CObject hits a CTrigger nSide.
-void CSegment::OperateTrigger (int nSide, CObject *objP, int bShot)
+void CSegment::OperateTrigger (int32_t nSide, CObject *objP, int32_t bShot)
 {
 CTrigger* trigP = Trigger (nSide);
 
@@ -1081,7 +1081,7 @@ if (IsMultiGame && !trigP->ClientOnly ())
 //	-----------------------------------------------------------------------------
 //if an effect is hit, and it can blow up, then blow it up
 //returns true if it blew up
-int CSegment::TextureIsDestructable (int nSide, tDestructableTextureProps* dtpP)
+int32_t CSegment::TextureIsDestructable (int32_t nSide, tDestructableTextureProps* dtpP)
 {
 	tDestructableTextureProps	dtp;
 
@@ -1116,11 +1116,11 @@ return 1;
 //if an effect is hit, and it can blow up, then blow it up
 //returns true if it blew up
 
-int CSegment::BlowupTexture (int nSide, CFixVector& vHit, CObject* blowerP, int bForceBlowup)
+int32_t CSegment::BlowupTexture (int32_t nSide, CFixVector& vHit, CObject* blowerP, int32_t bForceBlowup)
 {
 	tDestructableTextureProps	dtp;
-	short				nSound, bPermaTrigger;
-	ubyte				vc;
+	int16_t				nSound, bPermaTrigger;
+	uint8_t				vc;
 	fix				u, v;
 	fix				xDestSize;
 	tEffectClip*	ecP = NULL;
@@ -1165,7 +1165,7 @@ else {
 	vc = 3;
 	}
 
-CreateExplosion (short (Index ()), vHit, xDestSize, vc);
+CreateExplosion (int16_t (Index ()), vHit, xDestSize, vc);
 if (dtp.nSwitchType) {
 	if ((nSound = gameData.effects.vClipP [vc].nSound) != -1)
 		audio.CreateSegmentSound (nSound, Index (), 0, vHit);
@@ -1173,7 +1173,7 @@ if (dtp.nSwitchType) {
 		audio.DestroySegmentSound (Index (), nSide, nSound);
 	if (!bPermaTrigger && (ecP->nDestroyedClip != -1) && (gameData.effects.effectP [ecP->nDestroyedClip].nSegment == -1)) {
 		tEffectClip	*newEcP = gameData.effects.effectP + ecP->nDestroyedClip;
-		int nNewBm = newEcP->changingWallTexture;
+		int32_t nNewBm = newEcP->changingWallTexture;
 		if (ChangeTextures (-1, nNewBm, nSide)) {
 			newEcP->xTimeLeft = EffectFrameTime (newEcP);
 			newEcP->nCurFrame = 0;
@@ -1203,11 +1203,11 @@ return 1;		//blew up!
 
 //------------------------------------------------------------------------------
 
-int CSegment::TexturedSides (void)
+int32_t CSegment::TexturedSides (void)
 {
-	int nSides = 0;
+	int32_t nSides = 0;
 
-for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
+for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++)
 	if (m_sides [i].FaceCount () && ((m_children [i] < 0) || m_sides [i].IsTextured ()))
 		nSides++;
 return nSides;
@@ -1215,21 +1215,21 @@ return nSides;
 
 //------------------------------------------------------------------------------
 
-void CSegment::CreateSound (short nSound, int nSide)
+void CSegment::CreateSound (int16_t nSound, int32_t nSide)
 {
 audio.CreateSegmentSound (nSound, Index (), nSide, SideCenter (nSide));
 }
 
 //------------------------------------------------------------------------------
 
-CBitmap* CSegment::ChangeTextures (short nBaseTex, short nOvlTex, short nSide)
+CBitmap* CSegment::ChangeTextures (int16_t nBaseTex, int16_t nOvlTex, int16_t nSide)
 {
 	CBitmap*		bmBot = (nBaseTex < 0) ? NULL : LoadFaceBitmap (nBaseTex, 0, 1);
 	CBitmap*		bmTop = (nOvlTex <= 0) ? NULL : LoadFaceBitmap (nOvlTex, 0, 1);
 	tSegFaces*	segFaceP = SEGFACES + Index ();
 	CSegFace*	faceP = segFaceP->faceP;
 
-for (int i = segFaceP->nFaces; i; i--, faceP++) {
+for (int32_t i = segFaceP->nFaces; i; i--, faceP++) {
 	if ((nSide < 0) || (faceP->m_info.nSide == nSide)) {
 		if (bmBot) {
 			faceP->bmBot = bmBot;
@@ -1246,9 +1246,9 @@ return bmBot ? bmBot : bmTop;
 
 //------------------------------------------------------------------------------
 
-int CSegment::ChildIndex (int nChild)
+int32_t CSegment::ChildIndex (int32_t nChild)
 {
-for (int i = 0; i < SEGMENT_SIDE_COUNT; i++)
+for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++)
 	if (m_sides [i].FaceCount () && (m_children [i] == nChild))
 		return i;
 return -1;
@@ -1256,15 +1256,15 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-CSide* CSegment::AdjacentSide (int nSegment)
+CSide* CSegment::AdjacentSide (int32_t nSegment)
 {
-int i = ChildIndex (nSegment);
+int32_t i = ChildIndex (nSegment);
 return (i < 0) ? NULL : m_sides + i;
 }
 
 //------------------------------------------------------------------------------
 
-CSide* CSegment::OppositeSide (int nSide)
+CSide* CSegment::OppositeSide (int32_t nSide)
 {
 if (m_children [nSide] < 0)
 	return NULL;
@@ -1280,7 +1280,7 @@ return &SEGMENTS [m_info.nSegment];
 
 //------------------------------------------------------------------------------
 
-bool CSegment::IsSolid (int nSide)
+bool CSegment::IsSolid (int32_t nSide)
 {
 CSide* sideP = Side (nSide);
 if (sideP->Shape () > SIDE_SHAPE_TRIANGLE)
@@ -1304,7 +1304,7 @@ PLANE_DIST_TOLERANCE = (xPlaneDistTolerance < 0) ? DEFAULT_PLANE_DIST_TOLERANCE 
 #endif
 gameOpts->render.nMathFormat = 0;
 RENDERPOINTS.Clear ();
-for (int i = 0; i <= gameData.segs.nLastSegment; i++)
+for (int32_t i = 0; i <= gameData.segs.nLastSegment; i++)
 	SEGMENTS [i].Setup ();
 ComputeVertexNormals ();
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
@@ -1317,8 +1317,8 @@ gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 
 void CSegment::RemapVertices (void)
 {
-	ubyte	map [8];
-	ubyte	i, j;
+	uint8_t	map [8];
+	uint8_t	i, j;
 
 for (i = 0, j = 0; i < 8; i++) {
 	map [i] = j;
@@ -1328,20 +1328,20 @@ for (i = 0, j = 0; i < 8; i++) {
 m_nVertices = j;
 for (; j < 8; j++)
 	m_vertices [j] = 0xffff;
-for (int nSide = 0; nSide < 6; nSide++)
+for (int32_t nSide = 0; nSide < 6; nSide++)
 	m_sides [nSide].RemapVertices (map);
 }
 
 // -------------------------------------------------------------------------------
 
-float CSegment::FaceSize (ubyte nSide)
+float CSegment::FaceSize (uint8_t nSide)
 {
-	ushort*	s2v = sideVertIndex [nSide];
-	int		nVertices = 0;
-	short		v [4];
+	uint16_t*	s2v = sideVertIndex [nSide];
+	int32_t		nVertices = 0;
+	int16_t		v [4];
 
-for (int i = 0; i < 4; i++) {
-	ushort h = m_vertices [s2v [i]];
+for (int32_t i = 0; i < 4; i++) {
+	uint16_t h = m_vertices [s2v [i]];
 	if (h != 0xFFFF) 
 		v [nVertices++] = h;
 	}

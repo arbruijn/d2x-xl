@@ -29,33 +29,33 @@ typedef struct control_info {
 	fix bankTime;
 	fix forwardThrustTime;
 
-	ubyte rearViewDownCount;
-	ubyte rearViewDownState;
+	uint8_t rearViewDownCount;
+	uint8_t rearViewDownState;
 
-	ubyte firePrimaryDownCount;
-	ubyte firePrimaryState;
-	ubyte fireSecondaryState;
-	ubyte fireSecondaryDownCount;
-	ubyte fireFlareDownCount;
+	uint8_t firePrimaryDownCount;
+	uint8_t firePrimaryState;
+	uint8_t fireSecondaryState;
+	uint8_t fireSecondaryDownCount;
+	uint8_t fireFlareDownCount;
 
-	ubyte dropBombDownCount;
+	uint8_t dropBombDownCount;
 
-	ubyte automapDownCount;
-	ubyte automapState;
+	uint8_t automapDownCount;
+	uint8_t automapState;
 
 	//CAngleVector heading;
 	//char oem_message [64];
 
-	ubyte afterburnerState;
-	ubyte cyclePrimaryCount;
-	ubyte cycleSecondaryCount;
-	ubyte headlightCount;
-	ubyte toggleIconsCount;
-	ubyte zoomDownCount;
-	ubyte useCloakDownCount;
-	ubyte useInvulDownCount;
-	ubyte slowMotionCount;
-	ubyte bulletTimeCount;
+	uint8_t afterburnerState;
+	uint8_t cyclePrimaryCount;
+	uint8_t cycleSecondaryCount;
+	uint8_t headlightCount;
+	uint8_t toggleIconsCount;
+	uint8_t zoomDownCount;
+	uint8_t useCloakDownCount;
+	uint8_t useInvulDownCount;
+	uint8_t slowMotionCount;
+	uint8_t bulletTimeCount;
 } __pack__ tControlInfo;
 
 typedef struct ext_control_info {
@@ -66,19 +66,19 @@ typedef struct ext_control_info {
 	fix bankTime;
 	fix forwardThrustTime;
 
-	ubyte rearViewDownCount;
-	ubyte rearViewDownState;
+	uint8_t rearViewDownCount;
+	uint8_t rearViewDownState;
 
-	ubyte firePrimaryDownCount;
-	ubyte firePrimaryState;
-	ubyte fireSecondaryState;
-	ubyte fireSecondaryDownCount;
-	ubyte fireFlareDownCount;
+	uint8_t firePrimaryDownCount;
+	uint8_t firePrimaryState;
+	uint8_t fireSecondaryState;
+	uint8_t fireSecondaryDownCount;
+	uint8_t fireFlareDownCount;
 
-	ubyte dropBombDownCount;
+	uint8_t dropBombDownCount;
 
-	ubyte automapDownCount;
-	ubyte automapState;
+	uint8_t automapDownCount;
+	uint8_t automapState;
 
 	//CAngleVector heading;   	    // for version >=1.0
 	//char oem_message [64];     	// for version >=1.0
@@ -86,35 +86,35 @@ typedef struct ext_control_info {
 	//CFixVector ship_pos           // for version >=2.0
 	//CFixMatrix ship_orient        // for version >=2.0
 
-	//ubyte cyclePrimaryCount     // for version >=3.0
-	//ubyte cycleSecondaryCount   // for version >=3.0
-	//ubyte afterburnerState       // for version >=3.0
-	//ubyte headlightCount         // for version >=3.0
+	//uint8_t cyclePrimaryCount     // for version >=3.0
+	//uint8_t cycleSecondaryCount   // for version >=3.0
+	//uint8_t afterburnerState       // for version >=3.0
+	//uint8_t headlightCount         // for version >=3.0
 
 	// everything below this line is for version >=4.0
 
-	//ubyte headlightState
+	//uint8_t headlightState
 
-	//int primaryWeaponFlags
-	//int secondaryWeaponFlags
-	//ubyte Primary_weapon_selected
-	//ubyte Secondary_weapon_selected
+	//int32_t primaryWeaponFlags
+	//int32_t secondaryWeaponFlags
+	//uint8_t Primary_weapon_selected
+	//uint8_t Secondary_weapon_selected
 
 	//CFixVector force_vector
 	//CFixMatrix force_matrix
-	//int joltinfo[3]
-	//int x_vibrate_info[2]
-	//int y_vibrate_info[2]
+	//int32_t joltinfo[3]
+	//int32_t x_vibrate_info[2]
+	//int32_t y_vibrate_info[2]
 
-	//int x_vibrate_clear
-	//int y_vibrate_clear
+	//int32_t x_vibrate_clear
+	//int32_t y_vibrate_clear
 
-	//ubyte gameStatus;
+	//uint8_t gameStatus;
 
-	//ubyte keyboard[128];          // scan code array, not ascii
-	//ubyte current_guidebot_command;
+	//uint8_t keyboard[128];          // scan code array, not ascii
+	//uint8_t current_guidebot_command;
 
-	//ubyte Reactor_blown
+	//uint8_t Reactor_blown
 
 } ext_control_info;
 
@@ -126,19 +126,19 @@ typedef struct advanced_ext_control_info {
 	fix bankTime;
 	fix forwardThrustTime;
 
-	ubyte rearViewDownCount;
-	ubyte rearViewDownState;
+	uint8_t rearViewDownCount;
+	uint8_t rearViewDownState;
 
-	ubyte firePrimaryDownCount;
-	ubyte firePrimaryState;
-	ubyte fireSecondaryState;
-	ubyte fireSecondaryDownCount;
-	ubyte fireFlareDownCount;
+	uint8_t firePrimaryDownCount;
+	uint8_t firePrimaryState;
+	uint8_t fireSecondaryState;
+	uint8_t fireSecondaryDownCount;
+	uint8_t fireFlareDownCount;
 
-	ubyte dropBombDownCount;
+	uint8_t dropBombDownCount;
 
-	ubyte automapDownCount;
-	ubyte automapState;
+	uint8_t automapDownCount;
+	uint8_t automapState;
 
 	// everything below this line is for version >=1.0
 
@@ -152,52 +152,52 @@ typedef struct advanced_ext_control_info {
 
 	// everything below this line is for version >=3.0
 
-	ubyte cyclePrimaryCount;
-	ubyte cycleSecondaryCount;
-	ubyte afterburnerState;
-	ubyte headlightCount;
+	uint8_t cyclePrimaryCount;
+	uint8_t cycleSecondaryCount;
+	uint8_t afterburnerState;
+	uint8_t headlightCount;
 
 	// everything below this line is for version >=4.0
 
-	int primaryWeaponFlags;
-	int secondaryWeaponFlags;
-	ubyte currentPrimary_weapon;
-	ubyte currentSecondary_weapon;
+	int32_t primaryWeaponFlags;
+	int32_t secondaryWeaponFlags;
+	uint8_t currentPrimary_weapon;
+	uint8_t currentSecondary_weapon;
 
 	CFixVector force_vector;
 	CFixMatrix force_matrix;
-	int joltinfo[3];
-	int x_vibrate_info[2];
-	int y_vibrate_info[2];
+	int32_t joltinfo[3];
+	int32_t x_vibrate_info[2];
+	int32_t y_vibrate_info[2];
 
-	int x_vibrate_clear;
-	int y_vibrate_clear;
+	int32_t x_vibrate_clear;
+	int32_t y_vibrate_clear;
 
-	ubyte gameStatus;
+	uint8_t gameStatus;
 
-	ubyte headlightState;
-	ubyte current_guidebot_command;
+	uint8_t headlightState;
+	uint8_t current_guidebot_command;
 
-	ubyte keyboard[128];    // scan code array, not ascii
+	uint8_t keyboard[128];    // scan code array, not ascii
 
-	ubyte Reactor_blown;
+	uint8_t Reactor_blown;
 
 } advanced_ext_control_info;
 
 
 class CExternalControls {
 	public:
-		ubyte					m_bUse;
-		ubyte					m_bEnable;
-		ubyte					m_intno;
+		uint8_t					m_bUse;
+		uint8_t					m_bEnable;
+		uint8_t					m_intno;
 		ext_control_info*	m_info;
 		char*					m_name;
-		ubyte					m_version;
+		uint8_t					m_version;
 
 	public:
 		CExternalControls () { memset (this, 0, sizeof (*this)); }
 		~CExternalControls () { Destroy (); }
-		void Init (int intno, int address);
+		void Init (int32_t intno, int32_t address);
 		void Destroy (void);
 		void Read (void);
 };
@@ -206,16 +206,16 @@ extern CExternalControls externalControls;
 
 
 typedef struct kcItem {
-	short id;				// The id of this item
-	short x, y;
-	short w1;
-	short w2;
-	short u,d,l,r;
-        //short text_num1;
+	int16_t id;				// The id of this item
+	int16_t x, y;
+	int16_t w1;
+	int16_t w2;
+	int16_t u,d,l,r;
+        //int16_t text_num1;
    const char 	*text;
-	int   textId;
-	ubyte nType;
-	ubyte value;		// what key,button,etc
+	int32_t   textId;
+	uint8_t nType;
+	uint8_t value;		// what key,button,etc
 } kcItem;
 
 
@@ -230,32 +230,32 @@ typedef struct kcItem {
 #define MAX_CONTROLS				64		// there are actually 48, so this leaves room for more
 
 typedef struct tControlSettings {
-	ubyte		custom [CONTROL_MAX_TYPES][MAX_CONTROLS];
-	ubyte		defaults [CONTROL_MAX_TYPES][MAX_CONTROLS];
-	ubyte		d2xCustom [MAX_HOTKEY_CONTROLS];
-	ubyte		d2xDefaults [MAX_HOTKEY_CONTROLS];
+	uint8_t		custom [CONTROL_MAX_TYPES][MAX_CONTROLS];
+	uint8_t		defaults [CONTROL_MAX_TYPES][MAX_CONTROLS];
+	uint8_t		d2xCustom [MAX_HOTKEY_CONTROLS];
+	uint8_t		d2xDefaults [MAX_HOTKEY_CONTROLS];
 } __pack__ tControlSettings;
 
 extern tControlSettings controlSettings;
 
 extern char *control_text[CONTROL_MAX_TYPES];
 
-void KCSetControls (int bGet);
+void KCSetControls (int32_t bGet);
 
 // Tries to use vfx1 head tracking.
 void kconfig_sense_init();
 
 //set the cruise speed to zero
 
-extern int kconfig_is_axes_used(int axis);
+extern int32_t kconfig_is_axes_used(int32_t axis);
 
-extern ubyte nExtGameStatus;
+extern uint8_t nExtGameStatus;
 
-extern ubyte system_keys [];
+extern uint8_t system_keys [];
 
 extern tControlSettings controlSettings;
 extern kcItem kcKeyboard []; //NUM_KEY_CONTROLS];
-extern ubyte kc_kbdFlags []; //NUM_KEY_CONTROLS];
+extern uint8_t kc_kbdFlags []; //NUM_KEY_CONTROLS];
 extern kcItem kcJoystick []; //NUM_JOY_CONTROLS];
 extern kcItem kcMouse [];	//NUM_MOUSE_CONTROLS];
 extern kcItem kcHotkeys [];	//NUM_HOTKEY_CONTROLS];
@@ -269,11 +269,11 @@ extern kcItem kcSuperJoy []; //NUM_JOY_CONTROLS];
 #define BT_JOY_AXIS			4
 #define BT_INVERT				5
 
-int KcKeyboardSize (void);
-int KcMouseSize (void);
-int KcJoystickSize (void);
-int KcSuperJoySize (void);
-int KcHotkeySize (void);
+int32_t KcKeyboardSize (void);
+int32_t KcMouseSize (void);
+int32_t KcJoystickSize (void);
+int32_t KcSuperJoySize (void);
+int32_t KcHotkeySize (void);
 
 //------------------------------------------------------------------------------
 
@@ -281,79 +281,79 @@ int KcHotkeySize (void);
 
 class CControlConfig : public CMenu {
 	public:
-		void Run (int nType, const char* pszTitle);
+		void Run (int32_t nType, const char* pszTitle);
 
 	private:
-		typedef ubyte kc_ctrlfuncType (void);
+		typedef uint8_t kc_ctrlfuncType (void);
 		typedef kc_ctrlfuncType *kc_ctrlfunc_ptr;
 
 		typedef struct tItemPos {
-			int	i, l, r, y;
+			int32_t	i, l, r, y;
 			} tItemPos;
 
 	private:
 		kcItem*		m_items;
-		int			m_nItems;
-		int			m_nCurItem, m_nPrevItem;
-		int			m_nChangeMode, m_nPrevChangeMode;
-		int			m_nMouseState, m_nPrevMouseState;
-		int			m_bTimeStopped;
-		int			m_xOffs, m_yOffs;
-		int			m_closeX, m_closeY, m_closeSize;
+		int32_t			m_nItems;
+		int32_t			m_nCurItem, m_nPrevItem;
+		int32_t			m_nChangeMode, m_nPrevChangeMode;
+		int32_t			m_nMouseState, m_nPrevMouseState;
+		int32_t			m_bTimeStopped;
+		int32_t			m_xOffs, m_yOffs;
+		int32_t			m_closeX, m_closeY, m_closeSize;
 		const char*	m_pszTitle;
 
-		static int	m_startAxis [JOY_MAX_AXES];
+		static int32_t	m_startAxis [JOY_MAX_AXES];
 
 	private:
-		void Edit (kcItem* items, int nItems);
-		int HandleControl (void);
-		int HandleInput (void);
+		void Edit (kcItem* items, int32_t nItems);
+		int32_t HandleControl (void);
+		int32_t HandleInput (void);
 		void Quit (void);
 
 
-		const char* MouseButtonText (int i);
-		const char* MouseAxisText (int i);
-		const char* YesNoText (int i);
+		const char* MouseButtonText (int32_t i);
+		const char* MouseAxisText (int32_t i);
+		const char* YesNoText (int32_t i);
 
-		int IsAxisUsed (int axis);
-		int GetItemHeight (kcItem *item);
+		int32_t IsAxisUsed (int32_t axis);
+		int32_t GetItemHeight (kcItem *item);
 		void DrawTitle (void);
 		void DrawHeader (void);
 		void DrawTable (void);
 		void DrawQuestion (kcItem *item);
-		void DrawItem (kcItem* item, int bIsCurrent, int bRedraw);
-		inline void DrawItem (kcItem *item, int bIsCurrent) { DrawItem (item, bIsCurrent, 1); }
+		void DrawItem (kcItem* item, int32_t bIsCurrent, int32_t bRedraw);
+		inline void DrawItem (kcItem *item, int32_t bIsCurrent) { DrawItem (item, bIsCurrent, 1); }
 
-		void ReadFCS (int raw_axis);
+		void ReadFCS (int32_t raw_axis);
 
-		int AssignControl (kcItem *item, int nType, ubyte code);
-		static ubyte KeyCtrlFunc (void);
-		static ubyte JoyBtnCtrlFunc (void);
-		static ubyte MouseBtnCtrlFunc (void);
-		static ubyte JoyAxisCtrlFunc (void);
-		static ubyte MouseAxisCtrlFunc (void);
-		int ChangeControl (kcItem *item, int nType, kc_ctrlfunc_ptr ctrlfunc, const char *pszMsg);
+		int32_t AssignControl (kcItem *item, int32_t nType, uint8_t code);
+		static uint8_t KeyCtrlFunc (void);
+		static uint8_t JoyBtnCtrlFunc (void);
+		static uint8_t MouseBtnCtrlFunc (void);
+		static uint8_t JoyAxisCtrlFunc (void);
+		static uint8_t MouseAxisCtrlFunc (void);
+		int32_t ChangeControl (kcItem *item, int32_t nType, kc_ctrlfunc_ptr ctrlfunc, const char *pszMsg);
 
-		inline int ChangeKey (kcItem *item) { return ChangeControl (item, BT_KEY, &CControlConfig::KeyCtrlFunc, TXT_PRESS_NEW_KEY); }
-		inline int ChangeJoyButton (kcItem *item) { return ChangeControl (item, BT_JOY_BUTTON, &CControlConfig::JoyBtnCtrlFunc, TXT_PRESS_NEW_JBUTTON); }
-		inline int ChangeMouseButton (kcItem * item) { return ChangeControl (item, BT_MOUSE_BUTTON, &CControlConfig::MouseBtnCtrlFunc, TXT_PRESS_NEW_MBUTTON); }
-		inline int ChangeJoyAxis (kcItem *item) { return ChangeControl (item, BT_JOY_AXIS, &CControlConfig::JoyAxisCtrlFunc, TXT_MOVE_NEW_JOY_AXIS); }
-		inline int ChangeMouseAxis (kcItem * item) { return ChangeControl (item, BT_MOUSE_AXIS, &CControlConfig::MouseAxisCtrlFunc, TXT_MOVE_NEW_MSE_AXIS); }
-		int ChangeInvert (kcItem * item);
+		inline int32_t ChangeKey (kcItem *item) { return ChangeControl (item, BT_KEY, &CControlConfig::KeyCtrlFunc, TXT_PRESS_NEW_KEY); }
+		inline int32_t ChangeJoyButton (kcItem *item) { return ChangeControl (item, BT_JOY_BUTTON, &CControlConfig::JoyBtnCtrlFunc, TXT_PRESS_NEW_JBUTTON); }
+		inline int32_t ChangeMouseButton (kcItem * item) { return ChangeControl (item, BT_MOUSE_BUTTON, &CControlConfig::MouseBtnCtrlFunc, TXT_PRESS_NEW_MBUTTON); }
+		inline int32_t ChangeJoyAxis (kcItem *item) { return ChangeControl (item, BT_JOY_AXIS, &CControlConfig::JoyAxisCtrlFunc, TXT_MOVE_NEW_JOY_AXIS); }
+		inline int32_t ChangeMouseAxis (kcItem * item) { return ChangeControl (item, BT_MOUSE_AXIS, &CControlConfig::MouseAxisCtrlFunc, TXT_MOVE_NEW_MSE_AXIS); }
+		int32_t ChangeInvert (kcItem * item);
 
-		void QSortItemPos (tItemPos* pos, int left, int right);
-		tItemPos* GetItemPos (kcItem* items, int nItems);
-		int* GetItemRef (int nItems, tItemPos* pos);
-		int FindItemAt (int x, int y);
-		int FindNextItemLeft (int nItems, int nCurItem, tItemPos *pos, int *ref);
-		int FindNextItemRight (int nItems, int nCurItem, tItemPos *pos, int *ref);
-		int FindNextItemUp (int nItems, int nCurItem, tItemPos *pos, int *ref);
-		int FindNextItemDown (int nItems, int nCurItem, tItemPos *pos, int *ref);
+		void QSortItemPos (tItemPos* pos, int32_t left, int32_t right);
+		tItemPos* GetItemPos (kcItem* items, int32_t nItems);
+		int32_t* GetItemRef (int32_t nItems, tItemPos* pos);
+		int32_t FindItemAt (int32_t x, int32_t y);
+		int32_t FindNextItemLeft (int32_t nItems, int32_t nCurItem, tItemPos *pos, int32_t *ref);
+		int32_t FindNextItemRight (int32_t nItems, int32_t nCurItem, tItemPos *pos, int32_t *ref);
+		int32_t FindNextItemUp (int32_t nItems, int32_t nCurItem, tItemPos *pos, int32_t *ref);
+		int32_t FindNextItemDown (int32_t nItems, int32_t nCurItem, tItemPos *pos, int32_t *ref);
 		void LinkKbdEntries (void);
 		void LinkJoyEntries (void);
 		void LinkMouseEntries (void);
 		void LinkHotkeyEntries (void);
-		void LinkTableEntries (int tableFlags);
+		void LinkTableEntries (int32_t tableFlags);
 
 	public:
 		virtual void Render (void);

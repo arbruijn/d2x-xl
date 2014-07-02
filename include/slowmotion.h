@@ -2,8 +2,8 @@
 #define _SLOWMOTION_H
 
 void DoSlowMotionFrame (void);
-int SlowMotionActive (void);
-int BulletTimeActive (void);
+int32_t SlowMotionActive (void);
+int32_t BulletTimeActive (void);
 void SlowMotionOff (void);
 void BulletTimeOn (void);
 void SpeedupSound (void);

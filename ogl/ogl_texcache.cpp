@@ -37,13 +37,13 @@
 #include "renderlib.h"
 #include "menu.h"
 
-static int bLoadTextures = 1;
+static int32_t bLoadTextures = 1;
 
 static CStaticArray< bool, MAX_VCLIPS >	bVClipLoaded;
 
 //------------------------------------------------------------------------------
 
-void OglCachePolyModelTextures (int nModel)
+void OglCachePolyModelTextures (int32_t nModel)
 {
 	CPolyModel* modelP = GetPolyModel (NULL, NULL, nModel, 0);
 
@@ -53,7 +53,7 @@ if (modelP)
 
 //------------------------------------------------------------------------------
 
-static CBitmap* OglCacheTexture (int nIndex, int nTranspType)
+static CBitmap* OglCacheTexture (int32_t nIndex, int32_t nTranspType)
 {
 LoadTexture (nIndex, 0, 0);
 CBitmap* bmP = &gameData.pig.tex.bitmaps [0][nIndex];
@@ -64,11 +64,11 @@ return bmP;
 
 //------------------------------------------------------------------------------
 
-static void OglCacheVClipTextures (tVideoClip* vcP, int nTranspType)
+static void OglCacheVClipTextures (tVideoClip* vcP, int32_t nTranspType)
 {
-for (int i = 0; i < vcP->nFrameCount; i++) {
+for (int32_t i = 0; i < vcP->nFrameCount; i++) {
 #if DBG
-	int h = vcP->frames [i].index;
+	int32_t h = vcP->frames [i].index;
 	if ((nDbgTexture >= 0) && (h == nDbgTexture))
 		BRP;
 #endif
@@ -80,7 +80,7 @@ for (int i = 0; i < vcP->nFrameCount; i++) {
 
 //------------------------------------------------------------------------------
 
-static void OglCacheVClipTextures (int i, int nTransp)
+static void OglCacheVClipTextures (int32_t i, int32_t nTransp)
 {
 if ((i >= 0) && !bVClipLoaded [i]) {
 	bVClipLoaded [i] = true;
@@ -107,10 +107,10 @@ else if (wi->renderType == WEAPON_RENDER_POLYMODEL)
 
 #if 0
 
-static CBitmap *OglLoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures)
+static CBitmap *OglLoadFaceBitmap (int16_t nTexture, int16_t nFrameIdx, int32_t bLoadTextures)
 {
 	CBitmap*	bmP, * bmoP, * bmfP;
-	int		nFrames;
+	int32_t		nFrames;
 
 LoadTexture (gameData.pig.tex.bmIndexP [nTexture].index, 0, gameStates.app.bD1Mission);
 bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [nTexture].index;
@@ -139,9 +139,9 @@ return bmP;
 
 //------------------------------------------------------------------------------
 
-static void CacheSideTextures (int nSegment)
+static void CacheSideTextures (int32_t nSegment)
 {
-	short			nSide, tMap1, tMap2;
+	int16_t			nSide, tMap1, tMap2;
 	CBitmap*		bmP, * bm2, * bmm;
 	CSide*		sideP;
 	CSegment*	segP = SEGMENTS + nSegment;
@@ -171,10 +171,10 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 
 //------------------------------------------------------------------------------
 
-static int nCacheSeg = 0;
-static int nCacheObj = -3;
+static int32_t nCacheSeg = 0;
+static int32_t nCacheObj = -3;
 
-static int TexCachePoll (CMenu& menu, int& key, int nCurItem, int nState)
+static int32_t TexCachePoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
@@ -195,10 +195,10 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int OglCacheTextures (void)
+int32_t OglCacheTextures (void)
 {
 	CMenu	m (3);
-	int	i;
+	int32_t	i;
 
 m.AddGauge ("progress bar", "                    ", -1, gameData.segs.nSegments + gameData.objs.nLastObject [0] + 4); 
 nCacheSeg = 0;
@@ -213,7 +213,7 @@ return 1;
 
 static void CacheAddonTextures (void)
 {
-for (int i = 0; i < MAX_ADDON_BITMAP_FILES; i++) {
+for (int32_t i = 0; i < MAX_ADDON_BITMAP_FILES; i++) {
 	PageInAddonBitmap (-i - 1);
 	BM_ADDON (i)->SetTranspType (0);
 	BM_ADDON (i)->SetupTexture (1, 1); 
@@ -223,13 +223,13 @@ CAddonBitmap::Prepare ();
 
 //------------------------------------------------------------------------------
 
-int OglCacheLevelTextures (void)
+int32_t OglCacheLevelTextures (void)
 {
-	int				i, j, bD1;
+	int32_t				i, j, bD1;
 	tEffectClip*	ecP;
-	int				max_efx = 0, ef;
-	int				nSegment, nSide;
-	short				nBaseTex, nOvlTex;
+	int32_t				max_efx = 0, ef;
+	int32_t				nSegment, nSide;
+	int16_t				nBaseTex, nOvlTex;
 	CBitmap*			bmBot,* bmTop, * bmm;
 	CSegment*		segP;
 	CSide*			sideP;

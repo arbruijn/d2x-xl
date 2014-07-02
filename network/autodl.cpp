@@ -55,9 +55,9 @@ static char *sznStates [] = {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int _CDECL_ UploadThread (void *pThreadId)
+int32_t _CDECL_ UploadThread (void *pThreadId)
 {
-return downloadManager.Upload (*((int*) pThreadId));
+return downloadManager.Upload (*((int32_t*) pThreadId));
 }
 
 //------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ return downloadManager.Upload (*((int*) pThreadId));
 
 void CDownloadManager::Init (void)
 {
-	int i;
+	int32_t i;
 
 for (i = 0; i < MAX_PLAYERS; i++) 
 	m_freeList [i] = i;
@@ -100,28 +100,28 @@ m_nResult = 1;
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::MaxTimeoutIndex (void)
+int32_t CDownloadManager::MaxTimeoutIndex (void)
 {
 return sizeofa (m_timeouts) - 1;
 }
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::GetTimeoutIndex (void)
+int32_t CDownloadManager::GetTimeoutIndex (void)
 {
 return m_iTimeout;
 }
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::GetTimeoutSecs (void)
+int32_t CDownloadManager::GetTimeoutSecs (void)
 {
 return m_timeouts [m_iTimeout];
 }
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::SetTimeoutIndex (int i)
+int32_t CDownloadManager::SetTimeoutIndex (int32_t i)
 {
 if ((i >= 0) && (i <= MaxTimeoutIndex ()))
 	m_iTimeout = i;
@@ -131,13 +131,13 @@ return m_iTimeout;
 
 //------------------------------------------------------------------------------
 
-bool CDownloadManager::Downloading (uint nPlayer) 
+bool CDownloadManager::Downloading (uint32_t nPlayer) 
 { 
 if (nPlayer == N_LOCALPLAYER)
 	return m_bDownloading [MAX_PLAYERS - 1];
 if (nPlayer >= MAX_PLAYERS) 
 	return false;
-int i = FindClient (netPlayers [0].m_info.players [nPlayer].network.Network (), netPlayers [0].m_info.players [nPlayer].network.Node ());
+int32_t i = FindClient (netPlayers [0].m_info.players [nPlayer].network.Network (), netPlayers [0].m_info.players [nPlayer].network.Node ());
 if (i < 0)
 	return false;
 return m_bDownloading [i]; 
@@ -145,9 +145,9 @@ return m_bDownloading [i];
 
 //------------------------------------------------------------------------------
 
-void CDownloadManager::SetDownloadFlag (int nPlayer, bool bFlag)
+void CDownloadManager::SetDownloadFlag (int32_t nPlayer, bool bFlag)
 {
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (!memcmp (m_clients [nPlayer].addr.Network (), netPlayers [0].m_info.players [i].network.Network (), 4) &&
 		 !memcmp (m_clients [nPlayer].addr.Node (), netPlayers [0].m_info.players [i].network.Node (), 6)) {
 		m_bDownloading [i] = bFlag;
@@ -158,9 +158,9 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::FindClient (ubyte* server, ubyte* node)
+int32_t CDownloadManager::FindClient (uint8_t* server, uint8_t* node)
 {
-for (int i = 0; i < m_nClients; i++)
+for (int32_t i = 0; i < m_nClients; i++)
 	if (m_clients [i].nState &&
 		 !memcmp (m_clients [i].addr.Network (), server, 4) &&
 		 !memcmp (m_clients [i].addr.Node (), node, 6)) {
@@ -172,16 +172,16 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::FindClient (void)
+int32_t CDownloadManager::FindClient (void)
 {
 return FindClient (networkData.packetSource.Network (), networkData.packetSource.Node ());
 }
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::AcceptClient (void)
+int32_t CDownloadManager::AcceptClient (void)
 {
-	int	i = FindClient ();
+	int32_t	i = FindClient ();
 
 if (i >= 0)
 	RemoveClient (i);
@@ -203,7 +203,7 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::RemoveClient (int i)
+int32_t CDownloadManager::RemoveClient (int32_t i)
 {
 if (i < 0)
 	i = FindClient ();
@@ -232,7 +232,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::SendRequest (ubyte pId, ubyte pIdFn, tClient* clientP)
+int32_t CDownloadManager::SendRequest (uint8_t pId, uint8_t pIdFn, tClient* clientP)
 {
 m_data [0] = pId;
 m_data [1] = pIdFn;
@@ -250,7 +250,7 @@ return 1;
 //------------------------------------------------------------------------------
 // ask the game host to accept a TCP connection from us
 
-int CDownloadManager::RequestUpload (void)
+int32_t CDownloadManager::RequestUpload (void)
 {
 m_nState = DL_CONNECT;
 return SendRequest (PID_UPLOAD, PID_DL_START);
@@ -259,7 +259,7 @@ return SendRequest (PID_UPLOAD, PID_DL_START);
 //------------------------------------------------------------------------------
 // tell the client the game host is ready to send more data
 
-int CDownloadManager::RequestDownload (tClient* clientP)
+int32_t CDownloadManager::RequestDownload (tClient* clientP)
 {
 return SendRequest (PID_DOWNLOAD, PID_DL_START, clientP);
 }
@@ -267,7 +267,7 @@ return SendRequest (PID_DOWNLOAD, PID_DL_START, clientP);
 //------------------------------------------------------------------------------
 // Connect the server with a client
 
-int CDownloadManager::ConnectToClient (tClient& client)
+int32_t CDownloadManager::ConnectToClient (tClient& client)
 {
 if (!m_socket) {
 	IPaddress ip;
@@ -291,7 +291,7 @@ return DL_DONE;
 //------------------------------------------------------------------------------
 // Connect the client (local player) with the server (game host)
 
-int CDownloadManager::ConnectToServer (void)
+int32_t CDownloadManager::ConnectToServer (void)
 {
 	IPaddress ip;
 	char szIp [16];
@@ -317,15 +317,15 @@ return 0;
 
 void CDownloadManager::CleanUp (void)
 {
-	int	t, i = 0;
-	static int nTimeout = 0;
+	int32_t	t, i = 0;
+	static int32_t nTimeout = 0;
 
 if (m_nTimeout < 0)
 	SetTimeoutIndex (-1);
 if ((t = SDL_GetTicks ()) - nTimeout > m_nTimeout) {
 	nTimeout = t;
 	while (i < m_nClients)
-		if ((int) SDL_GetTicks () - m_clients [i].nTimeout > m_nTimeout)
+		if ((int32_t) SDL_GetTicks () - m_clients [i].nTimeout > m_nTimeout)
 			RemoveClient (i);
 		else
 			i++;
@@ -334,7 +334,7 @@ if ((t = SDL_GetTicks ()) - nTimeout > m_nTimeout) {
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::SendData (ubyte nIdFn, tClient& client)
+int32_t CDownloadManager::SendData (uint8_t nIdFn, tClient& client)
 {
 	static CTimeout to (2);
 
@@ -348,7 +348,7 @@ return SDLNet_TCP_Send (client.socket, (void *) client.data, DL_PACKET_SIZE) == 
 //------------------------------------------------------------------------------
 // open a file on the game host
 
-int CDownloadManager::OpenFile (tClient& client, const char *pszExt)
+int32_t CDownloadManager::OpenFile (tClient& client, const char *pszExt)
 {
 	char	szFile [FILENAME_LEN];
 
@@ -357,10 +357,10 @@ if (client.cf.File ())
 	client.cf.Close ();
 if (!client.cf.Open (szFile, "", "rb", 0))
 	return 0;
-client.fLen = (int) client.cf.Length ();
+client.fLen = (int32_t) client.cf.Length ();
 sprintf (szFile, "%s%s", netGame.m_info.szMissionName, pszExt);
 PUT_INTEL_INT (client.data + 1, client.fLen);
-memcpy (client.data + 5, szFile, (int) strlen (szFile) + 1);
+memcpy (client.data + 5, szFile, (int32_t) strlen (szFile) + 1);
 return SendData (DL_CREATE_FILE, client);
 G3_SLEEP (50);
 }
@@ -369,14 +369,14 @@ G3_SLEEP (50);
 // send a file from the game host
 // returns -1: error, 0: more data to read and send, 1: complete file transmitted
 
-int CDownloadManager::SendFile (tClient& client)
+int32_t CDownloadManager::SendFile (tClient& client)
 {
-	int l = (int) client.fLen;
+	int32_t l = (int32_t) client.fLen;
 
 if (l > DL_PAYLOAD_SIZE)
 	l = DL_PAYLOAD_SIZE;
 PUT_INTEL_INT (client.data + 1, l);
-if ((int) client.cf.Read (client.data + 5, 1, l) != l)
+if ((int32_t) client.cf.Read (client.data + 5, 1, l) != l)
 	return -1;
 client.fLen -= l;
 if (!SendData (DL_DATA, client))
@@ -390,7 +390,7 @@ return 1; // all sent
 //------------------------------------------------------------------------------
 // Initialize file upload via TCP.
 
-int CDownloadManager::InitUpload (ubyte *data)
+int32_t CDownloadManager::InitUpload (uint8_t *data)
 {
 if (m_nSemaphore)
 	return 0;
@@ -406,7 +406,7 @@ return -1;
 //------------------------------------------------------------------------------
 // Game host sending data to client
 
-int CDownloadManager::Upload (int nClient)
+int32_t CDownloadManager::Upload (int32_t nClient)
 {
 tClient& client = Client (nClient);
 
@@ -462,7 +462,7 @@ return 0;
 //------------------------------------------------------------------------------
 // Client receiving data from game host
 
-int CDownloadManager::DownloadError (int nReason)
+int32_t CDownloadManager::DownloadError (int32_t nReason)
 {
 if (nReason == 1)
 	InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_AUTODL_SYNC);
@@ -478,7 +478,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::InitDownload (ubyte *data)
+int32_t CDownloadManager::InitDownload (uint8_t *data)
 {
 if (!gameStates.app.bHaveSDLNet)
 	return -1;
@@ -496,7 +496,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::Download (void)
+int32_t CDownloadManager::Download (void)
 {
 	static CTimeout to (1);
 
@@ -504,7 +504,7 @@ if (!m_socket)
 	return 0;
 
 to.Throttle ();
-int h, l = 0;
+int32_t h, l = 0;
 do {
 	if (0 >= (h = SDLNet_TCP_Recv (m_socket, m_data + l, DL_PACKET_SIZE - l)))
 		return 0;
@@ -529,7 +529,7 @@ switch (m_nState = m_data [0]) {
 		CFile::SplitPath (pszFile, NULL, szFile [0], szExt);
 		CFile::SplitPath (hogFileManager.MissionName (), szFolder, szFile [1], NULL);
 		strlwr (szFile [1]);
-		for (int i = 1 + (strcmp (szFile [0], szFile [1]) == 0); i > 0; i--) {
+		for (int32_t i = 1 + (strcmp (szFile [0], szFile [1]) == 0); i > 0; i--) {
 			if (i == 2)
 				sprintf (szDest, "%s/%s%s", szFolder, szFile [0], szExt);
 			else
@@ -547,10 +547,10 @@ switch (m_nState = m_data [0]) {
 		}
 
 	case DL_DATA: {
-		int l = GET_INTEL_INT (m_data + 1);
+		int32_t l = GET_INTEL_INT (m_data + 1);
 		if (l > DL_PAYLOAD_SIZE)
 			return DownloadError (1);
-		if ((int) m_cf.Write (m_data + 5, 1, l) != l)
+		if ((int32_t) m_cf.Write (m_data + 5, 1, l) != l)
 			return DownloadError (3);
 		m_nDestLen += l;
 		break;
@@ -568,7 +568,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CDownloadManager::Poll (CMenu& menu, int& key, int nCurItem)
+int32_t CDownloadManager::Poll (CMenu& menu, int32_t& key, int32_t nCurItem)
 {
 if (key == KEY_ESC) {
 	menu [m_nOptPercentage].SetText ("download aborted");
@@ -580,7 +580,7 @@ if (key == KEY_ESC) {
 if (m_nTimeout < 0)
 	SetTimeoutIndex (-1);
 
-int t = (int) SDL_GetTicks ();
+int32_t t = (int32_t) SDL_GetTicks ();
 
 if (t - m_nPollTime > m_nTimeout) {
 	menu [1].SetText ("download timed out");
@@ -612,7 +612,7 @@ else {
 		m_nPollTime = t;
 		if ((m_nState == DL_CREATE_FILE) || (m_nState == DL_DATA)) {
 			if (m_nSrcLen && m_nDestLen) {
-				int h = m_nDestLen * 100 / m_nSrcLen;
+				int32_t h = m_nDestLen * 100 / m_nSrcLen;
 				if (h != m_nProgress) {
 					m_nProgress = h;
 					sprintf (menu [m_nOptPercentage].m_text, TXT_PROGRESS, m_nProgress, '%');
@@ -641,7 +641,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int DownloadPoll (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t DownloadPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
@@ -657,7 +657,7 @@ return downloadManager.Poll (menu, key, nCurItem);
 // 3. The client opens a TCP connection to the server
 // 4. The actual download begins
 
-int CDownloadManager::DownloadMission (char *pszMission)
+int32_t CDownloadManager::DownloadMission (char *pszMission)
 {
 	static CTimeout to (3500);
 
@@ -667,7 +667,7 @@ if (!gameStates.app.bHaveSDLNet)
 	CMenu	m (3);
 	char	szTitle [30];
 	char	szProgress [30];
-	int	i;
+	int32_t	i;
 
 PrintLog (1, "trying to download mission '%s'\n", pszMission);
 m_bDownloading [MAX_PLAYERS - 1] = true;
@@ -679,7 +679,7 @@ if (!(/*gameStates.app.bHaveExtraGameInfo [1] &&*/ extraGameInfo [0].bAutoDownlo
 m.AddText ("", "");
 sprintf (szProgress, "0%c done", '%');
 m_nOptPercentage = m.AddText (szProgress, 0);
-m [m_nOptPercentage].m_x = (short) 0x8000;	//centered
+m [m_nOptPercentage].m_x = (int16_t) 0x8000;	//centered
 m [m_nOptPercentage].m_bCentered = 1;
 m_nOptProgress = m.AddGauge ("progress bar", "                    ", -1, 100);
 m_socket = 0;
@@ -702,7 +702,7 @@ if (m_socket) {
 	}
 m_nState = DL_DONE;
 if (i != -3) {
-	for (int i = 0; i < m_nFiles; i++)
+	for (int32_t i = 0; i < m_nFiles; i++)
 		CFile::Delete (m_files [i], "");
 	PrintLog (-1);
 	return 0;

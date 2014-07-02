@@ -50,7 +50,7 @@ char bOldHomingStates [20];
 
 char szCheatBuf[] = "AAAAAAAAAAAAAAA";
 
-extern int MarkPlayerPathToSegment (int nSegment);
+extern int32_t MarkPlayerPathToSegment (int32_t nSegment);
 
 //------------------------------------------------------------------------------
 
@@ -95,7 +95,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int MenuGetValues (const char *pszMsg, int *valueP, int nValues)
+int32_t MenuGetValues (const char *pszMsg, int32_t *valueP, int32_t nValues)
 {
 	CMenu	m (1);
 	char	text [20] = "", *psz;
@@ -104,7 +104,7 @@ m.AddInput ("", text, 20);
 if (m.Menu (NULL, pszMsg) < 0) 
 	return 0;
 valueP [0] = atoi (m [0].m_text);
-int i;
+int32_t i;
 for (i = 1, psz = m [0].m_text; --nValues && (psz = strchr (psz, ',')); i++)
 	valueP [i] = atoi (++psz);
 return i;
@@ -112,11 +112,11 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int KillAllBuddyBots (int bVerbose)
+int32_t KillAllBuddyBots (int32_t bVerbose)
 {
 	CObject*	objP;
-	int		nKilled = 0;
-	//int		i;
+	int32_t		nKilled = 0;
+	//int32_t		i;
 
 FORALL_ROBOT_OBJS (objP, i)
 	if (IS_GUIDEBOT (objP)) {
@@ -135,11 +135,11 @@ return nKilled;
 
 //------------------------------------------------------------------------------
 
-void KillAllRobots (int bVerbose)
+void KillAllRobots (int32_t bVerbose)
 {
 	CObject*	objP;
-	int		nKilled = 0;
-	//int		i;
+	int32_t		nKilled = 0;
+	//int32_t		i;
 
 // Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
 FORALL_ROBOT_OBJS (objP, i)
@@ -161,11 +161,11 @@ if (bVerbose)
 
 //------------------------------------------------------------------------------
 
-void KillAllBossRobots (int bVerbose)
+void KillAllBossRobots (int32_t bVerbose)
 {
 	CObject*	objP;
-	int		nKilled = 0;
-	//int		i;
+	int32_t		nKilled = 0;
+	//int32_t		i;
 
 if (gameStates.gameplay.bKillBossCheat)
 	gameStates.gameplay.bKillBossCheat = 0;
@@ -192,9 +192,9 @@ if (bVerbose)
 //	Place palyer just outside exit.
 //	Kill all bots in mine.
 //	Yippee!!
-void KillEverything (int bVerbose)
+void KillEverything (int32_t bVerbose)
 {
-	int     	i, j;
+	int32_t     	i, j;
 	CObject	*objP;
 
 if (bVerbose)
@@ -221,7 +221,7 @@ for (i = 0; i < gameData.trigs.m_nTriggers; i++) {
 	if (TRIGGERS [i].IsExit ()) {
 		for (j = 0; j < gameData.walls.nWalls; j++) {
 			if (WALLS [j].nTrigger == i) {
-				short nSegment = WALLS [j].nSegment;
+				int16_t nSegment = WALLS [j].nSegment;
 				gameData.objs.consoleP->info.position.vPos = SEGMENTS [nSegment].Center ();
 				gameData.objs.consoleP->RelinkToSeg (nSegment);
 				gameData.objs.consoleP->info.position.mOrient.m.dir.f = SEGMENTS [nSegment].m_sides [WALLS [j].nSide].m_normals [0];
@@ -238,10 +238,10 @@ gameStates.app.cheats.bEnabled |= 2;
 
 //------------------------------------------------------------------------------
 
-void KillThief (int bVerbose)
+void KillThief (int32_t bVerbose)
 {
 	CObject*	objP;
-	//int		i;
+	//int32_t		i;
 
 FORALL_ROBOT_OBJS (objP, i)
 	if (IS_THIEF (objP)) {
@@ -260,11 +260,11 @@ FORALL_ROBOT_OBJS (objP, i)
 
 #if DBG
 
-void KillAllSnipers (int bVerbose)
+void KillAllSnipers (int32_t bVerbose)
 {
 	CObject*	objP;
-	int		nKilled = 0;
-	//int		i;
+	int32_t		nKilled = 0;
+	//int32_t		i;
 
 //	Kill all snipers.
 FORALL_ROBOT_OBJS (objP, i)
@@ -280,10 +280,10 @@ if (bVerbose)
 
 //------------------------------------------------------------------------------
 
-void KillBuddy (int bVerbose)
+void KillBuddy (int32_t bVerbose)
 {
 	CObject*	objP;
-	//int		i;
+	//int32_t		i;
 
 //	Kill buddy.
 FORALL_ROBOT_OBJS (objP, i)
@@ -296,7 +296,7 @@ FORALL_ROBOT_OBJS (objP, i)
 
 //------------------------------------------------------------------------------
 
-void AccessoryCheat (int bVerbose)
+void AccessoryCheat (int32_t bVerbose)
 {
 if (!gameStates.app.bD1Mission) {
 	LOCALPLAYER.flags |= 
@@ -314,7 +314,7 @@ if (bVerbose)
 
 //------------------------------------------------------------------------------
 
-void AcidCheat (int bVerbose)
+void AcidCheat (int32_t bVerbose)
 {
 if (gameStates.app.cheats.bAcid) {
 	gameStates.app.cheats.bAcid = 0;
@@ -335,7 +335,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void AfterburnerCheat (int bVerbose)
+void AfterburnerCheat (int32_t bVerbose)
 {
 if (!gameStates.app.bD1Mission)
 	gameStates.gameplay.bAfterburnerCheat = !gameStates.gameplay.bAfterburnerCheat;
@@ -347,7 +347,7 @@ if (gameStates.gameplay.bAfterburnerCheat) {
 
 //------------------------------------------------------------------------------
 
-void DisarmRobotsCheat (int bVerbose)
+void DisarmRobotsCheat (int32_t bVerbose)
 {
 gameStates.app.cheats.bRobotsFiring = !gameStates.app.cheats.bRobotsFiring;
 if (gameStates.app.cheats.bRobotsFiring) {
@@ -363,7 +363,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void AllKeysCheat (int bVerbose)
+void AllKeysCheat (int32_t bVerbose)
 {
 if (bVerbose)
 	HUDInitMessage (TXT_ALL_KEYS);
@@ -372,7 +372,7 @@ LOCALPLAYER.flags |= PLAYER_FLAGS_ALL_KEYS;
 
 //------------------------------------------------------------------------------
 
-void BlueOrbCheat (int bVerbose)
+void BlueOrbCheat (int32_t bVerbose)
 {
 if (BoostVal (&LOCALPLAYER.shield, LOCALPLAYER.MaxShield ())) {
 	MultiSendShield ();
@@ -384,7 +384,7 @@ else if (bVerbose)
 
 //------------------------------------------------------------------------------
 
-void BuddyDudeCheat (int bVerbose)
+void BuddyDudeCheat (int32_t bVerbose)
 {
 gameStates.app.cheats.bMadBuddy = !gameStates.app.cheats.bMadBuddy;
 if (gameStates.app.cheats.bMadBuddy) {
@@ -401,7 +401,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void BuddyLifeCheat (int bVerbose)
+void BuddyLifeCheat (int32_t bVerbose)
 {
 if (bVerbose)
 	HUDInitMessage (TXT_GB_CLONE);
@@ -410,7 +410,7 @@ CreateBuddyBot ();
 
 //------------------------------------------------------------------------------
 
-void BouncyCheat (int bVerbose)
+void BouncyCheat (int32_t bVerbose)
 {
 if (bVerbose)
 	HUDInitMessage (TXT_WPN_BOUNCE);
@@ -419,9 +419,9 @@ gameStates.app.cheats.bBouncingWeapons = 1;
 
 //------------------------------------------------------------------------------
 
-void CloakCheat (int bVerbose)
+void CloakCheat (int32_t bVerbose)
 {
-	int	bCloaked;
+	int32_t	bCloaked;
 
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 	LOCALPLAYER.flags |= PLAYER_FLAGS_CLOAKED;
@@ -431,14 +431,14 @@ bCloaked = (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0;
 if (bVerbose)
 	HUDInitMessage ("%s %s!", TXT_CLOAKED, bCloaked ? TXT_ON : TXT_OFF);
 LOCALPLAYER.cloakTime = bCloaked ? 0x7fffffff : 0; //gameData.time.xGame + I2X (1000);
-audio.PlaySound (short (gameData.objs.pwrUp.info [POW_CLOAK].hitSound));
+audio.PlaySound (int16_t (gameData.objs.pwrUp.info [POW_CLOAK].hitSound));
 }
 
 //------------------------------------------------------------------------------
 
-void SegmentWarpCheat (int bVerbose)
+void SegmentWarpCheat (int32_t bVerbose)
 {
-	int nNewSegSide [2] = {0, 0};
+	int32_t nNewSegSide [2] = {0, 0};
 
 if (!MenuGetValues (TXT_ENTER_SEGNUM, nNewSegSide, 2))
 	return;
@@ -448,14 +448,14 @@ if ((nNewSegSide [0] >= 0) && (nNewSegSide [0] <= gameData.segs.nLastSegment)) {
 		nNewSegSide [1] = 0;
 	else if (nNewSegSide [1] > 5)
 		nNewSegSide [1] = 5;
-	TriggerSetObjOrient (LOCALPLAYER.nObject, (short) nNewSegSide [0], (short) nNewSegSide [1], 1, 0);
-	TriggerSetObjPos (LOCALPLAYER.nObject, (short) nNewSegSide [0]);
+	TriggerSetObjOrient (LOCALPLAYER.nObject, (int16_t) nNewSegSide [0], (int16_t) nNewSegSide [1], 1, 0);
+	TriggerSetObjPos (LOCALPLAYER.nObject, (int16_t) nNewSegSide [0]);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void ElectroCheat (int bVerbose)
+void ElectroCheat (int32_t bVerbose)
 {
 if (BoostVal (&LOCALPLAYER.energy, MAX_ENERGY))
 	 PowerupBasic (15, 15, 7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, X2IR (LOCALPLAYER.Energy ()));
@@ -465,9 +465,9 @@ else if (bVerbose)
 
 //------------------------------------------------------------------------------
 
-void SegmentPathCheat (int bVerbose)
+void SegmentPathCheat (int32_t bVerbose)
 {
-	int nSegment = 0; 
+	int32_t nSegment = 0; 
 
 if (!MenuGetValues (TXT_ENTER_SEGNUM, &nSegment, 1))
 	return;
@@ -479,14 +479,14 @@ if ((nSegment >= 0) && (nSegment < gameData.segs.nSegments)) {
 
 //------------------------------------------------------------------------------
 
-void ExitPathCheat (int bVerbose)
+void ExitPathCheat (int32_t bVerbose)
 {
 MarkPathToExit ();
 }
 
 //------------------------------------------------------------------------------
 
-void ExtraLifeCheat (int bVerbose)
+void ExtraLifeCheat (int32_t bVerbose)
 {
 LOCALPLAYER.lives++;
 PowerupBasic (20, 20, 20, 0, TXT_EXTRA_LIFE);
@@ -494,21 +494,21 @@ PowerupBasic (20, 20, 20, 0, TXT_EXTRA_LIFE);
 
 //------------------------------------------------------------------------------
 
-void FinishLevelCheat (int bVerbose)
+void FinishLevelCheat (int32_t bVerbose)
 {
 KillEverything (bVerbose);
 }
 
 //------------------------------------------------------------------------------
 
-void FramerateCheat (int bVerbose)
+void FramerateCheat (int32_t bVerbose)
 {
 gameStates.render.bShowFrameRate = !gameStates.render.bShowFrameRate;
 }
 
 //------------------------------------------------------------------------------
 
-void FullMapCheat (int bVerbose)
+void FullMapCheat (int32_t bVerbose)
 {
 if (gameStates.render.bAllVisited)
 	gameStates.render.bViewDist++;
@@ -522,7 +522,7 @@ if (bVerbose)
 
 //------------------------------------------------------------------------------
 
-void GasolineCheat (int bVerbose)
+void GasolineCheat (int32_t bVerbose)
 {
 LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield (), false);
 OBJECTS [N_LOCALPLAYER].ResetDamage ();
@@ -533,9 +533,9 @@ if (bVerbose)
 
 //------------------------------------------------------------------------------
 
-void HomingCheat (int bVerbose)
+void HomingCheat (int32_t bVerbose)
 {
-	int	i;
+	int32_t	i;
 
 if ((gameStates.app.cheats.bHomingWeapons = !gameStates.app.cheats.bHomingWeapons)) {
 	for (i = 0; i < 20; i++) {
@@ -553,9 +553,9 @@ else {
 
 //------------------------------------------------------------------------------
 
-void InvulCheat (int bVerbose)
+void InvulCheat (int32_t bVerbose)
 {
-	int	bInvul;
+	int32_t	bInvul;
 
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
 	LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
@@ -567,7 +567,7 @@ bInvul = (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) != 0;
 if (bVerbose)
 	HUDInitMessage ("%s %s!", TXT_INVULNERABILITY, bInvul ? TXT_ON : TXT_OFF);
 LOCALPLAYER.invulnerableTime = bInvul ? 0x7fffffff : 0; //gameData.time.xGame + I2X (1000);
-audio.PlaySound (short (gameData.objs.pwrUp.info [POW_INVUL].hitSound));
+audio.PlaySound (int16_t (gameData.objs.pwrUp.info [POW_INVUL].hitSound));
 SetupSpherePulse (gameData.multiplayer.spherePulse + N_LOCALPLAYER, 0.02f, 0.5f);
 }
 
@@ -575,7 +575,7 @@ SetupSpherePulse (gameData.multiplayer.spherePulse + N_LOCALPLAYER, 0.02f, 0.5f)
 
 void LoadGameBackground ();
 
-void JohnHeadCheat (int bVerbose)
+void JohnHeadCheat (int32_t bVerbose)
 {
 #if 1
 gameStates.app.cheats.bJohnHeadOn = !gameStates.app.cheats.bJohnHeadOn;
@@ -587,7 +587,7 @@ if (bVerbose)
 
 //------------------------------------------------------------------------------
 
-void KillBossCheat (int bVerbose)
+void KillBossCheat (int32_t bVerbose)
 {
 if (bVerbose)
 	HUDInitMessage (TXT_BAMBI_WINS);
@@ -596,7 +596,7 @@ KillAllBossRobots (bVerbose);
 
 //------------------------------------------------------------------------------
 
-void KillBuddyCheat (int bVerbose)
+void KillBuddyCheat (int32_t bVerbose)
 {
 if (bVerbose)
 	HUDInitMessage (TXT_TRUE_DREAMS);
@@ -605,7 +605,7 @@ KillAllBuddyBots (bVerbose);
 
 //------------------------------------------------------------------------------
 
-void KillThiefCheat (int bVerbose)
+void KillThiefCheat (int32_t bVerbose)
 {
 if (bVerbose)
 	HUDInitMessage (TXT_RIGHTEOUS);
@@ -614,7 +614,7 @@ KillThief (bVerbose);
 
 //------------------------------------------------------------------------------
 
-void KillRobotsCheat (int bVerbose)
+void KillRobotsCheat (int32_t bVerbose)
 {
 if (bVerbose)
 	HUDInitMessage (TXT_ARMAGEDDON);
@@ -624,9 +624,9 @@ ShakerRockStuff ();
 
 //------------------------------------------------------------------------------
 
-void LevelWarpCheat (int bVerbose)
+void LevelWarpCheat (int32_t bVerbose)
 {
-int nNewLevel;
+int32_t nNewLevel;
 
 if (!MenuGetValues (TXT_WARP_TO_LEVEL, &nNewLevel, 1))
 	return;
@@ -648,7 +648,7 @@ if (!StartNewLevel (nNewLevel, 0))
 
 //------------------------------------------------------------------------------
 
-void MonsterCheat (int bVerbose)
+void MonsterCheat (int32_t bVerbose)
 {
 gameStates.app.cheats.bMonsterMode = !gameStates.app.cheats.bMonsterMode;
 if (bVerbose)
@@ -657,7 +657,7 @@ if (bVerbose)
 
 //------------------------------------------------------------------------------
 
-void PhysicsCheat (int bVerbose)
+void PhysicsCheat (int32_t bVerbose)
 {
 gameStates.app.cheats.bPhysics = 0xbada55;
 if (bVerbose)
@@ -666,7 +666,7 @@ if (bVerbose)
 
 //------------------------------------------------------------------------------
 
-void RapidFireCheat (int bVerbose)
+void RapidFireCheat (int32_t bVerbose)
 {
 if (gameStates.app.cheats.bLaserRapidFire) {
 	gameStates.app.cheats.bLaserRapidFire = 0;
@@ -683,7 +683,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void RobotsKillRobotsCheat (int bVerbose)
+void RobotsKillRobotsCheat (int32_t bVerbose)
 {
 gameStates.app.cheats.bRobotsKillRobots = !gameStates.app.cheats.bRobotsKillRobots;
 if (!gameStates.app.cheats.bRobotsKillRobots) {
@@ -699,7 +699,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void SpeedCheat (int bVerbose)
+void SpeedCheat (int32_t bVerbose)
 {
 if ((gameStates.app.cheats.bSpeed = !gameStates.app.cheats.bSpeed)) {
 	BulletTimeOn ();
@@ -711,7 +711,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void TriFusionCheat (int bVerbose)
+void TriFusionCheat (int32_t bVerbose)
 {
 	CPlayerData	*playerP = &LOCALPLAYER;
 
@@ -725,7 +725,7 @@ DoCheatPenalty ();
 
 //------------------------------------------------------------------------------
 
-void TurboCheat (int bVerbose)
+void TurboCheat (int32_t bVerbose)
 {
 gameStates.app.cheats.bTurboMode = !gameStates.app.cheats.bTurboMode;
 if (!gameStates.app.cheats.bTurboMode) {
@@ -741,7 +741,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void UnlockAllCheat (int bVerbose)
+void UnlockAllCheat (int32_t bVerbose)
 {
 #if 1//DBG
 UnlockAllWalls (!gameStates.app.cheats.nUnlockLevel);
@@ -757,9 +757,9 @@ gameStates.app.cheats.nUnlockLevel = 1;
 
 //------------------------------------------------------------------------------
 
-void DoWowieCheat (int bVerbose, int bInitialize)
+void DoWowieCheat (int32_t bVerbose, int32_t bInitialize)
 {
-	int	h, i;
+	int32_t	h, i;
 
 if (gameStates.app.bD1Mission) {
 	LOCALPLAYER.primaryWeaponFlags = (1 << LASER_INDEX | (1 << VULCAN_INDEX) | (1 << SPREADFIRE_INDEX) | (1 << PLASMA_INDEX)) | (1 << FUSION_INDEX);
@@ -819,7 +819,7 @@ OBJECTS [N_LOCALPLAYER].ResetDamage ();
 
 //------------------------------------------------------------------------------
 
-void WowieCheat (int bVerbose)
+void WowieCheat (int32_t bVerbose)
 {
 if (bVerbose)
 	HUDInitMessage (TXT_WOWIE_ZOWIE);
@@ -828,7 +828,7 @@ DoWowieCheat (bVerbose, 1);
 
 //------------------------------------------------------------------------------
 
-void SuperWowieCheat (int bVerbose)
+void SuperWowieCheat (int32_t bVerbose)
 {
 if (gameStates.gameplay.bMineMineCheat) {
 	gameStates.gameplay.bMineMineCheat = 0;
@@ -853,7 +853,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void EnableD1Cheats (int bVerbose)
+void EnableD1Cheats (int32_t bVerbose)
 {
 gameStates.app.cheats.bD1CheatsEnabled = !gameStates.app.cheats.bD1CheatsEnabled;
 if (bVerbose)
@@ -865,7 +865,7 @@ if (bVerbose)
 #define CHEATSPOT 14
 #define CHEATEND 15
 
-typedef void tCheatFunc (int bVerbose);
+typedef void tCheatFunc (int32_t bVerbose);
 typedef tCheatFunc *pCheatFunc;
 
 typedef struct tCheat {
@@ -880,7 +880,7 @@ static char *pszCheat;
 
 //------------------------------------------------------------------------------
 
-inline int Cheat (tCheat *pCheat)
+inline int32_t Cheat (tCheat *pCheat)
 {
 if (strcmp (pCheat->bEncrypted ? pszCheat : szCheatBuf + CHEATEND - strlen (pCheat->pszCheat), 
 				pCheat->pszCheat))
@@ -1018,9 +1018,9 @@ tCheat cheats [] = {
 
 //------------------------------------------------------------------------------
 
-void FinalCheats (int key)
+void FinalCheats (int32_t key)
 {
-	int		i;
+	int32_t		i;
 	tCheat	*pCheat;
 
 key = KeyToASCII (key);
@@ -1037,7 +1037,7 @@ for (pCheat = cheats; pCheat->pszCheat && !Cheat (pCheat); pCheat++)
 #if DBG
 void DoCheatMenu ()
 {
-	int	mmn;
+	int32_t	mmn;
 	CMenu	m (16);
 	char	szScore[21];
 

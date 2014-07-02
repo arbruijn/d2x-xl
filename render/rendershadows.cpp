@@ -22,7 +22,7 @@
 
 void RenderFaceShadow (tFaceProps *propsP)
 {
-	int				i, nVertices = propsP->nVertices;
+	int32_t				i, nVertices = propsP->nVertices;
 	CRenderPoint*	p;
 	CFloatVector	v [9];
 
@@ -102,7 +102,7 @@ glPopMatrix ();
 
 //------------------------------------------------------------------------------
 
-void RenderFastShadows (fix xStereoSeparation, int nWindow, short nStartSeg)
+void RenderFastShadows (fix xStereoSeparation, int32_t nWindow, int16_t nStartSeg)
 {
 glowRenderer.End ();
 gameStates.render.nShadowPass = 2;
@@ -125,9 +125,9 @@ if (gameStates.render.nShadowBlurPass) {
 
 //------------------------------------------------------------------------------
 
-void RenderNeatShadows (fix xStereoSeparation, int nWindow, short nStartSeg)
+void RenderNeatShadows (fix xStereoSeparation, int32_t nWindow, int16_t nStartSeg)
 {
-	short			i, n;
+	int16_t			i, n;
 	CDynLight*	lightP;
 
 gameData.render.shadows.nLights = GatherShadowLightSources ();
@@ -163,8 +163,8 @@ RenderMine (nStartSeg, xStereoSeparation, nWindow);
 #define STB_SIZE_Y	2048
 
 CBitmap	shadowBuf;
-ubyte			shadowTexBuf [STB_SIZE_X * STB_SIZE_Y * 4];
-static int	bHaveShadowBuf = 0;
+uint8_t			shadowTexBuf [STB_SIZE_X * STB_SIZE_Y * 4];
+static int32_t	bHaveShadowBuf = 0;
 
 void CreateShadowTexture (void)
 {
@@ -189,7 +189,7 @@ glCopyTexSubImage2D (GL_TEXTURE_2D, 0, 0, 0, 0, 0, 128, 128);
 
 //------------------------------------------------------------------------------
 
-int shadowProg = -1;
+int32_t shadowProg = -1;
 
 #if DBG_SHADERS
 
@@ -255,7 +255,7 @@ glPopMatrix ();
 
 #if 0
 
-int RenderShadowMap (CDynLight *pLight)
+int32_t RenderShadowMap (CDynLight *pLight)
 {
 	CCamera	*cameraP;
 
@@ -284,8 +284,8 @@ return 1;
 void RenderObjectShadows (void)
 {
 	CObject		*objP;
-	//int			i; 
-	int			j, bSee;
+	//int32_t			i; 
+	int32_t			j, bSee;
 	CObject		fakePlayerPos = *gameData.objs.viewerP;
 
 FORALL_ACTOR_OBJS (objP, i)
@@ -319,7 +319,7 @@ for (; gameData.render.shadows.nShadowMaps;)
 
 #if MAX_SHADOWMAPS
 
-void ApplyShadowMaps (short nStartSeg, fix xStereoSeparation, int nWindow)
+void ApplyShadowMaps (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow)
 {
 	static float mTexBiasf [] = {
 		0.5f, 0.0f, 0.0f, 0.0f, 
@@ -338,7 +338,7 @@ void ApplyShadowMaps (short nStartSeg, fix xStereoSeparation, int nWindow)
 	CFloatMatrix mProjection;
 	CFloatMatrix mModelView;
 
-	int			i;
+	int32_t			i;
 	CCamera		*cameraP;
 
 #if 1
@@ -387,13 +387,13 @@ ogl.SetTexturing (false);
 
 //------------------------------------------------------------------------------
 
-int GatherShadowLightSources (void)
+int32_t GatherShadowLightSources (void)
 {
 	CObject*			objP;
 	CDynLight*		lightP;
 	CFixVector		vLightDir;
-	short*			nearestLightP;
-	int				h, i, j, k, l, n, m = gameOpts->render.shadows.nLights;
+	int16_t*			nearestLightP;
+	int32_t				h, i, j, k, l, n, m = gameOpts->render.shadows.nLights;
 
 n = lightManager.LightCount (1);
 for (h = l = 0; l < n; l++) {

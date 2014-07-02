@@ -95,7 +95,7 @@ for (extraGameInfo [0].entropy.nOverrideTextures = 0;
 void NetworkEntropyOptions (void)
 {
 	CMenu		m (25);
-	int		i;
+	int32_t		i;
 	char		szCapVirLim [10], szCapTimLim [10], szMaxVirCap [10], szBumpVirCap [10], 
 				szBashVirCap [10], szVirGenTim [10], szVirLife [10], 
 				szEnergyFill [10], szShieldFill [10], szShieldDmg [10];
@@ -125,14 +125,14 @@ for (;;) {
 	}
 extraGameInfo [0].entropy.nCaptureVirusThreshold = (char) m.ToInt ("capture virus threshold");
 extraGameInfo [0].entropy.nCaptureTimeThreshold = (char) m.ToInt ("capture time threshold");
-extraGameInfo [0].entropy.nMaxVirusCapacity = (ushort) m.ToInt ("virus capacity");
+extraGameInfo [0].entropy.nMaxVirusCapacity = (uint16_t) m.ToInt ("virus capacity");
 extraGameInfo [0].entropy.nBumpVirusCapacity = (char) m.ToInt ("virus capacity increase");
 extraGameInfo [0].entropy.nBashVirusCapacity = (char) m.ToInt ("virus capacity decrease");
 extraGameInfo [0].entropy.nVirusGenTime = (char) m.ToInt ("virus creation delay");
 extraGameInfo [0].entropy.nVirusLifespan = (char) m.ToInt ("virus lifetime");
-extraGameInfo [0].entropy.nEnergyFillRate = (ushort) m.ToInt ("refule rate");
-extraGameInfo [0].entropy.nShieldFillRate = (ushort) m.ToInt ("repair rate");
-extraGameInfo [0].entropy.nShieldDamageRate = (ushort) m.ToInt ("damage rage");
+extraGameInfo [0].entropy.nEnergyFillRate = (uint16_t) m.ToInt ("refule rate");
+extraGameInfo [0].entropy.nShieldFillRate = (uint16_t) m.ToInt ("repair rate");
+extraGameInfo [0].entropy.nShieldDamageRate = (uint16_t) m.ToInt ("damage rage");
 }
 
 //------------------------------------------------------------------------------

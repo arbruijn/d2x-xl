@@ -90,7 +90,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "findpath.h"
 #include "waypoint.h"
 
-uint nCurrentVGAMode;
+uint32_t nCurrentVGAMode;
 
 #ifdef MWPROFILER
 #include <profiler.h>
@@ -104,7 +104,7 @@ uint nCurrentVGAMode;
 
 #if DBG                          //these only exist if debugging
 
-int bGameDoubleBuffer = 1;     //double buffer by default
+int32_t bGameDoubleBuffer = 1;     //double buffer by default
 fix xFixedFrameTime = 0;          //if non-zero, set frametime to this
 
 #endif
@@ -116,7 +116,7 @@ CBitmap bmBackground;
 #define cv_w  Bitmap ().Width ()
 #define cv_h  Bitmap ().Height ()
 
-void NDRecordCockpitChange (int);
+void NDRecordCockpitChange (int32_t);
 
 void FireGun (void);
 void SlideTextures (void);
@@ -166,7 +166,7 @@ tDetailData	detailData = {
 
 void GameFlushInputs (void)
 {
-	int dx, dy;
+	int32_t dx, dy;
 
 #if 1
 controls.FlushInput ();
@@ -184,7 +184,7 @@ controls.Reset ();
 
 //------------------------------------------------------------------------------
 
-void MovePlayerToSegment (CSegment* segP, int nSide)
+void MovePlayerToSegment (CSegment* segP, int32_t nSide)
 {
 	CFixVector vp;
 
@@ -200,7 +200,7 @@ gameData.objs.consoleP->RelinkToSeg (segP->Index ());
 //------------------------------------------------------------------------------
 //this is called once per game
 
-bool InitGame (int nSegments, int nVertices)
+bool InitGame (int32_t nSegments, int32_t nVertices)
 {
 if (!gameData.Create (nSegments, nVertices))
 	return false;
@@ -242,7 +242,7 @@ return true;
 //------------------------------------------------------------------------------
 
 // Sets up the canvases we will be rendering to (NORMAL VERSION)
-void GameInitRenderBuffers (int nScreenSize, int render_w, int render_h, int render_method, int flags)
+void GameInitRenderBuffers (int32_t nScreenSize, int32_t render_w, int32_t render_h, int32_t render_method, int32_t flags)
 {
 gameData.render.screen.Set (nScreenSize);
 SetupCanvasses ();
@@ -268,7 +268,7 @@ objP->mType.physInfo.rotThrust.SetZero ();
 
 void DoCloakStuff (void)
 {
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (gameData.multiplayer.players[i].flags & PLAYER_FLAGS_CLOAKED) {
 		if (gameData.time.xGame - gameData.multiplayer.players [i].cloakTime > CLOAK_TIME_MAX) {
 			gameData.multiplayer.players[i].flags &= ~PLAYER_FLAGS_CLOAKED;
@@ -286,7 +286,7 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 
 //	------------------------------------------------------------------------------------
 
-int bFakingInvul = 0;
+int32_t bFakingInvul = 0;
 
 void DoInvulnerableStuff (void)
 {
@@ -309,7 +309,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 //@@//	------------------------------------------------------------------------------------
 //@@void afterburner_shake (void)
 //@@{
-//@@	int	rx, rz;
+//@@	int32_t	rx, rz;
 //@@
 //@@	rx = (abScale * FixMul (SRandShort (), I2X (1)/8 + (((gameData.time.xGame + 0x4000)*4) & 0x3fff)))/16;
 //@@	rz = (abScale * FixMul (SRandShort (), I2X (1)/2 + ((gameData.time.xGame*4) & 0xffff)))/16;
@@ -324,7 +324,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 #define AFTERBURNER_LOOP_START	 ((gameOpts->sound.audioSampleRate==SAMPLE_RATE_22K)?32027: (32027/2))		//20098
 #define AFTERBURNER_LOOP_END		 ((gameOpts->sound.audioSampleRate==SAMPLE_RATE_22K)?48452: (48452/2))		//25776
 
-//static int abScale = 4;
+//static int32_t abScale = 4;
 
 void DoAfterburnerStuff (void)
 {
@@ -336,10 +336,10 @@ if (gameStates.app.bEndLevelSequence || gameStates.app.bPlayerIsDead) {
 	}
 else /*if ((gameStates.gameplay.xLastAfterburnerCharge && (controls [0].afterburnerState != gameStates.gameplay.bLastAfterburnerState)) || 
 	 		(gameStates.gameplay.bLastAfterburnerState && (gameStates.gameplay.xLastAfterburnerCharge && !gameData.physics.xAfterburnerCharge)))*/ {
-	int nSoundObj = audio.FindObjectSound (LOCALPLAYER.nObject, SOUND_AFTERBURNER_IGNITE);
+	int32_t nSoundObj = audio.FindObjectSound (LOCALPLAYER.nObject, SOUND_AFTERBURNER_IGNITE);
 	if (gameData.physics.xAfterburnerCharge && controls [0].afterburnerState && (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER)) {
 		if (nSoundObj < 0) {
-			audio.CreateObjectSound ((short) SOUND_AFTERBURNER_IGNITE, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject, 
+			audio.CreateObjectSound ((int16_t) SOUND_AFTERBURNER_IGNITE, SOUNDCLASS_PLAYER, (int16_t) LOCALPLAYER.nObject, 
 											 1, I2X (1), I2X (256), AFTERBURNER_LOOP_START, AFTERBURNER_LOOP_END);
 			if (IsMultiGame)
 				MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_IGNITE);
@@ -348,7 +348,7 @@ else /*if ((gameStates.gameplay.xLastAfterburnerCharge && (controls [0].afterbur
 	else if (nSoundObj >= 0) { //gameStates.gameplay.xLastAfterburnerCharge || gameStates.gameplay.bLastAfterburnerState) {
 #if 1
 		audio.DeleteSoundObject (nSoundObj);
-		audio.CreateObjectSound ((short) SOUND_AFTERBURNER_PLAY, SOUNDCLASS_PLAYER, (short) LOCALPLAYER.nObject);
+		audio.CreateObjectSound ((int16_t) SOUND_AFTERBURNER_PLAY, SOUNDCLASS_PLAYER, (int16_t) LOCALPLAYER.nObject);
 		if (IsMultiGame) {
 			if (gameStates.multi.nGameType == UDP_GAME)
 			 	MultiSendSoundFunction (3, (char) SOUND_AFTERBURNER_PLAY);
@@ -432,7 +432,7 @@ m.TinyMenu (NULL, TXT_KEYS);
 //turns off active cheats
 void TurnCheatsOff (void)
 {
-	int i;
+	int32_t i;
 
 if (gameStates.app.cheats.bHomingWeapons)
 	for (i = 0; i < 20; i++)
@@ -507,7 +507,7 @@ gameData.render.rift.SetCenter ();
 
 //------------------------------------------------------------------------------
 
-void SetFunctionMode (int newFuncMode)
+void SetFunctionMode (int32_t newFuncMode)
 {
 if (gameStates.app.nFunctionMode != newFuncMode) {
 	gameStates.app.nLastFuncMode = gameStates.app.nFunctionMode;
@@ -589,7 +589,7 @@ AutoScreenshot ();
 
 #if PHYSICS_FPS >= 0
 
-int GameFrame (int bRenderFrame, int bReadControls, int fps)
+int32_t GameFrame (int32_t bRenderFrame, int32_t bReadControls, int32_t fps)
 {
 if (bRenderFrame)
 	DoRenderFrame ();
@@ -597,7 +597,7 @@ if (bRenderFrame)
 	fix		xFrameTime = gameData.time.xFrame; 
 	float		physicsFrameTime = 1000.0f / float (PHYSICS_FPS);
 	float		t = float (SDL_GetTicks ()), dt = t - gameData.physics.fLastTick;
-	int		h = 1, i = 0;
+	int32_t		h = 1, i = 0;
 
 while (dt >= physicsFrameTime) {
 	dt -= physicsFrameTime;
@@ -646,7 +646,7 @@ extern bool bRegisterBitmaps;
 
 void RunGame (void)
 {
-	int i, c;
+	int32_t i, c;
 
 GameSetup ();								// Replaces what was here earlier.
 #ifdef MWPROFILE
@@ -672,13 +672,13 @@ if (!setjmp (gameExitPoint)) {
 #endif
 			 //Assert (gameData.objs.consoleP == &OBJECTS[LOCALPLAYER.nObject]);
 			}
-		int playerShield = LOCALPLAYER.Shield ();
+		int32_t playerShield = LOCALPLAYER.Shield ();
 		gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
 
 		try {
 			i = GameFrame (1, 1);
 			}
-		catch (int e) {
+		catch (int32_t e) {
 			ClearWarnFunc (ShowInGameWarning);
 			if (e == EX_OUT_OF_MEMORY) {
 				Warning ("Out of memory.");
@@ -723,7 +723,7 @@ if (!setjmp (gameExitPoint)) {
 			//paletteManager.ResumeEffect (!IsMultiGame);
 			}
 		if (automap.Display ()) {
-			int	save_w = gameData.render.frame.Width (),
+			int32_t	save_w = gameData.render.frame.Width (),
 					save_h = gameData.render.frame.Height ();
 			automap.DoFrame (0, 0);
 			gameStates.app.bEnterGame = 1;
@@ -738,7 +738,7 @@ if (!setjmp (gameExitPoint)) {
 		if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
 			 gameData.demo.bAuto && !gameOpts->demo.bRevertFormat &&
 			 (gameData.demo.nState != ND_STATE_NORMAL)) {
-			int choice, fmode;
+			int32_t choice, fmode;
 			fmode = gameStates.app.nFunctionMode;
 			SetFunctionMode (FMODE_GAME);
 			//paletteManager.SuspendEffect ();
@@ -780,9 +780,9 @@ bRegisterBitmaps = false;
 
 void _CDECL_ CloseGame (void)
 {
-	static	int bGameClosed = 0;
+	static	int32_t bGameClosed = 0;
 #if MULTI_THREADED
-	int		i;
+	int32_t		i;
 #endif
 if (bGameClosed)
 	return;
@@ -889,7 +889,7 @@ return &gameData.render.scene;
 
 CObject *FindEscort ()
 {
-//	int 		i;
+//	int32_t 		i;
 	CObject	*objP = OBJECTS.Buffer ();
 
 FORALL_ROBOT_OBJS (objP, i)
@@ -905,8 +905,8 @@ void DoAmbientSounds (void)
 if (gameStates.app.bPlayerIsDead)
 	return;
 
-	int	bLava, bWater;
-	short nSound;
+	int32_t	bLava, bWater;
+	int16_t nSound;
 
 	bLava = (SEGMENTS [gameData.objs.consoleP->info.nSegment].m_flags & S2F_AMBIENT_LAVA);
 	bWater = (SEGMENTS [gameData.objs.consoleP->info.nSegment].m_flags & S2F_AMBIENT_WATER);
@@ -950,9 +950,9 @@ if (gameStates.render.bUpdateEffects) {
 // -- extern void lightning_frame (void);
 
 #if PHYSICS_FPS >= 0
-int DoGameFrame (int bRenderFrame, int bReadControls, int bFrameTime)
+int32_t DoGameFrame (int32_t bRenderFrame, int32_t bReadControls, int32_t bFrameTime)
 #else
-int GameFrame (int bRenderFrame, int bReadControls, int bFrameTime)
+int32_t GameFrame (int32_t bRenderFrame, int32_t bReadControls, int32_t bFrameTime)
 #endif
 {
 PROF_START
@@ -1102,7 +1102,7 @@ return 1;
 
 void ComputeSlideSegs (void)
 {
-	int			nSegment, nSide, bIsSlideSeg, nTexture;
+	int32_t			nSegment, nSide, bIsSlideSeg, nTexture;
 	CSegment*	segP = SEGMENTS.Buffer ();
 
 gameData.segs.nSlideSegs = 0;
@@ -1131,8 +1131,8 @@ gameData.segs.bHaveSlideSegs = 1;
 
 void SlideTextures (void)
 {
-	int			nSegment, nSide, h, i, j, tmn;
-	ubyte			sides;
+	int32_t			nSegment, nSide, h, i, j, tmn;
+	uint8_t			sides;
 	CSegment*	segP;
 	CSide*		sideP;
 	tUVL*			uvlP;
@@ -1190,7 +1190,7 @@ for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 //	-------------------------------------------------------------------------------------------------------
 //	If player is close enough to nObject, which ought to be a powerup, pick it up!
 //	This could easily be made difficulty level dependent.
-void PowerupGrabCheat (CObject *playerP, int nObject)
+void PowerupGrabCheat (CObject *playerP, int32_t nObject)
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return;
@@ -1218,7 +1218,7 @@ playerP->CollidePlayerAndPowerup (powerupP, vCollision);
 void PowerupGrabCheatAll (void)
 {
 if (gameStates.app.tick40fps.bTick) {
-	short nObject = SEGMENTS [gameData.objs.consoleP->info.nSegment].m_objects;
+	int16_t nObject = SEGMENTS [gameData.objs.consoleP->info.nSegment].m_objects;
 	while (nObject != -1) {
 		if (OBJECTS [nObject].info.nType == OBJ_POWERUP)
 			PowerupGrabCheat (gameData.objs.consoleP, nObject);
@@ -1231,14 +1231,14 @@ if (gameStates.app.tick40fps.bTick) {
 //	Create path for CPlayerData from current CSegment to goal CSegment.
 //	Return true if path created, else return false.
 
-int nLastLevelPathCreated = -1;
+int32_t nLastLevelPathCreated = -1;
 
-int MarkPlayerPathToSegment (int nSegment)
+int32_t MarkPlayerPathToSegment (int32_t nSegment)
 {
-	int		i;
+	int32_t		i;
 	CObject* objP = gameData.objs.consoleP;
-	short		playerPathLength = 0;
-	int		playerHideIndex = -1;
+	int16_t		playerPathLength = 0;
+	int32_t		playerHideIndex = -1;
 
 if (nLastLevelPathCreated == missionManager.nCurrentLevel)
 	return 0;
@@ -1249,9 +1249,9 @@ if (CreatePathPoints (objP, objP->info.nSegment, nSegment, gameData.ai.freePoint
 #endif
 	return 0;
 	}
-playerHideIndex = int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs));
+playerHideIndex = int32_t (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs));
 gameData.ai.freePointSegs += playerPathLength;
-if (int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)) + MAX_PATH_LENGTH * 2 > MAX_POINT_SEGS) {
+if (int32_t (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)) + MAX_PATH_LENGTH * 2 > MAX_POINT_SEGS) {
 #if TRACE
 	//console.printf (1, "Can't create path.  Not enough tPointSegs.\n");
 #endif
@@ -1259,7 +1259,7 @@ if (int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)) + MAX_PATH_LEN
 	return 0;
 	}
 for (i = 1; i < playerPathLength; i++) {
-	short			nSegment, nObject;
+	int16_t			nSegment, nObject;
 	CFixVector	vSegCenter;
 	CObject		*objP;
 
@@ -1285,10 +1285,10 @@ return 1;
 
 //-----------------------------------------------------------------------------
 //	Return true if it happened, else return false.
-int MarkPathToExit (void)
+int32_t MarkPathToExit (void)
 {
-for (int i = 0; i <= gameData.segs.nLastSegment; i++) {
-	for (int j = 0, h = SEGMENT_SIDE_COUNT; j < h; j++)
+for (int32_t i = 0; i <= gameData.segs.nLastSegment; i++) {
+	for (int32_t j = 0, h = SEGMENT_SIDE_COUNT; j < h; j++)
 		if (SEGMENTS [i].m_children [j] == -2)
 			return MarkPlayerPathToSegment (i);
 	}

@@ -12,11 +12,11 @@
 
 
 extern struct ipx_driver ipx_udp;
-extern ubyte ipx_MyAddress[10];
-extern ubyte ipx_ServerAddress [10];
-extern ubyte ipx_LocalAddress [10];
-extern int udpBasePorts [2];
+extern uint8_t ipx_MyAddress[10];
+extern uint8_t ipx_ServerAddress [10];
+extern uint8_t ipx_LocalAddress [10];
+extern int32_t udpBasePorts [2];
 
-int UDPGetMyAddress();
+int32_t UDPGetMyAddress();
 
 #endif

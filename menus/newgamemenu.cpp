@@ -54,24 +54,24 @@
 #include "menubackground.h"
 
 static struct {
-	int	nStartIPX;
-	int	nJoinIPX;
-	int	nStartUDP;
-	int	nJoinUDP;
-	int	nStartUdpTracker;
-	int	nJoinUdpTracker;
-	int	nStartMCast4;
-	int	nJoinMCast4;
-	int	nStartKali;
-	int	nJoinKali;
-	int	nSerial;
+	int32_t	nStartIPX;
+	int32_t	nJoinIPX;
+	int32_t	nStartUDP;
+	int32_t	nJoinUDP;
+	int32_t	nStartUdpTracker;
+	int32_t	nJoinUdpTracker;
+	int32_t	nStartMCast4;
+	int32_t	nJoinMCast4;
+	int32_t	nStartKali;
+	int32_t	nJoinKali;
+	int32_t	nSerial;
 } multiOpts = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, -1};
 
 //------------------------------------------------------------------------------
 
-int SelectAndLoadMission (int bMulti, int *bAnarchyOnly)
+int32_t SelectAndLoadMission (int32_t bMulti, int32_t *bAnarchyOnly)
 {
-	int				i, j, nMissions, nDefaultMission, nNewMission = -1;
+	int32_t				i, j, nMissions, nDefaultMission, nNewMission = -1;
 	CStack<char*>	msnNames (MAX_MISSIONS);
 	CListBox			lb;
 
@@ -118,9 +118,9 @@ return nNewMission;
 
 //------------------------------------------------------------------------------
 
-int DifficultyMenu (void)
+int32_t DifficultyMenu (void)
 {
-	int		i, choice = gameStates.app.nDifficultyLevel;
+	int32_t		i, choice = gameStates.app.nDifficultyLevel;
 	CMenu		m (5);
 
 for (i = 0; i < 5; i++)
@@ -139,13 +139,13 @@ return 1;
 
 void LegacyNewGameMenu (void)
 {
-	int				nNewLevel, nHighestPlayerLevel;
-	int				nMissions;
+	int32_t				nNewLevel, nHighestPlayerLevel;
+	int32_t				nMissions;
 	CStack<char*>	m (MAX_MISSIONS);
-	int				i, choice = 0, nFolder = -1, nDefaultMission = 0;
+	int32_t				i, choice = 0, nFolder = -1, nDefaultMission = 0;
 	CListBox			lb;
 
-	static int		nMission = -1;
+	static int32_t		nMission = -1;
 
 	static const char	*menuTitles [4];
 
@@ -222,13 +222,13 @@ if (!StartNewGame (nNewLevel))
 
 //------------------------------------------------------------------------------
 
-int NewGameMenuCallback (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t NewGameMenuCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
 	CMenuItem*	m;
-	int			v;
+	int32_t			v;
 
 if ((m = menu ["difficulty"])) {
 	v = m->Value ();
@@ -247,19 +247,19 @@ return nCurItem;
 void NewGameMenu (void)
 {
 	CMenu				m;
-	int				nMission = missionManager.nLastMission, bMsnLoaded = 0;
-	int				i, choice = 0, bBuiltIn, bEnableMod = gameOpts->app.bEnableMods;
+	int32_t				nMission = missionManager.nLastMission, bMsnLoaded = 0;
+	int32_t				i, choice = 0, bBuiltIn, bEnableMod = gameOpts->app.bEnableMods;
 	char				szDifficulty [50];
 	char				szLevelText [32];
 	char				szLevel [5];
 #if DBG
-	int				optLives;
+	int32_t				optLives;
 	char				szLives [5];
 #endif
-	int				optShip = -1;
+	int32_t				optShip = -1;
 
-	static int		nPlayerMaxLevel = 1;
-	static int		nLevel = 1;
+	static int32_t		nPlayerMaxLevel = 1;
+	static int32_t		nLevel = 1;
 
 if (gameStates.app.bNostalgia) {
 	LegacyNewGameMenu ();
@@ -401,16 +401,16 @@ if (!StartNewGame (nLevel))
 
 //------------------------------------------------------------------------------
 
-static inline int MultiChoice (int nType, int bJoin)
+static inline int32_t MultiChoice (int32_t nType, int32_t bJoin)
 {
-return *(reinterpret_cast<int*> (&multiOpts) + 2 * nType + bJoin);
+return *(reinterpret_cast<int32_t*> (&multiOpts) + 2 * nType + bJoin);
 }
 
 //------------------------------------------------------------------------------
 
-int ExecMultiMenuOption (CMenu& m, int nChoice)
+int32_t ExecMultiMenuOption (CMenu& m, int32_t nChoice)
 {
-	int	bUDP = 0, bStart = 0;
+	int32_t	bUDP = 0, bStart = 0;
 
 tracker.m_bUse = 0;
 if ((nChoice == multiOpts.nStartUdpTracker) ||(nChoice == multiOpts.nJoinUdpTracker)) {
@@ -442,7 +442,7 @@ if (bUDP) {
 	IpxSetDriver (IPX_DRIVER_UDP); 
 	if (nChoice == multiOpts.nStartUdpTracker) {
 		PrintLog (1, "Looking for active trackers\n");
-		int n = tracker.ActiveCount (1);
+		int32_t n = tracker.ActiveCount (1);
 		if (n < -2) {
 			if (n == -4)
 				TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_NO_TRACKERS);
@@ -484,11 +484,11 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int MultiplayerMenu (void)
+int32_t MultiplayerMenu (void)
 {
 	CMenu	m;
-	int	choice = 0, i, nConnections = 0;
-	int	nOldGameMode;
+	int32_t	choice = 0, i, nConnections = 0;
+	int32_t	nOldGameMode;
 
 if ((gameStates.app.bNostalgia < 2) && (gameData.multiplayer.autoNG.bValid > 0)) {
 	i = MultiChoice (gameData.multiplayer.autoNG.uConnect, !gameData.multiplayer.autoNG.bHost);

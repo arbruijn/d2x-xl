@@ -49,8 +49,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define LHX(x)	 (gameStates.menus.bHires ? 2 * (x) : x)
 
-//int GrInternalStringClipped (int x, int y, const char *s);
-//int GrInternalStringClippedM (int x, int y, const char *s);
+//int32_t GrInternalStringClipped (int32_t x, int32_t y, const char *s);
+//int32_t GrInternalStringClippedM (int32_t x, int32_t y, const char *s);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -60,7 +60,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define GRS_MAX_STRINGS	1000
 
 grsString stringPool [GRS_MAX_STRINGS];
-short nPoolStrings = 0;
+int16_t nPoolStrings = 0;
 
 //------------------------------------------------------------------------------
 
@@ -74,7 +74,7 @@ memset (stringPool, 0, sizeof (stringPool));
 
 void FreeStringPool (void)
 {
-	int			i;
+	int32_t			i;
 	grsString	*ps;
 
 PrintLog (1, "unloading string pool\n");
@@ -99,7 +99,7 @@ PrintLog (-1);
 
 //------------------------------------------------------------------------------
 
-grsString *CreatePoolString (const char *s, int *idP)
+grsString *CreatePoolString (const char *s, int32_t *idP)
 {
 if (!fontManager.Current ())
 	return NULL;
@@ -107,7 +107,7 @@ if (fontManager.Scale () != 1.0f)
 	return NULL;
 
 	grsString*	ps;
-	int			l, w, h, aw;
+	int32_t			l, w, h, aw;
 
 if (*idP) {
 	ps = stringPool + *idP - 1;
@@ -125,7 +125,7 @@ if (!(ps->bmP = CreateStringBitmap (s, 0, 0, 0, 0, w, 1))) {
 	*idP = 0;
 	return NULL;
 	}
-l = (int) strlen (s) + 1;
+l = (int32_t) strlen (s) + 1;
 if (ps->pszText && (ps->nLength < l)) {
 	delete[] ps->pszText;
 	ps->pszText = NULL;
@@ -149,7 +149,7 @@ return ps;
 
 //------------------------------------------------------------------------------
 
-grsString *GetPoolString (const char *s, int *idP)
+grsString *GetPoolString (const char *s, int32_t *idP)
 {
 	grsString	*ps;
 
@@ -172,22 +172,22 @@ return CreatePoolString (s, idP);
 //note we subtract one from color, since 255 is "transparent" so it'll never be used, and 0 would otherwise end the string.
 //function must already have origColor var set (or they could be passed as args...)
 //perhaps some sort of recursive origColor nType thing would be better, but that would be way too much trouble for little gain
-int grMsgColorLevel = 1;
+int32_t grMsgColorLevel = 1;
 
 //------------------------------------------------------------------------------
 
 #if 0
 
-int GrInternalString0 (int x, int y, const char *s)
+int32_t GrInternalString0 (int32_t x, int32_t y, const char *s)
 {
-	ubyte*		fp;
+	uint8_t*		fp;
 	const char*	textP, *nextRowP, *text_ptr1;
-	int			r, mask, i, bits, width, spacing, letter, underline;
-	int			skip_lines = 0;
-	uint			videoOffset, videoOffset1;
+	int32_t			r, mask, i, bits, width, spacing, letter, underline;
+	int32_t			skip_lines = 0;
+	uint32_t			videoOffset, videoOffset1;
 	CPalette*	palette = paletteManager.Game ();
-	ubyte*		videoBuffer = CCanvas::Current ()->Buffer ();
-	int			rowSize = CCanvas::Current ()->RowSize ();
+	uint8_t*		videoBuffer = CCanvas::Current ()->Buffer ();
+	int32_t			rowSize = CCanvas::Current ()->RowSize ();
 	tFont			font;
 	char			c;
 	
@@ -211,7 +211,7 @@ while (nextRowP != NULL) {
 	text_ptr1 = nextRowP;
 	nextRowP = NULL;
 	if (x == 0x8000) {			//centered
-		int xx = fontManager.Current ()->GetCenteredX (text_ptr1);
+		int32_t xx = fontManager.Current ()->GetCenteredX (text_ptr1);
 		videoOffset1 = y * rowSize + xx;
 		}
 	for (r = 0; r < font.height; r++) {
@@ -252,7 +252,7 @@ while (nextRowP != NULL) {
 				fp = font.data + letter * BITS_TO_BYTES (width) * font.height;
 			if (underline)
 				for (i = 0; i < width; i++)
-					videoBuffer [videoOffset++] = (ubyte) CCanvas::Current ()->FontColor (0).index;
+					videoBuffer [videoOffset++] = (uint8_t) CCanvas::Current ()->FontColor (0).index;
 				else {
 					fp += BITS_TO_BYTES (width)*r;
 					mask = 0;
@@ -262,9 +262,9 @@ while (nextRowP != NULL) {
 							mask = 0x80;
 							}
 						if (bits & mask)
-							videoBuffer [videoOffset++] = (ubyte) CCanvas::Current ()->FontColor (0).index;
+							videoBuffer [videoOffset++] = (uint8_t) CCanvas::Current ()->FontColor (0).index;
 						else
-							videoBuffer [videoOffset++] = (ubyte) CCanvas::Current ()->FontColor (1).index;
+							videoBuffer [videoOffset++] = (uint8_t) CCanvas::Current ()->FontColor (1).index;
 						mask >>= 1;
 						}
 					}
@@ -284,7 +284,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static inline const char* ScanEmbeddedColors (char c, const char* textP, int origColor, int nOffset, int nScale)
+static inline const char* ScanEmbeddedColors (char c, const char* textP, int32_t origColor, int32_t nOffset, int32_t nScale)
 {
 if ((c >= 1) && (c <= 3)) {
 	if (textP [1]) {
@@ -309,17 +309,17 @@ return textP + 1;
 
 #if 0
 
-int GrInternalString0m (int x, int y, const char *s)
+int32_t GrInternalString0m (int32_t x, int32_t y, const char *s)
 {
-	ubyte*			fp;
+	uint8_t*			fp;
 	const char*		textP, * nextRowP, * text_ptr1;
-	int				r, mask, i, bits, width, spacing, letter, underline;
-	int				skip_lines = 0;
+	int32_t				r, mask, i, bits, width, spacing, letter, underline;
+	int32_t				skip_lines = 0;
 	char				c;
-	int				origColor;
-	uint				videoOffset, videoOffset1;
-	ubyte*			videoBuffer = CCanvas::Current ()->Buffer ();
-	int				rowSize = CCanvas::Current ()->RowSize ();
+	int32_t				origColor;
+	uint32_t				videoOffset, videoOffset1;
+	uint8_t*			videoBuffer = CCanvas::Current ()->Buffer ();
+	int32_t				rowSize = CCanvas::Current ()->RowSize ();
 	tFont				font;
 
 if (CCanvas::Current ()->FontColor (0).rgb) {
@@ -341,7 +341,7 @@ while (nextRowP != NULL) {
 	nextRowP = NULL;
 
 	if (x==0x8000) {			//centered
-		int xx = fontManager.Current ()->GetCenteredX (text_ptr1);
+		int32_t xx = fontManager.Current ()->GetCenteredX (text_ptr1);
 		videoOffset1 = y * rowSize + xx;
 		}
 
@@ -388,7 +388,7 @@ while (nextRowP != NULL) {
 
 			if (underline)
 				for (i = 0; i < width; i++)
-					videoBuffer [videoOffset++] = (uint) CCanvas::Current ()->FontColor (0).index;
+					videoBuffer [videoOffset++] = (uint32_t) CCanvas::Current ()->FontColor (0).index;
 			else {
 				fp += BITS_TO_BYTES (width) * r;
 				mask = 0;
@@ -398,7 +398,7 @@ while (nextRowP != NULL) {
 						mask = 0x80;
 						}
 					if (bits & mask)
-						videoBuffer [videoOffset++] = (uint) CCanvas::Current ()->FontColor (0).index;
+						videoBuffer [videoOffset++] = (uint32_t) CCanvas::Current ()->FontColor (0).index;
 					else
 						videoOffset++;
 					mask >>= 1;
@@ -428,16 +428,16 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-char* CFont::PadString (char* pszDest, const char* pszText, const char* pszFiller, int nLength)
+char* CFont::PadString (char* pszDest, const char* pszText, const char* pszFiller, int32_t nLength)
 {
-int sw, swf, sh, aw;
+int32_t sw, swf, sh, aw;
 fontManager.Current ()->StringSize (pszText, sw, sh, aw);
 fontManager.Current ()->StringSize (pszFiller, swf, sh, aw);
 *pszDest = '\0';
 if (sw + swf <= nLength) {
-	int i = (nLength - sw) / swf;
+	int32_t i = (nLength - sw) / swf;
 	if (i > 0) {
-		int l = sw + i * swf;
+		int32_t l = sw + i * swf;
 		if (l < nLength)
 			PadString (pszDest, pszText, " ", nLength - l);
 		if (!*pszDest);
@@ -451,14 +451,14 @@ return pszDest;
 
 //------------------------------------------------------------------------------
 
-int CFont::DrawString (int left, int top, const char *s)
+int32_t CFont::DrawString (int32_t left, int32_t top, const char *s)
 {
 	const char*		textP, * nextRowP, * text_ptr1;
-	int				width, spacing, letter;
-	int				x, y;
-	int				origColor = CCanvas::Current ()->FontColor (0).index; //to allow easy reseting to default string color with colored strings -MPM
+	int32_t				width, spacing, letter;
+	int32_t				x, y;
+	int32_t				origColor = CCanvas::Current ()->FontColor (0).index; //to allow easy reseting to default string color with colored strings -MPM
 	float				fScale = fontManager.Scale ();
-	ubyte				c;
+	uint8_t				c;
 	CBitmap*			bmf;
 	CCanvasColor*	colorP = (m_info.flags & FT_COLOR) ? NULL : &CCanvas::Current ()->FontColor (0);
 	
@@ -484,7 +484,7 @@ while (nextRowP != NULL) {
 		if (fontManager.Current ()->InFont (letter)) {
 			bmf = m_info.bitmaps + letter;
 			bmf->AddFlags (BM_FLAG_TRANSPARENT);
-			bmf->RenderScaled (x, y, int (bmf->Width () * fScale), int (bmf->Height () * fScale), I2X (1), 0, colorP, !gameStates.app.bDemoData);
+			bmf->RenderScaled (x, y, int32_t (bmf->Width () * fScale), int32_t (bmf->Height () * fScale), I2X (1), 0, colorP, !gameStates.app.bDemoData);
 			}
 		x += spacing;
 		textP++;
@@ -495,18 +495,18 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static bool FillStringBitmap (CBitmap* bmP, const char *s, int nKey, uint nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce, int& w, int& h)
+static bool FillStringBitmap (CBitmap* bmP, const char *s, int32_t nKey, uint32_t nKeyColor, int32_t *nTabs, int32_t bCentered, int32_t nMaxWidth, int32_t bForce, int32_t& w, int32_t& h)
 {
 
-	int			origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
-	int			i, x, y, cw, spacing, nTab, nChars, bHotKey;
+	int32_t			origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
+	int32_t			i, x, y, cw, spacing, nTab, nChars, bHotKey;
 	CBitmap		*bmfP;
 	CRGBAColor	hc, kc;
 	CPalette		*palP = NULL;
 	CRGBColor	*colorP;
-	ubyte			c;
+	uint8_t			c;
 	const char	*textP, *text_ptr1, *nextRowP;
-	int			letter;
+	int32_t			letter;
 	CFont*		fontP = fontManager.Current ();
 
 nextRowP = s;
@@ -539,10 +539,10 @@ x = 0;
 		if (c == '\t') {
 			textP++;
 			if (nTabs && (nTab < 6)) {
-				int	sw, sh, aw;
+				int32_t	sw, sh, aw;
 
 				fontManager.Current ()->StringSize (textP, sw, sh, aw);
-				int tx = LHX (nTabs [nTab++]);
+				int32_t tx = LHX (nTabs [nTab++]);
 				if (!gameStates.multi.bSurfingNet)
 					x = nMaxWidth - sw;
 				else if (x < tx) 
@@ -561,11 +561,11 @@ x = 0;
 			textP++;
 			continue;
 			}
-		if ((bHotKey = ((nKey < 0) && isalnum (c)) || (nKey && ((int) c == nKey))))
+		if ((bHotKey = ((nKey < 0) && isalnum (c)) || (nKey && ((int32_t) c == nKey))))
 			nKey = 0;
 		bmfP = (bHotKey && (fontManager.Current () != SMALL_FONT)) ? SELECTED_FONT->Bitmaps () + letter : fontP->Bitmaps () + letter;
 		palP = bmfP->Parent () ? bmfP->Parent ()->Palette () : bmfP->Palette ();
-		int transparencyColor = paletteManager.Texture ()->TransparentColor ();
+		int32_t transparencyColor = paletteManager.Texture ()->TransparentColor ();
 		nChars++;
 		i = nKeyColor * 3;
 		kc.Red () = RGBA_RED (nKeyColor);
@@ -573,10 +573,10 @@ x = 0;
 		kc.Blue () = RGBA_BLUE (nKeyColor);
 		kc.Alpha () = 255;
 		if (fontP->Flags () & FT_COLOR) {
-			for (int hy = 0; hy < bmfP->Height (); hy++) {
+			for (int32_t hy = 0; hy < bmfP->Height (); hy++) {
 				CRGBAColor* pc = reinterpret_cast<CRGBAColor*> (bmP->Buffer ()) + (y + hy) * w + x;
-				ubyte* pf = bmfP->Buffer () + hy * bmfP->RowSize ();
-				for (int hx = bmfP->Width (); hx; hx--, pc++, pf++) {
+				uint8_t* pf = bmfP->Buffer () + hy * bmfP->RowSize ();
+				for (int32_t hx = bmfP->Width (); hx; hx--, pc++, pf++) {
 #if 1 || DBG
 					if ((pc - reinterpret_cast<CRGBAColor*> (bmP->Buffer ())) >= bmP->Width () * bmP->Height ())
 						continue;
@@ -605,10 +605,10 @@ x = 0;
 					}
 				hc.Alpha () = 255;
 				}
-			for (int hy = 0; hy < bmfP->Height (); hy++) {
+			for (int32_t hy = 0; hy < bmfP->Height (); hy++) {
 				CRGBAColor* pc = reinterpret_cast<CRGBAColor*> (bmP->Buffer ()) + (y + hy) * w + x;
-				ubyte* pf = bmfP->Buffer () + hy * bmfP->RowSize ();
-				for (int hx = bmfP->Width (); hx; hx--, pc++, pf++) {
+				uint8_t* pf = bmfP->Buffer () + hy * bmfP->RowSize ();
+				for (int32_t hx = bmfP->Width (); hx; hx--, pc++, pf++) {
 #if 1 || DBG
 					if ((pc - reinterpret_cast<CRGBAColor*> (bmP->Buffer ())) >= bmP->Width () * bmP->Height ())
 						continue;
@@ -630,12 +630,12 @@ return true;
 
 extern bool bRegisterBitmaps;
 
-CBitmap *CreateStringBitmap (const char *s, int nKey, uint nKeyColor, int *nTabs, int bCentered, int nMaxWidth, int bForce)
+CBitmap *CreateStringBitmap (const char *s, int32_t nKey, uint32_t nKeyColor, int32_t *nTabs, int32_t bCentered, int32_t nMaxWidth, int32_t bForce)
 {
 	CFont*		fontP = fontManager.Current ();
 	float			fScale = fontManager.Scale ();
 	CBitmap*		bmP;
-	int			w, h, aw;
+	int32_t			w, h, aw;
 
 #if 0
 if (!(bForce || (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)))
@@ -680,7 +680,7 @@ return bmP;
 
 //------------------------------------------------------------------------------
 
-int GrString (int x, int y, const char *s, int *idP)
+int32_t GrString (int32_t x, int32_t y, const char *s, int32_t *idP)
 {
 #if STRINGPOOL
 	grsString	*ps;
@@ -688,14 +688,14 @@ int GrString (int x, int y, const char *s, int *idP)
 if (/*(CCanvas::Current ()->Mode () == BM_OGL) &&*/ (ps = GetPoolString (s, idP))) {
 	CBitmap* bmP = ps->bmP;
 	float		fScale = fontManager.Scale ();
-	int		w = int (bmP->Width () * fScale);
-	int		xs = gameData.X (x);
+	int32_t		w = int32_t (bmP->Width () * fScale);
+	int32_t		xs = gameData.X (x);
 
-	ps->bmP->RenderScaled (xs, y, gameData.X (x + w) - xs, int (bmP->Height () * fScale), I2X (1), 0, &CCanvas::Current ()->FontColor (0), !gameStates.app.bDemoData);
-	return (int) (ps - stringPool) + 1;
+	ps->bmP->RenderScaled (xs, y, gameData.X (x + w) - xs, int32_t (bmP->Height () * fScale), I2X (1), 0, &CCanvas::Current ()->FontColor (0), !gameStates.app.bDemoData);
+	return (int32_t) (ps - stringPool) + 1;
 	}
 #endif
-	int		w, h, aw, clipped = 0;
+	int32_t		w, h, aw, clipped = 0;
 
 Assert (fontManager.Current () != NULL);
 fontManager.Current ()->StringSize (s, w, h, aw);
@@ -741,7 +741,7 @@ return GrInternalStringClipped (gameData.X (x), y, s);
 
 //------------------------------------------------------------------------------
 
-int GrUString (int x, int y, const char *s)
+int32_t GrUString (int32_t x, int32_t y, const char *s)
 {
 #if 1
 return fontManager.Current ()->DrawString (x, y, s);
@@ -760,7 +760,7 @@ return GrInternalString0 (x, y, s);
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ GrUPrintf (int x, int y, const char * format, ...)
+int32_t _CDECL_ GrUPrintf (int32_t x, int32_t y, const char * format, ...)
 {
 	char buffer[1000];
 	va_list args;
@@ -772,7 +772,7 @@ return GrUString (x, y, buffer);
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ GrPrintF (int *idP, int x, int y, const char * format, ...)
+int32_t _CDECL_ GrPrintF (int32_t *idP, int32_t x, int32_t y, const char * format, ...)
 {
 	static char buffer [1000];
 	va_list args;
@@ -786,12 +786,12 @@ return GrString (x, y, buffer, idP);
 
 #if 0
 
-int GrInternalStringClipped (int x, int y, const char *s)
+int32_t GrInternalStringClipped (int32_t x, int32_t y, const char *s)
 {
-	ubyte * fp;
+	uint8_t * fp;
 	const char * textP, * nextRowP, * text_ptr1;
-	int r, mask, i, bits, width, spacing, letter, underline;
-	int x1 = x, last_x;
+	int32_t r, mask, i, bits, width, spacing, letter, underline;
+	int32_t x1 = x, last_x;
 	tFont font;
 
 fontManager.Current ()->GetInfo (font);
@@ -886,12 +886,12 @@ return 0;
 
 #if 0
 
-int GrInternalStringClippedM (int x, int y, const char *s)
+int32_t GrInternalStringClippedM (int32_t x, int32_t y, const char *s)
 {
-	ubyte * fp;
+	uint8_t * fp;
 	const char * textP, * nextRowP, * text_ptr1;
-	int r, mask, i, bits, width, spacing, letter, underline;
-	int x1 = x, last_x;
+	int32_t r, mask, i, bits, width, spacing, letter, underline;
+	int32_t x1 = x, last_x;
 	tFont font;
 
 fontManager.Current ()->GetInfo (font);
@@ -983,9 +983,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 // Returns the length of the first 'n' characters of a string.
-int StringWidth (char * s, int n)
+int32_t StringWidth (char * s, int32_t n)
 {
-	int w, h, aw;
+	int32_t w, h, aw;
 	char p = s [n];
 
 if (n)
@@ -998,7 +998,7 @@ return w;
 
 //------------------------------------------------------------------------------
 
-int CenteredStringPos (char* s)
+int32_t CenteredStringPos (char* s)
 {
 return (CCanvas::Current ()->Width () - StringWidth (s)) / 2;
 }
@@ -1006,17 +1006,17 @@ return (CCanvas::Current ()->Width () - StringWidth (s)) / 2;
 //------------------------------------------------------------------------------
 // Draw string 's' centered on a canvas... if wider than
 // canvas, then wrap it.
-void DrawCenteredText (int y, char * s)
+void DrawCenteredText (int32_t y, char * s)
 {
 	char	p;
-	int	i, l = (int) strlen (s);
+	int32_t	i, l = (int32_t) strlen (s);
 
 if (StringWidth (s, l) < CCanvas::Current ()->Width ()) {
 	GrString (0x8000, y, s);
 	return;
 	}
-int w = CCanvas::Current ()->Width () - 16;
-int h = CCanvas::Current ()->Font ()->Height () + 1;
+int32_t w = CCanvas::Current ()->Width () - 16;
+int32_t h = CCanvas::Current ()->Font ()->Height () + 1;
 for (i = 0; i < l; i++) {
 	if (StringWidth (s, i) > w) {
 		p = s [i];

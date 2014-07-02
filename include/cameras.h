@@ -16,10 +16,10 @@
 typedef struct tCamera {
 	CObject			obj;
 	CObject			*objP;
-	short				nId;
-	short				nSegment;
-	short				nSide;
-	ubyte				*screenBuf;
+	int16_t				nId;
+	int16_t				nSegment;
+	int16_t				nSide;
+	uint8_t				*screenBuf;
 	GLuint			glTexId;
 	time_t			nTimeout;
 	char				nType;
@@ -30,7 +30,7 @@ typedef struct tCamera {
 	char				bShadowMap;
 	char				bTeleport;
 	char				bMirror;
-	int				nWaitFrames;
+	int32_t				nWaitFrames;
 	tUVL				uvlList [4];
 	tTexCoord2f		texCoord [6];
 #if RENDER2TEXTURE == 1
@@ -53,17 +53,17 @@ class CCamera : public CCanvas {
 		CCamera () { Init (); };
 		~CCamera () { Destroy (); };
 		void Init (void);
-		int Render (void);
-		int Ready (time_t t);
+		int32_t Render (void);
+		int32_t Ready (time_t t);
 		void Reset (void);
 		void Rotate (void);
 		void Align (CSegFace *faceP, tUVL *uvlP, tTexCoord2f *texCoordP, CFloatVector3 *vertexP);
-		int Create (short nId, short srcSeg, short srcSide, short tgtSeg, short tgtSide, 
-						CObject *objP, int bShadowMap, int bTeleport);
-		void Setup (int nId, short srcSeg, short srcSide, short tgtSeg, short tgtSide, CObject *objP, int bTeleport);
+		int32_t Create (int16_t nId, int16_t srcSeg, int16_t srcSide, int16_t tgtSeg, int16_t tgtSide, 
+						CObject *objP, int32_t bShadowMap, int32_t bTeleport);
+		void Setup (int32_t nId, int16_t srcSeg, int16_t srcSide, int16_t tgtSeg, int16_t tgtSide, CObject *objP, int32_t bTeleport);
 		void Destroy (void);
-		int HaveBuffer (int bCheckTexture);
-		int HaveTexture (void);
+		int32_t HaveBuffer (int32_t bCheckTexture);
+		int32_t HaveTexture (void);
 		inline void ReAlign (void) { m_data.bAligned = 0; }
 		inline void SetVisible (char bVisible) { m_data.bVisible = bVisible; }
 		inline char GetVisible (void) { return m_data.bVisible; }
@@ -75,23 +75,23 @@ class CCamera : public CCanvas {
 		inline CObject* GetObject (void) { return m_data.objP; }
 		inline CFBO& FrameBuffer (void) { return m_data.fbo; } 
 		inline GLuint DrawBuffer (void) { return m_data.bShadowMap ? FrameBuffer ().DepthBuffer () : FrameBuffer ().ColorBuffer (); }
-		int EnableBuffer (void);
-		int DisableBuffer (bool bPrepare = true);
-		inline short Id (void) { return m_data.nId; }
+		int32_t EnableBuffer (void);
+		int32_t DisableBuffer (bool bPrepare = true);
+		inline int16_t Id (void) { return m_data.nId; }
 		inline char Type (void) { return m_data.nType; }
 
 	private:
-		int CreateBuffer (void);
-		int BindBuffer (void);
-		int ReleaseBuffer (void);
-		int DestroyBuffer (void);
+		int32_t CreateBuffer (void);
+		int32_t BindBuffer (void);
+		int32_t ReleaseBuffer (void);
+		int32_t DestroyBuffer (void);
 	};
 
 //------------------------------------------------------------------------------
 
 typedef struct tShadowMapInfo {
 	public:
-		int			nCamera;
+		int32_t			nCamera;
 		CDynLight*	lightP;
 } tShadowMapInfo;
 
@@ -100,7 +100,7 @@ class CCameraManager {
 		CStack<CCamera>		m_cameras;
 		CCamera*					m_current;
 		CArray<char>			m_faceCameras;
-		CArray<ushort>			m_objectCameras;
+		CArray<uint16_t>			m_objectCameras;
 #if MAX_SHADOWMAPS < 0
 		CStaticArray<tShadowMapInfo, -MAX_SHADOWMAPS> m_shadowMaps;
 #elif MAX_SHADOWMAPS > 0
@@ -108,35 +108,35 @@ class CCameraManager {
 #endif
 
 	public:
-		int				m_fboType;
+		int32_t				m_fboType;
 
 	public:
 		CCameraManager () : m_current (NULL), m_objectCameras (0), m_fboType (1) {}
 		~CCameraManager ();
-		int Create ();
+		int32_t Create ();
 		void Destroy ();
-		int Render ();
+		int32_t Render ();
 		void Rotate (CObject *objP);
-		inline uint Count (void) { return m_cameras.Buffer () ? m_cameras.ToS () : 0; }
+		inline uint32_t Count (void) { return m_cameras.Buffer () ? m_cameras.ToS () : 0; }
 		inline CCamera* Cameras (void) { return m_cameras.Buffer (); }
-		//inline CCamera* Camera (short i = 0) { return Cameras () + i; }
-		inline int CurrentIndex (void) { return int (m_current - m_cameras.Buffer ()); }
+		//inline CCamera* Camera (int16_t i = 0) { return Cameras () + i; }
+		inline int32_t CurrentIndex (void) { return int32_t (m_current - m_cameras.Buffer ()); }
 		inline CCamera* Current (void) { return m_current; }
 		inline void SetCurrent (CCamera* cameraP) { m_current = cameraP; }
 		CCamera* Camera (CObject *objP);
-		inline int GetObjectCamera (int nObject);
-		inline void SetObjectCamera (int nObject, int i);
-		int GetFaceCamera (int nFace);
+		inline int32_t GetObjectCamera (int32_t nObject);
+		inline void SetObjectCamera (int32_t nObject, int32_t i);
+		int32_t GetFaceCamera (int32_t nFace);
 		void ReAlign (void);
-		inline void SetFaceCamera (int nFace, int i);
-		inline int Index (CCamera* cameraP) { return m_cameras.Buffer () ? int (cameraP - m_cameras.Buffer ()) : -1; }
+		inline void SetFaceCamera (int32_t nFace, int32_t i);
+		inline int32_t Index (CCamera* cameraP) { return m_cameras.Buffer () ? int32_t (cameraP - m_cameras.Buffer ()) : -1; }
 		inline CCamera* Add (void) { return ((m_cameras.Buffer () || Create ()) && m_cameras.Grow ()) ? m_cameras.Top () : NULL; }
-		inline CCamera* operator[] (uint i) { return (i < m_cameras.ToS ()) ? &m_cameras [i] : NULL; }
+		inline CCamera* operator[] (uint32_t i) { return (i < m_cameras.ToS ()) ? &m_cameras [i] : NULL; }
 
 #if MAX_SHADOWMAPS
-		inline CCamera* ShadowMap (int i) { return (m_shadowMaps [i].nCamera < 0) ? NULL : (*this) [i]; }
-		inline CDynLight* ShadowLightSource (int i) { return (m_shadowMaps [i].nCamera < 0) ? NULL : m_shadowMaps [i].lightP; }
-		inline CCamera* AddShadowMap (int i, CDynLight* lightP) { 
+		inline CCamera* ShadowMap (int32_t i) { return (m_shadowMaps [i].nCamera < 0) ? NULL : (*this) [i]; }
+		inline CDynLight* ShadowLightSource (int32_t i) { return (m_shadowMaps [i].nCamera < 0) ? NULL : m_shadowMaps [i].lightP; }
+		inline CCamera* AddShadowMap (int32_t i, CDynLight* lightP) { 
 			CCamera* cameraP = Add ();
 			if (!cameraP)
 				return NULL;
@@ -144,7 +144,7 @@ class CCameraManager {
 			m_shadowMaps [i].lightP = lightP;
 			return cameraP;
 			}
-		inline void DestroyShadowMap (int i) {
+		inline void DestroyShadowMap (int32_t i) {
 			CCamera* cameraP = ShadowMap (i);
 			if (cameraP) {
 				cameraP->Destroy ();

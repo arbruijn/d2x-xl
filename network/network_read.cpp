@@ -37,19 +37,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "console.h"
 
 #if DBG
-int VerifyObjLists (int nObject = -1);
+int32_t VerifyObjLists (int32_t nObject = -1);
 #endif
 
 //------------------------------------------------------------------------------
 
-void NetworkReadEndLevelPacket (ubyte *dataP)
+void NetworkReadEndLevelPacket (uint8_t *dataP)
 {
 	// Special packet for end of level syncing
-	int				nPlayer;
+	int32_t				nPlayer;
 	CEndLevelInfo	eli (reinterpret_cast<tEndLevelInfo*> (dataP));
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	int i, j;
+	int32_t i, j;
 
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
@@ -68,7 +68,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && (eli.Connected () != 0)) {
 	return; // Only accept disconnect packets if we're not out of the level yet
 	}
 CONNECT (nPlayer, eli.Connected ());
-memcpy (&gameData.multigame.score.matrix [nPlayer][0], eli.ScoreMatrix (), MAX_NUM_NET_PLAYERS * sizeof (short));
+memcpy (&gameData.multigame.score.matrix [nPlayer][0], eli.ScoreMatrix (), MAX_NUM_NET_PLAYERS * sizeof (int16_t));
 gameData.multiplayer.players [nPlayer].netKillsTotal = *eli.Kills ();
 gameData.multiplayer.players [nPlayer].netKilledTotal = *eli.Killed ();
 if ((gameData.multiplayer.players [nPlayer].connected == 1) && (*eli.SecondsLeft () < gameData.reactor.countdown.nSecsLeft))
@@ -78,11 +78,11 @@ ResetPlayerTimeout (nPlayer, -1);
 
 //------------------------------------------------------------------------------
 
-void NetworkReadEndLevelShortPacket (ubyte *dataP)
+void NetworkReadEndLevelShortPacket (uint8_t *dataP)
 {
 	// Special packet for end of level syncing
 
-	int						nPlayer;
+	int32_t						nPlayer;
 	tEndLevelInfoShort*	eli;
 
 #if 0 //DBG
@@ -109,14 +109,14 @@ ResetPlayerTimeout (nPlayer, -1);
 
 //------------------------------------------------------------------------------
 
-int SetLocalPlayer (CAllNetPlayersInfo* playerInfoP, int nPlayers, int nDefault)
+int32_t SetLocalPlayer (CAllNetPlayersInfo* playerInfoP, int32_t nPlayers, int32_t nDefault)
 {
 	tNetPlayerInfo*	playerP = playerInfoP->m_info.players;
 	char					szLocalCallSign [CALLSIGN_LEN+1];
-	int					nLocalPlayer = -1;
+	int32_t					nLocalPlayer = -1;
 
 memcpy (szLocalCallSign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
-for (int i = 0; i < nPlayers; i++, playerP++) {
+for (int32_t i = 0; i < nPlayers; i++, playerP++) {
 	if (!CmpLocalPlayer (&playerP->network, playerP->callsign, szLocalCallSign)) {
 		if (nLocalPlayer != -1) {
 			InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_DUPLICATE_PLAYERS);
@@ -132,15 +132,15 @@ return N_LOCALPLAYER = ((nLocalPlayer < 0) ? nDefault : nLocalPlayer);
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessSyncPacket (CNetGameInfo * netGameInfoP, int rsinit)
+void NetworkProcessSyncPacket (CNetGameInfo * netGameInfoP, int32_t rsinit)
 {
-	int					i, j;
+	int32_t					i, j;
 	tNetPlayerInfo*	playerP;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	CNetGameInfo		tmp_info;
 
 if ((gameStates.multi.nGameType >= IPX_GAME) && (netGameInfoP != &netGame)) { // for macintosh -- get the values unpacked to our structure format
-	ReceiveFullNetGamePacket (reinterpret_cast<ubyte*> (netGameInfoP), &tmp_info);
+	ReceiveFullNetGamePacket (reinterpret_cast<uint8_t*> (netGameInfoP), &tmp_info);
 	netGameInfoP = &tmp_info;
 	}
 #endif
@@ -150,9 +150,9 @@ if (rsinit)
 	// This function is now called by all people entering the netgame.
 if (netGameInfoP != &netGame) {
 	char *p = reinterpret_cast<char*> (netGameInfoP);
-	int i, j = (int) netGame.Size () - 1, s;
+	int32_t i, j = (int32_t) netGame.Size () - 1, s;
 	for (i = 0; i < j; i++, p++) {
-		s = *reinterpret_cast<ushort*> (p);
+		s = *reinterpret_cast<uint16_t*> (p);
 		if (s == networkData.nSegmentCheckSum) {
 			break;
 			}
@@ -176,7 +176,7 @@ if (netGame.GetSegmentCheckSum () != networkData.nSegmentCheckSum) {
 	if (extraGameInfo [0].bAutoDownload)
 		networkData.nStatus = NETSTAT_AUTODL;
 	else {
-		short nInMenu = gameStates.menus.nInMenu;
+		int16_t nInMenu = gameStates.menus.nInMenu;
 		gameStates.menus.nInMenu = 0;
 		networkData.nStatus = NETSTAT_MENU;
 		InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_NETLEVEL_MISMATCH);
@@ -203,11 +203,11 @@ for (i = 0, playerP = playerInfoP->m_info.players; i < gameData.multiplayer.nPla
 	memcpy (gameData.multiplayer.players [i].callsign, playerP->callsign, CALLSIGN_LEN+1);
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 #ifdef WORDS_NEED_ALIGNMENT
-		uint server;
+		uint32_t server;
 		memcpy (&server, playerP->network.Network (), 4);
 		if (server != 0)
 			IpxGetLocalTarget (
-				reinterpret_cast<ubyte*> (&server),
+				reinterpret_cast<uint8_t*> (&server),
 				playerInfoP->m_info.players [i].network.Node (),
 				gameData.multiplayer.players [i].netAddress);
 #else // WORDS_NEED_ALIGNMENT
@@ -248,7 +248,7 @@ CONNECT (N_LOCALPLAYER, CONNECT_PLAYING);
 netPlayers [0].m_info.players [N_LOCALPLAYER].connected = CONNECT_PLAYING;
 netPlayers [0].m_info.players [N_LOCALPLAYER].rank = GetMyNetRanking ();
 if (!networkData.nJoinState) {
-	int	j, bGotTeamSpawnPos = (IsTeamGame) && GotTeamSpawnPos ();
+	int32_t	j, bGotTeamSpawnPos = (IsTeamGame) && GotTeamSpawnPos ();
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 		if (bGotTeamSpawnPos) {
 			j = TeamSpawnPos (i);
@@ -281,7 +281,7 @@ MultiSortKillList ();
 
 //------------------------------------------------------------------------------
 
-void NetworkTrackPackets (int nPlayer, int nPackets)
+void NetworkTrackPackets (int32_t nPlayer, int32_t nPackets)
 {
 	CPlayerData*	playerP = gameData.multiplayer.players + nPlayer;
 
@@ -320,8 +320,8 @@ if  (nPackets != playerP->nPacketsGot) {
 
 void NetworkReadPDataLongPacket (tFrameInfoLong *pd)
 {
-	int		nPlayer;
-	int		theirObjNum;
+	int32_t		nPlayer;
+	int32_t		theirObjNum;
 	CObject* objP = NULL;
 
 // tFrameInfoLong should be aligned...for mac, make the necessary adjustments
@@ -331,21 +331,21 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	pd->objPos.dir.coord.x = INTEL_INT (pd->objPos.dir.coord.x);
 	pd->objPos.dir.coord.y = INTEL_INT (pd->objPos.dir.coord.y);
 	pd->objPos.dir.coord.z = INTEL_INT (pd->objPos.dir.coord.z);
-	pd->objOrient.mat.dir.r.dir.coord.x = (fix)INTEL_INT ((int)pd->objOrient.mat.dir.r.dir.coord.x);
-	pd->objOrient.mat.dir.r.dir.coord.y = (fix)INTEL_INT ((int)pd->objOrient.mat.dir.r.dir.coord.y);
-	pd->objOrient.mat.dir.r.dir.coord.z = (fix)INTEL_INT ((int)pd->objOrient.mat.dir.r.dir.coord.z);
-	pd->objOrient.mat.dir.u.dir.coord.x = (fix)INTEL_INT ((int)pd->objOrient.mat.dir.u.dir.coord.x);
-	pd->objOrient.mat.dir.u.dir.coord.y = (fix)INTEL_INT ((int)pd->objOrient.mat.dir.u.dir.coord.y);
-	pd->objOrient.mat.dir.u.dir.coord.z = (fix)INTEL_INT ((int)pd->objOrient.mat.dir.u.dir.coord.z);
-	pd->objOrient.mat.dir.f.dir.coord.x = (fix)INTEL_INT ((int)pd->objOrient.mat.dir.f.dir.coord.x);
-	pd->objOrient.mat.dir.f.dir.coord.y = (fix)INTEL_INT ((int)pd->objOrient.mat.dir.f.dir.coord.y);
-	pd->objOrient.mat.dir.f.dir.coord.z = (fix)INTEL_INT ((int)pd->objOrient.mat.dir.f.dir.coord.z);
-	pd->physVelocity.dir.coord.x = (fix)INTEL_INT ((int)pd->physVelocity.dir.coord.x);
-	pd->physVelocity.dir.coord.y = (fix)INTEL_INT ((int)pd->physVelocity.dir.coord.y);
-	pd->physVelocity.dir.coord.z = (fix)INTEL_INT ((int)pd->physVelocity.dir.coord.z);
-	pd->physRotVel.dir.coord.x = (fix)INTEL_INT ((int)pd->physRotVel.dir.coord.x);
-	pd->physRotVel.dir.coord.y = (fix)INTEL_INT ((int)pd->physRotVel.dir.coord.y);
-	pd->physRotVel.dir.coord.z = (fix)INTEL_INT ((int)pd->physRotVel.dir.coord.z);
+	pd->objOrient.mat.dir.r.dir.coord.x = (fix)INTEL_INT ((int32_t)pd->objOrient.mat.dir.r.dir.coord.x);
+	pd->objOrient.mat.dir.r.dir.coord.y = (fix)INTEL_INT ((int32_t)pd->objOrient.mat.dir.r.dir.coord.y);
+	pd->objOrient.mat.dir.r.dir.coord.z = (fix)INTEL_INT ((int32_t)pd->objOrient.mat.dir.r.dir.coord.z);
+	pd->objOrient.mat.dir.u.dir.coord.x = (fix)INTEL_INT ((int32_t)pd->objOrient.mat.dir.u.dir.coord.x);
+	pd->objOrient.mat.dir.u.dir.coord.y = (fix)INTEL_INT ((int32_t)pd->objOrient.mat.dir.u.dir.coord.y);
+	pd->objOrient.mat.dir.u.dir.coord.z = (fix)INTEL_INT ((int32_t)pd->objOrient.mat.dir.u.dir.coord.z);
+	pd->objOrient.mat.dir.f.dir.coord.x = (fix)INTEL_INT ((int32_t)pd->objOrient.mat.dir.f.dir.coord.x);
+	pd->objOrient.mat.dir.f.dir.coord.y = (fix)INTEL_INT ((int32_t)pd->objOrient.mat.dir.f.dir.coord.y);
+	pd->objOrient.mat.dir.f.dir.coord.z = (fix)INTEL_INT ((int32_t)pd->objOrient.mat.dir.f.dir.coord.z);
+	pd->physVelocity.dir.coord.x = (fix)INTEL_INT ((int32_t)pd->physVelocity.dir.coord.x);
+	pd->physVelocity.dir.coord.y = (fix)INTEL_INT ((int32_t)pd->physVelocity.dir.coord.y);
+	pd->physVelocity.dir.coord.z = (fix)INTEL_INT ((int32_t)pd->physVelocity.dir.coord.z);
+	pd->physRotVel.dir.coord.x = (fix)INTEL_INT ((int32_t)pd->physRotVel.dir.coord.x);
+	pd->physRotVel.dir.coord.y = (fix)INTEL_INT ((int32_t)pd->physRotVel.dir.coord.y);
+	pd->physRotVel.dir.coord.z = (fix)INTEL_INT ((int32_t)pd->physRotVel.dir.coord.z);
 	pd->nObjSeg = INTEL_SHORT (pd->nObjSeg);
 	pd->dataSize = INTEL_SHORT (pd->dataSize);
 	}
@@ -368,7 +368,7 @@ if (!gameData.multigame.bQuitGame && (nPlayer >= gameData.multiplayer.nPlayers))
 	}
 
 if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL)) {
-	int oldEndlevelSequence = gameStates.app.bEndLevelSequence;
+	int32_t oldEndlevelSequence = gameStates.app.bEndLevelSequence;
 	gameStates.app.bEndLevelSequence = 1;
 	if (pd->dataSize > 0)
 		// pass pd->data to some parser function....
@@ -377,7 +377,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	return;
 	}
 gameData.multiplayer.players [pd->nPlayer].m_nLevel = pd->nLevel;
-if ((sbyte)pd->nLevel != missionManager.nCurrentLevel) {
+if ((int8_t)pd->nLevel != missionManager.nCurrentLevel) {
 #if 1
 	console.printf (CON_DBG, "Got frame packet from CPlayerData %d wrong level %d!\n", pd->nPlayer, pd->nLevel);
 #endif
@@ -425,9 +425,9 @@ if (pd->dataSize > 0)
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 
-void GetShortFrameInfo (ubyte *old_info, tFrameInfoShort *new_info)
+void GetShortFrameInfo (uint8_t *old_info, tFrameInfoShort *new_info)
 {
-	int m_bufI = 0;
+	int32_t m_bufI = 0;
 
 NW_GET_BYTE (old_info, m_bufI, new_info->nType);
 /* skip three for pad byte */
@@ -458,18 +458,18 @@ NW_GET_BYTES (old_info, m_bufI, new_info->data, new_info->dataSize);
 
 void NetworkReadPDataShortPacket (tFrameInfoShort *pd)
 {
-	int nPlayer;
-	int nObject;
+	int32_t nPlayer;
+	int32_t nObject;
 	CObject * objP = NULL;
 
-// short frame info is not aligned because of tShortPos.  The mac
+// int16_t frame info is not aligned because of tShortPos.  The mac
 // will call totally hacked and gross function to fix this up.
 #if 0
 tFrameInfoShort new_pd;
 if (gameStates.multi.nGameType >= IPX_GAME)
-	GetShortFrameInfo (reinterpret_cast<ubyte*> (pd), &new_pd);
+	GetShortFrameInfo (reinterpret_cast<uint8_t*> (pd), &new_pd);
 else
-	memcpy (&new_pd, reinterpret_cast<ubyte*> (pd), sizeof (tFrameInfoShort));
+	memcpy (&new_pd, reinterpret_cast<uint8_t*> (pd), sizeof (tFrameInfoShort));
 #endif
 
 nPlayer = pd->nPlayer;
@@ -491,7 +491,7 @@ if ((networkData.sync [0].nPlayer != -1) && (nPlayer == networkData.sync [0].nPl
 	}
 
 if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL)) {
-	int oldEndlevelSequence = gameStates.app.bEndLevelSequence;
+	int32_t oldEndlevelSequence = gameStates.app.bEndLevelSequence;
 	gameStates.app.bEndLevelSequence = 1;
 	if (pd->dataSize > 0) {
 		// pass pd->data to some parser function....
@@ -501,7 +501,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	return;
 	}
 gameData.multiplayer.players [pd->nPlayer].m_nLevel = pd->nLevel;
-if ((sbyte) pd->nLevel != missionManager.nCurrentLevel) {
+if ((int8_t) pd->nLevel != missionManager.nCurrentLevel) {
 #if 1
 	console.printf (CON_DBG, "Got frame packet from player %d wrong level %d!\n", pd->nPlayer, pd->nLevel);
 #endif
@@ -543,10 +543,10 @@ if (pd->dataSize > 0) {
 
 //------------------------------------------------------------------------------
 
-int NetworkVerifyPlayers (void)
+int32_t NetworkVerifyPlayers (void)
 {
-	int				i, j, t, bCoop = IsCoopGame;
-	int				nPlayers, nPlayerObjs [MAX_PLAYERS];
+	int32_t				i, j, t, bCoop = IsCoopGame;
+	int32_t				nPlayers, nPlayerObjs [MAX_PLAYERS];
 	CObject*			objP;
 	CPlayerData*	playerP;
 
@@ -597,32 +597,32 @@ networkData.nStatus = NETSTAT_MENU;
 
 class CObjectSynchronizer {
 	private:
-		int		m_nPlayer;
-		sbyte		m_nObjOwner;
-		short		m_nLocalObj;
-		short		m_nRemoteObj;
-		ushort	m_nFrame;
-		int		m_nState;
-		int		m_bufI;
-		ubyte*	m_data;
+		int32_t		m_nPlayer;
+		int8_t		m_nObjOwner;
+		int16_t		m_nLocalObj;
+		int16_t		m_nRemoteObj;
+		uint16_t	m_nFrame;
+		int32_t		m_nState;
+		int32_t		m_bufI;
+		uint8_t*	m_data;
 
 	public:
-		int Run (ubyte* dataP);
+		int32_t Run (uint8_t* dataP);
 
 	private:
 		void Abort (void);
 		void RequestResync (void);
-		int CompareFrames (void);
-		int ValidateFrame (void);
-		int Start (void);
-		int Finish (void);
-		int Sync (void);
-		int Validate (void);
+		int32_t CompareFrames (void);
+		int32_t ValidateFrame (void);
+		int32_t Start (void);
+		int32_t Finish (void);
+		int32_t Sync (void);
+		int32_t Validate (void);
 };
 
 CObjectSynchronizer objectSynchronizer;
 
-bool ObjectIsLinked (CObject *objP, short nSegment);
+bool ObjectIsLinked (CObject *objP, int16_t nSegment);
 void ResetSyncTimeout (bool bInit = false);
 
 //------------------------------------------------------------------------------
@@ -642,7 +642,7 @@ networkData.nJoinState = 2;
 
 //------------------------------------------------------------------------------
 
-int CObjectSynchronizer::CompareFrames (void)
+int32_t CObjectSynchronizer::CompareFrames (void)
 {
 if (networkData.nPrevFrame == m_nFrame - 1)
 	return 1;
@@ -663,7 +663,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int CObjectSynchronizer::ValidateFrame (void)
+int32_t CObjectSynchronizer::ValidateFrame (void)
 {
 networkData.nPrevFrame = networkData.sync [0].objs.nFrame;
 if (gameStates.multi.nGameType == UDP_GAME) {
@@ -674,7 +674,7 @@ else {
 	m_nFrame = m_data [2];
 	m_bufI = 3;
 	}
-int syncRes = CompareFrames ();
+int32_t syncRes = CompareFrames ();
 if (syncRes < 0) {
 	if (!syncRes) 
 		networkData.toSyncPoll.Start (0);
@@ -687,7 +687,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CObjectSynchronizer::Start (void)
+int32_t CObjectSynchronizer::Start (void)
 {
 if ((m_nLocalObj != -1) && (m_nLocalObj != -3))
 	return 0;
@@ -717,14 +717,14 @@ return 1;
 //------------------------------------------------------------------------------
 // If the client is missing 10 or more objects, reject the sync data
 
-int CObjectSynchronizer::Validate (void)
+int32_t CObjectSynchronizer::Validate (void)
 {
 return abs (m_nRemoteObj - gameData.objs.nObjects) > 10;
 }
 
 //------------------------------------------------------------------------------
 
-int CObjectSynchronizer::Finish (void)
+int32_t CObjectSynchronizer::Finish (void)
 {
 if (m_nLocalObj != -2) 
 	return 0;
@@ -749,7 +749,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CObjectSynchronizer::Sync (void)
+int32_t CObjectSynchronizer::Sync (void)
 {
 if (networkData.nJoinState != 1)
 	return 0;
@@ -778,7 +778,7 @@ if (objP->info.nType != OBJ_NONE) {
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		SwapObject (objP);
 #endif
-	int nSegment = objP->info.nSegment;
+	int32_t nSegment = objP->info.nSegment;
 	PrintLog (0, "receiving object %d (type: %d, segment: %d)\n", m_nLocalObj, objP->info.nType, nSegment);
 	objP->ResetSgmLinks ();
 	objP->ResetLinks ();
@@ -824,17 +824,17 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CObjectSynchronizer::Run (ubyte* dataP)
+int32_t CObjectSynchronizer::Run (uint8_t* dataP)
 {
 m_data = dataP;
 
-int syncRes = ValidateFrame ();
+int32_t syncRes = ValidateFrame ();
 if (syncRes < 1)
 	return syncRes;
 
-int nObjects = m_data [1];
+int32_t nObjects = m_data [1];
 
-for (int i = 0; (i < nObjects) && (syncRes > -1); i++) {
+for (int32_t i = 0; (i < nObjects) && (syncRes > -1); i++) {
 #if DBG
 	VerifyObjLists (LOCALPLAYER.nObject);
 #endif
@@ -852,7 +852,7 @@ return syncRes;
 
 //------------------------------------------------------------------------------
 
-void NetworkReadObjectPacket (ubyte* dataP)
+void NetworkReadObjectPacket (uint8_t* dataP)
 {
 objectSynchronizer.Run (dataP);
 }

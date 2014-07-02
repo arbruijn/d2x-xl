@@ -21,19 +21,19 @@
 #include "mono.h"
 #include "error.h"
 
-int _CDECL_ Fail (const char *fmt, ...);
-ubyte *QueryHost(char *buf);
+int32_t _CDECL_ Fail (const char *fmt, ...);
+uint8_t *QueryHost(char *buf);
 
 #define FAIL	return Fail
 
 //------------------------------------------------------------------------------
 
-static int ipx_win_GetMyAddress( void )
+static int32_t ipx_win_GetMyAddress( void )
 {
 #if 1
 #	if 0
 	char buf[256];
-	ubyte *qhbuf;
+	uint8_t *qhbuf;
 
 if (gethostname(buf,sizeof(buf))) 
 	FAIL("Error getting my hostname");
@@ -43,11 +43,11 @@ if (!(qhbuf = QueryHost(buf)))
 	memcpy(ipx_MyAddress+4,qhbuf,6);
 #	endif
 #else
-  int sock;
+  int32_t sock;
   struct sockaddr_ipx ipxs;
   struct sockaddr_ipx ipxs2;
-  int len;
-  int i;
+  int32_t len;
+  int32_t i;
   
 //  sock=socket(AF_IPX,SOCK_DGRAM,PF_IPX);
   sock=socket(AF_IPX,SOCK_DGRAM,0);
@@ -91,7 +91,7 @@ if (!(qhbuf = QueryHost(buf)))
   for (i = 0; i < 6; i++) {
     ipx_MyAddress[4+i] = ipxs2.sa_nodenum[i];
   }
-/*printf("My address is 0x%.4X:%.2X.%.2X.%.2X.%.2X.%.2X.%.2X\n", *reinterpret_cast<int*> (ipxs2.sa_netnum), ipxs2.sa_nodenum[0],
+/*printf("My address is 0x%.4X:%.2X.%.2X.%.2X.%.2X.%.2X.%.2X\n", *reinterpret_cast<int32_t*> (ipxs2.sa_netnum), ipxs2.sa_nodenum[0],
   ipxs2.sa_nodenum[1], ipxs2.sa_nodenum[2], ipxs2.sa_nodenum[3], ipxs2.sa_nodenum[4], ipxs2.sa_nodenum[5]);
 */
     closesocket( sock );
@@ -101,12 +101,12 @@ if (!(qhbuf = QueryHost(buf)))
 
 //------------------------------------------------------------------------------
 
-static int ipx_win_OpenSocket(ipx_socket_t *sk, int port)
+static int32_t ipx_win_OpenSocket(ipx_socket_t *sk, int32_t port)
 {
-  int sock;			/* sock here means Linux socket handle */
-  int opt;
+  int32_t sock;			/* sock here means Linux socket handle */
+  int32_t opt;
   struct sockaddr_ipx ipxs;
-  int len;
+  int32_t len;
   struct sockaddr_ipx ipxs2;
 
   /* DANG_FIXTHIS - kludge to support broken linux IPX stack */
@@ -121,7 +121,7 @@ static int ipx_win_OpenSocket(ipx_socket_t *sk, int port)
   /* do a socket call, then bind to this port */
 //  sock = socket(AF_IPX, SOCK_DGRAM, PF_IPX);
 //  sock = socket(AF_IPX, SOCK_DGRAM, 0);
-sock = (int) socket(AF_IPX, SOCK_DGRAM, NSPROTO_IPX);//why NSPROTO_IPX?  I looked in the quake source and thats what they used. :) -MPM  (on w2k 0 and PF_IPX don't work)
+sock = (int32_t) socket(AF_IPX, SOCK_DGRAM, NSPROTO_IPX);//why NSPROTO_IPX?  I looked in the quake source and thats what they used. :) -MPM  (on w2k 0 and PF_IPX don't work)
 if (sock == -1) {
 	PrintLog (0, "IPX: could not open IPX socket.\n");
 	return -1;
@@ -137,7 +137,7 @@ if (setsockopt (sock, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<const char*> (&
 ipxs.sa_family = AF_IPX;
 memcpy(ipxs.sa_netnum, ipx_MyAddress, 4);
 memset(ipxs.sa_nodenum, 0, 6);
-ipxs.sa_socket = htons((short)port);
+ipxs.sa_socket = htons((int16_t)port);
 
 /* now bind to this port */
 if (bind (sock, reinterpret_cast<struct sockaddr*> (&ipxs), sizeof(ipxs)) == -1) {
@@ -159,7 +159,7 @@ if (port == 0) {
 
 memcpy (ipx_MyAddress, ipxs2.sa_netnum, 4);
 memcpy (ipx_MyAddress + 4, ipxs2.sa_nodenum, 6);
-sk->fd = (int) sock;
+sk->fd = (int32_t) sock;
 sk->socket = port;
 return 0;
 }
@@ -176,7 +176,7 @@ closesocket (mysock->fd);
 
 //------------------------------------------------------------------------------
 
-static int ipx_win_SendPacket (ipx_socket_t *mysock, IPXPacket_t *IPXHeader, ubyte *data, int dataLen) 
+static int32_t ipx_win_SendPacket (ipx_socket_t *mysock, IPXPacket_t *IPXHeader, uint8_t *data, int32_t dataLen) 
 {
   struct sockaddr_ipx ipxs;
  
@@ -184,8 +184,8 @@ ipxs.sa_family = AF_IPX;
 /* get destination address from IPX packet header */
 memcpy(&ipxs.sa_netnum, IPXHeader->Destination.Network, 4);
 /* if destination address is 0, then send to my net */
-if (*reinterpret_cast<uint*> (&ipxs.sa_netnum) == 0) {
- *reinterpret_cast<uint*> (&ipxs.sa_netnum) = *reinterpret_cast<uint*> (&ipx_MyAddress[0]);
+if (*reinterpret_cast<uint32_t*> (&ipxs.sa_netnum) == 0) {
+ *reinterpret_cast<uint32_t*> (&ipxs.sa_netnum) = *reinterpret_cast<uint32_t*> (&ipx_MyAddress[0]);
 }
 memcpy (&ipxs.sa_nodenum, IPXHeader->Destination.Node, 6);
 memcpy (&ipxs.sa_socket, IPXHeader->Destination.Socket, 2);
@@ -195,12 +195,12 @@ return sendto (mysock->fd, reinterpret_cast<const char*> (data), dataLen, 0,
 
 //------------------------------------------------------------------------------
 
-static int ipx_win_ReceivePacket (ipx_socket_t *s, ubyte *buffer, int bufsize, CPacketOrigin *rd) 
+static int32_t ipx_win_ReceivePacket (ipx_socket_t *s, uint8_t *buffer, int32_t bufsize, CPacketOrigin *rd) 
 {
 	struct sockaddr_ipx ipxs;
  
-int sz = sizeof(ipxs);
-int size = recvfrom (s->fd, reinterpret_cast<char*> (buffer), bufsize, 0,  reinterpret_cast<struct sockaddr*> (&ipxs), &sz);
+int32_t sz = sizeof(ipxs);
+int32_t size = recvfrom (s->fd, reinterpret_cast<char*> (buffer), bufsize, 0,  reinterpret_cast<struct sockaddr*> (&ipxs), &sz);
 if (size <= 0)
    return size;
 rd->SetNetwork (ipxs.sa_netnum);

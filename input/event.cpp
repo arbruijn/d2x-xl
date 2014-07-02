@@ -34,9 +34,9 @@ extern void JoyHatHandler (SDL_JoyHatEvent *jhe);
 extern void JoyAxisHandler (SDL_JoyAxisEvent *jae);
 #endif
 
-static int initialised=0;
+static int32_t initialised=0;
 
-int PollEvent (SDL_Event *event, uint mask)
+int32_t PollEvent (SDL_Event *event, uint32_t mask)
 {
 	SDL_PumpEvents();
 	/* We can't return -1, just return 0 (no event) on error */
@@ -44,7 +44,7 @@ int PollEvent (SDL_Event *event, uint mask)
 }
 
 
-void event_poll(uint mask)
+void event_poll(uint32_t mask)
 {
 	SDL_Event event;
 #if TO_EVENT_POLL
@@ -95,7 +95,7 @@ while (SDL_PollEvent (&event)) {
 	}
 }
 
-int event_init()
+int32_t event_init()
 {
 	// We should now be active and responding to events.
 	initialised = 1;

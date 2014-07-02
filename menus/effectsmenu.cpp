@@ -61,7 +61,7 @@ void SmokeDetailsMenu (void);
 
 //------------------------------------------------------------------------------
 
-static int nShadows, nCoronas, nLightTrails;
+static int32_t nShadows, nCoronas, nLightTrails;
 
 static const char* pszExplShrapnels [5];
 static const char* pszNoneBasicFull [3];
@@ -71,13 +71,13 @@ static const char* pszOffFastFull [3];
 static const char* pszOffOn [2];
 static const char* pszThrusters [3];
 
-int EffectOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t EffectOptionsCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
 	CMenuItem	*m;
-	int			v;
+	int32_t			v;
 
 if ((m = menu ["shockwaves"])) {
 	v = m->Value ();
@@ -139,7 +139,7 @@ if ((m = menu ["lightning"])) {
 	v = m->Value ();
 	if (extraGameInfo [0].bUseLightning != v) {
 		extraGameInfo [0].bUseLightning = v;
-		sprintf (m->m_text, TXT_LIGHTNING, pszNoneBasicFull [int (extraGameInfo [0].bUseLightning)]);
+		sprintf (m->m_text, TXT_LIGHTNING, pszNoneBasicFull [int32_t (extraGameInfo [0].bUseLightning)]);
 		m->m_bRebuild = -1;
 		}
 	}
@@ -212,12 +212,12 @@ static const char* softParticleIds [] = {"soft sprites", "soft sparks", "soft sm
 
 void EffectOptionsMenu (void)
 {
-	static int choice = 0;
+	static int32_t choice = 0;
 
 	CMenu	m;
-	int	i, j;
+	int32_t	i, j;
 #if 0
-	int	optShockwaves;
+	int32_t	optShockwaves;
 #endif
 	char	szSlider [50];
 
@@ -248,7 +248,7 @@ do {
 		m.AddSlider ("coronas", szSlider + 1, nCoronas, 0, 1, KEY_O, HTX_CORONAS);
 		}
 
-	sprintf (szSlider + 1, TXT_LIGHTNING, pszNoneBasicFull [int (extraGameInfo [0].bUseLightning)]);
+	sprintf (szSlider + 1, TXT_LIGHTNING, pszNoneBasicFull [int32_t (extraGameInfo [0].bUseLightning)]);
 	*szSlider = *(TXT_LIGHTNING - 1);
 	m.AddSlider ("lightning", szSlider + 1, extraGameInfo [0].bUseLightning, 0, 2, KEY_L, HTX_LIGHTNING);
 	sprintf (szSlider + 1, TXT_EFFECTS_GLOW, pszOffFastFull [gameOpts->render.effects.bGlow]);
@@ -268,7 +268,7 @@ do {
 	*szSlider = *(TXT_LIGHTTRAIL_QUAL - 1);
 	m.AddSlider ("light trails", szSlider + 1, nLightTrails, 0, 1 + extraGameInfo [0].bUseParticles, KEY_T, HTX_LIGHTTRAIL_QUAL);
 
-	sprintf (szSlider + 1, TXT_THRUSTER_FLAMES, pszThrusters [int (extraGameInfo [0].bThrusterFlames)]);
+	sprintf (szSlider + 1, TXT_THRUSTER_FLAMES, pszThrusters [int32_t (extraGameInfo [0].bThrusterFlames)]);
 	*szSlider = *(TXT_THRUSTER_FLAMES - 1);
 	m.AddSlider ("thrusters", szSlider + 1, extraGameInfo [0].bThrusterFlames, 0, 2, KEY_U, HTX_THRUSTER_FLAMES);
 

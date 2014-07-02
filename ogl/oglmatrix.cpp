@@ -28,7 +28,7 @@ if (det == 0.0)
 	return *this;
 
 det = 1.0 / det;
-for (int i = 0; i < 16; i++)
+for (int32_t i = 0; i < 16; i++)
 	im [i] *= det;
 return im;
 }

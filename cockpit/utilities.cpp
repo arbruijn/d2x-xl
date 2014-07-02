@@ -59,7 +59,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 char* CGenericCockpit::ftoa (char *pszVal, fix f)
 {
-	int decimal, fractional;
+	int32_t decimal, fractional;
 
 decimal = X2I (f);
 fractional = ((f & 0xffff) * 100) / 65536;
@@ -106,12 +106,12 @@ if (LOCALPLAYER.homingObjectDist >= 0) {
 
 //	-----------------------------------------------------------------------------
 
-void CGenericCockpit::CheckForExtraLife (int nPrevScore)
+void CGenericCockpit::CheckForExtraLife (int32_t nPrevScore)
 {
 if (LOCALPLAYER.score / EXTRA_SHIP_SCORE != nPrevScore / EXTRA_SHIP_SCORE) {
 	LOCALPLAYER.lives += LOCALPLAYER.score / EXTRA_SHIP_SCORE - nPrevScore / EXTRA_SHIP_SCORE;
 	PowerupBasic (20, 20, 20, 0, TXT_EXTRA_LIFE);
-	short nSound = gameData.objs.pwrUp.info [POW_EXTRA_LIFE].hitSound;
+	int16_t nSound = gameData.objs.pwrUp.info [POW_EXTRA_LIFE].hitSound;
 	if (nSound > -1)
 		audio.PlaySound (nSound);
 	}
@@ -119,9 +119,9 @@ if (LOCALPLAYER.score / EXTRA_SHIP_SCORE != nPrevScore / EXTRA_SHIP_SCORE) {
 
 //	-----------------------------------------------------------------------------
 
-void CGenericCockpit::AddPointsToScore (int points)
+void CGenericCockpit::AddPointsToScore (int32_t points)
 {
-	int nPrevScore;
+	int32_t nPrevScore;
 
 m_info.scoreTime += I2X (1) * 2;
 cockpit->AddScore (0, points);
@@ -144,9 +144,9 @@ if (!IsMultiGame)
 
 //	-----------------------------------------------------------------------------
 
-void CGenericCockpit::AddBonusPointsToScore (int points)
+void CGenericCockpit::AddBonusPointsToScore (int32_t points)
 {
-	int nPrevScore;
+	int32_t nPrevScore;
 
 if (!points || gameStates.app.cheats.bEnabled)
 	return;
@@ -161,7 +161,7 @@ if (!IsMultiGame)
 //	-----------------------------------------------------------------------------
 
 #if DBG
-extern int bSavingMovieFrames;
+extern int32_t bSavingMovieFrames;
 #else
 #define bSavingMovieFrames 0
 #endif
@@ -176,7 +176,7 @@ return gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ();
 //	-----------------------------------------------------------------------------
 //returns true if viewerP can see CObject
 
-int CGenericCockpit::CanSeeObject (int nObject, int bCheckObjs)
+int32_t CGenericCockpit::CanSeeObject (int32_t nObject, int32_t bCheckObjs)
 {
 if (nObject < 0)
 	return 0;
@@ -192,7 +192,7 @@ if (nObject < 0)
 
 	CHitResult hitResult;
 
-int nHitType = FindHitpoint (hitQuery, hitResult);
+int32_t nHitType = FindHitpoint (hitQuery, hitResult);
 return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.nObject == nObject) : (nHitType != HIT_WALL);
 }
 
@@ -244,24 +244,24 @@ if (m_history [0].weapon [0] == 0)
 
 //------------------------------------------------------------------------------
 
-int CGenericCockpit::WidthPad (char* pszText)
+int32_t CGenericCockpit::WidthPad (char* pszText)
 {
-	int	w, h, aw;
+	int32_t	w, h, aw;
 
 fontManager.Current ()->StringSize (pszText, w, h, aw);
-return ((int) FRound (ScaleX (w) / fontManager.Scale ()) - w) / 2;
+return ((int32_t) FRound (ScaleX (w) / fontManager.Scale ()) - w) / 2;
 }
 
 //------------------------------------------------------------------------------
 
-int CGenericCockpit::HeightPad (void)
+int32_t CGenericCockpit::HeightPad (void)
 {
-return (int) FRound (m_info.heightPad / fontManager.Scale ());
+return (int32_t) FRound (m_info.heightPad / fontManager.Scale ());
 }
 
 //------------------------------------------------------------------------------
 
-int CGenericCockpit::WidthPad (int nValue)
+int32_t CGenericCockpit::WidthPad (int32_t nValue)
 {
 	char szValue [20];
 

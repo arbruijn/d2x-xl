@@ -50,22 +50,22 @@ CBitmap	bmInvItems [NUM_INV_ITEMS];
 CBitmap	bmObjTally [2];
 CBitmap	bmGaugeIcons [3];
 
-int bHaveInvBms = -1;
-int bHaveObjTallyBms = -1;
-int bHaveGaugeBms = -1;
+int32_t bHaveInvBms = -1;
+int32_t bHaveObjTallyBms = -1;
+int32_t bHaveGaugeBms = -1;
 
 CHUDIcons	hudIcons;
 
 //	-----------------------------------------------------------------------------
 
-int CHUDIcons::LoadIcons (const char* pszIcons [], CBitmap* icons, int nIcons, int& bHaveIcons)
+int32_t CHUDIcons::LoadIcons (const char* pszIcons [], CBitmap* icons, int32_t nIcons, int32_t& bHaveIcons)
 {
 	char	szFilename [FILENAME_LEN];
 	CFile	cf;
 
 if (bHaveIcons > -1)
 	return bHaveIcons;
-for (int i = 0; i < nIcons; i++) {
+for (int32_t i = 0; i < nIcons; i++) {
 	icons [i].Destroy ();
 	sprintf (szFilename, "%sd2x-xl/%s", gameFolders.mods.szTextures [0], pszIcons [i]);
 	if (!cf.Exist (szFilename, "", 0))
@@ -84,10 +84,10 @@ return bHaveIcons = 1;
 
 //	-----------------------------------------------------------------------------
 
-void CHUDIcons::DestroyIcons (CBitmap* icons, int nIcons, int& bHaveIcons)
+void CHUDIcons::DestroyIcons (CBitmap* icons, int32_t nIcons, int32_t& bHaveIcons)
 {
 if (bHaveIcons > 0) {
-	for (int i = 0; i < nIcons; i++)
+	for (int32_t i = 0; i < nIcons; i++)
 		icons [i].Destroy ();
 	bHaveIcons = -1;
 	}
@@ -97,7 +97,7 @@ if (bHaveIcons > 0) {
 
 const char *pszObjTallyIcons [] = {"rboticon.tga", "pwupicon.tga"};
 
-int CHUDIcons::LoadTallyIcons (void)
+int32_t CHUDIcons::LoadTallyIcons (void)
 {
 return LoadIcons (pszObjTallyIcons, bmObjTally, sizeofa (bmObjTally), bHaveObjTallyBms);
 }
@@ -113,7 +113,7 @@ DestroyIcons (bmObjTally, sizeofa (bmObjTally), bHaveObjTallyBms);
 
 const char *pszGaugeIcons [] = {"shield-icon.tga", "energy-icon.tga", "afterburner-icon.tga"};
 
-int CHUDIcons::LoadGaugeIcons (void)
+int32_t CHUDIcons::LoadGaugeIcons (void)
 {
 return LoadIcons (pszGaugeIcons, bmGaugeIcons, sizeofa (bmGaugeIcons), bHaveGaugeBms);
 }
@@ -127,7 +127,7 @@ DestroyIcons (bmGaugeIcons, sizeofa (bmGaugeIcons), bHaveGaugeBms);
 
 //	-----------------------------------------------------------------------------
 
-CBitmap& CHUDIcons::GaugeIcon (int i)
+CBitmap& CHUDIcons::GaugeIcon (int32_t i)
 {
 return bmGaugeIcons [i];
 }
@@ -143,13 +143,13 @@ if (cockpit->Hide ())
 if (ogl.IsOculusRift ())
 	return;
 
-	static int		objCounts [2] = {0, 0};
+	static int32_t		objCounts [2] = {0, 0};
 	static time_t	t0 = -1;
-	static int		nIdTally [2] = {0, 0};
+	static int32_t		nIdTally [2] = {0, 0};
 	time_t			t;
 
 if (!IsMultiGame || IsCoopGame) {
-	int	x, x0 = 0, y = 0, w, h, aw, i, bmW, bmH;
+	int32_t	x, x0 = 0, y = 0, w, h, aw, i, bmW, bmH;
 	char	szInfo [20];
 
 	if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)
@@ -203,7 +203,7 @@ if (!IsMultiGame || IsCoopGame) {
 
 void CHUDIcons::ToggleWeaponIcons (void)
 {
-for (int i = 0; i < controls [0].toggleIconsCount; i++)
+for (int32_t i = 0; i < controls [0].toggleIconsCount; i++)
 	if (gameStates.app.bNostalgia)
 		extraGameInfo [0].nWeaponIcons = 0;
 	else {
@@ -215,9 +215,9 @@ for (int i = 0; i < controls [0].toggleIconsCount; i++)
 
 //	-----------------------------------------------------------------------------
 
-static ubyte ammoType [2][10] = {{0, 1, 0, 0, 0, 0, 1, 0, 0, 0}, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
+static uint8_t ammoType [2][10] = {{0, 1, 0, 0, 0, 0, 1, 0, 0, 0}, {1, 1, 1, 1, 1, 1, 1, 1, 1, 1}};
 
-int CHUDIcons::GetWeaponState (int& bHave, int& bAvailable, int& bActive, int i, int j, int l)
+int32_t CHUDIcons::GetWeaponState (int32_t& bHave, int32_t& bAvailable, int32_t& bActive, int32_t i, int32_t j, int32_t l)
 {
 if (i)
 	bHave = (LOCALPLAYER.secondaryWeaponFlags & (1 << l));
@@ -241,7 +241,7 @@ else {
 if (!bHave)
 	bAvailable = 0;
 else if (ammoType [i][l]) {
-	int nAmmo = (i ? LOCALPLAYER.secondaryAmmo [l] : LOCALPLAYER.primaryAmmo [(l == 6) ? 1 : l]);
+	int32_t nAmmo = (i ? LOCALPLAYER.secondaryAmmo [l] : LOCALPLAYER.primaryAmmo [(l == 6) ? 1 : l]);
 	bAvailable = (nAmmo > 0);
 	}
 else {
@@ -272,10 +272,10 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CHUDIcons::GetAmmo (char* szAmmo, int i, int j, int l)
+int32_t CHUDIcons::GetAmmo (char* szAmmo, int32_t i, int32_t j, int32_t l)
 {
 if (ammoType [i][l]) {
-	int nAmmo = (i ? LOCALPLAYER.secondaryAmmo [l] : LOCALPLAYER.primaryAmmo [(l == 6) ? 1 : l]);
+	int32_t nAmmo = (i ? LOCALPLAYER.secondaryAmmo [l] : LOCALPLAYER.primaryAmmo [(l == 6) ? 1 : l]);
 	if (!i && (l % 5 == 1)) {//Gauss/Vulcan
 		nAmmo = X2I (nAmmo * (unsigned) VULCAN_AMMO_SCALE);
 		if (nAmmo && (nAmmo < 1000)) {
@@ -301,12 +301,12 @@ return GREEN_RGBA;
 
 //	-----------------------------------------------------------------------------
 
-int CHUDIcons::GetWeaponIndex (int i, int j, int& nMaxAutoSelect)
+int32_t CHUDIcons::GetWeaponIndex (int32_t i, int32_t j, int32_t& nMaxAutoSelect)
 {
-	static int nLvlMap [2][10] = {{9, 4, 8, 3, 7, 2, 6, 1, 5, 0}, {4, 3, 2, 1, 0, 4, 3, 2, 1, 0}};
+	static int32_t nLvlMap [2][10] = {{9, 4, 8, 3, 7, 2, 6, 1, 5, 0}, {4, 3, 2, 1, 0, 4, 3, 2, 1, 0}};
 
 if (gameOpts->render.weaponIcons.nSort && !gameStates.app.bD1Mission) {
-	int l = nWeaponOrder [i][j];
+	int32_t l = nWeaponOrder [i][j];
 	if (l == 255)
 		nMaxAutoSelect = j;
 	return nWeaponOrder [i][j + (j >= nMaxAutoSelect)];
@@ -316,11 +316,11 @@ return nLvlMap [gameStates.app.bD1Mission][j];
 
 //	-----------------------------------------------------------------------------
 
-CBitmap* CHUDIcons::LoadWeaponIcon (int i, int l)
+CBitmap* CHUDIcons::LoadWeaponIcon (int32_t i, int32_t l)
 {
 	CBitmap * bmP, * bmoP;
 
-int m = i ? secondaryWeaponToWeaponInfo [l] : primaryWeaponToWeaponInfo [l];
+int32_t m = i ? secondaryWeaponToWeaponInfo [l] : primaryWeaponToWeaponInfo [l];
 if ((gameData.pig.tex.nHamFileVersion >= 3) && gameStates.video.nDisplayMode) {
 	LoadTexture (gameData.weapons.info [m].hiresPicture.index, 0, 0);
 	bmP = gameData.pig.tex.bitmaps [0] + gameData.weapons.info [m].hiresPicture.index;
@@ -337,24 +337,24 @@ return bmP;
 
 //	-----------------------------------------------------------------------------
 
-void CHUDIcons::SetWeaponFillColor (int bHave, int bAvailable, float alpha)
+void CHUDIcons::SetWeaponFillColor (int32_t bHave, int32_t bAvailable, float alpha)
 {
 if (bHave) {
 	if (bAvailable)
 		if (gameOpts->app.bColorblindFriendly)
-			CCanvas::Current ()->SetColorRGB (0, 192, 255, ubyte (alpha * 16));
+			CCanvas::Current ()->SetColorRGB (0, 192, 255, uint8_t (alpha * 16));
 		else
-			CCanvas::Current ()->SetColorRGB (255, 192, 0, ubyte (alpha * 16));
+			CCanvas::Current ()->SetColorRGB (255, 192, 0, uint8_t (alpha * 16));
 	else
-		CCanvas::Current ()->SetColorRGB (128, 0, 0, ubyte (alpha * 16));
+		CCanvas::Current ()->SetColorRGB (128, 0, 0, uint8_t (alpha * 16));
 	}
 else
-	CCanvas::Current ()->SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
+	CCanvas::Current ()->SetColorRGB (64, 64, 64, (uint8_t) (159 + alpha * 12));
 }
 
 //	-----------------------------------------------------------------------------
 
-void CHUDIcons::SetWeaponFrameColor (int bHave, int bAvailable, int bActive, float alpha)
+void CHUDIcons::SetWeaponFrameColor (int32_t bHave, int32_t bAvailable, int32_t bActive, float alpha)
 {
 if (bActive)
 	if (bAvailable)
@@ -379,38 +379,38 @@ else
 
 void CHUDIcons::DrawWeapons (void)
 {
-	int	nWeaponIcons = /*(gameStates.render.cockpit.nType == CM_STATUS_BAR) ? 3 :*/ extraGameInfo [0].nWeaponIcons;
-	int	nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) ? 4 : 3;
-	int	nIconPos = nWeaponIcons - 1;
-	int	nMaxAutoSelect;
-	int	nDmgIconWidth = 0;
-	int	nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
+	int32_t	nWeaponIcons = /*(gameStates.render.cockpit.nType == CM_STATUS_BAR) ? 3 :*/ extraGameInfo [0].nWeaponIcons;
+	int32_t	nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) ? 4 : 3;
+	int32_t	nIconPos = nWeaponIcons - 1;
+	int32_t	nMaxAutoSelect;
+	int32_t	nDmgIconWidth = 0;
+	int32_t	nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 #if 0
 								((nWeaponIcons == 2) 
 								 && ((gameStates.app.nSDLTicks [0] - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) || 
 								     gameData.objs.consoleP->CriticalDamage ()))) ? 32 : 0;
 #endif
-	int	ox = 6, 
+	int32_t	ox = 6, 
 			oy = 6, 
 			x = 0, dx = 0, y = 0, dy = 0;
 	//float	fLineWidth = (gameData.render.scene.Width () >= 1200) ? 2.0f : 1.0f;
 	float	fLineWidth = float (gameData.render.scene.Width ()) / 640.0f;
-	ubyte	alpha = gameOpts->render.weaponIcons.alpha;
-	uint	nAmmoColor;
+	uint8_t	alpha = gameOpts->render.weaponIcons.alpha;
+	uint32_t	nAmmoColor;
 	char	szAmmo [10];
 
-	static int	wIcon = 0, 
+	static int32_t	wIcon = 0, 
 					hIcon = 0;
-	static int	w = -1, 
+	static int32_t	w = -1, 
 					h = -1;
-	static int bInitIcons = 1;
-	static int nIdIcons [2][10] = {{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0}};
+	static int32_t bInitIcons = 1;
+	static int32_t nIdIcons [2][10] = {{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0}};
 
 if (gameOpts->render.weaponIcons.bShowAmmo) {
 	fontManager.SetCurrent (SMALL_FONT);
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);
 	}
-dx = (int) (10 * m_xScale);
+dx = (int32_t) (10 * m_xScale);
 if (ogl.IsOculusRift ()) {
 	//dy = (gameData.render.frame.Height () - gameData.render.scene.Height ());
 	//y = 3 * gameData.render.frame.Height () / 4 - dy - 4 * oy;
@@ -429,12 +429,12 @@ else if (extraGameInfo [0].nWeaponIcons == 2) {
 		y -= cockpit->LHX (10);
 	}
 
-for (int i = 0; i < 2; i++) {
-	int n = (gameStates.app.bD1Mission) ? 5 : 10;
+for (int32_t i = 0; i < 2; i++) {
+	int32_t n = (gameStates.app.bD1Mission) ? 5 : 10;
 	nMaxAutoSelect = 255;
 	if (ogl.IsOculusRift ()) {
 		if (!i) {
-			int nBombType, bHaveBombs = cockpit->BombCount (nBombType) > 0;
+			int32_t nBombType, bHaveBombs = cockpit->BombCount (nBombType) > 0;
 			x = CCanvas::Current ()->Width () / 2 - /*CScreen::Scaled*/ ((2 + bHaveBombs) * (wIcon + ox) / 2);
 			}
 		}
@@ -446,16 +446,16 @@ for (int i = 0; i < 2; i++) {
 			x -= dx + wIcon + nDmgIconWidth;
 		}
 	else {
-		int h = 0;
+		int32_t h = 0;
 		y = (gameData.render.scene.Height () - h - n * (hIcon + oy)) / 2 + hIcon;
 		x = i ? CCanvas::Current ()->Width () - wIcon - ox : ox;
 		//y += gameData.render.scene.Top ();
 		}
 
-	for (int j = 0; j < n; j++) {
-		int bActive, bHave, bAvailable;
-		int fw, fh, faw;
-		int l = GetWeaponIndex (i, j, nMaxAutoSelect);
+	for (int32_t j = 0; j < n; j++) {
+		int32_t bActive, bHave, bAvailable;
+		int32_t fw, fh, faw;
+		int32_t l = GetWeaponIndex (i, j, nMaxAutoSelect);
 		CBitmap* bmP = LoadWeaponIcon (i, l);
 
 		Assert (bmP != NULL);
@@ -463,8 +463,8 @@ for (int i = 0; i < 2; i++) {
 			w = bmP->Width ();
 		if (h < bmP->Height ())
 			h = bmP->Height ();
-		wIcon = (int) ((w + nIconScale - 1) / nIconScale * m_xScale);
-		hIcon = (int) ((h + nIconScale - 1) / nIconScale * m_yScale);
+		wIcon = (int32_t) ((w + nIconScale - 1) / nIconScale * m_xScale);
+		hIcon = (int32_t) ((h + nIconScale - 1) / nIconScale * m_yScale);
 
 		if (bInitIcons)
 			continue;
@@ -516,10 +516,10 @@ gameData.SetStereoOffsetType (nOffsetSave);
 
 //	-----------------------------------------------------------------------------
 
-int CHUDIcons::LoadInventoryIcons (void)
+int32_t CHUDIcons::LoadInventoryIcons (void)
 {
-	int		h, i;
-	ubyte*	buffer;
+	int32_t		h, i;
+	uint8_t*	buffer;
 
 if (!((bmpInventory = PiggyLoadBitmap ("inventry.bmp")) ||
 	   (bmpInventory = PiggyLoadBitmap ("inventory.bmp"))))
@@ -553,7 +553,7 @@ if (bmpInventory) {
 
 //	-----------------------------------------------------------------------------
 
-int CHUDIcons::EquipmentActive (int bFlag)
+int32_t CHUDIcons::EquipmentActive (int32_t bFlag)
 {
 switch (bFlag) {
 	case PLAYER_FLAGS_AFTERBURNER:
@@ -589,28 +589,28 @@ if (ogl.IsOculusRift ())
 
 	CBitmap*	bmP;
 	char		szCount [20];
-	int		nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) ? 3 : 2;
-	int		nIconPos = extraGameInfo [0].nWeaponIcons & 1;
-	int		nHiliteColor = gameOpts->app.bColorblindFriendly;
-	int		fw, fh, faw;
-	int		j, n, firstItem, 
+	int32_t		nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) ? 3 : 2;
+	int32_t		nIconPos = extraGameInfo [0].nWeaponIcons & 1;
+	int32_t		nHiliteColor = gameOpts->app.bColorblindFriendly;
+	int32_t		fw, fh, faw;
+	int32_t		j, n, firstItem, 
 				oy = 6, 
 				ox = 6, 
 				x, y, dy;
-	int		w = bmpInventory->Width (), 
+	int32_t		w = bmpInventory->Width (), 
 				h = bmpInventory->Width ();
-	int		wIcon = (int) ((w + nIconScale - 1) / nIconScale * m_xScale), 
-				hIcon = (int) ((h + nIconScale - 1) / nIconScale * m_yScale);
-	int		nDmgIconWidth = 0;
+	int32_t		wIcon = (int32_t) ((w + nIconScale - 1) / nIconScale * m_xScale), 
+				hIcon = (int32_t) ((h + nIconScale - 1) / nIconScale * m_yScale);
+	int32_t		nDmgIconWidth = 0;
 #if 0
 									(nIconPos
 									 && ((gameStates.app.nSDLTicks [0] - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) || 
 									     gameData.objs.consoleP->CriticalDamage ()))) ? 80 : 0;
 #endif
 	float		fLineWidth = float (gameData.render.scene.Width ()) / 640.0f;
-	ubyte		alpha = gameOpts->render.weaponIcons.alpha;
+	uint8_t		alpha = gameOpts->render.weaponIcons.alpha;
 
-	static int nInvFlags [NUM_INV_ITEMS] = {
+	static int32_t nInvFlags [NUM_INV_ITEMS] = {
 		PLAYER_FLAGS_AFTERBURNER, 
 		PLAYER_FLAGS_CONVERTER, 
 		PLAYER_FLAGS_HEADLIGHT, 
@@ -622,8 +622,8 @@ if (ogl.IsOculusRift ())
 		PLAYER_FLAGS_SLOWMOTION,
 		PLAYER_FLAGS_BULLETTIME
 		};
-	static int nEnergyType [NUM_INV_ITEMS] = {I2X (1), I2X (100), 0, I2X (1), 0, I2X (1), 0, 0, I2X (1), I2X (1)};
-	static int nIdItems [NUM_INV_ITEMS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	static int32_t nEnergyType [NUM_INV_ITEMS] = {I2X (1), I2X (100), 0, I2X (1), 0, I2X (1), 0, 0, I2X (1), I2X (1)};
+	static int32_t nIdItems [NUM_INV_ITEMS] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 dy = 0; //(gameData.render.frame.Height () - gameData.render.scene.Height ());
 #if 1
@@ -641,7 +641,7 @@ if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) && (extraGameInfo [0].n
 	y -= cockpit->LHX (10);
 //y += gameData.render.scene.Top ();
 for (j = firstItem; j < n; j++) {
-	int bHave, bAvailable, bActive = EquipmentActive (nInvFlags [j]);
+	int32_t bHave, bAvailable, bActive = EquipmentActive (nInvFlags [j]);
 	bmP = bmInvItems + j;
 	if (j == (n - firstItem + 1) / 2)
 		x += nDmgIconWidth;
@@ -670,16 +670,16 @@ for (j = firstItem; j < n; j++) {
 		if (bAvailable)
 			if (bActive)
 				if (nHiliteColor)
-					CCanvas::Current ()->SetColorRGB (0, 192, 255, ubyte (alpha * 16));
+					CCanvas::Current ()->SetColorRGB (0, 192, 255, uint8_t (alpha * 16));
 				else
-					CCanvas::Current ()->SetColorRGB (255, 192, 0, ubyte (alpha * 16));
+					CCanvas::Current ()->SetColorRGB (255, 192, 0, uint8_t (alpha * 16));
 			else
-				CCanvas::Current ()->SetColorRGB (128, 128, 0, ubyte (alpha * 16));
+				CCanvas::Current ()->SetColorRGB (128, 128, 0, uint8_t (alpha * 16));
 		else
-			CCanvas::Current ()->SetColorRGB (128, 0, 0, ubyte (alpha * 16));
+			CCanvas::Current ()->SetColorRGB (128, 0, 0, uint8_t (alpha * 16));
 		}
 	else {
-		CCanvas::Current ()->SetColorRGB (64, 64, 64, (ubyte) (159 + alpha * 12));
+		CCanvas::Current ()->SetColorRGB (64, 64, 64, (uint8_t) (159 + alpha * 12));
 		}
 	OglDrawFilledRect (cockpit->X (x - 1), y - hIcon - 1, cockpit->X (x + wIcon + 2), y + 2);
 	if (bHave)

@@ -24,30 +24,30 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // John's new stuff below here....
 
-int scale_error_term;
-int scale_initial_pixelCount;
-int scale_adj_up;
-int scale_adjDown;
-int scale_final_pixelCount;
-int scale_ydelta_minus_1;
-int scale_whole_step;
-ubyte * scale_source_ptr;
-ubyte * scale_dest_ptr;
+int32_t scale_error_term;
+int32_t scale_initial_pixelCount;
+int32_t scale_adj_up;
+int32_t scale_adjDown;
+int32_t scale_final_pixelCount;
+int32_t scale_ydelta_minus_1;
+int32_t scale_whole_step;
+uint8_t * scale_source_ptr;
+uint8_t * scale_dest_ptr;
 
 
-ubyte scale_rle_data[1600];
+uint8_t scale_rle_data[1600];
 
-void scale_up_bitmap(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  );
-void scale_up_bitmap_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  );
-void rls_stretch_scanline_setup( int XDelta, int YDelta );
+void scale_up_bitmap(CBitmap *source_bmp, CBitmap *dest_bmp, int32_t x0, int32_t y0, int32_t x1, int32_t y1, fix u0, fix v0,  fix u1, fix v1, int32_t orientation  );
+void scale_up_bitmap_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int32_t x0, int32_t y0, int32_t x1, int32_t y1, fix u0, fix v0,  fix u1, fix v1, int32_t orientation  );
+void rls_stretch_scanline_setup( int32_t XDelta, int32_t YDelta );
 void rls_stretch_scanline(void);
 
 
 //	-----------------------------------------------------------------------------
 
-void decode_row (CBitmap * bmp, int y)
+void decode_row (CBitmap * bmp, int32_t y)
 {
-	int i, offset=4+bmp->Height ();
+	int32_t i, offset=4+bmp->Height ();
 
 	for (i=0; i<y; i++ )
 		offset += bmp->Buffer () [4+i];
@@ -57,18 +57,18 @@ void decode_row (CBitmap * bmp, int y)
 
 //	-----------------------------------------------------------------------------
 
-void scale_up_bitmap(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
+void scale_up_bitmap(CBitmap *source_bmp, CBitmap *dest_bmp, int32_t x0, int32_t y0, int32_t x1, int32_t y1, fix u0, fix v0,  fix u1, fix v1, int32_t orientation  )
 {
 	fix dv, v;
-	int y;
+	int32_t y;
 
 	if (orientation & 1) {
-		int	t;
+		int32_t	t;
 		t = u0;	u0 = u1;	u1 = t;
 	}
 
 	if (orientation & 2) {
-		int	t;
+		int32_t	t;
 		t = v0;	v0 = v1;	v1 = t;
 		if (v1 < v0)
 			v0--;
@@ -78,7 +78,7 @@ void scale_up_bitmap(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int
 
 	dv = (v1-v0) / (y1-y0);
 
-	rls_stretch_scanline_setup( (int)(x1-x0), X2I(u1)-X2I(u0) );
+	rls_stretch_scanline_setup( (int32_t)(x1-x0), X2I(u1)-X2I(u0) );
 	if ( scale_ydelta_minus_1 < 1 ) return;
 
 	v = v0;
@@ -96,18 +96,18 @@ void scale_up_bitmap(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int
 
 //	-----------------------------------------------------------------------------
 
-void scale_up_bitmap_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
+void scale_up_bitmap_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int32_t x0, int32_t y0, int32_t x1, int32_t y1, fix u0, fix v0,  fix u1, fix v1, int32_t orientation  )
 {
 	fix dv, v;
-	int y, last_row = -1;
+	int32_t y, last_row = -1;
 
 	if (orientation & 1) {
-		int	t;
+		int32_t	t;
 		t = u0;	u0 = u1;	u1 = t;
 	}
 
 	if (orientation & 2) {
-		int	t;
+		int32_t	t;
 		t = v0;	v0 = v1;	v1 = t;
 		if (v1 < v0)
 			v0--;
@@ -115,7 +115,7 @@ void scale_up_bitmap_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0,
 
 	dv = (v1-v0) / (y1-y0);
 
-	rls_stretch_scanline_setup( (int)(x1-x0), X2I(u1)-X2I(u0) );
+	rls_stretch_scanline_setup( (int32_t)(x1-x0), X2I(u1)-X2I(u0) );
 	if ( scale_ydelta_minus_1 < 1 ) return;
 
 	v = v0;
@@ -134,7 +134,7 @@ void scale_up_bitmap_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0,
 
 //	-----------------------------------------------------------------------------
 
-void rls_stretch_scanline_setup( int XDelta, int YDelta )
+void rls_stretch_scanline_setup( int32_t XDelta, int32_t YDelta )
 {
 	  scale_ydelta_minus_1 = YDelta - 1;
 
@@ -183,8 +183,8 @@ void rls_stretch_scanline_setup( int XDelta, int YDelta )
 
 void rls_stretch_scanline( )
 {
-	ubyte   c, *src_ptr, *dest_ptr;
-	int i, j, len, ErrorTerm, initialCount, finalCount;
+	uint8_t   c, *src_ptr, *dest_ptr;
+	int32_t i, j, len, ErrorTerm, initialCount, finalCount;
 
 	// Draw the first, partial run of pixels
 
@@ -237,11 +237,11 @@ void rls_stretch_scanline( )
 
 //	-----------------------------------------------------------------------------
 
-void scale_bitmap_c(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
+void scale_bitmap_c(CBitmap *source_bmp, CBitmap *dest_bmp, int32_t x0, int32_t y0, int32_t x1, int32_t y1, fix u0, fix v0,  fix u1, fix v1, int32_t orientation  )
 {
 	fix u, v, du, dv;
-	int x, y;
-	ubyte * sbits, * dbits, c;
+	int32_t x, y;
+	uint8_t * sbits, * dbits, c;
 
 	du = (u1-u0) / (x1-x0);
 	dv = (v1-v0) / (y1-y0);
@@ -277,11 +277,11 @@ void scale_bitmap_c(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int 
 
 //	-----------------------------------------------------------------------------
 
-void scale_row_asm_transparent( ubyte * sbits, ubyte * dbits, int width, fix u, fix du )
+void scale_row_asm_transparent( uint8_t * sbits, uint8_t * dbits, int32_t width, fix u, fix du )
 {
 #if 0
-	int i;
-	ubyte coord;
+	int32_t i;
+	uint8_t coord;
 
 	for (i=0; i<width; i++ ) {
 		coord = sbits[ u >> 16 ];
@@ -291,14 +291,14 @@ void scale_row_asm_transparent( ubyte * sbits, ubyte * dbits, int width, fix u, 
 		u += du;
 	}
 #endif
-	int i;
-	ubyte c;
-	ubyte *dbits_end = &dbits[width-1];
+	int32_t i;
+	uint8_t c;
+	uint8_t *dbits_end = &dbits[width-1];
 
 	if ( du < I2X (1) ) {
 		// Scaling up.
 		fix next_u;
-		int next_u_int;
+		int32_t next_u_int;
 
 		next_u_int = X2I(u)+1;
 		c = sbits[ next_u_int ];
@@ -350,14 +350,14 @@ NonTransparent:
 
 //	-----------------------------------------------------------------------------
 
-void scale_bitmap_c_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, int x1, int y1, fix u0, fix v0,  fix u1, fix v1, int orientation  )
+void scale_bitmap_c_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int32_t x0, int32_t y0, int32_t x1, int32_t y1, fix u0, fix v0,  fix u1, fix v1, int32_t orientation  )
 {
 	fix du, dv, v;
-	int y, last_row=-1;
+	int32_t y, last_row=-1;
 
 //	Rotation doesn't work because explosions are not square!
 // -- 	if (orientation & 4) {
-// -- 		int	t;
+// -- 		int32_t	t;
 // -- 		t = u0;	u0 = v0;	v0 = t;
 // -- 		t = u1;	u1 = v1;	v1 = t;
 // -- 	}
@@ -398,7 +398,7 @@ void scale_bitmap_c_rle(CBitmap *source_bmp, CBitmap *dest_bmp, int x0, int y0, 
 
 //	-----------------------------------------------------------------------------
 // Scales bitmap, bp, into vertbuf[0] to vertbuf[1]
-void ScaleBitmap(CBitmap *bmP, grsPoint *vertbuf, int orientation )
+void ScaleBitmap(CBitmap *bmP, grsPoint *vertbuf, int32_t orientation )
 {
 	CBitmap* dbp = CCanvas::Current ();
 	fix x0, y0, x1, y1;
@@ -406,8 +406,8 @@ void ScaleBitmap(CBitmap *bmP, grsPoint *vertbuf, int orientation )
 	fix clipped_x0, clipped_y0, clipped_x1, clipped_y1;
 	fix clipped_u0, clipped_v0, clipped_u1, clipped_v1;
 	fix xmin, xmax, ymin, ymax;
-	int dx0, dy0, dx1, dy1;
-	int dtemp;
+	int32_t dx0, dy0, dx1, dy1;
+	int32_t dtemp;
 	// Set initial variables....
 
 	x0 = vertbuf[0].x; y0 = vertbuf[0].y;

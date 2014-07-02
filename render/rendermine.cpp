@@ -72,13 +72,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define CLEAR_WINDOW	0
 
-int	nClearWindow = 0; //2	// 1 = Clear whole background tPortal, 2 = clear view portals into rest of world, 0 = no clear
+int32_t	nClearWindow = 0; //2	// 1 = Clear whole background tPortal, 2 = clear view portals into rest of world, 0 = no clear
 
-void RenderSkyBox (int nWindow);
+void RenderSkyBox (int32_t nWindow);
 
 //------------------------------------------------------------------------------
 
-extern int bLog;
+extern int32_t bLog;
 
 CCanvas *reticleCanvas = NULL;
 
@@ -128,7 +128,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void DoRenderObject (int nObject, int nWindow)
+void DoRenderObject (int32_t nObject, int32_t nWindow)
 {
 #if DBG
 if (!(IsMultiGame || gameOpts->render.debug.bObjects))
@@ -158,7 +158,7 @@ if (RenderObject (objP, nWindow, 0)) {
 #endif
 	if (!gameStates.render.cameras.bActive) {
 		tWindowRenderedData*	wrd = windowRenderedData + nWindow;
-		int nType = objP->info.nType;
+		int32_t nType = objP->info.nType;
 		if ((nType == OBJ_ROBOT) || (nType == OBJ_PLAYER) ||
 			 ((nType == OBJ_WEAPON) && (objP->IsPlayerMine () || (objP->IsMissile () && EGI_FLAG (bKillMissiles, 0, 0, 0))))) {
 			if (wrd->nObjects >= MAX_RENDERED_OBJECTS) {
@@ -170,7 +170,7 @@ if (RenderObject (objP, nWindow, 0)) {
 		}
 	}
 
-for (int i = objP->info.nAttachedObj; i != -1; i = objP->cType.explInfo.attached.nNext) {
+for (int32_t i = objP->info.nAttachedObj; i != -1; i = objP->cType.explInfo.attached.nNext) {
 	objP = OBJECTS + i;
 	Assert (objP->info.nType == OBJ_FIREBALL);
 	Assert (objP->info.controlType == CT_EXPLOSION);
@@ -183,9 +183,9 @@ for (int i = objP->info.nAttachedObj; i != -1; i = objP->cType.explInfo.attached
 
 static tObjRenderListItem objRenderList [MAX_OBJECTS_D2X];
 
-void QSortObjRenderList (int left, int right)
+void QSortObjRenderList (int32_t left, int32_t right)
 {
-	int	l = left,
+	int32_t	l = left,
 			r = right,
 			m = objRenderList [(l + r) / 2].xDist;
 
@@ -212,10 +212,10 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-int SortObjList (int nSegment)
+int32_t SortObjList (int32_t nSegment)
 {
 	tObjRenderListItem*	pi;
-	int						i, j;
+	int32_t						i, j;
 
 if (nSegment < 0)
 	nSegment = -nSegment - 1;
@@ -236,9 +236,9 @@ return j;
 
 //------------------------------------------------------------------------------
 
-static int nDbgListPos = -1;
+static int32_t nDbgListPos = -1;
 
-void RenderObjList (int nListPos, int nWindow)
+void RenderObjList (int32_t nListPos, int32_t nWindow)
 {
 #if DBG
 if ((nListPos < 0) || (nListPos >= gameData.render.mine.nObjRenderSegs)) {
@@ -254,8 +254,8 @@ if ((gameData.render.mine.objRenderSegList [nListPos] < 0) || (gameData.render.m
 #endif
 
 PROF_START
-	int i, j;
-	int saveLinDepth = gameStates.render.detail.nMaxLinearDepth;
+	int32_t i, j;
+	int32_t saveLinDepth = gameStates.render.detail.nMaxLinearDepth;
 
 nDbgListPos = nListPos;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
@@ -270,8 +270,8 @@ PROF_END(ptRenderObjects)
 void RenderSkyBoxObjects (void)
 {
 PROF_START
-	short		i, nObject;
-	short		*segNumP;
+	int16_t		i, nObject;
+	int16_t		*segNumP;
 
 gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nState = 1;
@@ -283,7 +283,7 @@ PROF_END(ptRenderObjects)
 
 //------------------------------------------------------------------------------
 
-void RenderSkyBox (int nWindow)
+void RenderSkyBox (int32_t nWindow)
 {
 PROF_START
 if (gameStates.render.bHaveSkyBox && (!automap.Display () || gameOpts->render.automap.bSkybox)) {
@@ -297,9 +297,9 @@ PROF_END(ptRenderPass)
 
 void RenderObjectsST (void)
 {
-	short nSegment;
+	int16_t nSegment;
 
-for (int i = 0; i < gameData.render.mine.nObjRenderSegs; i++) {
+for (int32_t i = 0; i < gameData.render.mine.nObjRenderSegs; i++) {
 	nSegment = gameData.render.mine.objRenderSegList [i];
 #if DBG
 	if (nSegment == nDbgSeg)
@@ -329,13 +329,13 @@ class CThreadedObjectRenderer {
 	private:
 		bool			m_bInited;
 		SDL_Thread* m_threads [MAX_THREADS];
-		int			m_nThreadIds [MAX_THREADS];
+		int32_t			m_nThreadIds [MAX_THREADS];
 		SDL_sem*		m_lightObjects [MAX_THREADS];
 		SDL_mutex*	m_lightLock;
 		SDL_sem*		m_lightDone;
 		SDL_sem*		m_renderDone;
-		int			m_nRenderThreads;
-		int			m_nActiveThreads;
+		int32_t			m_nRenderThreads;
+		int32_t			m_nActiveThreads;
 
 	public:
 		CThreadedObjectRenderer ();
@@ -344,14 +344,14 @@ class CThreadedObjectRenderer {
 		void Create (void);
 		void Destroy (void);
 		void Render (void);
-		int Illuminate (void* nThreadP);
+		int32_t Illuminate (void* nThreadP);
 };
 
 CThreadedObjectRenderer threadedObjectRenderer;
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ LightObjectsThread (void* nThreadP)
+int32_t _CDECL_ LightObjectsThread (void* nThreadP)
 {
 return threadedObjectRenderer.Illuminate (nThreadP);
 }
@@ -393,7 +393,7 @@ if (m_bInited) {
 	SDL_DestroyMutex (m_lightLock);
 	SDL_DestroySemaphore (m_lightDone);
 	SDL_DestroySemaphore (m_renderDone);
-	for (int i = 0; i < gameStates.app.nThreads; i++) {
+	for (int32_t i = 0; i < gameStates.app.nThreads; i++) {
 		SDL_DestroySemaphore (m_lightObjects [i]);
 		SDL_KillThread (m_threads [i]);
 		}
@@ -410,7 +410,7 @@ if (!m_bInited) {
 	m_lightLock = SDL_CreateMutex ();
 	m_lightDone = SDL_CreateSemaphore (0);
 	m_renderDone = SDL_CreateSemaphore (0);
-	for (int i = 0; i < gameStates.app.nThreads; i++) {
+	for (int32_t i = 0; i < gameStates.app.nThreads; i++) {
 		m_nThreadIds [i] = i;
 		m_lightObjects [i] = SDL_CreateSemaphore (0);
 #if PERSISTENT_THREADS
@@ -419,7 +419,7 @@ if (!m_bInited) {
 		}
 	}
 #if !PERSISTENT_THREADS
-for (int i = 0; i < m_nRenderThreads; i++)
+for (int32_t i = 0; i < m_nRenderThreads; i++)
 	m_threads [i] = SDL_CreateThread (LightObjectsThread, m_nThreadIds + i);
 #endif
 m_nRenderThreads = Min (gameData.render.mine.nObjRenderSegs, gameStates.app.nThreads);
@@ -433,15 +433,15 @@ m_nActiveThreads = m_nRenderThreads;
 // for the render process to reset its semaphore before proceeding with the next 
 // segment.
 #if DBG
-static int nDbgThread = -1;
+static int32_t nDbgThread = -1;
 #endif
 
-int CThreadedObjectRenderer::Illuminate (void* nThreadP)
+int32_t CThreadedObjectRenderer::Illuminate (void* nThreadP)
 {
 #if 1
-	int	nThread = *((int*) nThreadP);
+	int32_t	nThread = *((int32_t*) nThreadP);
 #endif
-	short nSegment;
+	int16_t nSegment;
 
 #if PERSISTENT_THREADS
 for (;;) {
@@ -451,7 +451,7 @@ for (;;) {
 		BRP;
 #	endif
 #endif
-	for (int i = nThread; i < gameData.render.mine.nObjRenderSegs; i += m_nRenderThreads) {
+	for (int32_t i = nThread; i < gameData.render.mine.nObjRenderSegs; i += m_nRenderThreads) {
 		nSegment = gameData.render.mine.objRenderSegList [i];
 		if (gameStates.render.bApplyDynLight) {
 			lightManager.SetNearestToSegment (nSegment, -1, 0, 1, nThread);
@@ -503,11 +503,11 @@ Create ();
 lightManager.SetThreadId (-1);
 #endif
 
-int i, nListPos [MAX_THREADS];
+int32_t i, nListPos [MAX_THREADS];
 for (i = 0; i < MAX_THREADS; i++)
 	nListPos [i] = i;
 
-for (int i = 0; i < m_nRenderThreads; i++) 
+for (int32_t i = 0; i < m_nRenderThreads; i++) 
 	SDL_SemPost (m_lightObjects [i]);
 
 #if PERSISTENT_THREADS
@@ -515,7 +515,7 @@ for (;;) {
 	SDL_SemWait (m_lightDone);
 	if (!m_nActiveThreads)
 		break;
-	int nThread = lightManager.ThreadId (-1);
+	int32_t nThread = lightManager.ThreadId (-1);
 #if DBG
 	if (nThread < 0)
 		BRP;
@@ -543,9 +543,9 @@ lightManager.SetThreadId (-1);
 
 #if DBG
 
-static inline int VerifyObjectRenderSegment (short nSegment)
+static inline int32_t VerifyObjectRenderSegment (int16_t nSegment)
 {
-for (int i = 0; i < gameData.render.mine.nObjRenderSegs; i++)
+for (int32_t i = 0; i < gameData.render.mine.nObjRenderSegs; i++)
 	if (gameData.render.mine.objRenderSegList [i] == nSegment)
 		return -1;
 return nSegment;
@@ -560,11 +560,11 @@ return nSegment;
 
 //------------------------------------------------------------------------------
 
-static int ObjectRenderSegment (int i)
+static int32_t ObjectRenderSegment (int32_t i)
 {
 if (i >= gameData.render.mine.visibility [0].nSegments)
 	return -1;
-short nSegment = gameData.render.mine.visibility [0].segments [i];
+int16_t nSegment = gameData.render.mine.visibility [0].segments [i];
 if (nSegment < 0) {
 	if (nSegment == -0x7fff)
 		return -1;
@@ -581,7 +581,7 @@ tObjRenderListItem* pi;
 
 for (i = gameData.render.mine.objRenderList.ref [nSegment]; i >= 0; i = pi->nNextItem) {
 	pi = gameData.render.mine.objRenderList.objs + i;
-	int nType = OBJECTS [pi->nObject].info.nType;
+	int32_t nType = OBJECTS [pi->nObject].info.nType;
 	if (nType == OBJ_POWERUP) {
 		if (extraGameInfo [IsMultiGame].bPowerupsOnRadar)
 			return VerifyObjectRenderSegment (nSegment);
@@ -599,7 +599,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-void RenderMineObjects (int nType)
+void RenderMineObjects (int32_t nType)
 {
 #if DBG
 if (!gameOpts->render.debug.bObjects)
@@ -614,8 +614,8 @@ gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nState = 1;
 gameStates.render.bApplyDynLight = gameStates.render.bUseDynLight && gameOpts->ogl.bLightObjects && !gameStates.render.bFullBright;
 
-	int	i;
-	short nSegment;
+	int32_t	i;
+	int16_t nSegment;
 
 gameData.render.mine.nObjRenderSegs = 0;
 for (i = 0; i < gameData.render.mine.visibility [0].nSegments; i++)
@@ -645,7 +645,7 @@ gameStates.render.nState = 0;
 
 //------------------------------------------------------------------------------
 
-int RenderSegmentList (int nType)
+int32_t RenderSegmentList (int32_t nType)
 {
 PROF_START
 
@@ -665,7 +665,7 @@ if (!(EGI_FLAG (bShadows, 0, 1, 0) && FAST_SHADOWS && !gameOpts->render.shadows.
 #if MAX_SHADOWMAPS >= 0
 RenderMineObjects (nType);
 #endif
-for (int i = 0; i < gameStates.app.nThreads; i++)
+for (int32_t i = 0; i < gameStates.app.nThreads; i++)
 	lightManager.ResetAllUsed (1, i);
 ogl.ClearError (0);
 PROF_END(ptRenderPass)
@@ -674,12 +674,12 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void RenderEffects (int nWindow)
+void RenderEffects (int32_t nWindow)
 {
 PROF_START
 
 if (!ogl.StereoDevice () || (ogl.StereoSeparation () < 0) || nWindow || gameStates.render.cameras.bActive) {
-	int bLightning, bParticles, bSparks;
+	int32_t bLightning, bParticles, bSparks;
 
 	if (gameStates.app.nThreads > 1) {
 		while (!transparencyRenderer.Ready ())
@@ -716,15 +716,15 @@ PROF_END(ptEffects)
 
 //------------------------------------------------------------------------------
 
-int bHave3DCockpit = -1;
+int32_t bHave3DCockpit = -1;
 
 void RenderCockpitModel (void)
 {
-	static int bCockpit = 1;
+	static int32_t bCockpit = 1;
 	static float yOffset = 5.0f;
 
 if (bCockpit && bHave3DCockpit && (gameStates.render.cockpit.nType == CM_FULL_COCKPIT)) {
-	int bFullBright = gameStates.render.bFullBright;
+	int32_t bFullBright = gameStates.render.bFullBright;
 	gameStates.render.bFullBright = 1;
 	ogl.SetTransform (1);
 	CFixVector vOffset = /*OBJECTS [0].Orientation ().m.dir.f * F2X (xOffset) +*/ OBJECTS [0].Orientation ().m.dir.u * F2X (yOffset);
@@ -758,7 +758,7 @@ glPolygonMode (GL_BACK, GL_FILL);       // Draw Backfacing Polygons As Wireframe
 //------------------------------------------------------------------------------
 //renders onto current canvas
 
-void RenderMine (short nStartSeg, fix xStereoSeparation, int nWindow)
+void RenderMine (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow)
 {
 PROF_START
 SetupMineRenderer (nWindow);

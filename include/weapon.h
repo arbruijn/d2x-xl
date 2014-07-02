@@ -24,37 +24,37 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 class __pack__ CWeaponInfo {
 	public:
-		sbyte   renderType;         // How to draw 0=laser, 1=blob, 2=CObject
-		sbyte   persistent;         // 0 = dies when it hits something, 1 = continues (eg, fusion cannon)
-		short   nModel;             // Model num if rendertype==2.
-		short   nInnerModel;        // Model num of inner part if rendertype==2.
+		int8_t   renderType;         // How to draw 0=laser, 1=blob, 2=CObject
+		int8_t   persistent;         // 0 = dies when it hits something, 1 = continues (eg, fusion cannon)
+		int16_t   nModel;             // Model num if rendertype==2.
+		int16_t   nInnerModel;        // Model num of inner part if rendertype==2.
 
-		sbyte   nFlashVClip;        // What tVideoClip to use for muzzle flash
-		sbyte   nRobotHitVClip;     // What tVideoClip for impact with robot
-		short   flashSound;         // What sound to play when fired
+		int8_t   nFlashVClip;        // What tVideoClip to use for muzzle flash
+		int8_t   nRobotHitVClip;     // What tVideoClip for impact with robot
+		int16_t   flashSound;         // What sound to play when fired
 
-		sbyte   nWallHitVClip;      // What tVideoClip for impact with CWall
-		sbyte   fireCount;          // Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fireCount shots will be fired.
-		short   nRobotHitSound;     // What sound for impact with robot
+		int8_t   nWallHitVClip;      // What tVideoClip for impact with CWall
+		int8_t   fireCount;          // Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fireCount shots will be fired.
+		int16_t   nRobotHitSound;     // What sound for impact with robot
 
-		sbyte   nAmmoUsage;         // How many units of ammunition it uses.
-		sbyte   nVClipIndex;        // Vclip to render for the weapon, itself.
-		short   nWallHitSound;      // What sound for impact with CWall
+		int8_t   nAmmoUsage;         // How many units of ammunition it uses.
+		int8_t   nVClipIndex;        // Vclip to render for the weapon, itself.
+		int16_t   nWallHitSound;      // What sound for impact with CWall
 
-		sbyte   destructible;       // If !0, this weapon can be destroyed by another weapon.
-		sbyte   matter;             // Flag: set if this CObject is matter (as opposed to energy)
-		sbyte   bounce;             // 1==always bounces, 2=bounces twice
-		sbyte   homingFlag;         // Set if this weapon can home in on a target.
+		int8_t   destructible;       // If !0, this weapon can be destroyed by another weapon.
+		int8_t   matter;             // Flag: set if this CObject is matter (as opposed to energy)
+		int8_t   bounce;             // 1==always bounces, 2=bounces twice
+		int8_t   homingFlag;         // Set if this weapon can home in on a target.
 
-		ubyte   speedvar;           // allowed variance in speed below average, /128: 64 = 50% meaning if speed = 100, can be 50..100
+		uint8_t   speedvar;           // allowed variance in speed below average, /128: 64 = 50% meaning if speed = 100, can be 50..100
 
-		ubyte   flags;              // see values above
+		uint8_t   flags;              // see values above
 
-		sbyte   flash;              // Flash effect
-		sbyte   nAfterburnerSize;   // Size of blobs in I2X (1)/16 units, specify in bitmaps.tbl as floating point.  Player afterburner size = 2.5.
+		int8_t   flash;              // Flash effect
+		int8_t   nAfterburnerSize;   // Size of blobs in I2X (1)/16 units, specify in bitmaps.tbl as floating point.  Player afterburner size = 2.5.
 
 		/* not present in shareware datafiles */
-		sbyte   children;           // ID of weapon to drop if this contains children.  -1 means no children.
+		int8_t   children;           // ID of weapon to drop if this contains children.  -1 means no children.
 
 		fix	xEnergyUsage;         // How much fuel is consumed to fire this weapon.
 		fix	xFireWait;            // Time until this weapon can be fired again.
@@ -83,33 +83,33 @@ class __pack__ CWeaponInfo {
 		tBitmapIndex    hiresPicture;  // a hires picture of the above
 
 	public:
-		void Read (CFile& cf, int nFileVersion);
+		void Read (CFile& cf, int32_t nFileVersion);
 	};
 
 class __pack__ CD1WeaponInfo {
 	public:
-		sbyte	renderType;				// How to draw 0=laser, 1=blob, 2=CObject
-		sbyte	nModel;					// Model num if rendertype==2.
-		sbyte	nInnerModel;			// Model num of inner part if rendertype==2.
-		sbyte	persistent;					//	0 = dies when it hits something, 1 = continues (eg, fusion cannon)
+		int8_t	renderType;				// How to draw 0=laser, 1=blob, 2=CObject
+		int8_t	nModel;					// Model num if rendertype==2.
+		int8_t	nInnerModel;			// Model num of inner part if rendertype==2.
+		int8_t	persistent;					//	0 = dies when it hits something, 1 = continues (eg, fusion cannon)
 
-		sbyte	nFlashVClip;				// What tVideoClip to use for muzzle flash
-		short	flashSound;				// What sound to play when fired
-		sbyte	nRobotHitVClip;			// What tVideoClip for impact with robot
-		short	nRobotHitSound;			// What sound for impact with robot
+		int8_t	nFlashVClip;				// What tVideoClip to use for muzzle flash
+		int16_t	flashSound;				// What sound to play when fired
+		int8_t	nRobotHitVClip;			// What tVideoClip for impact with robot
+		int16_t	nRobotHitSound;			// What sound for impact with robot
 
-		sbyte	nWallHitVClip;			// What tVideoClip for impact with CWall
-		short	nWallHitSound;			// What sound for impact with CWall
-		sbyte	fireCount;					//	Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fireCount shots will be fired.
-		sbyte	nAmmoUsage;					//	How many units of ammunition it uses.
+		int8_t	nWallHitVClip;			// What tVideoClip for impact with CWall
+		int16_t	nWallHitSound;			// What sound for impact with CWall
+		int8_t	fireCount;					//	Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fireCount shots will be fired.
+		int8_t	nAmmoUsage;					//	How many units of ammunition it uses.
 
-		sbyte	nVClipIndex;				//	Vclip to render for the weapon, itself.
-		sbyte	destructible;				//	If !0, this weapon can be destroyed by another weapon.
-		sbyte	matter;						//	Flag: set if this CObject is matter (as opposed to energy)
-		sbyte	bounce;						//	Flag: set if this CObject bounces off walls
+		int8_t	nVClipIndex;				//	Vclip to render for the weapon, itself.
+		int8_t	destructible;				//	If !0, this weapon can be destroyed by another weapon.
+		int8_t	matter;						//	Flag: set if this CObject is matter (as opposed to energy)
+		int8_t	bounce;						//	Flag: set if this CObject bounces off walls
 
-		sbyte	homingFlag;				//	Set if this weapon can home in on a target.
-		sbyte	dum1, dum2, dum3;
+		int8_t	homingFlag;				//	Set if this weapon can home in on a target.
+		int8_t	dum1, dum2, dum3;
 
 		fix	xEnergyUsage;				//	How much fuel is consumed to fire this weapon.
 		fix	xFireWait;					//	Time until this weapon can be fired again.
@@ -135,13 +135,13 @@ class __pack__ CD1WeaponInfo {
 
 class __pack__ CD2D1WeaponInfo {
 	public:
-		sbyte	persistent;					//	0 = dies when it hits something, 1 = continues (eg, fusion cannon)
-		sbyte	fireCount;					//	Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fireCount shots will be fired.
-		sbyte	nAmmoUsage;					//	How many units of ammunition it uses.
-		sbyte	destructible;				//	If !0, this weapon can be destroyed by another weapon.
-		sbyte	matter;						//	Flag: set if this CObject is matter (as opposed to energy)
-		sbyte	bounce;						//	Flag: set if this CObject bounces off walls
-		sbyte	homingFlag;				//	Set if this weapon can home in on a target.
+		int8_t	persistent;					//	0 = dies when it hits something, 1 = continues (eg, fusion cannon)
+		int8_t	fireCount;					//	Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fireCount shots will be fired.
+		int8_t	nAmmoUsage;					//	How many units of ammunition it uses.
+		int8_t	destructible;				//	If !0, this weapon can be destroyed by another weapon.
+		int8_t	matter;						//	Flag: set if this CObject is matter (as opposed to energy)
+		int8_t	bounce;						//	Flag: set if this CObject bounces off walls
+		int8_t	homingFlag;				//	Set if this weapon can home in on a target.
 		fix	xEnergyUsage;				//	How much fuel is consumed to fire this weapon.
 		fix	xFireWait;					//	Time until this weapon can be fired again.
 		fix	strength [NDL];				// How much damage it can inflict
@@ -245,33 +245,33 @@ class __pack__ CD2D1WeaponInfo {
 #define NUM_SMART_CHILDREN  6   // Number of smart children created by default.
 
 extern CD2D1WeaponInfo weaponInfoD2D1 [D1_MAX_WEAPON_TYPES];
-extern void DoSelectWeapon(int nWeapon, int secondaryFlag);
+extern void DoSelectWeapon(int32_t nWeapon, int32_t secondaryFlag);
 extern void ShowWeaponStatus(void);
 
-extern ubyte primaryWeaponToWeaponInfo [MAX_PRIMARY_WEAPONS];
-extern ubyte secondaryWeaponToWeaponInfo [MAX_SECONDARY_WEAPONS];
+extern uint8_t primaryWeaponToWeaponInfo [MAX_PRIMARY_WEAPONS];
+extern uint8_t secondaryWeaponToWeaponInfo [MAX_SECONDARY_WEAPONS];
 
 //for each Secondary weapon, which gun it fires out of
-extern ubyte secondaryWeaponToGunNum [MAX_SECONDARY_WEAPONS];
+extern uint8_t secondaryWeaponToGunNum [MAX_SECONDARY_WEAPONS];
 
 //for each primary weapon, what kind of powerup gives weapon
-extern ubyte primaryWeaponToPowerup [MAX_SECONDARY_WEAPONS];
+extern uint8_t primaryWeaponToPowerup [MAX_SECONDARY_WEAPONS];
 
 //for each Secondary weapon, what kind of powerup gives weapon
-extern ubyte secondaryWeaponToPowerup [2][MAX_SECONDARY_WEAPONS];
+extern uint8_t secondaryWeaponToPowerup [2][MAX_SECONDARY_WEAPONS];
 
 //flags whether the last time we use this weapon, it was the 'super' version
-extern ubyte bLastWeaponWasSuper [2][MAX_PRIMARY_WEAPONS];
+extern uint8_t bLastWeaponWasSuper [2][MAX_PRIMARY_WEAPONS];
 
-extern void AutoSelectWeapon(int weaponType, int auto_select);        //parm is primary or secondary
-extern void SelectWeapon (int nWeapon, int secondaryFlag, int bPrintMessage, int bWaitForRearm);
+extern void AutoSelectWeapon(int32_t weaponType, int32_t auto_select);        //parm is primary or secondary
+extern void SelectWeapon (int32_t nWeapon, int32_t secondaryFlag, int32_t bPrintMessage, int32_t bWaitForRearm);
 
 extern char 	*pszShortPrimaryWeaponNames [];
 extern char 	*pszShortSecondaryWeaponNames [];
 extern char 	*pszPrimaryWeaponNames [];
 extern char 	*pszSecondaryWeaponNames [];
-extern int  	nMaxPrimaryAmmo [MAX_PRIMARY_WEAPONS];
-extern ubyte   nMaxSecondaryAmmo [MAX_SECONDARY_WEAPONS];
+extern int32_t  	nMaxPrimaryAmmo [MAX_PRIMARY_WEAPONS];
+extern uint8_t   nMaxSecondaryAmmo [MAX_SECONDARY_WEAPONS];
 
 #define HAS_WEAPON_FLAG 1
 #define HAS_ENERGY_FLAG 2
@@ -285,33 +285,33 @@ extern ubyte   nMaxSecondaryAmmo [MAX_SECONDARY_WEAPONS];
 //      HAS_ENERGY_FLAG
 //      HAS_AMMO_FLAG
 //      HAS_SUPER_FLAG
-int PlayerHasWeapon (int nWeapon, int secondaryFlag, int nPlayer, int bAll);
+int32_t PlayerHasWeapon (int32_t nWeapon, int32_t secondaryFlag, int32_t nPlayer, int32_t bAll);
 
 //called when one of these weapons is picked up
 //when you pick up a secondary, you always get the weapon & ammo for it
-int PickupSecondary (CObject *objP, int nWeaponIndex, int nAmount, int nPlayer);
+int32_t PickupSecondary (CObject *objP, int32_t nWeaponIndex, int32_t nAmount, int32_t nPlayer);
 
 // max. amount of ammo of type 'nWeapon' player can carry depending on equipment (ammo rack) and game settings
-int MaxSecondaryAmmo (int nWeapon);
+int32_t MaxSecondaryAmmo (int32_t nWeapon);
 
 //called when a primary weapon is picked up
 //returns true if actually picked up
-int PickupPrimary (int nWeaponIndex, int nPlayer);
+int32_t PickupPrimary (int32_t nWeaponIndex, int32_t nPlayer);
 
 //called when ammo (for the vulcan cannon) is picked up
-int PickupAmmo (int classFlag, int nWeaponIndex, int ammoCount, int nPlayer);
+int32_t PickupAmmo (int32_t classFlag, int32_t nWeaponIndex, int32_t ammoCount, int32_t nPlayer);
 
-int PickupLaser (CObject *objP, int nId, int nPlayer);
-int PickupSuperLaser (CObject *objP, int nId, int nPlayer);
-int PickupQuadLaser (CObject *objP, int nId, int nPlayer);
-int PickupGun (CObject *objP, int nId, int nPlayer);
-int PickupGatlingGun (CObject *objP, int nId, int nPlayer);
-int PickupVulcanAmmo (CObject *objP, int nPlayer);
+int32_t PickupLaser (CObject *objP, int32_t nId, int32_t nPlayer);
+int32_t PickupSuperLaser (CObject *objP, int32_t nId, int32_t nPlayer);
+int32_t PickupQuadLaser (CObject *objP, int32_t nId, int32_t nPlayer);
+int32_t PickupGun (CObject *objP, int32_t nId, int32_t nPlayer);
+int32_t PickupGatlingGun (CObject *objP, int32_t nId, int32_t nPlayer);
+int32_t PickupVulcanAmmo (CObject *objP, int32_t nPlayer);
 
-int AttemptToStealItem (CObject *objp, int player_num);
+int32_t AttemptToStealItem (CObject *objp, int32_t player_num);
 
 //this function is for when the player intentionally drops a powerup
-int SpitPowerup (CObject *spitter, ubyte id, int seed = -1);
+int32_t SpitPowerup (CObject *spitter, uint8_t id, int32_t seed = -1);
 
 #define SMEGA_ID    40
 
@@ -323,10 +323,10 @@ void tactile_set_button_jolt (void);
 /*
  * reads n CWeaponInfo structs from a CFILE
  */
-int ReadWeaponInfos (int nOffset, int nCount, CFile& cf, int fileVersion, bool bDefault);
+int32_t ReadWeaponInfos (int32_t nOffset, int32_t nCount, CFile& cf, int32_t fileVersion, bool bDefault);
 
-extern ubyte nWeaponOrder [2][11];
-extern ubyte nDefaultWeaponOrder [2][11];
+extern uint8_t nWeaponOrder [2][11];
+extern uint8_t nDefaultWeaponOrder [2][11];
 
 #define primaryOrder		(nWeaponOrder [0])
 #define secondaryOrder	(nWeaponOrder [1])
@@ -334,27 +334,27 @@ extern ubyte nDefaultWeaponOrder [2][11];
 #define defaultPrimaryOrder	(nDefaultWeaponOrder [0])
 #define defaultSecondaryOrder	(nDefaultWeaponOrder [1])
 
-int AllowedToFireGun (void);
-int AllowedToFireFlare (void);
-int AllowedToFireMissile (int nPlayer, int bCheckSegment);
+int32_t AllowedToFireGun (void);
+int32_t AllowedToFireFlare (void);
+int32_t AllowedToFireMissile (int32_t nPlayer, int32_t bCheckSegment);
 
 void DropCurrentWeapon (void);
-void DropSecondaryWeapon (int nWeapon, int nAmount = 1, int bSilent = 0);
+void DropSecondaryWeapon (int32_t nWeapon, int32_t nAmount = 1, int32_t bSilent = 0);
 
-void ValidatePrios (ubyte *order, ubyte *defaultOrder, int n);
+void ValidatePrios (uint8_t *order, uint8_t *defaultOrder, int32_t n);
 void SetLastSuperWeaponStates (void);
 void ToggleBomb (void);
 void CyclePrimary ();
 void CycleSecondary ();
-void SetWeaponState (sbyte nPrimary, sbyte bPrimFire, sbyte nSecondary, sbyte bSecFire);
-int GetPlayerGun (int nPlayer, int *bFiring);
-int GetPlayerMissile (int nPlayer, int *bFiring);
+void SetWeaponState (int8_t nPrimary, int8_t bPrimFire, int8_t nSecondary, int8_t bSecFire);
+int32_t GetPlayerGun (int32_t nPlayer, int32_t *bFiring);
+int32_t GetPlayerMissile (int32_t nPlayer, int32_t *bFiring);
 
 void InitSeismicDisturbances (void);
-int POrderList (int nWeapon);
-int SOrderList (int nWeapon);
-int CheckToUsePrimary (int nWeaponIndex);
+int32_t POrderList (int32_t nWeapon);
+int32_t SOrderList (int32_t nWeapon);
+int32_t CheckToUsePrimary (int32_t nWeaponIndex);
 void DoWeaponStuff (void);
-int ArmedBomb (void);
+int32_t ArmedBomb (void);
 
 #endif

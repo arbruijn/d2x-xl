@@ -42,39 +42,39 @@ void MouseFlush (void);	// clears all mice events...
 
 //========================================================================
 // Shutdowns mouse system.
-void MouseGetPos (int *x, int *y);
-void MouseGetDelta (int *dx, int *dy);
-void MouseGetPosZ (int *x, int *y, int *z);
-void MouseGetDeltaZ (int *dx, int *dy, int *dz);
-int MouseGetButtons (void);
-void MouseGetCybermanPos (int *x, int *y);
+void MouseGetPos (int32_t *x, int32_t *y);
+void MouseGetDelta (int32_t *dx, int32_t *dy);
+void MouseGetPosZ (int32_t *x, int32_t *y, int32_t *z);
+void MouseGetDeltaZ (int32_t *dx, int32_t *dy, int32_t *dz);
+int32_t MouseGetButtons (void);
+void MouseGetCybermanPos (int32_t *x, int32_t *y);
 
 // Returns how long this button has been down since last call.
-extern fix MouseButtonDownTime(int button);
+extern fix MouseButtonDownTime(int32_t button);
 
 // Returns how many times this button has went down since last call.
-extern int MouseButtonDownCount(int button);
+extern int32_t MouseButtonDownCount(int32_t button);
 
 // Returns 1 if this button is currently down
-extern int MouseButtonState(int button);
+extern int32_t MouseButtonState(int32_t button);
 
 #define MOUSE_MAX_BUTTONS       8
 
 typedef struct tMouseButton {
-	ubyte pressed;
-	ubyte rotated;
+	uint8_t pressed;
+	uint8_t rotated;
 	fix	xPrevTimeWentDown;
 	fix	xTimeWentDown;
 	fix	xTimeHeldDown;
-	uint	numDowns;
-	uint	numUps;
+	uint32_t	numDowns;
+	uint32_t	numUps;
 } __pack__ tMouseButton;
 
 typedef struct tMouseInfo {
 	tMouseButton	buttons [MOUSE_MAX_BUTTONS];
-	int				dx, dy, dz;
-	int				x, y, z;
-	int				bDoubleClick;
+	int32_t				dx, dy, dz;
+	int32_t				x, y, z;
+	int32_t				bDoubleClick;
 } __pack__ tMouseInfo;
 
 extern tMouseInfo mouseData;

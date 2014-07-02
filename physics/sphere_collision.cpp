@@ -33,13 +33,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderlib.h"
 #include "collision_math.h"
 
-int SphereToFaceRelation (CFixVector* refP, fix rad, CFixVector *vertList, int nVerts, CFixVector* vNormal);
+int32_t SphereToFaceRelation (CFixVector* refP, fix rad, CFixVector *vertList, int32_t nVerts, CFixVector* vNormal);
 
 //	-----------------------------------------------------------------------------
 
 //given largest component of Normal, return i & j
 //if largest component is negative, swap i & j
-int ijTable [3][2] = {
+int32_t ijTable [3][2] = {
 	{2, 1},  //pos x biggest
 	{0, 2},  //pos y biggest
 	{1, 0}	//pos z biggest
@@ -49,7 +49,7 @@ int ijTable [3][2] = {
 // see if a point (refP) is inside a triangle using barycentric method
 // return 0 if point inside triangle, otherwise sides point is behind as bit code
 
-ubyte PointIsOutsideFace (CFixVector* vRef, CFixVector* vertices, short nVerts)
+uint8_t PointIsOutsideFace (CFixVector* vRef, CFixVector* vertices, int16_t nVerts)
 {
 #if 1
 CFixVector n1 = CFixVector::Normal (vertices [0], vertices [1], *vRef);
@@ -71,14 +71,14 @@ fix invDenom = -FixDiv (I2X (1), FixMul (dot01, dot01));
 fix u = FixMul (dot02 - FixMul (dot01, dot12), invDenom);
 fix v = FixMul (dot12 - FixMul (dot01, dot02), invDenom);
 // Check if point is in triangle
-return int (u < 0) + (int (v < 0) << 1) + (int (u + v > I2X (1)) << 2);
+return int32_t (u < 0) + (int32_t (v < 0) << 1) + (int32_t (u + v > I2X (1)) << 2);
 #endif
 }
 
 //	-----------------------------------------------------------------------------
 //see if a point (refP) is inside a triangle using barycentric method
 
-ubyte PointIsOutsideFace (CFixVector* vRef, ushort* nVertIndex, short nVerts)
+uint8_t PointIsOutsideFace (CFixVector* vRef, uint16_t* nVertIndex, int16_t nVerts)
 {
 #if 1
 CFixVector n1 = CFixVector::Normal (VERTICES [nVertIndex [0]], VERTICES [nVertIndex [1]], *vRef);
@@ -102,14 +102,14 @@ fix invDenom = FixDiv (I2X (1), FixMul (dot00, dot11) - FixMul (dot01, dot01));
 fix u = FixMul (FixMul (dot11, dot02) - FixMul (dot01, dot12), invDenom);
 fix v = FixMul (FixMul (dot00, dot12) - FixMul (dot01, dot02), invDenom);
 // Check if point is in triangle
-return int (u < -PLANE_DIST_TOLERANCE) + (int (v < -PLANE_DIST_TOLERANCE) << 1) + (int (u + v > I2X (1) + PLANE_DIST_TOLERANCE) << 2); // compensate for numerical errors
+return int32_t (u < -PLANE_DIST_TOLERANCE) + (int32_t (v < -PLANE_DIST_TOLERANCE) << 1) + (int32_t (u + v > I2X (1) + PLANE_DIST_TOLERANCE) << 2); // compensate for numerical errors
 #endif
 }
 
 //	-----------------------------------------------------------------------------
 //see if a point (refP) is inside a triangle using barycentric method
 
-ubyte PointIsOutsideFace (CFloatVector* vRef, ushort* nVertIndex, short nVerts)
+uint8_t PointIsOutsideFace (CFloatVector* vRef, uint16_t* nVertIndex, int16_t nVerts)
 {
 #if 1
 #	if 1
@@ -141,11 +141,11 @@ p += v1 * v;
 p -= *vRef;
 float l = p.Mag ();
 #endif
-return (int (u < -0.001f)) + ((int (v < -0.001f)) << 1) + ((int (u + v > 1.001f)) << 2); // compensate for numerical errors
+return (int32_t (u < -0.001f)) + ((int32_t (v < -0.001f)) << 1) + ((int32_t (u + v > 1.001f)) << 2); // compensate for numerical errors
 #	endif
 #else
 	CFloatVector	t, *v0, *v1;
-	int 				i, j, nEdge, biggest;
+	int32_t 				i, j, nEdge, biggest;
 	float				check_i, check_j;
 	CFloatVector2	vEdge, vCheck;
 
@@ -194,12 +194,12 @@ return true;
 
 //	-----------------------------------------------------------------------------
 
-float DistToFace (CFloatVector3 vRef, short nSegment, ubyte nSide, CFloatVector3* vHit)
+float DistToFace (CFloatVector3 vRef, int16_t nSegment, uint8_t nSide, CFloatVector3* vHit)
 {
 	CSide*			sideP = SEGMENTS [nSegment].Side (nSide);
 	CFloatVector	h, r;
-	ushort*			vertices = sideP->m_vertices;
-	int				i, j;
+	uint16_t*			vertices = sideP->m_vertices;
+	int32_t				i, j;
 	float				d = 0.0f;
 
 r.Assign (vRef);
@@ -230,7 +230,7 @@ vertices = sideP->m_corners;
 
 	CFloatVector	* v0, * v1 = &FVERTICES [vertices [0]];
 	float				minDist = 1e10f;
-	int				nVertices = sideP->m_nCorners;
+	int32_t				nVertices = sideP->m_nCorners;
 
 for (i = 1; i <= nVertices; i++) {
 	v0 = v1;
@@ -253,7 +253,7 @@ return minDist;
 //vPlanePoint & vPlaneNorm describe the plane
 //p0 & p1 are the ends of the line
 
-int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlane, CFixVector *vNormal,
+int32_t FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlane, CFixVector *vNormal,
 										 CFixVector *p0, CFixVector *p1, fix rad, bool bCheckOverflow)
 {
 #if 0
@@ -317,7 +317,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int FindPlaneLineIntersection (CFloatVector& intersection, CFloatVector* vPlane, CFloatVector* vNormal, CFloatVector* p0, CFloatVector* p1)
+int32_t FindPlaneLineIntersection (CFloatVector& intersection, CFloatVector* vPlane, CFloatVector* vNormal, CFloatVector* p0, CFloatVector* p1)
 {
 CFloatVector u = *p1;
 u -= *p0;
@@ -347,18 +347,18 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 //see if a point is inside a face by projecting into 2d
-uint PointToFaceRelation (CFixVector* refP, CFixVector *vertList, int nVerts, CFixVector* vNormal)
+uint32_t PointToFaceRelation (CFixVector* refP, CFixVector *vertList, int32_t nVerts, CFixVector* vNormal)
 {
 #if 0
 if (nVerts == 3)
-	return uint (PointIsOutsideFace (refP, vNormal, vertList));
+	return uint32_t (PointIsOutsideFace (refP, vNormal, vertList));
 #endif
 
 //	CFixVector	vNormal;
 	CFixVector	t;
-	int			biggest;
-	int 			i, j, nEdge;
-	uint 			nEdgeMask;
+	int32_t			biggest;
+	int32_t 			i, j, nEdge;
+	uint32_t 			nEdgeMask;
 	fix 			check_i, check_j;
 	CFixVector	*v0, *v1;
 	CFixVector2	vEdge, vCheck;
@@ -405,15 +405,15 @@ return nEdgeMask;
 
 //	-----------------------------------------------------------------------------
 //check if a sphere intersects a face
-int SphereToFaceRelation (CFixVector* refP, fix rad, CFixVector *vertList, int nVerts, CFixVector* vNormal)
+int32_t SphereToFaceRelation (CFixVector* refP, fix rad, CFixVector *vertList, int32_t nVerts, CFixVector* vNormal)
 {
 	CFixVector	vEdge, vCheck;            //this time, real 3d vectors
 	CFixVector	vClosestPoint;
 	fix			xEdgeLen, d, dist;
 	CFixVector	*v0, *v1;
-	int			iType;
-	int			nEdge;
-	uint			nEdgeMask;
+	int32_t			iType;
+	int32_t			nEdge;
+	uint32_t			nEdgeMask;
 
 //now do 2d check to see if refP is inside
 if (!(nEdgeMask = PointToFaceRelation (refP, vertList, nVerts, vNormal)))
@@ -453,11 +453,11 @@ return IT_NONE;
 //refP on plane, whether or not line intersects CSide
 //iFace determines which of four possible faces we have
 //note: the seg parm is temporary, until the face itself has a refP field
-int CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad,
-									 CFixVector *vertList, int nVerts, CFixVector *vNormal)
+int32_t CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad,
+									 CFixVector *vertList, int32_t nVerts, CFixVector *vNormal)
 {
 	CFixVector	v1, vHit;
-	int			pli, bCheckRad = 0;
+	int32_t			pli, bCheckRad = 0;
 
 //use lowest refP number
 if (p1 == p0) {
@@ -478,7 +478,7 @@ if (rad)
 if ((pli = SphereToFaceRelation (&vHit, rad, vertList, nVerts, vNormal)))
 	return pli;
 if (bCheckRad) {
-	int			i, d;
+	int32_t			i, d;
 	CFixVector	*a, *b;
 
 	b = vertList;
@@ -496,7 +496,7 @@ return IT_NONE;
 //	-----------------------------------------------------------------------------
 //computes the parameters of closest approach of two lines
 //fill in two parameters, t0 & t1.  returns 0 if lines are parallel, else 1
-int CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVector *p2, CFixVector *v2)
+int32_t CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVector *p2, CFixVector *v2)
 {
 	CFixMatrix det;
 	fix d, crossMag2;		//mag squared Cross product
@@ -521,7 +521,7 @@ return 1;		//found refP
 //vector defined by p0, p1
 //returns dist if intersects, and fills in intP
 //else returns 0
-int CheckVectorSphereCollision (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *vSpherePos, fix xSphereRad)
+int32_t CheckVectorSphereCollision (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *vSpherePos, fix xSphereRad)
 {
 #if 0
 FindPointLineIntersection (intersection, *p0, *p1, *vSpherePos, 0);
@@ -594,8 +594,8 @@ fix CheckVectorObjectCollision (CHitData& hitData, CFixVector *p0, CFixVector *p
 {
 	fix			size, dist;
 	CFixVector	vHit, vNormal, v0, v1, vn, vPos;
-	int			bThisPoly, bOtherPoly;
-	short			nModel = -1;
+	int32_t			bThisPoly, bOtherPoly;
+	int16_t			nModel = -1;
 
 if (rad < 0)
 	size = 0;
@@ -694,9 +694,9 @@ return dist;
 
 //	-----------------------------------------------------------------------------
 
-int ObjectInList (short nObject, short *objListP)
+int32_t ObjectInList (int16_t nObject, int16_t *objListP)
 {
-	short t;
+	int16_t t;
 
 while (((t = *objListP) != -1) && (t != nObject))
 	objListP++;
@@ -706,12 +706,12 @@ return (t == nObject);
 
 //	-----------------------------------------------------------------------------
 
-int ComputeObjectHitpoint (CHitData& hitData, CHitQuery &hitQuery)
+int32_t ComputeObjectHitpoint (CHitData& hitData, CHitQuery &hitQuery)
 {
 	CObject		* thisObjP = (hitQuery.nObject < 0) ? NULL : OBJECTS + hitQuery.nObject,
 			 		* otherObjP;
-	int			nThisType = (hitQuery.nObject < 0) ? -1 : OBJECTS [hitQuery.nObject].info.nType;
-	int			nObjSegList [7], nObjSegs = 1, i;
+	int32_t			nThisType = (hitQuery.nObject < 0) ? -1 : OBJECTS [hitQuery.nObject].info.nType;
+	int32_t			nObjSegList [7], nObjSegs = 1, i;
 	fix			dMin = 0x7FFFFFFF;
 	bool			bCheckVisibility = ((hitQuery.flags & FQ_VISIBILITY) != 0);
 	CHitData		curHit;
@@ -725,8 +725,8 @@ if (hitQuery.nSegment == nDbgSeg)
 #	endif
 #if 1
 CSegment* segP = SEGMENTS + hitQuery.nSegment;
-for (int nSide = 0; nSide < 6; nSide++) {
-	short nSegment = segP->m_children [nSide];
+for (int32_t nSide = 0; nSide < 6; nSide++) {
+	int16_t nSegment = segP->m_children [nSide];
 	if (0 > nSegment)
 		continue;
 	CWall* wallP = segP->Wall (nSide);
@@ -738,17 +738,17 @@ for (int nSide = 0; nSide < 6; nSide++) {
 		nObjSegList [nObjSegs++] = nSegment;
 	}
 #endif
-for (int iObjSeg = 0; iObjSeg < nObjSegs; iObjSeg++) {
-	short nSegment = nObjSegList [iObjSeg];
+for (int32_t iObjSeg = 0; iObjSeg < nObjSegs; iObjSeg++) {
+	int16_t nSegment = nObjSegList [iObjSeg];
 	segP = SEGMENTS + nSegment;
 #if DBG
 restart:
 #endif
 	if (nSegment == nDbgSeg)
 		BRP;
-	short nSegObjs = gameData.objs.nObjects;
-	short nFirstObj = SEGMENTS [nSegment].m_objects;
-	for (short nObject = nFirstObj; nObject != -1; nObject = otherObjP->info.nNextInSeg, nSegObjs--) {
+	int16_t nSegObjs = gameData.objs.nObjects;
+	int16_t nFirstObj = SEGMENTS [nSegment].m_objects;
+	for (int16_t nObject = nFirstObj; nObject != -1; nObject = otherObjP->info.nNextInSeg, nSegObjs--) {
 		otherObjP = OBJECTS + nObject;
 #if DBG
 		if (nObject == nDbgObj)
@@ -758,7 +758,7 @@ restart:
 			goto restart;
 			}
 #endif
-		int nOtherType = otherObjP->info.nType;
+		int32_t nOtherType = otherObjP->info.nType;
 		if ((nOtherType == OBJ_POWERUP) && ((hitQuery.flags & FQ_IGNORE_POWERUPS) || (gameStates.app.bGameSuspended & SUSP_POWERUPS)))
 			continue;
 		if ((hitQuery.flags & FQ_CHECK_PLAYER) && (nOtherType != OBJ_PLAYER))
@@ -776,7 +776,7 @@ restart:
 				 (gameData.objs.collisionResult [nOtherType][nThisType] == RESULT_NOTHING))
 				continue;
 			}
-		int nFudgedRad = hitQuery.radP1;
+		int32_t nFudgedRad = hitQuery.radP1;
 
 		//	If this is a robot:robot collision, only do it if both of them have attackType != 0 (eg, green guy)
 		if (nThisType == OBJ_ROBOT) {
@@ -820,10 +820,10 @@ return dMin;
 
 //	-----------------------------------------------------------------------------
 
-static inline int PassThrough (short nObject, short nSegment, short nSide, short nFace, int flags, CFixVector& vHitPoint)
+static inline int32_t PassThrough (int16_t nObject, int16_t nSegment, int16_t nSide, int16_t nFace, int32_t flags, CFixVector& vHitPoint)
 {
 CSegment* segP = SEGMENTS + nSegment;
-int widResult = segP->IsPassable (nSide, (nObject < 0) ? NULL : OBJECTS + nObject);
+int32_t widResult = segP->IsPassable (nSide, (nObject < 0) ? NULL : OBJECTS + nObject);
 
 if (widResult & WID_PASSABLE_FLAG) // check whether side can be passed through
 	return 1; 
@@ -842,7 +842,7 @@ if (gameStates.app.cheats.bPhysics != 0xBADA55)
 	return 0;
 if (nObject != LOCALPLAYER.nObject) 
 	return 0;
-short nChildSeg = segP->m_children [nSide];
+int16_t nChildSeg = segP->m_children [nSide];
 if (nChildSeg < 0)
 	return 0;
 CSegment* childSegP = SEGMENTS + nChildSeg;
@@ -855,10 +855,10 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-static inline int CopySegList (short* dest, short nDestLen, short* src, short nSrcLen, int flags)
+static inline int32_t CopySegList (int16_t* dest, int16_t nDestLen, int16_t* src, int16_t nSrcLen, int32_t flags)
 {
 if (flags & FQ_GET_SEGLIST) {
-	int i = MAX_FVI_SEGS - 1 - nDestLen;
+	int32_t i = MAX_FVI_SEGS - 1 - nDestLen;
 	if (i > nSrcLen)
 		i = nSrcLen;
 	memcpy (dest + nDestLen, src, i * sizeof (*dest));
@@ -871,14 +871,14 @@ return 0;
 
 #define FVI_NEWCODE 2
 
-int ComputeHitpoint (CHitData& hitData, CHitQuery& hitQuery, short* segList, short* nSegments, int nEntrySeg)
+int32_t ComputeHitpoint (CHitData& hitData, CHitQuery& hitQuery, int16_t* segList, int16_t* nSegments, int32_t nEntrySeg)
 {
 	CHitData		bestHit, curHit;
 	fix			d, dMin = 0x7fffffff;					//distance to hit refP
-	int			nHitNoneSegment = -1;
-	short			hitNoneSegList [MAX_FVI_SEGS];
-	short			nHitNoneSegs = 0;
-	int			nCurNestLevel = gameData.collisions.hitResult.nNestCount;
+	int32_t			nHitNoneSegment = -1;
+	int16_t			hitNoneSegList [MAX_FVI_SEGS];
+	int16_t			nHitNoneSegs = 0;
+	int32_t			nCurNestLevel = gameData.collisions.hitResult.nNestCount;
 	bool			bCheckVisibility = ((hitQuery.flags & FQ_VISIBILITY) != 0);
 
 bestHit.vPoint.SetZero ();
@@ -903,24 +903,24 @@ if ((hitQuery.nObject > -1) && (gameData.objs.collisionResult [OBJECTS [hitQuery
 if (hitQuery.nSegment == nDbgSeg)
 	BRP;
 #endif
-int startMask = segP->Masks (*hitQuery.p0, hitQuery.radP0).m_face;
+int32_t startMask = segP->Masks (*hitQuery.p0, hitQuery.radP0).m_face;
 CSegMasks masks = segP->Masks (*hitQuery.p1, hitQuery.radP1);    //on back of which faces?
-int centerMask = masks.m_center;
-int endMask = masks.m_face;
+int32_t centerMask = masks.m_center;
+int32_t endMask = masks.m_face;
 
 if (!centerMask)
 	nHitNoneSegment = hitQuery.nSegment;
 if (endMask) { //on the back of at least one face
-	short nSide, iFace, bit;
+	int16_t nSide, iFace, bit;
 
 	//for each face we are on the back of, check if intersected
 	for (nSide = 0, bit = 1; (nSide < 6) && (endMask >= bit); nSide++) {
-		int nChildSeg = segP->m_children [nSide];
+		int32_t nChildSeg = segP->m_children [nSide];
 #if 0
 		if (bCheckVisibility && (0 > nChildSeg))	// poking through a wall into the void around the level?
 			continue;
 #endif
-		int nFaces = segP->Side (nSide)->m_nFaces;
+		int32_t nFaces = segP->Side (nSide)->m_nFaces;
 		for (iFace = 0; iFace < 2; iFace++, bit <<= 1) {
 			if (nChildSeg == nEntrySeg)	//must be executed here to have bit shifted
 				continue;		//don't go back through entry nSide
@@ -933,7 +933,7 @@ if (endMask) { //on the back of at least one face
 			if ((hitQuery.nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				BRP;
 #endif
-			int nFaceHitType;
+			int32_t nFaceHitType;
 				nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
 									? segP->CheckLineToFaceSpecial (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace)
 									: segP->CheckLineToFaceRegular (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace);
@@ -951,9 +951,9 @@ if (endMask) { //on the back of at least one face
 				}
 #endif
 			if (PassThrough (hitQuery.nObject, hitQuery.nSegment, nSide, iFace, hitQuery.flags, curHit.vPoint)) {
-				int			i;
-				short			subSegList [MAX_FVI_SEGS];
-				short			nSubSegments;
+				int32_t			i;
+				int16_t			subSegList [MAX_FVI_SEGS];
+				int16_t			nSubSegments;
 				CHitData		subHit, saveHitData = gameData.collisions.hitResult;
 				CHitQuery	subHitQuery = hitQuery;
 
@@ -1049,10 +1049,10 @@ return bestHit.nType;
 //  ingore_obj			ignore collisions with this CObject
 //  check_objFlag	determines whether collisions with OBJECTS are checked
 //Returns the hitResult->nHitType
-int FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult)
+int32_t FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult)
 {
 	CHitData		curHit, newHit;
-	int			i, nHitboxes = extraGameInfo [IsMultiGame].nHitboxes; // save value
+	int32_t			i, nHitboxes = extraGameInfo [IsMultiGame].nHitboxes; // save value
 
 gameData.collisions.hitResult.vNormal.SetZero ();
 gameData.collisions.hitResult.nNormals = 0;
@@ -1148,9 +1148,9 @@ return curHit.nType;
 //	-----------------------------------------------------------------------------
 //new function for Mike
 //note: gameData.collisions.nSegsVisited must be set to zero before this is called
-int SphereIntersectsWall (CFixVector *vPoint, short nSegment, fix rad)
+int32_t SphereIntersectsWall (CFixVector *vPoint, int16_t nSegment, fix rad)
 {
-	int		faceMask;
+	int32_t		faceMask;
 	CSegment *segP;
 
 #if DBG
@@ -1165,8 +1165,8 @@ gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nSegment;
 segP = SEGMENTS + nSegment;
 faceMask = segP->Masks (*vPoint, rad).m_face;
 if (faceMask != 0) {				//on the back of at least one face
-	int		nSide, bit, iFace, nChild, i;
-	int		nFaceHitType;      //in what way did we hit the face?
+	int32_t		nSide, bit, iFace, nChild, i;
+	int32_t		nFaceHitType;      //in what way did we hit the face?
 
 //for each face we are on the back of, check if intersected
 	for (nSide = 0, bit = 1; (nSide < 6) && (faceMask >= bit); nSide++) {
@@ -1195,7 +1195,7 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 //Returns true if the CObject is through any walls
-int ObjectIntersectsWall (CObject *objP)
+int32_t ObjectIntersectsWall (CObject *objP)
 {
 return SphereIntersectsWall (&objP->info.position.vPos, objP->info.nSegment, objP->info.xSize);
 }
@@ -1203,18 +1203,18 @@ return SphereIntersectsWall (&objP->info.position.vPos, objP->info.nSegment, obj
 //------------------------------------------------------------------------------
 // Check whether point p1 from segment nDestSeg can be seen from point p0 located in segment nStartSeg.
 
-int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short nDestSeg, int nDepth, int nThread)
+int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, int16_t nDestSeg, int32_t nDepth, int32_t nThread)
 {
-	static			uint segVisList [MAX_THREADS][MAX_SEGMENTS_D2X];
-	static			uint segVisFlags [MAX_THREADS] = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
+	static			uint32_t segVisList [MAX_THREADS][MAX_SEGMENTS_D2X];
+	static			uint32_t segVisFlags [MAX_THREADS] = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
 
 	CSegment*		segP;
 	CSide*			sideP;
 	CWall*			wallP;
 	CFloatVector	intersection, v0, v1;
 	float				l0, l1 = 0.0f;
-	short				nSide, nFace, nFaceCount, nChildSeg;
-	uint*				bVisited = segVisList [nThread];
+	int16_t				nSide, nFace, nFaceCount, nChildSeg;
+	uint32_t*				bVisited = segVisList [nThread];
 
 if (!nDepth) {
 #if 0
@@ -1227,7 +1227,7 @@ if (!nDepth) {
 #endif
 	}
 
-	uint			bFlag = segVisFlags [nThread];
+	uint32_t			bFlag = segVisFlags [nThread];
 
 for (;;) {
 	bVisited [nStartSeg] = bFlag;
@@ -1244,7 +1244,7 @@ for (;;) {
 			if (bVisited [nChildSeg] == bFlag)
 				continue;
 			}
-		ushort* vertices = sideP->m_vertices;
+		uint16_t* vertices = sideP->m_vertices;
 		nFaceCount = sideP->m_nFaces;
 		for (nFace = 0; nFace < nFaceCount; nFace++, vertices += 3) {
 			if (!(nFace && sideP->IsQuad ())) {
@@ -1301,9 +1301,9 @@ for (;;) {
 
 //	-----------------------------------------------------------------------------
 
-int UseSphere (CObject *objP)
+int32_t UseSphere (CObject *objP)
 {
-	int nType = objP->info.nType;
+	int32_t nType = objP->info.nType;
 
 return gameStates.app.bNostalgia || (nType == OBJ_MONSTERBALL) || (nType == OBJ_HOSTAGE) || (nType == OBJ_POWERUP) || objP->IsMine ();
 }

@@ -42,15 +42,15 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 extern CFaceColor tMapColor;
 
 #if DBG_SHADOWS
-extern int bShadowTest;
-extern int bFrontCap;
-extern int bRearCap;
-extern int bShadowVolume;
-extern int bFrontFaces;
-extern int bBackFaces;
-extern int bSWCulling;
+extern int32_t bShadowTest;
+extern int32_t bFrontCap;
+extern int32_t bRearCap;
+extern int32_t bShadowVolume;
+extern int32_t bFrontFaces;
+extern int32_t bBackFaces;
+extern int32_t bSWCulling;
 #endif
-extern int bZPass;
+extern int32_t bZPass;
 
 #define G3_DRAW_ARRAYS	1
 #define G3_USE_VBOS		0
@@ -62,27 +62,27 @@ extern int bZPass;
 //2: Compute hit point of vector from current light through each lit submodel vertex (slow)
 //3: Compute hit point of vector from current light through each lit model face (fastest, flawed)
 
-int bPrintLine = 0;
+int32_t bPrintLine = 0;
 
-short nHighestTexture;
-int g3d_interp_outline;
+int16_t nHighestTexture;
+int32_t g3d_interp_outline;
 
 CRenderPoint	*modelPointList = NULL;
 
 #define MAX_INTERP_COLORS 100
 
 //this is a table of mappings from RGB15 to palette colors
-typedef struct {short pal_entry, rgb15;} tInterpColor;
+typedef struct {int16_t pal_entry, rgb15;} tInterpColor;
 
 tInterpColor interpColorTable [MAX_INTERP_COLORS];
 
-//static int bIntrinsicFacing = 0;
-//static int bFlatPolys = 1;
-//static int bTexPolys = 1;
+//static int32_t bIntrinsicFacing = 0;
+//static int32_t bFlatPolys = 1;
+//static int32_t bTexPolys = 1;
 
 CRenderPoint *pointList [MAX_POINTS_PER_POLY];
 
-short nGlow = -1;
+int16_t nGlow = -1;
 
 //------------------------------------------------------------------------------
 //gives the interpreter an array of points to use
@@ -93,7 +93,7 @@ modelPointList = pointlist;
 
 //------------------------------------------------------------------------------
 
-void RotatePointList (CRenderPoint *dest, CFixVector *src, CRenderNormal *norms, int n, int o)
+void RotatePointList (CRenderPoint *dest, CFixVector *src, CRenderNormal *norms, int32_t n, int32_t o)
 {
 PROF_START
 	CFloatVector	*pfv = gameData.models.fPolyModelVerts + o;
@@ -107,7 +107,7 @@ dest += o;
 if (norms)
 	norms += o;
 while (n--) {
-	dest->SetKey ((short) o);
+	dest->SetKey ((int16_t) o);
 #if 1
 	if (norms) {
 		if (norms->nFaces > 1) {
@@ -156,10 +156,10 @@ PROF_END(ptTransform)
 
 //------------------------------------------------------------------------------
 
-void G3SwapPolyModelData (ubyte *dataP)
+void G3SwapPolyModelData (uint8_t *dataP)
 {
-	int	i;
-	short n;
+	int32_t	i;
+	int16_t n;
 	tUVL*	uvl_val;
 
 for (;;) {
@@ -253,7 +253,7 @@ for (;;) {
 //------------------------------------------------------------------------------
 
 #ifdef WORDS_NEED_ALIGNMENT
-void G3AddPolyModelChunk (ubyte *old_base, ubyte *new_base, int offset, chunk *chunk_list, int *no_chunks)
+void G3AddPolyModelChunk (uint8_t *old_base, uint8_t *new_base, int32_t offset, chunk *chunk_list, int32_t *no_chunks)
 {
 Assert (*no_chunks + 1 < MAX_CHUNKS); //increase MAX_CHUNKS if you get this
 chunk_list [*no_chunks].old_base = old_base;
@@ -266,9 +266,9 @@ chunk_list [*no_chunks].correction = 0;
 
 //------------------------------------------------------------------------------
 
-void G3PolyModelVerify (ubyte *dataP)
+void G3PolyModelVerify (uint8_t *dataP)
 {
-	short n;
+	int16_t n;
 
 for (;;) {
 	switch (WORDVAL (dataP)) {
@@ -313,24 +313,24 @@ for (;;) {
 
 //------------------------------------------------------------------------------
 
-int G3CheckAndSwap (void *dataP)
+int32_t G3CheckAndSwap (void *dataP)
 {
-	short	h = WORDVAL (dataP);
+	int16_t	h = WORDVAL (dataP);
 
 if ((h >= 0) && (h <= OP_GLOW))
 	return 1;
 ShortSwap (&h);
 if ((h < 0) || (h > OP_GLOW))
 	return 0;
-G3SwapPolyModelData (reinterpret_cast<ubyte*> (dataP));
+G3SwapPolyModelData (reinterpret_cast<uint8_t*> (dataP));
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-void GetThrusterPos (int nModel, CFixVector *vNormal, CFixVector *vOffset, CBitmap *bmP, int nPoints)
+void GetThrusterPos (int32_t nModel, CFixVector *vNormal, CFixVector *vOffset, CBitmap *bmP, int32_t nPoints)
 {
-	int					h, i, nSize;
+	int32_t					h, i, nSize;
 	CFixVector			v, vForward = CFixVector::Create(0,0,I2X (1));
 	CModelThrusters	*mtP = gameData.models.thrusters + nModel;
 
@@ -339,7 +339,7 @@ if (mtP->nCount >= 2)
 if (bmP) {
 	if (!gameData.pig.tex.bitmaps [0].IsElement (bmP))
 		return;
-	i = (int) (bmP - gameData.pig.tex.bitmaps [0]);
+	i = (int32_t) (bmP - gameData.pig.tex.bitmaps [0]);
 	if ((i != 24) && ((i < 1741) || (i > 1745)))
 		return;
 	}
@@ -376,7 +376,7 @@ if (!mtP->nCount++) {
 
 #define CHECK_NORMAL_FACING	0
 
-int G3DrawPolyModel (
+int32_t G3DrawPolyModel (
 	CObject*				objP,
 	void*					modelDataP,
 	CArray<CBitmap*>&	modelBitmaps,
@@ -386,13 +386,13 @@ int G3DrawPolyModel (
 	fix*					xGlowValues,
 	CFloatVector*		colorP,
 	POF::CModel*		po,
-	int					nModel)
+	int32_t					nModel)
 {
-	ubyte *p = reinterpret_cast<ubyte*> (modelDataP);
-	short	nTag;
-	short bGetThrusterPos, bLightning;
+	uint8_t *p = reinterpret_cast<uint8_t*> (modelDataP);
+	int16_t	nTag;
+	int16_t bGetThrusterPos, bLightning;
 
-	static int nDepth = -1;
+	static int32_t nDepth = -1;
 
 if (gameStates.app.bNostalgia)
 	bGetThrusterPos = 
@@ -424,27 +424,27 @@ for (;;) {
 	if (nTag == OP_EOF)
 		break;
 	else if (nTag == OP_DEFPOINTS) {
-		int n = WORDVAL (p+2);
+		int32_t n = WORDVAL (p+2);
 		RotatePointList (modelPointList, VECPTR (p+4), po ? po->m_vertNorms.Buffer () : NULL, n, 0);
 		p += n * sizeof (CFixVector) + 4;
 		break;
 		}
 	else if (nTag == OP_DEFP_START) {
-		int n = WORDVAL (p+2);
-		int s = WORDVAL (p+4);
+		int32_t n = WORDVAL (p+2);
+		int32_t s = WORDVAL (p+4);
 
 		RotatePointList (modelPointList, VECPTR (p+8), po ? po->m_vertNorms.Buffer () : NULL, n, s);
 		p += n * sizeof (CFixVector) + 8;
 		}
 	else if (nTag == OP_FLATPOLY) {
-		int nVerts = WORDVAL (p+2);
+		int32_t nVerts = WORDVAL (p+2);
 		Assert (nVerts < MAX_POINTS_PER_POLY);
 #if CHECK_NORMAL_FACING
 		if (G3CheckNormalFacing (*VECPTR (p+4), *VECPTR (p+16)) > 0)
 #endif
 		 {
 			//fix l = X2I (32 * xModelLight);
-			CCanvas::Current ()->SetColorRGB15bpp (WORDVAL (p+28), (ubyte) (255 * gameStates.render.grAlpha));
+			CCanvas::Current ()->SetColorRGB15bpp (WORDVAL (p+28), (uint8_t) (255 * gameStates.render.grAlpha));
 			CCanvas::Current ()->FadeColorRGB (1.0);
 			if (colorP) {
 				colorP->Red () = (float) CCanvas::Current ()->Color ().Red () / 255.0f;
@@ -452,7 +452,7 @@ for (;;) {
 				colorP->Blue () = (float) CCanvas::Current ()->Color ().Blue () / 255.0f;
 				}
 			p += 30;
-			for (int i = 0; i < nVerts; i++)
+			for (int32_t i = 0; i < nVerts; i++)
 				pointList [i] = modelPointList + WORDPTR (p) [i];
 			G3DrawPoly (nVerts, pointList);
 			}
@@ -463,14 +463,14 @@ for (;;) {
 		p += (nVerts | 1) * 2;
 		}
 	else if (nTag == OP_TMAPPOLY) {
-		int nVerts = WORDVAL (p+2);
+		int32_t nVerts = WORDVAL (p+2);
 		Assert ( nVerts < MAX_POINTS_PER_POLY );
 #if CHECK_NORMAL_FACING
 		if (G3CheckNormalFacing (*VECPTR (p+4), *VECPTR (p+16)) > 0)
 #endif
 		 {
 			tUVL *uvlList;
-			int i;
+			int32_t i;
 			fix l;
 			CFixVector *pvn = VECPTR (p+16);
 
@@ -573,10 +573,10 @@ return 1;
 
 //------------------------------------------------------------------------------
 //alternate interpreter for morphing CObject
-int G3DrawMorphingModel (void *modelP, CArray<CBitmap*>& modelBitmaps, CAngleVector *pAnimAngles, CFixVector *vOffset,
-								  fix xModelLight, CFixVector *new_points, int nModel)
+int32_t G3DrawMorphingModel (void *modelP, CArray<CBitmap*>& modelBitmaps, CAngleVector *pAnimAngles, CFixVector *vOffset,
+								  fix xModelLight, CFixVector *new_points, int32_t nModel)
 {
-	ubyte *p = reinterpret_cast<ubyte*> (modelP);
+	uint8_t *p = reinterpret_cast<uint8_t*> (modelP);
 	fix *xGlowValues = NULL;
 
 G3CheckAndSwap (modelP);
@@ -587,23 +587,23 @@ for (;;) {
 			return 1;
 
 		case OP_DEFPOINTS: {
-			int n = WORDVAL (p+2);
+			int32_t n = WORDVAL (p+2);
 			RotatePointList (modelPointList, new_points, NULL, n, 0);
 			p += n * sizeof (CFixVector) + 4;
 			break;
 			}
 
 		case OP_DEFP_START: {
-			int n = WORDVAL (p+2);
-			int s = WORDVAL (p+4);
+			int32_t n = WORDVAL (p+2);
+			int32_t s = WORDVAL (p+4);
 			RotatePointList (modelPointList, new_points, NULL, n, s);
 			p += n * sizeof (CFixVector) + 8;
 			break;
 			}
 
 		case OP_FLATPOLY: {
-			int nVerts = WORDVAL (p+2);
-			int i, nTris;
+			int32_t nVerts = WORDVAL (p+2);
+			int32_t i, nTris;
 			CCanvas::Current ()->SetColor (WORDVAL (p+28));
 			for (i = 0; i < 2; i++)
 				pointList [i] = modelPointList + WORDPTR (p+30) [i];
@@ -617,10 +617,10 @@ for (;;) {
 			}
 
 		case OP_TMAPPOLY: {
-			int nVerts = WORDVAL (p+2);
+			int32_t nVerts = WORDVAL (p+2);
 			tUVL *uvlList;
 			tUVL morph_uvls [3];
-			int i, nTris;
+			int32_t i, nTris;
 			fix light;
 			//calculate light from surface Normal
 			if (nGlow < 0) {			//no glow

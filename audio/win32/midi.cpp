@@ -56,7 +56,7 @@ if (gameOpts->sound.bUseSDLMixer) {
 			SDL_Delay (1);		
 #endif
 		}
-	int nVolume = m_nVolume;
+	int32_t nVolume = m_nVolume;
 	SetVolume (0);
 	m_nVolume = nVolume;
 	Mix_HaltMusic ();
@@ -68,13 +68,13 @@ if (gameOpts->sound.bUseSDLMixer) {
 
 //------------------------------------------------------------------------------
 
-int CMidi::SetVolume (int nVolume)
+int32_t CMidi::SetVolume (int32_t nVolume)
 {
 if (gameStates.sound.audio.bNoMusic)
 	return 0;
 
 #if (defined (_WIN32) || USE_SDL_MIXER)
-	int nLastVolume = m_nVolume;
+	int32_t nLastVolume = m_nVolume;
 
 if (nVolume < 0)
 	m_nVolume = 0;
@@ -107,7 +107,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void CMidi::FixVolume (int nVolume)
+void CMidi::FixVolume (int32_t nVolume)
 {
 #ifdef _WIN32
 if (gameStates.sound.bMidiFix && (songManager.Playing () <= 0)) {
@@ -122,13 +122,13 @@ if (gameStates.sound.bMidiFix && (songManager.Playing () <= 0)) {
 
 //------------------------------------------------------------------------------
 
-int CMidi::PlaySong (const char* pszSong, char* melodicBank, char* drumBank, int bLoop, int bD1Song)
+int32_t CMidi::PlaySong (const char* pszSong, char* melodicBank, char* drumBank, int32_t bLoop, int32_t bD1Song)
 {
 if (gameStates.sound.audio.bNoMusic)
 	return 0;
 
 #if (defined (_WIN32) || USE_SDL_MIXER)
-	int	bCustom;
+	int32_t	bCustom;
 
 PrintLog (1, "DigiPlayMidiSong (%s)\n", pszSong);
 audio.StopCurrentSong ();

@@ -50,9 +50,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-short PowerupModel (int nId)
+int16_t PowerupModel (int32_t nId)
 {
-	short nModel;
+	int16_t nModel;
 
 if ((nModel = PowerupToModel (nId)))
 	return nModel;
@@ -63,9 +63,9 @@ return gameData.weapons.info [nId].nModel;
 
 //------------------------------------------------------------------------------
 
-short WeaponModel (CObject *objP)
+int16_t WeaponModel (CObject *objP)
 {
-	short	nModel;
+	int16_t	nModel;
 
 if ((nModel = WeaponToModel (objP->info.nId)))
 	return nModel;
@@ -74,7 +74,7 @@ return objP->ModelId ();
 
 //------------------------------------------------------------------------------
 
-int InitAddonPowerup (CObject *objP)
+int32_t InitAddonPowerup (CObject *objP)
 {
 if (objP->info.nId == POW_SLOWMOTION)
 	objP->rType.vClipInfo.nClipIndex = -1;
@@ -105,7 +105,7 @@ objP->mType.physInfo.drag = 512;
 
 // -----------------------------------------------------------------------------
 
-int ConvertHostageToModel (CObject *objP)
+int32_t ConvertHostageToModel (CObject *objP)
 {
 if (objP->info.renderType == RT_POLYOBJ)
 	return 1;
@@ -123,7 +123,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-int ConvertModelToHostage (CObject *objP)
+int32_t ConvertModelToHostage (CObject *objP)
 {
 objP->rType.vClipInfo.nClipIndex = nHostageVClips [0];
 objP->rType.vClipInfo.xFrameTime = gameData.effects.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
@@ -138,7 +138,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-int CObject::PowerupToDevice (void)
+int32_t CObject::PowerupToDevice (void)
 {
 
 if (gameStates.app.bNostalgia)
@@ -150,8 +150,8 @@ if (info.controlType == CT_WEAPON)
 if ((info.nType != OBJ_POWERUP) && (info.nType != OBJ_WEAPON))
 	return 0;
 
-int bHasModel = 0;
-short nId, nModel = PowerupToModel (info.nId);
+int32_t bHasModel = 0;
+int16_t nId, nModel = PowerupToModel (info.nId);
 
 if (nModel)
 	nId = info.nId;
@@ -202,7 +202,7 @@ return 1;
 void ConvertAllPowerupsToWeapons (void)
 {
 	CObject*	objP;
-	//int		i;
+	//int32_t		i;
 
 FORALL_OBJS (objP, i)
 	if (objP->info.renderType == RT_POWERUP) {
@@ -292,7 +292,7 @@ return fScale;
 
 //------------------------------------------------------------------------------
 
-static int DrawShield3D (CObject* objP, CFloatVector& color)
+static int32_t DrawShield3D (CObject* objP, CFloatVector& color)
 {
 if ((objP->mType.physInfo.velocity.IsZero ()) && (objP->info.movementType != MT_SPINNING)) {
 	objP->info.movementType = MT_SPINNING;
@@ -305,20 +305,20 @@ return DrawShieldSphere (objP, color.Red (), color.Green (), color.Blue (), 1.0f
 //------------------------------------------------------------------------------
 //draw an CObject that has one bitmap & doesn't rotate
 
-void DrawObjectBitmap (CObject *objP, int bmi0, int bmi, int iFrame, CFloatVector *colorP, float fAlpha)
+void DrawObjectBitmap (CObject *objP, int32_t bmi0, int32_t bmi, int32_t iFrame, CFloatVector *colorP, float fAlpha)
 {
-	int nType = objP->info.nType;
+	int32_t nType = objP->info.nType;
 
 if ((nType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	return;
 
 	CBitmap*		bmP;
 	CFloatVector	color;
-	int			nId = objP->info.nId;
+	int32_t			nId = objP->info.nId;
 #if 0
-	int			bMuzzleFlash = 0;
+	int32_t			bMuzzleFlash = 0;
 #endif
-	int			bAdditive = 0, bEnergy = 0;
+	int32_t			bAdditive = 0, bEnergy = 0;
 	fix			xSize;
 
 if ((nType == OBJ_WEAPON) && (objP->info.nId == OMEGA_ID) && omegaLightning.Exist ())
@@ -356,7 +356,7 @@ else {
 	}
 
 if (bmi < 0) {
-	if (-bmi - 1 >= int (gameData.pig.tex.addonBitmaps.Length ()))
+	if (-bmi - 1 >= int32_t (gameData.pig.tex.addonBitmaps.Length ()))
 		return;
 	bmP = &gameData.pig.tex.addonBitmaps [-bmi - 1];
 	bmP = bmP->SetCurFrame (iFrame);
@@ -416,7 +416,7 @@ if (!b3DShield || !DrawShield3D (objP, color)) {
 
 //------------------------------------------------------------------------------
 
-int	bLinearTMapPolyObjs = 1;
+int32_t	bLinearTMapPolyObjs = 1;
 
 //used for robot engine glow
 //function that takes the same parms as draw_tmap, but renders as flat poly
@@ -433,10 +433,10 @@ int	bLinearTMapPolyObjs = 1;
 
 //------------------------------------------------------------------------------
 
-int GetCloakInfo (CObject *objP, fix xCloakStartTime, fix xCloakEndTime, tCloakInfo *ciP)
+int32_t GetCloakInfo (CObject *objP, fix xCloakStartTime, fix xCloakEndTime, tCloakInfo *ciP)
 {
 	tCloakInfo	ci = {0, CLOAKED_FADE_LEVEL, I2X (1), I2X (1), I2X (1), 0, 0};
-	int			i;
+	int32_t			i;
 
 if (!(xCloakStartTime || xCloakEndTime)) {
 	if (objP->info.nType == OBJ_PLAYER) {
@@ -487,7 +487,7 @@ else if (ci.xDeltaTime < ci.xFadeinDuration) {	// make object transparent during
 	}
 #endif
 else if ((xCloakStartTime == 0x7fffffff) || (gameData.time.xGame < xCloakEndTime - ci.xFadeoutDuration)) {
-	static int nCloakDelta = 0, nCloakDir = 1;
+	static int32_t nCloakDelta = 0, nCloakDir = 1;
 	static fix xCloakTimer = 0;
 
 	//note, if more than one cloaked CObject is visible at once, the
@@ -516,11 +516,11 @@ return ci.bFading;
 
 //------------------------------------------------------------------------------
 //do special cloaked render
-int DrawCloakedObject (CObject *objP, fix light, fix *glow, fix xCloakStartTime, fix xCloakEndTime)
+int32_t DrawCloakedObject (CObject *objP, fix light, fix *glow, fix xCloakStartTime, fix xCloakEndTime)
 {
 	tObjTransformation	*posP = OBJPOS (objP);
 	tCloakInfo	ci;
-	int			bOk = 0;
+	int32_t			bOk = 0;
 
 if (GetCloakInfo (objP, xCloakStartTime, xCloakEndTime, &ci) <= 0) {
 	fix xNewLight, xSaveGlow;
@@ -557,17 +557,17 @@ return bOk;
 
 //------------------------------------------------------------------------------
 
-static inline int ObjectIsCloaked (CObject *objP)
+static inline int32_t ObjectIsCloaked (CObject *objP)
 {
 return gameStates.render.bBuildModels ? 0 : objP->Cloaked ();
 }
 
 //------------------------------------------------------------------------------
 
-int DrawHiresObject (CObject *objP, fix xLight, fix *xEngineGlow)
+int32_t DrawHiresObject (CObject *objP, fix xLight, fix *xEngineGlow)
 {
 	float			fLight [3];
-	short			nModel = 0;
+	int16_t			nModel = 0;
 	OOF::CModel	*po;
 
 #if 0
@@ -602,17 +602,17 @@ return 1;
 //draw an CObject which renders as a polygon model
 #define MAX_MODEL_TEXTURES 63
 
-int DrawPolygonObject (CObject *objP, int bForce)
+int32_t DrawPolygonObject (CObject *objP, int32_t bForce)
 {
 	fix	xLight;
-	int	imSave = 0;
+	int32_t	imSave = 0;
 	fix	xEngineGlow [2];		//element 0 is for engine glow, 1 for headlight
-	int	bBlendPolys = 0;
-	int	bBrightPolys = 0;
-	int	bGatling = 0;
-	int	bCloaked = ObjectIsCloaked (objP);
-	int	bEnergyWeapon;
-	int	i, id, bOk = 0;
+	int32_t	bBlendPolys = 0;
+	int32_t	bBrightPolys = 0;
+	int32_t	bGatling = 0;
+	int32_t	bCloaked = ObjectIsCloaked (objP);
+	int32_t	bEnergyWeapon;
+	int32_t	i, id, bOk = 0;
 
 if (objP->info.nType == 255)
 	return 0;
@@ -620,7 +620,7 @@ if (objP->info.nType == 255)
 if ((objP->info.nType != OBJ_PLAYER) && (objP->info.position.vPos == OBJECTS [0].info.position.vPos))
 	BRP;
 #endif
-id = (int) objP->info.nId;
+id = (int32_t) objP->info.nId;
 if ((id < 0) || (id == 255))
 	bEnergyWeapon = id = 0;
 else {
@@ -741,9 +741,9 @@ return bOk;
 
 // -----------------------------------------------------------------------------
 
-static int RenderPlayerModel (CObject* objP, int bSpectate)
+static int32_t RenderPlayerModel (CObject* objP, int32_t bSpectate)
 {
-int bDynObjLight = (gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
+int32_t bDynObjLight = (gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
 if (automap.Display () && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)))
 	return 0;
 tObjTransformation savePos;
@@ -766,7 +766,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderRobotModel (CObject* objP, int bSpectate)
+static int32_t RenderRobotModel (CObject* objP, int32_t bSpectate)
 {
 if (automap.Display () && !AM_SHOW_ROBOTS)
 	return 0;
@@ -796,7 +796,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderReactorModel (CObject* objP, int bSpectate)
+static int32_t RenderReactorModel (CObject* objP, int32_t bSpectate)
 {
 if (!DrawPolygonObject (objP, 0))
 	return 0;
@@ -809,7 +809,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderWeaponModel (CObject* objP, int bSpectate)
+static int32_t RenderWeaponModel (CObject* objP, int32_t bSpectate)
 {
 if (automap.Display () && !AM_SHOW_POWERUPS (1))
 	return 0;
@@ -878,7 +878,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderPowerupModel (CObject* objP, int bSpectate)
+static int32_t RenderPowerupModel (CObject* objP, int32_t bSpectate)
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return 0;
@@ -908,7 +908,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderHostageModel (CObject* objP, int bSpectate)
+static int32_t RenderHostageModel (CObject* objP, int32_t bSpectate)
 {
 if (gameStates.app.bNostalgia || !(gameOpts->Use3DPowerups () && DrawPolygonObject (objP, 0)))
 	ConvertModelToHostage (objP);
@@ -920,7 +920,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderPolyModel (CObject* objP, int bSpectate)
+static int32_t RenderPolyModel (CObject* objP, int32_t bSpectate)
 {
 DrawPolygonObject (objP, 0);
 if (!(SHOW_SMOKE && gameOpts->render.particles.bDebris)) 
@@ -932,7 +932,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderFireball (CObject* objP, int bForce)
+static int32_t RenderFireball (CObject* objP, int32_t bForce)
 {
 if (gameStates.render.nShadowPass != 2) {
 	DrawFireball (objP);
@@ -945,7 +945,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderExplBlast (CObject* objP, int bForce)
+static int32_t RenderExplBlast (CObject* objP, int32_t bForce)
 {
 if (gameStates.render.nShadowPass != 2)
 	DrawExplBlast (objP);
@@ -954,7 +954,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderShockwave (CObject* objP, int bForce)
+static int32_t RenderShockwave (CObject* objP, int32_t bForce)
 {
 if (gameStates.render.nShadowPass != 2)
 	DrawShockwave (objP);
@@ -963,7 +963,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderShrapnel (CObject* objP, int bForce)
+static int32_t RenderShrapnel (CObject* objP, int32_t bForce)
 {
 if (gameStates.render.nShadowPass != 2)
 	shrapnelManager.Draw (objP);
@@ -972,7 +972,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderWeapon (CObject* objP, int bForce)
+static int32_t RenderWeapon (CObject* objP, int32_t bForce)
 {
 if (gameStates.render.nShadowPass != 2) {
 	if (automap.Display () && !AM_SHOW_POWERUPS (1))
@@ -998,7 +998,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderHostage (CObject* objP, int bForce)
+static int32_t RenderHostage (CObject* objP, int32_t bForce)
 {
 if (ConvertHostageToModel (objP))
 	DrawPolygonObject (objP, 0);
@@ -1009,7 +1009,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderPowerup (CObject* objP, int bForce)
+static int32_t RenderPowerup (CObject* objP, int32_t bForce)
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return 0;
@@ -1026,7 +1026,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int RenderLaser (CObject* objP, int bForce)
+static int32_t RenderLaser (CObject* objP, int32_t bForce)
 {
 if (gameStates.render.nShadowPass != 2) {
 	RenderLaser (objP);
@@ -1038,12 +1038,12 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-int RenderObject (CObject *objP, int nWindow, int bForce)
+int32_t RenderObject (CObject *objP, int32_t nWindow, int32_t bForce)
 {
-	short			nObject = objP->Index ();
-	int			bSpectate = 0;
+	int16_t			nObject = objP->Index ();
+	int32_t			bSpectate = 0;
 
-int nType = objP->info.nType;
+int32_t nType = objP->info.nType;
 if (nType == 255) {
 	objP->Die ();
 	return 0;
@@ -1091,7 +1091,7 @@ if ((nType == OBJ_NONE)/* || (nType==OBJ_CAMBOT)*/){
 #endif
 	return 0;
 	}
-int mldSave = gameStates.render.detail.nMaxLinearDepth;
+int32_t mldSave = gameStates.render.detail.nMaxLinearDepth;
 gameStates.render.nState = 1;
 gameData.objs.color.index = 0;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;

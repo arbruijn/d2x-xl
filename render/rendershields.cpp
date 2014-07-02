@@ -30,14 +30,14 @@
 
 //------------------------------------------------------------------------------
 
-void TransformHitboxf (CObject *objP, CFloatVector *vertList, int iSubObj)
+void TransformHitboxf (CObject *objP, CFloatVector *vertList, int32_t iSubObj)
 {
 
 	CFloatVector		hv;
 	tHitbox*				phb = gameData.models.hitboxes [objP->ModelId ()].hitboxes + iSubObj;
 	CFixVector			vMin = phb->vMin;
 	CFixVector			vMax = phb->vMax;
-	int					i;
+	int32_t					i;
 
 for (i = 0; i < 8; i++) {
 	hv.v.coord.x = X2F (hitBoxOffsets [i].v.coord.x ? vMin.v.coord.x : vMax.v.coord.x);
@@ -51,7 +51,7 @@ for (i = 0; i < 8; i++) {
 
 #if RENDER_HITBOX
 
-static int nDbgBox = -1, nDbgBoxFace = -1;
+static int32_t nDbgBox = -1, nDbgBoxFace = -1;
 
 void RenderHitbox (CObject *objP, float red, float green, float blue, float alpha)
 {
@@ -61,7 +61,7 @@ if (objP->rType.polyObjInfo.nModel < 0)
 	CFloatVector	dir;
 	tHitbox*			pmhb = gameData.models.hitboxes [objP->ModelId ()].hitboxes.Buffer ();
 	tCloakInfo		ci = {0, FADE_LEVELS, 0, 0, 0, 0, 0};
-	int				i, j, iBox, nBoxes, bHit = 0;
+	int32_t				i, j, iBox, nBoxes, bHit = 0;
 	float				fFade;
 
 if (!SHOW_OBJ_FX)
@@ -171,7 +171,7 @@ if (gameStates.app.nSDLTicks [0] - gameData.models.hitboxes [objP->ModelId ()].t
 	o.info.position.vPos = gameData.models.hitboxes [objP->ModelId ()].vHit;
 	o.info.position.mOrient = objP->info.position.mOrient;
 	o.SetSize (I2X (2));
-	int nModel = objP->rType.polyObjInfo.nModel;
+	int32_t nModel = objP->rType.polyObjInfo.nModel;
 	objP->rType.polyObjInfo.nModel = -1;
 	objP->rType.polyObjInfo.nModel = nModel;
 	//SetRenderView (0, NULL);
@@ -188,7 +188,7 @@ ogl.SetDepthMode (GL_LESS);
 
 void RenderPlayerShield (CObject *objP)
 {
-	int			bStencil, dt = 0, i = objP->info.nId, nColor = 0;
+	int32_t			bStencil, dt = 0, i = objP->info.nId, nColor = 0;
 	float			alpha, scale = 1;
 	tCloakInfo	ci;
 

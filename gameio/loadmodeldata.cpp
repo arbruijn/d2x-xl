@@ -69,7 +69,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void _CDECL_ FreeObjExtensionBitmaps (void)
 {
-	int		i;
+	int32_t		i;
 	CBitmap*	bmP;
 
 PrintLog (1, "unloading extra bitmaps\n");
@@ -81,7 +81,7 @@ for (i = gameData.pig.tex.nBitmaps [0], bmP = gameData.pig.tex.bitmaps [0] + i;
 	bmP->ReleaseTexture ();
 	if (bmP->Buffer ()) {
 		bmP->DestroyBuffer ();
-		UseBitmapCache (bmP, (int) -bmP->Height () * (int) bmP->RowSize ());
+		UseBitmapCache (bmP, (int32_t) -bmP->Height () * (int32_t) bmP->RowSize ());
 		}
 	}
 gameData.pig.tex.nExtraBitmaps = gameData.pig.tex.nBitmaps [0];
@@ -109,11 +109,11 @@ PrintLog (-1);
 //------------------------------------------------------------------------------
 
 //nType==1 means 1.1, nType==2 means 1.2 (with weapons)
-int LoadRobotExtensions (const char *fname, char *folder, int nType)
+int32_t LoadRobotExtensions (const char *fname, char *folder, int32_t nType)
 {
 	CFile cf;
-	int t,i,j;
-	int bVertigoData;
+	int32_t t,i,j;
+	int32_t bVertigoData;
 
 	//strlwr (fname);
 bVertigoData = !strcmp (fname, "d2x.ham");
@@ -124,7 +124,7 @@ FreeModelExtensions ();
 FreeObjExtensionBitmaps ();
 
 if (nType > 1) {
-	int sig;
+	int32_t sig;
 
 	sig = cf.ReadInt ();
 	if (sig != MAKE_SIG ('X','H','A','M'))
@@ -214,12 +214,12 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int LoadRobotReplacements (const char* szLevel, const char* szFolder, int bAddBots, int bAltModels, bool bCustom, bool bUseHog)
+int32_t LoadRobotReplacements (const char* szLevel, const char* szFolder, int32_t bAddBots, int32_t bAltModels, bool bCustom, bool bUseHog)
 {
 	CFile			cf;
 	CPolyModel*	modelP;
-	int			t, i, j;
-	int			nBotTypeSave = gameData.bots.nTypes [gameStates.app.bD1Mission], 
+	int32_t			t, i, j;
+	int32_t			nBotTypeSave = gameData.bots.nTypes [gameStates.app.bD1Mission], 
 					nBotJointSave = gameData.bots.nJoints, 
 					nPolyModelSave = gameData.models.nPolyModels;
 	tRobotInfo	botInfoSave;
@@ -288,7 +288,7 @@ for (j = 0; j < t; j++) {
 		return -1;
 		}
 	if (bAltModels)
-		cf.Seek (4 * sizeof (short), SEEK_CUR);
+		cf.Seek (4 * sizeof (int16_t), SEEK_CUR);
 	else
 		ReadJointPositions (gameData.bots.joints, 1, cf, i);
 	}
@@ -398,7 +398,7 @@ static tBitmapIndex LoadExitModelIFF (const char * filename)
 {
 	tBitmapIndex	bmi;
 	CBitmap*			bmP = gameData.pig.tex.bitmaps [0] + gameData.pig.tex.nExtraBitmaps;
-	int				iffError;		//reference parm to avoid warning message
+	int32_t				iffError;		//reference parm to avoid warning message
 	CIFF				iff;
 
 bmi.index = 0;
@@ -425,7 +425,7 @@ return bmi;
 
 static CBitmap *LoadExitModelBitmap (const char *name)
 {
-	int				i;
+	int32_t				i;
 	tBitmapIndex*	bip = gameData.pig.tex.objBmIndex + gameData.pig.tex.nObjBitmaps;
 	Assert (gameData.pig.tex.nObjBitmaps < MAX_OBJ_BITMAPS);
 
@@ -448,12 +448,12 @@ return gameData.pig.tex.bitmaps [0] + i;
 
 //------------------------------------------------------------------------------
 
-void OglCachePolyModelTextures (int nModel);
+void OglCachePolyModelTextures (int32_t nModel);
 
-int LoadExitModels (void)
+int32_t LoadExitModels (void)
 {
 	CFile cf;
-	int start_num, i;
+	int32_t start_num, i;
 	static const char* szExitBm [] = {
 		"steel1.bbm", 
 		"rbot061.bbm", 
@@ -500,7 +500,7 @@ int LoadExitModels (void)
 		OglCachePolyModelTextures (gameData.endLevel.exit.nDestroyedModel);
 	}
 	else if (cf.Exist (D1_PIGFILE,gameFolders.game.szData [0],0)) {
-		int offset, offset2;
+		int32_t offset, offset2;
 
 		cf.Open (D1_PIGFILE, gameFolders.game.szData [0], "rb",0);
 		switch (cf.Length ()) { //total hack for loading models
@@ -559,7 +559,7 @@ int LoadExitModels (void)
 void RestoreDefaultModels (void)
 {
 	CPolyModel*	modelP = &gameData.models.polyModels [0][0];
-	int			i;
+	int32_t			i;
 
 gameData.bots.info [0] = gameData.bots.defaultInfo;
 gameData.bots.joints = gameData.bots.defaultJoints;
@@ -585,14 +585,14 @@ gameData.bots.nJoints = gameData.bots.nDefaultJoints;
 #define MODEL_DATA_VERSION 3
 
 typedef struct tModelDataHeader {
-	int					nVersion;
+	int32_t					nVersion;
 } tModelDataHeader;
 
-int LoadModelData (void)
+int32_t LoadModelData (void)
 {
 	CFile					cf;
 	tModelDataHeader	mdh;
-	int					bOk;
+	int32_t					bOk;
 
 if (!gameStates.app.bCacheModelData)
 	return 0;
@@ -611,11 +611,11 @@ return bOk;
 
 //------------------------------------------------------------------------------
 
-int SaveModelData (void)
+int32_t SaveModelData (void)
 {
 	CFile					cf;
 	tModelDataHeader	mdh = {MODEL_DATA_VERSION};
-	int					bOk;
+	int32_t					bOk;
 
 if (!gameStates.app.bCacheModelData)
 	return 0;

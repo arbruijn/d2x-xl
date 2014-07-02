@@ -39,11 +39,11 @@ tUVL rodUvlList [4] = {
 
 //------------------------------------------------------------------------------
 //compute the corners of a rod.  fills in vertbuf.
-int CalcRodCorners (CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth)
+int32_t CalcRodCorners (CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth)
 {
 	CFixVector	vDelta, vTop, vTemp, vRodNorm;
-	ubyte			andCodes;
-	int			i;
+	uint8_t			andCodes;
+	int32_t			i;
 
 //compute vector from one point to other, do cross product with vector
 //from eye to get perpendicular
@@ -93,7 +93,7 @@ return 0;
 //------------------------------------------------------------------------------
 //draw a polygon that is always facing you
 //returns 1 if off screen, 0 if drew
-int G3DrawRodPoly (CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth)
+int32_t G3DrawRodPoly (CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth)
 {
 if (CalcRodCorners (btmPoint, xBtmWidth, topPoint, xTopWidth))
 	return 0;
@@ -103,7 +103,7 @@ return G3DrawPoly (4, rodPointList);
 //------------------------------------------------------------------------------
 //draw a bitmap CObject that is always facing you
 //returns 1 if off screen, 0 if drew
-int G3DrawRodTexPoly (CBitmap *bmP, CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth, fix light, tUVL *uvlList, int bAdditive)
+int32_t G3DrawRodTexPoly (CBitmap *bmP, CRenderPoint *btmPoint, fix xBtmWidth, CRenderPoint *topPoint, fix xTopWidth, fix light, tUVL *uvlList, int32_t bAdditive)
 {
 if (CalcRodCorners (btmPoint, xBtmWidth, topPoint, xTopWidth))
 	return 0;
@@ -121,7 +121,7 @@ return G3DrawTexPoly (4, rodPointList, uvlList, bmP, NULL, 1, bAdditive, -1);
 
 #define ADJUST_HIRES_HOSTAGE	0
 
-void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int bLit, int iFrame)
+void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int32_t bLit, int32_t iFrame)
 {
 	CBitmap*			bmP = gameData.pig.tex.bitmaps [0] + bmi.index;
 	fix				xSize = objP->info.xSize;
@@ -160,7 +160,7 @@ else {
 	CFloatVector	vertices [4];
 	tTexCoord2f		texCoords [4]; // = {{0,0},{u,0},{u,v},{0,v}};
 
-	for (int i = 0; i < 4; i++) {
+	for (int32_t i = 0; i < 4; i++) {
 		vertices [i].Assign (rodPoints [i].ViewPos ());
 		texCoords [i].v.u = X2F (rodUvlList [i].u);
 		texCoords [i].v.v = X2F (rodUvlList [i].v);

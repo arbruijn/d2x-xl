@@ -22,10 +22,10 @@
 
 static char	szLine [1024];
 static char	szLineBackup [1024];
-static int nLine = 0;
+static int32_t nLine = 0;
 static CFile *aseFile = NULL;
 static char *pszToken = NULL;
-static int bErrMsg = 0;
+static int32_t bErrMsg = 0;
 
 #define ASE_ROTATE_MODEL	1
 #define ASE_FLIP_TEXCOORD	1
@@ -38,7 +38,7 @@ using namespace ASE;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int CModel::Error (const char *pszMsg)
+int32_t CModel::Error (const char *pszMsg)
 {
 if (!bErrMsg) {
 	if (pszMsg)
@@ -64,7 +64,7 @@ return pszToken ? (float) atof (pszToken) : 0;
 
 //------------------------------------------------------------------------------
 
-static int IntTok (const char *delims)
+static int32_t IntTok (const char *delims)
 {
 pszToken = strtok (NULL, delims);
 if (!(pszToken && *pszToken))
@@ -106,7 +106,7 @@ static void ReadVector (CFile& cf, CFloatVector3 *pv)
 	float y = FloatTok (" \t");
 	*pv = CFloatVector3::Create(x, y, z);
 #else	// need to rotate model for Descent
-	int	i;
+	int32_t	i;
 
 for (i = 0; i < 3; i++)
 	pv [i] = FloatTok (" \t");
@@ -132,10 +132,10 @@ return NULL;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int ASE_ReleaseTextures (void)
+int32_t ASE_ReleaseTextures (void)
 {
 	CModel*	modelP;
-	int		bCustom, i;
+	int32_t		bCustom, i;
 
 PrintLog (1, "releasing ASE model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
@@ -147,10 +147,10 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int ASE_ReloadTextures (void)
+int32_t ASE_ReloadTextures (void)
 {
 	CModel*	modelP;
-	int		bCustom, i;
+	int32_t		bCustom, i;
 
 PrintLog (1, "reloading ASE model textures\n");
 for (bCustom = 0; bCustom < 2; bCustom++)
@@ -210,9 +210,9 @@ Init ();
 
 //------------------------------------------------------------------------------
 
-int CSubModel::ReadNode (CFile& cf)
+int32_t CSubModel::ReadNode (CFile& cf)
 {
-	int	i;
+	int32_t	i;
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -229,10 +229,10 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int CSubModel::ReadMeshVertexList (CFile& cf)
+int32_t CSubModel::ReadMeshVertexList (CFile& cf)
 {
 	CVertex*	pv;
-	int		i;
+	int32_t		i;
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -263,10 +263,10 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int CSubModel::ReadMeshFaceList (CFile& cf)
+int32_t CSubModel::ReadMeshFaceList (CFile& cf)
 {
 	CFace	*pf;
-	int	i;
+	int32_t	i;
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -297,10 +297,10 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int CSubModel::ReadVertexTexCoord (CFile& cf)
+int32_t CSubModel::ReadVertexTexCoord (CFile& cf)
 {
 	tTexCoord2f		*pt;
-	int				i;
+	int32_t				i;
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -328,10 +328,10 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int CSubModel::ReadFaceTexCoord (CFile& cf)
+int32_t CSubModel::ReadFaceTexCoord (CFile& cf)
 {
 	CFace	*pf;
-	int	i;
+	int32_t	i;
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -354,11 +354,11 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int CSubModel::ReadMeshNormals (CFile& cf)
+int32_t CSubModel::ReadMeshNormals (CFile& cf)
 {
 	CFace*	pf;
 	CVertex*	pv;
-	int		i;
+	int32_t		i;
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -389,7 +389,7 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int CSubModel::ReadMesh (CFile& cf, int& nFaces, int& nVerts)
+int32_t CSubModel::ReadMesh (CFile& cf, int32_t& nFaces, int32_t& nVerts)
 {
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -453,7 +453,7 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int CSubModel::Read (CFile& cf, int& nFaces, int& nVerts)
+int32_t CSubModel::Read (CFile& cf, int32_t& nFaces, int32_t& nVerts)
 {
 while ((pszToken = ReadLine (cf))) {
 	if (*pszToken == '}')
@@ -587,7 +587,7 @@ Init ();
 
 //------------------------------------------------------------------------------
 
-int CModel::ReleaseTextures (void)
+int32_t CModel::ReleaseTextures (void)
 {
 m_textures.Release ();
 return 0;
@@ -595,25 +595,25 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int CModel::ReloadTextures (void)
+int32_t CModel::ReloadTextures (void)
 {
 return m_textures.Bind (m_bCustom);
 }
 
 //------------------------------------------------------------------------------
 
-int CModel::FreeTextures (void)
+int32_t CModel::FreeTextures (void)
 {
 m_textures.Destroy ();
 return 0;
 }
 //------------------------------------------------------------------------------
 
-int CModel::ReadTexture (CFile& cf, int nBitmap)
+int32_t CModel::ReadTexture (CFile& cf, int32_t nBitmap)
 {
 	CBitmap	*bmP = m_textures.m_bitmaps + nBitmap;
 	char		fn [FILENAME_LEN], *ps;
-	int		l;
+	int32_t		l;
 
 sprintf (bmP->Name (), "ASE model %d texture %d", m_nModel, nBitmap);
 if (CharTok (" \t") != '{')
@@ -629,7 +629,7 @@ while ((pszToken = ReadLine (cf))) {
 		CTGA tga (bmP);
 		if (!tga.ReadModelTexture (::strlwr (fn), m_bCustom))
 			return CModel::Error ("texture not found");
-		l = (int) strlen (fn) + 1;
+		l = (int32_t) strlen (fn) + 1;
 		if (!m_textures.m_names [nBitmap].Create (l))
 			return CModel::Error ("out of memory");
 		memcpy (m_textures.m_names [nBitmap].Buffer (), fn, l);
@@ -645,7 +645,7 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int CModel::ReadOpacity (CFile& cf, int nBitmap)
+int32_t CModel::ReadOpacity (CFile& cf, int32_t nBitmap)
 {
 	CBitmap	*bmP = m_textures.m_bitmaps + nBitmap;
 
@@ -665,9 +665,9 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int CModel::ReadMaterial (CFile& cf)
+int32_t CModel::ReadMaterial (CFile& cf)
 {
-	int		i;
+	int32_t		i;
 	CBitmap	*bmP;
 
 i = IntTok (" \t");
@@ -682,9 +682,9 @@ while ((pszToken = ReadLine (cf))) {
 		return 1;
 	if (!strcmp (pszToken, "*MATERAL_DIFFUSE")) {
 		CRGBColor	avgRGB;
-		avgRGB.Red () = (ubyte) FRound (FloatTok (" \t") * 255);
-		avgRGB.Green () = (ubyte) FRound (FloatTok (" \t") * 255);
-		avgRGB.Blue () = (ubyte) FRound (FloatTok (" \t") * 255);
+		avgRGB.Red () = (uint8_t) FRound (FloatTok (" \t") * 255);
+		avgRGB.Green () = (uint8_t) FRound (FloatTok (" \t") * 255);
+		avgRGB.Blue () = (uint8_t) FRound (FloatTok (" \t") * 255);
 		bmP->SetAvgColor (avgRGB);
 		}
 	else if (!strcmp (pszToken, "*MAP_DIFFUSE")) {
@@ -701,7 +701,7 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int CModel::ReadMaterialList (CFile& cf)
+int32_t CModel::ReadMaterialList (CFile& cf)
 {
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -709,7 +709,7 @@ if (!(pszToken = ReadLine (cf)))
 	return CModel::Error ("unexpected end of file");
 if (strcmp (pszToken, "*MATERIAL_COUNT"))
 	return CModel::Error ("material count missing");
-int nBitmaps = IntTok (" \t");
+int32_t nBitmaps = IntTok (" \t");
 if (!nBitmaps)
 	return CModel::Error ("no bitmaps specified");
 if (!(m_textures.Create (nBitmaps)))
@@ -731,7 +731,7 @@ return CModel::Error ("unexpected end of file");
 
 //------------------------------------------------------------------------------
 
-int CModel::ReadSubModel (CFile& cf)
+int32_t CModel::ReadSubModel (CFile& cf)
 {
 	CSubModel	*psm;
 
@@ -747,7 +747,7 @@ return psm->Read (cf, m_nFaces, m_nVerts);
 
 //------------------------------------------------------------------------------
 
-int CModel::FindSubModel (const char* pszName)
+int32_t CModel::FindSubModel (const char* pszName)
 {
 	CSubModel *psm;
 
@@ -769,7 +769,7 @@ for (psm = m_subModels; psm; psm = psm->m_next)
 
 //------------------------------------------------------------------------------
 
-int CModel::Read (const char* filename, short nModel, int bCustom)
+int32_t CModel::Read (const char* filename, int16_t nModel, int32_t bCustom)
 {
 #if DBG
 if (nModel == nDbgModel)
@@ -777,7 +777,7 @@ if (nModel == nDbgModel)
 #endif
 
 	CFile		cf;
-	int		nResult = 1;
+	int32_t		nResult = 1;
 
 if (m_nModel >= 0)
 	return 0;
@@ -826,7 +826,7 @@ if (!nResult)
 	Destroy ();
 else {
 	LinkSubModels ();
-	gameData.models.bHaveHiresModel [uint (this - gameData.models.aseModels [bCustom != 0].Buffer ())] = 1;
+	gameData.models.bHaveHiresModel [uint32_t (this - gameData.models.aseModels [bCustom != 0].Buffer ())] = 1;
 	if (gameStates.app.bCacheModelData) {
 		if (IsPlayerShip (nModel))
 			SaveBinary (filename);
@@ -840,7 +840,7 @@ return nResult;
 
 //------------------------------------------------------------------------------
 
-int CSubModel::SaveBinary (CFile& cf)
+int32_t CSubModel::SaveBinary (CFile& cf)
 {
 #if DBG
 if (!strcmp (m_szName, "$WINGTIP2-0"))
@@ -855,14 +855,14 @@ cf.WriteShort (m_nFaces);
 cf.WriteShort (m_nVerts);
 cf.WriteShort (m_nTexCoord);
 cf.WriteShort (m_nIndex);
-cf.WriteByte (sbyte (m_bRender));
-cf.WriteByte (sbyte (m_bGlow));
-cf.WriteByte (sbyte (m_bFlare));
-cf.WriteByte (sbyte (m_bBillboard));
-cf.WriteByte (sbyte (m_bThruster));
-cf.WriteByte (sbyte (m_bWeapon));
-cf.WriteByte (sbyte (m_bHeadlight));
-cf.WriteByte (sbyte (m_bBombMount));
+cf.WriteByte (int8_t (m_bRender));
+cf.WriteByte (int8_t (m_bGlow));
+cf.WriteByte (int8_t (m_bFlare));
+cf.WriteByte (int8_t (m_bBillboard));
+cf.WriteByte (int8_t (m_bThruster));
+cf.WriteByte (int8_t (m_bWeapon));
+cf.WriteByte (int8_t (m_bHeadlight));
+cf.WriteByte (int8_t (m_bBombMount));
 cf.WriteByte (m_nGun);
 cf.WriteByte (m_nBomb);
 cf.WriteByte (m_nMissile);
@@ -880,7 +880,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CModel::SaveBinary (void)
+int32_t CModel::SaveBinary (void)
 {
 	char		szFilename [FILENAME_LEN];
 
@@ -890,7 +890,7 @@ return SaveBinary (szFilename);
 
 //------------------------------------------------------------------------------
 
-int CModel::SaveBinary (const char* szFilename)
+int32_t CModel::SaveBinary (const char* szFilename)
 {
 if (!*gameFolders.var.szModels [m_bCustom])
 	return 0;
@@ -913,10 +913,10 @@ cf.WriteInt (m_nFaces);
 cf.WriteInt (m_bCustom);
 cf.WriteInt (m_textures.m_nBitmaps);
 
-int h, i;
+int32_t h, i;
 
 for (i = 0; i < m_textures.m_nBitmaps; i++) {
-	h = int (m_textures.m_names [i].Length ());
+	h = int32_t (m_textures.m_names [i].Length ());
 	cf.WriteInt (h);
 	cf.Write (m_textures.m_names [i].Buffer (), 1, h);
 	}
@@ -932,7 +932,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CSubModel::ReadBinary (CFile& cf)
+int32_t CSubModel::ReadBinary (CFile& cf)
 {
 m_next = NULL;
 cf.Read (m_szName, 1, sizeof (m_szName));
@@ -944,14 +944,14 @@ m_nFaces = cf.ReadShort ();
 m_nVerts = cf.ReadShort ();
 m_nTexCoord = cf.ReadShort ();
 m_nIndex = cf.ReadShort ();
-m_bRender = ubyte (cf.ReadByte ());
-m_bGlow = ubyte (cf.ReadByte ());
-m_bFlare = ubyte (cf.ReadByte ());
-m_bBillboard = ubyte (cf.ReadByte ());
-m_bThruster = ubyte (cf.ReadByte ());
-m_bWeapon = ubyte (cf.ReadByte ());
-m_bHeadlight = ubyte (cf.ReadByte ());
-m_bBombMount = ubyte (cf.ReadByte ());
+m_bRender = uint8_t (cf.ReadByte ());
+m_bGlow = uint8_t (cf.ReadByte ());
+m_bFlare = uint8_t (cf.ReadByte ());
+m_bBillboard = uint8_t (cf.ReadByte ());
+m_bThruster = uint8_t (cf.ReadByte ());
+m_bWeapon = uint8_t (cf.ReadByte ());
+m_bHeadlight = uint8_t (cf.ReadByte ());
+m_bBombMount = uint8_t (cf.ReadByte ());
 m_nGun = cf.ReadByte ();
 m_nBomb = cf.ReadByte ();
 m_nMissile = cf.ReadByte ();
@@ -975,7 +975,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CModel::ReadBinary (short nModel, int bCustom, time_t tASE)
+int32_t CModel::ReadBinary (int16_t nModel, int32_t bCustom, time_t tASE)
 {
 	char		szFilename [FILENAME_LEN];
 
@@ -985,13 +985,13 @@ return ReadBinary (szFilename, bCustom, tASE);
 
 //------------------------------------------------------------------------------
 
-int CModel::ReadBinary (const char* szFilename, int bCustom, time_t tASE)
+int32_t CModel::ReadBinary (const char* szFilename, int32_t bCustom, time_t tASE)
 {
 if (!(szFilename && *szFilename))
 	return 0;
 
 	CFile		cf;
-	int		h, i;
+	int32_t		h, i;
 	char		szBin [FILENAME_LEN];
 
 strcpy (szBin, szFilename);

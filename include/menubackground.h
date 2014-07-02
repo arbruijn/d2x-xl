@@ -19,7 +19,7 @@
 
 //------------------------------------------------------------------------------
 
-const char* WallpaperName (int nType, int bHires = -1);
+const char* WallpaperName (int32_t nType, int32_t bHires = -1);
 
 //------------------------------------------------------------------------------
 
@@ -27,16 +27,16 @@ class CBackground : public CCanvas {
 	private:
 		CBitmap	m_saved;				// copy of a screen area covered by a menu
 		CBitmap*	m_bitmap;			// complete background
-		int		m_nType;
-		int		m_nWallpaper;
+		int32_t		m_nType;
+		int32_t		m_nWallpaper;
 
 	public:
 		CBackground () { Init (); }
 		~CBackground () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
-		bool Create (int width, int height, int nType, int nWallpaper);
-		void Setup (int width, int height);
+		bool Create (int32_t width, int32_t height, int32_t nType, int32_t nWallpaper);
+		void Setup (int32_t width, int32_t height);
 		void Draw (bool bUpdate = false);
 		void DrawArea (void);
 		void DrawBox (void);
@@ -45,19 +45,19 @@ class CBackground : public CCanvas {
 		inline CBitmap* SetBitmap (CBitmap* bmP) { return m_bitmap = bmP; }
 		inline CBitmap* Background (void) { return &m_saved; }
 		inline CBitmap* Saved (void) { return &m_saved; }
-		inline void GetExtent (int& x, int& y, int& w, int& h) { CCanvas::CViewport::GetExtent (x, y, w, h); }
+		inline void GetExtent (int32_t& x, int32_t& y, int32_t& w, int32_t& h) { CCanvas::CViewport::GetExtent (x, y, w, h); }
 		inline char* GetFilename (void) { return m_bitmap ? m_bitmap->Name () : NULL; }
-		inline int Wallpaper (void) { return m_nWallpaper; }
+		inline int32_t Wallpaper (void) { return m_nWallpaper; }
 
-		inline void SetType (int nType) { m_nType = nType; }
-		inline int GetType (void) { return m_nType; }
+		inline void SetType (int32_t nType) { m_nType = nType; }
+		inline int32_t GetType (void) { return m_nType; }
 
 		void Activate (void);
 		void Deactivate (void);
 		
 	private:
-		CBitmap* Load (char* filename, int width, int height);
-		void Save (int i, int width, int height);
+		CBitmap* Load (char* filename, int32_t width, int32_t height);
+		void Save (int32_t i, int32_t width, int32_t height);
 };
 
 //------------------------------------------------------------------------------
@@ -79,17 +79,17 @@ class CBackgroundManager : public CStack<CBackground> {
 		void Create (void);
 		void Rebuild (void);
 
-		bool Setup (CBackground& bg, int width, int height, int nType = BG_SUBMENU, int nWallPaper = BG_STANDARD);
+		bool Setup (CBackground& bg, int32_t width, int32_t height, int32_t nType = BG_SUBMENU, int32_t nWallPaper = BG_STANDARD);
 		void Activate (CBackground& bg);
 
-		inline const char* Filename (uint i = 0) { return m_filenames [i]; }
-		inline CBitmap* Wallpaper (uint i = 0) { return m_wallpapers [i].Bitmap (); }
+		inline const char* Filename (uint32_t i = 0) { return m_filenames [i]; }
+		inline CBitmap* Wallpaper (uint32_t i = 0) { return m_wallpapers [i].Bitmap (); }
 		inline bool Shadow (void) { return m_bShadow; }
 		inline void SetShadow (bool bShadow) { m_bShadow = bShadow; }
 
 		void Draw (CBackground* bg = NULL, bool bUpdate = false);
-		void Draw (int nWallpaper);
-		void DrawBox (int left, int top, int right, int bottom, int nLineWidth, float fAlpha, int bForce);
+		void Draw (int32_t nWallpaper);
+		void DrawBox (int32_t left, int32_t top, int32_t right, int32_t bottom, int32_t nLineWidth, float fAlpha, int32_t bForce);
 
 	private:
 		CBitmap* LoadWallpaper (const char* filename);

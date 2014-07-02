@@ -3,12 +3,12 @@
 
 class CEnergySpark {
 	public:
-		short				m_nProb;
+		int16_t				m_nProb;
 		char				m_nFrame;
 		char				m_nRotFrame;
-		ubyte				m_bRendered :1;
-		ubyte				m_nType :1;
-		ubyte				m_nOrient :1;
+		uint8_t				m_bRendered :1;
+		uint8_t				m_nType :1;
+		uint8_t				m_nOrient :1;
 		fix				m_xSize;
 		time_t			m_tRender;
 		time_t			m_tCreate;
@@ -16,7 +16,7 @@ class CEnergySpark {
 		CFixVector		m_vDir;
 
 	public:
-		void Setup (short nSegment, ubyte nType);
+		void Setup (int16_t nSegment, uint8_t nType);
 		void Update (void);
 		void Render (void);
 	};
@@ -24,10 +24,10 @@ class CEnergySpark {
 class CSparks {
 	public:
 		CArray<CEnergySpark>	m_sparks;
-		short						m_nSegment;
-		short						m_nMaxSparks;
-		ubyte						m_nType;
-		ubyte						m_bUpdate;
+		int16_t						m_nSegment;
+		int16_t						m_nMaxSparks;
+		uint8_t						m_nType;
+		uint8_t						m_bUpdate;
 
 	public:
 		CSparks () { Init (); }
@@ -41,7 +41,7 @@ class CSparks {
 			m_sparks.Destroy ();
 			Init ();
 			}
-		void Setup (short nSegment, ubyte nType);
+		void Setup (int16_t nSegment, uint8_t nType);
 		void Create (void);
 		void Render (void);
 		void Update (void);
@@ -51,8 +51,8 @@ class CSparks {
 class CSparkManager {
 	private:
 		CSparks		m_sparks [2 * MAX_FUEL_CENTERS];	//0: repair, 1: fuel center
-		short			m_segments [2 * MAX_FUEL_CENTERS];
-		short			m_nSegments;
+		int16_t			m_segments [2 * MAX_FUEL_CENTERS];
+		int16_t			m_nSegments;
 
 	public:
 		CSparkManager () { Init (); }
@@ -67,13 +67,13 @@ class CSparkManager {
 		inline bool HaveSparks (void) { return m_nSegments > 0; }
 
 	private:
-		inline int Type (short nObjProducer);
-		inline CSparks& Sparks (short nObjProducer);
-		int BuildSegList (void);
-		void SetupSparks (short nObjProducer);
-		void UpdateSparks (short nObjProducer);
-		void RenderSparks (short nObjProducer);
-		void DestroySparks (short nObjProducer);
+		inline int32_t Type (int16_t nObjProducer);
+		inline CSparks& Sparks (int16_t nObjProducer);
+		int32_t BuildSegList (void);
+		void SetupSparks (int16_t nObjProducer);
+		void UpdateSparks (int16_t nObjProducer);
+		void RenderSparks (int16_t nObjProducer);
+		void DestroySparks (int16_t nObjProducer);
 	};
 
 extern CSparkManager sparkManager;

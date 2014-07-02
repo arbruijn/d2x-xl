@@ -78,7 +78,7 @@ return dot;
 // -----------------------------------------------------------------------------
 //	vGoalVec must be normalized, or close to it.
 //	if bDotBased set, then speed is based on direction of movement relative to heading
-void MoveTowardsVector (CObject *objP, CFixVector *vGoalVec, int bDotBased)
+void MoveTowardsVector (CObject *objP, CFixVector *vGoalVec, int32_t bDotBased)
 {
 	tPhysicsInfo&	physicsInfo = objP->mType.physInfo;
 	tRobotInfo		*botInfoP = &ROBOTINFO (objP->info.nId);
@@ -113,8 +113,8 @@ if (speed > xMaxSpeed)
 void MoveAwayFromOtherRobots (CObject *objP, CFixVector& vVecToTarget)
 {
 	fix				xAvoidRad = 0;
-	short				nAvoidObjs = 0;
-	short				nStartSeg = objP->info.nSegment;
+	int16_t				nAvoidObjs = 0;
+	int16_t				nStartSeg = objP->info.nSegment;
 	CFixVector		vPos = objP->info.position.vPos;
 	CFixVector		vAvoidPos;
 
@@ -122,7 +122,7 @@ vAvoidPos.SetZero ();
 if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 	// move out from all other robots in same segment that are too close
 	CObject* avoidObjP;
-	for (short nObject = SEGMENTS [nStartSeg].m_objects; nObject != -1; nObject = avoidObjP->info.nNextInSeg) {
+	for (int16_t nObject = SEGMENTS [nStartSeg].m_objects; nObject != -1; nObject = avoidObjP->info.nNextInSeg) {
 		avoidObjP = OBJECTS + nObject;
 		if ((avoidObjP->info.nType != OBJ_ROBOT) || (avoidObjP->info.nSignature >= objP->info.nSignature))
 			continue;	// comparing the sigs ensures that only one of two bots tested against each other will move, keeping them from bouncing around
@@ -141,11 +141,11 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 			CFixVector vNewPos = CFixVector::Random ();
 			vNewPos *= objP->info.xSize;
 			vNewPos += vAvoidPos;
-			short nDestSeg = FindSegByPos (vNewPos, nStartSeg, 0, 0);
+			int16_t nDestSeg = FindSegByPos (vNewPos, nStartSeg, 0, 0);
 			if (0 > nDestSeg)
 				continue;
 			if (nStartSeg != nDestSeg) {
-				short nSide = segP->ConnectedSide (SEGMENTS + nDestSeg);
+				int16_t nSide = segP->ConnectedSide (SEGMENTS + nDestSeg);
 				if (0 > nSide)
 					continue;
 				if (!((segP->IsPassable (nSide, NULL) & WID_PASSABLE_FLAG) || (AIDoorIsOpenable (objP, segP, nSide))))
@@ -153,7 +153,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 
 				CHitResult hitResult;
 				CHitQuery hitQuery (0, &objP->info.position.vPos, &vNewPos, nStartSeg, objP->Index (), objP->info.xSize, objP->info.xSize);
-				int hitType = FindHitpoint (hitQuery, hitResult);
+				int32_t hitType = FindHitpoint (hitQuery, hitResult);
 				if (hitType != HIT_NONE)
 					continue;
 				}
@@ -176,18 +176,18 @@ MoveTowardsVector (objP, vVecToTarget, 1);
 
 // -----------------------------------------------------------------------------
 //	I am ashamed of this: fastFlag == -1 means Normal slide about.  fastFlag = 0 means no evasion.
-void MoveAroundPlayer (CObject *objP, CFixVector *vVecToTarget, int fastFlag)
+void MoveAroundPlayer (CObject *objP, CFixVector *vVecToTarget, int32_t fastFlag)
 {
 	tPhysicsInfo&	physInfo = objP->mType.physInfo;
 	tRobotInfo&		robotInfo = ROBOTINFO (objP->info.nId);
-	int				nObject = objP->Index ();
+	int32_t				nObject = objP->Index ();
 
 if (fastFlag == 0)
 	return;
 
-int dirChange = 48;
+int32_t dirChange = 48;
 fix ft = gameData.time.xFrame;
-int count = 0;
+int32_t count = 0;
 if (ft < I2X (1)/32) {
 	dirChange *= 8;
 	count += 3;
@@ -200,7 +200,7 @@ else {
 		}
 	}
 
-int dir = (gameData.app.nFrameCount + (count+1) * (nObject*8 + nObject*4 + nObject)) & dirChange;
+int32_t dir = (gameData.app.nFrameCount + (count+1) * (nObject*8 + nObject*4 + nObject)) & dirChange;
 dir >>= (4 + count);
 
 Assert ((dir >= 0) && (dir <= 3));
@@ -254,7 +254,7 @@ if ((objP->Index () != 1) && (speed > robotInfo.xMaxSpeed [gameStates.app.nDiffi
 
 // -----------------------------------------------------------------------------
 
-void MoveAwayFromTarget (CObject *objP, CFixVector *vVecToTarget, int attackType)
+void MoveAwayFromTarget (CObject *objP, CFixVector *vVecToTarget, int32_t attackType)
 {
 	tPhysicsInfo	physicsInfo = objP->mType.physInfo;
 	fix				ft = gameData.time.xFrame * 16;
@@ -262,7 +262,7 @@ void MoveAwayFromTarget (CObject *objP, CFixVector *vVecToTarget, int attackType
 physicsInfo.velocity -= gameData.ai.target.vDir * ft;
 if (attackType) {
 	//	Get value in 0d:\temp\dm_test3 to choose evasion direction.
-	int nObjRef = ((objP->Index ()) ^ ((gameData.app.nFrameCount + 3* (objP->Index ())) >> 5)) & 3;
+	int32_t nObjRef = ((objP->Index ()) ^ ((gameData.app.nFrameCount + 3* (objP->Index ())) >> 5)) & 3;
 	switch (nObjRef) {
 		case 0:
 			physicsInfo.velocity += objP->info.position.mOrient.m.dir.u * (gameData.time.xFrame << 5);
@@ -293,8 +293,8 @@ if (physicsInfo.velocity.Mag () > ROBOTINFO (objP->info.nId).xMaxSpeed [gameStat
 //	Also deals with evasion.
 //	If the flag bEvadeOnly is set, then only allowed to evade, not allowed to move otherwise (must have mode == AIM_IDLING).
 void AIMoveRelativeToTarget (CObject *objP, tAILocalInfo *ailP, fix xDistToTarget,
-									  CFixVector *vVecToTarget, fix circleDistance, int bEvadeOnly,
-									  int nTargetVisibility)
+									  CFixVector *vVecToTarget, fix circleDistance, int32_t bEvadeOnly,
+									  int32_t nTargetVisibility)
 {
 	CObject		*dObjP;
 	tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);
@@ -333,7 +333,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 			dotLaserRobot = CFixVector::Dot (fVecLaser, vLaserToRobot);
 
 			if ((dotLaserRobot > I2X (7) / 8) && (xDistToLaser < I2X (80))) {
-				int evadeSpeed = ROBOTINFO (objP->info.nId).evadeSpeed [gameStates.app.nDifficultyLevel];
+				int32_t evadeSpeed = ROBOTINFO (objP->info.nId).evadeSpeed [gameStates.app.nDifficultyLevel];
 				gameData.ai.bEvaded = 1;
 				MoveAroundPlayer (objP, &gameData.ai.target.vDir, evadeSpeed);
 				}
@@ -363,7 +363,7 @@ if (botInfoP->attackType == 1) {
 else if (botInfoP->thief)
 	MoveTowardsPlayer (objP, &gameData.ai.target.vDir);
 else {
-	int	objval = ((objP->Index ()) & 0x0f) ^ 0x0a;
+	int32_t	objval = ((objP->Index ()) & 0x0f) ^ 0x0a;
 
 	//	Changes here by MK, 12/29/95.  Trying to get rid of endless circling around bots in a large room.
 	if (botInfoP->kamikaze)
@@ -401,7 +401,7 @@ return xDistToGoal;
 // -----------------------------------------------------------------------------
 //	Move the CObject objP to a spot in which it doesn't intersect a CWall.
 //	It might mean moving it outside its current CSegment.
-bool MoveObjectToLegalSpot (CObject *objP, int bMoveToCenter)
+bool MoveObjectToLegalSpot (CObject *objP, int32_t bMoveToCenter)
 {
 	CFixVector	vSegCenter, vOrigPos = objP->info.position.vPos;
 	CSegment*	segP = SEGMENTS + objP->info.nSegment;
@@ -416,8 +416,8 @@ if (bMoveToCenter) {
 	return !ObjectIntersectsWall (objP);
 	}
 else {
-	for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
-		if (segP->IsPassable ((short) i, objP) & WID_PASSABLE_FLAG) {
+	for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
+		if (segP->IsPassable ((int16_t) i, objP) & WID_PASSABLE_FLAG) {
 			vSegCenter = SEGMENTS [segP->m_children [i]].Center ();
 			objP->info.position.vPos = vSegCenter;
 			if (ObjectIntersectsWall (objP))
@@ -427,7 +427,7 @@ else {
 				MoveObjectToLegalPoint (objP, &vSegCenter);
 				if (ObjectIntersectsWall (objP))
 					objP->ApplyDamageToRobot (FixMul (objP->info.xShield / 5, gameData.time.xFrame), objP->Index ());
-				int nNewSeg = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
+				int32_t nNewSeg = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 				if ((nNewSeg != -1) && (nNewSeg != objP->info.nSegment)) {
 					objP->RelinkToSeg (nNewSeg);
 					return true;
@@ -475,7 +475,7 @@ if (xDistToGoal - objP->info.xSize <= xMinDist) {
 	xDistToGoal = 0;
 	}
 else {
-	int	nNewSeg;
+	int32_t	nNewSeg;
 	fix	xRemDist = xDistToGoal - xMinDist,
 			xScale = (objP->info.xSize < xRemDist) ? objP->info.xSize : xRemDist;
 
@@ -503,7 +503,7 @@ CFixVector vSegCenter = SEGMENTS [objP->info.nSegment].Center ();
 return MoveTowardsPoint (objP, &vSegCenter, 0);
 }
 
-//int	Buddy_got_stuck = 0;
+//int32_t	Buddy_got_stuck = 0;
 
 //	-----------------------------------------------------------------------------
 // eof

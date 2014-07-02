@@ -58,7 +58,7 @@ void SetRobotAngles (tRobotInfo* botInfoP, CPolyModel* modelP, CAngleVector angs
 
 //------------------------------------------------------------------------------
 
-void CPolyModel::POF_Seek (int len, int nType)
+void CPolyModel::POF_Seek (int32_t len, int32_t nType)
 {
 switch (nType) {
 	case SEEK_SET:	
@@ -78,21 +78,21 @@ if (m_filePos > MODEL_BUF_SIZE)
 
 //------------------------------------------------------------------------------
 
-int CPolyModel::POF_ReadInt (ubyte *bufP)
+int32_t CPolyModel::POF_ReadInt (uint8_t *bufP)
 {
-int i = *(reinterpret_cast<int*> (&bufP [m_filePos]));
+int32_t i = *(reinterpret_cast<int32_t*> (&bufP [m_filePos]));
 m_filePos += 4;
 return INTEL_INT (i);
 }
 
 //------------------------------------------------------------------------------
 
-size_t CPolyModel::POF_Read (void *dst, size_t elsize, size_t nelem, ubyte *bufP)
+size_t CPolyModel::POF_Read (void *dst, size_t elsize, size_t nelem, uint8_t *bufP)
 {
 if (nelem * elsize + (size_t) m_filePos > (size_t) m_fileEnd)
 	return 0;
 memcpy (dst, &bufP [m_filePos], elsize*nelem);
-m_filePos += (int) (elsize * nelem);
+m_filePos += (int32_t) (elsize * nelem);
 if (m_filePos > MODEL_BUF_SIZE)
 	return 0;
 return nelem;
@@ -100,25 +100,25 @@ return nelem;
 
 //------------------------------------------------------------------------------
 
-short CPolyModel::POF_ReadShort (ubyte *bufP)
+int16_t CPolyModel::POF_ReadShort (uint8_t *bufP)
 {
-short s = * (reinterpret_cast<short*> (&bufP [m_filePos]));
+int16_t s = * (reinterpret_cast<int16_t*> (&bufP [m_filePos]));
 m_filePos += 2;
 return INTEL_SHORT (s);
 }
 
 //------------------------------------------------------------------------------
 
-void CPolyModel::POF_ReadString (char *buf, int max_char, ubyte *bufP)
+void CPolyModel::POF_ReadString (char *buf, int32_t max_char, uint8_t *bufP)
 {
-for (int i = 0; i < max_char; i++)
+for (int32_t i = 0; i < max_char; i++)
 	if ((*buf++ = bufP [m_filePos++]) == 0)
 		break;
 }
 
 //------------------------------------------------------------------------------
 
-void CPolyModel::POF_ReadVecs (CFixVector *vecs, int n, ubyte *bufP)
+void CPolyModel::POF_ReadVecs (CFixVector *vecs, int32_t n, uint8_t *bufP)
 {
 memcpy (vecs, &bufP [m_filePos], n * sizeof (*vecs));
 m_filePos += n * sizeof (*vecs);
@@ -130,7 +130,7 @@ while (n > 0)
 
 //------------------------------------------------------------------------------
 
-void CPolyModel::POF_ReadAngs (CAngleVector *angs, int n, ubyte *bufP)
+void CPolyModel::POF_ReadAngs (CAngleVector *angs, int32_t n, uint8_t *bufP)
 {
 memcpy (angs, &bufP [m_filePos], n * sizeof (*angs));
 m_filePos += n * sizeof (*angs);
@@ -144,25 +144,25 @@ while (n > 0)
 
 //------------------------------------------------------------------------------
 
-ubyte * old_dest (chunk o) // return where chunk is (in unaligned struct)
+uint8_t * old_dest (chunk o) // return where chunk is (in unaligned struct)
 {
-	return o.old_base + INTEL_SHORT (*reinterpret_cast<short*> (o.old_base + o.offset));
+	return o.old_base + INTEL_SHORT (*reinterpret_cast<int16_t*> (o.old_base + o.offset));
 }
 
 //------------------------------------------------------------------------------
 
-ubyte * new_dest (chunk o) // return where chunk is (in aligned struct)
+uint8_t * new_dest (chunk o) // return where chunk is (in aligned struct)
 {
-	return o.new_base + INTEL_SHORT (*reinterpret_cast<short*> (o.old_base + o.offset)) + o.correction;
+	return o.new_base + INTEL_SHORT (*reinterpret_cast<int16_t*> (o.old_base + o.offset)) + o.correction;
 }
 
 //------------------------------------------------------------------------------
 /*
  * find chunk with smallest address
  */
-int get_first_chunks_index (chunk *chunk_list, int no_chunks)
+int32_t get_first_chunks_index (chunk *chunk_list, int32_t no_chunks)
 {
-	int i, first_index = 0;
+	int32_t i, first_index = 0;
 	Assert (no_chunks >= 1);
 	for (i = 1; i < no_chunks; i++)
 		if (old_dest (chunk_list [i]) < old_dest (chunk_list [first_index]))
@@ -174,14 +174,14 @@ int get_first_chunks_index (chunk *chunk_list, int no_chunks)
 
 void AlignPolyModelData (CPolyModel* modelP)
 {
-	int i, chunk_len;
-	int total_correction = 0;
-	ubyte *cur_old, *cur_new;
+	int32_t i, chunk_len;
+	int32_t total_correction = 0;
+	uint8_t *cur_old, *cur_new;
 	chunk cur_ch;
 	chunk ch_list [MAX_CHUNKS];
-	int no_chunks = 0;
-	int tmp_size = modelP->nDataSize + SHIFT_SPACE;
-	ubyte *tmp = new ubyte [tmp_size]; // where we build the aligned version of modelP->Data ()
+	int32_t no_chunks = 0;
+	int32_t tmp_size = modelP->nDataSize + SHIFT_SPACE;
+	uint8_t *tmp = new uint8_t [tmp_size]; // where we build the aligned version of modelP->Data ()
 
 	Assert (tmp != NULL);
 	//start with first chunk (is always aligned!)
@@ -190,28 +190,28 @@ void AlignPolyModelData (CPolyModel* modelP)
 	chunk_len = get_chunks (cur_old, cur_new, ch_list, &no_chunks);
 	memcpy (cur_new, cur_old, chunk_len);
 	while (no_chunks > 0) {
-		int first_index = get_first_chunks_index (ch_list, no_chunks);
+		int32_t first_index = get_first_chunks_index (ch_list, no_chunks);
 		cur_ch = ch_list [first_index];
 		// remove first chunk from array:
 		no_chunks--;
 		for (i = first_index; i < no_chunks; i++)
 			ch_list [i] = ch_list [i + 1];
 		// if (new) address unaligned:
-		if ((uint)new_dest (cur_ch) % 4L != 0) {
+		if ((uint32_t)new_dest (cur_ch) % 4L != 0) {
 			// calculate how much to move to be aligned
-			short to_shift = 4 - (uint)new_dest (cur_ch) % 4L;
+			int16_t to_shift = 4 - (uint32_t)new_dest (cur_ch) % 4L;
 			// correct chunks' addresses
 			cur_ch.correction += to_shift;
 			for (i = 0; i < no_chunks; i++)
 				ch_list [i].correction += to_shift;
 			total_correction += to_shift;
-			Assert ((uint)new_dest (cur_ch) % 4L == 0);
+			Assert ((uint32_t)new_dest (cur_ch) % 4L == 0);
 			Assert (total_correction <= SHIFT_SPACE); // if you get this, increase SHIFT_SPACE
 		}
 		//write (corrected) chunk for current chunk:
-		* (reinterpret_cast<short*> (cur_ch.new_base + cur_ch.offset))
+		* (reinterpret_cast<int16_t*> (cur_ch.new_base + cur_ch.offset))
 		  = INTEL_SHORT (cur_ch.correction)
-				+ INTEL_SHORT (* (reinterpret_cast<short*> (cur_ch.old_base + cur_ch.offset)));
+				+ INTEL_SHORT (* (reinterpret_cast<int16_t*> (cur_ch.old_base + cur_ch.offset)));
 		//write (correctly aligned) chunk:
 		cur_old = old_dest (cur_ch);
 		cur_new = new_dest (cur_ch);
@@ -256,16 +256,16 @@ m_info.maxs.SetZero ();
 void CPolyModel::Parse (const char *filename, tRobotInfo *botInfoP)
 {
 	CFile cf;
-	short version;
-	int	id, len, next_chunk;
-	int	animFlag = 0;
-	ubyte modelBuf [MODEL_BUF_SIZE];
+	int16_t version;
+	int32_t	id, len, next_chunk;
+	int32_t	animFlag = 0;
+	uint8_t modelBuf [MODEL_BUF_SIZE];
 
 if (!cf.Open (filename, gameFolders.game.szData [0], "rb", 0))
 	Error ("Can't open file <%s>", filename);
 Assert (cf.Length () <= MODEL_BUF_SIZE);
 m_filePos = 0;
-m_fileEnd = (int) cf.Read (modelBuf, 1, cf.Length ());
+m_fileEnd = (int32_t) cf.Read (modelBuf, 1, cf.Length ());
 cf.Close ();
 id = POF_ReadInt (modelBuf);
 if (id != 0x4f505350) /* 'OPSP' */
@@ -302,7 +302,7 @@ while (POF_Read (&id, sizeof (id), 1, modelBuf) == 1) {
 			}
 
 		case ID_SOBJ: {		//Subobject header
-			int n = POF_ReadShort (modelBuf);
+			int32_t n = POF_ReadShort (modelBuf);
 			Assert (n < MAX_SUBMODELS);
 			animFlag++;
 			m_info.subModels.parents [n] = (char) POF_ReadShort (modelBuf);
@@ -316,14 +316,14 @@ while (POF_Read (&id, sizeof (id), 1, modelBuf) == 1) {
 
 		case ID_GUNS: {		//List of guns on this CObject
 			if (botInfoP) {
-				int i;
+				int32_t i;
 				CFixVector gun_dir;
 				botInfoP->nGuns = POF_ReadInt (modelBuf);
 				if (botInfoP->nGuns)
 					animFlag++;
 				Assert (botInfoP->nGuns <= MAX_GUNS);
 				for (i = 0; i < botInfoP->nGuns; i++) {
-					int id = POF_ReadShort (modelBuf);
+					int32_t id = POF_ReadShort (modelBuf);
 					Assert (id < botInfoP->nGuns);
 					botInfoP->gunSubModels [id] = (char) POF_ReadShort (modelBuf);
 					Assert (botInfoP->gunSubModels [id] != 0xff);
@@ -340,7 +340,7 @@ while (POF_Read (&id, sizeof (id), 1, modelBuf) == 1) {
 		case ID_ANIM:		//Animation data
 			animFlag++;
 			if (botInfoP) {
-				int f, m, n_frames = POF_ReadShort (modelBuf);
+				int32_t f, m, n_frames = POF_ReadShort (modelBuf);
 				Assert (n_frames == N_ANIM_STATES);
 				for (m = 0; m <m_info.nModels; m++)
 					for (f = 0; f < n_frames; f++)
@@ -353,7 +353,7 @@ while (POF_Read (&id, sizeof (id), 1, modelBuf) == 1) {
 
 		case ID_TXTR: {		//Texture filename list
 			char name_buf [128];
-			int n = POF_ReadShort (modelBuf);
+			int32_t n = POF_ReadShort (modelBuf);
 			while (n--)
 				POF_ReadString (name_buf, 128, modelBuf);
 			break;
@@ -385,18 +385,18 @@ G3SwapPolyModelData (Buffer ());
 
 void CPolyModel::FindMinMax (void)
 {
-	ushort		nVerts;
+	uint16_t		nVerts;
 	CFixVector*	vp;
-	ushort*		dataP, nType;
+	uint16_t*		dataP, nType;
 
 CFixVector& big_mn = m_info.mins;
 CFixVector& big_mx = m_info.maxs;
 
-for (int i = 0; i < m_info.nModels; i++) {
+for (int32_t i = 0; i < m_info.nModels; i++) {
 	CFixVector& mn = m_info.subModels.mins [i];
 	CFixVector& mx = m_info.subModels.maxs [i];
 	CFixVector& ofs = m_info.subModels.offsets [i];
-	dataP = reinterpret_cast<ushort*> (Buffer () + m_info.subModels.ptrs [i]);
+	dataP = reinterpret_cast<uint16_t*> (Buffer () + m_info.subModels.ptrs [i]);
 	nType = *dataP++;
 	Assert (nType == 7 || nType == 1);
 	nVerts = *dataP++;
@@ -427,12 +427,12 @@ for (int i = 0; i < m_info.nModels; i++) {
 
 //------------------------------------------------------------------------------
 
-extern short nHighestTexture;	//from interp.c
+extern int16_t nHighestTexture;	//from interp.c
 
 char pofNames [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
 //returns the number of this model
-void CPolyModel::Load (const char *filename, int nTextures, int nFirstTexture, tRobotInfo *botInfoP)
+void CPolyModel::Load (const char *filename, int32_t nTextures, int32_t nFirstTexture, tRobotInfo *botInfoP)
 {
 FindMinMax ();
 Setup ();
@@ -447,7 +447,7 @@ m_info.nSimplerModel = 0;
 //walks through all submodels of a polymodel and determines the coordinate extremes
 fix CPolyModel::Size (void)
 {
-	int			i, nSubModels;
+	int32_t			i, nSubModels;
 	tHitbox*		phb = &gameData.models.hitboxes [m_info.nId].hitboxes [0];
 	CFixVector	hv;
 	double		dx, dy, dz;
@@ -495,7 +495,7 @@ return (fix) (sqrt (dx * dx + dy * dy + dz + dz) /** 1.33*/);
 
 //------------------------------------------------------------------------------
 
-void CPolyModel::Check (ubyte *dataP)
+void CPolyModel::Check (uint8_t *dataP)
 {
 for (;;) {
 	switch (WORDVAL (dataP)) {
@@ -503,26 +503,26 @@ for (;;) {
 			return;
 
 		case OP_DEFPOINTS: {
-			int n = WORDVAL (dataP + 2);
+			int32_t n = WORDVAL (dataP + 2);
 			dataP += n * sizeof (CFixVector) + 4;
 			break;
 			}
 
 		case OP_DEFP_START: {
-			int n = WORDVAL (dataP + 2);
+			int32_t n = WORDVAL (dataP + 2);
 			dataP += n * sizeof (CFixVector) + 8;
 			break;
 			}
 
 		case OP_FLATPOLY: {
-			int nVerts = WORDVAL (dataP + 2);
+			int32_t nVerts = WORDVAL (dataP + 2);
 			Assert (nVerts > 2);		//must have 3 or more points
 			dataP += 30 + ((nVerts & ~1) + 1) * 2;
 			break;
 			}
 
 		case OP_TMAPPOLY: {
-			int nVerts = WORDVAL (dataP + 2);
+			int32_t nVerts = WORDVAL (dataP + 2);
 			Assert (nVerts > 2);		//must have 3 or more points
 			if (WORDVAL (dataP + 28) > nHighestTexture)
 				nHighestTexture = WORDVAL (dataP + 28);
@@ -592,9 +592,9 @@ Setup ();
 
 //------------------------------------------------------------------------------
 
-int CPolyModel::Read (int bHMEL, int bCustom, CFile& cf)
+int32_t CPolyModel::Read (int32_t bHMEL, int32_t bCustom, CFile& cf)
 {
-	int	i;
+	int32_t	i;
 
 #if DBG
 if (m_info.nId == nDbgModel)
@@ -644,9 +644,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CPolyModel::LoadTextures (tBitmapIndex*	altTextures)
+int32_t CPolyModel::LoadTextures (tBitmapIndex*	altTextures)
 {
-	int	i, j, nTextures = m_info.nTextures;
+	int32_t	i, j, nTextures = m_info.nTextures;
 
 if (altTextures) {
 	for (i = 0; i < nTextures; i++) {
@@ -733,9 +733,9 @@ maxs.Destroy ();
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int ReadPolyModels (CArray<CPolyModel>& models, int nModels, CFile& cf, int nOffset)
+int32_t ReadPolyModels (CArray<CPolyModel>& models, int32_t nModels, CFile& cf, int32_t nOffset)
 {
-	int i;
+	int32_t i;
 
 for (i = nOffset, nModels += nOffset; i < nModels; i++)
 	if (!models [i].Read (0, 0, cf))
@@ -745,7 +745,7 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int LoadPolyModel (const char* filename, int nTextures, int nFirstTexture, tRobotInfo *botInfoP)
+int32_t LoadPolyModel (const char* filename, int32_t nTextures, int32_t nFirstTexture, tRobotInfo *botInfoP)
 {
 Assert (gameData.models.nPolyModels < MAX_POLYGON_MODELS);
 Assert (nTextures < MAX_POLYOBJ_TEXTURES);
@@ -765,7 +765,7 @@ return gameData.models.nPolyModels - 1;
 
 void CModelData::Prepare (void)
 {
-	int			h, i, j;
+	int32_t			h, i, j;
 	CObject		o, *objP = OBJECTS.Buffer ();
 	const char*	pszHires;
 
@@ -777,7 +777,7 @@ gameStates.render.nShadowPass = 1;
 gameStates.render.bBuildModels = 1;
 h = 0;
 #if !BUILD_ALL_MODELS
-for (i = 0, j = int (OBJECTS.Length ()); i < j; i++, objP++) {
+for (i = 0, j = int32_t (OBJECTS.Length ()); i < j; i++, objP++) {
 	if ((objP->info.nSegment >= 0) && (objP->info.nType != 255) && (objP->info.renderType == RT_POLYOBJ) &&
 		 !G3HaveModel (objP->ModelId ())) {
 		if (gameStates.app.nLogLevel > 1)
@@ -815,7 +815,7 @@ for (tReplacementModel *rmP = replacementModels + i; i < j; i++, rmP++) {
 		else if (strstr (pszHires, "hostage") == pszHires)
 			o.info.nType = OBJ_HOSTAGE;
 		}
-	o.info.nId = (ubyte) rmP->nId;
+	o.info.nId = (uint8_t) rmP->nId;
 #if DBG
 	if (o.info.nId == nDbgObjId)
 		BRP;

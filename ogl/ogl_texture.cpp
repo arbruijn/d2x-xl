@@ -36,7 +36,7 @@
 #include "fbuffer.h"
 
 #if DBG
-CStaticArray< ubyte, 65536 > usedHandles;
+CStaticArray< uint8_t, 65536 > usedHandles;
 
 CStack< char* > texIds;
 #endif
@@ -49,9 +49,9 @@ CTextureManager textureManager;
 
 //------------------------------------------------------------------------------
 //little hack to find the largest or equal multiple of 2 for a given number
-int Pow2ize (int v, int max)
+int32_t Pow2ize (int32_t v, int32_t max)
 {
-	int i;
+	int32_t i;
 
 for (i = 2; i <= max; i *= 2)
 	if (v <= i)
@@ -61,9 +61,9 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int Luminance (int r, int g, int b)
+int32_t Luminance (int32_t r, int32_t g, int32_t b)
 {
-	int minColor, maxColor;
+	int32_t minColor, maxColor;
 
 if (r < g) {
 	minColor = (r < b) ? r : b;
@@ -89,7 +89,7 @@ texIds.SetGrowth (1000);
 #endif
 #else
 m_textures.Create (TEXTURE_LIST_SIZE);
-for (int i = 0; i < TEXTURE_LIST_SIZE; i++)
+for (int32_t i = 0; i < TEXTURE_LIST_SIZE; i++)
 	m_textures [i].SetIndex (i);
 #endif
 #if DBG
@@ -127,7 +127,7 @@ OglDeleteLists (&mouseIndList, 1);
 Check ();
 #endif
 
-for (uint i = m_textures.ToS (); i > 0; ) {
+for (uint32_t i = m_textures.ToS (); i > 0; ) {
 	CTexture* texP = m_textures [--i];
 #if DBG
 	if (texP->Registered () != i + 1)
@@ -147,9 +147,9 @@ texIds.Reset ();
 
 //------------------------------------------------------------------------------
 
-uint CTextureManager::Check (CTexture* texP)
+uint32_t CTextureManager::Check (CTexture* texP)
 {
-uint i = texP->Registered ();
+uint32_t i = texP->Registered ();
 return i && (i <= m_textures.ToS ()) && (m_textures [i] != texP) ? i : 0;
 }
 
@@ -158,7 +158,7 @@ return i && (i <= m_textures.ToS ()) && (m_textures [i] != texP) ? i : 0;
 bool CTextureManager::Check (void)
 {
 #if DBG
-for (uint i = 0, j = m_textures.ToS (); i < j; i++) {
+for (uint32_t i = 0, j = m_textures.ToS (); i < j; i++) {
 	CTexture* texP = m_textures [i]; 
 	if (texP->Registered () != i + 1) {
 		TextureError ();
@@ -171,9 +171,9 @@ return true;
 
 //------------------------------------------------------------------------------
 
-uint CTextureManager::Find (CTexture* texP)
+uint32_t CTextureManager::Find (CTexture* texP)
 {
-for (uint i = 0, j = m_textures.ToS (); i < j; i++) 
+for (uint32_t i = 0, j = m_textures.ToS (); i < j; i++) 
 	if (m_textures [i] == texP)
 		return i + 1;
 return 0;
@@ -181,9 +181,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-uint CTextureManager::Register (CTexture* texP)
+uint32_t CTextureManager::Register (CTexture* texP)
 {
-uint i = Find (texP);
+uint32_t i = Find (texP);
 if (i) {
 #if DBG
 	if (m_textures [i - 1]->Registered () != i)
@@ -193,7 +193,7 @@ if (i) {
 	}
 m_textures.Push (texP);
 #if DBG
-int l = (int) strlen (texP->Bitmap ()->Name ()) + 1;
+int32_t l = (int32_t) strlen (texP->Bitmap ()->Name ()) + 1;
 char* s = new char [l];
 if (s)
 	strcpy (s, texP->Bitmap ()->Name ());
@@ -210,7 +210,7 @@ bool CTextureManager::Release (CTexture* texP)
 #if DBG
 Check ();
 #endif
-uint i = Check (texP);
+uint32_t i = Check (texP);
 if (!i)
 	i = Find (texP);
 if (!i)
@@ -268,7 +268,7 @@ m_nRegistered = 0;
 
 //------------------------------------------------------------------------------
 
-void CTexture::Setup (int w, int h, int lw, int bpp, int bMask, int bMipMap, int bSmoothe, CBitmap *bmP)
+void CTexture::Setup (int32_t w, int32_t h, int32_t lw, int32_t bpp, int32_t bMask, int32_t bMipMap, int32_t bSmoothe, CBitmap *bmP)
 {
 m_info.w = w;
 m_info.h = h;
@@ -303,7 +303,7 @@ m_info.bSmoothe = (bMipMap < 0) ? -1 : bSmoothe || m_info.bMipMaps;
 
 //------------------------------------------------------------------------------
 
-bool CTexture::Register (uint i)
+bool CTexture::Register (uint32_t i)
 {
 if (i)
 	m_nRegistered = i;
@@ -393,7 +393,7 @@ else {
 void CTexture::Bind (void) 
 { 
 #if DBG
-if (int (m_info.handle) <= 0)
+if (int32_t (m_info.handle) <= 0)
 	return;
 #endif
 if (m_info.bRenderBuffer)
@@ -411,7 +411,7 @@ return m_info.handle && (m_info.handle == ogl.BoundTexture ());
 
 //------------------------------------------------------------------------------
 
-int CTexture::BindRenderBuffer (void)
+int32_t CTexture::BindRenderBuffer (void)
 {
 #if RENDER2TEXTURE == 1
 #	if 1
@@ -453,13 +453,13 @@ return 0;
 // will be computed so that only the part of the buffer containing the image
 // is rendered.
 
-ubyte* CTexture::Convert (int dxo, int dyo, CBitmap* bmP, int nTranspType, int bSuperTransp)
+uint8_t* CTexture::Convert (int32_t dxo, int32_t dyo, CBitmap* bmP, int32_t nTranspType, int32_t bSuperTransp)
 {
 paletteManager.SetTexture (bmP->Parent () ? bmP->Parent ()->Palette () : bmP->Palette ());
 if (!paletteManager.Texture ())
 	return NULL;
 
-int bTransp = (nTranspType || bSuperTransp) && bmP->HasTransparency ();
+int32_t bTransp = (nTranspType || bSuperTransp) && bmP->HasTransparency ();
 if (!bTransp)
 	m_info.format = GL_RGB;
 #if DBG
@@ -467,7 +467,7 @@ if (!nTranspType)
 	nTranspType = 0;
 #endif
 
-int bpp;
+int32_t bpp;
 
 restart:
 
@@ -491,13 +491,13 @@ switch (m_info.format) {
 		break;
 	}
 
-if (m_info.tw * m_info.th * bpp > (int) sizeof (ogl.m_data.buffer))//shouldn'texP happen, descent never uses textures that big.
+if (m_info.tw * m_info.th * bpp > (int32_t) sizeof (ogl.m_data.buffer))//shouldn'texP happen, descent never uses textures that big.
 	Error ("texture too big %i %i", m_info.tw, m_info.th);
 
-	ubyte*		rawData = bmP->Buffer ();
+	uint8_t*		rawData = bmP->Buffer ();
 	GLubyte*		bufP = ogl.m_data.buffer;
 	CRGBColor*	colorP;
-	int			transparencyColor, superTranspColor;
+	int32_t			transparencyColor, superTranspColor;
 #if 1
 	if (bmP) {
 		colorP = bmP->Palette ()->Color ();
@@ -512,8 +512,8 @@ if (m_info.tw * m_info.th * bpp > (int) sizeof (ogl.m_data.buffer))//shouldn'tex
 		superTranspColor =  paletteManager.Texture ()->SuperTranspColor ();
 		}
 
-	ushort		r, g, b, a;
-	int			x, y, c;
+	uint16_t		r, g, b, a;
+	int32_t			x, y, c;
 
 
 //bmP->Flags () &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
@@ -626,7 +626,7 @@ for (y = 0; y < m_info.h; y++) {
 #if 0 //non-linear formula
 							double da = (double) (r * 3 + g * 5 + b * 2) / (10.0 * 255.0);
 							da *= da;
-							vec = (ubyte) (da * 255.0);
+							vec = (uint8_t) (da * 255.0);
 #else
 							a = (r * 30 + g * 59 + b * 11) / 100;	//transparency based on color intensity
 #endif
@@ -675,12 +675,12 @@ return ogl.m_data.buffer;
 //------------------------------------------------------------------------------
 //create texture buffer from data already in RGBA format
 
-ubyte *CTexture::Copy (int dxo, int dyo, ubyte *data)
+uint8_t *CTexture::Copy (int32_t dxo, int32_t dyo, uint8_t *data)
 {
 if (!dxo && !dyo && (m_info.w == m_info.tw) && (m_info.h == m_info.th))
 	return data;	//can use data 1:1
 else {	//need to reformat
-	int		h, w, tw;
+	int32_t		h, w, tw;
 	GLubyte	*bufP;
 
 	h = m_info.lw / m_info.w;
@@ -702,7 +702,7 @@ else {	//need to reformat
 
 //------------------------------------------------------------------------------
 
-int CTexture::FormatSupported (void)
+int32_t CTexture::FormatSupported (void)
 {
 	GLint nFormat = 0;
 
@@ -779,7 +779,7 @@ return nFormat == m_info.internalFormat;
 
 //------------------------------------------------------------------------------
 
-int CTexture::Verify (void)
+int32_t CTexture::Verify (void)
 {
 while (!FormatSupported ()) {
 	switch (m_info.format) {
@@ -822,7 +822,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void CTexture::SetBufSize (int dbits, int bits, int w, int h)
+void CTexture::SetBufSize (int32_t dbits, int32_t bits, int32_t w, int32_t h)
 {
 if (bits <= 0) //the beta nvidia GLX server. doesn'texP ever return any bit sizes, so just use some assumptions.
 	bits = dbits;
@@ -833,7 +833,7 @@ if (bits <= 0) //the beta nvidia GLX server. doesn'texP ever return any bit size
 void CTexture::SetSize (void)
 {
 	GLint	w, h;
-	int	nBits = 16, a = 0;
+	int32_t	nBits = 16, a = 0;
 	GLint texP;
 
 glGetTexLevelParameteriv (GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &w);
@@ -894,7 +894,7 @@ SetBufSize (nBits, a, w, h);
 
 //------------------------------------------------------------------------------
 
-void CTexture::Wrap (int state)
+void CTexture::Wrap (int32_t state)
 {
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, state);
 glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, state);
@@ -902,10 +902,10 @@ glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, state);
 
 //------------------------------------------------------------------------------
 
-GLuint CTexture::Create (int w, int h)
+GLuint CTexture::Create (int32_t w, int32_t h)
 {
-	int		nSize = w * h * sizeof (uint);
-	ubyte		*data = new ubyte [nSize];
+	int32_t		nSize = w * h * sizeof (uint32_t);
+	uint8_t		*data = new uint8_t [nSize];
 
 if (!data)
 	return 0;
@@ -929,7 +929,7 @@ return m_info.handle;
 
 //------------------------------------------------------------------------------
 
-int CTexture::Prepare (bool bCompressed)
+int32_t CTexture::Prepare (bool bCompressed)
 {
 #if 0 //TEXTURE_COMPRESSION
 if (bCompressed) {
@@ -947,7 +947,7 @@ return 0;
 
 #if TEXTURE_COMPRESSION
 
-int CTexture::Compress (void)
+int32_t CTexture::Compress (void)
 {
 if (m_info.internalFormat != GL_COMPRESSED_RGBA)
 	return 0;
@@ -988,9 +988,9 @@ return 0;
 //------------------------------------------------------------------------------
 
 #if TEXTURE_COMPRESSION
-int CTexture::Load (ubyte *buffer, int nBufSize, int nFormat, bool bCompressed)
+int32_t CTexture::Load (uint8_t *buffer, int32_t nBufSize, int32_t nFormat, bool bCompressed)
 #else
-int CTexture::Load (ubyte* buffer)
+int32_t CTexture::Load (uint8_t* buffer)
 #endif
 {
 if (!buffer)
@@ -1070,10 +1070,10 @@ if (Texture () && (Texture ()->Handle () == -1)) {
 
 //------------------------------------------------------------------------------
 
-void CBitmap::Unlink (int bAddon)
+void CBitmap::Unlink (int32_t bAddon)
 {
 	CBitmap	*altBmP, *bmfP;
-	int			i, j;
+	int32_t			i, j;
 
 if (bAddon || (Type () == BM_TYPE_STD)) {
 	if (Mask ())
@@ -1103,10 +1103,10 @@ if (bAddon || (Type () == BM_TYPE_STD)) {
 
 //------------------------------------------------------------------------------
 
-CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures)
+CBitmap *LoadFaceBitmap (int16_t nTexture, int16_t nFrameIdx, int32_t bLoadTextures)
 {
 	CBitmap*	bmP, * bmoP, * bmfP;
-	int		nFrames;
+	int32_t		nFrames;
 
 #if DBG
 if (nTexture == nDbgTexture)
@@ -1139,9 +1139,9 @@ return bmfP;
 //loads a palettized bitmap into a ogl RGBA texture.
 //Sizes and pads dimensions to multiples of 2 if necessary.
 //stores OpenGL textured id in *texid and u/v values required to get only the real data in *u/*v
-int CBitmap::LoadTexture (int dxo, int dyo, int superTransp)
+int32_t CBitmap::LoadTexture (int32_t dxo, int32_t dyo, int32_t superTransp)
 {
-	ubyte*		data = Buffer ();
+	uint8_t*		data = Buffer ();
 
 if (!data)
 	return 1;
@@ -1149,7 +1149,7 @@ if (!data)
 	GLubyte*		bufP = NULL;
 	CTexture		texture;
 	bool			bLocal;
-	int			funcRes = 0;
+	int32_t			funcRes = 0;
 
 if ((bLocal = (m_info.texP == NULL))) {
 	texture.Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP);
@@ -1199,14 +1199,14 @@ return funcRes;
 
 //------------------------------------------------------------------------------
 
-ubyte decodebuf [2048*2048];
+uint8_t decodebuf [2048*2048];
 
 #if RENDER2TEXTURE == 1
-int CBitmap::PrepareTexture (int bMipMap, int bMask, CBO *renderBuffer)
+int32_t CBitmap::PrepareTexture (int32_t bMipMap, int32_t bMask, CBO *renderBuffer)
 #elif RENDER2TEXTURE == 2
-int CBitmap::PrepareTexture (int bMipMap, int bMask, CFBO *renderBuffer)
+int32_t CBitmap::PrepareTexture (int32_t bMipMap, int32_t bMask, CFBO *renderBuffer)
 #else
-int CBitmap::PrepareTexture (int bMipMap, int bMask, tPixelBuffer *renderBuffer)
+int32_t CBitmap::PrepareTexture (int32_t bMipMap, int32_t bMask, tPixelBuffer *renderBuffer)
 #endif
 {
 if ((m_info.nType == BM_TYPE_STD) && Parent () && (Parent () != this))
@@ -1242,7 +1242,7 @@ if (Flags () & BM_FLAG_RLE)
 if (!bMask) {
 	CFloatVector3 color;
 	if (0 <= (AvgColor (&color)))
-		SetAvgColorIndex ((ubyte) Palette ()->ClosestColor (&color));
+		SetAvgColorIndex ((uint8_t) Palette ()->ClosestColor (&color));
 	}
 #endif
 #if DBG
@@ -1255,10 +1255,10 @@ return m_info.texP->Handle () == 0;
 
 //------------------------------------------------------------------------------
 
-int CBitmap::CreateFrames (int bMipMaps, int bLoad)
+int32_t CBitmap::CreateFrames (int32_t bMipMaps, int32_t bLoad)
 {
-	int	nFrames = (m_info.nType == BM_TYPE_ALT) ? m_info.frames.nCount : 0;
-	ubyte	nFlags;
+	int32_t	nFrames = (m_info.nType == BM_TYPE_ALT) ? m_info.frames.nCount : 0;
+	uint8_t	nFlags;
 
 if (nFrames < 2)
 	return 0;
@@ -1272,7 +1272,7 @@ else {
 
 	m_info.frames.bmP = new CBitmap [nFrames];
 
-	int		i, w = m_info.props.w;
+	int32_t		i, w = m_info.props.w;
 	CBitmap* bmfP = m_info.frames.currentP = m_info.frames.bmP;
 
 	m_info.frames.nCurrent = 0;
@@ -1303,9 +1303,9 @@ return 1;
 
 CBitmap *CBitmap::CreateMask (void)
 {
-	int		i = (int) Width () * (int) Height ();
-	ubyte		*pi;
-	ubyte		*pm;
+	int32_t		i = (int32_t) Width () * (int32_t) Height ();
+	uint8_t		*pi;
+	uint8_t		*pm;
 
 if (!gameStates.render.textures.bHaveMaskShader)
 	return NULL;
@@ -1313,7 +1313,7 @@ if (!Buffer ())
 	return NULL;
 if (m_info.maskP)
 	return m_info.maskP;
-//int nTranspType = m_info.nTranspType;
+//int32_t nTranspType = m_info.nTranspType;
 //SetBPP (4);
 if (!(m_info.maskP = CBitmap::Create (0, (Width ()  + 1) / 2, (Height () + 1) / 2, 4)))
 	return NULL;
@@ -1324,7 +1324,7 @@ m_info.maskP->SetWidth (m_info.props.w);
 m_info.maskP->SetHeight (m_info.props.w);
 m_info.maskP->SetBPP (1);
 //m_info.nTranspType = nTranspType;
-UseBitmapCache (m_info.maskP, (int) m_info.maskP->Width () * (int) m_info.maskP->RowSize ());
+UseBitmapCache (m_info.maskP, (int32_t) m_info.maskP->Width () * (int32_t) m_info.maskP->RowSize ());
 if (m_info.props.flags & BM_FLAG_TGA) {
 	for (pi = Buffer (), pm = m_info.maskP->Buffer (); i; i--, pi += 4, pm++)
 		if ((pi [0] == 120) && (pi [1] == 88) && (pi [2] == 128))
@@ -1345,9 +1345,9 @@ return m_info.maskP;
 
 //------------------------------------------------------------------------------
 
-int CBitmap::CreateMasks (void)
+int32_t CBitmap::CreateMasks (void)
 {
-	int	nMasks, i, nFrames;
+	int32_t	nMasks, i, nFrames;
 
 if (!gameStates.render.textures.bHaveMaskShader)
 	return 0;
@@ -1372,11 +1372,11 @@ return nMasks;
 //------------------------------------------------------------------------------
 // returns 0:Success, 1:Error
 
-int CBitmap::Bind (int bMipMaps)
+int32_t CBitmap::Bind (int32_t bMipMaps)
 {
 	CBitmap		*bmP;
 
-	static int nDepth = 0;
+	static int32_t nDepth = 0;
 
 #if 0
 if (nDepth > 1)
@@ -1384,7 +1384,7 @@ if (nDepth > 1)
 nDepth++;
 
 if ((nDepth < 2) && (bmP = HasOverride ()) && (bmP != this)) {
-	int i = bmP->Bind (bMipMaps);
+	int32_t i = bmP->Bind (bMipMaps);
 	nDepth--;
 	return i;
 	}
@@ -1392,7 +1392,7 @@ if ((nDepth < 2) && (bmP = HasOverride ()) && (bmP != this)) {
 #else
 
 if ((bmP = HasOverride ()) && (bmP != this)) {
-	int i = bmP->Bind (bMipMaps);
+	int32_t i = bmP->Bind (bMipMaps);
 	return i;
 	}
 
@@ -1426,13 +1426,13 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-bool CBitmap::SetupFrames (int bMipMaps, int bLoad)
+bool CBitmap::SetupFrames (int32_t bMipMaps, int32_t bLoad)
 {
-int h = m_info.props.h;
-int w = m_info.props.w;
+int32_t h = m_info.props.h;
+int32_t w = m_info.props.w;
 if (!(h * w))
 	return false;
-int nFrames = (m_info.nType == BM_TYPE_ALT) ? FrameCount () : 0;
+int32_t nFrames = (m_info.nType == BM_TYPE_ALT) ? FrameCount () : 0;
 if (!(m_info.props.flags & BM_FLAG_TGA) || (nFrames < 2)) {
 	CreateMasks ();
 	if (bLoad) {
@@ -1447,7 +1447,7 @@ else if (!Frames ()) {
 	CreateMasks ();
 	if (bLoad) {
 		CBitmap*	bmfP = Frames ();
-		for (int i = nFrames; i; i--, bmfP++) {
+		for (int32_t i = nFrames; i; i--, bmfP++) {
 			if (bmfP->PrepareTexture (bMipMaps, 1))
 				return false;
 			if (bmfP->Mask () && (bmfP->Mask ()->PrepareTexture (0, 1, NULL)))
@@ -1460,7 +1460,7 @@ return (m_info.bSetup = true);
 
 //------------------------------------------------------------------------------
 
-bool CBitmap::SetupTexture (int bMipMaps, int bLoad)
+bool CBitmap::SetupTexture (int32_t bMipMaps, int32_t bLoad)
 {
 	CBitmap *bmP;
 
@@ -1523,8 +1523,8 @@ if ((*hTextures == DrawBuffer ()->ColorBuffer ()) &&
 	DestroyDrawBuffers ();
 #endif
 #if DBG
-for (int i = 0; i < n;)
-	if (int (hTextures [i]) < 0)
+for (int32_t i = 0; i < n;)
+	if (int32_t (hTextures [i]) < 0)
 		hTextures [i] = hTextures [--n];
 	else
 		i++;

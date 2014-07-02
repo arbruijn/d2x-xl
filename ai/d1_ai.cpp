@@ -64,9 +64,9 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	JOHN_CHEATS_SIZE_2	6
 #define	JOHN_CHEATS_SIZE_3	6
 
-void pae_aux (int nSegment, int nType, int level);
+void pae_aux (int32_t nSegment, int32_t nType, int32_t level);
 
-ubyte	john_cheats_1 [JOHN_CHEATS_SIZE_1] = { 	KEY_P ^ 0x00 ^ 0x34,
+uint8_t	john_cheats_1 [JOHN_CHEATS_SIZE_1] = { 	KEY_P ^ 0x00 ^ 0x34,
 															KEY_O ^ 0x10 ^ 0x34,
 															KEY_B ^ 0x20 ^ 0x34,
 															KEY_O ^ 0x30 ^ 0x34,
@@ -77,8 +77,8 @@ ubyte	john_cheats_1 [JOHN_CHEATS_SIZE_1] = { 	KEY_P ^ 0x00 ^ 0x34,
 
 #define MIN_D 0x100
 
-int	nFlinchScaleD1 = 4;
-int	nAttackScaleD1 = 24;
+int32_t	nFlinchScaleD1 = 4;
+int32_t	nAttackScaleD1 = 24;
 
 #ifndef ANIM_RATE
 #	define	ANIM_RATE		(I2X (1)/16)
@@ -86,16 +86,16 @@ int	nAttackScaleD1 = 24;
 
 #define	DELTA_ANG_SCALE	16
 
-static ubyte xlatD1Animation [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLINCH, AS_FIRE, AS_RECOIL, AS_REST};
+static uint8_t xlatD1Animation [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLINCH, AS_FIRE, AS_RECOIL, AS_REST};
 
-int	john_cheats_index_1;		//	POBOYS		detonate reactor
-int	john_cheats_index_2;		//	PORGYS		high speed weapon firing
-int	john_cheats_index_3;		//	LUNACY		lunacy (insane behavior, rookie firing)
-int	john_cheats_index_4;		//	PLETCHnnn	paint robots
+int32_t	john_cheats_index_1;		//	POBOYS		detonate reactor
+int32_t	john_cheats_index_2;		//	PORGYS		high speed weapon firing
+int32_t	john_cheats_index_3;		//	LUNACY		lunacy (insane behavior, rookie firing)
+int32_t	john_cheats_index_4;		//	PLETCHnnn	paint robots
 
-extern int nRobotSoundVolume;
+extern int32_t nRobotSoundVolume;
 
-// int	No_ai_flag=0;
+// int32_t	No_ai_flag=0;
 
 #define	OVERALL_AGITATION_MAX	100
 
@@ -115,7 +115,7 @@ extern int nRobotSoundVolume;
 
 //	---------- John: End of variables which must be saved as part of gamesave. ----------
 
-int	D1_AI_evaded=0;
+int32_t	D1_AI_evaded=0;
 
 //	0	mech
 //	1	green claw
@@ -142,16 +142,16 @@ int	D1_AI_evaded=0;
 //	22	quad-laser
 // 23 super boss
 
-// ubyte	super_boss_gate_list [] = {0, 1, 2, 9, 11, 16, 18, 19, 21, 22, 0, 9, 9, 16, 16, 18, 19, 19, 22, 22};
-ubyte	super_boss_gate_list [] = {0, 1, 8, 9, 10, 11, 12, 15, 16, 18, 19, 20, 22, 0, 8, 11, 19, 20, 8, 20, 8};
+// uint8_t	super_boss_gate_list [] = {0, 1, 2, 9, 11, 16, 18, 19, 21, 22, 0, 9, 9, 16, 16, 18, 19, 19, 22, 22};
+uint8_t	super_boss_gate_list [] = {0, 1, 8, 9, 10, 11, 12, 15, 16, 18, 19, 20, 22, 0, 8, 11, 19, 20, 8, 20, 8};
 #define	D1_MAX_GATE_INDEX	( sizeof(super_boss_gate_list) / sizeof(super_boss_gate_list [0]) )
 
-int	D1_AI_info_enabled=0;
+int32_t	D1_AI_info_enabled=0;
 
-int	Ugly_robot_cheat = 0, Ugly_robot_texture = 0;
-ubyte	Enable_john_cheat_1 = 0, Enable_john_cheat_2 = 0, Enable_john_cheat_3 = 0, Enable_john_cheat_4 = 0;
+int32_t	Ugly_robot_cheat = 0, Ugly_robot_texture = 0;
+uint8_t	Enable_john_cheat_1 = 0, Enable_john_cheat_2 = 0, Enable_john_cheat_3 = 0, Enable_john_cheat_4 = 0;
 
-ubyte	john_cheats_3 [2*JOHN_CHEATS_SIZE_3+1] = { KEY_Y ^ 0x67,
+uint8_t	john_cheats_3 [2*JOHN_CHEATS_SIZE_3+1] = { KEY_Y ^ 0x67,
 																KEY_E ^ 0x66,
 																KEY_C ^ 0x65,
 																KEY_A ^ 0x64,
@@ -162,8 +162,8 @@ ubyte	john_cheats_3 [2*JOHN_CHEATS_SIZE_3+1] = { KEY_Y ^ 0x67,
 
 #define	D1_MAX_AWARENESS_EVENTS	64
 typedef struct awareness_event {
-	short 		nSegment;				// CSegment the event occurred in
-	short			type;					// type of event, defines behavior
+	int16_t 		nSegment;				// CSegment the event occurred in
+	int16_t			type;					// type of event, defines behavior
 	CFixVector	pos;					// absolute 3 space location of event
 } awareness_event;
 
@@ -174,7 +174,7 @@ typedef struct awareness_event {
 #define	D1_AIS_MAX	8
 #define	D1_AIE_MAX	4
 
-//--unused-- int	Processed_this_frame, LastFrameCount;
+//--unused-- int32_t	Processed_this_frame, LastFrameCount;
 #if DBG
 //	Index into this array with ailP->mode
 char	mode_text [8][9] = {
@@ -211,7 +211,7 @@ char	state_text [8][5] = {
 };
 
 
-int	D1_AI_animation_test=0;
+int32_t	D1_AI_animation_test=0;
 #endif
 
 // Current state indicates where the robotP current is, or has just done.
@@ -221,7 +221,7 @@ int	D1_AI_animation_test=0;
 //	 Third dimension is goal state.
 //	Result is new goal state.
 //	ERR_ means something impossible has happened.
-ubyte D1_AI_transition_table [D1_AI_MAX_EVENT][D1_AI_MAX_STATE][D1_AI_MAX_STATE] = {
+uint8_t D1_AI_transition_table [D1_AI_MAX_EVENT][D1_AI_MAX_STATE][D1_AI_MAX_STATE] = {
  {
 	//	Event = AIE_FIRE, a nearby CObject fired
 	//	none			rest			srch			lock			flin			fire			reco				// CURRENT is rows, GOAL is columns
@@ -269,7 +269,7 @@ ubyte D1_AI_transition_table [D1_AI_MAX_EVENT][D1_AI_MAX_STATE][D1_AI_MAX_STATE]
 	}
 };
 
-ubyte	john_cheats_2 [2*JOHN_CHEATS_SIZE_2] = { 	KEY_P ^ 0x00 ^ 0x43, 0x66,
+uint8_t	john_cheats_2 [2*JOHN_CHEATS_SIZE_2] = { 	KEY_P ^ 0x00 ^ 0x43, 0x66,
 																KEY_O ^ 0x10 ^ 0x43, 0x11,
 																KEY_R ^ 0x20 ^ 0x43, 0x8,
 																KEY_G ^ 0x30 ^ 0x43, 0x2,
@@ -281,7 +281,7 @@ static CHitResult aiHitResult;
 // ---------------------------------------------------------
 //	On entry, gameData.bots.nTypes [1] had darn sure better be set.
 //	Mallocs gameData.bots.nTypes [1] tRobotInfo structs into global tRobotInfo.
-void john_cheat_func_1(int key)
+void john_cheat_func_1(int32_t key)
 {
 	if (!gameStates.app.cheats.bEnabled)
 		return;
@@ -300,7 +300,7 @@ else
 
 // ---------------------------------------------------------------------------------------------------------------------
 //	Given a behavior, set initial mode.
-int D1_AI_behavior_to_mode(int behavior)
+int32_t D1_AI_behavior_to_mode(int32_t behavior)
 {
 	switch (behavior) {
 		case D1_AIB_STILL:			return D1_AIM_STILL;
@@ -315,15 +315,15 @@ int D1_AI_behavior_to_mode(int behavior)
 	return D1_AIM_STILL;
 }
 
-int	Lunacy = 0;
-int	Diff_save = 1;
+int32_t	Lunacy = 0;
+int32_t	Diff_save = 1;
 
 fix	primaryFiringWaitCopy [MAX_ROBOT_TYPES];
-ubyte	nRapidFireCountCopy [MAX_ROBOT_TYPES];
+uint8_t	nRapidFireCountCopy [MAX_ROBOT_TYPES];
 
 void do_lunacy_on(void)
 {
-	int	i;
+	int32_t	i;
 
 	if ( !Lunacy ) {
 		Lunacy = 1;
@@ -342,7 +342,7 @@ void do_lunacy_on(void)
 
 void do_lunacy_off(void)
 {
-	int	i;
+	int32_t	i;
 
 	if ( Lunacy ) {
 		Lunacy = 0;
@@ -354,7 +354,7 @@ void do_lunacy_off(void)
 	}
 }
 
-void john_cheat_func_3(int key)
+void john_cheat_func_3(int32_t key)
 {
 	if (!gameStates.app.cheats.bEnabled)
 		return;
@@ -395,8 +395,8 @@ void set_rotvel_and_saturate(fix *dest, fix delta)
 }
 
 //--debug-- #if DBG
-//--debug-- int	Total_turns=0;
-//--debug-- int	Prevented_turns=0;
+//--debug-- int32_t	Total_turns=0;
+//--debug-- int32_t	Prevented_turns=0;
 //--debug-- #endif
 
 #define	D1_AI_TURN_SCALE	1
@@ -431,7 +431,7 @@ objP->info.position.mOrient = CFixMatrix::CreateFR (new_fVec, objP->info.positio
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void ai_turn_randomly(CFixVector *vec_to_player, CObject *objP, fix rate, int nPrevVisibility)
+void ai_turn_randomly(CFixVector *vec_to_player, CObject *objP, fix rate, int32_t nPrevVisibility)
 {
 	CFixVector	curVec;
 
@@ -466,7 +466,7 @@ void ai_turn_randomly(CFixVector *vec_to_player, CObject *objP, fix rate, int nP
 //		Increases distance to which robotP will search to create path to playerP by gameData.ai.nOverallAgitation/8 segments.
 //		Decreases wait between fire times by gameData.ai.nOverallAgitation/64 seconds.
 
-void john_cheat_func_4(int key)
+void john_cheat_func_4(int32_t key)
 {
 	if (!gameStates.app.cheats.bEnabled)
 		return;
@@ -548,7 +548,7 @@ void john_cheat_func_4(int key)
 //		2		Player is visible and in field of view.
 //	Note: Uses gameData.ai.target.vBelievedPos as playerP's position for cloak effect.
 //	NOTE: Will destructively modify *pos if *pos is outside the mine.
-int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vec_to_player)
+int32_t player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vec_to_player)
 {
 	fix			dot;
 
@@ -559,7 +559,7 @@ int player_is_visible_from_object(CObject *objP, CFixVector *pos, fix fieldOfVie
 if ((*pos) == objP->info.position.vPos)
 	hitQuery.nSegment	= objP->info.nSegment;
 else {
-	int nSegment = FindSegByPos (*pos, objP->info.nSegment, 1, 0);
+	int32_t nSegment = FindSegByPos (*pos, objP->info.nSegment, 1, 0);
 	if (nSegment != -1)
 		hitQuery.nSegment = nSegment;
 	else {
@@ -587,16 +587,16 @@ return 0;
 
 // ------------------------------------------------------------------------------------------------------------------
 //	Return 1 if animates, else return 0
-int do_silly_animation (CObject *objP)
+int32_t do_silly_animation (CObject *objP)
 {
-	int				nObject = objP->Index ();
+	int32_t				nObject = objP->Index ();
 	tJointPos*		jointPositions;
-	int				robotType, nGun, robotState, nJointPositions;
+	int32_t				robotType, nGun, robotState, nJointPositions;
 	tPolyObjInfo*	polyObjInfo = &objP->rType.polyObjInfo;
 	tAIStaticInfo*	aiP = &objP->cType.aiInfo;
-	int				nGunCount, at_goal;
-	int				attackType;
-	int				nFlinchAttackScale = 1;
+	int32_t				nGunCount, at_goal;
+	int32_t				attackType;
+	int32_t				nFlinchAttackScale = 1;
 
 robotType = objP->info.nId;
 if (0 > (nGunCount = gameData.bots.info [1][robotType].nGuns))
@@ -611,8 +611,8 @@ else if ((robotState == AS_FLINCH) || (robotState == AS_RECOIL))
 at_goal = 1;
 for (nGun = 0; nGun <= nGunCount; nGun++) {
 	nJointPositions = RobotGetAnimState (&jointPositions, robotType, nGun, robotState);
-	for (int nJoint = 0; nJoint < nJointPositions; nJoint++) {
-		int				jointnum = jointPositions [nJoint].jointnum;
+	for (int32_t nJoint = 0; nJoint < nJointPositions; nJoint++) {
+		int32_t				jointnum = jointPositions [nJoint].jointnum;
 
 		if (jointnum >= gameData.models.polyModels [0][objP->ModelId ()].ModelCount ())
 			continue;
@@ -620,7 +620,7 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 		CAngleVector*	jointAngles = &jointPositions [nJoint].angles;
 		CAngleVector*	objAngles = &polyObjInfo->animAngles [jointnum];
 
-		for (int nAngle = 0; nAngle < 3; nAngle++) {
+		for (int32_t nAngle = 0; nAngle < 3; nAngle++) {
 			if (jointAngles->v.vec [nAngle] != objAngles->v.vec [nAngle]) {
 				if (nGun == 0)
 					at_goal = 0;
@@ -662,19 +662,19 @@ return 1;
 //	Delta orientation of CObject is at:		aiInfo.deltaAngles
 void ai_frame_animation (CObject *objP)
 {
-	int	nObject = objP->Index ();
-	int	nJointCount;
+	int32_t	nObject = objP->Index ();
+	int32_t	nJointCount;
 
 nJointCount = gameData.models.polyModels [0][objP->ModelId ()].ModelCount ();
 
-for (int joint = 1; joint < nJointCount; joint++) {
+for (int32_t joint = 1; joint < nJointCount; joint++) {
 	fix			delta_to_goal;
 	fix			scaled_delta_angle;
 	CAngleVector	*curAngP = &objP->rType.polyObjInfo.animAngles [joint];
 	CAngleVector	*goalAngP = &gameData.ai.localInfo [nObject].goalAngles [joint];
 	CAngleVector	*deltaAngP = &gameData.ai.localInfo [nObject].deltaAngles [joint];
 
-	for (int nAngle = 0; nAngle < 3; nAngle++) {
+	for (int32_t nAngle = 0; nAngle < 3; nAngle++) {
 		delta_to_goal = goalAngP->v.vec [nAngle] - curAngP->v.vec [nAngle];
 		if (delta_to_goal > 32767)
 			delta_to_goal -= 65536;
@@ -737,7 +737,7 @@ if (botInfoP->attackType == 1) {
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void ai_multi_send_robot_position (int nObject, int force)
+void ai_multi_send_robot_position (int32_t nObject, int32_t force)
 {
 if (IsMultiGame)
 	MultiSendRobotPosition(nObject, force != -1);
@@ -749,7 +749,7 @@ if (IsMultiGame)
 //	When this routine is complete, the parameter vec_to_player should not be necessary.
 void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 {
-	int				nObject = objP->Index ();
+	int32_t				nObject = objP->Index ();
 	tAILocalInfo*	ailP = &gameData.ai.localInfo [nObject];
 	tRobotInfo*		botInfoP = &gameData.bots.info [1][objP->info.nId];
 	CFixVector		vFire;
@@ -887,17 +887,17 @@ void move_towards_player(CObject *objP, CFixVector *vec_to_player)
 
 // --------------------------------------------------------------------------------------------------------------------
 //	I am ashamed of this: fast_flag == -1 means Normal slide about.  fast_flag = 0 means no evasion.
-void move_around_player(CObject *objP, CFixVector *vec_to_player, int fast_flag)
+void move_around_player(CObject *objP, CFixVector *vec_to_player, int32_t fast_flag)
 {
 	tPhysicsInfo	*piP = &objP->mType.physInfo;
 	fix				speed;
 	tRobotInfo		*botInfoP = &gameData.bots.info [1][objP->info.nId];
-	int				nObject = objP->Index ();
-	int				dir;
-	int				dir_change;
+	int32_t				nObject = objP->Index ();
+	int32_t				dir;
+	int32_t				dir_change;
 	fix				ft;
 	CFixVector		vEvade;
-	int				count=0;
+	int32_t				count=0;
 
 	if (fast_flag == 0)
 		return;
@@ -976,12 +976,12 @@ void move_around_player(CObject *objP, CFixVector *vec_to_player, int fast_flag)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void move_away_from_player(CObject *objP, CFixVector *vec_to_player, int attackType)
+void move_away_from_player(CObject *objP, CFixVector *vec_to_player, int32_t attackType)
 {
 	fix				speed;
 	tPhysicsInfo	*piP = &objP->mType.physInfo;
 	tRobotInfo		*botInfoP = &gameData.bots.info [1][objP->info.nId];
-	int				objref;
+	int32_t				objref;
 
 	piP->velocity -= *vec_to_player * (gameData.time.xFrame * 16);
 
@@ -1039,7 +1039,7 @@ void move_away_from_player(CObject *objP, CFixVector *vec_to_player, int attackT
 //	Move towards, away_from or around playerP.
 //	Also deals with evasion.
 //	If the flag evade_only is set, then only allowed to evade, not allowed to move otherwise (must have mode == D1_AIM_STILL).
-void ai_move_relative_to_player(CObject *objP, tAILocalInfo *ailP, fix dist_to_player, CFixVector *vec_to_player, fix circle_distance, int evade_only)
+void ai_move_relative_to_player(CObject *objP, tAILocalInfo *ailP, fix dist_to_player, CFixVector *vec_to_player, fix circle_distance, int32_t evade_only)
 {
 	CObject		*dangerObjP;
 	tRobotInfo	*botInfoP = &gameData.bots.info [1][objP->info.nId];
@@ -1077,7 +1077,7 @@ void ai_move_relative_to_player(CObject *objP, tAILocalInfo *ailP, fix dist_to_p
 				laser_robot_dot = CFixVector::Dot (laser_fVec, laser_vec_to_robot);
 
 				if ((laser_robot_dot > I2X (7) / 8) && (dist_to_laser < I2X (80))) {
-					int	evadeSpeed;
+					int32_t	evadeSpeed;
 
 					D1_AI_evaded = 1;
 					evadeSpeed = gameData.bots.info [1][objP->info.nId].evadeSpeed [gameStates.app.nDifficultyLevel];
@@ -1122,9 +1122,9 @@ void ai_move_relative_to_player(CObject *objP, tAILocalInfo *ailP, fix dist_to_p
 
 
 //	-------------------------------------------------------------------------------------------------------------------
-int	Break_on_object = -1;
+int32_t	Break_on_object = -1;
 
-void do_firing_stuff(CObject *objP, int player_visibility, CFixVector *vec_to_player)
+void do_firing_stuff(CObject *objP, int32_t player_visibility, CFixVector *vec_to_player)
 {
 	if (player_visibility >= 1) {
 		//	Now, if in robotP's field of view, lock onto playerP
@@ -1160,7 +1160,7 @@ void do_firing_stuff(CObject *objP, int player_visibility, CFixVector *vec_to_pl
 
 // --------------------------------------------------------------------------------------------------------------------
 //	If a hiding robotP gets bumped or hit, he decides to find another hiding place.
-void DoD1AIRobotHit (CObject *objP, int type)
+void DoD1AIRobotHit (CObject *objP, int32_t type)
 {
 	if (objP->info.controlType == CT_AI) {
 		if ((type == D1_PA_WEAPON_ROBOT_COLLISION) || (type == D1_PA_PLAYER_COLLISION))
@@ -1176,7 +1176,7 @@ void DoD1AIRobotHit (CObject *objP, int type)
 
 }
 #if DBG
-int	Do_ai_flag=1;
+int32_t	Do_ai_flag=1;
 #endif
 
 #define	CHASE_TIME_LENGTH		(I2X (8))
@@ -1192,12 +1192,12 @@ int	Do_ai_flag=1;
 //	If the playerP is cloaked, set vec_to_player based on time playerP cloaked and last uncloaked position.
 //	Updates ailP->nPrevVisibility if playerP is not cloaked, in which case the previous visibility is left unchanged
 //	and is copied to player_visibility
-void compute_vis_and_vec (CObject *objP, CFixVector *pos, tAILocalInfo *ailP, CFixVector *vec_to_player, int *player_visibility, tRobotInfo *botInfoP, int *flag)
+void compute_vis_and_vec (CObject *objP, CFixVector *pos, tAILocalInfo *ailP, CFixVector *vec_to_player, int32_t *player_visibility, tRobotInfo *botInfoP, int32_t *flag)
 {
 if (!*flag) {
 	if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 		fix	delta_time, dist;
-		int	cloak_index = objP->Index () % D1_MAX_AI_CLOAK_INFO;
+		int32_t	cloak_index = objP->Index () % D1_MAX_AI_CLOAK_INFO;
 
 		delta_time = gameData.time.xGame - gameData.ai.cloakInfo [cloak_index].lastTime;
 		if (delta_time > I2X (2)) {
@@ -1264,7 +1264,7 @@ if (!*flag) {
 void move_object_to_legal_spot(CObject *objP)
 {
 	CFixVector	original_pos = objP->info.position.vPos;
-	int			i;
+	int32_t			i;
 	CSegment*	segP = SEGMENTS + objP->info.nSegment;
 
 	for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
@@ -1276,7 +1276,7 @@ void move_object_to_legal_spot(CObject *objP)
 			goal_dir *= objP->info.xSize;
 			objP->info.position.vPos += goal_dir;
 			if (!ObjectIntersectsWall(objP)) {
-				int	nNewSeg = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
+				int32_t	nNewSeg = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 
 				if (nNewSeg != -1) {
 					objP->RelinkToSeg (nNewSeg);
@@ -1309,7 +1309,7 @@ void move_towards_segment_center(CObject *objP)
 			move_object_to_legal_spot(objP);
 		}
 	} else {
-		int	nNewSeg;
+		int32_t	nNewSeg;
 		//	Move one radii towards center.
 		goal_dir *= objP->info.xSize;
 		objP->info.position.vPos += goal_dir;
@@ -1325,13 +1325,13 @@ void move_towards_segment_center(CObject *objP)
 //	-----------------------------------------------------------------------------------------------------------
 //	Return true if door can be flown through by a suitable type robotP.
 //	Only brains and avoid robots can open doors.
-int ai_door_is_openable(CObject *objP, CSegment *segP, int sidenum)
+int32_t ai_door_is_openable(CObject *objP, CSegment *segP, int32_t sidenum)
 {
-	int	nWall;
+	int32_t	nWall;
 
 	//	The mighty console CObject can open all doors (for purposes of determining paths).
 	if (objP == gameData.objs.consoleP) {
-		int	nWall = segP->m_sides [sidenum].m_nWall;
+		int32_t	nWall = segP->m_sides [sidenum].m_nWall;
 
 		if (WALLS [nWall].nType == WALL_DOOR)
 			return 1;
@@ -1350,7 +1350,7 @@ int ai_door_is_openable(CObject *objP, CSegment *segP, int sidenum)
 
 //--//	-----------------------------------------------------------------------------------------------------------
 //--//	Return true if CObject *objP is allowed to open door at nWall
-//--int door_openable_by_robot(CObject *objP, int nWall)
+//--int32_t door_openable_by_robot(CObject *objP, int32_t nWall)
 //--{
 //--	if (objP->info.nId == ROBOT_BRAIN)
 //--		if (WALLS [nWall].keys == KEY_NONE)
@@ -1361,9 +1361,9 @@ int ai_door_is_openable(CObject *objP, CSegment *segP, int sidenum)
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Return true if a special CObject (playerP or control center) is in this CSegment.
-int special_object_in_seg (int nSegment)
+int32_t special_object_in_seg (int32_t nSegment)
 {
-	int nObject = SEGMENTS [nSegment].m_objects;
+	int32_t nObject = SEGMENTS [nSegment].m_objects;
 
 while (nObject != -1) {
 	if ((OBJECTS [nObject].info.nType == OBJ_PLAYER) || (OBJECTS [nObject].info.nType == OBJ_REACTOR))
@@ -1375,10 +1375,10 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Randomly select a CSegment attached to *segP, reachable by flying.
-int get_random_child(int nSegment)
+int32_t get_random_child(int32_t nSegment)
 {
 CSegment	*segP = SEGMENTS + nSegment;
-int sidenum = (RandShort () * 6) >> 15;
+int32_t sidenum = (RandShort () * 6) >> 15;
 while (!(segP->IsPassable (sidenum, NULL) & WID_PASSABLE_FLAG))
 	sidenum = (RandShort () * 6) >> 15;
 return segP->m_children [sidenum];
@@ -1386,17 +1386,17 @@ return segP->m_children [sidenum];
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Return true if CObject created, else return false.
-int CreateGatedRobot (int nSegment, int nObjId)
+int32_t CreateGatedRobot (int32_t nSegment, int32_t nObjId)
 {
-	int			nObject;
+	int32_t			nObject;
 	CObject		*objP;
 	CSegment		*segP = &SEGMENTS [nSegment];
 	CFixVector	vObjPos;
 	tRobotInfo	*botInfoP = &gameData.bots.info [1][nObjId];
-	int			count = 0;
-	//int			i;
+	int32_t			count = 0;
+	//int32_t			i;
 	fix			objsize = gameData.models.polyModels [0][botInfoP->nModel].Rad ();
-	int			default_behavior;
+	int32_t			default_behavior;
 
 	FORALL_ROBOT_OBJS (objP, i) {
 		if (objP->info.nCreator == BOSS_GATE_PRODUCER_NUM)
@@ -1447,7 +1447,7 @@ int CreateGatedRobot (int nSegment, int nObjId)
 //	The process of him bringing in a robotP takes one second.
 //	Then a robotP appears somewhere near the playerP.
 //	Return true if robotP successfully created, else return false
-int gate_in_robot(int type, int nSegment)
+int32_t gate_in_robot(int32_t type, int32_t nSegment)
 {
 if (!gameData.bosses.ToS ())
 	return -1;
@@ -1461,14 +1461,14 @@ return CreateGatedRobot (nSegment, type);
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int boss_fits_in_seg (CObject *bossObjP, int nSegment)
+int32_t boss_fits_in_seg (CObject *bossObjP, int32_t nSegment)
 {
 	CFixVector	vCenter;
-	int			nBossObj = bossObjP - OBJECTS;
+	int32_t			nBossObj = bossObjP - OBJECTS;
 	CSegment*	segP = SEGMENTS + nSegment;
 
 vCenter = SEGMENTS [nSegment].Center ();
-for (int nPos = 0; nPos < 9; nPos++) {
+for (int32_t nPos = 0; nPos < 9; nPos++) {
 	if (!nPos) 
 		bossObjP->info.position.vPos = vCenter;
 	else if (segP->m_vertices [nPos - 1] == 0xFFFF)
@@ -1497,7 +1497,7 @@ return 0;
 //	Return value:
 //		0	this playerP IS NOT allowed to move this robotP.
 //		1	this playerP IS allowed to move this robotP.
-int ai_multiplayer_awareness(CObject *objP, int awareness_level)
+int32_t ai_multiplayer_awareness(CObject *objP, int32_t awareness_level)
 {
 if (!IsMultiGame)
 	return 1;
@@ -1554,9 +1554,9 @@ void do_boss_stuff(CObject *objP)
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Do special stuff for a boss.
-void do_super_boss_stuff(CObject *objP, fix dist_to_player, int player_visibility)
+void do_super_boss_stuff(CObject *objP, fix dist_to_player, int32_t player_visibility)
 {
-	static int eclipState = 0;
+	static int32_t eclipState = 0;
 	do_boss_stuff(objP);
 
 	// Only master playerP can cause gating to occur.
@@ -1581,10 +1581,10 @@ void do_super_boss_stuff(CObject *objP, fix dist_to_player, int player_visibilit
 
 		if (gameData.time.xGame - gameData.bosses [0].m_nLastGateTime > gameData.bosses [0].m_nGateInterval)
 			if (ai_multiplayer_awareness(objP, 99)) {
-				int	nObject;
-				int	randtype = (RandShort () * D1_MAX_GATE_INDEX) >> 15;
+				int32_t	nObject;
+				int32_t	randtype = (RandShort () * D1_MAX_GATE_INDEX) >> 15;
 
-				Assert(randtype < int (D1_MAX_GATE_INDEX));
+				Assert(randtype < int32_t (D1_MAX_GATE_INDEX));
 				randtype = super_boss_gate_list [randtype];
 				Assert(randtype < gameData.bots.nTypes [1]);
 
@@ -1602,7 +1602,7 @@ void do_super_boss_stuff(CObject *objP, fix dist_to_player, int player_visibilit
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Returns true if this CObject should be allowed to fire at the playerP.
-int maybe_ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP)
+int32_t maybe_ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP)
 {
 	if (IsMultiGame)
 		if ((aiP->GOAL_STATE != D1_AIS_FLIN) && (objP->info.nId != ROBOT_BRAIN))
@@ -1613,7 +1613,7 @@ int maybe_ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *ailP, tRobotInfo *botInfoP, CFixVector *vec_to_player, fix dist_to_player, CFixVector *vGunPoint, int player_visibility, int object_animates)
+void ai_do_actual_firing_stuff(CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *ailP, tRobotInfo *botInfoP, CFixVector *vec_to_player, fix dist_to_player, CFixVector *vGunPoint, int32_t player_visibility, int32_t object_animates)
 {
 	fix	dot;
 
@@ -1687,19 +1687,19 @@ else if (WI_homingFlag (objP->info.nId) == 1) {
 
 void DoD1AIFrame (CObject *objP)
 {
-	int				nObject = objP->Index ();
+	int32_t				nObject = objP->Index ();
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 	tAILocalInfo	*ailP = &gameData.ai.localInfo [nObject];
 	fix				dist_to_player;
 	CFixVector		vec_to_player;
 	fix				dot;
 	tRobotInfo		*botInfoP;
-	int				player_visibility=-1;
-	int				obj_ref;
-	int				object_animates;
-	int				new_goalState;
-	int				bVisAndVecComputed = 0;
-	int				nPrevVisibility;
+	int32_t				player_visibility=-1;
+	int32_t				obj_ref;
+	int32_t				object_animates;
+	int32_t				new_goalState;
+	int32_t				bVisAndVecComputed = 0;
+	int32_t				nPrevVisibility;
 	CFixVector		vGunPoint;
 	CFixVector		vVisVecPos;
 	bool				bHaveGunPos = false;
@@ -1935,7 +1935,7 @@ if (DoAnyRobotDyingFrame (objP))
 				aiP->CURRENT_STATE = D1_AIS_FIRE;
 			compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
 
-		 {	int pv = player_visibility;
+		 {	int32_t pv = player_visibility;
 				fix	dtp = dist_to_player/4;
 
 			//	If playerP cloaked, visibility is screwed up and superboss will gate in robots when not supposed to.
@@ -1990,7 +1990,7 @@ if (DoAnyRobotDyingFrame (objP))
 				move_away_from_player(objP, &vec_to_player, 0);
 				ai_multi_send_robot_position (nObject, -1);
 			} else if (ailP->mode != D1_AIM_STILL) {
-				int	r;
+				int32_t	r;
 
 				r = objP->OpenableDoorsInSegment ();
 				if (r != -1) {
@@ -2146,7 +2146,7 @@ if (DoAnyRobotDyingFrame (objP))
 			break;
 
 		case D1_AIM_FOLLOW_PATH: {
-			int	anger_level = 65;
+			int32_t	anger_level = 65;
 
 			if (aiP->behavior == D1_AIB_STATION)
 				if ((aiP->nHideIndex + aiP->nPathLength > 0) && (gameData.ai.routeSegs [aiP->nHideIndex + aiP->nPathLength - 1].nSegment == aiP->nHideSegment)) {
@@ -2337,7 +2337,7 @@ if (DoAnyRobotDyingFrame (objP))
 	//	- -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -
 	//	If new state = fire, then set all gun states to fire.
 	if ((aiP->GOAL_STATE == D1_AIS_FIRE) ) {
-		int	i,nGunCount;
+		int32_t	i,nGunCount;
 		nGunCount = gameData.bots.info [1][objP->info.nId].nGuns;
 		for (i=0; i<nGunCount; i++)
 			ailP->goalState [i] = D1_AIS_FIRE;
@@ -2464,7 +2464,7 @@ if (DoAnyRobotDyingFrame (objP))
 //	-----------------------------------------------------------------------------------
 void ai_do_cloak_stuff(void)
 {
-	int	i;
+	int32_t	i;
 
 	for (i=0; i<D1_MAX_AI_CLOAK_INFO; i++) {
 		gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objs.consoleP)->vPos;
@@ -2478,7 +2478,7 @@ void ai_do_cloak_stuff(void)
 
 //	-----------------------------------------------------------------------------------
 //	Returns false if awareness is considered too puny to add, else returns true.
-int add_awareness_event(CObject *objP, int type)
+int32_t add_awareness_event(CObject *objP, int32_t type)
 {
 	//	If playerP cloaked and hit a robotP, then increase awareness
 	if ((type == D1_PA_WEAPON_ROBOT_COLLISION) || (type == D1_PA_WEAPON_WALL_COLLISION) || (type == D1_PA_PLAYER_COLLISION))
@@ -2502,7 +2502,7 @@ int add_awareness_event(CObject *objP, int type)
 }
 
 #if DBG
-int	D1_AI_dump_enable = 0;
+int32_t	D1_AI_dump_enable = 0;
 
 FILE *D1_AI_dump_file = NULL;
 
@@ -2512,8 +2512,8 @@ char	D1_AI_error_message [128] = "";
 void dump_ai_objects_all()
 {
 #if PARALLAX
-	int	nObject;
-	int	total=0;
+	int32_t	nObject;
+	int32_t	total=0;
 	time_t	time_of_day;
 
 	time_of_day = time(NULL);
@@ -2554,7 +2554,7 @@ void dump_ai_objects_all()
 // ----------------------------------------------------------------------------------
 void force_dump_ai_objects_all(char *msg)
 {
-	int	tsave;
+	int32_t	tsave;
 
 	tsave = D1_AI_dump_enable;
 

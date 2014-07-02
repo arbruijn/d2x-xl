@@ -87,7 +87,7 @@ void PrintVersion (void);
 
 void EvalAutoNetGameArgs (void)
 {
-	int	t, bHaveIp = 0;
+	int32_t	t, bHaveIp = 0;
 	char	*p;
 #if 0
 	static const char *pszTypes [] = {"anarchy", "coop", "ctf", "ctf+", "hoard", "entropy", NULL};
@@ -175,7 +175,7 @@ EvalAutoNetGameArgs ();
 
 void EvalMovieArgs (void)
 {
-	int	t;
+	int32_t	t;
 
 if ((t = FindArg ("-nomovies")))
 	gameOptions [0].movies.nLevel = 2 - NumArg (t, 2);
@@ -197,7 +197,7 @@ if (gameData.multiplayer.autoNG.bValid > 0)
 
 void EvalSoundArgs (void)
 {
-	int	t;
+	int32_t	t;
 
 #if USE_SDL_MIXER
 #	ifdef __macosx__
@@ -236,7 +236,7 @@ if (gameOptions [0].sound.bUseSDLMixer) {
 
 void EvalMusicArgs (void)
 {
-	int	t;
+	int32_t	t;
 	char	*p;
 
 if ((t = FindArg ("-nomusic")))
@@ -257,7 +257,7 @@ if ((t = FindArg ("-menusong")) && (p = appConfig [t+1]))
 
 void EvalMenuArgs (void)
 {
-	int	t;
+	int32_t	t;
 
 if (!gameStates.app.bNostalgia) {
 	if ((t = FindArg ("-menustyle")))
@@ -291,7 +291,7 @@ if ((t = FindArg ("-use_swapfile")))
 
 void EvalGameplayArgs (void)
 {
-	int	t;
+	int32_t	t;
 
 if ((t = FindArg ("-briefings")))
 	gameOpts->gameplay.bSkipBriefingScreens = !NumArg (t, 1);
@@ -309,7 +309,7 @@ if ((t = FindArg ("-disable_powerups")) && NumArg (t, 1))
 
 void EvalInputArgs (void)
 {
-	int	t;
+	int32_t	t;
 
 if ((t = FindArg ("-grabmouse")))
 	gameStates.input.bGrabMouse = NumArg (t, 1);
@@ -319,7 +319,7 @@ if ((t = FindArg ("-grabmouse")))
 
 void EvalOglArgs (void)
 {
-	int	t;
+	int32_t	t;
 
 #if DBG
 if ((t = FindArg ("-gl_alttexmerge")))
@@ -346,7 +346,7 @@ if ((t = FindArg ("-quad_buffering")))
 
 void EvalDemoArgs (void)
 {
-	int	t;
+	int32_t	t;
 
 if ((t = FindArg ("-revert_demos")))
 	gameOpts->demo.bRevertFormat = NumArg (t, 1);
@@ -358,7 +358,7 @@ if ((t = FindArg ("-auto_demos")))
 
 void EvalRenderArgs (void)
 {
-	int	t;
+	int32_t	t;
 
 if ((t = FindArg ("-hires_textures")))
 	gameOptions [0].render.textures.bUseHires [0] =
@@ -414,10 +414,10 @@ if ((t = FindArg ("-oculus_rift")))
 void EvalShipArgs (void)
 {
 	const char*	szShipArgs [] = {"-medium_ship", "-light_ship", "-heavy_ship"};
-	int	t;
+	int32_t	t;
 	char	*p;
 
-for (int i = 0; i < MAX_SHIP_TYPES; i++) {
+for (int32_t i = 0; i < MAX_SHIP_TYPES; i++) {
 	if ((t = FindArg (szShipArgs [i])) && (p = appConfig [t+1]) && *p) {
 		strncpy (gameData.models.szShipModels [i], appConfig [t+1], FILENAME_LEN);
 		strlwr (gameData.models.szShipModels [i]);
@@ -430,7 +430,7 @@ for (int i = 0; i < MAX_SHIP_TYPES; i++) {
 
 void EvalAppArgs (void)
 {
-	int	t;
+	int32_t	t;
 
 #if 0
 if ((t = FindArg ("-gpgpu_lights")))
@@ -492,7 +492,7 @@ if ((t = FindArg ("-auto_hogfile"))) {
 	}
 if ((t = FindArg ("-auto_mission"))) {
 	char	c = *appConfig [++t];
-	int		bDelim = ((c == '\'') || (c == '"'));
+	int32_t		bDelim = ((c == '\'') || (c == '"'));
 
 	strcpy (szAutoMission, &appConfig [t][bDelim]);
 	if (bDelim)

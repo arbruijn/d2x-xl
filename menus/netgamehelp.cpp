@@ -36,7 +36,7 @@
 
 //------------------------------------------------------------------------------
 
-extern int WhoIsGameHost(), NetworkHowManyConnected(), GetMyNetRanking();
+extern int32_t WhoIsGameHost(), NetworkHowManyConnected(), GetMyNetRanking();
 extern char bPauseableMenu;
 //char *NetworkModeNames[]={"Anarchy", "Team Anarchy", "Robo Anarchy", "Cooperative", "Capture the Flag", "Hoard", "Team Hoard", "Unknown"};
 
@@ -44,9 +44,9 @@ void DoShowNetGameHelp (void)
 {
 	CMenu		m (30);
    char		szText [MENU_MAX_TEXTLEN];
-	int		i, eff;
+	int32_t		i, eff;
 #if DBG
-	int		nLost;
+	int32_t		nLost;
 #endif
 	//char *eff_strings[]={"trashing", "really hurting", "seriously affecting", "hurting", "affecting", "tarnishing"};
 
@@ -69,7 +69,7 @@ m.AddText ("", szText);
 sprintf (szText, TXT_INFO_SHORTPKT, netGame.GetShortPackets () ? "Yes" : "No");
 m.AddText ("", szText);
 #if DBG
-nLost = (int) ((double (networkData.nTotalMissedPackets) / double (networkData.nTotalPacketsGot + networkData.nTotalMissedPackets)) * 100.0);
+nLost = (int32_t) ((double (networkData.nTotalMissedPackets) / double (networkData.nTotalPacketsGot + networkData.nTotalMissedPackets)) * 100.0);
 if (nLost < 0)
 	nLost = 0;
 sprintf (szText, TXT_INFO_LOSTPKT, networkData.nTotalMissedPackets, nLost);
@@ -101,7 +101,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		m.AddText ("", szText);
 		}
 	m.AddText ("", "");
-	eff = (int)((double)((double) networkData.nNetLifeKills / ((double) networkData.nNetLifeKilled + (double) networkData.nNetLifeKills))*100.0);
+	eff = (int32_t)((double)((double) networkData.nNetLifeKills / ((double) networkData.nNetLifeKilled + (double) networkData.nNetLifeKills))*100.0);
 	if (eff < 0)
 		eff = 0;
 	if (IsHoardGame) {

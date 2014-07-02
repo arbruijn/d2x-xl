@@ -37,21 +37,21 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 class __pack__ CSubModelData {
 	public:
 #if 1
-		int			ptrs [MAX_SUBMODELS];
+		int32_t			ptrs [MAX_SUBMODELS];
 		CFixVector	offsets [MAX_SUBMODELS];
 		CFixVector	norms [MAX_SUBMODELS];   // norm for sep plane
 		CFixVector	pnts [MAX_SUBMODELS];    // point on sep plane
 		fix			rads [MAX_SUBMODELS];       // radius for each submodel
-		ubyte			parents [MAX_SUBMODELS];    // what is parent for each submodel
+		uint8_t			parents [MAX_SUBMODELS];    // what is parent for each submodel
 		CFixVector	mins [MAX_SUBMODELS];
 		CFixVector	maxs [MAX_SUBMODELS];
 #else
-		CArray<int>				ptrs ;//[MAX_SUBMODELS];
+		CArray<int32_t>				ptrs ;//[MAX_SUBMODELS];
 		CArray<CFixVector>	offsets ;//[MAX_SUBMODELS];
 		CArray<CFixVector>	norms ;//[MAX_SUBMODELS];   // norm for sep plane
 		CArray<CFixVector>	pnts ;//[MAX_SUBMODELS];    // point on sep plane
 		CArray<fix>				rads ;//[MAX_SUBMODELS];       // radius for each submodel
-		CArray<ubyte>			parents ;//[MAX_SUBMODELS];    // what is parent for each submodel
+		CArray<uint8_t>			parents ;//[MAX_SUBMODELS];    // what is parent for each submodel
 		CArray<CFixVector>	mins ;//[MAX_SUBMODELS];
 		CArray<CFixVector>	maxs ;//[MAX_SUBMODELS];
 #endif
@@ -59,7 +59,7 @@ class __pack__ CSubModelData {
 	public:
 		CSubModelData () { Create (); }
 		void Create (void);
-		void Setup (ubyte* dataP);
+		void Setup (uint8_t* dataP);
 		void Destroy (void);
 	};
 
@@ -67,16 +67,16 @@ class __pack__ CSubModelData {
 //used to describe a polygon model
 
 typedef struct tPolyModelInfo {
-		ushort			nId;
-		short				nType;
-		int				nModels;
-		int				nDataSize;
+		uint16_t			nId;
+		int16_t				nType;
+		int32_t				nModels;
+		int32_t				nDataSize;
 		CSubModelData	subModels;
 		CFixVector		mins, maxs;		// min,max for whole model
 		fix				rad [2];			// 0: recomputed rad, 1: original rad from Descent data
-		ubyte				nTextures;
-		ushort			nFirstTexture;
-		ubyte				nSimplerModel;	// alternate model with less detail (0 if none, nModel+1 else)
+		uint8_t				nTextures;
+		uint16_t			nFirstTexture;
+		uint8_t				nSimplerModel;	// alternate model with less detail (0 if none, nModel+1 else)
 		bool				bCustom;
 } __pack__ tPolyModelInfo;
 
@@ -87,30 +87,30 @@ class CPolyModel : public CByteArray {
 	public:
 		CPolyModel () { Init (); }
 		void Init (void);
-		int Read (int bHMEL, int bCustom, CFile& cf);
+		int32_t Read (int32_t bHMEL, int32_t bCustom, CFile& cf);
 		void ReadData (CPolyModel* defModelP, CFile& cf);
-		void Load (const char *filename, int nTextures, int nFirstTexture, tRobotInfo *botInfoP);
-		int LoadTextures (tBitmapIndex*	altTextures);
+		void Load (const char *filename, int32_t nTextures, int32_t nFirstTexture, tRobotInfo *botInfoP);
+		int32_t LoadTextures (tBitmapIndex*	altTextures);
 		void FindMinMax (void);
 		fix Size (void);
 
-		inline ushort Id (void) { return m_info.nId; }
-		inline void SetKey (ushort nId) { m_info.nId = nId; }
-		inline short Type (void) { return m_info.nType; }
-		inline void SetType (short nType) { m_info.nType = nType; }
+		inline uint16_t Id (void) { return m_info.nId; }
+		inline void SetKey (uint16_t nId) { m_info.nId = nId; }
+		inline int16_t Type (void) { return m_info.nType; }
+		inline void SetType (int16_t nType) { m_info.nType = nType; }
 		inline bool Custom (void) { return m_info.bCustom; }
 		inline void SetCustom (bool bCustom) { m_info.bCustom = bCustom; }
-		inline int DataSize (void) { return m_info.nDataSize; }
-		inline void SetDataSize (int nDataSize) { m_info.nDataSize = nDataSize; }
-		inline ubyte SimplerModel (void) { return m_info.nSimplerModel; }
-		inline fix Rad (int i = 0) { return m_info.rad [i] ? m_info.rad [i] : m_info.rad [!i]; }
-		inline void SetRad (fix rad, int bCustom) { m_info.rad [bCustom] = rad; }
-		inline ubyte* Data (void) { return Buffer (); }
-		inline int ModelCount (void) { return m_info.nModels; }
+		inline int32_t DataSize (void) { return m_info.nDataSize; }
+		inline void SetDataSize (int32_t nDataSize) { m_info.nDataSize = nDataSize; }
+		inline uint8_t SimplerModel (void) { return m_info.nSimplerModel; }
+		inline fix Rad (int32_t i = 0) { return m_info.rad [i] ? m_info.rad [i] : m_info.rad [!i]; }
+		inline void SetRad (fix rad, int32_t bCustom) { m_info.rad [bCustom] = rad; }
+		inline uint8_t* Data (void) { return Buffer (); }
+		inline int32_t ModelCount (void) { return m_info.nModels; }
 		inline CSubModelData& SubModels (void) { return m_info.subModels; }
-		inline ushort FirstTexture (void) { return m_info.nFirstTexture; }
-		inline void SetFirstTexture (ushort nFirstTexture) { m_info.nFirstTexture = nFirstTexture; }
-		inline ubyte TextureCount (void) { return m_info.nTextures; }
+		inline uint16_t FirstTexture (void) { return m_info.nFirstTexture; }
+		inline void SetFirstTexture (uint16_t nFirstTexture) { m_info.nFirstTexture = nFirstTexture; }
+		inline uint8_t TextureCount (void) { return m_info.nTextures; }
 		inline tPolyModelInfo& Info (void) { return m_info; }
 		inline void ResetBuffer (void) {
 			SetBuffer (NULL);
@@ -128,19 +128,19 @@ class CPolyModel : public CByteArray {
 #endif
 
 	private:
-		int	m_fileEnd;
-		int	m_filePos;
+		int32_t	m_fileEnd;
+		int32_t	m_filePos;
 
-		void POF_Seek (int len, int nType);
-		size_t POF_Read (void *dst, size_t elsize, size_t nelem, ubyte *bufP);
-		int POF_ReadInt (ubyte *bufP);
-		short POF_ReadShort (ubyte *bufP);
-		void POF_ReadString (char *buf, int max_char, ubyte *bufP);
-		void POF_ReadVecs (CFixVector *vecs, int n, ubyte *bufP);
-		void POF_ReadAngs (CAngleVector *angs, int n, ubyte *bufP);
+		void POF_Seek (int32_t len, int32_t nType);
+		size_t POF_Read (void *dst, size_t elsize, size_t nelem, uint8_t *bufP);
+		int32_t POF_ReadInt (uint8_t *bufP);
+		int16_t POF_ReadShort (uint8_t *bufP);
+		void POF_ReadString (char *buf, int32_t max_char, uint8_t *bufP);
+		void POF_ReadVecs (CFixVector *vecs, int32_t n, uint8_t *bufP);
+		void POF_ReadAngs (CAngleVector *angs, int32_t n, uint8_t *bufP);
 
 		void Parse (const char *filename, tRobotInfo *botInfoP);
-		void Check (ubyte* dataP);
+		void Check (uint8_t* dataP);
 		void Setup (void);
 	};
 
@@ -148,30 +148,30 @@ class CPolyModel : public CByteArray {
 // array of pointers to polygon objects
 // switch to simpler model when the CObject has depth
 // greater than this value times its radius.
-extern int nSimpleModelThresholdScale;
+extern int32_t nSimpleModelThresholdScale;
 
 // how many polygon objects there are
 // array of names of currently-loaded models
 extern char pofNames [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
 
-int LoadPolyModel (const char* filename, int nTextures, int nFirstTexture, tRobotInfo* botInfoP);
+int32_t LoadPolyModel (const char* filename, int32_t nTextures, int32_t nFirstTexture, tRobotInfo* botInfoP);
 
 // draw a polygon model
-int DrawPolyModel (CObject* objP, CFixVector* pos, CFixMatrix* orient, CAngleVector* animAngles, int nModel, int flags, fix light, 
+int32_t DrawPolyModel (CObject* objP, CFixVector* pos, CFixMatrix* orient, CAngleVector* animAngles, int32_t nModel, int32_t flags, fix light, 
 						 fix* glowValues, tBitmapIndex nAltTextures[], CFloatVector* obj_color);
 
 // draws the given model in the current canvas.  The distance is set to
 // more-or-less fill the canvas.  Note that this routine actually renders
 // into an off-screen canvas that it creates, then copies to the current
 // canvas.
-void DrawModelPicture (int mn,CAngleVector* orient_angles);
+void DrawModelPicture (int32_t mn,CAngleVector* orient_angles);
 
 // free up a model, getting rid of all its memory
 #define MAX_POLYOBJ_TEXTURES 100
 
-int ReadPolyModels (CArray<CPolyModel>& models, int nModels, CFile& cf, int nOffset = 0);
+int32_t ReadPolyModels (CArray<CPolyModel>& models, int32_t nModels, CFile& cf, int32_t nOffset = 0);
 
-CPolyModel* GetPolyModel (CObject* objP, CFixVector* pos, int nModel, int flags, int* bCustomModel = NULL);
+CPolyModel* GetPolyModel (CObject* objP, CFixVector* pos, int32_t nModel, int32_t flags, int32_t* bCustomModel = NULL);
 
 //	-----------------------------------------------------------------------------
 

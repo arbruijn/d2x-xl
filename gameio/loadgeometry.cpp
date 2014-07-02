@@ -77,63 +77,63 @@ struct mh mine_header;
 struct me mine_editor;
 
 typedef struct v16_segment {
-	short   objects;            // pointer to OBJECTS in this CSegment
-	ubyte   special;            // what nType of center this is
-	sbyte   nObjProducer;         // which center CSegment is associated with.
-	short   value;
+	int16_t   objects;            // pointer to OBJECTS in this CSegment
+	uint8_t   special;            // what nType of center this is
+	int8_t   nObjProducer;         // which center CSegment is associated with.
+	int16_t   value;
 	fix     xAvgSegLight;       // average static light in CSegment
-	short   pad;                // make structure longword aligned
+	int16_t   pad;                // make structure longword aligned
 } v16_segment;
 
 struct mfi_v19 {
-	ushort  fileinfo_signature;
-	ushort  fileinfoVersion;
-	int     fileinfo_sizeof;
-	int     header_offset;      // Stuff common to game & editor
-	int     header_size;
-	int     editor_offset;      // Editor specific stuff
-	int     editor_size;
-	int     segment_offset;
-	int     segment_howmany;
-	int     segment_sizeof;
-	int     newseg_verts_offset;
-	int     newseg_verts_howmany;
-	int     newseg_verts_sizeof;
-	int     group_offset;
-	int     group_howmany;
-	int     group_sizeof;
-	int     vertex_offset;
-	int     vertex_howmany;
-	int     vertex_sizeof;
-	int     texture_offset;
-	int     texture_howmany;
-	int     texture_sizeof;
+	uint16_t  fileinfo_signature;
+	uint16_t  fileinfoVersion;
+	int32_t     fileinfo_sizeof;
+	int32_t     header_offset;      // Stuff common to game & editor
+	int32_t     header_size;
+	int32_t     editor_offset;      // Editor specific stuff
+	int32_t     editor_size;
+	int32_t     segment_offset;
+	int32_t     segment_howmany;
+	int32_t     segment_sizeof;
+	int32_t     newseg_verts_offset;
+	int32_t     newseg_verts_howmany;
+	int32_t     newseg_verts_sizeof;
+	int32_t     group_offset;
+	int32_t     group_howmany;
+	int32_t     group_sizeof;
+	int32_t     vertex_offset;
+	int32_t     vertex_howmany;
+	int32_t     vertex_sizeof;
+	int32_t     texture_offset;
+	int32_t     texture_howmany;
+	int32_t     texture_sizeof;
 	tGameItemInfo	walls;
 	tGameItemInfo	triggers;
 	tGameItemInfo	links;
 	tGameItemInfo	CObject;
-	int     unused_offset;      // was: doors.offset
-	int     unused_howmamy;     // was: doors.count
-	int     unused_sizeof;      // was: doors.size
-	short   level_shake_frequency;  // Shakes every level_shake_frequency seconds
-	short   level_shake_duration;   // for level_shake_duration seconds (on average, Random).  In 16ths second.
-	int     secret_return_segment;
+	int32_t     unused_offset;      // was: doors.offset
+	int32_t     unused_howmamy;     // was: doors.count
+	int32_t     unused_sizeof;      // was: doors.size
+	int16_t   level_shake_frequency;  // Shakes every level_shake_frequency seconds
+	int16_t   level_shake_duration;   // for level_shake_duration seconds (on average, Random).  In 16ths second.
+	int32_t     secret_return_segment;
 	CFixMatrix  secret_return_orient;
 	tGameItemInfo	lightDeltaIndices;
 	tGameItemInfo	lightDeltas;
 };
 
-int CreateDefaultNewSegment ();
+int32_t CreateDefaultNewSegment ();
 
 bool bNewFileFormat = true; // "new file format" is everything newer than d1 shareware
 
-int bD1PigPresent = 0; // can descent.pig from descent 1 be loaded?
+int32_t bD1PigPresent = 0; // can descent.pig from descent 1 be loaded?
 
 /* returns nonzero if nD1Texture references a texture which isn't available in d2. */
-int d1_tmap_num_unique (short nD1Texture)
+int32_t d1_tmap_num_unique (int16_t nD1Texture)
 {
-	short t, i;
-	static short unique_tmap_nums [] = {
+	int16_t t, i;
+	static int16_t unique_tmap_nums [] = {
 		  0,   2,   4,   5,   6,   7,   9,
 		 10,  11,  12,  17,  18,
 		 20,  21,  25,  28,
@@ -176,13 +176,13 @@ return 0;
  */
 
 typedef struct nD1ToD2Texture {
-	short	d1_min, d1_max;
-	short	repl [2];
+	int16_t	d1_min, d1_max;
+	int16_t	repl [2];
 } nD1ToD2Texture;
 
-short ConvertD1Texture (short nD1Texture, int bForce)
+int16_t ConvertD1Texture (int16_t nD1Texture, int32_t bForce)
 {
-	int h, i;
+	int32_t h, i;
 
 	static nD1ToD2Texture nD1ToD2Texture [] = {
 	 {0, 0, {43, 137}},
@@ -378,8 +378,8 @@ short ConvertD1Texture (short nD1Texture, int bForce)
 			}
 
  { // handle rare case where orientation != 0
-		short nTexture = nD1Texture & TMAP_NUM_MASK;
-		short orient = nD1Texture & ~TMAP_NUM_MASK;
+		int16_t nTexture = nD1Texture & TMAP_NUM_MASK;
+		int16_t orient = nD1Texture & ~TMAP_NUM_MASK;
 	if (orient)
 		return orient | ConvertD1Texture (nTexture, bForce);
 	//Warning (TXT_D1TEXTURE, nTexture);
@@ -395,7 +395,7 @@ typedef struct tRgbColord {
 	double blue;
 } __pack__ tRgbColord;
 
-void ReadColor (CFile& cf, CFaceColor *colorP, int bFloatData, int bRegisterColor)
+void ReadColor (CFile& cf, CFaceColor *colorP, int32_t bFloatData, int32_t bRegisterColor)
 {
 colorP->index = cf.ReadByte ();
 if (bFloatData) {
@@ -406,7 +406,7 @@ if (bFloatData) {
 	colorP->Blue () = (float) c.blue;
 	}
 else {
-	int c = cf.ReadInt ();
+	int32_t c = cf.ReadInt ();
 	colorP->Red () = (float) c / (float) 0x7fffffff;
 	c = cf.ReadInt ();
 	colorP->Green () = (float) c / (float) 0x7fffffff;
@@ -424,11 +424,11 @@ colorP->Alpha () = 1;
 //------------------------------------------------------------------------------
 
 #if DBG
-CSegFace *FindDupFace (short nSegment, short nSide)
+CSegFace *FindDupFace (int16_t nSegment, int16_t nSide)
 {
 	tSegFaces	*segFaceP = SEGFACES + nSegment;
 	CSegFace		*faceP0, *faceP1;
-	int			i, j;
+	int32_t			i, j;
 
 for (i = segFaceP->nFaces, faceP0 = segFaceP->faceP; i; faceP0++, i--)
 	if (faceP0->m_info.nSide == nSide)
@@ -448,9 +448,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void LoadSegmentsCompiled (short nSegment, CFile& cf)
+void LoadSegmentsCompiled (int16_t nSegment, CFile& cf)
 {
-	short			nLastSeg;
+	int16_t			nLastSeg;
 
 INIT_PROGRESS_LOOP (nSegment, nLastSeg, gameData.segs.nSegments);
 for (; nSegment < nLastSeg; nSegment++) {
@@ -468,7 +468,7 @@ for (; nSegment < nLastSeg; nSegment++) {
 void LoadExtSegmentsCompiled (CFile& cf)
 {
 gameData.producers.nRepairCenters = 0;
-for (int i = 0; i < gameData.segs.nSegments; i++) {
+for (int32_t i = 0; i < gameData.segs.nSegments; i++) {
 	if (gameData.segs.nLevelVersion > 5)
 		SEGMENTS [i].ReadExtras (cf);
 #if DBG
@@ -477,7 +477,7 @@ for (int i = 0; i < gameData.segs.nSegments; i++) {
 #endif
 	}
 // can only process producers after knowing all segment's type producer information!
-for (int i = 0; i < gameData.segs.nSegments; i++) {
+for (int32_t i = 0; i < gameData.segs.nSegments; i++) {
 #if DBG
 	if (i == nDbgSeg)
 		BRP;
@@ -488,9 +488,9 @@ for (int i = 0; i < gameData.segs.nSegments; i++) {
 
 //------------------------------------------------------------------------------
 
-void LoadVertLightsCompiled (int i, CFile& cf)
+void LoadVertLightsCompiled (int32_t i, CFile& cf)
 {
-	int	j;
+	int32_t	j;
 
 gameData.render.shadows.nLights = 0;
 if (gameStates.app.bD2XLevel) {
@@ -507,9 +507,9 @@ if (gameStates.app.bD2XLevel) {
 
 //------------------------------------------------------------------------------
 
-int HasColoredLight (void)
+int32_t HasColoredLight (void)
 {
-	int			i, bColored = 0;
+	int32_t			i, bColored = 0;
 	CFaceColor	*pvc = gameData.render.color.ambient.Buffer ();
 
 if (!gameStates.app.bD2XLevel)
@@ -534,9 +534,9 @@ return bColored;
 
 void InitTexColors (void)
 {
-	int			i;
+	int32_t			i;
 	CFaceColor	*pf = gameData.render.color.textures.Buffer ();
-	int			bBW = gameStates.app.bNostalgia; // || (gameOpts->render.color.nLevel < 2);
+	int32_t			bBW = gameStates.app.bNostalgia; // || (gameOpts->render.color.nLevel < 2);
 
 for (i = 0; i < MAX_WALL_TEXTURES; i++, pf++) {
 	pf->index = IsLight (i);
@@ -549,9 +549,9 @@ for (i = 0; i < MAX_WALL_TEXTURES; i++, pf++) {
 
 //------------------------------------------------------------------------------
 
-void LoadTexColorsCompiled (int i, CFile& cf)
+void LoadTexColorsCompiled (int32_t i, CFile& cf)
 {
-	int			j;
+	int32_t			j;
 
 // get the default colors
 if (gameStates.app.bD2XLevel) {
@@ -564,10 +564,10 @@ if (gameStates.app.bD2XLevel) {
 
 //------------------------------------------------------------------------------
 
-void LoadSideLightsCompiled (int i, CFile& cf)
+void LoadSideLightsCompiled (int32_t i, CFile& cf)
 {
 	CFaceColor	*colorP;
-	int			j;
+	int32_t			j;
 
 gameData.render.shadows.nLights = 0;
 if (gameStates.app.bD2XLevel) {
@@ -581,9 +581,9 @@ if (gameStates.app.bD2XLevel) {
 
 //------------------------------------------------------------------------------
 
-void ComputeSegSideCenters (int nSegment)
+void ComputeSegSideCenters (int32_t nSegment)
 {
-	int			i, j, nSide;
+	int32_t			i, j, nSide;
 	CSegment*	segP;
 #if CALC_SEGRADS
 	fix			xSideDists [6], xMinDist;
@@ -616,9 +616,9 @@ for (i = nSegment * 6, segP = SEGMENTS + nSegment; nSegment < j; nSegment++, seg
 
 //------------------------------------------------------------------------------
 
-void ComputeChildDists (int nSegment)
+void ComputeChildDists (int32_t nSegment)
 {
-	int			j;
+	int32_t			j;
 
 INIT_PROGRESS_LOOP (nSegment, j, gameData.segs.nSegments);
 
@@ -628,11 +628,11 @@ for (; nSegment < j; nSegment++)
 
 //------------------------------------------------------------------------------
 
-static int loadIdx = 0;
-static int loadOp = 0;
+static int32_t loadIdx = 0;
+static int32_t loadOp = 0;
 static CFile *mineDataFile;
 
-static int LoadSegmentsPoll (CMenu& menu, int& key, int nCurItem, int nState)
+static int32_t LoadSegmentsPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
@@ -708,9 +708,9 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int LoadMineGaugeSize (void)
+int32_t LoadMineGaugeSize (void)
 {
-	int	i = 3 * PROGRESS_STEPS (gameData.segs.nSegments) + 3;
+	int32_t	i = 3 * PROGRESS_STEPS (gameData.segs.nSegments) + 3;
 
 if (gameStates.app.bD2XLevel) {
 	i += PROGRESS_STEPS (gameData.segs.nVertices) + PROGRESS_STEPS (MAX_WALL_TEXTURES);
@@ -734,9 +734,9 @@ ProgressBar (TXT_LOADING, 0, LoadMineGaugeSize () + PagingGaugeSize () + SortLig
 
 //------------------------------------------------------------------------------
 
-int LoadMineSegmentsCompiled (CFile& cf)
+int32_t LoadMineSegmentsCompiled (CFile& cf)
 {
-	int			i, nSegments, nVertices;
+	int32_t			i, nSegments, nVertices;
 	char*			psz;
 	CFixVector	v;
 
@@ -747,7 +747,7 @@ bD1PigPresent = CFile::Exist (D1_PIGFILE, gameFolders.game.szData [0], 0);
 psz = strchr (gameData.segs.szLevelFilename, '.');
 bNewFileFormat = !psz || strcmp (psz, ".sdl");
 #if TRACE
-ubyte nCompiledVersion = cf.ReadByte ();
+uint8_t nCompiledVersion = cf.ReadByte ();
 if (nCompiledVersion != COMPILED_MINE_VERSION)
 	console.printf (CON_DBG, "compiled mine version=%i\n", nCompiledVersion); //many levels have "wrong" versions.  Theres no point in aborting because of it, I think.
 console.printf (CON_DBG, "   compiled mine version = %d\n", nCompiledVersion);

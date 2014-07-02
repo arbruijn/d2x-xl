@@ -63,14 +63,14 @@ void DefaultGameplaySettings (bool bSetup = false);
 
 static const char *pszGuns [] = {"Laser", "Vulcan", "Spreadfire", "Plasma", "Fusion", "Super Laser", "Gauss", "Helix", "Phoenix", "Omega"};
 static const char *pszDevices [] = {"Full Map", "Ammo Rack", "Converter", "Quad Lasers", "Afterburner", "Headlight", "Slow Motion", "Bullet Time"};
-static int nDeviceFlags [] = {PLAYER_FLAGS_FULLMAP, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS,
+static int32_t nDeviceFlags [] = {PLAYER_FLAGS_FULLMAP, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS,
 										PLAYER_FLAGS_AFTERBURNER, PLAYER_FLAGS_HEADLIGHT, PLAYER_FLAGS_SLOWMOTION, PLAYER_FLAGS_BULLETTIME};
 
-static int optGuns, optDevices;
+static int32_t optGuns, optDevices;
 
 //------------------------------------------------------------------------------
 
-static inline void SetGunLoadoutFlag (int i, int v)
+static inline void SetGunLoadoutFlag (int32_t i, int32_t v)
 {
 if (v)
 	extraGameInfo [0].loadout.nGuns |= (1 << i);
@@ -80,14 +80,14 @@ else
 
 //------------------------------------------------------------------------------
 
-static inline int GetGunLoadoutFlag (int i)
+static inline int32_t GetGunLoadoutFlag (int32_t i)
 {
 return (extraGameInfo [0].loadout.nGuns & (1 << i)) != 0;
 }
 
 //------------------------------------------------------------------------------
 
-static inline void SetDeviceLoadoutFlag (int i, int v)
+static inline void SetDeviceLoadoutFlag (int32_t i, int32_t v)
 {
 if (v)
 	extraGameInfo [0].loadout.nDevice |= nDeviceFlags [i];
@@ -97,20 +97,20 @@ else
 
 //------------------------------------------------------------------------------
 
-static inline int GetDeviceLoadoutFlag (int i)
+static inline int32_t GetDeviceLoadoutFlag (int32_t i)
 {
 return (extraGameInfo [0].loadout.nDevice & nDeviceFlags [i]) != 0;
 }
 
 //------------------------------------------------------------------------------
 
-int LoadoutCallback (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t LoadoutCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
 	CMenuItem	*m = menu + nCurItem;
-	int			v = m->Value ();
+	int32_t			v = m->Value ();
 
 if (nCurItem == menu.IndexOf (pszGuns [0])) {	//checked/unchecked lasers
 	if (v != GetGunLoadoutFlag (0)) {
@@ -155,17 +155,17 @@ return nCurItem;
 
 void LoadoutOptionsMenu (void)
 {
-	static int choice = 0;
+	static int32_t choice = 0;
 
 	CMenu	m (25);
-	int	i, j, nOptions = 0;
+	int32_t	i, j, nOptions = 0;
 
 m.AddText ("", TXT_GUN_LOADOUT, 0);
-for (i = 0; i < (int) sizeofa (pszGuns); i++, nOptions++)
+for (i = 0; i < (int32_t) sizeofa (pszGuns); i++, nOptions++)
 	m.AddCheck (pszGuns [i], pszGuns [i], (extraGameInfo [0].loadout.nGuns & (1 << i)) != 0, 0, HTX_GUN_LOADOUT);
 m.AddText ("", "");
 m.AddText ("", TXT_DEVICE_LOADOUT, 0);
-for (i = 0; i < (int) sizeofa (pszDevices); i++, nOptions++)
+for (i = 0; i < (int32_t) sizeofa (pszDevices); i++, nOptions++)
 	m.AddCheck (pszDevices [i], pszDevices [i], (extraGameInfo [0].loadout.nDevice & (nDeviceFlags [i])) != 0, 0, HTX_DEVICE_LOADOUT);
 
 do {
@@ -173,13 +173,13 @@ do {
 	} while (i != -1);
 
 extraGameInfo [0].loadout.nGuns = 0;
-for (i = 0, j = m.IndexOf (pszGuns [0]); i < (int) sizeofa (pszGuns); i++) {
+for (i = 0, j = m.IndexOf (pszGuns [0]); i < (int32_t) sizeofa (pszGuns); i++) {
 	if (m [j + i].Value ())
 		extraGameInfo [0].loadout.nGuns |= (1 << i);
 	}
 
 extraGameInfo [0].loadout.nDevice = 0;
-for (i = 0, j = m.IndexOf (pszDevices [0]); i < (int) sizeofa (pszDevices); i++) {
+for (i = 0, j = m.IndexOf (pszDevices [0]); i < (int32_t) sizeofa (pszDevices); i++) {
 	if (m [j + i].Value ())
 		extraGameInfo [0].loadout.nDevice |= nDeviceFlags [i];
 	}
@@ -189,15 +189,15 @@ AddPlayerLoadout ();
 
 //------------------------------------------------------------------------------
 
-static int nAIAggressivity;
+static int32_t nAIAggressivity;
 
-int GameplayOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t GameplayOptionsCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
 	CMenuItem*	m;
-	int			v;
+	int32_t			v;
 
 if ((m = menu ["difficulty"])) {
 	v = m->Value ();
@@ -235,9 +235,9 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-void AddShipSelection (CMenu& m, int& optShip)
+void AddShipSelection (CMenu& m, int32_t& optShip)
 {
-	int h, i;
+	int32_t h, i;
 
 for (h = i = 0; i < 3; i++) {
 	if (missionConfig.m_shipsAllowed [i])
@@ -265,10 +265,10 @@ else { // more than one ship to chose from
 
 //------------------------------------------------------------------------------
 
-void GetShipSelection (CMenu& m, int& optShip)
+void GetShipSelection (CMenu& m, int32_t& optShip)
 {
 if (optShip >= 0) {
-	for (int i = 0, j = -1; i < MAX_SHIP_TYPES; i++) {
+	for (int32_t i = 0, j = -1; i < MAX_SHIP_TYPES; i++) {
 		if (missionConfig.m_shipsAllowed [i]) {
 			if (m [optShip + ++j].Value ()) {
 				gameOpts->gameplay.nShip [1] = i;
@@ -305,12 +305,12 @@ pszWeaponSwitch [2] = TXT_CHOSE_BEST;
 
 void GameplayOptionsMenu (void)
 {
-	static int choice = 0;
+	static int32_t choice = 0;
 
 	CMenu m;
-	int	i;
-	int	optShip = -1;
-	int	nShip = (gameOpts->gameplay.nShip [0] < 0) ? 0 : gameOpts->gameplay.nShip [0];
+	int32_t	i;
+	int32_t	optShip = -1;
+	int32_t	nShip = (gameOpts->gameplay.nShip [0] < 0) ? 0 : gameOpts->gameplay.nShip [0];
 	char	szSlider [50];
 
 InitStrings ();

@@ -32,7 +32,7 @@ extern fix compute_lightingValue(CRenderPoint *vertptr);
 //	tmap_num references a texture map defined in Texmap_ptrs.
 //	nverts = number of vertices
 //	vertbuf is a pointer to an array of vertex pointers
-extern void draw_tmap(CBitmap *bp, int nverts, CRenderPoint **vertbuf);
+extern void draw_tmap(CBitmap *bp, int32_t nverts, CRenderPoint **vertbuf);
 
 // -------------------------------------------------------------------------------------------------------
 // Texture map vertex.
@@ -51,7 +51,7 @@ typedef struct g3ds_vertex {
 // of the texture map in the world, from which the deltas Du_dx, Dv_dy, etc.
 // are computed.
 typedef struct g3ds_tmap {
-	int	nv;			// number of vertices
+	int32_t	nv;			// number of vertices
 	g3ds_vertex	verts[MAX_TMAP_VERTS];	// up to 8 vertices, this is inefficient, change
 } g3ds_tmap;
 
@@ -59,16 +59,16 @@ typedef struct g3ds_tmap {
 
 //	Note:	Not all interpolation method and lighting combinations are supported.
 //	Set Interpolation_method to 0/1/2 for linear/linear, perspective/linear, perspective/perspective
-extern	int	Interpolation_method;
+extern	int32_t	Interpolation_method;
 
 // Set Lighting_on to 0/1/2 for no lighting/intensity lighting/rgb lighting
-extern	int	Lighting_on;
+extern	int32_t	Lighting_on;
 
 // HACK INTERFACE: how far away the current CSegment (& thus texture) is
-extern	int	nCurrentSegDepth;	
-extern	int	Max_perspective_depth;		//	Deepest CSegment at which perspective interpolation will be used.
-extern	int	Max_linear_depth;				//	Deepest CSegment at which linear interpolation will be used.
-extern	int	Max_flat_depth;				//	Deepest CSegment at which flat shading will be used. (If not flat shading, then what?)
+extern	int32_t	nCurrentSegDepth;	
+extern	int32_t	Max_perspective_depth;		//	Deepest CSegment at which perspective interpolation will be used.
+extern	int32_t	Max_linear_depth;				//	Deepest CSegment at which linear interpolation will be used.
+extern	int32_t	Max_flat_depth;				//	Deepest CSegment at which flat shading will be used. (If not flat shading, then what?)
 
 //	These are pointers to texture maps.  If you want to render texture map #7, then you will render
 //	the texture map defined by Texmap_ptrs[7].
@@ -84,18 +84,18 @@ void ntexture_map_lighted_linear(CBitmap *srcb, g3ds_tmap *t);
 
 //	This is the gr_upoly-like interface to the texture mapper which uses texture-mapper compatible
 //	(ie, avoids cracking) edge/delta computation.
-void gr_upoly_tmap(int nverts, int *vert );
+void gr_upoly_tmap(int32_t nverts, int32_t *vert );
 
 //This is like gr_upoly_tmap() but instead of drawing, it calls the specified
 //function with ylr values
-void gr_upoly_tmap_ylr(int nverts, int *vert, void (*ylr_func)(int, fix, fix) );
+void gr_upoly_tmap_ylr(int32_t nverts, int32_t *vert, void (*ylr_func)(int32_t, fix, fix) );
 
-extern int Transparency_on,per2Flag;
+extern int32_t Transparency_on,per2Flag;
 
 //	Set to !0 to enable Sim City 2000 (or Eric's Drive Through, or Eric's Game) specific code.
-extern	int	SC2000;
+extern	int32_t	SC2000;
 
-extern int nWindowClipLeft, nWindowClipBot, nWindowClipRight, nWindowClipTop;
+extern int32_t nWindowClipLeft, nWindowClipBot, nWindowClipRight, nWindowClipTop;
 
 // for ugly hack put in to be sure we don't overflow render buffer
 

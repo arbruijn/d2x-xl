@@ -121,7 +121,7 @@ vOffs = m_info.pos - vPos;
 m_info.pos = mOrient * vOffs;
 //step 3: rotate CObject matrix through view_matrix (vm = ob * vm)
 mTrans = mOrient.Transpose ();
-for (int i = 0; i < 2; i++) {
+for (int32_t i = 0; i < 2; i++) {
 	mRot = mTrans * m_info.view [i];
 	m_info.view [i] = mRot;
 	m_info.viewf [i].Assign (m_info.view [i]);
@@ -172,7 +172,7 @@ return dest;
 
 //------------------------------------------------------------------------------
 //compute aspect ratio for this canvas
-void CTransformation::ComputeAspect (int nWidth, int nHeight)
+void CTransformation::ComputeAspect (int32_t nWidth, int32_t nHeight)
 {
 fix s = FixMulDiv (gameData.render.screen.Aspect (), (nWidth > 0) ? nWidth : CCanvas::Current ()->Height (), (nHeight > 0) ? nHeight : CCanvas::Current ()->Width ());
 if (s <= I2X (1)) {	   //scale x
@@ -227,9 +227,9 @@ m_info.aspectRatio = aspectRatio;
 
 //------------------------------------------------------------------------------
 
-ubyte CTransformation::Codes (CFixVector& v)
+uint8_t CTransformation::Codes (CFixVector& v)
 {
-	ubyte codes = (v.v.coord.z < 0) ? CC_BEHIND : 0;
+	uint8_t codes = (v.v.coord.z < 0) ? CC_BEHIND : 0;
 #if 1
 	tScreenPos s;
 	ProjectPoint (v, s);
@@ -264,17 +264,17 @@ ubyte CTransformation::Codes (CFixVector& v)
 
 #define COMPUTE_TYPE 0
 
-static int planeVerts [6][4] = {
+static int32_t planeVerts [6][4] = {
 	{0,1,2,3},{0,1,5,4},{1,2,6,5},{2,3,7,6},{0,3,7,4},{4,5,6,7}
 	};
 
-//static int oppSides [6] = {5, 3, 4, 1, 2, 0};
+//static int32_t oppSides [6] = {5, 3, 4, 1, 2, 0};
 
-static int normRefs [6][2] = {{1,5},{4,7},{5,4},{7,4},{4,5},{5,1}};
+static int32_t normRefs [6][2] = {{1,5},{4,7},{5,4},{7,4},{4,5},{5,1}};
 
 void CFrustum::Compute (void)
 {
-	int i;
+	int32_t i;
 
 #if COMPUTE_TYPE == 1
 
@@ -387,7 +387,7 @@ for (i = 1; i < 6; i++) {
 	m_centers [i].Assign (centers [i]);
 #if COMPUTE_TYPE == 1
 #else
-	for (int j = 0; j < 4; j++)
+	for (int32_t j = 0; j < 4; j++)
 		m_centers [i] += m_corners [planeVerts [i][j]];
 	m_centers [i] /= I2X (4);
 #endif
@@ -405,13 +405,13 @@ for (i = 1; i < 6; i++) {
 
 bool CFrustum::Contains (CSide* sideP)
 {
-	static int lineVerts [12][2] = {
+	static int32_t lineVerts [12][2] = {
 		{0,1}, {1,2}, {2,3}, {3,0}, 
 		{4,5}, {5,6}, {6,7}, {7,4},
 		{0,4}, {1,5}, {2,6}, {3,7}
 	};
 
-	int i, j, nInside = 0, nOutside [4] = {0, 0, 0, 0};
+	int32_t i, j, nInside = 0, nOutside [4] = {0, 0, 0, 0};
 	CRenderPoint* points [4];
 	CFixVector intersection;
 
@@ -424,8 +424,8 @@ for (j = 0; j < 4; j++) {
 // check whether all vertices of the face are at the back side of at least one frustum plane,
 // or if at least one is at at least on one frustum plane's front sides
 for (i = 0; i < 6; i++) {
-	int nPtInside = 4;
-	int bPtInside = 1;
+	int32_t nPtInside = 4;
+	int32_t bPtInside = 1;
 	CFixVector& c = m_centers [i];
 	CFixVector& n = m_normals [i];
 	for (j = 0; j < 4; j++) {

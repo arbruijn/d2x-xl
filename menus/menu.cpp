@@ -88,16 +88,16 @@ char bPauseableMenu = 0;
 char bAlreadyShowingInfo = 0;
 
 CMenu* CMenu::m_active = NULL;
-int CMenu::m_level = 0;
+int32_t CMenu::m_level = 0;
 
 
 //------------------------------------------------------------------------------
 
-bool MenuRenderTimeout (int& t0, int tFade)
+bool MenuRenderTimeout (int32_t& t0, int32_t tFade)
 {
-int i = SDL_GetTicks ();
+int32_t i = SDL_GetTicks ();
 
-if ((tFade < 0) || (i - tFade > int (gameOpts->menus.nFade))) {
+if ((tFade < 0) || (i - tFade > int32_t (gameOpts->menus.nFade))) {
 	if (i - t0 < 25) {
 		G3_SLEEP (1);
 		return false;
@@ -111,9 +111,9 @@ return true;
 //------------------------------------------------------------------------------ 
 //------------------------------------------------------------------------------ 
 // Draw a left justfied string with black background.
-void CMenu::DrawRightStringWXY (int w1, int x, int y, const char* s)
+void CMenu::DrawRightStringWXY (int32_t w1, int32_t x, int32_t y, const char* s)
 {
-	int	w, h, aw;
+	int32_t	w, h, aw;
 
 fontManager.Current ()->StringSize (s, w, h, aw);
 x -= 3;
@@ -126,15 +126,15 @@ GrString (x - w, y, s);
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::XOffset (void) { return (gameData.render.frame.Width () - m_props.width) / 2; }
-int CMenu::YOffset (void) { return (gameData.render.frame.Height () - m_props.height) / 2; }
+int32_t CMenu::XOffset (void) { return (gameData.render.frame.Width () - m_props.width) / 2; }
+int32_t CMenu::YOffset (void) { return (gameData.render.frame.Height () - m_props.height) / 2; }
 
 //------------------------------------------------------------------------------ 
 
 char* nmAllowedChars = NULL;
 
 //returns true if char is bAllowed
-int CMenu::CharAllowed (char c)
+int32_t CMenu::CharAllowed (char c)
 {
 	char* p = nmAllowedChars;
 
@@ -152,16 +152,16 @@ return 0;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::TinyMenu (const char* pszTitle, const char* pszSubTitle, pMenuCallback callback)
+int32_t CMenu::TinyMenu (const char* pszTitle, const char* pszSubTitle, pMenuCallback callback)
 {
 return Menu (pszTitle, pszSubTitle, callback, NULL, BG_SUBMENU, BG_STANDARD, -1, -1, 1);
 }
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::FixedFontMenu (const char* pszTitle, const char* pszSubTitle, 
-								  pMenuCallback callback, int* nCurItemP, int nType, int nWallpaper, 
-								  int width, int height)
+int32_t CMenu::FixedFontMenu (const char* pszTitle, const char* pszSubTitle, 
+								  pMenuCallback callback, int32_t* nCurItemP, int32_t nType, int32_t nWallpaper, 
+								  int32_t width, int32_t height)
 {
 SetScreenMode (SCREEN_MENU);
 return Menu (pszTitle, pszSubTitle, callback, nCurItemP, nType, nWallpaper, width, height, 0);
@@ -181,14 +181,14 @@ m_yMouse -= rc.Top ();
 //------------------------------------------------------------------------------ 
 
 //returns 1 if a control device button has been pressed
-int NMCheckButtonPress ()
+int32_t NMCheckButtonPress ()
 {
 switch (gameConfig.nControlType) {
 	case CONTROL_JOYSTICK:
 	case CONTROL_FLIGHTSTICK_PRO:
 	case CONTROL_THRUSTMASTER_FCS:
 	case CONTROL_GRAVIS_GAMEPAD:
-		for (int i = 0; i < 4; i++)
+		for (int32_t i = 0; i < 4; i++)
 	 		if (JoyGetButtonDownCnt (i) > 0) 
 				return 1;
 		break;
@@ -210,13 +210,13 @@ return 0;
 
 //------------------------------------------------------------------------------ 
 
-extern int bRestoringMenu;
+extern int32_t bRestoringMenu;
 
-ubyte bHackDblClickMenuMode = 0;
+uint8_t bHackDblClickMenuMode = 0;
 
 # define JOYDEFS_CALIBRATING 0
 
-void CMenu::DrawCloseBox (int x, int y)
+void CMenu::DrawCloseBox (int32_t x, int32_t y)
 {
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 OglDrawFilledRect (x + MENU_CLOSE_X, y + MENU_CLOSE_Y, x + MENU_CLOSE_X + Scaled (MENU_CLOSE_SIZE), y + MENU_CLOSE_Y + Scaled (MENU_CLOSE_SIZE));
@@ -226,10 +226,10 @@ OglDrawFilledRect (x + MENU_CLOSE_X + LHX (1), y + MENU_CLOSE_Y + LHX (1), x + M
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::DrawTitle (const char* pszTitle, CFont* font, uint color, int ty)
+int32_t CMenu::DrawTitle (const char* pszTitle, CFont* font, uint32_t color, int32_t ty)
 {
 if (pszTitle && *pszTitle) {
-		int x = 0x8000, w, h, aw;
+		int32_t x = 0x8000, w, h, aw;
 
 	fontManager.SetCurrent (font);
 	fontManager.SetColorRGBi (color, 1, 0, 0);
@@ -242,10 +242,10 @@ return ty;
 
 //------------------------------------------------------------------------------ 
 
-void CMenu::GetTitleSize (const char* pszTitle, CFont* font, int& tw, int& th)
+void CMenu::GetTitleSize (const char* pszTitle, CFont* font, int32_t& tw, int32_t& th)
 {
 if (pszTitle && *pszTitle) {
-		int nStringWidth, nStringHeight, nAverageWidth;
+		int32_t nStringWidth, nStringHeight, nAverageWidth;
 
 	fontManager.SetCurrent (font);
 	fontManager.Current ()->StringSize (pszTitle, nStringWidth, nStringHeight, nAverageWidth);
@@ -259,15 +259,15 @@ if (pszTitle && *pszTitle) {
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::GetSize (int& w, int& h, int& aw, int& nMenus, int& nOthers)
+int32_t CMenu::GetSize (int32_t& w, int32_t& h, int32_t& aw, int32_t& nMenus, int32_t& nOthers)
 {
-	int	nStringWidth = 0, nStringHeight = 0, nAverageWidth = 0;
+	int32_t	nStringWidth = 0, nStringHeight = 0, nAverageWidth = 0;
 
 #if 0
 if ((gameOpts->menus.nHotKeys > 0) && !gameStates.app.bEnglish)
 	gameOpts->menus.nHotKeys = -1;
 #endif
-for (uint i = 0; i < ToS (); i++) {
+for (uint32_t i = 0; i < ToS (); i++) {
 	Item (i).GetSize (Scaled (h), aw, nStringWidth, nStringHeight, nAverageWidth, nMenus, nOthers, m_props.bTinyMode);
 	if (w < nStringWidth)
 		w = nStringWidth;		// Save maximum width
@@ -283,10 +283,10 @@ return Scaled (nStringHeight);
 
 //------------------------------------------------------------------------------ 
 
-void CMenu::SetItemPos (int twidth, int xOffs, int yOffs, int m_rightOffset)
+void CMenu::SetItemPos (int32_t twidth, int32_t xOffs, int32_t yOffs, int32_t m_rightOffset)
 {
-for (uint i = 0; i < ToS (); i++) {
-	if (((Item (i).m_x == short (0x8000)) || Item (i).m_bCentered)) {
+for (uint32_t i = 0; i < ToS (); i++) {
+	if (((Item (i).m_x == int16_t (0x8000)) || Item (i).m_bCentered)) {
 		Item (i).m_bCentered = 1;
 		Item (i).m_x = -1;
 		}
@@ -296,8 +296,8 @@ for (uint i = 0; i < ToS (); i++) {
 	Item (i).m_xSave = Item (i).m_x;
 	Item (i).m_ySave = Item (i).m_y;
 	if (Item (i).m_nType == NM_TYPE_RADIO) {
-		int fm = -1;	// ffs first marked one
-		for (uint j = 0; j < ToS (); j++) {
+		int32_t fm = -1;	// ffs first marked one
+		for (uint32_t j = 0; j < ToS (); j++) {
 			if ((Item (j).m_nType == NM_TYPE_RADIO) && (Item (j).m_group == Item (i).m_group)) {
 				if ((fm == -1) && Item (j).Value ())
 					fm = j;
@@ -330,12 +330,12 @@ class CFixFraction {
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::InitProps (const char* pszTitle, const char* pszSubTitle)
+int32_t CMenu::InitProps (const char* pszTitle, const char* pszSubTitle)
 {
 if ((m_props.screenWidth == gameData.render.frame.Width ()) && (m_props.screenHeight == gameData.render.frame.Height ()))
 	return 0;
 
-	int	i, gap, haveTitle;
+	int32_t	i, gap, haveTitle;
 
 m_props.screenWidth = gameData.render.frame.Width ();
 m_props.screenHeight = gameData.render.frame.Height ();
@@ -349,7 +349,7 @@ m_props.titleHeight += gap;		//put some space between pszTitles & body
 fontManager.SetCurrent (m_props.bTinyMode ? SMALL_FONT : NORMAL_FONT);
 
 m_props.width = 0;
-m_props.height = int (ceil (double (m_props.titleHeight) / GetScale ())); // will be scaled in GetSize()
+m_props.height = int32_t (ceil (double (m_props.titleHeight) / GetScale ())); // will be scaled in GetSize()
 m_props.nMenus = m_props.nOthers = 0;
 m_props.nStringHeight = GetSize (m_props.width, m_props.height, m_props.aw, m_props.nMenus, m_props.nOthers) + m_props.bTinyMode * 2;
 
@@ -362,14 +362,14 @@ if (/*!m_props.bTinyMode && */ (m_props.height > (m_props.nMaxOnMenu * (m_props.
  }
 else
 	m_props.bIsScrollBox = 0;
-m_props.nMaxDisplayable = (m_props.nMaxOnMenu < int (ToS ())) ? m_props.nMaxOnMenu : int (ToS ());
+m_props.nMaxDisplayable = (m_props.nMaxOnMenu < int32_t (ToS ())) ? m_props.nMaxOnMenu : int32_t (ToS ());
 m_props.rightOffset = 0;
 if (m_props.userWidth > -1)
 	m_props.width = Scaled (m_props.userWidth);
 if (m_props.userHeight > -1)
 	m_props.height = Scaled (m_props.userHeight);
 
-for (i = 0; i < int (ToS ()); i++) {
+for (i = 0; i < int32_t (ToS ()); i++) {
 	Item (i).m_w = Unscaled (m_props.width);
 	if (Scaled (Item (i).m_rightOffset) > m_props.rightOffset)
 		m_props.rightOffset = Scaled (Item (i).m_rightOffset);
@@ -436,13 +436,13 @@ GrabMouse (1, 0);
 
 void CMenu::FreeTextBms (void)
 {
-for (int i = 0; i < int (ToS ()); i++)
+for (int32_t i = 0; i < int32_t (ToS ()); i++)
 	Item (i).FreeTextBms ();
 }
 
 //------------------------------------------------------------------------------ 
 
-void CMenu::SwapText (int i, int j)
+void CMenu::SwapText (int32_t i, int32_t j)
 {
 	char h [MENU_MAX_TEXTLEN + 1];
 
@@ -489,7 +489,7 @@ return true;
 
 void CMenu::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
-	static	int t0 = 0;
+	static	int32_t t0 = 0;
 
 if (!MenuRenderTimeout (t0, m_tEnter))
 	return;
@@ -514,7 +514,7 @@ else {
 		Render ();
 		}
 	else {
-		for (int i = 0; i < 2; i++) {
+		for (int32_t i = 0; i < 2; i++) {
 			gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
 			SetupCanvasses (-1.0f);
 			gameData.render.frame.Activate ("CMenu::Render (frame, 2)");
@@ -546,16 +546,16 @@ void CMenu::Render (void)
 if (m_bDone)
 	return;
 
-	int y = 0;
+	int32_t y = 0;
 
 ogl.SetDepthTest (false);
 FadeIn ();
 ogl.ColorMask (1,1,1,1,0);
 backgroundManager.Activate (m_background);
-int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
+int32_t nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 fontManager.PushScale ();
 fontManager.SetScale (fontManager.Scale () * GetScale ());
-int i = DrawTitle (m_props.pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
+int32_t i = DrawTitle (m_props.pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
 DrawTitle (m_props.pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
 if (!m_bRedraw)
 	m_props.ty = i;
@@ -594,8 +594,8 @@ if (m_props.bIsScrollBox) {
 	if (m_bRedraw || (m_nLastScrollCheck != m_props.nScrollOffset)) {
 		m_nLastScrollCheck = m_props.nScrollOffset;
 		fontManager.SetCurrent (SELECTED_FONT);
-		int sy = Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
-		int sx = Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires ? 24 : 12);
+		int32_t sy = Item (m_props.nScrollOffset).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
+		int32_t sx = Item (m_props.nScrollOffset).m_x - (gameStates.menus.bHires ? 24 : 12);
 		if (m_props.nScrollOffset > m_props.nMaxNoScroll)
 			DrawRightStringWXY (Scaled (gameStates.menus.bHires ? 20 : 10), sx, sy, UP_ARROW_MARKER);
 		else
@@ -603,7 +603,7 @@ if (m_props.bIsScrollBox) {
 		i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll -1;
 		sy = Item (i).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
 		sx = Item (i).m_x - (gameStates.menus.bHires ? 24 : 12);
-		if (m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll < int (ToS ()))
+		if (m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll < int32_t (ToS ()))
 			DrawRightStringWXY (Scaled (gameStates.menus.bHires ? 20 : 10), sx, sy, DOWN_ARROW_MARKER);
 		else
 			DrawRightStringWXY (Scaled (gameStates.menus.bHires ? 20 : 10), sx, sy, " ");
@@ -631,12 +631,12 @@ gameStates.render.grAlpha = 1.0f;
 void CMenu::FadeIn (void)
 {
 if (gameOpts->menus.nFade && !gameStates.app.bNostalgia) {
-	if (m_tEnter == uint (-1))
+	if (m_tEnter == uint32_t (-1))
 		m_tEnter = SDL_GetTicks ();
-	int t = int (SDL_GetTicks () - m_tEnter);
+	int32_t t = int32_t (SDL_GetTicks () - m_tEnter);
 	if (t < 0)
 		t = 0;
-	gameStates.render.grAlpha = (t < int (gameOpts->menus.nFade)) ? float (t) / float (gameOpts->menus.nFade) : 1.0f;
+	gameStates.render.grAlpha = (t < int32_t (gameOpts->menus.nFade)) ? float (t) / float (gameOpts->menus.nFade) : 1.0f;
 	}
 else {
 	m_tEnter = 0;
@@ -649,9 +649,9 @@ else {
 void CMenu::FadeOut (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP)
 {
 if (gameOpts->menus.nFade && !gameStates.app.bNostalgia) {
-	int t = int (gameOpts->menus.nFade * gameStates.render.grAlpha);
-	int t0 = SDL_GetTicks ();
-	int t1, dt;
+	int32_t t = int32_t (gameOpts->menus.nFade * gameStates.render.grAlpha);
+	int32_t t0 = SDL_GetTicks ();
+	int32_t t1, dt;
 	do {
 		t1 = SDL_GetTicks ();
 		dt = t1 - t0;
@@ -663,20 +663,20 @@ if (gameOpts->menus.nFade && !gameStates.app.bNostalgia) {
 
 //------------------------------------------------------------------------------ 
 
-#define REDRAW_ALL	for (i = 0; i < int (ToS ()); i++) Item (i).m_bRedraw = 1;
+#define REDRAW_ALL	for (i = 0; i < int32_t (ToS ()); i++) Item (i).m_bRedraw = 1;
 
-int CMenu::Menu (const char* pszTitle, const char* pszSubTitle, pMenuCallback callback, int* nCurItemP, 
-					  int nType, int nWallpaper, int width, int height, int bTinyMode)
+int32_t CMenu::Menu (const char* pszTitle, const char* pszSubTitle, pMenuCallback callback, int32_t* nCurItemP, 
+					  int32_t nType, int32_t nWallpaper, int32_t width, int32_t height, int32_t bTinyMode)
 {
-	int			bKeyRepeat, nItem = nCurItemP ? *nCurItemP : 0;
-	int			oldChoice, i;
-	int			bSoundStopped = 0, bTimeStopped = 0;
-	int			topChoice;// Is this a scrolling box? Set to 0 at init
-	int			bWheelUp, bWheelDown, nMouseState, nOldMouseState, bDblClick = 0;
-	int			x1 = 0, x2, y1, y2;
-	int			bLaunchOption = 0;
-	int			exception = 0;
-	int			bPauseMenu = gameData.app.bGamePaused;
+	int32_t			bKeyRepeat, nItem = nCurItemP ? *nCurItemP : 0;
+	int32_t			oldChoice, i;
+	int32_t			bSoundStopped = 0, bTimeStopped = 0;
+	int32_t			topChoice;// Is this a scrolling box? Set to 0 at init
+	int32_t			bWheelUp, bWheelDown, nMouseState, nOldMouseState, bDblClick = 0;
+	int32_t			x1 = 0, x2, y1, y2;
+	int32_t			bLaunchOption = 0;
+	int32_t			exception = 0;
+	int32_t			bPauseMenu = gameData.app.bGamePaused;
 
 if (gameStates.menus.nInMenu > 0)
 	return -1;
@@ -698,7 +698,7 @@ m_props.userHeight = Scaled (height);
 m_props.bTinyMode = bTinyMode;
 controls.FlushInput ();
 
-if (int (ToS ()) < 1)
+if (int32_t (ToS ()) < 1)
 	return -1;
 //if (gameStates.app.bGameRunning && !gameOpts->menus.nStyle)
 //	backgroundManager.LoadStars (true);
@@ -720,12 +720,12 @@ else {
 	if (nItem < 0) 
 		nItem = 0;
 	else 
-		nItem %= int (ToS ());
+		nItem %= int32_t (ToS ());
 	m_nChoice = nItem;
 	bDblClick = 1;
 	while (Item (m_nChoice).m_nType == NM_TYPE_TEXT) {
 		m_nChoice++;
-		if (m_nChoice >= int (ToS ()))
+		if (m_nChoice >= int32_t (ToS ()))
 			m_nChoice = 0; 
 		if (m_nChoice == nItem) {
 			m_nChoice = 0; 
@@ -743,7 +743,7 @@ Register ();
 
 while (Item (topChoice).m_nType == NM_TYPE_TEXT) {
 	topChoice++;
-	if (topChoice >= int (ToS ()))
+	if (topChoice >= int32_t (ToS ()))
 		topChoice = 0; 
 	if (topChoice == nItem) {
 		topChoice = 0; 
@@ -775,7 +775,7 @@ while (!m_bDone) {
 		SDL_ShowCursor (1); // possibly hidden
 	nOldMouseState = nMouseState;
 	if (!gameStates.menus.bReordering) {
-		int b = gameOpts->legacy.bInput;
+		int32_t b = gameOpts->legacy.bInput;
 		gameOpts->legacy.bInput = 1;
 		nMouseState = MouseButtonState (0);
 		gameOpts->legacy.bInput = b;
@@ -821,7 +821,7 @@ while (!m_bDone) {
 		try {
 			m_nChoice = (*callback) (*this, m_nKey, m_nChoice, 0);
 			}
-		catch (int e) {
+		catch (int32_t e) {
 			exception = e;
 			m_bDone = 1;
 			break;
@@ -894,8 +894,8 @@ while (!m_bDone) {
  				if (m_props.bIsScrollBox) {
 					m_nLastScrollCheck = -1;
 		 			if (m_nChoice < topChoice) { 
-						m_nChoice = int (ToS ()) -1; 
-						m_props.nScrollOffset = int (ToS ()) - m_props.nMaxDisplayable + m_props.nMaxNoScroll;
+						m_nChoice = int32_t (ToS ()) -1; 
+						m_props.nScrollOffset = int32_t (ToS ()) - m_props.nMaxDisplayable + m_props.nMaxNoScroll;
 						if (m_props.nScrollOffset < m_props.nMaxNoScroll)
 							m_props.nScrollOffset = m_props.nMaxNoScroll;
 						REDRAW_ALL;
@@ -909,10 +909,10 @@ while (!m_bDone) {
 						}
 					}
 				else {
-					if (m_nChoice >= int (ToS ())) 
+					if (m_nChoice >= int32_t (ToS ())) 
 						m_nChoice = 0;
 					else if (m_nChoice < 0) 
-						m_nChoice = int (ToS ()) -1;
+						m_nChoice = int32_t (ToS ()) -1;
 					}
 				} while (Item (m_nChoice).m_nType == NM_TYPE_TEXT);
 			if ((Item (m_nChoice).m_nType == NM_TYPE_INPUT) && (m_nChoice != oldChoice))
@@ -937,7 +937,7 @@ while (!m_bDone) {
 				m_nChoice++;
 				if (m_props.bIsScrollBox) {
 					m_nLastScrollCheck = -1;
-						if (m_nChoice == int (ToS ())) {
+						if (m_nChoice == int32_t (ToS ())) {
 							m_nChoice = 0;
 							if (m_props.nScrollOffset) {
 								REDRAW_ALL;
@@ -951,8 +951,8 @@ while (!m_bDone) {
 						}
 					else {
 						if (m_nChoice < 0) 
-							m_nChoice = int (ToS ()) -1;
-						else if (m_nChoice >= int (ToS ())) 
+							m_nChoice = int32_t (ToS ()) -1;
+						else if (m_nChoice >= int32_t (ToS ())) 
 							m_nChoice = 0;
 						}
 					} while (Item (m_nChoice).m_nType == NM_TYPE_TEXT);
@@ -993,7 +993,7 @@ radioOption:
 						goto launchOption;
 					break;
 				case NM_TYPE_RADIO:
-					for (i = 0; i < int (ToS ()); i++) {
+					for (i = 0; i < int32_t (ToS ()); i++) {
 						if ((i != m_nChoice) && (Item (i).m_nType == NM_TYPE_RADIO) && (Item (i).m_group == Item (m_nChoice).m_group) && (Item (i).Value ())) {
 							Item (i).Value () = 0;
 							Item (i).m_bRedraw = 1;
@@ -1019,7 +1019,7 @@ radioOption:
 			 break;
 
 		case KEY_SHIFTED + KEY_DOWN:
-			if (gameStates.menus.bReordering && m_nChoice !=(int (ToS ()) -1)) {
+			if (gameStates.menus.bReordering && m_nChoice !=(int32_t (ToS ()) -1)) {
 				SwapText (m_nChoice, m_nChoice + 1);
 				::Swap (Item (m_nChoice).Value (), Item (m_nChoice + 1).Value ());
 				Item (m_nChoice).m_bRebuild = 
@@ -1029,7 +1029,7 @@ radioOption:
 			 break;
 
 		case KEY_ALTED + KEY_ENTER: {
-			//int bLoadCustomBg = NMFreeCustomBg ();
+			//int32_t bLoadCustomBg = NMFreeCustomBg ();
 			FreeTextBms ();
 			//NMRestoreScreen (filename, & m_bDontRestore);
 			GrToggleFullScreenGame ();
@@ -1098,7 +1098,7 @@ launchOption:
 		case KEY_PRINT_SCREEN:
 			gameStates.app.bSaveScreenShot = 1;
 			SaveScreenShot (NULL, 0);
-			for (i = 0; i < int (ToS ()); i++)
+			for (i = 0; i < int32_t (ToS ()); i++)
 				Item (i).m_bRedraw = 1;
 		
 			break;
@@ -1117,7 +1117,7 @@ launchOption:
 
 		if (!m_bDone && nMouseState && !nOldMouseState && !m_bAllText) {
 			GetMousePos ();
-			for (i = 0; i < int (ToS ()); i++) {
+			for (i = 0; i < int32_t (ToS ()); i++) {
 				if (!Item (i).Selectable ())
 					continue;
 				x1 = /*CCanvas::Current ()->Left () +*/ Item (i).m_x - Item (i).m_rightOffset - 6;
@@ -1131,7 +1131,7 @@ launchOption:
 					}
 				
 					m_nChoice = i + m_props.nScrollOffset - m_props.nMaxNoScroll;
-					if (m_nChoice >= 0 && m_nChoice < int (ToS ()))
+					if (m_nChoice >= 0 && m_nChoice < int32_t (ToS ()))
 						switch (Item (m_nChoice).m_nType) {
 							case NM_TYPE_CHECK:
 								Item (m_nChoice).Value () = !Item (m_nChoice).Value ();
@@ -1140,7 +1140,7 @@ launchOption:
 									m_nLastScrollCheck = -1;
 								break;
 							case NM_TYPE_RADIO:
-								for (i = 0; i < int (ToS ()); i++) {
+								for (i = 0; i < int32_t (ToS ()); i++) {
 									if ((i!= m_nChoice) && (Item (i).m_nType == NM_TYPE_RADIO) && (Item (i).m_group == Item (m_nChoice).m_group) && (Item (i).Value ())) {
 										Item (i).Value () = 0;
 										Item (i).m_bRedraw = 1;
@@ -1167,7 +1167,7 @@ launchOption:
 
 			// check possible scrollbar stuff first
 			if (m_props.bIsScrollBox) {
-				int i, arrowWidth, arrowHeight, aw;
+				int32_t i, arrowWidth, arrowHeight, aw;
 			
 				if (m_props.nScrollOffset > m_props.nMaxNoScroll) {
 					fontManager.Current ()->StringSize (UP_ARROW_MARKER, arrowWidth, arrowHeight, aw);
@@ -1184,7 +1184,7 @@ launchOption:
 							}
 						}
 					}
-				if ((i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll) < int (ToS ()) && Item (i).Selectable ()) {
+				if ((i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll) < int32_t (ToS ()) && Item (i).Selectable ()) {
 					fontManager.Current ()->StringSize (DOWN_ARROW_MARKER, arrowWidth, arrowHeight, aw);
 					x2 = /*CCanvas::Current ()->Left () +*/ Item (i -1).m_x - (gameStates.menus.bHires?24:12);
 					y1 = /*CCanvas::Current ()->Top () +*/ Item (i -1).m_y - ((m_props.nStringHeight + 1)*(m_props.nScrollOffset - m_props.nMaxNoScroll));
@@ -1201,7 +1201,7 @@ launchOption:
 					}
 				}
 		
-			for (i = m_props.nScrollOffset; i < int (ToS ()); i++) {
+			for (i = m_props.nScrollOffset; i < int32_t (ToS ()); i++) {
 				if (!Item (i).Selectable ())
 					continue;
 				x1 = /*CCanvas::Current ()->Left () +*/ Item (i).m_x - Item (i).m_rightOffset - 6;
@@ -1219,7 +1219,7 @@ launchOption:
 
 					if (Item (m_nChoice).m_nType == NM_TYPE_SLIDER) {
 						char slider_text [MENU_MAX_TEXTLEN + 1], *p, *s1;
-						int slider_width, height, aw, sleft_width, sright_width, smiddle_width;
+						int32_t slider_width, height, aw, sleft_width, sright_width, smiddle_width;
 					
 						strcpy (slider_text, Item (m_nChoice).m_savedText);
 						p = strchr (slider_text, '\t');
@@ -1242,7 +1242,7 @@ launchOption:
 								Item (m_nChoice).Value () = Item (m_nChoice).MaxValue ();
 								Item (m_nChoice).m_bRedraw = 2;
 							} else if ((m_xMouse > (x1 + sleft_width)) && (m_xMouse < (x2 - sright_width))) {
-								int numValues, value_width, newValue;
+								int32_t numValues, value_width, newValue;
 							
 								numValues = Item (m_nChoice).MaxValue () - Item (m_nChoice).MinValue () + 1;
 								value_width = (slider_width - sleft_width - sright_width) / numValues;
@@ -1330,13 +1330,13 @@ launchOption:
 			Item (0).m_bRedraw = 0;
 
 		if (m_nChoice > -1) {
-			int ascii;
+			int32_t ascii;
 
 			if (((Item (m_nChoice).m_nType == NM_TYPE_INPUT) || 
 				 ((Item (m_nChoice).m_nType == NM_TYPE_INPUT_MENU) && (Item (m_nChoice).m_group == 1))) && (oldChoice == m_nChoice)) {
 				if (m_nKey == KEY_LEFT || m_nKey == KEY_BACKSPACE || m_nKey == KEY_PAD4) {
 					if (Item (m_nChoice).Value () == -1) 
-						Item (m_nChoice).Value () = (int) strlen (Item (m_nChoice).m_text);
+						Item (m_nChoice).Value () = (int32_t) strlen (Item (m_nChoice).m_text);
 					if (Item (m_nChoice).Value () > 0)
 						Item (m_nChoice).Value ()--;
 					Item (m_nChoice).m_text [Item (m_nChoice).Value ()] = '\0';
@@ -1345,7 +1345,7 @@ launchOption:
 				else {
 					ascii = KeyToASCII (m_nKey);
 					if ((ascii < 255) && (Item (m_nChoice).Value () < Item (m_nChoice).m_nTextLen)) {
-						int bAllowed;
+						int32_t bAllowed;
 
 						if (Item (m_nChoice).Value ()== -1)
 							Item (m_nChoice).Value () = 0;
@@ -1365,12 +1365,12 @@ launchOption:
 			else if ((Item (m_nChoice).m_nType != NM_TYPE_INPUT) && (Item (m_nChoice).m_nType != NM_TYPE_INPUT_MENU)) {
 				ascii = KeyToASCII (m_nKey);
 				if (ascii < 255) {
-					int choice1 = m_nChoice;
+					int32_t choice1 = m_nChoice;
 					ascii = toupper (ascii);
 					do {
-						int i, ch = 0, t;
+						int32_t i, ch = 0, t;
 
-						if (++choice1 >= int (ToS ())) 
+						if (++choice1 >= int32_t (ToS ())) 
 							choice1 = 0;
 						t = Item (choice1).m_nType;
 						if (gameStates.app.bNostalgia)
@@ -1400,8 +1400,8 @@ launchOption:
 								}
 							else if (m_nChoice > m_props.nScrollOffset + m_props.nMaxDisplayable -1) {
 								m_props.nScrollOffset = m_nChoice;
-								if (m_props.nScrollOffset + m_props.nMaxDisplayable >= int (ToS ())) {
-									m_props.nScrollOffset = int (ToS ()) - m_props.nMaxDisplayable;
+								if (m_props.nScrollOffset + m_props.nMaxDisplayable >= int32_t (ToS ())) {
+									m_props.nScrollOffset = int32_t (ToS ()) - m_props.nMaxDisplayable;
 									if (m_props.nScrollOffset < m_props.nMaxNoScroll)
 										m_props.nScrollOffset = m_props.nMaxNoScroll;
 									}
@@ -1420,7 +1420,7 @@ launchOption:
 				}
 
 			if ((Item (m_nChoice).m_nType == NM_TYPE_NUMBER) || (Item (m_nChoice).m_nType == NM_TYPE_SLIDER)) {
-				int ov = Item (m_nChoice).Value ();
+				int32_t ov = Item (m_nChoice).Value ();
 				switch (m_nKey) {
 				case KEY_PAD4:
 			 	case KEY_LEFT:
@@ -1480,7 +1480,7 @@ SDL_EnableKeyRepeat (0, 0);
 if (gameStates.app.bGameRunning && IsMultiGame)
 	MultiSendMsgQuit();
 
-for (i = 0; i < int (ToS ()); i++)
+for (i = 0; i < int32_t (ToS ()); i++)
 	Item (i).GetInput ();
 
 if (exception)
@@ -1509,7 +1509,7 @@ return Grow (1) ? Top () : NULL;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddCheck (const char* szId, const char* szText, int nValue, int nKey, const char* szHelp)
+int32_t CMenu::AddCheck (const char* szId, const char* szText, int32_t nValue, int32_t nKey, const char* szHelp)
 {
 CMenuItem* item = AddItem ();
 if (!item)
@@ -1518,7 +1518,7 @@ item->m_nType = NM_TYPE_CHECK;
 item->m_pszText = NULL;
 item->SetText (szText);
 item->Value () = NMBOOL (nValue);
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText -1));
+item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
 item->m_szHelp = szHelp;
 SetId (*item, szId);
 return ToS () -1;
@@ -1526,7 +1526,7 @@ return ToS () -1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddRadio (const char* szId, const char* szText, int nValue, int nKey, const char* szHelp)
+int32_t CMenu::AddRadio (const char* szId, const char* szText, int32_t nValue, int32_t nKey, const char* szHelp)
 {
 if (!ToS () || (Top ()->m_nType != NM_TYPE_RADIO))
 	NewGroup ();
@@ -1537,7 +1537,7 @@ item->m_nType = NM_TYPE_RADIO;
 item->m_pszText = NULL;
 item->SetText (szText);
 item->Value () = nValue;
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText -1));
+item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
 item->m_group = m_nGroup;
 item->m_szHelp = szHelp;
 SetId (*item, szId);
@@ -1546,7 +1546,7 @@ return ToS () -1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddMenu (const char* szId, const char* szText, int nKey, const char* szHelp)
+int32_t CMenu::AddMenu (const char* szId, const char* szText, int32_t nKey, const char* szHelp)
 {
 CMenuItem* item = AddItem ();
 if (!item)
@@ -1554,7 +1554,7 @@ if (!item)
 item->m_nType = NM_TYPE_MENU;
 item->m_pszText = NULL;
 item->SetText (szText);
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText -1));
+item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
 item->m_szHelp = szHelp;
 SetId (*item, szId);
 return ToS () -1;
@@ -1562,7 +1562,7 @@ return ToS () -1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddText (const char* szId, const char* szText, int nKey)
+int32_t CMenu::AddText (const char* szId, const char* szText, int32_t nKey)
 {
 CMenuItem* item = AddItem ();
 if (!item)
@@ -1570,14 +1570,14 @@ if (!item)
 item->m_nType = NM_TYPE_TEXT;
 item->m_pszText = NULL;
 item->SetText (szText);
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText -1));
+item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
 SetId (*item, szId);
 return ToS () -1;
 }
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddSlider (const char* szId, const char* szText, int nValue, int nMin, int nMax, int nKey, const char* szHelp)
+int32_t CMenu::AddSlider (const char* szId, const char* szText, int32_t nValue, int32_t nMin, int32_t nMax, int32_t nKey, const char* szHelp)
 {
 CMenuItem* item = AddItem ();
 if (!item)
@@ -1588,7 +1588,7 @@ item->SetText (szText);
 item->Value () = NMCLAMP (nValue, nMin, nMax);
 item->MinValue () = nMin;
 item->MaxValue () = nMax;
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText -1));
+item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
 item->m_szHelp = szHelp;
 SetId (*item, szId);
 return ToS () -1;
@@ -1596,7 +1596,7 @@ return ToS () -1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInput (const char* szId, const char* szText, int nLen, const char* szHelp)
+int32_t CMenu::AddInput (const char* szId, const char* szText, int32_t nLen, const char* szHelp)
 {
 CMenuItem* item = AddItem ();
 if (!item)
@@ -1612,7 +1612,7 @@ return ToS () -1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInput (const char* szId, const char* szText, char* szValue, int nLen, const char* szHelp)
+int32_t CMenu::AddInput (const char* szId, const char* szText, char* szValue, int32_t nLen, const char* szHelp)
 {
 if (AddText ("", szText, -1) < 0)
 	return -1;
@@ -1621,7 +1621,7 @@ return AddInput (szId, szValue, nLen, szHelp);
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInput (const char* szId, const char* szText, char* szValue, int nValue, int nLen, const char* szHelp)
+int32_t CMenu::AddInput (const char* szId, const char* szText, char* szValue, int32_t nValue, int32_t nLen, const char* szHelp)
 {
 sprintf (szValue, "%d", nValue);
 return AddInput (szId, szText, szValue, nLen, szHelp);
@@ -1629,7 +1629,7 @@ return AddInput (szId, szText, szValue, nLen, szHelp);
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddInputBox (const char* szId, const char* szText, int nLen, int nKey, const char* szHelp)
+int32_t CMenu::AddInputBox (const char* szId, const char* szText, int32_t nLen, int32_t nKey, const char* szHelp)
 {
 CMenuItem* item = AddItem ();
 if (!item)
@@ -1638,7 +1638,7 @@ item->m_nType = NM_TYPE_INPUT_MENU;
 item->m_pszText = (char*) (szText);
 item->SetText (szText);
 item->m_nTextLen = nLen;
-item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int (*(szText -1));
+item->m_nKey = (gameStates.app.bEnglish || !szText) ? nKey : int32_t (*(szText -1));
 item->m_szHelp = szHelp;
 SetId (*item, szId);
 return ToS () -1;
@@ -1646,7 +1646,7 @@ return ToS () -1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddNumber (const char* szId, const char* szText, int nValue, int nMin, int nMax)
+int32_t CMenu::AddNumber (const char* szId, const char* szText, int32_t nValue, int32_t nMin, int32_t nMax)
 {
 CMenuItem* item = AddItem ();
 if (!item)
@@ -1663,7 +1663,7 @@ return ToS () -1;
 
 //------------------------------------------------------------------------------ 
 
-int CMenu::AddGauge (const char* szId, const char* szText, int nValue, int nMax)
+int32_t CMenu::AddGauge (const char* szId, const char* szText, int32_t nValue, int32_t nMax)
 {
 CMenuItem* item = AddItem ();
 if (!item)
@@ -1671,7 +1671,7 @@ if (!item)
 item->m_nType = NM_TYPE_GAUGE;
 item->m_pszText = NULL;
 item->SetText (szText);
-item->m_nTextLen = *szText ? (int) strlen (szText) : 20;
+item->m_nTextLen = *szText ? (int32_t) strlen (szText) : 20;
 item->Value () = NMCLAMP (nValue, 0, nMax);
 item->MaxValue () = nMax;
 SetId (*item, szId);
@@ -1684,9 +1684,9 @@ return ToS () -1;
 //------------------------------------------------------------------------------ 
 /* Spiffy word wrap string formatting function */
 
-void NMWrapText (char* dbuf, char* sbuf, int line_length)
+void NMWrapText (char* dbuf, char* sbuf, int32_t line_length)
 {
-	int col;
+	int32_t col;
 	char* wordptr;
 	char* tbuf;
 
@@ -1699,7 +1699,7 @@ void NMWrapText (char* dbuf, char* sbuf, int line_length)
 	dbuf [0] = 0;
 
 while (wordptr) {
-	col = col + (int) strlen (wordptr) + 1;
+	col = col + (int32_t) strlen (wordptr) + 1;
 	if (col >= line_length) {
 		col = 0;
 		sprintf (dbuf, "%s\n%s ", dbuf, wordptr);
@@ -1714,9 +1714,9 @@ delete[] tbuf;
 
 //------------------------------------------------------------------------------ 
 
-void ProgressBar (const char* szCaption, int nCurProgress, int nMaxProgress, pMenuCallback doProgress)
+void ProgressBar (const char* szCaption, int32_t nCurProgress, int32_t nMaxProgress, pMenuCallback doProgress)
 {
-	int	i, nInMenu;
+	int32_t	i, nInMenu;
 	CMenu	menu;
 
 menu.Create (3);

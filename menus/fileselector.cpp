@@ -79,7 +79,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void DeleteSaveGames (char* name)
 {
-	int i;
+	int32_t i;
 	char filename [16];
 
 for (i = 0; i < 10; i++) {
@@ -110,8 +110,8 @@ textArea.Activate ("CFileSelector::Render", &m_background);
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 OglDrawFilledRect (0, 0, CCanvas::Current ()->Width (), CCanvas::Current ()->Height ());
 
-int y = 0;
-for (int i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
+int32_t y = 0;
+for (int32_t i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
 	if (i < m_nFileCount) {
 		fontManager.SetCurrent ((i == m_nChoice) ? SELECTED_FONT : NORMAL_FONT);
 		GrString (5, y, reinterpret_cast<char*> (&m_filenames [i]) + (((m_nMode == 1) && (m_filenames [i][0] == '$')) ? 1 : 0));
@@ -127,7 +127,7 @@ SDL_ShowCursor (1);
 
 //------------------------------------------------------------------------------ 
 
-int CFileSelector::DeleteFile (void)
+int32_t CFileSelector::DeleteFile (void)
 {
 if (!m_nMode)
 	return 0;
@@ -170,19 +170,19 @@ return 1;
 
 //------------------------------------------------------------------------------ 
 
-int CFileSelector::FileSelector (const char* pszTitle, const char* filespec, char* filename, int bAllowAbort)
+int32_t CFileSelector::FileSelector (const char* pszTitle, const char* filespec, char* filename, int32_t bAllowAbort)
 {
-	int					i;
+	int32_t					i;
 	FFS					ffs;
-	int					bKeyRepeat = gameStates.input.keys.bRepeat;
-	int					bInitialized = 0;
-	int					exitValue = 0;
-	int					nWidth, nHeight, nTitleHeight;
-	int					mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;
-	int					mouse2State, omouse2State, bWheelUp, bWheelDown;
-	int					bDblClick = 0;
+	int32_t					bKeyRepeat = gameStates.input.keys.bRepeat;
+	int32_t					bInitialized = 0;
+	int32_t					exitValue = 0;
+	int32_t					nWidth, nHeight, nTitleHeight;
+	int32_t					mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;
+	int32_t					mouse2State, omouse2State, bWheelUp, bWheelDown;
+	int32_t					bDblClick = 0;
 	char					szPattern [40];
-	int					nPatternLen = 0;
+	int32_t					nPatternLen = 0;
 	char*					pszFn;
 
 gameData.render.frame.Activate ("CFileSelector::FileSelector (frame)");
@@ -282,13 +282,13 @@ if (!bInitialized) {
 	nHeight = 0;
 
 	for (i = 0; i < m_nFileCount; i++) {
-		int w, h, aw;
+		int32_t w, h, aw;
 		fontManager.Current ()->StringSize (m_filenames [i], w, h, aw);	
 		if (w > nWidth)
 			nWidth = w;
 		}
 	if (pszTitle) {
-		int w, h, aw;
+		int32_t w, h, aw;
 		fontManager.Current ()->StringSize (pszTitle, w, h, aw);	
 		if (w > nWidth)
 			nWidth = w;
@@ -429,10 +429,10 @@ while (!m_bDone) {
 				szPattern [--nPatternLen] = '\0';
 				
 		default:
-			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < (int) sizeof (szPattern) - 1)) {
-				int nStart, ascii = KeyToASCII (m_nKey);
+			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < (int32_t) sizeof (szPattern) - 1)) {
+				int32_t nStart, ascii = KeyToASCII (m_nKey);
 				if ((m_nKey == KEY_BACKSPACE) || (ascii < 255)) {
-					int cc, bFound = 0;
+					int32_t cc, bFound = 0;
 					if (!gameOpts->menus.bSmartFileSearch) {
 						cc = m_nChoice + 1;
 						nStart = m_nChoice;
@@ -486,7 +486,7 @@ while (!m_bDone) {
 		m_nFirstItem = 0;
 
 	if (nMouseState || mouse2State) {
-		int w, h, aw;
+		int32_t w, h, aw;
 
 		MouseGetPos (&mx, &my);
 		for (i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
@@ -506,7 +506,7 @@ while (!m_bDone) {
 		}
 
 	if (!nMouseState && nOldMouseState) {
-		int w, h, aw;
+		int32_t w, h, aw;
 
 		fontManager.Current ()->StringSize (m_filenames [m_nChoice], w, h, aw);
 		MouseGetPos (&mx, &my);

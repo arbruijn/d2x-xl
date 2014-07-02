@@ -47,9 +47,9 @@
 #include "timeout.h"
 
 CTimeout toFlushed (1000);
-int nFlushes [4] = {0, 0, 0, 0};
-int nPartsFlushed [4] = {0, 0, 0, 0};
-int iFlushed = 0;
+int32_t nFlushes [4] = {0, 0, 0, 0};
+int32_t nPartsFlushed [4] = {0, 0, 0, 0};
+int32_t iFlushed = 0;
 #endif
 
 //------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ if (gameStates.app.bMultiThreaded) {
 #	if (LAZY_RENDER_SETUP < 2)
 	if (m_iBuffer <= 1000)
 #	endif
-	for (int i = 0; i < m_iBuffer; i++) {
+	for (int32_t i = 0; i < m_iBuffer; i++) {
 		m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
 		}
 #	if (LAZY_RENDER_SETUP < 2)
@@ -83,9 +83,9 @@ else
 #	endif
 #	pragma omp parallel
 		{
-		int nThread = omp_get_thread_num();
+		int32_t nThread = omp_get_thread_num();
 #	pragma omp for 
-		for (int i = 0; i < m_iBuffer; i++) {
+		for (int32_t i = 0; i < m_iBuffer; i++) {
 			m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, nThread);
 			}
 		}
@@ -94,7 +94,7 @@ else
 #endif
 	{
 	if ((m_iBuffer < 100) || !RunRenderThreads (rtParticles))
-		for (int i = 0; i < m_iBuffer; i++)
+		for (int32_t i = 0; i < m_iBuffer; i++)
 			m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
 	}
 PROF_END(ptParticles)
@@ -118,20 +118,20 @@ CEffectArea::Reset ();
 
 //------------------------------------------------------------------------------
 
-void CParticleBuffer::Setup (int nThread)
+void CParticleBuffer::Setup (int32_t nThread)
 {
-int nStep = m_iBuffer / gameStates.app.nThreads;
-int nStart = nStep * nThread;
-int nEnd = (nThread == gameStates.app.nThreads - 1) ? m_iBuffer : nStart + nStep;
+int32_t nStep = m_iBuffer / gameStates.app.nThreads;
+int32_t nStart = nStep * nThread;
+int32_t nEnd = (nThread == gameStates.app.nThreads - 1) ? m_iBuffer : nStart + nStep;
 bool alphaControl = AlphaControl ();
 
-for (int i = nStart; i < nEnd; i++)
+for (int32_t i = nStart; i < nEnd; i++)
 	m_particles [i].particle->Setup (alphaControl, m_particles [i].fBrightness, m_particles [i].nFrame, m_particles [i].nRotFrame, m_vertices + 4 * i, 0);
 }
 
 //------------------------------------------------------------------------------
 
-int CParticleBuffer::bCompatible [2 * PARTICLE_TYPES] = {0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 
+int32_t CParticleBuffer::bCompatible [2 * PARTICLE_TYPES] = {0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 
 																			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 bool CParticleBuffer::Compatible (CParticle* particleP)
@@ -140,7 +140,7 @@ bool CParticleBuffer::Compatible (CParticle* particleP)
 if (m_nType == FIRE_PARTICLES)
 	m_nType = m_nType;
 #endif
-int nParticleType = particleP->RenderType ();
+int32_t nParticleType = particleP->RenderType ();
 if ((nParticleType == m_nType) && (particleP->m_bEmissive == m_bEmissive))
 	return 1;
 return USE_PARTICLE_SHADER && bCompatible [m_nType] && bCompatible [nParticleType];
@@ -174,7 +174,7 @@ return bFlushed;
 
 //------------------------------------------------------------------------------
 
-int CParticleBuffer::Init (void)
+int32_t CParticleBuffer::Init (void)
 {
 ogl.ResetClientStates (1);
 ogl.EnableClientStates (1, 1, 0, GL_TEXTURE0);
@@ -187,13 +187,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CParticleBuffer::UseParticleShader (void)
+int32_t CParticleBuffer::UseParticleShader (void)
 {
 if (!USE_PARTICLE_SHADER)
 	return -1;
 if (!bCompatible [m_nType])
 	return -1;
-int nShader = 0; //ogl.m_features.bTextureArrays.Available ();
+int32_t nShader = 0; //ogl.m_features.bTextureArrays.Available ();
 if ((ogl.m_features.bDepthBlending > -1) && gameOpts->SoftBlend (SOFT_BLEND_PARTICLES))
 	return nShader + 2;
 return nShader;
@@ -204,7 +204,7 @@ return nShader;
 bool CParticleBuffer::Flush (float fBrightness, bool bForce)
 {
 	static vec3 dMax = {5.0f, 3.0f, 5.0f}; // blend ranges for smoke, sparks, bubbles
-	int nShader = 0;
+	int32_t nShader = 0;
 	bool bHaveTexture = false;
 
 if (!m_iBuffer)
@@ -225,8 +225,8 @@ if (toFlushed.Expired ()) {
 	}
 	++nFlushes [iFlushed];
 	nPartsFlushed [iFlushed] += m_iBuffer;
-	int p = 0, f = 0;
-	for (int i = 0; i < 4; i++)
+	int32_t p = 0, f = 0;
+	for (int32_t i = 0; i < 4; i++)
 		if (i != iFlushed)
 		p += nPartsFlushed [i], f = nFlushes [i];
 if (f)

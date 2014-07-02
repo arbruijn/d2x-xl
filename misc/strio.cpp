@@ -17,7 +17,7 @@
 
 char *fsplitword (CFile& cf, char splitchar)
 {
-	int	i, mem;
+	int32_t	i, mem;
 	char	c, *buf;
 
 mem = 256;
@@ -43,12 +43,12 @@ return buf;
 
 char *splitword (char *s, char splitchar)
 {
-	int	l, lw;
+	int32_t	l, lw;
 	char	*buf, *p;
 
-l = (int) strlen (s);
+l = (int32_t) strlen (s);
 p = strchr (s, splitchar);
-lw = p ? (int) (p - s) : l;
+lw = p ? (int32_t) (p - s) : l;
 buf = new char [lw + 1];
 memcpy (buf, s, lw + 1);
 buf [lw] = '\0';

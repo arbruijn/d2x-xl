@@ -18,7 +18,7 @@ CGlowRenderer glowRenderer;
 
 #if 1
 
-int hBlurShader = -1;
+int32_t hBlurShader = -1;
 
 #	if 1
 
@@ -74,7 +74,7 @@ const char *blurFS =
 	
 #else
 
-int hBlurShader [2] = {-1, -1};
+int32_t hBlurShader [2] = {-1, -1};
 
 const char *blurFS [2] = { 
 	"uniform sampler2D glowSource;\r\n" \
@@ -135,7 +135,7 @@ const char *blurVS =
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::LoadShader (int const direction, float const radius)
+bool CGlowRenderer::LoadShader (int32_t const direction, float const radius)
 {
 	//float fScale [2] = {ogl.m_data.windowScale.dim.y * (radius * 0.5f + 1.0f), ogl.m_data.windowScale.dim.x * (radius * 0.5f + 1.0f)};
 	float fScale [2] = {ogl.m_data.windowScale.dim.y * 2.0f, ogl.m_data.windowScale.dim.x * 2.0f};
@@ -169,7 +169,7 @@ if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders) {
 		ogl.m_states.bGlowRendering = 0;
 		}
 #else
-	for (int i = 0; i < 2; i++) {
+	for (int32_t i = 0; i < 2; i++) {
 		if (!shaderManager.Build (hBlurShader [i], blurFS [i], blurVS)) {
 			ogl.ClearError (0);
 			ogl.m_states.bGlowRendering = 0;
@@ -187,7 +187,7 @@ bool CGlowRenderer::ShaderActive (void)
 if ((hBlurShader >= 0) && (shaderManager.Current () == hBlurShader))
 	return true;
 #else
-for (int i = 0; i < 2; i++)
+for (int32_t i = 0; i < 2; i++)
 	if ((hBlurShader [i] >= 0) && (shaderManager.Current () == hBlurShader [i]))
 		return true;
 #endif
@@ -196,7 +196,7 @@ return false;
 
 //------------------------------------------------------------------------------
 
-static void ClearDrawBuffer (int nType)
+static void ClearDrawBuffer (int32_t nType)
 {
 #if 0 //DBG
 if (gameStates.render.cameras.bActive) {
@@ -230,7 +230,7 @@ if (gameStates.render.cameras.bActive) {
 	ogl.SetTexturing (false);
 	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 	ogl.SetDepthMode (GL_ALWAYS);
-	for (int i = 0; i < 4; i++) {
+	for (int32_t i = 0; i < 4; i++) {
 		ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 		ogl.SetTexturing (false);
 		glColor3fv (colors [i]);
@@ -259,7 +259,7 @@ glClear (GL_COLOR_BUFFER_BIT);
 
 //------------------------------------------------------------------------------
 
-int CGlowRenderer::Activate (void)
+int32_t CGlowRenderer::Activate (void)
 {
 if (!ogl.SelectGlowBuffer ()) {
 #if DBG
@@ -274,7 +274,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::Reset (int bGlow, int bOgl)
+bool CGlowRenderer::Reset (int32_t bGlow, int32_t bOgl)
 {
 m_nType = -1;
 m_nStrength = -1;
@@ -291,31 +291,31 @@ return 0 != (gameOpts->render.effects.bGlow = bGlow);
 
 //------------------------------------------------------------------------------
 
-inline int ScreenScale (void)
+inline int32_t ScreenScale (void)
 {
 return (!gameStates.render.cameras.bActive || gameOpts->render.cameras.bHires) ? 1 : 2;
 }
 
 #if 0
 
-inline int ScreenWidth (void)
+inline int32_t ScreenWidth (void)
 {
 return gameData.render.screen.Width ();
 }
 
-inline int ScreenHeight (void)
+inline int32_t ScreenHeight (void)
 {
 return gameData.render.screen.Height ();
 }
 
 #else
 
-inline int ScreenWidth (void)
+inline int32_t ScreenWidth (void)
 {
 return CCanvas::Current ()->Width (); 
 }
 
-inline int ScreenHeight (void)
+inline int32_t ScreenHeight (void)
 {
 return CCanvas::Current ()->Height ();
 }
@@ -409,7 +409,7 @@ else if (!m_bViewport) {
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::SetViewport (int const nType, CFloatVector3* vertexP, int nVerts)
+bool CGlowRenderer::SetViewport (int32_t const nType, CFloatVector3* vertexP, int32_t nVerts)
 {
 if (!Available (nType))
 	return true;
@@ -421,7 +421,7 @@ if (gameOpts->render.effects.bGlow != 1)
 //#pragma omp parallel for
 m_itemMin.x = m_itemMin.y = 0x7FFF;
 m_itemMax.x = m_itemMax.y = -0x7FFF;
-for (int i = 0; i < nVerts; i++)
+for (int32_t i = 0; i < nVerts; i++)
 	SetItemExtent (vertexP [i]);
 #endif
 return Visible ();
@@ -429,7 +429,7 @@ return Visible ();
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::SetViewport (int const nType, CFloatVector* vertexP, int nVerts)
+bool CGlowRenderer::SetViewport (int32_t const nType, CFloatVector* vertexP, int32_t nVerts)
 {
 if (!Available (nType))
 	return true;
@@ -441,7 +441,7 @@ if (!UseViewport ())
 //#pragma omp parallel for
 m_itemMin.x = m_itemMin.y = 0x7FFF;
 m_itemMax.x = m_itemMax.y = -0x7FFF;
-for (int i = 0; i < nVerts; i++) 
+for (int32_t i = 0; i < nVerts; i++) 
 	SetItemExtent (*(vertexP [i].XYZ ()));
 #endif
 return Visible ();
@@ -449,7 +449,7 @@ return Visible ();
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::SetViewport (int const nType, CFloatVector3 v, float width, float height, bool bTransformed)
+bool CGlowRenderer::SetViewport (int32_t const nType, CFloatVector3 v, float width, float height, bool bTransformed)
 {
 if (!Available (nType))
 	return true;
@@ -472,7 +472,7 @@ return Visible ();
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::SetViewport (int const nType, CFixVector pos, float radius)
+bool CGlowRenderer::SetViewport (int32_t const nType, CFixVector pos, float radius)
 {
 if (!Available (nType))
 	return true;
@@ -493,7 +493,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::Available (int const nType, bool bForce)
+bool CGlowRenderer::Available (int32_t const nType, bool bForce)
 {
 #if 0 //DBG
 if (nType == GLOW_SHIELDS)
@@ -524,7 +524,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-bool CGlowRenderer::Begin (int const nType, int const nStrength, bool const bReplace, float const brightness)
+bool CGlowRenderer::Begin (int32_t const nType, int32_t const nStrength, bool const bReplace, float const brightness)
 {
 if (!Available (nType))
 	return false;
@@ -572,9 +572,9 @@ return c;
 
 void RenderTestImage (void);
 
-static int bEnableViewport = 1;
+static int32_t bEnableViewport = 1;
 
-void CGlowRenderer::Render (int const source, int const direction, float const radius, bool const bClear)
+void CGlowRenderer::Render (int32_t const source, int32_t const direction, float const radius, bool const bClear)
 {
 #if USE_VIEWPORT == 2 //DBG
 
@@ -726,7 +726,7 @@ ogl.ChooseDrawBuffer ();
 
 //------------------------------------------------------------------------------
 
-void CGlowRenderer::Done (const int nType)
+void CGlowRenderer::Done (const int32_t nType)
 {
 if (Available (nType)) {
 #if 1
@@ -792,7 +792,7 @@ else
 	if (m_nType != BLUR_SHADOW)
 		ogl.SetBlendMode (OGL_BLEND_ADD);
 #	if BLUR > 1
-	for (int i = 1; i < m_nStrength; i++) {
+	for (int32_t i = 1; i < m_nStrength; i++) {
 		radius += RAD_INCR;
 		if (!ogl.SelectBlurBuffer (0))
 			return Reset (0, 1);

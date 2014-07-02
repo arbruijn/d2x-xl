@@ -24,25 +24,25 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 typedef struct tFaceProps {
-	short			segNum, sideNum;
-	short			nBaseTex, nOvlTex, nOvlOrient;
+	int16_t			segNum, sideNum;
+	int16_t			nBaseTex, nOvlTex, nOvlOrient;
 	tUVL			uvls [4];
-	short			vp [5];
+	int16_t			vp [5];
 	tUVL			uvl_lMaps [4];
 	CFixVector	vNormal;
-	ubyte			nVertices;
-	ubyte			widFlags;
+	uint8_t			nVertices;
+	uint8_t			widFlags;
 	char			nType;
 } tFaceProps;
 
 typedef struct tFaceListEntry {
-	short			nextFace;
+	int16_t			nextFace;
 	tFaceProps	props;
 } tFaceListEntry;
 
 // Given a list of point numbers, rotate any that haven't been rotated
 // this frame
-tRenderCodes TransformVertexList (int nVerts, ushort* vertexIndexP);
+tRenderCodes TransformVertexList (int32_t nVerts, uint16_t* vertexIndexP);
 void RotateSideNorms (void);
 // Given a list of point numbers, project any that haven't been projected
 
@@ -51,33 +51,33 @@ void TransformSideCenters (void);
 void TransformSideCenters (void);
 #endif
 
-int IsTransparentTexture (short nTexture);
+int32_t IsTransparentTexture (int16_t nTexture);
 void AlphaBlend (CFloatVector& dest, CFloatVector& other, float fAlpha);
-int SetVertexColor (int nVertex, CFaceColor *pc, int bBlend = 0);
-int SetVertexColors (tFaceProps *propsP);
-fix SetVertexLight (int nSegment, int nSide, int nVertex, CFaceColor *pc, fix light);
-int SetFaceLight (tFaceProps *propsP);
+int32_t SetVertexColor (int32_t nVertex, CFaceColor *pc, int32_t bBlend = 0);
+int32_t SetVertexColors (tFaceProps *propsP);
+fix SetVertexLight (int32_t nSegment, int32_t nSide, int32_t nVertex, CFaceColor *pc, fix light);
+int32_t SetFaceLight (tFaceProps *propsP);
 void AdjustVertexColor (CBitmap *bmP, CFaceColor *pc, fix xLight);
-char IsColoredSeg (short nSegment);
-char IsColoredSegFace (short nSegment, short nSide);
-CFloatVector *ColoredSegmentColor (int nSegment, int nSide, char nColor);
-int IsMonitorFace (short nSegment, short nSide, int bForce);
-float WallAlpha (short nSegment, short nSide, short nWall, ubyte widFlags, int bIsMonitor, ubyte bAdditive,
-					  CFloatVector *colorP, int& nColor, ubyte& bTextured, ubyte& bCloaked, ubyte& bTransparent);
-int SetupMonitorFace (short nSegment, short nSide, short nCamera, CSegFace *faceP);
-CBitmap *LoadFaceBitmap (short nTexture, short nFrameIdx, int bLoadTextures = 1);
-void DrawOutline (int nVertices, CRenderPoint **pointList);
-int ToggleOutlineMode (void);
-int ToggleShowOnlyCurSide (void);
-void RotateTexCoord2f (tTexCoord2f& dest, tTexCoord2f& src, ubyte nOrient);
-int FaceIsVisible (short nSegment, short nSide);
-int SegmentMayBeVisible (short nStartSeg, int nRadius, int nMaxDist, int nThread = 0);
-void SetupMineRenderer (int nWindow);
-void ComputeMineLighting (short nStartSeg, fix xStereoSeparation, int nWindow);
+char IsColoredSeg (int16_t nSegment);
+char IsColoredSegFace (int16_t nSegment, int16_t nSide);
+CFloatVector *ColoredSegmentColor (int32_t nSegment, int32_t nSide, char nColor);
+int32_t IsMonitorFace (int16_t nSegment, int16_t nSide, int32_t bForce);
+float WallAlpha (int16_t nSegment, int16_t nSide, int16_t nWall, uint8_t widFlags, int32_t bIsMonitor, uint8_t bAdditive,
+					  CFloatVector *colorP, int32_t& nColor, uint8_t& bTextured, uint8_t& bCloaked, uint8_t& bTransparent);
+int32_t SetupMonitorFace (int16_t nSegment, int16_t nSide, int16_t nCamera, CSegFace *faceP);
+CBitmap *LoadFaceBitmap (int16_t nTexture, int16_t nFrameIdx, int32_t bLoadTextures = 1);
+void DrawOutline (int32_t nVertices, CRenderPoint **pointList);
+int32_t ToggleOutlineMode (void);
+int32_t ToggleShowOnlyCurSide (void);
+void RotateTexCoord2f (tTexCoord2f& dest, tTexCoord2f& src, uint8_t nOrient);
+int32_t FaceIsVisible (int16_t nSegment, int16_t nSide);
+int32_t SegmentMayBeVisible (int16_t nStartSeg, int32_t nRadius, int32_t nMaxDist, int32_t nThread = 0);
+void SetupMineRenderer (int32_t nWindow);
+void ComputeMineLighting (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow);
 
 #if DBG
-void OutlineSegSide (CSegment *seg, int _side, int edge, int vert);
-void DrawWindowBox (uint color, short left, short top, short right, short bot);
+void OutlineSegSide (CSegment *seg, int32_t _side, int32_t edge, int32_t vert);
+void DrawWindowBox (uint32_t color, int16_t left, int16_t top, int16_t right, int16_t bot);
 #endif
 
 //------------------------------------------------------------------------------
@@ -85,18 +85,18 @@ void DrawWindowBox (uint color, short left, short top, short right, short bot);
 extern CFloatVector segmentColors [4];
 
 #if DBG
-extern short nDbgSeg;
-extern short nDbgSide;
-extern int nDbgVertex;
-extern int nDbgBaseTex;
-extern int nDbgOvlTex;
+extern int16_t nDbgSeg;
+extern int16_t nDbgSide;
+extern int32_t nDbgVertex;
+extern int32_t nDbgBaseTex;
+extern int32_t nDbgOvlTex;
 #endif
 
-extern int bOutLineMode, bShowOnlyCurSide;
+extern int32_t bOutLineMode, bShowOnlyCurSide;
 
 //------------------------------------------------------------------------------
 
-static inline int IsTransparentFace (tFaceProps *propsP)
+static inline int32_t IsTransparentFace (tFaceProps *propsP)
 {
 return IsTransparentTexture (SEGMENTS [propsP->segNum].m_sides [propsP->sideNum].m_nBaseTex);
 }
@@ -107,10 +107,10 @@ return IsTransparentTexture (SEGMENTS [propsP->segNum].m_sides [propsP->sideNum]
 
 class CFrameController {
 	private:
-		int	m_nFrames;
-		int	m_iFrame;
-		int	m_nEye;
-		int	m_nOffsetSave;
+		int32_t	m_nFrames;
+		int32_t	m_iFrame;
+		int32_t	m_nEye;
+		int32_t	m_nOffsetSave;
 
 	public:
 		CFrameController ();

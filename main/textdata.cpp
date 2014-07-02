@@ -33,9 +33,9 @@ msgP->nMessages = 0;
 
 //------------------------------------------------------------------------------
 
-void QSortTextData (tTextIndex *indexP, int left, int right)
+void QSortTextData (tTextIndex *indexP, int32_t left, int32_t right)
 {
-	int	l = left,
+	int32_t	l = left,
 			r = right,
 			m = indexP [(left + right) / 2].nId;
 
@@ -66,7 +66,7 @@ void LoadTextData (const char *pszLevelName, const char *pszExt, CTextData *msgP
 {
 	char			szFilename [FILENAME_LEN];
 	CFile			cf;
-	int			bufSize, nLines;
+	int32_t			bufSize, nLines;
 	char			*p, *q;
 	tTextIndex	*pi;
 
@@ -74,7 +74,7 @@ void LoadTextData (const char *pszLevelName, const char *pszExt, CTextData *msgP
 PrintLog (1, "loading mission messages\n");
 FreeTextData (msgP);
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, pszExt);
-bufSize = (int) cf.Size (szFilename, gameFolders.game.szData [0], 0);
+bufSize = (int32_t) cf.Size (szFilename, gameFolders.game.szData [0], 0);
 if (bufSize <= 0) {
 	PrintLog (-1);
 	return;
@@ -138,19 +138,19 @@ for (p = q = msgP->textBuffer, pi = msgP->index; ; p++) {
 	else
 		*q++ = *p;
 	}
-msgP->nMessages = (int) (pi - msgP->index);
+msgP->nMessages = (int32_t) (pi - msgP->index);
 QSortTextData (msgP->index, 0, msgP->nMessages - 1);
 PrintLog (-1);
 }
 
 //------------------------------------------------------------------------------
 
-tTextIndex *FindTextData (CTextData *msgP, int nId)
+tTextIndex *FindTextData (CTextData *msgP, int32_t nId)
 {
 if (!msgP->index)
 	return NULL;
 
-	int	h, m, l = 0, r = msgP->nMessages - 1;
+	int32_t	h, m, l = 0, r = msgP->nMessages - 1;
 
 do {
 	m = (l + r) / 2;
@@ -167,10 +167,10 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-int ShowGameMessage (CTextData *msgP, int nId, int nDuration)
+int32_t ShowGameMessage (CTextData *msgP, int32_t nId, int32_t nDuration)
 {
 	tTextIndex	*indexP;
-	short			w, h, x, y;
+	int16_t			w, h, x, y;
 	float			fAlpha;
 
 if (nId < 0) {

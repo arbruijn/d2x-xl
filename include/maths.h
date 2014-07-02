@@ -17,23 +17,23 @@
 #endif
 
 
-typedef int32_t fix;		//16 bits int, 16 bits frac
+typedef int32_t fix;		//16 bits int32_t, 16 bits frac
 typedef int16_t fixang;		//angles
 
 typedef struct tQuadInt {// integer 64 bit, previously called "quad"
-	uint low;
+	uint32_t low;
    int32_t high;
 } __pack__ tQuadInt;
 
 #define WORLDSCALE	1000	// one world unit (65536 in fixed point arithmetic) corresponds to 1000 mm (1 m) of the real world
 
-//Convert an int to a fix
+//Convert an int32_t to a fix
 #define I2X(i) ((static_cast<fix> (i)) * 65536)
 
-//Get the int part of a fix
+//Get the int32_t part of a fix
 #define X2I(_f) ((_f) / 65536)
 
-//Get the int part of a fix, with rounding
+//Get the int32_t part of a fix, with rounding
 #define X2IR(_f) (((_f) + (I2X (1) / 2)) / 65536)
 
 //Convert fix to double and double to fix
@@ -42,7 +42,7 @@ typedef struct tQuadInt {// integer 64 bit, previously called "quad"
 #define F2X(_f) (fix ((_f) * 65536))
 
 #define MM2X(_mm) (((_mm) * I2X (1)) / WORLDSCALE)	// mm to world units
-#define X2MM(_i)	(int (X2F (_i) * WORLDSCALE + 0.5f))
+#define X2MM(_i)	(int32_t (X2F (_i) * WORLDSCALE + 0.5f))
 
 //Some handy constants
 //#define F0_1	0x199a
@@ -75,23 +75,23 @@ inline double DRound (double v)	{ return (v < 0.0) ? v - 0.5 : v + 0.5; }
 #endif
 
 //divide a tQuadInt by a long
-int32_t FixDivQuadLong (uint qlow, uint qhigh, uint d);
+int32_t FixDivQuadLong (uint32_t qlow, uint32_t qhigh, uint32_t d);
 
-//computes the square root of a long, returning a short
-ushort LongSqrt (int32_t a);
+//computes the square root of a long, returning a int16_t
+uint16_t LongSqrt (int32_t a);
 
 //computes the square root of a tQuadInt, returning a long
-extern int nMathFormat;
-extern int nDefMathFormat;
+extern int32_t nMathFormat;
+extern int32_t nDefMathFormat;
 
-uint sqrt64 (uint64_t a);
+uint32_t sqrt64 (uint64_t a);
 
 #define mul64(_a,_b)	(static_cast<int64_t> (_a) * static_cast<int64_t> (_b))
 
 //multiply two fixes, and add 64-bit product to a tQuadInt
 void FixMulAccum (tQuadInt * q, fix a, fix b);
 
-uint QuadSqrt (uint low, int32_t high);
+uint32_t QuadSqrt (uint32_t low, int32_t high);
 //unsigned long QuadSqrt (long low, long high);
 
 //computes the square root of a fix, returning a fix
@@ -123,15 +123,15 @@ fix FixISqrt (fix a);
 
 #define SHORT_RAND_MAX 0x7fff
 
-static inline int RandShort (void)
+static inline int32_t RandShort (void)
 {
-return int (rand () & SHORT_RAND_MAX);
+return int32_t (rand () & SHORT_RAND_MAX);
 }
 
 //-----------------------------------------------------------------------------
 // return a random integer in the range [-SHORT_RAND_MAX / 2 .. +SHORT_RAND_MAX / 2]
 
-static inline int SRandShort (void)
+static inline int32_t SRandShort (void)
 {
 return SHORT_RAND_MAX / 2 - RandShort ();
 }

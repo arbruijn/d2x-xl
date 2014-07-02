@@ -44,7 +44,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-int ObjectHasShadow (CObject *objP)
+int32_t ObjectHasShadow (CObject *objP)
 {
 if (objP->info.nType == OBJ_ROBOT) {
 	if (!gameOpts->render.shadows.bRobots)
@@ -79,10 +79,10 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-CPolyModel* GetPolyModel (CObject *objP, CFixVector *pos, int nModel, int flags, int* bCustomModel)
+CPolyModel* GetPolyModel (CObject *objP, CFixVector *pos, int32_t nModel, int32_t flags, int32_t* bCustomModel)
 {
 	CPolyModel	*modelP = NULL;
-	int			bHaveAltModel, bIsDefModel;
+	int32_t			bHaveAltModel, bIsDefModel;
 
 #if DBG
 if (nModel == nDbgModel)
@@ -130,7 +130,7 @@ else if (!modelP) {
 	}
 //check if should use simple model (depending on detail level chosen)
 if (!(SHOW_DYN_LIGHT || SHOW_SHADOWS) && modelP->SimplerModel () && !flags && pos) {
-	int	cnt = 1;
+	int32_t	cnt = 1;
 	fix depth = G3CalcPointDepth (*pos);		//gets 3d depth
 	while (modelP->SimplerModel () && (depth > cnt++ * gameData.models.nSimpleModelThresholdScale * modelP->Rad ()))
 		modelP = gameData.models.polyModels [0] + modelP->SimplerModel () - 1;
@@ -141,20 +141,20 @@ return modelP;
 //------------------------------------------------------------------------------
 
 //draw a polygon model
-int DrawPolyModel (
+int32_t DrawPolyModel (
 	CObject*			objP,
 	CFixVector*		pos,
 	CFixMatrix*		orient,
 	CAngleVector*	animAngles,
-	int				nModel,
-	int				flags,
+	int32_t				nModel,
+	int32_t				flags,
 	fix				light,
 	fix*				glowValues,
 	tBitmapIndex	altTextures [],
 	CFloatVector*	colorP)
 {
 	CPolyModel*	modelP;
-	int			bHires = 0, bCustomModel = 0;
+	int32_t			bHires = 0, bCustomModel = 0;
 
 #if 0 //DBG
 if (!gameStates.render.bBuildModels) {
@@ -225,7 +225,7 @@ if (!flags) {	//draw entire object
 else {	
 	CFixVector vOffset;
 
-	for (int i = 0; flags > 0; flags >>= 1, i++) {
+	for (int32_t i = 0; flags > 0; flags >>= 1, i++) {
 		if ((flags & 1) && (i < modelP->ModelCount ())) {
 			//if submodel, rotate around its center point, not pivot point
 			vOffset = CFixVector::Avg (modelP->SubModels ().mins [i], modelP->SubModels ().maxs [i]);
@@ -259,7 +259,7 @@ return 1;
 //into an off-screen canvas that it creates, then copies to the current
 //canvas.
 
-void DrawModelPicture (int nModel, CAngleVector *orientAngles)
+void DrawModelPicture (int32_t nModel, CAngleVector *orientAngles)
 {
 	CFixVector	p = CFixVector::ZERO;
 	CFixMatrix	o = CFixMatrix::IDENTITY;

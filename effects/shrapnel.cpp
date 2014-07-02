@@ -109,7 +109,7 @@ if (m_info.xTTL > 0) {
 
 // -----------------------------------------------------------------------------
 
-int CShrapnel::Update (void)
+int32_t CShrapnel::Update (void)
 {
 if (m_info.xTTL <= 0)
 	return -1;	//dead
@@ -124,17 +124,17 @@ return 0; //kill
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-uint CShrapnelCloud::Update (void)
+uint32_t CShrapnelCloud::Update (void)
 {
-	int i;
+	int32_t i;
 
 #if USE_OPENMP //> 1
 #	pragma omp parallel for 
 #endif
-	for (i = 0; i < int (m_tos); i++)
+	for (i = 0; i < int32_t (m_tos); i++)
 		m_data.buffer [i].Update ();
 
-for (i = int (m_tos) - 1; i >= 0; i--)
+for (i = int32_t (m_tos) - 1; i >= 0; i--)
 	if (m_data.buffer [i].TTL () < 0)
 		Delete (i);
 
@@ -152,17 +152,17 @@ if (explBlast.Load ())
 #if USE_OPENMP //> 1
 #	pragma omp parallel for
 #endif
-	for (int i = 0; i < int (m_tos); i++)
+	for (int32_t i = 0; i < int32_t (m_tos); i++)
 		m_data.buffer [i].Draw ();
 }
 
 // -----------------------------------------------------------------------------
 
-int CShrapnelCloud::Create (CObject* parentObjP, CObject* objP)
+int32_t CShrapnelCloud::Create (CObject* parentObjP, CObject* objP)
 {
 	float		fScale = float (sqrt (X2F (parentObjP->info.xSize))) * 1.25f;
-	int		i, 
-				h = (int) FRound (fScale * fShrapnelScale [gameOpts->render.effects.nShrapnels]);
+	int32_t		i, 
+				h = (int32_t) FRound (fScale * fShrapnelScale [gameOpts->render.effects.nShrapnels]);
 
 objP->SetLife (0);
 objP->cType.explInfo.nSpawnTime = -1;
@@ -197,7 +197,7 @@ void CShrapnelCloud::Destroy (void)
 #if USE_OPENMP //> 1
 #	pragma omp parallel for 
 #endif
-for (int i = 0; i < int (m_tos); i++)
+for (int32_t i = 0; i < int32_t (m_tos); i++)
 	m_data.buffer [i].Destroy ();
 CStack<CShrapnel>::Destroy ();
 }
@@ -220,7 +220,7 @@ CArray<CShrapnelCloud>::Destroy ();
 
 // -----------------------------------------------------------------------------
 
-int CShrapnelManager::Create (CObject* objP)
+int32_t CShrapnelManager::Create (CObject* objP)
 {
 #if 1
 return 0;
@@ -233,7 +233,7 @@ if (objP->info.nFlags & OF_ARMAGEDDON)
 	return 0;
 if ((objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_ROBOT) && (objP->info.nType != OBJ_DEBRIS))
 	return 0;
-short nObject = CreateFireball (0, objP->info.nSegment, objP->info.position.vPos, 1, RT_SHRAPNELS);
+int16_t nObject = CreateFireball (0, objP->info.nSegment, objP->info.position.vPos, 1, RT_SHRAPNELS);
 if (0 > nObject)
 	return 0;
 return m_data.buffer [nObject].Create (objP, OBJECTS + nObject);
@@ -249,7 +249,7 @@ m_data.buffer [objP->Index ()].Draw ();
 
 // -----------------------------------------------------------------------------
 
-int CShrapnelManager::Update (CObject* objP)
+int32_t CShrapnelManager::Update (CObject* objP)
 {
 if ((objP->LifeLeft () <= 0) || !m_data.buffer [objP->Index ()].Update ())
 	Destroy (objP);
@@ -271,7 +271,7 @@ objP->SetLifeLeft (-1);
 void CShrapnelManager::DoFrame (void)
 {
 	CObject	*objP;
-	int		i;
+	int32_t		i;
 
 if (!SHOW_SMOKE)
 	return;

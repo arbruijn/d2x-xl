@@ -45,7 +45,7 @@ CMessageBox messageBox;
 //show a message in a nice little box
 void CMessageBox::Show (const char *pszMsg, bool bFade)
 {
-	int w, h, aw;
+	int32_t w, h, aw;
 	
 m_tEnter = -1;
 m_nDrawBuffer = ogl.m_states.nDrawBuffer;
@@ -72,7 +72,7 @@ void CMessageBox::Render (void)
 {
 #if 1
 
-	static	int t0 = 0;
+	static	int32_t t0 = 0;
 
 if (!(BeginRenderMenu () && MenuRenderTimeout (t0, -1)))
 	return;
@@ -93,7 +93,7 @@ m_background.Deactivate ();
 
 #else
 
-	static	int t0 = 0;
+	static	int32_t t0 = 0;
 
 if (!(BeginRenderMenu () && MenuRenderTimeout (t0, -1)))
 	return;

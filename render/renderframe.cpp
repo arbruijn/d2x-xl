@@ -56,7 +56,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void StartLightingFrame (CObject *viewer);
 bool GuidedMissileActive (void);
 
-uint	nClearWindowColor = 0;
+uint32_t	nClearWindowColor = 0;
 
 #if 0
 extern tTexCoord2f quadTexCoord [3][4];
@@ -65,7 +65,7 @@ extern float quadVerts [3][4][2];
 
 //------------------------------------------------------------------------------
 
-int RenderMissileView (void)
+int32_t RenderMissileView (void)
 {
 	CObject	*objP = NULL;
 
@@ -87,7 +87,7 @@ else {
 		gameData.objs.guidedMissile [N_LOCALPLAYER].objP = NULL;
 		}
 	if (gameData.objs.missileViewerP && !gameStates.render.bChaseCam) {		//do missile view
-		static int mslViewerSig = -1;
+		static int32_t mslViewerSig = -1;
 		if (mslViewerSig == -1)
 			mslViewerSig = gameData.objs.missileViewerP->info.nSignature;
 		if (gameOpts->render.cockpit.bMissileView &&
@@ -191,7 +191,7 @@ if (ogl.IsSideBySideDevice ()) {
 
 	CFloatVector3 quadVerts [4];
 
-	for (int i = 0; i < 4; i++) {
+	for (int32_t i = 0; i < 4; i++) {
 		CFloatVector3 v;
 		v.Assign (transformation.Frustum ().m_corners [7 - i]);
 		v.v.coord.x *= 7.0f / ZFAR;
@@ -227,7 +227,7 @@ if (ogl.IsSideBySideDevice ()) {
 
 void FlushFrame (fix xStereoSeparation)
 {
-	int i = ogl.StereoDevice ();
+	int32_t i = ogl.StereoDevice ();
 
 if (!(i && xStereoSeparation)) {	//no stereo or shutter glasses or Oculus Rift
 	//if (gameStates.render.bRenderIndirect <= 0)
@@ -254,7 +254,7 @@ else {
 
 #if MAX_SHADOWMAPS
 
-static int RenderShadowMap (CDynLight* lightP, int nLight, fix xStereoSeparation)
+static int32_t RenderShadowMap (CDynLight* lightP, int32_t nLight, fix xStereoSeparation)
 {
 if (!lightP)
 	return 0;
@@ -284,12 +284,12 @@ static void RenderShadowMaps (fix xStereoSeparation)
 {
 if (EGI_FLAG (bShadows, 0, 1, 0)) {
 	lightManager.ResetActive (1, 0);
-	short nSegment = OBJSEG (gameData.objs.viewerP);
+	int16_t nSegment = OBJSEG (gameData.objs.viewerP);
 	lightManager.ResetNearestStatic (nSegment, 1);
 	lightManager.SetNearestStatic (nSegment, 1, 1);
 	CDynLightIndex* sliP = &lightManager.Index (0,1);
 	CActiveDynLight* activeLightsP = lightManager.Active (1) + sliP->nFirst;
-	int nLights = 0, h = (sliP->nActive < abs (MAX_SHADOWMAPS)) ? sliP->nActive : abs (MAX_SHADOWMAPS);
+	int32_t nLights = 0, h = (sliP->nActive < abs (MAX_SHADOWMAPS)) ? sliP->nActive : abs (MAX_SHADOWMAPS);
 	for (gameStates.render.nShadowMap = 1; gameStates.render.nShadowMap <= h; gameStates.render.nShadowMap++) 
 		nLights += RenderShadowMap (lightManager.GetActive (activeLightsP, 1), nLights, xStereoSeparation);
 	lightManager.SetLightCount (nLights, 2);
@@ -303,9 +303,9 @@ if (EGI_FLAG (bShadows, 0, 1, 0)) {
 
 extern CBitmap bmBackground;
 
-void RenderFrame (fix xStereoSeparation, int nWindow)
+void RenderFrame (fix xStereoSeparation, int32_t nWindow)
 {
-	short nStartSeg;
+	int16_t nStartSeg;
 	fix	nEyeOffsetSave = gameStates.render.xStereoSeparation [0];
 
 gameStates.render.nType = -1;
@@ -479,7 +479,7 @@ if (xStereoSeparation <= 0) {
 	}
 
 if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
-	int w, h, aw;
+	int32_t w, h, aw;
 	const char *msg = "Guided Missile View";
 	CObject *viewerSave = gameData.objs.viewerP;
 
@@ -551,7 +551,7 @@ if ((gameData.render.screen.Height () >= gameData.render.screen.Height ()) || (g
 	cockpit->Activate (CM_FULL_SCREEN);
 	}
 else {
-	//int x, y;
+	//int32_t x, y;
 	gameData.render.screen.SetWidth (gameData.render.screen.Width () + WINDOW_W_DELTA);
 	gameData.render.screen.SetHeight (gameData.render.screen.Height () + WINDOW_H_DELTA);
 	if (gameData.render.screen.Height () > gameData.render.screen.Height ())
@@ -571,15 +571,15 @@ StartTime (0);
 
 extern CBitmap bmBackground;
 
-void CopyBackgroundRect (int left, int top, int right, int bot)
+void CopyBackgroundRect (int32_t left, int32_t top, int32_t right, int32_t bot)
 {
 if (right < left || bot < top)
 	return;
 
-	int x, y;
-	int tileLeft, tileRight, tileTop, tileBot;
-	int xOffs, yOffs;
-	int xDest, yDest;
+	int32_t x, y;
+	int32_t tileLeft, tileRight, tileTop, tileBot;
+	int32_t xOffs, yOffs;
+	int32_t xDest, yDest;
 
 tileLeft = left / bmBackground.Width ();
 tileRight = right / bmBackground.Width ();
@@ -592,9 +592,9 @@ yDest = top;
 for (y = tileTop;y <= tileBot; y++) {
 	xOffs = left % bmBackground.Width ();
 	xDest = left;
-	int h = Min (bot - yDest + 1, bmBackground.Height () - yOffs);
+	int32_t h = Min (bot - yDest + 1, bmBackground.Height () - yOffs);
 	for (x = tileLeft; x <= tileRight; x++) {
-		int w = Min (right - xDest + 1, bmBackground.Width () - xOffs);
+		int32_t w = Min (right - xDest + 1, bmBackground.Width () - xOffs);
 		bmBackground.Blit (CCanvas::Current (), xDest, yDest, w, h, xOffs, yOffs, 1);
 		xOffs = 0;
 		xDest += w;
@@ -609,7 +609,7 @@ for (y = tileTop;y <= tileBot; y++) {
 void UpdateSlidingFaces (void)
 {
 	CSegFace*		faceP;
-	short				nOffset;
+	int16_t				nOffset;
 	tTexCoord2f*	texCoordP, *ovlTexCoordP;
 	tUVL*				uvlP;
 
@@ -623,18 +623,18 @@ for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
 	uvlP = SEGMENTS [faceP->m_info.nSegment].m_sides [faceP->m_info.nSide].m_uvls;
 	nOffset = faceP->m_info.nType == SIDE_IS_TRI_13;
 	if (gameStates.render.bTriangleMesh) {
-		static short nTriVerts [2][6] = {{0,1,2,0,2,3},{0,1,3,1,2,3}};
-		int j = faceP->m_info.nTriangles * 3;
-		for (int i = 0; i < j; i++) {
-			short k = nTriVerts [nOffset][i];
+		static int16_t nTriVerts [2][6] = {{0,1,2,0,2,3},{0,1,3,1,2,3}};
+		int32_t j = faceP->m_info.nTriangles * 3;
+		for (int32_t i = 0; i < j; i++) {
+			int16_t k = nTriVerts [nOffset][i];
 			texCoordP [i].v.u = X2F (uvlP [k].u);
 			texCoordP [i].v.v = X2F (uvlP [k].v);
 			RotateTexCoord2f (ovlTexCoordP [i], texCoordP [i], faceP->m_info.nOvlOrient);
 			}
 		}
 	else {
-		int j = 2 * faceP->m_info.nTriangles;
-		for (int i = 0; i < j; i++) {
+		int32_t j = 2 * faceP->m_info.nTriangles;
+		for (int32_t i = 0; i < j; i++) {
 			texCoordP [i].v.u = X2F (uvlP [(i + nOffset) % 4].u);
 			texCoordP [i].v.v = X2F (uvlP [(i + nOffset) % 4].v);
 			RotateTexCoord2f (ovlTexCoordP [i], texCoordP [i], faceP->m_info.nOvlOrient);

@@ -331,7 +331,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define WS_FADING_OUT	1
 #define WS_FADING_IN		2
 
-#define FADE_SCALE	 (2*I2X (FADE_LEVELS)/REARM_TIME)		// fade out and back in REARM_TIME, in fade levels per seconds (int)
+#define FADE_SCALE	 (2*I2X (FADE_LEVELS)/REARM_TIME)		// fade out and back in REARM_TIME, in fade levels per seconds (int32_t)
 
 //	-----------------------------------------------------------------------------
 
@@ -344,9 +344,9 @@ extern tSpan weaponWindowRight [WEAPON_WINDOW_SIZE];
 extern tSpan weaponWindowLeftHires [WEAPON_WINDOW_SIZE_HIRES];
 extern tSpan weaponWindowRightHires [WEAPON_WINDOW_SIZE_HIRES];
 extern tGaugeBox hudWindowAreas [];
-extern ubyte afterburnerBarTable [AFTERBURNER_GAUGE_H_L * 2];
-extern int nDbgGauge;
-extern int SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
+extern uint8_t afterburnerBarTable [AFTERBURNER_GAUGE_H_L * 2];
+extern int32_t nDbgGauge;
+extern int32_t SW_drawn [2], SW_x [2], SW_y [2], SW_w [2], SW_h [2];
 extern CStaticCanvasColor<0,0,0,255> gaugeFadeColors [2][4];
 
 //	-----------------------------------------------------------------------------

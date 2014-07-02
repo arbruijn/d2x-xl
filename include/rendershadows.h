@@ -8,25 +8,25 @@ void RenderFaceShadow (tFaceProps *propsP);
 void RenderShadowQuad (void);
 void CreateShadowTexture (void);
 void RenderShadowTexture (void);
-int RenderShadowMap (CDynLight *pLight);
+int32_t RenderShadowMap (CDynLight *pLight);
 void RenderObjectShadows (void);
 void DestroyShadowMaps (void);
-void ApplyShadowMaps (short nStartSeg, fix xStereoSeparation, int nWindow);
-int GatherShadowLightSources (void);
-void RenderFastShadows (fix xStereoSeparation, int nWindow, short nStartSeg);
-void RenderNeatShadows (fix xStereoSeparation, int nWindow, short nStartSeg);
+void ApplyShadowMaps (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow);
+int32_t GatherShadowLightSources (void);
+void RenderFastShadows (fix xStereoSeparation, int32_t nWindow, int16_t nStartSeg);
+void RenderNeatShadows (fix xStereoSeparation, int32_t nWindow, int16_t nStartSeg);
 
 #if DBG_SHADOWS
-extern int bShadowTest;
-extern int bFrontCap;
-extern int bRearCap;
-extern int bShadowVolume;
-extern int bFrontFaces;
-extern int bBackFaces;
-extern int bSWCulling;
-extern int bWallShadows;
+extern int32_t bShadowTest;
+extern int32_t bFrontCap;
+extern int32_t bRearCap;
+extern int32_t bShadowVolume;
+extern int32_t bFrontFaces;
+extern int32_t bBackFaces;
+extern int32_t bSWCulling;
+extern int32_t bWallShadows;
 #endif
-extern int bZPass;
+extern int32_t bZPass;
 
 #endif //_RENDERSHADOWS_H
 

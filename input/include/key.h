@@ -33,28 +33,28 @@ extern void _CDECL_ KeyClose(void);
 // These are configuration parameters to setup how the buffer works.
 // set keyd_bufferType to 0 for no key buffering.
 // set it to 1 and it will buffer scancodes.
-extern ubyte keyd_bufferType;
+extern uint8_t keyd_bufferType;
 
 // keyd_editor_mode... 0=game mode, 1=editor mode.
 // Editor mode makes KeyDownTime always return 0 if modifiers are down.
-extern ubyte keyd_editor_mode;	
+extern uint8_t keyd_editor_mode;	
 
 // Time in seconds when last key was pressed...
-extern volatile int xLastKeyPressTime;
+extern volatile int32_t xLastKeyPressTime;
 
 //==========================================================================
 // These are the "buffered" keypress routines.  Use them by setting the
 // "keyd_bufferType" variable.
 
-extern void KeyPutKey (ushort); // simulates a keystroke
+extern void KeyPutKey (uint16_t); // simulates a keystroke
 extern void KeyFlush();    // Clears the 256 char buffer
-extern int KeyCheckChar();   // Returns 1 if a char is waiting
-extern int KeyGetChar();     // Gets key if one waiting other waits for one.
-extern int KeyInKey();     // Gets key if one, other returns 0.
-extern int KeyInKeyTime(fix *time);     // Same as inkey, but returns the time the key was pressed down.
-extern int KeyPeekKey();   // Same as inkey, but doesn't remove key from buffer.
+extern int32_t KeyCheckChar();   // Returns 1 if a char is waiting
+extern int32_t KeyGetChar();     // Gets key if one waiting other waits for one.
+extern int32_t KeyInKey();     // Gets key if one, other returns 0.
+extern int32_t KeyInKeyTime(fix *time);     // Same as inkey, but returns the time the key was pressed down.
+extern int32_t KeyPeekKey();   // Same as inkey, but doesn't remove key from buffer.
 
-extern ubyte KeyToASCII(int keyCode );
+extern uint8_t KeyToASCII(int32_t keyCode );
 
 extern void key_debug();    // Does an INT3
 
@@ -62,20 +62,20 @@ extern void key_debug();    // Does an INT3
 // These are the unbuffered routines. Index by the keyboard scancode.
 
 // Set to 1 if the key is currently down, else 0
-extern volatile ubyte keyd_pressed[];
-extern volatile ubyte keydFlags[];
-extern volatile ubyte keyd_last_pressed;
-extern volatile ubyte keyd_last_released;
+extern volatile uint8_t keyd_pressed[];
+extern volatile uint8_t keydFlags[];
+extern volatile uint8_t keyd_last_pressed;
+extern volatile uint8_t keyd_last_released;
 
 // Returns the seconds this key has been down since last call.
-extern fix KeyDownTime(int scancode);
+extern fix KeyDownTime(int32_t scancode);
 
 // Returns number of times key has went from up to down since last call.
-extern uint KeyDownCount(int scancode);
+extern uint32_t KeyDownCount(int32_t scancode);
 
-extern ubyte KeyFlags(int scancode);
+extern uint8_t KeyFlags(int32_t scancode);
 // Returns number of times key has went from down to up since last call.
-extern uint KeyUpCount(int scancode);
+extern uint32_t KeyUpCount(int32_t scancode);
 
 // Clears the times & counts used by the above functions
 // Took out... use KeyFlush();

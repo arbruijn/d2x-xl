@@ -58,7 +58,7 @@ if (ogl.m_states.bVertexLighting) {
 static char	*szTexNames [GPGPU_LIGHT_BUFFERS] = {"vertPosTex", "vertNormTex", "lightPosTex", "lightColorTex"};
 #endif
 
-GLuint CGPGPULighting::CreateBuffer (int i)
+GLuint CGPGPULighting::CreateBuffer (int32_t i)
 {
 	GLuint	hBuffer;
 
@@ -89,7 +89,7 @@ void CGPGPULighting::ComputeFragLight (float lightRange)
 	CFloatVector	vReflect, vertColor = CFloatVector::ZERO;
 	float		nType, radius, brightness, specular;
 	float		attenuation, lightDist, NdotL, RdotE;
-	int		i;
+	int32_t		i;
 
 	static CFloatVector matAmbient = CFloatVector::Create(0.01f, 0.01f, 0.01f, 1.0f);
 	//static CFloatVector matDiffuse = {{1.0f, 1.0f, 1.0f, 1.0f}};
@@ -146,13 +146,13 @@ for (i = 0; i < m_vld.nLights; i++) {
 
 //------------------------------------------------------------------------------
 
-int CGPGPULighting::Render (void)
+int32_t CGPGPULighting::Render (void)
 {
 	CFaceColor*		vertColorP;
 	CFloatVector	vertColor;
 	CFloatVector*	colorP;
-	int				i, j;
-	int				nVertex, nLights;
+	int32_t				i, j;
+	int32_t				nVertex, nLights;
 	GLuint			hBuffer [GPGPU_LIGHT_BUFFERS] = {0,0,0,0};
 
 #if !GPGPU_LIGHT_DRAWARRAYS
@@ -241,9 +241,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CGPGPULighting::Compute (int nVertex, int nState, CFaceColor *colorP)
+int32_t CGPGPULighting::Compute (int32_t nVertex, int32_t nState, CFaceColor *colorP)
 {
-	int	nLights, h, i, j;
+	int32_t	nLights, h, i, j;
 
 	static float		quadCoord [4][2] = {{0, 0}, {0, GPGPU_LIGHT_BUF_WIDTH}, {GPGPU_LIGHT_BUF_WIDTH, GPGPU_LIGHT_BUF_WIDTH}, {GPGPU_LIGHT_BUF_WIDTH, 0}};
 	static float		texCoord [4][2] = {{0, 0}, {0, 1}, {1, 1}, {1, 0}};
@@ -307,7 +307,7 @@ if (nState == 0) {
 	}
 else if (nState == 1) {
 	CDynLight*		lightP;
-	int				bSkipHeadlight = ogl.m_states.bHeadlight && (lightManager.Headlights ().nLights > 0) && !gameStates.render.nState;
+	int32_t				bSkipHeadlight = ogl.m_states.bHeadlight && (lightManager.Headlights ().nLights > 0) && !gameStates.render.nState;
 	CFloatVector	vPos = gameData.segs.fVertices [nVertex],
 						vNormal = *RENDERPOINTS [nVertex].GetNormal ();
 		

@@ -70,24 +70,24 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 // Function Prototypes added after LINTING
-int ExecMainMenuOption (CMenu& m, int nChoice);
-int ExecMultiMenuOption (CMenu& m, int nChoice);
+int32_t ExecMainMenuOption (CMenu& m, int32_t nChoice);
+int32_t ExecMultiMenuOption (CMenu& m, int32_t nChoice);
 
 //returns the number of demo files on the disk
-int NDCountDemos (void);
+int32_t NDCountDemos (void);
 
 #if defined(_WIN32) || defined(__unix__)
-int CheckForUpdate (void);
+int32_t CheckForUpdate (void);
 #endif
 
 // ------------------------------------------------------------------------
 
-int AutoDemoCallback (CMenu& m, int& nLastKey, int nCurItem, int nState)
+int32_t AutoDemoCallback (CMenu& m, int32_t& nLastKey, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
-	int curtime;
+	int32_t curtime;
 
 PrintVersionInfo ();
 // Don't allow them to hit ESC in the main menu.
@@ -100,7 +100,7 @@ if (gameStates.app.bAutoDemos) {
 		&& !gameData.speedtest.bOn
 #endif	
 		) {
-		int nDemos = NDCountDemos ();
+		int32_t nDemos = NDCountDemos ();
 		for (;;) {
 			if ((RandShort () % (nDemos+1)) == 0) {
 				gameStates.video.nScreenMode = -1;
@@ -127,7 +127,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 //      Create the main menu.
-int SetupMainMenu (CMenu& m)
+int32_t SetupMainMenu (CMenu& m)
 {
 m.Destroy ();
 m.Create (25);
@@ -160,10 +160,10 @@ return m.ToS ();
 
 //------------------------------------------------------------------------------
 //returns number of item chosen
-int MainMenu (void) 
+int32_t MainMenu (void) 
 {
 	CMenu	m;
-	int	i, nChoice = 0;
+	int32_t	i, nChoice = 0;
 
 IpxClose ();
 //paletteManager.Load (MENU_PALETTE, NULL, 0, 1, 0);		//get correct palette
@@ -205,7 +205,7 @@ return nChoice;
 
 static void PlayMenuMovie (void)
 {
-	int				h, i, j;
+	int32_t				h, i, j;
 	CStack<char*>	m;
 	char*				ps;
 	CListBox			lb;
@@ -242,7 +242,7 @@ songManager.PlayCurrent (1);
 
 static void PlayMenuSong (void)
 {
-	int				h, i;
+	int32_t				h, i;
 	CStack<char*>	m (MAX_NUM_SONGS + 2);
 	CFile				cf;
 	char				szSongTitles [2][14] = {"- Descent 2 -", "- Descent 1 -"};
@@ -276,7 +276,7 @@ for (;;) {
 void ShowOrderForm (void);      // John didn't want this in inferno[HA] so I just externed it.
 
 //returns flag, true means quit menu
-int ExecMainMenuOption (CMenu& m, int nChoice) 
+int32_t ExecMainMenuOption (CMenu& m, int32_t nChoice) 
 {
 	CFileSelector	fs;
 
@@ -296,7 +296,7 @@ else if (nChoice == m.IndexOf ("load game")) {
 else if (nChoice == m.IndexOf ("load direct")) {
 	CMenu	m (1);
 	char	szLevel [10] = "";
-	int	nLevel;
+	int32_t	nLevel;
 
 	m.AddInput ("level number", szLevel, sizeof (szLevel), NULL);
 	m.Menu (NULL, "Enter level to load", NULL, NULL);
@@ -352,12 +352,12 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int QuitSaveLoadMenu (void)
+int32_t QuitSaveLoadMenu (void)
 {
 	CMenu m (5);
-	int	i;
+	int32_t	i;
 
-	int choice = 0;
+	int32_t choice = 0;
 
 m.AddMenu ("quit", TXT_QUIT_GAME, KEY_Q, HTX_QUIT_GAME);
 m.AddMenu ("settings", TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);

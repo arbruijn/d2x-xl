@@ -69,7 +69,7 @@ if ((objP->info.nType != OBJ_ROBOT) && (objP->info.nType	!= OBJ_PLAYER))
 	CFixVector	vecToObj;
 	CObject*		lightObjP;
 
-for (int nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
+for (int32_t nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	if ((lightObjP = objects [nPlayer])) {
 		vecToObj = objP->info.position.vPos - lightObjP->info.position.vPos;
 		dist = CFixVector::Normalize (vecToObj);
@@ -98,7 +98,7 @@ if (automap.Display ())
 	CDynLight*	lightP;
 	bool			bHWHeadlight = (gameStates.render.bPerPixelLighting == 2) || (ogl.m_states.bHeadlight && gameOpts->ogl.bHeadlight);
 
-for (int i = 0; i < MAX_PLAYERS; i++) {
+for (int32_t i = 0; i < MAX_PLAYERS; i++) {
 	if (lightIds [i] >= 0) {
 		lightP = lightManager.Lights () + lightIds [i];
 		lightP->info.bSpot = 1;
@@ -123,14 +123,14 @@ for (int i = 0; i < MAX_PLAYERS; i++) {
 void CHeadlightManager::Prepare (void)
 {
 nLights = 0;
-for (int i = 0; i < MAX_PLAYERS; i++)
+for (int32_t i = 0; i < MAX_PLAYERS; i++)
 	if (lightIds [i] >= 0)
 		lights [nLights++] = lightManager.Lights () + lightIds [i];
 }
 
 //------------------------------------------------------------------------------
 
-int CHeadlightManager::Add (CObject *objP)
+int32_t CHeadlightManager::Add (CObject *objP)
 {
 #if 0
 	static float spotExps [] = {12.0f, 5.0f, 0.0f};
@@ -141,7 +141,7 @@ objects [objP->info.nId] = objP;
 if (gameStates.render.nLightingMethod) {
 	if (lightIds [objP->info.nId] < 0) {
 			static CFloatVector c = {{{1.0f, 1.0f, 1.0f, 1.0f}}};
-			int nLight = lightManager.Add (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
+			int32_t nLight = lightManager.Add (NULL, &c, I2X (200), -1, -1, -1, -1, NULL);
 
 		if (0 <= nLight) {
 			CDynLight* lightP = lightManager.Lights () + nLight;
@@ -177,7 +177,7 @@ void CHeadlightManager::Update (void)
 {
 	CDynLight*	lightP;
 	CObject*		objP;
-	short			nPlayer;
+	int16_t			nPlayer;
 
 for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	if (lightIds [nPlayer] >= 0) {
@@ -298,7 +298,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"varying vec3 vertPos, normal;\r\n" \
 	"void main (void) {\r\n" \
 	"float spotBrightness = 0.0;\r\n" \
-	"int i;\r\n" \
+	"int32_t i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
@@ -323,7 +323,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"float spotBrightness = 0.0, normLen = length (normal);\r\n" \
-	"int i;\r\n" \
+	"int32_t i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
@@ -351,7 +351,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"float spotBrightness = 0.0;\r\n" \
-	"int i;\r\n" \
+	"int32_t i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
@@ -383,7 +383,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"   vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy);\r\n" \
 	"   texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	 float spotBrightness = 0.0;\r\n" \
-	"	 int i;\r\n" \
+	"	 int32_t i;\r\n" \
 	"	 for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	    vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	    float lightDist = length (lightVec);\r\n" \
@@ -499,7 +499,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"varying vec3 vertPos, normal;\r\n" \
 	"void main (void) {\r\n" \
 	"float spotBrightness = 0.0;\r\n" \
-	"int i;\r\n" \
+	"int32_t i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
@@ -524,7 +524,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"void main (void) {\r\n" \
 	"vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"float spotBrightness = 0.0, normLen = length (normal);\r\n" \
-	"int i;\r\n" \
+	"int32_t i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
@@ -551,7 +551,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"float spotBrightness = 0.0;\r\n" \
-	"int i;\r\n" \
+	"int32_t i;\r\n" \
 	"for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	 vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	 float lightDist = length (lightVec);\r\n" \
@@ -582,7 +582,7 @@ const char *headlightFS [2][HEADLIGHT_SHADER_COUNT] = {
 	"   vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"   texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	 float spotBrightness = 0.0;\r\n" \
-	"	 int i;\r\n" \
+	"	 int32_t i;\r\n" \
 	"	 for (i = 0; i < LIGHTS; i++) {\r\n" \
 	"	    vec3 lightVec = vertPos - gl_LightSource [i].position.xyz;\r\n" \
 	"	    float lightDist = length (lightVec);\r\n" \
@@ -759,14 +759,14 @@ const char *headlightVS [2][HEADLIGHT_SHADER_COUNT] = {
 
 //-------------------------------------------------------------------------
 
-int headlightShaderProgs [2][4] = {{-1,-1,-1,-1},{-1,-1,-1,-1}};
+int32_t headlightShaderProgs [2][4] = {{-1,-1,-1,-1},{-1,-1,-1,-1}};
 
 //-------------------------------------------------------------------------
 
 void DeleteHeadlightShader (void)
 {
-for (int i = 0; i < 2; i++) {
-	for (int j = 0; j < HEADLIGHT_SHADER_COUNT / 2; j++) {
+for (int32_t i = 0; i < 2; i++) {
+	for (int32_t j = 0; j < HEADLIGHT_SHADER_COUNT / 2; j++) {
 		if (headlightShaderProgs [i][j] > 0) {
 			shaderManager.Delete (headlightShaderProgs [i][j]);
 			headlightShaderProgs [i][j] = -1;
@@ -777,9 +777,9 @@ for (int i = 0; i < 2; i++) {
 
 //-------------------------------------------------------------------------
 
-void InitHeadlightShaders (int nLights)
+void InitHeadlightShaders (int32_t nLights)
 {
-	int	h, i, j, bOk;
+	int32_t	h, i, j, bOk;
 	char	*pszFS;
 
 if (nLights < 0) {
@@ -818,9 +818,9 @@ ogl.m_data.nHeadlights = nLights;
 
 //------------------------------------------------------------------------------
 
-int CHeadlightManager::SetupShader (int nType, int bLightmaps, CFloatVector *colorP)
+int32_t CHeadlightManager::SetupShader (int32_t nType, int32_t bLightmaps, CFloatVector *colorP)
 {
-	int			h, i, bTransform;
+	int32_t			h, i, bTransform;
 	CFloatVector	color;
 
 //headlights
@@ -872,7 +872,7 @@ return headlightShaderProgs [bLightmaps][nType];
 
 //-----------------------------------------------------------------------------
 
-int PlayerHasHeadlight (int nPlayer)
+int32_t PlayerHasHeadlight (int32_t nPlayer)
 {
 return EGI_FLAG (headlight.bAvailable, 0, 0, 0) && 
 		 ((extraGameInfo [IsMultiGame].loadout.nDevice & PLAYER_FLAGS_HEADLIGHT) ||
@@ -881,7 +881,7 @@ return EGI_FLAG (headlight.bAvailable, 0, 0, 0) &&
 
 //-----------------------------------------------------------------------------
 
-int HeadlightIsOn (int nPlayer)
+int32_t HeadlightIsOn (int32_t nPlayer)
 {
 #if DBG
 if (!PlayerHasHeadlight (nPlayer))
@@ -896,7 +896,7 @@ return PlayerHasHeadlight (nPlayer) && ((gameData.multiplayer.players [(nPlayer 
 
 //-----------------------------------------------------------------------------
 
-void SetPlayerHeadlight (int nPlayer, int bOn)
+void SetPlayerHeadlight (int32_t nPlayer, int32_t bOn)
 {
 if (bOn)
 	gameData.multiplayer.players [(nPlayer < 0) ? N_LOCALPLAYER : nPlayer].flags |= PLAYER_FLAGS_HEADLIGHT_ON;
@@ -909,7 +909,7 @@ audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X 
 
 void DrainHeadlightPower (void)
 {
-	static int bTurnedOff = 0;
+	static int32_t bTurnedOff = 0;
 
 if (!EGI_FLAG (headlight.bDrainPower, 0, 0, 1))
 	return;

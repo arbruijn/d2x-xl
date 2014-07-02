@@ -35,19 +35,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define CACHE_LIGHTS 0
 #define FLICKERFIX 0
-//int	Use_fvi_lighting = 0;
+//int32_t	Use_fvi_lighting = 0;
 
 #define	LIGHTING_CACHE_SIZE	4096	//	Must be power of 2!
 #define	LIGHTING_FRAME_DELTA	256	//	Recompute cache value every 8 frames.
 #define	LIGHTING_CACHE_SHIFT	8
 
-int	nLightingFrameDelta = 1;
-int	lightingCache [LIGHTING_CACHE_SIZE];
-int	nCacheHits = 0, nCacheLookups = 1;
+int32_t	nLightingFrameDelta = 1;
+int32_t	lightingCache [LIGHTING_CACHE_SIZE];
+int32_t	nCacheHits = 0, nCacheLookups = 1;
 
 typedef struct {
-  int    nTexture;
-  int		nBrightness;
+  int32_t    nTexture;
+  int32_t		nBrightness;
 } tTexBright;
 
 #define	NUM_LIGHTS_D1     49
@@ -95,7 +95,7 @@ tTexBright texBrightD2 [NUM_LIGHTS_D2] = {
 
 //--------------------------------------------------------------------------
 
-int LightingMethod (void)
+int32_t LightingMethod (void)
 {
 if (gameStates.render.nLightingMethod == 1)
 	return 2 + gameStates.render.bAmbientColor;
@@ -108,16 +108,16 @@ return gameStates.render.bAmbientColor;
 //	Return true if we think vertex nVertex is visible from CSegment nSegment.
 //	If some amount of time has gone by, then recompute, else use cached value.
 
-int LightingCacheVisible (int nVertex, int nSegment, int nObject, CFixVector *vObjPos, int nObjSeg, CFixVector *vVertPos)
+int32_t LightingCacheVisible (int32_t nVertex, int32_t nSegment, int32_t nObject, CFixVector *vObjPos, int32_t nObjSeg, CFixVector *vVertPos)
 {
-	int	cache_val = lightingCache [((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)];
-	int	cache_frame = cache_val >> 1;
-	int	cache_vis = cache_val & 1;
+	int32_t	cache_val = lightingCache [((nSegment << LIGHTING_CACHE_SHIFT) ^ nVertex) & (LIGHTING_CACHE_SIZE-1)];
+	int32_t	cache_frame = cache_val >> 1;
+	int32_t	cache_vis = cache_val & 1;
 
 nCacheLookups++;
 if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFrameCount)) {
-	int			bApplyLight = 0;
-	int			nSegment;
+	int32_t			bApplyLight = 0;
+	int32_t			nSegment;
 	nSegment = -1;
 #if DBG
 	nSegment = FindSegByPos (*vObjPos, nObjSeg, 1, 0);
@@ -129,7 +129,7 @@ if ((cache_frame == 0) || (cache_frame + nLightingFrameDelta <= gameData.app.nFr
 	CHitQuery	hitQuery (FQ_TRANSWALL, vObjPos, vVertPos, nObjSeg, nObject);
 	CHitResult	hitResult;
 
-	int hitType = FindHitpoint (hitQuery, hitResult);
+	int32_t hitType = FindHitpoint (hitQuery, hitResult);
 	// gameData.ai.vHitPos = gameData.ai.hitResult.vPoint;
 	// gameData.ai.nHitSeg = gameData.ai.hitResult.hit_seg;
 	if (hitType == HIT_OBJECT)
@@ -164,7 +164,7 @@ gameData.render.lights.bStartDynColoring = 0;
 
 // ----------------------------------------------------------------------------------------------
 
-void SetDynColor (CFloatVector *color, CFloatVector3 *dynColorP, int nVertex, ubyte *bGotDynColorP, int bForce)
+void SetDynColor (CFloatVector *color, CFloatVector3 *dynColorP, int32_t nVertex, uint8_t *bGotDynColorP, int32_t bForce)
 {
 if (!color)
 	return;
@@ -200,7 +200,7 @@ if (objP->info.nType != OBJ_POWERUP)
 if (!EGI_FLAG (bPowerupLights, 0, 0, 0))
 	return true;
 if (gameStates.render.bPerPixelLighting == 2) {
-	int id = objP->info.nId;
+	int32_t id = objP->info.nId;
 	if ((id != POW_EXTRA_LIFE) && (id != POW_ENERGY) && (id != POW_SHIELD_BOOST) &&
 		 (id != POW_HOARD_ORB) && (id != POW_MONSTERBALL) && (id != POW_INVUL)) {
 		return true;
@@ -211,12 +211,12 @@ return false;
 
 // ----------------------------------------------------------------------------------------------
 
-void ApplyLight (fix xObjIntensity, int nObjSeg, CFixVector *vObjPos, int nRenderVertices,
-					  CArray<short>& renderVertices,	int nObject, CFloatVector *color)
+void ApplyLight (fix xObjIntensity, int32_t nObjSeg, CFixVector *vObjPos, int32_t nRenderVertices,
+					  CArray<int16_t>& renderVertices,	int32_t nObject, CFloatVector *color)
 {
-	int				iVertex, bUseColor, bForceColor;
-	int				nVertex;
-	ubyte				nObjType;
+	int32_t				iVertex, bUseColor, bForceColor;
+	int32_t				nVertex;
+	uint8_t				nObjType;
 	CFixVector		*vVertPos;
 	fix				dist, xOrigIntensity = xObjIntensity;
 	CObject*		objP = (nObject < 0) ? NULL : OBJECTS + nObject;
@@ -272,7 +272,7 @@ if (xObjIntensity) {
 	// for pretty dim sources, only process vertices in CObject's own CSegment.
 	//	12/04/95, MK, markers only cast light in own CSegment.
 	if (objP && ((abs (obji_64) <= I2X (8)) || (nObjType == OBJ_MARKER))) {
-		ushort *vp = SEGMENTS [nObjSeg].m_vertices;
+		uint16_t *vp = SEGMENTS [nObjSeg].m_vertices;
 		for (iVertex = 0; iVertex < SEGMENT_VERTEX_COUNT; iVertex++) {
 			nVertex = vp [iVertex];
 			if (nVertex == 0xFFFF)
@@ -299,7 +299,7 @@ if (xObjIntensity) {
 			}
 		}
 	else {
-		int	headlightShift = 0;
+		int32_t	headlightShift = 0;
 		fix	maxHeadlightDist = I2X (200);
 		if (objP && (nObjType == OBJ_PLAYER))
 			if ((gameStates.render.bHeadlightOn = HeadlightIsOn (objP->info.nId))) {
@@ -314,7 +314,7 @@ if (xObjIntensity) {
 					CHitQuery	hitQuery (FQ_TRANSWALL, vObjPos, &tVec, objP->info.nSegment, nObject);
 					CHitResult	hitResult;
 
-					int fate = FindHitpoint (hitQuery, hitResult);
+					int32_t fate = FindHitpoint (hitQuery, hitResult);
 					if (fate != HIT_NONE) {
 						tVec = hitResult.vPoint - *vObjPos;
 						maxHeadlightDist = tVec.Mag() + I2X (4);
@@ -343,7 +343,7 @@ if (xObjIntensity) {
 						gameData.render.lights.dynamicLight [nVertex] += FixDiv (xObjIntensity, dist);
 					else {
 							fix	dot, maxDot;
-							int	spotSize = gameData.render.vertColor.bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
+							int32_t	spotSize = gameData.render.vertColor.bDarkness ? 2 << (3 - extraGameInfo [1].nSpotSize) : 1;
 
 						CFixVector	vecToPoint;
 						vecToPoint = *vVertPos - *vObjPos;
@@ -367,15 +367,15 @@ if (xObjIntensity) {
 #define	FLASH_LEN_FIXED_SECONDS	 (I2X (1)/3)
 #define	FLASH_SCALE					 (I2X (3)/FLASH_LEN_FIXED_SECONDS)
 
-void CastMuzzleFlashLight (int nRenderVertices, CArray<short>& renderVertices)
+void CastMuzzleFlashLight (int32_t nRenderVertices, CArray<int16_t>& renderVertices)
 {
-	int	i;
-	short	time_since_flash;
+	int32_t	i;
+	int16_t	time_since_flash;
 	fix currentTime = TimerGetFixedSeconds ();
 
 for (i = 0; i < MUZZLE_QUEUE_MAX; i++) {
 	if (gameData.muzzle.info [i].createTime) {
-		time_since_flash = (short) (currentTime - gameData.muzzle.info [i].createTime);
+		time_since_flash = (int16_t) (currentTime - gameData.muzzle.info [i].createTime);
 		if (time_since_flash < FLASH_LEN_FIXED_SECONDS)
 			ApplyLight ((FLASH_LEN_FIXED_SECONDS - time_since_flash) * FLASH_SCALE,
 							gameData.muzzle.info [i].nSegment, &gameData.muzzle.info [i].pos,
@@ -394,10 +394,10 @@ fix	objLightXlat [16] =
 	 0x2123, 0x39af, 0x0f03, 0x132a,
 	 0x3123, 0x29af, 0x1f03, 0x032a};
 
-fix ComputeLightIntensity (int nObject, CFloatVector *colorP, char *pbGotColor)
+fix ComputeLightIntensity (int32_t nObject, CFloatVector *colorP, char *pbGotColor)
 {
 	CObject*	objP = OBJECTS + nObject;
-	int		nObjType = objP->info.nType;
+	int32_t		nObjType = objP->info.nType;
    fix		s;
 	static CFloatVector powerupColors [9] = {
 	 {{{0,1,0,1}}},{{{1,0.8f,0,1}}},{{{0,0,1,1}}},{{{1,1,1,1}}},{{{0,0,1,1}}},{{{1,0,0,1}}},{{{1,0.8f,0,1}}},{{{0,1,0,1}}},{{{1,0.8f,0,1}}}
@@ -443,7 +443,7 @@ switch (nObjType) {
 		else {
 			tVideoClip *vcP = gameData.effects.vClips [0] + objP->info.nId;
 			fix		xLight = vcP->lightValue;
-			int		i, j;
+			int32_t		i, j;
 			CBitmap	*bmoP, *bmP; // = gameData.pig.tex.bitmapP [vcP->frames [0].index].Override (-1);
 #if 0
 			if (bmP) {
@@ -570,10 +570,10 @@ if (!gameOpts->render.debug.bDynamicLight)
 if (gameStates.render.bFullBright)
 	return;
 
-	int			iVertex, nv;
-	int			nObject, nVertex, nSegment;
-	int			nRenderVertices;
-	int			iRenderSeg, v;
+	int32_t			iVertex, nv;
+	int32_t			nObject, nVertex, nSegment;
+	int32_t			nRenderVertices;
+	int32_t			iRenderSeg, v;
 	char			bGotColor, bKeepDynColoring = 0;
 	CObject		*objP;
 	CFixVector	*objPos;
@@ -593,7 +593,7 @@ if (!gameStates.render.nLightingMethod) {
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.visibility [0].nSegments; iRenderSeg++) {
 		nSegment = gameData.render.mine.visibility [0].segments [iRenderSeg];
 		if (nSegment != -1) {
-			ushort* vp = SEGMENTS [nSegment].m_vertices;
+			uint16_t* vp = SEGMENTS [nSegment].m_vertices;
 			for (v = 0; v < SEGMENT_VERTEX_COUNT; v++) {
 				nv = vp [v];
 				if (nv == 0xFFFF)
@@ -687,11 +687,11 @@ if (!bKeepDynColoring)
 // ----------------------------------------------------------------------------------------------
 //compute the average dynamic light in a CSegment.  Takes the CSegment number
 
-fix ComputeSegDynamicLight (int nSegment)
+fix ComputeSegDynamicLight (int32_t nSegment)
 {
 fix sum = 0;
-ushort *verts = SEGMENTS [nSegment].m_vertices;
-for (int i = 8; i; i--, verts++)
+uint16_t *verts = SEGMENTS [nSegment].m_vertices;
+for (int32_t i = 8; i; i--, verts++)
 	if (*verts != 0xFFFF)
 		sum += gameData.render.lights.dynamicLight [*verts];
 return sum >> 3;
@@ -699,7 +699,7 @@ return sum >> 3;
 // ----------------------------------------------------------------------------------------------
 
 CObject *oldViewer;
-int bResetLightingHack;
+int32_t bResetLightingHack;
 
 #define LIGHT_RATE I2X (4)		//how fast the light ramps up
 
@@ -721,7 +721,7 @@ fix ComputeObjectLight (CObject *objP, CFixVector *vTransformed)
 #endif
 	if (!OBJECTS.IsElement (objP))
 		return I2X (1);
-	int nObject = objP->Index ();
+	int32_t nObject = objP->Index ();
 	if (nObject < 0)
 		return I2X (1);
 #if DBG
@@ -732,7 +732,7 @@ fix ComputeObjectLight (CObject *objP, CFixVector *vTransformed)
 fix light;
 #if 1
 if (gameStates.render.nLightingMethod && (objP->info.renderType != RT_POLYOBJ)) {
-	int nState = gameStates.render.nState;
+	int32_t nState = gameStates.render.nState;
 	gameStates.render.nState = -1;
 	gameData.objs.color = *lightManager.AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos, 0);
 	gameStates.render.nState = nState;
@@ -800,9 +800,9 @@ void FlickerLights (void)
 if (!(flP = gameData.render.lights.flicker.Buffer ()))
 	return;
 
-	int				l;
+	int32_t				l;
 	CSide				*sideP;
-	short				nSegment, nSide;
+	int16_t				nSegment, nSide;
 
 for (l = gameData.render.lights.flicker.Length (); l; l--, flP++) {
 	if (flP->m_timer == (fix) 0x80000000)		//disabled
@@ -837,19 +837,19 @@ for (l = gameData.render.lights.flicker.Length (); l; l--, flP++) {
 }
 //-----------------------------------------------------------------------------
 //returns ptr to flickering light structure, or NULL if can't find
-CVariableLight *FindVariableLight (int nSegment,int nSide)
+CVariableLight *FindVariableLight (int32_t nSegment,int32_t nSide)
 {
 	CVariableLight	*flP;
 
 if ((flP = gameData.render.lights.flicker.Buffer ()))
-	for (int l = gameData.render.lights.flicker.Length (); l; l--, flP++)
+	for (int32_t l = gameData.render.lights.flicker.Length (); l; l--, flP++)
 		if ((flP->m_nSegment == nSegment) && (flP->m_nSide == nSide))	//found it!
 			return flP;
 return NULL;
 }
 //-----------------------------------------------------------------------------
 //turn flickering off (because light has been turned off)
-void DisableVariableLight (int nSegment,int nSide)
+void DisableVariableLight (int32_t nSegment,int32_t nSide)
 {
 CVariableLight *flP = FindVariableLight (nSegment, nSide);
 
@@ -859,7 +859,7 @@ if (flP)
 
 //-----------------------------------------------------------------------------
 //turn flickering off (because light has been turned on)
-void EnableVariableLight (int nSegment,int nSide)
+void EnableVariableLight (int32_t nSegment,int32_t nSide)
 {
 	CVariableLight *flP = FindVariableLight (nSegment, nSide);
 
@@ -869,7 +869,7 @@ if (flP)
 
 //------------------------------------------------------------------------------
 
-int IsLight (int tMapNum)
+int32_t IsLight (int32_t tMapNum)
 {
 return (tMapNum < MAX_WALL_TEXTURES) ? gameData.pig.tex.brightness [tMapNum] : 0;
 }
@@ -881,15 +881,15 @@ return (tMapNum < MAX_WALL_TEXTURES) ? gameData.pig.tex.brightness [tMapNum] : 0
 #define	MAGIC_LIGHT_CONSTANT			 (I2X (16))
 
 #define MAX_CHANGED_SEGS 30
-short changedSegs [MAX_CHANGED_SEGS];
-int nChangedSegs;
+int16_t changedSegs [MAX_CHANGED_SEGS];
+int32_t nChangedSegs;
 
-void ApplyLightToSegment (CSegment *segP, CFixVector *vSegCenter, fix xBrightness, int nCallDepth)
+void ApplyLightToSegment (CSegment *segP, CFixVector *vSegCenter, fix xBrightness, int32_t nCallDepth)
 {
 	CFixVector	rSegmentCenter;
 	fix			xDistToRSeg;
-	int 			i;
-	short			nSide,
+	int32_t 			i;
+	int16_t			nSide,
 					nSegment = segP->Index ();
 
 for (i = 0; i <nChangedSegs; i++)
@@ -930,7 +930,7 @@ extern CObject *oldViewer;
 //	------------------------------------------------------------------------------------------
 //update the xAvgSegLight field in a CSegment, which is used for CObject lighting
 //this code is copied from the editor routine calim_process_all_lights ()
-void ChangeSegmentLight (short nSegment, short nSide, int dir)
+void ChangeSegmentLight (int16_t nSegment, int16_t nSide, int32_t dir)
 {
 	CSegment *segP = SEGMENTS + nSegment;
 
@@ -953,12 +953,12 @@ oldViewer = NULL;
 
 //	------------------------------------------------------------------------------------------
 
-int FindDLIndex (short nSegment, short nSide)
+int32_t FindDLIndex (int16_t nSegment, int16_t nSide)
 {
 if (!gameData.render.lights.deltaIndices.Buffer ())
 	return 0;
 
-int	m,
+int32_t	m,
 		l = 0,
 		r = gameData.render.lights.nStatic - 1;
 
@@ -988,14 +988,14 @@ return 0;
 //	dir = -1 -> subtract light
 //	dir = 17 -> add 17x light
 //	dir =  0 -> you are dumb
-void ChangeLight (short nSegment, short nSide, int dir)
+void ChangeLight (int16_t nSegment, int16_t nSide, int32_t dir)
 {
-	int					i, j, k;
+	int32_t					i, j, k;
 	fix					dl, * segLightDeltaP;
 	tUVL*					uvlP;
 	CLightDeltaIndex*	dliP;
 	CLightDelta*		dlP;
-	short					iSeg, iSide;
+	int16_t					iSeg, iSide;
 
 if ((!gameStates.render.nLightingMethod || gameStates.app.bNostalgia) && gameData.render.lights.deltaIndices.Buffer ()) {
 	if (0 > (i = FindDLIndex (nSegment, nSide))) {
@@ -1050,7 +1050,7 @@ ChangeSegmentLight (nSegment, nSide, dir);
 //	Subtract light cast by a light source from all surfaces to which it applies light.
 //	This is precomputed data, stored at static light application time in the editor (the slow lighting function).
 // returns 1 if lights actually subtracted, else 0
-int SubtractLight (short nSegment, int nSide)
+int32_t SubtractLight (int16_t nSegment, int32_t nSide)
 {
 if (gameData.render.lights.subtracted [nSegment] & (1 << nSide))
 	return 0;
@@ -1064,7 +1064,7 @@ return 1;
 //	This is precomputed data, stored at static light application time in the editor (the slow lighting function).
 //	You probably only want to call this after light has been subtracted.
 // returns 1 if lights actually added, else 0
-int AddLight (short nSegment, int nSide)
+int32_t AddLight (int16_t nSegment, int32_t nSide)
 {
 if (!(gameData.render.lights.subtracted [nSegment] & (1 << nSide)))
 	return 0;
@@ -1077,8 +1077,8 @@ return 1;
 //	Parse the gameData.render.lights.subtracted array, turning on or off all lights.
 void ApplyAllChangedLight (void)
 {
-	short	i, j;
-	ubyte	h;
+	int16_t	i, j;
+	uint8_t	h;
 	CSegment* segP = SEGMENTS.Buffer ();
 
 for (i = 0; i < gameData.segs.nSegments; i++, segP++) {
@@ -1106,7 +1106,7 @@ gameData.render.lights.subtracted.Clear ();
 //	which is present in the xAvgSegLight field contains the light cast from that light.
 void ComputeAllStaticLight (void)
 {
-	int		h, i, j, k;
+	int32_t		h, i, j, k;
 	CSegment	*segP;
 	CSide		*sideP;
 	fix		xTotal;
@@ -1144,8 +1144,8 @@ void CLightDeltaIndex::Read (CFile& cf)
 {
 if (gameStates.render.bD2XLights) {
 	nSegment = cf.ReadShort ();
-	short i = (short) cf.ReadByte ();	// these two bytes contain the side in the lower 3 and the count in the upper 13 bits
-	short j = (short) cf.ReadByte ();
+	int16_t i = (int16_t) cf.ReadByte ();	// these two bytes contain the side in the lower 3 and the count in the upper 13 bits
+	int16_t j = (int16_t) cf.ReadByte ();
 	nSide = i & 7;
 	count = (j << 5) + ((i >> 3) & 63);
 	index = cf.ReadShort ();

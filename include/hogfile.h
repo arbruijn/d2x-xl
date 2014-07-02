@@ -27,16 +27,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 typedef struct tHogFile {
 	char		name [256];
-	int		offset;
-	int		length;
+	int32_t		offset;
+	int32_t		length;
 } tHogFile;
 
 typedef struct tHogFileList {
 	tHogFile		files [MAX_HOGFILES];
 	char			szName [FILENAME_LEN];
 	char			szFolder [FILENAME_LEN];
-	int			nFiles;
-	int			bInitialized;
+	int32_t			nFiles;
+	int32_t			bInitialized;
 } tHogFileList;
 
 typedef struct tGameHogFiles {
@@ -47,7 +47,7 @@ typedef struct tGameHogFiles {
 	tHogFileList ExtraHogFiles;
 	tHogFileList MsnHogFiles;
 	char szAltHogFile [FILENAME_LEN];
-	int bAltHogFileInited;
+	int32_t bAltHogFileInited;
 } tGameHogFiles;
 
 class CHogFile {
@@ -57,17 +57,17 @@ class CHogFile {
 	public:
 		CHogFile () {};
 		~CHogFile () {};
-		int Init (const char *pszHogName, const char *pszFolder);
+		int32_t Init (const char *pszHogName, const char *pszFolder);
 
-		int UseXL (const char *name);
-		int UseD2X (const char *name);
-		int UseExtra (const char *name);
-		int UseMission (const char *name);
-		int ReloadMission (const char * name = NULL);
-		int UseD1 (const char *name);
+		int32_t UseXL (const char *name);
+		int32_t UseD2X (const char *name);
+		int32_t UseExtra (const char *name);
+		int32_t UseMission (const char *name);
+		int32_t ReloadMission (const char * name = NULL);
+		int32_t UseD1 (const char *name);
 		void UseAltDir (const char *path);
-		FILE* Find (const char *name, int *length, int bUseD1Hog);
-		FILE *Find (tHogFileList *hogP, const char *folder, const char *name, int *length);
+		FILE* Find (const char *name, int32_t *length, int32_t bUseD1Hog);
+		FILE *Find (tHogFileList *hogP, const char *folder, const char *name, int32_t *length);
 
 		inline tHogFileList& D1Files (void) { return m_files.D1HogFiles; }
 		inline tHogFileList& D2Files (void) { return m_files.D2HogFiles; }
@@ -79,11 +79,11 @@ class CHogFile {
 		inline char *MissionName (void) { return m_files.MsnHogFiles.szName; }
 
 	private:
-		void QuickSort (tHogFile *hogFiles, int left, int right);
-		tHogFile *BinSearch (tHogFile *hogFiles, int nFiles, const char *pszFile);
-		int Use (tHogFileList *hogP, const char *name, const char *folder);
-		int Reload (tHogFileList *hogP);
-		int Setup (const char *pszFile, const char *folder, tHogFile *hogFiles, int *nFiles);
+		void QuickSort (tHogFile *hogFiles, int32_t left, int32_t right);
+		tHogFile *BinSearch (tHogFile *hogFiles, int32_t nFiles, const char *pszFile);
+		int32_t Use (tHogFileList *hogP, const char *name, const char *folder);
+		int32_t Reload (tHogFileList *hogP);
+		int32_t Setup (const char *pszFile, const char *folder, tHogFile *hogFiles, int32_t *nFiles);
 };
 
 extern CHogFile hogFileManager;

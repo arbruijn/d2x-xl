@@ -9,9 +9,9 @@
 
 //	------------------------------------------------------------------------------------------------------
 
-int FindProducer (int nSegment)
+int32_t FindProducer (int32_t nSegment)
 {
-for (int i = 0; i < gameData.producers.nProducers; i++)
+for (int32_t i = 0; i < gameData.producers.nProducers; i++)
 	if (gameData.producers.producers [i].nSegment == nSegment)
 		return i;
 return -1;
@@ -19,20 +19,20 @@ return -1;
 
 //-----------------------------------------------------------------------------
 
-int CountRooms (void)
+int32_t CountRooms (void)
 {
-	int		i;
+	int32_t		i;
 	CSegment	*segP = SEGMENTS.Buffer ();
 
 memset (gameData.entropy.nRoomOwners, 0xFF, sizeof (gameData.entropy.nRoomOwners));
 memset (gameData.entropy.nTeamRooms, 0, sizeof (gameData.entropy.nTeamRooms));
 for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++)
 	if ((segP->m_owner >= 0) && (segP->m_group >= 0) && 
-		 /* (segP->m_group <= N_MAX_ROOMS) &&*/ (gameData.entropy.nRoomOwners [(int) segP->m_group] < 0))
-		gameData.entropy.nRoomOwners [(int) segP->m_group] = segP->m_owner;
+		 /* (segP->m_group <= N_MAX_ROOMS) &&*/ (gameData.entropy.nRoomOwners [(int32_t) segP->m_group] < 0))
+		gameData.entropy.nRoomOwners [(int32_t) segP->m_group] = segP->m_owner;
 for (i = 0; i < N_MAX_ROOMS; i++)
 	if (gameData.entropy.nRoomOwners [i] >= 0) {
-		gameData.entropy.nTeamRooms [(int) gameData.entropy.nRoomOwners [i]]++;
+		gameData.entropy.nTeamRooms [(int32_t) gameData.entropy.nRoomOwners [i]]++;
 		gameData.entropy.nTotalRooms++;
 		}
 return gameData.entropy.nTotalRooms;
@@ -40,13 +40,13 @@ return gameData.entropy.nTotalRooms;
 
 //-----------------------------------------------------------------------------
 
-void ConquerRoom (int newOwner, int oldOwner, int roomId)
+void ConquerRoom (int32_t newOwner, int32_t oldOwner, int32_t roomId)
 {
-	int				f, h, i, j, jj, k, kk, nObject;
+	int32_t				f, h, i, j, jj, k, kk, nObject;
 	CSegment*		segP;
 	CObject*			objP;
 	tProducerInfo*	fuelP;
-	short				virusGens [MAX_FUEL_CENTERS];
+	int16_t				virusGens [MAX_FUEL_CENTERS];
 
 // this loop with
 // a) convert all segments with group 'roomId' to newOwner 'newOwner'
@@ -92,12 +92,12 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer ();
 // back to their original nType
 if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && ((j > jj) || (k < kk))) {
 	if (kk < MAX_FUEL_CENTERS) {
-		memcpy (virusGens + jj, virusGens + kk, (MAX_FUEL_CENTERS - kk) * sizeof (short));
+		memcpy (virusGens + jj, virusGens + kk, (MAX_FUEL_CENTERS - kk) * sizeof (int16_t));
 		jj += (MAX_FUEL_CENTERS - kk);
 		for (j = 0; j < jj; j++) {
 			fuelP = gameData.producers.producers + virusGens [j];
 			h = fuelP->nSegment;
-			SEGMENTS [h].m_function = gameData.producers.origProducerTypes [uint (fuelP - gameData.producers.producers.Buffer ())];
+			SEGMENTS [h].m_function = gameData.producers.origProducerTypes [uint32_t (fuelP - gameData.producers.producers.Buffer ())];
 			SEGMENTS [h].CreateProducer (SEGMENTS [h].m_function);
 			SEGMENTS [h].ChangeTexture (newOwner);
 			}
@@ -153,10 +153,10 @@ if (gameStates.entropy.bConquerWarning) {
 
 //	------------------------------------------------------------------------------------------------------
 
-int CSegment::ConquerCheck (void)
+int32_t CSegment::ConquerCheck (void)
 {
 	CPlayerData	*playerP = gameData.multiplayer.players + N_LOCALPLAYER;
-	int		team = GetTeam (N_LOCALPLAYER) + 1;
+	int32_t		team = GetTeam (N_LOCALPLAYER) + 1;
 	time_t	t;
 
 gameStates.entropy.bConquering = 0;
@@ -200,7 +200,7 @@ if ((gameStates.entropy.nTimeLastMoved < 0) ||
 #endif
 t = SDL_GetTicks ();
 if (!gameStates.entropy.nTimeLastMoved)
-	gameStates.entropy.nTimeLastMoved = (int) t;
+	gameStates.entropy.nTimeLastMoved = (int32_t) t;
 if (t - gameStates.entropy.nTimeLastMoved < extraGameInfo [1].entropy.nCaptureTimeThreshold * 1000) {
 	gameStates.entropy.bConquering = 1;
 	if (m_owner > 0)

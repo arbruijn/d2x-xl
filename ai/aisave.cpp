@@ -38,23 +38,23 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-------------------------------------------------------------------------------------------------
 
-int CSaveGameManager::LoadAIBinFormat (void)
+int32_t CSaveGameManager::LoadAIBinFormat (void)
 {
-	int	h, i, j;
+	int32_t	h, i, j;
 
 gameData.ai.localInfo.Clear ();
 gameData.ai.routeSegs.Clear ();
-m_cf.Read (&gameData.ai.bInitialized, sizeof (int), 1);
-m_cf.Read (&gameData.ai.nOverallAgitation, sizeof (int), 1);
+m_cf.Read (&gameData.ai.bInitialized, sizeof (int32_t), 1);
+m_cf.Read (&gameData.ai.nOverallAgitation, sizeof (int32_t), 1);
 gameData.ai.localInfo.Read (m_cf, (m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2);
 h = (m_nVersion > 39) ? LEVEL_POINT_SEGS : (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2;
-j = (h > int (gameData.ai.routeSegs.Length ())) ? int (gameData.ai.routeSegs.Length ()) : h;
+j = (h > int32_t (gameData.ai.routeSegs.Length ())) ? int32_t (gameData.ai.routeSegs.Length ()) : h;
 for (i = 0; i < j; i++) {
 	m_cf.Read (&gameData.ai.routeSegs [i].nSegment, sizeof (gameData.ai.routeSegs [i].nSegment), 1);
 	m_cf.Read (&gameData.ai.routeSegs [i].point.v.coord, sizeof (gameData.ai.routeSegs [i].point.v.coord), 1);
 	}
 if (j < h)
-	m_cf.Seek ((h - j) * 4 * sizeof (int), SEEK_CUR);
+	m_cf.Seek ((h - j) * 4 * sizeof (int32_t), SEEK_CUR);
 gameData.ai.cloakInfo.Read (m_cf, MAX_AI_CLOAK_INFO_D2);
 gameData.bosses.Destroy ();
 if (m_nVersion < 29)
@@ -83,8 +83,8 @@ else {
 	gameData.thief.stolenItems.Clear (0xff);
 	}
 if (m_nVersion >= 15) {
-	int temp;
-	m_cf.Read (&temp, sizeof (int), 1);
+	int32_t temp;
+	m_cf.Read (&temp, sizeof (int32_t), 1);
 	gameData.ai.freePointSegs = gameData.ai.routeSegs + temp;
 	}
 else
@@ -92,11 +92,11 @@ else
 if (m_nVersion >= 21) {
 	for (i = 0; i < j; i++) {
 		m_cf.Read (&h, sizeof (h), 1);
-		gameData.bosses [i].m_nTeleportSegs = short (h);
+		gameData.bosses [i].m_nTeleportSegs = int16_t (h);
 		}
 	for (i = 0; i < j; i++) {
 		m_cf.Read (&h, sizeof (h), 1);
-		gameData.bosses [i].m_nGateSegs = short (h);
+		gameData.bosses [i].m_nGateSegs = int16_t (h);
 		}
 	for (i = 0; i < j; i++) {
 		if (gameData.bosses [i].m_nGateSegs && gameData.bosses [i].m_gateSegs.Create (gameData.bosses [i].m_nGateSegs))
@@ -120,7 +120,7 @@ return 1;
 
 void CSaveGameManager::SaveAILocalInfo (tAILocalInfo *ailP)
 {
-	int	i;
+	int32_t	i;
 
 m_cf.WriteInt (ailP->targetAwarenessType);
 m_cf.WriteInt (ailP->nRetryCount);
@@ -164,9 +164,9 @@ m_cf.WriteVector (ciP->vLastPos);
 
 //	-------------------------------------------------------------------------------------------------
 
-int CSaveGameManager::SaveAI (void)
+int32_t CSaveGameManager::SaveAI (void)
 {
-	int	h, i;
+	int32_t	h, i;
 
 m_cf.WriteInt (gameData.ai.bInitialized);
 m_cf.WriteInt (gameData.ai.nOverallAgitation);
@@ -176,7 +176,7 @@ for (i = 0; i < LEVEL_POINT_SEGS; i++)
 	SaveAIPointSeg (gameData.ai.routeSegs + i);
 for (i = 0; i < MAX_AI_CLOAK_INFO; i++)
 	SaveAICloakInfo (gameData.ai.cloakInfo + i);
-m_cf.WriteInt (h = int (gameData.bosses.Count ()));
+m_cf.WriteInt (h = int32_t (gameData.bosses.Count ()));
 if (h)
 	gameData.bosses.SaveStates (m_cf);
 m_cf.WriteInt (gameData.escort.nKillObject);
@@ -188,7 +188,7 @@ gameData.thief.stolenItems.Write (m_cf);
 #if DBG
 i = CFTell ();
 #endif
-m_cf.WriteInt (int (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)));
+m_cf.WriteInt (int32_t (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs)));
 if (h) {
 	gameData.bosses.SaveSizeStates (m_cf);
 	gameData.bosses.SaveBufferStates (m_cf);
@@ -200,7 +200,7 @@ return 1;
 
 void CSaveGameManager::LoadAILocalInfo (tAILocalInfo *ailP)
 {
-	int	i;
+	int32_t	i;
 
 ailP->targetAwarenessType = m_cf.ReadInt ();
 ailP->nRetryCount = m_cf.ReadInt ();
@@ -244,30 +244,30 @@ m_cf.ReadVector (ciP->vLastPos);
 
 //	-------------------------------------------------------------------------------------------------
 
-int CSaveGameManager::LoadAIUniFormat (void)
+int32_t CSaveGameManager::LoadAIUniFormat (void)
 {
-	int	h, i, j, fPos;
+	int32_t	h, i, j, fPos;
 
 gameData.ai.bInitialized = m_cf.ReadInt ();
 gameData.ai.nOverallAgitation = m_cf.ReadInt ();
 
 h = (m_nVersion > 39) ? LEVEL_OBJECTS : (m_nVersion > 22) ? MAX_OBJECTS : MAX_OBJECTS_D2;
-fPos = (int) m_cf.Tell ();
-j = Min (h, int (gameData.ai.localInfo.Length ()));
+fPos = (int32_t) m_cf.Tell ();
+j = Min (h, int32_t (gameData.ai.localInfo.Length ()));
 gameData.ai.localInfo.Clear ();
 for (i = 0; i < j; i++)
 	LoadAILocalInfo (gameData.ai.localInfo + i);
 if (i < h)
-	m_cf.Seek ((h - i) * ((int) m_cf.Tell () - fPos) / i, SEEK_CUR);
+	m_cf.Seek ((h - i) * ((int32_t) m_cf.Tell () - fPos) / i, SEEK_CUR);
 
 h = (m_nVersion > 39) ? LEVEL_POINT_SEGS : (m_nVersion > 22) ? MAX_POINT_SEGS : MAX_POINT_SEGS_D2;
-fPos = (int) m_cf.Tell ();
+fPos = (int32_t) m_cf.Tell ();
 gameData.ai.routeSegs.Clear ();
-j = Min (h, int (gameData.ai.routeSegs.Length ()));
+j = Min (h, int32_t (gameData.ai.routeSegs.Length ()));
 for (i = 0; i < j; i++)
 	LoadAIPointSeg (gameData.ai.routeSegs + i);
 if (i < h)
-	m_cf.Seek ((h - i) * ((int) m_cf.Tell () - fPos) / i, SEEK_CUR);
+	m_cf.Seek ((h - i) * ((int32_t) m_cf.Tell () - fPos) / i, SEEK_CUR);
 
 j = (m_nVersion < 42) ? 8 : MAX_AI_CLOAK_INFO;
 gameData.ai.cloakInfo.Clear ();
@@ -309,7 +309,7 @@ if (m_nVersion < 15)
 else {
 	DBG (i = CFTell (fp));
 	i = m_cf.ReadInt ();
-	if ((i >= 0) && (i < int (gameData.ai.routeSegs.Length ())))
+	if ((i >= 0) && (i < int32_t (gameData.ai.routeSegs.Length ())))
 		gameData.ai.freePointSegs = gameData.ai.routeSegs + i;
 	else
 		AIResetAllPaths ();

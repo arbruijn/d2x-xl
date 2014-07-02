@@ -79,18 +79,18 @@ void DrawGuidedCrosshairs (fix xStereoSeparation)
 if (transformation.HaveHeadAngles ())
 	return;
 
-int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+int32_t nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 31, 0));
-int w = gameData.render.scene.Width () >> 5;
+int32_t w = gameData.render.scene.Width () >> 5;
 if (w < 5)
 	w = 5;
-int h = I2X (w) / gameData.render.screen.Aspect ();
-int x = gameData.render.scene.Width () / 2;
+int32_t h = I2X (w) / gameData.render.screen.Aspect ();
+int32_t x = gameData.render.scene.Width () / 2;
 if (xStereoSeparation) {
 	ogl.ColorMask (1,1,1,1,1);
-	x -= int (float (x / 32) * X2F (xStereoSeparation));
+	x -= int32_t (float (x / 32) * X2F (xStereoSeparation));
 	}
-int y = gameData.render.scene.Height () / 2;
+int32_t y = gameData.render.scene.Height () / 2;
 glLineWidth (float (gameData.render.frame.Width ()) / 640.0f);
 x = gameData.X (x);
 #if 1
@@ -153,38 +153,38 @@ void DrawZoomCrosshairs (void)
 if (transformation.HaveHeadAngles ())
 	return;
 
-int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+int32_t nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 DrawScope ();
 
 	static tSinCosf sinCos [124];
-	static int bInitSinCos = 1;
+	static int32_t bInitSinCos = 1;
 
 if (bInitSinCos) {
 	ComputeSinCosTable (sizeofa (sinCos), sinCos);
 	bInitSinCos = 0;
 	}
 
-	int bHaveTarget = TargetInLineOfFire ();
-	int sh = gameData.render.screen.Height ();
-	int ch = gameData.render.scene.Height ();
-	int cw = gameData.render.scene.Width ();
-	int h = ch >> 2;
-	int w = X2I (h * gameData.render.screen.Aspect ());
+	int32_t bHaveTarget = TargetInLineOfFire ();
+	int32_t sh = gameData.render.screen.Height ();
+	int32_t ch = gameData.render.scene.Height ();
+	int32_t cw = gameData.render.scene.Width ();
+	int32_t h = ch >> 2;
+	int32_t w = X2I (h * gameData.render.screen.Aspect ());
 
 if (ogl.IsSideBySideDevice ()) {
 	w /= 3;
 	h /= 3;
 	}
 
-	int x = gameData.X (cw / 2);
-	int y = ch / 2;
-	int left = x - w, right = x + w, top = y - h, bottom = y + h;
+	int32_t x = gameData.X (cw / 2);
+	int32_t y = ch / 2;
+	int32_t left = x - w, right = x + w, top = y - h, bottom = y + h;
 	float xStep = float (2 * w + 1) / 12.0f;
 	//float yStep = float (2 * h + 1) / 12.0f;
 	float xScale = float (w + (w >> 1)) / float (cw);
 	float yScale = float (h + (h >> 1)) / float (sh);
 	float	x1, y1;
-	int	i;
+	int32_t	i;
 
 w >>= 4;
 h >>= 4;
@@ -198,13 +198,13 @@ else
 for (i = 0, x1 = float (left); i < 11; i++) {
 	x1 += xStep;
 	if (i != 5)
-		OglDrawLine ((int) FRound (x1), y - h, (int) FRound (x1), y + h);
+		OglDrawLine ((int32_t) FRound (x1), y - h, (int32_t) FRound (x1), y + h);
 	}
 
 for (i = 0, y1 = float (top); i < 11; i++) {
 	y1 += xStep;
 	if (i != 5)
-		OglDrawLine (x - w, (int) FRound (y1), x + w, (int) FRound (y1));
+		OglDrawLine (x - w, (int32_t) FRound (y1), x + w, (int32_t) FRound (y1));
 	}
 
 if (bHaveTarget)
@@ -283,9 +283,9 @@ glPopMatrix ();
 #endif
 
 char	szZoom [20];
-int	r, aw;
+int32_t	r, aw;
 if (extraGameInfo [IsMultiGame].nZoomMode == 2)
-	r = int (100.0f * gameStates.zoom.nFactor / float (gameStates.zoom.nMinFactor));
+	r = int32_t (100.0f * gameStates.zoom.nFactor / float (gameStates.zoom.nMinFactor));
 else {
 	float s = float (pow (float (gameStates.zoom.nMaxFactor) / float (gameStates.zoom.nMinFactor), 0.25f));
 	fix f = gameStates.zoom.nMinFactor;
@@ -316,7 +316,7 @@ CRGBColor playerColors [] = {
  {29, 29, 0}};
 
 typedef struct {
-	int x, y;
+	int32_t x, y;
 } xy;
 
 //offsets for reticle parts: high-big  high-sml  low-big  low-sml
@@ -325,7 +325,7 @@ xy primaryOffsets [4] =  {{-30, 14}, {-16, 6},  {-15, 6}, {-8, 2}};
 xy secondaryOffsets [4] = {{-24, 2},  {-12, 0}, {-12, 1}, {-6, -2}};
 
 //draw the reticle
-void CGenericCockpit::DrawReticle (int bForceBig, fix xStereoSeparation)
+void CGenericCockpit::DrawReticle (int32_t bForceBig, fix xStereoSeparation)
 {
 if (cockpit->Hide ())
 	return;
@@ -339,10 +339,10 @@ if (!gameOpts->render.cockpit.bReticle
 	 || automap.Display ())
 	return;
 
-	int		x, y;
-	int		bLaserReady, bMissileReady, bLaserAmmo, bMissileAmmo;
-	int		nBmReticle, nCrossBm, nPrimaryBm, nSecondaryBm;
-	int		bHiresReticle, bSmallReticle, ofs;
+	int32_t		x, y;
+	int32_t		bLaserReady, bMissileReady, bLaserAmmo, bMissileAmmo;
+	int32_t		nBmReticle, nCrossBm, nPrimaryBm, nSecondaryBm;
+	int32_t		bHiresReticle, bSmallReticle, ofs;
 
 if (((gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) ||
 	 ((gameData.demo.nState == ND_STATE_PLAYBACK) && gameData.demo.bFlyingGuided))) {
@@ -397,7 +397,7 @@ nBmReticle = ((!IsMultiGame || IsCoopGame) && TargetInLineOfFire ())
 				 : BM_ADDON_RETICLE_GREEN;
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 glColor3i (1,1,1);
-int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+int32_t nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 
 if (ogl.IsOculusRift ()) {
 	float fov = float (gameStates.render.glFOV * X2D (transformation.m_info.zoom));
@@ -423,8 +423,8 @@ if (ogl.IsOculusRift ()) {
 			gameStates.render.grAlpha = 1.0f - gameStates.render.grAlpha;
 			}
 		}
-	x -= int (ceil (xStep * RadToDeg (X2F (transformation.m_info.playerHeadAngles.v.coord.h))));
-	y -= int (ceil (yStep * RadToDeg (X2F (transformation.m_info.playerHeadAngles.v.coord.p))));
+	x -= int32_t (ceil (xStep * RadToDeg (X2F (transformation.m_info.playerHeadAngles.v.coord.h))));
+	y -= int32_t (ceil (yStep * RadToDeg (X2F (transformation.m_info.playerHeadAngles.v.coord.p))));
 	}
 
 BitBlt ((bSmallReticle ? SML_RETICLE_CROSS : RETICLE_CROSS) + nCrossBm,

@@ -27,7 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //-----------------------------------------------------------------------------
 
-int FusionBump (void)
+int32_t FusionBump (void)
 {
 if (gameData.fusion.xAutoFireTime) {
 	if (gameData.weapons.nPrimary != FUSION_INDEX)

@@ -32,7 +32,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 extern void timer_init();
 extern void timer_close();
-extern void timer_set_rate(int count_val);
+extern void timer_set_rate(int32_t count_val);
 extern void timer_set_function( void _far * function );
 
 //==========================================================================

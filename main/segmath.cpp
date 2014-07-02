@@ -30,14 +30,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // -------------------------------------------------------------------------------
 
-sbyte ConvertToByte (fix f)
+int8_t ConvertToByte (fix f)
 {
 if (f >= 0x00010000)
 	return MATRIX_MAX;
 else if (f <= -0x00010000)
 	return -MATRIX_MAX;
 else
-	return (sbyte) (f >> MATRIX_PRECISION);
+	return (int8_t) (f >> MATRIX_PRECISION);
 }
 
 #define VEL_PRECISION 12
@@ -46,12 +46,12 @@ else
 //	Create a tShortPos struct from an CObject.
 //	Extract the matrix into byte values.
 //	Create a position relative to vertex 0 with 1/256 Normal "fix" precision.
-//	Stuff CSegment in a short.
-void CreateShortPos (tShortPos *spp, CObject *objP, int swap_bytes)
+//	Stuff CSegment in a int16_t.
+void CreateShortPos (tShortPos *spp, CObject *objP, int32_t swap_bytes)
 {
-	// int	nSegment;
+	// int32_t	nSegment;
 	CFixMatrix orient = objP->info.position.mOrient;
-	sbyte   *segP = spp->orient;
+	int8_t   *segP = spp->orient;
 	CFixVector *pv;
 
 *segP++ = ConvertToByte(orient.m.dir.r.v.coord.x);
@@ -65,17 +65,17 @@ void CreateShortPos (tShortPos *spp, CObject *objP, int swap_bytes)
 *segP++ = ConvertToByte(orient.m.dir.f.v.coord.z);
 
 pv = gameData.segs.vertices + SEGMENTS [objP->info.nSegment].m_vertices [0];
-spp->pos [0] = (short) ((objP->info.position.vPos.v.coord.x - pv->v.coord.x) >> RELPOS_PRECISION);
-spp->pos [1] = (short) ((objP->info.position.vPos.v.coord.y - pv->v.coord.y) >> RELPOS_PRECISION);
-spp->pos [2] = (short) ((objP->info.position.vPos.v.coord.z - pv->v.coord.z) >> RELPOS_PRECISION);
+spp->pos [0] = (int16_t) ((objP->info.position.vPos.v.coord.x - pv->v.coord.x) >> RELPOS_PRECISION);
+spp->pos [1] = (int16_t) ((objP->info.position.vPos.v.coord.y - pv->v.coord.y) >> RELPOS_PRECISION);
+spp->pos [2] = (int16_t) ((objP->info.position.vPos.v.coord.z - pv->v.coord.z) >> RELPOS_PRECISION);
 
 spp->nSegment = objP->info.nSegment;
 
-spp->vel [0] = (short) ((objP->mType.physInfo.velocity.v.coord.x) >> VEL_PRECISION);
-spp->vel [1] = (short) ((objP->mType.physInfo.velocity.v.coord.y) >> VEL_PRECISION);
-spp->vel [2] = (short) ((objP->mType.physInfo.velocity.v.coord.z) >> VEL_PRECISION);
+spp->vel [0] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.x) >> VEL_PRECISION);
+spp->vel [1] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.y) >> VEL_PRECISION);
+spp->vel [2] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.z) >> VEL_PRECISION);
 
-// swap the short values for the big-endian machines.
+// swap the int16_t values for the big-endian machines.
 
 if (swap_bytes) {
 	spp->pos [0] = INTEL_SHORT (spp->pos [0]);
@@ -90,10 +90,10 @@ if (swap_bytes) {
 
 // -------------------------------------------------------------------------------
 
-void ExtractShortPos (CObject *objP, tShortPos *spp, int swap_bytes)
+void ExtractShortPos (CObject *objP, tShortPos *spp, int32_t swap_bytes)
 {
-	int	nSegment;
-	sbyte   *segP;
+	int32_t	nSegment;
+	int8_t   *segP;
 	CFixVector *pv;
 
 	segP = spp->orient;
@@ -138,24 +138,24 @@ void ExtractShortPos (CObject *objP, tShortPos *spp, int swap_bytes)
 // -----------------------------------------------------------------------------
 //	Extract a vector from a CSegment.  The vector goes from the start face to the end face.
 //	The point on each face is the average of the four points forming the face.
-void ExtractVectorFromSegment (CSegment *segP, CFixVector *vp, int start, int end)
+void ExtractVectorFromSegment (CSegment *segP, CFixVector *vp, int32_t start, int32_t end)
 {
 	CFixVector	vs, ve;
 
 vs.SetZero ();
 ve.SetZero ();
-int nVertices = 0;
+int32_t nVertices = 0;
 CSide* sideP = segP->Side (start);
-for (int i = 0, j = sideP->CornerCount (); i < j; i++) {
-	ushort n = sideP->m_corners [i];
+for (int32_t i = 0, j = sideP->CornerCount (); i < j; i++) {
+	uint16_t n = sideP->m_corners [i];
 	if (n != 0xFFFF) {
 		vs += gameData.segs.vertices [n];
 		nVertices++;
 		}
 	}
 sideP = segP->Side (end);
-for (int i = 0, j = sideP->CornerCount (); i < j; i++) {
-	ushort n = sideP->m_corners [i];
+for (int32_t i = 0, j = sideP->CornerCount (); i < j; i++) {
+	uint16_t n = sideP->m_corners [i];
 	n = segP->m_vertices [sideVertIndex [end][i]];
 	if (n != 0xFFFF) {
 		ve += gameData.segs.vertices [n];
@@ -184,10 +184,10 @@ void ExtractOrientFromSegment (CFixMatrix *m, CSegment *segP)
 //	Return v0, v1, v2 = 3 vertices with smallest numbers.  If *bFlip set, then negate Normal after computation.
 //	Note, pos.v.c.yu cannot just compute the Normal by treating the points in the opposite direction as this introduces
 //	small differences between normals which should merely be opposites of each other.
-ushort SortVertsForNormal (ushort v0, ushort v1, ushort v2, ushort v3, ushort* vSorted)
+uint16_t SortVertsForNormal (uint16_t v0, uint16_t v1, uint16_t v2, uint16_t v3, uint16_t* vSorted)
 {
-	int		i, j;
-	ushort	index [4] = {0, 1, 2, 3};
+	int32_t		i, j;
+	uint16_t	index [4] = {0, 1, 2, 3};
 
 //	index is a list that shows how things got scrambled so we know if our Normal is pointing backwards
 vSorted [0] = v0;
@@ -209,7 +209,7 @@ return (((index [0] + 3) % 4) == index [1]) || (((index [1] + 3) % 4) == index [
 
 // -------------------------------------------------------------------------------
 
-void AddToVertexNormal (int nVertex, CFixVector& vNormal)
+void AddToVertexNormal (int32_t nVertex, CFixVector& vNormal)
 {
 	CRenderNormal& n = RENDERPOINTS [nVertex].Normal ();
 
@@ -227,7 +227,7 @@ void ComputeVertexNormals (void)
 {
 	CRenderPoint* pp = RENDERPOINTS.Buffer ();
 
-for (int i = gameData.segs.nVertices; i; i--, pp++)
+for (int32_t i = gameData.segs.nVertices; i; i--, pp++)
 	pp->Normal ().Normalize ();
 }
 
@@ -237,7 +237,7 @@ void ResetVertexNormals (void)
 {
 	CRenderPoint* pp = RENDERPOINTS.Buffer ();
 
-for (int i = gameData.segs.nVertices; i; i--, pp++)
+for (int32_t i = gameData.segs.nVertices; i; i--, pp++)
 	pp->Normal ().Reset ();
 }
 

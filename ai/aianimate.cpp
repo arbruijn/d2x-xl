@@ -39,7 +39,7 @@ if (objP->Index () == nDbgObj)
 	BRP;
 #endif
 if (gameOpts->gameplay.bIdleAnims) {
-		int			h, i, j;
+		int32_t			h, i, j;
 		CSegment		*segP = SEGMENTS + objP->info.nSegment;
 		CFixVector	*vVertex, vVecToGoal, vGoal = gameData.objs.vRobotGoals [objP->Index ()];
 
@@ -82,21 +82,21 @@ if (gameOpts->gameplay.bIdleAnims) {
 // ------------------------------------------------------------------------------------------------------------------
 //	Return 1 if animates, else return 0
 
-int     nFlinchScale = 4;
-int     nAttackScale = 24;
+int32_t     nFlinchScale = 4;
+int32_t     nAttackScale = 24;
 
-static sbyte   xlatAnimation [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLINCH, AS_FIRE, AS_RECOIL, AS_REST};
+static int8_t   xlatAnimation [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLINCH, AS_FIRE, AS_RECOIL, AS_REST};
 
-int DoSillyAnimation (CObject *objP)
+int32_t DoSillyAnimation (CObject *objP)
 {
-	int				nObject = objP->Index ();
+	int32_t				nObject = objP->Index ();
 	tJointPos*		jointPositions;
-	int				robotType, nGun, robotState, nJointPositions;
+	int32_t				robotType, nGun, robotState, nJointPositions;
 	tPolyObjInfo*	polyObjInfo = &objP->rType.polyObjInfo;
 	tAIStaticInfo*	aiP = &objP->cType.aiInfo;
-	int				nGunCount, at_goal;
-	int				attackType;
-	int				nFlinchAttackScale = 1;
+	int32_t				nGunCount, at_goal;
+	int32_t				attackType;
+	int32_t				nFlinchAttackScale = 1;
 
 robotType = objP->info.nId;
 if (0 > (nGunCount = ROBOTINFO (robotType).nGuns))
@@ -111,8 +111,8 @@ else if ((robotState == AS_FLINCH) || (robotState == AS_RECOIL))
 at_goal = 1;
 for (nGun = 0; nGun <= nGunCount; nGun++) {
 	nJointPositions = RobotGetAnimState (&jointPositions, robotType, nGun, robotState);
-	for (int nJoint = 0; nJoint < nJointPositions; nJoint++) {
-		int				jointnum = jointPositions [nJoint].jointnum;
+	for (int32_t nJoint = 0; nJoint < nJointPositions; nJoint++) {
+		int32_t				jointnum = jointPositions [nJoint].jointnum;
 
 		if (jointnum >= gameData.models.polyModels [0][objP->ModelId ()].ModelCount ())
 			continue;
@@ -120,7 +120,7 @@ for (nGun = 0; nGun <= nGunCount; nGun++) {
 		CAngleVector*	jointAngles = &jointPositions [nJoint].angles;
 		CAngleVector*	objAngles = &polyObjInfo->animAngles [jointnum];
 
-		for (int nAngle = 0; nAngle < 3; nAngle++) {
+		for (int32_t nAngle = 0; nAngle < 3; nAngle++) {
 			if (jointAngles->v.vec [nAngle] != objAngles->v.vec [nAngle]) {
 				if (nGun == 0)
 					at_goal = 0;
@@ -163,9 +163,9 @@ return 1;
 //	Delta orientation of CObject is at:		aiInfo.deltaAngles
 void AIFrameAnimation (CObject *objP)
 {
-	int	nObject = objP->Index ();
-	int	nJoint;
-	int	nJoints = gameData.models.polyModels [0][objP->ModelId ()].ModelCount ();
+	int32_t	nObject = objP->Index ();
+	int32_t	nJoint;
+	int32_t	nJoints = gameData.models.polyModels [0][objP->ModelId ()].ModelCount ();
 
 for (nJoint = 1; nJoint < nJoints; nJoint++) {
 	fix				deltaToGoal;
@@ -175,7 +175,7 @@ for (nJoint = 1; nJoint < nJoints; nJoint++) {
 	CAngleVector*	deltaAngP = &gameData.ai.localInfo [nObject].deltaAngles [nJoint];
 
 	Assert (nObject >= 0);
-	for (int nAngle = 0; nAngle < 3; nAngle++) {
+	for (int32_t nAngle = 0; nAngle < 3; nAngle++) {
 		deltaToGoal = goalAngP->v.vec [nAngle] - curAngP->v.vec [nAngle];
 		if (deltaToGoal > 32767)
 			deltaToGoal -= 65536;
@@ -196,7 +196,7 @@ for (nJoint = 1; nJoint < nJoints; nJoint++) {
 //	General purpose robot-dies-with-death-roll-and-groan code.
 //	Return true if CObject just died.
 //	scale: I2X (4) for boss, much smaller for much smaller guys
-int DoRobotDyingFrame (CObject *objP, fix StartTime, fix xRollDuration, sbyte *bDyingSoundPlaying, short deathSound, fix xExplScale, fix xSoundScale)
+int32_t DoRobotDyingFrame (CObject *objP, fix StartTime, fix xRollDuration, int8_t *bDyingSoundPlaying, int16_t deathSound, fix xExplScale, fix xSoundScale)
 {
 	fix	xRollVal, temp;
 	fix	xSoundDuration;
@@ -255,11 +255,11 @@ if (!objP->cType.aiInfo.xDyingStartTime) { // if not already dying
 
 //	----------------------------------------------------------------------
 
-int DoAnyRobotDyingFrame (CObject *objP)
+int32_t DoAnyRobotDyingFrame (CObject *objP)
 {
 if (objP->cType.aiInfo.xDyingStartTime) {
-	int bDeathRoll = ROBOTINFO (objP->info.nId).bDeathRoll;
-	int rval = DoRobotDyingFrame (objP, objP->cType.aiInfo.xDyingStartTime, I2X (Min (bDeathRoll / 2 + 1, 6)), 
+	int32_t bDeathRoll = ROBOTINFO (objP->info.nId).bDeathRoll;
+	int32_t rval = DoRobotDyingFrame (objP, objP->cType.aiInfo.xDyingStartTime, I2X (Min (bDeathRoll / 2 + 1, 6)), 
 											&objP->cType.aiInfo.bDyingSoundPlaying, ROBOTINFO (objP->info.nId).deathrollSound, 
 											I2X (bDeathRoll) / 8, I2X (bDeathRoll) / 2);
 	if (rval) {

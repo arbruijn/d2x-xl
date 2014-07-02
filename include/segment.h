@@ -128,17 +128,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Note that -1 means no connection, -2 means a connection to the outside world.
 #define IS_CHILD(nSegment) (nSegment > -1)
 
-extern ushort sideVertIndex [SEGMENT_SIDE_COUNT][4];
+extern uint16_t sideVertIndex [SEGMENT_SIDE_COUNT][4];
 extern char oppSideTable [SEGMENT_SIDE_COUNT];
 
 //------------------------------------------------------------------------------
 
 class CSegMasks {
 	public:
-	   short m_face;     //which faces sphere pokes through (12 bits)
-		sbyte m_side;     //which sides sphere pokes through (6 bits)
-		sbyte m_center;   //which sides center point is on back of (6 bits)
-		sbyte m_valid;
+	   int16_t m_face;     //which faces sphere pokes through (12 bits)
+		int8_t m_side;     //which sides sphere pokes through (6 bits)
+		int8_t m_center;   //which sides center point is on back of (6 bits)
+		int8_t m_valid;
 
 	public:
 		CSegMasks () { Init (); }
@@ -166,14 +166,14 @@ typedef struct tUVL {
 
 //------------------------------------------------------------------------------
 
-static inline int IsWaterTexture (short nTexture)
+static inline int32_t IsWaterTexture (int16_t nTexture)
 {
 return ((nTexture >= 399) && (nTexture <= 403));
 }
 
 //------------------------------------------------------------------------------
 
-static inline int IsLavaTexture (short nTexture)
+static inline int32_t IsLavaTexture (int16_t nTexture)
 {
 return (nTexture == 378) || ((nTexture >= 404) && (nTexture <= 409));
 }
@@ -186,16 +186,16 @@ class CObject;
 
 class CSide {
 	public:
-		sbyte   			m_nType;       // replaces num_faces and tri_edge, 1 = quad, 2 = 0:2 triangulation, 3 = 1:3 triangulation
-		sbyte   			m_nFrame;      //keep us longword aligned
-		ushort  			m_nWall;
-		short   			m_nBaseTex;
+		int8_t   			m_nType;       // replaces num_faces and tri_edge, 1 = quad, 2 = 0:2 triangulation, 3 = 1:3 triangulation
+		int8_t   			m_nFrame;      //keep us longword aligned
+		uint16_t  			m_nWall;
+		int16_t   			m_nBaseTex;
 #ifdef WORDS_BIGENDIAN
-		ushort			m_nOvlOrient : 2;
-		ushort			m_nOvlTex : 14;
+		uint16_t			m_nOvlOrient : 2;
+		uint16_t			m_nOvlTex : 14;
 #else
-		ushort			m_nOvlTex : 14;
-		ushort			m_nOvlOrient : 2;
+		uint16_t			m_nOvlTex : 14;
+		uint16_t			m_nOvlOrient : 2;
 #endif
 		tUVL     		m_uvls [4];
 		CFixVector		m_normals [3];  // 2 normals, if quadrilateral, both the same.
@@ -203,42 +203,42 @@ class CSide {
 		CFixVector		m_rotNorms [2];
 		CFixVector		m_vCenter;
 		fix				m_rads [2];
-		ushort			m_vertices [6];
-		ushort			m_faceVerts [6]; // vertex indices of the side's two triangles
-		ushort			m_nMinVertex [2];
-		ushort			m_corners [4];
-		ubyte				m_nFaces;
-		ubyte				m_nShape;
-		ubyte				m_nCorners;
-		ubyte				m_bIsQuad;
-		short				m_nSegment;
+		uint16_t			m_vertices [6];
+		uint16_t			m_faceVerts [6]; // vertex indices of the side's two triangles
+		uint16_t			m_nMinVertex [2];
+		uint16_t			m_corners [4];
+		uint8_t				m_nFaces;
+		uint8_t				m_nShape;
+		uint8_t				m_nCorners;
+		uint8_t				m_bIsQuad;
+		int16_t				m_nSegment;
 
 	public:
 		inline void Init (void) { memset (this, 0, sizeof (*this)); }
-		int Read (CFile& cf, ushort* segVerts, ushort* sideVerts, bool bSolid);
+		int32_t Read (CFile& cf, uint16_t* segVerts, uint16_t* sideVerts, bool bSolid);
 		void ReadWallNum (CFile& cf, bool bWall);
 		void SaveState (CFile& cf);
 		void LoadState (CFile& cf);
 		void LoadTextures (void);
-		inline ushort WallNum (void) { return m_nWall; }
-		inline sbyte Type (void) { return m_nType; }
-		inline void SetType (sbyte nType) { m_nType = nType; }
+		inline uint16_t WallNum (void) { return m_nWall; }
+		inline int8_t Type (void) { return m_nType; }
+		inline void SetType (int8_t nType) { m_nType = nType; }
 		bool IsWall (void);
 		CWall* Wall (void);
 		CTrigger* Trigger (void);
 		bool IsVolatile (void);
-		inline ubyte IsQuad (void) { return m_bIsQuad; }
-		inline ubyte CornerCount (void) { return m_nCorners; }
+		inline uint8_t IsQuad (void) { return m_bIsQuad; }
+		inline uint8_t CornerCount (void) { return m_nCorners; }
 		bool IsSolid (void);
 
-		void CheckSum (uint& sum1, uint& sum2);
+		void CheckSum (uint32_t& sum1, uint32_t& sum2);
 
-		int CheckTransparency (void);
-		int CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal);
-		int CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, short iFace, CFixVector vNormal);
-		int SphereToFaceRelation (CFixVector& intersection, fix rad, short iFace, CFixVector vNormal);
-		uint PointToFaceRelation (CFixVector& intersection, short iFace, CFixVector vNormal);
-		int SeesPoint (CFixVector& vPoint, short nDestSeg, int nLevel = 0, int nThread = 0);
+		int32_t CheckTransparency (void);
+		int32_t CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int16_t iFace, CFixVector vNormal);
+		int32_t CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int16_t iFace, CFixVector vNormal);
+		int32_t SphereToFaceRelation (CFixVector& intersection, fix rad, int16_t iFace, CFixVector vNormal);
+		uint32_t PointToFaceRelation (CFixVector& intersection, int16_t iFace, CFixVector vNormal);
+		int32_t SeesPoint (CFixVector& vPoint, int16_t nDestSeg, int32_t nLevel = 0, int32_t nThread = 0);
 
 		void GetNormals (CFixVector& n1, CFixVector& n2);
 
@@ -249,57 +249,57 @@ class CSide {
 		fix MaxRad (void) { return m_rads [1]; }
 		fix AvgRad (void) { return (m_rads [0] + m_rads [1]) / 2; }
 
-		void Setup (short nSegment, ushort* verts, ushort* index, bool bSolid);
+		void Setup (int16_t nSegment, uint16_t* verts, uint16_t* index, bool bSolid);
 
-		void SetTextures (int nBaseTex, int nOvlTex);
+		void SetTextures (int32_t nBaseTex, int32_t nOvlTex);
 
-		inline ubyte GetVertices (ushort*& vertices) { 
+		inline uint8_t GetVertices (uint16_t*& vertices) { 
 			vertices = m_vertices;
 			return m_nFaces;
 			}
 		CFixVector* GetCornerVertices (CFixVector* vertices);
-		inline ushort* Corners (void) { return m_corners; }
-		int HasVertex (ushort nVertex);
-		CFixVector& Vertex (int nVertex);
+		inline uint16_t* Corners (void) { return m_corners; }
+		int32_t HasVertex (uint16_t nVertex);
+		CFixVector& Vertex (int32_t nVertex);
 		CFixVector& MinVertex (void);
-		CFixVector& Normal (int nFace);
+		CFixVector& Normal (int32_t nFace);
 		fix Height (void);
 		bool IsPlanar (void);
-		ubyte Dist (const CFixVector& point, fix& xSideDist, int bBehind, short sideBit);
-		ubyte Distf (const CFloatVector& point, float& fSideDist, int bBehind, short sideBit);
+		uint8_t Dist (const CFixVector& point, fix& xSideDist, int32_t bBehind, int16_t sideBit);
+		uint8_t Distf (const CFloatVector& point, float& fSideDist, int32_t bBehind, int16_t sideBit);
 		fix DistToPoint (CFixVector v);
 		float DistToPointf (CFloatVector v);
-		CSegMasks Masks (const CFixVector& refP, fix xRad, short sideBit, short faceBit, bool bCheckPoke = false);
-		void HitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int iFace);
-		int CheckForTranspPixel (CFixVector& intersection, short iFace);
-		int Physics (fix& damage, bool bSolid);
+		CSegMasks Masks (const CFixVector& refP, fix xRad, int16_t sideBit, int16_t faceBit, bool bCheckPoke = false);
+		void HitPointUV (fix *u, fix *v, fix *l, CFixVector& intersection, int32_t iFace);
+		int32_t CheckForTranspPixel (CFixVector& intersection, int16_t iFace);
+		int32_t Physics (fix& damage, bool bSolid);
 
 		bool IsOpenableDoor (void);
 		bool IsTextured (void);
 
-		inline int IsLava (void) { return IsLavaTexture (m_nBaseTex) || (m_nOvlTex && (IsLavaTexture (m_nOvlTex))); }
-		inline int IsWater (void) { return IsWaterTexture (m_nBaseTex) || (m_nOvlTex && (IsWaterTexture (m_nOvlTex))); }
+		inline int32_t IsLava (void) { return IsLavaTexture (m_nBaseTex) || (m_nOvlTex && (IsLavaTexture (m_nOvlTex))); }
+		inline int32_t IsWater (void) { return IsWaterTexture (m_nBaseTex) || (m_nOvlTex && (IsWaterTexture (m_nOvlTex))); }
 
-		inline ubyte Shape (void) { return m_nShape; }
-		inline ubyte FaceCount (void) { return m_nFaces; }
-		void RemapVertices (ubyte* map);
+		inline uint8_t Shape (void) { return m_nShape; }
+		inline uint8_t FaceCount (void) { return m_nFaces; }
+		void RemapVertices (uint8_t* map);
 
 	private:
-		void SetupCorners (ushort* verts, ushort* index);
-		void SetupVertexList (ushort* verts, ushort* index);
+		void SetupCorners (uint16_t* verts, uint16_t* index);
+		void SetupVertexList (uint16_t* verts, uint16_t* index);
 		void SetupFaceVertIndex (void);
-		void SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, ushort* verts, ushort* index);
-		void SetupAsTriangles (bool bSolid, ushort* verts, ushort* index);
+		void SetupAsQuad (CFixVector& vNormal, CFloatVector& vNormalf, uint16_t* verts, uint16_t* index);
+		void SetupAsTriangles (bool bSolid, uint16_t* verts, uint16_t* index);
 	};
 
 //------------------------------------------------------------------------------
 
 typedef struct tDestructableTextureProps {
-	ushort			nOvlTex;
-	ushort			nOvlOrient;
-	int				nEffect;
-	int				nBitmap;
-	int				nSwitchType;
+	uint16_t			nOvlTex;
+	uint16_t			nOvlOrient;
+	int32_t				nEffect;
+	int32_t				nBitmap;
+	int32_t				nSwitchType;
 } tDestructableTextureProps;
 
 //------------------------------------------------------------------------------
@@ -307,18 +307,18 @@ typedef struct tDestructableTextureProps {
 class CSegment {
 	public:
 		CSide			m_sides [SEGMENT_SIDE_COUNT];       // 6 sides
-		short			m_children [SEGMENT_SIDE_COUNT];    // indices of 6 children segments, front, left, top, right, bottom, back
+		int16_t			m_children [SEGMENT_SIDE_COUNT];    // indices of 6 children segments, front, left, top, right, bottom, back
 		fix			m_childDists [2][SEGMENT_SIDE_COUNT];
-		ushort		m_vertices [SEGMENT_VERTEX_COUNT];    // vertex ids of 4 front and 4 back vertices
-		short			m_nVertices;
-		int			m_objects;    // pointer to objects in this tSegment
+		uint16_t		m_vertices [SEGMENT_VERTEX_COUNT];    // vertex ids of 4 front and 4 back vertices
+		int16_t			m_nVertices;
+		int32_t			m_objects;    // pointer to objects in this tSegment
 
-		ubyte			m_nShape;
-		ubyte			m_function;
-		ubyte			m_flags;
-		ubyte			m_props;
-		short			m_value;
-		short			m_nObjProducer;
+		uint8_t			m_nShape;
+		uint8_t			m_function;
+		uint8_t			m_flags;
+		uint8_t			m_props;
+		int16_t			m_value;
+		int16_t			m_nObjProducer;
 		fix			m_xDamage [2];
 		fix			m_xAvgSegLight;
 
@@ -329,41 +329,41 @@ class CSegment {
 		CFixVector	m_extents [2];
 
 	public:
-		int Index (void);
+		int32_t Index (void);
 		void Read (CFile& cf);
-		void ReadFunction (CFile& cf, ubyte flags);
+		void ReadFunction (CFile& cf, uint8_t flags);
 		void ReadVerts (CFile& cf);
-		void ReadChildren (CFile& cf, ubyte flags);
+		void ReadChildren (CFile& cf, uint8_t flags);
 		void ReadExtras (CFile& cf);
 		void SaveState (CFile& cf);
 		void LoadState (CFile& cf);
 		void LoadTextures (void);
-		void LoadSideTextures (int nSide);
+		void LoadSideTextures (int32_t nSide);
 		void LoadBotGenTextures (void);
 		void Setup (void);
-		inline ushort WallNum (int nSide) { return m_sides [nSide].WallNum (); }
-		inline int CheckTransparency (int nSide) { return m_sides [nSide].CheckTransparency (); }
-		void CheckSum (uint& sum1, uint& sum2);
+		inline uint16_t WallNum (int32_t nSide) { return m_sides [nSide].WallNum (); }
+		inline int32_t CheckTransparency (int32_t nSide) { return m_sides [nSide].CheckTransparency (); }
+		void CheckSum (uint32_t& sum1, uint32_t& sum2);
 
-		inline bool IsWall (int nSide) { return m_sides [nSide].IsWall (); }
-		void SetTexture (int nSide, CSegment *connSegP, short nConnSide, int nAnim, int nFrame);
-		void DestroyWall (int nSide);
-		void DamageWall (int nSide, fix damage);
-		void BlastWall (int nSide);
-		void OpenDoor (int nSide);
-		void CloseDoor (int nSide, bool bForce = false);
-		void StartCloak (int nSide);
-		void StartDecloak (int nSide);
-		void IllusionOff (int nSide);
-		void IllusionOn (int nSide);
-		int AnimateOpeningDoor (int nSide, fix xElapsedTime);
-		int AnimateClosingDoor (int nSide, fix xElapsedTime);
-		void ToggleWall (int nSide);
-		int ProcessWallHit (int nSide, fix damage, int nPlayer, CObject *objP);
-		int DoorIsBlocked (int nSide, bool bIgnoreMarker = false);
-		int TextureIsDestructable (int nSide, tDestructableTextureProps* dtpP = NULL);
-		int BlowupTexture (int nSide, CFixVector& vHit, CObject* blower, int bForceBlowup);
-		void CreateSound (short nSound, int nSide);
+		inline bool IsWall (int32_t nSide) { return m_sides [nSide].IsWall (); }
+		void SetTexture (int32_t nSide, CSegment *connSegP, int16_t nConnSide, int32_t nAnim, int32_t nFrame);
+		void DestroyWall (int32_t nSide);
+		void DamageWall (int32_t nSide, fix damage);
+		void BlastWall (int32_t nSide);
+		void OpenDoor (int32_t nSide);
+		void CloseDoor (int32_t nSide, bool bForce = false);
+		void StartCloak (int32_t nSide);
+		void StartDecloak (int32_t nSide);
+		void IllusionOff (int32_t nSide);
+		void IllusionOn (int32_t nSide);
+		int32_t AnimateOpeningDoor (int32_t nSide, fix xElapsedTime);
+		int32_t AnimateClosingDoor (int32_t nSide, fix xElapsedTime);
+		void ToggleWall (int32_t nSide);
+		int32_t ProcessWallHit (int32_t nSide, fix damage, int32_t nPlayer, CObject *objP);
+		int32_t DoorIsBlocked (int32_t nSide, bool bIgnoreMarker = false);
+		int32_t TextureIsDestructable (int32_t nSide, tDestructableTextureProps* dtpP = NULL);
+		int32_t BlowupTexture (int32_t nSide, CFixVector& vHit, CObject* blower, int32_t bForceBlowup);
+		void CreateSound (int16_t nSound, int32_t nSide);
 
 		fix Refuel (fix xMaxFuel);
 		fix Repair (fix xMaxShield);
@@ -371,66 +371,66 @@ class CSegment {
 		fix EnergyDamage (fix xMaxDamage);
 		void CheckForGoal (void);
 		void CheckForHoardGoal (void);
-		int CheckFlagDrop (int nTeamId, int nFlagId, int nGoalId);
-		int ConquerCheck (void);
+		int32_t CheckFlagDrop (int32_t nTeamId, int32_t nFlagId, int32_t nGoalId);
+		int32_t ConquerCheck (void);
 
-		void ChangeTexture (int oldOwner);
-		void OverrideTextures (short nTexture, short nOldTexture, short nTexture2, int bFullBright, int bForce);
+		void ChangeTexture (int32_t oldOwner);
+		void OverrideTextures (int16_t nTexture, int16_t nOldTexture, int16_t nTexture2, int32_t bFullBright, int32_t bForce);
 
-		bool CreateGenerator (int nType);
-		bool CreateEquipmentMaker (int nOldFunction);
-		bool CreateRobotMaker (int nOldFunction);
-		bool CreateProducer (int nOldFunction);
-		bool CreateObjectProducer (int nOldFunction, int nMaxCount);
+		bool CreateGenerator (int32_t nType);
+		bool CreateEquipmentMaker (int32_t nOldFunction);
+		bool CreateRobotMaker (int32_t nOldFunction);
+		bool CreateProducer (int32_t nOldFunction);
+		bool CreateObjectProducer (int32_t nOldFunction, int32_t nMaxCount);
 
 		void ComputeCenter (void);
 		void ComputeRads (fix xMinDist);
 		void ComputeChildDists (void);
-		inline void ComputeSideCenter (int nSide) { m_sides [nSide].ComputeCenter (); }
-		inline short ChildId (int nSide) { return m_children [nSide]; }
-		inline CSide* Side (int nSide) { return m_sides + nSide; }
-		int ChildIndex (int nChild);
-		CSide* AdjacentSide (int nSegment);
-		CSide* OppositeSide (int nSide);
-		inline CWall* Wall (int nSide) { return m_sides [nSide].Wall (); }
-		inline CTrigger* Trigger (int nSide) { return m_sides [nSide].Trigger (); }
-		inline sbyte Type (int nSide) { return m_sides [nSide].m_nType; }
-		inline void SetType (int nSide, sbyte nType) { m_sides [nSide].SetType (nType); }
-		inline void SetTextures (int nSide, int nBaseTex, int nOvlTex) { m_sides [nSide].SetTextures (nBaseTex, nOvlTex); }
+		inline void ComputeSideCenter (int32_t nSide) { m_sides [nSide].ComputeCenter (); }
+		inline int16_t ChildId (int32_t nSide) { return m_children [nSide]; }
+		inline CSide* Side (int32_t nSide) { return m_sides + nSide; }
+		int32_t ChildIndex (int32_t nChild);
+		CSide* AdjacentSide (int32_t nSegment);
+		CSide* OppositeSide (int32_t nSide);
+		inline CWall* Wall (int32_t nSide) { return m_sides [nSide].Wall (); }
+		inline CTrigger* Trigger (int32_t nSide) { return m_sides [nSide].Trigger (); }
+		inline int8_t Type (int32_t nSide) { return m_sides [nSide].m_nType; }
+		inline void SetType (int32_t nSide, int8_t nType) { m_sides [nSide].SetType (nType); }
+		inline void SetTextures (int32_t nSide, int32_t nBaseTex, int32_t nOvlTex) { m_sides [nSide].SetTextures (nBaseTex, nOvlTex); }
 
-		void GetCornerIndex (int nSide, ushort* vertIndex);
+		void GetCornerIndex (int32_t nSide, uint16_t* vertIndex);
 		void ComputeSideRads (void);
-		float FaceSize (ubyte nSide);
-		inline bool IsVertex (int nVertex);
-		void GetNormals (int nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }
+		float FaceSize (uint8_t nSide);
+		inline bool IsVertex (int32_t nVertex);
+		void GetNormals (int32_t nSide, CFixVector& n1, CFixVector& n2) { m_sides [nSide].GetNormals (n1, n2); }
 		inline CFixVector& Center (void) { return m_vCenter; }
-		inline CFixVector& SideCenter (int nSide) { return m_sides [nSide].Center (); }
-		inline ushort* Corners (int nSide) { return m_sides [nSide].Corners (); }
-		inline ubyte CornerCount (int nSide) { return m_sides [nSide].CornerCount (); }
-		inline CFixVector* GetCornerVertices (int nSide, CFixVector* vertices) { return m_sides [nSide].GetCornerVertices (vertices); }
-		ubyte SideDists (const CFixVector& intersection, fix* xSideDists, int bBehind = 1);
-		int ConnectedSide (CSegment* other);
-		inline CFixVector& Normal (int nSide, int nFace) { return m_sides [nSide].Normal (nFace); }
+		inline CFixVector& SideCenter (int32_t nSide) { return m_sides [nSide].Center (); }
+		inline uint16_t* Corners (int32_t nSide) { return m_sides [nSide].Corners (); }
+		inline uint8_t CornerCount (int32_t nSide) { return m_sides [nSide].CornerCount (); }
+		inline CFixVector* GetCornerVertices (int32_t nSide, CFixVector* vertices) { return m_sides [nSide].GetCornerVertices (vertices); }
+		uint8_t SideDists (const CFixVector& intersection, fix* xSideDists, int32_t bBehind = 1);
+		int32_t ConnectedSide (CSegment* other);
+		inline CFixVector& Normal (int32_t nSide, int32_t nFace) { return m_sides [nSide].Normal (nFace); }
 #if 0
-		inline uint PointToFaceRelation (CFixVector& intersection, int nSide, short iFace)
+		inline uint32_t PointToFaceRelation (CFixVector& intersection, int32_t nSide, int16_t iFace)
 		 { return m_sides [nSide].PointToFaceRelation (intersection, iFace, Normal (nSide, iFace)); }
 #endif
-		inline int SphereToFaceRelation (CFixVector& intersection, fix rad, int nSide, short iFace)
+		inline int32_t SphereToFaceRelation (CFixVector& intersection, fix rad, int32_t nSide, int16_t iFace)
 		 { return m_sides [nSide].SphereToFaceRelation (intersection, rad, iFace, Normal (nSide, iFace)); }
-		inline int CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int nSide, short iFace)
+		inline int32_t CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int32_t nSide, int16_t iFace)
 		 { return m_sides [nSide].CheckLineToFaceRegular (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
-		inline int CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int nSide, int iFace)
+		inline int32_t CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int32_t nSide, int32_t iFace)
 		 { return m_sides [nSide].CheckLineToFaceSpecial (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
 
-		inline int FaceCount (int nSide) { return m_sides [nSide].FaceCount (); }
+		inline int32_t FaceCount (int32_t nSide) { return m_sides [nSide].FaceCount (); }
 		CSegMasks Masks (const CFixVector& refP, fix xRad);
-		CSegMasks SideMasks (int nSide, const CFixVector& refP, fix xRad, bool bCheckPoke = false);
-		ubyte GetSideDists (const CFixVector& refP, fix* xSideDists, int bBehind);
-		ubyte GetSideDistsf (const CFloatVector& refP, float* fSideDists, int bBehind);
-		void HitPointUV (int nSide, fix *u, fix *v, fix *l, CFixVector& intersection, int iFace)
+		CSegMasks SideMasks (int32_t nSide, const CFixVector& refP, fix xRad, bool bCheckPoke = false);
+		uint8_t GetSideDists (const CFixVector& refP, fix* xSideDists, int32_t bBehind);
+		uint8_t GetSideDistsf (const CFloatVector& refP, float* fSideDists, int32_t bBehind);
+		void HitPointUV (int32_t nSide, fix *u, fix *v, fix *l, CFixVector& intersection, int32_t iFace)
 			{ m_sides [nSide].HitPointUV (u, v, l, intersection, iFace); }
 
-		int HasVertex (ubyte nSide, ushort nVertex);
+		int32_t HasVertex (uint8_t nSide, uint16_t nVertex);
 
 		fix MinRad (void) { return m_rads [0]; }
 		fix MaxRad (void) { return m_rads [1]; }
@@ -443,94 +443,94 @@ class CSegment {
 
 		CFixVector RandomPoint (void);
 
-		int IsPassable (int nSide, CObject* objP, bool bIgnoreDoors = false);
-		int HasOpenableDoor (void);
+		int32_t IsPassable (int32_t nSide, CObject* objP, bool bIgnoreDoors = false);
+		int32_t HasOpenableDoor (void);
 
-		inline int CheckForTranspPixel (CFixVector& intersection, int nSide, short iFace) 
+		inline int32_t CheckForTranspPixel (CFixVector& intersection, int32_t nSide, int16_t iFace) 
 		 { return m_sides [nSide].CheckForTranspPixel (intersection, iFace); }
 
-		int Physics (int nSide, fix& damage) { return m_sides [nSide].Physics (damage, m_children [nSide] == -1); }
-		int Physics (fix& xDamage);
+		int32_t Physics (int32_t nSide, fix& damage) { return m_sides [nSide].Physics (damage, m_children [nSide] == -1); }
+		int32_t Physics (fix& xDamage);
 
-		int TexturedSides (void);
-		CBitmap* ChangeTextures (short nBaseTex, short nOvlTex, short nSide = -1);
+		int32_t TexturedSides (void);
+		CBitmap* ChangeTextures (int16_t nBaseTex, int16_t nOvlTex, int16_t nSide = -1);
 
-		void OperateTrigger (int nSide, CObject *objP, int bShot);
+		void OperateTrigger (int32_t nSide, CObject *objP, int32_t bShot);
 
-		inline ubyte Function (void) { return m_function; }
+		inline uint8_t Function (void) { return m_function; }
 
-		inline int HasFunction (ubyte function) { return m_function == function; }
+		inline int32_t HasFunction (uint8_t function) { return m_function == function; }
 
-		inline int HasProp (ubyte prop) { return (m_props & prop) != 0; }
-		inline int HasBlockedProp (void) { return HasProp (SEGMENT_PROP_BLOCKED); }
-		inline int HasDamageProp (int i = -1) { return (i < 0) ? (m_xDamage [0] | m_xDamage [1]) != 0 : (m_xDamage [i] != 0); }
-		inline int HasNoDamageProp (void) { return HasProp (SEGMENT_PROP_NODAMAGE); }
-		inline int HasWaterProp (void) { return HasProp (SEGMENT_PROP_WATER); }
-		inline int HasLavaProp (void) { return HasProp (SEGMENT_PROP_LAVA); }
-		inline int HasOutdoorsProp (void) { return HasProp (SEGMENT_PROP_OUTDOORS); }
+		inline int32_t HasProp (uint8_t prop) { return (m_props & prop) != 0; }
+		inline int32_t HasBlockedProp (void) { return HasProp (SEGMENT_PROP_BLOCKED); }
+		inline int32_t HasDamageProp (int32_t i = -1) { return (i < 0) ? (m_xDamage [0] | m_xDamage [1]) != 0 : (m_xDamage [i] != 0); }
+		inline int32_t HasNoDamageProp (void) { return HasProp (SEGMENT_PROP_NODAMAGE); }
+		inline int32_t HasWaterProp (void) { return HasProp (SEGMENT_PROP_WATER); }
+		inline int32_t HasLavaProp (void) { return HasProp (SEGMENT_PROP_LAVA); }
+		inline int32_t HasOutdoorsProp (void) { return HasProp (SEGMENT_PROP_OUTDOORS); }
 
-		inline int HasTexture (ubyte nSide) { return (m_children [nSide] >= 0) || m_sides [nSide].IsWall (); }
+		inline int32_t HasTexture (uint8_t nSide) { return (m_children [nSide] >= 0) || m_sides [nSide].IsWall (); }
 
-		inline int IsLava (ubyte nSide) { return HasTexture (nSide) && m_sides [nSide].IsLava (); }
-		inline int IsWater (ubyte nSide) { return HasTexture (nSide) && m_sides [nSide].IsWater (); }
-		bool IsSolid (int nSide);
+		inline int32_t IsLava (uint8_t nSide) { return HasTexture (nSide) && m_sides [nSide].IsLava (); }
+		inline int32_t IsWater (uint8_t nSide) { return HasTexture (nSide) && m_sides [nSide].IsWater (); }
+		bool IsSolid (int32_t nSide);
 
 		void RemapVertices (void);
 
 	private:
-		inline int PokesThrough (int nObject, int nSide);
+		inline int32_t PokesThrough (int32_t nObject, int32_t nSide);
 		void Upgrade (void);
 	};
 
-inline int operator- (CSegment* s, CArray<CSegment>& a) { return a.Index (s); }
+inline int32_t operator- (CSegment* s, CArray<CSegment>& a) { return a.Index (s); }
 
 //------------------------------------------------------------------------------
 
 typedef struct tFaceTriangle {
-	ushort				nFace;
-	ushort				index [3];
-	int					nIndex;
+	uint16_t				nFace;
+	uint16_t				index [3];
+	int32_t					nIndex;
 	} tFaceTriangle;
 
 class CSegFaceInfo {
 	public:
-		ushort				index [4];
-		int					nKey;
-		int					nIndex;
-		int					nTriIndex;
-		int					nVerts;
-		int					nTris;
-		int					nFrame;
+		uint16_t				index [4];
+		int32_t					nKey;
+		int32_t					nIndex;
+		int32_t					nTriIndex;
+		int32_t					nVerts;
+		int32_t					nTris;
+		int32_t					nFrame;
 		CFloatVector		color;
 		float					fRads [2];
-		short					nWall;
-		short					nBaseTex;
-		short					nOvlTex;
-		short					nCorona;
-		short					nSegment;
-		ushort				nLightmap;
-		ubyte					nSide;
-		ubyte					nOvlOrient :2;
-		ubyte					bVisible :1;
-		ubyte					bTextured :1;
-		ubyte					bOverlay :1;
-		ubyte					bSplit :1;
-		ubyte					bTransparent :1;
-		ubyte					bIsLight :1;
-		ubyte					bAdditive :2;
-		ubyte					bHaveCameraBg :1;
-		ubyte					bAnimation :1;
-		ubyte					bTeleport :1;
-		ubyte					bSlide :1;
-		ubyte					bSolid :1;
-		ubyte					bSparks :1;
-		ubyte					nRenderType :2;
-		ubyte					nTriangles :2;
-		ubyte					bColored :1;
-		ubyte					bCloaked :1;
-		ubyte					bHasColor :1;
-		ubyte					bSegColor :1;
-		ubyte					widFlags;
+		int16_t					nWall;
+		int16_t					nBaseTex;
+		int16_t					nOvlTex;
+		int16_t					nCorona;
+		int16_t					nSegment;
+		uint16_t				nLightmap;
+		uint8_t					nSide;
+		uint8_t					nOvlOrient :2;
+		uint8_t					bVisible :1;
+		uint8_t					bTextured :1;
+		uint8_t					bOverlay :1;
+		uint8_t					bSplit :1;
+		uint8_t					bTransparent :1;
+		uint8_t					bIsLight :1;
+		uint8_t					bAdditive :2;
+		uint8_t					bHaveCameraBg :1;
+		uint8_t					bAnimation :1;
+		uint8_t					bTeleport :1;
+		uint8_t					bSlide :1;
+		uint8_t					bSolid :1;
+		uint8_t					bSparks :1;
+		uint8_t					nRenderType :2;
+		uint8_t					nTriangles :2;
+		uint8_t					bColored :1;
+		uint8_t					bCloaked :1;
+		uint8_t					bHasColor :1;
+		uint8_t					bSegColor :1;
+		uint8_t					widFlags;
 		char					nCamera;
 		char					nType;
 		char					nSegColor;
@@ -542,9 +542,9 @@ class CSegFaceInfo {
 class CSegFace {
 	public:
 		CSegFaceInfo		m_info;
-		ushort*				triIndex;
+		uint16_t*				triIndex;
 #if USE_RANGE_ELEMENTS
-		uint*					vertIndex;
+		uint32_t*					vertIndex;
 #endif
 		CBitmap*				bmBot;
 		CBitmap*				bmTop;
@@ -560,14 +560,14 @@ class CSegFace {
 			}
 		};
 
-inline int operator- (CSegFace* f, CArray<CSegFace>& a) { return a.Index (f); }
+inline int32_t operator- (CSegFace* f, CArray<CSegFace>& a) { return a.Index (f); }
 
 //------------------------------------------------------------------------------
 
 typedef struct tSegFaces {
 	CSegFace*	faceP;
-	ubyte		nFaces;
-	ubyte		bVisible;
+	uint8_t		nFaces;
+	uint8_t		bVisible;
 } tSegFaces;
 
 #define S2F_AMBIENT_WATER   0x01
@@ -583,22 +583,22 @@ typedef struct tSegFaces {
 #define SS_REPAIR_CENTER    0x01    // Bitmask for this tSegment being part of repair center.
 
 //--repair-- typedef struct {
-//--repair-- 	int     specialType;
-//--repair-- 	short   special_segment; // if specialType indicates repair center, this is the base of the repair center
+//--repair-- 	int32_t     specialType;
+//--repair-- 	int16_t   special_segment; // if specialType indicates repair center, this is the base of the repair center
 //--repair-- } lsegment;
 
 // Globals from mglobal.c
-extern ushort sideVertIndex [SEGMENT_SIDE_COUNT][4];       // sideVertIndex[my_side] is list of vertices forming side my_side.
+extern uint16_t sideVertIndex [SEGMENT_SIDE_COUNT][4];       // sideVertIndex[my_side] is list of vertices forming side my_side.
 extern char oppSideTable [];                                // oppSideTable [my_side] returns CSide opposite cube from my_side.
 
 // New stuff, 10/14/95: For shooting out lights and monitors.
 // Light cast upon vertLight vertices in nSegment:nSide by some light
 class CLightDelta {
 	public:
-		short   nSegment;
-		sbyte   nSide;
-		sbyte   bValid;
-		ubyte   vertLight [4];
+		int16_t   nSegment;
+		int8_t   nSide;
+		int8_t   bValid;
+		uint8_t   vertLight [4];
 
 	public:
 		void Read (CFile& cf);
@@ -606,10 +606,10 @@ class CLightDelta {
 
 class CLightDeltaIndex {
 	public:
-		short		nSegment;
-		ushort	nSide :3;
-		ushort	count :13;
-		ushort	index;
+		int16_t		nSegment;
+		uint16_t	nSide :3;
+		uint16_t	count :13;
+		uint16_t	index;
 
 	public:
 		inline bool operator< (CLightDeltaIndex& other) {
@@ -630,13 +630,13 @@ class CLightDeltaIndex {
 
 #define DL_SCALE            2048    // Divide light to allow 3 bits integer, 5 bits fraction.
 
-int SubtractLight (short nSegment, int nSide);
-int AddLight (short nSegment, int nSide);
+int32_t SubtractLight (int16_t nSegment, int32_t nSide);
+int32_t AddLight (int16_t nSegment, int32_t nSide);
 void ClearLightSubtracted (void);
 
-int CountSkyBoxSegments (void);
+int32_t CountSkyBoxSegments (void);
 void FreeSkyBoxSegList (void);
-int BuildSkyBoxSegList (void);
+int32_t BuildSkyBoxSegList (void);
 
 void SetupSegments (fix xPlaneDistTolerance = -1);
 

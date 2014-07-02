@@ -21,7 +21,7 @@ void CModel::CountOOFModelItems (OOF::CModel *po)
 {
 	OOF::CSubModel*	pso;
 	OOF::CFace*			pf;
-	int					i, j;
+	int32_t					i, j;
 
 i = po->m_nSubModels;
 m_nSubModels = i;
@@ -39,7 +39,7 @@ for (pso = po->m_subModels.Buffer (); i; i--, pso++) {
 
 //------------------------------------------------------------------------------
 
-void CModel::GetOOFModelItems (int nModel, OOF::CModel *po, float fScale)
+void CModel::GetOOFModelItems (int32_t nModel, OOF::CModel *po, float fScale)
 {
 	OOF::CSubModel*	pso;
 	OOF::CFace*			pof;
@@ -48,12 +48,12 @@ void CModel::GetOOFModelItems (int nModel, OOF::CModel *po, float fScale)
 	CFloatVector3*		pvn = m_vertNorms.Buffer (), vNormal;
 	CVertex*				pmv = m_faceVerts.Buffer ();
 	CFace*				pmf = m_faces.Buffer ();
-	int					h, i, j, n, nIndex = 0;
+	int32_t					h, i, j, n, nIndex = 0;
 
 for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Buffer (); i; i--, pso++, psm++) {
 	psm->m_nParent = pso->m_nParent;
 	if (psm->m_nParent < 0)
-		m_iSubModel = (short) (psm - m_subModels);
+		m_iSubModel = (int16_t) (psm - m_subModels);
 	psm->m_vOffset.v.coord.x = F2X (pso->m_vOffset.v.coord.x * fScale);
 	psm->m_vOffset.v.coord.y = F2X (pso->m_vOffset.v.coord.y * fScale);
 	psm->m_vOffset.v.coord.z = F2X (pso->m_vOffset.v.coord.z * fScale);
@@ -94,7 +94,7 @@ for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Bu
 			h = pfv->m_nIndex;
 			pmv->m_nIndex = h;
 #if DBG
-			if (h >= int (m_vertices.Length ()))
+			if (h >= int32_t (m_vertices.Length ()))
 				continue;
 #endif
 			pmv->m_texCoord.v.u = pfv->m_fu;
@@ -123,11 +123,11 @@ for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Bu
 
 //------------------------------------------------------------------------------
 
-int CModel::BuildFromOOF (CObject *objP, int nModel)
+int32_t CModel::BuildFromOOF (CObject *objP, int32_t nModel)
 {
 	OOF::CModel*	po = gameData.models.modelToOOF [1][nModel];
 	CBitmap*			bmP;
-	int				i;
+	int32_t				i;
 
 if (!po) {
 	po = gameData.models.modelToOOF [0][nModel];

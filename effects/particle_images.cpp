@@ -161,14 +161,14 @@ CParticleImageManager particleImageManager;
 
 //	-----------------------------------------------------------------------------
 
-int CParticleImageManager::GetType (int nType)
+int32_t CParticleImageManager::GetType (int32_t nType)
 {
 return nType;
 }
 
 //	-----------------------------------------------------------------------------
 
-void CParticleImageManager::Animate (int nType)
+void CParticleImageManager::Animate (int32_t nType)
 {
 	tParticleImageInfo& pii = ParticleImageInfo (nType);
 
@@ -192,7 +192,7 @@ if (pii.bAnimate && (pii.nFrames > 1)) {
 void CParticleImageManager::AdjustBrightness (CBitmap *bmP)
 {
 	CBitmap*	bmfP;
-	int		i, j = bmP->FrameCount ();
+	int32_t		i, j = bmP->FrameCount ();
 	float*	fFrameBright, fAvgBright = 0, fMaxBright = 0;
 
 if (j < 2)
@@ -208,14 +208,14 @@ for (i = 0, bmfP = bmP->Frames (); i < j; i++, bmfP++) {
 fAvgBright /= j;
 for (i = 0, bmfP = bmP->Frames (); i < j; i++, bmfP++) {
 	CTGA tga (bmfP);
-	tga.ChangeBrightness (0, 1, 2 * (int) (255 * fFrameBright [i] * (fAvgBright - fFrameBright [i])), 0);
+	tga.ChangeBrightness (0, 1, 2 * (int32_t) (255 * fFrameBright [i] * (fAvgBright - fFrameBright [i])), 0);
 	}
 delete[] fFrameBright;
 }
 
 //	-----------------------------------------------------------------------------
 
-	static inline bool Bind (int nType)
+	static inline bool Bind (int32_t nType)
 	{
 	if (!ogl.m_features.bTextureArrays.Available ())
 		return true;
@@ -223,7 +223,7 @@ delete[] fFrameBright;
 	}
 
 
-int CParticleImageManager::Load (int nType, int bForce)
+int32_t CParticleImageManager::Load (int32_t nType, int32_t bForce)
 {
 nType = particleImageManager.GetType (nType);
 
@@ -282,11 +282,11 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CParticleImageManager::LoadAll (void)
+int32_t CParticleImageManager::LoadAll (void)
 {
 if (!gameOpts->render.particles.nQuality)
 	return 0;
-for (int i = 0; i < PARTICLE_TYPES; i++) {
+for (int32_t i = 0; i < PARTICLE_TYPES; i++) {
 	if (!Load (i))
 		return 0;
 	Animate (i);
@@ -304,7 +304,7 @@ if (m_textureArray) {
 	m_textureArray = 0;
 	}
 
-	int	i, j;
+	int32_t	i, j;
 	tParticleImageInfo* piiP = particleImageInfo [0];
 
 for (i = 0; i < MAX_PARTICLE_QUALITY + 1; i++)
@@ -323,8 +323,8 @@ bool CParticleImageManager::SetupMultipleTextures (CBitmap* bmP1, CBitmap* bmP2,
 if (!bmP1)
 	return false;
 
-int nWidth = bmP1->Width ();
-int nHeight = bmP1->Height ();
+int32_t nWidth = bmP1->Width ();
+int32_t nHeight = bmP1->Height ();
 
 if ((bmP2->Width () != nWidth) || (bmP2->Height () != nHeight) || 
 	 (bmP3->Width () != nWidth) || (bmP3->Height () != nHeight))
@@ -357,7 +357,7 @@ return true;
 	
 //-------------------------------------------------------------------------
 
-bool CParticleImageManager::LoadMultipleTextures (int nTMU)
+bool CParticleImageManager::LoadMultipleTextures (int32_t nTMU)
 {
 if (!ogl.m_features.bTextureArrays.Available ())
 	return false;

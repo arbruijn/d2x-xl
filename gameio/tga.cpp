@@ -23,7 +23,7 @@
 //---------------------------------------------------------------
 //---------------------------------------------------------------
 
-int CTGAHeader::Read (CFile& cf, CBitmap *bmP)
+int32_t CTGAHeader::Read (CFile& cf, CBitmap *bmP)
 {
 m_data.identSize = char (cf.ReadByte ());
 m_data.colorMapType = char (cf.ReadByte ());
@@ -49,7 +49,7 @@ return (m_data.width <= 4096) && (m_data.height <= 32768) &&
 
 //---------------------------------------------------------------
 
-int CTGAHeader::Write (CFile& cf, CBitmap *bmP)
+int32_t CTGAHeader::Write (CFile& cf, CBitmap *bmP)
 {
 memset (&m_data, 0, sizeof (m_data));
 m_data.width = bmP->Width ();
@@ -79,7 +79,7 @@ return 1;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int CTGA::Compress (void)
+int32_t CTGA::Compress (void)
 {
 if (!ogl.m_features.bTextureCompression/*.Apply ()*/)
 	return 0;
@@ -96,12 +96,12 @@ if ((m_bmP->BPP () == 4) && m_bmP->Buffer ()) {
 	CRGBColor *rgbP = reinterpret_cast<CRGBColor*> (m_bmP->Buffer ());
 	CRGBAColor *rgbaP = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ());
 
-	for (int i = m_bmP->Length () / 4; i; i--, rgbP++, rgbaP++) {
+	for (int32_t i = m_bmP->Length () / 4; i; i--, rgbP++, rgbaP++) {
 		rgbP->Red () = rgbaP->Red ();
 		rgbP->Green () = rgbaP->Green ();
 		rgbP->Blue () = rgbaP->Blue ();
 		}
-	m_bmP->Resize (uint (3 * m_bmP->Size () / 4));
+	m_bmP->Resize (uint32_t (3 * m_bmP->Size () / 4));
 	m_bmP->SetBPP (3);
 	m_bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
 	}
@@ -115,22 +115,22 @@ if ((m_bmP->BPP () == 4) && m_bmP->Buffer ()) {
 	CRGBAColor *rgbaP = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ());
 	float alpha;
 
-	for (int i = m_bmP->Length () / 4; i; i--, rgbaP++) {
+	for (int32_t i = m_bmP->Length () / 4; i; i--, rgbaP++) {
 		alpha = float (rgbaP->Alpha () / 255.0f) * fScale;
-		rgbaP->Red () = (ubyte) FRound (rgbaP->Red () * alpha);
-		rgbaP->Green () = (ubyte) FRound (rgbaP->Green () * alpha);
-		rgbaP->Blue () = (ubyte) FRound (rgbaP->Blue () * alpha);
+		rgbaP->Red () = (uint8_t) FRound (rgbaP->Red () * alpha);
+		rgbaP->Green () = (uint8_t) FRound (rgbaP->Green () * alpha);
+		rgbaP->Blue () = (uint8_t) FRound (rgbaP->Blue () * alpha);
 		}
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void CTGA::SetProperties (int alpha, int bGrayScale, double brightness, bool bSwapRB)
+void CTGA::SetProperties (int32_t alpha, int32_t bGrayScale, double brightness, bool bSwapRB)
 {
-	int			i, n, nAlpha = 0, nFrames;
-	int			h = m_bmP->Height ();
-	int			w = m_bmP->Width ();
+	int32_t			i, n, nAlpha = 0, nFrames;
+	int32_t			h = m_bmP->Height ();
+	int32_t			w = m_bmP->Width ();
 	float			nVisible = 0;
 	CFloatVector	avgColor;
 	CRGBColor	avgColorb;
@@ -142,8 +142,8 @@ void CTGA::SetProperties (int alpha, int bGrayScale, double brightness, bool bSw
 
 m_bmP->AddFlags (BM_FLAG_TGA);
 m_bmP->SetTranspType (-1);
-memset (m_bmP->TransparentFrames (), 0, 4 * sizeof (int));
-memset (m_bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
+memset (m_bmP->TransparentFrames (), 0, 4 * sizeof (int32_t));
+memset (m_bmP->SuperTranspFrames (), 0, 4 * sizeof (int32_t));
 memset (&avgColor, 0, sizeof (avgColor));
 
 m_bmP->DelFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
@@ -151,7 +151,7 @@ if (m_bmP->BPP () == 3) {
 	CRGBColor*	p = reinterpret_cast<CRGBColor*> (m_bmP->Buffer ());
 #if USE_OPENMP
 	if (gameStates.app.bMultiThreaded) {
-		int			tId, j = w * h;
+		int32_t			tId, j = w * h;
 		CFloatVector3	ac [MAX_THREADS];
 
 		memset (ac, 0, sizeof (ac));
@@ -159,7 +159,7 @@ if (m_bmP->BPP () == 3) {
 			{
 			tId = omp_get_thread_num ();
 #		pragma omp for reduction (+: nVisible)
-			for (int i = 0; i < j; i++) {
+			for (int32_t i = 0; i < j; i++) {
 				if (p [i].Red () || p [i].Green () || p [i].Blue ()) {
 					::Swap (p [i].Red (), p [i].Blue ());
 					ac [tId].Red () += p [i].Red ();
@@ -177,7 +177,7 @@ if (m_bmP->BPP () == 3) {
 		}
 	else
 #endif
-	for (int i = 0, j = w * h; i < j; i++) {
+	for (int32_t i = 0, j = w * h; i < j; i++) {
 		if (p [i].Red () || p [i].Green () || p [i].Blue ()) {
 			::Swap (p [i].Red (), p [i].Blue ());
 			avgColor.Red () += p [i].Red ();
@@ -189,19 +189,19 @@ if (m_bmP->BPP () == 3) {
 	avgColor.Alpha () = 1.0f;
 	}
 else {
-	int nSuperTransp;
+	int32_t nSuperTransp;
 
 	if (!(nFrames = h / w))
 		nFrames = 1;
 	for (n = 0; n < nFrames; n++) {
 		nSuperTransp = 0;
 
-	int				j = w * (h / nFrames);
+	int32_t				j = w * (h / nFrames);
 	CRGBAColor*	p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ()) + n * j;
 
 #if USE_OPENMP
 		if (gameStates.app.bMultiThreaded) {
-			int			nst [MAX_THREADS], nac [MAX_THREADS], tId;
+			int32_t			nst [MAX_THREADS], nac [MAX_THREADS], tId;
 			CFloatVector	avc [MAX_THREADS];
 
 			memset (avc, 0, sizeof (avc));
@@ -211,13 +211,13 @@ else {
 			{
 			tId = omp_get_thread_num ();
 #	pragma omp for reduction (+: nVisible)
-			for (int i = 0; i < j; i++) {
+			for (int32_t i = 0; i < j; i++) {
 				if (bSwapRB)
 					::Swap (p [i].Red (), p [i].Blue ());
 				if (bGrayScale) {
 					p [i].Red () =
 					p [i].Green () =
-					p [i].Blue () = ubyte ((int (p [i].Red ()) + int (p [i].Green ()) + int (p [i].Blue ())) / 3 * brightness);
+					p [i].Blue () = uint8_t ((int32_t (p [i].Red ()) + int32_t (p [i].Green ()) + int32_t (p [i].Blue ())) / 3 * brightness);
 					}
 				else if ((p [i].Red () == 120) && (p [i].Green () == 88) && (p [i].Blue () == 128)) {
 					nst [tId]++;
@@ -242,7 +242,7 @@ else {
 				avc [tId].Blue () += float (p [i].Blue ()) * a;
 				}
 			}
-		for (int i = 0, j = gameStates.app.nThreads; i < j; i++) {
+		for (int32_t i = 0, j = gameStates.app.nThreads; i < j; i++) {
 			avgColor.Red () += avc [i].Red ();
 			avgColor.Green () += avc [i].Green ();
 			avgColor.Blue () += avc [i].Blue ();
@@ -260,7 +260,7 @@ else {
 			if (bGrayScale) {
 				p->Red () =
 				p->Green () =
-				p->Blue () = ubyte ((int (p->Red ()) + int (p->Green ()) + int (p->Blue ())) / 3 * brightness);
+				p->Blue () = uint8_t ((int32_t (p->Red ()) + int32_t (p->Green ()) + int32_t (p->Blue ())) / 3 * brightness);
 				}
 			else if ((p->Red () == 120) && (p->Green () == 88) && (p->Blue () == 128)) {
 				nSuperTransp++;
@@ -302,9 +302,9 @@ else {
 			}
 		}
 	}
-avgColorb.Red () = ubyte (avgColor.Red () / nVisible);
-avgColorb.Green () = ubyte (avgColor.Green () / nVisible);
-avgColorb.Blue () = ubyte (avgColor.Blue () / nVisible);
+avgColorb.Red () = uint8_t (avgColor.Red () / nVisible);
+avgColorb.Green () = uint8_t (avgColor.Green () / nVisible);
+avgColorb.Blue () = uint8_t (avgColor.Blue () / nVisible);
 m_bmP->SetAvgColor (avgColorb);
 if (!nAlpha)
 	ConvertToRGB ();
@@ -312,24 +312,24 @@ if (!nAlpha)
 
 //------------------------------------------------------------------------------
 
-int CTGA::ReadData (CFile& cf, int alpha, double brightness, int bGrayScale, int bReverse)
+int32_t CTGA::ReadData (CFile& cf, int32_t alpha, double brightness, int32_t bGrayScale, int32_t bReverse)
 {
-	int	nBytes = int (m_header.Bits ()) / 8;
+	int32_t	nBytes = int32_t (m_header.Bits ()) / 8;
 
 m_bmP->AddFlags (BM_FLAG_TGA);
 m_bmP->SetBPP (nBytes);
 if (!(m_bmP->Buffer () || m_bmP->CreateBuffer ()))
 	 return 0;
 m_bmP->SetTranspType (-1);
-memset (m_bmP->TransparentFrames (), 0, 4 * sizeof (int));
-memset (m_bmP->SuperTranspFrames (), 0, 4 * sizeof (int));
+memset (m_bmP->TransparentFrames (), 0, 4 * sizeof (int32_t));
+memset (m_bmP->SuperTranspFrames (), 0, 4 * sizeof (int32_t));
 #if 1
 if (bReverse)
 	m_bmP->Read (cf);
 else {
-	int		h = m_bmP->Height ();
-	int		w = m_bmP->RowSize ();
-	ubyte*	bufP = m_bmP->Buffer () + w * h;
+	int32_t		h = m_bmP->Height ();
+	int32_t		w = m_bmP->RowSize ();
+	uint8_t*	bufP = m_bmP->Buffer () + w * h;
 	while (h--) {
 		bufP -= w;
 		cf.Read (bufP, 1, w);
@@ -337,9 +337,9 @@ else {
 	}
 SetProperties (alpha, bGrayScale, brightness, bReverse == 0);
 #else
-	int				i, j, n, nAlpha = 0, nVisible = 0, nFrames;
-	int				h = m_bmP->Height ();
-	int				w = m_bmP->Width ();
+	int32_t				i, j, n, nAlpha = 0, nVisible = 0, nFrames;
+	int32_t				h = m_bmP->Height ();
+	int32_t				w = m_bmP->Width ();
 	CFloatVector3		avgColor;
 	CRGBColor		avgColorb;
 	float				vec, avgAlpha = 0;
@@ -357,12 +357,12 @@ if (m_header.Bits () == 24) {
 			if (bGrayScale) {
 				p->Red () =
 				p->Green () =
-				p->Blue () = (ubyte) (((int) coord.r + (int) coord.g + (int) coord.b) / 3 * brightness);
+				p->Blue () = (uint8_t) (((int32_t) coord.r + (int32_t) coord.g + (int32_t) coord.b) / 3 * brightness);
 				}
 			else {
-				p->Red () = (ubyte) (coord.r * brightness);
-				p->Green () = (ubyte) (coord.g * brightness);
-				p->Blue () = (ubyte) (coord.b * brightness);
+				p->Red () = (uint8_t) (coord.r * brightness);
+				p->Green () = (uint8_t) (coord.g * brightness);
+				p->Blue () = (uint8_t) (coord.b * brightness);
 				}
 			avgColor.Red () += p->Red ();
 			avgColor.Green () += p->Green ();
@@ -378,7 +378,7 @@ else {
 	if (bReverse) {
 		tRGBA	coord;
 		CRGBAColor	*p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ());
-		int nSuperTransp;
+		int32_t nSuperTransp;
 
 		nFrames = h / w - 1;
 		for (i = 0; i < h; i++) {
@@ -390,12 +390,12 @@ else {
 				if (bGrayScale) {
 					p->Red () =
 					p->Green () =
-					p->Blue () = (ubyte) (((int) coord.r + (int) coord.g + (int) coord.b) / 3 * brightness);
+					p->Blue () = (uint8_t) (((int32_t) coord.r + (int32_t) coord.g + (int32_t) coord.b) / 3 * brightness);
 					}
 				else if (coord.vec) {
-					p->Red () = (ubyte) (coord.r * brightness);
-					p->Green () = (ubyte) (coord.g * brightness);
-					p->Blue () = (ubyte) (coord.b * brightness);
+					p->Red () = (uint8_t) (coord.r * brightness);
+					p->Green () = (uint8_t) (coord.g * brightness);
+					p->Blue () = (uint8_t) (coord.b * brightness);
 					}
 				if ((coord.r == 120) && (coord.g == 88) && (coord.b == 128)) {
 					nSuperTransp++;
@@ -435,7 +435,7 @@ else {
 	else {
 		tBGRA	coord;
 		CRGBAColor *p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ()) + w * (h - 1);
-		int nSuperTransp;
+		int32_t nSuperTransp;
 
 		nFrames = h / w - 1;
 		for (i = 0; i < h; i++) {
@@ -447,12 +447,12 @@ else {
 				if (bGrayScale) {
 					p->Red () =
 					p->Green () =
-					p->Blue () = (ubyte) (((int) coord.r + (int) coord.g + (int) coord.b) / 3 * brightness);
+					p->Blue () = (uint8_t) (((int32_t) coord.r + (int32_t) coord.g + (int32_t) coord.b) / 3 * brightness);
 					}
 				else {
-					p->Red () = (ubyte) (coord.r * brightness);
-					p->Green () = (ubyte) (coord.g * brightness);
-					p->Blue () = (ubyte) (coord.b * brightness);
+					p->Red () = (uint8_t) (coord.r * brightness);
+					p->Green () = (uint8_t) (coord.g * brightness);
+					p->Blue () = (uint8_t) (coord.b * brightness);
 					}
 				if ((coord.r == 120) && (coord.g == 88) && (coord.b == 128)) {
 					nSuperTransp++;
@@ -491,9 +491,9 @@ else {
 		}
 	}
 vec = (float) nVisible / 255.0f;
-avgColorb.Red () = (ubyte) (avgColor.Red () / vec);
-avgColorb.Green () = (ubyte) (avgColor.Green () / vec);
-avgColorb.Blue () = (ubyte) (avgColor.Blue () / vec);
+avgColorb.Red () = (uint8_t) (avgColor.Red () / vec);
+avgColorb.Green () = (uint8_t) (avgColor.Green () / vec);
+avgColorb.Blue () = (uint8_t) (avgColor.Blue () / vec);
 m_bmP->SetAvgColor (avgColorb);
 if (!nAlpha)
 	ConvertToRGB (bmP);
@@ -503,11 +503,11 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CTGA::WriteData (void)
+int32_t CTGA::WriteData (void)
 {
-	int				i, j;
-	int				h = m_bmP->Height ();
-	int				w = m_bmP->Width ();
+	int32_t				i, j;
+	int32_t				h = m_bmP->Height ();
+	int32_t				w = m_bmP->Width ();
 
 if (m_header.Bits () == 24) {
 	if (m_bmP->BPP () == 3) {
@@ -542,7 +542,7 @@ if (m_header.Bits () == 24) {
 else {
 	tBGRA	c;
 	CRGBAColor *p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ()) + w * (m_bmP->Height () - 1);
-	int bShaderMerge = gameOpts->ogl.bGlTexMerge;
+	int32_t bShaderMerge = gameOpts->ogl.bGlTexMerge;
 	for (i = 0; i < h; i++) {
 		for (j = w; j; j--, p++) {
 			if (bShaderMerge && !(p->Red () || p->Green () || p->Blue ()) && (p->Alpha () == 1)) {
@@ -570,14 +570,14 @@ return 1;
 //---------------------------------------------------------------
 //---------------------------------------------------------------
 
-int CTGA::Load (int alpha, double brightness, int bGrayScale)
+int32_t CTGA::Load (int32_t alpha, double brightness, int32_t bGrayScale)
 {
 return m_header.Read (m_cf, m_bmP) && ReadData (m_cf, alpha, brightness, bGrayScale, m_header.m_data.yStart != 0);
 }
 
 //---------------------------------------------------------------
 
-int CTGA::Write (void)
+int32_t CTGA::Write (void)
 {
 return m_header.Write (m_cf, m_bmP) && WriteData ();
 }
@@ -586,7 +586,7 @@ return m_header.Write (m_cf, m_bmP) && WriteData ();
 
 #if USE_SDL_IMAGE
 
-int CTGA::ReadImage (const char* pszFile, const char* pszFolder, int alpha, double brightness, int bGrayScale)
+int32_t CTGA::ReadImage (const char* pszFile, const char* pszFolder, int32_t alpha, double brightness, int32_t bGrayScale)
 {
 	char	szFolder [FILENAME_LEN], szFile [FILENAME_LEN], szExt [FILENAME_LEN], szImage [FILENAME_LEN];
 	CFile	cf;
@@ -596,7 +596,7 @@ if (!pszFolder)
 	pszFolder = gameFolders.game.szData [0];
 if (!*szFolder)
 	strcpy (szFolder, pszFolder);
-int l = int (strlen (szFolder));
+int32_t l = int32_t (strlen (szFolder));
 if (l && ((szFolder [l - 1] == '/') || (szFolder [l - 1] == '\\')))
 	szFolder [l - 1] = '\0';
 #	if 1
@@ -633,9 +633,9 @@ return 1;
 
 //---------------------------------------------------------------
 
-int CTGA::Read (const char *pszFile, const char *pszFolder, int alpha, double brightness, int bGrayScale, bool bAutoComplete)
+int32_t CTGA::Read (const char *pszFile, const char *pszFolder, int32_t alpha, double brightness, int32_t bGrayScale, bool bAutoComplete)
 {
-	int	r;
+	int32_t	r;
 
 #if USE_SDL_IMAGE
 
@@ -698,10 +698,10 @@ return m_bmP = NULL;
 
 //	-----------------------------------------------------------------------------
 
-int CTGA::Save (const char *pszFile, const char *pszFolder)
+int32_t CTGA::Save (const char *pszFile, const char *pszFolder)
 {
 	char	szFolder [FILENAME_LEN], fn [FILENAME_LEN];
-	int	r;
+	int32_t	r;
 
 if (!pszFolder)
 	pszFolder = gameFolders.game.szData [0];
@@ -716,14 +716,14 @@ return r;
 
 //	-----------------------------------------------------------------------------
 
-int CTGA::Shrink (int xFactor, int yFactor, int bRealloc)
+int32_t CTGA::Shrink (int32_t xFactor, int32_t yFactor, int32_t bRealloc)
 {
-	int		bpp = m_bmP->BPP ();
-	int		xSrc, ySrc, xMax, yMax, xDest, yDest, x, y, w, h, i, nFactor2, nSuperTransp, bSuperTransp;
-	ubyte		*dataP, *pSrc, *pDest;
-	int		cSum [4];
+	int32_t		bpp = m_bmP->BPP ();
+	int32_t		xSrc, ySrc, xMax, yMax, xDest, yDest, x, y, w, h, i, nFactor2, nSuperTransp, bSuperTransp;
+	uint8_t		*dataP, *pSrc, *pDest;
+	int32_t		cSum [4];
 
-	static ubyte superTranspKeys [3] = {120,88,128};
+	static uint8_t superTranspKeys [3] = {120,88,128};
 
 if (!m_bmP->Buffer ())
 	return 0;
@@ -739,9 +739,9 @@ nFactor2 = xFactor * yFactor;
 if (!bRealloc)
 	pDest = dataP = m_bmP->Buffer ();
 else {
-	if (!(dataP = new ubyte [xMax * yMax * bpp]))
+	if (!(dataP = new uint8_t [xMax * yMax * bpp]))
 		return 0;
-	UseBitmapCache (m_bmP, (int) -m_bmP->Height () * int (m_bmP->RowSize ()));
+	UseBitmapCache (m_bmP, (int32_t) -m_bmP->Height () * int32_t (m_bmP->RowSize ()));
 	pDest = dataP;
 	}
 if (bpp == 3) {
@@ -758,7 +758,7 @@ if (bpp == 3) {
 					}
 				}
 			for (i = 0; i < bpp; i++)
-				*pDest++ = (ubyte) (cSum [i] / (nFactor2));
+				*pDest++ = (uint8_t) (cSum [i] / (nFactor2));
 			}
 		}
 	}
@@ -791,7 +791,7 @@ else {
 				}
 			else {
 				for (i = 0, bSuperTransp = 1; i < bpp; i++)
-					pDest [i] = (ubyte) (cSum [i] / (nFactor2 - nSuperTransp));
+					pDest [i] = (uint8_t) (cSum [i] / (nFactor2 - nSuperTransp));
 				if (!(m_bmP->Flags () & BM_FLAG_SUPER_TRANSPARENT)) {
 					for (i = 0; i < 3; i++)
 						if (pDest [i] != superTranspKeys [i])
@@ -815,7 +815,7 @@ m_bmP->SetWidth (xMax);
 m_bmP->SetHeight (yMax);
 m_bmP->SetRowSize (m_bmP->RowSize () / xFactor);
 if (bRealloc)
-	UseBitmapCache (m_bmP, int (m_bmP->Height ()) * int (m_bmP->RowSize ()));
+	UseBitmapCache (m_bmP, int32_t (m_bmP->Height ()) * int32_t (m_bmP->RowSize ()));
 return 1;
 }
 
@@ -826,8 +826,8 @@ double CTGA::Brightness (void)
 if (!m_bmP)
 	return 0;
 else {
-		int		bAlpha = m_bmP->BPP () == 4, i, j;
-		ubyte		*dataP;
+		int32_t		bAlpha = m_bmP->BPP () == 4, i, j;
+		uint8_t		*dataP;
 		double	pixelBright, totalBright, nPixels, alpha;
 
 	if (!(dataP = m_bmP->Buffer ()))
@@ -851,11 +851,11 @@ else {
 
 //	-----------------------------------------------------------------------------
 
-void CTGA::ChangeBrightness (double dScale, int bInverse, int nOffset, int bSkipAlpha)
+void CTGA::ChangeBrightness (double dScale, int32_t bInverse, int32_t nOffset, int32_t bSkipAlpha)
 {
 if (m_bmP) {
-		int		bpp = m_bmP->BPP (), h, i, j, c, bAlpha = (bpp == 4);
-		ubyte		*dataP;
+		int32_t		bpp = m_bmP->BPP (), h, i, j, c, bAlpha = (bpp == 4);
+		uint8_t		*dataP;
 
 	if ((dataP = m_bmP->Buffer ())) {
 	if (!bAlpha)
@@ -865,16 +865,16 @@ if (m_bmP) {
 		if (nOffset) {
 			for (i = m_bmP->Width () * m_bmP->Height (); i; i--) {
 				for (h = 0, j = 3; j; j--, dataP++) {
-					c = (int) *dataP + nOffset;
+					c = (int32_t) *dataP + nOffset;
 					h += c;
-					*dataP = (ubyte) ((c < 0) ? 0 : (c > 255) ? 255 : c);
+					*dataP = (uint8_t) ((c < 0) ? 0 : (c > 255) ? 255 : c);
 					}
 				if (bSkipAlpha)
 					dataP++;
 				else if (bAlpha) {
 					if ((c = *dataP)) {
 						c += nOffset;
-						*dataP = (ubyte) ((c < 0) ? 0 : (c > 255) ? 255 : c);
+						*dataP = (uint8_t) ((c < 0) ? 0 : (c > 255) ? 255 : c);
 						}
 					dataP++;
 					}
@@ -884,7 +884,7 @@ if (m_bmP) {
 			if (dScale < 0) {
 				for (i = m_bmP->Width () * m_bmP->Height (); i; i--) {
 					for (j = bpp; j; j--, dataP++)
-						*dataP = (ubyte) (*dataP * dScale);
+						*dataP = (uint8_t) (*dataP * dScale);
 					if (bSkipAlpha)
 						dataP++;
 					}
@@ -894,7 +894,7 @@ if (m_bmP) {
 				for (i = m_bmP->Width () * m_bmP->Height (); i; i--) {
 					for (j = bpp; j; j--, dataP++)
 						if ((c = 255 - *dataP))
-							*dataP = 255 - (ubyte) (c * dScale);
+							*dataP = 255 - (uint8_t) (c * dScale);
 					if (bSkipAlpha)
 						dataP++;
 					}
@@ -903,8 +903,8 @@ if (m_bmP) {
 				for (i = m_bmP->Width () * m_bmP->Height (); i; i--) {
 					for (j = bpp; j; j--, dataP++)
 						if ((c = 255 - *dataP)) {
-							c = (int) (*dataP * dScale);
-							*dataP = (ubyte) ((c > 255) ? 255 : c);
+							c = (int32_t) (*dataP * dScale);
+							*dataP = (uint8_t) ((c > 255) ? 255 : c);
 							}
 					if (bSkipAlpha)
 						dataP++;
@@ -917,10 +917,10 @@ if (m_bmP) {
 
 //------------------------------------------------------------------------------
 
-int CTGA::Interpolate (int nScale)
+int32_t CTGA::Interpolate (int32_t nScale)
 {
-	ubyte	*bufP, *destP, *srcP1, *srcP2;
-	int	nSize, nFrameSize, nStride, nFrames, i, j;
+	uint8_t	*bufP, *destP, *srcP1, *srcP2;
+	int32_t	nSize, nFrameSize, nStride, nFrames, i, j;
 
 if (nScale < 1)
 	nScale = 1;
@@ -930,7 +930,7 @@ nScale = 1 << nScale;
 nFrames = m_bmP->Height () / m_bmP->Width ();
 nFrameSize = m_bmP->Width () * m_bmP->Width () * m_bmP->BPP ();
 nSize = nFrameSize * nFrames * nScale;
-if (!(bufP = new ubyte [nSize]))
+if (!(bufP = new uint8_t [nSize]))
 	return 0;
 m_bmP->SetHeight (m_bmP->Height () * nScale);
 memset (bufP, 0, nSize);
@@ -947,7 +947,7 @@ while (nScale > 1) {
 		srcP2 = bufP + nStride * ((i + 1) % nFrames);
 		destP = srcP1 + nStride / 2;
 		for (j = nFrameSize; j; j--) {
-			*destP++ = (ubyte) (((short) *srcP1++ + (short) *srcP2++) / 2);
+			*destP++ = (uint8_t) (((int16_t) *srcP1++ + (int16_t) *srcP2++) / 2);
 			if (destP - bufP > nSize)
 				destP = destP;
 			}
@@ -963,10 +963,10 @@ return nFrames;
 
 //------------------------------------------------------------------------------
 
-int CTGA::MakeSquare (void)
+int32_t CTGA::MakeSquare (void)
 {
-	ubyte	*bufP, *destP, *srcP;
-	int	nSize, nFrameSize, nRowSize, nFrames, i, j, w, q;
+	uint8_t	*bufP, *destP, *srcP;
+	int32_t	nSize, nFrameSize, nRowSize, nFrames, i, j, w, q;
 
 nFrames = m_bmP->Height () / m_bmP->Width ();
 if (nFrames < 4)
@@ -978,7 +978,7 @@ if (q * q != nFrames)
 w = m_bmP->Width ();
 nFrameSize = w * w * m_bmP->BPP ();
 nSize = nFrameSize * nFrames;
-if (!(bufP = new ubyte [nSize]))
+if (!(bufP = new uint8_t [nSize]))
 	return 0;
 srcP = m_bmP->Buffer ();
 nRowSize = w * m_bmP->BPP ();
@@ -998,10 +998,10 @@ return q;
 
 //------------------------------------------------------------------------------
 
-CBitmap* CTGA::ReadModelTexture (const char *pszFile, int bCustom)
+CBitmap* CTGA::ReadModelTexture (const char *pszFile, int32_t bCustom)
 {
 	char			fn [FILENAME_LEN], en [FILENAME_LEN], fnBase [FILENAME_LEN], szShrunkFolder [FILENAME_LEN];
-	int			nShrinkFactor = 1 << (3 - gameStates.render.nModelQuality);
+	int32_t			nShrinkFactor = 1 << (3 - gameStates.render.nModelQuality);
 	time_t		tBase, tShrunk;
 
 if (!pszFile)
@@ -1013,14 +1013,14 @@ if (nShrinkFactor > 1) {
 	tBase = m_cf.Date (fnBase, bCustom ? gameFolders.mods.szModels [0] : gameFolders.game.szModels, 0);
 	tShrunk = m_cf.Date (fnBase, szShrunkFolder, 0);
 	if ((tShrunk > tBase) && Read (fnBase, szShrunkFolder, -1, 1.0, 0)) {
-		UseBitmapCache (m_bmP, int (m_bmP->Height ()) * int (m_bmP->RowSize ()));
+		UseBitmapCache (m_bmP, int32_t (m_bmP->Height ()) * int32_t (m_bmP->RowSize ()));
 		return m_bmP;
 		}
 	}
 if (!(Read (pszFile, bCustom ? gameFolders.mods.szModels [bCustom - 1] : gameFolders.game.szModels, -1, 1.0, 0, false) ||
 	   Read (pszFile, bCustom ? gameFolders.mods.szModels [bCustom - 1] : gameFolders.game.szModels, -1, 1.0, 0, true)))
 	return NULL;
-UseBitmapCache (m_bmP, int (m_bmP->Height ()) * int (m_bmP->RowSize ()));
+UseBitmapCache (m_bmP, int32_t (m_bmP->Height ()) * int32_t (m_bmP->RowSize ()));
 if (gameStates.app.bCacheTextures && (nShrinkFactor > 1) &&
 	 (m_bmP->Width () == 512) && Shrink (nShrinkFactor, nShrinkFactor, 1)) {
 	strcat (fn, ".tga");
@@ -1037,7 +1037,7 @@ return m_bmP;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int CModelTextures::ReadBitmap (int i, int bCustom)
+int32_t CModelTextures::ReadBitmap (int32_t i, int32_t bCustom)
 {
 	CBitmap*	bmP = m_bitmaps + i;
 	CTGA		tga (bmP);
@@ -1057,9 +1057,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CModelTextures::Read (int bCustom)
+int32_t CModelTextures::Read (int32_t bCustom)
 {
-for (int i = 0; i < m_nBitmaps; i++)
+for (int32_t i = 0; i < m_nBitmaps; i++)
 	if (!ReadBitmap (i, bCustom))
 		return 0;
 return 1;
@@ -1070,16 +1070,16 @@ return 1;
 void CModelTextures::Release (void)
 {
 if ((m_bitmaps.Buffer ()))
-	for (int i = 0; i < m_nBitmaps; i++)
+	for (int32_t i = 0; i < m_nBitmaps; i++)
 		m_bitmaps [i].ReleaseTexture ();
 }
 
 //------------------------------------------------------------------------------
 
-int CModelTextures::Bind (int bCustom)
+int32_t CModelTextures::Bind (int32_t bCustom)
 {
 if ((m_bitmaps.Buffer ()))
-	for (int i = 0; i < m_nBitmaps; i++) {
+	for (int32_t i = 0; i < m_nBitmaps; i++) {
 		if (!(m_bitmaps [i].Buffer () || ReadBitmap (i, bCustom)))
 			return 0;
 		m_bitmaps [i].Bind (1);
@@ -1091,14 +1091,14 @@ return 1;
 
 void CModelTextures::Destroy (void)
 {
-	int	i;
+	int32_t	i;
 
 if (m_names.Buffer ()) {
 	for (i = 0; i < m_nBitmaps; i++)
 		m_names [i].Destroy ();
 if (m_bitmaps.Buffer ())
 	for (i = 0; i < m_nBitmaps; i++) {
-		UseBitmapCache (&m_bitmaps [i], -static_cast<int> (m_bitmaps [i].Size ()));
+		UseBitmapCache (&m_bitmaps [i], -static_cast<int32_t> (m_bitmaps [i].Size ()));
 		m_bitmaps [i].Destroy ();
 		}
 	m_nTeam.Destroy ();
@@ -1110,7 +1110,7 @@ if (m_bitmaps.Buffer ())
 
 //------------------------------------------------------------------------------
 
-bool CModelTextures::Create (int nBitmaps)
+bool CModelTextures::Create (int32_t nBitmaps)
 {
 if (nBitmaps <= 0)
 	return false;

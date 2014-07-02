@@ -12,10 +12,10 @@
 #include "descent.h"
 #include "gr.h"
 
-void GrMergeTextures( ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale )
+void GrMergeTextures( uint8_t * lower, uint8_t * upper, uint8_t * dest, uint16_t width, uint16_t height, int32_t scale )
 {
-	int x,y,h;
-	ubyte c;
+	int32_t x,y,h;
+	uint8_t c;
 	for (y=0;y<height;y++) 
 		for (x=0;x<width;x++) {
 			h = (width*y+x) / scale;
@@ -26,10 +26,10 @@ void GrMergeTextures( ubyte * lower, ubyte * upper, ubyte * dest, ushort width, 
 		}
 }
 
-void GrMergeTextures1( ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale )
+void GrMergeTextures1( uint8_t * lower, uint8_t * upper, uint8_t * dest, uint16_t width, uint16_t height, int32_t scale )
 {
-	int x,y;
-	ubyte c;
+	int32_t x,y;
+	uint8_t c;
 	for (y=0; y<height; y++ )
 		for (x=0; x<width; x++ ) {
 			c = upper[ (width*x+(height-1-y)) / scale ];
@@ -39,10 +39,10 @@ void GrMergeTextures1( ubyte * lower, ubyte * upper, ubyte * dest, ushort width,
 		}
 }
 
-void GrMergeTextures2( ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale )
+void GrMergeTextures2( uint8_t * lower, uint8_t * upper, uint8_t * dest, uint16_t width, uint16_t height, int32_t scale )
 {
- int x,y;
- ubyte c;
+ int32_t x,y;
+ uint8_t c;
 	for (y=0; y<height; y++ )
 		for (x=0; x<width; x++ ) {
 			c = upper[ (width*(height-1-y)+(width-1-x))/scale ];
@@ -52,10 +52,10 @@ void GrMergeTextures2( ubyte * lower, ubyte * upper, ubyte * dest, ushort width,
 		}
 }
 
-void GrMergeTextures3( ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale )
+void GrMergeTextures3( uint8_t * lower, uint8_t * upper, uint8_t * dest, uint16_t width, uint16_t height, int32_t scale )
 {
- int x,y;
- ubyte c;
+ int32_t x,y;
+ uint8_t c;
 	for (y=0; y<height; y++ )
 		for (x=0; x<width; x++ ) {
 			c = upper[ width*(height-1-x)+y  ];

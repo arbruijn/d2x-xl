@@ -25,16 +25,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RBA_MEDIA_CHANGED	-1
 
 typedef struct RBACHANNELCTL {
-	uint out0in, out0vol;
-	uint out1in, out1vol;
-	uint out2in, out2vol;
-	uint out3in, out3vol;
+	uint32_t out0in, out0vol;
+	uint32_t out1in, out1vol;
+	uint32_t out2in, out2vol;
+	uint32_t out3in, out3vol;
 } RBACHANNELCTL;
 
 class CRBA {
 	private:
 		SDL_CD*	m_cdInfo;
-		int		m_bInitialized;
+		int32_t		m_bInitialized;
 
 	public:
 		CRBA ();
@@ -43,32 +43,32 @@ class CRBA {
 		void Destroy (void);
 		void RegisterCD (void);
 		long GetDeviceStatus (void);
-		int PlayTrack (int track);
-		int PlayTracks (int first, int last);	//plays tracks first through last, inclusive
-		int CheckMediaChange (void);
-		long GetHeadLoc (int *min, int *sec, int *frame);
-		int PeekPlayStatus (void);
+		int32_t PlayTrack (int32_t track);
+		int32_t PlayTracks (int32_t first, int32_t last);	//plays tracks first through last, inclusive
+		int32_t CheckMediaChange (void);
+		long GetHeadLoc (int32_t *min, int32_t *sec, int32_t *frame);
+		int32_t PeekPlayStatus (void);
 		void _CDECL_ Stop (void);
 		void SetStereoAudio (RBACHANNELCTL* channels);
 		void SetQuadAudio (RBACHANNELCTL* channels);
 		void GetAudioInfo (RBACHANNELCTL* channels);
-		void SetChannelVolume (int channel, int volume);
-		void SetVolume (int volume);
-		int Enabled (void);
+		void SetChannelVolume (int32_t channel, int32_t volume);
+		void SetVolume (int32_t volume);
+		int32_t Enabled (void);
 		void Disable (void);
 		void Enable (void);
-		int GetNumberOfTracks (void);
+		int32_t GetNumberOfTracks (void);
 		void Pause (void);
-		int Resume (void);
+		int32_t Resume (void);
 
 		//return the track number currently playing.  Useful if RBAPlayTracks() 
 		//is called.  Returns 0 if no track playing, else track number
-		int GetTrackNum (void);
+		int32_t GetTrackNum (void);
 		// get the cddb discid for the current cd.
-		uint GetDiscID (void);
+		uint32_t GetDiscID (void);
 
 	private:
-		int cddb_sum (int n);
+		int32_t cddb_sum (int32_t n);
 };
 
 extern class CRBA rba;

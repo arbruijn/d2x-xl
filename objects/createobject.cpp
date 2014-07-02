@@ -54,7 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "loadgame.h"
 #include "multi.h"
 
-int MultiPowerupIs4Pack (int);
+int32_t MultiPowerupIs4Pack (int32_t);
 
 //------------------------------------------------------------------------------
 
@@ -72,15 +72,15 @@ return gameData.time.xGame - m_xCreationTime;
 
 //------------------------------------------------------------------------------
 
-void CObject::Initialize (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos,
-								  const CFixMatrix& mOrient, fix xSize, ubyte cType, ubyte mType, ubyte rType)
+void CObject::Initialize (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos,
+								  const CFixMatrix& mOrient, fix xSize, uint8_t cType, uint8_t mType, uint8_t rType)
 {
 SetSignature (gameData.objs.nNextSignature++);
 SetType (nType);
 SetKey (nId);
 SetLastPos (vPos);
 SetSize (xSize);
-SetCreator ((sbyte) nCreator);
+SetCreator ((int8_t) nCreator);
 SetOrient (&mOrient);
 SetControlType (cType);
 SetMovementType (mType);
@@ -97,9 +97,9 @@ LinkToSeg (nSegment);
 
 //-----------------------------------------------------------------------------
 
-int CObject::Create (ubyte nType, ubyte nId, short nCreator, short nSegment,
+int32_t CObject::Create (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSegment,
 							const CFixVector& vPos, const CFixMatrix& mOrient,
-							fix xSize, ubyte cType, ubyte mType, ubyte rType)
+							fix xSize, uint8_t cType, uint8_t mType, uint8_t rType)
 {
 #if DBG
 if (nType == OBJ_WEAPON) {
@@ -108,12 +108,12 @@ if (nType == OBJ_WEAPON) {
 		nType = nType;
 	if (nId == FLARE_ID)
 		nType = nType;
-	if (IsMissile ((int) nId))
+	if (IsMissile ((int32_t) nId))
 		nType = nType;
 	}
 else if (nType == OBJ_ROBOT) {
 #if 0
-	if (ROBOTINFO ((int) nId).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
+	if (ROBOTINFO ((int32_t) nId).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
 		return -1;
 #endif
 	}
@@ -150,7 +150,7 @@ SetKey (nId);
 SetLastPos (vPos);
 SetPos (&vPos);
 SetSize (xSize);
-SetCreator ((sbyte) nCreator);
+SetCreator ((int8_t) nCreator);
 SetOrient (&mOrient);
 SetControlType (cType);
 SetMovementType (mType);
@@ -197,10 +197,10 @@ return Key ();
 //searches for the correct CSegment
 //returns the CObject number
 
-int CreateObject (ubyte nType, ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, const CFixMatrix& mOrient,
-						fix xSize, ubyte cType, ubyte mType, ubyte rType)
+int32_t CreateObject (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, const CFixMatrix& mOrient,
+						fix xSize, uint8_t cType, uint8_t mType, uint8_t rType)
 {
-	short		nObject;
+	int16_t		nObject;
 	CObject	*objP;
 
 #if DBG
@@ -215,14 +215,14 @@ if (nType == OBJ_WEAPON) {
 		nType = nType;
 	if (nId == EARTHSHAKER_MEGA_ID)
 		nType = nType;
-	if (CObject::IsMissile ((int) nId))
+	if (CObject::IsMissile ((int32_t) nId))
 		nType = nType;
 	else
 		nType = nType;
 	}
 else if (nType == OBJ_ROBOT) {
 #if 0
-	if (ROBOTINFO ((int) nId).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
+	if (ROBOTINFO ((int32_t) nId).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
 		return -1;
 #endif
 	}
@@ -274,11 +274,11 @@ objP->info.vLastPos =
 objP->info.position.vPos = vPos;
 objP->SetOrigin (vPos);
 objP->SetSize (xSize);
-objP->info.nCreator = sbyte (nCreator);
+objP->info.nCreator = int8_t (nCreator);
 objP->SetLife (IMMORTAL_TIME);
 if (IsMultiGame && IsEntropyGame && (nType == OBJ_POWERUP) && (nId == POW_ENTROPY_VIRUS)) {
 	if ((nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_PLAYER))
-		objP->info.nCreator = sbyte (GetTeam (OBJECTS [nCreator].info.nId) + 1);
+		objP->info.nCreator = int8_t (GetTeam (OBJECTS [nCreator].info.nId) + 1);
 	if (extraGameInfo [1].entropy.nVirusLifespan > 0)
 		objP->SetLife (I2X (extraGameInfo [1].entropy.nVirusLifespan));
 	}
@@ -323,11 +323,11 @@ objP->StopSync ();
 memset (&objP->HitInfo (), 0, sizeof (CObjHitInfo));
 #if 1
 if (IsMultiGame && IsCoopGame && 
-	 (nType == OBJ_WEAPON) && CObject::IsMissile (short (nId)) && 
+	 (nType == OBJ_WEAPON) && CObject::IsMissile (int16_t (nId)) && 
 	 (nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_PLAYER)) {
 	extern char powerupToObject [MAX_POWERUP_TYPES];
 
-	for (int i = 0; i < MAX_POWERUP_TYPES; i++) {
+	for (int32_t i = 0; i < MAX_POWERUP_TYPES; i++) {
 		if (powerupToObject [i] == nId)
 			gameData.multiplayer.maxPowerupsAllowed [i]--;
 		}
@@ -340,10 +340,10 @@ return nObject;
 
 //------------------------------------------------------------------------------
 
-int CloneObject (CObject *objP)
+int32_t CloneObject (CObject *objP)
 {
-	short		nObject, nSegment;
-	int		nSignature;
+	int16_t		nObject, nSegment;
+	int32_t		nSignature;
 	CObject	*cloneP;
 
 if (0 > (nObject = AllocObject ()))
@@ -368,7 +368,7 @@ return nObject;
 
 //------------------------------------------------------------------------------
 
-int CreateRobot (ubyte nId, short nSegment, const CFixVector& vPos)
+int32_t CreateRobot (uint8_t nId, int16_t nSegment, const CFixVector& vPos)
 {
 if (nId >= gameData.bots.nTypes [gameStates.app.bD1Mission]) {
 	PrintLog (0, "Trying to create non-existent robot (type %d)\n", nId);
@@ -379,9 +379,9 @@ return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, g
 
 //------------------------------------------------------------------------------
 
-int PowerupsInMine (int nPowerup)
+int32_t PowerupsInMine (int32_t nPowerup)
 {
-int nCount = 0;
+int32_t nCount = 0;
 if (gameStates.multi.nGameType == UDP_GAME) {
 	nCount = PowerupsOnShips (nPowerup);
 	if (MultiPowerupIs4Pack (nPowerup))
@@ -389,7 +389,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 	}
 nCount += gameData.multiplayer.powerupsInMine [nPowerup];
 if (nPowerup == POW_VULCAN_AMMO) {
-	int nAmmo = 0;
+	int32_t nAmmo = 0;
 	CObject* objP;
 	FORALL_POWERUP_OBJS (objP, i) {
 		if ((objP->Id () == POW_VULCAN) || (objP->Id () == POW_GAUSS))
@@ -398,8 +398,8 @@ if (nPowerup == POW_VULCAN_AMMO) {
 	nCount += (nAmmo + VULCAN_CLIP_CAPACITY - 1) / VULCAN_CLIP_CAPACITY;
 	}
 else if ((nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE)) {
-	int nMines = 0;
-	int nId = (nPowerup == POW_PROXMINE) ? PROXMINE_ID : SMARTMINE_ID;
+	int32_t nMines = 0;
+	int32_t nId = (nPowerup == POW_PROXMINE) ? PROXMINE_ID : SMARTMINE_ID;
 	CObject* objP;
 	FORALL_WEAPON_OBJS (objP, i) {
 		if (objP->Id () == nId)
@@ -413,10 +413,10 @@ return nCount;
 //-----------------------------------------------------------------------------
 
 #if DBG
-int nDbgPowerup = -1;
+int32_t nDbgPowerup = -1;
 #endif
 
-void AddAllowedPowerup (int nPowerup, int nCount)
+void AddAllowedPowerup (int32_t nPowerup, int32_t nCount)
 {
 if (nCount && powerupFilter [nPowerup]) {
 #if DBG
@@ -433,7 +433,7 @@ if (nCount && powerupFilter [nPowerup]) {
 
 //-----------------------------------------------------------------------------
 
-void RemoveAllowedPowerup (int nPowerup)
+void RemoveAllowedPowerup (int32_t nPowerup)
 {
 if (MultiPowerupIs4Pack (nPowerup))
 	gameData.multiplayer.maxPowerupsAllowed [nPowerup - 1] -= 4;
@@ -444,7 +444,7 @@ if ((nPowerup == POW_VULCAN) || (nPowerup == POW_GAUSS))
 
 //-----------------------------------------------------------------------------
 
-void AddPowerupInMine (int nPowerup, bool bIncreaseLimit)
+void AddPowerupInMine (int32_t nPowerup, bool bIncreaseLimit)
 {
 #if DBG
 if (nPowerup == nDbgPowerup)
@@ -459,7 +459,7 @@ if (bIncreaseLimit)
 
 //-----------------------------------------------------------------------------
 
-void RemovePowerupInMine (int nPowerup)
+void RemovePowerupInMine (int32_t nPowerup)
 {
 #if DBG
 if (nPowerup == nDbgPowerup)
@@ -478,14 +478,14 @@ if (gameData.multiplayer.powerupsInMine [nPowerup] > 0) {
 
 //------------------------------------------------------------------------------
 
-int MissingPowerups (int nPowerup, int bBreakDown)
+int32_t MissingPowerups (int32_t nPowerup, int32_t bBreakDown)
 {
 return gameData.multiplayer.maxPowerupsAllowed [nPowerup] - PowerupsInMine (nPowerup);
 }
 
 //------------------------------------------------------------------------------
 
-static inline int TooManyPowerups (int nPowerup)
+static inline int32_t TooManyPowerups (int32_t nPowerup)
 {
 if (!IsMultiGame)
 	return 0;
@@ -498,7 +498,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CreatePowerup (ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, int bIgnoreLimits, bool bForce)
+int32_t CreatePowerup (uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, int32_t bIgnoreLimits, bool bForce)
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return -1;
@@ -506,7 +506,7 @@ if (nId >= MAX_POWERUP_TYPES) {
 	PrintLog (0, "Trying to create non-existent powerup (type %d)\n", nId);
 	return -1;
 	}
-if (!bIgnoreLimits && TooManyPowerups ((int) nId)) {
+if (!bIgnoreLimits && TooManyPowerups ((int32_t) nId)) {
 #if 1 //DBG
 	PrintLog (0, "Deleting excess powerup %d (in mine: %d, on ships: %d, max: %d)\n", 
 				 nId, gameData.multiplayer.powerupsInMine [nId], PowerupsOnShips (nId), gameData.multiplayer.maxPowerupsAllowed [nId]);
@@ -517,16 +517,16 @@ if (!bIgnoreLimits && TooManyPowerups ((int) nId)) {
 	}
 if (gameStates.gameplay.bMineMineCheat && !bForce && (CObject::IsEquipment (nId) < 2))
 	return -1;
-short nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objs.pwrUp.info [nId].size,
+int16_t nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objs.pwrUp.info [nId].size,
 										CT_POWERUP, MT_PHYSICS, RT_POWERUP);
 if ((nObject >= 0) && IsMultiGame && PowerupClass (nId)) 
-	AddPowerupInMine ((int) nId);
+	AddPowerupInMine ((int32_t) nId);
 return nObject;
 }
 
 //------------------------------------------------------------------------------
 
-int CreateWeapon (ubyte nId, short nCreator, short nSegment, const CFixVector& vPos, fix xSize, ubyte rType)
+int32_t CreateWeapon (uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, fix xSize, uint8_t rType)
 {
 if (rType == 255) {
 	switch (gameData.weapons.info [nId].renderType) {
@@ -556,14 +556,14 @@ return CreateObject (OBJ_WEAPON, nId, nCreator, nSegment, vPos, CFixMatrix::IDEN
 
 //------------------------------------------------------------------------------
 
-int CreateFireball (ubyte nId, short nSegment, const CFixVector& vPos, fix xSize, ubyte rType)
+int32_t CreateFireball (uint8_t nId, int16_t nSegment, const CFixVector& vPos, fix xSize, uint8_t rType)
 {
 return CreateObject (OBJ_FIREBALL, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, xSize, CT_EXPLOSION, MT_NONE, rType);
 }
 
 //------------------------------------------------------------------------------
 
-int CreateDebris (CObject *parentP, short nSubModel)
+int32_t CreateDebris (CObject *parentP, int16_t nSubModel)
 {
 return CreateObject (OBJ_DEBRIS, 0, -1, parentP->info.nSegment, parentP->info.position.vPos, parentP->info.position.mOrient,
 							gameData.models.polyModels [0][parentP->ModelId ()].SubModels ().rads [nSubModel],
@@ -572,7 +572,7 @@ return CreateObject (OBJ_DEBRIS, 0, -1, parentP->info.nSegment, parentP->info.po
 
 //------------------------------------------------------------------------------
 
-int CreateCamera (CObject *parentP)
+int32_t CreateCamera (CObject *parentP)
 {
 return CreateObject (OBJ_CAMERA, 0, -1, parentP->info.nSegment, parentP->info.position.vPos, parentP->info.position.mOrient, 0,
 							CT_NONE, MT_NONE, RT_NONE);
@@ -580,18 +580,18 @@ return CreateObject (OBJ_CAMERA, 0, -1, parentP->info.nSegment, parentP->info.po
 
 //------------------------------------------------------------------------------
 
-int CreateLight (ubyte nId, short nSegment, const CFixVector& vPos)
+int32_t CreateLight (uint8_t nId, int16_t nSegment, const CFixVector& vPos)
 {
 return CreateObject (OBJ_LIGHT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, 0, CT_LIGHT, MT_NONE, RT_NONE);
 }
 
 //------------------------------------------------------------------------------
 
-void CreateSmallFireballOnObject (CObject *objP, fix size_scale, int bSound)
+void CreateSmallFireballOnObject (CObject *objP, fix size_scale, int32_t bSound)
 {
 	fix			size;
 	CFixVector	vPos, vRand;
-	short			nSegment;
+	int16_t			nSegment;
 
 vPos = objP->info.position.vPos;
 vRand = CFixVector::Random();
@@ -616,11 +616,11 @@ if (nSegment != -1) {
 //------------------------------------------------------------------------------
 
 
-void CreateVClipOnObject (CObject *objP, fix xScale, ubyte nVClip)
+void CreateVClipOnObject (CObject *objP, fix xScale, uint8_t nVClip)
 {
 	fix			xSize;
 	CFixVector	vPos, vRand;
-	short			nSegment;
+	int16_t			nSegment;
 
 vPos = objP->info.position.vPos;
 vRand = CFixVector::Random();
@@ -640,9 +640,9 @@ if (nSegment != -1) {
 
 //------------------------------------------------------------------------------
 //creates a marker CObject in the world.  returns the CObject number
-int DropMarkerObject (CFixVector& vPos, short nSegment, CFixMatrix& orient, ubyte nMarker)
+int32_t DropMarkerObject (CFixVector& vPos, int16_t nSegment, CFixMatrix& orient, uint8_t nMarker)
 {
-	short nObject;
+	int16_t nObject;
 
 Assert (gameData.models.nMarkerModel != -1);
 nObject = CreateObject (OBJ_MARKER, nMarker, -1, nSegment, vPos, orient,
@@ -660,12 +660,12 @@ return nObject;
 //------------------------------------------------------------------------------
 
 //remove CObject from the world
-void ReleaseObject (short nObject)
+void ReleaseObject (int16_t nObject)
 {
 if ((nObject <= 0) || (nObject >= LEVEL_OBJECTS))
 	return;
 
-	int nParent;
+	int32_t nParent;
 	CObject *objP = OBJECTS + nObject;
 
 if (objP->info.nType == OBJ_WEAPON) {

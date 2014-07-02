@@ -83,11 +83,11 @@ m_faces.Clear (0);
 m_index [0].Clear (0);
 m_sortedVerts.Clear (0);
 
-for (ushort i = 0; i < m_nSubModels; i++)
+for (uint16_t i = 0; i < m_nSubModels; i++)
 	m_subModels [i].m_nSubModel = i;
 
 if (ogl.m_features.bVertexBufferObjects) {
-	int i;
+	int32_t i;
 	ogl.ClearError (0);
 	glGenBuffersARB (1, &m_vboDataHandle);
 	if ((i = glGetError ())) {
@@ -116,8 +116,8 @@ if (ogl.m_features.bVertexBufferObjects) {
 	if (m_vboIndexHandle) {
 #if !DIRECT_VBO
 		glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_vboIndexHandle);
-		glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_nFaceVerts * sizeof (short), NULL, GL_STATIC_DRAW_ARB);
-		m_index [1].SetBuffer (reinterpret_cast<short*> (glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)), 1, m_nFaceVerts);
+		glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_nFaceVerts * sizeof (int16_t), NULL, GL_STATIC_DRAW_ARB);
+		m_index [1].SetBuffer (reinterpret_cast<int16_t*> (glMapBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB)), 1, m_nFaceVerts);
 #endif
 		}
 	}
@@ -159,7 +159,7 @@ Init ();
 
 //------------------------------------------------------------------------------
 
-int CFace::Compare (const CFace* pf, const CFace* pm)
+int32_t CFace::Compare (const CFace* pf, const CFace* pm)
 {
 if (pf == pm)
 	return 0;
@@ -214,12 +214,12 @@ m_textureP = (textureP && (m_nBitmap >= 0)) ? textureP + m_nBitmap : NULL;
 
 //------------------------------------------------------------------------------
 
-int CFace::GatherVertices (CArray<CVertex>& source, CArray<CVertex>& dest, int nIndex)
+int32_t CFace::GatherVertices (CArray<CVertex>& source, CArray<CVertex>& dest, int32_t nIndex)
 {
 #if DBG
-if (uint (m_nIndex + m_nVerts) > source.Length ())
+if (uint32_t (m_nIndex + m_nVerts) > source.Length ())
 	return 0;
-if (uint (nIndex + m_nVerts) > dest.Length ())
+if (uint32_t (nIndex + m_nVerts) > dest.Length ())
 	return 0;
 #endif
 memcpy (dest + nIndex, source + m_nIndex, m_nVerts * sizeof (CVertex));
@@ -268,20 +268,20 @@ void CSubModel::SortFaces (CBitmap* textureP)
 {
 	CQuickSort<CFace>	qs;
 
-for (int i = 0; i < m_nFaces; i++)
+for (int32_t i = 0; i < m_nFaces; i++)
 	m_faces [i].SetTexture (textureP);
 if (m_nFaces > 1)
-	qs.SortAscending (m_faces, 0, static_cast<uint> (m_nFaces - 1), &RenderModel::CFace::Compare);
+	qs.SortAscending (m_faces, 0, static_cast<uint32_t> (m_nFaces - 1), &RenderModel::CFace::Compare);
 }
 
 //------------------------------------------------------------------------------
 
 void CSubModel::GatherVertices (CArray<CVertex>& source, CArray<CVertex>& dest)
 {
-	int nIndex = m_nIndex;	//this submodels vertices start at m_nIndex in the models vertex buffer
+	int32_t nIndex = m_nIndex;	//this submodels vertices start at m_nIndex in the models vertex buffer
 
 // copy vertices face by face
-for (int i = 0; i < m_nFaces; i++)
+for (int32_t i = 0; i < m_nFaces; i++)
 	nIndex += m_faces [i].GatherVertices (source, dest, nIndex);
 }
 
@@ -289,7 +289,7 @@ for (int i = 0; i < m_nFaces; i++)
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CModel::Setup (int bHires, int bSort)
+void CModel::Setup (int32_t bHires, int32_t bSort)
 {
 	CSubModel*		psm;
 	CFace*			pfi, * pfj;
@@ -298,8 +298,8 @@ void CModel::Setup (int bHires, int bSort)
 	tTexCoord2f*	pt;
 	CFloatVector*	pc;
 	CBitmap*			textureP = bHires ? m_textures.Buffer () : NULL;
-	int				i, j;
-	ushort			nId;
+	int32_t				i, j;
+	uint16_t			nId;
 
 m_fScale = 1;
 for (i = 0, j = m_nFaceVerts; i < j; i++)
@@ -359,7 +359,7 @@ if (m_vertBuf [1].Buffer ()) { // points to graphics driver buffer for VBO based
 if (m_index [0].Buffer ()) { // points to graphics driver buffer for VBO based rendering
 	glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_vboIndexHandle);
 	ogl.EnableClientState (GL_VERTEX_ARRAY);
-	glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_nFaceVerts * sizeof (short), reinterpret_cast<void*> (m_index [0].Buffer ()), GL_STATIC_DRAW_ARB);
+	glBufferDataARB (GL_ELEMENT_ARRAY_BUFFER_ARB, m_nFaceVerts * sizeof (int16_t), reinterpret_cast<void*> (m_index [0].Buffer ()), GL_STATIC_DRAW_ARB);
 #else
 if (m_index [1].Buffer ()) { // points to graphics driver buffer for VBO based rendering
 	memcpy (m_index [1].Buffer (), m_index [0].Buffer (), m_index [1].Size ());
@@ -378,19 +378,19 @@ if (ogl.m_features.bVertexBufferObjects) {
 	}
 m_sortedVerts.Destroy ();
 
-for (i = 0; i < (int) m_textures.Length (); i++)
+for (i = 0; i < (int32_t) m_textures.Length (); i++)
 	m_textures [i].PrepareTexture (1, 0);
 }
 
 //------------------------------------------------------------------------------
 
-int CModel::Shift (CObject *objP, int bHires, CFloatVector3 *vOffsetfP)
+int32_t CModel::Shift (CObject *objP, int32_t bHires, CFloatVector3 *vOffsetfP)
 {
 #if 1
 return 0;
 #else
 	CRenderSubModel*	psm;
-	int					i;
+	int32_t					i;
 	CFloatVector3		vOffsetf;
 	CVertex*				pmv;
 
@@ -433,7 +433,7 @@ void CSubModel::Size (CModel* pm, CObject* objP, CFixVector* vOffset)
 {
 	tHitbox		*phb = (m_nHitbox < 0) ? NULL : gameData.models.hitboxes [pm->m_nModel].hitboxes + m_nHitbox;
 	CFixVector	vMin, vMax, vOffs;
-	int			i, j;
+	int32_t			i, j;
 	CSubModel*	psm;
 
 if (vOffset)
@@ -461,7 +461,7 @@ for (i = 0, j = pm->m_nSubModels, psm = pm->m_subModels.Buffer (); i < j; i++, p
 
 //------------------------------------------------------------------------------
 
-int CModel::CmpVerts (const CFloatVector3* pv, const CFloatVector3* pm)
+int32_t CModel::CmpVerts (const CFloatVector3* pv, const CFloatVector3* pm)
 {
 	float h;
 
@@ -486,14 +486,14 @@ return 0;
 //------------------------------------------------------------------------------
 // remove duplicates
 
-ushort CModel::FilterVertices (CArray<CFloatVector3>& vertices, ushort nVertices)
+uint16_t CModel::FilterVertices (CArray<CFloatVector3>& vertices, uint16_t nVertices)
 {
 	CFloatVector3	*pi, *pj;
 
 for (pi = vertices.Buffer (), pj = pi + 1, --nVertices; nVertices; nVertices--, pj++)
 	if (CmpVerts (pi, pj))
 		*++pi = *pj;
-return (ushort) (pi - vertices) + 1;
+return (uint16_t) (pi - vertices) + 1;
 }
 
 //------------------------------------------------------------------------------
@@ -506,7 +506,7 @@ fix CModel::Radius (CObject *objP)
 	CArray<CFloatVector3>	vertices;
 	CFloatVector3				vCenter, vOffset, v, vMin, vMax;
 	float							fRad = 0, r;
-	ushort						h, i, j, k;
+	uint16_t						h, i, j, k;
 
 tModelSphere *sP = gameData.models.spheres + m_nModel;
 if (m_nType >= 0) {
@@ -528,7 +528,7 @@ if (vertices.Create (m_nFaceVerts)) {
 				}
 			}
 		}
-	h = (ushort) (pv - vertices.Buffer ()) - 1;
+	h = (uint16_t) (pv - vertices.Buffer ()) - 1;
 
 	CQuickSort<CFloatVector3>	qs;
 	qs.SortAscending (vertices.Buffer (), 0, h, &RenderModel::CModel::CmpVerts);
@@ -591,10 +591,10 @@ return F2X (fRad);
 
 //------------------------------------------------------------------------------
 
-fix CModel::Size (CObject *objP, int bHires)
+fix CModel::Size (CObject *objP, int32_t bHires)
 {
 	CSubModel*		psm;
-	int				i, j;
+	int32_t				i, j;
 	tHitbox*			phb = &gameData.models.hitboxes [m_nModel].hitboxes [0];
 	CFixVector		hv;
 	CFloatVector3	vOffset;
@@ -692,10 +692,10 @@ return Radius (objP);
 
 //------------------------------------------------------------------------------
 
-int CModel::MinMax (tHitbox *phb)
+int32_t CModel::MinMax (tHitbox *phb)
 {
 	CSubModel*	psm;
-	int			i;
+	int32_t			i;
 
 for (i = m_nSubModels, psm = m_subModels.Buffer (); i; i--, psm++) {
 	if (!psm->m_bThruster && (psm->m_nGunPoint < 0)) {
@@ -715,13 +715,13 @@ return m_nSubModels;
 
 void CModel::SetShipGunPoints (OOF::CModel *po)
 {
-	static short nGunSubModels [] = {6, 7, 5, 4, 9, 10, 3, 3};
+	static int16_t nGunSubModels [] = {6, 7, 5, 4, 9, 10, 3, 3};
 
 	CSubModel*		psm;
 	OOF::CPoint*	pp = po->m_gunPoints.Buffer ();
 
 po->m_gunPoints.Resize (N_PLAYER_GUNS);
-for (uint i = 0; i < po->m_gunPoints.Length (); i++, pp++) {
+for (uint32_t i = 0; i < po->m_gunPoints.Length (); i++, pp++) {
 	if (nGunSubModels [i] >= m_nSubModels)
 		continue;
 	m_nGunSubModels [i] = nGunSubModels [i];
@@ -747,7 +747,7 @@ void CModel::SetRobotGunPoints (OOF::CModel *po)
 {
 	CSubModel*		psm;
 	OOF::CPoint*	pp;
-	int				i, j = po->m_gunPoints.Length ();
+	int32_t				i, j = po->m_gunPoints.Length ();
 
 for (i = 0, pp = po->m_gunPoints.Buffer (); i < j; i++, pp++) {
 	m_nGunSubModels [i] = pp->m_nParent;
@@ -762,10 +762,10 @@ for (i = 0, pp = po->m_gunPoints.Buffer (); i < j; i++, pp++) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int NearestGunPoint (CFixVector *vGunPoints, CFixVector *vGunPoint, int nGuns, int *nUsedGuns)
+int32_t NearestGunPoint (CFixVector *vGunPoints, CFixVector *vGunPoint, int32_t nGuns, int32_t *nUsedGuns)
 {
 	fix			xDist, xMinDist = 0x7fffffff;
-	int			h = 0, i;
+	int32_t			h = 0, i;
 	CFixVector	vi, v0 = *vGunPoint;
 
 v0.v.coord.z = 0;
@@ -786,14 +786,14 @@ return h;
 
 //------------------------------------------------------------------------------
 
-fix G3ModelRad (CObject *objP, int m_nModel, int bHires)
+fix G3ModelRad (CObject *objP, int32_t m_nModel, int32_t bHires)
 {
 return gameData.models.renderModels [bHires][m_nModel].Radius (objP);
 }
 
 //------------------------------------------------------------------------------
 
-fix G3ModelSize (CObject *objP, int m_nModel, int bHires)
+fix G3ModelSize (CObject *objP, int32_t m_nModel, int32_t bHires)
 {
 return gameData.models.renderModels [bHires][m_nModel].Size (objP, bHires);
 }
@@ -814,10 +814,10 @@ pm->SetRobotGunPoints (po);
 
 //------------------------------------------------------------------------------
 
-void CModel::SetGunPoints (CObject *objP, int bASE)
+void CModel::SetGunPoints (CObject *objP, int32_t bASE)
 {
 	CFixVector		*vGunPoints;
-	int				nParent, h, i, j;
+	int32_t				nParent, h, i, j;
 
 if (bASE) {
 	CSubModel	*psm = m_subModels.Buffer ();
@@ -869,7 +869,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-int G3BuildModel (CObject* objP, int nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, CFloatVector* pObjColor, int bHires)
+int32_t G3BuildModel (CObject* objP, int32_t nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, CFloatVector* pObjColor, int32_t bHires)
 {
 	RenderModel::CModel*	pm = gameData.models.renderModels [bHires] + nModel;
 
@@ -892,7 +892,7 @@ return bHires
 
 //------------------------------------------------------------------------------
 
-int G3ModelMinMax (int m_nModel, tHitbox *phb)
+int32_t G3ModelMinMax (int32_t m_nModel, tHitbox *phb)
 {
 	RenderModel::CModel*		pm;
 

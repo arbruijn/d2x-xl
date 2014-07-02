@@ -48,7 +48,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void NetworkStopResync (tSequencePacket *their)
 {
-for (short i = 0; i < networkData.nJoining; )
+for (int16_t i = 0; i < networkData.nJoining; )
 	if (!CmpNetPlayers (networkData.sync [i].player [1].player.callsign, their->player.callsign, 
 							  &networkData.sync [i].player [1].player.network, &their->player.network)) {
 #if 1      
@@ -62,11 +62,11 @@ for (short i = 0; i < networkData.nJoining; )
 
 //------------------------------------------------------------------------------
 
-static int objFilter [] = {1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1};
+static int32_t objFilter [] = {1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1};
 
-static inline int NetworkFilterObject (CObject *objP)
+static inline int32_t NetworkFilterObject (CObject *objP)
 {
-	short t = objP->info.nType;
+	int16_t t = objP->info.nType;
 #if DBG
 if (t == nDbgObjType)
 	BRP;
@@ -82,7 +82,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static inline int NetworkObjFrameFilter (tNetworkSyncData *syncP)
+static inline int32_t NetworkObjFrameFilter (tNetworkSyncData *syncP)
 {
 if (!syncP->objs.nFrame++)
 	return 1;
@@ -94,7 +94,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static inline bool SendObject (int nMode, int nLocalObj, int nPlayer)
+static inline bool SendObject (int32_t nMode, int32_t nLocalObj, int32_t nPlayer)
 {
 if (NetworkFilterObject (OBJECTS + nLocalObj)) 
 	return false;
@@ -105,14 +105,14 @@ return nMode
 
 //------------------------------------------------------------------------------
 
-ubyte objBuf [MAX_PACKET_SIZE];
+uint8_t objBuf [MAX_PACKET_SIZE];
 
 void NetworkSyncObjects (tNetworkSyncData *syncP)
 {
-	int		bufI, nLocalObj, nPacketsLeft;
-	int		nObjFrames = 0;
-	int		nPlayer = syncP->player [1].player.connected;
-	int		bResync = syncP->objs.missingFrames.nFrame > 0;
+	int32_t		bufI, nLocalObj, nPacketsLeft;
+	int32_t		nObjFrames = 0;
+	int32_t		nPlayer = syncP->player [1].player.connected;
+	int32_t		bResync = syncP->objs.missingFrames.nFrame > 0;
 	
 syncP->bDeferredSync = networkThread.Available ();
 
@@ -138,10 +138,10 @@ for (nPacketsLeft = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACK
 
 	for (nLocalObj = syncP->objs.nCurrent; nLocalObj <= gameData.objs.nLastObject [0]; nLocalObj++) {
 		if (SendObject (syncP->objs.nMode, nLocalObj, nPlayer)) {
-			if ((MAX_PAYLOAD_SIZE - bufI - 1) < int (sizeof (tBaseObject)) + 5)
+			if ((MAX_PAYLOAD_SIZE - bufI - 1) < int32_t (sizeof (tBaseObject)) + 5)
 				break; // Not enough room for another CObject
-			sbyte	nObjOwner;
-			short nRemoteObj = GetRemoteObjNum (short (nLocalObj), nObjOwner);
+			int8_t	nObjOwner;
+			int16_t nRemoteObj = GetRemoteObjNum (int16_t (nLocalObj), nObjOwner);
 			NW_SET_SHORT (objBuf, bufI, nLocalObj);      
 			NW_SET_BYTE (objBuf, bufI, nObjOwner);                                 
 			NW_SET_SHORT (objBuf, bufI, nRemoteObj); 
@@ -160,9 +160,9 @@ for (nPacketsLeft = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACK
 		if (NetworkObjFrameFilter (syncP)) { // this statement skips any objects successfully sync'd in case the client has reported missing frames
 			objBuf [1] = nObjFrames;  
 			if (gameStates.multi.nGameType == UDP_GAME)
-				*reinterpret_cast<short*> (objBuf + 2) = INTEL_SHORT (syncP->objs.nFrame);
+				*reinterpret_cast<int16_t*> (objBuf + 2) = INTEL_SHORT (syncP->objs.nFrame);
 			else
-				objBuf [2] = (ubyte) syncP->objs.nFrame;
+				objBuf [2] = (uint8_t) syncP->objs.nFrame;
 			Assert (bufI <= MAX_PAYLOAD_SIZE);
 			if (gameStates.multi.nGameType >= IPX_GAME) {
 				if (!syncP->bDeferredSync)
@@ -192,7 +192,7 @@ for (nPacketsLeft = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACK
 				NW_SET_SHORT (objBuf, bufI, syncP->objs.nFrame); 
 				}
 			else {
-				objBuf [2] = (ubyte) syncP->objs.nFrame;
+				objBuf [2] = (uint8_t) syncP->objs.nFrame;
 				bufI = 3;
 				}
 			NW_SET_SHORT (objBuf, bufI, -2);
@@ -213,7 +213,7 @@ for (nPacketsLeft = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACK
 
 void NetworkSyncPlayer (tNetworkSyncData *syncP)
 {
-	int nPlayer = syncP->player [1].player.connected;
+	int32_t nPlayer = syncP->player [1].player.connected;
 
 //OLD IPXSendPacketData (objBuf, 8, &syncP->player [1].player.node);
 if (gameStates.multi.nGameType >= IPX_GAME)
@@ -282,7 +282,7 @@ void NetworkSyncConnection (tNetworkSyncData *syncP)
 
 if (t < syncP->timeout)
 	return;
-syncP->timeout = t + 100 / Clamp (PacketsPerSec (), (short) MIN_PPS, (short) DEFAULT_PPS);
+syncP->timeout = t + 100 / Clamp (PacketsPerSec (), (int16_t) MIN_PPS, (int16_t) DEFAULT_PPS);
 #endif
 if (syncP->bExtraGameInfo) {
 	NetworkSendExtraGameInfo (&syncP->player [0]);
@@ -308,7 +308,7 @@ else if (syncP->nState == 3) {
 	if (syncP->nExtras) {
 		NetworkSyncExtras (syncP);
 		if ((syncP->bExtraGameInfo = (syncP->nExtras == 0))) {
-			DeleteSyncData (short (syncP - networkData.sync));
+			DeleteSyncData (int16_t (syncP - networkData.sync));
 			}
 		}
 	}
@@ -318,7 +318,7 @@ else if (syncP->nState == 3) {
 
 void NetworkDoSyncFrame (void)
 {
-for (short i = 0; i < networkData.nJoining; i++)
+for (int16_t i = 0; i < networkData.nJoining; i++)
 	NetworkSyncConnection (networkData.sync + i);
 }
 
@@ -328,7 +328,7 @@ void NetworkUpdateNetGame (void)
 {
 	// Update the netgame struct with current game variables
 
-	int i, j;
+	int32_t i, j;
 
 netGame.m_info.nConnected = 0;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
@@ -393,7 +393,7 @@ networkData.toSyncPoll.Start ();
 //------------------------------------------------------------------------------
 // wait for sync packets from the game host after having sent join request
 
-int NetworkSyncPoll (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t NetworkSyncPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (gameData.multiplayer.nPlayers && IAmGameHost ()) {
 	key = -3;
@@ -435,11 +435,11 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int NetworkWaitForSync (void)
+int32_t NetworkWaitForSync (void)
 {
 	char					text [60];
 	CMenu					m (2);
-	int					i, choice;
+	int32_t					i, choice;
 	tSequencePacket	me;
 
 networkData.nStatus = NETSTAT_WAITING;
@@ -510,7 +510,7 @@ networkData.toWaitAllPoll = (time_t) SDL_GetTicks () + WaitAllPollTimeout ();
 
 //------------------------------------------------------------------------------
 
-int NetworkWaitAllPoll (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t NetworkWaitAllPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
@@ -527,9 +527,9 @@ return nCurItem;
  
 //------------------------------------------------------------------------------
 
-int NetworkWaitForAllInfo (int choice)
+int32_t NetworkWaitForAllInfo (int32_t choice)
  {
-  int pick;
+  int32_t pick;
   
   CMenu m (2);
 
@@ -553,9 +553,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int NetworkWaitForPlayerInfo (void)
+int32_t NetworkWaitForPlayerInfo (void)
 {
-	ubyte						packet [MAX_PACKET_SIZE];
+	uint8_t						packet [MAX_PACKET_SIZE];
 	CAllNetPlayersInfo	playerData;
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
@@ -574,10 +574,10 @@ if (networkData.nStatus == NETSTAT_PLAYING) {
 	return 0;
 	}
 
-uint xTimeout = SDL_GetTicks () + 5000;
+uint32_t xTimeout = SDL_GetTicks () + 5000;
 while (SDL_GetTicks () < xTimeout) {
-	int size = networkThread.GetPacketData (packet);
-	ubyte id = packet [0];
+	int32_t size = networkThread.GetPacketData (packet);
+	uint8_t id = packet [0];
 	if ((size > 0) && (id == PID_PLAYERSINFO)) {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 		ReceiveNetPlayersPacket (packet, &playerData);
@@ -610,10 +610,10 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void NetworkDoBigWait (int choice)
+void NetworkDoBigWait (int32_t choice)
 {
-	int						size;
-	ubyte						packet [MAX_PACKET_SIZE], *data;
+	int32_t						size;
+	uint8_t						packet [MAX_PACKET_SIZE], *data;
 	CAllNetPlayersInfo	playerData;
   
 while (0 < (size = networkThread.GetPacketData (packet))) {
@@ -691,7 +691,7 @@ while (0 < (size = networkThread.GetPacketData (packet))) {
 
 //------------------------------------------------------------------------------
 
-int NetworkRequestPoll (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t NetworkRequestPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (!IAmGameHost ()) {
 	key = -2;
@@ -704,7 +704,7 @@ if (!networkThread.Available ()) {
 	static CTimeout to (500);
 	// tell other players that I am here
 	if (to.Expired ()) {
-		for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
 			if (i != N_LOCALPLAYER) {
 				pingStats [i].launchTime = -1; //TimerGetFixedSeconds ();
 				NetworkSendPing (i); // tell clients already connected server is still alive
@@ -714,10 +714,10 @@ if (!networkThread.Available ()) {
 	}
 NetworkListen ();
 
-int nReady = 0;
+int32_t nReady = 0;
 
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if ((ubyte) gameData.multiplayer.players [i].connected < 2)
+for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	if ((uint8_t) gameData.multiplayer.players [i].connected < 2)
 		nReady++;
 	}
 if (nReady == gameData.multiplayer.nPlayers) // All players have checked in or are disconnected
@@ -730,7 +730,7 @@ return nCurItem;
 void NetworkWaitForRequests (void)
 {
 	// Wait for other players to load the level before we send the sync
-	int	choice, i;
+	int32_t	choice, i;
 	CMenu	m (1);
 
 networkData.nStatus = NETSTAT_WAITING;
@@ -766,9 +766,9 @@ for (;;) {
 //------------------------------------------------------------------------------
 
 /* Do required syncing after each level, before starting new one */
-int NetworkLevelSync (void)
+int32_t NetworkLevelSync (void)
 {
-	int result;
+	int32_t result;
 	networkData.bSyncPackInited = 0;
 
 //networkThread.SetListen (false);

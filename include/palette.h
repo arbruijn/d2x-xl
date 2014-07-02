@@ -28,57 +28,57 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define FADE_RATE					16		//	gots to be a power of 2, else change the code in DiminishPaletteTowardsNormal
 
 typedef struct tBGR {
-	ubyte	b,g,r;
+	uint8_t	b,g,r;
 } __pack__ tBGR;
 
 typedef struct tRGB {
-	ubyte	r,g,b;
+	uint8_t	r,g,b;
 } __pack__ tRGB;
 
 typedef union tPalette {
-	ubyte			raw [PALETTE_SIZE * 3];
+	uint8_t			raw [PALETTE_SIZE * 3];
 	CRGBColor	rgb [PALETTE_SIZE];
 } __pack__ tPalette;
 
 class CComputedColor : public CRGBColor {
 	public:
-		ubyte			nIndex;
+		uint8_t			nIndex;
 	};
 
 class CPalette {
 	private:
 		tPalette			m_data;
 		CComputedColor	m_computedColors [MAX_COMPUTED_COLORS];
-		short				m_nComputedColors;
-		int				m_transparentColor;
-		int				m_superTranspColor;
+		int16_t				m_nComputedColors;
+		int32_t				m_transparentColor;
+		int32_t				m_superTranspColor;
 
 	public:
 		CPalette () : m_transparentColor (-1), m_superTranspColor (-1) {}
 		~CPalette () {}
-		void Init (int nTransparentColor = -1, int nSuperTranspColor = -1);
-		void InitTransparency (int nTransparentColor = -1, int nSuperTranspColor = -1);
+		void Init (int32_t nTransparentColor = -1, int32_t nSuperTranspColor = -1);
+		void InitTransparency (int32_t nTransparentColor = -1, int32_t nSuperTranspColor = -1);
 		void ClearStep ();
 		bool Read (CFile& cf);
 		bool Write (CFile& cf);
-		int ClosestColor (int r, int g, int b);
-		inline int ClosestColor (CRGBColor* colorP)
-		 { return ClosestColor ((int) colorP->r, (int) colorP->g, (int) colorP->b); }
-		inline int ClosestColor (CFloatVector3* colorP)
-		 { return ClosestColor ((int) (colorP->Red () * 63.0f), (int) (colorP->Green () * 63.0f), (int) (colorP->Blue () * 63.0f)); }
+		int32_t ClosestColor (int32_t r, int32_t g, int32_t b);
+		inline int32_t ClosestColor (CRGBColor* colorP)
+		 { return ClosestColor ((int32_t) colorP->r, (int32_t) colorP->g, (int32_t) colorP->b); }
+		inline int32_t ClosestColor (CFloatVector3* colorP)
+		 { return ClosestColor ((int32_t) (colorP->Red () * 63.0f), (int32_t) (colorP->Green () * 63.0f), (int32_t) (colorP->Blue () * 63.0f)); }
 		void SwapTransparency (void);
-		void AddComputedColor (int r, int g, int b, int nIndex);
+		void AddComputedColor (int32_t r, int32_t g, int32_t b, int32_t nIndex);
 		void InitComputedColors (void);
-		void ToRgbaf (ubyte nColor, CFloatVector& color);
+		void ToRgbaf (uint8_t nColor, CFloatVector& color);
 
 		inline tPalette& Data (void) { return m_data; }
 		inline CRGBColor *Color (void) { return m_data.rgb; }
-		inline ubyte *Raw (void) { return m_data.raw; }
+		inline uint8_t *Raw (void) { return m_data.raw; }
 		inline void Skip (CFile& cf) { cf.Seek (sizeof (m_data), SEEK_CUR); }
 		inline size_t Size (void) { return sizeof (m_data); }
-		inline void SetBlack (ubyte r, ubyte g, ubyte b) 
+		inline void SetBlack (uint8_t r, uint8_t g, uint8_t b) 
 		 { m_data.rgb [0].r = r, m_data.rgb [0].g = g, m_data.rgb [0].b = b; }
-		inline void SetTransparency (ubyte r, ubyte g, ubyte b) 
+		inline void SetTransparency (uint8_t r, uint8_t g, uint8_t b) 
 		 { m_data.rgb [PALETTE_SIZE - 1].r = r, m_data.rgb [PALETTE_SIZE - 1].g = g, m_data.rgb [PALETTE_SIZE - 1].b = b; }
 		inline CPalette& operator= (CPalette& source) { 
 			Init ();
@@ -92,9 +92,9 @@ class CPalette {
 					 (SuperTranspColor () == source.SuperTranspColor ()) &&
 					 (memcmp (&Data (), &source.Data (), sizeof (tPalette)) == 0); 
 			}
-		inline CRGBColor& operator[] (const int i) { return m_data.rgb [i]; }
-		inline int TransparentColor (void) { return m_transparentColor; }
-		inline int SuperTranspColor (void) { return m_superTranspColor; }
+		inline CRGBColor& operator[] (const int32_t i) { return m_data.rgb [i]; }
+		inline int32_t TransparentColor (void) { return m_transparentColor; }
+		inline int32_t SuperTranspColor (void) { return m_superTranspColor; }
 	};
 
 //------------------------------------------------------------------------------
@@ -119,20 +119,20 @@ class CPaletteData {
 		tPaletteList*		list;
 		char					szLastLoaded [FILENAME_LEN];
 		char					szLastPig [FILENAME_LEN];
-		int					nPalettes;
-		int					nGamma;
-		int					nLastGamma;
+		int32_t					nPalettes;
+		int32_t					nGamma;
+		int32_t					nLastGamma;
 		fix					xFadeDelay;
 		fix					xFadeDuration [2];
 		fix					xLastDelay;
 		fix					xLastEffectTime;
 
-		ubyte					fadeTable [PALETTE_SIZE * MAX_FADE_LEVELS];
+		uint8_t					fadeTable [PALETTE_SIZE * MAX_FADE_LEVELS];
 		CFloatVector3		flash;
 		CFloatVector3		effect;
 		CFloatVector3		lastEffect;
 		bool					bDoEffect;
-		int					nSuspended;
+		int32_t					nSuspended;
 	};
 
 
@@ -150,20 +150,20 @@ class CPaletteManager {
 		void Init (void);
 		void Destroy (void); 
 		CPalette* Find (CPalette& palette);
-		CPalette* Add (CPalette& palette, int nTransparentColor = -1, int nSuperTranspColor = -1);
-		CPalette* Add (ubyte* buffer, int nTransparentColor = -1, int nSuperTranspColor = -1);
-		CPalette* Load (const char *pszPaletteName, const char *pszLevelName, int nUsedForLevel, int bNoScreenChange, int bForce);
+		CPalette* Add (CPalette& palette, int32_t nTransparentColor = -1, int32_t nSuperTranspColor = -1);
+		CPalette* Add (uint8_t* buffer, int32_t nTransparentColor = -1, int32_t nSuperTranspColor = -1);
+		CPalette* Load (const char *pszPaletteName, const char *pszLevelName, int32_t nUsedForLevel, int32_t bNoScreenChange, int32_t bForce);
 		CPalette* Load (const char* filename, const char* levelname);
 		CPalette* LoadD1 (void);
-		int FindClosestColor15bpp (int rgb);
-		void SetGamma (int gamma);
-		int GetGamma (void);
+		int32_t FindClosestColor15bpp (int32_t rgb);
+		void SetGamma (int32_t gamma);
+		int32_t GetGamma (void);
 		const float Brightness (void);
 		const char* BrightnessLevel (void);
 		void Flash (void);
 
 		void ClearStep (void);
-		void StepUp (int r, int g, int b);
+		void StepUp (int32_t r, int32_t g, int32_t b);
 		void StepUp (void);
 		void RenderEffect (void);
 		void FadeEffect (void);
@@ -171,19 +171,19 @@ class CPaletteManager {
 		void SaveEffect (void);
 		void SuspendEffect (bool bCond = true);
 		void ResumeEffect (bool bCond = true);
-		void SetEffect (int r, int g, int b, bool bForce = false);
+		void SetEffect (int32_t r, int32_t g, int32_t b, bool bForce = false);
 		void SetEffect (float r, float g, float b, bool bForce = false);
-		void BumpEffect (int r, int g, int b);
+		void BumpEffect (int32_t r, int32_t g, int32_t b);
 		void BumpEffect (float r, float g, float b);
 		void UpdateEffect (void);
-		inline void SetRedEffect (int color) { m_data.effect.Red () = float (color) / 64.0f; }
-		inline void SetGreenEffect (int color) { m_data.effect.Green () = float (color) / 64.0f; }
-		inline void SetBlueEffect (int color) { m_data.effect.Blue () = float (color) / 64.0f; }
+		inline void SetRedEffect (int32_t color) { m_data.effect.Red () = float (color) / 64.0f; }
+		inline void SetGreenEffect (int32_t color) { m_data.effect.Green () = float (color) / 64.0f; }
+		inline void SetBlueEffect (int32_t color) { m_data.effect.Blue () = float (color) / 64.0f; }
 		void SetEffect (bool bForce = false);
 		void ClearEffect (void);
-		int ClearEffect (CPalette* palette);
-		int EnableEffect (bool bReset = false);
-		int DisableEffect (void);
+		int32_t ClearEffect (CPalette* palette);
+		int32_t EnableEffect (bool bReset = false);
+		int32_t DisableEffect (void);
 		bool EffectEnabled (void) { return m_data.nSuspended <= 0; }
 		bool EffectDisabled (void) { return m_data.nSuspended > 0; }
 		inline bool FadedOut (void) { return m_data.nSuspended <= 0; }
@@ -204,12 +204,12 @@ class CPaletteManager {
 			return m_data.current;
 			}
 
-		inline sbyte RedEffect (bool bFade = false) { return sbyte (m_data.effect.Red () * 64.0f * (bFade ? FadeScale () : 1.0f)); }
-		inline sbyte GreenEffect (bool bFade = false) { return sbyte (m_data.effect.Green () * 64.0f * (bFade ? FadeScale () : 1.0f)); }
-		inline sbyte BlueEffect (bool bFade = false) { return sbyte (m_data.effect.Blue () * 64.0f * (bFade ? FadeScale () : 1.0f)); }
-		inline void SetRedEffect (sbyte color) {  m_data.effect.Red () = float (color) / 64.0f; }
-		inline void SetGreenEffect (sbyte color) {  m_data.effect.Green () = float (color) / 64.0f; }
-		inline void SetBlueEffect (sbyte color) {  m_data.effect.Blue () = float (color) / 64.0f; }
+		inline int8_t RedEffect (bool bFade = false) { return int8_t (m_data.effect.Red () * 64.0f * (bFade ? FadeScale () : 1.0f)); }
+		inline int8_t GreenEffect (bool bFade = false) { return int8_t (m_data.effect.Green () * 64.0f * (bFade ? FadeScale () : 1.0f)); }
+		inline int8_t BlueEffect (bool bFade = false) { return int8_t (m_data.effect.Blue () * 64.0f * (bFade ? FadeScale () : 1.0f)); }
+		inline void SetRedEffect (int8_t color) {  m_data.effect.Red () = float (color) / 64.0f; }
+		inline void SetGreenEffect (int8_t color) {  m_data.effect.Green () = float (color) / 64.0f; }
+		inline void SetBlueEffect (int8_t color) {  m_data.effect.Blue () = float (color) / 64.0f; }
 		inline void SetFadeDelay (fix xDelay) { m_data.xFadeDelay = xDelay; }
 		inline void SetFadeDuration (fix xDuration) { m_data.xFadeDuration [0] = m_data.xFadeDuration [1] = xDuration; }
 		inline void SetLastEffectTime (fix xTime) { m_data.xLastEffectTime = xTime; }
@@ -229,7 +229,7 @@ class CPaletteManager {
 		inline CPalette* Texture (void) { return m_data.texture ? m_data.texture : Current (); };
 		inline CPalette* D1 (void) { return m_data.D1 ? m_data.D1 : Current (); }
 		inline CPalette* Fade (void) { return m_data.fade; }
-		inline ubyte* FadeTable (void) { return m_data.fadeTable; }
+		inline uint8_t* FadeTable (void) { return m_data.fadeTable; }
 		inline bool DoEffect (void) { return m_data.bDoEffect; }
 
 		inline char* LastLoaded (void) { return m_data.szLastLoaded; }
@@ -237,7 +237,7 @@ class CPaletteManager {
 		inline void SetLastLoaded (const char *name) { strncpy (m_data.szLastLoaded, name, sizeof (m_data.szLastLoaded)); }
 		inline void SetLastPig (const char *name) { strncpy (m_data.szLastPig, name, sizeof (m_data.szLastPig)); }
 
-		inline int ClosestColor (int r, int g, int b)
+		inline int32_t ClosestColor (int32_t r, int32_t g, int32_t b)
 		 { return m_data.current ? m_data.current->ClosestColor (r, g, b) : 0; }
 
 		inline float FadeScale (void) { return m_data.xFadeDuration [1] ? (float) m_data.xFadeDuration [0] / (float) m_data.xFadeDuration [1] : 0.0f; }

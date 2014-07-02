@@ -63,7 +63,7 @@ if (!m_bUse)
 	return;
 
 	CObject	*objP;
-	int		h, i;
+	int32_t		h, i;
 
 FORALL_LIGHT_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID)) {
@@ -89,7 +89,7 @@ FORALL_LIGHT_OBJS (objP, i) {
 #endif
 				}
 			if (1 || (objP->cType.lightInfo.nSegment < 0)) {
-				short nSegment = FindSegByPos (objP->info.position.vPos, abs (objP->cType.lightInfo.nSegment), 0, 0);
+				int16_t nSegment = FindSegByPos (objP->info.position.vPos, abs (objP->cType.lightInfo.nSegment), 0, 0);
 				objP->cType.lightInfo.nSegment = (nSegment < 0) ? abs (objP->cType.lightInfo.nSegment) : nSegment;
 				}
 			if (objP->info.nSegment != objP->cType.lightInfo.nSegment)
@@ -102,11 +102,11 @@ FORALL_LIGHT_OBJS (objP, i) {
 
 //--------------------------------------------------------------------------
 
-short CLightClusterManager::Create (CObject *objP)
+int16_t CLightClusterManager::Create (CObject *objP)
 {
 if (!m_bUse)
 	return -1;
-short nObject = CreateLight (CLUSTER_LIGHT_ID, objP->info.nSegment, OBJPOS (objP)->vPos);
+int16_t nObject = CreateLight (CLUSTER_LIGHT_ID, objP->info.nSegment, OBJPOS (objP)->vPos);
 if (nObject >= 0)
 	OBJECTS [nObject].SetLife (IMMORTAL_TIME);
 return nObject;
@@ -114,12 +114,12 @@ return nObject;
 
 //--------------------------------------------------------------------------
 
-int CLightClusterManager::Add (short nObject, CFloatVector *color, fix xObjIntensity)
+int32_t CLightClusterManager::Add (int16_t nObject, CFloatVector *color, fix xObjIntensity)
 {
 if (!m_bUse)
 	return 0;
 
-short nLightObj = m_objects [nObject].nObject;
+int16_t nLightObj = m_objects [nObject].nObject;
 
 if (0 > nLightObj)
 	return 0;
@@ -162,7 +162,7 @@ return 1;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void CLightClusterManager::Add (short nObject, short nLightObj)
+void CLightClusterManager::Add (int16_t nObject, int16_t nLightObj)
 {
 m_objects [nObject].nObject = nLightObj;
 if (nLightObj >= 0) {
@@ -177,12 +177,12 @@ if (nLightObj >= 0) {
 // If the function can combine two or more shots, it will create a dedicated light object for them. This light 
 // object receives the signature of the first shot assigned to it for future reference.
 
-void CLightClusterManager::AddForAI (CObject *objP, short nObject, short nShot)
+void CLightClusterManager::AddForAI (CObject *objP, int16_t nObject, int16_t nShot)
 {
 if (!m_bUse)
 	return;
 
-short nPrevShot = objP->Shots ().nObject;
+int16_t nPrevShot = objP->Shots ().nObject;
 
 #if DBG
 if (nObject == nDbgObj)
@@ -192,7 +192,7 @@ if (nPrevShot >= 0) {
 	CObject *prevShotP = OBJECTS + nPrevShot;
 	if (prevShotP->info.nSignature == objP->Shots ().nSignature) {
 		CObject *lightP, *shotP = OBJECTS + nShot;
-		short nLight = m_objects [nPrevShot].nObject;
+		int16_t nLight = m_objects [nPrevShot].nObject;
 		if (nLight < 0)
 			lightP = prevShotP;
 		else {

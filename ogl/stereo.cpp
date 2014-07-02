@@ -62,12 +62,12 @@
 
 //#define _WIN32_WINNT		0x0600
 
-int enhance3DShaderProg [2][2][3] = {{{-1,-1,-1},{-1,-1,-1}},{{-1,-1,-1},{-1,-1,-1}}};
-int duboisShaderProg = -1;
+int32_t enhance3DShaderProg [2][2][3] = {{{-1,-1,-1},{-1,-1,-1}},{{-1,-1,-1},{-1,-1,-1}}};
+int32_t duboisShaderProg = -1;
 
-int riftWarpShaderProg [2] = {-1, -1};
+int32_t riftWarpShaderProg [2] = {-1, -1};
 
-int nScreenDists [10] = {1, 2, 5, 10, 15, 20, 30, 50, 70, 100};
+int32_t nScreenDists [10] = {1, 2, 5, 10, 15, 20, 30, 50, 70, 100};
 float nDeghostThresholds [4][2] = {{1.0f, 1.0f}, {0.8f, 0.8f}, {0.7f, 0.7f}, {0.6f, 0.6f}};
 
 extern tTexCoord2f quadTexCoord [3][4];
@@ -94,7 +94,7 @@ class CDefaultDistortionConfig : public OVR::Util::Render::DistortionConfig {
 
 static CDefaultDistortionConfig defaultDistortion;
 
-static bool RiftWarpFrame (const OVR::Util::Render::DistortionConfig* pDistortion, int nEye)
+static bool RiftWarpFrame (const OVR::Util::Render::DistortionConfig* pDistortion, int32_t nEye)
 {
 	OVR::Util::Render::DistortionConfig distortion;
 
@@ -164,7 +164,7 @@ if (!ogl.IsOculusRift ())
 if (!gameStates.render.textures.bHaveRiftWarpShader)
 	return false;
 
-for (int i = 0; i < 2; i++) {
+for (int32_t i = 0; i < 2; i++) {
 	gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
 	SetupCanvasses ();
 	gameData.render.frame.Activate ("RiftWarpScene (frame)");
@@ -476,9 +476,9 @@ if (gameOpts->render.bUseShaders && m_features.bShaders.Available ()) {
 		(0 <= shaderManager.Build (riftWarpShaderProg [1], riftWarpFS [1], riftWarpVS));
 
 	PrintLog (0, "building enhanced 3D shader programs\n");
-	for (int h = 0; h < 2; h++) {
-		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < 3; j++) {
+	for (int32_t h = 0; h < 2; h++) {
+		for (int32_t i = 0; i < 2; i++) {
+			for (int32_t j = 0; j < 3; j++) {
 				gameStates.render.textures.bHaveEnhanced3DShader = (0 <= shaderManager.Build (enhance3DShaderProg [h][i][j], enhance3DFS [h][i][j], enhance3DVS));
 				if (!gameStates.render.textures.bHaveEnhanced3DShader) {
 					DeleteEnhanced3DShader ();
@@ -499,9 +499,9 @@ if (duboisShaderProg >= 0) {
 	shaderManager.Delete (duboisShaderProg);
 	shaderManager.Delete (riftWarpShaderProg [0]);
 	shaderManager.Delete (riftWarpShaderProg [1]);
-	for (int h = 0; h < 2; h++) {
-		for (int i = 0; i < 2; i++) {
-			for (int j = 0; j < 3; j++) {
+	for (int32_t h = 0; h < 2; h++) {
+		for (int32_t i = 0; i < 2; i++) {
+			for (int32_t j = 0; j < 3; j++) {
 				shaderManager.Delete (enhance3DShaderProg [h][i][j]);
 				}
 			}
@@ -516,9 +516,9 @@ void COGL::MergeAnaglyphBuffers (void)
 if (m_data.xStereoSeparation > 0) {
 	static float gain [4] = {1.0, 4.0, 2.0, 1.0};
 
-	int nDevice = StereoDevice ();
-	int h = gameOpts->render.stereo.bDeghost;
-	int i = (gameOpts->render.stereo.bColorGain > 0);
+	int32_t nDevice = StereoDevice ();
+	int32_t h = gameOpts->render.stereo.bDeghost;
+	int32_t i = (gameOpts->render.stereo.bColorGain > 0);
 	if (postProcessManager.HaveEffects ()) // additional effect and/or shadow map rendering
 		SelectDrawBuffer (2); // use as temporary render buffer
 	else

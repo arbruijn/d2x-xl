@@ -43,7 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	BOSS_LOCKED_DOOR_SEG		595
 #define	BOSS_LOCKED_DOOR_SIDE	5
 
-//--unused-- int gameData.walls.bitmaps [MAX_WALL_ANIMS];
+//--unused-- int32_t gameData.walls.bitmaps [MAX_WALL_ANIMS];
 
 //door Doors [MAX_DOORS];
 
@@ -58,10 +58,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 // Opens a door, including animation and other processing.
-bool DoDoorOpen (int nDoor);
+bool DoDoorOpen (int32_t nDoor);
 
 // Closes a door, including animation and other processing.
-bool DoDoorClose (int nDoor);
+bool DoDoorClose (int32_t nDoor);
 
 //------------------------------------------------------------------------------
 
@@ -95,33 +95,33 @@ return gameData.walls.exploding.Top ();
 
 //------------------------------------------------------------------------------
 
-static void DeleteActiveDoor (int nDoor)
+static void DeleteActiveDoor (int32_t nDoor)
 {
-gameData.walls.activeDoors.Delete (static_cast<uint> (nDoor));
+gameData.walls.activeDoors.Delete (static_cast<uint32_t> (nDoor));
 audio.Update ();
 }
 
 //------------------------------------------------------------------------------
 
-static void DeleteCloakingWall (int nWall)
+static void DeleteCloakingWall (int32_t nWall)
 {
-gameData.walls.cloaking.Delete (static_cast<uint> (nWall));
+gameData.walls.cloaking.Delete (static_cast<uint32_t> (nWall));
 audio.Update ();
 }
 
 //------------------------------------------------------------------------------
 
-static void DeleteExplodingWall (int nWall)
+static void DeleteExplodingWall (int32_t nWall)
 {
-gameData.walls.exploding.Delete (static_cast<uint> (nWall));
+gameData.walls.exploding.Delete (static_cast<uint32_t> (nWall));
 audio.Update ();
 }
 
 //------------------------------------------------------------------------------
 
-int AnimFrameCount (tWallClip *anim)
+int32_t AnimFrameCount (tWallClip *anim)
 {
-	int	n;
+	int32_t	n;
 
 CBitmap *bmP = gameData.pig.tex.bitmapP + gameData.pig.tex.bmIndexP [anim->frames [0]].index;
 if (bmP->Override ())
@@ -134,7 +134,7 @@ return (n > 1) ? n : anim->nFrameCount;
 
 fix AnimPlayTime (tWallClip *anim)
 {
-int nFrames = AnimFrameCount (anim);
+int32_t nFrames = AnimFrameCount (anim);
 fix pt = (fix) (anim->xTotalTime * gameStates.gameplay.slowmo [0].fSpeed);
 
 if (nFrames == anim->nFrameCount)
@@ -147,12 +147,12 @@ return (fix) (((double) pt * (double) anim->nFrameCount) / (double) nFrames);
 //		0 = NO
 //------------------------------------------------------------------------------
 
-CActiveDoor* FindActiveDoor (short nWall)
+CActiveDoor* FindActiveDoor (int16_t nWall)
 {
 	CActiveDoor* doorP = gameData.walls.activeDoors.Buffer ();
 
-for (uint i = gameData.walls.activeDoors.ToS (); i; i--, doorP++) {		//find door
-	for (int j = 0; j < doorP->nPartCount; j++)
+for (uint32_t i = gameData.walls.activeDoors.ToS (); i; i--, doorP++) {		//find door
+	for (int32_t j = 0; j < doorP->nPartCount; j++)
 		if ((doorP->nFrontWall [j] == nWall) || (doorP->nBackWall [j] == nWall))
 			return doorP;
 	}
@@ -173,7 +173,7 @@ return NULL;
 //		WID_TRANSILLUSORY_WALL	7	//	1/1/1		transparent illusory wall
 //		WID_NO_WALL					5	//	1/0/1		no wall, can fly through
 
-int CWall::IsPassable (CObject *objP, bool bIgnoreDoors)
+int32_t CWall::IsPassable (CObject *objP, bool bIgnoreDoors)
 {
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -271,11 +271,11 @@ return doorP;
 
 //------------------------------------------------------------------------------
 
-CCloakingWall* FindCloakingWall (short nWall)
+CCloakingWall* FindCloakingWall (int16_t nWall)
 {
 	CCloakingWall* cloakWallP = gameData.walls.cloaking.Buffer ();
 
-for (uint i = gameData.walls.cloaking.ToS (); i; i--, cloakWallP++) {		//find door
+for (uint32_t i = gameData.walls.cloaking.ToS (); i; i--, cloakWallP++) {		//find door
 	if ((cloakWallP->nFrontWall == nWall) || (cloakWallP->nBackWall == nWall))
 		return cloakWallP;
 	}
@@ -285,11 +285,11 @@ return NULL;
 //------------------------------------------------------------------------------
 // This function closes the specified door and restuckObjPres the closed
 //  door texture.  This is called when the animation is done
-void CloseDoor (int nDoor)
+void CloseDoor (int32_t nDoor)
 {
 	CActiveDoor*	doorP = gameData.walls.activeDoors + nDoor;
 
-for (int i = doorP->nPartCount; i; )
+for (int32_t i = doorP->nPartCount; i; )
 	WALLS [doorP->nFrontWall [--i]].CloseActiveDoor ();
 DeleteActiveDoor (nDoor);
 }
@@ -344,7 +344,7 @@ void CWall::CloseActiveDoor (void)
 {
 CSegment* segP = SEGMENTS + nSegment;
 CSegment* connSegP = SEGMENTS + segP->m_children [nSide];
-short nConnSide = segP->ConnectedSide (connSegP);
+int16_t nConnSide = segP->ConnectedSide (connSegP);
 
 state = WALL_DOOR_CLOSED;
 segP->SetTexture (nSide, NULL, -1, nClip, 0);
@@ -383,25 +383,25 @@ return doorP;
 
 //------------------------------------------------------------------------------
 
-int CWall::AnimateOpeningDoor (fix xElapsedTime)
+int32_t CWall::AnimateOpeningDoor (fix xElapsedTime)
 {
 if (nClip < 0)
 	return 3;
 
-int nFrames = AnimFrameCount (gameData.walls.animP + nClip);
+int32_t nFrames = AnimFrameCount (gameData.walls.animP + nClip);
 if (!nFrames)
 	return 3;
 
 fix xTotalTime = (fix) (gameData.walls.animP [nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed);
 fix xFrameTime = xTotalTime / nFrames;
 #if DBG
-int i;
+int32_t i;
 if (xElapsedTime < 0)
 	i = nFrames;
 else
 	i = xElapsedTime / xFrameTime;
 #else
-int i = (xElapsedTime < 0) ? nFrames : xElapsedTime / xFrameTime;
+int32_t i = (xElapsedTime < 0) ? nFrames : xElapsedTime / xFrameTime;
 #endif
 CSegment* segP = SEGMENTS + nSegment;
 if (i < nFrames)
@@ -422,15 +422,15 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CWall::AnimateClosingDoor (fix xElapsedTime)
+int32_t CWall::AnimateClosingDoor (fix xElapsedTime)
 {
-int nFrames = AnimFrameCount (gameData.walls.animP + nClip);
+int32_t nFrames = AnimFrameCount (gameData.walls.animP + nClip);
 if (!nFrames)
 	return 0;
 
 fix xTotalTime = (fix) (gameData.walls.animP [nClip].xTotalTime * gameStates.gameplay.slowmo [0].fSpeed);
 fix xFrameTime = xTotalTime / nFrames;
-int i = nFrames - xElapsedTime / xFrameTime - 1;
+int32_t i = nFrames - xElapsedTime / xFrameTime - 1;
 if (i < nFrames / 2)
 	flags &= ~WALL_DOOR_OPENED;
 if (i <= 0)
@@ -443,13 +443,13 @@ return 0;
 //------------------------------------------------------------------------------
 // Animates opening of a door.
 // Called in the game loop.
-bool DoDoorOpen (int nDoor)
+bool DoDoorOpen (int32_t nDoor)
 {
 	CActiveDoor*	doorP;
 	CWall*			wallP;
-	short				nConnSide, nSide;
+	int16_t				nConnSide, nSide;
 	CSegment*		connSegP, * segP;
-	int				i, nWall, bFlags = 3;
+	int32_t				i, nWall, bFlags = 3;
 
 if (nDoor < -1)
 	return false;
@@ -493,7 +493,7 @@ return false;
 //------------------------------------------------------------------------------
 // Animates and processes the closing of a door.
 // Called from the game loop.
-bool DoDoorClose (int nDoor)
+bool DoDoorClose (int32_t nDoor)
 {
 if (nDoor < -1)
 	return false;
@@ -501,15 +501,15 @@ CActiveDoor* doorP = gameData.walls.activeDoors + nDoor;
 CWall* wallP = WALLS + doorP->nFrontWall [0];
 CSegment* segP = SEGMENTS + wallP->nSegment;
 
-	int			i, bFlags = 1;
-	short			nConnSide, nSide;
+	int32_t			i, bFlags = 1;
+	int16_t			nConnSide, nSide;
 	CSegment*	connSegP;
 
 //check for OBJECTS in doorway before closing
 if (wallP->flags & WALL_DOOR_AUTO) {
-	if (segP->DoorIsBlocked (short (wallP->nSide), wallP->IgnoreMarker ())) {
-		audio.DestroySegmentSound (short (wallP->nSegment), short (wallP->nSide), -1);
-		segP->OpenDoor (short (wallP->nSide));		//re-open door
+	if (segP->DoorIsBlocked (int16_t (wallP->nSide), wallP->IgnoreMarker ())) {
+		audio.DestroySegmentSound (int16_t (wallP->nSegment), int16_t (wallP->nSide), -1);
+		segP->OpenDoor (int16_t (wallP->nSide));		//re-open door
 		return false;
 		}
 	}
@@ -537,7 +537,7 @@ for (i = 0; i < doorP->nPartCount; i++) {
 		}
 	if ((gameData.demo.nState != ND_STATE_PLAYBACK) && !(i || doorP->time)) {
 		if (gameData.walls.animP [wallP->nClip].closeSound  > -1)
-			audio.CreateSegmentSound ((short) gameData.walls.animP [segP->Wall (nSide)->nClip].closeSound,
+			audio.CreateSegmentSound ((int16_t) gameData.walls.animP [segP->Wall (nSide)->nClip].closeSound,
 											  wallP->nSegment, nSide, SEGMENTS [wallP->nSegment].SideCenter (nSide), 0, I2X (1));
 		}
 	doorP->time += gameData.time.xFrame;
@@ -554,7 +554,7 @@ return false;
 
 //	-----------------------------------------------------------------------------
 //	Allowed to open the normally locked special boss door if in multiplayer mode.
-int AllowToOpenSpecialBossDoor (int nSegment, short nSide)
+int32_t AllowToOpenSpecialBossDoor (int32_t nSegment, int16_t nSide)
 {
 if (IsMultiGame)
 	return (missionManager.nCurrentLevel == BOSS_LOCKED_DOOR_LEVEL) &&
@@ -565,9 +565,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void UnlockAllWalls (int bOnlyDoors)
+void UnlockAllWalls (int32_t bOnlyDoors)
 {
-	int	i;
+	int32_t	i;
 	CWall	*wallP;
 
 for (i = gameData.walls.nWalls, wallP = WALLS.Buffer (); i; wallP++, i--) {
@@ -591,7 +591,7 @@ for (i = gameData.walls.nWalls, wallP = WALLS.Buffer (); i; wallP++, i--) {
 
 void InitDoorAnims (void)
 {
-	int			h, i;
+	int32_t			h, i;
 	CWall			*wallP;
 	CSegment		*segP;
 	tWallClip	*animP;
@@ -615,7 +615,7 @@ for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; wallP++, i++) {
 //nPlayer is the number the player who hit the CWall or fired the weapon,
 //or -1 if a robot fired the weapon
 
-int CWall::ProcessHit (int nPlayer, CObject* objP)
+int32_t CWall::ProcessHit (int32_t nPlayer, CObject* objP)
 {
 	bool bShowMessage;
 
@@ -682,7 +682,7 @@ nClip = -1;
 // Tidy up WALLS array for load/save purposes.
 void ResetWalls (void)
 {
-//for (int i = 0; i < gameData.walls.nWalls; i++)
+//for (int32_t i = 0; i < gameData.walls.nWalls; i++)
 //	WALLS [i].Init ();
 gameData.walls.cloaking.Reset ();
 gameData.walls.exploding.Reset ();
@@ -691,7 +691,7 @@ gameData.walls.activeDoors.Reset ();
 
 //------------------------------------------------------------------------------
 
-bool DoCloakingWallFrame (int nCloakingWall)
+bool DoCloakingWallFrame (int32_t nCloakingWall)
 {
 	CCloakingWall*	cloakWallP;
 	CWall*			frontWallP,*backWallP;
@@ -718,9 +718,9 @@ if (cloakWallP->time > CLOAKING_WALL_TIME) {
 	audio.Update ();
 	}
 else if (SHOW_DYN_LIGHT || (cloakWallP->time > CLOAKING_WALL_TIME / 2)) {
-	int oldType = frontWallP->nType;
+	int32_t oldType = frontWallP->nType;
 #if 1
-	frontWallP->cloakValue = sbyte (float (FADE_LEVELS) * X2F (cloakWallP->time));
+	frontWallP->cloakValue = int8_t (float (FADE_LEVELS) * X2F (cloakWallP->time));
 #else
 	if (SHOW_DYN_LIGHT)
 		frontWallP->cloakValue = (fix) FRound (FADE_LEVELS * X2F (cloakWallP->time));
@@ -734,7 +734,7 @@ else if (SHOW_DYN_LIGHT || (cloakWallP->time > CLOAKING_WALL_TIME / 2)) {
 		if (backWallP)
 			backWallP->nType = WALL_CLOAKED;
 		if (!SHOW_DYN_LIGHT) {
-			for (int i = 0; i < 4; i++) {
+			for (int32_t i = 0; i < 4; i++) {
 				SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls [i].l = cloakWallP->front_ls [i];
 				if (backWallP)
 					SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].m_uvls [i].l = cloakWallP->back_ls [i];
@@ -744,7 +744,7 @@ else if (SHOW_DYN_LIGHT || (cloakWallP->time > CLOAKING_WALL_TIME / 2)) {
 	}
 else {		//fading out
 	fix xLightScale = FixDiv (CLOAKING_WALL_TIME / 2 - cloakWallP->time, CLOAKING_WALL_TIME / 2);
-	for (int i = 0; i < 4; i++) {
+	for (int32_t i = 0; i < 4; i++) {
 		SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls [i].l = FixMul (cloakWallP->front_ls [i], xLightScale);
 		if (backWallP)
 			SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].m_uvls [i].l = FixMul (cloakWallP->back_ls [i], xLightScale);
@@ -760,7 +760,7 @@ return bDeleted;
 
 //------------------------------------------------------------------------------
 
-void DoDecloakingWallFrame (int nCloakingWall)
+void DoDecloakingWallFrame (int32_t nCloakingWall)
 {
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	return;
@@ -774,7 +774,7 @@ if (cloakWallP->time > CLOAKING_WALL_TIME) {
 	frontWallP->state = WALL_DOOR_CLOSED;
 	if (backWallP)
 		backWallP->state = WALL_DOOR_CLOSED;
-	for (uint i = 0; i < 4; i++) {
+	for (uint32_t i = 0; i < 4; i++) {
 		SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls [i].l = cloakWallP->front_ls [i];
 		if (backWallP)
 			SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].m_uvls [i].l = cloakWallP->back_ls [i];
@@ -791,7 +791,7 @@ else if (cloakWallP->time > CLOAKING_WALL_TIME / 2) {		//fading in
 			lightManager.Toggle (backWallP->nSegment, backWallP->nSide, -1, 0);
 		}
 	fix xLightScale = FixDiv (cloakWallP->time-CLOAKING_WALL_TIME/2,CLOAKING_WALL_TIME / 2);
-	for (int i = 0; i < 4; i++) {
+	for (int32_t i = 0; i < 4; i++) {
 		SEGMENTS [frontWallP->nSegment].m_sides [frontWallP->nSide].m_uvls [i].l = FixMul (cloakWallP->front_ls [i], xLightScale);
 		if (backWallP)
 			SEGMENTS [backWallP->nSegment].m_sides [backWallP->nSide].m_uvls [i].l = FixMul (cloakWallP->back_ls [i], xLightScale);
@@ -819,7 +819,7 @@ void WallFrameProcess (void)
 	CCloakingWall*	cloakWallP;
 	CActiveDoor*	doorP = gameData.walls.activeDoors.Buffer ();
 	CWall*			wallP, *backWallP;
-	uint				i;
+	uint32_t				i;
 
 for (i = 0; i < gameData.walls.activeDoors.ToS (); i++) {
 	doorP = &gameData.walls.activeDoors [i];
@@ -861,7 +861,7 @@ for (i = 0; i < gameData.walls.activeDoors.ToS (); i++) {
 
 cloakWallP = gameData.walls.cloaking.Buffer ();
 for (i = 0; i < gameData.walls.cloaking.ToS (); i++, cloakWallP++) {
-	ubyte s = WALLS [cloakWallP->nFrontWall].state;
+	uint8_t s = WALLS [cloakWallP->nFrontWall].state;
 	if (s == WALL_DOOR_CLOAKING) {
 		if (DoCloakingWallFrame (i))
 			i--;	// cloaking wall has been deleted from cloaking wall tracker
@@ -878,13 +878,13 @@ for (i = 0; i < gameData.walls.cloaking.ToS (); i++, cloakWallP++) {
 //------------------------------------------------------------------------------
 //	An CObject got stuck in a door (like a flare).
 //	Add global entry.
-int				nStuckObjects = 0;
+int32_t				nStuckObjects = 0;
 tStuckObject	stuckObjects [MAX_STUCK_OBJECTS];
 
-void AddStuckObject (CObject *objP, short nSegment, short nSide)
+void AddStuckObject (CObject *objP, int16_t nSegment, int16_t nSide)
 {
-	int				i;
-	short				nWall;
+	int32_t				i;
+	int16_t				nWall;
 	tStuckObject	*stuckObjP;
 
 CWall* wallP = SEGMENTS [nSegment].Wall (nSide);
@@ -909,7 +909,7 @@ if (wallP) {
 //	Removes up to one/frame.
 void RemoveObsoleteStuckObjects (void)
 {
-	short	nObject, nWall;
+	int16_t	nObject, nWall;
 	CObject			*objP;
 	tStuckObject	*stuckObjP;
 
@@ -931,9 +931,9 @@ if (IS_WALL (nWall) &&
 
 //	----------------------------------------------------------------------------------------------------
 //	Door with CWall index nWall is opening, kill all OBJECTS stuck in it.
-void KillStuckObjects (int nWall)
+void KillStuckObjects (int32_t nWall)
 {
-	int				i;
+	int32_t				i;
 	tStuckObject	*stuckObjP;
 	CObject			*objP;
 
@@ -967,7 +967,7 @@ simpleRouter [0].Flush ();
 // Initialize stuck OBJECTS array.  Called at start of level
 void InitStuckObjects (void)
 {
-for (int i = 0; i < MAX_STUCK_OBJECTS; i++)
+for (int32_t i = 0; i < MAX_STUCK_OBJECTS; i++)
 	stuckObjects [i].nWall = NO_WALL;
 nStuckObjects = 0;
 }
@@ -979,7 +979,7 @@ void ClearStuckObjects (void)
 	tStuckObject	*stuckObjP = stuckObjects;
 	CObject			*objP;
 
-for (int i = 0; i < MAX_STUCK_OBJECTS; i++, stuckObjP++) {
+for (int32_t i = 0; i < MAX_STUCK_OBJECTS; i++, stuckObjP++) {
 	if (IS_WALL (stuckObjP->nWall)) {
 		objP = OBJECTS + stuckObjP->nObject;
 		if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FLARE_ID))
@@ -995,10 +995,10 @@ if (nStuckObjects)
 // -----------------------------------------------------------------------------------
 #define	MAX_BLAST_GLASS_DEPTH	5
 
-void BngProcessSegment (CObject *objP, fix damage, CSegment *segP, int depth, sbyte *visited)
+void BngProcessSegment (CObject *objP, fix damage, CSegment *segP, int32_t depth, int8_t *visited)
 {
-	int	i;
-	short	nSide;
+	int32_t	i;
+	int16_t	nSide;
 
 if (depth > MAX_BLAST_GLASS_DEPTH)
 	return;
@@ -1009,15 +1009,15 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	if (!segP->Side (nSide)->FaceCount ())
 		continue;
 		
-		int			tm;
+		int32_t			tm;
 		fix			dist;
 		CFixVector	pnt;
 
 	//	Process only walls which have glass.
 	if ((tm = segP->m_sides [nSide].m_nOvlTex)) {
-		int ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip;
+		int32_t ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip;
 		tEffectClip* ecP = (ec < 0) ? NULL : gameData.effects.effectP + ec;
-		int db = ecP ? ecP->nDestBm : -1;
+		int32_t db = ecP ? ecP->nDestBm : -1;
 
 		if (((ec != -1) && (db != -1) && !(ecP->flags & EF_ONE_SHOT)) ||
 		 	 ((ec == -1) && (gameData.pig.tex.tMapInfoP [tm].destroyed != -1))) {
@@ -1034,7 +1034,7 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	}
 
 for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
-	short nSegment = segP->m_children [i];
+	int16_t nSegment = segP->m_children [i];
 
 	if ((nSegment != -1) && !visited [nSegment] && (segP->IsPassable (i, NULL) & WID_PASSABLE_FLAG)) {
 		visited [nSegment] = 1;
@@ -1045,13 +1045,13 @@ for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 
 // -----------------------------------------------------------------------------------
 
-int CWall::IsTriggerTarget (int i)
+int32_t CWall::IsTriggerTarget (int32_t i)
 {
 CTrigger *triggerP = TRIGGERS.Buffer (i);
 for (; i < gameData.trigs.m_nTriggers; i++, triggerP++) {
-	short *nSegP = triggerP->m_segments;
-	short *nSideP = triggerP->m_sides;
-	for (int j = triggerP->m_nLinks; j; j--, nSegP++, nSideP++)
+	int16_t *nSegP = triggerP->m_segments;
+	int16_t *nSideP = triggerP->m_sides;
+	for (int32_t j = triggerP->m_nLinks; j; j--, nSegP++, nSideP++)
 		if ((*nSegP == nSegment) && (*nSideP == nSide))
 			return i;
 	}
@@ -1070,10 +1070,10 @@ if (bVolatile < 0) {
 		bVolatile = 1;
 	else {
 		CTrigger *triggerP = TRIGGERS.Buffer ();
-		for (int i = 0; i < gameData.trigs.m_nTriggers; i++, triggerP++) {
-			short *nSegP = triggerP->m_segments;
-			short *nSideP = triggerP->m_sides;
-			for (int j = triggerP->m_nLinks; j; j--, nSegP++, nSideP++) {
+		for (int32_t i = 0; i < gameData.trigs.m_nTriggers; i++, triggerP++) {
+			int16_t *nSegP = triggerP->m_segments;
+			int16_t *nSideP = triggerP->m_sides;
+			for (int32_t j = triggerP->m_nLinks; j; j--, nSegP++, nSideP++) {
 				if ((*nSegP != nSegment) && (*nSideP != nSide))
 					continue;
 				if ((triggerP->m_info.nType == TT_OPEN_DOOR) || (triggerP->m_info.nType == TT_ILLUSION_OFF) || (triggerP->m_info.nType == TT_OPEN_WALL)) {
@@ -1112,8 +1112,8 @@ return (wallP != NULL) && (wallP->IsTriggerTarget () < 0);
 //	blast nearby monitors, lights, maybe other things
 void BlastNearbyGlass (CObject *objP, fix damage)
 {
-	int		i;
-	sbyte		visited [MAX_SEGMENTS_D2X];
+	int32_t		i;
+	int8_t		visited [MAX_SEGMENTS_D2X];
 	CSegment	*cursegp;
 
 cursegp = &SEGMENTS [objP->info.nSegment];
@@ -1130,9 +1130,9 @@ BngProcessSegment(objP, damage, cursegp, 0, visited);
 /*
  * reads a tWallClip structure from a CFile
  */
-int ReadD1WallClips (tWallClip *wc, int n, CFile& cf)
+int32_t ReadD1WallClips (tWallClip *wc, int32_t n, CFile& cf)
 {
-	int i, j;
+	int32_t i, j;
 
 	for (i = 0; i < n; i++) {
 		wc [i].xTotalTime = cf.ReadFix ();
@@ -1153,9 +1153,9 @@ int ReadD1WallClips (tWallClip *wc, int n, CFile& cf)
 /*
  * reads a tWallClip structure from a CFile
  */
-int ReadWallClips(CArray<tWallClip>& wc, int n, CFile& cf)
+int32_t ReadWallClips(CArray<tWallClip>& wc, int32_t n, CFile& cf)
 {
-	int i, j;
+	int32_t i, j;
 
 for (i = 0; i < n; i++) {
 	wc [i].xTotalTime = cf.ReadFix ();
@@ -1180,7 +1180,7 @@ void ReadWallV16(tWallV16&  w, CFile& cf)
 w.nType = cf.ReadByte ();
 w.flags = cf.ReadByte ();
 w.hps = cf.ReadFix ();
-w.nTrigger = (ubyte) cf.ReadByte ();
+w.nTrigger = (uint8_t) cf.ReadByte ();
 w.nClip = cf.ReadByte ();
 w.keys = cf.ReadByte ();
 }
@@ -1196,7 +1196,7 @@ w.nSide = cf.ReadInt ();
 w.nType = cf.ReadByte ();
 w.flags = cf.ReadByte ();
 w.hps = cf.ReadFix ();
-w.nTrigger = (ubyte) cf.ReadByte ();
+w.nTrigger = (uint8_t) cf.ReadByte ();
 w.nClip = cf.ReadByte ();
 w.keys = cf.ReadByte ();
 w.nLinkedWall = cf.ReadInt ();
@@ -1214,11 +1214,11 @@ hps = cf.ReadFix ();
 nLinkedWall = cf.ReadInt ();
 nType = cf.ReadByte ();
 if (gameTopFileInfo.fileinfoVersion < 37)
-	flags = ushort (cf.ReadByte ());
+	flags = uint16_t (cf.ReadByte ());
 else
 	flags = cf.ReadUShort ();
 state = cf.ReadByte ();
-nTrigger = ubyte (cf.ReadByte ());
+nTrigger = uint8_t (cf.ReadByte ());
 nClip = cf.ReadByte ();
 keys = cf.ReadByte ();
 controllingTrigger = cf.ReadByte ();
@@ -1234,12 +1234,12 @@ cf.WriteInt (nSegment);
 cf.WriteInt (nSide);
 cf.WriteFix (hps);    
 cf.WriteInt (nLinkedWall);
-cf.WriteByte ((sbyte) nType);       
-cf.WriteShort (short (flags));      
+cf.WriteByte ((int8_t) nType);       
+cf.WriteShort (int16_t (flags));      
 cf.WriteByte (state);      
-cf.WriteByte ((sbyte) nTrigger);    
+cf.WriteByte ((int8_t) nTrigger);    
 cf.WriteByte (nClip);   
-cf.WriteByte ((sbyte) keys);       
+cf.WriteByte ((int8_t) keys);       
 cf.WriteByte (controllingTrigger);
 cf.WriteByte (cloakValue); 
 }
@@ -1252,15 +1252,15 @@ nSegment = cf.ReadInt ();
 nSide = cf.ReadInt ();
 hps = cf.ReadFix ();    
 nLinkedWall = cf.ReadInt ();
-nType = (ubyte) cf.ReadByte ();       
+nType = (uint8_t) cf.ReadByte ();       
 if (saveGameManager.Version () < 47)
-	flags = ushort (cf.ReadByte ());
+	flags = uint16_t (cf.ReadByte ());
 else
-	flags = ushort (cf.ReadShort ());
-state = (ubyte) cf.ReadByte ();      
-nTrigger = (ubyte) cf.ReadByte ();    
+	flags = uint16_t (cf.ReadShort ());
+state = (uint8_t) cf.ReadByte ();      
+nTrigger = (uint8_t) cf.ReadByte ();    
 nClip = cf.ReadByte ();   
-keys = (ubyte) cf.ReadByte ();       
+keys = (uint8_t) cf.ReadByte ();       
 controllingTrigger = cf.ReadByte ();
 cloakValue = cf.ReadByte (); 
 bVolatile = -1;
@@ -1317,7 +1317,7 @@ return ((nTrigger == NO_TRIGGER) || (nTrigger >= gameData.trigs.m_nTriggers)) ? 
 void CActiveDoor::LoadState (CFile& cf)
 {
 nPartCount = cf.ReadInt ();
-for (int i = 0; i < 2; i++) {
+for (int32_t i = 0; i < 2; i++) {
 	nFrontWall [i] = cf.ReadShort ();
 	nBackWall [i] = cf.ReadShort ();
 	}
@@ -1329,7 +1329,7 @@ time = cf.ReadFix ();
 void CActiveDoor::SaveState (CFile& cf)
 {
 cf.WriteInt (nPartCount);
-for (int i = 0; i < 2; i++) {
+for (int32_t i = 0; i < 2; i++) {
 	cf.WriteShort (nFrontWall [i]);
 	cf.WriteShort (nBackWall [i]);
 	}
@@ -1344,7 +1344,7 @@ void CCloakingWall::LoadState (CFile& cf)
 {
 nFrontWall = cf.ReadShort ();
 nBackWall = cf.ReadShort (); 
-for (int i = 0; i < 4; i++) {
+for (int32_t i = 0; i < 4; i++) {
 	front_ls [i] = cf.ReadFix (); 
 	back_ls [i] = cf.ReadFix ();
 	}
@@ -1357,7 +1357,7 @@ void CCloakingWall::SaveState (CFile& cf)
 {
 cf.WriteShort (nFrontWall);
 cf.WriteShort (nBackWall); 
-for (int i = 0; i < 4; i++) {
+for (int32_t i = 0; i < 4; i++) {
 	cf.WriteFix (front_ls [i]); 
 	cf.WriteFix (back_ls [i]);
 	}
@@ -1399,7 +1399,7 @@ gameData.walls.exploding.Reset ();
 
 //------------------------------------------------------------------------------
 //explode the given CWall
-void ExplodeWall (short nSegment, short nSide)
+void ExplodeWall (int16_t nSegment, int16_t nSide)
 {
 	CExplodingWall * explodingWallP = AddExplodingWall ();
 
@@ -1416,15 +1416,15 @@ if (explodingWallP) {
 //note: this CWall code assumes the CWall is not triangulated
 void DoExplodingWallFrame (void)
 {
-for (uint i = 0; i < gameData.walls.exploding.ToS (); ) {
-	short nSegment = gameData.walls.exploding [i].nSegment;
+for (uint32_t i = 0; i < gameData.walls.exploding.ToS (); ) {
+	int16_t nSegment = gameData.walls.exploding [i].nSegment;
 	if (nSegment < 0) {
 		DeleteExplodingWall (i);
 		continue;
 		}
-	short nSide = gameData.walls.exploding [i].nSide;
+	int16_t nSide = gameData.walls.exploding [i].nSide;
 	fix oldfrac, newfrac;
-	int oldCount, newCount, e;		//n,
+	int32_t oldCount, newCount, e;		//n,
 	oldfrac = FixDiv (gameData.walls.exploding [i].time, EXPL_WALL_TIME);
 	gameData.walls.exploding [i].time += gameData.time.xFrame;
 	if (gameData.walls.exploding [i].time > EXPL_WALL_TIME)
@@ -1432,9 +1432,9 @@ for (uint i = 0; i < gameData.walls.exploding.ToS (); ) {
 	else if (gameData.walls.exploding [i].time > 3 * EXPL_WALL_TIME / 4) {
 		CSegment *segP = SEGMENTS + nSegment,
 					*connSegP = SEGMENTS + segP->m_children [nSide];
-		ubyte	a = (ubyte) segP->Wall (nSide)->nClip;
-		short n = AnimFrameCount (gameData.walls.animP + a);
-		short nConnSide = segP->ConnectedSide (connSegP);
+		uint8_t	a = (uint8_t) segP->Wall (nSide)->nClip;
+		int16_t n = AnimFrameCount (gameData.walls.animP + a);
+		int16_t nConnSide = segP->ConnectedSide (connSegP);
 		segP->SetTexture (nSide, connSegP, nConnSide, a, n - 1);
 		segP->Wall (nSide)->flags |= WALL_BLASTED;
 		if (nConnSide >= 0) {
@@ -1449,7 +1449,7 @@ for (uint i = 0; i < gameData.walls.exploding.ToS (); ) {
 	//n = newCount - oldCount;
 	//now create all the next explosions
 	for (e = oldCount; e < newCount; e++) {
-		ushort*		corners;
+		uint16_t*		corners;
 		CFixVector	*v0, *v1, *v2;
 		CFixVector	vv0, vv1, vPos;
 		fix			size;
@@ -1468,10 +1468,10 @@ for (uint i = 0; i < gameData.walls.exploding.ToS (); ) {
 		//fireballs start away from door, with subsequent ones getting closer
 		vPos += SEGMENTS [nSegment].m_sides [nSide].m_normals [0] * (size * (EXPL_WALL_TOTAL_FIREBALLS - e) / EXPL_WALL_TOTAL_FIREBALLS);
 		if (e & 3)		//3 of 4 are Normal
-			CreateExplosion ((short) gameData.walls.exploding [i].nSegment, vPos, size, (ubyte) VCLIP_SMALL_EXPLOSION);
+			CreateExplosion ((int16_t) gameData.walls.exploding [i].nSegment, vPos, size, (uint8_t) VCLIP_SMALL_EXPLOSION);
 		else
-			CreateSplashDamageExplosion (NULL, (short) gameData.walls.exploding [i].nSegment, vPos,
-										  size, (ubyte) VCLIP_SMALL_EXPLOSION, I2X (4), I2X (20), I2X (50), -1);
+			CreateSplashDamageExplosion (NULL, (int16_t) gameData.walls.exploding [i].nSegment, vPos,
+										  size, (uint8_t) VCLIP_SMALL_EXPLOSION, I2X (4), I2X (20), I2X (50), -1);
 		}
 	if (gameData.walls.exploding [i].time >= EXPL_WALL_TIME)
 		DeleteExplodingWall (i);
@@ -1486,7 +1486,7 @@ void SetupWalls (void)
 {
 	CWall* wallP = WALLS.Buffer ();
 
-for (int i = 0; i < gameData.walls.nWalls; i++, wallP++) {
+for (int32_t i = 0; i < gameData.walls.nWalls; i++, wallP++) {
 	if ((wallP->nType == WALL_DOOR) && (wallP->flags & WALL_DOOR_OPENED)) {
 		if ((wallP->flags & WALL_DOOR_AUTO) && !FindActiveDoor (i)) {	// make sure pre-opened automatic doors will close after a while
 			wallP->flags &= ~WALL_DOOR_OPENED;
@@ -1504,8 +1504,8 @@ for (int i = 0; i < gameData.walls.nWalls; i++, wallP++) {
 void FixWalls (void)
 {
 	CWall*			wallP;
-	uint				i, j;
-	ubyte				bActive [MAX_WALLS];
+	uint32_t				i, j;
+	uint8_t				bActive [MAX_WALLS];
 
 memset (bActive, 0, sizeof (bActive));
 for (i = 0; i < gameData.walls.activeDoors.ToS (); i++)

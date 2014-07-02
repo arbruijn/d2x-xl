@@ -37,7 +37,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "visibility.h"
 
 extern CFaceColor tMapColor;
-extern int bPrintLine;
+extern int32_t bPrintLine;
 
 using namespace POF;
 
@@ -65,26 +65,26 @@ static CFixVector vLightPos, vLightDir, vShadowOffset;
 //this is a table of mappings from RGB15 to palette colors
 
 #if DBG_SHADOWS
-extern int bShadowTest;
-extern int bFrontCap;
-extern int bRearCap;
-extern int bShadowVolume;
-extern int bFrontFaces;
-extern int bBackFaces;
-extern int bSWCulling;
+extern int32_t bShadowTest;
+extern int32_t bFrontCap;
+extern int32_t bRearCap;
+extern int32_t bShadowVolume;
+extern int32_t bFrontFaces;
+extern int32_t bBackFaces;
+extern int32_t bSWCulling;
 #	define SHADOWTEST	bShadowTest
 #else
 #	define SHADOWTEST 0
 #endif
-extern int bZPass;
-static int bTriangularize = 0;
-//static int bIntrinsicFacing = 0;
-static int bFlatPolys = 1;
-static int bTexPolys = 1;
+extern int32_t bZPass;
+static int32_t bTriangularize = 0;
+//static int32_t bIntrinsicFacing = 0;
+static int32_t bFlatPolys = 1;
+static int32_t bTexPolys = 1;
 
 //------------------------------------------------------------------------------
 
-inline int G3CheckPointFacing (CFloatVector *pv, CFloatVector *pNorm, CFloatVector *pDir)
+inline int32_t G3CheckPointFacing (CFloatVector *pv, CFloatVector *pNorm, CFloatVector *pDir)
 {
 	CFloatVector	h = *pDir - *pv;
 
@@ -93,14 +93,14 @@ return (h * *pNorm) > 0;
 
 //------------------------------------------------------------------------------
 
-inline int CFace::IsFacingLight (void)
+inline int32_t CFace::IsFacingLight (void)
 {
 return G3CheckPointFacing (&m_vCenterf, &m_vNormf, &vLightPosf);
 }
 
 //------------------------------------------------------------------------------
 
-inline int CFace::IsFacingViewer (void)
+inline int32_t CFace::IsFacingViewer (void)
 {
 return CFloatVector::Dot (m_vCenterf, m_vNormf) >= 0;
 }
@@ -125,30 +125,30 @@ return &m_vCenterf;
 
 //------------------------------------------------------------------------------
 
-inline int CFace::IsLit (void)
+inline int32_t CFace::IsLit (void)
 {
 return m_bFacingLight = IsFacingLight ();
 }
 
 //------------------------------------------------------------------------------
 
-inline int CFace::IsFront (void)
+inline int32_t CFace::IsFront (void)
 {
 return m_bFrontFace = IsFacingViewer ();
 }
 
 //------------------------------------------------------------------------------
 
-int G3GetFaceWinding (CFloatVector *v0, CFloatVector *v1, CFloatVector *v2)
+int32_t G3GetFaceWinding (CFloatVector *v0, CFloatVector *v1, CFloatVector *v2)
 {
 return (((*v1).v.coord.x - (*v0).v.coord.x) * ((*v2).v.coord.y - (*v1).v.coord.y) < 0) ? GL_CW : GL_CCW;
 }
 
 //------------------------------------------------------------------------------
 
-int CModel::CountItems (void *modelDataP)
+int32_t CModel::CountItems (void *modelDataP)
 {
-	ubyte *p = reinterpret_cast<ubyte*> (modelDataP);
+	uint8_t *p = reinterpret_cast<uint8_t*> (modelDataP);
 
 G3CheckAndSwap (modelDataP);
 for (;;)
@@ -157,21 +157,21 @@ for (;;)
 			return 1;
 
 		case OP_DEFPOINTS: {
-			int n = WORDVAL (p+2);
+			int32_t n = WORDVAL (p+2);
 			m_nVerts += n;
 			p += n * sizeof (CFixVector) + 4;
 			break;
 			}
 
 		case OP_DEFP_START: {
-			int n = WORDVAL (p+2);
+			int32_t n = WORDVAL (p+2);
 			p += n * sizeof (CFixVector) + 8;
 			m_nVerts += n;
 			break;
 			}
 
 		case OP_FLATPOLY: {
-			int nVerts = WORDVAL (p+2);
+			int32_t nVerts = WORDVAL (p+2);
 			m_nAdjFaces += nVerts;
 			m_nFaces++;
 			m_nFaceVerts += nVerts;
@@ -180,7 +180,7 @@ for (;;)
 			}
 
 		case OP_TMAPPOLY: {
-			int nVerts = WORDVAL (p + 2);
+			int32_t nVerts = WORDVAL (p + 2);
 			m_nAdjFaces += nVerts;
 			m_nFaces += nVerts - 2;
 			m_nFaceVerts += (nVerts - 2) * 3;
@@ -223,7 +223,7 @@ void CFace::CalcNormal (CModel* po)
 {
 if (bTriangularize) {
 	CFixVector	*pv = po->m_vertices.Buffer ();
-	ushort		*pfv = m_vertices;
+	uint16_t		*pfv = m_vertices;
 
 	m_vNorm = CFixVector::Normal (pv [pfv [0]], pv [pfv [1]], pv [pfv [2]]);
 	}
@@ -236,8 +236,8 @@ else
 CFloatVector CFace::CalcCenterf (CModel* po)
 {
 	CFloatVector	*pv = po->m_vertsf.Buffer ();
-	ushort			*pfv = m_vertices;
-	int				i;
+	uint16_t			*pfv = m_vertices;
+	int32_t				i;
 
 	CFloatVector	c;
 
@@ -262,9 +262,9 @@ return c;
 
 //------------------------------------------------------------------------------
 
-inline void CModel::AddTriangle (CFace* pf, ushort v0, ushort v1, ushort v2)
+inline void CModel::AddTriangle (CFace* pf, uint16_t v0, uint16_t v1, uint16_t v2)
 {
-	ushort *pfv = m_faceVerts + m_iFaceVert;
+	uint16_t *pfv = m_faceVerts + m_iFaceVert;
 
 pf->m_vertices = pfv;
 pf->m_nVerts = 3;
@@ -278,9 +278,9 @@ pf->CalcNormal (this);
 
 #if 0
 
-short G3FindPolyModelFace (CModel* po, CFace* pf)
+int16_t G3FindPolyModelFace (CModel* po, CFace* pf)
 {
-	int			h, i, j, k, l;
+	int32_t			h, i, j, k, l;
 	CFace	*pfh;
 
 for (h = pf->m_nVerts, i = po->m_iFace, pfh = po->m_faces; i; i--, pfh++)
@@ -300,11 +300,11 @@ return -1;
 #else
 //------------------------------------------------------------------------------
 
-int CModel::FindFace (ushort *p, int nVerts)
+int32_t CModel::FindFace (uint16_t *p, int32_t nVerts)
 {
 	CFace*	pf;
-	ushort*	pfv;
-	int		h, i, j, k;
+	uint16_t*	pfv;
+	int32_t		h, i, j, k;
 
 for (i = m_iFace, pf = m_faces.Buffer (); i; i--, pf++) {
 	if (pf->m_nVerts != nVerts)
@@ -337,12 +337,12 @@ return 0;
 #endif
 //------------------------------------------------------------------------------
 
-CFace* CModel::AddFace (CSubModel* pso, CFace* pf, CFixVector *pn, ubyte *p, int bShadowData)
+CFace* CModel::AddFace (CSubModel* pso, CFace* pf, CFixVector *pn, uint8_t *p, int32_t bShadowData)
 {
-	ushort		nVerts = WORDVAL (p+2);
+	uint16_t		nVerts = WORDVAL (p+2);
 	CFixVector	*pv = m_vertices.Buffer (), v;
-	ushort		*pfv;
-	ushort		i, v0;
+	uint16_t		*pfv;
+	uint16_t		i, v0;
 
 //if (G3FindPolyModelFace (po, WORDPTR (p+30), nVerts))
 //	return pf;
@@ -404,7 +404,7 @@ if (bShadowData) {
 	else { //if (nVerts < 5) {
 		pfv = pf->m_vertices = m_faceVerts + m_iFaceVert;
 		pf->m_nVerts = nVerts;
-		memcpy (pfv, WORDPTR (p+30), nVerts * sizeof (ushort));
+		memcpy (pfv, WORDPTR (p+30), nVerts * sizeof (uint16_t));
 		pf->m_bGlow = (nGlow >= 0);
 		pf->CalcNormal (this);
 #if 0
@@ -426,10 +426,10 @@ if (bShadowData) {
 		}
 #if 0
 	else {
-		ushort h = (nVerts + 1) / 2;
+		uint16_t h = (nVerts + 1) / 2;
 		pfv = pf->m_vertices = m_faceVerts + m_iFaceVert;
 		pf->m_nVerts = h;
-		memcpy (pfv, WORDPTR (p+30), h * sizeof (ushort));
+		memcpy (pfv, WORDPTR (p+30), h * sizeof (uint16_t));
 		pf->m_bGlow = (nGlow >= 0);
 		G3CalcFaceNormal (po, pf);
 		m_iFaceVert += h;
@@ -439,7 +439,7 @@ if (bShadowData) {
 		pso->m_nFaces++;
 		pfv = pf->m_vertices = m_faceVerts + m_iFaceVert;
 		pf->m_nVerts = h;
-		memcpy (pfv, WORDPTR (p + 30) + nVerts / 2, h * sizeof (ushort));
+		memcpy (pfv, WORDPTR (p + 30) + nVerts / 2, h * sizeof (uint16_t));
 		pf->m_bGlow = (nGlow >= 0);
 		G3CalcFaceNormal (po, pf);
 		pf->m_bTest = 1;
@@ -470,7 +470,7 @@ return pf;
 void CSubModel::RotateNormals (void)
 {
 	CFace*	pf;
-	int		i;
+	int32_t		i;
 
 for (i = m_nFaces, pf = m_faces; i; i--, pf++) {
 	pf->RotateNormal ();
@@ -482,7 +482,7 @@ for (i = m_nFaces, pf = m_faces; i; i--, pf++) {
 
 CFloatVector* CModel::VertsToFloat (void)
 {
-for (int i = 0; i < m_nVerts; i++)
+for (int32_t i = 0; i < m_nVerts; i++)
 	m_vertsf [i].Assign (m_vertices [i]);
 return m_vertsf.Buffer ();
 }
@@ -491,18 +491,18 @@ return m_vertsf.Buffer ();
 
 #define MAXGAP	0.01f;
 
-int CSubModel::FindEdge (CFace* pf0, int v0, int v1)
+int32_t CSubModel::FindEdge (CFace* pf0, int32_t v0, int32_t v1)
 {
-	int		h, i, j, n;
+	int32_t		h, i, j, n;
 	CFace*	pf1;
-	ushort*	pfv;
+	uint16_t*	pfv;
 
 for (i = m_nFaces, pf1 = m_faces; i; i--, pf1++) {
 	if (pf1 != pf0) {
 		for (j = 0, n = pf1->m_nVerts, pfv = pf1->m_vertices; j < n; j++) {
 			h = (j + 1) % n;
 			if (((pfv [j] == v0) && (pfv [h] == v1)) || ((pfv [j] == v1) && (pfv [h] == v0)))
-				return (int) (pf1 - m_faces);
+				return (int32_t) (pf1 - m_faces);
 			}
 		}
 	}
@@ -511,12 +511,12 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int CModel::GatherAdjFaces (void)
+int32_t CModel::GatherAdjFaces (void)
 {
-	ushort		h, i, j, n;
+	uint16_t		h, i, j, n;
 	CSubModel*	pso = m_subModels.Buffer ();
 	CFace*		pf;
-	ushort*		pfv;
+	uint16_t*		pfv;
 
 m_nAdjFaces = 0;
 VertsToFloat ();
@@ -533,9 +533,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CSubModel::CalcFacing (CModel* po)
+int32_t CSubModel::CalcFacing (CModel* po)
 {
-	ushort	i;
+	uint16_t	i;
 
 RotateNormals ();
 for (i = 0; i < m_nFaces; i++) {
@@ -549,9 +549,9 @@ return m_nFaces;
 
 //------------------------------------------------------------------------------
 
-int CSubModel::GatherLitFaces (CModel* po)
+int32_t CSubModel::GatherLitFaces (CModel* po)
 {
-	ushort	i;
+	uint16_t	i;
 	CFace		*pf;
 
 CalcFacing (po);
@@ -570,7 +570,7 @@ return 1;
 
 void CModel::CalcCenters (void)
 {
-	ushort		i, j;
+	uint16_t		i, j;
 	CSubModel*	pso = m_subModels.Buffer ();
 	CFace*		pf;
 
@@ -581,12 +581,12 @@ for (i = m_nSubModels; i; i--, pso++)
 
 //------------------------------------------------------------------------------
 
-int CModel::GatherItems (void *modelDataP, CAngleVector *animAngleP, int bInitModel, int bShadowData, int nThis, int nParent)
+int32_t CModel::GatherItems (void *modelDataP, CAngleVector *animAngleP, int32_t bInitModel, int32_t bShadowData, int32_t nThis, int32_t nParent)
 {
-	ubyte*		p = reinterpret_cast<ubyte*> (modelDataP);
+	uint8_t*		p = reinterpret_cast<uint8_t*> (modelDataP);
 	CSubModel*	pso = m_subModels + nThis;
 	CFace*		pf = m_faces + m_iFace;
-	int			nChild;
+	int32_t			nChild;
 
 G3CheckAndSwap (modelDataP);
 nGlow = -1;
@@ -599,7 +599,7 @@ for (;;)
 		case OP_EOF:
 			return 1;
 		case OP_DEFPOINTS: {
-			int n = WORDVAL (p+2);
+			int32_t n = WORDVAL (p+2);
 			if (bInitModel)
 				memcpy (m_vertices.Buffer (), VECPTR (p+4), n * sizeof (CFixVector));
 			else
@@ -610,8 +610,8 @@ for (;;)
 			}
 
 		case OP_DEFP_START: {
-			int n = WORDVAL (p+2);
-			int s = WORDVAL (p+4);
+			int32_t n = WORDVAL (p+2);
+			int32_t s = WORDVAL (p+4);
 			if (bInitModel)
 				memcpy (m_vertices + s, VECPTR (p+8), n * sizeof (CFixVector));
 			else
@@ -621,7 +621,7 @@ for (;;)
 			}
 
 		case OP_FLATPOLY: {
-			int nVerts = WORDVAL (p+2);
+			int32_t nVerts = WORDVAL (p+2);
 			if (bInitModel && bFlatPolys) {
 				pf = AddFace (pso, pf, VECPTR (p+16), p, bShadowData);
 				}
@@ -630,7 +630,7 @@ for (;;)
 			}
 
 		case OP_TMAPPOLY: {
-			int nVerts = WORDVAL (p + 2);
+			int32_t nVerts = WORDVAL (p + 2);
 			if (bInitModel && bTexPolys) {
 				pf = AddFace (pso, pf, VECPTR (p+16), p, bShadowData);
 				}
@@ -685,9 +685,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CModel::Create (void *modelDataP, int bShadowData)
+int32_t CModel::Create (void *modelDataP, int32_t bShadowData)
 {
-	int	h;
+	int32_t	h;
 
 Init ();
 m_nSubModels = 1;
@@ -739,9 +739,9 @@ return m_nState = 1;
 
 //------------------------------------------------------------------------------
 
-void SetCullAndStencil (int bCullFront, int bZPass = 0)
+void SetCullAndStencil (int32_t bCullFront, int32_t bZPass = 0)
 {
-	static int nStencilOp [2] = {GL_DECR_WRAP, GL_INCR_WRAP};
+	static int32_t nStencilOp [2] = {GL_DECR_WRAP, GL_INCR_WRAP};
 
 ogl.SetStencilTest (true);
 if (ogl.m_features.bSeparateStencilOps == 0) {
@@ -826,10 +826,10 @@ OglDrawArrays (GL_QUADS, 0, 4);
 
 //------------------------------------------------------------------------------
 
-void RenderFarShadowCapFace (CFloatVector *pv, int nVerts)
+void RenderFarShadowCapFace (CFloatVector *pv, int32_t nVerts)
 {
 	CFloatVector	v0, v1;
-	int				i;
+	int32_t				i;
 
 #if DBG_SHADOWS
 if (bShadowTest == 1)
@@ -860,17 +860,17 @@ ogl.FlushBuffers (GL_TRIANGLE_FAN, i);
 
 //------------------------------------------------------------------------------
 
-int CSubModel::RenderShadowVolume (CModel* po, int bCullFront)
+int32_t CSubModel::RenderShadowVolume (CModel* po, int32_t bCullFront)
 {
 if (bCullFront && ogl.m_features.bSeparateStencilOps)
 	return 1;
 
 	CFloatVector*	pvf, v [4];
 	CFace*			pf, ** ppf;
-	ushort*			pfv, * paf;
-	ushort			h, i, j, n, nVerts = 0;
+	uint16_t*			pfv, * paf;
+	uint16_t			h, i, j, n, nVerts = 0;
 	float				fClipDist;
-	int				nClip;
+	int32_t				nClip;
 
 #if DBG_SHADOWS
 if (!bShadowVolume)
@@ -970,9 +970,9 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int LineHitsFace (CFixVector *pHit, CFixVector *p0, CFixVector *p1, short nSegment, short nSide)
+int32_t LineHitsFace (CFixVector *pHit, CFixVector *p0, CFixVector *p1, int16_t nSegment, int16_t nSide)
 {
-	ushort		i, nFaces;
+	uint16_t		i, nFaces;
 	CSegment*	segP = SEGMENTS + nSegment;
 
 nFaces = segP->Side (nSide)->FaceCount ();
@@ -984,20 +984,20 @@ return -1;
 
 //	-----------------------------------------------------------------------------
 
-float NearestShadowedWallDist (short nObject, short nSegment, CFixVector *vPos, float fScale)
+float NearestShadowedWallDist (int16_t nObject, int16_t nSegment, CFixVector *vPos, float fScale)
 {
 	static float fClip [4] = {1.1f, 1.5f, 2.0f, 3.0f};
 
 #if 1
 	CFixVector	vHit, v, vh;
 	CSegment		*segP;
-	int			nSide, nHitSide, nChild, nWID, bHit = 0;
+	int32_t			nSide, nHitSide, nChild, nWID, bHit = 0;
 	float			fDist;
 #if USE_SEGRADS
 	fix			xDist;
 #endif
-	static		uint nVisited = 0;
-	static		uint bVisited [MAX_SEGMENTS_D2X];
+	static		uint32_t nVisited = 0;
+	static		uint32_t bVisited [MAX_SEGMENTS_D2X];
 
 if (0 > (nSegment = FindSegByPos (*vPos, nSegment, 1, 0)))
 	return G3_INFINITY;
@@ -1005,7 +1005,7 @@ v = *vPos - vLightPos;
 CFixVector::Normalize (v);
 v *= I2X (G3_INFINITY);
 if (!nVisited++)
-	memset (bVisited, 0, gameData.segs.nSegments * sizeof (uint));
+	memset (bVisited, 0, gameData.segs.nSegments * sizeof (uint32_t));
 
 #if DBG_SHADOWS
 if (bPrintLine) {
@@ -1123,10 +1123,10 @@ return NearestShadowedWallDist (objP->Index (), objP->info.nSegment, &vCenter, 0
 //------------------------------------------------------------------------------
 // use face centers to determine clipping distance
 
-float CSubModel::ClipDistByFaceCenters (CObject *objP, CModel* po, int i, int incr)
+float CSubModel::ClipDistByFaceCenters (CObject *objP, CModel* po, int32_t i, int32_t incr)
 {
 	CFace*	pf, ** ppf;
-	ushort	h;
+	uint16_t	h;
 	float		fClipDist, fMaxDist = 0;
 
 for (h = m_nLitFaces, ppf = m_litFaces + i; i < h; i += incr, ppf += incr) {
@@ -1144,15 +1144,15 @@ return fMaxDist;
 
 //------------------------------------------------------------------------------
 
-float CSubModel::ClipDistByFaceVerts (CObject *objP, CModel* po, float fMaxDist, int i, int incr)
+float CSubModel::ClipDistByFaceVerts (CObject *objP, CModel* po, float fMaxDist, int32_t i, int32_t incr)
 {
 	CFloatVector*	pv;
 	CFixVector		v;
 	float*			pfc;
 	CFace*			pf, ** ppf;
-	ushort*			pfv, h, j, m, n;
-	short				nObject = objP->Index ();
-	short				nPointSeg, nSegment = objP->info.nSegment;
+	uint16_t*			pfv, h, j, m, n;
+	int16_t				nObject = objP->Index ();
+	int16_t				nPointSeg, nSegment = objP->info.nSegment;
 	float				fClipDist;
 
 pv = po->m_vertsf.Buffer ();
@@ -1181,17 +1181,17 @@ return fMaxDist;
 
 //------------------------------------------------------------------------------
 
-float G3ClipDistByLitVerts (CObject *objP, CModel* po, float fMaxDist, int i, int incr)
+float G3ClipDistByLitVerts (CObject *objP, CModel* po, float fMaxDist, int32_t i, int32_t incr)
 {
 	CFloatVector	*pv;
 	CFixVector	v;
 	float			*pfc;
-	ushort		j;
-	ubyte			*pvf;
-	short			nObject = objP->Index ();
-	short			nPointSeg, nSegment = objP->info.nSegment;
+	uint16_t		j;
+	uint8_t			*pvf;
+	int16_t			nObject = objP->Index ();
+	int16_t			nPointSeg, nSegment = objP->info.nSegment;
 	float			fClipDist;
-	ubyte			nVertFlag = po->m_nVertFlag;
+	uint8_t			nVertFlag = po->m_nVertFlag;
 
 pv = po->m_vertsf.Buffer ();
 pfc = po->m_fClipDist.Buffer ();
@@ -1220,9 +1220,9 @@ return fMaxDist;
 
 #if MULTI_THREADED_SHADOWS
 
-int _CDECL_ ClipDistThread (void *pThreadId)
+int32_t _CDECL_ ClipDistThread (void *pThreadId)
 {
-	int		nId = *reinterpret_cast<int*> (pThreadId);
+	int32_t		nId = *reinterpret_cast<int32_t*> (pThreadId);
 
 while (!gameStates.app.bExit) {
 	while (!gameData.threads.clipDist.info [nId].bExec)
@@ -1249,9 +1249,9 @@ return 0;
 void G3GetLitVertices (CModel* po, CSubModel* pso)
 {
 	CFace		*pf, **ppf;
-	ushort	*pfv, i, j;
-	ubyte		*pvf;
-	ubyte		nVertFlag = po->m_nVertFlag++;
+	uint16_t	*pfv, i, j;
+	uint8_t		*pvf;
+	uint8_t		nVertFlag = po->m_nVertFlag++;
 
 if (!nVertFlag)
 	po->m_vertFlags.Clear ();
@@ -1303,16 +1303,16 @@ return m_fClipDist = (fMaxDist ? fMaxDist : (fInf < G3_INFINITY) ? fInf : G3_INF
 
 //------------------------------------------------------------------------------
 
-int CSubModel::RenderShadowCaps (CObject *objP, CModel* po, int bCullFront)
+int32_t CSubModel::RenderShadowCaps (CObject *objP, CModel* po, int32_t bCullFront)
 {
 if (bCullFront && ogl.m_features.bSeparateStencilOps)
 	return 1;
 
 	CFloatVector*	pvf, v0, v1;
 	CFace*			pf, ** ppf;
-	ushort*			pfv, i, j, nVerts;
+	uint16_t*			pfv, i, j, nVerts;
 	float				fClipDist;
-	int				nClip;
+	int32_t				nClip;
 
 #if DBG_SHADOWS
 if (bShadowTest) {
@@ -1365,13 +1365,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CSubModel::RenderShadow (CObject *objP, CModel* po)
+int32_t CSubModel::RenderShadow (CObject *objP, CModel* po)
 {
-	int			h = 1, i;
+	int32_t			h = 1, i;
 
 if (m_nParent >= 0)
 	transformation.Begin (m_vPos, m_vAngles);
-h = (int) (this - po->m_subModels);
+h = (int32_t) (this - po->m_subModels);
 for (i = 0; i < po->m_nSubModels; i++)
 	if (po->m_subModels [i].m_nParent == h)
 		po->m_subModels [i].RenderShadow (objP, po);
@@ -1398,9 +1398,9 @@ return h;
 
 //------------------------------------------------------------------------------
 
-int POFGatherPolyModelItems (CObject *objP, void *modelDataP, CAngleVector *animAngleP, CModel* po, int bShadowData)
+int32_t POFGatherPolyModelItems (CObject *objP, void *modelDataP, CAngleVector *animAngleP, CModel* po, int32_t bShadowData)
 {
-	int				j;
+	int32_t				j;
 	CFixVector*		pv;
 	CFloatVector*	pvf;
 
@@ -1438,11 +1438,11 @@ return 1;
 
 #if 0
 
-int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAngleP, int nModel)
+int32_t G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAngleP, int32_t nModel)
 {
 	CFixVector	v, vLightDir;
-	short*		nearestLightP;
-	int			h, i, j;
+	int16_t*		nearestLightP;
+	int32_t			h, i, j;
 	CModel*		po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
 
 Assert (objP->info.nId < MAX_ROBOT_TYPES);
@@ -1494,7 +1494,7 @@ if (FAST_SHADOWS) {
 	}
 else {
 	h = objP->Index ();
-	j = int (gameData.render.shadows.lightP - lightManager.Lights ());
+	j = int32_t (gameData.render.shadows.lightP - lightManager.Lights ());
 	nearestLightP = gameData.render.shadows.objLights + h * MAX_SHADOW_LIGHTS;
 	for (i = 0; i < gameOpts->render.shadows.nLights; i++, nearestLightP++) {
 		if (*nearestLightP < 0)
@@ -1516,14 +1516,14 @@ return 1;
 
 #else //-------------------------------------------------------------------------
 
-int G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAngleP, int nModel)
+int32_t G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAngleP, int32_t nModel)
 {
 if (objP->IsStatic ())
 	return 0;
 
 	CFixVector	v;
-	short*		nearestLightP;
-	int			h, i, j, nShadowQuality = gameOpts->render.ShadowQuality () - 1;
+	int16_t*		nearestLightP;
+	int32_t			h, i, j, nShadowQuality = gameOpts->render.ShadowQuality () - 1;
 	CModel*		po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
 	CObject*		lightObjP = NULL;
 
@@ -1538,13 +1538,13 @@ ogl.EnableClientState (GL_VERTEX_ARRAY);
 nearestLightP = lightManager.NearestSegLights () + objP->info.nSegment * MAX_NEAREST_LIGHTS;
 gameData.render.shadows.nLight = 0;
 if (FAST_SHADOWS) {
-	short nLights = lightManager.SetNearestToSegment (objP->Segment (), -1, 0, 0, 0);	//only get light emitting objects here
+	int16_t nLights = lightManager.SetNearestToSegment (objP->Segment (), -1, 0, 0, 0);	//only get light emitting objects here
 	if (nLights > 0) {
 		if (nLights > gameOpts->render.shadows.nLights)
 			nLights = gameOpts->render.shadows.nLights;
 		CDynLightIndex* sliP = &lightManager.Index (0, 0);
 		CActiveDynLight* activeLightsP = lightManager.Active (0) + sliP->nFirst;
-		int i = sliP->nLast - sliP->nFirst + 1;
+		int32_t i = sliP->nLast - sliP->nFirst + 1;
 		for (; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 			if ((gameData.render.shadows.lightP = activeLightsP->lightP)) {
 				--nLights;
@@ -1556,7 +1556,7 @@ if (FAST_SHADOWS) {
 				else if (gameData.render.shadows.lightP->info.nType == 2) {
 					if (gameData.render.shadows.lightP->info.nObject >= 0) {
 						lightObjP = &OBJECTS [gameData.render.shadows.lightP->info.nObject];
-						int nType = lightObjP->Type ();
+						int32_t nType = lightObjP->Type ();
 						if ((nType != OBJ_FIREBALL) && (nType != OBJ_FLARE) && (nType != OBJ_LIGHT) && !lightObjP->IsEnergyWeapon ())
 							continue;
 						if (!nShadowQuality && (nType == OBJ_FIREBALL) && !lightObjP->IsEnergyWeapon ())
@@ -1619,7 +1619,7 @@ if (FAST_SHADOWS) {
 	}
 else {
 	h = objP->Index ();
-	j = int (gameData.render.shadows.lightP - lightManager.Lights ());
+	j = int32_t (gameData.render.shadows.lightP - lightManager.Lights ());
 	nearestLightP = gameData.render.shadows.objLights + h * MAX_SHADOW_LIGHTS;
 	for (i = 0; i < gameOpts->render.shadows.nLights; i++, nearestLightP++) {
 		if (*nearestLightP < 0)

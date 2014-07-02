@@ -35,25 +35,25 @@
 #	define HUD_MAX_MSGS 4
 #endif
 
-extern int MSG_Playermessages;
-extern int MSG_Noredundancy;
+extern int32_t MSG_Playermessages;
+extern int32_t MSG_Noredundancy;
 
 //killed 11/01/98 -MM
 //added on 10/04/98 by Matt Mueller to allow hud message logging
-//extern int HUD_log_messages;
+//extern int32_t HUD_log_messages;
 //end addition -MM
 //end kill -MM
 
 #ifdef __GNUC__
-void HUDMessage(int msgClass, const char *format, ...)
+void HUDMessage(int32_t msgClass, const char *format, ...)
 	__attribute__ ((format (printf, 2, 3)));
-int _CDECL_ HUDInitMessage(const char *format, ... )
+int32_t _CDECL_ HUDInitMessage(const char *format, ... )
 	__attribute__ ((format (printf, 1, 2)));
 void _CDECL_ HUDPlayerMessage(const char *format, ... )
 	 __attribute__ ((format (printf, 1, 2)));
 #else
-void _CDECL_ HUDMessage (int msgClass, const char *format, ...);
-int _CDECL_ HUDInitMessage (const char *format, ... );
+void _CDECL_ HUDMessage (int32_t msgClass, const char *format, ...);
+int32_t _CDECL_ HUDInitMessage (const char *format, ... );
 void _CDECL_ HUDPlayerMessage (const char *format, ... );
 #endif
 

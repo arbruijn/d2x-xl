@@ -60,7 +60,7 @@
 #include "gpgpu_lighting.h"
 #include "postprocessing.h"
 
-int shadowShaderProg = -1;
+int32_t shadowShaderProg = -1;
 
 extern tTexCoord2f quadTexCoord [4];
 extern float quadVerts [4][2];
@@ -71,7 +71,7 @@ extern float quadVerts [4][2];
 
 #if MAX_SHADOWMAPS
 
-void COGL::FlushShadowMaps (int nEffects)
+void COGL::FlushShadowMaps (int32_t nEffects)
 {
 	static const char* szShadowMap [] = {"shadowMap", "shadow1", "shadow2", "shadow3"};
 
@@ -98,7 +98,7 @@ if (gameStates.render.textures.bHaveShadowMapShader && (EGI_FLAG (bShadows, 0, 1
 		shaderManager.Rebuild (shaderProg);
 		GLint matrixMode;
 		glGetIntegerv (GL_MATRIX_MODE, &matrixMode);
-		int i;
+		int32_t i;
 		for (i = 0; i < lightManager.LightCount (2); i++) {
 			SelectTMU (GL_TEXTURE2 + i);
 			SetTexturing (true);

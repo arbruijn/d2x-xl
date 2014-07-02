@@ -46,8 +46,8 @@ else {
 
 void InitSpecialEffects (void)
 {
-for (int bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
-	for (int i = 0; i < gameData.effects.nEffects [gameStates.app.bD1Data]; i++)
+for (int32_t bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
+	for (int32_t i = 0; i < gameData.effects.nEffects [gameStates.app.bD1Data]; i++)
 		gameData.effects.effects [bD1][i].xTimeLeft = EffectFrameTime (gameData.effects.effects [bD1] + i);
 }
 
@@ -55,7 +55,7 @@ for (int bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 
 void ResetPogEffects (void)
 {
-	int				i, bD1;
+	int32_t				i, bD1;
 	tEffectClip		*ecP;
 	tWallClip		*wcP;
 	tVideoClip		*vcP;
@@ -80,9 +80,9 @@ void ResetSpecialEffects (void)
 {
 	tBitmapIndex	bmi;
 
-for (int bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
+for (int32_t bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 	tEffectClip* ecP = gameData.effects.effects [bD1].Buffer ();
-	for (int i = 0; i < gameData.effects.nEffects [bD1]; i++, ecP++) {
+	for (int32_t i = 0; i < gameData.effects.nEffects [bD1]; i++, ecP++) {
 		ecP->nSegment = -1;					//clear any active one-shots
 		ecP->flags &= ~(EF_STOPPED | EF_ONE_SHOT | EF_INITIALIZED);	//restart any stopped effects
 		bmi = ecP->vClipInfo.frames [ecP->nCurFrame = 0];
@@ -99,11 +99,11 @@ for (int bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 
 void CacheObjectEffects (void)
 {
-for (int bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
+for (int32_t bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 	tEffectClip* ecP = gameData.effects.effects [bD1].Buffer ();
-	for (int i = 0; i < gameData.effects.nEffects [bD1]; i++, ecP++)
+	for (int32_t i = 0; i < gameData.effects.nEffects [bD1]; i++, ecP++)
 		if ((ecP->changingObjectTexture != -1) && !(ecP->flags & EF_ALTFMT))
-			for (int j = 0; j < ecP->vClipInfo.nFrameCount; j++)
+			for (int32_t j = 0; j < ecP->vClipInfo.nFrameCount; j++)
 				LoadTexture (ecP->vClipInfo.frames [j].index, 0, bD1);
 	}	
 }
@@ -115,11 +115,11 @@ for (int bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 								  gameData.pig.tex.bmIndexP [((_fP) [_i])].index : \
 								  ((_fP) [_i]))
 
-CBitmap *FindAnimBaseTex (short *frameP, int nFrames, int bIndirect, int bObject, int *piBaseFrame)
+CBitmap *FindAnimBaseTex (int16_t *frameP, int32_t nFrames, int32_t bIndirect, int32_t bObject, int32_t *piBaseFrame)
 {
 	CBitmap*	bmP;
 
-for (int i = 0; i < nFrames; i++) {
+for (int32_t i = 0; i < nFrames; i++) {
 	if (bObject)
 		bmP = gameData.pig.tex.bitmaps [0] + BM_INDEX (frameP, i, bIndirect, bObject);
 	else
@@ -135,10 +135,10 @@ return NULL;
 
 // ----------------------------------------------------------------------------
 
-CBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect, int bObject, int *pnFrames, CBitmap* bmP)
+CBitmap *SetupHiresAnim (int16_t *frameP, int32_t nFrames, int32_t nBaseTex, int32_t bIndirect, int32_t bObject, int32_t *pnFrames, CBitmap* bmP)
 {
 	CBitmap*	hbmP, * bitmapP;
-	int		h, i, j, iBaseFrame, nBmFrames, nFrameStep;
+	int32_t		h, i, j, iBaseFrame, nBmFrames, nFrameStep;
 
 if (!(bmP || (bmP = FindAnimBaseTex (frameP, nFrames, bIndirect, bObject, &iBaseFrame))))
 	return NULL;
@@ -211,7 +211,7 @@ xEffectTime += gameData.time.xFrame;
 		tEffectClip*	ecP;
 		tBitmapIndex	bmi;
 		fix				ft = 0;
-		int				i, t, nFrames;
+		int32_t				i, t, nFrames;
 
 	for (i = 0, ecP = gameData.effects.effectP.Buffer (); i < gameData.effects.nEffects [gameStates.app.bD1Data]; i++, ecP++) {
 		if ((t = ecP->changingWallTexture) == -1)
@@ -236,7 +236,7 @@ xEffectTime += gameData.time.xFrame;
 					nFrames = bmP->FrameCount ();
 				}
 			else {
-				bmP = SetupHiresAnim (reinterpret_cast<short*> (ecP->vClipInfo.frames), nFrames, t, 0, 0, &nFrames);
+				bmP = SetupHiresAnim (reinterpret_cast<int16_t*> (ecP->vClipInfo.frames), nFrames, t, 0, 0, &nFrames);
 				if (!bmP)
 					ecP->flags &= ~EF_ALTFMT;
 				else
@@ -268,7 +268,7 @@ xEffectTime += gameData.time.xFrame;
 			bmP = bmP;
 #endif
 		if ((ecP->nCritClip != -1) && gameData.reactor.bDestroyed) {
-			int n = ecP->nCritClip;
+			int32_t n = ecP->nCritClip;
 			bmi = gameData.effects.effectP [n].vClipInfo.frames [gameData.effects.effectP [n].nCurFrame];
 			gameData.pig.tex.bmIndexP [t] = bmi;
 			}
@@ -310,7 +310,7 @@ xEffectTime += gameData.time.xFrame;
 					nFrames = bmP->FrameCount ();
 				}
 			else {
-   			bmP = SetupHiresAnim (reinterpret_cast<short*> (ecP->vClipInfo.frames), nFrames, t, 0, 1, &nFrames);
+   			bmP = SetupHiresAnim (reinterpret_cast<int16_t*> (ecP->vClipInfo.frames), nFrames, t, 0, 1, &nFrames);
 	   		if (!bmP)
 		   		ecP->flags &= ~EF_ALTFMT;
 			   else if (!gameOpts->ogl.bGlTexMerge)
@@ -341,7 +341,7 @@ xEffectTime += gameData.time.xFrame;
 		if (ecP->flags & EF_CRITICAL)
 			continue;
 		if ((ecP->nCritClip != -1) && gameData.reactor.bDestroyed) {
-			int n = ecP->nCritClip;
+			int32_t n = ecP->nCritClip;
 			bmi = gameData.effects.effects [0][n].vClipInfo.frames [gameData.effects.effects [0][n].nCurFrame];
 			gameData.pig.tex.objBmIndex [t] = bmi;
 			}
@@ -369,7 +369,7 @@ xEffectTime += gameData.time.xFrame;
 
 void RestoreEffectBitmapIcons()
 {
-	int i,j;
+	int32_t i,j;
 	tEffectClip *ecP;
 	tBitmapIndex	bmi;
 
@@ -395,7 +395,7 @@ for (i = 0, j = gameData.effects.nEffects [0], ecP = gameData.effects.effects [0
 
 // ----------------------------------------------------------------------------
 //stop an effect from animating.  Show first frame.
-void StopEffect(int effect_num)
+void StopEffect(int32_t effect_num)
 {
 	tEffectClip *ecP = gameData.effects.effectP + effect_num;
 	//Assert(ecP->bm_ptr != -1);
@@ -410,7 +410,7 @@ if (ecP->changingObjectTexture != -1)
 
 // ----------------------------------------------------------------------------
 //restart a stopped effect
-void RestartEffect(int effect_num)
+void RestartEffect(int32_t effect_num)
 {
 gameData.effects.effectP [effect_num].flags &= ~EF_STOPPED;
 
@@ -441,9 +441,9 @@ ec.nSegment = cf.ReadInt ();
 ec.nSide = cf.ReadInt ();
 }
 
-int ReadEffectClips (CArray<tEffectClip>& ec, int n, CFile& cf)
+int32_t ReadEffectClips (CArray<tEffectClip>& ec, int32_t n, CFile& cf)
 {
-	int i;
+	int32_t i;
 
 for (i = 0; i < n; i++) {
 	ReadEffectClip (ec [i], cf);

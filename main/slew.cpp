@@ -33,10 +33,10 @@ CObject *slewObjP=NULL;	//what CObject is slewing, or NULL if none
 #define ROT_SPEED 8		//rate of rotation while key held down
 #define VEL_SPEED (2*55)	//rate of acceleration while key held down
 
-short old_joy_x,old_joy_y;	//position last time around
+int16_t old_joy_x,old_joy_y;	//position last time around
 
 //	Function Prototypes
-int slew_stop(void);
+int32_t slew_stop(void);
 
 
 // -------------------------------------------------------------------
@@ -52,7 +52,7 @@ void slew_init(CObject *objP)
 }
 
 
-int slew_stop()
+int32_t slew_stop()
 {
 	if (!slewObjP || slewObjP->info.controlType!=CT_SLEW) return 0;
 
@@ -75,13 +75,13 @@ slewObjP->info.position.mOrient.m.dir.f.v.coord.x =
 slewObjP->info.position.mOrient.m.dir.f.v.coord.y = 0;
 }
 
-int do_slew_movement(CObject *objP, int check_keys, int check_joy )
+int32_t do_slew_movement(CObject *objP, int32_t check_keys, int32_t check_joy )
 {
-	int moved = 0;
+	int32_t moved = 0;
 	CFixVector svel, movement;				//scaled velocity (per this frame)
 	CFixMatrix rotmat,new_pm;
-	int joy_x,joy_y,btns;
-	int joyx_moved,joyy_moved;
+	int32_t joy_x,joy_y,btns;
+	int32_t joyx_moved,joyy_moved;
 	CAngleVector rotang;
 
 	if (!slewObjP || slewObjP->info.controlType!=CT_SLEW) return 0;
@@ -167,7 +167,7 @@ int do_slew_movement(CObject *objP, int check_keys, int check_joy )
 }
 
 //do slew for this frame
-int slew_frame(int check_keys)
+int32_t slew_frame(int32_t check_keys)
 {
 	return do_slew_movement( slewObjP, !check_keys, 1 );
 

@@ -71,7 +71,7 @@ CCockpit		fullCockpit;
 CStatusBar	statusBarCockpit;
 CRearView	rearViewCockpit;
 
-CStack<int>	CGenericCockpit::m_save;
+CStack<int32_t>	CGenericCockpit::m_save;
 
 bool	CCockpitInfo::bWindowDrawn [2];
 
@@ -152,7 +152,7 @@ if (!m_save.Buffer ())
 //rear view.  If label is non-NULL, print the label at the top of the
 //window.
 
-void CGenericCockpit::RenderWindow (int nWindow, CObject *viewerP, int bRearView, int nUser, const char *pszLabel)
+void CGenericCockpit::RenderWindow (int32_t nWindow, CObject *viewerP, int32_t bRearView, int32_t nUser, const char *pszLabel)
 {
 if (Hide ())
 	return;
@@ -166,12 +166,12 @@ if ((gameStates.render.cockpit.nType >= CM_FULL_SCREEN) && (gameStates.zoom.nFac
 	static CCanvas overlapCanv;
 
 	CObject*	viewerSave = gameData.objs.viewerP;
-	int		bRearViewSave = gameStates.render.bRearView;
-	int		nWindowSave = gameStates.render.nWindow [0];
+	int32_t		bRearViewSave = gameStates.render.bRearView;
+	int32_t		nWindowSave = gameStates.render.nWindow [0];
 	fix		xStereoSeparation = ogl.StereoSeparation ();
 	float		nZoomSave;
 
-	static int bOverlapDirty [2] = {0, 0};
+	static int32_t bOverlapDirty [2] = {0, 0};
 
 if (!viewerP) {								//this nUser is done
 	Assert (nUser == WBU_WEAPON || nUser == WBU_STATIC);
@@ -231,9 +231,9 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 	OglDrawEmptyRect (0, 0, CCanvas::Current ()->Width () - 1, CCanvas::Current ()->Height ());
 	glLineWidth (1);
 #if 0
-	static int y, x;
+	static int32_t y, x;
 
-	int smallWindowBottom, bigWindowBottom, extraPartHeight;
+	int32_t smallWindowBottom, bigWindowBottom, extraPartHeight;
 
 	//if the window only partially overlaps the big 3d window, copy
 	//the extra part to the visible screen
@@ -270,9 +270,9 @@ void CGenericCockpit::RenderWindows (void)
 if (ogl.IsOculusRift ())
 	return;
 
-	int		bDidMissileView = 0;
-	int		saveNewDemoState = gameData.demo.nState;
-	int		w;
+	int32_t		bDidMissileView = 0;
+	int32_t		saveNewDemoState = gameData.demo.nState;
+	int32_t		w;
 
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
    if (nDemoDoLeft) {
@@ -329,7 +329,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 			}
 
 		case CV_COOP: {
-			int nPlayer = gameStates.render.cockpit.nCoopPlayerView [w];
+			int32_t nPlayer = gameStates.render.cockpit.nCoopPlayerView [w];
 	      gameStates.render.nRenderingType = 255; // don't handle coop stuff
 			if ((nPlayer != -1) && gameData.multiplayer.players [nPlayer].IsConnected () && SameTeam (nPlayer, N_LOCALPLAYER))
 				cockpit->RenderWindow (w, &OBJECTS [gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].nObject], 0, WBU_COOP, gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].callsign);
@@ -342,7 +342,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 
 		case CV_MARKER: {
 			char label [10];
-			short v = markerManager.Viewer (w);
+			int16_t v = markerManager.Viewer (w);
 			gameStates.render.nRenderingType = 5 + (w << 4);
 			if ((v == -1) || (markerManager.Objects (v) == -1)) {
 				gameStates.render.cockpit.n3DView [w] = CV_NONE;
@@ -371,7 +371,7 @@ gameData.demo.nState = saveNewDemoState;
 
 //	-----------------------------------------------------------------------------
 
-void CGenericCockpit::SetupSceneCenter (CCanvas* refCanv, int& w, int& h)
+void CGenericCockpit::SetupSceneCenter (CCanvas* refCanv, int32_t& w, int32_t& h)
 {
 if (ogl.IsOculusRift ()) {
 	w = refCanv->Width (false) / 2;
@@ -381,7 +381,7 @@ if (ogl.IsOculusRift ()) {
 	}
 else {
 	w = refCanv->Width (false) - 3 * abs (gameData.StereoOffset2D ());
-	int d = abs (gameData.StereoOffset2D ());
+	int32_t d = abs (gameData.StereoOffset2D ());
 	gameData.render.window.Setup (refCanv, (ogl.StereoSeparation () < 0) ? 2 * d : d, 0, w, refCanv->Height (false)); 
 	gameData.render.window.Activate (refCanv->Id (), refCanv);
 	}
@@ -397,10 +397,10 @@ glLineWidth (1);
 //	-----------------------------------------------------------------------------
 //draw all the things on the HUD
 
-void CGenericCockpit::Render (int bExtraInfo, fix xStereoSeparation)
+void CGenericCockpit::Render (int32_t bExtraInfo, fix xStereoSeparation)
 {
 #if DBG
-extern int bHave3DCockpit;
+extern int32_t bHave3DCockpit;
 if (bHave3DCockpit > 0)
 	return;
 #endif
@@ -417,7 +417,7 @@ if (gameStates.render.bChaseCam || (gameStates.render.bFreeCam > 0)) {
 if (!cockpit->Setup (false, false))
 	return;
 
-int nOffsetSave;
+int32_t nOffsetSave;
 
 ogl.SetDepthMode (GL_ALWAYS);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
@@ -438,7 +438,7 @@ m_info.yScale = Canvas ()->YScale ();
 #endif
 fontManager.PushScale ();
 fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
-m_info.nLineSpacing = int (GAME_FONT->Height () + GAME_FONT->Height () * fontManager.Scale () / 4);
+m_info.nLineSpacing = int32_t (GAME_FONT->Height () + GAME_FONT->Height () * fontManager.Scale () / 4);
 fontManager.PopScale ();
 m_info.heightPad = (ScaleY (m_info.fontHeight) - m_info.fontHeight) / 2;
 m_info.nDamage [0] = gameData.objs.consoleP->AimDamage ();
@@ -474,7 +474,7 @@ DrawReticle (ogl.StereoDevice () < 0);
 if (((gameOpts->render.cockpit.bHUD > 1) || (gameStates.render.cockpit.nType < CM_FULL_SCREEN)) && (gameStates.zoom.nFactor == float (gameStates.zoom.nMinFactor))) {
 	if (ogl.IsOculusRift () && !transformation.HaveHeadAngles ()) {
 		nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
-		int w, h;
+		int32_t w, h;
 		SetupSceneCenter (&gameData.render.frame, w, h);
 
 		DrawEnergyLevels ();
@@ -497,10 +497,10 @@ if (((gameOpts->render.cockpit.bHUD > 1) || (gameStates.render.cockpit.nType < C
 		gameData.render.window.Deactivate ();
 		}
 	else {
-		int bStereoOffset = ogl.IsSideBySideDevice () && ((gameStates.render.cockpit.nType == CM_FULL_SCREEN) || (gameStates.render.cockpit.nType == CM_LETTERBOX));
+		int32_t bStereoOffset = ogl.IsSideBySideDevice () && ((gameStates.render.cockpit.nType == CM_FULL_SCREEN) || (gameStates.render.cockpit.nType == CM_LETTERBOX));
 		if (bStereoOffset) {
 			nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
-			int w, h;
+			int32_t w, h;
 			SetupSceneCenter (&gameData.render.scene, w, h);
 			}
 		if ((gameData.demo.nState == ND_STATE_PLAYBACK))
@@ -599,7 +599,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-void CGenericCockpit::Activate (int nType, bool bClearMessages)
+void CGenericCockpit::Activate (int32_t nType, bool bClearMessages)
 {
 if (ogl.IsOculusRift ())
 	cockpit = &hudCockpit;

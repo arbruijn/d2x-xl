@@ -23,8 +23,8 @@ typedef struct tPixelBuffer {
 	HGLDC			hDC;
 	HGLRC			hRC;
 	GLuint		texId;
-	int			nWidth;
-	int			nHeight;
+	int32_t			nWidth;
+	int32_t			nHeight;
 	char			bBound;
 } tPixelBuffer;
 
@@ -52,19 +52,19 @@ class CPBO {
 		~CPBO () { Destroy (); }
 		static void Setup (void);
 		void Init (void);
-		int Create (int nWidth, int nHeight);
+		int32_t Create (int32_t nWidth, int32_t nHeight);
 		void Destroy (void);
-		int Available (void);
-		int Enable (void);
-		int Disable (void);
+		int32_t Available (void);
+		int32_t Enable (void);
+		int32_t Disable (void);
 		bool Bind (void);
 		void Release (void);
-		inline int GetWidth (void) { return m_info.nWidth; }
-		inline void SetWidth (int nWidth) { m_info.nWidth = nWidth; }
-		inline int GetHeight (void) { return m_info.nHeight; }
-		inline void SetHeight (int nHeight) { m_info.nHeight = nHeight; }
+		inline int32_t GetWidth (void) { return m_info.nWidth; }
+		inline void SetWidth (int32_t nWidth) { m_info.nWidth = nWidth; }
+		inline int32_t GetHeight (void) { return m_info.nHeight; }
+		inline void SetHeight (int32_t nHeight) { m_info.nHeight = nHeight; }
 		inline GLuint GetTexId (void) { return m_info.texId; }
-		inline void SetTexId (int nTexId) { m_info.texId = nTexId; }
+		inline void SetTexId (int32_t nTexId) { m_info.texId = nTexId; }
 		inline char Bound (void) { return m_info.bBound; }
 		inline HPBUFFERARB Handle (void) { return m_info.hBuf; }
 		inline GLuint TexId (void) { return m_info.texId; }

@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 
 char *jcrypt (char *pszPlain);
-ushort Crc16 (ushort crc, const ubyte * bufP, long bufSize);
-uint Crc32 (uint crc, const ubyte * bufP, long bufSize);
+uint16_t Crc16 (uint16_t crc, const uint8_t * bufP, long bufSize);
+uint32_t Crc32 (uint32_t crc, const uint8_t * bufP, long bufSize);
 
 #endif //__crypt_h

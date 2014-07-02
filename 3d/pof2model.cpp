@@ -31,9 +31,9 @@ using namespace RenderModel;
 
 //------------------------------------------------------------------------------
 
-int CModel::CountPOFModelItems (void *modelDataP, ushort *pnSubModels, ushort *pnVerts, ushort *pnFaces, ushort *pnFaceVerts)
+int32_t CModel::CountPOFModelItems (void *modelDataP, uint16_t *pnSubModels, uint16_t *pnVerts, uint16_t *pnFaces, uint16_t *pnFaceVerts)
 {
-	ubyte *p = reinterpret_cast<ubyte*> (modelDataP);
+	uint8_t *p = reinterpret_cast<uint8_t*> (modelDataP);
 
 G3CheckAndSwap (modelDataP);
 for (;;) {
@@ -42,7 +42,7 @@ for (;;) {
 			return 1;
 
 		case OP_DEFPOINTS: {
-			int n = WORDVAL (p+2);
+			int32_t n = WORDVAL (p+2);
 			if (*pnVerts < n) 
 				*pnVerts = n;
 			p += n * sizeof (CFixVector) + 4;
@@ -50,8 +50,8 @@ for (;;) {
 			}
 
 		case OP_DEFP_START: {
-			int n = WORDVAL (p+2);
-			int s = WORDVAL (p+4);
+			int32_t n = WORDVAL (p+2);
+			int32_t s = WORDVAL (p+4);
 			p += n * sizeof (CFixVector) + 8;
 			if (*pnVerts < s + n) 
 				*pnVerts = s + n;
@@ -59,7 +59,7 @@ for (;;) {
 			}
 
 		case OP_FLATPOLY: {
-			int nVerts = WORDVAL (p+2);
+			int32_t nVerts = WORDVAL (p+2);
 			(*pnFaces)++;
 			(*pnFaceVerts) += nVerts;
 			p += 30 + (nVerts | 1) * 2;
@@ -67,7 +67,7 @@ for (;;) {
 			}
 
 		case OP_TMAPPOLY: {
-			int nVerts = WORDVAL (p + 2);
+			int32_t nVerts = WORDVAL (p + 2);
 			(*pnFaces)++;
 			(*pnFaceVerts) += nVerts;
 			p += 30 + (nVerts | 1) * 2 + nVerts * 12;
@@ -110,16 +110,16 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-CFace* CModel::AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, ubyte* p, CArray<CBitmap*>& modelBitmaps, CFloatVector* objColorP, bool bTextured)
+CFace* CModel::AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, uint8_t* p, CArray<CBitmap*>& modelBitmaps, CFloatVector* objColorP, bool bTextured)
 {
-	ushort				nVerts = WORDVAL (p+2);
+	uint16_t				nVerts = WORDVAL (p+2);
 	CVertex*				pmv;
-	ushort*				pfv;
+	uint16_t*				pfv;
 	tUVL*					uvl;
 	CFloatVector			baseColor;
 	CFloatVector3		n, * pvn;
-	ushort				i, j;
-	ushort				c;
+	uint16_t				i, j;
+	uint16_t				c;
 
 if (!psm->m_faces)
 	psm->m_faces = pmf;
@@ -138,7 +138,7 @@ if (bTextured) {
 			}
 		}
 	baseColor.Red () = baseColor.Green () = baseColor.Blue () = baseColor.Alpha () = 1;
-	i = (int) (bmP - gameData.pig.tex.bitmaps [0]);
+	i = (int32_t) (bmP - gameData.pig.tex.bitmaps [0]);
 	pmf->m_bThruster = (i == 24) || ((i >= 1741) && (i <= 1745));
 	}
 else {
@@ -158,15 +158,15 @@ pmf->m_vNormal = *pn;
 pmf->m_nIndex = m_iFaceVert;
 pmv = m_faceVerts + m_iFaceVert;
 pvn = m_vertNorms + m_iFaceVert;
-if (psm->m_nIndex == (ushort) -1)
+if (psm->m_nIndex == (uint16_t) -1)
 	psm->m_nIndex = m_iFaceVert;
 pmf->m_nVerts = nVerts;
 if ((pmf->m_bGlow = (nGlow >= 0)))
 	nGlow = -1;
 uvl = reinterpret_cast<tUVL*> (p + 30 + (nVerts | 1) * 2);
 n.Assign (*pn);
-Assert (m_iFaceVert + nVerts <= int (m_faceVerts.Length ()));
-Assert (m_iFaceVert + nVerts <= int (m_vertNorms.Length ()));
+Assert (m_iFaceVert + nVerts <= int32_t (m_faceVerts.Length ()));
+Assert (m_iFaceVert + nVerts <= int32_t (m_vertNorms.Length ()));
 for (i = nVerts, pfv = WORDPTR (p+30); i; i--, pfv++, uvl++, pmv++, pvn++) {
 	j = *pfv;
 	Assert (pmv - m_faceVerts < m_nFaceVerts);
@@ -188,20 +188,20 @@ return ++pmf;
 
 //------------------------------------------------------------------------------
 
-int CModel::GetPOFModelItems (void *modelDataP, CAngleVector *pAnimAngles, int nThis, int nParent,
-										int bSubObject, CArray<CBitmap*>& modelBitmaps, CFloatVector *objColorP)
+int32_t CModel::GetPOFModelItems (void *modelDataP, CAngleVector *pAnimAngles, int32_t nThis, int32_t nParent,
+										int32_t bSubObject, CArray<CBitmap*>& modelBitmaps, CFloatVector *objColorP)
 {
-	ubyte*		p = reinterpret_cast<ubyte*> (modelDataP);
+	uint8_t*		p = reinterpret_cast<uint8_t*> (modelDataP);
 	CSubModel*	psm = m_subModels + nThis;
 	CFace*		pmf = m_faces + m_iFace;
-	int			nChild;
-	short			nTag;
+	int32_t			nChild;
+	int16_t			nTag;
 
 G3CheckAndSwap (modelDataP);
 nGlow = -1;
 if (bSubObject) {
 	psm->InitMinMax ();
-	psm->m_nIndex = (ushort) -1;
+	psm->m_nIndex = (uint16_t) -1;
 	psm->m_nParent = nParent;
 	psm->m_nBomb = -1;
 	psm->m_nMissile = -1;
@@ -219,8 +219,8 @@ for (;;) {
 			return 1;
 
 		case OP_DEFPOINTS: {
-			int i, n = WORDVAL (p+2);
-			Assert (n <= int (m_vertices.Length ()));
+			int32_t i, n = WORDVAL (p+2);
+			Assert (n <= int32_t (m_vertices.Length ()));
 			CFloatVector3 *pfv = m_vertices.Buffer ();
 			CFixVector *pv = VECPTR (p+4);
 			for (i = n; i; i--) {
@@ -232,9 +232,9 @@ for (;;) {
 			}
 
 		case OP_DEFP_START: {
-			int i, n = WORDVAL (p+2);
-			int s = WORDVAL (p+4);
-			Assert (s + n <= int (m_vertices.Length ()));
+			int32_t i, n = WORDVAL (p+2);
+			int32_t s = WORDVAL (p+4);
+			Assert (s + n <= int32_t (m_vertices.Length ()));
 			CFloatVector3 *pfv = m_vertices + s;
 			CFixVector *pv = VECPTR (p+8);
 			for (i = n; i; i--) {
@@ -246,14 +246,14 @@ for (;;) {
 			}
 
 		case OP_FLATPOLY: {
-			int nVerts = WORDVAL (p+2);
+			int32_t nVerts = WORDVAL (p+2);
 			pmf = AddPOFFace (psm, pmf, VECPTR (p+16), p, modelBitmaps, objColorP, false);
 			p += 30 + (nVerts | 1) * 2;
 			break;
 			}
 
 		case OP_TMAPPOLY: {
-			int nVerts = WORDVAL (p + 2);
+			int32_t nVerts = WORDVAL (p + 2);
 			pmf = AddPOFFace (psm, pmf, VECPTR (p+16), p, modelBitmaps, objColorP);
 			p += 30 + (nVerts | 1) * 2 + nVerts * 12;
 			break;
@@ -301,8 +301,8 @@ return 1;
 
 void CModel::AssignPOFFaces (void)
 {
-	int		i;
-	ubyte		nSubModel = 255;
+	int32_t		i;
+	uint8_t		nSubModel = 255;
 	CFace*	pmf;
 
 for (pmf = m_faces.Buffer (), i = m_nFaces; i; i--, pmf++)
@@ -316,7 +316,7 @@ for (pmf = m_faces.Buffer (), i = m_nFaces; i; i--, pmf++)
 
 //------------------------------------------------------------------------------
 
-int CModel::BuildFromPOF (CObject* objP, int nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, CFloatVector* objColorP)
+int32_t CModel::BuildFromPOF (CObject* objP, int32_t nModel, CPolyModel* pp, CArray<CBitmap*>& modelBitmaps, CFloatVector* objColorP)
 {
 if (!pp->Buffer ())
 	return 0;

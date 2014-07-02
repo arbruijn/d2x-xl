@@ -31,22 +31,22 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef struct tEffectClip {
 	tVideoClip	vClipInfo;        //embedded tVideoClip
 	fix			xTimeLeft;			//for sequencing
-	int			nCurFrame;			//for sequencing
-	short			changingWallTexture;		//Which element of Textures array to replace.
-	short			changingObjectTexture;  //Which element of ObjBitmapPtrs array to replace.
-	int			flags;				//see above
-	int			nCritClip;			//use this clip instead of above one when mine critical
-	int			nDestBm;				//use this bitmap when monitor destroyed
-	int			nDestVClip;			//what tVideoClip to play when exploding
-	int			nDestroyedClip;			//what tEffectClip to play when exploding
+	int32_t			nCurFrame;			//for sequencing
+	int16_t			changingWallTexture;		//Which element of Textures array to replace.
+	int16_t			changingObjectTexture;  //Which element of ObjBitmapPtrs array to replace.
+	int32_t			flags;				//see above
+	int32_t			nCritClip;			//use this clip instead of above one when mine critical
+	int32_t			nDestBm;				//use this bitmap when monitor destroyed
+	int32_t			nDestVClip;			//what tVideoClip to play when exploding
+	int32_t			nDestroyedClip;			//what tEffectClip to play when exploding
 	fix			xDestSize;			//3d size of explosion
-	int			nSound;				//what sound this makes
-	int			nSegment, nSide;	//what seg & CSide, for one-shot clips
+	int32_t			nSound;				//what sound this makes
+	int32_t			nSegment, nSide;	//what seg & CSide, for one-shot clips
 } __pack__ tEffectClip;
 
 typedef tEffectClip D1_eclip;
 
-extern int Num_effects [2];
+extern int32_t Num_effects [2];
 extern tEffectClip Effects [2][MAX_EFFECTS];
 
 // Set up special effects.
@@ -65,18 +65,18 @@ void DoSpecialEffects (bool bSetup = false);
 void RestoreEffectBitmapIcons (void);
 
 //stop an effect from animating.  Show first frame.
-void StopEffect(int effect_num);
+void StopEffect(int32_t effect_num);
 
 //restart a stopped effect
-void RestartEffect (int nEffect);
+void RestartEffect (int32_t nEffect);
 
 /*
  * reads n tEffectClip structs from a CFILE
  */
 void ReadEffectClip (tEffectClip& ec, CFile& cf);
-int ReadEffectClips (CArray<tEffectClip>& ec, int n, CFile& cf);
+int32_t ReadEffectClips (CArray<tEffectClip>& ec, int32_t n, CFile& cf);
 
-CBitmap *SetupHiresAnim (short *frameP, int nFrames, int nBaseTex, int bIndirect, int bObj, int *pnFrames, CBitmap* bmP = NULL);
+CBitmap *SetupHiresAnim (int16_t *frameP, int32_t nFrames, int32_t nBaseTex, int32_t bIndirect, int32_t bObj, int32_t *pnFrames, CBitmap* bmP = NULL);
 void ResetPogEffects (void);
 void CacheObjectEffects (void);
 

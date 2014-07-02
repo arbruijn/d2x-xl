@@ -24,7 +24,7 @@
 CRenderThreadInfo tiRender;
 CEffectThreadInfo tiEffects;
 
-int _CDECL_ LightObjectsThread (void* nThreadP);
+int32_t _CDECL_ LightObjectsThread (void* nThreadP);
 
 //------------------------------------------------------------------------------
 
@@ -42,11 +42,11 @@ return false;
 
 //------------------------------------------------------------------------------
 
-static inline int ThreadsActive (int nThreads)
+static inline int32_t ThreadsActive (int32_t nThreads)
 {
-	int	nActive = 0;
+	int32_t	nActive = 0;
 
-for (int i = 0; i < nThreads; i++)
+for (int32_t i = 0; i < nThreads; i++)
 	if (tiRender.ti [i].bExec)
 		nActive++;
 return nActive;
@@ -54,7 +54,7 @@ return nActive;
 
 //------------------------------------------------------------------------------
 
-int RunRenderThreads (int nTask, int nThreads)
+int32_t RunRenderThreads (int32_t nTask, int32_t nThreads)
 {
 #if USE_OPENMP
 
@@ -67,9 +67,9 @@ if (!gameStates.app.bMultiThreaded)
 
 #	if DBG
 	time_t	t0 = 0, t2 = 0;
-	static	int nLockups = 0;
+	static	int32_t nLockups = 0;
 #	endif
-	int		i, bWait = 1;
+	int32_t		i, bWait = 1;
 
 if (nTask < 0) {
 	nTask = -nTask - 1;
@@ -83,7 +83,7 @@ for (i = 0; i < nThreads; i++)
 if (!bWait)
 	return 1;
 #if 0 //DBG
-int nActive;
+int32_t nActive;
 t0 = clock ();
 while ((nActive = ThreadsActive (nThreads)) && (clock () - t0 < 1000)) {
 	G3_SLEEP (0);
@@ -112,10 +112,10 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ RenderThread (void *pThreadId)
+int32_t _CDECL_ RenderThread (void *pThreadId)
 {
-	int		nId = *reinterpret_cast<int*> (pThreadId);
-	int		nStart, nEnd;
+	int32_t		nId = *reinterpret_cast<int32_t*> (pThreadId);
+	int32_t		nStart, nEnd;
 #ifdef _WIN32
 	HGLRC		myContext = 0;
 #endif
@@ -148,7 +148,7 @@ do {
 				ComputeFaceLight (nStart, nEnd, nId);
 				}
 			else {
-				int nPivot = gameStates.app.nThreads / 2;
+				int32_t nPivot = gameStates.app.nThreads / 2;
 				if (nId < nPivot) {
 					ComputeThreadRange (nId, tiRender.nMiddle, nStart, nEnd, nPivot);
 					ComputeFaceLight (nStart, nEnd, nId);
@@ -197,7 +197,7 @@ if (!bInitialized) {
 	bInitialized = true;
 	}
 #if !USE_OPENMP
-for (int i = 0; i < gameStates.app.nThreads; i++) {
+for (int32_t i = 0; i < gameStates.app.nThreads; i++) {
 	if (!tiRender.ti [i].pThread) {
 		tiRender.ti [i].bDone =
 		tiRender.ti [i].bExec = 0;
@@ -225,10 +225,10 @@ void DestroyRenderThreads (void)
 if (!gameStates.app.bMultiThreaded)
 	return;
 #if !USE_OPENMP
-for (int i = 0; i < gameStates.app.nThreads; i++) 
+for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 	tiRender.ti [i].bDone = 1;
 G3_SLEEP (10);
-for (int i = 0; i < gameStates.app.nThreads; i++) {
+for (int32_t i = 0; i < gameStates.app.nThreads; i++) {
 	if (tiRender.ti [i].pThread) {
 		//SDL_KillThread (tiRender.ti [0].pThread);
 		tiRender.ti [i].pThread = NULL;
@@ -242,7 +242,7 @@ DestroyEffectsThread ();
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ EffectsThread (void *pThreadId)
+int32_t _CDECL_ EffectsThread (void *pThreadId)
 {
 do {
 	while (!tiEffects.bExec) {
@@ -298,7 +298,7 @@ tiEffects.pThread = NULL;
 
 //------------------------------------------------------------------------------
 
-bool StartEffectsThread (int nWindow)
+bool StartEffectsThread (int32_t nWindow)
 {
 #if 1 //!USE_OPENMP
 if (!WaitForEffectsThread ())
@@ -325,12 +325,12 @@ return true;
 
 //------------------------------------------------------------------------------
 
-int GetNumThreads (void)
+int32_t GetNumThreads (void)
 {
 if (!gameStates.app.bMultiThreaded)
 	return gameStates.app.nThreads = 1;
 #if USE_OPENMP && defined(_OPENMP)
-int nThreads = omp_get_num_threads ();
+int32_t nThreads = omp_get_num_threads ();
 if (nThreads < 2)
 #pragma omp parallel 
 	{

@@ -51,7 +51,7 @@ CRadar radar;
 
 // -----------------------------------------------------------------------------------
 
-int				CRadar::radarRanges [5] = {0, 100, 250, 500, 2000};
+int32_t				CRadar::radarRanges [5] = {0, 100, 250, 500, 2000};
 float				CRadar::radarSizes [3] = {2.0f, 3.0f, 4.0f};
 float				CRadar::sizeOffsets [2][3] = {{4.0f, 2.0f, 0.0f}, {4.0f, 2.0f, 0.0f}};
 
@@ -77,7 +77,7 @@ CRadar::CRadar ()
 ComputeSinCosTable (sizeofa (sinCosRadar), sinCosRadar);
 ComputeSinCosTable (sizeofa (sinCosBlip), sinCosBlip);
 
-int i;
+int32_t i;
 
 for (i = 0; i < 8; i++) {
 	shipColors [i].Set (playerColors [i].r, playerColors [i].g, playerColors [i].b);
@@ -122,7 +122,7 @@ void CRadar::RenderSetup (void)
 memcpy (ogl.VertexBuffer ().Buffer (), m_vertices, sizeof (m_vertices));
 #else
 CFloatVector* pv = &ogl.VertexBuffer () [0];
-for (int i = 0; i < RADAR_SLICES; i++, pv++) {
+for (int32_t i = 0; i < RADAR_SLICES; i++, pv++) {
 	double ang = 2.0 * PI * i / RADAR_SLICES;
 	pv->v.coord.x = float (cos (ang));
 	pv->v.coord.y = float (sin (ang));
@@ -158,7 +158,7 @@ void CRadar::RenderDevice (void)
 {
 	CFloatVector* pv;
 	CFixMatrix mOrient;
-	int i;
+	int32_t i;
 
 RenderSetup ();
 ogl.SetTransform (1);
@@ -224,7 +224,7 @@ ogl.FlushBuffers (GL_LINE_LOOP, RADAR_SLICES, 3);
 #if 0
 CFloatVector	vAxis [8], vOffset;
 
-// render 4 short lines pointing from the outer ring of the radar dish to its center
+// render 4 int16_t lines pointing from the outer ring of the radar dish to its center
 // disabled as it makes the radar look too cluttered
 pv = &ogl.VertexBuffer () [0];
 
@@ -284,7 +284,7 @@ glLineWidth (2);
 
 // -----------------------------------------------------------------------------------
 
-void CRadar::RenderBlip (CObject *objP, float r, float g, float b, float a, int bAbove)
+void CRadar::RenderBlip (CObject *objP, float r, float g, float b, float a, int32_t bAbove)
 {
 	CFloatVector	v [2];
 	float				m, h, s;
@@ -323,7 +323,7 @@ ogl.FlushBuffers (GL_LINES, 2);
 
 // -----------------------------------------------------------------------------------
 
-void CRadar::RenderObjects (int bAbove)
+void CRadar::RenderObjects (int32_t bAbove)
 {
 	CObject*			objP;
 	CFloatVector3*	colorP = radarColor + gameOpts->render.automap.nColor;
@@ -381,7 +381,7 @@ if (gameStates.zoom.nFactor > gameStates.zoom.nMinFactor)
 if (!ogl.SizeVertexBuffer (RADAR_SLICES))
 	return;
 
-int bStencil = ogl.StencilOff ();
+int32_t bStencil = ogl.StencilOff ();
 
 m_offset.v.coord.x = 0.0f;
 m_offset.v.coord.y = yOffs [gameOpts->render.cockpit.nRadarPos][gameStates.render.cockpit.nType];

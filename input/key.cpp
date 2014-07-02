@@ -32,26 +32,26 @@
 
 #define KEY_BUFFER_SIZE 16
 
-static ubyte bInstalled = 0;
+static uint8_t bInstalled = 0;
 
 //-------- Variable accessed by outside functions ---------
 
 typedef struct tKeyInfo {
-	ubyte		state;			// state of key 1 == down, 0 == up
-	ubyte		lastState;		// previous state of key
-	int		counter;		// incremented each time key is down in handler
+	uint8_t		state;			// state of key 1 == down, 0 == up
+	uint8_t		lastState;		// previous state of key
+	int32_t		counter;		// incremented each time key is down in handler
 	fix		timeWentDown;	// simple counter incremented each time in interrupt and key is down
 	fix		timeHeldDown;	// counter to tell how long key is down -- gets reset to 0 by key routines
-	ubyte		downCount;		// number of key counts key was down
-	ubyte		upCount;		// number of times key was released
-	ubyte		flags;
+	uint8_t		downCount;		// number of key counts key was down
+	uint8_t		upCount;		// number of times key was released
+	uint8_t		flags;
 } tKeyInfo;
 
 typedef struct tKeyboard {
-	ushort		keyBuffer [KEY_BUFFER_SIZE];
+	uint16_t		keyBuffer [KEY_BUFFER_SIZE];
 	tKeyInfo		keys [256];
 	fix			xTimePressed [KEY_BUFFER_SIZE];
-	uint 			nKeyHead, nKeyTail;
+	uint32_t 			nKeyHead, nKeyTail;
 } tKeyboard;
 
 static tKeyboard keyData;
@@ -325,20 +325,20 @@ const char *pszKeyText [256];
 
 //------------------------------------------------------------------------------
 
-ubyte KeyToASCII (int keyCode)
+uint8_t KeyToASCII (int32_t keyCode)
 {
-	int shifted;
+	int32_t shifted;
 
 shifted = keyCode & KEY_SHIFTED;
 keyCode &= 0xFF;
-return shifted ? static_cast<ubyte> (keyProperties [keyCode].shiftedAsciiValue) : static_cast<ubyte> (keyProperties [keyCode].asciiValue);
+return shifted ? static_cast<uint8_t> (keyProperties [keyCode].shiftedAsciiValue) : static_cast<uint8_t> (keyProperties [keyCode].asciiValue);
 }
 
 //------------------------------------------------------------------------------
 
 #if UNICODE_KEYS == 0
 
-static int KeyGerman (int keyCode)
+static int32_t KeyGerman (int32_t keyCode)
 {
 if (keyCode == KEY_Z)
 	return KEY_Y;
@@ -359,7 +359,7 @@ else if (keyCode == KEY_SLASH)
 else if (keyCode == KEY_BACKSLASH)
 	return KEY_RAPOSTRO;
 else if (keyCode & KEY_SHIFTED) {
-	int h = keyCode & 0xFF;
+	int32_t h = keyCode & 0xFF;
 	if (h == KEY_7)
 		return KEY_BACKSLASH;
 	else if (h == KEY_0)
@@ -382,7 +382,7 @@ return keyCode;
 
 //------------------------------------------------------------------------------
 
-static int KeyFrench (int keyCode)
+static int32_t KeyFrench (int32_t keyCode)
 {
 if (keyCode == KEY_A)
 	return KEY_Q;
@@ -413,7 +413,7 @@ else if (keyCode == KEY_LBRACKET)
 else if (keyCode == KEY_SLASH)
 	return -1;
 else if (gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT]) {
-	int h = keyCode & 0xFF;
+	int32_t h = keyCode & 0xFF;
 	if (h == KEY_COMMA)
 		return KEY_PERIOD;
 	else if (h == KEY_PERIOD)
@@ -437,10 +437,10 @@ return keyCode;
 //------------------------------------------------------------------------------
 
 typedef struct tKeyMap {
-	int	inKey, outKey;
+	int32_t	inKey, outKey;
 } tKeyMap;
 
-static int KeyDvorak (int keyCode)
+static int32_t KeyDvorak (int32_t keyCode)
 {
 	static tKeyMap keyMap [] = {
 		{KEY_A, KEY_A},
@@ -480,10 +480,10 @@ static int KeyDvorak (int keyCode)
 		{KEY_EQUALS, KEY_RBRACKET}
 		};
 
-	int flags = keyCode & 0xff00;
+	int32_t flags = keyCode & 0xff00;
 
 keyCode &= 0xff;
-for (int i = 0, j = sizeofa (keyMap); i < j; i++)
+for (int32_t i = 0, j = sizeofa (keyMap); i < j; i++)
 	if (keyCode == keyMap [i].inKey)
 		return keyMap [i].outKey;
 return keyCode | flags;
@@ -495,8 +495,8 @@ return keyCode | flags;
 
 void KeyHandler (SDL_KeyboardEvent *event)
 {
-	ubyte			state;
-	int			keyCode,
+	uint8_t			state;
+	int32_t			keyCode,
 				keyState = (event->state == SDL_PRESSED),
 				nKeyboard = gameOpts->input.keyboard.nType;
 	SDLKey		keySym = event->keysym.sym;
@@ -504,13 +504,13 @@ void KeyHandler (SDL_KeyboardEvent *event)
 	wchar_t		unicode = event->keysym.unicode;
 #endif
 	tKeyInfo*	keyP;
-	ubyte			temp;
+	uint8_t			temp;
 
 //=====================================================
 //Here a translation from win keycodes to mac keycodes!
 //=====================================================
 
-for (int i = 0, j = sizeofa (keyProperties); i < j; i++) {
+for (int32_t i = 0, j = sizeofa (keyProperties); i < j; i++) {
 #if UNICODE_KEYS == 0
 	if (nKeyboard == 1) {
 		if (-1 == (keyCode = KeyGerman (i)))
@@ -556,11 +556,11 @@ for (int i = 0, j = sizeofa (keyProperties); i < j; i++) {
 			gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds ();
 			keyP->flags = 0;
 			if (gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT])
-				keyP->flags |= ubyte (KEY_SHIFTED / 256);
+				keyP->flags |= uint8_t (KEY_SHIFTED / 256);
 			if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
-				keyP->flags |= ubyte (KEY_ALTED / 256);
+				keyP->flags |= uint8_t (KEY_ALTED / 256);
 			if ((/*(nKeyboard != 1) &&*/ gameStates.input.keys.pressed [KEY_LCTRL]) || gameStates.input.keys.pressed [KEY_RCTRL])
-				keyP->flags |= ubyte (KEY_CTRLED / 256);
+				keyP->flags |= uint8_t (KEY_CTRLED / 256);
 			}
 		}
 	else {
@@ -574,11 +574,11 @@ for (int i = 0, j = sizeofa (keyProperties); i < j; i++) {
 			keyP->state = 1;
 			keyP->flags = 0;
 			if (gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT])
-				keyP->flags |= ubyte (KEY_SHIFTED / 256);
+				keyP->flags |= uint8_t (KEY_SHIFTED / 256);
 			if (gameStates.input.keys.pressed [KEY_LALT] || gameStates.input.keys.pressed [KEY_RALT])
-				keyP->flags |= ubyte (KEY_ALTED / 256);
+				keyP->flags |= uint8_t (KEY_ALTED / 256);
 			if ((/*(nKeyboard != 1) &&*/ gameStates.input.keys.pressed [KEY_LCTRL]) || gameStates.input.keys.pressed [KEY_RCTRL])
-				keyP->flags |= ubyte (KEY_CTRLED / 256);
+				keyP->flags |= uint8_t (KEY_CTRLED / 256);
 //				keyP->timeWentDown = gameStates.input.keys.xLastPressTime = TimerGetFixedSeconds();
 			}
 		else {
@@ -634,7 +634,7 @@ void _CDECL_ KeyClose (void)
 
 void KeyInit (void)
 {
-  int i;
+  int32_t i;
   
 if (bInstalled) 
 	return;
@@ -656,7 +656,7 @@ atexit (KeyClose);
 
 void KeyFlush (void)
 {
- 	int i;
+ 	int32_t i;
 
 if (!bInstalled)
 	KeyInit();
@@ -666,7 +666,7 @@ for (i = 0; i < KEY_BUFFER_SIZE; i++) {
 	keyData.keyBuffer [i] = 0;
 	keyData.xTimePressed [i] = 0;
 	}
-int curtime = TimerGetFixedSeconds ();
+int32_t curtime = TimerGetFixedSeconds ();
 for (i = 0; i < 256; i++) {
 	gameStates.input.keys.pressed [i] = 0;
 	keyData.keys [i].state = 1;
@@ -681,14 +681,14 @@ for (i = 0; i < 256; i++) {
 
 //------------------------------------------------------------------------------
 
-int KeyAddKey (int n)
+int32_t KeyAddKey (int32_t n)
 {
 return (++n < KEY_BUFFER_SIZE) ? n : 0;
 }
 
 //------------------------------------------------------------------------------
 
-int KeyCheckChar (void)
+int32_t KeyCheckChar (void)
 {
 event_poll (SDL_KEYDOWNMASK | SDL_KEYUPMASK);
 return (keyData.nKeyTail != keyData.nKeyHead);
@@ -696,10 +696,10 @@ return (keyData.nKeyTail != keyData.nKeyHead);
 
 //------------------------------------------------------------------------------
 
-int KeyInKeyTime (fix * time)
+int32_t KeyInKeyTime (fix * time)
 {
-	int key = 0;
-	int bLegacy = gameOpts->legacy.bInput;
+	int32_t key = 0;
+	int32_t bLegacy = gameOpts->legacy.bInput;
 
 gameOpts->legacy.bInput = 1;
 
@@ -722,16 +722,16 @@ return key;
 
 //------------------------------------------------------------------------------
 
-int KeyInKey (void)
+int32_t KeyInKey (void)
 {
 return KeyInKeyTime (NULL);
 }
 
 //------------------------------------------------------------------------------
 
-int KeyPeekKey (void)
+int32_t KeyPeekKey (void)
 {
-	int key = 0;
+	int32_t key = 0;
 
 event_poll (SDL_KEYDOWNMASK | SDL_KEYUPMASK);
 if (keyData.nKeyTail != keyData.nKeyHead)
@@ -741,7 +741,7 @@ return key;
 
 //------------------------------------------------------------------------------
 
-int KeyGetChar (void)
+int32_t KeyGetChar (void)
 {
 if (!bInstalled)
 	return 0;
@@ -752,9 +752,9 @@ return KeyInKey ();
 
 //------------------------------------------------------------------------------
 
-uint KeyGetShiftStatus (void)
+uint32_t KeyGetShiftStatus (void)
 {
-	uint shift_status = 0;
+	uint32_t shift_status = 0;
 
 if (gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT])
 	shift_status |= KEY_SHIFTED;
@@ -771,7 +771,7 @@ return shift_status;
 
 //------------------------------------------------------------------------------
 // Returns the number of seconds this key has been down since last call.
-fix KeyDownTime (int scanCode)
+fix KeyDownTime (int32_t scanCode)
 {
 	static fix lastTime = -1;
 	fix timeDown, time, slack = 0;
@@ -795,7 +795,7 @@ else {
 	ms = (timeDown & 0xFFFF);
 	ms *= 1000;
 	ms >>= 16;
-	keyData.keys [scanCode].timeHeldDown += (int) (s * 1000 + ms);
+	keyData.keys [scanCode].timeHeldDown += (int32_t) (s * 1000 + ms);
 	// the following code takes care of clamping in KConfig.c::control_read_all()
 	if (gameStates.input.bKeepSlackTime && (timeDown > controls.PollTime ())) {
 		slack = (fix) (timeDown - controls.PollTime ());
@@ -814,9 +814,9 @@ return timeDown;
 
 //------------------------------------------------------------------------------
 
-uint KeyDownCount (int scanCode)
+uint32_t KeyDownCount (int32_t scanCode)
 {
-	int n;
+	int32_t n;
 
 if ((scanCode<0)|| (scanCode>255)) return 0;
 
@@ -828,7 +828,7 @@ return n;
 
 //------------------------------------------------------------------------------
 
-ubyte KeyFlags (int scanCode)
+uint8_t KeyFlags (int32_t scanCode)
 {
 if ((scanCode < 0)|| (scanCode > 255)) 
 	return 0;
@@ -837,9 +837,9 @@ return keyData.keys [scanCode].flags;
 
 //------------------------------------------------------------------------------
 
-uint KeyUpCount (int scanCode)
+uint32_t KeyUpCount (int32_t scanCode)
 {
-	int n;
+	int32_t n;
 
 if ((scanCode < 0)|| (scanCode > 255)) 
 	return 0;
@@ -850,12 +850,12 @@ return n;
 
 //------------------------------------------------------------------------------
 
-fix KeyRamp (int scanCode)
+fix KeyRamp (int32_t scanCode)
 {
 if (!gameOpts->input.keyboard.nRamp)
 	return 1;
 else {
-		int maxRampTime = gameOpts->input.keyboard.nRamp * 20; // / gameOpts->input.keyboard.nRamp;
+		int32_t maxRampTime = gameOpts->input.keyboard.nRamp * 20; // / gameOpts->input.keyboard.nRamp;
 		fix t = keyData.keys [scanCode].timeHeldDown;
 
 	if (!t)

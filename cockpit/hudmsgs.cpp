@@ -31,14 +31,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "args.h"
 #include "ogl_render.h"
 
-void CopyBackgroundRect (int left,int top,int right,int bot);
+void CopyBackgroundRect (int32_t left,int32_t top,int32_t right,int32_t bot);
 char szDisplayedBackgroundMsg [2][HUD_MESSAGE_LENGTH] = {"",""};
 
-int nLastMsgYCrd = -1;
-int nLastMsgHeight = 6;
-int bMSGPlayerMsgs = 0;
-int bNoMsgRedundancy = 0;
-int nModexHUDMsgs;
+int32_t nLastMsgYCrd = -1;
+int32_t nLastMsgHeight = 6;
+int32_t bMSGPlayerMsgs = 0;
+int32_t bNoMsgRedundancy = 0;
+int32_t nModexHUDMsgs;
 
 // ----------------------------------------------------------------------------
 
@@ -63,7 +63,7 @@ szDisplayedBackgroundMsg [0][0] = 0;
 
 void HUDClearMessages (void)
 {
-	int i, j;
+	int32_t i, j;
 	CHUDMessage	*pMsgs;
 
 for (j = 2, pMsgs = gameData.hud.msgs; j; j--, pMsgs++) {
@@ -84,12 +84,12 @@ for (j = 2, pMsgs = gameData.hud.msgs; j; j--, pMsgs++) {
 
 // ----------------------------------------------------------------------------
 
-void HUDRenderMessages (ubyte nType)
+void HUDRenderMessages (uint8_t nType)
 {
 if (gameStates.app.bSaveScreenShot)
 	return;
 
-	int			h, i, n, w, y, aw, yStart;
+	int32_t			h, i, n, w, y, aw, yStart;
 	CHUDMessage *pMsgs = gameData.hud.msgs + nType;
 
 if ((pMsgs->nMessages < 0) || (pMsgs->nMessages > HUD_MAX_MSGS))
@@ -100,7 +100,7 @@ pMsgs->xTimer -= gameData.time.xFrame;
 if (pMsgs->xTimer < 0) {
 	// Timer expired... get rid of oldest pszMsg...
 	if (pMsgs->nLast != pMsgs->nFirst) {
-		int	temp;
+		int32_t	temp;
 
 		//&pMsgs->szMsgs.szMsg [pMsgs->nFirst][0] is deing deleted...;
 		pMsgs->nFirst = (pMsgs->nFirst + 1) % HUD_MAX_MSGS;
@@ -115,7 +115,7 @@ if (pMsgs->xTimer < 0) {
 }
 
 if (pMsgs->nMessages > 0) {
-	if (pMsgs->nColor == (uint) -1)
+	if (pMsgs->nColor == (uint32_t) -1)
 		pMsgs->nColor = GREEN_RGBA;
 
 #if 0 
@@ -124,17 +124,17 @@ if (pMsgs->nMessages > 0) {
 	// and since you can run the program in windowed and fullscreen mode at lower than native screen resolution.
 	if (((gameStates.render.cockpit.nType == CM_STATUS_BAR) || (gameStates.render.cockpit.nType == CM_FULL_SCREEN)) && (gameData.render.scene.Top () >= (gameData.render.screen.Height () / 8))) {
 		// Only display the most recent pszMsg in this mode
-		int nMsg = (pMsgs->nFirst + pMsgs->nMessages-1) % HUD_MAX_MSGS;
+		int32_t nMsg = (pMsgs->nFirst + pMsgs->nMessages-1) % HUD_MAX_MSGS;
 		char* pszMsg = pMsgs->szMsgs [nMsg];
 
 		if (strcmp (szDisplayedBackgroundMsg [0], pszMsg)) {
-			int ycrd = /*CCanvas::Current ()->Top () -*/ (SMALL_FONT->Height () + 2);
+			int32_t ycrd = /*CCanvas::Current ()->Top () -*/ (SMALL_FONT->Height () + 2);
 			if (ycrd < 0)
 				ycrd = 0;
 			fontManager.SetCurrent (SMALL_FONT);
 			fontManager.Current ()->StringSize (pszMsg, w, h, aw);
 			ClearBackgroundMessages ();
-			if (pMsgs->nColor == (uint) -1)
+			if (pMsgs->nColor == (uint32_t) -1)
 				pMsgs->nColor = GREEN_RGBA;
 			fontManager.SetColorRGBi (pMsgs->nColor, 1, 0, 0);
 			pMsgs->nMsgIds [nMsg] = GrPrintF (pMsgs->nMsgIds + nMsg, (CCanvas::Current ()->Width ()-w) / 2, ycrd, pszMsg);
@@ -187,7 +187,7 @@ if (pMsgs->nMessages > 0) {
 #if 0
 else if (CurrentGameScreen ()->Mode () == BM_MODEX) {
 	if (nModexHUDMsgs) {
-		int temp = nLastMsgYCrd;
+		int32_t temp = nLastMsgYCrd;
 		nModexHUDMsgs--;
 		ClearBackgroundMessages ();			//	If in status bar mode and no messages, then erase.
 		nLastMsgYCrd = temp;
@@ -209,10 +209,10 @@ if (gameOpts->render.cockpit.bSplitHUDMsgs)
 //------------------------------------------------------------------------------
 // Call to flash a message on the HUD.  Returns true if message drawn.
 // (pszMsg might not be drawn if previous pszMsg was same)
-int HUDInitMessageVA (ubyte nType, const char * format, va_list args)
+int32_t HUDInitMessageVA (uint8_t nType, const char * format, va_list args)
 {
 	CHUDMessage *pMsgs = gameData.hud.msgs + (gameOpts->render.cockpit.bSplitHUDMsgs ? nType : 0);
-	int			temp;
+	int32_t			temp;
 	char			*pszMsg = NULL, 
 					*pszLastMsg = NULL;
 	char			con_message [HUD_MESSAGE_LENGTH + 3];
@@ -234,7 +234,7 @@ if (strlen (pszMsg) >= HUD_MESSAGE_LENGTH) {
 	}
 // Produce a colorised version and send it to the console
 con_message [0] = CC_COLOR;
-if (pMsgs->nColor != (uint) -1) {
+if (pMsgs->nColor != (uint32_t) -1) {
 	con_message [1] = (char) RGBA_RED (pMsgs->nColor) / 2 + 128;
 	con_message [2] = (char) RGBA_GREEN (pMsgs->nColor) / 2 + 128;
 	con_message [3] = (char) RGBA_BLUE (pMsgs->nColor) / 2 + 128;
@@ -290,9 +290,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ HUDInitMessage (const char *format, ...)
+int32_t _CDECL_ HUDInitMessage (const char *format, ...)
 {
-	int ret = 0;
+	int32_t ret = 0;
 
 if (gameOpts->render.cockpit.bHUDMsgs) {
 	va_list args;
@@ -312,7 +312,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && LOCALPLAYER.m_bExploded) {
 	CHUDMessage	*pMsgs = gameData.hud.msgs;
 
    if (LOCALPLAYER.lives < 2) {
-      int x, y, w, h, aw;
+      int32_t x, y, w, h, aw;
       fontManager.SetCurrent (HUGE_FONT);
       fontManager.Current ()->StringSize (TXT_GAME_OVER, w, h, aw);
       w += 20;
@@ -329,12 +329,12 @@ if (gameOpts->render.cockpit.bHUDMsgs && LOCALPLAYER.m_bExploded) {
       if (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + I2X (10)) {
                SetFunctionMode (FMODE_MENU);
                gameData.app.SetGameMode (GM_GAME_OVER);
-               __asm int 3; longjmp (gameExitPoint, 1);        // Exit out of game loop
+               __asm int32_t 3; longjmp (gameExitPoint, 1);        // Exit out of game loop
 	      }
 #endif
 	   }
    fontManager.SetCurrent (GAME_FONT);
-   if (pMsgs->nColor == (uint) -1)
+   if (pMsgs->nColor == (uint32_t) -1)
       pMsgs->nColor = RGBA_PAL2 (0, 28, 0);
 	fontManager.SetColorRGBi (pMsgs->nColor, 1, 0, 0);
    GrString (0x8000, CCanvas::Current ()->Height ()- (CCanvas::Current ()->Font ()->Height () + 3), TXT_PRESS_ANY_KEY);
@@ -350,7 +350,7 @@ if (gameOpts->render.cockpit.bHUDMsgs && LOCALPLAYER.m_bExploded) {
 // 		InitHUDMessage ("Afterburner disengaged.");
 // }
 
-void _CDECL_ HUDMessage (int nClass, const char *format, ...)
+void _CDECL_ HUDMessage (int32_t nClass, const char *format, ...)
 {
 if (gameOpts->render.cockpit.bHUDMsgs && 
 #if !DBG

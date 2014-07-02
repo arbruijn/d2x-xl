@@ -68,9 +68,9 @@ void DefaultRenderSettings (bool bSetup = false);
 //------------------------------------------------------------------------------
 
 #if 1 //DBG
-static int fpsTable [] = {-1, 0, 10, 20, 30, 60, 120}; //40, 50, 60, 70, 80, 90, 100, 125, 150, 200, 250};
+static int32_t fpsTable [] = {-1, 0, 10, 20, 30, 60, 120}; //40, 50, 60, 70, 80, 90, 100, 125, 150, 200, 250};
 #else
-static int fpsTable [] = {0, 60};
+static int32_t fpsTable [] = {0, 60};
 #endif
 
 static const char *pszRendQual [4];
@@ -85,12 +85,12 @@ static const char *psz3DMethod [2];
 static const char *pszStereoSeparation [] = {"0.25", "0.5", "0.75", "1.0", "1.25", "1.5", "1.75", "2.0", "2.25", "2.5", "2.75", "3.0", "3.25", "3.5", "3.75", "4.0", "4.25", "4.5", "4.75", "5.0"};
 static const char *pszFOV [5];
 
-static int stereoDeviceMap [5];
-static int xStereoSeparation = 0;
-static int nStereoDevice = 0;
-static int nStereoDeviceCount = 0;
-static int nAnaglyphColor = 0;
-static int nIPD = RIFT_DEFAULT_IPD - RIFT_MIN_IPD;
+static int32_t stereoDeviceMap [5];
+static int32_t xStereoSeparation = 0;
+static int32_t nStereoDevice = 0;
+static int32_t nStereoDeviceCount = 0;
+static int32_t nAnaglyphColor = 0;
+static int32_t nIPD = RIFT_DEFAULT_IPD - RIFT_MIN_IPD;
 
 //------------------------------------------------------------------------------
 
@@ -105,11 +105,11 @@ return (ogl.m_states.nContrast == 8)
 
 //------------------------------------------------------------------------------
 
-int FindTableFps (int nFps)
+int32_t FindTableFps (int32_t nFps)
 {
-	int	i, j = 0, d, dMin = 0x7fffffff;
+	int32_t	i, j = 0, d, dMin = 0x7fffffff;
 
-for (i = 0; i < int (sizeofa (fpsTable)); i++) {
+for (i = 0; i < int32_t (sizeofa (fpsTable)); i++) {
 	d = abs (nFps - fpsTable [i]);
 	if (d < dMin) {
 		j = i;
@@ -121,7 +121,7 @@ return j;
 
 //------------------------------------------------------------------------------
 
-static int nPowerups, nCameras, nLighting;
+static int32_t nPowerups, nCameras, nLighting;
 
 static const char* pszNoneBasicAdv [3];
 static const char* pszNoneBasicFull [3];
@@ -129,13 +129,13 @@ static const char* pszNoneBasicStdFull [4];
 static const char *pszQuality [4];
 static const char *pszPrecision [3];
 
-int RenderOptionsCallback (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t RenderOptionsCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
 	CMenuItem*	m;
-	int			v;
+	int32_t			v;
 
 if (!gameStates.app.bNostalgia) {
 	if ((m = menu ["brightness"])) {
@@ -482,10 +482,10 @@ psz3DMethod [1] = TXT_3D_TOE_IN;
 void RenderOptionsMenu (void)
 {
 	CMenu	m;
-	int	i;
-	int	nRendQualSave = gameOpts->render.nImageQuality;
+	int32_t	i;
+	int32_t	nRendQualSave = gameOpts->render.nImageQuality;
 
-	static int choice = 0;
+	static int32_t choice = 0;
 
 	char szSlider [50];
 
@@ -510,7 +510,7 @@ if ((nStereoDevice = gameOpts->render.stereo.nGlasses)) {
 xStereoSeparation = gameOpts->render.stereo.xSeparation [0] / (STEREO_SEPARATION_STEP) - 1;
 if (xStereoSeparation < 0)
 	xStereoSeparation = 0;
-else if (xStereoSeparation >= (int) sizeofa (pszStereoSeparation))
+else if (xStereoSeparation >= (int32_t) sizeofa (pszStereoSeparation))
 	xStereoSeparation = sizeofa (pszStereoSeparation) - 1;
 nIPD = X2MM (gameOpts->render.stereo.xSeparation [1]) - RIFT_MIN_IPD; //RIFT_IPD_STEP - 1;
 

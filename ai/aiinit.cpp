@@ -45,7 +45,7 @@ void InitAISystem (void)
 
 // ---------------------------------------------------------------------------------------------------------------------
 //	Given a behavior, set initial mode.
-int AIBehaviorToMode (int behavior)
+int32_t AIBehaviorToMode (int32_t behavior)
 {
 switch (behavior) {
 	case AIB_STILL:
@@ -69,7 +69,7 @@ return AIM_IDLING;
 
 // ---------------------------------------------------------------------------------------------------------------------
 //	initial_mode == -1 means leave mode unchanged.
-void InitAIObject (short nObject, short behavior, short nHideSegment)
+void InitAIObject (int16_t nObject, int16_t behavior, int16_t nHideSegment)
 {
 	CObject		*objP = OBJECTS + nObject;
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
@@ -83,13 +83,13 @@ if (behavior == AIB_STATIC) {
 	}
 if (behavior == 0) {
 	behavior = AIB_NORMAL;
-	aiP->behavior = (ubyte) behavior;
+	aiP->behavior = (uint8_t) behavior;
 	}
 //	mode is now set from the Robot dialog, so this should get overwritten.
 ailP->mode = AIM_IDLING;
 ailP->nPrevVisibility = 0;
 if (behavior != -1) {
-	aiP->behavior = (ubyte) behavior;
+	aiP->behavior = (uint8_t) behavior;
 	ailP->mode = AIBehaviorToMode (aiP->behavior);
 	}
 else if (!((aiP->behavior >= MIN_BEHAVIOR) && (aiP->behavior <= MAX_BEHAVIOR))) {
@@ -139,7 +139,7 @@ aiP->xDyingStartTime = 0;
 
 void InitAIObjects (void)
 {
-	short		i, j;
+	int16_t		i, j;
 	CObject*	objP;
 
 gameData.ai.target.objP = NULL;
@@ -148,12 +148,12 @@ for (i = j = 0, objP = OBJECTS.Buffer (); i < LEVEL_OBJECTS; i++, objP++) {
 	if (objP->info.controlType == CT_AI)
 		InitAIObject (i, objP->cType.aiInfo.behavior, objP->cType.aiInfo.nHideSegment);
 	if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP->info.nId).bossFlag) {
-		if (j < (int) gameData.bosses.ToS () || gameData.bosses.Grow ())
+		if (j < (int32_t) gameData.bosses.ToS () || gameData.bosses.Grow ())
 			gameData.bosses [j++].Setup (i);
 		}
 	}
 if (0 < (i = gameData.bosses.Count () - j)) {
-	gameData.bosses.Shrink (uint (i));
+	gameData.bosses.Shrink (uint32_t (i));
 	extraGameInfo [0].nBossCount [0] -= i;
 	extraGameInfo [0].nBossCount [1] -= i;
 	}
@@ -164,14 +164,14 @@ InitBuddyForLevel ();
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-int		nDiffSave = 1;
+int32_t		nDiffSave = 1;
 fix		Firing_wait_copy [MAX_ROBOT_TYPES];
 fix		Firing_wait2_copy [MAX_ROBOT_TYPES];
-sbyte		RapidfireCount_copy [MAX_ROBOT_TYPES];
+int8_t		RapidfireCount_copy [MAX_ROBOT_TYPES];
 
 void DoLunacyOn (void)
 {
-	int	i;
+	int32_t	i;
 
 if (gameStates.app.bLunacy)	//already on
 	return;
@@ -192,7 +192,7 @@ for (i = 0; i < MAX_ROBOT_TYPES; i++) {
 
 void DoLunacyOff (void)
 {
-	int	i;
+	int32_t	i;
 
 if (!gameStates.app.bLunacy)	//already off
 	return;
@@ -209,7 +209,7 @@ gameStates.app.nDifficultyLevel = nDiffSave;
 //	Call this each time the player starts a new ship.
 void InitAIForShip (void)
 {
-for (int i = 0; i < MAX_AI_CLOAK_INFO; i++) {
+for (int32_t i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
 	if (gameData.objs.consoleP) {
 		gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.objs.consoleP);
@@ -231,7 +231,7 @@ gameStates.gameplay.bFinalBossIsDead = 0;
 gameData.escort.nObjNum = 0;
 gameData.escort.bMayTalk = 0;
 gameData.physics.xBossInvulDot = I2X (1)/4 - I2X (gameStates.app.nDifficultyLevel)/8;
-for (uint i = 0; i < gameData.bosses.Count (); i++)
+for (uint32_t i = 0; i < gameData.bosses.Count (); i++)
 	gameData.bosses [i].m_nDyingStartTime = 0;
 }
 
@@ -239,7 +239,7 @@ for (uint i = 0; i < gameData.bosses.Count (); i++)
 
 void InitAIFrame (void)
 {
-	int abState;
+	int32_t abState;
 
 if (gameData.ai.nMaxAwareness < PA_PLAYER_COLLISION)
 	gameData.ai.target.vLastPosFiredAt.SetZero ();

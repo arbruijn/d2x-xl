@@ -47,15 +47,15 @@ CLightmapManager lightmapManager;
 //------------------------------------------------------------------------------
 
 typedef struct tLightmapDataHeader {
-	int	nVersion;
-	int	nCheckSum;
-	int	nSegments;
-	int	nVertices;
-	int	nFaces;
-	int	nLights;
-	int	nMaxLightRange;
-	int	nBuffers;
-	int	bCompressed;
+	int32_t	nVersion;
+	int32_t	nCheckSum;
+	int32_t	nSegments;
+	int32_t	nVertices;
+	int32_t	nFaces;
+	int32_t	nLights;
+	int32_t	nMaxLightRange;
+	int32_t	nBuffers;
+	int32_t	bCompressed;
 	} tLightmapDataHeader;
 
 //------------------------------------------------------------------------------
@@ -65,16 +65,16 @@ GLhandleARB lmFS [3] = {0,0,0};
 GLhandleARB lmVS [3] = {0,0,0}; 
 
 #if DBG
-int lightmapWidth [5] = {8, 16, 32, 64, 128};
+int32_t lightmapWidth [5] = {8, 16, 32, 64, 128};
 #else
-int lightmapWidth [5] = {16, 32, 64, 128, 256};
+int32_t lightmapWidth [5] = {16, 32, 64, 128, 256};
 #endif
 
 tLightmap dummyLightmap;
 
 //------------------------------------------------------------------------------
 
-int InitLightData (int bVariable);
+int32_t InitLightData (int32_t bVariable);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -102,11 +102,11 @@ memset (m_texColor, 0, LM_W * LM_H * sizeof (CRGBColor));
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int CLightmapManager::Bind (int nLightmap)
+int32_t CLightmapManager::Bind (int32_t nLightmap)
 {
 	tLightmapBuffer	*lmP = &m_list.buffers [nLightmap];
 #if DBG
-	int					nError;
+	int32_t					nError;
 #endif
 
 if (lmP->handle)
@@ -138,9 +138,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CLightmapManager::BindAll (void)
+int32_t CLightmapManager::BindAll (void)
 {
-for (int i = 0; i < m_list.nBuffers; i++)
+for (int32_t i = 0; i < m_list.nBuffers; i++)
 	if (!Bind (i))
 		return 0;
 return 1;
@@ -152,7 +152,7 @@ void CLightmapManager::Release (void)
 {
 if (m_list.buffers.Buffer ()) { 
 	tLightmapBuffer *lmP = &m_list.buffers [0];
-	for (int i = m_list.nBuffers; i; i--, lmP++)
+	for (int32_t i = m_list.nBuffers; i; i--, lmP++)
 		if (lmP->handle) {
 			ogl.DeleteTextures (1, reinterpret_cast<GLuint*> (&lmP->handle));
 			lmP->handle = 0;
@@ -174,32 +174,32 @@ if (m_list.info.Buffer ()) {
 
 //------------------------------------------------------------------------------
 
-inline void CLightmapManager::ComputePixelOffset (CFixVector& vOffs, CFixVector& v1, CFixVector& v2, int nOffset)
+inline void CLightmapManager::ComputePixelOffset (CFixVector& vOffs, CFixVector& v1, CFixVector& v2, int32_t nOffset)
 {
 vOffs = (v2 - v1) * nOffset;
 }
 
 //------------------------------------------------------------------------------
 
-void CLightmapManager::RestoreLights (int bVariable)
+void CLightmapManager::RestoreLights (int32_t bVariable)
 {
 	CDynLight*	lightP = lightManager.Lights ();
 
-for (int i = lightManager.LightCount (0); i; i--, lightP++)
+for (int32_t i = lightManager.LightCount (0); i; i--, lightP++)
 	if (!(lightP->info.nType || (lightP->info.bVariable && !bVariable)))
 		lightP->info.bOn = 1;
 }
 
 //------------------------------------------------------------------------------
 
-int CLightmapManager::CountLights (int bVariable)
+int32_t CLightmapManager::CountLights (int32_t bVariable)
 {
 	CDynLight*	lightP = lightManager.Lights ();
-	int			nLights = 0;
+	int32_t			nLights = 0;
 
 if (!gameStates.render.bPerPixelLighting)
 	return 0;
-for (int i = lightManager.LightCount (0); i; i--, lightP++)
+for (int32_t i = lightManager.LightCount (0); i; i--, lightP++)
 	if (!(lightP->info.nType || (lightP->info.bVariable && !bVariable)))
 		nLights++;
 return nLights; 
@@ -207,14 +207,14 @@ return nLights;
 
 //------------------------------------------------------------------------------
 
-double CLightmapManager::SideRad (int nSegment, int nSide)
+double CLightmapManager::SideRad (int32_t nSegment, int32_t nSide)
 {
-	int			i;
+	int32_t			i;
 	double		h, xMin, xMax, yMin, yMax, zMin, zMax;
 	double		dx, dy, dz;
 	CFixVector	*v;
 	CSide*		sideP = SEGMENTS [nSegment].Side (nSide);
-	ushort*		sideVerts = sideP->Corners ();
+	uint16_t*		sideVerts = sideP->Corners ();
 
 xMin = yMin = zMin = 1e300;
 xMax = yMax = zMax = -1e300;
@@ -244,11 +244,11 @@ return sqrt (dx * dx + dy * dy + dz * dz) / (double) I2X (2);
 
 //------------------------------------------------------------------------------
 
-int CLightmapManager::Init (int bVariable)
+int32_t CLightmapManager::Init (int32_t bVariable)
 {
 	CDynLight*		lightP;
 	CSegFace*		faceP = NULL;
-	int				nIndex, i;
+	int32_t				nIndex, i;
 	tLightmapInfo*	lightmapInfoP;  //temporary place to put light data.
 	double			sideRad;
 
@@ -292,7 +292,7 @@ for (lightP = lightManager.Lights (), i = lightManager.LightCount (0); i; i--, l
 	lightmapInfoP->vDir = CFixVector::Avg(normalP[0], normalP[1]);
 	lightmapInfoP++; 
 	}
-return m_list.nLights = (int) (lightmapInfoP - m_list.info.Buffer ()); 
+return m_list.nLights = (int32_t) (lightmapInfoP - m_list.info.Buffer ()); 
 }
 
 //------------------------------------------------------------------------------
@@ -300,29 +300,29 @@ return m_list.nLights = (int) (lightmapInfoP - m_list.info.Buffer ());
 #if LMAP_REND2TEX
 
 // create 512 brightness values using inverse square
-void InitBrightmap (ubyte *brightmap)
+void InitBrightmap (uint8_t *brightmap)
 {
-	int		i;
+	int32_t		i;
 	double	h;
 
 for (i = 512; i; i--, brightmap++) {
 	h = (double) i / 512.0;
 	h *= h;
-	*brightmap = (ubyte) FRound ((255 * h));
+	*brightmap = (uint8_t) FRound ((255 * h));
 	}
 }
 
 //------------------------------------------------------------------------------
 
 // create a color/brightness table
-void InitLightmapInfo (ubyte *lightmap, ubyte *brightmap, GLfloat *color)
+void InitLightmapInfo (uint8_t *lightmap, uint8_t *brightmap, GLfloat *color)
 {
-	int		i, j;
+	int32_t		i, j;
 	double	h;
 
 for (i = 512; i; i--, brightmap++)
 	for (j = 0; j < 3; j++, lightmap++)
-		*lightmap = (ubyte) FRound (*brightmap * color [j]);
+		*lightmap = (uint8_t) FRound (*brightmap * color [j]);
 }
 
 #endif //LMAP_REND2TEX
@@ -346,7 +346,7 @@ CWall* wallP = SEGMENTS [faceP->m_info.nSegment].m_sides [faceP->m_info.nSide].W
 if (!wallP || (wallP->nType != WALL_OPEN)) 
 	return false;
 
-int nTrigger = 0; 
+int32_t nTrigger = 0; 
 for (;;) {
 	if (0 > (nTrigger = wallP->IsTriggerTarget (nTrigger)))
 		return false;
@@ -365,7 +365,7 @@ return true;
 static float weight [5] = {0.2270270270f, 0.1945945946f, 0.1216216216f, 0.0540540541f, 0.0162162162f};
 
 
-static inline void Add (CLightmapFaceData& source, int x, int y, int offset, CFloatVector3& color)
+static inline void Add (CLightmapFaceData& source, int32_t x, int32_t y, int32_t offset, CFloatVector3& color)
 {
 if (x < 0)
 	x = 0;
@@ -383,24 +383,24 @@ color.Blue () += sourceColor.b * w;
 }
 
 
-void CLightmapManager::Blur (CSegFace* faceP, CLightmapFaceData& source, CLightmapFaceData& dest, int direction)
+void CLightmapManager::Blur (CSegFace* faceP, CLightmapFaceData& source, CLightmapFaceData& dest, int32_t direction)
 {
-	int				w = LM_W, h = LM_H;
-	int				xScale = 1 - direction, yScale = direction, xo, yo;
+	int32_t				w = LM_W, h = LM_H;
+	int32_t				xScale = 1 - direction, yScale = direction, xo, yo;
 	CRGBColor*		destColor = dest.m_texColor;
 	CFloatVector3	color;
 
-for (int y = 0; y < h; y++) {
-	for (int x = 0; x < w; x++, destColor++) {
+for (int32_t y = 0; y < h; y++) {
+	for (int32_t x = 0; x < w; x++, destColor++) {
 		color.Set (0.0f, 0.0f, 0.0f);
 		Add (source, x, y, 0, color);
-		for (int offset = 1; offset < 5; offset++) {
+		for (int32_t offset = 1; offset < 5; offset++) {
 			xo = offset * xScale;
 			yo = offset * yScale;
 			Add (source, x - xo, y - yo, offset, color);
 			Add (source, x + xo, y + yo, offset, color);
 			}
-		destColor->Set ((ubyte) FRound (color.Red ()), (ubyte) FRound (color.Green ()), (ubyte) FRound (color.Blue ()));
+		destColor->Set ((uint8_t) FRound (color.Red ()), (uint8_t) FRound (color.Green ()), (uint8_t) FRound (color.Blue ()));
 		}
 	}
 }
@@ -419,19 +419,19 @@ Blur (faceP, tempData, source, 1);
 
 //------------------------------------------------------------------------------
 
-void CLightmapManager::Copy (CRGBColor *texColorP, ushort nLightmap)
+void CLightmapManager::Copy (CRGBColor *texColorP, uint16_t nLightmap)
 {
 tLightmapBuffer *bufP = &m_list.buffers [nLightmap / LIGHTMAP_BUFSIZE];
-int i = nLightmap % LIGHTMAP_BUFSIZE;
-int x = (i % LIGHTMAP_ROWSIZE) * LM_W;
-int y = (i / LIGHTMAP_ROWSIZE) * LM_H;
+int32_t i = nLightmap % LIGHTMAP_BUFSIZE;
+int32_t x = (i % LIGHTMAP_ROWSIZE) * LM_W;
+int32_t y = (i / LIGHTMAP_ROWSIZE) * LM_H;
 for (i = 0; i < LM_H; i++, y++, texColorP += LM_W)
 	memcpy (&bufP->bmP [y][x], texColorP, LM_W * sizeof (CRGBColor));
 }
 
 //------------------------------------------------------------------------------
 
-void CLightmapManager::CreateSpecial (CRGBColor *texColorP, ushort nLightmap, ubyte nColor)
+void CLightmapManager::CreateSpecial (CRGBColor *texColorP, uint16_t nLightmap, uint8_t nColor)
 {
 memset (texColorP, nColor, LM_W * LM_H * sizeof (CRGBColor));
 Copy (texColorP, nLightmap);
@@ -440,17 +440,17 @@ Copy (texColorP, nLightmap);
 //------------------------------------------------------------------------------
 // build one entire lightmap in single threaded mode or in horizontal stripes when multi threaded
 
-ubyte PointIsInTriangle (CFixVector* vRef, CFixVector* vNormal, short* triangleVerts);
+uint8_t PointIsInTriangle (CFixVector* vRef, CFixVector* vNormal, int16_t* triangleVerts);
 
-void CLightmapManager::Build (CSegFace* faceP, int nThread)
+void CLightmapManager::Build (CSegFace* faceP, int32_t nThread)
 {
 	CFixVector		*pixelPosP;
 	CRGBColor		*texColorP;
 	CFloatVector3	color;
-	int				w, h, x, y, yMin, yMax;
-	ubyte				nTriangles = faceP->m_info.nTriangles - 1;
-	short				nSegment = faceP->m_info.nSegment;
-	short				nSide = faceP->m_info.nSide;
+	int32_t				w, h, x, y, yMin, yMax;
+	uint8_t				nTriangles = faceP->m_info.nTriangles - 1;
+	int16_t				nSegment = faceP->m_info.nSegment;
+	int16_t				nSide = faceP->m_info.nSide;
 	bool				bBlack, bWhite;
 
 	CVertColorData	vcd = m_data.m_vcd; // need a local copy for each thread!
@@ -464,7 +464,7 @@ if (nThread < 0) {
 	nThread = 0;
 	}
 else {
-	int nStep = (h + gameStates.app.nThreads - 1) / gameStates.app.nThreads;
+	int32_t nStep = (h + gameStates.app.nThreads - 1) / gameStates.app.nThreads;
 	yMin = nStep * nThread;
 	yMax = yMin + nStep;
 	if (yMax > h)
@@ -618,7 +618,7 @@ for (y = yMin; y < yMax; y++) {
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		BRP;
 #endif
-	int h = nTriangles ? w : y + 1;
+	int32_t h = nTriangles ? w : y + 1;
 	pixelPosP = m_data.m_pixelPos + y * w;
 	for (x = 0; x < h; x++, pixelPosP++) { 
 #if DBG
@@ -638,7 +638,7 @@ for (y = yMin; y < yMax; y++) {
 		fix dist = x ? CFixVector::Dist (*pixelPosP, *(pixelPosP - 1)) : 0;
 #endif
 #if DBG
-		int nLights = lightManager.SetNearestToPixel (nSegment, nSide, &m_data.m_vNormal, pixelPosP, faceP->m_info.fRads [1] / 10.0f, nThread);
+		int32_t nLights = lightManager.SetNearestToPixel (nSegment, nSide, &m_data.m_vNormal, pixelPosP, faceP->m_info.fRads [1] / 10.0f, nThread);
 		if (0 < nLights) {
 #else
 		if (0 < lightManager.SetNearestToPixel (nSegment, nSide, &m_data.m_vNormal, pixelPosP, faceP->m_info.fRads [1] / 10.0f, nThread)) {
@@ -662,9 +662,9 @@ for (y = yMin; y < yMax; y++) {
 					bWhite = false;
 				}
 			texColorP = m_data.m_texColor + x * w + y;
-			texColorP->Red () = (ubyte) (255 * color.Red ());
-			texColorP->Green () = (ubyte) (255 * color.Green ());
-			texColorP->Blue () = (ubyte) (255 * color.Blue ());
+			texColorP->Red () = (uint8_t) (255 * color.Red ());
+			texColorP->Green () = (uint8_t) (255 * color.Green ());
+			texColorP->Blue () = (uint8_t) (255 * color.Blue ());
 			}
 		}
 	}
@@ -685,19 +685,19 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 
 //------------------------------------------------------------------------------
 
-int CLightmapManager::CompareFaces (const tSegFacePtr* pf, const tSegFacePtr* pm)
+int32_t CLightmapManager::CompareFaces (const tSegFacePtr* pf, const tSegFacePtr* pm)
 {
-	int	k = (*pf)->m_info.nKey;
-	int	m = (*pm)->m_info.nKey;
+	int32_t	k = (*pf)->m_info.nKey;
+	int32_t	m = (*pm)->m_info.nKey;
 
 return (k < m) ? -1 : (k > m) ? 1 : 0;
 }
 
 //------------------------------------------------------------------------------
 
-void CLightmapManager::BuildAll (int nFace)
+void CLightmapManager::BuildAll (int32_t nFace)
 {
-	int	nLastFace; 
+	int32_t	nLastFace; 
 
 INIT_PROGRESS_LOOP (nFace, nLastFace, FACES.nFaces);
 if (nFace <= 0) {
@@ -723,7 +723,7 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 	else {
 #if USE_OPENMP
 #	pragma omp parallel for
-		for (int i = 0; i < gameStates.app.nThreads; i++)
+		for (int32_t i = 0; i < gameStates.app.nThreads; i++)
 			Build (m_data.faceP, i);
 #else
 		if (!RunRenderThreads (rtLightmap, gameStates.app.nThreads))
@@ -752,9 +752,9 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 
 //------------------------------------------------------------------------------
 
-static int nFace = 0;
+static int32_t nFace = 0;
 
-static int CreatePoll (CMenu& menu, int& key, int nCurItem, int nState)
+static int32_t CreatePoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
@@ -778,7 +778,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-char *CLightmapManager::Filename (char *pszFilename, int nLevel)
+char *CLightmapManager::Filename (char *pszFilename, int32_t nLevel)
 {
 if (gameOpts->render.color.nLevel == 2)
 	return GameDataFilename (pszFilename, "lmap", nLevel, (gameOpts->render.nLightmapQuality + 1) * (gameOpts->render.nLightmapPrecision + 1) - 1);
@@ -788,7 +788,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void CLightmapManager::Realloc (int nBuffers)
+void CLightmapManager::Realloc (int32_t nBuffers)
 {
 if (m_list.nBuffers > nBuffers) {
 	m_list.buffers.Resize (nBuffers);
@@ -800,16 +800,16 @@ if (m_list.nBuffers > nBuffers) {
 
 void CLightmapManager::ToGrayScale (void)
 {
-for (int i = 0; i < m_list.nBuffers; i++) {
+for (int32_t i = 0; i < m_list.nBuffers; i++) {
 	CRGBColor* colorP = &m_list.buffers [i].bmP [0][0];
-	for (int j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, colorP++)
+	for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, colorP++)
 		colorP->ToGrayScale (1);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-int CLightmapManager::Save (int nLevel)
+int32_t CLightmapManager::Save (int32_t nLevel)
 {
 	CFile				cf;
 	tLightmapDataHeader ldh = {LIGHTMAP_DATA_VERSION, 
@@ -822,7 +822,7 @@ int CLightmapManager::Save (int nLevel)
 										m_list.nBuffers,
 										gameStates.app.bCompressData
 										};
-	int				i, bOk;
+	int32_t				i, bOk;
 	char				szFilename [FILENAME_LEN];
 	CSegFace			*faceP;
 
@@ -851,11 +851,11 @@ return bOk;
 
 //------------------------------------------------------------------------------
 
-int CLightmapManager::Load (int nLevel)
+int32_t CLightmapManager::Load (int32_t nLevel)
 {
 	CFile						cf;
 	tLightmapDataHeader	ldh;
-	int						i, bOk;
+	int32_t						i, bOk;
 	char						szFilename [FILENAME_LEN];
 	CSegFace*				faceP;
 
@@ -910,7 +910,7 @@ memset (&m_data, 0, sizeof (m_data));
 
 //------------------------------------------------------------------------------
 
-int CLightmapManager::Create (int nLevel)
+int32_t CLightmapManager::Create (int32_t nLevel)
 {
 if (!(gameStates.render.bUsePerPixelLighting))
 	return 0;
@@ -923,7 +923,7 @@ if (gameOpts->render.nLightmapPrecision > 2)
 	gameOpts->render.nLightmapPrecision = 2;
 #endif
 Destroy ();
-int nLights = Init (0);
+int32_t nLights = Init (0);
 if (nLights < 0)
 	return 0;
 if (Load (nLevel))
@@ -931,7 +931,7 @@ if (Load (nLevel))
 if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 	if (nLights) {
 		lightManager.Transform (1, 0);
-		int nSaturation = gameOpts->render.color.nSaturation;
+		int32_t nSaturation = gameOpts->render.color.nSaturation;
 		gameOpts->render.color.nSaturation = 1;
 		gameStates.render.bHaveLightmaps = 1;
 		//gameData.render.fAttScale [0] = 2.0f;
@@ -940,7 +940,7 @@ if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 		gameStates.render.bSpecularColor = 0;
 		gameStates.render.nState = 0;
 		float h = 1.0f / float (LM_W - 1);
-		for (int i = 0; i < LM_W; i++)
+		for (int32_t i = 0; i < LM_W; i++)
 			m_data.nOffset [i] = i * h;
 		m_data.nBlackLightmaps = 
 		m_data.nWhiteLightmaps = 0; 
@@ -967,7 +967,7 @@ if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 	else {
 		CreateSpecial (m_data.m_texColor, 0, 0);
 		m_list.nLightmaps = 1;
-		for (int i = 0; i < FACES.nFaces; i++)
+		for (int32_t i = 0; i < FACES.nFaces; i++)
 			FACES.faces [i].m_info.nLightmap = 0;
 		}
 	BindAll ();
@@ -978,7 +978,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void CLightmapManager::Setup (int nLevel)
+void CLightmapManager::Setup (int32_t nLevel)
 {
 if (gameStates.render.bPerPixelLighting) {
 	Create (nLevel);
@@ -991,13 +991,13 @@ if (gameStates.render.bPerPixelLighting) {
 
 //------------------------------------------------------------------------------
 
-int SetupLightmap (CSegFace* faceP)
+int32_t SetupLightmap (CSegFace* faceP)
 {
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	BRP;
 #endif
-int i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
+int32_t i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
 if (!lightmapManager.Bind (i))
 	return 0;
 GLuint h = lightmapManager.Buffer (i)->handle;

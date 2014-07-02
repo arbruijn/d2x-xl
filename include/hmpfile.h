@@ -12,37 +12,37 @@
 #define HMP_BUFSIZE 1024
 
 typedef struct event {
-	uint		delta;
-	ubyte		msg[3];
-	ubyte*	data;
-	uint		datalen;
+	uint32_t		delta;
+	uint8_t		msg[3];
+	uint8_t*	data;
+	uint32_t		datalen;
 } event;
 
 typedef struct hmp_track {
-	ubyte*	data;
-	uint		len;
-	ubyte*	cur;
-	uint		left;
-	uint	curTime;
+	uint8_t*	data;
+	uint32_t		len;
+	uint8_t*	cur;
+	uint32_t		left;
+	uint32_t	curTime;
 } hmp_track;
 
 typedef struct hmp_file {
-	int			num_trks;
+	int32_t			num_trks;
 	hmp_track	trks[HMP_TRACKS];
-	uint			curTime;
-	int			tempo;
+	uint32_t			curTime;
+	int32_t			tempo;
 #ifdef _WIN32
 	MIDIHDR*		evbuf;
    HMIDISTRM	hmidi;
 	UINT			devid;
 #endif
-	ubyte*		pending;
-	uint			pending_size;
-	uint			pending_event;
-	int			stop;		/* 1 -> don't send more data */
-	int			bufs_in_mm;	/* number of queued buffers */
-	int			bLoop;
-	uint			midi_division;
+	uint8_t*		pending;
+	uint32_t			pending_size;
+	uint32_t			pending_event;
+	int32_t			stop;		/* 1 -> don't send more data */
+	int32_t			bufs_in_mm;	/* number of queued buffers */
+	int32_t			bLoop;
+	uint32_t			midi_division;
 } hmp_file;
 
 
@@ -51,9 +51,9 @@ typedef struct hmp_file {
 #define HMP_MM_ERR -3
 #define HMP_EOF 1
 
-hmp_file *hmp_open (const char *filename, int bUseD1Hog);
-int hmp_play (hmp_file *hmp, int bLoop);
+hmp_file *hmp_open (const char *filename, int32_t bUseD1Hog);
+int32_t hmp_play (hmp_file *hmp, int32_t bLoop);
 void hmp_close (hmp_file *hmp);
-int hmp_to_midi (hmp_file *hmp, char *pszFn);
+int32_t hmp_to_midi (hmp_file *hmp, char *pszFn);
 
 #endif

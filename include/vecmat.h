@@ -110,7 +110,7 @@ class __pack__ CFixVector {
 
 		bool IsZero (void) const;
 		void SetZero (void);
-		const int Sign (void) const;
+		const int32_t Sign (void) const;
 
 		fix SqrMag (void) const;
 		float Sqr (float f) const;
@@ -1023,7 +1023,7 @@ inline void CFixVector::SetZero (void)
 memset (&v, 0, sizeof (v));
 }
 
-inline const int CFixVector::Sign (void) const
+inline const int32_t CFixVector::Sign (void) const
 {
 return (v.coord.x * v.coord.y * v.coord.z < 0) ? -1 : 1;
 }
@@ -1600,14 +1600,14 @@ inline void CFloatMatrix::CheckAndFix (void) {
 // -----------------------------------------------------------------------------
 // misc remaining C-style funcs
 
-const int FindPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, int bClampToFarthest);
-//const int FindPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, const CFixVector& vPos, int bClampToFarthest);
+const int32_t FindPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, int32_t bClampToFarthest);
+//const int32_t FindPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, const CFixVector& vPos, int32_t bClampToFarthest);
 const fix VmLinePointDist (const CFixVector& a, const CFixVector& b, const CFixVector& p);
-const int FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, const CFloatVector& vPos, int bClamp);
-const int FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, int bClamp);
-const int FindPointLineIntersection (CFloatVector3& hitP, const CFloatVector3& p1, const CFloatVector3& p2, const CFloatVector3& p3, CFloatVector3 *vPos, int bClamp);
-const float VmLinePointDist (const CFloatVector& a, const CFloatVector& b, const CFloatVector& p, int bClamp);
-const float VmLinePointDist (const CFloatVector3& a, const CFloatVector3& b, const CFloatVector3& p, int bClamp);
+const int32_t FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, const CFloatVector& vPos, int32_t bClamp);
+const int32_t FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, int32_t bClamp);
+const int32_t FindPointLineIntersection (CFloatVector3& hitP, const CFloatVector3& p1, const CFloatVector3& p2, const CFloatVector3& p3, CFloatVector3 *vPos, int32_t bClamp);
+const float VmLinePointDist (const CFloatVector& a, const CFloatVector& b, const CFloatVector& p, int32_t bClamp);
+const float VmLinePointDist (const CFloatVector3& a, const CFloatVector3& b, const CFloatVector3& p, int32_t bClamp);
 const float VmLineLineIntersection (const CFloatVector3& v1, const CFloatVector3& v2, const CFloatVector3& v3, const CFloatVector3& v4, CFloatVector3& va, CFloatVector3& vb);
 const float VmLineLineIntersection (const CFloatVector& v1, const CFloatVector& v2, const CFloatVector& v3, const CFloatVector& v4, CFloatVector& va, CFloatVector& vb);
 

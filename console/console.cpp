@@ -34,7 +34,7 @@
 #if 0
 #define CON_LINE_LEN 40
 static char con_display[40][40];
-static int  con_line; /* Current display line */
+static int32_t  con_line; /* Current display line */
 #endif
 
 CConsole console;
@@ -47,7 +47,7 @@ CCvar* CConsole::m_threshold = NULL;
 /*  Takes keys from the keyboard and inputs them to the console
     If the event was not handled (i.e. WM events or unknown ctrl-shift
     sequences) the function returns the event for further processing. */
-int CConsole::Events (int event)
+int32_t CConsole::Events (int32_t event)
 {
 if (!IsVisible ())
 	return event;
@@ -191,11 +191,11 @@ return 0;
 /* CConsole::AlphaGL () -- sets the alpha channel of an SDL_Surface to the
  * specified value.  Preconditions: the surface in question is RGBA.
  * 0 <= a <= 255, where 0 is transparent and 255 is opaque. */
-void CConsole::AlphaGL (SDL_Surface *s, int alpha) {
-	ubyte val;
-	int x, y, w, h;
-	uint pixel;
-	ubyte r, g, b, vec;
+void CConsole::AlphaGL (SDL_Surface *s, int32_t alpha) {
+	uint8_t val;
+	int32_t x, y, w, h;
+	uint32_t pixel;
+	uint8_t r, g, b, vec;
 	SDL_PixelFormat *format;
 	static char errorPrinted = 0;
 
@@ -231,10 +231,10 @@ void CConsole::AlphaGL (SDL_Surface *s, int alpha) {
 			 * difficult.  And since 24-bit mode is reall the same as 32-bit,
 			 * so it usually ends up taking this route too.  Win!  Unroll loop
 			 * and use pointer arithmetic for extra speed. */
-			int numpixels = h * (w << 2);
-			ubyte *pix = reinterpret_cast<ubyte*> (s->pixels);
-			ubyte *last = pix + numpixels;
-			ubyte *pixel;
+			int32_t numpixels = h * (w << 2);
+			uint8_t *pix = reinterpret_cast<uint8_t*> (s->pixels);
+			uint8_t *last = pix + numpixels;
+			uint8_t *pixel;
 			if ((numpixels & 0x7) == 0)
 				for (pixel = pix + 3; pixel < last; pixel += 32)
 					*pixel = * (pixel + 4) = * (pixel + 8) = * (pixel + 12) = * (pixel + 16) = * (pixel + 20) = * (pixel + 24) = * (pixel + 28) = val;
@@ -278,9 +278,9 @@ void CConsole::AlphaGL (SDL_Surface *s, int alpha) {
 /* Updates the console buffer */
 void CConsole::Update (void)
 {
-	int				loop;
-	int				loop2;
-	int				Screenlines;
+	int32_t				loop;
+	int32_t				loop2;
+	int32_t				Screenlines;
 	CCanvasColor	orig_color;
 
 	/* Due to the Blits, the update is not very fast: So only update if it's worth it */
@@ -405,9 +405,9 @@ m_threshold = CCvar::Register (const_cast<char*>("con_threshold"), const_cast<ch
 //------------------------------------------------------------------------------
 
 /* Initializes the console */
-void CConsole::Setup (CFont *font, CScreen *output, int lines, int x, int y, int w, int h)
+void CConsole::Setup (CFont *font, CScreen *output, int32_t lines, int32_t x, int32_t y, int32_t w, int32_t h)
 {
-	int loop;
+	int32_t loop;
 
 /* Create a new console struct and init it. */
 m_Visible = CON_CLOSED;
@@ -511,7 +511,7 @@ m_Visible = CON_CLOSING;
 
 //------------------------------------------------------------------------------
 /* tells wether the console is visible or not */
-int CConsole::IsVisible (void)
+int32_t CConsole::IsVisible (void)
 {
 return (m_Visible == CON_OPEN) || (m_Visible == CON_OPENING);
 }
@@ -522,7 +522,7 @@ return (m_Visible == CON_OPEN) || (m_Visible == CON_OPENING);
 void CConsole::Destroy (void)
 {
 //CConsole::DestroyCommands ();
-for (int i = 0; i < m_LineBuffer; i++) {
+for (int32_t i = 0; i < m_LineBuffer; i++) {
 	m_ConsoleLines [i].Destroy ();
 	m_CommandLines [i].Destroy ();
 	}
@@ -547,7 +547,7 @@ if (m_input) {
 /* Increments the console lines */
 void CConsole::NewLineConsole (void)
 {
-	int	loop;
+	int32_t	loop;
 	char* temp;
 
 temp = m_ConsoleLines [m_LineBuffer - 1].Buffer ();
@@ -571,7 +571,7 @@ if (m_ConsoleScrollBack > m_LineBuffer-1)
 /* Increments the command lines */
 void CConsole::NewLineCommand (void)
 {
-	int	loop;
+	int32_t	loop;
 	char*	temp;
 
 temp = m_CommandLines [m_LineBuffer - 1].Buffer ();
@@ -588,17 +588,17 @@ if (m_TotalCommands < m_LineBuffer - 1)
 /* completely rewritten by C.Wacha */
 void CConsole::DrawCommandLine (void)
 {
-	int x;
-	int commandbuffer;
+	int32_t x;
+	int32_t commandbuffer;
 #if 0
 	CFont* CurrentFont;
 #endif
-	static int		LastBlinkTime = 0;	/* Last time the consoles cursor blinked */
-	static int		LastCursorPos = 0;		// Last Cursor Position
-	static int		bBlink = 0;			/* Is the cursor currently blinking */
+	static int32_t		LastBlinkTime = 0;	/* Last time the consoles cursor blinked */
+	static int32_t		LastCursorPos = 0;		// Last Cursor Position
+	static int32_t		bBlink = 0;			/* Is the cursor currently blinking */
 	CCanvasColor	orig_color;
 
-commandbuffer = m_VChars - (int) strlen (m_Prompt) - 1; // -1 to make cursor visible
+commandbuffer = m_VChars - (int32_t) strlen (m_Prompt) - 1; // -1 to make cursor visible
 
 #if 0
 CurrentFont = m_canvas.Font ();
@@ -624,7 +624,7 @@ strncat (m_VCommand, &m_Command [m_Offset], strlen (&m_Command [m_Offset]));
 //once again we're drawing text, so in OpenGL context we need to temporarily set up
 //software-mode transparency.
 if (m_output->flags & SDL_OPENGLBLIT) {
-	uint *pix = reinterpret_cast<uint*> (CurrentFont->FontSurface->pixels);
+	uint32_t *pix = reinterpret_cast<uint32_t*> (CurrentFont->FontSurface->pixels);
 	SDL_SetColorKey (CurrentFont->FontSurface, SDL_SRCCOLORKEY, *pix);
 }
 #endif
@@ -654,11 +654,11 @@ if (m_CursorPos != LastCursorPos) {
 
 if (bBlink) {
 #if 1
-	int w, h, aw;
+	int32_t w, h, aw;
 	fontManager.Current ()->StringSize (m_VCommand, w, h, aw);
 	x = CON_CHAR_BORDER + w;
 #else
-	x = CON_CHAR_BORDER + m_canvas.Font ()->Width () * (m_CursorPos - m_Offset + (int) strlen (m_Prompt));
+	x = CON_CHAR_BORDER + m_canvas.Font ()->Width () * (m_CursorPos - m_Offset + (int32_t) strlen (m_Prompt));
 #endif
 	if (m_InsMode)
 		GrString (x, m_canvas.Height () - m_canvas.Font ()->Height (), CON_INS_CURSOR);
@@ -714,7 +714,7 @@ void CConsole::LoadBackground (const char *filename)
 	CBitmap bm;
 
 #if DBG
-int pcxError = PCXReadBitmap (filename, &bm, BM_LINEAR, 0);
+int32_t pcxError = PCXReadBitmap (filename, &bm, BM_LINEAR, 0);
 Assert(pcxError == PCX_ERROR_NONE);
 #else
 PCXReadBitmap (filename, &bm, BM_LINEAR, 0);
@@ -725,7 +725,7 @@ SetBackground (&bm);
 
 //------------------------------------------------------------------------------
 /* Adds  background image to the scaled to size of console*/
-int CConsole::SetBackground (CBitmap *image)
+int32_t CConsole::SetBackground (CBitmap *image)
 {
 /* Free the background from the console */
 if (image == NULL) {
@@ -747,7 +747,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 /* Sets font info for the console */
-void CConsole::SetFont (CFont *font, uint fg, uint bg)
+void CConsole::SetFont (CFont *font, uint32_t fg, uint32_t bg)
 {
 m_canvas.Activate ("CConsole::SetFont");
 fontManager.SetCurrent (font);
@@ -757,7 +757,7 @@ m_canvas.Deactivate ();
 
 //------------------------------------------------------------------------------
 /* takes a new x and y of the top left of the console window */
-void CConsole::Position (int x, int y)
+void CConsole::Position (int32_t x, int32_t y)
 {
 if (x < 0 || x > m_output->Width () - m_canvas.Width ())
 	m_DispX = 0;
@@ -773,7 +773,7 @@ else
 
 /* resizes the console, has to reset a lot of stuff
  * returns 1 on error */
-int CConsole::Resize (int x, int y, int w, int h)
+int32_t CConsole::Resize (int32_t x, int32_t y, int32_t w, int32_t h)
 {
 /* make sure that the size of the console is valid */
 if (w > m_output->Width () || w < m_canvas.Font ()->Width () * 32)
@@ -808,7 +808,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 /* Transfers the console to another screen surface, and adjusts size */
-int CConsole::Transfer (CScreen *newOutput, int x, int y, int w, int h)
+int32_t CConsole::Transfer (CScreen *newOutput, int32_t x, int32_t y, int32_t w, int32_t h)
 {
 m_output = newOutput;
 return Resize (x, y, w, h);
@@ -827,7 +827,7 @@ else
 
 //------------------------------------------------------------------------------
 /* Sets the key that deactivates (hides) the console. */
-void CConsole::SetHideKey (int key)
+void CConsole::SetHideKey (int32_t key)
 {
 m_HideKey = key;
 }
@@ -863,7 +863,7 @@ m_TabFunction = TabFunction;
 //------------------------------------------------------------------------------
 
 void CConsole::TabCompletion (void) {
-	int i,j;
+	int32_t i,j;
 	char* command;
 
 command = StrDup (m_LCommand);
@@ -872,7 +872,7 @@ command = m_TabFunction (command);
 if (!command)
 	return;	//no tab completion took place so return silently
 
-j = (int) strlen (command);
+j = (int32_t) strlen (command);
 if (j > CON_CHARS_PER_LINE - 2)
 	j = CON_CHARS_PER_LINE-1;
 memset (m_LCommand, 0, CON_CHARS_PER_LINE);
@@ -915,7 +915,7 @@ void CConsole::CursorRight (void)
 {
 	char temp [CON_CHARS_PER_LINE];
 
-if (m_CursorPos < (int) strlen (m_Command)) {
+if (m_CursorPos < (int32_t) strlen (m_Command)) {
 	m_CursorPos++;
 	strncat (m_LCommand, m_RCommand, 1);
 	strcpy (temp, m_RCommand);
@@ -940,7 +940,7 @@ memset (m_LCommand, 0, CON_CHARS_PER_LINE);
 
 void CConsole::CursorEnd (void)
 {
-m_CursorPos = (int) strlen (m_Command);
+m_CursorPos = (int32_t) strlen (m_Command);
 strncat (m_LCommand, m_RCommand, strlen (m_RCommand));
 memset (m_RCommand, 0, CON_CHARS_PER_LINE);
 }
@@ -972,7 +972,7 @@ if (m_CursorPos > 0) {
 
 //------------------------------------------------------------------------------
 
-void CConsole::CursorAdd (int event)
+void CConsole::CursorAdd (int32_t event)
 {
 if (strlen (m_Command) < CON_CHARS_PER_LINE - 1) {
 	m_CursorPos++;
@@ -996,7 +996,7 @@ memset (m_RCommand, 0, CON_CHARS_PER_LINE);
 
 void CConsole::ClearHistory (void)
 {
-for (int loop = 0; loop <= m_LineBuffer - 1; loop++)
+for (int32_t loop = 0; loop <= m_LineBuffer - 1; loop++)
 	m_ConsoleLines [loop].Clear ();
 }
 
@@ -1010,7 +1010,7 @@ if (m_CommandScrollBack < m_TotalCommands - 1) {
 	memset (m_RCommand, 0, CON_CHARS_PER_LINE);
 	m_Offset = 0;
 	strcpy (m_LCommand, m_CommandLines [m_CommandScrollBack].Buffer ());
-	m_CursorPos = (int) strlen (m_CommandLines [m_CommandScrollBack].Buffer ());
+	m_CursorPos = (int32_t) strlen (m_CommandLines [m_CommandScrollBack].Buffer ());
 	Update ();
 	}
 }
@@ -1027,14 +1027,14 @@ if (m_CommandScrollBack > -1) {
 	m_Offset = 0;
 	if (m_CommandScrollBack > -1)
 		strcpy (m_LCommand, m_CommandLines [m_CommandScrollBack].Buffer ());
-	m_CursorPos = (int) strlen (m_LCommand);
+	m_CursorPos = (int32_t) strlen (m_LCommand);
 	Update ();
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ CConsole::printf (int priority, const char *fmt, ...)
+void _CDECL_ CConsole::printf (int32_t priority, const char *fmt, ...)
 {
 	va_list arglist;
 
@@ -1042,7 +1042,7 @@ void _CDECL_ CConsole::printf (int priority, const char *fmt, ...)
 
 if (!(fmt && *fmt))
 	return;
-if (priority <= ((int) m_threshold->Value ())) {
+if (priority <= ((int32_t) m_threshold->Value ())) {
 	va_start (arglist, fmt);
 	vsprintf (buffer,  fmt, arglist);
 	va_end (arglist);

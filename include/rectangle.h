@@ -5,13 +5,13 @@
 
 class CRectangle {
 	public:
-		int m_x, m_y, m_w, m_h;
+		int32_t m_x, m_y, m_w, m_h;
 
-		CRectangle (int x = 0, int y = 0, int w = 0, int h = 0, int t = 0) : m_x (x), m_y (y), m_w (w), m_h (h) {}
+		CRectangle (int32_t x = 0, int32_t y = 0, int32_t w = 0, int32_t h = 0, int32_t t = 0) : m_x (x), m_y (y), m_w (w), m_h (h) {}
 
 		CRectangle (const CRectangle& other) : m_x (other.m_x), m_y (other.m_y), m_w (other.m_w), m_h (other.m_h) {}
 
-		void Setup (int x, int y, int w, int h) {
+		void Setup (int32_t x, int32_t y, int32_t w, int32_t h) {
 			m_x = x;
 			m_y = y;
 			m_w = w;
@@ -54,19 +54,19 @@ class CRectangle {
 			return rc;
 			}
 
-		inline int Left (void) { return m_x; }
-		inline int Top (void) { return m_y; }
-		inline int Right (void) { return m_x + m_w - 1; }
-		inline int Bottom (void) { return m_y + m_h - 1; }
-		inline int Width (void) { return m_w; }
-		inline int Height (void) { return m_h; }
+		inline int32_t Left (void) { return m_x; }
+		inline int32_t Top (void) { return m_y; }
+		inline int32_t Right (void) { return m_x + m_w - 1; }
+		inline int32_t Bottom (void) { return m_y + m_h - 1; }
+		inline int32_t Width (void) { return m_w; }
+		inline int32_t Height (void) { return m_h; }
 
-		inline void SetLeft (int x) { m_x = x; }
-		inline void SetTop (int y) { m_y = y; }
-		inline void SetWidth (int w) { m_w = w; }
-		inline void SetHeight (int h) { m_h = h; }
+		inline void SetLeft (int32_t x) { m_x = x; }
+		inline void SetTop (int32_t y) { m_y = y; }
+		inline void SetWidth (int32_t w) { m_w = w; }
+		inline void SetHeight (int32_t h) { m_h = h; }
 
-		inline void GetExtent (int& x, int& y, int& w, int& h) {
+		inline void GetExtent (int32_t& x, int32_t& y, int32_t& w, int32_t& h) {
 			x = Left ();
 			y = Top ();
 			w = Width ();

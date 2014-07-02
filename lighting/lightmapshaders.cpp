@@ -111,11 +111,11 @@ const char *pszLMLightingVS [] = {
 
 // ----------------------------------------------------------------------------------------------
 
-int lightmapShaderProgs [4] = {-1,-1,-1,-1};
+int32_t lightmapShaderProgs [4] = {-1,-1,-1,-1};
 
-int CreateLightmapShader (int nType)
+int32_t CreateLightmapShader (int32_t nType)
 {
-	int	h, j;
+	int32_t	h, j;
 
 if (!(ogl.m_features.bShaders && ogl.m_features.bPerPixelLighting)) {
 	gameStates.render.bPerPixelLighting = 0;
@@ -142,7 +142,7 @@ return 1;
 
 void InitLightmapShaders (void)
 {
-for (int nType = 0; nType < 4; nType++)
+for (int32_t nType = 0; nType < 4; nType++)
 	CreateLightmapShader (nType);
 }
 
@@ -155,7 +155,7 @@ void ResetLightmapShaders (void)
 
 //------------------------------------------------------------------------------
 
-int SetupLightmapShader (CSegFace *faceP, int nType, bool bHeadlight)
+int32_t SetupLightmapShader (CSegFace *faceP, int32_t nType, bool bHeadlight)
 {
 PROF_START
 	//static CBitmap	*nullBmP = NULL;

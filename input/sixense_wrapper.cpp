@@ -29,14 +29,14 @@ sixenseExit ();
 
 // -----------------------------------------------------------------------------
 
-int CSixense::QueryActiveBase (void)
+int32_t CSixense::QueryActiveBase (void)
 {
-for (int i = m_nActive + 1; i < m_nBases; i++) {
+for (int32_t i = m_nActive + 1; i < m_nBases; i++) {
 	if (!sixenseIsBaseConnected (i))
 		continue;
 	if (sixenseSetActiveBase (m_nActive) == SIXENSE_FAILURE)
 		continue;
-	for (int i = sixenseGetNumActiveControllers (); i; )
+	for (int32_t i = sixenseGetNumActiveControllers (); i; )
 		if (sixenseIsControllerEnabled (--i))
 			return m_nActive = i;
 	}
@@ -45,7 +45,7 @@ return m_nActive = -1;
 
 // -----------------------------------------------------------------------------
 
-bool CSixense::QueryAngles (ubyte nController, CFloatVector& v)
+bool CSixense::QueryAngles (uint8_t nController, CFloatVector& v)
 {
 if ((m_nActive < 0) || (sixenseSetActiveBase (m_nActive) == SIXENSE_FAILURE))
 	return false;
@@ -58,15 +58,15 @@ return QueryAnglesInternal (nController, v);
 
 // -----------------------------------------------------------------------------
 
-bool CSixense::QueryAnglesInternal (ubyte nController, CFloatVector& v)
+bool CSixense::QueryAnglesInternal (uint8_t nController, CFloatVector& v)
 {
 if (sixenseGetNewestData (nController, m_data.controllers + nController) == SIXENSE_FAILURE)
 	return false;
 
 CFloatMatrix m;
 
-for (int i = 0; i < 3; i++)
-	for (int j = 0; j < 3; j++)
+for (int32_t i = 0; i < 3; i++)
+	for (int32_t j = 0; j < 3; j++)
 		m [4 * i + j] = m_data.controllers [nController].rot_mat [i][j];
 
 v = m.ComputeAngles ();
@@ -75,19 +75,19 @@ return true;
 
 // -----------------------------------------------------------------------------
 
-int CSixense::QueryAxis (void)
+int32_t CSixense::QueryAxis (void)
 {
 if (!m_axis)
 	return 0;
 
 m_nActive = -1;
-int m_nAxis = 0;
+int32_t m_nAxis = 0;
 while (QueryActiveBase () >= 0) {
 	CFloatVector v;
-	int n = sixenseGetNumActiveControllers ();
-	for (ubyte i = 0; i < n; i++) {
+	int32_t n = sixenseGetNumActiveControllers ();
+	for (uint8_t i = 0; i < n; i++) {
 		if (QueryAnglesInternal (i, v)) {
-			for (int j = 0; j < 3; j++)
+			for (int32_t j = 0; j < 3; j++)
 				m_axis [m_nAxis++] = F2X (v [j]);
 			}
 		}	

@@ -92,16 +92,16 @@ static const char *szWeaponTexts [] = {
 	"Shaker Bomblet: %1.2f"
 	};
 
-short nOptionToForce [] = {1, 3, 5, 10, 20, 30, 50, 75, 100, 200, 300, 500, 1000, 2500, 5000, 10000};
+int16_t nOptionToForce [] = {1, 3, 5, 10, 20, 30, 50, 75, 100, 200, 300, 500, 1000, 2500, 5000, 10000};
 
 
-int MonsterballMenuCallback (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t MonsterballMenuCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
 	CMenuItem			*m;
-	int					h,i, j, v;
+	int32_t					h,i, j, v;
 	tMonsterballForce	*pf = extraGameInfo [0].monsterball.forces;
 
 h = sizeofa (szWeaponTexts);
@@ -155,7 +155,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-static int optionToWeaponId [] = {
+static int32_t optionToWeaponId [] = {
 	LASER_ID, 
 	LASER_ID + 1, 
 	LASER_ID + 2, 
@@ -182,9 +182,9 @@ static int optionToWeaponId [] = {
 	EARTHSHAKER_MEGA_ID
 	};
 
-static inline int ForceToOption (double dForce)
+static inline int32_t ForceToOption (double dForce)
 {
-	int	i, h = (int) sizeofa (nOptionToForce);
+	int32_t	i, h = (int32_t) sizeofa (nOptionToForce);
 
 for (i = 0; i < h - 1; i++)
 	if ((dForce >= nOptionToForce [i]) && (dForce < nOptionToForce [i + 1]))
@@ -194,15 +194,15 @@ return i;
 
 void NetworkMonsterballOptions (void)
 {
-	static int choice = 0;
+	static int32_t choice = 0;
 
 	CMenu					m (35);
-	int					h, i, j, opt = 0;
+	int32_t					h, i, j, opt = 0;
 	char					szSlider [60];
 	tMonsterballForce	*pf = extraGameInfo [0].monsterball.forces;
 
-h = (int) sizeofa (optionToWeaponId);
-j = (int) sizeofa (nOptionToForce);
+h = (int32_t) sizeofa (optionToWeaponId);
+j = (int32_t) sizeofa (nOptionToForce);
 for (i = opt = 0; i < h; i++, opt++, pf++) {
 	sprintf (szSlider, szWeaponTexts [i], float (pf->nForce) / 100.0f);
 	m.AddSlider (szWeaponIds [i], szSlider, ForceToOption (pf->nForce), 0, j - 1, 0, NULL);

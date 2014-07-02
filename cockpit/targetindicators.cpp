@@ -103,7 +103,7 @@ void RenderDamageIndicator (CObject *objP, CFloatVector3 *pc)
 	CFixVector		vPos;
 	CFloatVector	vPosf, fVerts [4];
 	float				r, r2, w;
-	int				bStencil;
+	int32_t				bStencil;
 
 if (!SHOW_OBJ_FX)
 	return;
@@ -154,8 +154,8 @@ if (EGI_FLAG (bDamageIndicators, 0, 1, 0) && (extraGameInfo [IsMultiGame].bTarge
 // -----------------------------------------------------------------------------
 
 static CFloatVector	trackGoalColor [2] = {{{{1, 0.5f, 0, 0.8f}}}, {{{1, 0.5f, 0, 0.8f}}}};
-static int				nMslLockColor [2] = {0, 0};
-static int				nMslLockColorIncr [2] = {-1, -1};
+static int32_t				nMslLockColor [2] = {0, 0};
+static int32_t				nMslLockColorIncr [2] = {-1, -1};
 static float			fMslLockGreen [2] = {0.65f, 0.0f};
 
 void RenderMslLockIndicator (CObject *objP)
@@ -163,14 +163,14 @@ void RenderMslLockIndicator (CObject *objP)
 	#define INDICATOR_POSITIONS	60
 
 	static tSinCosf	sinCosInd [INDICATOR_POSITIONS];
-	static int			bInitSinCos = 1;
-	static int			nMslLockIndPos [2] = {0, 0};
-	static int			t0 [2] = {0, 0}, tDelay [2] = {25, 40};
+	static int32_t			bInitSinCos = 1;
+	static int32_t			nMslLockIndPos [2] = {0, 0};
+	static int32_t			t0 [2] = {0, 0}, tDelay [2] = {25, 40};
 
 	CFixVector			vPos;
 	CFloatVector		fPos, fVerts [3];
 	float					r, r2;
-	int					nTgtInd, bHasDmg, bMarker = (objP->info.nType == OBJ_MARKER);
+	int32_t					nTgtInd, bHasDmg, bMarker = (objP->info.nType == OBJ_MARKER);
 
 if (bMarker) {
 	if (objP != markerManager.SpawnObject (-1))
@@ -210,7 +210,7 @@ glColor4fv (reinterpret_cast<GLfloat*> (trackGoalColor + bMarker));
 if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 	CFloatVector	rotVerts [3];
 	CFloatMatrix	mRot;
-	int				i, j;
+	int32_t				i, j;
 
 	if (bInitSinCos) {
 		ComputeSinCosTable (sizeofa (sinCosInd), sinCosInd);
@@ -251,7 +251,7 @@ if (bMarker || gameOpts->render.cockpit.bRotateMslLockInd) {
 #if GL_FALLBACK
 		else {
 			glBegin (bMarker ? GL_LINE_LOOP : GL_TRIANGLES);
-			for (int h = 0; h < 3; h++)
+			for (int32_t h = 0; h < 3; h++)
 				glVertex3fv (reinterpret_cast<GLfloat*> (rotVerts + h));
 			glEnd ();
 			}
@@ -315,7 +315,7 @@ void RenderTargetIndicator (CObject *objP, CFloatVector3 *pc)
 	CFixVector		vPos;
 	CFloatVector	fPos, fVerts [4];
 	float				r, r2, r3;
-	int				bStencil, nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1;
+	int32_t				bStencil, nPlayer = (objP->info.nType == OBJ_PLAYER) ? objP->info.nId : -1;
 
 if (!SHOW_OBJ_FX)
 	return;

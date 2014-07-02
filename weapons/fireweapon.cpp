@@ -53,7 +53,7 @@ void NDRecordGuidedEnd (void);
 #define	FULL_COCKPIT_OFFS 0
 #define	LASER_OFFS	 (I2X (29) / 100)
 
-static   int nMslTurnSpeeds [3] = {I2X (1) / 2, 3 * I2X (1) / 4, 5 * I2X (1) / 4};
+static   int32_t nMslTurnSpeeds [3] = {I2X (1) / 2, 3 * I2X (1) / 4, 5 * I2X (1) / 4};
 
 #define	HOMINGMSL_SCALE		nMslTurnSpeeds [(IsMultiGame && !IsCoopGame) ? 2 : extraGameInfo [IsMultiGame].nMslTurnSpeed]
 
@@ -62,14 +62,14 @@ static   int nMslTurnSpeeds [3] = {I2X (1) / 2, 3 * I2X (1) / 4, 5 * I2X (1) / 4
 
 //---------------------------------------------------------------------------------
 
-inline int HomingMslScale (void)
+inline int32_t HomingMslScale (void)
 {
-return (int) (HOMINGMSL_SCALE / sqrt (gameStates.gameplay.slowmo [0].fSpeed));
+return (int32_t) (HOMINGMSL_SCALE / sqrt (gameStates.gameplay.slowmo [0].fSpeed));
 }
 
 //---------------------------------------------------------------------------------
 
-void TrackWeaponObject (short nObject, int nOwner)
+void TrackWeaponObject (int16_t nObject, int32_t nOwner)
 {
 if (gameData.multigame.laser.nFired [0] < sizeofa (gameData.multigame.laser.nObjects)) {
 	if (gameData.multigame.laser.nFired [0] < gameData.multigame.laser.nFired [1])
@@ -117,7 +117,7 @@ switch (gameData.weapons.info [objP->info.nId].renderType) {
 
 //---------------------------------------------------------------------------------
 
-static int LaserCreationTimeout (int nId, fix xCreationTime)
+static int32_t LaserCreationTimeout (int32_t nId, fix xCreationTime)
 {
 if (nId == PHOENIX_ID)
 	return gameData.time.xGame > xCreationTime + (I2X (1) / 3) * gameStates.gameplay.slowmo [0].fSpeed;
@@ -135,10 +135,10 @@ else
 //	AND...Your proximity bombs can blow you up if they're 2.0 seconds or more old.
 //	Changed by MK on 06/06/95: Now must be 4.0 seconds old.  Much valid Net-complaining.
 
-int LasersAreRelated (int o1, int o2)
+int32_t LasersAreRelated (int32_t o1, int32_t o2)
 {
 	CObject	*objP1, *objP2;
-	short		id1, id2;
+	int16_t		id1, id2;
 	fix		ct1, ct2;
 
 if ((o1 < 0) || (o2 < 0))
@@ -195,8 +195,8 @@ return 1;
 }
 
 //---------------------------------------------------------------------------------
-//--unused-- int Muzzle_scale=2;
-void DoMuzzleStuff (int nSegment, CFixVector *pos)
+//--unused-- int32_t Muzzle_scale=2;
+void DoMuzzleStuff (int32_t nSegment, CFixVector *pos)
 {
 gameData.muzzle.info [gameData.muzzle.queueIndex].createTime = TimerGetFixedSeconds ();
 gameData.muzzle.info [gameData.muzzle.queueIndex].nSegment = nSegment;
@@ -207,14 +207,14 @@ if (++gameData.muzzle.queueIndex >= MUZZLE_QUEUE_MAX)
 
 //	-----------------------------------------------------------------------------------------------------------
 
-CFixVector *GetGunPoints (CObject *objP, int nGun)
+CFixVector *GetGunPoints (CObject *objP, int32_t nGun)
 {
 if (!objP)
 	return NULL;
 
 	tGunInfo*	giP = gameData.models.gunInfo + objP->ModelId ();
 	CFixVector*	vDefaultGunPoints, *vGunPoints;
-	int			nDefaultGuns, nGuns;
+	int32_t			nDefaultGuns, nGuns;
 
 if (objP->info.nType == OBJ_PLAYER) {
 	vDefaultGunPoints = gameData.pig.ship.player->gunPoints;
@@ -240,18 +240,18 @@ return vGunPoints;
 
 //-------------- Initializes a laser after Fire is pressed -----------------
 
-CFixVector *TransformGunPoint (CObject *objP, CFixVector *vGunPoints, int nGun,
-										 fix xDelay, ubyte nLaserType, CFixVector *vMuzzle, CFixMatrix *mP)
+CFixVector *TransformGunPoint (CObject *objP, CFixVector *vGunPoints, int32_t nGun,
+										 fix xDelay, uint8_t nLaserType, CFixVector *vMuzzle, CFixMatrix *mP)
 {
-	int						bSpectate = SPECTATOR (objP);
+	int32_t						bSpectate = SPECTATOR (objP);
 	tObjTransformation*	posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
 	CFixMatrix				m, *viewP;
 	CFixVector				v [2];
 #if FULL_COCKPIT_OFFS
-	int						bLaserOffs = ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) &&
+	int32_t						bLaserOffs = ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) &&
 												  (objP->Index () == LOCALPLAYER.nObject));
 #else
-	int						bLaserOffs = 0;
+	int32_t						bLaserOffs = 0;
 #endif
 
 if (nGun < 0) {	// use center between gunPoints nGun and nGun + 1
@@ -285,30 +285,30 @@ return vMuzzle;
 
 //-------------- Initializes a laser after Fire is pressed -----------------
 
-int FireWeaponDelayedWithSpread (
+int32_t FireWeaponDelayedWithSpread (
 	CObject *objP,
-	ubyte nLaserType,
-	int nGun,
+	uint8_t nLaserType,
+	int32_t nGun,
 	fix xSpreadR,
 	fix xSpreadU,
 	fix xDelay,
-	int bMakeSound,
-	int bHarmless,
-	short	nLightObj)
+	int32_t bMakeSound,
+	int32_t bHarmless,
+	int16_t	nLightObj)
 {
-	short					nLaserSeg;
-	int					nFate;
+	int16_t					nLaserSeg;
+	int32_t					nFate;
 	CFixVector			vLaserPos, vLaserDir, *vGunPoints;
-	int					nObject;
+	int32_t					nObject;
 	CObject*				laserP;
 #if FULL_COCKPIT_OFFS
-	int bLaserOffs = ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) &&
+	int32_t bLaserOffs = ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) &&
 							(objP->Index () == LOCALPLAYER.nObject));
 #else
-	int bLaserOffs = 0;
+	int32_t bLaserOffs = 0;
 #endif
 	CFixMatrix				m;
-	int						bSpectate = SPECTATOR (objP);
+	int32_t						bSpectate = SPECTATOR (objP);
 	tObjTransformation*	posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
 
 #if DBG
@@ -363,7 +363,7 @@ if (nLaserType == OMEGA_ID)
 	return -1;
 if (nObject == -1)
 	return -1;
-//TrackWeaponObject (nObject, int (objP->info.nId));
+//TrackWeaponObject (nObject, int32_t (objP->info.nId));
 laserP = OBJECTS + nObject;
 if ((nLaserType == GUIDEDMSL_ID) && gameData.multigame.bIsGuided)
 	gameData.objs.guidedMissile [objP->info.nId].objP = laserP;
@@ -423,11 +423,11 @@ if (IsMultiGame) {
 
 //-------------------------------------------------------------------------------------------
 
-static int nMslSlowDown [4] = {1, 4, 3, 2};
+static int32_t nMslSlowDown [4] = {1, 4, 3, 2};
 
 float MissileSpeedScale (CObject *objP)
 {
-	int	i = extraGameInfo [IsMultiGame].nMslStartSpeed;
+	int32_t	i = extraGameInfo [IsMultiGame].nMslStartSpeed;
 
 if (!i)
 	return 1;
@@ -452,13 +452,13 @@ objP->info.position.mOrient = CFixMatrix::CreateF(vNewDir);
 
 //-------------------------------------------------------------------------------------------
 
-static inline fix HomingMslStraightTime (int id)
+static inline fix HomingMslStraightTime (int32_t id)
 {
 if (!CObject::IsMissile (id))
 	return HOMINGMSL_STRAIGHT_TIME;
 if ((id == EARTHSHAKER_MEGA_ID) || (id == ROBOT_SHAKER_MEGA_ID))
 	return HOMINGMSL_STRAIGHT_TIME;
-return HOMINGMSL_STRAIGHT_TIME * nMslSlowDown [(int) extraGameInfo [IsMultiGame].nMslStartSpeed];
+return HOMINGMSL_STRAIGHT_TIME * nMslSlowDown [(int32_t) extraGameInfo [IsMultiGame].nMslStartSpeed];
 }
 
 //-------------------------------------------------------------------------------------------
@@ -493,13 +493,13 @@ return false;
 
 //-------------------------------------------------------------------------------------------
 //sequence this weapon object for this _frame_ (underscores added here to aid MK in his searching!)
-void CObject::UpdateHomingWeapon (int nThread)
+void CObject::UpdateHomingWeapon (int32_t nThread)
 {
 for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= I2X (1) / 40; xFrameTime -= I2X (1) / 40) {
 	CFixVector	vVecToObject, vNewVel;
 	fix			dot = I2X (1);
 	fix			speed, xMaxSpeed, xDist;
-	int			nObjId = info.nId;
+	int32_t			nObjId = info.nId;
 	//	For first 1/2 second of life, missile flies straight.
 	if (cType.laserInfo.xCreationTime + HomingMslStraightTime (nObjId) < gameData.time.xGame) 
 		{
@@ -507,7 +507,7 @@ for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= I2X (1) / 40; xF
 		if (Bounces ())
 			mType.physInfo.flags &= ~PF_BOUNCE;
 		//	Make sure the CObject we are tracking is still trackable.
-		int nTarget = UpdateHomingTarget (cType.laserInfo.nHomingTarget, dot, nThread);
+		int32_t nTarget = UpdateHomingTarget (cType.laserInfo.nHomingTarget, dot, nThread);
 		if (nTarget != -1) {
 			if (nTarget == LOCALPLAYER.nObject) {
 				fix xDistToTarget = CFixVector::Dist (info.position.vPos, OBJECTS [nTarget].info.position.vPos);
@@ -638,19 +638,19 @@ controls.StopSecondaryFire ();
 //	--------------------------------------------------------------------------------------------------
 // Assumption: This is only called by the actual console player, not for network players
 
-int LocalPlayerFireGun (void)
+int32_t LocalPlayerFireGun (void)
 {
 	CPlayerData*	playerP = gameData.multiplayer.players + N_LOCALPLAYER;
 	CObject*			objP = &OBJECTS [playerP->nObject];
 	fix				xEnergyUsed;
-	int				nAmmoUsed, nPrimaryAmmo;
-	int				nWeaponIndex;
-	int				rVal = 0;
-	int 				nRoundsPerShot = 1;
-	int				bGatling = (gameData.weapons.nPrimary == GAUSS_INDEX) ? 2 : (gameData.weapons.nPrimary == VULCAN_INDEX) ? 1 : 0;
+	int32_t				nAmmoUsed, nPrimaryAmmo;
+	int32_t				nWeaponIndex;
+	int32_t				rVal = 0;
+	int32_t 				nRoundsPerShot = 1;
+	int32_t				bGatling = (gameData.weapons.nPrimary == GAUSS_INDEX) ? 2 : (gameData.weapons.nPrimary == VULCAN_INDEX) ? 1 : 0;
 	fix				addval;
-	static int		nSpreadfireToggle = 0;
-	static int		nHelixOrient = 0;
+	static int32_t		nSpreadfireToggle = 0;
+	static int32_t		nHelixOrient = 0;
 
 if (gameStates.app.bPlayerIsDead)
 	return 0;
@@ -692,7 +692,7 @@ gameData.laser.xLastFiredTime = gameData.time.xGame;
 
 while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 	if	((playerP->energy >= xEnergyUsed) && (nPrimaryAmmo >= nAmmoUsed)) {
-			int nLaserLevel, flags = 0;
+			int32_t nLaserLevel, flags = 0;
 
 		if (gameStates.app.cheats.bLaserRapidFire == 0xBADA55)
 			gameData.laser.xNextFireTime += I2X (1) / 25;
@@ -711,7 +711,7 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS)
 			flags |= LASER_QUAD;
 #if 1
-		int fired = FireWeapon ((short) LOCALPLAYER.nObject, (ubyte) gameData.weapons.nPrimary, nLaserLevel, flags, nRoundsPerShot);
+		int32_t fired = FireWeapon ((int16_t) LOCALPLAYER.nObject, (uint8_t) gameData.weapons.nPrimary, nLaserLevel, flags, nRoundsPerShot);
 		if (fired) {
 			rVal += fired;
 			if (bGatling) {
@@ -733,7 +733,7 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 				}
 			}
 #else
-		rVal += FireWeapon ((short) LOCALPLAYER.nObject, (ubyte) gameData.weapons.nPrimary, nLaserLevel, flags, nRoundsPerShot);
+		rVal += FireWeapon ((int16_t) LOCALPLAYER.nObject, (uint8_t) gameData.weapons.nPrimary, nLaserLevel, flags, nRoundsPerShot);
 		playerP->energy -= (xEnergyUsed * rVal) / gameData.weapons.info [nWeaponIndex].fireCount;
 		if (playerP->energy < 0)
 			playerP->energy = 0;
@@ -758,9 +758,9 @@ return rVal;
 
 //	-------------------------------------------------------------------------------------------
 //	if nGoalObj == -1, then create Random vector
-int CreateHomingWeapon (CObject *objP, int nGoalObj, ubyte objType, int bMakeSound)
+int32_t CreateHomingWeapon (CObject *objP, int32_t nGoalObj, uint8_t objType, int32_t bMakeSound)
 {
-	short			nObject;
+	int16_t			nObject;
 	CFixVector	vGoal, vRandom;
 
 if (nGoalObj == -1)
@@ -779,13 +779,13 @@ return nObject;
 
 //-----------------------------------------------------------------------------
 // Create the children of a smart bomb, which is a bunch of homing missiles.
-void CreateSmartChildren (CObject *objP, int nSmartChildren)
+void CreateSmartChildren (CObject *objP, int32_t nSmartChildren)
 {
 	tParentInfo	parent;
-	int			bMakeSound;
-	int			nObjects = 0;
-	int			objList [MAX_OBJDISTS];
-	ubyte			nBlobId, nObjType = objP->info.nType, nObjId = objP->info.nId;
+	int32_t			bMakeSound;
+	int32_t			nObjects = 0;
+	int32_t			objList [MAX_OBJDISTS];
+	uint8_t			nBlobId, nObjType = objP->info.nType, nObjId = objP->info.nId;
 
 if (nObjType == OBJ_WEAPON) {
 	parent = objP->cType.laserInfo.parent;
@@ -810,7 +810,7 @@ if (nObjType == OBJ_WEAPON) {
 else if (nObjType != OBJ_ROBOT) // && ((nObjType != OBJ_WEAPON) || (gameData.weapons.info [nObjId].children < 1)))
 	return;
 
-int		i, nObject;
+int32_t		i, nObject;
 CObject	*curObjP;
 
 if (IsMultiGame)
@@ -839,7 +839,7 @@ FORALL_OBJS (curObjP, nObject) {
 		continue;
 	fix dist = CFixVector::Dist (objP->info.position.vPos, curObjP->info.position.vPos);
 	if (dist < MAX_SMART_DISTANCE) {
-		int	oovis = ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL);
+		int32_t	oovis = ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL);
 		if (oovis) { //ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL)) {
 			objList [nObjects++] = nObject;
 			if (nObjects >= MAX_OBJDISTS) {
@@ -859,7 +859,7 @@ else {
 	}
 bMakeSound = 1;
 for (i = 0; i < nSmartChildren; i++) {
-	short nTarget = nObjects ? objList [(RandShort () * nObjects) >> 15] : -1;
+	int16_t nTarget = nObjects ? objList [(RandShort () * nObjects) >> 15] : -1;
 	CreateHomingWeapon (objP, nTarget, nBlobId, bMakeSound);
 	bMakeSound = 0;
 	}
@@ -868,7 +868,7 @@ for (i = 0; i < nSmartChildren; i++) {
 //	-------------------------------------------------------------------------------------------
 
 //give up control of the guided missile
-void ReleaseGuidedMissile (int nPlayer)
+void ReleaseGuidedMissile (int32_t nPlayer)
 {
 if (nPlayer == N_LOCALPLAYER) {
 	if (!gameData.objs.guidedMissile [nPlayer].objP)
@@ -886,9 +886,9 @@ gameData.objs.guidedMissile [nPlayer].objP = NULL;
 //parameter determines whether or not to do autoselect if have run out of ammo
 //this is needed because if you drop a bomb with the B key, you don't
 //want to autoselect if the bomb isn't actually selected.
-void DoMissileFiring (int bAutoSelect)
+void DoMissileFiring (int32_t bAutoSelect)
 {
-	int				i, gunFlag = 0;
+	int32_t				i, gunFlag = 0;
 	CObject*			gmObjP = gameData.objs.guidedMissile [N_LOCALPLAYER].objP;
 	CPlayerData*	playerP = gameData.multiplayer.players + N_LOCALPLAYER;
 
@@ -903,7 +903,7 @@ if (gmObjP && (gmObjP->info.nSignature == gameData.objs.guidedMissile [N_LOCALPL
 if (gameStates.app.bPlayerIsDead || (playerP->secondaryAmmo [gameData.weapons.nSecondary] <= 0))
 	return;
 
-ubyte nWeaponId = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
+uint8_t nWeaponId = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
 if ((nWeaponId == PROXMINE_ID) && IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0) &&
 	 (CountPlayerObjects (N_LOCALPLAYER, OBJ_WEAPON, PROXMINE_ID) >= extraGameInfo [IsMultiGame].nMaxSmokeGrenades))
 	return;
@@ -912,15 +912,15 @@ if (gameStates.app.cheats.bLaserRapidFire != 0xBADA55)
 else
 	gameData.missiles.xNextFireTime = gameData.time.xGame + I2X (1)/25;
 gameData.missiles.xLastFiredTime = gameData.time.xGame;
-int nGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary];
-int h = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 0, 1, 0)) ? 1 : 0;
+int32_t nGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary];
+int32_t h = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 0, 1, 0)) ? 1 : 0;
 for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 0); i++) {
 	playerP->secondaryAmmo [gameData.weapons.nSecondary]--;
 	if (nGun == 4) {		//alternate left/right
 		nGun += (gunFlag = (gameData.laser.nMissileGun & 1));
 		gameData.laser.nMissileGun++;
 		}
-	int nObject = LaserPlayerFire (gameData.objs.consoleP, nWeaponId, nGun, 1, 0, -1);
+	int32_t nObject = LaserPlayerFire (gameData.objs.consoleP, nWeaponId, nGun, 1, 0, -1);
 	if (0 > nObject)
 		return;
 	if (gameData.weapons.nSecondary == PROXMINE_INDEX) {
@@ -986,7 +986,7 @@ void GetPlayerMslLock (void)
 if (gameStates.app.bPlayerIsDead)
 	return;
 
-	int			nWeapon, nObject, nGun, h, i, j;
+	int32_t			nWeapon, nObject, nGun, h, i, j;
 	CFixVector	*vGunPoints, vGunPos;
 	CFixMatrix	*viewP;
 	CObject		*objP;
@@ -1038,7 +1038,7 @@ for (i = 0; i < j; i++, h = !h) {
 //				    cannon.
 void FireGun (void)
 {
-	int i = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
+	int32_t i = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
 
 if (gameData.weapons.firing [0].nDuration)
 	gameData.laser.nGlobalFiringCount += WI_fireCount (i);

@@ -1,9 +1,9 @@
 #ifndef _ENTROPY_H
 #define _ENTROPY_H
 
-int CountRooms (void);
-int GatherFlagGoals (void);
-void ConquerRoom (int newOwner, int oldOwner, int roomId);
+int32_t CountRooms (void);
+int32_t GatherFlagGoals (void);
+void ConquerRoom (int32_t newOwner, int32_t oldOwner, int32_t roomId);
 void StartConquerWarning (void);
 void StopConquerWarning (void);
 

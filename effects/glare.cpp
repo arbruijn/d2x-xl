@@ -32,23 +32,23 @@
 
 float coronaIntensities [] = {0.35f, 0.5f, 0.75f, 1};
 
-int hGlareShader = -1;
+int32_t hGlareShader = -1;
 
 CGlareRenderer glareRenderer;
 
 // -----------------------------------------------------------------------------------
 
-int CGlareRenderer::Style (void)
+int32_t CGlareRenderer::Style (void)
 {
 return (ogl.m_features.bDepthBlending > 0) && gameOpts->render.coronas.bUse && gameOpts->render.coronas.nStyle && !gameStates.render.cameras.bActive;
 }
 
 // -----------------------------------------------------------------------------------
 
-int CGlareRenderer::CalcFaceDimensions (short nSegment, short nSide, fix *w, fix *h, ushort* corners)
+int32_t CGlareRenderer::CalcFaceDimensions (int16_t nSegment, int16_t nSide, fix *w, fix *h, uint16_t* corners)
 {
 	fix		d1, d2, dMax = -1;
-	int		i, j;
+	int32_t		i, j;
 
 if (!corners) 
 	corners = SEGMENTS [nSegment].Corners (nSide);
@@ -79,11 +79,11 @@ return i;
 
 // -----------------------------------------------------------------------------------
 
-int CGlareRenderer::FaceHasCorona (short nSegment, short nSide, int *bAdditiveP, float *fIntensityP)
+int32_t CGlareRenderer::FaceHasCorona (int16_t nSegment, int16_t nSide, int32_t *bAdditiveP, float *fIntensityP)
 {
 	CSide			*sideP;
 	char			*pszName;
-	int			i, bAdditive, nTexture, nBrightness;
+	int32_t			i, bAdditive, nTexture, nBrightness;
 
 if (IsMultiGame && extraGameInfo [1].bDarkness)
 	return 0;
@@ -94,7 +94,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 sideP = SEGMENTS [nSegment].m_sides + nSide;
 CWall* wallP = sideP->Wall ();
 if (wallP) {
-	ubyte nType = wallP->nType;
+	uint8_t nType = wallP->nType;
 
 	if ((nType == WALL_BLASTABLE) || (nType == WALL_DOOR) || (nType == WALL_OPEN) || (nType == WALL_CLOAKED))
 		return 0;
@@ -182,11 +182,11 @@ return nTexture;
 
 // -----------------------------------------------------------------------------------
 
-float CGlareRenderer::ComputeCoronaSprite (short nSegment, short nSide)
+float CGlareRenderer::ComputeCoronaSprite (int16_t nSegment, int16_t nSide)
 {
 	CSide*			sideP = SEGMENTS [nSegment].m_sides + nSide;
-	ushort*			corners;
-	int				i;
+	uint16_t*			corners;
+	int32_t				i;
 	float				fLight = 0;
 	CFloatVector	v;
 
@@ -207,7 +207,7 @@ void CGlareRenderer::ComputeSpriteZRange (void)
 {
 m_zRange.fMin = 1000000000.0f;
 m_zRange.fMax = -1000000000.0f;
-for (int i = 0; i < 4; i++) {
+for (int32_t i = 0; i < 4; i++) {
 	float z = m_sprite [i].v.coord.z;
 	if (m_zRange.fMin > z)
 		m_zRange.fMin = z;
@@ -242,7 +242,7 @@ return fIntensity;
 
 void RenderCoronaOutline(CFloatVector *m_sprite, CFloatVector m_vCenter)
 {
-	int	i;
+	int32_t	i;
 
 ogl.SetTexturing (false);
 glColor4d (1,1,1,1);
@@ -277,7 +277,7 @@ float CGlareRenderer::ComputeSoftGlare (void)
 {
 	CFloatVector 	n, e, s, t, u, v;
 	float 			ul, vl, h, cosine;
-	int 				i;
+	int32_t 				i;
 
 m_vEye = CFloatVector::ZERO;
 u = m_sprite [2] + m_sprite [1];
@@ -314,7 +314,7 @@ return float (sqrt (cosine) * coronaIntensities [gameOpts->render.coronas.nInten
 
 // -----------------------------------------------------------------------------------
 
-void CGlareRenderer::RenderSoftGlare (int nTexture, float fIntensity, int bAdditive, int bColored)
+void CGlareRenderer::RenderSoftGlare (int32_t nTexture, float fIntensity, int32_t bAdditive, int32_t bColored)
 {
 	CFloatVector color;
 	tTexCoord2f	tcGlare [4] = {{{0,0}},{{1,0}},{{1,1}},{{0,1}}};
@@ -344,14 +344,14 @@ RenderCoronaOutline (m_sprite, m_vCenter);
 
 // -----------------------------------------------------------------------------------
 
-void CGlareRenderer::Render (short nSegment, short nSide, float fIntensity, float fSize)
+void CGlareRenderer::Render (int16_t nSegment, int16_t nSide, float fIntensity, float fSize)
 {
 if (!Style ())
 	return;
 if (fIntensity < 0.01f)
 	return;
 
-	int				nTexture, bAdditive;
+	int32_t				nTexture, bAdditive;
 
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -372,11 +372,11 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 
 //------------------------------------------------------------------------------
 
-float CGlareRenderer::Visibility (int nQuery)
+float CGlareRenderer::Visibility (int32_t nQuery)
 {
 	GLuint	nSamples = 0;
 	GLint		bAvailable = 0;
-	int		nAttempts = 2;
+	int32_t		nAttempts = 2;
 	float		fIntensity;
 #if DBG
 	GLint		nError;
@@ -431,10 +431,10 @@ return (hGlareShader >= 0) && (shaderManager.Current () == hGlareShader);
 
 //-------------------------------------------------------------------------
 
-bool CGlareRenderer::LoadShader (float dMax, int nBlendMode)
+bool CGlareRenderer::LoadShader (float dMax, int32_t nBlendMode)
 {
 	static float dMaxPrev = -1;
-	static int nBlendPrev = -1;
+	static int32_t nBlendPrev = -1;
 
 ogl.ClearError (0);
 if (!gameOpts->render.bUseShaders)
@@ -491,8 +491,8 @@ const char *glareFS =
 	"uniform sampler2D glareTex, depthTex;\r\n" \
 	"uniform float dMax;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
-	"uniform int blendMode;\r\n" \
-	"uniform int bSuspended;\r\n" \
+	"uniform int32_t blendMode;\r\n" \
+	"uniform int32_t bSuspended;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"#define NDC(z) (2.0 * z - 1.0)\r\n" \

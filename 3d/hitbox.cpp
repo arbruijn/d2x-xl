@@ -39,10 +39,10 @@ extern CFaceColor tMapColor;
 //------------------------------------------------------------------------------
 
 //walks through all submodels of a polymodel and determines the coordinate extremes
-int GetPolyModelMinMax (void *modelP, tHitbox *phb, int nSubModels)
+int32_t GetPolyModelMinMax (void *modelP, tHitbox *phb, int32_t nSubModels)
 {
-	ubyte			*p = reinterpret_cast<ubyte*> (modelP);
-	int			i, n, nVerts;
+	uint8_t			*p = reinterpret_cast<uint8_t*> (modelP);
+	int32_t			i, n, nVerts;
 	CFixVector	*v, hv;
 	tHitbox		hb = *phb;
 
@@ -160,7 +160,7 @@ CFixVector hitBoxOffsets [8] = {
 	CFixVector::Create(1, 1, 0)
 	};
 
-int hitboxFaceVerts [6][4] = {
+int32_t hitboxFaceVerts [6][4] = {
  {0,1,2,3},
  {0,3,7,4},
  {5,6,2,1},
@@ -169,7 +169,7 @@ int hitboxFaceVerts [6][4] = {
  {6,7,3,2}
 	};
 
-void ComputeHitbox (int nModel, int iHitbox)
+void ComputeHitbox (int32_t nModel, int32_t iHitbox)
 {
 	tHitbox			*phb = gameData.models.hitboxes [nModel].hitboxes + iHitbox;
 	CFixVector		vMin = phb->vMin;
@@ -177,7 +177,7 @@ void ComputeHitbox (int nModel, int iHitbox)
 	CFixVector		vOffset = phb->vOffset;
 	CFixVector		*pv = phb->box.vertices;
 	tQuad				*pf;
-	int				i;
+	int32_t				i;
 
 for (i = 0; i < 8; i++) {
 	pv [i].v.coord.x = (hitBoxOffsets [i].v.coord.x ? vMin.v.coord.x : vMax.v.coord.x) + vOffset.v.coord.x;
@@ -206,7 +206,7 @@ void TransformHitboxes (CObject *objP, CFixVector *vPos, tBox *phb)
 	tHitbox		*pmhb = gameData.models.hitboxes [objP->ModelId ()].hitboxes;
 	tQuad			*pf;
 	CFixVector	rotVerts [8];
-	int			i, j, iModel, nModels;
+	int32_t			i, j, iModel, nModels;
 
 if (CollisionModel () == 1) {
 	iModel =
@@ -233,7 +233,7 @@ transformation.End ();
 
 tHitbox* TransformHitboxes (CObject *objP, CFixVector *vPos)
 {
-	int			nId = objP->ModelId ();
+	int32_t			nId = objP->ModelId ();
 	tHitbox*		hb = &gameData.models.hitboxes [nId].hitboxes [0];
 
 #if !DBG
@@ -244,7 +244,7 @@ gameData.models.hitboxes [nId].nFrame = gameData.objs.nFrameCount;
 	tQuad*		pf;
 	CFixVector	rotVerts [8];
 	CFixMatrix*	viewP = objP->View (0);
-	int			i, j, iBox, nBoxes;
+	int32_t			i, j, iBox, nBoxes;
 
 if (CollisionModel () == 1) {
 	iBox = 0;

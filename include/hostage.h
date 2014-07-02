@@ -18,11 +18,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define MAX_HOSTAGE_TYPES   1       //only one hostage bitmap
 
-extern int nHostageTypes;
+extern int32_t nHostageTypes;
 
-extern int nHostageVClips [MAX_HOSTAGE_TYPES];    // for each nType of hostage
+extern int32_t nHostageVClips [MAX_HOSTAGE_TYPES];    // for each nType of hostage
 
 void DrawHostage(CObject *obj);
-void RescueHostage(int nHostage);
+void RescueHostage(int32_t nHostage);
 
 #endif /* _HOSTAGE_H */

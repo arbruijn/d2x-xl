@@ -7,9 +7,9 @@
 #include "cfile.h"
 #include "3d.h"
 
-void ComputeHitbox (int nModel, int iSubObj);
+void ComputeHitbox (int32_t nModel, int32_t iSubObj);
 tHitbox* TransformHitboxes (CObject *objP, CFixVector *vPos);
-int GetPolyModelMinMax (void *modelP, tHitbox *phb, int nSubModels);
+int32_t GetPolyModelMinMax (void *modelP, tHitbox *phb, int32_t nSubModels);
 
 #endif //_HITBOX_H
 

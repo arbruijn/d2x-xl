@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include <time.h>
 #endif
 
-int	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
+int32_t	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Returns:
@@ -42,7 +42,7 @@ int	nRobotSoundVolume = DEFAULT_ROBOT_SOUND_VOLUME;
 //		2		Player is visible and in field of view.
 //	Note: Uses gameData.ai.target.vBelievedPos as player's position for cloak effect.
 //	NOTE: Will destructively modify *pos if *pos is outside the mine.
-int AICanSeeTarget (CObject *objP, CFixVector *vPos, fix fieldOfView, CFixVector *vVecToTarget)
+int32_t AICanSeeTarget (CObject *objP, CFixVector *vPos, fix fieldOfView, CFixVector *vVecToTarget)
 {
 	fix			dot;
 	CHitQuery	hitQuery (FQ_TRANSWALL | FQ_CHECK_OBJS | FQ_VISIBILITY | (objP->AttacksRobots () ? FQ_ANY_OBJECT : FQ_CHECK_PLAYER),
@@ -51,7 +51,7 @@ int AICanSeeTarget (CObject *objP, CFixVector *vPos, fix fieldOfView, CFixVector
 //	Assume that robot's gun tip is in same CSegment as robot's center.
 objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_GUNSEG;
 if ((*vPos) != objP->info.position.vPos) {
-	short nSegment = FindSegByPos (*vPos, objP->info.nSegment, 1, 0);
+	int16_t nSegment = FindSegByPos (*vPos, objP->info.nSegment, 1, 0);
 	if (nSegment == -1) {
 		hitQuery.nSegment = objP->info.nSegment;
 		*vPos = objP->info.position.vPos;
@@ -92,10 +92,10 @@ return 1;
 
 // ------------------------------------------------------------------------------------------------------------------
 
-int AICanFireAtTarget (CObject *objP, CFixVector *vGun, CFixVector *vTarget)
+int32_t AICanFireAtTarget (CObject *objP, CFixVector *vGun, CFixVector *vTarget)
 {
 	fix			nSize;
-	short			nModel;
+	int16_t			nModel;
 
 //	Assume that robot's gun tip is in same CSegment as robot's center.
 if (vGun->IsZero ())
@@ -110,7 +110,7 @@ CHitQuery hitQuery (FQ_CHECK_OBJS | FQ_ANY_OBJECT | FQ_IGNORE_POWERUPS | FQ_TRAN
 if (*vGun == objP->Position ())
 	hitQuery.nSegment	= objP->info.nSegment;
 else {
-	short nSegment = FindSegByPos (*vGun, objP->info.nSegment, 1, 0);
+	int16_t nSegment = FindSegByPos (*vGun, objP->info.nSegment, 1, 0);
 	if (nSegment == -1)
 		return -1;
 	if (nSegment != objP->info.nSegment)
@@ -157,14 +157,14 @@ if ((xMaxVisibleDist > 0) && (gameData.ai.target.xDist > xMaxVisibleDist) && (ai
 //	If the player is cloaked, set gameData.ai.target.vDir based on time player cloaked and last uncloaked position.
 //	Updates ailP->nPrevVisibility if player is not cloaked, in which case the previous visibility is left unchanged
 //	and is copied to gameData.ai.nTargetVisibility
-void ComputeVisAndVec (CObject *objP, CFixVector *pos, tAILocalInfo *ailP, tRobotInfo *botInfoP, int *flag, fix xMaxVisibleDist)
+void ComputeVisAndVec (CObject *objP, CFixVector *pos, tAILocalInfo *ailP, tRobotInfo *botInfoP, int32_t *flag, fix xMaxVisibleDist)
 {
 if (*flag)
 	LimitTargetVisibility (xMaxVisibleDist, ailP);
 else {
 	if (TARGETOBJ->Cloaked ()) {
 		fix			deltaTime, dist;
-		int			nCloakIndex = (objP->Index ()) % MAX_AI_CLOAK_INFO;
+		int32_t			nCloakIndex = (objP->Index ()) % MAX_AI_CLOAK_INFO;
 
 		deltaTime = gameData.time.xGame - gameData.ai.cloakInfo [nCloakIndex].lastTime;
 		if (deltaTime > I2X (2)) {
@@ -258,7 +258,7 @@ if (objP->Index () == nDbgObj) {
 //	Return true if door can be flown through by a suitable nType robot.
 //	Brains, avoid robots, companions can open doors.
 //	objP == NULL means treat as buddy.
-int AIDoorIsOpenable (CObject *objP, CSegment *segP, short nSide)
+int32_t AIDoorIsOpenable (CObject *objP, CSegment *segP, int16_t nSide)
 {
 	CWall	*wallP;
 
@@ -272,7 +272,7 @@ if (objP == gameData.objs.consoleP) {
 		return 1;
 	}
 if ((objP == NULL) || (ROBOTINFO (objP->info.nId).companion == 1)) {
-	int	ailp_mode;
+	int32_t	ailp_mode;
 
 	if (wallP->flags & WALL_BUDDY_PROOF) {
 		if ((wallP->nType == WALL_DOOR) && (wallP->state == WALL_DOOR_CLOSED))
@@ -321,7 +321,7 @@ if ((objP == NULL) || (ROBOTINFO (objP->info.nId).companion == 1)) {
 		// -- }
 
 	if ((ailp_mode != AIM_GOTO_PLAYER) && (wallP->controllingTrigger != -1)) {
-		int	nClip = wallP->nClip;
+		int32_t	nClip = wallP->nClip;
 
 		if (nClip == -1)
 			return 1;
@@ -339,7 +339,7 @@ if ((objP == NULL) || (ROBOTINFO (objP->info.nId).companion == 1)) {
 		if (wallP->nType == WALL_BLASTABLE)
 			return 1;
 		else {
-			int	nClip = wallP->nClip;
+			int32_t	nClip = wallP->nClip;
 
 			if (nClip == -1)
 				return 1;
@@ -370,9 +370,9 @@ return 0;
 
 // -- // --------------------------------------------------------------------------------------------------------------------
 // -- //	Return true if a special CObject (player or control center) is in this CSegment.
-// -- int specialObject_in_seg (int nSegment)
+// -- int32_t specialObject_in_seg (int32_t nSegment)
 // -- {
-// -- 	int	nObject;
+// -- 	int32_t	nObject;
 // --
 // -- 	nObject = SEGMENTS [nSegment].m_objects;
 // --
@@ -388,9 +388,9 @@ return 0;
 
 // -- // --------------------------------------------------------------------------------------------------------------------
 // -- //	Randomly select a CSegment attached to *segP, reachable by flying.
-// -- int get_random_child (int nSegment)
+// -- int32_t get_random_child (int32_t nSegment)
 // -- {
-// -- 	int	nSide;
+// -- 	int32_t	nSide;
 // -- 	CSegment	*segP = &SEGMENTS [nSegment];
 // --
 // -- 	nSide = (rand () * 6) >> 15;
@@ -405,10 +405,10 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Return true if placing an CObject of size size at pos *pos intersects a (player or robot or control center) in CSegment *segP.
-int CheckObjectObjectIntersection (CFixVector *pos, fix size, CSegment *segP)
+int32_t CheckObjectObjectIntersection (CFixVector *pos, fix size, CSegment *segP)
 {
 //	If this would intersect with another CObject (only check those in this CSegment), then try to move.
-short nObject = segP->m_objects;
+int16_t nObject = segP->m_objects;
 CObject *objP;
 while (nObject != -1) {
 	objP = OBJECTS + nObject;
@@ -432,7 +432,7 @@ return 0;
 //		0	this player IS NOT allowed to move this robot.
 //		1	this player IS allowed to move this robot.
 
-int AIMultiplayerAwareness (CObject *objP, int awarenessLevel)
+int32_t AIMultiplayerAwareness (CObject *objP, int32_t awarenessLevel)
 {
 if (!IsMultiGame)
 	return 1;
@@ -445,7 +445,7 @@ return MultiCanRemoveRobot (objP->Index (), awarenessLevel);
 
 #define	BOSS_TO_PLAYER_GATE_DISTANCE	 (I2X (200))
 
-void AIMultiSendRobotPos (short nObject, int force)
+void AIMultiSendRobotPos (int16_t nObject, int32_t force)
 {
 if (IsMultiGame)
 	MultiSendRobotPosition (nObject, force != -1);
@@ -454,7 +454,7 @@ if (IsMultiGame)
 // ----------------------------------------------------------------------------------
 
 #if DBG
-int Ai_dump_enable = 0;
+int32_t Ai_dump_enable = 0;
 
 FILE *Ai_dump_file = NULL;
 
@@ -462,7 +462,7 @@ char Ai_error_message [128] = "";
 
 void force_dump_aiObjects_all (char *msg)
 {
-	int tsave;
+	int32_t tsave;
 
 	tsave = Ai_dump_enable;
 

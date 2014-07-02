@@ -54,9 +54,9 @@ CMissionManager missionManager;
 //  Special versions of mission routines for d1 builtins
 //
 
-int CMissionManager::LoadD1 (int nMission)
+int32_t CMissionManager::LoadD1 (int32_t nMission)
 {
-	int i;
+	int32_t i;
 
 hogFileManager.UseD1 ("descent.hog");
 
@@ -142,7 +142,7 @@ return 1;
 //  Special versions of mission routines for shareware
 //
 
-int  CMissionManager::LoadShareware (int nMission)
+int32_t  CMissionManager::LoadShareware (int32_t nMission)
 {
 nCurrentMission = nMission;
 gameStates.app.szCurrentMissionFile = m_list [nMission].filename;
@@ -183,7 +183,7 @@ return 1;
 //  Special versions of mission routines for Diamond/S3 version
 //
 
-int  CMissionManager::LoadOEM (int nMission)
+int32_t  CMissionManager::LoadOEM (int32_t nMission)
 {
 nCurrentMission = nMission;
 gameStates.app.szCurrentMissionFile = m_list [nMission].filename;
@@ -209,14 +209,14 @@ return 1;
 
 //------------------------------------------------------------------------------
 //strips damn newline from end of line
-char *MsnGetS (char *s, int n, CFile& cf)
+char *MsnGetS (char *s, int32_t n, CFile& cf)
 {
 	char *r;
-	int	l;
+	int32_t	l;
 
 r = cf.GetS (s, n);
 if (r) {
-	l = (int) strlen (s) - 1;
+	l = (int32_t) strlen (s) - 1;
 	if (s [l] == '\n')
 		s [l] = 0;
 	}
@@ -225,7 +225,7 @@ return r;
 
 //------------------------------------------------------------------------------
 //compare a string for a token. returns true if match
-int MsnIsTok (char *buf, const char *tok)
+int32_t MsnIsTok (char *buf, const char *tok)
 {
 return !strnicmp (buf, tok, strlen (tok));
 }
@@ -271,7 +271,7 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-int _CDECL_ MLSortFunc (tMsnListEntry *e0, tMsnListEntry *e1)
+int32_t _CDECL_ MLSortFunc (tMsnListEntry *e0, tMsnListEntry *e1)
 {
 	char	*s1 = e0->szMissionName,
 			*s2 = e1->szMissionName;
@@ -294,7 +294,7 @@ char* Trim (char* s)
 if (s) {
 	while (::isspace (*s))
 		s++;
-	for (int i = (int) strlen (s); --i; ) {
+	for (int32_t i = (int32_t) strlen (s); --i; ) {
 		if (::isspace (s [i]))
 			s [i] = '\0';
 		else
@@ -309,7 +309,7 @@ return s;
 extern char CDROM_dir [];
 
 //returns 1 if file read ok, else 0
-int CMissionManager::ReadFile (const char *filename, int m_nCount, int location)
+int32_t CMissionManager::ReadFile (const char *filename, int32_t m_nCount, int32_t location)
 {
 	CFile		cf;
 	char		filename2 [FILENAME_LEN], szMissionName [FILENAME_LEN], temp [FILENAME_LEN];
@@ -393,7 +393,7 @@ void CMissionManager::AddBuiltinD1Mission (void)
 
 if (!cf.Exist ("descent.hog", gameFolders.game.szData [0], 1))
 	return;
-nBuiltInHogSize [1] = (int) cf.Size ("descent.hog", gameFolders.game.szData [0], 0);
+nBuiltInHogSize [1] = (int32_t) cf.Size ("descent.hog", gameFolders.game.szData [0], 0);
 switch (nBuiltInHogSize [1]) {
 	case D1_SHAREWARE_MISSION_HOGSIZE:
 	case D1_SHAREWARE_10_MISSION_HOGSIZE:
@@ -462,9 +462,9 @@ void CMissionManager::AddBuiltinMission (void)
 {
 	CFile	cf;
 
-nBuiltInHogSize [0] = (int) cf.Size ("descent2.hog", gameFolders.game.szData [0], 0);
+nBuiltInHogSize [0] = (int32_t) cf.Size ("descent2.hog", gameFolders.game.szData [0], 0);
 if (nBuiltInHogSize [0] == -1)
-	nBuiltInHogSize [0] = (int) cf.Size ("d2demo.hog", gameFolders.game.szData [0], 0);
+	nBuiltInHogSize [0] = (int32_t) cf.Size ("d2demo.hog", gameFolders.game.szData [0], 0);
 
 switch (nBuiltInHogSize [0]) {
 	case SHAREWARE_MISSION_HOGSIZE:
@@ -503,16 +503,16 @@ m_list [m_nCount].location = ML_DATADIR;
 
 //------------------------------------------------------------------------------
 
-int nBuiltIns = 0;
+int32_t nBuiltIns = 0;
 
-void CMissionManager::Add (int bAnarchy, int bD1Mission, int bSubFolder, int bHaveSubFolders, int nLocation)
+void CMissionManager::Add (int32_t bAnarchy, int32_t bD1Mission, int32_t bSubFolder, int32_t bHaveSubFolders, int32_t nLocation)
 {
 	CFile	cf;
 	FFS	ffs;
 	char lvlName [255];
 	char searchName [255];
 	const char *lvlExt = ".hog";
-	int	bFindDirs, nFolderNameLen = (int) strlen (gameFolders.missions.szCurrent [nLocation]);
+	int32_t	bFindDirs, nFolderNameLen = (int32_t) strlen (gameFolders.missions.szCurrent [nLocation]);
 
 	static const char *altLvlExt [2] = {".rdl", ".rl2"};
 
@@ -582,14 +582,14 @@ void CMissionManager::Add (int bAnarchy, int bD1Mission, int bSubFolder, int bHa
 // Find the mission szMissionName in the mission list and move it to that place
 // Increase nTopList for the next mission to be promoted
 
-void CMissionManager::Promote (const char * szMissionName, int& nTopPlace)
+void CMissionManager::Promote (const char * szMissionName, int32_t& nTopPlace)
 {
 	char name [FILENAME_LEN];
 
 strcpy (name, szMissionName);
 
-for (int h = 0; h < 2; h++) {
-	for (int i = nTopPlace; i < m_nCount; i++) {
+for (int32_t h = 0; h < 2; h++) {
+	for (int32_t i = nTopPlace; i < m_nCount; i++) {
 		if (!stricmp (m_list [i].filename, name)) {
 			if (i != nTopPlace)
 				Swap (m_list [nTopPlace], m_list [i]);
@@ -611,9 +611,9 @@ extern char CDROM_dir [];
 
 void CMissionManager::MoveFolderUp (void)
 {
-int	i;
+int32_t	i;
 
-for (i = (int) strlen (gameFolders.missions.szSubFolder) - 2; i >= 0; i--)
+for (i = (int32_t) strlen (gameFolders.missions.szSubFolder) - 2; i >= 0; i--)
 	if (gameFolders.missions.szSubFolder [i] == '/')
 		break;
 gameFolders.missions.szSubFolder [i + 1] = '\0';
@@ -623,7 +623,7 @@ if (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.missions.szSubFolder, "s
 
 //------------------------------------------------------------------------------
 
-void CMissionManager::MoveFolderDown (int nSubFolder)
+void CMissionManager::MoveFolderDown (int32_t nSubFolder)
 {
 strcat (gameFolders.missions.szSubFolder, m_list [nSubFolder].szMissionName + 1);
 gameFolders.missions.szSubFolder [strlen (gameFolders.missions.szSubFolder) - 1] = '/';
@@ -631,9 +631,9 @@ gameFolders.missions.szSubFolder [strlen (gameFolders.missions.szSubFolder) - 1]
 
 //------------------------------------------------------------------------------
 
-int CMissionManager::BuildList (int bAnarchy, int nSubFolder)
+int32_t CMissionManager::BuildList (int32_t bAnarchy, int32_t nSubFolder)
 {
-	int nTopPlace, bSubFolder, bHaveSubFolders;
+	int32_t nTopPlace, bSubFolder, bHaveSubFolders;
 
 m_nCount = 0;
 //now search for levels on disk
@@ -714,9 +714,9 @@ else {
 	Promote ("d2x", nTopPlace); // vertigo
 	}
 if (m_nCount > nTopPlace)
-	qsort (m_list + nTopPlace, m_nCount - nTopPlace, sizeof (*m_list), (int (_CDECL_ *)(const void *, const void *)) MLSortFunc);
+	qsort (m_list + nTopPlace, m_nCount - nTopPlace, sizeof (*m_list), (int32_t (_CDECL_ *)(const void *, const void *)) MLSortFunc);
 //if (m_nCount > nTopPlace)
-//	qsort(m_list + nTopPlace, m_nCount - nTopPlace, sizeof (*m_list), (int (_CDECL_ *) (const void *, const void * )) MLSortFunc);
+//	qsort(m_list + nTopPlace, m_nCount - nTopPlace, sizeof (*m_list), (int32_t (_CDECL_ *) (const void *, const void * )) MLSortFunc);
 return m_nCount;
 }
 
@@ -729,7 +729,7 @@ char *MsnTrimComment (char *buf)
 if ((ps = strchr (buf, ';'))) {
 	while (ps > buf) {
 		--ps;
-		if (!::isspace ((ubyte) *ps)) {
+		if (!::isspace ((uint8_t) *ps)) {
 			++ps;
 			break;
 			}
@@ -741,9 +741,9 @@ return buf;
 
 //------------------------------------------------------------------------------
 
-int CMissionManager::Parse (CFile& cf)
+int32_t CMissionManager::Parse (CFile& cf)
 {
-	int	i;
+	int32_t	i;
 	char	*t, *v;
 	char	buf [256], *bufP;
 
@@ -801,14 +801,14 @@ while (MsnGetS (buf, 80, cf)) {
 		}
 	else if (MsnIsTok (buf, "num_levels")) {
 		if ((v = MsnGetValue (buf))) {
-			int nLevels = atoi (v);
+			int32_t nLevels = atoi (v);
 			if (nLevels)
 				PrintLog (0, "parsing level m_list\n");
 			for (i = 0; (i < nLevels) && MsnGetS (buf, 80, cf); i++) {
 				PrintLog (0, "'%s'\n", buf);
 				MsnTrimComment (buf);
 				MsnAddStrTerm (buf);
-				if ((int) strlen (buf) > (nEnhancedMission ? 255 : 12)) {
+				if ((int32_t) strlen (buf) > (nEnhancedMission ? 255 : 12)) {
 					PrintLog (-1, "mission file: invalid level name\n");
 					return 0;
 					}
@@ -823,7 +823,7 @@ while (MsnGetS (buf, 80, cf)) {
 		if ((v = MsnGetValue (buf))) {
 			nSecretLevels = atoi (v);
 			Assert(nSecretLevels <= MAX_SECRET_LEVELS_PER_MISSION);
-			int nLinks = 0;
+			int32_t nLinks = 0;
 			for (i = 0; (i < nSecretLevels) && MsnGetS (buf, 80, cf); i++) {
 				PrintLog (0, "'%s'\n", buf);
 				MsnTrimComment (buf);
@@ -832,7 +832,7 @@ while (MsnGetS (buf, 80, cf)) {
 						break;
 					nLinks++;
 					*t++ = 0;
-					int j = atoi (t);
+					int32_t j = atoi (t);
 					if ((j < 1) || (j > nLastLevel)) {
 						PrintLog (-1, "mission file: invalid secret level base level number '%s'\n", t);
 						return 0;
@@ -861,11 +861,11 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CMissionManager::LoadSongList (char *szFile)
+int32_t CMissionManager::LoadSongList (char *szFile)
 {
 	CFile	cf;
 	char	pn [FILENAME_LEN], fn [FILENAME_LEN] = {'\x01'};
-	int	i;
+	int32_t	i;
 
 memset (szSongNames, 0, sizeof (szSongNames));
 CFile::SplitPath (szFile, pn, fn + 1, NULL);
@@ -885,11 +885,11 @@ return i;
 //loads the specfied mission from the mission m_list.
 //BuildMissionList() must have been called.
 //Returns true if mission loaded ok, else false.
-int CMissionManager::Load (int nMission)
+int32_t CMissionManager::Load (int32_t nMission)
 {
 	CFile		cf;
 	char		szFolder [FILENAME_LEN] = {'\0'}, szFile [FILENAME_LEN] = {'\0'};
-	int		i, bFoundHogFile = 0;
+	int32_t		i, bFoundHogFile = 0;
 
 nEnhancedMission = 0;
 if (nMission >= 0) {
@@ -1015,9 +1015,9 @@ return 1;
 //------------------------------------------------------------------------------
 //loads the named mission if exists.
 //Returns true if mission loaded ok, else false.
-int CMissionManager::LoadByName (char *szMissionName, int nSubFolder, const char* szSubFolder)
+int32_t CMissionManager::LoadByName (char *szMissionName, int32_t nSubFolder, const char* szSubFolder)
 {
-	int n, i, j;
+	int32_t n, i, j;
 
 if (nSubFolder < 0) {
 	*gameFolders.missions.szSubFolder = '\0';
@@ -1052,9 +1052,9 @@ return 0;		//couldn't ffs mission
 //------------------------------------------------------------------------------
 //loads the named mission if exists.
 //Returns true if mission loaded ok, else false.
-int CMissionManager::FindByName (char *szMissionName, int nSubFolder)
+int32_t CMissionManager::FindByName (char *szMissionName, int32_t nSubFolder)
 {
-	int n,i,j;
+	int32_t n,i,j;
 
 if (nSubFolder < 0)
 	*gameFolders.missions.szSubFolder = '\0';
@@ -1074,7 +1074,7 @@ return 0;		//couldn't find mission
 
 //------------------------------------------------------------------------------
 
-int CMissionManager::IsBuiltIn (const char* pszMission)
+int32_t CMissionManager::IsBuiltIn (const char* pszMission)
 {
 #if 0
 if (*pszMission)
@@ -1094,7 +1094,7 @@ return (strstr (pszMission, "Descent: First Strike") != NULL)
 
 //------------------------------------------------------------------------------
 
-char* CMissionManager::LevelStateName (char* szFile, int nLevel)
+char* CMissionManager::LevelStateName (char* szFile, int32_t nLevel)
 {
 #if DBG
 sprintf (szFile, "%s-player%d.level%d", 
@@ -1107,7 +1107,7 @@ return szFile;
 
 //------------------------------------------------------------------------------
 
-int CMissionManager::SaveLevelStates (void)
+int32_t CMissionManager::SaveLevelStates (void)
 {
 if (!gameStates.app.bReadOnly) {
 		CFile		cf;
@@ -1116,8 +1116,8 @@ if (!gameStates.app.bReadOnly) {
 	sprintf (szFile, "%s.state", m_list [nCurrentMission].szMissionName + ((m_list [nCurrentMission].szMissionName [0] == '[') ? 4 : 0));
 	if (!cf.Open (szFile, gameFolders.missions.szStates, "wb", 0))
 		return 0;
-	for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
-		cf.WriteByte (sbyte (nLevelState [i]));
+	for (int32_t i = 0; i < MAX_LEVELS_PER_MISSION; i++)
+		cf.WriteByte (int8_t (nLevelState [i]));
 	cf.Close ();
 	}
 return 1;
@@ -1125,7 +1125,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CMissionManager::LoadLevelStates (void)
+int32_t CMissionManager::LoadLevelStates (void)
 {
 	CFile		cf;
 	char		szFile [FILENAME_LEN] = {'\0'};
@@ -1134,7 +1134,7 @@ sprintf (szFile, "%s.state", m_list [nCurrentMission].szMissionName + ((m_list [
 if (!cf.Open (szFile, gameFolders.missions.szStates, "rb", 0) &&
 	 !cf.Open (szFile, gameFolders.var.szCache, "rb", 0))
 	return 0;
-for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++)
+for (int32_t i = 0; i < MAX_LEVELS_PER_MISSION; i++)
 	nLevelState [i] = char (cf.ReadByte ());
 cf.Close ();
 return 1;
@@ -1146,7 +1146,7 @@ void CMissionManager::DeleteLevelStates (void)
 {
 	char	szFile [FILENAME_LEN] = {'\0'};
 
-for (int i = 0; i < MAX_LEVELS_PER_MISSION; i++) {
+for (int32_t i = 0; i < MAX_LEVELS_PER_MISSION; i++) {
 	LevelStateName (szFile, i);
 	if (CFile::Exist (szFile, gameFolders.var.szCache, 0))
 		CFile::Delete (szFile, gameFolders.var.szCache);
@@ -1156,7 +1156,7 @@ memset (nLevelState, 0, sizeof (nLevelState));
 
 //------------------------------------------------------------------------------
 
-void CMissionManager::AdvanceLevel (int nNextLevel)
+void CMissionManager::AdvanceLevel (int32_t nNextLevel)
 {
 if (gameStates.app.bD1Mission) 
 	missionManager.SetNextLevel (((missionManager.nCurrentLevel < 0) ? missionManager.nEntryLevel : missionManager.nCurrentLevel) + 1);

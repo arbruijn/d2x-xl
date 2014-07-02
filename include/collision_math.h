@@ -74,9 +74,9 @@ class CFloatVector2 {
 
 class CHitData {
 	public:
-		int 			nType;						//what sort of intersection
-		short			nSegment;
-		short			nObject;
+		int32_t 			nType;						//what sort of intersection
+		int16_t			nSegment;
+		int16_t			nObject;
 		CFixVector	vPoint;
 		CFixVector	vNormal;
 
@@ -97,12 +97,12 @@ class CHitData {
 
 class CHitInfo : public CHitData {
 	public:
-		short			nAltSegment;
-		short 		nSide;						//if hit wall, which side
-		short			nFace;
-		short 		nSideSegment;				//what segment the hit side is in
-		int			nNormals;
-		int			nNestCount;
+		int16_t			nAltSegment;
+		int16_t 		nSide;						//if hit wall, which side
+		int16_t			nFace;
+		int16_t 		nSideSegment;				//what segment the hit side is in
+		int32_t			nNormals;
+		int32_t			nNestCount;
 
 	public:
 		CHitInfo () : nAltSegment (-1), nSide (0), nFace (0), nSideSegment (-1), nNormals (0), nNestCount (0) {}
@@ -113,8 +113,8 @@ class CHitInfo : public CHitData {
 
 class CHitResult : public CHitInfo {
 	public:
-		short 	nSegments;					//how many segs we went through
-		short 	segList [MAX_FVI_SEGS];	//list of segs vector went through
+		int16_t 	nSegments;					//how many segs we went through
+		int16_t 	segList [MAX_FVI_SEGS];	//list of segs vector went through
 
 	public:
 		CHitResult () : nSegments (0) {}
@@ -125,18 +125,18 @@ class CHitResult : public CHitInfo {
 //this data contains the parms to fvi()
 class CHitQuery {
 	public:
-		int			flags;
+		int32_t			flags;
 		CFixVector* p0, * p1;
-		short			nSegment;
-		short			nObject;
+		int16_t			nSegment;
+		int16_t			nObject;
 		fix			radP0, radP1;
-		int			bIgnoreObjFlag;
+		int32_t			bIgnoreObjFlag;
 
 	public:
 		CHitQuery () 
 			: flags (0), p0 (NULL), p1 (NULL), nSegment (-1), nObject (-1), radP0 (0), radP1 (0), bIgnoreObjFlag (0)
 			{}
-		CHitQuery (int flags, CFixVector* p0, CFixVector* p1, short nSegment, short nObject = -1, fix radP0 = 0, fix radP1 = 0, int bIgnoreObjFlag = 0)
+		CHitQuery (int32_t flags, CFixVector* p0, CFixVector* p1, int16_t nSegment, int16_t nObject = -1, fix radP0 = 0, fix radP1 = 0, int32_t bIgnoreObjFlag = 0)
 			: flags (flags), p0 (p0), p1 (p1), nSegment (nSegment), nObject (nObject), radP0 (radP0), radP1 (radP1), bIgnoreObjFlag (bIgnoreObjFlag)
 			{}
 	};
@@ -144,7 +144,7 @@ class CHitQuery {
 //------------------------------------------------------------------------------
 
 typedef struct tSpeedBoostData {
-	int						bBoosted;
+	int32_t						bBoosted;
 	CFixVector				vVel;
 	CFixVector				vMinVel;
 	CFixVector				vMaxVel;
@@ -156,11 +156,11 @@ typedef struct tSpeedBoostData {
 
 class CPhysSimData {
 	public:
-		short					nObject;
+		int16_t					nObject;
 		CObject*				objP;
-		short					nStartSeg;
+		int16_t					nStartSeg;
 		CFixVector			vStartPos;
-		short					nOldSeg;
+		int16_t					nOldSeg;
 		CFixVector			velocity;
 		CFixVector			vOldPos;
 		CFixVector			vNewPos;
@@ -176,18 +176,18 @@ class CPhysSimData {
 		tSpeedBoostData	speedBoost;
 		CHitResult			hitResult;
 		CHitQuery			hitQuery;
-		int					bInitialize;
-		int					bUpdateOffset;
-		int					bUseHitbox;
-		int					bGetPhysSegs;
-		int					bSpeedBoost;
-		int					bScaleSpeed;
-		int					bStopped;
-		int					bBounced;
-		int					bIgnoreObjFlag;
-		int					nTries;
+		int32_t					bInitialize;
+		int32_t					bUpdateOffset;
+		int32_t					bUseHitbox;
+		int32_t					bGetPhysSegs;
+		int32_t					bSpeedBoost;
+		int32_t					bScaleSpeed;
+		int32_t					bStopped;
+		int32_t					bBounced;
+		int32_t					bIgnoreObjFlag;
+		int32_t					nTries;
 
-		explicit CPhysSimData (short nObject = -1) : nObject (nObject), bUpdateOffset (1), bStopped (0), bBounced (0), bIgnoreObjFlag (0), nTries (0) { Setup (); }
+		explicit CPhysSimData (int16_t nObject = -1) : nObject (nObject), bUpdateOffset (1), bStopped (0), bBounced (0), bIgnoreObjFlag (0), nTries (0) { Setup (); }
 		void Setup (void);
 		void GetPhysSegs (void);
 	};
@@ -204,40 +204,40 @@ class CPhysSimData {
 //  ingore_obj_list	NULL, or ptr to a list of objnums to ignore, terminated with -1
 //  check_objFlag	determines whether collisions with objects are checked
 //Returns the hitResult->hitType
-int FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult);
+int32_t FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult);
 
 //finds the uv coords of the given point on the given seg & CSide
 //fills in u & v. if l is non-NULL fills it in also
-void FindHitPointUV (fix *u,fix *v,fix *l, CFixVector *pnt,CSegment *seg,int nSide,int facenum);
+void FindHitPointUV (fix *u,fix *v,fix *l, CFixVector *pnt,CSegment *seg,int32_t nSide,int32_t facenum);
 
 //Returns true if the CObject is through any walls
-int ObjectIntersectsWall (CObject *objP);
+int32_t ObjectIntersectsWall (CObject *objP);
 
-int CheckLineToSegFace (CFixVector *newP, CFixVector *p0, CFixVector *p1, 
-								short nSegment, short nSide, short iFace, int nv, fix rad);
+int32_t CheckLineToSegFace (CFixVector *newP, CFixVector *p0, CFixVector *p1, 
+								int16_t nSegment, int16_t nSide, int16_t iFace, int32_t nv, fix rad);
 
-int FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
+int32_t FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
 										 CFixVector *p0, CFixVector *p1, fix rad, bool bCheckOverflow = true);
 
-int CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVector *p2, CFixVector *v2);
+int32_t CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVector *p2, CFixVector *v2);
 
-float DistToFace (CFloatVector3 vRef, short nSegment, ubyte nSide, CFloatVector3* vHit = NULL);
+float DistToFace (CFloatVector3 vRef, int16_t nSegment, uint8_t nSide, CFloatVector3* vHit = NULL);
 
-fix CheckVectorHitboxCollision (CFixVector& intersection, CFixVector& normal, CFixVector *p0, CFixVector *p1, CFixVector *vRef, CObject *objP, fix rad, short& nModel);
+fix CheckVectorHitboxCollision (CFixVector& intersection, CFixVector& normal, CFixVector *p0, CFixVector *p1, CFixVector *vRef, CObject *objP, fix rad, int16_t& nModel);
 
-fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *objP1, CObject *objP2, CFixVector *p0, CFixVector *p1, short& nModel);
+fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *objP1, CObject *objP2, CFixVector *p0, CFixVector *p1, int16_t& nModel);
 
-CSegMasks CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, short nSegment, short nSide, CFixVector* p0, CFixVector* p1, CObject *objP);
+CSegMasks CheckFaceHitboxCollision (CFixVector& intersection, CFixVector& normal, int16_t nSegment, int16_t nSide, CFixVector* p0, CFixVector* p1, CObject *objP);
 
-ubyte PointIsOutsideFace (CFixVector* refP, CFixVector* vertices, short nVerts);
+uint8_t PointIsOutsideFace (CFixVector* refP, CFixVector* vertices, int16_t nVerts);
 
-ubyte PointIsOutsideFace (CFixVector* refP, ushort* nVertIndex, short nVerts);
+uint8_t PointIsOutsideFace (CFixVector* refP, uint16_t* nVertIndex, int16_t nVerts);
 
-ubyte PointIsOutsideFace (CFloatVector* refP, ushort* nVertIndex, short nVerts);
+uint8_t PointIsOutsideFace (CFloatVector* refP, uint16_t* nVertIndex, int16_t nVerts);
 
-uint PointToFaceRelation (CFixVector* refP, CFixVector *vertList, int nVerts, CFixVector* vNormal);
+uint32_t PointToFaceRelation (CFixVector* refP, CFixVector *vertList, int32_t nVerts, CFixVector* vNormal);
 
-int PointSeesPoint (CFloatVector* p0, CFloatVector* p1, short nStartSeg, short nDestSeg, int nDepth, int nThread);
+int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, int16_t nDestSeg, int32_t nDepth, int32_t nThread);
 
 //	-----------------------------------------------------------------------------
 
@@ -268,12 +268,12 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int UseHitbox (CObject *objP);
-int UseSphere (CObject *objP);
+int32_t UseHitbox (CObject *objP);
+int32_t UseSphere (CObject *objP);
 
 //	-----------------------------------------------------------------------------
 
-extern int ijTable [3][2];
+extern int32_t ijTable [3][2];
 
 #endif
 

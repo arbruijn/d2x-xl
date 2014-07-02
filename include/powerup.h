@@ -97,16 +97,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define POWERUP_NAME_LENGTH 16      // Length of a robot or powerup name.
 extern char Powerup_names[MAX_POWERUP_TYPES][POWERUP_NAME_LENGTH];
 
-extern int Headlight_active_default;    // is headlight on when picked up?
+extern int32_t Headlight_active_default;    // is headlight on when picked up?
 
 typedef struct tPowerupTypeInfo {
-	int nClipIndex;
-	int hitSound;
+	int32_t nClipIndex;
+	int32_t hitSound;
 	fix size;       // 3d size of longest dimension
 	fix light;      // amount of light cast by this powerup, set in bitmaps.tbl
 } __pack__ tPowerupTypeInfo;
 
-extern int N_powerupTypes;
+extern int32_t N_powerupTypes;
 extern tPowerupTypeInfo powerupInfo[MAX_POWERUP_TYPES];
 
 void InitPowerupTables (void);
@@ -114,7 +114,7 @@ void InitPowerupTables (void);
 void DrawPowerup(CObject *objP);
 
 //returns true if powerup consumed
-int DoPowerup(CObject *objP, int nPlayer);
+int32_t DoPowerup(CObject *objP, int32_t nPlayer);
 
 //process (animate) a powerup for one frame
 void UpdateFlagClips (void);
@@ -122,34 +122,34 @@ void UpdateFlagClips (void);
 // Diminish shield and energy towards max in case they exceeded it.
 void diminish_towards_max(void);
 
-void DoMegaWowPowerup(int quantity);
+void DoMegaWowPowerup(int32_t quantity);
 
-void _CDECL_ PowerupBasic(int redadd, int greenadd, int blueadd, int score, const char *format, ...);
+void _CDECL_ PowerupBasic(int32_t redadd, int32_t greenadd, int32_t blueadd, int32_t score, const char *format, ...);
 
 /*
  * reads n tPowerupTypeInfo structs from a CFILE
  */
-int ReadPowerupTypeInfos (tPowerupTypeInfo *pti, int n, CFile& cf);
+int32_t ReadPowerupTypeInfos (tPowerupTypeInfo *pti, int32_t n, CFile& cf);
 
-int ApplyCloak (int bForce, int nPlayer);
-int ApplyInvul (int bForce, int nPlayer);
+int32_t ApplyCloak (int32_t bForce, int32_t nPlayer);
+int32_t ApplyInvul (int32_t bForce, int32_t nPlayer);
 
-int PowerupToDevice (short nPowerup, int *nType);
-char PowerupToWeaponCount (short nPowerup);
-char PowerupClass (short nPowerup);
-char PowerupToObject (short nPowerup);
-short PowerupToModel (short nPowerup);
-short WeaponToModel (short nWeapon);
-short PowerupsOnShips (int nPowerup);
-void SpawnLeftoverPowerups (short nObject);
+int32_t PowerupToDevice (int16_t nPowerup, int32_t *nType);
+char PowerupToWeaponCount (int16_t nPowerup);
+char PowerupClass (int16_t nPowerup);
+char PowerupToObject (int16_t nPowerup);
+int16_t PowerupToModel (int16_t nPowerup);
+int16_t WeaponToModel (int16_t nWeapon);
+int16_t PowerupsOnShips (int32_t nPowerup);
+void SpawnLeftoverPowerups (int16_t nObject);
 void CheckInventory (void);
 
-int PickupEnergyBoost (CObject *objP, int nPlayer);
-int PickupEquipment (CObject *objP, int nEquipment, const char *pszHave, const char *pszGot, int nPlayer);
+int32_t PickupEnergyBoost (CObject *objP, int32_t nPlayer);
+int32_t PickupEquipment (CObject *objP, int32_t nEquipment, const char *pszHave, const char *pszGot, int32_t nPlayer);
 
 extern const char *pszPowerup [MAX_POWERUP_TYPES];
-extern ubyte powerupType [MAX_POWERUP_TYPES];
-extern ubyte powerupFilter [MAX_POWERUP_TYPES];
+extern uint8_t powerupType [MAX_POWERUP_TYPES];
+extern uint8_t powerupFilter [MAX_POWERUP_TYPES];
 extern void * pickupHandler [MAX_POWERUP_TYPES];
 
 #define POWERUP_IS_UNDEFINED	-1
@@ -161,7 +161,7 @@ extern void * pickupHandler [MAX_POWERUP_TYPES];
 
 //------------------------------------------------------------------------------
 
-static inline int IsEnergyPowerup (int nId)
+static inline int32_t IsEnergyPowerup (int32_t nId)
 {
 return (nId == POW_EXTRA_LIFE) || (nId == POW_ENERGY) || (nId == POW_SHIELD_BOOST) ||
 		 (nId == POW_HOARD_ORB) || (nId == POW_CLOAK) || (nId == POW_INVUL);
@@ -169,12 +169,12 @@ return (nId == POW_EXTRA_LIFE) || (nId == POW_ENERGY) || (nId == POW_SHIELD_BOOS
 
 //------------------------------------------------------------------------------
 
-void AddAllowedPowerup (int nPowerup, int nCount = 1);
-void RemoveAllowedPowerup (int nPowerup);
-void AddPowerupInMine (int nPowerup, bool bIncreaseLimit = false);
-void RemovePowerupInMine (int nPowerup);
-int PowerupsInMine (int nPowerup);
-int MissingPowerups (int nPowerup, int bBreakDown = 0);
+void AddAllowedPowerup (int32_t nPowerup, int32_t nCount = 1);
+void RemoveAllowedPowerup (int32_t nPowerup);
+void AddPowerupInMine (int32_t nPowerup, bool bIncreaseLimit = false);
+void RemovePowerupInMine (int32_t nPowerup);
+int32_t PowerupsInMine (int32_t nPowerup);
+int32_t MissingPowerups (int32_t nPowerup, int32_t bBreakDown = 0);
 
 //------------------------------------------------------------------------------
 

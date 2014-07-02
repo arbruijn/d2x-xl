@@ -19,24 +19,24 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define CHECK_DROP	2
 #define EXEC_DROP		3
 
-int ChooseDropSegment (CObject *objP, int *pbFixedPos, int nDropState);
-int ObjectCreateEgg (CObject *objP, bool bLocal = false, bool bUpdateLimits = true);
-int CallObjectCreateEgg (CObject *objP, int count, int nType, int id, bool bLocal = false, bool bUpdateLimits = false);
-int MaybeDropNetPowerup (short nObject, int powerupType, int nDropState);
-void RespawnDestroyedWeapon (short nObject);
+int32_t ChooseDropSegment (CObject *objP, int32_t *pbFixedPos, int32_t nDropState);
+int32_t ObjectCreateEgg (CObject *objP, bool bLocal = false, bool bUpdateLimits = true);
+int32_t CallObjectCreateEgg (CObject *objP, int32_t count, int32_t nType, int32_t id, bool bLocal = false, bool bUpdateLimits = false);
+int32_t MaybeDropNetPowerup (int16_t nObject, int32_t powerupType, int32_t nDropState);
+void RespawnDestroyedWeapon (int16_t nObject);
 void MaybeReplacePowerupWithEnergy (CObject *del_obj);
 void DropPowerups (void);
-int DropPowerup (ubyte nType, ubyte nId, short nOwner, int nCount, const CFixVector& vInitVel, const CFixVector& vPos, short nSegment, bool bLocal = false);
+int32_t DropPowerup (uint8_t nType, uint8_t nId, int16_t nOwner, int32_t nCount, const CFixVector& vInitVel, const CFixVector& vPos, int16_t nSegment, bool bLocal = false);
 // creates afterburner blobs behind the specified CObject
-void DropAfterburnerBlobs (CObject *obj, int count, fix size_scale, fix lifetime, CObject *pParent, int bThruster);
-int MaybeDropPrimaryWeaponEgg (CObject *playerObjP, int weapon_index);
-void MaybeDropSecondaryWeaponEgg (CObject *playerObjP, int weapon_index, int count);
+void DropAfterburnerBlobs (CObject *obj, int32_t count, fix size_scale, fix lifetime, CObject *pParent, int32_t bThruster);
+int32_t MaybeDropPrimaryWeaponEgg (CObject *playerObjP, int32_t weapon_index);
+void MaybeDropSecondaryWeaponEgg (CObject *playerObjP, int32_t weapon_index, int32_t count);
 void DropPlayerEggs (CObject *playerObjP);
 void DropExcessAmmo (void);
-int ReturnFlagHome (CObject *pObj);
-int PickConnectedSegment (CObject *objP, int nMaxDepth, int *nDepthP);
-int AddDropInfo (short nObject, short nPowerupType, int nDropTime = -1);
-void DelDropInfo (int h);
-int FindDropInfo (int nSignature);
+int32_t ReturnFlagHome (CObject *pObj);
+int32_t PickConnectedSegment (CObject *objP, int32_t nMaxDepth, int32_t *nDepthP);
+int32_t AddDropInfo (int16_t nObject, int16_t nPowerupType, int32_t nDropTime = -1);
+void DelDropInfo (int32_t h);
+int32_t FindDropInfo (int32_t nSignature);
 
 #endif /* _DROPOBJECT_H */

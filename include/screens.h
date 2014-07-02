@@ -28,31 +28,31 @@ extern CCanvas *Canv_editor;			// the full on-scrren editor canvas
 extern CCanvas *Canv_editor_game;	// the game window on the editor screen
 
 //from game.c
-extern int SetScreenMode(uint sm);		// True = editor screen
+extern int32_t SetScreenMode(uint32_t sm);		// True = editor screen
 
 //About the screen
-extern ubyte		VR_screenFlags;
-extern ubyte		nVRCurrentPage;
+extern uint8_t		VR_screenFlags;
+extern uint8_t		nVRCurrentPage;
 extern fix			VR_eye_width;
-extern int 			VR_eye_switch;
+extern int32_t 			VR_eye_switch;
 
 //NEWVR (Add a bunch off lines)
 #define VR_SEPARATION I2X (1)*7/10
 #define VR_PIXEL_SHIFT -6
 #define VR_WHITE_INDEX 255
 #define VR_BLACK_INDEX 0
-extern int			VR_eye_offset;
-extern int 			VR_eye_offset_changed;
+extern int32_t			VR_eye_offset;
+extern int32_t 			VR_eye_offset_changed;
 extern void 		VRResetParams();
-extern int			VR_use_reg_code;
+extern int32_t			VR_use_reg_code;
 
 
-extern uint	nVRScreenMode;
-extern int			VR_render_mode;
-extern int			VR_low_res;
-extern int 			VR_show_hud;
-extern int			VR_sensitivity;
-extern uint  bScreenModeOverride;
+extern uint32_t	nVRScreenMode;
+extern int32_t			VR_render_mode;
+extern int32_t			VR_low_res;
+extern int32_t 			VR_show_hud;
+extern int32_t			VR_sensitivity;
+extern uint32_t  bScreenModeOverride;
 
 extern CCanvas	*VR_offscreen_buffer;		// The offscreen data buffer
 extern CCanvas	VR_render_buffer[2];			// Two offscreen buffers for left/right eyes.
@@ -73,14 +73,14 @@ extern CCanvas	VR_screen_sub_pages[2];		// Two sub pages of VRAM if paging is av
 #define VR_AREA_DET		1	// viewing with the stereo area determined method
 #define VR_INTERLACED	2	// viewing with the stereo interlaced method
 
-void GameInitRenderBuffers(int screen_mode, int render_max_w, int render_max_h, int render_method, int flags);
+void GameInitRenderBuffers(int32_t screen_mode, int32_t render_max_w, int32_t render_max_h, int32_t render_method, int32_t flags);
 void GameInitRenderSubBuffers(void);
 
-int GetDisplayMode (int mode);
-int SetDisplayMode (int mode, int bOverride);
-int SetSideBySideDisplayMode (void);
+int32_t GetDisplayMode (int32_t mode);
+int32_t SetDisplayMode (int32_t mode, int32_t bOverride);
+int32_t SetSideBySideDisplayMode (void);
 
-extern int nDefaultDisplayMode;		// cannot be -1
+extern int32_t nDefaultDisplayMode;		// cannot be -1
 // values are:
 // -1: some special VR mode.
 //  0: 320 x 200

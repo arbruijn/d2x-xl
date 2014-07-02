@@ -3,15 +3,15 @@
 
 class CPerlinNoise {
 	private:
-		int m_randomize;
+		int32_t m_randomize;
 
 	protected:	
 		double m_amplitude;
 		double m_persistence;
-		int m_octaves;
+		int32_t m_octaves;
 
 	public:
-		virtual void Setup (double amplitude, double persistence, int octaves, int randomize = -1);
+		virtual void Setup (double amplitude, double persistence, int32_t octaves, int32_t randomize = -1);
 		double ComputeNoise (double x);
 		double ComputeNoise (double x, double y);
 
@@ -29,7 +29,7 @@ class CPerlinNoise {
 		virtual double InterpolatedNoise (double x);
 		virtual double InterpolatedNoise (double x, double y);
 
-		inline int FastFloor (double n) { return (n > 0) ? (int) n : (int) n - 1; }
+		inline int32_t FastFloor (double n) { return (n > 0) ? (int32_t) n : (int32_t) n - 1; }
 	};
 
 #endif //__PERLINNOISE_H

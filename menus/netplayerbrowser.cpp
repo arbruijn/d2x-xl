@@ -41,14 +41,14 @@
 
 //------------------------------------------------------------------------------
 
-int NetworkSelectTeams (void)
+int32_t NetworkSelectTeams (void)
 {
 	CMenu		m;
-	int		choice;
-	ushort	teamVector = 0;
+	int32_t		choice;
+	uint16_t	teamVector = 0;
 	char		teamNames [2][CALLSIGN_LEN+1];
-	int		i, j;
-	int		playerIds [MAX_PLAYERS+2];
+	int32_t		i, j;
+	int32_t		playerIds [MAX_PLAYERS+2];
 	char		szId [100];
 
 // one time initialization
@@ -82,10 +82,10 @@ for (;;) {
 
 	choice = m.Menu (NULL, TXT_TEAM_SELECTION, NULL, NULL);
 
-	int redTeam = m.IndexOf ("red team");
-	int blueTeam = m.IndexOf ("blue team");
-	int endOfTeams = m.IndexOf ("end of teams");
-	if (choice == int (m.ToS ()) - 1) {
+	int32_t redTeam = m.IndexOf ("red team");
+	int32_t blueTeam = m.IndexOf ("blue team");
+	int32_t endOfTeams = m.IndexOf ("end of teams");
+	if (choice == int32_t (m.ToS ()) - 1) {
 		if ((endOfTeams - blueTeam < 2) || (blueTeam - redTeam < 2))
 			TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_TEAM_MUST_ONE);
 		netGame.m_info.SetTeamVector (teamVector);
@@ -105,11 +105,11 @@ for (;;) {
 
 //------------------------------------------------------------------------------
 
-static bool GetSelectedPlayers (CMenu& m, int nSavePlayers)
+static bool GetSelectedPlayers (CMenu& m, int32_t nSavePlayers)
 {
 // Count number of players chosen
 gameData.multiplayer.nPlayers = 0;
-for (int i = 0; i < nSavePlayers; i++) {
+for (int32_t i = 0; i < nSavePlayers; i++) {
 	if (m [i].Value ()) 
 		gameData.multiplayer.nPlayers++;
 	}
@@ -145,9 +145,9 @@ return false;
 
 //------------------------------------------------------------------------------
 
-int AbortPlayerSelection (int nSavePlayers)
+int32_t AbortPlayerSelection (int32_t nSavePlayers)
 {
-for (int i = 1; i < nSavePlayers; i++) {
+for (int32_t i = 1; i < nSavePlayers; i++) {
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.Network (), netPlayers [0].m_info.players [i].network.Node (), DUMP_ABORTED);
 	}
@@ -161,13 +161,13 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int NetworkSelectPlayers (int bAutoRun)
+int32_t NetworkSelectPlayers (int32_t bAutoRun)
 {
-	int		i, j, choice = 1;
+	int32_t		i, j, choice = 1;
    CMenu		m (MAX_PLAYERS + 4);
    char		text [MAX_PLAYERS+4][45];
 	char		title [200];
-	int		nSavePlayers;              //how may people would like to join
+	int32_t		nSavePlayers;              //how may people would like to join
 
 PrintLog (1, "Selecting netgame players\n");
 NetworkAddPlayer (&networkData.thisPlayer);

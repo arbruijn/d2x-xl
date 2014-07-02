@@ -38,9 +38,9 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-void gr_rle_decode (ubyte *src, ubyte *dest)
+void gr_rle_decode (uint8_t *src, uint8_t *dest)
 {
-	ubyte data, count = 0;
+	uint8_t data, count = 0;
 
 while (1) {
 	data = *src++;
@@ -59,11 +59,11 @@ while (1) {
 
 // Given pointer to start of one scanline of rle data, uncompress it to
 // dest, from source pixels x1 to x2.
-void gr_rle_expand_scanline_masked (ubyte *dest, ubyte *src, int x1, int x2 )
+void gr_rle_expand_scanline_masked (uint8_t *dest, uint8_t *src, int32_t x1, int32_t x2 )
 {
-	int i = 0;
-	ubyte count;
-	ubyte color=0;
+	int32_t i = 0;
+	uint8_t count;
+	uint8_t color=0;
 
 	if (x2 < x1) return;
 
@@ -125,11 +125,11 @@ void gr_rle_expand_scanline_masked (ubyte *dest, ubyte *src, int x1, int x2 )
 
 //------------------------------------------------------------------------------
 
-void gr_rle_expand_scanline (ubyte *dest, ubyte *src, int x1, int x2 )
+void gr_rle_expand_scanline (uint8_t *dest, uint8_t *src, int32_t x1, int32_t x2 )
 {
-	int i = 0;
-	ubyte count;
-	ubyte color=0;
+	int32_t i = 0;
+	uint8_t count;
+	uint8_t color=0;
 
 	if (x2 < x1) return;
 
@@ -186,12 +186,12 @@ void gr_rle_expand_scanline (ubyte *dest, ubyte *src, int x1, int x2 )
 
 //------------------------------------------------------------------------------
 
-int gr_rle_encode (int org_size, ubyte *src, ubyte *dest)
+int32_t gr_rle_encode (int32_t org_size, uint8_t *src, uint8_t *dest)
 {
-	int i;
-	ubyte c, oc;
-	ubyte count;
-	ubyte *dest_start;
+	int32_t i;
+	uint8_t c, oc;
+	uint8_t count;
+	uint8_t *dest_start;
 
 	dest_start = dest;
 	oc = *src++;
@@ -233,17 +233,17 @@ int gr_rle_encode (int org_size, ubyte *src, ubyte *dest)
 	}
 	*dest++ = RLE_CODE;
 
-	return (int) (dest - dest_start);
+	return (int32_t) (dest - dest_start);
 }
 
 //------------------------------------------------------------------------------
 
-int gr_rle_getsize (int org_size, ubyte *src)
+int32_t gr_rle_getsize (int32_t org_size, uint8_t *src)
 {
-	int i;
-	ubyte c, oc;
-	ubyte count;
-	int dest_size=0;
+	int32_t i;
+	uint8_t c, oc;
+	uint8_t count;
+	int32_t dest_size=0;
 
 	oc = *src++;
 	count = 1;
@@ -284,12 +284,12 @@ int gr_rle_getsize (int org_size, ubyte *src)
 
 //------------------------------------------------------------------------------
 
-int CBitmap::RLECompress (void)
+int32_t CBitmap::RLECompress (void)
 {
-	int y, d1, d;
-	int doffset;
-	ubyte *rle_data;
-	int large_rle = 0;
+	int32_t y, d1, d;
+	int32_t doffset;
+	uint8_t *rle_data;
+	int32_t large_rle = 0;
 
 	// first must check to see if this is large bitmap.
 
@@ -301,12 +301,12 @@ int CBitmap::RLECompress (void)
 		}
 	}
 
-	if (!(rle_data = new ubyte [MAX_BMP_SIZE (m_info.props.w, m_info.props.h)]))
+	if (!(rle_data = new uint8_t [MAX_BMP_SIZE (m_info.props.w, m_info.props.h)]))
 		return 0;
 	if (!large_rle)
 		doffset = 4 + m_info.props.h;
 	else
-		doffset = 4 + (2 * m_info.props.h);		// each row of rle'd bitmap has short instead of byte offset now
+		doffset = 4 + (2 * m_info.props.h);		// each row of rle'd bitmap has int16_t instead of byte offset now
 
 	for (y=0; y<m_info.props.h; y++) {
 		d1 = gr_rle_getsize (m_info.props.w, &Buffer ()[m_info.props.w*y]);
@@ -318,7 +318,7 @@ int CBitmap::RLECompress (void)
 		Assert (d==d1);
 		doffset	+= d;
 		if (large_rle)
-			*reinterpret_cast<short*> (rle_data + 2 * y + 4) = (short) d;
+			*reinterpret_cast<int16_t*> (rle_data + 2 * y + 4) = (int16_t) d;
 		else
 			rle_data[y+4] = d;
 	}
@@ -337,23 +337,23 @@ int CBitmap::RLECompress (void)
 
 typedef struct rle_cache_element {
 	CBitmap * rle_bitmap;
-	ubyte * rle_data;
+	uint8_t * rle_data;
 	CBitmap * expanded_bitmap;
-	int last_used;
+	int32_t last_used;
 } rle_cache_element;
 
-int rle_cache_initialized = 0;
-int rleCounter = 0;
-int rle_next = 0;
+int32_t rle_cache_initialized = 0;
+int32_t rleCounter = 0;
+int32_t rle_next = 0;
 rle_cache_element rle_cache [MAX_CACHE_BITMAPS];
 
-int rle_hits = 0;
-int rle_misses = 0;
+int32_t rle_hits = 0;
+int32_t rle_misses = 0;
 
 void _CDECL_ RLECacheClose (void)
 {
 if (rle_cache_initialized) {
-	int i;
+	int32_t i;
 	PrintLog (0, "deleting RLE cache\n");
 	rle_cache_initialized = 0;
 	for (i=0; i<MAX_CACHE_BITMAPS; i++) {
@@ -368,7 +368,7 @@ gameData.pig.tex.rleBuffer.Destroy ();
 
 void RLECacheInit ()
 {
-	int i;
+	int32_t i;
 
 for (i=0; i<MAX_CACHE_BITMAPS; i++) {
 	rle_cache [i].rle_bitmap = NULL;
@@ -384,7 +384,7 @@ rle_cache_initialized = 1;
 
 void RLECacheFlush (void)
 {
-	int i;
+	int32_t i;
 
 for (i=0; i<MAX_CACHE_BITMAPS; i++) {
 	rle_cache [i].rle_bitmap = NULL;
@@ -396,9 +396,9 @@ for (i=0; i<MAX_CACHE_BITMAPS; i++) {
 
 CBitmap *rle_expand_texture (CBitmap *bmP)
 {
-	int i;
-	int lowestCount, lc;
-	int least_recently_used;
+	int32_t i;
+	int32_t lowestCount, lc;
+	int32_t least_recently_used;
 
 if (!rle_cache_initialized) 
 	RLECacheInit ();
@@ -439,11 +439,11 @@ return rle_cache [least_recently_used].expanded_bitmap;
 
 //------------------------------------------------------------------------------
 
-void gr_rle_expand_scanline_generic (CBitmap * dest, int dx, int dy, ubyte *src, int x1, int x2)
+void gr_rle_expand_scanline_generic (CBitmap * dest, int32_t dx, int32_t dy, uint8_t *src, int32_t x1, int32_t x2)
 {
-	int i = 0, j;
-	int count;
-	ubyte color=0;
+	int32_t i = 0, j;
+	int32_t count;
+	uint8_t color=0;
 
 	if (x2 < x1) return;
 
@@ -501,11 +501,11 @@ void gr_rle_expand_scanline_generic (CBitmap * dest, int dx, int dy, ubyte *src,
 
 //------------------------------------------------------------------------------
 
-void gr_rle_expand_scanline_generic_masked (CBitmap * dest, int dx, int dy, ubyte *src, int x1, int x2 )
+void gr_rle_expand_scanline_generic_masked (CBitmap * dest, int32_t dx, int32_t dy, uint8_t *src, int32_t x1, int32_t x2 )
 {
-	int i = 0, j;
-	int count;
-	ubyte color = 0;
+	int32_t i = 0, j;
+	int32_t count;
+	uint8_t color = 0;
 
 	if (x2 < x1) return;
 
@@ -576,11 +576,11 @@ void gr_rle_expand_scanline_generic_masked (CBitmap * dest, int dx, int dy, ubyt
 
 void CBitmap::ExpandTo (CBitmap * destP)
 {
-	ubyte * dbits;
-	ubyte * sbits;
-	int i;
+	uint8_t * dbits;
+	uint8_t * sbits;
+	int32_t i;
 #ifdef RLE_DECODE_ASM
-	ubyte * dbits1;
+	uint8_t * dbits1;
 #endif
 
 sbits = Buffer () + 4 + m_info.props.h;
@@ -588,7 +588,7 @@ dbits = destP->Buffer ();
 destP->SetFlags (m_info.props.flags & ~BM_FLAG_RLE);
 for (i=0; i < m_info.props.h; i++) {
 	gr_rle_decode (sbits, dbits);
-	sbits += (int) Buffer () [4+i];
+	sbits += (int32_t) Buffer () [4+i];
 	dbits += m_info.props.w;
 	}
 }
@@ -598,12 +598,12 @@ for (i=0; i < m_info.props.h; i++) {
 
 void CBitmap::RLESwapTransparencyColor (void)
 {
-	int h, i, j, len, rle_big;
-	ubyte *ptr, *ptr2, *temp, *start;
-	ushort nLineSize;
+	int32_t h, i, j, len, rle_big;
+	uint8_t *ptr, *ptr2, *temp, *start;
+	uint16_t nLineSize;
 
 rle_big = m_info.props.flags & BM_FLAG_RLE_BIG;
-temp = new ubyte [MAX_BMP_SIZE (m_info.props.w, m_info.props.h)];
+temp = new uint8_t [MAX_BMP_SIZE (m_info.props.w, m_info.props.h)];
 if (rle_big) {                  // set ptrs to first lines
 	ptr = Buffer () + 4 + 2 * m_info.props.h;
 	ptr2 = temp + 4 + 2 * m_info.props.h;
@@ -614,7 +614,7 @@ if (rle_big) {                  // set ptrs to first lines
 for (i = 0; i < m_info.props.h; i++) {
 	start = ptr2;
 	if (rle_big)
-		nLineSize = INTEL_SHORT (*reinterpret_cast<ushort*> (Buffer () + 4 + 2 * i));
+		nLineSize = INTEL_SHORT (*reinterpret_cast<uint16_t*> (Buffer () + 4 + 2 * i));
 	else
 		nLineSize = Buffer () [4 + i];
 	for (j = 0; j < nLineSize; j++) {
@@ -641,13 +641,13 @@ for (i = 0; i < m_info.props.h; i++) {
 			}
 		}
 	if (rle_big)                // set line size
-		*reinterpret_cast<ushort*> (temp + 4 + 2 * i) = INTEL_SHORT ((short) (ptr2 - start));
+		*reinterpret_cast<uint16_t*> (temp + 4 + 2 * i) = INTEL_SHORT ((int16_t) (ptr2 - start));
 	else
-		temp[4 + i] = (ubyte) (ptr2 - start);
+		temp[4 + i] = (uint8_t) (ptr2 - start);
 	ptr += nLineSize;           // go to next line
 	}
-len = (int) (ptr2 - temp);
-*reinterpret_cast<int*> (temp) = len;           // set total size
+len = (int32_t) (ptr2 - temp);
+*reinterpret_cast<int32_t*> (temp) = len;           // set total size
 memcpy (Buffer (), temp, len);
 delete[] temp;
 }
@@ -655,14 +655,14 @@ delete[] temp;
 //------------------------------------------------------------------------------
 // remaps all entries using colorMap in an RLE bitmap without uncompressing it
 
-int CBitmap::RLERemap (ubyte *colorMap, int maxLen)
+int32_t CBitmap::RLERemap (uint8_t *colorMap, int32_t maxLen)
 {
-	int				h, i, j, len, bWideRLE;
-	ubyte	*pSrc, *destP, *remapBuf, *start;
-	ushort nLineSize;
+	int32_t				h, i, j, len, bWideRLE;
+	uint8_t	*pSrc, *destP, *remapBuf, *start;
+	uint16_t nLineSize;
 
 bWideRLE = m_info.props.flags & BM_FLAG_RLE_BIG;
-remapBuf = new ubyte [MAX_BMP_SIZE (m_info.props.w, m_info.props.h) + 30000];
+remapBuf = new uint8_t [MAX_BMP_SIZE (m_info.props.w, m_info.props.h) + 30000];
 if (bWideRLE) {                  // set ptrs to first lines
 	pSrc = Buffer () + 4 + 2 * m_info.props.h;
 	destP = remapBuf + 4 + 2 * m_info.props.h;
@@ -674,7 +674,7 @@ else {
 for (i = 0; i < m_info.props.h; i++) {
 	start = destP;
 	if (bWideRLE)
-		nLineSize = INTEL_SHORT (*reinterpret_cast<ushort*> (Buffer (4 + 2 * i)));
+		nLineSize = INTEL_SHORT (*reinterpret_cast<uint16_t*> (Buffer (4 + 2 * i)));
 	else
 		nLineSize = Buffer () [4 + i];
 	for (j = 0; j < nLineSize; j++) {
@@ -692,14 +692,14 @@ for (i = 0; i < m_info.props.h; i++) {
 			}
 		}
 	if (bWideRLE)                // set line size
-		*(reinterpret_cast<ushort*> (remapBuf + 4 + 2 * i)) = INTEL_SHORT ((short) (destP - start));
+		*(reinterpret_cast<uint16_t*> (remapBuf + 4 + 2 * i)) = INTEL_SHORT ((int16_t) (destP - start));
 	else
-		remapBuf [4 + i] = (ubyte) (destP - start);
+		remapBuf [4 + i] = (uint8_t) (destP - start);
 	pSrc += nLineSize;           // go to next line
 	}
-len = (int) (destP - remapBuf);
+len = (int32_t) (destP - remapBuf);
 Assert (len <= m_info.props.w * m_info.props.rowSize);
-*reinterpret_cast<int*> (remapBuf) = len;           // set total size
+*reinterpret_cast<int32_t*> (remapBuf) = len;           // set total size
 memcpy (Buffer (), remapBuf, len);
 delete[] remapBuf;
 return len;
@@ -707,19 +707,19 @@ return len;
 
 //------------------------------------------------------------------------------
 
-int CBitmap::RLEExpand (ubyte *colorMap, int bSwapTranspColor)
+int32_t CBitmap::RLEExpand (uint8_t *colorMap, int32_t bSwapTranspColor)
 {
-	ubyte		*srcP, *destP;
-	ubyte		c, h;
-	int		i, j, l, n, bWideRLE;
-	ushort	nRowSize;
+	uint8_t		*srcP, *destP;
+	uint8_t		c, h;
+	int32_t		i, j, l, n, bWideRLE;
+	uint16_t	nRowSize;
 
 	union {
-		ubyte*	b;
-		ushort*	w;
+		uint8_t*	b;
+		uint16_t*	w;
 	} rowSizeTable;
 
-	static int	rleBufSize = 0;
+	static int32_t	rleBufSize = 0;
 
 if (!(m_info.props.flags & BM_FLAG_RLE))
 	return m_info.props.h * m_info.props.rowSize;
@@ -736,7 +736,7 @@ if (!gameData.pig.tex.rleBuffer || (rleBufSize < i)) {
 
 destP = gameData.pig.tex.rleBuffer.Buffer ();
 for (i = 0; i < m_info.props.h; i++, srcP += nRowSize) {
-	nRowSize = bWideRLE ? INTEL_SHORT (rowSizeTable.w [i]) : (ushort) rowSizeTable.b [i];
+	nRowSize = bWideRLE ? INTEL_SHORT (rowSizeTable.w [i]) : (uint16_t) rowSizeTable.b [i];
 	for (j = 0, n = m_info.props.w; (j < nRowSize) && n; j++) {
 		h = srcP [j];
 		if (!IS_RLE_CODE (h)) {
@@ -782,7 +782,7 @@ for (i = 0; i < m_info.props.h; i++, srcP += nRowSize) {
 		destP += n;
 		}
 	}
-l = (int) (destP - gameData.pig.tex.rleBuffer);
+l = (int32_t) (destP - gameData.pig.tex.rleBuffer);
 if (l < 0)
 	return -1;
 if ((l > m_info.props.h * m_info.props.rowSize) && !Resize (l))

@@ -45,9 +45,9 @@
 
 //-------------------------------------------------------------------------
 
-int hParticleShader [4] = {-1, -1, -1, -1};
+int32_t hParticleShader [4] = {-1, -1, -1, -1};
 
-bool CParticleManager::LoadShader (int nShader, vec3& dMax)
+bool CParticleManager::LoadShader (int32_t nShader, vec3& dMax)
 {
 ogl.ClearError (0);
 if (!gameOpts->render.bUseShaders)
@@ -110,12 +110,12 @@ const char *particleFS [4] = {
 	"uniform sampler2D particleTex, sparkTex, bubbleTex;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
 	"//uniform sampler2D sourceTex;\r\n" \
-	"uniform int bSuspended;\r\n" \
+	"uniform int32_t bSuspended;\r\n" \
 	"void main (void) {\r\n" \
 	"if (bSuspended != 0)\r\n" \
 	"   gl_FragColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
 	"else {\r\n" \
-	"   int nType = int (floor (gl_TexCoord [0].z + 0.5));\r\n" \
+	"   int32_t nType = int32_t (floor (gl_TexCoord [0].z + 0.5));\r\n" \
 	"   vec4 texColor = ((nType == 0) ? texture2D (sparkTex, gl_TexCoord [0].xy) : (nType == 1) ? texture2D (particleTex, gl_TexCoord [0].xy) : texture2D (bubbleTex, gl_TexCoord [0].xy));\r\n" \
 	"   texColor *= gl_Color;\r\n" \
 	"   if (gl_Color.a == 0.0) //additive\r\n" \
@@ -130,7 +130,7 @@ const char *particleFS [4] = {
 	"uniform sampler2D sourceTex;\r\n" \
 	"uniform sampler2DArray particleTex;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
-	"uniform int bSuspended;\r\n" \
+	"uniform int32_t bSuspended;\r\n" \
 	"void main (void) {\r\n" \
 	"if (bSuspended != 0)\r\n" \
 	"   gl_FragColor = texture2D (sourceTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
@@ -149,7 +149,7 @@ const char *particleFS [4] = {
 	"uniform vec3 dMax;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
 	"//uniform sampler2D sourceTex;\r\n" \
-	"uniform int bSuspended;\r\n" \
+	"uniform int32_t bSuspended;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"// compute Normalized Device Coordinates\r\n" \
@@ -166,7 +166,7 @@ const char *particleFS [4] = {
 	"if (bSuspended != 0)\r\n" \
 	"   gl_FragColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
 	"else {\r\n" \
-	"   int nType = int (clamp (floor (gl_TexCoord [0].z + 0.5), 0.0, 2.0));\r\n" \
+	"   int32_t nType = int32_t (clamp (floor (gl_TexCoord [0].z + 0.5), 0.0, 2.0));\r\n" \
 	"   float dm = dMax [nType];\r\n" \
 	"   float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
@@ -187,7 +187,7 @@ const char *particleFS [4] = {
 	"uniform sampler2D depthTex;\r\n" \
 	"uniform vec3 dMax;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
-	"uniform int bSuspended;\r\n" \
+	"uniform int32_t bSuspended;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"// compute Normalized Device Coordinates\r\n" \
@@ -204,7 +204,7 @@ const char *particleFS [4] = {
 	"if (bSuspended != 0)\r\n" \
 	"   gl_FragColor = texture2D (sourceTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \
 	"else {\r\n" \
-	"   float dm = dMax [int (floor (gl_TexCoord [0].z + 0.5))];\r\n" \
+	"   float dm = dMax [int32_t (floor (gl_TexCoord [0].z + 0.5))];\r\n" \
 	"   float dz = clamp (ZEYE (gl_FragCoord.z) - ZEYE (texture2D (depthTex, gl_FragCoord.xy * windowScale).r), 0.0, dm);\r\n" \
 	"// compute scaling factor [0.0 - 1.0] - the closer distance to max distance, the smaller it gets\r\n" \
 	"   dz = (dm - dz) / dm;\r\n" \
@@ -232,7 +232,7 @@ void CParticleManager::InitShader (void)
 if (ogl.m_features.bRenderToTexture.Available () && ogl.m_features.bShaders) {
 	PrintLog (0, "building particle blending shader programs\n");
 	m_shaderProg = 0;
-	int i, j = (ogl.m_features.bDepthBlending > -1) ? 4 : 2;
+	int32_t i, j = (ogl.m_features.bDepthBlending > -1) ? 4 : 2;
 	for (i = 0; i < j; i++)
 		if (((i & 1) == 0) && !shaderManager.Build (hParticleShader [i], particleFS [i], particleVS)) // skip the texture array shaders
 			break;

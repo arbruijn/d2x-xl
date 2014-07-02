@@ -57,19 +57,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-void LoadVClipTextures (tVideoClip* vc, int bD1)
+void LoadVClipTextures (tVideoClip* vc, int32_t bD1)
 {
-for (int i = 0; i < vc->nFrameCount; i++)
+for (int32_t i = 0; i < vc->nFrameCount; i++)
 	LoadTexture (vc->frames [i].index, i, bD1);
 }
 
 //------------------------------------------------------------------------------
 
-void LoadWallEffectTextures (int nTexture)
+void LoadWallEffectTextures (int32_t nTexture)
 {
 	tEffectClip*	ecP = gameData.effects.effectP.Buffer ();
 
-for (int i = gameData.effects.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
+for (int32_t i = gameData.effects.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) {
 	if (ecP->changingWallTexture == nTexture) {
 		LoadVClipTextures (&ecP->vClipInfo, gameStates.app.bD1Data);
 		if (ecP->nDestBm >= 0)
@@ -86,24 +86,24 @@ for (int i = gameData.effects.nEffects [gameStates.app.bD1Data]; i; i--, ecP++) 
 
 //------------------------------------------------------------------------------
 
-void LoadObjectEffectTextures (int nTexture)
+void LoadObjectEffectTextures (int32_t nTexture)
 {
 	tEffectClip *ecP = gameData.effects.effectP.Buffer ();
 
-for (int i = gameData.effects.nEffects [gameStates.app.bD1Data]; i; i--, ecP++)
+for (int32_t i = gameData.effects.nEffects [gameStates.app.bD1Data]; i; i--, ecP++)
 	if (ecP->changingObjectTexture == nTexture)
 		LoadVClipTextures (&ecP->vClipInfo, 0);
 }
 
 //------------------------------------------------------------------------------
 
-void LoadModelTextures (int nModel)
+void LoadModelTextures (int32_t nModel)
 {
 	CPolyModel*	modelP = gameData.models.polyModels [0] + nModel;
-	ushort*		pi = gameData.pig.tex.objBmIndexP + modelP->FirstTexture ();
-	int			j;
+	uint16_t*		pi = gameData.pig.tex.objBmIndexP + modelP->FirstTexture ();
+	int32_t			j;
 
-for (int h = modelP->TextureCount (), i = 0; i < h; i++, pi++) {
+for (int32_t h = modelP->TextureCount (), i = 0; i < h; i++, pi++) {
 	j = *pi;
 	LoadTexture (gameData.pig.tex.objBmIndex [j].index, 0 /*i*/, 0); // don't pass frame number to avoid checking for hires replacement textures
 	LoadObjectEffectTextures (j);
@@ -112,7 +112,7 @@ for (int h = modelP->TextureCount (), i = 0; i < h; i++, pi++) {
 
 //------------------------------------------------------------------------------
 
-void LoadWeaponTextures (int nWeaponType)
+void LoadWeaponTextures (int32_t nWeaponType)
 {
 if ((nWeaponType < 0) || (nWeaponType > gameData.weapons.nTypes [0])) 
 	return;
@@ -148,11 +148,11 @@ switch (gameData.weapons.info [nWeaponType].renderType) {
 
 //------------------------------------------------------------------------------
 
-sbyte superBossGateTypeList [13] = {0, 1, 8, 9, 10, 11, 12, 15, 16, 18, 19, 20, 22};
+int8_t superBossGateTypeList [13] = {0, 1, 8, 9, 10, 11, 12, 15, 16, 18, 19, 20, 22};
 
-void LoadRobotTextures (int robotIndex)
+void LoadRobotTextures (int32_t robotIndex)
 {
-	int i;
+	int32_t i;
 
 // Page in robotIndex
 LoadModelTextures (ROBOTINFO (robotIndex).nModel);
@@ -174,7 +174,7 @@ if (ROBOTINFO (robotIndex).bossFlag == 2) {
 
 void CObject::LoadTextures (void)
 {
-	int v;
+	int32_t v;
 
 switch (info.renderType) {
 	case RT_NONE:
@@ -247,7 +247,7 @@ LoadTexture (gameData.pig.tex.bmIndexP [m_nBaseTex].index, 0, gameStates.app.bD1
 
 //------------------------------------------------------------------------------
 
-void CSegment::LoadSideTextures (int nSide)
+void CSegment::LoadSideTextures (int32_t nSide)
 {
 #if DBG
 if ((Index () == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -262,9 +262,9 @@ m_sides [nSide].LoadTextures ();
 
 void CSegment::LoadBotGenTextures (void)
 {
-	int		i;
-	uint		flags;
-	int		robotIndex;
+	int32_t		i;
+	uint32_t		flags;
+	int32_t		robotIndex;
 
 if (m_function != SEGMENT_FUNC_ROBOTMAKER)
 	return;
@@ -281,9 +281,9 @@ for (i = 0; i < 2; i++, robotIndex += 32) {
 
 //------------------------------------------------------------------------------
 
-void LoadObjectTextures (int nType)
+void LoadObjectTextures (int32_t nType)
 {
-	//int		i;
+	//int32_t		i;
 	CObject	*objP;
 
 FORALL_OBJS (objP, i)
@@ -295,7 +295,7 @@ FORALL_OBJS (objP, i)
 
 void CSegment::LoadTextures (void)
 {
-	short			nSide, nObject;
+	int16_t			nSide, nObject;
 
 #if DBG
 if (Index () == nDbgSeg)
@@ -315,7 +315,7 @@ void CWall::LoadTextures (void)
 {
 if (nClip>= 0) {
 	tWallClip* anim = gameData.walls.animP + nClip;
-	for (int j = 0; j < anim->nFrameCount; j++)
+	for (int32_t j = 0; j < anim->nFrameCount; j++)
 		LoadTexture (gameData.pig.tex.bmIndexP [anim->frames [j]].index, j, gameStates.app.bD1Data);
 	}
 }
@@ -324,7 +324,7 @@ if (nClip>= 0) {
 
 void LoadWallTextures (void)
 {
-for (int i = 0; i < gameData.walls.nWalls; i++)
+for (int32_t i = 0; i < gameData.walls.nWalls; i++)
 	WALLS [i].LoadTextures ();
 }
 
@@ -332,7 +332,7 @@ for (int i = 0; i < gameData.walls.nWalls; i++)
 
 void LoadSegmentTextures (void)
 {
-for (int i = 0; i < gameData.segs.nSegments; i++)
+for (int32_t i = 0; i < gameData.segs.nSegments; i++)
 	SEGMENTS [i].LoadTextures ();
 }
 
@@ -340,7 +340,7 @@ for (int i = 0; i < gameData.segs.nSegments; i++)
 
 void LoadPowerupTextures (void)
 {
-for (int i = 0; i < gameData.objs.pwrUp.nTypes; i++)
+for (int32_t i = 0; i < gameData.objs.pwrUp.nTypes; i++)
 	if (gameData.objs.pwrUp.info [i].nClipIndex>= 0)
 		LoadVClipTextures (&gameData.effects.vClips [0][gameData.objs.pwrUp.info [i].nClipIndex], 0);
 }
@@ -349,7 +349,7 @@ for (int i = 0; i < gameData.objs.pwrUp.nTypes; i++)
 
 void LoadWeaponTextures (void)
 {
-for (int i = 0; i < gameData.weapons.nTypes [0]; i++)
+for (int32_t i = 0; i < gameData.weapons.nTypes [0]; i++)
 	LoadWeaponTextures (i);
 }
 
@@ -357,14 +357,14 @@ for (int i = 0; i < gameData.weapons.nTypes [0]; i++)
 
 void LoadGaugeTextures (void)
 {
-for (int i = 0; i < MAX_GAUGE_BMS; i++)
+for (int32_t i = 0; i < MAX_GAUGE_BMS; i++)
 	if (gameData.cockpit.gauges [1][i].index)
 		LoadTexture (gameData.cockpit.gauges [1][i].index, 0, 0);
 }
 
 //------------------------------------------------------------------------------
 
-void PageInAddonBitmap (int bmi)
+void PageInAddonBitmap (int32_t bmi)
 {
 if ((bmi < 0) && (bmi >= -MAX_ADDON_BITMAP_FILES)) {
 	PageInBitmap (&gameData.pig.tex.addonBitmaps [-bmi - 1], szAddonTextures [-bmi - 1], bmi, 0, true);
@@ -375,7 +375,7 @@ if ((bmi < 0) && (bmi >= -MAX_ADDON_BITMAP_FILES)) {
 
 void LoadAddonTextures (void)
 {
-for (int i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
+for (int32_t i = 0; i < MAX_ADDON_BITMAP_FILES; i++)
 	PageInAddonBitmap (-i - 1);
 }
 
@@ -385,7 +385,7 @@ void LoadAllTextures (void)
 {
 StopTime ();
 #if 0
-int bBlackScreen = paletteManager.EffectDisabled ();
+int32_t bBlackScreen = paletteManager.EffectDisabled ();
 if (paletteManager.EffectDisabled ()) {
 	CCanvas::Current ()->Clear (BLACK_RGBA);
 	//paletteManager.ResumeEffect ();
@@ -411,7 +411,7 @@ StartTime (0);
 
 //------------------------------------------------------------------------------
 
-int PagingGaugeSize (void)
+int32_t PagingGaugeSize (void)
 {
 return PROGRESS_STEPS (gameData.segs.nSegments) + 
 		 PROGRESS_STEPS (gameFileInfo.walls.count) +
@@ -422,19 +422,19 @@ return PROGRESS_STEPS (gameData.segs.nSegments) +
 
 //------------------------------------------------------------------------------
 
-static int nTouchSeg = 0;
-static int nTouchWall = 0;
-static int nTouchWeapon = 0;
-static int nTouchPowerup1 = 0;
-static int nTouchPowerup2 = 0;
-static int nTouchGauge = 0;
+static int32_t nTouchSeg = 0;
+static int32_t nTouchWall = 0;
+static int32_t nTouchWeapon = 0;
+static int32_t nTouchPowerup1 = 0;
+static int32_t nTouchPowerup2 = 0;
+static int32_t nTouchGauge = 0;
 
-static int LoadTexturesPoll (CMenu& menu, int& key, int nCurItem, int nState)
+static int32_t LoadTexturesPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
-	int	i;
+	int32_t	i;
 
 //paletteManager.ResumeEffect ();
 if (nTouchSeg < gameData.segs.nSegments) {
@@ -486,13 +486,13 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int nBitmaps = 0;
+int32_t nBitmaps = 0;
 
 void LoadLevelTextures (void)
 {
 nBitmaps = 0;
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
-		int	i = LoadMineGaugeSize ();
+		int32_t	i = LoadMineGaugeSize ();
 
 	nTouchSeg = 0;
 	nTouchWall = 0;

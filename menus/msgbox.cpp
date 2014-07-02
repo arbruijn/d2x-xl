@@ -78,9 +78,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Creates a message box with a brief notification in the message box' subtitle
 // The message box offers several choices to pick from (like 'yes' / 'no' / 'maybe'
 
-int _CDECL_ InfoBox (const char* pszTitle, pMenuCallback callback, int nWallpaper, int nChoices, ...)
+int32_t _CDECL_ InfoBox (const char* pszTitle, pMenuCallback callback, int32_t nWallpaper, int32_t nChoices, ...)
 {
-	int				i;
+	int32_t				i;
 	char*				format, * s;
 	va_list			args;
 	char				szSubTitle [MSGBOX_TEXT_SIZE];
@@ -107,9 +107,9 @@ return mm.Menu (pszTitle, szSubTitle, callback, NULL, BG_SUBMENU, nWallpaper);
 // The text box doesn't offer choices to pick from, only an 'ok' button
 // since it's purpose is to display a longer text (e.g. a help text)
 
-int _CDECL_ TextBox (const char* pszTitle, int nWallpaper, int nChoices, ...)
+int32_t _CDECL_ TextBox (const char* pszTitle, int32_t nWallpaper, int32_t nChoices, ...)
 {
-	int				h, i, l, bTiny, nInMenu;
+	int32_t				h, i, l, bTiny, nInMenu;
 	char				*format, *s;
 	va_list			args;
 	char				nm_text [MSGBOX_TEXT_SIZE];
@@ -123,7 +123,7 @@ if ((bTiny = (nChoices < 0)))
 va_start (args, nChoices);
 for (i = l = 0; i < nChoices; i++) {
 	s = va_arg (args, char* );
-	h = (int) strlen (s);
+	h = (int32_t) strlen (s);
 	if (l + h > MSGBOX_TEXT_SIZE)
 		break;
 	l += h;
@@ -152,9 +152,9 @@ return i;
 
 //------------------------------------------------------------------------------ 
 //added on 10/14/98 by Victor Rachels to attempt a fixedwidth font messagebox
-int _CDECL_ FixedFontMsgBox (char* pszTitle, int nChoices, ...)
+int32_t _CDECL_ FixedFontMsgBox (char* pszTitle, int32_t nChoices, ...)
 {
-	int				i;
+	int32_t				i;
 	char*				format;
 	va_list			args;
 	char*				s;

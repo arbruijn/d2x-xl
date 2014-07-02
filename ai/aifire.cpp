@@ -41,13 +41,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Return firing status.
 // If ready to fire a weapon, return true, else return false.
 // Ready to fire a weapon if nextPrimaryFire <= 0 or nextSecondaryFire <= 0.
-int ReadyToFire (tRobotInfo *botInfoP, tAILocalInfo *ailP)
+int32_t ReadyToFire (tRobotInfo *botInfoP, tAILocalInfo *ailP)
 {
 return (ailP->nextPrimaryFire <= 0) || ((botInfoP->nSecWeaponType != -1) && (ailP->nextSecondaryFire <= 0));
 }
 
 // ----------------------------------------------------------------------------------
-void SetNextFireTime (CObject *objP, tAILocalInfo *ailP, tRobotInfo *botInfoP, int nGun)
+void SetNextFireTime (CObject *objP, tAILocalInfo *ailP, tRobotInfo *botInfoP, int32_t nGun)
 {
 	//	For guys in snipe mode, they have a 50% shot of getting this shot free.
 if ((nGun != 0) || (botInfoP->nSecWeaponType == -1))
@@ -119,11 +119,11 @@ return FixDiv (vTarget - vAttacker, elapsedTime) + player_vel;
 //		Player not farther away than MAX_LEAD_DISTANCE
 //		dot (vector_to_player, player_direction) must be in -LEAD_RANGE,LEAD_RANGE
 //		if firing a matter weapon, less leading, based on skill level.
-int LeadTarget (CObject *objP, CFixVector *vFirePoint, CFixVector *vBelievedTargetPos, int nGuns, CFixVector *vFire)
+int32_t LeadTarget (CObject *objP, CFixVector *vFirePoint, CFixVector *vBelievedTargetPos, int32_t nGuns, CFixVector *vFire)
 {
 	fix			dot, xTargetSpeed, xDistToTarget, xMaxWeaponSpeed, xProjectedTime;
 	CFixVector	vTargetMovementDir, vVecToTarget;
-	int			nWeaponType;
+	int32_t			nWeaponType;
 	CWeaponInfo	*wiP;
 	tRobotInfo	*botInfoP;
 
@@ -181,16 +181,16 @@ return 1;
 //	Note: Parameter gameData.ai.target.vDir is only passed now because guns which aren't on the forward vector from the
 //	center of the robot will not fire right at the player.  We need to aim the guns at the player.  Barring that, we cheat.
 //	When this routine is complete, the parameter gameData.ai.target.vDir should not be necessary.
-void AIFireLaserAtTarget (CObject *objP, CFixVector *vFirePoint, int nGun, CFixVector *vBelievedTargetPos)
+void AIFireLaserAtTarget (CObject *objP, CFixVector *vFirePoint, int32_t nGun, CFixVector *vBelievedTargetPos)
 {
-	short				nShot, nObject = objP->Index ();
+	int16_t				nShot, nObject = objP->Index ();
 	tAILocalInfo	*ailP = gameData.ai.localInfo + nObject;
 	tRobotInfo		*botInfoP = &ROBOTINFO (objP->info.nId);
 	CFixVector		vFire;
 	CFixVector		vRandTargetPos;
-	short				nWeaponType;
+	int16_t				nWeaponType;
 	fix				aim, dot;
-	int				count, i;
+	int32_t				count, i;
 
 Assert (nObject >= 0);
 //	If this robot is only awake because a camera woke it up, don't fire.
@@ -228,9 +228,9 @@ if (TARGETOBJ->Cloaked ()) {
 if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 	//	Well, the gun point is in a different CSegment than the robot's center.
 	//	This is almost always ok, but it is not ok if something solid is in between.
-	int	nGunSeg = FindSegByPos (*vFirePoint, objP->info.nSegment, 1, 0);
+	int32_t	nGunSeg = FindSegByPos (*vFirePoint, objP->info.nSegment, 1, 0);
 	//	See if these segments are connected, which should almost always be the case.
-	short nConnSide = (nGunSeg < 0) ? -1 : SEGMENTS [nGunSeg].ConnectedSide (&SEGMENTS [objP->info.nSegment]);
+	int16_t nConnSide = (nGunSeg < 0) ? -1 : SEGMENTS [nGunSeg].ConnectedSide (&SEGMENTS [objP->info.nSegment]);
 	if (nConnSide != -1) {
 		//	They are connected via nConnSide in CSegment objP->info.nSegment.
 		//	See if they are unobstructed.
@@ -243,7 +243,7 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 		//	Well, they are not directly connected, so use FindHitpoint to see if they are unobstructed.
 		CHitQuery	hitQuery (FQ_TRANSWALL, &objP->info.position.vPos, vFirePoint, objP->info.nSegment, objP->Index ());
 		CHitResult	hitResult;
-		int fate = FindHitpoint (hitQuery, hitResult);
+		int32_t fate = FindHitpoint (hitQuery, hitResult);
 		if (fate != HIT_NONE) {
 			Int3 ();		//	This bot's gun is poking through a CWall, so don't fire.
 			MoveTowardsSegmentCenter (objP);		//	And decrease chances it will happen again.
@@ -304,7 +304,7 @@ if ((botInfoP->nSecWeaponType != -1) && ((nWeaponType < 0) || !nGun))
 	nWeaponType = botInfoP->nSecWeaponType;
 if (nWeaponType < 0)
 	return;
-if (0 > (nShot = CreateNewWeaponSimple (&vFire, vFirePoint, objP->Index (), (ubyte) nWeaponType, 1)))
+if (0 > (nShot = CreateNewWeaponSimple (&vFire, vFirePoint, objP->Index (), (uint8_t) nWeaponType, 1)))
 	return;
 
 if ((nWeaponType == FUSION_ID) && (gameStates.app.nSDLTicks [0] - objP->TimeLastEffect () > 1000)) {
@@ -335,7 +335,7 @@ SetNextFireTime (objP, ailP, botInfoP, nGun);
 
 //	-------------------------------------------------------------------------------------------------------------------
 
-void DoFiringStuff (CObject *objP, int nTargetVisibility, CFixVector *vVecToTarget)
+void DoFiringStuff (CObject *objP, int32_t nTargetVisibility, CFixVector *vVecToTarget)
 {
 if ((gameData.ai.target.nDistToLastPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD) ||
 	 (gameData.ai.nTargetVisibility >= 1)) {
@@ -373,7 +373,7 @@ if ((gameData.ai.target.nDistToLastPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)
 
 // --------------------------------------------------------------------------------------------------------------------
 //	If a hiding robot gets bumped or hit, he decides to find another hiding place.
-void DoAIRobotHit (CObject *objP, int nType)
+void DoAIRobotHit (CObject *objP, int32_t nType)
 {
 if (objP->info.controlType != CT_AI)
 	return;
@@ -381,7 +381,7 @@ if ((nType != PA_WEAPON_ROBOT_COLLISION) && (nType != PA_PLAYER_COLLISION))
 	return;
 if (objP->cType.aiInfo.behavior != AIB_STILL)
 	return;
-int r = RandShort ();
+int32_t r = RandShort ();
 //	Attack robots (eg, green guy) shouldn't have behavior = still.
 //Assert (ROBOTINFO (objP->info.nId).attackType == 0);
 //	1/8 time, charge player, 1/4 time create path, rest of time, do nothing
@@ -398,15 +398,15 @@ else if (r < 4096 + 8192) {
 }
 
 #if DBG
-int	bDoAIFlag=1;
-int	Cvv_test=0;
-int	Cvv_lastTime [MAX_OBJECTS_D2X];
-int	Gun_point_hack=0;
+int32_t	bDoAIFlag=1;
+int32_t	Cvv_test=0;
+int32_t	Cvv_lastTime [MAX_OBJECTS_D2X];
+int32_t	Gun_point_hack=0;
 #endif
 
 // --------------------------------------------------------------------------------------------------------------------
 //	Returns true if this CObject should be allowed to fire at the player.
-int AIMaybeDoActualFiringStuff (CObject *objP, tAIStaticInfo *aiP)
+int32_t AIMaybeDoActualFiringStuff (CObject *objP, tAIStaticInfo *aiP)
 {
 if (IsMultiGame &&
 	 (aiP->GOAL_STATE != AIS_FLINCH) && (objP->info.nId != ROBOT_BRAIN) &&
@@ -418,7 +418,7 @@ return 0;
 // --------------------------------------------------------------------------------------------------------------------
 //	If fire_anyway, fire even if player is not visible.  We're firing near where we believe him to be.  Perhaps he's
 //	lurking behind a corner.
-void AIDoActualFiringStuff (CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *ailP, tRobotInfo *botInfoP, int nGun)
+void AIDoActualFiringStuff (CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *ailP, tRobotInfo *botInfoP, int32_t nGun)
 {
 	fix	dot;
 

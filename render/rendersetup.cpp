@@ -73,7 +73,7 @@ if (!++gameStates.render.nFrameCount)		//wrap!
 
 //------------------------------------------------------------------------------
 
-static void ComputeShadowTransformation (int nLight)
+static void ComputeShadowTransformation (int32_t nLight)
 {
 
 	static double biasData [16] = {0.5, 0.0, 0.0, 0.0,
@@ -105,9 +105,9 @@ glMatrixMode (matrixMode);
 
 //------------------------------------------------------------------------------
 
-void SetRenderView (fix xStereoSeparation, short *nStartSegP, int bOglScale)
+void SetRenderView (fix xStereoSeparation, int16_t *nStartSegP, int32_t bOglScale)
 {
-	short			nStartSeg;
+	int16_t			nStartSeg;
 	bool			bPlayer = (gameData.objs.viewerP == &OBJECTS [LOCALPLAYER.nObject]);
 	CFixMatrix	mView = gameData.objs.viewerP->info.position.mOrient;
 	fix			xZoom = gameStates.render.xZoom;
@@ -184,10 +184,10 @@ ogl.ResetTransform (1);
 //------------------------------------------------------------------------------
 
 #if DBG
-static int bDbgFullBright = -1;
+static int32_t bDbgFullBright = -1;
 #endif
 
-int BeginRenderMine (short nStartSeg, fix xStereoSeparation, int nWindow)
+int32_t BeginRenderMine (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow)
 {
 PROF_START
 #if DBG
@@ -236,7 +236,7 @@ return !gameStates.render.cameras.bActive && (gameData.objs.viewerP->info.nType 
 
 //------------------------------------------------------------------------------
 
-void SetupMineRenderer (int nWindow)
+void SetupMineRenderer (int32_t nWindow)
 {
 #if DBG
 if (gameStates.app.bNostalgia) {
@@ -301,7 +301,7 @@ gameStates.render.bDoLightmaps = 0;
 //------------------------------------------------------------------------------
 // Always needs to be executed, since it resets the face list and sets segment visibility
 
-void ComputeMineLighting (short nStartSeg, fix xStereoSeparation, int nWindow)
+void ComputeMineLighting (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow)
 {
 PROF_START
 ogl.m_states.fLightRange = fLightRanges [IsMultiGame ? 1 : extraGameInfo [IsMultiGame].nLightRange];
@@ -329,7 +329,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			}
 #if USE_OPENMP //> 1
 		else {
-				int	nStart, nEnd, nMax;
+				int32_t	nStart, nEnd, nMax;
 
 			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.visibility [0].nSegments < gameData.segs.nSegments))
 				nMax = gameData.render.mine.visibility [0].nSegments;
@@ -339,15 +339,15 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 				nMax = gameData.segs.nSegments;
 			if (gameStates.app.nThreads & 1) {
 #			pragma omp parallel for private (nStart, nEnd)
-				for (int i = 0; i < gameStates.app.nThreads; i++) {
+				for (int32_t i = 0; i < gameStates.app.nThreads; i++) {
 					ComputeThreadRange (i, nMax, nStart, nEnd);
 					ComputeFaceLight (nStart, nEnd, i);
 					}
 				}
 			else {
-				int	nPivot = gameStates.app.nThreads / 2;
+				int32_t	nPivot = gameStates.app.nThreads / 2;
 #				pragma omp parallel for private (nStart, nEnd)
-				for (int i = 0; i < gameStates.app.nThreads; i++) {
+				for (int32_t i = 0; i < gameStates.app.nThreads; i++) {
 					if (i < nPivot) {
 						ComputeThreadRange (i, tiRender.nMiddle, nStart, nEnd, nPivot);
 						ComputeFaceLight (nStart, nEnd, i);

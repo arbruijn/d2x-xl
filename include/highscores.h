@@ -16,18 +16,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 class CScoreTable {
 	private:
-		int	m_nPrevSecsLeft;
-		int	m_oldStates [MAX_PLAYERS];
-		int	m_sorted [MAX_PLAYERS];
-		int	m_bNetwork;
+		int32_t	m_nPrevSecsLeft;
+		int32_t	m_oldStates [MAX_PLAYERS];
+		int32_t	m_sorted [MAX_PLAYERS];
+		int32_t	m_bNetwork;
 		CBackground	m_background;
 		
 	public:
 		void Display (void);
 
 	private:
-		void DrawItem (int  i);
-		void DrawCoopItem (int  i);
+		void DrawItem (int32_t  i);
+		void DrawCoopItem (int32_t  i);
 		void DrawNames (void);
 		void DrawCoopNames (void);
 		void DrawCoop (void);
@@ -37,10 +37,10 @@ class CScoreTable {
 		void DrawChampion (void);
 		void Render (void);
 		void RenderCoop (void);
-		void Cleanup (int bQuit);
+		void Cleanup (int32_t bQuit);
 		bool Exit (void);
-		int Input (void);
-		int WaitForPlayers (void);
+		int32_t Input (void);
+		int32_t WaitForPlayers (void);
 		bool CapFramerate (void);
 
 	};

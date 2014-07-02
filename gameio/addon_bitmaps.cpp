@@ -61,7 +61,7 @@ m_list.Push (bmP);
 void CAddonBitmap::Unregister (CAddonBitmap* bmP)
 {
 if (m_list.Buffer ()) {
-	uint i = m_list.Find (bmP);
+	uint32_t i = m_list.Find (bmP);
 	if (i < m_list.ToS ())
 		m_list.Delete (i);
 	}
@@ -71,7 +71,7 @@ if (m_list.Buffer ()) {
 
 void CAddonBitmap::Prepare (void)
 {
-for (uint i = 0; i < m_list.ToS (); i++)
+for (uint32_t i = 0; i < m_list.ToS (); i++)
 	m_list [i]->Bitmap ()->SetupFrames (1, 1);
 }
 
@@ -88,7 +88,7 @@ m_bmP = NULL;
 }
 //------------------------------------------------------------------------------
 
-int CAddonBitmap::Load (char *pszName) 
+int32_t CAddonBitmap::Load (char *pszName) 
 {
 if (m_bAvailable < 0)
 	return 0;
@@ -141,7 +141,7 @@ if (m_bmP) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-CAnimation::CAnimation (const char* pszName, uint nFrames) 
+CAnimation::CAnimation (const char* pszName, uint32_t nFrames) 
 	: m_nFrames (nFrames) 
 {
 if (pszName)
@@ -166,7 +166,7 @@ if (!pszName)
 
 CFile::SplitPath (pszName, szFolder, szFile, szExt);
 
-for (uint i = 0; i < m_nFrames; i++) {
+for (uint32_t i = 0; i < m_nFrames; i++) {
 	sprintf (szName, "%s%s-%02d%s", szFolder, szFile, i + 1, szExt);
 	if (!m_frames [i].Load (szName)) {
 		Destroy ();
@@ -180,7 +180,7 @@ return true;
 
 void CAnimation::Unload (void)
 {
-for (uint i = 0; i < m_nFrames; i++)
+for (uint32_t i = 0; i < m_nFrames; i++)
 	m_frames [i].Unload ();
 }
 
@@ -190,7 +190,7 @@ CBitmap* CAnimation::Bitmap (fix xTTL, fix xLifeLeft)
 {
 if (!m_frames.Buffer ())
 	return NULL;
-uint nFrame = (uint) FRound (float (m_nFrames) * float (xTTL - xLifeLeft) / float (xTTL));
+uint32_t nFrame = (uint32_t) FRound (float (m_nFrames) * float (xTTL - xLifeLeft) / float (xTTL));
 return (nFrame >= m_nFrames) ? NULL : m_frames [nFrame].Bitmap ();
 }
 
@@ -198,7 +198,7 @@ return (nFrame >= m_nFrames) ? NULL : m_frames [nFrame].Bitmap ();
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int LoadAddonBitmap (CBitmap **bmPP, const char *pszName, int *bHaveP, bool bBind)
+int32_t LoadAddonBitmap (CBitmap **bmPP, const char *pszName, int32_t *bHaveP, bool bBind)
 {
 if (!*bHaveP) {
 	char	szFilename [FILENAME_LEN];

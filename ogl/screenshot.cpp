@@ -60,13 +60,13 @@
 #include "glare.h"
 #include "menu.h"
 
-extern int screenShotIntervals [];
+extern int32_t screenShotIntervals [];
 
 //------------------------------------------------------------------------------
 
 //writes out an uncompressed RGB .tga file
 //if we got really spiffy, we could optionally link in libpng or something, and use that.
-void WriteScreenShot (char *szSaveName, int w, int h, ubyte *buf, int nFormat)
+void WriteScreenShot (char *szSaveName, int32_t w, int32_t h, uint8_t *buf, int32_t nFormat)
 {
 	FILE *f = fopen (szSaveName, "wb");
 if (!f) {
@@ -76,9 +76,9 @@ if (!f) {
 	}
 else {
 	static tBGR* outBuf = NULL;
-	static int outBufSize = 0;
+	static int32_t outBufSize = 0;
 
-	int imgSize = w * h * sizeof (tBGR);
+	int32_t imgSize = w * h * sizeof (tBGR);
 
 	if (outBufSize < imgSize) {
 		outBufSize = imgSize;
@@ -98,16 +98,16 @@ else {
 		fwrite (&hdr, sizeof (hdr), 1, f);
 #else	// if only I knew how to control struct member packing with gcc or XCode ... ^_^
 		*(reinterpret_cast<char*> (&hdr) + 2) = 2;
-		*reinterpret_cast<short*> (reinterpret_cast<char*> (&hdr) + 12) = w;
-		*reinterpret_cast<short*> (reinterpret_cast<char*> (&hdr) + 14) = h;
+		*reinterpret_cast<int16_t*> (reinterpret_cast<char*> (&hdr) + 12) = w;
+		*reinterpret_cast<int16_t*> (reinterpret_cast<char*> (&hdr) + 14) = h;
 		*(reinterpret_cast<char*> (&hdr) + 16) = 24;
 		//write .TGA header.
 		fwrite (&hdr, 18, 1, f);
 #endif
 		tRGB* rgbP = ((tRGB *) buf);// + w * (h - 1);
 		tBGR* bgrP = outBuf;
-		for (int i = h; i; i--) {
-			for (int j = w; j; j--, rgbP++, bgrP++) {
+		for (int32_t i = h; i; i--) {
+			for (int32_t j = w; j; j--, rgbP++, bgrP++) {
 				bgrP->r = rgbP->r;
 				bgrP->g = rgbP->g;
 				bgrP->b = rgbP->b;
@@ -127,12 +127,12 @@ else {
 
 extern char *pszSystemNames [];
 
-void SaveScreenShot (ubyte *buf, int bAutomap)
+void SaveScreenShot (uint8_t *buf, int32_t bAutomap)
 {
 	char				szMessage [1000];
 	char				szSaveName [FILENAME_LEN], szLevelName [FILENAME_LEN];
-	int				i, j, bTmpBuf;
-	static int		nSaveNum = 0;
+	int32_t				i, j, bTmpBuf;
+	static int32_t		nSaveNum = 0;
 	GLenum			glErrCode;
 
 if (!gameStates.app.bSaveScreenShot)
@@ -157,14 +157,14 @@ if (*gameFolders.user.szScreenshots)
 	sprintf (szSaveName, "%s", gameFolders.user.szScreenshots);
 else
 	*szSaveName = '\0';
-i = (int) strlen (szSaveName);
+i = (int32_t) strlen (szSaveName);
 do {
 	sprintf (szSaveName + i, "/%s%04d.tga", szLevelName, nSaveNum++);
 	nSaveNum %= 9999;
 	} while (!access (szSaveName, 0));
 
 if ((bTmpBuf = (buf == NULL))) {
-	buf = new ubyte [gameData.render.screen.Width () * gameData.render.screen.Height () * 3];
+	buf = new uint8_t [gameData.render.screen.Width () * gameData.render.screen.Height () * 3];
 	ogl.SetTexturing (false);
 	ogl.SetReadBuffer (GL_FRONT, 0);
 	gameData.render.screen.Activate ("SaveScreenShot (screen)");
@@ -190,11 +190,11 @@ StartTime (0);
 
 //-----------------------------------------------------------------------------
 
-int screenShotIntervals [] = {0, 1, 3, 5, 10, 15, 30, MAX_FRAMERATE};
+int32_t screenShotIntervals [] = {0, 1, 3, 5, 10, 15, 30, MAX_FRAMERATE};
 
 void AutoScreenshot (void)
 {
-	int	h;
+	int32_t	h;
 
 	static	time_t	t0 = 0;
 
@@ -215,15 +215,15 @@ gameStates.app.bSaveScreenShot = 1;
 // save a PICT to a file
 #ifdef MACINTOSH
 
-void SavePictScreen (int multiplayer)
+void SavePictScreen (int32_t multiplayer)
 {
 	OSErr err;
-	int parid, i, count;
+	int32_t parid, i, count;
 	char *pfilename, filename [50], buf[512], cwd[FILENAME_MAX];
-	short fd;
+	int16_t fd;
 	FSSpec spec;
 	PicHandle pict_handle;
-	static int multiCount = 0;
+	static int32_t multiCount = 0;
 	StandardFileReply sf_reply;
 
 // dump the contents of the GameWindow into a picture using copybits

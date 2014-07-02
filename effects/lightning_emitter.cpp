@@ -26,7 +26,7 @@
 
 //------------------------------------------------------------------------------
 
-void CLightningEmitter::Init (int nId)
+void CLightningEmitter::Init (int32_t nId)
 {
 m_bValid = 0;
 m_nId = nId;
@@ -34,10 +34,10 @@ m_nId = nId;
 
 //------------------------------------------------------------------------------
 
-bool CLightningEmitter::Create (int nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
-										 short nObject, int nLife, int nDelay, int nLength, int nAmplitude,
-										 char nAngle, int nOffset, short nNodes, short nChildren, char nDepth, short nSteps,
-										 short nSmoothe, char bClamp, char bGlow, char bSound, char bLight,
+bool CLightningEmitter::Create (int32_t nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
+										 int16_t nObject, int32_t nLife, int32_t nDelay, int32_t nLength, int32_t nAmplitude,
+										 char nAngle, int32_t nOffset, int16_t nNodes, int16_t nChildren, char nDepth, int16_t nSteps,
+										 int16_t nSmoothe, char bClamp, char bGlow, char bSound, char bLight,
 										 char nStyle, float nWidth, CFloatVector *colorP)
 {
 m_nObject = nObject;
@@ -60,17 +60,17 @@ l.Init (vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 		  nAngle, nOffset, nNodes, nChildren, nSteps,
 		  nSmoothe, bClamp, bGlow, bLight, nStyle, nWidth, colorP, NULL, -1);
 
-int bChildren = (gameOpts->render.lightning.nStyle > 1);
+int32_t bChildren = (gameOpts->render.lightning.nStyle > 1);
 
 #if USE_OPENMP // > 1
 
 if (gameStates.app.bMultiThreaded) {
-	int bFail = 0;
+	int32_t bFail = 0;
 	#pragma omp parallel 
 		{
-		int nThread = omp_get_thread_num ();
+		int32_t nThread = omp_get_thread_num ();
 		#pragma omp for
-		for (int i = 0; i < nBolts; i++) {
+		for (int32_t i = 0; i < nBolts; i++) {
 			if (bFail)
 				continue;
 			m_lightning [i] = l;
@@ -83,7 +83,7 @@ if (gameStates.app.bMultiThreaded) {
 	}
 else
 #endif
-for (int i = 0; i < nBolts; i++) {
+for (int32_t i = 0; i < nBolts; i++) {
 		m_lightning [i] = l;
 		if (!m_lightning [i].Create (bChildren, 0))
 			return false;
@@ -113,7 +113,7 @@ m_nObject = -1;
 
 //------------------------------------------------------------------------------
 
-void CLightningEmitter::CreateSound (int bSound, int nThread)
+void CLightningEmitter::CreateSound (int32_t bSound, int32_t nThread)
 {
 if ((m_bSound = bSound)) {
 	audio.CreateObjectSound (-1, SOUNDCLASS_GENERIC, m_nObject, 1, I2X (1) / 2, I2X (256), -1, -1, AddonSoundName (SND_ADDON_LIGHTNING), 0, 0, nThread);
@@ -136,25 +136,25 @@ if ((m_bSound > 0) & (m_nObject >= 0))
 
 //------------------------------------------------------------------------------
 
-void CLightningEmitter::Animate (int nStart, int nBolts, int nThread)
+void CLightningEmitter::Animate (int32_t nStart, int32_t nBolts, int32_t nThread)
 {
 if (m_bValid < 1)
 	return;
 if (nBolts < 0)
 	nBolts = m_nBolts;
-for (int i = nStart; i < nBolts; i++)
+for (int32_t i = nStart; i < nBolts; i++)
 	m_lightning [i].Animate (0, nThread);
 }
 
 //------------------------------------------------------------------------------
 
-int CLightningEmitter::SetLife (void)
+int32_t CLightningEmitter::SetLife (void)
 {
 if (!m_bValid)
 	return 0;
 
 	CLightning*	lightningP = m_lightning.Buffer ();
-	int			i;
+	int32_t			i;
 
 for (i = 0; i < m_nBolts; ) {
 	if (!lightningP->SetLife ()) {
@@ -174,7 +174,7 @@ return m_nBolts;
 
 //------------------------------------------------------------------------------
 
-int CLightningEmitter::Update (int nThread)
+int32_t CLightningEmitter::Update (int32_t nThread)
 {
 if (m_bDestroy) {
 	Destroy ();
@@ -211,7 +211,7 @@ if (m_bSound)
 
 //------------------------------------------------------------------------------
 
-void CLightningEmitter::UpdateSound (int nThread)
+void CLightningEmitter::UpdateSound (int32_t nThread)
 {
 if (m_bValid < 1) {
 	return;
@@ -220,7 +220,7 @@ if (!m_bSound)
 	return;
 
 	CLightning	*lightningP;
-	int			i;
+	int32_t			i;
 
 for (i = m_nBolts, lightningP = m_lightning.Buffer (); i > 0; i--, lightningP++)
 	if (lightningP->m_nNodes > 0) {
@@ -236,7 +236,7 @@ m_bSound = -1;
 
 //------------------------------------------------------------------------------
 
-void CLightningEmitter::Move (CFixVector vNewPos, short nSegment)
+void CLightningEmitter::Move (CFixVector vNewPos, int16_t nSegment)
 {
 if (!m_bValid)
 	return;
@@ -245,14 +245,14 @@ if (nSegment < 0)
 if (!m_lightning.Buffer ())
 	return;
 if (SHOW_LIGHTNING (1)) {
-	for (int i = 0; i < m_nBolts; i++)
+	for (int32_t i = 0; i < m_nBolts; i++)
 		m_lightning [i].Move (vNewPos, nSegment);
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void CLightningEmitter::Move (CFixVector vNewPos, CFixVector vNewEnd, short nSegment)
+void CLightningEmitter::Move (CFixVector vNewPos, CFixVector vNewEnd, int16_t nSegment)
 {
 if (!m_bValid)
 	return;
@@ -261,7 +261,7 @@ if (nSegment < 0)
 if (!m_lightning.Buffer ())
 	return;
 if (SHOW_LIGHTNING (1)) {
-	for (int i = 0; i < m_nBolts; i++)
+	for (int32_t i = 0; i < m_nBolts; i++)
 		m_lightning [i].Move (vNewPos, vNewEnd, nSegment);
 	}
 }
@@ -280,7 +280,7 @@ Move (OBJPOS (objP)->vPos, objP->info.nSegment);
 
 //------------------------------------------------------------------------------
 
-void CLightningEmitter::Render (int nStart, int nBolts, int nThread)
+void CLightningEmitter::Render (int32_t nStart, int32_t nBolts, int32_t nThread)
 {
 if (m_bValid < 1)
 	return;
@@ -299,21 +299,21 @@ if (automap.Display () && !(gameStates.render.bAllVisited || automap.m_bFull)) {
 
 if (nBolts < 0)
 	nBolts = m_nBolts;
-for (int i = nStart; i < nBolts; i++)
+for (int32_t i = nStart; i < nBolts; i++)
 	m_lightning [i].Render (0, nThread);
 }
 
 //------------------------------------------------------------------------------
 
-int CLightningEmitter::SetLight (void)
+int32_t CLightningEmitter::SetLight (void)
 {
 if (m_bValid < 1)
 	return 0;
 if (!m_lightning.Buffer ())
 	return 0;
 
-int nLights = 0;
-for (int i = 0; i < m_nBolts; i++)
+int32_t nLights = 0;
+for (int32_t i = 0; i < m_nBolts; i++)
 	nLights += m_lightning [i].SetLight ();
 return nLights;
 }

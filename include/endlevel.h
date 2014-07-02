@@ -24,11 +24,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EL_PANNING		5		//panning around, watching player
 #define EL_CHASING		6		//chasing player to station
 
-extern int Endlevel_sequence;
+extern int32_t Endlevel_sequence;
 void DoEndLevelFrame();
 void StopEndLevelSequence();
-void StartEndLevelSequence(int bSecret);
-void RenderEndLevelFrame(fix eye_offset, int window_num);
+void StartEndLevelSequence(int32_t bSecret);
+void RenderEndLevelFrame(fix eye_offset, int32_t window_num);
 
 void render_external_scene();
 void DrawExitModel();
@@ -36,10 +36,10 @@ void InitEndLevel();
 
 //@@extern CFixVector mine_exit_point;
 //@@extern CObject external_explosion;
-//@@extern int ext_expl_playing;
+//@@extern int32_t ext_expl_playing;
 
 //called for each level to load & setup the exit sequence
-void LoadEndLevelData(int level_num);
+void LoadEndLevelData(int32_t level_num);
 
 void InitEndLevelData (void);
 

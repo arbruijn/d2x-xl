@@ -30,20 +30,20 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 #endif
 
-extern ubyte guess_table [];
-extern short sincos_table [];
-extern ushort asin_table [];
-extern ushort acos_table [];
+extern uint8_t guess_table [];
+extern int16_t sincos_table [];
+extern uint16_t asin_table [];
+extern uint16_t acos_table [];
 extern fix isqrt_guess_table [];
 
 // ------------------------------------------------------------------------
 //multiply two ints & add 64-bit result to 64-bit sum
 void FixMulAccum (tQuadInt *q, fix a, fix b)
 {
-	uint	aa, bb;
-	uint	ah, al, bh, bl;
-	uint	t, c = 0, old;
-	int			neg = ((a ^ b) < 0);
+	uint32_t	aa, bb;
+	uint32_t	ah, al, bh, bl;
+	uint32_t	t, c = 0, old;
+	int32_t			neg = ((a ^ b) < 0);
 
 aa = labs(a); 
 bb = labs(b);
@@ -105,13 +105,13 @@ else {
 // ------------------------------------------------------------------------
 
 //divide a tQuadInt by a fix, returning a fix
-int32_t FixDivQuadLong (uint nl, uint nh, uint d)
+int32_t FixDivQuadLong (uint32_t nl, uint32_t nh, uint32_t d)
 {
-	int i;
-	uint tmp0;
-	ubyte tmp1;
-	uint r;
-	ubyte T,Q,M;
+	int32_t i;
+	uint32_t tmp0;
+	uint8_t tmp1;
+	uint32_t r;
+	uint8_t T,Q,M;
 
 	r = 0;
 
@@ -126,26 +126,26 @@ if (M == 0) {
 		T = ((nl & 0x80000000L) != 0);
 		nl <<= 1;
 		if (Q == 0) {
-			Q = (ubyte)((0x80000000L & nh) != 0 );
-			nh = (nh << 1) | (uint)T;
+			Q = (uint8_t)((0x80000000L & nh) != 0 );
+			nh = (nh << 1) | (uint32_t)T;
 			tmp0 = nh;
 			nh -= d;
 			tmp1 = (nh>tmp0);
 			if (Q == 0)
 				Q = tmp1;
 			else
-				Q = (ubyte)(tmp1 == 0);
+				Q = (uint8_t)(tmp1 == 0);
 			}
 		else if (Q == 1) {
-			Q = (ubyte)((0x80000000L & nh) != 0 );
-			nh = (nh << 1) | (uint)T;
+			Q = (uint8_t)((0x80000000L & nh) != 0 );
+			nh = (nh << 1) | (uint32_t)T;
 			tmp0 = nh;
 			nh += d;
 			tmp1 = (nh < tmp0);
 			if (Q == 0)
 				Q = tmp1;
 			else
-				Q = (ubyte)(tmp1 == 0);
+				Q = (uint8_t)(tmp1 == 0);
 			}
 		T = (Q == M);
 		}
@@ -157,26 +157,26 @@ else {
 		T = ((nl & 0x80000000L) != 0);
 		nl <<= 1;
 		if (Q == 0) {
-			Q = (ubyte)((0x80000000L & nh) != 0 );
-			nh = (nh << 1) | (uint)T;
+			Q = (uint8_t)((0x80000000L & nh) != 0 );
+			nh = (nh << 1) | (uint32_t)T;
 			tmp0 = nh;
 			nh += d;
 			tmp1 = (nh < tmp0);
 			if (Q == 1)
 				Q = tmp1;
 			else
-				Q = (ubyte)(tmp1 == 0);
+				Q = (uint8_t)(tmp1 == 0);
 			}
 		else if (Q == 1) {
-			Q = (ubyte) ((0x80000000L & nh) != 0);
-			nh = (nh << 1) | (uint) T;
+			Q = (uint8_t) ((0x80000000L & nh) != 0);
+			nh = (nh << 1) | (uint32_t) T;
 			tmp0 = nh;
 			nh = nh - d;
 			tmp1 = (nh > tmp0);
 			if (Q == 1)
 				Q = tmp1;
 			else
-				Q = (ubyte) (tmp1 == 0);
+				Q = (uint8_t) (tmp1 == 0);
 			}
 		T = (Q == M);
 		}
@@ -186,17 +186,17 @@ return (r << 1) | T;
 
 // ------------------------------------------------------------------------
 
-uint FixDivQuadLongU (uint nl, uint nh, uint d)
+uint32_t FixDivQuadLongU (uint32_t nl, uint32_t nh, uint32_t d)
 {
-return (uint) (((uint64_t) nl | (((uint64_t) nh) << 32)) / ((uint64_t) d));
+return (uint32_t) (((uint64_t) nl | (((uint64_t) nh) << 32)) / ((uint64_t) d));
 }
 
 // ------------------------------------------------------------------------
 
-uint QuadSqrt (uint low,int32_t high)
+uint32_t QuadSqrt (uint32_t low,int32_t high)
 {
-	int			i, cnt;
-	uint			r, old_r, t;
+	int32_t			i, cnt;
+	uint32_t			r, old_r, t;
 	tQuadInt		tq;
 
 if (high < 0)
@@ -246,10 +246,10 @@ return r;
 
 // ------------------------------------------------------------------------
 
-//computes the square root of a long, returning a short
-ushort LongSqrt (int32_t a)
+//computes the square root of a long, returning a int16_t
+uint16_t LongSqrt (int32_t a)
 {
-int cnt, r, old_r, t;
+int32_t cnt, r, old_r, t;
 
 if (a <= 0)
 	return 0;
@@ -310,8 +310,8 @@ if (gameOpts->render.nMathFormat == 2) {
 		*c = (fix) F2X (cos (d));
 	}
 else  {
-	int i = (a >> 8) & 0xff;
-	int f = a & 0xff;
+	int32_t i = (a >> 8) & 0xff;
+	int32_t f = a & 0xff;
 
 	if (s) {
 		fix ss = sincos_table [i];
@@ -330,7 +330,7 @@ else  {
 //no interpolation
 void FixFastSinCos (fix a,fix *s,fix *c)
 {
-	int i = (a >> 8) & 0xff;
+	int32_t i = (a >> 8) & 0xff;
 
 if (s) 
 	*s = sincos_table [i] << 2;
@@ -343,7 +343,7 @@ if (c)
 fixang FixASin (fix v)
 {
 	fix	vv = labs(v);
-	int	i, f, aa;
+	int32_t	i, f, aa;
 
 if (vv >= I2X (1))		//check for out of range
 	return 0x4000;
@@ -361,7 +361,7 @@ return aa;
 fixang FixACos(fix v)
 {
 	fix	vv = labs (v);
-	int	i, f, aa;
+	int32_t	i, f, aa;
 
 if (vv >= I2X (1))		//check for out of range
 	return 0;
@@ -380,9 +380,9 @@ return aa;
 //for passed value a, returns 1/sqrt(a) 
 fix FixISqrt (fix a)
 {
-	int i, b = a;
-	int cnt = 0;
-	int r;
+	int32_t i, b = a;
+	int32_t cnt = 0;
+	int32_t r;
 
 if (a == 0) 
 	return 0;
@@ -392,7 +392,7 @@ while (b >= TABLE_SIZE) {
 	}
 r = isqrt_guess_table [b] >> ((cnt+1)/2);
 for (i = 0; i < 3; i++ ) {
-	int old_r = r;
+	int32_t old_r = r;
 	r = FixMul (((3*65536) - FixMul(FixMul (r, r), a)), r) / 2;
 	if (old_r >= r) 
 		return (r + old_r) / 2;

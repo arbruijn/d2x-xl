@@ -39,13 +39,13 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 #include "gr.h"
 
-void gr_rle_decode( ubyte * src, ubyte * dest );
-int gr_rle_encode( int org_size, ubyte *src, ubyte *dest );
-int gr_rle_getsize( int org_size, ubyte *src );
-ubyte * r_rle_find_xth_pixel( ubyte *src, int x,int * count, ubyte color );
-int gr_bitmap_rle_compress( CBitmap * bmp );
-void gr_rle_expand_scanline_masked( ubyte *dest, ubyte *src, int x1, int x2  );
-void gr_rle_expand_scanline( ubyte *dest, ubyte *src, int x1, int x2  );
+void gr_rle_decode( uint8_t * src, uint8_t * dest );
+int32_t gr_rle_encode( int32_t org_size, uint8_t *src, uint8_t *dest );
+int32_t gr_rle_getsize( int32_t org_size, uint8_t *src );
+uint8_t * r_rle_find_xth_pixel( uint8_t *src, int32_t x,int32_t * count, uint8_t color );
+int32_t gr_bitmap_rle_compress( CBitmap * bmp );
+void gr_rle_expand_scanline_masked( uint8_t *dest, uint8_t *src, int32_t x1, int32_t x2  );
+void gr_rle_expand_scanline( uint8_t *dest, uint8_t *src, int32_t x1, int32_t x2  );
 
 CBitmap * rle_expand_texture( CBitmap * bmP );
 
@@ -53,9 +53,9 @@ void RLECacheFlush();
 
 void rle_swap_0_255(CBitmap *bmP);
 
-int rle_remap (CBitmap *bmP, ubyte *colorMap, int maxLen);
+int32_t rle_remap (CBitmap *bmP, uint8_t *colorMap, int32_t maxLen);
 
-int rle_expand (CBitmap *bmP, ubyte *colorMap, int bSwapTranspColor);
+int32_t rle_expand (CBitmap *bmP, uint8_t *colorMap, int32_t bSwapTranspColor);
 
 void _CDECL_ RLECacheClose (void);
 

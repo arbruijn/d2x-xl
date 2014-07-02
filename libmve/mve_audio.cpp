@@ -1,7 +1,7 @@
 
 #include "pstypes.h"
 
-static int audio_exp_table[256] =
+static int32_t audio_exp_table[256] =
 {
          0,      1,      2,      3,      4,      5,      6,      7,      8,      9,     10,     11,     12,     13,     14,     15,
         16,     17,     18,     19,     20,     21,     22,     23,     24,     25,     26,     27,     28,     29,     30,     31,
@@ -21,21 +21,21 @@ static int audio_exp_table[256] =
        -16,    -15,    -14,    -13,    -12,    -11,    -10,     -9,     -8,     -7,     -6,     -5,     -4,     -3,     -2,     -1
 };
 
-static int getWord(ubyte **fin)
+static int32_t getWord(uint8_t **fin)
 {
-    int value = ((*fin)[1] << 8) | (*fin)[0];
+    int32_t value = ((*fin)[1] << 8) | (*fin)[0];
     *fin += 2;
     return value;
 }
 
-static void sendWord(short **fout, int nOffset)
+static void sendWord(int16_t **fout, int32_t nOffset)
 {
     *(*fout)++ = nOffset;
 }
 
-static void processSwath(short *fout, ubyte *data, int swath, int *offsets)
+static void processSwath(int16_t *fout, uint8_t *data, int32_t swath, int32_t *offsets)
 {
-    int i;
+    int32_t i;
     for (i=0; i<swath; i++)
     {
         offsets[i&1] += audio_exp_table[data[i]];
@@ -43,10 +43,10 @@ static void processSwath(short *fout, ubyte *data, int swath, int *offsets)
     }
 }
 
-void mveaudio_uncompress(short *buffer, ubyte *data, int length)
+void mveaudio_uncompress(int16_t *buffer, uint8_t *data, int32_t length)
 {
-    int nCurOffsets[2];
-    int swath;
+    int32_t nCurOffsets[2];
+    int32_t swath;
 
     data += 4;
     swath = getWord(&data) / 2;

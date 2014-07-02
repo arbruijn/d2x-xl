@@ -44,9 +44,9 @@ char szGameList [MAX_ACTIVE_NETGAMES + 5][100];
 
 //------------------------------------------------------------------------------
 
-void InitNetGameMenuOption (CMenu& menu, int j)
+void InitNetGameMenuOption (CMenu& menu, int32_t j)
 {
-if (j >= int (menu.ToS ()))
+if (j >= int32_t (menu.ToS ()))
 	menu.AddMenu ("", szGameList [j]);
 CMenuItem* m = menu + j;
 sprintf (m->m_text, "%2d.                                                     ", j - 1 - tracker.m_bUse);
@@ -56,9 +56,9 @@ m->Rebuild ();
 
 //------------------------------------------------------------------------------
 
-void InitNetGameMenu (CMenu& menu, int i)
+void InitNetGameMenu (CMenu& menu, int32_t i)
 {
-	int j;
+	int32_t j;
 
 for (j = i + 2 + tracker.m_bUse; i < MAX_ACTIVE_NETGAMES; i++, j++)
 	InitNetGameMenuOption (menu, j);
@@ -66,11 +66,11 @@ for (j = i + 2 + tracker.m_bUse; i < MAX_ACTIVE_NETGAMES; i++, j++)
 
 //------------------------------------------------------------------------------
 
-extern int nTabs [];
+extern int32_t nTabs [];
 
-char *PruneText (char *pszDest, char *pszSrc, int nSize, int nPos, int nVersion)
+char *PruneText (char *pszDest, char *pszSrc, int32_t nSize, int32_t nPos, int32_t nVersion)
 {
-	int		lDots, lMax, l, tx, ty, ta;
+	int32_t		lDots, lMax, l, tx, ty, ta;
 	char*		psz;
 	CFont*	curFont = CCanvas::Current ()->Font ();
 
@@ -89,7 +89,7 @@ if ((psz = strchr (pszDest, '\t')))
 fontManager.SetCurrent (SMALL_FONT);
 fontManager.Current ()->StringSize ("... ", lDots, ty, ta);
 fontManager.Current ()->StringSize (pszDest, tx, ty, ta);
-l = (int) strlen (pszDest);
+l = (int32_t) strlen (pszDest);
 lMax = LHX (nTabs [nPos]) - LHX (nTabs [nPos - 1]);
 if (tx > lMax) {
 	lMax -= lDots;
@@ -116,15 +116,15 @@ const char *szModeLetters []  =
 	 "ENTROPY",
 	 "MONSTER"};
 
-int NetworkJoinPoll (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t NetworkJoinPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
 	// Polling loop for Join Game menu
 	static fix t1 = 0;
-	int	t = SDL_GetTicks ();
-	int	i, h = 2 + tracker.m_bUse, osocket, nJoinStatus, bPlaySound = 0;
+	int32_t	t = SDL_GetTicks ();
+	int32_t	i, h = 2 + tracker.m_bUse, osocket, nJoinStatus, bPlaySound = 0;
 	const char	*psz;
 	char	szOption [200];
 	char	szTrackers [100];
@@ -135,7 +135,7 @@ if (tracker.m_bUse) {
 	sprintf (szTrackers, TXT_TRACKERS_FOUND, i, (i == 1) ? "" : "s");
 	if (strcmp (menu [1].m_text, szTrackers)) {
 		strcpy (menu [1].m_text, szTrackers);
-//			menu [1].x = (short) 0x8000;
+//			menu [1].x = (int16_t) 0x8000;
 		menu [1].m_bRebuild = 1;
 		}
 	}
@@ -167,7 +167,7 @@ if ((gameStates.multi.nGameType >= IPX_GAME) && networkData.bAllowSocketChanges)
 		console.printf (0, TXT_CHANGE_SOCK, networkData.nPortOffset);
 #endif
 		NetworkListen ();
-		IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nPortOffset));
+		IpxChangeDefaultSocket ((uint16_t) (IPX_DEFAULT_SOCKET + networkData.nPortOffset));
 		RestartNetSearching (menu);
 		NetworkSendGameListRequest ();
 		return nCurItem;
@@ -194,10 +194,10 @@ if (networkData.bGamesChanged || (networkData.nActiveGames != networkData.nLastA
 #endif
 	// Copy the active games data into the menu options
 	for (i = 0; i < networkData.nActiveGames; i++, h++) {
-			int gameStatus = activeNetGames [i].m_info.gameStatus;
-			int nplayers = 0;
+			int32_t gameStatus = activeNetGames [i].m_info.gameStatus;
+			int32_t nplayers = 0;
 			char szLevelName [100], szMissionName [100], szGameName [100];
-			int nLevelVersion = gameOpts->menus.bShowLevelVersion ? missionManager.FindByName (activeNetGames [i].m_info.szMissionName, -1) : -1;
+			int32_t nLevelVersion = gameOpts->menus.bShowLevelVersion ? missionManager.FindByName (activeNetGames [i].m_info.szMissionName, -1) : -1;
 
 		// These next two loops protect against menu skewing
 		// if missiontitle or gamename contain a tab
@@ -258,10 +258,10 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int NetworkBrowseGames (void)
+int32_t NetworkBrowseGames (void)
 {
 	CMenu	menu (MAX_ACTIVE_NETGAMES + 5);
-	int	choice, bAutoLaunch = (gameData.multiplayer.autoNG.bValid > 0);
+	int32_t	choice, bAutoLaunch = (gameData.multiplayer.autoNG.bValid > 0);
 	char	callsign [CALLSIGN_LEN+1];
 
 memcpy (callsign, LOCALPLAYER.callsign, sizeof (callsign));
@@ -278,7 +278,7 @@ setjmp (gameExitPoint);
 networkData.nJoining = 0; 
 networkData.nJoinState = 0;
 networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
-IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nPortOffset));
+IpxChangeDefaultSocket ((uint16_t) (IPX_DEFAULT_SOCKET + networkData.nPortOffset));
 NetworkFlush ();
 NetworkListen ();  // Throw out old info
 NetworkSendGameListRequest (); // broadcast a request for lists
@@ -290,7 +290,7 @@ if (!bAutoLaunch) {
 	fontManager.SetColorRGBi (RGB_PAL (15, 15, 23), 1, 0, 0);
 	menu.AddText ("", szGameList [0]);
 	menu.Top ()->m_bNoScroll = 1;
-	menu.Top ()->m_x = (short) 0x8000;	//centered
+	menu.Top ()->m_x = (int16_t) 0x8000;	//centered
 	if (gameStates.multi.nGameType >= IPX_GAME) {
 		if (networkData.bAllowSocketChanges)
 			sprintf (menu.Top ()->m_text, TXT_CURR_SOCK, (gameStates.multi.nGameType == IPX_GAME) ? "IPX" : "UDP", networkData.nPortOffset);
@@ -300,7 +300,7 @@ if (!bAutoLaunch) {
 	if (tracker.m_bUse) {
 		menu.AddText ("", szGameList [1]);
 		strcpy (menu.Top ()->m_text, TXT_0TRACKERS);
-		menu.Top ()->m_x = (short) 0x8000;
+		menu.Top ()->m_x = (int16_t) 0x8000;
 		menu.Top ()->m_bNoScroll = 1;
 		}
 	menu.AddText ("", szGameList [1 + tracker.m_bUse]);

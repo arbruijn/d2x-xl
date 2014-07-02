@@ -60,29 +60,29 @@ extern tDetailData detailData;
 //------------------------------------------------------------------------------
 
 static struct {
-	int	nDigiVol;
-	int   nAmbientVol;
-	int	nMusicVol;
-	int	nLinkVols;
-	int	nRedbook;
-	int	nVolume;
-	int	nGatling;
-	int	nChannels;
+	int32_t	nDigiVol;
+	int32_t   nAmbientVol;
+	int32_t	nMusicVol;
+	int32_t	nLinkVols;
+	int32_t	nRedbook;
+	int32_t	nVolume;
+	int32_t	nGatling;
+	int32_t	nChannels;
 } soundOpts;
 
 static const char* pszLowMediumHigh [3];
 
 //------------------------------------------------------------------------------
 
-void SetRedbookVolume (int volume);
+void SetRedbookVolume (int32_t volume);
 
 //------------------------------------------------------------------------------
 
-int SoundChannelIndex (void)
+int32_t SoundChannelIndex (void)
 {
-	int	h, i;
+	int32_t	h, i;
 
-for (h = (int) sizeofa (detailData.nSoundChannels), i = 0; i < h; i++)
+for (h = (int32_t) sizeofa (detailData.nSoundChannels), i = 0; i < h; i++)
 	if (audio.MaxChannels () < detailData.nSoundChannels [i])
 		break;
 return i - 1;
@@ -90,13 +90,13 @@ return i - 1;
 
 //------------------------------------------------------------------------------
 
-int SoundMenuCallback (CMenu& menu, int& nKey, int nCurItem, int nState)
+int32_t SoundMenuCallback (CMenu& menu, int32_t& nKey, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
 CMenuItem*	m;
-int			v;
+int32_t			v;
 
 if ((m = menu ["channels"])) {
 	v = m->Value ();
@@ -193,7 +193,7 @@ if ((m = menu ["music volume"])) {
 		}
 	else {
 		if (gameConfig.nMidiVolume != v) {
-			int bSongPlaying = (gameConfig.nMidiVolume > 0);
+			int32_t bSongPlaying = (gameConfig.nMidiVolume > 0);
 
 			if (gameConfig.nMidiVolume * v == 0) //=> midi gets either turned on or off
 				nKey = -2;
@@ -238,16 +238,16 @@ pszLowMediumHigh [2] = TXT_HIGH;
 
 void SoundMenu (void)
 {
-	static int choice = 0;
+	static int32_t choice = 0;
 	char szSlider [50];
 
 	CMenu	m;
 #if 0
 	char	szVolume [50];
 #endif
-	int	i;
-	int	bSongPlaying = (gameConfig.nMidiVolume > 0);
-	int	bShuffleMusic = gameOpts->sound.bShuffleMusic;
+	int32_t	i;
+	int32_t	bSongPlaying = (gameConfig.nMidiVolume > 0);
+	int32_t	bShuffleMusic = gameOpts->sound.bShuffleMusic;
 
 InitStrings ();
 

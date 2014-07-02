@@ -47,7 +47,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 static void WaitWithUpdate (CFaceColor* colorP)
 {
-	int bUpdate = false;
+	int32_t bUpdate = false;
 
 for (;;) {
 #pragma omp critical
@@ -68,9 +68,9 @@ for (;;) {
 
 // -----------------------------------------------------------------------------------
 
-static int UpdateColor (CFaceColor* colorP)
+static int32_t UpdateColor (CFaceColor* colorP)
 {
-	int bUpdate;
+	int32_t bUpdate;
 
 #if 0
 
@@ -101,18 +101,18 @@ return bUpdate;
 
 // -----------------------------------------------------------------------------------
 
-int SegmentIsVisible (CSegment *segP)
+int32_t SegmentIsVisible (CSegment *segP)
 {
 if (automap.Display ())
 	return 1;
-ubyte code = 0xFF;
+uint8_t code = 0xFF;
 
 #if DBG
 if (segP->Index () == nDbgSeg)
 	BRP;
 #endif
-ushort* vertices = segP->m_vertices;
-for (int i = 0; i < 8; i++) {
+uint16_t* vertices = segP->m_vertices;
+for (int32_t i = 0; i < 8; i++) {
 	if (vertices [i] == 0xFFFF) 
 		continue;
 #if 0 //DBG
@@ -127,21 +127,21 @@ return 0;
 
 // -----------------------------------------------------------------------------------
 
-int SegmentIsVisible (CSegment *segP, CTransformation& transformation, int nThread)
+int32_t SegmentIsVisible (CSegment *segP, CTransformation& transformation, int32_t nThread)
 {
 #if DBG
 	CArray<CRenderPoint>& points = gameData.render.mine.visibility [nThread].points;
 #else
 	CRenderPoint* points = gameData.render.mine.visibility [nThread].points.Buffer ();
 #endif
-	ubyte code = 0xFF;
+	uint8_t code = 0xFF;
 
 #if DBG
 if (segP->Index () == nDbgSeg)
 	BRP;
 #endif
-ushort* vertices = segP->m_vertices;
-for (int i = 0; i < 8; i++) {
+uint16_t* vertices = segP->m_vertices;
+for (int32_t i = 0; i < 8; i++) {
 	if (vertices [i] == 0xFFFF) 
 		continue;
 #if 0 //DBG
@@ -156,7 +156,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-static int FaceIsVisible (CSegFace* faceP)
+static int32_t FaceIsVisible (CSegFace* faceP)
 {
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
@@ -171,10 +171,10 @@ return faceP->m_info.bVisible = 1;
 
 //------------------------------------------------------------------------------
 
-int SetupFace (short nSegment, short nSide, CSegment *segP, CSegFace *faceP, CFaceColor *faceColors, float& fAlpha)
+int32_t SetupFace (int16_t nSegment, int16_t nSide, CSegment *segP, CSegFace *faceP, CFaceColor *faceColors, float& fAlpha)
 {
-	ubyte	bTextured, bCloaked, bTransparent, bWall;
-	int	nColor = 0;
+	uint8_t	bTextured, bCloaked, bTransparent, bWall;
+	int32_t	nColor = 0;
 
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -227,18 +227,18 @@ return nColor;
 
 //------------------------------------------------------------------------------
 
-void ComputeDynamicFaceLight (int nStart, int nEnd, int nThread)
+void ComputeDynamicFaceLight (int32_t nStart, int32_t nEnd, int32_t nThread)
 {
 	CSegFace*		faceP;
 	CFloatVector*	colorP;
 	CFaceColor		faceColor [3];
 #if 0
-	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
+	uint8_t			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
-	int				nVertex, nSegment, nSide;
+	int32_t				nVertex, nSegment, nSide;
 	float				fAlpha;
-	int				h, i, nColor, nLights = 0;
-	//int				bVertexLight = gameStates.render.bPerPixelLighting != 2;
+	int32_t				h, i, nColor, nLights = 0;
+	//int32_t				bVertexLight = gameStates.render.bPerPixelLighting != 2;
 	bool				bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 	static			CFaceColor brightColor;
 
@@ -338,8 +338,8 @@ if (segP->Type (faceP->m_info.nSide) == SIDE_IS_TRI_13)
 #endif
 	segP->SetType (faceP->m_info.nSide, faceP->m_info.nType = SIDE_IS_TRI_02);
 
-	short	h = faceP->m_info.index [0];
-	memcpy (faceP->m_info.index, faceP->m_info.index + 1, 3 * sizeof (short));
+	int16_t	h = faceP->m_info.index [0];
+	memcpy (faceP->m_info.index, faceP->m_info.index + 1, 3 * sizeof (int16_t));
 	faceP->m_info.index [3] = h;
 
 	CFloatVector3 v = FACES.vertices [faceP->m_info.nIndex];
@@ -365,10 +365,10 @@ if (segP->Type (faceP->m_info.nSide) == SIDE_IS_TRI_13)
 
 //------------------------------------------------------------------------------
 
-void ComputeDynamicQuadLight (int nStart, int nEnd, int nThread)
+void ComputeDynamicQuadLight (int32_t nStart, int32_t nEnd, int32_t nThread)
 {
 #if 0
-	static int bSemaphore [2] = {0, 0};
+	static int32_t bSemaphore [2] = {0, 0};
 
 while (bSemaphore [nThread])
 	G3_SLEEP (0);
@@ -380,11 +380,11 @@ bSemaphore [nThread] = 1;
 	CFloatVector*	colorP;
 	CFaceColor		faceColor [3];
 #if 0
-	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
+	uint8_t			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
-	int			nVertex, nSegment, nSide;
+	int32_t			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, j, nColor, nLights = 0,
+	int32_t			h, i, j, nColor, nLights = 0,
 					bVertexLight = gameStates.render.bPerPixelLighting != 2;
 	static		CStaticFaceColor<255,255,255,255> brightColor1;
 	static		CStaticFaceColor<127,127,127,127> brightColor2;
@@ -490,7 +490,7 @@ bSemaphore [nThread] = 0;
 
 //------------------------------------------------------------------------------
 
-void ComputeDynamicTriangleLight (int nStart, int nEnd, int nThread)
+void ComputeDynamicTriangleLight (int32_t nStart, int32_t nEnd, int32_t nThread)
 {
 	CSegment*		segP;
 	tSegFaces*		segFaceP;
@@ -499,16 +499,16 @@ void ComputeDynamicTriangleLight (int nStart, int nEnd, int nThread)
 	CFloatVector*	colorP;
 	CFaceColor		faceColor [3];
 #if 0
-	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
+	uint8_t			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
-	int			nVertex, nSegment, nSide;
+	int32_t			nVertex, nSegment, nSide;
 	float			fAlpha;
-	int			h, i, j, k, nIndex, nColor, nLights = 0;
+	int32_t			h, i, j, k, nIndex, nColor, nLights = 0;
 	bool			bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 #if DBG
 	CShortArray& visibleSegs = gameData.render.mine.visibility [0].segments;
 #else
-	short*		visibleSegs = gameData.render.mine.visibility [0].segments.Buffer ();
+	int16_t*		visibleSegs = gameData.render.mine.visibility [0].segments.Buffer ();
 #endif
 	static		CStaticFaceColor<255,255,255,255> brightColor1;
 	static		CStaticFaceColor<127,127,127,127> brightColor2;
@@ -629,7 +629,7 @@ ogl.SetTransform (0);
 
 //------------------------------------------------------------------------------
 
-void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
+void ComputeStaticFaceLight (int32_t nStart, int32_t nEnd, int32_t nThread)
 {
 	CSegment*		segP;
 	CSide*			sideP;
@@ -638,13 +638,13 @@ void ComputeStaticFaceLight (int nStart, int nEnd, int nThread)
 	CFloatVector*	colorP;
 	CFaceColor		c, faceColor [3];
 #if 0
-	ubyte			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
+	uint8_t			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
-	int			nVertex, nSegment, nSide;
+	int32_t			nVertex, nSegment, nSide;
 	fix			xLight;
 	float			fAlpha;
 	tUVL			*uvlP;
-	int			h, i, j, uvi, nColor;
+	int32_t			h, i, j, uvi, nColor;
 
 	static		CStaticFaceColor<255,255,255,255> brightColor1;
 	static		CStaticFaceColor<127,127,127,127> brightColor2;
@@ -705,11 +705,11 @@ ogl.SetTransform (0);
 
 //------------------------------------------------------------------------------
 
-int CountRenderFaces (void)
+int32_t CountRenderFaces (void)
 {
 	CSegment*	segP;
-	short			nSegment;
-	int			h, i, j, nFaces, nSegments;
+	int16_t			nSegment;
+	int32_t			h, i, j, nFaces, nSegments;
 
 ogl.m_states.bUseTransform = 1; // prevent vertex transformation from setting FVERTICES!
 for (i = nSegments = nFaces = 0; i < gameData.render.mine.visibility [0].nSegments; i++) {

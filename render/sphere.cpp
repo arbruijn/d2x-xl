@@ -80,11 +80,11 @@ const char *pszSphereVS =
 	"	}"
 	;
 
-int sphereShaderProg = -1;
+int32_t sphereShaderProg = -1;
 
 // -----------------------------------------------------------------------------
 
-int CreateSphereShader (void)
+int32_t CreateSphereShader (void)
 {
 if (!(ogl.m_features.bShaders && ogl.m_features.bPerPixelLighting.Available ())) {
 	gameStates.render.bPerPixelLighting = 0;
@@ -119,9 +119,9 @@ shaderManager.Deploy (-1);
 
 // -----------------------------------------------------------------------------
 
-int SetupSphereShader (CObject* objP, float alpha)
+int32_t SetupSphereShader (CObject* objP, float alpha)
 {
-	int	nHits = 0;
+	int32_t	nHits = 0;
 
 PROF_START
 if (CreateSphereShader () < 1) {
@@ -149,8 +149,8 @@ else {
 	m.Transpose (m);
 	m = m.Inverse ();
 	}
-for (int i = 0; i < 3; i++) {
-	int dt = gameStates.app.nSDLTicks [0] - int (hitInfo.t [i]);
+for (int32_t i = 0; i < 3; i++) {
+	int32_t dt = gameStates.app.nSDLTicks [0] - int32_t (hitInfo.t [i]);
 	if (dt < SHIELD_EFFECT_TIME) {
 		float h = (fSize * float (cos (sqrt (float (dt) / float (SHIELD_EFFECT_TIME)) * PI / 2)));
 		if (h > 1.0f / 1e6f) {
@@ -225,9 +225,9 @@ return &pt->coord;
 
 // -----------------------------------------------------------------------------
 
-static int SplitTriangle (OOF::CTriangle *pDest, OOF::CTriangle *pSrc)
+static int32_t SplitTriangle (OOF::CTriangle *pDest, OOF::CTriangle *pSrc)
 {
-	int	i, j;
+	int32_t	i, j;
 	CFloatVector	coord = pSrc->coord;
 	CFloatVector	h [6];
 
@@ -248,9 +248,9 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int TesselateSphereTri (OOF::CTriangle *pDest, OOF::CTriangle *pSrc, int nFaces)
+static int32_t TesselateSphereTri (OOF::CTriangle *pDest, OOF::CTriangle *pSrc, int32_t nFaces)
 {
-	int	i;
+	int32_t	i;
 
 for (i = 0; i < nFaces; i++, pDest += 6, pSrc++)
 	SplitTriangle (pDest, pSrc);
@@ -259,9 +259,9 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int BuildSphereTri (OOF::CTriangle **buf, int *pnFaces, int nTessDepth)
+static int32_t BuildSphereTri (OOF::CTriangle **buf, int32_t *pnFaces, int32_t nTessDepth)
 {
-    int		i, j, nFaces = 0;
+    int32_t		i, j, nFaces = 0;
 	 float	l;
 
 l = (float) sqrt (2.0f) / 2.0f;
@@ -290,9 +290,9 @@ return &pt->coord;
 
 // -----------------------------------------------------------------------------
 
-static int SplitQuad (OOF::CQuad *pDest, OOF::CQuad *pSrc)
+static int32_t SplitQuad (OOF::CQuad *pDest, OOF::CQuad *pSrc)
 {
-	int	i, j;
+	int32_t	i, j;
 	CFloatVector	coord = pSrc->coord;
 	CFloatVector	h [8];
 
@@ -314,9 +314,9 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int TesselateSphereQuad (OOF::CQuad *pDest, OOF::CQuad *pSrc, int nFaces)
+static int32_t TesselateSphereQuad (OOF::CQuad *pDest, OOF::CQuad *pSrc, int32_t nFaces)
 {
-	int	i;
+	int32_t	i;
 
 for (i = 0; i < nFaces; i++, pDest += 4, pSrc++)
 	SplitQuad (pDest, pSrc);
@@ -325,9 +325,9 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-static int BuildSphereQuad (OOF::CQuad **buf, int *pnFaces, int nTessDepth)
+static int32_t BuildSphereQuad (OOF::CQuad **buf, int32_t *pnFaces, int32_t nTessDepth)
 {
-    int		i, j, nFaces;
+    int32_t		i, j, nFaces;
 	 float	l;
 
 l = (float) sqrt (2.0f) / 2.0f;
@@ -348,9 +348,9 @@ return !j;
 
 // -----------------------------------------------------------------------------
 
-int TesselateSphere (void)
+int32_t TesselateSphere (void)
 {
-	int			nFaces, i, j;
+	int32_t			nFaces, i, j;
 	CFloatVector	*buf [2];
 
 PrintLog (1, "Creating shield sphere\n");
@@ -394,7 +394,7 @@ OOF::CTriangle *RotateSphere (CFloatVector *rotSphereP, CFloatVector *vPosP, flo
 	CFloatVector	h, dir, p,
 					*vertP = m_vertices.Buffer (),
 					*s = rotSphereP;
-	int			nFaces;
+	int32_t			nFaces;
 
 OOF_MatVms2Oof (&mat, transformation.m_info.view[0]);
 OOF_VecVms2Oof (&p, transformation.m_info.coord);
@@ -410,9 +410,9 @@ return (OOF::CTriangle *) s;
 
 // -----------------------------------------------------------------------------
 
-OOF::CTriangle *SortSphere (OOF::CTriangle *sphereP, int left, int right)
+OOF::CTriangle *SortSphere (OOF::CTriangle *sphereP, int32_t left, int32_t right)
 {
-	int	l = left,
+	int32_t	l = left,
 			r = right;
 	float	mat = sphereP [(l + r) / 2].coord.z;
 
@@ -442,10 +442,10 @@ return sphereP;
 
 // -----------------------------------------------------------------------------
 
-int CSphere::InitSurface (float red, float green, float blue, float alpha, CBitmap *bmP, float *pfScale)
+int32_t CSphere::InitSurface (float red, float green, float blue, float alpha, CBitmap *bmP, float *pfScale)
 {
 	float	fScale;
-	int	bTextured = 0;
+	int32_t	bTextured = 0;
 
 if (m_pulseP) {
 	static time_t	t0 = 0;
@@ -516,9 +516,9 @@ return bTextured;
 
 #define UV_SCALE	3.0f
 
-int CSphere::Create (int nRings, int nTiles)
+int32_t CSphere::Create (int32_t nRings, int32_t nTiles)
 {
-	int				h, i, j;
+	int32_t				h, i, j;
 	float				t1, t2, t3, a, sint1, cost1, sint2, cost2, sint3, cost3;
 	tSphereVertex	*svP;
 
@@ -570,7 +570,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-void CSphere::RenderRing (int nOffset, int nItems, int bTextured, int nPrimitive)
+void CSphere::RenderRing (int32_t nOffset, int32_t nItems, int32_t bTextured, int32_t nPrimitive)
 {
 #if DBG
 ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
@@ -583,7 +583,7 @@ OglDrawArrays (nPrimitive, 0, nItems);
 
 // -----------------------------------------------------------------------------
 
-void CSphere::RenderRing (CFloatVector *vertexP, tTexCoord2f *texCoordP, int nItems, int bTextured, int nPrimitive)
+void CSphere::RenderRing (CFloatVector *vertexP, tTexCoord2f *texCoordP, int32_t nItems, int32_t bTextured, int32_t nPrimitive)
 {
 #if DBG
 ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
@@ -596,9 +596,9 @@ OglDrawArrays (nPrimitive, 0, nItems);
 
 // -----------------------------------------------------------------------------
 
-void CSphere::RenderRings (float fRadius, int nRings, float red, float green, float blue, float alpha, int bTextured, int nTiles)
+void CSphere::RenderRings (float fRadius, int32_t nRings, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nTiles)
 {
-	int				nCull, h, i, j, nQuads;
+	int32_t				nCull, h, i, j, nQuads;
 	CFloatVector	p [2 * MAX_SPHERE_RINGS + 2];
 	tTexCoord2f		tc [2 * MAX_SPHERE_RINGS + 2];
 	tSphereVertex	*svP [2];
@@ -674,10 +674,10 @@ OglCullFace (0);
 
 #else //!RINGED_SPHERE
 
-int CSphere::RenderTesselated (CFloatVector *vPosP, float xScale, float yScale, float zScale,
+int32_t CSphere::RenderTesselated (CFloatVector *vPosP, float xScale, float yScale, float zScale,
 										 float red, float green, float blue, float alpha, CBitmap *bmP)
 {
-	int			i, j, nFaces = m_nFaces;
+	int32_t			i, j, nFaces = m_nFaces;
 	CFloatVector *ps,
 					*sphereP = m_sphere,
 					*rotSphereP = new CFloatVector [nFaces * (m_nFaceNodes + 1)];
@@ -733,16 +733,16 @@ delete[] rotSphereP;
 
 // -----------------------------------------------------------------------------
 
-int CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float yScale, float zScale,
-							float red, float green, float blue, float alpha, CBitmap *bmP, int nTiles, char bAdditive)
+int32_t CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float yScale, float zScale,
+							float red, float green, float blue, float alpha, CBitmap *bmP, int32_t nTiles, char bAdditive)
 {
 	float	fScale = 1.0f;
-	int	bTextured = 0;
+	int32_t	bTextured = 0;
 #if 0 //DBG
-	int	bEffect = 0;
+	int32_t	bEffect = 0;
 #else
-	int	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
-	int	bGlow = (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
+	int32_t	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
+	int32_t	bGlow = (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
 #endif
 
 CFixVector vPos;
@@ -835,7 +835,7 @@ pulseP->fDir = fSpeed;
 
 // -----------------------------------------------------------------------------
 
-int CreateShieldSphere (void)
+int32_t CreateShieldSphere (void)
 {
 if (!shield.Load ())
 	return 0;
@@ -857,7 +857,7 @@ return 1;
 
 // -----------------------------------------------------------------------------
 
-int DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha, char bAdditive, fix nSize)
+int32_t DrawShieldSphere (CObject *objP, float red, float green, float blue, float alpha, char bAdditive, fix nSize)
 {
 if (!CreateShieldSphere ())
 	return 0;

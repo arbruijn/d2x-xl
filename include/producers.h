@@ -18,24 +18,24 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "object.h"
 
 // Create a robot in an object producer
-CObject *CreateMorphRobot (CSegment *segp, CFixVector *object_pos, ubyte object_id);
+CObject *CreateMorphRobot (CSegment *segp, CFixVector *object_pos, uint8_t object_id);
 
-int GatherFlagGoals (void);
+int32_t GatherFlagGoals (void);
 
 // An array of pointers to segments with fuel centers.
 typedef struct tProducerInfo {
-	int     nType;
-	int     nSegment;
-	sbyte   bFlag;
-	sbyte   bEnabled;
-	sbyte   nLives;          // Number of times this can be enabled.
-	sbyte   pad1;
+	int32_t     nType;
+	int32_t     nSegment;
+	int8_t   bFlag;
+	int8_t   bEnabled;
+	int8_t   nLives;          // Number of times this can be enabled.
+	int8_t   pad1;
 	fix     xCapacity;
 	fix     xMaxCapacity;
 	fix     xTimer;          // used in object producer for when next robot comes out
 	fix     xDisableTime;   // Time until center disabled.
 	//CObject  *last_created_obj;
-	//int     last_created_sig;
+	//int32_t     last_created_sig;
 	CFixVector vCenter;
 	bool	  bAssigned;
 } __pack__ tProducerInfo;
@@ -43,19 +43,19 @@ typedef struct tProducerInfo {
 // The max number of robot centers per mine.
 
 typedef struct  {
-	int     objFlags;    		// Up to 32 different robots
+	int32_t     objFlags;    		// Up to 32 different robots
 	fix     xHitPoints;     	// How hard it is to destroy this particular object producer
 	fix     xInterval;       	// Interval between materialogrifizations
-	short   nSegment;         	// Segment this is attached to.
-	short   nProducer;    		// Index in producer array.
+	int16_t   nSegment;         	// Segment this is attached to.
+	int16_t   nProducer;    		// Index in producer array.
 } __pack__ old_tObjProducerInfo;
 
 typedef struct tObjectProducerInfo {
-	int     objFlags [3]; 		// Up to 92 different robots
+	int32_t     objFlags [3]; 		// Up to 92 different robots
 	fix     xHitPoints;     	// How hard it is to destroy this particular object producer
 	fix     xInterval;       	// Interval between materializations
-	short   nSegment;         	// Segment this is attached to.
-	short   nProducer;    		// Index in producer array.
+	int16_t   nSegment;         	// Segment this is attached to.
+	int16_t   nProducer;    		// Index in producer array.
 	bool	  bAssigned;
 } __pack__ tObjectProducerInfo;
 
@@ -63,10 +63,10 @@ typedef struct tObjectProducerInfo {
 
 // Called when a materialization center gets triggered by the player
 // flying through some CTrigger!
-int StartObjectProducer (short nSegment);
+int32_t StartObjectProducer (int16_t nSegment);
 void DisableObjectProducers (void);
 void InitAllObjectProducers (void);
-void OperateRobotMaker (CObject *objP, short nSegment);
+void OperateRobotMaker (CObject *objP, int16_t nSegment);
 void SetEquipmentMakerStates (void);
 
 void OldReadObjectProducerInfo(old_tObjProducerInfo *mi, CFile& cf);
@@ -75,7 +75,7 @@ void ReadObjectProducerInfo (tObjectProducerInfo *ps, CFile& cf, bool bOldFormat
 void ResetGenerators (void);
 void UpdateAllProducers (void);
 
-#define PRODUCER_IDX(_producerP)	((short) ((_producerP) - gameData.producers.producers.Buffer ()))
-#define OBJECT_PRODUCER_IDX(_producerP)	((short) ((_objProducerP) - gameData.producers.producers.Buffer ()))
+#define PRODUCER_IDX(_producerP)	((int16_t) ((_producerP) - gameData.producers.producers.Buffer ()))
+#define OBJECT_PRODUCER_IDX(_producerP)	((int16_t) ((_objProducerP) - gameData.producers.producers.Buffer ()))
 
 #endif

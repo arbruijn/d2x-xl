@@ -13,7 +13,7 @@ CFlightPath	externalView;
 
 //------------------------------------------------------------------------------
 
-void CFlightPath::Reset (int nSize, int nFPS)
+void CFlightPath::Reset (int32_t nSize, int32_t nFPS)
 {
 m_nSize = (nSize < 0) ? MAX_PATH_POINTS : nSize;
 m_tRefresh = (time_t) (1000 / ((nFPS < 0) ? 40 : nFPS));
@@ -51,7 +51,7 @@ if (m_nSize && ((m_tUpdate < 0) || (t >= m_tRefresh))) {
 tPathPoint* CFlightPath::GetPoint (void)
 {
 	CFixVector		*p = &m_path [m_nEnd].vPos;
-	int				i;
+	int32_t				i;
 
 if (m_nStart == m_nEnd) {
 	m_posP = NULL;

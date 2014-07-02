@@ -25,18 +25,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //	-----------------------------------------------------------------------------------------------------------
 //Big array of joint positions.  All robots index into this array
 
-#define deg(a) ((int) (a) * 32768 / 180)
+#define deg(a) ((int32_t) (a) * 32768 / 180)
 
 //	-----------------------------------------------------------------------------------------------------------
 //given an CObject and a gun number, return position in 3-space of gun
 //fills in gun_point
-int CalcGunPoint (CFixVector *vGunPoint, CObject *objP, int nGun)
+int32_t CalcGunPoint (CFixVector *vGunPoint, CObject *objP, int32_t nGun)
 {
 	CPolyModel*	pm = gameData.models.polyModels [0] + objP->ModelId ();
 	tRobotInfo*	botInfoP;
 	CFixVector*	vGunPoints, vGunPos, vRot;
 	CFixMatrix	m;
-	int			nSubModel;				//submodel number
+	int32_t			nSubModel;				//submodel number
 
 Assert(objP->info.renderType == RT_POLYOBJ || objP->info.renderType == RT_MORPH);
 //Assert(objP->info.nId < gameData.bots.nTypes [gameStates.app.bD1Data]);
@@ -64,9 +64,9 @@ return 1;
 //	-----------------------------------------------------------------------------------------------------------
 //fills in ptr to list of joints, and returns the number of joints in list
 //takes the robot nType (CObject id), gun number, and desired state
-int RobotGetAnimState (tJointPos **jointPosP, int robotType, int nGun, int state)
+int32_t RobotGetAnimState (tJointPos **jointPosP, int32_t robotType, int32_t nGun, int32_t state)
 {
-	int nJoints = ROBOTINFO (robotType).animStates [nGun][state].n_joints;
+	int32_t nJoints = ROBOTINFO (robotType).animStates [nGun][state].n_joints;
 
 if (nJoints <= 0)
 	memset (jointPosP, 0, sizeof (*jointPosP));
@@ -78,9 +78,9 @@ return nJoints;
 
 //	-----------------------------------------------------------------------------------------------------------
 //for test, set a robot to a specific state
-void SetRobotState (CObject *objP, int state)
+void SetRobotState (CObject *objP, int32_t state)
 {
-	int			g, j, jo;
+	int32_t			g, j, jo;
 	tRobotInfo*	ri;
 	jointlist*	jl;
 
@@ -90,7 +90,7 @@ for (g = 0; g < ri->nGuns + 1; g++) {
 	jl = &ri->animStates [g][state];
 	jo = jl->offset;
 	for (j = 0; j < jl->n_joints; j++, jo++) {
-		int jn = gameData.bots.joints [jo].jointnum;
+		int32_t jn = gameData.bots.joints [jo].jointnum;
 		objP->rType.polyObjInfo.animAngles [jn] = gameData.bots.joints [jo].angles;
 		}
 	}
@@ -101,8 +101,8 @@ for (g = 0; g < ri->nGuns + 1; g++) {
 //be filled in.
 void SetRobotAngles (tRobotInfo *botInfoP, CPolyModel* modelP, CAngleVector angs [N_ANIM_STATES][MAX_SUBMODELS])
 {
-	int m,g,state;
-	int nGunCounts [MAX_SUBMODELS];			//which gun each submodel is part of
+	int32_t m,g,state;
+	int32_t nGunCounts [MAX_SUBMODELS];			//which gun each submodel is part of
 
 for (m = 0; m < modelP->ModelCount (); m++)
 	nGunCounts [m] = botInfoP->nGuns;		//assume part of body...
@@ -135,7 +135,7 @@ for (g = 0; g < botInfoP->nGuns + 1; g++) {
 
 //	-----------------------------------------------------------------------------------------------------------
 
-void InitCamBots (int bReset)
+void InitCamBots (int32_t bReset)
 {
 	tRobotInfo&	camBotInfo = gameData.bots.info [0][gameData.bots.nCamBotId];
 	CObject		*objP;
@@ -195,9 +195,9 @@ if (gameData.bots.nCamBotId >= 0) {
 /*
  * reads n jointlist structs from a CFile
  */
-static int ReadJointLists (jointlist *jl, int n, CFile& cf)
+static int32_t ReadJointLists (jointlist *jl, int32_t n, CFile& cf)
 {
-	int i;
+	int32_t i;
 
 for (i = 0; i < n; i++) {
 	jl [i].n_joints = cf.ReadShort ();
@@ -214,9 +214,9 @@ return i;
 /*
  * reads n tRobotInfo structs from a CFile
  */
-int ReadRobotInfos (CArray<tRobotInfo>& botInfo, int n, CFile& cf, int o)
+int32_t ReadRobotInfos (CArray<tRobotInfo>& botInfo, int32_t n, CFile& cf, int32_t o)
 {
-	int h, i, j;
+	int32_t h, i, j;
 
 for (i = 0; i < n; i++) {
 	h = i + o;
@@ -292,9 +292,9 @@ return i;
 /*
  * reads n tJointPos structs from a CFile
  */
-int ReadJointPositions (CArray<tJointPos>& jp, int n, CFile& cf, int o)
+int32_t ReadJointPositions (CArray<tJointPos>& jp, int32_t n, CFile& cf, int32_t o)
 {
-	int	i;
+	int32_t	i;
 
 for (i = 0; i < n; i++) {
 	jp [i + o].jointnum = cf.ReadShort ();

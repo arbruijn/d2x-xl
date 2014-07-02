@@ -102,7 +102,7 @@ if (m_semaphore) {
 
 //------------------------------------------------------------------------------
 
-int CNetworkPacketQueue::Lock (void) 
+int32_t CNetworkPacketQueue::Lock (void) 
 { 
 if (!m_semaphore)
 	return 0;
@@ -112,7 +112,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CNetworkPacketQueue::Unlock (void) 
+int32_t CNetworkPacketQueue::Unlock (void) 
 { 
 if (!m_semaphore)
 	return 0;
@@ -189,7 +189,7 @@ Unlock ();
 
 //------------------------------------------------------------------------------
 
-CNetworkPacket* CNetworkPacketQueue::Start (int nPacket) 
+CNetworkPacket* CNetworkPacketQueue::Start (int32_t nPacket) 
 { 
 for (m_current = Head (); m_current && nPacket--; Step ())
 	;
@@ -210,7 +210,7 @@ return bOk;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-static int _CDECL_ NetworkThreadHandler (void* nThreadP)
+static int32_t _CDECL_ NetworkThreadHandler (void* nThreadP)
 {
 networkThread.Run ();
 return 0;
@@ -295,7 +295,7 @@ m_rxPacketQueue.Flush ();
 
 //------------------------------------------------------------------------------
 
-int CNetworkThread::Lock (void) 
+int32_t CNetworkThread::Lock (void) 
 { 
 if (!m_semaphore)
 	return 0;
@@ -305,7 +305,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CNetworkThread::Unlock (void) 
+int32_t CNetworkThread::Unlock (void) 
 { 
 if (!m_semaphore)
 	return 0;
@@ -315,7 +315,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CNetworkThread::LockSend (void) 
+int32_t CNetworkThread::LockSend (void) 
 { 
 #if SENDLOCK
 if (!m_sendLock)
@@ -327,7 +327,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CNetworkThread::UnlockSend (void) 
+int32_t CNetworkThread::UnlockSend (void) 
 { 
 #if SENDLOCK
 if (!m_sendLock)
@@ -339,7 +339,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CNetworkThread::LockRecv (void) 
+int32_t CNetworkThread::LockRecv (void) 
 { 
 #if RECVLOCK
 if (!m_recvLock)
@@ -351,7 +351,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CNetworkThread::UnlockRecv (void) 
+int32_t CNetworkThread::UnlockRecv (void) 
 { 
 #if RECVLOCK
 if (!m_recvLock)
@@ -363,7 +363,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CNetworkThread::LockProcess (void) 
+int32_t CNetworkThread::LockProcess (void) 
 { 
 #if PROCLOCK
 if (!m_processLock)
@@ -375,7 +375,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CNetworkThread::UnlockProcess (void) 
+int32_t CNetworkThread::UnlockProcess (void) 
 { 
 #if PROCLOCK
 if (!m_processLock)
@@ -389,7 +389,7 @@ return 1;
 
 void CNetworkThread::Cleanup (void)
 {
-uint t = SDL_GetTicks ();
+uint32_t t = SDL_GetTicks ();
 if (t <= MAX_PACKET_AGE)
 	return; // drop packets older than 3 seconds
 t -= MAX_PACKET_AGE;
@@ -403,7 +403,7 @@ m_rxPacketQueue.Unlock ();
 
 //------------------------------------------------------------------------------
 
-int CNetworkThread::Listen (void)
+int32_t CNetworkThread::Listen (void)
 {
 #if 0
 	static CTimeout toListen (LISTEN_TIMEOUT);
@@ -454,7 +454,7 @@ return m_rxPacketQueue.Pop ();
 
 //------------------------------------------------------------------------------
 
-int CNetworkThread::GetPacketData (ubyte* data)
+int32_t CNetworkThread::GetPacketData (uint8_t* data)
 {
 if (!Available ())
 	return IpxGetPacketData (data);
@@ -465,16 +465,16 @@ if (!packet)
 
 memcpy (data, packet->m_data, packet->Size ());
 memcpy (&networkData.packetSource, &packet->m_owner.m_source, sizeof (networkData.packetSource));
-int size = packet->Size ();
+int32_t size = packet->Size ();
 delete packet;
 return size;
 }
 
 //------------------------------------------------------------------------------
 
-int CNetworkThread::ProcessPackets (void)
+int32_t CNetworkThread::ProcessPackets (void)
 {
-	int nProcessed = 0;
+	int32_t nProcessed = 0;
 	CNetworkPacket* packet;
 
 #if DBG
@@ -522,7 +522,7 @@ if (!m_toSend.Expired () && ! m_txPacketQueue.Head ()->Urgent ())
 	return;
 
 m_txPacketQueue.Lock ();
-int nSize = 0;
+int32_t nSize = 0;
 CNetworkPacket* packet;
 while ((packet = m_txPacketQueue.Head ()) && (packet->Urgent () || (nSize + packet->Size () <= MAX_PACKET_SIZE))) {
 	nSize += packet->Size ();
@@ -544,7 +544,7 @@ return (packet && packet->Type () == PID_OBJECT_DATA);
 
 //------------------------------------------------------------------------------
 
-bool CNetworkThread::Send (ubyte* data, int size, ubyte* network, ubyte* srcNode, ubyte* destNode)
+bool CNetworkThread::Send (uint8_t* data, int32_t size, uint8_t* network, uint8_t* srcNode, uint8_t* destNode)
 {
 if (!Available ()) {
 	if (destNode)
@@ -569,7 +569,7 @@ return true;
 
 //------------------------------------------------------------------------------
 
-int CNetworkThread::ConnectionStatus (int nPlayer)
+int32_t CNetworkThread::ConnectionStatus (int32_t nPlayer)
 {
 if (!gameData.multiplayer.players [nPlayer].callsign [0])
 	return 0;
@@ -586,17 +586,17 @@ return 2;	// we are in some level transition mode too, so try to reconnect
 
 //------------------------------------------------------------------------------
 
-int CNetworkThread::CheckPlayerTimeouts (void)
+int32_t CNetworkThread::CheckPlayerTimeouts (void)
 {
 Lock ();
-int nTimedOut = 0;
+int32_t nTimedOut = 0;
 //if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) 
 static CTimeout to (UPDATE_TIMEOUT);
-int s = -1;
+int32_t s = -1;
 if (to.Expired () /*&& !gameData.reactor.bDestroyed*/) 
 	{
-	int t = SDL_GetTicks ();
-	for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
+	int32_t t = SDL_GetTicks ();
+	for (int32_t nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 		if (nPlayer != N_LOCALPLAYER) {
 			switch (s = ConnectionStatus (nPlayer)) {
 				case 0:
@@ -643,7 +643,7 @@ if (toUpdate.Expired ()) {
 		NetworkSendEndLevelPacket ();
 	else {
 		//Lock ();
-		for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
+		for (int32_t nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 			if (nPlayer == N_LOCALPLAYER) 
 				continue;
 			if (gameData.multiplayer.players [nPlayer].Connected (CONNECT_END_MENU) || gameData.multiplayer.players [nPlayer].Connected (CONNECT_ADVANCE_LEVEL)) {

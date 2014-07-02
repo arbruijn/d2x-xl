@@ -73,10 +73,10 @@ void MultiSendShield (void);
 #define TEAM_RED    1
 
 typedef struct tPlayerHostages {
-	ushort  nRescued;		// Total number of hostages rescued.
-	ushort  nTotal;      // Total number of hostages.
-	ubyte   nOnBoard;    // Number of hostages on ship.
-	ubyte   nLevel;      // Number of hostages on this level.
+	uint16_t  nRescued;		// Total number of hostages rescued.
+	uint16_t  nTotal;      // Total number of hostages.
+	uint8_t   nOnBoard;    // Number of hostages on ship.
+	uint8_t   nLevel;      // Number of hostages on this level.
 } __pack__ tPlayerHostages;
 // When this structure changes, increment the constant
 // SAVE_FILE_VERSION in playsave.c
@@ -94,8 +94,8 @@ typedef union tShipModifier {
 
 class __pack__ CShipEnergy {
 	private:
-		int	m_type;
-		int	m_index;
+		int32_t	m_type;
+		int32_t	m_index;
 		fix	m_init;
 		fix	m_max;
 		fix*	m_current;
@@ -130,9 +130,9 @@ class __pack__ CShipEnergy {
 			return (Get () < e) ? Set (e, false) : false; 
 			}
 		// fill rate in percent
-		inline int Level (void) { return (int) FRound (100.0f * float (Get ()) / float (Initial ())); }
+		inline int32_t Level (void) { return (int32_t) FRound (100.0f * float (Get ()) / float (Initial ())); }
 		// initialize
-		void Setup (int type, int index, fix init, fix* current) {
+		void Setup (int32_t type, int32_t index, fix init, fix* current) {
 			m_type = type;
 			m_index = index;
 			m_init = init;
@@ -150,74 +150,74 @@ class CPlayerInfo {
 	public:
 		// Who am I data
 		char    callsign [CALLSIGN_LEN+1];  // The callsign of this player, for net purposes.
-		ubyte   netAddress[6];					// The network address of the player.
-		sbyte   connected;						// Is the player connected or not?
-		int     nObject;						   // What CObject number this player is. (made an int by mk because it's very often referenced)
-		int     nPacketsGot;					   // How many packets we got from them
-		int     nPacketsSent;					// How many packets we sent to them
+		uint8_t   netAddress[6];					// The network address of the player.
+		int8_t   connected;						// Is the player connected or not?
+		int32_t     nObject;						   // What CObject number this player is. (made an int32_t by mk because it's very often referenced)
+		int32_t     nPacketsGot;					   // How many packets we got from them
+		int32_t     nPacketsSent;					// How many packets we sent to them
 
 		//  -- make sure you're 4 byte aligned now!
 
 		// Game data
-		uint    flags;							// Powerup flags, see below...
+		uint32_t    flags;							// Powerup flags, see below...
 		fix     energy;						// Amount of energy remaining.
 		fix     shield;						// shield remaining (protection)
-		ubyte   lives;							// Lives remaining, 0 = game over.
-		sbyte   level;							// Current level player is playing. (must be signed for secret levels)
-		ubyte   laserLevel;					// Current level of the laser.
-		sbyte   startingLevel;				// What level the player started on.
-		short   nKillerObj;					// Who killed me.... (-1 if no one)
-		ushort  primaryWeaponFlags;		// bit set indicates the player has this weapon.
-		ushort  secondaryWeaponFlags;		// bit set indicates the player has this weapon.
-		ushort  primaryAmmo [MAX_PRIMARY_WEAPONS]; // How much ammo of each nType.
-		ushort  secondaryAmmo [MAX_SECONDARY_WEAPONS]; // How much ammo of each nType.
+		uint8_t   lives;							// Lives remaining, 0 = game over.
+		int8_t   level;							// Current level player is playing. (must be signed for secret levels)
+		uint8_t   laserLevel;					// Current level of the laser.
+		int8_t   startingLevel;				// What level the player started on.
+		int16_t   nKillerObj;					// Who killed me.... (-1 if no one)
+		uint16_t  primaryWeaponFlags;		// bit set indicates the player has this weapon.
+		uint16_t  secondaryWeaponFlags;		// bit set indicates the player has this weapon.
+		uint16_t  primaryAmmo [MAX_PRIMARY_WEAPONS]; // How much ammo of each nType.
+		uint16_t  secondaryAmmo [MAX_SECONDARY_WEAPONS]; // How much ammo of each nType.
 	#if 1 //for inventory system
-		ubyte	  nInvuls;
-		ubyte   nCloaks;
+		uint8_t	  nInvuls;
+		uint8_t   nCloaks;
 	#else
-		ushort  pad; // Pad because increased weaponFlags from byte to short -YW 3/22/95
+		uint16_t  pad; // Pad because increased weaponFlags from byte to int16_t -YW 3/22/95
 	#endif
 		//  -- make sure you're 4 byte aligned now
 
 		// Statistics...
-		int     lastScore;            // Score at beginning of current level.
-		int     score;                // Current score.
+		int32_t     lastScore;            // Score at beginning of current level.
+		int32_t     score;                // Current score.
 		fix     timeLevel;            // Level time played
 		fix     timeTotal;            // Game time played (high word = seconds)
 
 		fix     cloakTime;            // Time cloaked
 		fix     invulnerableTime;     // Time invulnerable
 
-		short   nScoreGoalCount;       // Num of players killed this level
-		short   netKilledTotal;			// Number of times killed total
-		short   netKillsTotal;        // Number of net kills total
-		short   numKillsLevel;        // Number of kills this level
-		short   numKillsTotal;        // Number of kills total
-		short   numRobotsLevel;       // Number of initial robots this level
-		short   numRobotsTotal;       // Number of robots total
+		int16_t   nScoreGoalCount;       // Num of players killed this level
+		int16_t   netKilledTotal;			// Number of times killed total
+		int16_t   netKillsTotal;        // Number of net kills total
+		int16_t   numKillsLevel;        // Number of kills this level
+		int16_t   numKillsTotal;        // Number of kills total
+		int16_t   numRobotsLevel;       // Number of initial robots this level
+		int16_t   numRobotsTotal;       // Number of robots total
 		tPlayerHostages	hostages;
 		fix     homingObjectDist;     // Distance of nearest homing CObject.
-		sbyte   hoursLevel;           // Hours played (since timeTotal can only go up to 9 hours)
-		sbyte   hoursTotal;           // Hours played (since timeTotal can only go up to 9 hours)
+		int8_t   hoursLevel;           // Hours played (since timeTotal can only go up to 9 hours)
+		int8_t   hoursTotal;           // Hours played (since timeTotal can only go up to 9 hours)
 
 	public:
 		inline bool HasLeft (void) { return (connected == 0) && (*callsign == '\0'); }
 		inline bool IsConnected (void) { return (connected != 0) && (*callsign != '\0'); }
-		inline bool Connected (int nState) { return (abs (connected) == nState) && (*callsign != '\0'); }
-		inline void SetConnected (int nState) { connected = nState; }
-		inline int GetConnected (void) { return connected; }
+		inline bool Connected (int32_t nState) { return (abs (connected) == nState) && (*callsign != '\0'); }
+		inline void SetConnected (int32_t nState) { connected = nState; }
+		inline int32_t GetConnected (void) { return connected; }
 	};
 
 class __pack__ CPlayerData : public CPlayerInfo {
 	public:
 		CShipEnergy	m_shield;
 		CShipEnergy	m_energy;
-		ubyte			m_laserLevels [2];
-		ubyte			m_bExploded;
-		ubyte			m_nLevel;
-		int			m_tDisconnect;
-		int			m_tDeath;
-		int			m_tWeaponInfo;
+		uint8_t			m_laserLevels [2];
+		uint8_t			m_bExploded;
+		uint8_t			m_nLevel;
+		int32_t			m_tDisconnect;
+		int32_t			m_tDeath;
+		int32_t			m_tWeaponInfo;
 
 	public:
 		CPlayerData () { 
@@ -232,7 +232,7 @@ class __pack__ CPlayerData : public CPlayerInfo {
 			m_energy.Setup (1, Index (), INITIAL_ENERGY, &energy);
 			}
 
-		void Connect (sbyte nStatus);
+		void Connect (int8_t nStatus);
 
 		bool TimedOut (void) { return m_tDisconnect > 0; }
 
@@ -258,15 +258,15 @@ class __pack__ CPlayerData : public CPlayerInfo {
 		inline fix UpdateEnergy (fix delta) { return m_energy.Update (delta); }
 		inline fix MaxShield (void) { return m_shield.Max (); }
 		inline fix MaxEnergy (void) { return m_energy.Max (); }
-		inline int ShieldLevel (void) { return m_shield.Level (); }
-		inline int EnergyLevel (void) { return m_energy.Level (); }
+		inline int32_t ShieldLevel (void) { return m_shield.Level (); }
+		inline int32_t EnergyLevel (void) { return m_energy.Level (); }
 		inline float ShieldScale (void) { return m_shield.Scale (); }
 		inline float EnergyScale (void) { return m_energy.Scale (); }
-		inline int RemainingRobots (void) { return numRobotsLevel - numKillsLevel; }
+		inline int32_t RemainingRobots (void) { return numRobotsLevel - numKillsLevel; }
 
 		inline void UpdateLaserLevel (void) { laserLevel = LaserLevel (); }
-		inline ubyte LaserLevel (int bSuperLaser = -1) { return (bSuperLaser < 0) ? m_laserLevels [1] ? MAX_LASER_LEVEL + m_laserLevels [1] : m_laserLevels [0] : m_laserLevels [bSuperLaser]; }
-		inline bool AddLaser (int bSuperLaser) { 
+		inline uint8_t LaserLevel (int32_t bSuperLaser = -1) { return (bSuperLaser < 0) ? m_laserLevels [1] ? MAX_LASER_LEVEL + m_laserLevels [1] : m_laserLevels [0] : m_laserLevels [bSuperLaser]; }
+		inline bool AddLaser (int32_t bSuperLaser) { 
 			if (m_laserLevels [bSuperLaser] >= (bSuperLaser ? MAX_SUPERLASER_LEVEL - MAX_LASER_LEVEL : MAX_LASER_LEVEL)) 
 				return false;
 			++m_laserLevels [bSuperLaser];
@@ -275,8 +275,8 @@ class __pack__ CPlayerData : public CPlayerInfo {
 			}
 		inline bool AddStandardLaser (void) { return HasSuperLaser () ? false : AddLaser (0); }
 		inline bool AddSuperLaser (void) { return AddLaser (1); }
-		inline ubyte HasSuperLaser (void) { return ubyte (m_laserLevels [1] > 0); }
-		inline ubyte HasStandardLaser (void) { return ubyte (m_laserLevels [1] == 0); }
+		inline uint8_t HasSuperLaser (void) { return uint8_t (m_laserLevels [1] > 0); }
+		inline uint8_t HasStandardLaser (void) { return uint8_t (m_laserLevels [1] == 0); }
 		inline bool DropSuperLaser (void) { 
 			if (!m_laserLevels [1])
 				return false;
@@ -295,14 +295,14 @@ class __pack__ CPlayerData : public CPlayerInfo {
 			UpdateLaserLevel ();
 			return true;
 			}
-		inline void SetStandardLaser (ubyte nLevel) { m_laserLevels [0] = nLevel; }
-		inline void SetSuperLaser (ubyte nLevel) { m_laserLevels [1] = nLevel; }
-		inline void SetLaserLevels (ubyte nStandard, ubyte nSuper) {
+		inline void SetStandardLaser (uint8_t nLevel) { m_laserLevels [0] = nLevel; }
+		inline void SetSuperLaser (uint8_t nLevel) { m_laserLevels [1] = nLevel; }
+		inline void SetLaserLevels (uint8_t nStandard, uint8_t nSuper) {
 			m_laserLevels [0] = nStandard;
 			m_laserLevels [1] = nSuper;
 			UpdateLaserLevel ();
 			}
-		inline void ComputeLaserLevels (ubyte nLevel) { 
+		inline void ComputeLaserLevels (uint8_t nLevel) { 
 			if (nLevel > MAX_LASER_LEVEL) 
 				SetLaserLevels (0, nLevel - MAX_LASER_LEVEL);
 			else
@@ -310,11 +310,11 @@ class __pack__ CPlayerData : public CPlayerInfo {
 			}
 #endif
 		CObject* Object (void);
-		void SetObject (short n);
+		void SetObject (int16_t n);
 		bool IsLocalPlayer (void);
 
 	private:
-		int Index (void);
+		int32_t Index (void);
 };
 
 
@@ -326,49 +326,49 @@ class __pack__ CPlayerData : public CPlayerInfo {
 typedef struct player16 {
 	// Who am I data
 	char    callsign[CALLSIGN_LEN+1]; // The callsign of this player, for net purposes.
-	ubyte   netAddress[6];         // The network address of the player.
-	sbyte   connected;              // Is the player connected or not?
-	int     nObject;                 // What CObject number this player is. (made an int by mk because it's very often referenced)
-	int     nPacketsGot;          // How many packets we got from them
-	int     nPacketsSent;         // How many packets we sent to them
+	uint8_t   netAddress[6];         // The network address of the player.
+	int8_t   connected;              // Is the player connected or not?
+	int32_t     nObject;                 // What CObject number this player is. (made an int32_t by mk because it's very often referenced)
+	int32_t     nPacketsGot;          // How many packets we got from them
+	int32_t     nPacketsSent;         // How many packets we sent to them
 
 	//  -- make sure you're 4 byte aligned now!
 
 	// Game data
-	uint    flags;                  // Powerup flags, see below...
+	uint32_t    flags;                  // Powerup flags, see below...
 	fix     energy;                 // Amount of energy remaining.
 	fix     shield;                // shield remaining (protection)
-	ubyte   lives;                  // Lives remaining, 0 = game over.
-	sbyte   level;                  // Current level player is playing. (must be signed for secret levels)
-	ubyte   laserLevel;            // Current level of the laser.
-	sbyte   startingLevel;         // What level the player started on.
-	short   nKillerObj;          // Who killed me.... (-1 if no one)
-	ubyte   primaryWeaponFlags;   // bit set indicates the player has this weapon.
-	ubyte   secondaryWeaponFlags; // bit set indicates the player has this weapon.
-	ushort  primaryAmmo[MAX_PRIMARY_WEAPONS16];    // How much ammo of each nType.
-	ushort  secondaryAmmo[MAX_SECONDARY_WEAPONS16];// How much ammo of each nType.
+	uint8_t   lives;                  // Lives remaining, 0 = game over.
+	int8_t   level;                  // Current level player is playing. (must be signed for secret levels)
+	uint8_t   laserLevel;            // Current level of the laser.
+	int8_t   startingLevel;         // What level the player started on.
+	int16_t   nKillerObj;          // Who killed me.... (-1 if no one)
+	uint8_t   primaryWeaponFlags;   // bit set indicates the player has this weapon.
+	uint8_t   secondaryWeaponFlags; // bit set indicates the player has this weapon.
+	uint16_t  primaryAmmo[MAX_PRIMARY_WEAPONS16];    // How much ammo of each nType.
+	uint16_t  secondaryAmmo[MAX_SECONDARY_WEAPONS16];// How much ammo of each nType.
 
 	//  -- make sure you're 4 byte aligned now
 
 	// Statistics...
-	int     last_score;             // Score at beginning of current level.
-	int     score;                  // Current score.
+	int32_t     last_score;             // Score at beginning of current level.
+	int32_t     score;                  // Current score.
 	fix     timeLevel;             // Level time played
 	fix     timeTotal;             // Game time played (high word = seconds)
 
 	fix     cloakTime;             // Time cloaked
 	fix     invulnerableTime;      // Time invulnerable
 
-	short   netKilledTotal;       // Number of times killed total
-	short   netKillsTotal;        // Number of net kills total
-	short   numKillsLevel;        // Number of kills this level
-	short   numKillsTotal;        // Number of kills total
-	short   numRobotsLevel;       // Number of initial robots this level
-	short   numRobotsTotal;       // Number of robots total
+	int16_t   netKilledTotal;       // Number of times killed total
+	int16_t   netKillsTotal;        // Number of net kills total
+	int16_t   numKillsLevel;        // Number of kills this level
+	int16_t   numKillsTotal;        // Number of kills total
+	int16_t   numRobotsLevel;       // Number of initial robots this level
+	int16_t   numRobotsTotal;       // Number of robots total
 	tPlayerHostages	hostages;
 	fix     homingObjectDist;     // Distance of nearest homing CObject.
-	sbyte   hoursLevel;            // Hours played (since timeTotal can only go up to 9 hours)
-	sbyte   hoursTotal;            // Hours played (since timeTotal can only go up to 9 hours)
+	int8_t   hoursLevel;            // Hours played (since timeTotal can only go up to 9 hours)
+	int8_t   hoursTotal;            // Hours played (since timeTotal can only go up to 9 hours)
 } __pack__ player16;
 
 //------------------------------------------------------------------------------
@@ -377,8 +377,8 @@ typedef struct player16 {
 
 class __pack__ CPlayerShip {
 	public:
-		int			nModel;
-		int			nExplVClip;
+		int32_t			nModel;
+		int32_t			nExplVClip;
 		fix			mass;
 		fix			drag;
 		fix			maxThrust;
@@ -396,9 +396,9 @@ class __pack__ CPlayerShip {
  * reads a CPlayerShip structure from a CFILE
  */
 void PlayerShipRead(CPlayerShip *ps, CFile& cf);
-int EquippedPlayerGun (CObject *objP);
-int EquippedPlayerBomb (CObject *objP);
-int EquippedPlayerMissile (CObject *objP, int *nMissiles);
+int32_t EquippedPlayerGun (CObject *objP);
+int32_t EquippedPlayerBomb (CObject *objP);
+int32_t EquippedPlayerMissile (CObject *objP, int32_t *nMissiles);
 void UpdatePlayerWeaponInfo (void);
 
 extern tShipModifier shipModifiers [MAX_SHIP_TYPES];

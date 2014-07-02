@@ -51,7 +51,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define ROW_SPACING (gameStates.menus.bHires?26:11)
 
-ubyte fadeValues[200] = { 1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,8,9,9,10,10,
+uint8_t fadeValues[200] = { 1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,8,9,9,10,10,
 11,11,12,12,12,13,13,14,14,15,15,15,16,16,17,17,17,18,18,19,19,19,20,20,
 20,21,21,22,22,22,23,23,23,24,24,24,24,25,25,25,26,26,26,26,27,27,27,27,
 28,28,28,28,28,29,29,29,29,29,29,30,30,30,30,30,30,30,30,30,31,31,31,31,
@@ -61,7 +61,7 @@ ubyte fadeValues[200] = { 1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,8,9,9,10,10,
 17,16,16,15,15,15,14,14,13,13,12,12,12,11,11,10,10,9,9,8,8,8,7,7,6,6,5,
 5,4,4,3,3,2,2,1 };
 
-ubyte fadeValues_hires[480] = { 1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,
+uint8_t fadeValues_hires[480] = { 1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,
 5,5,5,6,6,6,6,6,7,7,7,7,7,8,8,8,8,8,9,9,9,9,9,10,10,10,10,10,10,11,11,11,11,11,12,12,12,12,12,12,
 13,13,13,13,13,14,14,14,14,14,14,15,15,15,15,15,15,16,16,16,16,16,17,17,17,17,17,17,18,18,
 18,18,18,18,18,19,19,19,19,19,19,20,20,20,20,20,20,20,21,21,21,21,21,21,22,22,22,22,22,22,
@@ -80,7 +80,7 @@ ubyte fadeValues_hires[480] = { 1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,
 
 CPalette *creditsPalette = NULL;
 
-extern ubyte *grBitBltFadeTable;
+extern uint8_t *grBitBltFadeTable;
 
 #define ALLOWED_CHAR 'R'
 
@@ -91,7 +91,7 @@ extern ubyte *grBitBltFadeTable;
 #endif
 
 typedef struct box {
-	int left, top, width, height;
+	int32_t left, top, width, height;
 } box;
 
 #define CREDITS_FILE    \
@@ -158,7 +158,7 @@ CCreditsRenderer creditsRenderer;
 
 //-----------------------------------------------------------------------------
 
-uint CCreditsRenderer::Read (void)
+uint32_t CCreditsRenderer::Read (void)
 {
 while (m_nExtraInc) {
 	m_nLines [0] = (m_nLines [0] + 1) % NUM_LINES;
@@ -166,7 +166,7 @@ while (m_nExtraInc) {
 		if (m_cf.GetS (m_buffer [m_nLines [0]], 80)) {
 			char *p = m_buffer [m_nLines [0]];
 			if (m_bBinary)				// is this a binary tbl &m_cf
-				for (int i = (int) strlen (m_buffer [m_nLines [0]]); i > 0; i--, p++)
+				for (int32_t i = (int32_t) strlen (m_buffer [m_nLines [0]]); i > 0; i--, p++)
 					*p = EncodeRotateLeft ((char) (EncodeRotateLeft (*p) ^ BITMAP_TBL_XOR));
 			p = m_buffer [m_nLines [0]];
 			if (*p == ';')
@@ -229,7 +229,7 @@ return true;
 
 bool CCreditsRenderer::HandleInput (void)
 {
-int k = KeyInKey ();
+int32_t k = KeyInKey ();
 
 if ((k == KEY_PRINT_SCREEN) || (k == KEY_COMMAND + KEY_SHIFTED + KEY_P)) {
 	gameStates.app.bSaveScreenShot = 1;
@@ -243,7 +243,7 @@ else if (k == KEY_PADMINUS) {
 	else if (m_xDelay < 1000)
 		m_xDelay *= 2;
 	}
-else if ((k == KEY_ESC) || (m_bDone > uint (NUM_LINES))) {
+else if ((k == KEY_ESC) || (m_bDone > uint32_t (NUM_LINES))) {
 	Destroy ();
 	paletteManager.DisableEffect ();
 	paletteManager.Load (D2_DEFAULT_PALETTE, NULL);
@@ -267,13 +267,13 @@ void CCreditsRenderer::Render (void)
 
 
 
-for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
+for (int32_t i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 	backgroundManager.Draw (&m_background);
 	m_background.Activate ();
 	gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
-	int y = m_nFirstLineOffs - i;
-	for (int j = 0; j < NUM_LINES; j++) {
-		int l = (m_nLines [0] + j + 1) %  NUM_LINES;
+	int32_t y = m_nFirstLineOffs - i;
+	for (int32_t j = 0; j < NUM_LINES; j++) {
+		int32_t l = (m_nLines [0] + j + 1) %  NUM_LINES;
 		char* s = m_buffer [l];
 		if (*s == '!') 
 			s++;
@@ -288,7 +288,7 @@ for (int i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 		else
 			fontManager.SetCurrent (m_fonts [2]);
 		if (*s) {
-			int w, h, aw;
+			int32_t w, h, aw;
 
 			fontManager.Current ()->StringSize (s, w, h, aw);
 			if ((y >= 0) && (y + h <= 480)) {
@@ -328,7 +328,7 @@ m_bmBackdrop.Init ();
 void CCreditsRenderer::Destroy (void)
 {
 m_cf.Close ();
-for (int i = 0; i < 3; i++)
+for (int32_t i = 0; i < 3; i++)
 	fontManager.Unload (m_fonts [i]);
 m_bmBackdrop.Destroy ();
 }
@@ -376,7 +376,7 @@ for (;;) {
 		}
 	ogl.Update (0);
 
-	int t = m_xTimeout - SDL_GetTicks ();
+	int32_t t = m_xTimeout - SDL_GetTicks ();
 	if (t > 0)
 		G3_SLEEP (t);
 	m_xTimeout = SDL_GetTicks () + m_xDelay;

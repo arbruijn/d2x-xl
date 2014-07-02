@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::GetHostageWindowCoords (int& x, int& y, int& w, int& h)
+void CHUD::GetHostageWindowCoords (int32_t& x, int32_t& y, int32_t& w, int32_t& h)
 {
 x = SECONDARY_W_BOX_LEFT;
 y = SECONDARY_W_BOX_TOP;
@@ -83,7 +83,7 @@ if (cockpit->Hide ())
 	return;
 
 	char	szScore [40];
-	int	w, h, aw;
+	int32_t	w, h, aw;
 
 if ((gameData.hud.msgs [0].nMessages > 0) &&
 	 (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
@@ -104,11 +104,11 @@ DrawHUDText (NULL, -w - LHX (2), 3, szScore);
 if (cockpit->Hide ())
 	return;
 
-	int	color;
-	int	w, h, aw, nScore, nTime;
+	int32_t	color;
+	int32_t	w, h, aw, nScore, nTime;
 	char	szScore [20];
 
-	static int nIdTotalScore = 0;
+	static int32_t nIdTotalScore = 0;
 
 if (IsMultiGame && !IsCoopGame)
 	return;
@@ -143,17 +143,17 @@ void CHUD::DrawHomingWarning (void)
 if (cockpit->Hide ())
 	return;
 
-	static int nIdLock = 0;
+	static int32_t nIdLock = 0;
 
 #if 0 //DBG
 if (gameData.time.xGame & 0x4000) {
 #else
 if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
 #endif
-	int	x, y, nOffsetSave = -1;
+	int32_t	x, y, nOffsetSave = -1;
 
 	if (ogl.IsOculusRift ()) {
-		int w, h, aw;
+		int32_t w, h, aw;
 		fontManager.Current ()->StringSize (TXT_LOCK, w, h, aw);
 		x = CCanvas::Current ()->Width () / 2 - w / 2;
 		y = AdjustCockpitY (-4 * LineSpacing ());
@@ -169,7 +169,7 @@ if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
 		m_info.bAdjustCoords = true;
 		}
 	if ((m_info.weaponBoxUser [0] != WBU_WEAPON) || (m_info.weaponBoxUser [1] != WBU_WEAPON)) {
-		int wy = (m_info.weaponBoxUser [0] != WBU_WEAPON) ? SW_y [0] : SW_y [1];
+		int32_t wy = (m_info.weaponBoxUser [0] != WBU_WEAPON) ? SW_y [0] : SW_y [1];
 		y = Min (y, (wy - LineSpacing () - gameData.render.frame.Top ()));
 		}
 	SetFontColor (RED_RGBA);
@@ -187,7 +187,7 @@ if (cockpit->Hide ())
 if (IsMultiGame && !IsCoopGame)
 	return;
 
-	int	x, y, dx = GAME_FONT->Width () + GAME_FONT->Width () / 2;
+	int32_t	x, y, dx = GAME_FONT->Width () + GAME_FONT->Width () / 2;
 
 #if 0
 if (ogl.IsOculusRift ()) {
@@ -201,7 +201,7 @@ else
 	y = 3 * LineSpacing ();
 	}
 
-int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
+int32_t nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_BLUE_KEY)
 	BitBlt (KEY_ICON_BLUE, x, y, false, false);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_GOLD_KEY) 
@@ -231,10 +231,10 @@ CGenericCockpit::DrawFlag (5 * LineSpacing (), LineSpacing () * (gameStates.rend
 
 //	-----------------------------------------------------------------------------
 
-int CHUD::FlashGauge (int h, int *bFlash, int tToggle)
+int32_t CHUD::FlashGauge (int32_t h, int32_t *bFlash, int32_t tToggle)
 {
 	time_t t = gameStates.app.nSDLTicks [0];
-	int b = *bFlash;
+	int32_t b = *bFlash;
 
 if (gameOpts->app.bEpilepticFriendly || gameStates.app.bPlayerIsDead || LOCALPLAYER.m_bExploded)
 	b = 0;
@@ -249,7 +249,7 @@ else {
 		b = 2;
 	}
 *bFlash = b;
-return (int) ((b && (tToggle <= t)) ? t + 300 / b : 0);
+return (int32_t) ((b && (tToggle <= t)) ? t + 300 / b : 0);
 }
 
 //	-----------------------------------------------------------------------------
@@ -259,13 +259,13 @@ void CHUD::DrawShieldText (void)
 if (cockpit->Hide ())
 	return;
 
-	static int nIdShield = 0;
+	static int32_t nIdShield = 0;
 
 if (ShowTextGauges ()) {
-	int y = IsMultiGame ? -6 * LineSpacing () : -2 * LineSpacing ();
+	int32_t y = IsMultiGame ? -6 * LineSpacing () : -2 * LineSpacing ();
 	SetFontColor (GREEN_RGBA);
 	m_info.bAdjustCoords = true;
-	nIdShield = DrawHUDText (&nIdShield, 2, y, "%s: %i", TXT_SHIELD, (int) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
+	nIdShield = DrawHUDText (&nIdShield, 2, y, "%s: %i", TXT_SHIELD, (int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
 	}
 }
 
@@ -276,43 +276,43 @@ void CHUD::DrawShieldBar (void)
 if (cockpit->Hide ())
 	return;
 
-	static int		bShow = 1;
+	static int32_t		bShow = 1;
 	static time_t	tToggle = 0, nBeep = -1;
-	//static int		nIdLevel = 0;
+	//static int32_t		nIdLevel = 0;
 
 	time_t			t = gameStates.app.nSDLTicks [0];
-	int				bLastFlash = gameStates.render.cockpit.nShieldFlash;
+	int32_t				bLastFlash = gameStates.render.cockpit.nShieldFlash;
 
 if (!ShowTextGauges ()) {
 
-	int nLevel = m_info.nShield;
-	if ((t = FlashGauge (nLevel, &gameStates.render.cockpit.nShieldFlash, (int) tToggle))) {
+	int32_t nLevel = m_info.nShield;
+	if ((t = FlashGauge (nLevel, &gameStates.render.cockpit.nShieldFlash, (int32_t) tToggle))) {
 		tToggle = t;
 		bShow = !bShow;
 		}
 
-	int nLineSpacing = 5 * GAME_FONT->Height () / 4;
-	int h = int (9 * m_info.yGaugeScale), 
-		 w = int (9 * m_info.xGaugeScale), 
-		 y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 6 : 2) * nLineSpacing - 1) * m_info.yGaugeScale);
+	int32_t nLineSpacing = 5 * GAME_FONT->Height () / 4;
+	int32_t h = int32_t (9 * m_info.yGaugeScale), 
+		 w = int32_t (9 * m_info.xGaugeScale), 
+		 y = CCanvas::Current ()->Height () - (int32_t) (((IsMultiGame ? 6 : 2) * nLineSpacing - 1) * m_info.yGaugeScale);
 	if (hudIcons.LoadGaugeIcons () > 0)
 		hudIcons.GaugeIcon (0).RenderScaled (6, y, w, h);
-	int x = 6 + int (10 * m_info.xGaugeScale);
+	int32_t x = 6 + int32_t (10 * m_info.xGaugeScale);
 	w = (nLevel > 100) ? 100 : 50;
 	CCanvas::Current ()->SetColorRGB (0, 64, 224, 255);
 	glLineWidth (1);
-	OglDrawEmptyRect (x, y, x + int (w * m_info.xGaugeScale), y + h);
+	OglDrawEmptyRect (x, y, x + int32_t (w * m_info.xGaugeScale), y + h);
 	if (bShow) {
 		CCanvas::Current ()->SetColorRGB (0, 64, 224, 128);
 		if (nLevel <= 100)
-			OglDrawFilledRect (x, y, x + int (nLevel * m_info.xGaugeScale / 2.0f), y + h);
+			OglDrawFilledRect (x, y, x + int32_t (nLevel * m_info.xGaugeScale / 2.0f), y + h);
 		else {
-			w = int (50 * m_info.xGaugeScale);
+			w = int32_t (50 * m_info.xGaugeScale);
 			OglDrawFilledRect (x, y, x + w, y + h);
 			while (nLevel > 100)
 				nLevel -= 100;
 			CCanvas::Current ()->SetColorRGB (0, 224, 224, 128);
-			OglDrawFilledRect (x + w, y, x + w + int (nLevel * m_info.xGaugeScale / 2.0f), y + h);
+			OglDrawFilledRect (x + w, y, x + w + int32_t (nLevel * m_info.xGaugeScale / 2.0f), y + h);
 			}
 		}
 	}
@@ -320,20 +320,20 @@ if (gameStates.render.cockpit.nShieldFlash) {
 	if (gameOpts->gameplay.bShieldWarning && gameOpts->sound.bUseSDLMixer) {
 		if ((nBeep < 0) || (bLastFlash != gameStates.render.cockpit.nShieldFlash)) {
 			if (nBeep >= 0)
-				audio.StopSound ((int) nBeep);
+				audio.StopSound ((int32_t) nBeep);
 			nBeep = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (2) / 3, 0xFFFF / 2, -1, -1, -1, -1, I2X (1),
 											  AddonSoundName ((gameStates.render.cockpit.nShieldFlash == 1) ? SND_ADDON_LOW_SHIELDS1 : SND_ADDON_LOW_SHIELDS2));
 			}
 		}
 	else if (nBeep >= 0) {
-		audio.StopSound ((int) nBeep);
+		audio.StopSound ((int32_t) nBeep);
 		nBeep = -1;
 		}
 	}
 else {
 	bShow = 1;
 	if (nBeep >= 0) {
-		audio.StopSound ((int) nBeep);
+		audio.StopSound ((int32_t) nBeep);
 		nBeep = -1;
 		}
 	}
@@ -346,8 +346,8 @@ void CHUD::DrawEnergyText (void)
 if (cockpit->Hide ())
 	return;
 
-	int h, y;
-	static int nIdEnergy = 0;
+	int32_t h, y;
+	static int32_t nIdEnergy = 0;
 
 h = LOCALPLAYER.Energy () ? X2IR (LOCALPLAYER.Energy ()) : 0;
 if (ShowTextGauges ()) {
@@ -357,7 +357,7 @@ if (ShowTextGauges ()) {
 	nIdEnergy = DrawHUDText (&nIdEnergy, 2, y, "%s: %i", TXT_ENERGY, h);
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
-	int energy = X2IR (LOCALPLAYER.Energy ());
+	int32_t energy = X2IR (LOCALPLAYER.Energy ());
 
 	if (energy != m_history [0].energy) {
 		NDRecordPlayerEnergy (m_history [0].energy, energy);
@@ -374,27 +374,27 @@ if (cockpit->Hide ())
 	return;
 
 if (!ShowTextGauges ()) {
-	static int		bFlash = 0, bShow = 1;
+	static int32_t		bFlash = 0, bShow = 1;
 	static time_t	tToggle;
-	//static int		nIdLevel = 0;
+	//static int32_t		nIdLevel = 0;
 	time_t			t;
 
-	int nLevel = m_info.nEnergy;
-	int nLineSpacing = 5 * GAME_FONT->Height () / 4;
-	if ((t = FlashGauge (nLevel, &bFlash, (int) tToggle))) {
+	int32_t nLevel = m_info.nEnergy;
+	int32_t nLineSpacing = 5 * GAME_FONT->Height () / 4;
+	if ((t = FlashGauge (nLevel, &bFlash, (int32_t) tToggle))) {
 		tToggle = t;
 		bShow = !bShow;
 		}
-	int h = int (9 * m_info.yGaugeScale), 
-		 w = int (9 * m_info.xGaugeScale), 
-		 y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 5 : 1) * nLineSpacing - 1) * m_info.yGaugeScale);
+	int32_t h = int32_t (9 * m_info.yGaugeScale), 
+		 w = int32_t (9 * m_info.xGaugeScale), 
+		 y = CCanvas::Current ()->Height () - (int32_t) (((IsMultiGame ? 5 : 1) * nLineSpacing - 1) * m_info.yGaugeScale);
 	if (hudIcons.LoadGaugeIcons () > 0)
 		hudIcons.GaugeIcon (1).RenderScaled (6, y, w, h);
 	CCanvas::Current ()->SetColorRGB (255, 224, 0, 255);
 	glLineWidth (1);
-	int x = 6 + int (10 * m_info.xGaugeScale);
+	int32_t x = 6 + int32_t (10 * m_info.xGaugeScale);
 	w = (nLevel > 100) ? 100 : 50;
-	OglDrawEmptyRect (x, y, x + int (w * m_info.xGaugeScale), y + h);
+	OglDrawEmptyRect (x, y, x + int32_t (w * m_info.xGaugeScale), y + h);
 	if (bFlash) {
 		if (!bShow)
 			return;
@@ -404,14 +404,14 @@ if (!ShowTextGauges ()) {
 		bShow = 1;
 	CCanvas::Current ()->SetColorRGB (255, 224, 0, 128);
 	if (nLevel <= 100)
-		OglDrawFilledRect (x, y, x + int (nLevel * m_info.xGaugeScale / 2.0f), y + h);
+		OglDrawFilledRect (x, y, x + int32_t (nLevel * m_info.xGaugeScale / 2.0f), y + h);
 	else {
-		w = int (50 * m_info.xGaugeScale);
+		w = int32_t (50 * m_info.xGaugeScale);
 		OglDrawFilledRect (x, y, x + w, y + h);
 		while (nLevel > 100)
 			nLevel -= 100;
 		CCanvas::Current ()->SetColorRGB (255, 240, 240, 128);
-		OglDrawFilledRect (x + w, y, x + w + int (nLevel * m_info.xGaugeScale / 2.0f), y + h);
+		OglDrawFilledRect (x + w, y, x + w + int32_t (nLevel * m_info.xGaugeScale / 2.0f), y + h);
 		}
 	}
 }
@@ -423,8 +423,8 @@ void CHUD::DrawAfterburnerText (void)
 if (cockpit->Hide ())
 	return;
 	
-	int h, y;
-	static int nIdAfterBurner = 0;
+	int32_t h, y;
+	static int32_t nIdAfterBurner = 0;
 
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
@@ -444,24 +444,24 @@ void CHUD::DrawAfterburnerBar (void)
 if (cockpit->Hide ())
 	return;
 
-	//static int nIdLevel = 0;
+	//static int32_t nIdLevel = 0;
 	
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 	return;		//don't draw if don't have
-int nLevel = FixMul (gameData.physics.xAfterburnerCharge, 100);
-int nLineSpacing = 5 * GAME_FONT->Height () / 4;
+int32_t nLevel = FixMul (gameData.physics.xAfterburnerCharge, 100);
+int32_t nLineSpacing = 5 * GAME_FONT->Height () / 4;
 if (!ShowTextGauges ()) {
-	int h = int (9 * m_info.yGaugeScale), 
-		 w = int (9 * m_info.xGaugeScale), 
-		 y = CCanvas::Current ()->Height () - (int) (((IsMultiGame ? 8 : 3) * nLineSpacing - 1) * m_info.yGaugeScale);
+	int32_t h = int32_t (9 * m_info.yGaugeScale), 
+		 w = int32_t (9 * m_info.xGaugeScale), 
+		 y = CCanvas::Current ()->Height () - (int32_t) (((IsMultiGame ? 8 : 3) * nLineSpacing - 1) * m_info.yGaugeScale);
 	if (hudIcons.LoadGaugeIcons () > 0)
-		hudIcons.GaugeIcon (2).RenderScaled (6, y, w = int (9 * m_info.xGaugeScale), h = int (9 * m_info.yGaugeScale));
+		hudIcons.GaugeIcon (2).RenderScaled (6, y, w = int32_t (9 * m_info.xGaugeScale), h = int32_t (9 * m_info.yGaugeScale));
 	CCanvas::Current ()->SetColorRGB (255, 0, 0, 255);
 	glLineWidth (1);
-	int x = 6 + int (10 * m_info.xGaugeScale);
-	OglDrawEmptyRect (x, y, x + (int) (50 * m_info.xGaugeScale), y + h);
+	int32_t x = 6 + int32_t (10 * m_info.xGaugeScale);
+	OglDrawEmptyRect (x, y, x + (int32_t) (50 * m_info.xGaugeScale), y + h);
 	CCanvas::Current ()->SetColorRGB (224, 0, 0, 128);
-	OglDrawFilledRect (x, y, x + (int) (nLevel * m_info.xGaugeScale / 2.0f), y + h);
+	OglDrawFilledRect (x, y, x + (int32_t) (nLevel * m_info.xGaugeScale / 2.0f), y + h);
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	if (gameData.physics.xAfterburnerCharge != m_history [0].afterburner) {
@@ -475,15 +475,15 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 
 void CHUD::DrawEnergyLevelsCombined (void)
 {
-	int	y = AdjustCockpitY (-2 * LineSpacing ());
-	int	x = 2; //CCanvas::Current ()->Width () / 4;
-	int	nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
+	int32_t	y = AdjustCockpitY (-2 * LineSpacing ());
+	int32_t	x = 2; //CCanvas::Current ()->Width () / 4;
+	int32_t	nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 
-	static uint	energyColors [3] = { GOLD_RGBA, BLUE_RGBA, RED_RGBA };
+	static uint32_t	energyColors [3] = { GOLD_RGBA, BLUE_RGBA, RED_RGBA };
 
-int				i, nColor, h [4], w [4], aw [4], tw = 0;
-int				nEnergy [3] = {LOCALPLAYER.Energy () ? X2IR (LOCALPLAYER.Energy ()) : 0, 
-										(int) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()), 
+int32_t				i, nColor, h [4], w [4], aw [4], tw = 0;
+int32_t				nEnergy [3] = {LOCALPLAYER.Energy () ? X2IR (LOCALPLAYER.Energy ()) : 0, 
+										(int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()), 
 										(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) ? FixMul (gameData.physics.xAfterburnerCharge, 100) : -1
 									  };
 char				szEnergy [3][10];
@@ -539,11 +539,11 @@ else
 	 GT (636 + nWeaponId - FLASHMSL_INDEX))
 
 //return which bomb will be dropped next time the bomb key is pressed
-int ArmedBomb ();
+int32_t ArmedBomb ();
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::ClearBombCount (int bgColor)
+void CHUD::ClearBombCount (int32_t bgColor)
 {
 }
 
@@ -556,28 +556,28 @@ CGenericCockpit::DrawBombCount (0, 0, BLACK_RGBA, 0);
 
 //	-----------------------------------------------------------------------------
 
-int CHUD::DrawBombCount (int& nIdBombCount, int x, int y, int nColor, char* pszBombCount)
+int32_t CHUD::DrawBombCount (int32_t& nIdBombCount, int32_t x, int32_t y, int32_t nColor, char* pszBombCount)
 {
 fontManager.SetColorRGBi (nColor, 1, 0, 0);
 x = gameData.render.scene.Width () - 3 * GAME_FONT->Width () - gameStates.render.fonts.bHires - 1;
 y = gameData.render.scene.Height () - 3 * LineSpacing ();
 if ((extraGameInfo [0].nWeaponIcons >= 3) && (gameData.render.scene.Height () < 670))
 	x -= LHX (20);
-int nOffsetSave = AdjustCockpitXY (pszBombCount, x, y);
+int32_t nOffsetSave = AdjustCockpitXY (pszBombCount, x, y);
 return GrString (x, y, pszBombCount, &nIdBombCount);
 gameData.SetStereoOffsetType (nOffsetSave);
 }
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::DrawPrimaryAmmoInfo (int ammoCount)
+void CHUD::DrawPrimaryAmmoInfo (int32_t ammoCount)
 {
 DrawAmmoInfo (PRIMARY_AMMO_X, PRIMARY_AMMO_Y, ammoCount, 1);
 }
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::DrawSecondaryAmmoInfo (int ammoCount)
+void CHUD::DrawSecondaryAmmoInfo (int32_t ammoCount)
 {
 DrawAmmoInfo (SECONDARY_AMMO_X, SECONDARY_AMMO_Y, ammoCount, 0);
 }
@@ -592,12 +592,12 @@ if (cockpit->Hide ())
 if (ogl.IsOculusRift () && EGI_FLAG (nWeaponIcons, 1, 1, 0))
 	return;
 
-	int	w, h, aw;
-	int	y;
+	int32_t	w, h, aw;
+	int32_t	y;
 	const char	*pszWeapon;
 	char	szWeapon [32];
 
-	static int nIdWeapons [2] = {0, 0};
+	static int32_t nIdWeapons [2] = {0, 0};
 
 SetFontColor (GREEN_RGBA);
 y = IsMultiGame ? -4 * LineSpacing () : 0;
@@ -679,19 +679,19 @@ void CHUD::DrawInvul (void)
 if (cockpit->Hide ())
 	return;
 
-	static int nIdInvul = 0;
+	static int32_t nIdInvul = 0;
 
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 	 (((LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame) > I2X (4)) || (gameData.time.xGame & 0x8000))) {
 	SetFontColor (GREEN_RGBA);
 
 	if (ogl.IsOculusRift ()) {
-		int w, h, aw;
+		int32_t w, h, aw;
 		fontManager.Current ()->StringSize ("INVUL CLOAK ", w, h, aw);
 		nIdInvul = DrawHUDText (&nIdInvul, CCanvas::Current ()->Width () - w, -2 * LineSpacing (), "%s", "INVUL");
 		}
 	else {
-		int y = IsMultiGame ? -10 * LineSpacing () : -5 * LineSpacing ();
+		int32_t y = IsMultiGame ? -10 * LineSpacing () : -5 * LineSpacing ();
 		if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !ShowTextGauges ())
 			y -= LineSpacing () + gameStates.render.fonts.bHires + 1;
 		nIdInvul = DrawHUDText (&nIdInvul, 2, y, "%s", TXT_INVULNERABLE);
@@ -707,19 +707,19 @@ void CHUD::DrawCloak (void)
 if (cockpit->Hide ())
 	return;
 
-	static int nIdCloak = 0;
+	static int32_t nIdCloak = 0;
 
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) &&
 	 ((LOCALPLAYER.cloakTime + CLOAK_TIME_MAX - gameData.time.xGame > I2X (3)) || (gameData.time.xGame & 0x8000))) {
 	SetFontColor (GREEN_RGBA);
 
 	if (ogl.IsOculusRift ()) {
-		int w, h, aw;
+		int32_t w, h, aw;
 		fontManager.Current ()->StringSize ("CLOAK ", w, h, aw);
 		nIdCloak = DrawHUDText (&nIdCloak, CCanvas::Current ()->Width () - w, -2 * LineSpacing (), "%s", "CLOAK");
 		}
 	else {
-		int y = IsMultiGame ? -7 * LineSpacing () : -4 * LineSpacing ();
+		int32_t y = IsMultiGame ? -7 * LineSpacing () : -4 * LineSpacing ();
 		if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !ShowTextGauges ())
 			y -= LineSpacing () + gameStates.render.fonts.bHires + 1;
 		nIdCloak = DrawHUDText (&nIdCloak, 2, y, "%s", TXT_CLOAKED);
@@ -732,7 +732,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) &&
 //draw the icons for number of lives
 void CHUD::DrawLives (void)
 {
-	static int nIdLives = 0;
+	static int32_t nIdLives = 0;
 
 if (cockpit->Hide ())
 	return;
@@ -751,7 +751,7 @@ else if (LOCALPLAYER.lives > 1)  {
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::DrawStatic (int nWindow)
+void CHUD::DrawStatic (int32_t nWindow)
 {
 }
 
@@ -787,17 +787,17 @@ return true;
 
 //	-----------------------------------------------------------------------------
 
-void CHUD::SetupWindow (int nWindow)
+void CHUD::SetupWindow (int32_t nWindow)
 {
-	static int cockpitWindowScale [4] = {8, 6, 4, 3};
+	static int32_t cockpitWindowScale [4] = {8, 6, 4, 3};
 
-	int x, y, nWindowPos;
+	int32_t x, y, nWindowPos;
 
-int w = (int) (gameData.render.frame.Width () / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);	
-int h = I2X (w) / gameData.render.screen.Aspect ();
+int32_t w = (int32_t) (gameData.render.frame.Width () / cockpitWindowScale [gameOpts->render.cockpit.nWindowSize] * HUD_ASPECT);	
+int32_t h = I2X (w) / gameData.render.screen.Aspect ();
 if (!gameStates.app.bNostalgia) //(gameOpts->render.cockpit.bWideDisplays)
-	w = int (float (w) * float (gameData.render.screen.Width ()) / float (gameData.render.screen.Height ()) * 0.75f);
-	//w = int (w / HUD_ASPECT);
+	w = int32_t (float (w) * float (gameData.render.screen.Width ()) / float (gameData.render.screen.Height ()) * 0.75f);
+	//w = int32_t (w / HUD_ASPECT);
 nWindowPos = gameOpts->render.cockpit.nWindowPos % 3;
 if ((nWindowPos == 2) && gameStates.render.cockpit.n3DView [0] && gameStates.render.cockpit.n3DView [1])
 	nWindowPos = 1;
@@ -819,7 +819,7 @@ else {
 	y = gameData.render.scene.Height () - h - h / 10;
 	if (extraGameInfo [0].nWeaponIcons &&
 		 (extraGameInfo [0].nWeaponIcons - gameOpts->render.weaponIcons.bEquipment < 3))
-		y -= (int) ((gameOpts->render.weaponIcons.bSmall ? 20.0 : 30.0) * (double) CCanvas::Current ()->Height () / 480.0);
+		y -= (int32_t) ((gameOpts->render.weaponIcons.bSmall ? 20.0 : 30.0) * (double) CCanvas::Current ()->Height () / 480.0);
 	}
 //copy these vars so stereo code can get at them
 CCockpitInfo::bWindowDrawn [nWindow] = 1;
@@ -846,7 +846,7 @@ m_info.bRebuild = false;
 if (!CGenericCockpit::Setup (bScene, bRebuild))
 	return false;
 // 480.0f / 640.0f * 0.7f is the aspect ratio of the widescreen mode in the reference resolution 640x480 
-int h = gameData.render.screen.Height () - 21 * gameData.render.screen.Width () / 40; //(int) FRound ((float) gameData.render.frame.Width () * (480.0f / 640.0f * 0.7f));
+int32_t h = gameData.render.screen.Height () - 21 * gameData.render.screen.Width () / 40; //(int32_t) FRound ((float) gameData.render.frame.Width () * (480.0f / 640.0f * 0.7f));
 *((CViewport*) &gameData.render.scene) += CViewport (0, h / 2, 0, -h);
 gameData.render.scene.Activate ("CWideHUD::Setup (scene)");
 return true;
@@ -868,7 +868,7 @@ CGenericCockpit::Activate (CM_FULL_COCKPIT, true);
 
 //	-----------------------------------------------------------------------------
 
-void CWideHUD::SetupWindow (int nWindow)
+void CWideHUD::SetupWindow (int32_t nWindow)
 {
 CHUD::SetupWindow (nWindow);
 #if 0

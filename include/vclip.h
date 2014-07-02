@@ -38,19 +38,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 typedef struct {
 	fix             xTotalTime;          // total time (in seconds) of clip
-	int             nFrameCount;
+	int32_t             nFrameCount;
 	fix             xFrameTime;         // time (in seconds) of each frame
-	int             flags;
-	short           nSound;
+	int32_t             flags;
+	int16_t           nSound;
 	tBitmapIndex    frames[VCLIP_MAX_FRAMES];
 	fix             lightValue;
 } __pack__ tVideoClip;
 
-extern int Num_vclips [2];
+extern int32_t Num_vclips [2];
 extern tVideoClip Vclip [2][MAX_VCLIPS];
 
 // draw an CObject which renders as a tVideoClip.
-void DrawVClipObject (CObject *objP, fix timeleft, int lighted, int vclip_num, CFloatVector *color);
+void DrawVClipObject (CObject *objP, fix timeleft, int32_t lighted, int32_t vclip_num, CFloatVector *color);
 void DrawWeaponVClip (CObject *objP);
 void DrawExplBlast (CObject *objP);
 void DrawShockwave (CObject *objP);
@@ -58,6 +58,6 @@ void ConvertWeaponToVClip (CObject *objP);
 CRGBColor *VClipColor (CObject *objP);
 
 void ReadVideoClip (tVideoClip& vc, CFile& cf);
-int ReadVideoClips (CArray<tVideoClip>& vc, int n, CFile& cf);
+int32_t ReadVideoClips (CArray<tVideoClip>& vc, int32_t n, CFile& cf);
 
 #endif /* _VCLIP_H */

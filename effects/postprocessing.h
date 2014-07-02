@@ -9,13 +9,13 @@ class CPostEffect {
 	private:
 		class CPostEffect*	m_prev;
 		class CPostEffect*	m_next;
-		int						m_nType;
+		int32_t						m_nType;
 
 	protected:
 		bool						m_bValid;
 
 	public:
-		CPostEffect (int nType = 0) : 
+		CPostEffect (int32_t nType = 0) : 
 			m_prev (0), m_next (0), m_nType (nType), m_bValid (false)
 			{}
 
@@ -25,7 +25,7 @@ class CPostEffect {
 
 		inline CPostEffect* Next (void) { return m_next; }
 
-		inline void Setup (int nType) { m_nType = nType; }
+		inline void Setup (int32_t nType) { m_nType = nType; }
 
 		inline void Link (CPostEffect* prev, CPostEffect* next) {
 			m_prev = prev, m_next = next;
@@ -66,12 +66,12 @@ class CPostEffect {
 
 class CPostEffectShockwave : public CPostEffect {
 	private:
-		uint				m_nStart;
-		uint				m_nLife;
-		int				m_nSize;
-		int				m_nBias;
+		uint32_t				m_nStart;
+		uint32_t				m_nLife;
+		int32_t				m_nSize;
+		int32_t				m_nBias;
 		CFixVector		m_pos;
-		int				m_nObject;
+		int32_t				m_nObject;
 
 		CFloatVector3	m_renderPos;
 		float				m_rad;
@@ -80,21 +80,21 @@ class CPostEffectShockwave : public CPostEffect {
 
 	public:
 		static bool m_bRendered;
-		static int m_nShockwaves;
+		static int32_t m_nShockwaves;
 		static GLhandleARB m_shaderProg;
 
 	public:
-		CPostEffectShockwave (int nStart = 0, int nLife = 0, int nSize = 0, int nBias = 1, CFixVector pos = CFixVector::ZERO, int nObject = -1) :
+		CPostEffectShockwave (int32_t nStart = 0, int32_t nLife = 0, int32_t nSize = 0, int32_t nBias = 1, CFixVector pos = CFixVector::ZERO, int32_t nObject = -1) :
 			CPostEffect (PP_EFFECT_SHOCKWAVE), 
-			m_nStart (nStart), m_nLife (int (1000 * X2F (nLife))), m_nSize (nSize), m_nBias (nBias), m_nObject (nObject)
+			m_nStart (nStart), m_nLife (int32_t (1000 * X2F (nLife))), m_nSize (nSize), m_nBias (nBias), m_nObject (nObject)
 			{ m_pos = pos; }
 
-		void Setup (int nStart, int nLife, int nSize, int nBias, CFixVector pos, int nObject) {
+		void Setup (int32_t nStart, int32_t nLife, int32_t nSize, int32_t nBias, CFixVector pos, int32_t nObject) {
 			CPostEffect::Setup (PP_EFFECT_SHOCKWAVE);
 			m_nStart = nStart, m_nLife = nLife, m_nSize = nSize, m_nBias = nBias, m_pos = pos, m_nObject = nObject;
 			}
 
-		virtual bool Terminate (void) { return SDL_GetTicks () - m_nStart >= (uint) Life (); }
+		virtual bool Terminate (void) { return SDL_GetTicks () - m_nStart >= (uint32_t) Life (); }
 
 		virtual bool Setup (void);
 
@@ -116,7 +116,7 @@ class CPostEffectShockwave : public CPostEffect {
 
 class CPostProcessManager {
 	private:
-		int				m_nEffects;
+		int32_t				m_nEffects;
 		CPostEffect*	m_effects;
 
 	public:

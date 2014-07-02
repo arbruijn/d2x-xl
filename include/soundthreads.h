@@ -33,7 +33,7 @@ class CSoundThreadInfo : public CThreadInfo {
 void CreateSoundThread (void);
 void DestroySoundThread (void);
 void WaitForSoundThread (time_t nTimeout = -1);
-int StartSoundThread (tSoundTask nTask);
+int32_t StartSoundThread (tSoundTask nTask);
 bool HaveSoundThread (void);
 
 extern CSoundThreadInfo tiSound;

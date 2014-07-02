@@ -4,25 +4,25 @@
 #ifndef __tracker_h
 #define __tracker_h
 
-typedef ubyte tUdpAddress [6];
+typedef uint8_t tUdpAddress [6];
 
 #if 0
 
 // this causes dereferencing type punned pointer warnings from g++
-#define UDP_ADDR(_a)	*((uint *) (_a))
-#define UDP_PORT(_a)	*((ushort *) ((char *) (_a) + 4))
+#define UDP_ADDR(_a)	*((uint32_t *) (_a))
+#define UDP_PORT(_a)	*((uint16_t *) ((char *) (_a) + 4))
 
 #else
 
-static inline uint& UDP_ADDR(void *a)
+static inline uint32_t& UDP_ADDR(void *a)
 {
-uint *tmp = reinterpret_cast<uint*> (a);
+uint32_t *tmp = reinterpret_cast<uint32_t*> (a);
 return *tmp;
 }
 
-static inline ushort& UDP_PORT(void *a)
+static inline uint16_t& UDP_PORT(void *a)
 {
-ushort *tmp = reinterpret_cast<ushort*> (a);
+uint16_t *tmp = reinterpret_cast<uint16_t*> (a);
 return *tmp;
 }
 
@@ -32,8 +32,8 @@ return *tmp;
 
 
 typedef struct tServerList {
-	ubyte	id;
-	ubyte	nServers;
+	uint8_t	id;
+	uint8_t	nServers;
 	tUdpAddress		servers [MAX_TRACKER_SERVERS];
 } __pack__ tServerList;
 
@@ -51,7 +51,7 @@ class CTracker {
 		tServerListTable*	m_table;
 
 	public:
-		int					m_bUse;
+		int32_t					m_bUse;
 
 	public:
 		CTracker () { Init (); }
@@ -60,24 +60,24 @@ class CTracker {
 		void Destroy (void);
 		void CreateList (void);
 		void DestroyList (void);
-		int AddServer (void);
-		int RequestServerList (void);
-		int ReceiveServerList (ubyte *data);
-		void SetServerFromList (tServerList *psl, int i, ubyte* serverAddress);
-		int IsTracker (uint addr, ushort port, char* msg = NULL);
-		int GetServerFromList (int i, ubyte* serverAddress);
-		int CountActive (void);
-		int ActiveCount (int bQueryTrackers);
+		int32_t AddServer (void);
+		int32_t RequestServerList (void);
+		int32_t ReceiveServerList (uint8_t *data);
+		void SetServerFromList (tServerList *psl, int32_t i, uint8_t* serverAddress);
+		int32_t IsTracker (uint32_t addr, uint16_t port, char* msg = NULL);
+		int32_t GetServerFromList (int32_t i, uint8_t* serverAddress);
+		int32_t CountActive (void);
+		int32_t ActiveCount (int32_t bQueryTrackers);
 
-		int Poll (CMenu& menu, int& key, int nCurItem);
+		int32_t Poll (CMenu& menu, int32_t& key, int32_t nCurItem);
 
 	private:
-		int Find (tUdpAddress *addr);
-		void Call (int i, ubyte *pData, int nDataLen);
-		int Add (tUdpAddress *addr);
-		int Query (void);
+		int32_t Find (tUdpAddress *addr);
+		void Call (int32_t i, uint8_t *pData, int32_t nDataLen);
+		int32_t Add (tUdpAddress *addr);
+		int32_t Query (void);
 		void AddFromCmdLine (void);
-		int ParseIpAndPort (char *pszAddr, tUdpAddress *addr);
+		int32_t ParseIpAndPort (char *pszAddr, tUdpAddress *addr);
 		void ResetList (void);
 	};
 

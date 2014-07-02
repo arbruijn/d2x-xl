@@ -6,7 +6,7 @@
 
 class CRadar {
 	private:
-		static int				radarRanges [5];
+		static int32_t				radarRanges [5];
 		static float			radarSizes [3];
 		static float			sizeOffsets [2][3];
 
@@ -19,14 +19,14 @@ class CRadar {
 
 		static tSinCosf		sinCosRadar [RADAR_SLICES];
 		static tSinCosf		sinCosBlip [BLIP_SLICES];
-		static int				bInitSinCos;
+		static int32_t				bInitSinCos;
 
 		static CFloatVector3		shipColors [8];
 		static CFloatVector3		guidebotColor;
 		static CFloatVector3		robotColor;
 		static CFloatVector3		powerupColor;
 		static CFloatVector3		radarColor [2];
-		static int				bHaveShipColors;
+		static int32_t				bHaveShipColors;
 
 	private:
 		CFloatVector	m_vertices [RADAR_SLICES];
@@ -46,8 +46,8 @@ class CRadar {
 		void RenderSetup (void);
 		void RenderBackground (void);
 		void RenderDevice (void);
-		void RenderBlip (CObject *objP, float r, float g, float b, float a, int bAbove);
-		void RenderObjects (int bAbove);
+		void RenderBlip (CObject *objP, float r, float g, float b, float a, int32_t bAbove);
+		void RenderObjects (int32_t bAbove);
 
 	};
 

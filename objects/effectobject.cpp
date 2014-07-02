@@ -45,7 +45,7 @@
 
 void ConvertSmokeObject (CObject *objP)
 {
-	int			j;
+	int32_t			j;
 	CTrigger		*trigP;
 
 objP->SetType (OBJ_EFFECT);
@@ -82,7 +82,7 @@ objP->rType.particleInfo.nSize [1] = (j * (j + 1)) / 2;
 void ConvertObjects (void)
 {
 	CObject	*objP;
-	//int		i;
+	//int32_t		i;
 
 PrintLog (0, "converting deprecated smoke objects\n");
 FORALL_STATIC_OBJS (objP, i)
@@ -98,7 +98,7 @@ if ((info.nType != OBJ_EFFECT) || (info.nId != PARTICLE_ID))
 	return;
 
 	tParticleInfo*	psi = &rType.particleInfo;
-	int				nLife, nSpeed, nParts, nSize;
+	int32_t				nLife, nSpeed, nParts, nSize;
 
 info.renderType = RT_SMOKE;
 nLife = psi->nLife ? psi->nLife : 5;
@@ -124,7 +124,7 @@ psi->nSize [1] = (nSize * (nSize + 1)) / 2;
 psi->nParts = 90 + (nParts * psi->nLife * 3 * (1 << nSpeed)) / (11 - nParts);
 if (psi->nSide > 0) {
 	float faceSize = SEGMENTS [info.nSegment].FaceSize (psi->nSide - 1);
-	psi->nParts = (int) (psi->nParts * ((faceSize < 1) ? sqrt (faceSize) : faceSize));
+	psi->nParts = (int32_t) (psi->nParts * ((faceSize < 1) ? sqrt (faceSize) : faceSize));
 	if (gameData.segs.nLevelVersion >= 18) {
 		if (psi->nType == SMOKE_TYPE_SPRAY)
 			psi->nParts *= 4;
@@ -146,7 +146,7 @@ if (psi->nType == SMOKE_TYPE_BUBBLES) {
 void SetupEffects (void)
 {
 	CObject	*objP;
-	//int		i;
+	//int32_t		i;
 
 PrintLog (1, "setting up effects\n");
 FORALL_EFFECT_OBJS (objP, i) 

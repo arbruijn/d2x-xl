@@ -40,81 +40,81 @@
 class CDownloadManager {
 	public:
 		typedef struct tClient {
-			ubyte				data [DL_PACKET_SIZE];
+			uint8_t				data [DL_PACKET_SIZE];
 			CNetworkNode	addr;
-			ubyte				nState;
+			uint8_t				nState;
 			CFile				cf;
-			int				fLen;
-			int				nTimeout;
+			int32_t				fLen;
+			int32_t				nTimeout;
 			TCPsocket		socket;	// 0: host, 1: client
 			SDL_Thread*		thread;
 		} tUploadDest;
 
 	private:
-		ubyte			m_data [DL_PACKET_SIZE];
+		uint8_t			m_data [DL_PACKET_SIZE];
 		tClient 		m_clients [MAX_PLAYERS];
-		int			m_nClients;
-		ushort		m_freeList [MAX_PLAYERS];
+		int32_t			m_nClients;
+		uint16_t		m_freeList [MAX_PLAYERS];
 		TCPsocket	m_socket;
-		int			m_nState;
-		int			m_nResult;
-		int			m_nSrcLen;
-		int			m_nDestLen;
-		int			m_nProgress;
-		int			m_nPollTime;
-		int			m_nRequestTime;
-		int			m_nSemaphore;
+		int32_t			m_nState;
+		int32_t			m_nResult;
+		int32_t			m_nSrcLen;
+		int32_t			m_nDestLen;
+		int32_t			m_nProgress;
+		int32_t			m_nPollTime;
+		int32_t			m_nRequestTime;
+		int32_t			m_nSemaphore;
 		bool			m_bDownloading [MAX_PLAYERS];
-		int			m_timeouts [10];
-		int			m_iTimeout;
-		int			m_nTimeout;
-		int			m_nOptProgress;
-		int			m_nOptPercentage;
+		int32_t			m_timeouts [10];
+		int32_t			m_iTimeout;
+		int32_t			m_nTimeout;
+		int32_t			m_nOptProgress;
+		int32_t			m_nOptPercentage;
 		CFile			m_cf;
 		char			m_files [2][FILENAME_LEN];
-		int			m_nFiles;
+		int32_t			m_nFiles;
 
 	public:
 		CDownloadManager () { Init (); }
 		void Init (void);
-		int SetTimeoutIndex (int i);
-		int MaxTimeoutIndex (void);
-		int GetTimeoutIndex (void);
-		int GetTimeoutSecs (void);
-		int InitUpload (ubyte *data);
-		int InitDownload (ubyte *data);
-		int Upload (int nClient);
-		int Download (void);
-		int DownloadMission (char *pszMission);
+		int32_t SetTimeoutIndex (int32_t i);
+		int32_t MaxTimeoutIndex (void);
+		int32_t GetTimeoutIndex (void);
+		int32_t GetTimeoutSecs (void);
+		int32_t InitUpload (uint8_t *data);
+		int32_t InitDownload (uint8_t *data);
+		int32_t Upload (int32_t nClient);
+		int32_t Download (void);
+		int32_t DownloadMission (char *pszMission);
 		void CleanUp (void);
-		int Poll (CMenu& menu, int& key, int nCurItem);
+		int32_t Poll (CMenu& menu, int32_t& key, int32_t nCurItem);
 
-		bool Downloading (uint i);
-		inline int Timeout (void) { return m_nTimeout; }
-		inline tClient& Client (int i) { return m_clients [i]; }
-		inline int GetState (void) { return m_nState; }
-		inline int SetState (int nState) {
-			int nOldState = m_nState;
+		bool Downloading (uint32_t i);
+		inline int32_t Timeout (void) { return m_nTimeout; }
+		inline tClient& Client (int32_t i) { return m_clients [i]; }
+		inline int32_t GetState (void) { return m_nState; }
+		inline int32_t SetState (int32_t nState) {
+			int32_t nOldState = m_nState;
 			m_nState = nState;
 			return nOldState;
 			}
 
 	private:
-		void SetDownloadFlag (int nPlayer, bool bFlag);
-		int FindClient (ubyte* server, ubyte* node);
-		int FindClient (void);
-		int AcceptClient (void);
-		int RemoveClient (int i);
-		int SendRequest (ubyte pId, ubyte pIdFn, tClient* clientP = NULL);
-		int RequestUpload (void);
-		int RequestDownload (tClient* clientP);
-		int ConnectToServer (void);
-		int ConnectToClient (tClient& client);
+		void SetDownloadFlag (int32_t nPlayer, bool bFlag);
+		int32_t FindClient (uint8_t* server, uint8_t* node);
+		int32_t FindClient (void);
+		int32_t AcceptClient (void);
+		int32_t RemoveClient (int32_t i);
+		int32_t SendRequest (uint8_t pId, uint8_t pIdFn, tClient* clientP = NULL);
+		int32_t RequestUpload (void);
+		int32_t RequestDownload (tClient* clientP);
+		int32_t ConnectToServer (void);
+		int32_t ConnectToClient (tClient& client);
 		void ResendRequest (void);
-		int SendData (ubyte nIdFn, tClient& client);
-		int OpenFile (tClient& client, const char *pszExt);
-		int SendFile (tClient& client);
-		int DownloadError (int nReason);
+		int32_t SendData (uint8_t nIdFn, tClient& client);
+		int32_t OpenFile (tClient& client, const char *pszExt);
+		int32_t SendFile (tClient& client);
+		int32_t DownloadError (int32_t nReason);
 	};
 
 extern CDownloadManager downloadManager;

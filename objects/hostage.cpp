@@ -29,8 +29,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------- Globaly used hostage variables --------------------------------
 
-int nHostageTypes = MAX_HOSTAGE_TYPES;		  			// Number of hostage types
-int nHostageVClips [MAX_HOSTAGE_TYPES] = {33};	// tVideoClip num for each tpye of hostage
+int32_t nHostageTypes = MAX_HOSTAGE_TYPES;		  			// Number of hostage types
+int32_t nHostageVClips [MAX_HOSTAGE_TYPES] = {33};	// tVideoClip num for each tpye of hostage
 
 
 //-------------- Renders a hostage --------------------------------------------
@@ -45,7 +45,7 @@ gameData.render.nTotalSprites++;
 
 //------------- Called once when a hostage is rescued -------------------------
 
-void RescueHostage (int nHostage)
+void RescueHostage (int32_t nHostage)
 {
 paletteManager.BumpEffect (0, 0, 25);		//small blue flash
 LOCALPLAYER.hostages.nOnBoard++;

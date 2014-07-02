@@ -36,7 +36,7 @@ CConfigManager appConfig;
 
 void CConfigManager::Destroy (void)
 {
-for (int i = Count (); i > 0; ) {
+for (int32_t i = Count (); i > 0; ) {
 	if (m_properties [--i])
 		delete[] m_properties [i];
 	}
@@ -45,9 +45,9 @@ m_properties.Destroy ();
 
 //------------------------------------------------------------------------------
 
-int CConfigManager::Find (const char * s)
+int32_t CConfigManager::Find (const char * s)
 {
-for (int i = 0, j = Count (); i < j; i++) 
+for (int32_t i = 0, j = Count (); i < j; i++) 
 	if (m_properties [i] && *m_properties [i] && !stricmp (m_properties [i], s))
 		return i + 1;
 return 0;
@@ -55,9 +55,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-char* CConfigManager::Filename (int bDebug)
+char* CConfigManager::Filename (int32_t bDebug)
 {
-	int	i;
+	int32_t	i;
 	CFile	cf;
 
 if ((i = Find ("-ini")))
@@ -81,7 +81,7 @@ return m_filename;
 
 char* Trim (char* s);
 
-int CConfigManager::Parse (CFile* cfP)
+int32_t CConfigManager::Parse (CFile* cfP)
 {
 	char 		lineBuf [1024], *token;
 
@@ -108,7 +108,7 @@ return Count ();
 void CConfigManager::PrintLog (void)
 {
 ::PrintLog (1, "");
-for (int i = 0, j = 0; i < Count (); i++, j++) {
+for (int32_t i = 0, j = 0; i < Count (); i++, j++) {
 	if (!m_properties [i]) 
 		continue;
 	if ((m_properties [i][0] == '-') && (isalpha (m_properties [i][1]) || (j == 2))) {
@@ -134,9 +134,9 @@ m_null [0] = '\0';
 
 //------------------------------------------------------------------------------
 
-void CConfigManager::Load (int argC, char **argV)
+void CConfigManager::Load (int32_t argC, char **argV)
 {
-for (int i = 0; i < argC; i++) {
+for (int32_t i = 0; i < argC; i++) {
 	m_properties.Push (StrDup (argV [i]));
 	if (*m_properties [i] == '-')
 		strlwr (m_properties [i]);  // Convert all args to lowercase
@@ -158,7 +158,7 @@ if (m_cf.Open (filename, "", "rb", 0)) {
 
 // ----------------------------------------------------------------------------
 
-int CConfigManager::Int (int t, int nDefault)
+int32_t CConfigManager::Int (int32_t t, int32_t nDefault)
 {
 	char *psz = m_properties [t];
 
@@ -173,9 +173,9 @@ return nDefault;
 
 // ----------------------------------------------------------------------------
 
-int CConfigManager::Int (const char* szArg, int nDefault)
+int32_t CConfigManager::Int (const char* szArg, int32_t nDefault)
 {
-	int t = Find (szArg);
+	int32_t t = Find (szArg);
 
 return t ? Int (t, nDefault) : nDefault;
 }
@@ -184,7 +184,7 @@ return t ? Int (t, nDefault) : nDefault;
 
 const char* CConfigManager::Text (const char* szArg, const char* pszDefault)
 {
-	int t = Find (szArg);
+	int32_t t = Find (szArg);
 
 return t ? m_properties [t] : pszDefault;
 }

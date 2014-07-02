@@ -18,8 +18,8 @@ extern char **pszHelpTexts;
 void LoadModTexts (void);
 void FreeModTexts (void);
 
-const char *GAMETEXT (int _i);
-const char *HELPTEXT (int _i);
+const char *GAMETEXT (int32_t _i);
+const char *HELPTEXT (int32_t _i);
 
 #define TXT_VERTIGO	"Vertigo"
 

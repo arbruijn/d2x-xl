@@ -4,13 +4,13 @@
 class CWayPointManager {
 	private:
 		CArray<CObject*>		m_wayPoints;
-		int						m_nWayPoints;
+		int32_t						m_nWayPoints;
 
-	CObject* Find (int nId);
+	CObject* Find (int32_t nId);
 	CObject* Target (CObject* objP);
-	int Count (void);
+	int32_t Count (void);
 	void Gather (void);
-	void Remap (int& nId);
+	void Remap (int32_t& nId);
 	void Renumber (void);
 	void LinkBack (void);
 	void Attach (void);
@@ -19,7 +19,7 @@ class CWayPointManager {
 	bool Hop (CObject* objP);
 	bool Synchronize (CObject* obj);
 	void Move (CObject* objP);
-	inline CObject* WayPoint (uint i) { return m_wayPoints.IsIndex (i) ? m_wayPoints [i] : NULL; }
+	inline CObject* WayPoint (uint32_t i) { return m_wayPoints.IsIndex (i) ? m_wayPoints [i] : NULL; }
 
 	public:
 		CWayPointManager () : m_nWayPoints (0)

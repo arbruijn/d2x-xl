@@ -22,7 +22,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "ogl_lib.h"
 #include "oof.h"
 
-void ScaleTransformation (CTransformation& transformation, int bOglScale);
+void ScaleTransformation (CTransformation& transformation, int32_t bOglScale);
 
 //------------------------------------------------------------------------------
 //set view from x,y,z & p,b,h, xZoom.  Must call one of g3_setView_*()
@@ -41,7 +41,7 @@ ScaleTransformation (transformation, 1);
 
 #define ZSCREEN 10.0
 
-void SetupTransformation (CTransformation& transformation, const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int bOglScale, fix xStereoSeparation, bool bSetupRenderer)
+void SetupTransformation (CTransformation& transformation, const CFixVector& vPos, const CFixMatrix& mOrient, fix xZoom, int32_t bOglScale, fix xStereoSeparation, bool bSetupRenderer)
 {
 transformation.m_info.zoom = (ogl.IsOculusRift () && !(gameStates.render.nWindow [0] || gameStates.render.bBriefing)) ? F2X (X2F (xZoom) / X2F (DEFAULT_ZOOM) * float (RIFT_DEFAULT_ZOOM)) : xZoom;
 transformation.m_info.zoomf = (float) xZoom / 65536.0f;
@@ -72,7 +72,7 @@ if (bSetupRenderer)
 
 //------------------------------------------------------------------------------
 //performs aspect scaling on global view matrix
-void ScaleTransformation (CTransformation& transformation, int bOglScale)
+void ScaleTransformation (CTransformation& transformation, int32_t bOglScale)
 {
 	transformation.m_info.view [1] = transformation.m_info.view [0];		//so we can use unscaled if we want
 	transformation.m_info.viewf [1] = transformation.m_info.viewf [0];		//so we can use unscaled if we want

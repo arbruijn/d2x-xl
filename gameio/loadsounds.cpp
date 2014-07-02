@@ -63,13 +63,13 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //#define NO_DUMP_SOUNDS        1   //if set, dump bitmaps but not sounds
 
-int RequestCD (void);
+int32_t RequestCD (void);
 
 extern char CDROM_dir [];
 
 CHashTable soundNames [2];
 static tSoundFile sounds [2][MAX_SOUND_FILES];
-static int nSoundFilesNew = 0;
+static int32_t nSoundFilesNew = 0;
 
 //------------------------------------------------------------------------------
 /*
@@ -92,9 +92,9 @@ memset (gameData.pig.sound.sounds, 0, sizeof (gameData.pig.sound.sounds));
 
 //------------------------------------------------------------------------------
 
-int PiggyRegisterSound (char *szFileName, int bFromFile, bool bCustom)
+int32_t PiggyRegisterSound (char *szFileName, int32_t bFromFile, bool bCustom)
 {
-	int i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission];
+	int32_t i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission];
 
 Assert (i < MAX_SOUND_FILES);
 strncpy (sounds [gameStates.app.bD1Mission][i].name, szFileName, 12);
@@ -107,9 +107,9 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int PiggyFindSound (const char * name)
+int32_t PiggyFindSound (const char * name)
 {
-	int i = soundNames [gameStates.app.bD1Mission].Search (name);
+	int32_t i = soundNames [gameStates.app.bD1Mission].Search (name);
 if (i < 0)
 	return -1;
 return i;
@@ -119,9 +119,9 @@ return i;
 
 void FreeSoundReplacements (void)
 {
-for (int i = 0; i < 2; i++) {
+for (int32_t i = 0; i < 2; i++) {
 	CSoundSample* dsP = gameData.pig.sound.sounds [i].Buffer ();
-	for (int j = 0; j < MAX_SOUND_FILES; j++, dsP++) {
+	for (int32_t j = 0; j < MAX_SOUND_FILES; j++, dsP++) {
 		if (dsP->bCustom) {
 			dsP->data [1].Destroy ();
 			dsP->bCustom = 0;
@@ -132,13 +132,13 @@ for (int i = 0; i < 2; i++) {
 
 //------------------------------------------------------------------------------
 
-int LoadSoundReplacements (const char *pszFilename)
+int32_t LoadSoundReplacements (const char *pszFilename)
 {
 	CFile					cf;
 	char					szId [4];
-	int					nLoadedSounds;
-	int					i, j, l;
-	int					b11K = (gameOpts->sound.audioSampleRate == SAMPLE_RATE_11K);
+	int32_t					nLoadedSounds;
+	int32_t					i, j, l;
+	int32_t					b11K = (gameOpts->sound.audioSampleRate == SAMPLE_RATE_11K);
 	tPIGSoundHeader	dsh;
 	CSoundSample*		dsP;
 	size_t				nHeaderOffs, nDataOffs;
@@ -195,7 +195,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int LoadHiresSound (CSoundSample* soundP, char* pszSoundName, bool bCustom)
+int32_t LoadHiresSound (CSoundSample* soundP, char* pszSoundName, bool bCustom)
 {
 	CFile			cf;
 	char			szSoundFile [FILENAME_LEN];
@@ -205,7 +205,7 @@ if (!((*gameFolders.mods.szSounds [1] && cf.Open (szSoundFile, gameFolders.mods.
 	   (*gameFolders.mods.szSounds [0] && cf.Open (szSoundFile, gameFolders.mods.szSounds [0], "rb", 0)) ||
 	   ((/*bCustom ||*/ gameOpts->UseHiresSound ()) && cf.Open (szSoundFile, gameFolders.game.szSounds [HIRES_SOUND_FOLDER (gameStates.sound.bD1Sound)], "rb", 0))))
 	return 0;
-if (0 >= (soundP->nLength [0] = (int) cf.Length ())) {
+if (0 >= (soundP->nLength [0] = (int32_t) cf.Length ())) {
 	cf.Close ();
 	return 0;
 	}
@@ -213,7 +213,7 @@ if (!soundP->data [0].Create (soundP->nLength [0])) {
 	cf.Close ();
 	return 0;
 	}
-if (soundP->data [0].Read (cf, soundP->nLength [0]) != uint (soundP->nLength [0])) {
+if (soundP->data [0].Read (cf, soundP->nLength [0]) != uint32_t (soundP->nLength [0])) {
 	soundP->data [0].Destroy ();
 	soundP->nLength [0] = 0;
 	cf.Close ();
@@ -226,14 +226,14 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int SetupSounds (CFile& cf, int nSounds, int nSoundStart, bool bCustom, bool bUseLowRes)
+int32_t SetupSounds (CFile& cf, int32_t nSounds, int32_t nSoundStart, bool bCustom, bool bUseLowRes)
 {
 	tPIGSoundHeader	sndh;
 	CSoundSample*		soundP;
-	int					i, j;
-	int 					nHeaderSize = nSounds * sizeof (tPIGSoundHeader);
+	int32_t					i, j;
+	int32_t 					nHeaderSize = nSounds * sizeof (tPIGSoundHeader);
 	char					szSoundName [16];
-	int					nLoadedSounds [2] = {0, 0};
+	int32_t					nLoadedSounds [2] = {0, 0};
 
 /*---*/PrintLog (1, "Loading sound data (%d sounds)\n", nSounds);
 cf.Seek (nSoundStart, SEEK_SET);
@@ -276,12 +276,12 @@ return (nLoadedSounds [1] << 16) | nLoadedSounds [0];
 
 //------------------------------------------------------------------------------
 
-int PiggySoundIsNeeded (int nSound)
+int32_t PiggySoundIsNeeded (int32_t nSound)
 {
 #if 1
 return 1;
 #else
-	int i;
+	int32_t i;
 
 if (!gameStates.sound.audio.bLoMem)
 	return 1;
@@ -297,7 +297,7 @@ return 0;
 
 #if USE_OPENAL
 
-int PiggyBufferSound (CSoundSample *soundP)
+int32_t PiggyBufferSound (CSoundSample *soundP)
 {
 if (!gameOpts->sound.bUseOpenAL)
 	return 0;
@@ -327,7 +327,7 @@ void LoadSounds (CFile& cf, bool bCustom)
 {
 	CSoundSample*	soundP = &gameData.pig.sound.soundP [0];
 
-for (int i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission]; i; i--, soundP++) {
+for (int32_t i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission]; i; i--, soundP++) {
 	if (soundP->nOffset [bCustom] > 0) {
 		//if (PiggySoundIsNeeded (i))
 			{
@@ -344,11 +344,11 @@ for (int i = gameData.pig.sound.nSoundFiles [gameStates.app.bD1Mission]; i; i--,
 
 //------------------------------------------------------------------------------
 
-void UnloadSounds (int bD1)
+void UnloadSounds (int32_t bD1)
 {
 PrintLog (1, "unloading sounds\n");
 CSoundSample* soundP = gameData.pig.sound.sounds [bD1].Buffer ();
-for (int j = 0; j < MAX_SOUND_FILES; j++, soundP++)
+for (int32_t j = 0; j < MAX_SOUND_FILES; j++, soundP++)
 	if (soundP->bHires) {
 		soundP->data [0].Destroy ();
 		soundP->bHires = 0;
@@ -362,7 +362,7 @@ soundNames [bD1].Destroy ();
 
 //------------------------------------------------------------------------------
 
-bool VerifyHiresSound (bool bCustom, int nLoadedSounds)
+bool VerifyHiresSound (bool bCustom, int32_t nLoadedSounds)
 {
 if (bCustom) {
 	if (!(nLoadedSounds & 0xFFFF)) {	// -> all default sounds are hires
@@ -381,15 +381,15 @@ return true;
 
 //------------------------------------------------------------------------------
 
-int LoadD2Sounds (bool bCustom)
+int32_t LoadD2Sounds (bool bCustom)
 {
 if (!(gameData.pig.sound.nType || bCustom))
 	return 1;
 
 	CFile		cf;
-	int		sndId, sndVersion;
-	int		nSounds;
-	int		nLoadedSounds = 0;
+	int32_t		sndId, sndVersion;
+	int32_t		nSounds;
+	int32_t		nLoadedSounds = 0;
 	bool		bUseLowRes = false;
 	char		szFile [FILENAME_LEN];
 	char*		pszFile, * pszFolder;
@@ -438,7 +438,7 @@ else {
 		}
 	nSounds = cf.ReadInt ();
 
-	nLoadedSounds = SetupSounds (cf, nSounds, (int) cf.Tell (), bCustom, bUseLowRes);
+	nLoadedSounds = SetupSounds (cf, nSounds, (int32_t) cf.Tell (), bCustom, bUseLowRes);
 
 #if 1
 	if (!VerifyHiresSound (bCustom, nLoadedSounds))
@@ -460,7 +460,7 @@ return nLoadedSounds != 0;
 
 bool LoadD1Sounds (bool bCustom)
 {
-	int	nBmHdrOffs, nBmDataOffs, nSounds, nBitmaps;
+	int32_t	nBmHdrOffs, nBmDataOffs, nSounds, nBitmaps;
 
 if (cfPiggy [1].File ())
 	cfPiggy [1].Seek (0, SEEK_SET);
@@ -476,7 +476,7 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data) {
 	if ((gameData.pig.sound.nType != 1) || gameStates.app.bCustomSounds || bCustom) {
 		if (bCustom)
 			sprintf (gameFolders.mods.szSounds [1], "%s%s", gameFolders.mods.szSounds [0], LevelFolder (missionManager.nCurrentLevel));
-		int nLoadedSounds = SetupSounds (cfPiggy [1], nSounds, nBmHdrOffs + nBitmaps * PIGBITMAPHEADER_D1_SIZE, bCustom, false);
+		int32_t nLoadedSounds = SetupSounds (cfPiggy [1], nSounds, nBmHdrOffs + nBitmaps * PIGBITMAPHEADER_D1_SIZE, bCustom, false);
 		if (!VerifyHiresSound (bCustom, nLoadedSounds))
 			return LoadD1Sounds (bCustom);
 		LoadSounds (cfPiggy [1]);
@@ -537,21 +537,21 @@ tAddonSound addonSounds [MAX_ADDON_SOUND_FILES] = {
 	 {NULL, "35:waterfall.wav"},
 	 {NULL, "36:fire.wav"},
 	 {NULL, "37:jet-engine.wav"},
-	 {NULL, "38:nuke-explosion-short.wav"}
+	 {NULL, "38:nuke-explosion-int16_t.wav"}
 	};
 
 //------------------------------------------------------------------------------
 
-const char *AddonSoundName (int nSound)
+const char *AddonSoundName (int32_t nSound)
 {
 return ((nSound < 0) || (nSound >= MAX_ADDON_SOUND_FILES)) ? "" : addonSounds [nSound].szSoundFile;
 }
 
 //------------------------------------------------------------------------------
 
-int FindAddonSound (const char* pszSoundFile)
+int32_t FindAddonSound (const char* pszSoundFile)
 {
-for (int i = 0; i < MAX_ADDON_SOUND_FILES; i++)
+for (int32_t i = 0; i < MAX_ADDON_SOUND_FILES; i++)
 	if (strstr (addonSounds [i].szSoundFile + 3, pszSoundFile) ==  addonSounds [i].szSoundFile + 3)
 		return i;
 return -1;
@@ -559,12 +559,12 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-Mix_Chunk *LoadAddonSound (const char *pszSoundFile, ubyte *bBuiltIn)
+Mix_Chunk *LoadAddonSound (const char *pszSoundFile, uint8_t *bBuiltIn)
 {
 	Mix_Chunk*		chunkP;
 	char				szWAV [FILENAME_LEN];
 	const char*		pszFolder, * pszFile;
-	int				i;
+	int32_t				i;
 	CFile				cf;
 
 if (!::isdigit (*pszSoundFile))
@@ -610,7 +610,7 @@ return chunkP;
 
 void LoadAddonSounds (void)
 {
-for (int i = 0; i < int (sizeofa (addonSounds)); i++)
+for (int32_t i = 0; i < int32_t (sizeofa (addonSounds)); i++)
 	LoadAddonSound (AddonSoundName (i));
 }
 
@@ -618,7 +618,7 @@ for (int i = 0; i < int (sizeofa (addonSounds)); i++)
 
 void FreeAddonSounds (void)
 {
-for (int i = 0; i < MAX_ADDON_SOUND_FILES; i++) {
+for (int32_t i = 0; i < MAX_ADDON_SOUND_FILES; i++) {
 	if (addonSounds [i].chunkP) {
 		Mix_FreeChunk (addonSounds [i].chunkP);
 		addonSounds [i].chunkP = NULL;

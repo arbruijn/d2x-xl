@@ -64,11 +64,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define	DEATH_SEQUENCE_EXPLODE_TIME	 (I2X (2))
 
 CObject	*viewerSaveP;
-int		nPlayerFlagsSave;
+int32_t		nPlayerFlagsSave;
 fix		xCameraToPlayerDistGoal=I2X (4);
-ubyte		nControlTypeSave, nRenderTypeSave;
-int		nKilledInFrame = -1;
-short		nKilledObjNum = -1;
+uint8_t		nControlTypeSave, nRenderTypeSave;
+int32_t		nKilledInFrame = -1;
+int16_t		nKilledObjNum = -1;
 
 extern char bMultiSuicide;
 
@@ -78,7 +78,7 @@ extern char bMultiSuicide;
 void SetCameraPos (CFixVector *vCameraPos, CObject *objP)
 {
 	CFixVector	vPlayerCameraOffs = *vCameraPos - objP->info.position.vPos;
-	int			count = 0;
+	int32_t			count = 0;
 	fix			xCameraPlayerDist;
 	fix			xFarScale;
 
@@ -154,7 +154,7 @@ if (gameStates.app.bPlayerIsDead) {
 	//	If unable to create camera at time of death, create now.
 	if (!gameData.objs.deadPlayerCamera) {
 		CObject *playerP = OBJECTS + LOCALPLAYER.nObject;
-		int nObject = CreateCamera (playerP);
+		int32_t nObject = CreateCamera (playerP);
 		if (nObject != -1)
 			gameData.objs.viewerP = gameData.objs.deadPlayerCamera = OBJECTS + nObject;
 		else
@@ -274,7 +274,7 @@ playerObjP->mType.physInfo.rotThrust.SetZero ();
 playerObjP->mType.physInfo.thrust.SetZero ();
 playerObjP->ResetDamage ();
 gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
-int nObject = CreateCamera (playerObjP);
+int32_t nObject = CreateCamera (playerObjP);
 viewerSaveP = gameData.objs.viewerP;
 if (nObject != -1)
 	gameData.objs.viewerP = gameData.objs.deadPlayerCamera = OBJECTS + nObject;

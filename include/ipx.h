@@ -34,7 +34,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define IPX_DRIVER_MCAST4 4 // UDP/IP, user datagrams protocol over multicast networks
 
 /* Sets the "IPX driver" (net driver).  Takes one of the above consts as argument. */
-extern void ArchIpxSetDriver(int ipx_driver);
+extern void ArchIpxSetDriver(int32_t ipx_driver);
 
 #define IPX_INIT_OK              0
 #define IPX_SOCKET_ALREADY_OPEN -1
@@ -46,13 +46,13 @@ extern void ArchIpxSetDriver(int ipx_driver);
 //------------------------------------------------------------------------------
 
 typedef union tPort {
-	ubyte		b [2];
-	ushort	s;
+	uint8_t		b [2];
+	uint16_t	s;
 } __pack__ tPort;
 
 typedef union tIP {
-	uint		a;
-	ubyte		octets [4];
+	uint32_t		a;
+	uint8_t		octets [4];
 } __pack__ tIP;
 
 typedef struct tPortAddress {
@@ -62,21 +62,21 @@ typedef struct tPortAddress {
 
 typedef union tNetworkAddr {
 	tPortAddress	portAddress;
-	ubyte				node [6];
+	uint8_t				node [6];
 } tNetworkAddr;
 
 typedef struct tNetworkNode {
 	union {
-		ubyte		b [4];
-		uint		n;
+		uint8_t		b [4];
+		uint32_t		n;
 	} network;
 	tNetworkAddr	address;
 } __pack__ tNetworkNode;
 
 typedef struct tAppleTalkAddr {
-	ushort  net;
-	ubyte   node;
-	ubyte   socket;
+	uint16_t  net;
+	uint8_t   node;
+	uint8_t   socket;
 } __pack__ tAppleTalkAddr;
 
 typedef union {
@@ -89,22 +89,22 @@ class CNetworkNode {
 	public:
 		tNetworkNode	m_address;
 
-		inline ubyte* Network (void) { return m_address.network.b; }
-		inline ubyte* Node (void) { return m_address.address.node; }
-		inline ubyte* Server (void) { return m_address.address.portAddress.ip.octets; }
-		inline ushort Port (void) { return m_address.address.portAddress.port.s; }
+		inline uint8_t* Network (void) { return m_address.network.b; }
+		inline uint8_t* Node (void) { return m_address.address.node; }
+		inline uint8_t* Server (void) { return m_address.address.portAddress.ip.octets; }
+		inline uint16_t Port (void) { return m_address.address.portAddress.port.s; }
 
-		inline void SetNetwork (void* network) { memcpy (m_address.network.b, (ubyte*) network, sizeof (m_address.network)); }
-		inline void SetNode (void* node) { memcpy (m_address.address.node, (ubyte*) node, sizeof (m_address.address.node)); }
-		inline void SetServer (void* ip) { memcpy (m_address.address.portAddress.ip.octets, (ubyte*) ip, sizeof (m_address.address.portAddress.ip.octets)); }
-		inline void SetServer (uint ip) { m_address.address.portAddress.ip.a = ip; }
-		inline void SetPort (void* port) { memcpy (m_address.address.portAddress.port.b, (ubyte*) port, sizeof (m_address.address.portAddress.port.b)); }
-		inline void SetPort (ushort port) { m_address.address.portAddress.port.s = port; }
+		inline void SetNetwork (void* network) { memcpy (m_address.network.b, (uint8_t*) network, sizeof (m_address.network)); }
+		inline void SetNode (void* node) { memcpy (m_address.address.node, (uint8_t*) node, sizeof (m_address.address.node)); }
+		inline void SetServer (void* ip) { memcpy (m_address.address.portAddress.ip.octets, (uint8_t*) ip, sizeof (m_address.address.portAddress.ip.octets)); }
+		inline void SetServer (uint32_t ip) { m_address.address.portAddress.ip.a = ip; }
+		inline void SetPort (void* port) { memcpy (m_address.address.portAddress.port.b, (uint8_t*) port, sizeof (m_address.address.portAddress.port.b)); }
+		inline void SetPort (uint16_t port) { m_address.address.portAddress.port.s = port; }
 
-		inline void ResetServer (ubyte filler = 0) { memset (m_address.address.portAddress.ip.octets, filler, sizeof (m_address.address.portAddress.ip.octets)); }
-		inline void ResetNetwork (ubyte filler = 0) { memset (m_address.network.b, filler, sizeof (m_address.network)); }
-		inline void ResetNode (ubyte filler = 0) { memset (m_address.address.node, filler, sizeof (m_address.address.node)); }
-		inline void ResetPort (ubyte filler = 0) { memset (m_address.address.portAddress.port.b, filler, sizeof (m_address.address.portAddress.port)); }
+		inline void ResetServer (uint8_t filler = 0) { memset (m_address.address.portAddress.ip.octets, filler, sizeof (m_address.address.portAddress.ip.octets)); }
+		inline void ResetNetwork (uint8_t filler = 0) { memset (m_address.network.b, filler, sizeof (m_address.network)); }
+		inline void ResetNode (uint8_t filler = 0) { memset (m_address.address.node, filler, sizeof (m_address.address.node)); }
+		inline void ResetPort (uint8_t filler = 0) { memset (m_address.address.portAddress.port.b, filler, sizeof (m_address.address.portAddress.port)); }
 	};
 
 class CNetworkInfo {
@@ -112,21 +112,21 @@ class CNetworkInfo {
 		tNetworkInfo	m_info;
 
 	public:
-		inline ubyte* Network (void) { return m_info.node.network.b; }
-		inline ubyte* Node (void) { return m_info.node.address.node; }
-		inline ubyte* Server (void) { return m_info.node.address.portAddress.ip.octets; }
-		inline ushort* Port (void) { return &m_info.node.address.portAddress.port.s; }
+		inline uint8_t* Network (void) { return m_info.node.network.b; }
+		inline uint8_t* Node (void) { return m_info.node.address.node; }
+		inline uint8_t* Server (void) { return m_info.node.address.portAddress.ip.octets; }
+		inline uint16_t* Port (void) { return &m_info.node.address.portAddress.port.s; }
 
-		inline void SetNetwork (void* network) { memcpy (m_info.node.network.b, (ubyte*) network, sizeof (m_info.node.network)); }
-		inline void SetNetwork (uint network) {m_info.node.network.n = network; }
-		inline void SetNode (void* node) { memcpy (m_info.node.address.node, (ubyte*) node, sizeof (m_info.node.address.node)); }
-		inline void SetServer (void* ip) { memcpy (m_info.node.address.portAddress.ip.octets, (ubyte*) ip, sizeof (m_info.node.address.portAddress.ip.octets)); }
-		inline void SetServer (uint ip) { m_info.node.address.portAddress.ip.a = ip; }
-		inline void SetPort (void* port) { memcpy (m_info.node.address.portAddress.port.b, (ubyte*) port, sizeof (m_info.node.address.portAddress.port.b)); }
-		inline void SetPort (ushort port) { m_info.node.address.portAddress.port.s = port; }
+		inline void SetNetwork (void* network) { memcpy (m_info.node.network.b, (uint8_t*) network, sizeof (m_info.node.network)); }
+		inline void SetNetwork (uint32_t network) {m_info.node.network.n = network; }
+		inline void SetNode (void* node) { memcpy (m_info.node.address.node, (uint8_t*) node, sizeof (m_info.node.address.node)); }
+		inline void SetServer (void* ip) { memcpy (m_info.node.address.portAddress.ip.octets, (uint8_t*) ip, sizeof (m_info.node.address.portAddress.ip.octets)); }
+		inline void SetServer (uint32_t ip) { m_info.node.address.portAddress.ip.a = ip; }
+		inline void SetPort (void* port) { memcpy (m_info.node.address.portAddress.port.b, (uint8_t*) port, sizeof (m_info.node.address.portAddress.port.b)); }
+		inline void SetPort (uint16_t port) { m_info.node.address.portAddress.port.s = port; }
 
-		inline void ResetNetwork (ubyte filler = 0) { memset (m_info.node.network.b, filler, sizeof (m_info.node.network)); }
-		inline void ResetNode (ubyte filler = 0) { memset (m_info.node.address.node, filler, sizeof (m_info.node.address.node)); }
+		inline void ResetNetwork (uint8_t filler = 0) { memset (m_info.node.network.b, filler, sizeof (m_info.node.network)); }
+		inline void ResetNode (uint8_t filler = 0) { memset (m_info.node.address.node, filler, sizeof (m_info.node.address.node)); }
 
 		inline bool HaveNetwork (void) { return m_info.node.network.n != 0; }
 
@@ -143,37 +143,37 @@ class CNetworkInfo {
 //------------------------------------------------------------------------------
 
 /* returns one of the above constants */
-extern int IpxInit(int socket_number);
+extern int32_t IpxInit(int32_t socket_number);
 
 void _CDECL_ IpxClose(void);
 
-int IpxChangeDefaultSocket (ushort nSocket, int bKeepClients = 0);
+int32_t IpxChangeDefaultSocket (uint16_t nSocket, int32_t bKeepClients = 0);
 
-// Returns a pointer to 6-ubyte address
-ubyte * IpxGetMyLocalAddress (void);
-// Returns a pointer to 4-ubyte server
-ubyte * IpxGetMyServerAddress (void);
+// Returns a pointer to 6-uint8_t address
+uint8_t * IpxGetMyLocalAddress (void);
+// Returns a pointer to 4-uint8_t server
+uint8_t * IpxGetMyServerAddress (void);
 
 // Determines the local address equivalent of an internetwork address.
-void IpxGetLocalTarget( ubyte * server, ubyte * node, ubyte * local_target );
+void IpxGetLocalTarget( uint8_t * server, uint8_t * node, uint8_t * local_target );
 
 // If any packets waiting to be read in, this fills data in with the packet data and returns
 // the number of bytes read.  Else returns 0 if no packets waiting.
-int IpxGetPacketData (ubyte * data);
+int32_t IpxGetPacketData (uint8_t * data);
 
 // Sends a broadcast packet to everyone on this socket.
-void IPXSendBroadcastData (ubyte * data, int datasize);
+void IPXSendBroadcastData (uint8_t * data, int32_t datasize);
 
 // Sends a packet to a certain address
-void IPXSendPacketData (ubyte * data, int datasize, ubyte *network, ubyte *address, ubyte *immediate_address);
-void IPXSendInternetPacketData (ubyte * data, int datasize, ubyte * server, ubyte *address);
+void IPXSendPacketData (uint8_t * data, int32_t datasize, uint8_t *network, uint8_t *address, uint8_t *immediate_address);
+void IPXSendInternetPacketData (uint8_t * data, int32_t datasize, uint8_t * server, uint8_t *address);
 
 // Sends a packet to everyone in the game
-int IpxSendGamePacket (ubyte *data, int datasize);
+int32_t IpxSendGamePacket (uint8_t *data, int32_t datasize);
 
 // Initialize and handle the protocol-specific field of the netgame struct.
-void IpxInitNetGameAuxData (ubyte data[]);
-int IpxHandleNetGameAuxData (const ubyte data[]);
+void IpxInitNetGameAuxData (uint8_t data[]);
+int32_t IpxHandleNetGameAuxData (const uint8_t data[]);
 // Handle disconnecting from the game
 void IpxHandleLeaveGame (void);
 

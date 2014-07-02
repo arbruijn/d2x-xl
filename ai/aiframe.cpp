@@ -35,17 +35,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // ---------- John: These variables must be saved as part of gamesave. --------
 
 typedef struct tAIStateInfo {
-	short				nObject;
-	short				nObjRef;
+	int16_t				nObject;
+	int16_t				nObjRef;
 	tRobotInfo*		botInfoP;
 	tAIStaticInfo*	aiP;
 	tAILocalInfo*	ailP;
 	CFixVector		vVisPos;
-	int				nPrevVisibility;
-	int				bVisAndVecComputed;
-	int				bHaveGunPos;
-	int				bMultiGame;
-	int				nNewGoalState;
+	int32_t				nPrevVisibility;
+	int32_t				bVisAndVecComputed;
+	int32_t				bHaveGunPos;
+	int32_t				bMultiGame;
+	int32_t				nNewGoalState;
 	} tAIStateInfo;
 
 
@@ -137,7 +137,7 @@ char pszAIState [8][5] = {
 // Third dimension is goal state.
 // Result is new goal state.
 // ERR_ means something impossible has happened.
-sbyte aiTransitionTable [AI_MAX_EVENT][AI_MAX_STATE][AI_MAX_STATE] = {
+int8_t aiTransitionTable [AI_MAX_EVENT][AI_MAX_STATE][AI_MAX_STATE] = {
  {
 		// Event = AIE_FIRE, a nearby CObject fired
 		// none     rest      srch      lock      flin      fire      recover     // CURRENT is rows, GOAL is columns
@@ -198,7 +198,7 @@ sbyte aiTransitionTable [AI_MAX_EVENT][AI_MAX_STATE][AI_MAX_STATE] = {
 
 // --------------------------------------------------------------------------------------------------------------------
 
-short AIRouteSeg (uint i)
+int16_t AIRouteSeg (uint32_t i)
 {
 return (i < gameData.ai.routeSegs.Length ()) ? gameData.ai.routeSegs [i].nSegment : -1;
 }
@@ -206,14 +206,14 @@ return (i < gameData.ai.routeSegs.Length ()) ? gameData.ai.routeSegs [i].nSegmen
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AINothingHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AINothingHandler (CObject *objP, tAIStateInfo *siP)
 {
 return 0;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AIMGotoPlayerHandler1 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMGotoPlayerHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 MoveTowardsSegmentCenter (objP);
 CreatePathToTarget (objP, 100, 1);
@@ -221,21 +221,21 @@ return 0;
 }
 
 
-int AIMGotoObjectHandler1 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMGotoObjectHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 return 0;
 }
 
 
-int AIMChaseObjectHandler1 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMChaseObjectHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 CreatePathToTarget (objP, 4 + gameData.ai.nOverallAgitation/8 + gameStates.app.nDifficultyLevel, 1);
 return 0;
 }
 
 
-int AIMIdlingHandler1 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMIdlingHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 if (siP->botInfoP->attackType)
 	MoveTowardsSegmentCenter (objP);
@@ -245,7 +245,7 @@ return 0;
 }
 
 
-int AIMFollowPathHandler1 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMFollowPathHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 if (siP->bMultiGame)
 	siP->ailP->mode = AIM_IDLING;
@@ -255,7 +255,7 @@ return 0;
 }
 
 
-int AIMRunFromObjectHandler1 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMRunFromObjectHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 MoveTowardsSegmentCenter (objP);
 objP->mType.physInfo.velocity.SetZero ();
@@ -265,7 +265,7 @@ return 0;
 }
 
 
-int AIMBehindHandler1 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMBehindHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 MoveTowardsSegmentCenter (objP);
 objP->mType.physInfo.velocity.SetZero ();
@@ -273,7 +273,7 @@ return 0;
 }
 
 
-int AIMOpenDoorHandler1 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMOpenDoorHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 CreateNSegmentPathToDoor (objP, 5, -1);
 return 0;
@@ -282,7 +282,7 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AIMChaseObjectHandler2 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMChaseObjectHandler2 (CObject *objP, tAIStateInfo *siP)
 {
 	tAIStaticInfo *aiP = siP->aiP;
 	fix circleDistance = siP->botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + TARGETOBJ->info.xSize;
@@ -359,7 +359,7 @@ return 0;
 }
 
 
-int AIMRunFromObjectHandler2 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMRunFromObjectHandler2 (CObject *objP, tAIStateInfo *siP)
 {
 	tAIStaticInfo *aiP = siP->aiP;
 
@@ -403,7 +403,7 @@ return 0;
 }
 
 
-int AIMGotoHandler2 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMGotoHandler2 (CObject *objP, tAIStateInfo *siP)
 {
 AIFollowPath (objP, 2, siP->nPrevVisibility, &gameData.ai.target.vDir);    // Follows path as if player can see robot.
 AIMultiSendRobotPos (siP->nObject, -1);
@@ -411,13 +411,13 @@ return 0;
 }
 
 
-int AIMFollowPathHandler2 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMFollowPathHandler2 (CObject *objP, tAIStateInfo *siP)
 {
 	tAIStaticInfo *aiP = siP->aiP;
-	int angerLevel = 65;
+	int32_t angerLevel = 65;
 
 if (aiP->behavior == AIB_STATION)
-	if ((aiP->nHideIndex >= 0) && (AIRouteSeg (uint (aiP->nHideIndex + aiP->nPathLength - 1)) == aiP->nHideSegment)) {
+	if ((aiP->nHideIndex >= 0) && (AIRouteSeg (uint32_t (aiP->nHideIndex + aiP->nPathLength - 1)) == aiP->nHideSegment)) {
 		angerLevel = 64;
 	}
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
@@ -477,7 +477,7 @@ return 0;
 }
 
 
-int AIMBehindHandler2 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMBehindHandler2 (CObject *objP, tAIStateInfo *siP)
 {
 if (!AIMultiplayerAwareness (objP, 71)) {
 	if (AIMaybeDoActualFiringStuff (objP, siP->aiP)) {
@@ -529,7 +529,7 @@ return 0;
 }
 
 
-int AIMIdlingHandler2 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMIdlingHandler2 (CObject *objP, tAIStateInfo *siP)
 {
 if ((gameData.ai.target.xDist < MAX_WAKEUP_DIST) || (siP->ailP->targetAwarenessType >= PA_RETURN_FIRE - 1)) {
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
@@ -596,7 +596,7 @@ return 0;
 }
 
 
-int AIMOpenDoorHandler2 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMOpenDoorHandler2 (CObject *objP, tAIStateInfo *siP)
 {
 	CFixVector vCenter, vGoal;
 
@@ -613,7 +613,7 @@ return 0;
 }
 
 
-int AIMSnipeHandler2 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMSnipeHandler2 (CObject *objP, tAIStateInfo *siP)
 {
 if (AIMultiplayerAwareness (objP, 53)) {
 	AIDoActualFiringStuff (objP, siP->aiP, siP->ailP, siP->botInfoP, siP->aiP->CURRENT_GUN);
@@ -624,7 +624,7 @@ return 0;
 }
 
 
-int AIMDefaultHandler2 (CObject *objP, tAIStateInfo *siP)
+int32_t AIMDefaultHandler2 (CObject *objP, tAIStateInfo *siP)
 {
 siP->ailP->mode = AIM_CHASE_OBJECT;
 return 0;
@@ -632,7 +632,7 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AISNoneHandler1 (CObject *objP, tAIStateInfo *siP)
+int32_t AISNoneHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 	fix	dot;
 
@@ -644,7 +644,7 @@ return 0;
 }
 
 
-int AISRestHandler1 (CObject *objP, tAIStateInfo *siP)
+int32_t AISRestHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 if (siP->aiP->GOAL_STATE == AIS_REST) {
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
@@ -655,7 +655,7 @@ return 0;
 }
 
 
-int AISSearchHandler1 (CObject *objP, tAIStateInfo *siP)
+int32_t AISSearchHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 if (!AIMultiplayerAwareness (objP, 60))
 	return 1;
@@ -668,7 +668,7 @@ return 0;
 }
 
 
-int AISLockHandler1 (CObject *objP, tAIStateInfo *siP)
+int32_t AISLockHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_WAKEUP_DIST);
 if (!siP->bMultiGame || (gameData.ai.nTargetVisibility)) {
@@ -683,7 +683,7 @@ return 0;
 }
 
 
-int AISFireHandler1 (CObject *objP, tAIStateInfo *siP)
+int32_t AISFireHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
 if (gameData.ai.nTargetVisibility == 2) {
@@ -710,7 +710,7 @@ return 0;
 }
 
 
-int AISRecoverHandler1 (CObject *objP, tAIStateInfo *siP)
+int32_t AISRecoverHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 if (siP->nObjRef & 3)
 	return 0;
@@ -725,7 +725,7 @@ return 0;
 }
 
 
-int AISDefaultHandler1 (CObject *objP, tAIStateInfo *siP)
+int32_t AISDefaultHandler1 (CObject *objP, tAIStateInfo *siP)
 {
 siP->aiP->GOAL_STATE =
 siP->aiP->CURRENT_STATE = AIS_REST;
@@ -735,9 +735,9 @@ return 0;
 // --------------------------------------------------------------------------------------------------------------------
 
 #if defined(_WIN32) && !DBG
-typedef int (__fastcall * pAIHandler) (CObject *objP, tAIStateInfo *);
+typedef int32_t (__fastcall * pAIHandler) (CObject *objP, tAIStateInfo *);
 #else
-typedef int (* pAIHandler) (CObject *objP, tAIStateInfo *);
+typedef int32_t (* pAIHandler) (CObject *objP, tAIStateInfo *);
 #endif
 
 static pAIHandler aimHandler1 [] = {
@@ -756,7 +756,7 @@ static pAIHandler aisHandler1 [] = {
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AIBrainHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AIBrainHandler (CObject *objP, tAIStateInfo *siP)
 {
 // Robots function nicely if behavior is gameData.producers.producers.  This
 // means they won't move until they can see the player, at
@@ -771,7 +771,7 @@ if (OBJSEG (TARGETOBJ) == objP->info.nSegment) {
 	AIMultiSendRobotPos (siP->nObject, -1);
 	}
 else if (siP->ailP->mode != AIM_IDLING) {
-	int r = objP->OpenableDoorsInSegment ();
+	int32_t r = objP->OpenableDoorsInSegment ();
 	if (r != -1) {
 		siP->ailP->mode = AIM_OPEN_DOOR;
 		siP->aiP->GOALSIDE = r;
@@ -804,7 +804,7 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AISnipeHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AISnipeHandler (CObject *objP, tAIStateInfo *siP)
 {
 if (siP->aiP->behavior == AIB_SNIPE) {
 	if (siP->bMultiGame && !siP->botInfoP->thief) {
@@ -829,7 +829,7 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AIBuddyHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AIBuddyHandler (CObject *objP, tAIStateInfo *siP)
 {
 if (siP->botInfoP->companion) {
 		tAIStaticInfo	*aiP = siP->aiP;
@@ -847,16 +847,16 @@ if (siP->botInfoP->companion) {
 		}
 
 	if (ReadyToFire (siP->botInfoP, siP->ailP)) {
-		int bDoStuff = 0;
+		int32_t bDoStuff = 0;
 
 		if (objP->OpenableDoorsInSegment () != -1)
 			bDoStuff = 1;
 		else if (aiP->nHideIndex >= 0) {
-			short nSegment;
-			int i = aiP->nHideIndex + aiP->nCurPathIndex;
-			if (((nSegment = AIRouteSeg (uint (i + aiP->PATH_DIR))) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
+			int16_t nSegment;
+			int32_t i = aiP->nHideIndex + aiP->nCurPathIndex;
+			if (((nSegment = AIRouteSeg (uint32_t (i + aiP->PATH_DIR))) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
 				bDoStuff = 1;
-			else if (((nSegment = AIRouteSeg (uint (i + 2 * aiP->PATH_DIR))) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
+			else if (((nSegment = AIRouteSeg (uint32_t (i + 2 * aiP->PATH_DIR))) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
 				bDoStuff = 1;
 			}
 		if (!bDoStuff && (siP->ailP->mode == AIM_GOTO_PLAYER) && (gameData.ai.target.xDist < 3 * MIN_ESCORT_DISTANCE / 2)) {
@@ -878,7 +878,7 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AIThiefHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AIThiefHandler (CObject *objP, tAIStateInfo *siP)
 {
 if (siP->botInfoP->thief) {
 		tAIStaticInfo	*aiP = siP->aiP;
@@ -886,15 +886,15 @@ if (siP->botInfoP->thief) {
 	ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
 	DoThiefFrame (objP);
 	if (ReadyToFire (siP->botInfoP, siP->ailP)) {
-		int bDoStuff = 0;
+		int32_t bDoStuff = 0;
 		if (objP->OpenableDoorsInSegment () != -1)
 			bDoStuff = 1;
 		else {
-			short nSegment;
-			int i = aiP->nHideIndex + aiP->nCurPathIndex;
-			if (((nSegment = AIRouteSeg (uint (i + aiP->PATH_DIR))) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
+			int16_t nSegment;
+			int32_t i = aiP->nHideIndex + aiP->nCurPathIndex;
+			if (((nSegment = AIRouteSeg (uint32_t (i + aiP->PATH_DIR))) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
 				bDoStuff = 1;
-			else if (((nSegment = AIRouteSeg (uint (i + 2 * aiP->PATH_DIR))) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
+			else if (((nSegment = AIRouteSeg (uint32_t (i + 2 * aiP->PATH_DIR))) >= 0) && (SEGMENTS [nSegment].HasOpenableDoor () != -1))
 				bDoStuff = 1;
 			}
 		if (bDoStuff) {
@@ -912,7 +912,7 @@ return 0;
 // --------------------------------------------------------------------------------------------------------------------
 // Make sure that if this guy got hit or bumped, then he's chasing player.
 
-int AIBumpHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AIBumpHandler (CObject *objP, tAIStateInfo *siP)
 {
 #if DBG
 if (objP->Index () == nDbgObj)
@@ -941,7 +941,7 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AIAnimationHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AIAnimationHandler (CObject *objP, tAIStateInfo *siP)
 {
 // Note: Should only do these two function calls for objects which animate
 if (gameData.ai.bEnableAnimation && (gameData.ai.target.xDist < MAX_WAKEUP_DIST / 2)) { // && !siP->bMultiGame)) {
@@ -960,10 +960,10 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AIBossHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AIBossHandler (CObject *objP, tAIStateInfo *siP)
 {
 if (siP->botInfoP->bossFlag) {
-		int	pv;
+		int32_t	pv;
 
 	if (siP->aiP->GOAL_STATE == AIS_FLINCH)
 		siP->aiP->GOAL_STATE = AIS_FIRE;
@@ -981,7 +981,7 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AIStationaryHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AIStationaryHandler (CObject *objP, tAIStateInfo *siP)
 {
 // Time-slice, don't process all the time, purely an efficiency hack.
 // Guys whose behavior is station and are not at their hide segment get processed anyway.
@@ -1006,7 +1006,7 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AIProducerHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AIProducerHandler (CObject *objP, tAIStateInfo *siP)
 {
 if (siP->bMultiGame || (SEGMENTS [objP->info.nSegment].m_function != SEGMENT_FUNC_ROBOTMAKER))
 	return 0;
@@ -1019,7 +1019,7 @@ return 1;
 // --------------------------------------------------------------------------------------------------------------------
 // Occasionally make non-still robots make a path to the player.  Based on agitation and distance from player.
 
-int AIApproachHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AIApproachHandler (CObject *objP, tAIStateInfo *siP)
 {
 #if DBG
 if (objP->Index () == nDbgObj)
@@ -1062,7 +1062,7 @@ return 1;
 
 static CObject *NearestRobot (CObject* objP, tAIStateInfo *siP)
 {
-	int			j;
+	int32_t			j;
 	fix			curDist, minDist = MAX_WAKEUP_DIST, bestAngle = -1;
 	CObject*		robotP, *targetP = NULL;
 	CFixVector	vPos = objP->AttacksRobots ()
@@ -1097,7 +1097,7 @@ return gameData.objs.consoleP;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AITargetPosHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AITargetPosHandler (CObject *objP, tAIStateInfo *siP)
 {
 	CObject* targetP = objP->AttacksRobots () ? NearestRobot (objP, siP) : gameData.objs.consoleP;
 
@@ -1124,7 +1124,7 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AIFireHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AIFireHandler (CObject *objP, tAIStateInfo *siP)
 {
 if ((siP->nPrevVisibility || !(siP->nObjRef & 3)) && ReadyToFire (siP->botInfoP, siP->ailP) &&
 	 ((siP->ailP->targetAwarenessType >= PA_RETURN_FIRE) ||//(siP->aiP->GOAL_STATE == AIS_FIRE) || //i.e. robot has been hit last frame
@@ -1150,7 +1150,7 @@ return 0;
 // --------------------------------------------------------------------------------------------------------------------
 // Decrease player awareness due to the passage of time.
 
-int AIAwarenessHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AIAwarenessHandler (CObject *objP, tAIStateInfo *siP)
 {
 	tAIStaticInfo*	aiP = siP->aiP;
 	tAILocalInfo*	ailP = siP->ailP;
@@ -1181,7 +1181,7 @@ return 0;
 // --------------------------------------------------------------------------------------------------------------------
 // Decrease player awareness due to the passage of time.
 
-int AIPlayerDeadHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AIPlayerDeadHandler (CObject *objP, tAIStateInfo *siP)
 {
 	tAIStaticInfo*	aiP = siP->aiP;
 	tAILocalInfo*	ailP = siP->ailP;
@@ -1210,7 +1210,7 @@ return 0;
 // This prevents the problem of a robot looking right at you but doing nothing.
 // Assert (gameData.ai.nTargetVisibility != -1); // Means it didn't get initialized!
 
-int AIWakeupHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AIWakeupHandler (CObject *objP, tAIStateInfo *siP)
 {
 if (!gameData.ai.nTargetVisibility &&
 	 (siP->ailP->targetAwarenessType < PA_WEAPON_WALL_COLLISION) &&
@@ -1233,7 +1233,7 @@ return 0;
 // --------------------------------------------------------------------------------------------------------------------
 // Decrease player awareness due to the passage of time.
 
-int AINewGoalHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AINewGoalHandler (CObject *objP, tAIStateInfo *siP)
 {
 	tAIStaticInfo*	aiP = siP->aiP;
 	tAILocalInfo*	ailP = siP->ailP;
@@ -1261,11 +1261,11 @@ return 0;
 // --------------------------------------------------------------------------------------------------------------------
 // Decrease player awareness due to the passage of time.
 
-int AIFireGunsHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AIFireGunsHandler (CObject *objP, tAIStateInfo *siP)
 {
 if (siP->aiP->GOAL_STATE == AIS_FIRE) {
 	tAILocalInfo *ailP = siP->ailP;
-	int i, nGuns = siP->botInfoP->nGuns;
+	int32_t i, nGuns = siP->botInfoP->nGuns;
 	for (i = 0; i < nGuns; i++)
 		ailP->goalState [i] = AIS_FIRE;
 	}
@@ -1275,14 +1275,14 @@ return 0;
 // --------------------------------------------------------------------------------------------------------------------
 // If a guy hasn't animated to the firing state, but his nextPrimaryFire says ok to fire, bash him there
 
-int AIForceFireHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AIForceFireHandler (CObject *objP, tAIStateInfo *siP)
 {
 	tAIStaticInfo	*aiP = siP->aiP;
 
 if (ReadyToFire (siP->botInfoP, siP->ailP) && (aiP->GOAL_STATE == AIS_FIRE))
 	aiP->CURRENT_STATE = AIS_FIRE;
 if ((aiP->GOAL_STATE != AIS_FLINCH) && (objP->info.nId != ROBOT_BRAIN)) {
-	if ((ushort) aiP->CURRENT_STATE < AIS_ERROR)
+	if ((uint16_t) aiP->CURRENT_STATE < AIS_ERROR)
 		return aisHandler1 [aiP->CURRENT_STATE] (objP, siP);
 	else
 		return AISDefaultHandler1 (objP, siP);
@@ -1297,7 +1297,7 @@ return 0;
 // AI.  This is low level communication between systems of a sort
 // that should not be done.
 
-int AIRetryHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AIRetryHandler (CObject *objP, tAIStateInfo *siP)
 {
 	tAILocalInfo	*ailP = siP->ailP;
 
@@ -1307,7 +1307,7 @@ else {
 	ailP->nConsecutiveRetries += ailP->nRetryCount;
 	ailP->nRetryCount = 0;
 	if (ailP->nConsecutiveRetries > 3) {
-		if ((ushort) ailP->mode <= AIM_GOTO_OBJECT)
+		if ((uint16_t) ailP->mode <= AIM_GOTO_OBJECT)
 			return aimHandler1 [ailP->mode] (objP, siP);
 		ailP->nConsecutiveRetries = 0;
 		}
@@ -1317,7 +1317,7 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-int AINextFireHandler (CObject *objP, tAIStateInfo *siP)
+int32_t AINextFireHandler (CObject *objP, tAIStateInfo *siP)
 {
 	tAILocalInfo	*ailP = siP->ailP;
 
@@ -1439,7 +1439,7 @@ if (AIBuddyHandler (objP, &si))
 if (AIThiefHandler (objP, &si))
 	return;
 // More special ability stuff, but based on a property of a robot, not its ID.
-if ((ushort) si.ailP->mode > AIM_THIEF_WAIT)
+if ((uint16_t) si.ailP->mode > AIM_THIEF_WAIT)
 	AIMDefaultHandler2 (objP, &si);
 else if (aimHandler2 [si.ailP->mode] (objP, &si))
 	return;

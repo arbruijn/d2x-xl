@@ -59,10 +59,10 @@ tFaceRenderFunc faceRenderFunc = RenderFace;
 typedef struct tFaceBuffer {
 	CBitmap	*bmBot;
 	CBitmap	*bmTop;
-	short			nFaces;
-	short			nElements;
-	int			bTextured;
-	int			index [FACE_BUFFER_INDEX_SIZE];
+	int16_t			nFaces;
+	int16_t			nElements;
+	int32_t			bTextured;
+	int32_t			index [FACE_BUFFER_INDEX_SIZE];
 } tFaceBuffer;
 
 static tFaceBuffer faceBuffer = {NULL, NULL, 0, 0, 0, {0}};
@@ -77,11 +77,11 @@ extern GLhandleARB gsShaderProg [2][3];
 // this is a work around for OpenGL's per vertex light interpolation
 // rendering a quad is always started with the brightest vertex
 
-void G3BuildQuadIndex (CSegFace *faceP, int *indexP)
+void G3BuildQuadIndex (CSegFace *faceP, int32_t *indexP)
 {
 #if G3_BUFFER_FACES
-int nIndex = faceP->m_info.nIndex;
-//for (int i = 0; i < 4; i++)
+int32_t nIndex = faceP->m_info.nIndex;
+//for (int32_t i = 0; i < 4; i++)
 *indexP++ = nIndex++;
 *indexP++ = nIndex++;
 *indexP++ = nIndex++;
@@ -89,8 +89,8 @@ int nIndex = faceP->m_info.nIndex;
 #else
 	CFloatVector	*pc = FACES.color + faceP->m_info.nIndex;
 	float			l, lMax = 0;
-	int			i, j, nIndex;
-	int			iMax = 0;
+	int32_t			i, j, nIndex;
+	int32_t			iMax = 0;
 
 for (i = 0; i < 4; i++, pc++) {
 	l = pc->Red () + pc->Green () + pc->Blue ();
@@ -113,7 +113,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void G3FlushFaceBuffer (int bForce)
+void G3FlushFaceBuffer (int32_t bForce)
 {
 #if G3_BUFFER_FACES
 if (faceBuffer.nFaces && (bForce || (faceBuffer.nFaces >= FACE_BUFFER_SIZE))) {
@@ -136,7 +136,7 @@ if (faceBuffer.nFaces && (bForce || (faceBuffer.nFaces >= FACE_BUFFER_SIZE))) {
 
 //------------------------------------------------------------------------------
 
-void G3FillFaceBuffer (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTextured)
+void G3FillFaceBuffer (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int32_t bTextured)
 {
 #if DBG
 if (!gameOpts->render.debug.bTextures)
@@ -151,13 +151,13 @@ if (!gameStates.render.bTriangleMesh) {
 else
 #endif
 	{
-	int	i = faceP->m_info.nIndex,
+	int32_t	i = faceP->m_info.nIndex,
 			j = gameStates.render.bTriangleMesh ? faceP->m_info.nTris * 3 : 4;
 
 #if 0 //DBG
 		if (i == nDbgVertex)
 			BRP;
-		if (i + j > int (FACES.vertices.Length ())) {
+		if (i + j > int32_t (FACES.vertices.Length ())) {
 			PrintLog (0, "invalid vertex index %d in G3FillFaceBuffer\n");
 			return;
 			}
@@ -179,9 +179,9 @@ else
 
 //------------------------------------------------------------------------------
 
-int SetupShader (CSegFace *faceP, int bColorKey, int bMultiTexture, int bTextured, int bColored, CFloatVector *colorP)
+int32_t SetupShader (CSegFace *faceP, int32_t bColorKey, int32_t bMultiTexture, int32_t bTextured, int32_t bColored, CFloatVector *colorP)
 {
-	int	nType, nShader = -1;
+	int32_t	nType, nShader = -1;
 
 if (!ogl.m_features.bShaders || (gameStates.render.nType == RENDER_TYPE_SKYBOX))
 	return -1;
@@ -213,7 +213,7 @@ return nShader;
 
 #if DBG
 
-void RenderWireFrame (CSegFace *faceP, int bTextured)
+void RenderWireFrame (CSegFace *faceP, int32_t bTextured)
 {
 if (gameOpts->render.debug.bWireFrame) {
 	if ((nDbgFace < 0) || (faceP - FACES.faces == nDbgFace)) {
@@ -224,14 +224,14 @@ if (gameOpts->render.debug.bWireFrame) {
 		glColor3f (1.0f, 0.5f, 0.0f);
 		glLineWidth (6);
 		if (ogl.SizeVertexBuffer (4)) {
-			for (int i = 0; i < 4; i++)
+			for (int32_t i = 0; i < 4; i++)
 				ogl.VertexBuffer () [i] = gameData.segs.fVertices [faceP->m_info.index [i]];
 			ogl.FlushBuffers (GL_LINE_LOOP, 4);
 			}	
 		if (gameStates.render.bTriangleMesh) {
 			glLineWidth (2);
 			glColor3f (1,1,1);
-			for (int i = 0; i < faceP->m_info.nTris; i++, triP++)
+			for (int32_t i = 0; i < faceP->m_info.nTris; i++, triP++)
 				OglDrawArrays (GL_LINE_LOOP, triP->nIndex, 3);
 			glLineWidth (1);
 			}
@@ -260,7 +260,7 @@ else
 
 //------------------------------------------------------------------------------
 
-static inline CBitmap* SetupTMU (CBitmap* bmP, int nTMU, int nMode)
+static inline CBitmap* SetupTMU (CBitmap* bmP, int32_t nTMU, int32_t nMode)
 {
 ogl.SelectTMU (nTMU, true);
 ogl.SetTexturing (true);
@@ -274,7 +274,7 @@ return bmP;
 
 //------------------------------------------------------------------------------
 
-void inline ResetTMU (int nTMU)
+void inline ResetTMU (int32_t nTMU)
 {
 ogl.SelectTMU (nTMU, true);
 ogl.BindTexture (0);
@@ -283,8 +283,8 @@ ogl.SetTexturing (false);
 
 //------------------------------------------------------------------------------
 
-int SetRenderStates (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, 
-							int bTextured, int bColorKey, int bColored, int bLightmaps, 
+int32_t SetRenderStates (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, 
+							int32_t bTextured, int32_t bColorKey, int32_t bColored, int32_t bLightmaps, 
 							bool bForce = false)
 {
 PROF_START
@@ -340,7 +340,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void SetupMonitor (CSegFace *faceP, CBitmap *bmTop, int bTextured, int bLightmaps)
+void SetupMonitor (CSegFace *faceP, CBitmap *bmTop, int32_t bTextured, int32_t bLightmaps)
 {
 ogl.SelectTMU ((bmTop ? GL_TEXTURE1 : GL_TEXTURE0) + bLightmaps, true);
 if (bTextured)
@@ -353,7 +353,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void ResetMonitor (CBitmap *bmTop, int bLightmaps)
+void ResetMonitor (CBitmap *bmTop, int32_t bLightmaps)
 {
 if (bmTop) {
 	ogl.SelectTMU (GL_TEXTURE1 + bLightmaps, true);
@@ -370,14 +370,14 @@ else {
 
 //------------------------------------------------------------------------------
 
-static inline int FaceIsTransparent (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
+static inline int32_t FaceIsTransparent (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop)
 {
 return faceP->m_info.nTransparent;
 }
 
 //------------------------------------------------------------------------------
 
-static inline int FaceIsColored (CSegFace *faceP)
+static inline int32_t FaceIsColored (CSegFace *faceP)
 {
 return gameStates.render.bFullBright || faceP->m_info.nColored;
 }
@@ -394,10 +394,10 @@ else
 
 //------------------------------------------------------------------------------
 
-int RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTextured, int bLightmaps)
+int32_t RenderFace (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int32_t bTextured, int32_t bLightmaps)
 {
 PROF_START
-	int bColored, bTransparent, bColorKey = 0, bMonitor = 0;
+	int32_t bColored, bTransparent, bColorKey = 0, bMonitor = 0;
 
 #if DBG
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
@@ -505,9 +505,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int DrawHeadlights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int bTextured, int bLightmaps)
+int32_t DrawHeadlights (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, int32_t bTextured, int32_t bLightmaps)
 {
-	int bColorKey = 0, bMonitor = 0;
+	int32_t bColorKey = 0, bMonitor = 0;
 
 if (!faceP->m_info.bTextured)
 	bmBot = NULL;

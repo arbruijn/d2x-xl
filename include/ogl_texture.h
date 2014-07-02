@@ -17,18 +17,18 @@ class CBitmap;
 class CTextureManager;
 
 typedef struct tTexture {
-	int				index;
+	int32_t				index;
 	GLuint	 		handle;
 	GLint				internalFormat;
 	GLenum			format;
-	int 				w, h, tw, th, lw;
-//	int 				bytesu;
-//	int 				bytes;
+	int32_t 				w, h, tw, th, lw;
+//	int32_t 				bytesu;
+//	int32_t 				bytes;
 	GLfloat			u, v;
 	GLclampf			prio;
-	ubyte				bMipMaps;
+	uint8_t				bMipMaps;
 	char				bSmoothe;
-	ubyte				bRenderBuffer;
+	uint8_t				bRenderBuffer;
 	CBitmap*			bmP;
 #if RENDER2TEXTURE == 1
 	CPBO				pbo;
@@ -40,43 +40,43 @@ typedef struct tTexture {
 class CTexture {
 	private:
 #if 1
-		uint			m_nRegistered;
+		uint32_t			m_nRegistered;
 #endif
 		tTexture	m_info;
 
 	public:
 		CTexture () : m_nRegistered (0) { Init (); }
 		~CTexture () { Destroy (); }
-		GLuint Create (int w, int h);
+		GLuint Create (int32_t w, int32_t h);
 		void Init (void);
-		void Setup (int w, int h, int lw, int bpp  = 0, int bMask = 0, int bMipMap = 0, int bSmoothe = 0, CBitmap *bmP = NULL);
-		int Prepare (bool bCompressed = false);
+		void Setup (int32_t w, int32_t h, int32_t lw, int32_t bpp  = 0, int32_t bMask = 0, int32_t bMipMap = 0, int32_t bSmoothe = 0, CBitmap *bmP = NULL);
+		int32_t Prepare (bool bCompressed = false);
 #if TEXTURE_COMPRESSION
-		int Load (ubyte *buffer, int nBufSize = 0, int nFormat = 0, bool bCompressed = false);
+		int32_t Load (uint8_t *buffer, int32_t nBufSize = 0, int32_t nFormat = 0, bool bCompressed = false);
 #else
-		int Load (ubyte *buffer);
+		int32_t Load (uint8_t *buffer);
 #endif
 		void Destroy (void);
-		bool Register (uint i = 0);
+		bool Register (uint32_t i = 0);
 		void Release (void);
-		static void Wrap (int state);
+		static void Wrap (int32_t state);
 		void Bind (void);
-		int BindRenderBuffer (void);
+		int32_t BindRenderBuffer (void);
 		bool IsBound (void);
 
-		inline int Index (void) { return m_info.index; }
-		inline void SetIndex (int index) { m_info.index = index; }
+		inline int32_t Index (void) { return m_info.index; }
+		inline void SetIndex (int32_t index) { m_info.index = index; }
 		inline GLint Handle (void) { return GLint (m_info.handle); }
 		inline GLenum Format (void) { return m_info.format; }
 		inline GLint InternalFormat (void) { return m_info.internalFormat; }
 		inline GLfloat U (void) { return m_info.u; }
 		inline GLfloat V (void) { return m_info.v; }
-		inline int Width (void) { return m_info.w; }
-		inline int Height (void) { return m_info.h; }
-		inline int TW (void) { return m_info.tw; }
-		inline int TH (void) { return m_info.th; }
-		inline uint Registered (void) { return m_nRegistered; }
-		inline ubyte IsRenderBuffer (void) { return m_info.bRenderBuffer; }
+		inline int32_t Width (void) { return m_info.w; }
+		inline int32_t Height (void) { return m_info.h; }
+		inline int32_t TW (void) { return m_info.tw; }
+		inline int32_t TH (void) { return m_info.th; }
+		inline uint32_t Registered (void) { return m_nRegistered; }
+		inline uint8_t IsRenderBuffer (void) { return m_info.bRenderBuffer; }
 		inline CBitmap* Bitmap (void) { return m_info.bmP; }
 		inline void SetBitmap (CBitmap* bmP) { m_info.bmP = bmP; }
 
@@ -90,18 +90,18 @@ class CTexture {
 		inline CFBO& FBO (void) { return m_info.fbo; }
 		inline void SetRenderBuffer (CFBO *fbo);
 #endif
-		ubyte *Copy (int dxo, int dyo, ubyte *data);
-		ubyte *Convert (int dxo, int dyo,  CBitmap *bmP, int nTransp, int bSuperTransp);
+		uint8_t *Copy (int32_t dxo, int32_t dyo, uint8_t *data);
+		uint8_t *Convert (int32_t dxo, int32_t dyo,  CBitmap *bmP, int32_t nTransp, int32_t bSuperTransp);
 #if TEXTURE_COMPRESSION
-		int Compress ();
+		int32_t Compress ();
 #endif
-		int Verify (void);
+		int32_t Verify (void);
 		bool Check (void);
 
 	private:
 		void SetSize (void);
-		void SetBufSize (int dbits, int bits, int w, int h);
-		int FormatSupported (void);
+		void SetBufSize (int32_t dbits, int32_t bits, int32_t w, int32_t h);
+		int32_t FormatSupported (void);
 	};
 
 //------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ class CTextureManager {
 	private:
 		CTexture			m_info;
 		CTextureList	m_textures;
-		int				m_nTextures;
+		int32_t				m_nTextures;
 
 	public:
 		CTextureManager () { Init (); }
@@ -121,21 +121,21 @@ class CTextureManager {
 		void Init (void);
 		void Smash (void);
 		void Destroy (void);
-		uint Find (CTexture* texP);
-		uint Register (CTexture* texP);
+		uint32_t Find (CTexture* texP);
+		uint32_t Register (CTexture* texP);
 		bool Release (CTexture* texP);
 		inline CTextureList Textures (void) { return m_textures; }
 		bool Check (void);
-		uint Check (CTexture* texP);
+		uint32_t Check (CTexture* texP);
 	};
 
 extern CTextureManager textureManager;
 
 //------------------------------------------------------------------------------
 
-int Pow2ize (int v, int max = 4096);
+int32_t Pow2ize (int32_t v, int32_t max = 4096);
 
-extern int nOglMemTarget;
+extern int32_t nOglMemTarget;
 
 //------------------------------------------------------------------------------
 

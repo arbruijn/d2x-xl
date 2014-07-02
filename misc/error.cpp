@@ -38,7 +38,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 FILE *fLog = NULL;
 
 //edited 05/17/99 Matt Mueller added err_ prefix to prevent conflicts with statically linking SDL
-int err_initialized=0;
+int32_t err_initialized=0;
 //end edit -MM
 
 static void (*ErrorPrintFunc) (const char *);
@@ -46,8 +46,8 @@ static void (*ErrorPrintFunc) (const char *);
 char szExitMsg[MAX_MSG_LEN]="";
 char szWarnMsg[MAX_MSG_LEN];
 
-int nLogDate = 0;
-int glHWHash = 0;
+int32_t nLogDate = 0;
+int32_t glHWHash = 0;
 
 void ShowInGameWarning (const char *s);
 
@@ -102,7 +102,7 @@ pWarnFunc = warn_printf;
 void _CDECL_ set_exit_message(const char *fmt,...)
 {
 	va_list arglist;
-	int len;
+	int32_t len;
 
 va_start (arglist,fmt);
 len = vsprintf (szExitMsg,fmt,arglist);
@@ -113,11 +113,11 @@ if (len==-1 || len>MAX_MSG_LEN)
 
 //------------------------------------------------------------------------------
 
-void _Assert(int expr, const char *expr_text, const char *filename, int linenum)
+void _Assert(int32_t expr, const char *expr_text, const char *filename, int32_t linenum)
 {
 if (!(expr)) {
 #if defined (_DEBUG) && defined (_WIN32)
-	//_asm int 3;
+	//_asm int32_t 3;
 #else
 	Int3();
 #endif
@@ -197,11 +197,11 @@ return True;
 
 //------------------------------------------------------------------------------
 
-static int MsgSize (char* pszMsg, int& nCols)
+static int32_t MsgSize (char* pszMsg, int32_t& nCols)
 {
 if (!(pszMsg && *pszMsg))
 	return 0;
-int nRows = 1;
+int32_t nRows = 1;
 nCols = 0;
 for (char* p = pszMsg; *p && (pszMsg = strchr (p, '\n')); nRows++, p = ++pszMsg) {
 	if (nCols < pszMsg - p)
@@ -231,14 +231,14 @@ XtAppSetExitFlag (appShell);
 // Taken from the Motif programmer's manual and slightly adapted (no icon, single button),
 // minimal window decoration).
 
-Widget XmMessageDialog (const char* pszMsg, int nRows, int nCols, bool bError)
+Widget XmMessageDialog (const char* pszMsg, int32_t nRows, int32_t nCols, bool bError)
 {
     Widget       msgBox, pane, msgText, form, /*sep, label,*/ widget;
     void         DestroyShell(Widget, XtPointer, XtPointer);
     //Pixmap       pixmap;
     Property          args [10];
-    int          n = 0;
-    int          i;
+    int32_t          n = 0;
+    int32_t          i;
     Dimension    h;
 // Set up a DialogShell as a popup window. Set the delete window protocol response to XmDESTROY to make sure that
 // the window goes away appropriately. Otherwise, it's XmUNMAP which means it'd be lost forever, since we're not storing
@@ -344,7 +344,7 @@ XtAppSetExitFlag (appShell);
 void XmMessageBox (const char* pszMsg, bool bError)
 {
 	Widget	topWid;
-	int		nRows, nCols;
+	int32_t		nRows, nCols;
 
 nRows = MsgSize (const_cast<char*>(pszMsg), nCols);
 if ((nRows > 3) || (nCols > 360))
@@ -385,7 +385,7 @@ XtDestroyApplicationContext (appShell);
 #	define MB_ICONERROR		1
 #endif
 
-void D2MsgBox (const char *pszMsg, uint nType)
+void D2MsgBox (const char *pszMsg, uint32_t nType)
 {
 gameData.app.bGamePaused = 1;
 if (gameData.render.screen.Width () && gameData.render.screen.Height () && pWarnFunc)
@@ -434,10 +434,10 @@ exit (1);
 
 //------------------------------------------------------------------------------
 
-static int nLogIndent = 0;
-static int nLastIndent = 0;
+static int32_t nLogIndent = 0;
+static int32_t nLastIndent = 0;
 
-void IndentLog (int nIndent)
+void IndentLog (int32_t nIndent)
 {
 if (nIndent) {
 	if (abs (nIndent) == 1)
@@ -457,9 +457,9 @@ else if (nLogIndent > 30) {
 
 //------------------------------------------------------------------------------
 
-int SetIndent (int nIndent)
+int32_t SetIndent (int32_t nIndent)
 {
-int nOldIndent = nLogIndent;
+int32_t nOldIndent = nLogIndent;
 nLogIndent = nIndent;
 return nOldIndent;
 }
@@ -490,13 +490,13 @@ if (*gameFolders.user.szCache && (gameStates.app.nLogLevel > 0)) {
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ PrintLog (const int nIndent, const char *fmt, ...)
+void _CDECL_ PrintLog (const int32_t nIndent, const char *fmt, ...)
 {
 if (fLog) {
 	if (fmt && *fmt) {
 		va_list arglist;
 			static char	szLogLine [2][100000] = {{'\0'}, {'\0'}};
-			static int nLogLine = 0;
+			static int32_t nLogLine = 0;
 
 		va_start (arglist, fmt);
 		if (nLogIndent > 0)
@@ -542,16 +542,16 @@ static void SetLogDate (void)
 
 time (&t);
 h = localtime (&t);
-nLogDate = int (h->tm_year + 1900) * 65536 + int (h->tm_mon) * 256 + h->tm_mday;
+nLogDate = int32_t (h->tm_year + 1900) * 65536 + int32_t (h->tm_mon) * 256 + h->tm_mday;
 glHWHash = ~nLogDate;
 }
 
 //------------------------------------------------------------------------------
 //initialize error handling system, and set default message. returns 0=ok
-int _CDECL_ error_init (void (*func)(const char *), const char *fmt, ...)
+int32_t _CDECL_ error_init (void (*func)(const char *), const char *fmt, ...)
 {
 	va_list arglist;
-	int len;
+	int32_t len;
 
 atexit (print_exit_message);		//last thing at exit is print message
 SetLogDate ();
@@ -571,20 +571,20 @@ return 0;
 
 #if 1//DBG
 
-short nDbgSeg = -1;
-short nDbgSide = -1;
-short nDbgFace = -1;
-short nDbgObj = -1;
-short nDbgObjType = -1;
-short nDbgObjId = -1;
-short nDbgModel = -1;
-int nDbgVertex = -1;
-int nDbgBaseTex = -1;
-int nDbgOvlTex = -1;
-int nDbgTexture = -1;
-short nDbgSound = -1;
-short nDbgChannel = -1;
-int nDbgLight = -1;
+int16_t nDbgSeg = -1;
+int16_t nDbgSide = -1;
+int16_t nDbgFace = -1;
+int16_t nDbgObj = -1;
+int16_t nDbgObjType = -1;
+int16_t nDbgObjId = -1;
+int16_t nDbgModel = -1;
+int32_t nDbgVertex = -1;
+int32_t nDbgBaseTex = -1;
+int32_t nDbgOvlTex = -1;
+int32_t nDbgTexture = -1;
+int16_t nDbgSound = -1;
+int16_t nDbgChannel = -1;
+int32_t nDbgLight = -1;
 
 #endif
 

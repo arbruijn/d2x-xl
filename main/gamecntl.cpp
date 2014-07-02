@@ -123,9 +123,9 @@ if (gameData.time.xGame > last_playTime + CONVERTER_SOUND_DELAY) {
 
 //------------------------------------------------------------------------------
 
-void formatTime(char *str, int secs_int)
+void formatTime(char *str, int32_t secs_int)
 {
-	int h, m, s;
+	int32_t h, m, s;
 
 h = secs_int/3600;
 s = secs_int%3600;
@@ -171,9 +171,9 @@ gameData.app.bGamePaused = 0;
 void DoShowNetGameHelp (void);
 
 //Process selected keys until game unpaused. returns key that left pause (p or esc)
-int DoGamePause (void)
+int32_t DoGamePause (void)
 {
-	int			key = 0;
+	int32_t			key = 0;
 	char			szPauseMsg [1000];
 	char			szTotalTime [9], szLevelTime [9];
 
@@ -219,7 +219,7 @@ key = m.Menu (NULL, "PAUSE");
 
 #else 
 
-int bScreenChanged;
+int32_t bScreenChanged;
 
 SetPopupScreenMode ();
 if (!gameOpts->menus.nStyle) {
@@ -258,7 +258,7 @@ return key;
 
 //------------------------------------------------------------------------------
 //switch a cockpit window to the next function
-int SelectNextWindowFunction (int nWindow)
+int32_t SelectNextWindowFunction (int32_t nWindow)
 {
 switch (gameStates.render.cockpit.n3DView [nWindow]) {
 	case CV_NONE:

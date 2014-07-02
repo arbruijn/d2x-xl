@@ -27,7 +27,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //from gauges.c
 
 // Flags for gauges/hud stuff
-extern ubyte Reticle_on;
+extern uint8_t Reticle_on;
 
 // Call to flash a message on the HUD.  Returns true if message drawn.
 // (message might not be drawn if previous message was same)
@@ -53,7 +53,7 @@ extern ubyte Reticle_on;
 
 //	-----------------------------------------------------------------------------
 
-#define HUD_SCALE(v, s)		(int (float (v) * (s)))
+#define HUD_SCALE(v, s)		(int32_t (float (v) * (s)))
 #define HUD_SCALE_X(v)		HUD_SCALE (v, m_info.xScale)
 #define HUD_SCALE_Y(v)		HUD_SCALE (v, m_info.yScale)
 #define HUD_LHX(x)			(gameStates.menus.bHires ? 2 * (x) : x)
@@ -63,12 +63,12 @@ extern ubyte Reticle_on;
 //	-----------------------------------------------------------------------------
 
 typedef struct tSpan {
-	sbyte l, r;
+	int8_t l, r;
 } tSpan;
 
 typedef struct tGaugeBox {
-	int left, top;
-	int right, bot;		//maximal box
+	int32_t left, top;
+	int32_t right, bot;		//maximal box
 	tSpan *spanlist;	//list of left, right spans for copy
 } tGaugeBox;
 
@@ -76,17 +76,17 @@ typedef struct tGaugeBox {
 
 class CCockpitHistory {
 	public:
-		int		score;
-		int		energy;
-		int		shield;
-		uint		flags;
-		int		bCloak;
-		int		lives;
+		int32_t		score;
+		int32_t		energy;
+		int32_t		shield;
+		uint32_t		flags;
+		int32_t		bCloak;
+		int32_t		lives;
 		fix		afterburner;
-		int		bombCount;
-		int		laserLevel;
-		int		weapon [2];
-		int		ammo [2];
+		int32_t		bombCount;
+		int32_t		laserLevel;
+		int32_t		weapon [2];
+		int32_t		ammo [2];
 		fix		xOmegaCharge;
 
 	public:
@@ -95,34 +95,34 @@ class CCockpitHistory {
 
 class CCockpitInfo {
 	public:
-		int		nCloakFadeState;
-		int		bLastHomingWarningDrawn [2];
-		int		addedScore [2];
+		int32_t		nCloakFadeState;
+		int32_t		bLastHomingWarningDrawn [2];
+		int32_t		addedScore [2];
 		fix		scoreTime;
 		fix		lastWarningBeepTime [2];
-		int		bHaveGaugeCanvases;
-		int		nInvulnerableFrame;
-		int		weaponBoxStates [2];
+		int32_t		bHaveGaugeCanvases;
+		int32_t		nInvulnerableFrame;
+		int32_t		weaponBoxStates [2];
 		fix		weaponBoxFadeValues [2];
-		int		weaponBoxUser [2];
-		int		nLineSpacing;
-		int		nType;
-		int		nColor;
+		int32_t		weaponBoxUser [2];
+		int32_t		nLineSpacing;
+		int32_t		nType;
+		int32_t		nColor;
 		float		xScale;
 		float		yScale;
 		float		xGaugeScale;
 		float		yGaugeScale;
 		float		fontScale;
-		int		fontWidth;
-		int		fontHeight;
-		uint		fontColor;
-		int		heightPad;
-		int		nCockpit;
-		int		nShield;
-		int		nEnergy;
-		int		bCloak;
-		int		bAdjustCoords;
-		int		nDamage [3];
+		int32_t		fontWidth;
+		int32_t		fontHeight;
+		uint32_t		fontColor;
+		int32_t		heightPad;
+		int32_t		nCockpit;
+		int32_t		nShield;
+		int32_t		nEnergy;
+		int32_t		bCloak;
+		int32_t		bAdjustCoords;
+		int32_t		nDamage [3];
 		fix		tInvul;
 		fix		xStereoSeparation;
 		CCanvas	windows [2];
@@ -140,7 +140,7 @@ class CGenericCockpit {
 	protected:
 		CCockpitHistory		m_history [2];
 		CCockpitInfo			m_info;
-		static CStack<int>	m_save;
+		static CStack<int32_t>	m_save;
 
 	public:
 		CGenericCockpit();
@@ -152,21 +152,21 @@ class CGenericCockpit {
 		static void Rewind (bool bActivate = true);
 
 		inline float Aspect (void) { return float (gameData.render.screen.Height ()) / float (gameData.render.screen.Width ()) / 0.75f; }
-		inline int ScaleX (int v) { return (int) FRound (float (v) * m_info.xScale); }
-		inline int ScaleY (int v) { return (int) FRound (float (v) * m_info.yScale); }
-		inline int LHX (int x) { return x << gameStates.render.fonts.bHires; }
-		inline int LHY (int y) { return gameStates.render.fonts.bHires ? 24 * y / 10 : y; }
+		inline int32_t ScaleX (int32_t v) { return (int32_t) FRound (float (v) * m_info.xScale); }
+		inline int32_t ScaleY (int32_t v) { return (int32_t) FRound (float (v) * m_info.yScale); }
+		inline int32_t LHX (int32_t x) { return x << gameStates.render.fonts.bHires; }
+		inline int32_t LHY (int32_t y) { return gameStates.render.fonts.bHires ? 24 * y / 10 : y; }
 		inline float FontScale (void) { return m_info.fontScale; }
 		inline void SetFontScale (float fontScale) { m_info.fontScale = (fontScale < 1.0f) ? 1.0f : fontScale; }
-		inline uint FontColor (void) { return m_info.fontColor; }
-		inline void SetFontColor (uint fontColor) { m_info.fontColor = fontColor; }
+		inline uint32_t FontColor (void) { return m_info.fontColor; }
+		inline void SetFontColor (uint32_t fontColor) { m_info.fontColor = fontColor; }
 		inline CCanvas* Canvas (void) { return CCanvas::Current (); }
-		inline CCanvas& Window (int nWindow) { return m_info.windows [ nWindow]; }
-		inline void PageInGauge (int nGauge) { LoadTexture (gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index, 0, 0); }
-		inline ushort GaugeIndex (int nGauge) { return gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index; }
-		CBitmap* BitBlt (int nGauge, int x, int y, bool bScalePos = true, bool bScaleSize = true, int scale = I2X (1), int orient = 0, CBitmap* bmP = NULL, CBitmap* bmoP = NULL);
-		int _CDECL_ PrintF (int *idP, int x, int y, const char *pszFmt, ...);
-		void Rect (int left, int top, int width, int height) {
+		inline CCanvas& Window (int32_t nWindow) { return m_info.windows [ nWindow]; }
+		inline void PageInGauge (int32_t nGauge) { LoadTexture (gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index, 0, 0); }
+		inline uint16_t GaugeIndex (int32_t nGauge) { return gameData.cockpit.gauges [!gameStates.render.fonts.bHires][nGauge].index; }
+		CBitmap* BitBlt (int32_t nGauge, int32_t x, int32_t y, bool bScalePos = true, bool bScaleSize = true, int32_t scale = I2X (1), int32_t orient = 0, CBitmap* bmP = NULL, CBitmap* bmoP = NULL);
+		int32_t _CDECL_ PrintF (int32_t *idP, int32_t x, int32_t y, const char *pszFmt, ...);
+		void Rect (int32_t left, int32_t top, int32_t width, int32_t height) {
 			OglDrawFilledRect (HUD_SCALE_X (left), HUD_SCALE_Y (top), HUD_SCALE_X (width), HUD_SCALE_Y (height));
 			}
 
@@ -176,8 +176,8 @@ class CGenericCockpit {
 
 		void DrawMarkerMessage (void);
 		void DrawMultiMessage (void);
-		void DrawCountdown (int y);
-		void DrawRecording (int y);
+		void DrawCountdown (int32_t y);
+		void DrawRecording (int32_t y);
 		void DrawPacketLoss (void);
 		void DrawFrameRate (void);
 		void DrawPlayerStats (void);
@@ -185,31 +185,31 @@ class CGenericCockpit {
 		void DrawTime (void);
 		void DrawTimerCount (void);
 		void PlayHomingWarning (void);
-		void DrawCruise (int x, int y);
-		void DrawBombCount (int x, int y, int bgColor, int bShowAlways);
-		void DrawAmmoInfo (int x, int y, int ammoCount, int bPrimary);
-		void CheckForExtraLife (int nPrevScore);
-		void AddPointsToScore (int points);
-		void AddBonusPointsToScore (int points);
-		void DrawPlayerShip (int nCloakState, int nOldCloakState, int x, int y);
-		void DrawWeaponInfo (int nWeaponType, int nIndex, tGaugeBox *box, int xPic, int yPic, const char *pszName, int xText, int yText, int orient);
-		int DrawWeaponDisplay (int nWeaponType, int nWeaponId);
-		void DrawStatic (int nWindow, int nIndex);
-		void DrawOrbs (int x, int y);
-		void DrawFlag (int x, int y);
-		void DrawKillList (int x, int y);
+		void DrawCruise (int32_t x, int32_t y);
+		void DrawBombCount (int32_t x, int32_t y, int32_t bgColor, int32_t bShowAlways);
+		void DrawAmmoInfo (int32_t x, int32_t y, int32_t ammoCount, int32_t bPrimary);
+		void CheckForExtraLife (int32_t nPrevScore);
+		void AddPointsToScore (int32_t points);
+		void AddBonusPointsToScore (int32_t points);
+		void DrawPlayerShip (int32_t nCloakState, int32_t nOldCloakState, int32_t x, int32_t y);
+		void DrawWeaponInfo (int32_t nWeaponType, int32_t nIndex, tGaugeBox *box, int32_t xPic, int32_t yPic, const char *pszName, int32_t xText, int32_t yText, int32_t orient);
+		int32_t DrawWeaponDisplay (int32_t nWeaponType, int32_t nWeaponId);
+		void DrawStatic (int32_t nWindow, int32_t nIndex);
+		void DrawOrbs (int32_t x, int32_t y);
+		void DrawFlag (int32_t x, int32_t y);
+		void DrawKillList (int32_t x, int32_t y);
 		void DrawModuleDamage (void);
-		void DrawCockpit (int nCockpit, int y, bool bAlphaTest = false);
+		void DrawCockpit (int32_t nCockpit, int32_t y, bool bAlphaTest = false);
 		void UpdateLaserWeaponInfo (void);
-		void DrawReticle (int bForceBig, fix xStereoSeparation = 0);
-		int CanSeeObject (int nObject, int bCheckObjs);
+		void DrawReticle (int32_t bForceBig, fix xStereoSeparation = 0);
+		int32_t CanSeeObject (int32_t nObject, int32_t bCheckObjs);
 		void DrawPlayerNames (void);
 		void RenderWindows (void);
-		void Render (int bExtraInfo, fix xStereoSeparation = 0);
-		void RenderWindow (int nWindow, CObject *viewerP, int bRearView, int nUser, const char *pszLabel);
-		void Activate (int nType, bool bClearMessages = false);
+		void Render (int32_t bExtraInfo, fix xStereoSeparation = 0);
+		void RenderWindow (int32_t nWindow, CObject *viewerP, int32_t bRearView, int32_t nUser, const char *pszLabel);
+		void Activate (int32_t nType, bool bClearMessages = false);
 
-		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h) = 0;
+		virtual void GetHostageWindowCoords (int32_t& x, int32_t& y, int32_t& w, int32_t& h) = 0;
 		virtual void DrawRecording (void) = 0;
 		virtual void DrawCountdown (void) = 0;
 		virtual void DrawCruise (void) = 0;
@@ -234,35 +234,35 @@ class CGenericCockpit {
 			DrawAfterburnerText ();
 			}
 
-		virtual void ClearBombCount (int bgColor) = 0;
+		virtual void ClearBombCount (int32_t bgColor) = 0;
 		virtual void DrawBombCount (void) = 0;
-		virtual int DrawBombCount (int& nIdBombCount, int y, int x, int nColor, char* pszBombCount) = 0;
-		virtual void DrawPrimaryAmmoInfo (int ammoCount) = 0;
-		virtual void DrawSecondaryAmmoInfo (int ammoCount) = 0;
+		virtual int32_t DrawBombCount (int32_t& nIdBombCount, int32_t y, int32_t x, int32_t nColor, char* pszBombCount) = 0;
+		virtual void DrawPrimaryAmmoInfo (int32_t ammoCount) = 0;
+		virtual void DrawSecondaryAmmoInfo (int32_t ammoCount) = 0;
 		virtual void DrawCloak (void) = 0;
 		virtual void DrawInvul (void) = 0;
 		virtual void DrawLives (void) = 0;
 		virtual void DrawPlayerShip (void) = 0;
 		virtual void DrawKillList (void) = 0;
-		virtual void DrawStatic (int nWindow) = 0;
+		virtual void DrawStatic (int32_t nWindow) = 0;
 		virtual void Toggle (void) = 0;
-		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
+		virtual void DrawWeaponInfo (int32_t nWeaponType, int32_t nWeaponId, int32_t laserLevel);
 		virtual void DrawWeapons (void);
 		virtual void DrawCockpit (bool bAlphaTest = false) = 0;
-		virtual void SetupWindow (int nWindow) = 0;
+		virtual void SetupWindow (int32_t nWindow) = 0;
 		virtual bool Setup (bool bScene = false, bool bRebuild = false);
 
 		inline CCockpitInfo& Info (void) { return m_info; }
-		inline int Type (void) { return m_info.nType; }
-		inline int LineSpacing (void) { return m_info.nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4; }
+		inline int32_t Type (void) { return m_info.nType; }
+		inline int32_t LineSpacing (void) { return m_info.nLineSpacing = GAME_FONT->Height () + GAME_FONT->Height () / 4; }
 		inline float XScale (void) { return m_info.xScale = CCanvas::Current ()->XScale (); }
 		inline float YScale (void) { return m_info.yScale = CCanvas::Current ()->YScale (); }
 		inline void SetScales (float xScale, float yScale) { m_info.xScale = xScale, m_info.yScale = yScale; }
 		inline void Rebuild (void) { m_info.bRebuild = true; }
 
-		int WidthPad (char* pszText);
-		int WidthPad (int nValue);
-		int HeightPad (void);
+		int32_t WidthPad (char* pszText);
+		int32_t WidthPad (int32_t nValue);
+		int32_t HeightPad (void);
 
 		inline bool ShowAlways (void) { 
 			return (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR); 
@@ -277,31 +277,31 @@ class CGenericCockpit {
 					 (!(gameStates.app.bNostalgia || gameOpts->render.cockpit.bHUD) && (gameStates.render.cockpit.nType >= CM_FULL_SCREEN));
 			}
 
-		int BombCount (int& nBombType);
-		inline int ScoreTime (void) { return m_info.scoreTime; }
-		inline int SetScoreTime (int nTime) { return m_info.scoreTime = nTime; }
-		inline int AddedScore (int i = 0) { return m_info.addedScore [i]; }
-		inline void AddScore (int i, int nScore) { m_info.addedScore [i] += nScore; }
-		inline void SetAddedScore (int i, int nScore) { m_info.addedScore [i] = nScore; }
-		inline void SetLineSpacing (int nLineSpacing) { m_info.nLineSpacing = nLineSpacing; }
-		inline void SetColor (int nColor) { m_info.nColor = nColor; }
+		int32_t BombCount (int32_t& nBombType);
+		inline int32_t ScoreTime (void) { return m_info.scoreTime; }
+		inline int32_t SetScoreTime (int32_t nTime) { return m_info.scoreTime = nTime; }
+		inline int32_t AddedScore (int32_t i = 0) { return m_info.addedScore [i]; }
+		inline void AddScore (int32_t i, int32_t nScore) { m_info.addedScore [i] += nScore; }
+		inline void SetAddedScore (int32_t i, int32_t nScore) { m_info.addedScore [i] = nScore; }
+		inline void SetLineSpacing (int32_t nLineSpacing) { m_info.nLineSpacing = nLineSpacing; }
+		inline void SetColor (int32_t nColor) { m_info.nColor = nColor; }
 
 		bool ShowTextGauges (void);
 		
-		int X (int x, bool bForce = false);
+		int32_t X (int32_t x, bool bForce = false);
 
-		int _CDECL_ DrawHUDText (int *idP, int x, int y, const char * format, ...);
+		int32_t _CDECL_ DrawHUDText (int32_t *idP, int32_t x, int32_t y, const char * format, ...);
 
-		int AdjustCockpitXY (char* s, int& x, int& y);
-		int AdjustCockpitY (int y);
-		void SetupSceneCenter (CCanvas* refCanv, int& w, int& h);
+		int32_t AdjustCockpitXY (char* s, int32_t& x, int32_t& y);
+		int32_t AdjustCockpitY (int32_t y);
+		void SetupSceneCenter (CCanvas* refCanv, int32_t& w, int32_t& h);
 	};
 
 //	-----------------------------------------------------------------------------
 
 class CHUD : public CGenericCockpit {
 	public:
-		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h);
+		virtual void GetHostageWindowCoords (int32_t& x, int32_t& y, int32_t& w, int32_t& h);
 		virtual void DrawRecording (void);
 		virtual void DrawCountdown (void);
 		virtual void DrawCruise (void);
@@ -318,29 +318,29 @@ class CHUD : public CGenericCockpit {
 		virtual void DrawAfterburnerText (void);
 		virtual void DrawAfterburnerBar (void);
 		virtual void DrawEnergyLevels (void);
-		virtual void ClearBombCount (int bgColor);
+		virtual void ClearBombCount (int32_t bgColor);
 		virtual void DrawBombCount (void);
-		virtual int DrawBombCount (int& nIdBombCount, int y, int x, int nColor, char* pszBombCount);
-		virtual void DrawPrimaryAmmoInfo (int ammoCount);
-		virtual void DrawSecondaryAmmoInfo (int ammoCount);
+		virtual int32_t DrawBombCount (int32_t& nIdBombCount, int32_t y, int32_t x, int32_t nColor, char* pszBombCount);
+		virtual void DrawPrimaryAmmoInfo (int32_t ammoCount);
+		virtual void DrawSecondaryAmmoInfo (int32_t ammoCount);
 		virtual void DrawWeapons (void);
 		virtual void DrawCloak (void);
 		virtual void DrawInvul (void);
 		virtual void DrawLives (void);
 		virtual void DrawPlayerShip (void) {}
-		virtual void DrawStatic (int nWindow);
+		virtual void DrawStatic (int32_t nWindow);
 		virtual void DrawKillList (void);
 		virtual void DrawCockpit (bool bAlphaTest = false);
 		virtual void Toggle (void);
 
-		virtual void SetupWindow (int nWindow);
+		virtual void SetupWindow (int32_t nWindow);
 		virtual bool Setup (bool bScene, bool bRebuild);
 
 	private:
 		void DrawEnergyLevelsCombined (void);
 		void DrawInvulCloakCombined (void);
-		int FlashGauge (int h, int *bFlash, int tToggle);
-		inline int LineSpacing (void) {
+		int32_t FlashGauge (int32_t h, int32_t *bFlash, int32_t tToggle);
+		inline int32_t LineSpacing (void) {
 			return ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
 					 ? m_info.nLineSpacing
 					 : 5 * GAME_FONT->Height () / 4;
@@ -354,16 +354,16 @@ class CWideHUD : public CHUD {
 		virtual void DrawRecording (void);
 		virtual void Toggle (void);
 		virtual bool Setup (bool bScene, bool bRebuild);
-		virtual void SetupWindow (int nWindow);
+		virtual void SetupWindow (int32_t nWindow);
 	};
 
 //	-----------------------------------------------------------------------------
 
 class CStatusBar : public CGenericCockpit {
 	public:
-		CBitmap* StretchBlt (int nGauge, int x, int y, double xScale, double yScale, int scale = I2X (1), int orient = 0);
+		CBitmap* StretchBlt (int32_t nGauge, int32_t x, int32_t y, double xScale, double yScale, int32_t scale = I2X (1), int32_t orient = 0);
 
-		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h);
+		virtual void GetHostageWindowCoords (int32_t& x, int32_t& y, int32_t& w, int32_t& h);
 		virtual void DrawRecording (void);
 		virtual void DrawCountdown (void);
 		virtual void DrawCruise (void);
@@ -380,21 +380,21 @@ class CStatusBar : public CGenericCockpit {
 		virtual void DrawAfterburnerText (void);
 		virtual void DrawAfterburnerBar (void);
 		virtual void DrawBombCount (void);
-		virtual int DrawBombCount (int& nIdBombCount, int y, int x, int nColor, char* pszBombCount);
-		virtual void DrawPrimaryAmmoInfo (int ammoCount);
-		virtual void DrawSecondaryAmmoInfo (int ammoCount);
-		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
+		virtual int32_t DrawBombCount (int32_t& nIdBombCount, int32_t y, int32_t x, int32_t nColor, char* pszBombCount);
+		virtual void DrawPrimaryAmmoInfo (int32_t ammoCount);
+		virtual void DrawSecondaryAmmoInfo (int32_t ammoCount);
+		virtual void DrawWeaponInfo (int32_t nWeaponType, int32_t nWeaponId, int32_t laserLevel);
 		virtual void DrawCloak (void) {}
 		virtual void DrawInvul (void);
 		virtual void DrawLives (void);
 		virtual void DrawPlayerShip (void);
-		virtual void DrawStatic (int nWindow);
+		virtual void DrawStatic (int32_t nWindow);
 		virtual void DrawKillList (void);
-		virtual void ClearBombCount (int bgColor);
+		virtual void ClearBombCount (int32_t bgColor);
 		virtual void DrawCockpit (bool bAlphaTest = false);
 		virtual void Toggle (void);
 
-		virtual void SetupWindow (int nWindow);
+		virtual void SetupWindow (int32_t nWindow);
 		virtual bool Setup (bool bScene, bool bRebuild);
 	};
 
@@ -402,7 +402,7 @@ class CStatusBar : public CGenericCockpit {
 
 class CCockpit : public CGenericCockpit {
 	public:
-		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h);
+		virtual void GetHostageWindowCoords (int32_t& x, int32_t& y, int32_t& w, int32_t& h);
 		virtual void DrawRecording (void);
 		virtual void DrawCountdown (void);
 		virtual void DrawCruise (void);
@@ -417,23 +417,23 @@ class CCockpit : public CGenericCockpit {
 		virtual void DrawAfterburnerText (void) {}
 		virtual void DrawAfterburnerBar (void);
 		virtual void DrawBombCount (void);
-		virtual int DrawBombCount (int& nIdBombCount, int y, int x, int nColor, char* pszBombCount);
-		virtual void DrawPrimaryAmmoInfo (int ammoCount);
-		virtual void DrawSecondaryAmmoInfo (int ammoCount);
-		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel);
+		virtual int32_t DrawBombCount (int32_t& nIdBombCount, int32_t y, int32_t x, int32_t nColor, char* pszBombCount);
+		virtual void DrawPrimaryAmmoInfo (int32_t ammoCount);
+		virtual void DrawSecondaryAmmoInfo (int32_t ammoCount);
+		virtual void DrawWeaponInfo (int32_t nWeaponType, int32_t nWeaponId, int32_t laserLevel);
 		virtual void DrawCloak (void) {}
 		virtual void DrawInvul (void);
 		virtual void DrawShieldText (void);
 		virtual void DrawShieldBar (void);
 		virtual void DrawLives (void);
 		virtual void DrawPlayerShip (void);
-		virtual void DrawStatic (int nWindow);
+		virtual void DrawStatic (int32_t nWindow);
 		virtual void DrawKillList (void);
-		virtual void ClearBombCount (int bgColor);
+		virtual void ClearBombCount (int32_t bgColor);
 		virtual void DrawCockpit (bool bAlphaTest = false);
 		virtual void Toggle (void);
 
-		virtual void SetupWindow (int nWindow);
+		virtual void SetupWindow (int32_t nWindow);
 		virtual bool Setup (bool bScene, bool bRebuild);
 	};
 
@@ -441,7 +441,7 @@ class CCockpit : public CGenericCockpit {
 
 class CRearView : public CGenericCockpit {
 	public:
-		virtual void GetHostageWindowCoords (int& x, int& y, int& w, int& h) { x = y = w = h = -1; }
+		virtual void GetHostageWindowCoords (int32_t& x, int32_t& y, int32_t& w, int32_t& h) { x = y = w = h = -1; }
 		virtual void DrawRecording (void) {}
 		virtual void DrawCountdown (void) {}
 		virtual void DrawCruise (void) {}
@@ -456,10 +456,10 @@ class CRearView : public CGenericCockpit {
 		virtual void DrawAfterburnerText (void) {}
 		virtual void DrawAfterburnerBar (void) {}
 		virtual void DrawBombCount (void) {}
-		virtual int DrawBombCount (int& nIdBombCount, int y, int x, int nColor, char* pszBombCount) { return -1; }
-		virtual void DrawPrimaryAmmoInfo (int ammoCount) {}
-		virtual void DrawSecondaryAmmoInfo (int ammoCount) {}
-		virtual void DrawWeaponInfo (int nWeaponType, int nWeaponId, int laserLevel) {}
+		virtual int32_t DrawBombCount (int32_t& nIdBombCount, int32_t y, int32_t x, int32_t nColor, char* pszBombCount) { return -1; }
+		virtual void DrawPrimaryAmmoInfo (int32_t ammoCount) {}
+		virtual void DrawSecondaryAmmoInfo (int32_t ammoCount) {}
+		virtual void DrawWeaponInfo (int32_t nWeaponType, int32_t nWeaponId, int32_t laserLevel) {}
 		virtual void DrawWeapons (void) {}
 		virtual void DrawCloak (void) {}
 		virtual void DrawInvul (void) {}
@@ -468,14 +468,14 @@ class CRearView : public CGenericCockpit {
 		virtual void DrawLives (void) {}
 		virtual void DrawPlayerShip (void) {}
 		virtual void DrawCockpit (void) {}
-		virtual void DrawStatic (int nWindow) {}
+		virtual void DrawStatic (int32_t nWindow) {}
 		virtual void DrawKillList (void) {}
-		virtual void ClearBombCount (int bgColor) {}
+		virtual void ClearBombCount (int32_t bgColor) {}
 		virtual void DrawCockpit (bool bAlphaTest = false) { 
 			CGenericCockpit::DrawCockpit (CM_REAR_VIEW + m_info.nCockpit, 0, bAlphaTest); 
 			}
 		virtual void Toggle (void) {};
-		virtual void SetupWindow (int nWindow) {}
+		virtual void SetupWindow (int32_t nWindow) {}
 		virtual bool Setup (bool bScene, bool bRebuild);
 	};
 

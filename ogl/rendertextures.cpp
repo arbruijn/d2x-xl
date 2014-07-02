@@ -67,7 +67,7 @@
 #define GL_DEPTH24_STENCIL8_EXT		0x88F0
 #define GL_TEXTURE_STENCIL_SIZE_EXT 0x88F1
 
-GLuint COGL::CreateDepthTexture (int nTMU, int bFBO, int nType, int nWidth, int nHeight)
+GLuint COGL::CreateDepthTexture (int32_t nTMU, int32_t bFBO, int32_t nType, int32_t nWidth, int32_t nHeight)
 {
 	GLuint	hBuffer;
 
@@ -103,7 +103,7 @@ return hBuffer;
 
 // -----------------------------------------------------------------------------------
 
-void COGL::DestroyDepthTexture (int bFBO)
+void COGL::DestroyDepthTexture (int32_t bFBO)
 {
 if (m_states.hDepthBuffer [bFBO]) {
 	DeleteTextures (1, &m_states.hDepthBuffer [bFBO]);
@@ -113,10 +113,10 @@ if (m_states.hDepthBuffer [bFBO]) {
 
 // -----------------------------------------------------------------------------------
 
-GLuint COGL::CopyDepthTexture (int nId, int nTMU)
+GLuint COGL::CopyDepthTexture (int32_t nId, int32_t nTMU)
 {
-	static int nSamples = -1;
-	static int nDuration = 0;
+	static int32_t nSamples = -1;
+	static int32_t nDuration = 0;
 
 	GLenum nError = glGetError ();
 
@@ -128,7 +128,7 @@ if (!gameOpts->render.bUseShaders)
 	return m_states.hDepthBuffer [nId] = 0;
 if (ogl.m_features.bDepthBlending < 0) // too slow on the current hardware
 	return m_states.hDepthBuffer [nId] = 0;
-int t = (nSamples >= 5) ? -1 : SDL_GetTicks ();
+int32_t t = (nSamples >= 5) ? -1 : SDL_GetTicks ();
 SelectTMU (nTMU);
 SetTexturing (true);
 if (!m_states.hDepthBuffer [nId])
@@ -170,7 +170,7 @@ return m_states.hDepthBuffer [nId];
 
 // -----------------------------------------------------------------------------------
 
-GLuint COGL::CreateColorTexture (int nTMU, int bFBO)
+GLuint COGL::CreateColorTexture (int32_t nTMU, int32_t bFBO)
 {
 	GLuint	hBuffer;
 
@@ -248,7 +248,7 @@ return m_states.hColorBuffer;
 
 #if 0
 
-GLuint COGL::CreateStencilTexture (int nTMU, int bFBO)
+GLuint COGL::CreateStencilTexture (int32_t nTMU, int32_t bFBO)
 {
 	GLuint	hBuffer;
 

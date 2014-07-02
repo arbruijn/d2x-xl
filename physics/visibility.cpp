@@ -35,11 +35,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-----------------------------------------------------------------------------
 
-int PixelTranspType (short nTexture, short nOrient, short nFrame, fix u, fix v)
+int32_t PixelTranspType (int16_t nTexture, int16_t nOrient, int16_t nFrame, fix u, fix v)
 {
 	CBitmap *bmP;
-	int bmx, bmy, w, h, offs;
-	ubyte	c;
+	int32_t bmx, bmy, w, h, offs;
+	uint8_t	c;
 #if 0
 	tBitmapIndex *bmiP;
 
@@ -73,7 +73,7 @@ else {
 	}
 offs = bmy * w + bmx;
 if (bmP->Flags () & BM_FLAG_TGA) {
-	ubyte *p;
+	uint8_t *p;
 
 	if (bmP->BPP () == 3)	//no alpha -> no transparency
 		return 0;
@@ -103,10 +103,10 @@ return 0;
 //	-----------------------------------------------------------------------------
 //check if a particular refP on a CWall is a transparent pixel
 //returns 1 if can pass though the CWall, else 0
-int CSide::CheckForTranspPixel (CFixVector& intersection, short iFace)
+int32_t CSide::CheckForTranspPixel (CFixVector& intersection, int16_t iFace)
 {
 	fix	u, v;
-	int	nTranspType;
+	int32_t	nTranspType;
 
 HitPointUV (&u, &v, NULL, intersection, iFace);	//	Don't compute light value.
 if (m_nOvlTex) {
@@ -122,7 +122,7 @@ return nTranspType;
 
 //------------------------------------------------------------------------------
 
-int CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, short nSegment, fix xRad)
+int32_t CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, int16_t nSegment, fix xRad)
 {
 	CHitQuery	hitQuery (FQ_TRANSWALL, vSource, vDest, -1, objP ? objP->Index () : -1, 1, xRad);
 	CHitResult	hitResult;
@@ -132,14 +132,14 @@ if (SPECTATOR (objP))
 else
 	hitQuery.nSegment = objP ? objP->info.nSegment : nSegment;
 
-int nHitType = FindHitpoint (hitQuery, hitResult);
+int32_t nHitType = FindHitpoint (hitQuery, hitResult);
 return nHitType != HIT_WALL;
 }
 
 //	-----------------------------------------------------------------------------
 //returns true if viewerP can see CObject
 
-int CanSeeObject (int nObject, int bCheckObjs)
+int32_t CanSeeObject (int32_t nObject, int32_t bCheckObjs)
 {
 	CHitQuery	hitQuery (bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL,
 								 &gameData.objs.viewerP->info.position.vPos,
@@ -151,18 +151,18 @@ int CanSeeObject (int nObject, int bCheckObjs)
 								);
 	CHitResult		hitResult;
 
-int nHitType = FindHitpoint (hitQuery, hitResult);
+int32_t nHitType = FindHitpoint (hitQuery, hitResult);
 return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.nObject == nObject) : (nHitType != HIT_WALL);
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 //	Determine if two OBJECTS are on a line of sight.  If so, return true, else return false.
 //	Calls fvi.
-int ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int transType)
+int32_t ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int32_t transType)
 {
 	CHitQuery	hitQuery;
 	CHitResult	hitResult;
-	int			fate, nTries = 0, bSpectate = SPECTATOR (objP1);
+	int32_t			fate, nTries = 0, bSpectate = SPECTATOR (objP1);
 
 do {
 	hitQuery.flags = transType | FQ_CHECK_OBJS;
@@ -190,12 +190,12 @@ return (fate == HIT_NONE) || (fate == HIT_BAD_P0) || ((fate == HIT_OBJECT) && (h
 
 //	-----------------------------------------------------------------------------
 
-int TargetInLineOfFire (void)
+int32_t TargetInLineOfFire (void)
 {
 #if DBG
 return 0;
 #else
-	int			nType;
+	int32_t			nType;
 	CHitResult		hitResult;
 	CObject*		objP;
 
@@ -211,13 +211,13 @@ CHitQuery hitQuery (FQ_CHECK_OBJS | FQ_VISIBLE_OBJS | FQ_IGNORE_POWERUPS | FQ_TR
 						  ++gameData.physics.bIgnoreObjFlag
 						  );
 
-int nHitType = FindHitpoint (hitQuery, hitResult);
+int32_t nHitType = FindHitpoint (hitQuery, hitResult);
 if (nHitType != HIT_OBJECT)
 	return 0;
 objP = OBJECTS + hitResult.nObject;
 nType = objP->Type ();
 if (nType == OBJ_ROBOT) 
-	return int (!objP->IsGuideBot ());
+	return int32_t (!objP->IsGuideBot ());
 if (nType == OBJ_REACTOR)
 	return 1;
 if (nType != OBJ_PLAYER)

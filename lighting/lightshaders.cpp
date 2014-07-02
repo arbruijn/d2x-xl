@@ -52,12 +52,12 @@ const char *pszPPXLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform vec4 matColor;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = gl_Color;\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
-	"	int i;\r\n" \
+	"	int32_t i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"		vec4 color;\r\n" \
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
@@ -92,13 +92,13 @@ const char *pszPPXLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D baseTex;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = gl_Color;\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
-	"	int i;\r\n" \
+	"	int32_t i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"		vec4 color;\r\n" \
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
@@ -134,7 +134,7 @@ const char *pszPPXLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D baseTex, decalTex;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = gl_Color;\r\n" \
@@ -142,7 +142,7 @@ const char *pszPPXLightingFS [] = {
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [1].xy) ;\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
-	"	int i;\r\n" \
+	"	int32_t i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"		vec4 color;\r\n" \
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
@@ -178,8 +178,8 @@ const char *pszPPXLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nType;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nType;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"if ((nType == 3) && (texture2D (maskTex, gl_TexCoord [2].xy).r < 0.5))\r\n" \
@@ -190,7 +190,7 @@ const char *pszPPXLightingFS [] = {
 	"  vec4 decalColor = (nType == 1) ? vec4 (0.0, 0.0, 0.0, 0.0) : texture2D (decalTex, gl_TexCoord [2].xy);\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
-	"	int i;\r\n" \
+	"	int32_t i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"		vec4 color;\r\n" \
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
@@ -231,7 +231,7 @@ const char *pszPPXLightingFS [] = {
 const char *pszPP1LightingFS [] = {
 	"uniform vec4 matColor;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = gl_Color;\r\n" \
@@ -266,7 +266,7 @@ const char *pszPP1LightingFS [] = {
 	,
 	"uniform sampler2D baseTex;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = gl_Color;\r\n" \
@@ -302,7 +302,7 @@ const char *pszPP1LightingFS [] = {
 	,
 	"uniform sampler2D baseTex, decalTex;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = gl_Color;\r\n" \
@@ -340,8 +340,8 @@ const char *pszPP1LightingFS [] = {
 	,
 	"uniform sampler2D baseTex, decalTex, maskTex;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nType;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nType;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"if ((nType == 3) && (texture2D (maskTex, gl_TexCoord [3].xy).r < 0.5))\r\n" \
@@ -497,12 +497,12 @@ const char *pszPPXLMLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
 	"uniform vec4 matColor;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
-	"	int i;\r\n" \
+	"	int32_t i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"		vec4 color;\r\n" \
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
@@ -537,13 +537,13 @@ const char *pszPPXLMLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"/*	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
 	"	vec4 texColor = texture2D (baseTex, gl_TexCoord [1].xy);\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
-	"	int i;\r\n" \
+	"	int32_t i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"		vec4 color;\r\n" \
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
@@ -579,7 +579,7 @@ const char *pszPPXLMLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"/*	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
@@ -587,7 +587,7 @@ const char *pszPPXLMLightingFS [] = {
 	"  vec4 decalColor = texture2D (decalTex, gl_TexCoord [2].xy) ;\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
-	"	int i;\r\n" \
+	"	int32_t i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"     vec4 color;\r\n" \
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
@@ -623,8 +623,8 @@ const char *pszPPXLMLightingFS [] = {
 	"#define LIGHTS 8\r\n" \
 	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nType;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nType;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"if ((nType == 3) && (texture2D (maskTex, gl_TexCoord [3].xy).r < 0.5))\r\n" \
@@ -636,7 +636,7 @@ const char *pszPPXLMLightingFS [] = {
 	"  texColor.rgb *= gl_Color.rgb;\r\n" \
 	"	texColor = vec4 (vec3 (mix (texColor, decalColor, decalColor.a)), (texColor.a + decalColor.a));\r\n" \
 	"	vec3 vertNorm = normalize (normal);\r\n" \
-	"	int i;\r\n" \
+	"	int32_t i;\r\n" \
 	"	for (i = 0; i < LIGHTS; i++) if (i < nLights) {\r\n" \
 	"		vec4 color;\r\n" \
 	"		vec3 lightVec = vec3 (gl_LightSource [i].position) - vertPos;\r\n" \
@@ -677,7 +677,7 @@ const char *pszPP1LMLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
 	"uniform vec4 matColor;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
@@ -712,7 +712,7 @@ const char *pszPP1LMLightingFS [] = {
 	,
 	"uniform sampler2D lMapTex, baseTex;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
@@ -748,7 +748,7 @@ const char *pszPP1LMLightingFS [] = {
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"	vec4 colorSum = texture2D (lMapTex, gl_TexCoord [0].xy);\r\n" \
@@ -786,8 +786,8 @@ const char *pszPP1LMLightingFS [] = {
 	,
 	"uniform sampler2D lMapTex, baseTex, decalTex, maskTex;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nType;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nType;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"varying vec3 normal, vertPos;\r\n" \
 	"void main() {\r\n" \
 	"if ((nType == 3) && (texture2D (maskTex, gl_TexCoord [3].xy).r < 0.5))\r\n" \
@@ -881,7 +881,7 @@ const char *pszPP0LMLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
 	"uniform vec4 matColor;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"void main() {\r\n" \
 	"gl_FragColor = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
 	"}"
@@ -889,7 +889,7 @@ const char *pszPP0LMLightingFS [] = {
 	"uniform sampler2D lMapTex;\r\n" \
 	"uniform vec4 matColor;\r\n" \
 	"uniform float fLightScale;\r\n" \
-	"uniform int nLights;\r\n" \
+	"uniform int32_t nLights;\r\n" \
 	"void main() {\r\n" \
 	"vec4 color = texture2D (lMapTex, gl_TexCoord [0].xy) * fLightScale;\r\n" \
 	"gl_FragColor = /*min (texColor,*/ vec4 (min (matColor.rgb, matColor.rgb * color.rgb), matColor.a * gl_Color.a);\r\n" \
@@ -929,11 +929,11 @@ const char *pszPP0LMLightingFS [] = {
 
 //-------------------------------------------------------------------------
 
-int SetIndent (int nIndent);
+int32_t SetIndent (int32_t nIndent);
 
-char *BuildLightingShader (const char *pszTemplate, int nLights)
+char *BuildLightingShader (const char *pszTemplate, int32_t nLights)
 {
-	int	l = (int) strlen (pszTemplate) + 1;
+	int32_t	l = (int32_t) strlen (pszTemplate) + 1;
 	char	*pszFS, szLights [2];
 
 if (!(pszFS = new char [l]))
@@ -946,7 +946,7 @@ if (strstr (pszFS, "#define LIGHTS ") == pszFS) {
 	pszFS [15] = *szLights;
 	}
 #if DBG
-int nIndent = SetIndent (0);
+int32_t nIndent = SetIndent (0);
 PrintLog (0, "\n\nShader program:\n");
 PrintLog (0, pszFS);
 PrintLog (0, "\n");
@@ -957,7 +957,7 @@ return pszFS;
 
 //-------------------------------------------------------------------------
 
-int perPixelLightingShaderProgs [9][4] = {
+int32_t perPixelLightingShaderProgs [9][4] = {
 	{-1,-1,-1,-1},
 	{-1,-1,-1,-1},
 	{-1,-1,-1,-1},
@@ -969,9 +969,9 @@ int perPixelLightingShaderProgs [9][4] = {
 	{-1,-1,-1,-1}
 };
 
-int CreatePerPixelLightingShader (int nType, int nLights)
+int32_t CreatePerPixelLightingShader (int32_t nType, int32_t nLights)
 {
-	int	h, i, j, bOk;
+	int32_t	h, i, j, bOk;
 	char	*pszFS, *pszVS;
 	const char	**fsP, **vsP;
 
@@ -1046,11 +1046,11 @@ void ResetPerPixelLightingShaders (void)
 void InitPerPixelLightingShaders (void)
 {
 #if CONST_LIGHT_COUNT
-for (int nType = 0; nType < 4; nType++)
+for (int32_t nType = 0; nType < 4; nType++)
 	CreatePerPixelLightingShader (nType, gameStates.render.nMaxLightsPerPass);
 #else
-for (int nType = 0; nType < 4; nType++)
-	for (int nLights = 0; nLights <= gameStates.render.nMaxLightsPerPass; nLights++)
+for (int32_t nType = 0; nType < 4; nType++)
+	for (int32_t nLights = 0; nLights <= gameStates.render.nMaxLightsPerPass; nLights++)
 		CreatePerPixelLightingShader (nType, nLights);
 #endif
 }
@@ -1058,13 +1058,13 @@ for (int nType = 0; nType < 4; nType++)
 //------------------------------------------------------------------------------
 
 #if DBG
-int CheckUsedLights2 (void);
+int32_t CheckUsedLights2 (void);
 #endif
 
-int SetupHardwareLighting (CSegFace *faceP, int nType)
+int32_t SetupHardwareLighting (CSegFace *faceP, int32_t nType)
 {
 PROF_START
-	int					nLightRange, nLights;
+	int32_t					nLightRange, nLights;
 	float					fBrightness;
 	CFloatVector			ambient, diffuse;
 #if 0
@@ -1187,7 +1187,7 @@ for (nLights = 0;
 if (nLightRange <= 0) {
 	ogl.m_states.iLight = ogl.m_states.nLights;
 	}
-ogl.m_states.nFirstLight = int (activeLightsP - lightManager.Active (0));
+ogl.m_states.nFirstLight = int32_t (activeLightsP - lightManager.Active (0));
 #if DBG
 if ((ogl.m_states.iLight < ogl.m_states.nLights) && !nLightRange)
 	BRP;
@@ -1199,18 +1199,18 @@ return nLights;
 
 //------------------------------------------------------------------------------
 
-int SetupPerPixelLightingShader (CSegFace *faceP, int nType, bool bHeadlight)
+int32_t SetupPerPixelLightingShader (CSegFace *faceP, int32_t nType, bool bHeadlight)
 {
 PROF_START
 	//static CBitmap	*nullBmP = NULL;
-	static int nLastType = -1;
+	static int32_t nLastType = -1;
 
 #if DBG
 if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	BRP;
 #endif
 
-	int	nLights = SetupHardwareLighting (faceP, nType);//, bStart = (ogl.m_states.iLight == 0);
+	int32_t	nLights = SetupHardwareLighting (faceP, nType);//, bStart = (ogl.m_states.iLight == 0);
 	
 if (0 > nLights)
 	return 0;

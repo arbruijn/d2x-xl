@@ -142,8 +142,8 @@ CWeaponInfo defaultWeaponInfoD2 [] = {
 
 //-----------------------------------------------------------------------------
 
-ubyte Sounds [2][MAX_SOUNDS];
-ubyte AltSounds [2][MAX_SOUNDS];
+uint8_t Sounds [2][MAX_SOUNDS];
+uint8_t AltSounds [2][MAX_SOUNDS];
 
 //right now there's only one CPlayerData ship, but we can have another by
 //adding an array and setting the pointer to the active ship.
@@ -153,9 +153,9 @@ ubyte AltSounds [2][MAX_SOUNDS];
 /*
  * reads n tTexMapInfo structs from a CFile
  */
-int ReadTMapInfoN (CArray<tTexMapInfo>& ti, int n, CFile& cf)
+int32_t ReadTMapInfoN (CArray<tTexMapInfo>& ti, int32_t n, CFile& cf)
 {
-	int i;
+	int32_t i;
 
 for (i = 0;i < n;i++) {
 	ti [i].flags = cf.ReadByte ();
@@ -174,9 +174,9 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int ReadTMapInfoND1 (tTexMapInfo *ti, int n, CFile& cf)
+int32_t ReadTMapInfoND1 (tTexMapInfo *ti, int32_t n, CFile& cf)
 {
-	int i;
+	int32_t i;
 
 for (i = 0;i < n;i++) {
 	cf.Seek (13, SEEK_CUR);// skip filename
@@ -192,7 +192,7 @@ return i;
 // Read data from piggy.
 // This is called when the editor is OUT.
 // If editor is in, bm_init_use_table () is called.
-int BMInit (void)
+int32_t BMInit (void)
 {
 if (!PiggyInit ())				// This calls BMReadAll
 	Error ("Cannot open pig and/or ham file");
@@ -206,7 +206,7 @@ return 0;
 
 void BMSetAfterburnerSizes (void)
 {
-	sbyte	nSize = gameData.weapons.info [MERCURYMSL_ID].nAfterburnerSize;
+	int8_t	nSize = gameData.weapons.info [MERCURYMSL_ID].nAfterburnerSize;
 
 //gameData.weapons.info [VULCAN_ID].nAfterburnerSize = 
 //gameData.weapons.info [GAUSS_ID].nAfterburnerSize = nSize / 8;
@@ -230,9 +230,9 @@ gameData.weapons.info [ROBOT_EARTHSHAKER_ID].nAfterburnerSize = 4 * nSize;
 
 //------------------------------------------------------------------------------
 
-void QSortTextureIndex (short *pti, short left, short right)
+void QSortTextureIndex (int16_t *pti, int16_t left, int16_t right)
 {
-	short	l = left,
+	int16_t	l = left,
 			r = right,
 			m = pti [(left + right) / 2],
 			h;
@@ -260,9 +260,9 @@ if (left < r)
 
 //------------------------------------------------------------------------------
 
-void BuildTextureIndex (int i, int n)
+void BuildTextureIndex (int32_t i, int32_t n)
 {
-	short				*pti = gameData.pig.tex.textureIndex [i].Buffer ();
+	int16_t				*pti = gameData.pig.tex.textureIndex [i].Buffer ();
 	tBitmapIndex	*pbi = gameData.pig.tex.bmIndex [i].Buffer ();
 
 gameData.pig.tex.textureIndex [i].Clear (0xff);
@@ -275,7 +275,7 @@ for (i = 0; i < n; i++)
 
 void BMReadAll (CFile& cf, bool bDefault)
 {
-	int i, t;
+	int32_t i, t;
 
 gameData.pig.tex.nTextures [0] = cf.ReadInt ();
 /*---*/PrintLog (1, "Loading %d texture indices\n", gameData.pig.tex.nTextures [0]);
@@ -286,8 +286,8 @@ PrintLog (-1);
 
 t = cf.ReadInt ();
 /*---*/PrintLog (1, "Loading %d sound indices\n", t);
-cf.Read (Sounds [0], sizeof (ubyte), t);
-cf.Read (AltSounds [0], sizeof (ubyte), t);
+cf.Read (Sounds [0], sizeof (uint8_t), t);
+cf.Read (AltSounds [0], sizeof (uint8_t), t);
 PrintLog (-1);
 
 gameData.effects.nClips [0] = cf.ReadInt ();
@@ -398,7 +398,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void BMReadWeaponInfoD1N (CFile& cf, int i)
+void BMReadWeaponInfoD1N (CFile& cf, int32_t i)
 {
 	CD1WeaponInfo* wiP = gameData.weapons.infoD1 + i;
 
@@ -505,25 +505,25 @@ PrintLog (0, "},%d,%d,%d,%d,%d,%d,%d,{%d}},\n",
 
 typedef struct tD1TextureHeader {
 	char	name [8];
-	ubyte frame; //bits 0-5 anim frame num, bit 6 abm flag
-	ubyte xsize; //low 8 bits here, 4 more bits in size2
-	ubyte ysize; //low 8 bits here, 4 more bits in size2
-	ubyte flag; //see BM_FLAG_XXX
-	ubyte ave_color; //palette index of average color
-	uint	offset; //relative to end of directory
+	uint8_t frame; //bits 0-5 anim frame num, bit 6 abm flag
+	uint8_t xsize; //low 8 bits here, 4 more bits in size2
+	uint8_t ysize; //low 8 bits here, 4 more bits in size2
+	uint8_t flag; //see BM_FLAG_XXX
+	uint8_t ave_color; //palette index of average color
+	uint32_t	offset; //relative to end of directory
 } tD1TextureHeader;
 
 typedef struct tD1SoundHeader {
 	char name [8];
-	int length; //size in bytes
-	int data_length; //actually the same as above
-	int offset; //relative to end of directory
+	int32_t length; //size in bytes
+	int32_t data_length; //actually the same as above
+	int32_t offset; //relative to end of directory
 } tD1SoundHeader;
 
 
 void BMReadGameDataD1 (CFile& cf)
 {
-	int				h, i, j;
+	int32_t				h, i, j;
 #if 1
 	D1_tmap_info	t; // only needed for sizeof term below
 	//D1Robot_info	r;
@@ -532,10 +532,10 @@ void BMReadGameDataD1 (CFile& cf)
 	tTexMapInfo		*pt;
 	tRobotInfo		*pr;
 	CPolyModel		model;
-	ubyte				tmpSounds [D1_MAX_SOUNDS];
+	uint8_t				tmpSounds [D1_MAX_SOUNDS];
 
 cf.ReadInt ();
-cf.Read (&gameData.pig.tex.nTextures [1], sizeof (int), 1);
+cf.Read (&gameData.pig.tex.nTextures [1], sizeof (int32_t), 1);
 j = (gameData.pig.tex.nTextures [1] == 70) ? 70 : D1_MAX_TEXTURES;
 /*---*/PrintLog (1, "Loading %d texture indices\n", j);
 //cf.Read (gameData.pig.tex.bmIndex [1], sizeof (tBitmapIndex), D1_MAX_TEXTURES);
@@ -550,7 +550,7 @@ for (i = 0, pt = &gameData.pig.tex.tMapInfo [1][0]; i < j; i++, pt++) {
 #else
 	cf.Seek (sizeof (t.filename), SEEK_CUR);
 #endif
-	pt->flags = (ubyte) cf.ReadByte ();
+	pt->flags = (uint8_t) cf.ReadByte ();
 	pt->lighting = cf.ReadFix ();
 	pt->damage = cf.ReadFix ();
 	pt->nEffectClip = cf.ReadInt ();
@@ -560,8 +560,8 @@ for (i = 0, pt = &gameData.pig.tex.tMapInfo [1][0]; i < j; i++, pt++) {
 	}
 PrintLog (-1);
 
-cf.Read (Sounds [1], sizeof (ubyte), D1_MAX_SOUNDS);
-cf.Read (AltSounds [1], sizeof (ubyte), D1_MAX_SOUNDS);
+cf.Read (Sounds [1], sizeof (uint8_t), D1_MAX_SOUNDS);
+cf.Read (AltSounds [1], sizeof (uint8_t), D1_MAX_SOUNDS);
 
 /*---*/PrintLog (1, "Initializing %d sounds\n", D1_MAX_SOUNDS);
 if (gameOpts->sound.bUseD1Sounds) {
@@ -607,7 +607,7 @@ for (i = 0, pw = &gameData.walls.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw++)
 PrintLog (-1);
 
 /*---*/PrintLog (1, "Loading %d robot descriptions\n", gameData.bots.nTypes [1]);
-cf.Read (&gameData.bots.nTypes [1], sizeof (int), 1);
+cf.Read (&gameData.bots.nTypes [1], sizeof (int32_t), 1);
 PrintLog (-1);
 gameData.bots.info [1] = gameData.bots.info [0];
 if (!gameOpts->sound.bUseD1Sounds) {
@@ -618,31 +618,31 @@ if (!gameOpts->sound.bUseD1Sounds) {
 for (i = 0, pr = &gameData.bots.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr++) {
 	//cf.Read (&r, sizeof (r), 1);
 	cf.Seek (
-		sizeof (int) * 3 + 
-		(sizeof (CFixVector) + sizeof (ubyte)) * MAX_GUNS + 
-		sizeof (short) * 5 +
-		sizeof (sbyte) * 7 +
+		sizeof (int32_t) * 3 + 
+		(sizeof (CFixVector) + sizeof (uint8_t)) * MAX_GUNS + 
+		sizeof (int16_t) * 5 +
+		sizeof (int8_t) * 7 +
 		sizeof (fix) * 4 +
 		sizeof (fix) * 7 * NDL +
-		sizeof (sbyte) * 2 * NDL,
+		sizeof (int8_t) * 2 * NDL,
 		SEEK_CUR);
 
-	pr->seeSound = (ubyte) cf.ReadByte ();
-	pr->attackSound = (ubyte) cf.ReadByte ();
-	pr->clawSound = (ubyte) cf.ReadByte ();
+	pr->seeSound = (uint8_t) cf.ReadByte ();
+	pr->attackSound = (uint8_t) cf.ReadByte ();
+	pr->clawSound = (uint8_t) cf.ReadByte ();
 	cf.Seek (
 		JOINTLIST_SIZE * (MAX_GUNS + 1) * N_ANIM_STATES +
-		sizeof (int),
+		sizeof (int32_t),
 		SEEK_CUR);
 	pr->always_0xabcd = 0xabcd;   
 	}         
 
 cf.Seek (
-	sizeof (int) +
+	sizeof (int32_t) +
 	JOINTPOS_SIZE * D1_MAX_ROBOT_JOINTS +
-	sizeof (int) +
+	sizeof (int32_t) +
 	D1_WEAPON_INFO_SIZE * D1_MAX_WEAPON_TYPES +
-	sizeof (int) +
+	sizeof (int32_t) +
 	POWERUP_TYPE_INFO_SIZE * MAX_POWERUP_TYPES_D1,
 	SEEK_CUR);
 
@@ -652,22 +652,22 @@ for (h = 0; i; i--) {
 	cf.Seek (MODEL_DATA_SIZE_OFFS, SEEK_CUR);
 	model.SetDataSize (cf.ReadInt ());
 	h += model.DataSize ();
-	cf.Seek (POLYMODEL_SIZE - MODEL_DATA_SIZE_OFFS - sizeof (int), SEEK_CUR);
+	cf.Seek (POLYMODEL_SIZE - MODEL_DATA_SIZE_OFFS - sizeof (int32_t), SEEK_CUR);
 	}
 cf.Seek (
 	h +
 	sizeof (tBitmapIndex) * D1_MAX_GAUGE_BMS +
-	sizeof (int) * 2 * D1_MAX_POLYGON_MODELS +
+	sizeof (int32_t) * 2 * D1_MAX_POLYGON_MODELS +
 	sizeof (tBitmapIndex) * D1_MAX_OBJ_BITMAPS +
-	sizeof (ushort) * D1_MAX_OBJ_BITMAPS +
+	sizeof (uint16_t) * D1_MAX_OBJ_BITMAPS +
 	PLAYER_SHIP_SIZE +
-	sizeof (int) +
+	sizeof (int32_t) +
 	sizeof (tBitmapIndex) * D1_N_COCKPIT_BITMAPS,
 	SEEK_CUR);
 PrintLog (-1);
 
 /*---*/PrintLog (1, "Loading sound data\n", i);
-cf.Read (tmpSounds, sizeof (ubyte), D1_MAX_SOUNDS);
+cf.Read (tmpSounds, sizeof (uint8_t), D1_MAX_SOUNDS);
 PrintLog (-1);
 
 //for (i = 0, pr = &gameData.bots.info [1][0]; i < gameData.bots.nTypes [1]; i++, pr++) 
@@ -690,7 +690,7 @@ for (i = 0; i < D1_MAX_SOUNDS; i++) {
 	if (Sounds [1][i] == tmpSounds [pr->clawSound])
 		pr->clawSound = i;
 	}
-cf.Read (tmpSounds, sizeof (ubyte), D1_MAX_SOUNDS);
+cf.Read (tmpSounds, sizeof (uint8_t), D1_MAX_SOUNDS);
 //	for (i = 0, pr = &gameData.bots.info [1][0]; i < gameData.bots.nTypes [1]; i++, pr++) {
 pr = gameData.bots.info [1] + 17;
 for (i = 0; i < D1_MAX_SOUNDS; i++) {
@@ -718,28 +718,28 @@ PrintLog (-1);
 void BMReadWeaponInfoD1 (CFile& cf)
 {
 cf.Seek (
-	sizeof (int) +
-	sizeof (int) +
+	sizeof (int32_t) +
+	sizeof (int32_t) +
 	sizeof (tBitmapIndex) * D1_MAX_TEXTURES +
 	sizeof (D1_tmap_info) * D1_MAX_TEXTURES +
-	sizeof (ubyte) * D1_MAX_SOUNDS +
-	sizeof (ubyte) * D1_MAX_SOUNDS +
-	sizeof (int) +
+	sizeof (uint8_t) * D1_MAX_SOUNDS +
+	sizeof (uint8_t) * D1_MAX_SOUNDS +
+	sizeof (int32_t) +
 	sizeof (tVideoClip) * D1_VCLIP_MAXNUM +
-	sizeof (int) +
+	sizeof (int32_t) +
 	sizeof (D1_eclip) * D1_MAX_EFFECTS +
-	sizeof (int) +
+	sizeof (int32_t) +
 	sizeof (tD1WallClip) * D1_MAX_WALL_ANIMS +
-	sizeof (int) +
+	sizeof (int32_t) +
 	sizeof (D1Robot_info) * D1_MAX_ROBOT_TYPES +
-	sizeof (int) +
+	sizeof (int32_t) +
 	sizeof (tJointPos) * D1_MAX_ROBOT_JOINTS,
 	SEEK_CUR);
 gameData.weapons.nTypes [1] = cf.ReadInt ();
 #if PRINT_WEAPON_INFO
 PrintLog (1, "\nCD1WeaponInfo defaultWeaponInfosD1 [] = {\n");
 #endif
-for (int i = 0; i < gameData.weapons.nTypes [1]; i++)
+for (int32_t i = 0; i < gameData.weapons.nTypes [1]; i++)
 	BMReadWeaponInfoD1N (cf, i);
 #if PRINT_WEAPON_INFO
 PrintLog (-1, "};\n\n");
@@ -748,11 +748,11 @@ PrintLog (-1, "};\n\n");
 
 //------------------------------------------------------------------------------
 
-void LoadTextureBrightness (const char *pszLevel, int *brightnessP)
+void LoadTextureBrightness (const char *pszLevel, int32_t *brightnessP)
 {
 	CFile		cf;
 	char		szFile [FILENAME_LEN];
-	int		i, *pb;
+	int32_t		i, *pb;
 
 if (!brightnessP)
 	brightnessP = gameData.pig.tex.brightness.Buffer ();
@@ -807,7 +807,7 @@ gameData.pig.ship.player->wiggle = defaultShipProps.wiggle;
 void SetDefaultWeaponProps (void)
 {
 if (!EGI_FLAG (bAllowCustomWeapons, 0, 0, 1)) {
-	for (int i = 0; i < int (sizeofa (defaultWeaponInfoD2)); i++)
+	for (int32_t i = 0; i < int32_t (sizeofa (defaultWeaponInfoD2)); i++)
 		gameData.weapons.info [i] = defaultWeaponInfoD2 [i];
 	}
 }

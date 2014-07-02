@@ -43,7 +43,7 @@
 
 //------------------------------------------------------------------------------
 
-void CBitmap::SetTexCoord (GLfloat u, GLfloat v, int orient)
+void CBitmap::SetTexCoord (GLfloat u, GLfloat v, int32_t orient)
 {
 if (orient == 1)
 	glTexCoord2f ((1.0f - v) * m_render.aspect, u);
@@ -57,7 +57,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void CBitmap::SetTexCoord (GLfloat u, GLfloat v, int orient, tTexCoord2f& texCoord)
+void CBitmap::SetTexCoord (GLfloat u, GLfloat v, int32_t orient, tTexCoord2f& texCoord)
 {
 if (orient == 1)
 	texCoord.v.u = (1.0f - v) * m_render.aspect, texCoord.v.v = u;
@@ -71,7 +71,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void CBitmap::OglVertices (int x, int y, int w, int h, int scale, int orient, CRectangle* destP)
+void CBitmap::OglVertices (int32_t x, int32_t y, int32_t w, int32_t h, int32_t scale, int32_t orient, CRectangle* destP)
 {
 if (!w)
 	w = Width ();
@@ -115,7 +115,7 @@ m_render.v2 = float (Bottom ()) / h;
 
 //------------------------------------------------------------------------------
 
-CTexture* CBitmap::OglBeginRender (bool bBlend, int bMipMaps, int nTransp)
+CTexture* CBitmap::OglBeginRender (bool bBlend, int32_t bMipMaps, int32_t nTransp)
 {
 m_render.bBlendState = ogl.GetBlendUsage ();
 m_render.depthFunc = ogl.GetDepthMode ();
@@ -132,7 +132,7 @@ return &m_info.texture;
 
 //------------------------------------------------------------------------------
 
-void CBitmap::OglRender (CFloatVector* colorP, int nColors, int orient)
+void CBitmap::OglRender (CFloatVector* colorP, int32_t nColors, int32_t orient)
 {
 	float				verts [4][2] = {{m_render.x0, m_render.y0}, {m_render.x1, m_render.y0}, {m_render.x1, m_render.y1}, {m_render.x0, m_render.y1}};
 	tTexCoord2f		texCoord [4];
@@ -165,7 +165,7 @@ ogl.SetTexturing (false);
 
 //------------------------------------------------------------------------------
 
-int CBitmap::RenderScaled (int x, int y, int w, int h, int scale, int orient, CCanvasColor* colorP, int bSmoothe)
+int32_t CBitmap::RenderScaled (int32_t x, int32_t y, int32_t w, int32_t h, int32_t scale, int32_t orient, CCanvasColor* colorP, int32_t bSmoothe)
 {
 	CBitmap*			bmoP;
 	CFloatVector	color;
@@ -185,10 +185,10 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int CBitmap::Render (CRectangle* destP,
-							int xDest, int yDest, int wDest, int hDest,
-							int xSrc, int ySrc, int wSrc, int hSrc,
-							int bTransp, int bMipMaps, int bSmoothe,
+int32_t CBitmap::Render (CRectangle* destP,
+							int32_t xDest, int32_t yDest, int32_t wDest, int32_t hDest,
+							int32_t xSrc, int32_t ySrc, int32_t wSrc, int32_t hSrc,
+							int32_t bTransp, int32_t bMipMaps, int32_t bSmoothe,
 							float fAlpha, CFloatVector* colorP)
 {
 	CBitmap*		bmoP;
@@ -196,13 +196,13 @@ int CBitmap::Render (CRectangle* destP,
 if ((bmoP = HasOverride ()))
 	return bmoP->Render (destP, xDest, yDest, wDest, hDest, xSrc, ySrc, wSrc, hSrc, bTransp, bMipMaps, bSmoothe, fAlpha, colorP);
 
-	int			nTransp = (Flags () & BM_FLAG_TGA) ? -1 : HasTransparency () ? 2 : 0;
+	int32_t			nTransp = (Flags () & BM_FLAG_TGA) ? -1 : HasTransparency () ? 2 : 0;
 	bool			bLocal = Texture () == NULL;
 
-//	ubyte *oldpal;
+//	uint8_t *oldpal;
 OglVertices (xDest, yDest, wDest, hDest, I2X (1), 0, destP);
 CFloatVector color;
-int nColors;
+int32_t nColors;
 bool bBlend = bTransp && nTransp;
 
 if (!colorP) {
@@ -247,13 +247,13 @@ return 0;
 
 //------------------------------------------------------------------------------
 // OglUBitBltToLinear
-void CBitmap::ScreenCopy (CBitmap * dest, int dx, int dy, int w, int h, int sx, int sy)
+void CBitmap::ScreenCopy (CBitmap * dest, int32_t dx, int32_t dy, int32_t w, int32_t h, int32_t sx, int32_t sy)
 {
-	ubyte *d, *s;
-	int	i, j;
-	int	bTGA = (dest->Flags () & BM_FLAG_TGA) != 0;
-	int	wScreen = gameData.render.screen.Width ();
-	int	hScreen = gameData.render.screen.Height ();
+	uint8_t *d, *s;
+	int32_t	i, j;
+	int32_t	bTGA = (dest->Flags () & BM_FLAG_TGA) != 0;
+	int32_t	wScreen = gameData.render.screen.Width ();
+	int32_t	hScreen = gameData.render.screen.Height ();
 
 ogl.SetTexturing (false);
 ogl.SetReadBuffer (GL_FRONT, 1);
@@ -268,8 +268,8 @@ else {
 	glReadPixels (0, 0, wScreen, hScreen, GL_RGB, GL_UNSIGNED_BYTE, ogl.m_data.buffer);
 	}
 
-ubyte* buffer = dest->Buffer ();
-int rowSize = dest->RowSize ();
+uint8_t* buffer = dest->Buffer ();
+int32_t rowSize = dest->RowSize ();
 
 if (bTGA) {
 	sx += Left ();

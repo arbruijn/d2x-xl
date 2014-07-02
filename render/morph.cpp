@@ -35,7 +35,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 	return &gameData.render.morph.objects [0];
 	}
 
-for (int i = 0; i < MAX_MORPH_OBJECTS; i++)
+for (int32_t i = 0; i < MAX_MORPH_OBJECTS; i++)
 	if (gameData.render.morph.objects [i].objP == objP)
 		return gameData.render.morph.objects + i;
 return NULL;
@@ -43,13 +43,13 @@ return NULL;
 
 //-------------------------------------------------------------
 //takes pmP, fills in min& max
-void MorphFindModelBounds (CPolyModel* pmP, int nSubModel, CFixVector& minv, CFixVector& maxv)
+void MorphFindModelBounds (CPolyModel* pmP, int32_t nSubModel, CFixVector& minv, CFixVector& maxv)
 {
-	ushort nVerts;
+	uint16_t nVerts;
 	CFixVector *vp;
-	ushort *data, nType;
+	uint16_t *data, nType;
 
-	data = reinterpret_cast<ushort*> (pmP->Data () + pmP->SubModels ().ptrs [nSubModel]);
+	data = reinterpret_cast<uint16_t*> (pmP->Data () + pmP->SubModels ().ptrs [nSubModel]);
 	nType = *data++;
 	Assert (nType == 7 || nType == 1);
 	nVerts = *data++;
@@ -77,15 +77,15 @@ void MorphFindModelBounds (CPolyModel* pmP, int nSubModel, CFixVector& minv, CFi
 
 //-------------------------------------------------------------
 
-int MorphInitPoints (CPolyModel* pmP, CFixVector *vBoxSize, int nSubModel, tMorphInfo *mdP)
+int32_t MorphInitPoints (CPolyModel* pmP, CFixVector *vBoxSize, int32_t nSubModel, tMorphInfo *mdP)
 {
-	ushort		nVerts;
+	uint16_t		nVerts;
 	CFixVector	*vp, v;
-	ushort		*data, nType;
-	int			i;
+	uint16_t		*data, nType;
+	int32_t			i;
 
 //printf ("initing %d ", nSubModel);
-data = reinterpret_cast<ushort*> (pmP->Data () + pmP->SubModels ().ptrs [nSubModel]);
+data = reinterpret_cast<uint16_t*> (pmP->Data () + pmP->SubModels ().ptrs [nSubModel]);
 nType = *data++;
 #if DBG
 //Assert (nType == 7 || nType == 1);
@@ -136,15 +136,15 @@ return 1;
 
 //-------------------------------------------------------------
 
-int MorphUpdatePoints (CPolyModel* pmP, int nSubModel, tMorphInfo *mdP)
+int32_t MorphUpdatePoints (CPolyModel* pmP, int32_t nSubModel, tMorphInfo *mdP)
 {
-	ushort nVerts;
+	uint16_t nVerts;
 	CFixVector *vp;
-	ushort *data, nType;
-	int i;
+	uint16_t *data, nType;
+	int32_t i;
 
 	////printf ("updating %d ", nSubModel);
-data = reinterpret_cast<ushort*> (pmP->Data () + pmP->SubModels ().ptrs [nSubModel]);
+data = reinterpret_cast<uint16_t*> (pmP->Data () + pmP->SubModels ().ptrs [nSubModel]);
 nType = *data++;
 #if DBG
 //Assert (nType == 7 || nType == 1);
@@ -181,7 +181,7 @@ return 1;
 //process the morphing CObject for one frame
 void CObject::DoMorphFrame (void)
 {
-	int			i, t;
+	int32_t			i, t;
 	CPolyModel	*pmP;
 	tMorphInfo	*mdP;
 
@@ -220,7 +220,7 @@ CFixVector morph_rotvel = CFixVector::Create(0x4000, 0x2000, 0x1000);
 
 void MorphInit ()
 {
-	int i;
+	int32_t i;
 
 for (i = 0; i < MAX_MORPH_OBJECTS; i++)
 	gameData.render.morph.objects [i].objP = NULL;
@@ -234,7 +234,7 @@ void CObject::MorphStart (void)
 	CPolyModel* pmP;
 	CFixVector pmmin, pmmax;
 	CFixVector vBoxSize;
-	int i;
+	int32_t i;
 	tMorphInfo *mdP = &gameData.render.morph.objects [0];
 
 for (i = 0; i < MAX_MORPH_OBJECTS; i++, mdP++)
@@ -277,10 +277,10 @@ MorphInitPoints (pmP, &vBoxSize, 0, mdP);
 
 //-------------------------------------------------------------
 
-void MorphDrawModel (CPolyModel* modelP, int nSubModel, CAngleVector *animAngles, fix light, tMorphInfo *mdP, int nModel)
+void MorphDrawModel (CPolyModel* modelP, int32_t nSubModel, CAngleVector *animAngles, fix light, tMorphInfo *mdP, int32_t nModel)
 {
-	int h, i, j, m, n;
-	int sortList [2 * MAX_SUBMODELS];
+	int32_t h, i, j, m, n;
+	int32_t sortList [2 * MAX_SUBMODELS];
 	//first, sort the submodels
 
 n = h = modelP->ModelCount ();
@@ -313,7 +313,7 @@ for (i = m; i < n; i++) {
 		// so we need to reread them all in.
 		if (gameData.pig.tex.bPageFlushed) {
 			gameData.pig.tex.bPageFlushed = 0;
-			for (int j = 0; j < h; j++)
+			for (int32_t j = 0; j < h; j++)
 				LoadTexture (gameData.models.textureIndex [j].index, 0, 0);
 			}
 			// Make sure that they can all fit in memory.
@@ -339,7 +339,7 @@ for (i = m; i < n; i++) {
 
 void CObject::MorphDraw (void)
 {
-//	int save_light;
+//	int32_t save_light;
 	CPolyModel* pmP;
 	fix light;
 	tMorphInfo *mdP;

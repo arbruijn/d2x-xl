@@ -10,7 +10,7 @@
 
 //-----------------------------------------------------------------------------
 
-bool CDialHeap::Create (short nNodes)
+bool CDialHeap::Create (int16_t nNodes)
 {
 Destroy ();
 m_nNodes = nNodes;
@@ -44,19 +44,19 @@ void CDialHeap::Reset (void)
 {
 #if SPARSE_RESET
 #	if 0 //DBG
-for (uint i = 0, j = m_dirtyIndex.ToS (); i < j; i++)
+for (uint32_t i = 0, j = m_dirtyIndex.ToS (); i < j; i++)
 	m_index [m_dirtyIndex [i]] = -1;
-for (uint i = 0, j = m_dirtyCost.ToS (); i < j; i++)
+for (uint32_t i = 0, j = m_dirtyCost.ToS (); i < j; i++)
 	m_cost [m_dirtyCost [i]] = 0xFFFFFFFF;
 #	else
-short* indexP = m_index.Buffer ();
-ushort* dirtyIndexP = m_dirtyIndex.Buffer ();
-uint i;
+int16_t* indexP = m_index.Buffer ();
+uint16_t* dirtyIndexP = m_dirtyIndex.Buffer ();
+uint32_t i;
 for (i = m_dirtyIndex.ToS (); i; i--, dirtyIndexP++)
 	indexP [*dirtyIndexP] = -1;
 
-uint* costP = m_cost.Buffer ();
-uint* dirtyCostP = m_dirtyCost.Buffer ();
+uint32_t* costP = m_cost.Buffer ();
+uint32_t* dirtyCostP = m_dirtyCost.Buffer ();
 for (i = m_dirtyCost.ToS (); i; i--, dirtyCostP++)
 	costP [*dirtyCostP] = 0xFFFFFFFF;
 #	endif
@@ -71,7 +71,7 @@ m_nIndex = 0;
 
 //-----------------------------------------------------------------------------
 
-void CDialHeap::Setup (short nNode)
+void CDialHeap::Setup (int16_t nNode)
 {
 Reset ();
 Push (nNode, -1, -1, 0);
@@ -79,9 +79,9 @@ Push (nNode, -1, -1, 0);
 
 //-----------------------------------------------------------------------------
 
-bool CDialHeap::Push (short nNode, short nPredNode, short nEdge, uint nNewCost)
+bool CDialHeap::Push (int16_t nNode, int16_t nPredNode, int16_t nEdge, uint32_t nNewCost)
 {
-	uint nOldCost = m_cost [nNode] & ~0x80000000;
+	uint32_t nOldCost = m_cost [nNode] & ~0x80000000;
 
 if (nNewCost >= nOldCost)
 	return false;
@@ -91,11 +91,11 @@ if (!nNewCost)
 	BRP;
 #endif
 
-	ushort nIndex = ushort (nNewCost & 0xFFFF);
+	uint16_t nIndex = uint16_t (nNewCost & 0xFFFF);
 
 if (nOldCost < 0x7FFFFFFF) {	// node already in heap with higher cost, so unlink
-	int h = ushort (nOldCost & 0xFFFF);
-	for (int i = m_index [h], j = -1; i >= 0; j = i, i = m_links [i]) {
+	int32_t h = uint16_t (nOldCost & 0xFFFF);
+	for (int32_t i = m_index [h], j = -1; i >= 0; j = i, i = m_links [i]) {
 		if (i == nNode) {
 			if (j < 0)
 				m_index [h] = m_links [i];
@@ -121,28 +121,28 @@ return true;
 
 //-----------------------------------------------------------------------------
 
-int CDialHeap::Scan (int nStart, int nLength)
+int32_t CDialHeap::Scan (int32_t nStart, int32_t nLength)
 {
-	short* bufP = m_index.Buffer (nStart);
+	int16_t* bufP = m_index.Buffer (nStart);
 
 for (; nLength; nLength--, bufP++)
 	if (*bufP >= 0)
-		return int (bufP - m_index.Buffer ());
+		return int32_t (bufP - m_index.Buffer ());
 return -1;
 }
 
 //-----------------------------------------------------------------------------
 
-short CDialHeap::Pop (uint& nCost)
+int16_t CDialHeap::Pop (uint32_t& nCost)
 {
 #if FAST_SCAN
-int i = Scan (m_nIndex, m_index.Length () - m_nIndex); // scan beginning at m_nIndex to the end of the buffer
+int32_t i = Scan (m_nIndex, m_index.Length () - m_nIndex); // scan beginning at m_nIndex to the end of the buffer
 if (i < 0)
 	i = Scan (0, m_nIndex); // wrap around and scan from the end of the buffer to m_nIndex
 if (i < 0)
 	return -1;
-m_nIndex = ushort (i);
-short nNode = m_index [m_nIndex];
+m_nIndex = uint16_t (i);
+int16_t nNode = m_index [m_nIndex];
 #if DBG
 if (nNode < 0) // bug; should never happen
 	return -1; 
@@ -152,9 +152,9 @@ nCost = m_cost [nNode];
 m_cost [nNode] |= 0x80000000;
 return nNode;
 #else
-	short	nNode;
+	int16_t	nNode;
 
-for (int i = 65536; i; i--) {
+for (int32_t i = 65536; i; i--) {
 	if (0 <= (nNode = m_index [m_nIndex])) {
 		m_index [m_nIndex] = m_links [nNode];
 		nCost = m_cost [nNode];
@@ -169,9 +169,9 @@ return -1;
 
 //-----------------------------------------------------------------------------
 
-short CDialHeap::RouteLength (short nNode)
+int16_t CDialHeap::RouteLength (int16_t nNode)
 {
-	short	h = nNode, i = 0;
+	int16_t	h = nNode, i = 0;
 
 while (0 <= (h = m_pred [h]))
 	i++;
@@ -180,9 +180,9 @@ return i + 1;
 
 //-----------------------------------------------------------------------------
 
-short CDialHeap::BuildRoute (short nNode, int bReverse, tPathNode* route)
+int16_t CDialHeap::BuildRoute (int16_t nNode, int32_t bReverse, tPathNode* route)
 {
-	short	h = RouteLength (nNode);
+	int16_t	h = RouteLength (nNode);
 
 if (!route) {
 	if (!m_route.Buffer ())
@@ -191,14 +191,14 @@ if (!route) {
 	}
 
 if (bReverse) {
-	for (int i = 0; i < h; i++) {
+	for (int32_t i = 0; i < h; i++) {
 		route [i].nNode = nNode;
 		route [i].nEdge = m_edge [nNode];
 		nNode = m_pred [nNode];
 		}
 	}
 else {
-	for (int i = h - 1; i >= 0; i--) {
+	for (int32_t i = h - 1; i >= 0; i--) {
 		route [i].nNode = nNode;
 		route [i].nEdge = m_edge [nNode];
 		nNode = m_pred [nNode];

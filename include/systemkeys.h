@@ -1,21 +1,21 @@
 #ifndef __SYSTEMKEYS_H
 #define __SYSTEMKEYS_H
 
-void HandleEndlevelKey (int key);
-void HandleDeathKey (int key);
-void HandleDemoKey (int key);
-int HandleSystemKey (int key);
-void HandleGameKey (int key);
-void HandleTestKey (int key);
+void HandleEndlevelKey (int32_t key);
+void HandleDeathKey (int32_t key);
+void HandleDemoKey (int32_t key);
+int32_t HandleSystemKey (int32_t key);
+void HandleGameKey (int32_t key);
+void HandleTestKey (int32_t key);
 
-int SetRearView (int bOn);
-int ToggleRearView (void);
+int32_t SetRearView (int32_t bOn);
+int32_t ToggleRearView (void);
 void ResetRearView (void);
 void CheckRearView (void);
-int SetChaseCam (int bOn);
-int ToggleChaseCam (void);
-int SetFreeCam (int bOn);
-int ToggleFreeCam (void);
+int32_t SetChaseCam (int32_t bOn);
+int32_t ToggleChaseCam (void);
+int32_t SetFreeCam (int32_t bOn);
+int32_t ToggleFreeCam (void);
 void HandleZoom (void);
 
 #endif //__SYSTEMKEYS_H

@@ -70,7 +70,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // -----------------------------------------------------------------------------
 // Set detail level based stuff.
 // Note: Highest detail level (gameStates.render.detail.nLevel == NUM_DETAIL_LEVELS-1) is custom detail level.
-int InitDetailLevels (int nDetailLevel)
+int32_t InitDetailLevels (int32_t nDetailLevel)
 {
 if ((nDetailLevel < 0) || (nDetailLevel >= NUM_DETAIL_LEVELS))
 	nDetailLevel = NUM_DETAIL_LEVELS - 1;
@@ -99,7 +99,7 @@ return nDetailLevel;
 
 void DetailLevelMenu (void)
 {
-	int		i, choice = gameStates.app.nDetailLevel;
+	int32_t		i, choice = gameStates.app.nDetailLevel;
 	CMenu		m (8);
 
 	char szMenuDetails [5][20];
@@ -132,7 +132,7 @@ gameOpts->movies.bHires = m [7].Value ();
 
 // -----------------------------------------------------------------------------
 
-int CustomDetailsCallback (CMenu& m, int& nLastKey, int nCurItem, int nState)
+int32_t CustomDetailsCallback (CMenu& m, int32_t& nLastKey, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
@@ -182,10 +182,10 @@ audio.SetMaxChannels (detailData.nSoundChannels [gameStates.sound.nSoundChannels
 
 void CustomDetailsMenu (void)
 {
-	int	i;
+	int32_t	i;
 	CMenu m;
 
-	static int choice = 0;
+	static int32_t choice = 0;
 
 do {
 	m.Destroy ();

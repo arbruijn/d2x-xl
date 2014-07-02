@@ -10,11 +10,11 @@
 #include "slowmotion.h"
 #include "soundthreads.h"
 
-static int nSlowMotionChannel = -1;
+static int32_t nSlowMotionChannel = -1;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-void SetSlowMotionState (int i)
+void SetSlowMotionState (int32_t i)
 {
 if (gameStates.gameplay.slowmo [i].nState) {
 	gameStates.gameplay.slowmo [i].nState = -gameStates.gameplay.slowmo [i].nState;
@@ -58,7 +58,7 @@ else {
 
 //	-----------------------------------------------------------------------------------------------------------
 
-void InitBulletTime (int nState)
+void InitBulletTime (int32_t nState)
 {
 gameStates.gameplay.slowmo [1].nState = nState;
 SetSlowMotionState (1);
@@ -66,7 +66,7 @@ SetSlowMotionState (1);
 
 //	-----------------------------------------------------------------------------------------------------------
 
-void InitSlowMotion (int nState)
+void InitSlowMotion (int32_t nState)
 {
 gameStates.gameplay.slowmo [0].nState = nState;
 SetSlowMotionState (0);
@@ -74,7 +74,7 @@ SetSlowMotionState (0);
 
 //	-----------------------------------------------------------------------------------------------------------
 
-int SlowMotionActive (void)
+int32_t SlowMotionActive (void)
 {
 return gameStates.gameplay.slowmo [0].bActive =
 		 (gameStates.gameplay.slowmo [0].nState > 0) || (gameStates.gameplay.slowmo [0].fSpeed > 1.0f);
@@ -82,7 +82,7 @@ return gameStates.gameplay.slowmo [0].bActive =
 
 //	-----------------------------------------------------------------------------------------------------------
 
-int BulletTimeActive (void)
+int32_t BulletTimeActive (void)
 {
 return gameStates.gameplay.slowmo [1].bActive =
 		 SlowMotionActive () && 
@@ -114,15 +114,15 @@ SlowMotionMessage ();
 
 //	-----------------------------------------------------------------------------------------------------------
 
-int ToggleSlowMotion (void)
+int32_t ToggleSlowMotion (void)
 {
 if (gameData.reactor.bDestroyed)
 	return 0;
 
-	int	bSlowMotionOk = gameStates.app.cheats.bSpeed || ((LOCALPLAYER.Energy () > I2X (10)) && (LOCALPLAYER.flags & PLAYER_FLAGS_SLOWMOTION));
-	int	bBulletTimeOk = bSlowMotionOk && (gameStates.app.cheats.bSpeed || (LOCALPLAYER.flags & (PLAYER_FLAGS_SLOWMOTION | PLAYER_FLAGS_BULLETTIME)));
-	int	bSlowMotion = bSlowMotionOk && (controls [0].slowMotionCount > 0);
-	int	bBulletTime = bBulletTimeOk && (controls [0].bulletTimeCount > 0);
+	int32_t	bSlowMotionOk = gameStates.app.cheats.bSpeed || ((LOCALPLAYER.Energy () > I2X (10)) && (LOCALPLAYER.flags & PLAYER_FLAGS_SLOWMOTION));
+	int32_t	bBulletTimeOk = bSlowMotionOk && (gameStates.app.cheats.bSpeed || (LOCALPLAYER.flags & (PLAYER_FLAGS_SLOWMOTION | PLAYER_FLAGS_BULLETTIME)));
+	int32_t	bSlowMotion = bSlowMotionOk && (controls [0].slowMotionCount > 0);
+	int32_t	bBulletTime = bBulletTimeOk && (controls [0].bulletTimeCount > 0);
 
 controls [0].bulletTimeCount =
 controls [0].slowMotionCount = 0;
@@ -234,7 +234,7 @@ else {
 
 void DoSlowMotionFrame (void)
 {
-	int	i, bMsg;
+	int32_t	i, bMsg;
 	float	f, h;
 
 if (gameStates.app.bNostalgia || IsMultiGame)

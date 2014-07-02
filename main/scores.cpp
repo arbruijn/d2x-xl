@@ -94,7 +94,7 @@ sprintf (m_scores.stats[7].name, "Doug");
 sprintf (m_scores.stats[8].name, "Dan");
 sprintf (m_scores.stats[9].name, "Jason");
 
-for (int i = 0; i < 10; i++)
+for (int32_t i = 0; i < 10; i++)
 	m_scores.stats [i].score = (10 - i) * 1000;
 }
 
@@ -113,7 +113,7 @@ if (!cf.Open (GetFilename (), gameFolders.game.szData [0], "rb", 0)) {
 	return false;
 	}
 	
-int fSize = (int) cf.Length ();
+int32_t fSize = (int32_t) cf.Length ();
 
 if (fSize != sizeof (tScoreInfo)) {
 	cf.Close ();
@@ -152,21 +152,21 @@ return true;
 
 //------------------------------------------------------------------------------
 
-char* CScoreManager::IntToString (int number, char *dest)
+char* CScoreManager::IntToString (int32_t number, char *dest)
 {
 	char buffer[20];
 
 sprintf (buffer, "%d", number);
-int l = (int) strlen (buffer);
+int32_t l = (int32_t) strlen (buffer);
 if (l <= 3) {
 	// Don't bother with less than 3 digits
 	sprintf (dest, "%d", number);
 	return dest;
 	}
 
-int c = 0;
+int32_t c = 0;
 char *p = dest;
-for (int i = l - 1; i >= 0; i--) {
+for (int32_t i = l - 1; i >= 0; i--) {
 	if (c == 3) {
 		*p++ = ',';
 		c = 0;
@@ -196,15 +196,15 @@ stats.startingLevel = LOCALPLAYER.startingLevel;
 //------------------------------------------------------------------------------
 //char * score_placement[10] = { TXT_1ST, TXT_2ND, TXT_3RD, TXT_4TH, TXT_5TH, TXT_6TH, TXT_7TH, TXT_8TH, TXT_9TH, TXT_10TH };
 
-void CScoreManager::Add (int bAbort)
+void CScoreManager::Add (int32_t bAbort)
 {
 if (IsMultiGame && !IsCoopGame)
 	return;
 
 Load ();
 
-int position = MAX_HIGH_SCORES;
-for (int i = 0; i < MAX_HIGH_SCORES; i++) {
+int32_t position = MAX_HIGH_SCORES;
+for (int32_t i = 0; i < MAX_HIGH_SCORES; i++) {
 	if (LOCALPLAYER.score > m_scores.stats [i].score) {
 		position = i;
 		break;
@@ -234,7 +234,7 @@ else {
 		}
 
 	// move everyone down...
-	for (int i = MAX_HIGH_SCORES - 1; i > position; i--) 
+	for (int32_t i = MAX_HIGH_SCORES - 1; i > position; i--) 
 		m_scores.stats [i] = m_scores.stats [i - 1];
 	InitStats(m_scores.stats [position]);
 	Save ();
@@ -244,7 +244,7 @@ Show (position);
 
 //------------------------------------------------------------------------------
 
-void _CDECL_ CScoreManager::RPrintF (int x, int y, const char * format, ...)
+void _CDECL_ CScoreManager::RPrintF (int32_t x, int32_t y, const char * format, ...)
 {
 va_list	args;
 char		buffer [128];
@@ -258,17 +258,17 @@ for (char* p = buffer; *p; p++)
 	if (*p == '1') 
 		*p = (char) 132;
 
-int w, h, aw;
+int32_t w, h, aw;
 fontManager.Current ()->StringSize (buffer, w, h, aw);
 GrString (LHX (x) - w, LHY (y), buffer);
 }
 
 //------------------------------------------------------------------------------
 
-void CScoreManager::RenderItem (int i, tStatsInfo& stats)
+void CScoreManager::RenderItem (int32_t i, tStatsInfo& stats)
 {
 	char	buffer [20];
-	int	y = 7 + 70 + i * 9;
+	int32_t	y = 7 + 70 + i * 9;
 
 if (i == 0) 
 	y -= 8;
@@ -294,18 +294,18 @@ else if ((stats.startingLevel < 0) && (stats.endingLevel < 0))
 else if ((stats.startingLevel > 0) && (stats.endingLevel < 0))
 	RPrintF (192 + 33 + XX, y + YY, "%d-S%d", stats.startingLevel, -stats.endingLevel);
 
-int h = stats.seconds / 3600;
-int s = stats.seconds % 3600;
-int m = s / 60;
+int32_t h = stats.seconds / 3600;
+int32_t s = stats.seconds % 3600;
+int32_t m = s / 60;
 s = s % 60;
 RPrintF (311 - 42 + XX, y + YY, "%d:%02d:%02d", h, m, s);
 }
 
 //------------------------------------------------------------------------------
 
-void CScoreManager::Render (int nCurItem)
+void CScoreManager::Render (int32_t nCurItem)
 {
-		sbyte fadeValues [64] = { 1,1,1,2,2,3,4,4,5,6,8,9,10,12,13,15,16,17,19,20,22,23,24,26,27,28,28,29,30,30,31,31,31,31,31,30,30,29,28,28,27,26,24,23,22,20,19,17,16,15,13,12,10,9,8,6,5,4,4,3,2,2,1,1 };
+		int8_t fadeValues [64] = { 1,1,1,2,2,3,4,4,5,6,8,9,10,12,13,15,16,17,19,20,22,23,24,26,27,28,28,29,30,30,31,31,31,31,31,30,30,29,28,28,27,26,24,23,22,20,19,17,16,15,13,12,10,9,8,6,5,4,4,3,2,2,1,1 };
 
 CFrameController fc;
 for (fc.Begin (); fc.Continue (); fc.End ()) {
@@ -324,14 +324,14 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 	if (nCurItem < 0)
 		GrString (0x8000, LHY (175), TXT_PRESS_CTRL_R);
 	fontManager.SetColorRGBi (RGBA_PAL2 (28,28,28), 1, 0, 0);
-	for (int i = 0; i < MAX_HIGH_SCORES; i++) {
-		int c = 28 - i * 2;
+	for (int32_t i = 0; i < MAX_HIGH_SCORES; i++) {
+		int32_t c = 28 - i * 2;
 		fontManager.SetColorRGBi (RGBA_PAL2 (c, c, c), 1, 0, 0);
 		RenderItem (i, m_scores.stats [i]);
 		}
 	paletteManager.EnableEffect ();
 	if ((nCurItem >= 0) && m_bHilite) {
-		int c = 7 + fadeValues [m_nFade];
+		int32_t c = 7 + fadeValues [m_nFade];
 		fontManager.SetColorRGBi (RGBA_PAL2 (c, c, c), 1, 0, 0);
 		if (++m_nFade > 63) 
 			m_nFade = 0;
@@ -347,16 +347,16 @@ ogl.Update (0);
 
 //------------------------------------------------------------------------------
 
-int CScoreManager::HandleInput (int nCurItem)
+int32_t CScoreManager::HandleInput (int32_t nCurItem)
 {
-for (int i = 0; i < 4; i++)
+for (int32_t i = 0; i < 4; i++)
 	if (JoyGetButtonDownCnt (i) > 0) 
 		return 0;
-for (int i = 0; i < 3; i++)
+for (int32_t i = 0; i < 3; i++)
 	if (MouseButtonDownCount (i) > 0) 
 		return 0;
 
-int k = KeyInKey ();
+int32_t k = KeyInKey ();
 switch (k) {
 	case KEY_CTRLED + KEY_R:	
 		if (nCurItem < 0)	{
@@ -384,13 +384,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void CScoreManager::Show (int nCurItem)
+void CScoreManager::Show (int32_t nCurItem)
 {
 
 gameStates.render.nFlashScale = 0;
 SetScreenMode (SCREEN_MENU);
 Load ();
-int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
+int32_t nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 backgroundManager.Setup (m_background, 640, 480, -BG_TOPMENU, -BG_SCORES);
 
 GameFlushInputs ();

@@ -14,18 +14,18 @@
 
 //------------------------------------------------------------------------------
 
-void KillPlayerSmoke (int i);
+void KillPlayerSmoke (int32_t i);
 void ResetPlayerSmoke (void);
 void InitObjectSmoke (void);
 void ResetObjectSmoke (void);
 void KillPlayerBullets (CObject *objP);
 void KillGatlingSmoke (CObject *objP);
-//static inline int RandN (int n);
-void CreateDamageExplosion (int h, int i);
-void DoPlayerSmoke (CObject *objP, int i);
+//static inline int32_t RandN (int32_t n);
+void CreateDamageExplosion (int32_t h, int32_t i);
+void DoPlayerSmoke (CObject *objP, int32_t i);
 void DoRobotSmoke (CObject *objP);
 void DoMissileSmoke (CObject *objP);
-int DoObjectSmoke (CObject *objP);
+int32_t DoObjectSmoke (CObject *objP);
 void PlayerSmokeFrame (void);
 void RobotSmokeFrame (void);
 void DoParticleFrame (void);
@@ -33,22 +33,22 @@ void InitObjectSmoke (void);
 void ResetPlayerSmoke (void);
 void ResetRobotSmoke (void);
 
-int CreateShrapnels (CObject *parentObjP);
+int32_t CreateShrapnels (CObject *parentObjP);
 void DestroyShrapnels (CObject *objP);
-int UpdateShrapnels (CObject *objP);
+int32_t UpdateShrapnels (CObject *objP);
 void DrawShrapnels (CObject *objP);
 
 //------------------------------------------------------------------------------
 
 #if DBG
 
-void KillObjectParticleSystem (int i);
+void KillObjectParticleSystem (int32_t i);
 
 #else
 
-static inline void KillObjectSmoke (int i)
+static inline void KillObjectSmoke (int32_t i)
 {
-	int	j;
+	int32_t	j;
 
 if ((i >= 0) && ((j = particleManager.GetObjectSystem (i)) >= 0)) {
 	particleManager.SetLife (j, 0);

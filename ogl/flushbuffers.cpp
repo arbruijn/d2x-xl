@@ -90,7 +90,7 @@ typedef struct tProfilerTagLabels {
 	char	szLabel [30];
 	char	szPad [200];
 	char*	pszPad;
-	int	nPadOffset;
+	int32_t	nPadOffset;
 } tProfilerTagLabels;
 
 static tProfilerTagLabels szTags [ptTagCount] = {
@@ -120,7 +120,7 @@ static tProfilerTagLabels szTags [ptTagCount] = {
 	{"        physics", "", NULL, 0}
 };
 
-static int profilerValueOffset = 0;
+static int32_t profilerValueOffset = 0;
 
 //------------------------------------------------------------------------------
 
@@ -129,10 +129,10 @@ static void PrepareTagLabels (void)
 if (profilerValueOffset)
 	return;
 
-int	i, w, h, aw, wMax = 0;
+int32_t	i, w, h, aw, wMax = 0;
 CFont* fontP = fontManager.Current ();
 
-for (i = (int) ptFrame; i < (int) ptTagCount; i++) {
+for (i = (int32_t) ptFrame; i < (int32_t) ptTagCount; i++) {
 	fontP->StringSize (szTags [i].szLabel, w, h, aw);
 	if (profilerValueOffset < w)
 		profilerValueOffset = w;
@@ -140,7 +140,7 @@ for (i = (int) ptFrame; i < (int) ptTagCount; i++) {
 fontP->StringSize (" .", w, h, aw);
 profilerValueOffset += w + 5;
 
-for (i = (int) ptFrame; i < (int) ptTagCount; i++) {
+for (i = (int32_t) ptFrame; i < (int32_t) ptTagCount; i++) {
 	fontP->PadString (szTags [i].szPad, szTags [i].szLabel, " .", profilerValueOffset);
 	szTags [i].pszPad = strstr (szTags [i].szPad, " .");
 	*szTags [i].pszPad++ = '\0';
@@ -151,10 +151,10 @@ for (i = (int) ptFrame; i < (int) ptTagCount; i++) {
 
 //------------------------------------------------------------------------------
 
-static float PrintTime (tProfilerTags tag, int nLine, int bStyle = 0)
+static float PrintTime (tProfilerTags tag, int32_t nLine, int32_t bStyle = 0)
 {
 	char szValue [200];
-	int h = fontManager.Current ()->Height () + 3;
+	int32_t h = fontManager.Current ()->Height () + 3;
 	float t = 0.0f;
 
 #if 0
@@ -174,11 +174,11 @@ else
 	sprintf (szValue, ": %05.2f %c", t = 100.0f * float (p [0].t [tag]) / float (p [0].t [ptFrame]), '%');
 
 
-int x = profilerValueOffset + 1;
+int32_t x = profilerValueOffset + 1;
 char c [2] = {'\0', '\0'};
 
 for (char* ps = szValue; *ps; ps++) {
-	int sw, sh, aw;
+	int32_t sw, sh, aw;
 	c [0] = *ps;
 	fontManager.Current ()->StringSize (c, sw, sh, aw);
 	if (isdigit (*ps)) {
@@ -214,12 +214,12 @@ if (gameStates.render.bShowProfiler && !gameStates.menus.nInMenu && fontManager.
 		t0 = t1;
 		}
 	fontManager.SetCurrent (SMALL_FONT);
-	int h = fontManager.Current ()->Height () + 3;
+	int32_t h = fontManager.Current ()->Height () + 3;
 	fontManager.SetColorRGBi (ORANGE_RGBA, 1, 0, 0);
 	fontManager.SetColorRGBi (GOLD_RGBA, 1, 0, 0);
 	CFont* fontP = fontManager.Current ();
 
-	int nLine = 3;
+	int32_t nLine = 3;
 	float s = 0;
 
 	PrintTime (ptFrame, nLine++, 1);
@@ -262,7 +262,7 @@ if (gameStates.render.bShowProfiler && !gameStates.menus.nInMenu && fontManager.
 
 //------------------------------------------------------------------------------
 
-void COGL::Update (int bClear)
+void COGL::Update (int32_t bClear)
 {
 if (m_states.bInitialized) {
 	if (m_states.nDrawBuffer == GL_FRONT)
@@ -274,7 +274,7 @@ if (m_states.bInitialized) {
 
 //------------------------------------------------------------------------------
 
-void COGL::SwapBuffers (int bForce, int bClear)
+void COGL::SwapBuffers (int32_t bForce, int32_t bClear)
 {
 if (gameStates.app.bGameRunning)	{
 	PrintStatistics ();
@@ -282,7 +282,7 @@ if (gameStates.app.bGameRunning)	{
 	if (gameStates.render.bRenderIndirect > 0) 
 		FlushDrawBuffer ();
 	if (StereoDevice () >= 0) {
-		int bRenderIndirect = gameStates.render.bRenderIndirect = 0;
+		int32_t bRenderIndirect = gameStates.render.bRenderIndirect = 0;
 		Draw2DFrameElements ();
 		gameStates.render.bRenderIndirect = bRenderIndirect;
 		}
@@ -309,7 +309,7 @@ if (gameStates.menus.nInMenu || bClear)
 
 void COGL::FlushEffectsSideBySide (void)
 {
-int nDevice = StereoDevice ();
+int32_t nDevice = StereoDevice ();
 
 #if 1
 if (nDevice == -GLASSES_SHUTTER_HDMI)
@@ -318,7 +318,7 @@ else
 #endif
 	SelectBlurBuffer (0); 
 ogl.BindTexture (DrawBuffer (0)->ColorBuffer ());
-for (int i = 0; i < 2; i++) {
+for (int32_t i = 0; i < 2; i++) {
 	gameData.SetStereoSeparation (i ? STEREO_RIGHT_FRAME : STEREO_LEFT_FRAME);
 	SetupCanvasses ();
 	gameData.render.frame.Activate ("COGL::FlushEffects (frame)");
@@ -434,7 +434,7 @@ if (HaveDrawBuffer ()) {
 	ResetClientStates (1);
 	EnableClientStates (1, 0, 0, GL_TEXTURE0);
 
-	int nDevice = abs (StereoDevice ());
+	int32_t nDevice = abs (StereoDevice ());
 
 	gameData.render.screen.Activate ("FlushDrawBuffer");
 

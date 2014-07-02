@@ -97,13 +97,13 @@ textArea.Setup (&gameData.render.frame, m_nOffset, m_nOffset + m_nTitleHeight, m
 textArea.Activate ("CListbox::Render (textArea)", &m_background);
 
 CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
-for (int i = Max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
-	int w, h, aw, x, y;
+for (int32_t i = Max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++) {
+	int32_t w, h, aw, x, y;
 
 	x = 0;
 	y = (i - m_nFirstItem) * (CCanvas::Current ()->Font ()->Height () + 2);
 
-	if (i >= int (m_items->ToS ())) {
+	if (i >= int32_t (m_items->ToS ())) {
 		CCanvas::Current ()->SetColorRGB (0, 0, 0, 255);
 		OglDrawFilledRect (x, y - 1, x + m_nWidth - 1, y + CCanvas::Current ()->Font ()->Height () + 1);
 		}
@@ -126,15 +126,15 @@ SDL_ShowCursor (1);
 
 //------------------------------------------------------------------------------ 
 
-int CListBox::ListBox (const char* pszTitle, CStack<char*>& items, int nDefaultItem, int bAllowAbort, pListBoxCallback callback)
+int32_t CListBox::ListBox (const char* pszTitle, CStack<char*>& items, int32_t nDefaultItem, int32_t bAllowAbort, pListBoxCallback callback)
 {
-	int	i;
-	int	bKeyRepeat = gameStates.input.keys.bRepeat;
-	int	x1, x2, y1, y2, nMouseState, nOldMouseState;	//, bDblClick;
-	int	xClose, yClose, bWheelUp, bWheelDown;
+	int32_t	i;
+	int32_t	bKeyRepeat = gameStates.input.keys.bRepeat;
+	int32_t	x1, x2, y1, y2, nMouseState, nOldMouseState;	//, bDblClick;
+	int32_t	xClose, yClose, bWheelUp, bWheelDown;
 	char	szPattern [40];
-	int	nPatternLen = 0;
-	int	w, h, aw;
+	int32_t	nPatternLen = 0;
+	int32_t	w, h, aw;
 	char*	pszFn;
 
 m_tEnter = -1;
@@ -147,36 +147,36 @@ gameData.render.frame.Activate ("CListBox::ListBox (frame)");
 fontManager.SetCurrent (SUBTITLE_FONT);
 
 m_nWidth = 0;
-for (i = 0; i < int (items.ToS ()); i++) {
-//	int w, h, aw;
+for (i = 0; i < int32_t (items.ToS ()); i++) {
+//	int32_t w, h, aw;
 	fontManager.Current ()->StringSize (items [i], w, h, aw);	
 	if (w > m_nWidth)
 		m_nWidth = w;
 	}
 m_nVisibleItems = LB_ITEMS_ON_SCREEN * CCanvas::Current ()->Height () / 480;
-m_nHeight = int (float ((CCanvas::Current ()->Font ()->Height () + 2) * m_nVisibleItems) * GetScale ());
+m_nHeight = int32_t (float ((CCanvas::Current ()->Font ()->Height () + 2) * m_nVisibleItems) * GetScale ());
 
 fontManager.Current ()->StringSize (pszTitle, w, h, aw);	
 if (w > m_nWidth)
 	m_nWidth = w;
-m_nTitleHeight = int ((h + 5) * GetScale ());
+m_nTitleHeight = int32_t ((h + 5) * GetScale ());
 
-m_nOffset = int (CCanvas::Current ()->Font ()->Width () * GetScale ());
+m_nOffset = int32_t (CCanvas::Current ()->Font ()->Width () * GetScale ());
 m_nWidth += (CCanvas::Current ()->Font ()->Width ());
 
-int nMargin = CCanvas::Current ()->Font ()->Width () * 3;
+int32_t nMargin = CCanvas::Current ()->Font ()->Width () * 3;
 if (ogl.IsSideBySideDevice ())
 	nMargin += 4 * labs (gameData.StereoOffset2D ());
 if (m_nWidth > CCanvas::Current ()->Width () - nMargin)
 	m_nWidth = CCanvas::Current ()->Width () - nMargin;
-m_nWidth = int (m_nWidth * GetScale ());
+m_nWidth = int32_t (m_nWidth * GetScale ());
 
 backgroundManager.Setup (m_background, m_nWidth + m_nOffset * 2, m_nHeight + m_nTitleHeight + m_nOffset * 2);
 m_bDone = 0;
 m_nChoice = nDefaultItem;
 if (m_nChoice < 0) 
 	m_nChoice = 0;
-if (m_nChoice >= int (items.ToS ())) 
+if (m_nChoice >= int32_t (items.ToS ())) 
 	m_nChoice = 0;
 
 m_nFirstItem = -1;
@@ -235,7 +235,7 @@ while (!m_bDone) {
 			break;
 		case KEY_END:
 		case KEY_PAD1:
-			m_nChoice = int (items.ToS ()) - 1;
+			m_nChoice = int32_t (items.ToS ()) - 1;
 			break;
 		case KEY_UP:
 		case KEY_PAD8:
@@ -271,17 +271,17 @@ while (!m_bDone) {
 				szPattern [--nPatternLen] = '\0';
 				
 		default:
-			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < (int) sizeof (szPattern) - 1)) {
-				int nStart,
+			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < (int32_t) sizeof (szPattern) - 1)) {
+				int32_t nStart,
 					 ascii = KeyToASCII (m_nKey);
 				if ((m_nKey == KEY_BACKSPACE) || (ascii < 255)) {
-					int cc, bFound = 0;
+					int32_t cc, bFound = 0;
 					if (!gameOpts->menus.bSmartFileSearch) {
 						nStart = m_nChoice;
 						cc = m_nChoice + 1;
 						if (cc < 0) 
 							cc = 0;
-						else if (cc >= int (items.ToS ())) 
+						else if (cc >= int32_t (items.ToS ())) 
 							cc = 0;
 						}
 					else {
@@ -295,7 +295,7 @@ while (!m_bDone) {
 					do {
 						pszFn = items [cc];
 						const char* versionIds [] = {"(D1)", "(D2)", "(XL)"};
-						for (int i = 0; i < 3; i++)
+						for (int32_t i = 0; i < 3; i++)
 							if (strstr (pszFn, versionIds [i]) == pszFn) {
 								pszFn += 5;
 								break;
@@ -309,7 +309,7 @@ while (!m_bDone) {
 							break;
 							}
 						cc++;
-						cc %= int (items.ToS ());
+						cc %= int32_t (items.ToS ());
 					} while (cc != nStart);
 				if (gameOpts->menus.bSmartFileSearch && !bFound && (nPatternLen > 0))
 					szPattern [--nPatternLen] = '\0';
@@ -319,27 +319,27 @@ while (!m_bDone) {
 		if (m_bDone) break;
 
 		if (m_nChoice < 0)
-			m_nChoice = int (items.ToS ()) - 1;
-		else if (m_nChoice >= int (items.ToS ()))
+			m_nChoice = int32_t (items.ToS ()) - 1;
+		else if (m_nChoice >= int32_t (items.ToS ()))
 			m_nChoice = 0;
 		if (m_nChoice < m_nFirstItem)
 			m_nFirstItem = m_nChoice;
 		else if (m_nChoice >= (m_nFirstItem + m_nVisibleItems))
 			m_nFirstItem = m_nChoice - m_nVisibleItems + 1;
-		if (int (items.ToS ()) <= m_nVisibleItems)
+		if (int32_t (items.ToS ()) <= m_nVisibleItems)
 			 m_nFirstItem = 0;
-		if (m_nFirstItem > int (items.ToS ()) - m_nVisibleItems)
-			m_nFirstItem = int (items.ToS ()) - m_nVisibleItems;
+		if (m_nFirstItem > int32_t (items.ToS ()) - m_nVisibleItems)
+			m_nFirstItem = int32_t (items.ToS ()) - m_nVisibleItems;
 		if (m_nFirstItem < 0) 
 			m_nFirstItem = 0;
 
 		if (nMouseState) {
-			int w, h, aw;
+			int32_t w, h, aw;
 
 			GetMousePos ();
 			m_yMouse -= m_nOffset + m_nTitleHeight;
 			for (i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
-				if (i >= int (items.ToS ()))
+				if (i >= int32_t (items.ToS ()))
 					break;
 				fontManager.Current ()->StringSize (items [i], w, h, aw);
 				x1 = 0;
@@ -382,11 +382,11 @@ return m_nChoice;
 
 //------------------------------------------------------------------------------ 
 
-int FileList (char* pszTitle, char* filespec, char* filename)
+int32_t FileList (char* pszTitle, char* filespec, char* filename)
 {
 	static char filenameList [MENU_MAX_FILES][FILENAME_LEN + 1];
 
-	int				i, nFiles;
+	int32_t				i, nFiles;
 	CStack<char*>	filenames;// [MENU_MAX_FILES];
 	FFS				ffs;
 	CListBox			lb;

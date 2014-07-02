@@ -73,7 +73,7 @@ CPlayerProfile profile;
 CDisplayModeInfo customDisplayMode;
 
 void DefaultAllSettings (bool bSetup);
-int FindDisplayMode (short w, short h);
+int32_t FindDisplayMode (int16_t w, int16_t h);
 
 //------------------------------------------------------------------------------
 
@@ -85,14 +85,14 @@ int FindDisplayMode (short w, short h);
 # define strerror(x) "Unknown Error"
 #endif
 
-int GetLifetimeChecksum (int a,int b);
+int32_t GetLifetimeChecksum (int32_t a,int32_t b);
 
 typedef struct hli {
 	char	shortname [9];
-	ubyte	nLevel;
+	uint8_t	nLevel;
 } hli;
 
-short nHighestLevels;
+int16_t nHighestLevels;
 
 hli highestLevels [MAX_MISSIONS];
 
@@ -127,24 +127,24 @@ void InitWeaponOrdering();
 
 //------------------------------------------------------------------------------
 
-int CParam::Set (const char *pszIdent, const char *pszValue)
+int32_t CParam::Set (const char *pszIdent, const char *pszValue)
 {
-int nVal = atoi (pszValue);
+int32_t nVal = atoi (pszValue);
 switch (nSize) {
 	case 1:
 		if (!(::isdigit (*pszValue) || issign (*pszValue)) || (nVal < SCHAR_MIN) || (nVal > SCHAR_MAX))
 			return 0;
-		*reinterpret_cast<sbyte*> (valP) = (sbyte) nVal;
+		*reinterpret_cast<int8_t*> (valP) = (int8_t) nVal;
 		break;
 	case 2:
 		if (!(::isdigit (*pszValue) || issign (*pszValue))  || (nVal < SHRT_MIN) || (nVal > SHRT_MAX))
 			return 0;
-		*reinterpret_cast<short*> (valP) = (short) nVal;
+		*reinterpret_cast<int16_t*> (valP) = (int16_t) nVal;
 		break;
 	case 4:
 		if (!(::isdigit (*pszValue) || issign (*pszValue)))
 			return 0;
-		*reinterpret_cast<int*> (valP) = (int) nVal;
+		*reinterpret_cast<int32_t*> (valP) = (int32_t) nVal;
 		break;
 	default:
 		strncpy (reinterpret_cast<char*> (valP), pszValue, nSize);
@@ -155,26 +155,26 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CParam::Save (CFile& cf)
+int32_t CParam::Save (CFile& cf)
 {
 	char	szVal [200];
 
 switch (nSize) {
 	case 1:
-		sprintf (szVal, "=%d\n", *reinterpret_cast<sbyte*> (valP));
+		sprintf (szVal, "=%d\n", *reinterpret_cast<int8_t*> (valP));
 		break;
 	case 2:
-		sprintf (szVal, "=%d\n", *reinterpret_cast<short*> (valP));
+		sprintf (szVal, "=%d\n", *reinterpret_cast<int16_t*> (valP));
 		break;
 	case 4:
-		sprintf (szVal, "=%d\n", *reinterpret_cast<int*> (valP));
+		sprintf (szVal, "=%d\n", *reinterpret_cast<int32_t*> (valP));
 		break;
 	default:
 		sprintf (szVal, "=%s\n", valP);
 		break;
 	}
-cf.Write (szTag, 1, (int) strlen (szTag));
-cf.Write (szVal, 1, (int) strlen (szVal));
+cf.Write (szTag, 1, (int32_t) strlen (szTag));
+cf.Write (szVal, 1, (int32_t) strlen (szVal));
 fflush (cf.File ());
 return 1;
 }
@@ -206,18 +206,18 @@ while (paramList) {
 
 //------------------------------------------------------------------------------
 
-char* CPlayerProfile::MakeTag (char *pszTag, const char *pszIdent, int i, int j)
+char* CPlayerProfile::MakeTag (char *pszTag, const char *pszIdent, int32_t i, int32_t j)
 {
 	char	*pi;
 	const char *ph;
-	int	h = 0, l;
+	int32_t	h = 0, l;
 
 for (pi = pszTag; *pszIdent; h++) {
 	if (!((ph = strstr (pszIdent, " [")) || (ph = strchr (pszIdent, '[')))) {
 		strcpy (pi, pszIdent);
 		break;
 		}
-	memcpy (pi, pszIdent, l = (int) (ph - pszIdent));
+	memcpy (pi, pszIdent, l = (int32_t) (ph - pszIdent));
 	sprintf (pi + l, "[%d]", h ? j : i);
 	pi = pszTag + strlen (pszTag);
 	strcat (pszTag, pszIdent = strchr (ph + 1, ']') + 1);
@@ -227,14 +227,14 @@ return pszTag;
 
 //------------------------------------------------------------------------------
 
-int CPlayerProfile::Register (void *valP, const char *pszIdent, int i, int j, ubyte nSize)
+int32_t CPlayerProfile::Register (void *valP, const char *pszIdent, int32_t i, int32_t j, uint8_t nSize)
 {
 	char		szTag [200];
-	int		l;
+	int32_t		l;
 	CParam	*pp;
 
-l = (int) strlen (MakeTag (szTag, pszIdent, i, j));
-pp = reinterpret_cast<CParam*> (new ubyte [sizeof (CParam) + l]);
+l = (int32_t) strlen (MakeTag (szTag, pszIdent, i, j));
+pp = reinterpret_cast<CParam*> (new uint8_t [sizeof (CParam) + l]);
 if (!pp)
 	return 0;
 memcpy (pp->szTag, szTag, l + 1);
@@ -255,9 +255,9 @@ return 1;
 //------------------------------------------------------------------------------
 // returns number of config items with identical ids before the current one
 
-int CPlayerProfile::FindInConfig (kcItem *cfgP, int nItems, int iItem, const char *pszText)
+int32_t CPlayerProfile::FindInConfig (kcItem *cfgP, int32_t nItems, int32_t iItem, const char *pszText)
 {
-	int	h, i;
+	int32_t	h, i;
 
 for (h = i = 0; i < nItems; i++) {
 	if (!strcmp (pszText, cfgP [i].text)) {
@@ -272,10 +272,10 @@ return h ? h : -1;
 
 //------------------------------------------------------------------------------
 
-void CPlayerProfile::RegisterConfig (kcItem *cfgP, int nItems, const char *pszId)
+void CPlayerProfile::RegisterConfig (kcItem *cfgP, int32_t nItems, const char *pszId)
 {
 	char	szTag [200], *p;
-	int	i, j = 0;
+	int32_t	i, j = 0;
 
 strcpy (szTag, pszId);
 p = szTag + strlen (szTag);
@@ -301,7 +301,7 @@ for (i = 0; i < nItems; i++) {
 
 void CPlayerProfile::Create (void)
 {
-	uint	i, j;
+	uint32_t	i, j;
 
 if (bRegistered)
 	return;
@@ -705,7 +705,7 @@ RegisterConfig (kcHotkeys, KcHotkeySize (), "hotkeys.");
 
 //------------------------------------------------------------------------------
 
-int CPlayerProfile::Save (void)
+int32_t CPlayerProfile::Save (void)
 {
 if (Busy ())
 	return 1;
@@ -737,7 +737,7 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-int CPlayerProfile::Set (const char *pszIdent, const char *pszValue)
+int32_t CPlayerProfile::Set (const char *pszIdent, const char *pszValue)
 {
 	CParam*	pp;
 
@@ -753,7 +753,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CPlayerProfile::LoadParam (void)
+int32_t CPlayerProfile::LoadParam (void)
 {
 	char		szParam	[200], *pszValue;
 
@@ -769,13 +769,13 @@ return Set (szParam, pszValue);
 
 //------------------------------------------------------------------------------
 
-int CPlayerProfile::Load (bool bOnlyWindowSizes)
+int32_t CPlayerProfile::Load (bool bOnlyWindowSizes)
 {
 if (Busy ())
 	return 1;
 
 	char	fn [FILENAME_LEN];
-	int	nParams = 0;
+	int32_t	nParams = 0;
 
 sprintf (fn, "%s.plx", LOCALPLAYER.callsign);
 if (!m_cf.Open (fn, gameFolders.user.szProfiles, "rb", 0))
@@ -789,7 +789,7 @@ while (!m_cf.EoF ()) {
 audio.SetMaxChannels (NMCLAMP (gameStates.sound.audio.nMaxChannels, MIN_SOUND_CHANNELS, MAX_SOUND_CHANNELS));
 cockpit->Activate (gameStates.render.cockpit.nType);	
 downloadManager.SetTimeoutIndex (gameStates.app.iDownloadTimeout);
-for (int i = 0; i < 2; i++) {
+for (int32_t i = 0; i < 2; i++) {
 	if (gameStates.render.cockpit.n3DView [i] < CV_NONE)
 		gameStates.render.cockpit.n3DView [i] = CV_NONE;
 	else if (gameStates.render.cockpit.n3DView [i] >= CV_FUNC_COUNT)
@@ -1533,7 +1533,7 @@ tParamValue defaultParams [] = {
 void CPlayerProfile::Setup (void)
 {
 	tParamValue	*pv;
-	int			i;
+	int32_t			i;
 
 for (i = sizeofa (defaultParams), pv = defaultParams; i; i--, pv++) {
 	Set (pv->pszIdent, pv->pszValue);
@@ -1542,13 +1542,13 @@ for (i = sizeofa (defaultParams), pv = defaultParams; i; i--, pv++) {
 
 //------------------------------------------------------------------------------
 
-int NewPlayerConfig (void)
+int32_t NewPlayerConfig (void)
 {
-	int	i, j;
+	int32_t	i, j;
 	CMenu	m (8);
-   int	mct = CONTROL_MAX_TYPES;
+   int32_t	mct = CONTROL_MAX_TYPES;
 
-	static int choice = 0;
+	static int32_t choice = 0;
 
 mct--;
 InitWeaponOrdering ();		//setup default weapon priorities
@@ -1615,25 +1615,25 @@ return 1;
 //this length must match the value in escort.c
 #define GUIDEBOT_NAME_LEN 9
 
-ubyte dosControlType,winControlType;
+uint8_t dosControlType,winControlType;
 
 //read in the player's saved games.  returns errno (0 == no error)
-int LoadPlayerProfile (int nStage)
+int32_t LoadPlayerProfile (int32_t nStage)
 {
 if (profile.Busy ())
 	return 1;
 
 	CFile		cf;
-	int		funcRes = EZERO;
-	int		bRewriteIt = 0;
-	uint		i;
+	int32_t		funcRes = EZERO;
+	int32_t		bRewriteIt = 0;
+	uint32_t		i;
 
-	short gameWindowW = gameData.render.screen.Width ();
-	short	gameWindowH = gameData.render.screen.Height ();
-	ubyte nDisplayMode = gameStates.video.nDefaultDisplayMode;
+	int16_t gameWindowW = gameData.render.screen.Width ();
+	int16_t	gameWindowH = gameData.render.screen.Height ();
+	uint8_t nDisplayMode = gameStates.video.nDefaultDisplayMode;
 
 	char		filename [FILENAME_LEN];
-	int		id;
+	int32_t		id;
 
 memset (highestLevels, 0, sizeof (highestLevels));
 nHighestLevels = 0;
@@ -1773,9 +1773,9 @@ return funcRes;
 
 //finds entry for this level in table.  if not found, returns ptr to
 //empty entry.  If no empty entries, takes over last one
-int FindHLIEntry (void)
+int32_t FindHLIEntry (void)
 {
-	int i;
+	int32_t i;
 
 for (i = 0; i < nHighestLevels; i++) {
 	if (!stricmp (highestLevels [i].shortname, missionManager [missionManager.nCurrentMission].filename))
@@ -1794,11 +1794,11 @@ return i;
 
 //------------------------------------------------------------------------------
 //set a new highest level for player for this mission
-void SetHighestLevel (ubyte nLevel)
+void SetHighestLevel (uint8_t nLevel)
 {
-int ret = LoadPlayerProfile (0);
+int32_t ret = LoadPlayerProfile (0);
 if ((ret == EZERO) || (ret == ENOENT))	{	//if file doesn't exist, that's ok
-	int i = FindHLIEntry ();
+	int32_t i = FindHLIEntry ();
 	if (nLevel > highestLevels [i].nLevel)
 		highestLevels [i].nLevel = nLevel;
 	SavePlayerProfile ();
@@ -1807,10 +1807,10 @@ if ((ret == EZERO) || (ret == ENOENT))	{	//if file doesn't exist, that's ok
 
 //------------------------------------------------------------------------------
 //gets the player's highest level from the file for this mission
-int GetHighestLevel(void)
+int32_t GetHighestLevel(void)
 {
-	int i;
-	int nHighestSaturnLevel = 0;
+	int32_t i;
+	int32_t nHighestSaturnLevel = 0;
 
 LoadPlayerProfile (0);
 #ifndef SATURN
@@ -1831,7 +1831,7 @@ return i;
 //------------------------------------------------------------------------------
 
 //write out player's saved games.  returns errno (0 == no error)
-int SavePlayerProfile (void)
+int32_t SavePlayerProfile (void)
 {
 if (gameStates.app.bReadOnly)
 	return EZERO;
@@ -1840,7 +1840,7 @@ if (profile.Busy ())
 
 	CFile	cf;
 	char	filename [FILENAME_LEN];		// because of ":gameData.multiplayer.players:" path
-	int	funcRes = EZERO;
+	int32_t	funcRes = EZERO;
 
 funcRes = WriteConfigFile ();
 sprintf (filename, "%s.plr", LOCALPLAYER.callsign);
@@ -1869,9 +1869,9 @@ return funcRes;
 
 //------------------------------------------------------------------------------
 //update the player's highest level.  returns errno (0 == no error)
-int UpdatePlayerFile (void)
+int32_t UpdatePlayerFile (void)
 {
-	int ret = LoadPlayerProfile (2);
+	int32_t ret = LoadPlayerProfile (2);
 
 if ((ret != EZERO) && (ret != ENOENT))		//if file doesn't exist, that's ok
 	return ret;
@@ -1880,10 +1880,10 @@ return SavePlayerProfile ();
 
 //------------------------------------------------------------------------------
 
-int GetLifetimeChecksum (int a, int b)
+int32_t GetLifetimeChecksum (int32_t a, int32_t b)
 {
 // confusing enough to beat amateur disassemblers? Lets hope so
-int num = (a << 8 ^ b);
+int32_t num = (a << 8 ^ b);
 num ^= (a | b);
 num *= num >> 2;
 return num;
@@ -1897,11 +1897,11 @@ return num;
 //pairs of chars describing ranges
 char playername_allowed_chars [] = "azAZ09__--";
 
-int MakeNewPlayerFile (int bAllowAbort)
+int32_t MakeNewPlayerFile (int32_t bAllowAbort)
 {
 	CMenu	m;
 	CFile cf;
-	int	x;
+	int32_t	x;
 	char	filename [FILENAME_LEN];
 	char	text [CALLSIGN_LEN + 1] = "";
 
@@ -1940,13 +1940,13 @@ return 1;
 //------------------------------------------------------------------------------
 
 //Inputs the player's name, without putting up the background screen
-int SelectPlayer (void)
+int32_t SelectPlayer (void)
 {
-	static int bStartup = 1;
-	int 	i,j, bAutoPlr;
+	static int32_t bStartup = 1;
+	int32_t 	i,j, bAutoPlr;
 	char 	filename [FILENAME_LEN];
 	char	filespec [FILENAME_LEN];
-	int 	bAllowAbort = !bStartup;
+	int32_t 	bAllowAbort = !bStartup;
 
 	CFileSelector	fs;
 

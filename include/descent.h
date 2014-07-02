@@ -155,9 +155,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------------------------------------------------------------------------
 
 #ifdef _OPENMP
-typedef void _CDECL_ tThreadFunc (int);
+typedef void _CDECL_ tThreadFunc (int32_t);
 #else
-typedef int _CDECL_ tThreadFunc (void *);
+typedef int32_t _CDECL_ tThreadFunc (void *);
 #endif
 
 typedef tThreadFunc *pThreadFunc;
@@ -167,11 +167,11 @@ class CThreadInfo {
 		SDL_Thread*	pThread;
 		SDL_sem*		done;
 		SDL_sem*		exec;
-		int			nId;
-		int			bExec;
-		int			bDone;
-		int			bBlock;
-		int			bQuit;
+		int32_t			nId;
+		int32_t			bExec;
+		int32_t			bDone;
+		int32_t			bBlock;
+		int32_t			bQuit;
 	};
 
 //------------------------------------------------------------------------------
@@ -179,188 +179,188 @@ class CThreadInfo {
 // The version number of the game
 class CLegacyOptions {
 	public:
-		int bInput;
-		int bProducers;
-		int bMouse;
-		int bHomers;
-		int bRender;
-		int bSwitches;
-		int bWalls;
+		int32_t bInput;
+		int32_t bProducers;
+		int32_t bMouse;
+		int32_t bHomers;
+		int32_t bRender;
+		int32_t bSwitches;
+		int32_t bWalls;
 
 	public:
 		CLegacyOptions () { Init (); }
-		void Init (int i = 0);
+		void Init (int32_t i = 0);
 	};
 
 //------------------------------------------------------------------------------
 
 typedef struct tCameraOptions {
-	int nFPS;
-	int nSpeed;
-	int bFitToWall;
-	int bHires;
+	int32_t nFPS;
+	int32_t nSpeed;
+	int32_t bFitToWall;
+	int32_t bHires;
 } tCameraOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tWeaponIconOptions {
-	int bSmall;
-	int nHiliteColor;
+	int32_t bSmall;
+	int32_t nHiliteColor;
 	char bShowAmmo;
 	char bEquipment;
 	char bBoldHighlight;
 	char nSort;
-	ubyte alpha;
+	uint8_t alpha;
 } tWeaponIconOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tColorOptions {
-	int bCap;
-	int nLevel;
-	int bWalls;
-	int bMix;
-	int bUseLightmaps;
-	int nLightmapRange;
-	int nSaturation;
+	int32_t bCap;
+	int32_t nLevel;
+	int32_t bWalls;
+	int32_t bMix;
+	int32_t bUseLightmaps;
+	int32_t nLightmapRange;
+	int32_t nSaturation;
 } tColorOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tCockpitOptions {
-	int bHUD;
-	int bHUDMsgs;
-	int bSplitHUDMsgs;	//split player and other message displays
-	int bWideDisplays;
-	int bReticle;
-	int bMouseIndicator;
-	int bTextGauges;
-	int bScaleGauges;
-	int bFlashGauges;
-	int bMissileView;
-	int bGuidedInMainView;
-	int bObjectTally;
-	int bRotateMslLockInd;
-	int bPlayerStats;
-	int nWindowPos;
-	int nWindowSize;
-	int nWindowZoom;
-	int nRadarPos;
-	int nRadarSize;
-	int nRadarRange;
-	int nRadarColor;
-	int nRadarStyle;
+	int32_t bHUD;
+	int32_t bHUDMsgs;
+	int32_t bSplitHUDMsgs;	//split player and other message displays
+	int32_t bWideDisplays;
+	int32_t bReticle;
+	int32_t bMouseIndicator;
+	int32_t bTextGauges;
+	int32_t bScaleGauges;
+	int32_t bFlashGauges;
+	int32_t bMissileView;
+	int32_t bGuidedInMainView;
+	int32_t bObjectTally;
+	int32_t bRotateMslLockInd;
+	int32_t bPlayerStats;
+	int32_t nWindowPos;
+	int32_t nWindowSize;
+	int32_t nWindowZoom;
+	int32_t nRadarPos;
+	int32_t nRadarSize;
+	int32_t nRadarRange;
+	int32_t nRadarColor;
+	int32_t nRadarStyle;
 } tCockpitOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tTextureOptions {
-	int bUseHires [2];
-	int nQuality;
+	int32_t bUseHires [2];
+	int32_t nQuality;
 } tTextureOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tParticleOptions {
-	int nQuality;
-	int nDens [5];
-	int nSize [5];
-	int nLife [5];
-	int nAlpha [5];
-	int bSyncSizes;
-	int bPlayers;
-	int bRobots;
-	int bMissiles;
-	int bPlasmaTrails;
-	int bDebris;
-	int bStatic;
-	int bBubbles;
-	int bWobbleBubbles;
-	int bWiggleBubbles;
-	int bCollisions;
-	int bDisperse;
-	int bRotate;
-	int bSort;
-	int bDecreaseLag;	//only render if player is moving forward
-	int bAuxViews;
-	int bMonitors;
+	int32_t nQuality;
+	int32_t nDens [5];
+	int32_t nSize [5];
+	int32_t nLife [5];
+	int32_t nAlpha [5];
+	int32_t bSyncSizes;
+	int32_t bPlayers;
+	int32_t bRobots;
+	int32_t bMissiles;
+	int32_t bPlasmaTrails;
+	int32_t bDebris;
+	int32_t bStatic;
+	int32_t bBubbles;
+	int32_t bWobbleBubbles;
+	int32_t bWiggleBubbles;
+	int32_t bCollisions;
+	int32_t bDisperse;
+	int32_t bRotate;
+	int32_t bSort;
+	int32_t bDecreaseLag;	//only render if player is moving forward
+	int32_t bAuxViews;
+	int32_t bMonitors;
 } tParticleOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tLightningOptions {
-	int nQuality;
-	int nStyle;
-	int bGlow;
-	int bPlayers;
-	int bRobots;
-	int bDamage;
-	int bExplosions;
-	int bStatic;
-	int bOmega;
-	int bRobotOmega;
-	int bAuxViews;
-	int bMonitors;
+	int32_t nQuality;
+	int32_t nStyle;
+	int32_t bGlow;
+	int32_t bPlayers;
+	int32_t bRobots;
+	int32_t bDamage;
+	int32_t bExplosions;
+	int32_t bStatic;
+	int32_t bOmega;
+	int32_t bRobotOmega;
+	int32_t bAuxViews;
+	int32_t bMonitors;
 } tLightningOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tShadowOptions {
-	int nReach;
-	int nLights;
-	int bFast;
-	int nClip;
-	int bSoft;
-	int bPlayers;
-	int bRobots;
-	int bMissiles;
-	int bPowerups;
-	int bReactors;
+	int32_t nReach;
+	int32_t nLights;
+	int32_t bFast;
+	int32_t nClip;
+	int32_t bSoft;
+	int32_t bPlayers;
+	int32_t bRobots;
+	int32_t bMissiles;
+	int32_t bPowerups;
+	int32_t bReactors;
 	} tShadowOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tPowerupOptions {
-	int b3D;
-	int b3DShields;
-	int nSpin;
+	int32_t b3D;
+	int32_t b3DShields;
+	int32_t nSpin;
 } tPowerupOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tAutomapOptions {
-	int bTextured;
-	int bBright;
-	int bCoronas;
-	int bParticles;
-	int bSparks;
-	int bLightning;
-	int bGrayOut;
-	int bSkybox;
-	int nColor;
-	//int nRange;
+	int32_t bTextured;
+	int32_t bBright;
+	int32_t bCoronas;
+	int32_t bParticles;
+	int32_t bSparks;
+	int32_t bLightning;
+	int32_t bGrayOut;
+	int32_t bSkybox;
+	int32_t nColor;
+	//int32_t nRange;
 } tAutomapOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tShipRenderOptions {
-	int nWingtip;
-	int bBullets;
-	int nColor;
+	int32_t nWingtip;
+	int32_t bBullets;
+	int32_t nColor;
 } tShipRenderOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tCoronaRenderOptions {
-	int bUse;
-	int nStyle;
-	int bShots;
-	int bWeapons;
-	int bPowerups;
-	int bAdditive; //additive corona blending for wall lights 
-	int bAdditiveObjs; //additive corona blending for light emitting weapons
-	int nIntensity;
-	int nObjIntensity;
+	int32_t bUse;
+	int32_t nStyle;
+	int32_t bShots;
+	int32_t bWeapons;
+	int32_t bPowerups;
+	int32_t bAdditive; //additive corona blending for wall lights 
+	int32_t bAdditiveObjs; //additive corona blending for light emitting weapons
+	int32_t nIntensity;
+	int32_t nObjIntensity;
 } tCoronaRenderOptions;
 
 //------------------------------------------------------------------------------
@@ -370,27 +370,27 @@ typedef struct tCoronaRenderOptions {
 #define SOFT_BLEND_PARTICLES	4
 
 typedef struct tEffectRenderOptions {
-	int bEnabled;
-	int nShockwaves;
-	int nShrapnels;
-	int bEnergySparks;
-	int bRobotShields;
-	int bOnlyShieldHits;
-	int bAutoTransparency;
-	int bTransparent;
-	int bSoftParticles;
-	int bMovingSparks;
-	int bGlow;
+	int32_t bEnabled;
+	int32_t nShockwaves;
+	int32_t nShrapnels;
+	int32_t bEnergySparks;
+	int32_t bRobotShields;
+	int32_t bOnlyShieldHits;
+	int32_t bAutoTransparency;
+	int32_t bTransparent;
+	int32_t bSoftParticles;
+	int32_t bMovingSparks;
+	int32_t bGlow;
 } tEffectRenderOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tDebugRenderOptions {
-	int bDynamicLight;
-	int bObjects;
-	int bTextures;
-	int bWalls;
-	int bWireFrame;
+	int32_t bDynamicLight;
+	int32_t bObjects;
+	int32_t bTextures;
+	int32_t bWalls;
+	int32_t bWireFrame;
 } tDebugRenderOptions;
 
 //------------------------------------------------------------------------------
@@ -410,37 +410,37 @@ typedef struct tDebugRenderOptions {
 #define STEREO_TOE_IN					1
 
 typedef struct tStereoRenderOptions {
-	int nGlasses;
-	int nMethod;
-	int nScreenDist;
-	int bEnhance;
-	int bColorGain;
-	int bDeghost;
-	int bFlipFrames;
-	int bBrighten;
-	int bChromAbCorr;
-	int nRiftFOV;
+	int32_t nGlasses;
+	int32_t nMethod;
+	int32_t nScreenDist;
+	int32_t bEnhance;
+	int32_t bColorGain;
+	int32_t bDeghost;
+	int32_t bFlipFrames;
+	int32_t bBrighten;
+	int32_t bChromAbCorr;
+	int32_t nRiftFOV;
 	fix xSeparation [2];
 } tStereoRenderOptions;
 
 class CRenderOptions {
 	public:
-		int bAllSegs;
-		int nLightingMethod;
-		int bHiresModels [2];
-		int nMeshQuality;
-		int bUseLightmaps;
-		int nLightmapQuality;
-		int nLightmapPrecision;
-		int bUseShaders;
-		int bUseRift;
-		int nMathFormat;
-		int nDefMathFormat;
-		short nMaxFPS;
-		int nPath;
-		int nQuality;
-		int nImageQuality;
-		int nDebrisLife;
+		int32_t bAllSegs;
+		int32_t nLightingMethod;
+		int32_t bHiresModels [2];
+		int32_t nMeshQuality;
+		int32_t bUseLightmaps;
+		int32_t nLightmapQuality;
+		int32_t nLightmapPrecision;
+		int32_t bUseShaders;
+		int32_t bUseRift;
+		int32_t nMathFormat;
+		int32_t nDefMathFormat;
+		int16_t nMaxFPS;
+		int32_t nPath;
+		int32_t nQuality;
+		int32_t nImageQuality;
+		int32_t nDebrisLife;
 		tCameraOptions cameras;
 		tColorOptions color;
 		tCockpitOptions cockpit;
@@ -459,69 +459,69 @@ class CRenderOptions {
 
 	public:
 		CRenderOptions () { Init (); }
-		void Init (int i = 0);
-		int ShadowQuality (void);
+		void Init (int32_t i = 0);
+		int32_t ShadowQuality (void);
 	};
 
 //------------------------------------------------------------------------------
 
 class COglOptions {
 	public:
-		int bGlTexMerge;
-		int bLightObjects;
-		int bLightPowerups;
-		int bObjLighting;
-		int bHeadlight;
-		int nMaxLightsPerFace;
-		int nMaxLightsPerPass;
-		int nMaxLightsPerObject;
+		int32_t bGlTexMerge;
+		int32_t bLightObjects;
+		int32_t bLightPowerups;
+		int32_t bObjLighting;
+		int32_t bHeadlight;
+		int32_t nMaxLightsPerFace;
+		int32_t nMaxLightsPerPass;
+		int32_t nMaxLightsPerObject;
 
 	public:
 		COglOptions () { Init (); }
-		void Init (int i = 0);
+		void Init (int32_t i = 0);
 	};
 
 //------------------------------------------------------------------------------
 
 class CMovieOptions {
 	public:
-		int bHires;
-		int nQuality;
-		int nLevel;
-		int bResize;
-		int bFullScreen;
-		int bSubTitles;
+		int32_t bHires;
+		int32_t nQuality;
+		int32_t nLevel;
+		int32_t bResize;
+		int32_t bFullScreen;
+		int32_t bSubTitles;
 
 	public:
 		CMovieOptions () { Init (); }
-		void Init (int i = 0);
+		void Init (int32_t i = 0);
 	};
 
 //------------------------------------------------------------------------------
 
 class CGameplayOptions {
 	public:
-		int nAutoSelectWeapon;
-		int bSecretSave;
-		int bTurboMode;
-		int bFastRespawn;
-		int nAutoLeveling;
-		int bEscortHotKeys;
-		int bSkipBriefingScreens;
-		int bHeadlightOnWhenPickedUp;
-		int bShieldWarning;
-		int bInventory;
-		int bIdleAnims;
-		int nAIAwareness;
-		int nAIAggressivity;
-		int nSlowMotionSpeedup;
-		int bUseD1AI;
-		int bNoThief;
-		int nShip [2];
+		int32_t nAutoSelectWeapon;
+		int32_t bSecretSave;
+		int32_t bTurboMode;
+		int32_t bFastRespawn;
+		int32_t nAutoLeveling;
+		int32_t bEscortHotKeys;
+		int32_t bSkipBriefingScreens;
+		int32_t bHeadlightOnWhenPickedUp;
+		int32_t bShieldWarning;
+		int32_t bInventory;
+		int32_t bIdleAnims;
+		int32_t nAIAwareness;
+		int32_t nAIAggressivity;
+		int32_t nSlowMotionSpeedup;
+		int32_t bUseD1AI;
+		int32_t bNoThief;
+		int32_t nShip [2];
 
 	public:
 		CGameplayOptions () { Init (); }
-		void Init (int i = 0);
+		void Init (int32_t i = 0);
 	};
 
 //------------------------------------------------------------------------------
@@ -529,57 +529,57 @@ class CGameplayOptions {
 #define UNIQUE_JOY_AXES	5
 
 typedef struct tMouseInputOptions {
-	int bUse;
-	int bSyncAxis;
-	int bJoystick;
-	int nDeadzone;
-	int sensitivity [3];
+	int32_t bUse;
+	int32_t bSyncAxis;
+	int32_t bJoystick;
+	int32_t nDeadzone;
+	int32_t sensitivity [3];
 	} tMouseInputOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tJoystickInputOptions {
-	int bUse;
-	int bSyncAxis;
-	int bLinearSens;
-	int sensitivity [UNIQUE_JOY_AXES];
-	int deadzones [UNIQUE_JOY_AXES];
+	int32_t bUse;
+	int32_t bSyncAxis;
+	int32_t bLinearSens;
+	int32_t sensitivity [UNIQUE_JOY_AXES];
+	int32_t deadzones [UNIQUE_JOY_AXES];
 	} tJoystickInputOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tOculusRiftInputOptions {
-	int nDeadzone;
+	int32_t nDeadzone;
 	} tOculusRiftInputOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tTrackIRInputOptions {
-	int bPresent;
-	int bUse;
-	int nMode;
-	int bMove [5];
-	int nDeadzone;
-	int sensitivity [3];
-	int bSyncAxis;
+	int32_t bPresent;
+	int32_t bUse;
+	int32_t nMode;
+	int32_t bMove [5];
+	int32_t nDeadzone;
+	int32_t sensitivity [3];
+	int32_t bSyncAxis;
 	} tTrackIRInputOptions;
 
 //------------------------------------------------------------------------------
 
 typedef struct tKeyboardInputOptions {
-	int nType;
-	int bUse;
-	int nRamp;
-	int bRamp [3];
+	int32_t nType;
+	int32_t bUse;
+	int32_t nRamp;
+	int32_t bRamp [3];
 	} tKeyboardInputOptions;
 
 //------------------------------------------------------------------------------
 
 class CInputOptions {
 	public:
-		int bLimitTurnRate;
-		int nMinTurnRate;
-		int bUseHotKeys;
+		int32_t bLimitTurnRate;
+		int32_t nMinTurnRate;
+		int32_t bUseHotKeys;
 		tMouseInputOptions mouse;
 		tJoystickInputOptions joystick;
 		tOculusRiftInputOptions oculusRift;
@@ -588,41 +588,41 @@ class CInputOptions {
 
 	public:
 		CInputOptions () { Init (); }
-		void Init (int i = 0);
+		void Init (int32_t i = 0);
 	};
 
 //------------------------------------------------------------------------------
 
 class CSoundOptions {
 	public:
-		int bUseD1Sounds;
-		int bUseRedbook;
-		int bHires [2];
-		int bUseSDLMixer;
-		int bUseOpenAL;
-		int bFadeMusic;
-		int bShuffleMusic;
-		int bLinkVolumes;
-		int audioSampleRate;	// what's used by the audio system
-		int soundSampleRate;	// what the default sounds are in
-		int bShip;
-		int bMissiles;
-		int bGatling;
-		int bSpeedUp;
+		int32_t bUseD1Sounds;
+		int32_t bUseRedbook;
+		int32_t bHires [2];
+		int32_t bUseSDLMixer;
+		int32_t bUseOpenAL;
+		int32_t bFadeMusic;
+		int32_t bShuffleMusic;
+		int32_t bLinkVolumes;
+		int32_t audioSampleRate;	// what's used by the audio system
+		int32_t soundSampleRate;	// what the default sounds are in
+		int32_t bShip;
+		int32_t bMissiles;
+		int32_t bGatling;
+		int32_t bSpeedUp;
 		fix xCustomSoundVolume;
 
 	public:
 		CSoundOptions () { Init (); }
-		void Init (int i = 0);
+		void Init (int32_t i = 0);
 	};
 
 //------------------------------------------------------------------------------
 
 typedef struct tAltBgOptions {
-	int bHave;
+	int32_t bHave;
 	double alpha;
 	double brightness;
-	int grayscale;
+	int32_t grayscale;
 	char szName [2][FILENAME_LEN];
 } tAltBgOptions;
 
@@ -630,62 +630,62 @@ typedef struct tAltBgOptions {
 
 class CMenuOptions {
 	public:
-		int nStyle;
-		int bFastMenus;
-		uint nFade;
-		int bSmartFileSearch;
-		int bShowLevelVersion;
+		int32_t nStyle;
+		int32_t bFastMenus;
+		uint32_t nFade;
+		int32_t bSmartFileSearch;
+		int32_t bShowLevelVersion;
 		char nHotKeys;
 		tAltBgOptions altBg;
 
 	public:
 		CMenuOptions () { Init (); }
-		void Init (int i = 0);
+		void Init (int32_t i = 0);
 	};
 
 //------------------------------------------------------------------------------
 
 class CDemoOptions {
 	public:
-		int bOldFormat;
-		int bRevertFormat;
+		int32_t bOldFormat;
+		int32_t bRevertFormat;
 
 	public:
 		CDemoOptions () { Init (); }
-		void Init (int i = 0);
+		void Init (int32_t i = 0);
 	};
 
 //------------------------------------------------------------------------------
 
 class CMultiplayerOptions {
 	public:
-		int bNoRankings;
-		int bTimeoutPlayers;
-		int bUseMacros;
-		int bNoRedundancy;
+		int32_t bNoRankings;
+		int32_t bTimeoutPlayers;
+		int32_t bUseMacros;
+		int32_t bNoRedundancy;
 
 	public:
 		CMultiplayerOptions () { Init (); }
-		void Init (int i = 0);
+		void Init (int32_t i = 0);
 	};
 
 //------------------------------------------------------------------------------
 
 class CApplicationOptions {
 	public:
-		int bAutoRunMission;
-		int nVersionFilter;
-		int bSinglePlayer;
-		int bEnableMods;
-		int bExpertMode;
-		int bEpilepticFriendly;
-		int bColorblindFriendly;
-		int bNotebookFriendly;
-		int nScreenShotInterval;
+		int32_t bAutoRunMission;
+		int32_t nVersionFilter;
+		int32_t bSinglePlayer;
+		int32_t bEnableMods;
+		int32_t bExpertMode;
+		int32_t bEpilepticFriendly;
+		int32_t bColorblindFriendly;
+		int32_t bNotebookFriendly;
+		int32_t nScreenShotInterval;
 
 	public:
 		CApplicationOptions () { Init (); }
-		void Init (int i = 0);
+		void Init (int32_t i = 0);
 };
 
 //------------------------------------------------------------------------------
@@ -706,10 +706,10 @@ class CGameOptions {
 
 	public:
 		CGameOptions () { Init (); }
-		void Init (int i = 0);
+		void Init (int32_t i = 0);
 		bool Use3DPowerups (void);
-		int UseHiresSound (void);
-		inline int SoftBlend (int nFlag) { return (render.effects.bSoftParticles & nFlag) != 0; }
+		int32_t UseHiresSound (void);
+		inline int32_t SoftBlend (int32_t nFlag) { return (render.effects.bSoftParticles & nFlag) != 0; }
 };
 
 //------------------------------------------------------------------------------
@@ -722,12 +722,12 @@ class CSeismicStates {
 		fix	nStartTime;
 		fix	nEndTime;
 		fix	nNextSoundTime;
-		int	nLevel;
-		int	nShakeFrequency;
-		int	nShakeDuration;
-		int	nSound;
-		int	bSound;
-		int	nVolume;
+		int32_t	nLevel;
+		int32_t	nShakeFrequency;
+		int32_t	nShakeDuration;
+		int32_t	nSound;
+		int32_t	bSound;
+		int32_t	nVolume;
 	};
 
 //------------------------------------------------------------------------------
@@ -735,40 +735,40 @@ class CSeismicStates {
 class CSlowMotionStates {
 	public:
 		float		fSpeed;
-		int		nState;
+		int32_t		nState;
 		time_t	tUpdate;
-		int		bActive;
+		int32_t		bActive;
 	};
 
 //------------------------------------------------------------------------------
 
 class CGameplayStates {
 	public:	
-		int bMultiBosses;
-		int bFinalBossIsDead;
-		int bHaveSmartMines;
-		int bMineDestroyed;
-		int bKillBossCheat;
-		int bTagFlag;
-		int nReactorCount [2];
-		int nLastReactor;
-		int bMineMineCheat;
-		int bAfterburnerCheat;
-		int bTripleFusion;
-		int bLastAfterburnerState;
+		int32_t bMultiBosses;
+		int32_t bFinalBossIsDead;
+		int32_t bHaveSmartMines;
+		int32_t bMineDestroyed;
+		int32_t bKillBossCheat;
+		int32_t bTagFlag;
+		int32_t nReactorCount [2];
+		int32_t nLastReactor;
+		int32_t bMineMineCheat;
+		int32_t bAfterburnerCheat;
+		int32_t bTripleFusion;
+		int32_t bLastAfterburnerState;
 		fix xLastAfterburnerCharge;
 		fix nPlayerSpeed;
 		fix xInitialShield [2];
 		fix xInitialEnergy [2];
 		CFixVector vTgtDir;
-		int nDirSteps;
-		int nInitialLives;
+		int32_t nDirSteps;
+		int32_t nInitialLives;
 		CSeismicStates seismic;
 		CSlowMotionStates slowmo [2];
 
 	public:
 		fix InitialShield (void) {
-			int h = xInitialShield [1];
+			int32_t h = xInitialShield [1];
 			if (h <= 0)
 				return xInitialShield [0];
 			xInitialShield [1] = -1;
@@ -776,7 +776,7 @@ class CGameplayStates {
 			}
 
 		fix InitialEnergy (void) {
-			int h = xInitialEnergy [1];
+			int32_t h = xInitialEnergy [1];
 			if (h <= 0)
 				return xInitialEnergy [0];
 			xInitialEnergy [1] = -1;
@@ -791,27 +791,27 @@ class CGameplayStates {
 
 class CKeyStates {
 	public:
-		ubyte 	nBufferType;		// 0=No buffer, 1=buffer ASCII, 2=buffer scans
-		ubyte 	bRepeat;
-		ubyte 	bEditorMode;
-		ubyte 	nLastPressed;
-		ubyte 	nLastReleased;
-		ubyte		pressed [256];
-		int		xLastPressTime;
+		uint8_t 	nBufferType;		// 0=No buffer, 1=buffer ASCII, 2=buffer scans
+		uint8_t 	bRepeat;
+		uint8_t 	bEditorMode;
+		uint8_t 	nLastPressed;
+		uint8_t 	nLastReleased;
+		uint8_t		pressed [256];
+		int32_t		xLastPressTime;
 		};
 
 class CInputStates {
 	public:
-		int			nPlrFileVersion;
-		int			nMouseType;
-		int			nJoyType;
-		int			nJoysticks;
-		int			bGrabMouse;
-		int			bHaveTrackIR;
-		ubyte			bCybermouseActive;
-		int			bSkipControls;
-		int			bControlsSkipFrame;
-		int			bKeepSlackTime;
+		int32_t			nPlrFileVersion;
+		int32_t			nMouseType;
+		int32_t			nJoyType;
+		int32_t			nJoysticks;
+		int32_t			bGrabMouse;
+		int32_t			bHaveTrackIR;
+		uint8_t			bCybermouseActive;
+		int32_t			bSkipControls;
+		int32_t			bControlsSkipFrame;
+		int32_t			bKeepSlackTime;
 		time_t		kcPollTime;
 		float			kcFrameTime;
 		fix			nCruiseSpeed;
@@ -822,21 +822,21 @@ class CInputStates {
 
 class CMenuStates {
 	public:
-		int bHires;
-		int bHiresAvailable;
-		int nInMenu;
-		int bInitBG;
-		int bDrawCopyright;
-		int bFullScreen;
-		int bReordering;
-		int bNoBackground;
+		int32_t bHires;
+		int32_t bHiresAvailable;
+		int32_t nInMenu;
+		int32_t bInitBG;
+		int32_t bDrawCopyright;
+		int32_t bFullScreen;
+		int32_t bReordering;
+		int32_t bNoBackground;
 	};
 
 //------------------------------------------------------------------------------
 
 class CMovieStates {
 	public:
-		int bIntroPlayed;
+		int32_t bIntroPlayed;
 	};
 
 //------------------------------------------------------------------------------
@@ -845,64 +845,64 @@ class CMovieStates {
 
 class CMultiplayerStates {
 	public:
-		int bUseTracker;
-		int bTrackerCall;
-		int bServer [2];
-		int bKeepClients;
-		int bHaveLocalAddress;
-		int nGameType;
-		int nGameSubType;
-		int bTryAutoDL;
-		int nConnection;
-		int bIWasKicked;
-		int bCheckPorts;
-		ubyte bSurfingNet;
-		int bPlayerIsTyping [MAX_PLAYERS];
+		int32_t bUseTracker;
+		int32_t bTrackerCall;
+		int32_t bServer [2];
+		int32_t bKeepClients;
+		int32_t bHaveLocalAddress;
+		int32_t nGameType;
+		int32_t nGameSubType;
+		int32_t bTryAutoDL;
+		int32_t nConnection;
+		int32_t bIWasKicked;
+		int32_t bCheckPorts;
+		uint8_t bSurfingNet;
+		int32_t bPlayerIsTyping [MAX_PLAYERS];
 	};
 
 //------------------------------------------------------------------------------
 
 class CGfxStates {
 	public:
-		int bInstalled;
-		int bOverride;
-		int nStartScrSize;
-		int nStartScrMode;
+		int32_t bInstalled;
+		int32_t bOverride;
+		int32_t nStartScrSize;
+		int32_t nStartScrMode;
 	};
 
 //------------------------------------------------------------------------------
 
 class CCameraStates {
 	public:
-		int bActive;
+		int32_t bActive;
 	};
 
 //------------------------------------------------------------------------------
 
 class CTextureStates {
 	public:
-		int bGlTexMergeOk;
-		int bHaveMaskShader;
-		int bHaveGrayScaleShader;
-		int bHaveEnhanced3DShader;
-		int bHaveRiftWarpShader;
-		int bHaveShadowMapShader;
+		int32_t bGlTexMergeOk;
+		int32_t bHaveMaskShader;
+		int32_t bHaveGrayScaleShader;
+		int32_t bHaveEnhanced3DShader;
+		int32_t bHaveRiftWarpShader;
+		int32_t bHaveShadowMapShader;
 	};
 
 //------------------------------------------------------------------------------
 
 class CCockpitStates {
 	public:
-		int bShowPingStats;
-		int nType;
-		int nNextType;
-		int nTypeSave;
-		int nShieldFlash;
-		int bRedraw;
-		int bBigWindowSwitch;
-		int nLastDrawn [2];
-		int n3DView [2];
-		int nCoopPlayerView [2];
+		int32_t bShowPingStats;
+		int32_t nType;
+		int32_t nNextType;
+		int32_t nTypeSave;
+		int32_t nShieldFlash;
+		int32_t bRedraw;
+		int32_t bBigWindowSwitch;
+		int32_t nLastDrawn [2];
+		int32_t n3DView [2];
+		int32_t nCoopPlayerView [2];
 	};
 
 //------------------------------------------------------------------------------
@@ -920,17 +920,17 @@ class CVRBuffers {
 class CVRStates {
 	public:
 		CScreenSize	m_screenSize;
-		ubyte			nScreenFlags;	//see values in screens.h
-		ubyte			nCurrentPage;
+		uint8_t			nScreenFlags;	//see values in screens.h
+		uint8_t			nCurrentPage;
 		fix			xEyeWidth;
-		int			nRenderMode;
-		int			nLowRes;			// Default to low res
-		int 			bShowHUD;
-		int			nSensitivity;	// 0 - 2
-		int			xStereoSeparation;
-		int			nEyeSwitch;
-		int			bEyeOffsetChanged;
-		int			bUseRegCode;
+		int32_t			nRenderMode;
+		int32_t			nLowRes;			// Default to low res
+		int32_t 			bShowHUD;
+		int32_t			nSensitivity;	// 0 - 2
+		int32_t			xStereoSeparation;
+		int32_t			nEyeSwitch;
+		int32_t			bEyeOffsetChanged;
+		int32_t			bUseRegCode;
 		CVRBuffers	buffers;
 	};
 #endif
@@ -939,9 +939,9 @@ class CVRStates {
 
 class CFontStates {
 	public:
-		int bHires;
-		int bHiresAvailable;
-		int bInstalled;
+		int32_t bHires;
+		int32_t bHiresAvailable;
+		int32_t bInstalled;
 	};
 
 //------------------------------------------------------------------------------
@@ -951,132 +951,132 @@ class CFontStates {
 #define RIFT_DEFAULT_ZOOM		1.5
 
 typedef struct tRenderDetail {
-	int nLevel;
-	int nRenderDepth;
-	int nMaxDebrisObjects;
-	int nMaxObjectsOnScreenDetailed;
-	int nMaxLinearDepthObjects;
-	int nMaxPerspectiveDepth;
-	int nMaxLinearDepth;
-	int nMaxFlatDepth;
-	sbyte nObjectComplexity;
-	sbyte nObjectDetail;
-	sbyte nWallDetail;
-	sbyte nWallRenderDepth;
-	sbyte nDebrisAmount; 
-	sbyte nSoundChannels;
+	int32_t nLevel;
+	int32_t nRenderDepth;
+	int32_t nMaxDebrisObjects;
+	int32_t nMaxObjectsOnScreenDetailed;
+	int32_t nMaxLinearDepthObjects;
+	int32_t nMaxPerspectiveDepth;
+	int32_t nMaxLinearDepth;
+	int32_t nMaxFlatDepth;
+	int8_t nObjectComplexity;
+	int8_t nObjectDetail;
+	int8_t nWallDetail;
+	int8_t nWallRenderDepth;
+	int8_t nDebrisAmount; 
+	int8_t nSoundChannels;
 } tRenderDetail;
 
 typedef struct tRenderHistory {
 	CBitmap		*bmBot;
 	CBitmap		*bmTop;
 	CBitmap		*bmMask;
-	ubyte			bSuperTransp;
-	ubyte			bShaderMerge;
-	int			bOverlay;
-	int			bColored;
-	int			nType;
-	int			nBlendMode;
+	uint8_t			bSuperTransp;
+	uint8_t			bShaderMerge;
+	int32_t			bOverlay;
+	int32_t			bColored;
+	int32_t			nType;
+	int32_t			nBlendMode;
 } tRenderHistory;
 
 class CZoomStates {
 	public:
-		int			nState;
+		int32_t			nState;
 		float			nFactor;
 		fix			nMinFactor;
 		fix			nMaxFactor;
 		fix			nDestFactor;
-		int			nChannel;
+		int32_t			nChannel;
 		float			nStep;
 		time_t		nTime;
 	};
 
 class CRenderStates {
 	public:
-		int bChaseCam;
-		int bFreeCam;
-		int bEnableFreeCam;
-		int bQueryOcclusion;
-		int bVertexArrays;
-		int bAutoMap;
-		int bLightmapsOk;
-		int bHaveLightmaps;
-		int bUseLightmaps;
-		int bDropAfterburnerBlob;
-		int bOutsideMine;
-		int bExtExplPlaying;
-		int bDoAppearanceEffect;
-		int bGlLighting;
-		int bColored;
-		int bBriefing;
-		int bRearView;
-		int bDepthSort;
-		int nInterpolationMethod;
-		int bTMapFlat;
-		int bCloaked;
-		int bBrightObject;
-		int nWindow [2];
-		int xStereoSeparation [2];
-		int nStartSeg;
-		int nLighting;
-		int nMaxTextureQuality;
-		int bTransparency;
-		int bSplitPolys;
-		int bHaveOculusRift;
-		int bHaveDynLights;
-		int bHaveSparks;
-		int bUsePerPixelLighting;
-		int nRenderPass;
-		int nShadowPass;
-		int nShadowBlurPass;
-		int bBlurPass;
-		int nShadowMap;
-		int bLoResShadows;
-		int bUseCameras;
-		int bUseDynLight;
-		int bApplyDynLight;
-		int bClusterLights;
-		int nSoften;
-		int bHeadlightOn;
-		int bHeadlights;
-		int bHaveSkyBox;
-		int bAllVisited;
-		int bViewDist;
-		int bD2XLights;
-		int bRendering;
-		int bFullBright;
-		int bQueryCoronas;
-		int bDoLightmaps;
-		int bAmbientColor;
-		int bSpecularColor;
-		int bDoCameras;
-		int bRenderIndirect;
-		int bBuildModels;
-		int bShowFrameRate;
-		int bShowTime;
-		int bShowProfiler;
-		int bTriangleMesh;
-		int bOmegaModded;
-		int bPlasmaModded;
-		int nFrameFlipFlop;
-		int nModelQuality;
-		int nMeshQuality;
-		int nState;	//0: render geometry, 1: render objects
-		int nType;
-		int nFrameCount;
-		int bUpdateEffects;
-		int nLightingMethod;
-		int bPerPixelLighting;
-		int nMaxLightsPerPass;
-		int nMaxLightsPerFace;
-		int nMaxLightsPerObject;
-		int bVSync;
-		int bVSyncOk;
-		int nThreads;
-		int xPlaneDistTolerance;
+		int32_t bChaseCam;
+		int32_t bFreeCam;
+		int32_t bEnableFreeCam;
+		int32_t bQueryOcclusion;
+		int32_t bVertexArrays;
+		int32_t bAutoMap;
+		int32_t bLightmapsOk;
+		int32_t bHaveLightmaps;
+		int32_t bUseLightmaps;
+		int32_t bDropAfterburnerBlob;
+		int32_t bOutsideMine;
+		int32_t bExtExplPlaying;
+		int32_t bDoAppearanceEffect;
+		int32_t bGlLighting;
+		int32_t bColored;
+		int32_t bBriefing;
+		int32_t bRearView;
+		int32_t bDepthSort;
+		int32_t nInterpolationMethod;
+		int32_t bTMapFlat;
+		int32_t bCloaked;
+		int32_t bBrightObject;
+		int32_t nWindow [2];
+		int32_t xStereoSeparation [2];
+		int32_t nStartSeg;
+		int32_t nLighting;
+		int32_t nMaxTextureQuality;
+		int32_t bTransparency;
+		int32_t bSplitPolys;
+		int32_t bHaveOculusRift;
+		int32_t bHaveDynLights;
+		int32_t bHaveSparks;
+		int32_t bUsePerPixelLighting;
+		int32_t nRenderPass;
+		int32_t nShadowPass;
+		int32_t nShadowBlurPass;
+		int32_t bBlurPass;
+		int32_t nShadowMap;
+		int32_t bLoResShadows;
+		int32_t bUseCameras;
+		int32_t bUseDynLight;
+		int32_t bApplyDynLight;
+		int32_t bClusterLights;
+		int32_t nSoften;
+		int32_t bHeadlightOn;
+		int32_t bHeadlights;
+		int32_t bHaveSkyBox;
+		int32_t bAllVisited;
+		int32_t bViewDist;
+		int32_t bD2XLights;
+		int32_t bRendering;
+		int32_t bFullBright;
+		int32_t bQueryCoronas;
+		int32_t bDoLightmaps;
+		int32_t bAmbientColor;
+		int32_t bSpecularColor;
+		int32_t bDoCameras;
+		int32_t bRenderIndirect;
+		int32_t bBuildModels;
+		int32_t bShowFrameRate;
+		int32_t bShowTime;
+		int32_t bShowProfiler;
+		int32_t bTriangleMesh;
+		int32_t bOmegaModded;
+		int32_t bPlasmaModded;
+		int32_t nFrameFlipFlop;
+		int32_t nModelQuality;
+		int32_t nMeshQuality;
+		int32_t nState;	//0: render geometry, 1: render objects
+		int32_t nType;
+		int32_t nFrameCount;
+		int32_t bUpdateEffects;
+		int32_t nLightingMethod;
+		int32_t bPerPixelLighting;
+		int32_t nMaxLightsPerPass;
+		int32_t nMaxLightsPerFace;
+		int32_t nMaxLightsPerObject;
+		int32_t bVSync;
+		int32_t bVSyncOk;
+		int32_t nThreads;
+		int32_t xPlaneDistTolerance;
 		fix xZoom;
 		fix xZoomScale;
-		ubyte nRenderingType;
+		uint8_t nRenderingType;
 		fix nFlashScale;
 		fix nFlashRate;
 		CCameraStates cameras;
@@ -1084,7 +1084,7 @@ class CRenderStates {
 		//CVRStates vr;
 		CFontStates fonts;
 		CTextureStates textures;
-		int bDetriangulation;
+		int32_t bDetriangulation;
 		GLenum nFacePrimitive;
 		double glFOV;
 		double glAspect;
@@ -1092,7 +1092,7 @@ class CRenderStates {
 		tRenderDetail detail;
 		tRenderHistory history;
 
-		inline void SetRenderWindow (int w) {
+		inline void SetRenderWindow (int32_t w) {
 			nWindow [1] = nWindow [0];
 			nWindow [0] = w;
 			}
@@ -1109,25 +1109,25 @@ class CRenderStates {
 
 class CAudioStates {
 	public:
-		int bNoMusic;
-		int bSoundsInitialized;
-		int bLoMem;
-		int nNextSignature;
-		int nActiveObjects;
-		int nMaxChannels;
+		int32_t bNoMusic;
+		int32_t bSoundsInitialized;
+		int32_t bLoMem;
+		int32_t nNextSignature;
+		int32_t nActiveObjects;
+		int32_t nMaxChannels;
 	};
 
 //------------------------------------------------------------------------------
 
 class CSoundStates {
 	public:
-		int bWasRecording;
-		int bDontStartObjects;
-		int nConquerWarningSoundChannel;
-		int nSoundChannels;
-		int bD1Sound;
-		int bMidiFix;
-		int bDynamic;
+		int32_t bWasRecording;
+		int32_t bDontStartObjects;
+		int32_t nConquerWarningSoundChannel;
+		int32_t nSoundChannels;
+		int32_t bD1Sound;
+		int32_t bMidiFix;
+		int32_t bDynamic;
 		CAudioStates audio;
 	};
 
@@ -1135,53 +1135,53 @@ class CSoundStates {
 
 class CVideoStates {
 	public:
-		int nDisplayMode;
-		int nDefaultDisplayMode;
-		uint nScreenMode;
-		uint nLastScreenMode;
-		int nWidth;
-		int nHeight;
-		int bFullScreen;
+		int32_t nDisplayMode;
+		int32_t nDefaultDisplayMode;
+		uint32_t nScreenMode;
+		uint32_t nLastScreenMode;
+		int32_t nWidth;
+		int32_t nHeight;
+		int32_t bFullScreen;
 	};
 
 //------------------------------------------------------------------------------
 
 class CCheatStates {
 	public:
-		int bEnabled;
-		int bTurboMode;
-		int bMonsterMode;
-		int bLaserRapidFire;
-		int bRobotsFiring;
-		int bRobotsKillRobots;
-		int bJohnHeadOn;
-		int bHomingWeapons;
-		int bBouncingWeapons;
-		int bMadBuddy;
-		int bAcid;
-		int bPhysics;
-		int bSpeed;
-		int bD1CheatsEnabled;
-		int nUnlockLevel;
+		int32_t bEnabled;
+		int32_t bTurboMode;
+		int32_t bMonsterMode;
+		int32_t bLaserRapidFire;
+		int32_t bRobotsFiring;
+		int32_t bRobotsKillRobots;
+		int32_t bJohnHeadOn;
+		int32_t bHomingWeapons;
+		int32_t bBouncingWeapons;
+		int32_t bMadBuddy;
+		int32_t bAcid;
+		int32_t bPhysics;
+		int32_t bSpeed;
+		int32_t bD1CheatsEnabled;
+		int32_t nUnlockLevel;
 	};
 
 //------------------------------------------------------------------------------
 
 class CEntropyStates {
 	public:
-		int bConquering;
-		int bConquerWarning;
-		int bExitSequence;
-		int nTimeLastMoved;
+		int32_t bConquering;
+		int32_t bConquerWarning;
+		int32_t bExitSequence;
+		int32_t nTimeLastMoved;
 	};
 
 //------------------------------------------------------------------------------
 
 typedef struct tSlowTick {
-	int bTick;
-	int nTime;
-	int nSlack;
-	int nLastTick;
+	int32_t bTick;
+	int32_t nTime;
+	int32_t nSlack;
+	int32_t nLastTick;
 } tSlowTick;
 
 class CApplicationStates {
@@ -1189,81 +1189,81 @@ class CApplicationStates {
 		tSlowTick tick40fps;
 		tSlowTick tick60fps;
 	#if 1 //MULTI_THREADED
-		int bExit;
-		int bMultiThreaded;
-		int nThreads;
+		int32_t bExit;
+		int32_t bMultiThreaded;
+		int32_t nThreads;
 	#endif
-		int bDemoData;
-		int bCheckAndFixSetup;
+		int32_t bDemoData;
+		int32_t bCheckAndFixSetup;
 	#ifdef __unix__
-		int bLinuxMsgBox;
+		int32_t bLinuxMsgBox;
 	#endif
-		int nSDLTicks [2];
-		int nExtGameStatus;
-		int nFunctionMode;
-		int nLastFuncMode;
-		int nCriticalError;
-		int bStandalone;
-		int bNostalgia;
-		int iNostalgia;
-		int bInitialized;
-		int bD2XLevel;
-		int bEnterGame;
-		int bSaveScreenShot;
-		int bShowVersionInfo;
-		int bGameRunning;
-		int bGameSuspended;
-		int bGameAborted;
-		int bBetweenLevels;
-		int bPlayerIsDead;
-		int bPlayerEggsDropped;
-		int bDeathSequenceAborted;
-		int bChangingShip;
-		int bPlayerFiredLaserThisFrame;
-		int bUseSound;
-		int bMacData;
-		int bCompressData;
-		int bLunacy;
-		int bEnglish;
-		int bD1Data;
-		int bD1Model;
-		int bD1Mission;
-		int bHaveD1Data;
-		int bHaveD1Textures;
-		int bHaveMod;
-		int bEndLevelDataLoaded;
-		int bEndLevelSequence;
-		int bFirstSecretVisit;
-		int bHaveExtraGameInfo [2];
-		int bConfigMenu;
-		int nDifficultyLevel;
-		int nDetailLevel;
-		int nBaseCtrlCenExplTime;
-		int bUseDefaults;
-		int nCompSpeed;
-		int bHaveExtraData;
-		int bHaveExtraMovies;
-		int bDebugSpew;
-		int bAutoRunMission;
-		int bProgressBars;
-		int bLittleEndian;
-		int bUsingConverter;
-		int bFixModels;
-		int bAltModels;
-		int bReadOnly;
-		int bCacheTextures;
-		int bCacheLights;
-		int bCacheMeshes;
-		int bCacheLightmaps;
-		int bCacheModelData;
-		int bUseSwapFile;
-		int bSingleStep;
-		int bAutoDemos;	//automatically play demos or intro movie if user is idling in the main menu
-		int bShowError;
-		int bClearMessage;
-		int nLogLevel;
-		int iDownloadTimeout;
-		int bHaveSDLNet;
+		int32_t nSDLTicks [2];
+		int32_t nExtGameStatus;
+		int32_t nFunctionMode;
+		int32_t nLastFuncMode;
+		int32_t nCriticalError;
+		int32_t bStandalone;
+		int32_t bNostalgia;
+		int32_t iNostalgia;
+		int32_t bInitialized;
+		int32_t bD2XLevel;
+		int32_t bEnterGame;
+		int32_t bSaveScreenShot;
+		int32_t bShowVersionInfo;
+		int32_t bGameRunning;
+		int32_t bGameSuspended;
+		int32_t bGameAborted;
+		int32_t bBetweenLevels;
+		int32_t bPlayerIsDead;
+		int32_t bPlayerEggsDropped;
+		int32_t bDeathSequenceAborted;
+		int32_t bChangingShip;
+		int32_t bPlayerFiredLaserThisFrame;
+		int32_t bUseSound;
+		int32_t bMacData;
+		int32_t bCompressData;
+		int32_t bLunacy;
+		int32_t bEnglish;
+		int32_t bD1Data;
+		int32_t bD1Model;
+		int32_t bD1Mission;
+		int32_t bHaveD1Data;
+		int32_t bHaveD1Textures;
+		int32_t bHaveMod;
+		int32_t bEndLevelDataLoaded;
+		int32_t bEndLevelSequence;
+		int32_t bFirstSecretVisit;
+		int32_t bHaveExtraGameInfo [2];
+		int32_t bConfigMenu;
+		int32_t nDifficultyLevel;
+		int32_t nDetailLevel;
+		int32_t nBaseCtrlCenExplTime;
+		int32_t bUseDefaults;
+		int32_t nCompSpeed;
+		int32_t bHaveExtraData;
+		int32_t bHaveExtraMovies;
+		int32_t bDebugSpew;
+		int32_t bAutoRunMission;
+		int32_t bProgressBars;
+		int32_t bLittleEndian;
+		int32_t bUsingConverter;
+		int32_t bFixModels;
+		int32_t bAltModels;
+		int32_t bReadOnly;
+		int32_t bCacheTextures;
+		int32_t bCacheLights;
+		int32_t bCacheMeshes;
+		int32_t bCacheLightmaps;
+		int32_t bCacheModelData;
+		int32_t bUseSwapFile;
+		int32_t bSingleStep;
+		int32_t bAutoDemos;	//automatically play demos or intro movie if user is idling in the main menu
+		int32_t bShowError;
+		int32_t bClearMessage;
+		int32_t nLogLevel;
+		int32_t iDownloadTimeout;
+		int32_t bHaveSDLNet;
 		bool bCustomData;
 		bool bCustomSounds;
 		fix xThisLevelTime;
@@ -1271,15 +1271,15 @@ class CApplicationStates {
 		char *szCurrentMission;
 		char *szCurrentMissionFile;
 		tObjTransformation playerPos;
-		short nPlayerSegment;
-		uint nRandSeed;
+		int16_t nPlayerSegment;
+		uint32_t nRandSeed;
 		CCheatStates cheats;
 
-		inline void SRand (uint seed = 0xffffffff) {
+		inline void SRand (uint32_t seed = 0xffffffff) {
 			if (seed == 0xffffffff) {
 				seed = SDL_GetTicks ();
 				seed *= seed;
-				seed ^= (uint) time (NULL);
+				seed ^= (uint32_t) time (NULL);
 				}
 			srand (nRandSeed = seed);
 			}
@@ -1290,13 +1290,13 @@ class CApplicationStates {
 
 class CLimitFPSStates {
 	public:
-		ubyte	bControls;
-		ubyte bJoystick;
-		ubyte	bSeismic;
-		ubyte bCountDown;
-		ubyte	bHomers;
-		ubyte	bFusion;
-		ubyte bOmega;
+		uint8_t	bControls;
+		uint8_t bJoystick;
+		uint8_t	bSeismic;
+		uint8_t bCountDown;
+		uint8_t	bHomers;
+		uint8_t	bFusion;
+		uint8_t bOmega;
 	};
 
 //------------------------------------------------------------------------------
@@ -1337,20 +1337,20 @@ extern CGameOptions	*gameOpts;
 
 class CMissionConfig {
 	public:
-		int	m_shipsAllowed [MAX_SHIP_TYPES];
-		int	m_playerShip;
-		int	m_bTeleport;
-		int	m_bSecretSave;
-		int	m_bColoredSegments;
-		int	m_b3DPowerups;
-		int	m_nCollisionModel;
+		int32_t	m_shipsAllowed [MAX_SHIP_TYPES];
+		int32_t	m_playerShip;
+		int32_t	m_bTeleport;
+		int32_t	m_bSecretSave;
+		int32_t	m_bColoredSegments;
+		int32_t	m_b3DPowerups;
+		int32_t	m_nCollisionModel;
 
 	public:
 		CMissionConfig () { Init (); }
 		void Init (void);
-		int Load (char* szFilename = NULL);
+		int32_t Load (char* szFilename = NULL);
 		void Apply (void);
-		int SelectShip (int nShip);
+		int32_t SelectShip (int32_t nShip);
 };
 
 extern CMissionConfig missionConfig;
@@ -1365,7 +1365,7 @@ class CBase {
 		CBase*	m_next;
 		CBase*	m_parent;
 		CBase*	m_child;
-		uint		m_refCount;
+		uint32_t		m_refCount;
 	public:
 		CBase () { Init (); } 
 		virtual ~CBase () { Destroy (); }
@@ -1407,8 +1407,8 @@ class CBase {
 class CShadowLightData {
 	public:
 		CFloatVector	vPosf;
-		short				nMap;
-		ubyte				nFrame;	//set per frame when scene as seen from a light source has been rendered
+		int16_t				nMap;
+		uint8_t				nFrame;	//set per frame when scene as seen from a light source has been rendered
 #if DBG
 		CFixMatrix	orient;
 #endif
@@ -1423,9 +1423,9 @@ class CShadowLightData {
 #define MAX_SHADOW_LIGHTS 8
 
 typedef struct tLightRef {
-	short			nSegment;
-	short			nSide;
-	short			nTexture;
+	int16_t			nSegment;
+	int16_t			nSide;
+	int16_t			nTexture;
 } tLightRef;
 
 //------------------------------------------------------------------------------
@@ -1441,7 +1441,7 @@ class CColorData {
 		CArray<CFaceColor>	textures; // [MAX_WALL_TEXTURES];
 		CArray<CFaceColor>	defaultTextures [2]; //[MAX_WALL_TEXTURES];
 		CArray<tLightRef>		visibleLights;
-		int						nVisibleLights;
+		int32_t						nVisibleLights;
 		CFloatVector3			flagTag;
 	public:
 		CColorData ();
@@ -1467,9 +1467,9 @@ class CPulseData {
 //Flickering light system
 class CVariableLight {
 	public:
-		short		m_nSegment;
-		short		m_nSide;
-		uint		m_mask;     // determines flicker pattern
+		int16_t		m_nSegment;
+		int16_t		m_nSide;
+		uint32_t		m_mask;     // determines flicker pattern
 		fix		m_timer;    // time until next change
 		fix		m_delay;    // time between changes
 
@@ -1487,24 +1487,24 @@ class CFlickerLightData : public CArray< CVariableLight > {};
 
 class CLightData {
 	public:
-		int								nStatic;
-		int								nCoronas;
+		int32_t								nStatic;
+		int32_t								nCoronas;
 		CArray<fix>						segDeltas;
 		CArray<CLightDeltaIndex>	deltaIndices;
 		CArray<CLightDelta>			deltas;
-		CArray<ubyte>					subtracted;
+		CArray<uint8_t>					subtracted;
 		CFlickerLightData				flicker;
 		CArray<fix>						dynamicLight;
 		CArray<CFloatVector3>			dynamicColor;
-		CArray<ubyte>					bGotDynColor;
-		ubyte								bGotGlobalDynColor;
-		ubyte								bStartDynColoring;
-		ubyte								bInitDynColoring;
+		CArray<uint8_t>					bGotDynColor;
+		uint8_t								bGotGlobalDynColor;
+		uint8_t								bStartDynColoring;
+		uint8_t								bInitDynColoring;
 		CFloatVector3						globalDynColor;
-		CArray<short>					vertices;
-		CArray<sbyte>					vertexFlags;
-		CArray<sbyte>					newObjects;
-		CArray<sbyte>					objects;
+		CArray<int16_t>					vertices;
+		CArray<int8_t>					vertexFlags;
+		CArray<int8_t>					newObjects;
+		CArray<int8_t>					objects;
 		CArray<GLuint>					coronaQueries;
 		CArray<GLuint>					coronaSamples;
 	public:
@@ -1515,22 +1515,22 @@ class CLightData {
 		void Destroy (void);
 };
 
-inline int operator- (CLightDeltaIndex* o, CArray<CLightDeltaIndex>& a) { return a.Index (o); }
-inline int operator- (CLightDelta* o, CArray<CLightDelta>& a) { return a.Index (o); }
+inline int32_t operator- (CLightDeltaIndex* o, CArray<CLightDeltaIndex>& a) { return a.Index (o); }
+inline int32_t operator- (CLightDelta* o, CArray<CLightDelta>& a) { return a.Index (o); }
 
 //------------------------------------------------------------------------------
 
 class CShadowData {
 	public:
-		short					nLight;
-		short					nLights;
-		short					nShadowMaps;
+		int16_t					nLight;
+		int16_t					nLights;
+		int16_t					nShadowMaps;
 		CDynLight*			lightP;
 		CObject				lightSource;
 		CFloatVector		vLightPos;
 		CFixVector			vLightDir [MAX_SHADOW_LIGHTS];
-		CArray<short>		objLights;
-		ubyte					nFrame;	//flipflop for testing whether a light source's view has been rendered the current frame
+		CArray<int16_t>		objLights;
+		uint8_t					nFrame;	//flipflop for testing whether a light source's view has been rendered the current frame
 	public:
 		CShadowData ();
 		void Init (void);
@@ -1558,17 +1558,17 @@ class CMorphData {
 
 class CTerrainRenderData {
 	public:
-		CArray<ubyte>			heightmap;
+		CArray<uint8_t>			heightmap;
 		CArray<fix>				lightmap;
 		CArray<CFixVector>	points;
 		CBitmap*					bmP;
 		CStaticArray< CRenderPoint, TERRAIN_GRID_MAX_SIZE >		saveRow; // [TERRAIN_GRID_MAX_SIZE];
 		CFixVector				vStartPoint;
 		tUVL						uvlList [2][3];
-		int						bOutline;
-		int						nGridW, nGridH;
-		int						orgI, orgJ;
-		int						nMineTilesDrawn;    //flags to tell if all 4 tiles under mine have drawn
+		int32_t						bOutline;
+		int32_t						nGridW, nGridH;
+		int32_t						orgI, orgJ;
+		int32_t						nMineTilesDrawn;    //flags to tell if all 4 tiles under mine have drawn
 	public:
 		CTerrainRenderData ();
 };
@@ -1581,7 +1581,7 @@ class CThrusterData {
 	public:
 		CFlightPath		path;
 		float				fSpeed;
-		short				nPulse;
+		int16_t				nPulse;
 		time_t			tPulse;
 	public:
 		CThrusterData ();
@@ -1593,40 +1593,40 @@ class CThrusterData {
 #define N_EXTRA_OBJ_LISTS   50
 
 typedef struct tObjRenderListItem {
-	short	nNextItem;
-	short	nObject;
+	int16_t	nNextItem;
+	int16_t	nObject;
 	fix	xDist;
 } tObjRenderListItem;
 
 class CObjRenderList {
 	public:
-		CStaticArray< short, MAX_SEGMENTS_D2X >	ref; // [MAX_SEGMENTS_D2X];	//points to each segment's first render object list entry in renderObjs
+		CStaticArray< int16_t, MAX_SEGMENTS_D2X >	ref; // [MAX_SEGMENTS_D2X];	//points to each segment's first render object list entry in renderObjs
 		CStaticArray< tObjRenderListItem, MAX_OBJECTS_D2X >	objs; // [MAX_OBJECTS_D2X];
-		int						nUsed;
+		int32_t						nUsed;
 	};
 
 
 typedef struct tSegZRef {
 	fix	z;
-	short	nSegment;
+	int16_t	nSegment;
 } tSegZRef;
 
 typedef struct tPortal {
 	fix	left, right, top, bot;
 	char  bProjected;
-	ubyte bVisible;
+	uint8_t bVisible;
 } tPortal;
 
 class CVisibilityData {
 	public:
-		int						nSegments;
+		int32_t						nSegments;
 		CShortArray				segments; //[MAX_SEGMENTS_D2X];
 		CByteArray				bVisited; //[MAX_SEGMENTS_D2X];
 		CByteArray				bVisible; //[MAX_SEGMENTS_D2X];
 		CByteArray				bProcessed; //[MAX_SEGMENTS_D2X];		//whether each entry has been nProcessed
-		ubyte 					nVisited;
-		ubyte						nProcessed;
-		ubyte						nVisible;
+		uint8_t 					nVisited;
+		uint8_t						nProcessed;
+		uint8_t						nVisible;
 		CShortArray				nDepth; //[MAX_SEGMENTS_D2X];		//depth for each seg in nRenderList
 		CArray<tSegZRef>		zRef [2]; // segment indexes sorted by distance from viewer
 		CArray<tPortal>		portals;
@@ -1636,23 +1636,23 @@ class CVisibilityData {
 	public:
 		CVisibilityData ();
 		~CVisibilityData () { Destroy (); }
-		bool Create (int nState);
-		bool Resize (int nLength = -1);
+		bool Create (int32_t nState);
+		bool Resize (int32_t nLength = -1);
 		void Destroy (void);
 
-		inline bool Visible (short nSegment) { return bVisible [nSegment] == nVisible; }
-		inline bool Visited (short nSegment) { return bVisited [nSegment] == nVisited; }
-		inline void Visit (short nSegment) { bVisited [nSegment] = nVisited; }
-		ubyte BumpVisitedFlag (void);
-		ubyte BumpProcessedFlag (void);
-		ubyte BumpVisibleFlag (void);
-		int SegmentMayBeVisible (short nStartSeg, int nRadius, int nMaxDist);
-		void BuildSegList (CTransformation& transformation, short nStartSeg, int nWindow, bool bIgnoreDoors = false);
-		void InitZRef (int i, int j, int nThread);
-		void QSortZRef (short left, short right);
+		inline bool Visible (int16_t nSegment) { return bVisible [nSegment] == nVisible; }
+		inline bool Visited (int16_t nSegment) { return bVisited [nSegment] == nVisited; }
+		inline void Visit (int16_t nSegment) { bVisited [nSegment] = nVisited; }
+		uint8_t BumpVisitedFlag (void);
+		uint8_t BumpProcessedFlag (void);
+		uint8_t BumpVisibleFlag (void);
+		int32_t SegmentMayBeVisible (int16_t nStartSeg, int32_t nRadius, int32_t nMaxDist);
+		void BuildSegList (CTransformation& transformation, int16_t nStartSeg, int32_t nWindow, bool bIgnoreDoors = false);
+		void InitZRef (int32_t i, int32_t j, int32_t nThread);
+		void QSortZRef (int16_t left, int16_t right);
 
 	private:
-		int BuildAutomapSegList (void);
+		int32_t BuildAutomapSegList (void);
 		void Sort (void);
 		void MergeZRef (void);
 
@@ -1665,7 +1665,7 @@ class CMineRenderData {
 		CVisibilityData		visibility [MAX_THREADS + 2];
 		//CShortArray				renderSegList [MAX_THREADS]; //[MAX_SEGMENTS_D2X];
 		CShortArray				objRenderSegList;
-		int						nObjRenderSegs;
+		int32_t						nObjRenderSegs;
 		CObjRenderList			objRenderList;
 		CArray< CSegFace* >	renderFaceListP; //[MAX_SEGMENTS_D2X * 6];
 		CIntArray				bObjectRendered; //[MAX_OBJECTS_D2X];
@@ -1675,31 +1675,31 @@ class CMineRenderData {
 		CUShortArray			bAutomapVisited; //[MAX_SEGMENTS_D2X];
 		CUShortArray			bAutomapVisible; //[MAX_SEGMENTS_D2X];
 		CUShortArray			bRadarVisited; //[MAX_SEGMENTS_D2X];
-		ubyte						bSetAutomapVisited;
+		uint8_t						bSetAutomapVisited;
 
 	public:
 		CMineRenderData ();
 		~CMineRenderData () { Destroy (); }
-		bool Create (int nState);
-		bool Resize (int nLength = -1);
+		bool Create (int32_t nState);
+		bool Resize (int32_t nLength = -1);
 		void Destroy (void);
-		bool Visible (short nSegment, int nThread = 0) { return visibility [nThread].Visible (nSegment); }
-		bool Visited (short nSegment, int nThread = 0) { return visibility [nThread].Visited (nSegment); }
-		void Visit (short nSegment, int nThread = 0) { return visibility [nThread].Visit (nSegment); }
-		CByteArray& VisibleFlags (int nThread = 0) { return visibility [nThread].bVisible; }
-		CByteArray& VisitedFlags (int nThread = 0) { return visibility [nThread].bVisited; }
+		bool Visible (int16_t nSegment, int32_t nThread = 0) { return visibility [nThread].Visible (nSegment); }
+		bool Visited (int16_t nSegment, int32_t nThread = 0) { return visibility [nThread].Visited (nSegment); }
+		void Visit (int16_t nSegment, int32_t nThread = 0) { return visibility [nThread].Visit (nSegment); }
+		CByteArray& VisibleFlags (int32_t nThread = 0) { return visibility [nThread].bVisible; }
+		CByteArray& VisitedFlags (int32_t nThread = 0) { return visibility [nThread].bVisited; }
 };
 
 //------------------------------------------------------------------------------
 
 class CVertColorData {
 	public:
-		int				bExclusive;
-		int				bNoShadow;
-		int				bDarkness;
-		int				bMatEmissive;
-		int				bMatSpecular;
-		int				nMatLight;
+		int32_t				bExclusive;
+		int32_t				bNoShadow;
+		int32_t				bDarkness;
+		int32_t				bMatEmissive;
+		int32_t				bMatSpecular;
+		int32_t				nMatLight;
 		CFloatVector	matAmbient;
 		CFloatVector	matDiffuse;
 		CFloatVector	matSpecular;
@@ -1714,7 +1714,7 @@ class CVertColorData {
 
 typedef struct tFaceListItem {
 	CSegFace*			faceP;
-	int					nNextItem;
+	int32_t					nNextItem;
 } tFaceListItem;
 
 class CFaceListIndex {
@@ -1722,8 +1722,8 @@ class CFaceListIndex {
 		CIntArray				roots; // [MAX_WALL_TEXTURES * 3];
 		CIntArray				tails; // [MAX_WALL_TEXTURES * 3];
 		CIntArray				usedKeys; // [MAX_WALL_TEXTURES * 3];
-		//int						nUsedFaces;
-		int						nUsedKeys;
+		//int32_t						nUsedFaces;
+		int32_t						nUsedKeys;
 	public:
 		CFaceListIndex ();
 		~CFaceListIndex ();
@@ -1759,28 +1759,28 @@ class CRiftData {
 		float				m_renderScale;
 		float				m_fov;
 		float				m_projectionCenterOffset;
-		int				m_ipd;
-		int				m_nResolution;
-		int				m_bUse;
-		int				m_bAvailable;
+		int32_t				m_ipd;
+		int32_t				m_nResolution;
+		int32_t				m_bUse;
+		int32_t				m_bAvailable;
 		CFloatVector	m_center;
 
 		CRiftData () : m_renderScale (1.0f), m_fov (125.0f), m_projectionCenterOffset (0.0f), m_ipd (0), m_nResolution (0), m_bUse (0), m_bAvailable (false) {}
 		~CRiftData () { Destroy (); }
 		bool Create (void);
 		void Destroy (void);
-		inline int Available (void) { return m_bAvailable; }
-		inline int Resolution (void) { return m_nResolution; }
-		int GetViewMatrix (CFixMatrix& m);
-		int GetHeadAngles (CAngleVector* angles);
+		inline int32_t Available (void) { return m_bAvailable; }
+		inline int32_t Resolution (void) { return m_nResolution; }
+		int32_t GetViewMatrix (CFixMatrix& m);
+		int32_t GetHeadAngles (CAngleVector* angles);
 		void AutoCalibrate (void);
 		inline void SetCenter (void) { GetHeadAngles (NULL); }
 #if OCULUS_RIFT
-		inline int HResolution (void) { return (Available () &&  m_hmdInfo.HResolution) ? m_hmdInfo.HResolution : 1920; }
-		inline int VResolution (void) { return (Available () && m_hmdInfo.VResolution) ? m_hmdInfo.VResolution : 1200; }
+		inline int32_t HResolution (void) { return (Available () &&  m_hmdInfo.HResolution) ? m_hmdInfo.HResolution : 1920; }
+		inline int32_t VResolution (void) { return (Available () && m_hmdInfo.VResolution) ? m_hmdInfo.VResolution : 1200; }
 #else
-		inline int HResolution (void) { return 1920; }
-		inline int VResolution (void) { return 1200; }
+		inline int32_t HResolution (void) { return 1920; }
+		inline int32_t VResolution (void) { return 1200; }
 #endif
 	};
 
@@ -1792,7 +1792,7 @@ class CRenderData {
 	public:
 		CRiftData					rift;
 		CColorData					color;
-		int							transpColor;
+		int32_t							transpColor;
 		CFaceListIndex				faceIndex;
 		CVertColorData				vertColor;
 		CSphere						shield;
@@ -1817,19 +1817,19 @@ class CRenderData {
 		fix							zMax;
 		double						dAspect;
 		CFBO							glareBuffer;
-		int							nTotalFaces;
-		int							nTotalObjects;
-		int							nTotalSprites;
-		int							nTotalLights;
-		int							nMaxLights;
-		int							nColoredFaces;
-		int							nStateChanges;
-		int							nShaderChanges;
-		int							nUsedFaces;
-		int							nStereoOffsetType;
+		int32_t							nTotalFaces;
+		int32_t							nTotalObjects;
+		int32_t							nTotalSprites;
+		int32_t							nTotalLights;
+		int32_t							nMaxLights;
+		int32_t							nColoredFaces;
+		int32_t							nStateChanges;
+		int32_t							nShaderChanges;
+		int32_t							nUsedFaces;
+		int32_t							nStereoOffsetType;
 		float							fAttScale [2];
 		float							fBrightness;
-		ubyte							nPowerupFilter;
+		uint8_t							nPowerupFilter;
 
 	public:
 		CRenderData ();
@@ -1842,7 +1842,7 @@ class CRenderData {
 
 class CSecretData {
 	public:
-		int			nReturnSegment;
+		int32_t			nReturnSegment;
 		CFixMatrix	returnOrient;
 	public:
 		CSecretData () { memset (this, 0, sizeof (*this)); }
@@ -1851,8 +1851,8 @@ class CSecretData {
 //------------------------------------------------------------------------------
 
 typedef struct tSlideSegs {
-	short	nSegment;
-	ubyte	nSides;
+	int16_t	nSegment;
+	uint8_t	nSides;
 } tSlideSegs;
 
 //------------------------------------------------------------------------------
@@ -1883,24 +1883,24 @@ class CFaceData {
 		CArray<tTexCoord2f>		ovlTexCoord;
 		CArray<tTexCoord2f>		lMapTexCoord;
 		CArray<CFloatVector>		color;
-		CArray<ushort>				faceVerts;
+		CArray<uint16_t>				faceVerts;
 		CSegFace*					slidingFaces;
 #if USE_RANGE_ELEMENTS
 		CArray<GLuint>				vertIndex;
 #endif	
 		GLuint						vboDataHandle;
 		GLuint						vboIndexHandle;
-		ubyte*						vertexP;
-		ushort*						indexP;
-		int							nFaces;
-		int							nTriangles;
-		int							nVertices;
-		int							iVertices;
-		int							iNormals;
-		int							iColor;
-		int							iTexCoord;
-		int							iOvlTexCoord;
-		int							iLMapTexCoord;
+		uint8_t*						vertexP;
+		uint16_t*						indexP;
+		int32_t							nFaces;
+		int32_t							nTriangles;
+		int32_t							nVertices;
+		int32_t							iVertices;
+		int32_t							iNormals;
+		int32_t							iColor;
+		int32_t							iTexCoord;
+		int32_t							iOvlTexCoord;
+		int32_t							iLMapTexCoord;
 	public:
 		CFaceData ();
 		void Init (void);
@@ -1909,13 +1909,13 @@ class CFaceData {
 		void Destroy (void);
 };
 
-inline int operator- (tFaceTriangle* o, CArray<tFaceTriangle>& a) { return a.Index (o); }
-inline int operator- (CFloatVector3* o, CArray<CFloatVector3>& a) { return a.Index (o); }
-inline int operator- (tTexCoord2f* o, CArray<tTexCoord2f>& a) { return a.Index (o); }
+inline int32_t operator- (tFaceTriangle* o, CArray<tFaceTriangle>& a) { return a.Index (o); }
+inline int32_t operator- (CFloatVector3* o, CArray<CFloatVector3>& a) { return a.Index (o); }
+inline int32_t operator- (tTexCoord2f* o, CArray<tTexCoord2f>& a) { return a.Index (o); }
 
 typedef struct tSegList {
-	int					nSegments;
-	CArray<short>		segments;
+	int32_t					nSegments;
+	CArray<int16_t>		segments;
 } tSegList;
 
 typedef struct tSegExtent {
@@ -1924,11 +1924,11 @@ typedef struct tSegExtent {
 	} tSegExtent;
 
 
-class CSkyBox : public CStack< short > {
+class CSkyBox : public CStack< int16_t > {
 	public:
 		void Destroy (void);
-		int CountSegments (void);
-		inline int GetSegList (short*& listP) {
+		int32_t CountSegments (void);
+		inline int32_t GetSegList (int16_t*& listP) {
 			listP = Buffer ();
 			return ToS ();
 			}
@@ -1954,8 +1954,8 @@ class CSkyBox : public CStack< short > {
 #define TRIAMATIDX(_i, _j)					(((_j) < (_i)) ? TRIAMATSIZE (_i) + (_j) : TRIAMATSIZE (_j) + (_i))
 
 typedef struct tSegGridIndex {
-	int		nIndex;
-	ushort	nSegments;
+	int32_t		nIndex;
+	uint16_t	nSegments;
 	} tSegGridIndex;
 
 class CSegmentGrid {
@@ -1965,21 +1965,21 @@ class CSegmentGrid {
 		CFixVector					m_vDim;
 		CFixVector					m_vMin;
 		CFixVector					m_vMax;
-		int							m_nGridSize;
+		int32_t							m_nGridSize;
 
 	public:
-		bool Create (int nGridSize, int bSkyBox);
+		bool Create (int32_t nGridSize, int32_t bSkyBox);
 		void Destroy (void);
-		int GetSegList (CFixVector vPos, short*& listP);
-		inline int GridIndex (int x, int y, int z);
+		int32_t GetSegList (CFixVector vPos, int16_t*& listP);
+		inline int32_t GridIndex (int32_t x, int32_t y, int32_t z);
 		inline bool Available (void) { return (m_segments.Buffer () != NULL); }
 };
 
 
 class CSegDistHeader {
 	public:
-		ushort	offset;
-		ushort	length;
+		uint16_t	offset;
+		uint16_t	length;
 		float		scale;
 
 	inline bool Read (CFile& cf) {
@@ -1999,25 +1999,25 @@ class CSegDistHeader {
 
 class CSegDistList : public CSegDistHeader {
 	public:
-		CArray<ushort> dist;
+		CArray<uint16_t> dist;
 
-	inline void Set (ushort nSegment, fix xDistance) {
+	inline void Set (uint16_t nSegment, fix xDistance) {
 		nSegment -= offset;
 		if (nSegment < length)
-			dist [nSegment] = (xDistance < 0) ? 0xFFFF : (ushort) ((float) xDistance / scale);
+			dist [nSegment] = (xDistance < 0) ? 0xFFFF : (uint16_t) ((float) xDistance / scale);
 		}
 
-	inline int Get (ushort nSegment) {
+	inline int32_t Get (uint16_t nSegment) {
 		nSegment -= offset;
 		if (nSegment >= length)
 			return -1;
-		ushort d = dist [nSegment];
+		uint16_t d = dist [nSegment];
 		if (d == 0xFFFF)
 			return -1;
 		return (fix) ((float) d * scale);
 		}
 
-	inline bool Read (CFile& cf, int bCompressed) {
+	inline bool Read (CFile& cf, int32_t bCompressed) {
 		if (!CSegDistHeader::Read (cf))
 			return false;
 		if (!length)
@@ -2027,7 +2027,7 @@ class CSegDistList : public CSegDistHeader {
 		return (dist.Read (cf, length, 0, bCompressed) > 0);
 		}
 
-	inline bool Write (CFile& cf, int bCompressed) {
+	inline bool Write (CFile& cf, int32_t bCompressed) {
 		return CSegDistHeader::Write (cf) && dist.Write (cf, length, 0, bCompressed);
 		}
 
@@ -2038,13 +2038,13 @@ class CSegDistList : public CSegDistHeader {
 	};
 
 typedef struct tVertexOwner {
-	ushort	nSegment;
-	ubyte		nSide;
+	uint16_t	nSegment;
+	uint8_t		nSide;
 } tVertexOwner;
 
 class CSegmentData {
 	public:
-		int							nMaxSegments;
+		int32_t							nMaxSegments;
 		CArray<CFixVector>		vertices;
 		CArray<CFloatVector>		fVertices;
 		CArray<tVertexOwner>		vertexOwners;
@@ -2063,52 +2063,52 @@ class CSegmentData {
 		float							fRad;
 		CArray<CFixVector>		segCenters [2];
 		CArray<CFixVector>		sideCenters;
-		CArray<ubyte>				bSegVis;
-		CArray<ubyte>				bVertVis;
-		CArray<ubyte>				bLightVis;
+		CArray<uint8_t>				bSegVis;
+		CArray<uint8_t>				bVertVis;
+		CArray<uint8_t>				bLightVis;
 		CArray<CSegDistList>		segDistTable;
-		CArray<short>				vertexSegments; // all segments using this vertex
-		int							nVertices;
-		int							nFaceVerts;
-		int							nLastVertex;
-		int							nSegments;
-		int							nLastSegment;
-		int							nFaces;
-		int							nFaceKeys;
-		int							nLevelVersion;
+		CArray<int16_t>				vertexSegments; // all segments using this vertex
+		int32_t							nVertices;
+		int32_t							nFaceVerts;
+		int32_t							nLastVertex;
+		int32_t							nSegments;
+		int32_t							nLastSegment;
+		int32_t							nFaces;
+		int32_t							nFaceKeys;
+		int32_t							nLevelVersion;
 		char							szLevelFilename [FILENAME_LEN];
 		CSecretData					secret;
 		CArray<tSlideSegs>		slideSegs;
-		short							nSlideSegs;
-		int							bHaveSlideSegs;
+		int16_t							nSlideSegs;
+		int32_t							bHaveSlideSegs;
 		CFaceData					faces;
 
 	public:
 		CSegmentData ();
 		void Init (void);
-		bool Create (int nSegments, int nVertices);
+		bool Create (int32_t nSegments, int32_t nVertices);
 		bool Resize (void);
 		void Destroy (void);
 
-		inline int SegVisSize (int nElements = 0) {
+		inline int32_t SegVisSize (int32_t nElements = 0) {
 			if (!nElements)
 				nElements = nSegments;
 			return (TRIAMATSIZE (nSegments) + 7) / 8;
 			}
 
-		inline int SegVisIdx (int i, int j) {
+		inline int32_t SegVisIdx (int32_t i, int32_t j) {
 			return TRIAMATIDX (i, j);
 			}
 
-		inline int SegVis (int i, int j) {
+		inline int32_t SegVis (int32_t i, int32_t j) {
 			i = SegVisIdx (i, j);	// index in triangular matrix, enforce j <= i
 			return (i >= 0) && (bSegVis [i >> 3] & (1 << (i & 7))) != 0;
 			}
 
-		inline int SetSegVis (short nSrcSeg, short nDestSeg) {
-			int i = SegVisIdx (nSrcSeg, nDestSeg);
-			ubyte* flagP = &bSegVis [i >> 3];
-			ubyte flag = 1 << (i & 7);
+		inline int32_t SetSegVis (int16_t nSrcSeg, int16_t nDestSeg) {
+			int32_t i = SegVisIdx (nSrcSeg, nDestSeg);
+			uint8_t* flagP = &bSegVis [i >> 3];
+			uint8_t flag = 1 << (i & 7);
 #ifdef _OPENMP
 #	pragma omp atomic
 #endif
@@ -2116,38 +2116,38 @@ class CSegmentData {
 			return 1;
 			}
 
-		inline int SegDistSize (int nElements = 0) {
+		inline int32_t SegDistSize (int32_t nElements = 0) {
 			if (!nElements)
 				nElements = nSegments;
 			return QUADMATSIZE (nSegments);
 			}
 
-		inline int SegDistIdx (int i, int j) {
+		inline int32_t SegDistIdx (int32_t i, int32_t j) {
 			return QUADMATIDX (i, j, nSegments);
 			}
 
-		inline int SegDist (ushort i, ushort j) {
+		inline int32_t SegDist (uint16_t i, uint16_t j) {
 			return segDistTable [i].Get (j);
 			}
 
-		inline void SetSegDist (ushort i, ushort j, fix xDistance) {
+		inline void SetSegDist (uint16_t i, uint16_t j, fix xDistance) {
 			segDistTable [i].Set (j, xDistance);
 			}
 
-		inline int LightVisIdx (int i, int j) {
+		inline int32_t LightVisIdx (int32_t i, int32_t j) {
 			return QUADMATIDX (i, j, nSegments);
 			}
 
-		inline sbyte LightVis (int nLight, int nSegment) {
-			int i = LightVisIdx (nLight, nSegment);
-			if ((i >> 2) >= (int) bLightVis.Length ())
+		inline int8_t LightVis (int32_t nLight, int32_t nSegment) {
+			int32_t i = LightVisIdx (nLight, nSegment);
+			if ((i >> 2) >= (int32_t) bLightVis.Length ())
 				return 0;
-			return sbyte (((bLightVis [i >> 2] >> ((i & 3) << 1)) & 3) - 1);
+			return int8_t (((bLightVis [i >> 2] >> ((i & 3) << 1)) & 3) - 1);
 			}
 
-		inline int SetLightVis (int nLight, int nSegment, ubyte flag) {
-			int i = LightVisIdx (nLight, nSegment);
-			ubyte* flagP = &bLightVis [i >> 2];
+		inline int32_t SetLightVis (int32_t nLight, int32_t nSegment, uint8_t flag) {
+			int32_t i = LightVisIdx (nLight, nSegment);
+			uint8_t* flagP = &bLightVis [i >> 2];
 			flag <<= ((i & 3) << 1);
 #ifdef _OPENMP
 #	pragma omp atomic
@@ -2156,9 +2156,9 @@ class CSegmentData {
 			return 1;
 			}
 
-		inline bool BuildGrid (int nSize, int bSkyBox) { return grids [bSkyBox].Create (nSize, bSkyBox); }
-		inline int GetSegList (CFixVector vPos, short*& listP, int bSkyBox) { return grids [bSkyBox].GetSegList (vPos, listP); }
-		inline bool HaveGrid (int bSkyBox) { return grids [bSkyBox].Available (); }
+		inline bool BuildGrid (int32_t nSize, int32_t bSkyBox) { return grids [bSkyBox].Create (nSize, bSkyBox); }
+		inline int32_t GetSegList (CFixVector vPos, int16_t*& listP, int32_t bSkyBox) { return grids [bSkyBox].GetSegList (vPos, listP); }
+		inline bool HaveGrid (int32_t bSkyBox) { return grids [bSkyBox].Available (); }
 };
 
 //------------------------------------------------------------------------------
@@ -2170,9 +2170,9 @@ class CWallData {
 		CStack<CActiveDoor>		activeDoors; //[MAX_DOORS];
 		CStack<CCloakingWall>	cloaking; //[MAX_CLOAKING_WALLS];
 		CArray<tWallClip>			anims [2]; //[MAX_WALL_ANIMS];
-		CArray<int>					bitmaps; //[MAX_WALL_ANIMS];
-		int							nWalls;
-		int							nAnims [2];
+		CArray<int32_t>					bitmaps; //[MAX_WALL_ANIMS];
+		int32_t							nWalls;
+		int32_t							nAnims [2];
 		CArray<tWallClip>			animP;
 
 	public:
@@ -2188,13 +2188,13 @@ class CTriggerData {
 		CArray<CTrigger>			triggers; // [MAX_TRIGGERS];
 		CArray<CTrigger>			objTriggers; // [MAX_TRIGGERS];
 		CArray<tObjTriggerRef>	objTriggerRefs; // [MAX_OBJ_TRIGGERS];
-//		CArray<short>				firstObjTrigger; // [MAX_OBJECTS_D2X];
-		CArray<int>					delay; // [MAX_TRIGGERS];
-		int							m_nTriggers;
-		int							m_nObjTriggers;
+//		CArray<int16_t>				firstObjTrigger; // [MAX_OBJECTS_D2X];
+		CArray<int32_t>					delay; // [MAX_TRIGGERS];
+		int32_t							m_nTriggers;
+		int32_t							m_nObjTriggers;
 	public:
 		CTriggerData ();
-		bool Create (int nTriggers, bool bObjTriggers);
+		bool Create (int32_t nTriggers, bool bObjTriggers);
 		void Destroy (void);
 };
 
@@ -2203,7 +2203,7 @@ class CTriggerData {
 class CPowerupData {
 	public:
 		CStaticArray< tPowerupTypeInfo, MAX_POWERUP_TYPES >	info; // [MAX_POWERUP_TYPES];
-		int						nTypes;
+		int32_t						nTypes;
 
 	public:
 		CPowerupData () { nTypes = 0; }
@@ -2213,9 +2213,9 @@ class CPowerupData {
 
 class CObjTypeData {
 	public:
-		int						nTypes;
-		CStaticArray< sbyte, MAX_OBJTYPE >	nType; //[MAX_OBJTYPE];
-		CStaticArray< sbyte, MAX_OBJTYPE >	nId; //[MAX_OBJTYPE];  
+		int32_t						nTypes;
+		CStaticArray< int8_t, MAX_OBJTYPE >	nType; //[MAX_OBJTYPE];
+		CStaticArray< int8_t, MAX_OBJTYPE >	nId; //[MAX_OBJTYPE];  
 		CStaticArray< fix, MAX_OBJTYPE >		nStrength; //[MAX_OBJTYPE];   
 };
 
@@ -2234,7 +2234,7 @@ typedef struct tBox {
 	tQuad					faces [6];
 #if 0
 	tQuad					rotFaces [6];	//transformed faces
-	short					nTransformed;
+	int16_t					nTransformed;
 #endif
 	} tBox;
 
@@ -2245,19 +2245,19 @@ typedef struct tHitbox {
 	CFixVector			vOffset;
 	tBox					box;
 	CAngleVector		angles;			//rotation angles
-	short					nParent;			//parent hitbox
+	int16_t					nParent;			//parent hitbox
 } tHitbox;
 
 //------------------------------------------------------------------------------
 
 typedef struct tObjectViewData {
 	CFixMatrix			mView [2];
-	int					nFrame [2];
+	int32_t					nFrame [2];
 } tObjectViewData;
 
 typedef struct tGuidedMissileInfo {
 	CObject				*objP;
-	int					nSignature;
+	int32_t					nSignature;
 } tGuidedMissileInfo;
 
 class CObjLists {
@@ -2283,22 +2283,22 @@ class CObjectData {
 		CStack<CObject*>			update;
 		CArray<tBaseObject>		effects;
 		CObjLists					lists;
-		CArray<short>				freeList;
-		CArray<short>				parentObjs;
+		CArray<int16_t>				freeList;
+		CArray<int16_t>				parentObjs;
 		CArray<tObjectRef>		childObjs;
-		CArray<short>				firstChild;
+		CArray<int16_t>				firstChild;
 		CArray<CObject>			init;
 		CArray<tObjDropInfo>		dropInfo;
 		CArray<tSpeedBoostData>	speedBoost;
 		CArray<CFixVector>		vRobotGoals;
 		CArray<fix>					xLastAfterburnerTime;
 		CArray<fix>					xLight;
-		CArray<int>					nLightSig;
+		CArray<int32_t>					nLightSig;
 		CFaceColor					color;
-		short							nFirstDropped;
-		short							nLastDropped;
-		short							nFreeDropped;
-		short							nDropped;
+		int16_t							nFirstDropped;
+		int16_t							nLastDropped;
+		int16_t							nFreeDropped;
+		int16_t							nDropped;
 		tGuidedMissileInfo		guidedMissile [MAX_PLAYERS];
 		CObject*						consoleP;
 		CObject*						viewerP;
@@ -2306,25 +2306,25 @@ class CObjectData {
 		CObject*						missileViewerP;
 		CObject*						deadPlayerCamera;
 		CObject*						endLevelCamera;
-		int							nMaxObjects;
-		int							nObjects;
-		int							nLastObject [2];
-		int							nObjectLimit;
-		int							nMaxUsedObjects;
-		int							nInitialRobots;
-		int							nEffects;
-		int							nDebris;
-		int							nNextSignature;
-		int							nChildFreeList;
-		int							nDrops;
-		int							nDeadControlCenter;
-		int							nVertigoBotFlags;
-		int							nFrameCount;
-		CArray<short>				nHitObjects;
+		int32_t							nMaxObjects;
+		int32_t							nObjects;
+		int32_t							nLastObject [2];
+		int32_t							nObjectLimit;
+		int32_t							nMaxUsedObjects;
+		int32_t							nInitialRobots;
+		int32_t							nEffects;
+		int32_t							nDebris;
+		int32_t							nNextSignature;
+		int32_t							nChildFreeList;
+		int32_t							nDrops;
+		int32_t							nDeadControlCenter;
+		int32_t							nVertigoBotFlags;
+		int32_t							nFrameCount;
+		CArray<int16_t>				nHitObjects;
 		CPowerupData				pwrUp;
-		ubyte							collisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
+		uint8_t							collisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
 		CArray<tObjectViewData>	viewData;
-		CStaticArray< short, MAX_WEAPONS >	idToOOF; //[MAX_WEAPONS];
+		CStaticArray< int16_t, MAX_WEAPONS >	idToOOF; //[MAX_WEAPONS];
 		CByteArray				bWantEffect; //[MAX_OBJECTS_D2X];
 
 	public:
@@ -2334,7 +2334,7 @@ class CObjectData {
 		void Destroy (void);
 		void InitFreeList (void);
 		void GatherEffects (void);
-		int RebuildEffects (void);
+		int32_t RebuildEffects (void);
 };
 
 #define PLAYER_LIGHTNING	1
@@ -2350,12 +2350,12 @@ class CObjectData {
 
 class CFVISideData {
 	public:
-		int					bCache;
-		int					vertices [6];
-		int					nFaces;
-		short					nSegment;
-		short					nSide;
-		short					nType;
+		int32_t					bCache;
+		int32_t					vertices [6];
+		int32_t					nFaces;
+		int16_t					nSegment;
+		int16_t					nSide;
+		int16_t					nType;
 
 	public:
 		CFVISideData ();
@@ -2363,15 +2363,15 @@ class CFVISideData {
 
 class CPhysicsData {
 	public:
-		CStaticArray< short, MAX_FVI_SEGS >	segments;
+		CStaticArray< int16_t, MAX_FVI_SEGS >	segments;
 		CFVISideData		side;
 		float					fLastTick;
 		fix					xTime;
 		fix					xAfterburnerCharge;
 		fix					xBossInvulDot;
 		CFixVector			playerThrust;
-		int					nSegments;
-		int					bIgnoreObjFlag;
+		int32_t					nSegments;
+		int32_t					bIgnoreObjFlag;
 
 	public:
 		CPhysicsData ();
@@ -2393,13 +2393,13 @@ class CRobotData {
 		CArray<tRobotInfo>	defaultInfo ; //[MAX_ROBOT_TYPES];
 		CArray<tJointPos>		joints ; //[MAX_ROBOT_JOINTS];
 		CArray<tJointPos>		defaultJoints ; //[MAX_ROBOT_JOINTS];
-		int						nJoints;
-		int						nDefaultJoints;
-		int						nCamBotId;
-		int						nCamBotModel;
-		int						nTypes [2];
-		int						nDefaultTypes;
-		int						bReplacementsLoaded;
+		int32_t						nJoints;
+		int32_t						nDefaultJoints;
+		int32_t						nCamBotId;
+		int32_t						nCamBotModel;
+		int32_t						nTypes [2];
+		int32_t						nDefaultTypes;
+		int32_t						bReplacementsLoaded;
 		CArray<tRobotInfo>	infoP;
 		CArray<POF::CModel>	pofData;
 	public:
@@ -2423,10 +2423,10 @@ typedef struct tOpenALData {
 
 class CSoundData {
 	public:
-		int						nType;	// 0: D2, 1: D1
-		//CArray<ubyte>			data [2];
+		int32_t						nType;	// 0: D2, 1: D1
+		//CArray<uint8_t>			data [2];
 		CArray<CSoundSample>	sounds [2]; //[MAX_SOUND_FILES];
-		int						nSoundFiles [2];
+		int32_t						nSoundFiles [2];
 		CArray<CSoundSample>	soundP;
 #if USE_OPENAL
 		tOpenALData				openAL;
@@ -2445,36 +2445,36 @@ class CSoundData {
 class CTextureData {
 	public:
 		CArray<tBitmapFile>		bitmapFiles [2]; //[MAX_BITMAP_FILES];
-		CArray<ushort>				bitmapFlags [2]; //[MAX_BITMAP_FILES];
+		CArray<uint16_t>				bitmapFlags [2]; //[MAX_BITMAP_FILES];
 		CArray<CBitmap>			bitmaps [2]; //[MAX_BITMAP_FILES];
 		CArray<CBitmap>			altBitmaps [2]; //[MAX_BITMAP_FILES];
 		CArray<CBitmap>			addonBitmaps ; //[MAX_ADDON_BITMAP_FILES];
-		CArray<ushort>				bitmapXlat ; //[MAX_BITMAP_FILES];
+		CArray<uint16_t>				bitmapXlat ; //[MAX_BITMAP_FILES];
 		CArray<alias>				aliases ; //[MAX_ALIASES];
 		CArray<tBitmapIndex>		bmIndex [2]; //[MAX_TEXTURES];
 		CArray<tBitmapIndex>		objBmIndex ; //[MAX_OBJ_BITMAPS];
 		CArray<tBitmapIndex>		defaultObjBmIndex ; //[MAX_OBJ_BITMAPS];
-		CArray<short>				textureIndex [2]; //[MAX_BITMAP_FILES];
-		CArray<ushort>				objBmIndexP ; //[MAX_OBJ_BITMAPS];
+		CArray<int16_t>				textureIndex [2]; //[MAX_BITMAP_FILES];
+		CArray<uint16_t>				objBmIndexP ; //[MAX_OBJ_BITMAPS];
 		CArray<tBitmapIndex>		cockpitBmIndex; //[N_COCKPIT_BITMAPS];
 		CArray<CFloatVector3>		bitmapColors ; //[MAX_BITMAP_FILES];
-		int							nBitmaps [2];
-		int							nObjBitmaps;
-		int							bPageFlushed;
+		int32_t							nBitmaps [2];
+		int32_t							nObjBitmaps;
+		int32_t							bPageFlushed;
 		CArray<tTexMapInfo>		tMapInfo [2] ; //[MAX_TEXTURES];
-		int							nExtraBitmaps;
-		int							nAliases;
-		int							nHamFileVersion;
-		int							nTextures [2];
-		int							nFirstMultiBitmap;
+		int32_t							nExtraBitmaps;
+		int32_t							nAliases;
+		int32_t							nHamFileVersion;
+		int32_t							nTextures [2];
+		int32_t							nFirstMultiBitmap;
 		CArray<tBitmapFile>		bitmapFileP;
 		CArray<CBitmap>			bitmapP;
 		CArray<CBitmap>			altBitmapP;
 		CArray<tBitmapIndex>		bmIndexP;
 		CArray<tTexMapInfo>		tMapInfoP;
-		CArray<ubyte>				rleBuffer;
-		CArray<int>					brightness; // [MAX_WALL_TEXTURES];
-		CArray<int>					defaultBrightness [2]; //[MAX_WALL_TEXTURES];
+		CArray<uint8_t>				rleBuffer;
+		CArray<int32_t>					brightness; // [MAX_WALL_TEXTURES];
+		CArray<int32_t>					defaultBrightness [2]; //[MAX_WALL_TEXTURES];
 
 	public:
 		CTextureData ();
@@ -2487,8 +2487,8 @@ class CEffectData {
 	public:
 		CArray<tEffectClip>	effects [2]; //[MAX_EFFECTS];
 		CArray<tVideoClip>	vClips [2]; //[MAX_VCLIPS];
-		int						nEffects [2];
-		int 						nClips [2];
+		int32_t						nEffects [2];
+		int32_t 						nClips [2];
 		CArray<tEffectClip>	effectP;
 		CArray<tVideoClip>	vClipP;
 
@@ -2497,8 +2497,8 @@ class CEffectData {
 		~CEffectData () {}
 };
 
-inline int operator- (tEffectClip* o, CArray<tEffectClip>& a) { return a.Index (o); }
-inline int operator- (tVideoClip* o, CArray<tVideoClip>& a) { return a.Index (o); }
+inline int32_t operator- (tEffectClip* o, CArray<tEffectClip>& a) { return a.Index (o); }
+inline int32_t operator- (tVideoClip* o, CArray<tVideoClip>& a) { return a.Index (o); }
 
 class CShipData {
 	public:
@@ -2538,7 +2538,7 @@ class CPigData {
 
 class CMuzzleData {
 	public:
-		int				queueIndex;
+		int32_t				queueIndex;
 		tMuzzleInfo		info [MUZZLE_QUEUE_MAX];
 };
 
@@ -2547,25 +2547,25 @@ class CMuzzleData {
 #define GATLING_DELAY	700
 
 typedef struct tFiringData {
-	int					nStart;
-	int					nStop;
-	int					nDuration;
-	int					bSound;
-	int					bSpeedUp;
+	int32_t					nStart;
+	int32_t					nStop;
+	int32_t					nDuration;
+	int32_t					bSound;
+	int32_t					bSpeedUp;
 	} tFiringData;
 
 class CWeaponData {
 	public:
-		sbyte						nPrimary;
-		sbyte						nSecondary;
-		sbyte						nOverridden;
-		sbyte						bTripleFusion;
+		int8_t						nPrimary;
+		int8_t						nSecondary;
+		int8_t						nOverridden;
+		int8_t						bTripleFusion;
 		tFiringData				firing [2];
-		int						nTypes [2];
+		int32_t						nTypes [2];
 		CStaticArray< CWeaponInfo, MAX_WEAPON_TYPES >	info; // [MAX_WEAPON_TYPES];
 		CStaticArray< CD1WeaponInfo, D1_MAX_WEAPON_TYPES >	infoD1; // [D1_MAX_WEAPON_TYPES];
 		CArray<CFloatVector>	color;
-		ubyte						bLastWasSuper [2][MAX_PRIMARY_WEAPONS];
+		uint8_t						bLastWasSuper [2][MAX_PRIMARY_WEAPONS];
 
 	public:
 		CWeaponData ();
@@ -2587,8 +2587,8 @@ class CWeaponData {
 
 class CModelHitboxList {
 	public:
-		int			nHitboxes;
-		int			nFrame;
+		int32_t			nHitboxes;
+		int32_t			nFrame;
 		CStaticArray< tHitbox, MAX_HITBOXES + 1 >	hitboxes; // [MAX_HITBOXES + 1];
 #if DBG
 		CFixVector	vHit;
@@ -2615,19 +2615,19 @@ class CModelThrusters {
 		CFixVector	vPos [MAX_THRUSTERS];
 		CFixVector	vDir [MAX_THRUSTERS];
 		float			fSize [MAX_THRUSTERS];
-		ubyte			nType [MAX_THRUSTERS];
-		short			nCount;
+		uint8_t			nType [MAX_THRUSTERS];
+		int16_t			nCount;
 	};
 
 typedef struct tGunInfo {
-	int					nGuns;
+	int32_t					nGuns;
 	CFixVector			vGunPoints [MAX_GUNS];
 	} tGunInfo;
 
 typedef struct tModelSphere {
-	short					nSubModels;
-	short					nFaces;
-	short					nFaceVerts;
+	int16_t					nSubModels;
+	int16_t					nFaces;
+	int16_t					nFaceVerts;
 	fix					xRads [3];
 	CFixVector			vOffsets [3];
 } tModelSphere;
@@ -2636,20 +2636,20 @@ typedef struct tModelSphere {
 
 class CModelData {
 	public:
-		int									nLoresModels;
-		int									nHiresModels;
-		int									nPolyModels;
-		int									nDefPolyModels;
-		int									nSimpleModelThresholdScale;
-		int									nMarkerModel;
-		int									nCockpits;
-		int									nLightScale;
-		CArray<int>							nDyingModels ; //[MAX_POLYGON_MODELS];
-		CArray<int>							nDeadModels ; //[MAX_POLYGON_MODELS];
+		int32_t									nLoresModels;
+		int32_t									nHiresModels;
+		int32_t									nPolyModels;
+		int32_t									nDefPolyModels;
+		int32_t									nSimpleModelThresholdScale;
+		int32_t									nMarkerModel;
+		int32_t									nCockpits;
+		int32_t									nLightScale;
+		CArray<int32_t>							nDyingModels ; //[MAX_POLYGON_MODELS];
+		CArray<int32_t>							nDeadModels ; //[MAX_POLYGON_MODELS];
 		CArray<ASE::CModel>				aseModels [2]; //[MAX_POLYGON_MODELS];
 		CArray<OOF::CModel>				oofModels [2]; //[MAX_POLYGON_MODELS];
 		CArray<POF::CModel>				pofData [2][2]; //[MAX_POLYGON_MODELS];
-		CArray<ubyte>						bHaveHiresModel ; //[MAX_POLYGON_MODELS];
+		CArray<uint8_t>						bHaveHiresModel ; //[MAX_POLYGON_MODELS];
 		CArray<CPolyModel>				polyModels [3] ; //[MAX_POLYGON_MODELS];
 		CArray<OOF::CModel*>				modelToOOF [2]; //[MAX_POLYGON_MODELS];
 		CArray<ASE::CModel*>				modelToASE [2]; //[MAX_POLYGON_MODELS];
@@ -2682,14 +2682,14 @@ class CAutoNetGame {
 		char					szFile [FILENAME_LEN];
 		char					szMission [13];
 		char					szName [81];		//game name
-		int					nLevel;
-		ubyte					ipAddr [4];
-		int					nPort;
-		ubyte					uConnect;
-		ubyte					uType;
-		ubyte					bHost;
-		ubyte					bTeam;				// team game?
-		ubyte					bValid;
+		int32_t					nLevel;
+		uint8_t					ipAddr [4];
+		int32_t					nPort;
+		uint8_t					uConnect;
+		uint8_t					uType;
+		uint8_t					bHost;
+		uint8_t					bTeam;				// team game?
+		uint8_t					bValid;
 
 	public:
 		CAutoNetGame () { memset (this, 0, sizeof (*this)); }
@@ -2697,8 +2697,8 @@ class CAutoNetGame {
 
 typedef struct tLeftoverPowerup {
 	CObject				*spitterP;
-	ubyte					nCount;
-	ubyte					nType;
+	uint8_t					nCount;
+	uint8_t					nType;
 } tLeftoverPowerup;
 
 class CWeaponState {
@@ -2706,7 +2706,7 @@ class CWeaponState {
 		tFiringData				firing [2];
 		fix						xMslFireTime;
 		fix						xFusionCharge;
-		short						nAmmoUsed;
+		int16_t						nAmmoUsed;
 		char						nMissiles;
 		char						nPrimary;
 		char						nSecondary;
@@ -2714,9 +2714,9 @@ class CWeaponState {
 		char						nLaserLevel;
 		char						bTripleFusion;
 		char						nMslLaunchPos;
-		ubyte						nBuiltinMissiles;
-		ubyte						nThrusters [5];
-		ubyte						nShip;
+		uint8_t						nBuiltinMissiles;
+		uint8_t						nThrusters [5];
+		uint8_t						nShip;
 
 	public:
 		CWeaponState () { memset (this, 0, sizeof (*this)); }
@@ -2726,23 +2726,23 @@ class CWeaponState {
 
 class CMultiplayerData {
 	public:
-		int 								nPlayers;				
-		int								nMaxPlayers;
-		int 								nLocalPlayer;				
-		int								nPlayerPositions;
-		int								bMoving;
+		int32_t 								nPlayers;				
+		int32_t								nMaxPlayers;
+		int32_t 								nLocalPlayer;				
+		int32_t								nPlayerPositions;
+		int32_t								bMoving;
 		CPlayerData						players [MAX_PLAYERS + 4];  
 		tObjPosition					playerInit [MAX_PLAYERS];
-		short								nVirusCapacity [MAX_PLAYERS];
-		int								nLastHitTime [MAX_PLAYERS];
+		int16_t								nVirusCapacity [MAX_PLAYERS];
+		int32_t								nLastHitTime [MAX_PLAYERS];
 		CWeaponState					weaponStates [MAX_PLAYERS];
 		char								bWasHit [MAX_PLAYERS];
-		int								bulletEmitters [MAX_PLAYERS];
-		int					 			gatlingSmoke [MAX_PLAYERS];
+		int32_t								bulletEmitters [MAX_PLAYERS];
+		int32_t					 			gatlingSmoke [MAX_PLAYERS];
 		CPulseData						spherePulse [MAX_PLAYERS];
-		CStaticArray< ubyte, MAX_POWERUP_TYPES >	powerupsInMine; //[MAX_POWERUP_TYPES];
-		CStaticArray< ubyte, MAX_POWERUP_TYPES >	powerupsOnShip; //[MAX_POWERUP_TYPES];
-		CStaticArray< ubyte, MAX_POWERUP_TYPES >	maxPowerupsAllowed; //[MAX_POWERUP_TYPES];
+		CStaticArray< uint8_t, MAX_POWERUP_TYPES >	powerupsInMine; //[MAX_POWERUP_TYPES];
+		CStaticArray< uint8_t, MAX_POWERUP_TYPES >	powerupsOnShip; //[MAX_POWERUP_TYPES];
+		CStaticArray< uint8_t, MAX_POWERUP_TYPES >	maxPowerupsAllowed; //[MAX_POWERUP_TYPES];
 		bool								bAdjustPowerupCap [MAX_PLAYERS];
 		CArray<tLeftoverPowerup>	leftoverPowerups;
 		CAutoNetGame					autoNG;
@@ -2753,22 +2753,22 @@ class CMultiplayerData {
 		bool Create (void);
 		void Destroy (void);
 #if DBG
-		void Connect (int nPlayer, sbyte nStatus);
+		void Connect (int32_t nPlayer, int8_t nStatus);
 #else
-		inline void Connect (int nPlayer, sbyte nStatus) {
+		inline void Connect (int32_t nPlayer, int8_t nStatus) {
 			players [nPlayer].Connect (nStatus);
 			}
 #endif
 
 		bool WaitingForExplosion (void) {
-			for (int i = 0; i < nPlayers; i++)
+			for (int32_t i = 0; i < nPlayers; i++)
 				if (players [i].WaitingForExplosion ())
 					return true;
 			return false;
 			}
 
 		bool WaitingForWeaponInfo (void) {
-			for (int i = 0; i < nPlayers; i++) {
+			for (int32_t i = 0; i < nPlayers; i++) {
 				if (weaponStates [i].nShip == 255)
 					return true;
 				if ((i != nLocalPlayer) && players [i].WaitingForWeaponInfo ())
@@ -2777,16 +2777,16 @@ class CMultiplayerData {
 			return false;
 			}
 
-		inline ushort PrimaryAmmo (short nPlayer, short nWeapon) { return players [nPlayer].primaryAmmo [nWeapon]; }
-		inline ushort SecondaryAmmo (short nPlayer, short nWeapon, int bBuiltin = 1) { 
-			ushort nAmmo = players [nPlayer].secondaryAmmo [nWeapon];
+		inline uint16_t PrimaryAmmo (int16_t nPlayer, int16_t nWeapon) { return players [nPlayer].primaryAmmo [nWeapon]; }
+		inline uint16_t SecondaryAmmo (int16_t nPlayer, int16_t nWeapon, int32_t bBuiltin = 1) { 
+			uint16_t nAmmo = players [nPlayer].secondaryAmmo [nWeapon];
 			if (nWeapon || bBuiltin)
 				return nAmmo; 
-			ushort nBuiltin = BuiltinMissiles (nPlayer);
+			uint16_t nBuiltin = BuiltinMissiles (nPlayer);
 			return (nAmmo > nBuiltin) ? nAmmo - nBuiltin : 0;
 			}
-		inline ushort BuiltinMissiles (short nPlayer) { return weaponStates [nPlayer].nBuiltinMissiles; }
-		inline bool Flag (short nPlayer, uint nFlag) { return (players [nPlayer].flags & nFlag) != 0; }
+		inline uint16_t BuiltinMissiles (int16_t nPlayer) { return weaponStates [nPlayer].nBuiltinMissiles; }
+		inline bool Flag (int16_t nPlayer, uint32_t nFlag) { return (players [nPlayer].flags & nFlag) != 0; }
 };
 
 #include "multi.h"
@@ -2795,8 +2795,8 @@ class CMultiplayerData {
 
 class CMultiCreateData {
 	public:
-		CStaticArray< int, MAX_NET_CREATE_OBJECTS >	nObjNums; // [MAX_NET_CREATE_OBJECTS];
-		int					nCount;
+		CStaticArray< int32_t, MAX_NET_CREATE_OBJECTS >	nObjNums; // [MAX_NET_CREATE_OBJECTS];
+		int32_t					nCount;
 
 	public:
 		CMultiCreateData () { nCount = 0; }
@@ -2806,13 +2806,13 @@ class CMultiCreateData {
 
 class CMultiLaserData {
 	public:
-		int					bFired;
-		ubyte					nFired [2];
-		short					nObjects [2][MAX_FIRED_OBJECTS];
-		int					nGun;
-		int					nFlags;
-		int					nLevel;
-		short					nTrack;
+		int32_t					bFired;
+		uint8_t					nFired [2];
+		int16_t					nObjects [2][MAX_FIRED_OBJECTS];
+		int32_t					nGun;
+		int32_t					nFlags;
+		int32_t					nLevel;
+		int16_t					nTrack;
 
 	public:
 		CMultiLaserData () { memset (this, 0, sizeof (*this)); }
@@ -2823,11 +2823,11 @@ class CMultiMsgData {
 	public:
 		char					bSending;
 		char					bDefining;
-		int					nIndex;
+		int32_t					nIndex;
 		char					szMsg [MAX_MESSAGE_LEN];
 		char					szMacro [4][MAX_MESSAGE_LEN];
 		char					buf [MAX_MULTI_MESSAGE_LEN+4];            // This is where multiplayer message are built
-		int					nReceiver;
+		int32_t					nReceiver;
 
 	public:
 		CMultiMsgData () { memset (this, 0, sizeof (*this)); }
@@ -2845,9 +2845,9 @@ class CMultiMenuData {
 class CMultiScoreData {
 	public:
 		char					pFlags [MAX_PLAYERS];
-		int					nSorted [MAX_PLAYERS];
-		short					matrix [MAX_PLAYERS][MAX_PLAYERS];
-		short					nTeam [2];
+		int32_t					nSorted [MAX_PLAYERS];
+		int16_t					matrix [MAX_PLAYERS][MAX_PLAYERS];
+		int16_t					nTeam [2];
 		char					bShowList;
 		fix					xShowListTimer;
 
@@ -2857,7 +2857,7 @@ class CMultiScoreData {
 
 class CMultiGameData {
 	public:
-		int					nWhoKilledCtrlcen;
+		int32_t					nWhoKilledCtrlcen;
 		char					bShowReticleName;
 		char					bIsGuided;
 		char					bQuitGame;
@@ -2867,11 +2867,11 @@ class CMultiGameData {
 		CMultiMenuData		menu;
 		CMultiScoreData	score;
 		tMultiRobotData	robots;
-		CArray<short>		remoteToLocal [MAX_PLAYERS];  // Remote CObject number for each local CObject
-		CArray<short>		localToRemote;
-		CArray<sbyte>		nObjOwner;   // Who created each CObject in my universe, -1 = loaded at start
-		int					bGotoSecret;
-		int					nTypingTimeout;
+		CArray<int16_t>		remoteToLocal [MAX_PLAYERS];  // Remote CObject number for each local CObject
+		CArray<int16_t>		localToRemote;
+		CArray<int8_t>		nObjOwner;   // Who created each CObject in my universe, -1 = loaded at start
+		int32_t					bGotoSecret;
+		int32_t					nTypingTimeout;
 
 	public:
 		CMultiGameData ();
@@ -2889,7 +2889,7 @@ class CEntropyData {
 	public:
 		char	nRoomOwners [N_MAX_ROOMS];
 		char	nTeamRooms [3];
-		int   nTotalRooms;
+		int32_t   nTotalRooms;
 
 	public:
 		CEntropyData () { memset (this, 0, sizeof (*this)); }
@@ -2899,8 +2899,8 @@ extern CEntropyData entropyData;
 
 typedef struct tCountdownData {
 	fix					nTimer;
-	int					nSecsLeft;
-	int					nTotalTime;
+	int32_t					nSecsLeft;
+	int32_t					nTotalTime;
 } tCountdownData;
 
 //------------------------------------------------------------------------------
@@ -2915,15 +2915,15 @@ class CMarkerData {
 		CStaticArray< CFixVector, NUM_MARKERS >	position; // [NUM_MARKERS];	//three markers (two regular + one spawn) per player in multi
 		char					szMessage [NUM_MARKERS][MARKER_MESSAGE_LEN];
 		char					nOwner [NUM_MARKERS][CALLSIGN_LEN+1];
-		CStaticArray< short, NUM_MARKERS >			objects; // [NUM_MARKERS];
-		short					viewers [2];
-		int					nHighlight;
+		CStaticArray< int16_t, NUM_MARKERS >			objects; // [NUM_MARKERS];
+		int16_t					viewers [2];
+		int32_t					nHighlight;
 		float					fScale;
-		ubyte					nDefiningMsg;
+		uint8_t					nDefiningMsg;
 		char					szInput [40];
-		int					nIndex;
-		int					nCurrent;
-		int					nLast;
+		int32_t					nIndex;
+		int32_t					nCurrent;
+		int32_t					nLast;
 		bool					bRotate;
 
 	public:
@@ -2945,14 +2945,14 @@ class CTimeData {
 		fix					xGameTotal;
 		fix					xMaxOnline;
 		fix					xLast;
-		int					tLast;
+		int32_t					tLast;
 		fix					xSlack;
 		fix					xStarted;
 		fix					xStopped;
 		fix					xLastThiefHitTime;
-		int					nPaused;
-		int					nStarts;
-		int					nStops;
+		int32_t					nPaused;
+		int32_t					nStarts;
+		int32_t					nStops;
 
 	public:
 		CTimeData ();
@@ -2980,21 +2980,21 @@ typedef enum {
 
 class CApplicationData {
 	public:
-		int					nFrameCount;
-		int					nMineRenderCount;
-		int					nGameMode;
-		int					bGamePaused;
-		uint					nStateGameId;
-		uint					semaphores [4];
-		int					nLifetimeChecksum;
-		int					bUseMultiThreading [rtTaskCount];
-		int					argC;
+		int32_t					nFrameCount;
+		int32_t					nMineRenderCount;
+		int32_t					nGameMode;
+		int32_t					bGamePaused;
+		uint32_t					nStateGameId;
+		uint32_t					semaphores [4];
+		int32_t					nLifetimeChecksum;
+		int32_t					bUseMultiThreading [rtTaskCount];
+		int32_t					argC;
 		char**				argV;
 
 	public:
 		CApplicationData ();
-		inline int GameMode (int nFlags = 0xFFFFFFFF) { return nGameMode & nFlags; }
-		inline void SetGameMode (int nMode) {
+		inline int32_t GameMode (int32_t nFlags = 0xFFFFFFFF) { return nGameMode & nFlags; }
+		inline void SetGameMode (int32_t nMode) {
 			nGameMode = nMode;
 			}
 };
@@ -3033,8 +3033,8 @@ typedef enum tProfilerTags {
 
 typedef struct tProfilerData {
 	time_t				t [ptTagCount];
-	int					nFrameCount;
-	int					bToggle;
+	int32_t					nFrameCount;
+	int32_t					bToggle;
 } tProfilerData;
 
 #define PROF_INIT				memset(&gameData.profiler, 0, sizeof (gameData.profiler));
@@ -3068,9 +3068,9 @@ typedef struct tProfilerData {
 
 class CBossInfo {
 	public:
-		short					m_nTeleportSegs;
+		int16_t					m_nTeleportSegs;
 		CShortArray			m_teleportSegs; // [MAX_BOSS_TELEPORT_SEGS];
-		short					m_nGateSegs;
+		int16_t					m_nGateSegs;
 		CShortArray			m_gateSegs; // [MAX_BOSS_TELEPORT_SEGS];
 		fix					m_nDyingStartTime;
 		fix					m_nHitTime;
@@ -3085,34 +3085,34 @@ class CBossInfo {
 	#if DBG
 		fix					m_xPrevShield;
 	#endif
-		int					m_bHitThisFrame;
-		int					m_bHasBeenHit;
-		int					m_nObject;
-		short					m_nDying;
-		sbyte					m_bDyingSoundPlaying;
+		int32_t					m_bHitThisFrame;
+		int32_t					m_bHasBeenHit;
+		int32_t					m_nObject;
+		int16_t					m_nDying;
+		int8_t					m_bDyingSoundPlaying;
 
 	public:
 		CBossInfo () { Init (); }
 		~CBossInfo () { Destroy (); }
 		void Init (void);
-		bool Setup (short nObject);
+		bool Setup (int16_t nObject);
 		void Destroy (void);
-		bool SetupSegments (CShortArray& segments, int bSizeCheck, int bOneWallHack);
+		bool SetupSegments (CShortArray& segments, int32_t bSizeCheck, int32_t bOneWallHack);
 		void InitGateInterval (void);
 		void SaveState (CFile& cf);
 		void SaveSizeStates (CFile& cf);
 		void SaveBufferStates (CFile& cf);
 		void LoadBinState (CFile& cf);
-		void LoadState (CFile& cf, int nVersion);
+		void LoadState (CFile& cf, int32_t nVersion);
 		void LoadSizeStates (CFile& cf);
-		int LoadBufferStates (CFile& cf);
+		int32_t LoadBufferStates (CFile& cf);
 
 		inline void ResetHitTime (void) { m_nHitTime = -I2X (10); }
 		void ResetCloakTime (void);
 
 	private:
 		void SaveBufferState (CFile& cf, CShortArray& buffer);
-		int LoadBufferState (CFile& cf, CShortArray& buffer, int nBufSize);
+		int32_t LoadBufferState (CFile& cf, CShortArray& buffer, int32_t nBufSize);
 	};
 
 class CBossData {
@@ -3121,31 +3121,31 @@ class CBossData {
 
 	public:
 		CBossData ();
-		bool Create (uint nBosses = 0);
+		bool Create (uint32_t nBosses = 0);
 		void Destroy (void);
-		void Setup (int nObject = -1);
-		short Find (short nBossObj);
-		int Add (short nObject);
-		void Remove (short nBoss);
+		void Setup (int32_t nObject = -1);
+		int16_t Find (int16_t nBossObj);
+		int32_t Add (int16_t nObject);
+		void Remove (int16_t nBoss);
 		void ResetHitTimes (void);
 		void ResetCloakTimes (void);
 		void InitGateIntervals (void);
 
-		inline void Shrink (uint i = 1) { m_info.Shrink (i); }
-		inline uint ToS (void) { return m_info.ToS (); }
-		inline bool Grow (uint i = 1) { return m_info.Grow (i); }
-		inline CBossInfo& Boss (uint i) { return m_info [i]; }
-		inline uint BossCount (void) { return m_info.Buffer () ? m_info.ToS () : 0; }
-		inline uint Count (void) { return m_info.Buffer () ? m_info.ToS () : 0; }
-		inline CBossInfo& operator[] (uint i) { return m_info [i]; }
+		inline void Shrink (uint32_t i = 1) { m_info.Shrink (i); }
+		inline uint32_t ToS (void) { return m_info.ToS (); }
+		inline bool Grow (uint32_t i = 1) { return m_info.Grow (i); }
+		inline CBossInfo& Boss (uint32_t i) { return m_info [i]; }
+		inline uint32_t BossCount (void) { return m_info.Buffer () ? m_info.ToS () : 0; }
+		inline uint32_t Count (void) { return m_info.Buffer () ? m_info.ToS () : 0; }
+		inline CBossInfo& operator[] (uint32_t i) { return m_info [i]; }
 
 		void SaveStates (CFile& cf);
 		void SaveSizeStates (CFile& cf);
 		void SaveBufferStates (CFile& cf);
 		void LoadBinStates (CFile& cf);
-		void LoadStates (CFile& cf, int nVersion);
+		void LoadStates (CFile& cf, int32_t nVersion);
 		void LoadSizeStates (CFile& cf);
-		int LoadBufferStates (CFile& cf);
+		int32_t LoadBufferStates (CFile& cf);
 	};
 
 //------------------------------------------------------------------------------
@@ -3153,12 +3153,12 @@ class CBossData {
 #include "reactor.h"
 
 typedef struct tReactorStates {
-	int					nObject;
-	int					bHit;
-	int					bSeenPlayer;
-	int					nNextFireTime;
-	int					nDeadObj;
-	int					nStrength;
+	int32_t					nObject;
+	int32_t					bHit;
+	int32_t					bSeenPlayer;
+	int32_t					nNextFireTime;
+	int32_t					nDeadObj;
+	int32_t					nStrength;
 	fix					xLastVisCheckTime;
 	CFixVector			vGunPos [MAX_CONTROLCEN_GUNS];
 	CFixVector			vGunDir [MAX_CONTROLCEN_GUNS];
@@ -3170,11 +3170,11 @@ class CReactorData {
 		CTriggerTargets	triggers;
 		CStaticArray< tReactorStates, MAX_BOSS_COUNT >	states; // [MAX_BOSS_COUNT];
 		tCountdownData		countdown;
-		int					nReactors;
-		int					nStrength;
-		int					bPresent;
-		int					bDisabled;
-		int					bDestroyed;
+		int32_t					nReactors;
+		int32_t					nStrength;
+		int32_t					bPresent;
+		int32_t					bDisabled;
+		int32_t					bDestroyed;
 
 	public:
 		CReactorData ();
@@ -3186,7 +3186,7 @@ class CReactorData {
 
 class CAITarget {
 	public:
-		short							nBelievedSeg;
+		int16_t							nBelievedSeg;
 		CFixVector					vBelievedPos;
 		CFixVector					vLastPosFiredAt;
 		fix							nDistToLastPosFiredAt;
@@ -3199,26 +3199,26 @@ class CAITarget {
 
 class CAIData {
 	public:
-		int							bInitialized;
-		int							nOverallAgitation;
-		int							bEvaded;
-		int							bEnableAnimation;
-		int							bInfoEnabled;
+		int32_t							bInitialized;
+		int32_t							nOverallAgitation;
+		int32_t							bEvaded;
+		int32_t							bEnableAnimation;
+		int32_t							bInfoEnabled;
 		CFixVector					vHitPos;
-		int							nHitType;
-		int							nHitSeg;
+		int32_t							nHitType;
+		int32_t							nHitSeg;
 		CHitResult					hitResult;
 		CAITarget					target;
 		CArray<tAILocalInfo>		localInfo;
 		CArray<tAICloakInfo>		cloakInfo; // [MAX_AI_CLOAK_INFO];
 		CArray<tPointSeg>			routeSegs; // [MAX_POINT_SEGS];
 		tPointSeg*					freePointSegs;
-		int							nAwarenessEvents;
-		int							nMaxAwareness;
+		int32_t							nAwarenessEvents;
+		int32_t							nMaxAwareness;
 		CFixVector					vGunPoint;
-		int							nTargetVisibility;
-		int							bObjAnimates;
-		int							nLastMissileCamera;
+		int32_t							nTargetVisibility;
+		int32_t							bObjAnimates;
+		int32_t							nLastMissileCamera;
 		CArray<tAwarenessEvent>	awarenessEvents; //[MAX_AWARENESS_EVENTS];
 
 	public:
@@ -3227,9 +3227,9 @@ class CAIData {
 		void Destroy (void);
 };
 
-inline int operator- (tAILocalInfo* o, CArray<tAILocalInfo>& a) { return a.Index (o); }
-inline int operator- (tAICloakInfo* o, CArray<tAICloakInfo>& a) { return a.Index (o); }
-inline int operator- (tPointSeg* o, CArray<tPointSeg>& a) { return a.Index (o); }
+inline int32_t operator- (tAILocalInfo* o, CArray<tAILocalInfo>& a) { return a.Index (o); }
+inline int32_t operator- (tAICloakInfo* o, CArray<tAICloakInfo>& a) { return a.Index (o); }
+inline int32_t operator- (tPointSeg* o, CArray<tPointSeg>& a) { return a.Index (o); }
 
 //------------------------------------------------------------------------------
 
@@ -3244,7 +3244,7 @@ typedef struct tStationData {
 	CBitmap			*bmP;
 	CBitmap			**bmList [1];
 	CFixVector		vPos;
-	int				nModel;
+	int32_t				nModel;
 } tStationData;
 
 class CTerrainData {
@@ -3254,14 +3254,14 @@ class CTerrainData {
 };
 
 typedef struct tExitData {
-	int					nModel;
-	int					nDestroyedModel;
+	int32_t					nModel;
+	int32_t					nDestroyedModel;
 	CFixVector			vMineExit;
 	CFixVector			vGroundExit;
 	CFixVector			vSideExit;
 	CFixMatrix			mOrient;
-	short					nSegNum;
-	short					nTransitSegNum;
+	int16_t					nSegNum;
+	int16_t					nTransitSegNum;
 } tExitData;
 
 class CEndLevelData {
@@ -3278,15 +3278,15 @@ class CEndLevelData {
 
 class CMenuData {
 	public:
-		int		bValid;
-		uint		tinyColors [2][2];
-		uint		warnColor;
-		uint		keyColor;
-		uint		tabbedColor;
-		uint		helpColor;
-		uint		colorOverride;
-		int		nLineWidth;
-		ubyte		alpha;
+		int32_t		bValid;
+		uint32_t		tinyColors [2][2];
+		uint32_t		warnColor;
+		uint32_t		keyColor;
+		uint32_t		tabbedColor;
+		uint32_t		helpColor;
+		uint32_t		colorOverride;
+		int32_t		nLineWidth;
+		uint8_t		alpha;
 
 	public:
 		CMenuData ();
@@ -3308,12 +3308,12 @@ class CProducerData {
 		CStaticArray< tProducerInfo, MAX_FUEL_CENTERS >	producers; //[MAX_FUEL_CENTERS];
 		CStaticArray< tObjectProducerInfo, MAX_ROBOT_CENTERS >	robotMakers; //[MAX_ROBOT_CENTERS];
 		CStaticArray< tObjectProducerInfo, MAX_EQUIP_CENTERS >	equipmentMakers; //[MAX_EQUIP_CENTERS];
-		int				nProducers;
-		int				nRobotMakers;
-		int				nEquipmentMakers;
-		int				nRepairCenters;
+		int32_t				nProducers;
+		int32_t				nRobotMakers;
+		int32_t				nEquipmentMakers;
+		int32_t				nRepairCenters;
 		fix				xEnergyToCreateOneRobot;
-		CStaticArray< int, MAX_FUEL_CENTERS >				origProducerTypes; // [MAX_FUEL_CENTERS];
+		CStaticArray< int32_t, MAX_FUEL_CENTERS >				origProducerTypes; // [MAX_FUEL_CENTERS];
 		CSegment*		playerSegP;
 
 	public:
@@ -3324,37 +3324,37 @@ class CProducerData {
 
 class CDemoData {
 	public:
-		int				bAuto;
+		int32_t				bAuto;
 		char				fnAuto [FILENAME_LEN];
-		CArray<sbyte>	bWasRecorded;
-		CArray<sbyte>	bViewWasRecorded;
-		sbyte				bRenderingWasRecorded [32];
+		CArray<int8_t>	bWasRecorded;
+		CArray<int8_t>	bViewWasRecorded;
+		int8_t				bRenderingWasRecorded [32];
 		char				callSignSave [CALLSIGN_LEN + 1];
-		int				nVersion;
-		int				nState;
-		int				nVcrState;
-		int				nStartFrame;
-		uint				nSize;
-		uint				nWritten;
-		int				nGameMode;
-		int				nOldCockpit;
-		sbyte				bNoSpace;
-		sbyte				bEof;
-		sbyte				bInterpolate;
-		sbyte				bPlayersCloaked;
-		sbyte				bWarningGiven;
-		sbyte				bCtrlcenDestroyed;
-		int				nFrameCount;
-		short				nFrameBytesWritten;
+		int32_t				nVersion;
+		int32_t				nState;
+		int32_t				nVcrState;
+		int32_t				nStartFrame;
+		uint32_t				nSize;
+		uint32_t				nWritten;
+		int32_t				nGameMode;
+		int32_t				nOldCockpit;
+		int8_t				bNoSpace;
+		int8_t				bEof;
+		int8_t				bInterpolate;
+		int8_t				bPlayersCloaked;
+		int8_t				bWarningGiven;
+		int8_t				bCtrlcenDestroyed;
+		int32_t				nFrameCount;
+		int16_t				nFrameBytesWritten;
 		fix				xStartTime;
 		fix				xPlaybackTotal;
 		fix				xRecordedTotal;
 		fix				xRecordedTime;
-		sbyte				nPlaybackStyle;
-		sbyte				bFirstTimePlayback;
+		int8_t				nPlaybackStyle;
+		int8_t				bFirstTimePlayback;
 		fix				xJasonPlaybackTotal;
-		int				bUseShortPos;
-		int				bFlyingGuided;
+		int32_t				bUseShortPos;
+		int32_t				bFlyingGuided;
 
 	public:
 		CDemoData () {memset (this, 0, sizeof (*this)); }
@@ -3368,16 +3368,16 @@ class CDemoData {
 
 class CEscortData {
 	public:
-		int				nMaxLength;
-		int				nObjNum;
-		int				bSearchingMarker;
-		int				nLastKey;
-		int				nKillObject;
-		int				nGoalObject;
-		int				nSpecialGoal;
-		int				nGoalIndex;
-		int				bMayTalk;
-		int				bMsgsSuppressed;
+		int32_t				nMaxLength;
+		int32_t				nObjNum;
+		int32_t				bSearchingMarker;
+		int32_t				nLastKey;
+		int32_t				nKillObject;
+		int32_t				nGoalObject;
+		int32_t				nSpecialGoal;
+		int32_t				nGoalIndex;
+		int32_t				bMayTalk;
+		int32_t				bMsgsSuppressed;
 		fix				xSorryTime;
 		fix				xLastMsgTime;
 		fix				xLastPathCreated;
@@ -3392,8 +3392,8 @@ class CEscortData {
 
 class CThiefData {
 	public:
-		CStaticArray< ubyte, MAX_STOLEN_ITEMS >	stolenItems; // [MAX_STOLEN_ITEMS];
-		int				nStolenItem;
+		CStaticArray< uint8_t, MAX_STOLEN_ITEMS >	stolenItems; // [MAX_STOLEN_ITEMS];
+		int32_t				nStolenItem;
 		fix				xReInitTime;
 		fix				xWaitTimes [NDL];
 
@@ -3404,28 +3404,28 @@ class CThiefData {
 //------------------------------------------------------------------------------
 
 typedef struct tHoardItem {
-	int			nWidth;
-	int			nHeight;
-	int			nFrameSize;
-	int			nSize;
-	int			nFrames;
-	int			nClip;
+	int32_t			nWidth;
+	int32_t			nHeight;
+	int32_t			nFrameSize;
+	int32_t			nSize;
+	int32_t			nFrames;
+	int32_t			nClip;
 	CBitmap		bm;
 	CPalette		*palette;
 } tHoardItem;
 
 class CHoardData {
 	public:
-		int			bInitialized;
-		int			nTextures;
+		int32_t			bInitialized;
+		int32_t			nTextures;
 		tHoardItem	orb;
 		tHoardItem	icon [2];
 		tHoardItem	goal;
 		tHoardItem	monsterball;
-		short			nMonsterballSeg;
+		int16_t			nMonsterballSeg;
 		CFixVector	vMonsterballPos;
 		CObject		*monsterballP;
-		short			nLastHitter;
+		int16_t			nLastHitter;
 };
 
 //------------------------------------------------------------------------------
@@ -3434,13 +3434,13 @@ class CHoardData {
 
 class CHUDMessage {
 	public:
-		int					nFirst;
-		int					nLast;
-		int					nMessages;
+		int32_t					nFirst;
+		int32_t					nLast;
+		int32_t					nMessages;
 		fix					xTimer;
-		uint					nColor;
+		uint32_t					nColor;
 		char					szMsgs [HUD_MAX_MSGS][HUD_MESSAGE_LENGTH + 5];
-		int					nMsgIds [HUD_MAX_MSGS];
+		int32_t					nMsgIds [HUD_MAX_MSGS];
 
 	public:
 		CHUDMessage ();
@@ -3449,7 +3449,7 @@ class CHUDMessage {
 class CHUDData {
 	public:	
 		CHUDMessage			msgs [2];
-		int					bPlayerMessage;
+		int32_t					bPlayerMessage;
 
 	public:
 		CHUDData ();
@@ -3492,13 +3492,13 @@ class CThreadData {
 #if DBG
 class CSpeedtestData {
 	public:
-		int		bOn;
-		int		nMarks;
-		int		nStartTime;
-		int		nSegment;
-		int		nSide;
-		int		nFrameStart;
-		int		nCount;
+		int32_t		bOn;
+		int32_t		nMarks;
+		int32_t		nStartTime;
+		int32_t		nSegment;
+		int32_t		nSide;
+		int32_t		nFrameStart;
+		int32_t		nCount;
 	};
 #endif
 
@@ -3509,11 +3509,11 @@ class CLaserData {
 		fix		xLastFiredTime;
 		fix		xNextFireTime;
 		fix		xUpdateTime;
-		int		nGlobalFiringCount;
-		int		nMissileGun;
-		int		nOffset;
-		int		nProximityDropped;
-		int		nSmartMinesDropped;
+		int32_t		nGlobalFiringCount;
+		int32_t		nMissileGun;
+		int32_t		nOffset;
+		int32_t		nProximityDropped;
+		int32_t		nSmartMinesDropped;
 };
 
 //------------------------------------------------------------------------------
@@ -3524,7 +3524,7 @@ class CFusionData {
 		fix	xCharge;
 		fix	xNextSoundTime;
 		fix	xLastSoundTime;
-		int	xFrameTime;
+		int32_t	xFrameTime;
 };
 
 //------------------------------------------------------------------------------
@@ -3533,7 +3533,7 @@ class COmegaData {
 	public:
 		fix		xCharge [2];
 		fix		xMaxCharge;
-		int		nLastFireFrame;
+		int32_t		nLastFireFrame;
 
 	public:
 		COmegaData ();
@@ -3545,29 +3545,29 @@ class CMissileData {
 	public:
 		fix		xLastFiredTime;
 		fix		xNextFireTime;
-		int		nGlobalFiringCount;
+		int32_t		nGlobalFiringCount;
 };
 
 //------------------------------------------------------------------------------
 
 typedef struct tPlayerStats {
-	int	nShots [2];
-	int	nHits [2];
-	int	nMisses [2];
+	int32_t	nShots [2];
+	int32_t	nHits [2];
+	int32_t	nMisses [2];
 	} tPlayerStats;
 
 class CStatsData {
 	public:
 		tPlayerStats	player [2];	//per level/per session
-		int				nDisplayMode;
+		int32_t				nDisplayMode;
 	};
 
 //------------------------------------------------------------------------------
 
 class CCollisionData {
 	public:
-		int			nSegsVisited;
-		CStaticArray< short, MAX_SEGS_VISITED >	segsVisited; // [MAX_SEGS_VISITED];
+		int32_t			nSegsVisited;
+		CStaticArray< int16_t, MAX_SEGS_VISITED >	segsVisited; // [MAX_SEGS_VISITED];
 		CHitInfo hitResult;
 };
 
@@ -3575,7 +3575,7 @@ class CCollisionData {
 
 class CTrackIRData {
 	public:
-		int	x, y;
+		int32_t	x, y;
 };
 
 
@@ -3583,11 +3583,11 @@ class CTrackIRData {
 
 class CScoreData {
 	public:
-		int nKillsChanged;
-		int bNoMovieMessage;
-		int nHighscore;
-		int nChampion;
-		int bWaitingForOthers;
+		int32_t nKillsChanged;
+		int32_t bNoMovieMessage;
+		int32_t nHighscore;
+		int32_t nChampion;
+		int32_t bWaitingForOthers;
 
 	public:
 		CScoreData ();
@@ -3596,8 +3596,8 @@ class CScoreData {
 //------------------------------------------------------------------------------
 
 typedef struct tTextIndex {
-	int	nId;
-	int	nLines;
+	int32_t	nId;
+	int32_t	nLines;
 	char	*pszText;
 } tTextIndex;
 
@@ -3606,9 +3606,9 @@ class CTextData {
 		char*			textBuffer;
 		tTextIndex*	index;
 		tTextIndex*	currentMsg;
-		int			nMessages;
-		int			nStartTime;
-		int			nEndTime;
+		int32_t			nMessages;
+		int32_t			nStartTime;
+		int32_t			nEndTime;
 		CBitmap*		bmP;
 };
 
@@ -3681,35 +3681,35 @@ class CGameData {
 
 	public:
 		void Init (void);
-		bool Create (int nSegments, int nVertices);
+		bool Create (int32_t nSegments, int32_t nVertices);
 		void Destroy (void);
 		void SetFusionCharge (fix xCharge, bool bLocal = false);
-		fix FusionCharge (int nId = -1);
+		fix FusionCharge (int32_t nId = -1);
 		fix FusionDamage (fix xBaseDamage);
-		int StereoOffset2D (void);
-		int FloatingStereoOffset2D (int x, bool bForce = false);
-		void SetStereoSeparation (int nFrame);
-		int SetStereoOffsetType (int nType) { 
-			int nOldType = render.nStereoOffsetType;
+		int32_t StereoOffset2D (void);
+		int32_t FloatingStereoOffset2D (int32_t x, bool bForce = false);
+		void SetStereoSeparation (int32_t nFrame);
+		int32_t SetStereoOffsetType (int32_t nType) { 
+			int32_t nOldType = render.nStereoOffsetType;
 			if (nType >= 0)
 				render.nStereoOffsetType = nType; 
 			return nOldType;
 			}
-		inline CObject* Object (int nObject) { return (objs.objects.Buffer () && (nObject < objs.nObjects)) ? objs.objects + nObject : NULL; }
-		inline int X (int x, bool bForce = false) { return render.nStereoOffsetType ? x - ((render.nStereoOffsetType == STEREO_OFFSET_FLOATING) ? FloatingStereoOffset2D (x, bForce) : StereoOffset2D ()) : x; }
+		inline CObject* Object (int32_t nObject) { return (objs.objects.Buffer () && (nObject < objs.nObjects)) ? objs.objects + nObject : NULL; }
+		inline int32_t X (int32_t x, bool bForce = false) { return render.nStereoOffsetType ? x - ((render.nStereoOffsetType == STEREO_OFFSET_FLOATING) ? FloatingStereoOffset2D (x, bForce) : StereoOffset2D ()) : x; }
 };
 
 extern CGameData gameData;
 
 typedef struct tBossProps {
-	ubyte		bTeleports;
-	ubyte		bSpewMore;
-	ubyte		bSpewBotsEnergy;
-	ubyte		bSpewBotsKinetic;
-	ubyte		bSpewBotsTeleport;
-	ubyte		bInvulEnergy;
-	ubyte		bInvulKinetic;
-	ubyte		bInvulSpot;
+	uint8_t		bTeleports;
+	uint8_t		bSpewMore;
+	uint8_t		bSpewBotsEnergy;
+	uint8_t		bSpewBotsKinetic;
+	uint8_t		bSpewBotsTeleport;
+	uint8_t		bInvulEnergy;
+	uint8_t		bInvulKinetic;
+	uint8_t		bInvulSpot;
 } tBossProps;
 
 typedef struct tIntervalf {
@@ -3722,18 +3722,18 @@ extern char szAutoMission [255];
 extern char szAutoHogFile [255];
 
 #if 0
-static inline ushort WallNumS (CSide *sideP) { return (sideP)->nWall; }
-static inline ushort WallNumP (CSegment *segP, short nSide) { return WallNumS ((segP)->m_sides + (nSide)); }
-static inline ushort WallNumI (short nSegment, short nSide) { return WallNumP(SEGMENTS + (nSegment), nSide); }
+static inline uint16_t WallNumS (CSide *sideP) { return (sideP)->nWall; }
+static inline uint16_t WallNumP (CSegment *segP, int16_t nSide) { return WallNumS ((segP)->m_sides + (nSide)); }
+static inline uint16_t WallNumI (int16_t nSegment, int16_t nSide) { return WallNumP(SEGMENTS + (nSegment), nSide); }
 #endif
 
 //-----------------------------------------------------------------------------
 
 typedef struct tGameItemInfo {
 	public:
-		int		offset;
-		int		count;
-		int		size;
+		int32_t		offset;
+		int32_t		count;
+		int32_t		size;
 
 	public:
 		inline void Read (CFile& cf) {
@@ -3745,11 +3745,11 @@ typedef struct tGameItemInfo {
 } __pack__ tGameItemInfo;
 
 typedef struct {
-	ushort  fileinfo_signature;
-	ushort  fileinfoVersion;
-	int     fileinfo_sizeof;
+	uint16_t  fileinfo_signature;
+	uint16_t  fileinfoVersion;
+	int32_t     fileinfo_sizeof;
 	char    mine_filename [15];
-	int     level;
+	int32_t     level;
 	tGameItemInfo	player;
 	tGameItemInfo	objects;
 	tGameItemInfo	walls;
@@ -3767,7 +3767,7 @@ extern tGameFileInfo gameFileInfo;
 
 //-----------------------------------------------------------------------------
 
-static inline short ObjIdx (CObject *objP)
+static inline int16_t ObjIdx (CObject *objP)
 {
 #if DBG
 if (gameData.objs.objects.IsElement (objP))
@@ -3781,17 +3781,17 @@ return gameData.objs.objects.IsElement (objP) ? gameData.objs.objects.Index (obj
 //	-----------------------------------------------------------------------------------------------------------
 
 #define	NO_WALL					(gameStates.app.bD2XLevel ? 2047 : 255)
-#define  IS_WALL(_wallnum)		((ushort (_wallnum) != NO_WALL) && (ushort (_wallnum) < gameFileInfo.walls.count))
+#define  IS_WALL(_wallnum)		((uint16_t (_wallnum) != NO_WALL) && (uint16_t (_wallnum) < gameFileInfo.walls.count))
 
-#define SEG_IDX(_segP)			((short) ((_segP) - SEGMENTS))
-#define SEG2_IDX(_seg2P)		((short) ((_seg2P) - SEGMENTS))
-#define WALL_IDX(_wallP)		((short) ((_wallP) - WALLS))
+#define SEG_IDX(_segP)			((int16_t) ((_segP) - SEGMENTS))
+#define SEG2_IDX(_seg2P)		((int16_t) ((_seg2P) - SEGMENTS))
+#define WALL_IDX(_wallP)		((int16_t) ((_wallP) - WALLS))
 #define OBJ_IDX(_objP)			ObjIdx (_objP)
-#define TRIG_IDX(_triggerP)	((short) ((_triggerP) - TRIGGERS))
-#define FACE_IDX(_faceP)		((int) ((_faceP) - FACES.faces))
+#define TRIG_IDX(_triggerP)	((int16_t) ((_triggerP) - TRIGGERS))
+#define FACE_IDX(_faceP)		((int32_t) ((_faceP) - FACES.faces))
 
-void GrabMouse (int bGrab, int bForce);
-void SetDataVersion (int v);
+void GrabMouse (int32_t bGrab, int32_t bForce);
+void SetDataVersion (int32_t v);
 
 //	-----------------------------------------------------------------------------------------------------------
 
@@ -3804,7 +3804,7 @@ glVertex3f ((float) x / 65536.0f, (float) y / 65536.0f, (float) z / 65536.0f);
 
 static inline void OglVertex3f (CRenderPoint *p, CFloatVector* v = NULL)
 {
-	int i = p->Index ();
+	int32_t i = p->Index ();
 if (v) {
 	if (i < 0)
 		v->Assign (p->ViewPos ());
@@ -3821,7 +3821,7 @@ else {
 
 //	-----------------------------------------------------------------------------------------------------------
 
-static inline float GrAlpha (ubyte alpha)
+static inline float GrAlpha (uint8_t alpha)
 {
 if (alpha >= FADE_LEVELS)
 	return 1.0f;
@@ -3887,7 +3887,7 @@ return vPosP;
 
 //	-----------------------------------------------------------------------------
 
-inline void CObject::RequestEffects (ubyte nEffects)
+inline void CObject::RequestEffects (uint8_t nEffects)
 {
 gameData.objs.bWantEffect [OBJ_IDX (this)] |= nEffects;
 }
@@ -3917,16 +3917,16 @@ typedef struct tTransRotInfo {
 
 #ifndef _WIN32
 #	define WINAPI
-#	define HINSTANCE	int
+#	define HINSTANCE	int32_t
 #	define HWND void *
 #endif
 
-typedef int (WINAPI *tpfnTIRInit) (HWND);
-typedef int (WINAPI *tpfnTIRExit) (void);
-typedef int (WINAPI *tpfnTIRStart) (void);
-typedef int (WINAPI *tpfnTIRStop) (void);
-typedef int (WINAPI *tpfnTIRCenter) (void);
-typedef int (WINAPI *tpfnTIRQuery) (tTransRotInfo *);
+typedef int32_t (WINAPI *tpfnTIRInit) (HWND);
+typedef int32_t (WINAPI *tpfnTIRExit) (void);
+typedef int32_t (WINAPI *tpfnTIRStart) (void);
+typedef int32_t (WINAPI *tpfnTIRStop) (void);
+typedef int32_t (WINAPI *tpfnTIRCenter) (void);
+typedef int32_t (WINAPI *tpfnTIRQuery) (tTransRotInfo *);
 
 extern tpfnTIRInit	pfnTIRInit;
 extern tpfnTIRExit	pfnTIRExit;
@@ -3935,8 +3935,8 @@ extern tpfnTIRStop	pfnTIRStop;
 extern tpfnTIRCenter	pfnTIRCenter;
 extern tpfnTIRQuery	pfnTIRQuery;
 
-int TIRLoad (void);
-int TIRUnload (void);
+int32_t TIRLoad (void);
+int32_t TIRUnload (void);
 
 #ifndef G3_SLEEP
 #	ifdef _WIN32
@@ -3956,7 +3956,7 @@ int TIRUnload (void);
 
 #include "error.h"
 
-static inline void SemWait (uint sem)
+static inline void SemWait (uint32_t sem)
 {
 	time_t t0 = gameStates.app.nSDLTicks [0];
 
@@ -3973,14 +3973,14 @@ while (gameData.app.semaphores [sem]) {
 
 #if DBG
 
-static inline void SemEnter (uint sem, const char *pszFile, int nLine)
+static inline void SemEnter (uint32_t sem, const char *pszFile, int32_t nLine)
 {
 SemWait (sem);
 //PrintLog (0, "SemEnter (%d) @ %s:%d\n", sem, pszFile, nLine);
 gameData.app.semaphores [sem]++;
 }
 
-static inline void SemLeave (uint sem, const char *pszFile, int nLine)
+static inline void SemLeave (uint32_t sem, const char *pszFile, int32_t nLine)
 {
 if (gameData.app.semaphores [sem]) {
 	gameData.app.semaphores [sem]--;
@@ -3999,13 +3999,13 @@ else
 #else
 
 
-static inline void SemEnter (uint sem)
+static inline void SemEnter (uint32_t sem)
 {
 SemWait (sem);
 gameData.app.semaphores [sem]++;
 }
 
-static inline void SemLeave (uint sem)
+static inline void SemLeave (uint32_t sem)
 {
 if (gameData.app.semaphores [sem])
 	gameData.app.semaphores [sem]--;

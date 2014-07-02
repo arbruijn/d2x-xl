@@ -60,10 +60,10 @@
 void MultiThreadingOptionsMenu (void)
 {
 	CMenu	m (10);
-	int	h, i, bSound = gameData.app.bUseMultiThreading [rtSound], choice = 0;
+	int32_t	h, i, bSound = gameData.app.bUseMultiThreading [rtSound], choice = 0;
 
-	static int	menuToTask [rtTaskCount] = {0, 1, 1, 2, 2, 3, 4, 5};	//map menu entries to tasks
-	static int	taskToMenu [6] = {0, 1, 3, 5, 6, 7};	//map tasks to menu entries
+	static int32_t	menuToTask [rtTaskCount] = {0, 1, 1, 2, 2, 3, 4, 5};	//map menu entries to tasks
+	static int32_t	taskToMenu [6] = {0, 1, 3, 5, 6, 7};	//map tasks to menu entries
 
 h = gameStates.app.bMultiThreaded ? 6 : 1;
 for (i = 0; i < h; i++)
@@ -83,14 +83,14 @@ if (gameStates.app.bGameRunning) {
 
 //------------------------------------------------------------------------------
 
-int ConfigMenuCallback (CMenu& menu, int& nLastKey, int nCurItem, int nState)
+int32_t ConfigMenuCallback (CMenu& menu, int32_t& nLastKey, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
 if (gameStates.app.bNostalgia) {
 	CMenuItem* m = menu ["brightness"];
-	int v = m->Value ();
+	int32_t v = m->Value ();
 	if ((nCurItem == menu.IndexOf ("brightness")) && (v != paletteManager.GetGamma ())) {
 		paletteManager.SetGamma (v);
 		sprintf (m->m_text, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
@@ -104,10 +104,10 @@ return nCurItem;
 
 void ConfigMenu (void)
 {
-	static int choice = 0;
+	static int32_t choice = 0;
 
 	CMenu	m;
-	int	i;
+	int32_t	i;
 	char	szSlider [50];
 
 

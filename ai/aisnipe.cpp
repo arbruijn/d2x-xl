@@ -38,8 +38,8 @@ void MakeNearbyRobotSnipe (void)
 {
 	CObject		*objP;
 	tRobotInfo	*botInfoP;
-	short			bfsList [MNRS_SEG_MAX];
-	int			nObject, nBfsLength, i;
+	int16_t			bfsList [MNRS_SEG_MAX];
+	int32_t			nObject, nBfsLength, i;
 
 CreateBfsList (OBJSEG (TARGETOBJ), bfsList, &nBfsLength, MNRS_SEG_MAX);
 for (i = 0; i < nBfsLength; i++) {
@@ -149,7 +149,7 @@ void DoSnipeFrame (CObject *objP)
 {
 if (gameData.ai.target.xDist <= MAX_SNIPE_DIST) {
 	tAILocalInfo		*ailP = gameData.ai.localInfo + objP->Index ();
-	int			i = ailP->mode;
+	int32_t			i = ailP->mode;
 
 	if ((i >= AIM_SNIPE_ATTACK) && (i <= AIM_SNIPE_WAIT))
 		aiSnipeHandlers [i - AIM_SNIPE_ATTACK] (objP, ailP);

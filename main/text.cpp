@@ -2533,7 +2533,7 @@ const char *defaultHelpTexts [][2] = {
 	 "If checked, transparent objects are being sorted according to\n their distance from the viewer, ensuring that far\naway transparent objects aren't hidden behind closer ones.\n"},
  {"Wenn angekreuzt werden elektrische Entladungen gezeichnet.", "Check to have electric discharges rendered."},
  {"Bei hoher Qualitaet haben Blitze kurze Seitenkanaele; die dafuer\nerforderliche Rechenleistung ist allerdings hoch. Bei niedriger\nQualitaet fehlen die seitlichen Entladungen, dafuer wird aber\nauch weniger Rechenleistung benoetigt.",
-	 "At high quality lightning have short secondary discharges; you\nneed however a lot of computing power for these. At low quality\nno secondary discharges are created, but you also need less\ncomputing power."},
+	 "At high quality lightning have int16_t secondary discharges; you\nneed however a lot of computing power for these. At low quality\nno secondary discharges are created, but you also need less\ncomputing power."},
  {"Hier kann zwischen gezackten und wellenfoermigen Entladungs-\nkanaelen gewaehlt werden.", "Here you can choose between jaggy and smooth discharge\npaths of lightings."},
  {"Wenn angekreuzt werden Blitze mit einem Plasmakanal gezeichnet.", "If checked lightings are render with a plasma channel."},
  {"Wenn angekreuzt schlagen Blitze aus beschaedigten Objekten.", "If checked damaged objects show electric discharges."},
@@ -2712,22 +2712,22 @@ const char *defaultHelpTexts [][2] = {
 
 //------------------------------------------------------------------------------
 
-inline int GameTextCount (void)
+inline int32_t GameTextCount (void)
 {
 return sizeof (defaultGameTexts) / (2 * sizeof (char *)) - 1;	//last entry always empty!
 }
 
 //------------------------------------------------------------------------------
 
-int GameTextSize (void)
+int32_t GameTextSize (void)
 {
-	int	h, i, j = GameTextCount ();
+	int32_t	h, i, j = GameTextCount ();
 
 for (h = i = 0; i < j; i++)
-	h += (int) strlen (defaultGameTexts [i][gameStates.app.bEnglish]) + 2;
+	h += (int32_t) strlen (defaultGameTexts [i][gameStates.app.bEnglish]) + 2;
 for (i = 0; i < BASE_TEXT_COUNT; i++)
 	if (baseGameTexts [i][0])
-		h += (int) strlen (baseGameTexts [i][0]) + 2;
+		h += (int32_t) strlen (baseGameTexts [i][0]) + 2;
 	else
 		h += 2;
 return h;
@@ -2735,9 +2735,9 @@ return h;
 
 //------------------------------------------------------------------------------
 
-char **InitTexts (char *szTextFile, int bInitHotKeys)
+char **InitTexts (char *szTextFile, int32_t bInitHotKeys)
 {
-	int	h, i, j, l, bHotKeys = 0;
+	int32_t	h, i, j, l, bHotKeys = 0;
 	char	k;
 	char	*pk, *pDest, *pSrc, **pszTexts;
 #if DUMP_TEXTS == 1
@@ -2796,7 +2796,7 @@ for (i = 0; i < j; i++) {
 		k = -1;
 		}
 	else {
-		l = (int) strlen (pSrc) + 1;
+		l = (int32_t) strlen (pSrc) + 1;
 		if ((pk = strchr (pSrc, '~'))) {
 			bHotKeys = 1;
 			--l;
@@ -2809,7 +2809,7 @@ for (i = 0; i < j; i++) {
 			k = -1;
 			}
 		}
-	*(pDest - 1) = (k < 0) ? 0 : toupper (pDest [(int) k]);
+	*(pDest - 1) = (k < 0) ? 0 : toupper (pDest [(int32_t) k]);
 	pszTexts [i] = pDest;
 	pszTexts [i + 1] = pDest + l;
 	}
@@ -2823,7 +2823,7 @@ return pszTexts;
 
 //------------------------------------------------------------------------------
 
-void SetupText (char* ph, const char* pszFile, int nLine)
+void SetupText (char* ph, const char* pszFile, int32_t nLine)
 {
 char *pi, *pj;
 
@@ -2850,7 +2850,7 @@ void LoadModTexts (void)
 {
 	CFile	cf;
 	char	szFile [FILENAME_LEN], szText [200], *p, *t;
-	int	i, l, nLine;
+	int32_t	i, l, nLine;
 
 FreeModTexts ();
 sprintf (szFile, "%s%s.txt", gameFolders.mods.szCurrent, gameFolders.mods.szName);
@@ -2864,7 +2864,7 @@ for (nLine = 0; cf.GetS (szText, sizeof (szText)); nLine++) {
 		continue;
 	for (; *p && (isdigit (*p) || isspace (*p)); p++)
 		;
-	l = int (strlen (p));
+	l = int32_t (strlen (p));
 	if (!l)
 		continue;
 	if (!(t = new char [l + 1]))
@@ -2879,7 +2879,7 @@ for (nLine = 0; cf.GetS (szText, sizeof (szText)); nLine++) {
 
 void FreeModTexts (void)
 {
-for (int i = 0; i < BASE_TEXT_COUNT; i++)
+for (int32_t i = 0; i < BASE_TEXT_COUNT; i++)
 	if (d2GameTexts [i][1]) {
 		delete[] d2GameTexts [i][1];
 		d2GameTexts [i][1] = NULL;
@@ -2908,7 +2908,7 @@ pszHelpTexts = InitTexts (szHelpFiles [gameStates.app.bEnglish], 0);
 // rotates a byte left one bit, preserving the bit falling off the right
 char EncodeRotateLeft (char c)
 {
-int b = (c & 0x80);
+int32_t b = (c & 0x80);
 c <<= 1;
 if (b)
 	c |= 0x01;
@@ -2966,7 +2966,7 @@ void LoadGameTexts (void)
 #endif
 	CFile	tFile;
 	CFile	iFile;
-	int	len, h, i, j, bBinary = 0;
+	int32_t	len, h, i, j, bBinary = 0;
 	char	*psz;
 	const char	*filename = "descent.tex";
 
@@ -2984,17 +2984,17 @@ if (!tFile.Open (filename, gameFolders.game.szData [0], "rb", 0)) {
 		return;
 	}
 	bBinary = 1;
-	len = (int) iFile.Length ();
+	len = (int32_t) iFile.Length ();
 	text = new char [len];
 	atexit (free_text);
 	iFile.Read (text, 1, len);
 	iFile.Close ();
 	}
 else {
-	int i;
+	int32_t i;
 	char *pi, *pj;
 
-	len = (int) tFile.Length ();
+	len = (int32_t) tFile.Length ();
 	text = new char [len];
 	atexit (free_text);
 #if 1
@@ -3002,7 +3002,7 @@ else {
 	for (i = len, pi = pj = text; i; i--, pi++)
 		if (*pi != 13)
 			*pj++ = *pi;
-	len = (int) (pj - text);
+	len = (int32_t) (pj - text);
 #else
 	p = text;
 	do {
@@ -3073,7 +3073,7 @@ InitGameTexts ();
 
 //------------------------------------------------------------------------------
 
-const char *GAMETEXT (int _i)
+const char *GAMETEXT (int32_t _i)
 {
 if ((_i < BASE_TEXT_COUNT) && d2GameTexts [_i][1])
 	 return d2GameTexts [_i][1] ;
@@ -3086,7 +3086,7 @@ else
 }
 
 
-const char *HELPTEXT (int _i)
+const char *HELPTEXT (int32_t _i)
 {
 if (pszHelpTexts)
 	return const_cast<char*>(pszHelpTexts [_i]);

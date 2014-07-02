@@ -57,15 +57,15 @@ char szConditionLetters [] = {' ','P','E','D','E','E','V','W'};
 #define LHX(x)      (gameStates.menus.bHires?2* (x):x)
 #define LHY(y)      (gameStates.menus.bHires? (24* (y))/10:y)
 
-static int xOffs = 0, yOffs = 0;
+static int32_t xOffs = 0, yOffs = 0;
 
 CScoreTable scoreTable;
 
 //-----------------------------------------------------------------------------
 
-void CScoreTable::DrawItem (int  i)
+void CScoreTable::DrawItem (int32_t  i)
 {
-	int j, x, y;
+	int32_t j, x, y;
 	char temp [10];
 
 	y = LHY (50+i*9) + yOffs;
@@ -103,7 +103,7 @@ for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
 if (gameData.multiplayer.players [m_sorted [i]].netKilledTotal + gameData.multiplayer.players [m_sorted [i]].netKillsTotal == 0)
 	sprintf (temp,"N/A");
 else
-   sprintf (temp,"%d%%", (int) ((double) gameData.multiplayer.players [m_sorted [i]].netKillsTotal / 
+   sprintf (temp,"%d%%", (int32_t) ((double) gameData.multiplayer.players [m_sorted [i]].netKillsTotal / 
 										  (double) (gameData.multiplayer.players [m_sorted [i]].netKilledTotal + gameData.multiplayer.players [m_sorted [i]].netKillsTotal) * 100.0));	
 x = LHX (60 + CENTERING_OFFSET (gameData.multiplayer.nPlayers) + gameData.multiplayer.nPlayers*25) + xOffs;
 fontManager.SetColorRGBi (RGBA_PAL2 (25,25,25),1, 0, 0);
@@ -112,9 +112,9 @@ GrPrintF (NULL, x ,y,"%4d/%s",gameData.multiplayer.players [m_sorted [i]].netKil
 
 //-----------------------------------------------------------------------------
 
-void CScoreTable::DrawCoopItem (int  i)
+void CScoreTable::DrawCoopItem (int32_t  i)
 {
-	int  x, y = LHY (50+i*9) + yOffs;
+	int32_t  x, y = LHY (50+i*9) + yOffs;
 
 // Print CPlayerData name.
 GrPrintF (NULL, LHX (CENTERING_OFFSET (gameData.multiplayer.nPlayers)) + xOffs, y, "%s", gameData.multiplayer.players [m_sorted [i]].callsign);
@@ -131,8 +131,8 @@ GrPrintF (NULL, x, y, "%d", gameData.multiplayer.players [m_sorted [i]].netKille
 
 void CScoreTable::DrawNames (void)
 {
-	int j, x;
-	int color;
+	int32_t j, x;
+	int32_t color;
 
 if (gameData.score.bNoMovieMessage) {
 	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
@@ -174,8 +174,8 @@ GrPrintF (NULL, CENTERSCREEN+LHX (50), LHY (40), "DEATHS");
 
 void CScoreTable::DrawDeaths (void)
 {
-	int	y;
-	int	sw, sh, aw;
+	int32_t	y;
+	int32_t	sw, sh, aw;
 	char	reactor_message [50];
 
 y = LHY (55 + 72 + 35) + yOffs;
@@ -213,8 +213,8 @@ if (gameData.app.GameMode (GM_HOARD | GM_ENTROPY))
 
 void CScoreTable::DrawCoopDeaths (void)
 {
-	int	j, x, y;
-	int	sw, sh, aw;
+	int32_t	j, x, y;
+	int32_t	sw, sh, aw;
 	char	reactor_message [50];
 
 y = LHY (55 + gameData.multiplayer.nPlayers * 9) + yOffs;
@@ -259,7 +259,7 @@ else {
 void CScoreTable::DrawReactor (const char *message)
  {
   static char oldmessage [50]={0};
-  int sw, sh, aw;
+  int32_t sw, sh, aw;
 
 if (gameData.app.GameMode (GM_MODEM | GM_SERIAL))
 	return;
@@ -278,7 +278,7 @@ strcpy (reinterpret_cast<char*> (&oldmessage), message);
 
 void CScoreTable::DrawChampion (void)
 {
-  int sw, sh, aw;
+  int32_t sw, sh, aw;
   char message [80];
 
 if (IsHoardGame != 0)
@@ -329,11 +329,11 @@ MultiGetKillList (m_sorted);
 m_background.Activate ();
 gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 DrawNames ();
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (!gameData.multiplayer.players [m_sorted [i]].connected)
 		fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 	else {
-		int color = IsTeamGame ? GetTeam (m_sorted [i]) : m_sorted [i];
+		int32_t color = IsTeamGame ? GetTeam (m_sorted [i]) : m_sorted [i];
 		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].Red (), playerColors [color].Green (), playerColors [color].Blue ()), 1, 0, 0);
 		}
 	DrawItem (i);
@@ -356,11 +356,11 @@ MultiGetKillList (m_sorted);
 m_background.Activate ();
 gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 DrawCoopNames ();
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (gameData.multiplayer.players [m_sorted [i]].connected == CONNECT_DISCONNECTED)
 		fontManager.SetColorRGBi (GRAY_RGBA, 1, 0, 0);
 	else {
-		int color = m_sorted [i];
+		int32_t color = m_sorted [i];
 		fontManager.SetColorRGBi (RGBA_PAL2 (playerColors [color].Red (), playerColors [color].Green (), playerColors [color].Blue ()), 1, 0, 0);
 		}
 	DrawCoopItem (i);
@@ -373,7 +373,7 @@ ogl.Update (1);
 
 //-----------------------------------------------------------------------------
 
-void CScoreTable::Cleanup (int bQuit)
+void CScoreTable::Cleanup (int32_t bQuit)
 {
 if (m_bNetwork) 
 	NetworkSendEndLevelPacket ();
@@ -406,9 +406,9 @@ return false;
 
 //-----------------------------------------------------------------------------
 
-int CScoreTable::Input (void)
+int32_t CScoreTable::Input (void)
 {
-	int i, nChoice;
+	int32_t i, nChoice;
 
 for (i = 0; i < 4; i++)
 	if (JoyGetButtonDownCnt (i))
@@ -419,7 +419,7 @@ for (i = 0; i < 3; i++)
 		return Exit () ? -1 : 1;
 
 //see if redbook song needs to be restarted
-int k = KeyInKey ();
+int32_t k = KeyInKey ();
 switch (k) {
 	case KEY_ENTER:
 	case KEY_SPACEBAR:
@@ -432,13 +432,13 @@ switch (k) {
 	case KEY_ESC:
 		if (IsNetworkGame && !networkThread.Available ()) {
 			gameData.multiplayer.xStartAbortMenuTime = TimerGetApproxSeconds ();
-			int nInMenu = gameStates.menus.nInMenu;
+			int32_t nInMenu = gameStates.menus.nInMenu;
 			gameStates.menus.nInMenu = 0;
 			nChoice = InfoBox (NULL, NetworkEndLevelPoll3, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
 			gameStates.menus.nInMenu = nInMenu;
 			}
 		else {
-			int nInMenu = gameStates.menus.nInMenu;
+			int32_t nInMenu = gameStates.menus.nInMenu;
 			gameStates.menus.nInMenu = 0;
 			nChoice = InfoBox (NULL, NULL, BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_ABORT_GAME);
 			gameStates.menus.nInMenu = nInMenu;
@@ -462,20 +462,20 @@ return 0;
 
 //-----------------------------------------------------------------------------
 
-int CScoreTable::WaitForPlayers (void)
+int32_t CScoreTable::WaitForPlayers (void)
 {
-int nEscaped = 0;
-int nReady = 0;
-int nConnected = 0;
-int bServer = gameStates.multi.bServer [0];
+int32_t nEscaped = 0;
+int32_t nReady = 0;
+int32_t nConnected = 0;
+int32_t bServer = gameStates.multi.bServer [0];
 
 if (!networkThread.Lock ())
 	networkThread.CheckPlayerTimeouts (); // wait for eventual player timeout checking to complete
-for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
+for (int32_t nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 	// check timeouts for idle players
 #if 0 // handled by networkThread.CheckPlayerTimeouts () now
 	if ((nPlayer != N_LOCALPLAYER) && gameData.multiplayer.players [nPlayer].connected) {
-		if (SDL_GetTicks () > (uint) networkData.nLastPacketTime [nPlayer] + ((gameData.multiplayer.players [nPlayer].connected == CONNECT_ADVANCE_LEVEL) ? LEVEL_LOAD_TIME : ENDLEVEL_IDLE_TIME)) {
+		if (SDL_GetTicks () > (uint32_t) networkData.nLastPacketTime [nPlayer] + ((gameData.multiplayer.players [nPlayer].connected == CONNECT_ADVANCE_LEVEL) ? LEVEL_LOAD_TIME : ENDLEVEL_IDLE_TIME)) {
 			CONNECT (nPlayer, CONNECT_DISCONNECTED);
 			if ((gameStates.multi.nGameType != UDP_GAME) || IAmGameHost ())
 				NetworkSendEndLevelSub (nPlayer);
@@ -519,9 +519,9 @@ for (int nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 networkThread.Unlock ();
 
 if (!bServer && (nConnected < 2)) {
-	int nInMenu = gameStates.menus.nInMenu;
+	int32_t nInMenu = gameStates.menus.nInMenu;
 	gameStates.menus.nInMenu = 0;
-	int choice = InfoBox (NULL, NULL, BG_STANDARD, 1, TXT_YES, TXT_CONNECT_LOST);
+	int32_t choice = InfoBox (NULL, NULL, BG_STANDARD, 1, TXT_YES, TXT_CONNECT_LOST);
 	gameStates.menus.nInMenu = nInMenu;
 	Cleanup (1);
 	return -1;
@@ -534,10 +534,10 @@ return 0;
 
 void CScoreTable::Display (void)
 {											 
-   int	i;
-	int	key;
-	int	bRedraw = 0;
-	uint	t0 = SDL_GetTicks ();
+   int32_t	i;
+	int32_t	key;
+	int32_t	bRedraw = 0;
+	uint32_t	t0 = SDL_GetTicks ();
 
 m_bNetwork = IsNetworkGame != 0;
 m_nPrevSecsLeft = -1;
@@ -548,7 +548,7 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	audio.DestroyObjectSound (gameData.multiplayer.players [i].nObject);
 
 SetScreenMode (SCREEN_MENU);
-int nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
+int32_t nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 backgroundManager.Setup (m_background, 640, 480, BG_TOPMENU, BG_STARS);
 gameData.score.bWaitingForOthers = 0;
 //@@GrPaletteFadeIn (grPalette,32, 0);
@@ -579,7 +579,7 @@ for (;;) {
 	if ((i > 1) && !m_bNetwork)
 		break;
 
-	uint t = SDL_GetTicks ();
+	uint32_t t = SDL_GetTicks ();
 	if ((t >= t0 + MAX_VIEW_TIME) && (LOCALPLAYER.GetConnected () != CONNECT_ADVANCE_LEVEL)) {
 		if (LAST_OEM_LEVEL) {
 			Cleanup (1);

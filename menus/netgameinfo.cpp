@@ -47,8 +47,8 @@
  * because of the "driver's" ipx_packetnum (see linuxnet.c).
  */
 
-void SetFunctionMode (int);
-extern ubyte ipx_MyAddress [10];
+void SetFunctionMode (int32_t);
+extern uint8_t ipx_MyAddress [10];
 
 //------------------------------------------------------------------------------
 
@@ -69,11 +69,11 @@ char szHighlight [] = {1, (char) 255, (char) 192, (char) 128, 0};
 
 //------------------------------------------------------------------------------
 
-void ShowNetGameInfo (int choice)
+void ShowNetGameInfo (int32_t choice)
 {
 	CMenu	m (30);
    char	mTexts [30][200];
-	int	i, j, nInMenu, opt = 0;
+	int32_t	i, j, nInMenu, opt = 0;
 
 #if !DBG
 if (choice >= networkData.nActiveGames)
@@ -204,35 +204,35 @@ bAlreadyShowingInfo = 0;
 #define AGI netGame.m_info
 #define AXI	extraGameInfo [0]
 
-static int GraphicsFxCompMode (void)
+static int32_t GraphicsFxCompMode (void)
 {
 return (!AXI.bCompetition && AXI.bUseLightning) ? 2 : (AXI.bShadows || AXI.bUseParticles) ? 1 : 0;
 }
 
 //------------------------------------------------------------------------------
 
-static int WeaponFxCompMode (void)
+static int32_t WeaponFxCompMode (void)
 {
 return (!AXI.bCompetition && (AXI.bLightTrails || AXI.bTracers)) ? 2 : 0;
 }
 
 //------------------------------------------------------------------------------
 
-static int ShipFxCompMode (void)
+static int32_t ShipFxCompMode (void)
 {
 return (!AXI.bCompetition && (AXI.bPlayerShield || AXI.bDamageExplosions || AXI.bShowWeapons || AXI.bGatlingSpeedUp)) ? 2 : 0;
 }
 
 //------------------------------------------------------------------------------
 
-static int HUDCompMode (void)
+static int32_t HUDCompMode (void)
 {
 return (!AXI.bCompetition && (AXI.bTargetIndicators || AXI.bDamageIndicators || AXI.bMslLockIndicators)) ? 2 : (AXI.nWeaponIcons != 0) ? 1 : 0;
 }
 
 //------------------------------------------------------------------------------
 
-static int RadarCompMode (void)
+static int32_t RadarCompMode (void)
 {
 return (!AXI.bCompetition && AXI.bRadarEnabled) &&
 		  (((AGI.gameFlags & NETGAME_FLAG_SHOW_MAP) != 0) || AXI.bPowerupsOnRadar || AXI.bRobotsOnRadar || (AXI.nRadar != 0)) ? 2 : 0;
@@ -240,14 +240,14 @@ return (!AXI.bCompetition && AXI.bRadarEnabled) &&
 
 //------------------------------------------------------------------------------
 
-static int ControlsCompMode (void)
+static int32_t ControlsCompMode (void)
 {
 return (!AXI.bCompetition && (AXI.bMouseLook || AXI.bFastPitch)) ? 2 : 0;
 }
 
 //------------------------------------------------------------------------------
 
-static int GameplayCompMode (void)
+static int32_t GameplayCompMode (void)
 {
 return (!AXI.bCompetition && (AXI.bEnableCheats || AXI.bDarkness || AXI.bSmokeGrenades || (AXI.nFusionRamp != 2) || !AXI.bFriendlyFire ||
 										 AXI.bInhibitSuicide || AXI.bKillMissiles || AXI.bTripleFusion || AXI.bEnhancedShakers || AXI.nHitboxes)) ? 2 : 0;
@@ -258,7 +258,7 @@ return (!AXI.bCompetition && (AXI.bEnableCheats || AXI.bDarkness || AXI.bSmokeGr
 // 1: competition mode, some uncritical D2X-XL extensions enabled
 // 0: full competition mode
 
-static int CompetitionMode (void)
+static int32_t CompetitionMode (void)
 {
 return GraphicsFxCompMode () | WeaponFxCompMode () | ShipFxCompMode () | HUDCompMode () | RadarCompMode () | ControlsCompMode() | GameplayCompMode ();
 }
@@ -268,15 +268,15 @@ return GraphicsFxCompMode () | WeaponFxCompMode () | ShipFxCompMode () | HUDComp
 char* XMLPlayerInfo (char* xmlGameInfo)
 {
 strcat (xmlGameInfo, "  <PlayerInfo>\n");
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Player%d name=\"%s\" ping=\"", i, netPlayers [0].m_info.players [N_LOCALPLAYER].callsign);
 	if (pingStats [i].ping < 0)
 		strcat (xmlGameInfo, (i == N_LOCALPLAYER) ? "0" : "> 1s");
 	else
 		sprintf (xmlGameInfo + strlen (xmlGameInfo), "\"%d\"", pingStats [i].ping);
 
-	ubyte* node = netPlayers [0].m_info.players [N_LOCALPLAYER].network.Node ();
-	uint ip = (uint (node [0]) << 24) + (uint (node [1]) << 16) + (uint (node [2]) << 8) + uint (node [3]);
+	uint8_t* node = netPlayers [0].m_info.players [N_LOCALPLAYER].network.Node ();
+	uint32_t ip = (uint32_t (node [0]) << 24) + (uint32_t (node [1]) << 16) + (uint32_t (node [2]) << 8) + uint32_t (node [3]);
 
 	sprintf (xmlGameInfo + strlen (xmlGameInfo), "\" score=\"%d\" kills=\"%d\" deaths=\"%d\" country=\"%s\" />\n", 
 				gameData.multiplayer.players [i].score,
@@ -285,7 +285,7 @@ for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
 #if 1
 				CountryFromIP (ip));
 #else
-				CountryFromIP (*((uint*) netPlayers [0].m_info.players [N_LOCALPLAYER].network.Node ())));
+				CountryFromIP (*((uint32_t*) netPlayers [0].m_info.players [N_LOCALPLAYER].network.Node ())));
 #endif
 	}
 strcat (xmlGameInfo, "  </PlayerInfo>\n");
@@ -305,7 +305,7 @@ char* XMLGameInfo (void)
 	static const char* szGameState [] = {"open", "closed", "restricted"};
 	static const char* szCompMode [] = {"none", "basic", "critical", "critical"};
 
-	int nExtensions;
+	int32_t nExtensions;
 
 sprintf (xmlGameInfo, "<?xml version=\"1.0\"?>\n<GameInfo>\n  <Descent>\n");
 
@@ -322,7 +322,7 @@ sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Player Current=\"%d\" Max=\"%
 			 AGI.nNumPlayers, AGI.nMaxPlayers);
 
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Mode Type=\"%s\" Team=\"%d\" Robots=\"%d\" />\n",
-			szGameType [(int) extraGameInfo [0].bEnhancedCTF][(int) mpParams.nGameMode],
+			szGameType [(int32_t) extraGameInfo [0].bEnhancedCTF][(int32_t) mpParams.nGameMode],
 			(mpParams.nGameMode != NETGAME_ANARCHY) && (mpParams.nGameMode != NETGAME_ROBOT_ANARCHY) && (mpParams.nGameMode != NETGAME_HOARD),
 			(mpParams.nGameMode == NETGAME_ROBOT_ANARCHY) || (mpParams.nGameMode == NETGAME_COOPERATIVE));
 

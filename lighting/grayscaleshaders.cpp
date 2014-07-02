@@ -31,7 +31,7 @@
 
 //------------------------------------------------------------------------------
 
-int grayscaleShaderProgs [2][3] = {{-1,-1,-1},{-1,-1,-1}};
+int32_t grayscaleShaderProgs [2][3] = {{-1,-1,-1},{-1,-1,-1}};
 
 const char *grayScaleFS [2][3] = {{
 	"uniform sampler2D baseTex;\r\n" \
@@ -113,8 +113,8 @@ const char *grayScaleVS [2][3] = {{
 
 void DeleteGrayScaleShader (void)
 {
-for (int i = 0; i < 2; i++)
-	for (int j = 0; j < 3; j++) 
+for (int32_t i = 0; i < 2; i++)
+	for (int32_t j = 0; j < 3; j++) 
 		shaderManager.Delete (grayscaleShaderProgs [i][j]);
 }
 
@@ -126,8 +126,8 @@ if (!(gameOpts->render.bUseShaders && ogl.m_features.bShaders))
 	gameOpts->ogl.bGlTexMerge = 0;
 else {
 	PrintLog (0, "building grayscale shader programs\n");
-	for (int i = 0; i < 2; i++) {
-		for (int j = 0; j < 3; j++) {
+	for (int32_t i = 0; i < 2; i++) {
+		for (int32_t j = 0; j < 3; j++) {
 			if (!(gameStates.render.textures.bHaveGrayScaleShader = shaderManager.Build (grayscaleShaderProgs [i][j], grayScaleFS [i][j], grayScaleVS [i][j]))) {
 				DeleteGrayScaleShader ();
 				return;
@@ -144,14 +144,14 @@ if (!gameOpts->ogl.bGlTexMerge) {
 
 //------------------------------------------------------------------------------
 
-int SetupGrayScaleShader (int nType, CFloatVector *colorP)
+int32_t SetupGrayScaleShader (int32_t nType, CFloatVector *colorP)
 {
 if (!gameStates.render.textures.bHaveGrayScaleShader)
 	return -1;
 
 if (nType > 2)
 	nType = 2;
-int bLightmaps = lightmapManager.HaveLightmaps ();
+int32_t bLightmaps = lightmapManager.HaveLightmaps ();
 GLhandleARB shaderProg = GLhandleARB (shaderManager.Deploy (grayscaleShaderProgs [bLightmaps][nType]));
 if (!shaderProg)
 	return -1;

@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //-----------------------------------------------------------------------------
 
-#define SM(w,h) ((((uint)w)<<16)+(((uint)h)&0xFFFF))
+#define SM(w,h) ((((uint32_t)w)<<16)+(((uint32_t)h)&0xFFFF))
 #define SM_W(m) (m>>16)
 #define SM_H(m) (m&0xFFFF)
 
@@ -45,25 +45,25 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // grdCurScreen to point to it.  grs_curcanv points to this screen's
 // canvas.  Saves the current VGA state and screen mode.
 
-int GrInit(void);
+int32_t GrInit(void);
 
 // This function sets up the main gameData.render.screen.  It should be called whenever
 // the video mode changes.
-int GrInitScreen(int mode, int w, int h, int x, int y, int rowSize, ubyte *data);
+int32_t GrInitScreen(int32_t mode, int32_t w, int32_t h, int32_t x, int32_t y, int32_t rowSize, uint8_t *data);
 
-int GrVideoModeOK(uint mode);
-int GrSetMode(uint mode);
+int32_t GrVideoModeOK(uint32_t mode);
+int32_t GrSetMode(uint32_t mode);
 
 //-----------------------------------------------------------------------------
 // These 4 functions actuall change screen colors.
 
-extern void gr_pal_fade_out(ubyte * pal);
-extern void gr_pal_fade_in(ubyte * pal);
+extern void gr_pal_fade_out(uint8_t * pal);
+extern void gr_pal_fade_in(uint8_t * pal);
 extern void gr_pal_clear(void);
-extern void gr_pal_setblock(int start, int number, ubyte * pal);
-extern void gr_pal_getblock(int start, int number, ubyte * pal);
+extern void gr_pal_setblock(int32_t start, int32_t number, uint8_t * pal);
+extern void gr_pal_getblock(int32_t start, int32_t number, uint8_t * pal);
 
-extern ubyte *gr_video_memory;
+extern uint8_t *gr_video_memory;
 
 //shut down the 2d.  Restore the screen mode.
 void _CDECL_ GrClose(void);
@@ -79,7 +79,7 @@ void _CDECL_ GrClose(void);
 // When this function is called, the guns are set to gr_palette, and
 // the palette stays the same until GrClose is called
 
-void GrCopyPalette (ubyte *gr_palette, ubyte *pal, int size);
+void GrCopyPalette (uint8_t *gr_palette, uint8_t *pal, int32_t size);
 
 //=========================================================================
 // Drawing functions:
@@ -90,53 +90,53 @@ void GrCopyPalette (ubyte *gr_palette, ubyte *pal, int size);
 // convex; a concave polygon will be handled in some reasonable manner, 
 // but not necessarily shaded as a concave polygon. It shouldn't hang.
 // probably good solution is to shade from minx to maxx on each scan line.
-// int should really be fix
-void DrawPixelClipped(int x, int y);
-void DrawPixel(int x, int y);
+// int32_t should really be fix
+void DrawPixelClipped(int32_t x, int32_t y);
+void DrawPixel(int32_t x, int32_t y);
 
 #if 0
-int gr_poly(int nverts, int *verts);
-int gr_upoly(int nverts, int *verts);
+int32_t gr_poly(int32_t nverts, int32_t *verts);
+int32_t gr_upoly(int32_t nverts, int32_t *verts);
 
 
 // Draws a point into the current canvas in the current color and drawmode.
 // Gets a pixel;
-ubyte gr_gpixel(CBitmap * bitmap, int x, int y);
-ubyte gr_ugpixel(CBitmap * bitmap, int x, int y);
+uint8_t gr_gpixel(CBitmap * bitmap, int32_t x, int32_t y);
+uint8_t gr_ugpixel(CBitmap * bitmap, int32_t x, int32_t y);
 
 // Draws a line into the current canvas in the current color and drawmode.
-int GrLine(fix x0, fix y0, fix x1, fix y1);
-int gr_uline(fix x0, fix y0, fix x1, fix y1);
+int32_t GrLine(fix x0, fix y0, fix x1, fix y1);
+int32_t gr_uline(fix x0, fix y0, fix x1, fix y1);
 
 // Draws an anti-aliased line into the current canvas in the current color and drawmode.
-int gr_aaline(fix x0, fix y0, fix x1, fix y1);
-int gr_uaaline(fix x0, fix y0, fix x1, fix y1);
+int32_t gr_aaline(fix x0, fix y0, fix x1, fix y1);
+int32_t gr_uaaline(fix x0, fix y0, fix x1, fix y1);
 
-void DrawScanLineClipped(int x1, int x2, int y);
-void DrawScanLine(int x1, int x2, int y);
+void DrawScanLineClipped(int32_t x1, int32_t x2, int32_t y);
+void DrawScanLine(int32_t x1, int32_t x2, int32_t y);
 
-void RotateBitmap (CBitmap *bp, grsPoint *vertbuf, int lightValue);
-void ScaleBitmap (CBitmap *bp, grsPoint *vertbuf, int orientation);
+void RotateBitmap (CBitmap *bp, grsPoint *vertbuf, int32_t lightValue);
+void ScaleBitmap (CBitmap *bp, grsPoint *vertbuf, int32_t orientation);
 
 //===========================================================================
 // Global variables
-extern ubyte Test_bitmap_data[64*64];
+extern uint8_t Test_bitmap_data[64*64];
 
-extern uint FixDivide(uint x, uint y);
+extern uint32_t FixDivide(uint32_t x, uint32_t y);
 
 extern void gr_vesa_update(CBitmap * source1, CBitmap * dest, CBitmap * source2);
 
 // Special effects
-extern void gr_snow_out(int num_dots);
+extern void gr_snow_out(int32_t num_dots);
 
 extern void TestRotateBitmap(void);
-extern void RotateBitmap(CBitmap *bp, grsPoint *vertbuf, int lightValue);
+extern void RotateBitmap(CBitmap *bp, grsPoint *vertbuf, int32_t lightValue);
 
-extern ubyte grInverseTable [32*32*32];
+extern uint8_t grInverseTable [32*32*32];
 
-extern ushort grPaletteSelector;
-extern ushort grInverseTableSelector;
-extern ushort grFadeTableSelector;
+extern uint16_t grPaletteSelector;
+extern uint16_t grInverseTableSelector;
+extern uint16_t grFadeTableSelector;
 
 // Remaps a bitmap into the current palette. If transparent_color is
 // between 0 and 255 then all occurances of that color are mapped to
@@ -151,11 +151,11 @@ extern ushort grFadeTableSelector;
 // Allocates a selector that has a base address at 'address' and length 'size'.
 // Returns 0 if successful... BE SURE TO CHECK the return value since there
 // is a limited number of selectors available!!!
-int GetSelector(void * address, int size, uint * selector);
+int32_t GetSelector(void * address, int32_t size, uint32_t * selector);
 
 // Assigns a selector to a bitmap. Returns 0 if successful.  BE SURE TO CHECK
 // this return value since there is a limited number of selectors!!!!!!!
-int GrBitmapAssignSelector(CBitmap * bmPp);
+int32_t GrBitmapAssignSelector(CBitmap * bmPp);
 
 //#define GR_GETCOLOR(r, g, b) (gr_inverse_table [((((r)&31)<<10) | (((g)&31)<<5) | ((b)&31))])
 //#define gr_getcolor(r, g, b) (gr_inverse_table [((((r)&31)<<10) | (((g)&31)<<5) | ((b)&31))])
@@ -170,12 +170,12 @@ int GrBitmapAssignSelector(CBitmap * bmPp);
 // best matches the input.
 #endif
 
-void GrMergeTextures(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
-void GrMergeTextures1(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
-void GrMergeTextures2(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
-void GrMergeTextures3(ubyte * lower, ubyte * upper, ubyte * dest, ushort width, ushort height, int scale);
+void GrMergeTextures(uint8_t * lower, uint8_t * upper, uint8_t * dest, uint16_t width, uint16_t height, int32_t scale);
+void GrMergeTextures1(uint8_t * lower, uint8_t * upper, uint8_t * dest, uint16_t width, uint16_t height, int32_t scale);
+void GrMergeTextures2(uint8_t * lower, uint8_t * upper, uint8_t * dest, uint16_t width, uint16_t height, int32_t scale);
+void GrMergeTextures3(uint8_t * lower, uint8_t * upper, uint8_t * dest, uint16_t width, uint16_t height, int32_t scale);
 
-void SaveScreenShot (ubyte *buf, int automapFlag);
+void SaveScreenShot (uint8_t *buf, int32_t automapFlag);
 void AutoScreenshot (void);
 
 /*
@@ -184,22 +184,22 @@ void AutoScreenshot (void);
  */
 #define GR_SUPPORTS_FULLSCREEN_TOGGLE
 
-void ResetTextures (int bReload, int bGame);
+void ResetTextures (int32_t bReload, int32_t bGame);
 
 typedef struct tScrSize {
-	int	x, y, c;
+	int32_t	x, y, c;
 } __pack__ tScrSize;
 
-extern int curDrawBuffer;
+extern int32_t curDrawBuffer;
 
-char *ScrSizeArg (int x, int y);
+char *ScrSizeArg (int32_t x, int32_t y);
 
 class CDisplayModeInfo {
 	public:
-		int	dim;
-		short	w, h;
-		short	renderMethod;
-		short	flags;
+		int32_t	dim;
+		int16_t	w, h;
+		int16_t	renderMethod;
+		int16_t	flags;
 		char	bWideScreen;
 		char	bFullScreen;
 		char	bAvailable;
@@ -232,11 +232,11 @@ class CDisplayModeInfo {
 
 extern CArray<CDisplayModeInfo> displayModeInfo;
 
-#define NUM_DISPLAY_MODES		int (displayModeInfo.Length ())
+#define NUM_DISPLAY_MODES		int32_t (displayModeInfo.Length ())
 #define CUSTOM_DISPLAY_MODE	(NUM_DISPLAY_MODES - 1)
 #define MAX_DISPLAY_MODE		(NUM_DISPLAY_MODES - 2)
 
-int FindDisplayMode (int nScrSize);
-int SetCustomDisplayMode (int w, int h, int bFullScreen);
+int32_t FindDisplayMode (int32_t nScrSize);
+int32_t SetCustomDisplayMode (int32_t w, int32_t h, int32_t bFullScreen);
 
 #endif /* def _GR_H */

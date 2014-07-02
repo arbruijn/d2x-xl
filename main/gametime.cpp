@@ -274,7 +274,7 @@ if (++gameData.time.nPaused == 1) {
 
 //------------------------------------------------------------------------------
 
-void StartTime (int bReset)
+void StartTime (int32_t bReset)
 {
 if (gameData.time.nPaused <= 0)
 	return;
@@ -291,7 +291,7 @@ if (pfnTIRStart)
 
 //------------------------------------------------------------------------------
 
-int TimeStopped (void)
+int32_t TimeStopped (void)
 {
 return gameData.time.nPaused > 0;
 }
@@ -322,7 +322,7 @@ GetSlowTicks ();
 
 #if EXACT_FRAME_TIME
 
-	int nDeltaTime;
+	int32_t nDeltaTime;
 
 if (MAXFPS <= 1) 
 	nDeltaTime = 0;
@@ -373,13 +373,13 @@ else {
 #else
 		static float fSlack = 0;
 
-		int nFrameTime = gameStates.app.nSDLTicks [0] - gameData.time.tLast;
-		int nMinFrameTime = 1000 / MAXFPS;
+		int32_t nFrameTime = gameStates.app.nSDLTicks [0] - gameData.time.tLast;
+		int32_t nMinFrameTime = 1000 / MAXFPS;
 		nDeltaTime = nMinFrameTime - nFrameTime;
 		fSlack += 1000.0f / MAXFPS - nMinFrameTime;
 		if (fSlack >= 1.0f) {
-			nDeltaTime += int (fSlack);
-			fSlack -= int (fSlack);
+			nDeltaTime += int32_t (fSlack);
+			fSlack -= int32_t (fSlack);
 			}
 		if (0 < nDeltaTime)
 			G3_SLEEP (nDeltaTime);
@@ -468,8 +468,8 @@ void GameDrawTimeLeft (void)
 {
 	char temp_string[30];
 	fix timevar;
-	int i;
-	static int nId = 0;
+	int32_t i;
+	static int32_t nId = 0;
 
 fontManager.SetCurrent (GAME_FONT);    //GAME_FONT
 fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);

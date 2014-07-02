@@ -34,10 +34,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "visibility.h"
 #include "marker.h"
 
-void SayEscortGoal (int nGoal);
+void SayEscortGoal (int32_t nGoal);
 void ShowEscortMenu (char *msg);
 
-int nEscortGoalText [MAX_ESCORT_GOALS] = {
+int32_t nEscortGoalText [MAX_ESCORT_GOALS] = {
 	702,
 	703,
 	704,
@@ -68,7 +68,7 @@ int nEscortGoalText [MAX_ESCORT_GOALS] = {
 
 void InitBuddyForLevel (void)
 {
-	//int		i;
+	//int32_t		i;
 	CObject	*objP;
 
 gameData.escort.bMayTalk = 0;
@@ -90,7 +90,7 @@ gameData.escort.nLastKey = -1;
 //	-----------------------------------------------------------------------------
 //	See if CSegment from curseg through nSide is reachable.
 //	Return true if it is reachable, else return false.
-int SegmentIsReachable (int curseg, short nSide)
+int32_t SegmentIsReachable (int32_t curseg, int16_t nSide)
 {
 return AIDoorIsOpenable (NULL, SEGMENTS + curseg, nSide);
 }
@@ -105,28 +105,28 @@ return AIDoorIsOpenable (NULL, SEGMENTS + curseg, nSide);
 //	Output:
 //		bfsList:	array of shorts, each reachable CSegment.  Includes start CSegment.
 //		length:		number of elements in bfsList
-void CreateBfsList (int nStartSeg, short segList [], int *length, int nMaxSegs)
+void CreateBfsList (int32_t nStartSeg, int16_t segList [], int32_t *length, int32_t nMaxSegs)
 {
-	int		head = 0, tail = 0;
-	sbyte		bVisited [MAX_SEGMENTS_D2X];
+	int32_t		head = 0, tail = 0;
+	int8_t		bVisited [MAX_SEGMENTS_D2X];
 
-memset (bVisited, 0, LEVEL_SEGMENTS * sizeof (sbyte));
+memset (bVisited, 0, LEVEL_SEGMENTS * sizeof (int8_t));
 segList [head++] = nStartSeg;
 bVisited [nStartSeg] = 1;
 if (nMaxSegs > LEVEL_SEGMENTS)
 	nMaxSegs = LEVEL_SEGMENTS;
 
 while ((head != tail) && (head < nMaxSegs)) {
-	short nSegment = segList [tail++];
+	int16_t nSegment = segList [tail++];
 	CSegment	*segP = SEGMENTS + nSegment;
 
-	for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
-		int nConnSeg = segP->m_children [i];
+	for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
+		int32_t nConnSeg = segP->m_children [i];
 		if (!IS_CHILD (nConnSeg))
 			continue;
 		if (bVisited [nConnSeg])
 			continue;
-		if (!SegmentIsReachable (nSegment, (short) i))
+		if (!SegmentIsReachable (nSegment, (int16_t) i))
 			continue;
 		segList [head++] = nConnSeg;
 		if (head >= nMaxSegs)
@@ -142,9 +142,9 @@ while ((head != tail) && (head < nMaxSegs)) {
 //	Return true if ok for buddy to talk, else return false.
 //	Buddy is allowed to talk if the CSegment he is in does not contain a blastable CWall that has not been blasted
 //	AND he has never yet, since being initialized for level, been allowed to talk.
-int BuddyMayTalk (void)
+int32_t BuddyMayTalk (void)
 {
-	int		i;
+	int32_t		i;
 	CSegment	*segP;
 	CObject	*objP;
 
@@ -171,7 +171,7 @@ for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 		return 0;
 	//	Check one level deeper.
 	if (IS_CHILD (segP->m_children [i])) {
-		int		j;
+		int32_t		j;
 		CSegment	*connSegP = SEGMENTS + segP->m_children [i];
 
 		for (j = 0; j < SEGMENT_SIDE_COUNT; j++) {
@@ -187,12 +187,12 @@ return 1;
 
 //	--------------------------------------------------------------------------------------------
 
-void DetectEscortGoalAccomplished (int index)
+void DetectEscortGoalAccomplished (int32_t index)
 {
-	int		i, j;
-	int		bDetected = 0;
+	int32_t		i, j;
+	int32_t		bDetected = 0;
 	CObject	*objP;
-	short*	childI, * childJ;
+	int16_t*	childI, * childJ;
 
 //	If goal is to go away, how can it be achieved?
 if (gameData.escort.nSpecialGoal == ESCORT_GOAL_SCRAM)
@@ -209,7 +209,7 @@ if ((gameData.escort.nSpecialGoal == -1) && (gameData.escort.nGoalIndex == index
 if ((gameData.escort.nGoalIndex <= ESCORT_GOAL_RED_KEY) && (index >= 0) && (index <= gameData.objs.nLastObject [0])) {
 	objP = OBJECTS + index;
 	if (objP->info.nType == OBJ_POWERUP)  {
-		ubyte id = objP->info.nId;
+		uint8_t id = objP->info.nId;
 		if (id == POW_KEY_BLUE) {
 			if (gameData.escort.nGoalIndex == ESCORT_GOAL_BLUE_KEY) {
 				bDetected = 1;
@@ -285,7 +285,7 @@ void ChangeGuidebotName (void)
 {
 	CMenu	m;
 	char	text [GUIDEBOT_NAME_LEN+1] = "";
-	int	item;
+	int32_t	item;
 
 strcpy (text,gameData.escort.szName);
 m.AddInput ("guidebot name", text, GUIDEBOT_NAME_LEN);
@@ -303,13 +303,13 @@ void BuddyOuchMessage (fix damage)
 {
 	char	szOuch [6 * 4 + 2];
 
-int count = X2I (damage / 8);
+int32_t count = X2I (damage / 8);
 if (count > 4)
 	count = 4;
 else if (count <= 0)
 	count = 1;
 szOuch [0] = 0;
-for (int i = 0; i < count; i++) {
+for (int32_t i = 0; i < count; i++) {
 	strcat (szOuch, TXT_BUDDY_OUCH);
 	strcat (szOuch, " ");
 	}
@@ -329,7 +329,7 @@ if ((gameData.escort.xLastMsgTime + I2X (1) < gameData.time.xGame) ||
 	if (BuddyMayTalk ()) {
 		char		szMsg [200];
 		va_list	args;
-		int		l = (int) strlen (gameData.escort.szName);
+		int32_t		l = (int32_t) strlen (gameData.escort.szName);
 
 		va_start (args, format);
 		vsprintf (szMsg + l + 10, format, args);
@@ -355,9 +355,9 @@ if ((gameData.escort.xLastMsgTime + I2X (1) < gameData.time.xGame) ||
 
 //	-----------------------------------------------------------------------------
 //	Return true if marker #id has been placed.
-int MarkerExistsInMine (int id)
+int32_t MarkerExistsInMine (int32_t id)
 {
-	//int		i;
+	//int32_t		i;
 	CObject	*objP;
 
 FORALL_OBJS (objP, i)
@@ -368,15 +368,15 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-void EscortSetSpecialGoal (int specialKey)
+void EscortSetSpecialGoal (int32_t specialKey)
 {
-	int markerKey;
+	int32_t markerKey;
 
 gameData.escort.bMsgsSuppressed = 0;
 if (!gameData.escort.bMayTalk) {
 	BuddyMayTalk ();
 	if (!gameData.escort.bMayTalk) {
-		//int		i;
+		//int32_t		i;
 		CObject	*objP;
 
 		FORALL_ROBOT_OBJS (objP, i)
@@ -454,10 +454,10 @@ gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 
 //	-----------------------------------------------------------------------------
 //	Return id of boss.
-int GetBossId (void)
+int32_t GetBossId (void)
 {
-	int	h, i;
-	int	nObject;
+	int32_t	h, i;
+	int32_t	nObject;
 
 	for (h = gameData.bosses.ToS (), i = 0; i < h; i++) {
 		if (0 <= (nObject = gameData.bosses [i].m_nObject))
@@ -469,13 +469,13 @@ int GetBossId (void)
 //	-----------------------------------------------------------------------------
 //	Return bject index if CObject of objType, objId exists in mine, else return -1
 //	"special" is used to find OBJECTS spewed by player which is hacked into flags field of powerup.
-int ExistsInMine2 (int nSegment, int objType, int objId, int special)
+int32_t ExistsInMine2 (int32_t nSegment, int32_t objType, int32_t objId, int32_t special)
 {
 if ((objType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	return -1;
 
 
-	int nObject = SEGMENTS [nSegment].m_objects;
+	int32_t nObject = SEGMENTS [nSegment].m_objects;
 	
 if (nObject != -1) {
 	while (nObject != -1) {
@@ -507,12 +507,12 @@ return -1;
 //	If special == ESCORT_GOAL_PLAYER_SPEW, then looking for any CObject spewed by player.
 //	-1 means CObject does not exist in mine.
 //	-2 means CObject does exist in mine, but buddy-bot can't reach it (eg, behind triggered CWall)
-int ExistsInMine (int nStartSeg, int objType, int objId, int special)
+int32_t ExistsInMine (int32_t nStartSeg, int32_t objType, int32_t objId, int32_t special)
 {
-	int	nSegIdx, nSegment;
-	short	bfsList [MAX_SEGMENTS_D2X];
-	int	length;
-	int	nObject;
+	int32_t	nSegIdx, nSegment;
+	int16_t	bfsList [MAX_SEGMENTS_D2X];
+	int32_t	length;
+	int32_t	nObject;
 
 CreateBfsList (nStartSeg, bfsList, &length, LEVEL_SEGMENTS);
 if (objType == PRODUCER_CHECK) {
@@ -550,12 +550,12 @@ return -1;
 
 //	-----------------------------------------------------------------------------
 //	Return true if it happened, else return false.
-int FindExitSegment (void)
+int32_t FindExitSegment (void)
 {
 	CSegment* segP = SEGMENTS.Buffer ();
 
-for (int i = 0; i <= gameData.segs.nSegments; i++, segP++)
-	for (int j = 0; j < SEGMENT_SIDE_COUNT; j++)
+for (int32_t i = 0; i <= gameData.segs.nSegments; i++, segP++)
+	for (int32_t j = 0; j < SEGMENT_SIDE_COUNT; j++)
 		if (segP->m_children [j] == -2) {
 			return i;
 		}
@@ -566,7 +566,7 @@ return -1;
 
 //	-----------------------------------------------------------------------------
 
-void SayEscortGoal (int nGoal)
+void SayEscortGoal (int32_t nGoal)
 {
 if (gameStates.app.bPlayerIsDead)
 	return;
@@ -636,7 +636,7 @@ switch (nGoal) {
 
 #if 0
 typedef struct tEscortGoal {
-	short	nType, nId, special;
+	int16_t	nType, nId, special;
 } tEscortGoal;
 
 static tEscortGoal escortGoals [MAX_ESCORT_GOALS] = {
@@ -667,8 +667,8 @@ static tEscortGoal escortGoals [MAX_ESCORT_GOALS] = {
 
 void EscortCreatePathToGoal (CObject *objP)
 {
-	short				nGoalSeg = -1;
-	short				nObject = objP->Index ();
+	int16_t				nGoalSeg = -1;
+	int16_t				nObject = objP->Index ();
 	tAIStaticInfo*	aip = &objP->cType.aiInfo;
 	tAILocalInfo*	ailp = gameData.ai.localInfo + nObject;
 
@@ -747,7 +747,7 @@ else {
 			gameData.escort.nGoalIndex = nGoalSeg;
 			break;
 		case ESCORT_GOAL_BOSS: {
-			int	boss_id;
+			int32_t	boss_id;
 
 			boss_id = GetBossId ();
 			Assert (boss_id != -1);
@@ -813,7 +813,7 @@ else {
 //	-----------------------------------------------------------------------------
 //	Escort robot chooses goal CObject based on player's keys, location.
 //	Returns goal CObject.
-int EscortSetGoalObject (void)
+int32_t EscortSetGoalObject (void)
 {
 if (gameData.escort.nSpecialGoal != -1)
 	return ESCORT_GOAL_UNSPECIFIED;
@@ -827,7 +827,7 @@ else if (!(gameData.objs.consoleP->info.nFlags & PLAYER_FLAGS_RED_KEY) &&
 			 (ExistsInMine (gameData.objs.consoleP->info.nSegment, OBJ_POWERUP, POW_KEY_RED, -1) != -1))
 	return ESCORT_GOAL_RED_KEY;
 else if (!gameData.reactor.bDestroyed) {
-	for (int i = 0; i < int (gameData.bosses.ToS ()); i++)
+	for (int32_t i = 0; i < int32_t (gameData.bosses.ToS ()); i++)
 		if ((gameData.bosses [i].m_nObject >= 0) && gameData.bosses [i].m_nTeleportSegs)
 			return ESCORT_GOAL_BOSS;
 		return ESCORT_GOAL_CONTROLCEN;
@@ -842,7 +842,7 @@ fix	xBuddyLastSeenPlayer = 0, Buddy_last_player_path_created;
 
 //	-----------------------------------------------------------------------------
 
-int TimeToVisitPlayer (CObject *objP, tAILocalInfo *ailp, tAIStaticInfo *aip)
+int32_t TimeToVisitPlayer (CObject *objP, tAILocalInfo *ailp, tAIStaticInfo *aip)
 {
 	//	Note: This one has highest priority because, even if already going towards player,
 	//	might be necessary to create a new path, as player can move.
@@ -864,7 +864,7 @@ fix Buddy_last_missileTime;
 
 //	-----------------------------------------------------------------------------
 
-void BashBuddyWeaponInfo (int nWeaponObj)
+void BashBuddyWeaponInfo (int32_t nWeaponObj)
 {
 	CObject	*objP = OBJECTS + nWeaponObj;
 
@@ -875,13 +875,13 @@ objP->cType.laserInfo.parent.nSignature = gameData.objs.consoleP->info.nSignatur
 
 //	-----------------------------------------------------------------------------
 
-int MaybeBuddyFireMega (short nObject)
+int32_t MaybeBuddyFireMega (int16_t nObject)
 {
 	CObject		*objP = OBJECTS + nObject;
 	CObject		*buddyObjP = OBJECTS + gameData.escort.nObjNum;
 	fix			dist, dot;
 	CFixVector	vVecToRobot;
-	int			nWeaponObj;
+	int32_t			nWeaponObj;
 
 vVecToRobot = buddyObjP->info.position.vPos - objP->info.position.vPos;
 dist = CFixVector::Normalize (vVecToRobot);
@@ -911,12 +911,12 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int MaybeBuddyFireSmart (short nObject)
+int32_t MaybeBuddyFireSmart (int16_t nObject)
 {
 	CObject	*objP = &OBJECTS [nObject];
 	CObject	*buddyObjP = &OBJECTS [gameData.escort.nObjNum];
 	fix		dist;
-	short		nWeaponObj;
+	int16_t		nWeaponObj;
 
 dist = CFixVector::Dist(buddyObjP->info.position.vPos, objP->info.position.vPos);
 if (dist > I2X (80))
@@ -937,7 +937,7 @@ return 1;
 
 void DoBuddyDudeStuff (void)
 {
-	//short		i;
+	//int16_t		i;
 	CObject	*objP;
 
 if (!BuddyMayTalk ())
@@ -966,9 +966,9 @@ if (Buddy_last_missileTime + I2X (2) < gameData.time.xGame) {
 
 //	-----------------------------------------------------------------------------
 //	Called every frame (or something).
-void DoEscortFrame (CObject *objP, fix xDistToPlayer, int nPlayerVisibility)
+void DoEscortFrame (CObject *objP, fix xDistToPlayer, int32_t nPlayerVisibility)
 {
-	int				nObject = objP->Index ();
+	int32_t				nObject = objP->Index ();
 	tAIStaticInfo*	aip = &objP->cType.aiInfo;
 	tAILocalInfo*	ailp = gameData.ai.localInfo + nObject;
 
@@ -991,7 +991,7 @@ if (gameData.escort.xSorryTime + I2X (1) > gameData.time.xGame) {
 //	If buddy not allowed to talk, then he is locked in his room.  Make him mostly do nothing unless you're nearby.
 if (!gameData.escort.bMayTalk)
 	if (xDistToPlayer > I2X (100))
-		aip->SKIP_AI_COUNT = (sbyte) ((I2X (1) / 4) / (gameData.time.xFrame ? gameData.time.xFrame : 1));
+		aip->SKIP_AI_COUNT = (int8_t) ((I2X (1) / 4) / (gameData.time.xFrame ? gameData.time.xFrame : 1));
 //	AIM_WANDER has been co-opted for buddy behavior (didn't want to modify aistruct.h)
 //	It means the CObject has been told to get lost and has come to the end of its path.
 //	If the player is now visible, then create a path.
@@ -1019,7 +1019,7 @@ if (((gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM) && ((gameData.escort.xL
 	gameData.escort.xLastPathCreated = gameData.time.xGame;
 	}
 if ((gameData.escort.nSpecialGoal != ESCORT_GOAL_SCRAM) && TimeToVisitPlayer (objP, ailp, aip)) {
-	int	nMaxLen;
+	int32_t	nMaxLen;
 
 	Buddy_last_player_path_created = gameData.time.xGame;
 	ailp->mode = AIM_GOTO_PLAYER;
@@ -1078,10 +1078,10 @@ void InvalidateEscortGoal (void)
 
 // --------------------------------------------------------------------------------------------------------------
 
-int ShowEscortHelp (char *pszGoal, char *tstr)
+int32_t ShowEscortHelp (char *pszGoal, char *tstr)
 {
 
-	int	nItems;
+	int32_t	nItems;
 	CMenu	m (12);
 	char	szGoal	[40], szMsgs [40];
 #if 0
@@ -1125,8 +1125,8 @@ if (IsMultiGame) {
 if (gameStates.app.bD1Mission)
 	return;
 
-	int		i;
-	int		next_goal;
+	int32_t		i;
+	int32_t		next_goal;
 	char		szGoal [32], tstr [32];
 	CObject	*objP;
 
@@ -1242,7 +1242,7 @@ audio.ResumeSounds ();
 //	It is available as a cheat in a non-debug (release) version.
 void CreateBuddyBot (void)
 {
-	ubyte	buddy_id;
+	uint8_t	buddy_id;
 	CFixVector	vObjPos;
 
 for (buddy_id = 0; buddy_id < gameData.bots.nTypes [0]; buddy_id++)

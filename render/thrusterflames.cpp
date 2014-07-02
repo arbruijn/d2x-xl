@@ -50,13 +50,13 @@ static CFloatVector	vRingVerts [RING_SEGS] = {
 	CFloatVector::Create (-0.2706f, -0.6533f, 0.0f, 1.0f)
 };
 
-//static int nStripIdx [] = {0,15,1,14,2,13,3,12,4,11,5,10,6,9,7,8};
+//static int32_t nStripIdx [] = {0,15,1,14,2,13,3,12,4,11,5,10,6,9,7,8};
 
 void CThrusterFlames::Create (void)
 {
 if (!m_bHaveFlame [m_bPlayer]) {
 		CFloatVector*	pv;
-		int				i, j, m, n;
+		int32_t				i, j, m, n;
 		double			phi, sinPhi;
 		float				z = 0,
 							fScale = 2.0f / 3.0f,
@@ -85,7 +85,7 @@ if (!m_bHaveFlame [m_bPlayer]) {
 	tTexCoord2f* flameTexCoord = m_flameTexCoord [m_bPlayer];
 	float uOffset = m_bPlayer ? 0.5f : 0.0f;
 
-	int nVerts = 0;
+	int32_t nVerts = 0;
 	for (i = 0; i < THRUSTER_SEGS - 1; i++) {
 		for (j = 0; j <= RING_SEGS; j++) {
 			m = j % RING_SEGS;
@@ -126,13 +126,13 @@ else {
 
 // -----------------------------------------------------------------------------
 
-int CThrusterFlames::CalcPos (CObject *objP, tThrusterInfo* tiP, int bAfterburnerBlob)
+int32_t CThrusterFlames::CalcPos (CObject *objP, tThrusterInfo* tiP, int32_t bAfterburnerBlob)
 {
 if (!tiP)
 	tiP = &m_ti;
 
 	tThrusterInfo	ti = *tiP;
-	int				i, bMissile = IS_MISSILE (objP);
+	int32_t				i, bMissile = IS_MISSILE (objP);
 
 m_pt = NULL;
 ti.pp = NULL;
@@ -293,7 +293,7 @@ transparencyRenderer.AddLightTrail (thruster.Bitmap (), vCap, tcCap [m_bPlayer],
 
 // -----------------------------------------------------------------------------
 
-void CThrusterFlames::RenderCap (int i)
+void CThrusterFlames::RenderCap (int32_t i)
 {
 if (thruster.Load ()) {
 	CFloatVector	verts [4];
@@ -301,7 +301,7 @@ if (thruster.Load ()) {
 	float				scale = m_ti.fSize [i] * 1.6666667f;
 
 	// choose 4 vertices from the widest ring of the flame
-	for (int i = 0; i < 4; i++) {
+	for (int32_t i = 0; i < 4; i++) {
 		verts [i] = m_vFlame [5][4 * i];
 		verts [i].v.coord.x *= scale;
 		verts [i].v.coord.y *= scale;
@@ -318,7 +318,7 @@ if (thruster.Load ()) {
 
 // -----------------------------------------------------------------------------
 
-void CThrusterFlames::Render3D (int i)
+void CThrusterFlames::Render3D (int32_t i)
 {
 if (glowRenderer.SetViewport (GLOW_THRUSTERS, m_flameVerts, FLAME_VERT_COUNT)) {
 	glColor3f (1,1,1);
@@ -334,7 +334,7 @@ if (glowRenderer.SetViewport (GLOW_THRUSTERS, m_flameVerts, FLAME_VERT_COUNT)) {
 
 // -----------------------------------------------------------------------------
 
-bool CThrusterFlames::Setup (CObject *objP, int nStages)
+bool CThrusterFlames::Setup (CObject *objP, int32_t nStages)
 {
 if (gameStates.app.bNostalgia)
 	return false;
@@ -395,11 +395,11 @@ return true;
 
 // -----------------------------------------------------------------------------
 
-bool CThrusterFlames::IsFiring (CWeaponState* ws, int i)
+bool CThrusterFlames::IsFiring (CWeaponState* ws, int32_t i)
 {
 if (!ws)
 	return true;
-for (int j = 0; j < (int) sizeofa (ws->nThrusters); j++)
+for (int32_t j = 0; j < (int32_t) sizeofa (ws->nThrusters); j++)
 	if (ws->nThrusters [j] && ((m_ti.nType [i] & ws->nThrusters [j]) == m_ti.nType [i]))
 		return true;
 return false;
@@ -407,9 +407,9 @@ return false;
 
 // -----------------------------------------------------------------------------
 
-void CThrusterFlames::Render (CObject *objP, tThrusterInfo* infoP, int nThruster)
+void CThrusterFlames::Render (CObject *objP, tThrusterInfo* infoP, int32_t nThruster)
 {
-int bStencil = ogl.StencilOff ();
+int32_t bStencil = ogl.StencilOff ();
 
 CWeaponState* ws = (objP->info.nType == OBJ_PLAYER) ? gameData.multiplayer.weaponStates + objP->info.nId : NULL;
 
@@ -420,7 +420,7 @@ if (m_nStyle == 1) {	//2D
 		static CFloatVector	tcColor = {{{0.75f, 0.75f, 0.75f, 1.0f}}};
 
 	//m_ti.fLength *= 4 * m_ti.fSize;
-	for (int i = 0; i < m_nThrusters; i++) {
+	for (int32_t i = 0; i < m_nThrusters; i++) {
 		if (IsFiring (ws, i)) {
 			m_ti.fSize [i] *= ((objP->info.nType == OBJ_PLAYER) && HaveHiresModel (objP->ModelId ())) ? 1.2f : 1.5f;
 			if (!gameData.models.vScale.IsZero ())
@@ -436,7 +436,7 @@ else { //3D
 			return;
 		Create ();
 		m_ti.mOrient = objP->info.position.mOrient;
-		for (int i = 0; i < m_nThrusters; i++) {
+		for (int32_t i = 0; i < m_nThrusters; i++) {
 			if (IsFiring (ws, i))
 				transparencyRenderer.AddThruster (objP, &m_ti, i);
 			}

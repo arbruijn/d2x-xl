@@ -15,18 +15,18 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define _IBITBLT_H
 
 // Finds location/size of the largest "hole" in bitmap mask_bmp
-void gr_ibitblt_find_hole_size ( CBitmap * mask_bmp, int *minx, int *miny, int *maxx, int *maxy );
+void gr_ibitblt_find_hole_size ( CBitmap * mask_bmp, int32_t *minx, int32_t *miny, int32_t *maxx, int32_t *maxy );
 
 // Creates a code mask that will copy data from a bitmap that is sw by
 // sh starting from location sx, sy with a rowSize of srowSize onto
 // another bitmap but only copies into pixel locations that are
 // defined as transparent in bitmap bmp.
 
-void gr_ibitblt_create_mask_pa(CBitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowSize);
-void gr_ibitblt_create_mask(CBitmap *mask_bmp, int sx, int sy, int sw, int sh, int srowSize);
+void gr_ibitblt_create_mask_pa(CBitmap *mask_bmp, int32_t sx, int32_t sy, int32_t sw, int32_t sh, int32_t srowSize);
+void gr_ibitblt_create_mask(CBitmap *mask_bmp, int32_t sx, int32_t sy, int32_t sw, int32_t sh, int32_t srowSize);
 // Copy source bitmap onto destination bitmap, not copying pixels that
 // are defined transparent by the mask
 
-void gr_ibitblt(CBitmap *source_bmp, CBitmap *dest_bmp, ubyte pixel_double);
+void gr_ibitblt(CBitmap *source_bmp, CBitmap *dest_bmp, uint8_t pixel_double);
 
 #endif

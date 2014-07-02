@@ -35,7 +35,7 @@ void AIDoCloakStuff (void)
 {
 	CObject*	objP = TARGETOBJ ? TARGETOBJ : gameData.objs.consoleP;
 
-for (int i = 0; i < MAX_AI_CLOAK_INFO; i++) {
+for (int32_t i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 	gameData.ai.cloakInfo [i].vLastPos = OBJPOS (objP)->vPos;
 	gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (objP);
 	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
@@ -47,7 +47,7 @@ gameData.ai.target.nBelievedSeg = gameData.ai.cloakInfo [0].nLastSeg;
 
 // ----------------------------------------------------------------------------
 // Returns false if awareness is considered too puny to add, else returns true.
-int AddAwarenessEvent (CObject *objP, int nType)
+int32_t AddAwarenessEvent (CObject *objP, int32_t nType)
 {
 	// If player cloaked and hit a robot, then increase awareness
 if (nType >= WEAPON_WALL_COLLISION)
@@ -69,7 +69,7 @@ return 1;
 // ----------------------------------------------------------------------------------
 // Robots will become aware of the player based on something that occurred.
 // The CObject (probably player or weapon) which created the awareness is objP.
-void CreateAwarenessEvent (CObject *objP, int nType)
+void CreateAwarenessEvent (CObject *objP, int32_t nType)
 {
 	// If not in multiplayer, or in multiplayer with robots, do this, else unnecessary!
 if (IsRobotGame) {
@@ -82,17 +82,17 @@ if (IsRobotGame) {
 	}
 }
 
-sbyte newAwareness [MAX_SEGMENTS_D2X];
+int8_t newAwareness [MAX_SEGMENTS_D2X];
 
 // ----------------------------------------------------------------------------------
 
-void pae_aux (int nSegment, int nType, int level)
+void pae_aux (int32_t nSegment, int32_t nType, int32_t level)
 {
 if ((nSegment >= 0) && (nSegment < gameData.segs.nSegments)) {
 	if (newAwareness [nSegment] < nType)
 		newAwareness [nSegment] = nType;
 	CSegment* segP = SEGMENTS + nSegment;
-	for (int i = 0; i < SEGMENT_SIDE_COUNT; i++) {
+	for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 		if (IS_CHILD (segP->m_children [i])) {
 			if (level <= 3) {
 				pae_aux (segP->m_children [i], (nType == 4) ? nType - 1 : nType, level + 1);
@@ -108,7 +108,7 @@ void ProcessAwarenessEvents (void)
 {
 if (IsRobotGame) {
 	memset (newAwareness, 0, sizeof (newAwareness [0]) * gameData.segs.nSegments);
-	for (int i = 0; i < gameData.ai.nAwarenessEvents; i++)
+	for (int32_t i = 0; i < gameData.ai.nAwarenessEvents; i++)
 		pae_aux (gameData.ai.awarenessEvents [i].nSegment, gameData.ai.awarenessEvents [i].nType, 1);
 	}
 gameData.ai.nAwarenessEvents = 0;
@@ -118,8 +118,8 @@ gameData.ai.nAwarenessEvents = 0;
 
 void SetPlayerAwarenessAll (void)
 {
-	int		i;
-	short		nSegment;
+	int32_t		i;
+	int16_t		nSegment;
 	CObject	*objP;
 
 ProcessAwarenessEvents ();
@@ -143,8 +143,8 @@ FORALL_OBJS (objP, i)
 //  Setting player_awareness (a fix, time in seconds which CObject is aware of player)
 void DoAIFrameAll (void)
 {
-	int		h, j;
-	//int		i;
+	int32_t		h, j;
+	//int32_t		i;
 	CObject	*objP;
 
 SetPlayerAwarenessAll ();

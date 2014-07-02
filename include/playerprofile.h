@@ -30,21 +30,21 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #endif
 
 // update the player's highest level.  returns errno (0 == no error)
-int UpdatePlayerFile ();
+int32_t UpdatePlayerFile ();
 // Used to save KConfig values to disk.
-int SavePlayerProfile ();
-int NewPlayerConfig ();
+int32_t SavePlayerProfile ();
+int32_t NewPlayerConfig ();
 
 // called once at program startup to get the player's name
-int SelectPlayer (void);
+int32_t SelectPlayer (void);
 
-int LoadPlayerProfile (int nStage = 2);
+int32_t LoadPlayerProfile (int32_t nStage = 2);
 
 // set a new highest level for player for this mission
-void SetHighestLevel (ubyte nLevel);
+void SetHighestLevel (uint8_t nLevel);
 
 // gets the player's highest level from the file for this mission
-int GetHighestLevel(void);
+int32_t GetHighestLevel(void);
 
 //------------------------------------------------------------------------------
 
@@ -52,13 +52,13 @@ class CParam {
 	public:
 		class CParam*	next;
 		char*				valP;
-		short				nValues;
-		ubyte				nSize;
+		int16_t				nValues;
+		uint8_t				nSize;
 		char				szTag [1];
 
 	public:
-		int Save (CFile& cf);
-		int Set (const char *pszIdent, const char *pszValue);
+		int32_t Save (CFile& cf);
+		int32_t Set (const char *pszIdent, const char *pszValue);
 	};
 
 //------------------------------------------------------------------------------
@@ -70,14 +70,14 @@ class CPlayerProfile {
 		bool		bRegistered;
 		CFile		m_cf;
 		
-		char* MakeTag (char *pszTag, const char *pszIdent, int i, int j);
-		void RegisterConfig (kcItem *cfgP, int nItems, const char *pszId);
-		int FindInConfig (kcItem *cfgP, int nItems, int iItem, const char *pszText);
-		int Register (void *valP, const char *pszIdent, int i, int j, ubyte nSize);
+		char* MakeTag (char *pszTag, const char *pszIdent, int32_t i, int32_t j);
+		void RegisterConfig (kcItem *cfgP, int32_t nItems, const char *pszId);
+		int32_t FindInConfig (kcItem *cfgP, int32_t nItems, int32_t iItem, const char *pszText);
+		int32_t Register (void *valP, const char *pszIdent, int32_t i, int32_t j, uint8_t nSize);
 		void Create (void);
 		CParam* Find (const char *pszTag);
-		int Set (const char *pszIdent, const char *pszValue);
-		int LoadParam (void);
+		int32_t Set (const char *pszIdent, const char *pszValue);
+		int32_t LoadParam (void);
 
 	public:
 		CPlayerProfile () { Init (); }
@@ -85,8 +85,8 @@ class CPlayerProfile {
 		void Init (void);
 		void Destroy (void);
 		void Setup (void);
-		int Load (bool bOnlyWindowSizes = false);
-		int Save (void);
+		int32_t Load (bool bOnlyWindowSizes = false);
+		int32_t Save (void);
 		inline bool Busy (void) { return m_cf.File () != 0; }
 	};
 

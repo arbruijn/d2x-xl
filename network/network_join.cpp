@@ -38,9 +38,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-int NetworkFindPlayer (tNetPlayerInfo *playerP)
+int32_t NetworkFindPlayer (tNetPlayerInfo *playerP)
 {
-	int	i;
+	int32_t	i;
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (!CmpNetPlayers (NULL, NULL, &netPlayers [0].m_info.players [i].network, &playerP->network))
@@ -50,16 +50,16 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int GetNewPlayerNumber (tSequencePacket *their)
+int32_t GetNewPlayerNumber (tSequencePacket *their)
   {
-	 int i;
+	 int32_t i;
 
 if ((gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers) && 
 	 (gameData.multiplayer.nPlayers < gameData.multiplayer.nPlayerPositions))
 	return gameData.multiplayer.nPlayers;
 // Slots are full but game is open, see if anyone is
 // disconnected and replace the oldest player with this new one
-int oldestPlayer = -1;
+int32_t oldestPlayer = -1;
 fix oldestTime = gameStates.app.nSDLTicks [0];
 
 Assert (gameData.multiplayer.nPlayers == gameData.multiplayer.nMaxPlayers);
@@ -74,11 +74,11 @@ return oldestPlayer;
 
 //------------------------------------------------------------------------------
 
-int CanJoinNetGame (CNetGameInfo *game, CAllNetPlayersInfo *people)
+int32_t CanJoinNetGame (CNetGameInfo *game, CAllNetPlayersInfo *people)
 {
 	// Can this CPlayerData rejoin a netgame in progress?
 
-	int i, nNumPlayers;
+	int32_t i, nNumPlayers;
 
 if (game->m_info.gameStatus == NETSTAT_STARTING)
    return 1;
@@ -142,16 +142,16 @@ networkData.nJoining = 0;
 
 //------------------------------------------------------------------------------
 
-void NetworkResetObjSync (short nObject)
+void NetworkResetObjSync (int16_t nObject)
 {
-for (short i = 0; i < networkData.nJoining; i++)
+for (int16_t i = 0; i < networkData.nJoining; i++)
 	if ((networkData.sync [i].nState == 1) && ((nObject < 0) || NetworkObjnumIsPast (nObject, networkData.sync + i)))
 		networkData.sync [i].objs.nCurrent = -1;
 }
 
 //------------------------------------------------------------------------------
 
-void NetworkDisconnectPlayer (int nPlayer)
+void NetworkDisconnectPlayer (int32_t nPlayer)
 {
 CPlayerData& player = gameData.multiplayer.players [nPlayer];
 
@@ -164,7 +164,7 @@ if (player.Connected (CONNECT_PLAYING)) {
 	gameData.multiplayer.weaponStates [nPlayer].firing [1].nDuration = 0;
 	KillPlayerBullets (gameData.Object (player.nObject));
 	KillGatlingSmoke (gameData.Object (player.nObject));
-	for (short i = 0; i < networkData.nJoining; i++)
+	for (int16_t i = 0; i < networkData.nJoining; i++)
 		if (networkData.sync [i].nPlayer == nPlayer) {
 			DeleteSyncData (i);
 			NetworkResetSyncStates ();
@@ -181,7 +181,7 @@ if (player.Connected (CONNECT_PLAYING)) {
 
 void NetworkNewPlayer (tSequencePacket *their)
 {
-	int	nPlayer;
+	int32_t	nPlayer;
 
 nPlayer = their->player.connected;
 Assert (nPlayer >= 0);
@@ -198,7 +198,7 @@ netPlayers [0].m_info.players [nPlayer].versionMinor = their->player.versionMino
 NetworkCheckForOldVersion ((char) nPlayer);
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	if (*reinterpret_cast<uint*> (their->player.network.Network ()) != 0)
+	if (*reinterpret_cast<uint32_t*> (their->player.network.Network ()) != 0)
 		IpxGetLocalTarget (
 			their->player.network.Network (), 
 			their->player.network.Node (), 
@@ -211,7 +211,7 @@ gameData.multiplayer.players [nPlayer].nPacketsGot = 0;
 CONNECT (nPlayer, CONNECT_PLAYING);
 gameData.multiplayer.players [nPlayer].netKillsTotal = 0;
 gameData.multiplayer.players [nPlayer].netKilledTotal = 0;
-memset (gameData.multigame.score.matrix [nPlayer], 0, MAX_NUM_NET_PLAYERS * sizeof (short)); 
+memset (gameData.multigame.score.matrix [nPlayer], 0, MAX_NUM_NET_PLAYERS * sizeof (int16_t)); 
 gameData.multiplayer.players [nPlayer].score = 0;
 gameData.multiplayer.players [nPlayer].flags = 0;
 gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
@@ -234,10 +234,10 @@ MultiSortKillList ();
 
 //------------------------------------------------------------------------------
 
-static int FindNetworkPlayer (tSequencePacket *player, ubyte *newAddress)
+static int32_t FindNetworkPlayer (tSequencePacket *player, uint8_t *newAddress)
 {
-	int	i;
-	ubyte anyAddress [6];
+	int32_t	i;
+	uint8_t anyAddress [6];
 
 if (gameStates.multi.nGameType == UDP_GAME) {
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
@@ -271,7 +271,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-static int FindPlayerSlot (tSequencePacket *player)
+static int32_t FindPlayerSlot (tSequencePacket *player)
 {
 if (netGame.m_info.gameFlags & NETGAME_FLAG_CLOSED) {
 	// Slots are open but game is closed
@@ -290,9 +290,9 @@ if ((gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers) &&
 	}
 // Slots are full but game is open, see if anyone is
 // disconnected and replace the oldest CPlayerData with this new one
-int oldestPlayer = -1;
+int32_t oldestPlayer = -1;
 fix oldestTime = TimerGetApproxSeconds ();
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (!gameData.multiplayer.players [i].IsConnected () && (networkData.nLastPacketTime [i] < oldestTime)) {
 		oldestTime = networkData.nLastPacketTime [i];
 		oldestPlayer = i;
@@ -313,9 +313,9 @@ return oldestPlayer;
 
 //------------------------------------------------------------------------------
 
-static short FindJoiningPlayer (tSequencePacket *player)
+static int16_t FindJoiningPlayer (tSequencePacket *player)
 {
-for (short i = 0; i < networkData.nJoining; i++)
+for (int16_t i = 0; i < networkData.nJoining; i++)
 	if (!memcmp (&networkData.sync [i].player [1], player, sizeof (*player)))
 		return i;
 return -1;
@@ -323,9 +323,9 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-tNetworkSyncData *FindJoiningPlayer (short nPlayer)
+tNetworkSyncData *FindJoiningPlayer (int16_t nPlayer)
 {
-for (short i = 0; i < networkData.nJoining; i++)
+for (int16_t i = 0; i < networkData.nJoining; i++)
 	if (networkData.sync [i].player [1].player.connected == nPlayer)
 		return networkData.sync + i;
 return NULL;
@@ -333,7 +333,7 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-void DeleteSyncData (short nConnection)
+void DeleteSyncData (int16_t nConnection)
 {
 if (nConnection < --networkData.nJoining)
 	memcpy (networkData.sync + nConnection, networkData.sync + networkData.nJoining, sizeof (tNetworkSyncData));
@@ -370,7 +370,7 @@ if (player->player.connected != missionManager.nCurrentLevel) {
 	}
 
 tNetworkSyncData *syncP;
-short nConnection = FindJoiningPlayer (player);
+int16_t nConnection = FindJoiningPlayer (player);
 
 if (nConnection < 0) {
 	if (networkData.nJoining == MAX_JOIN_REQUESTS)
@@ -391,8 +391,8 @@ return syncP;
 
 void NetworkWelcomePlayer (tSequencePacket *player)
 {
-	int					nPlayer;
-	ubyte					newAddress [6];
+	int32_t					nPlayer;
+	uint8_t					newAddress [6];
 	tNetworkSyncData*	syncP;
 
 networkData.refuse.bWaitForAnswer = 0;
@@ -421,7 +421,7 @@ if (!(syncP = AcceptJoinRequest (player)))
 memset (&syncP->player [1], 0, sizeof (tSequencePacket));
 networkData.bPlayerAdded = 0;
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	if (*reinterpret_cast<uint*> (player->player.network.Network ()) != 0)
+	if (*reinterpret_cast<uint32_t*> (player->player.network.Network ()) != 0)
 		IpxGetLocalTarget (
 			player->player.network.Network (), 
 			player->player.network.Node (), 
@@ -432,7 +432,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 if (0 > (nPlayer = FindNetworkPlayer (player, newAddress))) {
 	// Player is new to this game
 	if (0 > (nPlayer = FindPlayerSlot (player))) {
-		DeleteSyncData (short (syncP - networkData.sync));
+		DeleteSyncData (int16_t (syncP - networkData.sync));
 		return;
 		}
 	gameData.multiplayer.bAdjustPowerupCap [nPlayer] = true;
@@ -499,7 +499,7 @@ NetworkSendGameInfo (NULL);
 
 void NetworkRemovePlayer (tSequencePacket *player)
 {
-	int i, j, pn = NetworkFindPlayer (&player->player);
+	int32_t i, j, pn = NetworkFindPlayer (&player->player);
 
 if (pn < 0)
 	return;
@@ -524,7 +524,7 @@ NetworkSendGameInfo (NULL);
 
 void DoRefuseStuff (tSequencePacket *their)
 {
-  int				i, nNewPlayer;
+  int32_t				i, nNewPlayer;
 
   static tTextIndex	joinMsgIndex;
   static char			szJoinMsg [200];
@@ -622,7 +622,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void NetworkDumpPlayer (ubyte * server, ubyte *node, int nReason)
+void NetworkDumpPlayer (uint8_t * server, uint8_t *node, int32_t nReason)
 {
 	// Inform CPlayerData that he was not chosen for the netgame
 	tSequencePacket temp;
@@ -640,10 +640,10 @@ else
 
 #if DBG
 
-void CMultiplayerData::Connect (int nPlayer, sbyte nStatus) 
+void CMultiplayerData::Connect (int32_t nPlayer, int8_t nStatus) 
 {
-	static int nDbgPlayer = 1;
-	static int nDbgStatus = 1;
+	static int32_t nDbgPlayer = 1;
+	static int32_t nDbgStatus = 1;
 
 if (((nDbgPlayer != -1) || (nDbgStatus != -1)) && ((nDbgPlayer < 0) || (nPlayer == nDbgPlayer)) && ((nDbgStatus < 0) || (nStatus == nDbgStatus)))
 	BRP;

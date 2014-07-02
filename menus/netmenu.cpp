@@ -49,7 +49,7 @@
  * because of the "driver's" ipx_packetnum (see linuxnet.c).
  */
 
-extern ubyte ipx_MyAddress [10];
+extern uint8_t ipx_MyAddress [10];
 
 //------------------------------------------------------------------------------
 
@@ -121,16 +121,16 @@ netGame.m_info.DoHeadlight = m.Value ("headlight");
 //------------------------------------------------------------------------------
 
 fix nLastPlayTime = -1;
-int nLastReactorLife = 0;
-int nLastScoreGoal = -1;
-int nLastMaxPlayers = -1;
+int32_t nLastReactorLife = 0;
+int32_t nLastScoreGoal = -1;
+int32_t nLastMaxPlayers = -1;
 
 //------------------------------------------------------------------------------
 
 
-#define	WF(_f)	 ((short) (( (nFilter) & (1 << (_f))) != 0))
+#define	WF(_f)	 ((int16_t) (( (nFilter) & (1 << (_f))) != 0))
 
-void SetAllAllowablesTo (int nFilter)
+void SetAllAllowablesTo (int32_t nFilter)
 {
 	nLastReactorLife = 0;   //default to zero
    
@@ -210,7 +210,7 @@ WF (netGame.m_info.invul, 27);
 #define ENDLEVEL_SEND_INTERVAL  500
 #define ENDLEVEL_IDLE_TIME      20000
 
-int NetworkEndLevelPoll2 (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t NetworkEndLevelPoll2 (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
@@ -228,10 +228,10 @@ if (!networkThread.Available ()) {
 	}
 NetworkListen ();
 
-int nReady = 0;
-int bSecret = 0;
+int32_t nReady = 0;
+int32_t bSecret = 0;
 
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if ((gameData.multiplayer.players [i].connected != CONNECT_PLAYING) && 
 		 (gameData.multiplayer.players [i].connected != CONNECT_ESCAPE_TUNNEL) && 
 		 (gameData.multiplayer.players [i].connected != CONNECT_END_MENU)) {
@@ -251,13 +251,13 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int NetworkEndLevelPoll3 (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t NetworkEndLevelPoll3 (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
 	// Polling loop for End-of-level menu
-   int nReady = 0, i;
+   int32_t nReady = 0, i;
  
 if (TimerGetApproxSeconds () > (gameData.multiplayer.xStartAbortMenuTime + (I2X (8))))
 	key = -2;
@@ -275,26 +275,26 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int NetworkStartPoll (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t NetworkStartPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
-	int i, n, nm;
+	int32_t i, n, nm;
 
 Assert (networkData.nStatus == NETSTAT_STARTING);
 if (!menu [0].Value ()) {
 	menu [0].Value () = 1;
 	menu [0].Rebuild ();
 	}
-for (i = 1; i < int (menu.ToS ()); i++) {
+for (i = 1; i < int32_t (menu.ToS ()); i++) {
 	if ((i >= gameData.multiplayer.nPlayers) && menu [i].Value ()) {
 		menu [i].Value () = 0;
 		menu [i].Rebuild ();
 		}
 	}
 nm = 0;
-for (i = 0; i < int (menu.ToS ()); i++) {
+for (i = 0; i < int32_t (menu.ToS ()); i++) {
 	if (menu [i].Value ()) {
 		if (++nm > gameData.multiplayer.nPlayers) {
 			menu [i].Value () = 0;
@@ -355,9 +355,9 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-static int nGameTypes = -1, nGameItem = -1;
+static int32_t nGameTypes = -1, nGameItem = -1;
 
-int NetworkGameParamPoll (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t NetworkGameParamPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
@@ -366,9 +366,9 @@ if (!menu.Available ("max. players"))
 
 CMenuItem* maxPlayers = menu ["max. players"];
 
-	static int oldMaxPlayers = 0;
+	static int32_t oldMaxPlayers = 0;
 
-int i = menu.IndexOf ("anarchy");
+int32_t i = menu.IndexOf ("anarchy");
 if ((nCurItem >= i) && (nCurItem < i + nGameTypes)) {
 	if ((nCurItem != nGameItem) && menu [nCurItem].Value ()) {
 		nGameItem = nCurItem;
@@ -416,13 +416,13 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int NetworkMoreOptionsPoll (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t NetworkMoreOptionsPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
 CMenuItem*	m;
-int			v;
+int32_t			v;
 
 if ((m = menu ["reactor life"])) {
 	v = m->Value ();
@@ -460,9 +460,9 @@ return nCurItem;
 
 void NetworkMoreGameOptions (void)
 {
-	static int choice = 0;
+	static int32_t choice = 0;
 
-	int		i;
+	int32_t		i;
 	char		szPlayTime [80], szScoreGoal [80], szInvul [50], szSocket [6], szPPS [6], szPPSLabel [40];
 	CMenu		m;
 
@@ -492,7 +492,7 @@ do {
 	m.AddCheck ("bright ships", TXT_BRIGHT_SHIPS, mpParams.bBrightPlayers ? 0 : 1, KEY_S, HTX_MULTI2_BRIGHTSHIP);
 	m.AddCheck ("show players names", TXT_SHOW_NAMES, mpParams.bShowAllNames, KEY_E, HTX_MULTI2_SHOWNAMES);
 	m.AddCheck ("show players on map", TXT_SHOW_PLAYERS, mpParams.bShowPlayersOnAutomap, KEY_A, HTX_MULTI2_SHOWPLRS);
-	m.AddCheck ("short packets", TXT_SHORT_PACKETS, mpParams.bShortPackets, KEY_H, HTX_MULTI2_SHORTPKTS);
+	m.AddCheck ("int16_t packets", TXT_SHORT_PACKETS, mpParams.bShortPackets, KEY_H, HTX_MULTI2_SHORTPKTS);
 	if (!gameStates.app.bGameRunning)
 		m.AddCheck ("allow custom weapons", TXT_ALLOW_CUSTOM_WEAPONS, extraGameInfo [0].bAllowCustomWeapons, KEY_C, HTX_ALLOW_CUSTOM_WEAPONS);
 	m.AddText ("", "");
@@ -528,29 +528,29 @@ if (i == m.IndexOf ("allowed weapons")) {
 	}
 
 if (!gameStates.app.bGameRunning) {
-	extraGameInfo [0].bAllowCustomWeapons = ubyte (m.Value ("allow custom weapons"));
+	extraGameInfo [0].bAllowCustomWeapons = uint8_t (m.Value ("allow custom weapons"));
 	extraGameInfo [1].bAllowCustomWeapons = extraGameInfo [0].bAllowCustomWeapons;
 	if (!extraGameInfo [0].bAllowCustomWeapons)
 		SetDefaultWeaponProps ();
 	}	
-mpParams.bInvul = ubyte (m.Value ("spawn invul"));
-mpParams.bBrightPlayers = ubyte (m.Value ("bright ships") ? 0 : 1);
-mpParams.bShowAllNames = ubyte (m.Value ("show player names"));
-mpParams.bMarkerView = ubyte (m.Value ("marker cameras"));
-mpParams.bIndestructibleLights = ubyte (m.Value ("indestructible lights"));
+mpParams.bInvul = uint8_t (m.Value ("spawn invul"));
+mpParams.bBrightPlayers = uint8_t (m.Value ("bright ships") ? 0 : 1);
+mpParams.bShowAllNames = uint8_t (m.Value ("show player names"));
+mpParams.bMarkerView = uint8_t (m.Value ("marker cameras"));
+mpParams.bIndestructibleLights = uint8_t (m.Value ("indestructible lights"));
 mpParams.nDifficulty = m.Value ("difficulty");
 mpParams.bShowPlayersOnAutomap = m.Value ("show players on map");
-mpParams.bShortPackets = m.Value ("short packets");
+mpParams.bShortPackets = m.Value ("int16_t packets");
 mpParams.nPPS = Clamp (m.ToInt ("PPS"), MIN_PPS, MAX_PPS);
 
 if (gameStates.multi.nGameType >= IPX_GAME) { 
-	int newSocket = atoi (szSocket);
+	int32_t newSocket = atoi (szSocket);
 	if ((newSocket < -0xFFFF) || (newSocket > 0xFFFF))
 		InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_INV_SOCKET,
 				  (gameStates.multi.nGameType == UDP_GAME) ? mpParams.udpPorts [0] + networkData.nPortOffset : networkData.nPortOffset);
 	else if (newSocket != networkData.nPortOffset) {
 		networkData.nPortOffset = (gameStates.multi.nGameType == UDP_GAME) ? newSocket - mpParams.udpPorts [0] : newSocket;
-		IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nPortOffset));
+		IpxChangeDefaultSocket ((uint16_t) (IPX_DEFAULT_SOCKET + networkData.nPortOffset));
 		}
 	}
 
@@ -558,13 +558,13 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 
 //------------------------------------------------------------------------------
 
-int NetworkD2XOptionsPoll (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t NetworkD2XOptionsPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
 	CMenuItem*	m;
-	int			v;
+	int32_t			v;
 
 if ((m = menu ["competition"])) {
 	v = m->Value ();
@@ -670,9 +670,9 @@ return nCurItem;
 
 void NetworkD2XOptions (void)
 {
-	static int choice = 0;
+	static int32_t choice = 0;
 
-	int		i;
+	int32_t		i;
 	char		szSlider [50];
 	CMenu		m;
 
@@ -720,7 +720,7 @@ do {
 		}
 	if (!extraGameInfo [1].bCompetition) {
 		if (mpParams.nGameMode == NETGAME_COOPERATIVE) {
-			sprintf (szSlider + 1, TXT_COOP_PENALTY, nCoopPenalties [(int) extraGameInfo [1].nCoopPenalty], '%');
+			sprintf (szSlider + 1, TXT_COOP_PENALTY, nCoopPenalties [(int32_t) extraGameInfo [1].nCoopPenalty], '%');
 			strupr (szSlider + 1);
 			*szSlider = *(TXT_COOP_PENALTY - 1);
 			m.AddSlider ("coop penalty", szSlider + 1, extraGameInfo [1].nCoopPenalty, 0, 9, KEY_O, HTX_COOP_PENALTY); 
@@ -750,7 +750,7 @@ do {
 	*szSlider = *(TXT_RESPAWN_DELAY - 1);
 	m.AddSlider ("spawn delay", szSlider + 1, extraGameInfo [0].nSpawnDelay / 5000, 0, 12, KEY_R, HTX_GPLAY_SPAWNDELAY);
 	if (!(IsMultiGame && gameStates.app.bGameRunning)) {
-		int v = 100 + extraGameInfo [0].nSpeedScale * 25;
+		int32_t v = 100 + extraGameInfo [0].nSpeedScale * 25;
 		sprintf (szSlider + 1, TXT_GAME_SPEED, v / 100, v % 100);
 		*szSlider = *(TXT_GAME_SPEED - 1);
 		m.AddSlider ("speed", szSlider + 1, extraGameInfo [0].nSpeedScale, 0, 4, KEY_S, HTX_GAME_SPEED);
@@ -761,7 +761,7 @@ do {
 	i = m.Menu (NULL, TXT_D2XOPTIONS_TITLE, NetworkD2XOptionsPoll, &choice);
   //mpParams."reactor life" = atoi (szInvul)*I2X (60);
 	if (m.Available ("darkness")) {
-		extraGameInfo [1].bDarkness = (ubyte) m.Value ("darkness");
+		extraGameInfo [1].bDarkness = (uint8_t) m.Value ("darkness");
 		if ((mpParams.bDarkness = extraGameInfo [1].bDarkness)) {
 			extraGameInfo [1].headlight.bAvailable = !m.Value ("headlights");
 			extraGameInfo [1].bPowerupLights = !m.Value ("bright powerups");
@@ -771,7 +771,7 @@ do {
 		GET_VAL (extraGameInfo [0].shipsAllowed [0], "standard ship");
 		GET_VAL (extraGameInfo [0].shipsAllowed [1], "light ship");
 		GET_VAL (extraGameInfo [0].shipsAllowed [2], "heavy ship");
-		int j;
+		int32_t j;
 		for (j = 0; j < MAX_SHIP_TYPES; j++)
 			missionConfig.m_shipsAllowed [j] = extraGameInfo [0].shipsAllowed [j];
 		for (j = 0; j < MAX_SHIP_TYPES; j++)
@@ -831,7 +831,7 @@ static const char* szMslNames [] = {
 	"Smart: %d"
 };
 
-static int powerupMap [] = {
+static int32_t powerupMap [] = {
 	-1,
 	-1,
 	CONCUSSION_INDEX,
@@ -849,14 +849,14 @@ static int powerupMap [] = {
 	SMARTMINE_INDEX
 };
 
-int NetworkMissileOptionsPoll (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t NetworkMissileOptionsPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
-	int	h, i, v;
+	int32_t	h, i, v;
 
-for (i = 0; i < int (menu.ToS ()); i++) {
+for (i = 0; i < int32_t (menu.ToS ()); i++) {
 	if (menu [i].m_nType != NM_TYPE_TEXT) {
 		h = powerupMap [i];
 		v = menu [i].Value ();
@@ -874,9 +874,9 @@ return nCurItem;
 
 void MissileLoadoutMenu (void)
 {
-	static int choice = 0;
+	static int32_t choice = 0;
 
-	int		h, i, j;
+	int32_t		h, i, j;
 	char		szSlider [50];
 	CMenu		m;
 
@@ -903,9 +903,9 @@ do {
 
 //------------------------------------------------------------------------------
 
-int NetworkGetGameType (CMenu& m, int bAnarchyOnly)
+int32_t NetworkGetGameType (CMenu& m, int32_t bAnarchyOnly)
 {
-	int bHoard = HoardEquipped ();
+	int32_t bHoard = HoardEquipped ();
 		   
 if (m.Value ("anarchy"))
 	mpParams.nGameMode = NETGAME_ANARCHY;
@@ -943,9 +943,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void BuildGameParamsMenu (CMenu& m, char* szName, char* szLevelText, char* szLevel, char* szIpAddr, char* szMaxPlayers, int nNewMission)
+void BuildGameParamsMenu (CMenu& m, char* szName, char* szLevelText, char* szLevel, char* szIpAddr, char* szMaxPlayers, int32_t nNewMission)
 {
-	int bHoard = HoardEquipped ();
+	int32_t bHoard = HoardEquipped ();
 
 sprintf (szLevel, "%d", mpParams.nLevel);
 
@@ -1022,9 +1022,9 @@ if (!gameStates.app.bNostalgia) {
 
 //------------------------------------------------------------------------------
 
-int GameParamsMenu (CMenu& m, int& key, int& choice, char* szName, char* szLevelText, char* szLevel, char* szIpAddr, int& nNewMission)
+int32_t GameParamsMenu (CMenu& m, int32_t& key, int32_t& choice, char* szName, char* szLevelText, char* szLevel, char* szIpAddr, int32_t& nNewMission)
 {
-	int i, bAnarchyOnly = (nNewMission < 0) ? 0 : missionManager [nNewMission].bAnarchyOnly;
+	int32_t i, bAnarchyOnly = (nNewMission < 0) ? 0 : missionManager [nNewMission].bAnarchyOnly;
 
 if (m ["mission name"]->Rebuilding ()) {
 	strncpy (netGame.m_info.szMissionName, 
@@ -1082,7 +1082,7 @@ else if (!gameStates.app.bNostalgia && (choice == m.IndexOf ("missile options"))
 	return 1;
 	}
 else if (choice == m.IndexOf ("mission selector")) {
-	int h = SelectAndLoadMission (1, &bAnarchyOnly);
+	int32_t h = SelectAndLoadMission (1, &bAnarchyOnly);
 	if (h < 0)
 		return 1;
 	missionManager.nLastMission = nNewMission = h;
@@ -1091,7 +1091,7 @@ else if (choice == m.IndexOf ("mission selector")) {
 	}
 
 if (key != -1) {
-	int h, j;
+	int32_t h, j;
 		   
 	gameData.multiplayer.nMaxPlayers = m.Value ("max. players") + 2;
 	netGame.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
@@ -1135,9 +1135,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int NetworkGetGameParams (int bAutoRun)
+int32_t NetworkGetGameParams (int32_t bAutoRun)
 {
-	int	i, key, choice = 1, nState = 0;
+	int32_t	i, key, choice = 1, nState = 0;
 	CMenu	m;
 	char	szName [80]; //NETGAME_NAME_LEN+1];
 	char	szLevelText [80]; //32];
@@ -1145,7 +1145,7 @@ int NetworkGetGameParams (int bAutoRun)
 	char	szIpAddr [80];
 	char	szLevel [10]; //5];
 
-	int nNewMission = missionManager.nLastMission;
+	int32_t nNewMission = missionManager.nLastMission;
 
 gameOpts->app.bSinglePlayer = 0;
 SetAllAllowablesTo (mpParams.nWeaponFilter);
@@ -1231,7 +1231,7 @@ else
 	netGame.m_info.gameFlags &= ~NETGAME_FLAG_SHOW_MAP;
 gameStates.app.nDifficultyLevel = mpParams.nDifficulty;
 NetworkAdjustMaxDataSize ();
-IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nPortOffset));
+IpxChangeDefaultSocket ((uint16_t) (IPX_DEFAULT_SOCKET + networkData.nPortOffset));
 return key;
 }
 
@@ -1239,7 +1239,7 @@ return key;
 
 static time_t	nQueryTimeout;
 
-static int QueryPoll (CMenu& menu, int& key, int nCurItem, int nState)
+static int32_t QueryPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
@@ -1253,7 +1253,7 @@ else if (key == KEY_ESC)
 else if ((t = SDL_GetTicks () - nQueryTimeout) > 5000)
 	key = -4;
 else {
-	int v = (int) (t / 5);
+	int32_t v = (int32_t) (t / 5);
 	if (menu [0].Value () != v) {
 		menu [0].Value () = v;
 		menu [0].Rebuild ();
@@ -1265,10 +1265,10 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int NetworkFindGame (void)
+int32_t NetworkFindGame (void)
 {
 	CMenu	m (3);
-	int	i;
+	int32_t	i;
 
 if (gameStates.multi.nGameType > IPX_GAME)
 	return 0;
@@ -1290,22 +1290,22 @@ return (networkData.nActiveGames >= MAX_ACTIVE_NETGAMES);
 
 //------------------------------------------------------------------------------
 
-int ConnectionPacketLevel [] = {0, 1, 1, 1};
-int ConnectionSecLevel [] = {12, 3, 5, 7};
+int32_t ConnectionPacketLevel [] = {0, 1, 1, 1};
+int32_t ConnectionSecLevel [] = {12, 3, 5, 7};
 
-int AppletalkConnectionPacketLevel [] = {0, 1, 0};
-int AppletalkConnectionSecLevel [] = {10, 3, 8};
+int32_t AppletalkConnectionPacketLevel [] = {0, 1, 0};
+int32_t AppletalkConnectionSecLevel [] = {10, 3, 8};
 
 #if !DBG
 
-int NetworkChooseConnect ()
+int32_t NetworkChooseConnect ()
 {
 return 1;
 }
 
 #else
 
-int NetworkChooseConnect (void)
+int32_t NetworkChooseConnect (void)
 {
 if (gameStates.multi.nGameType >= IPX_GAME) 
    return 1;
@@ -1315,9 +1315,9 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int stoport (char *szPort, int *pPort, int *pSign)
+int32_t stoport (char *szPort, int32_t *pPort, int32_t *pSign)
 {
-	int	h, sign;
+	int32_t	h, sign;
 
 if (*szPort == '+')
 	sign = 1;
@@ -1336,10 +1336,10 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int stoip (char *szServerIpAddr, ubyte *ipAddrP, int* portP)
+int32_t stoip (char *szServerIpAddr, uint8_t *ipAddrP, int32_t* portP)
 {
 	char	*pi, *pj, *pFields [5], tmp [22];
-	int	h, i, j;
+	int32_t	h, i, j;
 
 memset (pFields, 0, sizeof (pFields));
 memcpy (tmp, szServerIpAddr, sizeof (tmp));
@@ -1379,7 +1379,7 @@ for (j = 0; j < i; j++) {
 		h = atol (pFields [j]);
 		if ((h < 0) || (h > 255))
 			return 0;
-		ipAddrP [j] = (ubyte) h;
+		ipAddrP [j] = (uint8_t) h;
 		}
 	}
 return 1;
@@ -1387,22 +1387,22 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int IpAddrMenuCallBack (CMenu& menu, int& key, int nCurItem, int nState)
+int32_t IpAddrMenuCallBack (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 return nCurItem;
 }
 
 //------------------------------------------------------------------------------
 
-int NetworkGetIpAddr (bool bServer, bool bUDP)
+int32_t NetworkGetIpAddr (bool bServer, bool bUDP)
 {
 	CMenu	m (9);
-	int	h, i, j, choice = 0;
+	int32_t	h, i, j, choice = 0;
 	bool	bError;
 	char	szId [100];
 
 	static char szPort [2][7] = {{'\0','\0','\0','\0','\0','\0','\0'}, {'\0','\0','\0','\0','\0','\0','\0'}};
-	static int nSign = 0;
+	static int32_t nSign = 0;
 
 if (bUDP && !tracker.m_bUse) {
 	if (!*mpParams.szServerIpAddr) {
@@ -1448,7 +1448,7 @@ for (;;) {
 	i = m.Menu (NULL, tracker.m_bUse ? TXT_NETWORK_ADDRESSES : TXT_IP_HEADER, &IpAddrMenuCallBack, &choice);
 	if (i < 0)
 		break;
-	if (i >= int (m.ToS ()))
+	if (i >= int32_t (m.ToS ()))
 		continue;
 	bError = false;
 	extraGameInfo [0].bCheckUDPPort = m.Value ("check ports") != 0;
@@ -1472,12 +1472,12 @@ return 0;
  * before the change which allows the user to choose the network driver
  * from the game menu instead of having to supply command line args.
  */
-void IpxSetDriver (int ipx_driver)
+void IpxSetDriver (int32_t ipx_driver)
 {
 	IpxClose ();
 
-	int nIpxError;
-	int socket = 0, t;
+	int32_t nIpxError;
+	int32_t socket = 0, t;
 
 if ((t = FindArg ("-socket")))
 	socket = atoi (appConfig [t + 1]);
@@ -1515,7 +1515,7 @@ void DoNewIPAddress (void)
 {
   CMenu	m (2);
   char	szIP [30];
-  int		choice;
+  int32_t		choice;
 
 m.AddText ("Enter an address or hostname:", 0);
 m.AddInput ("ip address", szIP, 50, NULL);

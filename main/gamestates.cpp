@@ -252,8 +252,8 @@ void InitVideoStates (void)
 {
 gameStates.video.nDisplayMode = 2;
 gameStates.video.nDefaultDisplayMode = 2;
-gameStates.video.nScreenMode = (uint) -1;
-gameStates.video.nLastScreenMode = (uint) -1;
+gameStates.video.nScreenMode = (uint32_t) -1;
+gameStates.video.nLastScreenMode = (uint32_t) -1;
 gameStates.video.nWidth = -1;
 gameStates.video.nHeight = -1;
 gameStates.video.bFullScreen = -1;

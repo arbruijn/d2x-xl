@@ -94,9 +94,9 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #include "console.h"
 #include "IpToCountry.h"
 
-extern int SDL_HandleSpecialKeys;
+extern int32_t SDL_HandleSpecialKeys;
 extern const char *pszOglExtensions;
-extern int glHWHash;
+extern int32_t glHWHash;
 
 #ifdef __macosx__
 #	include <SDL/SDL.h>
@@ -126,7 +126,7 @@ CGameOptions* gameOpts = gameOptions;
 void EvalArgs (void);
 void GetAppFolders (bool bInit);
 #if defined (_WIN32) || defined(__unix__)
-int CheckAndFixSetup (void);
+int32_t CheckAndFixSetup (void);
 #else
 #define CheckAndFixSetup()
 #endif
@@ -136,19 +136,19 @@ char szAutoMission [255];
 char szAutoHogFile [255];
 
 
-int nDescentCriticalError = 0;
+int32_t nDescentCriticalError = 0;
 unsigned descent_critical_deverror = 0;
 unsigned descent_critical_errcode = 0;
 
 // ----------------------------------------------------------------------------
 
 #if defined (__unix__) || defined (__macosx__)
-void D2SignalHandler (int nSignal)
+void D2SignalHandler (int32_t nSignal)
 #else
-void __cdecl D2SignalHandler (int nSignal)
+void __cdecl D2SignalHandler (int32_t nSignal)
 #endif
 {
-	static int nErrors = 0;
+	static int32_t nErrors = 0;
 
 if (nSignal == SIGABRT)
 	PrintLog (0, "+++ Abnormal program termination\n");
@@ -182,7 +182,7 @@ SDL_WM_SetCaption ("", "D2X-XL");
 
 	char		szCaption [200];
 	wchar_t	wszCaption [200];
-	int		i;
+	int32_t		i;
 
 strcpy (szCaption, DESCENT_VERSION);
 if (*LOCALPLAYER.callsign) {
@@ -226,7 +226,7 @@ SDL_WM_SetCaption (szCaption, "D2X-XL");
 
 void PrintVersionInfo (void)
 {
-	int nInfoType;
+	int32_t nInfoType;
 	
 if (!(gameStates.app.bGameRunning || gameStates.app.bBetweenLevels))
 	nInfoType = 0;
@@ -235,9 +235,9 @@ else if (gameStates.app.bShowVersionInfo || gameStates.app.bSaveScreenShot || (g
 else
 	return;
 
-	static int bVertigo = -1;
+	static int32_t bVertigo = -1;
 
-	int y, w, ws, h, hs, aw;
+	int32_t y, w, ws, h, hs, aw;
 	float grAlpha = gameStates.render.grAlpha;
 
 gameData.render.frame.Activate ("PrintVersionInfo (frame)");
@@ -310,13 +310,13 @@ if (!nInfoType) {
 	}
 else {
 	//gameStates.render.grAlpha = 0.75f;
-	int w2, h2;
+	int32_t w2, h2;
 	fontManager.SetCurrent (GAME_FONT);
 	fontManager.Current ()->StringSize ("www.descent2.de", w2, h2, aw);
 	fontManager.SetCurrent (MEDIUM2_FONT);
 	fontManager.Current ()->StringSize ("D2X-XL", w, h, aw);
-	int l = CCanvas::Current ()->Width () - 70 - w;
-	int t = CCanvas::Current ()->Height () - 40 - h - h2 - 2;
+	int32_t l = CCanvas::Current ()->Width () - 70 - w;
+	int32_t t = CCanvas::Current ()->Height () - 40 - h - h2 - 2;
 	GrPrintF (NULL, l, t, "D2X-XL");
 	fontManager.SetCurrent (GAME_FONT);
 #if 0
@@ -339,8 +339,8 @@ gameData.render.frame.Deactivate ();
 void CheckEndian (void)
 {
 	union {
-		short	s;
-		ubyte	b [2];
+		int16_t	s;
+		uint8_t	b [2];
 	} h;
 
 h.b [0] = 0;
@@ -409,7 +409,7 @@ console.printf (CON_NORMAL, "\nDESCENT 2 %s v%d.%d.%d\n", VERSION_TYPE, D2X_MAJO
 console.printf (CON_NORMAL, "\nDESCENT 2 %s -- %s\n", VERSION_TYPE, DESCENT_VERSION);
 #endif
 if (hogFileManager.D2XFiles ().bInitialized)
-	console.printf ((int) CON_NORMAL, "  Vertigo Enhanced\n");
+	console.printf ((int32_t) CON_NORMAL, "  Vertigo Enhanced\n");
 console.printf (CON_NORMAL, "\nBuilt: %s %s\n", __DATE__, __TIME__);
 #ifdef __VERSION__
 console.printf (CON_NORMAL, "Compiler: %s\n", __VERSION__);
@@ -419,16 +419,16 @@ console.printf (CON_NORMAL, "\n");
 
 // ----------------------------------------------------------------------------
 
-int ShowTitleScreens (void)
+int32_t ShowTitleScreens (void)
 {
-	int nPlayed = MOVIE_NOT_PLAYED;	//default is not nPlayed
+	int32_t nPlayed = MOVIE_NOT_PLAYED;	//default is not nPlayed
 #if DBG
 if (FindArg ("-notitles"))
 	songManager.Play (SONG_TITLE, 1);
 else
 #endif
  {	//NOTE LINK TO ABOVE!
-	int bSongPlaying = 0;
+	int32_t bSongPlaying = 0;
 	if (movieManager.m_bHaveExtras) {
 		nPlayed = movieManager.Play ("starta.mve", MOVIE_REQUIRED, 0, gameOpts->movies.bResize);
 		if (nPlayed == MOVIE_ABORTED)
@@ -471,7 +471,7 @@ void LoadHoardData (void)
 
 // ----------------------------------------------------------------------------
 
-void GrabMouse (int bGrab, int bForce)
+void GrabMouse (int32_t bGrab, int32_t bForce)
 {
 //if (gameStates.input.bGrabMouse && (bForce || gameStates.app.bGameRunning))
 SDL_WM_GrabInput (((bGrab && gameStates.input.bGrabMouse) || ogl.m_states.bFullScreen) ? SDL_GRAB_ON : SDL_GRAB_OFF);
@@ -533,7 +533,7 @@ while (gameStates.app.nFunctionMode != FMODE_EXIT) {
 void InitThreads (void)
 {
 if (gameStates.app.bMultiThreaded) {
-	int	i;
+	int32_t	i;
 	for (i = 0; i < 2; i++) {
 #if MULTI_THREADED_LIGHTS
 		gameData.threads.vertColor.info [i].done = SDL_CreateSemaphore (0);
@@ -585,7 +585,7 @@ static HINSTANCE hTIRDll = 0;
 
 // ------------------------------------------------------------------------------------------
 
-int TIRUnload (void)
+int32_t TIRUnload (void)
 {
 #ifdef _WIN32
 if (hTIRDll)
@@ -603,7 +603,7 @@ return gameStates.input.bHaveTrackIR = 0;
 
 // ------------------------------------------------------------------------------------------
 
-int TIRLoad (void)
+int32_t TIRLoad (void)
 {
 #ifdef _WIN32
 if (hTIRDll)
@@ -634,9 +634,9 @@ return gameStates.input.bHaveTrackIR = 0;
 
 // ----------------------------------------------------------------------------
 
-int InitGraphics (bool bFull = true)
+int32_t InitGraphics (bool bFull = true)
 {
-	int			t;
+	int32_t			t;
 
 /*---*/PrintLog (1, "Initializing graphics\n");
 if ((t = GrInit ())) {		//doesn't do much
@@ -668,16 +668,16 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-static inline int InitGaugeSize (void)
+static inline int32_t InitGaugeSize (void)
 {
 return 19;
 }
 
 //------------------------------------------------------------------------------
 
-static int loadOp = 0;
+static int32_t loadOp = 0;
 
-static int InitializePoll (CMenu& menu, int& key, int nCurItem, int nState)
+static int32_t InitializePoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
@@ -710,7 +710,7 @@ switch (loadOp) {
 		PrintLog (-1);
 		break;
 	case 5:
-		int i;
+		int32_t i;
 		if ((i = FindArg ("-xcontrol")) > 0)
 			externalControls.Init (strtol (appConfig [i+1], NULL, 0), strtol (appConfig [i+2], NULL, 0));
 		break;
@@ -795,7 +795,7 @@ ProgressBar (TXT_INITIALIZING, 0, InitGaugeSize (), InitializePoll);
 
 // ----------------------------------------------------------------------------
 
-void InitArgs (int argC, char **argV) 
+void InitArgs (int32_t argC, char **argV) 
 { 
 appConfig.Destroy ();
 appConfig.Init ();
@@ -808,7 +808,7 @@ PrintLog (-1);
 
 // ----------------------------------------------------------------------------
 
-int Initialize (int argc, char *argv[])
+int32_t Initialize (int32_t argc, char *argv[])
 {
 /*---*/PrintLog (1, "Initializing data\n");
 gameData.time.xGameTotal = 0;
@@ -870,7 +870,7 @@ if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	InitializeGauge ();
 else {
 	CMenu m (1);
-	int key = 0;
+	int32_t key = 0;
 	m.AddGauge ("", "", -1, 1000); // dummy for InitializePoll()
 	messageBox.Show (TXT_INITIALIZING);
 	for (loadOp = 0; loadOp < InitGaugeSize (); )
@@ -897,7 +897,7 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int CleanUp (void)
+int32_t CleanUp (void)
 {
 if (gameStates.input.bHaveTrackIR) {
 	pfnTIRExit ();
@@ -927,7 +927,7 @@ void DonationNotification (void)
 {
 if (gameConfig.nTotalTime > (20 * 60)) {	// played for more than 25 hours
 	SetScreenMode (SCREEN_MENU);
-	int nFade = gameOpts->menus.nFade;
+	int32_t nFade = gameOpts->menus.nFade;
 	gameOpts->menus.nFade = 250;
 	messageBox.Show (TXT_PLEASE_DONATE);
 	G3_SLEEP (15000);
@@ -942,15 +942,15 @@ if (gameConfig.nTotalTime > (20 * 60)) {	// played for more than 25 hours
 
 void HardwareCheck (void)
 {
-if (glHWHash == (int) 0xf825fcfe) {
+if (glHWHash == (int32_t) 0xf825fcfe) {
 	SetScreenMode (SCREEN_MENU);
-	int nFade = gameOpts->menus.nFade;
-	for (int h = 0; ; h++) {
-		for (int i = 0; i < 2; i++) {
+	int32_t nFade = gameOpts->menus.nFade;
+	for (int32_t h = 0; ; h++) {
+		for (int32_t i = 0; i < 2; i++) {
 			if (i)
 				messageBox.Show ("FORWARDING FAILED -\nCHECK YOUR FIREWALL STATUS!\n\nPRESS ENTER WHEN DONE!");
 			else {
-				for (int j = 0; j < 10; j++) {	
+				for (int32_t j = 0; j < 10; j++) {	
 					gameOpts->menus.nFade = 333;
 					messageBox.Show ("UNSUPPORTED GRAPHICS HARDWARE!");
 					messageBox.Clear ();
@@ -961,7 +961,7 @@ if (glHWHash == (int) 0xf825fcfe) {
 					messageBox.Show ("DUE TO CONSTANT PPROBLEMSWITH\nYOUR TYPE OF GRAPHICS HARDWARE,\nSUPPORT FOR IT HAS BEEN REMOVED\nPERMANENTLY FROM D2X-XL.\n\nPLEASE GET A GRAPHICS CARD\nTHAT DESERVES THE NAME:\n\nA GRAPHICS CARD FROM AMD!\n\nPRESS ENTER TO BE FORWARDED\nTO A GOOD RETAILER!");
 				}
 			char c = 0;
-			for (uint j = 0; (c != KEY_ENTER); j++) {
+			for (uint32_t j = 0; (c != KEY_ENTER); j++) {
 				if (j >= 400) {
 					c = KeyInKey ();
 					if (c == KEY_ESC) {
@@ -989,10 +989,10 @@ void BadHardwareNotification (void)
 #if 1//!DBG
 if (!ogl.m_features.bShaders && (gameConfig.nVersion != D2X_IVER)) {
 	SetScreenMode (SCREEN_MENU);
-	int nFade = gameOpts->menus.nFade;
+	int32_t nFade = gameOpts->menus.nFade;
 	gameOpts->menus.nFade = 333;
 #if 1
-	for (int i = 0; i < 3; i++) {	// make the message flash a few times
+	for (int32_t i = 0; i < 3; i++) {	// make the message flash a few times
 		messageBox.Show (TXT_BAD_HARDWARE);
 		messageBox.Clear ();
 		}
@@ -1009,7 +1009,7 @@ if (!ogl.m_features.bShaders && (gameConfig.nVersion != D2X_IVER)) {
 
 // ----------------------------------------------------------------------------
 
-int SDLCALL main (int argc, char *argv[])
+int32_t SDLCALL main (int32_t argc, char *argv[])
 {
 gameStates.app.bInitialized = 0;
 if (Initialize (argc, argv))
@@ -1026,7 +1026,7 @@ if (gameData.demo.bAuto && !gameOpts->demo.bRevertFormat) {
 	if (gameData.demo.nState == ND_STATE_PLAYBACK)
 		SetFunctionMode (FMODE_GAME);
 	}
-//do this here because the demo code can do a __asm int 3; longjmp when trying to
+//do this here because the demo code can do a __asm int32_t 3; longjmp when trying to
 //autostart a demo from the main menu, never having gone into the game
 setjmp (gameExitPoint);
 backgroundManager.Rebuild ();
@@ -1050,7 +1050,7 @@ return 0;		//presumably successful exit
 void CheckJoystickCalibration (void)
 {
 #if 0//ndef _WIN32
-	int x1, y1, x2, y2, coord;
+	int32_t x1, y1, x2, y2, coord;
 	fix t1;
 
 	if ((gameConfig.nControlType!=CONTROL_JOYSTICK) &&
@@ -1093,7 +1093,7 @@ if (! CFile::Exist (szExitScreen, gameFolders.game.szData [0], 0))
 if (! CFile::Exist (szExitScreen, gameFolders.game.szData [0], 0))
 	return; // D2 registered
 
-int pcxResult = PcxReadFullScrImage (szExitScreen, 0);
+int32_t pcxResult = PcxReadFullScrImage (szExitScreen, 0);
 if (pcxResult == PCX_ERROR_NONE) {
 	ogl.Update (0);
 	while (!(KeyInKey () || MouseButtonState (0)))

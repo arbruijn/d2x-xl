@@ -35,7 +35,7 @@ char *iptos (char *pszIP, char *addr)
 {
 sprintf (pszIP, "%d.%d.%d.%d:%d",
 			addr [0], addr [1], addr [2], addr [3],
-			ntohs (*reinterpret_cast<short*> (addr + 4)));
+			ntohs (*reinterpret_cast<int16_t*> (addr + 4)));
 return pszIP;
 }
 
@@ -44,22 +44,22 @@ return pszIP;
 void ClipRank (char *rank)
 {
 // This function ensures no crashes when dealing with D2 1.0
-if (*((ubyte*) rank) > 9)
+if (*((uint8_t*) rank) > 9)
 	*rank = 0;
  }
 
 //------------------------------------------------------------------------------
 // Who is the master of this game?
 
-int WhoIsGameHost (void)
+int32_t WhoIsGameHost (void)
 {
 if (!IsMultiGame)
 	return N_LOCALPLAYER;
-for (int i = 0; i < gameData.multiplayer.nPlayers; i++) {
+for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
 	if (gameData.multiplayer.players [i].callsign [0]/*gameData.multiplayer.players [i].connected*/) { // if a player gets kicked, his callsign will be cleared
 		if (gameStates.multi.nGameType == IPX_GAME)
 			return i;
-		if (htons (*netPlayers [0].m_info.players [i].network.Port ()) == ushort (mpParams.udpPorts [0] + networkData.nPortOffset))
+		if (htons (*netPlayers [0].m_info.players [i].network.Port ()) == uint16_t (mpParams.udpPorts [0] + networkData.nPortOffset))
 			return i;
 		}
 	}
@@ -68,7 +68,7 @@ return N_LOCALPLAYER;
 
 //------------------------------------------------------------------------------
 
-int IAmGameHost (void)
+int32_t IAmGameHost (void)
 {
 if (gameStates.app.bGameRunning) {
 	gameStates.multi.bServer [0] = (WhoIsGameHost () == N_LOCALPLAYER);
@@ -82,7 +82,7 @@ if (gameStates.app.bGameRunning) {
 		gameStates.multi.bServer [1] = gameStates.multi.bServer [0]; 
 		// check whether the client port (mpParams.updPorts [1]) differs from the server port (mpParams.udpPorts [0] + networkData.nPortOffset)
 		if (mpParams.udpPorts [0] + networkData.nPortOffset != mpParams.udpPorts [1])
-			IpxChangeDefaultSocket ((ushort) (IPX_DEFAULT_SOCKET + networkData.nPortOffset), 1);
+			IpxChangeDefaultSocket ((uint16_t) (IPX_DEFAULT_SOCKET + networkData.nPortOffset), 1);
 		}
 #endif
 	}
@@ -91,9 +91,9 @@ return gameStates.multi.bServer [0];
 
 //------------------------------------------------------------------------------
 
-int NetworkHowManyConnected (void)
+int32_t NetworkHowManyConnected (void)
  {
-  int n = 0, i;
+  int32_t n = 0, i;
 
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (gameData.multiplayer.players [i].connected)
@@ -103,7 +103,7 @@ return n;
 
 //------------------------------------------------------------------------------
 
-int CmpNetPlayers (char *callsign1, char *callsign2, CNetworkInfo *network1, CNetworkInfo *network2)
+int32_t CmpNetPlayers (char *callsign1, char *callsign2, CNetworkInfo *network1, CNetworkInfo *network2)
 {
 if ((gameStates.multi.nGameType == IPX_GAME) ||
 	 ((gameStates.multi.nGameType == UDP_GAME) && extraGameInfo [0].bCheckUDPPort)) {
@@ -137,7 +137,7 @@ return 0;
 	 networkData.localAddress + 4 : networkData.thisPlayer.player.network.Node ())
 
 
-int CmpLocalPlayer (CNetworkInfo *networkP, char *pszNetCallSign, char *pszLocalCallSign)
+int32_t CmpLocalPlayer (CNetworkInfo *networkP, char *pszNetCallSign, char *pszLocalCallSign)
 {
 if (stricmp (pszNetCallSign, pszLocalCallSign))
 	return 1;
@@ -162,7 +162,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-char *NetworkGetPlayerName (int nObject)
+char *NetworkGetPlayerName (int32_t nObject)
 {
 if (nObject < 0)
 	return NULL;
@@ -177,13 +177,13 @@ return gameData.multiplayer.players [OBJECTS [nObject].info.nId].callsign;
 
 //------------------------------------------------------------------------------
 
-void DeleteActiveNetGame (int i)
+void DeleteActiveNetGame (int32_t i)
 {
 if (i < --networkData.nActiveGames) {
-	int h = networkData.nActiveGames - i;
+	int32_t h = networkData.nActiveGames - i;
 	memcpy (activeNetGames + i, activeNetGames + i + 1, activeNetGames [0].Size () * h);
 	memcpy (activeNetPlayers + i, activeNetPlayers + i + 1, activeNetPlayers [0].Size () * h);
-	memcpy (nLastNetGameUpdate + i, nLastNetGameUpdate + i + 1, sizeof (int) * h);
+	memcpy (nLastNetGameUpdate + i, nLastNetGameUpdate + i + 1, sizeof (int32_t) * h);
 	}
 networkData.bGamesChanged = 1;
 }
@@ -192,8 +192,8 @@ networkData.bGamesChanged = 1;
 
 void DeleteTimedOutNetGames (void)
 {
-	int	i, t = SDL_GetTicks ();
-	int	bPlaySound = 0;
+	int32_t	i, t = SDL_GetTicks ();
+	int32_t	bPlaySound = 0;
 
 for (i = networkData.nActiveGames; i > 0;)
 	if (t - nLastNetGameUpdate [--i] > 10000) {
@@ -206,9 +206,9 @@ if (bPlaySound)
 
 //------------------------------------------------------------------------------
 
-int FindActiveNetGame (char *pszGameName, int nSecurity)
+int32_t FindActiveNetGame (char *pszGameName, int32_t nSecurity)
 {
-	int	i;
+	int32_t	i;
 
 for (i = 0; i < networkData.nActiveGames; i++) {
 	if (!stricmp (activeNetGames [i].m_info.szGameName, pszGameName)
@@ -223,12 +223,12 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int NetworkObjnumIsPast (int nObject, tNetworkSyncData *syncP)
+int32_t NetworkObjnumIsPast (int32_t nObject, tNetworkSyncData *syncP)
 {
 	// determine whether or not a given CObject number has already been sent
 	// to a re-joining player.
-	int nPlayer = syncP->player [1].player.connected;
-	int nObjMode = !((gameData.multigame.nObjOwner [nObject] == -1) || (gameData.multigame.nObjOwner [nObject] == nPlayer));
+	int32_t nPlayer = syncP->player [1].player.connected;
+	int32_t nObjMode = !((gameData.multigame.nObjOwner [nObject] == -1) || (gameData.multigame.nObjOwner [nObject] == nPlayer));
 
 if (!syncP->nState)
 	return 0; // We're not sending OBJECTS to a new CPlayerData
@@ -244,7 +244,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void NetworkSetGameMode (int gameMode)
+void NetworkSetGameMode (int32_t gameMode)
 {
 	gameData.multigame.score.bShowList = 1;
 
@@ -279,9 +279,9 @@ if (IsTeamGame)
 // Check whether all spawn positions are assigned to a team
 // Team specific spawn positions will only be used if this applies
 
-int GotTeamSpawnPos (void)
+int32_t GotTeamSpawnPos (void)
 {
-	int	i, j;
+	int32_t	i, j;
 
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	j = FindSegByPos (*PlayerSpawnPos (i), -1, 1, 0);
@@ -303,9 +303,9 @@ return 1;
 //------------------------------------------------------------------------------
 // Find the proper initial spawn location for CPlayerData i from team t
 
-int TeamSpawnPos (int i)
+int32_t TeamSpawnPos (int32_t i)
 {
-	int	h, j, t = GetTeam (i);
+	int32_t	h, j, t = GetTeam (i);
 
 // first find out how many players before CPlayerData i are in the same team
 // result stored in h
@@ -334,7 +334,7 @@ return -1;
 
 void NetworkCountPowerupsInMine (void)
 {
- //int 		i;
+ //int32_t 		i;
   CObject	*objP;
 
 gameData.multiplayer.powerupsInMine.Clear (0);
@@ -354,7 +354,7 @@ networkData.nMaxXDataSize = netGame.GetShortPackets () ? NET_XDATA_SIZE : NET_XD
 #ifdef NETPROFILING
 void OpenSendLog ()
  {
-  int i;
+  int32_t i;
 
 SendLogFile = reinterpret_cast<FILE*> (fopen ("sendlog.net", "w"));
 for (i = 0; i < 100; i++)
@@ -365,7 +365,7 @@ for (i = 0; i < 100; i++)
 
 void OpenReceiveLog ()
  {
-int i;
+int32_t i;
 
 ReceiveLogFile= reinterpret_cast<FILE*> (fopen ("recvlog.net", "w"));
 for (i = 0; i < 100; i++)
@@ -375,7 +375,7 @@ for (i = 0; i < 100; i++)
 
 //------------------------------------------------------------------------------
 
-void NetworkRequestPlayerNames (int n)
+void NetworkRequestPlayerNames (int32_t n)
 {
 NetworkSendAllInfoRequest (PID_GAME_PLAYERS, activeNetGames [n].m_info.nSecurity);
 networkData.nNamesInfoSecurity = activeNetGames [n].m_info.nSecurity;
@@ -383,9 +383,9 @@ networkData.nNamesInfoSecurity = activeNetGames [n].m_info.nSecurity;
 
 //------------------------------------------------------------------------------
 
-int HoardEquipped (void)
+int32_t HoardEquipped (void)
 {
-	static int bHoard = -1;
+	static int32_t bHoard = -1;
 
 if (bHoard == -1)
 	bHoard = CFile::Exist ("hoard.ham", gameFolders.game.szData [0], 0) ? 1 : 0;

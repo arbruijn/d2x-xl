@@ -25,7 +25,7 @@ typedef struct tLightmapInfo {
 	GLfloat		color [3];
 	//float		bright;
 	double		range;
-	int			nIndex;  //(seg*6)+CSide ie which CSide the light is on
+	int32_t			nIndex;  //(seg*6)+CSide ie which CSide the light is on
 } tLightmapInfo;
 
 typedef struct tLightmap {
@@ -40,9 +40,9 @@ typedef struct tLightmapBuffer {
 typedef struct tLightmapList {
 	CArray<tLightmapInfo>	info;
 	CArray<tLightmapBuffer>	buffers;
-	int							nBuffers;
-	int							nLights; 
-	ushort						nLightmaps;
+	int32_t							nBuffers;
+	int32_t							nLights; 
+	uint16_t						nLightmaps;
 } tLightmapList;
 
 typedef CSegFace* tSegFacePtr;
@@ -50,11 +50,11 @@ typedef CSegFace* tSegFacePtr;
 
 class CLightmapFaceData {
 	public:
-		int						m_nType;
-		int						m_nColor;
+		int32_t						m_nType;
+		int32_t						m_nColor;
 		CFixVector				m_vNormal;
 		CFixVector				m_vCenter;
-		ushort					m_sideVerts [4]; 
+		uint16_t					m_sideVerts [4]; 
 		CVertColorData			m_vcd;
 		CRGBColor				m_texColor [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH];
 		CFixVector				m_pixelPos [MAX_LIGHTMAP_WIDTH * MAX_LIGHTMAP_WIDTH]; 
@@ -66,8 +66,8 @@ class CLightmapData : public CLightmapFaceData {
 	public:
 		float						nOffset [MAX_LIGHTMAP_WIDTH];
 		CArray<tSegFacePtr>	faceList;
-		int						nBlackLightmaps;
-		int						nWhiteLightmaps;
+		int32_t						nBlackLightmaps;
+		int32_t						nWhiteLightmaps;
 		CSegFace*				faceP;
 	};
 
@@ -80,36 +80,36 @@ class CLightmapManager {
 		CLightmapManager () { Init (); } 
 		~CLightmapManager () { Destroy (); }
 		void Init (void);
-		void Setup (int nLevel);
+		void Setup (int32_t nLevel);
 		void Destroy (void);
-		void RestoreLights (int bVariable);
-		int Bind (int nLightmap);
-		int BindAll (void);
+		void RestoreLights (int32_t bVariable);
+		int32_t Bind (int32_t nLightmap);
+		int32_t BindAll (void);
 		void Release (void);
-		int Create (int nLevel);
-		void Build (CSegFace* faceP, int nThread);
-		void BuildAll (int nFace);
-		inline tLightmapBuffer* Buffer (uint i = 0) { return &m_list.buffers [i]; }
-		inline int HaveLightmaps (void) { return !gameStates.app.bNostalgia && (m_list.buffers.Buffer () != NULL); }
+		int32_t Create (int32_t nLevel);
+		void Build (CSegFace* faceP, int32_t nThread);
+		void BuildAll (int32_t nFace);
+		inline tLightmapBuffer* Buffer (uint32_t i = 0) { return &m_list.buffers [i]; }
+		inline int32_t HaveLightmaps (void) { return !gameStates.app.bNostalgia && (m_list.buffers.Buffer () != NULL); }
 		inline CSegFace* CurrentFace (void) { return m_data.faceP; }
 
 	private:
-		int Init (int bVariable);
+		int32_t Init (int32_t bVariable);
 		bool FaceIsInvisible (CSegFace* faceP);
-		inline void ComputePixelOffset (CFixVector& vPos, CFixVector& v1, CFixVector& v2, int nOffset);
-		double SideRad (int nSegment, int nSide);
-		int CountLights (int bVariable);
-		void Copy (CRGBColor *texColorP, ushort nLightmap);
-		void CreateSpecial (CRGBColor *texColorP, ushort nLightmap, ubyte nColor);
-		void Realloc (int nBuffers);
-		int Save (int nLevel);
-		int Load (int nLevel);
+		inline void ComputePixelOffset (CFixVector& vPos, CFixVector& v1, CFixVector& v2, int32_t nOffset);
+		double SideRad (int32_t nSegment, int32_t nSide);
+		int32_t CountLights (int32_t bVariable);
+		void Copy (CRGBColor *texColorP, uint16_t nLightmap);
+		void CreateSpecial (CRGBColor *texColorP, uint16_t nLightmap, uint8_t nColor);
+		void Realloc (int32_t nBuffers);
+		int32_t Save (int32_t nLevel);
+		int32_t Load (int32_t nLevel);
 		void ToGrayScale (void);
-		char* Filename (char *pszFilename, int nLevel);
-		void Blur (CSegFace* faceP, CLightmapFaceData& source, CLightmapFaceData& dest, int direction);
+		char* Filename (char *pszFilename, int32_t nLevel);
+		void Blur (CSegFace* faceP, CLightmapFaceData& source, CLightmapFaceData& dest, int32_t direction);
 		void Blur (CSegFace* faceP, CLightmapFaceData& source);
 
-		static int CompareFaces (const tSegFacePtr* pf, const tSegFacePtr* pm);
+		static int32_t CompareFaces (const tSegFacePtr* pf, const tSegFacePtr* pm);
 	};
 
 extern CLightmapManager lightmapManager;
@@ -126,12 +126,12 @@ extern CLightmapManager lightmapManager;
 //------------------------------------------------------------------------------
 
 //extern CTexture	*lightmaps;
-extern int					lightmapWidth [5];
+extern int32_t					lightmapWidth [5];
 extern GLhandleARB		lmShaderProgs [3];
 
 //------------------------------------------------------------------------------
 
-int SetupLightmap (CSegFace* faceP);
+int32_t SetupLightmap (CSegFace* faceP);
 
 //------------------------------------------------------------------------------
 

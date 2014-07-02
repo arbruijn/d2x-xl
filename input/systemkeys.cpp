@@ -67,7 +67,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // Global Variables -----------------------------------------------------------
 
-int	redbookVolume = 255;
+int32_t	redbookVolume = 255;
 
 
 //	External Variables ---------------------------------------------------------
@@ -108,7 +108,7 @@ char *Pause_msg;
 
 //------------------------------------------------------------------------------
 
-int SetRearView (int bOn)
+int32_t SetRearView (int32_t bOn)
 {
 if (gameStates.render.bRearView == bOn)
 	return 0;
@@ -145,7 +145,7 @@ if (controls [0].rearViewDownCount) {		//key/button has gone down
 #else
 	#define LEAVE_TIME 0x1000		//how long until we decide key is down	 (Used to be 0x4000)
 
-	static int nLeaveMode;
+	static int32_t nLeaveMode;
 	static fix entryTime;
 
 if (controls [0].rearViewDownCount) {		//key/button has gone down
@@ -166,7 +166,7 @@ else if (nLeaveMode)
 
 //------------------------------------------------------------------------------
 
-int ToggleRearView (void)
+int32_t ToggleRearView (void)
 {
 return SetRearView (!gameStates.render.bRearView);
 }
@@ -188,7 +188,7 @@ if ((gameStates.render.cockpit.nType < 0) || (gameStates.render.cockpit.nType > 
 
 //------------------------------------------------------------------------------
 
-int SetChaseCam (int bOn)
+int32_t SetChaseCam (int32_t bOn)
 {
 if (gameStates.render.bChaseCam == bOn)
 	return 0;
@@ -209,7 +209,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int ToggleChaseCam (void)
+int32_t ToggleChaseCam (void)
 {
 #if !DBG
 if (IsMultiGame && !IsCoopGame && (!EGI_FLAG (bEnableCheats, 0, 0, 0) || COMPETITION)) {
@@ -222,7 +222,7 @@ return SetChaseCam (!gameStates.render.bChaseCam);
 
 //------------------------------------------------------------------------------
 
-int SetFreeCam (int bOn)
+int32_t SetFreeCam (int32_t bOn)
 {
 if (gameStates.render.bFreeCam < 0)
 	return 0;
@@ -249,7 +249,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int ToggleFreeCam (void)
+int32_t ToggleFreeCam (void)
 {
 #if !DBG
 if (IsMultiGame && !IsCoopGame && (!EGI_FLAG (bEnableCheats, 0, 0, 0) || COMPETITION)) {
@@ -269,7 +269,7 @@ gameOpts->render.cockpit.nRadarRange = (gameOpts->render.cockpit.nRadarRange + 1
 
 //------------------------------------------------------------------------------
 
-void HandleEndlevelKey (int key)
+void HandleEndlevelKey (int32_t key)
 {
 if (key == (KEY_COMMAND + KEY_SHIFTED + KEY_P))
 	SaveScreenShot (NULL, 0);
@@ -297,7 +297,7 @@ if (key == KEY_ESC) {
 
 //------------------------------------------------------------------------------
 
-void HandleDeathKey(int key)
+void HandleDeathKey(int32_t key)
 {
 /*
 	Commented out redundant calls because the key used here typically
@@ -338,7 +338,7 @@ if (gameStates.app.bDeathSequenceAborted)
 
 //------------------------------------------------------------------------------
 
-void HandleDemoKey (int key)
+void HandleDemoKey (int32_t key)
 {
 if (gameOpts->demo.bRevertFormat && (gameData.demo.nVersion > DEMO_VERSION))
 	return;
@@ -411,7 +411,7 @@ switch (key) {
 
 	case KEY_COMMAND + KEY_SHIFTED + KEY_P:
 	case KEY_PRINT_SCREEN: {
-		int oldState = gameData.demo.nVcrState;
+		int32_t oldState = gameData.demo.nVcrState;
 		gameData.demo.nVcrState = ND_STATE_PRINTSCREEN;
 		//RenderMonoFrame ();
 		gameStates.app.bSaveScreenShot = 1;
@@ -425,10 +425,10 @@ switch (key) {
 //------------------------------------------------------------------------------
 //this is for system-level keys, such as help, etc.
 //returns 1 if screen changed
-int HandleSystemKey (int key)
+int32_t HandleSystemKey (int32_t key)
 {
-	int bScreenChanged = 0;
-	int bStopPlayerMovement = 1;
+	int32_t bScreenChanged = 0;
+	int32_t bStopPlayerMovement = 1;
 
 	//if (gameStates.gameplay.bSpeedBoost)
 	//	return 0;
@@ -612,7 +612,7 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 		case KEY_ALTED + KEY_F3:
 			if (!gameStates.app.bPlayerIsDead && (!IsMultiGame || IsCoopGame)) {
 				paletteManager.SuspendEffect ();
-				int bLoaded = saveGameManager.Load (1, 0, 0, NULL);
+				int32_t bLoaded = saveGameManager.Load (1, 0, 0, NULL);
 				if (gameData.app.bGamePaused)
 					DoGamePause ();
 				paletteManager.ResumeEffect (!bLoaded);
@@ -674,9 +674,9 @@ return bScreenChanged;
 
 extern void DropFlag ();
 
-extern int gr_renderstats;
+extern int32_t gr_renderstats;
 
-void HandleGameKey(int key)
+void HandleGameKey(int32_t key)
 {
 	switch (key) {
 
@@ -822,7 +822,7 @@ void HandleGameKey(int key)
 
 #if DBG
 
-void HandleTestKey(int key)
+void HandleTestKey(int32_t key)
 {
 	switch (key) {
 
@@ -1010,7 +1010,7 @@ void HandleTestKey(int key)
 		case KEYDBGGED + KEY_B: {
 			CMenu	m (1);
 			char text [FILENAME_LEN] = "";
-			int item;
+			int32_t item;
 
 			m.AddInput ("", text, FILENAME_LEN);
 			item = m.Menu (NULL, "Briefing to play?");
@@ -1042,10 +1042,10 @@ char OldHomingState [20];
 
 void ReadControls (void)
 {
-	int	key;
+	int32_t	key;
 	fix	keyTime;
 
-	static ubyte explodingFlag = 0;
+	static uint8_t explodingFlag = 0;
 
 gameStates.app.bPlayerFiredLaserThisFrame = -1;
 if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
@@ -1070,7 +1070,7 @@ if (LOCALPLAYER.m_bExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.
 		GameFlushInputs ();
 		}
 	else {
-		int i;
+		int32_t i;
 		for (i = 0; i < 4; i++)
 			if (JoyGetButtonDownCnt (i) > 0)
 				gameStates.app.bDeathSequenceAborted = 1;
@@ -1130,10 +1130,10 @@ while ((key = KeyInKeyTime (&keyTime)) != 0) {
 
 extern kcItem kcMouse [];
 
-inline int ZoomKeyPressed (void)
+inline int32_t ZoomKeyPressed (void)
 {
 #if 1
-	int	v;
+	int32_t	v;
 
 return gameStates.input.keys.pressed [kcKeyboard [52].value] || gameStates.input.keys.pressed [kcKeyboard [53].value] ||
 		 (((v = kcMouse [30].value) < 255) && MouseButtonState (v));

@@ -25,18 +25,18 @@ extern GLuint secondary_lh [5];
 extern GLuint g3InitTMU [4][2];
 extern GLuint g3ExitTMU [2];
 
-extern int r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc, r_tvertexc, r_texcount;
-extern int gr_renderstats, gr_badtexture;
+extern int32_t r_polyc, r_tpolyc, r_bitmapc, r_ubitmapc, r_ubitbltc, r_upixelc, r_tvertexc, r_texcount;
+extern int32_t gr_renderstats, gr_badtexture;
 
-extern int nScreenDists [10];
+extern int32_t nScreenDists [10];
 
 //------------------------------------------------------------------------------
 
 typedef struct tRenderQuality {
-	int	texMinFilter;
-	int	texMagFilter;
-	int	bNeedMipmap;
-	int	bAntiAliasing;
+	int32_t	texMinFilter;
+	int32_t	texMagFilter;
+	int32_t	bNeedMipmap;
+	int32_t	bAntiAliasing;
 } tRenderQuality;
 
 extern tRenderQuality renderQualities [];
@@ -47,9 +47,9 @@ typedef struct tSinCosf {
 
 //------------------------------------------------------------------------------
 
-void OglDeleteLists (GLuint *lp, int n);
-void ComputeSinCosTable (int nSides, tSinCosf *sinCosP);
-int CircleListInit (int nSides, int nType, int mode);
+void OglDeleteLists (GLuint *lp, int32_t n);
+void ComputeSinCosTable (int32_t nSides, tSinCosf *sinCosP);
+int32_t CircleListInit (int32_t nSides, int32_t nType, int32_t mode);
 void G3Normal (CRenderPoint** pointList, CFixVector* pvNormal);
 void G3CalcNormal (CRenderPoint **pointList, CFloatVector *pvNormal);
 
@@ -84,7 +84,7 @@ typedef union tWindowScale {
 typedef struct tClientBuffer {
 	const GLvoid*	buffer;
 	const char*		pszFile;
-	int				nLine;
+	int32_t				nLine;
 } tClientBuffer;
 
 #endif
@@ -99,11 +99,11 @@ class COglData {
 		tWindowScale	windowScale;
 		CStaticArray<CFBO, 9> drawBuffers;
 		CFBO*				drawBufferP;
-		int				nPerPixelLights [9];
+		int32_t				nPerPixelLights [9];
 		float				lightRads [8];
 		CFloatVector	lightPos [8];
-		int				bLightmaps;
-		int				nHeadlights;
+		int32_t				bLightmaps;
+		int32_t				nHeadlights;
 		fix				xStereoSeparation;
 		GLuint			nTexture [4];
 		GLenum			nSrcBlendMode;
@@ -122,10 +122,10 @@ class COglData {
 		bool				bLineSmooth;
 		bool				bLighting;
 		bool				bPolyOffsetFill;
-		int				nTMU [2];	//active driver and client TMUs
-		int				clientStates [4][6];	// client states for the first 4 TMUs
-		int				bClientTexCoord;
-		int				bClientColor;
+		int32_t				nTMU [2];	//active driver and client TMUs
+		int32_t				clientStates [4][6];	// client states for the first 4 TMUs
+		int32_t				bClientTexCoord;
+		int32_t				bClientColor;
 #if DBG_OGL
 		tClientBuffer	clientBuffers [4][6];
 #endif
@@ -133,32 +133,32 @@ class COglData {
 	public:
 		COglData () { Initialize (); }
 		void Initialize (void);
-		inline CFBO* GetDrawBuffer (int nBuffer) { return &drawBuffers [nBuffer]; }
-		inline CFBO* GetGlowBuffer (int nBuffer) { return &drawBuffers [nBuffer + 2]; }
-		inline CFBO* GetBlurBuffer (int nBuffer) { return &drawBuffers [nBuffer + 3]; }
-		inline CFBO* GetDepthBuffer (int nBuffer) { return &drawBuffers [nBuffer + 5]; }
+		inline CFBO* GetDrawBuffer (int32_t nBuffer) { return &drawBuffers [nBuffer]; }
+		inline CFBO* GetGlowBuffer (int32_t nBuffer) { return &drawBuffers [nBuffer + 2]; }
+		inline CFBO* GetBlurBuffer (int32_t nBuffer) { return &drawBuffers [nBuffer + 3]; }
+		inline CFBO* GetDepthBuffer (int32_t nBuffer) { return &drawBuffers [nBuffer + 5]; }
 };
 
 //-----------------------------------------------------------------------------
 
 class COglFeature {
 	private:
-		int	m_bAvailable;
-		int	m_bApply;
+		int32_t	m_bAvailable;
+		int32_t	m_bApply;
 
 	public:
-		inline int Available (const int i) { return (m_bAvailable = i); }
-		inline int Available (void) { return m_bAvailable; }
-		inline int Apply (void) { return m_bAvailable && m_bApply; }
-		inline const COglFeature& operator = (const int i) { 
+		inline int32_t Available (const int32_t i) { return (m_bAvailable = i); }
+		inline int32_t Available (void) { return m_bAvailable; }
+		inline int32_t Apply (void) { return m_bAvailable && m_bApply; }
+		inline const COglFeature& operator = (const int32_t i) { 
 			m_bApply = i; 
 			return *this;
 			}
-		operator int() { return (m_bAvailable > 0) * m_bApply; }
-		inline bool operator == (const int i) { return ((m_bAvailable > 0) * m_bApply) == i; }
-		inline bool operator != (const int i) { return ((m_bAvailable > 0) * m_bApply) != i; }
-		inline bool operator > (const int i) { return ((m_bAvailable > 0) * m_bApply) > i; }
-		inline bool operator < (const int i) { return ((m_bAvailable > 0) * m_bApply) < i; }
+		operator int32_t() { return (m_bAvailable > 0) * m_bApply; }
+		inline bool operator == (const int32_t i) { return ((m_bAvailable > 0) * m_bApply) == i; }
+		inline bool operator != (const int32_t i) { return ((m_bAvailable > 0) * m_bApply) != i; }
+		inline bool operator > (const int32_t i) { return ((m_bAvailable > 0) * m_bApply) > i; }
+		inline bool operator < (const int32_t i) { return ((m_bAvailable > 0) * m_bApply) < i; }
 		//operator bool() { return bool (Available () && Apply ()); }
 		COglFeature () : m_bAvailable (1), m_bApply (0) {}
 	};
@@ -186,64 +186,64 @@ class COglFeatures {
 
 class COglStates {
 	public:
-		int	bInitialized;
-		int	bRebuilding;
-		int	bFullScreen;
-		int	bLastFullScreen;
-		int	bUseTransform;
-		int	nTransformCalls;
-		int	bBrightness;
-		int	bLowMemory;
-		int	nColorBits;
-		int	nPreloadTextures;
-		ubyte	nTransparencyLimit;
+		int32_t	bInitialized;
+		int32_t	bRebuilding;
+		int32_t	bFullScreen;
+		int32_t	bLastFullScreen;
+		int32_t	bUseTransform;
+		int32_t	nTransformCalls;
+		int32_t	bBrightness;
+		int32_t	bLowMemory;
+		int32_t	nColorBits;
+		int32_t	nPreloadTextures;
+		uint8_t	nTransparencyLimit;
 		GLint	nDepthBits;
 		GLint	nStencilBits;
 		GLint	nStereo;
-		int	bEnableTexture2D;
-		int	bEnableTexClamp;
-		int	bEnableScissor;
-		int	bNeedMipMaps;
-		int	bFSAA;
-		int	texMinFilter;
-		int	texMagFilter;
-		int	nTexMagFilterState;
-		int	nTexMinFilterState;
-		int	nTexEnvModeState;
-		int	nContrast;
+		int32_t	bEnableTexture2D;
+		int32_t	bEnableTexClamp;
+		int32_t	bEnableScissor;
+		int32_t	bNeedMipMaps;
+		int32_t	bFSAA;
+		int32_t	texMinFilter;
+		int32_t	texMagFilter;
+		int32_t	nTexMagFilterState;
+		int32_t	nTexMinFilterState;
+		int32_t	nTexEnvModeState;
+		int32_t	nContrast;
 		CViewport viewport [2];
-		int	nCurWidth;
-		int	nCurHeight;
-		int	nLights;
-		int	iLight;
-		int	nFirstLight;
-		int	bCurFullScreen;
-		int	bpp;
-		int	bScaleLight;
-		int	bDynObjLight;
-		int	bVertexLighting;
-		int	bHeadlight;
-		int	bStandardContrast;
-		int	nRGBAFormat;
-		int	nRGBFormat;
-		int	bIntensity4;
-		int	bLuminance4Alpha4;
-		int	bGlowRendering;
-		int	bHaveDepthBuffer [2];
-		int	bHaveColorBuffer;
-		int	nDrawBuffer;
-		int	nStencil;
-		int	nCamera;
+		int32_t	nCurWidth;
+		int32_t	nCurHeight;
+		int32_t	nLights;
+		int32_t	iLight;
+		int32_t	nFirstLight;
+		int32_t	bCurFullScreen;
+		int32_t	bpp;
+		int32_t	bScaleLight;
+		int32_t	bDynObjLight;
+		int32_t	bVertexLighting;
+		int32_t	bHeadlight;
+		int32_t	bStandardContrast;
+		int32_t	nRGBAFormat;
+		int32_t	nRGBFormat;
+		int32_t	bIntensity4;
+		int32_t	bLuminance4Alpha4;
+		int32_t	bGlowRendering;
+		int32_t	bHaveDepthBuffer [2];
+		int32_t	bHaveColorBuffer;
+		int32_t	nDrawBuffer;
+		int32_t	nStencil;
+		int32_t	nCamera;
 	#ifdef GL_ARB_multitexture
-		int	bArbMultiTexture;
+		int32_t	bArbMultiTexture;
 	#endif
 	#ifdef GL_SGIS_multitexture
-		int	bSgisMultiTexture;
+		int32_t	bSgisMultiTexture;
 	#endif
 		float	fAlpha;
 		float	fLightRange;
-		int	bDepthBuffer [2];
-		int	bColorBuffer;
+		int32_t	bDepthBuffer [2];
+		int32_t	bColorBuffer;
 		GLuint hDepthBuffer [2];
 		GLuint hColorBuffer;
 
@@ -259,19 +259,19 @@ class COglBuffers {
 		CArray<tTexCoord2f>		texCoord [2];
 		CArray<CFloatVector>		color;
 		CUShortArray				indices;
-		int							m_nVertices;
+		int32_t							m_nVertices;
 
 	public:
 		COglBuffers () { 
 			m_nVertices = 0; 
 			SizeBuffers (1000);
 			}
-		bool SizeVertices (int nVerts);
-		bool SizeColor (int nVerts);
-		bool SizeTexCoord (int nVerts);
-		bool SizeIndex (int nVerts);
-		bool SizeBuffers (int nVerts);
-		void Flush (GLenum nPrimitive, int nVerts, int nDimension = 3, int bTextured = 0, int bColored = 0);
+		bool SizeVertices (int32_t nVerts);
+		bool SizeColor (int32_t nVerts);
+		bool SizeTexCoord (int32_t nVerts);
+		bool SizeIndex (int32_t nVerts);
+		bool SizeBuffers (int32_t nVerts);
+		void Flush (GLenum nPrimitive, int32_t nVerts, int32_t nDimension = 3, int32_t bTextured = 0, int32_t bColored = 0);
 
 	};
 
@@ -305,44 +305,44 @@ class COGL {
 
 		void SetupProjection (CTransformation& transformation);
 		void SetupFrustum (fix xStereoSeparation);
-		void SelectTMU (int nTMU, bool bClient = true);
-		int EnableClientState (GLuint nState, int nTMU = -1);
-		int DisableClientState (GLuint nState, int nTMU = -1);
-		int EnableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU = -1);
-		void DisableClientStates (int bTexCoord, int bColor, int bNormals, int nTMU = -1);
-		void ResetClientStates (int nFirst = 0);
-		void StartFrame (int bFlat, int bResetColorBuf, fix xStereoSeparation);
-		void EndFrame (int nWindow);
-		void EnableLighting (int bSpecular);
+		void SelectTMU (int32_t nTMU, bool bClient = true);
+		int32_t EnableClientState (GLuint nState, int32_t nTMU = -1);
+		int32_t DisableClientState (GLuint nState, int32_t nTMU = -1);
+		int32_t EnableClientStates (int32_t bTexCoord, int32_t bColor, int32_t bNormals, int32_t nTMU = -1);
+		void DisableClientStates (int32_t bTexCoord, int32_t bColor, int32_t bNormals, int32_t nTMU = -1);
+		void ResetClientStates (int32_t nFirst = 0);
+		void StartFrame (int32_t bFlat, int32_t bResetColorBuf, fix xStereoSeparation);
+		void EndFrame (int32_t nWindow);
+		void EnableLighting (int32_t bSpecular);
 		void DisableLighting (void);
-		void SetRenderQuality (int nQuality = -1);
+		void SetRenderQuality (int32_t nQuality = -1);
 		CViewport& Viewport (void) { return m_states.viewport [0]; }
-		void SetViewport (int x, int y, int w, int h);
+		void SetViewport (int32_t x, int32_t y, int32_t w, int32_t h);
 		void GetViewport (vec4& viewport);
 		void SaveViewport (void);
 		void RestoreViewport (void);
-		void SwapBuffers (int bForce, int bClear);
-		void Update (int bClear);
-		void SetupTransform (int bForce);
-		void ResetTransform (int bForce);
+		void SwapBuffers (int32_t bForce, int32_t bClear);
+		void Update (int32_t bClear);
+		void SetupTransform (int32_t bForce);
+		void ResetTransform (int32_t bForce);
 		void SetScreenMode (void);
 		void GetVerInfo (void);
-		GLuint CreateDepthTexture (int nTMU, int bFBO, int nType = 0, int nWidth = -1, int hHeight = -1);
-		void DestroyDepthTexture (int bFBO);
-		GLuint CopyDepthTexture (int nId, int nTMU = GL_TEXTURE1);
-		GLuint CreateColorTexture (int nTMU, int bFBO);
+		GLuint CreateDepthTexture (int32_t nTMU, int32_t bFBO, int32_t nType = 0, int32_t nWidth = -1, int32_t hHeight = -1);
+		void DestroyDepthTexture (int32_t bFBO);
+		GLuint CopyDepthTexture (int32_t nId, int32_t nTMU = GL_TEXTURE1);
+		GLuint CreateColorTexture (int32_t nTMU, int32_t bFBO);
 		void DestroyColorTexture (void);
 		GLuint CopyColorTexture (void);
 #if 0
-		GLuint CreateStencilTexture (int nTMU, int bFBO);
+		GLuint CreateStencilTexture (int32_t nTMU, int32_t bFBO);
 #endif
-		void CreateDrawBuffer (int nType = 1);
+		void CreateDrawBuffer (int32_t nType = 1);
 		void DestroyDrawBuffer (void);
 		void DestroyDrawBuffers (void);
-		void SetDrawBuffer (int nBuffer, int bFBO);
-		void SetReadBuffer (int nBuffer, int bFBO);
-		int DrawBufferWidth (void);
-		int DrawBufferHeight (void);
+		void SetDrawBuffer (int32_t nBuffer, int32_t bFBO);
+		void SetReadBuffer (int32_t nBuffer, int32_t bFBO);
+		int32_t DrawBufferWidth (void);
+		int32_t DrawBufferHeight (void);
 		void MergeAnaglyphBuffers (void);
 		void FlushOculusRiftBuffers (void);
 		void FlushSideBySideBuffers (void);
@@ -351,32 +351,32 @@ class COGL {
 		void FlushMonoFrameBuffer (void);
 		void FlushEffectsSideBySide (void);
 #if MAX_SHADOWMAPS
-		void FlushShadowMaps (int nEffects);
+		void FlushShadowMaps (int32_t nEffects);
 #endif
 		void FlushDrawBuffer (bool bAdditive = false);
 		void ChooseDrawBuffer (void);
 
-		int BindBuffers (CFloatVector *vertexP, int nVertices, int nDimensions,
+		int32_t BindBuffers (CFloatVector *vertexP, int32_t nVertices, int32_t nDimensions,
 							  tTexCoord2f *texCoordP, 
-							  CFloatVector *colorP, int nColors,
+							  CFloatVector *colorP, int32_t nColors,
 							  CBitmap *bmP, 							  
-							  int nTMU = -1);
+							  int32_t nTMU = -1);
 		void ReleaseBuffers (void);
-		int BindBitmap (CBitmap* bmP, int nFrame, int nWrap, int bTextured);
-		int RenderArrays (int nPrimitive, 
-								CFloatVector *vertexP, int nVertices, int nDimensions = 3,
+		int32_t BindBitmap (CBitmap* bmP, int32_t nFrame, int32_t nWrap, int32_t bTextured);
+		int32_t RenderArrays (int32_t nPrimitive, 
+								CFloatVector *vertexP, int32_t nVertices, int32_t nDimensions = 3,
 								tTexCoord2f *texCoordP = NULL, 
-								CFloatVector *colorP = NULL, int nColors = 1, 
-								CBitmap *bmP = NULL, int nFrame = 0, int nWrap = GL_REPEAT);
-		int RenderQuad (CBitmap* bmP, CFloatVector* vertexP, int nDimensions = 3, tTexCoord2f* texCoordP = NULL, CFloatVector* colorP = NULL, int nColors = 1, int nWrap = GL_CLAMP);
-		int RenderQuad (CBitmap* bmP, CFloatVector& vPosf, float width, float height, int nDimensions = 3, int nWrap = GL_CLAMP);
-		int RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, CFloatVector* colorP, float alpha, int bAdditive);
-		int RenderSprite (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, float alpha, int bAdditive, float fSoftRad);
+								CFloatVector *colorP = NULL, int32_t nColors = 1, 
+								CBitmap *bmP = NULL, int32_t nFrame = 0, int32_t nWrap = GL_REPEAT);
+		int32_t RenderQuad (CBitmap* bmP, CFloatVector* vertexP, int32_t nDimensions = 3, tTexCoord2f* texCoordP = NULL, CFloatVector* colorP = NULL, int32_t nColors = 1, int32_t nWrap = GL_CLAMP);
+		int32_t RenderQuad (CBitmap* bmP, CFloatVector& vPosf, float width, float height, int32_t nDimensions = 3, int32_t nWrap = GL_CLAMP);
+		int32_t RenderBitmap (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, CFloatVector* colorP, float alpha, int32_t bAdditive);
+		int32_t RenderSprite (CBitmap* bmP, const CFixVector& vPos, fix xWidth, fix xHeight, float alpha, int32_t bAdditive, float fSoftRad);
 		void RenderScreenQuad (GLuint nTexture = 0);
 
-		inline int FullScreen (void) { return m_states.bFullScreen; }
+		inline int32_t FullScreen (void) { return m_states.bFullScreen; }
 
-		inline void SetFullScreen (int bFullScreen) {
+		inline void SetFullScreen (int32_t bFullScreen) {
 #if !DBG
 			if (bFullScreen || !IsSideBySideDevice ()) {
 #endif
@@ -388,7 +388,7 @@ class COGL {
 #endif
 			}
 
-		int ToggleFullScreen (void) {
+		int32_t ToggleFullScreen (void) {
 			SetFullScreen (!m_states.bFullScreen);
 			return m_states.bFullScreen;
 			}
@@ -412,11 +412,11 @@ class COGL {
 
 		inline COglBuffers& Buffers (void) { return m_buffers; }
 		inline CArray<CFloatVector>& VertexBuffer (void) { return Buffers ().vertices; }
-		inline CArray<tTexCoord2f>& TexCoordBuffer (int i = 0) { return Buffers ().texCoord [i]; }
+		inline CArray<tTexCoord2f>& TexCoordBuffer (int32_t i = 0) { return Buffers ().texCoord [i]; }
 		inline CArray<CFloatVector>& ColorBuffer (void) { return Buffers ().color; }
-		inline bool SizeBuffers (int nVerts) { return m_buffers.SizeBuffers (nVerts); }
-		inline bool SizeVertexBuffer (int nVerts) { return m_buffers.SizeVertices (nVerts); }
-		inline void FlushBuffers (GLenum nPrimitive, int nVerts, int nDimensions = 3, int bTextured = 0, int bColored = 0) {
+		inline bool SizeBuffers (int32_t nVerts) { return m_buffers.SizeBuffers (nVerts); }
+		inline bool SizeVertexBuffer (int32_t nVerts) { return m_buffers.SizeVertices (nVerts); }
+		inline void FlushBuffers (GLenum nPrimitive, int32_t nVerts, int32_t nDimensions = 3, int32_t bTextured = 0, int32_t bColored = 0) {
 			m_buffers.Flush (nPrimitive, nVerts, nDimensions, bTextured, bColored); 
 			}
 
@@ -477,7 +477,7 @@ class COGL {
 			nDestBlendMode = m_data.nDestBlendMode;
 			}
 
-		inline void SetBlendMode (int nBlendMode) {
+		inline void SetBlendMode (int32_t nBlendMode) {
 			switch (nBlendMode) {
 				case OGL_BLEND_REPLACE:
 					SetBlendMode (GL_ONE, GL_ZERO); // replace 
@@ -529,38 +529,38 @@ class COGL {
 			return m_data.nCullMode;
 			}
 
-		int SelectDrawBuffer (int nBuffer, int nColorBuffers = 0);
+		int32_t SelectDrawBuffer (int32_t nBuffer, int32_t nColorBuffers = 0);
 
-		int SelectGlowBuffer (void);
+		int32_t SelectGlowBuffer (void);
 
-		int SelectBlurBuffer (int nBuffer);
+		int32_t SelectBlurBuffer (int32_t nBuffer);
 
-		inline CFBO* DrawBuffer (int nBuffer = -1) { return (nBuffer < 0) ? m_data.drawBufferP : m_data.GetDrawBuffer (nBuffer); }
+		inline CFBO* DrawBuffer (int32_t nBuffer = -1) { return (nBuffer < 0) ? m_data.drawBufferP : m_data.GetDrawBuffer (nBuffer); }
 
 		inline CFBO* GlowBuffer () { return m_data.GetDrawBuffer (2); }
 
-		CFBO* BlurBuffer (int nBuffer);
+		CFBO* BlurBuffer (int32_t nBuffer);
 
-		inline CFBO* DepthBuffer (int nBuffer = -1) { return (nBuffer < 0) ? m_data.drawBufferP : m_data.GetDepthBuffer (nBuffer + 5); }
+		inline CFBO* DepthBuffer (int32_t nBuffer = -1) { return (nBuffer < 0) ? m_data.drawBufferP : m_data.GetDepthBuffer (nBuffer + 5); }
 
-		void RebuildContext (int bGame);
+		void RebuildContext (int32_t bGame);
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
-		int StereoDevice (int bForce = 0);
+		int32_t StereoDevice (int32_t bForce = 0);
 
-		inline int IsAnaglyphDevice (int nDevice = 0x7fffffff) { 
+		inline int32_t IsAnaglyphDevice (int32_t nDevice = 0x7fffffff) { 
 			if (nDevice == 0x7fffffff)
 				nDevice = StereoDevice ();
 			return nDevice > 0; 
 			}
 
-		inline int IsOculusRift (int nDevice = 0x7fffffff) {
+		inline int32_t IsOculusRift (int32_t nDevice = 0x7fffffff) {
 			if (nDevice == 0x7fffffff)
 				nDevice = StereoDevice ();
 			return nDevice == -GLASSES_OCULUS_RIFT;
 			}
 
-		inline int IsSideBySideDevice (int nDevice = 0x7fffffff) {
+		inline int32_t IsSideBySideDevice (int32_t nDevice = 0x7fffffff) {
 			if (nDevice == 0x7fffffff)
 				nDevice = StereoDevice ();
 			return (nDevice <= -DEVICE_STEREO_SIDEBYSIDE) && (nDevice > -DEVICE_STEREO_DOUBLE_BUFFER);
@@ -576,56 +576,56 @@ class COGL {
 		inline GLuint BoundTexture (void) { return m_data.nTexture [m_data.nTMU [0]]; }
 
 		inline void ReleaseTexture (GLuint handle) { 
-			for (int i = 0; i < 4; i++)
+			for (int32_t i = 0; i < 4; i++)
 				if (m_data.nTexture [i] == handle) {
 					glBindTexture (GL_TEXTURE_2D, m_data.nTexture [i] = 0); 
 					break;
 					}
 			}
 
-		inline int IsBound (GLuint handle) { 
-			for (int i = 0; i < 4; i++)
+		inline int32_t IsBound (GLuint handle) { 
+			for (int32_t i = 0; i < 4; i++)
 				if (m_data.nTexture [i] == handle)
 					return i;
 			return -1;
 			}
 
 #if DBG_OGL
-		void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine);
-		void ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine);
-		void TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine);
-		void NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine);
+		void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int32_t nLine);
+		void ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int32_t nLine);
+		void TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int32_t nLine);
+		void NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int32_t nLine);
 
 		void GenTextures (GLsizei n, GLuint *hTextures);
 		void DeleteTextures (GLsizei n, GLuint *hTextures);
 	
 #else
-		inline void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
+		inline void VertexPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int32_t nLine)
 			{ glVertexPointer (size, type, stride, pointer); }
-		inline void ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
+		inline void ColorPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int32_t nLine)
 			{ glColorPointer (size, type, stride, pointer); }
-		inline void TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
+		inline void TexCoordPointer (GLint size, GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int32_t nLine)
 			{ glTexCoordPointer (size, type, stride, pointer); }
-		inline void NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int nLine)
+		inline void NormalPointer (GLenum type, GLsizei stride, const GLvoid* pointer, const char* pszFile, int32_t nLine)
 			{ glNormalPointer (type, stride, pointer); }
 
 		inline void GenTextures (GLsizei n, GLuint *hTextures) { glGenTextures (n, hTextures); }
 		inline void DeleteTextures (GLsizei n, GLuint *hTextures) { glDeleteTextures (n, hTextures); }
 #endif
 
-		GLenum ClearError (int bTrapError);
+		GLenum ClearError (int32_t bTrapError);
 
-		inline int SetTransform (int bUseTransform) { return m_states.bUseTransform = bUseTransform; }
-		inline int UseTransform (void) { return m_states.bUseTransform; }
+		inline int32_t SetTransform (int32_t bUseTransform) { return m_states.bUseTransform = bUseTransform; }
+		inline int32_t UseTransform (void) { return m_states.bUseTransform; }
 		inline void SetStereoSeparation (fix xStereoSeparation) { m_data.xStereoSeparation = xStereoSeparation; }
 		inline fix StereoSeparation (void) { return m_data.xStereoSeparation; }
 
-		inline int HaveDrawBuffer (void) {
+		inline int32_t HaveDrawBuffer (void) {
 			return m_features.bRenderToTexture.Available () && m_data.drawBufferP->Handle () && m_data.drawBufferP->Active ();
 			}
 
-		int StencilOff (void);
-		void StencilOn (int bStencil);
+		int32_t StencilOff (void);
+		void StencilOn (int32_t bStencil);
 		
 		double ZScreen (void);
 		
@@ -636,11 +636,11 @@ class COGL {
 
 #if DBG_OGL
 	private:
-		int m_bLocked;
+		int32_t m_bLocked;
 
 	public:
-		inline int Lock (void) { return m_bLocked ? 0 : ++m_bLocked; }
-		inline int Unlock (void) { return m_bLocked ? --m_bLocked : 0; }
+		inline int32_t Lock (void) { return m_bLocked ? 0 : ++m_bLocked; }
+		inline int32_t Unlock (void) { return m_bLocked ? --m_bLocked : 0; }
 		inline bool Locked (void) { return m_bLocked != 0; }
 #endif
 };
@@ -649,7 +649,7 @@ extern COGL ogl;
 
 //------------------------------------------------------------------------------
 
-static inline void OglCullFace (int bFront)
+static inline void OglCullFace (int32_t bFront)
 {
 #if 0
 if (gameStates.render.bRearView)

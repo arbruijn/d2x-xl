@@ -202,7 +202,7 @@ tReplacementModel replacementModels [] = {
 
 // ----------------------------------------------------------------------------
 
-int ReplacementModelCount (void)
+int32_t ReplacementModelCount (void)
 {
 return sizeofa (replacementModels);
 }
@@ -211,7 +211,7 @@ return sizeofa (replacementModels);
 
 void InitReplacementModels (void)
 {
-for (int i = 0; i < 2; i++) {
+for (int32_t i = 0; i < 2; i++) {
 	gameData.models.modelToOOF [i].Clear ();
 	gameData.models.modelToASE [i].Clear ();
 	}
@@ -220,11 +220,11 @@ gameData.models.modelToPOL.Clear ();
 
 // ----------------------------------------------------------------------------
 
-short LoadLoresModel (short i)
+int16_t LoadLoresModel (int16_t i)
 {
 	CFile			cf;
 	CPolyModel*	modelP;
-	short			nModel, j = sizeofa (replacementModels);
+	int16_t			nModel, j = sizeofa (replacementModels);
 	char			szModel [FILENAME_LEN];
 
 sprintf (szModel, "model%d.pol", replacementModels [i].nModel);
@@ -255,14 +255,14 @@ return i;
 
 // ----------------------------------------------------------------------------
 
-short LoadOOFModel (OOF::CModel *po, short i, int bCustom)
+int16_t LoadOOFModel (OOF::CModel *po, int16_t i, int32_t bCustom)
 {
-	short nModel = replacementModels [i].nModel;
+	int16_t nModel = replacementModels [i].nModel;
 
 if (gameData.models.modelToOOF [bCustom != 0][nModel])
 	return i + 1;
 
-	short	j = sizeofa (replacementModels);
+	int16_t	j = sizeofa (replacementModels);
 	char	szModel [2][FILENAME_LEN];
 
 sprintf (szModel [0], "model%d.oof", replacementModels [i].nModel);
@@ -284,9 +284,9 @@ return i;
 
 // ----------------------------------------------------------------------------
 
-short LoadASEModel (ASE::CModel *pa, short i, int bCustom)
+int16_t LoadASEModel (ASE::CModel *pa, int16_t i, int32_t bCustom)
 {
-	short nModel = replacementModels [i].nModel;
+	int16_t nModel = replacementModels [i].nModel;
 
 #if DBG
 if (nModel == nDbgModel)
@@ -295,7 +295,7 @@ if (nModel == nDbgModel)
 if (gameData.models.modelToASE [bCustom != 0][nModel])
 	return i + 1;
 
-	short	j = sizeofa (replacementModels);
+	int16_t	j = sizeofa (replacementModels);
 	char	szModel [2][FILENAME_LEN];
 
 sprintf (szModel [0], "model%d.ase", nModel);
@@ -321,9 +321,9 @@ return i;
 
 // ----------------------------------------------------------------------------
 
-short LoadHiresModel (int nModel, short i, int bCustom, const char* filename)
+int16_t LoadHiresModel (int32_t nModel, int16_t i, int32_t bCustom, const char* filename)
 {
-	short	j = sizeofa (replacementModels);
+	int16_t	j = sizeofa (replacementModels);
 
 #if DBG
 if ((nDbgModel >= 0) && (replacementModels [i].nModel == nDbgModel))
@@ -357,10 +357,10 @@ return bCustom ? ++i : LoadLoresModel (i);
 
 //------------------------------------------------------------------------------
 
-static int loadIdx;
-static int loadOp = 0;
+static int32_t loadIdx;
+static int32_t loadOp = 0;
 
-static int LoadModelsPoll (CMenu& menu, int& key, int nCurItem, int nState)
+static int32_t LoadModelsPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
@@ -368,14 +368,14 @@ if (nState)
 //paletteManager.ResumeEffect ();
 if (loadOp == 0) {
 	loadIdx = LoadHiresModel (gameData.models.nHiresModels, loadIdx, 0);
-	if (loadIdx >= (int) sizeofa (replacementModels)) {
+	if (loadIdx >= (int32_t) sizeofa (replacementModels)) {
 		loadOp = 1;
 		loadIdx = 0;
 		}
 	}
 else if (loadOp == 1) {
 	loadIdx = LoadLoresModel (loadIdx);
-	if (loadIdx >= (int) sizeofa (replacementModels)) {
+	if (loadIdx >= (int32_t) sizeofa (replacementModels)) {
 		key = -2;
 		//paletteManager.ResumeEffect ();
 		return nCurItem;
@@ -390,9 +390,9 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-int ModelsGaugeSize (void)
+int32_t ModelsGaugeSize (void)
 {
-	int h, i, j;
+	int32_t h, i, j;
 
 for (h = i = 0, j = sizeofa (replacementModels); i < j; i++)
 	if (replacementModels [i].pszHires) {
@@ -415,7 +415,7 @@ ProgressBar (TXT_LOADING_MODELS, 0, ModelsGaugeSize (), LoadModelsPoll);
 
 // ----------------------------------------------------------------------------
 
-void LoadHiresModels (int bCustom)
+void LoadHiresModels (int32_t bCustom)
 {
 if (!bCustom) {
 	InitReplacementModels ();
@@ -428,7 +428,7 @@ else /*if (gameOpts->render.bHiresModels [0])*/ {
 	if (!bCustom && gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 		LoadModelsGauge ();
 	else {
-		short	i = 0, j = sizeofa (replacementModels);
+		int16_t	i = 0, j = sizeofa (replacementModels);
 		if (!bCustom)
 			messageBox.Show (TXT_LOADING_MODELS);
 		if (bCustom || gameOpts->render.bHiresModels [0]) {
@@ -447,10 +447,10 @@ else /*if (gameOpts->render.bHiresModels [0])*/ {
 
 // ----------------------------------------------------------------------------
 
-void FreeHiresModel (int nModel)
+void FreeHiresModel (int32_t nModel)
 {
-for (int i = 0, l = gameData.models.nHiresModels; i < l; i++) {
-	for (int j = 0; j < 2; j++) {
+for (int32_t i = 0, l = gameData.models.nHiresModels; i < l; i++) {
+	for (int32_t j = 0; j < 2; j++) {
 		if (gameData.models.aseModels [j][i].m_nModel == nModel) {
 			if (gameData.models.modelToASE [j][nModel]) {
 				gameData.models.modelToASE [j][nModel] = NULL;
@@ -464,9 +464,9 @@ for (int i = 0, l = gameData.models.nHiresModels; i < l; i++) {
 
 // ----------------------------------------------------------------------------
 
-void FreeHiresModels (int bCustom)
+void FreeHiresModels (int32_t bCustom)
 {
-	int	h, i, j, l;
+	int32_t	h, i, j, l;
 
 for (i = 0, l = gameData.models.nHiresModels; i < l; i++)
 	for (j = bCustom; j < 2; j++) {

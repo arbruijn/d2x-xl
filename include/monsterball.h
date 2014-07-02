@@ -1,15 +1,15 @@
 #ifndef _MONSTERBALL_H
 #define _MONSTERBALL_H
 
-int ResetMonsterball (bool bCreate = true);
-int CreateMonsterball (void);
+int32_t ResetMonsterball (bool bCreate = true);
+int32_t CreateMonsterball (void);
 void RemoveMonsterball (void);
-int CheckMonsterballScore (void);
+int32_t CheckMonsterballScore (void);
 void SetMonsterballForces (void);
 CObject* FindMonsterball (void);
 void SetMonsterballDefaults (tMonsterballInfo *monsterballP = NULL);
 
-extern short nMonsterballForces [];
-extern short nMonsterballPyroForce;
+extern int16_t nMonsterballForces [];
+extern int16_t nMonsterballPyroForce;
 
 #endif //_MONSTERBALL_H

@@ -23,7 +23,7 @@ CPostProcessManager postProcessManager;
 //------------------------------------------------------------------------------
 // shockwave effect
 
-int hShockwaveShader = -1;
+int32_t hShockwaveShader = -1;
 
 const char* shockwaveVS = 
 	"void main(void) {\r\n" \
@@ -38,7 +38,7 @@ const char* shockwaveVS =
 const char* shockwaveFS = 
 	"uniform sampler2D sceneTex;\r\n" \
 	"uniform sampler2D depthTex;\r\n" \
-	"uniform int nShockwaves;\r\n" \
+	"uniform int32_t nShockwaves;\r\n" \
 	"uniform vec2 screenSize;\r\n" \
 	"uniform vec3 effectStrength;\r\n" \
 	"//#define LinearDepth(_z) 10000.0 / (5001.0 - (_z) * 4999.0)\r\n" \
@@ -56,7 +56,7 @@ const char* shockwaveFS =
 	"void main() {\r\n" \
 	"vec2 tcSrc = gl_TexCoord [0].xy * screenSize;\r\n" \
 	"vec2 tcDest = tcSrc; //vec2 (0.0, 0.0);\r\n" \
-	"int i;\r\n" \
+	"int32_t i;\r\n" \
 	"for (i = 0; i < 8; i++) if (i < nShockwaves) {\r\n" \
 	"  vec2 v = tcSrc - gl_LightSource [i].position.xy;\r\n" \
 	"  float d = length (v); //distance of screen coordinate to center of effect\r\n" \
@@ -82,7 +82,7 @@ const char* shockwaveFS =
 const char* shockwaveFS = 
 	"uniform sampler2D sceneTex;\r\n" \
 	"uniform sampler2D depthTex;\r\n" \
-	"uniform int nShockwaves;\r\n" \
+	"uniform int32_t nShockwaves;\r\n" \
 	"uniform vec2 screenSize;\r\n" \
 	"uniform vec3 effectStrength;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
@@ -97,7 +97,7 @@ const char* shockwaveFS =
 	"vec2 tcSrc = gl_TexCoord [0].xy * screenSize;\r\n" \
 	"vec2 tcDest = tcSrc;\r\n" \
 	"vec4 frag = texture2D (sceneTex, tcDest / screenSize);" \
-	"int i;\r\n" \
+	"int32_t i;\r\n" \
 	"for (i = 0; i < 8; i++) if (i < nShockwaves) {\r\n" \
 	"  vec2 v = tcSrc - gl_LightSource [i].position.xy;\r\n" \
 	"  float r = gl_LightSource [i].constantAttenuation;\r\n" \
@@ -122,7 +122,7 @@ const char* shockwaveFS =
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int CPostEffectShockwave::m_nShockwaves = 0;
+int32_t CPostEffectShockwave::m_nShockwaves = 0;
 GLhandleARB CPostEffectShockwave::m_shaderProg;
 
 void CPostEffectShockwave::InitShader (void)
@@ -209,7 +209,7 @@ if (bTransform && (transformation.TransformAndEncode (p [0], m_pos) & CC_BEHIND)
 m_ttl = float (SDL_GetTicks () - m_nStart) / Life ();
 m_rad = X2F (m_nSize) * m_ttl;
 
-int size = int (float (m_nSize) * m_ttl);
+int32_t size = int32_t (float (m_nSize) * m_ttl);
 p [1].v.coord.x = 
 p [4].v.coord.x = p [0].v.coord.x - size;
 p [1].v.coord.y = 
@@ -223,7 +223,7 @@ p [2].v.coord.z =
 p [3].v.coord.z =
 p [4].v.coord.z = p [0].v.coord.z;
 
-int i;
+int32_t i;
 
 for (i = 1; i < 5; i++) {
 	if (!(transformation.Codes (p [i]) & CC_BEHIND))
@@ -233,7 +233,7 @@ if (i == 5)
 	return false;
 
 tScreenPos s [5];
-for (int i = 0; i < 5; i++) {
+for (int32_t i = 0; i < 5; i++) {
 	ProjectPoint (p [i], s [i], 0, 0);
 	if (gameStates.render.cockpit.nType == CM_LETTERBOX)
 		s [i].y += (gameData.render.frame.Height () - CCanvas::Current ()->Height ()) / 2;
@@ -243,7 +243,7 @@ for (int i = 0; i < 5; i++) {
 
 #if 1
 fix xMin = 0x7FFFFFFF, yMin = 0x7FFFFFFF, xMax = -0x7FFFFFFF, yMax = -0x7FFFFFFF;
-for (int i = 1; i < 5; i++) {
+for (int32_t i = 1; i < 5; i++) {
 	if (xMin > s [i].x)
 		xMin = s [i].x;
 	if (xMax < s [i].x)
@@ -261,9 +261,9 @@ m_screenRad = (float) _hypot (double (xMax), double (yMax)) * 0.125f;
 m_screenRad = (float) hypot (double (xMax), double (yMax)) * 0.125f;
 #	endif
 #else
-int d = 0;
-int n = 0;
-for (int i = 1; i < 5; i++) {
+int32_t d = 0;
+int32_t n = 0;
+for (int32_t i = 1; i < 5; i++) {
 	if ((s [i].x >= 0) && (s [i].x < gameData.render.screen.Width ()) && (s [i].y >= 0) && (s [i].y < gameData.render.screen.Height ())) {
 		d += labs (s [0].x - s [i].x) + labs (s [0].y - s [i].y);
 		n += 4;
@@ -313,7 +313,7 @@ void CPostEffectShockwave::Render (void)
 // render current render target
 OglDrawArrays (GL_QUADS, 0, 4);
 if (m_nShockwaves > 0) {
-	for (int i = 0; i < m_nShockwaves; i++)
+	for (int32_t i = 0; i < m_nShockwaves; i++)
 		glDisable (GL_LIGHT0 + i);
 	ogl.SetLighting (false);
 	m_nShockwaves = 0;

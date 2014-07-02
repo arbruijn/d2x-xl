@@ -42,7 +42,7 @@ void OglDrawMouseIndicator (void)
 
 	static tSinCosf sinCos30 [30];
 	static tSinCosf sinCos12 [12];
-	static int bInitSinCos = 1;
+	static int32_t bInitSinCos = 1;
 
 	static CCanvasColor color;// = {-1, 1, {255, 255, 255, 96}};
 

@@ -17,33 +17,33 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 
 typedef struct dpmi_real_regs {
-    uint edi;
-    uint esi;
-    uint ebp;
-    uint reserved_by_system;
-    uint ebx;
-    uint edx;
-    uint ecx;
-    uint eax;
-    ushort flags;
-    ushort es,ds,fs,gs,ip,cs,sp,ss;
+    uint32_t edi;
+    uint32_t esi;
+    uint32_t ebp;
+    uint32_t reserved_by_system;
+    uint32_t ebx;
+    uint32_t edx;
+    uint32_t ecx;
+    uint32_t eax;
+    uint16_t flags;
+    uint16_t es,ds,fs,gs,ip,cs,sp,ss;
 } dpmi_real_regs;
 
 
 // Initializes dpmi. Returns zero if failed.
-extern int dpmi_init(int verbose);
+extern int32_t dpmi_init(int32_t verbose);
 // Returns a pointer to a temporary dos memory block. Size must be < 1024 bytes.
-extern void *dpmi_get_temp_low_buffer( int size );
-extern void *dpmi_real_malloc( int size, ushort *selector );
-extern void dpmi_real_free( ushort selector );
-extern void dpmi_real_int386x( ubyte intno, dpmi_real_regs * rregs );
+extern void *dpmi_get_temp_low_buffer( int32_t size );
+extern void *dpmi_real_malloc( int32_t size, uint16_t *selector );
+extern void dpmi_real_free( uint16_t selector );
+extern void dpmi_real_int386x( uint8_t intno, dpmi_real_regs * rregs );
 extern void dpmi_real_call(dpmi_real_regs * rregs);
-extern int dpmi_lock_region(void *address, unsigned length);
-extern int dpmi_unlock_region(void *address, unsigned length);
+extern int32_t dpmi_lock_region(void *address, unsigned length);
+extern int32_t dpmi_unlock_region(void *address, unsigned length);
 // returns 0 if failed...
-extern int dpmi_allocate_selector( void * address, int size, ushort * selector );
-extern int dpmi_modify_selector_base( ushort selector, void * address );
-extern int dpmi_modify_selector_limit( ushort selector, int size  );
+extern int32_t dpmi_allocate_selector( void * address, int32_t size, uint16_t * selector );
+extern int32_t dpmi_modify_selector_base( uint16_t selector, void * address );
+extern int32_t dpmi_modify_selector_limit( uint16_t selector, int32_t size  );
 
 
 #if defined(__GNUC__) || defined(_WIN32)
@@ -52,11 +52,11 @@ extern int dpmi_modify_selector_limit( ushort selector, int size  );
 # define _far far
 #endif
 // Sets the PM handler. Returns 0 if succssful
-extern int dpmi_set_pm_handler(unsigned intnum, void _far * isr );
+extern int32_t dpmi_set_pm_handler(unsigned intnum, void _far * isr );
 
-extern uint dpmi_virtual_memory;
-extern uint dpmi_available_memory;
-extern uint dpmi_physical_memory;
-extern uint dpmi_dos_memory;
+extern uint32_t dpmi_virtual_memory;
+extern uint32_t dpmi_available_memory;
+extern uint32_t dpmi_physical_memory;
+extern uint32_t dpmi_dos_memory;
 
 #endif

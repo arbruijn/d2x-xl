@@ -55,7 +55,7 @@ void CParticleManager::RebuildSystemList (void)
 m_nUsed =
 m_nFree = -1;
 CParticleSystem *systemP = m_systems;
-for (int i = 0; i < MAX_PARTICLE_SYSTEMS; i++, systemP++) {
+for (int32_t i = 0; i < MAX_PARTICLE_SYSTEMS; i++, systemP++) {
 	if (systemP->HasEmitters ()) {
 		systemP->SetNext (m_nUsed);
 		m_nUsed = i;
@@ -104,8 +104,8 @@ if (!m_systems.Create (MAX_PARTICLE_SYSTEMS)) {
 	return;
 	}
 m_systemList.Create (MAX_PARTICLE_SYSTEMS);
-int i = 0;
-int nCurrent = m_systems.FreeList ();
+int32_t i = 0;
+int32_t nCurrent = m_systems.FreeList ();
 for (CParticleSystem* systemP = m_systems.GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 	systemP->Init (i++);
 for (i = 0; i < MAX_PARTICLE_BUFFERS; i++)
@@ -123,7 +123,7 @@ mat.m.dir.f.v.coord.y = 0;
 mat.m.dir.f.v.coord.z = 1;
 CFloatVector dir;
 dir.Set (1.0f, 1.0f, 0.0f, 1.0f);
-for (int i = 0; i < PARTICLE_POSITIONS; i++) {
+for (int32_t i = 0; i < PARTICLE_POSITIONS; i++) {
 	mat.m.dir.r.v.coord.x =
 	mat.m.dir.u.v.coord.y = sinCosPart [i].fCos;
 	mat.m.dir.u.v.coord.x = sinCosPart [i].fSin;
@@ -140,7 +140,7 @@ CParticle::InitRotation ();
 
 //------------------------------------------------------------------------------
 
-int CParticleManager::Destroy (int i)
+int32_t CParticleManager::Destroy (int32_t i)
 {
 #if 1
 m_systems [i].m_bDestroy = true;
@@ -155,7 +155,7 @@ return i;
 
 void CParticleManager::Cleanup (void)
 {
-int nCurrent = -1;
+int32_t nCurrent = -1;
 for (CParticleSystem* systemP = GetFirst (nCurrent), * nextP = NULL; systemP; systemP = nextP) {
 	nextP = GetNext (nCurrent);
 	if (systemP->m_bDestroy) {
@@ -167,10 +167,10 @@ for (CParticleSystem* systemP = GetFirst (nCurrent), * nextP = NULL; systemP; sy
 
 //------------------------------------------------------------------------------
 
-int CParticleManager::Shutdown (void)
+int32_t CParticleManager::Shutdown (void)
 {
 SEM_ENTER (SEM_SMOKE)
-int nCurrent = -1;
+int32_t nCurrent = -1;
 for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 	systemP->Destroy ();
 Cleanup ();
@@ -185,10 +185,10 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-int CParticleManager::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
-										short nSegment, int nMaxEmitters, int nMaxParts,
-										float fScale, /*int nDensity, int nPartsPerPos,*/ int nLife, int nSpeed, char nType,
-										int nObject, CFloatVector *colorP, int bBlowUpParts, char nSide)
+int32_t CParticleManager::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
+										int16_t nSegment, int32_t nMaxEmitters, int32_t nMaxParts,
+										float fScale, /*int32_t nDensity, int32_t nPartsPerPos,*/ int32_t nLife, int32_t nSpeed, char nType,
+										int32_t nObject, CFloatVector *colorP, int32_t bBlowUpParts, char nSide)
 {
 if (!gameOpts->render.particles.nQuality)
 	return -1;
@@ -209,7 +209,7 @@ else
 }
 if (!systemP)
 	return -1;
-int i = systemP->Create (vPos, vDir, mOrient, nSegment, nMaxEmitters, nMaxParts, fScale, /*nDensity, nPartsPerPos,*/ 
+int32_t i = systemP->Create (vPos, vDir, mOrient, nSegment, nMaxEmitters, nMaxParts, fScale, /*nDensity, nPartsPerPos,*/ 
 								 nLife, nSpeed, nType, nObject, colorP, bBlowUpParts, nSide);
 if (i < 1)
 	return i;
@@ -218,22 +218,22 @@ return systemP->Id ();
 
 //------------------------------------------------------------------------------
 
-int CParticleManager::Update (void)
+int32_t CParticleManager::Update (void)
 {
 #if SMOKE_SLOWMO
-	static int	t0 = 0;
-	int t = gameStates.app.nSDLTicks [0] - t0;
+	static int32_t	t0 = 0;
+	int32_t t = gameStates.app.nSDLTicks [0] - t0;
 
 if (t / gameStates.gameplay.slowmo [0].fSpeed < 25)
 	return 0;
-t0 += (int) (gameStates.gameplay.slowmo [0].fSpeed * 25);
+t0 += (int32_t) (gameStates.gameplay.slowmo [0].fSpeed * 25);
 #else
 if (!gameStates.app.tick40fps.bTick)
 	return 0;
 #endif
-	int	h = 0;
+	int32_t	h = 0;
 
-	int nCurrent = -1;
+	int32_t nCurrent = -1;
 
 #if USE_OPENMP > 1
 if (gameStates.app.bMultiThreaded && m_systemList.Buffer ()) {
@@ -241,9 +241,9 @@ if (gameStates.app.bMultiThreaded && m_systemList.Buffer ()) {
 		m_systemList [h++] = systemP;
 #	pragma omp parallel
 		{
-		int nThread = omp_get_thread_num();
+		int32_t nThread = omp_get_thread_num();
 #	pragma omp for
-		for (int i = 0; i < h; i++)
+		for (int32_t i = 0; i < h; i++)
 			m_systemList [i]->Update (nThread);
 		}
 	}
@@ -262,11 +262,11 @@ void CParticleManager::Render (void)
 {
 if (!gameOpts->render.particles.nQuality)
 	return;
-int nCurrent = -1;
+int32_t nCurrent = -1;
 
 #if USE_OPENMP > 1
 if (gameStates.app.bMultiThreaded && m_systemList.Buffer ()) {
-	int h = 0;
+	int32_t h = 0;
 	for (CParticleSystem* systemP = GetFirst (nCurrent); systemP; systemP = GetNext (nCurrent))
 		m_systemList [h++] = systemP;
 	if (h == 0)
@@ -276,9 +276,9 @@ if (gameStates.app.bMultiThreaded && m_systemList.Buffer ()) {
 	else 
 #	pragma omp parallel
 		{
-		int nThread = omp_get_thread_num();
+		int32_t nThread = omp_get_thread_num();
 #	pragma omp for
-		for (int i = 0; i < h; i++)
+		for (int32_t i = 0; i < h; i++)
 			m_systemList [i]->Render (nThread);
 		}
 	}
@@ -292,15 +292,15 @@ else
 
 //------------------------------------------------------------------------------
 
-void CParticleManager::SetupParticles (int nThread)
+void CParticleManager::SetupParticles (int32_t nThread)
 {
-for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++)
+for (int32_t i = 0; i < MAX_PARTICLE_BUFFERS; i++)
 	particleBuffer [i].Setup (nThread);
 }
 
 //------------------------------------------------------------------------------
 
-int CParticleManager::CloseBuffer (void)
+int32_t CParticleManager::CloseBuffer (void)
 {
 Flush (-1);
 ogl.DisableClientStates (1, 1, 0, GL_TEXTURE0 + lightmapManager.HaveLightmaps ());
@@ -314,11 +314,11 @@ bool CParticleManager::Flush (float fBrightness, bool bForce)
 #if MAX_PARTICLE_BUFFERS  > 1
 	bool bFlushed = false;
 
-for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
+for (int32_t i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 	float d = 0;
-	int h = -1;
+	int32_t h = -1;
 	// flush most distant particles first
-	for (int j = 0; j < MAX_PARTICLE_BUFFERS; j++) {
+	for (int32_t j = 0; j < MAX_PARTICLE_BUFFERS; j++) {
 		if (particleBuffer [j].m_iBuffer && (d < particleBuffer [j].m_dMax)) {
 			d = particleBuffer [j].m_dMax;
 			h = j;
@@ -337,7 +337,7 @@ return particleBuffer [0].Flush (fBrightness, bForce);
 
 //------------------------------------------------------------------------------
 
-short CParticleManager::Add (CParticle* particleP, float brightness, int nBuffer, bool& bFlushed)
+int16_t CParticleManager::Add (CParticle* particleP, float brightness, int32_t nBuffer, bool& bFlushed)
 {
 #if MAX_PARTICLE_BUFFERS  > 1
 if (!particleBuffer [nBuffer].Compatible (particleP))
@@ -345,7 +345,7 @@ if (!particleBuffer [nBuffer].Compatible (particleP))
 CFloatVector pos;
 pos.Assign (particleP->m_vPos);
 float rad = particleP->Rad ();
-for (int i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
+for (int32_t i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 	if (i == nBuffer) 
 		continue;
 	if (!particleBuffer [i].Overlap (pos, rad))
@@ -374,7 +374,7 @@ bool CParticleManager::Add (CParticle* particleP, float brightness)
 {
 #if MAX_PARTICLE_BUFFERS  > 1
 	bool	bFlushed = false;
-	int	i, j;
+	int32_t	i, j;
 
 for (i = 0; i < MAX_PARTICLE_BUFFERS; i++) {
 	if (Add (particleP, brightness, i, bFlushed) >= 0)
@@ -397,7 +397,7 @@ return particleBuffer [0].Add (particleP, brightness, particleP->Posf (), partic
 
 //------------------------------------------------------------------------------
 
-int CParticleManager::BeginRender (int nType, float nScale)
+int32_t CParticleManager::BeginRender (int32_t nType, float nScale)
 {
 	static time_t	t0 = 0;
 
@@ -414,7 +414,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CParticleManager::EndRender (void)
+int32_t CParticleManager::EndRender (void)
 {
 return 1;
 }

@@ -35,19 +35,19 @@ using namespace OOF;
 #endif
 
 #if DBG_SHADOWS
-extern int bShadowTest;
-extern int bSingleStencil;
+extern int32_t bShadowTest;
+extern int32_t bSingleStencil;
 
-int bFrontCap = 1;
-int bRearCap = 1;
-int bFrontFaces = 1;
-int bBackFaces = 1;
-int bShadowVolume = 1;
-int bWallShadows = 1;
-int bSWCulling = 0;
+int32_t bFrontCap = 1;
+int32_t bRearCap = 1;
+int32_t bFrontFaces = 1;
+int32_t bBackFaces = 1;
+int32_t bShadowVolume = 1;
+int32_t bWallShadows = 1;
+int32_t bSWCulling = 0;
 #endif
 
-int bZPass = 0;
+int32_t bZPass = 0;
 
 static CFloatVector vPos;
 static CFloatVector vrLightPos;
@@ -55,7 +55,7 @@ static CFloatMatrix mView;
 
 //------------------------------------------------------------------------------
 
-int OOF_FacingPoint (CFloatVector *modelVertP, CFloatVector *pn, CFloatVector *pp)
+int32_t OOF_FacingPoint (CFloatVector *modelVertP, CFloatVector *pn, CFloatVector *pp)
 {
 	CFloatVector	v = *pp - *modelVertP;
 
@@ -64,14 +64,14 @@ return CFloatVector::Dot (v, *pn) > 0;
 
 //------------------------------------------------------------------------------
 
-int OOF_FacingViewer (CFloatVector *modelVertP, CFloatVector *pn)
+int32_t OOF_FacingViewer (CFloatVector *modelVertP, CFloatVector *pn)
 {
 return OOF_FacingPoint (modelVertP, pn, &vPos);
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_FacingLight (CFloatVector *modelVertP, CFloatVector *pn)
+int32_t OOF_FacingLight (CFloatVector *modelVertP, CFloatVector *pn)
 {
 return OOF_FacingPoint (modelVertP, pn, &vrLightPos);
 }
@@ -89,7 +89,7 @@ return &faceP->m_vRotNormal;
 
 //------------------------------------------------------------------------------
 
-int OOF_LitFace (CSubModel *pso, CFace *faceP)
+int32_t OOF_LitFace (CSubModel *pso, CFace *faceP)
 {
 //OOF_CalcFacePerp (pso, faceP);
 return faceP->m_bFacingLight = 
@@ -102,7 +102,7 @@ return faceP->m_bFacingLight =
 
 //------------------------------------------------------------------------------
 
-int OOF_FrontFace (CSubModel *pso, CFace *faceP)
+int32_t OOF_FrontFace (CSubModel *pso, CFace *faceP)
 {
 #if 0
 return OOF_FacingViewer (&faceP->m_vRotCenter, &faceP->m_vRotNormal);
@@ -113,10 +113,10 @@ return OOF_FacingViewer (pso->m_rotVerts + faceP->m_vertices->m_nIndex, &faceP->
 
 //------------------------------------------------------------------------------
 
-int OOF_GetLitFaces (CSubModel *pso)
+int32_t OOF_GetLitFaces (CSubModel *pso)
 {
 	CFace		*faceP;
-	int				i;
+	int32_t				i;
 
 for (i = pso->m_faces.m_nFaces, faceP = pso->m_faces.m_list.Buffer (); i; i--, faceP++) {
 	faceP->m_bFacingLight = OOF_LitFace (pso, faceP);
@@ -130,10 +130,10 @@ return pso->m_faces.m_nFaces;
 
 //------------------------------------------------------------------------------
 
-int OOF_GetSilhouette (CSubModel *pso)
+int32_t OOF_GetSilhouette (CSubModel *pso)
 {
 	CEdge		*pe;
-	int				h, i, j;
+	int32_t				h, i, j;
 
 OOF_GetLitFaces (pso);
 for (h = j = 0, i = pso->m_edges.m_nEdges, pe = pso->m_edges.m_list.Buffer (); i; i--, pe++) {
@@ -156,23 +156,23 @@ return pso->m_edges.m_nContourEdges = h;
 
 //------------------------------------------------------------------------------
 
-void SetCullAndStencil (int bCullFront, int bZPass = 0);
+void SetCullAndStencil (int32_t bCullFront, int32_t bZPass = 0);
 
-void OOF_SetCullAndStencil (int bCullFront)
+void OOF_SetCullAndStencil (int32_t bCullFront)
 {
 SetCullAndStencil (bCullFront);
 }
 
 //------------------------------------------------------------------------------
 
-int OOF_DrawShadowVolume (CModel *po, CSubModel *pso, int bCullFront)
+int32_t OOF_DrawShadowVolume (CModel *po, CSubModel *pso, int32_t bCullFront)
 {
 if (bCullFront && ogl.m_features.bSeparateStencilOps.Available ())
 	return 1;
 
 	CEdge*					pe;
 	CFloatVector*			modelVertP;
-	int						nVerts, nEdges;
+	int32_t						nVerts, nEdges;
 
 if (!bCullFront)
 	OOF_GetSilhouette (pso);
@@ -207,7 +207,7 @@ for (nVerts = 0, pe = pso->m_edges.m_list.Buffer (); nEdges; pe++) {
 #if DBG_SHADOWS
 		if (bShadowTest < 2) {
 #endif
-			int h = (pe->m_faces [1] && pe->m_faces [1]->m_bFacingLight);
+			int32_t h = (pe->m_faces [1] && pe->m_faces [1]->m_bFacingLight);
 			if (pe->m_faces [h]->m_bReverse)
 				h = !h;
 			ogl.VertexBuffer () [nVerts] = modelVertP [pe->m_v1 [h]];
@@ -247,7 +247,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OOF_DrawShadowCaps (CModel *po, CSubModel *pso, int bCullFront)
+int32_t OOF_DrawShadowCaps (CModel *po, CSubModel *pso, int32_t bCullFront)
 {
 if (bCullFront && ogl.m_features.bSeparateStencilOps.Available ())
 	return 1;
@@ -255,7 +255,7 @@ if (bCullFront && ogl.m_features.bSeparateStencilOps.Available ())
 	CFace*			faceP;
 	CFaceVert*		faceVertP;
 	CFloatVector*	modelVertP, v0, v1;
-	int				nVerts, i, j, bReverse;
+	int32_t				nVerts, i, j, bReverse;
 
 #if DBG_SHADOWS
 if (bZPass)
@@ -332,7 +332,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int OOF_DrawShadow (CModel *po, CSubModel *pso)
+int32_t OOF_DrawShadow (CModel *po, CSubModel *pso)
 {
 #if 1
 return 1;	// D2 oof models aren't 'shadow proof'
@@ -346,16 +346,16 @@ return OOF_DrawShadowVolume (po, pso, 0) &&
 
 //------------------------------------------------------------------------------
 
-int CSubModel::Draw (CObject *objP, CModel *po, float *fLight)
+int32_t CSubModel::Draw (CObject *objP, CModel *po, float *fLight)
 {
 	CFace*			faceP;
 	CFaceVert*		faceVertP;
 	CFloatVector*	modelVertP, * modelNormalP, * phv;
 	CFaceColor*		vertColorP, vertColor, segColor;
 	CBitmap*			bmP = NULL;
-	int				h, i, j, nModelVerts [2], nVerts, nFaceVerts;
-	int				bBright = EGI_FLAG (bBrightObjects, 0, 1, 0), bTextured = -1, bReverse;
-	int				bDynLighting = gameStates.render.bApplyDynLight;
+	int32_t				h, i, j, nModelVerts [2], nVerts, nFaceVerts;
+	int32_t				bBright = EGI_FLAG (bBrightObjects, 0, 1, 0), bTextured = -1, bReverse;
+	int32_t				bDynLighting = gameStates.render.bApplyDynLight;
 	float				fl, r, g, b, fAlpha = po->m_fAlpha;
 	// helper pointers into render buffers
 	CFloatVector*	vertP;
@@ -427,7 +427,7 @@ for (bReverse = 0; bReverse <= 1; bReverse++) {
 					nVerts = 0;
 					}
 				bmP = po->m_textures.m_bitmaps + faceP->m_texProps.nTexId;
-				if (bmP->Texture () && ((int) bmP->Texture ()->Handle () < 0))
+				if (bmP->Texture () && ((int32_t) bmP->Texture ()->Handle () < 0))
 					bmP->Texture ()->SetHandle (0);
 				bmP->SetTranspType (0);
 				ogl.SetTexturing (true);
@@ -548,7 +548,7 @@ void CSubModel::Transform (CFloatVector vo)
 {
 	CFloatVector	*modelVertP, *prv;
 	CFace				*faceP;
-	int				i;
+	int32_t				i;
 
 for (i = m_nVerts, modelVertP = m_vertices.Buffer (), prv = m_rotVerts.Buffer (); i; i--, modelVertP++, prv++)
 	TransformVertex (prv, modelVertP, &vo);
@@ -570,10 +570,10 @@ for (i = m_faces.m_nFaces, faceP = m_faces.m_list.Buffer (); i; i--, faceP++) {
 
 //------------------------------------------------------------------------------
 
-int CSubModel::Render (CObject *objP, CModel *po, CFloatVector vo, int nIndex, float *fLight)
+int32_t CSubModel::Render (CObject *objP, CModel *po, CFloatVector vo, int32_t nIndex, float *fLight)
 {
 	CSubModel	*pso;
-	int			i, j;
+	int32_t			i, j;
 
 vo += m_vOffset;
 Transform (vo);
@@ -598,10 +598,10 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CModel::Draw (CObject *objP, float *fLight)
+int32_t CModel::Draw (CObject *objP, float *fLight)
 {
 	CSubModel		*pso;
-	int				r = 1, i;
+	int32_t				r = 1, i;
 	CFloatVector	vo;
 
 vo.SetZero ();
@@ -627,9 +627,9 @@ return r;
 
 //------------------------------------------------------------------------------
 
-int CModel::RenderShadow (CObject *objP, float *fLight)
+int32_t CModel::RenderShadow (CObject *objP, float *fLight)
 {
-	short		i, *nearestLightP = lightManager.NearestSegLights () + gameData.objs.consoleP->info.nSegment * MAX_NEAREST_LIGHTS;
+	int16_t		i, *nearestLightP = lightManager.NearestSegLights () + gameData.objs.consoleP->info.nSegment * MAX_NEAREST_LIGHTS;
 
 gameData.render.shadows.nLight = 0; 
 for (i = 0; (gameData.render.shadows.nLight < gameOpts->render.shadows.nLights) && (*nearestLightP >= 0); i++, nearestLightP++) {
@@ -648,7 +648,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int CModel::Render (CObject *objP, float *fLight, int bCloaked)
+int32_t CModel::Render (CObject *objP, float *fLight, int32_t bCloaked)
 {
 	float	dt;
 

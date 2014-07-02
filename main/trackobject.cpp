@@ -47,7 +47,7 @@ class CHomingTargetData {
 		CFixVector m_vTrackerViewDir;
 		fix	m_xMaxDist;
 		fix	m_xBestDot;
-		int	m_nBestObj;
+		int32_t	m_nBestObj;
 		CStack<class CTarget>& m_targets;
 
 		CHomingTargetData (CObject* trackerP, CFixVector& vTrackerPos, CStack<class CTarget>& targets) 
@@ -63,7 +63,7 @@ class CHomingTargetData {
 
 		void Add (CObject* targetP, float dotScale = 1.0f);
 
-		int Target (void);
+		int32_t Target (void);
 	};
 
 //	-----------------------------------------------------------------------------
@@ -96,7 +96,7 @@ if (ObjectToObjectVisibility (m_trackerP, targetP, FQ_TRANSWALL)) {
 
 //	-----------------------------------------------------------------------------
 
-int CHomingTargetData::Target (void)
+int32_t CHomingTargetData::Target (void)
 {
 #if NEW_TARGETTING
 if (m_targets.ToS () < 1)
@@ -104,7 +104,7 @@ if (m_targets.ToS () < 1)
 if (m_targets.ToS () > 1)
 	m_targets.SortDescending ();
 
-for (uint i = 0; i < m_targets.ToS (); i++) {
+for (uint32_t i = 0; i < m_targets.ToS (); i++) {
 	if (ObjectToObjectVisibility (m_trackerP, m_targets[i].m_objP, FQ_TRANSWALL))
 		return m_targets[i].m_objP->Index ();
 	}
@@ -120,7 +120,7 @@ return m_nBestObj;
 //	Return true if weapon *trackerP is able to track CObject OBJECTS [nTarget], else return false.
 //	In order for the CObject to be trackable, it must be within a reasonable turning radius for the missile
 //	and it must not be obstructed by a CWall.
-int CObject::ObjectIsTrackable (int nTarget, fix& xDot)
+int32_t CObject::ObjectIsTrackable (int32_t nTarget, fix& xDot)
 {
 if (nTarget == -1)
 	return 0;
@@ -158,7 +158,7 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-int CObject::SelectHomingTarget (CFixVector& vTrackerPos)
+int32_t CObject::SelectHomingTarget (CFixVector& vTrackerPos)
 {
 if (!IsMultiGame)
 	return FindAnyHomingTarget (vTrackerPos, OBJ_ROBOT, -1);
@@ -174,9 +174,9 @@ return FindAnyHomingTarget (vTrackerPos, OBJ_PLAYER, (parentP && (parentP->Targe
 
 //	-----------------------------------------------------------------------------
 
-int CObject::FindTargetWindow (void)
+int32_t CObject::FindTargetWindow (void)
 {
-for (int i = 0; i < MAX_RENDERED_WINDOWS; i++)
+for (int32_t i = 0; i < MAX_RENDERED_WINDOWS; i++)
 	if ((windowRenderedData [i].nFrame >= gameData.app.nFrameCount - 1) &&
 		 ((windowRenderedData [i].viewerP == gameData.objs.consoleP) || (this == GuidedInMainView ())) &&
 		 !windowRenderedData [i].bRearView) {
@@ -187,7 +187,7 @@ return -1;
 
 //	-----------------------------------------------------------------------------
 
-int CObject::MaxTrackableDist (int& xBestDot)
+int32_t CObject::MaxTrackableDist (int32_t& xBestDot)
 {
 if (Type () == OBJ_WEAPON) {
 	if (Id () == OMEGA_ID) {
@@ -206,7 +206,7 @@ return MAX_TRACKABLE_DIST;
 //	-----------------------------------------------------------------------------
 //	Find CObject to home in on.
 //	Scan list of OBJECTS rendered last frame, find one that satisfies function of nearness to center and distance.
-int CObject::FindVisibleHomingTarget (CFixVector& vTrackerPos)
+int32_t CObject::FindVisibleHomingTarget (CFixVector& vTrackerPos)
 {
 //	Find an CObject to track based on game mode (eg, whether in network play) and who fired it.
 if (IsMultiGame)
@@ -216,7 +216,7 @@ if (IsMultiGame)
 if ((Type () != OBJ_PLAYER) && (cType.laserInfo.parent.nObject != LOCALPLAYER.nObject) && !(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 	return OBJ_IDX (gameData.objs.consoleP);
 
-	int nWindow = FindTargetWindow ();
+	int32_t nWindow = FindTargetWindow ();
 
 if (nWindow == -1)
 	return SelectHomingTarget (vTrackerPos);
@@ -226,13 +226,13 @@ if (nWindow == -1)
 	CHomingTargetData targetData (this, vTrackerPos, targetLists [0]);
 
 //	Not in multiplayer mode and fired by player.
-for (int i = windowRenderedData [nWindow].nObjects - 1; i >= 0; i--) {
-	short nObject = windowRenderedData [nWindow].renderedObjects [i];
+for (int32_t i = windowRenderedData [nWindow].nObjects - 1; i >= 0; i--) {
+	int16_t nObject = windowRenderedData [nWindow].renderedObjects [i];
 	if (nObject == LOCALPLAYER.nObject)
 		continue;
 	CObject* targetP = OBJECTS + nObject;
 	//	Can't track AI CObject if he's cloaked.
-	int nType = targetP->Type ();
+	int32_t nType = targetP->Type ();
 	if (nType == OBJ_ROBOT) {
 		if (targetP->cType.aiInfo.CLOAKED)
 			continue;
@@ -260,7 +260,7 @@ return targetData.Target ();
 //	Always track proximity bombs.  --MK, 06/14/95
 //	Make homing OBJECTS not track parent's prox bombs.
 
-int CObject::FindAnyHomingTarget (CFixVector& vTrackerPos, int targetType1, int targetType2, int nThread)
+int32_t CObject::FindAnyHomingTarget (CFixVector& vTrackerPos, int32_t targetType1, int32_t targetType2, int32_t nThread)
 {
 	bool bOmega = (Type () == OBJ_WEAPON) && (Id () == OMEGA_ID);
 	CObject* targetP;
@@ -271,7 +271,7 @@ FORALL_ACTOR_OBJS (targetP, nObject) {
 		continue;
 
 	float dotScale = 1.0f;
-	int nType = targetP->Type ();
+	int32_t nType = targetP->Type ();
 	if (nType == OBJ_WEAPON) {
 		if (targetP->cType.laserInfo.parent.nSignature == cType.laserInfo.parent.nSignature)
 			continue; // target was created by tracker (e.g. a mine dropped by the tracker object)
@@ -309,11 +309,11 @@ return targetData.Target ();
 //	See if legal to keep tracking currently tracked CObject.  If not, see if another CObject is trackable.  If not, return -1,
 //	else return CObject number of tracking CObject.
 //	Computes and returns a fairly precise dot product.
-int CObject::UpdateHomingTarget (int nTarget, fix& dot, int nThread)
+int32_t CObject::UpdateHomingTarget (int32_t nTarget, fix& dot, int32_t nThread)
 {
-	int	rVal = -2;
-	int	nFrame;
-	int	targetType1, targetType2 = -1;
+	int32_t	rVal = -2;
+	int32_t	nFrame;
+	int32_t	targetType1, targetType2 = -1;
 
 //if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.tick40fps.bTick)
 	//	Every 8 frames for each CObject, scan all OBJECTS.

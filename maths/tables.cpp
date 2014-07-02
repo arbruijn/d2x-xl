@@ -17,7 +17,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "maths.h"
 
-ubyte guess_table [] = {
+uint8_t guess_table [] = {
 	1,
 	1,1,1,
 	2,2,2,2,2,
@@ -36,7 +36,7 @@ ubyte guess_table [] = {
 	15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15
 };
 
-short sincos_table [] = {
+int16_t sincos_table [] = {
 	0,
 	402,
 	804,
@@ -361,7 +361,7 @@ short sincos_table [] = {
 	16384
 };
 
-ushort asin_table [] = {
+uint16_t asin_table [] = {
 	0,
 	41,
 	81,
@@ -622,7 +622,7 @@ ushort asin_table [] = {
 	16384   // extra for when exactly 1
 };
 
-ushort acos_table [] = {
+uint16_t acos_table [] = {
 	16384,
 	16343,
 	16303,

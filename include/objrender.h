@@ -14,8 +14,8 @@
 //------------------------------------------------------------------------------
 
 typedef struct tCloakInfo {
-	int	bFading;
-	int	nFadeValue;
+	int32_t	bFading;
+	int32_t	nFadeValue;
 	fix	xFadeinDuration;
 	fix	xFadeoutDuration;
 	fix	xLightScale;
@@ -25,18 +25,18 @@ typedef struct tCloakInfo {
 
 //------------------------------------------------------------------------------
 
-void DrawObjectBitmap (CObject *obj, int bmi0, int bmi, int iFrame, CFloatVector *color, float alpha);
+void DrawObjectBitmap (CObject *obj, int32_t bmi0, int32_t bmi, int32_t iFrame, CFloatVector *color, float alpha);
 // draw an CObject that is a texture-mapped rod
-void DrawObjectRodTexPoly (CObject *obj, tBitmapIndex bitmap, int bLit, int iFrame);
-int DrawPolygonObject (CObject *objP, int bForce);
+void DrawObjectRodTexPoly (CObject *obj, tBitmapIndex bitmap, int32_t bLit, int32_t iFrame);
+int32_t DrawPolygonObject (CObject *objP, int32_t bForce);
 void CalcShipThrusterPos (CObject *objP, CFixVector *vPos);
-int InitAddonPowerup (CObject *objP);
+int32_t InitAddonPowerup (CObject *objP);
 void ConvertWeaponToPowerup (CObject *objP);
-int ConvertPowerupToWeapon (CObject *objP);
+int32_t ConvertPowerupToWeapon (CObject *objP);
 void ConvertAllPowerupsToWeapons (void);
-int RenderObject(CObject *objP, int nWindowNum, int bForce);
-void TransformHitboxf (CObject *objP, CFloatVector *vertList, int iSubObj);
-int GetCloakInfo (CObject *objP, fix xCloakStartTime, fix xCloakEndTime, tCloakInfo *ciP);
+int32_t RenderObject(CObject *objP, int32_t nWindowNum, int32_t bForce);
+void TransformHitboxf (CObject *objP, CFloatVector *vertList, int32_t iSubObj);
+int32_t GetCloakInfo (CObject *objP, fix xCloakStartTime, fix xCloakEndTime, tCloakInfo *ciP);
 
 //------------------------------------------------------------------------------
 

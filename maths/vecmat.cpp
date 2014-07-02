@@ -91,7 +91,7 @@ fix check = labs (v.coord.x) | labs(v.coord.y) | labs(v.coord.z);
 if (check == 0)
 	return;
 
-int cnt = 0;
+int32_t cnt = 0;
 
 if (check & 0xfffc0000) {		//too big
 	while (check & 0xfff00000) {
@@ -696,7 +696,7 @@ return a;
 
 //	-----------------------------------------------------------------------------
 
-inline int VmBehindPlane (const CFixVector& n, const CFixVector& p1, const CFixVector& p2, const CFixVector& i) {
+inline int32_t VmBehindPlane (const CFixVector& n, const CFixVector& p1, const CFixVector& p2, const CFixVector& i) {
 	CFixVector	t;
 #if DBG
 	fix			d;
@@ -716,7 +716,7 @@ return CFixVector::Dot (i, t) - CFixVector::Dot (p1, t) < 0;
 // If intersection is not between p1 and p2 and vPos is given, return
 // further away point of p1 and p2 to vPos. Otherwise return intersection.
 // returns 1 if intersection outside of p1,p2, otherwise 0.
-const int FindPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, int bClamp)
+const int32_t FindPointLineIntersection (CFixVector& hitP, const CFixVector& p1, const CFixVector& p2, const CFixVector& p3, int32_t bClamp)
 {
 CFixVector d21 = p2 - p1;
 double m = fabs (double (d21.v.coord.x) * double (d21.v.coord.x) + double (d21.v.coord.y) * double (d21.v.coord.y) + double (d21.v.coord.z) * double (d21.v.coord.z));
@@ -728,7 +728,7 @@ CFixVector d31 = p3 - p1;
 double u = double (d31.v.coord.x) * double (d21.v.coord.x) + double (d31.v.coord.y) * double (d21.v.coord.y) + double (d31.v.coord.z) * double (d21.v.coord.z);
 u /= m;
 
-int bClamped = 0;
+int32_t bClamped = 0;
 if (u < 0.0)
 	bClamped = bClamp ? 2 : 1;
 else if (u > 1.0)
@@ -750,12 +750,12 @@ return bClamped;
 // ------------------------------------------------------------------------
 
 // Version with vPos
-const int FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, 
-											    const CFloatVector& vPos, int bClamp) 
+const int32_t FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, 
+											    const CFloatVector& vPos, int32_t bClamp) 
 {
 	CFloatVector	d31, d21;
 	float		m, u;
-	int		bClamped = 0;
+	int32_t		bClamped = 0;
 
 d21 = p2 - p1;
 m = (float) fabs (d21.SqrMag ());
@@ -784,11 +784,11 @@ return bClamped;
 
 
 // Version without vPos
-const int FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, int bClamp) 
+const int32_t FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, int32_t bClamp) 
 {
 	CFloatVector	d31, d21;
 	float		m, u;
-	int		bClamped = 0;
+	int32_t		bClamped = 0;
 
 d21 = p2 - p1;
 m = (float) fabs (d21.SqrMag ());	// Dot (d21, d21)
@@ -815,11 +815,11 @@ return bClamped;
 
 // ------------------------------------------------------------------------
 
-const int FindPointLineIntersection (CFloatVector3& hitP, const CFloatVector3& p1, const CFloatVector3& p2, const CFloatVector3& p3, CFloatVector3 *vPos, int bClamp) 
+const int32_t FindPointLineIntersection (CFloatVector3& hitP, const CFloatVector3& p1, const CFloatVector3& p2, const CFloatVector3& p3, CFloatVector3 *vPos, int32_t bClamp) 
 {
 	CFloatVector3	d31, d21;
 	float		m, u;
-	int		bClamped = 0;
+	int32_t		bClamped = 0;
 
 d21 = p2 - p1;
 m = (float) fabs (d21.SqrMag ());
@@ -860,7 +860,7 @@ return CFixVector::Dist (h, p);
 
 // ------------------------------------------------------------------------
 
-const float VmLinePointDist (const CFloatVector& a, const CFloatVector& b, const CFloatVector& p, int bClamp)
+const float VmLinePointDist (const CFloatVector& a, const CFloatVector& b, const CFloatVector& p, int32_t bClamp)
 {
 	CFloatVector	h;
 
@@ -870,7 +870,7 @@ return CFloatVector::Dist (h, p);
 
 // ------------------------------------------------------------------------
 
-const float VmLinePointDist (const CFloatVector3& a, const CFloatVector3& b, const CFloatVector3& p, int bClamp)
+const float VmLinePointDist (const CFloatVector3& a, const CFloatVector3& b, const CFloatVector3& p, int32_t bClamp)
 {
 	CFloatVector3	h;
 
@@ -1019,7 +1019,7 @@ else
 const CFixVector CFixVector::Random (void) 
 {
 	CFixVector v;
-	int i = RandShort () % 3;
+	int32_t i = RandShort () % 3;
 
 if (i == 2) {
 	v.v.coord.x = (SRandShort ()) | 1;	// make sure we don't create null vector
