@@ -646,6 +646,8 @@ int CObjectSynchronizer::CompareFrames (void)
 {
 if (networkData.nPrevFrame == m_nFrame - 1)
 	return 1;
+if (networkData.nJoinState > 1)
+	return 0;
 if (networkData.nPrevFrame >= m_nFrame)
 	return -1;
 if (networkData.nPrevFrame < 0)
@@ -663,8 +665,6 @@ return 0;
 
 int CObjectSynchronizer::ValidateFrame (void)
 {
-if (networkData.nJoinState > 1)
-	return 0;
 networkData.nPrevFrame = networkData.sync [0].objs.nFrame;
 if (gameStates.multi.nGameType == UDP_GAME) {
 	m_bufI = 2;
