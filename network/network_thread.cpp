@@ -186,8 +186,6 @@ return bOk;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-char* nwtFunc = "";
-
 static int _CDECL_ NetworkThreadHandler (void* nThreadP)
 {
 networkThread.Run ();
@@ -204,13 +202,9 @@ return 0;
 void CNetworkThread::Run (void)
 {
 for (;;) {
-	nwtFunc = "Listen";
 	Listen ();
-	nwtFunc = "SendSync";
 	SendSync ();
-	nwtFunc = "Update";
 	Update ();
-	nwtFunc = "CheckPlayerTimeouts";
 	CheckPlayerTimeouts ();
 	G3_SLEEP (1);
 	}
@@ -417,11 +411,12 @@ m_rxPacketQueue.Unlock ();
 
 int CNetworkThread::Listen (void)
 {
+#if 0
 	static CTimeout toListen (LISTEN_TIMEOUT);
 
 if (!toListen.Expired ())
 	return 0;
-
+#endif
 #if 1 // network reads all network packets independently of main thread
 Cleanup ();
 // read all available network packets and append them to the end of the list of unprocessed network packets
