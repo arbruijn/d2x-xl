@@ -326,18 +326,18 @@ else {
 
 //------------------------------------------------------------------------------
 
-// Sends a non-localized packet... needs 4 byte server, 6 byte address
-void IPXSendInternetPacketData (ubyte *data, int dataSize, ubyte *server, ubyte *address)
+// Sends a non-localized packet... needs 4 byte network, 6 byte address
+void IPXSendInternetPacketData (ubyte *data, int dataSize, ubyte *network, ubyte *node)
 {
 	ubyte localAddress [6];
 
-if (*reinterpret_cast<uint*> (server) != 0) {
-	IpxGetLocalTarget (server, address, localAddress);
-	IPXSendPacketData (data, dataSize, server, address, localAddress);
+if (*reinterpret_cast<uint*> (network) != 0) {
+	IpxGetLocalTarget (network, node, localAddress);
+	IPXSendPacketData (data, dataSize, network, node, localAddress);
 	} 
 else {
 	// Old method, no server info.
-	IPXSendPacketData (data, dataSize, server, address, address);
+	IPXSendPacketData (data, dataSize, network, node, node);
 	}
 }
 

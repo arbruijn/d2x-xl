@@ -166,14 +166,12 @@ void TestXMLInfoRequest (ubyte* serverAddress)
 {
 #if 0 //DBG
 gameStates.multi.bTrackerCall = 2;
-IPXSendInternetPacketData ((ubyte *) "FDescent Game Info Request", (int) strlen ("FDescent Game Info Request") + 1, 
-								   serverAddress, serverAddress + 4);
+networkThread.Send ((ubyte *) "FDescent Game Info Request", (int) strlen ("FDescent Game Info Request") + 1, serverAddress, serverAddress + 4);
 gameStates.multi.bTrackerCall = 0;
 #endif
 #if 1 //DBG
 gameStates.multi.bTrackerCall = 2;
-IPXSendInternetPacketData ((ubyte *) "GDescent Game Status Request", (int) strlen ("GDescent Game Status Request") + 1, 
-								   serverAddress, serverAddress + 4);
+networkThread.Send ((ubyte *) "GDescent Game Status Request", (int) strlen ("GDescent Game Status Request") + 1, serverAddress, serverAddress + 4);
 gameStates.multi.bTrackerCall = 0;
 #endif
 }
@@ -700,7 +698,7 @@ if (!their) {
 buf [0] = PID_NAMES_RETURN; 
 count++;
 *reinterpret_cast<int*> (buf + 1) = netGame.m_info.nSecurity; 
-count+=4;
+count += 4;
 if (!bNameReturning) {
 	buf [count++] = (char) 255; 
 	goto sendit;
@@ -721,7 +719,7 @@ buf [count++] = char (PacketsPerSec ());
  
 sendit:	   
 
-IPXSendInternetPacketData (reinterpret_cast<ubyte*> (buf), count, their->player.network.Network (), their->player.network.Node ());
+networkThread.Send (reinterpret_cast<ubyte*> (buf), count, their->player.network.Network (), their->player.network.Node ());
 }
 
 //------------------------------------------------------------------------------

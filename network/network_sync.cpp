@@ -125,8 +125,6 @@ for (nPacketsLeft = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACK
 	bufI = (gameStates.multi.nGameType == UDP_GAME) ? 4 : 3;
 
 	if (bResync || (syncP->objs.nCurrent == -1)) {	// first packet tells the receiver to reset it's object data
-		if (!bResync && syncP->bDeferredSync && networkThread.Available ())
-			networkThread.InitSync ();
 		syncP->objs.nSent = 0;
 		syncP->objs.nMode = 0;
 		syncP->objs.nFrame = 0;
@@ -219,7 +217,7 @@ void NetworkSyncPlayer (tNetworkSyncData *syncP)
 
 //OLD IPXSendPacketData (objBuf, 8, &syncP->player [1].player.node);
 if (gameStates.multi.nGameType >= IPX_GAME)
-	IPXSendInternetPacketData (objBuf, 8, syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node ());
+	networkThread.Send (objBuf, 8, syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node ());
 // Send sync packet which tells the player who he is and to start!
 NetworkSendRejoinSync (nPlayer, syncP);
 

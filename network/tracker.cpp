@@ -99,7 +99,7 @@ void CTracker::Call (int i, ubyte *pData, int nDataLen)
 UDP_ADDR (&tracker) = UDP_ADDR (trackerList.servers + i);
 UDP_PORT (&tracker) = htons (UDP_PORT (trackerList.servers + i));
 gameStates.multi.bTrackerCall = 1;
-IPXSendInternetPacketData (pData, nDataLen, reinterpret_cast<ubyte*> (&network), reinterpret_cast<ubyte*> (&tracker));
+networkThread.Send (pData, nDataLen, reinterpret_cast<ubyte*> (&network), reinterpret_cast<ubyte*> (&tracker));
 gameStates.multi.bTrackerCall = 0;
 }
 

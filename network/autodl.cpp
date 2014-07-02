@@ -240,10 +240,10 @@ if (pId == PID_UPLOAD) {
 	if (gameStates.multi.nGameType == IPX_GAME)
 		IPXSendBroadcastData (m_data, 2);
 	else
-		IPXSendInternetPacketData (m_data, 2, networkData.serverAddress, networkData.serverAddress + 4);
+		networkThread.Send (m_data, 2, networkData.serverAddress, networkData.serverAddress + 4);
 	}
 else
-	IPXSendInternetPacketData (m_data, 2, clientP->addr.Network (), clientP->addr.Node ());
+	networkThread.Send (m_data, 2, clientP->addr.Network (), clientP->addr.Node ());
 return 1;
 }
 

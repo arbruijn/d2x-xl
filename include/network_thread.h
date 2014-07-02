@@ -3,10 +3,30 @@
 
 //------------------------------------------------------------------------------
 
-typedef struct tNetworkPacketOwner {
-	CPacketOrigin				address;
-	ubyte							nPlayer;
-} tNetworkPacketOwner;
+class CNetworkPacketOwner {
+	public:
+		CPacketOrigin				m_source;
+		tNetworkAddr				m_dest;
+		ubyte							m_bHaveDest;
+		ubyte							m_nPlayer;
+
+	public:
+		void SetSource (ubyte* network, ubyte* node) {
+			m_source.SetNetwork (network);
+			m_source.SetNode (node);
+			}
+
+		void SetDest (ubyte* node) {
+			if (m_bHaveDest = (node != NULL))
+				memcpy (&m_dest, node, sizeof (m_dest));
+			else
+				memset (&m_dest, 0, sizeof (m_dest));
+			}
+
+		inline ubyte* SrcNetwork (void) { return m_source.Network (); }
+		inline ubyte* SrcNode (void) { return m_source.Node (); }
+		inline ubyte* DestNode (void) { return m_dest.node; }
+};
 
 class CNetworkData {
 	public:
@@ -31,7 +51,7 @@ class CNetworkPacket : public CNetworkData {
 	public:	
 		CNetworkPacket*		m_nextPacket;
 		uint						m_timestamp;
-		tNetworkPacketOwner	m_owner;
+		CNetworkPacketOwner	m_owner;
 
 	public:
 		CNetworkPacket () : m_nextPacket (NULL), m_timestamp (0) {}
@@ -40,7 +60,7 @@ class CNetworkPacket : public CNetworkData {
 		inline CNetworkPacket* Next (void) { return m_nextPacket; }
 		inline uint Timestamp (void) { return m_timestamp; }
 		inline ubyte Type (void) { return (m_size > 0) ? m_data [0] : 0xff; }
-		inline bool operator== (CNetworkPacket& other) { return (m_owner.address == other.m_owner.address) && ((CNetworkData) *this == (CNetworkData) other); }
+		inline bool operator== (CNetworkPacket& other) { return (m_owner.m_source == other.m_owner.m_source) && ((CNetworkData) *this == (CNetworkData) other); }
 };
 
 //------------------------------------------------------------------------------
@@ -93,7 +113,6 @@ class CNetworkThread {
 		int						m_nThreadId;
 		bool						m_bListen;
 		bool						m_bSync;
-		tNetworkPacketOwner	m_owner;
 		CNetworkPacketQueue	m_txPacketQueue; // transmit
 		CNetworkPacketQueue	m_rxPacketQueue; // receive
 		CNetworkPacket*		m_packet;
@@ -126,7 +145,7 @@ class CNetworkThread {
 		int LockProcess (void);
 		int UnlockProcess (void);
 		inline void SetListen (bool bListen) { m_bListen = bListen; }
-		bool Send (ubyte* data, int size, ubyte* network, ubyte* node);
+		bool Send (ubyte* data, int size, ubyte* network, ubyte* srcNode, ubyte* destNode = NULL);
 		void Transmit (void);
 		int InitSync (void);
 		void AbortSync (void);

@@ -63,7 +63,10 @@ CNetworkThread networkThread;
 
 void CNetworkPacket::Transmit (void)
 {
-IPXSendInternetPacketData (m_data, m_size, m_owner.address.Network (), m_owner.address.Node ());
+if (m_owner.m_bHaveDest)
+	IPXSendPacketData (m_data, m_size, m_owner.SrcNetwork (), m_owner.SrcNode (), m_owner.DestNode ());
+else
+	IPXSendInternetPacketData (m_data, m_size, m_owner.SrcNetwork (), m_owner.SrcNode ());
 }
 
 //------------------------------------------------------------------------------
@@ -451,7 +454,7 @@ for (;;) {
 	if (!m_rxPacketQueue.Validate ())
 		FlushPackets ();
 #endif
-	memcpy (&m_packet->m_owner.address, &networkData.packetSource, sizeof (networkData.packetSource));
+	memcpy (&m_packet->m_owner.m_source, &networkData.packetSource, sizeof (networkData.packetSource));
 	m_rxPacketQueue.Append (m_packet, false);
 	m_packet = NULL;
 	}
@@ -488,7 +491,7 @@ if (!packet)
 	return 0;
 
 memcpy (data, packet->m_data, packet->Size ());
-memcpy (&networkData.packetSource, &packet->m_owner.address, sizeof (networkData.packetSource));
+memcpy (&networkData.packetSource, &packet->m_owner.m_source, sizeof (networkData.packetSource));
 int size = packet->Size ();
 delete packet;
 return size;
@@ -561,17 +564,24 @@ return (packet && packet->Type () == PID_OBJECT_DATA);
 
 //------------------------------------------------------------------------------
 
-bool CNetworkThread::Send (ubyte* data, int size, ubyte* network, ubyte* node)
+bool CNetworkThread::Send (ubyte* data, int size, ubyte* network, ubyte* srcNode, ubyte* destNode)
 {
-if (!Available ())
-	return false;
+if (!Available ()) {
+	if (destNode)
+		IPXSendPacketData (data, size, network, srcNode, destNode);
+	else
+		IPXSendInternetPacketData (data, size, srcNode, destNode);
+	return true;
+	}
+
 CNetworkPacket* packet = m_txPacketQueue.Append ();
 if (!packet)
 	return false;
+
 packet->SetTime (SDL_GetTicks ());
 packet->SetData (data, size);
-packet->m_owner.address.SetNetwork (network);
-packet->m_owner.address.SetNode (node);
+packet->m_owner.SetSource (network, srcNode);
+packet->m_owner.SetDest (destNode);
 return true;
 }
 
