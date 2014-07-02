@@ -56,6 +56,10 @@
 #	define PPS		netGame.GetPacketsPerSec ()
 #endif
 
+#define SENDLOCK 0
+#define RECVLOCK 0
+#define PROCLOCK 0
+
 //------------------------------------------------------------------------------
 
 CNetworkThread networkThread;
@@ -214,10 +218,14 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-#define SENDLOCK 0
-#define RECVLOCK 0
-#define PROCLOCK 0
-#define SYNCLOCK 1
+CNetworkThread::CNetworkThread () 
+	: m_thread (NULL), m_semaphore (NULL), m_sendLock (NULL), m_recvLock (NULL), m_processLock (NULL), m_nThreadId (0), m_bUrgent (0)
+{
+m_packet = NULL;
+m_syncPackets = NULL;
+}
+
+//------------------------------------------------------------------------------
 
 void CNetworkThread::Run (void)
 {
@@ -232,27 +240,17 @@ for (;;) {
 
 //------------------------------------------------------------------------------
 
-CNetworkThread::CNetworkThread () 
-	: m_thread (NULL), m_semaphore (NULL), m_sendLock (NULL), m_recvLock (NULL), m_processLock (NULL), m_nThreadId (0), m_bListen (false)
-{
-m_packet = NULL;
-m_syncPackets = NULL;
-}
-
-//------------------------------------------------------------------------------
-
 void CNetworkThread::Start (void)
 {
 if (!m_thread) {
 	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
 	m_semaphore = SDL_CreateSemaphore (1);
-	m_syncLock = SDL_CreateSemaphore (0);
 	m_sendLock = SDL_CreateMutex ();
 	m_recvLock = SDL_CreateMutex ();
 	m_processLock = SDL_CreateMutex ();
 	m_toSend.Setup (PPS);
 	m_toSend.Start ();
-	m_bListen = true;
+	m_bUrgent = false;
 	}
 }
 
@@ -265,10 +263,6 @@ if (m_thread) {
 	if (m_semaphore) {
 		SDL_DestroySemaphore (m_semaphore);
 		m_semaphore = NULL;
-		}
-	if (m_syncLock) {
-		SDL_DestroySemaphore (m_syncLock);
-		m_syncLock = NULL;
 		}
 	if (m_sendLock) {
 		SDL_DestroyMutex (m_sendLock);
@@ -288,7 +282,7 @@ if (m_thread) {
 		}
 	FlushPackets ();
 	m_thread = NULL;
-	m_bListen = false;
+	m_bUrgent = false;
 	}
 }
 
@@ -387,30 +381,6 @@ int CNetworkThread::UnlockProcess (void)
 if (!m_processLock)
 	return 0;
 SDL_UnlockMutex (m_processLock); 
-#endif
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int CNetworkThread::LockSync (void) 
-{ 
-#if SYNCLOCK
-if (!m_syncLock)
-	return 0;
-SDL_SemWait (m_syncLock); 
-#endif
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int CNetworkThread::UnlockSync (void) 
-{ 
-#if SYNCLOCK
-if (!m_syncLock)
-	return 0;
-SDL_SemPost (m_syncLock); 
 #endif
 return 1;
 }
@@ -592,6 +562,8 @@ packet->SetTime (SDL_GetTicks ());
 packet->SetData (data, size);
 packet->m_owner.SetSource (network, srcNode);
 packet->m_owner.SetDest (destNode);
+packet->Urgent (m_bUrgent);
+m_bUrgent = false;
 return true;
 }
 

@@ -53,15 +53,17 @@ class CNetworkPacket : public CNetworkData {
 	public:	
 		CNetworkPacket*		m_nextPacket;
 		uint						m_timestamp;
+		int						m_bUrgent;
 		CNetworkPacketOwner	m_owner;
 
 	public:
-		CNetworkPacket () : m_nextPacket (NULL), m_timestamp (0) {}
+		CNetworkPacket () : m_nextPacket (NULL), m_timestamp (0), m_bUrgent (0) {}
 		void Transmit (void);
 		inline int SetTime (int timestamp) { return m_timestamp = timestamp; }
 		inline CNetworkPacket* Next (void) { return m_nextPacket; }
 		inline uint Timestamp (void) { return m_timestamp; }
 		inline ubyte Type (void) { return (m_size > 0) ? m_data [0] : 0xff; }
+		inline void Urgent (int bUrgent) { m_bUrgent = bUrgent; }
 		inline bool operator== (CNetworkPacket& other) { return (m_owner.m_source == other.m_owner.m_source) && ((CNetworkData) *this == (CNetworkData) other); }
 };
 
@@ -108,13 +110,11 @@ class CNetworkThread {
 	private:
 		SDL_Thread*				m_thread;
 		SDL_sem*					m_semaphore;
-		SDL_sem*					m_syncLock;
 		SDL_mutex*				m_sendLock;
 		SDL_mutex*				m_recvLock;
 		SDL_mutex*				m_processLock;
 		int						m_nThreadId;
-		bool						m_bListen;
-		bool						m_bSync;
+		int						m_bUrgent;
 		CNetworkPacketQueue	m_txPacketQueue; // transmit
 		CNetworkPacketQueue	m_rxPacketQueue; // receive
 		CNetworkPacket*		m_packet;
@@ -138,26 +138,23 @@ class CNetworkThread {
 		void Cleanup (void);
 		int Lock (void);
 		int Unlock (void);
-		int LockSync (void);
-		int UnlockSync (void);
 		int LockSend (void);
 		int UnlockSend (void);
 		int LockRecv (void);
 		int UnlockRecv (void);
 		int LockProcess (void);
 		int UnlockProcess (void);
-		inline void SetListen (bool bListen) { m_bListen = bListen; }
 		bool Send (ubyte* data, int size, ubyte* network, ubyte* srcNode, ubyte* destNode = NULL);
 		void Transmit (void);
 		int InitSync (void);
 		void AbortSync (void);
 		void SendSync (void);
 		bool SyncInProgress (void);
+		inline void Urgent (int bUrgent) { m_bUrgent = bUrgent; }
 		inline bool Sending (void) { return Available () && !m_txPacketQueue.Empty (); }
 
 	private:
 		int ConnectionStatus (int nPlayer);
-		inline bool GetListen (void) { return m_bListen; }
 };
 
 extern CNetworkThread networkThread;

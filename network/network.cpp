@@ -458,6 +458,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		 || ((networkData.xLastSendTime >= I2X (1) / MAX_PPS) && (gameData.multigame.laser.bFired || networkData.bPacketUrgent))
 #endif
 		) {
+		networkThread.Urgent (bForce || gameData.multigame.laser.bFired || networkData.bPacketUrgent);
 		if (LOCALPLAYER.IsConnected ()) {
 			int nObject = LOCALPLAYER.nObject;
 			networkData.bPacketUrgent = 0;
