@@ -438,6 +438,10 @@ bufP += 3;
 nRemoteObj = short (GetRemoteObjNum (nObject, reinterpret_cast<sbyte&> (gameData.multigame.msg.buf [bufP + 2])));
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, nRemoteObj);                       
 bufP += 3;
+if (gameStates.multi.nGameType == UDP_GAME) {
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameStates.app.nRandSeed);                       
+	bufP += 4;
+	}
 gameData.multigame.msg.buf [bufP++] = bIsThief;   
 MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 if (gameStates.multi.nGameType == UDP_GAME) {	// make sure the packet arrives
@@ -716,7 +720,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int MultiExplodeRobotSub (int nRobot, int nKiller, char bIsThief)
+int MultiExplodeRobot (int nRobot, int nKiller, char bIsThief)
 {
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0])) { // Objnum in range?
 	Int3 (); // See rob
@@ -750,7 +754,12 @@ nRobot = GetLocalObjNum (nRemoteBot, int (buf [bufP+2]));
 bufP += 3;
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
 	return;
-rval = MultiExplodeRobotSub (nRobot, nKiller, buf [bufP]);
+if (gameStates.multi.nGameType == UDP_GAME) {
+	gameStates.app.nRandSeed = GET_INTEL_INT (buf + bufP);
+	bufP += 4;
+	gameStates.app.SRand (gameStates.app.nRandSeed);
+	}
+rval = MultiExplodeRobot (nRobot, nKiller, buf [bufP]);
 if (rval && (nKiller == LOCALPLAYER.nObject))
 	cockpit->AddPointsToScore (ROBOTINFO (OBJECTS [nRobot].info.nId).scoreValue);
 }

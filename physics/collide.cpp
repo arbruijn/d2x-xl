@@ -1365,7 +1365,9 @@ if (IsMultiGame) {
 	bIsThief = (ROBOTINFO (info.nId).thief != 0);
 	if (bIsThief)
 		memcpy (tempStolen, &gameData.thief.stolenItems [0], gameData.thief.stolenItems.Size ());
-	if (!MultiExplodeRobotSub (OBJ_IDX (this), nKillerObj, ROBOTINFO (info.nId).thief)) 
+	if (IsMultiGame)
+		gameStates.app.SRand (); // required for sync'ing the stuff the robot drops/spawns on the clients 
+	if (!MultiExplodeRobot (OBJ_IDX (this), nKillerObj, ROBOTINFO (info.nId).thief)) 
 		return 0;
 	if (bIsThief)
 		memcpy (&gameData.thief.stolenItems [0], tempStolen, gameData.thief.stolenItems.Size ());

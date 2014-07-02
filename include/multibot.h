@@ -41,7 +41,7 @@ void MultiDoBossActions (char *buf);
 void MultiDoCreateRobotPowerups (char *buf);
 
 int MultiDestroyRobot (CObject* robotP, char bIsThief = 01);
-int MultiExplodeRobotSub (int nRobot, int nkiller, char bIsThief);
+int MultiExplodeRobot (int nRobot, int nkiller, char bIsThief);
 
 void MultiDropRobotPowerups (int nObject);
 void MultiDumpRobots (void);
