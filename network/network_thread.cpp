@@ -155,6 +155,7 @@ void CNetworkPacketQueue::Free (CNetworkPacket* packet, bool bLock)
 Lock (bLock);
 packet->m_nextPacket = m_packets [2];
 m_packets [2] = packet;
+packet->SetSize (0);
 Unlock (bLock);
 }
 
