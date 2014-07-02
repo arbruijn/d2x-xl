@@ -728,6 +728,8 @@ int32_t CObjectSynchronizer::Finish (void)
 {
 if (m_nLocalObj != -2) 
 	return 0;
+if (networkData.nJoinState > 1)
+	return -1;
 
 if (!m_nState || !Validate ()) {
 	Abort ();
