@@ -463,6 +463,7 @@ syncP->nState = 1;
 syncP->objs.nCurrent = -1;
 syncP->nExtras = 0;
 syncP->timeout = 0;
+syncP->objs.missingFrames.nFrame = 0;
 syncP->tLastJoined = gameStates.app.nSDLTicks [0];
 NetworkDoSyncFrame ();
 }
