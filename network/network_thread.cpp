@@ -524,7 +524,7 @@ if (!m_toSend.Expired ())
 m_txPacketQueue.Lock ();
 int nSize = 0;
 CNetworkPacket* packet;
-while ((packet = m_txPacketQueue.Head ()) && (nSize + packet->Size () <= MAX_PACKET_SIZE)) {
+while ((packet = m_txPacketQueue.Head ()) && (packet->Urgent () || (nSize + packet->Size () <= MAX_PACKET_SIZE))) {
 	nSize += packet->Size ();
 	packet->Transmit ();
 	m_txPacketQueue.Pop (true, false);
@@ -562,7 +562,7 @@ packet->SetTime (SDL_GetTicks ());
 packet->SetData (data, size);
 packet->m_owner.SetSource (network, srcNode);
 packet->m_owner.SetDest (destNode);
-packet->Urgent (m_bUrgent);
+packet->SetUrgent (m_bUrgent);
 m_bUrgent = false;
 return true;
 }

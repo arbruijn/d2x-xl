@@ -63,7 +63,8 @@ class CNetworkPacket : public CNetworkData {
 		inline CNetworkPacket* Next (void) { return m_nextPacket; }
 		inline uint Timestamp (void) { return m_timestamp; }
 		inline ubyte Type (void) { return (m_size > 0) ? m_data [0] : 0xff; }
-		inline void Urgent (int bUrgent) { m_bUrgent = bUrgent; }
+		inline int Urgent (void) { return m_bUrgent; }
+		inline void SetUrgent (int bUrgent) { m_bUrgent = bUrgent; }
 		inline bool operator== (CNetworkPacket& other) { return (m_owner.m_source == other.m_owner.m_source) && ((CNetworkData) *this == (CNetworkData) other); }
 };
 
@@ -150,7 +151,7 @@ class CNetworkThread {
 		void AbortSync (void);
 		void SendSync (void);
 		bool SyncInProgress (void);
-		inline void Urgent (int bUrgent) { m_bUrgent = bUrgent; }
+		inline void SetUrgent (int bUrgent) { m_bUrgent = bUrgent; }
 		inline bool Sending (void) { return Available () && !m_txPacketQueue.Empty (); }
 
 	private:
