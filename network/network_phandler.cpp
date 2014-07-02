@@ -75,6 +75,32 @@ memset (addressFilter, 0, sizeof (addressFilter));
 }
 
 //------------------------------------------------------------------------------
+// Check whether the packet has the correct size. Works for packets with
+// several messages packet together.
+
+static int32_t NetworkBadCombinedPacketSize (uint8_t* dataP, int32_t nLength)
+{
+	int32_t	i = 0;
+
+for (;;) {
+	uint8_t pId = dataP [i];
+	tPacketHandlerInfo* piP = packetHandlers + pId;
+	if (!piP->packetHandler) {
+		PrintLog (0, "invalid packet id %d\n", pId);
+		return 0;
+		}
+	nLength -= piP->nLength;
+	if (nLength == 0)
+		return 1;
+	if (nLength < 0) {
+		PrintLog (0, "invalid packet size for packet type %d\n", pId);
+		return 0;
+		}
+	i += piP->nLength;
+	}
+}
+
+//------------------------------------------------------------------------------
 
 int32_t NetworkBadPacketSize (int32_t nLength, int32_t nExpectedLength, const char *pszId)
 {
@@ -474,7 +500,7 @@ PHINIT (PID_TRACKER_ADD_SERVER, TrackerHandler, 0, (int16_t) 0xFFFF);
 
 //-----------------------------------------------------------------------------------------------------------------
 
-int32_t NetworkProcessPacket (uint8_t *dataP, int32_t nLength)
+int32_t NetworkProcessSinglePacket (uint8_t *dataP, int32_t nLength)
 {
 	uint8_t					pId = dataP [0];
 	tPacketHandlerInfo*	piP = packetHandlers + pId;
@@ -489,7 +515,6 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	}
 #endif
 
-networkThread.LockProcess ();
 if (!piP->packetHandler)
 	PrintLog (0, "invalid packet id %d\n", pId);
 else if (!(piP->nStatusFilter & (1 << networkData.nStatus)))
@@ -506,8 +531,34 @@ else if (!NetworkBadPacketSize (nLength, piP->nLength, piP->pszInfo)) {
 	VerifyObjLists (LOCALPLAYER.nObject);
 #endif
 	}
-networkThread.UnlockProcess ();
 return nFuncRes;
+}
+
+//-----------------------------------------------------------------------------------------------------------------
+
+int32_t NetworkProcessPacket (uint8_t *dataP, int32_t nLength)
+{
+if (!networkThread.Available ())
+	return NetworkProcessSinglePacket (dataP, nLength);
+
+if (NetworkBadCombinedPacketSize (dataP, nLength)) 
+	return 0;
+
+tPacketHandlerInfo* piP = NULL;
+
+int32_t nPackets = 0;
+int32_t nProcessed = 0;
+
+networkThread.LockProcess ();
+for (int32_t i = 0; nLength; i += piP->nLength) {
+	++nPackets;
+	tPacketHandlerInfo* piP = packetHandlers + dataP [i];
+	if (NetworkProcessSinglePacket (dataP + i, piP->nLength))
+		++nProcessed;
+	nLength -= piP->nLength;
+	}
+networkThread.UnlockProcess ();
+return nProcessed == nPackets;
 }
 
 //-----------------------------------------------------------------------------------------------------------------
