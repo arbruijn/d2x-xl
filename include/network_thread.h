@@ -123,7 +123,6 @@ class CNetworkThread {
 		bool AddSyncPacket (ubyte* data, int size, ubyte* network, ubyte* node);
 		bool StartSync (int nPacket = 0);
 		void SendSync (void);
-		void UpdateSync (int nPacket);
 		void StopSync (void);
 		inline bool SyncInProgress (void) { return Available () && m_bSendSync; }
 
