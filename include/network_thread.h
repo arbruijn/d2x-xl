@@ -90,6 +90,10 @@ class CNetworkPacketQueue {
 		SDL_sem*				m_semaphore;
 
 	public:
+		int32_t				m_nDuplicate;
+		int32_t				m_nCombined;
+
+	public:
 		CNetworkPacketQueue ();
 		~CNetworkPacketQueue ();
 		CNetworkPacket* Alloc (void);

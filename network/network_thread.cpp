@@ -108,6 +108,8 @@ m_packets [0] =
 m_packets [1] = 
 m_packets [2] = 
 m_current = NULL;
+m_nDuplicate = 0;
+m_nCombined = 0;
 m_semaphore = SDL_CreateSemaphore (1);
 }
 
@@ -190,6 +192,7 @@ if (!packet) {
 
 if (Tail ()) { // list tail
 	if (!bAllowDuplicates && (*Tail () == *packet)) {
+		++m_nDuplicate;
 		Tail ()->SetTime (SDL_GetTicks ());
 		Unlock ();
 		Free (packet);
@@ -240,6 +243,8 @@ while (m_packets [0]) {
 	}
 m_packets [1] = NULL;
 m_nPackets = 0;
+m_nDuplicate = 0;
+m_nCombined = 0;
 Unlock ();
 }
 
@@ -615,8 +620,10 @@ CNetworkPacket* packet;
 
 m_txPacketQueue.Lock ();
 // try to combine data sent to the same player
-if ((packet = m_txPacketQueue.Head ()) && packet->Combine (data, size, network, node))
+if ((packet = m_txPacketQueue.Head ()) && packet->Combine (data, size, network, node)) {
+	++m_txPacketQueue.m_nCombined;
 	m_txPacketQueue.Unlock ();
+	}
 else {
 	m_txPacketQueue.Unlock ();
 	if (!(packet = m_txPacketQueue.Alloc ()))
