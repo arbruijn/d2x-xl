@@ -13,10 +13,10 @@ typedef struct tShrapnel {
 	fix			xBaseSpeed;
 	fix			xLife;
 	fix			xTTL;
-	int			nSmoke;
-	int			nTurn;
-	int			nParts;
-	int			d;
+	int32_t		nSmoke;
+	int32_t		nTurn;
+	int32_t		nParts;
+	int32_t		d;
 	double		fScale;
 	time_t		tUpdate;
 } tShrapnel;
@@ -30,15 +30,15 @@ class CShrapnel {
 		void Destroy (void);
 		void Move (void);
 		void Draw (void);
-		int Update (void);
+		int32_t Update (void);
 		inline fix TTL (void) { return m_info.xTTL; }
 };
 
 class CShrapnelCloud : private CStack<CShrapnel> {
 	public:
 		~CShrapnelCloud () { Destroy (); }
-		int Create (CObject* parentObjP, CObject* objP);
-		uint Update (void);
+		int32_t Create (CObject* parentObjP, CObject* objP);
+		uint32_t Update (void);
 		void Draw (void);
 		void Destroy (void);
 	};
@@ -47,9 +47,9 @@ class CShrapnelManager : private CArray<CShrapnelCloud> {
 	public:
 		bool Init (void);
 		void Reset (void);
-		int Create (CObject *objP);
+		int32_t Create (CObject *objP);
 		void Draw (CObject *objP);
-		int Update (CObject *objP);
+		int32_t Update (CObject *objP);
 		void Move (CObject *objP);
 		void Destroy (CObject *objP); 
 		void DoFrame (void);

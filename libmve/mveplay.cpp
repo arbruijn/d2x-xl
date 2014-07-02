@@ -132,8 +132,8 @@ static struct timeval timer_expire = {0, 0};
 #if !HAVE_STRUCT_TIMESPEC
 struct timespec
 {
-	long int32_t tv_sec;            /* Seconds.  */
-	long int32_t tv_nsec;           /* Nanoseconds.  */
+	uint32_t tv_sec;            /* Seconds.  */
+	uint32_t tv_nsec;           /* Nanoseconds.  */
 };
 #endif
 

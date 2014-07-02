@@ -1,6 +1,8 @@
 #ifndef __PERLINNOISE_H
 #define __PERLINNOISE_H
 
+#include <stdint.h>
+
 class CPerlinNoise {
 	private:
 		int32_t m_randomize;
