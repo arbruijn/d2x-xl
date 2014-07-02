@@ -956,7 +956,7 @@ const char *defaultGameTexts [][2] = {
  {"Kurze Daten~Pakete", "SHort Packets"},
  {"Zugelassene ~Objekte...", "SET objects ALLOWED..."},
  {"Netzwerk-Socket", "NETWORK SOCKET"},
- {"Datenpakete pro Sekunde (5 - 100)", "PACKETS PER SECOND (5 - 100)"},
+ {"Datenpakete pro Sekunde (%d - %d)", "PACKETS PER SECOND (%d - %d)"},
  {"Weitere Netzwerkeinstellungen", "Additional netgame options"},
  {"Unzulaessige Paketrate\nstelle 100 ein", "Packet value out of range\nSetting value to 100"},
  {"Unzulaessige Paketrate\nstelle 5 ein", "Packet value out of range\nSetting value to 5"},

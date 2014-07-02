@@ -451,7 +451,11 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 	//networkData.xLastTimeoutCheck += gameData.time.xFrame;
 
 	// Send out packet PacksPerSec times per second maximum... unless they fire, then send more often...
-	if ((networkData.xLastSendTime > I2X (1) / PacketsPerSec ()) || gameData.multigame.laser.bFired || bForce || networkData.bPacketUrgent) {        
+	if ((networkData.xLastSendTime > I2X (1) / PacketsPerSec ())
+#if !DBG
+		 || ((networkData.xLastSendTime > I2X (1) / MAX_PPS) && (gameData.multigame.laser.bFired || bForce || networkData.bPacketUrgent))
+#endif
+		) {
 		if (LOCALPLAYER.IsConnected ()) {
 			int nObject = LOCALPLAYER.nObject;
 			networkData.bPacketUrgent = 0;
