@@ -44,7 +44,7 @@ class CNetworkData {
 	public:
 		CNetworkData () : m_size (0) {}
 		inline void SetData (uint8_t* data, int32_t size, int32_t offset = 0) { 
-			memcpy (m_data, data, size); 
+			memcpy (m_data + offset, data, size); 
 			m_size += size;
 			}
 		inline CNetworkData& operator= (CNetworkData& other) { 
@@ -75,6 +75,8 @@ class CNetworkPacket : public CNetworkData {
 		inline uint8_t Type (void) { return (m_size > 0) ? m_data [0] : 0xff; }
 		inline int32_t Urgent (void) { return m_bUrgent; }
 		inline void SetUrgent (int32_t bUrgent) { m_bUrgent = bUrgent; }
+		bool Combineable (uint8_t type);
+		bool Combine (uint8_t* data, int32_t size, uint8_t* network, uint8_t* node);
 		inline bool operator== (CNetworkPacket& other) { return (m_owner.m_address == other.m_owner.m_address) && ((CNetworkData) *this == (CNetworkData) other); }
 };
 

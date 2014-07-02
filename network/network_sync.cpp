@@ -612,8 +612,8 @@ return 0;
 
 void NetworkDoBigWait (int32_t choice)
 {
-	int32_t						size;
-	uint8_t						packet [MAX_PACKET_SIZE], *data;
+	int32_t					size;
+	uint8_t					packet [MAX_PACKET_SIZE], *data;
 	CAllNetPlayersInfo	playerData;
   
 while (0 < (size = networkThread.GetPacketData (packet))) {

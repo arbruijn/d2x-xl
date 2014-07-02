@@ -77,6 +77,27 @@ else
 }
 
 //------------------------------------------------------------------------------
+
+bool CNetworkPacket::Combineable (uint8_t type)
+{
+return (type != PID_GAME_INFO) && (type != PID_EXTRA_GAMEINFO) && (type != PID_PLAYERSINFO);
+}
+
+//------------------------------------------------------------------------------
+
+bool CNetworkPacket::Combine (uint8_t* data, int32_t size, uint8_t* network, uint8_t* node)
+{
+if (Size () + size > MAX_PACKET_SIZE) 
+	return false; // too large
+if (!Combineable (Type ()) && Combineable (data [0]))
+	return false; // at least one of the packets contains data that must not be combined with other data
+if (Owner ().CmpAddress (network, node)) 
+	return false; // different receivers
+SetData (data, size, Size ());
+return true;
+}
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -160,18 +181,19 @@ CNetworkPacket* CNetworkPacketQueue::Append (CNetworkPacket* packet, bool bAllow
 {
 Lock ();
 if (!packet) {
-	packet = new CNetworkPacket;
+	packet = Alloc ();
 	if (!packet) {
 		Unlock ();
 		return NULL;
 		}
 	}
 
-if (Tail ()) {// list tail
+if (Tail ()) { // list tail
 	if (!bAllowDuplicates && (*Tail () == *packet)) {
 		Tail ()->SetTime (SDL_GetTicks ());
 		Unlock ();
-		return packet;
+		Free (packet);
+		return Tail ();
 		}
 	Tail ()->m_nextPacket = packet;
 	}
@@ -555,9 +577,10 @@ if (m_txPacketQueue.Empty ())
 if (!m_toSend.Expired () && ! m_txPacketQueue.Head ()->Urgent ())
 	return;
 
-m_txPacketQueue.Lock ();
 int32_t nSize = 0;
 CNetworkPacket* packet;
+
+m_txPacketQueue.Lock ();
 while ((packet = m_txPacketQueue.Head ()) && (packet->Urgent () || (nSize + packet->Size () <= MAX_PACKET_SIZE))) {
 	nSize += packet->Size ();
 	packet->Transmit ();
@@ -592,18 +615,16 @@ CNetworkPacket* packet;
 
 m_txPacketQueue.Lock ();
 // try to combine data sent to the same player
-if ((packet = m_txPacketQueue.Head ()) && (packet->Size () + size <= MAX_PACKET_SIZE) && !packet->Owner ().CmpAddress (network, node)) {
-	packet->SetData (data, size, packet->Size ());
+if ((packet = m_txPacketQueue.Head ()) && packet->Combine (data, size, network, node))
 	m_txPacketQueue.Unlock ();
-	}
 else {
-	packet = m_txPacketQueue.Append ();
 	m_txPacketQueue.Unlock ();
-	if (!packet)
+	if (!(packet = m_txPacketQueue.Alloc ()))
 		return false;
 	packet->SetData (data, size);
 	packet->Owner ().SetAddress (network, node);
 	packet->Owner ().SetLocalAddress (localAddress);
+	packet = m_txPacketQueue.Append (packet, false);
 	}
 
 packet->SetUrgent (m_bUrgent);
