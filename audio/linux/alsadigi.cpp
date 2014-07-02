@@ -35,7 +35,7 @@
 #ifdef __i386__
 #define do_fixmul(x,y)				\
 ({						\
-	int _ax, _dx;				\
+	int32_t _ax, _dx;				\
 	asm("imull %2\n\tshrdl %3,%1,%0"	\
 	    : "=a"(_ax), "=d"(_dx)		\
 	    : "rm"(y), "i"(16), "0"(x);	\
@@ -58,7 +58,7 @@ extern inline fix FixMul(fix x, fix y) { return do_fixmul(x,y); }
  * the value to avoid overflow.  (used with permission from ARDI)
  * DPH: Taken from SDL/src/SDL_mixer.c.
  */
-static const ubyte mix8[] =
+static const uint8_t mix8[] =
 {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -117,23 +117,23 @@ static const ubyte mix8[] =
 #define SOF_PLAY_FOREVER	16		// Play forever (or until level is stopped), otherwise plays once
 
 typedef struct tSoundObject {
-	short		nSignature;		// A unique nSignature to this sound
-	ubyte		flags;			// Used to tell if this slot is used and/or currently playing, and how long.
-	fix		maxVolume;		// Max volume that this sound is playing at
-	fix		maxDistance;	        // The max distance that this sound can be heard at...
-	int		volume;			// Volume that this sound is playing at
-	int 		pan;			// Pan value that this sound is playing at
-	int		handle; 		// What handle this sound is playing on.  Valid only if SOF_PLAYING is set.
-	short		nSound;		// The sound number that is playing
+	int16_t		nSignature;		// A unique nSignature to this sound
+	uint8_t		flags;			// Used to tell if this slot is used and/or currently playing, and how long.
+	fix			maxVolume;		// Max volume that this sound is playing at
+	fix			maxDistance;	        // The max distance that this sound can be heard at...
+	int32_t		volume;			// Volume that this sound is playing at
+	int32_t 		pan;			// Pan value that this sound is playing at
+	int32_t		handle; 		// What handle this sound is playing on.  Valid only if SOF_PLAYING is set.
+	int16_t		nSound;		// The sound number that is playing
 	union {
 		struct {
-			short		nSegment; 			// Used if SOF_LINK_TO_POS field is used
-			short		nSide;
+			int16_t		nSegment; 			// Used if SOF_LINK_TO_POS field is used
+			int16_t		nSide;
 			CFixVector	position;
 		}pos;
 		struct {
-			short		 nObject;			 // Used if SOF_LINK_TO_OBJ field is used
-			short		 objsignature;
+			int16_t		 nObject;			 // Used if SOF_LINK_TO_OBJ field is used
+			int16_t		 objsignature;
 		}obj;
 	}link;
 } tSoundObject;
@@ -146,38 +146,38 @@ typedef struct tSoundObject {
 
 #define MAX_SOUND_OBJECTS 16
 tSoundObject SoundObjects[MAX_SOUND_OBJECTS];
-short gameStates.sound.digi.nNextSignature=0;
+int16_t gameStates.sound.digi.nNextSignature=0;
 
 //added/changed on 980905 by adb to make sfx volume work, on 990221 by adb changed I2X (1) to I2X (1) / 2
 #define SOUND_MAX_VOLUME (I2X (1) / 2)
 
-int gameStates.sound.digi.nVolume = SOUND_MAX_VOLUME;
+int32_t gameStates.sound.digi.nVolume = SOUND_MAX_VOLUME;
 //end edit by adb
 
-int gameStates.sound.digi.bLoMem = 0;
+int32_t gameStates.sound.digi.bLoMem = 0;
 
-static int gameStates.sound.digi.bInitialized = 0;
+static int32_t gameStates.sound.digi.bInitialized = 0;
 
 struct sound_slot {
- int nSound;
- int playing;   // Is there a sample playing on this channel?
- int looped;    // Play this sample looped?
+ int32_t nSound;
+ int32_t playing;   // Is there a sample playing on this channel?
+ int32_t looped;    // Play this sample looped?
  fix pan;       // 0 = far left, 1 = far right
  fix volume;    // 0 = nothing, 1 = fully on
- //changed on 980905 by adb from char * to ubyte * 
- ubyte *samples;
+ //changed on 980905 by adb from char * to uint8_t * 
+ uint8_t *samples;
  //end changes by adb
- uint length; // Length of the sample
- uint position; // Position we are at at the moment.
+ uint32_t length; // Length of the sample
+ uint32_t position; // Position we are at at the moment.
 } SoundSlots[MAX_SOUND_SLOTS];
 
-static int gameStates.sound.digi.bSoundsInitialized = 0;
+static int32_t gameStates.sound.digi.bSoundsInitialized = 0;
 
 //added on 980905 by adb to add rotating/volume based sound kill system
-static int gameStates.sound.digi.nMaxChannels = 16;
-static int next_handle = 0;
-int SampleHandles[32];
-void resetSounds_on_channel(int channel);
+static int32_t gameStates.sound.digi.nMaxChannels = 16;
+static int32_t next_handle = 0;
+int32_t SampleHandles[32];
+void resetSounds_on_channel(int32_t channel);
 //end edit by adb
 
 /* Threading/ALSA stuff */
@@ -193,20 +193,20 @@ void digi_reset_digiSounds(void);
 
 /* Audio mixing callback */
 //changed on 980905 by adb to cleanup, add pan support and optimize mixer
-static void AudioMixCallback(void *userdata, ubyte *stream, int len)
+static void AudioMixCallback(void *userdata, uint8_t *stream, int32_t len)
 {
- ubyte *streamend = stream + len;
+ uint8_t *streamend = stream + len;
  struct sound_slot *sl;
 
  for (sl = SoundSlots; sl < SoundSlots + MAX_SOUND_SLOTS; sl++)
  {
   if (sl->playing)
   {
-   ubyte *sldata = sl->samples + sl->position.vPosition, *slend = sl->samples + sl->length;
-   ubyte *sp = stream;
+   uint8_t *sldata = sl->samples + sl->position.vPosition, *slend = sl->samples + sl->length;
+   uint8_t *sp = stream;
    signed char v;
    fix vl, vr;
-   int x;
+   int32_t x;
 
    if ((x = sl->pan) & 0x8000)
    {
@@ -243,7 +243,7 @@ static void AudioMixCallback(void *userdata, ubyte *stream, int len)
 
 void *MixerThread (void *data) 
 {
-	ubyte buffer [512];
+	uint8_t buffer [512];
  /* Allow ourselves to be asynchronously cancelled */
  pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
  while (1) {
@@ -259,9 +259,9 @@ void *MixerThread (void *data)
 
 
 /* Initialise audio devices. */
-int DigiInit()
+int32_t DigiInit()
 {
- int card=0, device=0, err;
+ int32_t card=0, device=0, err;
  snd_pcm_format_t format;
  snd_pcm_playback_params_t params;
  pthread_attr_t attr;
@@ -337,7 +337,7 @@ pthread_cancel(thread_id);
 }
 
 /* Find the sound which actually equates to a sound number */
-int DigiXlatSound(int nSound)
+int32_t DigiXlatSound(int32_t nSound)
 {
 	if (nSound < 0) return -1;
 
@@ -348,9 +348,9 @@ int DigiXlatSound(int nSound)
 	return Sounds [gameStates.sound.bD1Sound][nSound];
 }
 
-static int get_free_slot()
+static int32_t get_free_slot()
 {
- int i;
+ int32_t i;
  for (i=0; i<MAX_SOUND_SLOTS; i++)
  {
   if (!SoundSlots[i].playing) return i;
@@ -358,10 +358,10 @@ static int get_free_slot()
  return -1;
 }
 
-int DigiStartSound(int nSound, fix volume, fix pan)
+int32_t DigiStartSound(int32_t nSound, fix volume, fix pan)
 {
- int ntries;
- int slot;
+ int32_t ntries;
+ int32_t slot;
 
  if (!gameStates.sound.digi.bInitialized) return -1;
  LOCK();
@@ -411,9 +411,9 @@ TryNextChannel:
 }
 
  //added on 980905 by adb to add sound kill system from original sos digi.c
-void resetSounds_on_channel(int channel)
+void resetSounds_on_channel(int32_t channel)
 {
- int i;
+ int32_t i;
 
  for (i=0; i<gameStates.sound.digi.nMaxChannels; i++)
   if (SampleHandles[i] == channel)
@@ -423,9 +423,9 @@ void resetSounds_on_channel(int channel)
 //------------------------------------------------------------------------------
 //end edit by adb
 
-int DigiStartSoundObject (int obj)
+int32_t DigiStartSoundObject (int32_t obj)
 {
- int slot;
+ int32_t slot;
 
  if (!gameStates.sound.digi.bInitialized) return -1;
  LOCK();
@@ -458,7 +458,7 @@ int DigiStartSoundObject (int obj)
 
 // Play the given sound number.
 // Volume is max at I2X (1).
-void DigiPlaySample(int nSound, fix maxVolume)
+void DigiPlaySample(int32_t nSound, fix maxVolume)
 {
 #ifdef NEWDEMO
 	if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -476,9 +476,9 @@ void DigiPlaySample(int nSound, fix maxVolume)
 //------------------------------------------------------------------------------
 // Play the given sound number. If the sound is already playing,
 // restart it.
-void CAudio::PlaySampleOnce (int nSound, fix maxVolume)
+void CAudio::PlaySampleOnce (int32_t nSound, fix maxVolume)
 {
-	int i;
+	int32_t i;
 
 #ifdef NEWDEMO
 if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -497,7 +497,7 @@ UNLOCK();
 StartSound (nSound, maxVolume, (I2X (1) / 2));
 }
 
-void DigiPlaySample (int nSound, int volume, int angle, int no_dups) // Volume from 0-0x7fff
+void DigiPlaySample (int32_t nSound, int32_t volume, int32_t angle, int32_t no_dups) // Volume from 0-0x7fff
 {
 	no_dups = 1;
 
@@ -520,8 +520,8 @@ void DigiPlaySample (int nSound, int volume, int angle, int no_dups) // Volume f
 
 //------------------------------------------------------------------------------
 
-void CAudio::GetVolPan (CFixMatrix * listener, CFixVector * vListenerPos, int nListenerSeg, CFixVector * vSoundPos, 
-						 		int nSoundSeg, fix maxVolume, int *volume, int *pan, fix maxDistance, int nDecay)
+void CAudio::GetVolPan (CFixMatrix * listener, CFixVector * vListenerPos, int32_t nListenerSeg, CFixVector * vSoundPos, 
+						 		int32_t nSoundSeg, fix maxVolume, int32_t *volume, int32_t *pan, fix maxDistance, int32_t nDecay)
 {	  
 	CFixVector	vector_toSound;
 	fix angle_from_ear, cosang,sinang;
@@ -537,7 +537,7 @@ void CAudio::GetVolPan (CFixMatrix * listener, CFixVector * vListenerPos, int nL
 	distance = VmVecNormalizedDir(&vector_toSound, vSoundPos, vListenerPos);
 	
 	if (distance < maxDistance)	{
-		int nSearchSegs = X2I(maxDistance/20);
+		int32_t nSearchSegs = X2I(maxDistance/20);
 		if (nSearchSegs < 1) 
 			nSearchSegs = 1;
 
@@ -565,11 +565,11 @@ void CAudio::GetVolPan (CFixMatrix * listener, CFixVector * vListenerPos, int nL
 
 //------------------------------------------------------------------------------
 
-int CreateObjectSound (int nOrgSound, short nObject, int forever, fix maxVolume, fix  maxDistance)
+int32_t CreateObjectSound (int32_t nOrgSound, int16_t nObject, int32_t forever, fix maxVolume, fix  maxDistance)
 {
-	int i,volume,pan;
+	int32_t i,volume,pan;
 	CObject * objP;
-	int nSound;
+	int32_t nSound;
 
 	nSound = DigiXlatSound(nOrgSound);
 
@@ -630,10 +630,10 @@ int CreateObjectSound (int nOrgSound, short nObject, int forever, fix maxVolume,
 
 //------------------------------------------------------------------------------
 
-int CAudio::CreateSegmentSound (int nOrgSound, int nSoundClass, short nSegment, short nSide, CFixVector * pos, int forever, fix maxVolume, fix maxDistance, int nDecay)
+int32_t CAudio::CreateSegmentSound (int32_t nOrgSound, int32_t nSoundClass, int16_t nSegment, int16_t nSide, CFixVector * pos, int32_t forever, fix maxVolume, fix maxDistance, int32_t nDecay)
 {
-	int i, volume, pan;
-	int nSound;
+	int32_t i, volume, pan;
+	int32_t nSound;
 
 	nSound = DigiXlatSound(nOrgSound);
 
@@ -687,9 +687,9 @@ if (!forever || SoundObjects[i].volume >= MIN_VOLUME)
 return SoundObjects[i].nSignature;
 }
 
-void CAudio::DestroySegmentSound (int nSegment, int nSide, int nSound)
+void CAudio::DestroySegmentSound (int32_t nSegment, int32_t nSide, int32_t nSound)
 {
-	int i,killed;
+	int32_t i,killed;
 
 	nSound = DigiXlatSound(nSound);
 
@@ -718,9 +718,9 @@ void CAudio::DestroySegmentSound (int nSegment, int nSide, int nSound)
 	}
 }
 
-void CAudio::DestroyObjectSound (int nObject)
+void CAudio::DestroyObjectSound (int32_t nObject)
 {
-	int i,killed;
+	int32_t i,killed;
 
 	if (!gameStates.sound.digi.bInitialized) return;
 
@@ -748,8 +748,8 @@ void CAudio::DestroyObjectSound (int nObject)
 
 void CAudio::SyncSounds (void)
 {
-	int i;
-	int oldvolume, oldpan;
+	int32_t i;
+	int32_t oldvolume, oldpan;
 
 	if (!gameStates.sound.digi.bInitialized) return;
 
@@ -831,7 +831,7 @@ void CAudio::SyncSounds (void)
 
 void DigiInitSounds()
 {
-	int i;
+	int32_t i;
 
 	if (!gameStates.sound.digi.bInitialized) return;
 
@@ -851,7 +851,7 @@ void DigiInitSounds()
 }
 
 //added on 980905 by adb from original source to make sfx volume work
-void DigiSetFxVolume(int dvolume)
+void DigiSetFxVolume(int32_t dvolume)
 {
 	dvolume = FixMulDiv(dvolume, SOUND_MAX_VOLUME, 0x7fff);
 	if (dvolume > SOUND_MAX_VOLUME)
@@ -867,11 +867,11 @@ void DigiSetFxVolume(int dvolume)
 }
 //end edit by adb
 
-void DigiMidiVolume(int dvolume, int mvolume) { }
+void DigiMidiVolume(int32_t dvolume, int32_t mvolume) { }
 
-int DigiIsSoundPlaying(int nSound)
+int32_t DigiIsSoundPlaying(int32_t nSound)
 {
-	int i;
+	int32_t i;
 
 	nSound = DigiXlatSound(nSound);
 
@@ -891,7 +891,7 @@ void DigiResumeAll() { }
 void DigiStopAll() { }
 
  //added on 980905 by adb to make sound channel setting work
-void DigiSetMaxChannels(int n) { 
+void DigiSetMaxChannels(int32_t n) { 
 	gameStates.sound.digi.nMaxChannels	= n;
 
 	if (gameStates.sound.digi.nMaxChannels < 1) 
@@ -904,13 +904,13 @@ void DigiSetMaxChannels(int n) {
 	digi_reset_digiSounds();
 }
 
-int DigiGetMaxChannels() { 
+int32_t DigiGetMaxChannels() { 
 	return gameStates.sound.digi.nMaxChannels; 
 }
 // end edit by adb
 
 void digi_reset_digiSounds() {
- int i;
+ int32_t i;
 
  LOCK();
  for (i=0; i< MAX_SOUND_SLOTS; i++)
@@ -926,8 +926,8 @@ void digi_reset_digiSounds() {
 
 // MIDI stuff follows.
 //added/killed on 11/25/98 by Matthew Mueller
-//void DigiSetMidiVolume(int mvolume) { }
-//void DigiPlayMidiSong(char * filename, char * melodic_bank, char * drum_bank, int loop) {}
+//void DigiSetMidiVolume(int32_t mvolume) { }
+//void DigiPlayMidiSong(char * filename, char * melodic_bank, char * drum_bank, int32_t loop) {}
 //void DigiStopCurrentSong()
 //{
 //#ifdef HMIPLAY
