@@ -50,8 +50,8 @@
 #	define MAX_PACKET_AGE	3000
 #endif
 
-#if 1
-#	define PPS		MAX_PPS
+#if DBG
+#	define PPS		DEFAULT_PPS
 #else
 #	define PPS		netGame.GetPacketsPerSec ()
 #endif
@@ -183,15 +183,15 @@ return 1;
 
 CNetworkPacket* CNetworkPacketQueue::Append (CNetworkPacket* packet, bool bAllowDuplicates)
 {
+Lock ();
 if (!packet) {
-	packet = Alloc ();
+	packet = Alloc (false);
 	if (!packet) {
 		Unlock ();
 		return NULL;
 		}
 	}
 
-Lock ();
 if (Tail ()) { // list tail
 	if (!bAllowDuplicates && (*Tail () == *packet)) {
 		++m_nDuplicate;
@@ -579,14 +579,22 @@ if (m_toSend.Duration () != 1000 / PPS) {
 
 if (m_txPacketQueue.Empty ())
 	return;
+#if DBG
+if (!m_toSend.Expired ())
+#else
 if (!m_toSend.Expired () && !m_txPacketQueue.Head ()->Urgent ())
+#endif
 	return;
 
 int32_t nSize = 0;
 CNetworkPacket* packet;
 
 m_txPacketQueue.Lock ();
+#if DBG
+while ((packet = m_txPacketQueue.Head ())) {
+#else
 while ((packet = m_txPacketQueue.Head ()) && (packet->Urgent () || (nSize + packet->Size () <= MAX_PACKET_SIZE))) {
+#endif
 	nSize += packet->Size ();
 	packet->Transmit ();
 	m_txPacketQueue.Pop (true, false);
