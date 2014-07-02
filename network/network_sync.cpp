@@ -135,14 +135,10 @@ for (h = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACKETS_PER_FRA
 		if (NetworkFilterObject (objP)) 
 			continue;
 		// objects are sent in two passes; // nMode controls what types of objects to send in which pass
-		if (syncP->objs.nMode) { 
-				if ((gameData.multigame.nObjOwner [nLocalObj] != -1) && (gameData.multigame.nObjOwner [nLocalObj] != nPlayer))
-				continue;
-			}
-		else {
-			if ((gameData.multigame.nObjOwner [nLocalObj] == -1) || (gameData.multigame.nObjOwner [nLocalObj] == nPlayer))
-				continue;
-			}
+		if (syncP->objs.nMode
+			 ? (gameData.multigame.nObjOwner [nLocalObj] != -1) && (gameData.multigame.nObjOwner [nLocalObj] != nPlayer) // send objects owned by the local player or by nobody
+			 : (gameData.multigame.nObjOwner [nLocalObj] == -1) || (gameData.multigame.nObjOwner [nLocalObj] == nPlayer) // send objects owned by other players
+			) continue;
 		if ((MAX_PAYLOAD_SIZE - bufI - 1) < int (sizeof (tBaseObject)) + 5)
 			break; // Not enough room for another CObject
 		nObjFrames++;
