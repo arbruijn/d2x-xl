@@ -463,7 +463,7 @@ void NetworkMoreGameOptions (void)
 	static int choice = 0;
 
 	int		i;
-	char		szPlayTime [80], szScoreGoal [80], szInvul [50], szSocket [6], szPPS [6];
+	char		szPlayTime [80], szScoreGoal [80], szInvul [50], szSocket [6], szPPS [6], szPPSLabel [40];
 	CMenu		m;
 
 do {
@@ -505,8 +505,9 @@ do {
 		}
 
 	sprintf (szPPS, "%d", mpParams.nPPS);
-	m.AddText ("", TXT_PPS, KEY_P);
-	m.AddInput ("PPS", szPPS, 2, HTX_MULTI2_PPS);
+	sprintf (szPPSLabel, TXT_PPS, MIN_PPS, MAX_PPS);
+	m.AddText ("", szPPSLabel, KEY_P);
+	m.AddInput ("PPS", szPPS, 3, HTX_MULTI2_PPS);
 
 	nLastScoreGoal = netGame.GetScoreGoal ();
 	nLastPlayTime = mpParams.nMaxTime;
