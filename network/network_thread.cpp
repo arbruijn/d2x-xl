@@ -41,7 +41,11 @@
 #define LISTEN_TIMEOUT		5
 #define SYNC_TIMEOUT			5
 #define UPDATE_TIMEOUT		500
-#define MAX_PACKET_AGE		300000
+#if DBG
+#	define MAX_PACKET_AGE		300000
+#else
+#	define MAX_PACKET_AGE		3000
+#endif
 
 //------------------------------------------------------------------------------
 
