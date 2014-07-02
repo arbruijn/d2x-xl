@@ -188,7 +188,7 @@ return (r << 1) | T;
 
 uint FixDivQuadLongU (uint nl, uint nh, uint d)
 {
-return (uint) (((u_int64_t) nl | (((u_int64_t) nh) << 32)) / ((u_int64_t) d));
+return (uint) (((uint64_t) nl | (((uint64_t) nh) << 32)) / ((uint64_t) d));
 }
 
 // ------------------------------------------------------------------------
@@ -196,7 +196,7 @@ return (uint) (((u_int64_t) nl | (((u_int64_t) nh) << 32)) / ((u_int64_t) d));
 uint QuadSqrt (uint low,int32_t high)
 {
 	int			i, cnt;
-	uint	r, old_r, t;
+	uint			r, old_r, t;
 	tQuadInt		tq;
 
 if (high < 0)
