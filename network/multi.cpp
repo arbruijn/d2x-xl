@@ -1213,6 +1213,7 @@ if (IsNetworkGame) {
 	gameStates.app.SRand ();
 	fix shield = LOCALPLAYER.Shield ();
 	LOCALPLAYER.SetShield (-1);
+	gameStates.app.SRand (); // required to sync the player ship explosion on the clients
 	DropPlayerEggs (gameData.objs.consoleP);
 	LOCALPLAYER.SetShield (shield);
 	MultiSendPosition (LOCALPLAYER.nObject);

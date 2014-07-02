@@ -938,8 +938,7 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 	PrintLog (1, "dropping player equipment\n");
 	if (IsMultiGame) {
 		gameData.multigame.create.nCount = 0;
-		if (gameStates.multi.nGameType != UDP_GAME)
-			gameStates.app.SRand (5483L);
+		gameStates.app.SRand ((gameStates.multi.nGameType == UDP_GAME) ? gameStates.app.nRandSeed : 5483L);
 		}
 	MaybeArmMines (playerObjP, playerP, SMARTMINE_INDEX, SMARTMINE_ID);
 	if (IsMultiGame && !(IsHoardGame || IsEntropyGame))
