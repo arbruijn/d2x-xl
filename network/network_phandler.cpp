@@ -552,7 +552,7 @@ int32_t nProcessed = 0;
 networkThread.LockProcess ();
 for (int32_t i = 0; nLength; i += piP->nLength) {
 	++nPackets;
-	tPacketHandlerInfo* piP = packetHandlers + dataP [i];
+	piP = packetHandlers + dataP [i];
 	if (NetworkProcessSinglePacket (dataP + i, piP->nLength))
 		++nProcessed;
 	nLength -= piP->nLength;
