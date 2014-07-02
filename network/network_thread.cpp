@@ -38,12 +38,15 @@
 #	include "linux/include/ipx_drv.h"
 #endif
 
-#define LISTEN_TIMEOUT		5
-#define SEND_TIMEOUT			5
-#define UPDATE_TIMEOUT		500
 #if DBG
+#	define LISTEN_TIMEOUT	5
+#	define SEND_TIMEOUT		20
+#	define UPDATE_TIMEOUT	500
 #	define MAX_PACKET_AGE	300000
 #else
+#	define LISTEN_TIMEOUT	5
+#	define SEND_TIMEOUT		5
+#	define UPDATE_TIMEOUT	500
 #	define MAX_PACKET_AGE	3000
 #endif
 
@@ -548,8 +551,15 @@ if (m_txPacketQueue.Empty ())
 if (!m_toSend.Expired ())
 	return;
 
-CNetworkPacket* packet = m_txPacketQueue.Pop ();
-packet->Transmit ();
+m_txPacketQueue.Lock ();
+int nSize = 0;
+CNetworkPacket* packet;
+while ((packet = m_txPacketQueue.Head ()) && (nSize + packet->Size () <= MAX_PACKET_SIZE)) {
+	nSize += packet->Size ();
+	packet->Transmit ();
+	m_txPacketQueue.Pop (true, false);
+	}
+m_txPacketQueue.Unlock ();
 }
 
 //------------------------------------------------------------------------------
@@ -570,7 +580,7 @@ if (!Available ()) {
 	if (destNode)
 		IPXSendPacketData (data, size, network, srcNode, destNode);
 	else
-		IPXSendInternetPacketData (data, size, srcNode, destNode);
+		IPXSendInternetPacketData (data, size, network, srcNode);
 	return true;
 	}
 
