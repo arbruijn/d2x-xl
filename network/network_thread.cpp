@@ -39,12 +39,12 @@
 #endif
 
 #define LISTEN_TIMEOUT		5
-#define SYNC_TIMEOUT			5
+#define SEND_TIMEOUT			5
 #define UPDATE_TIMEOUT		500
 #if DBG
-#	define MAX_PACKET_AGE		300000
+#	define MAX_PACKET_AGE	300000
 #else
-#	define MAX_PACKET_AGE		3000
+#	define MAX_PACKET_AGE	3000
 #endif
 
 //------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ CNetworkThread networkThread;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CNetworkPacket::Send (void)
+void CNetworkPacket::Transmit (void)
 {
 IPXSendInternetPacketData (m_data, m_size, owner.address.Network (), owner.address.Node ());
 }
@@ -137,7 +137,7 @@ return packet;
 
 //------------------------------------------------------------------------------
 
-CNetworkPacket* CNetworkPacketQueue::Pop (bool bLock)
+CNetworkPacket* CNetworkPacketQueue::Pop (bool bDrop, bool bLock)
 {
 CNetworkPacket* packet;
 if (bLock)
@@ -146,6 +146,10 @@ if (packet = m_packets [0]) {
 	if (!(m_packets [0] = packet->nextPacket))
 		m_packets [1] = NULL;
 	--m_nPackets;
+	if (bDrop) {
+		delete packet;
+		packet = NULL;
+		}
 	}
 if (bLock)
 	Unlock ();
@@ -207,7 +211,7 @@ void CNetworkThread::Run (void)
 {
 for (;;) {
 	Listen ();
-	SendSync ();
+	Transmit ();
 	Update ();
 	CheckPlayerTimeouts ();
 	G3_SLEEP (1);
@@ -219,6 +223,8 @@ for (;;) {
 CNetworkThread::CNetworkThread () 
 	: m_thread (NULL), m_semaphore (NULL), m_sendLock (NULL), m_recvLock (NULL), m_processLock (NULL), m_nThreadId (0), m_bListen (false)
 {
+m_packet = NULL;
+m_syncPackets = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -406,7 +412,7 @@ t -= MAX_PACKET_AGE;
 m_rxPacketQueue.Lock ();
 for (m_rxPacketQueue.Start (); m_rxPacketQueue.Current (); m_rxPacketQueue.Next ()) {
 	if (m_rxPacketQueue.Current ()->timeStamp < t) 
-		m_rxPacketQueue.Pop (false);
+		m_rxPacketQueue.Pop (true, false);
 	}
 m_rxPacketQueue.Unlock ();
 }
@@ -500,63 +506,51 @@ return nProcessed;
 }
 
 //------------------------------------------------------------------------------
+// Remove any sync packets still in the transmission queue
 
-int CNetworkThread::InitSync (void)
+void CNetworkThread::StartSync (void)
 {
 if (!Available ())
-	return 0;
-m_txPacketQueue.Flush ();
-return m_syncLock != NULL;
-}
-
-//------------------------------------------------------------------------------
-// (Re-) Start sending sync packets with packet # nPacket
-
-bool CNetworkThread::StartSync (int nPacket)
-{
-if (!Available ())
-	return 0;
-m_txPacketQueue.Start ();
-m_txPacketQueue.Lock ();
-m_bSendSync = m_txPacketQueue.Current () != NULL;
-m_txPacketQueue.Unlock ();
-return m_bSendSync;
-}
-
-//------------------------------------------------------------------------------
-
-void CNetworkThread::SendSync (void)
-{
-	static CTimeout toSync (SYNC_TIMEOUT);
-
-if (!SyncInProgress ())
 	return;
-if (!toSync.Expired ())
-	return;
-
 m_txPacketQueue.Lock ();
-if (!m_txPacketQueue.Current ()) 
-	m_bSendSync = false;
-else {
-	m_txPacketQueue.Current ()->Send ();
+CNetworkPacket* packet;
+m_txPacketQueue.Start (); 
+while ((packet = m_txPacketQueue.Current ())) {
 	m_txPacketQueue.Next ();
+	if (packet->Type () == PID_OBJECT_DATA)
+		m_txPacketQueue.Pop (true, false);
 	}
 m_txPacketQueue.Unlock ();
 }
 
 //------------------------------------------------------------------------------
 
-void CNetworkThread::StopSync (void)
+void CNetworkThread::Transmit (void)
 {
-m_txPacketQueue.Lock ();
-m_bSendSync = false;
-m_txPacketQueue.Unlock ();
-m_txPacketQueue.Flush ();
+	static CTimeout toSend (SEND_TIMEOUT);
+
+if (m_txPacketQueue.Empty ())
+	return;
+if (!toSend.Expired ())
+	return;
+
+CNetworkPacket* packet = m_txPacketQueue.Pop ();
+packet->Transmit ();
 }
 
 //------------------------------------------------------------------------------
 
-bool CNetworkThread::AddSyncPacket (ubyte* data, int size, ubyte* network, ubyte* node)
+bool CNetworkThread::SyncInProgress (void)
+{
+m_txPacketQueue.Lock ();
+CNetworkPacket* packet = m_txPacketQueue.Head ();
+m_txPacketQueue.Unlock ();
+return (packet && packet->Type () == PID_OBJECT_DATA);
+}
+
+//------------------------------------------------------------------------------
+
+bool CNetworkThread::Send (ubyte* data, int size, ubyte* network, ubyte* node)
 {
 if (!Available ())
 	return false;

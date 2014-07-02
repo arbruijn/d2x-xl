@@ -36,7 +36,8 @@ class CNetworkPacket : public CNetworkData {
 
 	public:
 		CNetworkPacket () : nextPacket (NULL), timeStamp (0) {}
-		void Send (void);
+		void Transmit (void);
+		inline ubyte Type (void) { return (m_size > 0) ? m_data [0] : 0xff; }
 		inline bool operator== (CNetworkPacket& other) { return (owner.address == other.owner.address) && ((CNetworkData) *this == (CNetworkData) other); }
 };
 
@@ -61,12 +62,13 @@ class CNetworkPacketQueue {
 		inline CNetworkPacket* Current (void) { return m_current; }
 		void Flush (void);
 		CNetworkPacket* Append (CNetworkPacket* packet = NULL, bool bAllowDuplicates = true);
-		CNetworkPacket* Pop (bool bLock = true);
+		CNetworkPacket* Pop (bool bDrop = false, bool bLock = true);
 		CNetworkPacket* Get (void);
 		int Lock (void);
 		int Unlock (void);
 		bool Validate (void);
 		inline int Length (void) { return m_nPackets; }
+		inline bool Empty (void) { return Head () == NULL; }
 };
 
 //------------------------------------------------------------------------------
@@ -88,11 +90,12 @@ class CNetworkThread {
 		SDL_mutex*				m_processLock;
 		int						m_nThreadId;
 		bool						m_bListen;
-		bool						m_bSendSync;
+		bool						m_bSync;
 		tNetworkPacketOwner	m_owner;
 		CNetworkPacketQueue	m_txPacketQueue; // transmit
 		CNetworkPacketQueue	m_rxPacketQueue; // receive
 		CNetworkPacket*		m_packet;
+		CNetworkPacket*		m_syncPackets;
 
 	public:
 		CNetworkThread ();
@@ -119,12 +122,13 @@ class CNetworkThread {
 		int LockProcess (void);
 		int UnlockProcess (void);
 		inline void SetListen (bool bListen) { m_bListen = bListen; }
+		bool Send (ubyte* data, int size, ubyte* network, ubyte* node);
+		void Transmit (void);
 		int InitSync (void);
-		bool AddSyncPacket (ubyte* data, int size, ubyte* network, ubyte* node);
-		bool StartSync (int nPacket = 0);
+		void StartSync (void);
 		void SendSync (void);
-		void StopSync (void);
-		inline bool SyncInProgress (void) { return Available () && m_bSendSync; }
+		bool SyncInProgress (void);
+		inline bool Sending (void) { return Available () && !m_txPacketQueue.Empty (); }
 
 	private:
 		int ConnectionStatus (int nPlayer);

@@ -169,7 +169,7 @@ for (nPacketsLeft = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACK
 			if (gameStates.multi.nGameType >= IPX_GAME) {
 				if (!syncP->bDeferredSync)
 					IPXSendInternetPacketData (objBuf, bufI, syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node ());
-				else if (!networkThread.AddSyncPacket (objBuf, bufI, syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node ())) {
+				else if (!networkThread.Send (objBuf, bufI, syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node ())) {
 					syncP->bDeferredSync = false;
 					nPacketsLeft = OBJ_PACKETS_PER_FRAME;
 					syncP->objs.nCurrent = -1;
