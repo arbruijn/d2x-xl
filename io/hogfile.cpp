@@ -28,7 +28,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 #include "u_mem.h"
 #include "strutil.h"
-#include "d_io.h"
 #include "error.h"
 #include "cfile.h"
 #include "hogfile.h"

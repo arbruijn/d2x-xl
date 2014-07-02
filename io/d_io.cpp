@@ -31,18 +31,6 @@ long filelength(int fd) {
 }
 #endif
 
-long ffilelength(FILE *file)
-{
-	long old_pos, size;
-
-	if ((old_pos = ftell(file)) == -1 ||
-	    fseek(file, 0, SEEK_END) == -1 ||
-	    (size = ftell(file)) == -1 ||
-	    fseek(file, old_pos, SEEK_SET) == -1)
-		return -1L;
-	return size;
-}
-
 
 uint d_getdiskfree()
 {

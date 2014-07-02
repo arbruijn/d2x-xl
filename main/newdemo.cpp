@@ -45,7 +45,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "newdemo.h"
 #include "cockpit.h"
 #include "text.h"
-#include "d_io.h"
 #include "timer.h"
 #include "objsmoke.h"
 #include "menu.h"
@@ -3254,6 +3253,10 @@ else {
 
 void NDStartRecording (void)
 {
+#if 1
+gameData.demo.nSize = 0;
+#else
+// free disk space shouldn't be an issue these days ...
 gameData.demo.nSize = GetDiskFree ();
 gameData.demo.nSize -= 100000;
 if ((gameData.demo.nSize+100000) <  2000000000) {
@@ -3262,6 +3265,7 @@ if ((gameData.demo.nSize+100000) <  2000000000) {
 		return;
 		}
 	}
+#endif
 InitDemoData ();
 gameData.demo.nWritten = 0;
 gameData.demo.bNoSpace = 0;

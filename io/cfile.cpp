@@ -29,7 +29,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "pstypes.h"
 #include "u_mem.h"
 #include "strutil.h"
-#include "d_io.h"
 #include "error.h"
 #include "cfile.h"
 #include "hogfile.h"
@@ -54,6 +53,23 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 int nCFileError = 0;
 
 tGameFolders gameFolders;
+
+// ----------------------------------------------------------------------------
+
+size_t ffilelength (FILE *file)
+{
+size_t pos = ftell (file);
+if (pos < 0)
+	return -1;
+if (fseek (file, 0, SEEK_END) == -1)
+	return -1;
+size_t size = ftell (file);
+if (size < 0)
+	return -1;
+if ( fseek(file, pos, SEEK_SET) == -1)
+	return -1;
+return size;
+}
 
 // ----------------------------------------------------------------------------
 // GetAppFolder verifies that szMainFolder/szSubFolder is a valid game folder by

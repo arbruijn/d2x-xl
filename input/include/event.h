@@ -20,7 +20,7 @@
 #endif
 
 int event_init();
-void event_poll(unsigned long mask);
+void event_poll(uint mask);
 
 #ifdef GII_XWIN
 void init_gii_xwin(Display *disp,Window win);
