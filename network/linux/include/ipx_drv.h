@@ -43,7 +43,7 @@ typedef struct ipx_socket_struct {
 	int16_6 fd;
 } ipx_socket_t;
 
-class CPacketOrigin : public CNetworkNode {
+class CPacketAddress : public CNetworkNode {
 	/* all network order */
 	private:
 		//tNetworkNode	src_addr;
