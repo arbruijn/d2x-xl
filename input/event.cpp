@@ -36,7 +36,7 @@ extern void JoyAxisHandler (SDL_JoyAxisEvent *jae);
 
 static int initialised=0;
 
-int PollEvent (SDL_Event *event, ulong mask)
+int PollEvent (SDL_Event *event, uint mask)
 {
 	SDL_PumpEvents();
 	/* We can't return -1, just return 0 (no event) on error */
@@ -44,7 +44,7 @@ int PollEvent (SDL_Event *event, ulong mask)
 }
 
 
-void event_poll(ulong mask)
+void event_poll(uint mask)
 {
 	SDL_Event event;
 #if TO_EVENT_POLL

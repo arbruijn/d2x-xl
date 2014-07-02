@@ -161,7 +161,7 @@ static int createTimer_handler (ubyte major, ubyte minor, ubyte *data, int len, 
 #ifndef _WIN32 //FIXME
 	__extension__ long long temp;
 #else
-	QLONG temp;
+	int64_t temp;
 #endif
 
 if (timer_created)

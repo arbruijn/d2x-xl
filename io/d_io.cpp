@@ -44,13 +44,13 @@ long ffilelength(FILE *file)
 }
 
 
-ulong d_getdiskfree()
+uint d_getdiskfree()
 {
  // FIXME:
 return 999999999;
 }
 
-ulong GetDiskFree()
+uint GetDiskFree()
 {
  return d_getdiskfree();
 }

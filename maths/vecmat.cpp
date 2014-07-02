@@ -145,7 +145,7 @@ else if (z < double (-0x7fffffff))
 
 dest.Set (fix (x), fix (y), fix (z));
 #else
-QLONG x, y, z;
+int64_t x, y, z;
 
 x = mul64 (v0.v.coord.y, v1.v.coord.z);
 x += mul64 (-v0.v.coord.z, v1.v.coord.y);
@@ -160,7 +160,7 @@ return dest;
 
 // ------------------------------------------------------------------------
 
-fix FixQuadAdjust (QLONG q)
+fix FixQuadAdjust (int64_t q)
 {
 return fix ((q >> 32) <<16) + fix ((q & 0xffffffff) >>16);
 }
@@ -187,7 +187,7 @@ else if (z < double (-0x7fffffff))
 
 return Create (fix (x), fix (y), fix (z));
 #else
-QLONG x, y, z;
+int64_t x, y, z;
 
 x = mul64 (v0.v.coord.y, v1.v.coord.z);
 x += mul64 (-v0.v.coord.z, v1.v.coord.y);

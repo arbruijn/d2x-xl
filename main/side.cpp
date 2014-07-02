@@ -676,7 +676,7 @@ uint CSide::PointToFaceRelation (CFixVector& intersection, short nFace, CFixVect
 	fix 				check_i, check_j;
 	CFixVector		*v0, *v1;
 	CFixVector2		vEdge, vCheck;
-	QLONG				d;
+	int64_t				d;
 
 //now do 2d check to see if refP is in CSide
 //project polygon onto plane by finding largest component of Normal

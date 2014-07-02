@@ -190,7 +190,7 @@ if (WSAStartup (wVersionRequested, &wsaData))
 	return IPX_SOCKET_ALREADY_OPEN;
 
 if ((i = FindArg ("-ipxnetwork")) && appConfig [i + 1]) {
-	ulong n = strtol (appConfig [i + 1], NULL, 16);
+	int n = strtol (appConfig [i + 1], NULL, 16);
 	for (i = 3; i >= 0; i--, n >>= 8)
 		ipx_MyAddress [i] = (ubyte) n & 0xff; 
 	}

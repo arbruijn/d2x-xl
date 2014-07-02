@@ -424,25 +424,25 @@ void SetD1Sound (void);
 //------------------------------------------------------------------------------
 
 typedef struct tWAVHeader {
-	char	chunkID [4];
-	ulong	chunkSize;
-	char	riffType [4];
+	char		chunkID [4];
+	uint		chunkSize;
+	char		riffType [4];
 } tRIFFChunk;
 
 typedef struct tWAVFormat {
 	char		chunkID [4];
-	ulong		chunkSize;
+	uint		chunkSize;
 	ushort	format;
 	ushort	channels;
-	ulong		sampleRate;
-	ulong		avgBytesPerSec;
+	uint		sampleRate;
+	uint		avgBytesPerSec;
 	ushort	blockAlign;
 	ushort	bitsPerSample;
 	} tPCMFormatChunk;
 
 typedef struct tWAVData {
-	char	chunkID [4];
-	ulong	chunkSize;
+	char		chunkID [4];
+	uint		chunkSize;
 } tWAVData;
 
 typedef struct tWAVInfo {

@@ -194,7 +194,7 @@ return 1;
 #if UDP_SAFEMODE
 
 typedef struct tPacketProps {
-	long						id;
+	int						id;
 	ubyte						*data;
 	short						len;
 	time_t					timeStamp;
@@ -208,8 +208,8 @@ class CClient {
 #if UDP_SAFEMODE
 		tPacketProps			packetProps [MAX_BUF_PACKETS];
 		ubyte						packetBuf [PACKET_BUF_SIZE];
-		long						nSent;
-		long						nReceived;
+		int						nSent;
+		int						nReceived;
 		short						firstPacket;
 		short						numPackets;
 		int						fd;
@@ -1237,7 +1237,7 @@ return dataLen;
 
 int UDPPacketReady (ipx_socket_t *s)
 {
-	ulong nAvailBytes = 0;
+	u_long nAvailBytes = 0;
 
 #ifdef _WIN32
 return !ioctlsocket (s->fd, FIONREAD, &nAvailBytes) && (nAvailBytes > 0);

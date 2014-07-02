@@ -47,11 +47,7 @@ typedef struct tQuadInt {// integer 64 bit, previously called "quad"
 //Some handy constants
 //#define F0_1	0x199a
 
-#ifdef _WIN32
-#	define QLONG __int64
-#else
-#	define QLONG long long
-#endif
+#define int64_t int64_t
 
 #if 1
 
@@ -64,17 +60,17 @@ typedef struct tQuadInt {// integer 64 bit, previously called "quad"
 inline float FRound (float v)	{ return (v < 0.0f) ? v - 0.5f : v + 0.5f; }
 inline double DRound (double v)	{ return (v < 0.0) ? v - 0.5 : v + 0.5; }
 
-#define FixMul64(_a, _b)		((QLONG) XRound (double (_b) / 65536.0 * double (_a)))
+#define FixMul64(_a, _b)		((int64_t) XRound (double (_b) / 65536.0 * double (_a)))
 #define FixMul(_a, _b)			(XRound (double (_b) / 65536.0 * double (_a)))
 #define FixDiv(_a, _b)			(XRound ((_b) ? (double (_a) / double (_b) * 65536.0) : 1))
 #define FixMulDiv(_a, _b, _c) (XRound ((_c) ? double (_a) / double (_c) * double (_b) : 1))
 
 #else
 
-#define FixMul64(_a, _b)		(static_cast<QLONG> (((static_cast<QLONG> (_a)) * (static_cast<QLONG> (_b))) / 65536))
+#define FixMul64(_a, _b)		(static_cast<int64_t> (((static_cast<int64_t> (_a)) * (static_cast<int64_t> (_b))) / 65536))
 #define FixMul(_a, _b)			(static_cast<fix> (FixMul64 (_a, _b)))
-#define FixDiv(_a, _b)			(static_cast<fix> ((_b) ? (((static_cast<QLONG> (_a)) * 65536) / (static_cast<QLONG> (_b))) : 1))
-#define FixMulDiv(_a, _b, _c) ((fix) ((_c) ? (((static_cast<QLONG> (_a)) * (static_cast<QLONG> (_b))) / (static_cast<QLONG> (_c))) : 1))
+#define FixDiv(_a, _b)			(static_cast<fix> ((_b) ? (((static_cast<int64_t> (_a)) * 65536) / (static_cast<int64_t> (_b))) : 1))
+#define FixMulDiv(_a, _b, _c) ((fix) ((_c) ? (((static_cast<int64_t> (_a)) * (static_cast<int64_t> (_b))) / (static_cast<int64_t> (_c))) : 1))
 
 #endif
 
@@ -88,9 +84,9 @@ ushort LongSqrt (int32_t a);
 extern int nMathFormat;
 extern int nDefMathFormat;
 
-uint sqrt64 (unsigned QLONG a);
+uint sqrt64 (uint64_t a);
 
-#define mul64(_a,_b)	(static_cast<QLONG> (_a) * static_cast<QLONG> (_b))
+#define mul64(_a,_b)	(static_cast<int64_t> (_a) * static_cast<int64_t> (_b))
 
 //multiply two fixes, and add 64-bit product to a tQuadInt
 void FixMulAccum (tQuadInt * q, fix a, fix b);

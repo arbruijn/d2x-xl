@@ -2200,7 +2200,9 @@
     <ClCompile Include="..\menus\soundmenu.cpp" />
     <ClCompile Include="..\io\args.cpp" />
     <ClCompile Include="..\io\cfile.cpp" />
-    <ClCompile Include="..\io\d_io.cpp" />
+    <ClCompile Include="..\io\d_io.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\io\win32\findfile.cpp" />
     <ClCompile Include="..\io\hogfile.cpp" />
     <ClCompile Include="..\libmve\decoder16.cpp" />

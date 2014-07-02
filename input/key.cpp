@@ -784,7 +784,7 @@ if (!gameStates.input.keys.pressed [scanCode]) {
 	keyData.keys [scanCode].timeHeldDown = 0;
 	} 
 else {
-	QLONG s, ms;
+	int64_t s, ms;
 #if DBG
 	if (scanCode == 72)
 		scanCode = scanCode;

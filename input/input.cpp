@@ -188,7 +188,7 @@ return (int) ((AttenuateAxis (h / 256, i) * m_pollTime) / 128);
 int CControlsManager::ReadJoystick (int* joyAxis)
 {
 	int	rawJoyAxis [JOY_MAX_AXES];
-	ulong channelMasks;
+	uint	channelMasks;
 	int	i, bUseJoystick = 0;
 	fix	ctime = 0;
 

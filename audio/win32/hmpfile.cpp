@@ -14,7 +14,7 @@ hmp_file *hmp_open(const char *filename, int bUseD1Hog)
 {
 	int i;
 	char buf [256];
-	long data = 0;
+	int data = 0;
 	CFile cf;
 	hmp_file *hmp;
 	int num_tracks, midi_div;
@@ -124,10 +124,10 @@ void hmp_close(hmp_file *hmp)
 /*
  * read a HMI nType variable length number
  */
-static int get_var_num_hmi(ubyte *data, int datalen, ulong *value) 
+static int get_var_num_hmi(ubyte *data, int datalen, uint *value) 
 {
 	ubyte *p;
-	ulong v = 0;
+	uint v = 0;
 	int shift = 0;
 
 	p = data;
@@ -147,10 +147,10 @@ static int get_var_num_hmi(ubyte *data, int datalen, ulong *value)
 /*
  * read a MIDI nType variable length number
  */
-static int get_var_num(ubyte *data, int datalen, ulong *value) 
+static int get_var_num(ubyte *data, int datalen, uint *value) 
 {
 	ubyte *orgdata = data;
-	ulong v = 0;
+	uint v = 0;
 
 	while ((datalen > 0) && (*data & 0x80))
 		v = (v << 7) + (*(data++) & 0x7f);
@@ -166,8 +166,8 @@ static int get_var_num(ubyte *data, int datalen, ulong *value)
 static int get_event(hmp_file *hmp, event *ev) 
 {
     static int cmdlen [7] ={3,3,3,3,2,2,3};
-	ulong got;
-	ulong mindelta, delta;
+	uint got;
+	uint mindelta, delta;
 	int i, ev_num;
 	hmp_track *trk, *fndtrk;
 
@@ -216,7 +216,7 @@ static int get_event(hmp_file *hmp, event *ev)
 	} else if (ev_num == 0xff) {
 		ev->msg [1] = *(trk->cur++);
 		trk->left--;
-		if (!(got = get_var_num(ev->data = trk->cur, trk->left, reinterpret_cast<ulong*> (&ev->datalen))))
+		if (!(got = get_var_num(ev->data = trk->cur, trk->left, reinterpret_cast<uint*> (&ev->datalen))))
 			return HMP_INVALID_FILE;
 	    trk->cur += ev->datalen;
 		if (trk->left <= ev->datalen)
@@ -342,7 +342,7 @@ static void _stdcall midi_callback(HMIDISTRM hms, UINT uMsg, DWORD dwUser, DWORD
 
 //------------------------------------------------------------------------------
 
-static void setup_tempo(hmp_file *hmp, ulong tempo) 
+static void setup_tempo(hmp_file *hmp, uint tempo) 
 {
 	MIDIHDR *mhdr = hmp->evbuf;
 if (mhdr) {

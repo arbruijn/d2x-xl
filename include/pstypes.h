@@ -25,14 +25,16 @@ typedef int dboolean;
 
 #include <stdint.h>
 
-typedef int8_t				sbyte;
-typedef int16_t			sshort;
-typedef int32_t			sint;
-typedef int64_t			slong;
-typedef uint8_t			ubyte;
-typedef uint16_t			ushort;
-typedef uint32_t			uint;
-typedef uint64_t			ulong;
+typedef char				sbyte;
+typedef short				sshort;
+typedef int					sint;
+typedef long				slong;
+typedef int64_t			longlong;
+typedef unsigned char	ubyte;
+typedef unsigned short	ushort;
+typedef unsigned int		uint;
+typedef unsigned long	ulong;
+typedef uint64_t			ulonglong;
 
 #ifdef _WIN32
 # include <stdlib.h> // this is where minand max are defined
