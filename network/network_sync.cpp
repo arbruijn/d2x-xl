@@ -94,14 +94,22 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+static inline bool SendObject (int nMode, int nLocalObj, int nPlayer)
+{
+if (NetworkFilterObject (OBJECTS + nLocalObj)) 
+	return false;
+return nMode
+		 ? (gameData.multigame.nObjOwner [nLocalObj] == -1) || (gameData.multigame.nObjOwner [nLocalObj] == nPlayer) // send objects owned by the local player or by nobody
+		 : (gameData.multigame.nObjOwner [nLocalObj] != -1) && (gameData.multigame.nObjOwner [nLocalObj] != nPlayer); // send objects owned by other players
+}
+
+//------------------------------------------------------------------------------
+
 ubyte objBuf [MAX_PACKET_SIZE];
 
 void NetworkSyncObjects (tNetworkSyncData *syncP)
 {
-	CObject	*objP;
-	sbyte		nObjOwner;
-	short		nRemoteObj;
-	int		bufI, nLocalObj, h;
+	int		bufI, nLocalObj, nPacketsLeft;
 	int		nObjFrames = 0;
 	int		nPlayer = syncP->player [1].player.connected;
 	int		bResync = syncP->objs.missingFrames.nFrame > 0;
@@ -110,8 +118,7 @@ syncP->bDeferredSync = false; //networkThread.Available ();
 
 // Send clear OBJECTS array CTrigger and send player num
 objFilter [OBJ_MARKER] = !gameStates.app.bHaveExtraGameInfo [1];
-for (h = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACKETS_PER_FRAME; h; h--) {	// Do more than 1 per frame, try to speed it up without
-																// over-stressing the receiver.
+for (nPacketsLeft = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACKETS_PER_FRAME; nPacketsLeft; nPacketsLeft--) {
 	nObjFrames = 0;
 	memset (objBuf, 0, MAX_PAYLOAD_SIZE);
 	objBuf [0] = PID_OBJECT_DATA;
@@ -131,27 +138,23 @@ for (h = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACKETS_PER_FRA
 		bResync = 0;
 		}
 
-	for (nLocalObj = syncP->objs.nCurrent, objP = OBJECTS + nLocalObj; nLocalObj <= gameData.objs.nLastObject [0]; nLocalObj++, objP++) {
-		if (NetworkFilterObject (objP)) 
-			continue;
-		// objects are sent in two passes; // nMode controls what types of objects to send in which pass
-		if (syncP->objs.nMode
-			 ? (gameData.multigame.nObjOwner [nLocalObj] != -1) && (gameData.multigame.nObjOwner [nLocalObj] != nPlayer) // send objects owned by the local player or by nobody
-			 : (gameData.multigame.nObjOwner [nLocalObj] == -1) || (gameData.multigame.nObjOwner [nLocalObj] == nPlayer) // send objects owned by other players
-			) continue;
-		if ((MAX_PAYLOAD_SIZE - bufI - 1) < int (sizeof (tBaseObject)) + 5)
-			break; // Not enough room for another CObject
-		nObjFrames++;
-		syncP->objs.nSent++;
-		nRemoteObj = GetRemoteObjNum (short (nLocalObj), nObjOwner);
-		NW_SET_SHORT (objBuf, bufI, nLocalObj);      
-		NW_SET_BYTE (objBuf, bufI, nObjOwner);                                 
-		NW_SET_SHORT (objBuf, bufI, nRemoteObj); 
-		NW_SET_BYTES (objBuf, bufI, &objP->info, sizeof (tBaseObject));
+	for (nLocalObj = syncP->objs.nCurrent; nLocalObj <= gameData.objs.nLastObject [0]; nLocalObj++) {
+		if (SendObject (syncP->objs.nMode, nLocalObj, nPlayer)) {
+			if ((MAX_PAYLOAD_SIZE - bufI - 1) < int (sizeof (tBaseObject)) + 5)
+				break; // Not enough room for another CObject
+			sbyte	nObjOwner;
+			short nRemoteObj = GetRemoteObjNum (short (nLocalObj), nObjOwner);
+			NW_SET_SHORT (objBuf, bufI, nLocalObj);      
+			NW_SET_BYTE (objBuf, bufI, nObjOwner);                                 
+			NW_SET_SHORT (objBuf, bufI, nRemoteObj); 
+			NW_SET_BYTES (objBuf, bufI, &OBJECTS [nLocalObj].info, sizeof (tBaseObject));
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
-		if (gameStates.multi.nGameType >= IPX_GAME)
-			SwapObject (reinterpret_cast<CObject*> (objBuf + bufI - sizeof (tBaseObject)));
+			if (gameStates.multi.nGameType >= IPX_GAME)
+				SwapObject (reinterpret_cast<CObject*> (objBuf + bufI - sizeof (tBaseObject)));
 #endif
+			nObjFrames++;
+			syncP->objs.nSent++;
+			}
 		}
 
 	if (nObjFrames) {	// Send any objects we've buffered
@@ -168,7 +171,7 @@ for (h = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACKETS_PER_FRA
 					IPXSendInternetPacketData (objBuf, bufI, syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node ());
 				else if (!networkThread.AddSyncPacket (objBuf, bufI, syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node ())) {
 					syncP->bDeferredSync = false;
-					h = OBJ_PACKETS_PER_FRAME;
+					nPacketsLeft = OBJ_PACKETS_PER_FRAME;
 					syncP->objs.nCurrent = -1;
 					break;
 					}
@@ -194,8 +197,7 @@ for (h = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACKETS_PER_FRA
 				objBuf [2] = (ubyte) syncP->objs.nFrame;
 				bufI = 3;
 				}
-			nRemoteObj = -2;
-			NW_SET_SHORT (objBuf, bufI, nRemoteObj);
+			NW_SET_SHORT (objBuf, bufI, -2);
 			NW_SET_SHORT (objBuf, bufI, syncP->objs.nSent);
 			if (syncP->bDeferredSync)
 				networkThread.StartSync ();
