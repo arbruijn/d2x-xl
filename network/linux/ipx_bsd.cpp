@@ -41,25 +41,25 @@
 // ----------------------------------------------------------------------------
 
 typedef union tIpxAddrCast {
-	ubyte	b [1];
-	uint	i;
+	uint8_t	b [1];
+	uint32_t	i;
 } tIpxAddrCast;
 
 //------------------------------------------------------------------------------
 
-int Fail (const char *fmt, ...);
+int32_t Fail (const char *fmt, ...);
 
 #define FAIL	return Fail
 
 //------------------------------------------------------------------------------
 
-static int ipx_bsd_GetMyAddress (void)
+static int32_t ipx_bsd_GetMyAddress (void)
 {
-	int sock;
+	int32_t sock;
 	struct sockaddr_ipx ipxs;
 	struct sockaddr_ipx ipxs2;
-	uint len;
-	int i;
+	uint32_t len;
+	int32_t i;
 
 	sock=socket (AF_IPX,SOCK_DGRAM,PF_IPX);
 	if (sock == -1) {
@@ -99,12 +99,12 @@ static int ipx_bsd_GetMyAddress (void)
 
 // ----------------------------------------------------------------------------
 
-static int ipx_bsd_OpenSocket (ipx_socket_t *sk, int port)
+static int32_t ipx_bsd_OpenSocket (ipx_socket_t *sk, int32_t port)
 {
-	int sock;           /* sock here means Linux socket handle */
-	int opt;
+	int32_t sock;           /* sock here means Linux socket handle */
+	int32_t opt;
 	struct sockaddr_ipx ipxs;
-	uint len;
+	uint32_t len;
 	struct sockaddr_ipx ipxs2;
 
 	/* DANG_FIXTHIS - kludge to support broken linux IPX stack */
@@ -209,7 +209,7 @@ static void ipx_bsd_CloseSocket (ipx_socket_t *mysock) {
 
 // ----------------------------------------------------------------------------
 
-static int ipx_bsd_SendPacket (ipx_socket_t *mysock, IPXPacket_t *IPXHeader, u_char *data, int dataLen) {
+static int32_t ipx_bsd_SendPacket (ipx_socket_t *mysock, IPXPacket_t *IPXHeader, uint8_t *data, int32_t dataLen) {
 	struct sockaddr_ipx ipxs;
 
 	ipxs.sipx_family = AF_IPX;
@@ -232,8 +232,8 @@ static int ipx_bsd_SendPacket (ipx_socket_t *mysock, IPXPacket_t *IPXHeader, u_c
 
 // ----------------------------------------------------------------------------
 
-static int ipx_bsd_ReceivePacket (ipx_socket_t *s, char *buffer, int bufsize, IPXRecvData_t *rd) {
-	uint sz, size;
+static int32_t ipx_bsd_ReceivePacket (ipx_socket_t *s, char *buffer, int32_t bufsize, IPXRecvData_t *rd) {
+	uint32_t sz, size;
 	struct sockaddr_ipx ipxs;
 
 	sz = sizeof (ipxs);
