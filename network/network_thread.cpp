@@ -63,7 +63,7 @@ CNetworkThread networkThread;
 
 void CNetworkPacket::Transmit (void)
 {
-IPXSendInternetPacketData (m_data, m_size, owner.address.Network (), owner.address.Node ());
+IPXSendInternetPacketData (m_data, m_size, m_owner.address.Network (), m_owner.address.Node ());
 }
 
 //------------------------------------------------------------------------------
@@ -125,17 +125,17 @@ if (!packet) {
 
 if (Tail ()) {// list tail
 	if (!bAllowDuplicates && (*Tail () == *packet)) {
-		Tail ()->timeStamp = SDL_GetTicks ();
+		Tail ()->SetTime (SDL_GetTicks ());
 		Unlock ();
 		return packet;
 		}
-	Tail ()->nextPacket = packet;
+	Tail ()->m_nextPacket = packet;
 	}
 else 
 	SetHead (packet); // list head
 SetTail (packet);
-Tail ()->timeStamp = SDL_GetTicks ();
-Tail ()->nextPacket = NULL;
+Tail ()->SetTime (SDL_GetTicks ());
+Tail ()->m_nextPacket = NULL;
 ++m_nPackets;
 Unlock ();
 return packet;
@@ -149,7 +149,7 @@ CNetworkPacket* packet;
 if (bLock)
 	Lock ();
 if (packet = m_packets [0]) {
-	if (!(m_packets [0] = packet->nextPacket))
+	if (!(m_packets [0] = packet->Next ()))
 		m_packets [1] = NULL;
 	--m_nPackets;
 	if (bDrop) {
@@ -169,7 +169,7 @@ void CNetworkPacketQueue::Flush (void)
 Lock ();
 while (m_packets [0]) {
 	m_packets [1] = m_packets [0];
-	m_packets [0] = m_packets [0]->nextPacket;
+	m_packets [0] = m_packets [0]->Next ();
 	delete m_packets [1];
 	}
 m_packets [1] = NULL;
@@ -181,7 +181,7 @@ Unlock ();
 
 CNetworkPacket* CNetworkPacketQueue::Start (int nPacket) 
 { 
-for (m_current = Head (); m_current && nPacket--; Next ())
+for (m_current = Head (); m_current && nPacket--; Step ())
 	;
 return m_current;
 }
@@ -418,8 +418,8 @@ if (t <= MAX_PACKET_AGE)
 	return; // drop packets older than 3 seconds
 t -= MAX_PACKET_AGE;
 m_rxPacketQueue.Lock ();
-for (m_rxPacketQueue.Start (); m_rxPacketQueue.Current (); m_rxPacketQueue.Next ()) {
-	if (m_rxPacketQueue.Current ()->timeStamp < t) 
+for (m_rxPacketQueue.Start (); m_rxPacketQueue.Current (); m_rxPacketQueue.Step ()) {
+	if (m_rxPacketQueue.Current ()->Timestamp () < t) 
 		m_rxPacketQueue.Pop (true, false);
 	}
 m_rxPacketQueue.Unlock ();
@@ -445,13 +445,13 @@ for (;;) {
 		if (!m_packet)
 			break;
 		}
-	if (!m_packet->SetSize (IpxGetPacketData (m_packet->data)))
+	if (!m_packet->SetSize (IpxGetPacketData (m_packet->m_data)))
 		break;
 #if DBG
 	if (!m_rxPacketQueue.Validate ())
 		FlushPackets ();
 #endif
-	memcpy (&m_packet->owner.address, &networkData.packetSource, sizeof (networkData.packetSource));
+	memcpy (&m_packet->m_owner.address, &networkData.packetSource, sizeof (networkData.packetSource));
 	m_rxPacketQueue.Append (m_packet, false);
 	m_packet = NULL;
 	}
@@ -487,8 +487,8 @@ CNetworkPacket* packet = GetPacket ();
 if (!packet)
 	return 0;
 
-memcpy (data, packet->data, packet->Size ());
-memcpy (&networkData.packetSource, &packet->owner.address, sizeof (networkData.packetSource));
+memcpy (data, packet->m_data, packet->Size ());
+memcpy (&networkData.packetSource, &packet->m_owner.address, sizeof (networkData.packetSource));
 int size = packet->Size ();
 delete packet;
 return size;
@@ -506,7 +506,7 @@ if (LOCALPLAYER.connected == CONNECT_WAITING)
 	BRP;
 #endif
 while (packet = GetPacket ()) {
-	if (NetworkProcessPacket (packet->data, packet->Size ()))
+	if (NetworkProcessPacket (packet->m_data, packet->Size ()))
 		++nProcessed;
 	delete packet;
 	}
@@ -524,7 +524,7 @@ m_txPacketQueue.Lock ();
 CNetworkPacket* packet;
 m_txPacketQueue.Start (); 
 while ((packet = m_txPacketQueue.Current ())) {
-	m_txPacketQueue.Next ();
+	m_txPacketQueue.Step ();
 	if (packet->Type () == PID_OBJECT_DATA)
 		m_txPacketQueue.Pop (true, false);
 	}
@@ -568,9 +568,10 @@ if (!Available ())
 CNetworkPacket* packet = m_txPacketQueue.Append ();
 if (!packet)
 	return false;
+packet->SetTime (SDL_GetTicks ());
 packet->SetData (data, size);
-packet->owner.address.SetNetwork (network);
-packet->owner.address.SetNode (node);
+packet->m_owner.address.SetNetwork (network);
+packet->m_owner.address.SetNode (node);
 return true;
 }
 

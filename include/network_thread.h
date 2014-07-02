@@ -29,16 +29,18 @@ class CNetworkData {
 
 class CNetworkPacket : public CNetworkData {
 	public:	
-		CNetworkPacket*		nextPacket;
-		uint						timeStamp;
-		tNetworkPacketOwner	owner;
-		ubyte						data [MAX_PACKET_SIZE];
+		CNetworkPacket*		m_nextPacket;
+		uint						m_timestamp;
+		tNetworkPacketOwner	m_owner;
 
 	public:
-		CNetworkPacket () : nextPacket (NULL), timeStamp (0) {}
+		CNetworkPacket () : m_nextPacket (NULL), m_timestamp (0) {}
 		void Transmit (void);
+		inline int SetTime (int timestamp) { return m_timestamp = timestamp; }
+		inline CNetworkPacket* Next (void) { return m_nextPacket; }
+		inline uint Timestamp (void) { return m_timestamp; }
 		inline ubyte Type (void) { return (m_size > 0) ? m_data [0] : 0xff; }
-		inline bool operator== (CNetworkPacket& other) { return (owner.address == other.owner.address) && ((CNetworkData) *this == (CNetworkData) other); }
+		inline bool operator== (CNetworkPacket& other) { return (m_owner.address == other.m_owner.address) && ((CNetworkData) *this == (CNetworkData) other); }
 };
 
 //------------------------------------------------------------------------------
@@ -58,7 +60,7 @@ class CNetworkPacketQueue {
 		inline void SetHead (CNetworkPacket* packet) { m_packets [0] = packet; }
 		inline void SetTail (CNetworkPacket* packet) { m_packets [1] = packet; }
 		CNetworkPacket* Start (int nPacket = 0);
-		inline CNetworkPacket* Next (void) { return m_current ? m_current = m_current->nextPacket : NULL; }
+		inline CNetworkPacket* Step (void) { return m_current ? m_current = m_current->Next () : NULL; }
 		inline CNetworkPacket* Current (void) { return m_current; }
 		void Flush (void);
 		CNetworkPacket* Append (CNetworkPacket* packet = NULL, bool bAllowDuplicates = true);
