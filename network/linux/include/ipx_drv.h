@@ -40,7 +40,7 @@ typedef struct ipx_socket_struct {
 	uint16_t PSP;
 #endif
 	uint16_t socket;
-	int16_6 fd;
+	int16_t fd;
 } ipx_socket_t;
 
 class CPacketAddress : public CNetworkNode {
