@@ -135,33 +135,33 @@ if (m_semaphore) {
 
 //------------------------------------------------------------------------------
 
-CNetworkPacket* CNetworkPacketQueue::Alloc (void)
+CNetworkPacket* CNetworkPacketQueue::Alloc (bool bLock)
 {
-Lock ();
+Lock (bLock);
 CNetworkPacket* packet = m_packets [2];
 if (m_packets [2])
 	m_packets [2] = m_packets [2]->Next ();
 else
 	packet = new CNetworkPacket;
-Unlock ();
+Unlock (bLock);
 return packet;
 }
 
 //------------------------------------------------------------------------------
 
-void CNetworkPacketQueue::Free (CNetworkPacket* packet)
+void CNetworkPacketQueue::Free (CNetworkPacket* packet, bool bLock)
 {
-Lock ();
+Lock (bLock);
 packet->m_nextPacket = m_packets [2];
 m_packets [2] = packet;
-Unlock ();
+Unlock (bLock);
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CNetworkPacketQueue::Lock (void) 
+int32_t CNetworkPacketQueue::Lock (bool bLock) 
 { 
-if (!m_semaphore)
+if (!m_semaphore || !bLock)
 	return 0;
 SDL_SemWait (m_semaphore); 
 return 1;
@@ -169,9 +169,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CNetworkPacketQueue::Unlock (void) 
+int32_t CNetworkPacketQueue::Unlock (bool bLock) 
 { 
-if (!m_semaphore)
+if (!m_semaphore || !bLock)
 	return 0;
 SDL_SemPost (m_semaphore); 
 return 1;
@@ -181,7 +181,6 @@ return 1;
 
 CNetworkPacket* CNetworkPacketQueue::Append (CNetworkPacket* packet, bool bAllowDuplicates)
 {
-Lock ();
 if (!packet) {
 	packet = Alloc ();
 	if (!packet) {
@@ -190,6 +189,7 @@ if (!packet) {
 		}
 	}
 
+Lock ();
 if (Tail ()) { // list tail
 	if (!bAllowDuplicates && (*Tail () == *packet)) {
 		++m_nDuplicate;
@@ -215,19 +215,17 @@ return packet;
 CNetworkPacket* CNetworkPacketQueue::Pop (bool bDrop, bool bLock)
 {
 CNetworkPacket* packet;
-if (bLock)
-	Lock ();
+Lock (bLock);
 if (packet = m_packets [0]) {
 	if (!(m_packets [0] = packet->Next ()))
 		m_packets [1] = NULL;
 	--m_nPackets;
 	if (bDrop) {
-		Free (packet);
+		Free (packet, false);
 		packet = NULL;
 		}
 	}
-if (bLock)
-	Unlock ();
+Unlock (bLock);
 return packet;
 }
 
@@ -579,7 +577,7 @@ if (m_toSend.Duration () != 1000 / PPS) {
 
 if (m_txPacketQueue.Empty ())
 	return;
-if (!m_toSend.Expired () && ! m_txPacketQueue.Head ()->Urgent ())
+if (!m_toSend.Expired () && !m_txPacketQueue.Head ()->Urgent ())
 	return;
 
 int32_t nSize = 0;
@@ -625,8 +623,9 @@ if ((packet = m_txPacketQueue.Head ()) && packet->Combine (data, size, network, 
 	m_txPacketQueue.Unlock ();
 	}
 else {
+	packet = m_txPacketQueue.Alloc (false);
 	m_txPacketQueue.Unlock ();
-	if (!(packet = m_txPacketQueue.Alloc ()))
+	if (!packet)
 		return false;
 	packet->SetData (data, size);
 	packet->Owner ().SetAddress (network, node);

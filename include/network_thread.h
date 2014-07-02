@@ -96,8 +96,8 @@ class CNetworkPacketQueue {
 	public:
 		CNetworkPacketQueue ();
 		~CNetworkPacketQueue ();
-		CNetworkPacket* Alloc (void);
-		void Free (CNetworkPacket* packet);
+		CNetworkPacket* Alloc (bool bLock = true);
+		void Free (CNetworkPacket* packet, bool bLock = true);
 		inline CNetworkPacket* Head (void) { return m_packets [0]; }
 		inline CNetworkPacket* Tail (void) { return m_packets [1]; }
 		inline CNetworkPacket* FreeList (void) { return m_packets [2]; }
@@ -110,8 +110,8 @@ class CNetworkPacketQueue {
 		CNetworkPacket* Append (CNetworkPacket* packet = NULL, bool bAllowDuplicates = true);
 		CNetworkPacket* Pop (bool bDrop = false, bool bLock = true);
 		CNetworkPacket* Get (void);
-		int32_t Lock (void);
-		int32_t Unlock (void);
+		int32_t Lock (bool bLock = true);
+		int32_t Unlock (bool bLock = true);
 		bool Validate (void);
 		inline int32_t Length (void) { return m_nPackets; }
 		inline bool Empty (void) { return Head () == NULL; }
