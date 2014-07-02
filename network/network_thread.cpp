@@ -518,7 +518,7 @@ if (m_toSend.Duration () != PPS) {
 
 if (m_txPacketQueue.Empty ())
 	return;
-if (!m_toSend.Expired ())
+if (!m_toSend.Expired () && ! m_txPacketQueue.Head ()->Urgent ())
 	return;
 
 m_txPacketQueue.Lock ();
