@@ -538,7 +538,7 @@ return nFuncRes;
 
 int32_t NetworkProcessPacket (uint8_t *dataP, int32_t nLength)
 {
-if (!networkThread.Available ())
+if (!networkThread.Available () || !(dataP [0] & 0x80))
 	return NetworkProcessSinglePacket (dataP, nLength);
 
 if (NetworkBadCombinedPacketSize (dataP, nLength)) 
@@ -549,13 +549,13 @@ tPacketHandlerInfo* piP = NULL;
 int32_t nPackets = 0;
 int32_t nProcessed = 0;
 
+dataP [0] &= ~0x80;
 networkThread.LockProcess ();
-for (int32_t i = 0; nLength; i += piP->nLength) {
+for (int32_t i = 0; i < nLength; i += piP->nLength) {
 	++nPackets;
 	piP = packetHandlers + dataP [i];
 	if (NetworkProcessSinglePacket (dataP + i, piP->nLength))
 		++nProcessed;
-	nLength -= piP->nLength;
 	}
 networkThread.UnlockProcess ();
 return nProcessed == nPackets;

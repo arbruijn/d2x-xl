@@ -72,7 +72,7 @@ class CNetworkPacket : public CNetworkData {
 		inline CNetworkPacket* Next (void) { return m_nextPacket; }
 		inline CNetworkPacketOwner& Owner (void) { return m_owner; }
 		inline uint32_t Timestamp (void) { return m_timestamp; }
-		inline uint8_t Type (void) { return (m_size > 0) ? m_data [0] : 0xff; }
+		inline uint8_t Type (void) { return (m_size > 0) ? m_data [0]  & ~0x80 : 0xff; }
 		inline int32_t Urgent (void) { return m_bUrgent; }
 		inline void SetUrgent (int32_t bUrgent) { m_bUrgent = bUrgent; }
 		bool Combineable (uint8_t type);

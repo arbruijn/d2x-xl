@@ -94,6 +94,7 @@ if (!Combineable (Type ()) || !Combineable (data [0]))
 if (Owner ().CmpAddress (network, node)) 
 	return false; // different receivers
 SetData (data, size, Size ());
+data [0] |= 0x80; // mark the packet as containing combined data
 return true;
 }
 
