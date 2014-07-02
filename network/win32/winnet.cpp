@@ -298,16 +298,16 @@ void IPXSendBroadcastData (ubyte *data, int dataSize)
 	ubyte localAddress [6];
 
 if (gameStates.multi.nGameType > IPX_GAME)
-	IPXSendPacketData (data, dataSize, reinterpret_cast<ubyte*> (ipxNetworks), broadcast, broadcast);
+	networkThread.Send (data, dataSize, reinterpret_cast<ubyte*> (ipxNetworks), broadcast, broadcast);
 else {
 	// send to all networks besides mine
 	for (i = 0; i < nIpxNetworks; i++) {
 		if (memcmp (ipxNetworks + i, &ipx_network, 4)) {
 			IpxGetLocalTarget (reinterpret_cast<ubyte*> (ipxNetworks) + i, broadcast, localAddress);
-			IPXSendPacketData (data, dataSize, reinterpret_cast<ubyte*> (ipxNetworks + i), broadcast, localAddress);
+			networkThread.Send (data, dataSize, reinterpret_cast<ubyte*> (ipxNetworks + i), broadcast, localAddress);
 			} 
 		else {
-			IPXSendPacketData (data, dataSize, reinterpret_cast<ubyte*> (ipxNetworks + i), broadcast, broadcast);
+			networkThread.Send (data, dataSize, reinterpret_cast<ubyte*> (ipxNetworks + i), broadcast, broadcast);
 			}
 		}
 	// Send directly to all users not on my network or in the network list.
@@ -317,8 +317,7 @@ else {
 				if (!memcmp (ipxUsers [i].network, ipxNetworks + j, 4))
 					break;
 				if (j < nIpxNetworks)
-					IPXSendPacketData (data, dataSize, ipxUsers [i].network, 
-											ipxUsers [i].node, ipxUsers [i].address);
+					networkThread.Send (data, dataSize, ipxUsers [i].network, ipxUsers [i].node, ipxUsers [i].address);
 			}
 		}
 	}
@@ -493,7 +492,7 @@ else {
 	//printf ("Sending game packet: gameData.multiplayer.nPlayers = %i\n", gameData.multiplayer.nPlayers);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (gameData.multiplayer.players [i].IsConnected () && (i != N_LOCALPLAYER))
-			IPXSendPacketData (
+			networkThread.Send (
 				data, dataSize, 
 				netPlayers [0].m_info.players [i].network.Network (), 
 				netPlayers [0].m_info.players [i].network.Node (),

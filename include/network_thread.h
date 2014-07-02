@@ -11,6 +11,8 @@ class CNetworkPacketOwner {
 		ubyte							m_nPlayer;
 
 	public:
+		CNetworkPacketOwner () { m_bHaveDest = 0; }
+
 		void SetSource (ubyte* network, ubyte* node) {
 			m_source.SetNetwork (network);
 			m_source.SetNode (node);

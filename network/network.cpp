@@ -438,10 +438,10 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 	if (nakedData.nLength) {
 		Assert (nakedData.nDestPlayer >- 1);
 		if (gameStates.multi.nGameType >= IPX_GAME) 
-			IPXSendPacketData (reinterpret_cast<ubyte*> (nakedData.buf), nakedData.nLength, 
-									 netPlayers [0].m_info.players [nakedData.nDestPlayer].network.Network (), 
-									 netPlayers [0].m_info.players [nakedData.nDestPlayer].network.Node (), 
-									 gameData.multiplayer.players [nakedData.nDestPlayer].netAddress);
+			networkThread.Send (reinterpret_cast<ubyte*> (nakedData.buf), nakedData.nLength, 
+									  netPlayers [0].m_info.players [nakedData.nDestPlayer].network.Network (), 
+									  netPlayers [0].m_info.players [nakedData.nDestPlayer].network.Node (), 
+									  gameData.multiplayer.players [nakedData.nDestPlayer].netAddress);
 		nakedData.nLength = 0;
 		nakedData.nDestPlayer = -1;
 		}
@@ -577,7 +577,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	mybuf [1] = N_LOCALPLAYER;
 	if (gameStates.multi.nGameType == UDP_GAME)
 		mybuf [2] = LOCALPLAYER.connected;
-	IPXSendPacketData (
+	networkThread.Send (
 		reinterpret_cast<ubyte*> (mybuf), (gameStates.multi.nGameType == UDP_GAME) ? 3 : 2, 
 		netPlayers [0].m_info.players [nPlayer].network.Network (), 
 		netPlayers [0].m_info.players [nPlayer].network.Node (), 

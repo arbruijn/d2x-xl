@@ -108,16 +108,16 @@ void BESwapObject (CObject *obj);
 	IPXSendBroadcastData((ubyte *)&netPlayers [0], int (netPlayers [0].Size ()))
 
 #define SendSequencePacket(seq, server, node, netAddress) \
-	IPXSendPacketData((ubyte *)&seq, sizeof(tSequencePacket), server, node, netAddress)
+	networkThread.Send((ubyte *)&seq, sizeof(tSequencePacket), server, node, netAddress)
 #define SendInternetSequencePacket(seq, server, node) \
 	networkThread.Send((ubyte *)&seq, sizeof(tSequencePacket), server, node)
 #define SendBroadcastSequencePacket(seq) \
 	IPXSendBroadcastData((ubyte *)&seq, sizeof(tSequencePacket))
 
 #define SendFullNetGamePacket(server, node, netAddress) \
-	IPXSendPacketData((ubyte *)&netGame.m_info, netgame->Size (), server, node, netAddress)
+	networkThread.Send((ubyte *)&netGame.m_info, netgame->Size (), server, node, netAddress)
 #define SendLiteNetGamePacket(server, node, netAddress) \
-	IPXSendPacketData((ubyte *)&netGame.m_info, sizeof(tNetGameInfoLite), server, node, netAddress)
+	networkThread.Send((ubyte *)&netGame.m_info, sizeof(tNetGameInfoLite), server, node, netAddress)
 #define SendInternetFullNetGamePacket(server, node) \
 	networkThread.Send((ubyte *)&netGame.m_info, int (netGame.Size ()), server, node)
 #define SendInternetLiteNetGamePacket(server, node) \
@@ -132,7 +132,7 @@ void BESwapObject (CObject *obj);
 	memcpy (&(netgame)->m_info, data, sizeof(tNetGameInfoLite))
 
 #define SendExtraGameInfoPacket(server, node, netAddress) \
-	IPXSendPacketData((ubyte *) (extraGameInfo + 1), sizeof(tExtraGameInfo), server, node, netAddress)
+	networkThread.Send((ubyte *) (extraGameInfo + 1), sizeof(tExtraGameInfo), server, node, netAddress)
 #define SendInternetExtraGameInfoPacket(server, node) \
 	networkThread.Send((ubyte *) (extraGameInfo + 1), sizeof(tExtraGameInfo), server, node)
 #define SendBroadcastExtraGameInfoPacket() \
@@ -144,7 +144,7 @@ void BESwapObject (CObject *obj);
 	networkThread.Send((ubyte *) xmlGameInfo, (int) strlen(xmlGameInfo) + 1, server, node)
 
 #define SendMissingObjFramesPacket(server, node, netAddress) \
-	IPXSendPacketData((ubyte *) &networkData.sync [0].objs.missingFrames, sizeof(tMissingObjFrames), server, node, netAddress)
+	networkThread.Send((ubyte *) &networkData.sync [0].objs.missingFrames, sizeof(tMissingObjFrames), server, node, netAddress)
 #define SendInternetMissingObjFramesPacket(server, node) \
 	networkThread.Send((ubyte *) &networkData.sync [0].objs.missingFrames, sizeof(tMissingObjFrames), server, node)
 #define SendBroadcastMissingObjFramesPacket() \

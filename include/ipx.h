@@ -150,32 +150,32 @@ void _CDECL_ IpxClose(void);
 int IpxChangeDefaultSocket (ushort nSocket, int bKeepClients = 0);
 
 // Returns a pointer to 6-ubyte address
-ubyte * IpxGetMyLocalAddress();
+ubyte * IpxGetMyLocalAddress (void);
 // Returns a pointer to 4-ubyte server
-ubyte * IpxGetMyServerAddress();
+ubyte * IpxGetMyServerAddress (void);
 
 // Determines the local address equivalent of an internetwork address.
 void IpxGetLocalTarget( ubyte * server, ubyte * node, ubyte * local_target );
 
 // If any packets waiting to be read in, this fills data in with the packet data and returns
 // the number of bytes read.  Else returns 0 if no packets waiting.
-int IpxGetPacketData( ubyte * data );
+int IpxGetPacketData (ubyte * data);
 
 // Sends a broadcast packet to everyone on this socket.
-void IPXSendBroadcastData( ubyte * data, int datasize );
+void IPXSendBroadcastData (ubyte * data, int datasize);
 
 // Sends a packet to a certain address
-void IPXSendPacketData( ubyte * data, int datasize, ubyte *network, ubyte *address, ubyte *immediate_address );
-void IPXSendInternetPacketData( ubyte * data, int datasize, ubyte * server, ubyte *address );
+void IPXSendPacketData (ubyte * data, int datasize, ubyte *network, ubyte *address, ubyte *immediate_address);
+void IPXSendInternetPacketData (ubyte * data, int datasize, ubyte * server, ubyte *address);
 
 // Sends a packet to everyone in the game
-int IpxSendGamePacket(ubyte *data, int datasize);
+int IpxSendGamePacket (ubyte *data, int datasize);
 
 // Initialize and handle the protocol-specific field of the netgame struct.
-void IpxInitNetGameAuxData(ubyte data[]);
-int IpxHandleNetGameAuxData(const ubyte data[]);
+void IpxInitNetGameAuxData (ubyte data[]);
+int IpxHandleNetGameAuxData (const ubyte data[]);
 // Handle disconnecting from the game
-void IpxHandleLeaveGame();
+void IpxHandleLeaveGame (void);
 
 void IpxReadUserFile (const char * filename);
 void IpxReadNetworkFile (const char * filename);

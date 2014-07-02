@@ -270,7 +270,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if (gameData.multiplayer.players [i].Connected (CONNECT_PLAYING))
 			NetworkSendEndLevelShortSub (nPlayer, i);
 		else if (gameStates.multi.nGameType >= IPX_GAME)
-			IPXSendPacketData (
+			networkThread.Send (
 				reinterpret_cast<ubyte*> (&end), sizeof (tEndLevelInfo), 
 				netPlayers [0].m_info.players [i].network.Network (), 
 				netPlayers [0].m_info.players [i].network.Node (), 
@@ -311,7 +311,7 @@ eli.nType = PID_ENDLEVEL_SHORT;
 eli.nPlayer = nSrcPlayer;
 eli.connected = gameData.multiplayer.players [nSrcPlayer].connected;
 eli.secondsLeft = gameData.reactor.countdown.nSecsLeft;
-IPXSendPacketData (
+networkThread.Send (
 	reinterpret_cast<ubyte*> (&eli), sizeof (tEndLevelInfoShort), 
 	netPlayers [0].m_info.players [nDestPlayer].network.Network (), 
 	netPlayers [0].m_info.players [nDestPlayer].network.Node (), 
@@ -662,7 +662,7 @@ if (nakedData.nLength == 0) {
 	}
 if (len + nakedData.nLength>networkData.nMaxXDataSize) {
 	if (gameStates.multi.nGameType >= IPX_GAME)
-		IPXSendPacketData (
+		networkThread.Send (
 			reinterpret_cast<ubyte*> (nakedData.buf), 
 			nakedData.nLength, 
 			netPlayers [0].m_info.players [receiver].network.Network (), 
