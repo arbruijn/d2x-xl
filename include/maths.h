@@ -21,7 +21,7 @@ typedef int32_t fix;		//16 bits int, 16 bits frac
 typedef int16_t fixang;		//angles
 
 typedef struct tQuadInt {// integer 64 bit, previously called "quad"
-	u_int32_t low;
+	uint low;
    int32_t high;
 } __pack__ tQuadInt;
 
@@ -79,7 +79,7 @@ inline double DRound (double v)	{ return (v < 0.0) ? v - 0.5 : v + 0.5; }
 #endif
 
 //divide a tQuadInt by a long
-int32_t FixDivQuadLong (u_int32_t qlow, u_int32_t qhigh, u_int32_t d);
+int32_t FixDivQuadLong (uint qlow, uint qhigh, uint d);
 
 //computes the square root of a long, returning a short
 ushort LongSqrt (int32_t a);
@@ -95,7 +95,7 @@ uint sqrt64 (unsigned QLONG a);
 //multiply two fixes, and add 64-bit product to a tQuadInt
 void FixMulAccum (tQuadInt * q, fix a, fix b);
 
-u_int32_t QuadSqrt (u_int32_t low, int32_t high);
+uint QuadSqrt (uint low, int32_t high);
 //unsigned long QuadSqrt (long low, long high);
 
 //computes the square root of a fix, returning a fix

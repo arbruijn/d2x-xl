@@ -238,7 +238,7 @@ class CGameScreenData : public CCanvas {
 //------------------------------------------------------------------------------
 
 typedef struct tScreen {		// This is a video screen
-	u_int32_t	mode;				// Video mode number
+	uint	mode;				// Video mode number
 	short   		width, height; // Actual Width and Height
 	fix     		aspect;			//aspect ratio (w/h) for this screen
 	float			scale [2];		//size ratio compared to 640x480
@@ -263,13 +263,13 @@ class CScreen : public CGameScreenData {
 			}
 		void Destroy (void) { /*Canvas ()->CBitmap::Destroy ();*/ };
 
-		inline u_int32_t Mode (void) { return m_info.mode; }
+		inline uint Mode (void) { return m_info.mode; }
 
 		inline short Width (bool bScale = true) { return bScale ? (short) FRound (m_info.width * GetScale ()) : m_info.width; }
 		inline short Height (bool bScale = true) { return bScale ? (short) FRound (m_info.height * GetScale ()) : m_info.height; }
 		inline fix Aspect (void) { return m_info.aspect; }
 
-		inline void SetMode (u_int32_t mode) { m_info.mode = mode; }
+		inline void SetMode (uint mode) { m_info.mode = mode; }
 		inline void SetWidth (short width) { 
 			m_info.width = width; 
 			m_info.scale [0] = (width > 640) ? float (width) / 640.0f : 1.0f;

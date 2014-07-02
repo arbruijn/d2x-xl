@@ -23,36 +23,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // define a dboolean
 typedef int dboolean;
 
-#if defined(_WIN32) || defined(__sun__) // platforms missing (u_)int??_t
-# include <SDL_types.h>
-#endif
+#include <stdint.h>
 
-#ifndef __MINGW32__
-#	if defined(_WIN32)// platforms missing int??_t
- 		typedef Sint16 int16_t;
- 		typedef Sint32 int32_t;
- 		typedef Sint64 int64_t;
-#	endif // defined(_WIN32)
-#endif
-#if 1//ndef __MINGW32__
-#	if defined(_WIN32) || defined(__sun__) // platforms missing u_int??_t
- 		typedef Uint16 u_int16_t;
- 		typedef Uint32 u_int32_t;
- 		typedef Uint64 u_int64_t;
-#	endif // defined(_WIN32) || defined(__sun__)
-#endif
-
-#if !defined(__unix__) || defined(__FreeBSD__)
-typedef u_int16_t			ushort;
-typedef u_int32_t			uint;
-typedef unsigned long	ulong;
-#endif
-
-//define a signed byte
-typedef signed char sbyte;
-//define unsigned types;
-typedef unsigned char ubyte;
-
+typedef int8_t				sbyte;
+typedef int16_t			sshort;
+typedef int32_t			sint;
+typedef int64_t			slong;
+typedef uint8_t			ubyte;
+typedef uint16_t			ushort;
+typedef uint32_t			uint;
+typedef uint64_t			ulong;
 
 #ifdef _WIN32
 # include <stdlib.h> // this is where minand max are defined

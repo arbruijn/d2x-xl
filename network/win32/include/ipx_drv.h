@@ -28,16 +28,16 @@
 #endif
 
 typedef struct IPXAddressStruct {
-	u_char Network[4]; // __pack__;
-	u_char Node[6]; // __pack__;
-	u_char Socket[2]; // __pack__;
+	ubyte Network[4]; // __pack__;
+	ubyte Node[6]; // __pack__;
+	ubyte Socket[2]; // __pack__;
 } IPXAddress_t;
 
 typedef struct IPXPacketStructure {
-	u_short Checksum; // __pack__;
-	u_short Length; // __pack__;
-	u_char TransportControl; // __pack__;
-	u_char PacketType; // __pack__;
+	ushort Checksum; // __pack__;
+	ushort Length; // __pack__;
+	ubyte TransportControl; // __pack__;
+	ubyte PacketType; // __pack__;
 	IPXAddress_t Destination; // __pack__;
 	IPXAddress_t Source; // __pack__;
 } IPXPacket_t;
@@ -52,7 +52,7 @@ typedef struct IPXPacketStructure {
 #endif
 
 typedef struct ipx_socket_struct {
-	u_short socket;
+	ushort socket;
 	UINT_PTR	fd;
 } ipx_socket_t;
 
@@ -63,16 +63,16 @@ class CPacketOrigin : public CNetworkNode {
 		int				packetType;
 
 	public:
-		u_short			src_socket;
-		u_short			dst_socket;
+		ushort			src_socket;
+		ushort			dst_socket;
 
 	public:
 		inline void SetType (int nType) { packetType = nType; }
 #if 0 // inherited from CNetworkNode
-		inline u_int32_t Server (void) { return src_addr.address.portAddress.ip.a; }
-		inline u_int16_t Port (void) { return src_addr.address.portAddress.port.s; }
-		inline u_char* Network (void) { return src_addr.network.b; }
-		inline u_char* Node (void) { return src_addr.address.node; }
+		inline uint Server (void) { return src_addr.address.portAddress.ip.a; }
+		inline ushort Port (void) { return src_addr.address.portAddress.port.s; }
+		inline ubyte* Network (void) { return src_addr.network.b; }
+		inline ubyte* Node (void) { return src_addr.address.node; }
 		inline int Type (void) { return packetType; }
 
 		inline void SetServer (void* server) { memcpy (src_addr.address.portAddress.ip.octets, (ubyte*) server, sizeof (src_addr.address.portAddress.ip.octets)); }
@@ -98,13 +98,13 @@ struct ipx_driver {
 	int (*GetMyAddress)();
 	int (*OpenSocket)(ipx_socket_t *, int);
 	void (*CloseSocket)(ipx_socket_t *);
-	int (*SendPacket)(ipx_socket_t *, IPXPacket_t *, u_char *, int);
+	int (*SendPacket)(ipx_socket_t *, IPXPacket_t *, ubyte *, int);
 	int (*ReceivePacket)(ipx_socket_t *, ubyte *, int, CPacketOrigin *);
 	int (*PacketReady)(ipx_socket_t *s);
-	void (*InitNetGameAuxData)(ipx_socket_t *, u_char []);
-	int (*HandleNetGameAuxData)(ipx_socket_t *, const u_char []);
+	void (*InitNetGameAuxData)(ipx_socket_t *, ubyte []);
+	int (*HandleNetGameAuxData)(ipx_socket_t *, const ubyte []);
 	void (*HandleLeaveGame)(ipx_socket_t *);
-	int (*SendGamePacket)(ipx_socket_t *s, u_char *, int);
+	int (*SendGamePacket)(ipx_socket_t *s, ubyte *, int);
 };
 
 int IPXGeneralPacketReady (ipx_socket_t *s);

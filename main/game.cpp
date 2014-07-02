@@ -90,7 +90,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "findpath.h"
 #include "waypoint.h"
 
-u_int32_t nCurrentVGAMode;
+uint nCurrentVGAMode;
 
 #ifdef MWPROFILER
 #include <profiler.h>

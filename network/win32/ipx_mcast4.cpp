@@ -41,7 +41,7 @@ extern ubyte ipx_MyAddress[10];
 
 /* OUR port. Can be changed by "@X[+=]..." argument (X is the shift value)
  */
-static u_short baseport = UDP_BASEPORT;
+static ushort baseport = UDP_BASEPORT;
 
 static struct in_addr game_addr;    // The game's multicast address
 
@@ -127,13 +127,13 @@ static void dumpaddr (struct sockaddr_in *sin)
 /* Open the socket and subscribe to the multicast session */
 static int ipx_mcast4_OpenSocket (ipx_socket_t *sk, int port)
 {
-	u_char loop;
+	ubyte loop;
 	struct ip_mreq mreq;
 	struct sockaddr_in sin;
 	int ttl = 128;
 
 #if 0 //DBG
-	u_short	nServerPort = mpParams.udpPorts [0] + networkData.nPortOffset,
+	ushort	nServerPort = mpParams.udpPorts [0] + networkData.nPortOffset,
 				nLocalPort = gameStates.multi.bServer [0] ? nServerPort : mpParams.udpPorts [1];
 #endif
 
@@ -196,11 +196,11 @@ sk->fd = (UINT_PTR) (-1);
 
 //------------------------------------------------------------------------------
 
-static int ipx_mcast4_SendPacket (ipx_socket_t *sk, IPXPacket_t *IPXHeader, u_char *data, int dataLen)
+static int ipx_mcast4_SendPacket (ipx_socket_t *sk, IPXPacket_t *IPXHeader, ubyte *data, int dataLen)
 {
 	struct sockaddr_in toaddr;
 #if 0 //DBG
-	u_short	nServerPort = mpParams.udpPorts [0] + networkData.nPortOffset,
+	ushort	nServerPort = mpParams.udpPorts [0] + networkData.nPortOffset,
 				nLocalPort = gameStates.multi.bServer [0] ? nServerPort : mpParams.udpPorts [1];
 #endif
 
@@ -259,7 +259,7 @@ return size;
  * Byte 0 is the protocol version number.
  * Bytes 1-4 are the IPv4 multicast session to join, in network byte order.
  */
-static int ipx_mcast4_HandleNetGameAuxData (ipx_socket_t *sk, const u_char buf[NETGAME_AUX_SIZE])
+static int ipx_mcast4_HandleNetGameAuxData (ipx_socket_t *sk, const ubyte buf[NETGAME_AUX_SIZE])
 {
 	// Extract the multicast session and subscribe to it.  We should
 	// now be getting packets intended for the players of this game.
@@ -311,7 +311,7 @@ return 0;
  * Byte 0 is the protcol version number.
  * Bytes 1-4 hold the IPv4 multicast session for the game.
  */
-static void ipx_mcast4_InitNetGameAuxData (ipx_socket_t *sk, u_char buf[NETGAME_AUX_SIZE])
+static void ipx_mcast4_InitNetGameAuxData (ipx_socket_t *sk, ubyte buf[NETGAME_AUX_SIZE])
 {
 	char addr[16];
 	Assert (game_addr.s_addr == 0);
@@ -352,7 +352,7 @@ static int ipx_mcast4_SendGamePacket (ipx_socket_t *sk, ubyte *data, int dataLen
 {
 	struct sockaddr_in toaddr;
 #if 0 //DBG
-	u_short	nServerPort = mpParams.udpPorts [0] + networkData.nPortOffset,
+	ushort	nServerPort = mpParams.udpPorts [0] + networkData.nPortOffset,
 				nLocalPort = gameStates.multi.bServer [0] ? nServerPort : mpParams.udpPorts [1];
 #endif
 

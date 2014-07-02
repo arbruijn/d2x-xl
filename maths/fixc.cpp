@@ -40,9 +40,9 @@ extern fix isqrt_guess_table [];
 //multiply two ints & add 64-bit result to 64-bit sum
 void FixMulAccum (tQuadInt *q, fix a, fix b)
 {
-	u_int32_t	aa, bb;
-	u_int32_t	ah, al, bh, bl;
-	u_int32_t	t, c = 0, old;
+	uint	aa, bb;
+	uint	ah, al, bh, bl;
+	uint	t, c = 0, old;
 	int			neg = ((a ^ b) < 0);
 
 aa = labs(a); 
@@ -105,12 +105,12 @@ else {
 // ------------------------------------------------------------------------
 
 //divide a tQuadInt by a fix, returning a fix
-int32_t FixDivQuadLong (u_int32_t nl, u_int32_t nh, u_int32_t d)
+int32_t FixDivQuadLong (uint nl, uint nh, uint d)
 {
 	int i;
-	u_int32_t tmp0;
+	uint tmp0;
 	ubyte tmp1;
-	u_int32_t r;
+	uint r;
 	ubyte T,Q,M;
 
 	r = 0;
@@ -127,7 +127,7 @@ if (M == 0) {
 		nl <<= 1;
 		if (Q == 0) {
 			Q = (ubyte)((0x80000000L & nh) != 0 );
-			nh = (nh << 1) | (u_int32_t)T;
+			nh = (nh << 1) | (uint)T;
 			tmp0 = nh;
 			nh -= d;
 			tmp1 = (nh>tmp0);
@@ -138,7 +138,7 @@ if (M == 0) {
 			}
 		else if (Q == 1) {
 			Q = (ubyte)((0x80000000L & nh) != 0 );
-			nh = (nh << 1) | (u_int32_t)T;
+			nh = (nh << 1) | (uint)T;
 			tmp0 = nh;
 			nh += d;
 			tmp1 = (nh < tmp0);
@@ -158,7 +158,7 @@ else {
 		nl <<= 1;
 		if (Q == 0) {
 			Q = (ubyte)((0x80000000L & nh) != 0 );
-			nh = (nh << 1) | (u_int32_t)T;
+			nh = (nh << 1) | (uint)T;
 			tmp0 = nh;
 			nh += d;
 			tmp1 = (nh < tmp0);
@@ -169,7 +169,7 @@ else {
 			}
 		else if (Q == 1) {
 			Q = (ubyte) ((0x80000000L & nh) != 0);
-			nh = (nh << 1) | (u_int32_t) T;
+			nh = (nh << 1) | (uint) T;
 			tmp0 = nh;
 			nh = nh - d;
 			tmp1 = (nh > tmp0);
@@ -193,10 +193,10 @@ return (uint) (((u_int64_t) nl | (((u_int64_t) nh) << 32)) / ((u_int64_t) d));
 
 // ------------------------------------------------------------------------
 
-u_int32_t QuadSqrt (u_int32_t low,int32_t high)
+uint QuadSqrt (uint low,int32_t high)
 {
 	int			i, cnt;
-	u_int32_t	r, old_r, t;
+	uint	r, old_r, t;
 	tQuadInt		tq;
 
 if (high < 0)

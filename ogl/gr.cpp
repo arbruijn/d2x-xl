@@ -57,14 +57,14 @@ CArray<CDisplayModeInfo> displayModeInfo;
 
 //------------------------------------------------------------------------------
 
-int GrVideoModeOK (u_int32_t mode)
+int GrVideoModeOK (uint mode)
 {
 return SdlGlVideoModeOK (SM_W (mode), SM_H (mode)); // platform specific code
 }
 
 //------------------------------------------------------------------------------
 
-int GrSetMode (u_int32_t mode)
+int GrSetMode (uint mode)
 {
 	uint w, h, i;
 	//int bForce = (nCurrentVGAMode < 0);
@@ -433,9 +433,9 @@ if (!gameOpts->menus.nStyle)
 
 //------------------------------------------------------------------------------
 
-int SetMenuScreenMode (u_int32_t sm)
+int SetMenuScreenMode (uint sm)
 {
-	u_int32_t nMenuMode;
+	uint nMenuMode;
 
 gameStates.menus.bHires = gameStates.menus.bHiresAvailable;		//do highres if we can
 nMenuMode = gameStates.gfx.bOverride 
@@ -461,7 +461,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int SetGameScreenMode (u_int32_t sm)
+int SetGameScreenMode (uint sm)
 {
 if (nCurrentVGAMode != gameData.render.screen.Scalar ()) {
 	if (GrSetMode (gameData.render.screen.Scalar ())) {
@@ -490,7 +490,7 @@ return 1;
 //called to change the screen mode. Parameter sm is the new mode, one of
 //SMODE_GAME or SMODE_EDITOR. returns mode acutally set (could be other
 //mode if cannot init requested mode)
-int SetScreenMode (u_int32_t sm)
+int SetScreenMode (uint sm)
 {
 #if 0
 	GLint nError = glGetError ();

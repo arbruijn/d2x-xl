@@ -1137,8 +1137,8 @@ class CVideoStates {
 	public:
 		int nDisplayMode;
 		int nDefaultDisplayMode;
-		u_int32_t nScreenMode;
-		u_int32_t nLastScreenMode;
+		uint nScreenMode;
+		uint nLastScreenMode;
 		int nWidth;
 		int nHeight;
 		int bFullScreen;

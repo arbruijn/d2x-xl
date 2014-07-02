@@ -114,7 +114,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 /* Packet format: first is the nSignature { 0xD1,'X' } which can be also
  * { 'D','1','X','u','d','p'} for old-fashioned packets.
  * Then follows virtual socket number (as changed during PgDOWN/PgUP)
- * in network-byte-order as 2 bytes (u_short). After such 4/8 byte header
+ * in network-byte-order as 2 bytes (ushort). After such 4/8 byte header
  * follows raw data as communicated with D1X network core functions.
  */
 
@@ -571,7 +571,7 @@ int port = atoi (pszPort);
 if ((port < -PORTSHIFT_TOLERANCE) || (port > +PORTSHIFT_TOLERANCE))
 	PrintLog (0, "Invalid PortShift in \"%s\", tolerance is +/-%d\n", pszPort, PORTSHIFT_TOLERANCE);
 else
-	srcPort = (ushort) htons (u_short (port));
+	srcPort = (ushort) htons (ushort (port));
 memcpy (qhbuf + 4, &srcPort, 2);
 }
 
@@ -706,7 +706,7 @@ static void dumpaddr(struct sockaddr_in *sin)
 ushort srcPort;
 
 memcpy(qhbuf, &sin->sin_addr, 4);
-srcPort = htons ((u_short) (ntohs (sin->sin_port) - UDP_BASEPORT));
+srcPort = htons ((ushort) (ntohs (sin->sin_port) - UDP_BASEPORT));
 memcpy(qhbuf + 4, &srcPort, 2);
 DumpRawAddr (qhbuf);
 }
@@ -742,7 +742,7 @@ static int UDPOpenSocket (ipx_socket_t *sk, int port)
 #if 0 //for testing only
 	static ubyte inAddrLoopBack [4] = {127,0,0,1};
 #endif
-	u_short	nServerPort = mpParams.udpPorts [0] + networkData.nPortOffset,
+	ushort	nServerPort = mpParams.udpPorts [0] + networkData.nPortOffset,
 				nLocalPort = gameStates.multi.bServer [0] ? nServerPort : mpParams.udpPorts [1];
 
 gameStates.multi.bHaveLocalAddress = 0;
@@ -755,7 +755,7 @@ if (!gameStates.multi.bServer [0]) {		//set up server address and add it to dest
 		FAIL ("error allocating client table");
 	sin.sin_family = AF_INET;
 
-	u_short nPort = htons (nServerPort);
+	ushort nPort = htons (nServerPort);
 	memcpy (networkData.serverAddress + 8, &nPort, sizeof (nPort));
 	memcpy (&sin.sin_addr.s_addr, networkData.serverAddress + 4, 4);
 	sin.sin_port = nPort;
@@ -773,7 +773,7 @@ ioctlsocket (sk->fd, FIONBIO, &sockBlockMode);
 #else
 fcntl (sk->fd, F_SETFL, O_NONBLOCK);
 #endif
-*(reinterpret_cast<u_short*> (ipx_MyAddress + 8)) = nLocalPort;
+*(reinterpret_cast<ushort*> (ipx_MyAddress + 8)) = nLocalPort;
 #ifdef UDP_BROADCAST
 if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*> (&val_one), sizeof (val_one))) {
 #ifdef _WIN32
@@ -897,7 +897,7 @@ return 1;
 // we'll repeat the same data to each host in our broadcasting list.
 
 static int UDPSendPacket
-	(ipx_socket_t *mysock, IPXPacket_t *ipxHeader, u_char *data, int dataLen)
+	(ipx_socket_t *mysock, IPXPacket_t *ipxHeader, ubyte *data, int dataLen)
 {
  	struct sockaddr_in destAddr, *dest;
 	int				iDest, nClients, nUdpRes, extraDataLen = 0, bBroadcast = 0;

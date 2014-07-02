@@ -203,7 +203,7 @@ void FullPaletteSave (void);
  */
 extern short maxfps;
 extern int timer_paused;
-extern u_int32_t nCurrentVGAMode;
+extern uint nCurrentVGAMode;
 
 
 #endif /* _GAME_H */

@@ -197,15 +197,15 @@ void AlignPolyModelData (CPolyModel* modelP)
 		for (i = first_index; i < no_chunks; i++)
 			ch_list [i] = ch_list [i + 1];
 		// if (new) address unaligned:
-		if ((u_int32_t)new_dest (cur_ch) % 4L != 0) {
+		if ((uint)new_dest (cur_ch) % 4L != 0) {
 			// calculate how much to move to be aligned
-			short to_shift = 4 - (u_int32_t)new_dest (cur_ch) % 4L;
+			short to_shift = 4 - (uint)new_dest (cur_ch) % 4L;
 			// correct chunks' addresses
 			cur_ch.correction += to_shift;
 			for (i = 0; i < no_chunks; i++)
 				ch_list [i].correction += to_shift;
 			total_correction += to_shift;
-			Assert ((u_int32_t)new_dest (cur_ch) % 4L == 0);
+			Assert ((uint)new_dest (cur_ch) % 4L == 0);
 			Assert (total_correction <= SHIFT_SPACE); // if you get this, increase SHIFT_SPACE
 		}
 		//write (corrected) chunk for current chunk:

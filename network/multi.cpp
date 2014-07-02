@@ -3347,7 +3347,7 @@ void MultiInitiateSaveGame (int bSecret)
 	int	i;
 	char	slot;
 	union {
-		u_char	b [4];
+		ubyte	b [4];
 		uint		i;
 	} uintCast;
 
@@ -5111,7 +5111,7 @@ MultiSendData (gameData.multigame.msg.buf, 4, 0);
 void MultiSendTeleport (char nPlayer, short nSegment, char nSide)
 {
 	union {
-		u_char	b [2];
+		ubyte	b [2];
 		ushort	i;
 	} ushortCast;
 

@@ -263,12 +263,12 @@ networkThread.LockSend ();
 if (dataSize > MAX_PAYLOAD_SIZE) 
 	PrintLog (0, "IpxSendPacketData: packet too large (%d bytes)\n", dataSize);
 else {
-		static u_char buf [MAX_PACKET_SIZE];
+		static ubyte buf [MAX_PACKET_SIZE];
 		IPXPacket_t ipxHeader;
 	
 	memcpy (ipxHeader.Destination.Network, network, 4);
 	memcpy (ipxHeader.Destination.Node, dest, 6);
-	*reinterpret_cast<u_short*> (ipxHeader.Destination.Socket) = htons (ipxSocketData.socket);
+	*reinterpret_cast<ushort*> (ipxHeader.Destination.Socket) = htons (ipxSocketData.socket);
 	ipxHeader.PacketType = 4; /* Packet Exchange */
 	if (gameStates.multi.bTrackerCall)
 		memcpy (buf, data, dataSize);
@@ -479,7 +479,7 @@ if (driver->SendGamePacket) {
 	if (dataSize > MAX_PACKET_SIZE - 4)
 		PrintLog (0, "IpxSendGamePacket: packet too large (%d bytes)\n", dataSize);
 	else {
-		static u_char buf [MAX_PACKET_SIZE];
+		static ubyte buf [MAX_PACKET_SIZE];
 		*reinterpret_cast<uint*> (buf) = nIpxPacket++;
 		memcpy (buf + 4, data, dataSize);
 		*reinterpret_cast<uint*> (data) = nIpxPacket++;

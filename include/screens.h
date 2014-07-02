@@ -28,7 +28,7 @@ extern CCanvas *Canv_editor;			// the full on-scrren editor canvas
 extern CCanvas *Canv_editor_game;	// the game window on the editor screen
 
 //from game.c
-extern int SetScreenMode(u_int32_t sm);		// True = editor screen
+extern int SetScreenMode(uint sm);		// True = editor screen
 
 //About the screen
 extern ubyte		VR_screenFlags;
@@ -47,12 +47,12 @@ extern void 		VRResetParams();
 extern int			VR_use_reg_code;
 
 
-extern u_int32_t	nVRScreenMode;
+extern uint	nVRScreenMode;
 extern int			VR_render_mode;
 extern int			VR_low_res;
 extern int 			VR_show_hud;
 extern int			VR_sensitivity;
-extern u_int32_t  bScreenModeOverride;
+extern uint  bScreenModeOverride;
 
 extern CCanvas	*VR_offscreen_buffer;		// The offscreen data buffer
 extern CCanvas	VR_render_buffer[2];			// Two offscreen buffers for left/right eyes.

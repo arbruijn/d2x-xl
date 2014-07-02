@@ -176,7 +176,7 @@ closesocket (mysock->fd);
 
 //------------------------------------------------------------------------------
 
-static int ipx_win_SendPacket (ipx_socket_t *mysock, IPXPacket_t *IPXHeader, u_char *data, int dataLen) 
+static int ipx_win_SendPacket (ipx_socket_t *mysock, IPXPacket_t *IPXHeader, ubyte *data, int dataLen) 
 {
   struct sockaddr_ipx ipxs;
  

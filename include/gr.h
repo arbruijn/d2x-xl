@@ -35,7 +35,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //-----------------------------------------------------------------------------
 
-#define SM(w,h) ((((u_int32_t)w)<<16)+(((u_int32_t)h)&0xFFFF))
+#define SM(w,h) ((((uint)w)<<16)+(((uint)h)&0xFFFF))
 #define SM_W(m) (m>>16)
 #define SM_H(m) (m&0xFFFF)
 
@@ -51,8 +51,8 @@ int GrInit(void);
 // the video mode changes.
 int GrInitScreen(int mode, int w, int h, int x, int y, int rowSize, ubyte *data);
 
-int GrVideoModeOK(u_int32_t mode);
-int GrSetMode(u_int32_t mode);
+int GrVideoModeOK(uint mode);
+int GrSetMode(uint mode);
 
 //-----------------------------------------------------------------------------
 // These 4 functions actuall change screen colors.
