@@ -129,7 +129,7 @@ class CNetworkThread {
 		bool Send (ubyte* data, int size, ubyte* network, ubyte* node);
 		void Transmit (void);
 		int InitSync (void);
-		void StartSync (void);
+		void AbortSync (void);
 		void SendSync (void);
 		bool SyncInProgress (void);
 		inline bool Sending (void) { return Available () && !m_txPacketQueue.Empty (); }

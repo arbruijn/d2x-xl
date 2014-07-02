@@ -356,14 +356,11 @@ ReceiveMissingObjFramesPacket (reinterpret_cast<ubyte*> (dataP), &missingObjFram
 tNetworkSyncData *syncP = FindJoiningPlayer (missingObjFrames.nPlayer);
 if (syncP && (missingObjFrames.nFrame > syncP->objs.missingFrames.nFrame)) {
 #if 1
-	if (networkThread.SyncInProgress ()) 
-		networkThread.StartSync (missingObjFrames.nFrame);
-	else {
-		syncP->objs.missingFrames = missingObjFrames; // restart at the first missing frame
-		syncP->objs.nFrame = 0;
-		syncP->objs.nCurrent = 0;				
-		syncP->nState = 1;
-		}
+	networkThread.AbortSync ();
+	syncP->objs.missingFrames = missingObjFrames; // restart at the first missing frame
+	syncP->objs.nFrame = 0;
+	syncP->objs.nCurrent = 0;				
+	syncP->nState = 1;
 	}
 #else
 else {

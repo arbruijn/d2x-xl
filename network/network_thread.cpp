@@ -516,7 +516,7 @@ return nProcessed;
 //------------------------------------------------------------------------------
 // Remove any sync packets still in the transmission queue
 
-void CNetworkThread::StartSync (void)
+void CNetworkThread::AbortSync (void)
 {
 if (!Available ())
 	return;
