@@ -50,8 +50,8 @@ class CMovie {
 	public:
 		~CMovie () { Close (); }
 		static void ShowFrame (uint8_t* buf, uint32_t bufw, uint32_t bufh, uint32_t sx, uint32_t sy, uint32_t w, uint32_t h, uint32_t dstx, uint32_t dsty);
-		static void SetPalette (uint8_t* p, unsigned start, unsigned count);
-		static void* Alloc (unsigned size);
+		static void SetPalette (uint8_t* p, uint32_t start, uint32_t count);
+		static void* Alloc (uint32_t size);
 		static void Free (void* p);
 		static uint32_t Read (void* handle, void* buf, uint32_t count);
 		void Rewind (void);

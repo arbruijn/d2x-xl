@@ -92,7 +92,7 @@ uint32_t sqrt64 (uint64_t a);
 void FixMulAccum (tQuadInt * q, fix a, fix b);
 
 uint32_t QuadSqrt (uint32_t low, int32_t high);
-//unsigned long QuadSqrt (long low, long high);
+//uint32_t QuadSqrt (long low, long high);
 
 //computes the square root of a fix, returning a fix
 fix FixSqrt (fix a);

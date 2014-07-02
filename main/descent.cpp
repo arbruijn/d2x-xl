@@ -137,8 +137,8 @@ char szAutoHogFile [255];
 
 
 int32_t nDescentCriticalError = 0;
-unsigned descent_critical_deverror = 0;
-unsigned descent_critical_errcode = 0;
+uint32_t descent_critical_deverror = 0;
+uint32_t descent_critical_errcode = 0;
 
 // ----------------------------------------------------------------------------
 

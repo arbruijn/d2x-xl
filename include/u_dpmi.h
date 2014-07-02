@@ -38,8 +38,8 @@ extern void *dpmi_real_malloc( int32_t size, uint16_t *selector );
 extern void dpmi_real_free( uint16_t selector );
 extern void dpmi_real_int386x( uint8_t intno, dpmi_real_regs * rregs );
 extern void dpmi_real_call(dpmi_real_regs * rregs);
-extern int32_t dpmi_lock_region(void *address, unsigned length);
-extern int32_t dpmi_unlock_region(void *address, unsigned length);
+extern int32_t dpmi_lock_region(void *address, uint32_t length);
+extern int32_t dpmi_unlock_region(void *address, uint32_t length);
 // returns 0 if failed...
 extern int32_t dpmi_allocate_selector( void * address, int32_t size, uint16_t * selector );
 extern int32_t dpmi_modify_selector_base( uint16_t selector, void * address );
@@ -52,7 +52,7 @@ extern int32_t dpmi_modify_selector_limit( uint16_t selector, int32_t size  );
 # define _far far
 #endif
 // Sets the PM handler. Returns 0 if succssful
-extern int32_t dpmi_set_pm_handler(unsigned intnum, void _far * isr );
+extern int32_t dpmi_set_pm_handler(uint32_t intnum, void _far * isr );
 
 extern uint32_t dpmi_virtual_memory;
 extern uint32_t dpmi_available_memory;

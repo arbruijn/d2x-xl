@@ -616,7 +616,7 @@ switch (gameData.weapons.nPrimary) {
 
 	case VULCAN_INDEX:
 	case GAUSS_INDEX:
-		sprintf (szWeapon, "%s: %i", pszWeapon, X2I ((unsigned) LOCALPLAYER.primaryAmmo [VULCAN_INDEX] * (unsigned) VULCAN_AMMO_SCALE));
+		sprintf (szWeapon, "%s: %i", pszWeapon, X2I ((uint32_t) LOCALPLAYER.primaryAmmo [VULCAN_INDEX] * (uint32_t) VULCAN_AMMO_SCALE));
 		Convert1s (szWeapon);
 		break;
 

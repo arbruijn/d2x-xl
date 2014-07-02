@@ -861,7 +861,7 @@ if (m_info.weaponBoxUser [0] == WBU_WEAPON) {
 			if (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] != m_history [0].ammo [0]) {
 				if (gameData.demo.nState == ND_STATE_RECORDING)
 					NDRecordPrimaryAmmo (m_history [0].ammo [0], LOCALPLAYER.primaryAmmo [VULCAN_INDEX]);
-				DrawPrimaryAmmoInfo (X2I ((unsigned) VULCAN_AMMO_SCALE * (unsigned) LOCALPLAYER.primaryAmmo [VULCAN_INDEX]));
+				DrawPrimaryAmmoInfo (X2I ((uint32_t) VULCAN_AMMO_SCALE * (uint32_t) LOCALPLAYER.primaryAmmo [VULCAN_INDEX]));
 				m_history [0].ammo [0] = LOCALPLAYER.primaryAmmo [VULCAN_INDEX];
 				}
 			}
@@ -1130,7 +1130,7 @@ for (i = 0; i < nPlayers; i++) {
 						netPlayers [0].m_info.players [i].network.Node () [2],
 						netPlayers [0].m_info.players [i].network.Node () [3],
 						netPlayers [0].m_info.players [i].network.Node () [5] +
-						 (unsigned) netPlayers [0].m_info.players [i].network.Node () [4] * 256);
+						 (uint32_t) netPlayers [0].m_info.players [i].network.Node () [4] * 256);
 #else
 			sprintf (name, "%c%s", teamInd [0], netGame.m_info.szTeamName [GetTeam (i)]);
 #endif
@@ -1145,7 +1145,7 @@ for (i = 0; i < nPlayers; i++) {
 						netPlayers [0].m_info.players [i].network.Node () [2],
 						netPlayers [0].m_info.players [i].network.Node () [3],
 						netPlayers [0].m_info.players [i].network.Node () [5] +
-						 (unsigned) netPlayers [0].m_info.players [i].network.Node () [4] * 256);
+						 (uint32_t) netPlayers [0].m_info.players [i].network.Node () [4] * 256);
 #else
 			strcpy (name, netGame.m_info.szTeamName [GetTeam (i)]);
 #endif
@@ -1161,7 +1161,7 @@ for (i = 0; i < nPlayers; i++) {
 					netPlayers [0].m_info.players [nPlayer].network.Node () [2],
 					netPlayers [0].m_info.players [nPlayer].network.Node () [3],
 					netPlayers [0].m_info.players [nPlayer].network.Node () [5] +
-					 (unsigned) netPlayers [0].m_info.players [nPlayer].network.Node () [4] * 256);
+					 (uint32_t) netPlayers [0].m_info.players [nPlayer].network.Node () [4] * 256);
 #else
 		strcpy (name, gameData.multiplayer.players [nPlayer].callsign);	// Note link to above if!!
 #endif

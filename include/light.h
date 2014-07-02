@@ -45,7 +45,7 @@ void DisableVariableLight (int32_t nSegment, int32_t nSide);
 void EnableVariableLight (int32_t nSegment, int32_t nSide);
 
 // returns 1 if ok, 0 if error
-int32_t AddVariableLight(int32_t nSegment, int32_t nSide, fix delay, unsigned long mask);
+int32_t AddVariableLight(int32_t nSegment, int32_t nSide, fix delay, uint32_t mask);
 
 void ReadVariableLight (CVariableLight *fl, CFile& cf);
 

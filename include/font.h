@@ -43,10 +43,10 @@ typedef struct tFont {
 	uint8_t					minChar;    // First char defined by this font
 	uint8_t					maxChar;    // Last char defined by this font
 	int16_t					byteWidth;  // Width in unsigned chars
-	uint8_t*				data;       // Ptr to raw data.
+	uint8_t*					data;       // Ptr to raw data.
 	CArray<uint8_t*>		chars;		// Ptrs to data for each char (required for prop font)
-	int16_t*				widths;     // Array of widths (required for prop font)
-	uint8_t*				kernData;   // Array of kerning triplet data
+	int16_t*					widths;     // Array of widths (required for prop font)
+	uint8_t*					kernData;   // Array of kerning triplet data
 	int32_t					dataOffs;
 	int32_t					widthOffs;
 	int32_t					kernDataOffs;

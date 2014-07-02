@@ -277,7 +277,7 @@ int32_t CHUDIcons::GetAmmo (char* szAmmo, int32_t i, int32_t j, int32_t l)
 if (ammoType [i][l]) {
 	int32_t nAmmo = (i ? LOCALPLAYER.secondaryAmmo [l] : LOCALPLAYER.primaryAmmo [(l == 6) ? 1 : l]);
 	if (!i && (l % 5 == 1)) {//Gauss/Vulcan
-		nAmmo = X2I (nAmmo * (unsigned) VULCAN_AMMO_SCALE);
+		nAmmo = X2I (nAmmo * (uint32_t) VULCAN_AMMO_SCALE);
 		if (nAmmo && (nAmmo < 1000)) {
 			sprintf (szAmmo, ".%d", nAmmo / 100);
 			return RED_RGBA;

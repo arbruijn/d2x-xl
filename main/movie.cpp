@@ -242,7 +242,7 @@ while (nNextSubTitle < m_nCaptions && nFrame >= m_captions [nNextSubTitle].first
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 
-void* CMovie::Alloc (unsigned size)
+void* CMovie::Alloc (uint32_t size)
 {
 return reinterpret_cast<void*> (new uint8_t [size]);
 }
@@ -318,7 +318,7 @@ bmFrame.SetBuffer (NULL);
 
 //-----------------------------------------------------------------------
 //our routine to set the palette, called from the movie code
-void CMovie::SetPalette (uint8_t* p, unsigned start, unsigned count)
+void CMovie::SetPalette (uint8_t* p, uint32_t start, uint32_t count)
 {
 	CPalette	palette;
 

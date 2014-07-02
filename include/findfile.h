@@ -7,7 +7,7 @@
 
 // Empty file
 typedef struct FILEFINDSTRUCT {
-	unsigned long size;
+	uint32_t size;
 	char name [256];
 } FILEFINDSTRUCT;
 

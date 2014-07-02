@@ -185,8 +185,8 @@ if (pl1 != pl2) {
 	*pl1 = *pl2;
 	*pl2 = h;
 #if USE_OGL_LIGHTS
-	pl1->handle = (unsigned) (GL_LIGHT0 + (pl1 - m_data.lights [0]));
-	pl2->handle = (unsigned) (GL_LIGHT0 + (pl2 - m_data.lights [0]));
+	pl1->handle = (uint32_t) (GL_LIGHT0 + (pl1 - m_data.lights [0]));
+	pl2->handle = (uint32_t) (GL_LIGHT0 + (pl2 - m_data.lights [0]));
 #endif
 	if (pl1->info.nObject >= 0)
 		m_data.owners [pl1->info.nObject] =	int16_t (m_data.lights.Index (pl1));

@@ -56,20 +56,20 @@ if (bmP->Flags () & BM_FLAG_RLE)
 w = bmP->Width ();
 h = ((bmP->Type () == BM_TYPE_ALT) && bmP->Frames ()) ? w : bmP->Height ();
 if (nOrient == 0) {
-	bmx = ((unsigned) X2I (u * w)) % w;
-	bmy = ((unsigned) X2I (v * h)) % h;
+	bmx = ((uint32_t) X2I (u * w)) % w;
+	bmy = ((uint32_t) X2I (v * h)) % h;
 	}
 else if (nOrient == 1) {
-	bmx = ((unsigned) X2I ((I2X (1) - v) * w)) % w;
-	bmy = ((unsigned) X2I (u * h)) % h;
+	bmx = ((uint32_t) X2I ((I2X (1) - v) * w)) % w;
+	bmy = ((uint32_t) X2I (u * h)) % h;
 	}
 else if (nOrient == 2) {
-	bmx = ((unsigned) X2I ((I2X (1) - u) * w)) % w;
-	bmy = ((unsigned) X2I ((I2X (1) - v) * h)) % h;
+	bmx = ((uint32_t) X2I ((I2X (1) - u) * w)) % w;
+	bmy = ((uint32_t) X2I ((I2X (1) - v) * h)) % h;
 	}
 else {
-	bmx = ((unsigned) X2I (v * w)) % w;
-	bmy = ((unsigned) X2I ((I2X (1) - u) * h)) % h;
+	bmx = ((uint32_t) X2I (v * w)) % w;
+	bmy = ((uint32_t) X2I ((I2X (1) - u) * h)) % h;
 	}
 offs = bmy * w + bmx;
 if (bmP->Flags () & BM_FLAG_TGA) {

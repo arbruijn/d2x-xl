@@ -372,7 +372,7 @@ m_nMasks = 0;
 int32_t CClientManager::BuildInterfaceList (void)
 {
 #if 0
-	unsigned					i, j;
+	uint32_t					i, j;
 	WSADATA					info;
 	INTERFACE_INFO*		ifo;
 	SOCKET					sock;
@@ -433,7 +433,7 @@ return m_nBroads;
 
 int32_t CClientManager::BuildInterfaceList (void)
 {
-	unsigned 				j;
+	uint32_t 				j;
 	struct sockaddr_in	*sinp, *sinmp;
 
 m_broads.Destroy ();
@@ -484,10 +484,10 @@ static int32_t _ioRes;
 
 int32_t CClientManager::BuildInterfaceList (void)
 {
-	unsigned					i, cnt = MAX_BRDINTERFACES;
+	uint32_t					i, cnt = MAX_BRDINTERFACES;
 	struct ifconf 			ifconf;
 	int32_t 						sock;
-	unsigned 				j;
+	uint32_t 				j;
 	struct sockaddr_in	*sinp, *sinmp;
 
 m_broads.Destroy ();

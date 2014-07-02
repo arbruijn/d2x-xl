@@ -256,8 +256,8 @@ void swap_0_255 (CBitmap *bmP);
 extern CFile cfPiggy [2];
 
 extern int32_t nDescentCriticalError;
-extern unsigned descent_critical_deverror;
-extern unsigned descent_critical_errcode;
+extern uint32_t descent_critical_deverror;
+extern uint32_t descent_critical_errcode;
 
 extern size_t bitmapCacheUsed;
 extern size_t bitmapCacheSize;
