@@ -909,8 +909,8 @@ CSegment* segP = gameData.Segment (gameData.objs.consoleP->info.nSegment);
 if (!segP)
 	return;
 
-	int32_t bLava = (SEGMENTS [gameData.objs.consoleP->info.nSegment].m_flags & S2F_AMBIENT_LAVA);
-	int32_t bWater = (SEGMENTS [gameData.objs.consoleP->info.nSegment].m_flags & S2F_AMBIENT_WATER);
+	int32_t bLava = (segP->m_flags & S2F_AMBIENT_LAVA);
+	int32_t bWater = (segP->m_flags & S2F_AMBIENT_WATER);
 	int16_t nSound;
 
 if (bLava) {							//has lava
