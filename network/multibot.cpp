@@ -309,7 +309,7 @@ for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 			}
 		if (gameData.multigame.robots.fired [sending]) {
 			gameData.multigame.robots.fired [sending] = 0;
-			MultiSendData (reinterpret_cast<char*> (gameData.multigame.robots.fireBuf [sending]), 18, 1);
+			MultiSendData (reinterpret_cast<uint8_t*> (gameData.multigame.robots.fireBuf [sending]), 18, 1);
 			}
 		if (! IsNetworkGame)
 			sent += 1;
@@ -346,7 +346,7 @@ bufP += 9;
 memcpy (gameData.multigame.msg.buf + bufP, reinterpret_cast<uint8_t*> (&sp.coord), 14);
 bufP += 14;
 #endif
-MultiSendData (reinterpret_cast<char*> (gameData.multigame.msg.buf), bufP, 1);
+MultiSendData (reinterpret_cast<uint8_t*> (gameData.multigame.msg.buf), bufP, 1);
 }
 
 //-----------------------------------------------------------------------------
