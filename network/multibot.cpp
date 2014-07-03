@@ -444,10 +444,12 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 	}
 gameData.multigame.msg.buf [bufP++] = bIsThief;   
 MultiSendData (gameData.multigame.msg.buf, bufP, 1);
+#if 0
 if (gameStates.multi.nGameType == UDP_GAME) {	// make sure the packet arrives
 	MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 	MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 	}
+#endif
 MultiDeleteControlledRobot (nObject);
 }
 

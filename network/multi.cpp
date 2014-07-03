@@ -1177,7 +1177,7 @@ if (!gameData.multigame.menu.bInvoked)
 if (gameData.app.GameMode (GM_MULTI_ROBOTS)) {
 	MultiCheckRobotTimeout ();
 	}
-NetworkDoFrame (0, 1);
+NetworkDoFrame ();
 if (gameData.multigame.bQuitGame && !(gameData.multigame.menu.bInvoked || gameStates.menus.nInMenu)) {
 	gameData.multigame.bQuitGame = 0;
 	longjmp (gameExitPoint, 0);

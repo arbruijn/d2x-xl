@@ -591,8 +591,8 @@ if (!networkData.bSyncPackInited) {
 	networkData.bSyncPackInited = 1;
 	memset (&networkData.syncPack, 0, sizeof (tFrameInfoLong));
 	}
-if ((networkData.syncPack.dataSize + len) > networkData.nMaxXDataSize) {
-	NetworkDoFrame (1, 0);
+if (networkData.syncPack.dataSize + len > networkData.nMaxXDataSize) {
+	NetworkSendSyncData ();
 	if (networkData.syncPack.dataSize != 0) {
 #if 0			
 		console.printf (CON_DBG, "%d bytes were added to data by NetworkDoFrame!\n", networkData.syncPack.dataSize);
@@ -611,10 +611,9 @@ if (gameStates.multi.nGameType == IPX_GAME) {
 	if (bD2XData && (gameStates.app.bNostalgia > 1))
 		return;
 	if (networkData.syncPack.dataSize && !bD2XData && networkData.bD2XData)
-		NetworkDoFrame (1, 0);
+		NetworkSendSyncData ();
 	networkData.bD2XData = bD2XData;
 	}
-Assert (networkData.syncPack.dataSize + len <= networkData.nMaxXDataSize);
 memcpy (networkData.syncPack.data + networkData.syncPack.dataSize, buf, len);
 networkData.syncPack.dataSize += len;
 if (bUrgent)

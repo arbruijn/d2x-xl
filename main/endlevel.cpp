@@ -239,7 +239,7 @@ LOCALPLAYER.homingObjectDist = -I2X (1); // Turn off homing sound.
 ResetRearView ();		//turn off rear view if set
 if (IsMultiGame) {
 	MultiSendEndLevelStart (0);
-	NetworkDoFrame (1, 1);
+	NetworkDoFrame (1);
 	}
 if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) ||
 	 ((missionManager.nCurrentMission == missionManager.nBuiltInMission [1]) && movieManager.m_bHaveExtras)) {
@@ -300,7 +300,7 @@ gameData.endLevel.exit.nTransitSegNum = nSegment;
 CGenericCockpit::Save ();
 if (IsMultiGame) {
 	MultiSendEndLevelStart (0);
-	NetworkDoFrame (1, 1);
+	NetworkDoFrame (1);
 	}
 Assert (nLastSeg == gameData.endLevel.exit.nSegNum);
 if (missionManager [missionManager.nCurrentMission].nDescentVersion == 1)
@@ -1546,7 +1546,7 @@ LOCALPLAYER.homingObjectDist = -I2X (1); // Turn off homing sound.
 ResetRearView ();		//turn off rear view if set
 if (IsMultiGame) {
 	MultiSendEndLevelStart (0);
-	NetworkDoFrame (1, 1);
+	NetworkDoFrame (1);
 	}
 if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) ||
 	 ((missionManager.nCurrentMission == missionManager.nBuiltInMission [1]) && movieManager.m_bHaveExtras)) {
@@ -1605,7 +1605,7 @@ gameData.endLevel.exit.nTransitSegNum = nSegment;
 CGenericCockpit::Save ();
 if (IsMultiGame) {
 	MultiSendEndLevelStart (0);
-	NetworkDoFrame (1, 1);
+	NetworkDoFrame (1);
 	}
 if (missionManager [missionManager.nCurrentMission].nDescentVersion == 1)
 	songManager.Play (SONG_ENDLEVEL, 0);

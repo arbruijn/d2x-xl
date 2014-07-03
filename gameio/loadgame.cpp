@@ -1733,7 +1733,7 @@ if (IsMultiGame) {
 	}
 PrintLog (0, "keeping network busy\n");
 if (IsNetworkGame)
-	NetworkDoFrame (1, 1);
+	NetworkDoFrame (1);
 PrintLog (0, "resetting AI paths\n");
 AIResetAllPaths ();
 gameData.bosses.ResetHitTimes ();
