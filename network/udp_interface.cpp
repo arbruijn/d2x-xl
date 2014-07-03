@@ -140,7 +140,7 @@ class CNetworkLocks {
 
 		inline void Unlock (SDL_mutex* m) {
 			if (m)
-				SDL_LockMutex (m);
+				SDL_UnlockMutex (m);
 			}
 
 		inline int32_t Abort (SDL_mutex* m) {
