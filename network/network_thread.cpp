@@ -582,9 +582,10 @@ if ((packet = m_txPacketQueue.Head ()) && packet->Combine (data, size, network, 
 	}
 else {
 	packet = m_txPacketQueue.Alloc (false);
-	m_txPacketQueue.Unlock ();
-	if (!packet)
+	if (!packet) {
+		m_txPacketQueue.Unlock ();
 		return false;
+		}
 	packet->SetData (data, size);
 	packet->Owner ().SetAddress (network, node);
 	packet->Owner ().SetLocalAddress (localAddress);
@@ -593,6 +594,7 @@ else {
 
 packet->SetUrgent (m_bUrgent);
 packet->SetTime (SDL_GetTicks ());
+m_txPacketQueue.Unlock ();
 m_bUrgent = false;
 return true;
 }
