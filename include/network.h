@@ -424,7 +424,7 @@ extern fix LastPacketTime [MAX_PLAYERS];
 
 // Call once at the beginning of a frame
 void NetworkDoFrame (int bFlush = 0);
-void NetworkSendSyncData (void);
+void NetworkFlushData (void);
 
 // Tacks data of length 'len' onto the end of the next
 // packet that we're transmitting.

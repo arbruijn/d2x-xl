@@ -434,7 +434,7 @@ return I2X (1) / (networkThread.Available () ? networkThread.PacketsPerSec () : 
 
 //------------------------------------------------------------------------------
 
-void NetworkSendSyncData (void)
+void NetworkFlushData (void)
 {
 	static int32_t tLastEndlevel = 0;
 
@@ -537,7 +537,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 		if (LOCALPLAYER.IsConnected ()) {
 			MultiSendRobotFrame (0);
 			MultiSendFire ();              // Do firing if needed..
-			NetworkSendSyncData ();
+			NetworkFlushData ();
 			}
 		}
 
