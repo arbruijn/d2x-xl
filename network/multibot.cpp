@@ -553,7 +553,7 @@ for (nContained = delObjP->info.contains.nCount; nContained; nContained -= h) {
 		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP + 2 * i, gameData.multigame.create.nObjNums [j]);
 		SetLocalObjNumMapping (gameData.multigame.create.nObjNums [j]);
 		}
-	MultiSendData (gameData.multigame.msg.buf, (gameStates.multi.nGameType == UDP_GAME) ? 29 : 27, 2);
+	MultiSendData (gameData.multigame.msg.buf, (gameStates.multi.nGameType == UDP_GAME) ? 31 : 27, 2);
 	}
 }
 
