@@ -199,6 +199,10 @@ for (nPacketsLeft = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACK
 			NW_SET_BYTE (objBuf, bufI, -1);                                 
 			NW_SET_SHORT (objBuf, bufI, syncP->objs.nSent);
 			syncP->nState = 2;
+#if DBG
+			while (networkThread.Transmit (true))
+				;
+#endif
 			}
 		else {
 			syncP->objs.nCurrent = 0;

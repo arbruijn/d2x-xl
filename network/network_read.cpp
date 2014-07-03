@@ -856,6 +856,13 @@ return syncRes;
 
 void NetworkReadObjectPacket (uint8_t* dataP)
 {
+#if DBG
+	CTimeout toListen (3000);
+
+do {
+	networkThread.Listen ();
+	} while (!toListen.Expired ());
+#endif
 objectSynchronizer.Run (dataP);
 }
 

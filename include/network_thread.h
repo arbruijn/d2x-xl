@@ -18,7 +18,7 @@ class CNetworkPacketOwner {
 			m_address.SetNode (node);
 			}
 
-		int CmpAddress (uint8_t* network, uint8_t* node) {
+		int32_t CmpAddress (uint8_t* network, uint8_t* node) {
 			return memcmp (m_address.Network (), network, 4) || memcpy (m_address.Node (), node, 6); 
 			}
 
@@ -164,7 +164,7 @@ class CNetworkThread {
 		int32_t LockProcess (void);
 		int32_t UnlockProcess (void);
 		bool Send (uint8_t* data, int32_t size, uint8_t* network, uint8_t* srcNode, uint8_t* destNode = NULL);
-		void Transmit (void);
+		int32_t Transmit (bool bForce = false);
 		int32_t InitSync (void);
 		void AbortSync (void);
 		void SendSync (void);

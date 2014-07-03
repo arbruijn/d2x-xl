@@ -570,7 +570,7 @@ m_txPacketQueue.Unlock ();
 
 //------------------------------------------------------------------------------
 
-void CNetworkThread::Transmit (void)
+int32_t CNetworkThread::Transmit (bool bForce = false)
 {
 if (m_toSend.Duration () != 1000 / PPS) {
 	m_toSend.Setup (1000 / PPS);
@@ -578,13 +578,13 @@ if (m_toSend.Duration () != 1000 / PPS) {
 	}
 
 if (m_txPacketQueue.Empty ())
-	return;
+	return 0;
 #if DBG
-if (!m_toSend.Expired ())
+if (!bForce && !m_toSend.Expired ())
 #else
 if (!m_toSend.Expired () && !m_txPacketQueue.Head ()->Urgent ())
 #endif
-	return;
+	return 1;
 
 int32_t nSize = 0;
 CNetworkPacket* packet;
@@ -600,6 +600,7 @@ while ((packet = m_txPacketQueue.Head ()) && (packet->Urgent () || (nSize + pack
 	m_txPacketQueue.Pop (true, false);
 	}
 m_txPacketQueue.Unlock ();
+return 1;
 }
 
 //------------------------------------------------------------------------------

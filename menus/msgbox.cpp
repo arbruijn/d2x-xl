@@ -92,7 +92,7 @@ if (!mm.Create (5))
 va_start (args, nChoices);
 for (i = 0; i < nChoices; i++) {
 	s = va_arg (args, char *);
-	int nItem = mm.AddMenu ("msgbox", s, - 1);
+	int32_t nItem = mm.AddMenu ("msgbox", s, - 1);
 	mm [nItem].m_bCentered = 1;
 	}
 format = va_arg (args, char*);
