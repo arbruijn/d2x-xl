@@ -74,8 +74,8 @@ class CPacketAddress : public CNetworkNode {
 #endif
 		inline tNetworkNode& Address (void) { return m_address; }
 
-		inline bool operator== (CPacketOrigin& other) { return !memcmp (&Address (), &other.Address (), sizeof (tNetworkNode)); }
-		inline CPacketOrigin& operator= (CPacketOrigin& other) { 
+		inline bool operator== (CPacketAddress& other) { return !memcmp (&Address (), &other.Address (), sizeof (tNetworkNode)); }
+		inline CPacketAddress& operator= (CPacketAddress& other) { 
 			memcpy (this, &other, sizeof (*this));
 			return *this;
 			}
