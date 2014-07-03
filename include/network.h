@@ -392,6 +392,7 @@ int32_t NetworkEndLevelPoll2 (CMenu& menu, int32_t& key, int32_t nCurItem, int32
 
 int32_t NetworkListen (void);
 int32_t NetworkLevelSync (void);
+void NetworkSendLifeSign (void);
 void NetworkSendEndLevelPacket (void);
 
 int32_t network_delete_extraObjects (void);

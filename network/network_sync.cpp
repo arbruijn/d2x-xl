@@ -704,6 +704,13 @@ while (0 < (size = networkThread.GetPacketData (packet))) {
 
 //------------------------------------------------------------------------------
 
+void NetworkSendLifeSign (void)
+{
+networkThread.SendLifeSign (true);
+}
+
+//------------------------------------------------------------------------------
+
 int32_t NetworkRequestPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (!IAmGameHost ()) {
@@ -713,18 +720,7 @@ if (!IAmGameHost ()) {
 if (nState)
 	return nCurItem;
 
-if (!networkThread.Available ()) {
-	static CTimeout to (500);
-	// tell other players that I am here
-	if (to.Expired ()) {
-		for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if (i != N_LOCALPLAYER) {
-				pingStats [i].launchTime = -1; //TimerGetFixedSeconds ();
-				NetworkSendPing (i); // tell clients already connected server is still alive
-				}
-			}
-		}
-	}
+NetworkSendLifeSign ();
 NetworkListen ();
 
 int32_t nReady = 0;

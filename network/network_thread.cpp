@@ -312,7 +312,7 @@ for (;;) {
 		Transmit ();
 		UnlockSend ();
 		}
-	Update ();
+	SendLifeSign ();
 	CheckPlayerTimeouts ();
 	G3_SLEEP (1);
 	}
@@ -673,7 +673,7 @@ return nTimedOut;
 //------------------------------------------------------------------------------
 // Check for player timeouts
 
-void CNetworkThread::Update (void)
+void CNetworkThread::SendLifeSign (bool bForce = false)
 {
 	static CTimeout toUpdate (UPDATE_TIMEOUT);
 
@@ -697,7 +697,7 @@ if (toUpdate.Expired ()) {
 				NetworkSendPing (nPlayer);
 #endif
 				}
-			else if (bDownloading) {
+			else if (bDownloading || bForce) {
 				pingStats [nPlayer].launchTime = -1;
 				NetworkSendPing (nPlayer);
 				}	

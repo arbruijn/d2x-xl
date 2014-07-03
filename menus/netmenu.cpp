@@ -218,14 +218,7 @@ if (nState)
 	// Polling loop for End-of-level menu
 
 // Send our endlevel packet at regular intervals
-if (!networkThread.Available ()) {
-	static fix t1 = 0;
-	fix t = SDL_GetTicks ();
-	if (t > (t1 + ENDLEVEL_SEND_INTERVAL)) {
-		NetworkSendEndLevelPacket (); // tell other players that I have left the level and am waiting in the score screen
-		t1 = t;
-		}
-	}
+NetworkSendLifeSign ();
 NetworkListen ();
 
 int32_t nReady = 0;

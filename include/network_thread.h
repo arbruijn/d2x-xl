@@ -148,7 +148,7 @@ class CNetworkThread {
 		void Start (void);
 		void End (void);
 		int32_t CheckPlayerTimeouts (void);
-		void Update (void);
+		void SendLifeSign (bool bForce = false);
 		int32_t Listen (void);
 		CNetworkPacket* GetPacket (void);
 		int32_t GetPacketData (uint8_t* data);
