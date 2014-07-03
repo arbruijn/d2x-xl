@@ -854,11 +854,16 @@ return syncRes;
 
 //------------------------------------------------------------------------------
 
+static bool bWait = true;
+
 void NetworkReadObjectPacket (uint8_t* dataP)
 {
-#if 0 //DBG
-while (networkThread.RxPacketQueue ().Length () < 30)
-	G3_SLEEP (10);
+#if DBG
+if (bWait) {
+	bWait = false;
+	while (networkThread.RxPacketQueue ().Length () < (gameData.objs.nObjects + 4) / 5)
+		G3_SLEEP (0);
+	}
 #endif
 objectSynchronizer.Run (dataP);
 }

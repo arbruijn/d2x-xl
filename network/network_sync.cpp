@@ -126,9 +126,12 @@ for (nPacketsLeft = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACK
 
 	if (bResync || (syncP->objs.nCurrent == -1)) {	// first packet tells the receiver to reset it's object data
 #if DBG
-		if (networkThread.Available ())
+		if (networkThread.Available ()) {
+			networkThread.LockSend ();
 			while (networkThread.Transmit ())
 				;
+			networkThread.UnlockSend ();
+			}
 #endif
 		syncP->objs.nSent = 0;
 		syncP->objs.nMode = 0;
@@ -204,9 +207,12 @@ for (nPacketsLeft = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACK
 			NW_SET_BYTE (objBuf, bufI, -1);                                 
 			NW_SET_SHORT (objBuf, bufI, syncP->objs.nSent);
 #if DBG
-			if (networkThread.Available ())
+			if (networkThread.Available ()) {
+				networkThread.LockSend ();
 				while (networkThread.Transmit ())
-				;
+					;
+				networkThread.UnlockSend ();
+				}
 #endif
 			syncP->nState = 2;
 			}

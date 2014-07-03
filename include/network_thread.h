@@ -130,9 +130,9 @@ class CNetworkThread {
 	private:
 		SDL_Thread*				m_thread;
 		SDL_sem*					m_semaphore;
-		SDL_mutex*				m_sendLock;
-		SDL_mutex*				m_recvLock;
-		SDL_mutex*				m_processLock;
+		SDL_sem*					m_sendLock;
+		SDL_sem*					m_recvLock;
+		SDL_sem*					m_processLock;
 		int32_t					m_nThreadId;
 		int32_t					m_bUrgent;
 		CNetworkPacketQueue	m_txPacketQueue; // transmit
@@ -155,14 +155,16 @@ class CNetworkThread {
 		int32_t ProcessPackets (void);
 		void FlushPackets (void);
 		void Cleanup (void);
-		int32_t Lock (void);
-		int32_t Unlock (void);
-		int32_t LockSend (void);
-		int32_t UnlockSend (void);
-		int32_t LockRecv (void);
-		int32_t UnlockRecv (void);
-		int32_t LockProcess (void);
-		int32_t UnlockProcess (void);
+		int32_t Lock (SDL_sem* semaphore, bool bTry = false);
+		int32_t Unlock (SDL_sem* semaphore);
+		inline int32_t LockThread (bool bTry = false) { return Lock (m_semaphore); }
+		inline int32_t UnlockThread (void) { return Unlock (m_semaphore); }
+		inline int32_t LockSend (bool bTry = false) { return Lock (m_sendLock); }
+		inline int32_t UnlockSend (void) { return Unlock (m_sendLock); }
+		inline int32_t LockRecv (bool bTry = false) { return Lock (m_recvLock); }
+		inline int32_t UnlockRecv (void) { return Unlock (m_recvLock); }
+		int32_t LockProcess (bool bTry = false) { return Lock (m_processLock); }
+		int32_t UnlockProcess (void) { return Unlock (m_processLock); }
 		bool Send (uint8_t* data, int32_t size, uint8_t* network, uint8_t* srcNode, uint8_t* destNode = NULL);
 		int32_t Transmit (bool bForce = false);
 		int32_t InitSync (void);

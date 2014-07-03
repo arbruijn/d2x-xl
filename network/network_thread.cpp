@@ -51,13 +51,13 @@
 #endif
 
 #if DBG
-#	define PPS		DEFAULT_PPS
+#	define PPS		(DEFAULT_PPS / 2)
 #else
 #	define PPS		netGame.GetPacketsPerSec ()
 #endif
 
-#define SENDLOCK 0
-#define RECVLOCK 0
+#define SENDLOCK 1
+#define RECVLOCK 1
 #define PROCLOCK 0
 
 #define MULTI_THREADED_NETWORKING 1 // set to 0 to have D2X-XL manage network traffic the old way
@@ -293,8 +293,14 @@ m_syncPackets = NULL;
 void CNetworkThread::Run (void)
 {
 for (;;) {
-	Listen ();
-	Transmit ();
+	if (LockRecv (true)) {
+		Listen ();
+		UnlockRecv ();
+		}
+	if (LockSend (true)) {
+		Transmit ();
+		UnlockSend ();
+		}
 	Update ();
 	CheckPlayerTimeouts ();
 	G3_SLEEP (1);
@@ -309,9 +315,15 @@ void CNetworkThread::Start (void)
 if (!m_thread) {
 	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
 	m_semaphore = SDL_CreateSemaphore (1);
-	m_sendLock = SDL_CreateMutex ();
-	m_recvLock = SDL_CreateMutex ();
-	m_processLock = SDL_CreateMutex ();
+#if SENDLOCK
+	m_sendLock = SDL_CreateSemaphore (1);
+#endif
+#if RECVLOCK
+	m_recvLock = SDL_CreateSemaphore (1);
+#endif
+#if PROCLOCK
+	m_processLock = SDL_CreateSemaphore (1);
+#endif
 	m_toSend.Setup (1000 / PPS);
 	m_toSend.Start ();
 	m_bUrgent = false;
@@ -330,15 +342,15 @@ if (m_thread) {
 		m_semaphore = NULL;
 		}
 	if (m_sendLock) {
-		SDL_DestroyMutex (m_sendLock);
+		SDL_DestroySemaphore (m_sendLock);
 		m_sendLock = NULL;
 		}
 	if (m_recvLock) {
-		SDL_DestroyMutex (m_recvLock);
+		SDL_DestroySemaphore (m_recvLock);
 		m_recvLock = NULL;
 		}
 	if (m_processLock) {
-		SDL_DestroyMutex (m_processLock);
+		SDL_DestroySemaphore (m_processLock);
 		m_processLock = NULL;
 		}
 	if (m_packet) {
@@ -360,93 +372,23 @@ m_rxPacketQueue.Flush ();
 
 //------------------------------------------------------------------------------
 
-int32_t CNetworkThread::Lock (void) 
+int32_t CNetworkThread::Lock (SDL_sem* semaphore, bool bTry = false) 
 { 
-if (!m_semaphore)
+if (!semaphore)
 	return 0;
-SDL_SemWait (m_semaphore); 
+if (bTry)
+	return SDL_SemTryWait (semaphore) != 0;
+SDL_SemWait (semaphore); 
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CNetworkThread::Unlock (void) 
+int32_t CNetworkThread::Unlock (SDL_sem* semaphore) 
 { 
-if (!m_semaphore)
+if (!semaphore)
 	return 0;
-SDL_SemPost (m_semaphore); 
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int32_t CNetworkThread::LockSend (void) 
-{ 
-#if SENDLOCK
-if (!m_sendLock)
-	return 0;
-SDL_LockMutex (m_sendLock); 
-#endif
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int32_t CNetworkThread::UnlockSend (void) 
-{ 
-#if SENDLOCK
-if (!m_sendLock)
-	return 0;
-SDL_UnlockMutex (m_sendLock); 
-#endif
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int32_t CNetworkThread::LockRecv (void) 
-{ 
-#if RECVLOCK
-if (!m_recvLock)
-	return 0;
-SDL_LockMutex (m_recvLock); 
-#endif
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int32_t CNetworkThread::UnlockRecv (void) 
-{ 
-#if RECVLOCK
-if (!m_recvLock)
-	return 0;
-SDL_UnlockMutex (m_recvLock); 
-#endif
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int32_t CNetworkThread::LockProcess (void) 
-{ 
-#if PROCLOCK
-if (!m_processLock)
-	return 0;
-SDL_LockMutex (m_processLock); 
-#endif
-return 1;
-}
-
-//------------------------------------------------------------------------------
-
-int32_t CNetworkThread::UnlockProcess (void) 
-{ 
-#if PROCLOCK
-if (!m_processLock)
-	return 0;
-SDL_UnlockMutex (m_processLock); 
-#endif
+SDL_SemPost (semaphore); 
 return 1;
 }
 
