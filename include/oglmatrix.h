@@ -1,6 +1,7 @@
 #ifndef _OGLMATRIX_H
 #define _OGLMATRIX_H
 
+#include <stdint.h>
 #include <string.h>
 #include "glew.h"
 
