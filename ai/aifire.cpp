@@ -420,8 +420,6 @@ return 0;
 //	lurking behind a corner.
 void AIDoActualFiringStuff (CObject *objP, tAIStaticInfo *aiP, tAILocalInfo *ailP, tRobotInfo *botInfoP, int32_t nGun)
 {
-	fix	dot;
-
 if ((gameData.ai.nTargetVisibility == 2) ||
 	 (gameData.ai.target.nDistToLastPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
 	CFixVector vFirePos = gameData.ai.target.vBelievedPos;
@@ -435,7 +433,7 @@ if ((gameData.ai.nTargetVisibility == 2) ||
 	//	Above comment corrected.  Date changed from 1994, to 1995.  Should fix some very subtle bugs, 
 	// as well as not cause me to wonder, in the future, why I was writing AI code for onearm ten months before he existed.
 	if (!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailP)) {
-		dot = CFixVector::Dot (objP->info.position.mOrient.m.dir.f, gameData.ai.target.vDir);
+		fix dot = CFixVector::Dot (objP->info.position.mOrient.m.dir.f, gameData.ai.target.vDir);
 		if ((dot >= I2X (7) / 8) || ((dot > I2X (1) / 4) && botInfoP->bossFlag)) {
 			if (nGun < botInfoP->nGuns) {
 				if (botInfoP->attackType == 1) {
@@ -527,7 +525,7 @@ else {	//	---------------------------------------------------------------
 		if ((!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailP)) &&
 			 (gameData.ai.target.nDistToLastPosFiredAt < FIRE_AT_NEARBY_PLAYER_THRESHOLD)) {
 			CFixVector::NormalizedDir (vLastPos, gameData.ai.target.vBelievedPos, objP->info.position.vPos);
-			dot = CFixVector::Dot (objP->info.position.mOrient.m.dir.f, vLastPos);
+			fix dot = CFixVector::Dot (objP->info.position.mOrient.m.dir.f, vLastPos);
 			if (dot >= I2X (7) / 8) {
 				if (aiP->CURRENT_GUN < botInfoP->nGuns) {
 					if (botInfoP->attackType == 1) {

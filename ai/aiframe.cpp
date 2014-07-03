@@ -1062,6 +1062,7 @@ return 1;
 
 static CObject *NearestPlayerTarget (CObject* attackerP)
 {
+#if 0
 	int32_t		j;
 	fix			curDist, minDist = MAX_WAKEUP_DIST, bestAngle = -1;
 	CObject*		candidateP, *targetP = NULL;
@@ -1092,6 +1093,7 @@ if (targetP) {
 	CFixVector::NormalizedDir (gameData.ai.target.vDir, gameData.ai.target.vBelievedPos, attackerP->info.position.vPos);
 	return TARGETOBJ;
 	}
+#endif
 return gameData.objs.consoleP;
 }
 

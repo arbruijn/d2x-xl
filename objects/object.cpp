@@ -763,6 +763,7 @@ if (objP->info.nType != OBJ_NONE)
 memset (objP, 0, sizeof (*objP));
 objP->info.nType = OBJ_NONE;
 objP->SetLinkedType (OBJ_NONE);
+SetAttackMode (ROBOT_IS_HOSTILE);
 objP->info.nAttachedObj =
 objP->cType.explInfo.attached.nNext =
 objP->cType.explInfo.attached.nPrev =
@@ -1024,6 +1025,7 @@ if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
 CObject	*objP = OBJECTS + nObject;
 
 objP->Unlink ();
+objP->SetAttackMode (ROBOT_IS_HOSTILE);
 DelObjChildrenN (nObject);
 DelObjChildN (nObject);
 gameData.objs.bWantEffect [nObject] = 0;
