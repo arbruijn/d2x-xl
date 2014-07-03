@@ -4181,12 +4181,13 @@ void MultiSendPowerupUpdate (void)
 {
 if (IAmGameHost ()) {
 	gameData.multigame.msg.buf [0] = MULTI_POWERUP_UPDATE;
-	for (int32_t i = 0, j = 1; i < MAX_POWERUP_TYPES; i++) {
-		PUT_INTEL_SHORT (gameData.multigame.msg.buf + j, gameData.multiplayer.maxPowerupsAllowed [i]);
-		j += sizeof (uint16_t);
+	int32_t bufP = 1;
+	for (int32_t i = 0; i < MAX_POWERUP_TYPES; i++) {
+		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multiplayer.maxPowerupsAllowed [i]);
+		bufP += sizeof (uint16_t);
 		//gameData.multigame.msg.buf [j++] = gameData.multiplayer.powerupsInMine [i];
 		}
-	MultiSendData (gameData.multigame.msg.buf, /*2 **/ MAX_POWERUP_TYPES + 1, 1);
+	MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 	}
 }
 
