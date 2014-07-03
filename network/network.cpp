@@ -439,6 +439,8 @@ void NetworkFlushData (void)
 	static int32_t tLastEndlevel = 0;
 
 if (IsMultiGame && LOCALPLAYER.IsConnected ()) {
+	MultiSendRobotFrame (0);
+	MultiSendFire ();              // Do firing if needed..
 	int32_t nObject = LOCALPLAYER.nObject;
 	networkData.bPacketUrgent = 0;
 	networkData.xLastSendTime = 0;
@@ -528,17 +530,13 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 
 	// Send out packet PacksPerSec times per second maximum... unless they fire, then send more often...
 	if ((networkData.xLastSendTime >= SyncTimeout ())
-		 || bFlush
+
 #if !DBG
 		 || ((networkData.xLastSendTime >= I2X (1) / MAX_PPS) && (gameData.multigame.laser.bFired || networkData.bPacketUrgent))
 #endif
 		) {
 		networkThread.SetUrgent (gameData.multigame.laser.bFired || networkData.bPacketUrgent);
-		if (LOCALPLAYER.IsConnected ()) {
-			MultiSendRobotFrame (0);
-			MultiSendFire ();              // Do firing if needed..
-			NetworkFlushData ();
-			}
+		NetworkFlushData ();
 		}
 
 	if (!networkThread.Available ())

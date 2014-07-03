@@ -264,8 +264,10 @@ gameData.multigame.msg.buf [1] = N_LOCALPLAYER;
 int16_t nRemoteObject = GetRemoteObjNum (nObject, reinterpret_cast<int8_t&> (gameData.multigame.msg.buf [4]));
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+2, nRemoteObject);
 MultiSendData (gameData.multigame.msg.buf, 5, 2);
+#if 0
 MultiSendData (gameData.multigame.msg.buf, 5, 2);
 MultiSendData (gameData.multigame.msg.buf, 5, 2);
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -286,8 +288,10 @@ gameData.multigame.msg.buf [1] = N_LOCALPLAYER;
 int16_t nRemoteObj = GetRemoteObjNum (nObject, reinterpret_cast<int8_t&> (gameData.multigame.msg.buf [4]));
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+2, nRemoteObj);
 MultiSendData (gameData.multigame.msg.buf, 5, 2);
+#if 0
 MultiSendData (gameData.multigame.msg.buf, 5, 2);
 MultiSendData (gameData.multigame.msg.buf, 5, 2);
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -311,7 +315,7 @@ for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 			gameData.multigame.robots.fired [sending] = 0;
 			MultiSendData (reinterpret_cast<uint8_t*> (gameData.multigame.robots.fireBuf [sending]), 18, 1);
 			}
-		if (! IsNetworkGame)
+		if (!IsNetworkGame)
 			sent += 1;
 		last_sent = sending;
 		rval++;
@@ -446,11 +450,8 @@ gameData.multigame.msg.buf [bufP++] = bIsThief;
 MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 #if 0
 if (gameStates.multi.nGameType == UDP_GAME) {	// make sure the packet arrives
-	NetworkFlushData ();
 	MultiSendData (gameData.multigame.msg.buf, bufP, 1);
-	NetworkFlushData ();
 	MultiSendData (gameData.multigame.msg.buf, bufP, 1);
-	NetworkFlushData ();
 	}
 #endif
 MultiDeleteControlledRobot (nObject);

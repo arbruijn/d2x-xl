@@ -617,7 +617,7 @@ if (gameStates.multi.nGameType == IPX_GAME) {
 memcpy (networkData.syncPack.data + networkData.syncPack.dataSize, buf, len);
 networkData.syncPack.dataSize += len;
 if (bUrgent)
-	networkData.bPacketUrgent = bUrgent;
+	networkData.bPacketUrgent = 1;
 }
 
 //------------------------------------------------------------------------------
