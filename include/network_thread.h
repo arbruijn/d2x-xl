@@ -45,10 +45,7 @@ class CNetworkData {
 		CNetworkData () : m_size (0) {}
 		inline void SetData (uint8_t* data, int32_t size, int32_t offset = 0) { 
 			memcpy (m_data + offset, data, size); 
-			if (offset)
-				m_size += size;
-			else
-				m_size = size;
+			m_size = offset + size;
 			}
 		inline CNetworkData& operator= (CNetworkData& other) { 
 			SetData (other.m_data, other.m_size); 
