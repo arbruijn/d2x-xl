@@ -763,7 +763,7 @@ if (objP->info.nType != OBJ_NONE)
 memset (objP, 0, sizeof (*objP));
 objP->info.nType = OBJ_NONE;
 objP->SetLinkedType (OBJ_NONE);
-SetAttackMode (ROBOT_IS_HOSTILE);
+objP->SetAttackMode (ROBOT_IS_HOSTILE);
 objP->info.nAttachedObj =
 objP->cType.explInfo.attached.nNext =
 objP->cType.explInfo.attached.nPrev =
