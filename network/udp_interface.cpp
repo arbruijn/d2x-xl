@@ -973,16 +973,24 @@ if ((dataLen < 0) || (dataLen > MAX_PAYLOAD_SIZE + 4)) {
 	}
 
 locks.LockSend ();
+
 destAddr.sin_family = AF_INET;
 memcpy (&destAddr.sin_addr, ipxHeader->Destination.Node, 4);
 memcpy (&destAddr.sin_port, ipxHeader->Destination.Node + 4, sizeof (destAddr.sin_port));
 memset (&(destAddr.sin_zero), '\0', 8);
 
-if (!(gameStates.multi.bTrackerCall || (clientManager.Add (&destAddr) >= 0))) {
+if (gameStates.multi.bTrackerCall)
+	memcpy (buf, data, dataLen);
+else {
+	if (clientManager.Add (&destAddr) < 0) {
 #ifdef UDPDEBUG
-	PrintLog (-1);
+		PrintLog (-1);
 #endif
-	return locks.AbortSend ();
+		return locks.AbortSend ();
+		}
+	memcpy (buf, D2XUDP, 6);
+	memcpy (buf + 6, ipxHeader->Destination.Socket, 2);	//telling the receiver *my* port number here
+	memcpy (buf + 8, data, dataLen);
 	}
 
 if (destAddr.sin_addr.s_addr == htonl (INADDR_BROADCAST)) {
@@ -991,14 +999,6 @@ if (destAddr.sin_addr.s_addr == htonl (INADDR_BROADCAST)) {
 	}
 else if (clientManager.ClientCount () <= (iDest = clientManager.Find (&destAddr)))
 	iDest = -1;
-
-if (gameStates.multi.bTrackerCall)
-	memcpy (buf, data, dataLen);
-else {
-	memcpy (buf, D2XUDP, 6);
-	memcpy (buf + 6, ipxHeader->Destination.Socket, 2);	//telling the receiver *my* port number here
-	memcpy (buf + 8, data, dataLen);
-	}
 
 for (nClients = clientManager.ClientCount (); iDest < nClients; iDest++) {
 	if (iDest < 0)
@@ -1206,7 +1206,7 @@ static int32_t UDPReceivePacket (ipx_socket_t *s, uint8_t *outBuf, int32_t outBu
 	int32_t					packetId = -1, bSafeMode = 0;
 #endif
 #if DBG
-	//char						szIP [30];
+	//char					szIP [30];
 #endif
 
 locks.LockRecv ();
