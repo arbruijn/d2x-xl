@@ -857,11 +857,8 @@ return syncRes;
 void NetworkReadObjectPacket (uint8_t* dataP)
 {
 #if DBG
-	CTimeout toListen (1000);
-
-do {
-	networkThread.Listen ();
-	} while (!toListen.Expired ());
+while (networkThread.RxPacketQueue ().Length () < 30)
+	G3_SLEEP (10);
 #endif
 objectSynchronizer.Run (dataP);
 }

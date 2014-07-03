@@ -169,6 +169,8 @@ class CNetworkThread {
 		void AbortSync (void);
 		void SendSync (void);
 		bool SyncInProgress (void);
+		inline CNetworkPacketQueue& RxPacketQueue (void) { return m_rxPacketQueue; }
+		inline CNetworkPacketQueue& TxPacketQueue (void) { return m_txPacketQueue; }
 		inline void SetUrgent (int32_t bUrgent) { m_bUrgent = bUrgent; }
 		inline bool Sending (void) { return Available () && !m_txPacketQueue.Empty (); }
 
