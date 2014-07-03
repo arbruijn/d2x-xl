@@ -1398,10 +1398,10 @@ CPlayerData* playerP = gameData.multiplayer.players + nPlayer;
 CObject* objP = OBJECTS + playerP->nObject;
 fix shield = playerP->Shield ();
 playerP->SetShield (-1, false);
+gameData.multigame.create.nCount = 0;
 DropPlayerEggs (objP);
 playerP->SetShield (shield);
 // Create mapping from remote to local numbering system
-gameData.multigame.create.nCount = 0;
 int32_t i;
 for (i = 0; (i < nRemoteCreated) && (i < gameData.multigame.create.nCount); i++) {
 	int16_t nRemoteObj = GET_INTEL_SHORT (objList);
