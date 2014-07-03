@@ -231,7 +231,7 @@ void UseNetPlayerStats (CPlayerInfo * ps, tNetPlayerStats *pd);
 
 //-----------------------------------------------------------------------------
 
-inline int32_t MultiMsgLen (int32_t nMsg)
+inline int32_t MultiMsgLen (uint8_t nMsg)
 {
 #if 0
 return multiMessageLengths [nMsg][0];
@@ -1190,14 +1190,15 @@ MultiSyncMonsterball ();
 
 void MultiSendData (uint8_t* buf, int32_t len, int32_t bUrgent)
 {
-#if DBG
-if (len != MultiMsgLen (int32_t (buf [0])))
-	BRP;
+if (IsNetworkGame && buf [0]) {
+#if 1// DBG
+	if (len != MultiMsgLen (buf [0])) {
+		PrintLog (0, "Network message %d sent with wrong size %d!\n", len);
+		len = MultiMsgLen (buf [0]);
+		}
 #endif
-if (IsNetworkGame &&(buf [0] < 1))
-	return;
-else if (IsNetworkGame)
 	NetworkSendData (reinterpret_cast<uint8_t*> (buf), len, bUrgent);
+	}
 }
 
 //-----------------------------------------------------------------------------
