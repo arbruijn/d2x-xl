@@ -5,8 +5,8 @@ void MultiSendMessage (void);
 void MultiDefineMacro (int32_t key);
 int32_t MultiMessageFeedback (void);
 void MultiSendMacro (int32_t key);
-void MultiDoStartTyping (char *buf);
-void MultiDoQuitTyping (char *buf);
+void MultiDoStartTyping (uint8_t* buf);
+void MultiDoQuitTyping (uint8_t* buf);
 void MultiSendTyping (void);
 void MultiSendMsgStart (char nMsg);
 void MultiSendMsgQuit ();
@@ -18,7 +18,7 @@ void MultiSendMsgEnd ();
 void MultiDefineMacroEnd ();
 void MultiMsgInputSub (int32_t key);
 void MultiSendMsgDialog (void);
-void MultiDoMsg (char *buf);
+void MultiDoMsg (uint8_t* buf);
 
 #endif //__MULTIMSG_H
 //eof

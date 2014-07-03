@@ -171,14 +171,14 @@ MultiMessageFeedback ();
 
 //-----------------------------------------------------------------------------
 
-void MultiDoStartTyping (char *buf)
+void MultiDoStartTyping (uint8_t* buf)
 {
 gameStates.multi.bPlayerIsTyping [int32_t (buf [1])] = 1;
 }
 
 //-----------------------------------------------------------------------------
 
-void MultiDoQuitTyping (char *buf)
+void MultiDoQuitTyping (uint8_t* buf)
 {
 gameStates.multi.bPlayerIsTyping [int32_t (buf [1])] = 0;
 }
@@ -569,26 +569,26 @@ return strnicmp (LOCALPLAYER.callsign, bufP, nLen) == 0;
 
 //-----------------------------------------------------------------------------
 
-void MultiDoMsg (char *buf)
+void MultiDoMsg (uint8_t* buf)
 {
 	char *colon;
 	char *tilde, msgBuf [200];
 	int32_t tloc, t, l;
 	int32_t bufP = 2;
 
-if ((tilde = strchr (buf + bufP, '$'))) { 
+if ((tilde = strchr ((char*) buf + bufP, '$'))) { 
 	tloc = (int32_t) (tilde - (buf + bufP));			
 	if (tloc > 0)
-		strncpy (msgBuf, buf + bufP, tloc);
+		strncpy (msgBuf, (char*) buf + bufP, tloc);
 	strcpy (msgBuf + tloc, LOCALPLAYER.callsign);
-	strcpy (msgBuf + strlen (LOCALPLAYER.callsign) + tloc, buf + bufP + tloc + 1);
-	strcpy (buf + bufP, msgBuf);
+	strcpy (msgBuf + strlen (LOCALPLAYER.callsign) + tloc, (char*) buf + bufP + tloc + 1);
+	strcpy ((char*) buf + bufP, msgBuf);
 	}
-if ((colon = strrchr (buf + bufP, ':'))) {	//message may be addressed to a certain team or CPlayerData
+if ((colon = strrchr ((char*) buf + bufP, ':'))) {	//message may be addressed to a certain team or CPlayerData
 	l = (int32_t) (colon - (buf + bufP));
 	if (l && (l <= CALLSIGN_LEN) &&
-		 ((IsTeamId (buf + bufP, l) && !IsMyTeamId (buf + bufP, l)) ||
-		  (IsPlayerId (buf + bufP, l) && !IsMyPlayerId (buf + bufP, l))))
+		 ((IsTeamId ((char*) buf + bufP, l) && !IsMyTeamId ((char*) buf + bufP, l)) ||
+		  (IsPlayerId ((char*) buf + bufP, l) && !IsMyPlayerId ((char*) buf + bufP, l))))
 		return;
 	}
 msgBuf [0] = (char) 1;

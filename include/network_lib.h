@@ -246,7 +246,7 @@ void NetworkSendNetGameUpdate (void);
 int32_t NetworkSendRequest (void);
 void NetworkSendSync (void);
 void NetworkSendData (uint8_t * ptr, int32_t len, int32_t urgent);
-void NetworkSendNakedPacket (char *buf, int16_t len, int32_t who);
+void NetworkSendNakedPacket (uint8_t* buf, int16_t len, int32_t who);
 void NetworkSendPlayerNames (tSequencePacket *their);
 void NetworkSendMissingObjFrames (void);
 

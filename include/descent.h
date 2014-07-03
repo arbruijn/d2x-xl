@@ -2823,11 +2823,11 @@ class CMultiMsgData {
 	public:
 		char					bSending;
 		char					bDefining;
-		int32_t					nIndex;
+		int32_t				nIndex;
 		char					szMsg [MAX_MESSAGE_LEN];
 		char					szMacro [4][MAX_MESSAGE_LEN];
-		char					buf [MAX_MULTI_MESSAGE_LEN+4];            // This is where multiplayer message are built
-		int32_t					nReceiver;
+		uint8_t				buf [MAX_MULTI_MESSAGE_LEN+4];            // This is where multiplayer message are built
+		int32_t				nReceiver;
 
 	public:
 		CMultiMsgData () { memset (this, 0, sizeof (*this)); }
@@ -2845,8 +2845,8 @@ class CMultiMenuData {
 class CMultiScoreData {
 	public:
 		char					pFlags [MAX_PLAYERS];
-		int32_t					nSorted [MAX_PLAYERS];
-		int16_t					matrix [MAX_PLAYERS][MAX_PLAYERS];
+		int32_t				nSorted [MAX_PLAYERS];
+		int16_t				matrix [MAX_PLAYERS][MAX_PLAYERS];
 		int16_t					nTeam [2];
 		char					bShowList;
 		fix					xShowListTimer;
@@ -2857,7 +2857,7 @@ class CMultiScoreData {
 
 class CMultiGameData {
 	public:
-		int32_t					nWhoKilledCtrlcen;
+		int32_t				nWhoKilledCtrlcen;
 		char					bShowReticleName;
 		char					bIsGuided;
 		char					bQuitGame;
@@ -2867,11 +2867,11 @@ class CMultiGameData {
 		CMultiMenuData		menu;
 		CMultiScoreData	score;
 		tMultiRobotData	robots;
-		CArray<int16_t>		remoteToLocal [MAX_PLAYERS];  // Remote CObject number for each local CObject
-		CArray<int16_t>		localToRemote;
+		CArray<int16_t>	remoteToLocal [MAX_PLAYERS];  // Remote CObject number for each local CObject
+		CArray<int16_t>	localToRemote;
 		CArray<int8_t>		nObjOwner;   // Who created each CObject in my universe, -1 = loaded at start
-		int32_t					bGotoSecret;
-		int32_t					nTypingTimeout;
+		int32_t				bGotoSecret;
+		int32_t				nTypingTimeout;
 
 	public:
 		CMultiGameData ();

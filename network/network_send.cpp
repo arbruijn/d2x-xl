@@ -651,7 +651,7 @@ for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++)
 
 //------------------------------------------------------------------------------
 
-void NetworkSendNakedPacket (char *buf, int16_t len, int32_t receiver)
+void NetworkSendNakedPacket (uint8_t* buf, int16_t len, int32_t receiver)
 {
 if (!IsNetworkGame) 
 	return;

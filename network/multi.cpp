@@ -53,7 +53,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "console.h"
 
-typedef void tMultiHandler (char *);
+typedef void tMultiHandler (uint8_t *);
 typedef tMultiHandler *pMultiHandler;
 typedef struct tMultiHandlerInfo {
 	pMultiHandler	fpMultiHandler;
@@ -2006,7 +2006,7 @@ if ((nPlayer == N_LOCALPLAYER) || (nPlayer == 255)) {
 	ExtractNetPlayerStats (&ps, gameData.multiplayer.players + N_LOCALPLAYER);
 	ps.nLocalPlayer = N_LOCALPLAYER;
 	ps.messageType = MULTI_SEND_PLAYER;            // SET
-	MultiSendData (reinterpret_cast<char*> (&ps), sizeof (tNetPlayerStats), 0);
+	MultiSendData (reinterpret_cast<uint8_t*> (&ps), sizeof (tNetPlayerStats), 0);
 	}
 }
 
@@ -2537,7 +2537,7 @@ if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 void MultiDoSyncKills (uint8_t* buf)
 {
 	int32_t	nPlayer = int32_t (buf [1]);
-	char	*bufP = buf + 2;
+	uint8_t*	bufP = buf + 2;
 
 gameData.multiplayer.players [nPlayer].score = GET_INTEL_INT (bufP);
 bufP += 4;
@@ -2556,7 +2556,7 @@ gameData.multiplayer.players [nPlayer].numKillsTotal = GET_INTEL_SHORT (bufP);
 
 void MultiSendSyncKills (void)
 {
-	char	*bufP = gameData.multigame.msg.buf + 2;
+	uint8_t* bufP = gameData.multigame.msg.buf + 2;
 
 gameData.multigame.msg.buf [0] = (char) MULTI_SYNC_KILLS;
 gameData.multigame.msg.buf [1] = N_LOCALPLAYER;

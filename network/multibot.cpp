@@ -554,7 +554,7 @@ for (nContained = delObjP->info.contains.nCount; nContained; nContained -= h) {
 
 //-----------------------------------------------------------------------------
 
-void MultiDoClaimRobot (char *buf)
+void MultiDoClaimRobot (uint8_t* buf)
 {
 	int16_t nRobot, nRemoteBot;
 	char nPlayer = buf [1];
@@ -578,7 +578,7 @@ OBJECTS [nRobot].cType.aiInfo.REMOTE_SLOT_NUM = 0;
 
 //-----------------------------------------------------------------------------
 
-void MultiDoReleaseRobot (char *buf)
+void MultiDoReleaseRobot (uint8_t* buf)
 {
 	int16_t nRobot, nRemoteBot;
 	char nPlayer = buf [1];
@@ -599,7 +599,7 @@ OBJECTS [nRobot].cType.aiInfo.REMOTE_SLOT_NUM = 0;
 //-----------------------------------------------------------------------------
 // Process robot movement sent by another player
 
-void MultiDoRobotPosition (char *buf)
+void MultiDoRobotPosition (uint8_t* buf)
 {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	tShortPos sp;
@@ -640,7 +640,7 @@ ExtractShortPos (&OBJECTS [nRobot], &sp, 1);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoRobotFire (char *buf)
+void MultiDoRobotFire (uint8_t* buf)
 {
 	// Send robot vFire event
 	int32_t			bufP = 2;
@@ -739,7 +739,7 @@ return MultiDestroyRobot (OBJECTS + nRobot);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoRobotExplode (char *buf)
+void MultiDoRobotExplode (uint8_t* buf)
 {
 	// Explode robot controlled by other player
 
@@ -766,7 +766,7 @@ if (rval && (nKiller == LOCALPLAYER.nObject))
 
 //-----------------------------------------------------------------------------
 
-void MultiDoCreateRobot (char *buf)
+void MultiDoCreateRobot (uint8_t* buf)
 {
 
 	int32_t		nProducer = buf [2];
@@ -809,7 +809,7 @@ Assert (objP->cType.aiInfo.REMOTE_OWNER == -1);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoBossActions (char *buf)
+void MultiDoBossActions (uint8_t* buf)
 {
 	// Code to handle remote-controlled boss actions
 
@@ -911,7 +911,7 @@ switch (action)  {
 //-----------------------------------------------------------------------------
 // Code to drop remote-controlled robot powerups
 
-void MultiDoCreateRobotPowerups (char *buf)
+void MultiDoCreateRobotPowerups (uint8_t* buf)
 {
 	CObject	delObjP;
 	int32_t		nPlayer, nEggObj, i, bufP = 1;

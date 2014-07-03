@@ -31,14 +31,14 @@ void MultiSendCreateRobot (int32_t robotcen, int32_t nObject, int32_t nType);
 void MultiSendBossActions (int32_t bossobjnum, int32_t action, int32_t secondary, int32_t nObject);
 int32_t MultiSendRobotFrame (int32_t sent);
 
-void MultiDoRobotExplode (char *buf);
-void MultiDoRobotPosition (char *buf);
-void MultiDoClaimRobot (char *buf);
-void MultiDoReleaseRobot (char *buf);
-void MultiDoRobotFire (char *buf);
-void MultiDoCreateRobot (char *buf);
-void MultiDoBossActions (char *buf);
-void MultiDoCreateRobotPowerups (char *buf);
+void MultiDoRobotExplode (uint8_t* buf);
+void MultiDoRobotPosition (uint8_t* buf);
+void MultiDoClaimRobot (uint8_t* buf);
+void MultiDoReleaseRobot (uint8_t* buf);
+void MultiDoRobotFire (uint8_t* buf);
+void MultiDoCreateRobot (uint8_t* buf);
+void MultiDoBossActions (uint8_t* buf);
+void MultiDoCreateRobotPowerups (uint8_t* buf);
 
 int32_t MultiDestroyRobot (CObject* robotP, char bIsThief = 01);
 int32_t MultiExplodeRobot (int32_t nRobot, int32_t nkiller, char bIsThief);
