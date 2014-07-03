@@ -125,6 +125,10 @@ for (nPacketsLeft = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACK
 	bufI = (gameStates.multi.nGameType == UDP_GAME) ? 4 : 3;
 
 	if (bResync || (syncP->objs.nCurrent == -1)) {	// first packet tells the receiver to reset it's object data
+#if DBG
+		while (networkThread.Transmit ())
+			;
+#endif
 		syncP->objs.nSent = 0;
 		syncP->objs.nMode = 0;
 		syncP->objs.nFrame = 0;

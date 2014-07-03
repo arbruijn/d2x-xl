@@ -856,7 +856,7 @@ return syncRes;
 
 void NetworkReadObjectPacket (uint8_t* dataP)
 {
-#if DBG
+#if 0 //DBG
 while (networkThread.RxPacketQueue ().Length () < 30)
 	G3_SLEEP (10);
 #endif
