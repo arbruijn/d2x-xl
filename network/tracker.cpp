@@ -78,9 +78,9 @@ Init ();
 
 int32_t CTracker::Find (tUdpAddress *addr)
 {
-	int32_t				i;
-	unsigned	int32_t	a = UDP_ADDR (addr);
-	int16_t				p = (int16_t) ntohs (UDP_PORT (addr));
+	int32_t	i;
+	uint32_t	a = UDP_ADDR (addr);
+	int16_t	p = (int16_t) ntohs (UDP_PORT (addr));
 
 for (i = 0; i < trackerList.nServers; i++)
 	if ((a == UDP_ADDR (trackerList.servers + i)) && 

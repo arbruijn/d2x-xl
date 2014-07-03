@@ -22,7 +22,7 @@ return *tmp;
 
 static inline uint16_t& UDP_PORT(void *a)
 {
-uint16_t *tmp = reinterpret_cast<uint16_t*> (a);
+uint16_t *tmp = reinterpret_cast<uint16_t*> (reinterpret_cast<uint8_t*>(a) + 4);
 return *tmp;
 }
 
