@@ -1153,7 +1153,7 @@ if (objP->AttacksRobots ())
 else if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || (RandShort () > objP->AimDamage ()))
 	gameData.ai.target.vBelievedPos = gameData.ai.cloakInfo [siP->nObject & (MAX_AI_CLOAK_INFO - 1)].vLastPos;
 else
-	gameData.ai.target.vBelievedPos = OBJPOS (gameData.objs.consoleP)->vPos;
+	gameData.ai.target.vBelievedPos = OBJPOS (TARGETPOS)->vPos;
 return 0;
 }
 
