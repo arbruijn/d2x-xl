@@ -446,8 +446,11 @@ gameData.multigame.msg.buf [bufP++] = bIsThief;
 MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 #if 0
 if (gameStates.multi.nGameType == UDP_GAME) {	// make sure the packet arrives
+	NetworkFlushData ();
 	MultiSendData (gameData.multigame.msg.buf, bufP, 1);
+	NetworkFlushData ();
 	MultiSendData (gameData.multigame.msg.buf, bufP, 1);
+	NetworkFlushData ();
 	}
 #endif
 MultiDeleteControlledRobot (nObject);
