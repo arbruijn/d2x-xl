@@ -58,7 +58,7 @@ tGameFolders gameFolders;
 
 size_t ffilelength (FILE *file)
 {
-size_t pos = ftell (file);
+long pos = ftell (file);
 if (pos < 0)
 	return -1;
 if (fseek (file, 0, SEEK_END) == -1)
@@ -66,7 +66,7 @@ if (fseek (file, 0, SEEK_END) == -1)
 size_t size = ftell (file);
 if (size < 0)
 	return -1;
-if ( fseek(file, pos, SEEK_SET) == -1)
+if (fseek (file, pos, SEEK_SET) == -1)
 	return -1;
 return size;
 }
