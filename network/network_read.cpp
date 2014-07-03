@@ -860,9 +860,9 @@ void NetworkReadObjectPacket (uint8_t* dataP)
 {
 #if DBG
 if (bWait) {
-	bWait = false;
 	while (networkThread.RxPacketQueue ().Length () < (gameData.objs.nObjects + 4) / 5)
 		G3_SLEEP (0);
+	bWait = false;
 	}
 #endif
 objectSynchronizer.Run (dataP);

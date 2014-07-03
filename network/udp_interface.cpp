@@ -61,6 +61,7 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 	memcpy (&their->player.network.Network (), &networkData.packetSource.src_network, 10);
 	}
 */
+
 //------------------------------------------------------------------------------
 
 #ifdef HAVE_CONFIG_H
@@ -106,6 +107,59 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #include "u_mem.h"
 #include "byteswap.h"
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+class CNetworkLocks {
+	public:
+		SDL_mutex*	m_sendLock;
+		SDL_mutex*	m_recvLock;
+
+	public:
+		CNetworkLocks () : m_sendLock (NULL), m_recvLock (NULL) {
+			m_sendLock = SDL_CreateMutex ();
+			m_recvLock = SDL_CreateMutex ();
+			}
+
+		~CNetworkLocks () {
+			DestroyLock (m_sendLock);
+			DestroyLock (m_recvLock);
+			}
+
+		inline void DestroyLock (SDL_mutex*& m) {
+			if (m) {
+				SDL_DestroyMutex (m);
+				m = NULL;
+				}	
+			}
+		inline void Lock (SDL_mutex* m) {
+			if (m)
+				SDL_LockMutex (m);
+			}
+
+		inline void Unlock (SDL_mutex* m) {
+			if (m)
+				SDL_LockMutex (m);
+			}
+
+		inline int32_t Abort (SDL_mutex* m) {
+			Unlock (m);
+			return -1;
+			}
+
+		inline void LockSend (void) { Lock (m_sendLock); }
+		inline void UnlockSend (void) { Unlock (m_sendLock); }
+		inline void LockRecv (void) { Lock (m_recvLock); }
+		inline void UnlockRecv (void) { Unlock (m_recvLock); }
+		inline int32_t AbortSend (void) { return Abort (m_sendLock); }
+		inline int32_t AbortRecv (void) { return Abort (m_recvLock); }
+};
+
+static CNetworkLocks locks;
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 // #define UDPDEBUG
 
@@ -194,10 +248,10 @@ return 1;
 #if UDP_SAFEMODE
 
 typedef struct tPacketProps {
-	int32_t						id;
-	uint8_t						*data;
-	int16_t						len;
-	time_t					timeStamp;
+	int32_t	id;
+	uint8_t*	data;
+	int16_t	len;
+	time_t	timeStamp;
 } tPacketProps;
 
 #endif
@@ -206,27 +260,27 @@ class CClient {
 	public:
 		struct sockaddr_in	addr;
 #if UDP_SAFEMODE
-		tPacketProps			packetProps [MAX_BUF_PACKETS];
-		uint8_t						packetBuf [PACKET_BUF_SIZE];
-		int32_t						nSent;
-		int32_t						nReceived;
-		int16_t						firstPacket;
-		int16_t						numPackets;
-		int32_t						fd;
-		char						bSafeMode;		//safe mode a peer of the local CPlayerData uses (unknown: -1)
-		char						bOurSafeMode;	//our safe mode as that peer knows it (unknown: -1)
-		char						modeCountdown;
+		tPacketProps	packetProps [MAX_BUF_PACKETS];
+		uint8_t			packetBuf [PACKET_BUF_SIZE];
+		int32_t			nSent;
+		int32_t			nReceived;
+		int16_t			firstPacket;
+		int16_t			numPackets;
+		int32_t			fd;
+		char				bSafeMode;		//safe mode a peer of the local CPlayerData uses (unknown: -1)
+		char				bOurSafeMode;	//our safe mode as that peer knows it (unknown: -1)
+		char				modeCountdown;
 #endif
 };
 
 class CClientManager {
 	private:
 		CArray<CClient>				m_clients;
-		uint32_t								m_nClients;
+		uint32_t							m_nClients;
 		struct sockaddr_in			m_masks [MAX_BRDINTERFACES];
-		uint32_t								m_nMasks;
+		uint32_t							m_nMasks;
 		CArray<struct sockaddr_in>	m_broads;
-		uint32_t								m_nBroads;
+		uint32_t							m_nBroads;
 
 	public:
 		CClientManager () { Init (); }
@@ -896,15 +950,14 @@ return 1;
 // it to IP address/port as retrieved from IPX address. Otherwise (broadcast)
 // we'll repeat the same data to each host in our broadcasting list.
 
-static int32_t UDPSendPacket
-	(ipx_socket_t *mysock, IPXPacket_t *ipxHeader, uint8_t *data, int32_t dataLen)
+static int32_t UDPSendPacket (ipx_socket_t *mysock, IPXPacket_t *ipxHeader, uint8_t *data, int32_t dataLen)
 {
  	struct sockaddr_in	destAddr, *dest;
 	int32_t					iDest, nClients, nUdpRes, extraDataLen = 0, bBroadcast = 0;
 	CClient*					clientP;
 #if UDP_SAFEMODE
-	tPacketProps	*ppp;
-	int32_t				j;
+	tPacketProps*	ppp;
+	int32_t			j;
 #endif
 	static uint8_t	buf [MAX_PACKET_SIZE];
 	uint8_t*			bufP = buf;
@@ -918,13 +971,8 @@ if ((dataLen < 0) || (dataLen > MAX_PAYLOAD_SIZE + 4)) {
 #endif
 	return -1;
 	}
-if (gameStates.multi.bTrackerCall)
-	memcpy (buf, data, dataLen);
-else {
-	memcpy (buf, D2XUDP, 6);
-	memcpy (buf + 6, ipxHeader->Destination.Socket, 2);	//telling the receiver *my* port number here
-	memcpy (buf + 8, data, dataLen);
-	}
+
+locks.LockSend ();
 destAddr.sin_family = AF_INET;
 memcpy (&destAddr.sin_addr, ipxHeader->Destination.Node, 4);
 memcpy (&destAddr.sin_port, ipxHeader->Destination.Node + 4, sizeof (destAddr.sin_port));
@@ -934,14 +982,24 @@ if (!(gameStates.multi.bTrackerCall || (clientManager.Add (&destAddr) >= 0))) {
 #ifdef UDPDEBUG
 	PrintLog (-1);
 #endif
-	return -1;
+	return locks.AbortSend ();
 	}
+
 if (destAddr.sin_addr.s_addr == htonl (INADDR_BROADCAST)) {
 	bBroadcast = 1;
 	iDest = 0;
 	}
 else if (clientManager.ClientCount () <= (iDest = clientManager.Find (&destAddr)))
 	iDest = -1;
+
+if (gameStates.multi.bTrackerCall)
+	memcpy (buf, data, dataLen);
+else {
+	memcpy (buf, D2XUDP, 6);
+	memcpy (buf + 6, ipxHeader->Destination.Socket, 2);	//telling the receiver *my* port number here
+	memcpy (buf + 8, data, dataLen);
+	}
+
 for (nClients = clientManager.ClientCount (); iDest < nClients; iDest++) {
 	if (iDest < 0)
 		dest = &destAddr;
@@ -1012,6 +1070,7 @@ for (nClients = clientManager.ClientCount (); iDest < nClients; iDest++) {
 #ifdef UDPDEBUG
 			PrintLog (-1);
 #endif
+		locks.UnlockSend ();
 		if (gameStates.multi.bTrackerCall)
 			return ((nUdpRes < 1) ? -1 : nUdpRes);
 		return ((nUdpRes < extraDataLen + 8) ? -1 : nUdpRes - extraDataLen);
@@ -1020,6 +1079,7 @@ for (nClients = clientManager.ClientCount (); iDest < nClients; iDest++) {
 #ifdef UDPDEBUG
 PrintLog (-1);
 #endif
+locks.UnlockSend ();
 return dataLen;
 }
 
@@ -1134,37 +1194,43 @@ return 1;
 static int32_t UDPReceivePacket (ipx_socket_t *s, uint8_t *outBuf, int32_t outBufSize, CPacketAddress *rd)
 {
 	struct sockaddr_in	fromAddr;
-	int32_t						i, dataLen, bTracker;
+	int32_t					i, dataLen, bTracker;
 #ifdef _WIN32
-	int32_t						fromAddrSize = sizeof (fromAddr);
+	int32_t					fromAddrSize = sizeof (fromAddr);
 #else
 	socklen_t				fromAddrSize = sizeof (fromAddr);
 #endif
 	uint16_t					srcPort;
 #if UDP_SAFEMODE
 	CClient*					clientP;
-	int32_t						packetId = -1, bSafeMode = 0;
+	int32_t					packetId = -1, bSafeMode = 0;
 #endif
 #if DBG
 	//char						szIP [30];
 #endif
 
+locks.LockRecv ();
 dataLen = recvfrom (s->fd, reinterpret_cast<char*> (outBuf), outBufSize, 0, reinterpret_cast<struct sockaddr*> (&fromAddr), &fromAddrSize);
+
 if (0 > dataLen) {
 #if DBG && defined (_WIN32)
 	int32_t error = WSAGetLastError ();
 #endif
-	return -1;
+	return locks.AbortRecv ();
 	}
-bTracker = tracker.IsTracker (fromAddr.sin_addr.s_addr, fromAddr.sin_port, (char*) outBuf);
+
 if (fromAddr.sin_family != AF_INET)
-	return -1;
+	return locks.AbortRecv ();
+
+bTracker = tracker.IsTracker (fromAddr.sin_addr.s_addr, fromAddr.sin_port, (char*) outBuf);
+
 if ((dataLen < 6) || (!bTracker && (memcmp (outBuf, D2XUDP, 6)
 #if UDP_SAFEMODE
 	 || EvalSafeMode (s, &fromAddr, outBuf)
 #endif
 	 )))
-	return -1;
+	return locks.AbortRecv ();
+
 if (!(bTracker
 #if UDP_SAFEMODE
 	 || ResendData (&fromAddr, outBuf) || ForgetData (&fromAddr, outBuf)
@@ -1177,11 +1243,10 @@ if (!(bTracker
 	memcpy (networkData.localAddress + 4, outBuf + dataLen - 6, 6);
 	// add sender to client list if the packet is not from ourself
 	if (!memcmp (&fromAddr.sin_addr, networkData.localAddress + 4, 4) &&
-		 !memcmp (&srcPort, networkData.localAddress + 8, 2))
-		return -1;
-	i = clientManager.Add (&fromAddr);
-	if (i < 0)
-		return -1;
+		 !memcmp (&srcPort, networkData.localAddress + 8, 2)) 
+		return locks.AbortRecv ();
+	if (0 > (i = clientManager.Add (&fromAddr)))
+		return locks.AbortRecv ();
 #if UDP_SAFEMODE
 	if (i < clientManager.ClientCount () - 1) {	//i.e. sender already in list or successfully added to list
 		clientP = &clientManager.Client (i);
@@ -1198,7 +1263,7 @@ if (!(bTracker
 				clientP->nReceived++;
 			else if (packetId > clientP->nReceived) {
 				RequestResend (clientP, packetId);
-				return -1;
+				return locks.AbortRecv ();
 				}
 			}
 #	if DBG
@@ -1224,6 +1289,7 @@ rd->ResetNetwork ();
 rd->SetServer (&fromAddr.sin_addr); // SetPort () ?
 rd->SetPort (&fromAddr.sin_port);
 rd->SetType (0);
+locks.UnlockRecv ();
 return dataLen;
 }
 

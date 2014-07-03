@@ -210,7 +210,7 @@ for (nPacketsLeft = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACK
 			if (networkThread.Available ()) {
 				networkThread.LockSend ();
 				while (networkThread.Transmit ())
-					;
+					G3_SLEEP (100);
 				networkThread.UnlockSend ();
 				}
 #endif
