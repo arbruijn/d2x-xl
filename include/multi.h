@@ -203,7 +203,7 @@ void MultiPrepLevel (void);
 int32_t MultiEndLevel (int32_t *secret);
 int32_t MultiMenuPoll (void);
 void MultiLeaveGame (void);
-void MultiProcessData (char *dat, int32_t len);
+int MultiProcessData (char *data, int32_t len);
 void MultiProcessBigData (char *buf, int32_t len);
 void MultiDoDeath (int32_t nObject);
 void MultiSendMsgDialog (void);

@@ -2100,21 +2100,18 @@ extern FILE *RecieveLogFile;
 // Takes a bunch of messages, check them for validity,
 // and pass them to MultiProcessData.
 
-void MultiProcessBigData (char *buf, int32_t len)
+void MultiProcessBigData (char *buf, int32_t bufLen)
 {
-	int32_t nType, nMsgLen, nBytesProcessed = 0;
-
-while (nBytesProcessed < len) {
-	nType = buf [nBytesProcessed];
-	if ((nType < 0) || (nType > MULTI_MAX_TYPE))
+for (int32_t bufPos = 0, msgLen = 0; bufPos < bufLen; bufPos += msgLen) {
+	uint8_t nType = buf [bufPos];
+	if (nType > MULTI_MAX_TYPE)
 		return;
-	nMsgLen = MultiMsgLen (nType);
-	if ((nBytesProcessed + nMsgLen) > len) {
-		Int3 ();
+	msgLen = MultiMsgLen (nType);
+	bufPos += msgLen;
+	if (bufPos + msgLen > bufLen) 
 		return;
-		}
-	MultiProcessData (buf + nBytesProcessed, nMsgLen);
-	nBytesProcessed += nMsgLen;
+	if (!MultiProcessData (buf + bufPos, msgLen))
+		return;
 	}
 }
 
@@ -5319,7 +5316,7 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 
 //-----------------------------------------------------------------------------
 
-void MultiProcessData (char *buf, int32_t len)
+int MultiProcessData (char *buf, int32_t len)
 {
 	// Take an entire message (that has already been checked for validity,
 	// if necessary) and act on it.
@@ -5328,7 +5325,7 @@ void MultiProcessData (char *buf, int32_t len)
 
 if (nType > MULTI_MAX_TYPE) {
 	Int3 ();
-	return;
+	return 0;
 	}
 
 console.printf (CON_VERBOSE, "multi data %d\n", nType);
@@ -5672,9 +5669,10 @@ switch (nType) {
 			MultiDoPlayerThrust (buf);
 		break;
 	default:
-		Int3 ();
+		return 0;
 	}
 #endif //DBG
+return 1;
 }
 
 //-----------------------------------------------------------------------------
