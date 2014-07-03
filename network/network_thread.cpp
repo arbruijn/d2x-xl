@@ -673,7 +673,7 @@ return nTimedOut;
 //------------------------------------------------------------------------------
 // Check for player timeouts
 
-void CNetworkThread::SendLifeSign (bool bForce = false)
+void CNetworkThread::SendLifeSign (bool bForce)
 {
 	static CTimeout toUpdate (UPDATE_TIMEOUT);
 
