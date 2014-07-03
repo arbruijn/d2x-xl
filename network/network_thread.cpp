@@ -60,6 +60,8 @@
 #define RECVLOCK 0
 #define PROCLOCK 0
 
+#define MULTI_THREADED_NETWORKING 1 // set to 0 to have D2X-XL manage network traffic the old way
+
 //------------------------------------------------------------------------------
 
 CNetworkThread networkThread;
@@ -303,6 +305,7 @@ for (;;) {
 
 void CNetworkThread::Start (void)
 {
+#if MULTI_THREADED_NETWORKING
 if (!m_thread) {
 	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
 	m_semaphore = SDL_CreateSemaphore (1);
@@ -313,6 +316,7 @@ if (!m_thread) {
 	m_toSend.Start ();
 	m_bUrgent = false;
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
