@@ -66,12 +66,19 @@
 
 CNetworkThread networkThread;
 
+#if DBG
+int MultiCheckPData (uint8_t* pd);
+#endif
+
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 void CNetworkPacket::Transmit (void)
 {
+#if DBG
+MultiCheckPData (m_data);
+#endif
 if (m_owner.m_bHaveLocalAddress)
 	IPXSendPacketData (m_data, m_size, m_owner.Network (), m_owner.Node (), m_owner.LocalNode ());
 else
