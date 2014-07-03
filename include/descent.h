@@ -3695,8 +3695,8 @@ class CGameData {
 				render.nStereoOffsetType = nType; 
 			return nOldType;
 			}
-		inline CObject* Object (int32_t nObject) { return (objs.objects.Buffer () && (nObject < objs.nObjects)) ? objs.objects + nObject : NULL; }
-		inline CSegment* Segment (int32_t nSegment) { return (segs.segments.Buffer () && (nSegment < segs.nSegments)) ? segs.segments + nSegment : NULL; }
+		inline CObject* Object (int32_t nObject) { return (objs.objects.Buffer () && (nObject >= 0) && (nObject < objs.nObjects)) ? objs.objects + nObject : NULL; }
+		inline CSegment* Segment (int32_t nSegment) { return (segs.segments.Buffer () && (nSegment >= 0) && (nSegment < segs.nSegments)) ? segs.segments + nSegment : NULL; }
 		inline int32_t X (int32_t x, bool bForce = false) { return render.nStereoOffsetType ? x - ((render.nStereoOffsetType == STEREO_OFFSET_FLOATING) ? FloatingStereoOffset2D (x, bForce) : StereoOffset2D ()) : x; }
 };
 

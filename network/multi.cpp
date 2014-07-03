@@ -2119,7 +2119,7 @@ for (int32_t bufPos = 0, msgLen = 0; bufPos < bufLen; bufPos += msgLen) {
 
 int MultiCheckBigData (uint8_t *buf, int32_t bufLen)
 {
-	static uint8_t nDbgType = 0xFF;
+	static uint8_t nDbgType = MULTI_RESTORE_GAME;
 
 for (int32_t bufPos = 0, msgLen = 0; bufPos < bufLen; bufPos += msgLen) {
 	uint8_t nType = buf [bufPos];
