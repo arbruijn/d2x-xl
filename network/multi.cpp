@@ -1398,7 +1398,7 @@ CPlayerData* playerP = gameData.multiplayer.players + nPlayer;
 CObject* objP = OBJECTS + playerP->nObject;
 fix shield = playerP->Shield ();
 playerP->SetShield (-1, false);
-gameData.multigame.create.nCount = 0;
+gameData.multigame.create.nCount = 0; // this variable gets incremented everytime a powerup is created; use it to find out how many powerups actually get created
 DropPlayerEggs (objP);
 playerP->SetShield (shield);
 // Create mapping from remote to local numbering system
