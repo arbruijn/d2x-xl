@@ -1407,8 +1407,6 @@ for (i = 0; (i < nRemoteCreated) && (i < gameData.multigame.create.nCount); i++)
 	int16_t nRemoteObj = GET_INTEL_SHORT (objList);
 	if (nRemoteObj > 0)
 		SetObjNumMapping ((int16_t) gameData.multigame.create.nObjNums [i], nRemoteObj, nPlayer);
-	else
-		gameData.multigame.create.nCount--;
 	objList--;
 	}
 for (; i < gameData.multigame.create.nCount; i++)
@@ -1473,12 +1471,12 @@ if (multiMessageLengths [MULTI_PLAYER_EXPLODE][1] > 0) {
 		bufI += 4;
 		}
 	}
-gameData.multigame.create.nCount = gameData.multigame.msg.buf [bufI++];
 #endif
 #if 0
 MultiAdjustRemoteCap (nPlayer);
 #endif
 playerP->m_tWeaponInfo = 0; // keep the PSALM from kicking in before updated player weapon info is available
+playerP->SetShield (-1);
 MultiDestroyPlayerShip (nPlayer, buf [0] == MULTI_PLAYER_EXPLODE, buf [bufI], (int16_t*) (buf + bufI + 1));
 }
 
