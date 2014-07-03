@@ -489,8 +489,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 				shortSyncPack.nPackets = networkData.syncPack.nPackets;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
 				IpxSendGamePacket (
-					reinterpret_cast<uint8_t*> (&shortSyncPack), 
-					sizeof (tFrameInfoShort) - networkData.nMaxXDataSize + networkData.syncPack.dataSize);
+					reinterpret_cast<uint8_t*> (&shortSyncPack), sizeof (tFrameInfoShort) - networkData.nMaxXDataSize + networkData.syncPack.dataSize);
 #else
 				SquishShortFrameInfo (shortSyncPack, send_data);
 				IpxSendGamePacket (
