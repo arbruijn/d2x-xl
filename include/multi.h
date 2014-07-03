@@ -220,7 +220,7 @@ void MultiResetStuff (void);
 void MultiSendConquerRoom (char owner, char prevOwner, char group);
 void MultiSendConquerWarning ();
 void MultiSendStopConquerWarning ();
-void MultiSendData (char *buf, int32_t len, int32_t repeat);
+void MultiSendData (uint8_t* buf, int32_t len, int32_t repeat);
 void ChoseTeam (int32_t nPlayer, bool bForce = false);
 void AutoBalanceTeams ();
 

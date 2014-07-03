@@ -75,13 +75,13 @@ void FreeHoardData (void);
 void InitHoardData (void);
 void MultiApplyGoalTextures (void);
 void MultiBadRestore (void);
-void MultiDoCaptureBonus (char *buf);
-void MultiDoOrbBonus (char *buf);
+void MultiDoCaptureBonus (uint8_t* buf);
+void MultiDoOrbBonus (uint8_t* buf);
 void MultiSendDropFlag (int32_t nObject, int32_t seed);
 void MultiSendRanking (void);
-void MultiDoPlayByPlay (char *buf);
-void MultiDoConquerRoom (char *buf);
-void MultiDoConquerWarning (char *buf);
+void MultiDoPlayByPlay (uint8_t* buf);
+void MultiDoConquerRoom (uint8_t* buf);
+void MultiDoConquerWarning (uint8_t* buf);
 void MultiAdjustPowerupCap (void);
 
 //
@@ -556,7 +556,7 @@ MultiSendData (gameData.multigame.msg.buf, 2 + sizeof (wsP->nThrusters), 0);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoWeaponStates (char *buf)
+void MultiDoWeaponStates (uint8_t* buf)
 {
 	CWeaponState	*wsP = gameData.multiplayer.weaponStates + int32_t (buf [1]);
 	tFiringData		*fP;
@@ -608,7 +608,7 @@ for (i = 0, fP = wsP->firing; i < 2; i++, fP++) {
 
 //-----------------------------------------------------------------------------
 
-void MultiDoPlayerThrust (char *buf)
+void MultiDoPlayerThrust (uint8_t* buf)
 {
 	CWeaponState	*wsP = gameData.multiplayer.weaponStates + int32_t (buf [1]);
 
@@ -660,7 +660,7 @@ else
 
 //-----------------------------------------------------------------------------
 
-void MultiDoSetTeam (char *buf)
+void MultiDoSetTeam (uint8_t* buf)
 {
 SetTeam (int32_t (buf [1]), int32_t (buf [2]));
 }
@@ -1103,7 +1103,7 @@ if ((gameData.app.GameMode (GM_MONSTERBALL)) && gameData.hoard.monsterballP && I
 
 //-----------------------------------------------------------------------------
 
-void MultiDoSyncMonsterball (char* buf)
+void MultiDoSyncMonsterball (uint8_t* buf)
 {
 if ((gameData.app.GameMode (GM_MONSTERBALL)) && !IAmGameHost ()) {
 	CFixVector	vPos;
@@ -1188,7 +1188,7 @@ MultiSyncMonsterball ();
 
 //-----------------------------------------------------------------------------
 
-void MultiSendData (char *buf, int32_t len, int32_t bUrgent)
+void MultiSendData (uint8_t* buf, int32_t len, int32_t bUrgent)
 {
 #if DBG
 if (len != MultiMsgLen (int32_t (buf [0])))
@@ -1303,7 +1303,7 @@ if (!IsCoopGame)
 
 //-----------------------------------------------------------------------------
 
-void MultiDoFire (char *buf)
+void MultiDoFire (uint8_t* buf)
 {
 	int32_t nPlayer = int32_t (buf [1]);
 	uint8_t weapon = (uint8_t) buf [2];
@@ -1352,7 +1352,7 @@ gameData.multigame.laser.nFired [1] = 0;
 //-----------------------------------------------------------------------------
 // This routine does only player positions, mode game only
 
-void MultiDoPosition (char *buf)
+void MultiDoPosition (uint8_t* buf)
 {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	tShortPos sp;
@@ -1376,7 +1376,7 @@ if (objP->info.movementType == MT_PHYSICS)
 
 //-----------------------------------------------------------------------------
 
-void MultiDoReappear (char *buf)
+void MultiDoReappear (uint8_t* buf)
 {
 CObject *objP = gameData.Object (GET_INTEL_SHORT (buf + 1));
 if (objP) {
@@ -1428,7 +1428,7 @@ playerP->m_bExploded = 1;
 // Only call this for players, not robots.  nPlayer is player number, not
 // Object number.
 
-void MultiDoPlayerExplode (char *buf)
+void MultiDoPlayerExplode (uint8_t* buf)
 {
 int32_t nPlayer = buf [1];
 #if !DBG
@@ -1481,7 +1481,7 @@ MultiDestroyPlayerShip (nPlayer, buf [0] == MULTI_PLAYER_EXPLODE, buf [bufI], (i
 
 //-----------------------------------------------------------------------------
 
-void MultiDoKill (char *buf)
+void MultiDoKill (uint8_t* buf)
 {
 int32_t nPlayer = (int32_t) (buf [1]);
 if ((nPlayer < 0) || (nPlayer >= gameData.multiplayer.nPlayers)) {
@@ -1506,7 +1506,7 @@ MultiComputeKill (nKiller, nKilled, nPlayer);
 // Changed by MK on 10/20/94 to send NULL as CObject to NetDestroyReactor if it got -1
 // which means not a controlcen CObject, but contained in another CObject
 
-void MultiDoDestroyReactor (char *buf)
+void MultiDoDestroyReactor (uint8_t* buf)
 {
 int16_t nObject = GET_INTEL_SHORT (buf + 1);
 int8_t who = buf [3];
@@ -1526,7 +1526,7 @@ if (gameData.reactor.bDestroyed != 1) {
 
 //-----------------------------------------------------------------------------
 
-void MultiDoCountdown (char *buf)
+void MultiDoCountdown (uint8_t* buf)
 {
 if (NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR)))
 	 InitCountdown (NULL, 1, GET_INTEL_INT (buf + 1));
@@ -1534,7 +1534,7 @@ if (NetDestroyReactor (ObjFindFirstOfType (OBJ_REACTOR)))
 
 //-----------------------------------------------------------------------------
 
-void MultiDoEscape (char *buf)
+void MultiDoEscape (uint8_t* buf)
 {
 	int32_t nObject;
 
@@ -1561,7 +1561,7 @@ MultiMakePlayerGhost (buf [1]);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoRemoveObj (char *buf)
+void MultiDoRemoveObj (uint8_t* buf)
 {
 if ((gameStates.multi.nGameType == UDP_GAME) && (buf [4] == N_LOCALPLAYER))
 	return;
@@ -1608,7 +1608,7 @@ else {
 
 //-----------------------------------------------------------------------------
 
-void MultiDoQuit (char *buf)
+void MultiDoQuit (uint8_t* buf)
 {
 if (IsNetworkGame) {
 	audio.PlaySound (SOUND_HUD_MESSAGE);
@@ -1630,7 +1630,7 @@ if (IsNetworkGame) {
 
 //-----------------------------------------------------------------------------
 
-void MultiDoInvul (char *buf)
+void MultiDoInvul (uint8_t* buf)
 {
 int32_t nPlayer = (int32_t) (buf [1]);
 gameData.multiplayer.players [nPlayer].flags |= PLAYER_FLAGS_INVULNERABLE;
@@ -1641,7 +1641,7 @@ if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 
 //-----------------------------------------------------------------------------
 
-void MultiDoDeInvul (char *buf)
+void MultiDoDeInvul (uint8_t* buf)
 {
 int32_t nPlayer = (int32_t) (buf [1]);
 gameData.multiplayer.players [nPlayer].flags &= ~PLAYER_FLAGS_INVULNERABLE;
@@ -1649,7 +1649,7 @@ gameData.multiplayer.players [nPlayer].flags &= ~PLAYER_FLAGS_INVULNERABLE;
 
 //-----------------------------------------------------------------------------
 
-void MultiDoCloak (char *buf)
+void MultiDoCloak (uint8_t* buf)
 {
 int32_t nPlayer = (int32_t) (buf [1]);
 gameData.multiplayer.players [nPlayer].flags |= PLAYER_FLAGS_CLOAKED;
@@ -1663,7 +1663,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 
 //-----------------------------------------------------------------------------
 
-void MultiDoDeCloak (char *buf)
+void MultiDoDeCloak (uint8_t* buf)
 {
 int32_t nPlayer = (int32_t) (buf [1]);
 if (gameData.demo.nState == ND_STATE_RECORDING)
@@ -1672,7 +1672,7 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 
 //-----------------------------------------------------------------------------
 
-void MultiDoDoorOpen (char *buf)
+void MultiDoDoorOpen (uint8_t* buf)
 {
 	int32_t nSegment;
 	int8_t nSide;
@@ -1708,7 +1708,7 @@ else
 
 //-----------------------------------------------------------------------------
 
-void MultiDoCreateExplosion (char *buf)
+void MultiDoCreateExplosion (uint8_t* buf)
 {
 int32_t nPlayer = buf [1];
 CreateSmallFireballOnObject (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject], I2X (1), 1);
@@ -1716,7 +1716,7 @@ CreateSmallFireballOnObject (&OBJECTS [gameData.multiplayer.players [nPlayer].nO
 
 //-----------------------------------------------------------------------------
 
-void MultiDoCtrlcenFire (char *buf)
+void MultiDoCtrlcenFire (uint8_t* buf)
 {
 	CFixVector	vTarget;
 	char			nGun;
@@ -1740,7 +1740,7 @@ if (0 <= (i = FindReactor (OBJECTS + nObject)))
 
 //-----------------------------------------------------------------------------
 
-void MultiDoCreateWeapon (char *buf)
+void MultiDoCreateWeapon (uint8_t* buf)
 {
 	int16_t			nSegment;
 	int16_t			nObject;
@@ -1786,7 +1786,7 @@ return;
 
 //-----------------------------------------------------------------------------
 
-int32_t MultiDoCreatePowerup (char *buf)
+int32_t MultiDoCreatePowerup (uint8_t* buf)
 {
 	int16_t			nSegment;
 	int16_t			nObject;
@@ -1829,7 +1829,7 @@ return nLocalObj;
 
 //-----------------------------------------------------------------------------
 
-void MultiDoDropPowerup (char *buf)
+void MultiDoDropPowerup (uint8_t* buf)
 {
 int32_t nObject = MultiDoCreatePowerup (buf);
 if (nObject >= 0)
@@ -1838,7 +1838,7 @@ OBJECTS [nObject].mType.physInfo.velocity = *reinterpret_cast<CFixVector*>(buf +
 
 //-----------------------------------------------------------------------------
 
-void MultiDoPlaySound (char *buf)
+void MultiDoPlaySound (uint8_t* buf)
 {
 	int32_t nPlayer = (int32_t) (buf [1]);
 	int16_t nSound = (int32_t) (buf [2]);
@@ -1853,7 +1853,7 @@ if ((gameData.multiplayer.players [nPlayer].nObject >= 0) &&
 
 //-----------------------------------------------------------------------------
 
-void MultiDoScore (char *buf)
+void MultiDoScore (uint8_t* buf)
 {
 	int32_t nPlayer = (int32_t) (buf [1]);
 
@@ -1871,7 +1871,7 @@ MultiSortKillList ();
 
 //-----------------------------------------------------------------------------
 
-void MultiDoTrigger (char *buf)
+void MultiDoTrigger (uint8_t* buf)
 {
 	int32_t nPlayer = (int32_t) (buf [1]);
 	int32_t nTrigger = (int32_t) ((uint8_t) buf [2]);
@@ -1894,7 +1894,7 @@ TRIGGERS [nTrigger].Operate (nObject, nPlayer, 0, 0);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoShield (char *buf)
+void MultiDoShield (uint8_t* buf)
 {
 	int32_t	nPlayer = int32_t (buf [1]);
 	int32_t	shield = GET_INTEL_INT (buf+2);
@@ -1908,7 +1908,7 @@ gameData.multiplayer.players [nPlayer].SetShield (shield, false);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoObjTrigger (char *buf)
+void MultiDoObjTrigger (uint8_t* buf)
 {
 	int32_t nPlayer = (int32_t) (buf [1]);
 	int32_t nTrigger = (int32_t) ((uint8_t) buf [2]);
@@ -1926,7 +1926,7 @@ OBJTRIGGERS [nTrigger].Operate (gameData.multiplayer.players [nPlayer].nObject, 
 
 //-----------------------------------------------------------------------------
 
-void MultiDoDropMarker (char *buf)
+void MultiDoDropMarker (uint8_t* buf)
 {
 	int32_t			nPlayer = int32_t (buf [1]);
 	int32_t			nMsg = int32_t (buf [2]);
@@ -1954,7 +1954,7 @@ markerManager.SetOwner (nMarker, gameData.multiplayer.players [nPlayer].callsign
 //-----------------------------------------------------------------------------
 // Update hit point status of a door
 
-void MultiDoHostageDoorStatus (char *buf)
+void MultiDoHostageDoorStatus (uint8_t* buf)
 {
 	CWall	*wallP;
 	fix	hps;
@@ -1975,7 +1975,7 @@ if (hps < wallP->hps)
 
 //-----------------------------------------------------------------------------
 
-void MultiDoSaveGame (char *buf)
+void MultiDoSaveGame (uint8_t* buf)
 {
 	char desc [25];
 
@@ -1987,7 +1987,7 @@ MultiSaveGame (slot, id, desc);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoRestoreGame (char *buf)
+void MultiDoRestoreGame (uint8_t* buf)
 {
 char slot = buf [1];
 uint32_t id = GET_INTEL_INT (buf + 2);
@@ -1996,7 +1996,7 @@ MultiRestoreGame (slot, id);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoReqPlayer (char *buf)
+void MultiDoReqPlayer (uint8_t* buf)
 {
 	uint8_t nPlayer = *reinterpret_cast<uint8_t*> (buf+1);
 
@@ -2013,7 +2013,7 @@ if ((nPlayer == N_LOCALPLAYER) || (nPlayer == 255)) {
 //-----------------------------------------------------------------------------
 // Got a player packet from someone!!!
 
-void MultiDoSendPlayer (char *buf)
+void MultiDoSendPlayer (uint8_t* buf)
 {
 tNetPlayerStats *p = reinterpret_cast<tNetPlayerStats*> (buf);
 UseNetPlayerStats (gameData.multiplayer.players  + p->nLocalPlayer, p);
@@ -2534,7 +2534,7 @@ if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 
 //-----------------------------------------------------------------------------
 
-void MultiDoSyncKills (char *buf)
+void MultiDoSyncKills (uint8_t* buf)
 {
 	int32_t	nPlayer = int32_t (buf [1]);
 	char	*bufP = buf + 2;
@@ -3605,7 +3605,7 @@ MultiSendData (gameData.multigame.msg.buf, 12, 2);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoDropWeapon (char *buf)
+void MultiDoDropWeapon (uint8_t* buf)
 {
 	int32_t 		nPlayer, ammo, nObject, nRemoteObj, seed;
 	CObject	*objP;
@@ -3651,7 +3651,7 @@ MultiSendData (gameData.multigame.msg.buf, count, 0);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoGuided (char *buf)
+void MultiDoGuided (uint8_t* buf)
 {
 	int32_t nPlayer = int32_t (buf [1]);
 	int32_t count = 3;
@@ -3702,7 +3702,7 @@ MultiSendData (gameData.multigame.msg.buf, MAX_STOLEN_ITEMS + 1, 1);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoStolenItems (char *buf)
+void MultiDoStolenItems (uint8_t* buf)
 {
 	int32_t i;
 
@@ -3745,7 +3745,7 @@ NetworkSendNakedPacket (gameData.multigame.msg.buf, count, nPlayer);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoWallStatus (char *buf)
+void MultiDoWallStatus (uint8_t* buf)
 {
 	int16_t wallnum;
 	uint8_t flag, nType, state;
@@ -3786,7 +3786,7 @@ MultiSendData (gameData.multigame.msg.buf, count, 1);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoScoreGoalCounts (char *buf)
+void MultiDoScoreGoalCounts (uint8_t* buf)
 {
 	int32_t h, i, count = 1;
 
@@ -3808,7 +3808,7 @@ if (netGame.GetPlayTimeAllowed ()) {
 
 //-----------------------------------------------------------------------------
 
-void MultiDoHeartBeat (char *buf)
+void MultiDoHeartBeat (uint8_t* buf)
 {
 fix num = GET_INTEL_INT (buf + 1);
 gameStates.app.xThisLevelTime = num;
@@ -3933,7 +3933,7 @@ MultiSendData (gameData.multigame.msg.buf, 1 + 2 * sizeof (fix), 1);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoSeismic (char *buf)
+void MultiDoSeismic (uint8_t* buf)
 {
 gameStates.gameplay.seismic.nStartTime = GET_INTEL_INT (buf + 1);
 gameStates.gameplay.seismic.nEndTime = GET_INTEL_INT (buf + 5);
@@ -3973,7 +3973,7 @@ NetworkSendNakedPacket (gameData.multigame.msg.buf, count, nPlayer);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoLight (char *buf)
+void MultiDoLight (uint8_t* buf)
 {
 	uint8_t sides = buf [5];
 	int16_t i, nSegment = GET_INTEL_INT (buf + 1);
@@ -3990,7 +3990,7 @@ for (i = 0; i < SEGMENT_SIDE_COUNT; i++, buf += 2) {
 
 //-----------------------------------------------------------------------------
 
-void MultiDoFlags (char *buf)
+void MultiDoFlags (uint8_t* buf)
 {
 	int32_t nPlayer = int32_t (buf [1]);
 	uint32_t flags;
@@ -4012,7 +4012,7 @@ MultiSendData (gameData.multigame.msg.buf, 6, 1);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoWeapons (char *buf)
+void MultiDoWeapons (uint8_t* buf)
 {
 	int32_t	i, bufP = 1;
 	int32_t	nPlayer = int32_t (buf [bufP++]);
@@ -4038,7 +4038,7 @@ player.m_tWeaponInfo = gameStates.app.nSDLTicks [0];
 
 //-----------------------------------------------------------------------------
 
-void MultiDoAmmo (char *buf)
+void MultiDoAmmo (uint8_t* buf)
 {
 	int32_t	nPlayer = int32_t (buf [1]);
 
@@ -4048,7 +4048,7 @@ gameData.multiplayer.weaponStates [int32_t (nPlayer)].nAmmoUsed = GET_INTEL_SHOR
 
 //-----------------------------------------------------------------------------
 
-void MultiDoFusionCharge (char *buf)
+void MultiDoFusionCharge (uint8_t* buf)
 {
 gameData.multiplayer.weaponStates [int32_t (buf [1])].xFusionCharge = GET_INTEL_INT (buf + 2);
 }
@@ -4126,7 +4126,7 @@ MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoMonsterball (char *buf)
+void MultiDoMonsterball (uint8_t* buf)
 {
 	int32_t			bCreate, bufP = 1;
 	int16_t			nSegment;
@@ -4216,7 +4216,7 @@ MultiSendData (gameData.multigame.msg.buf, 2, 0);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoDropBlob (char *buf)
+void MultiDoDropBlob (uint8_t* buf)
 {
 DropAfterburnerBlobs (&OBJECTS [gameData.multiplayer.players [int32_t (buf [1])].nObject], 2, I2X (1), -1, NULL, 0);
 }
@@ -4239,7 +4239,7 @@ if (IAmGameHost ()) {
 
 //-----------------------------------------------------------------------------
 
-void MultiDoPowerupUpdate (char *buf)
+void MultiDoPowerupUpdate (uint8_t* buf)
 {
 if (!IAmGameHost ()) {
 	for (int32_t i = 0, j = 1; i < MAX_POWERUP_TYPES; i++) {
@@ -4282,7 +4282,7 @@ MultiSendData (gameData.multigame.msg.buf, count, 1);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoActiveDoor (char *buf)
+void MultiDoActiveDoor (uint8_t* buf)
 {
 CActiveDoor *doorP = reinterpret_cast<CActiveDoor*> (gameData.multigame.msg.buf + 3);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
@@ -4313,7 +4313,7 @@ MultiSendData (gameData.multigame.msg.buf, 4, 0);
 #define AFTERBURNER_LOOP_START  20098
 #define AFTERBURNER_LOOP_END    25776
 
-void MultiDoSoundFunction (char *buf)
+void MultiDoSoundFunction (uint8_t* buf)
 {
 // for afterburner
 if (!LOCALPLAYER.Connected (CONNECT_PLAYING))
@@ -4355,7 +4355,7 @@ MultiDoOrbBonus (gameData.multigame.msg.buf);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoCaptureBonus (char *buf)
+void MultiDoCaptureBonus (uint8_t* buf)
 {
 	// Figure out the results of a network kills and add it to the
 	// appropriate player's tally.
@@ -4418,7 +4418,7 @@ int32_t GetOrbBonus (char num)
 	// Figure out the results of a network kills and add it to the
 	// appropriate player's tally.
 
-void MultiDoOrbBonus (char *buf)
+void MultiDoOrbBonus (uint8_t* buf)
 {
 	int32_t nPlayer = int32_t (buf [1]);
 	int32_t bonus = GetOrbBonus (buf [2]);
@@ -4472,7 +4472,7 @@ MultiSendData (gameData.multigame.msg.buf, 6, 1);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoCheating (char *buf)
+void MultiDoCheating (uint8_t* buf)
 {
 HUDInitMessage (TXT_PLAYER_CHEATED, gameData.multiplayer.players [int32_t (buf [1])].callsign);
 audio.PlaySound (SOUND_CONTROL_CENTER_WARNING_SIREN, SOUNDCLASS_GENERIC, DEFAULT_VOLUME, DEFAULT_PAN, 0, 3);
@@ -4514,7 +4514,7 @@ MultiSendFlags ((char) N_LOCALPLAYER);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoGotFlag (char *buf)
+void MultiDoGotFlag (uint8_t* buf)
 {
 	int32_t nPlayer = int32_t (buf [1]);
 
@@ -4531,7 +4531,7 @@ HUDInitMessage (TXT_PICKFLAG2, gameData.multiplayer.players [nPlayer].callsign);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoGotOrb (char *buf)
+void MultiDoGotOrb (uint8_t* buf)
 {
 	int32_t nPlayer = int32_t (buf [1]);
 
@@ -4624,7 +4624,7 @@ MultiSendData (gameData.multigame.msg.buf, 12, 2);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoDropFlag (char *buf)
+void MultiDoDropFlag (uint8_t* buf)
 {
 	int32_t nPlayer, ammo, nObject, nRemoteObj, seed;
 	CObject *objP;
@@ -4689,7 +4689,7 @@ NetworkSendNakedPacket (gameData.multigame.msg.buf, 1
 
 //-----------------------------------------------------------------------------
 
-void MultiDoRobotControls (char *buf)
+void MultiDoRobotControls (uint8_t* buf)
 {
 	int32_t count = 2;
 
@@ -4887,7 +4887,7 @@ void MultiSendFinishGame ()
 
 extern void DoFinalBossHacks ();
 
-void MultiDoFinishGame (char *buf)
+void MultiDoFinishGame (uint8_t* buf)
 {
 if (buf [0]!=MULTI_FINISH_GAME)
 	return;
@@ -4908,7 +4908,7 @@ NetworkSendNakedPacket (gameData.multigame.msg.buf, 2, nPlayer);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoStartTrigger (char *buf)
+void MultiDoStartTrigger (uint8_t* buf)
 {
 TRIGGERS [(int32_t) ((uint8_t) buf [1])].m_info.flags |= TF_DISABLED;
 }
@@ -4969,7 +4969,7 @@ void MultiSendRanking ()
 
 //-----------------------------------------------------------------------------
 
-void MultiDoRanking (char *buf)
+void MultiDoRanking (uint8_t* buf)
 {
 	char rankstr [20];
 	int32_t nPlayer = int32_t (buf [1]);
@@ -4999,7 +4999,7 @@ MultiSendData (gameData.multigame.msg.buf, 1, 1);
 
 //-----------------------------------------------------------------------------
 
-void MultiSendModemPingReturn (char *buf)
+void MultiSendModemPingReturn (uint8_t* buf)
 {
 gameData.multigame.msg.buf [0] = MULTI_MODEM_PING_RETURN;
 MultiSendData (gameData.multigame.msg.buf, 1, 1);
@@ -5007,7 +5007,7 @@ MultiSendData (gameData.multigame.msg.buf, 1, 1);
 
 //-----------------------------------------------------------------------------
 
-void  MultiDoModemPingReturn (char *buf)
+void  MultiDoModemPingReturn (uint8_t* buf)
 {
 if (pingStats [0].launchTime <= 0)
 	return;
@@ -5054,7 +5054,7 @@ MultiDoPlayByPlay (gameData.multigame.msg.buf);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoPlayByPlay (char *buf)
+void MultiDoPlayByPlay (uint8_t* buf)
 {
 	int32_t whichplay = buf [1];
 	int32_t spnum = buf [2];
@@ -5078,7 +5078,7 @@ switch (whichplay) {
 
 //-----------------------------------------------------------------------------
 
-void MultiDoReturnFlagHome (char *buf)
+void MultiDoReturnFlagHome (uint8_t* buf)
 {
 	CObject	*objP = OBJECTS.Buffer ();
 	int32_t		i;
@@ -5105,7 +5105,7 @@ MultiSendData (gameData.multigame.msg.buf, 3, 0);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoConquerWarning (char *buf)
+void MultiDoConquerWarning (uint8_t* buf)
 {
 audio.PlaySound (SOUND_CONTROL_CENTER_WARNING_SIREN, SOUNDCLASS_GENERIC, I2X (3));
 }
@@ -5122,7 +5122,7 @@ MultiSendData (gameData.multigame.msg.buf, 3, 0);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoStopConquerWarning (char *buf)
+void MultiDoStopConquerWarning (uint8_t* buf)
 {
 audio.StopSound (SOUND_CONTROL_CENTER_WARNING_SIREN);
 }
@@ -5139,7 +5139,7 @@ MultiSendData (gameData.multigame.msg.buf, 3, 0);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoConquerRoom (char *buf)
+void MultiDoConquerRoom (uint8_t* buf)
 {
 ConquerRoom (buf [1], buf [2], buf [3]);
 }
@@ -5168,7 +5168,7 @@ MultiSendData (gameData.multigame.msg.buf, 5, 0);
 
 //-----------------------------------------------------------------------------
 
-void MultiDoTeleport (char *buf)
+void MultiDoTeleport (uint8_t* buf)
 {
 	int16_t	nObject = gameData.multiplayer.players [int32_t (buf [1])].nObject;
 	int16_t nSegment = GET_INTEL_SHORT (buf + 2);
@@ -5361,7 +5361,7 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 
 //-----------------------------------------------------------------------------
 
-int MultiProcessData (char *buf, int32_t len)
+int MultiProcessData (uint8_t* buf, int32_t len)
 {
 	// Take an entire message (that has already been checked for validity,
 	// if necessary) and act on it.
