@@ -1069,6 +1069,8 @@ static CObject *NearestPlayerTarget (CObject* attackerP)
 	CFixVector	vViewDir = attackerP->info.position.mOrient.m.dir.f;
 
 FORALL_PLAYER_OBJS (candidateP, j) {
+	if (candidateP->Type () != OBJ_PLAYER) // skip ghost players
+		continue;
 	if (!gameData.multiplayer.players [candidateP->Id ()].IsConnected ())
 		continue;
 	CFixVector vDir = OBJPOS (candidateP)->vPos - vPos;
