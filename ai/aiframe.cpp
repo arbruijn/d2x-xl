@@ -1060,36 +1060,71 @@ return 1;
 
 // --------------------------------------------------------------------------------------------------------------------
 
-static CObject *NearestRobot (CObject* objP, tAIStateInfo *siP)
+static CObject *NearestPlayerTarget (CObject* attackerP)
 {
-	int32_t			j;
+	int32_t		j;
 	fix			curDist, minDist = MAX_WAKEUP_DIST, bestAngle = -1;
-	CObject*		robotP, *targetP = NULL;
-	CFixVector	vPos = objP->AttacksRobots ()
-							 ? OBJPOS (objP)->vPos	// find robot closest to this robot
-							 : OBJPOS (OBJECTS + N_LOCALPLAYER)->vPos;	// find robot closest to player
-	CFixVector	vViewDir = objP->info.position.mOrient.m.dir.f;
+	CObject*		candidateP, *targetP = NULL;
+	CFixVector	vPos = OBJPOS (attackerP)->vPos;	
+	CFixVector	vViewDir = attackerP->info.position.mOrient.m.dir.f;
 
-FORALL_ROBOT_OBJS (robotP, j) {
-	if (robotP->Index () == siP->nObject)
+FORALL_PLAYER_OBJS (candidateP, j) {
+	if (!gameData.multiplayer.players [candidateP->Id ()].IsConnected ())
 		continue;
-	CFixVector vDir = OBJPOS (robotP)->vPos - vPos;
+	CFixVector vDir = OBJPOS (candidateP)->vPos - vPos;
 	curDist = vDir.Mag ();
-	if ((curDist < MAX_WAKEUP_DIST /*/ 2*/) && (curDist < minDist) && ObjectToObjectVisibility (objP, robotP, FQ_TRANSWALL)) {
+	if ((curDist < MAX_WAKEUP_DIST /*/ 2*/) && (curDist < minDist) && ObjectToObjectVisibility (attackerP, candidateP, FQ_TRANSWALL)) {
 		vDir /= curDist;
 		fix angle = CFixVector::Dot (vViewDir, vDir);
 		if (angle > bestAngle) {
 			bestAngle = angle;
-			targetP = robotP;
+			targetP = candidateP;
 			minDist = curDist;
 			}
 		}
 	}
 if (targetP) {
-	objP->SetTarget (gameData.ai.target.objP = targetP);
+	attackerP->SetTarget (gameData.ai.target.objP = targetP);
 	gameData.ai.target.vBelievedPos = OBJPOS (TARGETOBJ)->vPos;
 	gameData.ai.target.nBelievedSeg = OBJSEG (TARGETOBJ);
-	CFixVector::NormalizedDir (gameData.ai.target.vDir, gameData.ai.target.vBelievedPos, objP->info.position.vPos);
+	CFixVector::NormalizedDir (gameData.ai.target.vDir, gameData.ai.target.vBelievedPos, attackerP->info.position.vPos);
+	return TARGETOBJ;
+	}
+return gameData.objs.consoleP;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+
+static CObject *NearestRobotTarget (CObject* attackerP, tAIStateInfo *siP)
+{
+	int32_t		j;
+	fix			curDist, minDist = MAX_WAKEUP_DIST, bestAngle = -1;
+	CObject*		candidateP, *targetP = NULL;
+	CFixVector	vPos = attackerP->AttacksRobots ()
+							 ? OBJPOS (attackerP)->vPos	// find robot closest to this robot
+							 : OBJPOS (OBJECTS + N_LOCALPLAYER)->vPos;	// find robot closest to player
+	CFixVector	vViewDir = attackerP->info.position.mOrient.m.dir.f;
+
+FORALL_ROBOT_OBJS (candidateP, j) {
+	if (candidateP->Index () == siP->nObject)
+		continue;
+	CFixVector vDir = OBJPOS (candidateP)->vPos - vPos;
+	curDist = vDir.Mag ();
+	if ((curDist < MAX_WAKEUP_DIST /*/ 2*/) && (curDist < minDist) && ObjectToObjectVisibility (attackerP, candidateP, FQ_TRANSWALL)) {
+		vDir /= curDist;
+		fix angle = CFixVector::Dot (vViewDir, vDir);
+		if (angle > bestAngle) {
+			bestAngle = angle;
+			targetP = candidateP;
+			minDist = curDist;
+			}
+		}
+	}
+if (targetP) {
+	attackerP->SetTarget (gameData.ai.target.objP = targetP);
+	gameData.ai.target.vBelievedPos = OBJPOS (TARGETOBJ)->vPos;
+	gameData.ai.target.nBelievedSeg = OBJSEG (TARGETOBJ);
+	CFixVector::NormalizedDir (gameData.ai.target.vDir, gameData.ai.target.vBelievedPos, attackerP->info.position.vPos);
 	return TARGETOBJ;
 	}
 return gameData.objs.consoleP;
@@ -1099,7 +1134,7 @@ return gameData.objs.consoleP;
 
 int32_t AITargetPosHandler (CObject *objP, tAIStateInfo *siP)
 {
-	CObject* targetP = objP->AttacksRobots () ? NearestRobot (objP, siP) : gameData.objs.consoleP;
+	CObject* targetP = objP->AttacksRobots () ? NearestRobotTarget (objP, siP) : NearestPlayerTarget (objP);
 
 objP->SetTarget (gameData.ai.target.objP = targetP);
 if ((siP->aiP->SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE) && (gameData.ai.nLastMissileCamera != -1)) {
