@@ -3347,7 +3347,7 @@ void MultiInitiateSaveGame (int32_t bSecret)
 	int32_t	i;
 	char	slot;
 	union {
-		uint8_t	b [4];
+		uint8_t		b [4];
 		uint32_t		i;
 	} uintCast;
 
@@ -5110,15 +5110,9 @@ MultiSendData (gameData.multigame.msg.buf, 4, 0);
 
 void MultiSendTeleport (char nPlayer, int16_t nSegment, char nSide)
 {
-	union {
-		uint8_t	b [2];
-		uint16_t	i;
-	} ushortCast;
-
 gameData.multigame.msg.buf [0] = (char) MULTI_TELEPORT;
 gameData.multigame.msg.buf [1] = nPlayer; // dummy values
-ushortCast.i = INTEL_SHORT (nSegment);
-memcpy (gameData.multigame.msg.buf + 2, ushortCast.b, sizeof (ushortCast.b));
+memcpy (gameData.multigame.msg.buf + 2, &nSegment, sizeof (nSegment));
 gameData.multigame.msg.buf [4] = nSide; // dummy values
 MultiSendData (gameData.multigame.msg.buf, 5, 0);
 }

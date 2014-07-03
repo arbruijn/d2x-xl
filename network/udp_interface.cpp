@@ -899,19 +899,15 @@ return 1;
 static int32_t UDPSendPacket
 	(ipx_socket_t *mysock, IPXPacket_t *ipxHeader, uint8_t *data, int32_t dataLen)
 {
- 	struct sockaddr_in destAddr, *dest;
-	int32_t				iDest, nClients, nUdpRes, extraDataLen = 0, bBroadcast = 0;
-	CClient*			clientP;
+ 	struct sockaddr_in	destAddr, *dest;
+	int32_t					iDest, nClients, nUdpRes, extraDataLen = 0, bBroadcast = 0;
+	CClient*					clientP;
 #if UDP_SAFEMODE
 	tPacketProps	*ppp;
 	int32_t				j;
 #endif
 	static uint8_t	buf [MAX_PACKET_SIZE];
 	uint8_t*			bufP = buf;
-	union {
-		uint8_t		b [2];
-		uint16_t	i;
-	} ushortCast;
 
 #ifdef UDPDEBUG
 PrintLog (1, "UDP interface: SendPacket enter, dataLen=%d",dataLen);
@@ -931,8 +927,7 @@ else {
 	}
 destAddr.sin_family = AF_INET;
 memcpy (&destAddr.sin_addr, ipxHeader->Destination.Node, 4);
-memcpy (ushortCast.b, ipxHeader->Destination.Node + 4, sizeof (ushortCast.b));
-destAddr.sin_port = ushortCast.i;
+memcpy (&destAddr.sin_port, ipxHeader->Destination.Node + 4, sizeof (destAddr.sin_port));
 memset (&(destAddr.sin_zero), '\0', 8);
 
 if (!(gameStates.multi.bTrackerCall || (clientManager.Add (&destAddr) >= 0))) {
