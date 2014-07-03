@@ -570,7 +570,7 @@ m_txPacketQueue.Unlock ();
 
 //------------------------------------------------------------------------------
 
-int32_t CNetworkThread::Transmit (bool bForce = false)
+int32_t CNetworkThread::Transmit (bool bForce)
 {
 if (m_toSend.Duration () != 1000 / PPS) {
 	m_toSend.Setup (1000 / PPS);
