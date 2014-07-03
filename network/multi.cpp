@@ -1378,12 +1378,16 @@ if (objP->info.movementType == MT_PHYSICS)
 
 void MultiDoReappear (char *buf)
 {
-	int16_t nObject = GET_INTEL_SHORT (buf + 1);
-	CObject *objP = OBJECTS + nObject;
-
-MultiMakeGhostPlayer (objP->info.nId);
-objP->CreateAppearanceEffect ();
-gameData.multigame.score.pFlags [objP->info.nId] = 0;
+CObject *objP = gameData.Object (GET_INTEL_SHORT (buf + 1));
+if (objP) {
+	MultiMakeGhostPlayer (objP->info.nId);
+	objP->CreateAppearanceEffect ();
+	gameData.multigame.score.pFlags [objP->info.nId] = 0;
+	}
+#if DBG
+else
+	BRP;
+#endif
 }
 
 //-----------------------------------------------------------------------------
