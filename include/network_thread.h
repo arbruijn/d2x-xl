@@ -77,7 +77,7 @@ class CNetworkPacket : public CNetworkData {
 		inline void SetUrgent (int32_t bUrgent) { m_bUrgent = bUrgent; }
 		bool Combineable (uint8_t type);
 		bool Combine (uint8_t* data, int32_t size, uint8_t* network, uint8_t* node);
-		inline bool operator== (CNetworkPacket& other) { return (m_owner.m_address == other.m_owner.m_address) && ((CNetworkData) *this == (CNetworkData) other); }
+		inline bool operator== (CNetworkPacket& other) { return (m_owner.m_address == other.m_owner.m_address) && ((CNetworkData&) *this == (CNetworkData&) other); }
 };
 
 //------------------------------------------------------------------------------
