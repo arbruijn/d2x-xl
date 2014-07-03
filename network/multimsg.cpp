@@ -38,7 +38,7 @@ void MultiSendMessage (void)
 if (gameData.multigame.msg.nReceiver != -1) {
 	gameData.multigame.msg.buf [bufP++] = (char)MULTI_MESSAGE;            
 	gameData.multigame.msg.buf [bufP++] = (char)N_LOCALPLAYER;                       
-	strncpy (gameData.multigame.msg.buf + bufP, gameData.multigame.msg.szMsg, MAX_MESSAGE_LEN); 
+	strncpy ((char*) gameData.multigame.msg.buf + bufP, gameData.multigame.msg.szMsg, MAX_MESSAGE_LEN); 
 	bufP += MAX_MESSAGE_LEN;
 	gameData.multigame.msg.buf [bufP-1] = '\0';
 	MultiSendData (gameData.multigame.msg.buf, bufP, 0);
@@ -577,7 +577,7 @@ void MultiDoMsg (uint8_t* buf)
 	int32_t bufP = 2;
 
 if ((tilde = strchr ((char*) buf + bufP, '$'))) { 
-	tloc = (int32_t) (tilde - (buf + bufP));			
+	tloc = (int32_t) (tilde - ((char*) buf + bufP));			
 	if (tloc > 0)
 		strncpy (msgBuf, (char*) buf + bufP, tloc);
 	strcpy (msgBuf + tloc, LOCALPLAYER.callsign);
@@ -585,7 +585,7 @@ if ((tilde = strchr ((char*) buf + bufP, '$'))) {
 	strcpy ((char*) buf + bufP, msgBuf);
 	}
 if ((colon = strrchr ((char*) buf + bufP, ':'))) {	//message may be addressed to a certain team or CPlayerData
-	l = (int32_t) (colon - (buf + bufP));
+	l = (int32_t) (colon - ((char*) buf + bufP));
 	if (l && (l <= CALLSIGN_LEN) &&
 		 ((IsTeamId ((char*) buf + bufP, l) && !IsMyTeamId ((char*) buf + bufP, l)) ||
 		  (IsPlayerId ((char*) buf + bufP, l) && !IsMyPlayerId ((char*) buf + bufP, l))))
