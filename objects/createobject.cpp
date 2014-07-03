@@ -421,7 +421,7 @@ void AddAllowedPowerup (int32_t nPowerup, int32_t nCount)
 if (nCount && powerupFilter [nPowerup]) {
 #if DBG
 	if (nPowerup == nDbgPowerup)
-		nDbgPowerup = nDbgPowerup;
+		BRP;
 #endif
 	if (MultiPowerupIs4Pack (nPowerup))
 		gameData.multiplayer.maxPowerupsAllowed [nPowerup - 1] += 4 * nCount;
@@ -448,7 +448,7 @@ void AddPowerupInMine (int32_t nPowerup, bool bIncreaseLimit)
 {
 #if DBG
 if (nPowerup == nDbgPowerup)
-	nDbgPowerup = nDbgPowerup;
+	BRP;
 #endif
 if (MultiPowerupIs4Pack (nPowerup))
 	gameData.multiplayer.powerupsInMine [nPowerup - 1] += 4;
@@ -463,7 +463,7 @@ void RemovePowerupInMine (int32_t nPowerup)
 {
 #if DBG
 if (nPowerup == nDbgPowerup)
-	nDbgPowerup = nDbgPowerup;
+	BRP;
 #endif
 if (gameData.multiplayer.powerupsInMine [nPowerup] > 0) {
 	gameData.multiplayer.powerupsInMine [nPowerup]--;
@@ -487,6 +487,10 @@ return gameData.multiplayer.maxPowerupsAllowed [nPowerup] - PowerupsInMine (nPow
 
 static inline int32_t TooManyPowerups (int32_t nPowerup)
 {
+#if DBG
+if (nPowerup == nDbgPowerup)
+	BRP;
+#endif
 if (!IsMultiGame)
 	return 0;
 if (!PowerupClass (nPowerup))

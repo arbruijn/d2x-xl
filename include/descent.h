@@ -2731,22 +2731,22 @@ class CMultiplayerData {
 		int32_t 								nLocalPlayer;				
 		int32_t								nPlayerPositions;
 		int32_t								bMoving;
-		CPlayerData						players [MAX_PLAYERS + 4];  
-		tObjPosition					playerInit [MAX_PLAYERS];
+		CPlayerData							players [MAX_PLAYERS + 4];  
+		tObjPosition						playerInit [MAX_PLAYERS];
 		int16_t								nVirusCapacity [MAX_PLAYERS];
 		int32_t								nLastHitTime [MAX_PLAYERS];
-		CWeaponState					weaponStates [MAX_PLAYERS];
-		char								bWasHit [MAX_PLAYERS];
+		CWeaponState						weaponStates [MAX_PLAYERS];
+		char									bWasHit [MAX_PLAYERS];
 		int32_t								bulletEmitters [MAX_PLAYERS];
 		int32_t					 			gatlingSmoke [MAX_PLAYERS];
 		CPulseData						spherePulse [MAX_PLAYERS];
-		CStaticArray< uint8_t, MAX_POWERUP_TYPES >	powerupsInMine; //[MAX_POWERUP_TYPES];
-		CStaticArray< uint8_t, MAX_POWERUP_TYPES >	powerupsOnShip; //[MAX_POWERUP_TYPES];
-		CStaticArray< uint8_t, MAX_POWERUP_TYPES >	maxPowerupsAllowed; //[MAX_POWERUP_TYPES];
-		bool								bAdjustPowerupCap [MAX_PLAYERS];
-		CArray<tLeftoverPowerup>	leftoverPowerups;
-		CAutoNetGame					autoNG;
-		fix								xStartAbortMenuTime;
+		CStaticArray< uint16_t, MAX_POWERUP_TYPES >	powerupsInMine; //[MAX_POWERUP_TYPES];
+		CStaticArray< uint16_t, MAX_POWERUP_TYPES >	powerupsOnShip; //[MAX_POWERUP_TYPES];
+		CStaticArray< uint16_t, MAX_POWERUP_TYPES >	maxPowerupsAllowed; //[MAX_POWERUP_TYPES];
+		bool									bAdjustPowerupCap [MAX_PLAYERS];
+		CArray<tLeftoverPowerup>		leftoverPowerups;
+		CAutoNetGame						autoNG;
+		fix									xStartAbortMenuTime;
 
 	public:
 		CMultiplayerData ();

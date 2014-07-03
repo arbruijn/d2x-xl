@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "loadgame.h"
 #include "network_thread.h"
 
-#define EGI_DATA_VERSION				6
+#define EGI_DATA_VERSION				7
 
 #define NETWORK_OEM						0x10
 
@@ -95,9 +95,9 @@ extern int32_t nNetworkGameSubType;
 
 typedef struct tSequencePacket {
 	uint8_t           nType;
-	int32_t             nSecurity;
+	int32_t           nSecurity;
 	uint8_t           pad1 [3];
-	tNetPlayerInfo  player;
+	tNetPlayerInfo		player;
 	uint8_t           pad2 [3];
 } __pack__ tSequencePacket;
 
@@ -112,19 +112,19 @@ typedef struct tSequencePacket {
 //      ints on even byte boundaries
 
 typedef struct tFrameInfoLong {
-	uint8_t       nType;                   // What nType of packet
-	uint8_t       pad[3];                 // Pad out length of tFrameInfoLong packet
-	int32_t         nPackets;
+	uint8_t     nType;                   // What nType of packet
+	uint8_t     pad[3];                 // Pad out length of tFrameInfoLong packet
+	int32_t     nPackets;
 	CFixVector	objPos;
 	CFixMatrix	objOrient;
 	CFixVector	physVelocity;
 	CFixVector	physRotVel;
-	int16_t       nObjSeg;
-	uint16_t      dataSize;          // Size of data appended to the net packet
-	uint8_t       nPlayer;
-	uint8_t       objRenderType;
-	uint8_t       nLevel;
-	uint8_t       data [NET_XDATA_SIZE];   // extra data to be tacked on the end
+	int16_t     nObjSeg;
+	uint16_t    dataSize;          // Size of data appended to the net packet
+	uint8_t     nPlayer;
+	uint8_t     objRenderType;
+	uint8_t     nLevel;
+	uint8_t     data [NET_XDATA_SIZE];   // extra data to be tacked on the end
 } __pack__ tFrameInfoLong;
 
 // tFrameInfoShort is not aligned -- 01/18/96 -- MWA
@@ -132,15 +132,15 @@ typedef struct tFrameInfoLong {
 // to stay in current form.
 
 typedef struct tFrameInfoShort {
-	uint8_t       nType;                   // What nType of packet
-	uint8_t       pad[3];                 // Pad out length of tFrameInfoLong packet
-	int32_t         nPackets;
+	uint8_t     nType;                   // What nType of packet
+	uint8_t     pad[3];                 // Pad out length of tFrameInfoLong packet
+	int32_t     nPackets;
 	tShortPos   objPos;
-	uint16_t      dataSize;          // Size of data appended to the net packet
-	uint8_t       nPlayer;
-	uint8_t       objRenderType;
-	uint8_t       nLevel;
-	uint8_t       data [NET_XDATA_SIZE];   // extra data to be tacked on the end
+	uint16_t    dataSize;          // Size of data appended to the net packet
+	uint8_t     nPlayer;
+	uint8_t     objRenderType;
+	uint8_t     nLevel;
+	uint8_t     data [NET_XDATA_SIZE];   // extra data to be tacked on the end
 } __pack__ tFrameInfoShort;
 
 typedef union tFrameInfo {

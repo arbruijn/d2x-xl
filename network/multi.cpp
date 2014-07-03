@@ -184,7 +184,7 @@ static int32_t multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{2, -1},  // MULTI_START_TRIGGER
 	{6, -1},  // MULTI_FLAGS
 	{2, -1},  // MULTI_DROP_BLOB
-	{/*2 **/ MAX_POWERUP_TYPES + 1, -1}, // MULTI_POWERUP_UPDATE
+	{/*2 **/ MAX_POWERUP_TYPES * sizeof (uint16_t) + 1, -1}, // MULTI_POWERUP_UPDATE
 	{sizeof (CActiveDoor) + 3, -1}, // MULTI_ACTIVE_DOOR
 	{4, -1},  // MULTI_SOUND_FUNCTION
 	{2, -1},  // MULTI_CAPTURE_BONUS
