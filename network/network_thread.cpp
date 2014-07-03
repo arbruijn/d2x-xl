@@ -372,7 +372,7 @@ m_rxPacketQueue.Flush ();
 
 //------------------------------------------------------------------------------
 
-int32_t CNetworkThread::Lock (SDL_sem* semaphore, bool bTry = false) 
+int32_t CNetworkThread::Lock (SDL_sem* semaphore, bool bTry) 
 { 
 if (!semaphore)
 	return 0;
@@ -617,7 +617,7 @@ return 2;	// we are in some level transition mode too, so try to reconnect
 
 int32_t CNetworkThread::CheckPlayerTimeouts (void)
 {
-Lock ();
+LockThread ();
 int32_t nTimedOut = 0;
 //if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) 
 static CTimeout to (UPDATE_TIMEOUT);
@@ -652,7 +652,7 @@ if (to.Expired () /*&& !gameData.reactor.bDestroyed*/)
 		}
 	//networkData.xLastTimeoutCheck = 0;
 	}
-Unlock ();
+UnlockThread ();
 return nTimedOut;
 }
 
