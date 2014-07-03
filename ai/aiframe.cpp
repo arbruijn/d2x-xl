@@ -1127,7 +1127,7 @@ if (targetP) {
 	CFixVector::NormalizedDir (gameData.ai.target.vDir, gameData.ai.target.vBelievedPos, attackerP->info.position.vPos);
 	return TARGETOBJ;
 	}
-return gameData.objs.consoleP;
+return NearestPlayerTarget (attackerP);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1148,12 +1148,12 @@ if (objP->AttacksRobots () || (!siP->botInfoP->thief && (RandShort () > 2 * objP
 		return 0;
 	}
 siP->bVisAndVecComputed = 0;
-if (objP->AttacksRobots ())
+if (TARGETOBJ->Type () == OBJ_ROBOT)
 	gameData.ai.target.vBelievedPos = objP->FrontPosition ();
-else if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) || (RandShort () > objP->AimDamage ()))
+else if ((gameData.multiplayer.players [TARGETOBJ->Id ()].flags & PLAYER_FLAGS_CLOAKED) || (RandShort () > objP->AimDamage ()))
 	gameData.ai.target.vBelievedPos = gameData.ai.cloakInfo [siP->nObject & (MAX_AI_CLOAK_INFO - 1)].vLastPos;
 else
-	gameData.ai.target.vBelievedPos = OBJPOS (TARGETPOS)->vPos;
+	gameData.ai.target.vBelievedPos = OBJPOS (TARGETOBJ)->vPos;
 return 0;
 }
 
