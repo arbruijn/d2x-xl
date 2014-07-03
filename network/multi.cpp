@@ -2107,7 +2107,6 @@ for (int32_t bufPos = 0, msgLen = 0; bufPos < bufLen; bufPos += msgLen) {
 	if (nType > MULTI_MAX_TYPE)
 		return;
 	msgLen = MultiMsgLen (nType);
-	bufPos += msgLen;
 	if (bufPos + msgLen > bufLen) 
 		return;
 	if (!MultiProcessData (buf + bufPos, msgLen))
@@ -2130,7 +2129,6 @@ for (int32_t bufPos = 0, msgLen = 0; bufPos < bufLen; bufPos += msgLen) {
 	if (nType > MULTI_MAX_TYPE)
 		return 0;
 	msgLen = MultiMsgLen (nType);
-	bufPos += msgLen;
 	if (bufPos + msgLen > bufLen) 
 		return 0;
 	}
