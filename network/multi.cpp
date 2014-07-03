@@ -2115,6 +2115,51 @@ for (int32_t bufPos = 0, msgLen = 0; bufPos < bufLen; bufPos += msgLen) {
 	}
 }
 
+//-----------------------------------------------------------------------------
+
+int MultiCheckBigData (uint8_t *buf, int32_t bufLen)
+{
+	static uint8_t nDbgType = 0xFF;
+
+for (int32_t bufPos = 0, msgLen = 0; bufPos < bufLen; bufPos += msgLen) {
+	uint8_t nType = buf [bufPos];
+#if DBG
+	if (nType == nDbgType)
+		BRP;
+#endif
+	if (nType > MULTI_MAX_TYPE)
+		return 0;
+	msgLen = MultiMsgLen (nType);
+	bufPos += msgLen;
+	if (bufPos + msgLen > bufLen) 
+		return 0;
+	}
+return 1;
+}
+
+//-----------------------------------------------------------------------------
+
+int MultiCheckPData (uint8_t* pd)
+{
+if (pd [0] != PID_PDATA)
+	return -1;
+
+int32_t dataSize;
+uint8_t* data;
+
+if (netGame.GetShortPackets ()) {
+	dataSize = reinterpret_cast<tFrameInfoShort*> (pd)->dataSize;
+	data = reinterpret_cast<tFrameInfoShort*> (pd)->data;
+	}
+else {
+	dataSize = reinterpret_cast<tFrameInfoLong*> (pd)->dataSize;
+	data = reinterpret_cast<tFrameInfoLong*> (pd)->data;
+	}
+return dataSize ? MultiCheckBigData (data, dataSize) : 1;
+}
+
+//-----------------------------------------------------------------------------
+
 //
 // Part 2 : Functions that send communication messages to inform the other
 //          players of something we did.
