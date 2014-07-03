@@ -1161,7 +1161,6 @@ if (0 > dataLen) {
 #endif
 	return -1;
 	}
-//bTracker = tracker.IsTracker (*reinterpret_cast<ulong*> (&fromAddr.sin_addr), *reinterpret_cast<uint16_t*> (&fromAddr.sin_port), (char*) outBuf);
 bTracker = tracker.IsTracker (fromAddr.sin_addr.s_addr, fromAddr.sin_port, (char*) outBuf);
 if (fromAddr.sin_family != AF_INET)
 	return -1;
