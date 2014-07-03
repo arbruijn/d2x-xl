@@ -537,7 +537,8 @@ CNetworkPacket* packet;
 
 m_txPacketQueue.Lock ();
 #if DBG
-while ((packet = m_txPacketQueue.Head ())) {
+	{
+	packet = m_txPacketQueue.Head ();
 #else
 while ((packet = m_txPacketQueue.Head ()) && (packet->Urgent () || (nSize + packet->Size () <= MAX_PACKET_SIZE))) {
 #endif

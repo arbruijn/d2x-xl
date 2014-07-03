@@ -719,7 +719,7 @@ return 1;
 
 int32_t CObjectSynchronizer::Validate (void)
 {
-return abs (m_nRemoteObj - gameData.objs.nObjects) > 10;
+return abs (m_nRemoteObj - gameData.objs.nObjects) < 10;
 }
 
 //------------------------------------------------------------------------------
@@ -854,11 +854,11 @@ return syncRes;
 
 //------------------------------------------------------------------------------
 
-static bool bWait = true;
-
 void NetworkReadObjectPacket (uint8_t* dataP)
 {
-#if DBG
+#if 0 //DBG
+static bool bWait = true;
+
 if (bWait) {
 	while (networkThread.RxPacketQueue ().Length () < (gameData.objs.nObjects + 4) / 5)
 		G3_SLEEP (0);
