@@ -1503,7 +1503,7 @@ if (!IsMultiGame)
 	return 1;
 if (awareness_level == 0)
 	return 0;
-return MultiCanRemoveRobot(objP->Index (), awareness_level);
+return MultiCanControlRobot(objP->Index (), awareness_level);
 }
 #if DBG
 fix	Prev_boss_shield = -1;

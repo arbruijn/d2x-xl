@@ -443,7 +443,7 @@ if ((gameData.ai.nTargetVisibility == 2) ||
 						return;
 					if (gameData.ai.target.xDist >= objP->info.xSize + TARGETOBJ->info.xSize + I2X (2))
 						return;
-					if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION - 2))
+					if (!AILocalPlayerControlsRobot (objP, ROBOT_FIRE_AGITATION - 2))
 						return;
 					DoAIRobotHitAttack (objP, TARGETOBJ, &objP->info.position.vPos);
 					}
@@ -453,7 +453,7 @@ if ((gameData.ai.nTargetVisibility == 2) ||
 #else
 					if (gameData.ai.vGunPoint.p.x || gameData.ai.vGunPoint.p.y || gameData.ai.vGunPoint.p.z) {
 #endif
-						if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))
+						if (!AILocalPlayerControlsRobot (objP, ROBOT_FIRE_AGITATION))
 							return;
 						//	New, multi-weapon-nType system, 06/05/95 (life is slipping awayd:\temp\dm_test.)
 						if (nGun != 0) {
@@ -505,7 +505,7 @@ else if ((!botInfoP->attackType && (botInfoP->nWeaponType >= 0) && gameData.weap
 			&& (((ailP->nextPrimaryFire <= 0) && (aiP->CURRENT_GUN != 0)) ||
 				((ailP->nextSecondaryFire <= 0) && (aiP->CURRENT_GUN == 0)))
 			&& ((dist = CFixVector::Dist(gameData.ai.vHitPos, objP->info.position.vPos)) > I2X (40))) {
-		if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))
+		if (!AILocalPlayerControlsRobot (objP, ROBOT_FIRE_AGITATION))
 			return;
 		AIFireLaserAtTarget (objP, &gameData.ai.vGunPoint, nGun, &gameData.ai.target.vBelievedPos);
 		aiP->GOAL_STATE = AIS_RECOVER;
@@ -532,7 +532,7 @@ else {	//	---------------------------------------------------------------
 				if (aiP->CURRENT_GUN < botInfoP->nGuns) {
 					if (botInfoP->attackType == 1) {
 						if (!LOCALPLAYER.m_bExploded && (gameData.ai.target.xDist < objP->info.xSize + TARGETOBJ->info.xSize + I2X (2))) {	
-							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION-2))
+							if (!AILocalPlayerControlsRobot (objP, ROBOT_FIRE_AGITATION-2))
 								return;
 							DoAIRobotHitAttack (objP, TARGETOBJ, &objP->info.position.vPos);
 							}
@@ -543,7 +543,7 @@ else {	//	---------------------------------------------------------------
 						if (gameData.ai.vGunPoint.IsZero ())
 							;
 						else {
-							if (!AIMultiplayerAwareness (objP, ROBOT_FIRE_AGITATION))
+							if (!AILocalPlayerControlsRobot (objP, ROBOT_FIRE_AGITATION))
 								return;
 							//	New, multi-weapon-nType system, 06/05/95 (life is slipping awayd:\temp\dm_test.)
 							if (nGun != 0) {

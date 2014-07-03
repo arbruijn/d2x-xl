@@ -432,13 +432,13 @@ return 0;
 //		0	this player IS NOT allowed to move this robot.
 //		1	this player IS allowed to move this robot.
 
-int32_t AIMultiplayerAwareness (CObject *objP, int32_t awarenessLevel)
+int32_t AILocalPlayerControlsRobot (CObject *objP, int32_t awarenessLevel)
 {
 if (!IsMultiGame)
 	return 1;
 if (!awarenessLevel)
 	return 0;
-return MultiCanRemoveRobot (objP->Index (), awarenessLevel);
+return MultiCanControlRobot (objP->Index (), awarenessLevel);
 }
 
 // --------------------------------------------------------------------------------------------------------------------

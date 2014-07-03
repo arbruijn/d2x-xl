@@ -22,7 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _MULTIBOT_H
 #define _MULTIBOT_H
 
-int32_t MultiCanRemoveRobot (int32_t nObject, int32_t agitation);
+int32_t MultiCanControlRobot (int32_t nObject, int32_t agitation);
 void MultiSendRobotPosition (int32_t nObject, int32_t fired);
 void MultiSendRobotFire (int32_t nObject, int32_t nGun, CFixVector *fire);
 void MultiSendClaimRobot (int32_t nObject);

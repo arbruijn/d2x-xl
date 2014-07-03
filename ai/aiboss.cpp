@@ -386,7 +386,7 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 		if ((gameData.time.xGame - gameData.bosses [i].m_nCloakStartTime > BOSS_CLOAK_DURATION / 3) &&
 			 (gameData.bosses [i].m_nCloakEndTime - gameData.time.xGame > BOSS_CLOAK_DURATION / 3) &&
 			 (gameData.time.xGame - gameData.bosses [i].m_nLastTeleportTime > gameData.bosses [i].m_nTeleportInterval)) {
-			if (AIMultiplayerAwareness (objP, 98)) {
+			if (AILocalPlayerControlsRobot (objP, 98)) {
 				TeleportBoss (objP);
 				if (bossProps [gameStates.app.bD1Mission][nBossIndex].bSpewBotsTeleport) {
 					CFixVector	spewPoint;
@@ -412,7 +412,7 @@ if (bossProps [gameStates.app.bD1Mission][nBossIndex].bTeleports) {
 	else if (((gameData.time.xGame - gameData.bosses [i].m_nCloakEndTime > gameData.bosses [i].m_nCloakInterval) ||
 				 (gameData.time.xGame - gameData.bosses [i].m_nCloakEndTime < -gameData.bosses [i].m_nCloakDuration)) && 
 				 (objP->Damage () >= 0.01) && (RandShort () <= objP->DriveDamage ())) {
-		if (AIMultiplayerAwareness (objP, 95)) {
+		if (AILocalPlayerControlsRobot (objP, 95)) {
 			gameData.bosses [i].m_nCloakStartTime = gameData.time.xGame;
 			gameData.bosses [i].m_nCloakEndTime = gameData.time.xGame + gameData.bosses [i].m_nCloakDuration;
 			objP->cType.aiInfo.CLOAKED = 1;

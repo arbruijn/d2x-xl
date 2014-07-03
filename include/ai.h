@@ -90,7 +90,7 @@ void AIOpenDoorsInSegment (CObject *robot);
 int32_t AIDoorIsOpenable (CObject *objP, CSegment *segp, int16_t nSide);
 int32_t AICanSeeTarget (CObject *objP, CFixVector *pos, fix fieldOfView, CFixVector *vec_to_player);
 void AIResetAllPaths (void);   // Reset all paths.  Call at the start of a level.
-int32_t AIMultiplayerAwareness (CObject *objP, int32_t awarenessLevel);
+int32_t AILocalPlayerControlsRobot (CObject *objP, int32_t awarenessLevel);
 
 // In escort.c
 void DoEscortFrame (CObject *objP, fix dist_to_player, int32_t player_visibility);

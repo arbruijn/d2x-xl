@@ -60,7 +60,7 @@ extern int32_t MultiPowerupIsAllowed (int32_t);
 //-----------------------------------------------------------------------------
 // Determine whether or not I am allowed to move this robot.
 
-int32_t MultiCanRemoveRobot (int32_t nObject, int32_t agitation)
+int32_t MultiCanControlRobot (int32_t nObject, int32_t agitation)
 {
 	int32_t nRemOwner;
 	CObject *objP = OBJECTS + nObject;
