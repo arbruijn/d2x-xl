@@ -905,11 +905,13 @@ void DoAmbientSounds (void)
 if (gameStates.app.bPlayerIsDead)
 	return;
 
-	int32_t	bLava, bWater;
-	int16_t nSound;
+CSegment* segP = gameData.Segment (gameData.objs.consoleP->info.nSegment);
+if (!segP)
+	return;
 
-	bLava = (SEGMENTS [gameData.objs.consoleP->info.nSegment].m_flags & S2F_AMBIENT_LAVA);
-	bWater = (SEGMENTS [gameData.objs.consoleP->info.nSegment].m_flags & S2F_AMBIENT_WATER);
+	int32_t bLava = (SEGMENTS [gameData.objs.consoleP->info.nSegment].m_flags & S2F_AMBIENT_LAVA);
+	int32_t bWater = (SEGMENTS [gameData.objs.consoleP->info.nSegment].m_flags & S2F_AMBIENT_WATER);
+	int16_t nSound;
 
 if (bLava) {							//has lava
 	nSound = SOUND_AMBIENT_LAVA;
