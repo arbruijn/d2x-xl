@@ -42,11 +42,11 @@ int32_t VerifyObjLists (int32_t nObject = -1);
 
 //------------------------------------------------------------------------------
 
-void NetworkReadEndLevelPacket (uint8_t *dataP)
+void NetworkReadEndLevelPacket (uint8_t *data)
 {
 	// Special packet for end of level syncing
 	int32_t				nPlayer;
-	CEndLevelInfo	eli (reinterpret_cast<tEndLevelInfo*> (dataP));
+	CEndLevelInfo	eli (reinterpret_cast<tEndLevelInfo*> (data));
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	int32_t i, j;
@@ -78,7 +78,7 @@ ResetPlayerTimeout (nPlayer, -1);
 
 //------------------------------------------------------------------------------
 
-void NetworkReadEndLevelShortPacket (uint8_t *dataP)
+void NetworkReadEndLevelShortPacket (uint8_t *data)
 {
 	// Special packet for end of level syncing
 
@@ -89,7 +89,7 @@ void NetworkReadEndLevelShortPacket (uint8_t *dataP)
 if (N_LOCALPLAYER)
 	audio.PlaySound (SOUND_HUD_MESSAGE);
 #endif
-eli = reinterpret_cast<tEndLevelInfoShort*> (dataP);
+eli = reinterpret_cast<tEndLevelInfoShort*> (data);
 nPlayer = eli->nPlayer;
 Assert (nPlayer != N_LOCALPLAYER);
 if (nPlayer >= gameData.multiplayer.nPlayers) {
@@ -372,7 +372,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	gameStates.app.bEndLevelSequence = 1;
 	if (pd->dataSize > 0)
 		// pass pd->data to some parser function....
-		MultiProcessBigData (reinterpret_cast<char*> (pd->data), pd->dataSize);
+		MultiProcessBigData (pd->data, pd->dataSize);
 	gameStates.app.bEndLevelSequence = oldEndlevelSequence;
 	return;
 	}
@@ -415,10 +415,10 @@ if (!gameData.multiplayer.players [nPlayer].connected) {
 							 gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	MultiSendScore ();
 	}
-//------------ Parse the extra dataP at the end ---------------
+//------------ Parse the extra data at the end ---------------
 if (pd->dataSize > 0)
 	// pass pd->data to some parser function....
-	MultiProcessBigData (reinterpret_cast<char*> (pd->data), pd->dataSize);
+	MultiProcessBigData (pd->data, pd->dataSize);
 }
 
 //------------------------------------------------------------------------------
@@ -495,7 +495,7 @@ if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL
 	gameStates.app.bEndLevelSequence = 1;
 	if (pd->dataSize > 0) {
 		// pass pd->data to some parser function....
-		MultiProcessBigData (reinterpret_cast<char*> (pd->data), pd->dataSize);
+		MultiProcessBigData (pd->data, pd->dataSize);
 		}
 	gameStates.app.bEndLevelSequence = oldEndlevelSequence;
 	return;
@@ -534,10 +534,10 @@ if (!gameData.multiplayer.players [nPlayer].connected) {
 							 gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	MultiSendScore ();
 	}
-//------------ Parse the extra dataP at the end ---------------
+//------------ Parse the extra data at the end ---------------
 if (pd->dataSize > 0) {
 	// pass pd->data to some parser function....
-	MultiProcessBigData (reinterpret_cast<char*> (pd->data), pd->dataSize);
+	MultiProcessBigData (pd->data, pd->dataSize);
 	}
 }
 
@@ -607,7 +607,7 @@ class CObjectSynchronizer {
 		uint8_t*	m_data;
 
 	public:
-		int32_t Run (uint8_t* dataP);
+		int32_t Run (uint8_t* data);
 
 	private:
 		void Abort (void);
@@ -826,9 +826,9 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CObjectSynchronizer::Run (uint8_t* dataP)
+int32_t CObjectSynchronizer::Run (uint8_t* data)
 {
-m_data = dataP;
+m_data = data;
 
 int32_t syncRes = ValidateFrame ();
 if (syncRes < 1)
@@ -854,7 +854,7 @@ return syncRes;
 
 //------------------------------------------------------------------------------
 
-void NetworkReadObjectPacket (uint8_t* dataP)
+void NetworkReadObjectPacket (uint8_t* data)
 {
 #if 0 //DBG
 static bool bWait = true;
@@ -865,7 +865,7 @@ if (bWait) {
 	bWait = false;
 	}
 #endif
-objectSynchronizer.Run (dataP);
+objectSynchronizer.Run (data);
 }
 
 //------------------------------------------------------------------------------

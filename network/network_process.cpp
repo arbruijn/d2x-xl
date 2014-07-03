@@ -61,15 +61,15 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessGameInfo (uint8_t *dataP)
+void NetworkProcessGameInfo (uint8_t *data)
 {
-	CNetGameInfo	newGame (reinterpret_cast<tNetGameInfo*> (dataP));
+	CNetGameInfo	newGame (reinterpret_cast<tNetGameInfo*> (data));
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	CNetGameInfo tmp_info;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	ReceiveNetGamePacket (dataP, &tmp_info, 0); // get correctly aligned structure
+	ReceiveNetGamePacket (data, &tmp_info, 0); // get correctly aligned structure
 	newGame = tmp_info;
 	}
 #endif
@@ -94,7 +94,7 @@ if (i == networkData.nActiveGames) {
 	networkData.nActiveGames++;
 	}
 networkData.bGamesChanged = 1;
-// MWA  memcpy (&activeNetGames [i], dataP, sizeof (tNetGameInfo);
+// MWA  memcpy (&activeNetGames [i], data, sizeof (tNetGameInfo);
 nLastNetGameUpdate [i] = SDL_GetTicks ();
 activeNetGames [i] = newGame;
 activeNetPlayers [i] = *playerInfoP;
@@ -112,16 +112,16 @@ if (activeNetGames [i].m_info.nNumPlayers == 0) {	// Delete this game
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessLiteInfo (uint8_t *dataP)
+void NetworkProcessLiteInfo (uint8_t *data)
 {
 	int32_t					i;
 	CNetGameInfo*		actGameP;
-	tNetGameInfoLite*	newInfo = reinterpret_cast<tNetGameInfoLite*> (dataP);
+	tNetGameInfoLite*	newInfo = reinterpret_cast<tNetGameInfoLite*> (data);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	CNetGameInfo		tmp_info;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	ReceiveNetGamePacket (dataP, &tmp_info, 1);
+	ReceiveNetGamePacket (data, &tmp_info, 1);
 	newInfo = reinterpret_cast<tNetGameInfoLite*> (&tmp_info.m_info);
 	}
 #endif
@@ -140,7 +140,7 @@ memcpy (actGameP, reinterpret_cast<uint8_t*> (newInfo), sizeof (tNetGameInfoLite
 memcpy (actGameP->m_server, networkData.packetSource.Network (), sizeof (actGameP->m_server));
 nLastNetGameUpdate [i] = SDL_GetTicks ();
 // See if this is really a Hoard/Entropy/Monsterball game
-// If so, adjust all the dataP accordingly
+// If so, adjust all the data accordingly
 if (HoardEquipped ()) {
 	if (actGameP->m_info.gameFlags & (NETGAME_FLAG_HOARD | NETGAME_FLAG_ENTROPY | NETGAME_FLAG_MONSTERBALL)) {
 		if ((actGameP->m_info.gameFlags & NETGAME_FLAG_MONSTERBALL) == NETGAME_FLAG_MONSTERBALL)
@@ -164,9 +164,9 @@ if (actGameP->m_info.nNumPlayers == 0)
 
 //------------------------------------------------------------------------------
 
-int32_t NetworkProcessExtraGameInfo (uint8_t *dataP)
+int32_t NetworkProcessExtraGameInfo (uint8_t *data)
 {
-ReceiveExtraGameInfoPacket (dataP, extraGameInfo + 1);
+ReceiveExtraGameInfoPacket (data, extraGameInfo + 1);
 memcpy (extraGameInfo, extraGameInfo + 1, sizeof (extraGameInfo [0]));
 if (extraGameInfo [1].nVersion != EGI_DATA_VERSION) {
 	InfoBox (TXT_SORRY, NULL, BG_STANDARD, 1, TXT_OK, TXT_D2X_VERSION_MISMATCH);
@@ -236,20 +236,20 @@ for (int32_t nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessPData (char *dataP)
+void NetworkProcessPData (uint8_t* data)
 {
 if (netGame.GetShortPackets ())
-	NetworkReadPDataShortPacket (reinterpret_cast<tFrameInfoShort*> (dataP));
+	NetworkReadPDataShortPacket (reinterpret_cast<tFrameInfoShort*> (data));
 else
-	NetworkReadPDataLongPacket (reinterpret_cast<tFrameInfoLong*> (dataP));
+	NetworkReadPDataLongPacket (reinterpret_cast<tFrameInfoLong*> (data));
 }
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessNakedPData (char *dataP, int32_t len)
+void NetworkProcessNakedPData (uint8_t *data, int32_t len)
  {
-   int32_t nPlayer = dataP [1]; 
-   Assert (dataP [0] == PID_NAKED_PDATA);
+   int32_t nPlayer = data [1]; 
+   Assert (data [0] == PID_NAKED_PDATA);
 
 if (nPlayer < 0) {
 #if 1			
@@ -269,30 +269,30 @@ if (!gameData.multigame.bQuitGame && (nPlayer >= gameData.multiplayer.nPlayers))
 if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL)) {
 	int32_t oldEndlevelSequence = gameStates.app.bEndLevelSequence;
 	gameStates.app.bEndLevelSequence = 1;
-	MultiProcessBigData (reinterpret_cast<char*> (dataP + 2), len - 2);
+	MultiProcessBigData (data + 2, len - 2);
 	gameStates.app.bEndLevelSequence = oldEndlevelSequence;
 	return;
 	}
-MultiProcessBigData (reinterpret_cast<char*> (dataP + 2), len - 2);
+MultiProcessBigData (data + 2, len - 2);
  }
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessNamesReturn (char *dataP)
+void NetworkProcessNamesReturn (uint8_t* data)
  {
 	CMenu	m (15);
    char	mText [15][50], temp [50];
 	int32_t	i, l, nInMenu, gnum, num = 0, count = 5, nPlayers;
    
 memset (mText, 0, sizeof (mText));
-if (networkData.nNamesInfoSecurity != *reinterpret_cast<int32_t*> (dataP + 1)) {
+if (networkData.nNamesInfoSecurity != *reinterpret_cast<int32_t*> (data + 1)) {
 #if 1			
   console.printf (CON_DBG, "Bad security on names return!\n");
-  console.printf (CON_DBG, "NIS=%d dataP=%d\n", networkData.nNamesInfoSecurity, *reinterpret_cast<int32_t*> (dataP + 1));
+  console.printf (CON_DBG, "NIS=%d data=%d\n", networkData.nNamesInfoSecurity, *reinterpret_cast<int32_t*> (data + 1));
 #endif
 	return;
 	}
-nPlayers = dataP [count++]; 
+nPlayers = data [count++]; 
 if (nPlayers == 255) {
 	gameStates.multi.bSurfingNet = 0;
 	networkData.nNamesInfoSecurity = -1;
@@ -322,8 +322,8 @@ gnum = 0;
 sprintf (mText [num], TXT_GAME_PLRS, activeNetGames [gnum].m_info.szGameName); 
 num++;
 for (i = 0; i < nPlayers; i++) {
-	l = dataP [count++];
-	memcpy (temp, dataP + count, CALLSIGN_LEN + 1);
+	l = data [count++];
+	memcpy (temp, data + count, CALLSIGN_LEN + 1);
 	count += CALLSIGN_LEN + 1;
 	if (gameOpts->multi.bNoRankings)
 		sprintf (mText [num], "%s", temp);
@@ -331,10 +331,10 @@ for (i = 0; i < nPlayers; i++) {
 		sprintf (mText [num], "%s%s", pszRankStrings [l], temp);
 	num++;
 	}
-if (dataP [count] == 99) {
+if (data [count] == 99) {
 	sprintf (mText [num++], " ");
-	sprintf (mText [num++], TXT_SHORT_PACKETS2, dataP [count+1] ? TXT_ON : TXT_OFF);
-	sprintf (mText [num++], TXT_PPS2, dataP [count+2]);
+	sprintf (mText [num++], TXT_SHORT_PACKETS2, data [count+1] ? TXT_ON : TXT_OFF);
+	sprintf (mText [num++], TXT_PPS2, data [count+2]);
 	}
 for (i = 0; i < num; i++) 
 	m.AddText ("", mText [i]);	
@@ -348,11 +348,11 @@ bAlreadyShowingInfo = 0;
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessMissingObjFrames (char *dataP)
+void NetworkProcessMissingObjFrames (uint8_t* data)
 {
 	tMissingObjFrames	missingObjFrames;
 
-ReceiveMissingObjFramesPacket (reinterpret_cast<uint8_t*> (dataP), &missingObjFrames);
+ReceiveMissingObjFramesPacket (data, &missingObjFrames);
 tNetworkSyncData *syncP = FindJoiningPlayer (missingObjFrames.nPlayer);
 if (syncP && (missingObjFrames.nFrame > syncP->objs.missingFrames.nFrame)) {
 #if 1

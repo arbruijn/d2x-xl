@@ -203,26 +203,26 @@ void DoRefuseStuff (tSequencePacket *their);
 void NetworkDumpPlayer (uint8_t * server, uint8_t *node, int32_t nReason);
 
 void NetworkProcessSyncPacket (CNetGameInfo * sp, int32_t rsinit);
-void NetworkReadObjectPacket (uint8_t *dataP);
-void NetworkReadEndLevelPacket (uint8_t *dataP);
-void NetworkReadEndLevelShortPacket (uint8_t *dataP);
+void NetworkReadObjectPacket (uint8_t *data);
+void NetworkReadEndLevelPacket (uint8_t *data);
+void NetworkReadEndLevelShortPacket (uint8_t *data);
 void NetworkReadPDataLongPacket (tFrameInfoLong *pd);
 void NetworkReadPDataShortPacket (tFrameInfoShort *pd);
-void NetworkReadObjectPacket (uint8_t *dataP);
+void NetworkReadObjectPacket (uint8_t *data);
 
 void NetworkProcessMonitorVector (int32_t vector);
-void NetworkProcessGameInfo (uint8_t *dataP);
-void NetworkProcessLiteInfo (uint8_t *dataP);
-int32_t NetworkProcessExtraGameInfo (uint8_t *dataP);
+void NetworkProcessGameInfo (uint8_t *data);
+void NetworkProcessLiteInfo (uint8_t *data);
+int32_t NetworkProcessExtraGameInfo (uint8_t *data);
 void NetworkProcessDump (tSequencePacket *their);
 void NetworkProcessRequest (tSequencePacket *their);
-void NetworkProcessPData (char *dataP);
-void NetworkProcessNakedPData (char *dataP, int32_t len);
-void NetworkProcessNamesReturn (char *dataP);
-void NetworkProcessMissingObjFrames (char *dataP);
+void NetworkProcessPData (uint8_t* data);
+void NetworkProcessNakedPData (uint8_t* data, int32_t len);
+void NetworkProcessNamesReturn (uint8_t* data);
+void NetworkProcessMissingObjFrames (uint8_t* data);
 void NetworkWaitForRequests (void);
 
-int32_t NetworkProcessPacket (uint8_t *dataP, int32_t nLength);
+int32_t NetworkProcessPacket (uint8_t *data, int32_t nLength);
 
 void NetworkSendDoorUpdates (int32_t nPlayer);
 void NetworkSendPlayerFlags (void);
@@ -259,7 +259,7 @@ void NetworkSyncExtras (tNetworkSyncData *syncP);
 tNetworkSyncData *FindJoiningPlayer (int16_t nPlayer);
 int32_t NetworkObjnumIsPast(int32_t nObject, tNetworkSyncData *syncP);
 
-int32_t XMLGameInfoHandler (uint8_t *dataP = NULL, int32_t nLength = 0);
+int32_t XMLGameInfoHandler (uint8_t *data = NULL, int32_t nLength = 0);
 
 void InitAddressFilter (void);
 

@@ -2100,7 +2100,7 @@ extern FILE *RecieveLogFile;
 // Takes a bunch of messages, check them for validity,
 // and pass them to MultiProcessData.
 
-void MultiProcessBigData (char *buf, int32_t bufLen)
+void MultiProcessBigData (uint8_t *buf, int32_t bufLen)
 {
 for (int32_t bufPos = 0, msgLen = 0; bufPos < bufLen; bufPos += msgLen) {
 	uint8_t nType = buf [bufPos];
