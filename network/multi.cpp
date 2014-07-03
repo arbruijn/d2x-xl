@@ -2337,9 +2337,9 @@ for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
 	nType = int32_t (secondaryWeaponToPowerup [0][i]);
 	if (0 <= (h = MissingPowerups (nType)))
 		continue;
-	LOCALPLAYER.secondaryAmmo [i] += h;
-	if (LOCALPLAYER.secondaryAmmo [i] < 0)
-		LOCALPLAYER.secondaryAmmo [i] = 0;
+	h += LOCALPLAYER.secondaryAmmo [i];
+	if (LOCALPLAYER.secondaryAmmo [i] < h)
+		LOCALPLAYER.secondaryAmmo [i] = h;
 	}
 
 if (!gameData.app.GameMode (GM_HOARD | GM_ENTROPY))
@@ -4182,7 +4182,8 @@ void MultiSendPowerupUpdate (void)
 if (IAmGameHost ()) {
 	gameData.multigame.msg.buf [0] = MULTI_POWERUP_UPDATE;
 	for (int32_t i = 0, j = 1; i < MAX_POWERUP_TYPES; i++) {
-		gameData.multigame.msg.buf [j++] = gameData.multiplayer.maxPowerupsAllowed [i];
+		PUT_INTEL_SHORT (gameData.multigame.msg.buf + j, gameData.multiplayer.maxPowerupsAllowed [i]);
+		j += sizeof (uint16_t);
 		//gameData.multigame.msg.buf [j++] = gameData.multiplayer.powerupsInMine [i];
 		}
 	MultiSendData (gameData.multigame.msg.buf, /*2 **/ MAX_POWERUP_TYPES + 1, 1);
@@ -4197,7 +4198,8 @@ if (!IAmGameHost ()) {
 	for (int32_t i = 0, j = 1; i < MAX_POWERUP_TYPES; i++) {
 		//if (buf [i+1] > gameData.multiplayer.maxPowerupsAllowed [i])
 			{
-			gameData.multiplayer.maxPowerupsAllowed [i] = buf [j++];
+			gameData.multiplayer.maxPowerupsAllowed [i] = GET_INTEL_SHORT (buf + j);
+			j += sizeof (uint16_t);
 			//gameData.multiplayer.powerupsInMine [i] = buf [j++];
 			}
 		}
