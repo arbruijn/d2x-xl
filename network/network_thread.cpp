@@ -82,7 +82,11 @@ else
 
 bool CNetworkPacket::Combineable (uint8_t type)
 {
+#if DBG
+return false;
+#else
 return (type != PID_GAME_INFO) && (type != PID_EXTRA_GAMEINFO) && (type != PID_PLAYERSINFO) && (type != PID_PDATA);
+#endif
 }
 
 //------------------------------------------------------------------------------
