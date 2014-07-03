@@ -107,7 +107,7 @@ class CNetworkPacketQueue {
 		inline CNetworkPacket* Step (void) { return m_current ? m_current = m_current->Next () : NULL; }
 		inline CNetworkPacket* Current (void) { return m_current; }
 		void Flush (void);
-		CNetworkPacket* Append (CNetworkPacket* packet = NULL, bool bAllowDuplicates = true);
+		CNetworkPacket* Append (CNetworkPacket* packet = NULL, bool bAllowDuplicates = true, bool bLock = false);
 		CNetworkPacket* Pop (bool bDrop = false, bool bLock = true);
 		CNetworkPacket* Get (void);
 		int32_t Lock (bool bLock = true);

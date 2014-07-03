@@ -183,13 +183,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-CNetworkPacket* CNetworkPacketQueue::Append (CNetworkPacket* packet, bool bAllowDuplicates)
+CNetworkPacket* CNetworkPacketQueue::Append (CNetworkPacket* packet, bool bAllowDuplicates, bool bLock)
 {
-Lock ();
+Lock (bLock);
 if (!packet) {
 	packet = Alloc (false);
 	if (!packet) {
-		Unlock ();
+		Unlock (bLock);
 		return NULL;
 		}
 	}
@@ -198,7 +198,7 @@ if (Tail ()) { // list tail
 	if (!bAllowDuplicates && (*Tail () == *packet)) {
 		++m_nDuplicate;
 		Tail ()->SetTime (SDL_GetTicks ());
-		Unlock ();
+		Unlock (bLock);
 		Free (packet);
 		return Tail ();
 		}
@@ -210,7 +210,7 @@ SetTail (packet);
 Tail ()->SetTime (SDL_GetTicks ());
 Tail ()->m_nextPacket = NULL;
 ++m_nPackets;
-Unlock ();
+Unlock (bLock);
 return packet;
 }
 
@@ -589,7 +589,7 @@ else {
 	packet->SetData (data, size);
 	packet->Owner ().SetAddress (network, node);
 	packet->Owner ().SetLocalAddress (localAddress);
-	packet = m_txPacketQueue.Append (packet, false);
+	packet = m_txPacketQueue.Append (packet, false, false);
 	}
 
 packet->SetUrgent (m_bUrgent);
