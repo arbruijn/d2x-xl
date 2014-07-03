@@ -132,6 +132,59 @@ int32_t nIpxNetworks = 0;
 uint32_t ipxNetworks [MAX_NETWORKS];
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+class CNetworkLocks {
+	public:
+		SDL_mutex*	m_sendLock;
+		SDL_mutex*	m_recvLock;
+
+	public:
+		CNetworkLocks () : m_sendLock (NULL), m_recvLock (NULL) {
+			m_sendLock = SDL_CreateMutex ();
+			m_recvLock = SDL_CreateMutex ();
+			}
+
+		~CNetworkLocks () {
+			DestroyLock (m_sendLock);
+			DestroyLock (m_recvLock);
+			}
+
+		inline void DestroyLock (SDL_mutex*& m) {
+			if (m) {
+				SDL_DestroyMutex (m);
+				m = NULL;
+				}	
+			}
+		inline void Lock (SDL_mutex* m) {
+			if (m)
+				SDL_LockMutex (m);
+			}
+
+		inline void Unlock (SDL_mutex* m) {
+			if (m)
+				SDL_UnlockMutex (m);
+			}
+
+		inline int32_t Abort (SDL_mutex* m) {
+			Unlock (m);
+			return -1;
+			}
+
+		inline void LockSend (void) { Lock (m_sendLock); }
+		inline void UnlockSend (void) { Unlock (m_sendLock); }
+		inline void LockRecv (void) { Lock (m_recvLock); }
+		inline void UnlockRecv (void) { Unlock (m_recvLock); }
+		inline int32_t AbortSend (void) { return Abort (m_sendLock); }
+		inline int32_t AbortRecv (void) { return Abort (m_recvLock); }
+};
+
+static CNetworkLocks locks;
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 int32_t IPXGeneralPacketReady (ipx_socket_t *s) 
 {
@@ -226,6 +279,7 @@ int32_t IpxGetPacketData (uint8_t *data)
 
 	int32_t dataSize, dataOffs;
 
+locks.LockRecv ();
 while (driver->PacketReady (&ipxSocketData)) {
 	dataSize = driver->ReceivePacket (reinterpret_cast<ipx_socket_t*> (&ipxSocketData), buf, sizeof (buf), &networkData.packetSource);
 #if 0//DBG
@@ -248,8 +302,10 @@ while (driver->PacketReady (&ipxSocketData)) {
 		}
 	memcpy (data, buf + dataOffs, dataSize - dataOffs);
 	networkThread.UnlockRecv ();
+	locks.UnlockRecv ();
 	return dataSize - dataOffs;
 	}
+locks.UnlockRecv ();
 return 0;
 }
 
@@ -263,6 +319,7 @@ else {
 		static uint8_t buf [MAX_PACKET_SIZE];
 		IPXPacket_t ipxHeader;
 	
+	locks.LockSend ();
 	memcpy (ipxHeader.Destination.Network, network, 4);
 	memcpy (ipxHeader.Destination.Node, dest, 6);
 	*reinterpret_cast<uint16_t*> (ipxHeader.Destination.Socket) = htons (ipxSocketData.socket);
@@ -274,6 +331,7 @@ else {
 		memcpy (buf + 4, data, dataSize);
 		}
 	driver->SendPacket (&ipxSocketData, &ipxHeader, buf, dataSize + (gameStates.multi.bTrackerCall ? 0 : 4));
+	locks.UnlockSend ();
 	}
 }
 
