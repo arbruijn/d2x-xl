@@ -1042,8 +1042,6 @@ if (gameData.ai.nOverallAgitation < 71)
 if (objP->Index () == nDbgObj)
 	BRP;
 #endif
-if (siP->aiP->GOAL_STATE == AIS_FIRE)
-	return 0;
 if (gameOpts->gameplay.nAIAggressivity && (siP->ailP->mode == AIM_FOLLOW_PATH) && (siP->ailP->nGoalSegment == gameData.ai.target.nBelievedSeg)) {
 #if DBG
 	if (objP->Index () == nDbgObj)
