@@ -165,7 +165,7 @@ void CNetworkPacketQueue::Free (CNetworkPacket* packet, bool bLock)
 Lock (bLock);
 packet->m_nextPacket = m_packets [2];
 m_packets [2] = packet;
-packet->SetSize (0);
+packet->Reset ();
 Unlock (bLock);
 }
 
@@ -193,20 +193,23 @@ return 1;
 
 void CNetworkPacketQueue::UpdateClientList (void)
 {
-CNetworkClientInfo* i = m_clients.Update (Tail ()->Owner ().GetAddress ());
+CNetworkPacket* packet = Tail ();
+
+CNetworkClientInfo* i = m_clients.Update (packet->Owner ().GetAddress ());
 if (!i)
 	return;
 
-int32_t nId = i->GetPacketId () + 1; // last packet id sent or received + 1
+int32_t nClientId = i->GetPacketId () + 1; // last packet id sent or received
 if (m_nType == SEND_QUEUE)  // send
-	Tail ()->SetId (i->SetPacketId (nId));
+	packet->SetId (i->SetPacketId (nClientId));
 else { // listen
-	int32_t nLost = Tail ()->GetId () - nId;
+	int32_t nPacketId = abs (packet->GetId ());
+	int32_t nLost = nPacketId - nClientId;
 	if (nLost) {
 		i->m_nLost += nLost;
 		m_nLost += nLost;
 		}
-	i->SetPacketId (Tail ()->GetId ());
+	i->SetPacketId (nPacketId);
 	}
 }
 
@@ -624,7 +627,7 @@ if (m_txPacketQueue.Empty ())
 #if DBG
 if (!bForce && !m_toSend.Expired ())
 #else
-if (!m_toSend.Expired () && !m_txPacketQueue.Head ()->Urgent ())
+if (!m_toSend.Expired () && !m_txPacketQueue.Head ()->IsUrgent ())
 #endif
 	return 1;
 
@@ -636,7 +639,7 @@ m_txPacketQueue.Lock ();
 	{
 	packet = m_txPacketQueue.Head ();
 #else
-while ((packet = m_txPacketQueue.Head ()) && (packet->Urgent () || (nSize + packet->Size () <= MAX_PACKET_SIZE))) {
+while ((packet = m_txPacketQueue.Head ()) && (packet->IsUrgent () || (nSize + packet->Size () <= MAX_PACKET_SIZE))) {
 #endif
 	nSize += packet->Size ();
 	packet->Transmit ();
@@ -672,10 +675,8 @@ CNetworkPacket* packet;
 
 m_txPacketQueue.Lock ();
 // try to combine data sent to the same player
-if ((packet = m_txPacketQueue.Head ()) && packet->Combine (data, size, network, node)) {
+if ((packet = m_txPacketQueue.Head ()) && packet->Combine (data, size, network, node))
 	++m_txPacketQueue.m_nCombined;
-	m_txPacketQueue.Unlock ();
-	}
 else {
 	packet = m_txPacketQueue.Alloc (false);
 	if (!packet) {
@@ -689,6 +690,7 @@ else {
 	}
 
 packet->SetUrgent (m_bUrgent);
+packet->SetImportant (m_bImportant);
 packet->SetTime (SDL_GetTicks ());
 m_txPacketQueue.Unlock ();
 m_bUrgent = false;

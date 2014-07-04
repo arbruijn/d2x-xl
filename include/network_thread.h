@@ -89,8 +89,8 @@ class CNetworkPacketData {
 			return *this;
 			}
 
-		inline void SetId (uint32_t nId) { m_data.nId = nId; }
-		inline uint32_t GetId (void) { return m_data.nId; }
+		inline void SetId (int32_t nId) { m_data.nId = nId; }
+		inline int32_t GetId (void) { return m_data.nId; }
 		inline uint8_t* Buffer (void) { return m_data.buffer; }
 		inline int32_t Size (void) { return m_size; }
 		inline int32_t SetSize (int32_t size) { return m_size = size; }
@@ -104,18 +104,35 @@ class CNetworkPacket : public CNetworkPacketData {
 		CNetworkPacket*		m_nextPacket;
 		uint32_t					m_timestamp;
 		int32_t					m_bUrgent;
+		int32_t					m_bImportant;
 		CNetworkPacketOwner	m_owner;
 
 	public:
-		CNetworkPacket () : m_nextPacket (NULL), m_timestamp (0), m_bUrgent (0) {}
+		CNetworkPacket () : m_nextPacket (NULL), m_timestamp (0), m_bUrgent (0), m_bImportant (0) {}
 		void Transmit (void);
+		inline void Reset (void) {
+			SetId (0);
+			SetSize (0);
+			SetUrgent (0);
+			SetImportant (0);
+			}
+
 		inline int32_t SetTime (int32_t timestamp) { return m_timestamp = timestamp; }
 		inline CNetworkPacket* Next (void) { return m_nextPacket; }
 		inline CNetworkPacketOwner& Owner (void) { return m_owner; }
 		inline uint32_t Timestamp (void) { return m_timestamp; }
 		inline uint8_t Type (void) { return (m_size > 0) ? m_data [0]  & ~0x80 : 0xff; }
-		inline int32_t Urgent (void) { return m_bUrgent; }
+		inline int32_t IsUrgent (void) { return m_bUrgent; }
 		inline void SetUrgent (int32_t bUrgent) { m_bUrgent = bUrgent; }
+		inline void SetImportant (int32_t bImportant) { 
+			if (bImportant && !m_bImportant) {
+				m_bImportant = 1;
+				int32_t nId = GetId ();
+				if (nId > 0)
+					SetId (-nId); // mark packet as import w/o using additional data space
+				}
+			}
+		inline int32_t IsImportant (void) { return m_bImportant; }
 		bool Combineable (uint8_t type);
 		bool Combine (uint8_t* data, int32_t size, uint8_t* network, uint8_t* node);
 		inline bool operator== (CNetworkPacket& other) { return (m_owner.m_address == other.m_owner.m_address) && ((CNetworkPacketData&) *this == (CNetworkPacketData&) other); }
@@ -184,6 +201,7 @@ class CNetworkThread {
 		SDL_sem*					m_processLock;
 		int32_t					m_nThreadId;
 		int32_t					m_bUrgent;
+		int32_t					m_bImportant;
 		CNetworkPacketQueue	m_txPacketQueue; // transmit
 		CNetworkPacketQueue	m_rxPacketQueue; // receive
 		CNetworkPacket*		m_packet;
@@ -223,6 +241,7 @@ class CNetworkThread {
 		inline CNetworkPacketQueue& RxPacketQueue (void) { return m_rxPacketQueue; }
 		inline CNetworkPacketQueue& TxPacketQueue (void) { return m_txPacketQueue; }
 		inline void SetUrgent (int32_t bUrgent) { m_bUrgent = bUrgent; }
+		inline void SetImportant (int32_t bImportant) { m_bImportant = bImportant; }
 		inline bool Sending (void) { return Available () && !m_txPacketQueue.Empty (); }
 		inline int32_t PacketsPerSec (void) { return int32_t (1000 / m_toSend.Duration ()); }
 
