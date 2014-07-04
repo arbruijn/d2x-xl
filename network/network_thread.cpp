@@ -194,7 +194,6 @@ return 1;
 void CNetworkPacketQueue::UpdateClientList (void)
 {
 CNetworkPacket* packet = Tail ();
-
 if (!packet)
 	return;
 
