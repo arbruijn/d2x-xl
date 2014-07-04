@@ -495,6 +495,9 @@ return 1;
 
 void CNetworkThread::Cleanup (void)
 {
+m_rxPacketQueue.UpdateClientList ();
+m_txPacketQueue.UpdateClientList ();
+
 uint32_t t = SDL_GetTicks ();
 if (t <= MAX_PACKET_AGE)
 	return; // drop packets older than 3 seconds
