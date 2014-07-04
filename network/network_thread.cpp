@@ -208,10 +208,12 @@ if (m_nType == SEND_QUEUE)  // send
 	packet->SetId (i->SetPacketId (nClientId));
 else { // listen
 	int32_t nPacketId = abs (packet->GetId ());
-	int32_t nLost = nPacketId - nClientId;
-	if (nLost) {
-		i->m_nLost += nLost;
-		m_nLost += nLost;
+	if (nClientId > 0) {
+		int32_t nLost = nPacketId - nClientId;
+		if (nLost) {
+			i->m_nLost += nLost;
+			m_nLost += nLost;
+			}
 		}
 	i->SetPacketId (nPacketId);
 	}
