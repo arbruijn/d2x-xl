@@ -5,17 +5,18 @@
 
 class CNetworkClientInfo : public CNetworkAddress {
 	public:
-		int32_t		m_nPacketId;
+		int32_t		m_nPacketId [2];
 		uint32_t		m_nLost;
 		uint32_t		m_timestamp;
 
 		inline void Reset (void) {
-			m_nPacketId = 0;
+			m_nPacketId [0] = 0;
+			m_nPacketId [0] = 0;
 			m_nLost = 0;
 			m_timestamp = 0;
 			}
-		inline int32_t SetPacketId (int32_t nId) { return m_nPacketId = nId; }
-		inline int32_t GetPacketId (void) { return m_nPacketId; }
+		inline int32_t SetPacketId (int32_t nType, int32_t nId) { return m_nPacketId [nType] = nId; }
+		inline int32_t GetPacketId (int32_t nType) { return m_nPacketId [nType]; }
 		inline void SetTime (uint32_t t) { m_timestamp = t; }
 		inline uint32_t GetTime (void) { return m_timestamp; }
 	};

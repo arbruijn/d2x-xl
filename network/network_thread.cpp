@@ -203,9 +203,9 @@ CNetworkClientInfo* i = m_clients.Update (packet->Owner ().GetAddress ());
 if (!i)
 	return;
 
-int32_t nClientId = i->GetPacketId () + 1; // last packet id sent or received
+int32_t nClientId = i->GetPacketId (m_nType) + 1; // last packet id sent or received
 if (m_nType == SEND_QUEUE)  // send
-	packet->SetId (i->SetPacketId (nClientId));
+	packet->SetId (i->SetPacketId (m_nType, nClientId));
 else { // listen
 	int32_t nPacketId = abs (packet->GetId ());
 	if (nClientId > 0) {
@@ -215,7 +215,7 @@ else { // listen
 			m_nLost += nLost;
 			}
 		}
-	i->SetPacketId (nPacketId);
+	i->SetPacketId (m_nType, nPacketId);
 	}
 }
 
