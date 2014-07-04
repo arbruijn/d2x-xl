@@ -1041,9 +1041,9 @@ else
 	// NOTE LINK TO ABOVE!!!
 	NDWriteInt (gameData.app.nGameMode);
 if (IsTeamGame) {
-	NDWriteByte (int8_t (netGame.m_info.GetTeamVector ()));
-	NDWriteString (netGame.m_info.szTeamName [0]);
-	NDWriteString (netGame.m_info.szTeamName [1]);
+	NDWriteByte (int8_t (netGameInfo.m_info.GetTeamVector ()));
+	NDWriteString (netGameInfo.m_info.szTeamName [0]);
+	NDWriteString (netGameInfo.m_info.szTeamName [1]);
 	}
 if (IsMultiGame) {
 	NDWriteByte (int8_t (gameData.multiplayer.nPlayers));
@@ -1819,9 +1819,9 @@ gameData.demo.xJasonPlaybackTotal = 0;
 gameData.demo.nGameMode = NDReadInt ();
 ChangePlayerNumTo ((gameData.demo.nGameMode >> 16) & 0x7);
 if (gameData.demo.nGameMode & GM_TEAM) {
-	netGame.m_info.SetTeamVector (NDReadByte ());
-	NDReadString (netGame.m_info.szTeamName [0]);
-	NDReadString (netGame.m_info.szTeamName [1]);
+	netGameInfo.m_info.SetTeamVector (NDReadByte ());
+	NDReadString (netGameInfo.m_info.szTeamName [0]);
+	NDReadString (netGameInfo.m_info.szTeamName [1]);
 	}
 if (gameData.demo.nGameMode & GM_MULTI) {
 	MultiNewGame ();

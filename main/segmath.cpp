@@ -43,54 +43,65 @@ else
 #define VEL_PRECISION 12
 
 // -------------------------------------------------------------------------------
+
+void CreateLongPos (tLongPos* posP, CObject* objP)
+{
+posP->nSegment = objP->Segment ();
+posP->pos = objP->Position ();
+posP->orient = objP->Orientation ();
+posP->vel = objP->Velocity ();
+posP->rotVel = objP->RotVelocity ();
+}
+
+// -------------------------------------------------------------------------------
 //	Create a tShortPos struct from an CObject.
 //	Extract the matrix into byte values.
 //	Create a position relative to vertex 0 with 1/256 Normal "fix" precision.
 //	Stuff CSegment in a int16_t.
-void CreateShortPos (tShortPos *spp, CObject *objP, int32_t swap_bytes)
+void CreateShortPos (tShortPos *posP, CObject *objP, int32_t bSwapBytes)
 {
 	// int32_t	nSegment;
 	CFixMatrix orient = objP->info.position.mOrient;
-	int8_t   *segP = spp->orient;
+	int8_t   *segP = posP->orient;
 	CFixVector *pv;
 
-*segP++ = ConvertToByte(orient.m.dir.r.v.coord.x);
-*segP++ = ConvertToByte(orient.m.dir.u.v.coord.x);
-*segP++ = ConvertToByte(orient.m.dir.f.v.coord.x);
-*segP++ = ConvertToByte(orient.m.dir.r.v.coord.y);
-*segP++ = ConvertToByte(orient.m.dir.u.v.coord.y);
-*segP++ = ConvertToByte(orient.m.dir.f.v.coord.y);
-*segP++ = ConvertToByte(orient.m.dir.r.v.coord.z);
-*segP++ = ConvertToByte(orient.m.dir.u.v.coord.z);
-*segP++ = ConvertToByte(orient.m.dir.f.v.coord.z);
+*segP++ = ConvertToByte (orient.m.dir.r.v.coord.x);
+*segP++ = ConvertToByte (orient.m.dir.u.v.coord.x);
+*segP++ = ConvertToByte (orient.m.dir.f.v.coord.x);
+*segP++ = ConvertToByte (orient.m.dir.r.v.coord.y);
+*segP++ = ConvertToByte (orient.m.dir.u.v.coord.y);
+*segP++ = ConvertToByte (orient.m.dir.f.v.coord.y);
+*segP++ = ConvertToByte (orient.m.dir.r.v.coord.z);
+*segP++ = ConvertToByte (orient.m.dir.u.v.coord.z);
+*segP++ = ConvertToByte (orient.m.dir.f.v.coord.z);
 
 pv = gameData.segs.vertices + SEGMENTS [objP->info.nSegment].m_vertices [0];
-spp->pos [0] = (int16_t) ((objP->info.position.vPos.v.coord.x - pv->v.coord.x) >> RELPOS_PRECISION);
-spp->pos [1] = (int16_t) ((objP->info.position.vPos.v.coord.y - pv->v.coord.y) >> RELPOS_PRECISION);
-spp->pos [2] = (int16_t) ((objP->info.position.vPos.v.coord.z - pv->v.coord.z) >> RELPOS_PRECISION);
+posP->pos [0] = (int16_t) ((objP->info.position.vPos.v.coord.x - pv->v.coord.x) >> RELPOS_PRECISION);
+posP->pos [1] = (int16_t) ((objP->info.position.vPos.v.coord.y - pv->v.coord.y) >> RELPOS_PRECISION);
+posP->pos [2] = (int16_t) ((objP->info.position.vPos.v.coord.z - pv->v.coord.z) >> RELPOS_PRECISION);
 
-spp->nSegment = objP->info.nSegment;
+posP->nSegment = objP->info.nSegment;
 
-spp->vel [0] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.x) >> VEL_PRECISION);
-spp->vel [1] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.y) >> VEL_PRECISION);
-spp->vel [2] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.z) >> VEL_PRECISION);
+posP->vel [0] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.x) >> VEL_PRECISION);
+posP->vel [1] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.y) >> VEL_PRECISION);
+posP->vel [2] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.z) >> VEL_PRECISION);
 
 // swap the int16_t values for the big-endian machines.
 
-if (swap_bytes) {
-	spp->pos [0] = INTEL_SHORT (spp->pos [0]);
-	spp->pos [1] = INTEL_SHORT (spp->pos [1]);
-	spp->pos [2] = INTEL_SHORT (spp->pos [2]);
-	spp->nSegment = INTEL_SHORT (spp->nSegment);
-	spp->vel [0] = INTEL_SHORT (spp->vel [0]);
-	spp->vel [1] = INTEL_SHORT (spp->vel [1]);
-	spp->vel [2] = INTEL_SHORT (spp->vel [2]);
+if (bSwapBytes) {
+	posP->pos [0] = INTEL_SHORT (posP->pos [0]);
+	posP->pos [1] = INTEL_SHORT (posP->pos [1]);
+	posP->pos [2] = INTEL_SHORT (posP->pos [2]);
+	posP->nSegment = INTEL_SHORT (posP->nSegment);
+	posP->vel [0] = INTEL_SHORT (posP->vel [0]);
+	posP->vel [1] = INTEL_SHORT (posP->vel [1]);
+	posP->vel [2] = INTEL_SHORT (posP->vel [2]);
 	}
 }
 
 // -------------------------------------------------------------------------------
 
-void ExtractShortPos (CObject *objP, tShortPos *spp, int32_t swap_bytes)
+void ExtractShortPos (CObject *objP, tShortPos *spp, int32_t bSwapBytes)
 {
 	int32_t	nSegment;
 	int8_t   *segP;
@@ -108,7 +119,7 @@ void ExtractShortPos (CObject *objP, tShortPos *spp, int32_t swap_bytes)
 	objP->info.position.mOrient.m.dir.u.v.coord.z = *segP++ << MATRIX_PRECISION;
 	objP->info.position.mOrient.m.dir.f.v.coord.z = *segP++ << MATRIX_PRECISION;
 
-	if (swap_bytes) {
+	if (bSwapBytes) {
 		spp->pos [0] = INTEL_SHORT (spp->pos [0]);
 		spp->pos [1] = INTEL_SHORT (spp->pos [1]);
 		spp->pos [2] = INTEL_SHORT (spp->pos [2]);

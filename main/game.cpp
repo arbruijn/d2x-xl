@@ -993,7 +993,7 @@ if (IsMultiGame) {
 	tracker.AddServer ();
 	MultiDoFrame ();
 	CheckMonsterballScore ();
-	MultiCheckForScoreGoalWinner (netGame.GetPlayTimeAllowed () && (gameStates.app.xThisLevelTime >= I2X ((netGame.GetPlayTimeAllowed () * 5 * 60))));
+	MultiCheckForScoreGoalWinner (netGameInfo.GetPlayTimeAllowed () && (gameStates.app.xThisLevelTime >= I2X ((netGameInfo.GetPlayTimeAllowed () * 5 * 60))));
 	MultiCheckForEntropyWinner ();
 	MultiRemoveGhostShips ();
 	PROF_END (ptGameStates)
@@ -1024,7 +1024,7 @@ DropPowerups ();
 gameData.time.xGame += gameData.time.xFrame;
 if ((gameData.time.xGame < 0) || (gameData.time.xGame > I2X (0x7fff - 600))) 
 	gameData.time.xGame = gameData.time.xFrame;	//wrap when goes negative, or gets within 10 minutes
-if (IsMultiGame && netGame.GetPlayTimeAllowed ())
+if (IsMultiGame && netGameInfo.GetPlayTimeAllowed ())
 	gameStates.app.xThisLevelTime += gameData.time.xFrame;
 audio.SyncSounds ();
 PROF_END (ptGameStates)
@@ -1082,7 +1082,7 @@ PROF_CONT
 if (gameStates.render.bDoAppearanceEffect) {
 	gameData.objs.consoleP->CreateAppearanceEffect ();
 	gameStates.render.bDoAppearanceEffect = 0;
-	if (IsMultiGame && netGame.m_info.invul) {
+	if (IsMultiGame && netGameInfo.m_info.invul) {
 		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
 		LOCALPLAYER.invulnerableTime = gameData.time.xGame - I2X (27);
 		bFakingInvul = 1;

@@ -31,6 +31,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+CNakedData nakedData;
+
+CNetworkData networkData;
+
+//------------------------------------------------------------------------------
+
 char *iptos (char *pszIP, char *addr)
 {
 sprintf (pszIP, "%d.%d.%d.%d:%d",
@@ -340,13 +346,6 @@ void NetworkCountPowerupsInMine (void)
 gameData.multiplayer.powerupsInMine.Clear (0);
 FORALL_POWERUP_OBJS (objP, i)
 	AddPowerupInMine (objP->info.nId);
-}
-
-//------------------------------------------------------------------------------
-
-void NetworkAdjustMaxDataSize ()
-{
-networkData.nMaxXDataSize = netGame.GetShortPackets () ? NET_XDATA_SIZE : NET_XDATA_SIZE;
 }
 
 //------------------------------------------------------------------------------

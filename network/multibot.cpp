@@ -121,7 +121,7 @@ if (gameData.time.xGame > lastcheck + I2X (1)) {
 				Int3 (); // Non-terminal but Rob is interesting, step over please...
 				return;
 				}
- 			if (nRemOwner !=N_LOCALPLAYER)
+ 			if (nRemOwner != N_LOCALPLAYER)
 				return;
 			if (gameData.multigame.robots.sendPending [i])
 				MultiSendRobotPosition (gameData.multigame.robots.controlled [i], 1);
@@ -138,8 +138,8 @@ void MultiStripRobots (int32_t nPlayer)
 	// Grab all robots away from a player 
 	// (player died or exited the game)
 
-	int32_t 		i;
-	CObject	*objP;
+	int32_t 	i;
+	CObject*	objP;
 
 if (gameData.app.GameMode (GM_MULTI_ROBOTS)) {
 	if (nPlayer == N_LOCALPLAYER)
@@ -225,11 +225,9 @@ return 1;
 
 void MultiDeleteControlledRobot (int32_t nObject)
 {
-	int32_t i;
-
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 	return;
-for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++)
+for (int32_t i = 0; i < MAX_ROBOTS_CONTROLLED; i++)
 	if (gameData.multigame.robots.controlled [i] == nObject) {
 		CObject* objP = gameData.Object (nObject);
 		if (objP) {
@@ -564,7 +562,7 @@ MultiSendData (gameData.multigame.msg.buf, (gameStates.multi.nGameType == UDP_GA
 void MultiDoClaimRobot (uint8_t* buf)
 {
 	int16_t nRobot, nRemoteBot;
-	char nPlayer = buf [1];
+	uint8_t nPlayer = buf [1];
 
 nRemoteBot = GET_INTEL_SHORT (buf + 2);
 nRobot = GetLocalObjNum (nRemoteBot, (int8_t)buf [4]);
@@ -588,7 +586,7 @@ OBJECTS [nRobot].cType.aiInfo.REMOTE_SLOT_NUM = 0;
 void MultiDoReleaseRobot (uint8_t* buf)
 {
 	int16_t nRobot, nRemoteBot;
-	char nPlayer = buf [1];
+	uint8_t nPlayer = buf [1];
 
 nRemoteBot = GET_INTEL_SHORT (buf + 2);
 nRobot = GetLocalObjNum (nRemoteBot, (int8_t)buf [4]);
@@ -613,7 +611,7 @@ void MultiDoRobotPosition (uint8_t* buf)
 #endif
 	int16_t nRobot, nRemoteBot;
 	int32_t bufP = 1;
-	char nPlayer = buf [bufP++];
+	uint8_t nPlayer = buf [bufP++];
 
 nRemoteBot = GET_INTEL_SHORT (buf + bufP);
 nRobot = GetLocalObjNum (nRemoteBot, (int8_t)buf [bufP+2]); 
@@ -943,7 +941,6 @@ gameData.multigame.create.nCount = 0;
 nEggObj = ObjectCreateEgg (&delObjP);
 if (nEggObj == -1)
 	return; // Object buffer full
-//	Assert (nEggObj > -1);
 Assert ((gameData.multigame.create.nCount > 0) && (gameData.multigame.create.nCount <= MAX_ROBOT_POWERUPS));
 for (i = 0; i < gameData.multigame.create.nCount; i++) {
 	s = GET_INTEL_SHORT (buf + bufP);

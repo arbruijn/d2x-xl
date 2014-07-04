@@ -1314,7 +1314,7 @@ const char *defaultGameTexts [][2] = {
  {"Spieler von Spiel '%s':", "players of game '%s':"},
  {"Kurze Datenpakete: %s", "Short packets: %s"},
  {"Datenpakete/Sek.: %d", "Packets Per Second: %d"},
- {"Netzspiel-Information", "netGame Information"},
+ {"Netzspiel-Information", "netGameInfo Information"},
  {"Spiel: %s%s", "Game: %s%s"},
  {"Mission: %s%s", "Mission: %s%s"},
  {"Aktueller Level: %s%d", "Current Level: %s%d"},

@@ -1852,7 +1852,7 @@ for (int32_t i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	ResetPlayerData (bNewGame, bSecret, bRestore, i);
 if (IsCoopGame && networkData.nJoinState) {
 	for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++)
-		gameData.multiplayer.players [i].flags |= netGame.PlayerFlags () [i];
+		gameData.multiplayer.players [i].flags |= netGameInfo.PlayerFlags () [i];
 	}
 if (IsMultiGame)
 	MultiPrepLevel (); // Removes robots from level if necessary

@@ -194,7 +194,7 @@ fontManager.SetCurrent (GAME_FONT);
 nZoomSave = gameStates.zoom.nFactor;
 gameStates.zoom.nFactor = float (I2X (gameOpts->render.cockpit.nWindowZoom + 1));					//the player's zoom factor
 if (((nUser != WBU_RADAR_TOPDOWN) && (nUser != WBU_RADAR_HEADSUP)) ||
-	 (IsMultiGame && !(netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
+	 (IsMultiGame && !(netGameInfo.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 	RenderFrame (0, nWindow + 1);
 	}
 else {

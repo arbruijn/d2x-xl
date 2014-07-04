@@ -225,9 +225,9 @@ class CFrameInfo {
 
 class CPosFrame {
 	public:
-		int32_t				m_iKeyFrame;
+		int32_t			m_iKeyFrame;
 		CFloatVector	m_vPos;
-		int32_t				m_nStartTime;
+		int32_t			m_nStartTime;
 
 	public:
 		int32_t Read (CFile& cf, int32_t bTimed);

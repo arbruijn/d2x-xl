@@ -14,9 +14,9 @@
 #define MSGC_PICKUP_TOOMUCH	2    // Pickup failed: it's a powerup you have too much from
 #define MSGC_PICKUP_ALREADY	4    // Pickup failed: it's a powerup you already have
 #define MSGC_PICKUP_OK			8    // Pickup succeeded
-#define MSGC_MULTI_USERMSG		16   // netGame messages from other users
-#define MSGC_MULTI_KILL 		32   // netGame kill information
-#define MSGC_MULTI_INFO 		64   // netGame information (join/leave, reactor, exit)
+#define MSGC_MULTI_USERMSG		16   // netGameInfo messages from other users
+#define MSGC_MULTI_KILL 		32   // netGameInfo kill information
+#define MSGC_MULTI_INFO 		64   // netGameInfo information (join/leave, reactor, exit)
 #define MSGC_GAME_ACTION		128  // Something happened in the game (exit,hostage,ship dest)
 #define MSGC_GAME_FEEDBACK		256  // User feedback (F3=Cockpit mode, can't pause, netmsg)
 #define MSGC_MINE_FEEDBACK		512  // Mine feedback (can't open door, reactor invul)

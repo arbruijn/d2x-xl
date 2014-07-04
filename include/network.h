@@ -87,6 +87,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define UDP_SAFEMODE	0
 #endif
 
+#define NET_XDATA_SIZE					454
+
 // defines and other things for appletalk/ipx games on mac
 #if 0
 extern int32_t nNetworkGameType;
@@ -101,7 +103,6 @@ typedef struct tSequencePacket {
 	uint8_t           pad2 [3];
 } __pack__ tSequencePacket;
 
-#define NET_XDATA_SIZE 454
 
 
 // frame info is aligned -- 01/18/96 -- MWA
@@ -111,42 +112,34 @@ typedef struct tSequencePacket {
 //      shorts on even byte boundaries
 //      ints on even byte boundaries
 
+typedef struct tFrameInfoHeader {
+	uint8_t				nType;        
+	uint8_t				pad [3];       
+	int32_t				nPackets;
+} __pack__ tFrameInfoHeader;
+
+typedef struct tFrameInfoData {
+	uint16_t				dataSize;          // Size of data appended to the net packet
+	uint8_t				nPlayer;
+	uint8_t				nRenderType;
+	uint8_t				nLevel;
+	uint8_t				msgData [UDP_PAYLOAD_SIZE];   // extra data to be tacked on the end
+} __pack__ tFrameInfoData;
+
 typedef struct tFrameInfoLong {
-	uint8_t     nType;                   // What nType of packet
-	uint8_t     pad[3];                 // Pad out length of tFrameInfoLong packet
-	int32_t     nPackets;
-	CFixVector	objPos;
-	CFixMatrix	objOrient;
-	CFixVector	physVelocity;
-	CFixVector	physRotVel;
-	int16_t     nObjSeg;
-	uint16_t    dataSize;          // Size of data appended to the net packet
-	uint8_t     nPlayer;
-	uint8_t     objRenderType;
-	uint8_t     nLevel;
-	uint8_t     data [NET_XDATA_SIZE];   // extra data to be tacked on the end
+	tFrameInfoHeader	header;
+	tLongPos				objData;
+	tFrameInfoData		data;
 } __pack__ tFrameInfoLong;
 
 // tFrameInfoShort is not aligned -- 01/18/96 -- MWA
-// won't align because of tShortPos.  Shortpos needs
-// to stay in current form.
+// won't align because of tShortPos. Shortpos needs to stay in current form.
 
 typedef struct tFrameInfoShort {
-	uint8_t     nType;                   // What nType of packet
-	uint8_t     pad[3];                 // Pad out length of tFrameInfoLong packet
-	int32_t     nPackets;
-	tShortPos   objPos;
-	uint16_t    dataSize;          // Size of data appended to the net packet
-	uint8_t     nPlayer;
-	uint8_t     objRenderType;
-	uint8_t     nLevel;
-	uint8_t     data [NET_XDATA_SIZE];   // extra data to be tacked on the end
+	tFrameInfoHeader	header;
+	tShortPos			objData;
+	tFrameInfoData		data;
 } __pack__ tFrameInfoShort;
-
-typedef union tFrameInfo {
-	tFrameInfoLong		l;
-	tFrameInfoShort	s;
-} tFrameInfo;
 
 typedef struct tEntropyGameInfo {
 	uint16_t	nEnergyFillRate;
@@ -558,12 +551,11 @@ int32_t  NetworkSendGameListRequest (int32_t bAutoLaunch = 0);
 void NetworkAddPlayer (tSequencePacket *p);
 void NetworkSendGameInfo (tSequencePacket *their);
 void ClipRank (char *rank);
-void NetworkCheckForOldVersion (char pnum);
+void NetworkCheckForOldVersion (uint8_t nPlayer);
 void NetworkInit (void);
 void NetworkFlush (void);
 int32_t  NetworkWaitForAllInfo (int32_t choice);
 void NetworkSetGameMode (int32_t gameMode);
-void NetworkAdjustMaxDataSize (void);
 int32_t CanJoinNetGame (CNetGameInfo *game, CAllNetPlayersInfo *people);
 void RestartNetSearching (CMenu& menu);
 void DeleteTimedOutNetGames (void);
@@ -602,11 +594,11 @@ extern int32_t nCoopPenalties [10];
 
 static inline int16_t PacketsPerSec (void)
 {
-	int32_t	i = netGame.GetPacketsPerSec ();
+	int32_t	i = netGameInfo.GetPacketsPerSec ();
 
 if ((i < MIN_PPS) || (i > MAX_PPS))
-	netGame.SetPacketsPerSec (DEFAULT_PPS);
-return netGame.GetPacketsPerSec ();
+	netGameInfo.SetPacketsPerSec (DEFAULT_PPS);
+return netGameInfo.GetPacketsPerSec ();
 }
 
 //------------------------------------------------------------------------------

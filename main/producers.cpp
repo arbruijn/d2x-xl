@@ -829,7 +829,7 @@ return h;
 
 //--------------------------------------------------------------------
 
-void MultiSendCaptureBonus (char);
+void MultiSendCaptureBonus (uint8_t);
 
 int32_t FlagAtHome (int32_t nFlagId)
 {
@@ -858,7 +858,7 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG))
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF &&
 	 !FlagAtHome ((nFlagId == POW_BLUEFLAG) ? POW_REDFLAG : POW_BLUEFLAG))
 	return 0;
-MultiSendCaptureBonus (char (N_LOCALPLAYER));
+MultiSendCaptureBonus (N_LOCALPLAYER);
 LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG));
 MaybeDropNetPowerup (-1, nFlagId, FORCE_DROP);
 return 1;
@@ -907,7 +907,7 @@ if (!LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX])
 #if TRACE
 console.printf (CON_DBG,"In orb goal!\n");
 #endif
-MultiSendOrbBonus ((char) N_LOCALPLAYER);
+MultiSendOrbBonus (N_LOCALPLAYER);
 LOCALPLAYER.flags &= (~(PLAYER_FLAGS_FLAG));
 LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]=0;
 }

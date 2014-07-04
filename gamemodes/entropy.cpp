@@ -209,7 +209,7 @@ if (t - gameStates.entropy.nTimeLastMoved < extraGameInfo [1].entropy.nCaptureTi
 	}
 StopConquerWarning ();
 if (m_owner)
-	MultiSendCaptureBonus ((char) N_LOCALPLAYER);
+	MultiSendCaptureBonus (N_LOCALPLAYER);
 playerP->secondaryAmmo [PROXMINE_INDEX] -= extraGameInfo [1].entropy.nCaptureVirusThreshold;
 if (playerP->secondaryAmmo [SMARTMINE_INDEX] > extraGameInfo [1].entropy.nBashVirusCapacity)
 	playerP->secondaryAmmo [SMARTMINE_INDEX] -= extraGameInfo [1].entropy.nBashVirusCapacity;

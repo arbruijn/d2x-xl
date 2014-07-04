@@ -266,7 +266,7 @@ else if (syncP->nExtras == 4) {
 		MultiSendStolenItems ();
 	}
 else if (syncP->nExtras == 5) {
-	if (netGame.GetPlayTimeAllowed () || netGame.GetScoreGoal ())
+	if (netGameInfo.GetPlayTimeAllowed () || netGameInfo.GetScoreGoal ())
 		MultiSendScoreGoalCounts ();
 	}
 else if (syncP->nExtras == 6)
@@ -346,10 +346,10 @@ void NetworkUpdateNetGame (void)
 
 	int32_t i, j;
 
-netGame.m_info.nConnected = 0;
+netGameInfo.m_info.nConnected = 0;
 for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 	if (gameData.multiplayer.players [i].IsConnected ())
-		netGame.m_info.nConnected++;
+		netGameInfo.m_info.nConnected++;
 
 // This is great: D2 1.0 and 1.1 ignore upper part of the gameFlags field of
 //	the tNetGameInfoLite struct when you're sitting on the join netgame gameData.render.screen.  We can
@@ -357,33 +357,33 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 //	another packet that could be lost in transit.
 if (HoardEquipped ()) {
 	if (gameData.app.GameMode (GM_MONSTERBALL))
-		netGame.m_info.gameFlags |= NETGAME_FLAG_MONSTERBALL;
+		netGameInfo.m_info.gameFlags |= NETGAME_FLAG_MONSTERBALL;
 	else if (IsEntropyGame)
-		netGame.m_info.gameFlags |= NETGAME_FLAG_ENTROPY;
+		netGameInfo.m_info.gameFlags |= NETGAME_FLAG_ENTROPY;
 	else if (IsHoardGame) {
-		netGame.m_info.gameFlags |= NETGAME_FLAG_HOARD;
+		netGameInfo.m_info.gameFlags |= NETGAME_FLAG_HOARD;
 		if (IsTeamGame)
-			netGame.m_info.gameFlags |= NETGAME_FLAG_TEAM_HOARD;
+			netGameInfo.m_info.gameFlags |= NETGAME_FLAG_TEAM_HOARD;
 		}
 	}
 if (networkData.nStatus == NETSTAT_STARTING)
 	return;
-netGame.m_info.nNumPlayers = gameData.multiplayer.nPlayers;
-netGame.m_info.gameStatus = networkData.nStatus;
-netGame.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
+netGameInfo.m_info.nNumPlayers = gameData.multiplayer.nPlayers;
+netGameInfo.m_info.gameStatus = networkData.nStatus;
+netGameInfo.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 	memcpy (netPlayers [0].m_info.players [i].callsign, gameData.multiplayer.players [i].callsign, sizeof (netPlayers [0].m_info.players [i].callsign));
 	netPlayers [0].m_info.players [i].connected = gameData.multiplayer.players [i].connected;
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
-		*netGame.Kills (i, j) = gameData.multigame.score.matrix [i][j];
-	*netGame.Killed (i) = gameData.multiplayer.players [i].netKilledTotal;
-	*netGame.PlayerKills (i) = gameData.multiplayer.players [i].netKillsTotal;
-	*netGame.PlayerScore (i) = gameData.multiplayer.players [i].score;
-	*netGame.PlayerFlags (i) = (gameData.multiplayer.players [i].flags & (PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY));
+		*netGameInfo.Kills (i, j) = gameData.multigame.score.matrix [i][j];
+	*netGameInfo.Killed (i) = gameData.multiplayer.players [i].netKilledTotal;
+	*netGameInfo.PlayerKills (i) = gameData.multiplayer.players [i].netKillsTotal;
+	*netGameInfo.PlayerScore (i) = gameData.multiplayer.players [i].score;
+	*netGameInfo.PlayerFlags (i) = (gameData.multiplayer.players [i].flags & (PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY));
 	}
-*netGame.TeamKills (0) = gameData.multigame.score.nTeam [0];
-*netGame.TeamKills (1) = gameData.multigame.score.nTeam [1];
-netGame.m_info.SetLevel (missionManager.nCurrentLevel);
+*netGameInfo.TeamKills (0) = gameData.multigame.score.nTeam [0];
+*netGameInfo.TeamKills (1) = gameData.multigame.score.nTeam [1];
+netGameInfo.m_info.SetLevel (missionManager.nCurrentLevel);
 }
 
 //------------------------------------------------------------------------------
@@ -479,7 +479,7 @@ if (choice == -3)
 if (networkData.nStatus == NETSTAT_PLAYING)  
 	return 0;
 else if (networkData.nStatus == NETSTAT_AUTODL) {
-	if (!downloadManager.DownloadMission (netGame.m_info.szMissionName))
+	if (!downloadManager.DownloadMission (netGameInfo.m_info.szMissionName))
 		networkData.nStatus = NETSTAT_MENU;
 	else {
 		networkData.nStatus = NETSTAT_PLAYING;

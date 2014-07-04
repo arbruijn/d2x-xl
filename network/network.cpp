@@ -119,10 +119,6 @@ const char *pszRankStrings []={
    "Commander ", "Captain ", "Vice Admiral ", "Admiral ", "Demigod "
 	};
 
-tNakedData nakedData = {0, -1};
-
-tNetworkData networkData;
-
 //------------------------------------------------------------------------------
 
 void ResetAllPlayerTimeouts (void)
@@ -176,31 +172,31 @@ if (0 > NetworkGetGameParams (bAutoRun)) {
 	return 0;
 	}
 gameData.multiplayer.nPlayers = 0;
-netGame.m_info.difficulty = gameStates.app.nDifficultyLevel;
-netGame.m_info.gameMode = mpParams.nGameMode;
-netGame.m_info.gameStatus = NETSTAT_STARTING;
-netGame.m_info.nNumPlayers = 0;
-netGame.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
-netGame.m_info.SetLevel (mpParams.nLevel);
-netGame.m_info.protocolVersion = MULTI_PROTO_VERSION;
-strcpy (netGame.m_info.szGameName, mpParams.szGameName);
+netGameInfo.m_info.difficulty = gameStates.app.nDifficultyLevel;
+netGameInfo.m_info.gameMode = mpParams.nGameMode;
+netGameInfo.m_info.gameStatus = NETSTAT_STARTING;
+netGameInfo.m_info.nNumPlayers = 0;
+netGameInfo.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
+netGameInfo.m_info.SetLevel (mpParams.nLevel);
+netGameInfo.m_info.protocolVersion = MULTI_PROTO_VERSION;
+strcpy (netGameInfo.m_info.szGameName, mpParams.szGameName);
 networkData.nStatus = NETSTAT_STARTING;
 // Have the network driver initialize whatever data it wants to
 // store for this netgame.
 // For mcast4, this randomly chooses a multicast session and port.
 // Clients subscribe to this address when they call
 // IpxHandleNetGameAuxData.
-IpxInitNetGameAuxData (netGame.AuxData ());
-NetworkSetGameMode (netGame.m_info.gameMode);
+IpxInitNetGameAuxData (netGameInfo.AuxData ());
+NetworkSetGameMode (netGameInfo.m_info.gameMode);
 gameStates.app.SRand ();
-netGame.m_info.nSecurity = RandShort ();  // For syncing NetGames with player packets
+netGameInfo.m_info.nSecurity = RandShort ();  // For syncing NetGames with player packets
 downloadManager.Init ();
 networkThread.Start ();
 if (NetworkSelectPlayers (bAutoRun)) {
 	missionManager.DeleteLevelStates ();
 	missionManager.SaveLevelStates ();
 	SetupPowerupFilter ();
-	StartNewLevel (netGame.m_info.GetLevel (), true);
+	StartNewLevel (netGameInfo.m_info.GetLevel (), true);
 	ResetAllPlayerTimeouts ();
 	PrintLog (-1);
 	return 1;
@@ -246,7 +242,7 @@ if (bDisconnect) {
 					}
 			}
 
-		netGame.m_info.nNumPlayers = 0;
+		netGameInfo.m_info.nNumPlayers = 0;
 		int32_t h = gameData.multiplayer.nPlayers;
 		gameData.multiplayer.nPlayers = 0;
 		NetworkSendGameInfo (NULL);
@@ -346,7 +342,7 @@ if (networkThread.Available ())
 tracker.AddServer ();
 
 int32_t nQueries = 
-	((networkData.nStatus == NETSTAT_PLAYING) && netGame.GetShortPackets () && !networkData.nJoining)
+	((networkData.nStatus == NETSTAT_PLAYING) && netGameInfo.GetShortPackets () && !networkData.nJoining)
 	? gameData.multiplayer.nPlayers * PacketsPerSec ()
 	: 999;
 
@@ -364,31 +360,37 @@ return nPackets;
 
 //------------------------------------------------------------------------------
 
-#if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-
-void SquishShortFrameInfo (tFrameInfoShort old_info, uint8_t *data)
+void CSyncPackShort::Squish (void)
 {
-	int32_t 	bufI = 0;
+#if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
+	int32_t 	i;
 	
-NW_SET_BYTE (data, bufI, old_info.nType);                                            
-bufI += 3;
-NW_SET_INT (data, bufI, old_info.nPackets);
-NW_SET_BYTES (data, bufI, old_info.objPos.orient, 9);                   
-NW_SET_SHORT (data, bufI, old_info.objPos.coord [0]);
-NW_SET_SHORT (data, bufI, old_info.objPos.coord [1]);
-NW_SET_SHORT (data, bufI, old_info.objPos.coord [2]);
-NW_SET_SHORT (data, bufI, old_info.objPos.nSegment);
-NW_SET_SHORT (data, bufI, old_info.objPos.vel [0]);
-NW_SET_SHORT (data, bufI, old_info.objPos.vel [1]);
-NW_SET_SHORT (data, bufI, old_info.objPos.vel [2]);
-NW_SET_SHORT (data, bufI, old_info.dataSize);
-NW_SET_BYTE (data, bufI, old_info.nPlayer);                                     
-NW_SET_BYTE (data, bufI, old_info.objRenderType);                               
-NW_SET_BYTE (data, bufI, old_info.nLevel);                                     
-NW_SET_BYTES (data, bufI, old_info.data, old_info.dataSize);
+m_info.header.nPackets = INTEL_INT (m_info.header.nPackets);
+for (int32_t i = 0; i < 3; i++) {
+	m_info.objData.pos [i] = INTEL_SHORT (m_info.objData.pos [i]);
+	m_info.objData.vel [i] = INTEL_SHORT (m_info.objData.vel [i]);
+	}
+m_info.objData.nSegment = INTEL_SHORT (m_info.objData.nSegment);
+m_info.data.dataSize = INTEL_SHORT (m_info.data.dataSize);
+#endif
 }
 
+//------------------------------------------------------------------------------
+
+void CSyncPackLong::Squish (void)
+{
+#if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
+if (gameStates.multi.nGameType >= IPX_GAME) {
+	m_info.header.nPackets = INTEL_INT (m_info.header.nPackets);
+	INTEL_VECTOR (m_info.objData.pos);
+	INTEL_MATRIX (m_info.objData.orient);
+	INTEL_VECTOR (m_info.objData.vel);
+	INTEL_VECTOR (m_info.objData.rotVel);
+	m_info.objData.nSegment = INTEL_SHORT (m_info.objData.nSegment);
+	m_info.data.dataSize = INTEL_SHORT (m_info.data.dataSize);
+	}
 #endif
+}
 
 //------------------------------------------------------------------------------
 
@@ -434,10 +436,51 @@ return I2X (1) / (networkThread.Available () ? networkThread.PacketsPerSec () : 
 
 //------------------------------------------------------------------------------
 
+void CSyncPack::Prepare (void) 
+{
+SetType (PID_PDATA);
+SetPlayer (N_LOCALPLAYER);
+SetRenderType (OBJECTS [LOCALPLAYER.nObject].info.renderType);
+SetLevel (missionManager.nCurrentLevel);
+SetObjInfo (OBJECTS + LOCALPLAYER.nObject);
+Squish ();
+}
+
+//------------------------------------------------------------------------------
+
+void CSyncPack::Send (void) 
+{
+	static CTimeout toEndLevel (500);
+
+if (IsMultiGame && LOCALPLAYER.IsConnected ()) {
+	MultiSendRobotFrame (0);
+	MultiSendFire (); // Do firing if needed..
+	Prepare ();
+	IpxSendGamePacket (Buffer (), Size ());
+	++m_nPackets; 
+	networkData.bD2XData = 0;
+	if (gameData.reactor.bDestroyed) {
+		if (gameStates.app.bPlayerIsDead)
+			CONNECT (N_LOCALPLAYER, CONNECT_DIED_IN_MINE);
+		if (toEndLevel.Expired ())
+			NetworkSendEndLevelPacket ();
+		}
+	}
+Reset ();
+}
+
+//------------------------------------------------------------------------------
+
 void NetworkFlushData (void)
 {
-	static int32_t tLastEndlevel = 0;
+networkData.SyncPack ().Send (); 
+}
 
+//------------------------------------------------------------------------------
+
+void NetworkDoFrame (int bFlush)
+{
+=======
 if (IsMultiGame && LOCALPLAYER.IsConnected ()) {
 	MultiSendRobotFrame (0);
 	MultiSendFire ();              // Do firing if needed..
@@ -510,19 +553,11 @@ if (IsMultiGame && LOCALPLAYER.IsConnected ()) {
 
 void NetworkDoFrame (int bFlush)
 {
+>>>>>>> .r13337
 if (!IsNetworkGame) 
 	return;
 if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequence) { // Don't send postion during escape sequence...
-	if (nakedData.nLength) {
-		Assert (nakedData.nDestPlayer >- 1);
-		if (gameStates.multi.nGameType >= IPX_GAME) 
-			networkThread.Send (reinterpret_cast<uint8_t*> (nakedData.buf), nakedData.nLength, 
-									  netPlayers [0].m_info.players [nakedData.nDestPlayer].network.Network (), 
-									  netPlayers [0].m_info.players [nakedData.nDestPlayer].network.Node (), 
-									  gameData.multiplayer.players [nakedData.nDestPlayer].netAddress);
-		nakedData.nLength = 0;
-		nakedData.nDestPlayer = -1;
-		}
+	nakedData.Flush ();
 	if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds ()> (networkData.refuse.xTimeLimit + (I2X (12))))
 		networkData.refuse.bWaitForAnswer = 0;
 	networkData.xLastSendTime += gameData.time.xFrame;
@@ -670,7 +705,7 @@ return rank + 1;
 
 //------------------------------------------------------------------------------
 
-void NetworkCheckForOldVersion (char nPlayer)
+void NetworkCheckForOldVersion (uint8_t nPlayer)
 {  
 if ((netPlayers [0].m_info.players [(int32_t) nPlayer].versionMajor == 1) && 
 	 !(netPlayers [0].m_info.players [(int32_t) nPlayer].versionMinor & 0x0F))

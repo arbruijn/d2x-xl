@@ -121,7 +121,7 @@ return 1;
 int32_t NetworkBadSecurity (int32_t nSecurity, const char *pszId)
 {
 #if SECURITY_CHECK
-if (nSecurity == netGame.m_info.nSecurity)
+if (nSecurity == netGameInfo.m_info.nSecurity)
 #endif
 	return 0;
 console.printf (CON_DBG, "Bad security for %s\n", pszId);
@@ -247,7 +247,7 @@ if (networkData.nStatus == NETSTAT_STARTING) // Someone wants to join our game!
 else if (networkData.nStatus == NETSTAT_WAITING)	// Someone is ready to receive a sync packet
 	NetworkProcessRequest (THEIR);	
 else if (networkData.nStatus == NETSTAT_PLAYING) {		// Someone wants to join a game in progress!
-	if (netGame.m_info.bRefusePlayers)
+	if (netGameInfo.m_info.bRefusePlayers)
 		DoRefuseStuff (THEIR);
 	else 
 		NetworkWelcomePlayer (THEIR);
@@ -391,9 +391,9 @@ if (NetworkBadSecurity (reinterpret_cast<tNetGameInfo*> (data)->nSecurity, "PID_
 	return 0;
 if (networkData.nStatus == NETSTAT_PLAYING) {
 	if (gameStates.multi.nGameType >= IPX_GAME)
-		ReceiveLiteNetGamePacket (data, &netGame);
+		ReceiveLiteNetGamePacket (data, &netGameInfo);
 	else
-		memcpy (&netGame, data, sizeof (tNetGameInfoLite));
+		memcpy (&netGameInfo, data, sizeof (tNetGameInfoLite));
 	}
 if (IsTeamGame) {
 	for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++)

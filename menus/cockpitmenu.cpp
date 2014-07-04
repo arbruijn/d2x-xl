@@ -297,10 +297,10 @@ if (FindEscort())
 winFuncList [i++] = CV_REAR;
 if (IsCoopGame || IsTeamGame) 
 	winFuncList [i++] = CV_COOP;
-if (!IsMultiGame || IsCoopGame || netGame.m_info.bAllowMarkerView)
+if (!IsMultiGame || IsCoopGame || netGameInfo.m_info.bAllowMarkerView)
 	winFuncList [i++] = CV_MARKER;
 if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
-	 (!IsMultiGame || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
+	 (!IsMultiGame || (netGameInfo.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 	winFuncList [i++] = CV_RADAR_TOPDOWN;
 	winFuncList [i++] = CV_RADAR_HEADSUP;
 	}

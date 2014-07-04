@@ -201,7 +201,7 @@ bAlreadyShowingInfo = 0;
 #undef AGI
 #undef AXI
 
-#define AGI netGame.m_info
+#define AGI netGameInfo.m_info
 #define AXI	extraGameInfo [0]
 
 static int32_t GraphicsFxCompMode (void)

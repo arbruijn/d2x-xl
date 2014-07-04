@@ -506,7 +506,7 @@ if (Hide ())
 if ((gameData.hud.msgs [0].nMessages > 0) && (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
 	return;
 
-if (IsNetworkGame && (timevar = I2X (netGame.GetPlayTimeAllowed () * 5 * 60))) {
+if (IsNetworkGame && (timevar = I2X (netGameInfo.GetPlayTimeAllowed () * 5 * 60))) {
 	i = X2I (timevar - gameStates.app.xThisLevelTime) + 1;
 	sprintf (szScore, "T - %5d", i);
 	fontManager.Current ()->StringSize (szScore, w, h, aw);
@@ -914,7 +914,7 @@ void CGenericCockpit::DrawPlayerNames (void)
 	int32_t nColor;
 	static int32_t nIdNames [2][MAX_PLAYERS] = {{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}};
 
-bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) || (netGame.m_info.bShowAllNames && gameData.multigame.bShowReticleName));
+bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) || (netGameInfo.m_info.bShowAllNames && gameData.multigame.bShowReticleName));
 bShowTeamNames = (gameData.multigame.bShowReticleName && (IsCoopGame || IsTeamGame));
 
 nTeam = GetTeam (N_LOCALPLAYER);
@@ -1103,12 +1103,12 @@ for (i = 0; i < nPlayers; i++) {
 		if (i == nLeft)
 			y0 = y;
 #if 0
-		if (netGame.GetScoreGoal () || netGame.GetPlayTimeAllowed ())
+		if (netGameInfo.GetScoreGoal () || netGameInfo.GetPlayTimeAllowed ())
 			x1 -= LHX (18);
 #endif
 		}
 #if 0
-	else if (netGame.GetScoreGoal () || netGame.GetPlayTimeAllowed ())
+	else if (netGameInfo.GetScoreGoal () || netGameInfo.GetPlayTimeAllowed ())
 		 x1 = int32_t (LHX (43) * fScale - LHX (18));
 #endif
 	nPlayer = (gameData.multigame.score.bShowList == 3) ? i : playerList [i];
@@ -1124,7 +1124,7 @@ for (i = 0; i < nPlayers; i++) {
 		if (N_LOCALPLAYER == i) {
 #if 0//DBG
 			sprintf (name, "%c%-8s %d.%d.%d.%d:%d",
-						teamInd [0], netGame.m_info.szTeamName [i],
+						teamInd [0], netGameInfo.m_info.szTeamName [i],
 						netPlayers [0].m_info.players [i].network.Node () [0],
 						netPlayers [0].m_info.players [i].network.Node () [1],
 						netPlayers [0].m_info.players [i].network.Node () [2],
@@ -1132,14 +1132,14 @@ for (i = 0; i < nPlayers; i++) {
 						netPlayers [0].m_info.players [i].network.Node () [5] +
 						 (uint32_t) netPlayers [0].m_info.players [i].network.Node () [4] * 256);
 #else
-			sprintf (name, "%c%s", teamInd [0], netGame.m_info.szTeamName [GetTeam (i)]);
+			sprintf (name, "%c%s", teamInd [0], netGameInfo.m_info.szTeamName [GetTeam (i)]);
 #endif
 			indent = 0;
 			}
 		else {
 #if SHOW_PLAYER_IP
 			sprintf (name, "%-8s %d.%d.%d.%d:%d",
-						netGame.m_info.szTeamName [i],
+						netGameInfo.m_info.szTeamName [i],
 						netPlayers [0].m_info.players [i].network.Node () [0],
 						netPlayers [0].m_info.players [i].network.Node () [1],
 						netPlayers [0].m_info.players [i].network.Node () [2],
@@ -1147,7 +1147,7 @@ for (i = 0; i < nPlayers; i++) {
 						netPlayers [0].m_info.players [i].network.Node () [5] +
 						 (uint32_t) netPlayers [0].m_info.players [i].network.Node () [4] * 256);
 #else
-			strcpy (name, netGame.m_info.szTeamName [GetTeam (i)]);
+			strcpy (name, netGameInfo.m_info.szTeamName [GetTeam (i)]);
 #endif
 			fontManager.Current ()->StringSize (teamInd, indent, sh, aw);
 			}
@@ -1196,7 +1196,7 @@ for (i = 0; i < nPlayers; i++) {
 		}
 	else if (IsCoopGame)
 		nIdKillList [1][i] = DrawHUDText (nIdKillList [1] + i, x1, y0, "%-6d", gameData.multiplayer.players [nPlayer].score);
-   else if (netGame.GetPlayTimeAllowed () || netGame.GetScoreGoal ())
+   else if (netGameInfo.GetPlayTimeAllowed () || netGameInfo.GetScoreGoal ())
       nIdKillList [1][i] = DrawHUDText (nIdKillList [1] + i, x1, y0, "%3d (%d)",
 													 gameData.multiplayer.players [nPlayer].netKillsTotal,
 													 gameData.multiplayer.players [nPlayer].nScoreGoalCount);

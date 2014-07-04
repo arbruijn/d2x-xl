@@ -85,7 +85,7 @@ class CPacketAddress : public CNetworkNode {
 		inline void ResetNode (uint8_t filler = 0) { memset (src_addr.address.node, filler, sizeof (src_addr.address.node)); }
 		inline void ResetPort (uint8_t filler = 0) { memset (src_addr.address.portAddress.port.b, filler, sizeof (src_addr.address.portAddress.port)); }
 #endif
-		inline tNetworkNode& Address (void) { return m_address; }
+		inline tNetworkAddress& Address (void) { return m_address; }
 
 		inline bool operator== (CPacketAddress& other) { return !memcmp (&Address (), &other.Address (), sizeof (tNetworkNode)); }
 		inline CPacketAddress& operator= (CPacketAddress& other) { 

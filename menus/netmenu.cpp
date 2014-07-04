@@ -57,65 +57,65 @@ void NetworkSetWeaponsAllowed (void)
 {
 CMenu	m (40);
 
-m.AddCheck ("laser upgrade", TXT_WA_LASER, netGame.m_info.DoLaserUpgrade, 0, NULL);
-m.AddCheck ("super laser", TXT_WA_SLASER, netGame.m_info.DoSuperLaser, 0, NULL);
-m.AddCheck ("quad lasers", TXT_WA_QLASER, netGame.m_info.DoQuadLasers, 0, NULL);
-m.AddCheck ("vulcan", TXT_WA_VULCAN, netGame.m_info.DoVulcan, 0, NULL);
-m.AddCheck ("spreadfire", TXT_WA_SPREAD, netGame.m_info.DoSpread, 0, NULL);
-m.AddCheck ("plasma", TXT_WA_PLASMA, netGame.m_info.DoPlasma, 0, NULL);
-m.AddCheck ("fusion", TXT_WA_FUSION, netGame.m_info.DoFusions, 0, NULL);
-m.AddCheck ("gauss", TXT_WA_GAUSS, netGame.m_info.DoGauss, 0, NULL);
-m.AddCheck ("helix", TXT_WA_HELIX, netGame.m_info.DoHelix, 0, NULL);
-m.AddCheck ("phoenix", TXT_WA_PHOENIX, netGame.m_info.DoPhoenix, 0, NULL);
-m.AddCheck ("omega", TXT_WA_OMEGA, netGame.m_info.DoOmega, 0, NULL);
+m.AddCheck ("laser upgrade", TXT_WA_LASER, netGameInfo.m_info.DoLaserUpgrade, 0, NULL);
+m.AddCheck ("super laser", TXT_WA_SLASER, netGameInfo.m_info.DoSuperLaser, 0, NULL);
+m.AddCheck ("quad lasers", TXT_WA_QLASER, netGameInfo.m_info.DoQuadLasers, 0, NULL);
+m.AddCheck ("vulcan", TXT_WA_VULCAN, netGameInfo.m_info.DoVulcan, 0, NULL);
+m.AddCheck ("spreadfire", TXT_WA_SPREAD, netGameInfo.m_info.DoSpread, 0, NULL);
+m.AddCheck ("plasma", TXT_WA_PLASMA, netGameInfo.m_info.DoPlasma, 0, NULL);
+m.AddCheck ("fusion", TXT_WA_FUSION, netGameInfo.m_info.DoFusions, 0, NULL);
+m.AddCheck ("gauss", TXT_WA_GAUSS, netGameInfo.m_info.DoGauss, 0, NULL);
+m.AddCheck ("helix", TXT_WA_HELIX, netGameInfo.m_info.DoHelix, 0, NULL);
+m.AddCheck ("phoenix", TXT_WA_PHOENIX, netGameInfo.m_info.DoPhoenix, 0, NULL);
+m.AddCheck ("omega", TXT_WA_OMEGA, netGameInfo.m_info.DoOmega, 0, NULL);
 
-m.AddCheck ("homingmsl", TXT_WA_HOMING_MSL, netGame.m_info.DoHoming, 0, NULL);
-m.AddCheck ("proxmine", TXT_WA_PROXBOMB, netGame.m_info.DoProximity, 0, NULL);
-m.AddCheck ("smartmsl", TXT_WA_SMART_MSL, netGame.m_info.DoSmarts, 0, NULL);
-m.AddCheck ("megamsl", TXT_WA_MEGA_MSL, netGame.m_info.DoMegas, 0, NULL);
-m.AddCheck ("flashmsl", TXT_WA_FLASH_MSL, netGame.m_info.DoFlash, 0, NULL);
-m.AddCheck ("guidedmsl", TXT_WA_GUIDED_MSL, netGame.m_info.DoGuided, 0, NULL);
-m.AddCheck ("smartmine", TXT_WA_SMARTMINE, netGame.m_info.DoSmartMine, 0, NULL);
-m.AddCheck ("mercurymsl", TXT_WA_MERC_MSL, netGame.m_info.DoMercury, 0, NULL);
-m.AddCheck ("eshakermsl", TXT_WA_SHAKER_MSL, netGame.m_info.DoEarthShaker, 0, NULL);
+m.AddCheck ("homingmsl", TXT_WA_HOMING_MSL, netGameInfo.m_info.DoHoming, 0, NULL);
+m.AddCheck ("proxmine", TXT_WA_PROXBOMB, netGameInfo.m_info.DoProximity, 0, NULL);
+m.AddCheck ("smartmsl", TXT_WA_SMART_MSL, netGameInfo.m_info.DoSmarts, 0, NULL);
+m.AddCheck ("megamsl", TXT_WA_MEGA_MSL, netGameInfo.m_info.DoMegas, 0, NULL);
+m.AddCheck ("flashmsl", TXT_WA_FLASH_MSL, netGameInfo.m_info.DoFlash, 0, NULL);
+m.AddCheck ("guidedmsl", TXT_WA_GUIDED_MSL, netGameInfo.m_info.DoGuided, 0, NULL);
+m.AddCheck ("smartmine", TXT_WA_SMARTMINE, netGameInfo.m_info.DoSmartMine, 0, NULL);
+m.AddCheck ("mercurymsl", TXT_WA_MERC_MSL, netGameInfo.m_info.DoMercury, 0, NULL);
+m.AddCheck ("eshakermsl", TXT_WA_SHAKER_MSL, netGameInfo.m_info.DoEarthShaker, 0, NULL);
 
-m.AddCheck ("invul", TXT_WA_INVUL, netGame.m_info.DoInvulnerability, 0, NULL);
-m.AddCheck ("cloak", TXT_WA_CLOAK, netGame.m_info.DoCloak, 0, NULL);
-m.AddCheck ("afterburner", TXT_WA_BURNER, netGame.m_info.DoAfterburner, 0, NULL);
-m.AddCheck ("ammorack", TXT_WA_AMMORACK, netGame.m_info.DoAmmoRack, 0, NULL);
-m.AddCheck ("converter", TXT_WA_CONVERTER, netGame.m_info.DoConverter, 0, NULL);
-m.AddCheck ("headlight", TXT_WA_HEADLIGHT, netGame.m_info.DoHeadlight, 0, NULL);
+m.AddCheck ("invul", TXT_WA_INVUL, netGameInfo.m_info.DoInvulnerability, 0, NULL);
+m.AddCheck ("cloak", TXT_WA_CLOAK, netGameInfo.m_info.DoCloak, 0, NULL);
+m.AddCheck ("afterburner", TXT_WA_BURNER, netGameInfo.m_info.DoAfterburner, 0, NULL);
+m.AddCheck ("ammorack", TXT_WA_AMMORACK, netGameInfo.m_info.DoAmmoRack, 0, NULL);
+m.AddCheck ("converter", TXT_WA_CONVERTER, netGameInfo.m_info.DoConverter, 0, NULL);
+m.AddCheck ("headlight", TXT_WA_HEADLIGHT, netGameInfo.m_info.DoHeadlight, 0, NULL);
 
 m.Menu (NULL, TXT_WA_OBJECTS);
 
-netGame.m_info.DoLaserUpgrade = m.Value ("laser upgrade"); 
-netGame.m_info.DoSuperLaser = m.Value ("super laser");
-netGame.m_info.DoQuadLasers = m.Value ("quad lasers");  
-netGame.m_info.DoVulcan = m.Value ("vulcan");
-netGame.m_info.DoSpread = m.Value ("spreadfire");
-netGame.m_info.DoPlasma = m.Value ("plasma");
-netGame.m_info.DoFusions = m.Value ("fusion");
-netGame.m_info.DoGauss = m.Value ("gauss");
-netGame.m_info.DoHelix = m.Value ("helix");
-netGame.m_info.DoPhoenix = m.Value ("phoenix");
-netGame.m_info.DoOmega = m.Value ("omega");
+netGameInfo.m_info.DoLaserUpgrade = m.Value ("laser upgrade"); 
+netGameInfo.m_info.DoSuperLaser = m.Value ("super laser");
+netGameInfo.m_info.DoQuadLasers = m.Value ("quad lasers");  
+netGameInfo.m_info.DoVulcan = m.Value ("vulcan");
+netGameInfo.m_info.DoSpread = m.Value ("spreadfire");
+netGameInfo.m_info.DoPlasma = m.Value ("plasma");
+netGameInfo.m_info.DoFusions = m.Value ("fusion");
+netGameInfo.m_info.DoGauss = m.Value ("gauss");
+netGameInfo.m_info.DoHelix = m.Value ("helix");
+netGameInfo.m_info.DoPhoenix = m.Value ("phoenix");
+netGameInfo.m_info.DoOmega = m.Value ("omega");
 
-netGame.m_info.DoHoming = m.Value ("homingmsl");
-netGame.m_info.DoProximity = m.Value ("proxmine");
-netGame.m_info.DoSmarts = m.Value ("smartmsl");
-netGame.m_info.DoMegas = m.Value ("megamsl");
-netGame.m_info.DoFlash = m.Value ("flashmsl");
-netGame.m_info.DoGuided = m.Value ("guidedmsl");
-netGame.m_info.DoSmartMine = m.Value ("smartmine");
-netGame.m_info.DoMercury = m.Value ("mercurymsl");
-netGame.m_info.DoEarthShaker = m.Value ("eshakermsl");
+netGameInfo.m_info.DoHoming = m.Value ("homingmsl");
+netGameInfo.m_info.DoProximity = m.Value ("proxmine");
+netGameInfo.m_info.DoSmarts = m.Value ("smartmsl");
+netGameInfo.m_info.DoMegas = m.Value ("megamsl");
+netGameInfo.m_info.DoFlash = m.Value ("flashmsl");
+netGameInfo.m_info.DoGuided = m.Value ("guidedmsl");
+netGameInfo.m_info.DoSmartMine = m.Value ("smartmine");
+netGameInfo.m_info.DoMercury = m.Value ("mercurymsl");
+netGameInfo.m_info.DoEarthShaker = m.Value ("eshakermsl");
 
-netGame.m_info.DoInvulnerability = m.Value ("invul");
-netGame.m_info.DoCloak = m.Value ("cloak");
-netGame.m_info.DoAfterburner = m.Value ("afterburner");
-netGame.m_info.DoAmmoRack = m.Value ("ammorack");
-netGame.m_info.DoConverter = m.Value ("converter");     
-netGame.m_info.DoHeadlight = m.Value ("headlight");     
+netGameInfo.m_info.DoInvulnerability = m.Value ("invul");
+netGameInfo.m_info.DoCloak = m.Value ("cloak");
+netGameInfo.m_info.DoAfterburner = m.Value ("afterburner");
+netGameInfo.m_info.DoAmmoRack = m.Value ("ammorack");
+netGameInfo.m_info.DoConverter = m.Value ("converter");     
+netGameInfo.m_info.DoHeadlight = m.Value ("headlight");     
 }
 
 //------------------------------------------------------------------------------
@@ -134,34 +134,34 @@ void SetAllAllowablesTo (int32_t nFilter)
 {
 	nLastReactorLife = 0;   //default to zero
    
-netGame.m_info.DoMegas = WF (0);
-netGame.m_info.DoSmarts = WF (1);
-netGame.m_info.DoFusions = WF (2);
-netGame.m_info.DoHelix = WF (3);
-netGame.m_info.DoPhoenix = WF (4);
-netGame.m_info.DoCloak = WF (5);
-netGame.m_info.DoInvulnerability = WF (6);
-netGame.m_info.DoAfterburner = WF (7);
-netGame.m_info.DoGauss = WF (8);
-netGame.m_info.DoVulcan = WF (9);
-netGame.m_info.DoPlasma = WF (10);
-netGame.m_info.DoOmega = WF (11);
-netGame.m_info.DoSuperLaser = WF (12);
-netGame.m_info.DoProximity = WF (13);
-netGame.m_info.DoSpread = WF (14);
-netGame.m_info.DoMercury = WF (15);
-netGame.m_info.DoSmartMine = WF (16);
-netGame.m_info.DoFlash = WF (17);
-netGame.m_info.DoGuided = WF (18);
-netGame.m_info.DoEarthShaker = WF (19);
-netGame.m_info.DoConverter = WF (20);
-netGame.m_info.DoAmmoRack = WF (21);
-netGame.m_info.DoHeadlight = WF (22);
-netGame.m_info.DoHoming = WF (23);
-netGame.m_info.DoLaserUpgrade = WF (24);
-netGame.m_info.DoQuadLasers = WF (25);
-netGame.m_info.BrightPlayers = !WF (26);
-netGame.m_info.invul = WF (27);
+netGameInfo.m_info.DoMegas = WF (0);
+netGameInfo.m_info.DoSmarts = WF (1);
+netGameInfo.m_info.DoFusions = WF (2);
+netGameInfo.m_info.DoHelix = WF (3);
+netGameInfo.m_info.DoPhoenix = WF (4);
+netGameInfo.m_info.DoCloak = WF (5);
+netGameInfo.m_info.DoInvulnerability = WF (6);
+netGameInfo.m_info.DoAfterburner = WF (7);
+netGameInfo.m_info.DoGauss = WF (8);
+netGameInfo.m_info.DoVulcan = WF (9);
+netGameInfo.m_info.DoPlasma = WF (10);
+netGameInfo.m_info.DoOmega = WF (11);
+netGameInfo.m_info.DoSuperLaser = WF (12);
+netGameInfo.m_info.DoProximity = WF (13);
+netGameInfo.m_info.DoSpread = WF (14);
+netGameInfo.m_info.DoMercury = WF (15);
+netGameInfo.m_info.DoSmartMine = WF (16);
+netGameInfo.m_info.DoFlash = WF (17);
+netGameInfo.m_info.DoGuided = WF (18);
+netGameInfo.m_info.DoEarthShaker = WF (19);
+netGameInfo.m_info.DoConverter = WF (20);
+netGameInfo.m_info.DoAmmoRack = WF (21);
+netGameInfo.m_info.DoHeadlight = WF (22);
+netGameInfo.m_info.DoHoming = WF (23);
+netGameInfo.m_info.DoLaserUpgrade = WF (24);
+netGameInfo.m_info.DoQuadLasers = WF (25);
+netGameInfo.m_info.BrightPlayers = !WF (26);
+netGameInfo.m_info.invul = WF (27);
 }
 
 #undef WF
@@ -173,34 +173,34 @@ netGame.m_info.invul = WF (27);
 void GetAllAllowables (void)
 {
 mpParams.nWeaponFilter = 0;
-WF (netGame.m_info.DoMegas, 0);
-WF (netGame.m_info.DoSmarts, 1);
-WF (netGame.m_info.DoFusions, 2);
-WF (netGame.m_info.DoHelix, 3);
-WF (netGame.m_info.DoPhoenix, 4);
-WF (netGame.m_info.DoCloak, 5);
-WF (netGame.m_info.DoInvulnerability, 6);
-WF (netGame.m_info.DoAfterburner, 7);
-WF (netGame.m_info.DoGauss, 8);
-WF (netGame.m_info.DoVulcan, 9);
-WF (netGame.m_info.DoPlasma, 10);
-WF (netGame.m_info.DoOmega, 11);
-WF (netGame.m_info.DoSuperLaser, 12);
-WF (netGame.m_info.DoProximity, 13);
-WF (netGame.m_info.DoSpread, 14);
-WF (netGame.m_info.DoMercury, 15);
-WF (netGame.m_info.DoSmartMine, 16);
-WF (netGame.m_info.DoFlash, 17);
-WF (netGame.m_info.DoGuided, 18);
-WF (netGame.m_info.DoEarthShaker, 19);
-WF (netGame.m_info.DoConverter, 20);
-WF (netGame.m_info.DoAmmoRack, 21);
-WF (netGame.m_info.DoHeadlight, 22);
-WF (netGame.m_info.DoHoming, 23);
-WF (netGame.m_info.DoLaserUpgrade, 24);
-WF (netGame.m_info.DoQuadLasers, 25);
-WF (!netGame.m_info.BrightPlayers, 26);
-WF (netGame.m_info.invul, 27);
+WF (netGameInfo.m_info.DoMegas, 0);
+WF (netGameInfo.m_info.DoSmarts, 1);
+WF (netGameInfo.m_info.DoFusions, 2);
+WF (netGameInfo.m_info.DoHelix, 3);
+WF (netGameInfo.m_info.DoPhoenix, 4);
+WF (netGameInfo.m_info.DoCloak, 5);
+WF (netGameInfo.m_info.DoInvulnerability, 6);
+WF (netGameInfo.m_info.DoAfterburner, 7);
+WF (netGameInfo.m_info.DoGauss, 8);
+WF (netGameInfo.m_info.DoVulcan, 9);
+WF (netGameInfo.m_info.DoPlasma, 10);
+WF (netGameInfo.m_info.DoOmega, 11);
+WF (netGameInfo.m_info.DoSuperLaser, 12);
+WF (netGameInfo.m_info.DoProximity, 13);
+WF (netGameInfo.m_info.DoSpread, 14);
+WF (netGameInfo.m_info.DoMercury, 15);
+WF (netGameInfo.m_info.DoSmartMine, 16);
+WF (netGameInfo.m_info.DoFlash, 17);
+WF (netGameInfo.m_info.DoGuided, 18);
+WF (netGameInfo.m_info.DoEarthShaker, 19);
+WF (netGameInfo.m_info.DoConverter, 20);
+WF (netGameInfo.m_info.DoAmmoRack, 21);
+WF (netGameInfo.m_info.DoHeadlight, 22);
+WF (netGameInfo.m_info.DoHoming, 23);
+WF (netGameInfo.m_info.DoLaserUpgrade, 24);
+WF (netGameInfo.m_info.DoQuadLasers, 25);
+WF (!netGameInfo.m_info.BrightPlayers, 26);
+WF (netGameInfo.m_info.invul, 27);
 }
 
 #undef WF
@@ -308,10 +308,10 @@ if (nm > gameData.multiplayer.nMaxPlayers) {
 
 //       if (menu.ToS () > MAX_PLAYERS) return; 
 
-n = netGame.m_info.nNumPlayers;
+n = netGameInfo.m_info.nNumPlayers;
 NetworkListen ();
 
-if (n < netGame.m_info.nNumPlayers) {
+if (n < netGameInfo.m_info.nNumPlayers) {
 	audio.PlaySound (SOUND_HUD_MESSAGE);
 	if (gameOpts->multi.bNoRankings)
 	   sprintf (menu [gameData.multiplayer.nPlayers - 1].Text (), "%d. %-20s", 
@@ -326,7 +326,7 @@ if (n < netGame.m_info.nNumPlayers) {
 	if (gameData.multiplayer.nPlayers <= gameData.multiplayer.nMaxPlayers)
 		menu [gameData.multiplayer.nPlayers - 1].Value () = 1;
 	} 
-else if (n > netGame.m_info.nNumPlayers) {
+else if (n > netGameInfo.m_info.nNumPlayers) {
 	// One got removed...
    audio.PlaySound (SOUND_HUD_KILL);
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
@@ -385,11 +385,11 @@ if (menu.Value ("coop")) {
 		maxPlayers->MaxValue () = 2;
 		maxPlayers->Redraw ();
 		}
-	if (!(netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))
-		netGame.m_info.gameFlags |= NETGAME_FLAG_SHOW_MAP;
-	if (netGame.GetPlayTimeAllowed () || netGame.GetScoreGoal ()) {
-		netGame.SetPlayTimeAllowed (0);
-		netGame.SetScoreGoal (0);
+	if (!(netGameInfo.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))
+		netGameInfo.m_info.gameFlags |= NETGAME_FLAG_SHOW_MAP;
+	if (netGameInfo.GetPlayTimeAllowed () || netGameInfo.GetScoreGoal ()) {
+		netGameInfo.SetPlayTimeAllowed (0);
+		netGameInfo.SetScoreGoal (0);
 		}
 	}
 else {// if !Coop game
@@ -502,7 +502,7 @@ do {
 	m.AddText ("", szPPSLabel, KEY_P);
 	m.AddInput ("PPS", szPPS, 3, HTX_MULTI2_PPS);
 
-	nLastScoreGoal = netGame.GetScoreGoal ();
+	nLastScoreGoal = netGameInfo.GetScoreGoal ();
 	nLastPlayTime = mpParams.nMaxTime;
 
 doMenu:
@@ -1020,9 +1020,9 @@ int32_t GameParamsMenu (CMenu& m, int32_t& key, int32_t& choice, char* szName, c
 	int32_t i, bAnarchyOnly = (nNewMission < 0) ? 0 : missionManager [nNewMission].bAnarchyOnly;
 
 if (m ["mission name"]->Rebuilding ()) {
-	strncpy (netGame.m_info.szMissionName, 
+	strncpy (netGameInfo.m_info.szMissionName, 
 				(nNewMission < 0) ? "" : missionManager [nNewMission].filename, 
-				sizeof (netGame.m_info.szMissionName) - 1);
+				sizeof (netGameInfo.m_info.szMissionName) - 1);
 	m ["mission name"]->SetText ((nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager [nNewMission].szMissionName));
 	if ((nNewMission >= 0) && (missionManager.nLastLevel > 1)) {
 		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, missionManager.nLastLevel);
@@ -1087,7 +1087,7 @@ if (key != -1) {
 	int32_t h, j;
 		   
 	gameData.multiplayer.nMaxPlayers = m.Value ("max. players") + 2;
-	netGame.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
+	netGameInfo.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
 			
 	for (j = 0; j < networkData.nActiveGames; j++)
 		if (!stricmp (activeNetGames [j].m_info.szGameName, szName)) {
@@ -1117,8 +1117,8 @@ if (key != -1) {
 	if (!NetworkGetGameType (m, bAnarchyOnly))
 		return 1;
 	if (m.Value ("closed game"))
-		netGame.m_info.gameFlags |= NETGAME_FLAG_CLOSED;
-	netGame.m_info.bRefusePlayers = m.Value ("restricted game");
+		netGameInfo.m_info.gameFlags |= NETGAME_FLAG_CLOSED;
+	netGameInfo.m_info.bRefusePlayers = m.Value ("restricted game");
 	}
 NetworkSetGameMode (mpParams.nGameMode);
 if (key == -2)
@@ -1206,24 +1206,23 @@ if (gameStates.app.bNostalgia) {
 	extraGameInfo [1].bMslLockIndicators = 0;
 	extraGameInfo [1].bTagOnlyHitObjs = 0;
 	}
-netGame.m_info.szMissionName [sizeof (netGame.m_info.szMissionName) - 1] = '\0';
-strncpy (netGame.m_info.szMissionTitle, missionManager [nNewMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0), sizeof (netGame.m_info.szMissionTitle));
-netGame.m_info.szMissionTitle [sizeof (netGame.m_info.szMissionTitle) - 1] = '\0';
-netGame.SetControlInvulTime (mpParams.nReactorLife * 5 * I2X (60));
-netGame.SetPlayTimeAllowed (mpParams.nMaxTime);
-netGame.SetScoreGoal (mpParams.nScoreGoal * 5);
-netGame.SetPacketsPerSec (mpParams.nPPS);
-netGame.m_info.invul = mpParams.bInvul;
-netGame.m_info.BrightPlayers = mpParams.bBrightPlayers;
-netGame.SetShortPackets (mpParams.bShortPackets);
-netGame.m_info.bAllowMarkerView = mpParams.bMarkerView;
-netGame.m_info.bIndestructibleLights = mpParams.bIndestructibleLights; 
+netGameInfo.m_info.szMissionName [sizeof (netGameInfo.m_info.szMissionName) - 1] = '\0';
+strncpy (netGameInfo.m_info.szMissionTitle, missionManager [nNewMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0), sizeof (netGameInfo.m_info.szMissionTitle));
+netGameInfo.m_info.szMissionTitle [sizeof (netGameInfo.m_info.szMissionTitle) - 1] = '\0';
+netGameInfo.SetControlInvulTime (mpParams.nReactorLife * 5 * I2X (60));
+netGameInfo.SetPlayTimeAllowed (mpParams.nMaxTime);
+netGameInfo.SetScoreGoal (mpParams.nScoreGoal * 5);
+netGameInfo.SetPacketsPerSec (mpParams.nPPS);
+netGameInfo.m_info.invul = mpParams.bInvul;
+netGameInfo.m_info.BrightPlayers = mpParams.bBrightPlayers;
+netGameInfo.SetShortPackets (mpParams.bShortPackets);
+netGameInfo.m_info.bAllowMarkerView = mpParams.bMarkerView;
+netGameInfo.m_info.bIndestructibleLights = mpParams.bIndestructibleLights; 
 if (mpParams.bShowPlayersOnAutomap)
-	netGame.m_info.gameFlags |= NETGAME_FLAG_SHOW_MAP;
+	netGameInfo.m_info.gameFlags |= NETGAME_FLAG_SHOW_MAP;
 else
-	netGame.m_info.gameFlags &= ~NETGAME_FLAG_SHOW_MAP;
+	netGameInfo.m_info.gameFlags &= ~NETGAME_FLAG_SHOW_MAP;
 gameStates.app.nDifficultyLevel = mpParams.nDifficulty;
-NetworkAdjustMaxDataSize ();
 IpxChangeDefaultSocket ((uint16_t) (IPX_DEFAULT_SOCKET + networkData.nPortOffset));
 return key;
 }

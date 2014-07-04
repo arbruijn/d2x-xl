@@ -473,7 +473,7 @@ void GameDrawTimeLeft (void)
 
 fontManager.SetCurrent (GAME_FONT);    //GAME_FONT
 fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
-timevar = I2X (netGame.GetPlayTimeAllowed () * 5 * 60);
+timevar = I2X (netGameInfo.GetPlayTimeAllowed () * 5 * 60);
 i = X2I (timevar - gameStates.app.xThisLevelTime) + 1;
 sprintf (temp_string, TXT_TIME_LEFT, i);
 if (i >= 0)

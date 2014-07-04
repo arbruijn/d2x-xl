@@ -5,10 +5,10 @@
 
 class CNetworkPacketOwner {
 	public:
-		CPacketAddress	m_address;
-		tNetworkAddr	m_localAddress;
-		uint8_t			m_bHaveLocalAddress;
-		uint8_t			m_nPlayer;
+		CPacketAddress		m_address;
+		tNetworkNode		m_localAddress;
+		uint8_t				m_bHaveLocalAddress;
+		uint8_t				m_nPlayer;
 
 	public:
 		CNetworkPacketOwner () { m_bHaveLocalAddress = 0; }
@@ -31,34 +31,34 @@ class CNetworkPacketOwner {
 
 		inline uint8_t* Network (void) { return m_address.Network (); }
 		inline uint8_t* Node (void) { return m_address.Node (); }
-		inline uint8_t* LocalNode (void) { return m_localAddress.node; }
+		inline uint8_t* LocalNode (void) { return m_localAddress.b; }
 };
 
 //------------------------------------------------------------------------------
 
-class CNetworkData {
+class CNetworkPacketData {
 	public:
 		uint16_t	m_size;
 		uint8_t	m_data [MAX_PACKET_SIZE];
 
 	public:
-		CNetworkData () : m_size (0) {}
+		CNetworkPacketData () : m_size (0) {}
 		inline void SetData (uint8_t* data, int32_t size, int32_t offset = 0) { 
 			memcpy (m_data + offset, data, size); 
 			m_size = offset + size;
 			}
-		inline CNetworkData& operator= (CNetworkData& other) { 
+		inline CNetworkPacketData& operator= (CNetworkPacketData& other) { 
 			SetData (other.m_data, other.m_size); 
 			return *this;
 			}
 		inline int32_t Size (void) { return m_size; }
 		inline int32_t SetSize (int32_t size) { return m_size = size; }
-		inline bool operator== (CNetworkData& other) { return (m_size == other.m_size) && !memcmp (m_data, other.m_data, m_size); }
+		inline bool operator== (CNetworkPacketData& other) { return (m_size == other.m_size) && !memcmp (m_data, other.m_data, m_size); }
 };
 
 //------------------------------------------------------------------------------
 
-class CNetworkPacket : public CNetworkData {
+class CNetworkPacket : public CNetworkPacketData {
 	public:	
 		CNetworkPacket*		m_nextPacket;
 		uint32_t					m_timestamp;
@@ -77,7 +77,7 @@ class CNetworkPacket : public CNetworkData {
 		inline void SetUrgent (int32_t bUrgent) { m_bUrgent = bUrgent; }
 		bool Combineable (uint8_t type);
 		bool Combine (uint8_t* data, int32_t size, uint8_t* network, uint8_t* node);
-		inline bool operator== (CNetworkPacket& other) { return (m_owner.m_address == other.m_owner.m_address) && ((CNetworkData&) *this == (CNetworkData&) other); }
+		inline bool operator== (CNetworkPacket& other) { return (m_owner.m_address == other.m_owner.m_address) && ((CNetworkPacketData&) *this == (CNetworkPacketData&) other); }
 };
 
 //------------------------------------------------------------------------------

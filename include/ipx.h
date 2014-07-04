@@ -23,7 +23,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define IPX_PAYLOAD_SIZE	542
 #define PPPoE_MTU				1492	// typical PPPoE based DSL MTU (MTUs can differ depending on protocols used for DSL connection)
 #define UDP_PACKET_SIZE		PPPoE_MTU
-#define UDP_HEADER_SIZE		18		//4 bytes for general networking, 14 bytes for udp stuff
+#define UDP_HEADER_SIZE		18		// 4 bytes for general networking, 14 bytes for udp stuff
 #define UDP_PAYLOAD_SIZE	(UDP_PACKET_SIZE - UDP_HEADER_SIZE)		
 
 #define MAX_PACKET_SIZE		UDP_PACKET_SIZE
@@ -46,65 +46,61 @@ extern void ArchIpxSetDriver(int32_t ipx_driver);
 //------------------------------------------------------------------------------
 
 typedef union tPort {
-	uint8_t		b [2];
-	uint16_t	s;
+	uint8_t			b [2];
+	uint16_t			p;
 } __pack__ tPort;
 
-typedef union tIP {
-	uint32_t		a;
-	uint8_t		octets [4];
-} __pack__ tIP;
+typedef union tIPAddress {
+	uint32_t			a;
+	uint8_t			octets [4];
+} __pack__ tIPAddress;
 
 typedef struct tPortAddress {
-	tIP		ip;
-	tPort		port;
+	tIPAddress		ip;
+	tPort				port;
 } __pack__ tPortAddress;
 
-typedef union tNetworkAddr {
+typedef union tNetworkNode { // local address in a (sub) network
 	tPortAddress	portAddress;
-	uint8_t				node [6];
-} tNetworkAddr;
+	uint8_t			b [6];
+} tNetworkNode;
 
-typedef struct tNetworkNode {
-	union {
-		uint8_t		b [4];
-		uint32_t		n;
-	} network;
-	tNetworkAddr	address;
-} __pack__ tNetworkNode;
+typedef struct tNetworkAddress { // global address with network and (intra-network) node address
+	tIPAddress		network;
+	tNetworkNode	node;
+} __pack__ tNetworkAddress;
 
 typedef struct tAppleTalkAddr {
-	uint16_t  net;
-	uint8_t   node;
-	uint8_t   socket;
+	uint16_t			net;
+	uint8_t			node;
+	uint8_t			socket;
 } __pack__ tAppleTalkAddr;
 
 typedef union {
-	public:
-		tNetworkNode	node;
-		tAppleTalkAddr	appletalk;
+	tNetworkAddress	address;
+	tAppleTalkAddr		appletalk;
 } __pack__ tNetworkInfo;
 
 class CNetworkNode {
 	public:
-		tNetworkNode	m_address;
+		tNetworkAddress	m_address;
 
-		inline uint8_t* Network (void) { return m_address.network.b; }
-		inline uint8_t* Node (void) { return m_address.address.node; }
-		inline uint8_t* Server (void) { return m_address.address.portAddress.ip.octets; }
-		inline uint16_t Port (void) { return m_address.address.portAddress.port.s; }
+		inline uint8_t* Network (void) { return m_address.network.octets; }
+		inline uint8_t* Node (void) { return m_address.node.b; }
+		inline uint8_t* Server (void) { return m_address.node.portAddress.ip.octets; }
+		inline uint16_t Port (void) { return m_address.node.portAddress.port.p; }
 
-		inline void SetNetwork (void* network) { memcpy (m_address.network.b, (uint8_t*) network, sizeof (m_address.network)); }
-		inline void SetNode (void* node) { memcpy (m_address.address.node, (uint8_t*) node, sizeof (m_address.address.node)); }
-		inline void SetServer (void* ip) { memcpy (m_address.address.portAddress.ip.octets, (uint8_t*) ip, sizeof (m_address.address.portAddress.ip.octets)); }
-		inline void SetServer (uint32_t ip) { m_address.address.portAddress.ip.a = ip; }
-		inline void SetPort (void* port) { memcpy (m_address.address.portAddress.port.b, (uint8_t*) port, sizeof (m_address.address.portAddress.port.b)); }
-		inline void SetPort (uint16_t port) { m_address.address.portAddress.port.s = port; }
+		inline void SetNetwork (void* network) { memcpy (m_address.network.octets, (uint8_t*) network, sizeof (m_address.network)); }
+		inline void SetNode (void* node) { memcpy (m_address.node.b, (uint8_t*) node, sizeof (m_address.node.b)); }
+		inline void SetServer (void* ip) { memcpy (m_address.node.portAddress.ip.octets, (uint8_t*) ip, sizeof (m_address.node.portAddress.ip.octets)); }
+		inline void SetServer (uint32_t ip) { m_address.node.portAddress.ip.a = ip; }
+		inline void SetPort (void* port) { memcpy (m_address.node.portAddress.port.b, (uint8_t*) port, sizeof (m_address.node.portAddress.port.b)); }
+		inline void SetPort (uint16_t port) { m_address.node.portAddress.port.p = port; }
 
-		inline void ResetServer (uint8_t filler = 0) { memset (m_address.address.portAddress.ip.octets, filler, sizeof (m_address.address.portAddress.ip.octets)); }
-		inline void ResetNetwork (uint8_t filler = 0) { memset (m_address.network.b, filler, sizeof (m_address.network)); }
-		inline void ResetNode (uint8_t filler = 0) { memset (m_address.address.node, filler, sizeof (m_address.address.node)); }
-		inline void ResetPort (uint8_t filler = 0) { memset (m_address.address.portAddress.port.b, filler, sizeof (m_address.address.portAddress.port)); }
+		inline void ResetServer (uint8_t filler = 0) { memset (m_address.node.portAddress.ip.octets, filler, sizeof (m_address.node.portAddress.ip.octets)); }
+		inline void ResetNetwork (uint8_t filler = 0) { memset (m_address.network.octets, filler, sizeof (m_address.network)); }
+		inline void ResetNode (uint8_t filler = 0) { memset (m_address.node.b, filler, sizeof (m_address.node.b)); }
+		inline void ResetPort (uint8_t filler = 0) { memset (m_address.node.portAddress.port.b, filler, sizeof (m_address.node.portAddress.port)); }
 	};
 
 class CNetworkInfo {
@@ -112,23 +108,23 @@ class CNetworkInfo {
 		tNetworkInfo	m_info;
 
 	public:
-		inline uint8_t* Network (void) { return m_info.node.network.b; }
-		inline uint8_t* Node (void) { return m_info.node.address.node; }
-		inline uint8_t* Server (void) { return m_info.node.address.portAddress.ip.octets; }
-		inline uint16_t* Port (void) { return &m_info.node.address.portAddress.port.s; }
+		inline uint8_t* Network (void) { return m_info.address.network.octets; }
+		inline uint8_t* Node (void) { return m_info.address.node.b; }
+		inline uint8_t* Server (void) { return m_info.address.node.portAddress.ip.octets; }
+		inline uint16_t* Port (void) { return &m_info.address.node.portAddress.port.p; }
 
-		inline void SetNetwork (void* network) { memcpy (m_info.node.network.b, (uint8_t*) network, sizeof (m_info.node.network)); }
-		inline void SetNetwork (uint32_t network) {m_info.node.network.n = network; }
-		inline void SetNode (void* node) { memcpy (m_info.node.address.node, (uint8_t*) node, sizeof (m_info.node.address.node)); }
-		inline void SetServer (void* ip) { memcpy (m_info.node.address.portAddress.ip.octets, (uint8_t*) ip, sizeof (m_info.node.address.portAddress.ip.octets)); }
-		inline void SetServer (uint32_t ip) { m_info.node.address.portAddress.ip.a = ip; }
-		inline void SetPort (void* port) { memcpy (m_info.node.address.portAddress.port.b, (uint8_t*) port, sizeof (m_info.node.address.portAddress.port.b)); }
-		inline void SetPort (uint16_t port) { m_info.node.address.portAddress.port.s = port; }
+		inline void SetNetwork (void* network) { memcpy (m_info.address.network.octets, (uint8_t*) network, sizeof (m_info.address.network)); }
+		inline void SetNetwork (uint32_t network) {m_info.address.network.a = network; }
+		inline void SetNode (void* node) { memcpy (m_info.address.node.b, (uint8_t*) node, sizeof (m_info.address.node.b)); }
+		inline void SetServer (void* ip) { memcpy (m_info.address.node.portAddress.ip.octets, (uint8_t*) ip, sizeof (m_info.address.node.portAddress.ip.octets)); }
+		inline void SetServer (uint32_t ip) { m_info.address.node.portAddress.ip.a = ip; }
+		inline void SetPort (void* port) { memcpy (m_info.address.node.portAddress.port.b, (uint8_t*) port, sizeof (m_info.address.node.portAddress.port.b)); }
+		inline void SetPort (uint16_t port) { m_info.address.node.portAddress.port.p = port; }
 
-		inline void ResetNetwork (uint8_t filler = 0) { memset (m_info.node.network.b, filler, sizeof (m_info.node.network)); }
-		inline void ResetNode (uint8_t filler = 0) { memset (m_info.node.address.node, filler, sizeof (m_info.node.address.node)); }
+		inline void ResetNetwork (uint8_t filler = 0) { memset (m_info.address.network.octets, filler, sizeof (m_info.address.network)); }
+		inline void ResetNode (uint8_t filler = 0) { memset (m_info.address.node.b, filler, sizeof (m_info.address.node.b)); }
 
-		inline bool HaveNetwork (void) { return m_info.node.network.n != 0; }
+		inline bool HaveNetwork (void) { return m_info.address.network.a != 0; }
 
 		inline bool operator== (CNetworkInfo& other) { return !memcmp (&m_info, &other.m_info, sizeof (m_info)); }
 

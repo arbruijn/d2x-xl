@@ -810,7 +810,7 @@ if ((nObject >= 0) && (m_nLinks > 0)) {
 	TriggerSetObjOrient (nObject, nSegment, nSide, 1, 0);
 	TriggerSetObjPos (nObject, nSegment);
 	gameStates.render.bDoAppearanceEffect = 1;
-	MultiSendTeleport ((char) nObject, nSegment, (char) nSide);
+	MultiSendTeleport (N_LOCALPLAYER, nSegment, (uint8_t) nSide);
 	}
 }
 

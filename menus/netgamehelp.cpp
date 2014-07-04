@@ -50,23 +50,23 @@ void DoShowNetGameHelp (void)
 #endif
 	//char *eff_strings[]={"trashing", "really hurting", "seriously affecting", "hurting", "affecting", "tarnishing"};
 
-sprintf (szText, TXT_INFO_GAME, netGame.m_info.szGameName);
+sprintf (szText, TXT_INFO_GAME, netGameInfo.m_info.szGameName);
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_MISSION, netGame.m_info.szMissionTitle);
+sprintf (szText, TXT_INFO_MISSION, netGameInfo.m_info.szMissionTitle);
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_LEVEL, netGame.m_info.GetLevel ());
+sprintf (szText, TXT_INFO_LEVEL, netGameInfo.m_info.GetLevel ());
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_SKILL, MENU_DIFFICULTY_TEXT (netGame.m_info.difficulty));
+sprintf (szText, TXT_INFO_SKILL, MENU_DIFFICULTY_TEXT (netGameInfo.m_info.difficulty));
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_MODE, GT (537 + netGame.m_info.gameMode));
+sprintf (szText, TXT_INFO_MODE, GT (537 + netGameInfo.m_info.gameMode));
 m.AddText ("", szText);
 sprintf (szText, TXT_INFO_SERVER, gameData.multiplayer.players [WhoIsGameHost()].callsign);
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_PLRNUM, NetworkHowManyConnected (), netGame.m_info.nMaxPlayers);
+sprintf (szText, TXT_INFO_PLRNUM, NetworkHowManyConnected (), netGameInfo.m_info.nMaxPlayers);
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_PPS, netGame.GetPacketsPerSec ());
+sprintf (szText, TXT_INFO_PPS, netGameInfo.GetPacketsPerSec ());
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_SHORTPKT, netGame.GetShortPackets () ? "Yes" : "No");
+sprintf (szText, TXT_INFO_SHORTPKT, netGameInfo.GetShortPackets () ? "Yes" : "No");
 m.AddText ("", szText);
 #if DBG
 nLost = (int32_t) ((double (networkData.nTotalMissedPackets) / double (networkData.nTotalPacketsGot + networkData.nTotalMissedPackets)) * 100.0);
@@ -75,8 +75,8 @@ if (nLost < 0)
 sprintf (szText, TXT_INFO_LOSTPKT, networkData.nTotalMissedPackets, nLost);
 m.AddText ("", szText);
 #endif
-if (netGame.GetScoreGoal ())
-	sprintf (szText, TXT_INFO_SCOREGOAL, netGame.GetScoreGoal () * 5);
+if (netGameInfo.GetScoreGoal ())
+	sprintf (szText, TXT_INFO_SCOREGOAL, netGameInfo.GetScoreGoal () * 5);
 sprintf (szText, " ");
 sprintf (szText, TXT_INFO_PLRSCONN);
 netPlayers [0].m_info.players [N_LOCALPLAYER].rank = GetMyNetRanking ();

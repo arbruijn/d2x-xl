@@ -14,6 +14,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #ifndef _NETWORK_LIB_H
 #define _NETWORK_LIB_H
 
+#include "multi.h"
+
 //------------------------------------------------------------------------------
 
 #define SECURITY_CHECK		1
@@ -39,24 +41,162 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+typedef union tFrameInfo {
+	tFrameInfoLong		longInfo;
+	tFrameInfoShort	shortInfo;
+	uint8_t				data [MAX_PACKET_SIZE];
+} tFrameInfo;
+
+class CSyncPack {
+	public:
+		uint32_t	m_nPackets;
+
+	public:
+		virtual void Reset (void) { MsgDataSize () = 0; }
+		virtual int32_t HeaderSize (void) = 0;
+		virtual int32_t MaxDataSize (void) = 0;
+		virtual tFrameInfoHeader& Header (void) = 0;
+		virtual tFrameInfoData& Data (void) = 0;
+		virtual void* Info (void) = 0;
+		virtual void SetInfo (void* info) = 0;
+
+		virtual uint8_t* Buffer (void) { return reinterpret_cast<uint8_t*> (this); }
+		virtual int32_t Size (void) { return HeaderSize () + MsgDataSize (); }
+
+		virtual uint8_t* MsgData (uint32_t offset = 0) { return Data ().msgData + offset; }
+		virtual uint16_t& MsgDataSize (void) { return Data ().dataSize; }
+
+		virtual void SetType (uint8_t nType) { Header ().nType = nType; }
+		virtual void SetPackets (int32_t nPackets) { Header ().nPackets = nPackets; }
+		virtual void SetPlayer (uint8_t nPlayer) { Data ().nPlayer = nPlayer; }
+		virtual void SetRenderType (uint8_t nRenderType) { Data ().nRenderType = nRenderType; }
+		virtual void SetLevel (uint8_t nLevel) { Data ().nLevel = nLevel; }
+
+		virtual uint8_t GetType (void) { return Header ().nType; }
+		virtual int32_t GetPackets (void) { return Header ().nPackets; }
+		virtual uint8_t GetPlayer (void) { return Data ().nPlayer; }
+		virtual uint8_t GetRenderType (void) { return Data ().nRenderType; }
+		virtual uint8_t GetLevel (void) { return Data ().nLevel; }
+
+		virtual void SetObjInfo (CObject* objP) = 0;
+
+		virtual bool Overflow (uint16_t msgLen) { return MsgDataSize () + msgLen > MaxDataSize (); }
+
+		virtual int AppendMessage (uint8_t* msg, uint16_t msgLen) {
+			if (Overflow (msgLen))
+				Send ();
+			memcpy (MsgData (MsgDataSize ()), msg, msgLen);
+			MsgDataSize () += msgLen;
+			return MsgDataSize ();
+			}
+
+		virtual void Squish (void) = 0;
+
+		virtual void Prepare (void);
+		virtual void Send (void);
+	};
+
+
+class CSyncPackLong : public CSyncPack {
+	public:
+		tFrameInfoLong m_info;
+
+	public:
+		virtual void* Info (void) { return &m_info; }
+		virtual int32_t HeaderSize (void) { return sizeof (m_info) - UDP_PAYLOAD_SIZE; }
+		virtual int32_t MaxDataSize (void) { return UDP_PAYLOAD_SIZE - HeaderSize (); }
+		virtual tFrameInfoHeader& Header (void) { return m_info.header; }
+		virtual tFrameInfoData& Data (void) { return m_info.data; }
+		virtual void SetInfo (void* info) { memcpy (&m_info, info, HeaderSize () + reinterpret_cast<tFrameInfoLong*>(info)->data.dataSize); }
+		virtual void SetObjInfo (CObject* objP) { CreateLongPos (&m_info.objData, objP); }
+		virtual void Squish (void);
+
+		inline CSyncPackLong& operator= (tFrameInfoLong& info) { 
+			SetInfo (&info); 
+			return *this;
+			}
+	};
+
+
+class CSyncPackShort : public CSyncPack {
+	public:
+		tFrameInfoShort m_info;
+
+	public:
+		virtual void* Info (void) { return &m_info; }
+		virtual int32_t HeaderSize (void) { return sizeof (m_info) - UDP_PAYLOAD_SIZE; }
+		virtual int32_t MaxDataSize (void) { return NET_XDATA_SIZE; }
+		virtual tFrameInfoHeader& Header (void) { return m_info.header; }
+		virtual tFrameInfoData& Data (void) { return m_info.data; }
+		virtual void SetInfo (void* info) { memcpy (&m_info, info, HeaderSize () + reinterpret_cast<tFrameInfoShort*>(info)->data.dataSize); }
+		virtual void SetObjInfo (CObject* objP) { CreateShortPos (&m_info.objData, objP); }
+		virtual void Squish (void);
+
+		inline CSyncPackShort& operator= (tFrameInfoShort& info) { 
+			SetInfo (&info); 
+			return *this;
+			}
+	};
+
+//------------------------------------------------------------------------------
+
+typedef struct tNakedData {
+	int32_t	nLength;
+	int32_t	receiver;
+   uint8_t	buffer [UDP_PAYLOAD_SIZE];
+	} __pack__ tNakedData;
+
+class CNakedData {
+	public:
+		tNakedData	m_data;
+
+	public:
+		CNakedData () { Reset (); }
+
+		inline void Reset (void) {
+			m_data.nLength = 0;
+			m_data.receiver = -1;
+			}
+
+		inline int32_t Length (void) { return m_data.nLength; }
+
+		inline int32_t SetLength (int nLength) { return m_data.nLength = nLength; }
+
+		inline uint8_t* Buffer (int32_t offset = 0) { return m_data.buffer + offset; }
+
+		inline int32_t HeaderSize (void) { return sizeof (m_data) - UDP_PAYLOAD_SIZE; }
+
+		inline int32_t MaxDataSize (void) { return (gameStates.multi.nGameType == UDP_GAME) ? UDP_PAYLOAD_SIZE - HeaderSize () : NET_XDATA_SIZE + 4; }
+
+		inline tNakedData& Data (void) { return m_data; }
+
+		void Flush (void);
+
+		void SendMessage (uint8_t* msgBuf, int16_t msgLen, int32_t receiver);
+	};
+
+extern CNakedData nakedData;
+
+//------------------------------------------------------------------------------
+
 typedef struct tMissingObjFrames {
-	uint8_t					pid;
-	uint8_t					nPlayer;
+	uint8_t				pid;
+	uint8_t				nPlayer;
 	uint16_t				nFrame;
 } __pack__ tMissingObjFrames;
 
 typedef struct tRefuseData {
-	char	bThisPlayer;
-	char	bWaitForAnswer;
-	char	bTeam;
-	char	szPlayer [12];
-	fix	xTimeLimit;
+	char					bThisPlayer;
+	char					bWaitForAnswer;
+	char					bTeam;
+	char					szPlayer [12];
+	fix					xTimeLimit;
 	} __pack__ tRefuseData;
 
 typedef struct tSyncObjectsData {
-	int32_t					nMode;
-	int32_t					nCurrent;
-	int32_t					nSent;
+	int32_t				nMode;
+	int32_t				nCurrent;
+	int32_t				nSent;
 	uint16_t				nFrame;
 	tMissingObjFrames	missingFrames;
 } __pack__ tSyncObjectsData;
@@ -65,10 +205,10 @@ typedef struct tNetworkSyncData {
 	time_t				timeout;
 	time_t				tLastJoined;
 	tSequencePacket	player [2];
-	int16_t					nPlayer;
-	int16_t					nExtrasPlayer; 
-	int16_t					nState;
-	int16_t					nExtras;
+	int16_t				nPlayer;
+	int16_t				nExtrasPlayer; 
+	int16_t				nState;
+	int16_t				nExtras;
 	bool					bExtraGameInfo;
 	bool					bAllowedPowerups;
 	bool					bDeferredSync;
@@ -79,80 +219,80 @@ typedef struct tNetworkSyncData {
 #include "ipx_udp.h"
 #include "timeout.h"
 
-typedef struct tNetworkData {
-	uint8_t					localAddress [10];
-	uint8_t					serverAddress [10];
-	CPacketAddress		packetSource;
-	int32_t					nActiveGames;
-	int32_t					nLastActiveGames;
-	int32_t					nNamesInfoSecurity;
-	int32_t					nPacketsPerSec;
-	int32_t					nMaxXDataSize;
-	int32_t					nNetLifeKills;
-	int32_t					nNetLifeKilled;
-	int32_t					bDebug;
-	int32_t					bActive;
-	int32_t					nStatus;
-	int32_t					bGamesChanged;
-	int32_t					nPortOffset;
-	int32_t					bAllowSocketChanges;
-	int32_t					nSecurityFlag;
-	int32_t					nSecurityNum;
-	int32_t					nJoinState;
-	int32_t					bNewGame;       
-	int32_t					bPlayerAdded;   
-	int32_t					bD2XData;
-	int32_t					nSecurityCheck;
-	fix					nLastPacketTime [MAX_PLAYERS];
-	int32_t					bPacketUrgent;
-	int32_t					nGameType;
-	int32_t					nTotalMissedPackets;
-	int32_t					nTotalPacketsGot;
-	int32_t					nMissedPackets;
-	int32_t					nConsistencyErrorCount;
-	tFrameInfoLong		syncPack;
-	tFrameInfoLong		urgentSyncPack;
-	uint8_t					bSyncPackInited;       
-	uint16_t				nSegmentCheckSum;
-	tSequencePacket	thisPlayer;
-	char					bWantPlayersInfo;
-	char					bWaitingForPlayerInfo;
-	fix					nStartWaitAllTime;
-	int32_t					bWaitAllChoice;
-	fix					xLastSendTime;
-	fix					xLastTimeoutCheck;
-	fix					xPingReturnTime;
-	int32_t					bShowPingStats;
-	int32_t					tLastPingStat;
-	int32_t					bHaveSync;
-	int16_t					nPrevFrame;
-	int32_t					bTraceFrames;
-	tRefuseData			refuse;
-	CTimeout				toSyncPoll;
-	time_t				toWaitAllPoll;
-	tNetworkSyncData	sync [MAX_JOIN_REQUESTS];
-	int16_t					nJoining;
-	int32_t					xmlGameInfoRequestTime;
-} tNetworkData;
+class CNetworkData {
+	public:
+		uint8_t					localAddress [10];
+		uint8_t					serverAddress [10];
+		CPacketAddress			packetSource;
+		int32_t					nActiveGames;
+		int32_t					nLastActiveGames;
+		int32_t					nNamesInfoSecurity;
+		int32_t					nPacketsPerSec;
+		int32_t					nNetLifeKills;
+		int32_t					nNetLifeKilled;
+		int32_t					bDebug;
+		int32_t					bActive;
+		int32_t					nStatus;
+		int32_t					bGamesChanged;
+		int32_t					nPortOffset;
+		int32_t					bAllowSocketChanges;
+		int32_t					nSecurityFlag;
+		int32_t					nSecurityNum;
+		int32_t					nJoinState;
+		int32_t					bNewGame;       
+		int32_t					bPlayerAdded;   
+		int32_t					bD2XData;
+		int32_t					nSecurityCheck;
+		fix						nLastPacketTime [MAX_PLAYERS];
+		int32_t					bPacketUrgent;
+		int32_t					nGameType;
+		int32_t					nTotalMissedPackets;
+		int32_t					nTotalPacketsGot;
+		int32_t					nMissedPackets;
+		int32_t					nConsistencyErrorCount;
+		CSyncPackLong			longSyncPack;
+		CSyncPackShort		shortSyncPack;
+		uint8_t					bSyncPackInited;       
+		uint16_t					nSegmentCheckSum;
+		tSequencePacket		thisPlayer;
+		char						bWantPlayersInfo;
+		char						bWaitingForPlayerInfo;
+		fix						nStartWaitAllTime;
+		int32_t					bWaitAllChoice;
+		fix						xLastSendTime;
+		fix						xLastTimeoutCheck;
+		fix						xPingReturnTime;
+		int32_t					bShowPingStats;
+		int32_t					tLastPingStat;
+		int32_t					bHaveSync;
+		int16_t					nPrevFrame;
+		int32_t					bTraceFrames;
+		tRefuseData				refuse;
+		CTimeout					toSyncPoll;
+		time_t					toWaitAllPoll;
+		tNetworkSyncData		sync [MAX_JOIN_REQUESTS];
+		int16_t					nJoining;
+		int32_t					xmlGameInfoRequestTime;
 
-extern tNetworkData networkData;
+	public:
+		CSyncPack& SyncPack (void) { 
+			if (netGameInfo.GetShortPackets ()) 
+				return shortSyncPack;
+			else
+				return longSyncPack; 
+			}
+};
+
+extern CNetworkData networkData;
 
 //------------------------------------------------------------------------------
 
 typedef struct tIPToCountry {
 	int32_t	minIP, maxIP;
-	char  country [4];
+	char		country [4];
 } tIPToCountry;
 
 //------------------------------------------------------------------------------
-
-typedef struct tNakedData {
-	int32_t	nLength;
-	int32_t	nDestPlayer;
-   char	buf [NET_XDATA_SIZE + 4];
-	} __pack__ tNakedData;
-
-extern tNakedData	nakedData;
 
 extern CNetGameInfo tempNetInfo;
 
@@ -180,6 +320,7 @@ int32_t FindActiveNetGame (char *pszGameName, int32_t nSecurity);
 void DeleteActiveNetGame (int32_t i);
 int32_t WhoIsGameHost (void);
 void NetworkConsistencyError (void);
+
 void NetworkPing (uint8_t flag, uint8_t nPlayer);
 void NetworkHandlePingReturn (uint8_t nPlayer);
 void DoRefuseStuff (tSequencePacket *their);

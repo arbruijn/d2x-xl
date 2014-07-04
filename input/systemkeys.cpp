@@ -793,20 +793,20 @@ void HandleGameKey(int32_t key)
 			SwitchTeam (N_LOCALPLAYER, 0);
 			break;
 		case KEY_F6:
-			if (netGame.m_info.bRefusePlayers && networkData.refuse.bWaitForAnswer && !IsTeamGame) {
+			if (netGameInfo.m_info.bRefusePlayers && networkData.refuse.bWaitForAnswer && !IsTeamGame) {
 				networkData.refuse.bThisPlayer = 1;
 				HUDInitMessage (TXT_ACCEPT_PLR);
 				}
 			break;
 		case KEY_ALTED + KEY_1:
-			if (netGame.m_info.bRefusePlayers && networkData.refuse.bWaitForAnswer && IsTeamGame) {
+			if (netGameInfo.m_info.bRefusePlayers && networkData.refuse.bWaitForAnswer && IsTeamGame) {
 				networkData.refuse.bThisPlayer = 1;
 				HUDInitMessage (TXT_ACCEPT_PLR);
 				networkData.refuse.bTeam = 1;
 				}
 			break;
 		case KEY_ALTED + KEY_2:
-			if (netGame.m_info.bRefusePlayers && networkData.refuse.bWaitForAnswer && IsTeamGame) {
+			if (netGameInfo.m_info.bRefusePlayers && networkData.refuse.bWaitForAnswer && IsTeamGame) {
 				networkData.refuse.bThisPlayer = 1;
 				HUDInitMessage (TXT_ACCEPT_PLR);
 				networkData.refuse.bTeam = 2;

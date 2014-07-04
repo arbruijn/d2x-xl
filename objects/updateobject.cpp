@@ -462,7 +462,7 @@ if (gameStates.render.bDropAfterburnerBlob) {
 	Assert (this == gameData.objs.consoleP);
 	DropAfterburnerBlobs (this, 2, I2X (5) / 2, -1, NULL, 0);	//	-1 means use default lifetime
 	if (IsMultiGame)
-		MultiSendDropBlobs ((char) N_LOCALPLAYER);
+		MultiSendDropBlobs (N_LOCALPLAYER);
 	gameStates.render.bDropAfterburnerBlob = 0;
 	}
 

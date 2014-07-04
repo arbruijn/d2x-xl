@@ -95,20 +95,20 @@ sprintf (szFeedbackResult, "%s ", TXT_MESSAGE_SENT_TO);
 if (IsTeamGame && (atoi (gameData.multigame.msg.szMsg) > 0) && 
 	 (atoi (gameData.multigame.msg.szMsg) < 3)) {
 	sprintf (szFeedbackResult+strlen (szFeedbackResult), "%s '%s'", 
-				TXT_TEAM, netGame.m_info.szTeamName [atoi (gameData.multigame.msg.szMsg)-1]);
+				TXT_TEAM, netGameInfo.m_info.szTeamName [atoi (gameData.multigame.msg.szMsg)-1]);
 	bFound = 1;
 	}
 if (!bFound)
 	if (IsTeamGame) {
 		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if (!strnicmp (netGame.m_info.szTeamName [i], gameData.multigame.msg.szMsg, l)) {
+			if (!strnicmp (netGameInfo.m_info.szTeamName [i], gameData.multigame.msg.szMsg, l)) {
 				if (bFound)
 					strcat (szFeedbackResult, ", ");
 				bFound++;
 				if (!(bFound % 4))
 					strcat (szFeedbackResult, "\n");
 				sprintf (szFeedbackResult+strlen (szFeedbackResult), "%s '%s'", 
-							TXT_TEAM, netGame.m_info.szTeamName [i]);
+							TXT_TEAM, netGameInfo.m_info.szTeamName [i]);
 				}
 			}
 		}
@@ -191,7 +191,7 @@ if (gameStates.multi.bPlayerIsTyping [N_LOCALPLAYER]) {
 	if (gameStates.app.nSDLTicks [0] - gameData.multigame.nTypingTimeout > 1000) {
 		gameData.multigame.nTypingTimeout = gameStates.app.nSDLTicks [0];
 		gameData.multigame.msg.buf [0] = (char) MULTI_START_TYPING;
-		gameData.multigame.msg.buf [1] = (char) N_LOCALPLAYER; 
+		gameData.multigame.msg.buf [1] = N_LOCALPLAYER; 
 		gameData.multigame.msg.buf [2] = gameData.multigame.msg.bSending;
 		MultiSendData (gameData.multigame.msg.buf, 3, 0);
 		}
@@ -224,7 +224,7 @@ gameData.multigame.msg.bDefining = 0;
 gameData.multigame.msg.nIndex = 0;
 gameStates.multi.bPlayerIsTyping [N_LOCALPLAYER] = 0;
 gameData.multigame.msg.buf [0] = (char) MULTI_QUIT_TYPING;
-gameData.multigame.msg.buf [1] = (char) N_LOCALPLAYER; 
+gameData.multigame.msg.buf [1] = N_LOCALPLAYER; 
 gameData.multigame.msg.buf [2] = 0;
 MultiSendData (gameData.multigame.msg.buf, 3, 0);
 }
@@ -398,7 +398,7 @@ else if (!strnicmp (gameData.multigame.msg.szMsg, TXT_HANDICAP, 9)) {
 		return;
 	}
 else if (!strnicmp (gameData.multigame.msg.szMsg, TXT_BOMBS_OFF, 7))
-	netGame.m_info.DoSmartMine = 0;
+	netGameInfo.m_info.DoSmartMine = 0;
 else if (!(gameStates.render.cockpit.bShowPingStats || strnicmp (gameData.multigame.msg.szMsg, TXT_PING, 5))) {
 	if (PingPlayer (-1))
 		return;
@@ -527,7 +527,7 @@ i = atoi (bufP);
 if ((i >= 1) && (i <= 2))
 	return 1;
 for (i = 0; i < 2; i++)
-	if (!strnicmp (netGame.m_info.szTeamName [i], bufP, nLen))
+	if (!strnicmp (netGameInfo.m_info.szTeamName [i], bufP, nLen))
 		return 1;
 return 0;
 }
@@ -543,7 +543,7 @@ if (!IsTeamGame)
 i = GetTeam (N_LOCALPLAYER);
 if (i == atoi (bufP) - 1)
 	return 1;
-if (!strnicmp (netGame.m_info.szTeamName [i], bufP, nLen))
+if (!strnicmp (netGameInfo.m_info.szTeamName [i], bufP, nLen))
 	return 1;
 return 0;
 }

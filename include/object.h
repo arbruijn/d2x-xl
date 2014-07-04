@@ -171,13 +171,21 @@ extern char szObjectTypeNames [MAX_OBJECT_TYPES][10];
  * STRUCTURES
  */
 
+typedef struct tLongPos {
+	CFixVector			pos;
+	CFixMatrix			orient;
+	CFixVector			vel;
+	CFixVector			rotVel;
+	int16_t				nSegment;
+} __pack__ tLongPos;
+
 // A compressed form for sending crucial data about via slow devices,
 // such as modems and buggies.
 typedef struct tShortPos {
-	int8_t   orient [9];
-	int16_t   pos [3];
-	int16_t   nSegment;
-	int16_t   vel [3];
+	int8_t		orient [9];
+	int16_t		pos [3];
+	int16_t		nSegment;
+	int16_t		vel [3];
 } __pack__ tShortPos;
 
 class CShortPos {
@@ -938,7 +946,9 @@ class CObject : public CObjectInfo {
 		inline fix Mass (void) { return mType.physInfo.mass; }
 		inline fix Drag (void) { return mType.physInfo.drag; }
 		inline CFixVector& Thrust (void) { return mType.physInfo.thrust; }
+		inline CFixVector& RotThrust (void) { return mType.physInfo.rotThrust; }
 		inline CFixVector& Velocity (void) { return mType.physInfo.velocity; }
+		inline CFixVector& RotVelocity (void) { return mType.physInfo.rotVel; }
 		inline CFixVector& Position (void) { return info.position.vPos; }
 		CFixVector FrontPosition (void);
 		inline CFixMatrix& Orientation (void) { return info.position.mOrient; }
@@ -1468,11 +1478,12 @@ void DeadPlayerEnd (void);
 // Extract information from an CObject (objp->orient, objp->pos,
 // objp->nSegment), stuff in a tShortPos structure.  See typedef
 // tShortPos.
-void CreateShortPos(tShortPos *spp, CObject *objp, int32_t swap_bytes);
+void CreateLongPos (tLongPos* posP, CObject* objP);
+void CreateShortPos(tShortPos *posP, CObject *objp, int32_t bSwapBytes = 0);
 
 // Extract information from a tShortPos, stuff in objp->orient
 // (matrix), objp->pos, objp->nSegment
-void ExtractShortPos(CObject *objp, tShortPos *spp, int32_t swap_bytes);
+void ExtractShortPos(CObject *objp, tShortPos *spp, int32_t bSwapBytes);
 
 // delete objects, such as weapons & explosions, that shouldn't stay
 // between levels if clear_all is set, clear even proximity bombs

@@ -64,10 +64,10 @@ typedef struct tBmProps {
 	int8_t	  nMode;		// 0=Linear, 1=ModeX, 2=SVGA
 } tBmProps;
 
-class CFrameInfo {
+class CBitmapFrameInfo {
 	public:
-		CBitmap*	bmP;
-		CBitmap*	currentP;
+		CBitmap*		bmP;
+		CBitmap*		currentP;
 		int32_t		nCurrent;
 		uint32_t		nCount;
 	};
@@ -92,37 +92,37 @@ class CBitmapInfo {
 	public:
 		char					szName [FILENAME_LEN];
 		tBmProps				props;
-		uint8_t					flags;
+		uint8_t				flags;
 		uint16_t				nId;
 		CRGBColor			avgColor;
-		uint8_t					avgColorIndex;
-		uint8_t					nBPP;
-		uint8_t					nType;
-		uint8_t					bWallAnim;
-		uint8_t					bFromPog;
-		uint8_t					bChild;
-		uint8_t					bFlat;		//no texture, just a colored area
-		uint8_t					bStatic;		//must remain in RAM
-		uint8_t					bSetup;
+		uint8_t				avgColorIndex;
+		uint8_t				nBPP;
+		uint8_t				nType;
+		uint8_t				bWallAnim;
+		uint8_t				bFromPog;
+		uint8_t				bChild;
+		uint8_t				bFlat;		//no texture, just a colored area
+		uint8_t				bStatic;		//must remain in RAM
+		uint8_t				bSetup;
 		char					nMasks;
-		uint8_t					nTeam;
-		uint8_t					nBlendMode;	//0: alpha, 1: additive
+		uint8_t				nTeam;
+		uint8_t				nBlendMode;	//0: alpha, 1: additive
 #if TEXTURE_COMPRESSION
 		CBitmapCompressionData	compressed;
 #endif
-		int32_t					nTranspType;
-		int32_t					transparentFrames [4];
-		int32_t					supertranspFrames [4];
+		int32_t				nTranspType;
+		int32_t				transparentFrames [4];
+		int32_t				supertranspFrames [4];
 		CBitmap*				parentP;
 		CBitmap*				overrideP;
 		CBitmap*				maskP;
-		CFrameInfo			frames;
+		CBitmapFrameInfo	frames;
 		CPalette*			palette;
 		CTexture				texture;
 		CTexture*			texP;
 		tTexCoord2f*		texCoordP;
 		CFloatVector*		colorP;
-		int32_t					nColors;
+		int32_t				nColors;
 	};
 
 class CBitmapRenderData {

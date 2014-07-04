@@ -238,7 +238,7 @@ for (int32_t nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 
 void NetworkProcessPData (uint8_t* data)
 {
-if (netGame.GetShortPackets ())
+if (netGameInfo.GetShortPackets ())
 	NetworkReadPDataShortPacket (reinterpret_cast<tFrameInfoShort*> (data));
 else
 	NetworkReadPDataLongPacket (reinterpret_cast<tFrameInfoLong*> (data));

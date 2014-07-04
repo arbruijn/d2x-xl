@@ -1093,7 +1093,7 @@ if (!dtpP->nOvlTex)
 dtpP->nOvlOrient = m_sides [nSide].m_nOvlOrient;	//nOvlTex flags
 dtpP->nEffect = gameData.pig.tex.tMapInfoP [dtpP->nOvlTex].nEffectClip;
 if (dtpP->nEffect < 0) {
-	if (IsMultiGame && netGame.m_info.bIndestructibleLights)
+	if (IsMultiGame && netGameInfo.m_info.bIndestructibleLights)
 		return 0;
 	dtpP->nBitmap = gameData.pig.tex.tMapInfoP [dtpP->nOvlTex].destroyed;
 	if (dtpP->nBitmap < 0)

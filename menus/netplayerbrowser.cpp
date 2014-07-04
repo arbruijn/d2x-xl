@@ -88,9 +88,9 @@ for (;;) {
 	if (choice == int32_t (m.ToS ()) - 1) {
 		if ((endOfTeams - blueTeam < 2) || (blueTeam - redTeam < 2))
 			TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_TEAM_MUST_ONE);
-		netGame.m_info.SetTeamVector (teamVector);
-		strcpy (netGame.m_info.szTeamName [0], teamNames [0]);
-		strcpy (netGame.m_info.szTeamName [1], teamNames [1]);
+		netGameInfo.m_info.SetTeamVector (teamVector);
+		strcpy (netGameInfo.m_info.szTeamName [0], teamNames [0]);
+		strcpy (netGameInfo.m_info.szTeamName [1], teamNames [1]);
 		NetworkSendGameInfo (NULL);
 		return 1;
 		}
@@ -113,7 +113,7 @@ for (int32_t i = 0; i < nSavePlayers; i++) {
 	if (m [i].Value ()) 
 		gameData.multiplayer.nPlayers++;
 	}
-if (gameData.multiplayer.nPlayers > netGame.m_info.nMaxPlayers) {
+if (gameData.multiplayer.nPlayers > netGameInfo.m_info.nMaxPlayers) {
 	InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multiplayer.nMaxPlayers, TXT_NETPLAYERS_IN);
 	gameData.multiplayer.nPlayers = nSavePlayers;
 	return true;
@@ -129,9 +129,9 @@ if (gameData.multiplayer.nPlayers < 2) {
 #endif
 
 #if !DBG
-if (((netGame.m_info.gameMode == NETGAME_TEAM_ANARCHY) ||
-	  (netGame.m_info.gameMode == NETGAME_CAPTURE_FLAG) || 
-	  (netGame.m_info.gameMode == NETGAME_TEAM_HOARD)) && 
+if (((netGameInfo.m_info.gameMode == NETGAME_TEAM_ANARCHY) ||
+	  (netGameInfo.m_info.gameMode == NETGAME_CAPTURE_FLAG) || 
+	  (netGameInfo.m_info.gameMode == NETGAME_TEAM_HOARD)) && 
 	 (gameData.multiplayer.nPlayers < 2)) {
 	InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_NEED_2PLAYERS);
 	gameData.multiplayer.nPlayers = nSavePlayers;
@@ -152,7 +152,7 @@ for (int32_t i = 1; i < nSavePlayers; i++) {
 		NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.Network (), netPlayers [0].m_info.players [i].network.Node (), DUMP_ABORTED);
 	}
 
-netGame.m_info.nNumPlayers = 0;
+netGameInfo.m_info.nNumPlayers = 0;
 NetworkSendGameInfo (0); // Tell everyone we're bailing
 IpxHandleLeaveGame (); // Tell the network driver we're bailing too
 networkData.nStatus = NETSTAT_MENU;
@@ -245,13 +245,13 @@ for (i = gameData.multiplayer.nPlayers; i < MAX_NUM_NET_PLAYERS; i++) {
 	netPlayers [0].m_info.players [i].rank = 0;
 	}
 #if 1			
-console.printf (CON_DBG, "Select teams: Game mode is %d\n", netGame.m_info.gameMode);
+console.printf (CON_DBG, "Select teams: Game mode is %d\n", netGameInfo.m_info.gameMode);
 #endif
-if (netGame.m_info.gameMode == NETGAME_TEAM_ANARCHY ||
-	 netGame.m_info.gameMode == NETGAME_CAPTURE_FLAG ||
-	 netGame.m_info.gameMode == NETGAME_TEAM_HOARD ||
-	 netGame.m_info.gameMode == NETGAME_ENTROPY ||
-	 netGame.m_info.gameMode == NETGAME_MONSTERBALL)
+if (netGameInfo.m_info.gameMode == NETGAME_TEAM_ANARCHY ||
+	 netGameInfo.m_info.gameMode == NETGAME_CAPTURE_FLAG ||
+	 netGameInfo.m_info.gameMode == NETGAME_TEAM_HOARD ||
+	 netGameInfo.m_info.gameMode == NETGAME_ENTROPY ||
+	 netGameInfo.m_info.gameMode == NETGAME_MONSTERBALL)
 	if (!NetworkSelectTeams ()) {
 		PrintLog (-1);
 		return AbortPlayerSelection (nSavePlayers);

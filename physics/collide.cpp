@@ -1091,9 +1091,9 @@ if (whotype != OBJ_PLAYER) {
 #endif
 	return;
 	}
-if (IsMultiGame && !IsCoopGame && (LOCALPLAYER.timeLevel < netGame.GetControlInvulTime ())) {
+if (IsMultiGame && !IsCoopGame && (LOCALPLAYER.timeLevel < netGameInfo.GetControlInvulTime ())) {
 	if (OBJECTS [nAttacker].info.nId == N_LOCALPLAYER) {
-		int32_t t = netGame.GetControlInvulTime () - LOCALPLAYER.timeLevel;
+		int32_t t = netGameInfo.GetControlInvulTime () - LOCALPLAYER.timeLevel;
 		int32_t secs = X2I (t) % 60;
 		int32_t mins = X2I (t) / 60;
 		HUDInitMessage ("%s %d:%02d.", TXT_CNTRLCEN_INVUL, mins, secs);

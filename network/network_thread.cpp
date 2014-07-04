@@ -20,18 +20,11 @@
 #include "byteswap.h"
 #include "timer.h"
 #include "error.h"
-#include "objeffects.h"
 #include "network.h"
 #include "network_lib.h"
-#include "netmisc.h"
-#include "multibot.h"
-#include "netmenu.h"
 #include "autodl.h"
 #include "tracker.h"
-#include "playerprofile.h"
-#include "gamecntl.h"
 #include "text.h"
-#include "console.h"
 
 #ifndef _WIN32
 #	include "linux/include/ipx_udp.h"
@@ -53,7 +46,7 @@
 #if DBG
 #	define PPS		(DEFAULT_PPS / 2)
 #else
-#	define PPS		netGame.GetPacketsPerSec ()
+#	define PPS		netGameInfo.GetPacketsPerSec ()
 #endif
 
 #define SENDLOCK 1

@@ -217,7 +217,7 @@ gameData.multiplayer.players [nPlayer].flags = 0;
 gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
 if (nPlayer == gameData.multiplayer.nPlayers) {
 	gameData.multiplayer.nPlayers++;
-	netGame.m_info.nNumPlayers = gameData.multiplayer.nPlayers;
+	netGameInfo.m_info.nNumPlayers = gameData.multiplayer.nPlayers;
 	}
 audio.PlaySound (SOUND_HUD_MESSAGE);
 ClipRank (reinterpret_cast<char*> (&their->player.rank));
@@ -273,7 +273,7 @@ return -1;
 
 static int32_t FindPlayerSlot (tSequencePacket *player)
 {
-if (netGame.m_info.gameFlags & NETGAME_FLAG_CLOSED) {
+if (netGameInfo.m_info.gameFlags & NETGAME_FLAG_CLOSED) {
 	// Slots are open but game is closed
 	if (gameStates.multi.nGameType >= IPX_GAME)
 		NetworkDumpPlayer (
@@ -488,7 +488,7 @@ memcpy (player.callsign, playerInfo.callsign, CALLSIGN_LEN + 1);
 player.nScoreGoalCount = 0;
 CONNECT (gameData.multiplayer.nPlayers, CONNECT_PLAYING);
 ResetPlayerTimeout (gameData.multiplayer.nPlayers, -1);
-netGame.m_info.nNumPlayers = ++gameData.multiplayer.nPlayers;
+netGameInfo.m_info.nNumPlayers = ++gameData.multiplayer.nPlayers;
 // Broadcast updated info
 NetworkSendGameInfo (NULL);
 }
@@ -515,7 +515,7 @@ for (i = pn; i < gameData.multiplayer.nPlayers - 1; ) {
    NetworkCheckForOldVersion ((char) i);
 	}
 gameData.multiplayer.nPlayers--;
-netGame.m_info.nNumPlayers = gameData.multiplayer.nPlayers;
+netGameInfo.m_info.nNumPlayers = gameData.multiplayer.nPlayers;
 // Broadcast new info
 NetworkSendGameInfo (NULL);
 }
@@ -547,7 +547,7 @@ if (!networkData.refuse.bWaitForAnswer) {
 		else
 			HUDInitMessage ("%s %s wants to join", 
 								 pszRankStrings [their->player.rank], their->player.callsign);
-		HUDInitMessage ("Alt-1 assigns to team %s. Alt-2 to team %s", netGame.m_info.szTeamName [0], netGame.m_info.szTeamName [1]);
+		HUDInitMessage ("Alt-1 assigns to team %s. Alt-2 to team %s", netGameInfo.m_info.szTeamName [0], netGameInfo.m_info.szTeamName [1]);
 		}               
 	else    
 		HUDInitMessage (TXT_JOIN_ACCEPT, their->player.callsign);
@@ -561,7 +561,7 @@ if (!networkData.refuse.bWaitForAnswer) {
 		else
 			sprintf (szRank, "%s ", pszRankStrings [their->player.rank]);
 		sprintf (szJoinMsg, " \n  %s%s wants to join.  \n  Alt-1 assigns to team %s.  \n  Alt-2 to team %s.  \n ", 
-					szRank, their->player.callsign, netGame.m_info.szTeamName [0], netGame.m_info.szTeamName [1]);
+					szRank, their->player.callsign, netGameInfo.m_info.szTeamName [0], netGameInfo.m_info.szTeamName [1]);
 		joinMsgIndex.nLines = 5;
 		}
 	else {
@@ -594,9 +594,9 @@ else {
 			nNewPlayer = GetNewPlayerNumber (their);
 			Assert (networkData.refuse.bTeam == 1 || networkData.refuse.bTeam == 2);        
 			if (networkData.refuse.bTeam == 1)      
-				netGame.m_info.RemoveTeamPlayer (nNewPlayer);
+				netGameInfo.m_info.RemoveTeamPlayer (nNewPlayer);
 			else
-				netGame.m_info.AddTeamPlayer (nNewPlayer);
+				netGameInfo.m_info.AddTeamPlayer (nNewPlayer);
 			NetworkWelcomePlayer (their);
 			NetworkSendNetGameUpdate (); 
 			}

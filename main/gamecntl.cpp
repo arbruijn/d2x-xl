@@ -267,14 +267,14 @@ switch (gameStates.render.cockpit.n3DView [nWindow]) {
 
 	case CV_REAR:
 		if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
-		    (!IsMultiGame || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
+		    (!IsMultiGame || (netGameInfo.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 			gameStates.render.cockpit.n3DView [nWindow] = CV_RADAR_TOPDOWN;
 			break;
 			}
 
 	case CV_RADAR_TOPDOWN:
 		if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0) &&
-		    (!IsMultiGame || (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
+		    (!IsMultiGame || (netGameInfo.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))) {
 			gameStates.render.cockpit.n3DView [nWindow] = CV_RADAR_HEADSUP;
 			break;
 			}
@@ -313,7 +313,7 @@ switch (gameStates.render.cockpit.n3DView [nWindow]) {
 		//if not multi, fall through
 	case CV_MARKER:
 	case_marker:;
-		if (!IsMultiGame || IsCoopGame || netGame.m_info.bAllowMarkerView) {	//anarchy only
+		if (!IsMultiGame || IsCoopGame || netGameInfo.m_info.bAllowMarkerView) {	//anarchy only
 			gameStates.render.cockpit.n3DView [nWindow] = CV_MARKER;
 			if (markerManager.Viewer (nWindow) == -1)
 				markerManager.SetViewer (nWindow, N_LOCALPLAYER * 3);

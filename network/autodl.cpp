@@ -352,13 +352,13 @@ int32_t CDownloadManager::OpenFile (tClient& client, const char *pszExt)
 {
 	char	szFile [FILENAME_LEN];
 
-sprintf (szFile, "%s%s%s", gameFolders.missions.szRoot, netGame.m_info.szMissionName, pszExt);
+sprintf (szFile, "%s%s%s", gameFolders.missions.szRoot, netGameInfo.m_info.szMissionName, pszExt);
 if (client.cf.File ())
 	client.cf.Close ();
 if (!client.cf.Open (szFile, "", "rb", 0))
 	return 0;
 client.fLen = (int32_t) client.cf.Length ();
-sprintf (szFile, "%s%s", netGame.m_info.szMissionName, pszExt);
+sprintf (szFile, "%s%s", netGameInfo.m_info.szMissionName, pszExt);
 PUT_INTEL_INT (client.data + 1, client.fLen);
 memcpy (client.data + 5, szFile, (int32_t) strlen (szFile) + 1);
 return SendData (DL_CREATE_FILE, client);

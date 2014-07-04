@@ -20,7 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define AM_SHOW_PLAYERS				(!IsMultiGame || IsTeamGame || IsCoopGame)
 #define AM_SHOW_PLAYER(_i)			(!IsMultiGame || \
 											 IsCoopGame || \
-											 (netGame.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP) || \
+											 (netGameInfo.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP) || \
 											 (GetTeam (N_LOCALPLAYER) == GetTeam (_i)))
 #define AM_SHOW_ROBOTS				EGI_FLAG (bRobotsOnRadar, 0, 1, 0)
 #if DBG == 1

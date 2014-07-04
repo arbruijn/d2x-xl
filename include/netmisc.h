@@ -115,17 +115,17 @@ void BESwapObject (CObject *obj);
 	IPXSendBroadcastData((uint8_t *)&seq, sizeof(tSequencePacket))
 
 #define SendFullNetGamePacket(server, node, netAddress) \
-	networkThread.Send((uint8_t *)&netGame.m_info, netgame->Size (), server, node, netAddress)
+	networkThread.Send((uint8_t *)&netGameInfo.m_info, netgame->Size (), server, node, netAddress)
 #define SendLiteNetGamePacket(server, node, netAddress) \
-	networkThread.Send((uint8_t *)&netGame.m_info, sizeof(tNetGameInfoLite), server, node, netAddress)
+	networkThread.Send((uint8_t *)&netGameInfo.m_info, sizeof(tNetGameInfoLite), server, node, netAddress)
 #define SendInternetFullNetGamePacket(server, node) \
-	networkThread.Send((uint8_t *)&netGame.m_info, int32_t (netGame.Size ()), server, node)
+	networkThread.Send((uint8_t *)&netGameInfo.m_info, int32_t (netGameInfo.Size ()), server, node)
 #define SendInternetLiteNetGamePacket(server, node) \
-	networkThread.Send((uint8_t *)&netGame.m_info, sizeof(tNetGameInfoLite), server, node)
+	networkThread.Send((uint8_t *)&netGameInfo.m_info, sizeof(tNetGameInfoLite), server, node)
 #define SendBroadcastFullNetGamePacket() \
-	IPXSendBroadcastData((uint8_t *)&netGame.m_info, int32_t (netGame.Size ()))
+	IPXSendBroadcastData((uint8_t *)&netGameInfo.m_info, int32_t (netGameInfo.Size ()))
 #define SendBroadcastLiteNetGamePacket() \
-	IPXSendBroadcastData((uint8_t *)&netGame.m_info, sizeof(tNetGameInfoLite))
+	IPXSendBroadcastData((uint8_t *)&netGameInfo.m_info, sizeof(tNetGameInfoLite))
 #define ReceiveFullNetGamePacket(data, netgame) \
 	memcpy (&(netgame)->m_info, data, (netgame)->Size ())
 #define ReceiveLiteNetGamePacket(data, netgame) \

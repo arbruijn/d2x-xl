@@ -50,7 +50,7 @@ if (PlayerHasHeadlight (-1)) {
 	LOCALPLAYER.flags ^= PLAYER_FLAGS_HEADLIGHT_ON;
 	audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_HEADLIGHT));
 	if (IsMultiGame)
-		MultiSendFlags ((char) N_LOCALPLAYER);
+		MultiSendFlags (N_LOCALPLAYER);
 	}
 }
 
@@ -923,7 +923,7 @@ if (LOCALPLAYER.Energy () < I2X (10)) {
 		audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_HEADLIGHT));
 		bTurnedOff = 1;
 		if (IsMultiGame)
-			MultiSendFlags ((char) N_LOCALPLAYER);
+			MultiSendFlags (N_LOCALPLAYER);
 		}
 	}
 else
@@ -931,7 +931,7 @@ else
 if (LOCALPLAYER.Energy () <= 0) {
 	LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 	if (IsMultiGame)
-		MultiSendFlags ((char) N_LOCALPLAYER);
+		MultiSendFlags (N_LOCALPLAYER);
 	}
 }
 

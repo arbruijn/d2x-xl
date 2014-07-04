@@ -37,7 +37,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int32_t ReturnFlagHome (CObject *pObj);
 void InvalidateEscortGoal (void);
-void MultiSendGotFlag (char);
+void MultiSendGotFlag (uint8_t);
 
 const char *pszPowerup [MAX_POWERUP_TYPES] = {
 	"extra life",
@@ -376,7 +376,7 @@ int32_t PickupHoardOrb (CObject *objP, int32_t nPlayer)
 if (IsHoardGame) {
 	if (playerP->secondaryAmmo [PROXMINE_INDEX] < 12) {
 		if (ISLOCALPLAYER (nPlayer)) {
-			MultiSendGotOrb ((char) N_LOCALPLAYER);
+			MultiSendGotOrb (N_LOCALPLAYER);
 			PowerupBasic (15, 0, 15, 0, "Orb!!!", nPlayer);
 			}
 		playerP->secondaryAmmo [PROXMINE_INDEX]++;
@@ -385,7 +385,7 @@ if (IsHoardGame) {
 		}
 	}
 else if (IsEntropyGame) {
-	if (objP->info.nCreator != GetTeam ((char) N_LOCALPLAYER) + 1) {
+	if (objP->info.nCreator != GetTeam (N_LOCALPLAYER) + 1) {
 		if ((extraGameInfo [1].entropy.nVirusStability < 2) ||
 			 ((extraGameInfo [1].entropy.nVirusStability < 3) && 
 			 ((SEGMENTS [objP->info.nSegment].m_owner != objP->info.nCreator) ||
@@ -395,7 +395,7 @@ else if (IsEntropyGame) {
 	else if (!extraGameInfo [1].entropy.nMaxVirusCapacity ||
 				(playerP->secondaryAmmo [PROXMINE_INDEX] < playerP->secondaryAmmo [SMARTMINE_INDEX])) {
 		if (ISLOCALPLAYER (nPlayer)) {
-			MultiSendGotOrb ((char) N_LOCALPLAYER);
+			MultiSendGotOrb (N_LOCALPLAYER);
 			PowerupBasic (15, 0, 15, 0, "Virus!!!", nPlayer);
 			}
 		playerP->secondaryAmmo [PROXMINE_INDEX]++;
@@ -450,7 +450,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 	if (EGI_FLAG (headlight.bAvailable, 0, 0, 1)  && gameOpts->gameplay.bHeadlightOnWhenPickedUp)
 		playerP->flags |= PLAYER_FLAGS_HEADLIGHT_ON;
 	if IsMultiGame
-		MultiSendFlags ((char) N_LOCALPLAYER);
+		MultiSendFlags (N_LOCALPLAYER);
 	}
 return 1;
 }
@@ -535,14 +535,14 @@ int32_t PickupFlag (CObject *objP, int32_t nThisTeam, int32_t nOtherTeam, const 
 if (ISLOCALPLAYER (nPlayer)) {
 	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
 	if (gameData.app.GameMode (GM_CAPTURE)) {
-		if (GetTeam ((char) N_LOCALPLAYER) == nOtherTeam) {
+		if (GetTeam (N_LOCALPLAYER) == nOtherTeam) {
 			PowerupBasic (15, 0, 15, 0, nOtherTeam ? "RED FLAG!" : "BLUE FLAG!", nPlayer);
 			playerP->flags |= PLAYER_FLAGS_FLAG;
 			gameData.pig.flags [nThisTeam].path.Reset (10, -1);
-			MultiSendGotFlag ((char) N_LOCALPLAYER);
+			MultiSendGotFlag (N_LOCALPLAYER);
 			return 1;
 			}
-		if (GetTeam ((char) N_LOCALPLAYER) == nThisTeam) {
+		if (GetTeam (N_LOCALPLAYER) == nThisTeam) {
 			ReturnFlagHome (objP);
 			}
 		}
@@ -1110,7 +1110,7 @@ powerupType [POW_EARTHSHAKER] = (uint8_t) POWERUP_IS_MISSILE;
 void SetupPowerupFilter (tNetGameInfo* infoP)
 {
 if (!infoP)
-	infoP = &netGame.m_info;
+	infoP = &netGameInfo.m_info;
 memset (powerupFilter, 0, sizeof (powerupFilter));
 ENABLE_FILTER (POW_INVUL, infoP->DoInvulnerability);
 ENABLE_FILTER (POW_CLOAK, infoP->DoCloak);

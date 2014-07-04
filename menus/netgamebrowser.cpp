@@ -406,24 +406,23 @@ do {
 		}
 
 	// Choice is valid, prepare to join in
-	netGame = activeNetGames [choice];
+	netGameInfo = activeNetGames [choice];
 	netPlayers [0] = activeNetPlayers [choice];
-	gameStates.app.nDifficultyLevel = netGame.m_info.difficulty;
-	gameData.multiplayer.nMaxPlayers = netGame.m_info.nMaxPlayers;
+	gameStates.app.nDifficultyLevel = netGameInfo.m_info.difficulty;
+	gameData.multiplayer.nMaxPlayers = netGameInfo.m_info.nMaxPlayers;
 
-	if (SetLocalPlayer (&netPlayers [0], netGame.m_info.nNumPlayers, 1) < 0)
+	if (SetLocalPlayer (&netPlayers [0], netGameInfo.m_info.nNumPlayers, 1) < 0)
 		return 0;
 	ResetPlayerData (true, false, false, -1);
 	memcpy (LOCALPLAYER.callsign, callsign, sizeof (callsign));
 	// Handle the extra data for the network driver
 	// For the mcast4 driver, this is the game's multicast address, to
 	// which the driver subscribes.
-	} while (IpxHandleNetGameAuxData (netGame.AuxData ()) < 0);
+	} while (IpxHandleNetGameAuxData (netGameInfo.AuxData ()) < 0);
 
-NetworkSetGameMode (netGame.m_info.gameMode);
-NetworkAdjustMaxDataSize ();
+NetworkSetGameMode (netGameInfo.m_info.gameMode);
 //networkThread.Start ();
-return StartNewLevel (netGame.m_info.GetLevel (), true);
+return StartNewLevel (netGameInfo.m_info.GetLevel (), true);
 }
 
 //------------------------------------------------------------------------------
