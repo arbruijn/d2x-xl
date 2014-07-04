@@ -3,6 +3,26 @@
 
 //------------------------------------------------------------------------------
 
+class CNetworkClientInfo : public CNetworkAddress {
+	public:
+		uint32_t		m_nFrame;
+		uint32_t		m_timestamp;
+	};
+
+//------------------------------------------------------------------------------
+
+class CNetworkClientList : public CStack< CNetworkClientInfo >	{
+	public:
+		bool Create (void);
+		void Destroy (void);
+		CNetworkClientInfo* Find (CNetworkAddress& client);
+		CNetworkClientInfo* Add (CNetworkAddress& client);
+		void Cleanup (void);
+	};
+
+
+//------------------------------------------------------------------------------
+
 class CNetworkPacketOwner {
 	public:
 		CPacketAddress		m_address;
@@ -39,21 +59,28 @@ class CNetworkPacketOwner {
 class CNetworkPacketData {
 	public:
 		uint16_t	m_size;
-		uint8_t	m_data [MAX_PACKET_SIZE];
+		struct {
+			uint32_t	nFrame;
+			uint8_t	buffer [MAX_PACKET_SIZE - sizeof (uint32_t)];
+		} m_data;
 
 	public:
 		CNetworkPacketData () : m_size (0) {}
+
 		inline void SetData (uint8_t* data, int32_t size, int32_t offset = 0) { 
-			memcpy (m_data + offset, data, size); 
+			memcpy (m_data.buffer + offset, data, size); 
 			m_size = offset + size;
 			}
+
 		inline CNetworkPacketData& operator= (CNetworkPacketData& other) { 
-			SetData (other.m_data, other.m_size); 
+			SetData (other.Buffer (), other.m_size); 
 			return *this;
 			}
+
+		inline uint8_t* Buffer (void) { return m_data.buffer; }
 		inline int32_t Size (void) { return m_size; }
 		inline int32_t SetSize (int32_t size) { return m_size = size; }
-		inline bool operator== (CNetworkPacketData& other) { return (m_size == other.m_size) && !memcmp (m_data, other.m_data, m_size); }
+		inline bool operator== (CNetworkPacketData& other) { return (m_size == other.m_size) && !memcmp (Buffer (), other.Buffer (), m_size); }
 };
 
 //------------------------------------------------------------------------------
@@ -140,6 +167,7 @@ class CNetworkThread {
 		CNetworkPacket*		m_packet;
 		CNetworkPacket*		m_syncPackets;
 		CTimeout					m_toSend;
+		CNetworkClientList	m_clients;
 
 	public:
 		CNetworkThread ();

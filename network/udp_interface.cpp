@@ -1180,8 +1180,7 @@ if (!(bTracker
 	 || ResendData (&fromAddr, outBuf) || ForgetData (&fromAddr, outBuf)
 #endif
 	 )) {
-	rd->src_socket = ntohs (*reinterpret_cast<uint16_t*> (outBuf + 6));
-	rd->dst_socket = s->socket;
+	rd->SetSockets (ntohs (*reinterpret_cast<uint16_t*> (outBuf + 6)), s->socket);
 	srcPort = ntohs (fromAddr.sin_port);
 	// check if we already have sender of this packet in broadcast list
 	memcpy (networkData.localAddress + 4, outBuf + dataLen - 6, 6);

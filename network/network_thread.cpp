@@ -36,11 +36,13 @@
 #	define SEND_TIMEOUT		20
 #	define UPDATE_TIMEOUT	500
 #	define MAX_PACKET_AGE	300000
+#	define MAX_CLIENT_AGE	30000
 #else
 #	define LISTEN_TIMEOUT	5
 #	define SEND_TIMEOUT		5
 #	define UPDATE_TIMEOUT	500
 #	define MAX_PACKET_AGE	3000
+#	define MAX_CLIENT_AGE	30000
 #endif
 
 #if DBG
@@ -271,6 +273,65 @@ Lock ();
 bool bOk = (!Head () == !Tail ()); // both must be either NULL or not NULL
 Unlock ();
 return bOk;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+bool CNetworkClientList::Create (void) 
+{ 
+if (!CStack<CNetworkClientInfo>::Create (100))
+	return false;
+SetGrowth (100);
+return true;
+}
+
+//------------------------------------------------------------------------------
+
+void CNetworkClientList::Destroy (void) 
+{ 
+CStack<CNetworkClientInfo>::Destroy ();
+}
+
+//------------------------------------------------------------------------------
+
+CNetworkClientInfo* CNetworkClientList::Find (CNetworkAddress& client) 
+{
+for (uint32_t i = 0; i < ToS (); i++)
+	if (*Top () == client)
+		return Top ();
+return NULL;
+}
+
+//------------------------------------------------------------------------------
+
+CNetworkClientInfo* CNetworkClientList::Add (CNetworkAddress& client) 
+{
+CNetworkClientInfo* i = Find (client);
+if (i)
+	return i;
+if (!Grow ())
+	return NULL;
+(CNetworkAddress&) *Top () = client;
+return Top ();
+}
+
+//------------------------------------------------------------------------------
+
+void CNetworkClientList::Cleanup (void) 
+{
+	uint32_t t = SDL_GetTicks ();
+	uint32_t i = 0;
+
+while (i < ToS ()) {
+	if (t - Buffer (i)->m_timestamp < MAX_CLIENT_AGE)
+		++i;
+	else {
+		*Buffer (i) = *Top ();
+		--m_tos;
+		}
+	}
 }
 
 //------------------------------------------------------------------------------

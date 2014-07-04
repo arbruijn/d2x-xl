@@ -28,18 +28,18 @@
 #endif
 
 typedef struct IPXAddressStruct {
-	uint8_t Network[4]; // __pack__;
-	uint8_t Node[6]; // __pack__;
-	uint8_t Socket[2]; // __pack__;
+	uint8_t			Network [4];
+	uint8_t			Node [6];
+	uint8_t			Socket [2];
 } IPXAddress_t;
 
 typedef struct IPXPacketStructure {
-	uint16_t Checksum; // __pack__;
-	uint16_t Length; // __pack__;
-	uint8_t TransportControl; // __pack__;
-	uint8_t PacketType; // __pack__;
-	IPXAddress_t Destination; // __pack__;
-	IPXAddress_t Source; // __pack__;
+	uint16_t			Checksum;
+	uint16_t			Length;
+	uint8_t			TransportControl;
+	uint8_t			PacketType;
+	IPXAddress_t	Destination;
+	IPXAddress_t	Source;
 } IPXPacket_t;
 
 #ifdef _WIN32
@@ -52,23 +52,29 @@ typedef struct IPXPacketStructure {
 #endif
 
 typedef struct ipx_socket_struct {
-	uint16_t socket;
-	UINT_PTR	fd;
+	uint16_t			socket;
+	UINT_PTR			fd;
 } ipx_socket_t;
 
-class CPacketAddress : public CNetworkNode {
+class CPacketAddress : public CNetworkAddress {
 	/* all network order */
 	private:
 		//tNetworkNode	src_addr;
-		int32_t				packetType;
+		int32_t	m_nType;
+		uint16_t	m_srcSocket;
+		uint16_t	m_destSocket;
 
 	public:
-		uint16_t			src_socket;
-		uint16_t			dst_socket;
-
-	public:
-		inline void SetType (int32_t nType) { packetType = nType; }
-#if 0 // inherited from CNetworkNode
+		inline void SetType (int32_t nType) { m_nType = nType; }
+		inline void SetSockets (uint16_t srcSocket, uint16_t destSocket) {
+			m_srcSocket = srcSocket;
+			m_destSocket = destSocket;
+			}
+		inline void GetSockets (uint16_t& srcSocket, uint16_t& destSocket) {
+			srcSocket = m_srcSocket;
+			destSocket = m_destSocket;
+			}
+#if 0 // inherited from CNetworkAddress
 		inline uint32_t Server (void) { return src_addr.address.portAddress.ip.a; }
 		inline uint16_t Port (void) { return src_addr.address.portAddress.port.s; }
 		inline uint8_t* Network (void) { return src_addr.network.b; }

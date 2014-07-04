@@ -205,8 +205,7 @@ if (size <= 0)
    return size;
 rd->SetNetwork (ipxs.sa_netnum);
 rd->SetNode (ipxs.sa_nodenum);
-rd->src_socket = ipxs.sa_socket;
-rd->dst_socket = s->socket;
+rd->SetSockets (ipxs.sa_socket, s->socket);
 return size;
 }
 

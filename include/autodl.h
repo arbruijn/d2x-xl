@@ -41,21 +41,21 @@ class CDownloadManager {
 	public:
 		typedef struct tClient {
 			uint8_t				data [DL_PACKET_SIZE];
-			CNetworkNode	addr;
+			CNetworkAddress	addr;
 			uint8_t				nState;
-			CFile				cf;
+			CFile					cf;
 			int32_t				fLen;
 			int32_t				nTimeout;
-			TCPsocket		socket;	// 0: host, 1: client
-			SDL_Thread*		thread;
+			TCPsocket			socket;	// 0: host, 1: client
+			SDL_Thread*			thread;
 		} tUploadDest;
 
 	private:
 		uint8_t			m_data [DL_PACKET_SIZE];
-		tClient 		m_clients [MAX_PLAYERS];
+		tClient 			m_clients [MAX_PLAYERS];
 		int32_t			m_nClients;
-		uint16_t		m_freeList [MAX_PLAYERS];
-		TCPsocket	m_socket;
+		uint16_t			m_freeList [MAX_PLAYERS];
+		TCPsocket		m_socket;
 		int32_t			m_nState;
 		int32_t			m_nResult;
 		int32_t			m_nSrcLen;
@@ -64,14 +64,14 @@ class CDownloadManager {
 		int32_t			m_nPollTime;
 		int32_t			m_nRequestTime;
 		int32_t			m_nSemaphore;
-		bool			m_bDownloading [MAX_PLAYERS];
+		bool				m_bDownloading [MAX_PLAYERS];
 		int32_t			m_timeouts [10];
 		int32_t			m_iTimeout;
 		int32_t			m_nTimeout;
 		int32_t			m_nOptProgress;
 		int32_t			m_nOptPercentage;
-		CFile			m_cf;
-		char			m_files [2][FILENAME_LEN];
+		CFile				m_cf;
+		char				m_files [2][FILENAME_LEN];
 		int32_t			m_nFiles;
 
 	public:

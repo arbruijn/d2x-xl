@@ -24,7 +24,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PPPoE_MTU				1492	// typical PPPoE based DSL MTU (MTUs can differ depending on protocols used for DSL connection)
 #define UDP_PACKET_SIZE		PPPoE_MTU
 #define UDP_HEADER_SIZE		18		// 4 bytes for general networking, 14 bytes for udp stuff
-#define UDP_PAYLOAD_SIZE	(UDP_PACKET_SIZE - UDP_HEADER_SIZE)		
+#define UDP_PAYLOAD_SIZE	(UDP_PACKET_SIZE - UDP_HEADER_SIZE - sizeof (uint32_t))	// the network thread will add its own 32 bit frame count to each data packet
 
 #define MAX_PACKET_SIZE		UDP_PACKET_SIZE
 
@@ -81,7 +81,7 @@ typedef union {
 	tAppleTalkAddr		appletalk;
 } __pack__ tNetworkInfo;
 
-class CNetworkNode {
+class CNetworkAddress {
 	public:
 		tNetworkAddress	m_address;
 
@@ -101,6 +101,18 @@ class CNetworkNode {
 		inline void ResetNetwork (uint8_t filler = 0) { memset (m_address.network.octets, filler, sizeof (m_address.network)); }
 		inline void ResetNode (uint8_t filler = 0) { memset (m_address.node.b, filler, sizeof (m_address.node.b)); }
 		inline void ResetPort (uint8_t filler = 0) { memset (m_address.node.portAddress.port.b, filler, sizeof (m_address.node.portAddress.port)); }
+
+		inline CNetworkAddress& operator= (tNetworkAddress& address) { 
+			memcpy (&m_address, &address, sizeof (tNetworkAddress)); 
+			return *this;
+			}
+
+		inline CNetworkAddress& operator= (CNetworkAddress& other) { 
+			*this = other.m_address;
+			return *this;
+			}
+
+		inline bool operator== (CNetworkAddress& other) { return !memcmp (&m_address, &other.m_address, sizeof (tNetworkAddress)); }
 	};
 
 class CNetworkInfo {
