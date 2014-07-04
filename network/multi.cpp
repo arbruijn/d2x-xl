@@ -159,7 +159,7 @@ static int32_t multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{2, -1},  // DE-CLOAK
 	{2, -1},  // MENU_CHOICE
 	{28, -1}, // ROBOT_POSITION  (shortpos_length (23) + 5 = 28)
-	{9, -1},  // ROBOT_EXPLODE
+	{9, 13},  // ROBOT_EXPLODE
 	{5, -1},  // ROBOT_RELEASE
 	{18, -1}, // ROBOT_FIRE
 	{6, -1},  // SCORE
@@ -5589,7 +5589,7 @@ switch (nType) {
 			MultiDoStartTrigger (buf);
 		break;
 	case MULTI_FLAGS:
-		if (!gameStates.app.bEndLevelSequence)
+		if (!gameStates.app.bEndLevelSequence)mj
 			MultiDoFlags (buf);
 		break;
 	case MULTI_WEAPONS:
