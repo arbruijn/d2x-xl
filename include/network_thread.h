@@ -14,7 +14,7 @@ class CNetworkClientInfo : public CNetworkAddress {
 			m_nLost = 0;
 			m_timestamp = 0;
 			}
-		inline void SetPacketId (int32_t nId) { m_nPacketId = nId; }
+		inline int32_t SetPacketId (int32_t nId) { return m_nPacketId = nId; }
 		inline int32_t GetPacketId (void) { return m_nPacketId; }
 		inline void SetTime (uint32_t t) { m_timestamp = t; }
 		inline uint32_t GetTime (void) { return m_timestamp; }
@@ -30,7 +30,6 @@ class CNetworkClientList : public CStack< CNetworkClientInfo >	{
 		CNetworkClientInfo* Update (CNetworkAddress& client);
 		void Cleanup (void);
 	};
-
 
 //------------------------------------------------------------------------------
 
@@ -126,14 +125,17 @@ class CNetworkPacket : public CNetworkPacketData {
 
 class CNetworkPacketQueue {
 	private:
-		int32_t				m_nPackets;
-		CNetworkPacket*	m_packets [3];
-		CNetworkPacket*	m_current;
-		SDL_sem*				m_semaphore;
+		int32_t					m_nPackets;
+		CNetworkPacket*		m_packets [3];
+		CNetworkPacket*		m_current;
+		SDL_sem*					m_semaphore;
+		CNetworkClientList	m_clients;
 
 	public:
-		int32_t				m_nDuplicate;
-		int32_t				m_nCombined;
+		uint32_t					m_nDuplicate;
+		uint32_t					m_nCombined;
+		uint32_t					m_nLost;
+		uint32_t					m_nType; // 0: listen, 1: send
 
 	public:
 		CNetworkPacketQueue ();
@@ -152,10 +154,12 @@ class CNetworkPacketQueue {
 		CNetworkPacket* Append (CNetworkPacket* packet = NULL, bool bAllowDuplicates = true, bool bLock = false);
 		CNetworkPacket* Pop (bool bDrop = false, bool bLock = true);
 		CNetworkPacket* Get (void);
+		void UpdateClientList (void);
 		int32_t Lock (bool bLock = true);
 		int32_t Unlock (bool bLock = true);
 		bool Validate (void);
 		inline int32_t Length (void) { return m_nPackets; }
+		inline void SetType (int32_t nType) { m_nType = nType; }
 		inline bool Empty (void) { return Head () == NULL; }
 };
 
@@ -182,7 +186,6 @@ class CNetworkThread {
 		CNetworkPacket*		m_packet;
 		CNetworkPacket*		m_syncPackets;
 		CTimeout					m_toSend;
-		CNetworkClientList	m_clients;
 
 	public:
 		CNetworkThread ();

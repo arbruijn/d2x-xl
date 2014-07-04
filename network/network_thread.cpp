@@ -72,7 +72,7 @@ int MultiCheckPData (uint8_t* pd);
 void CNetworkPacket::Transmit (void)
 {
 #if DBG
-MultiCheckPData (m_data.Buffer ());
+MultiCheckPData (Buffer ());
 #endif
 if (m_owner.m_bHaveLocalAddress)
 	IPXSendPacketData (reinterpret_cast<uint8_t*>(&m_data), m_size + sizeof (m_data.nId), m_owner.Network (), m_owner.Node (), m_owner.LocalNode ());
@@ -185,6 +185,27 @@ if (!m_semaphore || !bLock)
 	return 0;
 SDL_SemPost (m_semaphore); 
 return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CNetworkPacketQueue::UpdateClientList (void)
+{
+CNetworkClientInfo* i = m_clients.Update (Tail ()->Owner ().GetAddress ());
+if (!i)
+	return;
+
+int32_t nId = i->GetPacketId () + 1; // last packet id sent or received + 1
+if (m_nType)  // send
+	Tail ()->SetId (i->SetPacketId (nId));
+else { // listen
+	int32_t nLost = Tail ()->GetId () - nId;
+	if (nLost) {
+		i->m_nLost += nLost;
+		m_nLost += nLost;
+		}
+	i->SetPacketId (Tail ()->GetId ());
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -496,7 +517,7 @@ for (;;) {
 		if (!m_packet)
 			break;
 		}
-	if (!m_packet->SetSize (IpxGetPacketData (m_packet->m_data)))
+	if (!m_packet->SetSize (IpxGetPacketData (reinterpret_cast<uint8_t*>(&m_packet->m_data))))
 		break;
 #if DBG
 	if (!m_rxPacketQueue.Validate ())
@@ -657,7 +678,6 @@ else {
 	packet->SetData (data, size);
 	packet->Owner ().SetAddress (network, node);
 	packet->Owner ().SetLocalAddress (localAddress);
-	m_clients.Update (packet->Owner ().GetAddress ());
 	packet = m_txPacketQueue.Append (packet, false, false);
 	}
 
