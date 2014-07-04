@@ -85,6 +85,7 @@ class CNetworkAddress {
 	public:
 		tNetworkAddress	m_address;
 
+		CNetworkAddress () {}
 		CNetworkAddress (tNetworkAddress& address) { *this = address; }
 
 		inline uint8_t* Network (void) { return m_address.network.octets; }
