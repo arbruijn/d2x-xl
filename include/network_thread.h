@@ -48,7 +48,7 @@ class CNetworkPacketOwner {
 			m_address.SetNode (node);
 			}
 
-		CNetworkAddress& GetAddress (void) { return CNetworkAddress (m_address.Address ()); }
+		CNetworkAddress GetAddress (void) { return CNetworkAddress (m_address.Address ()); }
 
 		int32_t CmpAddress (uint8_t* network, uint8_t* node) {
 			return memcmp (m_address.Network (), network, 4) || memcpy (m_address.Node (), node, 6); 
