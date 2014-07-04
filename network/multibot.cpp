@@ -50,7 +50,7 @@ void DropStolenItems (CObject*);
 
 #define MIN_TO_ADD				60
 
-#define MAX_ROBOT_POWERUPS		4
+#define MAX_ROBOT_POWERUPS		((gameStates.multi.nGameType == UDP_GAME) ? 15 : 4)
 
 #define MULTI_ROBOT_PRIORITY(nObject, nPlayer) (((nObject % 4) + nPlayer) % gameData.multiplayer.nPlayers)
 
@@ -542,14 +542,17 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 
 // successively sent all robot powerups just created (their count is in gameData.multigame.create.nCount)
 int32_t nTotalSent = 0;
-for (uint8_t nSent = 0; gameData.multigame.create.nCount > 0; gameData.multigame.create.nCount -= nSent) {
-	nSent = (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS) ? MAX_ROBOT_POWERUPS : gameData.multigame.create.nCount;
+#if 0 // should never have to send more than MAX_ROBOT_POWERUPS powerups
+for (uint8_t nSent = 0; gameData.multigame.create.nCount > 0; gameData.multigame.create.nCount -= nSent) 
+#endif
+	{
+	uint8_t nSent = (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS) ? MAX_ROBOT_POWERUPS : gameData.multigame.create.nCount;
 	gameData.multigame.msg.buf [hBufP] = nSent;
-	memset (gameData.multigame.msg.buf + bufP, -1, MAX_ROBOT_POWERUPS * sizeof (int16_t));
 	for (int32_t i = 0; i < nSent; i++, nTotalSent++) {
 		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP + 2 * i, gameData.multigame.create.nObjNums [nTotalSent]); // bufP must always point to the start of the object data list here!
 		SetLocalObjNumMapping (gameData.multigame.create.nObjNums [nTotalSent]);
 		}
+	memset (gameData.multigame.msg.buf + bufP + 2 * nSent, -1, (MAX_ROBOT_POWERUPS - nSent) * sizeof (int16_t));
 	MultiSendData (gameData.multigame.msg.buf, (gameStates.multi.nGameType == UDP_GAME) ? 31 : 27, 2);
 	}
 }
@@ -909,8 +912,8 @@ switch (action)  {
 void MultiDoCreateRobotPowerups (uint8_t* buf)
 {
 	CObject	delObjP;
-	int32_t		nPlayer, nEggObj, i, bufP = 1;
-	int16_t		s;
+	int32_t	nPlayer, nEggObj, i, bufP = 1;
+	int16_t	s;
 
 nPlayer = buf [bufP++];			
 delObjP.info.nType = OBJ_ROBOT;
@@ -975,6 +978,8 @@ if (gameStates.multi.nGameType == UDP_GAME) // nRandSeed will be transmitted to 
 	gameStates.app.SRand ();
 
 if (delObjP->info.contains.nCount > 0) { 
+	if (delObjP->info.contains.nCount > MAX_ROBOT_POWERUPS)
+		delObjP->info.contains.nCount = MAX_ROBOT_POWERUPS;
 	//	If dropping a weapon that the player has, drop energy instead, unless it's vulcan, in which case drop vulcan ammo.
 	if (delObjP->info.contains.nType == OBJ_POWERUP) {
 		MaybeReplacePowerupWithEnergy (delObjP);
@@ -998,6 +1003,8 @@ else if (botInfoP->containsCount) {
 		gameStates.app.SRand ();
 	if (((RandShort () * 16) >> 15) < botInfoP->containsProb) {
 		delObjP->info.contains.nCount = ((RandShort () * botInfoP->containsCount) >> 15) + 1;
+		if (delObjP->info.contains.nCount > MAX_ROBOT_POWERUPS)
+			delObjP->info.contains.nCount = MAX_ROBOT_POWERUPS;
 		delObjP->info.contains.nType = botInfoP->containsType;
 		delObjP->info.contains.nId = botInfoP->containsId;
 		if (delObjP->info.contains.nType == OBJ_POWERUP) {
@@ -1011,6 +1018,14 @@ else if (botInfoP->containsCount) {
 			nEggObj = ObjectCreateEgg (delObjP);
 		}
 	}
+#if DBG
+if (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS)
+	BRP;
+if (gameData.multigame.create.nCount > delObjP->info.contains.nCount)
+	BRP;
+while (gameData.multigame.create.nCount > delObjP->info.contains.nCount)
+	OBJECTS [gameData.multigame.create.nObjNums [gameData.multigame.create.nCount--]].Die ();
+#endif
 if (nEggObj >= 0) // Transmit the object creation to the other players	 
 	MultiSendCreateRobotPowerups (delObjP);
 }
