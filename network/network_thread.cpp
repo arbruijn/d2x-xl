@@ -293,6 +293,13 @@ Unlock ();
 
 //------------------------------------------------------------------------------
 
+void CNetworkPacketQueue::Update (void)
+{
+m_clients.Cleanup ();
+}
+
+//------------------------------------------------------------------------------
+
 CNetworkPacket* CNetworkPacketQueue::Start (int32_t nPacket) 
 { 
 for (m_current = Head (); m_current && nPacket--; Step ())
@@ -501,8 +508,8 @@ return 1;
 
 void CNetworkThread::Cleanup (void)
 {
-m_rxPacketQueue.UpdateClientList ();
-m_txPacketQueue.UpdateClientList ();
+m_rxPacketQueue.Update ();
+m_txPacketQueue.Update ();
 
 uint32_t t = SDL_GetTicks ();
 if (t <= MAX_PACKET_AGE)

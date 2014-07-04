@@ -175,6 +175,7 @@ class CNetworkPacketQueue {
 		CNetworkPacket* Append (CNetworkPacket* packet = NULL, bool bAllowDuplicates = true, bool bLock = false);
 		CNetworkPacket* Pop (bool bDrop = false, bool bLock = true);
 		CNetworkPacket* Get (void);
+		void Update (void);
 		void UpdateClientList (void);
 		int32_t Lock (bool bLock = true);
 		int32_t Unlock (bool bLock = true);
