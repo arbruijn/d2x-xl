@@ -279,6 +279,7 @@ networkData.nJoining = 0;
 networkData.nJoinState = 0;
 networkData.nStatus = NETSTAT_BROWSING; // We are looking at a game menu
 IpxChangeDefaultSocket ((uint16_t) (IPX_DEFAULT_SOCKET + networkData.nPortOffset));
+networkThread.Start ();
 NetworkFlush ();
 NetworkListen ();  // Throw out old info
 NetworkSendGameListRequest (); // broadcast a request for lists
@@ -310,7 +311,6 @@ if (!bAutoLaunch) {
 	}
 networkData.bGamesChanged = 1;    
 
-networkThread.Start ();
 do {
 	networkData.nStatus = NETSTAT_BROWSING;
 	for (;;) {
