@@ -11,7 +11,7 @@ class CNetworkClientInfo : public CNetworkAddress {
 
 		inline void Reset (void) {
 			m_nPacketId [0] = 0;
-			m_nPacketId [0] = 0;
+			m_nPacketId [1] = 0;
 			m_nLost = 0;
 			m_timestamp = 0;
 			}
