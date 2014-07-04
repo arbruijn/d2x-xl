@@ -74,7 +74,7 @@ networkData.bWantPlayersInfo = 0;
 networkData.bWaitingForPlayerInfo = 0;
 networkData.nSegmentCheckSum = 0;
 networkData.nStartWaitAllTime = 0;
-networkData.nLastPacketTime [MAX_PLAYERS] = 0;
+memset (networkData.nLastPacketTime, 0, sizeof (networkData.nLastPacketTime));
 networkData.xLastSendTime = 0;
 networkData.xLastTimeoutCheck = 0;
 networkData.xPingReturnTime = 0;
