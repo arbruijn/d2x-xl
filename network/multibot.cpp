@@ -515,14 +515,13 @@ MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 void MultiSendCreateRobotPowerups (CObject *delObjP)
 {
 	int32_t	bufP = 0, hBufP;
-	char	h, nContained;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	CFixVector vSwapped;
 #endif
 
 gameData.multigame.msg.buf [bufP++] = MULTI_CREATE_ROBOT_POWERUPS;			
 gameData.multigame.msg.buf [bufP++] = N_LOCALPLAYER;			
-hBufP = bufP++;
+hBufP = bufP++; // points to the buffer location where the number of powerups contained in the data packet is stored
 gameData.multigame.msg.buf [bufP++] = delObjP->info.contains.nType; 				
 gameData.multigame.msg.buf [bufP++] = delObjP->info.contains.nId;					
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, delObjP->info.nSegment);
