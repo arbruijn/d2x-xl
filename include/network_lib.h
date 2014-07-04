@@ -52,6 +52,8 @@ class CSyncPack {
 		uint32_t	m_nPackets;
 
 	public:
+		CSyncPack () {}
+		~CSyncPack () {}
 		virtual void Reset (void) { MsgDataSize () = 0; }
 		virtual int32_t HeaderSize (void) = 0;
 		virtual int32_t MaxDataSize (void) = 0;
@@ -102,6 +104,8 @@ class CSyncPackLong : public CSyncPack {
 		tFrameInfoLong m_info;
 
 	public:
+		CSyncPackLong () { Reset (); }
+		~CSyncPackLong () {}
 		virtual void* Info (void) { return &m_info; }
 		virtual int32_t HeaderSize (void) { return sizeof (m_info) - UDP_PAYLOAD_SIZE; }
 		virtual int32_t MaxDataSize (void) { return UDP_PAYLOAD_SIZE - HeaderSize (); }
@@ -123,6 +127,8 @@ class CSyncPackShort : public CSyncPack {
 		tFrameInfoShort m_info;
 
 	public:
+		CSyncPackShort () { Reset (); }
+		~CSyncPackShort () {}
 		virtual void* Info (void) { return &m_info; }
 		virtual int32_t HeaderSize (void) { return sizeof (m_info) - UDP_PAYLOAD_SIZE; }
 		virtual int32_t MaxDataSize (void) { return NET_XDATA_SIZE; }
