@@ -427,7 +427,6 @@ if (!m_thread) {
 #if PROCLOCK
 	m_processLock = SDL_CreateSemaphore (1);
 #endif
-	m_txPacketQueue.
 	m_toSend.Setup (1000 / PPS);
 	m_toSend.Start ();
 	m_bUrgent = false;
