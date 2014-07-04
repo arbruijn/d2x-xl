@@ -111,26 +111,22 @@ return true;
 //------------------------------------------------------------------------------
 
 CNetworkPacketQueue::CNetworkPacketQueue ()
-	: m_nPackets (0)
 {
-m_packets [0] = 
-m_packets [1] = 
-m_packets [2] = 
-m_current = NULL;
-m_nDuplicate = 0;
-m_nCombined = 0;
-m_nLost = 0;
-m_nType = LISTEN_QUEUE;
-m_clients.Create ();
-m_semaphore = SDL_CreateSemaphore (1);
+Create ();
 }
 
 //------------------------------------------------------------------------------
 
 CNetworkPacketQueue::~CNetworkPacketQueue ()
 {
-Flush ();
+Destroy ();
+}
 
+//------------------------------------------------------------------------------
+
+void CNetworkPacketQueue::Destroy (void)
+{
+Flush ();
 Lock ();
 CNetworkPacket* packet;
 while ((packet = m_packets [2])) {
@@ -144,6 +140,23 @@ if (m_semaphore) {
 	SDL_DestroySemaphore (m_semaphore);
 	m_semaphore = NULL;
 	}
+}
+
+//------------------------------------------------------------------------------
+
+void CNetworkPacketQueue::Create (void)
+{
+m_packets [0] = 
+m_packets [1] = 
+m_packets [2] = 
+m_current = NULL;
+m_nPackets = 0;
+m_nDuplicate = 0;
+m_nCombined = 0;
+m_nLost = 0;
+m_nType = LISTEN_QUEUE;
+m_clients.Create ();
+m_semaphore = SDL_CreateSemaphore (1);
 }
 
 //------------------------------------------------------------------------------
@@ -392,7 +405,7 @@ return 0;
 //------------------------------------------------------------------------------
 
 CNetworkThread::CNetworkThread () 
-	: m_thread (NULL), m_semaphore (NULL), m_sendLock (NULL), m_recvLock (NULL), m_processLock (NULL), m_nThreadId (0), m_bUrgent (0)
+	: m_thread (NULL), m_semaphore (NULL), m_sendLock (NULL), m_recvLock (NULL), m_processLock (NULL), m_nThreadId (0), m_bUrgent (0), m_bRun (false)
 {
 m_packet = NULL;
 m_syncPackets = NULL;
@@ -404,7 +417,7 @@ m_txPacketQueue.SetType (SEND_QUEUE);
 
 void CNetworkThread::Run (void)
 {
-for (;;) {
+while (m_bRun) {
 	if (LockRecv (true)) {
 		Listen ();
 		UnlockRecv ();
@@ -425,6 +438,7 @@ void CNetworkThread::Start (void)
 {
 #if MULTI_THREADED_NETWORKING
 if (!m_thread) {
+	m_bRun = true;
 	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
 	m_semaphore = SDL_CreateSemaphore (1);
 #if SENDLOCK
@@ -436,6 +450,8 @@ if (!m_thread) {
 #if PROCLOCK
 	m_processLock = SDL_CreateSemaphore (1);
 #endif
+	m_rxPacketQueue.Create ();
+	m_txPacketQueue.Create ();
 	m_toSend.Setup (1000 / PPS);
 	m_toSend.Start ();
 	m_bUrgent = false;
@@ -445,10 +461,18 @@ if (!m_thread) {
 
 //------------------------------------------------------------------------------
 
-void CNetworkThread::End (void)
+void CNetworkThread::Stop (void)
 {
 if (m_thread) {
+	m_bRun = false;
+#if 1
+	int nStatus;
+	SDL_WaitThread (m_thread, &nStatus);
+#else
 	SDL_KillThread (m_thread);
+#endif
+	m_rxPacketQueue.Destroy ();
+	m_txPacketQueue.Destroy ();
 	if (m_semaphore) {
 		SDL_DestroySemaphore (m_semaphore);
 		m_semaphore = NULL;
@@ -480,6 +504,7 @@ if (m_thread) {
 void CNetworkThread::FlushPackets (void)
 {
 m_rxPacketQueue.Flush ();
+m_txPacketQueue.Flush ();
 }
 
 //------------------------------------------------------------------------------

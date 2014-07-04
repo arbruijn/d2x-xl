@@ -475,7 +475,7 @@ if (bStart ? NetworkStartGame () : NetworkBrowseGames ()) {
 		gameData.multiplayer.autoNG.bValid = -1;
 	return 1;
 	}
-networkThread.End ();
+networkThread.Stop ();
 gameData.app.SetGameMode (0);
 IpxClose ();
 gameData.multiplayer.autoNG.bValid = 0;

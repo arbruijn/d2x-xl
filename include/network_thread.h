@@ -161,6 +161,8 @@ class CNetworkPacketQueue {
 	public:
 		CNetworkPacketQueue ();
 		~CNetworkPacketQueue ();
+		void Create (void);
+		void Destroy (void);
 		CNetworkPacket* Alloc (bool bLock = true);
 		void Free (CNetworkPacket* packet, bool bLock = true);
 		inline CNetworkPacket* Head (void) { return m_packets [0]; }
@@ -204,6 +206,7 @@ class CNetworkThread {
 		int32_t					m_nThreadId;
 		int32_t					m_bUrgent;
 		int32_t					m_bImportant;
+		bool						m_bRun;
 		CNetworkPacketQueue	m_txPacketQueue; // transmit
 		CNetworkPacketQueue	m_rxPacketQueue; // receive
 		CNetworkPacket*		m_packet;
@@ -215,7 +218,7 @@ class CNetworkThread {
 		bool Available (void) { return m_thread != NULL; }
 		void Run (void);
 		void Start (void);
-		void End (void);
+		void Stop (void);
 		int32_t CheckPlayerTimeouts (void);
 		void SendLifeSign (bool bForce = false);
 		int32_t Listen (void);
