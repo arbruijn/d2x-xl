@@ -195,6 +195,9 @@ void CNetworkPacketQueue::UpdateClientList (void)
 {
 CNetworkPacket* packet = Tail ();
 
+if (!packet)
+	return;
+
 CNetworkClientInfo* i = m_clients.Update (packet->Owner ().GetAddress ());
 if (!i)
 	return;
