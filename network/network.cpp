@@ -152,7 +152,6 @@ int32_t NetworkStartGame (void)
 	int32_t bAutoRun;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	Assert (FRAME_INFO_SIZE < MAX_PAYLOAD_SIZE);
 	if (!networkData.bActive) {
 		TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_IPX_NOT_FOUND);
 		return 0;
