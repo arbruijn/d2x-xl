@@ -732,7 +732,7 @@ if ((objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERU
 					return -1;
 					}
 				} 
-			else  if (LOCALPLAYER.Shield () >= I2X (150)) {
+			else if (LOCALPLAYER.Shield () >= I2X (150)) {
 				if (RandShort () > 8192) {
 					return -1;
 					}

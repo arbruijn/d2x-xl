@@ -442,10 +442,6 @@ bufP += 3;
 nRemoteObj = int16_t (GetRemoteObjNum (nObject, reinterpret_cast<int8_t&> (gameData.multigame.msg.buf [bufP + 2])));
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, nRemoteObj);                       
 bufP += 3;
-if (gameStates.multi.nGameType == UDP_GAME) {
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameStates.app.nRandSeed);                       
-	bufP += 4;
-	}
 gameData.multigame.msg.buf [bufP++] = bIsThief;   
 MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 #if 0
@@ -519,7 +515,6 @@ MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 void MultiSendCreateRobotPowerups (CObject *delObjP)
 {
 	int32_t	bufP = 0, hBufP;
-	int32_t	i, j = 0;
 	char	h, nContained;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	CFixVector vSwapped;
@@ -545,14 +540,16 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameStates.app.nRandSeed);
 	bufP += 4;
 	}
-gameData.multigame.create.nCount = 0;
-for (nContained = delObjP->info.contains.nCount; nContained; nContained -= h) {
-	h = (nContained > MAX_ROBOT_POWERUPS) ? MAX_ROBOT_POWERUPS : nContained;
-	gameData.multigame.msg.buf [hBufP] = h;
+
+// successively sent all robot powerups just created (their count is in gameData.multigame.create.nCount)
+int32_t nTotalSent = 0;
+for (uint8_t nSent = 0; gameData.multigame.create.nCount >= 0; gameData.multigame.create.nCount -= nSent) {
+	nSent = (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS) ? MAX_ROBOT_POWERUPS : gameData.multigame.create.nCount;
+	gameData.multigame.msg.buf [hBufP] = nSent;
 	memset (gameData.multigame.msg.buf + bufP, -1, MAX_ROBOT_POWERUPS * sizeof (int16_t));
-	for (i = 0; i < h; i++, j++) {
-		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP + 2 * i, gameData.multigame.create.nObjNums [j]);
-		SetLocalObjNumMapping (gameData.multigame.create.nObjNums [j]);
+	for (int32_t i = 0; i < nSent; i++, nTotalSent++) {
+		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP + 2 * i, gameData.multigame.create.nObjNums [nTotalSent]); // bufP must always point to the start of the object data list here!
+		SetLocalObjNumMapping (gameData.multigame.create.nObjNums [nTotalSent]);
 		}
 	MultiSendData (gameData.multigame.msg.buf, (gameStates.multi.nGameType == UDP_GAME) ? 31 : 27, 2);
 	}
@@ -693,15 +690,13 @@ int32_t MultiDestroyRobot (CObject* robotP, char bIsThief)
 if (IsCoopGame && (robotP->info.contains.nCount > 0) && (robotP->info.contains.nType == OBJ_POWERUP) && 
 	 (robotP->info.contains.nId >= POW_KEY_BLUE) && (robotP->info.contains.nId <= POW_KEY_GOLD))
 	ObjectCreateEgg (robotP);
-/*else*/ if (robotP->cType.aiInfo.REMOTE_OWNER == N_LOCALPLAYER) {
-	MultiDropRobotPowerups (nRobot);
-	MultiDeleteControlledRobot (nRobot);
-	}
-else if ((robotP->cType.aiInfo.REMOTE_OWNER == -1) && IAmGameHost ()) {
+/*else*/ 
+if ((robotP->cType.aiInfo.REMOTE_OWNER == -1) && IAmGameHost ()) 
 	robotP->cType.aiInfo.REMOTE_OWNER = N_LOCALPLAYER;
+if (robotP->cType.aiInfo.REMOTE_OWNER == N_LOCALPLAYER) {
 	MultiDropRobotPowerups (robotP->Index ());
 	robotP->cType.aiInfo.REMOTE_OWNER = -1;
-	//MultiDeleteControlledRobot (nRobot);
+	MultiDeleteControlledRobot (nRobot);
 	}
 if (bIsThief || ROBOTINFO (robotP->info.nId).thief)
 	DropStolenItems (robotP);
@@ -760,11 +755,6 @@ nRobot = GetLocalObjNum (nRemoteBot, int32_t (buf [bufP+2]));
 bufP += 3;
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
 	return;
-if (gameStates.multi.nGameType == UDP_GAME) {
-	gameStates.app.nRandSeed = GET_INTEL_INT (buf + bufP);
-	bufP += 4;
-	gameStates.app.SRand (gameStates.app.nRandSeed);
-	}
 rval = MultiExplodeRobot (nRobot, nKiller, buf [bufP]);
 if (rval && (nKiller == LOCALPLAYER.nObject))
 	cockpit->AddPointsToScore (ROBOTINFO (OBJECTS [nRobot].info.nId).scoreValue);
@@ -967,7 +957,7 @@ for (i = 0; i < gameData.multigame.create.nCount; i++) {
 void MultiDropRobotPowerups (int32_t nObject)
 {
 	CObject		*delObjP;
-	int32_t			nEggObj = -1;
+	int32_t		nEggObj = -1;
 	tRobotInfo	*botInfoP; 
 
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {

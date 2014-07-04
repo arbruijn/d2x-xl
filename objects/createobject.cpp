@@ -197,49 +197,49 @@ return Key ();
 //searches for the correct CSegment
 //returns the CObject number
 
-int32_t CreateObject (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, const CFixMatrix& mOrient,
-						fix xSize, uint8_t cType, uint8_t mType, uint8_t rType)
+int32_t CreateObject (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, const CFixMatrix& mOrient, fix xSize, uint8_t cType, uint8_t mType, uint8_t rType)
 {
 	int16_t		nObject;
 	CObject	*objP;
 
 #if DBG
 if (nType == OBJ_WEAPON) {
-	nType = nType;
+	BRP;
 	if ((nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_ROBOT)) {
-		nType = nType;
+		BRP;
 		if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 			BRP;
 		}
 	if (nId == FLARE_ID)
-		nType = nType;
+		BRP;
 	if (nId == EARTHSHAKER_MEGA_ID)
-		nType = nType;
+		BRP;
 	if (CObject::IsMissile ((int32_t) nId))
-		nType = nType;
+		BRP;
 	else
-		nType = nType;
+		BRP;
 	}
 else if (nType == OBJ_ROBOT) {
+	BRP;
 #if 0
 	if (ROBOTINFO ((int32_t) nId).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
 		return -1;
 #endif
 	}
 else if (nType == OBJ_HOSTAGE)
-	nType = nType;
+	BRP;
 else if (nType == OBJ_FIREBALL)
-	nType = nType;
+	BRP;
 else if (nType == OBJ_REACTOR)
-	nType = nType;
+	BRP;
 else if (nType == OBJ_DEBRIS)
-	nType = nType;
+	BRP;
 else if (nType == OBJ_MARKER)
-	nType = nType;
+	BRP;
 else if (nType == OBJ_PLAYER)
-	nType = nType;
+	BRP;
 else if (nType == OBJ_POWERUP) {
-	nType = nType;
+	BRP;
 	if (nId == POW_MONSTERBALL)
 		nId = nId;
 	if (nId == 27) // unknown powerup type
@@ -315,7 +315,6 @@ else if (objP->info.controlType == CT_EXPLOSION)
 	objP->cType.explInfo.attached.nParent = -1;
 
 objP->Arm ();
-
 objP->Link ();
 objP->LinkToSeg (nSegment);
 objP->StopSync ();
@@ -323,8 +322,7 @@ objP->StopSync ();
 memset (&objP->HitInfo (), 0, sizeof (CObjHitInfo));
 #if 1
 if (IsMultiGame && IsCoopGame && 
-	 (nType == OBJ_WEAPON) && CObject::IsMissile (int16_t (nId)) && 
-	 (nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_PLAYER)) {
+	 (nType == OBJ_WEAPON) && CObject::IsMissile (int16_t (nId)) && (nCreator >= 0) && (OBJECTS [nCreator].info.nType == OBJ_PLAYER)) {
 	extern char powerupToObject [MAX_POWERUP_TYPES];
 
 	for (int32_t i = 0; i < MAX_POWERUP_TYPES; i++) {
@@ -342,9 +340,9 @@ return nObject;
 
 int32_t CloneObject (CObject *objP)
 {
-	int16_t		nObject, nSegment;
-	int32_t		nSignature;
-	CObject	*cloneP;
+	int16_t	nObject, nSegment;
+	int32_t	nSignature;
+	CObject*	cloneP;
 
 if (0 > (nObject = AllocObject ()))
 	return -1;
@@ -521,8 +519,7 @@ if (!bIgnoreLimits && TooManyPowerups ((int32_t) nId)) {
 	}
 if (gameStates.gameplay.bMineMineCheat && !bForce && (CObject::IsEquipment (nId) < 2))
 	return -1;
-int16_t nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objs.pwrUp.info [nId].size,
-										CT_POWERUP, MT_PHYSICS, RT_POWERUP);
+int16_t nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objs.pwrUp.info [nId].size, CT_POWERUP, MT_PHYSICS, RT_POWERUP);
 if ((nObject >= 0) && IsMultiGame && PowerupClass (nId)) 
 	AddPowerupInMine ((int32_t) nId);
 return nObject;
