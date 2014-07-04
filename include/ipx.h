@@ -24,7 +24,7 @@ COPYRIGHT 1993-1998 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PPPoE_MTU				1492	// typical PPPoE based DSL MTU (MTUs can differ depending on protocols used for DSL connection)
 #define UDP_PACKET_SIZE		PPPoE_MTU
 #define UDP_HEADER_SIZE		18		// 4 bytes for general networking, 14 bytes for udp stuff
-#define UDP_PAYLOAD_SIZE	(UDP_PACKET_SIZE - UDP_HEADER_SIZE - sizeof (uint32_t))	// the network thread will add its own 32 bit frame count to each data packet
+#define UDP_PAYLOAD_SIZE	(UDP_PACKET_SIZE - UDP_HEADER_SIZE - sizeof (int32_t))	// the network thread will add its own 32 bit frame count to each data packet
 
 #define MAX_PACKET_SIZE		UDP_PACKET_SIZE
 
@@ -84,6 +84,8 @@ typedef union {
 class CNetworkAddress {
 	public:
 		tNetworkAddress	m_address;
+
+		CNetworkAddress (tNetworkAddress& address) { *this = address; }
 
 		inline uint8_t* Network (void) { return m_address.network.octets; }
 		inline uint8_t* Node (void) { return m_address.node.b; }

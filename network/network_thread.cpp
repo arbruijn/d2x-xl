@@ -306,15 +306,18 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-CNetworkClientInfo* CNetworkClientList::Add (CNetworkAddress& client) 
+CNetworkClientInfo* CNetworkClientList::Update (CNetworkAddress& client) 
 {
 CNetworkClientInfo* i = Find (client);
-if (i)
-	return i;
-if (!Grow ())
-	return NULL;
-(CNetworkAddress&) *Top () = client;
-return Top ();
+if (!i) {
+	if (!Grow ())
+		return NULL;
+	i = Top ();
+	(CNetworkAddress&) *i = client;
+	i->Reset ();
+	}
+i->m_timestamp = SDL_GetTicks ();
+return i;
 }
 
 //------------------------------------------------------------------------------
@@ -654,6 +657,7 @@ else {
 	packet->SetData (data, size);
 	packet->Owner ().SetAddress (network, node);
 	packet->Owner ().SetLocalAddress (localAddress);
+	m_clients.Update (packet->Owner ().GetAddress ());
 	packet = m_txPacketQueue.Append (packet, false, false);
 	}
 

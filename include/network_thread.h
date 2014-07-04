@@ -5,8 +5,19 @@
 
 class CNetworkClientInfo : public CNetworkAddress {
 	public:
-		uint32_t		m_nFrame;
+		int32_t		m_nPacketId;
+		uint32_t		m_nLost;
 		uint32_t		m_timestamp;
+
+		inline void Reset (void) {
+			m_nPacketId = 0;
+			m_nLost = 0;
+			m_timestamp = 0;
+			}
+		inline void SetPacketId (int32_t nId) { m_nPacketId = nId; }
+		inline int32_t GetPacketId (void) { return m_nPacketId; }
+		inline void SetTime (uint32_t t) { m_timestamp = t; }
+		inline uint32_t GetTime (void) { return m_timestamp; }
 	};
 
 //------------------------------------------------------------------------------
@@ -16,7 +27,7 @@ class CNetworkClientList : public CStack< CNetworkClientInfo >	{
 		bool Create (void);
 		void Destroy (void);
 		CNetworkClientInfo* Find (CNetworkAddress& client);
-		CNetworkClientInfo* Add (CNetworkAddress& client);
+		CNetworkClientInfo* Update (CNetworkAddress& client);
 		void Cleanup (void);
 	};
 
@@ -37,6 +48,8 @@ class CNetworkPacketOwner {
 			m_address.SetNetwork (network);
 			m_address.SetNode (node);
 			}
+
+		CNetworkAddress& GetAddress (void) { return CNetworkAddress (m_address.Address ()); }
 
 		int32_t CmpAddress (uint8_t* network, uint8_t* node) {
 			return memcmp (m_address.Network (), network, 4) || memcpy (m_address.Node (), node, 6); 
@@ -60,8 +73,8 @@ class CNetworkPacketData {
 	public:
 		uint16_t	m_size;
 		struct {
-			uint32_t	nFrame;
-			uint8_t	buffer [MAX_PACKET_SIZE - sizeof (uint32_t)];
+			int32_t	nId;
+			uint8_t	buffer [MAX_PACKET_SIZE - sizeof (int32_t)];
 		} m_data;
 
 	public:
@@ -77,6 +90,8 @@ class CNetworkPacketData {
 			return *this;
 			}
 
+		inline void SetId (uint32_t nId) { m_data.nId = nId; }
+		inline uint32_t GetId (void) { return m_data.nId; }
 		inline uint8_t* Buffer (void) { return m_data.buffer; }
 		inline int32_t Size (void) { return m_size; }
 		inline int32_t SetSize (int32_t size) { return m_size = size; }
