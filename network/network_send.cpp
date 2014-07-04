@@ -591,7 +591,6 @@ if (!networkData.bSyncPackInited) {
 	networkData.bSyncPackInited = 1;
 	networkData.SyncPack ().Reset ();
 	}
-
 // for IPX game, separate legacy and D2X message to avoid non D2X-XL participants losing data
 // because they do not know the D2X data and hence cannot determine its length, thus getting out
 // of sync when decompositing a multi-data packet.
@@ -603,8 +602,7 @@ if (gameStates.multi.nGameType == IPX_GAME) {
 		NetworkFlushData ();
 	networkData.bD2XData = bD2XData;
 	}
-memcpy (networkData.syncPack.data + networkData.syncPack.dataSize, buf, len);
-networkData.syncPack.dataSize += len;
+networkData.SyncPack ().AppendMessage (buf, len);
 if (bUrgent)
 	networkData.bPacketUrgent = 1;
 }
