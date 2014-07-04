@@ -123,6 +123,9 @@ class CNetworkPacket : public CNetworkPacketData {
 
 //------------------------------------------------------------------------------
 
+#define LISTEN_QUEUE	0
+#define SEND_QUEUE	1
+
 class CNetworkPacketQueue {
 	private:
 		int32_t					m_nPackets;

@@ -119,6 +119,8 @@ m_packets [2] =
 m_current = NULL;
 m_nDuplicate = 0;
 m_nCombined = 0;
+m_nLost = 0;
+m_nType = LISTEN_QUEUE;
 m_semaphore = SDL_CreateSemaphore (1);
 }
 
@@ -196,7 +198,7 @@ if (!i)
 	return;
 
 int32_t nId = i->GetPacketId () + 1; // last packet id sent or received + 1
-if (m_nType)  // send
+if (m_nType == SEND_QUEUE)  // send
 	Tail ()->SetId (i->SetPacketId (nId));
 else { // listen
 	int32_t nLost = Tail ()->GetId () - nId;
@@ -225,6 +227,7 @@ if (Tail ()) { // list tail
 	if (!bAllowDuplicates && (*Tail () == *packet)) {
 		++m_nDuplicate;
 		Tail ()->SetTime (SDL_GetTicks ());
+		UpdateClientList ();
 		Unlock (bLock);
 		Free (packet);
 		return Tail ();
@@ -236,6 +239,7 @@ else
 SetTail (packet);
 Tail ()->SetTime (SDL_GetTicks ());
 Tail ()->m_nextPacket = NULL;
+UpdateClientList ();
 ++m_nPackets;
 Unlock (bLock);
 return packet;
@@ -274,6 +278,7 @@ m_packets [1] = NULL;
 m_nPackets = 0;
 m_nDuplicate = 0;
 m_nCombined = 0;
+m_nLost = 0;
 Unlock ();
 }
 
@@ -375,6 +380,8 @@ CNetworkThread::CNetworkThread ()
 {
 m_packet = NULL;
 m_syncPackets = NULL;
+m_rxPacketQueue.SetType (LISTEN_QUEUE);
+m_txPacketQueue.SetType (SEND_QUEUE);
 }
 
 //------------------------------------------------------------------------------
