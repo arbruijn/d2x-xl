@@ -40,11 +40,63 @@ networkData.tLastPingStat = 0;
 
 //------------------------------------------------------------------------------
 
+void ResetNetworkData (void)
+{
+memset (networkData.localAddress, 0, sizeof (networkData.localAddress));
+memset (networkData.serverAddress, 0, sizeof (networkData.serverAddress));
+networkData.nActiveGames = 0;
+networkData.nLastActiveGames = 0;
+networkData.nNamesInfoSecurity = 0;
+networkData.nPacketsPerSec = 0;
+networkData.nNetLifeKills = 0;
+networkData.nNetLifeKilled = 0;
+networkData.bDebug = 0;
+networkData.bActive = 0;
+networkData.nStatus = 0;
+networkData.bGamesChanged = 0;
+networkData.nPortOffset = 0;
+networkData.bAllowSocketChanges = 0;
+networkData.nSecurityFlag = 0;
+networkData.nSecurityNum = 0;
+networkData.nJoinState = 0;
+networkData.bNewGame = 0;       
+networkData.bPlayerAdded = 0;   
+networkData.bD2XData = 0;
+networkData.nSecurityCheck = 0;
+networkData.bPacketUrgent = 0;
+networkData.nGameType = 0;
+networkData.nTotalMissedPackets = 0;
+networkData.nTotalPacketsGot = 0;
+networkData.nMissedPackets = 0;
+networkData.nConsistencyErrorCount = 0;
+networkData.bSyncPackInited = 0;       
+networkData.bWantPlayersInfo = 0;
+networkData.bWaitingForPlayerInfo = 0;
+networkData.nSegmentCheckSum = 0;
+networkData.nStartWaitAllTime = 0;
+networkData.nLastPacketTime [MAX_PLAYERS] = 0;
+networkData.xLastSendTime = 0;
+networkData.xLastTimeoutCheck = 0;
+networkData.xPingReturnTime = 0;
+networkData.tLastPingStat = 0;
+networkData.bWaitAllChoice = 0;
+networkData.bShowPingStats = 0;
+networkData.bHaveSync = 0;
+networkData.nPrevFrame = 0;
+networkData.bTraceFrames = 0;
+networkData.nJoining = 0;
+networkData.xmlGameInfoRequestTime = 0;
+memset (&networkData.refuse, 0, sizeof (networkData.refuse));
+memset (&networkData.thisPlayer, 0, sizeof (networkData.thisPlayer));
+memset (networkData.sync, 0, sizeof (networkData.sync));
+}
+
+//------------------------------------------------------------------------------
+
 void InitNetworkData (void)
 {
-memset (&networkData, 0, sizeof (networkData));
+ResetNetworkData ();
 networkData.xmlGameInfoRequestTime = -1;
-networkData.nActiveGames = 0;
 networkData.nActiveGames = 0;
 networkData.nLastActiveGames = 0;
 networkData.nPacketsPerSec = DEFAULT_PPS;

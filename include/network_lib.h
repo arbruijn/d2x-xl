@@ -229,7 +229,6 @@ class CNetworkData {
 	public:
 		uint8_t					localAddress [10];
 		uint8_t					serverAddress [10];
-		CPacketAddress			packetSource;
 		int32_t					nActiveGames;
 		int32_t					nLastActiveGames;
 		int32_t					nNamesInfoSecurity;
@@ -249,36 +248,38 @@ class CNetworkData {
 		int32_t					bPlayerAdded;   
 		int32_t					bD2XData;
 		int32_t					nSecurityCheck;
-		fix						nLastPacketTime [MAX_PLAYERS];
 		int32_t					bPacketUrgent;
 		int32_t					nGameType;
 		int32_t					nTotalMissedPackets;
 		int32_t					nTotalPacketsGot;
 		int32_t					nMissedPackets;
 		int32_t					nConsistencyErrorCount;
-		CSyncPackLong			longSyncPack;
-		CSyncPackShort			shortSyncPack;
 		uint8_t					bSyncPackInited;       
+		uint8_t					bWantPlayersInfo;
+		uint8_t					bWaitingForPlayerInfo;
 		uint16_t					nSegmentCheckSum;
-		tSequencePacket		thisPlayer;
-		char						bWantPlayersInfo;
-		char						bWaitingForPlayerInfo;
 		fix						nStartWaitAllTime;
-		int32_t					bWaitAllChoice;
+		fix						nLastPacketTime [MAX_PLAYERS];
 		fix						xLastSendTime;
 		fix						xLastTimeoutCheck;
 		fix						xPingReturnTime;
-		int32_t					bShowPingStats;
 		int32_t					tLastPingStat;
+		int32_t					bWaitAllChoice;
+		int32_t					bShowPingStats;
 		int32_t					bHaveSync;
 		int16_t					nPrevFrame;
 		int32_t					bTraceFrames;
-		tRefuseData				refuse;
-		CTimeout					toSyncPoll;
-		time_t					toWaitAllPoll;
-		tNetworkSyncData		sync [MAX_JOIN_REQUESTS];
 		int16_t					nJoining;
 		int32_t					xmlGameInfoRequestTime;
+		tRefuseData				refuse;
+		tSequencePacket		thisPlayer;
+		tNetworkSyncData		sync [MAX_JOIN_REQUESTS];
+
+		CTimeout					toWaitAllPoll;
+		CTimeout					toSyncPoll;
+		CPacketAddress			packetSource;
+		CSyncPackLong			longSyncPack;
+		CSyncPackShort			shortSyncPack;
 
 	public:
 		CSyncPack& SyncPack (void) { 

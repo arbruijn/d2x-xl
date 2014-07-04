@@ -518,7 +518,8 @@ return 3000;
 
 static inline void ResetWaitAllTimeout (void)
 {
-networkData.toWaitAllPoll = (time_t) SDL_GetTicks () + WaitAllPollTimeout ();
+networkData.toWaitAllPoll.Setup (WaitAllPollTimeout ());
+networkData.toWaitAllPoll.Start ();
 }
 
 //------------------------------------------------------------------------------
@@ -528,7 +529,7 @@ int32_t NetworkWaitAllPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t
 if (nState)
 	return nCurItem;
 
-if ((time_t) SDL_GetTicks () > networkData.toWaitAllPoll) {
+if (networkData.toWaitAllPoll.Expired ()) {
 	NetworkSendAllInfoRequest (PID_SEND_ALL_GAMEINFO, networkData.nSecurityCheck);
 	ResetWaitAllTimeout ();
 	}
@@ -552,7 +553,8 @@ networkData.nStartWaitAllTime=TimerGetApproxSeconds ();
 networkData.nSecurityCheck = activeNetGames [choice].m_info.nSecurity;
 networkData.nSecurityFlag = 0;
 
-networkData.toWaitAllPoll = 0;
+networkData.toWaitAllPoll.Setup (WaitAllPollTimeout ());
+networkData.toWaitAllPoll.Start (-1, true);
 do {
 	pick = m.Menu (NULL, TXT_CONNECTING, NetworkWaitAllPoll);
 	} while ((pick > -1) && (networkData.nSecurityCheck != -1));
@@ -568,7 +570,7 @@ return 0;
 
 int32_t NetworkWaitForPlayerInfo (void)
 {
-	uint8_t						packet [MAX_PACKET_SIZE];
+	uint8_t					packet [MAX_PACKET_SIZE];
 	CAllNetPlayersInfo	playerData;
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
