@@ -95,7 +95,7 @@ return (type != PID_GAME_INFO) && (type != PID_EXTRA_GAMEINFO) && (type != PID_P
 
 bool CNetworkPacket::Combine (uint8_t* data, int32_t size, uint8_t* network, uint8_t* node)
 {
-if (Size () + size > MAX_PACKET_SIZE) 
+if (Size () + size > MAX_PAYLOAD_SIZE) 
 	return false; // too large
 if (!Combineable (Type ()) || !Combineable (data [0]))
 	return false; // at least one of the packets contains data that must not be combined with other data
@@ -536,12 +536,14 @@ for (;;) {
 		if (!m_packet)
 			break;
 		}
-	if (!m_packet->SetSize (IpxGetPacketData (reinterpret_cast<uint8_t*>(&m_packet->m_data))))
+	int32_t nSize = IpxGetPacketData (reinterpret_cast<uint8_t*>(&m_packet->m_data));
+	if (!nSize)
 		break;
 #if DBG
 	if (!m_rxPacketQueue.Validate ())
 		FlushPackets ();
 #endif
+	m_packet->SetSize (nSize - sizeof (int32_t)); // don't count the packet queue's 32 bit packet id!
 	memcpy (&m_packet->Owner ().m_address, &networkData.packetSource, sizeof (networkData.packetSource));
 	m_rxPacketQueue.Append (m_packet, false);
 	m_packet = NULL;
@@ -648,7 +650,7 @@ m_txPacketQueue.Lock ();
 	{
 	packet = m_txPacketQueue.Head ();
 #else
-while ((packet = m_txPacketQueue.Head ()) && (packet->IsUrgent () || (nSize + packet->Size () <= MAX_PACKET_SIZE))) {
+while ((packet = m_txPacketQueue.Head ()) && (packet->IsUrgent () || (nSize + packet->Size () <= MAX_PAYLOAD_SIZE))) {
 #endif
 	nSize += packet->Size ();
 	packet->Transmit ();

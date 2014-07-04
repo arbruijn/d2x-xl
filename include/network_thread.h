@@ -74,7 +74,7 @@ class CNetworkPacketData {
 		uint16_t	m_size;
 		struct {
 			int32_t	nId;
-			uint8_t	buffer [MAX_PACKET_SIZE - sizeof (int32_t)];
+			uint8_t	buffer [MAX_PACKET_SIZE]; // buffer must be big enough to hold the amount of data read by the UDP interface, which contains some additional info
 		} m_data;
 
 	public:

@@ -530,7 +530,7 @@ if (driver->HandleLeaveGame)
 int32_t IpxSendGamePacket (uint8_t *data, int32_t dataSize)
 {
 if (driver->SendGamePacket) {
-	if (dataSize > MAX_PACKET_SIZE - 4)
+	if (dataSize > MAX_PAYLOAD_SIZE - 4)
 		PrintLog (0, "IpxSendGamePacket: packet too large (%d bytes)\n", dataSize);
 	else {
 		static uint8_t buf [MAX_PACKET_SIZE];
