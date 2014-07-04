@@ -121,6 +121,7 @@ m_nDuplicate = 0;
 m_nCombined = 0;
 m_nLost = 0;
 m_nType = LISTEN_QUEUE;
+m_clients.Create ();
 m_semaphore = SDL_CreateSemaphore (1);
 }
 
@@ -136,6 +137,7 @@ while ((packet = m_packets [2])) {
 	m_packets [2] = m_packets [2]->Next ();
 	delete packet;
 	}
+m_clients.Destroy ();
 Unlock ();
 
 if (m_semaphore) {
@@ -425,6 +427,7 @@ if (!m_thread) {
 #if PROCLOCK
 	m_processLock = SDL_CreateSemaphore (1);
 #endif
+	m_txPacketQueue.
 	m_toSend.Setup (1000 / PPS);
 	m_toSend.Start ();
 	m_bUrgent = false;
