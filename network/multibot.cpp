@@ -542,7 +542,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 
 // successively sent all robot powerups just created (their count is in gameData.multigame.create.nCount)
 int32_t nTotalSent = 0;
-for (uint8_t nSent = 0; gameData.multigame.create.nCount >= 0; gameData.multigame.create.nCount -= nSent) {
+for (uint8_t nSent = 0; gameData.multigame.create.nCount > 0; gameData.multigame.create.nCount -= nSent) {
 	nSent = (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS) ? MAX_ROBOT_POWERUPS : gameData.multigame.create.nCount;
 	gameData.multigame.msg.buf [hBufP] = nSent;
 	memset (gameData.multigame.msg.buf + bufP, -1, MAX_ROBOT_POWERUPS * sizeof (int16_t));
