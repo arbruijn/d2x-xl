@@ -257,7 +257,7 @@ class CNetworkData {
 		int32_t					nMissedPackets;
 		int32_t					nConsistencyErrorCount;
 		CSyncPackLong			longSyncPack;
-		CSyncPackShort		shortSyncPack;
+		CSyncPackShort			shortSyncPack;
 		uint8_t					bSyncPackInited;       
 		uint16_t					nSegmentCheckSum;
 		tSequencePacket		thisPlayer;
