@@ -5589,7 +5589,7 @@ switch (nType) {
 			MultiDoStartTrigger (buf);
 		break;
 	case MULTI_FLAGS:
-		if (!gameStates.app.bEndLevelSequence)mj
+		if (!gameStates.app.bEndLevelSequence)
 			MultiDoFlags (buf);
 		break;
 	case MULTI_WEAPONS:
