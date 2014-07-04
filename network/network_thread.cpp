@@ -72,12 +72,12 @@ int MultiCheckPData (uint8_t* pd);
 void CNetworkPacket::Transmit (void)
 {
 #if DBG
-MultiCheckPData (m_data);
+MultiCheckPData (m_data.Buffer ());
 #endif
 if (m_owner.m_bHaveLocalAddress)
-	IPXSendPacketData (m_data, m_size, m_owner.Network (), m_owner.Node (), m_owner.LocalNode ());
+	IPXSendPacketData (reinterpret_cast<uint8_t*>(&m_data), m_size + sizeof (m_data.nId), m_owner.Network (), m_owner.Node (), m_owner.LocalNode ());
 else
-	IPXSendInternetPacketData (m_data, m_size, m_owner.Network (), m_owner.Node ());
+	IPXSendInternetPacketData (reinterpret_cast<uint8_t*>(&m_data), m_size + sizeof (m_data.nId), m_owner.Network (), m_owner.Node ());
 }
 
 //------------------------------------------------------------------------------
@@ -538,7 +538,7 @@ CNetworkPacket* packet = GetPacket ();
 if (!packet)
 	return 0;
 
-memcpy (data, packet->m_data, packet->Size ());
+memcpy (data, packet->Buffer (), packet->Size ());
 memcpy (&networkData.packetSource, &packet->Owner ().m_address, sizeof (networkData.packetSource));
 int32_t size = packet->Size ();
 m_rxPacketQueue.Free (packet);
@@ -557,7 +557,7 @@ if (LOCALPLAYER.connected == CONNECT_WAITING)
 	BRP;
 #endif
 while (packet = GetPacket ()) {
-	if (NetworkProcessPacket (packet->m_data, packet->Size ()))
+	if (NetworkProcessPacket (packet->Buffer (), packet->Size ()))
 		++nProcessed;
 	m_rxPacketQueue.Free (packet);
 	}
