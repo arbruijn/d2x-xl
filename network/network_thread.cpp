@@ -51,6 +51,8 @@
 #	define PPS		netGameInfo.GetPacketsPerSec ()
 #endif
 
+#define DBG_LOCKS	(DBG && 0)
+
 #define SENDLOCK 1
 #define RECVLOCK 1
 #define PROCLOCK 0
@@ -222,12 +224,12 @@ int32_t CNetworkPacketQueue::Lock (bool bLock, char* pszCaller)
 { 
 if (!m_semaphore || !bLock)
 	return 0;
-#if DBG
+#if DBG_LOCKS
 if (pszCaller)
 	PrintLog (0, "%s trying to lock %s queue\n", pszCaller, m_nType ? "send" : "listen");
 #endif
 SDL_SemWait (m_semaphore); 
-#if DBG
+#if DBG_LOCKS
 if (pszCaller)
 	PrintLog (0, "%s has locked %s queue\n", pszCaller, m_nType ? "send" : "listen");
 #endif
@@ -240,12 +242,12 @@ int32_t CNetworkPacketQueue::Unlock (bool bLock, char* pszCaller)
 { 
 if (!m_semaphore || !bLock)
 	return 0;
-#if DBG
+#if DBG_LOCKS
 if (pszCaller)
 	PrintLog (0, "%s trying to unlock %s queue\n", pszCaller, m_nType ? "send" : "listen");
 #endif
 SDL_SemPost (m_semaphore); 
-#if DBG
+#if DBG_LOCKS
 if (pszCaller)
 	PrintLog (0, "%s has unlocked %s queue\n", pszCaller, m_nType ? "send" : "listen");
 #endif
