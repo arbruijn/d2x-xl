@@ -210,7 +210,7 @@ class CNetworkThread {
 		int32_t					m_nThreadId;
 		int32_t					m_bUrgent;
 		int32_t					m_bImportant;
-		bool						m_bRun;
+		bool						m_bRunning;
 		CNetworkPacketQueue	m_txPacketQueue; // transmit
 		CNetworkPacketQueue	m_rxPacketQueue; // receive
 		CNetworkPacket*		m_packet;
@@ -259,7 +259,7 @@ class CNetworkThread {
 		inline void SetImportant (int32_t bImportant) { m_bImportant = bImportant; }
 		inline bool Sending (void) { return Available () && !m_txPacketQueue.Empty (); }
 		inline int32_t PacketsPerSec (void) { return int32_t (1000 / m_toSend.Duration ()); }
-		inline bool Running (void) { return m_bRun; }
+		inline bool Running (void) { return m_bRunning; }
 
 	private:
 		int32_t ConnectionStatus (int32_t nPlayer);

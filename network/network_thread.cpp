@@ -437,7 +437,7 @@ return 0;
 //------------------------------------------------------------------------------
 
 CNetworkThread::CNetworkThread () 
-	: m_thread (NULL), m_semaphore (NULL), m_sendLock (NULL), m_recvLock (NULL), m_processLock (NULL), m_nThreadId (0), m_bUrgent (0), m_bRun (false)
+	: m_thread (NULL), m_semaphore (NULL), m_sendLock (NULL), m_recvLock (NULL), m_processLock (NULL), m_nThreadId (0), m_bUrgent (0), m_bRunning (false)
 {
 m_packet = NULL;
 m_syncPackets = NULL;
@@ -449,8 +449,8 @@ m_txPacketQueue.SetType (SEND_QUEUE);
 
 void CNetworkThread::Run (void)
 {
-m_bRun = true;
-while (m_bRun) {
+m_bRunning = true;
+while (m_bRunning) {
 	if (LockRecv (true)) {
 		Listen ();
 		UnlockRecv ();
@@ -489,6 +489,8 @@ if (!m_thread) {
 	m_toSend.Start ();
 	m_bUrgent = false;
 	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
+	while (!Running ())
+		G3_SLEEP (0);
 	}
 #endif
 }
@@ -498,7 +500,7 @@ if (!m_thread) {
 void CNetworkThread::Stop (void)
 {
 if (m_thread) {
-	m_bRun = false;
+	m_bRunning = false;
 #if 1
 	int nStatus;
 	SDL_WaitThread (m_thread, &nStatus);
