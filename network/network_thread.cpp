@@ -224,12 +224,12 @@ if (!m_semaphore || !bLock)
 	return 0;
 #if DBG
 if (pszCaller)
-	PrintLog (0, "%s trying to lock\n", pszCaller);
+	PrintLog (0, "%s trying to lock %s queue\n", pszCaller, m_nType ? "send" : "listen");
 #endif
 SDL_SemWait (m_semaphore); 
 #if DBG
 if (pszCaller)
-	PrintLog (0, "%s has locked\n", pszCaller);
+	PrintLog (0, "%s has locked %s queue\n", pszCaller, m_nType ? "send" : "listen");
 #endif
 return 1;
 }
@@ -242,12 +242,12 @@ if (!m_semaphore || !bLock)
 	return 0;
 #if DBG
 if (pszCaller)
-	PrintLog (0, "%s trying to unlock\n", pszCaller);
+	PrintLog (0, "%s trying to unlock %s queue\n", pszCaller, m_nType ? "send" : "listen");
 #endif
 SDL_SemPost (m_semaphore); 
 #if DBG
 if (pszCaller)
-	PrintLog (0, "%s has unlocked\n", pszCaller);
+	PrintLog (0, "%s has unlocked %s queue\n", pszCaller, m_nType ? "send" : "listen");
 #endif
 return 1;
 }
