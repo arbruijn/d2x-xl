@@ -219,7 +219,13 @@ class CNetworkThread {
 
 	public:
 		CNetworkThread ();
-		bool Available (void) { return m_thread != NULL; }
+		bool Available (bool bRunning = true) { 
+			if (!m_thread)
+				return false;
+			if (!bRunning)
+				return true;
+			return m_bRun;
+			}
 		void Run (void);
 		void Start (void);
 		void Stop (void);
