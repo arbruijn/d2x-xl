@@ -674,12 +674,14 @@ int32_t CNetworkThread::ProcessPackets (void)
 if (LOCALPLAYER.connected == CONNECT_WAITING)
 	BRP;
 #endif
+m_rxPacketQueue.Lock ();
 while (packet = GetPacket ()) {
 	networkData.packetSource = packet->Owner ().m_address;
 	if (NetworkProcessPacket (packet->Buffer (), packet->Size ()))
 		++nProcessed;
 	m_rxPacketQueue.Free (packet);
 	}
+m_rxPacketQueue.Unlock ();
 return nProcessed;
 }
 
