@@ -226,7 +226,7 @@ class CNetworkThread {
 		int32_t CheckPlayerTimeouts (void);
 		void SendLifeSign (bool bForce = false);
 		int32_t Listen (void);
-		CNetworkPacket* GetPacket (void);
+		CNetworkPacket* GetPacket (bool bLock = true);
 		int32_t GetPacketData (uint8_t* data);
 		int32_t ProcessPackets (void);
 		void FlushPackets (void);

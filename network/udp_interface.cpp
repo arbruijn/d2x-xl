@@ -721,7 +721,7 @@ if (gethostname (buf, sizeof (buf)))
 	FAIL ("error getting my hostname");
 if (!(QueryHost (buf)))
 	FAIL ("querying my hostname \"%s\"", buf);
-ipx_MyAddress.SetNetwork (0);
+ipx_MyAddress.Reset ();
 ipx_MyAddress.SetNode (qhbuf);
 clientManager.BuildInterfaceList ();
 clientManager.Unify ();

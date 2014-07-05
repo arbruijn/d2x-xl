@@ -640,9 +640,9 @@ return NetworkListen ();
 
 //------------------------------------------------------------------------------
 
-CNetworkPacket* CNetworkThread::GetPacket (void)
+CNetworkPacket* CNetworkThread::GetPacket (bool bLock)
 {
-return m_rxPacketQueue.Pop ();
+return m_rxPacketQueue.Pop (false, bLock);
 }
 
 //------------------------------------------------------------------------------
@@ -675,7 +675,7 @@ if (LOCALPLAYER.connected == CONNECT_WAITING)
 	BRP;
 #endif
 m_rxPacketQueue.Lock ();
-while (packet = GetPacket ()) {
+while (packet = GetPacket (false)) {
 	networkData.packetSource = packet->Owner ().m_address;
 	if (NetworkProcessPacket (packet->Buffer (), packet->Size ()))
 		++nProcessed;
