@@ -145,8 +145,8 @@ networkData.nJoining = 0;
 void NetworkResetObjSync (int16_t nObject)
 {
 for (int16_t i = 0; i < networkData.nJoining; i++)
-	if ((networkData.sync [i].nState == 1) && ((nObject < 0) || NetworkObjnumIsPast (nObject, networkData.sync + i)))
-		networkData.sync [i].objs.nCurrent = -1;
+	if ((networkData.syncInfo [i].nState == 1) && ((nObject < 0) || NetworkObjnumIsPast (nObject, networkData.syncInfo + i)))
+		networkData.syncInfo [i].objs.nCurrent = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -165,7 +165,7 @@ if (player.Connected (CONNECT_PLAYING)) {
 	KillPlayerBullets (gameData.Object (player.nObject));
 	KillGatlingSmoke (gameData.Object (player.nObject));
 	for (int16_t i = 0; i < networkData.nJoining; i++)
-		if (networkData.sync [i].nPlayer == nPlayer) {
+		if (networkData.syncInfo [i].nPlayer == nPlayer) {
 			DeleteSyncData (i);
 			NetworkResetSyncStates ();
 			}
@@ -316,18 +316,19 @@ return oldestPlayer;
 static int16_t FindJoiningPlayer (tSequencePacket *player)
 {
 for (int16_t i = 0; i < networkData.nJoining; i++)
-	if (!memcmp (&networkData.sync [i].player [1], player, sizeof (*player)))
+	if (!strcmp (networkData.syncInfo [i].player [1].player.callsign, player->player.callsign) && 
+		(networkData.syncInfo [i].player [1].player.network == player->player.network))
 		return i;
 return -1;
 }
 
 //------------------------------------------------------------------------------
 
-tNetworkSyncData *FindJoiningPlayer (int16_t nPlayer)
+tNetworkSyncInfo *FindJoiningPlayer (int16_t nPlayer)
 {
 for (int16_t i = 0; i < networkData.nJoining; i++)
-	if (networkData.sync [i].player [1].player.connected == nPlayer)
-		return networkData.sync + i;
+	if (networkData.syncInfo [i].player [1].player.connected == nPlayer)
+		return networkData.syncInfo + i;
 return NULL;
 }
 
@@ -336,25 +337,21 @@ return NULL;
 void DeleteSyncData (int16_t nConnection)
 {
 if (nConnection < --networkData.nJoining)
-	memcpy (networkData.sync + nConnection, networkData.sync + networkData.nJoining, sizeof (tNetworkSyncData));
-memset (networkData.sync + networkData.nJoining, 0, sizeof (tNetworkSyncData));
+	memcpy (networkData.syncInfo + nConnection, networkData.syncInfo + networkData.nJoining, sizeof (tNetworkSyncInfo));
+memset (networkData.syncInfo + networkData.nJoining, 0, sizeof (tNetworkSyncInfo));
 }
 
 //------------------------------------------------------------------------------
 
-static tNetworkSyncData *AcceptJoinRequest (tSequencePacket *player)
+static tNetworkSyncInfo *AcceptJoinRequest (tSequencePacket *player)
 {
-// Don't accept new players if we're ending this level.  Its safe to
-// ignore since they'll request again later
+// Don't accept new players if we're ending this level.  Its safe to ignore since they'll request again later
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 #if 1      
 console.printf (CON_DBG, "Ignored request from new player to join during endgame.\n");
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME)
-		NetworkDumpPlayer (
-			player->player.network.Network (), 
-			player->player.network.Node (), 
-			DUMP_ENDLEVEL);
+		NetworkDumpPlayer (player->player.network.Network (), player->player.network.Node (), DUMP_ENDLEVEL);
 	return NULL; 
 	}
 
@@ -363,28 +360,25 @@ if (player->player.connected != missionManager.nCurrentLevel) {
 	console.printf (CON_DBG, "Dumping player due to old level number.\n");
 #endif
 	if (gameStates.multi.nGameType >= IPX_GAME)
-		NetworkDumpPlayer (
-			player->player.network.Network (), 
-			player->player.network.Node (), 
-			DUMP_LEVEL);
+		NetworkDumpPlayer (player->player.network.Network (), player->player.network.Node (), DUMP_LEVEL);
 	return NULL;
 	}
 
-tNetworkSyncData *syncP;
+tNetworkSyncInfo* syncInfoP;
 int16_t nConnection = FindJoiningPlayer (player);
 
 if (nConnection < 0) {
 	if (networkData.nJoining == MAX_JOIN_REQUESTS)
 		return NULL;
-	syncP = networkData.sync + networkData.nJoining++;
+	syncInfoP = networkData.syncInfo + networkData.nJoining++;
 	}
 else { //prevent flooding with connection attempts from the same player
-	syncP = networkData.sync + nConnection;
-	if (gameStates.app.nSDLTicks [0] - syncP->tLastJoined < 2100)
+	syncInfoP = networkData.syncInfo + nConnection;
+	if (gameStates.app.nSDLTicks [0] - syncInfoP->tLastJoined < 2100)
 		return NULL;
-	syncP->tLastJoined = gameStates.app.nSDLTicks [0];
+	syncInfoP->tLastJoined = gameStates.app.nSDLTicks [0];
 	}
-return syncP;
+return syncInfoP;
 }
 
 //------------------------------------------------------------------------------
@@ -392,17 +386,14 @@ return syncP;
 
 void NetworkWelcomePlayer (tSequencePacket *player)
 {
-	int32_t					nPlayer;
-	uint8_t					newAddress [6];
-	tNetworkSyncData*	syncP;
+	int32_t				nPlayer;
+	uint8_t				newAddress [6];
+	tNetworkSyncInfo*	syncInfoP;
 
 networkData.refuse.bWaitForAnswer = 0;
 if (FindArg ("-NoMatrixCheat")) {
 	if ((player->player.versionMinor & 0x0F) < 3) {
-		NetworkDumpPlayer (
-			player->player.network.Network (), 
-			player->player.network.Node (), 
-			DUMP_DORK);
+		NetworkDumpPlayer (player->player.network.Network (), player->player.network.Node (), DUMP_DORK);
 		return;
 		}
 	}
@@ -417,23 +408,20 @@ if (HoardEquipped ()) {
 		return;
 		}
 	}
-if (!(syncP = AcceptJoinRequest (player)))
+if (!(syncInfoP = AcceptJoinRequest (player)))
 	return;
-memset (&syncP->player [1], 0, sizeof (tSequencePacket));
+memset (&syncInfoP->player [1], 0, sizeof (tSequencePacket));
 networkData.bPlayerAdded = 0;
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (player->player.network.GetNetwork () != 0)
-		IpxGetLocalTarget (
-			player->player.network.Network (), 
-			player->player.network.Node (), 
-			newAddress);
+		IpxGetLocalTarget (player->player.network.Network (), player->player.network.Node (), newAddress);
 	else
 		memcpy (newAddress, player->player.network.Node (), 6);
 	}
 if (0 > (nPlayer = FindNetworkPlayer (player, newAddress))) {
 	// Player is new to this game
 	if (0 > (nPlayer = FindPlayerSlot (player))) {
-		DeleteSyncData (int16_t (syncP - networkData.sync));
+		DeleteSyncData (int16_t (syncInfoP - networkData.syncInfo));
 		return;
 		}
 	gameData.multiplayer.bAdjustPowerupCap [nPlayer] = true;
@@ -454,22 +442,20 @@ else {
 	}
 // Check whether this player is currently trying to sync and has a resync running
 // The resync request requires an additional join request to make the game host accept the resync request
-if ((syncP->nState == 0) || (nPlayer != syncP->objs.missingFrames.nPlayer)) { 
-	gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
-	gameData.multiplayer.players [nPlayer].m_nLevel = missionManager.nCurrentLevel;
-	CONNECT (nPlayer, CONNECT_DISCONNECTED);
+gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
+gameData.multiplayer.players [nPlayer].m_nLevel = missionManager.nCurrentLevel;
+CONNECT (nPlayer, CONNECT_DISCONNECTED);
 // Send updated OBJECTS data to the new/returning CPlayerData
-	syncP->player [0] = 
-	syncP->player [1] = *player;
-	syncP->player [1].player.connected = nPlayer;
-	syncP->bExtraGameInfo = 0;
-	syncP->nState = 1;
-	syncP->objs.nCurrent = -1;
-	syncP->nExtras = 0;
-	syncP->timeout = 0;
-	syncP->objs.missingFrames.nFrame = 0;
-	syncP->tLastJoined = gameStates.app.nSDLTicks [0];
-	}
+syncInfoP->player [0] = 
+syncInfoP->player [1] = *player;
+syncInfoP->player [1].player.connected = nPlayer;
+syncInfoP->bExtraGameInfo = 0;
+syncInfoP->nState = 1;
+syncInfoP->objs.nCurrent = -1;
+syncInfoP->nExtras = 0;
+syncInfoP->timeout = 0;
+syncInfoP->objs.nFramesToSkip = (gameStates.multi.nGameType == UDP_GAME) ? player->nObjFramesToSkip : 0;
+syncInfoP->tLastJoined = gameStates.app.nSDLTicks [0];
 NetworkDoSyncFrame ();
 }
 

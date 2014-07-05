@@ -353,21 +353,21 @@ void NetworkProcessMissingObjFrames (uint8_t* data)
 	tMissingObjFrames	missingObjFrames;
 
 ReceiveMissingObjFramesPacket (data, &missingObjFrames);
-tNetworkSyncData *syncP = FindJoiningPlayer (missingObjFrames.nPlayer);
-if (syncP && (missingObjFrames.nFrame > syncP->objs.missingFrames.nFrame)) {
+tNetworkSyncInfo *syncInfoP = FindJoiningPlayer (missingObjFrames.nPlayer);
+if (syncInfoP && (missingObjFrames.nFrame > syncInfoP->objs.nFramesToSkip)) {
 #if 1
 	networkThread.AbortSync ();
-	syncP->objs.missingFrames = missingObjFrames; // restart at the first missing frame
-	syncP->objs.nFrame = 0;
-	syncP->objs.nCurrent = -1;				
-	syncP->nState = 1;
+	syncInfoP->objs.missingFrames = missingObjFrames; // restart at the first missing frame
+	syncInfoP->objs.nFrame = 0;
+	syncInfoP->objs.nCurrent = -1;				
+	syncInfoP->nState = 1;
 	}
 #else
 else {
-	if (syncP && (missingObjFrames.nFrame < syncP->objs.nCurrent)) {
-		syncP->objs.nFrame = 0;
-		syncP->objs.nCurrent = missingObjFrames.nFrame; // restarted at the first missing object
-		syncP->nState = 1;
+	if (syncInfoP && (missingObjFrames.nFrame < syncInfoP->objs.nCurrent)) {
+		syncInfoP->objs.nFrame = 0;
+		syncInfoP->objs.nCurrent = missingObjFrames.nFrame; // restarted at the first missing object
+		syncInfoP->nState = 1;
 		}
 	}
 #endif

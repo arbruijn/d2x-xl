@@ -76,7 +76,7 @@ for (i = j = 0; i < gameData.multiplayer.nPlayers; i++, j++) {
 
 //------------------------------------------------------------------------------
 
-void NetworkSendRejoinSync (int32_t nPlayer, tNetworkSyncData *syncP)
+void NetworkSendRejoinSync (int32_t nPlayer, tNetworkSyncInfo *syncInfoP)
 {
 	int32_t i, j;
 
@@ -87,20 +87,20 @@ if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
 	// have to stop and try again after the level.
 
 	if (gameStates.multi.nGameType >= IPX_GAME)
-		NetworkDumpPlayer (syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node (), DUMP_ENDLEVEL);
-	syncP->nState = 0; 
-	syncP->nExtras = 0;
+		NetworkDumpPlayer (syncInfoP->player [1].player.network.Network (), syncInfoP->player [1].player.network.Node (), DUMP_ENDLEVEL);
+	syncInfoP->nState = 0; 
+	syncInfoP->nExtras = 0;
 	return;
 	}
 if (networkData.bPlayerAdded) {
-	syncP->player [1].nType = PID_ADDPLAYER;
-	syncP->player [1].player.connected = nPlayer;
-	NetworkNewPlayer (&syncP->player [1]);
+	syncInfoP->player [1].nType = PID_ADDPLAYER;
+	syncInfoP->player [1].player.connected = nPlayer;
+	NetworkNewPlayer (&syncInfoP->player [1]);
 
 	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
 		if ((i != nPlayer) && (i != N_LOCALPLAYER) && gameData.multiplayer.players [i].IsConnected () && (gameStates.multi.nGameType >= IPX_GAME)) {
 			SendSequencePacket (
-				syncP->player [1], 
+				syncInfoP->player [1], 
 				netPlayers [0].m_info.players [i].network.Network (), 
 				netPlayers [0].m_info.players [i].network.Node (), 
 				gameData.multiplayer.players [i].netAddress);
@@ -121,8 +121,8 @@ for (j = 0; j < MAX_PLAYERS; j++) {
 netGameInfo.SetLevelTime (LOCALPLAYER.timeLevel);
 netGameInfo.SetMonitorVector (NetworkCreateMonitorVector ());
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	SendInternetFullNetGamePacket (syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node ());
-	SendNetPlayersPacket (syncP->player [1].player.network.Network (), syncP->player [1].player.network.Node ());
+	SendInternetFullNetGamePacket (syncInfoP->player [1].player.network.Network (), syncInfoP->player [1].player.network.Node ());
+	SendNetPlayersPacket (syncInfoP->player [1].player.network.Network (), syncInfoP->player [1].player.network.Node ());
 	MultiSendMonsterball (1, 1);
 	}
 }
@@ -148,11 +148,11 @@ netGameInfo.LevelTime () = LOCALPLAYER.timeLevel;
 netGameInfo.MonitorVector () = NetworkCreateMonitorVector ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	SendInternetFullNetGamePacket (
-		networkData.sync [0].player [1].player.network.Network (), 
-		networkData.sync [0].player [1].player.network.Node ());
+		networkData.syncInfo [0].player [1].player.network.Network (), 
+		networkData.syncInfo [0].player [1].player.network.Node ());
 	SendNetPlayersPacket (
-		networkData.sync [0].player [1].player.network.Network (), 
-		networkData.sync [0].player [1].player.network.Node ());
+		networkData.syncInfo [0].player [1].player.network.Network (), 
+		networkData.syncInfo [0].player [1].player.network.Node ());
 	}
 }
 
@@ -520,8 +520,8 @@ networkData.thisPlayer.nType = PID_REQUEST;
 networkData.thisPlayer.player.connected = missionManager.nCurrentLevel;
 networkData.bHaveSync = 0;
 if (networkData.nJoinState == 0) {
-	networkData.sync [0].objs.nFrame = networkData.sync [0].objs.missingFrames.nFrame;
-	networkData.sync [0].objs.missingFrames.nFrame = 0;
+	networkData.syncInfo [0].objs.nFrame = networkData.syncInfo [0].objs.nFramesToSkip;
+	networkData.syncInfo [0].objs.nFramesToSkip = 0;
 	}
 networkData.bTraceFrames = 1;
 ResetWalls (); // may have been changed by players transmitting game state changes like doors opening or exploding etc.
@@ -725,9 +725,9 @@ networkThread.Send (reinterpret_cast<uint8_t*> (buf), count, their->player.netwo
 void NetworkSendMissingObjFrames (void)
 {
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	networkData.sync [0].objs.missingFrames.pid = PID_MISSING_OBJ_FRAMES;
-	networkData.sync [0].objs.missingFrames.nPlayer = N_LOCALPLAYER;
-	networkData.sync [0].objs.missingFrames.nFrame = networkData.sync [0].objs.nFrame + 1;
+	networkData.syncInfo [0].objs.missingFrames.pid = PID_MISSING_OBJ_FRAMES;
+	networkData.syncInfo [0].objs.missingFrames.nPlayer = N_LOCALPLAYER;
+	networkData.syncInfo [0].objs.nFramesToSkip = networkData.syncInfo [0].objs.nFrame + 1;
 	SendInternetMissingObjFramesPacket (networkData.serverAddress.Network (), networkData.serverAddress.Node ());
 	} 
 }

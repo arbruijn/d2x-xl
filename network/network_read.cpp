@@ -343,8 +343,8 @@ if (nPlayer < 0) {
 	return;
 	}
 nObject = gameData.multiplayer.players [nPlayer].nObject;
-if ((networkData.sync [0].nPlayer != -1) && (nPlayer == networkData.sync [0].nPlayer))
-	networkData.sync [0].nPlayer = -1;
+if ((networkData.syncInfo [0].nPlayer != -1) && (nPlayer == networkData.syncInfo [0].nPlayer))
+	networkData.syncInfo [0].nPlayer = -1;
 if (!gameData.multigame.bQuitGame && (nPlayer >= gameData.multiplayer.nPlayers)) {
 	if (networkData.nStatus != NETSTAT_WAITING) {
 		Int3 (); // We missed an important packet!
@@ -471,9 +471,9 @@ if (!gameData.multigame.bQuitGame && (nPlayer >= gameData.multiplayer.nPlayers))
 		}
 	return;
 	}
-if ((networkData.sync [0].nPlayer != -1) && (nPlayer == networkData.sync [0].nPlayer)) {
+if ((networkData.syncInfo [0].nPlayer != -1) && (nPlayer == networkData.syncInfo [0].nPlayer)) {
 	// Hurray! Someone really really got in the game (I think).
-   networkData.sync [0].nPlayer = -1;
+   networkData.syncInfo [0].nPlayer = -1;
 	}
 
 if (gameStates.app.bEndLevelSequence || (networkData.nStatus == NETSTAT_ENDLEVEL)) {
@@ -631,19 +631,14 @@ NetworkRequestSync ();
 
 int32_t CObjectSynchronizer::CompareFrames (void)
 {
-if (networkData.nPrevFrame == m_nFrame - 1)
+if (networkData.syncInfo [0].objs.nFrame == m_nFrame - 1)
 	return 1;
 if (networkData.nJoinState > 1)
 	return 0;
-if (networkData.nPrevFrame >= m_nFrame)
+if (networkData.syncInfo [0].objs.nFrame >= m_nFrame)
 	return 0;
-if (networkData.nPrevFrame < 0)
+if (networkData.syncInfo [0].objs.nFrame < 0)
 	return -1;
-#if 0
-networkData.sync [0].objs.missingFrames.nFrame = m_nRemoteObj + 1; 
-#else
-networkData.sync [0].objs.missingFrames.nFrame = networkData.nPrevFrame + 1;
-#endif
 RequestResync ();
 return -1;
 }
@@ -652,7 +647,6 @@ return -1;
 
 int32_t CObjectSynchronizer::ValidateFrame (void)
 {
-networkData.nPrevFrame = (networkData.nJoinState == 2) ? 0 : networkData.sync [0].objs.nFrame; // start over with frame #1, then skip object frames successfully read
 if (gameStates.multi.nGameType == UDP_GAME) {
 	m_bufI = 2;
 	NW_GET_SHORT (m_data, m_bufI, m_nFrame);
@@ -664,7 +658,7 @@ else {
 int32_t syncRes = CompareFrames ();
 if (syncRes < 0)
 	return syncRes;
-networkData.sync [0].objs.nFrame = m_nFrame;
+networkData.syncInfo [0].objs.nFrame = m_nFrame;
 return 1;
 }
 
@@ -685,9 +679,9 @@ m_nRemoteObj = -1;
 m_nState = 1;
 
 if (networkData.nJoinState == 2) { // re-sync'ing?
-	if (networkData.sync [0].objs.missingFrames.nFrame) {
-		networkData.sync [0].objs.nFrame = networkData.sync [0].objs.missingFrames.nFrame - 1;
-		networkData.sync [0].objs.missingFrames.nFrame = 0;
+	if (networkData.syncInfo [0].objs.nFramesToSkip) {
+		networkData.syncInfo [0].objs.nFrame = networkData.syncInfo [0].objs.nFramesToSkip - 1;
+		networkData.syncInfo [0].objs.nFramesToSkip = 0;
 		}
 	}
 else {
@@ -728,7 +722,7 @@ if (!m_nState || !Validate ()) {
 
 NetworkCountPowerupsInMine ();
 gameData.objs.RebuildEffects ();
-networkData.sync [0].objs.nFrame = 0;
+networkData.syncInfo [0].objs.nFrame = 0;
 m_nState = 0;
 if (networkData.bHaveSync)
 	networkData.nStatus = NETSTAT_PLAYING;

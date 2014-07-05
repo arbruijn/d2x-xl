@@ -204,10 +204,10 @@ typedef struct tSyncObjectsData {
 	int32_t				nCurrent;
 	int32_t				nSent;
 	uint16_t				nFrame;
-	tMissingObjFrames	missingFrames;
+	uint16_t				nFramesToSkip;
 } __pack__ tSyncObjectsData;
 
-typedef struct tNetworkSyncData {
+typedef struct tNetworkSyncInfo {
 	time_t				timeout;
 	time_t				tLastJoined;
 	tSequencePacket	player [2];
@@ -219,7 +219,7 @@ typedef struct tNetworkSyncData {
 	bool					bAllowedPowerups;
 	bool					bDeferredSync;
 	tSyncObjectsData	objs;
-} __pack__ tNetworkSyncData;
+} __pack__ tNetworkSyncInfo;
 
 #include "ipx_drv.h"
 #include "ipx_udp.h"
@@ -271,7 +271,7 @@ class CNetworkData {
 		int32_t					xmlGameInfoRequestTime;
 		tRefuseData				refuse;
 		tSequencePacket		thisPlayer;
-		tNetworkSyncData		sync [MAX_JOIN_REQUESTS];
+		tNetworkSyncInfo		syncInfo [MAX_JOIN_REQUESTS];
 
 		CNetworkAddress		localAddress;
 		CNetworkAddress		serverAddress;
@@ -377,7 +377,7 @@ void NetworkSendPlayerFlags (void);
 void NetworkSendFlyThruTriggers (int32_t nPlayer); 
 void NetworkSendSmashedLights (int32_t nPlayer); 
 void NetworkSendMarkers (void);
-void NetworkSendRejoinSync (int32_t nPlayer, tNetworkSyncData *syncP);
+void NetworkSendRejoinSync (int32_t nPlayer, tNetworkSyncInfo *syncInfoP);
 void ResendSyncDueToPacketLoss (void);
 void NetworkSendFlyThruTriggers (int32_t nPlayer); 
 void NetworkSendAllInfoRequest (char nType, int32_t nSecurity);
@@ -403,9 +403,9 @@ void NetworkDoSyncFrame (void);
 void NetworkStopResync (tSequencePacket *their);
 void NetworkUpdateNetGame (void);
 void NetworkDoBigWait (int32_t choice);
-void NetworkSyncExtras (tNetworkSyncData *syncP);
-tNetworkSyncData *FindJoiningPlayer (int16_t nPlayer);
-int32_t NetworkObjnumIsPast(int32_t nObject, tNetworkSyncData *syncP);
+void NetworkSyncExtras (tNetworkSyncInfo *syncInfoP);
+tNetworkSyncInfo* FindJoiningPlayer (int16_t nPlayer);
+int32_t NetworkObjnumIsPast(int32_t nObject, tNetworkSyncInfo *syncInfoP);
 
 int32_t XMLGameInfoHandler (uint8_t *data = NULL, int32_t nLength = 0);
 

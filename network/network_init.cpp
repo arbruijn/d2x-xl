@@ -88,7 +88,7 @@ networkData.nJoining = 0;
 networkData.xmlGameInfoRequestTime = 0;
 memset (&networkData.refuse, 0, sizeof (networkData.refuse));
 memset (&networkData.thisPlayer, 0, sizeof (networkData.thisPlayer));
-memset (networkData.sync, 0, sizeof (networkData.sync));
+memset (networkData.syncInfo, 0, sizeof (networkData.syncInfo));
 }
 
 //------------------------------------------------------------------------------

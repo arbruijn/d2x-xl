@@ -229,20 +229,20 @@ return i;
 
 //------------------------------------------------------------------------------
 
-int32_t NetworkObjnumIsPast (int32_t nObject, tNetworkSyncData *syncP)
+int32_t NetworkObjnumIsPast (int32_t nObject, tNetworkSyncInfo *syncInfoP)
 {
 	// determine whether or not a given CObject number has already been sent
 	// to a re-joining player.
-	int32_t nPlayer = syncP->player [1].player.connected;
+	int32_t nPlayer = syncInfoP->player [1].player.connected;
 	int32_t nObjMode = !((gameData.multigame.nObjOwner [nObject] == -1) || (gameData.multigame.nObjOwner [nObject] == nPlayer));
 
-if (!syncP->nState)
+if (!syncInfoP->nState)
 	return 0; // We're not sending OBJECTS to a new CPlayerData
-if (nObjMode > syncP->objs.nMode)
+if (nObjMode > syncInfoP->objs.nMode)
 	return 0;
-else if (nObjMode < syncP->objs.nMode)
+else if (nObjMode < syncInfoP->objs.nMode)
 	return 1;
-else if (nObject < syncP->objs.nCurrent)
+else if (nObject < syncInfoP->objs.nCurrent)
 	return 1;
 else
 	return 0;

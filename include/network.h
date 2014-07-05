@@ -98,7 +98,8 @@ extern int32_t nNetworkGameSubType;
 typedef struct tSequencePacket {
 	uint8_t           nType;
 	int32_t           nSecurity;
-	uint8_t           pad1 [3];
+	uint16_t				nObjFramesToSkip;
+	uint8_t           pad1;
 	tNetPlayerInfo		player;
 	uint8_t           pad2 [3];
 } __pack__ tSequencePacket;

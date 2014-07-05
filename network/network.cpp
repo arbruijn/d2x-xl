@@ -235,8 +235,8 @@ if (bDisconnect) {
 		while (bSyncExtras) {
 			bSyncExtras = false;
 			for (int16_t i = 0; i < networkData.nJoining; i++)
-				if (networkData.sync [i].nExtras && (networkData.sync [i].nExtrasPlayer != -1)) {
-					NetworkSyncExtras (networkData.sync + i);
+				if (networkData.syncInfo [i].nExtras && (networkData.syncInfo [i].nExtrasPlayer != -1)) {
+					NetworkSyncExtras (networkData.syncInfo + i);
 					bSyncExtras  = true;
 					}
 			}
@@ -505,7 +505,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 	}
 NetworkListen ();
 #if 0
-if ((networkData.sync [0].nPlayer != -1) && !(gameData.app.nFrameCount & 63))
+if ((networkData.syncInfo [0].nPlayer != -1) && !(gameData.app.nFrameCount & 63))
 	ResendSyncDueToPacketLoss (); // This will resend to network_player_rejoining
 #endif
 XMLGameInfoHandler ();
