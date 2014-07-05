@@ -460,7 +460,9 @@ if (!m_thread) {
 	m_processLock = SDL_CreateSemaphore (1);
 #endif
 	m_rxPacketQueue.Create ();
+	m_rxPacketQueue.SetType (LISTEN_QUEUE);
 	m_txPacketQueue.Create ();
+	m_txPacketQueue.SetType (SEND_QUEUE);
 	m_toSend.Setup (1000 / PPS);
 	m_toSend.Start ();
 	m_bUrgent = false;
