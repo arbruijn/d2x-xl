@@ -471,10 +471,10 @@ void CNetworkThread::Run (void)
 {
 m_bRunning = true;
 while (m_bRunning) {
-	if (LockRecv (true)) {
+	if (LockListen (true)) {
 		PrintLog (0, "Listen\n");
 		Listen ();
-		UnlockRecv ();
+		UnlockListen ();
 		}
 	if (LockSend (true)) {
 		PrintLog (0, "Transmit\n");
@@ -695,19 +695,29 @@ return size;
 int32_t CNetworkThread::ProcessPackets (void)
 {
 	int32_t nProcessed = 0;
-	CNetworkPacket* packet;
 
-#if DBG
-if (LOCALPLAYER.connected == CONNECT_WAITING)
-	BRP;
-#endif
+// grab the entire list of packets available for processing and then unlock again 
+// to avoid locking Listen() any longer than necessary
 m_rxPacketQueue.Lock (true, __FUNCTION__);
-while (packet = GetPacket (false)) {
+CNetworkPacket* head = m_rxPacketQueue.Head ();
+if (!head) {
+	m_rxPacketQueue.Unlock (true, __FUNCTION__);
+	return 0;
+	}
+m_rxPacketQueue.SetHead (NULL);
+m_rxPacketQueue.SetTail (NULL);
+m_rxPacketQueue.Unlock (true, __FUNCTION__);
+
+CNetworkPacket* packet;
+
+for (CNetworkPacket* packet = head; packet; packet = packet->Next ()) {
 	networkData.packetSource = packet->Owner ().m_address;
 	if (NetworkProcessPacket (packet->Buffer (), packet->Size ()))
 		++nProcessed;
-	m_rxPacketQueue.Free (packet, false);
 	}
+m_rxPacketQueue.Lock (true, __FUNCTION__);
+for (CNetworkPacket* packet = head; packet; packet = packet->Next ()) 
+	m_rxPacketQueue.Free (packet, false);
 m_rxPacketQueue.Unlock (true, __FUNCTION__);
 return nProcessed;
 }
@@ -793,7 +803,7 @@ if (!Available ()) {
 
 CNetworkPacket* packet;
 
-LockRecv ();
+LockSend ();
 m_txPacketQueue.Lock (true, __FUNCTION__);
 // try to combine data sent to the same player
 if ((packet = m_txPacketQueue.Head ()) && packet->Combine (data, size, network, node))
@@ -814,7 +824,7 @@ packet->SetUrgent (m_bUrgent);
 packet->SetImportant (m_bImportant);
 packet->SetTime (SDL_GetTicks ());
 m_txPacketQueue.Unlock (true, __FUNCTION__);
-UnlockRecv ();
+UnlockSend ();
 m_bUrgent = false;
 return true;
 }

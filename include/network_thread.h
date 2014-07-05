@@ -174,6 +174,7 @@ class CNetworkPacketQueue {
 		inline CNetworkPacket* FreeList (void) { return m_packets [2]; }
 		inline void SetHead (CNetworkPacket* packet) { m_packets [0] = packet; }
 		inline void SetTail (CNetworkPacket* packet) { m_packets [1] = packet; }
+		inline void SetFreelist (CNetworkPacket* packet) { m_packets [2] = packet; }
 		CNetworkPacket* Start (int32_t nPacket = 0);
 		inline CNetworkPacket* Step (void) { return m_current ? m_current = m_current->Next () : NULL; }
 		inline CNetworkPacket* Current (void) { return m_current; }
@@ -243,8 +244,8 @@ class CNetworkThread {
 		inline int32_t UnlockThread (void) { return Unlock (m_semaphore); }
 		inline int32_t LockSend (bool bTry = false) { return Lock (m_sendLock); }
 		inline int32_t UnlockSend (void) { return Unlock (m_sendLock); }
-		inline int32_t LockRecv (bool bTry = false) { return Lock (m_recvLock); }
-		inline int32_t UnlockRecv (void) { return Unlock (m_recvLock); }
+		inline int32_t LockListen (bool bTry = false) { return Lock (m_recvLock); }
+		inline int32_t UnlockListen (void) { return Unlock (m_recvLock); }
 		int32_t LockProcess (bool bTry = false) { return Lock (m_processLock); }
 		int32_t UnlockProcess (void) { return Unlock (m_processLock); }
 		bool Send (uint8_t* data, int32_t size, uint8_t* network, uint8_t* srcNode, uint8_t* destNode = NULL);
