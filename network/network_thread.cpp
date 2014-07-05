@@ -222,6 +222,7 @@ void CNetworkPacketQueue::Free (CNetworkPacket* packet, bool bLock)
 Lock (bLock, __FUNCTION__);
 packet->m_nextPacket = m_packets [2];
 m_packets [2] = packet;
+--m_nPackets;
 packet->Reset ();
 Unlock (bLock, __FUNCTION__);
 }
@@ -346,7 +347,6 @@ Lock (bLock, __FUNCTION__);
 if (packet = m_packets [0]) {
 	if (!(m_packets [0] = packet->Next ()))
 		m_packets [1] = NULL;
-	--m_nPackets;
 	if (bDrop) {
 		Free (packet, false);
 		packet = NULL;
