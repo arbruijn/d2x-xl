@@ -299,7 +299,7 @@ if (Tail ()) { // list tail
 		Tail ()->SetTime (SDL_GetTicks ());
 		UpdateClientList ();
 		Unlock (bLock, __FUNCTION__);
-		Free (packet);
+		Free (packet, bLock);
 		return Tail ();
 		}
 	Tail ()->m_nextPacket = packet;
@@ -787,6 +787,7 @@ if (!Available ()) {
 
 CNetworkPacket* packet;
 
+LockRecv ();
 m_txPacketQueue.Lock (true, __FUNCTION__);
 // try to combine data sent to the same player
 if ((packet = m_txPacketQueue.Head ()) && packet->Combine (data, size, network, node))
@@ -807,6 +808,7 @@ packet->SetUrgent (m_bUrgent);
 packet->SetImportant (m_bImportant);
 packet->SetTime (SDL_GetTicks ());
 m_txPacketQueue.Unlock (true, __FUNCTION__);
+UnlockRecv ();
 m_bUrgent = false;
 return true;
 }
