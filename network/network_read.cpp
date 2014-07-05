@@ -636,7 +636,7 @@ if (networkData.nPrevFrame == m_nFrame - 1)
 if (networkData.nJoinState > 1)
 	return 0;
 if (networkData.nPrevFrame >= m_nFrame)
-	return -1;
+	return 0;
 if (networkData.nPrevFrame < 0)
 	return -1;
 #if 0
@@ -753,6 +753,7 @@ if ((m_nObjOwner != N_LOCALPLAYER) && (m_nObjOwner != -1))
 	m_nState = 0;
 else { // for the local player and for unknown object owners, the new object must be allocated at the same object list position as on the remote server!
 	if (/*(m_nState != 1) ||*/ (m_nLocalObj != m_nRemoteObj)) { // since the object allocator tries its best to do so, ignore the sync state here if that requirement could me met
+		networkData.nJoinState = 0; // start over
 		RequestResync ();
 		return -1;
 		}

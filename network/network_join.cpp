@@ -337,6 +337,7 @@ void DeleteSyncData (int16_t nConnection)
 {
 if (nConnection < --networkData.nJoining)
 	memcpy (networkData.sync + nConnection, networkData.sync + networkData.nJoining, sizeof (tNetworkSyncData));
+memset (networkData.sync + networkData.nJoining, 0, sizeof (tNetworkSyncData));
 }
 
 //------------------------------------------------------------------------------
@@ -421,7 +422,7 @@ if (!(syncP = AcceptJoinRequest (player)))
 memset (&syncP->player [1], 0, sizeof (tSequencePacket));
 networkData.bPlayerAdded = 0;
 if (gameStates.multi.nGameType >= IPX_GAME) {
-	if (*reinterpret_cast<uint32_t*> (player->player.network.Network ()) != 0)
+	if (player->player.network.GetNetwork () != 0)
 		IpxGetLocalTarget (
 			player->player.network.Network (), 
 			player->player.network.Node (), 

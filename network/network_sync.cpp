@@ -394,9 +394,13 @@ networkData.toSyncPoll.Start ();
 
 int32_t NetworkRequestSync (void) 
 {
-if (networkData.nJoinState == 1) {
-	NetworkSendMissingObjFrames ();
-	networkData.nJoinState = 2;
+if ((networkData.nJoinState == 1) || (networkData.nJoinState == 2)) {
+	if (networkData.sync [0].objs.nFrame < 2)
+		networkData.nJoinState = 0;
+	else {
+		NetworkSendMissingObjFrames ();
+		networkData.nJoinState = 2;
+		}
 	}
 ResetSyncTimeout (); // make the join poll time out and send this request immediately 
 return NetworkSendRequest ();
