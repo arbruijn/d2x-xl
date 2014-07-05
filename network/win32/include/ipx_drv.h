@@ -118,6 +118,6 @@ struct ipx_driver {
 
 int32_t IPXGeneralPacketReady (ipx_socket_t *s);
 
-extern uint8_t ipx_MyAddress[10];
+extern CNetworkAddress ipx_MyAddress;
 
 #endif /* _IPX_DRV_H */

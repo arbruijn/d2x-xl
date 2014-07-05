@@ -39,8 +39,8 @@ if (gethostname(buf,sizeof(buf)))
 	FAIL("Error getting my hostname");
 if (!(qhbuf = QueryHost(buf))) 
 	FAIL("Querying my own hostname \"%s\"",buf);
-	memset(ipx_MyAddress+0,0,4);
-	memcpy(ipx_MyAddress+4,qhbuf,6);
+	ipx_MyAddress.SetServer (0);
+	ipx_MyAddress.SetNode (qhbuf);
 #	endif
 #else
   int32_t sock;
@@ -63,7 +63,7 @@ if (!(qhbuf = QueryHost(buf)))
   /* bind this socket to network 0 */  
   ipxs.sa_family=AF_IPX;
 #ifdef IPX_MANUAL_ADDRESS
-  memcpy(ipxs.sa_netnum, ipx_MyAddress, 4);
+  memcpy (ipxs.sa_netnum, ipx_MyAddress.Network (), 4);
 #else
   memset(ipxs.sa_netnum, 0, 4);
 #endif  
@@ -87,9 +87,8 @@ if (!(qhbuf = QueryHost(buf)))
     return(-1);
   }
 
-  memcpy(ipx_MyAddress, ipxs2.sa_netnum, 4);
-  for (i = 0; i < 6; i++) {
-    ipx_MyAddress[4+i] = ipxs2.sa_nodenum[i];
+  ipx_MyAddress.SetNetwork (ipxs2.sa_netnum);
+  ipx_MyAddress.SetNode (ipxs2.sa_nodenum);
   }
 /*printf("My address is 0x%.4X:%.2X.%.2X.%.2X.%.2X.%.2X.%.2X\n", *reinterpret_cast<int32_t*> (ipxs2.sa_netnum), ipxs2.sa_nodenum[0],
   ipxs2.sa_nodenum[1], ipxs2.sa_nodenum[2], ipxs2.sa_nodenum[3], ipxs2.sa_nodenum[4], ipxs2.sa_nodenum[5]);
@@ -135,7 +134,7 @@ if (setsockopt (sock, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<const char*> (&
 	}
 
 ipxs.sa_family = AF_IPX;
-memcpy(ipxs.sa_netnum, ipx_MyAddress, 4);
+memcpy (ipxs.sa_netnum, ipx_MyAddress.Network (), 4);
 memset(ipxs.sa_nodenum, 0, 6);
 ipxs.sa_socket = htons((int16_t)port);
 
@@ -157,8 +156,8 @@ if (port == 0) {
 	PrintLog (0, "IPX: opened dynamic socket %04x\n", port);
 	}
 
-memcpy (ipx_MyAddress, ipxs2.sa_netnum, 4);
-memcpy (ipx_MyAddress + 4, ipxs2.sa_nodenum, 6);
+ipx_MyAddress.SetNetwork (ipxs2.sa_netnum);
+ipx_MyAddress.SetNode (ipxs2.sa_nodenum);
 sk->fd = (int32_t) sock;
 sk->socket = port;
 return 0;
@@ -182,10 +181,10 @@ static int32_t ipx_win_SendPacket (ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
  
 ipxs.sa_family = AF_IPX;
 /* get destination address from IPX packet header */
-memcpy(&ipxs.sa_netnum, IPXHeader->Destination.Network, 4);
+memcpy (&ipxs.sa_netnum, IPXHeader->Destination.Network, 4);
 /* if destination address is 0, then send to my net */
 if (*reinterpret_cast<uint32_t*> (&ipxs.sa_netnum) == 0) {
- *reinterpret_cast<uint32_t*> (&ipxs.sa_netnum) = *reinterpret_cast<uint32_t*> (&ipx_MyAddress[0]);
+	memcpy (&ipxs.sa_netnum, ipx_MyAddress.Network (), 4);
 }
 memcpy (&ipxs.sa_nodenum, IPXHeader->Destination.Node, 6);
 memcpy (&ipxs.sa_socket, IPXHeader->Destination.Socket, 2);

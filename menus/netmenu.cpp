@@ -49,7 +49,7 @@
  * because of the "driver's" ipx_packetnum (see linuxnet.c).
  */
 
-extern uint8_t ipx_MyAddress [10];
+extern CNetworkAddress ipx_MyAddress;
 
 //------------------------------------------------------------------------------
 
@@ -949,10 +949,10 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 		strcpy (szIpAddr, TXT_IP_FAIL);
 	else {
 		sprintf (szIpAddr, "Game Host: %d.%d.%d.%d:%d", 
-					ipx_MyAddress [4], 
-					ipx_MyAddress [5], 
-					ipx_MyAddress [6], 
-					ipx_MyAddress [7], 
+					ipx_MyAddress.m_address.node.portAddress.ip.octets [0], 
+					ipx_MyAddress.m_address.node.portAddress.ip.octets [1], 
+					ipx_MyAddress.m_address.node.portAddress.ip.octets [2], 
+					ipx_MyAddress.m_address.node.portAddress.ip.octets [3], 
 					mpParams.udpPorts [0]);
 		}
 	}
@@ -1045,7 +1045,11 @@ else if (choice == m.IndexOf ("more options")) {
 	gameData.app.SetGameMode (0);
 	if (gameStates.multi.nGameType == UDP_GAME) {
 		sprintf (szIpAddr, "Game Host: %d.%d.%d.%d:%d", 
-					ipx_MyAddress [4], ipx_MyAddress [5], ipx_MyAddress [6], ipx_MyAddress [7], mpParams.udpPorts [0]);
+					ipx_MyAddress.m_address.node.portAddress.ip.octets [0], 
+					ipx_MyAddress.m_address.node.portAddress.ip.octets [1], 
+					ipx_MyAddress.m_address.node.portAddress.ip.octets [2], 
+					ipx_MyAddress.m_address.node.portAddress.ip.octets [3], 
+					mpParams.udpPorts [0]);
 		}
 	return 1;
 	}

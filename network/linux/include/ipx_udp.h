@@ -13,12 +13,12 @@
 #define UDP_BASEPORT 28342
 
 extern struct ipx_driver ipx_udp;
-extern uint8_t ipx_MyAddress[10];
-extern uint8_t ipx_ServerAddress [10];
-extern uint8_t ipx_LocalAddress [10];
-extern int32_t udpBasePorts [2];
-extern int32_t udpClientPort;
-extern int32_t bHaveLocalAddress;
+extern CNetworkAddress	ipx_MyAddress;
+extern CNetworkAddress	ipx_ServerAddress;
+extern CNetworkAddress	ipx_LocalAddress;
+extern tPort				udpBasePorts [2];
+extern tPort				udpClientPort;
+extern int32_t				bHaveLocalAddress;
 
 int32_t UDPGetMyAddress();
 

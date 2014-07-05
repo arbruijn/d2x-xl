@@ -48,7 +48,7 @@
  */
 
 void SetFunctionMode (int32_t);
-extern uint8_t ipx_MyAddress [10];
+extern CNetworkAddress ipx_MyAddress;
 
 //------------------------------------------------------------------------------
 

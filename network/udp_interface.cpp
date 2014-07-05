@@ -167,10 +167,7 @@ static uint8_t qhbuf [6];
 
 static int32_t HaveEmptyAddress (void)
 {
-for (int32_t i = 0; i < 10; i++)
-	if (ipx_MyAddress [i])
-		return 0;
-return 1;
+return (ipx_MyAddress.Network () == 0) && (ipx_MyAddress.Server () == 0) && (ipx_MyAddress.Port () == 0);
 }
 
 //------------------------------------------------------------------------------
@@ -727,8 +724,8 @@ if (gethostname (buf, sizeof (buf)))
 	FAIL ("error getting my hostname");
 if (!(QueryHost (buf)))
 	FAIL ("querying my hostname \"%s\"", buf);
-memset (ipx_MyAddress, 0, 4);
-memcpy (ipx_MyAddress + 4, qhbuf, 6);
+ipx_MyAddress.SetNetwork (0);
+ipx_MyAddress.SetNode (qhbuf);
 clientManager.BuildInterfaceList ();
 clientManager.Unify ();
 return 0;
@@ -776,7 +773,7 @@ ioctlsocket (sk->fd, FIONBIO, &sockBlockMode);
 #else
 fcntl (sk->fd, F_SETFL, O_NONBLOCK);
 #endif
-*(reinterpret_cast<uint16_t*> (ipx_MyAddress + 8)) = htons (nLocalPort);
+ipx_MyAddress.SetPort (htons (nLocalPort));
 #ifdef UDP_BROADCAST
 if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*> (&val_one), sizeof (val_one))) {
 #ifdef _WIN32

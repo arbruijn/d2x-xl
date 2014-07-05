@@ -81,7 +81,7 @@ typedef union {
 	tAppleTalkAddr		appletalk;
 } __pack__ tNetworkInfo;
 
-class CNetworkAddress {
+class CNetworkAddress : public tNetworkAddress {
 	public:
 		tNetworkAddress	m_address;
 

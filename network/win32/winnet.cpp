@@ -108,13 +108,13 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 
 extern struct ipx_driver ipx_win;
 
-int32_t ipx_fd;
-ipx_socket_t ipxSocketData;
-uint8_t bIpxInstalled = 0;
-uint16_t ipx_socket = 0;
-uint32_t ipx_network = 0;
-uint8_t ipx_MyAddress [10];
-int32_t nIpxPacket = 0;			/* Sequence number */
+int32_t				ipx_fd;
+ipx_socket_t		ipxSocketData;
+uint8_t				bIpxInstalled = 0;
+tPort					ipx_socket = {0};
+tIPAddress			ipx_network = {0};
+CNetworkAddress	ipx_MyAddress;
+int32_t				nIpxPacket = 0;			/* Sequence number */
 
 /* User defined routing stuff */
 typedef struct user_address {
@@ -129,7 +129,7 @@ user_address ipxUsers [MAX_USERS];
 
 #define MAX_NETWORKS 64
 int32_t nIpxNetworks = 0;
-uint32_t ipxNetworks [MAX_NETWORKS];
+tIPAddress ipxNetworks [MAX_NETWORKS];
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -209,7 +209,7 @@ return reinterpret_cast<uint8_t*> (&ipx_network);
 
 uint8_t *IpxGetMyLocalAddress ()
 {
-return reinterpret_cast<uint8_t*> (ipx_MyAddress + 4);
+return ipx_MyAddress.Node ();
 }
 
 //------------------------------------------------------------------------------
@@ -245,14 +245,14 @@ if (WSAStartup (wVersionRequested, &wsaData))
 if ((i = FindArg ("-ipxnetwork")) && appConfig [i + 1]) {
 	int32_t n = strtol (appConfig [i + 1], NULL, 16);
 	for (i = 3; i >= 0; i--, n >>= 8)
-		ipx_MyAddress [i] = (uint8_t) n & 0xff; 
+		ipx_MyAddress.SetServer (0xFFFFFFFF);
 	}
 if ((nSocket >= 0) && driver->OpenSocket (&ipxSocketData, nSocket))
 	return IPX_NOT_INSTALLED;
 driver->GetMyAddress ();
-memcpy (&ipx_network, ipx_MyAddress, 4);
+ipx_network.a = ipx_MyAddress.network.a;
 nIpxNetworks = 0;
-memcpy (ipxNetworks + nIpxNetworks++, &ipx_network, 4);
+ipxNetworks [nIpxNetworks++].a = ipx_network.a;
 bIpxInstalled = 1;
 atexit (IpxClose);
 return IPX_INIT_OK;

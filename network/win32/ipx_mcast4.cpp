@@ -32,7 +32,7 @@
 
 //#define IPX_MCAST4DBG
 
-extern uint8_t ipx_MyAddress[10];
+extern CNetworkAddress ipx_MyAddress;
 
 #define UDP_BASEPORT 28342
 
