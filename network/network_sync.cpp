@@ -119,21 +119,13 @@ syncP->bDeferredSync = networkThread.Available ();
 
 // Send clear OBJECTS array CTrigger and send player num
 objFilter [OBJ_MARKER] = !gameStates.app.bHaveExtraGameInfo [1];
-for (nPacketsLeft = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACKETS_PER_FRAME; nPacketsLeft; nPacketsLeft--) {
+for (nPacketsLeft = syncP->bDeferredSync ? 5 *  OBJ_PACKETS_PER_FRAME : OBJ_PACKETS_PER_FRAME; nPacketsLeft; nPacketsLeft--) {
 	nObjFrames = 0;
 	memset (objBuf, 0, MAX_PAYLOAD_SIZE);
 	objBuf [0] = PID_OBJECT_DATA;
 	bufI = (gameStates.multi.nGameType == UDP_GAME) ? 4 : 3;
 
 	if (syncP->objs.nCurrent == -1) {	// first packet tells the receiver to reset it's object data
-#if 0 //DBG
-		if (networkThread.Available ()) {
-			networkThread.LockSend ();
-			while (networkThread.Transmit ())
-				;
-			networkThread.UnlockSend ();
-			}
-#endif
 		syncP->objs.nSent = 0;
 		syncP->objs.nMode = 0;
 		syncP->objs.nFrame = 0;
@@ -206,14 +198,6 @@ for (nPacketsLeft = syncP->bDeferredSync ? gameData.objs.nObjects + 1 : OBJ_PACK
 			NW_SET_SHORT (objBuf, bufI, -2);
 			NW_SET_BYTE (objBuf, bufI, -1);                                 
 			NW_SET_SHORT (objBuf, bufI, syncP->objs.nSent);
-#if 0 //DBG
-			if (networkThread.Available ()) {
-				networkThread.LockSend ();
-				while (networkThread.Transmit ())
-					;
-				networkThread.UnlockSend ();
-				}
-#endif
 			syncP->nState = 2;
 			}
 		else {
@@ -407,6 +391,18 @@ networkData.toSyncPoll.Start ();
 }
 
 //------------------------------------------------------------------------------
+
+int32_t NetworkRequestSync (void) 
+{
+if (networkData.nJoinState == 1) {
+	NetworkSendMissingObjFrames ();
+	networkData.nJoinState = 2;
+	}
+ResetSyncTimeout (); // make the join poll time out and send this request immediately 
+return NetworkSendRequest ();
+}
+
+//------------------------------------------------------------------------------
 // wait for sync packets from the game host after having sent join request
 
 int32_t NetworkSyncPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
@@ -438,7 +434,7 @@ if (networkData.toSyncPoll.Expired ()) {	// Poll time expired, re-send request
 #if DBG
 	audio.PlaySound (SOUND_HUD_MESSAGE, SOUNDCLASS_GENERIC, I2X (1) / 2);
 #endif
-	if (NetworkSendRequest () < 0)
+	if (NetworkRequestSync () < 0)
 		key = -2;
 	}
 return nCurItem;

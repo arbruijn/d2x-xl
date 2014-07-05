@@ -620,13 +620,11 @@ NetworkAbortSync ();
 
 //------------------------------------------------------------------------------
 
+int32_t NetworkRequestSync (void);
+
 void CObjectSynchronizer::RequestResync (void)
 {
-networkData.nJoinState = 2;
-NetworkSendRequest ();
-NetworkSendMissingObjFrames ();
-ResetSyncTimeout (); // make the join poll time out and send this request immediately 
-//NetworkSendMissingObjFrames ();
+NetworkRequestSync ();
 }
 
 //------------------------------------------------------------------------------
