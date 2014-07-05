@@ -691,7 +691,7 @@ m_nRemoteObj = -1;
 gameData.objs.nObjects = 0;
 networkData.nJoinState = 1;
 if (m_nLocalObj == -1)
-	networkData.sync [0].objs.nFrame = networkData.sync [0].objs.missingFrames.nFrame - 1;
+	networkData.sync [0].objs.nFrame = networkData.sync [0].objs.missingFrames.nFrame ? networkData.sync [0].objs.missingFrames.nFrame - 1 : 0;
 networkData.sync [0].objs.missingFrames.nFrame = 0;
 m_nState = 1;
 #if DBG

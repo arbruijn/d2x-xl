@@ -451,21 +451,25 @@ else {
 		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers [0].m_info.players [nPlayer].rank], 
 							 gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
 	}
-gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
-gameData.multiplayer.players [nPlayer].m_nLevel = missionManager.nCurrentLevel;
-CONNECT (nPlayer, CONNECT_DISCONNECTED);
+// Check whether this player is currently trying to sync and has a resync running
+// The resync request requires an additional join request to make the game host accept the resync request
+if ((syncP->objs.missingFrames.nFrame == 0) || (nPlayer != syncP->objs.missingFrames.nPlayer)) { 
+	gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
+	gameData.multiplayer.players [nPlayer].m_nLevel = missionManager.nCurrentLevel;
+	CONNECT (nPlayer, CONNECT_DISCONNECTED);
 // Send updated OBJECTS data to the new/returning CPlayerData
-syncP->player [0] = 
-syncP->player [1] = *player;
-syncP->player [1].player.connected = nPlayer;
-syncP->bExtraGameInfo = 0;
-syncP->nState = 1;
-syncP->objs.nCurrent = -1;
-syncP->nExtras = 0;
-syncP->timeout = 0;
-syncP->objs.missingFrames.nFrame = 0;
-syncP->tLastJoined = gameStates.app.nSDLTicks [0];
-NetworkDoSyncFrame ();
+	syncP->player [0] = 
+	syncP->player [1] = *player;
+	syncP->player [1].player.connected = nPlayer;
+	syncP->bExtraGameInfo = 0;
+	syncP->nState = 1;
+	syncP->objs.nCurrent = -1;
+	syncP->nExtras = 0;
+	syncP->timeout = 0;
+	syncP->objs.missingFrames.nFrame = 0;
+	syncP->tLastJoined = gameStates.app.nSDLTicks [0];
+	NetworkDoSyncFrame ();
+	}
 }
 
 //------------------------------------------------------------------------------
