@@ -453,7 +453,7 @@ else {
 	}
 // Check whether this player is currently trying to sync and has a resync running
 // The resync request requires an additional join request to make the game host accept the resync request
-if ((syncP->objs.missingFrames.nFrame == 0) || (nPlayer != syncP->objs.missingFrames.nPlayer)) { 
+if ((syncP->nState != 1) || (nPlayer != syncP->objs.missingFrames.nPlayer)) { 
 	gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
 	gameData.multiplayer.players [nPlayer].m_nLevel = missionManager.nCurrentLevel;
 	CONNECT (nPlayer, CONNECT_DISCONNECTED);
@@ -468,8 +468,8 @@ if ((syncP->objs.missingFrames.nFrame == 0) || (nPlayer != syncP->objs.missingFr
 	syncP->timeout = 0;
 	syncP->objs.missingFrames.nFrame = 0;
 	syncP->tLastJoined = gameStates.app.nSDLTicks [0];
-	NetworkDoSyncFrame ();
 	}
+NetworkDoSyncFrame ();
 }
 
 //------------------------------------------------------------------------------

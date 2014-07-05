@@ -359,7 +359,7 @@ if (syncP && (missingObjFrames.nFrame > syncP->objs.missingFrames.nFrame)) {
 	networkThread.AbortSync ();
 	syncP->objs.missingFrames = missingObjFrames; // restart at the first missing frame
 	syncP->objs.nFrame = 0;
-	syncP->objs.nCurrent = 0;				
+	syncP->objs.nCurrent = -1;				
 	syncP->nState = 1;
 	}
 #else

@@ -623,6 +623,7 @@ NetworkAbortSync ();
 void CObjectSynchronizer::RequestResync (void)
 {
 networkData.nJoinState = 2;
+networkData.toSyncPoll.Start (-1, true); // make the join poll time out and send this request immediately 
 //NetworkSendMissingObjFrames ();
 }
 
@@ -644,14 +645,14 @@ networkData.sync [0].objs.missingFrames.nFrame = m_nRemoteObj + 1;
 networkData.sync [0].objs.missingFrames.nFrame = networkData.nPrevFrame + 1;
 #endif
 RequestResync ();
-return 0;
+return -1;
 }
 
 //------------------------------------------------------------------------------
 
 int32_t CObjectSynchronizer::ValidateFrame (void)
 {
-networkData.nPrevFrame = networkData.sync [0].objs.nFrame;
+networkData.nPrevFrame = (networkData.nJoinState == 2) ? 0 : networkData.sync [0].objs.nFrame; // start over with frame #1, then skip object frames successfully read
 if (gameStates.multi.nGameType == UDP_GAME) {
 	m_bufI = 2;
 	NW_GET_SHORT (m_data, m_bufI, m_nFrame);
@@ -661,11 +662,8 @@ else {
 	m_bufI = 3;
 	}
 int32_t syncRes = CompareFrames ();
-if (syncRes < 0) {
-	if (!syncRes) 
-		networkData.toSyncPoll.Start (0);
+if (syncRes < 0)
 	return syncRes;
-	}
 ResetSyncTimeout (true);
 networkData.sync [0].objs.nFrame = m_nFrame;
 return 1;
@@ -683,15 +681,17 @@ if (networkData.nJoinState)
 #endif
 // Clear object list
 m_nPlayer = m_nObjOwner;
-InitObjects (false);
-ChangePlayerNumTo (m_nPlayer);
-InitMultiPlayerObject (1);
+if (networkData.nJoinState != 2) { // re-sync'ing?
+	InitObjects (false);
+	gameData.objs.nObjects = 0;
+	ChangePlayerNumTo (m_nPlayer);
+	InitMultiPlayerObject (1);
+	ClaimObjectSlot (LOCALPLAYER.nObject);
+	}
+networkData.nJoinState = 1;
 m_nLocalObj =
 m_nRemoteObj = -1;
-gameData.objs.nObjects = 0;
-networkData.nJoinState = 1;
-if (m_nLocalObj == -1)
-	networkData.sync [0].objs.nFrame = networkData.sync [0].objs.missingFrames.nFrame ? networkData.sync [0].objs.missingFrames.nFrame - 1 : 0;
+networkData.sync [0].objs.nFrame = networkData.sync [0].objs.missingFrames.nFrame ? networkData.sync [0].objs.missingFrames.nFrame - 1 : 0;
 networkData.sync [0].objs.missingFrames.nFrame = 0;
 m_nState = 1;
 #if DBG
