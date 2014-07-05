@@ -301,7 +301,6 @@ while (driver->PacketReady (&ipxSocketData)) {
 		continue;
 		}
 	memcpy (data, buf + dataOffs, dataSize - dataOffs);
-	networkThread.UnlockRecv ();
 	locks.UnlockRecv ();
 	return dataSize - dataOffs;
 	}
