@@ -973,8 +973,8 @@ if (toUpdate.Expired ()) {
 #endif
 				}
 			else if (bDownloading || bForce) {
-				//pingStats [nPlayer].launchTime = -1;
-				//NetworkSendPing (nPlayer);
+				pingStats [nPlayer].launchTime = -1;
+				NetworkSendPing (nPlayer);
 				}	
 			}
 		//Unlock ();
