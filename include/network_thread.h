@@ -274,4 +274,14 @@ extern CNetworkThread networkThread;
 
 //------------------------------------------------------------------------------
 
+#if DBG
+#	define TIMEOUT_DISCONNECT	300000
+#	define TIMEOUT_KICK			180000
+#else
+#	define TIMEOUT_DISCONNECT	3000
+#	define TIMEOUT_KICK			180000
+#endif
+
+//------------------------------------------------------------------------------
+
 #endif /* _NETWORK_THREAD_H */
