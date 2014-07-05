@@ -466,6 +466,7 @@ Reset ();
 void NetworkFlushData (void)
 {
 networkData.SyncPack ().Send (); 
+networkData.bPacketUrgent = 0;
 }
 
 //------------------------------------------------------------------------------
