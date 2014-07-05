@@ -68,24 +68,47 @@ int MultiCheckPData (uint8_t* pd);
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
+// Certain packets must be sent w/o a leading frame counter (e.g. tracker or XML game info)
+
+bool CNetworkPacket::HasId (void)
+{
+CNetworkAddress address = m_owner.GetAddress ();
+if (tracker.IsTracker (address.m_address.node.portAddress.ip.a, address.m_address.node.portAddress.port.p, reinterpret_cast<char*>(m_data.buffer)))
+	return true;
+if (Type () == PID_XML_GAMEINFO)
+	return true;
+return false;
+}
+
+//------------------------------------------------------------------------------
+// Certain packets must be sent w/o a type tag (e.g. XML game info)
+
+int32_t CNetworkPacket::DataOffset (void)
+{
+if (Type () == PID_XML_GAMEINFO)
+	return 1;
+return 0;
+}
+
+//------------------------------------------------------------------------------
 
 void CNetworkPacket::Transmit (void)
 {
 #if DBG
 MultiCheckPData (Buffer ());
 #endif
-CNetworkAddress address = m_owner.GetAddress ();
-if (tracker.IsTracker (address.m_address.node.portAddress.ip.a, address.m_address.node.portAddress.port.p, reinterpret_cast<char*>(m_data.buffer))) {
-	if (m_owner.m_bHaveLocalAddress)
-		IPXSendPacketData (Buffer (), m_size, m_owner.Network (), m_owner.Node (), m_owner.LocalNode ());
-	else
-		IPXSendInternetPacketData (Buffer (), m_size, m_owner.Network (), m_owner.Node ());
-	}
-else {
+if (HasId ()) {
 	if (m_owner.m_bHaveLocalAddress)
 		IPXSendPacketData (reinterpret_cast<uint8_t*>(&m_data), m_size + sizeof (m_data.nId), m_owner.Network (), m_owner.Node (), m_owner.LocalNode ());
 	else
 		IPXSendInternetPacketData (reinterpret_cast<uint8_t*>(&m_data), m_size + sizeof (m_data.nId), m_owner.Network (), m_owner.Node ());
+	}
+else {
+	int32_t offset = DataOffset ();
+	if (m_owner.m_bHaveLocalAddress)
+		IPXSendPacketData (Buffer (offset), m_size - offset, m_owner.Network (), m_owner.Node (), m_owner.LocalNode ());
+	else
+		IPXSendInternetPacketData (Buffer (offset), m_size - offset, m_owner.Network (), m_owner.Node ());
 	}
 }
 
@@ -651,6 +674,7 @@ if (LOCALPLAYER.connected == CONNECT_WAITING)
 	BRP;
 #endif
 while (packet = GetPacket ()) {
+	networkData.packetSource = packet->Owner ().m_address;
 	if (NetworkProcessPacket (packet->Buffer (), packet->Size ()))
 		++nProcessed;
 	m_rxPacketQueue.Free (packet);

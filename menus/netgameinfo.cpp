@@ -307,7 +307,7 @@ char* XMLGameInfo (void)
 
 	int32_t nExtensions;
 
-sprintf (xmlGameInfo, "<?xml version=\"1.0\"?>\n<GameInfo>\n  <Descent>\n");
+sprintf (xmlGameInfo, "%c<?xml version=\"1.0\"?>\n<GameInfo>\n  <Descent>\n", (char) PID_XML_GAMEINFO);
 
 sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Host Name=\"%s\" />\n",
 			 LOCALPLAYER.callsign);

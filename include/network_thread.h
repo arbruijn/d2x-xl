@@ -92,7 +92,7 @@ class CNetworkPacketData {
 
 		inline void SetId (int32_t nId) { m_data.nId = nId; }
 		inline int32_t GetId (void) { return m_data.nId; }
-		inline uint8_t* Buffer (void) { return m_data.buffer; }
+		inline uint8_t* Buffer (int32_t offset = 0) { return m_data.buffer + offset; }
 		inline int32_t Size (void) { return m_size; }
 		inline int32_t SetSize (int32_t size) { return m_size = size; }
 		inline bool operator== (CNetworkPacketData& other) { return (m_size == other.m_size) && !memcmp (Buffer (), other.Buffer (), m_size); }
@@ -137,6 +137,10 @@ class CNetworkPacket : public CNetworkPacketData {
 		bool Combineable (uint8_t type);
 		bool Combine (uint8_t* data, int32_t size, uint8_t* network, uint8_t* node);
 		inline bool operator== (CNetworkPacket& other) { return (m_owner.m_address == other.m_owner.m_address) && ((CNetworkPacketData&) *this == (CNetworkPacketData&) other); }
+
+	private:
+		bool HasId (void);
+		int32_t DataOffset (void);
 };
 
 //------------------------------------------------------------------------------
