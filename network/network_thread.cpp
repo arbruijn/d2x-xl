@@ -52,7 +52,7 @@
 #endif
 
 #if DBG
-#	define DBG_LOCKS		0
+#	define DBG_LOCKS		1
 #else
 #	define DBG_LOCKS		0
 #endif
