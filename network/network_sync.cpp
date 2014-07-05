@@ -86,6 +86,8 @@ static inline int32_t NetworkObjFrameFilter (tNetworkSyncData *syncP)
 {
 if (!syncP->objs.nFrame++)
 	return 1;
+if (!syncP->objs.missingFrames.nFrame)
+	return 1;
 if (syncP->objs.nFrame < syncP->objs.missingFrames.nFrame)
 	return 0;
 syncP->objs.missingFrames.nFrame = 0;

@@ -587,10 +587,10 @@ class CObjectSynchronizer {
 		int8_t		m_nObjOwner;
 		int16_t		m_nLocalObj;
 		int16_t		m_nRemoteObj;
-		uint16_t	m_nFrame;
+		uint16_t		m_nFrame;
 		int32_t		m_nState;
 		int32_t		m_bufI;
-		uint8_t*	m_data;
+		uint8_t*		m_data;
 
 	public:
 		int32_t Run (uint8_t* data);
@@ -691,7 +691,7 @@ m_nRemoteObj = -1;
 gameData.objs.nObjects = 0;
 networkData.nJoinState = 1;
 if (m_nLocalObj == -1)
-	networkData.nPrevFrame = 0;
+	networkData.sync [0].objs.nFrame = networkData.sync [0].objs.missingFrames.nFrame - 1;
 networkData.sync [0].objs.missingFrames.nFrame = 0;
 m_nState = 1;
 #if DBG

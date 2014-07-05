@@ -520,7 +520,7 @@ networkData.thisPlayer.nType = PID_REQUEST;
 networkData.thisPlayer.player.connected = missionManager.nCurrentLevel;
 networkData.bHaveSync = 0;
 if (networkData.nJoinState == 0) {
-	networkData.sync [0].objs.nFrame = 0;
+	networkData.sync [0].objs.nFrame = networkData.sync [0].objs.missingFrames.nFrame;
 	networkData.sync [0].objs.missingFrames.nFrame = 0;
 	}
 networkData.bTraceFrames = 1;
