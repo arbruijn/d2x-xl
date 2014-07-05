@@ -449,9 +449,7 @@ m_txPacketQueue.SetType (SEND_QUEUE);
 
 void CNetworkThread::Run (void)
 {
-#if DBG
-G3_SLEEP (500); // wait a bit before starting
-#endif
+m_bRun = true;
 while (m_bRun) {
 	if (LockRecv (true)) {
 		Listen ();
@@ -490,7 +488,6 @@ if (!m_thread) {
 	m_toSend.Setup (1000 / PPS);
 	m_toSend.Start ();
 	m_bUrgent = false;
-	m_bRun = true;
 	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
 	}
 #endif
@@ -679,7 +676,7 @@ while (packet = GetPacket (false)) {
 	networkData.packetSource = packet->Owner ().m_address;
 	if (NetworkProcessPacket (packet->Buffer (), packet->Size ()))
 		++nProcessed;
-	m_rxPacketQueue.Free (packet);
+	m_rxPacketQueue.Free (packet, false);
 	}
 m_rxPacketQueue.Unlock ();
 return nProcessed;
