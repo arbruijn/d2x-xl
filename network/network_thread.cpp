@@ -266,6 +266,11 @@ CNetworkPacket* packet = Tail ();
 if (!packet)
 	return;
 
+if (packet->Owner ().GetAddress ().IsBroadcast ()) { // do not trackbroadcast packets
+	packet->SetId (0);
+	return;
+	}
+
 CNetworkClientInfo* client = m_clients.Update (packet->Owner ().GetAddress ());
 if (!client)
 	return;
@@ -275,6 +280,8 @@ if (m_nType == SEND_QUEUE)  // send
 	packet->SetId (client->SetPacketId (m_nType, nClientId));
 else { // listen
 	int32_t nPacketId = abs (packet->GetId ());
+	if (!nPacketId) // was a broadcast packet - cannot track
+		return;
 	if (nClientId > 0) {
 		int32_t nLost = nPacketId - nClientId;
 		if (nLost > 0) {
