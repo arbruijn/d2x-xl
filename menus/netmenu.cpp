@@ -1408,7 +1408,10 @@ if (bUDP && !tracker.m_bUse) {
 			}
 		else {
 			sprintf (mpParams.szServerIpAddr, "%d.%d.%d.%d", 
-						networkData.serverAddress [4], networkData.serverAddress [5], networkData.serverAddress [6], networkData.serverAddress [7]);
+						networkData.serverAddress.m_address.node.portAddress.ip.octets [0],
+						networkData.serverAddress.m_address.node.portAddress.ip.octets [1],
+						networkData.serverAddress.m_address.node.portAddress.ip.octets [2],
+						networkData.serverAddress.m_address.node.portAddress.ip.octets [3]);
 			sprintf (szPort [1], "%s%d", 
 						 (nSign < 0) ? "-" : (nSign > 0) ? "+" : "", mpParams.udpPorts [1]);
 			IpxClose ();
@@ -1453,7 +1456,7 @@ for (;;) {
 		if (extraGameInfo [0].bCheckUDPPort && !mpParams.udpPorts [i])
 			bError = true;
 		}
-	if (!(tracker.m_bUse || stoip (mpParams.szServerIpAddr, networkData.serverAddress + 4)))
+	if (!tracker.m_bUse && !stoip (mpParams.szServerIpAddr, networkData.serverAddress.Server ()))
 		bError =  true;
 	if (!bError)
 		return 1;

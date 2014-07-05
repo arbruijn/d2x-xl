@@ -209,7 +209,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 				}
 			}
 		else {
-			SendInternetSequencePacket (me, networkData.serverAddress, networkData.serverAddress + 4);
+			SendInternetSequencePacket (me, networkData.serverAddress.Network (), networkData.serverAddress.Node ());
 			}
 		}
 	}
@@ -728,7 +728,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	networkData.sync [0].objs.missingFrames.pid = PID_MISSING_OBJ_FRAMES;
 	networkData.sync [0].objs.missingFrames.nPlayer = N_LOCALPLAYER;
 	networkData.sync [0].objs.missingFrames.nFrame = networkData.nPrevFrame + 1;
-	SendInternetMissingObjFramesPacket (networkData.serverAddress, networkData.serverAddress + 4);
+	SendInternetMissingObjFramesPacket (networkData.serverAddress.Network (), networkData.serverAddress.Node ());
 	} 
 }
 

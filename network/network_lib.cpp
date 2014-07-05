@@ -140,7 +140,7 @@ return 0;
 
 #define LOCAL_NODE \
 	((gameStates.multi.bHaveLocalAddress && (gameStates.multi.nGameType == UDP_GAME)) ? \
-	 networkData.localAddress + 4 : networkData.thisPlayer.player.network.Node ())
+	 networkData.localAddress.Server () : networkData.thisPlayer.player.network.Node ())
 
 
 int32_t CmpLocalPlayer (CNetworkInfo *networkP, char *pszNetCallSign, char *pszLocalCallSign)

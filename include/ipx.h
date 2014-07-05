@@ -116,6 +116,10 @@ class CNetworkAddress : public tNetworkAddress {
 			}
 
 		inline bool operator== (CNetworkAddress& other) { return !memcmp (&m_address, &other.m_address, sizeof (tNetworkAddress)); }
+
+		inline void Reset (void) { memset (&m_address, 0, sizeof (m_address)); }
+
+		inline bool IsEmpty (void) { return (m_address.network.a == 0) && (m_address.node.portAddress.ip.a == 0) && (m_address.node.portAddress.port.p == 0); }
 	};
 
 class CNetworkInfo {

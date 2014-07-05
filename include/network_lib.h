@@ -227,8 +227,6 @@ typedef struct tNetworkSyncData {
 
 class CNetworkData {
 	public:
-		uint8_t					localAddress [10];
-		uint8_t					serverAddress [10];
 		int32_t					nActiveGames;
 		int32_t					nLastActiveGames;
 		int32_t					nNamesInfoSecurity;
@@ -275,6 +273,8 @@ class CNetworkData {
 		tSequencePacket		thisPlayer;
 		tNetworkSyncData		sync [MAX_JOIN_REQUESTS];
 
+		CNetworkAddress		localAddress;
+		CNetworkAddress		serverAddress;
 		CTimeout					toWaitAllPoll;
 		CTimeout					toSyncPoll;
 		CPacketAddress			packetSource;

@@ -42,8 +42,8 @@ networkData.tLastPingStat = 0;
 
 void ResetNetworkData (void)
 {
-memset (networkData.localAddress, 0, sizeof (networkData.localAddress));
-memset (networkData.serverAddress, 0, sizeof (networkData.serverAddress));
+networkData.localAddress.Reset ();
+networkData.serverAddress.Reset ();
 networkData.nActiveGames = 0;
 networkData.nLastActiveGames = 0;
 networkData.nNamesInfoSecurity = 0;
@@ -154,10 +154,6 @@ networkData.thisPlayer.player.versionMinor = D2X_MINOR | (IS_D2_OEM ? NETWORK_OE
 networkData.thisPlayer.player.rank=GetMyNetRanking ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (networkData.thisPlayer.player.network.Node (), IpxGetMyLocalAddress (), 6);
-	//if (gameStates.multi.nGameType == UDP_GAME)
-	//	networkData.thisPlayer.player.network.Port () = htons (networkData.thisPlayer.player.network.Port ());
-//		if (gameStates.multi.nGameType == UDP_GAME)
-//			memcpy (networkData.thisPlayer.player.network.Node (), networkData.localAddress + 4, 4);
 	networkData.thisPlayer.player.network.SetNetwork (IpxGetMyServerAddress ());
 	}
 networkData.thisPlayer.player.computerType = DOS;
@@ -448,7 +444,7 @@ if (gameData.multiplayer.autoNG.bHost) {
 	mpParams.nGameType = mpParams.nGameMode;
 	}
 else {
-	memcpy (networkData.serverAddress + 4, gameData.multiplayer.autoNG.ipAddr, sizeof (gameData.multiplayer.autoNG.ipAddr));
+	networkData.serverAddress.SetServer (gameData.multiplayer.autoNG.ipAddr);
 	mpParams.udpPorts [0] = gameData.multiplayer.autoNG.nPort;
 	}
 PrintLog (-1);

@@ -159,15 +159,12 @@ static int32_t nOpenSockets = 0;
 static const int32_t val_one=1;
 static uint8_t qhbuf [6];
 
-//uint8_t networkData.localAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
-//uint8_t networkData.serverAddress [10] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
-
 //------------------------------------------------------------------------------
 // OUR port. Can be changed by "@X[+=]..." argument (X is the shift value)
 
 static int32_t HaveEmptyAddress (void)
 {
-return (ipx_MyAddress.Network () == 0) && (ipx_MyAddress.Server () == 0) && (ipx_MyAddress.Port () == 0);
+return ipx_MyAddress.IsEmpty ();
 }
 
 //------------------------------------------------------------------------------
@@ -756,8 +753,8 @@ if (!gameStates.multi.bServer [0]) {		//set up server address and add it to dest
 	sin.sin_family = AF_INET;
 
 	uint16_t nPort = htons (nServerPort);
-	memcpy (networkData.serverAddress + 8, &nPort, sizeof (nPort));
-	memcpy (&sin.sin_addr.s_addr, networkData.serverAddress + 4, 4);
+	networkData.serverAddress.SetPort (nPort);
+	sin.sin_addr.s_addr = networkData.serverAddress.m_address.node.portAddress.ip.a;
 	sin.sin_port = nPort;
 	if (!tracker.m_bUse)
 		clientManager.Add (&sin);
@@ -787,7 +784,7 @@ if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*> (&val_
 #endif
 if (gameStates.multi.bServer [0] || mpParams.udpPorts [1]) {
 	sin.sin_family = AF_INET;
-	sin.sin_addr.s_addr = htonl (INADDR_ANY); //networkData.serverAddress + 4);
+	sin.sin_addr.s_addr = htonl (INADDR_ANY); 
 	sin.sin_port = htons (uint16_t (nLocalPort));
 	if (bind (sk->fd, reinterpret_cast<struct sockaddr*> (&sin), sizeof (sin))) {
 #ifdef _WIN32
@@ -1181,10 +1178,10 @@ if (!(bTracker
 	rd->SetSockets (ntohs (*reinterpret_cast<uint16_t*> (outBuf + 6)), s->socket);
 	srcPort = ntohs (fromAddr.sin_port);
 	// check if we already have sender of this packet in broadcast list
-	memcpy (networkData.localAddress + 4, outBuf + dataLen - 6, 6); // this is the local port the sender of this packet sent the packet to
+	networkData.localAddress.SetNode (outBuf + dataLen - 6); // this is the local port the sender of this packet sent the packet to
 	// add sender to client list if the packet is not from ourself
-	if (!memcmp (&fromAddr.sin_addr, networkData.localAddress + 4, 4) &&
-		 !memcmp (&srcPort, networkData.localAddress + 8, 2)) 
+	if ((fromAddr.sin_addr.s_addr != networkData.localAddress.m_address.node.portAddress.ip.a) &&
+		 (srcPort != networkData.localAddress.m_address.node.portAddress.port.p)) 
 		return -1;
 	if (0 > (i = clientManager.Add (&fromAddr)))
 		return -1;
@@ -1214,7 +1211,7 @@ if (!(bTracker
 		}
 #endif //UDP_SAFEMODE
 	gameStates.multi.bHaveLocalAddress = 1;
-	memcpy (netPlayers [0].m_info.players [N_LOCALPLAYER].network.Node (), networkData.localAddress + 4, 6);
+	netPlayers [0].m_info.players [N_LOCALPLAYER].network.SetNode (networkData.localAddress.Node ());
 #if UDP_SAFEMODE
 	dataLen -= (bSafeMode ? 22 : 14);
 #else
