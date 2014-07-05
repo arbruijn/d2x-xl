@@ -449,6 +449,9 @@ m_txPacketQueue.SetType (SEND_QUEUE);
 
 void CNetworkThread::Run (void)
 {
+#if DBG
+G3_SLEEP (500); // wait a bit before starting
+#endif
 while (m_bRun) {
 	if (LockRecv (true)) {
 		Listen ();
@@ -488,9 +491,7 @@ if (!m_thread) {
 	m_toSend.Start ();
 	m_bUrgent = false;
 	m_bRun = true;
-	G3_SLEEP (500);
 	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
-	G3_SLEEP (500);
 	}
 #endif
 }
