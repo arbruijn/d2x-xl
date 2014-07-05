@@ -440,8 +440,6 @@ if (networkData.toSyncPoll.Expired ()) {	// Poll time expired, re-send request
 #endif
 	if (NetworkSendRequest () < 0)
 		key = -2;
-	if (networkData.nJoinState == 2)
-		NetworkSendMissingObjFrames ();
 	}
 return nCurItem;
 }

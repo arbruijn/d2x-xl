@@ -623,7 +623,9 @@ NetworkAbortSync ();
 void CObjectSynchronizer::RequestResync (void)
 {
 networkData.nJoinState = 2;
-networkData.toSyncPoll.Start (-1, true); // make the join poll time out and send this request immediately 
+NetworkSendRequest ();
+NetworkSendMissingObjFrames ();
+ResetSyncTimeout (); // make the join poll time out and send this request immediately 
 //NetworkSendMissingObjFrames ();
 }
 
@@ -664,7 +666,6 @@ else {
 int32_t syncRes = CompareFrames ();
 if (syncRes < 0)
 	return syncRes;
-ResetSyncTimeout (true);
 networkData.sync [0].objs.nFrame = m_nFrame;
 return 1;
 }
@@ -681,19 +682,24 @@ if (networkData.nJoinState)
 #endif
 // Clear object list
 m_nPlayer = m_nObjOwner;
-if (networkData.nJoinState != 2) { // re-sync'ing?
+m_nLocalObj =
+m_nRemoteObj = -1;
+m_nState = 1;
+
+if (networkData.nJoinState == 2) { // re-sync'ing?
+	if (networkData.sync [0].objs.missingFrames.nFrame) {
+		networkData.sync [0].objs.nFrame = networkData.sync [0].objs.missingFrames.nFrame - 1;
+		networkData.sync [0].objs.missingFrames.nFrame = 0;
+		}
+	}
+else {
 	InitObjects (false);
 	gameData.objs.nObjects = 0;
 	ChangePlayerNumTo (m_nPlayer);
 	InitMultiPlayerObject (1);
-	ClaimObjectSlot (LOCALPLAYER.nObject);
+	//ClaimObjectSlot (LOCALPLAYER.nObject);
 	}
 networkData.nJoinState = 1;
-m_nLocalObj =
-m_nRemoteObj = -1;
-networkData.sync [0].objs.nFrame = networkData.sync [0].objs.missingFrames.nFrame ? networkData.sync [0].objs.missingFrames.nFrame - 1 : 0;
-networkData.sync [0].objs.missingFrames.nFrame = 0;
-m_nState = 1;
 #if DBG
 VerifyObjLists (N_LOCALPLAYER);
 #endif
@@ -815,6 +821,8 @@ return 1;
 int32_t CObjectSynchronizer::Run (uint8_t* data)
 {
 m_data = data;
+
+ResetSyncTimeout (true);
 
 int32_t syncRes = ValidateFrame ();
 if (syncRes < 1)
