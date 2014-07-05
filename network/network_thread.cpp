@@ -74,10 +74,19 @@ void CNetworkPacket::Transmit (void)
 #if DBG
 MultiCheckPData (Buffer ());
 #endif
-if (m_owner.m_bHaveLocalAddress)
-	IPXSendPacketData (reinterpret_cast<uint8_t*>(&m_data), m_size + sizeof (m_data.nId), m_owner.Network (), m_owner.Node (), m_owner.LocalNode ());
-else
-	IPXSendInternetPacketData (reinterpret_cast<uint8_t*>(&m_data), m_size + sizeof (m_data.nId), m_owner.Network (), m_owner.Node ());
+CNetworkAddress address = m_owner.GetAddress ();
+if (tracker.IsTracker (address.m_address.node.portAddress.ip.a, address.m_address.node.portAddress.port.p, reinterpret_cast<char*>(m_data.buffer))) {
+	if (m_owner.m_bHaveLocalAddress)
+		IPXSendPacketData (Buffer (), m_size, m_owner.Network (), m_owner.Node (), m_owner.LocalNode ());
+	else
+		IPXSendInternetPacketData (Buffer (), m_size, m_owner.Network (), m_owner.Node ());
+	}
+else {
+	if (m_owner.m_bHaveLocalAddress)
+		IPXSendPacketData (reinterpret_cast<uint8_t*>(&m_data), m_size + sizeof (m_data.nId), m_owner.Network (), m_owner.Node (), m_owner.LocalNode ());
+	else
+		IPXSendInternetPacketData (reinterpret_cast<uint8_t*>(&m_data), m_size + sizeof (m_data.nId), m_owner.Network (), m_owner.Node ());
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -575,8 +584,15 @@ for (;;) {
 	if (!m_rxPacketQueue.Validate ())
 		FlushPackets ();
 #endif
-	m_packet->SetSize (nSize - sizeof (int32_t)); // don't count the packet queue's 32 bit packet id!
 	memcpy (&m_packet->Owner ().m_address, &networkData.packetSource, sizeof (networkData.packetSource));
+	// tracker packets come without a packet id prefix
+	if (tracker.IsTracker (networkData.packetSource.m_address.node.portAddress.ip.a, networkData.packetSource.m_address.node.portAddress.port.p, reinterpret_cast<char*>(&m_packet->m_data))) {
+		memcpy (m_packet->Buffer (), reinterpret_cast<uint8_t*>(&m_packet->m_data), m_packet->Size ());
+		m_packet->SetSize (nSize); // don't count the packet queue's 32 bit packet id!
+		m_packet->SetId (0);
+		}
+	else
+		m_packet->SetSize (nSize - sizeof (int32_t)); // don't count the packet queue's 32 bit packet id!
 	m_rxPacketQueue.Append (m_packet, false);
 	m_packet = NULL;
 	}
