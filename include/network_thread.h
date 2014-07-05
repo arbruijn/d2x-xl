@@ -15,9 +15,12 @@ class CNetworkClientInfo : public CNetworkAddress {
 			m_nLost = 0;
 			m_timestamp = 0;
 			}
-		inline int32_t SetPacketId (int32_t nType, int32_t nId) { return m_nPacketId [nType] = nId; }
+		inline int32_t SetPacketId (int32_t nType, int32_t nId) { 
+			SetTime ();
+			return m_nPacketId [nType] = nId; 
+			}
 		inline int32_t GetPacketId (int32_t nType) { return m_nPacketId [nType]; }
-		inline void SetTime (uint32_t t) { m_timestamp = t; }
+		inline void SetTime (uint32_t t = 0) { m_timestamp = t ? t : SDL_GetTicks (); }
 		inline uint32_t GetTime (void) { return m_timestamp; }
 	};
 

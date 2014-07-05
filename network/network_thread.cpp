@@ -266,23 +266,23 @@ CNetworkPacket* packet = Tail ();
 if (!packet)
 	return;
 
-CNetworkClientInfo* i = m_clients.Update (packet->Owner ().GetAddress ());
-if (!i)
+CNetworkClientInfo* client = m_clients.Update (packet->Owner ().GetAddress ());
+if (!client)
 	return;
 
-int32_t nClientId = i->GetPacketId (m_nType) + 1; // last packet id sent or received
+int32_t nClientId = client->GetPacketId (m_nType) + 1; // last packet id sent or received
 if (m_nType == SEND_QUEUE)  // send
-	packet->SetId (i->SetPacketId (m_nType, nClientId));
+	packet->SetId (client->SetPacketId (m_nType, nClientId));
 else { // listen
 	int32_t nPacketId = abs (packet->GetId ());
 	if (nClientId > 0) {
 		int32_t nLost = nPacketId - nClientId;
-		if (nLost) {
-			i->m_nLost += nLost;
+		if (nLost > 0) {
+			client->m_nLost += nLost;
 			m_nLost += nLost;
 			}
 		}
-	i->SetPacketId (m_nType, nPacketId);
+	client->SetPacketId (m_nType, nPacketId);
 	}
 }
 

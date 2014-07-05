@@ -455,7 +455,7 @@ if (IsMultiGame && LOCALPLAYER.IsConnected ()) {
 	MultiSendRobotFrame (0);
 	MultiSendFire (); // Do firing if needed..
 	Prepare ();
-	IpxSendGamePacket (Buffer (), Size ());
+	IpxSendGamePacket (reinterpret_cast<uint8_t*>(Info ()), Size ());
 	++m_nPackets; 
 	networkData.bD2XData = 0;
 	if (gameData.reactor.bDestroyed) {
