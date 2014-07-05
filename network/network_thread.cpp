@@ -74,10 +74,10 @@ bool CNetworkPacket::HasId (void)
 {
 CNetworkAddress address = m_owner.GetAddress ();
 if (tracker.IsTracker (address.m_address.node.portAddress.ip.a, address.m_address.node.portAddress.port.p, reinterpret_cast<char*>(m_data.buffer)))
-	return true;
+	return false;
 if (Type () == PID_XML_GAMEINFO)
-	return true;
-return false;
+	return false;
+return true;
 }
 
 //------------------------------------------------------------------------------
@@ -613,13 +613,13 @@ for (;;) {
 #endif
 	memcpy (&m_packet->Owner ().m_address, &networkData.packetSource, sizeof (networkData.packetSource));
 	// tracker packets come without a packet id prefix
-	if (tracker.IsTracker (networkData.packetSource.m_address.node.portAddress.ip.a, networkData.packetSource.m_address.node.portAddress.port.p, reinterpret_cast<char*>(&m_packet->m_data))) {
+	if (m_packet->HasId ()) 
+		m_packet->SetSize (nSize - sizeof (int32_t)); // don't count the packet queue's 32 bit packet id!
+	else {
 		memcpy (m_packet->Buffer (), reinterpret_cast<uint8_t*>(&m_packet->m_data), m_packet->Size ());
 		m_packet->SetSize (nSize); // don't count the packet queue's 32 bit packet id!
 		m_packet->SetId (0);
 		}
-	else
-		m_packet->SetSize (nSize - sizeof (int32_t)); // don't count the packet queue's 32 bit packet id!
 	m_rxPacketQueue.Append (m_packet, false);
 	m_packet = NULL;
 	}

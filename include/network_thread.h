@@ -136,10 +136,10 @@ class CNetworkPacket : public CNetworkPacketData {
 		inline int32_t IsImportant (void) { return m_bImportant; }
 		bool Combineable (uint8_t type);
 		bool Combine (uint8_t* data, int32_t size, uint8_t* network, uint8_t* node);
+		bool HasId (void);
 		inline bool operator== (CNetworkPacket& other) { return (m_owner.m_address == other.m_owner.m_address) && ((CNetworkPacketData&) *this == (CNetworkPacketData&) other); }
 
 	private:
-		bool HasId (void);
 		int32_t DataOffset (void);
 };
 

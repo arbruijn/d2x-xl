@@ -1140,7 +1140,6 @@ static int32_t UDPReceivePacket (ipx_socket_t *s, uint8_t *outBuf, int32_t outBu
 #else
 	socklen_t				fromAddrSize = sizeof (fromAddr);
 #endif
-	uint16_t					srcPort;
 #if UDP_SAFEMODE
 	CClient*					clientP;
 	int32_t					packetId = -1, bSafeMode = 0;
@@ -1176,13 +1175,13 @@ if (!(bTracker
 #endif
 	 )) {
 	rd->SetSockets (ntohs (*reinterpret_cast<uint16_t*> (outBuf + 6)), s->socket);
-	srcPort = ntohs (fromAddr.sin_port);
 	// check if we already have sender of this packet in broadcast list
 	networkData.localAddress.SetNode (outBuf + dataLen - 6); // this is the local port the sender of this packet sent the packet to
-	// add sender to client list if the packet is not from ourself
-	if ((fromAddr.sin_addr.s_addr != networkData.localAddress.m_address.node.portAddress.ip.a) &&
-		 (srcPort != networkData.localAddress.m_address.node.portAddress.port.p)) 
+	// do not accept packets sent from myself (how did they arrive here anyway?)
+	if ((fromAddr.sin_addr.s_addr == networkData.localAddress.m_address.node.portAddress.ip.a) &&
+		 (fromAddr.sin_port == networkData.localAddress.m_address.node.portAddress.port.p)) 
 		return -1;
+	// add sender to client list if the packet is not from ourself
 	if (0 > (i = clientManager.Add (&fromAddr)))
 		return -1;
 #if UDP_SAFEMODE
