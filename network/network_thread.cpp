@@ -65,6 +65,10 @@
 #define RECVLOCK 1
 #define PROCLOCK 0
 
+#define CONCURRENT_SEND		0
+#define CONCURRENT_LISTEN	1
+#define USE_PACKET_IDS		0
+
 #define MULTI_THREADED_NETWORKING 1 // set to 0 to have D2X-XL manage network traffic the old way
 
 //------------------------------------------------------------------------------
@@ -82,12 +86,16 @@ int MultiCheckPData (uint8_t* pd);
 
 bool CNetworkPacket::HasId (void)
 {
+#if USE_PACKET_IDS
 CNetworkAddress address = m_owner.GetAddress ();
 if (tracker.IsTracker (address.m_address.node.portAddress.ip.a, address.m_address.node.portAddress.port.p, reinterpret_cast<char*>(m_data.buffer)))
 	return false;
 if (Type () == PID_XML_GAMEINFO)
 	return false;
 return true;
+#else
+return false;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -268,6 +276,7 @@ return 1;
 
 void CNetworkPacketQueue::UpdateClientList (void)
 {
+#if USE_PACKET_IDS
 CNetworkPacket* packet = Tail ();
 if (!packet)
 	return;
@@ -301,6 +310,7 @@ else { // listen
 		}
 	client->SetPacketId (m_nType, nPacketId);
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -839,7 +849,7 @@ return (packet && packet->Type () == PID_OBJECT_DATA);
 
 bool CNetworkThread::Send (uint8_t* data, int32_t size, uint8_t* network, uint8_t* node, uint8_t* localAddress)
 {
-if (!Available ()) {
+if (!SendInBackground ()) {
 	if (localAddress)
 		IPXSendPacketData (data, size, network, node, localAddress);
 	else
@@ -972,5 +982,21 @@ if (toUpdate.Expired ()) {
 	}
 }
 
+//------------------------------------------------------------------------------
+
+bool CNetworkThread::SendInBackground (void)
+{
+return (CONCURRENT_SEND != 0) && Available ();
+}
+
+//------------------------------------------------------------------------------
+
+bool CNetworkThread::ListenInBackground (void)
+{
+return (CONCURRENT_LISTEN != 0) && Available ();
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 

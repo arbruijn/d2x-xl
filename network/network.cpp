@@ -335,7 +335,7 @@ if ((gameStates.multi.nGameType < IPX_GAME) || !networkData.bActive)
 networkData.bWaitingForPlayerInfo = 1;
 networkData.nSecurityFlag = NETSECURITY_OFF;
 
-if (networkThread.Available ())
+if (networkThread.ListenInBackground ())
 	return networkThread.ProcessPackets ();
 
 tracker.AddServer ();

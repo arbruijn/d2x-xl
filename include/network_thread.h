@@ -265,6 +265,9 @@ class CNetworkThread {
 		inline bool Sending (void) { return Available () && !m_txPacketQueue.Empty (); }
 		inline int32_t MinPPS (void) { return int32_t (1000 / m_toSend.Duration ()); }
 		inline bool Running (void) { return m_bRunning; }
+		bool SendInBackground (void);
+		bool ListenInBackground (void);
+
 
 	private:
 		int32_t ConnectionStatus (int32_t nPlayer);
