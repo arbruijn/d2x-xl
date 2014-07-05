@@ -51,7 +51,11 @@
 #	define PPS		netGameInfo.GetPacketsPerSec ()
 #endif
 
-#define DBG_LOCKS	(DBG && 0)
+#if DBG
+#	define DBG_LOCKS		0
+#else
+#	define DBG_LOCKS		0
+#endif
 
 #define SENDLOCK 1
 #define RECVLOCK 1
