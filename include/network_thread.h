@@ -160,6 +160,7 @@ class CNetworkPacketQueue {
 		CNetworkClientList	m_clients;
 
 	public:
+		uint32_t					m_nTotal;
 		uint32_t					m_nDuplicate;
 		uint32_t					m_nCombined;
 		uint32_t					m_nLost;

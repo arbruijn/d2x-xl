@@ -316,6 +316,7 @@ SetTail (packet);
 Tail ()->SetTime (SDL_GetTicks ());
 Tail ()->m_nextPacket = NULL;
 UpdateClientList ();
+++m_nTotal;
 ++m_nPackets;
 Unlock (bLock, __FUNCTION__);
 return packet;
