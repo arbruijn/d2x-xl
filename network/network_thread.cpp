@@ -716,8 +716,11 @@ for (packet = head; packet; packet = packet->Next ()) {
 		++nProcessed;
 	}
 m_rxPacketQueue.Lock (true, __FUNCTION__);
-for (packet = head; packet; packet = packet->Next ()) 
+while (head) {
+	packet = head;
+	head = head->Next ();
 	m_rxPacketQueue.Free (packet, false);
+	}
 m_rxPacketQueue.Unlock (true, __FUNCTION__);
 return nProcessed;
 }
@@ -917,8 +920,8 @@ if (toUpdate.Expired ()) {
 #endif
 				}
 			else if (bDownloading || bForce) {
-				pingStats [nPlayer].launchTime = -1;
-				NetworkSendPing (nPlayer);
+				//pingStats [nPlayer].launchTime = -1;
+				//NetworkSendPing (nPlayer);
 				}	
 			}
 		//Unlock ();
