@@ -81,6 +81,8 @@ typedef union {
 	tAppleTalkAddr		appletalk;
 } __pack__ tNetworkInfo;
 
+//------------------------------------------------------------------------------
+
 class CNetworkAddress : public tNetworkAddress {
 	public:
 		tNetworkAddress	m_address;
@@ -94,6 +96,7 @@ class CNetworkAddress : public tNetworkAddress {
 		inline uint16_t Port (void) { return m_address.node.portAddress.port.p; }
 
 		inline void SetNetwork (void* network) { memcpy (m_address.network.octets, (uint8_t*) network, sizeof (m_address.network)); }
+		inline void SetNetwork (uint32_t network) { m_address.network.a = network; }
 		inline void SetNode (void* node) { memcpy (m_address.node.b, (uint8_t*) node, sizeof (m_address.node.b)); }
 		inline void SetServer (void* ip) { memcpy (m_address.node.portAddress.ip.octets, (uint8_t*) ip, sizeof (m_address.node.portAddress.ip.octets)); }
 		inline void SetServer (uint32_t ip) { m_address.node.portAddress.ip.a = ip; }
@@ -105,6 +108,14 @@ class CNetworkAddress : public tNetworkAddress {
 		inline void ResetNode (uint8_t filler = 0) { memset (m_address.node.b, filler, sizeof (m_address.node.b)); }
 		inline void ResetPort (uint8_t filler = 0) { memset (m_address.node.portAddress.port.b, filler, sizeof (m_address.node.portAddress.port)); }
 
+		inline uint32_t GetNetwork (tNetworkAddress& address) {return address.network.a; }
+		inline uint32_t GetServer (tNetworkAddress& address) { return address.node.portAddress.ip.a; }
+		inline uint16_t GetPort (tNetworkAddress& address) { return address.node.portAddress.port.p; }
+
+		inline uint32_t GetNetwork (void) {return GetNetwork (m_address); }
+		inline uint32_t GetServer (void) { return GetServer (m_address); }
+		inline uint16_t GetPort (void) { return GetPort (m_address); }
+
 		inline CNetworkAddress& operator= (tNetworkAddress& address) { 
 			memcpy (&m_address, &address, sizeof (tNetworkAddress)); 
 			return *this;
@@ -115,12 +126,21 @@ class CNetworkAddress : public tNetworkAddress {
 			return *this;
 			}
 
-		inline bool operator== (CNetworkAddress& other) { return !memcmp (&m_address, &other.m_address, sizeof (tNetworkAddress)); }
+		inline bool operator== (CNetworkAddress& other) { 
+			return ((m_address.node.portAddress.ip.octets [0] == 127) && (other.m_address.node.portAddress.ip.octets [0] == 127))
+					 ? m_address.node.portAddress.port.p == other.m_address.node.portAddress.port.p
+					 : !memcmp (&m_address, &other.m_address, sizeof (tNetworkAddress)); 
+			}
 
 		inline void Reset (void) { memset (&m_address, 0, sizeof (m_address)); }
 
-		inline bool IsEmpty (void) { return (m_address.network.a == 0) && (m_address.node.portAddress.ip.a == 0) && (m_address.node.portAddress.port.p == 0); }
+		inline bool HaveNetwork (void) { return GetNetwork () != 0; }
+		inline bool IsEmpty (void) { return (GetNetwork () == 0) && (GetServer () == 0) && (GetPort () == 0); }
+		inline bool IsBroadcast (void) { return (GetNetwork () == 0xFFFFFFFF) && (GetServer () == 0xFFFFFFFF) && (GetPort () == 0xFFFF); }
+		inline bool IsInternal (void) { return *Server () == 127; }
 	};
+
+//------------------------------------------------------------------------------
 
 class CNetworkInfo {
 	public:
@@ -133,17 +153,28 @@ class CNetworkInfo {
 		inline uint16_t* Port (void) { return &m_info.address.node.portAddress.port.p; }
 
 		inline void SetNetwork (void* network) { memcpy (m_info.address.network.octets, (uint8_t*) network, sizeof (m_info.address.network)); }
-		inline void SetNetwork (uint32_t network) {m_info.address.network.a = network; }
+		inline void SetNetwork (uint32_t network) { m_info.address.network.a = network; }
 		inline void SetNode (void* node) { memcpy (m_info.address.node.b, (uint8_t*) node, sizeof (m_info.address.node.b)); }
 		inline void SetServer (void* ip) { memcpy (m_info.address.node.portAddress.ip.octets, (uint8_t*) ip, sizeof (m_info.address.node.portAddress.ip.octets)); }
 		inline void SetServer (uint32_t ip) { m_info.address.node.portAddress.ip.a = ip; }
 		inline void SetPort (void* port) { memcpy (m_info.address.node.portAddress.port.b, (uint8_t*) port, sizeof (m_info.address.node.portAddress.port.b)); }
 		inline void SetPort (uint16_t port) { m_info.address.node.portAddress.port.p = port; }
 
-		inline void ResetNetwork (uint8_t filler = 0) { memset (m_info.address.network.octets, filler, sizeof (m_info.address.network)); }
-		inline void ResetNode (uint8_t filler = 0) { memset (m_info.address.node.b, filler, sizeof (m_info.address.node.b)); }
+		inline uint32_t GetNetwork (tNetworkAddress& address) {return address.network.a; }
+		inline uint32_t GetServer (tNetworkAddress& address) { return address.node.portAddress.ip.a; }
+		inline uint16_t GetPort (tNetworkAddress& address) { return address.node.portAddress.port.p; }
 
-		inline bool HaveNetwork (void) { return m_info.address.network.a != 0; }
+		inline uint32_t GetNetwork (void) {return GetNetwork (m_info.address); }
+		inline uint32_t GetServer (void) { return GetServer (m_info.address); }
+		inline uint16_t GetPort (void) { return GetPort (m_info.address); }
+
+		inline void ResetNetwork (uint8_t filler = 0) { memset (Network (), filler, sizeof (m_info.address.network)); }
+		inline void ResetNode (uint8_t filler = 0) { memset (Node (), filler, sizeof (m_info.address.node.b)); }
+
+		inline bool HaveNetwork (void) { return GetNetwork () != 0; }
+		inline bool IsEmpty (void) { return (GetNetwork () == 0) && (GetServer () == 0) && (GetPort () == 0); }
+		inline bool IsBroadcast (void) { return (GetNetwork () == 0xFFFFFFFF) && (GetServer () == 0xFFFFFFFF) && (GetPort () == 0xFFFF); }
+		inline bool IsInternal (void) { return *Server () == 127; }
 
 		inline bool operator== (CNetworkInfo& other) { return !memcmp (&m_info, &other.m_info, sizeof (m_info)); }
 

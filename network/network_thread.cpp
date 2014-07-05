@@ -36,13 +36,13 @@
 #	define SEND_TIMEOUT		20
 #	define UPDATE_TIMEOUT	500
 #	define MAX_PACKET_AGE	300000
-#	define MAX_CLIENT_AGE	30000
+#	define MAX_CLIENT_AGE	300000
 #else
 #	define LISTEN_TIMEOUT	5
 #	define SEND_TIMEOUT		5
 #	define UPDATE_TIMEOUT	500
 #	define MAX_PACKET_AGE	3000
-#	define MAX_CLIENT_AGE	30000
+#	define MAX_CLIENT_AGE	300000
 #endif
 
 #if DBG
@@ -281,6 +281,10 @@ else { // listen
 			client->m_nLost += nLost;
 			m_nLost += nLost;
 			}
+#if DBG
+		else if (nLost < 0)
+			BRP;
+#endif
 		}
 	client->SetPacketId (m_nType, nPacketId);
 	}
@@ -414,18 +418,20 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-CNetworkClientInfo* CNetworkClientList::Update (CNetworkAddress& client) 
+CNetworkClientInfo* CNetworkClientList::Update (CNetworkAddress& address) 
 {
-CNetworkClientInfo* i = Find (client);
-if (!i) {
+if (address.IsBroadcast ())
+	return NULL;
+CNetworkClientInfo* client = Find (address);
+if (!client) {
 	if (!Grow ())
 		return NULL;
-	i = Top ();
-	(CNetworkAddress&) *i = client;
-	i->Reset ();
+	client = Top ();
+	(CNetworkAddress&) *client = address;
+	client->Reset ();
 	}
-i->m_timestamp = SDL_GetTicks ();
-return i;
+client->m_timestamp = SDL_GetTicks ();
+return client;
 }
 
 //------------------------------------------------------------------------------
