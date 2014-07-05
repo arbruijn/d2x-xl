@@ -115,11 +115,11 @@ void NetworkSyncObjects (tNetworkSyncInfo *syncInfoP)
 	int32_t		nObjFrames = 0;
 	int32_t		nPlayer = syncInfoP->player [1].player.connected;
 	
-syncInfoP->bDeferredSync = networkThread.Available ();
+syncInfoP->bDeferredSync = networkThread.SendInBackground ();
 
 // Send clear OBJECTS array CTrigger and send player num
 objFilter [OBJ_MARKER] = !gameStates.app.bHaveExtraGameInfo [1];
-for (nPacketsLeft = syncInfoP->bDeferredSync ? 5 *  OBJ_PACKETS_PER_FRAME : OBJ_PACKETS_PER_FRAME; nPacketsLeft; nPacketsLeft--) {
+for (nPacketsLeft = OBJ_PACKETS_PER_FRAME; nPacketsLeft; nPacketsLeft--) {
 	nObjFrames = 0;
 	memset (objBuf, 0, MAX_PAYLOAD_SIZE);
 	objBuf [0] = PID_OBJECT_DATA;
