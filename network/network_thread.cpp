@@ -447,8 +447,6 @@ void CNetworkThread::Start (void)
 {
 #if MULTI_THREADED_NETWORKING
 if (!m_thread) {
-	m_bRun = true;
-	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
 	m_semaphore = SDL_CreateSemaphore (1);
 #if SENDLOCK
 	m_sendLock = SDL_CreateSemaphore (1);
@@ -466,6 +464,10 @@ if (!m_thread) {
 	m_toSend.Setup (1000 / PPS);
 	m_toSend.Start ();
 	m_bUrgent = false;
+	m_bRun = true;
+	G3_SLEEP (500);
+	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
+	G3_SLEEP (500);
 	}
 #endif
 }

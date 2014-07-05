@@ -776,7 +776,7 @@ ioctlsocket (sk->fd, FIONBIO, &sockBlockMode);
 #else
 fcntl (sk->fd, F_SETFL, O_NONBLOCK);
 #endif
-*(reinterpret_cast<uint16_t*> (ipx_MyAddress + 8)) = nLocalPort;
+*(reinterpret_cast<uint16_t*> (ipx_MyAddress + 8)) = htons (nLocalPort);
 #ifdef UDP_BROADCAST
 if (setsockopt (sk->fd, SOL_SOCKET, SO_BROADCAST, reinterpret_cast<char*> (&val_one), sizeof (val_one))) {
 #ifdef _WIN32
@@ -924,6 +924,7 @@ if ((dataLen < 0) || (dataLen > MAX_PAYLOAD_SIZE + 4)) {
 destAddr.sin_family = AF_INET;
 memcpy (&destAddr.sin_addr, ipxHeader->Destination.Node, 4);
 memcpy (&destAddr.sin_port, ipxHeader->Destination.Node + 4, sizeof (destAddr.sin_port));
+destAddr.sin_port = *(reinterpret_cast<uint16_t*> (ipxHeader->Destination.Node + 4));
 memset (&(destAddr.sin_zero), '\0', 8);
 
 if (gameStates.multi.bTrackerCall)
@@ -961,7 +962,7 @@ for (nClients = clientManager.ClientCount (); iDest < nClients; iDest++) {
 			ReportSafeMode (clientP);
 		if (clientP->bSafeMode <= 0) {
 #endif
-			memcpy (buf + 8 + dataLen, &dest->sin_addr, 4);
+			memcpy (buf + 8 + dataLen, &dest->sin_addr, 4); // telling the server who I think he is at here
 			memcpy (buf + 12 + dataLen, &dest->sin_port, 2);
 			extraDataLen = 14;
 #if UDP_SAFEMODE
@@ -1183,7 +1184,7 @@ if (!(bTracker
 	rd->SetSockets (ntohs (*reinterpret_cast<uint16_t*> (outBuf + 6)), s->socket);
 	srcPort = ntohs (fromAddr.sin_port);
 	// check if we already have sender of this packet in broadcast list
-	memcpy (networkData.localAddress + 4, outBuf + dataLen - 6, 6);
+	memcpy (networkData.localAddress + 4, outBuf + dataLen - 6, 6); // this is the local port the sender of this packet sent the packet to
 	// add sender to client list if the packet is not from ourself
 	if (!memcmp (&fromAddr.sin_addr, networkData.localAddress + 4, 4) &&
 		 !memcmp (&srcPort, networkData.localAddress + 8, 2)) 
