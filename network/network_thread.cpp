@@ -710,13 +710,13 @@ m_rxPacketQueue.Unlock (true, __FUNCTION__);
 
 CNetworkPacket* packet;
 
-for (CNetworkPacket* packet = head; packet; packet = packet->Next ()) {
+for (packet = head; packet; packet = packet->Next ()) {
 	networkData.packetSource = packet->Owner ().m_address;
 	if (NetworkProcessPacket (packet->Buffer (), packet->Size ()))
 		++nProcessed;
 	}
 m_rxPacketQueue.Lock (true, __FUNCTION__);
-for (CNetworkPacket* packet = head; packet; packet = packet->Next ()) 
+for (packet = head; packet; packet = packet->Next ()) 
 	m_rxPacketQueue.Free (packet, false);
 m_rxPacketQueue.Unlock (true, __FUNCTION__);
 return nProcessed;
