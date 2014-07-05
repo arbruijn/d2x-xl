@@ -808,6 +808,11 @@ ref.nObjects++;
 
 void RebuildObjectLists (void)
 {
+	static bool bRebuilding = false;
+
+if (bRebuilding)
+	return;
+bRebuilding = true;
 PrintLog (0, "Rebuilding corrupted object lists ...\n");
 
 CObject* objP = &OBJECTS [0];
@@ -823,6 +828,7 @@ for (int32_t nObject = gameData.objs.nLastObject [0]; nObject; nObject--, objP++
 			objP->Link ();
 		}
 	}
+bRebuilding = false;
 }
 
 //------------------------------------------------------------------------------
