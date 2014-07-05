@@ -224,7 +224,7 @@ class CNetworkThread {
 				return false;
 			if (!bRunning)
 				return true;
-			return m_bRun;
+			return m_bRunning;
 			}
 		void Run (void);
 		void Start (void);
