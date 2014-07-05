@@ -302,7 +302,7 @@ typedef struct tMpParams {
 	uint8_t bEnableCheats;
 	uint8_t	bShowAllNames;
 	uint8_t	bShortPackets;
-	uint8_t	nPPS;
+	uint8_t	nMinPPS;
 	tMsnListEntry	mission;
 } __pack__ tMpParams;
 
@@ -592,13 +592,13 @@ extern int32_t nCoopPenalties [10];
 #define MAX_PPS		100
 #define DEFAULT_PPS	20
 
-static inline int16_t PacketsPerSec (void)
+static inline int16_t MinPPS (void)
 {
-	int32_t	i = netGameInfo.GetPacketsPerSec ();
+	int32_t	nMinPPS = netGameInfo.GetMinPPS ();
 
-if ((i < MIN_PPS) || (i > MAX_PPS))
-	netGameInfo.SetPacketsPerSec (DEFAULT_PPS);
-return netGameInfo.GetPacketsPerSec ();
+if ((nMinPPS < MIN_PPS) || (nMinPPS > MAX_PPS))
+	netGameInfo.SetMinPPS (DEFAULT_PPS);
+return netGameInfo.GetMinPPS ();
 }
 
 //------------------------------------------------------------------------------

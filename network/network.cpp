@@ -342,7 +342,7 @@ tracker.AddServer ();
 
 int32_t nQueries = 
 	((networkData.nStatus == NETSTAT_PLAYING) && netGameInfo.GetShortPackets () && !networkData.nJoining)
-	? gameData.multiplayer.nPlayers * PacketsPerSec ()
+	? gameData.multiplayer.nPlayers * MinPPS ()
 	: 999;
 
 uint8_t packet [MAX_PACKET_SIZE];
@@ -422,15 +422,8 @@ if (to.Expired ()) {
 		if (nMaxPing < pingStats [i].averagePing)
 			nMaxPing = pingStats [i].averagePing;
 		}
-	mpParams.nPPS = Clamp (2000 / nMaxPing, MIN_PPS, MAX_PPS);
+	mpParams.nMinPPS = Clamp (2000 / nMaxPing, MIN_PPS, MAX_PPS);
 	}
-}
-
-//------------------------------------------------------------------------------
-
-static int32_t SyncTimeout (void)
-{
-return I2X (1) / (networkThread.Available () ? networkThread.PacketsPerSec () : PacketsPerSec ());
 }
 
 //------------------------------------------------------------------------------
@@ -477,13 +470,20 @@ networkData.SyncPack ().Send ();
 
 //------------------------------------------------------------------------------
 
+static int32_t SyncTimeout (void)
+{
+return I2X (1) / (networkThread.Available () ? networkThread.MinPPS () : MinPPS ());
+}
+
+//------------------------------------------------------------------------------
+
 void NetworkDoFrame (int bFlush)
 {
 if (!IsNetworkGame) 
 	return;
 if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequence) { // Don't send postion during escape sequence...
 	nakedData.Flush ();
-	if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds ()> (networkData.refuse.xTimeLimit + (I2X (12))))
+	if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds () > (networkData.refuse.xTimeLimit + (I2X (12))))
 		networkData.refuse.bWaitForAnswer = 0;
 	networkData.xLastSendTime += gameData.time.xFrame;
 	//networkData.xLastTimeoutCheck += gameData.time.xFrame;
@@ -492,7 +492,7 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 	if ((networkData.xLastSendTime >= SyncTimeout ())
 
 #if !DBG
-		 || ((networkData.xLastSendTime >= I2X (1) / MAX_PPS) && (gameData.multigame.laser.bFired || networkData.bPacketUrgent))
+		 || (/*(networkData.xLastSendTime >= I2X (1) / MAX_PPS) &&*/ (gameData.multigame.laser.bFired || networkData.bPacketUrgent))
 #endif
 		) {
 		networkThread.SetUrgent (gameData.multigame.laser.bFired || networkData.bPacketUrgent);

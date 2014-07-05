@@ -328,7 +328,7 @@ typedef struct tNetGameInfoD2 {
 		int32_t     monitorVector;							// 4 bytes
 		int32_t		playerScore [MAX_PLAYERS_D2];		// 32 bytes
 		uint8_t		playerFlags [MAX_PLAYERS_D2];		// 8 bytes
-		int16_t		nPacketsPerSec;							// 2 bytes
+		int16_t		nMinPPS;							// 2 bytes
 		uint8_t		bShortPackets;							// 1 bytes
 // 279 bytes
 // 355 bytes total
@@ -350,7 +350,7 @@ typedef struct tNetGameInfoD2X {
 		int32_t     monitorVector;							// 4 bytes
 		int32_t     playerScore [MAX_PLAYERS_D2X];		// 32 bytes
 		uint8_t		playerFlags [MAX_PLAYERS_D2X];		// 8 bytes
-		int16_t		nPacketsPerSec;							// 2 bytes
+		int16_t		nMinPPS;							// 2 bytes
 		uint8_t		bShortPackets;							// 1 bytes
 		uint8_t		auxData [NETGAME_AUX_SIZE];  // Storage for protocol-specific data (e.g., multicast session and port)
 } __pack__ tNetGameInfoD2X;
@@ -504,7 +504,7 @@ class CNetGameInfo {
 		inline fix GetLevelTime (void) { return IsUdpGame () ? m_info.versionSpecific.d2x.xLevelTime : m_info.versionSpecific.d2.xLevelTime; }
 		inline int32_t GetControlInvulTime (void) { return IsUdpGame () ? m_info.versionSpecific.d2x.controlInvulTime : m_info.versionSpecific.d2.controlInvulTime; }
 		inline int32_t GetMonitorVector (void) { return IsUdpGame () ? m_info.versionSpecific.d2x.monitorVector : m_info.versionSpecific.d2.monitorVector; }
-		inline int16_t GetPacketsPerSec (void) { return IsUdpGame () ? m_info.versionSpecific.d2x.nPacketsPerSec : m_info.versionSpecific.d2.nPacketsPerSec; }
+		inline int16_t GetMinPPS (void) { return IsUdpGame () ? m_info.versionSpecific.d2x.nMinPPS : m_info.versionSpecific.d2.nMinPPS; }
 		inline uint8_t GetShortPackets (void) { return IsUdpGame () ? m_info.versionSpecific.d2x.bShortPackets : m_info.versionSpecific.d2.bShortPackets; }
 
 		inline void SetSegmentCheckSum (uint16_t n) { if (IsUdpGame ()) m_info.versionSpecific.d2x.nSegmentCheckSum = n; else m_info.versionSpecific.d2.nSegmentCheckSum = n; }
@@ -513,7 +513,7 @@ class CNetGameInfo {
 		inline void SetLevelTime (fix n) { if (IsUdpGame ()) m_info.versionSpecific.d2x.xLevelTime = n; else m_info.versionSpecific.d2.xLevelTime = n; }
 		inline void SetControlInvulTime (int32_t n) { if (IsUdpGame ()) m_info.versionSpecific.d2x.controlInvulTime = n; else m_info.versionSpecific.d2.controlInvulTime = n; }
 		inline void SetMonitorVector (int32_t n) { if (IsUdpGame ()) m_info.versionSpecific.d2x.monitorVector = n; else m_info.versionSpecific.d2.monitorVector = n; }
-		inline void SetPacketsPerSec (int16_t n) { if (IsUdpGame ()) m_info.versionSpecific.d2x.nPacketsPerSec = n; else m_info.versionSpecific.d2.nPacketsPerSec = n; }
+		inline void SetMinPPS (int16_t n) { if (IsUdpGame ()) m_info.versionSpecific.d2x.nMinPPS = n; else m_info.versionSpecific.d2.nMinPPS = n; }
 		inline void SetShortPackets (uint8_t n) { if (IsUdpGame ()) m_info.versionSpecific.d2x.bShortPackets = 0; else m_info.versionSpecific.d2.bShortPackets = n; } // always long packets for UDP/IP
 };
 

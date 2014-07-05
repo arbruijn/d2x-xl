@@ -50,9 +50,9 @@
 #endif
 
 #if DBG
-#	define PPS		(DEFAULT_PPS / 2)
+#	define PPS		DEFAULT_PPS
 #else
-#	define PPS		netGameInfo.GetPacketsPerSec ()
+#	define PPS		netGameInfo.GetMinPPS ()
 #endif
 
 #if DBG
@@ -211,6 +211,7 @@ if (m_packets [2])
 	m_packets [2] = m_packets [2]->Next ();
 else
 	packet = new CNetworkPacket;
+++m_nPackets;
 Unlock (bLock, __FUNCTION__);
 return packet;
 }
@@ -333,7 +334,6 @@ Tail ()->SetTime (SDL_GetTicks ());
 Tail ()->m_nextPacket = NULL;
 UpdateClientList ();
 ++m_nTotal;
-++m_nPackets;
 Unlock (bLock, __FUNCTION__);
 return packet;
 }
@@ -775,24 +775,17 @@ if (m_toSend.Duration () != 1000 / PPS) {
 
 if (m_txPacketQueue.Empty ())
 	return 0;
-#if DBG
+
 if (!bForce && !m_toSend.Expired ())
-#else
-if (!m_toSend.Expired () && !m_txPacketQueue.Head ()->IsUrgent ())
-#endif
 	return 1;
+
+#if 0
 
 int32_t nSize = 0;
 CNetworkPacket* packet;
 
 m_txPacketQueue.Lock (true, __FUNCTION__);
-#if DBG
-	{
-	PrintLog (0, "Transmit: Fetch packet\n");
-	packet = m_txPacketQueue.Head ();
-#else
-while ((packet = m_txPacketQueue.Head ()) && (packet->IsUrgent () || (nSize + packet->Size () <= MAX_PAYLOAD_SIZE))) {
-#endif
+while ((packet = m_txPacketQueue.Head ())) {
 	nSize += packet->Size ();
 	PrintLog (0, "Transmit: Send packet\n");
 	packet->Transmit ();
@@ -800,6 +793,35 @@ while ((packet = m_txPacketQueue.Head ()) && (packet->IsUrgent () || (nSize + pa
 	m_txPacketQueue.Pop (true, false);
 	}
 m_txPacketQueue.Unlock (true, __FUNCTION__);
+
+#else
+
+m_txPacketQueue.Lock (true, __FUNCTION__);
+CNetworkPacket* head = m_txPacketQueue.Head ();
+if (!head) {
+	m_txPacketQueue.Unlock (true, __FUNCTION__);
+	return 0;
+	}
+m_txPacketQueue.SetHead (NULL);
+m_txPacketQueue.SetTail (NULL);
+m_txPacketQueue.Unlock (true, __FUNCTION__);
+
+CNetworkPacket* packet;
+
+for (packet = head; packet; packet = packet->Next ())
+	packet->Transmit ();
+
+m_txPacketQueue.Lock (true, __FUNCTION__);
+while (head) {
+	packet = head;
+	head = head->Next ();
+	m_txPacketQueue.Free (packet, false);
+	}
+m_txPacketQueue.Unlock (true, __FUNCTION__);
+return 1;
+
+#endif
+
 return 1;
 }
 

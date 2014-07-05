@@ -64,7 +64,7 @@ sprintf (szText, TXT_INFO_SERVER, gameData.multiplayer.players [WhoIsGameHost()]
 m.AddText ("", szText);
 sprintf (szText, TXT_INFO_PLRNUM, NetworkHowManyConnected (), netGameInfo.m_info.nMaxPlayers);
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_PPS, netGameInfo.GetPacketsPerSec ());
+sprintf (szText, TXT_INFO_PPS, netGameInfo.GetMinPPS ());
 m.AddText ("", szText);
 sprintf (szText, TXT_INFO_SHORTPKT, netGameInfo.GetShortPackets () ? "Yes" : "No");
 m.AddText ("", szText);

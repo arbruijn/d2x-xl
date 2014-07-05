@@ -713,7 +713,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		}
 buf [count++] = 99;
 buf [count++] = netGameInfo.GetShortPackets ();	
-buf [count++] = char (PacketsPerSec ());
+buf [count++] = char (MinPPS ());
  
 sendit:	   
 

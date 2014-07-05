@@ -230,7 +230,7 @@ class CNetworkData {
 		int32_t					nActiveGames;
 		int32_t					nLastActiveGames;
 		int32_t					nNamesInfoSecurity;
-		int32_t					nPacketsPerSec;
+		int32_t					nMinPPS;
 		int32_t					nNetLifeKills;
 		int32_t					nNetLifeKilled;
 		int32_t					bDebug;

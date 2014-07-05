@@ -497,7 +497,7 @@ do {
 		m.AddInput ("socket", szSocket, 5, HTX_MULTI2_SOCKET);
 		}
 
-	sprintf (szPPS, "%d", mpParams.nPPS);
+	sprintf (szPPS, "%d", mpParams.nMinPPS);
 	sprintf (szPPSLabel, TXT_PPS, MIN_PPS, MAX_PPS);
 	m.AddText ("", szPPSLabel, KEY_P);
 	m.AddInput ("PPS", szPPS, 3, HTX_MULTI2_PPS);
@@ -534,7 +534,7 @@ mpParams.bIndestructibleLights = uint8_t (m.Value ("indestructible lights"));
 mpParams.nDifficulty = m.Value ("difficulty");
 mpParams.bShowPlayersOnAutomap = m.Value ("show players on map");
 mpParams.bShortPackets = m.Value ("int16_t packets");
-mpParams.nPPS = Clamp (m.ToInt ("PPS"), MIN_PPS, MAX_PPS);
+mpParams.nMinPPS = Clamp (m.ToInt ("PPS"), MIN_PPS, MAX_PPS);
 
 if (gameStates.multi.nGameType >= IPX_GAME) { 
 	int32_t newSocket = atoi (szSocket);
@@ -1216,7 +1216,7 @@ netGameInfo.m_info.szMissionTitle [sizeof (netGameInfo.m_info.szMissionTitle) - 
 netGameInfo.SetControlInvulTime (mpParams.nReactorLife * 5 * I2X (60));
 netGameInfo.SetPlayTimeAllowed (mpParams.nMaxTime);
 netGameInfo.SetScoreGoal (mpParams.nScoreGoal * 5);
-netGameInfo.SetPacketsPerSec (mpParams.nPPS);
+netGameInfo.SetMinPPS (mpParams.nMinPPS);
 netGameInfo.m_info.invul = mpParams.bInvul;
 netGameInfo.m_info.BrightPlayers = mpParams.bBrightPlayers;
 netGameInfo.SetShortPackets (mpParams.bShortPackets);

@@ -626,7 +626,7 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	m_cf.WriteInt (*netGameInfo.PlayerScore (i));				// 32 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	m_cf.WriteByte ((int8_t) *netGameInfo.PlayerFlags (i));	// 8 bytes
-m_cf.WriteShort (PacketsPerSec ());							// 2 bytes
+m_cf.WriteShort (MinPPS ());							// 2 bytes
 m_cf.WriteByte (int8_t (netGameInfo.GetShortPackets ()));		// 1 bytes
 // 279 bytes
 // 355 bytes total
@@ -1470,7 +1470,7 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	*netGameInfo.PlayerScore (i) = m_cf.ReadInt ();				// 32 bytes
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	*netGameInfo.PlayerFlags (i) = uint8_t (m_cf.ReadByte ());	// 8 bytes
-netGameInfo.SetPacketsPerSec (m_cf.ReadShort ());				// 2 bytes
+netGameInfo.SetMinPPS (m_cf.ReadShort ());				// 2 bytes
 netGameInfo.SetShortPackets (uint8_t (m_cf.ReadByte ()));		// 1 bytes
 // 279 bytes
 // 355 bytes total

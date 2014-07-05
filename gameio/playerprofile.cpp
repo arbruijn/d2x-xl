@@ -353,7 +353,7 @@ for (i = 0; i < 2; i++) {
 		RP (mpParams.bBrightPlayers, 0, 0);
 		RP (mpParams.bShowAllNames, 0, 0);
 		RP (mpParams.bShortPackets, 0, 0);
-		RP (mpParams.nPPS, 0, 0);
+		RP (mpParams.nMinPPS, 0, 0);
 		RP (mpParams.udpPorts [0], 0, 0);
 		RP (mpParams.udpPorts [1], 1, 0);
 		RP (mpParams.szServerIpAddr, 0, 0);
@@ -846,7 +846,7 @@ tParamValue defaultParams [] = {
 	 {"mpParams.bBrightPlayers", "0"},
 	 {"mpParams.bShowAllNames", "0"},
 	 {"mpParams.bShortPackets", "0"},
-	 {"mpParams.nPPS", "20"},
+	 {"mpParams.nMinPPS", "20"},
 	 {"mpParams.udpPorts[0]", "28342"},
 	 {"mpParams.udpPorts[1]", "28342"},
 	 {"mpParams.szServerIpAddr", "127.0.0.1"},
