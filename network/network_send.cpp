@@ -722,15 +722,3 @@ networkThread.Send (reinterpret_cast<uint8_t*> (buf), count, their->player.netwo
 
 //------------------------------------------------------------------------------
 
-void NetworkSendMissingObjFrames (void)
-{
-if (gameStates.multi.nGameType >= IPX_GAME) {
-	networkData.syncInfo [0].objs.missingFrames.pid = PID_MISSING_OBJ_FRAMES;
-	networkData.syncInfo [0].objs.missingFrames.nPlayer = N_LOCALPLAYER;
-	networkData.syncInfo [0].objs.nFramesToSkip = networkData.syncInfo [0].objs.nFrame + 1;
-	SendInternetMissingObjFramesPacket (networkData.serverAddress.Network (), networkData.serverAddress.Node ());
-	} 
-}
-
-//------------------------------------------------------------------------------
-

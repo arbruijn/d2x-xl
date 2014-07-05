@@ -185,12 +185,6 @@ extern CNakedData nakedData;
 
 //------------------------------------------------------------------------------
 
-typedef struct tMissingObjFrames {
-	uint8_t				pid;
-	uint8_t				nPlayer;
-	uint16_t				nFrame;
-} __pack__ tMissingObjFrames;
-
 typedef struct tRefuseData {
 	char					bThisPlayer;
 	char					bWaitForAnswer;
@@ -367,7 +361,6 @@ void NetworkProcessRequest (tSequencePacket *their);
 void NetworkProcessPData (uint8_t* data);
 void NetworkProcessNakedPData (uint8_t* data, int32_t len);
 void NetworkProcessNamesReturn (uint8_t* data);
-void NetworkProcessMissingObjFrames (uint8_t* data);
 void NetworkWaitForRequests (void);
 
 int32_t NetworkProcessPacket (uint8_t *data, int32_t nLength);

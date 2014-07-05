@@ -442,14 +442,6 @@ if (IAmGameHost () &&
 return 1;
 }
 
-//------------------------------------------------------------------------------
-
-int32_t MissingObjFramesHandler (uint8_t* data, int32_t nLength)
-{
-NetworkProcessMissingObjFrames (data);
-return 1;
-}
-
 //-----------------------------------------------------------------------------------------------------------------
 
 void InitPacketHandler (uint8_t pId, pPacketHandler packetHandler, const char *pszInfo, int32_t nLength, int16_t nStatusFilter)
@@ -492,7 +484,6 @@ PHINIT (PID_NAMES_RETURN, NamesReturnHandler, 0, 1 << NETSTAT_BROWSING);
 PHINIT (PID_EXTRA_GAMEINFO, ExtraGameInfoHandler, 0, (int16_t) 0xFFFF);
 PHINIT (PID_DOWNLOAD, DownloadHandler, 0, (int16_t) 0xFFFF);
 PHINIT (PID_UPLOAD, UploadHandler, 0, (1 << NETSTAT_STARTING) | (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
-PHINIT (PID_MISSING_OBJ_FRAMES, MissingObjFramesHandler, 0, (1 << NETSTAT_WAITING) | (1 << NETSTAT_PLAYING) | (1 << NETSTAT_STARTING) | (1 << NETSTAT_ENDLEVEL));
 PHINIT (PID_XML_GAMEINFO, XMLGameInfoHandler, 0, (int16_t) 0xFFFF);
 PHINIT (PID_TRACKER_GET_SERVERLIST, TrackerHandler, 0, (int16_t) 0xFFFF);
 PHINIT (PID_TRACKER_ADD_SERVER, TrackerHandler, 0, (int16_t) 0xFFFF);

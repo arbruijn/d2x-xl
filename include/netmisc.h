@@ -38,8 +38,6 @@ void BESendNetGamePacket (uint8_t *server, uint8_t *node, uint8_t *netAddress, i
 void BEReceiveNetGamePacket (uint8_t *data, CNetGameInfo *netgame, int32_t liteFlag);
 void BESendExtraGameInfo (uint8_t *server, uint8_t *node, uint8_t *netAddress);
 void BEReceiveExtraGameInfo (uint8_t *data, tExtraGameInfo *extraGameInfo);
-void BESendMissingObjFrames (uint8_t *server, uint8_t *node, uint8_t *netAddress);
-void BEReceiveMissingObjFrames (uint8_t *data, tMissingObjFrames *missingObjFrames);
 void BESwapObject (CObject *obj);
 
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
@@ -142,15 +140,6 @@ void BESwapObject (CObject *obj);
 
 #define SendInternetXMLGameInfoPacket(xmlGameInfo, server, node) \
 	networkThread.Send((uint8_t *) xmlGameInfo, (int32_t) strlen(xmlGameInfo) + 1, server, node)
-
-#define SendMissingObjFramesPacket(server, node, netAddress) \
-	networkThread.Send((uint8_t *) &networkData.syncInfo [0].objs.missingFrames, sizeof(tMissingObjFrames), server, node, netAddress)
-#define SendInternetMissingObjFramesPacket(server, node) \
-	networkThread.Send((uint8_t *) &networkData.syncInfo [0].objs.missingFrames, sizeof(tMissingObjFrames), server, node)
-#define SendBroadcastMissingObjFramesPacket() \
-	IPXSendBroadcastData((uint8_t *) &networkData.syncInfo [0].objs.missingFrames, sizeof(tMissingObjFrames))
-#define ReceiveMissingObjFramesPacket(data, _missingObjFrames) \
-	memcpy ((uint8_t *)(_missingObjFrames), data, sizeof(tMissingObjFrames))
 
 #define SwapObject(obj)
 
