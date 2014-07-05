@@ -486,17 +486,20 @@ void CNetworkThread::Run (void)
 m_bRunning = true;
 while (m_bRunning) {
 	if (LockListen (true)) {
-		PrintLog (0, "Listen\n");
+		PrintLog (1, "Listen\n");
 		Listen ();
+		PrintLog (-1);
 		UnlockListen ();
 		}
 	if (LockSend (true)) {
-		PrintLog (0, "Transmit\n");
+		PrintLog (1, "Transmit\n");
 		Transmit ();
+		PrintLog (-1);
 		UnlockSend ();
 		}
-	PrintLog (0, "SendLifeSign\n");
+	PrintLog (1, "SendLifeSign\n");
 	SendLifeSign ();
+	PrintLog (-1);
 	CheckPlayerTimeouts ();
 	G3_SLEEP (1);
 	}
