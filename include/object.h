@@ -1409,7 +1409,7 @@ class CObjectIterator {
 		bool Done (void);
 		CObject* Next (void);
 		CObject* Step (void);
-		inline CObject* Back (void) { }
+		CObject* Back (void);
 		CObject* Current (void) { return (m_objP); }
 };
 
