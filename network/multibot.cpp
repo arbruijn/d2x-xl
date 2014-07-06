@@ -935,8 +935,6 @@ else {
 	bufP += 4;
 	}
 gameStates.app.SRand (gameStates.app.nRandSeed);
-Assert ((nPlayer >= 0) && (nPlayer < gameData.multiplayer.nPlayers));
-Assert (nPlayer != N_LOCALPLAYER); // What? How'd we send ourselves this?
 gameData.multigame.create.nCount = 0;
 nEggObj = ObjectCreateEgg (&delObjP);
 if (nEggObj == -1)
@@ -978,8 +976,8 @@ if (delObjP->info.nType != OBJ_ROBOT) {
 botInfoP = &ROBOTINFO (delObjP->info.nId);
 gameData.multigame.create.nCount = 0;
 
-if (gameStates.multi.nGameType == UDP_GAME) // nRandSeed will be transmitted to other players by MultiSendCreateRobotPowerups below
-	gameStates.app.SRand ();
+//if (gameStates.multi.nGameType == UDP_GAME) // nRandSeed will be transmitted to other players by MultiSendCreateRobotPowerups below
+//	gameStates.app.SRand ();
 
 if (delObjP->info.contains.nCount > 0) { 
 	if (delObjP->info.contains.nCount > MAX_ROBOT_POWERUPS)
@@ -997,6 +995,8 @@ if (delObjP->info.contains.nCount > 0) {
 		}
 	if (gameStates.multi.nGameType != UDP_GAME)
 		gameStates.app.SRand (1245L);
+	else
+		gameStates.app.SRand ();
 	if (delObjP->info.contains.nCount > 0)
 		nEggObj = ObjectCreateEgg (delObjP);
 	}
