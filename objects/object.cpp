@@ -837,8 +837,7 @@ gameData.objs.lists.Init ();
 objP = &OBJECTS [0];
 for (int32_t nObject = gameData.objs.nLastObject [0]; nObject; nObject--, objP++) {
 	if (objP->Type () < MAX_OBJECT_TYPES) {
-		for (int32_t nLink = 0; nLink < 3; nLink++)
-			objP->Link ();
+		objP->Link ();
 		}
 	}
 bRebuilding = false;
