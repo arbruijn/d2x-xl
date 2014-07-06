@@ -540,13 +540,11 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 
 // successively sent all robot powerups just created (their count is in gameData.multigame.create.nCount)
 #if DBG
-if (delObjP->info.contains.nCount > MAX_ROBOT_POWERUPS)
+if (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS)
 	delObjP->info.contains.nCount = MAX_ROBOT_POWERUPS;
-if (gameData.multigame.create.nCount > delObjP->info.contains.nCount)
-	BRP;
-while (gameData.multigame.create.nCount > delObjP->info.contains.nCount)
-	OBJECTS [gameData.multigame.create.nObjNums [gameData.multigame.create.nCount--]].Die ();
 #endif
+while (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS)
+	OBJECTS [gameData.multigame.create.nObjNums [gameData.multigame.create.nCount--]].Die ();
 gameData.multigame.create.nCount = 0;
 gameData.multigame.msg.buf [hBufP] = (uint8_t) delObjP->info.contains.nCount;
 for (int32_t i = 0; i < delObjP->info.contains.nCount; i++) {
@@ -940,11 +938,11 @@ nEggObj = ObjectCreateEgg (&delObjP);
 if (nEggObj == -1)
 	return; // Object buffer full
 #if DBG
-if (gameData.multigame.create.nCount > delObjP.info.contains.nCount)
+if (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS)
 	BRP;
-while (gameData.multigame.create.nCount > delObjP.info.contains.nCount)
-	OBJECTS [gameData.multigame.create.nObjNums [gameData.multigame.create.nCount--]].Die ();
 #endif
+while (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS) 
+	OBJECTS [gameData.multigame.create.nObjNums [gameData.multigame.create.nCount--]].Die ();
 for (i = 0; i < gameData.multigame.create.nCount; i++) {
 	s = GET_INTEL_SHORT (buf + bufP);
 	if (s != -1)
