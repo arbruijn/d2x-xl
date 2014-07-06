@@ -866,8 +866,10 @@ if (link.prev || link.next) {
 	else {
 		if (ref.tail != this)
 			bRebuild = true;
-		else 
+		else {
 			ref.tail = link.prev;
+			ref.tail->m_links [nLink].next = NULL;
+			}
 		}
 	if (link.prev) {
 		if (link.prev->m_links [nLink].next != this)
@@ -878,8 +880,10 @@ if (link.prev || link.next) {
 	else {
 		if (ref.head != this)
 			bRebuild = true;
-		else 
+		else {
 			ref.head = link.next;
+			ref.head->m_links [nLink].prev = NULL;
+			}
 		}
 	if (ref.head)
 		ref.head->m_links [nLink].prev = NULL;

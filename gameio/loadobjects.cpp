@@ -358,6 +358,10 @@ if ((gameFileInfo.objects.offset > -1) && gameFileInfo.objects.count) {
 	OBJECTS.Clear (0, gameFileInfo.objects.count);
 	i = 0;
 	while (i < gameFileInfo.objects.count) {
+#if DBG
+		if (i == nDbgObj)
+			BRP;
+#endif
 		ClaimObjectSlot (i);
 		objP->Read (cf);
 #if OBJ_LIST_TYPE == 1
