@@ -356,6 +356,7 @@ if ((gameFileInfo.objects.offset > -1) && gameFileInfo.objects.count) {
 		return -1;
 		}
 	OBJECTS.Clear (0, gameFileInfo.objects.count);
+	gameData.objs.nObjects = 0;				//just the player
 	i = 0;
 	while (i < gameFileInfo.objects.count) {
 #if DBG

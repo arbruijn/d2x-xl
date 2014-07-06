@@ -444,6 +444,7 @@ if (bInitPlayer) {
 	gameData.objs.consoleP->LinkToSeg (0);	//put in the world in segment 0
 	}
 //gameData.objs.consoleP->Link ();
+ClaimObjectSlot (0);
 gameData.objs.nObjects = 1;				//just the player
 gameData.objs.consoleP->ResetLinks ();
 gameData.objs.nLastObject [0] = 0;
@@ -1020,8 +1021,10 @@ if (bForce || (nType != OBJ_NONE)) {
 			Unlink (gameData.objs.lists.effects, 1);
 		else if (nType == OBJ_LIGHT)
 			Unlink (gameData.objs.lists.lights, 1);
-		Unlink (gameData.objs.lists.statics, 2);
-		return;
+		if ((nType != OBJ_WEAPON) && (nType != OBJ_MONSTERBALL)) {
+			Unlink (gameData.objs.lists.statics, 2);
+			return;
+			}
 		}
 	Unlink (gameData.objs.lists.actors, 2);
 	}
