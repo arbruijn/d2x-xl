@@ -770,7 +770,9 @@ if (objP->info.nType != OBJ_NONE) {
 	int32_t nSegment = objP->info.nSegment;
 	PrintLog (0, "receiving object %d (type: %d, segment: %d)\n", m_nLocalObj, objP->info.nType, nSegment);
 	objP->ResetSgmLinks ();
+#if OBJ_LIST_TYPE
 	objP->ResetLinks ();
+#endif
 	objP->info.nAttachedObj = -1;
 	objP->Link ();
 	if (nSegment < 0) {

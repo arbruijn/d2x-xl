@@ -264,10 +264,9 @@ int32_t CObject::FindAnyHomingTarget (CFixVector& vTrackerPos, int32_t targetTyp
 {
 	bool bOmega = (Type () == OBJ_WEAPON) && (Id () == OMEGA_ID);
 	CObject* targetP;
-	int32_t	nObject;
 	CHomingTargetData targetData (this, vTrackerPos, targetLists [nThread]);
 
-FORALL_ACTOR_OBJS (targetP, nObject) {
+FORALL_ACTOR_OBJS (targetP) {
 	if (OBJ_IDX (targetP) == cType.laserInfo.parent.nObject) // Don't track shooter
 		continue;
 

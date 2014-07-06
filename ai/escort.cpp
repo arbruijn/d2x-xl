@@ -80,7 +80,7 @@ gameData.escort.bMsgsSuppressed = 0;
 FORALL_ROBOT_OBJS (objP)
 	if (IS_GUIDEBOT (objP))
 		break;
-if (IS_OBJECT (objP, i))
+if (IS_OBJECT (objP, objP->Index ()))
 	gameData.escort.nObjNum = objP->Index ();
 gameData.escort.xSorryTime = -I2X (1);
 gameData.escort.bSearchingMarker = -1;
@@ -160,7 +160,7 @@ if ((OBJECTS [gameData.escort.nObjNum].info.nType == OBJ_ROBOT) &&
 	FORALL_ROBOT_OBJS (objP)
 		if (IS_GUIDEBOT (objP))
 			break;
-	if (!IS_OBJECT (objP, i))
+	if (!IS_OBJECT (objP, objP->Index ()))
 		return 0;
 	gameData.escort.nObjNum = objP->Index ();
 	}
@@ -357,7 +357,6 @@ if ((gameData.escort.xLastMsgTime + I2X (1) < gameData.time.xGame) ||
 //	Return true if marker #id has been placed.
 int32_t MarkerExistsInMine (int32_t id)
 {
-	int32_t	i;
 	CObject*	objP;
 
 FORALL_OBJS (objP)
@@ -376,7 +375,6 @@ gameData.escort.bMsgsSuppressed = 0;
 if (!gameData.escort.bMayTalk) {
 	BuddyMayTalk ();
 	if (!gameData.escort.bMayTalk) {
-		int32_t	i;
 		CObject*	objP;
 
 		FORALL_ROBOT_OBJS (objP)
@@ -937,7 +935,6 @@ return 1;
 
 void DoBuddyDudeStuff (void)
 {
-	int16_t	i;
 	CObject*	objP;
 
 if (!BuddyMayTalk ())
@@ -1135,7 +1132,7 @@ FORALL_ROBOT_OBJS (objP) {
 		break;
 	}
 
-if (!IS_OBJECT (objP, i)) {
+if (!IS_OBJECT (objP, objP->Index ())) {
 #if 1//DBG - always allow buddy bot creation
 		//	If no buddy bot, create one!
 		HUDInitMessage (TXT_GB_CREATE);

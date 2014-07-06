@@ -340,7 +340,6 @@ return -1;
 
 void NetworkCountPowerupsInMine (void)
 {
- int32_t 	i;
   CObject*	objP;
 
 gameData.multiplayer.powerupsInMine.Clear (0);

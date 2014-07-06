@@ -143,9 +143,8 @@ FORALL_OBJS (objP)
 //  Setting player_awareness (a fix, time in seconds which CObject is aware of player)
 void DoAIFrameAll (void)
 {
-	int32_t		h, j;
-	int32_t		i;
-	CObject	*objP;
+	int32_t	h, j;
+	CObject*	objP;
 
 SetPlayerAwarenessAll ();
 if (USE_D1_AI)

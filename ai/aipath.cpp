@@ -538,7 +538,6 @@ return 1;
 
 void ValidateAllPaths (void)
 {
-	int32_t			i;
 	CObject*			objP;
 	tAIStaticInfo*	aiP;
 
@@ -1180,7 +1179,7 @@ nLastFrameGarbageCollected = gameData.app.nFrameCount;
 ValidateAllPaths ();
 #endif
 	//	Create a list of OBJECTS which have paths of length 1 or more.p.
-FORALL_ROBOT_OBJS (objP, nObject) {
+FORALL_ROBOT_OBJS (objP) {
 	if ((objP->info.controlType == CT_AI) || (objP->info.controlType == CT_MORPH)) {
 		aiP = &objP->cType.aiInfo;
 		if (aiP->nPathLength > 0) {
@@ -1280,7 +1279,6 @@ else if (i > LEVEL_POINT_SEGS / 2) {
 //	Should be called at the start of each level.
 void AIResetAllPaths (void)
 {
-	int32_t	i;
 	CObject*	objP = OBJECTS.Buffer ();
 
 FORALL_OBJS (objP)

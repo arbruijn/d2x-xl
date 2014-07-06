@@ -72,7 +72,6 @@ int32_t CObject::CreateGatedRobot (int16_t nSegment, uint8_t nObjId, CFixVector*
 	CFixVector	vObjPos;
 	tRobotInfo*	botInfoP = &ROBOTINFO (nObjId);
 	int32_t		nBoss, count = 0;
-	int32_t		i;
 	fix			objsize = gameData.models.polyModels [0][botInfoP->nModel].Rad ();
 	uint8_t		default_behavior;
 
@@ -245,7 +244,6 @@ return 0;
 int32_t IsValidTeleportDest (CFixVector *vPos, int32_t nMinDist)
 {
 	CObject		*objP;
-	int32_t		i;
 	CFixVector	vOffs;
 	fix			xDist;
 

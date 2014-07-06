@@ -1099,7 +1099,6 @@ return gameData.objs.consoleP;
 
 static CObject *NearestRobotTarget (CObject* attackerP, tAIStateInfo *siP)
 {
-	int32_t		j;
 	fix			curDist, minDist = MAX_WAKEUP_DIST, bestAngle = -1;
 	CObject*		candidateP, *targetP = NULL;
 	CFixVector	vPos = attackerP->AttacksRobots ()
@@ -1107,7 +1106,7 @@ static CObject *NearestRobotTarget (CObject* attackerP, tAIStateInfo *siP)
 							 : OBJPOS (OBJECTS + N_LOCALPLAYER)->vPos;	// find robot closest to player
 	CFixVector	vViewDir = attackerP->info.position.mOrient.m.dir.f;
 
-FORALL_ROBOT_OBJS (candidateP, j) {
+FORALL_ROBOT_OBJS (candidateP) {
 	if (candidateP->Index () == siP->nObject)
 		continue;
 	CFixVector vDir = OBJPOS (candidateP)->vPos - vPos;
