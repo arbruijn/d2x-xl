@@ -37,28 +37,28 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_EXCESS_OBJECTS 15
 
 // Object types
-#define OBJ_NONE        255 // unused CObject
-#define OBJ_WALL        0   // A CWall... not really an CObject, but used for collisions
-#define OBJ_FIREBALL    1   // a fireball, part of an explosion
-#define OBJ_ROBOT       2   // an evil enemy
-#define OBJ_HOSTAGE     3   // a hostage you need to rescue
-#define OBJ_PLAYER      4   // the player on the console
-#define OBJ_WEAPON      5   // a laser, missile, etc
-#define OBJ_CAMERA      6   // a camera to slew around with
-#define OBJ_POWERUP     7   // a powerup you can pick up
-#define OBJ_DEBRIS      8   // a piece of robot
-#define OBJ_REACTOR     9   // the control center
-#define OBJ_FLARE       10  // a flare
-#define OBJ_CLUTTER     11  // misc objects
-#define OBJ_GHOST       12  // what the player turns into when dead
-#define OBJ_LIGHT       13  // a light source, & not much else
-#define OBJ_COOP        14  // a cooperative player CObject.
-#define OBJ_MARKER      15  // a map marker
-#define OBJ_CAMBOT		16	 // a camera
-#define OBJ_MONSTERBALL	17	 // a monsterball
-#define OBJ_SMOKE			18	 // static smoke
-#define OBJ_EXPLOSION	19	 // static explosion particleEmitters
-#define OBJ_EFFECT		20	 // lightnings
+#define OBJ_NONE				255 // unused CObject
+#define OBJ_WALL				0   // A CWall... not really an CObject, but used for collisions
+#define OBJ_FIREBALL			1   // a fireball, part of an explosion
+#define OBJ_ROBOT				2   // an evil enemy
+#define OBJ_HOSTAGE			3   // a hostage you need to rescue
+#define OBJ_PLAYER			4   // the player on the console
+#define OBJ_WEAPON			5   // a laser, missile, etc
+#define OBJ_CAMERA			6   // a camera to slew around with
+#define OBJ_POWERUP			7   // a powerup you can pick up
+#define OBJ_DEBRIS			8   // a piece of robot
+#define OBJ_REACTOR			9   // the control center
+#define OBJ_FLARE				10  // a flare
+#define OBJ_CLUTTER			11  // misc objects
+#define OBJ_GHOST				12  // what the player turns into when dead
+#define OBJ_LIGHT				13  // a light source, & not much else
+#define OBJ_COOP				14  // a cooperative player CObject.
+#define OBJ_MARKER			15  // a map marker
+#define OBJ_CAMBOT			16	 // a camera
+#define OBJ_MONSTERBALL		17	 // a monsterball
+#define OBJ_SMOKE				18	 // static smoke
+#define OBJ_EXPLOSION		19	 // static explosion particleEmitters
+#define OBJ_EFFECT			20	 // lightnings
 
 // WARNING!! If you add a nType here, add its name to ObjectType_names
 // in CObject.c
