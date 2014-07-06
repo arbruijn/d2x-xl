@@ -539,10 +539,6 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 	}
 
 // successively sent all robot powerups just created (their count is in gameData.multigame.create.nCount)
-#if DBG
-if (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS)
-	delObjP->info.contains.nCount = MAX_ROBOT_POWERUPS;
-#endif
 while (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS)
 	OBJECTS [gameData.multigame.create.nObjNums [--gameData.multigame.create.nCount]].Die ();
 gameData.multigame.create.nCount = 0;
