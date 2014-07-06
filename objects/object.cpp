@@ -1910,6 +1910,7 @@ objP = Start ();
 
 CObject* CObjectIterator::Start (void)
 {
+m_nLink = Link ();
 return m_objP = Head ();
 }
 
@@ -1974,6 +1975,24 @@ CObject* CLightIterator::Head (void) { return gameData.objs.lists.lights.head; }
 CObject* CActorIterator::Head (void) { return gameData.objs.lists.actors.head; }
 
 CObject* CStaticObjectIterator::Head (void) { return gameData.objs.lists.statics.head; }
+
+//------------------------------------------------------------------------------
+
+CPlayerIterator::CPlayerIterator (CObject*& objP) { objP = Start (); }
+
+CRobotIterator::CRobotIterator (CObject*& objP) { objP = Start (); }
+
+CWeaponIterator::CWeaponIterator (CObject*& objP) { objP = Start (); }
+
+CPowerupIterator::CPowerupIterator (CObject*& objP) { objP = Start (); }
+
+CEffectIterator::CEffectIterator (CObject*& objP) { objP = Start (); }
+
+CLightIterator::CLightIterator (CObject*& objP) { objP = Start (); }
+
+CActorIterator::CActorIterator (CObject*& objP) { objP = Start (); }
+
+CStaticObjectIterator::CStaticObjectIterator (CObject*& objP) { objP = Start (); }
 
 //------------------------------------------------------------------------------
 

@@ -1418,55 +1418,55 @@ class CObjectIterator {
 
 class CPlayerIterator : public CObjectIterator {
 	public:
-		CPlayerIterator (CObject*& objP) : CObjectIterator (objP) {}
+		CPlayerIterator (CObject*& objP);
 		virtual CObject* Head (void);
 	};
 
 class CRobotIterator : public CObjectIterator {
 	public:
-		CRobotIterator (CObject*& objP) : CObjectIterator (objP) {}
+		CRobotIterator (CObject*& objP);
 		virtual CObject* Head (void);
 		virtual int32_t Link (void) { return 1; }
 	};
 
 class CWeaponIterator : public CObjectIterator {
 	public:
-		CWeaponIterator (CObject*& objP) : CObjectIterator (objP) {}
+		CWeaponIterator (CObject*& objP);
 		virtual CObject* Head (void);
 		virtual int32_t Link (void) { return 1; }
 	};
 
 class CPowerupIterator : public CObjectIterator {
 	public:
-		CPowerupIterator (CObject*& objP) : CObjectIterator (objP) {}
+		CPowerupIterator (CObject*& objP);
 		virtual CObject* Head (void);
 		virtual int32_t Link (void) { return 1; }
 	};
 
 class CEffectIterator : public CObjectIterator {
 	public:
-		CEffectIterator (CObject*& objP) : CObjectIterator (objP) {}
+		CEffectIterator (CObject*& objP);
 		virtual CObject* Head (void);
 		virtual int32_t Link (void) { return 1; }
 	};
 
 class CLightIterator : public CObjectIterator {
 	public:
-		CLightIterator (CObject*& objP) : CObjectIterator (objP) {}
+		CLightIterator (CObject*& objP);
 		virtual CObject* Head (void);
 		virtual int32_t Link (void) { return 1; }
 	};
 
 class CActorIterator : public CObjectIterator {
 	public:
-		CActorIterator (CObject*& objP) : CObjectIterator (objP) {}
+		CActorIterator (CObject*& objP);
 		virtual CObject* Head (void);
 		virtual int32_t Link (void) { return 2; }
 	};
 
 class CStaticObjectIterator : public CObjectIterator {
 	public:
-		CStaticObjectIterator (CObject*& objP) : CObjectIterator (objP) {}
+		CStaticObjectIterator (CObject*& objP);
 		virtual CObject* Head (void);
 		virtual int32_t Link (void) { return 2; }
 	};
