@@ -349,7 +349,7 @@ if (!CollisionModel () &&
 	fix dist = vDist.Mag ();
 	fix intrusion = (thisP->info.xSize + otherP->info.xSize) - dist;
 	if (intrusion > 0) {
-#if DBG
+#if 0 //DBG
 		HUDMessage (0, "Unsticking objects (dist = %1.2f)", X2F (dist));
 #endif
 		fix speed0 = f0.m_vVel.Mag ();

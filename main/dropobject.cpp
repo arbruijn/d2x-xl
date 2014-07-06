@@ -703,8 +703,10 @@ switch (nType) {
 				gameData.bosses.Add (nObject);
 			}
 		// At JasenW's request, robots which contain robots sometimes drop shield.
-		if (RandShort () > 16384)
+		if (RandShort () > 16384) {
+			AddAllowedPowerup (POW_SHIELD_BOOST);
 			DropPowerup (OBJ_POWERUP, POW_SHIELD_BOOST, -1, 1, vInitVel, vPos, nSegment);
+			}
 		break;
 
 	default:
@@ -723,7 +725,7 @@ int32_t ObjectCreateEgg (CObject *objP, bool bLocal, bool bUpdateLimits)
 if ((objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERUP)) {
 	if (IsMultiGame) {
 		if (bUpdateLimits)
-			AddAllowedPowerup (objP->info.contains.nId);
+			AddAllowedPowerup (objP->info.contains.nId, objP->info.contains.nCount);
 		}
 	else {
 		if (objP->info.contains.nId == POW_SHIELD_BOOST) {
