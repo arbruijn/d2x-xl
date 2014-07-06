@@ -1605,9 +1605,9 @@ extern CObject *dbgObjP;
 #	define FORALL_EFFECT_OBJS(_objP,_i)				FORALL_CLASS_OBJS (OBJ_EFFECT, _objP, _i)
 #	define IS_OBJECT(_objP, _i)						((_i) <= gameData.objs.nLastObject [0])
 #else
-#	define FORALL_OBJS(_objP,_i)							for ((_objP) = gameData.objs.lists.all.head; (_objP); (_objP) = (_objP)->Links (0).next)
-#	define FORALL_SUPERCLASS_OBJS(_list,_objP,_i)	for ((_objP) = (_list).head; (_objP); (_objP) = (_objP)->Links (2).next)
-#	define FORALL_CLASS_OBJS(_list,_objP,_i)			for ((_objP) = (_list).head; (_objP); (_objP) = (_objP)->Links (1).next)
+#	define FORALL_OBJS(_objP,_i)							for ((_objP) = gameData.objs.lists.all.head, (_i) = 0; (_objP) && !(_i); (_objP) = (_objP)->Links (0).next, (_i) += (_objP) == gameData.objs.lists.all.head)
+#	define FORALL_SUPERCLASS_OBJS(_list,_objP,_i)	for ((_objP) = (_list).head, (_i) = 0; (_objP) && !(_i); (_objP) = (_objP)->Links (2).next, (_i) += (_objP) == (_list).head)
+#	define FORALL_CLASS_OBJS(_list,_objP,_i)			for ((_objP) = (_list).head, (_i) = 0; (_objP) && !(_i); (_objP) = (_objP)->Links (1).next, (_i) += (_objP) == (_list).head)
 #	define FORALL_PLAYER_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.players, _objP, _i)
 #	define FORALL_ROBOT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.robots, _objP, _i)
 #	define FORALL_POWERUP_OBJS(_objP,_i)				FORALL_CLASS_OBJS (gameData.objs.lists.powerups, _objP, _i)

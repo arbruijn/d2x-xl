@@ -941,7 +941,12 @@ gameData.multigame.create.nCount = 0;
 nEggObj = ObjectCreateEgg (&delObjP);
 if (nEggObj == -1)
 	return; // Object buffer full
-Assert ((gameData.multigame.create.nCount > 0) && (gameData.multigame.create.nCount <= MAX_ROBOT_POWERUPS));
+#if DBG
+if (gameData.multigame.create.nCount > delObjP.info.contains.nCount)
+	BRP;
+while (gameData.multigame.create.nCount > delObjP.info.contains.nCount)
+	OBJECTS [gameData.multigame.create.nObjNums [gameData.multigame.create.nCount--]].Die ();
+#endif
 for (i = 0; i < gameData.multigame.create.nCount; i++) {
 	s = GET_INTEL_SHORT (buf + bufP);
 	if (s != -1)
