@@ -1398,6 +1398,8 @@ extern CObject Follow;
 class CObjectIterator {
 	public:
 		CObject*		m_objP;
+		int32_t		m_i;
+		int32_t		m_nSize;
 		int32_t		m_nLink;
 
 	public:
@@ -1406,6 +1408,7 @@ class CObjectIterator {
 
 		virtual CObject* Start (void);
 		virtual CObject* Head (void);
+		virtual int32_t Size (void);
 		virtual int32_t Link (void) { return 0; }
 		bool Done (void);
 		CObject* Next (void);
@@ -1420,12 +1423,15 @@ class CPlayerIterator : public CObjectIterator {
 	public:
 		CPlayerIterator (CObject*& objP);
 		virtual CObject* Head (void);
+		virtual int32_t Size (void);
+		virtual int32_t Link (void) { return 1; }
 	};
 
 class CRobotIterator : public CObjectIterator {
 	public:
 		CRobotIterator (CObject*& objP);
 		virtual CObject* Head (void);
+		virtual int32_t Size (void);
 		virtual int32_t Link (void) { return 1; }
 	};
 
@@ -1433,6 +1439,7 @@ class CWeaponIterator : public CObjectIterator {
 	public:
 		CWeaponIterator (CObject*& objP);
 		virtual CObject* Head (void);
+		virtual int32_t Size (void);
 		virtual int32_t Link (void) { return 1; }
 	};
 
@@ -1440,6 +1447,7 @@ class CPowerupIterator : public CObjectIterator {
 	public:
 		CPowerupIterator (CObject*& objP);
 		virtual CObject* Head (void);
+		virtual int32_t Size (void);
 		virtual int32_t Link (void) { return 1; }
 	};
 
@@ -1447,6 +1455,7 @@ class CEffectIterator : public CObjectIterator {
 	public:
 		CEffectIterator (CObject*& objP);
 		virtual CObject* Head (void);
+		virtual int32_t Size (void);
 		virtual int32_t Link (void) { return 1; }
 	};
 
@@ -1454,6 +1463,7 @@ class CLightIterator : public CObjectIterator {
 	public:
 		CLightIterator (CObject*& objP);
 		virtual CObject* Head (void);
+		virtual int32_t Size (void);
 		virtual int32_t Link (void) { return 1; }
 	};
 
@@ -1461,6 +1471,7 @@ class CActorIterator : public CObjectIterator {
 	public:
 		CActorIterator (CObject*& objP);
 		virtual CObject* Head (void);
+		virtual int32_t Size (void);
 		virtual int32_t Link (void) { return 2; }
 	};
 
@@ -1468,6 +1479,7 @@ class CStaticObjectIterator : public CObjectIterator {
 	public:
 		CStaticObjectIterator (CObject*& objP);
 		virtual CObject* Head (void);
+		virtual int32_t Size (void);
 		virtual int32_t Link (void) { return 2; }
 	};
 

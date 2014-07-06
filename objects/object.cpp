@@ -1913,6 +1913,7 @@ objP = Start ();
 CObject* CObjectIterator::Start (void)
 {
 m_nLink = Link ();
+m_nSize = Size ();
 return m_objP = Head ();
 }
 
@@ -1943,6 +1944,8 @@ CObject* CObjectIterator::Back (void)
 {
 if (m_objP)
 	m_objP = m_objP->Links (m_nLink).prev;
+if (m_i > 0)
+	m_i--;
 return m_objP;
 }
 
@@ -1953,8 +1956,8 @@ CObject* CObjectIterator::Step (void)
 if (Done ())
 	return NULL;
 m_objP = m_objP->Links (m_nLink).next;
-if (m_objP == Head ()) { // error! stop anyway
-	VerifyObjLists ();
+if (++m_i >= m_nSize) { // error! stop anyway
+	RebuildObjectLists ();
 	m_objP = NULL;
 	}
 return m_objP;
@@ -1979,6 +1982,28 @@ CObject* CActorIterator::Head (void) { return gameData.objs.lists.actors.head; }
 CObject* CStaticObjectIterator::Head (void) { return gameData.objs.lists.statics.head; }
 
 //------------------------------------------------------------------------------
+
+int32_t CPlayerIterator::Size (void) { return gameData.objs.lists.players.nObjects; }
+
+int32_t CRobotIterator::Size (void) { return gameData.objs.lists.robots.nObjects; }
+
+int32_t CWeaponIterator::Size (void) { return gameData.objs.lists.weapons.nObjects; }
+
+int32_t CPowerupIterator::Size (void) { return gameData.objs.lists.powerups.nObjects; }
+
+int32_t CEffectIterator::Size (void) { return gameData.objs.lists.effects.nObjects; }
+
+int32_t CLightIterator::Size (void) { return gameData.objs.lists.lights.nObjects; }
+
+int32_t CActorIterator::Size (void) { return gameData.objs.lists.actors.nObjects; }
+
+int32_t CStaticObjectIterator::Size (void) { return gameData.objs.lists.statics.nObjects; }
+
+//------------------------------------------------------------------------------
+// Despite doing the same as CObjectIterator::Start(), these c'tors are required
+// because they set the virtual function pointer table up before calling Start().
+// Just going via CObjectIterator's c'tor would mean that Start () would call
+// the Head () and Size () functions of CObjectIterator instead of the derived class.
 
 CPlayerIterator::CPlayerIterator (CObject*& objP) { objP = Start (); }
 
