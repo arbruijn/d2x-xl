@@ -1994,6 +1994,7 @@ objP = Start ();
 CObject* CObjectIterator::Start (void)
 {
 m_i = 0;
+m_objP = &OBJECTS [0];
 if (Match ())
 	return m_objP = (gameData.objs.nObjects > 0) ? &OBJECTS [0] : NULL;
 return Step ();
@@ -2036,21 +2037,21 @@ return m_objP = NULL;
 
 //------------------------------------------------------------------------------
 
-CPlayerIterator::CPlayerIterator (CObject*& objP) : CObjectIterator (objP) {}
+CPlayerIterator::CPlayerIterator (CObject*& objP) { objP = Start (); }
 
-CRobotIterator::CRobotIterator (CObject*& objP) : CObjectIterator (objP) {}
+CRobotIterator::CRobotIterator (CObject*& objP) { objP = Start (); }
 
-CWeaponIterator::CWeaponIterator (CObject*& objP) : CObjectIterator (objP) {}
+CWeaponIterator::CWeaponIterator (CObject*& objP) { objP = Start (); }
 
-CPowerupIterator::CPowerupIterator (CObject*& objP) : CObjectIterator (objP) {}
+CPowerupIterator::CPowerupIterator (CObject*& objP) { objP = Start (); }
 
-CEffectIterator::CEffectIterator (CObject*& objP) : CObjectIterator (objP) {}
+CEffectIterator::CEffectIterator (CObject*& objP) { objP = Start (); }
 
-CLightIterator::CLightIterator (CObject*& objP) : CObjectIterator (objP) {}
+CLightIterator::CLightIterator (CObject*& objP) { objP = Start (); }
 
-CActorIterator::CActorIterator (CObject*& objP) : CObjectIterator (objP) {}
+CActorIterator::CActorIterator (CObject*& objP) { objP = Start (); }
 
-CStaticObjectIterator::CStaticObjectIterator (CObject*& objP) : CObjectIterator (objP) {}
+CStaticObjectIterator::CStaticObjectIterator (CObject*& objP) { objP = Start (); }
 
 //	-----------------------------------------------------------------------------
 
