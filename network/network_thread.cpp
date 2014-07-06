@@ -66,7 +66,7 @@
 #define PROCLOCK 0
 
 #define CONCURRENT_SEND		0
-#define CONCURRENT_LISTEN	1
+#define CONCURRENT_LISTEN	0
 #define USE_PACKET_IDS		0
 
 #define MULTI_THREADED_NETWORKING 1 // set to 0 to have D2X-XL manage network traffic the old way
@@ -648,7 +648,12 @@ int32_t CNetworkThread::Listen (void)
 if (!toListen.Expired ())
 	return 0;
 #endif
-#if 1 // network reads all network packets independently of main thread
+
+#if 1
+if (!ListenInBackground ())
+	return 0;
+
+// network reads all network packets independently of main thread
 Cleanup ();
 // read all available network packets and append them to the end of the list of unprocessed network packets
 m_rxPacketQueue.Lock (true, __FUNCTION__);
@@ -711,7 +716,7 @@ return m_rxPacketQueue.Pop (false, bLock);
 
 int32_t CNetworkThread::GetPacketData (uint8_t* data)
 {
-if (!Available ())
+if (!ListenInBackground ())
 	return IpxGetPacketData (data);
 
 CNetworkPacket* packet = GetPacket ();
