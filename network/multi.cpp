@@ -3335,7 +3335,7 @@ void MultiSetRobotAI (void)
 
 int32_t MultiDeleteExtraObjects (void)
 {
-	int32_t 		nType, nnp = 0;
+	int32_t 	i, nType, nnp = 0;
 	CObject *objP;
 
 // Go through the CObject list and remove any objects not used in
@@ -3882,9 +3882,9 @@ else {
 
 void MultiRemoveGhostShips (void)
 {
-	uint8_t		bHaveObject [MAX_PLAYERS];
+	uint8_t	bHaveObject [MAX_PLAYERS];
 	CObject*	objP;
-//	int32_t		i;
+	int32_t	i;
 
 memset (bHaveObject, 0, sizeof (bHaveObject));
 FORALL_PLAYER_OBJS (objP, i) {

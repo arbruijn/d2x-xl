@@ -68,8 +68,8 @@ int32_t nEscortGoalText [MAX_ESCORT_GOALS] = {
 
 void InitBuddyForLevel (void)
 {
-	//int32_t		i;
-	CObject	*objP;
+	int32_t	i;
+	CObject*	objP;
 
 gameData.escort.bMayTalk = 0;
 gameData.escort.nObjNum = -1;
@@ -357,8 +357,8 @@ if ((gameData.escort.xLastMsgTime + I2X (1) < gameData.time.xGame) ||
 //	Return true if marker #id has been placed.
 int32_t MarkerExistsInMine (int32_t id)
 {
-	//int32_t		i;
-	CObject	*objP;
+	int32_t	i;
+	CObject*	objP;
 
 FORALL_OBJS (objP, i)
 	if ((objP->info.nType == OBJ_MARKER) && (objP->info.nId == id))
@@ -376,8 +376,8 @@ gameData.escort.bMsgsSuppressed = 0;
 if (!gameData.escort.bMayTalk) {
 	BuddyMayTalk ();
 	if (!gameData.escort.bMayTalk) {
-		//int32_t		i;
-		CObject	*objP;
+		int32_t	i;
+		CObject*	objP;
 
 		FORALL_ROBOT_OBJS (objP, i)
 			if (IS_GUIDEBOT (objP)) {
@@ -913,10 +913,10 @@ return 1;
 
 int32_t MaybeBuddyFireSmart (int16_t nObject)
 {
-	CObject	*objP = &OBJECTS [nObject];
-	CObject	*buddyObjP = &OBJECTS [gameData.escort.nObjNum];
+	CObject*	objP = &OBJECTS [nObject];
+	CObject*	buddyObjP = &OBJECTS [gameData.escort.nObjNum];
 	fix		dist;
-	int16_t		nWeaponObj;
+	int16_t	nWeaponObj;
 
 dist = CFixVector::Dist(buddyObjP->info.position.vPos, objP->info.position.vPos);
 if (dist > I2X (80))
@@ -937,8 +937,8 @@ return 1;
 
 void DoBuddyDudeStuff (void)
 {
-	//int16_t		i;
-	CObject	*objP;
+	int16_t	i;
+	CObject*	objP;
 
 if (!BuddyMayTalk ())
 	return;

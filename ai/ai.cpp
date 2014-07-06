@@ -144,7 +144,7 @@ FORALL_OBJS (objP, i)
 void DoAIFrameAll (void)
 {
 	int32_t		h, j;
-	//int32_t		i;
+	int32_t		i;
 	CObject	*objP;
 
 SetPlayerAwarenessAll ();

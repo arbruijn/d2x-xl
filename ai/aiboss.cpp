@@ -66,15 +66,15 @@ int32_t	maxSpewBots [NUM_D2_BOSSES] = {2, 1, 2, 3, 3, 3, 3, 3};
 //	If pos == NULL, pick random spot in CSegment.
 int32_t CObject::CreateGatedRobot (int16_t nSegment, uint8_t nObjId, CFixVector* vPos)
 {
-	int32_t			nObject, nTries = 5;
-	CObject		*objP;
-	CSegment		*segP = SEGMENTS + nSegment;
+	int32_t		nObject, nTries = 5;
+	CObject*		objP;
+	CSegment*	segP = SEGMENTS + nSegment;
 	CFixVector	vObjPos;
-	tRobotInfo	*botInfoP = &ROBOTINFO (nObjId);
-	int32_t			nBoss, count = 0;
-	//int32_t			i;
+	tRobotInfo*	botInfoP = &ROBOTINFO (nObjId);
+	int32_t		nBoss, count = 0;
+	int32_t		i;
 	fix			objsize = gameData.models.polyModels [0][botInfoP->nModel].Rad ();
-	uint8_t			default_behavior;
+	uint8_t		default_behavior;
 
 #if !DBG
 if (gameStates.app.bGameSuspended & SUSP_ROBOTS)
@@ -245,7 +245,7 @@ return 0;
 int32_t IsValidTeleportDest (CFixVector *vPos, int32_t nMinDist)
 {
 	CObject		*objP;
-	//int32_t			i;
+	int32_t		i;
 	CFixVector	vOffs;
 	fix			xDist;
 

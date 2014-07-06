@@ -538,9 +538,9 @@ return 1;
 
 void ValidateAllPaths (void)
 {
-	//int32_t				i;
-	CObject			*objP;
-	tAIStaticInfo	*aiP;
+	int32_t			i;
+	CObject*			objP;
+	tAIStaticInfo*	aiP;
 
 FORALL_ROBOT_OBJS (objP, i) {
 	aiP = &objP->cType.aiInfo;
@@ -1280,8 +1280,8 @@ else if (i > LEVEL_POINT_SEGS / 2) {
 //	Should be called at the start of each level.
 void AIResetAllPaths (void)
 {
-	//int32_t		i;
-	CObject	*objP = OBJECTS.Buffer ();
+	int32_t	i;
+	CObject*	objP = OBJECTS.Buffer ();
 
 FORALL_OBJS (objP, i)
 	if (objP->info.controlType == CT_AI) {

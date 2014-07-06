@@ -889,8 +889,8 @@ return &gameData.render.scene;
 
 CObject *FindEscort ()
 {
-//	int32_t 		i;
 	CObject	*objP = OBJECTS.Buffer ();
+	int32_t 		i;
 
 FORALL_ROBOT_OBJS (objP, i)
 	if (IS_GUIDEBOT (objP))
