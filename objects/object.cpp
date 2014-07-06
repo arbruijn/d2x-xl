@@ -445,7 +445,7 @@ if (bInitPlayer) {
 	}
 //gameData.objs.consoleP->Link ();
 gameData.objs.nObjects = 1;				//just the player
-ClaimObjectSlot (0);
+AllocObject (0);
 gameData.objs.nLastObject [0] = 0;
 }
 
