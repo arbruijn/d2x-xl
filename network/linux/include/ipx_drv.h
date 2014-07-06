@@ -85,10 +85,8 @@ struct ipx_driver {
 	int (*GetMyAddress)(void);
 	int (*OpenSocket)(ipx_socket_t *sk, int port);
 	void (*CloseSocket)(ipx_socket_t *mysock);
-	int (*SendPacket)(ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
-	                  uint8_t *data, int dataLen);
-	int (*ReceivePacket)(ipx_socket_t *s, char *buffer, int bufsize,
-	                     IPXRecvData_t *rec);
+	int (*SendPacket)(ipx_socket_t *mysock, IPXPacket_t *IPXHeader, uint8_t *data, int dataLen);
+	int (*ReceivePacket)(ipx_socket_t *s, char *buffer, int bufsize, IPXRecvData_t *rec);
 	int (*PacketReady)(ipx_socket_t *s);
 	void (*InitNetgameAuxData)(ipx_socket_t *s, uint8_t buf[]);
 	int (*HandleNetgameAuxData)(ipx_socket_t *s, const uint8_t buf[]);

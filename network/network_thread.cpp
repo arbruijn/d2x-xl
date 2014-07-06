@@ -238,7 +238,7 @@ Unlock (bLock, __FUNCTION__);
 
 //------------------------------------------------------------------------------
 
-int32_t CNetworkPacketQueue::Lock (bool bLock, char* pszCaller) 
+int32_t CNetworkPacketQueue::Lock (bool bLock, const char* pszCaller)
 { 
 if (!m_semaphore || !bLock)
 	return 0;
@@ -256,7 +256,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CNetworkPacketQueue::Unlock (bool bLock, char* pszCaller) 
+int32_t CNetworkPacketQueue::Unlock (bool bLock, const char* pszCaller)
 { 
 if (!m_semaphore || !bLock)
 	return 0;

@@ -188,8 +188,8 @@ class CNetworkPacketQueue {
 		CNetworkPacket* Get (void);
 		void Update (void);
 		void UpdateClientList (void);
-		int32_t Lock (bool bLock = true, char* pszCaller = NULL);
-		int32_t Unlock (bool bLock = true, char* pszCaller = NULL);
+		int32_t Lock (bool bLock = true, const char* pszCaller = NULL);
+		int32_t Unlock (bool bLock = true, const char* pszCaller = NULL);
 		bool Validate (void);
 		inline int32_t Length (void) { return m_nPackets; }
 		inline void SetType (int32_t nType) { m_nType = nType; }
