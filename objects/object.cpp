@@ -1860,6 +1860,67 @@ if (botInfoP->energyDrain && LOCALPLAYER.Energy ()) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+#if 1 || OBJ_LIST_ITERATOR
+
+//------------------------------------------------------------------------------
+
+CObject* CObjectIterator::Start (void)
+{
+return m_objP = Head ();
+}
+
+//------------------------------------------------------------------------------
+
+CObject* CObjectIterator::Head (void)
+{
+return gameData.objs.lists.all.head;
+}
+
+//------------------------------------------------------------------------------
+
+bool CObjectIterator::Done (void)
+{
+return m_objP == NULL;
+}
+
+//------------------------------------------------------------------------------
+
+CObject* CObjectIterator::Step (void)
+{
+if (Done ())
+	return NULL;
+m_objP = m_objP->Links (m_nLink).next;
+if (m_objP == Head ()) { // error! stop anyway
+	VerifyObjLists ();
+	m_objP = NULL;
+	}
+return m_objP;
+}
+
+//------------------------------------------------------------------------------
+
+CObject* CPlayerIterator::Head (void) { return gameData.objs.lists.players.head; }
+
+CObject* CRobotIterator::Head (void) { return gameData.objs.lists.robots.head; }
+
+CObject* CWeaponIterator::Head (void) { return gameData.objs.lists.weapons.head; }
+
+CObject* CPowerupIterator::Head (void) { return gameData.objs.lists.powerups.head; }
+
+CObject* CEffectIterator::Head (void) { return gameData.objs.lists.effects.head; }
+
+CObject* CLightIterator::Head (void) { return gameData.objs.lists.lights.head; }
+
+CObject* CActorIterator::Head (void) { return gameData.objs.lists.actors.head; }
+
+CObject* CStaticObjectIterator::Head (void) { return gameData.objs.lists.statics.head; }
+
+//------------------------------------------------------------------------------
+
+#else // OBJ_LIST_ITERATOR
+
+//------------------------------------------------------------------------------
+
 CObject* CObjectIterator::Start (void)
 {
 m_i = 0;
@@ -1886,6 +1947,10 @@ while (m_i < gameData.objs.nObjects) {
 	} 
 return NULL;
 }
+
+//------------------------------------------------------------------------------
+
+#endif // OBJ_LIST_ITERATOR
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------

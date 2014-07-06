@@ -739,8 +739,8 @@ typedef struct tShotInfo {
 
 typedef struct tObject : public tBaseObject {
 	tObjListLink	links [3];		// link into list of objects in same category (0: all, 1: same type, 2: same class)
-	uint8_t				nLinkedType;
-	uint8_t				nTracers;
+	uint8_t			nLinkedType;
+	uint8_t			nTracers;
 	fix				xCreationTime;
 	fix				xTimeLastHit;
 	tShotInfo		shots;
@@ -758,7 +758,8 @@ class CObjListLink {
 
 
 typedef struct tObjListRef {
-	CObject	*head, *tail;
+	CObject*		head;
+	CObject*		tail;
 	int16_t		nObjects;
 } __pack__ tObjListRef;
 
@@ -767,17 +768,17 @@ class CObjHitInfo {
 	public:
 		CFixVector		v [3];
 		time_t			t [3];
-		int32_t				i;
+		int32_t			i;
 };
 
 class CObjDamageInfo {
 	public:
 		fix				nHits [3];	// aim, drives, guns
 		bool				bCritical;
-		int32_t				nCritical;
-		int32_t				tCritical;	// time of last critical hit
-		int32_t				tShield;		// time of last non-critical hit
-		int32_t				tRepaired;
+		int32_t			nCritical;
+		int32_t			tCritical;	// time of last critical hit
+		int32_t			tShield;		// time of last non-critical hit
+		int32_t			tRepaired;
 };
 
 #define MAX_WEAPONS	100
@@ -1378,6 +1379,77 @@ extern CObject Follow;
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 
+#define OBJ_LIST_ITERATOR 1
+
+#if OBJ_LIST_ITERATOR
+
+class CObjectIterator {
+	public:
+		CObject*		m_objP;
+		int32_t		m_nLink;
+
+	public:
+		CObjectIterator () : m_objP (NULL), m_nLink (0) {}
+
+		virtual CObject* Start (void);
+		virtual CObject* Head (void);
+		virtual int32_t Link (void) { return 0; }
+		bool Done (void);
+		CObject*Step (void);
+		CObject* ObjP (void) { return (m_objP); }
+};
+
+//	-----------------------------------------------------------------------------
+
+class CPlayerIterator : public CObjectIterator {
+	public:
+		virtual CObject* Head (void);
+	};
+
+class CRobotIterator : public CObjectIterator {
+	public:
+		virtual CObject* Head (void);
+		virtual int32_t Link (void) { return 1; }
+	};
+
+class CWeaponIterator : public CObjectIterator {
+	public:
+		virtual CObject* Head (void);
+		virtual int32_t Link (void) { return 1; }
+	};
+
+class CPowerupIterator : public CObjectIterator {
+	public:
+		virtual CObject* Head (void);
+		virtual int32_t Link (void) { return 1; }
+	};
+
+class CEffectIterator : public CObjectIterator {
+	public:
+		virtual CObject* Head (void);
+		virtual int32_t Link (void) { return 1; }
+	};
+
+class CLightIterator : public CObjectIterator {
+	public:
+		virtual CObject* Head (void);
+		virtual int32_t Link (void) { return 1; }
+	};
+
+class CActorIterator : public CObjectIterator {
+	public:
+		virtual CObject* Head (void);
+		virtual int32_t Link (void) { return 2; }
+	};
+
+class CStaticObjectIterator : public CObjectIterator {
+	public:
+		virtual CObject* Head (void);
+		virtual int32_t Link (void) { return 2; }
+	};
+
+#else // OBJ_LIST_ITERATOR
+
 class CObjectIterator {
 	public:
 		CObject*		m_objP;
@@ -1404,6 +1476,11 @@ class CPlayerIterator : public CObjectIterator {
 class CRobotIterator : public CObjectIterator {
 	public:
 		virtual bool Match (void) { return (m_objP->Type () == OBJ_ROBOT); }
+};
+
+class CWeaponIterator : public CObjectIterator {
+	public:
+		virtual bool Match (void) { return (m_objP->Type () == OBJ_WEAPON); }
 };
 
 class CPowerupIterator : public CObjectIterator {
@@ -1436,6 +1513,36 @@ class CStaticObjectIterator : public CObjectIterator {
 			return (nType == OBJ_POWERUP) || (nType == OBJ_EFFECT) || (nType == OBJ_LIGHT); 
 		}
 };
+
+#endif // OBJ_LIST_ITERATOR
+
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+// cheap object list walking using macros
+
+#	define FORALL_OBJSi(_objP,_i)							for ((_objP) = OBJECTS.Buffer (), (_i) = 0; (_i) <= gameData.objs.nLastObject [0]; (_i)++, (_objP)++)
+#if 0
+#	define FORALL_CLASS_OBJS(_type,_objP,_i)			for ((_objP) = OBJECTS, (_i) = 0; i <= gameData.objs.nLastObject [0]; (_i)++, (_objP)++) if ((_objP)->info.nType == _type)
+#	define FORALL_ACTOR_OBJS(_objP,_i)					FORALL_CLASS_OBJS (OBJ_ROBOT, _objP, _i)
+#	define FORALL_POWERUP_OBJS(_objP,_i)				FORALL_CLASS_OBJS (OBJ_POWERUP, _objP, _i)
+#	define FORALL_WEAPON_OBJS(_objP,_i)					FORALL_CLASS_OBJS (OBJ_WEAPON, _objP, _i)
+#	define FORALL_EFFECT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (OBJ_EFFECT, _objP, _i)
+#	define IS_OBJECT(_objP, _i)							((_i) <= gameData.objs.nLastObject [0])
+#else
+#	define FORALL_OBJS(_objP,_i)							for ((_objP) = gameData.objs.lists.all.head, (_i) = 0; (_objP) && !(_i); (_objP) = (_objP)->Links (0).next, (_i) += (_objP) == gameData.objs.lists.all.head)
+#	define FORALL_SUPERCLASS_OBJS(_list,_objP,_i)	for ((_objP) = (_list).head, (_i) = 0; (_objP) && !(_i); (_objP) = (_objP)->Links (2).next, (_i) += (_objP) == (_list).head)
+#	define FORALL_CLASS_OBJS(_list,_objP,_i)			for ((_objP) = (_list).head, (_i) = 0; (_objP) && !(_i); (_objP) = (_objP)->Links (1).next, (_i) += (_objP) == (_list).head)
+#	define FORALL_PLAYER_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.players, _objP, _i)
+#	define FORALL_ROBOT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.robots, _objP, _i)
+#	define FORALL_POWERUP_OBJS(_objP,_i)				FORALL_CLASS_OBJS (gameData.objs.lists.powerups, _objP, _i)
+#	define FORALL_WEAPON_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.weapons, _objP, _i)
+#	define FORALL_EFFECT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.effects, _objP, _i)
+#	define FORALL_LIGHT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.lights, _objP, _i)
+#	define FORALL_ACTOR_OBJS(_objP,_i)					FORALL_SUPERCLASS_OBJS (gameData.objs.lists.actors, _objP, _i)
+#	define FORALL_STATIC_OBJS(_objP,_i)					FORALL_SUPERCLASS_OBJS (gameData.objs.lists.statics, _objP, _i)
+#	define IS_OBJECT(_objP, _i)							((_objP) != NULL)
+#endif
 
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
@@ -1658,29 +1765,6 @@ extern CObject *dbgObjP;
 #define DISABLE_COLLISION(type1, type2)	SET_COLLISION(type1, type2, RESULT_NOTHING)
 
 #define OBJECT_EXISTS(_objP)	 ((_objP) && !((_objP)->Flags() & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)))
-
-#	define FORALL_OBJSi(_objP,_i)						for ((_objP) = OBJECTS.Buffer (), (_i) = 0; (_i) <= gameData.objs.nLastObject [0]; (_i)++, (_objP)++)
-#if 0
-#	define FORALL_CLASS_OBJS(_type,_objP,_i)		for ((_objP) = OBJECTS, (_i) = 0; i <= gameData.objs.nLastObject [0]; (_i)++, (_objP)++) if ((_objP)->info.nType == _type)
-#	define FORALL_ACTOR_OBJS(_objP,_i)				FORALL_CLASS_OBJS (OBJ_ROBOT, _objP, _i)
-#	define FORALL_POWERUP_OBJS(_objP,_i)			FORALL_CLASS_OBJS (OBJ_POWERUP, _objP, _i)
-#	define FORALL_WEAPON_OBJS(_objP,_i)				FORALL_CLASS_OBJS (OBJ_WEAPON, _objP, _i)
-#	define FORALL_EFFECT_OBJS(_objP,_i)				FORALL_CLASS_OBJS (OBJ_EFFECT, _objP, _i)
-#	define IS_OBJECT(_objP, _i)						((_i) <= gameData.objs.nLastObject [0])
-#else
-#	define FORALL_OBJS(_objP,_i)							for ((_objP) = gameData.objs.lists.all.head, (_i) = 0; (_objP) && !(_i); (_objP) = (_objP)->Links (0).next, (_i) += (_objP) == gameData.objs.lists.all.head)
-#	define FORALL_SUPERCLASS_OBJS(_list,_objP,_i)	for ((_objP) = (_list).head, (_i) = 0; (_objP) && !(_i); (_objP) = (_objP)->Links (2).next, (_i) += (_objP) == (_list).head)
-#	define FORALL_CLASS_OBJS(_list,_objP,_i)			for ((_objP) = (_list).head, (_i) = 0; (_objP) && !(_i); (_objP) = (_objP)->Links (1).next, (_i) += (_objP) == (_list).head)
-#	define FORALL_PLAYER_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.players, _objP, _i)
-#	define FORALL_ROBOT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.robots, _objP, _i)
-#	define FORALL_POWERUP_OBJS(_objP,_i)				FORALL_CLASS_OBJS (gameData.objs.lists.powerups, _objP, _i)
-#	define FORALL_WEAPON_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.weapons, _objP, _i)
-#	define FORALL_EFFECT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.effects, _objP, _i)
-#	define FORALL_LIGHT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.lights, _objP, _i)
-#	define FORALL_ACTOR_OBJS(_objP,_i)					FORALL_SUPERCLASS_OBJS (gameData.objs.lists.actors, _objP, _i)
-#	define FORALL_STATIC_OBJS(_objP,_i)					FORALL_SUPERCLASS_OBJS (gameData.objs.lists.statics, _objP, _i)
-#	define IS_OBJECT(_objP, _i)							((_objP) != NULL)
-#endif
 
 //	-----------------------------------------------------------------------------------------------------------
 
