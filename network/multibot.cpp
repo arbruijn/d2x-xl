@@ -547,11 +547,15 @@ while (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS)
 	OBJECTS [gameData.multigame.create.nObjNums [--gameData.multigame.create.nCount]].Die ();
 gameData.multigame.create.nCount = 0;
 gameData.multigame.msg.buf [hBufP] = (uint8_t) delObjP->info.contains.nCount;
-for (int32_t i = 0; i < gameData.multigame.create.nCount; i++) {
+
+int32_t i;
+for (i = 0; i < gameData.multigame.create.nCount; i++) {
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP + 2 * i, gameData.multigame.create.nObjNums [i]); // bufP must always point to the start of the object data list here!
 	SetLocalObjNumMapping (gameData.multigame.create.nObjNums [i]);
 	}
-memset (gameData.multigame.msg.buf + bufP + 2 * gameData.multigame.create.nCount, -1, (MAX_ROBOT_POWERUPS - gameData.multigame.create.nCount) * sizeof (int16_t));
+for (; i < MAX_ROBOT_POWERUPS; i++) 
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP + 2 * i, gameData.multigame.create.nObjNums [i]); // bufP must always point to the start of the object data list here!
+
 MultiSendData (gameData.multigame.msg.buf, (gameStates.multi.nGameType == UDP_GAME) ? 31 : 27, 2);
 }
 
