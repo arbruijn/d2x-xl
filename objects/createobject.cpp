@@ -665,7 +665,7 @@ return nObject;
 //remove CObject from the world
 void ReleaseObject (int16_t nObject)
 {
-if ((nObject <= 0) || (nObject >= LEVEL_OBJECTS))
+if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
 	return;
 
 	int32_t nParent;
