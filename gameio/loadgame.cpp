@@ -263,9 +263,9 @@ for (CObjectIterator iter (objP); objP; ) {
 			bRelease = true;
 		}
 	if (bRelease) {
-		objP = iter.Back ();
+		CObject* prevObjP = iter.Back ();
 		ReleaseObject (objP->Index ());
-		objP = objP ? iter.Step () : iter.Start ();
+		objP = prevObjP ? iter.Step () : iter.Start ();
 		}
 	else
 		objP = iter.Step ();

@@ -1438,27 +1438,19 @@ FORALL_ROBOT_OBJS (objP)
 //if bClearAll is set, clear even proximity bombs
 void ClearTransientObjects (int32_t bClearAll)
 {
-#if OBJ_LIST_TYPE == 1
-	CObject *objP, *nextObjP;
+	CObject *objP;
 
 CWeaponIterator iter (objP);
 while (objP) {
-	nextObjP = iter.Step ();
 	if ((!(gameData.weapons.info [objP->info.nId].flags & WIF_PLACABLE) && (bClearAll || ((objP->info.nId != PROXMINE_ID) && (objP->info.nId != SMARTMINE_ID)))) ||
 			objP->info.nType == OBJ_FIREBALL ||	objP->info.nType == OBJ_DEBRIS || ((objP->info.nType != OBJ_NONE) && (objP->info.nFlags & OF_EXPLODING))) {
+		CObject* prevObjP = iter.Back ();
 		ReleaseObject (objP->Index ());
+		objP = prevObjP ? iter.Step () : iter.Start ();
 		}
-	objP = nextObjP;
+	else
+		objP = iter.Step ();
 	}
-#else
-for (int32_t i = gameData.objs.nObjects; i > 0;) {
-	CObject* objP = OBJECTS + gameData.objs.freeList [--i];
-	if ((!(gameData.weapons.info [objP->info.nId].flags & WIF_PLACABLE) && (bClearAll || ((objP->info.nId != PROXMINE_ID) && (objP->info.nId != SMARTMINE_ID)))) ||
-			objP->info.nType == OBJ_FIREBALL ||	objP->info.nType == OBJ_DEBRIS || ((objP->info.nType != OBJ_NONE) && (objP->info.nFlags & OF_EXPLODING))) {
-		ReleaseObject (objP->Index ());
-		}
-	}
-#endif
 }
 
 //------------------------------------------------------------------------------
