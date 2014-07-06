@@ -220,7 +220,7 @@ void NetworkSyncPlayer (tNetworkSyncInfo *syncInfoP)
 
 //OLD IPXSendPacketData (objBuf, 8, &syncInfoP->player [1].player.node);
 if (gameStates.multi.nGameType >= IPX_GAME)
-	networkThread.Send (objBuf, 8, syncInfoP->player [1].player.network.Network (), syncInfoP->player [1].player.network.Node ());
+	networkThread.Send (objBuf, (gameStates.multi.nGameType == UDP_GAME) ? 9 : 8, syncInfoP->player [1].player.network.Network (), syncInfoP->player [1].player.network.Node ());
 // Send sync packet which tells the player who he is and to start!
 NetworkSendRejoinSync (nPlayer, syncInfoP);
 
