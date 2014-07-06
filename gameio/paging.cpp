@@ -283,8 +283,8 @@ for (i = 0; i < 2; i++, robotIndex += 32) {
 
 void LoadObjectTextures (int32_t nType)
 {
-	//int32_t		i;
-	CObject	*objP;
+	CObject*	objP;
+	int32_t	i;
 
 FORALL_OBJS (objP, i)
 	if ((nType < 0) || (objP->info.nType == nType))

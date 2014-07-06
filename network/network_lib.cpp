@@ -340,8 +340,8 @@ return -1;
 
 void NetworkCountPowerupsInMine (void)
 {
- //int32_t 		i;
-  CObject	*objP;
+ int32_t 	i;
+  CObject*	objP;
 
 gameData.multiplayer.powerupsInMine.Clear (0);
 FORALL_POWERUP_OBJS (objP, i)

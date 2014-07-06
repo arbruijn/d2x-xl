@@ -207,9 +207,9 @@ Assert (gameData.objs.consoleP->info.nId == N_LOCALPLAYER);
 
 int32_t CountRobotsInLevel (void)
 {
-	int32_t robotCount = 0;
-	//int32_t 		i;
-	CObject	*objP;
+	int32_t	robotCount = 0;
+	int32_t 	i;
+	CObject*	objP;
 
 FORALL_ROBOT_OBJS (objP, i)
 	robotCount++;
@@ -220,9 +220,9 @@ return robotCount;
 
 int32_t CountHostagesInLevel (void)
 {
-	int32_t 		count = 0;
-	//int32_t 		i;
-	CObject	*objP;
+	int32_t 	count = 0;
+	int32_t 	i;
+	CObject*	objP;
 
 FORALL_STATIC_OBJS (objP, i)
 	if (objP->info.nType == OBJ_HOSTAGE)
@@ -621,8 +621,8 @@ if (LOCALPLAYER.timeTotal > I2X (3600)) {
 
 void SetVertigoRobotFlags (void)
 {
-	CObject	*objP;
-	//int32_t		i;
+	CObject*	objP;
+	int32_t	i;
 
 gameData.objs.nVertigoBotFlags = 0;
 FORALL_ROBOT_OBJS (objP, i)
@@ -2095,8 +2095,8 @@ if (bBash)
 
 void FilterObjectsFromLevel (void)
 {
-  //int32_t 		i;
-	CObject	*objP;
+	CObject*	objP;
+	int32_t	i;
 
 FORALL_POWERUP_OBJS (objP, i)
 	objP->BashToShield ((objP->info.nId == POW_REDFLAG) || (objP->info.nId == POW_BLUEFLAG));
@@ -2397,8 +2397,8 @@ objP->SetShield (RobotDefaultShield (objP));
 //	This function should be called at level load time.
 void CopyDefaultsToRobotsAll (void)
 {
-	//int32_t		i;
-	CObject	*objP;
+	CObject*	objP;
+	int32_t	i;
 
 FORALL_ROBOT_OBJS (objP, i)
 	CopyDefaultsToRobot (objP);
