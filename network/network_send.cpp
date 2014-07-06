@@ -521,6 +521,7 @@ networkData.thisPlayer.player.connected = missionManager.nCurrentLevel;
 networkData.bHaveSync = 0;
 if (networkData.nJoinState != 2)
 	networkData.syncInfo [0].objs.nFramesToSkip = 0;
+networkData.thisPlayer.nObjFramesToSkip = networkData.syncInfo [0].objs.nFramesToSkip;
 networkData.bTraceFrames = 1;
 ResetWalls (); // may have been changed by players transmitting game state changes like doors opening or exploding etc.
 if (gameStates.multi.nGameType >= IPX_GAME) {
