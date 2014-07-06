@@ -197,7 +197,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-int32_t CTracker::IsTracker (uint32_t addr, uint16_t port, char* msg)
+int32_t CTracker::IsTracker (uint32_t addr, uint16_t port, const char* msg)
 {
 if (msg) { 
 	if (!strcmp (msg, "FDescent Game Info Request"))

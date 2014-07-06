@@ -64,7 +64,7 @@ class CTracker {
 		int32_t RequestServerList (void);
 		int32_t ReceiveServerList (uint8_t *data);
 		void SetServerFromList (tServerList *psl, int32_t i, uint8_t* serverAddress);
-		int32_t IsTracker (uint32_t addr, uint16_t port, char* msg = NULL);
+		int32_t IsTracker (uint32_t addr, uint16_t port, const char* msg = NULL);
 		int32_t GetServerFromList (int32_t i, uint8_t* serverAddress);
 		int32_t CountActive (void);
 		int32_t ActiveCount (int32_t bQueryTrackers);
