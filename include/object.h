@@ -617,57 +617,57 @@ class CObjContainerInfo {
 //	-----------------------------------------------------------------------------
 
 typedef struct tObjectInfo {
-	int32_t     					nSignature;    // Every CObject ever has a unique nSignature...
-	uint8_t   					nType;         // what nType of CObject this is... robot, weapon, hostage, powerup, fireball
-	uint8_t   					nId;           // which form of CObject...which powerup, robot, etc.
+	int32_t     			nSignature;    // Every CObject ever has a unique nSignature...
+	uint8_t   				nType;         // what nType of CObject this is... robot, weapon, hostage, powerup, fireball
+	uint8_t   				nId;           // which form of CObject...which powerup, robot, etc.
 #ifdef WORDS_NEED_ALIGNMENT
-	int16_t   					pad;
+	int16_t   				pad;
 #endif
-	int16_t   					nNextInSeg,
+	int16_t   				nNextInSeg,
 								nPrevInSeg;		// id of next and previous connected CObject in Objects, -1 = no connection
-	uint8_t   					controlType;   // how this CObject is controlled
-	uint8_t   					movementType;  // how this CObject moves
-	uint8_t   					renderType;    // how this CObject renders
-	uint8_t   					nFlags;        // misc flags
-	int16_t						nSegment;
-	int16_t   					nAttachedObj;  // number of attached fireball CObject
+	uint8_t   				controlType;   // how this CObject is controlled
+	uint8_t   				movementType;  // how this CObject moves
+	uint8_t   				renderType;    // how this CObject renders
+	uint8_t   				nFlags;        // misc flags
+	int16_t					nSegment;
+	int16_t   				nAttachedObj;  // number of attached fireball CObject
 	tObjTransformation	position;
 	fix     					xSize;         // 3d size of CObject - for collision detection
 	fix     					xShield;      // Starts at maximum, when <0, CObject dies..
 	CFixVector 				vLastPos;		// where CObject was last frame
 	tObjContainerInfo		contains;
-	int8_t   					nCreator;		// Materialization center that created this CObject, high bit set if producer-created
+	int8_t   				nCreator;		// Materialization center that created this CObject, high bit set if producer-created
 	fix     					xLifeLeft;     // how long until goes away, or 7fff if immortal
 } __pack__ tObjectInfo;
 
 typedef union tObjMovementInfo {
-	tPhysicsInfo		physInfo;		// a physics CObject
-	CFixVector   		spinRate;		// for spinning objects
+	tPhysicsInfo			physInfo;		// a physics CObject
+	CFixVector   			spinRate;		// for spinning objects
 	} __pack__ tObjMovementInfo;
 
 typedef union tObjControlInfo {
-	tLaserInfo			laserInfo;
-	tExplosionInfo		explInfo;      // NOTE: debris uses this also
-	tAIStaticInfo		aiInfo;
-	tObjLightInfo		lightInfo;     // why put this here?  Didn't know what else to do with it.
-	tPowerupInfo		powerupInfo;
-	tWayPointInfo		wayPointInfo;
+	tLaserInfo				laserInfo;
+	tExplosionInfo			explInfo;      // NOTE: debris uses this also
+	tAIStaticInfo			aiInfo;
+	tObjLightInfo			lightInfo;     // why put this here?  Didn't know what else to do with it.
+	tPowerupInfo			powerupInfo;
+	tWayPointInfo			wayPointInfo;
 	} __pack__ tObjControlInfo;
 
 typedef union tObjRenderInfo {
-	tPolyObjInfo		polyObjInfo;   // polygon model
-	tVideoClipInfo		vClipInfo;     // tVideoClip
-	tParticleInfo		particleInfo;
-	tLightningInfo		lightningInfo;
-	tSoundInfo			soundInfo;
+	tPolyObjInfo			polyObjInfo;   // polygon model
+	tVideoClipInfo			vClipInfo;     // tVideoClip
+	tParticleInfo			particleInfo;
+	tLightningInfo			lightningInfo;
+	tSoundInfo				soundInfo;
 	} __pack__ tObjRenderInfo;
 
 // TODO get rid of the structs (former unions) and the union
 typedef struct tBaseObject {
-	tObjectInfo			info;
-	tObjMovementInfo	mType;	// movement info, determined by MOVEMENT_TYPE
-	tObjControlInfo	cType;	// control info, determined by CONTROL_TYPE
-	tObjRenderInfo		rType;	// render info, determined by RENDER_TYPE
+	tObjectInfo				info;
+	tObjMovementInfo		mType;	// movement info, determined by MOVEMENT_TYPE
+	tObjControlInfo		cType;	// control info, determined by CONTROL_TYPE
+	tObjRenderInfo			rType;	// render info, determined by RENDER_TYPE
 #ifdef WORDS_NEED_ALIGNMENT
 	int16_t   				nPad;
 #endif
@@ -728,17 +728,22 @@ class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public 
 
 struct tObject;
 
+#define OBJ_LIST_TYPE 0
+
 typedef struct tObjListLink {
-	tObject	*prev, *next;
+	tObject*			prev;
+	tObject*			next;
 } __pack__ tObjListLink;
 
 typedef struct tShotInfo {
-	int16_t					nObject;
-	int32_t					nSignature;
+	int16_t			nObject;
+	int32_t			nSignature;
 } __pack__ tShotInfo;
 
 typedef struct tObject : public tBaseObject {
+#if OBJ_LIST_TYPE
 	tObjListLink	links [3];		// link into list of objects in same category (0: all, 1: same type, 2: same class)
+#endif
 	uint8_t			nLinkedType;
 	uint8_t			nTracers;
 	fix				xCreationTime;
@@ -791,7 +796,7 @@ class CObjDamageInfo {
 
 class CPositionSnapshot {
 	public:
-		uint8_t			bIdleAnimation;
+		uint8_t		bIdleAnimation;
 		fix			xTime;
 		CFixVector	vPos;
 };
@@ -800,8 +805,8 @@ class CPositionSnapshot {
 
 class CPositionTracker {
 	public:
-		int32_t					m_nCurPos;
-		int32_t					m_nPosCount;
+		int32_t		m_nCurPos;
+		int32_t		m_nPosCount;
 		CPositionSnapshot m_positions [POSTRACK_MAXFRAMES];
 
 		CPositionTracker () : m_nCurPos (0), m_nPosCount (0) {}
@@ -814,7 +819,7 @@ class CPositionTracker {
 class CObject : public CObjectInfo {
 	private:
 		static CArray<uint16_t>	m_weaponInfo;
-		static CArray<uint8_t>		m_bIsEquipment; 
+		static CArray<uint8_t>	m_bIsEquipment; 
 
 	public:
 		static void InitTables (void);
@@ -844,20 +849,22 @@ class CObject : public CObjectInfo {
 		inline bool Reprogrammed (void) { return (m_nAttackRobots >= ROBOT_IS_FRIENDLY); }
 
 	private:
-		int16_t				m_nKey;
+		int16_t			m_nKey;
 		CObject*			m_prev;
 		CObject*			m_next;
 		CObject*			m_target;
+#if OBJ_LIST_TYPE
 		CObjListLink	m_links [3]; // link into list of objects in same category (0: all, 1: same type, 2: same class)
-		uint8_t				m_nLinkedType;
-		uint8_t				m_nTracers;
+		uint8_t			m_nLinkedType;
+#endif
+		uint8_t			m_nTracers;
 		fix				m_xCreationTime;
 		fix				m_xMoveTime; // move object explosions out of their origin towards the viewer during the explosion's life time
 		fix				m_xMoveDist;
 		fix				m_xTimeLastHit;
 		fix				m_xTimeLastEffect;
 		fix				m_xTimeEnergyDrain;
-		int32_t				m_nAttackRobots;
+		int32_t			m_nAttackRobots;
 		tShotInfo		m_shots;
 		CFixVector		m_vStartVel;
 		CFixVector		m_vOrigin;
@@ -867,8 +874,8 @@ class CObject : public CObjectInfo {
 		bool				m_bMultiplayer;
 		bool				m_bRotate;
 		bool				m_bSynchronize;
-		int32_t				m_nFrame;
-		int32_t				m_bIgnore [2]; // ignore this object (physics: type = 0, pickup powerup: type = 1)
+		int32_t			m_nFrame;
+		int32_t			m_bIgnore [2]; // ignore this object (physics: type = 0, pickup powerup: type = 1)
 #if DBG
 		CPositionTracker	m_posTracker;
 #endif
@@ -899,6 +906,16 @@ class CObject : public CObjectInfo {
 #if DBG
 		bool IsInList (tObjListRef& ref, int32_t nLink);
 #endif
+#if OBJ_LIST_TYPE == 1
+		inline void ResetLinks (void) {
+			memset (m_links, 0, sizeof (m_links));
+			m_nLinkedType = OBJ_NONE;
+			}
+		inline CObjListLink& Links (uint32_t i) { return m_links [i]; }
+		inline uint8_t LinkedType (void) { return m_nLinkedType; }
+		inline void SetLinkedType (uint8_t nLinkedType) { m_nLinkedType = nLinkedType; }
+		inline void InitLinks (void) { memset (m_links, 0, sizeof (m_links)); }
+#endif
 		void SetType (uint8_t nNewType, bool bLink = true);
 		void ResetSgmLinks (void) { info.nNextInSeg = info.nPrevInSeg = info.nSegment = -1; }
 		void LinkToSeg (int32_t nSegment);
@@ -912,12 +929,6 @@ class CObject : public CObjectInfo {
 		inline int16_t Key (void) { return m_nKey; }
 		inline CObject* Prev (void) { return m_prev; }
 		inline CObject* Next (void) { return m_next; }
-		inline void ResetLinks (void) {
-			memset (m_links, 0, sizeof (m_links));
-			m_nLinkedType = OBJ_NONE;
-			}
-		inline CObjListLink& Links (uint32_t i) { return m_links [i]; }
-		inline uint8_t LinkedType (void) { return m_nLinkedType; }
 		inline uint8_t Tracers (void) { return m_nTracers; }
 		inline fix CreationTime (void) { return m_xCreationTime; }
 		inline fix TimeLastHit (void) { return m_xTimeLastHit; }
@@ -929,7 +940,6 @@ class CObject : public CObjectInfo {
 		inline void SetKey (int16_t nKey) { m_nKey = nKey; }
 		inline void SetPrev (CObject* prev) { m_prev = prev; }
 		inline void SetNext (CObject* next) { m_next = next; }
-		inline void SetLinkedType (uint8_t nLinkedType) { m_nLinkedType = nLinkedType; }
 		inline void SetTracers (uint8_t nTracers) { m_nTracers = nTracers; }
 		void SetCreationTime (fix xCreationTime = -1);
 		fix LifeTime (void);
@@ -960,7 +970,6 @@ class CObject : public CObjectInfo {
 		inline void SetLife (fix xLife) { info.xLifeLeft = xLife; }
 #endif
 		inline fix LifeLeft (void) { return info.xLifeLeft; }
-		inline void InitLinks (void) { memset (m_links, 0, sizeof (m_links)); }
 
 		inline int32_t& WayPointId (void) { return cType.wayPointInfo.nId [1]; }
 		inline int32_t& NextWayPoint (void) { return cType.wayPointInfo.nSuccessor [0]; }
@@ -1293,14 +1302,14 @@ class CParticleObject : public CObject, public CSmokeInfo {
 
 typedef struct tObjPosition {
 	tObjTransformation	position;
-	int16_t						nSegment;     // CSegment number containing CObject
-	int16_t						nSegType;		// nType of CSegment
+	int16_t					nSegment;     // CSegment number containing CObject
+	int16_t					nSegType;		// nType of CSegment
 } tObjPosition;
 
 class CObjPosition : public CObjTransformation {
 	private:
-		int16_t		m_nSegment;
-		int16_t		m_nSegType;
+		int16_t				m_nSegment;
+		int16_t				m_nSegType;
 	public:
 		inline int16_t& Segment () { return m_nSegment; }
 		inline int16_t& SegType () { return m_nSegType; }
@@ -1310,11 +1319,11 @@ class CObjPosition : public CObjTransformation {
 
 typedef struct tWindowRenderedData {
 	int32_t     nFrame;
-	CObject *viewerP;
+	CObject*		viewerP;
 	int32_t     bRearView;
 	int32_t     nUser;
 	int32_t     nObjects;
-	int16_t   renderedObjects [MAX_RENDERED_OBJECTS];
+	int16_t		renderedObjects [MAX_RENDERED_OBJECTS];
 } tWindowRenderedData;
 
 class WIndowRenderedData {
@@ -1379,12 +1388,9 @@ extern CObject Follow;
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 
-#define OBJ_ITERATORS		1
-#define OBJ_LIST_ITERATOR	1
+#define OBJ_ITERATOR_TYPE	1 && OBJ_LIST_TYPE
 
-#if OBJ_ITERATORS
-
-#if OBJ_LIST_ITERATOR
+#if OBJ_ITERATOR_TYPE
 
 //	-----------------------------------------------------------------------------
 
@@ -1402,7 +1408,7 @@ class CObjectIterator {
 		virtual int32_t Link (void) { return 0; }
 		bool Done (void);
 		CObject*Step (void);
-		CObject* ObjP (void) { return (m_objP); }
+		CObject* Current (void) { return (m_objP); }
 };
 
 //	-----------------------------------------------------------------------------
@@ -1470,12 +1476,13 @@ class CObjectIterator {
 		int32_t		m_i;
 
 	public:
-		CObjectIterator () : m_objP (NULL), m_i (0) {}
+		CObjectIterator ();
+		CObjectIterator (CObject*& objP);
 
 		CObject* Start (void);
 		bool Done (void);
 		CObject*Step (void);
-		CObject* ObjP (void) { return (m_objP); }
+		CObject* Current (void) { return (m_objP); }
 		int32_t Index (void) { return m_i; }
 		virtual bool Match (void) { return true; }
 };
@@ -1484,36 +1491,43 @@ class CObjectIterator {
 
 class CPlayerIterator : public CObjectIterator {
 	public:
+		CPlayerIterator (CObject*& objP);
 		virtual bool Match (void) { return (m_objP->Type () == OBJ_PLAYER) || (m_objP->Type () == OBJ_GHOST); }
 };
 
 class CRobotIterator : public CObjectIterator {
 	public:
+		CRobotIterator (CObject*& objP);
 		virtual bool Match (void) { return (m_objP->Type () == OBJ_ROBOT); }
 };
 
 class CWeaponIterator : public CObjectIterator {
 	public:
+		CWeaponIterator (CObject*& objP);
 		virtual bool Match (void) { return (m_objP->Type () == OBJ_WEAPON); }
 };
 
 class CPowerupIterator : public CObjectIterator {
 	public:
+		CPowerupIterator (CObject*& objP);
 		virtual bool Match (void) { return (m_objP->Type () == OBJ_POWERUP); }
 };
 
 class CEffectIterator : public CObjectIterator {
 	public:
+		CEffectIterator (CObject*& objP);
 		virtual bool Match (void) { return (m_objP->Type () == OBJ_EFFECT); }
 };
 
 class CLightIterator : public CObjectIterator {
 	public:
+		CLightIterator (CObject*& objP);
 		virtual bool Match (void) { return (m_objP->Type () == OBJ_LIGHT); }
 };
 
 class CActorIterator : public CObjectIterator {
 	public:
+		CActorIterator (CObject*& objP);
 		virtual bool Match (void) { 
 			uint8_t nType = m_objP->Type ();
 			return (nType == OBJ_PLAYER) || (nType == OBJ_GHOST) || (nType == OBJ_ROBOT) || (nType == OBJ_REACTOR) || (nType == OBJ_WEAPON) || (nType == OBJ_MONSTERBALL); 
@@ -1522,6 +1536,7 @@ class CActorIterator : public CObjectIterator {
 
 class CStaticObjectIterator : public CObjectIterator {
 	public:
+		CStaticObjectIterator (CObject*& objP);
 		virtual bool Match (void) { 
 			uint8_t nType = m_objP->Type ();
 			return (nType == OBJ_POWERUP) || (nType == OBJ_EFFECT) || (nType == OBJ_LIGHT); 
@@ -1530,52 +1545,20 @@ class CStaticObjectIterator : public CObjectIterator {
 
 #endif // OBJ_LIST_ITERATOR
 
-#define FORALL_OBJS(_objP,_i)							for (CObjectIterator objIter ((_objP)); !objIter.Done (); (_objP) = objIter.Step ())
-#define FORALL_PLAYER_OBJS(_objP,_i)				for (CPlayerIterator playerIter ((_objP)); !playerIter.Done (); (_objP) = playerIter.Step ())
-#define FORALL_ROBOT_OBJS(_objP,_i)					for (CRobotIterator robotIter ((_objP)); !robotIter.Done (); (_objP) = robotIter.Step ())
-#define FORALL_WEAPON_OBJS(_objP,_i)				for (CWeaponIterator weaponIter ((_objP)); !weaponIter.Done (); (_objP) = weaponIter.Step ())
-#define FORALL_POWERUP_OBJS(_objP,_i)				for (CPowerupIterator powerIter ((_objP)); !powerIter.Done (); (_objP) = powerIter.Step ())
-#define FORALL_EFFECT_OBJS(_objP,_i)				for (CEffectIterator effectIter ((_objP)); !effectIter.Done (); (_objP) = effectIter.Step ())
-#define FORALL_LIGHT_OBJS(_objP,_i)					for (CLightIterator lightIter ((_objP)); !lightIter.Done (); (_objP) = lightIter.Step ())
-#define FORALL_ACTOR_OBJS(_objP,_i)					for (CActorIterator actorIter ((_objP)); !actorIter.Done (); (_objP) = actorIter.Step ())
-#define FORALL_STATIC_OBJS(_objP,_i)				for (CStaticObjectIterator staticsIter ((_objP)); !staticsIter.Done (); (_objP) = staticsIter.Step ())
+#define FORALL_OBJS(_objP)								for (CObjectIterator objIter ((_objP)); !objIter.Done (); (_objP) = objIter.Step ())
+#define FORALL_PLAYER_OBJS(_objP)					for (CPlayerIterator playerIter ((_objP)); !playerIter.Done (); (_objP) = playerIter.Step ())
+#define FORALL_ROBOT_OBJS(_objP)						for (CRobotIterator robotIter ((_objP)); !robotIter.Done (); (_objP) = robotIter.Step ())
+#define FORALL_WEAPON_OBJS(_objP)					for (CWeaponIterator weaponIter ((_objP)); !weaponIter.Done (); (_objP) = weaponIter.Step ())
+#define FORALL_POWERUP_OBJS(_objP)					for (CPowerupIterator powerIter ((_objP)); !powerIter.Done (); (_objP) = powerIter.Step ())
+#define FORALL_EFFECT_OBJS(_objP)					for (CEffectIterator effectIter ((_objP)); !effectIter.Done (); (_objP) = effectIter.Step ())
+#define FORALL_LIGHT_OBJS(_objP)						for (CLightIterator lightIter ((_objP)); !lightIter.Done (); (_objP) = lightIter.Step ())
+#define FORALL_ACTOR_OBJS(_objP)						for (CActorIterator actorIter ((_objP)); !actorIter.Done (); (_objP) = actorIter.Step ())
+#define FORALL_STATIC_OBJS(_objP)					for (CStaticObjectIterator staticsIter ((_objP)); !staticsIter.Done (); (_objP) = staticsIter.Step ())
 
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 
-#else // OBJ_ITERATORS
-
-// cheap object list walking using macros
-
-#	define FORALL_OBJSi(_objP,_i)							for ((_objP) = OBJECTS.Buffer (), (_i) = 0; (_i) <= gameData.objs.nLastObject [0]; (_i)++, (_objP)++)
-#if 0
-#	define FORALL_CLASS_OBJS(_type,_objP,_i)			for ((_objP) = OBJECTS, (_i) = 0; i <= gameData.objs.nLastObject [0]; (_i)++, (_objP)++) if ((_objP)->info.nType == _type)
-#	define FORALL_ACTOR_OBJS(_objP,_i)					FORALL_CLASS_OBJS (OBJ_ROBOT, _objP, _i)
-#	define FORALL_POWERUP_OBJS(_objP,_i)				FORALL_CLASS_OBJS (OBJ_POWERUP, _objP, _i)
-#	define FORALL_WEAPON_OBJS(_objP,_i)					FORALL_CLASS_OBJS (OBJ_WEAPON, _objP, _i)
-#	define FORALL_EFFECT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (OBJ_EFFECT, _objP, _i)
-#	define IS_OBJECT(_objP, _i)							((_i) <= gameData.objs.nLastObject [0])
-#else
-#	define FORALL_OBJS(_objP,_i)							for ((_objP) = gameData.objs.lists.all.head, (_i) = 0; (_objP) && !(_i); (_objP) = (_objP)->Links (0).next, (_i) += (_objP) == gameData.objs.lists.all.head)
-#	define FORALL_SUPERCLASS_OBJS(_list,_objP,_i)	for ((_objP) = (_list).head, (_i) = 0; (_objP) && !(_i); (_objP) = (_objP)->Links (2).next, (_i) += (_objP) == (_list).head)
-#	define FORALL_CLASS_OBJS(_list,_objP,_i)			for ((_objP) = (_list).head, (_i) = 0; (_objP) && !(_i); (_objP) = (_objP)->Links (1).next, (_i) += (_objP) == (_list).head)
-#	define FORALL_PLAYER_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.players, _objP, _i)
-#	define FORALL_ROBOT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.robots, _objP, _i)
-#	define FORALL_POWERUP_OBJS(_objP,_i)				FORALL_CLASS_OBJS (gameData.objs.lists.powerups, _objP, _i)
-#	define FORALL_WEAPON_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.weapons, _objP, _i)
-#	define FORALL_EFFECT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.effects, _objP, _i)
-#	define FORALL_LIGHT_OBJS(_objP,_i)					FORALL_CLASS_OBJS (gameData.objs.lists.lights, _objP, _i)
-#	define FORALL_ACTOR_OBJS(_objP,_i)					FORALL_SUPERCLASS_OBJS (gameData.objs.lists.actors, _objP, _i)
-#	define FORALL_STATIC_OBJS(_objP,_i)					FORALL_SUPERCLASS_OBJS (gameData.objs.lists.statics, _objP, _i)
-#	define IS_OBJECT(_objP, _i)							((_objP) != NULL)
-#endif
-
-#endif // OBJ_ITERATORS
-
-//	-----------------------------------------------------------------------------
-//	-----------------------------------------------------------------------------
-//	-----------------------------------------------------------------------------
 /*
  * FUNCTIONS
  */

@@ -244,10 +244,9 @@ return (fDmg > 1.0f) ? 1.0f : (fDmg < 0.0f) ? 0.0f : fDmg;
 //set viewerP CObject to next CObject in array
 void ObjectGotoNextViewer (void)
 {
-	int32_t 	i;
 	CObject*	objP;
 
-FORALL_OBJS (objP, i) {
+FORALL_OBJS (objP) {
 	if (objP->info.nType != OBJ_NONE) {
 		gameData.objs.viewerP = objP;
 		return;
@@ -262,10 +261,9 @@ void ObjectGotoPrevViewer (void)
 {
 	CObject*	objP;
 	int32_t 	nStartObj = 0;
-	int32_t	i;
 
 nStartObj = OBJ_IDX (gameData.objs.viewerP);		//get viewerP CObject number
-FORALL_OBJS (objP, i) {
+FORALL_OBJS (objP) {
 	if (--nStartObj < 0)
 		nStartObj = gameData.objs.nLastObject [0];
 	if (OBJECTS [nStartObj].info.nType != OBJ_NONE) {
@@ -281,10 +279,9 @@ Error ("Couldn't find a viewerP CObject!");
 
 CObject *ObjFindFirstOfType (int32_t nType)
 {
-	int32_t	i;
 	CObject*	objP;
 
-FORALL_OBJS (objP, i)
+FORALL_OBJS (objP)
 	if (objP->info.nType == nType)
 		return (objP);
 return reinterpret_cast<CObject*> (NULL);
@@ -295,10 +292,9 @@ return reinterpret_cast<CObject*> (NULL);
 int32_t ObjReturnNumOfType (int32_t nType)
 {
 	int32_t	count = 0;
-	int32_t	i;
 	CObject*	objP;
 
-FORALL_OBJS (objP, i)
+FORALL_OBJS (objP)
 	if (objP->info.nType == nType)
 		count++;
 return count;
@@ -309,10 +305,9 @@ return count;
 int32_t ObjReturnNumOfTypeAndId (int32_t nType, int32_t id)
 {
 	int32_t	count = 0;
-	int32_t	i;
 	CObject*	objP;
 
-FORALL_OBJS (objP, i)
+FORALL_OBJS (objP)
 	if ((objP->info.nType == nType) && (objP->info.nId == id))
 	 count++;
  return count;
@@ -396,7 +391,9 @@ cType.explInfo.attached.nParent =
 info.nAttachedObj = -1;
 info.nFlags = 0;
 ResetSgmLinks ();
+#if OBJ_LIST_TYPE == 1
 ResetLinks ();
+#endif
 m_shots.nObject = -1;
 m_shots.nSignature = -1;
 m_xCreationTime =
@@ -425,11 +422,17 @@ return false;
 //sets up the free list, init player data etc.
 void InitObjects (bool bInitPlayer)
 {
+
+#if OBJ_LIST_TYPE == 1
 CObject* objP, * nextObjP = NULL;
 for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->Links (0).next;
 	ReleaseObject (objP->Index ());
 	}
+#else
+while (gameData.objs.nObjects)
+	ReleaseObject (gameData.objs.freeList [0]);
+#endif
 CollideInit ();
 ResetSegObjLists ();
 gameData.objs.lists.Init ();
@@ -460,7 +463,9 @@ Assert (OBJECTS [0].info.nType != OBJ_NONE);		//0 should be used
 
 CObject* objP = &OBJECTS [0];
 for (int32_t i = gameData.objs.nLastObject [0]; i; i--, objP++) {
+#if OBJ_LIST_TYPE == 1
 	objP->InitLinks ();
+#endif
 	if (objP->info.nType < MAX_OBJECT_TYPES) {
 		ClaimObjectSlot (objP->Index ()); // allocate object list entry #i - should always work here
 		objP->Link ();
@@ -479,7 +484,7 @@ for (nObject = SEGMENTS [nSegment].m_objects; nObject != -1; nObject = OBJECTS [
 		Int3 ();
 		return count;
 		}
-	if (nObject==objn)
+	if (nObject == objn)
 		count++;
 	}
  return count;
@@ -530,10 +535,9 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++)
 int32_t CheckDuplicateObjects (void)
 {
 	int32_t	count = 0;
-	int32_t	i;
 	CObject*	objP;
 
-FORALL_OBJS (objP, i) {
+FORALL_OBJS (objP) {
 	if (objP->info.nType != OBJ_NONE) {
 		count = SearchAllSegsForObject (objP->Index ());
 		if (count > 1) {
@@ -580,10 +584,9 @@ for (int32_t i = 0; i < LEVEL_SEGMENTS; i++)
 
 void LinkAllObjsToSegs (void)
 {
-	int32_t	i;
 	CObject*	objP;
 
-FORALL_OBJS (objP, i)
+FORALL_OBJS (objP)
 	objP->LinkToSeg (objP->info.nSegment);
 }
 
@@ -762,7 +765,9 @@ if (objP->info.nType != OBJ_NONE)
 #endif
 memset (objP, 0, sizeof (*objP));
 objP->info.nType = OBJ_NONE;
+#if OBJ_LIST_TYPE == 1
 objP->SetLinkedType (OBJ_NONE);
+#endif
 objP->SetAttackMode (ROBOT_IS_HOSTILE);
 objP->info.nAttachedObj =
 objP->cType.explInfo.attached.nNext =
@@ -779,12 +784,16 @@ return nObject;
 
 bool CObject::IsInList (tObjListRef& ref, int32_t nLink)
 {
+#if OBJ_LIST_TYPE == 1
 	CObject	*listObjP;
 
 for (listObjP = ref.head; listObjP; listObjP = listObjP->m_links [nLink].next)
 	if (listObjP == this)
 		return true;
 return false;
+#else
+return true;
+#endif
 }
 
 #endif
@@ -793,6 +802,7 @@ return false;
 
 void CObject::Link (tObjListRef& ref, int32_t nLink)
 {
+#if OBJ_LIST_TYPE == 1
 	CObjListLink& link = m_links [nLink];
 
 link.prev = ref.tail;
@@ -802,12 +812,14 @@ else
 	ref.head = this;
 ref.tail = this;
 ref.nObjects++;
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void RebuildObjectLists (void)
 {
+#if OBJ_LIST_TYPE == 1
 	static bool bRebuilding = false;
 
 if (bRebuilding)
@@ -829,12 +841,14 @@ for (int32_t nObject = gameData.objs.nLastObject [0]; nObject; nObject--, objP++
 		}
 	}
 bRebuilding = false;
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CObject::Unlink (tObjListRef& ref, int32_t nLink)
 {
+#if OBJ_LIST_TYPE == 1
 	CObjListLink& link = m_links [nLink];
 	bool bRebuild = false;
 
@@ -885,6 +899,7 @@ if (bRebuild) { //this actually means the list is corrupted -> rebuild all objec
 	}
 else 
 	link.prev = link.next = NULL;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -895,6 +910,7 @@ int32_t VerifyObjLists (int32_t nObject = -1);
 
 int32_t VerifyObjLists (int32_t nObject)
 {
+#if OBJ_LIST_TYPE == 1
 	CObject* refObjP = (nObject < 0) ? NULL : gameData.Object (nObject);
 	CObject* objP, * firstObjP = gameData.objs.lists.all.head;
 	int32_t		i = 0;
@@ -924,6 +940,9 @@ if (refObjP == NULL)
 	return 1;
 RebuildObjectLists ();
 return 0;
+#else
+return 1;
+#endif
 }
 
 #endif
@@ -932,6 +951,7 @@ return 0;
 
 void CObject::Link (void)
 {
+#if OBJ_LIST_TYPE == 1
 	uint8_t nType = info.nType;
 
 Unlink (true);
@@ -968,12 +988,14 @@ else if (nType != OBJ_REACTOR) {
 		}
 	}
 Link (gameData.objs.lists.actors, 2);
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CObject::Unlink (bool bForce)
 {
+#if OBJ_LIST_TYPE == 1
 	uint8_t nType = m_nLinkedType;
 
 if (bForce || (nType != OBJ_NONE)) {
@@ -1003,12 +1025,14 @@ if (bForce || (nType != OBJ_NONE)) {
 		}
 	Unlink (gameData.objs.lists.actors, 2);
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CObject::SetType (uint8_t nNewType, bool bLink)
 {
+#if OBJ_LIST_TYPE == 1
 if (info.nType != nNewType) {
 	if (bLink)
 		Unlink ();
@@ -1016,6 +1040,9 @@ if (info.nType != nNewType) {
 	if (bLink)
 		Link ();
 	}
+#else
+info.nType = nNewType;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1046,6 +1073,18 @@ lightningManager.DestroyForObject (OBJECTS + nObject);
 SEM_LEAVE (SEM_LIGHTNING)
 #endif
 lightManager.Delete (-1, -1, nObject);
+#if OBJ_LIST_TYPE == 0
+// Make sure the freeList vector contains all allocated object numbers at the start of the list 
+if (gameData.objs.nObjects > 1) {
+	int32_t h = gameData.objs.freeList [gameData.objs.nObjects - 1];
+	for (int32_t i = 0; i < gameData.objs.nObjects; i++) {
+		if (gameData.objs.freeList [i] == nObject) {
+			gameData.objs.freeList [i] = h;
+			break;
+			}
+		}
+	}	
+#endif
 gameData.objs.freeList [--gameData.objs.nObjects] = nObject;
 Assert (gameData.objs.nObjects >= 0);
 if (nObject == gameData.objs.nLastObject [0])
@@ -1275,10 +1314,9 @@ return SOUNDCLASS_GENERIC;
 int32_t ObjectCount (int32_t nType)
 {
 	int32_t	h = 0;
-	int32_t	i;
-	CObject*	objP = OBJECTS.Buffer ();
+	CObject*	objP;
 
-FORALL_OBJS (objP, i)
+FORALL_OBJS (objP)
 	if ((objP->info.nType == nType) && !objP->IsGeometry ())
 		h++;
 return h;
@@ -1361,9 +1399,8 @@ return 1;
 void FixObjectSegs (void)
 {
 	CObject*	objP;
-	int32_t	i;
 
-FORALL_OBJS (objP, i) {
+FORALL_OBJS (objP) {
 	if ((objP->info.nType == OBJ_NONE) || (objP->info.nType == OBJ_CAMBOT) || (objP->info.nType == OBJ_EFFECT))
 		continue;
 	if (!UpdateObjectSeg (objP))
@@ -1386,12 +1423,11 @@ FORALL_OBJS (objP, i) {
 //go through all OBJECTS and make sure they have the correct size
 void FixObjectSizes (void)
 {
-	int32_t 	i;
-	CObject*	objP = OBJECTS.Buffer ();
+	CObject* objP;
 
-FORALL_PLAYER_OBJS (objP, i)
+FORALL_PLAYER_OBJS (objP)
 	objP->AdjustSize ();
-FORALL_ROBOT_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP)
 	objP->AdjustSize ();
 }
 
@@ -1402,33 +1438,27 @@ FORALL_ROBOT_OBJS (objP, i)
 //if bClearAll is set, clear even proximity bombs
 void ClearTransientObjects (int32_t bClearAll)
 {
+#if OBJ_LIST_TYPE == 1
 	CObject *objP, *nextObjP;
 
-for (objP = gameData.objs.lists.weapons.head; objP; objP = nextObjP) {
-	nextObjP = objP->Links (1).next;
-	if ((!(gameData.weapons.info [objP->info.nId].flags & WIF_PLACABLE) &&
-		  (bClearAll || ((objP->info.nId != PROXMINE_ID) && (objP->info.nId != SMARTMINE_ID)))) ||
-			objP->info.nType == OBJ_FIREBALL ||
-			objP->info.nType == OBJ_DEBRIS ||
-			((objP->info.nType != OBJ_NONE) && (objP->info.nFlags & OF_EXPLODING))) {
-
-#if DBG
-#	if TRACE
-		if (objP->info.xLifeLeft > I2X (2))
-			console.printf (CON_DBG, "Note: Clearing CObject %d (nType=%d, id=%d) with lifeleft=%x\n",
-							objP->Index (), objP->info.nType, objP->info.nId, objP->info.xLifeLeft);
-#	endif
-#endif
+CWeaponIterator iter (objP);
+while (objP) {
+	nextObjP = iter.Step ();
+	if ((!(gameData.weapons.info [objP->info.nId].flags & WIF_PLACABLE) && (bClearAll || ((objP->info.nId != PROXMINE_ID) && (objP->info.nId != SMARTMINE_ID)))) ||
+			objP->info.nType == OBJ_FIREBALL ||	objP->info.nType == OBJ_DEBRIS || ((objP->info.nType != OBJ_NONE) && (objP->info.nFlags & OF_EXPLODING))) {
 		ReleaseObject (objP->Index ());
 		}
-	#if DBG
-#	if TRACE
-		else if ((objP->info.nType != OBJ_NONE) && (objP->info.xLifeLeft < I2X (2)))
-		console.printf (CON_DBG, "Note: NOT clearing CObject %d (nType=%d, id=%d) with lifeleft=%x\n",
-						objP->Index (), objP->info.nType, objP->info.nId,	objP->info.xLifeLeft);
-#	endif
-#endif
+	objP = nextObjP;
 	}
+#else
+for (int32_t i = gameData.objs.nObjects; i > 0;) {
+	CObject* objP = OBJECTS + gameData.objs.freeList [--i];
+	if ((!(gameData.weapons.info [objP->info.nId].flags & WIF_PLACABLE) && (bClearAll || ((objP->info.nId != PROXMINE_ID) && (objP->info.nId != SMARTMINE_ID)))) ||
+			objP->info.nType == OBJ_FIREBALL ||	objP->info.nType == OBJ_DEBRIS || ((objP->info.nType != OBJ_NONE) && (objP->info.nFlags & OF_EXPLODING))) {
+		ReleaseObject (objP->Index ());
+		}
+	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1860,7 +1890,7 @@ if (botInfoP->energyDrain && LOCALPLAYER.Energy ()) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-#if 1 || OBJ_LIST_ITERATOR
+#if OBJ_ITERATOR_TYPE == 1
 
 //------------------------------------------------------------------------------
 
@@ -1869,6 +1899,7 @@ CObjectIterator::CObjectIterator () : m_objP (NULL), m_nLink (0) {}
 //------------------------------------------------------------------------------
 
 CObjectIterator::CObjectIterator (CObject*& objP) 
+	: m_objP (NULL), m_nLink (0)
 { 
 objP = Start (); 
 }
@@ -1929,6 +1960,18 @@ CObject* CStaticObjectIterator::Head (void) { return gameData.objs.lists.statics
 //------------------------------------------------------------------------------
 
 #else // OBJ_LIST_ITERATOR
+
+//------------------------------------------------------------------------------
+
+CObjectIterator::CObjectIterator () 
+	: m_objP (NULL), m_i (0) 
+{}
+
+CObjectIterator::CObjectIterator (CObject*& objP)
+	: m_objP (NULL), m_i (0) 
+{
+objP = Start ();
+}
 
 //------------------------------------------------------------------------------
 
