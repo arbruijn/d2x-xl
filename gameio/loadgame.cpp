@@ -236,7 +236,7 @@ void GameStartInitNetworkPlayers (void)
 				segNum, segType,
 				playerObjs [MAX_PLAYERS], startSegs [MAX_PLAYERS],
 				nPlayers, nMaxPlayers = bCoop ? MAX_COOP_PLAYERS + 1 : MAX_PLAYERS;
-	CObject	*objP, *nextObjP;
+	CObject	*objP;
 	bool		bRelease = false;
 
 	// Initialize network player start locations and CObject numbers
@@ -252,7 +252,7 @@ for (CObjectIterator iter (objP); objP; ) {
 		if ((nPlayers >= nMaxPlayers) || (bCoop ? (j && (t != OBJ_COOP)) : (t == OBJ_COOP))) 
 			bRelease = true;
 		else {
-			playerObjs [nPlayers] = i;
+			playerObjs [nPlayers] = objP->Index ();
 			startSegs [nPlayers] = objP->info.nSegment;
 			nPlayers++;
 			}
@@ -621,7 +621,6 @@ if (LOCALPLAYER.timeTotal > I2X (3600)) {
 void SetVertigoRobotFlags (void)
 {
 	CObject*	objP;
-	int32_t	i;
 
 gameData.objs.nVertigoBotFlags = 0;
 FORALL_ROBOT_OBJS (objP)
@@ -2095,7 +2094,6 @@ if (bBash)
 void FilterObjectsFromLevel (void)
 {
 	CObject*	objP;
-	int32_t	i;
 
 FORALL_POWERUP_OBJS (objP)
 	objP->BashToShield ((objP->info.nId == POW_REDFLAG) || (objP->info.nId == POW_BLUEFLAG));
@@ -2397,7 +2395,6 @@ objP->SetShield (RobotDefaultShield (objP));
 void CopyDefaultsToRobotsAll (void)
 {
 	CObject*	objP;
-	int32_t	i;
 
 FORALL_ROBOT_OBJS (objP)
 	CopyDefaultsToRobot (objP);

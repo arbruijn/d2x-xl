@@ -74,7 +74,6 @@ CObject* FindMonsterball (void)
 {
 if (!gameData.hoard.monsterballP) {
 	CObject*	objP;
-	int32_t	i;
 
 	FORALL_STATIC_OBJS (objP)
 		if ((objP->info.nType == OBJ_MONSTERBALL) || ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_MONSTERBALL))) {
@@ -90,7 +89,6 @@ return gameData.hoard.monsterballP;
 int32_t ResetMonsterball (bool bCreate)
 {
 	CObject*	objP;
-	int32_t	i;
 
 if (gameData.hoard.monsterballP) {
 	//ReleaseObject (gameData.hoard.monsterballP->Index ());
