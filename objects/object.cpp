@@ -445,9 +445,7 @@ if (bInitPlayer) {
 	}
 //gameData.objs.consoleP->Link ();
 gameData.objs.nObjects = 1;				//just the player
-ClaimObjectSlot (0);
 gameData.objs.consoleP->ResetLinks ();
-gameData.objs.consoleP->Link ();
 gameData.objs.nLastObject [0] = 0;
 }
 
@@ -866,10 +864,8 @@ if (link.prev || link.next) {
 	else {
 		if (ref.tail != this)
 			bRebuild = true;
-		else {
+		else
 			ref.tail = link.prev;
-			ref.tail->m_links [nLink].next = NULL;
-			}
 		}
 	if (link.prev) {
 		if (link.prev->m_links [nLink].next != this)
@@ -880,10 +876,8 @@ if (link.prev || link.next) {
 	else {
 		if (ref.head != this)
 			bRebuild = true;
-		else {
+		else
 			ref.head = link.next;
-			ref.head->m_links [nLink].prev = NULL;
-			}
 		}
 	if (ref.head)
 		ref.head->m_links [nLink].prev = NULL;
@@ -891,8 +885,10 @@ if (link.prev || link.next) {
 		ref.tail->m_links [nLink].next = NULL;
 	ref.nObjects--;
 	}
-else if ((ref.head == this) && (ref.tail == this))
+else if ((ref.head == this) && (ref.tail == this)) {
 	ref.head = ref.tail = NULL;
+	ref.nObjects = 0;
+	}
 #if 0
 else if (ref.head || ref.tail)
 	bRebuild = true;
