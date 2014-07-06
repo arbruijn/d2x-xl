@@ -138,7 +138,8 @@ for (g = 0; g < botInfoP->nGuns + 1; g++) {
 void InitCamBots (int32_t bReset)
 {
 	tRobotInfo&	camBotInfo = gameData.bots.info [0][gameData.bots.nCamBotId];
-	CObject		*objP;
+	CObject*		objP;
+	int32_t		i;
 
 if ((gameData.bots.nCamBotId < 0) || gameStates.app.bD1Mission)
 	return;

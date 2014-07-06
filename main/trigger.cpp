@@ -1713,12 +1713,11 @@ return wallP ? wallP->nSegment * 65536 + wallP->nSide : -1;
 
 int32_t ObjTriggerIsValid (int32_t nTrigger)
 {
-	int32_t		j;
-	//int32_t		i;
+	int32_t	i;
 	CObject	*objP;
 
 FORALL_OBJS (objP, i) {
-	j = objP->Index ();
+	int32_t j = objP->Index ();
 	if ((nTrigger >= gameData.trigs.objTriggerRefs [j].nFirst) && 
 		 (nTrigger < gameData.trigs.objTriggerRefs [j].nFirst + gameData.trigs.objTriggerRefs [j].nCount) &&
 		(OBJTRIGGERS [nTrigger].m_info.nObject >= 0))

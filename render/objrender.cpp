@@ -201,8 +201,8 @@ return 1;
 
 void ConvertAllPowerupsToWeapons (void)
 {
-	CObject*	objP;
-	//int32_t		i;
+	CObject* objP;
+	int32_t	i;
 
 FORALL_OBJS (objP, i)
 	if (objP->info.renderType == RT_POWERUP) {

@@ -389,8 +389,8 @@ for (CLightningEmitter* emitterP = m_emitters.GetFirst (nCurrent); emitterP; emi
 
 void CLightningManager::DestroyForAllObjects (int32_t nType, int32_t nId)
 {
-	CObject	*objP;
-	//int32_t		i;
+	CObject* objP;
+	int32_t	i;
 
 FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == nType) && ((nId < 0) || (objP->info.nId == nId)))
@@ -479,8 +479,8 @@ if (SHOW_LIGHTNING (1)) {
 
 CFixVector *CLightningManager::FindTargetPos (CObject* emitterP, int16_t nTarget)
 {
-	//int32_t		i;
-	CObject*	objP;
+	CObject* objP;
+	int32_t	i;
 
 if (!nTarget)
 	return 0;
@@ -507,8 +507,9 @@ return m_emitters [h].m_bValid;
 
 void CLightningManager::StaticFrame (void)
 {
-	CObject*				objP;
-	CFixVector*			vEnd, * vDelta, v;
+	CObject*		objP;
+	int32_t		i;
+	CFixVector*	vEnd, * vDelta, v;
 
 if (!SHOW_LIGHTNING (1))
 	return;

@@ -33,6 +33,7 @@ m_wayPoints.Destroy ();
 int32_t CWayPointManager::Count (void)
 {
 	CObject* objP;
+	int32_t	i;
 
 m_nWayPoints = 0;
 FORALL_EFFECT_OBJS (objP, i) {
@@ -64,6 +65,7 @@ if (nTarget < 0)
 	return NULL;
 
 	CObject* targetP;
+	int32_t	i;
 
 FORALL_EFFECT_OBJS (targetP, i) {
 	if ((targetP->Id () == LIGHTNING_ID) && (targetP->rType.lightningInfo.nId == nTarget))
@@ -111,6 +113,7 @@ nId = objP ? objP->cType.wayPointInfo.nId [0] : -1;
 void CWayPointManager::Renumber (void)
 {
 	CObject* objP;
+	int32_t	i;
 
 for (int32_t i = 0; i < m_nWayPoints; i++)
 	m_wayPoints [i]->cType.wayPointInfo.nId [0] = i;
@@ -144,6 +147,7 @@ for (int32_t i = 0; i < m_nWayPoints; i++)
 void CWayPointManager::Attach (void)
 {
 	CObject* objP;
+	int32_t	i;
 
 FORALL_EFFECT_OBJS (objP, i) {
 	if (objP->Id () == LIGHTNING_ID) {

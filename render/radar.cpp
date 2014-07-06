@@ -326,6 +326,7 @@ ogl.FlushBuffers (GL_LINES, 2);
 void CRadar::RenderObjects (int32_t bAbove)
 {
 	CObject*			objP;
+	int32_t			i;
 	CFloatVector3*	colorP = radarColor + gameOpts->render.automap.nColor;
 
 // glPushMatrix ();

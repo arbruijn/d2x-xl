@@ -935,7 +935,8 @@ for (int32_t i = 0; i <= gameData.objs.nLastObject [1]; i++, objP++) {
 
 void StaticParticlesFrame (void)
 {
-	CObject	*objP;
+	CObject* objP;
+	int32_t	i;
 
 if (!SHOW_SMOKE)
 	return;

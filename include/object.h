@@ -65,54 +65,54 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_OBJECT_TYPES 21
 
 // Result types
-#define RESULT_NOTHING  0   // Ignore this collision
-#define RESULT_CHECK    1   // Check for this collision
+#define RESULT_NOTHING		0   // Ignore this collision
+#define RESULT_CHECK			1   // Check for this collision
 
 // Control types - what tells this CObject what do do
-#define CT_NONE         0   // doesn't move (or change movement)
-#define CT_AI           1   // driven by AI
-#define CT_EXPLOSION    2   // explosion sequencer
-#define CT_FLYING       4   // the player is flying
-#define CT_SLEW         5   // slewing
-#define CT_FLYTHROUGH   6   // the flythrough system
-#define CT_WEAPON       9   // laser, etc.
-#define CT_REPAIRCEN    10  // under the control of the repair center
-#define CT_MORPH        11  // this CObject is being morphed
-#define CT_DEBRIS       12  // this is a piece of debris
-#define CT_POWERUP      13  // animating powerup blob
-#define CT_LIGHT        14  // doesn't actually do anything
-#define CT_REMOTE       15  // controlled by another net player
-#define CT_CNTRLCEN     16  // the control center/main reactor
-#define CT_WAYPOINT     17
-#define CT_CAMERA			18
+#define CT_NONE				0   // doesn't move (or change movement)
+#define CT_AI					1   // driven by AI
+#define CT_EXPLOSION			2   // explosion sequencer
+#define CT_FLYING				4   // the player is flying
+#define CT_SLEW				5   // slewing
+#define CT_FLYTHROUGH		6   // the flythrough system
+#define CT_WEAPON				9   // laser, etc.
+#define CT_REPAIRCEN			10  // under the control of the repair center
+#define CT_MORPH				11  // this CObject is being morphed
+#define CT_DEBRIS				12  // this is a piece of debris
+#define CT_POWERUP			13  // animating powerup blob
+#define CT_LIGHT				14  // doesn't actually do anything
+#define CT_REMOTE				15  // controlled by another net player
+#define CT_CNTRLCEN			16  // the control center/main reactor
+#define CT_WAYPOINT			17
+#define CT_CAMERA				18
 
 // Movement types
-#define MT_NONE         0   // doesn't move
-#define MT_PHYSICS      1   // moves by physics
-#define MT_STATIC			2	 // completely still and immoveable
-#define MT_SPINNING     3   // this CObject doesn't move, just sits and spins
+#define MT_NONE				0   // doesn't move
+#define MT_PHYSICS			1   // moves by physics
+#define MT_STATIC				2	 // completely still and immoveable
+#define MT_SPINNING			3   // this CObject doesn't move, just sits and spins
 
 // Render types
-#define RT_NONE         0   // does not render
-#define RT_POLYOBJ      1   // a polygon model
-#define RT_FIREBALL     2   // a fireball
-#define RT_LASER        3   // a laser
-#define RT_HOSTAGE      4   // a hostage
-#define RT_POWERUP      5   // a powerup
-#define RT_MORPH        6   // a robot being morphed
-#define RT_WEAPON_VCLIP 7   // a weapon that renders as a tVideoClip
-#define RT_THRUSTER		8	 // like afterburner, but doesn't cast light
-#define RT_EXPLBLAST		9	 // white explosion light blast
-#define RT_SHRAPNELS		10	 // smoke trails coming from explosions
-#define RT_SMOKE			11
-#define RT_LIGHTNING    12
-#define RT_SOUND			13
-#define RT_SHOCKWAVE		14  // concentric shockwave effect
+#define RT_NONE				0   // does not render
+#define RT_POLYOBJ			1   // a polygon model
+#define RT_FIREBALL			2   // a fireball
+#define RT_LASER				3   // a laser
+#define RT_HOSTAGE			4   // a hostage
+#define RT_POWERUP			5   // a powerup
+#define RT_MORPH				6   // a robot being morphed
+#define RT_WEAPON_VCLIP		7   // a weapon that renders as a tVideoClip
+#define RT_THRUSTER			8	 // like afterburner, but doesn't cast light
+#define RT_EXPLBLAST			9	 // white explosion light blast
+#define RT_SHRAPNELS			10	 // smoke trails coming from explosions
+#define RT_SMOKE				11
+#define RT_LIGHTNING			12
+#define RT_SOUND				13
+#define RT_SHOCKWAVE			14  // concentric shockwave effect
 
-#define PARTICLE_ID		0
-#define LIGHTNING_ID		1
-#define SOUND_ID			2
-#define WAYPOINT_ID		3
+#define PARTICLE_ID			0
+#define LIGHTNING_ID			1
+#define SOUND_ID				2
+#define WAYPOINT_ID			3
 
 #define SINGLE_LIGHT_ID		0
 #define CLUSTER_LIGHT_ID	1
@@ -1373,6 +1373,69 @@ extern tWindowRenderedData windowRenderedData [MAX_RENDERED_WINDOWS];
 extern char *robot_names[];         // name of each robot
 
 extern CObject Follow;
+
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+//	-----------------------------------------------------------------------------
+
+class CObjectIterator {
+	public:
+		CObject*		m_objP;
+		int32_t		m_i;
+
+	public:
+		CObjectIterator () : m_objP (NULL), m_i (0) {}
+
+		CObject* Start (void);
+		bool Done (void);
+		CObject*Step (void);
+		CObject* ObjP (void) { return (m_objP); }
+		int32_t Index (void) { return m_i; }
+		virtual bool Match (void) { return true; }
+};
+
+//	-----------------------------------------------------------------------------
+
+class CPlayerIterator : public CObjectIterator {
+	public:
+		virtual bool Match (void) { return (m_objP->Type () == OBJ_PLAYER) || (m_objP->Type () == OBJ_GHOST); }
+};
+
+class CRobotIterator : public CObjectIterator {
+	public:
+		virtual bool Match (void) { return (m_objP->Type () == OBJ_ROBOT); }
+};
+
+class CPowerupIterator : public CObjectIterator {
+	public:
+		virtual bool Match (void) { return (m_objP->Type () == OBJ_POWERUP); }
+};
+
+class CEffectIterator : public CObjectIterator {
+	public:
+		virtual bool Match (void) { return (m_objP->Type () == OBJ_EFFECT); }
+};
+
+class CLightIterator : public CObjectIterator {
+	public:
+		virtual bool Match (void) { return (m_objP->Type () == OBJ_LIGHT); }
+};
+
+class CActorIterator : public CObjectIterator {
+	public:
+		virtual bool Match (void) { 
+			uint8_t nType = m_objP->Type ();
+			return (nType == OBJ_PLAYER) || (nType == OBJ_GHOST) || (nType == OBJ_ROBOT) || (nType == OBJ_REACTOR) || (nType == OBJ_WEAPON) || (nType == OBJ_MONSTERBALL); 
+		}
+};
+
+class CStaticObjectIterator : public CObjectIterator {
+	public:
+		virtual bool Match (void) { 
+			uint8_t nType = m_objP->Type ();
+			return (nType == OBJ_POWERUP) || (nType == OBJ_EFFECT) || (nType == OBJ_LIGHT); 
+		}
+};
 
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------

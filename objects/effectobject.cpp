@@ -81,8 +81,8 @@ objP->rType.particleInfo.nSize [1] = (j * (j + 1)) / 2;
 
 void ConvertObjects (void)
 {
-	CObject	*objP;
-	//int32_t		i;
+	int32_t 	i;
+	CObject*	objP = OBJECTS.Buffer ();
 
 PrintLog (0, "converting deprecated smoke objects\n");
 FORALL_STATIC_OBJS (objP, i)
@@ -98,7 +98,7 @@ if ((info.nType != OBJ_EFFECT) || (info.nId != PARTICLE_ID))
 	return;
 
 	tParticleInfo*	psi = &rType.particleInfo;
-	int32_t				nLife, nSpeed, nParts, nSize;
+	int32_t			nLife, nSpeed, nParts, nSize;
 
 info.renderType = RT_SMOKE;
 nLife = psi->nLife ? psi->nLife : 5;
@@ -145,8 +145,8 @@ if (psi->nType == SMOKE_TYPE_BUBBLES) {
 
 void SetupEffects (void)
 {
-	CObject	*objP;
-	//int32_t		i;
+	int32_t 	i;
+	CObject*	objP = OBJECTS.Buffer ();
 
 PrintLog (1, "setting up effects\n");
 FORALL_EFFECT_OBJS (objP, i) 

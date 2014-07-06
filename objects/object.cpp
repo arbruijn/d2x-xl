@@ -244,8 +244,8 @@ return (fDmg > 1.0f) ? 1.0f : (fDmg < 0.0f) ? 0.0f : fDmg;
 //set viewerP CObject to next CObject in array
 void ObjectGotoNextViewer (void)
 {
-	//int32_t 		i;
-	CObject	*objP;
+	int32_t 	i;
+	CObject*	objP;
 
 FORALL_OBJS (objP, i) {
 	if (objP->info.nType != OBJ_NONE) {
@@ -260,9 +260,9 @@ Error ("Couldn't find a viewerP CObject!");
 //set viewerP CObject to next CObject in array
 void ObjectGotoPrevViewer (void)
 {
-	CObject	*objP;
-	int32_t 		nStartObj = 0;
-	//int32_t		i;
+	CObject*	objP;
+	int32_t 	nStartObj = 0;
+	int32_t	i;
 
 nStartObj = OBJ_IDX (gameData.objs.viewerP);		//get viewerP CObject number
 FORALL_OBJS (objP, i) {
@@ -281,8 +281,8 @@ Error ("Couldn't find a viewerP CObject!");
 
 CObject *ObjFindFirstOfType (int32_t nType)
 {
-	//int32_t		i;
-	CObject	*objP;
+	int32_t	i;
+	CObject*	objP;
 
 FORALL_OBJS (objP, i)
 	if (objP->info.nType == nType)
@@ -294,9 +294,9 @@ return reinterpret_cast<CObject*> (NULL);
 
 int32_t ObjReturnNumOfType (int32_t nType)
 {
-	int32_t		count = 0;
-	//int32_t		i;
-	CObject	*objP;
+	int32_t	count = 0;
+	int32_t	i;
+	CObject*	objP;
 
 FORALL_OBJS (objP, i)
 	if (objP->info.nType == nType)
@@ -308,9 +308,9 @@ return count;
 
 int32_t ObjReturnNumOfTypeAndId (int32_t nType, int32_t id)
 {
-	int32_t		count = 0;
-	CObject	*objP;
-	//int32_t		i;
+	int32_t	count = 0;
+	int32_t	i;
+	CObject*	objP;
 
 FORALL_OBJS (objP, i)
 	if ((objP->info.nType == nType) && (objP->info.nId == id))
@@ -529,9 +529,9 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++)
 
 int32_t CheckDuplicateObjects (void)
 {
-	int32_t 		count = 0;
-	CObject	*objP;
-	//int32_t		i;
+	int32_t	count = 0;
+	int32_t	i;
+	CObject*	objP;
 
 FORALL_OBJS (objP, i) {
 	if (objP->info.nType != OBJ_NONE) {
@@ -580,8 +580,8 @@ for (int32_t i = 0; i < LEVEL_SEGMENTS; i++)
 
 void LinkAllObjsToSegs (void)
 {
-	CObject	*objP;
-	//int32_t		i;
+	int32_t	i;
+	CObject*	objP;
 
 FORALL_OBJS (objP, i)
 	objP->LinkToSeg (objP->info.nSegment);
@@ -1274,9 +1274,9 @@ return SOUNDCLASS_GENERIC;
 
 int32_t ObjectCount (int32_t nType)
 {
-	int32_t		h = 0;
-	//int32_t		i;
-	CObject	*objP = OBJECTS.Buffer ();
+	int32_t	h = 0;
+	int32_t	i;
+	CObject*	objP = OBJECTS.Buffer ();
 
 FORALL_OBJS (objP, i)
 	if ((objP->info.nType == nType) && !objP->IsGeometry ())
@@ -1360,8 +1360,8 @@ return 1;
 //go through all OBJECTS and make sure they have the correct CSegment numbers
 void FixObjectSegs (void)
 {
-	CObject	*objP;
-	//int32_t		i;
+	CObject*	objP;
+	int32_t	i;
 
 FORALL_OBJS (objP, i) {
 	if ((objP->info.nType == OBJ_NONE) || (objP->info.nType == OBJ_CAMBOT) || (objP->info.nType == OBJ_EFFECT))
@@ -1386,8 +1386,8 @@ FORALL_OBJS (objP, i) {
 //go through all OBJECTS and make sure they have the correct size
 void FixObjectSizes (void)
 {
-	//int32_t 		i;
-	CObject	*objP = OBJECTS.Buffer ();
+	int32_t 	i;
+	CObject*	objP = OBJECTS.Buffer ();
 
 FORALL_PLAYER_OBJS (objP, i)
 	objP->AdjustSize ();
@@ -1854,6 +1854,37 @@ if (botInfoP->energyDrain && LOCALPLAYER.Energy ()) {
 	m_xTimeEnergyDrain = gameStates.app.nSDLTicks [0];
 	LOCALPLAYER.UpdateEnergy (-I2X (botInfoP->energyDrain));
 	}
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+CObject* CObjectIterator::Start (void)
+{
+m_i = 0;
+return (gameData.objs.nObjects > 0) ? &OBJECTS [0] : NULL;
+}
+
+//------------------------------------------------------------------------------
+
+bool CObjectIterator::Done (void)
+{
+return m_i >= gameData.objs.nObjects;
+}
+
+//------------------------------------------------------------------------------
+
+CObject* CObjectIterator::Step (void)
+{
+if (Done ())
+	return NULL;
+while (m_i < gameData.objs.nObjects) {
+	++m_i;
+	if (Match ())
+		return &OBJECTS [m_i];
+	} 
+return NULL;
 }
 
 //------------------------------------------------------------------------------

@@ -46,7 +46,8 @@ void CLightClusterManager::Reset (void)
 if (!m_bUse)
 	return;
 
-	CObject	*objP;
+	CObject*	objP;
+	int32_t	i;
 
 FORALL_LIGHT_OBJS (objP, i)
 	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID)) {

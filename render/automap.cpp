@@ -243,8 +243,9 @@ if (AM_SHOW_PLAYERS) {
 	}
 
 
-CObject* objP = OBJECTS.Buffer ();
-CRenderPoint	spherePoint;
+	CObject*			objP;
+	int32_t			i;
+	CRenderPoint	spherePoint;
 
 FORALL_OBJS (objP, i) {
 	int32_t size = objP->info.xSize;

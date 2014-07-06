@@ -134,12 +134,13 @@ return objP;
 CObject* CreateExplosion (CObject* parentP, int16_t nSegment, CFixVector& vPos, fix xSize,
 								  uint8_t nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, int16_t nParent)
 {
-	int16_t			nObject;
-	CObject		*explObjP, *objP;
+	int16_t		nObject;
+	CObject*		explObjP, *objP;
 	fix			dist, force, damage;
 	CFixVector	vHit, vForce;
-	int32_t			nType, id;
-	int32_t			flash = parentP ? static_cast<int32_t> (gameData.weapons.info [parentP->info.nId].flash) : 0;
+	int32_t		nType, id;
+	int32_t		flash = parentP ? static_cast<int32_t> (gameData.weapons.info [parentP->info.nId].flash) : 0;
+	int32_t		i;
 
 nObject = CreateFireball (nVClip, nSegment, vPos, xSize, RT_FIREBALL);
 if (nObject < 0)

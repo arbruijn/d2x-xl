@@ -1071,11 +1071,11 @@ return nSound;
 //go through this level and start any effect sounds
 void SetSoundSources (void)
 {
-	int16_t			nSegment, nSide;
+	int16_t		nSegment, nSide;
 	CSegment*	segP;
 	CObject*		objP;
-	int32_t			nSegSoundSources, nSideSounds [6];
-	//int32_t			i;
+	int32_t		nSegSoundSources, nSideSounds [6];
+	int32_t		i;
 
 SetD1Sound ();
 audio.InitSounds ();		//clear old sounds

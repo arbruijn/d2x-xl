@@ -430,8 +430,8 @@ return -1;
 void GatherLeftoutVisibleObjects (void)
 {
 #if 1
-	CObject*	objP;
-	//int32_t		i;
+	CObject* objP;
+	int32_t	i;
 
 FORALL_OBJS (objP, i) {
 	if (objP->Type () >= MAX_OBJECT_TYPES) 

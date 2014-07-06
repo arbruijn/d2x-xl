@@ -480,11 +480,11 @@ void RobotMakerHandler (tProducerInfo * objProducerP)
 {
 	fix			xDistToPlayer;
 	CFixVector	vPos, vDir;
-	int32_t			nObjProducer, nSegment, nObject;
-	CObject		*objP;
+	int32_t		nObjProducer, nSegment, nObject;
+	CObject*		objP;
 	fix			topTime;
-	int32_t			nType, nMyStation, nCount;
-	//int32_t			i;
+	int32_t		nType, nMyStation, nCount;
+	int32_t		i;
 
 if (gameStates.app.bGameSuspended & SUSP_ROBOTS)
 	return;
