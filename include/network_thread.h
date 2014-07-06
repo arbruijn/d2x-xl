@@ -59,7 +59,7 @@ class CNetworkPacketOwner {
 			}
 
 		void SetLocalAddress (uint8_t* node) {
-			if (m_bHaveLocalAddress = (node != NULL))
+			if ((m_bHaveLocalAddress = (node != NULL)))
 				memcpy (&m_localAddress, node, sizeof (m_localAddress));
 			else
 				memset (&m_localAddress, 0, sizeof (m_localAddress));

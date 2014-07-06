@@ -90,6 +90,19 @@ class CPacketAddress : public CNetworkAddress {
 			}
 };
 
+struct ipx_driver {
+	int32_t (*GetMyAddress)();
+	int32_t (*OpenSocket)(ipx_socket_t *, int32_t);
+	void (*CloseSocket)(ipx_socket_t *);
+	int32_t (*SendPacket)(ipx_socket_t *, IPXPacket_t *, uint8_t *, int32_t);
+	int32_t (*ReceivePacket)(ipx_socket_t *, uint8_t *, int32_t, CPacketAddress *);
+	int32_t (*PacketReady)(ipx_socket_t *s);
+	void (*InitNetGameAuxData)(ipx_socket_t *, uint8_t []);
+	int32_t (*HandleNetGameAuxData)(ipx_socket_t *, const uint8_t []);
+	void (*HandleLeaveGame)(ipx_socket_t *);
+	int32_t (*SendGamePacket)(ipx_socket_t *s, uint8_t *, int32_t);
+};
+
 int IPXGeneralPacketReady(ipx_socket_t *s);
 
 extern CNetworkAddress ipx_MyAddress;
