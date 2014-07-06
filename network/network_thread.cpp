@@ -660,7 +660,11 @@ for (;;) {
 		if (!m_packet)
 			break;
 		}
+#if USE_PACKET_IDS
 	int32_t nSize = IpxGetPacketData (reinterpret_cast<uint8_t*>(&m_packet->m_data));
+#else
+	int32_t nSize = IpxGetPacketData (m_packet->Buffer ());
+#endif
 	if (!nSize)
 		break;
 #if DBG
@@ -675,7 +679,7 @@ for (;;) {
 		m_packet->SetSize (nSize - sizeof (int32_t)); // don't count the packet queue's 32 bit packet id!
 	else {
 		memcpy (m_packet->Buffer (), reinterpret_cast<uint8_t*>(&m_packet->m_data), m_packet->Size ());
-		m_packet->SetSize (nSize); // don't count the packet queue's 32 bit packet id!
+		m_packet->SetSize (nSize); 
 		m_packet->SetId (0);
 		}
 	PrintLog (0, "Listen: Append\n");
