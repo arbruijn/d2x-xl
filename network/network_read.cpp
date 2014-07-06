@@ -631,8 +631,10 @@ NetworkRequestSync ();
 
 int32_t CObjectSynchronizer::CompareFrames (void)
 {
-if (networkData.syncInfo [0].objs.nFrame == m_nFrame - 1)
+if (networkData.syncInfo [0].objs.nFrame == m_nFrame - 1) {
+	networkData.nJoinState = 1;
 	return 1;
+	}
 if (networkData.nJoinState > 1)
 	return 0;
 if (networkData.syncInfo [0].objs.nFrame >= m_nFrame)
