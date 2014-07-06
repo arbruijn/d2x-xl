@@ -455,7 +455,7 @@ int32_t NetworkWaitForSync (void)
 {
 	char					text [60];
 	CMenu					m (2);
-	int32_t					i, choice;
+	int32_t				i, choice;
 	tSequencePacket	me;
 
 networkData.nStatus = NETSTAT_WAITING;
@@ -471,6 +471,7 @@ if (i < 0) {
 	}
 sprintf (m [0].m_text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers [0].m_info.players [i].callsign, TXT_NET_TO_ENTER);
 ResetSyncTimeout (true);
+networkData.toSyncPoll.Start (-1, true); // make it time out immediately when starting
 
 do {
 	gameStates.menus.nInMenu = -gameStates.menus.nInMenu;
