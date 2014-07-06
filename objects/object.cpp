@@ -1994,7 +1994,9 @@ objP = Start ();
 CObject* CObjectIterator::Start (void)
 {
 m_i = 0;
-return m_objP = (gameData.objs.nObjects > 0) ? &OBJECTS [0] : NULL;
+if (Match ())
+	return m_objP = (gameData.objs.nObjects > 0) ? &OBJECTS [0] : NULL;
+return Step ();
 }
 
 //------------------------------------------------------------------------------
