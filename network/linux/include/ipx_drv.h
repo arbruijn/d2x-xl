@@ -16,18 +16,18 @@
 #define IPX_MANUAL_ADDRESS
 
 typedef struct IPXAddressStruct {
-	uint8_t Network[4]; // __attribute__((packed));
-	uint8_t Node[6]; // __attribute__((packed));
-	uint8_t Socket[2]; // __attribute__((packed));
+	uint8_t			Network [4]; // __attribute__((packed));
+	uint8_t			Node [6]; // __attribute__((packed));
+	uint8_t			Socket [2]; // __attribute__((packed));
 } IPXAddress_t;
 
 typedef struct IPXPacketStructure {
-	uint16_t Checksum; // __attribute__((packed));
-	uint16_t Length; // __attribute__((packed));
-	uint8_t TransportControl; // __attribute__((packed));
-	uint8_t PacketType; // __attribute__((packed));
-	IPXAddress_t Destination; // __attribute__((packed));
-	IPXAddress_t Source; // __attribute__((packed));
+	uint16_t			Checksum; // __attribute__((packed));
+	uint16_t			Length; // __attribute__((packed));
+	uint8_t			TransportControl; // __attribute__((packed));
+	uint8_t			PacketType; // __attribute__((packed));
+	IPXAddress_t	Destination; // __attribute__((packed));
+	IPXAddress_t	Source; // __attribute__((packed));
 } IPXPacket_t;
 
 typedef struct ipx_socket_struct {
@@ -39,23 +39,32 @@ typedef struct ipx_socket_struct {
 	int AESCount;
 	uint16_t PSP;
 #endif
-	uint16_t socket;
-	int16_t fd;
+	uint16_t			socket;
+	int16_t			fd;
 } ipx_socket_t;
 
-class CPacketAddress : public CNetworkNode {
+class CPacketAddress : public CNetworkAddress {
 	/* all network order */
 	private:
 		//tNetworkNode	src_addr;
-		int32_t				packetType;
+		int32_t	m_nType;
+		uint16_t	m_srcSocket;
+		uint16_t	m_destSocket;
 
 	public:
-		uint16_t			src_socket;
-		uint16_t			dst_socket;
+		CPacketAddress () {}
+		CPacketAddress (tNetworkAddress& address) : CNetworkAddress (address) {}
 
-	public:
-		inline void SetType (int32_t nType) { packetType = nType; }
-#if 0 // inherited from CNetworkNode
+		inline void SetType (int32_t nType) { m_nType = nType; }
+		inline void SetSockets (uint16_t srcSocket, uint16_t destSocket) {
+			m_srcSocket = srcSocket;
+			m_destSocket = destSocket;
+			}
+		inline void GetSockets (uint16_t& srcSocket, uint16_t& destSocket) {
+			srcSocket = m_srcSocket;
+			destSocket = m_destSocket;
+			}
+#if 0 // inherited from CNetworkAddress
 		inline uint32_t Server (void) { return src_addr.address.portAddress.ip.a; }
 		inline uint16_t Port (void) { return src_addr.address.portAddress.port.s; }
 		inline uint8_t* Network (void) { return src_addr.network.b; }
@@ -72,26 +81,13 @@ class CPacketAddress : public CNetworkNode {
 		inline void ResetNode (uint8_t filler = 0) { memset (src_addr.address.node, filler, sizeof (src_addr.address.node)); }
 		inline void ResetPort (uint8_t filler = 0) { memset (src_addr.address.portAddress.port.b, filler, sizeof (src_addr.address.portAddress.port)); }
 #endif
-		inline tNetworkNode& Address (void) { return m_address; }
+		inline tNetworkAddress& Address (void) { return m_address; }
 
 		inline bool operator== (CPacketAddress& other) { return !memcmp (&Address (), &other.Address (), sizeof (tNetworkNode)); }
 		inline CPacketAddress& operator= (CPacketAddress& other) { 
 			memcpy (this, &other, sizeof (*this));
 			return *this;
 			}
-};
-
-struct ipx_driver {
-	int (*GetMyAddress)(void);
-	int (*OpenSocket)(ipx_socket_t *sk, int port);
-	void (*CloseSocket)(ipx_socket_t *mysock);
-	int (*SendPacket)(ipx_socket_t *mysock, IPXPacket_t *IPXHeader, uint8_t *data, int dataLen);
-	int (*ReceivePacket)(ipx_socket_t *s, char *buffer, int bufsize, IPXRecvData_t *rec);
-	int (*PacketReady)(ipx_socket_t *s);
-	void (*InitNetgameAuxData)(ipx_socket_t *s, uint8_t buf[]);
-	int (*HandleNetgameAuxData)(ipx_socket_t *s, const uint8_t buf[]);
-	void (*HandleLeaveGame)(ipx_socket_t *s);
-	int (*SendGamePacket)(ipx_socket_t *s, uint8_t *data, int dataLen);
 };
 
 int IPXGeneralPacketReady(ipx_socket_t *s);
