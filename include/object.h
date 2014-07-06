@@ -154,6 +154,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define ROBOT_IS_NEUTRAL	0
 #define ROBOT_IS_FRIENDLY	1
 
+#define OBJ_LIST_TYPE		1
+
+
 #define MAX_VELOCITY I2X(50)
 
 #define PF_SPAT_BY_PLAYER   1 //this powerup was spat by the player
@@ -727,8 +730,6 @@ class CObjectInfo : public CObjTransformation, public CObjContainerInfo, public 
 //	-----------------------------------------------------------------------------
 
 struct tObject;
-
-#define OBJ_LIST_TYPE 0
 
 typedef struct tObjListLink {
 	tObject*			prev;

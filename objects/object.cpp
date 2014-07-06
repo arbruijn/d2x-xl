@@ -1089,8 +1089,17 @@ if (gameData.objs.nObjects > 1) {
 gameData.objs.freeList [--gameData.objs.nObjects] = nObject;
 Assert (gameData.objs.nObjects >= 0);
 if (nObject == gameData.objs.nLastObject [0])
-	while (OBJECTS [--gameData.objs.nLastObject [0]].info.nType == OBJ_NONE);
+	while (gameData.objs.nLastObject [0] && (OBJECTS [--gameData.objs.nLastObject [0]].info.nType == OBJ_NONE))
+		;
 #if DBG
+#	if OBJ_LIST_TYPE == 0
+if (gameData.objs.nLastObject [0] < gameData.objs.nObjects - 1) {
+	int32_t nMaxObj = gameData.objs.freeList [0];
+	for (int32_t i = 1; i < gameData.objs.nObjects; i++)
+		if (nMaxObj < gameData.objs.freeList [0])
+			nMaxObj = gameData.objs.freeList [0];
+	}
+#	endif // OBJ_LIST_TYPE == 0
 if (dbgObjP && (OBJ_IDX (dbgObjP) == nObject))
 	dbgObjP = NULL;
 #endif
