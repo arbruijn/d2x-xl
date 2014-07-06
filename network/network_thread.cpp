@@ -33,7 +33,7 @@
 
 #if DBG
 #	define LISTEN_TIMEOUT		5
-#	define SEND_TIMEOUT			20
+#	define SEND_TIMEOUT			5
 #	define UPDATE_TIMEOUT		500
 #	define MAX_PACKET_AGE		300000
 #	define MAX_CLIENT_AGE		300000
@@ -507,7 +507,7 @@ while (m_bRunning) {
 		}
 	if (LockSend (true)) {
 		PrintLog (1, "Transmit\n");
-		Transmit ();
+		TransmitPackets ();
 		PrintLog (-1);
 		UnlockSend ();
 		}
@@ -785,8 +785,14 @@ m_txPacketQueue.Unlock (true, __FUNCTION__);
 
 //------------------------------------------------------------------------------
 
-int32_t CNetworkThread::Transmit (bool bForce)
+int32_t CNetworkThread::TransmitPackets (bool bForce)
 {
+#if 1
+	static CTimeout toSend (SEND_TIMEOUT);
+
+if (!bForce && !toSend.Expired ())
+	return 1;
+#else
 if (m_toSend.Duration () != 1000 / PPS) {
 	m_toSend.Setup (1000 / PPS);
 	m_toSend.Start ();
@@ -797,6 +803,7 @@ if (m_txPacketQueue.Empty ())
 
 if (!bForce && !m_toSend.Expired ())
 	return 1;
+#endif
 
 #if 0
 

@@ -253,7 +253,7 @@ class CNetworkThread {
 		int32_t LockProcess (bool bTry = false) { return Lock (m_processLock); }
 		int32_t UnlockProcess (void) { return Unlock (m_processLock); }
 		bool Send (uint8_t* data, int32_t size, uint8_t* network, uint8_t* srcNode, uint8_t* destNode = NULL);
-		int32_t Transmit (bool bForce = false);
+		int32_t TransmitPackets (bool bForce = false);
 		int32_t InitSync (void);
 		void AbortSync (void);
 		void SendSync (void);
