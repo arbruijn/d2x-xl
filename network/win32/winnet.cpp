@@ -244,8 +244,10 @@ if (WSAStartup (wVersionRequested, &wsaData))
 
 if ((i = FindArg ("-ipxnetwork")) && appConfig [i + 1]) {
 	int32_t n = strtol (appConfig [i + 1], NULL, 16);
+	uint8_t b [4]; 
 	for (i = 3; i >= 0; i--, n >>= 8)
-		ipx_MyAddress.SetServer (0xFFFFFFFF);
+		b [i] = n &0xFF;
+	ipx_MyAddress.SetServer (b);
 	}
 if ((nSocket >= 0) && driver->OpenSocket (&ipxSocketData, nSocket))
 	return IPX_NOT_INSTALLED;
@@ -295,7 +297,7 @@ while (driver->PacketReady (&ipxSocketData)) {
 		break;
 	if (dataSize < 6)
 		continue;
-	dataOffs = tracker.IsTracker (networkData.packetSource.m_address.node.portAddress.ip.a, networkData.packetSource.Port (), (char*) buf) ? 0 : 4;
+	dataOffs = tracker.IsTracker (networkData.packetSource.GetServer (), networkData.packetSource.GetPort (), (char*) buf) ? 0 : 4;
 	if (dataSize > MAX_PAYLOAD_SIZE + dataOffs) {
 		PrintLog (0, "incoming data package too large (%d bytes)\n", dataSize);
 		continue;

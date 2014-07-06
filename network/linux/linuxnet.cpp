@@ -157,8 +157,10 @@ int32_t IpxInit (int32_t socket_number)
 
 if ((i = FindArg ("-ipxnetwork")) && appConfig [i + 1]) {
 	ulong n = strtol (appConfig [i + 1], NULL, 16);
+	uint8_t b [4]; 
 	for (i = 3; i >= 0; i--, n >>= 8)
-		ipx_MyAddress [i] = n & 0xff; 
+		b [i] = n &0xFF;
+	ipx_MyAddress.SetServer (b);
 	}
 if (driver->OpenSocket (&ipxSocketData, socket_number)) {
 	return IPX_NOT_INSTALLED;
@@ -198,7 +200,7 @@ while (driver->PacketReady (&ipxSocketData)) {
 		break;
 	if (dataSize < 6)
 		continue;
-	dataOffs = tracker.IsTracker (networkData.packetSource.Server (), networkData.packetSource.Port (), (char*) buf) ? 0 : 4;
+	dataOffs = tracker.IsTracker (networkData.packetSource.GetServer (), networkData.packetSource.GetPort (), (char*) buf) ? 0 : 4;
 	if (dataSize > MAX_PAYLOAD_SIZE + dataOffs) {
 		PrintLog (0, "incoming data package too large (%d bytes)\n", dataSize);
 		continue;
