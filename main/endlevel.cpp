@@ -1522,7 +1522,6 @@ void StartEndLevelSequence (int32_t bSecret)
 {
 	CObject*		objP;
 	int32_t		nMoviePlayed = MOVIE_NOT_PLAYED;
-	int32_t		i;
 
 if (gameData.demo.nState == ND_STATE_RECORDING)		// stop demo recording
 	gameData.demo.nState = ND_STATE_PAUSED;

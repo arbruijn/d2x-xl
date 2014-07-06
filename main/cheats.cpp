@@ -116,7 +116,6 @@ int32_t KillAllBuddyBots (int32_t bVerbose)
 {
 	CObject*		objP;
 	int32_t		nKilled = 0;
-	int32_t		i;
 
 FORALL_ROBOT_OBJS (objP)
 	if (IS_GUIDEBOT (objP)) {
@@ -139,8 +138,7 @@ void KillAllRobots (int32_t bVerbose)
 {
 	CObject*		objP;
 	int32_t		nKilled = 0;
-	int32_t		i;
-
+	
 // Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
 FORALL_ROBOT_OBJS (objP)
 	if (!(ROBOTINFO (objP->info.nId).companion || ROBOTINFO (objP->info.nId).bossFlag || objP->IsGeometry ())) {
@@ -165,7 +163,6 @@ void KillAllBossRobots (int32_t bVerbose)
 {
 	CObject*		objP;
 	int32_t		nKilled = 0;
-	int32_t		i;
 
 if (gameStates.gameplay.bKillBossCheat)
 	gameStates.gameplay.bKillBossCheat = 0;
@@ -241,7 +238,6 @@ gameStates.app.cheats.bEnabled |= 2;
 void KillThief (int32_t bVerbose)
 {
 	CObject*	objP;
-	int32_t	i;
 
 FORALL_ROBOT_OBJS (objP)
 	if (IS_THIEF (objP)) {
@@ -264,7 +260,6 @@ void KillAllSnipers (int32_t bVerbose)
 {
 	CObject*		objP;
 	int32_t		nKilled = 0;
-	int32_t		i;
 
 //	Kill all snipers.
 FORALL_ROBOT_OBJS (objP)
@@ -283,7 +278,6 @@ if (bVerbose)
 void KillBuddy (int32_t bVerbose)
 {
 	CObject*	objP;
-	int32_t	i;
 
 //	Kill buddy.
 FORALL_ROBOT_OBJS (objP)

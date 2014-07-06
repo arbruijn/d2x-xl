@@ -1559,6 +1559,8 @@ class CStaticObjectIterator : public CObjectIterator {
 
 #define IS_OBJECT(_objP, _i)							((_i) <= gameData.objs.nLastObject [0])
 
+#	define FORALL_OBJSi(_objP,_i)						for ((_objP) = OBJECTS.Buffer (), (_i) = 0; (_i) <= gameData.objs.nLastObject [0]; (_i)++, (_objP)++)
+
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------

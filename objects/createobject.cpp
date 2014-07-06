@@ -390,7 +390,6 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 nCount += gameData.multiplayer.powerupsInMine [nPowerup];
 if (nPowerup == POW_VULCAN_AMMO) {
 	int32_t	nAmmo = 0;
-	int32_t	i;
 	CObject* objP;
 	FORALL_POWERUP_OBJS (objP) {
 		if ((objP->Id () == POW_VULCAN) || (objP->Id () == POW_GAUSS))
@@ -401,7 +400,6 @@ if (nPowerup == POW_VULCAN_AMMO) {
 else if ((nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE)) {
 	int32_t nMines = 0;
 	int32_t	nId = (nPowerup == POW_PROXMINE) ? PROXMINE_ID : SMARTMINE_ID;
-	int32_t	i;
 	CObject* objP;
 	FORALL_WEAPON_OBJS (objP) {
 		if (objP->Id () == nId)

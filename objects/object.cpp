@@ -1999,7 +1999,7 @@ return m_i >= gameData.objs.nObjects;
 
 CObject* CObjectIterator::Next (void)
 {
-return (m_i < gameData.objs.nObjects) ? &OBJECTS [i] : NULL;
+return (m_i < gameData.objs.nObjects) ? &OBJECTS [m_i] : NULL;
 }
 
 //------------------------------------------------------------------------------

@@ -360,7 +360,9 @@ if ((gameFileInfo.objects.offset > -1) && gameFileInfo.objects.count) {
 	while (i < gameFileInfo.objects.count) {
 		ClaimObjectSlot (i);
 		objP->Read (cf);
+#if OBJ_LIST_TYPE == 1
 		objP->ResetLinks ();
+#endif
 		if (!IsMultiGame && objP->Multiplayer ())
 			gameFileInfo.objects.count--;
 		else {

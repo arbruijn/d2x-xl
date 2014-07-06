@@ -506,7 +506,6 @@ return m_emitters [h].m_bValid;
 void CLightningManager::StaticFrame (void)
 {
 	CObject*		objP;
-	int32_t		i;
 	CFixVector*	vEnd, * vDelta, v;
 
 if (!SHOW_LIGHTNING (1))
