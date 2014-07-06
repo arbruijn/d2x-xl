@@ -544,7 +544,7 @@ if (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS)
 	delObjP->info.contains.nCount = MAX_ROBOT_POWERUPS;
 #endif
 while (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS)
-	OBJECTS [gameData.multigame.create.nObjNums [gameData.multigame.create.nCount--]].Die ();
+	OBJECTS [gameData.multigame.create.nObjNums [--gameData.multigame.create.nCount]].Die ();
 gameData.multigame.create.nCount = 0;
 gameData.multigame.msg.buf [hBufP] = (uint8_t) delObjP->info.contains.nCount;
 for (int32_t i = 0; i < delObjP->info.contains.nCount; i++) {
@@ -942,7 +942,7 @@ if (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS)
 	BRP;
 #endif
 while (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS) 
-	OBJECTS [gameData.multigame.create.nObjNums [gameData.multigame.create.nCount--]].Die ();
+	OBJECTS [gameData.multigame.create.nObjNums [--gameData.multigame.create.nCount]].Die ();
 for (i = 0; i < gameData.multigame.create.nCount; i++) {
 	s = GET_INTEL_SHORT (buf + bufP);
 	if (s != -1)
