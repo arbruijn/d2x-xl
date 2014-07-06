@@ -316,7 +316,7 @@ if (SHOW_LIGHTNING (1)) {
 			}
 		}
 
-	FORALL_OBJS (objP, i) {
+	FORALL_OBJS (objP) {
 		i = objP->Index ();
 		h = gameData.objs.bWantEffect [i];
 		if (h & EXPL_LIGHTNING) {
@@ -390,9 +390,8 @@ for (CLightningEmitter* emitterP = m_emitters.GetFirst (nCurrent); emitterP; emi
 void CLightningManager::DestroyForAllObjects (int32_t nType, int32_t nId)
 {
 	CObject* objP;
-	int32_t	i;
 
-FORALL_OBJS (objP, i) {
+FORALL_OBJS (objP) {
 	if ((objP->info.nType == nType) && ((nId < 0) || (objP->info.nId == nId)))
 #if 1
 		objP->RequestEffects (DESTROY_LIGHTNING);
@@ -480,11 +479,10 @@ if (SHOW_LIGHTNING (1)) {
 CFixVector *CLightningManager::FindTargetPos (CObject* emitterP, int16_t nTarget)
 {
 	CObject* objP;
-	int32_t	i;
 
 if (!nTarget)
 	return 0;
-FORALL_EFFECT_OBJS (objP, i) {
+FORALL_EFFECT_OBJS (objP) {
 	if ((objP != emitterP) && (objP->info.nId == LIGHTNING_ID) && (objP->rType.lightningInfo.nId == nTarget))
 		return &objP->info.position.vPos;
 	}
@@ -515,7 +513,7 @@ if (!SHOW_LIGHTNING (1))
 	return;
 if (!gameOpts->render.lightning.bStatic)
 	return;
-FORALL_EFFECT_OBJS (objP, i) {
+FORALL_EFFECT_OBJS (objP) {
 	if (objP->info.nId != LIGHTNING_ID)
 		continue;
 	int16_t nObject = objP->Index ();

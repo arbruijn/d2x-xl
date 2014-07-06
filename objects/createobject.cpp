@@ -357,8 +357,10 @@ nSegment = objP->info.nSegment;
 cloneP->info.nSegment =
 cloneP->info.nPrevInSeg =
 cloneP->info.nNextInSeg = -1;
+#if OBJ_LIST_TYPE == 1
 cloneP->InitLinks ();
 cloneP->SetLinkedType (OBJ_NONE);
+#endif
 objP->Link ();
 objP->LinkToSeg (nSegment);
 return nObject;
@@ -390,7 +392,7 @@ if (nPowerup == POW_VULCAN_AMMO) {
 	int32_t	nAmmo = 0;
 	int32_t	i;
 	CObject* objP;
-	FORALL_POWERUP_OBJS (objP, i) {
+	FORALL_POWERUP_OBJS (objP) {
 		if ((objP->Id () == POW_VULCAN) || (objP->Id () == POW_GAUSS))
 			nAmmo += objP->cType.powerupInfo.nCount;
 		}
@@ -401,7 +403,7 @@ else if ((nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE)) {
 	int32_t	nId = (nPowerup == POW_PROXMINE) ? PROXMINE_ID : SMARTMINE_ID;
 	int32_t	i;
 	CObject* objP;
-	FORALL_WEAPON_OBJS (objP, i) {
+	FORALL_WEAPON_OBJS (objP) {
 		if (objP->Id () == nId)
 			nMines++;
 		}

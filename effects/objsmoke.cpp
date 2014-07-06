@@ -936,11 +936,10 @@ for (int32_t i = 0; i <= gameData.objs.nLastObject [1]; i++, objP++) {
 void StaticParticlesFrame (void)
 {
 	CObject* objP;
-	int32_t	i;
 
 if (!SHOW_SMOKE)
 	return;
-FORALL_EFFECT_OBJS (objP, i) {
+FORALL_EFFECT_OBJS (objP) {
 	if (objP->info.nId == PARTICLE_ID)
 		DoStaticParticles (objP);
 	}

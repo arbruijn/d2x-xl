@@ -1075,7 +1075,6 @@ void SetSoundSources (void)
 	CSegment*	segP;
 	CObject*		objP;
 	int32_t		nSegSoundSources, nSideSounds [6];
-	int32_t		i;
 
 SetD1Sound ();
 audio.InitSounds ();		//clear old sounds
@@ -1104,7 +1103,7 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSeg
 			audio.CreateSegmentSound (nSideSounds [nSide], nSegment, nSide, segP->SideCenter (nSide), 1, I2X (1) / (2 * nSegSoundSources));
 	}
 
-FORALL_EFFECT_OBJS (objP, i)
+FORALL_EFFECT_OBJS (objP)
 	if (objP->info.nId == SOUND_ID) {
 		char fn [FILENAME_LEN];
 #if 0 //DBG
@@ -1117,7 +1116,7 @@ FORALL_EFFECT_OBJS (objP, i)
 
 int16_t nSound = audio.GetSoundByName ("explode2");
 if (0 <= nSound) {
-	FORALL_STATIC_OBJS (objP, i)
+	FORALL_STATIC_OBJS (objP)
 		if (objP->info.nType == OBJ_EXPLOSION) {
 			objP->info.renderType = RT_POWERUP;
 			objP->rType.vClipInfo.nClipIndex = objP->info.nId;

@@ -244,10 +244,9 @@ if (AM_SHOW_PLAYERS) {
 
 
 	CObject*			objP;
-	int32_t			i;
 	CRenderPoint	spherePoint;
 
-FORALL_OBJS (objP, i) {
+FORALL_OBJS (objP) {
 	int32_t size = objP->info.xSize;
 	if (bTextured)
 		ogl.SetBlending (true);

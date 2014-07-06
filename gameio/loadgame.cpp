@@ -211,7 +211,7 @@ int32_t CountRobotsInLevel (void)
 	int32_t 	i;
 	CObject*	objP;
 
-FORALL_ROBOT_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP)
 	robotCount++;
 return robotCount;
 }
@@ -224,7 +224,7 @@ int32_t CountHostagesInLevel (void)
 	int32_t 	i;
 	CObject*	objP;
 
-FORALL_STATIC_OBJS (objP, i)
+FORALL_STATIC_OBJS (objP)
 	if (objP->info.nType == OBJ_HOSTAGE)
 		count++;
 return count;
@@ -625,7 +625,7 @@ void SetVertigoRobotFlags (void)
 	int32_t	i;
 
 gameData.objs.nVertigoBotFlags = 0;
-FORALL_ROBOT_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP)
 	if ((objP->info.nId >= 66) && !IS_BOSS (objP))
 		gameData.objs.nVertigoBotFlags |= (1 << (objP->info.nId - 64));
 }
@@ -2098,7 +2098,7 @@ void FilterObjectsFromLevel (void)
 	CObject*	objP;
 	int32_t	i;
 
-FORALL_POWERUP_OBJS (objP, i)
+FORALL_POWERUP_OBJS (objP)
 	objP->BashToShield ((objP->info.nId == POW_REDFLAG) || (objP->info.nId == POW_BLUEFLAG));
 }
 
@@ -2400,7 +2400,7 @@ void CopyDefaultsToRobotsAll (void)
 	CObject*	objP;
 	int32_t	i;
 
-FORALL_ROBOT_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP)
 	CopyDefaultsToRobot (objP);
 
 }

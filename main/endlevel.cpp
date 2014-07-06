@@ -230,7 +230,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {		// don't do this if in playbac
 if (gameStates.app.bPlayerIsDead || (gameData.objs.consoleP->info.nFlags & OF_SHOULD_BE_DEAD))
 	return;				//don't start if dead!
 //	Dematerialize Buddy!
-FORALL_ROBOT_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP)
 	if (IS_GUIDEBOT (objP)) {
 			CreateExplosion (objP->info.nSegment, objP->info.position.vPos, I2X (7) / 2, VCLIP_POWERUP_DISAPPEARANCE);
 			objP->Die ();
@@ -1537,7 +1537,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {		// don't do this if in playbac
 if (gameStates.app.bPlayerIsDead || (gameData.objs.consoleP->info.nFlags & OF_SHOULD_BE_DEAD))
 	return;				//don't start if dead!
 //	Dematerialize Buddy!
-FORALL_ROBOT_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP)
 	if (IS_GUIDEBOT (objP)) {
 			CreateExplosion (objP->info.nSegment, objP->info.position.vPos, I2X (7) / 2, VCLIP_POWERUP_DISAPPEARANCE);
 			objP->Die ();

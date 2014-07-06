@@ -433,7 +433,7 @@ else {
 	gameStates.gameplay.nLastReactor = -1;
 	gameData.reactor.states.Clear (char (0xff));
 	}
-FORALL_ACTOR_OBJS (objP, i) {
+FORALL_ACTOR_OBJS (objP) {
 	if (objP->info.nType == OBJ_REACTOR) {
 		if (gameStates.gameplay.nReactorCount [0] && !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)) {
 #if TRACE

@@ -123,7 +123,7 @@ void SetPlayerAwarenessAll (void)
 	CObject	*objP;
 
 ProcessAwarenessEvents ();
-FORALL_OBJS (objP, i)
+FORALL_OBJS (objP)
 	if (objP->info.controlType == CT_AI) {
 		i = objP->Index ();
 		nSegment = OBJECTS [i].info.nSegment;
@@ -154,7 +154,7 @@ if (gameData.ai.nLastMissileCamera != -1) {
 	// Clear if supposed misisle camera is not a weapon, or just every so often, just in case.
 	if (((gameData.app.nFrameCount & 0x0f) == 0) || (OBJECTS [gameData.ai.nLastMissileCamera].info.nType != OBJ_WEAPON)) {
 		gameData.ai.nLastMissileCamera = -1;
-		FORALL_ROBOT_OBJS (objP, i) {
+		FORALL_ROBOT_OBJS (objP) {
 			objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
 			}
 		}
@@ -165,7 +165,7 @@ for (h = gameData.bosses.ToS (), j = 0; j < h; j++)
 			DoBossDyingFrame (OBJECTS + gameData.bosses [j].m_nDying);
 		else {
 			CObject *objP = OBJECTS.Buffer ();
-			FORALL_ROBOT_OBJS (objP, i)
+			FORALL_ROBOT_OBJS (objP)
 				if (ROBOTINFO (objP->info.nId).bossFlag)
 					DoBossDyingFrame (objP);
 		}

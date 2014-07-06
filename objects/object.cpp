@@ -917,7 +917,7 @@ int32_t VerifyObjLists (int32_t nObject)
 
 if (refObjP && !refObjP->Links (0).prev  && !refObjP->Links (0).next)
 	refObjP = NULL;
-FORALL_OBJS (objP, i) {
+FORALL_OBJS (objP) {
 	if (objP == refObjP)
 		refObjP = NULL;
 	if (objP->Type () < MAX_OBJECT_TYPES) {
@@ -1927,6 +1927,13 @@ return m_objP == NULL;
 
 //------------------------------------------------------------------------------
 
+CObject* CObjectIterator::Next (void)
+{
+return m_objP ? m_objP->Links (m_nLink).next : NULL;
+}
+
+//------------------------------------------------------------------------------
+
 CObject* CObjectIterator::Step (void)
 {
 if (Done ())
@@ -1986,6 +1993,13 @@ return (gameData.objs.nObjects > 0) ? &OBJECTS [0] : NULL;
 bool CObjectIterator::Done (void)
 {
 return m_i >= gameData.objs.nObjects;
+}
+
+//------------------------------------------------------------------------------
+
+CObject* CObjectIterator::Next (void)
+{
+return (m_i < gameData.objs.nObjects) ? &OBJECTS [i] : NULL;
 }
 
 //------------------------------------------------------------------------------

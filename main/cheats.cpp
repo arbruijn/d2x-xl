@@ -118,7 +118,7 @@ int32_t KillAllBuddyBots (int32_t bVerbose)
 	int32_t		nKilled = 0;
 	int32_t		i;
 
-FORALL_ROBOT_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP)
 	if (IS_GUIDEBOT (objP)) {
 		if (gameStates.app.bNostalgia)
 			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
@@ -142,7 +142,7 @@ void KillAllRobots (int32_t bVerbose)
 	int32_t		i;
 
 // Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
-FORALL_ROBOT_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP)
 	if (!(ROBOTINFO (objP->info.nId).companion || ROBOTINFO (objP->info.nId).bossFlag || objP->IsGeometry ())) {
 		nKilled++;
 		if (gameStates.app.bNostalgia)
@@ -170,7 +170,7 @@ void KillAllBossRobots (int32_t bVerbose)
 if (gameStates.gameplay.bKillBossCheat)
 	gameStates.gameplay.bKillBossCheat = 0;
 else {
-	FORALL_ROBOT_OBJS (objP, i)
+	FORALL_ROBOT_OBJS (objP)
 		if (ROBOTINFO (objP->info.nId).bossFlag) {
 			nKilled++;
 			if (gameStates.app.bNostalgia)
@@ -199,7 +199,7 @@ void KillEverything (int32_t bVerbose)
 
 if (bVerbose)
 	HUDInitMessage (TXT_KILL_ETC);
-FORALL_OBJS (objP, i) {
+FORALL_OBJS (objP) {
 	switch (objP->info.nType) {
 		case OBJ_ROBOT:
 			if (objP->IsGeometry ())
@@ -243,7 +243,7 @@ void KillThief (int32_t bVerbose)
 	CObject*	objP;
 	int32_t	i;
 
-FORALL_ROBOT_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP)
 	if (IS_THIEF (objP)) {
 		if (gameStates.app.bNostalgia)
 			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
@@ -267,7 +267,7 @@ void KillAllSnipers (int32_t bVerbose)
 	int32_t		i;
 
 //	Kill all snipers.
-FORALL_ROBOT_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP)
 	if ((objP->info.nType == OBJ_ROBOT) && (objP->cType.aiInfo.behavior == AIB_SNIPE)) {
 		nKilled++;
 		objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
@@ -286,7 +286,7 @@ void KillBuddy (int32_t bVerbose)
 	int32_t	i;
 
 //	Kill buddy.
-FORALL_ROBOT_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP)
 	if (IS_GUIDEBOT (objP)) {
 		objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		if (bVerbose)

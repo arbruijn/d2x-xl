@@ -243,10 +243,9 @@ UpdateFiringSounds ();
 int32_t CountPlayerObjects (int32_t nPlayer, int32_t nType, int32_t nId)
 {
 	int32_t	h = 0;
-	int32_t	i;
 	CObject*	objP;
 
-FORALL_OBJS (objP, i) 
+FORALL_OBJS (objP) 
 	if ((objP->info.nType == nType) && (objP->info.nId == nId) &&
 		 (objP->cType.laserInfo.parent.nType == OBJ_PLAYER) &&
 		 (OBJECTS [objP->cType.laserInfo.parent.nObject].info.nId == nPlayer))

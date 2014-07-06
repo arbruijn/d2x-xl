@@ -275,10 +275,10 @@ void CShrapnelManager::DoFrame (void)
 
 if (!SHOW_SMOKE)
 	return;
-FORALL_STATIC_OBJS (objP, i)
+FORALL_STATIC_OBJS (objP)
 	if (objP->info.renderType == RT_SHRAPNELS)
 		Update (objP);
-FORALL_ACTOR_OBJS (objP, i) {
+FORALL_ACTOR_OBJS (objP) {
 	i = objP->Index ();
 	if (gameData.objs.bWantEffect [i] & SHRAPNEL_SMOKE) {
 		gameData.objs.bWantEffect [i] &= ~SHRAPNEL_SMOKE;

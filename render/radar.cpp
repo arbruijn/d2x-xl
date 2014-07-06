@@ -326,12 +326,11 @@ ogl.FlushBuffers (GL_LINES, 2);
 void CRadar::RenderObjects (int32_t bAbove)
 {
 	CObject*			objP;
-	int32_t			i;
 	CFloatVector3*	colorP = radarColor + gameOpts->render.automap.nColor;
 
 // glPushMatrix ();
 glLineWidth (GLfloat (2 + gameOpts->render.cockpit.nRadarSize));
-FORALL_OBJS (objP, i) {
+FORALL_OBJS (objP) {
 	if ((objP->info.nType == OBJ_PLAYER) && (objP != gameData.objs.consoleP)) {
 		if (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)) {
 			colorP = shipColors + (IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId);

@@ -296,7 +296,7 @@ PrintLog (1, "caching model textures\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 1);
 bModelLoaded.Clear ();
 bVClipLoaded.Clear ();
-FORALL_OBJS (objP, i) {
+FORALL_OBJS (objP) {
 	if (objP->info.renderType != RT_POLYOBJ)
 		continue;
 	if (bModelLoaded [objP->ModelId ()])

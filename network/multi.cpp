@@ -3042,7 +3042,7 @@ if (IsNetworkGame) {
 invulCount = 0;
 cloakCount = 0;
 SetupPowerupFilter ();
-FORALL_STATIC_OBJS (objP, i) {
+FORALL_STATIC_OBJS (objP) {
 	if (objP->info.nType == OBJ_HOSTAGE) {
 		if (!IsCoopGame) {
 			nObject = CreatePowerup (POW_SHIELD_BOOST, -1, objP->info.nSegment, objP->info.position.vPos, 1);
@@ -3343,7 +3343,7 @@ int32_t MultiDeleteExtraObjects (void)
 // This function also prints the total number of available multiplayer
 // positions in this level, even though this should always be 8 or more!
 
-FORALL_OBJS (objP, i) {
+FORALL_OBJS (objP) {
 	nType = objP->info.nType;
 	if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST) || (nType == OBJ_CAMBOT) || (nType == OBJ_EFFECT))
 		nnp++;
@@ -3887,7 +3887,7 @@ void MultiRemoveGhostShips (void)
 	int32_t	i;
 
 memset (bHaveObject, 0, sizeof (bHaveObject));
-FORALL_PLAYER_OBJS (objP, i) {
+FORALL_PLAYER_OBJS (objP) {
 	if (objP->info.nType != OBJ_PLAYER)
 		continue;
 	if (bHaveObject [objP->info.nId] || (objP->info.nId >= gameData.multiplayer.nPlayers))
@@ -5083,7 +5083,7 @@ void MultiDoReturnFlagHome (uint8_t* buf)
 	uint16_t		nType = buf [1];
 	uint16_t		id = buf [2];
 
-FORALL_POWERUP_OBJS (objP, i) {
+FORALL_POWERUP_OBJS (objP) {
 	if ((objP->info.nType == nType) && (objP->info.nId == id)) {
 		ReturnFlagHome (objP);
 		break;
@@ -5227,7 +5227,7 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 		CObject* objP, * delObjP = NULL;
 		int32_t tCreate = -0x7FFFFFFF;
 
-		FORALL_STATIC_OBJS (objP, i) {
+		FORALL_STATIC_OBJS (objP) {
 			if ((objP->Id () == j) && (tCreate < objP->CreationTime ())) {
 				tCreate = objP->CreationTime ();
 				delObjP = objP;

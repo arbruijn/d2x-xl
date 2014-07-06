@@ -284,11 +284,10 @@ return 1;
 void RenderObjectShadows (void)
 {
 	CObject* objP;
-	int32_t	i;
 	int32_t	j, bSee;
 	CObject	fakePlayerPos = *gameData.objs.viewerP;
 
-FORALL_ACTOR_OBJS (objP, i)
+FORALL_ACTOR_OBJS (objP)
 	if (objP == gameData.objs.consoleP)
 		RenderObject (objP, 0, 0);
 	else if ((objP->info.nType == OBJ_PLAYER) || 
@@ -402,7 +401,7 @@ for (h = l = 0; l < n; l++) {
 	lightP->render.bExclusive = 0;
 	}
 
-FORALL_OBJS (objP, h) {
+FORALL_OBJS (objP) {
 	h = objP->Index ();
 	if (gameData.render.mine.bObjectRendered [h] != gameStates.render.nFrameFlipFlop)
 		continue;

@@ -810,12 +810,12 @@ if (nObjType == OBJ_WEAPON) {
 else if (nObjType != OBJ_ROBOT) // && ((nObjType != OBJ_WEAPON) || (gameData.weapons.info [nObjId].children < 1)))
 	return;
 
-int32_t		i, nObject;
-CObject	*curObjP;
+int32_t	i, nObject;
+CObject*	curObjP;
 
 if (IsMultiGame)
 	gameStates.app.SRand (8321L);
-FORALL_OBJS (curObjP, nObject) {
+FORALL_OBJS (curObjP) {
 	nObject = OBJ_IDX (curObjP);
 	if (curObjP->info.nType == OBJ_PLAYER) {
 		if (nObject == parent.nObject)

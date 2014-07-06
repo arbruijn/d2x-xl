@@ -542,7 +542,7 @@ for (j = 0, playerP = gameData.multiplayer.players; j < MAX_PLAYERS; j++, player
 if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 #endif
 nPlayers = 0;
-FORALL_OBJS (objP, i) {
+FORALL_OBJS (objP) {
 	i = objP->Index ();
 	t = objP->info.nType;
 	if (t == OBJ_GHOST) {

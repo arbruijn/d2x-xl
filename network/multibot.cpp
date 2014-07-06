@@ -145,7 +145,7 @@ if (gameData.app.GameMode (GM_MULTI_ROBOTS)) {
 	if (nPlayer == N_LOCALPLAYER)
 		for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++)
 			MultiDeleteControlledRobot (gameData.multigame.robots.controlled [i]);
-	FORALL_ROBOT_OBJS (objP, i)
+	FORALL_ROBOT_OBJS (objP)
 		if (objP->cType.aiInfo.REMOTE_OWNER == nPlayer) {
 			objP->cType.aiInfo.REMOTE_OWNER = -1;
 			objP->cType.aiInfo.REMOTE_SLOT_NUM = (nPlayer == N_LOCALPLAYER) ? 4 : 0;

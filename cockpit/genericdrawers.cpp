@@ -938,17 +938,17 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 		//so we search the CObject list for the nObject
 		CObject *objP;
 		nObject = -1;
-		FORALL_PLAYER_OBJS (objP, nObject)
+		FORALL_PLAYER_OBJS (objP)
 			if (objP->info.nId == nPlayer) {
 				nObject = objP->Index ();
 				break;
 				}
-		if (IS_OBJECT (objP, nObject))		//not in list, thus not visible
+		if (IS_OBJECT (objP, objP->Index ()))		//not in list, thus not visible
 			bShowName = !bHasFlag;				//..so don't show name
 		}
 
 	if ((bShowName || bHasFlag) && CanSeeObject (nObject, 1)) {
-		CRenderPoint		vPlayerPos;
+		CRenderPoint	vPlayerPos;
 
 #if 1
 		vPlayerPos.TransformAndEncode (OBJECTS [nObject].info.position.vPos);

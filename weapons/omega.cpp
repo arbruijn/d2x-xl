@@ -65,7 +65,7 @@ void DeleteOldOmegaBlobs (CObject *parentObjP)
 	CObject*	objP;
 	int32_t	i;
 
-FORALL_WEAPON_OBJS (objP, i)
+FORALL_WEAPON_OBJS (objP)
 	if ((objP->info.nId == OMEGA_ID) && (objP->cType.laserInfo.parent.nObject == nParentObj))
 		ReleaseObject (objP->Index ());
 }

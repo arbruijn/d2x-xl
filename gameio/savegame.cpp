@@ -831,7 +831,7 @@ for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	m_cf.WriteInt (gameData.multiplayer.weaponStates [i].bTripleFusion);
 if (!m_bBetweenLevels) {
 //Finish all morph OBJECTS
-	FORALL_OBJS (objP, i) {
+	FORALL_OBJS (objP) {
 	if (objP->info.nType == OBJ_NONE) 
 			continue;
 		if (objP->info.nType == OBJ_CAMERA)

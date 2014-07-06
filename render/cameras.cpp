@@ -576,7 +576,7 @@ if (gameData.trigs.m_nTriggers) {
 	}
 
 if (gameData.trigs.m_nObjTriggers) {
-	FORALL_OBJS (objP, i) {
+	FORALL_OBJS (objP) {
 		if ((j = gameData.trigs.objTriggerRefs [objP->Index ()].nFirst) >= int32_t (OBJTRIGGERS.Length ()))
 			continue;
 		triggerP = OBJTRIGGERS + j;

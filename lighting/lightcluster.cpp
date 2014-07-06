@@ -47,9 +47,8 @@ if (!m_bUse)
 	return;
 
 	CObject*	objP;
-	int32_t	i;
 
-FORALL_LIGHT_OBJS (objP, i)
+FORALL_LIGHT_OBJS (objP)
 	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID)) {
 		objP->SetLife (0);
 		memset (&objP->cType.lightInfo, 0, sizeof (objP->cType.lightInfo));
@@ -66,7 +65,7 @@ if (!m_bUse)
 	CObject	*objP;
 	int32_t		h, i;
 
-FORALL_LIGHT_OBJS (objP, i) {
+FORALL_LIGHT_OBJS (objP) {
 	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID)) {
 		i = objP->Index ();
 #if DBG

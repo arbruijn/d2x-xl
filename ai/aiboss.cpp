@@ -85,7 +85,7 @@ if (nBoss < 0)
 	return -1;
 if (gameData.time.xGame - gameData.bosses [nBoss].m_nLastGateTime < gameData.bosses [nBoss].m_nGateInterval)
 	return -1;
-FORALL_ROBOT_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP)
 	if (objP->info.nCreator == BOSS_GATE_PRODUCER_NUM)
 		count++;
 if (count > 2 * gameStates.app.nDifficultyLevel + 6) {
@@ -249,7 +249,7 @@ int32_t IsValidTeleportDest (CFixVector *vPos, int32_t nMinDist)
 	CFixVector	vOffs;
 	fix			xDist;
 
-FORALL_ACTOR_OBJS (objP, i) {
+FORALL_ACTOR_OBJS (objP) {
 	vOffs = *vPos - objP->info.position.vPos;
 	xDist = vOffs.Mag();
 	if (xDist > ((nMinDist + objP->info.xSize) * 3 / 2))

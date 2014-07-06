@@ -76,7 +76,7 @@ if (!gameData.hoard.monsterballP) {
 	CObject*	objP;
 	int32_t	i;
 
-	FORALL_STATIC_OBJS (objP, i)
+	FORALL_STATIC_OBJS (objP)
 		if ((objP->info.nType == OBJ_MONSTERBALL) || ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_MONSTERBALL))) {
 			gameData.hoard.monsterballP = objP;
 			break;
@@ -98,7 +98,7 @@ if (gameData.hoard.monsterballP) {
 	}	
 gameData.hoard.nMonsterballSeg = -1;
 gameData.hoard.nLastHitter = -1;
-FORALL_STATIC_OBJS (objP, i)
+FORALL_STATIC_OBJS (objP)
 	if ((objP->info.nType == OBJ_MONSTERBALL) || ((objP->info.nType == OBJ_POWERUP) && (objP->info.nId == POW_MONSTERBALL))) {
 		if (gameData.hoard.nMonsterballSeg < 0) {
 			gameData.hoard.nMonsterballSeg = objP->info.nSegment;

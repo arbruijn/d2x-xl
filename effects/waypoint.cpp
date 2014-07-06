@@ -33,10 +33,9 @@ m_wayPoints.Destroy ();
 int32_t CWayPointManager::Count (void)
 {
 	CObject* objP;
-	int32_t	i;
 
 m_nWayPoints = 0;
-FORALL_EFFECT_OBJS (objP, i) {
+FORALL_EFFECT_OBJS (objP) {
 	if (objP->Id () == WAYPOINT_ID)
 		++m_nWayPoints;
 	}
@@ -65,9 +64,8 @@ if (nTarget < 0)
 	return NULL;
 
 	CObject* targetP;
-	int32_t	i;
 
-FORALL_EFFECT_OBJS (targetP, i) {
+FORALL_EFFECT_OBJS (targetP) {
 	if ((targetP->Id () == LIGHTNING_ID) && (targetP->rType.lightningInfo.nId == nTarget))
 		return targetP;
 	}
@@ -83,7 +81,7 @@ void CWayPointManager::Gather (void)
 	CObject* objP;
 	int32_t i = 0;
 
-FORALL_EFFECT_OBJS (objP, i) {
+FORALL_EFFECT_OBJS (objP) {
 	if (objP->Id () == WAYPOINT_ID) 
 		m_wayPoints [i++] = objP;
 	}
@@ -113,7 +111,6 @@ nId = objP ? objP->cType.wayPointInfo.nId [0] : -1;
 void CWayPointManager::Renumber (void)
 {
 	CObject* objP;
-	int32_t	i;
 
 for (int32_t i = 0; i < m_nWayPoints; i++)
 	m_wayPoints [i]->cType.wayPointInfo.nId [0] = i;
@@ -121,7 +118,7 @@ for (int32_t i = 0; i < m_nWayPoints; i++)
 for (int32_t i = 0; i < m_nWayPoints; i++)
 	Remap (m_wayPoints [i]->NextWayPoint ());
 
-FORALL_EFFECT_OBJS (objP, i) {
+FORALL_EFFECT_OBJS (objP) {
 	if ((objP->Id () == LIGHTNING_ID) && (*objP->WayPoint () >= 0)) {
 		CObject* targetP = Target (objP);
 		if (targetP && !Target (targetP))
@@ -147,9 +144,8 @@ for (int32_t i = 0; i < m_nWayPoints; i++)
 void CWayPointManager::Attach (void)
 {
 	CObject* objP;
-	int32_t	i;
 
-FORALL_EFFECT_OBJS (objP, i) {
+FORALL_EFFECT_OBJS (objP) {
 	if (objP->Id () == LIGHTNING_ID) {
 		uint32_t i = (uint32_t) *objP->WayPoint ();
 		if (m_wayPoints.IsIndex (i))
@@ -273,7 +269,7 @@ if (gameStates.app.tick40fps.bTick) {
 	CObject* objP;
 	int32_t i = 0;
 
-	FORALL_EFFECT_OBJS (objP, i) {
+	FORALL_EFFECT_OBJS (objP) {
 		if (objP->Id () != LIGHTNING_ID) 
 			continue;
 		if (!objP->WayPoint () || (*objP->WayPoint () < 0))

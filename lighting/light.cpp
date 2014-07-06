@@ -634,7 +634,7 @@ if (EGI_FLAG (bUseLightning, 0, 0, 1) && !gameStates.render.nLightingMethod) {
 //	Only objects which are in rendered segments cast dynamic light.  We might want to extend this
 //	one or two segments if we notice light changing as OBJECTS go offgameData.render.screen.  I couldn't see any
 //	serious visual degradation.  In fact, I could see no humorous degradation, either. --MK
-FORALL_OBJS (objP, nObject) {
+FORALL_OBJS (objP) {
 	if (objP->info.nType == OBJ_NONE)
 		continue;
 	if (SkipPowerup (objP))
@@ -654,7 +654,7 @@ FORALL_OBJS (objP, nObject) {
 		}
 	}
 //	Now, process all lights from last frame which haven't been processed this frame.
-FORALL_OBJS (objP, nObject) {
+FORALL_OBJS (objP) {
 	nObject = objP->Index ();
 	//	In multiplayer games, process even unprocessed OBJECTS every 4th frame, else don't know about CPlayerData sneaking up.
 	if ((gameData.render.lights.objects [nObject]) ||

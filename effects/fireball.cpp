@@ -140,7 +140,6 @@ CObject* CreateExplosion (CObject* parentP, int16_t nSegment, CFixVector& vPos, 
 	CFixVector	vHit, vForce;
 	int32_t		nType, id;
 	int32_t		flash = parentP ? static_cast<int32_t> (gameData.weapons.info [parentP->info.nId].flash) : 0;
-	int32_t		i;
 
 nObject = CreateFireball (nVClip, nSegment, vPos, xSize, RT_FIREBALL);
 if (nObject < 0)
@@ -180,7 +179,7 @@ if (SHOW_LIGHTNING (2)) {
 if (xMaxDamage <= 0)
 	return explObjP;
 // -- now legal for xSplashDamage explosions on a CWall. Assert (this != NULL);
-FORALL_OBJS (objP, i) {
+FORALL_OBJS (objP) {
 	nType = objP->info.nType;
 	id = objP->info.nId;
 	//	Weapons used to be affected by badass explosions, but this introduces serious problems.

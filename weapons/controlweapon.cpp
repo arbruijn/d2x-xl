@@ -735,7 +735,7 @@ void ProcessSmartMinesFrame (void)
 	//	check every 8th CObject each frame.
 gameStates.gameplay.bHaveSmartMines = 0;
 
-FORALL_WEAPON_OBJS (bombP, i) {
+FORALL_WEAPON_OBJS (bombP) {
 	if (bombP->info.nId != SMARTMINE_ID)
 		continue;
 	nParentObj = bombP->cType.laserInfo.parent.nObject;
@@ -744,7 +744,7 @@ FORALL_WEAPON_OBJS (bombP, i) {
 		continue;
 	vBombPos = &bombP->info.position.vPos;
 	i = bombP->Index ();
-	FORALL_ACTOR_OBJS (actorP, j) {
+	FORALL_ACTOR_OBJS (actorP) {
 		j = actorP->Index ();
 		if (j == nParentObj) 
 			continue;

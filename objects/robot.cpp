@@ -36,7 +36,7 @@ int32_t CalcGunPoint (CFixVector *vGunPoint, CObject *objP, int32_t nGun)
 	tRobotInfo*	botInfoP;
 	CFixVector*	vGunPoints, vGunPos, vRot;
 	CFixMatrix	m;
-	int32_t			nSubModel;				//submodel number
+	int32_t		nSubModel;				//submodel number
 
 Assert(objP->info.renderType == RT_POLYOBJ || objP->info.renderType == RT_MORPH);
 //Assert(objP->info.nId < gameData.bots.nTypes [gameStates.app.bD1Data]);
@@ -139,7 +139,6 @@ void InitCamBots (int32_t bReset)
 {
 	tRobotInfo&	camBotInfo = gameData.bots.info [0][gameData.bots.nCamBotId];
 	CObject*		objP;
-	int32_t		i;
 
 if ((gameData.bots.nCamBotId < 0) || gameStates.app.bD1Mission)
 	return;
@@ -163,7 +162,7 @@ memset (camBotInfo.turnTime, 0, sizeof (camBotInfo.turnTime));
 memset (camBotInfo.xMaxSpeed, 0, sizeof (camBotInfo.xMaxSpeed));
 memset (camBotInfo.circleDistance, 0, sizeof (camBotInfo.circleDistance));
 memset (camBotInfo.nRapidFireCount, 0, sizeof (camBotInfo.nRapidFireCount));
-FORALL_STATIC_OBJS (objP, i) 
+FORALL_STATIC_OBJS (objP) 
 	if (objP->info.nType == OBJ_CAMBOT) {
 		objP->info.nId	= gameData.bots.nCamBotId;
 		objP->AdjustSize ();

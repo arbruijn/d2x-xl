@@ -634,8 +634,7 @@ UpdatePlayerOrient ();
 gameData.objs.update.Reset ();
 #endif
 ++gameData.objs.nFrameCount;
-for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
-	nextObjP = objP->Links (0).next;
+FORALL_OBJS (objP) {
 	if ((objP->info.nType != OBJ_NONE) && (objP->info.nType != OBJ_GHOST) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !objP->Update ()) {
 		PROF_END(ptObjectStates)
 		return 0;
@@ -704,8 +703,8 @@ void CleanupObjects (void)
 	CObject	*objP, *nextObjP = NULL;
 	int32_t		nLocalDeadPlayerObj = -1;
 
-for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
-	nextObjP = objP->Links (0).next;
+for (CObjectIterator iter (objP); objP; objP = nextObjP) {
+	nextObjP = iter.Step ();
 	if (objP->info.nType == OBJ_NONE)
 		continue;
 	if (!(objP->info.nFlags & OF_SHOULD_BE_DEAD))

@@ -77,7 +77,7 @@ gameData.escort.nGoalObject = ESCORT_GOAL_UNSPECIFIED;
 gameData.escort.nSpecialGoal = -1;
 gameData.escort.nGoalIndex = -1;
 gameData.escort.bMsgsSuppressed = 0;
-FORALL_ROBOT_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP)
 	if (IS_GUIDEBOT (objP))
 		break;
 if (IS_OBJECT (objP, i))
@@ -157,7 +157,7 @@ if (gameData.escort.bMayTalk)
 if ((OBJECTS [gameData.escort.nObjNum].info.nType == OBJ_ROBOT) &&
 	 (gameData.escort.nObjNum <= gameData.objs.nLastObject [0]) &&
 	!ROBOTINFO (OBJECTS [gameData.escort.nObjNum].info.nId).companion) {
-	FORALL_ROBOT_OBJS (objP, i)
+	FORALL_ROBOT_OBJS (objP)
 		if (IS_GUIDEBOT (objP))
 			break;
 	if (!IS_OBJECT (objP, i))
@@ -360,7 +360,7 @@ int32_t MarkerExistsInMine (int32_t id)
 	int32_t	i;
 	CObject*	objP;
 
-FORALL_OBJS (objP, i)
+FORALL_OBJS (objP)
 	if ((objP->info.nType == OBJ_MARKER) && (objP->info.nId == id))
 		return 1;
 return 0;
@@ -379,7 +379,7 @@ if (!gameData.escort.bMayTalk) {
 		int32_t	i;
 		CObject*	objP;
 
-		FORALL_ROBOT_OBJS (objP, i)
+		FORALL_ROBOT_OBJS (objP)
 			if (IS_GUIDEBOT (objP)) {
 				HUDInitMessage (TXT_GB_RELEASE, gameData.escort.szName);
 				return;
@@ -948,14 +948,14 @@ if (Buddy_last_missileTime > gameData.time.xGame)
 
 if (Buddy_last_missileTime + I2X (2) < gameData.time.xGame) {
 	//	See if a robot potentially in view cone
-	FORALL_ROBOT_OBJS (objP, i)
+	FORALL_ROBOT_OBJS (objP)
 		if (!ROBOTINFO (objP->info.nId).companion)
 			if (MaybeBuddyFireMega (objP->Index ())) {
 				Buddy_last_missileTime = gameData.time.xGame;
 				return;
 			}
 	//	See if a robot near enough that buddy should fire smart missile
-	FORALL_ROBOT_OBJS (objP, i)
+	FORALL_ROBOT_OBJS (objP)
 		if (!ROBOTINFO (objP->info.nId).companion)
 			if (MaybeBuddyFireSmart (objP->Index ())) {
 				Buddy_last_missileTime = gameData.time.xGame;
@@ -1130,7 +1130,7 @@ if (gameStates.app.bD1Mission)
 	char		szGoal [32], tstr [32];
 	CObject	*objP;
 
-FORALL_ROBOT_OBJS (objP, i) {
+FORALL_ROBOT_OBJS (objP) {
 	if (ROBOTINFO (objP->info.nId).companion)
 		break;
 	}

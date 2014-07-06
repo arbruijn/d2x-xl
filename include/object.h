@@ -1407,7 +1407,8 @@ class CObjectIterator {
 		virtual CObject* Head (void);
 		virtual int32_t Link (void) { return 0; }
 		bool Done (void);
-		CObject*Step (void);
+		CObject* Next (void);
+		CObject* Step (void);
 		CObject* Current (void) { return (m_objP); }
 };
 
@@ -1481,7 +1482,8 @@ class CObjectIterator {
 
 		CObject* Start (void);
 		bool Done (void);
-		CObject*Step (void);
+		CObject* Next (void);
+		CObject* Step (void);
 		CObject* Current (void) { return (m_objP); }
 		int32_t Index (void) { return m_i; }
 		virtual bool Match (void) { return true; }
@@ -1555,6 +1557,8 @@ class CStaticObjectIterator : public CObjectIterator {
 #define FORALL_ACTOR_OBJS(_objP)						for (CActorIterator actorIter ((_objP)); !actorIter.Done (); (_objP) = actorIter.Step ())
 #define FORALL_STATIC_OBJS(_objP)					for (CStaticObjectIterator staticsIter ((_objP)); !staticsIter.Done (); (_objP) = staticsIter.Step ())
 
+#define IS_OBJECT(_objP, _i)							((_i) <= gameData.objs.nLastObject [0])
+
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
@@ -1566,8 +1570,8 @@ class CStaticObjectIterator : public CObjectIterator {
 // do whatever setup needs to be done
 void InitObjects (bool bInitPlayer = true);
 
-int32_t CreateObject (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, const CFixMatrix& mOrient,
-					   fix xSize, uint8_t cType, uint8_t mType, uint8_t rType);
+int32_t CreateObject (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, const CFixMatrix& mOrient, 
+							 fix xSize, uint8_t cType, uint8_t mType, uint8_t rType);
 int32_t CloneObject (CObject *objP);
 int32_t CreateRobot (uint8_t nId, int16_t nSegment, const CFixVector& vPos);
 int32_t CreatePowerup (uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, int32_t bIgnoreLimits, bool bForce = false);

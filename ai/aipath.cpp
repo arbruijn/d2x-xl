@@ -542,7 +542,7 @@ void ValidateAllPaths (void)
 	CObject*			objP;
 	tAIStaticInfo*	aiP;
 
-FORALL_ROBOT_OBJS (objP, i) {
+FORALL_ROBOT_OBJS (objP) {
 	aiP = &objP->cType.aiInfo;
 	if ((objP->info.controlType == CT_AI) &&
 		 (aiP->nHideIndex != -1) && (aiP->nPathLength > 0) &&
@@ -1225,7 +1225,7 @@ if (nObjects > 0) {
 gameData.ai.freePointSegs = gameData.ai.routeSegs + nFreeIndex;
 
 #if DBG
-FORALL_ROBOT_OBJS (objP, i)
+FORALL_ROBOT_OBJS (objP)
 	if (objP->info.controlType == CT_AI) {
 		aiP = &objP->cType.aiInfo; 
 		if ((aiP->nHideIndex + aiP->nPathLength > int32_t (gameData.ai.routeSegs.Index (gameData.ai.freePointSegs))) && (aiP->nPathLength > 0))
@@ -1283,7 +1283,7 @@ void AIResetAllPaths (void)
 	int32_t	i;
 	CObject*	objP = OBJECTS.Buffer ();
 
-FORALL_OBJS (objP, i)
+FORALL_OBJS (objP)
 	if (objP->info.controlType == CT_AI) {
 		objP->cType.aiInfo.nHideIndex = -1;
 		objP->cType.aiInfo.nPathLength = 0;

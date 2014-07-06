@@ -1394,11 +1394,10 @@ int32_t CreateGatedRobot (int32_t nSegment, int32_t nObjId)
 	CFixVector	vObjPos;
 	tRobotInfo*	botInfoP = &gameData.bots.info [1][nObjId];
 	int32_t		count = 0;
-	int32_t		i;
 	fix			objsize = gameData.models.polyModels [0][botInfoP->nModel].Rad ();
 	int32_t		default_behavior;
 
-	FORALL_ROBOT_OBJS (objP, i) {
+	FORALL_ROBOT_OBJS (objP) {
 		if (objP->info.nCreator == BOSS_GATE_PRODUCER_NUM)
 			count++;
 		}

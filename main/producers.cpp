@@ -484,7 +484,6 @@ void RobotMakerHandler (tProducerInfo * objProducerP)
 	CObject*		objP;
 	fix			topTime;
 	int32_t		nType, nMyStation, nCount;
-	int32_t		i;
 
 if (gameStates.app.bGameSuspended & SUSP_ROBOTS)
 	return;
@@ -551,7 +550,7 @@ if (!objProducerP->bFlag) {
 
 	//	Make sure this robotmaker hasn't put out its max without having any of them killed.
 	nCount = 0;
-	FORALL_ROBOT_OBJS (objP, i)
+	FORALL_ROBOT_OBJS (objP)
 		if ((objP->info.nCreator ^ 0x80) == nMyStation)
 			nCount++;
 	if (nCount > gameStates.app.nDifficultyLevel + 3) {
