@@ -65,9 +65,9 @@
 #define RECVLOCK 1
 #define PROCLOCK 0
 
-#define CONCURRENT_SEND		0
-#define CONCURRENT_LISTEN	0
-#define USE_PACKET_IDS		0
+#define SEND_IN_BACKGROUND		0
+#define LISTEN_IN_BACKGROUND	0
+#define USE_PACKET_IDS			0
 
 #define MULTI_THREADED_NETWORKING 1 // set to 0 to have D2X-XL manage network traffic the old way
 
@@ -642,16 +642,16 @@ m_rxPacketQueue.Unlock (true, __FUNCTION__);
 
 int32_t CNetworkThread::Listen (void)
 {
-#if 0
+#if 1
+if (!ListenInBackground ())
+	return 0;
+
+#if 1
 	static CTimeout toListen (LISTEN_TIMEOUT);
 
 if (!toListen.Expired ())
 	return 0;
 #endif
-
-#if 1
-if (!ListenInBackground ())
-	return 0;
 
 // network reads all network packets independently of main thread
 Cleanup ();
@@ -995,14 +995,14 @@ if (toUpdate.Expired ()) {
 
 bool CNetworkThread::SendInBackground (void)
 {
-return (CONCURRENT_SEND != 0) && Available ();
+return (SEND_IN_BACKGROUND != 0) && Available ();
 }
 
 //------------------------------------------------------------------------------
 
 bool CNetworkThread::ListenInBackground (void)
 {
-return (CONCURRENT_LISTEN != 0) && Available ();
+return (LISTEN_IN_BACKGROUND != 0) && Available ();
 }
 
 //------------------------------------------------------------------------------
