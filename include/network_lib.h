@@ -54,7 +54,7 @@ class CSyncPack {
 	public:
 		CSyncPack () {}
 		~CSyncPack () {}
-		virtual void Reset (void) { MsgDataSize () = 0; }
+		virtual void Reset (void) { SetMsgDataSize (0); }
 		virtual int32_t HeaderSize (void) = 0;
 		virtual int32_t MaxDataSize (void) = 0;
 		virtual tFrameInfoHeader& Header (void) = 0;
@@ -66,7 +66,8 @@ class CSyncPack {
 		virtual int32_t Size (void) { return HeaderSize () + MsgDataSize (); }
 
 		virtual uint8_t* MsgData (uint32_t offset = 0) { return Data ().msgData + offset; }
-		virtual uint16_t& MsgDataSize (void) { return Data ().dataSize; }
+		virtual uint16_t MsgDataSize (void) { return Data ().dataSize; }
+		virtual void SetMsgDataSize (uint16_t dataSize) { Data ().dataSize = dataSize; }
 
 		virtual void SetType (uint8_t nType) { Header ().nType = nType; }
 		virtual void SetPackets (int32_t nPackets) { Header ().nPackets = nPackets; }
@@ -88,7 +89,7 @@ class CSyncPack {
 			if (Overflow (msgLen))
 				Send ();
 			memcpy (MsgData (MsgDataSize ()), msg, msgLen);
-			MsgDataSize () += msgLen;
+			SetMsgDataSize (MsgDataSize () + msgLen);
 			return MsgDataSize ();
 			}
 
