@@ -1864,6 +1864,17 @@ if (botInfoP->energyDrain && LOCALPLAYER.Energy ()) {
 
 //------------------------------------------------------------------------------
 
+CObjectIterator::CObjectIterator () : m_objP (NULL), m_nLink (0) {}
+
+//------------------------------------------------------------------------------
+
+CObjectIterator::CObjectIterator (CObject*& objP) 
+{ 
+objP = Start (); 
+}
+
+//------------------------------------------------------------------------------
+
 CObject* CObjectIterator::Start (void)
 {
 return m_objP = Head ();

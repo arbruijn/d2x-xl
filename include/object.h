@@ -1379,9 +1379,14 @@ extern CObject Follow;
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 
-#define OBJ_LIST_ITERATOR 1
+#define OBJ_ITERATORS		1
+#define OBJ_LIST_ITERATOR	1
+
+#if OBJ_ITERATORS
 
 #if OBJ_LIST_ITERATOR
+
+//	-----------------------------------------------------------------------------
 
 class CObjectIterator {
 	public:
@@ -1389,7 +1394,8 @@ class CObjectIterator {
 		int32_t		m_nLink;
 
 	public:
-		CObjectIterator () : m_objP (NULL), m_nLink (0) {}
+		CObjectIterator ();
+		CObjectIterator (CObject*& objP);
 
 		virtual CObject* Start (void);
 		virtual CObject* Head (void);
@@ -1403,47 +1409,55 @@ class CObjectIterator {
 
 class CPlayerIterator : public CObjectIterator {
 	public:
+		CPlayerIterator (CObject*& objP) : CObjectIterator (objP) {}
 		virtual CObject* Head (void);
 	};
 
 class CRobotIterator : public CObjectIterator {
 	public:
+		CRobotIterator (CObject*& objP) : CObjectIterator (objP) {}
 		virtual CObject* Head (void);
 		virtual int32_t Link (void) { return 1; }
 	};
 
 class CWeaponIterator : public CObjectIterator {
 	public:
+		CWeaponIterator (CObject*& objP) : CObjectIterator (objP) {}
 		virtual CObject* Head (void);
 		virtual int32_t Link (void) { return 1; }
 	};
 
 class CPowerupIterator : public CObjectIterator {
 	public:
+		CPowerupIterator (CObject*& objP) : CObjectIterator (objP) {}
 		virtual CObject* Head (void);
 		virtual int32_t Link (void) { return 1; }
 	};
 
 class CEffectIterator : public CObjectIterator {
 	public:
+		CEffectIterator (CObject*& objP) : CObjectIterator (objP) {}
 		virtual CObject* Head (void);
 		virtual int32_t Link (void) { return 1; }
 	};
 
 class CLightIterator : public CObjectIterator {
 	public:
+		CLightIterator (CObject*& objP) : CObjectIterator (objP) {}
 		virtual CObject* Head (void);
 		virtual int32_t Link (void) { return 1; }
 	};
 
 class CActorIterator : public CObjectIterator {
 	public:
+		CActorIterator (CObject*& objP) : CObjectIterator (objP) {}
 		virtual CObject* Head (void);
 		virtual int32_t Link (void) { return 2; }
 	};
 
 class CStaticObjectIterator : public CObjectIterator {
 	public:
+		CStaticObjectIterator (CObject*& objP) : CObjectIterator (objP) {}
 		virtual CObject* Head (void);
 		virtual int32_t Link (void) { return 2; }
 	};
@@ -1516,9 +1530,22 @@ class CStaticObjectIterator : public CObjectIterator {
 
 #endif // OBJ_LIST_ITERATOR
 
+#define FORALL_OBJS(_objP,_i)							for (CObjectIterator objIter ((_objP)); !objIter.Done (); (_objP) = objIter.Step ())
+#define FORALL_PLAYER_OBJS(_objP,_i)				for (CPlayerIterator playerIter ((_objP)); !playerIter.Done (); (_objP) = playerIter.Step ())
+#define FORALL_ROBOT_OBJS(_objP,_i)					for (CRobotIterator robotIter ((_objP)); !robotIter.Done (); (_objP) = robotIter.Step ())
+#define FORALL_WEAPON_OBJS(_objP,_i)				for (CWeaponIterator weaponIter ((_objP)); !weaponIter.Done (); (_objP) = weaponIter.Step ())
+#define FORALL_POWERUP_OBJS(_objP,_i)				for (CPowerupIterator powerIter ((_objP)); !powerIter.Done (); (_objP) = powerIter.Step ())
+#define FORALL_EFFECT_OBJS(_objP,_i)				for (CEffectIterator effectIter ((_objP)); !effectIter.Done (); (_objP) = effectIter.Step ())
+#define FORALL_LIGHT_OBJS(_objP,_i)					for (CLightIterator lightIter ((_objP)); !lightIter.Done (); (_objP) = lightIter.Step ())
+#define FORALL_ACTOR_OBJS(_objP,_i)					for (CActorIterator actorIter ((_objP)); !actorIter.Done (); (_objP) = actorIter.Step ())
+#define FORALL_STATIC_OBJS(_objP,_i)				for (CStaticObjectIterator staticsIter ((_objP)); !staticsIter.Done (); (_objP) = staticsIter.Step ())
+
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
+
+#else // OBJ_ITERATORS
+
 // cheap object list walking using macros
 
 #	define FORALL_OBJSi(_objP,_i)							for ((_objP) = OBJECTS.Buffer (), (_i) = 0; (_i) <= gameData.objs.nLastObject [0]; (_i)++, (_objP)++)
@@ -1543,6 +1570,8 @@ class CStaticObjectIterator : public CObjectIterator {
 #	define FORALL_STATIC_OBJS(_objP,_i)					FORALL_SUPERCLASS_OBJS (gameData.objs.lists.statics, _objP, _i)
 #	define IS_OBJECT(_objP, _i)							((_objP) != NULL)
 #endif
+
+#endif // OBJ_ITERATORS
 
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
