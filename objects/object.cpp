@@ -2045,6 +2045,24 @@ CLightIterator::CLightIterator (CObject*& objP) : CObjectIterator (objP) {}
 CActorIterator::CActorIterator (CObject*& objP) : CObjectIterator (objP) {}
 CStaticObjectIterator::CStaticObjectIterator (CObject*& objP) : CObjectIterator (objP) {}
 
+//	-----------------------------------------------------------------------------
+
+bool CObjectIterator::Match (void) { return true; }
+bool CPlayerIterator::Match (void) { return (m_objP->Type () == OBJ_PLAYER) || (m_objP->Type () == OBJ_GHOST); }
+bool CRobotIterator::Match (void) { return (m_objP->Type () == OBJ_ROBOT); }
+bool CWeaponIterator::Match (void) { return (m_objP->Type () == OBJ_WEAPON); }
+bool CPowerupIterator::Match (void) { return (m_objP->Type () == OBJ_POWERUP); }
+bool CEffectIterator::Match (void) { return (m_objP->Type () == OBJ_EFFECT); }
+bool CLightIterator::Match (void) { return (m_objP->Type () == OBJ_LIGHT); }
+bool CActorIterator::Match (void) { 
+	uint8_t nType = m_objP->Type ();
+	return (nType == OBJ_PLAYER) || (nType == OBJ_GHOST) || (nType == OBJ_ROBOT) || (nType == OBJ_REACTOR) || (nType == OBJ_WEAPON) || (nType == OBJ_MONSTERBALL); 
+	}
+bool CStaticObjectIterator::Match (void) { 
+	uint8_t nType = m_objP->Type ();
+	return (nType == OBJ_POWERUP) || (nType == OBJ_EFFECT) || (nType == OBJ_LIGHT); 
+	}
+
 #endif // OBJ_LIST_ITERATOR
 
 //------------------------------------------------------------------------------

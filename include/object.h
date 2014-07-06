@@ -1488,7 +1488,7 @@ class CObjectIterator {
 		CObject* Back (void);
 		CObject* Current (void) { return (m_objP); }
 		int32_t Index (void) { return m_i; }
-		virtual bool Match (void) { return true; }
+		virtual bool Match (void);
 };
 
 //	-----------------------------------------------------------------------------
@@ -1496,55 +1496,49 @@ class CObjectIterator {
 class CPlayerIterator : public CObjectIterator {
 	public:
 		CPlayerIterator (CObject*& objP);
-		virtual bool Match (void) { return (m_objP->Type () == OBJ_PLAYER) || (m_objP->Type () == OBJ_GHOST); }
+		virtual bool Match (void);
 };
 
 class CRobotIterator : public CObjectIterator {
 	public:
 		CRobotIterator (CObject*& objP);
-		virtual bool Match (void) { return (m_objP->Type () == OBJ_ROBOT); }
+		virtual bool Match (void);
 };
 
 class CWeaponIterator : public CObjectIterator {
 	public:
 		CWeaponIterator (CObject*& objP);
-		virtual bool Match (void) { return (m_objP->Type () == OBJ_WEAPON); }
+		virtual bool Match (void);
 };
 
 class CPowerupIterator : public CObjectIterator {
 	public:
 		CPowerupIterator (CObject*& objP);
-		virtual bool Match (void) { return (m_objP->Type () == OBJ_POWERUP); }
+		virtual bool Match (void);
 };
 
 class CEffectIterator : public CObjectIterator {
 	public:
 		CEffectIterator (CObject*& objP);
-		virtual bool Match (void) { return (m_objP->Type () == OBJ_EFFECT); }
+		virtual bool Match (void);
 };
 
 class CLightIterator : public CObjectIterator {
 	public:
 		CLightIterator (CObject*& objP);
-		virtual bool Match (void) { return (m_objP->Type () == OBJ_LIGHT); }
+		virtual bool Match (void);
 };
 
 class CActorIterator : public CObjectIterator {
 	public:
 		CActorIterator (CObject*& objP);
-		virtual bool Match (void) { 
-			uint8_t nType = m_objP->Type ();
-			return (nType == OBJ_PLAYER) || (nType == OBJ_GHOST) || (nType == OBJ_ROBOT) || (nType == OBJ_REACTOR) || (nType == OBJ_WEAPON) || (nType == OBJ_MONSTERBALL); 
-		}
+		virtual bool Match (void);
 };
 
 class CStaticObjectIterator : public CObjectIterator {
 	public:
 		CStaticObjectIterator (CObject*& objP);
-		virtual bool Match (void) { 
-			uint8_t nType = m_objP->Type ();
-			return (nType == OBJ_POWERUP) || (nType == OBJ_EFFECT) || (nType == OBJ_LIGHT); 
-		}
+		virtual bool Match (void);
 };
 
 #endif // OBJ_LIST_ITERATOR
