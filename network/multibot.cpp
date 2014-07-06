@@ -550,7 +550,7 @@ for (i = 0; i < gameData.multigame.create.nCount; i++) {
 	SetLocalObjNumMapping (gameData.multigame.create.nObjNums [i]);
 	}
 for (; i < MAX_ROBOT_POWERUPS; i++) 
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP + 2 * i, gameData.multigame.create.nObjNums [i]); // bufP must always point to the start of the object data list here!
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP + 2 * i, -1); // bufP must always point to the start of the object data list here!
 
 MultiSendData (gameData.multigame.msg.buf, (gameStates.multi.nGameType == UDP_GAME) ? 31 : 27, 2);
 }
