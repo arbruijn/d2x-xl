@@ -445,7 +445,9 @@ if (bInitPlayer) {
 	}
 //gameData.objs.consoleP->Link ();
 gameData.objs.nObjects = 1;				//just the player
-AllocObject (0);
+ClaimObjectSlot (0);
+gameData.objs.consoleP->ResetLinks ();
+gameData.objs.consoleP->Link ();
 gameData.objs.nLastObject [0] = 0;
 }
 
@@ -828,13 +830,11 @@ if (bRebuilding)
 bRebuilding = true;
 PrintLog (0, "Rebuilding corrupted object lists ...\n");
 
-CObject* objP = &OBJECTS [0];
-for (int32_t nObject = gameData.objs.nLastObject [0]; nObject; nObject--, objP++) {
-	for (int32_t nLink = 0; nLink < 3; nLink++)
-		objP->ResetLinks ();
-	}
+CObject* objP = OBJECTS.Buffer ();
+for (int32_t nObject = gameData.objs.nLastObject [0]; nObject; nObject--, objP++) 
+	objP->ResetLinks ();
 gameData.objs.lists.Init ();
-objP = &OBJECTS [0];
+objP = OBJECTS.Buffer ();
 for (int32_t nObject = gameData.objs.nLastObject [0]; nObject; nObject--, objP++) {
 	if (objP->Type () < MAX_OBJECT_TYPES) {
 		objP->Link ();

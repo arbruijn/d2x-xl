@@ -758,9 +758,6 @@ if (m_nLocalObj < 0)
 	return 0;
 
 CObject* objP = OBJECTS + m_nLocalObj;
-objP->Unlink (true);
-while (ObjectIsLinked (objP, objP->info.nSegment))
-	objP->UnlinkFromSeg ();
 NW_GET_BYTES (m_data, m_bufI, &objP->info, sizeof (tBaseObject));
 if (objP->info.nType != OBJ_NONE) {
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
@@ -772,9 +769,9 @@ if (objP->info.nType != OBJ_NONE) {
 	objP->ResetSgmLinks ();
 #if OBJ_LIST_TYPE
 	objP->ResetLinks ();
+	objP->Link ();
 #endif
 	objP->info.nAttachedObj = -1;
-	objP->Link ();
 	if (nSegment < 0) {
 		nSegment = FindSegByPos (objP->info.position.vPos, -1, 1, 0);
 		if (nSegment < 0) {
