@@ -2034,6 +2034,15 @@ return m_objP = NULL;
 
 //------------------------------------------------------------------------------
 
+CPlayerIterator::CPlayerIterator (CObject*& objP) : CObjectIterator (objP) {}
+CRobotIterator::CRobotIterator (CObject*& objP) : CObjectIterator (objP) {}
+CWeaponIterator::CWeaponIterator (CObject*& objP) : CObjectIterator (objP) {}
+CPowerupIterator::CPowerupIterator (CObject*& objP) : CObjectIterator (objP) {}
+CEffectIterator::CEffectIterator (CObject*& objP) : CObjectIterator (objP) {}
+CLightIterator::CLightIterator (CObject*& objP) : CObjectIterator (objP) {}
+CActorIterator::CActorIterator (CObject*& objP) : CObjectIterator (objP) {}
+CStaticObjectIterator::CStaticObjectIterator (CObject*& objP) : CObjectIterator (objP) {}
+
 #endif // OBJ_LIST_ITERATOR
 
 //------------------------------------------------------------------------------
