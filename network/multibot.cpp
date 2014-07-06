@@ -541,7 +541,6 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 // successively sent all robot powerups just created (their count is in gameData.multigame.create.nCount)
 while (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS)
 	OBJECTS [gameData.multigame.create.nObjNums [--gameData.multigame.create.nCount]].Die ();
-gameData.multigame.create.nCount = 0;
 gameData.multigame.msg.buf [hBufP] = (uint8_t) delObjP->info.contains.nCount;
 
 int32_t i;
@@ -553,6 +552,7 @@ for (; i < MAX_ROBOT_POWERUPS; i++)
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP + 2 * i, -1); // bufP must always point to the start of the object data list here!
 
 MultiSendData (gameData.multigame.msg.buf, (gameStates.multi.nGameType == UDP_GAME) ? 31 : 27, 2);
+gameData.multigame.create.nCount = 0;
 }
 
 //-----------------------------------------------------------------------------
