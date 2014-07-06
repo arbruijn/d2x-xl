@@ -208,7 +208,6 @@ Assert (gameData.objs.consoleP->info.nId == N_LOCALPLAYER);
 int32_t CountRobotsInLevel (void)
 {
 	int32_t	robotCount = 0;
-	int32_t 	i;
 	CObject*	objP;
 
 FORALL_ROBOT_OBJS (objP)
@@ -221,7 +220,6 @@ return robotCount;
 int32_t CountHostagesInLevel (void)
 {
 	int32_t 	count = 0;
-	int32_t 	i;
 	CObject*	objP;
 
 FORALL_STATIC_OBJS (objP)
@@ -234,11 +232,12 @@ return count;
 //added 10/12/95: delete buddy bot if coop game.  Probably doesn't really belong here. -MT
 void GameStartInitNetworkPlayers (void)
 {
-	int32_t		i, j, t, bCoop = IsCoopGame,
+	int32_t	i, j, t, bCoop = IsCoopGame,
 				segNum, segType,
 				playerObjs [MAX_PLAYERS], startSegs [MAX_PLAYERS],
 				nPlayers, nMaxPlayers = bCoop ? MAX_COOP_PLAYERS + 1 : MAX_PLAYERS;
 	CObject	*objP, *nextObjP;
+	bool		bRelease = false;
 
 	// Initialize network player start locations and CObject numbers
 
@@ -246,16 +245,12 @@ memset (gameStates.multi.bPlayerIsTyping, 0, sizeof (gameStates.multi.bPlayerIsT
 //VerifyConsoleObject ();
 nPlayers = 0;
 j = 0;
-for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
-#if DBG
-	VerifyObjLists (objP->Index ());
-#endif
-	i = objP->Index ();
-	nextObjP = objP->Links (0).next;
+for (CObjectIterator iter (objP); objP; ) {
+	bRelease = false;
 	t = objP->info.nType;
 	if ((t == OBJ_PLAYER) || (t == OBJ_GHOST) || (t == OBJ_COOP)) {
-		if ((nPlayers >= nMaxPlayers) || (bCoop ? (j && (t != OBJ_COOP)) : (t == OBJ_COOP)))
-			ReleaseObject (int16_t (i));
+		if ((nPlayers >= nMaxPlayers) || (bCoop ? (j && (t != OBJ_COOP)) : (t == OBJ_COOP))) 
+			bRelease = true;
 		else {
 			playerObjs [nPlayers] = i;
 			startSegs [nPlayers] = objP->info.nSegment;
@@ -264,12 +259,16 @@ for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
 		j++;
 		}
 	else if (t == OBJ_ROBOT) {
-		if (ROBOTINFO (objP->info.nId).companion && IsMultiGame)
-			ReleaseObject (int16_t (i));		//kill the buddy in netgames
+		if (ROBOTINFO (objP->info.nId).companion && IsMultiGame) 
+			bRelease = true;
 		}
-#if DBG
-	VerifyObjLists ();
-#endif
+	if (bRelease) {
+		objP = iter.Back ();
+		ReleaseObject (objP->Index ());
+		objP = objP ? iter.Step () : iter.Start ();
+		}
+	else
+		objP = iter.Step ();
 	}
 
 for (i = 0; i < nMaxPlayers; i++)

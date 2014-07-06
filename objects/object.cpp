@@ -1934,6 +1934,15 @@ return m_objP ? m_objP->Links (m_nLink).next : NULL;
 
 //------------------------------------------------------------------------------
 
+CObject* CObjectIterator::Back (void)
+{
+if (m_objP)
+	m_objP = m_objP->Links (m_nLink).prev;
+return m_objP;
+}
+
+//------------------------------------------------------------------------------
+
 CObject* CObjectIterator::Step (void)
 {
 if (Done ())
@@ -1985,7 +1994,7 @@ objP = Start ();
 CObject* CObjectIterator::Start (void)
 {
 m_i = 0;
-return (gameData.objs.nObjects > 0) ? &OBJECTS [0] : NULL;
+return m_objP = (gameData.objs.nObjects > 0) ? &OBJECTS [0] : NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -1993,6 +2002,13 @@ return (gameData.objs.nObjects > 0) ? &OBJECTS [0] : NULL;
 bool CObjectIterator::Done (void)
 {
 return m_i >= gameData.objs.nObjects;
+}
+
+//------------------------------------------------------------------------------
+
+CObject* CObjectIterator::Back (void)
+{
+return m_objP = (gameData.objs.nObjects && m_i) ? &OBJECTS [--m_i] : NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -2007,13 +2023,13 @@ return (m_i < gameData.objs.nObjects) ? &OBJECTS [m_i] : NULL;
 CObject* CObjectIterator::Step (void)
 {
 if (Done ())
-	return NULL;
+	return m_objP = NULL;
 while (m_i < gameData.objs.nObjects) {
 	++m_i;
 	if (Match ())
-		return &OBJECTS [m_i];
+		return m_objP = &OBJECTS [m_i];
 	} 
-return NULL;
+return m_objP = NULL;
 }
 
 //------------------------------------------------------------------------------

@@ -68,7 +68,6 @@ int32_t nEscortGoalText [MAX_ESCORT_GOALS] = {
 
 void InitBuddyForLevel (void)
 {
-	int32_t	i;
 	CObject*	objP;
 
 gameData.escort.bMayTalk = 0;

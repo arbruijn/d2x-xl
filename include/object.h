@@ -1409,6 +1409,7 @@ class CObjectIterator {
 		bool Done (void);
 		CObject* Next (void);
 		CObject* Step (void);
+		inline CObject* Back (void) { }
 		CObject* Current (void) { return (m_objP); }
 };
 
@@ -1484,6 +1485,7 @@ class CObjectIterator {
 		bool Done (void);
 		CObject* Next (void);
 		CObject* Step (void);
+		inline CObject* Back (void);
 		CObject* Current (void) { return (m_objP); }
 		int32_t Index (void) { return m_i; }
 		virtual bool Match (void) { return true; }
