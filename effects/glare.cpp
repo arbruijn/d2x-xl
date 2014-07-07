@@ -491,8 +491,8 @@ const char *glareFS =
 	"uniform sampler2D glareTex, depthTex;\r\n" \
 	"uniform float dMax;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
-	"uniform int32_t blendMode;\r\n" \
-	"uniform int32_t bSuspended;\r\n" \
+	"uniform int blendMode;\r\n" \
+	"uniform int bSuspended;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
 	"#define ZFAR 5000.0\r\n" \
 	"#define NDC(z) (2.0 * z - 1.0)\r\n" \

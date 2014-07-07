@@ -38,7 +38,7 @@ const char* shockwaveVS =
 const char* shockwaveFS = 
 	"uniform sampler2D sceneTex;\r\n" \
 	"uniform sampler2D depthTex;\r\n" \
-	"uniform int32_t nShockwaves;\r\n" \
+	"uniform int nShockwaves;\r\n" \
 	"uniform vec2 screenSize;\r\n" \
 	"uniform vec3 effectStrength;\r\n" \
 	"//#define LinearDepth(_z) 10000.0 / (5001.0 - (_z) * 4999.0)\r\n" \
@@ -56,7 +56,7 @@ const char* shockwaveFS =
 	"void main() {\r\n" \
 	"vec2 tcSrc = gl_TexCoord [0].xy * screenSize;\r\n" \
 	"vec2 tcDest = tcSrc; //vec2 (0.0, 0.0);\r\n" \
-	"int32_t i;\r\n" \
+	"int i;\r\n" \
 	"for (i = 0; i < 8; i++) if (i < nShockwaves) {\r\n" \
 	"  vec2 v = tcSrc - gl_LightSource [i].position.xy;\r\n" \
 	"  float d = length (v); //distance of screen coordinate to center of effect\r\n" \
@@ -82,7 +82,7 @@ const char* shockwaveFS =
 const char* shockwaveFS = 
 	"uniform sampler2D sceneTex;\r\n" \
 	"uniform sampler2D depthTex;\r\n" \
-	"uniform int32_t nShockwaves;\r\n" \
+	"uniform int nShockwaves;\r\n" \
 	"uniform vec2 screenSize;\r\n" \
 	"uniform vec3 effectStrength;\r\n" \
 	"#define ZNEAR 1.0\r\n" \
@@ -97,7 +97,7 @@ const char* shockwaveFS =
 	"vec2 tcSrc = gl_TexCoord [0].xy * screenSize;\r\n" \
 	"vec2 tcDest = tcSrc;\r\n" \
 	"vec4 frag = texture2D (sceneTex, tcDest / screenSize);" \
-	"int32_t i;\r\n" \
+	"int i;\r\n" \
 	"for (i = 0; i < 8; i++) if (i < nShockwaves) {\r\n" \
 	"  vec2 v = tcSrc - gl_LightSource [i].position.xy;\r\n" \
 	"  float r = gl_LightSource [i].constantAttenuation;\r\n" \
