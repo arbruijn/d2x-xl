@@ -512,6 +512,13 @@ return 1;
 
 static int32_t video_data_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
 {
+//int16_t nFrameHot  = get_short (data);
+//int16_t nFrameCold = get_short (data+2);
+//int16_t nXoffset   = get_short (data+4);
+//int16_t nYoffset   = get_short (data+6);
+//int16_t nXsize     = get_short (data+8);
+//int16_t nYsize     = get_short (data+10);
+uint16_t nFlags     = get_ushort (data+12);
 if (nFlags & 1) {
 	uint8_t* temp = reinterpret_cast<uint8_t*> (g_vBackBuf1);
 	g_vBackBuf1 = g_vBackBuf2;
