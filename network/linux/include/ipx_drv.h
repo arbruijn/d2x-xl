@@ -103,6 +103,7 @@ struct ipx_driver {
 	int32_t (*SendGamePacket)(ipx_socket_t *s, uint8_t *, int32_t);
 };
 
+
 int IPXGeneralPacketReady(ipx_socket_t *s);
 
 extern CNetworkAddress ipx_MyAddress;
