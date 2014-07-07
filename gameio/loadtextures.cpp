@@ -61,6 +61,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "error.h"
 #include "grdef.h"
 #include "gamepal.h"
+#include "hiresmodels.h"
 #include "pcx.h"
 
 //#define NO_DUMP_SOUNDS        1   //if set, dump bitmaps but not sounds
@@ -565,7 +566,9 @@ static bool IsWeapon (const char* bmName)
 		"cmissil",
 		"erthshkr",
 		"hmissil",
-		"key",
+		"key01",
+		"key02",
+		"key03",
 		"merc",
 		"mmissil",
 		"scmiss",
@@ -574,10 +577,13 @@ static bool IsWeapon (const char* bmName)
 		"hostage"
 		};
 
+	static const int nModels [] = { -1, -1, -1, -1, -1, BLUEKEY_MODEL, GOLDKEY_MODEL, REDKEY_MODEL, -1, -1, -1, -1, -1, HOSTAGE_MODEL};
+		
+
 if (!strchr (bmName, '#'))
 	return false;
 for (int32_t i = 0, j = sizeofa (szNames); i < j; i++)
-	if (strstr (bmName, szNames [i]) == bmName)
+	if ((strstr (bmName, szNames [i]) == bmName) && ((nModels [i] < 0) || HaveReplacementModel (nModels [i])))
 		return true;
 return false;
 }
