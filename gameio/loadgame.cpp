@@ -2267,7 +2267,6 @@ int32_t GetRandomPlayerPosition (int32_t nPlayer)
 {
 	CObject		*objP;
 	tSpawnTable	spawnTable [MAX_PLAYERS];
-	int32_t			nSpawnPos = 0;
 	int32_t			nSpawnSegs = 0;
 	int32_t			nTeam = IsTeamGame ? GetTeam (nPlayer) + 1 : 3;
 	int32_t			i, j;
