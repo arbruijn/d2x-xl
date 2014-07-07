@@ -156,7 +156,7 @@ int32_t IpxInit (int32_t socket_number)
 	int32_t i;
 
 if ((i = FindArg ("-ipxnetwork")) && appConfig [i + 1]) {
-	ulong n = strtol (appConfig [i + 1], NULL, 16);
+	uint32_t n = strtol (appConfig [i + 1], NULL, 16);
 	uint8_t b [4]; 
 	for (i = 3; i >= 0; i--, n >>= 8)
 		b [i] = n &0xFF;
