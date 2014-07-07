@@ -145,7 +145,7 @@ return (type != PID_GAME_INFO) && (type != PID_EXTRA_GAMEINFO) && (type != PID_P
 
 bool CNetworkPacket::Combine (uint8_t* data, int32_t size, uint8_t* network, uint8_t* node)
 {
-if (Size () + size > MAX_PAYLOAD_SIZE) 
+if (Size () + size > int32_t (MAX_PAYLOAD_SIZE))
 	return false; // too large
 if (!Combineable (Type ()) || !Combineable (data [0]))
 	return false; // at least one of the packets contains data that must not be combined with other data

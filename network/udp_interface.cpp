@@ -908,7 +908,7 @@ static int32_t UDPSendPacket (ipx_socket_t *mysock, IPXPacket_t *ipxHeader, uint
 #ifdef UDPDEBUG
 PrintLog (1, "UDP interface: SendPacket enter, dataLen=%d",dataLen);
 #endif
-if ((dataLen < 0) || (dataLen > MAX_PAYLOAD_SIZE + 4)) {
+if ((dataLen < 0) || (dataLen > int32_t (MAX_PAYLOAD_SIZE + 4))) {
 #ifdef UDPDEBUG
 	PrintLog (-1);
 #endif
