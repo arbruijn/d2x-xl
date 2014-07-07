@@ -14,6 +14,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h> /* for htons & co. */
 #include "pstypes.h"
+#include "ipx.h"
 #include "ipx_drv.h"
 #include "ukali.h"
 
@@ -24,9 +25,7 @@ static int32_t dynamic_socket = 0x401;
 static int32_t last_socket = 0;
 
 int32_t have_empty_address() {
-	int32_t i;
-	for (i = 0; i < 10 && !ipx_MyAddress[i]; i++) ;
-	return i == 10;
+	return ipx_MyAddress.IsEmpty ();
 }
 
 int32_t ipx_kali_GetMyAddress(void)
@@ -100,16 +99,16 @@ int32_t ipx_kali_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader, uint8_
 	return i;
 }
 
-int32_t ipx_kali_ReceivePacket(ipx_socket_t *s, uint8_t *outbuf, int32_t outbufsize, CPacketSource *rd)
+int32_t ipx_kali_ReceivePacket(ipx_socket_t *s, uint8_t *outbuf, int32_t outbufsize, CPacketAddress *rd)
 {
 	int32_t size;
 	kaliaddr_ipx fromaddr;
 
-	if ((size = KaliReceivePacket(s->fd, outbuf, outbufsize, &fromaddr)) < 0)
+	if ((size = KaliReceivePacket(s->fd, reinterpret_cast<char*> (outbuf), outbufsize, &fromaddr)) < 0)
 		return -1;
 
 	rd->SetSockets (ntohs(fromaddr.sa_socket), s->socket);
-	rd->SetNode ((uint8_t) fromaddr.sa_nodenum);
+	rd->SetNode ((uint8_t*) fromaddr.sa_nodenum);
 	rd->SetNetwork ((uint32_t) 0);
 	rd->SetType (0);
 
