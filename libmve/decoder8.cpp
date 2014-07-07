@@ -258,8 +258,8 @@ switch (codeType) {
 		   as a signed 8-bit value, and the second being the y offset as a
 		   signed 8-bit value.
 		*/
-		x = (signed char)*dataP++;
-		y = (signed char)*dataP++;
+		x = (int8_t)*dataP++;
+		y = (int8_t)*dataP++;
 		copyFrame (frameP, frameP + (reinterpret_cast<uint8_t*> (g_vBackBuf2) - reinterpret_cast<uint8_t*> (g_vBackBuf1)) + x + y*g_width);
 		frameP += 8;
 		*remainDataP -= 2;

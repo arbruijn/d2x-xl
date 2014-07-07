@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "decoders.h"
 #include "libmve.h"
 
 extern mve_cb_Read mve_read;
@@ -19,9 +20,9 @@ typedef struct MVEFILE
 {
     void    *stream;
     uint8_t	*cur_chunk;
-    int32_t     buf_size;
-    int32_t     cur_fill;
-    int32_t     next_segment;
+    int32_t  buf_size;
+    int32_t  cur_fill;
+    int32_t  next_segment;
 } MVEFILE;
 
 /*
@@ -78,7 +79,7 @@ typedef struct MVESTREAM
     MVEFILE             *movie;
     void                *context;
     MVESEGMENTHANDLER   handlers[32];
-	 int32_t						bLittleEndian;
+	 int32_t					bLittleEndian;
 } MVESTREAM;
 
 /*

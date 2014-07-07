@@ -47,8 +47,6 @@ typedef struct tQuadInt {// integer 64 bit, previously called "quad"
 //Some handy constants
 //#define F0_1	0x199a
 
-#define int64_t int64_t
-
 #if 1
 
 #	if 1

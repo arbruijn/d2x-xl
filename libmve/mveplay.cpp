@@ -95,6 +95,7 @@ static uint32_t unhandled_chunks[32*256];
 static int32_t default_seg_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
 {
 unhandled_chunks[major<<8|minor]++;
+//fprintf (stderr, "unknown chunk nType %02x/%02x\n", major, minor);
 return 1;
 }
 
@@ -131,8 +132,8 @@ static struct timeval timer_expire = {0, 0};
 #if !HAVE_STRUCT_TIMESPEC
 struct timespec
 {
-	uint32_t tv_sec;            /* Seconds.  */
-	uint32_t tv_nsec;           /* Nanoseconds.  */
+	int32_t tv_sec;            /* Seconds.  */
+	int32_t tv_nsec;           /* Nanoseconds.  */
 };
 #endif
 
@@ -157,11 +158,7 @@ return 0;
 
 static int32_t createTimer_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
 {
-#ifndef _WIN32 //FIXME
-	__extension__ long long temp;
-#else
 	int64_t temp;
-#endif
 
 if (timer_created)
 	return 1;
@@ -245,10 +242,10 @@ if (timer_expire.tv_usec > 1000000) {
 #define TOTAL_AUDIO_BUFFERS 64
 
 static int32_t audiobuf_created = 0;
-static void _CDECL_ mve_audio_callback (void *userdata, Uint8 *stream, int32_t len);
+static void _CDECL_ mve_audio_callback (void *userdata, uint8_t *stream, int32_t len);
 static int16_t *mve_audio_buffers[TOTAL_AUDIO_BUFFERS];
-static int32_t    mve_audio_buflens[TOTAL_AUDIO_BUFFERS];
-static int32_t    mve_audio_curbuf_curpos=0;
+static int32_t mve_audio_buflens[TOTAL_AUDIO_BUFFERS];
+static int32_t mve_audio_curbuf_curpos=0;
 static int32_t mve_audio_bufhead=0;
 static int32_t mve_audio_buftail=0;
 static int32_t mve_audio_playing=0;
@@ -259,7 +256,7 @@ static SDL_AudioSpec *mve_audio_spec=NULL;
 
 //-----------------------------------------------------------------------
 
-static void _CDECL_ mve_audio_callback (void *userdata, Uint8* stream, int32_t len)
+static void _CDECL_ mve_audio_callback (void *userdata, uint8_t* stream, int32_t len)
 {
 	int32_t total=0;
 	int32_t length;
@@ -329,7 +326,7 @@ if (bitsize == 1) {
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	format = AUDIO_S16MSB;
 #else
-	format = AUDIO_S16SYS;
+	format = AUDIO_S16LSB;
 #endif
 	}
 else
@@ -342,9 +339,15 @@ mve_audio_spec->samples = 4096;
 mve_audio_spec->callback = mve_audio_callback;
 mve_audio_spec->userdata = NULL;
 if (SDL_OpenAudio (mve_audio_spec, NULL) >= 0) {
+#if 0
+	fprintf (stderr, "   success\n");
+#endif
 	mve_audio_canplay = 1;
 	}
 else {
+#if 0
+	fprintf (stderr, "   failure : %s\n", SDL_GetError ();
+#endif
 	mve_audio_canplay = 0;
 	}
 memset (mve_audio_buffers, 0, sizeof (mve_audio_buffers));
@@ -405,6 +408,10 @@ if (mve_audio_canplay) {
 			}
 		if (++mve_audio_buftail == TOTAL_AUDIO_BUFFERS)
 			mve_audio_buftail = 0;
+#ifndef _WIN32
+		if (mve_audio_buftail == mve_audio_bufhead)
+			fprintf (stderr, "d'oh!  buffer ring overrun (%d)\n", mve_audio_bufhead);
+#endif
 		}
 	if (mve_audio_playing)
 		SDL_UnlockAudio ();

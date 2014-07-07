@@ -1,5 +1,6 @@
 
 #include "pstypes.h"
+#include "decoders.h"
 
 static int32_t audio_exp_table[256] =
 {

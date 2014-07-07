@@ -1,3 +1,4 @@
+#include <stdint.h> // for mem* functions
 #include <string.h> // for mem* functions
 #ifndef _WIN32
 #	include <unistd.h>
