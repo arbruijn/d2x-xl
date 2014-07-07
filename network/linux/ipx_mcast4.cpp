@@ -203,7 +203,7 @@ return sendto(sk->fd, data, dataLen, 0, reinterpret_cast<struct sockaddr*> (&toa
 
 //------------------------------------------------------------------------------
 
-static int32_t ipx_mcast4_ReceivePacket(ipx_socket_t *sk, char *outbuf, int32_t outbufsize, CPacketAddress *rd)
+static int32_t ipx_mcast4_ReceivePacket(ipx_socket_t *sk, uint8_t *outbuf, int32_t outbufsize, CPacketAddress *rd)
 {
 int32_t size;
 struct sockaddr_in fromaddr;
