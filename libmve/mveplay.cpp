@@ -95,7 +95,6 @@ static uint32_t unhandled_chunks[32*256];
 static int32_t default_seg_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
 {
 unhandled_chunks[major<<8|minor]++;
-//PrintLog (0, "unknown chunk nType %02x/%02x\n", major, minor);
 return 1;
 }
 
@@ -343,15 +342,9 @@ mve_audio_spec->samples = 4096;
 mve_audio_spec->callback = mve_audio_callback;
 mve_audio_spec->userdata = NULL;
 if (SDL_OpenAudio (mve_audio_spec, NULL) >= 0) {
-#if 0
-	PrintLog (0, "   success\n");
-#endif
 	mve_audio_canplay = 1;
 	}
 else {
-#if 0
-	PrintLog (0, "   failure : %s\n", SDL_GetError ();
-#endif
 	mve_audio_canplay = 0;
 	}
 memset (mve_audio_buffers, 0, sizeof (mve_audio_buffers));
@@ -412,10 +405,6 @@ if (mve_audio_canplay) {
 			}
 		if (++mve_audio_buftail == TOTAL_AUDIO_BUFFERS)
 			mve_audio_buftail = 0;
-#ifndef _WIN32
-		if (mve_audio_buftail == mve_audio_bufhead)
-			PrintLog (0, "d'oh!  buffer ring overrun (%d)\n", mve_audio_bufhead);
-#endif
 		}
 	if (mve_audio_playing)
 		SDL_UnlockAudio ();
@@ -523,13 +512,6 @@ return 1;
 
 static int32_t video_data_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
 {
-int16_t nFrameHot  = get_short (data);
-int16_t nFrameCold = get_short (data+2);
-int16_t nXoffset   = get_short (data+4);
-int16_t nYoffset   = get_short (data+6);
-int16_t nXsize     = get_short (data+8);
-int16_t nYsize     = get_short (data+10);
-uint16_t nFlags     = get_ushort (data+12);
 if (nFlags & 1) {
 	uint8_t* temp = reinterpret_cast<uint8_t*> (g_vBackBuf1);
 	g_vBackBuf1 = g_vBackBuf2;
