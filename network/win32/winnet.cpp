@@ -298,7 +298,7 @@ while (driver->PacketReady (&ipxSocketData)) {
 	if (dataSize < 6)
 		continue;
 	dataOffs = tracker.IsTracker (networkData.packetSource.GetServer (), networkData.packetSource.GetPort (), (char*) buf) ? 0 : 4;
-	if (dataSize > MAX_PAYLOAD_SIZE + dataOffs) {
+	if (dataSize > int32_t (MAX_PAYLOAD_SIZE + dataOffs)) {
 		PrintLog (0, "incoming data package too large (%d bytes)\n", dataSize);
 		continue;
 		}
@@ -314,7 +314,7 @@ return 0;
 
 void IPXSendPacketData (uint8_t *data, int32_t dataSize, uint8_t *network, uint8_t *source, uint8_t *dest)
 {
-if (dataSize > MAX_PAYLOAD_SIZE) 
+if (dataSize > int32_t (MAX_PAYLOAD_SIZE)) 
 	PrintLog (0, "IpxSendPacketData: packet too large (%d bytes)\n", dataSize);
 else {
 		static uint8_t buf [MAX_PACKET_SIZE];
@@ -531,7 +531,7 @@ if (driver->HandleLeaveGame)
 int32_t IpxSendGamePacket (uint8_t *data, int32_t dataSize)
 {
 if (driver->SendGamePacket) {
-	if (dataSize > MAX_PAYLOAD_SIZE - 4)
+	if (dataSize > int32_t (MAX_PAYLOAD_SIZE - 4))
 		PrintLog (0, "IpxSendGamePacket: packet too large (%d bytes)\n", dataSize);
 	else {
 		static uint8_t buf [MAX_PACKET_SIZE];
