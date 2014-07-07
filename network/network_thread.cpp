@@ -499,21 +499,15 @@ void CNetworkThread::Run (void)
 {
 m_bRunning = true;
 while (m_bRunning) {
-	if (LockListen (true)) {
-		PrintLog (1, "Listen\n");
+	if (ListenInBackground () && LockListen (true)) {
 		Listen ();
-		PrintLog (-1);
 		UnlockListen ();
 		}
-	if (LockSend (true)) {
-		PrintLog (1, "Transmit\n");
+	if (SendInBackground () && LockSend (true)) {
 		TransmitPackets ();
-		PrintLog (-1);
 		UnlockSend ();
 		}
-	PrintLog (1, "SendLifeSign\n");
 	SendLifeSign ();
-	PrintLog (-1);
 	CheckPlayerTimeouts ();
 	G3_SLEEP (1);
 	}
@@ -660,7 +654,6 @@ m_rxPacketQueue.Lock (true, __FUNCTION__);
 for (;;) {
 	// pre-allocate packet so IpxGetPacketData can directly fill its buffer and no extra copy operation is necessary
 	if (!m_packet) { 
-		PrintLog (0, "Listen: Alloc\n");
 		m_packet = m_rxPacketQueue.Alloc (false);
 		if (!m_packet)
 			break;
@@ -687,7 +680,6 @@ for (;;) {
 		m_packet->SetSize (nSize); 
 		m_packet->SetId (0);
 		}
-	PrintLog (0, "Listen: Append\n");
 	m_rxPacketQueue.Append (m_packet, false, false);
 	m_packet = NULL;
 	}
@@ -813,9 +805,7 @@ CNetworkPacket* packet;
 m_txPacketQueue.Lock (true, __FUNCTION__);
 while ((packet = m_txPacketQueue.Head ())) {
 	nSize += packet->Size ();
-	PrintLog (0, "Transmit: Send packet\n");
 	packet->Transmit ();
-	PrintLog (0, "Transmit: Remove packet\n");
 	m_txPacketQueue.Pop (true, false);
 	}
 m_txPacketQueue.Unlock (true, __FUNCTION__);

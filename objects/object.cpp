@@ -1908,7 +1908,6 @@ objP = Start ();
 CObject* CObjectIterator::Start (void)
 {
 m_nLink = Link ();
-m_nSize = Size ();
 #if DBG
 if (!m_nLink)
 	BRP;
