@@ -1399,7 +1399,6 @@ class CObjectIterator {
 	public:
 		CObject*		m_objP;
 		int32_t		m_i;
-		int32_t		m_nSize;
 		int32_t		m_nLink;
 
 	public:
