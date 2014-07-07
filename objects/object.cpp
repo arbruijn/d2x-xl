@@ -1914,6 +1914,7 @@ CObject* CObjectIterator::Start (void)
 {
 m_nLink = Link ();
 m_nSize = Size ();
+m_i = 0;
 return m_objP = Head ();
 }
 
@@ -1982,6 +1983,8 @@ CObject* CActorIterator::Head (void) { return gameData.objs.lists.actors.head; }
 CObject* CStaticObjectIterator::Head (void) { return gameData.objs.lists.statics.head; }
 
 //------------------------------------------------------------------------------
+
+int32_t CObjectIterator::Size (void) { return gameData.objs.lists.all.nObjects; }
 
 int32_t CPlayerIterator::Size (void) { return gameData.objs.lists.players.nObjects; }
 

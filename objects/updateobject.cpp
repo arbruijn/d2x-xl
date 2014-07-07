@@ -615,7 +615,7 @@ return 1;
 int32_t UpdateAllObjects (void)
 {
 PROF_START
-	CObject*	objP, * nextObjP;
+	CObject*	objP;
 
 if (gameData.objs.nLastObject [0] > gameData.objs.nMaxUsedObjects)
 	FreeObjectSlots (gameData.objs.nMaxUsedObjects);		//	Free all possible CObject slots.
