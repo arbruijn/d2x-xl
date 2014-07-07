@@ -232,7 +232,7 @@ void GameStartInitNetworkPlayers (void)
 				segNum, segType,
 				playerObjs [MAX_PLAYERS], startSegs [MAX_PLAYERS],
 				nPlayers, nMaxPlayers = bCoop ? MAX_COOP_PLAYERS + 1 : MAX_PLAYERS;
-	CObject	*objP;
+	CObject*	objP, * prevObjP;
 	bool		bRelease = false;
 
 	// Initialize network player start locations and CObject numbers
@@ -241,12 +241,14 @@ memset (gameStates.multi.bPlayerIsTyping, 0, sizeof (gameStates.multi.bPlayerIsT
 //VerifyConsoleObject ();
 nPlayers = 0;
 j = 0;
-for (CObjectIterator iter (objP); objP; ) {
-	bRelease = false;
+for (CObjectIterator iter (objP); objP; objP = prevObjP ? iter.Step () : iter.Start ()) {
+	prevObjP = objP;
 	t = objP->info.nType;
 	if ((t == OBJ_PLAYER) || (t == OBJ_GHOST) || (t == OBJ_COOP)) {
-		if ((nPlayers >= nMaxPlayers) || (bCoop ? (j && (t != OBJ_COOP)) : (t == OBJ_COOP))) 
-			bRelease = true;
+		if ((nPlayers >= nMaxPlayers) || (bCoop ? (j && (t != OBJ_COOP)) : (t == OBJ_COOP))) {
+			prevObjP = iter.Back ();
+			ReleaseObject (objP->Index ());
+			}
 		else {
 			playerObjs [nPlayers] = objP->Index ();
 			startSegs [nPlayers] = objP->info.nSegment;
@@ -255,16 +257,11 @@ for (CObjectIterator iter (objP); objP; ) {
 		j++;
 		}
 	else if (t == OBJ_ROBOT) {
-		if (ROBOTINFO (objP->info.nId).companion && IsMultiGame) 
-			bRelease = true;
+		if (ROBOTINFO (objP->info.nId).companion && IsMultiGame) {
+			prevObjP = iter.Back ();
+			ReleaseObject (objP->Index ());
+			}
 		}
-	if (bRelease) {
-		CObject* prevObjP = iter.Back ();
-		ReleaseObject (objP->Index ());
-		objP = prevObjP ? iter.Step () : iter.Start ();
-		}
-	else
-		objP = iter.Step ();
 	}
 
 for (i = 0; i < nMaxPlayers; i++)

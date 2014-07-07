@@ -1448,18 +1448,15 @@ FORALL_ROBOT_OBJS (objP)
 //if bClearAll is set, clear even proximity bombs
 void ClearTransientObjects (int32_t bClearAll)
 {
-	CObject *objP;
+	CObject*	objP, * prevObjP;
 
-CWeaponIterator iter (objP);
-while (objP) {
+for (CWeaponIterator iter (objP); objP; objP = prevObjP ? iter.Step () : iter.Start ()) {
+	prevObjP = objP;
 	if ((!(gameData.weapons.info [objP->info.nId].flags & WIF_PLACABLE) && (bClearAll || ((objP->info.nId != PROXMINE_ID) && (objP->info.nId != SMARTMINE_ID)))) ||
 			objP->info.nType == OBJ_FIREBALL ||	objP->info.nType == OBJ_DEBRIS || ((objP->info.nType != OBJ_NONE) && (objP->info.nFlags & OF_EXPLODING))) {
 		CObject* prevObjP = iter.Back ();
 		ReleaseObject (objP->Index ());
-		objP = prevObjP ? iter.Step () : iter.Start ();
 		}
-	else
-		objP = iter.Step ();
 	}
 }
 
@@ -1912,6 +1909,10 @@ CObject* CObjectIterator::Start (void)
 {
 m_nLink = Link ();
 m_nSize = Size ();
+#if DBG
+if (!m_nLink)
+	BRP;
+#endif
 m_i = 0;
 return m_objP = Head ();
 }
@@ -1955,7 +1956,7 @@ CObject* CObjectIterator::Step (void)
 if (Done ())
 	return NULL;
 m_objP = m_objP->Links (m_nLink).next;
-if (++m_i > m_nSize) { // error! stop anyway
+if (++m_i > Size ()) { // error! stop anyway
 	RebuildObjectLists ();
 	m_objP = NULL;
 	}

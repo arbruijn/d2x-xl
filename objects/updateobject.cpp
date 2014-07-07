@@ -700,26 +700,27 @@ for (int32_t i = windowRenderedData [nWindow].nObjects; i; ) {
 
 void CleanupObjects (void)
 {
-	CObject	*objP, *nextObjP = NULL;
+	CObject*		objP, *prevObjP;
 	int32_t		nLocalDeadPlayerObj = -1;
 
-for (CObjectIterator iter (objP); objP; objP = nextObjP) {
-	nextObjP = iter.Step ();
+for (CObjectIterator iter (objP); objP; objP = prevObjP ? iter.Step () : iter.Start ()) {
+	prevObjP = objP;
 	if (objP->info.nType == OBJ_NONE)
 		continue;
 	if (!(objP->info.nFlags & OF_SHOULD_BE_DEAD))
 		continue;
 	//Assert ((objP->info.nType != OBJ_FIREBALL) || (objP->cType.explInfo.nDeleteTime == -1));
-	if (objP->info.nType != OBJ_PLAYER)
+	if (objP->info.nType != OBJ_PLAYER) {
+		CObject* prevObjP = iter.Back ();
 		ReleaseObject (objP->Index ());
+
+		}
 	else {
 		if (objP->info.nId == N_LOCALPLAYER) {
 			if (nLocalDeadPlayerObj == -1) {
 				StartPlayerDeathSequence (objP);
 				nLocalDeadPlayerObj = objP->Index ();
 				}
-			else
-				Int3 ();
 			}
 		}
 	}
