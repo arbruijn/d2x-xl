@@ -36,10 +36,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "physics.h"
 #include "console.h"
 
-#if DBG
-int32_t VerifyObjLists (int32_t nObject = -1);
-#endif
-
 //------------------------------------------------------------------------------
 
 void NetworkReadEndLevelPacket (uint8_t *data)
@@ -187,14 +183,8 @@ if (netGameInfo.GetSegmentCheckSum () != networkData.nSegmentCheckSum) {
 #endif
 	}
 // Discover my player number
-#if DBG
-VerifyObjLists (LOCALPLAYER.nObject);
-#endif
 if (SetLocalPlayer (playerInfoP, gameData.multiplayer.nPlayers, -1) < -1)
 	return;
-#if DBG
-VerifyObjLists (LOCALPLAYER.nObject);
-#endif
 
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	gameData.multiplayer.players [i].netKillsTotal = 0;
@@ -257,22 +247,10 @@ if (!networkData.nJoinState) {
 			}
 		else
 			j = *netGameInfo.Locations (i);
-#if DBG
-		VerifyObjLists (gameData.multiplayer.players [i].nObject);
-#endif
 		GetPlayerSpawn (j, OBJECTS + gameData.multiplayer.players [i].nObject);
-#if DBG
-		VerifyObjLists (gameData.multiplayer.players [i].nObject);
-#endif
 		}
 	}
-#if DBG
-VerifyObjLists (LOCALPLAYER.nObject);
-#endif
 OBJECTS [LOCALPLAYER.nObject].SetType (OBJ_PLAYER);
-#if DBG
-VerifyObjLists (LOCALPLAYER.nObject);
-#endif
 networkData.nStatus = (IAmGameHost () || (networkData.nJoinState >= 4)) ? NETSTAT_PLAYING : NETSTAT_WAITING;
 SetFunctionMode (FMODE_GAME);
 networkData.bHaveSync = 1;
@@ -694,9 +672,6 @@ else {
 	//ClaimObjectSlot (LOCALPLAYER.nObject);
 	}
 networkData.nJoinState = 1;
-#if DBG
-VerifyObjLists (N_LOCALPLAYER);
-#endif
 return 1;
 }
 
@@ -729,9 +704,6 @@ m_nState = 0;
 if (networkData.bHaveSync)
 	networkData.nStatus = NETSTAT_PLAYING;
 networkData.nJoinState = 4;
-#if DBG
-VerifyObjLists (N_LOCALPLAYER);
-#endif
 return 1;
 }
 
@@ -804,9 +776,6 @@ if (objP->info.nType != OBJ_NONE) {
 		gameData.hoard.nMonsterballSeg = nSegment;
 		}
 	}
-#if DBG
-VerifyObjLists (objP->Index ());
-#endif
 return 1;
 }
 
@@ -825,9 +794,6 @@ if (syncRes < 1)
 int32_t nObjects = m_data [1];
 
 for (int32_t i = 0; (i < nObjects) && (syncRes > -1); i++) {
-#if DBG
-	VerifyObjLists (LOCALPLAYER.nObject);
-#endif
 	NW_GET_SHORT (m_data, m_bufI, m_nLocalObj);
 	NW_GET_BYTE (m_data, m_bufI, m_nObjOwner);
 	NW_GET_SHORT (m_data, m_bufI, m_nRemoteObj);

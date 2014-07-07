@@ -146,10 +146,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define SPAWN_MIN_DIST	I2X (15 * 20)
 
-#if DBG
-int32_t VerifyObjLists (int32_t nObject = -1);
-#endif
-
 //------------------------------------------------------------------------------
 
 void InitStuckObjects (void);

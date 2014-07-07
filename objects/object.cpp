@@ -967,13 +967,7 @@ void CObject::Link (void)
 
 Unlink (true);
 m_nLinkedType = nType;
-#if DBG
-VerifyObjLists (Index ());
-#endif
 Link (gameData.objs.lists.all, 0);
-#if DBG
-VerifyObjLists (Index ());
-#endif
 if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST))
 	Link (gameData.objs.lists.players, 1);
 else if (nType == OBJ_ROBOT)
@@ -1011,13 +1005,7 @@ void CObject::Unlink (bool bForce)
 
 if (bForce || (nType != OBJ_NONE)) {
 	m_nLinkedType = OBJ_NONE;
-#if DBG
-	VerifyObjLists (Index ());
-#endif
 	Unlink (gameData.objs.lists.all, 0);
-#if DBG
-	VerifyObjLists (Index ());
-#endif
 	if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST))
 		Unlink (gameData.objs.lists.players, 1);
 	else if (nType == OBJ_ROBOT)
