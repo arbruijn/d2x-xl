@@ -811,7 +811,6 @@ if (gameStates.app.bD1Mission && gameStates.app.bHaveD1Data && !gameStates.app.b
 		szNameRead [8] = 0;
 
 		memset (&bm, 0, sizeof (bm)); // important, because this texture will be cloned and must not contain any pointers to itself
-		bm.Texture ()->SetBitmap (NULL); 
 		if (bmh.dflags & DBM_FLAG_ABM) {
 			sprintf (szName, "%s#%d", szNameRead, bmh.dflags & DBM_NUM_FRAMES);
 			}

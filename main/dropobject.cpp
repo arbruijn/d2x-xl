@@ -591,7 +591,6 @@ int32_t DropPowerup (uint8_t nType, uint8_t nId, int16_t owner, int32_t bDropExt
 	CObject*		objP;
 	CFixVector	vNewVel, vNewPos;
 	fix			xOldMag, xNewMag;
-   int32_t		i;
 
 switch (nType) {
 	case OBJ_POWERUP:
