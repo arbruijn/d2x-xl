@@ -19,19 +19,7 @@ void decodeFrame8 (uint8_t *frameP, uint8_t *mapP, int32_t mapRemain, uint8_t *d
 		for (i=0; i<xb/2; i++)
 		{
 			dispatchDecoder (&frameP, (uint8_t) (*mapP & 0xf), &dataP, &dataRemain, &i, &j);
-#ifndef _WIN32
-			if (frameP < reinterpret_cast<uint8_t*> (g_vBackBuf1))
-				PrintLog (0, "danger!  pointing out of bounds below after dispatch decoder: %d, %d (1) [%x]\n", i, j, (*mapP) & 0xf);
-			else if (frameP >= reinterpret_cast<uint8_t*> (g_vBackBuf1) + g_width*g_height)
-				PrintLog (0, "danger!  pointing out of bounds above after dispatch decoder: %d, %d (1) [%x]\n", i, j, (*mapP) & 0xf);
-#endif
 			dispatchDecoder (&frameP, (uint8_t) (*mapP >> 4), &dataP, &dataRemain, &i, &j);
-#ifndef _WIN32
-			if (frameP < reinterpret_cast<uint8_t*> (g_vBackBuf1))
-				PrintLog (0, "danger!  pointing out of bounds below after dispatch decoder: %d, %d (2) [%x]\n", i, j, (*mapP) >> 4);
-			else if (frameP >= reinterpret_cast<uint8_t*> (g_vBackBuf1) + g_width*g_height)
-				PrintLog (0, "danger!  pointing out of bounds above after dispatch decoder: %d, %d (2) [%x]\n", i, j, (*mapP) >> 4);
-#endif
 			++mapP;
 			--mapRemain;
 		}
