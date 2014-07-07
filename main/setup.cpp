@@ -106,12 +106,13 @@ static tFileDesc addonFiles [] = {
 	{"\002exit.ham", {"data/", ""}, 1, 0, 0},
 
 	{"*.plx", {"profiles/", ""}, 1, -1, 0},
-	{"*.plr", {"profiles/", ""}, 1, -1, 0},
+	{"*.plr", {"profiles/", ""}, 1, -1, 0}
+	};
 
+static tFileDesc addonModelFiles [] = {
+	// D2X-XL addon model files
 	{"\002bullet.ase", {"models/", ""}, 0, 0, 0},
-	{"\002bullet.tga", {"models/", ""}, 0, 0, 0},
-
-	{"*.sg?", {"savegames/", ""}, 1, 1, 0}
+	{"\002bullet.tga", {"models/", ""}, 0, 0, 0}
 	};
 
 static tFileDesc addonTextureFiles [] = {
@@ -466,10 +467,12 @@ if (!bDemoData) {
 	}
 if (CheckAndCopyFiles (addonFiles, int32_t (sizeofa (addonFiles))))
 	nResult |= 8;
-if (CheckAndCopyFiles (addonTextureFiles, int32_t (sizeofa (addonTextureFiles))))
+if (CheckAndCopyFiles (addonModelFiles, int32_t (sizeofa (addonModelFiles))))
 	nResult |= 16;
-if (CheckAndCopyFiles (addonSoundFiles, int32_t (sizeofa (addonSoundFiles))))
+if (CheckAndCopyFiles (addonTextureFiles, int32_t (sizeofa (addonTextureFiles))))
 	nResult |= 32;
+if (CheckAndCopyFiles (addonSoundFiles, int32_t (sizeofa (addonSoundFiles))))
+	nResult |= 64;
 
 #if 0 //DBG
 nResult = 255;
@@ -493,10 +496,14 @@ if (nResult) {
 		CreateFileListMessage (szMsg, addonFiles, int32_t (sizeofa (addonFiles)), true);
 		}
 	if (nResult & 16) {
+		strcat (szMsg, "\n\nWarning - D2X-XL couldn't find the following D2X-XL files:\n\n");
+		CreateFileListMessage (szMsg, addonFiles, int32_t (sizeofa (addonFiles)), true);
+		}
+	if (nResult & 32) {
 		strcat (szMsg, "\n\nWarning - D2X-XL couldn't find the following D2X-XL texture files:\n\n");
 		CreateFileListMessage (szMsg, addonTextureFiles, int32_t (sizeofa (addonTextureFiles)), true);
 		}
-	if (nResult & 32) {
+	if (nResult & 64) {
 		strcat (szMsg, "\n\nWarning - D2X-XL couldn't find the following D2X-XL sound files:\n\n");
 		CreateFileListMessage (szMsg, addonSoundFiles, int32_t (sizeofa (addonSoundFiles)), true);
 		}
