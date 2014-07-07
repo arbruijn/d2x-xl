@@ -131,7 +131,7 @@ void DrawObjectRodTexPoly (CObject *objP, tBitmapIndex bmi, int32_t bLit, int32_
 	
 vOffset.SetZero ();
 #endif
-LoadTexture (bmi.index, 0, 0);
+LoadTexture (bmi.index, 0, gameStates.app.bD1Mission);
 if ((bmP->Type () == BM_TYPE_STD) && bmP->Override ()) {
 	bmP->SetupTexture (1, 0);
 	bmP = bmP->Override (iFrame);

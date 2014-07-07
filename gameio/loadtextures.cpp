@@ -613,11 +613,13 @@ static int32_t SearchHiresBitmap (char fn [6][FILENAME_LEN])
 {
 	CFile	cf;
 
-for (int32_t i = 0; i < 6; i++)
+for (int32_t i = 0; i < 6; i++) {
+	//PrintLog (0, "   Looking for '%s'\n", fn [i]);
 	if (*fn [i] && cf.Open (fn [i], "", "rb", 0)) {
 		cf.Close ();
 		return i;
 		}
+	}
 return -1;
 }
 

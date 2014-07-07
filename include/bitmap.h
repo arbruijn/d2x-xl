@@ -369,11 +369,13 @@ class CBitmap : public CArray< uint8_t > {
 
 		inline CBitmap& Clone (CBitmap& clone) {
 			memcpy (&clone, this, sizeof (CBitmap));
+			clone.m_info.texP = &clone.m_info.texture;
+			clone.Texture ()->SetBitmap (&clone);
 			return clone;
 			}
 
 		inline CBitmap& Copy (CBitmap& source) {
-			source.Clone (*this);
+			memcpy (this, &source, sizeof (CBitmap));
 			source.ShareBuffer (*this);
 			return *this;
 			}

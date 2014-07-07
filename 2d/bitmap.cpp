@@ -716,12 +716,10 @@ return oldOverrideP;
 
 void CBitmap::SetName (const char* pszName) 
 { 
-#if DBG
 if (pszName) {
 	strncpy (m_info.szName, pszName, sizeof (m_info.szName)); 
 	m_info.szName [sizeof (m_info.szName) - 1] = '\0';
 	}
-#endif
 }
 
 //------------------------------------------------------------------------------

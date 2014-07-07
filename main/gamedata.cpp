@@ -2080,6 +2080,7 @@ PrintLog (-1);
 void SetDataVersion (int32_t v)
 {
 gameStates.app.bD1Data = (v < 0) ? gameStates.app.bD1Mission && gameStates.app.bHaveD1Data : v;
+PrintLog (0, "Setting data version %d (D%d) (D1 mission = %d, have D1 data = %d)\n", v, 2 - gameStates.app.bD1Data, gameStates.app.bD1Mission, gameStates.app.bHaveD1Data);
 gameData.pig.tex.bitmaps [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.bitmapP);
 gameData.pig.tex.altBitmaps [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.altBitmapP);
 gameData.pig.tex.bmIndex [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.bmIndexP);
