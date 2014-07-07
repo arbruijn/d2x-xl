@@ -498,15 +498,15 @@ return 0;
 static bool FillStringBitmap (CBitmap* bmP, const char *s, int32_t nKey, uint32_t nKeyColor, int32_t *nTabs, int32_t bCentered, int32_t nMaxWidth, int32_t bForce, int32_t& w, int32_t& h)
 {
 
-	int32_t			origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
-	int32_t			i, x, y, cw, spacing, nTab, nChars, bHotKey;
-	CBitmap		*bmfP;
+	int32_t		origColor = CCanvas::Current ()->FontColor (0).index;//to allow easy reseting to default string color with colored strings -MPM
+	int32_t		x, y, cw, spacing, nTab, nChars, bHotKey;
+	CBitmap*		bmfP;
 	CRGBAColor	hc, kc;
-	CPalette		*palP = NULL;
-	CRGBColor	*colorP;
-	uint8_t			c;
-	const char	*textP, *text_ptr1, *nextRowP;
-	int32_t			letter;
+	CPalette*	palP = NULL;
+	CRGBColor*	colorP;
+	uint8_t		c;
+	const char*	textP, *text_ptr1, *nextRowP;
+	int32_t		letter;
 	CFont*		fontP = fontManager.Current ();
 
 nextRowP = s;
@@ -567,7 +567,6 @@ x = 0;
 		palP = bmfP->Parent () ? bmfP->Parent ()->Palette () : bmfP->Palette ();
 		int32_t transparencyColor = paletteManager.Texture ()->TransparentColor ();
 		nChars++;
-		i = nKeyColor * 3;
 		kc.Red () = RGBA_RED (nKeyColor);
 		kc.Green () = RGBA_GREEN (nKeyColor);
 		kc.Blue () = RGBA_BLUE (nKeyColor);
