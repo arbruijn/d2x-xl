@@ -45,7 +45,7 @@ else {
 if (nDropSeg >= 0) {
 	ResetMonsterball (false);
 	gameData.hoard.nMonsterballSeg = nDropSeg;
-	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 1, CFixVector::ZERO, gameData.hoard.vMonsterballPos, nDropSeg);
+	nObject = DropPowerup (OBJ_POWERUP, POW_MONSTERBALL, -1, 0, CFixVector::ZERO, gameData.hoard.vMonsterballPos, nDropSeg);
 	if (nObject >= 0) {
 		gameData.render.monsterball.SetupPulse (0.005f, 0.9f);
 		gameData.render.monsterball.SetPulse (gameData.render.monsterball.Pulse ());

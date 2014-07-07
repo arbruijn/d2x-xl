@@ -399,7 +399,7 @@ else
 		XmMessageBox (pszMsg, nType == MB_ICONERROR);
 	else
 #	endif
-	fprintf (stderr, "D2X-XL: %s\n", pszMsg);
+	PrintLog (0, "D2X-XL: %s\n", pszMsg);
 #elif defined (__macosx__)
 	NativeMacOSXMessageBox (pszMsg);
 #endif

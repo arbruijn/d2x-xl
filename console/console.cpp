@@ -252,7 +252,7 @@ void CConsole::AlphaGL (SDL_Surface *s, int32_t alpha) {
 				if (SDL_MUSTLOCK (s) && SDL_LockSurface (s) < 0) {
 #ifndef _WIN32
 					PRINT_ERROR ("Can't lock surface: ");
-					fprintf (stderr, "%s\n", SDL_GetError ();
+					PrintLog (0, "%s\n", SDL_GetError ();
 #endif
 					return;
 				}

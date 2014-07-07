@@ -675,7 +675,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 	if ((cType.explInfo.nDeleteObj < 0) ||
 		 (cType.explInfo.nDeleteObj > gameData.objs.nLastObject [0])) {
 #if TRACE
-		console.printf (CON_DBG, "Illegal value for nDeleteObj in fireball.c\n");
+		console.printf (CON_DBG, "Warning: Illegal value for nDeleteObj in fireball.c\n");
 #endif
 		Int3 (); // get Rob, please... thanks
 		return;

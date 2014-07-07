@@ -110,7 +110,7 @@ const char *particleFS [4] = {
 	"uniform sampler2D particleTex, sparkTex, bubbleTex;\r\n" \
 	"uniform vec2 windowScale;\r\n" \
 	"//uniform sampler2D sourceTex;\r\n" \
-	"uniform intt bSuspended;\r\n" \
+	"uniform int bSuspended;\r\n" \
 	"void main (void) {\r\n" \
 	"if (bSuspended != 0)\r\n" \
 	"   gl_FragColor = texture2D (particleTex, gl_TexCoord [0].xy) * gl_Color;\r\n" \

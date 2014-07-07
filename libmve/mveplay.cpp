@@ -95,7 +95,7 @@ static uint32_t unhandled_chunks[32*256];
 static int32_t default_seg_handler (uint8_t major, uint8_t minor, uint8_t *data, int32_t len, void *context)
 {
 unhandled_chunks[major<<8|minor]++;
-//fprintf (stderr, "unknown chunk nType %02x/%02x\n", major, minor);
+//PrintLog (0, "unknown chunk nType %02x/%02x\n", major, minor);
 return 1;
 }
 
@@ -344,13 +344,13 @@ mve_audio_spec->callback = mve_audio_callback;
 mve_audio_spec->userdata = NULL;
 if (SDL_OpenAudio (mve_audio_spec, NULL) >= 0) {
 #if 0
-	fprintf (stderr, "   success\n");
+	PrintLog (0, "   success\n");
 #endif
 	mve_audio_canplay = 1;
 	}
 else {
 #if 0
-	fprintf (stderr, "   failure : %s\n", SDL_GetError ();
+	PrintLog (0, "   failure : %s\n", SDL_GetError ();
 #endif
 	mve_audio_canplay = 0;
 	}
@@ -414,7 +414,7 @@ if (mve_audio_canplay) {
 			mve_audio_buftail = 0;
 #ifndef _WIN32
 		if (mve_audio_buftail == mve_audio_bufhead)
-			fprintf (stderr, "d'oh!  buffer ring overrun (%d)\n", mve_audio_bufhead);
+			PrintLog (0, "d'oh!  buffer ring overrun (%d)\n", mve_audio_bufhead);
 #endif
 		}
 	if (mve_audio_playing)

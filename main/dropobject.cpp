@@ -585,13 +585,13 @@ if (IsMultiGame && (delObjP->info.contains.nId == POW_EXTRA_LIFE))
 
 //------------------------------------------------------------------------------
 
-int32_t DropPowerup (uint8_t nType, uint8_t nId, int16_t owner, int32_t nCount, const CFixVector& vInitVel, const CFixVector& vPos, int16_t nSegment, bool bLocal)
+int32_t DropPowerup (uint8_t nType, uint8_t nId, int16_t owner, int32_t bDropExtras, const CFixVector& vInitVel, const CFixVector& vPos, int16_t nSegment, bool bLocal)
 {
-	int16_t			nObject = -1;
-	CObject		*objP;
+	int16_t		nObject = -1;
+	CObject*		objP;
 	CFixVector	vNewVel, vNewPos;
 	fix			xOldMag, xNewMag;
-   int32_t			i;
+   int32_t		i;
 
 switch (nType) {
 	case OBJ_POWERUP:
@@ -599,118 +599,116 @@ switch (nType) {
 			return -1;
 		if (nId >= MAX_WEAPON_ID)
 			return -1;
-		for (i = 0; i < nCount; i++) {
-			int32_t	nRandScale, nOffset;
-			vNewVel = vInitVel;
-			xOldMag = vInitVel.Mag();
 
-			//	We want powerups to move more in network mode.
-			if (IsMultiGame && !gameData.app.GameMode (GM_MULTI_ROBOTS)) {
-				nRandScale = 4;
-				//	extra life powerups are converted to invulnerability in multiplayer, for what is an extra life, anyway?
-				if (nId == POW_EXTRA_LIFE)
-					nId = POW_INVUL;
-				}
-			else
-				nRandScale = 2;
-			xNewMag = xOldMag + I2X (32);
-			nOffset = 16384 * nRandScale;
-			vNewVel.v.coord.x += FixMul (xNewMag, RandShort () * nRandScale - nOffset);
-			vNewVel.v.coord.y += FixMul (xNewMag, RandShort () * nRandScale - nOffset);
-			vNewVel.v.coord.z += FixMul (xNewMag, RandShort () * nRandScale - nOffset);
-			// Give keys zero velocity so they can be tracked better in multi
-			if (IsMultiGame && (((nId >= POW_KEY_BLUE) && (nId <= POW_KEY_GOLD)) || (nId == POW_MONSTERBALL)))
-				vNewVel.SetZero ();
-			vNewPos = vPos;
+		int32_t	nRandScale, nOffset;
+		vNewVel = vInitVel;
+		xOldMag = vInitVel.Mag();
 
-			if (IsMultiGame) {
-				if (gameData.multigame.create.nCount >= MAX_NET_CREATE_OBJECTS) {
-					return -1;
-					}
-				if (IsNetworkGame && networkData.nStatus == NETSTAT_ENDLEVEL)
-					return -1;
+		//	We want powerups to move more in network mode.
+		if (IsMultiGame && !gameData.app.GameMode (GM_MULTI_ROBOTS)) {
+			nRandScale = 4;
+			//	extra life powerups are converted to invulnerability in multiplayer, for what is an extra life, anyway?
+			if (nId == POW_EXTRA_LIFE)
+				nId = POW_INVUL;
+			}
+		else
+			nRandScale = 2;
+		xNewMag = xOldMag + I2X (32);
+		nOffset = 16384 * nRandScale;
+		vNewVel.v.coord.x += FixMul (xNewMag, RandShort () * nRandScale - nOffset);
+		vNewVel.v.coord.y += FixMul (xNewMag, RandShort () * nRandScale - nOffset);
+		vNewVel.v.coord.z += FixMul (xNewMag, RandShort () * nRandScale - nOffset);
+		// Give keys zero velocity so they can be tracked better in multi
+		if (IsMultiGame && (((nId >= POW_KEY_BLUE) && (nId <= POW_KEY_GOLD)) || (nId == POW_MONSTERBALL)))
+			vNewVel.SetZero ();
+		vNewPos = vPos;
+
+		if (IsMultiGame) {
+			if (gameData.multigame.create.nCount >= MAX_NET_CREATE_OBJECTS) {
+				return -1;
 				}
-			nObject = CreatePowerup (nId, owner, nSegment, vNewPos, 0);
-			if (nObject < 0) {
-				Int3 ();
-				return nObject;
-				}
-			if (IsMultiGame) {
+			if (IsNetworkGame && networkData.nStatus == NETSTAT_ENDLEVEL)
+				return -1;
+			}
+		nObject = CreatePowerup (nId, owner, nSegment, vNewPos, 0);
+		if (nObject < 0) {
+			Int3 ();
+			return nObject;
+			}
+		if (IsMultiGame) {
 #if 0
-				if ((gameStates.multi.nGameType == UDP_GAME) && !bLocal)
-					MultiSendDropPowerup (nId, nSegment, nObject, &vNewPos, &vNewVel);
+			if ((gameStates.multi.nGameType == UDP_GAME) && !bLocal)
+				MultiSendDropPowerup (nId, nSegment, nObject, &vNewPos, &vNewVel);
 #endif
-				gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
-				}
-			objP = OBJECTS + nObject;
-			objP->mType.physInfo.velocity = vNewVel;
-			objP->mType.physInfo.drag = 512;	//1024;
-			objP->mType.physInfo.mass = I2X (1);
-			objP->mType.physInfo.flags = PF_BOUNCE;
-			objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-			objP->rType.vClipInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
-			objP->rType.vClipInfo.nCurFrame = 0;
+			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
+			}
+		objP = OBJECTS + nObject;
+		objP->mType.physInfo.velocity = vNewVel;
+		objP->mType.physInfo.drag = 512;	//1024;
+		objP->mType.physInfo.mass = I2X (1);
+		objP->mType.physInfo.flags = PF_BOUNCE;
+		objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+		objP->rType.vClipInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
+		objP->rType.vClipInfo.nCurFrame = 0;
 
-			switch (objP->info.nId) {
-				case POW_CONCUSSION_1:
-				case POW_CONCUSSION_4:
-				case POW_SHIELD_BOOST:
-				case POW_ENERGY:
-					objP->SetLife ((RandShort () + I2X (3)) * 64);		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
-					if (IsMultiGame)
-						objP->info.xLifeLeft /= 2;
-					break;
-				default:
+		switch (objP->info.nId) {
+			case POW_CONCUSSION_1:
+			case POW_CONCUSSION_4:
+			case POW_SHIELD_BOOST:
+			case POW_ENERGY:
+				objP->SetLife ((RandShort () + I2X (3)) * 64);		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
+				if (IsMultiGame)
+					objP->info.xLifeLeft /= 2;
+				break;
+			default:
 //						if (IsMultiGame)
 //							objP->SetLife ((RandShort () + I2X (3)) * 64);		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
-					break;
-				}
+				break;
 			}
 		break;
 
 	case OBJ_ROBOT:
-		for (i = 0; i < nCount; i++) {
-			vNewVel = vInitVel;
-			xOldMag = vInitVel.Mag();
-			CFixVector::Normalize (vNewVel);
-			vNewVel.v.coord.x += SRandShort () * 2;
-			vNewVel.v.coord.y += SRandShort () * 2;
-			vNewVel.v.coord.z += SRandShort () * 2;
-			CFixVector::Normalize (vNewVel);
-			vNewVel *= ((I2X (32) + xOldMag) * 2);
-			vNewPos = vPos;
-			if (0 > (nObject = CreateRobot (nId, nSegment, vNewPos)))
-				return nObject;
-			if (IsMultiGame)
-				gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
-			objP = &OBJECTS [nObject];
-			//Set polygon-CObject-specific data
-			objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId).nModel;
-			objP->rType.polyObjInfo.nSubObjFlags = 0;
-			//set Physics info
-			objP->mType.physInfo.velocity = vNewVel;
-			objP->mType.physInfo.mass = ROBOTINFO (objP->info.nId).mass;
-			objP->mType.physInfo.drag = ROBOTINFO (objP->info.nId).drag;
-			objP->mType.physInfo.flags |= (PF_LEVELLING);
-			objP->SetShield (ROBOTINFO (objP->info.nId).strength);
-			objP->cType.aiInfo.behavior = AIB_NORMAL;
-			gameData.ai.localInfo [nObject].targetAwarenessType = WEAPON_ROBOT_COLLISION;
-			gameData.ai.localInfo [nObject].targetAwarenessTime = I2X (3);
-			objP->cType.aiInfo.CURRENT_STATE = AIS_LOCK;
-			objP->cType.aiInfo.GOAL_STATE = AIS_LOCK;
-			objP->cType.aiInfo.REMOTE_OWNER = -1;
-			if (ROBOTINFO (nId).bossFlag)
-				gameData.bosses.Add (nObject);
-			}
+		vNewVel = vInitVel;
+		xOldMag = vInitVel.Mag();
+		CFixVector::Normalize (vNewVel);
+		vNewVel.v.coord.x += SRandShort () * 2;
+		vNewVel.v.coord.y += SRandShort () * 2;
+		vNewVel.v.coord.z += SRandShort () * 2;
+		CFixVector::Normalize (vNewVel);
+		vNewVel *= ((I2X (32) + xOldMag) * 2);
+		vNewPos = vPos;
+		if (0 > (nObject = CreateRobot (nId, nSegment, vNewPos)))
+			return nObject;
+		if (IsMultiGame)
+			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
+		objP = &OBJECTS [nObject];
+		//Set polygon-CObject-specific data
+		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId).nModel;
+		objP->rType.polyObjInfo.nSubObjFlags = 0;
+		//set Physics info
+		objP->mType.physInfo.velocity = vNewVel;
+		objP->mType.physInfo.mass = ROBOTINFO (objP->info.nId).mass;
+		objP->mType.physInfo.drag = ROBOTINFO (objP->info.nId).drag;
+		objP->mType.physInfo.flags |= (PF_LEVELLING);
+		objP->SetShield (ROBOTINFO (objP->info.nId).strength);
+		objP->cType.aiInfo.behavior = AIB_NORMAL;
+		gameData.ai.localInfo [nObject].targetAwarenessType = WEAPON_ROBOT_COLLISION;
+		gameData.ai.localInfo [nObject].targetAwarenessTime = I2X (3);
+		objP->cType.aiInfo.CURRENT_STATE = AIS_LOCK;
+		objP->cType.aiInfo.GOAL_STATE = AIS_LOCK;
+		objP->cType.aiInfo.REMOTE_OWNER = -1;
+		if (ROBOTINFO (nId).bossFlag)
+			gameData.bosses.Add (nObject);
+
 		// At JasenW's request, robots which contain robots sometimes drop shield.
-		if (RandShort () > 16384) {
+		if (bDropExtras && (RandShort () > 16384)) {
 			AddAllowedPowerup (POW_SHIELD_BOOST);
-			DropPowerup (OBJ_POWERUP, POW_SHIELD_BOOST, -1, 1, vInitVel, vPos, nSegment);
+			DropPowerup (OBJ_POWERUP, POW_SHIELD_BOOST, -1, 0, vInitVel, vPos, nSegment);
 			}
 		break;
 
 	default:
-		PrintLog (0, "Illegal nType (%i) in function DropPowerup.\n", nType);
+		PrintLog (0, "Warning: Illegal object type %d in function DropPowerup.\n", nType);
 	}
 return nObject;
 }
@@ -756,7 +754,7 @@ if ((objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERU
 	}
 
 for (i = objP->info.contains.nCount; i; i--) {
-	nObject = DropPowerup (objP->info.contains.nType, uint8_t (objP->info.contains.nId), ObjIdx (objP), 1,
+	nObject = DropPowerup (objP->info.contains.nType, uint8_t (objP->info.contains.nId), ObjIdx (objP), i == 1, // drop extra powerups?
 								  objP->mType.physInfo.velocity, objP->info.position.vPos, objP->info.nSegment, bLocal);
 	if (nObject < 0)
 		break;

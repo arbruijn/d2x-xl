@@ -471,7 +471,7 @@ MultiSendData (gameData.multigame.msg.buf, bufP, 2);
 
 //-----------------------------------------------------------------------------
 
-void MultiSendBossActions (int32_t bossobjnum, int32_t action, int32_t secondary, int32_t nObject)
+void MultiSendBossActions (int32_t nBossObj, int32_t action, int32_t secondary, int32_t nObject)
 {
 	// Send special boss behavior information
 
@@ -479,7 +479,7 @@ void MultiSendBossActions (int32_t bossobjnum, int32_t action, int32_t secondary
 
 gameData.multigame.msg.buf [bufP++] = MULTI_BOSS_ACTIONS;					
 gameData.multigame.msg.buf [bufP++] = N_LOCALPLAYER;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, bossobjnum);  // Which player is controlling the boss        
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, nBossObj);  // Which player is controlling the boss        
 bufP += 2; // We won't network map this nObject since it's the boss
 gameData.multigame.msg.buf [bufP++] = (int8_t)action;  // What is the boss doing?
 gameData.multigame.msg.buf [bufP++] = (int8_t)secondary;  // More info for what he is doing
@@ -499,7 +499,7 @@ if (action == 1) { // Teleport releases robot
 		 (OBJECTS [bossobjnum].cType.aiInfo.REMOTE_SLOT_NUM >= 0) && 
 		 (OBJECTS [bossobjnum].cType.aiInfo.REMOTE_SLOT_NUM < MAX_ROBOTS_CONTROLLED));
 #endif
-	MultiDeleteControlledRobot (bossobjnum);
+	MultiDeleteControlledRobot (nBossObj);
 //		gameData.multigame.robots.controlled [OBJECTS [bossobjnum].cType.aiInfo.REMOTE_SLOT_NUM] = -1;
 //		OBJECTS [bossobjnum].cType.aiInfo.REMOTE_OWNER = -1;
 //		OBJECTS [bossobjnum].cType.aiInfo.REMOTE_SLOT_NUM = 5; // Hands-off period!
@@ -534,6 +534,9 @@ memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, sizeof (CFixVector));
 #endif
 bufP += sizeof (CFixVector);
 if (gameStates.multi.nGameType == UDP_GAME) {
+	int8_t nOwner;
+	int32_t nRemoteObj = GetRemoteObjNum (delObjP->Index (), nOwner);
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, nRemoteObj);
 	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameStates.app.nRandSeed);
 	bufP += 4;
 	}
@@ -551,7 +554,7 @@ for (i = 0; i < gameData.multigame.create.nCount; i++) {
 for (; i < MAX_ROBOT_POWERUPS; i++) 
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP + 2 * i, -1); // bufP must always point to the start of the object data list here!
 
-MultiSendData (gameData.multigame.msg.buf, (gameStates.multi.nGameType == UDP_GAME) ? 31 : 27, 2);
+MultiSendData (gameData.multigame.msg.buf, (gameStates.multi.nGameType == UDP_GAME) ? 55 : 27, 2);
 gameData.multigame.create.nCount = 0;
 }
 
@@ -735,7 +738,7 @@ if (OBJECTS [nRobot].cType.aiInfo.xDyingStartTime > 0)	// death sequence initiat
 	return 0;
 // Data seems valid, explode the sucker
 NetworkResetObjSync (nRobot);
-return MultiDestroyRobot (OBJECTS + nRobot);
+return MultiDestroyRobot (OBJECTS + nRobot, bIsThief);
 }
 
 //-----------------------------------------------------------------------------
@@ -744,7 +747,7 @@ void MultiDoRobotExplode (uint8_t* buf)
 {
 	// Explode robot controlled by other player
 
-	int32_t	nRobot, rval, bufP = 2;
+	int32_t nRobot, bufP = 2;
 	int16_t nRemoteBot, nKiller, nRemoteKiller;
 
 nRemoteKiller = GET_INTEL_SHORT (buf + bufP);
@@ -755,9 +758,10 @@ nRobot = GetLocalObjNum (nRemoteBot, int32_t (buf [bufP+2]));
 bufP += 3;
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
 	return;
-rval = MultiExplodeRobot (nRobot, nKiller, buf [bufP]);
-if (rval && (nKiller == LOCALPLAYER.nObject))
-	cockpit->AddPointsToScore (ROBOTINFO (OBJECTS [nRobot].info.nId).scoreValue);
+if (MultiExplodeRobot (nRobot, nKiller, buf [bufP])) {
+	if (nKiller == LOCALPLAYER.nObject)
+		cockpit->AddPointsToScore (ROBOTINFO (OBJECTS [nRobot].info.nId).scoreValue);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -929,6 +933,12 @@ delObjP.info.position.vPos.v.coord.z = (fix) INTEL_INT ((int32_t) delObjP.info.p
 if (gameStates.multi.nGameType != UDP_GAME)
 	gameStates.app.nRandSeed = 1245L;
 else {
+	// Check whether that robot is still alive on this client (-> out of sync!) and destroy it if it is to re-sync
+	// GetRemoteObjNum will return -1 if the corresponding local object does not exist
+	// MultiExplodeRobot will handle the cases of the robot not existing or still existing but already about to being destroyed
+	int8_t nOwner;
+	MultiExplodeRobot (GetRemoteObjNum (GET_INTEL_SHORT (buf + bufP), nOwner), -1, 0); 
+	bufP += 2;
 	gameStates.app.nRandSeed = (uint32_t) GET_INTEL_INT (buf + bufP);
 	bufP += 4;
 	}

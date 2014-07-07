@@ -151,7 +151,7 @@ level = volume * 3;
 
 if ((level<0) || (level>255)) {
 #ifndef _WIN32
-	fprintf (stderr, "illegal volume value (allowed values 0-255)\n");
+	PrintLog (0, "Warning: illegal volume value (allowed values 0-255)\n");
 #endif
 	return;
 	}
@@ -162,7 +162,7 @@ volctrl.channel2 =
 volctrl.channel3 = level;
 if (ioctl (cdfile, CDROMVOLCTRL, &volctrl) == -1) {
 #ifndef _WIN32
-	fprintf (stderr, "CDROMVOLCTRL ioctl failed\n");
+	PrintLog (0, "CDROMVOLCTRL ioctl failed\n");
 #endif
 	return;
 	}

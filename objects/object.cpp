@@ -827,7 +827,7 @@ void RebuildObjectLists (void)
 if (bRebuilding)
 	return;
 bRebuilding = true;
-PrintLog (0, "Rebuilding corrupted object lists ...\n");
+PrintLog (0, "Warning: Rebuilding corrupted object lists ...\n");
 
 CObject* objP = OBJECTS.Buffer ();
 for (int32_t nObject = gameData.objs.nLastObject [0]; nObject; nObject--, objP++) 
@@ -1955,10 +1955,13 @@ CObject* CObjectIterator::Step (void)
 if (Done ())
 	return NULL;
 m_objP = m_objP->Links (m_nLink).next;
-if (++m_i > Size ()) { // error! stop anyway
+++m_i;
+#if DBG // disable code for release builds once it has proven stable
+if (m_objP ? m_i >= Size () : m_i < Size ()) { // error! stop anyway
 	RebuildObjectLists ();
 	m_objP = NULL;
 	}
+#endif
 return m_objP;
 }
 

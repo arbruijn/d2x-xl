@@ -465,11 +465,12 @@ void DropStolenItems (CObject *objP)
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return;
-for (int32_t i = 0; i < MAX_STOLEN_ITEMS; i++) {
-	if (gameData.thief.stolenItems [i] != 255)
-		DropPowerup (OBJ_POWERUP, gameData.thief.stolenItems [i], -1, 1, objP->mType.physInfo.velocity, objP->info.position.vPos, objP->info.nSegment);
-	gameData.thief.stolenItems [i] = 255;
-	}
+
+for (int32_t i = 0; i < MAX_STOLEN_ITEMS; i++) 
+	if (gameData.thief.stolenItems [i] != 255) {
+		DropPowerup (OBJ_POWERUP, gameData.thief.stolenItems [i], -1, 0, objP->mType.physInfo.velocity, objP->info.position.vPos, objP->info.nSegment);
+		gameData.thief.stolenItems [i] = 255;
+		}
 }
 
 // --------------------------------------------------------------------------------------------------------------
