@@ -29,6 +29,7 @@
 #include <errno.h>
 
 #include "pstypes.h"
+#include "ipx.h"
 #include "ipx_drv.h"
 #include "ipx_bsd.h"
 
@@ -39,13 +40,6 @@
 #endif
 
 // ----------------------------------------------------------------------------
-
-typedef union tIpxAddrCast {
-	uint8_t	b [1];
-	uint32_t	i;
-} tIpxAddrCast;
-
-//------------------------------------------------------------------------------
 
 int32_t Fail (const char *fmt, ...);
 
@@ -59,7 +53,6 @@ static int32_t ipx_bsd_GetMyAddress (void)
 	struct sockaddr_ipx ipxs;
 	struct sockaddr_ipx ipxs2;
 	uint32_t len;
-	int32_t i;
 
 	sock=socket (AF_IPX,SOCK_DGRAM,PF_IPX);
 	if (sock == -1) {
@@ -70,7 +63,7 @@ static int32_t ipx_bsd_GetMyAddress (void)
 	/* bind this socket to network 0 */
 	ipxs.sipx_family=AF_IPX;
 #ifdef IPX_MANUAL_ADDRESS
-	memcpy (&ipxs.sipx_network, ipx_MyAddress, 4);
+	ipxs.sipx_network = ipx_MyAddress.GetNetwork ();
 #else
 	ipxs.sipx_network=0;
 #endif
@@ -89,10 +82,9 @@ static int32_t ipx_bsd_GetMyAddress (void)
 		return (-1);
 	}
 
-	memcpy (ipx_MyAddress, &ipxs2.sipx_network, 4);
-	for (i = 0; i < 6; i++) {
-		ipx_MyAddress[4+i] = ipxs2.sipx_node[i];
-	}
+	ipx_MyAddress.SetNetwork (ipxs2.sipx_network);
+	ipx_MyAddress.SetNode ((uint8_t*) ipxs2.sipx_node);
+
 	close ( sock );
 	return (0);
 }
@@ -165,10 +157,7 @@ static int32_t ipx_bsd_OpenSocket (ipx_socket_t *sk, int32_t port)
 #endif
 	ipxs.sipx_family = AF_IPX;
 
-	tIpxAddrCast ipxAddrCast;
-
-	memcpy (ipxAddrCast.b, ipx_MyAddress, sizeof (ipx_MyAddress));
- 	ipxs.sipx_network = ipxAddrCast.i;
+	ipxs.sipx_network = ipx_MyAddress.GetNetwork ();
 	/*  ipxs.sipx_network = htonl (MyNetwork); */
 	bzero (ipxs.sipx_node, 6);	/* Please fill in my node name */
 	ipxs.sipx_port = htons (port);
@@ -216,14 +205,10 @@ static int32_t ipx_bsd_SendPacket (ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
 	/* get destination address from IPX packet header */
 	memcpy (&ipxs.sipx_network, IPXHeader->Destination.Network, 4);
 	/* if destination address is 0, then send to my net */
-	if (ipxs.sipx_network == 0) {
-		tIpxAddrCast ipxAddrCast;
-
-		memcpy (ipxAddrCast.b, ipx_MyAddress, sizeof (ipx_MyAddress));
-		ipxs.sipx_network = ipxAddrCast.i;
+	if (ipxs.sipx_network == 0)
+		ipxs.sipx_network = ipx_MyAddress.GetNetwork ();
 		/*  ipxs.sipx_network = htonl (MyNetwork); */
-	}
-	memcpy (&ipxs.sipx_node, IPXHeader->Destination.Node, 6);
+	memcpy (ipxs.sipx_node, IPXHeader->Destination.Node, 6);
 	memcpy (&ipxs.sipx_port, IPXHeader->Destination.Socket, 2);
 	ipxs.sipx_type = IPXHeader->PacketType;
 	/*	ipxs.sipx_port=htons (0x452); */
@@ -232,18 +217,17 @@ static int32_t ipx_bsd_SendPacket (ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
 
 // ----------------------------------------------------------------------------
 
-static int32_t ipx_bsd_ReceivePacket (ipx_socket_t *s, char *buffer, int32_t bufsize, IPXRecvData_t *rd) {
+static int32_t ipx_bsd_ReceivePacket (ipx_socket_t *s, uint8_t *buffer, int32_t bufsize, CPacketAddress *rd) {
 	uint32_t sz, size;
 	struct sockaddr_ipx ipxs;
 
 	sz = sizeof (ipxs);
 	if ((size = recvfrom (s->fd, buffer, bufsize, 0, reinterpret_cast<struct sockaddr*> (&ipxs), &sz)) <= 0)
 		return size;
-	memcpy (rd->src_network, &ipxs.sipx_network, 4);
-	memcpy (rd->src_node, ipxs.sipx_node, 6);
-	rd->src_socket = ipxs.sipx_port;
-	rd->dst_socket = s->socket;
-	rd->pktType = ipxs.sipx_type;
+	rd->SetNetwork (ipxs.sipx_network);
+	rd->SetNode ((uint8_t*) ipxs.sipx_node);
+	rd->SetSockets (ipxs.sipx_port, s->socket);
+	rd->SetType (ipxs.sipx_type);
 
 	return size;
 }

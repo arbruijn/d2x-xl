@@ -17,7 +17,7 @@
 #include "ipx_drv.h"
 #include "ukali.h"
 
-extern uint8_t ipx_MyAddress[10];
+extern CNetworkAddress ipx_MyAddress;
 
 static int32_t open_sockets = 0;
 static int32_t dynamic_socket = 0x401;
@@ -40,8 +40,8 @@ int32_t ipx_kali_GetMyAddress(void)
 	if (KaliGetNodeNum(&mKaliAddr) < 0)
 		return -1;
 
-	memset(ipx_MyAddress, 0, 4);
-	memcpy(ipx_MyAddress + 4, mKaliAddr.sa_nodenum, sizeof(mKaliAddr.sa_nodenum));
+	ipx_MyAddress.SetServer ((uint32_t) 0);
+	ipx_MyAddress.SetNode ((uint8_t*) mKaliAddr.sa_nodenum);
 
 	return 0;
 }
@@ -86,8 +86,7 @@ void ipx_kali_CloseSocket(ipx_socket_t *mysock)
 	}
 }
 
-int32_t ipx_kali_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
- uint8_t *data, int32_t dataLen)
+int32_t ipx_kali_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader, uint8_t *data, int32_t dataLen)
 {
 	kaliaddr_ipx toaddr;
 	int32_t i;
@@ -101,8 +100,7 @@ int32_t ipx_kali_SendPacket(ipx_socket_t *mysock, IPXPacket_t *IPXHeader,
 	return i;
 }
 
-int32_t ipx_kali_ReceivePacket(ipx_socket_t *s, char *outbuf, int32_t outbufsize,
- IPXRecvData_t *rd)
+int32_t ipx_kali_ReceivePacket(ipx_socket_t *s, uint8_t *outbuf, int32_t outbufsize, CPacketSource *rd)
 {
 	int32_t size;
 	kaliaddr_ipx fromaddr;
@@ -110,11 +108,10 @@ int32_t ipx_kali_ReceivePacket(ipx_socket_t *s, char *outbuf, int32_t outbufsize
 	if ((size = KaliReceivePacket(s->fd, outbuf, outbufsize, &fromaddr)) < 0)
 		return -1;
 
-	rd->dst_socket = s->socket;
-	rd->src_socket = ntohs(fromaddr.sa_socket);
-	memcpy(rd->src_node, fromaddr.sa_nodenum, sizeof(fromaddr.sa_nodenum));
-	memset(rd->src_network, 0, 4);
-	rd->pktType = 0;
+	rd->SetSockets (ntohs(fromaddr.sa_socket), s->socket);
+	rd->SetNode ((uint8_t) fromaddr.sa_nodenum);
+	rd->SetNetwork ((uint32_t) 0);
+	rd->SetType (0);
 
 	return size;
 }

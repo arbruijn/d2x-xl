@@ -66,7 +66,7 @@ ipx_socket_t ipxSocketData;
 uint8_t bIpxInstalled=0;
 uint16_t ipx_socket = 0;
 uint32_t ipxNetwork = 0;
-uint8_t ipx_MyAddress[10];
+CNetworkAddress ipx_MyAddress;
 int32_t nIpxPacket = 0;			/* Sequence number */
 //int32_t     ipx_packettotal=0,ipx_lastspeed=0;
 
@@ -120,7 +120,7 @@ return reinterpret_cast<uint8_t*> (&ipxNetwork);
 
 uint8_t * IpxGetMyLocalAddress ()
 {
-return reinterpret_cast<uint8_t*> (ipx_MyAddress + 4);
+return ipx_MyAddress.Node ();
 }
 
 //------------------------------------------------------------------------------
@@ -166,7 +166,7 @@ if (driver->OpenSocket (&ipxSocketData, socket_number)) {
 	return IPX_NOT_INSTALLED;
 	}
 driver->GetMyAddress ();
-memcpy (&ipxNetwork, ipx_MyAddress, 4);
+memcpy (&ipxNetwork, ipx_MyAddress.Network (), 4);
 nIpxNetworks = 0;
 memcpy (ipxNetworks + nIpxNetworks++, &ipxNetwork, 4);
 bIpxInstalled = 1;
@@ -191,7 +191,7 @@ bIpxInstalled = 0;
 
 int32_t IpxGetPacketData (uint8_t * data)
 {
-	static char buf [MAX_PACKET_SIZE];
+	static uint8_t buf [MAX_PACKET_SIZE];
 	int32_t dataSize, dataOffs;
 
 while (driver->PacketReady (&ipxSocketData)) {
@@ -201,7 +201,7 @@ while (driver->PacketReady (&ipxSocketData)) {
 	if (dataSize < 6)
 		continue;
 	dataOffs = tracker.IsTracker (networkData.packetSource.GetServer (), networkData.packetSource.GetPort (), (char*) buf) ? 0 : 4;
-	if (dataSize > MAX_PAYLOAD_SIZE + dataOffs) {
+	if (dataSize > int32_t (MAX_PAYLOAD_SIZE + dataOffs)) {
 		PrintLog (0, "incoming data package too large (%d bytes)\n", dataSize);
 		continue;
 		}
@@ -218,18 +218,18 @@ void IPXSendPacketData (uint8_t * data, int32_t dataSize, uint8_t *network, uint
 	static uint8_t buf [MAX_PACKET_SIZE];
 	IPXPacket_t ipxHeader;
 
-if (dataSize > MAX_PAYLOAD_SIZE)
+if (dataSize > int32_t (MAX_PAYLOAD_SIZE))
 	PrintLog (0, "outgoing data package too large (%d bytes)\n", dataSize);
 else {
 	memcpy (ipxHeader.Destination.Network, network, 4);
 	memcpy (ipxHeader.Destination.Node, dest, 6);
 	uint16_t s = htons (ipxSocketData.socket);
-	memcpy (&ipxHeader.Destination.Socket [0], s, sizeof (s));
+	memcpy (&ipxHeader.Destination.Socket [0], &s, sizeof (s));
 	ipxHeader.PacketType = 4; /* Packet Exchange */
 	if (gameStates.multi.bTrackerCall)
 		memcpy (buf, data, dataSize);
 	else {
-		memcpy (buf, nIpxPacket, sizeof (nIpxPacket));
+		memcpy (buf, &nIpxPacket, sizeof (nIpxPacket));
 		memcpy (buf + 4, data, dataSize);
 		nIpxPacket++;
 		}
@@ -242,7 +242,7 @@ else {
 int32_t IpxGetPacketData (uint8_t * data)
 {
 	IPXRecvData_t rd;
-	char buf[MAX_PACKETSIZE];
+	uint8_t buf[MAX_PACKETSIZE];
 	int32_t size;
 	int32_t best_size = 0;
 
@@ -478,16 +478,16 @@ fclose (fp);
 // Initalizes the protocol-specific member of the netgame packet.
 void IpxInitNetGameAuxData (uint8_t buf[])
 {
-if (driver->InitNetgameAuxData)
-	driver->InitNetgameAuxData (&ipxSocketData, buf);
+if (driver->InitNetGameAuxData)
+	driver->InitNetGameAuxData (&ipxSocketData, buf);
 }
 
 //------------------------------------------------------------------------------
 // Handles the protocol-specific member of the netgame packet.
 int32_t IpxHandleNetGameAuxData (const uint8_t buf[])
 {
-if (driver->HandleNetgameAuxData)
-	return driver->HandleNetgameAuxData (&ipxSocketData, buf);
+if (driver->HandleNetGameAuxData)
+	return driver->HandleNetGameAuxData (&ipxSocketData, buf);
 return 0;
 }
 
