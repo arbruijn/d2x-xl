@@ -857,27 +857,35 @@ if (link.prev || link.next) {
 		return;
 		}
 	if (link.next) {
+#if DBG
 		if (link.next->m_links [nLink].prev != this)
 			bRebuild = true;
 		else
+#endif
 			link.next->m_links [nLink].prev = link.prev;
 		}
 	else {
+#if DBG
 		if (ref.tail != this)
 			bRebuild = true;
 		else
+#endif
 			ref.tail = link.prev;
 		}
 	if (link.prev) {
+#if DBG
 		if (link.prev->m_links [nLink].next != this)
 			bRebuild = true;
 		else
+#endif
 			link.prev->m_links [nLink].next = link.next;
 		}
 	else {
+#if DBG
 		if (ref.head != this)
 			bRebuild = true;
 		else
+#endif
 			ref.head = link.next;
 		}
 	if (ref.head)
@@ -894,11 +902,13 @@ else if ((ref.head == this) && (ref.tail == this)) {
 else if (ref.head || ref.tail)
 	bRebuild = true;
 #endif
+#if DBG
 if (bRebuild) { //this actually means the list is corrupted -> rebuild all object lists
 	RebuildObjectLists ();
 	Unlink ();
 	}
 else 
+#endif
 	link.prev = link.next = NULL;
 #endif
 }
@@ -1957,7 +1967,7 @@ CObject* CObjectIterator::Step (void)
 if (Done ())
 	return NULL;
 m_objP = m_objP->Links (m_nLink).next;
-if (++m_i >= m_nSize) { // error! stop anyway
+if (++m_i > m_nSize) { // error! stop anyway
 	RebuildObjectLists ();
 	m_objP = NULL;
 	}
