@@ -147,18 +147,18 @@ class CSyncPackShort : public CSyncPack {
 
 //------------------------------------------------------------------------------
 
-typedef struct tNakedData {
+typedef struct tMineSyncData {
 	int32_t	nLength;
 	int32_t	receiver;
    uint8_t	buffer [UDP_PAYLOAD_SIZE];
-	} __pack__ tNakedData;
+	} __pack__ tMineSyncData;
 
-class CNakedData {
+class CMineSyncData {
 	public:
-		tNakedData	m_data;
+		tMineSyncData	m_data;
 
 	public:
-		CNakedData () { Reset (); }
+		CMineSyncData () { Reset (); }
 
 		inline void Reset (void) {
 			m_data.nLength = 0;
@@ -175,14 +175,14 @@ class CNakedData {
 
 		inline int32_t MaxDataSize (void) { return (gameStates.multi.nGameType == UDP_GAME) ? UDP_PAYLOAD_SIZE - HeaderSize () : NET_XDATA_SIZE + 4; }
 
-		inline tNakedData& Data (void) { return m_data; }
+		inline tMineSyncData& Data (void) { return m_data; }
 
 		void Flush (void);
 
 		void SendMessage (uint8_t* msgBuf, int16_t msgLen, int32_t receiver);
 	};
 
-extern CNakedData nakedData;
+extern CMineSyncData mineSyncData;
 
 //------------------------------------------------------------------------------
 
@@ -205,7 +205,7 @@ typedef struct tSyncObjectsData {
 typedef struct tNetworkSyncInfo {
 	time_t				timeout;
 	time_t				tLastJoined;
-	tSequencePacket	player [2];
+	tPlayerSyncData	player [2];
 	int16_t				nPlayer;
 	int16_t				nExtrasPlayer; 
 	int16_t				nState;
@@ -265,7 +265,7 @@ class CNetworkData {
 		int16_t					nJoining;
 		int32_t					xmlGameInfoRequestTime;
 		tRefuseData				refuse;
-		tSequencePacket		thisPlayer;
+		tPlayerSyncData		thisPlayer;
 		tNetworkSyncInfo		syncInfo [MAX_JOIN_REQUESTS];
 
 		CNetworkAddress		localAddress;
@@ -325,7 +325,7 @@ void NetworkConsistencyError (void);
 
 void NetworkPing (uint8_t flag, uint8_t nPlayer);
 void NetworkHandlePingReturn (uint8_t nPlayer);
-void DoRefuseStuff (tSequencePacket *their);
+void DoRefuseStuff (tPlayerSyncData *their);
 int32_t GotTeamSpawnPos (void);
 int32_t TeamSpawnPos (int32_t i);
 int32_t NetworkHowManyConnected (void);
@@ -334,15 +334,15 @@ int32_t NetworkVerifyObjects (int32_t nRemoteObjNum, int32_t nLocalObjs);
 int32_t NetworkVerifyPlayers (void);
 void NetworkRequestPlayerNames (int32_t);
 
-void NetworkNewPlayer (tSequencePacket *their);
+void NetworkNewPlayer (tPlayerSyncData *their);
 int32_t CanJoinNetGame (CNetGameInfo *game, CAllNetPlayersInfo *people);
-void NetworkWelcomePlayer (tSequencePacket *their);
-void NetworkNewPlayer (tSequencePacket *their);
-void NetworkAddPlayer (tSequencePacket *seqP);
+void NetworkWelcomePlayer (tPlayerSyncData *their);
+void NetworkNewPlayer (tPlayerSyncData *their);
+void NetworkAddPlayer (tPlayerSyncData *playerSyncData);
 int32_t NetworkTimeoutPlayer (int32_t nPlayer, int32_t t);
 void NetworkDisconnectPlayer (int32_t nPlayer);
-void NetworkRemovePlayer (tSequencePacket *seqP);
-void DoRefuseStuff (tSequencePacket *their);
+void NetworkRemovePlayer (tPlayerSyncData *playerSyncData);
+void DoRefuseStuff (tPlayerSyncData *their);
 void NetworkDumpPlayer (uint8_t * server, uint8_t *node, int32_t nReason);
 
 void NetworkProcessSyncPacket (CNetGameInfo * sp, int32_t rsinit);
@@ -357,8 +357,8 @@ void NetworkProcessMonitorVector (int32_t vector);
 void NetworkProcessGameInfo (uint8_t *data);
 void NetworkProcessLiteInfo (uint8_t *data);
 int32_t NetworkProcessExtraGameInfo (uint8_t *data);
-void NetworkProcessDump (tSequencePacket *their);
-void NetworkProcessRequest (tSequencePacket *their);
+void NetworkProcessDump (tPlayerSyncData *their);
+void NetworkProcessRequest (tPlayerSyncData *their);
 void NetworkProcessPData (uint8_t* data);
 void NetworkProcessNakedPData (uint8_t* data, int32_t len);
 void NetworkProcessNamesReturn (uint8_t* data);
@@ -378,23 +378,23 @@ void NetworkSendAllInfoRequest (char nType, int32_t nSecurity);
 void NetworkSendEndLevelSub (int32_t nPlayer);
 void NetworkSendEndLevelPacket (void);
 void NetworkSendEndLevelShortSub (int32_t from_player_num, int32_t to_player);
-void NetworkSendGameInfo (tSequencePacket *their);
-void NetworkSendExtraGameInfo (tSequencePacket *their);
-void NetworkSendLiteInfo (tSequencePacket *their);
+void NetworkSendGameInfo (tPlayerSyncData *their);
+void NetworkSendExtraGameInfo (tPlayerSyncData *their);
+void NetworkSendLiteInfo (tPlayerSyncData *their);
 void NetworkSendXMLGameInfo (void);
 void NetworkSendXMLGameInfo (void);
 char* XMLGameInfo (void);
 void NetworkSendNetGameUpdate (void);
 int32_t NetworkSendRequest (void);
-void NetworkSendSync (void);
+void NetworkSendSync (int8_t nPlayer = -1);
 void NetworkSendData (uint8_t * ptr, int32_t len, int32_t urgent);
-void NetworkSendNakedPacket (uint8_t* buf, int16_t len, int32_t who);
-void NetworkSendPlayerNames (tSequencePacket *their);
+void NetworkSendMineSyncPacket (uint8_t* buf, int16_t len, int32_t who);
+void NetworkSendPlayerNames (tPlayerSyncData *their);
 void NetworkSendMissingObjFrames (void);
 
 int32_t NetworkWaitForSync (void);
 void NetworkDoSyncFrame (void);
-void NetworkStopResync (tSequencePacket *their);
+void NetworkStopResync (tPlayerSyncData *their);
 void NetworkUpdateNetGame (void);
 void NetworkDoBigWait (int32_t choice);
 void NetworkSyncExtras (tNetworkSyncInfo *syncInfoP);

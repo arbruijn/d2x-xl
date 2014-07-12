@@ -198,10 +198,10 @@ if (((nUser != WBU_RADAR_TOPDOWN) && (nUser != WBU_RADAR_HEADSUP)) ||
 	RenderFrame (0, nWindow + 1);
 	}
 else {
-	automap.m_bDisplay = -1;
+	automap.SetActive (-1);
 	gameStates.render.SetRenderWindow (nWindow + 1);
 	automap.DoFrame (0, 1 + (nUser == WBU_RADAR_TOPDOWN));
-	automap.m_bDisplay = 0;
+	automap.SetActive (0);
 	}
 gameStates.render.SetRenderWindow (nWindowSave);
 gameStates.zoom.nFactor = nZoomSave;

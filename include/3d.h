@@ -96,10 +96,10 @@ class CRenderPoint {
 		CFixVector		m_vertex [2];	//untransformed and transformed point
 		tUVL				m_uvl;			//u,v,l coords
 		tScreenPos		m_screen;		//screen x&y
-		uint8_t				m_codes;			//clipping codes
-		uint8_t				m_flags;			//projected?
+		uint8_t			m_codes;			//clipping codes
+		uint8_t			m_flags;			//projected?
 		uint16_t			m_key;
-		int32_t				m_index;			//keep structure longword aligned
+		int32_t			m_index;			//keep structure longword aligned
 		CRenderNormal	m_normal;
 
 	public:

@@ -50,6 +50,7 @@
  */
 
 extern CNetworkAddress ipx_MyAddress;
+static const char* pszMissionName = "";
 
 //------------------------------------------------------------------------------
 
@@ -348,7 +349,39 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
+const char* szGameTypeList [10];
+const char* szGameAccessList [3];
+
 static int32_t nGameTypes = -1, nGameItem = -1;
+static int32_t oldMaxPlayers = 0;
+
+//------------------------------------------------------------------------------
+
+inline void AdjustMaxPlayers (CMenuItem* maxPlayers, bool bCoop)
+{
+if (bCoop) { // coop
+	oldMaxPlayers = 1;
+	if (maxPlayers->Value () > 2)  {
+		maxPlayers->Value () = 2;
+		maxPlayers->Redraw ();
+		}
+	if (!(netGameInfo.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))
+		netGameInfo.m_info.gameFlags |= NETGAME_FLAG_SHOW_MAP;
+	if (netGameInfo.GetPlayTimeAllowed () || netGameInfo.GetScoreGoal ()) {
+		netGameInfo.SetPlayTimeAllowed (0);
+		netGameInfo.SetScoreGoal (0);
+		}
+	}
+else {
+	if (oldMaxPlayers) {
+		oldMaxPlayers = 0;
+		maxPlayers->Value () = 
+		maxPlayers->MaxValue () = MAX_NUM_NET_PLAYERS - 2;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
 
 int32_t NetworkGameParamPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
@@ -359,46 +392,67 @@ if (!menu.Available ("max. players"))
 
 CMenuItem* maxPlayers = menu ["max. players"];
 
-	static int32_t oldMaxPlayers = 0;
-
-int32_t i = menu.IndexOf ("anarchy");
-if ((nCurItem >= i) && (nCurItem < i + nGameTypes)) {
-	if ((nCurItem != nGameItem) && menu [nCurItem].Value ()) {
-		nGameItem = nCurItem;
+if (gameStates.app.bNostalgia) {
+	int32_t i = menu.IndexOf ("anarchy");
+	if ((nCurItem >= i) && (nCurItem < i + nGameTypes)) {
+		if ((nCurItem != nGameItem) && menu [nCurItem].Value ()) {
+			nGameItem = nCurItem;
+			key = -2;
+			return nCurItem;
+			}
+		}
+	// enable/disable entropy / monsterball options menu links
+	if ((menu.Available ("entropy") && ((menu.Value ("entropy") != 0) == !menu.Available ("entropy options"))) ||
+		 (menu.Available ("monsterball") && ((menu.Value ("monsterball") != 0) == !menu.Available ("monsterball options")) && (gameOpts->app.bExpertMode == SUPERUSER)))
 		key = -2;
-		return nCurItem;
-		}
+	//force restricted game for team games
+	//obsolete with D2X-W32 as it can assign players to teams automatically
+	//even in a match and progress, and allows players to switch teams
+	AdjustMaxPlayers (maxPlayers, menu.Value ("coop") != 0);
 	}
-if ((menu.Available ("entropy") && ((menu.Value ("entropy") != 0) == !menu.Available ("entropy options"))) ||
-	 ((gameOpts->app.bExpertMode == SUPERUSER) && menu.Available ("monsterball") && ((menu.Value ("monsterball") != 0) == !menu.Available ("monsterball options"))))
-	key = -2;
-//force restricted game for team games
-//obsolete with D2X-W32 as it can assign players to teams automatically
-//even in a match and progress, and allows players to switch teams
-if (menu.Value ("coop")) {
-	oldMaxPlayers = 1;
-	if (maxPlayers->Value () > 2)  {
-		maxPlayers->Value () = 2;
-		maxPlayers->Redraw ();
-		}
-	if (maxPlayers->MaxValue () > 2) {
-		maxPlayers->MaxValue () = 2;
-		maxPlayers->Redraw ();
-		}
-	if (!(netGameInfo.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))
-		netGameInfo.m_info.gameFlags |= NETGAME_FLAG_SHOW_MAP;
-	if (netGameInfo.GetPlayTimeAllowed () || netGameInfo.GetScoreGoal ()) {
-		netGameInfo.SetPlayTimeAllowed (0);
-		netGameInfo.SetScoreGoal (0);
-		}
+else {
+	CMenuItem*	m;
+	int32_t		v;
+	char			szSlider [50];
+
+	if ((m = menu ["game type"])) {
+		v = m->Value ();
+		if (mpParams.nGameType != v) {
+			mpParams.nGameType = v;
+			sprintf (szSlider + 1, TXT_GAME_TYPE, szGameTypeList [mpParams.nGameType]);
+			*szSlider = *(TXT_GAME_TYPE - 1);
+			strcpy (m->Text (), szSlider + 1);
+			m->Rebuild ();
+			AdjustMaxPlayers (maxPlayers, v == 3);
+			// enable/disable entropy / monsterball options menu links
+			if (((m->MaxValue () == sizeofa (szGameTypeList) - 1) && ((v == 8) != menu.Available ("entropy options"))) ||
+				 ((m->MaxValue () == sizeofa (szGameTypeList) - 1) && ((v == 9) != menu.Available ("monsterball options")) && (gameOpts->app.bExpertMode == SUPERUSER)))
+				key = -2;
+			}
+		}  
+
+	if ((m = menu ["game access"])) {
+		v = m->Value ();
+		if (mpParams.nGameAccess != v) {
+			mpParams.nGameAccess = v;
+			sprintf (szSlider + 1, TXT_GAME_ACCESS, szGameAccessList [mpParams.nGameAccess]);
+			*szSlider = *(TXT_GAME_ACCESS - 1);
+			strcpy (m->Text (), szSlider + 1);
+			m->Rebuild ();
+			}
+		}  
+
+	if ((m = menu ["level number"])) {
+		v = m->Value () + 1;
+		if (mpParams.nLevel != v) {
+			mpParams.nLevel = v;
+			sprintf (szSlider, "%s %d", TXT_LEVEL_, mpParams.nLevel);
+			strcpy (m->Text (), szSlider);
+			m->Rebuild ();
+			}
+		}  
 	}
-else {// if !Coop game
-	if (oldMaxPlayers) {
-		oldMaxPlayers = 0;
-		maxPlayers->Value () = 
-		maxPlayers->MaxValue () = MAX_NUM_NET_PLAYERS - 2;
-		}
-	}         
+
 if (nLastMaxPlayers != menu.Value ("max. players"))  {
 	sprintf (maxPlayers->Text (), TXT_MAX_PLAYERS, maxPlayers->Value () + 2);
 	nLastMaxPlayers = maxPlayers->Value ();
@@ -409,13 +463,25 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
+const uint8_t ppsTable [] = {5, 10, 20, 30, 50, 100};
+
+static inline uint8_t FindNearestPPS (void)
+{
+int32_t i = sizeof (ppsTable);
+while (i && ppsTable [--i] > mpParams.nMinPPS)
+	;
+return i;
+}
+
+//------------------------------------------------------------------------------
+
 int32_t NetworkMoreOptionsPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
 CMenuItem*	m;
-int32_t			v;
+int32_t		v;
 
 if ((m = menu ["reactor life"])) {
 	v = m->Value ();
@@ -446,6 +512,16 @@ if ((m = menu ["score goal"])) {
 		}
 	}
 
+if ((m = menu ["pps"])) {
+	v = m->Value ();
+	if (mpParams.nMinPPS != v) {
+		mpParams.nMinPPS = ppsTable [v];
+		sprintf (m->Text (), TXT_PPS2, mpParams.nMinPPS);
+		m->Rebuild ();
+		}
+	}  
+
+
 return nCurItem;
 }
 
@@ -455,8 +531,8 @@ void NetworkMoreGameOptions (void)
 {
 	static int32_t choice = 0;
 
-	int32_t		i;
-	char		szPlayTime [80], szScoreGoal [80], szInvul [50], szSocket [6], szPPS [6], szPPSLabel [40];
+	int32_t	i;
+	char		szPlayTime [80], szScoreGoal [80], szInvul [50], szSocket [6], szSlider [50];
 	CMenu		m;
 
 do {
@@ -479,13 +555,15 @@ do {
 		*szScoreGoal = *(TXT_SCOREGOAL - 1);
 		m.AddSlider ("score goal", szScoreGoal + 1, mpParams.nScoreGoal, 0, 10, KEY_K, HTX_MULTI2_SCOREGOAL);
 		}
+	m.AddText ("", "");
 	m.AddCheck ("spawn invul", TXT_INVUL_RESPAWN, mpParams.bInvul, KEY_I, HTX_MULTI2_INVUL);
 	m.AddCheck ("marker cameras", TXT_MARKER_CAMS, mpParams.bMarkerView, KEY_C, HTX_MULTI2_MARKERCAMS);
 	m.AddCheck ("indestructible lights", TXT_KEEP_LIGHTS, mpParams.bIndestructibleLights, KEY_L, HTX_MULTI2_KEEPLIGHTS);
 	m.AddCheck ("bright ships", TXT_BRIGHT_SHIPS, mpParams.bBrightPlayers ? 0 : 1, KEY_S, HTX_MULTI2_BRIGHTSHIP);
 	m.AddCheck ("show players names", TXT_SHOW_NAMES, mpParams.bShowAllNames, KEY_E, HTX_MULTI2_SHOWNAMES);
 	m.AddCheck ("show players on map", TXT_SHOW_PLAYERS, mpParams.bShowPlayersOnAutomap, KEY_A, HTX_MULTI2_SHOWPLRS);
-	m.AddCheck ("int16_t packets", TXT_SHORT_PACKETS, mpParams.bShortPackets, KEY_H, HTX_MULTI2_SHORTPKTS);
+	if (gameStates.app.bNostalgia)
+		m.AddCheck ("short packets", TXT_SHORT_PACKETS, mpParams.bShortPackets, KEY_H, HTX_MULTI2_SHORTPKTS);
 	if (!gameStates.app.bGameRunning)
 		m.AddCheck ("allow custom weapons", TXT_ALLOW_CUSTOM_WEAPONS, extraGameInfo [0].bAllowCustomWeapons, KEY_C, HTX_ALLOW_CUSTOM_WEAPONS);
 	m.AddText ("", "");
@@ -496,12 +574,19 @@ do {
 		m.AddText ("", TXT_SOCKET2, KEY_N);
 		m.AddInput ("socket", szSocket, 5, HTX_MULTI2_SOCKET);
 		}
-
+#if 1
+	m.AddText ("", "");
+	sprintf (szSlider + 1, TXT_PPS2, mpParams.nMinPPS);
+	strupr (szSlider + 1);
+	*szSlider = *(TXT_PPS2 - 1);
+	m.AddSlider ("pps", szSlider + 1, FindNearestPPS (), 0, sizeof (ppsTable) - 1, KEY_O, HTX_SPOTSIZE); 
+#else
+	char szPPS [20], szPPSLabel [40];
 	sprintf (szPPS, "%d", mpParams.nMinPPS);
 	sprintf (szPPSLabel, TXT_PPS, MIN_PPS, MAX_PPS);
 	m.AddText ("", szPPSLabel, KEY_P);
 	m.AddInput ("PPS", szPPS, 3, HTX_MULTI2_PPS);
-
+#endif
 	nLastScoreGoal = netGameInfo.GetScoreGoal ();
 	nLastPlayTime = mpParams.nMaxTime;
 
@@ -533,8 +618,12 @@ mpParams.bMarkerView = uint8_t (m.Value ("marker cameras"));
 mpParams.bIndestructibleLights = uint8_t (m.Value ("indestructible lights"));
 mpParams.nDifficulty = m.Value ("difficulty");
 mpParams.bShowPlayersOnAutomap = m.Value ("show players on map");
-mpParams.bShortPackets = m.Value ("int16_t packets");
+if (gameStates.app.bNostalgia)
+	mpParams.bShortPackets = m.Value ("short packets");
+#if 1
+#else
 mpParams.nMinPPS = Clamp (m.ToInt ("PPS"), MIN_PPS, MAX_PPS);
+#endif
 
 if (gameStates.multi.nGameType >= IPX_GAME) { 
 	int32_t newSocket = atoi (szSocket);
@@ -665,7 +754,7 @@ void NetworkD2XOptions (void)
 {
 	static int32_t choice = 0;
 
-	int32_t		i;
+	int32_t	i;
 	char		szSlider [50];
 	CMenu		m;
 
@@ -899,38 +988,52 @@ do {
 int32_t NetworkGetGameType (CMenu& m, int32_t bAnarchyOnly)
 {
 	int32_t bHoard = HoardEquipped ();
-		   
-if (m.Value ("anarchy"))
-	mpParams.nGameMode = NETGAME_ANARCHY;
-else if (m.Value ("team anarchy"))
-	mpParams.nGameMode = NETGAME_TEAM_ANARCHY;
-else if (m.Value ("CTF")) {
-	mpParams.nGameMode = NETGAME_CAPTURE_FLAG;
-	extraGameInfo [0].bEnhancedCTF = 0;
+		
+if (gameStates.app.bNostalgia) {
+	if (m.Value ("anarchy"))
+		mpParams.nGameMode = NETGAME_ANARCHY;
+	else if (m.Value ("team anarchy"))
+		mpParams.nGameMode = NETGAME_TEAM_ANARCHY;
+	else if (m.Value ("CTF")) {
+		mpParams.nGameMode = NETGAME_CAPTURE_FLAG;
+		extraGameInfo [0].bEnhancedCTF = 0;
+		}
+	else if (m.Value ("CTF+")) {
+		mpParams.nGameMode = NETGAME_CAPTURE_FLAG;
+		extraGameInfo [0].bEnhancedCTF = 1;
+		}
+	else if (bHoard && m.Value ("hoard"))
+		mpParams.nGameMode = NETGAME_HOARD;
+	else if (bHoard && m.Value ("team hoard"))
+		mpParams.nGameMode = NETGAME_TEAM_HOARD;
+	else if (bHoard && m.Value ("entropy"))
+		mpParams.nGameMode = NETGAME_ENTROPY;
+	else if (bHoard && m.Value ("monsterball"))
+		mpParams.nGameMode = NETGAME_MONSTERBALL;
+	else if (bAnarchyOnly) {
+		TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_ANARCHY_ONLY_MISSION);
+		m.SetValue ("anarchy", 1);
+		m.SetValue ("robot anarchy", 0);
+		m.SetValue ("coop", 0);
+		return 0;
+		}               
+	else if (m.Value ("robot anarchy")) 
+		mpParams.nGameMode = NETGAME_ROBOT_ANARCHY;
+	else if (m.Value ("coop")) 
+		mpParams.nGameMode = NETGAME_COOPERATIVE;
 	}
-else if (m.Value ("CTF+")) {
-	mpParams.nGameMode = NETGAME_CAPTURE_FLAG;
-	extraGameInfo [0].bEnhancedCTF = 1;
+else {
+	if (mpParams.nGameType <= NETGAME_CAPTURE_FLAG) {
+		mpParams.nGameMode = mpParams.nGameType;
+		if (mpParams.nGameMode == NETGAME_CAPTURE_FLAG)
+			extraGameInfo [0].bEnhancedCTF = 0;
+		}
+	else {
+		mpParams.nGameMode = mpParams.nGameType - 1;
+		if (mpParams.nGameMode == NETGAME_CAPTURE_FLAG)
+			extraGameInfo [0].bEnhancedCTF = 1;
+		}
 	}
-else if (bHoard && m.Value ("hoard"))
-	mpParams.nGameMode = NETGAME_HOARD;
-else if (bHoard && m.Value ("team hoard"))
-	mpParams.nGameMode = NETGAME_TEAM_HOARD;
-else if (bHoard && m.Value ("entropy"))
-	mpParams.nGameMode = NETGAME_ENTROPY;
-else if (bHoard && m.Value ("monsterball"))
-	mpParams.nGameMode = NETGAME_MONSTERBALL;
-else if (bAnarchyOnly) {
-	TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_ANARCHY_ONLY_MISSION);
-	m.SetValue ("anarchy", 1);
-	m.SetValue ("robot anarchy", 0);
-	m.SetValue ("coop", 0);
-	return 0;
-	}               
-else if (m.Value ("robot anarchy")) 
-	mpParams.nGameMode = NETGAME_ROBOT_ANARCHY;
-else if (m.Value ("coop")) 
-	mpParams.nGameMode = NETGAME_COOPERATIVE;
 return 1;
 }
 
@@ -958,58 +1061,102 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 	}
 m.AddText ("", TXT_DESCRIPTION, 0); 
 m.AddInput ("game name", szName, NETGAME_NAME_LEN, HTX_MULTI_NAME); 
+if (!gameStates.app.bNostalgia)
+	m.AddText ("", "");
 m.AddMenu ("mission selector", TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
-m.AddText ("mission name", "", 0);
-m ["mission name"]->Rebuild (); 
+if (gameStates.app.bNostalgia) {
+	m.AddText ("mission name", "", 0);
+	m ["mission name"]->Rebuild (); 
+	pszMissionName = "mission name";
+	}
+else {
+	m ["mission selector"]->Rebuild (); 
+	pszMissionName = "mission selector";
+	}
 if ((nNewMission >= 0) && (missionManager.nLastLevel > 1)) {
-	m.AddText ("level number text", szLevelText, 0); 
-	m.AddInput ("level number", szLevel, 4, HTX_MULTI_LEVEL);
+	if (gameStates.app.bNostalgia) {
+		m.AddText ("level number text", szLevelText, 0); 
+		m.AddInput ("level number", szLevel, 4, HTX_MULTI_LEVEL);
+		}
+	else {
+		sprintf (szLevelText, "%s %d", TXT_LEVEL_, NMCLAMP (mpParams.nLevel, 1, missionManager.nLastLevel));
+		m.AddSlider ("level number", szLevelText, NMCLAMP (mpParams.nLevel, 1, missionManager.nLastLevel) - 1, 0, missionManager.nLastLevel - 1);
+		}
 	}
 m.AddText ("", ""); 
 nGameTypes = m.ToS ();
-m.AddRadio ("anarchy", TXT_ANARCHY, 0, KEY_A, HTX_MULTI_ANARCHY);
-m.AddRadio ("team anarchy", TXT_TEAM_ANARCHY, 0, KEY_T, HTX_MULTI_TEAMANA);
-m.AddRadio ("robot anarchy", TXT_ANARCHY_W_ROBOTS, 0, KEY_R, HTX_MULTI_BOTANA);
-m.AddRadio ("coop", TXT_COOP, 0, KEY_P, HTX_MULTI_COOP);
-m.AddRadio ("CTF", TXT_CTF, 0, KEY_F, HTX_MULTI_CTF);
-if (!gameStates.app.bNostalgia)
-	m.AddRadio ("CTF+", TXT_CTF_PLUS, 0, KEY_T, HTX_MULTI_CTFPLUS);
+if (gameStates.app.bNostalgia) {
+	m.AddRadio ("anarchy", TXT_ANARCHY, 0, KEY_A, HTX_MULTI_ANARCHY);
+	m.AddRadio ("team anarchy", TXT_TEAM_ANARCHY, 0, KEY_T, HTX_MULTI_TEAMANA);
+	m.AddRadio ("robot anarchy", TXT_ROBOT_ANARCHY, 0, KEY_R, HTX_MULTI_BOTANA);
+	m.AddRadio ("coop", TXT_COOP, 0, KEY_P, HTX_MULTI_COOP);
+	m.AddRadio ("CTF", TXT_CTF, 0, KEY_F, HTX_MULTI_CTF);
+#if 0
+	if (!gameStates.app.bNostalgia)
+		m.AddRadio ("CTF+", TXT_CTF_PLUS, 0, KEY_T, HTX_MULTI_CTFPLUS);
+#endif
+	if (bHoard) {
+		m.AddRadio ("hoard", TXT_HOARD, 0, KEY_H, HTX_MULTI_HOARD);
+		m.AddRadio ("team hoard", TXT_TEAM_HOARD, 0, KEY_O, HTX_MULTI_TEAMHOARD);
+#if 0
+		if (!gameStates.app.bNostalgia) {
+			m.AddRadio ("entropy", TXT_ENTROPY, 0, KEY_Y, HTX_MULTI_ENTROPY);
+			m.AddRadio ("monsterball", TXT_MONSTERBALL, 0, KEY_B, HTX_MULTI_MONSTERBALL);
+			}
+#endif
+		} 
+	nGameTypes = m.ToS () - nGameTypes;
+	m [m.IndexOf ("anarchy") + NMCLAMP (mpParams.nGameType, 0, nGameTypes)].Value () = 1;
+	m.AddText ("end of game types", ""); 
+	m.AddRadio ("open game", TXT_OPEN_GAME, 0, KEY_O, HTX_MULTI_OPENGAME);
+	m.AddRadio ("closed game", TXT_CLOSED_GAME, 0, KEY_C, HTX_MULTI_CLOSEDGAME);
+	m.AddRadio ("restricted game", TXT_RESTRICTED_GAME, 0, KEY_R, HTX_MULTI_RESTRGAME);
+	m [m.IndexOf ("open game") + NMCLAMP (mpParams.nGameAccess, 0, 2)].Value () = 1;
+	m.AddText ("end of game access", "");
+	}
+else {
+	szGameTypeList [0] = TXT_ANARCHY;
+	szGameTypeList [1] = TXT_TEAM_ANARCHY; 
+	szGameTypeList [2] = TXT_ROBOT_ANARCHY; 
+	szGameTypeList [3] = TXT_COOP; 
+	szGameTypeList [4] = TXT_CTF; 
+	szGameTypeList [5] = TXT_CTF_PLUS; 
+	szGameTypeList [6] = TXT_HOARD; 
+	szGameTypeList [7] = TXT_TEAM_HOARD; 
+	szGameTypeList [8] = TXT_ENTROPY; 
+	szGameTypeList [9] = TXT_MONSTERBALL;
+	szGameAccessList [0] = TXT_ACCESS_ALL;
+	szGameAccessList [1] = TXT_ACCESS_INVITE;
+	szGameAccessList [2] = TXT_ACCESS_CONFIRM;
 
-if (bHoard) {
-	m.AddRadio ("hoard", TXT_HOARD, 0, KEY_H, HTX_MULTI_HOARD);
-	m.AddRadio ("team hoard", TXT_TEAM_HOARD, 0, KEY_O, HTX_MULTI_TEAMHOARD);
-	if (!gameStates.app.bNostalgia) {
-		m.AddRadio ("entropy", TXT_ENTROPY, 0, KEY_Y, HTX_MULTI_ENTROPY);
-		m.AddRadio ("monsterball", TXT_MONSTERBALL, 0, KEY_B, HTX_MULTI_MONSTERBALL);
-		}
-	} 
-nGameTypes = m.ToS () - nGameTypes;
-m [m.IndexOf ("anarchy") + NMCLAMP (mpParams.nGameType, 0, nGameTypes)].Value () = 1;
+	char szSlider [50];
 
-m.AddText ("end of game types", ""); 
+	nGameTypes = sizeofa (szGameTypeList) - (bHoard ? 1 : 5);
+	sprintf (szSlider + 1, TXT_GAME_TYPE, szGameTypeList [mpParams.nGameType]);
+	*szSlider = *(TXT_GAME_TYPE - 1);
+	m.AddSlider ("game type", szSlider + 1, NMCLAMP (mpParams.nGameType, 0, nGameTypes), 0, nGameTypes, KEY_T, HTX_GAME_TYPE);
+	sprintf (szSlider + 1, TXT_GAME_ACCESS, szGameAccessList [mpParams.nGameAccess]);
+	*szSlider = *(TXT_GAME_ACCESS - 1);
+	m.AddSlider ("game access", szSlider + 1, NMCLAMP (mpParams.nGameAccess, 0, 2), 0, 2, KEY_A, HTX_GAME_ACCESS);
+	}
 
-m.AddRadio ("open game", TXT_OPEN_GAME, 0, KEY_O, HTX_MULTI_OPENGAME);
-m.AddRadio ("closed game", TXT_CLOSED_GAME, 0, KEY_C, HTX_MULTI_CLOSEDGAME);
-m.AddRadio ("restricted game", TXT_RESTR_GAME, 0, KEY_R, HTX_MULTI_RESTRGAME);
-m [m.IndexOf ("open game") + NMCLAMP (mpParams.nGameAccess, 0, 2)].Value () = 1;
-m.AddText ("end of game access", "");
 sprintf (szMaxPlayers + 1, TXT_MAX_PLAYERS, gameData.multiplayer.nMaxPlayers);
 *szMaxPlayers = *(TXT_MAX_PLAYERS - 1);
 nLastMaxPlayers = gameData.multiplayer.nMaxPlayers - 2;
-m.AddSlider ("max. players", szMaxPlayers + 1, nLastMaxPlayers, 0, nLastMaxPlayers, KEY_X, HTX_MULTI_MAXPLRS); 
+m.AddSlider ("max. players", szMaxPlayers + 1, nLastMaxPlayers, 0, nLastMaxPlayers, KEY_P, HTX_MULTI_MAXPLRS); 
 m.AddText ("", "");
 m.AddMenu ("more options", TXT_MORE_OPTS, KEY_M, HTX_MULTI_MOREOPTS);
 if (!gameStates.app.bNostalgia) {
 	m.AddMenu ("d2x options", TXT_MULTI_D2X_OPTS, KEY_X, HTX_MULTI_D2XOPTS);
-	if (m.Available ("entropy") && m.Value ("entropy"))
+	if (mpParams.nGameType == 8)
 		m.AddMenu ("entropy options", TXT_ENTROPY_OPTS, KEY_E, HTX_MULTI_ENTOPTS);
-	if ((gameOpts->app.bExpertMode == SUPERUSER) && m.Available ("monsterball") && m.Value ("monsterball"))
-		m.AddMenu ("monsterball options", TXT_MONSTERBALL_OPTS, KEY_O, HTX_MULTI_MBALLOPTS);
+	if ((gameOpts->app.bExpertMode == SUPERUSER) && (mpParams.nGameType == 9))
+		m.AddMenu ("monsterball options", TXT_MONSTERBALL_OPTS, KEY_B, HTX_MULTI_MBALLOPTS);
 	else
 		InitMonsterballSettings (&extraGameInfo [0].monsterball);
 	m.AddMenu ("config options", TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);
-	m.AddMenu ("loadout options", TXT_LOADOUT_OPTION, KEY_L, HTX_MULTI_LOADOUT);
-	m.AddMenu ("missile options", TXT_MISSILE_LOADOUT, KEY_I, HTX_MISSILE_LOADOUT);
+	m.AddMenu ("loadout options", TXT_LOADOUT_OPTION, KEY_I, HTX_MULTI_LOADOUT);
+	m.AddMenu ("missile options", TXT_MISSILE_LOADOUT, KEY_C, HTX_MISSILE_LOADOUT);
 	}
 }
 
@@ -1019,18 +1166,38 @@ int32_t GameParamsMenu (CMenu& m, int32_t& key, int32_t& choice, char* szName, c
 {
 	int32_t i, bAnarchyOnly = (nNewMission < 0) ? 0 : missionManager [nNewMission].bAnarchyOnly;
 
-if (m ["mission name"]->Rebuilding ()) {
+if (m [pszMissionName]->Rebuilding ()) {
+	int32_t nOffset = 0;
+	if ((nNewMission >= 0) &&
+		 (strstr (missionManager [nNewMission].szMissionName, "(D1) ") || strstr (missionManager [nNewMission].szMissionName, "(D2) ") || strstr (missionManager [nNewMission].szMissionName, "(XL) ")))
+		nOffset = 5;
 	strncpy (netGameInfo.m_info.szMissionName, 
 				(nNewMission < 0) ? "" : missionManager [nNewMission].filename, 
 				sizeof (netGameInfo.m_info.szMissionName) - 1);
-	m ["mission name"]->SetText ((nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager [nNewMission].szMissionName));
-	if ((nNewMission >= 0) && (missionManager.nLastLevel > 1)) {
-		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, missionManager.nLastLevel);
-		if (strlen (szLevelText) < 32)
-			szLevelText [31] = '\0';
-		m ["level number text"]->Rebuild ();
+	if (gameStates.app.bNostalgia) {
+		m ["mission name"]->SetText ((nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager [nNewMission].szMissionName + nOffset));
+		if (gameStates.app.bNostalgia && (nNewMission >= 0) && (missionManager.nLastLevel > 1)) {
+			sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, missionManager.nLastLevel);
+			if (strlen (szLevelText) < 32)
+				szLevelText [31] = '\0';
+			strcpy (m ["level number text"]->Text (), szLevelText);
+			m ["level number text"]->Rebuild ();
+			}
+		mpParams.nLevel = 1;
+		}
+	else {
+		char szLabel [200];
+		sprintf (szLabel, "%s %s", TXT_SEL_MISSION, (nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager [nNewMission].szMissionName + nOffset));
+		CMenuItem* mi = m ["mission selector"];
+		m ["mission selector"]->SetText (szLabel);
 		}
 	mpParams.nLevel = 1;
+	}
+
+if (!gameStates.app.bNostalgia && (nNewMission >= 0) && !m.Available ("launch game")) {
+	m.AddText ("", "");
+	m.AddMenu ("launch game", TXT_LAUNCH_GAME, KEY_L, "");
+	m ["launch game"]->m_bCentered = 1;
 	}
 
 gameStates.app.nExtGameStatus = GAMESTAT_NETGAME_OPTIONS; 
@@ -1038,6 +1205,8 @@ key = m.Menu (NULL, (gameStates.multi.nGameType == UDP_GAME) ? szIpAddr : NULL, 
 								//TXT_NETGAME_SETUP
 if (key == -1)
 	return -1;
+else if (m.Available ("launch game") && (choice == m.IndexOf ("launch game")))
+	key = 0;
 else if (choice == m.IndexOf ("more options")) {
 	if (m [nGameTypes + 3].Value ())
 		gameData.app.SetGameMode (GM_MULTI_COOP);
@@ -1083,7 +1252,8 @@ else if (choice == m.IndexOf ("mission selector")) {
 	if (h < 0)
 		return 1;
 	missionManager.nLastMission = nNewMission = h;
-	m ["mission name"]->Rebuild ();
+	m [pszMissionName]->Rebuild ();
+	mpParams.nLevel = 1;
 	return 2;
 	}
 
@@ -1134,7 +1304,7 @@ return 0;
 
 int32_t NetworkGetGameParams (int32_t bAutoRun)
 {
-	int32_t	i, key, choice = 1, nState = 0;
+	int32_t	i, key, choice = 2, nState = 0;
 	CMenu	m;
 	char	szName [80]; //NETGAME_NAME_LEN+1];
 	char	szLevelText [80]; //32];

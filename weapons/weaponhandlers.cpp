@@ -340,14 +340,15 @@ if (nWeapon > OMEGA_INDEX) {
 	nRoundsPerShot = 0;
 	}
 else {
-	gameData.multigame.laser.nFired [0] = 0;
+	gameData.multigame.weapon.nFired [0] = 0;
 	nRoundsPerShot = weaponHandlers [nWeapon] (OBJECTS + nObject, nLevel, nFlags, nRoundsPerShot);
 	}
 if (IsMultiGame && (nObject == LOCALPLAYER.nObject)) {
-	gameData.multigame.laser.bFired = nRoundsPerShot;
-	gameData.multigame.laser.nGun = nWeapon;
-	gameData.multigame.laser.nFlags = nFlags;
-	gameData.multigame.laser.nLevel = nLevel;
+	gameData.multigame.weapon.bFired = nRoundsPerShot;
+	gameData.multigame.weapon.nGun = nWeapon;
+	gameData.multigame.weapon.nFlags = nFlags;
+	gameData.multigame.weapon.nLevel = nLevel;
+	MultiSendFire ();
 	}
 return nRoundsPerShot;
 }

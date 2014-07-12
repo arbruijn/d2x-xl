@@ -98,7 +98,7 @@ void FlashFrame (void)
 {
 	static fixang flashAngle = 0;
 
-if (automap.Display ())
+if (automap.Active ())
 	return;
 if (!(gameData.reactor.bDestroyed || gameStates.gameplay.seismic.nMagnitude)) {
 	gameStates.render.nFlashScale = 0;
@@ -286,7 +286,7 @@ PROF_END(ptRenderObjects)
 void RenderSkyBox (int32_t nWindow)
 {
 PROF_START
-if (gameStates.render.bHaveSkyBox && (!automap.Display () || gameOpts->render.automap.bSkybox)) {
+if (gameStates.render.bHaveSkyBox && (!automap.Active () || gameOpts->render.automap.bSkybox)) {
 	ogl.SetDepthWrite (true);
 	RenderSkyBoxFaces ();
 	}
@@ -572,7 +572,7 @@ if (nSegment < 0) {
 	}
 if (0 > gameData.render.mine.objRenderList.ref [nSegment])
 	return -1;
-if (!automap.Display ())
+if (!automap.Active ())
 	return VerifyObjectRenderSegment (nSegment);
 if (extraGameInfo [IsMultiGame].bPowerupsOnRadar && extraGameInfo [IsMultiGame].bRobotsOnRadar)
 	return VerifyObjectRenderSegment (nSegment);
@@ -607,7 +607,7 @@ if (!gameOpts->render.debug.bObjects)
 #endif
 if (nType != RENDER_TYPE_GEOMETRY)
 	return;
-if (automap.Display () && !(gameOpts->render.automap.bTextured & 1))
+if (automap.Active () && !(gameOpts->render.automap.bTextured & 1))
 	return;
 
 gameStates.render.nType = RENDER_TYPE_OBJECTS;
@@ -685,7 +685,7 @@ if (!ogl.StereoDevice () || (ogl.StereoSeparation () < 0) || nWindow || gameStat
 		while (!transparencyRenderer.Ready ())
 			G3_SLEEP (0);
 		}
-	if (automap.Display ()) {
+	if (automap.Active ()) {
 		bLightning = gameOpts->render.automap.bLightning;
 		bParticles = gameOpts->render.automap.bParticles;
 		bSparks = gameOpts->render.automap.bSparks;
@@ -778,7 +778,7 @@ RenderSegmentList (RENDER_TYPE_GEOMETRY);
 //RenderSegmentOutline ();
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {
 	if (!gameStates.app.bNostalgia &&
-		 (!automap.Display () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) 
+		 (!automap.Active () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) 
 		if (!nWindow && SetupCoronas ())
 			RenderSegmentList (RENDER_TYPE_CORONAS);
 	}

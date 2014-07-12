@@ -131,7 +131,7 @@ return objP;
 
 //------------------------------------------------------------------------------
 
-CObject* CreateExplosion (CObject* parentP, int16_t nSegment, CFixVector& vPos, fix xSize,
+CObject* CreateExplosion (CObject* parentP, int16_t nSegment, CFixVector& vPos, CFixVector& vImpact, fix xSize,
 								  uint8_t nVClip, fix xMaxDamage, fix xMaxDistance, fix xMaxForce, int16_t nParent)
 {
 	int16_t		nObject;
@@ -201,7 +201,7 @@ FORALL_OBJS (objP) {
 		}
 	else if ((nType != OBJ_REACTOR) && (nType != OBJ_PLAYER))
 		continue;
-	dist = CFixVector::Dist (OBJPOS (objP)->vPos, explObjP->info.position.vPos);
+	dist = CFixVector::Dist (OBJPOS (objP)->vPos, vImpact);
 	// Make damage be from 'xMaxDamage' to 0.0, where 0.0 is 'xMaxDistance' away;
 	if (dist >= xMaxDistance)
 		continue;
@@ -210,10 +210,10 @@ FORALL_OBJS (objP) {
 	damage = xMaxDamage - FixMulDiv (dist, xMaxDamage, xMaxDistance);
 	force = xMaxForce - FixMulDiv (dist, xMaxForce, xMaxDistance);
 	// Find the force vector on the CObject
-	CFixVector::NormalizedDir (vForce, objP->info.position.vPos, explObjP->info.position.vPos);
+	CFixVector::NormalizedDir (vForce, objP->info.position.vPos, vImpact);
 	vForce *= force;
 	// Find where the point of impact is... (vHit)
-	vHit = explObjP->info.position.vPos - objP->info.position.vPos;
+	vHit = vImpact - objP->info.position.vPos;
 	vHit *= (FixDiv (objP->info.xSize, objP->info.xSize + dist));
 	if (nType == OBJ_WEAPON) {
 		objP->ApplyForce (vForce);
@@ -317,10 +317,10 @@ return explObjP;
 
 //------------------------------------------------------------------------------
 
-CObject* CreateSplashDamageExplosion (CObject* objP, int16_t nSegment, CFixVector& position, fix size, uint8_t nVClip,
+CObject* CreateSplashDamageExplosion (CObject* objP, int16_t nSegment, CFixVector& position, CFixVector &impact, fix size, uint8_t nVClip,
 												  fix maxDamage, fix maxDistance, fix maxForce, int16_t parent)
 {
-CObject* explObjP = CreateExplosion (objP, nSegment, position, size, nVClip, maxDamage, maxDistance, maxForce, parent);
+CObject* explObjP = CreateExplosion (objP, nSegment, position, impact, size, nVClip, maxDamage, maxDistance, maxForce, parent);
 if (explObjP) {
 	if (!objP ||
 		 ((objP->info.nType == OBJ_PLAYER) && !SPECTATOR (objP)) || 
@@ -336,24 +336,36 @@ return explObjP;
 //------------------------------------------------------------------------------
 //blows up a xSplashDamage weapon, creating the xSplashDamage explosion
 //return the explosion CObject
-CObject* CObject::ExplodeSplashDamageWeapon (CFixVector& vPos)
+CObject* CObject::ExplodeSplashDamageWeapon (CFixVector& vImpact, CObject* targetP)
 {
 	CWeaponInfo *wi = &gameData.weapons.info [info.nId];
 
 Assert (wi->xDamageRadius);
-if ((info.nId == EARTHSHAKER_ID) || (info.nId == ROBOT_EARTHSHAKER_ID))
-	ShakerRockStuff (&vPos);
-audio.CreateObjectSound (IsSplashDamageWeapon () ? SOUND_BADASS_EXPLOSION_WEAPON : SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
-CFixVector v;
-if (gameStates.render.bPerPixelLighting == 2) { //make sure explosion center is not behind some wall
-	v = info.vLastPos - info.position.vPos;
-	CFixVector::Normalize (v);
-	//VmVecScale (&v, I2X (10));
-	v += vPos;
+// adjust the impact location in case it is inside the object
+#if 1
+if (targetP) {
+	CFixVector vRelImpact = vImpact - targetP->Position (); // impact relative to object center
+	fix xDist = vRelImpact.Mag ();
+	if (xDist != targetP->Size ()) {
+		vRelImpact *= Size ();
+		vRelImpact /= xDist;
+		vImpact = targetP->Position () + vRelImpact;
+		}
 	}
-else
-	v = vPos;
-return CreateSplashDamageExplosion (this, info.nSegment, v, wi->xImpactSize, wi->nRobotHitVClip,
+#endif
+if ((info.nId == EARTHSHAKER_ID) || (info.nId == ROBOT_EARTHSHAKER_ID))
+	ShakerRockStuff (&vImpact);
+audio.CreateObjectSound (IsSplashDamageWeapon () ? SOUND_BADASS_EXPLOSION_WEAPON : SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
+CFixVector vExplPos;
+if (gameStates.render.bPerPixelLighting != 2) 
+	vExplPos = vImpact;
+else { //make sure explosion center is not behind some wall
+	vExplPos = info.vLastPos - info.position.vPos;
+	CFixVector::Normalize (vExplPos);
+	//VmVecScale (&v, I2X (10));
+	vExplPos += vImpact;
+	}
+return CreateSplashDamageExplosion (this, info.nSegment, vExplPos, vImpact, wi->xImpactSize, wi->nRobotHitVClip,
 												wi->strength [gameStates.app.nDifficultyLevel], 
 												wi->xDamageRadius, wi->strength [gameStates.app.nDifficultyLevel],
 												cType.laserInfo.parent.nObject);
@@ -364,8 +376,8 @@ return CreateSplashDamageExplosion (this, info.nSegment, v, wi->xImpactSize, wi-
 CObject* CObject::ExplodeSplashDamage (fix damage, fix distance, fix force)
 {
 
-CObject* explObjP = CreateSplashDamageExplosion (this, info.nSegment, info.position.vPos, info.xSize,
-													    (uint8_t) GetExplosionVClip (this, 0), damage, distance, force, OBJ_IDX (this));
+CObject* explObjP = CreateSplashDamageExplosion (this, info.nSegment, info.position.vPos, info.position.vPos, info.xSize,
+																 (uint8_t) GetExplosionVClip (this, 0), damage, distance, force, OBJ_IDX (this));
 if (explObjP)
 	audio.CreateObjectSound (SOUND_BADASS_EXPLOSION_ACTOR, SOUNDCLASS_EXPLOSION, OBJ_IDX (explObjP));
 return explObjP;
@@ -691,7 +703,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 		}
 	nVClip = (uint8_t) GetExplosionVClip (delObjP, 1);
 	if ((delObjP->info.nType == OBJ_ROBOT) && xSplashDamage)
-		explObjP = CreateSplashDamageExplosion (NULL, delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE),
+		explObjP = CreateSplashDamageExplosion (NULL, delObjP->info.nSegment, *vSpawnPos, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE),
 															 nVClip, I2X (xSplashDamage), I2X (4) * xSplashDamage, I2X (35) * xSplashDamage, -1);
 	else
 		explObjP = CreateExplosion (delObjP->info.nSegment, *vSpawnPos, FixMul (delObjP->info.xSize, EXPLOSION_SCALE), nVClip);

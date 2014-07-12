@@ -135,41 +135,41 @@ typedef struct tNetPlayerStats {
 } tNetPlayerStats;
 
 static int32_t multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
-	{24, -1}, // POSITION
-	{3, -1},  // REAPPEAR
-	{8, -1}, //9 + MAX_FIRED_OBJECTS * sizeof (int16_t)},  // FIRE
-	{5, -1},  // KILL
-	{4, 5},  // REMOVE_OBJECT
-	{97+9, 97+15}, // PLAYER_EXPLODE
-	{37, -1}, // MESSAGE (MAX_MESSAGE_LENGTH = 40)
-	{2, -1},  // QUIT
-	{4, -1},  // PLAY_SOUND
-	{41, -1}, // BEGIN_SYNC
-	{4, -1},  // CONTROLCEN
-	{5, -1},  // CLAIM ROBOT
-	{4, -1},  // END_SYNC
-	{2, -1},  // CLOAK
-	{3, -1},  // ENDLEVEL_START
-	{5, -1},  // DOOR_OPEN
-	{2, -1},  // CREATE_EXPLOSION
-	{16, -1}, // CONTROLCEN_FIRE
-	{97+9, 97+11}, // PLAYER_DROP
-	{19, -1}, // CREATE_POWERUP
-	{9, -1},  // MISSILE_TRACK
-	{2, -1},  // DE-CLOAK
-	{2, -1},  // MENU_CHOICE
-	{28, -1}, // ROBOT_POSITION  (shortpos_length (23) + 5 = 28)
-	{9, -1},  // ROBOT_EXPLODE
-	{5, -1},  // ROBOT_RELEASE
-	{18, -1}, // ROBOT_FIRE
-	{6, -1},  // SCORE
-	{6, -1},  // CREATE_ROBOT
-	{3, -1},  // TRIGGER
-	{10, -1}, // BOSS_ACTIONS
-	{27, 55}, // CREATE_ROBOT_POWERUPS
-	{7, -1},  // HOSTAGE_DOOR
-	{2+24, -1}, // SAVE_GAME      (uint8_t slot, -1}, uint32_t id, -1}, char name [20])
-	{2+4, -1},  // RESTORE_GAME   (uint8_t slot, -1}, uint32_t id)
+	{24, 62}, // MULTI_POSITION
+	{3, -1},  // MULTI_REAPPEAR
+	{8, -1}, //9 + MAX_FIRED_OBJECTS * sizeof (int16_t)},  // MULTI_FIRE
+	{5, -1},  // MULTI_KILL
+	{4, 5},  // MULTI_REMOVE_OBJECT
+	{97+9, 97+15}, // MULTI_PLAYER_EXPLODE
+	{37, -1}, // MULTI_MESSAGE (MAX_MESSAGE_LENGTH = 40)
+	{2, -1},  // MULTI_QUIT
+	{4, -1},  // MULTI_PLAY_SOUND
+	{41, -1}, // MULTI_BEGIN_SYNC
+	{4, -1},  // MULTI_CONTROLCEN
+	{5, -1},  // MULTI_CLAIM ROBOT
+	{4, -1},  // MULTI_END_SYNC
+	{2, -1},  // MULTI_CLOAK
+	{3, -1},  // MULTI_ENDLEVEL_START
+	{5, -1},  // MULTI_DOOR_OPEN
+	{2, -1},  // MULTI_CREATE_EXPLOSION
+	{16, -1}, // MULTI_CONTROLCEN_FIRE
+	{97+9, 97+11}, // MULTI_PLAYER_DROP
+	{19, -1}, // MULTI_CREATE_POWERUP
+	{9, -1},  // MULTI_MISSILE_TRACK
+	{2, -1},  // MULTI_DE-CLOAK
+	{2, -1},  // MULTI_MENU_CHOICE
+	{28, -1}, // MULTI_ROBOT_POSITION  (shortpos_length (23) + 5 = 28)
+	{9, -1},  // MULTI_ROBOT_EXPLODE
+	{5, -1},  // MULTI_ROBOT_RELEASE
+	{18, -1}, // MULTI_ROBOT_FIRE
+	{6, -1},  // MULTI_SCORE
+	{6, -1},  // MULTI_CREATE_ROBOT
+	{3, -1},  // MULTI_TRIGGER
+	{10, -1}, // MULTI_BOSS_ACTIONS
+	{27, 55}, // MULTI_CREATE_ROBOT_POWERUPS
+	{7, -1},  // MULTI_HOSTAGE_DOOR
+	{2+24, -1}, // MULTI_SAVE_GAME      (uint8_t slot, -1}, uint32_t id, -1}, char name [20])
+	{2+4, -1},  // MULTI_RESTORE_GAME   (uint8_t slot, -1}, uint32_t id)
 	{1+1, -1},  // MULTI_REQ_PLAYER
 	{sizeof (tNetPlayerStats), -1}, // MULTI_SEND_PLAYER
 	{55, -1}, // MULTI_MARKER
@@ -359,11 +359,15 @@ if ((nLocalObj > -1) && (nLocalObj < LEVEL_OBJECTS) &&
 
 void SetLocalObjNumMapping (int32_t nLocalObj)
 {
+#if 1
+SetObjNumMapping (nLocalObj, nLocalObj, N_LOCALPLAYER);
+#else
 if ((nLocalObj > -1) && (nLocalObj < LEVEL_OBJECTS)) {
 	gameData.multigame.nObjOwner [nLocalObj] = N_LOCALPLAYER;
 	gameData.multigame.remoteToLocal [N_LOCALPLAYER][nLocalObj] = nLocalObj;
 	gameData.multigame.localToRemote [nLocalObj] = nLocalObj;
 	}
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -781,7 +785,7 @@ gameData.multigame.bShowReticleName = 1;
 gameData.multigame.score.xShowListTimer = 0;
 gameData.multigame.bIsGuided = 0;
 gameData.multigame.create.nCount = 0;       // pointer into previous array
-gameData.multigame.laser.bFired = 0;  // How many times we shot
+gameData.multigame.weapon.bFired = 0;  // How many times we shot
 gameData.multigame.msg.bSending = 0;
 gameData.multigame.msg.bDefining = 0;
 gameData.multigame.msg.nIndex = 0;
@@ -1193,7 +1197,7 @@ void MultiSendData (uint8_t* buf, int32_t len, int32_t bUrgent)
 if (IsNetworkGame && buf [0]) {
 #if 1// DBG
 	if (len != MultiMsgLen (buf [0])) {
-		PrintLog (0, "Network message %d sent with wrong size %d!\n", len);
+		PrintLog (0, "Network message %d sent with wrong size %d!\n", buf [0], len);
 		len = MultiMsgLen (buf [0]);
 		}
 #endif
@@ -1217,7 +1221,6 @@ if (IsNetworkGame) {
 	gameStates.app.SRand (); // required to sync the player ship explosion on the clients
 	DropPlayerEggs (gameData.objs.consoleP);
 	LOCALPLAYER.SetShield (shield);
-	MultiSendPosition (LOCALPLAYER.nObject);
 	MultiSendPlayerExplode (MULTI_PLAYER_DROP);
 	}
 MultiSendQuit (MULTI_QUIT);
@@ -1264,7 +1267,7 @@ return IsNetworkGame ? NetworkEndLevel (secret) : 0;
 int32_t MultiMenuPoll (void)
 {
 // Special polling function for in-game menus for multiplayer and serial
-if (!(IsMultiGame &&(gameStates.app.nFunctionMode == FMODE_GAME)))
+if (!(IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME)))
 	return 0;
 if (gameData.multigame.menu.bLeave)
 	return -1;
@@ -1286,7 +1289,7 @@ if (gameStates.app.bEndLevelSequence ||
 	gameData.multigame.menu.bLeave = 1;
 	return -1;
 	}
-if (gameData.reactor.bDestroyed &&(gameData.reactor.countdown.nSecsLeft < 10)) {
+if (gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)) {
 	gameData.multigame.menu.bLeave = 1;
 	return -1;
 	}
@@ -1306,18 +1309,18 @@ if (!IsCoopGame)
 
 void MultiDoFire (uint8_t* buf)
 {
-	int32_t nPlayer = int32_t (buf [1]);
-	uint8_t weapon = (uint8_t) buf [2];
+	uint8_t nPlayer = uint8_t (buf [1]);
+	uint8_t weapon = uint8_t (buf [2]);
 	int32_t flags = int32_t (buf [4]);
 
-gameData.multigame.laser.nTrack = GET_INTEL_SHORT (buf + 6);
-#if 0
+gameData.multigame.weapon.nTrack = GET_INTEL_SHORT (buf + 6);
+
 if (gameStates.multi.nGameType == UDP_GAME) {
-	gameData.multigame.laser.nFired [1] = buf [8];
-	for (int32_t i = 0; i < gameData.multigame.laser.nFired [1]; i++)
-		gameData.multigame.laser.nObjects [1][i] = GET_INTEL_SHORT (buf + 9 + i * sizeof (int16_t));
+	gameData.multigame.weapon.nFired [1] = buf [8];
+	for (int32_t i = 0; i < gameData.multigame.weapon.nFired [1]; i++)
+		gameData.multigame.weapon.nObjects [1][i] = GET_INTEL_SHORT (buf + 9 + i * sizeof (int16_t));
 	}
-#endif
+
 if (OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.nType == OBJ_GHOST)
 	MultiMakeGhostPlayer (nPlayer);
 if (weapon == FLARE_ADJUST)
@@ -1346,8 +1349,8 @@ else {
 	FireWeapon (int16_t (gameData.multiplayer.players [nPlayer].nObject), weapon, int32_t (buf [3]), flags, int32_t (buf [5]));
 	gameData.SetFusionCharge (xSaveCharge, true);
 	}
-gameData.multigame.laser.nFired [0] =
-gameData.multigame.laser.nFired [1] = 0;
+gameData.multigame.weapon.nFired [0] =
+gameData.multigame.weapon.nFired [1] = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -1355,24 +1358,37 @@ gameData.multigame.laser.nFired [1] = 0;
 
 void MultiDoPosition (uint8_t* buf)
 {
-#if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	tShortPos sp;
-#endif
-int32_t nPlayer = (N_LOCALPLAYER + 1) % 2;
-CObject *objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
-if (IsNetworkGame) {
-	Int3 (); // Get Jason, what the hell are we doing here?
+if (IsNetworkGame) 
 	return;
-	}
-#if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-ExtractShortPos (objP, reinterpret_cast<tShortPos*> (buf+1), 0);
-#else
-memcpy (reinterpret_cast<uint8_t*> (sp.orient), reinterpret_cast<uint8_t*> (buf + 1), 9);
-memcpy (reinterpret_cast<uint8_t*> (&sp.coord), reinterpret_cast<uint8_t*> (buf + 10), 14);
-ExtractShortPos (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject], &sp, 1);
+
+int32_t bufP = 0;
+if (gameStates.multi.nGameType == UDP_GAME) {
+	CObject* objP = OBJECTS + gameData.multiplayer.players [buf [bufP++]].nObject;
+	memcpy (&objP->Position (), buf + bufP, sizeof (CFixVector));
+	bufP += sizeof (CFixVector);
+	memcpy (&objP->Orientation (), buf + bufP, sizeof (CFixMatrix));
+	bufP += sizeof (CFixMatrix);
+	memcpy (&objP->Velocity (), buf + bufP, sizeof (CFixMatrix));
+	bufP += sizeof (CFixMatrix);
+#if (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
+	INTEL_VECTOR (objP->Position ());
+	INTEL_MATRIX (objP->Orientation ());
+	INTEL_VECTOR (objP->Velocity ());
 #endif
-if (objP->info.movementType == MT_PHYSICS)
-	objP->SetThrustFromVelocity ();
+	}
+else {
+	CObject *objP = OBJECTS + gameData.multiplayer.players [(N_LOCALPLAYER + 1) % 2].nObject;
+#if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
+	ExtractShortPos (objP, reinterpret_cast<tShortPos*> (buf + 1), 0);
+#else
+	tShortPos sp;
+	memcpy (reinterpret_cast<uint8_t*> (sp.orient), reinterpret_cast<uint8_t*> (buf + 1), 9);
+	memcpy (reinterpret_cast<uint8_t*> (&sp.coord), reinterpret_cast<uint8_t*> (buf + 10), 14);
+	ExtractShortPos (&OBJECTS [gameData.multiplayer.players [nPlayer].nObject], &sp, 1);
+	if (objP->info.movementType == MT_PHYSICS)
+		objP->SetThrustFromVelocity ();
+#endif
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1743,11 +1759,11 @@ if (0 <= (i = FindReactor (OBJECTS + nObject)))
 
 void MultiDoCreateWeapon (uint8_t* buf)
 {
-	int16_t			nSegment;
-	int16_t			nObject;
-	int32_t			nLocalObj;
-	int32_t			nPlayer;
-	int32_t			bufI = 1;
+	int16_t		nSegment;
+	int16_t		nObject;
+	int32_t		nLocalObj;
+	int32_t		nPlayer;
+	int32_t		bufI = 1;
 	CFixVector	vPos, vVel;
 	char			nId;
 
@@ -1789,11 +1805,11 @@ return;
 
 int32_t MultiDoCreatePowerup (uint8_t* buf)
 {
-	int16_t			nSegment;
-	int16_t			nObject;
-	int32_t			nLocalObj;
-	int32_t			nPlayer;
-	int32_t			bufI = 1;
+	int16_t		nSegment;
+	int16_t		nObject;
+	int32_t		nLocalObj;
+	int32_t		nPlayer;
+	int32_t		bufI = 1;
 	CFixVector	vPos;
 	char			powerupType;
 
@@ -2140,7 +2156,7 @@ return 1;
 
 int MultiCheckPData (uint8_t* pd)
 {
-if (pd [0] != PID_PDATA)
+if (pd [0] != PID_PLAYER_DATA)
 	return -1;
 
 int32_t dataSize;
@@ -2167,27 +2183,19 @@ return dataSize ? MultiCheckBigData (data, dataSize) : 1;
 
 void MultiSendFire (void)
 {
-if (!gameData.multigame.laser.bFired)
+if (!gameData.multigame.weapon.bFired)
 	return;
-gameData.multigame.msg.buf [0] = char (MULTI_FIRE);
-gameData.multigame.msg.buf [1] = char (N_LOCALPLAYER);
-gameData.multigame.msg.buf [2] = char (gameData.multigame.laser.nGun);
-gameData.multigame.msg.buf [3] = char (gameData.multigame.laser.nLevel);
-gameData.multigame.msg.buf [4] = char (gameData.multigame.laser.nFlags);
-gameData.multigame.msg.buf [5] = char (gameData.multigame.laser.bFired);
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + 6, gameData.multigame.laser.nTrack);
-#if 0
-if (gameStates.multi.nGameType == UDP_GAME) {
-	gameData.multigame.msg.buf [8] = char (gameData.multigame.laser.nFired [0]);
-	for (int32_t i = 0; i < gameData.multigame.laser.nFired [0]; i++)
-		PUT_INTEL_SHORT (gameData.multigame.msg.buf + 9 + 2 * i, gameData.multigame.laser.nObjects [0][i]);
-	MultiSendData (gameData.multigame.msg.buf, 9 + MAX_FIRED_OBJECTS * sizeof (int16_t), 0);
-	}
-else
-#endif
-	MultiSendData (gameData.multigame.msg.buf, 8, 0);
-gameData.multigame.laser.nFired [0] = 0;
-gameData.multigame.laser.bFired = 0;
+int32_t bufP = 0;
+gameData.multigame.msg.buf [bufP++] = uint8_t (MULTI_FIRE);
+gameData.multigame.msg.buf [bufP++] = uint8_t (N_LOCALPLAYER);
+gameData.multigame.msg.buf [bufP++] = uint8_t (gameData.multigame.weapon.nGun);
+gameData.multigame.msg.buf [bufP++] = uint8_t (gameData.multigame.weapon.nLevel);
+gameData.multigame.msg.buf [bufP++] = uint8_t (gameData.multigame.weapon.nFlags);
+gameData.multigame.msg.buf [bufP++] = uint8_t (gameData.multigame.weapon.bFired);
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multigame.weapon.nTrack);
+bufP += 2;
+MultiSendData (gameData.multigame.msg.buf, bufP, 0);
+gameData.multigame.weapon.nFired [0] = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -2311,7 +2319,6 @@ if (bufI > MultiMsgLen (nType))
 	Warning ("MultiSendPlayerExplode:\nMax. message length exceeded!"); // See Rob
 #endif
 MultiSendData (gameData.multigame.msg.buf, MultiMsgLen (nType), 2);
-MultiSendWeapons (1);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED)
 	MultiSendDeCloak ();
 if (gameData.app.GameMode (GM_MULTI_ROBOTS))
@@ -2481,28 +2488,49 @@ gameData.multigame.score.pFlags [N_LOCALPLAYER] = 0;
 }
 
 //-----------------------------------------------------------------------------
+// this message was initially only intended for modem games and is now used to better align shots
+// in UDP/IP (-> D2X-XL specific) games.
 
 void MultiSendPosition (int32_t nObject)
 {
-#if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	tShortPos sp;
-#endif
-	int32_t count = 0;
-
-if (IsNetworkGame)
+if (IsNetworkGame) 
 	return;
-gameData.multigame.msg.buf [count++] = (char)MULTI_POSITION;
-#if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-CreateShortPos (reinterpret_cast<tShortPos*> (gameData.multigame.msg.buf + count), OBJECTS+nObject, 0);
-count += sizeof (tShortPos);
-#else
-CreateShortPos (&sp, OBJECTS+nObject, 1);
-memcpy (gameData.multigame.msg.buf + count, reinterpret_cast<uint8_t*> (sp.orient), 9);
-count += 9;
-memcpy (gameData.multigame.msg.buf + count, reinterpret_cast<uint8_t*> (&sp.coord), 14);
-count += 14;
+
+CObject* objP = OBJECTS + nObject;
+if (objP->Type () != OBJ_PLAYER)
+	return;
+
+int32_t bufP = 0;
+gameData.multigame.msg.buf [bufP++] = MULTI_POSITION;
+if (gameStates.multi.nGameType == UDP_GAME) {
+	gameData.multigame.msg.buf [bufP++] = objP->Id ();
+	memcpy (gameData.multigame.msg.buf + bufP, &objP->info.position, sizeof (tObjTransformation));
+#if (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
+	tObjTransformation* p = reinterpret_cast<tObjTransformation*> (gameData.multigame.msg.buf + bufP);
+	INTEL_VECTOR (t.vPos);
+	INTEL_MATRIX (t.mOrientation);
 #endif
-MultiSendData (gameData.multigame.msg.buf, count, 0);
+	bufP += sizeof (tObjTransformation);
+	memcpy (gameData.multigame.msg.buf + bufP, &objP->Velocity (), sizeof (CFixVector));
+#if (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
+	INTEL_VECTOR (*reinterpret_cast<CFixVector*>(gameData.multigame.msg.buf + bufP));
+#endif
+	bufP += sizeof (CFixVector);
+	}
+else {
+#if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
+	CreateShortPos (reinterpret_cast<tShortPos*> (gameData.multigame.msg.buf + bufP), objP, 0);
+	bufP += sizeof (tShortPos);
+#else
+	tShortPos sp;
+	CreateShortPos (&sp, objP, 1);
+	memcpy (gameData.multigame.msg.buf + bufP, reinterpret_cast<uint8_t*> (sp.orient), 9);
+	bufP += 9;
+	memcpy (gameData.multigame.msg.buf + bufP, reinterpret_cast<uint8_t*> (&sp.coord), 14);
+	bufP += 14;
+#endif
+	}
+MultiSendData (gameData.multigame.msg.buf, bufP, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -2587,7 +2615,7 @@ if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (gameStates.app.n
 //-----------------------------------------------------------------------------
 // Tell the other guy to remove an CObject from his list
 
-void MultiSendRemoveObj (int32_t nObject)
+void MultiSendRemoveObject (int32_t nObject)
 {
 if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 	return;
@@ -2676,7 +2704,7 @@ MultiSendData (gameData.multigame.msg.buf, 5, 2);
 //-----------------------------------------------------------------------------
 // For sending doors only to a specific person (usually when they're joining)
 
-extern void NetworkSendNakedPacket (char *, int16_t, int32_t);
+extern void NetworkSendMineSyncPacket (char *, int16_t, int32_t);
 
 void MultiSendDoorOpenSpecific (int32_t nPlayer, int32_t nSegment, int32_t CSide, uint16_t flags)
 {
@@ -2684,7 +2712,7 @@ gameData.multigame.msg.buf [0] = MULTI_DOOR_OPEN;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf+1, nSegment);
 gameData.multigame.msg.buf [3] = (int8_t)CSide;
 gameData.multigame.msg.buf [4] = uint8_t (flags);
-NetworkSendNakedPacket (gameData.multigame.msg.buf, 5, nPlayer);
+NetworkSendMineSyncPacket (gameData.multigame.msg.buf, 5, nPlayer);
 }
 
 //
@@ -2740,33 +2768,33 @@ void MultiSendCreateWeapon (int32_t nObject)
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	CFixVector vSwapped;
 #endif
-	int32_t count = 0;
+	int32_t bufP = 0;
 
-gameData.multigame.msg.buf [count++] = MULTI_CREATE_WEAPON;
-gameData.multigame.msg.buf [count++] = N_LOCALPLAYER;
-gameData.multigame.msg.buf [count++] = OBJECTS [nObject].info.nId;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, OBJECTS [nObject].info.nSegment);
-count += 2;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);
-count += 2;
+gameData.multigame.msg.buf [bufP++] = MULTI_CREATE_WEAPON;
+gameData.multigame.msg.buf [bufP++] = N_LOCALPLAYER;
+gameData.multigame.msg.buf [bufP++] = OBJECTS [nObject].info.nId;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, OBJECTS [nObject].info.nSegment);
+bufP += 2;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, nObject);
+bufP += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-memcpy (gameData.multigame.msg.buf + count, &OBJECTS [nObject].info.position.vPos, sizeof (CFixVector));
-count += sizeof (CFixVector);
-memcpy (gameData.multigame.msg.buf + count, &OBJECTS [nObject].mType.physInfo.velocity, sizeof (CFixVector));
-count += sizeof (CFixVector);
+memcpy (gameData.multigame.msg.buf + bufP, &OBJECTS [nObject].info.position.vPos, sizeof (CFixVector));
+bufP += sizeof (CFixVector);
+memcpy (gameData.multigame.msg.buf + bufP, &OBJECTS [nObject].mType.physInfo.velocity, sizeof (CFixVector));
+bufP += sizeof (CFixVector);
 #else
 vSwapped.dir.coord.x = (fix)INTEL_INT (int32_t (OBJECTS [nObject].info.position.vPos.dir.coord.x));
 vSwapped.dir.coord.y = (fix)INTEL_INT (int32_t (OBJECTS [nObject].info.position.vPos.dir.coord.y));
 vSwapped.dir.coord.z = (fix)INTEL_INT (int32_t (OBJECTS [nObject].info.position.vPos.dir.coord.z));
-memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
-count += 12;
+memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, 12);
+bufP += 12;
 vSwapped.dir.coord.x = (fix)INTEL_INT (int32_t (OBJECTS [nObject].mType.physInfo.velocity.dir.coord.x));
 vSwapped.dir.coord.y = (fix)INTEL_INT (int32_t (OBJECTS [nObject].mType.physInfo.velocity.dir.coord.y));
 vSwapped.dir.coord.z = (fix)INTEL_INT (int32_t (OBJECTS [nObject].mType.physInfo.velocity.dir.coord.z));
-memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
-count += 12;
+memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, 12);
+bufP += 12;
 #endif
-MultiSendData (gameData.multigame.msg.buf, count, 1);
+MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 NetworkResetObjSync (nObject);
 SetLocalObjNumMapping (nObject);
 }
@@ -2782,26 +2810,26 @@ void MultiSendCreatePowerup (int32_t powerupType, int32_t nSegment, int32_t nObj
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	CFixVector vSwapped;
 #endif
-	int32_t count = 0;
+	int32_t bufP = 0;
 
-gameData.multigame.msg.buf [count++] = MULTI_CREATE_POWERUP;
-gameData.multigame.msg.buf [count++] = N_LOCALPLAYER;
-gameData.multigame.msg.buf [count++] = powerupType;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nSegment);
-count += 2;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);
-count += 2;
+gameData.multigame.msg.buf [bufP++] = MULTI_CREATE_POWERUP;
+gameData.multigame.msg.buf [bufP++] = N_LOCALPLAYER;
+gameData.multigame.msg.buf [bufP++] = powerupType;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, nSegment);
+bufP += 2;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, nObject);
+bufP += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-memcpy (gameData.multigame.msg.buf + count, vPos, sizeof (CFixVector));
-count += sizeof (CFixVector);
+memcpy (gameData.multigame.msg.buf + bufP, vPos, sizeof (CFixVector));
+bufP += sizeof (CFixVector);
 #else
 vSwapped.dir.coord.x = (fix)INTEL_INT ((int32_t) (*vPos).dir.coord.x);
 vSwapped.dir.coord.y = (fix)INTEL_INT ((int32_t) (*vPos).dir.coord.y);
 vSwapped.dir.coord.z = (fix)INTEL_INT ((int32_t) (*vPos).dir.coord.z);
-memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
-count += 12;
+memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, 12);
+bufP += 12;
 #endif
-MultiSendData (gameData.multigame.msg.buf, count, 1);
+MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 NetworkResetObjSync (nObject);
 SetLocalObjNumMapping (nObject);
 }
@@ -2817,33 +2845,33 @@ void MultiSendDropPowerup (int32_t powerupType, int32_t nSegment, int32_t nObjec
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	CFixVector vSwapped;
 #endif
-	int32_t count = 0;
+	int32_t bufP = 0;
 
-gameData.multigame.msg.buf [count++] = MULTI_DROP_POWERUP;
-gameData.multigame.msg.buf [count++] = N_LOCALPLAYER;
-gameData.multigame.msg.buf [count++] = powerupType;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nSegment);
-count += 2;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, nObject);
-count += 2;
+gameData.multigame.msg.buf [bufP++] = MULTI_DROP_POWERUP;
+gameData.multigame.msg.buf [bufP++] = N_LOCALPLAYER;
+gameData.multigame.msg.buf [bufP++] = powerupType;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, nSegment);
+bufP += 2;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, nObject);
+bufP += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-memcpy (gameData.multigame.msg.buf + count, vPos, sizeof (CFixVector));
-count += sizeof (CFixVector);
-memcpy (gameData.multigame.msg.buf + count, vVel, sizeof (CFixVector));
-count += sizeof (CFixVector);
+memcpy (gameData.multigame.msg.buf + bufP, vPos, sizeof (CFixVector));
+bufP += sizeof (CFixVector);
+memcpy (gameData.multigame.msg.buf + bufP, vVel, sizeof (CFixVector));
+bufP += sizeof (CFixVector);
 #else
 vSwapped.dir.coord.x = (fix)INTEL_INT ((int32_t) (*vPos).dir.coord.x);
 vSwapped.dir.coord.y = (fix)INTEL_INT ((int32_t) (*vPos).dir.coord.y);
 vSwapped.dir.coord.z = (fix)INTEL_INT ((int32_t) (*vPos).dir.coord.z);
-memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
-count += 12;
+memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, 12);
+bufP += 12;
 vSwapped.dir.coord.x = (fix)INTEL_INT ((int32_t) (*vVel).dir.coord.x);
 vSwapped.dir.coord.y = (fix)INTEL_INT ((int32_t) (*vVel).dir.coord.y);
 vSwapped.dir.coord.z = (fix)INTEL_INT ((int32_t) (*vVel).dir.coord.z);
-memcpy (gameData.multigame.msg.buf + count, &vSwapped, 12);
-count += 12;
+memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, 12);
+bufP += 12;
 #endif
-MultiSendData (gameData.multigame.msg.buf, count, 1);
+MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 NetworkResetObjSync (nObject);
 SetLocalObjNumMapping (nObject);
 }
@@ -3008,9 +3036,9 @@ void MultiPrepLevel (void)
 	// since the resulting checksum with depend on the value of N_LOCALPLAYER
 	// at the time this is called.
 
-	int32_t		i, nObject;
-	int32_t		cloakCount, invulCount;
-	CObject	*objP;
+	int32_t	i, nObject;
+	int32_t	cloakCount, invulCount;
+	CObject*	objP;
 
 gameData.score.nHighscore = 0;
 gameData.score.nChampion = -1;
@@ -3588,7 +3616,7 @@ objP = OBJECTS + nObject;
 ammoCount = objP->cType.powerupInfo.nCount;
 if (objP->info.nId == POW_OMEGA && ammoCount == I2X (1))
 	ammoCount = I2X (1) - 1; //make fit in int16_t
-gameData.multigame.msg.buf [count++] = (char)MULTI_DROP_WEAPON;
+gameData.multigame.msg.buf [count++] = MULTI_DROP_WEAPON;
 gameData.multigame.msg.buf [count++] = (char)objP->info.nId;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, N_LOCALPLAYER);
 count += 2;
@@ -3631,7 +3659,7 @@ void MultiSendGuidedInfo (CObject *miss, char done)
 #endif
 	int32_t count = 0;
 
-gameData.multigame.msg.buf [count++] = (char)MULTI_GUIDED;
+gameData.multigame.msg.buf [count++] = MULTI_GUIDED;
 gameData.multigame.msg.buf [count++] = (char)N_LOCALPLAYER;
 gameData.multigame.msg.buf [count++] = done;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
@@ -3657,7 +3685,7 @@ void MultiDoGuided (uint8_t* buf)
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	tShortPos sp;
 #endif
-	CObject *gmObjP = gameData.objs.guidedMissile [nPlayer].objP;
+	CObject *gmObjP = gameData.objs.GetGuidedMissile (nPlayer);
 
 if (gmObjP == NULL) {
 	if (++fun >= 50)
@@ -3737,8 +3765,8 @@ count += 2;
 gameData.multigame.msg.buf [count++] = nType;
 gameData.multigame.msg.buf [count++] = uint8_t (flags);
 gameData.multigame.msg.buf [count++] = state;
-NetworkSendNakedPacket (gameData.multigame.msg.buf, count, nPlayer); // twice, just to be sure
-NetworkSendNakedPacket (gameData.multigame.msg.buf, count, nPlayer);
+NetworkSendMineSyncPacket (gameData.multigame.msg.buf, count, nPlayer); // twice, just to be sure
+NetworkSendMineSyncPacket (gameData.multigame.msg.buf, count, nPlayer);
 }
 
 //-----------------------------------------------------------------------------
@@ -3965,7 +3993,7 @@ gameData.multigame.msg.buf [count++] = val;
 CSegment* segP = SEGMENTS + nSegment;
 for (i = 0; i < 6; i++, count += 2)
 	PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, (segP->m_sides [i].FaceCount ()) ? segP->m_sides [i].m_nOvlTex : 0);
-NetworkSendNakedPacket (gameData.multigame.msg.buf, count, nPlayer);
+NetworkSendMineSyncPacket (gameData.multigame.msg.buf, count, nPlayer);
 }
 
 //-----------------------------------------------------------------------------
@@ -4606,7 +4634,7 @@ void MultiSendDropFlag (int32_t nObject, int32_t seed)
 	int32_t count = 0;
 
 objP = &OBJECTS [nObject];
-gameData.multigame.msg.buf [count++] = (char)MULTI_DROP_FLAG;
+gameData.multigame.msg.buf [count++] = MULTI_DROP_FLAG;
 gameData.multigame.msg.buf [count++] = (char)objP->info.nId;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + count, N_LOCALPLAYER);
 count += 2;
@@ -4680,8 +4708,7 @@ memcpy (&(gameData.multigame.msg.buf [count]), &gameData.multigame.robots.sendPe
 count += (MAX_ROBOTS_CONTROLLED * 4);
 memcpy (&(gameData.multigame.msg.buf [count]), &gameData.multigame.robots.fired, MAX_ROBOTS_CONTROLLED * 4);
 count += (MAX_ROBOTS_CONTROLLED * 4);
-NetworkSendNakedPacket (gameData.multigame.msg.buf, 1
-, nPlayer);
+NetworkSendMineSyncPacket (gameData.multigame.msg.buf, 1, nPlayer);
 }
 
 //-----------------------------------------------------------------------------
@@ -4900,7 +4927,7 @@ void MultiSendTriggerSpecific (uint8_t nPlayer, uint8_t trig)
 	gameData.multigame.msg.buf [0] = MULTI_START_TRIGGER;
 	gameData.multigame.msg.buf [1] = trig;
 
-NetworkSendNakedPacket (gameData.multigame.msg.buf, 2, nPlayer);
+NetworkSendMineSyncPacket (gameData.multigame.msg.buf, 2, nPlayer);
 }
 
 //-----------------------------------------------------------------------------
@@ -4957,7 +4984,7 @@ if (gameStates.multi.nGameType != UDP_GAME)
 
 void MultiSendRanking ()
 {
-	gameData.multigame.msg.buf [0] = (char)MULTI_RANK;
+	gameData.multigame.msg.buf [0] = MULTI_RANK;
 	gameData.multigame.msg.buf [1] = (char)N_LOCALPLAYER;
 	gameData.multigame.msg.buf [2] = (char)GetMyNetRanking ();
 
@@ -5186,7 +5213,7 @@ void MultiAdjustPowerups (void)
 	static	time_t	t0 = 0;
 	time_t	t = gameStates.app.nSDLTicks [0];
 
- if (gameData.multiplayer.WaitingForExplosion () || gameData.multiplayer.WaitingForWeaponInfo ()) { // don't act if player ship status pending
+if (gameData.multiplayer.WaitingForExplosion () || gameData.multiplayer.WaitingForWeaponInfo ()) { // don't act if player ship status pending
 	if (t - t0 < 180000) 		// enforce after 3 minutes of inactivity though
 		return;
 #if DBG
@@ -5233,7 +5260,7 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 			}
 		if (delObjP) {
 			delObjP->Die ();
-			//MultiSendRemoveObj (OBJ_IDX (oldestObjP));
+			//MultiSendRemoveObject (OBJ_IDX (oldestObjP));
 			}
 		}
 	else if (h > 0) {

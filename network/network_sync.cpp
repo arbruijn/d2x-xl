@@ -46,7 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-void NetworkStopResync (tSequencePacket *their)
+void NetworkStopResync (tPlayerSyncData *their)
 {
 for (int16_t i = 0; i < networkData.nJoining; )
 	if (!CmpNetPlayers (networkData.syncInfo [i].player [1].player.callsign, their->player.callsign, 
@@ -130,9 +130,11 @@ for (nPacketsLeft = OBJ_PACKETS_PER_FRAME; nPacketsLeft; nPacketsLeft--) {
 		syncInfoP->objs.nMode = 0;
 		syncInfoP->objs.nFrame = 0;
 		if (!syncInfoP->objs.nFramesToSkip) {
+			//NetworkSendRejoinSync (nPlayer, syncInfoP);
 			NW_SET_SHORT (objBuf, bufI, -1);		// object number -1          
 			NW_SET_BYTE (objBuf, bufI, nPlayer);                            
-			bufI += 2;									// Placeholder for nRemoteObj, not used here
+			NW_SET_SHORT (objBuf, bufI, -1);		// Placeholder for nRemoteObj, not used here
+			bufI += 2;									
 			}
 		syncInfoP->objs.nCurrent = 0;
 		nObjFrames = 1;		// first frame contains "reset object data" info
@@ -399,8 +401,9 @@ int32_t NetworkRequestSync (void)
 {
 if ((networkData.nJoinState == 1) || (networkData.nJoinState == 2)) {
 	if (networkData.syncInfo [0].objs.nFrame < 2) {
+		networkData.syncInfo [0].objs.nFrame = 0;
 		networkData.syncInfo [0].objs.nFramesToSkip = 0;
-		networkData.nJoinState = 0;
+		//networkData.nJoinState = 0;
 		}
 	else {
 		networkData.syncInfo [0].objs.nFramesToSkip = networkData.syncInfo [0].objs.nFrame;
@@ -456,12 +459,13 @@ int32_t NetworkWaitForSync (void)
 	char					text [60];
 	CMenu					m (2);
 	int32_t				i, choice;
-	tSequencePacket	me;
+	tPlayerSyncData	me;
 
 networkData.nStatus = NETSTAT_WAITING;
 m.AddText ("", text);
 m.AddText ("", const_cast<char*> (TXT_NET_LEAVE));
 networkData.nJoinState = 0;
+#if 1
 i = NetworkSendRequest ();
 if (i < 0) {
 #if DBG
@@ -469,10 +473,9 @@ if (i < 0) {
 #endif
 	return -1;
 	}
+#endif
 sprintf (m [0].m_text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers [0].m_info.players [i].callsign, TXT_NET_TO_ENTER);
 ResetSyncTimeout (true);
-networkData.toSyncPoll.Start (-1, true); // make it time out immediately when starting
-
 do {
 	gameStates.menus.nInMenu = -gameStates.menus.nInMenu;
 	choice = m.Menu (NULL, TXT_HOST_WAIT, NetworkSyncPoll);
@@ -500,7 +503,7 @@ memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	me.player.network.SetNode (IpxGetMyLocalAddress ());
 	me.player.network.SetNetwork (IpxGetMyServerAddress ());
-	SendInternetSequencePacket (me, netPlayers [0].m_info.players [0].network.Network (), netPlayers [0].m_info.players [0].network.Node ());
+	SendInternetPlayerSyncData (me, netPlayers [0].m_info.players [0].network.Network (), netPlayers [0].m_info.players [0].network.Node ());
 }
 SetFunctionMode (FMODE_MENU);
 gameData.app.SetGameMode (GM_GAME_OVER);
@@ -662,6 +665,8 @@ while (0 < (size = networkThread.GetPacketData (packet))) {
 				networkData.nSecurityFlag = NETSECURITY_WAIT_FOR_PLAYERS;
 				networkData.nSecurityNum = tempNetInfo.m_info.nSecurity;
 				if (NetworkWaitForPlayerInfo ()) {
+					networkData.bHaveSync = 1;
+					//NetworkProcessSyncPacket (&tempNetInfo, 0);
 #if 1			
 					console.printf (CON_DBG, "HUH? Game=%d Player=%d\n", networkData.nSecurityNum, playerInfoP->m_info.nSecurity);
 #endif
@@ -788,6 +793,7 @@ int32_t NetworkLevelSync (void)
 
 //networkThread.SetListen (false);
 NetworkFlush (); // Flush any old packets
+networkData.bHaveSync = 0;
 for (;;) {
 	if (gameData.multiplayer.nPlayers && IAmGameHost ()) {
 		NetworkWaitForRequests ();

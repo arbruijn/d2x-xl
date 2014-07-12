@@ -258,7 +258,7 @@ if (!Init ()) {
 if (ogl.m_features.bShaders) {
 #if SMOKE_LIGHTING	// smoke is currently always rendered fully bright
 	if (m_nType <= SMOKE_PARTICLES) {
-		if ((gameOpts->render.particles.nQuality == 2) && !automap.Display () && lightManager.Headlights ().nLights) {
+		if ((gameOpts->render.particles.nQuality == 2) && !automap.Active () && lightManager.Headlights ().nLights) {
 			CFloatVector color = {1.0f, 1.0f, 1.0f, 1.0f};
 			lightManager.Headlights ().SetupShader (1, 0, &color);
 			}

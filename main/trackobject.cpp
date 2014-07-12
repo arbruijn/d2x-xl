@@ -309,6 +309,8 @@ return targetData.Target ();
 //	See if legal to keep tracking currently tracked CObject.  If not, see if another CObject is trackable.  If not, return -1,
 //	else return CObject number of tracking CObject.
 //	Computes and returns a fairly precise dot product.
+// This function is only called every 25 ms max. (-> updating at 40 fps or less) 
+
 int32_t CObject::UpdateHomingTarget (int32_t nTarget, fix& dot, int32_t nThread)
 {
 	int32_t	rVal = -2;
@@ -318,16 +320,8 @@ int32_t CObject::UpdateHomingTarget (int32_t nTarget, fix& dot, int32_t nThread)
 //if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.tick40fps.bTick)
 	//	Every 8 frames for each CObject, scan all OBJECTS.
 nFrame = OBJ_IDX (this) ^ gameData.app.nFrameCount;
-if (ObjectIsTrackable (nTarget, dot)) {
-	if (gameOpts->legacy.bHomers) {
-		if (nFrame % 8)
-			return nTarget;
-		}
-	else {
-		if (gameStates.limitFPS.bHomers && !gameStates.app.tick40fps.bTick)
-			return nTarget;
-		}
-	}
+if (ObjectIsTrackable (nTarget, dot) && (!gameOpts->legacy.bHomers || (nFrame % 8)))
+	return nTarget;
 
 if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 	//	If player fired missile, then search for an CObject, if not, then give up.

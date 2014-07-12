@@ -103,7 +103,7 @@ return bUpdate;
 
 int32_t SegmentIsVisible (CSegment *segP)
 {
-if (automap.Display ())
+if (automap.Active ())
 	return 1;
 uint8_t code = 0xFF;
 

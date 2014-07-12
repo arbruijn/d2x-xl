@@ -7,7 +7,7 @@
 
 #define MAX_LIGHTNING_SYSTEMS	1000
 #define MAX_LIGHTNING_NODES	1000
-#define NOISE_TYPE			0
+#define NOISE_TYPE				0
 
 //------------------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ typedef struct tLightningNode {
 	CFixVector			m_vOffs;
 	CFixVector			m_vBase;
 	CFixVector			m_vDelta [2];
-	int32_t					m_nDelta [2];
+	int32_t				m_nDelta [2];
 } tLightningNode;
 
 class CLightningNode : public tLightningNode {
@@ -75,21 +75,21 @@ typedef struct tLightning {
 	CArray<double>				m_dx;
 	CArray<double>				m_dy;
 	CFloatVector				m_color;
-	int32_t							m_nNext;
-	int32_t							m_nLife;
-	int32_t							m_nTTL;
-	int32_t							m_nDelay;
-	int32_t							m_nLength;
-	int32_t							m_nOffset;
-	int32_t							m_nAmplitude;
-	int16_t							m_nSegment;
-	int16_t							m_nSmoothe;
-	int16_t							m_nFrames;
-	int16_t							m_iStep;
-	int16_t							m_nNodes;
-	int16_t							m_nChildren;
-	int16_t							m_nObject;
-	int16_t							m_nNode;
+	int32_t						m_nNext;
+	int32_t						m_nLife;
+	int32_t						m_nTTL;
+	int32_t						m_nDelay;
+	int32_t						m_nLength;
+	int32_t						m_nOffset;
+	int32_t						m_nAmplitude;
+	int16_t						m_nSegment;
+	int16_t						m_nSmoothe;
+	int16_t						m_nFrames;
+	int16_t						m_iStep;
+	int16_t						m_nNodes;
+	int16_t						m_nChildren;
+	int16_t						m_nObject;
+	int16_t						m_nNode;
 	char							m_nStyle;
 	char							m_nAngle;
 	char							m_nDepth;
@@ -159,14 +159,14 @@ class CLightning : public tLightning {
 //------------------------------------------------------------------------------
 
 typedef struct tLightningSystem {
-	int32_t						m_nId;
+	int32_t					m_nId;
 	CArray<CLightning>	m_lightning;
-	int32_t						m_nBolts;
-	int16_t						m_nSegment [2];
-	int16_t						m_nObject;
-	int32_t						m_nKey [2];
+	int32_t					m_nBolts;
+	int16_t					m_nSegment [2];
+	int16_t					m_nObject;
+	int32_t					m_nKey [2];
 	time_t					m_tUpdate;
-	int32_t						m_nSound;
+	int32_t					m_nSound;
 	char						m_bSound;
 	char						m_bForcefield;
 	char						m_bDestroy;
@@ -217,12 +217,12 @@ typedef struct tLightningLight {
 
 
 typedef struct tLightningData {
-	CArray<int16_t>						m_objects;
+	CArray<int16_t>					m_objects;
 	CArray<tLightningLight>			m_lights;
 	CDataPool<CLightningEmitter>	m_emitters; // [MAX_LIGHTNING];
 	CArray<CLightningEmitter*>		m_emitterList;
-	int32_t									m_bDestroy;
-	int32_t									m_nFirstLight;
+	int32_t								m_bDestroy;
+	int32_t								m_nFirstLight;
 } tLightningData;
 
 class CLightningManager : public tLightningData {
@@ -301,7 +301,7 @@ typedef struct tOmegaLightningHandles {
 class COmegaLightning {
 	private:
 		tOmegaLightningHandles	m_handles [MAX_OBJECTS_D2X];
-		int32_t							m_nHandles;
+		int32_t						m_nHandles;
 
 	public:
 		COmegaLightning () : m_nHandles (0) { Init (); }

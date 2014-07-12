@@ -235,14 +235,6 @@ if ((k == KEY_PRINT_SCREEN) || (k == KEY_COMMAND + KEY_SHIFTED + KEY_P)) {
 	gameStates.app.bSaveScreenShot = 1;
 	SaveScreenShot (NULL, 0);
 	}
-else if (k == KEY_PADPLUS)
-	m_xDelay /= 2;
-else if (k == KEY_PADMINUS) {
-	if (!m_xDelay)
-		m_xDelay = 1;
-	else if (m_xDelay < 1000)
-		m_xDelay *= 2;
-	}
 else if ((k == KEY_ESC) || (m_bDone > uint32_t (NUM_LINES))) {
 	Destroy ();
 	paletteManager.DisableEffect ();
@@ -319,7 +311,6 @@ m_nExtraInc = 0;
 m_nLines [0] = 0;
 m_nLines [1] = 0;
 m_nFirstLineOffs = 0;
-m_xDelay = X2I (2800 * 1000);
 m_bmBackdrop.Init ();
 }
 
@@ -359,11 +350,12 @@ m_fonts [2] = fontManager.Load (fontNames [2][gameStates.menus.bHires]);
 songManager.Play (SONG_CREDITS, 1);
 
 KeyFlush ();
-m_xTimeout = SDL_GetTicks () + m_xDelay;
 ogl.SetBlending (true);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 gameStates.menus.nInMenu = 1;
 m_nExtraInc = 1;
+
+uint32_t tRenderTimeout = SDL_GetTicks ();
 
 for (;;) {
 	Read ();
@@ -376,10 +368,10 @@ for (;;) {
 		}
 	ogl.Update (0);
 
-	int32_t t = m_xTimeout - SDL_GetTicks ();
-	if (t > 0)
-		G3_SLEEP (t);
-	m_xTimeout = SDL_GetTicks () + m_xDelay;
+	uint32_t t = SDL_GetTicks ();
+	if (tRenderTimeout > t)
+		G3_SLEEP (tRenderTimeout - t);
+	tRenderTimeout = SDL_GetTicks () + 40; // throttle renderer at 25 fps
 
 	redbook.CheckRepeat();
 	if (!HandleInput ())

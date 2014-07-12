@@ -8,13 +8,13 @@
 class CControlsManager {
 	private:
 		tControlInfo	m_info [4];
-		int32_t				m_frameCount;
-		int32_t				m_maxTurnRate;
+		int32_t			m_frameCount;
+		int32_t			m_maxTurnRate;
 		float				m_slackTurnRate;
 		time_t			m_pollTime;
 		float				m_frameTime;
 		float				m_lastTick;
-		int32_t				m_joyAxis [JOY_MAX_AXES];
+		int32_t			m_joyAxis [JOY_MAX_AXES];
 
 	public:
 		CControlsManager () {

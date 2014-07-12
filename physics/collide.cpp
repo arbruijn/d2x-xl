@@ -386,7 +386,7 @@ if ((EGI_FLAG (bUseHitAngles, 0, 0, 0) || (otherP->info.nType == OBJ_MONSTERBALL
 	vDist.Neg ();
 	f1.Compute (vDist, vNormal, thisP);
 #else
-	CFixVector	vDistNorm, vVelNorm, f0.m_vForce, f1.m_vForce, f0.m_vRotForce, f1.m_vRotForce;
+	CFixVector	vDistNorm, vVelNorm;
 
 	if (f0.m_vVel.IsZero ())
 		f0.m_vForce.SetZero (), f0.m_vRotForce.SetZero ();
@@ -814,7 +814,7 @@ if (sideP && ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATI
 	if (weaponInfoP->xDamageRadius >= VOLATILE_WALL_DAMAGE_RADIUS / 2)
 		ExplodeSplashDamageWeapon (vHitPt);
 	else
-		CreateSplashDamageExplosion (this, nHitSeg, vHitPt, weaponInfoP->xImpactSize + VOLATILE_WALL_IMPACT_SIZE, tVideoClip,
+		CreateSplashDamageExplosion (this, nHitSeg, vHitPt, vHitPt, weaponInfoP->xImpactSize + VOLATILE_WALL_IMPACT_SIZE, tVideoClip,
 											  nStrength / 4 + VOLATILE_WALL_EXPL_STRENGTH, weaponInfoP->xDamageRadius+VOLATILE_WALL_DAMAGE_RADIUS,
 											  nStrength / 2 + VOLATILE_WALL_DAMAGE_FORCE, cType.laserInfo.parent.nObject);
 	Die ();		//make flares die in lava
@@ -828,7 +828,7 @@ else if (sideP && ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_W
 		if (weaponInfoP->xDamageRadius) {
 			audio.CreateObjectSound (IsSplashDamageWeapon () ? SOUND_BADASS_EXPLOSION_WEAPON : SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
 			//	MK: 09/13/95: SplashDamage in water is 1/2 Normal intensity.
-			CreateSplashDamageExplosion (this, nHitSeg, vHitPt, weaponInfoP->xImpactSize/2, weaponInfoP->nRobotHitVClip,
+			CreateSplashDamageExplosion (this, nHitSeg, vHitPt, vHitPt, weaponInfoP->xImpactSize/2, weaponInfoP->nRobotHitVClip,
 												  nStrength / 4, weaponInfoP->xDamageRadius, nStrength / 2, cType.laserInfo.parent.nObject);
 			}
 		else
@@ -1212,7 +1212,7 @@ if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 		if (0 <= (i = FindReactor (reactorP)))
 			gameData.reactor.states [i].bHit = 1;
 	if (WI_damage_radius (info.nId))
-		ExplodeSplashDamageWeapon (vHitPt);
+		ExplodeSplashDamageWeapon (vHitPt, reactorP);
 	else
 		CreateExplosion (reactorP->info.nSegment, vHitPt, 3 * reactorP->info.xSize / 20, VCLIP_SMALL_EXPLOSION);
 	audio.CreateSegmentSound (SOUND_CONTROL_CENTER_HIT, reactorP->info.nSegment, 0, vHitPt);
@@ -1612,12 +1612,12 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 	if (WI_damage_radius (info.nId)) {
 		if (bInvulBoss) {			//don't make badass sound
 			//this code copied from ExplodeSplashDamageWeapon ()
-			CreateSplashDamageExplosion (this, info.nSegment, vHitPt, wInfoP->xImpactSize, wInfoP->nRobotHitVClip, 
+			CreateSplashDamageExplosion (this, info.nSegment, vHitPt, vHitPt, wInfoP->xImpactSize, wInfoP->nRobotHitVClip, 
 												  nStrength, wInfoP->xDamageRadius, nStrength, cType.laserInfo.parent.nObject);
 
 			}
 		else		//Normal splash damage explosion
-			ExplodeSplashDamageWeapon (vHitPt);
+			ExplodeSplashDamageWeapon (vHitPt, robotP);
 		}
 	if (((cType.laserInfo.parent.nType == OBJ_PLAYER) || bAttackRobots) && !(robotP->info.nFlags & OF_EXPLODING)) {
 		CObject* explObjP = NULL;
@@ -1688,7 +1688,7 @@ if (this == gameData.objs.consoleP) {
 	// Remove the hostage CObject.
 	hostageP->Die ();
 	if (IsMultiGame)
-		MultiSendRemoveObj (OBJ_IDX (hostageP));
+		MultiSendRemoveObject (OBJ_IDX (hostageP));
 	}
 return 1;
 }
@@ -1836,7 +1836,7 @@ if (playerObjP->info.nId == N_LOCALPLAYER) {
 	}
 CreateExplosion (playerObjP->info.nSegment, vHitPt, I2X (10)/2, VCLIP_PLAYER_HIT);
 if (WI_damage_radius (info.nId))
-	ExplodeSplashDamageWeapon (vHitPt);
+	ExplodeSplashDamageWeapon (vHitPt, playerObjP);
 MaybeKillWeapon (playerObjP);
 BumpTwoObjects (playerObjP, this, 0, vHitPt);	//no xDamage from bump
 if (!WI_damage_radius (info.nId) && (cType.laserInfo.parent.nObject > -1) && !(info.nFlags & OF_HARMLESS))
@@ -1897,7 +1897,7 @@ int32_t CObject::CollideRobotAndObjProducer (void)
 CreateSound (SOUND_ROBOT_HIT);
 //	audio.PlaySound (SOUND_ROBOT_HIT);
 if (ROBOTINFO (info.nId).nExp1VClip > -1)
-	CreateExplosion ((int16_t) info.nSegment, info.position.vPos, (info.xSize/2*3)/4, (uint8_t) ROBOTINFO (info.nId).nExp1VClip);
+	CreateExplosion ((int16_t) info.nSegment, info.position.vPos, 3 * info.xSize / 8, (uint8_t) ROBOTINFO (info.nId).nExp1VClip);
 vExitDir.SetZero ();
 for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++)
 	if (segP->IsPassable (nSide, NULL) & WID_PASSABLE_FLAG) {
@@ -1926,7 +1926,7 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
 	if (bPowerupUsed) {
 		powerupP->Die ();
 		if (IsMultiGame)
-			MultiSendRemoveObj (OBJ_IDX (powerupP));
+			MultiSendRemoveObject (OBJ_IDX (powerupP));
 		}
 	}
 else if (IsCoopGame && (info.nId != N_LOCALPLAYER)) {
@@ -1989,7 +1989,7 @@ else {
 	MaybeKillWeapon (otherP);
 	if (info.nFlags & OF_SHOULD_BE_DEAD) {
 		CreateWeaponEffects (0);
-		ExplodeSplashDamageWeapon (vHitPt);
+		ExplodeSplashDamageWeapon (vHitPt, otherP);
 		audio.CreateSegmentSound (gameData.weapons.info [info.nId].nRobotHitSound, info.nSegment, 0, vHitPt);
 		}
 	}
@@ -2058,9 +2058,9 @@ if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 		if (AddHitObject (this, OBJ_IDX (mBallP)) < 0)
 			return 1;
 		}
-	CreateExplosion (mBallP->info.nSegment, vHitPt, I2X (10)/2, VCLIP_PLAYER_HIT);
+	CreateExplosion (mBallP->info.nSegment, vHitPt, I2X (5), VCLIP_PLAYER_HIT);
 	if (WI_damage_radius (info.nId))
-		ExplodeSplashDamageWeapon (vHitPt);
+		ExplodeSplashDamageWeapon (vHitPt, mBallP);
 	MaybeKillWeapon (mBallP);
 	BumpTwoObjects (this, mBallP, 1, vHitPt);
 	}
@@ -2085,7 +2085,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && !(debrisP->info.nFlags & OF_
 	audio.CreateSegmentSound (SOUND_ROBOT_HIT, info.nSegment, 0, vHitPt);
 	debrisP->Explode (0);
 	if (WI_damage_radius (info.nId))
-		ExplodeSplashDamageWeapon (vHitPt);
+		ExplodeSplashDamageWeapon (vHitPt, debrisP);
 	MaybeKillWeapon (debrisP);
 	Die ();
 	}

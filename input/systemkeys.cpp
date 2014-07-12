@@ -1060,7 +1060,7 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 	if (controls [0].automapDownCount &&
 		 !gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted &&
 		 !(IsMultiGame && gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)))
-		automap.m_bDisplay = -1;
+		automap.SetActive (-1);
 	DoWeaponStuff ();
 	hudIcons.ToggleWeaponIcons ();
 	}

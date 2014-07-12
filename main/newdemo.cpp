@@ -93,7 +93,7 @@ PrintLog (0, "Error in demo playback\n");
 #define ND_EVENT_PLAYER_WEAPON      20  // followed by weapon nType and weapon number
 #define ND_EVENT_EFFECT_BLOWUP      21  // followed by CSegment, nSide, and pnt
 #define ND_EVENT_HOMING_DISTANCE    22  // followed by homing distance
-#define ND_EVENT_LETTERBOX          23  // letterbox mode for death seq.
+#define ND_EVENT_LETTERBOX          23  // letterbox mode for death playerSyncData.
 #define ND_EVENT_RESTORE_COCKPIT    24  // restore cockpit after death
 #define ND_EVENT_REARVIEW           25  // going to rear view mode
 #define ND_EVENT_WALL_SET_TMAP_NUM1 26  // Wall changed

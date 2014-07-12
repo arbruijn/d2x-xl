@@ -106,9 +106,7 @@ if (gameStates.app.bPlayerIsDead || gameStates.app.bEnterGame) {
 if ((info.nType != OBJ_PLAYER) || (info.nId != N_LOCALPLAYER))
 	return;	//references to CPlayerShip require that this obj be the player
 
-tGuidedMissileInfo *gmiP = gameData.objs.guidedMissile + N_LOCALPLAYER;
-gmObjP = gmiP->objP;
-if (gmObjP && (gmObjP->info.nSignature == gmiP->nSignature)) {
+if ((gmObjP = gameData.objs.GetGuidedMissile (N_LOCALPLAYER))) {
 	CAngleVector	vRotAngs;
 	CFixMatrix		mRot, mOrient;
 	fix				speed;

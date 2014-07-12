@@ -743,7 +743,7 @@ return bOk;
 static int32_t RenderPlayerModel (CObject* objP, int32_t bSpectate)
 {
 int32_t bDynObjLight = (gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
-if (automap.Display () && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)))
+if (automap.Active () && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)))
 	return 0;
 tObjTransformation savePos;
 if (bSpectate) {
@@ -767,7 +767,7 @@ return 1;
 
 static int32_t RenderRobotModel (CObject* objP, int32_t bSpectate)
 {
-if (automap.Display () && !AM_SHOW_ROBOTS)
+if (automap.Active () && !AM_SHOW_ROBOTS)
 	return 0;
 gameData.models.vScale.SetZero ();
 #if DBG
@@ -810,7 +810,7 @@ return 1;
 
 static int32_t RenderWeaponModel (CObject* objP, int32_t bSpectate)
 {
-if (automap.Display () && !AM_SHOW_POWERUPS (1))
+if (automap.Active () && !AM_SHOW_POWERUPS (1))
 	return 0;
 if (!(gameStates.app.bNostalgia || gameOpts->Use3DPowerups ()) && objP->IsMine () && (objP->info.nId != SMALLMINE_ID))
 	ConvertWeaponToVClip (objP);
@@ -881,7 +881,7 @@ static int32_t RenderPowerupModel (CObject* objP, int32_t bSpectate)
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return 0;
-if (automap.Display () && !AM_SHOW_POWERUPS (1))
+if (automap.Active () && !AM_SHOW_POWERUPS (1))
 	return 0;
 if (!gameStates.app.bNostalgia && gameOpts->Use3DPowerups ()) {
 	RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
@@ -974,7 +974,7 @@ return 1;
 static int32_t RenderWeapon (CObject* objP, int32_t bForce)
 {
 if (gameStates.render.nShadowPass != 2) {
-	if (automap.Display () && !AM_SHOW_POWERUPS (1))
+	if (automap.Active () && !AM_SHOW_POWERUPS (1))
 		return 0;
 	if (objP->info.nType != OBJ_WEAPON)
 		DrawWeaponVClip (objP);
@@ -1012,7 +1012,7 @@ static int32_t RenderPowerup (CObject* objP, int32_t bForce)
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return 0;
-if (automap.Display () && !AM_SHOW_POWERUPS (1))
+if (automap.Active () && !AM_SHOW_POWERUPS (1))
 	return 0;
 if (objP->PowerupToDevice ()) {
 	RenderPowerupCorona (objP, 1, 1, 1, coronaIntensities [gameOpts->render.coronas.nObjIntensity]);
@@ -1049,9 +1049,7 @@ if (nType == 255) {
 	}
 if ((nType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	return 0;
-if ((gameStates.render.nShadowPass != 2) &&
-	 (objP == gameData.objs.guidedMissile [N_LOCALPLAYER].objP) &&
-	 (objP->info.nSignature == gameData.objs.guidedMissile [N_LOCALPLAYER].nSignature)) {
+if ((gameStates.render.nShadowPass != 2) && objP->IsGuidedMissile ()) {
 	return 0;
 	}
 #if DBG
@@ -1062,7 +1060,7 @@ if (nObject != LOCALPLAYER.nObject) {
 	if (objP == gameData.objs.viewerP)
 		return 0;
 	 }
-else if ((gameData.objs.viewerP == gameData.objs.consoleP) && !automap.Display ()) {
+else if ((gameData.objs.viewerP == gameData.objs.consoleP) && !automap.Active ()) {
 	if ((bSpectate = ((gameStates.render.bFreeCam > 0) && !nWindow)))
 		;
 #if DBG

@@ -195,12 +195,12 @@ if (bDbgFullBright >= 0)
 	gameStates.render.bFullBright = bDbgFullBright;
 else if ((gameStates.app.bEndLevelSequence == EL_FLYTHROUGH) || (gameStates.app.bEndLevelSequence == EL_LOOKBACK))
 	gameStates.render.bFullBright = 2;
-else if (automap.Display () && gameOpts->render.automap.bBright) 
+else if (automap.Active () && gameOpts->render.automap.bBright) 
 	gameStates.render.bFullBright = 1;
 else
 	gameStates.render.bFullBright = 0;
 #else
-gameStates.render.bFullBright = (automap.Display () && gameOpts->render.automap.bBright)
+gameStates.render.bFullBright = (automap.Active () && gameOpts->render.automap.bBright)
 #if MAX_SHADOWMAPS
 										  || (gameStates.render.nShadowMap > 0)
 #endif
@@ -216,7 +216,7 @@ if (!gameStates.render.cameras.bActive)
 	windowRenderedData [nWindow].nObjects = 0;
 ogl.m_states.fAlpha = FADE_LEVELS;
 if (((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2) && (gameStates.render.nShadowBlurPass < 2)) || gameStates.render.nShadowMap) {
-	if (!automap.Display ())
+	if (!automap.Active ())
 		RenderStartFrame ();
 	}
 if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2)) {
@@ -362,7 +362,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 #endif //_OPENMP
 		if ((gameStates.render.bPerPixelLighting == 2) && !gameData.app.nFrameCount)
 			meshBuilder.BuildVBOs ();
-		gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && lightManager.Headlights ().nLights && !(gameStates.render.bFullBright || automap.Display ());
+		gameStates.render.bHeadlights = gameOpts->ogl.bHeadlight && lightManager.Headlights ().nLights && !(gameStates.render.bFullBright || automap.Active ());
 		}
 	transparencyRenderer.InitBuffer (gameData.render.zMin, gameData.render.zMax, nWindow);
 	}

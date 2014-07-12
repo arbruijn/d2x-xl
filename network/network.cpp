@@ -335,8 +335,10 @@ if ((gameStates.multi.nGameType < IPX_GAME) || !networkData.bActive)
 networkData.bWaitingForPlayerInfo = 1;
 networkData.nSecurityFlag = NETSECURITY_OFF;
 
-if (networkThread.ListenInBackground ())
+if (networkThread.ListenInBackground ()) {
+	networkThread.Listen (true);
 	return networkThread.ProcessPackets ();
+	}
 
 tracker.AddServer ();
 
@@ -430,7 +432,7 @@ if (to.Expired ()) {
 
 void CSyncPack::Prepare (void) 
 {
-SetType (PID_PDATA);
+SetType (PID_PLAYER_DATA);
 SetPlayer (N_LOCALPLAYER);
 SetRenderType (OBJECTS [LOCALPLAYER.nObject].info.renderType);
 SetLevel (missionManager.nCurrentLevel);
@@ -446,7 +448,8 @@ void CSyncPack::Send (void)
 
 if (IsMultiGame && LOCALPLAYER.IsConnected ()) {
 	MultiSendRobotFrame (0);
-	MultiSendFire (); // Do firing if needed..
+	MultiSendWeapons (1);
+	MultiSendWeaponStates ();
 	Prepare ();
 	IpxSendGamePacket (reinterpret_cast<uint8_t*>(Info ()), Size ());
 	++m_nPackets; 
@@ -467,6 +470,7 @@ void NetworkFlushData (void)
 {
 networkData.SyncPack ().Send (); 
 networkData.bPacketUrgent = 0;
+gameData.multigame.weapon.bFired = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -483,7 +487,7 @@ void NetworkDoFrame (int bFlush)
 if (!IsNetworkGame) 
 	return;
 if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequence) { // Don't send postion during escape sequence...
-	nakedData.Flush ();
+	mineSyncData.Flush ();
 	if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds () > (networkData.refuse.xTimeLimit + (I2X (12))))
 		networkData.refuse.bWaitForAnswer = 0;
 	networkData.xLastSendTime += gameData.time.xFrame;
@@ -492,12 +496,12 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 	// Send out packet PacksPerSec times per second maximum... unless they fire, then send more often...
 	if ((networkData.xLastSendTime >= SyncTimeout ())
 #if DBG
-		 || ((networkData.xLastSendTime >= I2X (1) / MAX_PPS) && (bFlush || gameData.multigame.laser.bFired || networkData.bPacketUrgent))
+		 || ((networkData.xLastSendTime >= I2X (1) / MAX_PPS) && (bFlush || gameData.multigame.weapon.bFired || networkData.bPacketUrgent))
 #else
-		 || (bFlush || gameData.multigame.laser.bFired || networkData.bPacketUrgent)
+		 || (bFlush || gameData.multigame.weapon.bFired || networkData.bPacketUrgent)
 #endif
 		) {
-		networkThread.SetUrgent (gameData.multigame.laser.bFired || networkData.bPacketUrgent);
+		networkThread.SetUrgent (gameData.multigame.weapon.bFired || networkData.bPacketUrgent);
 		NetworkFlushData ();
 		}
 

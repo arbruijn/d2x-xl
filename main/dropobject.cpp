@@ -378,7 +378,6 @@ return -1;
 int32_t MaybeDropNetPowerup (int16_t nObject, int32_t nPowerupType, int32_t nDropState)
 {
 if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
-	MultiSendWeapons (1);
 #if 0
 	if (IsNetworkGame && (nDropState < CHECK_DROP) && (nPowerupType >= 0)) {
 		if (gameData.multiplayer.powerupsInMine [nPowerupType] >= gameData.multiplayer.maxPowerupsAllowed [nPowerupType])
@@ -439,7 +438,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (!bFixedPos)
 		objP->info.position.vPos = vNewPos;
 	objP->RelinkToSeg (nSegment);
-	CreateExplosion (objP, nSegment, vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
+	CreateExplosion (objP, nSegment, vNewPos, vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
 	return 1;
 	}
 return 0;

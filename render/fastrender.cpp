@@ -496,7 +496,7 @@ static inline int32_t VisitSegment (int16_t nSegment, int32_t bAutomap)
 if (nSegment < 0)
 	return 0;
 if (bAutomap) {
-	if (automap.Display ()) {
+	if (automap.Active ()) {
 		if (!(automap.m_bFull || automap.m_visible [nSegment]))
 			return 0;
 		if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_SKYBOX))
@@ -543,7 +543,7 @@ return 0;
 
 static inline int32_t FaceIsColored (CSegFace *faceP)
 {
-return !automap.Display () || automap.m_visited [faceP->m_info.nSegment] || !gameOpts->render.automap.bGrayOut;
+return !automap.Active () || automap.m_visited [faceP->m_info.nSegment] || !gameOpts->render.automap.bGrayOut;
 }
 
 //------------------------------------------------------------------------------
@@ -556,7 +556,7 @@ int16_t RenderFaceList (CFaceListIndex& flx, int32_t nType, int32_t bHeadlight)
 	int32_t				bAutomap = (nType == RENDER_TYPE_GEOMETRY);
 
 #if 1
-if (automap.Display ())
+if (automap.Active ())
 	flx.usedKeys.SortAscending (0, flx.nUsedKeys - 1);
 #endif
 for (i = 0; i < flx.nUsedKeys; i++) {
@@ -604,7 +604,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		if (!faceP->m_info.nCorona)
 			continue;
 		nSegment = faceP->m_info.nSegment;
-		if (automap.Display ()) {
+		if (automap.Active ()) {
 			if (!(automap.m_bFull || automap.m_visible [nSegment]))
 				return;
 			if (!gameOpts->render.automap.bSkybox && (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_SKYBOX))
@@ -798,7 +798,7 @@ int32_t SetupCoronas (void)
 {
 if (!SetupCoronaFaces ())
 	return 0;
-if (automap.Display () && !gameOpts->render.automap.bCoronas)
+if (automap.Active () && !gameOpts->render.automap.bCoronas)
 	return 0;
 return 1;
 }

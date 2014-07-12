@@ -22,9 +22,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define BLAST_LIFE		(I2X (2) / 5)
 #define SHOCKWAVE_LIFE	I2X (1)
 
-CObject *CreateSplashDamageExplosion (CObject* parentObjP, int16_t nSegment,
-										  CFixVector& position, fix size, uint8_t vclipType,
-										  fix maxdamage, fix maxdistance, fix maxforce, int16_t parent);
+CObject *CreateSplashDamageExplosion (CObject* parentObjP, int16_t nSegment, CFixVector& position, CFixVector& impact, fix size, uint8_t vclipType,
+										        fix maxdamage, fix maxdistance, fix maxforce, int16_t parent);
 
 // blows up a splash damage weapon, creating the splash damage explosion
 // return the explosion CObject
@@ -32,7 +31,7 @@ CObject *CreateSplashDamageExplosion (CObject* parentObjP, int16_t nSegment,
 // return the explosion CObject
 void DoDebrisFrame (CObject* objP);      // deal with debris for this frame
 void DrawFireball (CObject* objP);
-CObject* CreateExplosion (CObject* parentP, int16_t nSegment, CFixVector& vPos, fix xSize, uint8_t nVClip, 
+CObject* CreateExplosion (CObject* parentP, int16_t nSegment, CFixVector& vPos, CFixVector& vImpact, fix xSize, uint8_t nVClip, 
                           fix xMaxDamage = 0, fix xMaxDistance = 0, fix xMaxForce = 0, int16_t nParent = -1);
 
 
@@ -42,14 +41,14 @@ int16_t GetExplosionVClip (CObject *obj, int32_t stage);
 
 static inline CObject* CreateMuzzleFlash (int16_t nSegment, CFixVector& position, fix size, uint8_t nVClip)
 {
-return CreateExplosion (NULL, nSegment, position, size, nVClip, 0, 0, 0, -1);
+return CreateExplosion (NULL, nSegment, position, position, size, nVClip, 0, 0, 0, -1);
 }
 
 //------------------------------------------------------------------------------
 
 static inline CObject* CreateExplosion (int16_t nSegment, CFixVector& position, fix size, uint8_t nVClip)
 {
-return CreateExplosion (NULL, nSegment, position, size, nVClip, 0, 0, 0, -1);
+return CreateExplosion (NULL, nSegment, position, position, size, nVClip, 0, 0, 0, -1);
 }
 
 //------------------------------------------------------------------------------

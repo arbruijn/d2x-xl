@@ -53,11 +53,11 @@ if (OBJ_IDX (this) == nDbgObj)
 	BRP;
 #endif
 info.nType = cf.ReadByte ();
+info.nId = cf.ReadByte ();
 #if DBG
-if (info.nType == nDbgObjType)
+if ((info.nType == nDbgObjType) && ((nDbgObjId < 0) || (info.nId == nDbgObjId)))
 	BRP;
 #endif
-info.nId = cf.ReadByte ();
 #if DBG
 if ((info.nType == OBJ_EFFECT) && (info.nId == WAYPOINT_ID))
 	info.nId = WAYPOINT_ID;

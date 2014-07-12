@@ -622,7 +622,7 @@ switch (gameStates.app.bEndLevelSequence) {
 			gameStates.app.bEndLevelSequence = EL_PANNING;
 			VmExtractAnglesMatrix (&vCurrentCameraAngles, &gameData.objs.endLevelCamera->info.position.mOrient);
 			timer = I2X (3);
-			if (gameData.app.nGameMode & GM_MULTI) { // try to skip part of the seq if multiplayer
+			if (gameData.app.nGameMode & GM_MULTI) { // try to skip part of the playerSyncData if multiplayer
 				StopEndLevelSequence ();
 				return;
 				}
@@ -1921,7 +1921,7 @@ switch (gameStates.app.bEndLevelSequence) {
 			gameStates.app.bEndLevelSequence = EL_PANNING;
 			VmExtractAnglesMatrix (&vCurrentCameraAngles, &gameData.objs.endLevelCamera->info.position.mOrient);
 			timer = I2X (3);
-			if (IsMultiGame) { // try to skip part of the seq if multiplayer
+			if (IsMultiGame) { // try to skip part of the playerSyncData if multiplayer
 				StopEndLevelSequence ();
 				return;
 				}

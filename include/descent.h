@@ -1291,12 +1291,12 @@ class CApplicationStates {
 class CLimitFPSStates {
 	public:
 		uint8_t	bControls;
-		uint8_t bJoystick;
+		uint8_t	bJoystick;
 		uint8_t	bSeismic;
-		uint8_t bCountDown;
+		uint8_t	bCountDown;
 		uint8_t	bHomers;
 		uint8_t	bFusion;
-		uint8_t bOmega;
+		uint8_t	bOmega;
 	};
 
 //------------------------------------------------------------------------------
@@ -1619,14 +1619,14 @@ typedef struct tPortal {
 
 class CVisibilityData {
 	public:
-		int32_t						nSegments;
+		int32_t					nSegments;
 		CShortArray				segments; //[MAX_SEGMENTS_D2X];
 		CByteArray				bVisited; //[MAX_SEGMENTS_D2X];
 		CByteArray				bVisible; //[MAX_SEGMENTS_D2X];
 		CByteArray				bProcessed; //[MAX_SEGMENTS_D2X];		//whether each entry has been nProcessed
 		uint8_t 					nVisited;
-		uint8_t						nProcessed;
-		uint8_t						nVisible;
+		uint8_t					nProcessed;
+		uint8_t					nVisible;
 		CShortArray				nDepth; //[MAX_SEGMENTS_D2X];		//depth for each seg in nRenderList
 		CArray<tSegZRef>		zRef [2]; // segment indexes sorted by distance from viewer
 		CArray<tPortal>		portals;
@@ -1665,7 +1665,7 @@ class CMineRenderData {
 		CVisibilityData		visibility [MAX_THREADS + 2];
 		//CShortArray				renderSegList [MAX_THREADS]; //[MAX_SEGMENTS_D2X];
 		CShortArray				objRenderSegList;
-		int32_t						nObjRenderSegs;
+		int32_t					nObjRenderSegs;
 		CObjRenderList			objRenderList;
 		CArray< CSegFace* >	renderFaceListP; //[MAX_SEGMENTS_D2X * 6];
 		CIntArray				bObjectRendered; //[MAX_OBJECTS_D2X];
@@ -1675,7 +1675,7 @@ class CMineRenderData {
 		CUShortArray			bAutomapVisited; //[MAX_SEGMENTS_D2X];
 		CUShortArray			bAutomapVisible; //[MAX_SEGMENTS_D2X];
 		CUShortArray			bRadarVisited; //[MAX_SEGMENTS_D2X];
-		uint8_t						bSetAutomapVisited;
+		uint8_t					bSetAutomapVisited;
 
 	public:
 		CMineRenderData ();
@@ -2252,12 +2252,12 @@ typedef struct tHitbox {
 
 typedef struct tObjectViewData {
 	CFixMatrix			mView [2];
-	int32_t					nFrame [2];
+	int32_t				nFrame [2];
 } tObjectViewData;
 
 typedef struct tGuidedMissileInfo {
-	CObject				*objP;
-	int32_t					nSignature;
+	CObject*				objP;
+	int32_t				nSignature;
 } tGuidedMissileInfo;
 
 class CObjLists {
@@ -2283,22 +2283,22 @@ class CObjectData {
 		CStack<CObject*>			update;
 		CArray<tBaseObject>		effects;
 		CObjLists					lists;
-		CArray<int16_t>				freeList;
-		CArray<int16_t>				parentObjs;
+		CArray<int16_t>			freeList;
+		CArray<int16_t>			parentObjs;
 		CArray<tObjectRef>		childObjs;
-		CArray<int16_t>				firstChild;
+		CArray<int16_t>			firstChild;
 		CArray<CObject>			init;
 		CArray<tObjDropInfo>		dropInfo;
 		CArray<tSpeedBoostData>	speedBoost;
 		CArray<CFixVector>		vRobotGoals;
 		CArray<fix>					xLastAfterburnerTime;
 		CArray<fix>					xLight;
-		CArray<int32_t>					nLightSig;
+		CArray<int32_t>			nLightSig;
 		CFaceColor					color;
-		int16_t							nFirstDropped;
-		int16_t							nLastDropped;
-		int16_t							nFreeDropped;
-		int16_t							nDropped;
+		int16_t						nFirstDropped;
+		int16_t						nLastDropped;
+		int16_t						nFreeDropped;
+		int16_t						nDropped;
 		tGuidedMissileInfo		guidedMissile [MAX_PLAYERS];
 		CObject*						consoleP;
 		CObject*						viewerP;
@@ -2306,23 +2306,23 @@ class CObjectData {
 		CObject*						missileViewerP;
 		CObject*						deadPlayerCamera;
 		CObject*						endLevelCamera;
-		int32_t							nMaxObjects;
-		int32_t							nObjects;
-		int32_t							nLastObject [2];
-		int32_t							nObjectLimit;
-		int32_t							nMaxUsedObjects;
-		int32_t							nInitialRobots;
-		int32_t							nEffects;
-		int32_t							nDebris;
-		int32_t							nNextSignature;
-		int32_t							nChildFreeList;
-		int32_t							nDrops;
-		int32_t							nDeadControlCenter;
-		int32_t							nVertigoBotFlags;
-		int32_t							nFrameCount;
-		CArray<int16_t>				nHitObjects;
+		int32_t						nMaxObjects;
+		int32_t						nObjects;
+		int32_t						nLastObject [2];
+		int32_t						nObjectLimit;
+		int32_t						nMaxUsedObjects;
+		int32_t						nInitialRobots;
+		int32_t						nEffects;
+		int32_t						nDebris;
+		int32_t						nNextSignature;
+		int32_t						nChildFreeList;
+		int32_t						nDrops;
+		int32_t						nDeadControlCenter;
+		int32_t						nVertigoBotFlags;
+		int32_t						nFrameCount;
+		CArray<int16_t>			nHitObjects;
 		CPowerupData				pwrUp;
-		uint8_t							collisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
+		uint8_t						collisionResult [MAX_OBJECT_TYPES][MAX_OBJECT_TYPES];
 		CArray<tObjectViewData>	viewData;
 		CStaticArray< int16_t, MAX_WEAPONS >	idToOOF; //[MAX_WEAPONS];
 		CByteArray				bWantEffect; //[MAX_OBJECTS_D2X];
@@ -2334,6 +2334,10 @@ class CObjectData {
 		void Destroy (void);
 		void InitFreeList (void);
 		void GatherEffects (void);
+		void SetGuidedMissile (uint8_t nPlayer, CObject* objP);
+		bool IsGuidedMissile (CObject* objP);
+		bool HasGuidedMissile (uint8_t nPlayer);
+		CObject* GetGuidedMissile (uint8_t nPlayer);
 		int32_t RebuildEffects (void);
 };
 
@@ -2804,7 +2808,7 @@ class CMultiCreateData {
 
 #define MAX_FIRED_OBJECTS	8
 
-class CMultiLaserData {
+class CMultiWeaponData {
 	public:
 		int32_t					bFired;
 		uint8_t					nFired [2];
@@ -2815,7 +2819,7 @@ class CMultiLaserData {
 		int16_t					nTrack;
 
 	public:
-		CMultiLaserData () { memset (this, 0, sizeof (*this)); }
+		CMultiWeaponData () { memset (this, 0, sizeof (*this)); }
 };
 
 
@@ -2847,7 +2851,7 @@ class CMultiScoreData {
 		char					pFlags [MAX_PLAYERS];
 		int32_t				nSorted [MAX_PLAYERS];
 		int16_t				matrix [MAX_PLAYERS][MAX_PLAYERS];
-		int16_t					nTeam [2];
+		int16_t				nTeam [2];
 		char					bShowList;
 		fix					xShowListTimer;
 
@@ -2862,7 +2866,7 @@ class CMultiGameData {
 		char					bIsGuided;
 		char					bQuitGame;
 		CMultiCreateData	create;
-		CMultiLaserData	laser;
+		CMultiWeaponData	weapon;
 		CMultiMsgData		msg;
 		CMultiMenuData		menu;
 		CMultiScoreData	score;

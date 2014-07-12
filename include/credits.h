@@ -24,13 +24,11 @@ class CCreditsRenderer {
 		char				m_buffer [NUM_LINES_HIRES][80];
 		CFont*			m_fonts [3];
 		CBitmap			m_bmBackdrop;
-		uint32_t				m_bDone;
-		uint32_t				m_nLines [2];
-		int32_t				m_xDelay;
-		int32_t				m_xTimeout;
-		int32_t				m_nExtraInc;
-		int32_t				m_bBinary;
-		int32_t				m_nFirstLineOffs;
+		uint32_t			m_bDone;
+		uint32_t			m_nLines [2];
+		int32_t			m_nExtraInc;
+		int32_t			m_bBinary;
+		int32_t			m_nFirstLineOffs;
 		CBackground		m_background;
 
 	public:

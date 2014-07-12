@@ -359,7 +359,7 @@ void CControlsManager::DoD2XKeys (int32_t *bSlideOn, int32_t *bBankOn, fix *pitc
 //added on 2/4/99 by Victor Rachels for d1x keys
 //--------- Read primary weapon select -------------
 //the following "if" added by WraithX to stop deadies from switchin weapons, 4/14/00
-if (!(gameStates.app.bPlayerIsDead || automap.Display ())) { {
+if (!(gameStates.app.bPlayerIsDead || automap.Active ())) { {
 		int32_t i, d2xJoystickState [10];
 
 	for (i = 0; i < 10; i++)
@@ -429,7 +429,7 @@ int32_t CControlsManager::LimitTurnRate (int32_t bUseMouse)
 {
 if (!(gameOpts->input.bLimitTurnRate || IsMultiGame))
 	return 0;
-if (automap.Display () ||
+if (automap.Active () ||
 	 gameOpts->input.mouse.bJoystick ||
 	 gameStates.app.bNostalgia ||
 	 COMPETITION ||

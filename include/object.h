@@ -1063,7 +1063,7 @@ class CObject : public CObjectInfo {
 		int32_t CreateWeaponEffects (int32_t bExplBlast);
 		CObject* ExplodeSplashDamage (fix damage, fix distance, fix force);
 		CObject* ExplodeSplashDamagePlayer (void);
-		CObject* ExplodeSplashDamageWeapon (CFixVector& vPos);
+		CObject* ExplodeSplashDamageWeapon (CFixVector& vPos, CObject* targetP = NULL);
 		void MaybeKillWeapon (CObject *otherObjP);
 		int32_t MaybeDetonateWeapon (CObject* otherP, CFixVector& vHitPt);
 		void DoExplosionSequence (void);
@@ -1170,6 +1170,7 @@ class CObject : public CObjectInfo {
 		inline bool IsMissile (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsMissile (Id ()); }
 		inline bool IsEquipment (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsEquipment (Id ()); }
 		inline bool IsStatic (void) { return cType.aiInfo.behavior == AIB_STATIC; }
+		bool IsGuidedMissile (int8_t nPlayer = -1);
 		bool Indestructible (void);
 		inline bool IsGeometry (void) { return IsStatic () && Indestructible (); }
 		inline void Ignore (int32_t bFlag, int32_t nType = 0) { m_bIgnore [nType] = bFlag; }

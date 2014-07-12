@@ -1701,7 +1701,7 @@ else if (m_version > 0)  {
 		}
 	}
 
-	if (automap.Display ())			// (If in automap...)
+	if (automap.Active ())			// (If in automap...)
 		m_info->automapState = 1;
 	//memset (&r,0,sizeof (r);
 

@@ -363,7 +363,7 @@ if (!(nTexture = FaceHasCorona (nSegment, nSide, &bAdditive, &fIntensity)))
 ComputeCoronaSprite (nSegment, nSide);
 fIntensity *= ComputeSoftGlare ();
 //shaderManager.Set ("dMax"), 20.0f);
-RenderSoftGlare (nTexture, fIntensity, bAdditive, !automap.Display () || automap.m_visited [nSegment] || !gameOpts->render.automap.bGrayOut);
+RenderSoftGlare (nTexture, fIntensity, bAdditive, !automap.Active () || automap.m_visited [nSegment] || !gameOpts->render.automap.bGrayOut);
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	BRP;

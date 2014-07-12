@@ -190,7 +190,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessDump (tSequencePacket *their)
+void NetworkProcessDump (tPlayerSyncData *their)
 {
 	// Our request for join was denied.  Tell the user why.
 
@@ -221,7 +221,7 @@ else {
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessRequest (tSequencePacket *their)
+void NetworkProcessRequest (tPlayerSyncData *their)
 {
 // Player is ready to receieve a sync packet
 for (int32_t nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
@@ -249,7 +249,7 @@ else
 void NetworkProcessNakedPData (uint8_t *data, int32_t len)
  {
    int32_t nPlayer = data [1]; 
-   Assert (data [0] == PID_NAKED_PDATA);
+   Assert (data [0] == PID_MINE_DATA);
 
 if (nPlayer < 0) {
 #if 1			

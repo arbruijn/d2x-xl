@@ -46,8 +46,8 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 		(pid != PID_LITE_INFO) &&
 		(pid != PID_GAME_INFO) &&
 		(pid != PID_EXTRA_GAMEINFO) &&
-		(pid != PID_PDATA) &&
-		(pid != PID_NAKED_PDATA) &&
+		(pid != PID_PLAYER_DATA) &&
+		(pid != PID_MINE_DATA) &&
 		(pid != PID_OBJECT_DATA) &&
 		(pid != PID_ENDLEVEL) &&
 		(pid != PID_ENDLEVEL_SHORT) &&

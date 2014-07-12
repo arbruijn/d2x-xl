@@ -722,7 +722,8 @@ int32_t ClaimObjectSlot (int32_t nObject)
 {
 for (int32_t i = gameData.objs.nObjects; i < LEVEL_OBJECTS; i++)
 	if (gameData.objs.freeList [i] == nObject) {
-		gameData.objs.freeList [i] = gameData.objs.freeList [gameData.objs.nObjects++];
+		Swap (gameData.objs.freeList [i], gameData.objs.freeList [gameData.objs.nObjects]);
+		++gameData.objs.nObjects;
 		if (nObject > gameData.objs.nLastObject [0]) {
 			gameData.objs.nLastObject [0] = nObject;
 			if (gameData.objs.nLastObject [1] < gameData.objs.nLastObject [0])
@@ -984,8 +985,9 @@ else if (nType != OBJ_REACTOR) {
 	else
 		m_links [1].prev = m_links [1].next = NULL;
 #if DBG == 1
-	if (nType == OBJ_CAMBOT)
-		nType = nType;
+	static int32_t nDbgType = -1;
+	if (nType == nDbgType)
+		BRP;
 #endif
 	if ((nType != OBJ_WEAPON) && (nType != OBJ_MONSTERBALL)) {
 		Link (gameData.objs.lists.statics, 2);
@@ -1059,6 +1061,7 @@ if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
 CObject	*objP = OBJECTS + nObject;
 
 objP->Unlink ();
+objP->info.nType = OBJ_NONE;		//unused!
 objP->SetAttackMode (ROBOT_IS_HOSTILE);
 DelObjChildrenN (nObject);
 DelObjChildN (nObject);
@@ -1074,19 +1077,11 @@ lightningManager.DestroyForObject (OBJECTS + nObject);
 SEM_LEAVE (SEM_LIGHTNING)
 #endif
 lightManager.Delete (-1, -1, nObject);
-#if OBJ_LIST_TYPE == 0
-// Make sure the freeList vector contains all allocated object numbers at the start of the list 
-if (gameData.objs.nObjects > 1) {
-	int32_t h = gameData.objs.freeList [gameData.objs.nObjects - 1];
-	for (int32_t i = 0; i < gameData.objs.nObjects; i++) {
-		if (gameData.objs.freeList [i] == nObject) {
-			gameData.objs.freeList [i] = h;
-			break;
-			}
+for (int32_t i = gameData.objs.nObjects; i ; )
+	if (gameData.objs.freeList [--i] == nObject) {
+		Swap (gameData.objs.freeList [i], gameData.objs.freeList [--gameData.objs.nObjects]);
+		break;
 		}
-	}	
-#endif
-gameData.objs.freeList [--gameData.objs.nObjects] = nObject;
 Assert (gameData.objs.nObjects >= 0);
 if (nObject == gameData.objs.nLastObject [0])
 	while (gameData.objs.nLastObject [0] && (OBJECTS [--gameData.objs.nLastObject [0]].info.nType == OBJ_NONE))
@@ -1726,6 +1721,25 @@ CObject*	objP = OBJECTS + cType.laserInfo.parent.nObject;
 if (objP->Signature () != cType.laserInfo.parent.nSignature)
 	return NULL;
 return objP;
+}
+
+//------------------------------------------------------------------------------
+// return if object is a guided missile under player control (if not under 
+// player control, guided missiles turn into homing missiles)
+
+bool CObject::IsGuidedMissile (int8_t nPlayer) 
+{
+if (Type () != OBJ_WEAPON)
+	return false;
+if (Id () != GUIDEDMSL_ID)
+	return false;
+if (nPlayer < 0) {
+	CObject* parentObjP = Parent ();
+	if (!parentObjP)
+		return false;
+	nPlayer = parentObjP->Id ();
+	}
+return (this == gameData.objs.guidedMissile [nPlayer].objP) && (Signature () == gameData.objs.guidedMissile [nPlayer].nSignature);
 }
 
 //------------------------------------------------------------------------------

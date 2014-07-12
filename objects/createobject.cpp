@@ -315,6 +315,8 @@ else if (objP->info.controlType == CT_EXPLOSION)
 	objP->cType.explInfo.attached.nParent = -1;
 
 objP->Arm ();
+objP->ResetLinks ();
+objP->ResetSgmLinks ();
 objP->Link ();
 objP->LinkToSeg (nSegment);
 objP->StopSync ();
@@ -669,9 +671,15 @@ void ReleaseObject (int16_t nObject)
 {
 if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
 	return;
-
 	int32_t nParent;
-	CObject *objP = OBJECTS + nObject;
+
+CObject *objP = OBJECTS + nObject;
+
+#if DBG
+if (!objP->IsInList (gameData.objs.lists.all, 0))
+	return;
+#endif
+
 
 if (objP->info.nType == OBJ_WEAPON) {
 	if (gameData.demo.nVcrState != ND_STATE_PLAYBACK)
@@ -679,7 +687,7 @@ if (objP->info.nType == OBJ_WEAPON) {
 	if (objP->info.nId == GUIDEDMSL_ID) {
 		nParent = OBJECTS [objP->cType.laserInfo.parent.nObject].info.nId;
 		if (nParent != N_LOCALPLAYER)
-			gameData.objs.guidedMissile [nParent].objP = NULL;
+			gameData.objs.SetGuidedMissile (nParent, NULL);
 		else if (gameData.demo.nState == ND_STATE_RECORDING)
 			NDRecordGuidedEnd ();
 		}
@@ -700,7 +708,6 @@ if ((objP->info.nType == OBJ_ROBOT) ||
 	 (objP->info.nType == OBJ_POWERUP) ||
 	 (objP->info.nType == OBJ_HOSTAGE))
 	ExecObjTriggers (nObject, 0);
-objP->info.nType = OBJ_NONE;		//unused!
 objP->info.nSignature = -1;
 objP->info.nSegment = -1;				// zero it!
 try {

@@ -33,11 +33,20 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "text.h"
 
 // limit framerate to 30 while recording demo and to 40 when in automap and framerate display is disabled
-#define MAXFPS		((gameData.demo.nState == ND_STATE_RECORDING) ? 30 : \
-                   (automap.Display () && !(automap.Radar () || (gameStates.render.bShowFrameRate == 1))) ? 40 : \
-						 ((gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER_NVIDIA) && (gameOpts->render.nMaxFPS < 120)) ? 2 * gameOpts->render.nMaxFPS : gameOpts->render.nMaxFPS)
-
 #define EXACT_FRAME_TIME	1
+
+//------------------------------------------------------------------------------
+
+int32_t MaxFPS (void)
+{
+if (gameData.demo.nState == ND_STATE_RECORDING) 
+	return 30;
+if (automap.Active () && !(automap.Radar () || (gameStates.render.bShowFrameRate == 1)))
+	return 40;
+if ((gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER_NVIDIA) && (gameOpts->render.nMaxFPS < 120)) 
+	return 2 * gameOpts->render.nMaxFPS;
+return gameOpts->render.nMaxFPS;
+}
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -55,7 +64,7 @@ class CGenericFrameTime {
 		virtual time_t Elapsed (void) = 0;
 
 	public:
-		virtual void Compute (void) = 0;
+		virtual void Compute (int32_t fps = 0) = 0;
 	};
 
 //------------------------------------------------------------------------------
@@ -73,7 +82,7 @@ class CFrameTime : public CGenericFrameTime {
 			}
 
 	public:
-		virtual void Compute (void) {
+		virtual void Compute (int32_t fps = 0) {
 			while (Elapsed () < m_tMinFrame)
 				G3_SLEEP (0);
 			m_tLast = m_tick;
@@ -96,7 +105,7 @@ class CWindowsFrameTime : public CFrameTime <LARGE_INTEGER> {
 		virtual time_t Elapsed (void);
 
 	public:
-		virtual void Compute (void);
+		virtual void Compute (int32_t fps = 0);
 		explicit CWindowsFrameTime() { Setup (); }
 	};
 
@@ -126,7 +135,7 @@ return time_t (m_tick.QuadPart - m_tLast.QuadPart);
 
 //------------------------------------------------------------------------------
 
-void CWindowsFrameTime::Compute (void)
+void CWindowsFrameTime::Compute (int32_t fps)
 {
 m_ticksPerMSec = time_t (m_ticksPerSec.QuadPart) / 1000;
 m_tError += time_t (m_ticksPerSec.QuadPart) - m_ticksPerMSec * 1000;
@@ -135,7 +144,7 @@ if (tSlack > 0) {
 	m_ticksPerMSec += tSlack;
 	m_tError -= tSlack * m_ticksPerMSec;
 	}
-m_tMinFrame = time_t (m_ticksPerSec.QuadPart / LONGLONG (MAXFPS));
+m_tMinFrame = fps ? time_t (m_ticksPerSec.QuadPart / LONGLONG (fps)) : 0;
 CFrameTime<LARGE_INTEGER>::Compute ();
 }
 
@@ -150,6 +159,7 @@ class CUnixFrameTime : public CFrameTime <int64_t> {
 
 	public:
 		virtual void Setup (void);
+		virtual void Compute (int32_t fps = 0);
 
 		explicit CUnixFrameTime() { Setup (); }
 	};
@@ -158,8 +168,15 @@ class CUnixFrameTime : public CFrameTime <int64_t> {
 
 void CUnixFrameTime::Setup (void)
 {
-m_tMinFrame = time_t (1000000 / MAXFPS);
 CFrameTime<int64_t>::Setup ();
+}
+
+//------------------------------------------------------------------------------
+
+void CUnixFrameTime::Compute (int32_t fps)
+{
+m_tMinFrame = fps ? time_t (1000000 / fps) : 0;
+CFrameTime<int64_t>::Compute ();
 }
 
 //------------------------------------------------------------------------------
@@ -189,7 +206,7 @@ class CSDLFrameTime : public CFrameTime <time_t> {
 		virtual time_t FrameTime (void);
 
 	public:
-		virtual void Compute (void);
+		virtual void Compute (int32_t fps = 0);
 
 		explicit CSDLFrameTime() { Setup (); }
 	};
@@ -211,9 +228,9 @@ return time_t (m_tick - m_tLast);
 
 //------------------------------------------------------------------------------
 
-void CSDLFrameTime::Compute (void)
+void CSDLFrameTime::Compute (int32_t fps = 0)
 {
-m_tMinFrame = 1000 / MAXFPS;
+m_tMinFrame = fps ? 1000 / fps : 0;
 CFrameTime<time_t>::Compute ();
 }
 
@@ -306,7 +323,7 @@ gameData.time.xLast = TimerGetFixedSeconds ();
 
 //------------------------------------------------------------------------------
 
-void CalcFrameTime (void)
+void CalcFrameTime (int32_t fps)
 {
 if (gameData.app.bGamePaused) {
 	gameData.time.xLast = TimerGetFixedSeconds ();
@@ -320,11 +337,14 @@ fix 	timerValue,
 
 GetSlowTicks ();
 
+if (fps <= 0)
+	fps = MaxFPS ();
+
 #if EXACT_FRAME_TIME
 
 	int32_t nDeltaTime;
 
-if (MAXFPS <= 1) 
+if (fps <= 1) 
 	nDeltaTime = 0;
 else {
 #ifdef RELEASE
@@ -333,71 +353,19 @@ else {
 #endif
 	if (!gameData.time.tLast)
 		nDeltaTime = 0;
-	else {
-#if 1
-		CFrameTimeFactory::GetInstance ()->GetTimer ()->Compute ();
-#elif defined(_WIN32)
-		static time_t tError = 0, ticksPerMSec = 0;
-		static LARGE_INTEGER tLast = {0}, ticksPerSec;
-
-		if (!ticksPerMSec) 
-			QueryPerformanceFrequency (&ticksPerSec);
-		ticksPerMSec = time_t (ticksPerSec.QuadPart) / 1000;
-		tError += time_t (ticksPerSec.QuadPart) - ticksPerMSec * 1000;
-		time_t tSlack = tError / ticksPerMSec;
-		if (tSlack > 0) {
-			ticksPerMSec += tSlack;
-			tError -= tSlack * ticksPerMSec;
-			}
-		LARGE_INTEGER tick;
-		time_t tFrame, tMinFrame = time_t (ticksPerSec.QuadPart / LONGLONG (MAXFPS));
-		for (;;) {
-  			QueryPerformanceCounter (&tick);
-			tFrame = time_t (tick.QuadPart - tLast.QuadPart);
-			if (tFrame >= tMinFrame) 
-				break;
-			G3_SLEEP (0);
-			}
-		tLast = tick;
-#elif defined(__unix__) || defined(__macosx__)
-		static int64_t tLast = 0;
-
-		int64_t tick, tFrame, tMinFrame = int64_t (1000000 / MAXFPS);
-		for (;;) {
-  			tFrame = tick - tLast;
-			if (tFrame >= tMinFrame) 
-				break;
-			G3_SLEEP (0);
-			}
-		tLast = tick;
-#else
-		static float fSlack = 0;
-
-		int32_t nFrameTime = gameStates.app.nSDLTicks [0] - gameData.time.tLast;
-		int32_t nMinFrameTime = 1000 / MAXFPS;
-		nDeltaTime = nMinFrameTime - nFrameTime;
-		fSlack += 1000.0f / MAXFPS - nMinFrameTime;
-		if (fSlack >= 1.0f) {
-			nDeltaTime += int32_t (fSlack);
-			fSlack -= int32_t (fSlack);
-			}
-		if (0 < nDeltaTime)
-			G3_SLEEP (nDeltaTime);
-		else
-			nDeltaTime = 0;
-#endif
-		}
+	else 
+		CFrameTimeFactory::GetInstance ()->GetTimer ()->Compute (fps);
 	}
 
 timerValue = MSEC2X (gameStates.app.nSDLTicks [0]);
 
 #else
 
-fix xMinFrameTime = ((MAXFPS > 1) ? I2X (1) / MAXFPS : 1);
+fix xMinFrameTime = ((fps > 1) ? I2X (1) / fps : 1);
 do {
 	timerValue = TimerGetFixedSeconds ();
    gameData.time.SetTime (timerValue - gameData.time.xLast);
-	if (MAXFPS < 2)
+	if (fps < 2)
 		break;
 	G3_SLEEP (0);
 	} while (gameData.time.xFrame < xMinFrameTime);

@@ -441,10 +441,9 @@ return 0;
 
 void CObject::CheckGuidedMissileThroughExit (int16_t nPrevSegment)
 {
-if ((this == gameData.objs.guidedMissile [N_LOCALPLAYER].objP) &&
-	 (info.nSignature == gameData.objs.guidedMissile [N_LOCALPLAYER].nSignature)) {
+if (IsGuidedMissile (N_LOCALPLAYER)) {
 	if (nPrevSegment != info.nSegment) {
-		int16_t	nConnSide = SEGMENTS [info.nSegment].ConnectedSide (SEGMENTS + nPrevSegment);
+		int16_t nConnSide = SEGMENTS [info.nSegment].ConnectedSide (SEGMENTS + nPrevSegment);
 		if (nConnSide != -1) {
 			CTrigger* trigP = SEGMENTS [nPrevSegment].Trigger (nConnSide);
 			if (trigP && (trigP->m_info.nType == TT_EXIT))

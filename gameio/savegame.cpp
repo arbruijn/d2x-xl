@@ -1335,8 +1335,8 @@ if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 
 
 void CSaveGameManager::FixObjects (void)
 {
-	CObject	*objP = OBJECTS.Buffer ();
-	int32_t		i, j, nSegment;
+	CObject*	objP = OBJECTS.Buffer ();
+	int32_t	i, j, nSegment;
 
 ConvertObjects ();
 gameData.objs.nNextSignature = 0;
@@ -1351,6 +1351,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 		}
 	objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
 	if (objP->info.nType != OBJ_NONE) {
+		objP->Link ();
 		objP->LinkToSeg (nSegment);
 		if (objP->info.nSignature > gameData.objs.nNextSignature)
 			gameData.objs.nNextSignature = objP->info.nSignature;
@@ -1735,7 +1736,7 @@ if (m_nVersion > 33) {
 		   gameData.multiplayer.weaponStates [i].bTripleFusion = m_cf.ReadInt ();
    	else {
    	   gameData.weapons.bTripleFusion = m_cf.ReadInt ();
-		   gameData.multiplayer.weaponStates [i].bTripleFusion = !gameData.weapons.bTripleFusion;  //force MultiSendWeapons
+		   gameData.multiplayer.weaponStates [i].bTripleFusion = !gameData.weapons.bTripleFusion; 
 		   }
 	}
 if (!m_bBetweenLevels) {
@@ -1886,10 +1887,8 @@ if (!m_bBetweenLevels) {
 		gameData.reactor.states [0].nDeadObj = m_cf.ReadInt ();
 		}
 	else {
-		int32_t	i;
-
 		gameData.reactor.bPresent = m_cf.ReadInt ();
-		for (i = 0; i < MAX_BOSS_COUNT; i++)
+		for (int32_t i = 0; i < MAX_BOSS_COUNT; i++)
 			LoadReactorState (gameData.reactor.states + i);
 		}
 	// Restore the AI state

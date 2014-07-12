@@ -448,8 +448,8 @@ inline CFloatVector& CFloatVector::Cross (CFloatVector& dest, const CFloatVector
 inline const CFloatVector CFloatVector::Cross (const CFloatVector& v0, const CFloatVector& v1) {
 	CFloatVector vec;
 	vec.Set (v0.v.coord.y * v1.v.coord.z - v0.v.coord.z * v1.v.coord.y,
-	       v0.v.coord.z * v1.v.coord.x - v0.v.coord.x * v1.v.coord.z,
-	       v0.v.coord.x * v1.v.coord.y - v0.v.coord.y * v1.v.coord.x);
+	         v0.v.coord.z * v1.v.coord.x - v0.v.coord.x * v1.v.coord.z,
+	         v0.v.coord.x * v1.v.coord.y - v0.v.coord.y * v1.v.coord.x);
 	return vec;
 }
 

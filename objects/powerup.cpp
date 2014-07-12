@@ -189,7 +189,7 @@ if (info.renderType != RT_POLYOBJ) {
 	UpdatePowerupClip (vcP, vciP, i);
 	}
 if (info.xLifeLeft <= 0) {
-	CreateExplosion (this, info.nSegment, info.position.vPos, I2X (7) / 2, VCLIP_POWERUP_DISAPPEARANCE);
+	CreateExplosion (this, info.nSegment, info.position.vPos, info.position.vPos, I2X (7) / 2, VCLIP_POWERUP_DISAPPEARANCE);
 	if (gameData.effects.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound > -1)
 		audio.CreateObjectSound (gameData.effects.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound, SOUNDCLASS_GENERIC, i);
 	}
@@ -567,7 +567,6 @@ if (gameData.objs.pwrUp.info [id].hitSound > -1) {
 		MultiSendPlaySound (gameData.objs.pwrUp.info [id].hitSound, I2X (1));
 	audio.PlaySound (int16_t (gameData.objs.pwrUp.info [id].hitSound));
 	}
-MultiSendWeapons (1);
 }
 
 //------------------------------------------------------------------------------
@@ -589,7 +588,7 @@ if (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame))
 if (ISLOCALPLAYER (nPlayer)) {
 	playerP->invulnerableTime = gameData.time.xGame;
 	playerP->flags |= PLAYER_FLAGS_INVULNERABLE;
-	if IsMultiGame
+	if (IsMultiGame)
 		MultiSendInvul ();
 	if (bInventory)
 		PowerupBasic (7, 14, 21, 0, "");
@@ -621,7 +620,7 @@ if (ISLOCALPLAYER (nPlayer)) {
 	playerP->cloakTime = gameData.time.xGame;	//	Not!changed by awareness events (like CPlayerData fires laser).
 	playerP->flags |= PLAYER_FLAGS_CLOAKED;
 	AIDoCloakStuff ();
-	if IsMultiGame
+	if (IsMultiGame)
 		MultiSendCloak ();
 	if (bInventory)
 		PowerupBasic (-10, -10, -10, 0, "");
@@ -673,10 +672,10 @@ if (objP->Ignored (1, 1))
 	return 0;
 
 	CPlayerData*	playerP;
-	int32_t				bUsed = 0;
-	int32_t				bSpecialUsed = 0;		//for when hitting vulcan cannon gets vulcan ammo
-	int32_t				bLocalPlayer;
-	int32_t				nId, nType;
+	int32_t			bUsed = 0;
+	int32_t			bSpecialUsed = 0;		//for when hitting vulcan cannon gets vulcan ammo
+	int32_t			bLocalPlayer;
+	int32_t			nId, nType;
 
 if (nPlayer < 0)
 	nPlayer = N_LOCALPLAYER;
@@ -729,11 +728,8 @@ else
 //is solved.  Note also the break statements above that are commented out
 //!!	bUsed = 1;
 
-if (bUsed || bSpecialUsed) {
+if (bUsed || bSpecialUsed)
 	UsePowerup (nId * (bUsed ? bUsed : bSpecialUsed));
-	if (IsMultiGame)
-		MultiSendWeapons (1);
-	}
 gameData.hud.bPlayerMessage = 1;
 return bUsed;
 }
@@ -1129,6 +1125,7 @@ ENABLE_FILTER (POW_PLASMA, infoP->DoPlasma);
 ENABLE_FILTER (POW_OMEGA, infoP->DoOmega);
 ENABLE_FILTER (POW_LASER, 1);
 ENABLE_FILTER (POW_SUPERLASER, infoP->DoSuperLaser);
+ENABLE_FILTER (POW_MONSTERBALL, (gameData.app.GameMode (GM_HOARD | GM_MONSTERBALL)));
 ENABLE_FILTER (POW_PROXMINE, infoP->DoProximity || (gameData.app.GameMode (GM_HOARD | GM_ENTROPY)));
 ENABLE_FILTER (POW_SMARTMINE, infoP->DoSmartMine || IsEntropyGame);
 ENABLE_FILTER (POW_VULCAN_AMMO, (infoP->DoVulcan || infoP->DoGauss));

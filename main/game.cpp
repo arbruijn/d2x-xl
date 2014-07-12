@@ -90,6 +90,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "findpath.h"
 #include "waypoint.h"
 
+#define PHYSICS_IN_BACKGROUND 0
+
 uint32_t nCurrentVGAMode;
 
 #ifdef MWPROFILER
@@ -464,64 +466,6 @@ gameStates.app.cheats.bEnabled = 0;
 // ----------------------------------------------------------------------------
 //	GameSetup ()
 
-void GameSetup (void)
-{
-DoLunacyOn ();		//	Copy values for insane into copy buffer in ai.c
-DoLunacyOff ();		//	Restore true insane mode.
-gameStates.app.bGameAborted = 0;
-gameStates.app.bEndLevelSequence = 0;
-paletteManager.ResetEffect ();
-SetScreenMode (SCREEN_GAME);
-SetWarnFunc (ShowInGameWarning);
-#if TRACE
-//console.printf (CON_DBG, "   cockpit->Init () d:\temp\dm_test.\n");
-#endif
-cockpit->Init ();
-#if TRACE
-//console.printf (CON_DBG, "   InitGauges d:\temp\dm_test.\n");
-#endif
-//DigiInitSounds ();
-//gameStates.input.keys.bRepeat = 0;                // Don't allow repeat in game
-gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
-gameData.objs.viewerP = gameData.objs.consoleP;
-#if TRACE
-//console.printf (CON_DBG, "   FlyInit d:\temp\dm_test.\n");
-#endif
-FlyInit (gameData.objs.consoleP);
-if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
-	gameStates.app.bGameSuspended &= ~(SUSP_ROBOTS | SUSP_TEMPORARY);
-ResetTime ();
-gameData.time.SetTime (0);			//make first frame zero
-#if TRACE
-//console.printf (CON_DBG, "   FixObjectSegs d:\temp\dm_test.\n");
-#endif
-GameFlushInputs ();
-lightManager.SetMethod ();
-gameStates.app.nSDLTicks [0] = 
-gameStates.app.nSDLTicks [1] = 
-gameData.time.xGameStart = SDL_GetTicks ();
-gameData.physics.fLastTick = float (gameData.time.xGameStart);
-ogl.m_features.bShaders.Available (gameOpts->render.bUseShaders);
-gameData.render.rift.SetCenter ();
-}
-
-//------------------------------------------------------------------------------
-
-void SetFunctionMode (int32_t newFuncMode)
-{
-if (gameStates.app.nFunctionMode != newFuncMode) {
-	gameStates.app.nLastFuncMode = gameStates.app.nFunctionMode;
-	if ((gameStates.app.nFunctionMode = newFuncMode) == FMODE_GAME)
-		gameStates.app.bEnterGame = 2;
-#if DBG
-	else if (newFuncMode == FMODE_MENU)
-		gameStates.app.bEnterGame = 0;
-#endif
-	}
-}
-
-//	------------------------------------------------------------------------------------
-
 void CleanupAfterGame (bool bHaveLevel)
 {
 #ifdef MWPROFILE
@@ -569,20 +513,6 @@ ResetModFolders ();
 gameStates.app.bGameRunning = 0;
 backgroundManager.Rebuild ();
 SetFunctionMode (FMODE_MENU);	
-}
-
-//	-----------------------------------------------------------------------------
-
-void DoRenderFrame (void)
-{
-gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-if (gameStates.render.cockpit.bRedraw) {
-	cockpit->Init ();
-	gameStates.render.cockpit.bRedraw = 0;
-	}
-GameRenderFrame ();
-gameStates.app.bUsingConverter = 0;
-AutoScreenshot ();
 }
 
 //	-----------------------------------------------------------------------------
@@ -639,141 +569,12 @@ return h;
 #endif
 
 //	------------------------------------------------------------------------------------
+//	------------------------------------------------------------------------------------
+//	------------------------------------------------------------------------------------
 //this function is the game.  called when game mode selected.  runs until
 //editor mode or exit selected
 
 extern bool bRegisterBitmaps;
-
-void RunGame (void)
-{
-	int32_t i, c;
-
-GameSetup ();								// Replaces what was here earlier.
-#ifdef MWPROFILE
-ProfilerSetStatus (1);
-#endif
-
-if (pfnTIRStart)
-	pfnTIRStart ();
-
-if (!setjmp (gameExitPoint)) {
-	for (;;) {
-		PROF_TOGGLE
-		PROF_START
-		// GAME LOOP!
-#if DBG
-		if (automap.Display ())
-#endif
-		automap.m_bDisplay = 0;
-		gameStates.app.bConfigMenu = 0;
-		if (gameData.objs.consoleP != OBJECTS + LOCALPLAYER.nObject) {
-#if TRACE
-			 //console.printf (CON_DBG,"N_LOCALPLAYER=%d nObject=%d",N_LOCALPLAYER,LOCALPLAYER.nObject);
-#endif
-			 //Assert (gameData.objs.consoleP == &OBJECTS[LOCALPLAYER.nObject]);
-			}
-		int32_t playerShield = LOCALPLAYER.Shield ();
-		gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
-
-		try {
-			i = GameFrame (1, 1);
-			}
-		catch (int32_t e) {
-			ClearWarnFunc (ShowInGameWarning);
-			if (e == EX_OUT_OF_MEMORY) {
-				Warning ("Out of memory.");
-				break;
-				}
-			else if (e == EX_IO_ERROR) {
-				Warning ("Couldn't load game data.");
-				break;
-				}
-			else {
-				Warning ("Well ... something went wrong.");
-				break;
-				}
-			}
-		catch (...) {
-			ClearWarnFunc (ShowInGameWarning);
-			Warning ("Well ... something went really wrong.");
-			break;
-			}
-
-		PROF_END (ptFrame);
-		if (i < 0)
-			break;
-		if (i == 0)
-			continue;
-
-		PROF_CONT
-		if (gameStates.app.bSingleStep) {
-			while (!(c = KeyInKey ()))
-				;
-			if (c == KEY_ALTED + KEY_CTRLED + KEY_ESC)
-				gameStates.app.bSingleStep = 0;
-			}
-		//if the player is taking damage, give up guided missile control
-		if (LOCALPLAYER.Shield () != playerShield)
-			ReleaseGuidedMissile (N_LOCALPLAYER);
-		//see if redbook song needs to be restarted
-		redbook.CheckRepeat ();	// Handle RedBook Audio Repeating.
-		if (gameStates.app.bConfigMenu) {
-			//paletteManager.SuspendEffect (!IsMultiGame);
-			ConfigMenu ();
-			//paletteManager.ResumeEffect (!IsMultiGame);
-			}
-		if (automap.Display ()) {
-			int32_t	save_w = gameData.render.frame.Width (),
-					save_h = gameData.render.frame.Height ();
-			automap.DoFrame (0, 0);
-			gameStates.app.bEnterGame = 1;
-			//	FlushInput ();
-			//	StopPlayerMovement ();
-			gameStates.video.nScreenMode = -1;
-			SetScreenMode (SCREEN_GAME);
-			gameData.render.frame.SetWidth (save_w);
-			gameData.render.frame.SetHeight (save_h);
-			cockpit->Init ();
-			}
-		if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
-			 gameData.demo.bAuto && !gameOpts->demo.bRevertFormat &&
-			 (gameData.demo.nState != ND_STATE_NORMAL)) {
-			int32_t choice, fmode;
-			fmode = gameStates.app.nFunctionMode;
-			SetFunctionMode (FMODE_GAME);
-			//paletteManager.SuspendEffect ();
-			choice = InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
-			//paletteManager.ResumeEffect ();
-			SetFunctionMode (fmode);
-			if (choice)
-				SetFunctionMode (FMODE_GAME);
-			else {
-				gameData.demo.bAuto = 0;
-				NDStopPlayback ();
-				SetFunctionMode (FMODE_MENU);
-				}
-			}
-		if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
-			 (gameData.demo.nState != ND_STATE_PLAYBACK) &&
-			 (gameStates.app.nFunctionMode != FMODE_EDITOR) &&
-			 !gameStates.multi.bIWasKicked) {
-			if (QuitSaveLoadMenu ())
-				SetFunctionMode (FMODE_GAME);
-			}
-		gameStates.multi.bIWasKicked = 0;
-		PROF_END(ptFrame);
-		if (gameStates.app.nFunctionMode != FMODE_GAME)
-			break; //longjmp (gameExitPoint, 0);
-		}
-	}
-try {
-	CleanupAfterGame ();
-	}
-catch (...) {
-	Warning ("Internal error when cleaning up.");
-	}
-bRegisterBitmaps = false;
-}
 
 //-----------------------------------------------------------------------------
 //called at the end of the program
@@ -947,17 +748,183 @@ if (gameStates.render.bUpdateEffects) {
 	}
 }
 
-//-----------------------------------------------------------------------------
-// -- extern void lightning_frame (void);
+//------------------------------------------------------------------------------
 
-#if PHYSICS_FPS >= 0
-int32_t DoGameFrame (int32_t bRenderFrame, int32_t bReadControls, int32_t bFrameTime)
-#else
-int32_t GameFrame (int32_t bRenderFrame, int32_t bReadControls, int32_t bFrameTime)
+void SetFunctionMode (int32_t newFuncMode)
+{
+if (gameStates.app.nFunctionMode != newFuncMode) {
+	gameStates.app.nLastFuncMode = gameStates.app.nFunctionMode;
+	if ((gameStates.app.nFunctionMode = newFuncMode) == FMODE_GAME)
+		gameStates.app.bEnterGame = 2;
+#if DBG
+	else if (newFuncMode == FMODE_MENU)
+		gameStates.app.bEnterGame = 0;
 #endif
+	}
+}
+
+//	------------------------------------------------------------------------------------
+//	------------------------------------------------------------------------------------
+//	------------------------------------------------------------------------------------
+
+#if DBG
+static int32_t nRenderCalls = 0;
+static int32_t nStateCalls = 0;
+static int32_t tStateLoop = 0;
+static int32_t tRenderLoop = 0;
+#endif
+
+class CGameLoop {
+	private:
+		SDL_Thread*	m_thread;
+		SDL_sem*		m_lock;
+		bool			m_bRunning;
+		int32_t		m_bRender;
+		int32_t		m_bControls;
+		int32_t		m_fps;
+		int32_t		m_nResult;
+
+	public:
+		CGameLoop () : m_thread (NULL), m_lock (NULL), m_bRunning (false), m_bRender (0), m_bControls (0), m_fps (0), m_nResult (0) {}
+		void Start (void);
+		void Stop (void);
+		void Run (void);
+		void StateLoop (void);
+		void Setup (void);
+		void Cleanup (void);
+		int32_t Step (int32_t bRenderFrame = 1, int32_t bReadControls = 1, int32_t fps = 0);
+
+	private:
+		int32_t Preprocess (void);
+		int32_t Postprocess (void);
+		void Render (void);
+		void HandleQuit (void);
+		void HandleAutomap (void);
+		void HandleControls (int32_t bControls);
+		inline int32_t SetResult (int32_t nResult) { return m_nResult = nResult; }
+
+		void Lock (void) { 
+			if (m_lock)
+				SDL_SemWait (m_lock); 
+			}
+		void Unlock (void) { 
+			if (m_lock)
+				SDL_SemPost (m_lock); 
+			}
+};
+
+CGameLoop gameLoop;
+
+//	-----------------------------------------------------------------------------
+
+int32_t _CDECL_ GameThreadHandler (void* nThreadP)
+{
+gameLoop.StateLoop ();
+return 0;
+}
+
+//-----------------------------------------------------------------------------
+
+void CGameLoop::StateLoop (void)
+{
+m_bRunning = true;
+while (m_bRunning) {
+#if DBG
+	++nStateCalls;
+#endif
+	int32_t playerShield = LOCALPLAYER.Shield ();
+
+	CalcFrameTime (120);
+
+	Lock ();
+#if DBG
+	int32_t t = SDL_GetTicks ();
+#endif
+	m_nResult = Preprocess ();
+#if DBG
+	tStateLoop += SDL_GetTicks () - t;
+#endif
+	Unlock ();
+	if (1 > m_nResult)
+		break;
+	Lock ();
+#if DBG
+	t = SDL_GetTicks ();
+#endif
+	m_nResult = Postprocess ();
+#if DBG
+	tStateLoop += SDL_GetTicks () - t;
+#endif
+	Unlock ();
+	if (1 > m_nResult)
+		break;
+
+	if (LOCALPLAYER.Shield () != playerShield)
+		ReleaseGuidedMissile (N_LOCALPLAYER);
+#if DBG
+	tStateLoop += SDL_GetTicks () - t;
+#endif
+	}
+m_bRunning = false;
+}
+
+//-----------------------------------------------------------------------------
+
+void CGameLoop::Render (void)
+{
+Lock ();
+#if DBG
+++nRenderCalls;
+#endif
+gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
+
+if (gameStates.render.cockpit.bRedraw) {
+	cockpit->Init ();
+	gameStates.render.cockpit.bRedraw = 0;
+	}
+GameRenderFrame ();
+gameStates.app.bUsingConverter = 0;
+AutoScreenshot ();
+
+Unlock ();
+}
+
+//-----------------------------------------------------------------------------
+
+void CGameLoop::Setup (void)
+{
+DoLunacyOn ();		//	Copy values for insane into copy buffer in ai.c
+DoLunacyOff ();	//	Restore true insane mode.
+gameStates.app.bGameAborted = 0;
+gameStates.app.bEndLevelSequence = 0;
+paletteManager.ResetEffect ();
+SetScreenMode (SCREEN_GAME);
+SetWarnFunc (ShowInGameWarning);
+cockpit->Init ();
+gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
+gameData.objs.viewerP = gameData.objs.consoleP;
+FlyInit (gameData.objs.consoleP);
+if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
+	gameStates.app.bGameSuspended &= ~(SUSP_ROBOTS | SUSP_TEMPORARY);
+ResetTime ();
+gameData.time.SetTime (0);			//make first frame zero
+GameFlushInputs ();
+lightManager.SetMethod ();
+gameStates.app.nSDLTicks [0] = 
+gameStates.app.nSDLTicks [1] = 
+gameData.time.xGameStart = SDL_GetTicks ();
+gameData.physics.fLastTick = float (gameData.time.xGameStart);
+ogl.m_features.bShaders.Available (gameOpts->render.bUseShaders);
+gameData.render.rift.SetCenter ();
+if (pfnTIRStart)
+	pfnTIRStart ();
+}
+
+//	------------------------------------------------------------------------------------
+
+int32_t CGameLoop::Preprocess (void)
 {
 PROF_START
-gameStates.app.bGameRunning = 1;
 //gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
 
@@ -986,7 +953,6 @@ if (IsMultiGame) {
 	PROF_CONT
 	AutoBalanceTeams ();
 	MultiSendTyping ();
-	MultiSendWeapons (0);
 	MultiSyncKills ();
 	MultiAdjustPowerups ();
 	tracker.AddServer ();
@@ -1003,16 +969,16 @@ PROF_CONT
 DoEffectsFrame ();
 PROF_END(ptGameStates)
 #endif
-if (bRenderFrame)
-	DoRenderFrame ();
 
-PROF_CONT
-if (bFrameTime)
-	CalcFrameTime ();
-if (bReadControls > 0)
-	ReadControls ();
-else if (bReadControls < 0)
-	controls.Reset ();
+return 1;
+}
+
+//-----------------------------------------------------------------------------
+
+int32_t CGameLoop::Postprocess (void)
+{
+PROF_START
+
 DeadPlayerFrame ();
 if (gameData.demo.nState != ND_STATE_PLAYBACK) 
 	DoReactorDeadFrame ();
@@ -1098,12 +1064,232 @@ PROF_END (ptGameStates)
 return 1;
 }
 
+//-----------------------------------------------------------------------------
 
-//	-----------------------------------------------------------------------------
+void CGameLoop::HandleControls (int32_t bControls)
+{
+if (bControls < 0)
+	controls.Reset ();
+else if (bControls)
+	ReadControls ();
+}
+
+//-----------------------------------------------------------------------------
+
+extern int32_t MaxFPS (void);
+
+int32_t CGameLoop::Step (int32_t bRender, int32_t bControls, int32_t fps)
+{
+gameStates.app.bGameRunning = 1;
+
+if (m_bRunning) { // game states are updated in separate thread
+	int32_t t = fps ? SDL_GetTicks () : 0;
+	HandleControls (bControls);
+	if (!bRender)
+		return 0;
+	Render ();
+#if DBG
+	tRenderLoop += SDL_GetTicks () - t;
+#endif
+	if (fps) {
+		t += 1000 / fps - SDL_GetTicks ();
+		if (t > 0)
+			G3_SLEEP (t);
+		}	
+	}
+else {
+	CalcFrameTime (fps);
+	HandleControls (bControls);
+	if (0 > (m_nResult = Preprocess ()))
+		return m_nResult;
+	if (bRender)
+		Render ();
+	if (0 > (m_nResult = Postprocess ()))
+		return m_nResult;
+	}
+
+return m_nResult;
+}
+
+//------------------------------------------------------------------------------
+
+void CGameLoop::HandleQuit (void)
+{
+if (gameStates.app.bConfigMenu)
+	ConfigMenu ();
+
+if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
+		gameData.demo.bAuto && !gameOpts->demo.bRevertFormat &&
+		(gameData.demo.nState != ND_STATE_NORMAL)) {
+	int32_t choice, fmode;
+	fmode = gameStates.app.nFunctionMode;
+	SetFunctionMode (FMODE_GAME);
+	choice = InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_ABORT_AUTODEMO);
+	SetFunctionMode (fmode);
+	if (choice)
+		SetFunctionMode (FMODE_GAME);
+	else {
+		gameData.demo.bAuto = 0;
+		NDStopPlayback ();
+		SetFunctionMode (FMODE_MENU);
+		}
+	}
+
+if ((gameStates.app.nFunctionMode != FMODE_GAME) &&
+		(gameData.demo.nState != ND_STATE_PLAYBACK) &&
+		(gameStates.app.nFunctionMode != FMODE_EDITOR) &&
+		!gameStates.multi.bIWasKicked) {
+	if (QuitSaveLoadMenu ())
+		SetFunctionMode (FMODE_GAME);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CGameLoop::Start (void)
+{
+#if PHYSICS_IN_BACKGROUND
+m_bRunning = false;
+m_lock = SDL_CreateSemaphore (1);
+m_thread = SDL_CreateThread (GameThreadHandler, NULL);
+while (!m_bRunning)
+	G3_SLEEP (0);
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void CGameLoop::Stop (void)
+{
+m_bRunning = false;
+if (m_thread) {
+	SDL_WaitThread (m_thread, &m_nResult);
+	m_thread = NULL;
+	}
+if (m_lock) {
+	SDL_DestroySemaphore (m_lock);
+	m_lock = NULL;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CGameLoop::HandleAutomap (void)
+{
+if (automap.Active ()) {
+	int32_t	save_w = gameData.render.frame.Width (),
+				save_h = gameData.render.frame.Height ();
+	automap.DoFrame (0, 0);
+	gameStates.app.bEnterGame = 1;
+	gameStates.video.nScreenMode = -1;
+	SetScreenMode (SCREEN_GAME);
+	gameData.render.frame.SetWidth (save_w);
+	gameData.render.frame.SetHeight (save_h);
+	cockpit->Init ();
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void CGameLoop::Run (void)
+{
+Setup ();								// Replaces what was here earlier.
+
+for (;;) {
+	PROF_TOGGLE
+	PROF_START
+	// GAME LOOP!
+#if DBG
+	if (automap.Active ())
+#endif
+	automap.SetActive (0);
+	gameStates.app.bConfigMenu = 0;
+	gameStates.app.nExtGameStatus = GAMESTAT_RUNNING;
+
+	try {
+		Step (1, 1, MaxFPS ());
+		}
+	catch (int32_t e) {
+		ClearWarnFunc (ShowInGameWarning);
+		if (e == EX_OUT_OF_MEMORY) {
+			Warning ("Out of memory.");
+			break;
+			}
+		else if (e == EX_IO_ERROR) {
+			Warning ("Couldn't load game data.");
+			break;
+			}
+		else {
+			Warning ("Well ... something went wrong.");
+			break;
+			}
+		}
+	catch (...) {
+		ClearWarnFunc (ShowInGameWarning);
+		Warning ("Well ... something went really wrong.");
+		break;
+		}
+
+	PROF_END (ptFrame);
+	if (m_nResult < 0)
+		break;
+	if (m_nResult == 0)
+		continue;
+
+	PROF_CONT
+	if (gameStates.app.bSingleStep) {
+		char c;
+		while (!(c = KeyInKey ()))
+			;
+		if (c == KEY_ALTED + KEY_CTRLED + KEY_ESC)
+			gameStates.app.bSingleStep = 0;
+		}
+
+	redbook.CheckRepeat ();	// Handle RedBook Audio Repeating.
+	HandleAutomap ();
+	HandleQuit ();
+	gameStates.multi.bIWasKicked = 0;
+	PROF_END(ptFrame);
+	if (gameStates.app.nFunctionMode != FMODE_GAME)
+		break; 
+	}
+
+Stop ();
+
+try {
+	CleanupAfterGame ();
+	}
+catch (...) {
+	Warning ("Internal error when cleaning up.");
+	}
+bRegisterBitmaps = false;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void RunGame (void)
+{
+gameLoop.Setup ();
+gameLoop.Start ();
+if (!setjmp (gameExitPoint))
+	gameLoop.Run ();
+gameLoop.Stop ();
+}
+
+//------------------------------------------------------------------------------
+
+int32_t GameFrame (int32_t bRenderFrame, int32_t bReadControls, int32_t fps)
+{
+return gameLoop.Step (bRenderFrame, bReadControls, fps);
+}
+
+//------------------------------------------------------------------------------
 
 void ComputeSlideSegs (void)
 {
-	int32_t			nSegment, nSide, bIsSlideSeg, nTexture;
+	int32_t		nSegment, nSide, bIsSlideSeg, nTexture;
 	CSegment*	segP = SEGMENTS.Buffer ();
 
 gameData.segs.nSlideSegs = 0;
@@ -1327,5 +1513,7 @@ if (gameData.render.screen.Width () && gameData.render.screen.Height ()) {
 	}
 }
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 //eof

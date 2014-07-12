@@ -619,6 +619,7 @@ if (networkData.syncInfo [0].objs.nFrame >= m_nFrame)
 	return 0;
 if (networkData.syncInfo [0].objs.nFrame < 0)
 	return -1;
+networkData.nJoinState = 2;
 RequestResync ();
 return -1;
 }
@@ -636,10 +637,9 @@ else {
 	m_bufI = 3;
 	}
 int32_t syncRes = CompareFrames ();
-if (syncRes < 0)
-	return syncRes;
-networkData.syncInfo [0].objs.nFrame = m_nFrame;
-return 1;
+if (syncRes > 0)
+	networkData.syncInfo [0].objs.nFrame = m_nFrame;
+return syncRes;
 }
 
 //------------------------------------------------------------------------------
@@ -676,38 +676,6 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
-// If the client is missing 10 or more objects, reject the sync data
-
-int32_t CObjectSynchronizer::Validate (void)
-{
-return abs (m_nRemoteObj - gameData.objs.nObjects) < 10;
-}
-
-//------------------------------------------------------------------------------
-
-int32_t CObjectSynchronizer::Finish (void)
-{
-if (m_nLocalObj != -2) 
-	return 0;
-if (networkData.nJoinState > 1)
-	return -1;
-
-if (!m_nState || !Validate ()) {
-	Abort ();
-	return -1;
-	}
-
-NetworkCountPowerupsInMine ();
-gameData.objs.RebuildEffects ();
-networkData.syncInfo [0].objs.nFrame = 0;
-m_nState = 0;
-if (networkData.bHaveSync)
-	networkData.nStatus = NETSTAT_PLAYING;
-networkData.nJoinState = 4;
-return 1;
-}
-
-//------------------------------------------------------------------------------
 
 int32_t CObjectSynchronizer::Sync (void)
 {
@@ -717,17 +685,12 @@ if (networkData.nJoinState != 1)
 // try to allocate each object in the same object list slot as the game host
 // this is particularly important for the player objects, as these get used before they actually get allocated
 m_nLocalObj = AllocObject (m_nRemoteObj); 
-if ((m_nObjOwner != N_LOCALPLAYER) && (m_nObjOwner != -1)) 
+if (((m_nObjOwner == N_LOCALPLAYER) || (m_nObjOwner == -1)) && (m_nLocalObj != m_nRemoteObj)) { // since the object allocator tries its best to do so, ignore the sync state here if that requirement could be met
 	m_nState = 0;
-else { // for the local player and for unknown object owners, the new object must be allocated at the same object list position as on the remote server!
-	if (/*(m_nState != 1) ||*/ (m_nLocalObj != m_nRemoteObj)) { // since the object allocator tries its best to do so, ignore the sync state here if that requirement could me met
-		networkData.nJoinState = 0; // start over
-		RequestResync ();
-		return -1;
-		}
+	networkData.nJoinState = 0; // start over
+	RequestResync ();
+	return -1;
 	}
-if (m_nLocalObj < 0) 
-	return 0;
 
 CObject* objP = OBJECTS + m_nLocalObj;
 NW_GET_BYTES (m_data, m_bufI, &objP->info, sizeof (tBaseObject));
@@ -776,6 +739,38 @@ if (objP->info.nType != OBJ_NONE) {
 		gameData.hoard.nMonsterballSeg = nSegment;
 		}
 	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+// If the client is missing 10 or more objects, reject the sync data
+
+int32_t CObjectSynchronizer::Validate (void)
+{
+return abs (m_nRemoteObj - gameData.objs.nObjects) < 10;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CObjectSynchronizer::Finish (void)
+{
+if (m_nLocalObj != -2) 
+	return 0;
+if (networkData.nJoinState > 1)
+	return -1;
+
+if (!m_nState || !Validate ()) {
+	Abort ();
+	return -1;
+	}
+
+NetworkCountPowerupsInMine ();
+gameData.objs.RebuildEffects ();
+networkData.syncInfo [0].objs.nFrame = 0;
+m_nState = 0;
+if (networkData.bHaveSync)
+	networkData.nStatus = NETSTAT_PLAYING;
+networkData.nJoinState = 4;
 return 1;
 }
 

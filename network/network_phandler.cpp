@@ -20,8 +20,6 @@
 #include "timeout.h"
 #include "console.h"
 
-#define THEIR	reinterpret_cast<tSequencePacket*>(data)
-
 //------------------------------------------------------------------------------
 
 #if defined(_WIN32) && !DBG
@@ -57,10 +55,10 @@ memset (addressFilter, 0, sizeof (addressFilter));
 	 addressFilter [PID_ENDLEVEL] = 
 	 addressFilter [PID_ENDLEVEL_SHORT] =
 	 addressFilter [PID_GAME_INFO] =
-	 addressFilter [PID_NAKED_PDATA] =
+	 addressFilter [PID_MINE_DATA] =
 	 addressFilter [PID_NAMES_RETURN] =
 	 addressFilter [PID_OBJECT_DATA] =
-	 addressFilter [PID_PDATA] =
+	 addressFilter [PID_PLAYER_DATA] =
 	 addressFilter [PID_PLAYERSINFO] =
 	 addressFilter [PID_EXTRA_GAMEINFO] =
 	 addressFilter [PID_DOWNLOAD] =
@@ -204,11 +202,11 @@ return 1;
 
 int32_t GameListHandler (uint8_t* data, int32_t nLength)
 {
-if (banList.Find (THEIR->player.callsign))
+if (banList.Find (reinterpret_cast<tPlayerSyncData*>(data)->player.callsign))
 	return 0;
 if (!IAmGameHost ())
 	return 0;
-NetworkSendLiteInfo (THEIR);
+NetworkSendLiteInfo (reinterpret_cast<tPlayerSyncData*>(data));
 return 1;
 }
 
@@ -216,11 +214,11 @@ return 1;
 
 int32_t AllGameInfoHandler (uint8_t* data, int32_t nLength)
 {
-if (NetworkBadSecurity (THEIR->nSecurity, "PID_SEND_ALL_GAMEINFO"))
+if (NetworkBadSecurity (reinterpret_cast<tPlayerSyncData*>(data)->nSecurity, "PID_SEND_ALL_GAMEINFO"))
 	return 0;
 if (!IAmGameHost ())
 	return 0;
-NetworkSendGameInfo (THEIR);
+NetworkSendGameInfo (reinterpret_cast<tPlayerSyncData*>(data));
 return 1;
 }
 
@@ -228,7 +226,7 @@ return 1;
 
 int32_t AddPlayerHandler (uint8_t* data, int32_t nLength)
 {
-NetworkNewPlayer (THEIR);
+NetworkNewPlayer (reinterpret_cast<tPlayerSyncData*>(data));
 return 1;
 }
 
@@ -236,17 +234,17 @@ return 1;
 
 int32_t RequestHandler (uint8_t* data, int32_t nLength)
 {
-if (banList.Find (THEIR->player.callsign))
+if (banList.Find (reinterpret_cast<tPlayerSyncData*>(data)->player.callsign))
 	return 0;
 if (networkData.nStatus == NETSTAT_STARTING) // Someone wants to join our game!
-	NetworkAddPlayer (THEIR);	
+	NetworkAddPlayer (reinterpret_cast<tPlayerSyncData*>(data));	
 else if (networkData.nStatus == NETSTAT_WAITING)	// Someone is ready to receive a sync packet
-	NetworkProcessRequest (THEIR);	
+	NetworkProcessRequest (reinterpret_cast<tPlayerSyncData*>(data));	
 else if (networkData.nStatus == NETSTAT_PLAYING) {		// Someone wants to join a game in progress!
 	if (netGameInfo.m_info.bRefusePlayers)
-		DoRefuseStuff (THEIR);
+		DoRefuseStuff (reinterpret_cast<tPlayerSyncData*>(data));
 	else 
-		NetworkWelcomePlayer (THEIR);
+		NetworkWelcomePlayer (reinterpret_cast<tPlayerSyncData*>(data));
 	}
 return 1;
 }
@@ -255,7 +253,7 @@ return 1;
 
 int32_t DumpHandler (uint8_t* data, int32_t nLength)
 {
-NetworkProcessDump (THEIR);
+NetworkProcessDump (reinterpret_cast<tPlayerSyncData*>(data));
 return 1;
 }
 
@@ -264,9 +262,9 @@ return 1;
 int32_t QuitJoiningHandler (uint8_t* data, int32_t nLength)
 {
 if (networkData.nStatus == NETSTAT_STARTING)
-	NetworkRemovePlayer (THEIR);
+	NetworkRemovePlayer (reinterpret_cast<tPlayerSyncData*>(data));
 else if (networkData.nStatus == NETSTAT_PLAYING) 
-	NetworkStopResync (THEIR);
+	NetworkStopResync (reinterpret_cast<tPlayerSyncData*>(data));
 return 1;
 }
 
@@ -414,7 +412,7 @@ return 1;
 int32_t PingReturnHandler (uint8_t* data, int32_t nLength)
 {
 //CONNECT ((int32_t) data [1], (gameStates.multi.nGameType == UDP_GAME) ? data [2] : CONNECT_PLAYING);
-NetworkHandlePingReturn (data [1]);  // data [1] is CPlayerData who told us of THEIR ping time
+NetworkHandlePingReturn (data [1]);  // data [1] is CPlayerData who told us of reinterpret_cast<tPlayerSyncData*>(data) ping time
 ResetPlayerTimeout ((int32_t) data [1], -1);
 return 1;
 }
@@ -433,8 +431,8 @@ return 1;
 int32_t GamePlayersHandler (uint8_t* data, int32_t nLength)
 {
 if (IAmGameHost () && 
-	 !NetworkBadSecurity (THEIR->nSecurity, "PID_GAME_PLAYERS"))
-	NetworkSendPlayerNames (THEIR);
+	 !NetworkBadSecurity (reinterpret_cast<tPlayerSyncData*>(data)->nSecurity, "PID_GAME_PLAYERS"))
+	NetworkSendPlayerNames (reinterpret_cast<tPlayerSyncData*>(data));
 return 1;
 }
 
@@ -462,7 +460,7 @@ PHINIT (PID_SEND_ALL_GAMEINFO, AllGameInfoHandler, SEQUENCE_PACKET_SIZE, (1 << N
 PHINIT (PID_PLAYERSINFO, PlayersInfoHandler, ALLNETPLAYERSINFO_SIZE, (1 << NETSTAT_WAITING) | (1 << NETSTAT_PLAYING));
 PHINIT (PID_REQUEST, RequestHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_STARTING) | (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
 PHINIT (PID_SYNC, SyncHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
-PHINIT (PID_PDATA, PDataHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING) | (1 << NETSTAT_ENDLEVEL));
+PHINIT (PID_PLAYER_DATA, PDataHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING) | (1 << NETSTAT_ENDLEVEL));
 PHINIT (PID_ADDPLAYER, AddPlayerHandler, SEQUENCE_PACKET_SIZE, (int16_t) 0xFFFF);
 PHINIT (PID_DUMP, DumpHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
 PHINIT (PID_ENDLEVEL, EndLevelHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_ENDLEVEL));
@@ -474,7 +472,7 @@ PHINIT (PID_PING_SEND, PingSendHandler, 0, (int16_t) 0xFFFF);
 PHINIT (PID_PING_RETURN, PingReturnHandler, 0, (int16_t) 0xFFFF);
 PHINIT (PID_GAME_UPDATE, GameUpdateHandler, 0, (int16_t) 0xFFFF);
 PHINIT (PID_ENDLEVEL_SHORT, EndLevelShortHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_ENDLEVEL));
-PHINIT (PID_NAKED_PDATA, NakedPDataHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING) | (1 << NETSTAT_ENDLEVEL));
+PHINIT (PID_MINE_DATA, NakedPDataHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING) | (1 << NETSTAT_ENDLEVEL));
 PHINIT (PID_GAME_PLAYERS, GamePlayersHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_STARTING) | (1 << NETSTAT_ENDLEVEL));
 PHINIT (PID_NAMES_RETURN, NamesReturnHandler, 0, 1 << NETSTAT_BROWSING);
 PHINIT (PID_EXTRA_GAMEINFO, ExtraGameInfoHandler, 0, (int16_t) 0xFFFF);
@@ -494,11 +492,11 @@ int32_t NetworkProcessSinglePacket (uint8_t* data, int32_t nLength)
 	int32_t					nFuncRes = 0;
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
-	tSequencePacket tmpPacket;
+	tPlayerSyncData tmpPacket;
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	ReceiveSequencePacket (data, &tmpPacket);
-	data = reinterpret_cast<uint8_t*>(&tmpPacket); // reassign THEIR to point to correctly alinged structure
+	data = reinterpret_cast<uint8_t*>(&tmpPacket); // reassign reinterpret_cast<tPlayerSyncData*>(data) to point to correctly alinged structure
 	}
 #endif
 
@@ -509,7 +507,7 @@ else if (!(piP->nStatusFilter & (1 << networkData.nStatus)))
 else if (!NetworkBadPacketSize (nLength, piP->nLength, piP->pszInfo)) {
 	console.printf (0, "received %s\n", piP->pszInfo);
 	if (!addressFilter [pId])	// patch the proper IP address into the packet header
-		memcpy (&THEIR->player.network, &networkData.packetSource.Address (), sizeof (tNetworkNode));
+		memcpy (&reinterpret_cast<tPlayerSyncData*>(data)->player.network, &networkData.packetSource.Address (), sizeof (tNetworkNode));
 	nFuncRes = piP->packetHandler (data, nLength);
 	}
 return nFuncRes;

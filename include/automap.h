@@ -82,31 +82,31 @@ class CAutomap {
 		tAutomapColors			m_colors;
 		CArray<tEdgeInfo>		m_edges;
 		CArray<tEdgeInfo*>	m_brightEdges;
-		int32_t						m_nEdges;
-		int32_t						m_nMaxEdges;
-		int32_t						m_nLastEdge;
-		int32_t						m_nWidth;
-		int32_t						m_nHeight;
-		int32_t						m_bFade;
-		int32_t						m_nColor;
+		int32_t					m_nEdges;
+		int32_t					m_nMaxEdges;
+		int32_t					m_nLastEdge;
+		int32_t					m_nWidth;
+		int32_t					m_nHeight;
+		int32_t					m_bFade;
+		int32_t					m_nColor;
 		float						m_fScale;
-		CFloatVector				m_color;
-		int32_t						m_bChaseCam;
-		int32_t						m_bFreeCam;
+		CFloatVector			m_color;
+		int32_t					m_bChaseCam;
+		int32_t					m_bFreeCam;
 		char						m_szLevelNum [200];
 		char						m_szLevelName [200];
 		CAngleVector			m_vTAngles;
 		bool						m_bDrawBuffers;
-		int32_t						m_nVerts;
+		int32_t					m_nVerts;
 
 	public:
-		CArray<uint16_t>			m_visited;
-		CArray<uint16_t>			m_visible;
-		int32_t						m_bRadar;
+		CArray<uint16_t>		m_visited;
+		CArray<uint16_t>		m_visible;
+		int32_t					m_bRadar;
 		bool						m_bFull;
-		int32_t						m_bDisplay;
-		int32_t						m_nSegmentLimit;
-		int32_t						m_nMaxSegsAway;
+		int32_t					m_bActive;
+		int32_t					m_nSegmentLimit;
+		int32_t					m_nMaxSegsAway;
 
 	public:
 		CAutomap () { Init (); }
@@ -125,7 +125,8 @@ class CAutomap {
 		inline int32_t SegmentLimit (void) { return m_nSegmentLimit; }
 		inline int32_t MaxSegsAway (void) { return m_nMaxSegsAway; }
 		inline int32_t Visible (int32_t nSegment) { return m_bFull || m_visited [nSegment]; }
-		inline int32_t Display (void) { return m_bDisplay; }
+		inline int32_t Active (void) { return m_bActive; }
+		inline void SetActive (int32_t bActive) { m_bActive = bActive; }
 
 	private:
 		int32_t SetSegmentDepths (int32_t nStartSeg, uint16_t *depthBufP);

@@ -31,7 +31,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
-CNakedData nakedData;
+CMineSyncData mineSyncData;
 
 CNetworkData networkData;
 

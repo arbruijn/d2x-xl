@@ -127,8 +127,8 @@ extern int32_t Game_suspended;          // if non-zero, nothing moves but CPlaye
 bool InitGame(int32_t nSegments, int32_t nVertices);
 void RunGame (void);
 void CleanupAfterGame (bool bHaveLevel = true);
-void _CDECL_ CloseGame(void);
-void CalcFrameTime(void);
+void _CDECL_ CloseGame (void);
+void CalcFrameTime (int32_t fps = 0);
 
 int32_t do_flythrough(CObject *obj,int32_t firstTime);
 
@@ -194,7 +194,7 @@ void GetSlowTicks (void);
 
 void SetFunctionMode (int32_t newFuncMode);
 int32_t DoGameFrame (int32_t bRenderFrame, int32_t bReadControls, int32_t bFrameTime = 1);
-int32_t GameFrame (int32_t bRenderFrame, int32_t bReadControls, int32_t fps = 60);
+int32_t GameFrame (int32_t bRenderFrame, int32_t bReadControls, int32_t fps = 0);
 
 void FullPaletteSave (void);
 

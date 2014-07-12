@@ -32,8 +32,8 @@ extern int32_t netmisc_apply_diff(void *block1, void *diff_buffer, int32_t diff_
 void BEReceiveNetPlayerInfo (uint8_t *data, tNetPlayerInfo *info);
 void BEReceiveNetPlayersPacket (uint8_t *data, CAllNetPlayersInfo *pinfo);
 void BESendNetPlayersPacket (uint8_t *server, uint8_t *node);
-void BESendSequencePacket (tSequencePacket seq, uint8_t *server, uint8_t *node, uint8_t *netAddress);
-void BEReceiveSequencePacket (uint8_t *data, tSequencePacket *seq);
+void BESendSequencePacket (tPlayerSyncData playerSyncData, uint8_t *server, uint8_t *node, uint8_t *netAddress);
+void BEReceiveSequencePacket (uint8_t *data, tPlayerSyncData *playerSyncData);
 void BESendNetGamePacket (uint8_t *server, uint8_t *node, uint8_t *netAddress, int32_t liteFlag);
 void BEReceiveNetGamePacket (uint8_t *data, CNetGameInfo *netgame, int32_t liteFlag);
 void BESendExtraGameInfo (uint8_t *server, uint8_t *node, uint8_t *netAddress);
@@ -59,10 +59,10 @@ void BESwapObject (CObject *obj);
 
 #define SendBroadcastNetPlayersPacket() \
 	BESendNetPlayersPacket(NULL, NULL)
-#define SendInternetSequencePacket(seq, server, node) \
-	BESendSequencePacket(seq, server, node, NULL)
-#define SendBroadcastSequencePacket(seq) \
-	BESendSequencePacket(seq, NULL, NULL, NULL)
+#define SendInternetPlayerSyncData(playerSyncData, server, node) \
+	BESendSequencePacket(playerSyncData, server, node, NULL)
+#define SendBroadcastPlayerSyncData(playerSyncData) \
+	BESendSequencePacket(playerSyncData, NULL, NULL, NULL)
 #define SendFullNetGamePacket(server, node, netAddress) \
 	BESendNetGamePacket(server, node, netAddress, 0)
 #define SendLiteNetGamePacket(server, node, netAddress) \
@@ -105,12 +105,12 @@ void BESwapObject (CObject *obj);
 #define SendBroadcastNetPlayersPacket() \
 	IPXSendBroadcastData((uint8_t *)&netPlayers [0], int32_t (netPlayers [0].Size ()))
 
-#define SendSequencePacket(seq, server, node, netAddress) \
-	networkThread.Send((uint8_t *)&seq, sizeof(tSequencePacket), server, node, netAddress)
-#define SendInternetSequencePacket(seq, server, node) \
-	networkThread.Send((uint8_t *)&seq, sizeof(tSequencePacket), server, node)
-#define SendBroadcastSequencePacket(seq) \
-	IPXSendBroadcastData((uint8_t *)&seq, sizeof(tSequencePacket))
+#define SendSequencePacket(playerSyncData, server, node, netAddress) \
+	networkThread.Send((uint8_t *)&playerSyncData, sizeof(tPlayerSyncData), server, node, netAddress)
+#define SendInternetPlayerSyncData(playerSyncData, server, node) \
+	networkThread.Send((uint8_t *)&playerSyncData, sizeof(tPlayerSyncData), server, node)
+#define SendBroadcastPlayerSyncData(playerSyncData) \
+	IPXSendBroadcastData((uint8_t *)&playerSyncData, sizeof(tPlayerSyncData))
 
 #define SendFullNetGamePacket(server, node, netAddress) \
 	networkThread.Send((uint8_t *)&netGameInfo.m_info, netgame->Size (), server, node, netAddress)

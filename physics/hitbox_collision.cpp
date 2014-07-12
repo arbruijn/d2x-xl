@@ -65,9 +65,8 @@ static bool PointIsInQuad (CFixVector point, CFixVector* vertP, CFixVector vNorm
 #if 0
 return PointIsInTriangle (&point, vNormal, vertP) || PointIsInTriangle (&point, vNormal, vertP + 1);
 #else
-	CFixVector		t, v0, v1;
-	CFixVector2 	vEdge, vCheck, vRef;
-	int32_t 				i, j, iEdge, projPlane;
+	CFixVector		t;
+	int32_t 			i, j, projPlane;
 
 //now do 2d check to see if vRef is in side
 //project polygon onto plane by finding largest component of Normal
@@ -85,17 +84,14 @@ else {
 	j = ijTable [projPlane][0];
 	}
 //now do the 2d problem in the i, j plane
-vRef.x = point.v.vec [i];
-vRef.y = point.v.vec [j];
-v1 = vertP [0];
-for (iEdge = 1; iEdge <= 4; iEdge++) {
-	v0 = v1;
-	v1 = vertP [iEdge % 4];
-	vEdge.x = v1.v.vec [i] - v0.v.vec [i];
-	vEdge.y = v1.v.vec [j] - v0.v.vec [j];
-	vCheck.x = vRef.x - v0.v.vec [i];
-	vCheck.y = vRef.y - v0.v.vec [j];
-	if (FixMul (vCheck.x, vEdge.y) - FixMul (vCheck.y, vEdge.x) < 0)
+CFixVector2 vRef (point.v.vec [i], point.v.vec [j]);
+CFixVector* v1 = vertP;
+for (int32_t iEdge = 1; iEdge <= 4; iEdge++) {
+	CFixVector* v0 = v1;
+	v1 = vertP + iEdge % 4;
+	CFixVector2 vEdge (v1->v.vec [i] - v0->v.vec [i], v1->v.vec [j] - v0->v.vec [j]);
+	CFixVector2 vCheck (vRef.m_x - v0->v.vec [i], vRef.m_y - v0->v.vec [j]);
+	if (FixMul (vCheck.m_x, vEdge.m_y) - FixMul (vCheck.m_y, vEdge.m_x) < 0)
 		return false;
 	}
 return true;

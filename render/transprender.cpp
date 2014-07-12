@@ -351,7 +351,7 @@ if (gameStates.render.bPerPixelLighting && !gameStates.render.bFullBright) {
 	}
 else {
 	SetupShader (faceP, bmMask != NULL, bDecal > 0, bmBot != NULL,
-				    (nSegment < 0) || !automap.Display () || automap.m_visited [nSegment],
+				    (nSegment < 0) || !automap.Active () || automap.m_visited [nSegment],
 					 bTextured ? NULL : faceP ? &faceP->m_info.color : color);
 	OglDrawArrays (nPrimitive, 0, nVertices);
 	}
@@ -1114,7 +1114,7 @@ for (h = faceP->m_info.nTris; h; h--, triP++) {
 #if 1
 		transformation.Transform (vertices [i], *(reinterpret_cast<CFloatVector*> (FACES.vertices + j)), 0);
 #else
-		if (automap.Display ())
+		if (automap.Active ())
 			transformation.Transform (vertices + i, gameData.segs.fVertices + triP->index [i], 0);
 		else
 			vertices [i].Assign (RENDERPOINTS [triP->index [i]].m_vertex [1]);
@@ -1137,7 +1137,7 @@ if (gameStates.render.nShadowMap)
 	return 0;
 
 	CFloatVector	vertices [4];
-	int32_t				i, j, bAdditive = FaceIsAdditive (faceP);
+	int32_t			i, j, bAdditive = FaceIsAdditive (faceP);
 	CBitmap*			bmP = faceP->m_info.bTextured ? /*faceP->bmTop ? faceP->bmTop :*/ faceP->bmBot : NULL;
 
 if (bmP)
@@ -1150,7 +1150,7 @@ for (i = 0, j = faceP->m_info.nIndex; i < 4; i++, j++) {
 #if 1
 	transformation.Transform (vertices [i], *(reinterpret_cast<CFloatVector*> (FACES.vertices + j)), 0);
 #else
-	if (automap.Display ())
+	if (automap.Active ())
 		transformation.Transform(vertices [i], gameData.segs.fVertices [faceP->m_info.index [i]], 0);
 	else
 		vertices [i].Assign (RENDERPOINTS [faceP->m_info.index [i]].m_vertex [1]);

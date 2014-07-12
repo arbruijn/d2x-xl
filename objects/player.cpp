@@ -166,9 +166,9 @@ else if (gameData.weapons.firing [1].nDuration) {
 
 void UpdatePlayerWeaponInfo (void)
 {
-	int32_t				i, bUpdate = 0;
-	CWeaponState	*wsP = gameData.multiplayer.weaponStates + N_LOCALPLAYER;
-	tFiringData		*fP;
+	int32_t			i, bUpdate = 0;
+	CWeaponState*	wsP = gameData.multiplayer.weaponStates + N_LOCALPLAYER;
+	tFiringData*	fP;
 
 if (gameStates.app.bPlayerIsDead)
 	gameData.weapons.firing [0].nStart = 
@@ -233,8 +233,6 @@ if (wsP->xMslFireTime != gameData.missiles.xNextFireTime) {
 	wsP->xMslFireTime = gameData.missiles.xNextFireTime;
 	bUpdate = 1;
 	}
-if (bUpdate)
-	MultiSendWeaponStates ();	
 UpdateFiringSounds ();
 }
 

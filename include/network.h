@@ -50,7 +50,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PID_PLAYERSINFO					45 // 0x2D here's my name & personal data
 #define PID_REQUEST						46 // 0x2E may i join, plz send sync
 #define PID_SYNC							47 // 0x2F master says: enter mine now!
-#define PID_PDATA							48 // 0x30
+#define PID_PLAYER_DATA							48 // 0x30
 #define PID_ADDPLAYER					49
 
 #define PID_DUMP							51 // 0x33 you can't join this game
@@ -64,7 +64,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PID_PING_RETURN					59
 #define PID_GAME_UPDATE					60 // inform about new player/team change
 #define PID_ENDLEVEL_SHORT				61
-#define PID_NAKED_PDATA					62
+#define PID_MINE_DATA					62
 #define PID_GAME_PLAYERS				63
 #define PID_NAMES_RETURN				64 // 0x40
 
@@ -94,14 +94,14 @@ extern int32_t nNetworkGameType;
 extern int32_t nNetworkGameSubType;
 #endif
 
-typedef struct tSequencePacket {
+typedef struct tPlayerSyncData {
 	uint8_t           nType;
 	int32_t           nSecurity;
 	uint16_t				nObjFramesToSkip;
 	uint8_t           pad1;
 	tNetPlayerInfo		player;
 	uint8_t           pad2 [3];
-} __pack__ tSequencePacket;
+} __pack__ tPlayerSyncData;
 
 
 
@@ -538,7 +538,7 @@ class CEndLevelInfo {
 #define NETGAME_INFO_SIZE       int32_t (netGameInfo.Size ())
 #define ALLNETPLAYERSINFO_SIZE  int32_t (netPlayers [0].Size ())
 #define LITE_INFO_SIZE          sizeof (tNetGameInfoLite)
-#define SEQUENCE_PACKET_SIZE    sizeof (tSequencePacket)
+#define SEQUENCE_PACKET_SIZE    sizeof (tPlayerSyncData)
 #define FRAME_INFO_SIZE         sizeof (tFrameInfoLong)
 #define IPX_SHORT_INFO_SIZE     sizeof (tFrameInfoShort)
 #define ENTROPY_INFO_SIZE       sizeof (tExtraGameInfo)
@@ -548,8 +548,8 @@ class CEndLevelInfo {
 int32_t  NetworkSendRequest (void);
 int32_t  NetworkChooseConnect (void);
 int32_t  NetworkSendGameListRequest (int32_t bAutoLaunch = 0);
-void NetworkAddPlayer (tSequencePacket *p);
-void NetworkSendGameInfo (tSequencePacket *their);
+void NetworkAddPlayer (tPlayerSyncData *p);
+void NetworkSendGameInfo (tPlayerSyncData *their);
 void ClipRank (char *rank);
 void NetworkCheckForOldVersion (uint8_t nPlayer);
 void NetworkInit (void);
@@ -561,7 +561,7 @@ void RestartNetSearching (CMenu& menu);
 void DeleteTimedOutNetGames (void);
 void InitMonsterballSettings (tMonsterballInfo *monsterballP);
 void InitEntropySettings (int32_t i);
-void NetworkSendExtraGameInfo (tSequencePacket *their);
+void NetworkSendExtraGameInfo (tPlayerSyncData *their);
 void NetworkSendXMLGameInfo (void);
 void NetworkResetSyncStates (void);
 void NetworkResetObjSync (int16_t nObject);

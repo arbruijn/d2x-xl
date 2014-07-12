@@ -538,6 +538,7 @@ void CScoreTable::Display (void)
 	int32_t	key;
 	int32_t	bRedraw = 0;
 	uint32_t	tIdleTimeout = SDL_GetTicks () +  + MAX_VIEW_TIME;
+	uint32_t tRenderTimeout = SDL_GetTicks () + 40;
 
 m_bNetwork = IsNetworkGame != 0;
 m_nPrevSecsLeft = -1;
@@ -565,7 +566,11 @@ m.AddGauge ("", "", -1, 1000); //dummy for NetworkEndLevelPoll2()
 CTimeout toRender (33);
 
 for (;;) {
-	if (toRender.Expired () && (!bRedraw || (ogl.m_states.nDrawBuffer == GL_BACK))) {
+	uint32_t t = SDL_GetTicks ();
+	if (tRenderTimeout > t)
+		G3_SLEEP (tRenderTimeout - t);
+	tRenderTimeout = SDL_GetTicks () + 40;
+	if ((!bRedraw || (ogl.m_states.nDrawBuffer == GL_BACK))) {
 		Render ();
 		bRedraw = 1;
 		}

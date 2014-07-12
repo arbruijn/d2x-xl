@@ -186,10 +186,10 @@ class CObject;
 
 class CSide {
 	public:
-		int8_t   			m_nType;       // replaces num_faces and tri_edge, 1 = quad, 2 = 0:2 triangulation, 3 = 1:3 triangulation
-		int8_t   			m_nFrame;      //keep us longword aligned
-		uint16_t  			m_nWall;
-		int16_t   			m_nBaseTex;
+		int8_t   		m_nType;       // replaces num_faces and tri_edge, 1 = quad, 2 = 0:2 triangulation, 3 = 1:3 triangulation
+		int8_t   		m_nFrame;      //keep us longword aligned
+		uint16_t  		m_nWall;
+		int16_t   		m_nBaseTex;
 #ifdef WORDS_BIGENDIAN
 		uint16_t			m_nOvlOrient : 2;
 		uint16_t			m_nOvlTex : 14;
@@ -207,11 +207,11 @@ class CSide {
 		uint16_t			m_faceVerts [6]; // vertex indices of the side's two triangles
 		uint16_t			m_nMinVertex [2];
 		uint16_t			m_corners [4];
-		uint8_t				m_nFaces;
-		uint8_t				m_nShape;
-		uint8_t				m_nCorners;
-		uint8_t				m_bIsQuad;
-		int16_t				m_nSegment;
+		uint8_t			m_nFaces;
+		uint8_t			m_nShape;
+		uint8_t			m_nCorners;
+		uint8_t			m_bIsQuad;
+		int16_t			m_nSegment;
 
 	public:
 		inline void Init (void) { memset (this, 0, sizeof (*this)); }
@@ -234,11 +234,16 @@ class CSide {
 		void CheckSum (uint32_t& sum1, uint32_t& sum2);
 
 		int32_t CheckTransparency (void);
-		int32_t CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int16_t iFace, CFixVector vNormal);
-		int32_t CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int16_t iFace, CFixVector vNormal);
-		int32_t SphereToFaceRelation (CFixVector& intersection, fix rad, int16_t iFace, CFixVector vNormal);
-		uint32_t PointToFaceRelation (CFixVector& intersection, int16_t iFace, CFixVector vNormal);
+		int32_t CheckLineToFaceSpecial (CFixVector& vIntersection, CFixVector *p0, CFixVector *p1, fix rad, int16_t iFace, CFixVector vNormal);
+		int32_t CheckLineToFaceRegular (CFixVector& vIntersection, CFixVector *p0, CFixVector *p1, fix rad, int16_t iFace, CFixVector vNormal);
+		int32_t SphereToFaceRelation (CFixVector& vIntersection, fix rad, int16_t iFace, CFixVector vNormal);
+		uint32_t PointToFaceRelation (CFixVector& vIntersection, int16_t iFace, CFixVector vNormal);
 		int32_t SeesPoint (CFixVector& vPoint, int16_t nDestSeg, int32_t nLevel = 0, int32_t nThread = 0);
+
+		int32_t CheckLineToFaceSpecialf (CFloatVector& vIntersection, CFloatVector& p0, CFloatVector& p1, float rad, int16_t iFace, CFloatVector& vNormal);
+		int32_t CheckLineToFaceRegularf (CFloatVector& vIntersection, CFloatVector* p0, CFloatVector* p1, float rad, int16_t iFace, CFloatVector& vNormal);
+		int32_t SphereToFaceRelationf (CFloatVector& vIntersection, float rad, int16_t iFace, CFloatVector& vNormal);
+		uint32_t PointToFaceRelationf (CFloatVector& vIntersection, int16_t iFace, CFloatVector& vNormal);
 
 		void GetNormals (CFixVector& n1, CFixVector& n2);
 

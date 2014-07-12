@@ -455,7 +455,7 @@ memcpy (Item (j).m_text, h, MENU_MAX_TEXTLEN + 1);
 
 void RenderMenuGameFrame (void)
 {
-if (automap.Display ()) {
+if (automap.Active ()) {
 	automap.DoFrame (0, 0);
 	CalcFrameTime ();
 	}
@@ -784,7 +784,6 @@ while (!m_bDone) {
 	bWheelDown = MouseButtonState (4);
 	//see if redbook song needs to be restarted
 	redbook.CheckRepeat ();
-	//NetworkListen ();
 	if (bWheelUp)
 		m_nKey = KEY_UP;
 	else if (bWheelDown)

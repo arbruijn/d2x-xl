@@ -21,51 +21,59 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //	-----------------------------------------------------------------------------
 
 //return values for FindHitpoint() - what did we hit?
-#define HIT_NONE		0		//we hit nothing
-#define HIT_WALL		1		//we hit - guess - a CWall
-#define HIT_OBJECT	2		//we hit an CObject - which one?  no way to tell...
-#define HIT_BAD_P0	3		//start point is not in specified CSegment
+#define HIT_NONE					0		//we hit nothing
+#define HIT_WALL					1		//we hit - guess - a CWall
+#define HIT_OBJECT				2		//we hit an CObject - which one?  no way to tell...
+#define HIT_BAD_P0				3		//start point is not in specified CSegment
 
 //flags for fvi query
-#define FQ_CHECK_OBJS		1		//check against objects?
-#define FQ_TRANSWALL			2		//go through transparent walls
-#define FQ_TRANSPOINT		4		//go through trans CWall if hit point is transparent
-#define FQ_GET_SEGLIST		8		//build a list of segments
-#define FQ_IGNORE_POWERUPS	16		//ignore powerups
-#define FQ_VISIBLE_OBJS		32
-#define FQ_ANY_OBJECT		64
-#define FQ_CHECK_PLAYER		128
-#define FQ_VISIBILITY		256
+#define FQ_CHECK_OBJS			1		//check against objects?
+#define FQ_TRANSWALL				2		//go through transparent walls
+#define FQ_TRANSPOINT			4		//go through trans CWall if hit point is transparent
+#define FQ_GET_SEGLIST			8		//build a list of segments
+#define FQ_IGNORE_POWERUPS		16		//ignore powerups
+#define FQ_VISIBLE_OBJS			32
+#define FQ_ANY_OBJECT			64
+#define FQ_CHECK_PLAYER			128
+#define FQ_VISIBILITY			256
 
 //intersection types
-#define IT_ERROR	-1
-#define IT_NONE	0       //doesn't touch face at all
-#define IT_FACE	1       //touches face
-#define IT_EDGE	2       //touches edge of face
-#define IT_POINT  3       //touches vertex
+#define IT_ERROR					-1
+#define IT_NONE					0      //doesn't touch face at all
+#define IT_FACE					1      //touches face
+#define IT_EDGE					2      //touches edge of face
+#define IT_POINT					3      //touches vertex
 
 #define MAX_FVI_SEGS 200
+
+#define FLOAT_COLLISION_MATH	1
+#define FLOAT_DIST_TOLERANCE	1e-6f
+
 
 //	-----------------------------------------------------------------------------
 
 class CFixVector2 {
 	public:
-		fix x, y;
+		fix m_x, m_y;
 
-	inline fix Cross (CFixVector2& other) { return fix (double (x) / 65536.0 * double (other.y) - double (y) / 65536.0 * double (other.x)); }
+	CFixVector2 () : m_x (0), m_y (0) {}
+	CFixVector2 (fix x, fix y) : m_x (x), m_y (y) {}
+	inline fix Cross (CFixVector2& other) { return fix (double (m_x) / 65536.0 * double (other.m_y) - double (m_y) / 65536.0 * double (other.m_x)); }
 	};
 
 //	-----------------------------------------------------------------------------
 
 class CFloatVector2 {
 	public:
-		float x, y;
+		float m_x, m_y;
 
-	CFloatVector2 (fix x = 0, fix y = 0) : x (X2F (x)), y (X2F (y)) {}
-	inline float Cross (CFloatVector2& other) { return x * other.y - y * other.x; }
+	CFloatVector2 () : m_x (0), m_y (0) {}
+	CFloatVector2 (fix x, fix y) : m_x (X2F (x)), m_y (X2F (y)) {}
+	CFloatVector2 (float x, float y) : m_x (x), m_y (y) {}
+	inline float Cross (CFloatVector2& other) { return m_x * other.m_y - m_y * other.m_x; }
 	inline CFloatVector2& operator-= (CFloatVector2& other) { 
-		x -= other.x;
-		y -= other.y;
+		m_x -= other.m_x;
+		m_y -= other.m_y;
 		return *this;
 		}
 	};
@@ -74,9 +82,9 @@ class CFloatVector2 {
 
 class CHitData {
 	public:
-		int32_t 			nType;						//what sort of intersection
-		int16_t			nSegment;
-		int16_t			nObject;
+		int32_t 		nType;						//what sort of intersection
+		int16_t		nSegment;
+		int16_t		nObject;
 		CFixVector	vPoint;
 		CFixVector	vNormal;
 
@@ -97,12 +105,12 @@ class CHitData {
 
 class CHitInfo : public CHitData {
 	public:
-		int16_t			nAltSegment;
+		int16_t		nAltSegment;
 		int16_t 		nSide;						//if hit wall, which side
-		int16_t			nFace;
+		int16_t		nFace;
 		int16_t 		nSideSegment;				//what segment the hit side is in
-		int32_t			nNormals;
-		int32_t			nNestCount;
+		int32_t		nNormals;
+		int32_t		nNestCount;
 
 	public:
 		CHitInfo () : nAltSegment (-1), nSide (0), nFace (0), nSideSegment (-1), nNormals (0), nNestCount (0) {}
@@ -125,12 +133,12 @@ class CHitResult : public CHitInfo {
 //this data contains the parms to fvi()
 class CHitQuery {
 	public:
-		int32_t			flags;
-		CFixVector* p0, * p1;
-		int16_t			nSegment;
-		int16_t			nObject;
+		int32_t		flags;
+		CFixVector*	p0, * p1;
+		int16_t		nSegment;
+		int16_t		nObject;
 		fix			radP0, radP1;
-		int32_t			bIgnoreObjFlag;
+		int32_t		bIgnoreObjFlag;
 
 	public:
 		CHitQuery () 
@@ -144,23 +152,23 @@ class CHitQuery {
 //------------------------------------------------------------------------------
 
 typedef struct tSpeedBoostData {
-	int32_t						bBoosted;
-	CFixVector				vVel;
-	CFixVector				vMinVel;
-	CFixVector				vMaxVel;
-	CFixVector				vSrc;
-	CFixVector				vDest;
+	int32_t			bBoosted;
+	CFixVector		vVel;
+	CFixVector		vMinVel;
+	CFixVector		vMaxVel;
+	CFixVector		vSrc;
+	CFixVector		vDest;
 } tSpeedBoostData;
 
 //	-----------------------------------------------------------------------------
 
 class CPhysSimData {
 	public:
-		int16_t					nObject;
+		int16_t				nObject;
 		CObject*				objP;
-		int16_t					nStartSeg;
+		int16_t				nStartSeg;
 		CFixVector			vStartPos;
-		int16_t					nOldSeg;
+		int16_t				nOldSeg;
 		CFixVector			velocity;
 		CFixVector			vOldPos;
 		CFixVector			vNewPos;
@@ -176,16 +184,16 @@ class CPhysSimData {
 		tSpeedBoostData	speedBoost;
 		CHitResult			hitResult;
 		CHitQuery			hitQuery;
-		int32_t					bInitialize;
-		int32_t					bUpdateOffset;
-		int32_t					bUseHitbox;
-		int32_t					bGetPhysSegs;
-		int32_t					bSpeedBoost;
-		int32_t					bScaleSpeed;
-		int32_t					bStopped;
-		int32_t					bBounced;
-		int32_t					bIgnoreObjFlag;
-		int32_t					nTries;
+		int32_t				bInitialize;
+		int32_t				bUpdateOffset;
+		int32_t				bUseHitbox;
+		int32_t				bGetPhysSegs;
+		int32_t				bSpeedBoost;
+		int32_t				bScaleSpeed;
+		int32_t				bStopped;
+		int32_t				bBounced;
+		int32_t				bIgnoreObjFlag;
+		int32_t				nTries;
 
 		explicit CPhysSimData (int16_t nObject = -1) : nObject (nObject), bUpdateOffset (1), bStopped (0), bBounced (0), bIgnoreObjFlag (0), nTries (0) { Setup (); }
 		void Setup (void);
@@ -213,13 +221,15 @@ void FindHitPointUV (fix *u,fix *v,fix *l, CFixVector *pnt,CSegment *seg,int32_t
 //Returns true if the CObject is through any walls
 int32_t ObjectIntersectsWall (CObject *objP);
 
-int32_t CheckLineToSegFace (CFixVector *newP, CFixVector *p0, CFixVector *p1, 
-								int16_t nSegment, int16_t nSide, int16_t iFace, int32_t nv, fix rad);
+int32_t CheckLineToSegFace (CFixVector *newP, CFixVector *p0, CFixVector *p1, int16_t nSegment, int16_t nSide, int16_t iFace, int32_t nv, fix rad);
 
-int32_t FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm,
-										 CFixVector *p0, CFixVector *p1, fix rad, bool bCheckOverflow = true);
+int32_t FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlanePoint, CFixVector *vPlaneNorm, CFixVector *p0, CFixVector *p1, fix rad, bool bCheckOverflow = true);
+
+int32_t FindPlaneLineIntersectionf (CFloatVector& intersection, CFloatVector& vPlanePoint, CFloatVector& vPlaneNorm, CFloatVector& p0, CFloatVector& p1, float rad);
 
 int32_t CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVector *p2, CFixVector *v2);
+
+int32_t CheckLineToLinef (float& t1, float& t2, CFloatVector& p1, CFloatVector& v1, CFloatVector& p2, CFloatVector& v2);
 
 float DistToFace (CFloatVector3 vRef, int16_t nSegment, uint8_t nSide, CFloatVector3* vHit = NULL);
 

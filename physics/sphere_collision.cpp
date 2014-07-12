@@ -52,6 +52,7 @@ int32_t ijTable [3][2] = {
 uint8_t PointIsOutsideFace (CFixVector* vRef, CFixVector* vertices, int16_t nVerts)
 {
 #if 1
+
 CFixVector n1 = CFixVector::Normal (vertices [0], vertices [1], *vRef);
 CFixVector n2 = CFixVector::Normal (vertices [1], vertices [2], *vRef);
 if (CFixVector::Dot (n1, n2) < PLANE_DIST_TOLERANCE)
@@ -60,7 +61,9 @@ CFixVector n3 = CFixVector::Normal (vertices [2], vertices [0], *vRef);
 if (CFixVector::Dot (n2, n3) < PLANE_DIST_TOLERANCE)
 	return true;
 return false;
+
 #else
+
 CFixVector v0 = vertices [2] - vertices [0];
 CFixVector v1 = vertices [1] - vertices [0];
 CFixVector v2 = *vRef - vertices [0];
@@ -72,6 +75,7 @@ fix u = FixMul (dot02 - FixMul (dot01, dot12), invDenom);
 fix v = FixMul (dot12 - FixMul (dot01, dot02), invDenom);
 // Check if point is in triangle
 return int32_t (u < 0) + (int32_t (v < 0) << 1) + (int32_t (u + v > I2X (1)) << 2);
+
 #endif
 }
 
@@ -81,6 +85,7 @@ return int32_t (u < 0) + (int32_t (v < 0) << 1) + (int32_t (u + v > I2X (1)) << 
 uint8_t PointIsOutsideFace (CFixVector* vRef, uint16_t* nVertIndex, int16_t nVerts)
 {
 #if 1
+
 CFixVector n1 = CFixVector::Normal (VERTICES [nVertIndex [0]], VERTICES [nVertIndex [1]], *vRef);
 CFixVector n2 = CFixVector::Normal (VERTICES [nVertIndex [1]], VERTICES [nVertIndex [2]], *vRef);
 if (CFixVector::Dot (n1, n2) < PLANE_DIST_TOLERANCE)
@@ -89,7 +94,9 @@ CFixVector n3 = CFixVector::Normal (VERTICES [nVertIndex [2]], VERTICES [nVertIn
 if (CFixVector::Dot (n2, n3) < PLANE_DIST_TOLERANCE)
 	return true;
 return false;
+
 #else
+
 CFixVector v0 = VERTICES [nVertIndex [2]] - VERTICES [nVertIndex [0]];
 CFixVector v1 = VERTICES [nVertIndex [1]] - VERTICES [nVertIndex [0]];
 CFixVector v2 = *vRef - FVERTICES [nVertIndex [0]];
@@ -103,6 +110,7 @@ fix u = FixMul (FixMul (dot11, dot02) - FixMul (dot01, dot12), invDenom);
 fix v = FixMul (FixMul (dot00, dot12) - FixMul (dot01, dot02), invDenom);
 // Check if point is in triangle
 return int32_t (u < -PLANE_DIST_TOLERANCE) + (int32_t (v < -PLANE_DIST_TOLERANCE) << 1) + (int32_t (u + v > I2X (1) + PLANE_DIST_TOLERANCE) << 2); // compensate for numerical errors
+
 #endif
 }
 
@@ -113,6 +121,7 @@ uint8_t PointIsOutsideFace (CFloatVector* vRef, uint16_t* nVertIndex, int16_t nV
 {
 #if 1
 #	if 1
+
 CFloatVector n1 = CFloatVector::Normal (FVERTICES [nVertIndex [0]], FVERTICES [nVertIndex [1]], *vRef);
 CFloatVector n2 = CFloatVector::Normal (FVERTICES [nVertIndex [1]], FVERTICES [nVertIndex [2]], *vRef);
 if (CFloatVector::Dot (n1, n2) < 0.999999)
@@ -121,7 +130,9 @@ CFloatVector n3 = CFloatVector::Normal (FVERTICES [nVertIndex [2]], FVERTICES [n
 if (CFloatVector::Dot (n2, n3) < 0.999999)
 	return true;
 return false;
+
 #	else
+
 CFloatVector v0 = FVERTICES [nVertIndex [2]] - FVERTICES [nVertIndex [0]];
 CFloatVector v1 = FVERTICES [nVertIndex [1]] - FVERTICES [nVertIndex [0]];
 CFloatVector v2 = *vRef - FVERTICES [nVertIndex [0]];
@@ -142,10 +153,13 @@ p -= *vRef;
 float l = p.Mag ();
 #endif
 return (int32_t (u < -0.001f)) + ((int32_t (v < -0.001f)) << 1) + ((int32_t (u + v > 1.001f)) << 2); // compensate for numerical errors
+
 #	endif
+
 #else
+
 	CFloatVector	t, *v0, *v1;
-	int32_t 				i, j, nEdge, biggest;
+	int32_t 			i, j, nEdge, biggest;
 	float				check_i, check_j;
 	CFloatVector2	vEdge, vCheck;
 
@@ -189,6 +203,7 @@ for (nEdge = 1; nEdge <= nVerts; nEdge++) {
 		return false;
 	}
 return true;
+
 #endif
 }
 
@@ -198,13 +213,13 @@ float DistToFace (CFloatVector3 vRef, int16_t nSegment, uint8_t nSide, CFloatVec
 {
 	CSide*			sideP = SEGMENTS [nSegment].Side (nSide);
 	CFloatVector	h, r;
-	uint16_t*			vertices = sideP->m_vertices;
-	int32_t				i, j;
+	uint16_t*		vertices = sideP->m_vertices;
+	int32_t			i, j;
 	float				d = 0.0f;
 
 r.Assign (vRef);
 
-// compute intersection of vector perpendicular to the plane through vRef with the face's plane(s)
+// compute vIntersection of vector perpendicular to the plane through vRef with the face's plane(s)
 for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 	if (!(i && sideP->IsQuad ())) {
 		CFloatVector& n = sideP->m_fNormals [i];
@@ -230,7 +245,7 @@ vertices = sideP->m_corners;
 
 	CFloatVector	* v0, * v1 = &FVERTICES [vertices [0]];
 	float				minDist = 1e10f;
-	int32_t				nVertices = sideP->m_nCorners;
+	int32_t			nVertices = sideP->m_nCorners;
 
 for (i = 1; i <= nVertices; i++) {
 	v0 = v1;
@@ -247,41 +262,76 @@ return minDist;
 }
 
 //	-----------------------------------------------------------------------------
-//find the intersection on the specified plane where the line intersects
-//returns true if intersection found, false if line parallel to plane
-//intersection is the found intersection on the plane
-//vPlanePoint & vPlaneNorm describe the plane
-//p0 & p1 are the ends of the line
 
-int32_t FindPlaneLineIntersection (CFixVector& intersection, CFixVector *vPlane, CFixVector *vNormal,
-										 CFixVector *p0, CFixVector *p1, fix rad, bool bCheckOverflow)
+int32_t FindPlaneLineIntersectionf (CFloatVector& vIntersection, CFloatVector& vPlane, CFloatVector& vNormal, CFloatVector& p0, CFloatVector& p1, float rad)
 {
-#if 0
-	CFloatVector n, u, w;
+	CFloatVector vn, vu, vw;
 
-u.Assign (*p1 - *p0);
-n.Assign (*vNormal);
-float den = -CFloatVector::Dot (n, u);
-if ((den > -1e-6f) && (den < 1e-6f)) {// ~ parallel
+vu = p1 - p0;
+vn = vNormal;
+float d = -CFloatVector::Dot (vn, vu);
+if (fabs (d) < FLOAT_DIST_TOLERANCE) // ~ parallel
 	return 0;
-	}
-w.Assign (*p0 - *vPlane);
-float num = CFloatVector::Dot (n, w) - X2F (rad);
-float s = num / den;
+vw = p0 - vPlane;
+float n = CFloatVector::Dot (vn, vw) - X2F (rad);
+float s = n / d;
 if (s < 0.0f) {
-	if (s < -0.000001f) // compensate small numerical errors
+	if (s < -FLOAT_DIST_TOLERANCE) // compensate small numerical errors
 		return 0;
 	s = 0.0f;
 	}
 else if (s > 1.0f) {
-	if (s > 1.000001f) // compensate small numerical errors
+	if (s > 1.0f + FLOAT_DIST_TOLERANCE) // compensate small numerical errors
 		return 0;
 	s = 1.0f;
 	}
-u *= s;
-intersection.Assign (u);
-intersection += *p0;
+vu *= s;
+vIntersection = vu;
+vIntersection += p0;
+return 1;
+}
+
+//	-----------------------------------------------------------------------------
+//find the vIntersection on the specified plane where the line intersects
+//returns true if vIntersection found, false if line parallel to plane
+//vIntersection is the found vIntersection on the plane
+//vPlanePoint & vPlaneNorm describe the plane
+//p0 & p1 are the ends of the line
+
+int32_t FindPlaneLineIntersection (CFixVector& vIntersection, CFixVector *vPlane, CFixVector *vNormal, CFixVector *p0, CFixVector *p1, fix rad, bool bCheckOverflow)
+{
+#if 0 // FLOAT_COLLISION_MATH
+// for some reason I haven't been able to figure, the following code is not equivalent to the fix point arithmetic code below it
+	CFloatVector vn, vu, vw;
+
+vu.Assign (*p1 - *p0);
+vn.Assign (*vNormal);
+float d = -CFloatVector::Dot (vn, vu);
+if (fabs (d) < FLOAT_DIST_TOLERANCE) // ~ parallel
+	return 0;
+vw.Assign (*p0 - *vPlane);
+float n = CFloatVector::Dot (vn, vw) - X2F (rad);
+float s = n / d;
+if (s < 0.0f) {
+	if (s < -1.0f - FLOAT_DIST_TOLERANCE) // compensate small numerical errors
+		return 0;
+	s = 0.0f;
+	}
+else if (s > 1.0f) {
+	if (s > 1.0f + FLOAT_DIST_TOLERANCE) // compensate small numerical errors
+		return 0;
+	s = 1.0f;
+	}
+vu *= s;
+CFixVector vi;
+vi.Assign (vu);
+vi += *p0;
+vIntersection.Assign (vu);
+vIntersection += *p0;
+return 1;
+
 #else
+
 CFixVector u = *p1 - *p0;
 fix den = -CFixVector::Dot (*vNormal, u);
 if (!den)
@@ -291,38 +341,42 @@ fix num = CFixVector::Dot (*vNormal, w) - rad;
 //do check for potential overflow
 if (bCheckOverflow) {
 	if (den > 0) {
-		if ((num > den) || ((-num >> 15) >= den)) //frac greater than one
+		if ((num > den) || ((-num >> 15) >= den)) {//frac greater than one
 			return 0;
+			}
 		}
 	else {
-		if (num < den)
+		if (num < den) {
 			return 0;
+			}
 		}
-	if (labs (num) / (I2X (1) / 2) >= labs (den))
+	if (labs (num) / (I2X (1) / 2) >= labs (den)) {
 		return 0;
+		}
 	u *= FixDiv (num, den);
 	}
 else {
 	double scale = double (num) / double (den);
-	if ((scale < -0.000001f) || (scale > 1.000001f))
+	if ((scale < -FLOAT_DIST_TOLERANCE) || (scale > 1.0f + FLOAT_DIST_TOLERANCE))
 		return 0;
 	u.v.coord.x = fix (DRound (double (u.v.coord.x) * scale));
 	u.v.coord.y = fix (DRound (double (u.v.coord.y) * scale));
 	u.v.coord.z = fix (DRound (double (u.v.coord.z) * scale));
 	}
-intersection = *p0 + u;
-#endif
+vIntersection = *p0 + u;
 return 1;
+
+#endif
 }
 
 //	-----------------------------------------------------------------------------
 
-int32_t FindPlaneLineIntersection (CFloatVector& intersection, CFloatVector* vPlane, CFloatVector* vNormal, CFloatVector* p0, CFloatVector* p1)
+int32_t FindPlaneLineIntersection (CFloatVector& vIntersection, CFloatVector* vPlane, CFloatVector* vNormal, CFloatVector* p0, CFloatVector* p1)
 {
 CFloatVector u = *p1;
 u -= *p0;
 float d = -CFloatVector::Dot (*vNormal, u);
-if ((d > -1e-10f) && (d < 1e-10f)) {// ~ parallel
+if (fabs (d) < FLOAT_DIST_TOLERANCE) {// ~ parallel
 	return 0;
 	}
 CFloatVector w = *p0;
@@ -330,134 +384,236 @@ w -= *vPlane;
 float n = CFloatVector::Dot (*vNormal, w);
 float s = n / d;
 if (s < 0.0f) {
-	if (s < -0.000001f) // compensate small numerical errors
+	if (s < -FLOAT_DIST_TOLERANCE) // compensate small numerical errors
 		return 0;
 	s = 0.0f;
 	}
 else if (s > 1.0f) {
-	if (s > 1.000001f) // compensate small numerical errors
+	if (s > 1.0f + FLOAT_DIST_TOLERANCE) // compensate small numerical errors
 		return 0;
 	s = 1.0f;
 	}
 u *= s;
-intersection = *p0;
-intersection += u;
+vIntersection = *p0;
+vIntersection += u;
 return 1;
 }
 
 //	-----------------------------------------------------------------------------
-//see if a point is inside a face by projecting into 2d
-uint32_t PointToFaceRelation (CFixVector* refP, CFixVector *vertList, int32_t nVerts, CFixVector* vNormal)
+
+uint32_t PointToFaceRelationf (CFloatVector& vr, CFloatVector* vl, int32_t nVerts, CFloatVector& vn)
 {
-#if 0
-if (nVerts == 3)
-	return uint32_t (PointIsOutsideFace (refP, vNormal, vertList));
-#endif
-
-//	CFixVector	vNormal;
-	CFixVector	t;
-	int32_t			biggest;
-	int32_t 			i, j, nEdge;
-	uint32_t 			nEdgeMask;
-	fix 			check_i, check_j;
-	CFixVector	*v0, *v1;
-	CFixVector2	vEdge, vCheck;
-	fix 			d;
-
 //now do 2d check to see if refP is in side
 //project polygon onto plane by finding largest component of Normal
-t.v.coord.x = labs (vNormal->v.coord.z);
-t.v.coord.y = labs (vNormal->v.coord.z);
-t.v.coord.z = labs (vNormal->v.coord.z);
-if (t.v.coord.x > t.v.coord.y)
-	if (t.v.coord.x > t.v.coord.z)
-		biggest = 0;
-	else
-		biggest = 2;
-else if (t.v.coord.y > t.v.coord.z)
-	biggest = 1;
-else
-	biggest = 2;
-if (vNormal->v.vec [biggest] > 0) {
-	i = ijTable [biggest][0];
-	j = ijTable [biggest][1];
+CFloatVector vt;
+vt.v.coord.x = fabs (vn.v.coord.x);
+vt.v.coord.y = fabs (vn.v.coord.y);
+vt.v.coord.z = fabs (vn.v.coord.z);
+
+int32_t nBiggest = (vt.v.coord.x > vt.v.coord.y) ? (vt.v.coord.x > vt.v.coord.z) ? 0 : 2 : (vt.v.coord.y > vt.v.coord.z) ? 1 : 2;
+
+int32_t i, j;
+if (vn.v.vec [nBiggest] > 0) {
+	i = ijTable [nBiggest][0];
+	j = ijTable [nBiggest][1];
 	}
 else {
-	i = ijTable [biggest][1];
-	j = ijTable [biggest][0];
+	i = ijTable [nBiggest][1];
+	j = ijTable [nBiggest][0];
 	}
+
 //now do the 2d problem in the i, j plane
-check_i = refP->v.vec [i];
-check_j = refP->v.vec [j];
-for (nEdge = nEdgeMask = 0; nEdge < nVerts; nEdge++) {
-	v0 = vertList + nEdge;
-	v1 = vertList + ((nEdge + 1) % nVerts);
-	vEdge.x = v1->v.vec [i] - v0->v.vec [i];
-	vEdge.y = v1->v.vec [j] - v0->v.vec [j];
-	vCheck.x = check_i - v0->v.vec [i];
-	vCheck.y = check_j - v0->v.vec [j];
-	d = FixMul (vCheck.x, vEdge.y) - FixMul (vCheck.y, vEdge.x);
-	if (d < 0)              		//we are outside of triangle
+float check_i = vr.v.vec [i];
+float check_j = vr.v.vec [j];
+
+uint32_t nEdgeMask = 0;
+for (int32_t nEdge = 0; nEdge < nVerts; nEdge++) {
+	CFloatVector& v0 = vl [nEdge];
+	CFloatVector& v1 = vl [(nEdge + 1) % nVerts];
+	CFloatVector2 vEdge (v1.v.vec [i] - v0.v.vec [i], v1.v.vec [j] - v0.v.vec [j]);
+	CFloatVector2 vCheck (check_i - v0.v.vec [i], check_j - v0.v.vec [j]);
+	float d = vCheck.Cross (vEdge);
+	if (d < 0.0f)  //we are outside of triangle
 		nEdgeMask |= (1 << nEdge);
 	}
 return nEdgeMask;
 }
 
 //	-----------------------------------------------------------------------------
-//check if a sphere intersects a face
-int32_t SphereToFaceRelation (CFixVector* refP, fix rad, CFixVector *vertList, int32_t nVerts, CFixVector* vNormal)
+//see if a point is inside a face by projecting into 2d
+uint32_t PointToFaceRelation (CFixVector* vRef, CFixVector *vertList, int32_t nVerts, CFixVector* vNormal)
 {
-	CFixVector	vEdge, vCheck;            //this time, real 3d vectors
-	CFixVector	vClosestPoint;
-	fix			xEdgeLen, d, dist;
-	CFixVector	*v0, *v1;
-	int32_t			iType;
-	int32_t			nEdge;
-	uint32_t			nEdgeMask;
+#if FLOAT_COLLISION_MATH
 
-//now do 2d check to see if refP is inside
-if (!(nEdgeMask = PointToFaceRelation (refP, vertList, nVerts, vNormal)))
+	CFloatVector	vr, vn, vl [4];
+
+vr.Assign (*vRef);
+vn.Assign (*vNormal);
+for (int32_t i = 0; i < nVerts; i++)
+	vl [i].Assign (vertList [i]);
+return PointToFaceRelationf (vr, vl, nVerts, vn);
+
+#else
+
+//now do 2d check to see if vRef is in side
+//project polygon onto plane by finding largest component of Normal
+CFixVector	t;
+t.v.coord.x = labs (vNormal->v.coord.x);
+t.v.coord.y = labs (vNormal->v.coord.y);
+t.v.coord.z = labs (vNormal->v.coord.z);
+
+int32_t nBiggest;
+if (t.v.coord.x > t.v.coord.y)
+	if (t.v.coord.x > t.v.coord.z)
+		nBiggest = 0;
+	else
+		nBiggest = 2;
+else 
+	if (t.v.coord.y > t.v.coord.z)
+		nBiggest = 1;
+	else
+		nBiggest = 2;
+
+int32_t i, j;
+if (vNormal->v.vec [nBiggest] > 0) {
+	i = ijTable [nBiggest][0];
+	j = ijTable [nBiggest][1];
+	}
+else {
+	i = ijTable [nBiggest][1];
+	j = ijTable [nBiggest][0];
+	}
+//now do the 2d problem in the i, j plane
+fix check_i = vRef->v.vec [i];
+fix check_j = vRef->v.vec [j];
+
+uint32_t nEdgeMask = 0;
+for (int32_t nEdge = 0; nEdge < nVerts; nEdge++) {
+	CFixVector* v0 = vertList + nEdge;
+	CFixVector* v1 = vertList + ((nEdge + 1) % nVerts);
+	CFixVector2	vEdge (v1->v.vec [i] - v0->v.vec [i], v1->v.vec [j] - v0->v.vec [j]);
+	CFixVector2 vCheck (check_i - v0->v.vec [i], check_j - v0->v.vec [j]);
+	fix d = FixMul (vCheck.m_x, vEdge.m_y) - FixMul (vCheck.m_y, vEdge.m_x);
+	if (d < 0)              		//we are outside of triangle
+		nEdgeMask |= (1 << nEdge);
+	}
+return nEdgeMask;
+
+#endif
+}
+
+//	-----------------------------------------------------------------------------
+//check if a sphere intersects a face
+int32_t SphereToFaceRelationf (CFloatVector& vr, float r, CFloatVector *vl, int32_t nVerts, CFloatVector& vn)
+{
+
+//now do 2d check to see if vRef is inside
+uint32_t nEdgeMask = PointToFaceRelationf (vr, vl, nVerts, vn);
+if (!nEdgeMask)
+	return IT_FACE;	//we've gone through all the sides, and are inside
+
+//get verts for edge we're behind
+int32_t nEdge;
+for (nEdge = 0; !(nEdgeMask & 1); (nEdgeMask >>= 1), nEdge++)
+	;
+
+CFloatVector* v0 = vl + nEdge;
+CFloatVector* v1 = vl + ((nEdge + 1) % nVerts);
+//check if we are touching an edge or vRef
+CFloatVector vCheck = vr - *v0;
+CFloatVector vEdge = *v1 - *v0;
+float nEdgeLen = CFloatVector::Normalize (vEdge);
+//find vRef dist from planes of ends of edge
+float d = CFloatVector::Dot (vEdge, vCheck);
+if (d + r < 0)
+	return IT_NONE;                  //too far behind start vRef
+if (d - r > nEdgeLen)
+	return IT_NONE;    //too far part end vRef
+//find closest vRef on edge to check vRef
+int32_t iType = IT_POINT;
+CFloatVector vNearest;            //this time, real 3d vectors
+if (d < 0)
+	vNearest = *v0;
+else if (d > nEdgeLen)
+	vNearest = *v1;
+else {
+	iType = IT_EDGE;
+	vNearest = *v0 + vEdge * d;
+	}
+d = CFloatVector::Dist (vr, vNearest);
+if (d <= r)
+	return (iType == IT_POINT) ? IT_NONE : iType;
+return IT_NONE;
+}
+
+//	-----------------------------------------------------------------------------
+//check if a sphere intersects a face
+int32_t SphereToFaceRelation (CFixVector* vRef, fix rad, CFixVector *vertList, int32_t nVerts, CFixVector* vNormal)
+{
+#if FLOAT_COLLISION_MATH
+
+	CFloatVector	vr, vn, vl [4];
+
+vr.Assign (*vRef);
+vn.Assign (*vNormal);
+for (int32_t i = 0; i < nVerts; i++)
+	vl [i].Assign (vertList [i]);
+return SphereToFaceRelationf (vr, X2F (rad), vl, nVerts, vn);
+
+#else
+
+	CFixVector	vEdge, vCheck;            //this time, real 3d vectors
+	CFixVector	vNearest;
+	fix			xEdgeLen, d;
+	CFixVector* v0, * v1;
+	int32_t		iType;
+	int32_t		nEdge;
+	uint32_t		nEdgeMask;
+
+//now do 2d check to see if vRef is inside
+if (!(nEdgeMask = PointToFaceRelation (vRef, vertList, nVerts, vNormal)))
 	return IT_FACE;	//we've gone through all the sides, and are inside
 //get verts for edge we're behind
 for (nEdge = 0; !(nEdgeMask & 1); (nEdgeMask >>= 1), nEdge++)
 	;
 v0 = vertList + nEdge;
 v1 = vertList + ((nEdge + 1) % nVerts);
-//check if we are touching an edge or refP
-vCheck = *refP - *v0;
+//check if we are touching an edge or vRef
+vCheck = *vRef - *v0;
 xEdgeLen = CFixVector::NormalizedDir (vEdge, *v1, *v0);
-//find refP dist from planes of ends of edge
+//find vRef dist from planes of ends of edge
 d = CFixVector::Dot (vEdge, vCheck);
 if (d + rad < 0)
-	return IT_NONE;                  //too far behind start refP
+	return IT_NONE;                  //too far behind start vRef
 if (d - rad > xEdgeLen)
-	return IT_NONE;    //too far part end refP
-//find closest refP on edge to check refP
+	return IT_NONE;    //too far part end vRef
+//find closest vRef on edge to check vRef
 iType = IT_POINT;
 if (d < 0)
-	vClosestPoint = *v0;
+	vNearest = *v0;
 else if (d > xEdgeLen)
-	vClosestPoint = *v1;
+	vNearest = *v1;
 else {
 	iType = IT_EDGE;
-	vClosestPoint = *v0 + vEdge * d;
+	vNearest = *v0 + vEdge * d;
 	}
-dist = CFixVector::Dist (*refP, vClosestPoint);
-if (dist <= rad)
+d = CFixVector::Dist (*vRef, vNearest);
+if (d <= rad)
 	return (iType == IT_POINT) ? IT_NONE : iType;
 return IT_NONE;
+
+#endif
 }
 
 //	-----------------------------------------------------------------------------
-//returns true if line intersects with face. fills in intersection with intersection
+//returns true if line intersects with face. fills in vIntersection with vIntersection
 //refP on plane, whether or not line intersects CSide
 //iFace determines which of four possible faces we have
 //note: the seg parm is temporary, until the face itself has a refP field
-int32_t CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad,
-									 CFixVector *vertList, int32_t nVerts, CFixVector *vNormal)
+int32_t CheckLineToFaceRegular (CFixVector& vIntersection, CFixVector *p0, CFixVector *p1, fix rad, CFixVector *vertList, int32_t nVerts, CFixVector *vNormal)
 {
 	CFixVector	v1, vHit;
-	int32_t			pli, bCheckRad = 0;
+	int32_t		pli, bCheckRad = 0;
 
 //use lowest refP number
 if (p1 == p0) {
@@ -469,9 +625,9 @@ if (p1 == p0) {
 	rad = 0;
 	p1 = &v1;
 	}
-if (!(pli = FindPlaneLineIntersection (intersection, vertList, vNormal, p0, p1, rad)))
+if (!(pli = FindPlaneLineIntersection (vIntersection, vertList, vNormal, p0, p1, rad)))
 	return IT_NONE;
-vHit = intersection;
+vHit = vIntersection;
 //if rad != 0, project the refP down onto the plane of the polygon
 if (rad)
 	vHit += *vNormal * (-rad);
@@ -496,6 +652,26 @@ return IT_NONE;
 //	-----------------------------------------------------------------------------
 //computes the parameters of closest approach of two lines
 //fill in two parameters, t0 & t1.  returns 0 if lines are parallel, else 1
+int32_t CheckLineToLinef (float& t1, float& t2, CFloatVector& p1, CFloatVector& v1, CFloatVector& p2, CFloatVector& v2)
+{
+CFloatMatrix det;
+det.m.dir.r = p2 - p1;
+det.m.dir.f = CFloatVector::Cross (v1, v2);
+float crossMag2 = CFloatVector::Dot (det.m.dir.f, det.m.dir.f);
+if (fabs (crossMag2) < FLOAT_DIST_TOLERANCE)
+	return 0;			//lines are parallel
+det.m.dir.u = v2;
+float d = det.Det ();
+t1 = d / crossMag2;
+det.m.dir.u = v1;
+d = det.Det ();
+t2 = d / crossMag2;
+return 1;		//found refP
+}
+
+//	-----------------------------------------------------------------------------
+//computes the parameters of closest approach of two lines
+//fill in two parameters, t0 & t1.  returns 0 if lines are parallel, else 1
 int32_t CheckLineToLine (fix *t1, fix *t2, CFixVector *p1, CFixVector *v1, CFixVector *p2, CFixVector *v2)
 {
 	CFixMatrix det;
@@ -515,40 +691,65 @@ return 1;		//found refP
 }
 
 //	-----------------------------------------------------------------------------
-//maybe this routine should just return the distance and let the caller
-//decide it it's close enough to hit
-//determine if and where a vector intersects with a sphere
-//vector defined by p0, p1
-//returns dist if intersects, and fills in intP
-//else returns 0
-int32_t CheckVectorSphereCollision (CFixVector& intersection, CFixVector *p0, CFixVector *p1, CFixVector *vSpherePos, fix xSphereRad)
+// determine if and where a vector intersects with a sphere
+// vector defined by p0, p1
+// returns distance of sphere vIntersection to sphere center if intersects, and fills in intP
+// else returns -1
+
+int32_t CheckVectorSphereCollisionf (CFloatVector& vi, CFloatVector& v0, CFloatVector& v1, CFloatVector& vs, float r)
 {
-#if 0
-FindPointLineIntersection (intersection, *p0, *p1, *vSpherePos, 0);
-fix dist = CFixVector::Dist (intersection, *vSpherePos);
-if (xSphereRad < 0)
-	return dist;
-if (dist > xSphereRad)
-	return 0;
-if (dist < xSphereRad) {
-	CFixVector v = *p0;
-	v -= intersection;
-	fix l1 = CFixVector::Normalize (v);
-	float d = X2F (dist);
-	float r = X2F (xSphereRad);
-	fix l2 = F2X (sqrt (r * r - d * d));
-	if (l2 >= l1) {
-		intersection = *p0;
-		return 1;
-		}
-	v *= l2;
-	intersection += v;
+CFloatVector vw = vs - v0;
+CFloatVector vn = v1 - v0;
+float l = CFloatVector::Normalize (vn);
+
+if (l == 0.0f) {
+	float di = vw.Mag ();
+	vi = v0;
+	return (di < r) ? F2X (di) : -1;
 	}
-dist = CFixVector::Dist (*p0, intersection);
-return dist ? dist : 1;
+
+float dw = CFloatVector::Dot (vn, vw);
+if (dw < 0)
+	return -1;	// moving away from object
+if (dw > l + r)
+	return -1;	// cannot hit
+vi = v0 + vn * dw;
+float d = CFloatVector::Dist (vi, vs);
+if  (d < r) {
+	float di = dw - sqrt (r * r - d * d);
+	if (di > l)
+		return -1; // ||p0,sphere center|| greater than ||p0,p1||
+	if (di < 0) {
+		vi = v0; // past one or the other end of vector, which means we're inside; so don't move at all
+		return F2X (CFloatVector::Dist (v0, vs));
+		}
+	vn *= di;
+	v0 += vn;
+	vi = v0;         
+	return F2X (di);
+	}
+return -1;
+}
+
+//	-----------------------------------------------------------------------------
+
+int32_t CheckVectorSphereCollision (CFixVector& vIntersection, CFixVector *p0, CFixVector *p1, CFixVector *vSpherePos, fix xSphereRad)
+{
+#if FLOAT_COLLISION_MATH
+
+	CFloatVector	v0, v1, vs, vi;
+
+v0.Assign (*p0);
+v1.Assign (*p1);
+vs.Assign (*vSpherePos);
+int32_t dist = CheckVectorSphereCollisionf (vi, v0, v1, vs, X2F (xSphereRad));
+if (dist >= 0)
+	vIntersection.Assign (vi);
+return dist;
 
 #else
-	CFixVector	d, dn, w, vClosestPoint;
+
+	CFixVector	d, dn, w, vNearest;
 	fix			vecLen, dist, wDist, intDist;
 
 //this routine could be optimized if it's taking too much time!
@@ -559,32 +760,41 @@ dn = d;
 vecLen = CFixVector::Normalize (dn);
 if (vecLen == 0) {
 	intDist = w.Mag ();
-	intersection = *p0;
+	vIntersection = *p0;
 	return ((xSphereRad < 0) || (intDist < xSphereRad)) ? intDist : 0;
 	}
 wDist = CFixVector::Dot (dn, w);
 if (wDist < 0)
-	return 0;	//moving away from CObject
+	return -1;	//moving away from CObject
 if (wDist > vecLen + xSphereRad)
-	return 0;	//cannot hit
-vClosestPoint = *p0 + dn * wDist;
-dist = CFixVector::Dist (vClosestPoint, *vSpherePos);
+	return -1;	//cannot hit
+vNearest = *p0 + dn * wDist;
+dist = CFixVector::Dist (vNearest, *vSpherePos);
 if  (dist < xSphereRad) {
 	fix dist2 = FixMul (dist, dist);
 	fix radius2 = FixMul (xSphereRad, xSphereRad);
 	fix nShorten = FixSqrt (radius2 - dist2);
 	intDist = wDist - nShorten;
-	if ((intDist > vecLen) || (intDist < 0)) {
+	if (intDist > vecLen) {
+#if 1
+		return -1;
+#else
+		vIntersection = *p0;		//don't move at all
+		return 1;
+#endif
+		}
+	if (intDist < 0) {
 		//paste one or the other end of vector, which means we're inside
-		intersection = *p0;		//don't move at all
+		vIntersection = *p0;		//don't move at all
 		return 1;
 		}
 	dn *= intDist;
-	intersection = *p0 + dn;         //calc intersection refP
+	vIntersection = *p0 + dn;         //calc vIntersection refP
 	return intDist;
 	}
+return -1;
+
 #endif
-return 0;
 }
 
 //	-----------------------------------------------------------------------------
@@ -594,8 +804,8 @@ fix CheckVectorObjectCollision (CHitData& hitData, CFixVector *p0, CFixVector *p
 {
 	fix			size, dist;
 	CFixVector	vHit, vNormal, v0, v1, vn, vPos;
-	int32_t			bThisPoly, bOtherPoly;
-	int16_t			nModel = -1;
+	int32_t		bThisPoly, bOtherPoly;
+	int16_t		nModel = -1;
 
 if (rad < 0)
 	size = 0;
@@ -671,7 +881,7 @@ if ((CollisionModel () || thisObjP->IsStatic () || otherObjP->IsStatic ()) &&
 		}
 	}
 else {
-	if (!(dist = CheckVectorSphereCollision (vHit, p0, p1, &vPos, size + rad)))
+	if (0 > (dist = CheckVectorSphereCollision (vHit, p0, p1, &vPos, size + rad)))
 		return 0;
 	nModel = 0;
 	vNormal.SetZero ();
@@ -710,8 +920,8 @@ int32_t ComputeObjectHitpoint (CHitData& hitData, CHitQuery &hitQuery)
 {
 	CObject		* thisObjP = (hitQuery.nObject < 0) ? NULL : OBJECTS + hitQuery.nObject,
 			 		* otherObjP;
-	int32_t			nThisType = (hitQuery.nObject < 0) ? -1 : OBJECTS [hitQuery.nObject].info.nType;
-	int32_t			nObjSegList [7], nObjSegs = 1, i;
+	int32_t		nThisType = (hitQuery.nObject < 0) ? -1 : OBJECTS [hitQuery.nObject].info.nType;
+	int32_t		nObjSegList [7], nObjSegs = 1, i;
 	fix			dMin = 0x7FFFFFFF;
 	bool			bCheckVisibility = ((hitQuery.flags & FQ_VISIBILITY) != 0);
 	CHitData		curHit;
@@ -1052,7 +1262,7 @@ return bestHit.nType;
 int32_t FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult)
 {
 	CHitData		curHit, newHit;
-	int32_t			i, nHitboxes = extraGameInfo [IsMultiGame].nHitboxes; // save value
+	int32_t		i, nHitboxes = extraGameInfo [IsMultiGame].nHitboxes; // save value
 
 gameData.collisions.hitResult.vNormal.SetZero ();
 gameData.collisions.hitResult.nNormals = 0;
@@ -1151,7 +1361,7 @@ return curHit.nType;
 int32_t SphereIntersectsWall (CFixVector *vPoint, int16_t nSegment, fix rad)
 {
 	int32_t		faceMask;
-	CSegment *segP;
+	CSegment*	segP;
 
 #if DBG
 if (nSegment == -1) {
@@ -1197,6 +1407,10 @@ return 0;
 //Returns true if the CObject is through any walls
 int32_t ObjectIntersectsWall (CObject *objP)
 {
+#if DBG
+if (objP->Index () == nDbgObj)
+	BRP;
+#endif
 return SphereIntersectsWall (&objP->info.position.vPos, objP->info.nSegment, objP->info.xSize);
 }
 
@@ -1211,10 +1425,10 @@ int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, i
 	CSegment*		segP;
 	CSide*			sideP;
 	CWall*			wallP;
-	CFloatVector	intersection, v0, v1;
+	CFloatVector	vIntersection, v0, v1;
 	float				l0, l1 = 0.0f;
-	int16_t				nSide, nFace, nFaceCount, nChildSeg;
-	uint32_t*				bVisited = segVisList [nThread];
+	int16_t			nSide, nFace, nFaceCount, nChildSeg;
+	uint32_t*		bVisited = segVisList [nThread];
 
 if (!nDepth) {
 #if 0
@@ -1249,10 +1463,10 @@ for (;;) {
 		for (nFace = 0; nFace < nFaceCount; nFace++, vertices += 3) {
 			if (!(nFace && sideP->IsQuad ())) {
 				CFloatVector* n = sideP->m_fNormals + nFace;
-				if (!FindPlaneLineIntersection (intersection, &FVERTICES [*vertices], n, p0, p1))
+				if (!FindPlaneLineIntersection (vIntersection, &FVERTICES [*vertices], n, p0, p1))
 					continue;
-				v0 = *p0 - intersection;
-				v1 = *p1 - intersection;
+				v0 = *p0 - vIntersection;
+				v1 = *p1 - vIntersection;
 				l0 = v0.Mag ();
 				l1 = v1.Mag ();
 				if ((l0 >= 0.001f) && (l1 >= 0.001f)) {
@@ -1266,7 +1480,7 @@ for (;;) {
 			if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				BRP;
 #endif
-			if (PointIsOutsideFace (&intersection, vertices, 5 - nFaceCount))
+			if (PointIsOutsideFace (&vIntersection, vertices, 5 - nFaceCount))
 				continue;
 			if (l1 >= 0.001f) 
 				break;

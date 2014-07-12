@@ -79,7 +79,7 @@ static DWORD nOglLibFlags [2] = {1680960820, (DWORD) -1};
 
 COGL ogl;
 
-#define ZSCREEN	(automap.Display () ? 20.0 : 10.0)
+#define ZSCREEN	(automap.Active () ? 20.0 : 10.0)
 
 //------------------------------------------------------------------------------
 
@@ -147,7 +147,7 @@ m_t = gameData.render.screen.Height ();
 
 double COGL::ZScreen (void)
 {
-return double (nScreenDists [gameOpts->render.stereo.nScreenDist] * (automap.Display () + 1));
+return double (nScreenDists [gameOpts->render.stereo.nScreenDist] * (automap.Active () + 1));
 }
 
 //------------------------------------------------------------------------------
@@ -733,7 +733,7 @@ else
 			GLbitfield mask = 0;
 			if (!bResetColorBuf)
 				mask = GL_DEPTH_BUFFER_BIT;
-			else if (automap.Display () || (gameStates.render.bRenderIndirect > 0)) {
+			else if (automap.Active () || (gameStates.render.bRenderIndirect > 0)) {
 				glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
 				mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
 				}

@@ -400,7 +400,8 @@ strncpy (szCurrentPigFile [0], szPigName, sizeof (szCurrentPigFile [0]));
 nBitmapNum = cfP->ReadInt ();
 nHeaderSize = nBitmapNum * sizeof (tPIGBitmapHeader);
 nDataStart = nHeaderSize + (int32_t) cfP->Tell ();
-gameData.pig.tex.nBitmaps [0] = 1;
+if (bRegister)
+	gameData.pig.tex.nBitmaps [0] = 1;
 SetDataVersion (0);
 for (i = 0; i < nBitmapNum; i++) {
 	PIGBitmapHeaderRead (&bmh, *cfP);

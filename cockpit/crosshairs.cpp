@@ -57,11 +57,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 bool GuidedMissileActive (void)
 {
-CObject *gmObjP = gameData.objs.guidedMissile [N_LOCALPLAYER].objP;
-return gmObjP &&
-		 (gmObjP->info.nType == OBJ_WEAPON) &&
-		 (gmObjP->info.nId == GUIDEDMSL_ID) &&
-		 (gmObjP->info.nSignature == gameData.objs.guidedMissile [N_LOCALPLAYER].nSignature);
+return gameData.objs.HasGuidedMissile (N_LOCALPLAYER);
 }
 
 //	-----------------------------------------------------------------------------
@@ -336,7 +332,7 @@ if (!gameOpts->render.cockpit.bReticle
 	 || gameStates.app.bPlayerIsDead 
 	 || gameStates.render.bChaseCam 
 	 || (gameStates.render.bFreeCam > 0)
-	 || automap.Display ())
+	 || automap.Active ())
 	return;
 
 	int32_t		x, y;

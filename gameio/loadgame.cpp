@@ -934,7 +934,8 @@ gameData.objs.objects.Clear ();
 lightClusterManager.Init ();
 gameData.render.faceIndex.Init ();
 lightManager.ResetIndex ();
-memset (gameData.objs.guidedMissile, 0, sizeof (gameData.objs.guidedMissile));
+for (int32_t i = 0; i < MAX_PLAYERS; i++)
+	gameData.objs.SetGuidedMissile (i, NULL);
 omegaLightning.Init ();
 SetRearView (0);
 SetFreeCam (0);
@@ -1845,6 +1846,7 @@ if (IsCoopGame && networkData.nJoinState) {
 	for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++)
 		gameData.multiplayer.players [i].flags |= netGameInfo.PlayerFlags () [i];
 	}
+audio.Prepare ();
 if (IsMultiGame)
 	MultiPrepLevel (); // Removes robots from level if necessary
 else
@@ -1856,7 +1858,6 @@ gameData.reactor.bDestroyed = 0;
 gameStates.render.glFOV = DEFAULT_FOV;
 SetScreenMode (SCREEN_GAME);
 cockpit->Init ();
-audio.Prepare ();
 audio.SetupRouter ();
 InitRobotsForLevel ();
 InitShakerDetonates ();

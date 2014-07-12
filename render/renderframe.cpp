@@ -84,7 +84,7 @@ else {
 	if (objP) {		//used to be active
 		if (!gameOpts->render.cockpit.bGuidedInMainView)
 			cockpit->RenderWindow (1, NULL, 0, WBU_STATIC, NULL);
-		gameData.objs.guidedMissile [N_LOCALPLAYER].objP = NULL;
+		gameData.objs.SetGuidedMissile (N_LOCALPLAYER, NULL);
 		}
 	if (gameData.objs.missileViewerP && !gameStates.render.bChaseCam) {		//do missile view
 		static int32_t mslViewerSig = -1;
@@ -149,7 +149,7 @@ else {
 #if 1
 //SetBlendMode (OGL_BLEND_ALPHA);
 if (gameStates.app.bGameRunning) {
-	if (automap.Display ()) 
+	if (automap.Active ()) 
 		automap.RenderInfo ();
 	else {
 		PROF_START
@@ -380,7 +380,7 @@ if (!ogl.m_features.bStencilBuffer.Available ())
 	extraGameInfo [0].bShadows =
 	extraGameInfo [1].bShadows = 0;
 
-if (SHOW_SHADOWS && !(nWindow || gameStates.render.cameras.bActive || automap.Display ())) {
+if (SHOW_SHADOWS && !(nWindow || gameStates.render.cameras.bActive || automap.Active ())) {
 	if (!gameStates.render.nShadowMap) {
 		gameStates.render.nShadowPass = 1;
 #if SOFT_SHADOWS
@@ -478,7 +478,7 @@ if (xStereoSeparation <= 0) {
 	PROF_END(ptLighting)
 	}
 
-if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
+if (gameOpts->render.cockpit.bGuidedInMainView && gameData.objs.GetGuidedMissile (N_LOCALPLAYER)) {
 	int32_t w, h, aw;
 	const char *msg = "Guided Missile View";
 	CObject *viewerSave = gameData.objs.viewerP;
@@ -489,7 +489,7 @@ if (gameOpts->render.cockpit.bGuidedInMainView && GuidedMissileActive ()) {
 		cockpit->Activate (CM_STATUS_BAR);
 		return;
 		}
-  	gameData.objs.viewerP = gameData.objs.guidedMissile [N_LOCALPLAYER].objP;
+  	gameData.objs.viewerP = gameData.objs.GetGuidedMissile (N_LOCALPLAYER);
 	UpdateRenderedData (0, gameData.objs.viewerP, 0, 0);
 	if ((xStereoSeparation <= 0) && cameraManager.Render ())
 		CCanvas::Current ()->SetViewport ();
@@ -662,7 +662,7 @@ if (!ogl.StereoDevice ())
 else {
 	if (gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] == 0)
 		gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()] = I2X (1);
-	fix xStereoSeparation = (automap.Display () && !ogl.IsSideBySideDevice ()) 
+	fix xStereoSeparation = (automap.Active () && !ogl.IsSideBySideDevice ()) 
 									? 2 * gameOpts->render.stereo.xSeparation [0] 
 									: gameOpts->render.stereo.xSeparation [ogl.IsOculusRift ()];
 	SetupCanvasses (-1.0f);

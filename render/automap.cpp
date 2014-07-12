@@ -123,7 +123,7 @@ void CAutomap::Init (void)
 m_nWidth = 640;
 m_nHeight = 480;
 m_bFull = false;
-m_bDisplay = 0;
+m_bActive = 0;
 m_data.bCheat = 0;
 m_data.bHires = 1;
 m_data.nViewDist = 0;
@@ -591,8 +591,8 @@ int32_t CAutomap::Setup (int32_t bPauseGame, fix& xEntryTime)
 	int32_t		i;
 	CObject	*playerP;
 
-if (m_bDisplay < 0) {
-	m_bDisplay = 0;
+if (m_bActive < 0) {
+	m_bActive = 0;
 	if ((m_bChaseCam = gameStates.render.bChaseCam))
 		SetChaseCam (0);
 	if ((m_bFreeCam = (gameStates.render.bFreeCam > 0)))
@@ -660,7 +660,7 @@ else
 m_nSegmentLimit =
 m_nMaxSegsAway = SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, m_visible.Buffer ());
 AdjustSegmentLimit ();
-m_bDisplay++;
+m_bActive++;
 return gameData.app.bGamePaused;
 }
 
@@ -923,7 +923,7 @@ if (!bPauseGame) {
 	gameData.objs.consoleP->mType.physInfo.flags &= ~PF_WIGGLE;		// Turn off wiggle
 	if (MultiMenuPoll ())
 		bDone = 1;
-	::GameFrame (0, -1);		// Do game loop with no rendering and no reading controls.
+	::GameFrame (0, 0);		// Do game loop with no rendering and no reading controls.
 	gameData.objs.consoleP->mType.physInfo.flags |= bWiggleSave;	// Restore wiggle
 	controls [0] = controlInfoSave;
 	}
@@ -934,13 +934,13 @@ return bDone;
 
 void CAutomap::DoFrame (int32_t nKeyCode, int32_t bRadar)
 {
-	int32_t				bDone = 0;
-	int32_t				nLeaveMode = 0;
-	int32_t				bFirstTime = 1;
+	int32_t			bDone = 0;
+	int32_t			nLeaveMode = 0;
+	int32_t			bFirstTime = 1;
 	fix				xEntryTime;
-	int32_t				bPauseGame = (gameOpts->menus.nStyle == 0);		// Set to 1 if everything is paused during automap...No pause during net.
+	int32_t			bPauseGame = (gameOpts->menus.nStyle == 0);		// Set to 1 if everything is paused during automap...No pause during net.
 	fix				t1 = 0, t2 = 0;
-	int32_t				nContrast = ogl.m_states.nContrast;
+	int32_t			nContrast = ogl.m_states.nContrast;
 
 	//static uint8_t	automapPal [256*3];
 
@@ -955,7 +955,7 @@ if (bRadar) {
 	//ogl.m_features.bRenderToTexture = bRenderToTexture;
 
 	ogl.m_states.nContrast = nContrast;
-	if (!--m_bDisplay) {
+	if (!--m_bActive) {
 		if (m_bChaseCam)
 			SetChaseCam (1);
 		else if (m_bFreeCam)
@@ -1003,7 +1003,7 @@ if (!gameStates.menus.nInMenu) {
 		ResumeGame ();
 	ogl.m_states.nContrast = nContrast;
 	}
-if (!--m_bDisplay) {
+if (!--m_bActive) {
 	if (m_bChaseCam)
 		SetChaseCam (1);
 	else if (m_bFreeCam)

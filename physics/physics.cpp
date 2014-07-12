@@ -38,7 +38,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 static int32_t bNewPhysCode = 1;
 #endif
 
-#define UNSTICK_OBJS		2
+#define UNSTICK_OBJS		1
 
 #define ROLL_RATE 		0x2000
 #define DAMP_ANG 			0x400                  //min angle to bank
@@ -371,11 +371,12 @@ if (info.nType == OBJ_PLAYER) {
 	}
 else {
 #if UNSTICK_OBJS < 2
-	if (info.nType != OBJ_MONSTERBALL)
+	if ((info.nType != OBJ_MONSTERBALL) && (info.nType != OBJ_ROBOT))
 		return;
-#endif
+#else
 	if (info.nType != OBJ_ROBOT)
 		return;
+#endif
 	}
 CHitQuery hitQuery (0, &info.position.vPos, &info.position.vPos, info.nSegment, Index (), 0, info.xSize);
 CHitResult hitResult;
@@ -1036,6 +1037,11 @@ if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBO
 		info.position.mOrient = mSaveOrient;
 	}
 
+#if DBG
+if (Index () == nDbgObj) 
+	BRP;
+#endif
+
 if (Velocity () /*simData.velocity*/.IsZero ()) {
 #	if UNSTICK_OBJS
 	Unstick ();
@@ -1168,7 +1174,7 @@ if (mType.physInfo.mass == 0)
 	return;
 if (info.movementType != MT_PHYSICS)
 	return;
-if ((automap.Display () && (this == gameData.objs.consoleP)) || SPECTATOR (this))
+if ((automap.Active () && (this == gameData.objs.consoleP)) || SPECTATOR (this))
 	return;
 #ifdef FORCE_FEEDBACK
   if (TactileStick && (obj == OBJECTS + LOCALPLAYER.nObject))
@@ -1217,7 +1223,7 @@ void CObject::TurnTowardsVector (CFixVector vGoal, fix rate)
 // If no one moves, will be facing vGoal in 1 second.
 
 //	Detect null vector.
-if (automap.Display () && (this == gameData.objs.consoleP))
+if (automap.Active () && (this == gameData.objs.consoleP))
 	return;
 if (vGoal.IsZero ())
 	return;

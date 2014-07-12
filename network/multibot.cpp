@@ -320,7 +320,7 @@ for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 		}
 	}
 Assert ((last_sent >= 0) && (last_sent <= MAX_ROBOTS_CONTROLLED));
-return (rval);
+return rval;
 }
 
 //-----------------------------------------------------------------------------

@@ -367,7 +367,7 @@ if ((gameOpts->render.cockpit.bHUD < 2) && (gameStates.render.cockpit.nType >= C
 	return;
 if (transformation.HaveHeadAngles ())
 	return;
-if (automap.Display ())
+if (automap.Active ())
 	return;
 if (gameStates.render.bChaseCam)
 	return;

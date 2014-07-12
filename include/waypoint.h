@@ -4,7 +4,7 @@
 class CWayPointManager {
 	private:
 		CArray<CObject*>		m_wayPoints;
-		int32_t						m_nWayPoints;
+		int32_t					m_nWayPoints;
 
 	CObject* Find (int32_t nId);
 	CObject* Target (CObject* objP);

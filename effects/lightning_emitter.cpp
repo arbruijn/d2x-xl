@@ -285,7 +285,7 @@ void CLightningEmitter::Render (int32_t nStart, int32_t nBolts, int32_t nThread)
 if (m_bValid < 1)
 	return;
 
-if (automap.Display () && !(gameStates.render.bAllVisited || automap.m_bFull)) {
+if (automap.Active () && !(gameStates.render.bAllVisited || automap.m_bFull)) {
 	if (m_nObject >= 0) {
 		if (!automap.m_visited [OBJECTS [m_nObject].Segment ()])
 			return;

@@ -672,7 +672,7 @@ else {
 
 int32_t CVisibilityData::BuildAutomapSegList (void)
 {
-if (!(automap.Display () && gameOpts->render.automap.bTextured && !automap.Radar ()))
+if (!(automap.Active () && gameOpts->render.automap.bTextured && !automap.Radar ()))
 	return 0;
 
 	int32_t nSegmentLimit = automap.SegmentLimit ();

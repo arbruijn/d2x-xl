@@ -36,9 +36,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // How many simultaneous network players do we support?
 
-#define APPLETALK_GAME  1
-#define IPX_GAME        2
-#define UDP_GAME			3
+#define APPLETALK_GAME					1
+#define IPX_GAME							2
+#define UDP_GAME							3
 
 #define MAX_NUM_NET_PLAYERS			((gameStates.multi.nGameType == UDP_GAME) ? 16 : 8)
 
@@ -168,9 +168,9 @@ void MultiSendEndLevelStart (int32_t);
 void MultiSendPlayerExplode (uint8_t nType);
 void MultiSendMessage (void);
 void MultiSendPosition (int32_t nObject);
-void MultiSendReappear ();
+void MultiSendReappear (void);
 void MultiSendKill (int32_t nObject);
-void MultiSendRemoveObj (int32_t nObject);
+void MultiSendRemoveObject (int32_t nObject);
 void MultiSendQuit (int32_t nReason);
 void MultiSendDoorOpen (int32_t nSegment, int32_t nSide, uint16_t flags);
 void MultiSendCreateExplosion (int32_t nPlayer);
@@ -187,7 +187,7 @@ void MultiSendAudioTaunt (int32_t taunt_num);
 void MultiSendScore (void);
 void MultiSendTrigger (int32_t nTrigger, int32_t nObject);
 void MultiSendObjTrigger (int32_t CTrigger);
-void MultiSendHostageDoorStatus (int32_t wallnum);
+void MultiSendHostageDoorStatus (int32_t nWall);
 void MultiSendNetPlayerStatsRequest (uint8_t nPlayer);
 void MultiSendDropWeapon (int32_t nObject);
 void MultiSendDropMarker (int32_t nPlayer, CFixVector position, char messagenum, char text[]);
@@ -222,7 +222,7 @@ void MultiSendConquerWarning (void);
 void MultiSendStopConquerWarning (void);
 void MultiSendData (uint8_t* buf, int32_t len, int32_t repeat);
 void ChoseTeam (int32_t nPlayer, bool bForce = false);
-void AutoBalanceTeams ();
+void AutoBalanceTeams (void);
 
 int16_t GetTeam (int32_t nPlayer);
 bool SameTeam (int32_t nPlayer1, int32_t nPlayer2);

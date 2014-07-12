@@ -36,8 +36,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //this function is based on DropPowerup()
 int32_t SpitPowerup (CObject *spitterP, uint8_t id, int32_t seed)
 {
-	int16_t			nObject;
-	CObject		*objP;
+	int16_t		nObject;
+	CObject*		objP;
 	CFixVector	newVelocity, newPos;
 	tObjTransformation	*posP = OBJPOS (spitterP);
 
@@ -86,7 +86,6 @@ switch (objP->info.nId) {
 		//	objP->info.xLifeLeft = (RandShort () + I2X (3)) * 64;		//	Lives for 5 to 5.5 binary minutes (a binary minute is 64 seconds)
 		break;
 	}
-MultiSendWeapons (1);
 return nObject;
 }
 
@@ -165,10 +164,8 @@ if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 	if (nObject >= 0)
 		OBJECTS [nObject].cType.powerupInfo.nCount = gameData.omega.xCharge [IsMultiGame];
 	}
-if (IsMultiGame) {
+if (IsMultiGame)
 	MultiSendDropWeapon (nObject);
-	MultiSendWeapons (1);
-	}
 if (gameData.weapons.nPrimary) //if selected weapon was not the laser
 	AutoSelectWeapon (0, 0);
 }
@@ -225,10 +222,8 @@ for (int32_t i = 0; i < nItems; i++) {
 		HUDInitMessage (TXT_DROP_WEAPON, SECONDARY_WEAPON_NAMES (gameData.weapons.nSecondary));
 		audio.PlaySound (SOUND_DROP_WEAPON);
 		}
-	if (IsMultiGame) {
+	if (IsMultiGame)
 		MultiSendDropWeapon (nObject);
-		MultiSendWeapons (1);
-		}
 	if (LOCALPLAYER.secondaryAmmo [nWeapon] == 0) {
 		LOCALPLAYER.secondaryWeaponFlags &= (~(1 << gameData.weapons.nSecondary));
 		AutoSelectWeapon (1, 0);

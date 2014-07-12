@@ -289,7 +289,7 @@ void CGenericCockpit::DrawPacketLoss (void)
 {
 	static int32_t nIdPacketLoss = 0;
 
-if (IsMultiGame && networkData.nTotalMissedPackets && !automap.Display ()) {
+if (IsMultiGame && networkData.nTotalMissedPackets && !automap.Active ()) {
 		char	szLoss [50];
 		int32_t	w, h, aw; // position measured from lower right corner
 		int32_t	nLossRate = (1000 * networkData.nTotalMissedPackets) / (networkData.nTotalPacketsGot + networkData.nTotalMissedPackets);
@@ -370,7 +370,7 @@ if (gameStates.render.bShowFrameRate) {
 					gameData.render.nMaxLights);
 		x = 19;
 		}
-	if (automap.Display ())
+	if (automap.Active ())
 		y = 3;
 	else if (IsMultiGame)
 		y = 7;

@@ -367,7 +367,6 @@ if ((gameFileInfo.objects.offset > -1) && gameFileInfo.objects.count) {
 		objP->Read (cf);
 #if OBJ_LIST_TYPE == 1
 		objP->ResetLinks ();
-		objP->Link ();
 #endif
 		if (!IsMultiGame && objP->Multiplayer ())
 			gameFileInfo.objects.count--;
@@ -948,9 +947,9 @@ static void CheckAndFixWalls (void)
 	CWall*	wallP;
 
 for (i = 0; i < gameData.walls.nWalls; i++)
-	if (WALLS [i].nTrigger >= gameData.trigs.m_nTriggers) {
+	if ((WALLS [i].nTrigger >= gameData.trigs.m_nTriggers) && (WALLS [i].nTrigger != NO_TRIGGER)) {
 #if TRACE
-		PrintLog (0, "Removing reference to invalid CTrigger %d from CWall %d\n", WALLS [i].nTrigger,i);
+		PrintLog (0, "Removing reference to invalid trigger %d from wall %d\n", WALLS [i].nTrigger, i);
 #endif
 		WALLS [i].nTrigger = NO_TRIGGER;	//kill CTrigger
 		}

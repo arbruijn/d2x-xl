@@ -32,16 +32,16 @@
 #endif
 
 #if DBG
-#	define LISTEN_TIMEOUT		5
-#	define SEND_TIMEOUT			5
+#	define LISTEN_TIMEOUT		20
+#	define SEND_TIMEOUT			10
 #	define UPDATE_TIMEOUT		500
 #	define MAX_PACKET_AGE		300000
 #	define MAX_CLIENT_AGE		300000
 #	define TIMEOUT_DISCONNECT	300000
 #	define TIMEOUT_KICK			180000
 #else
-#	define LISTEN_TIMEOUT		5
-#	define SEND_TIMEOUT			5
+#	define LISTEN_TIMEOUT		10
+#	define SEND_TIMEOUT			0
 #	define UPDATE_TIMEOUT		500
 #	define MAX_PACKET_AGE		3000
 #	define MAX_CLIENT_AGE		300000
@@ -56,7 +56,7 @@
 #endif
 
 #if DBG
-#	define DBG_LOCKS		1
+#	define DBG_LOCKS		0
 #else
 #	define DBG_LOCKS		0
 #endif
@@ -65,7 +65,7 @@
 #define RECVLOCK 1
 #define PROCLOCK 0
 
-#define SEND_IN_BACKGROUND		0
+#define SEND_IN_BACKGROUND		1
 #define LISTEN_IN_BACKGROUND	0
 #define USE_PACKET_IDS			0
 
@@ -137,7 +137,7 @@ bool CNetworkPacket::Combineable (uint8_t type)
 #if DBG
 return false;
 #else
-return (type != PID_GAME_INFO) && (type != PID_EXTRA_GAMEINFO) && (type != PID_PLAYERSINFO) && (type != PID_PDATA);
+return (type != PID_GAME_INFO) && (type != PID_EXTRA_GAMEINFO) && (type != PID_PLAYERSINFO) && (type != PID_PLAYER_DATA);
 #endif
 }
 
@@ -327,6 +327,7 @@ if (!packet) {
 	}
 
 if (Tail ()) { // list tail
+#if 0
 	if (!bAllowDuplicates && (*Tail () == *packet)) {
 		++m_nDuplicate;
 		Tail ()->SetTime (SDL_GetTicks ());
@@ -335,6 +336,7 @@ if (Tail ()) { // list tail
 		Free (packet, bLock);
 		return Tail ();
 		}
+#endif
 	Tail ()->m_nextPacket = packet;
 	}
 else 
@@ -406,6 +408,48 @@ bool CNetworkPacketQueue::Validate (void)
 { 
 bool bOk = (!Head () == !Tail ()); // both must be either NULL or not NULL
 return bOk;
+}
+
+//------------------------------------------------------------------------------
+// Append all packets from network packet queue sender to own packet list
+
+int32_t CNetworkPacketQueue::Grab (CNetworkPacketQueue& sender)
+{
+sender.Lock (true, __FUNCTION__);
+if (Tail ())
+	Tail ()->Link (sender.Head ());
+else
+	SetHead (sender.Head ());
+SetTail (sender.Tail ());
+
+if (!Head ()) {
+	sender.Unlock (true, __FUNCTION__);
+	return 0;
+	}
+SetLength (Length () + sender.Length ());
+sender.SetHead (NULL);
+sender.SetTail (NULL);
+sender.SetLength (0);
+sender.Unlock (true, __FUNCTION__);
+return Length ();
+}
+
+//------------------------------------------------------------------------------
+// Free all packets to the free list of network packet queue trashcan
+
+void CNetworkPacketQueue::Dispose (CNetworkPacketQueue* receiver)
+{
+if (!receiver)
+	receiver = this;
+receiver->Lock (true, __FUNCTION__);
+while (Start ()) {
+	Step ();
+	receiver->Free (Head (), false);
+	SetHead (Current ());
+	}
+SetTail (NULL);
+SetCurrent (NULL);
+receiver->Unlock (true, __FUNCTION__);
 }
 
 //------------------------------------------------------------------------------
@@ -555,6 +599,7 @@ if (m_thread) {
 #else
 	SDL_KillThread (m_thread);
 #endif
+	m_thread = NULL;
 	m_rxPacketQueue.Destroy ();
 	m_txPacketQueue.Destroy ();
 	if (m_semaphore) {
@@ -624,32 +669,41 @@ uint32_t t = SDL_GetTicks ();
 if (t <= MAX_PACKET_AGE)
 	return; // drop packets older than 3 seconds
 t -= MAX_PACKET_AGE;
+int32_t nDeleted = 0;
 m_rxPacketQueue.Lock (true, __FUNCTION__);
 for (m_rxPacketQueue.Start (); m_rxPacketQueue.Current (); m_rxPacketQueue.Step ()) {
-	if (m_rxPacketQueue.Current ()->Timestamp () < t) 
+	if (m_rxPacketQueue.Current ()->Timestamp () < t) {
 		m_rxPacketQueue.Pop (true, false);
+		++nDeleted;
+		}
 	}
 m_rxPacketQueue.Unlock (true, __FUNCTION__);
+#if DBG
+if (nDeleted)
+	PrintLog (0, "removed %d outdated packets from listen queue\n", nDeleted);
+#endif
 }
 
 //------------------------------------------------------------------------------
 
-int32_t CNetworkThread::Listen (void)
+int32_t CNetworkThread::Listen (bool bImmediately)
 {
-#if 1
 if (!ListenInBackground ())
 	return 0;
 
-#if 1
+#if LISTEN_TIMEOUT
 	static CTimeout toListen (LISTEN_TIMEOUT);
 
-if (!toListen.Expired ())
+if (bImmediately)
+	return 0; //toListen.Start (); // reset timeout as we are listening now
+else if (!toListen.Expired ())
 	return 0;
 #endif
 
 // network reads all network packets independently of main thread
 Cleanup ();
 // read all available network packets and append them to the end of the list of unprocessed network packets
+int32_t nReceived = 0;
 m_rxPacketQueue.Lock (true, __FUNCTION__);
 for (;;) {
 	// pre-allocate packet so IpxGetPacketData can directly fill its buffer and no extra copy operation is necessary
@@ -682,26 +736,25 @@ for (;;) {
 		}
 	m_rxPacketQueue.Append (m_packet, false, false);
 	m_packet = NULL;
+	++nReceived;
 	}
 m_rxPacketQueue.Unlock (true, __FUNCTION__);
 return m_rxPacketQueue.Length ();
-
-#else
-
-if (!GetListen ())
-	return 0;
-if (LOCALPLAYER.Connected (CONNECT_PLAYING))
-	return 0;
-return NetworkListen ();
-
-#endif
 }
 
 //------------------------------------------------------------------------------
 
 CNetworkPacket* CNetworkThread::GetPacket (bool bLock)
 {
-return m_rxPacketQueue.Pop (false, bLock);
+Listen (true);
+if (!m_processPacketQueue.Head ())
+	return m_rxPacketQueue.Pop ();
+m_processPacketQueue.Grab (m_rxPacketQueue);
+if (!m_processPacketQueue.Current ())
+	m_processPacketQueue.Start ();
+CNetworkPacket* packet = m_processPacketQueue.Current ();
+m_processPacketQueue.Step ();
+return packet;
 }
 
 //------------------------------------------------------------------------------
@@ -711,7 +764,7 @@ int32_t CNetworkThread::GetPacketData (uint8_t* data)
 if (!ListenInBackground ())
 	return IpxGetPacketData (data);
 
-CNetworkPacket* packet = GetPacket ();
+CNetworkPacket* packet = GetPacket (true);
 if (!packet)
 	return 0;
 
@@ -730,30 +783,16 @@ int32_t CNetworkThread::ProcessPackets (void)
 
 // grab the entire list of packets available for processing and then unlock again 
 // to avoid locking Listen() any longer than necessary
-m_rxPacketQueue.Lock (true, __FUNCTION__);
-CNetworkPacket* head = m_rxPacketQueue.Head ();
-if (!head) {
-	m_rxPacketQueue.Unlock (true, __FUNCTION__);
-	return 0;
+m_processPacketQueue.Lock ();
+if (m_processPacketQueue.Grab (m_rxPacketQueue)) {
+for (m_processPacketQueue.Start (); m_processPacketQueue.Current (); m_processPacketQueue.Step ()) {
+		networkData.packetSource = m_processPacketQueue.Current ()->Owner ().m_address;
+		if (NetworkProcessPacket (m_processPacketQueue.Current ()->Buffer (), m_processPacketQueue.Current ()->Size ()))
+			++nProcessed;
+		}
+	m_processPacketQueue.Dispose (&m_rxPacketQueue);
 	}
-m_rxPacketQueue.SetHead (NULL);
-m_rxPacketQueue.SetTail (NULL);
-m_rxPacketQueue.Unlock (true, __FUNCTION__);
-
-CNetworkPacket* packet;
-
-for (packet = head; packet; packet = packet->Next ()) {
-	networkData.packetSource = packet->Owner ().m_address;
-	if (NetworkProcessPacket (packet->Buffer (), packet->Size ()))
-		++nProcessed;
-	}
-m_rxPacketQueue.Lock (true, __FUNCTION__);
-while (head) {
-	packet = head;
-	head = head->Next ();
-	m_rxPacketQueue.Free (packet, false);
-	}
-m_rxPacketQueue.Unlock (true, __FUNCTION__);
+m_processPacketQueue.Unlock ();
 return nProcessed;
 }
 
@@ -777,14 +816,17 @@ m_txPacketQueue.Unlock (true, __FUNCTION__);
 
 //------------------------------------------------------------------------------
 
-int32_t CNetworkThread::TransmitPackets (bool bForce)
+int32_t CNetworkThread::TransmitPackets (bool bImmediately)
 {
-#if 1
+#if SEND_TIMEOUT
+#	if 1
 	static CTimeout toSend (SEND_TIMEOUT);
 
-if (!bForce && !toSend.Expired ())
+if (bImmediately)
+	toSend.Start (); // reset timeout as we are sending now
+else if (!toSend.Expired ())
 	return 1;
-#else
+#	else
 if (m_toSend.Duration () != 1000 / PPS) {
 	m_toSend.Setup (1000 / PPS);
 	m_toSend.Start ();
@@ -793,8 +835,11 @@ if (m_toSend.Duration () != 1000 / PPS) {
 if (m_txPacketQueue.Empty ())
 	return 0;
 
-if (!bForce && !m_toSend.Expired ())
+if (bImmediately)
+	toSend.Start ();
+else if (!toSend.Expired ())
 	return 1;
+#	endif
 #endif
 
 #if 0
@@ -954,7 +999,7 @@ return nTimedOut;
 //------------------------------------------------------------------------------
 // Check for player timeouts
 
-void CNetworkThread::SendLifeSign (bool bForce)
+void CNetworkThread::SendLifeSign (bool bImmediately)
 {
 	static CTimeout toUpdate (UPDATE_TIMEOUT);
 
@@ -978,7 +1023,7 @@ if (toUpdate.Expired ()) {
 				NetworkSendPing (nPlayer);
 #endif
 				}
-			else if (bDownloading || bForce) {
+			else if (bDownloading || bImmediately) {
 				pingStats [nPlayer].launchTime = -1;
 				NetworkSendPing (nPlayer);
 				}	

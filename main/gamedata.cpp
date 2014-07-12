@@ -1675,6 +1675,35 @@ return j;
 
 // ----------------------------------------------------------------------------
 
+void CObjectData::SetGuidedMissile (uint8_t nPlayer, CObject* objP) 
+{
+guidedMissile [nPlayer].objP = objP;
+guidedMissile [nPlayer].nSignature = objP ? objP->Signature () : -1;
+}
+
+// ----------------------------------------------------------------------------
+
+bool CObjectData::IsGuidedMissile (CObject* objP) 
+{
+return objP && objP->IsGuidedMissile ();
+}
+
+// ----------------------------------------------------------------------------
+
+bool CObjectData::HasGuidedMissile (uint8_t nPlayer) 
+{
+return IsGuidedMissile (guidedMissile [nPlayer].objP);
+}
+
+// ----------------------------------------------------------------------------
+
+CObject* CObjectData::GetGuidedMissile (uint8_t nPlayer) 
+{
+return IsGuidedMissile (guidedMissile [nPlayer].objP) ? guidedMissile [nPlayer].objP : NULL;
+}
+
+// ----------------------------------------------------------------------------
+
 CColorData::CColorData ()
 {
 if (textures.Create (MAX_WALL_TEXTURES))

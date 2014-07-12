@@ -92,7 +92,7 @@ return light;
 
 void CHeadlightManager::Transform (void)
 {
-if (automap.Display ())
+if (automap.Active ())
 	return;
 
 	CDynLight*	lightP;

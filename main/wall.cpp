@@ -1470,8 +1470,8 @@ for (uint32_t i = 0; i < gameData.walls.exploding.ToS (); ) {
 		if (e & 3)		//3 of 4 are Normal
 			CreateExplosion ((int16_t) gameData.walls.exploding [i].nSegment, vPos, size, (uint8_t) VCLIP_SMALL_EXPLOSION);
 		else
-			CreateSplashDamageExplosion (NULL, (int16_t) gameData.walls.exploding [i].nSegment, vPos,
-										  size, (uint8_t) VCLIP_SMALL_EXPLOSION, I2X (4), I2X (20), I2X (50), -1);
+			CreateSplashDamageExplosion (NULL, (int16_t) gameData.walls.exploding [i].nSegment, vPos, vPos,
+										        size, (uint8_t) VCLIP_SMALL_EXPLOSION, I2X (4), I2X (20), I2X (50), -1);
 		}
 	if (gameData.walls.exploding [i].time >= EXPL_WALL_TIME)
 		DeleteExplodingWall (i);

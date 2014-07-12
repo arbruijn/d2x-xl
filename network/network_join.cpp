@@ -50,7 +50,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-int32_t GetNewPlayerNumber (tSequencePacket *their)
+int32_t GetNewPlayerNumber (tPlayerSyncData *their)
   {
 	 int32_t i;
 
@@ -179,7 +179,7 @@ if (player.Connected (CONNECT_PLAYING)) {
 	
 //------------------------------------------------------------------------------
 
-void NetworkNewPlayer (tSequencePacket *their)
+void NetworkNewPlayer (tPlayerSyncData *their)
 {
 	int32_t	nPlayer;
 
@@ -234,7 +234,7 @@ MultiSortKillList ();
 
 //------------------------------------------------------------------------------
 
-static int32_t FindNetworkPlayer (tSequencePacket *player, uint8_t *newAddress)
+static int32_t FindNetworkPlayer (tPlayerSyncData *player, uint8_t *newAddress)
 {
 	int32_t	i;
 	uint8_t anyAddress [6];
@@ -271,7 +271,7 @@ return -1;
 
 //------------------------------------------------------------------------------
 
-static int32_t FindPlayerSlot (tSequencePacket *player)
+static int32_t FindPlayerSlot (tPlayerSyncData *player)
 {
 if (netGameInfo.m_info.gameFlags & NETGAME_FLAG_CLOSED) {
 	// Slots are open but game is closed
@@ -313,7 +313,7 @@ return oldestPlayer;
 
 //------------------------------------------------------------------------------
 
-static int16_t FindJoiningPlayer (tSequencePacket *player)
+static int16_t FindJoiningPlayer (tPlayerSyncData *player)
 {
 for (int16_t i = 0; i < networkData.nJoining; i++)
 	if (!strcmp (networkData.syncInfo [i].player [1].player.callsign, player->player.callsign) && 
@@ -343,7 +343,7 @@ memset (networkData.syncInfo + networkData.nJoining, 0, sizeof (tNetworkSyncInfo
 
 //------------------------------------------------------------------------------
 
-static tNetworkSyncInfo *AcceptJoinRequest (tSequencePacket *player)
+static tNetworkSyncInfo *AcceptJoinRequest (tPlayerSyncData *player)
 {
 // Don't accept new players if we're ending this level.  Its safe to ignore since they'll request again later
 if (gameStates.app.bEndLevelSequence || gameData.reactor.bDestroyed) {
@@ -384,7 +384,7 @@ return syncInfoP;
 //------------------------------------------------------------------------------
 // Add a player to a game already in progress
 
-void NetworkWelcomePlayer (tSequencePacket *player)
+void NetworkWelcomePlayer (tPlayerSyncData *player)
 {
 	int32_t				nPlayer;
 	uint8_t				newAddress [6];
@@ -410,7 +410,7 @@ if (HoardEquipped ()) {
 	}
 if (!(syncInfoP = AcceptJoinRequest (player)))
 	return;
-memset (&syncInfoP->player [1], 0, sizeof (tSequencePacket));
+memset (&syncInfoP->player [1], 0, sizeof (tPlayerSyncData));
 networkData.bPlayerAdded = 0;
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (player->player.network.GetNetwork () != 0)
@@ -456,12 +456,13 @@ syncInfoP->nExtras = 0;
 syncInfoP->timeout = 0;
 syncInfoP->objs.nFramesToSkip = (gameStates.multi.nGameType == UDP_GAME) ? player->nObjFramesToSkip : 0;
 syncInfoP->tLastJoined = gameStates.app.nSDLTicks [0];
+NetworkSendSync (nPlayer);
 NetworkDoSyncFrame ();
 }
 
 //------------------------------------------------------------------------------
 
-void NetworkAddPlayer (tSequencePacket* playerInfoP)
+void NetworkAddPlayer (tPlayerSyncData* playerInfoP)
 {
 if (NetworkFindPlayer (&playerInfoP->player) > -1)
 	return;
@@ -488,7 +489,7 @@ NetworkSendGameInfo (NULL);
 
 // One of the players decided not to join the game
 
-void NetworkRemovePlayer (tSequencePacket *player)
+void NetworkRemovePlayer (tPlayerSyncData *player)
 {
 	int32_t i, j, pn = NetworkFindPlayer (&player->player);
 
@@ -513,7 +514,7 @@ NetworkSendGameInfo (NULL);
 
 //------------------------------------------------------------------------------
 
-void DoRefuseStuff (tSequencePacket *their)
+void DoRefuseStuff (tPlayerSyncData *their)
 {
   int32_t				i, nNewPlayer;
 
@@ -616,13 +617,13 @@ else {
 void NetworkDumpPlayer (uint8_t * server, uint8_t *node, int32_t nReason)
 {
 	// Inform CPlayerData that he was not chosen for the netgame
-	tSequencePacket temp;
+	tPlayerSyncData temp;
 
 temp.nType = PID_DUMP;
 memcpy (temp.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 temp.player.connected = nReason;
 if (gameStates.multi.nGameType >= IPX_GAME)
-	SendInternetSequencePacket (temp, server, node);
+	SendInternetPlayerSyncData (temp, server, node);
 else
 	Int3 ();
 }

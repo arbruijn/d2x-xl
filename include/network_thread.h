@@ -123,6 +123,7 @@ class CNetworkPacket : public CNetworkPacketData {
 
 		inline int32_t SetTime (int32_t timestamp) { return m_timestamp = timestamp; }
 		inline CNetworkPacket* Next (void) { return m_nextPacket; }
+		inline void Link (CNetworkPacket* packet) { m_nextPacket = packet; }
 		inline CNetworkPacketOwner& Owner (void) { return m_owner; }
 		inline uint32_t Timestamp (void) { return m_timestamp; }
 		inline uint8_t Type (void) { return (m_size > 0) ? m_data.buffer [0]  & ~0x80 : 0xff; }
@@ -182,6 +183,7 @@ class CNetworkPacketQueue {
 		CNetworkPacket* Start (int32_t nPacket = 0);
 		inline CNetworkPacket* Step (void) { return m_current ? m_current = m_current->Next () : NULL; }
 		inline CNetworkPacket* Current (void) { return m_current; }
+		inline void SetCurrent (CNetworkPacket* current) { m_current = current; }
 		void Flush (void);
 		CNetworkPacket* Append (CNetworkPacket* packet = NULL, bool bAllowDuplicates = true, bool bLock = false);
 		CNetworkPacket* Pop (bool bDrop = false, bool bLock = true);
@@ -192,15 +194,11 @@ class CNetworkPacketQueue {
 		int32_t Unlock (bool bLock = true, const char* pszCaller = NULL);
 		bool Validate (void);
 		inline int32_t Length (void) { return m_nPackets; }
+		inline int32_t SetLength (int32_t nPackets) { return m_nPackets = nPackets; }
 		inline void SetType (int32_t nType) { m_nType = nType; }
 		inline bool Empty (void) { return Head () == NULL; }
-};
-
-//------------------------------------------------------------------------------
-
-class CSyncThread {
-	private:
-		CNetworkInfo			m_client;
+		int32_t Grab (CNetworkPacketQueue& sender);
+		void Dispose (CNetworkPacketQueue* receiver = NULL);
 };
 
 //------------------------------------------------------------------------------
@@ -218,6 +216,7 @@ class CNetworkThread {
 		bool						m_bRunning;
 		CNetworkPacketQueue	m_txPacketQueue; // transmit
 		CNetworkPacketQueue	m_rxPacketQueue; // receive
+		CNetworkPacketQueue	m_processPacketQueue;
 		CNetworkPacket*		m_packet;
 		CNetworkPacket*		m_syncPackets;
 		CTimeout					m_toSend;
@@ -235,8 +234,8 @@ class CNetworkThread {
 		void Start (void);
 		void Stop (void);
 		int32_t CheckPlayerTimeouts (void);
-		void SendLifeSign (bool bForce = false);
-		int32_t Listen (void);
+		void SendLifeSign (bool bImmediately = false);
+		int32_t Listen (bool bImmediately = false);
 		CNetworkPacket* GetPacket (bool bLock = true);
 		int32_t GetPacketData (uint8_t* data);
 		int32_t ProcessPackets (void);
@@ -253,7 +252,7 @@ class CNetworkThread {
 		int32_t LockProcess (bool bTry = false) { return Lock (m_processLock); }
 		int32_t UnlockProcess (void) { return Unlock (m_processLock); }
 		bool Send (uint8_t* data, int32_t size, uint8_t* network, uint8_t* srcNode, uint8_t* destNode = NULL);
-		int32_t TransmitPackets (bool bForce = false);
+		int32_t TransmitPackets (bool bImmediately = false);
 		int32_t InitSync (void);
 		void AbortSync (void);
 		void SendSync (void);

@@ -105,7 +105,7 @@ m_vOffs *= (I2X (1) / nSteps);
 int32_t CLightningNode::Clamp (CFixVector *vPos, CFixVector *vBase, int32_t nAmplitude)
 {
 	CFixVector	vRoot;
-	int32_t			nDist = FindPointLineIntersection (vRoot, vBase [0], vBase [1], *vPos, 0);
+	int32_t		nDist = FindPointLineIntersection (vRoot, vBase [0], vBase [1], *vPos, 0);
 
 if (nDist < nAmplitude)
 	return nDist;
@@ -170,7 +170,7 @@ return nDist;
 CFixVector *CLightningNode::Create (CFixVector *vOffs, CFixVector *vAttract, int32_t nDist, int32_t nAmplitude)
 {
 	CFixVector	va = *vAttract;
-	int32_t			i, nDot, nMinDot = I2X (1) / 45 + I2X (1) / 2 - FixDiv (I2X (1) / 2, nAmplitude);
+	int32_t		i, nDot, nMinDot = I2X (1) / 45 + I2X (1) / 2 - FixDiv (I2X (1) / 2, nAmplitude);
 
 if (nDist < I2X (1) / 16)
 	return VmRandomVector (vOffs);

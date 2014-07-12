@@ -902,14 +902,10 @@ if (gameData.render.monsterball.nFaces > 0)
 		transparencyRenderer.AddSphere (riMonsterball, red, green, blue, alpha, objP, 0);
 	else {
 		float r = X2F (objP->info.xSize);
-		ogl.SetTransform (1);
-		ogl.SetupTransform (0);
-		transformation.Begin (objP->info.position.vPos, objP->info.position.mOrient);
 		CFloatVector p;
 		p.SetZero ();
 		gameData.render.monsterball.Render (objP, &p, r, r, r, red, green, blue, gameData.hoard.monsterball.bm.Buffer () ? 1.0f : alpha,
 														&gameData.hoard.monsterball.bm, 4, 0);
-		transformation.End ();
 		ogl.ResetTransform (1);
 		ogl.SetTransform (0);
 		}
