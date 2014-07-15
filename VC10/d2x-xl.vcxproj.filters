@@ -1865,6 +1865,9 @@
     <ClCompile Include="..\network\network_thread.cpp">
       <Filter>Source Files\network\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\network\network_handshake.cpp">
+      <Filter>Source Files\network\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\Websites\Descent\d2x-faq.html">

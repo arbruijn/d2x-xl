@@ -391,6 +391,10 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].nLightRange = 0;
 	extraGameInfo [i].headlight.bAvailable = 1;
 	extraGameInfo [i].headlight.bDrainPower = 1;
+	extraGameInfo [i].timeout.nDisconnectPlayer = TIMEOUT_DISCONNECT;
+	extraGameInfo [i].timeout.nKickPlayer = TIMEOUT_KICK;
+	extraGameInfo [i].timeout.nKeepMessage = TIMEOUT_KEEP_MSG;
+	extraGameInfo [i].timeout.nResendMessage = TIMEOUT_RESEND_MSG;
 	InitEntropySettings (i);
 	InitMonsterballSettings (&extraGameInfo [i].monsterball);
 	}

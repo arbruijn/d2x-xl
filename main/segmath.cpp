@@ -54,6 +54,17 @@ posP->rotVel = objP->RotVelocity ();
 }
 
 // -------------------------------------------------------------------------------
+
+void ExtractLongPos (CObject* objP, tLongPos* posP)
+{
+objP->SetSegment (posP->nSegment);
+objP->Position () = posP->pos;
+objP->Orientation () = posP->orient;
+objP->Velocity () = posP->vel;
+objP->RotVelocity () = posP->rotVel;
+}
+
+// -------------------------------------------------------------------------------
 //	Create a tShortPos struct from an CObject.
 //	Extract the matrix into byte values.
 //	Create a position relative to vertex 0 with 1/256 Normal "fix" precision.

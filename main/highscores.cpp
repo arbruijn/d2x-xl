@@ -559,11 +559,8 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 if (m_bNetwork)
 	NetworkEndLevel (&key);
 
-
 CMenu m (1);
 m.AddGauge ("", "", -1, 1000); //dummy for NetworkEndLevelPoll2()
-
-CTimeout toRender (33);
 
 for (;;) {
 	uint32_t t = SDL_GetTicks ();

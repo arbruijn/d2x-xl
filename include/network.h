@@ -21,7 +21,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "loadgame.h"
 #include "network_thread.h"
 
-#define EGI_DATA_VERSION				7
+#define EGI_DATA_VERSION				8
 
 #define NETWORK_OEM						0x10
 
@@ -50,7 +50,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PID_PLAYERSINFO					45 // 0x2D here's my name & personal data
 #define PID_REQUEST						46 // 0x2E may i join, plz send sync
 #define PID_SYNC							47 // 0x2F master says: enter mine now!
-#define PID_PLAYER_DATA							48 // 0x30
+#define PID_PLAYER_DATA					48 // 0x30
 #define PID_ADDPLAYER					49
 
 #define PID_DUMP							51 // 0x33 you can't join this game
@@ -72,6 +72,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define PID_DOWNLOAD						66
 #define PID_UPLOAD						67
 
+#define PID_RESEND_MESSAGE				68
+#define PID_CONFIRM_MESSAGE			69
+
 #define PID_XML_GAMEINFO				70	// 'F'
 
 #define PID_TRACKER_ADD_SERVER		'S'
@@ -79,6 +82,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define FIRST_PID							PID_LITE_INFO
 #define LAST_PID							PID_TRACKER_GET_SERVERLIST
+
+#if DBG
+#	define TIMEOUT_DISCONNECT			30000
+#	define TIMEOUT_KICK					180000
+#	define TIMEOUT_KEEP_MSG				3000
+#	define TIMEOUT_RESEND_MSG			300
+#else
+#	define TIMEOUT_DISCONNECT			3000
+#	define TIMEOUT_KICK					30000
+#	define TIMEOUT_KEEP_MSG				1500
+#	define TIMEOUT_RESEND_MSG			150
+#endif
+
 
 #if DBG
 #	define UDP_SAFEMODE	0
@@ -184,6 +200,13 @@ typedef struct tLoadoutInfo {
 	uint8_t					nMissiles [10];
 } __pack__ tLoadoutInfo;
 
+typedef struct tTimeoutInfo {
+	uint32_t					nDisconnectPlayer;
+	uint32_t					nKickPlayer;
+	uint16_t					nKeepMessage;
+	uint16_t					nResendMessage;
+} __pack__ tTimeoutInfo;
+
 typedef struct tExtraGameInfo {
 	uint8_t   	nType;
 	int32_t		nVersion;
@@ -193,6 +216,7 @@ typedef struct tExtraGameInfo {
 	tMonsterballInfo	monsterball;
 	tHeadlightInfo		headlight;
 	tLoadoutInfo		loadout;
+	tTimeoutInfo		timeout;
 
 	char		bFriendlyFire;
 	char		bInhibitSuicide;

@@ -1194,12 +1194,19 @@ return weaponToModel [nWeapon];
 }
 
 //-----------------------------------------------------------------------------
+// powerup classes:
+// 1 - guns
+// 2 - missiles
+// 3 - equipment
+// 4 - vulcan ammo
+// 5 - flags
+// 6 - keys
 
 int16_t PowerupsOnShips (int32_t nPowerup)
 {
 	CPlayerData*	playerP = gameData.multiplayer.players;
-	int32_t				nClass, nVulcanAmmo = 0;
-	int16_t				nPowerups = 0, nIndex = PowerupToDevice (nPowerup, &nClass);
+	int32_t			nClass, nVulcanAmmo = 0;
+	int16_t			nPowerups = 0, nIndex = PowerupToDevice (nPowerup, &nClass);
 
 if (!nClass || ((nClass < 3) && (nIndex < 0)))
 	return 0;

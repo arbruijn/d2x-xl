@@ -152,7 +152,7 @@ if (Type () == OBJ_POWERUP) {
 		SetSizeFromPowerup ();
 		cType.powerupInfo.xCreationTime = 0;
 		if (IsMultiGame) {
-			AddPowerupInMine (Id (), true);
+			AddPowerupInMine (Id (), 1, true);
 #if TRACE
 			console.printf (CON_DBG, "PowerupLimiter: ID=%d\n", Id ());
 			if (Id () > MAX_POWERUP_TYPES)

@@ -1469,6 +1469,7 @@
     </ClCompile>
     <ClCompile Include="..\network\autodl.cpp" />
     <ClCompile Include="..\network\banlist.cpp" />
+    <ClCompile Include="..\network\network_handshake.cpp" />
     <ClCompile Include="..\network\network_thread.cpp" />
     <ClCompile Include="..\network\win32\ipx_mcast4.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>

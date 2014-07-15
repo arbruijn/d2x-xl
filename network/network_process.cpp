@@ -236,7 +236,7 @@ for (int32_t nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessPData (uint8_t* data)
+void NetworkProcessPlayerData (uint8_t* data)
 {
 if (netGameInfo.GetShortPackets ())
 	NetworkReadPDataShortPacket (reinterpret_cast<tFrameInfoShort*> (data));
@@ -246,7 +246,7 @@ else
 
 //------------------------------------------------------------------------------
 
-void NetworkProcessNakedPData (uint8_t *data, int32_t len)
+void NetworkProcessMineData (uint8_t *data, int32_t len)
  {
    int32_t nPlayer = data [1]; 
    Assert (data [0] == PID_MINE_DATA);

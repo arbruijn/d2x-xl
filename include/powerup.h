@@ -169,10 +169,10 @@ return (nId == POW_EXTRA_LIFE) || (nId == POW_ENERGY) || (nId == POW_SHIELD_BOOS
 
 //------------------------------------------------------------------------------
 
-void AddAllowedPowerup (int32_t nPowerup, int32_t nCount = 1);
-void RemoveAllowedPowerup (int32_t nPowerup);
-void AddPowerupInMine (int32_t nPowerup, bool bIncreaseLimit = false);
-void RemovePowerupInMine (int32_t nPowerup);
+void AddAllowedPowerup (int32_t nPowerup, uint32_t nCount = 1);
+void RemoveAllowedPowerup (int32_t nPowerup, uint32_t nCount = 1);
+void AddPowerupInMine (int32_t nPowerup, uint32_t nCount = 1, bool bIncreaseLimit = false);
+void RemovePowerupInMine (int32_t nPowerup, uint32_t nCount = 1);
 int32_t PowerupsInMine (int32_t nPowerup);
 int32_t MissingPowerups (int32_t nPowerup, int32_t bBreakDown = 0);
 

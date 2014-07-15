@@ -1572,6 +1572,7 @@ void CObjectData::InitFreeList (void)
 {
 for (int32_t i = 0; i < LEVEL_OBJECTS; i++) {
 	gameData.objs.freeList [i] = i;
+	gameData.objs.freeListIndex.Clear (0xff);
 	OBJECTS [i].Init ();
 	}
 }
@@ -1584,6 +1585,7 @@ Init ();
 CREATE (gameData.objs.objects, LEVEL_OBJECTS, 0);
 CREATE (gameData.objs.update, LEVEL_OBJECTS, 0);
 CREATE (gameData.objs.freeList, LEVEL_OBJECTS, 0);
+CREATE (gameData.objs.freeListIndex, LEVEL_OBJECTS, 0xff);
 CREATE (gameData.objs.parentObjs, LEVEL_OBJECTS, (char) 0xff);
 CREATE (gameData.objs.childObjs, LEVEL_OBJECTS, 0);
 CREATE (gameData.objs.firstChild, LEVEL_OBJECTS, (char) 0xff);
@@ -1608,6 +1610,7 @@ void CObjectData::Destroy (void)
 {
 DESTROY (gameData.objs.objects);
 DESTROY (gameData.objs.effects);
+DESTROY (gameData.objs.freeListIndex);
 DESTROY (gameData.objs.freeList);
 DESTROY (gameData.objs.parentObjs);
 DESTROY (gameData.objs.childObjs);

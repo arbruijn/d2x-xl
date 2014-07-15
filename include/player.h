@@ -149,9 +149,9 @@ class __pack__ CShipEnergy {
 class CPlayerInfo {
 	public:
 		// Who am I data
-		char    callsign [CALLSIGN_LEN+1];  // The callsign of this player, for net purposes.
-		uint8_t   netAddress[6];					// The network address of the player.
-		int8_t   connected;						// Is the player connected or not?
+		char			callsign [CALLSIGN_LEN+1];  // The callsign of this player, for net purposes.
+		uint8_t		netAddress[6];					// The network address of the player.
+		int8_t		connected;						// Is the player connected or not?
 		int32_t     nObject;						   // What CObject number this player is. (made an int32_t by mk because it's very often referenced)
 		int32_t     nPacketsGot;					   // How many packets we got from them
 		int32_t     nPacketsSent;					// How many packets we sent to them
@@ -160,20 +160,20 @@ class CPlayerInfo {
 
 		// Game data
 		uint32_t    flags;							// Powerup flags, see below...
-		fix     energy;						// Amount of energy remaining.
-		fix     shield;						// shield remaining (protection)
-		uint8_t   lives;							// Lives remaining, 0 = game over.
-		int8_t   level;							// Current level player is playing. (must be signed for secret levels)
-		uint8_t   laserLevel;					// Current level of the laser.
-		int8_t   startingLevel;				// What level the player started on.
-		int16_t   nKillerObj;					// Who killed me.... (-1 if no one)
-		uint16_t  primaryWeaponFlags;		// bit set indicates the player has this weapon.
-		uint16_t  secondaryWeaponFlags;		// bit set indicates the player has this weapon.
-		uint16_t  primaryAmmo [MAX_PRIMARY_WEAPONS]; // How much ammo of each nType.
-		uint16_t  secondaryAmmo [MAX_SECONDARY_WEAPONS]; // How much ammo of each nType.
+		fix			energy;						// Amount of energy remaining.
+		fix			shield;						// shield remaining (protection)
+		uint8_t		lives;							// Lives remaining, 0 = game over.
+		int8_t		level;							// Current level player is playing. (must be signed for secret levels)
+		uint8_t		laserLevel;					// Current level of the laser.
+		int8_t		startingLevel;				// What level the player started on.
+		int16_t		nKillerObj;					// Who killed me.... (-1 if no one)
+		uint16_t		primaryWeaponFlags;		// bit set indicates the player has this weapon.
+		uint16_t		secondaryWeaponFlags;		// bit set indicates the player has this weapon.
+		uint16_t		primaryAmmo [MAX_PRIMARY_WEAPONS]; // How much ammo of each nType.
+		uint16_t		secondaryAmmo [MAX_SECONDARY_WEAPONS]; // How much ammo of each nType.
 	#if 1 //for inventory system
-		uint8_t	  nInvuls;
-		uint8_t   nCloaks;
+		uint8_t		nInvuls;
+		uint8_t		nCloaks;
 	#else
 		uint16_t  pad; // Pad because increased weaponFlags from byte to int16_t -YW 3/22/95
 	#endif
@@ -182,23 +182,23 @@ class CPlayerInfo {
 		// Statistics...
 		int32_t     lastScore;            // Score at beginning of current level.
 		int32_t     score;                // Current score.
-		fix     timeLevel;            // Level time played
-		fix     timeTotal;            // Game time played (high word = seconds)
+		fix			timeLevel;            // Level time played
+		fix			timeTotal;            // Game time played (high word = seconds)
 
-		fix     cloakTime;            // Time cloaked
-		fix     invulnerableTime;     // Time invulnerable
+		fix			cloakTime;            // Time cloaked
+		fix			invulnerableTime;     // Time invulnerable
 
-		int16_t   nScoreGoalCount;       // Num of players killed this level
-		int16_t   netKilledTotal;			// Number of times killed total
-		int16_t   netKillsTotal;        // Number of net kills total
-		int16_t   numKillsLevel;        // Number of kills this level
-		int16_t   numKillsTotal;        // Number of kills total
-		int16_t   numRobotsLevel;       // Number of initial robots this level
-		int16_t   numRobotsTotal;       // Number of robots total
+		int16_t		nScoreGoalCount;       // Num of players killed this level
+		int16_t		netKilledTotal;			// Number of times killed total
+		int16_t		netKillsTotal;        // Number of net kills total
+		int16_t		numKillsLevel;        // Number of kills this level
+		int16_t		numKillsTotal;        // Number of kills total
+		int16_t		numRobotsLevel;       // Number of initial robots this level
+		int16_t		numRobotsTotal;       // Number of robots total
 		tPlayerHostages	hostages;
-		fix     homingObjectDist;     // Distance of nearest homing CObject.
-		int8_t   hoursLevel;           // Hours played (since timeTotal can only go up to 9 hours)
-		int8_t   hoursTotal;           // Hours played (since timeTotal can only go up to 9 hours)
+		fix			homingObjectDist;     // Distance of nearest homing CObject.
+		int8_t		hoursLevel;           // Hours played (since timeTotal can only go up to 9 hours)
+		int8_t		hoursTotal;           // Hours played (since timeTotal can only go up to 9 hours)
 
 	public:
 		inline bool HasLeft (void) { return (connected == 0) && (*callsign == '\0'); }
@@ -212,12 +212,12 @@ class __pack__ CPlayerData : public CPlayerInfo {
 	public:
 		CShipEnergy	m_shield;
 		CShipEnergy	m_energy;
-		uint8_t			m_laserLevels [2];
-		uint8_t			m_bExploded;
-		uint8_t			m_nLevel;
-		int32_t			m_tDisconnect;
-		int32_t			m_tDeath;
-		int32_t			m_tWeaponInfo;
+		uint8_t		m_laserLevels [2];
+		uint8_t		m_bExploded;
+		uint8_t		m_nLevel;
+		int32_t		m_tDisconnect;
+		int32_t		m_tDeath;
+		int32_t		m_tWeaponInfo;
 
 	public:
 		CPlayerData () { 

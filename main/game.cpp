@@ -89,6 +89,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "menubackground.h"
 #include "findpath.h"
 #include "waypoint.h"
+#include "network_lib.h"
 
 #define PHYSICS_IN_BACKGROUND 0
 
@@ -235,6 +236,8 @@ nClearWindow = 2;		//	do portal only window clear.
 PrintLog (-1);
 /*---*/PrintLog (1, "Detail levels (%d)...\n", gameStates.app.nDetailLevel);
 gameStates.app.nDetailLevel = InitDetailLevels (gameStates.app.nDetailLevel);
+importantMessages [0].Destroy ();
+importantMessages [1].Destroy ();
 PrintLog (-1);
 PrintLog (-1);
 fpDrawTexPolyMulti = G3DrawTexPolyMulti;
@@ -473,6 +476,8 @@ ProfilerSetStatus (0);
 #endif
 DestroyEffectsThread ();
 networkThread.Stop ();
+importantMessages [0].Destroy ();
+importantMessages [1].Destroy ();
 songManager.DestroyPlaylists ();
 gameData.time.xGameTotal = (SDL_GetTicks () - gameData.time.xGameStart) / 1000;
 gameStates.render.bRenderIndirect = 0;

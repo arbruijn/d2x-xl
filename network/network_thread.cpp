@@ -37,16 +37,12 @@
 #	define UPDATE_TIMEOUT		500
 #	define MAX_PACKET_AGE		300000
 #	define MAX_CLIENT_AGE		300000
-#	define TIMEOUT_DISCONNECT	300000
-#	define TIMEOUT_KICK			180000
 #else
 #	define LISTEN_TIMEOUT		10
 #	define SEND_TIMEOUT			0
 #	define UPDATE_TIMEOUT		500
 #	define MAX_PACKET_AGE		3000
 #	define MAX_CLIENT_AGE		300000
-#	define TIMEOUT_DISCONNECT	3000
-#	define TIMEOUT_KICK			180000
 #endif
 
 #if DBG
@@ -978,7 +974,7 @@ if (to.Expired () /*&& !gameData.reactor.bDestroyed*/)
 						}
 
 				case 2:
-					if ((networkData.nLastPacketTime [nPlayer] == 0) || (t - networkData.nLastPacketTime [nPlayer] < TIMEOUT_DISCONNECT)) {
+					if ((networkData.nLastPacketTime [nPlayer] == 0) || (t - networkData.nLastPacketTime [nPlayer] < extraGameInfo [0].timeout.nDisconnectPlayer)) {
 						ResetPlayerTimeout (nPlayer, t);
 						break;
 						}

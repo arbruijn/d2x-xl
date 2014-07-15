@@ -124,7 +124,6 @@ netGameInfo.m_info.DoHeadlight = m.Value ("headlight");
 fix nLastPlayTime = -1;
 int32_t nLastReactorLife = 0;
 int32_t nLastScoreGoal = -1;
-int32_t nLastMaxPlayers = -1;
 
 //------------------------------------------------------------------------------
 
@@ -353,113 +352,7 @@ const char* szGameTypeList [10];
 const char* szGameAccessList [3];
 
 static int32_t nGameTypes = -1, nGameItem = -1;
-static int32_t oldMaxPlayers = 0;
-
-//------------------------------------------------------------------------------
-
-inline void AdjustMaxPlayers (CMenuItem* maxPlayers, bool bCoop)
-{
-if (bCoop) { // coop
-	oldMaxPlayers = 1;
-	if (maxPlayers->Value () > 2)  {
-		maxPlayers->Value () = 2;
-		maxPlayers->Redraw ();
-		}
-	if (!(netGameInfo.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))
-		netGameInfo.m_info.gameFlags |= NETGAME_FLAG_SHOW_MAP;
-	if (netGameInfo.GetPlayTimeAllowed () || netGameInfo.GetScoreGoal ()) {
-		netGameInfo.SetPlayTimeAllowed (0);
-		netGameInfo.SetScoreGoal (0);
-		}
-	}
-else {
-	if (oldMaxPlayers) {
-		oldMaxPlayers = 0;
-		maxPlayers->Value () = 
-		maxPlayers->MaxValue () = MAX_NUM_NET_PLAYERS - 2;
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
-int32_t NetworkGameParamPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
-{
-if (nState)
-	return nCurItem;
-if (!menu.Available ("max. players"))
-	return nCurItem;
-
-CMenuItem* maxPlayers = menu ["max. players"];
-
-if (gameStates.app.bNostalgia) {
-	int32_t i = menu.IndexOf ("anarchy");
-	if ((nCurItem >= i) && (nCurItem < i + nGameTypes)) {
-		if ((nCurItem != nGameItem) && menu [nCurItem].Value ()) {
-			nGameItem = nCurItem;
-			key = -2;
-			return nCurItem;
-			}
-		}
-	// enable/disable entropy / monsterball options menu links
-	if ((menu.Available ("entropy") && ((menu.Value ("entropy") != 0) == !menu.Available ("entropy options"))) ||
-		 (menu.Available ("monsterball") && ((menu.Value ("monsterball") != 0) == !menu.Available ("monsterball options")) && (gameOpts->app.bExpertMode == SUPERUSER)))
-		key = -2;
-	//force restricted game for team games
-	//obsolete with D2X-W32 as it can assign players to teams automatically
-	//even in a match and progress, and allows players to switch teams
-	AdjustMaxPlayers (maxPlayers, menu.Value ("coop") != 0);
-	}
-else {
-	CMenuItem*	m;
-	int32_t		v;
-	char			szSlider [50];
-
-	if ((m = menu ["game type"])) {
-		v = m->Value ();
-		if (mpParams.nGameType != v) {
-			mpParams.nGameType = v;
-			sprintf (szSlider + 1, TXT_GAME_TYPE, szGameTypeList [mpParams.nGameType]);
-			*szSlider = *(TXT_GAME_TYPE - 1);
-			strcpy (m->Text (), szSlider + 1);
-			m->Rebuild ();
-			AdjustMaxPlayers (maxPlayers, v == 3);
-			// enable/disable entropy / monsterball options menu links
-			if (((m->MaxValue () == sizeofa (szGameTypeList) - 1) && ((v == 8) != menu.Available ("entropy options"))) ||
-				 ((m->MaxValue () == sizeofa (szGameTypeList) - 1) && ((v == 9) != menu.Available ("monsterball options")) && (gameOpts->app.bExpertMode == SUPERUSER)))
-				key = -2;
-			}
-		}  
-
-	if ((m = menu ["game access"])) {
-		v = m->Value ();
-		if (mpParams.nGameAccess != v) {
-			mpParams.nGameAccess = v;
-			sprintf (szSlider + 1, TXT_GAME_ACCESS, szGameAccessList [mpParams.nGameAccess]);
-			*szSlider = *(TXT_GAME_ACCESS - 1);
-			strcpy (m->Text (), szSlider + 1);
-			m->Rebuild ();
-			}
-		}  
-
-	if ((m = menu ["level number"])) {
-		v = m->Value () + 1;
-		if (mpParams.nLevel != v) {
-			mpParams.nLevel = v;
-			sprintf (szSlider, "%s %d", TXT_LEVEL_, mpParams.nLevel);
-			strcpy (m->Text (), szSlider);
-			m->Rebuild ();
-			}
-		}  
-	}
-
-if (nLastMaxPlayers != menu.Value ("max. players"))  {
-	sprintf (maxPlayers->Text (), TXT_MAX_PLAYERS, maxPlayers->Value () + 2);
-	nLastMaxPlayers = maxPlayers->Value ();
-	maxPlayers->Rebuild ();
-	}               
-return nCurItem;
-}
+static int32_t nMaxPlayers [2] = {0, 0};
 
 //------------------------------------------------------------------------------
 
@@ -1039,6 +932,113 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+inline void AdjustMaxPlayers (CMenuItem* maxPlayers, bool bCoop)
+{
+if (bCoop) { // coop
+	nMaxPlayers [0] = maxPlayers->Value ();
+	maxPlayers->Value () = nMaxPlayers [1];
+	maxPlayers->MaxValue () = 2;
+	maxPlayers->Redraw ();
+	if (!(netGameInfo.m_info.gameFlags & NETGAME_FLAG_SHOW_MAP))
+		netGameInfo.m_info.gameFlags |= NETGAME_FLAG_SHOW_MAP;
+	if (netGameInfo.GetPlayTimeAllowed () || netGameInfo.GetScoreGoal ()) {
+		netGameInfo.SetPlayTimeAllowed (0);
+		netGameInfo.SetScoreGoal (0);
+		}
+	}
+else {
+	nMaxPlayers [1] = maxPlayers->Value ();
+	maxPlayers->Value () = nMaxPlayers [0];
+	maxPlayers->MaxValue () = MAX_NUM_NET_PLAYERS - 2;
+	}
+sprintf (maxPlayers->Text (), TXT_MAX_PLAYERS, nMaxPlayers [bCoop] + 2);
+}
+
+//------------------------------------------------------------------------------
+
+int32_t NetworkGameParamPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
+{
+if (nState)
+	return nCurItem;
+if (!menu.Available ("max. players"))
+	return nCurItem;
+
+CMenuItem* maxPlayers = menu ["max. players"];
+
+if (gameStates.app.bNostalgia) {
+	int32_t i = menu.IndexOf ("anarchy");
+	if ((nCurItem >= i) && (nCurItem < i + nGameTypes)) {
+		if ((nCurItem != nGameItem) && menu [nCurItem].Value ()) {
+			nGameItem = nCurItem;
+			key = -2;
+			return nCurItem;
+			}
+		}
+	AdjustMaxPlayers (maxPlayers, menu.Value ("coop") != 0);
+	// enable/disable entropy / monsterball options menu links
+	//if ((menu.Available ("entropy") && ((menu.Value ("entropy") != 0) == !menu.Available ("entropy options"))) ||
+	//	 (menu.Available ("monsterball") && ((menu.Value ("monsterball") != 0) == !menu.Available ("monsterball options")) && (gameOpts->app.bExpertMode == SUPERUSER)))
+		key = -2;
+	//force restricted game for team games
+	//obsolete with D2X-W32 as it can assign players to teams automatically
+	//even in a match and progress, and allows players to switch teams
+		return nCurItem;
+	}
+else {
+	CMenuItem*	m;
+	int32_t		v;
+	char			szSlider [50];
+
+	if ((m = menu ["game type"])) {
+		v = m->Value ();
+		if (mpParams.nGameType != v) {
+			mpParams.nGameType = v;
+			sprintf (szSlider + 1, TXT_GAME_TYPE, szGameTypeList [mpParams.nGameType]);
+			*szSlider = *(TXT_GAME_TYPE - 1);
+			strcpy (m->Text (), szSlider + 1);
+			m->Rebuild ();
+			AdjustMaxPlayers (maxPlayers, v == 3);
+			// enable/disable entropy / monsterball options menu links
+			//if (((m->MaxValue () == sizeofa (szGameTypeList) - 1) && ((v == 8) != menu.Available ("entropy options"))) ||
+			//	 ((m->MaxValue () == sizeofa (szGameTypeList) - 1) && ((v == 9) != menu.Available ("monsterball options")) && (gameOpts->app.bExpertMode == SUPERUSER)))
+				key = -2;
+			return nCurItem;
+			}
+		}  
+
+	if ((m = menu ["game access"])) {
+		v = m->Value ();
+		if (mpParams.nGameAccess != v) {
+			mpParams.nGameAccess = v;
+			sprintf (szSlider + 1, TXT_GAME_ACCESS, szGameAccessList [mpParams.nGameAccess]);
+			*szSlider = *(TXT_GAME_ACCESS - 1);
+			strcpy (m->Text (), szSlider + 1);
+			m->Rebuild ();
+			}
+		}  
+
+	if ((m = menu ["level number"])) {
+		v = m->Value () + 1;
+		if (mpParams.nLevel != v) {
+			mpParams.nLevel = v;
+			sprintf (szSlider, "%s %d", TXT_LEVEL_, mpParams.nLevel);
+			strcpy (m->Text (), szSlider);
+			m->Rebuild ();
+			}
+		}  
+	}
+
+bool bCoop = gameStates.app.bNostalgia ? menu.Value ("coop") != 0 : mpParams.nGameType == 3;
+if (nMaxPlayers [bCoop] != maxPlayers->Value ()) {
+	nMaxPlayers [bCoop] = maxPlayers->Value ();
+	sprintf (maxPlayers->Text (), TXT_MAX_PLAYERS, nMaxPlayers [bCoop] + 2);
+	maxPlayers->Rebuild ();
+	}               
+return nCurItem;
+}
+
+//------------------------------------------------------------------------------
+
 void BuildGameParamsMenu (CMenu& m, char* szName, char* szLevelText, char* szLevel, char* szIpAddr, char* szMaxPlayers, int32_t nNewMission)
 {
 	int32_t bHoard = HoardEquipped ();
@@ -1140,10 +1140,10 @@ else {
 	m.AddSlider ("game access", szSlider + 1, NMCLAMP (mpParams.nGameAccess, 0, 2), 0, 2, KEY_A, HTX_GAME_ACCESS);
 	}
 
-sprintf (szMaxPlayers + 1, TXT_MAX_PLAYERS, gameData.multiplayer.nMaxPlayers);
+bool bCoop = gameStates.app.bNostalgia ? m.Value ("coop") != 0 : mpParams.nGameType == 3;
+sprintf (szMaxPlayers + 1, TXT_MAX_PLAYERS, nMaxPlayers [bCoop] + 2);
 *szMaxPlayers = *(TXT_MAX_PLAYERS - 1);
-nLastMaxPlayers = gameData.multiplayer.nMaxPlayers - 2;
-m.AddSlider ("max. players", szMaxPlayers + 1, nLastMaxPlayers, 0, nLastMaxPlayers, KEY_P, HTX_MULTI_MAXPLRS); 
+m.AddSlider ("max. players", szMaxPlayers + 1, nMaxPlayers [bCoop], 0, bCoop ? 2 : MAX_NUM_NET_PLAYERS - 2, KEY_P, HTX_MULTI_MAXPLRS); 
 m.AddText ("", "");
 m.AddMenu ("more options", TXT_MORE_OPTS, KEY_M, HTX_MULTI_MOREOPTS);
 if (!gameStates.app.bNostalgia) {
@@ -1276,23 +1276,24 @@ if (key != -1) {
 		return 1;
 	}
 
-	for (h = i = m.IndexOf ("anarchy"), j = m.IndexOf ("end of game types"); i < j; i++)
-		if (m [i].Value ()) {
-			mpParams.nGameType = i - h;
-			break;
-			}
+	if (gameStates.app.bNostalgia) {
+		for (h = i = m.IndexOf ("anarchy"), j = m.IndexOf ("end of game types"); i < j; i++)
+			if (m [i].Value ()) {
+				mpParams.nGameType = i - h;
+				break;
+				}
 
-	for (h = i = m.IndexOf ("open game"), j = m.IndexOf ("end of game access"); i < j; i++)
-		if (m [i].Value ()) {
-			mpParams.nGameAccess = i - h;
-			break;
-			}
-
+		for (h = i = m.IndexOf ("open game"), j = m.IndexOf ("end of game access"); i < j; i++)
+			if (m [i].Value ()) {
+				mpParams.nGameAccess = i - h;
+				break;
+				}
+		}
 	if (!NetworkGetGameType (m, bAnarchyOnly))
 		return 1;
-	if (m.Value ("closed game"))
+	if (mpParams.nGameAccess == 1)
 		netGameInfo.m_info.gameFlags |= NETGAME_FLAG_CLOSED;
-	netGameInfo.m_info.bRefusePlayers = m.Value ("restricted game");
+	netGameInfo.m_info.bRefusePlayers = mpParams.nGameAccess == 2;
 	}
 NetworkSetGameMode (mpParams.nGameMode);
 if (key == -2)
@@ -1337,6 +1338,9 @@ nGameItem = -1;
 *szMaxPlayers =
 *szIpAddr =
 *szLevel = '\0';
+
+bool bCoop = gameStates.app.bNostalgia ? m.Value ("coop") != 0 : mpParams.nGameType == 3;
+nMaxPlayers [bCoop] = Min (gameData.multiplayer.nMaxPlayers - 2, bCoop ? 4 : MAX_NUM_NET_PLAYERS);
 
 do {
 	PrintLog (1, "building game parameters menu\n");

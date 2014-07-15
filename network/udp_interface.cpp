@@ -376,8 +376,10 @@ int32_t CClientManager::BuildInterfaceList (void)
 	struct sockaddr_in*	sinp, * sinmp;
 
 m_broads.Destroy ();
-if ((sock = socket (AF_INET, SOCK_DGRAM,IPPROTO_UDP)) < 0)
+if ((sock = socket (AF_INET, SOCK_DGRAM,IPPROTO_UDP)) < 0) {
 	FAIL ("creating socket during broadcast detection");
+	return 0;
+	}
 
 #ifdef SIOCGIFCOUNT
 if (ioctl (sock, SIOCGIFCOUNT, &m_nBroads)) {
@@ -742,6 +744,8 @@ static int32_t UDPOpenSocket (ipx_socket_t *sk, int32_t port)
 	uint16_t	nServerPort = mpParams.udpPorts [0] + networkData.nPortOffset,
 				nLocalPort = gameStates.multi.bServer [0] ? nServerPort : mpParams.udpPorts [1];
 
+PrintLog (1, "UDP interface: OpenSocket (port %d)\n", port);
+
 gameStates.multi.bHaveLocalAddress = 0;
 if (!nOpenSockets && (UDPGetMyAddress () < 0)) {
 	FAIL ("couldn't get my address");
@@ -764,6 +768,8 @@ sk->fd = (UINT_PTR) (socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP));
 if (0 > (INT_PTR) (sk->fd)) {
 	sk->fd = (UINT_PTR) (-1);
 	FAIL ("couldn't create socket on local port %d", nLocalPort);
+	PrintLog (-1);
+	return 1;
 	}
 #ifdef _WIN32
 ioctlsocket (sk->fd, FIONBIO, &sockBlockMode);
@@ -794,10 +800,11 @@ if (gameStates.multi.bServer [0] || mpParams.udpPorts [1]) {
 #endif
 		sk->fd = (UINT_PTR) (-1);
 		FAIL ("couldn't bind to local port %d", nLocalPort);
+		PrintLog (-1);
 		return 1;
 		}
 	}
-PrintLog (0, "Opened UDP connection (socket %d, port %d)\n", sk->fd, nLocalPort);
+PrintLog (-1, "Opened UDP connection (socket %d, port %d)\n", sk->fd, nLocalPort);
 nOpenSockets++;
 sk->socket = nLocalPort;
 return 0;
@@ -812,15 +819,15 @@ if (!gameStates.multi.bKeepClients)
 	clientManager.Destroy ();
 gameStates.multi.bHaveLocalAddress = 0;
 if (!nOpenSockets) {
-	PrintLog (0, "UDP interface: close w/o open\n");
+	PrintLog (0, "UDP interface: Trying to close a socket, but none are open\n");
 	return;
 	}
-PrintLog (1, "UDP interface: CloseSocket on D1X socket port %d\n", mysock->socket);
+PrintLog (1, "UDP interface: CloseSocket (socket %d, port %d)\n", mysock->fd, mysock->socket);
 if (closesocket (mysock->fd))
-	PrintLog (0, "UDP interface: closesocket() failed on CloseSocket D1X socket port %d.\n", mysock->socket);
+	PrintLog (0, "UDP interface: closesocket(%d) failed\n", mysock->socket);
 mysock->fd = (UINT_PTR) (-1);
 if (--nOpenSockets)
-	PrintLog (0, "UDP interface: (closesocket) %d sockets left\n", nOpenSockets);
+	PrintLog (0, "UDP interface (%s): %d sockets left\n", __FUNCTION__, nOpenSockets);
 PrintLog (-1);
 }
 

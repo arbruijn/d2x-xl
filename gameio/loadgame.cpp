@@ -2050,18 +2050,15 @@ PrepareSecretLevel (missionManager.NextLevel (), true);
 
 void CObject::Bash (uint8_t nId)
 {
-gameData.multiplayer.powerupsInMine [info.nId] =
-gameData.multiplayer.maxPowerupsAllowed [info.nId] = 0;
-if (MultiPowerupIs4Pack (info.nId))
-	gameData.multiplayer.powerupsInMine [info.nId - 1] =
-	gameData.multiplayer.maxPowerupsAllowed [info.nId - 1] = 0;
-else if (MultiPowerupIs4Pack (info.nId + 1))
-	gameData.multiplayer.powerupsInMine [info.nId + 1] =
-	gameData.multiplayer.maxPowerupsAllowed [info.nId + 1] = 0;
-SetType (OBJ_POWERUP);
+if (Type () == OBJ_POWERUP)
+	RemovePowerupInMine (info.nId);
+AddPowerupInMine (nId, 1, true);
+if (Type () != OBJ_POWERUP) {
+	SetType (OBJ_POWERUP);
+	info.renderType = RT_POWERUP;
+	info.controlType = CT_POWERUP;
+	}
 info.nId = nId;
-info.renderType = RT_POWERUP;
-info.controlType = CT_POWERUP;
 SetSizeFromPowerup ();
 rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [nId].nClipIndex;
 rType.vClipInfo.xFrameTime = gameData.effects.vClips [0][rType.vClipInfo.nClipIndex].xFrameTime;

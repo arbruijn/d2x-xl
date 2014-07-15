@@ -64,6 +64,8 @@ memset (addressFilter, 0, sizeof (addressFilter));
 	 addressFilter [PID_DOWNLOAD] =
 	 addressFilter [PID_UPLOAD] =
 	 addressFilter [PID_XML_GAMEINFO] =
+	 addressFilter [PID_RESEND_MESSAGE] =
+	 addressFilter [PID_CONFIRM_MESSAGE] =
 	 addressFilter [(int32_t) PID_TRACKER_ADD_SERVER] =
 	 addressFilter [(int32_t) PID_TRACKER_GET_SERVERLIST] = 1;
 }
@@ -337,19 +339,39 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t PDataHandler (uint8_t* data, int32_t nLength)
+int MultiProcessData (uint8_t* buf, int32_t len);
+
+int32_t ResentMessageHandler (uint8_t* data, int32_t nLength)
 {
-if (IsNetworkGame)
-	NetworkProcessPData (data);
+MultiProcessData (data + 1, nLength - 1);
 return 1;
 }
 
 //------------------------------------------------------------------------------
 
-int32_t NakedPDataHandler (uint8_t* data, int32_t nLength)
+void MultiDoConfirmMessage (uint8_t* buf);
+
+int32_t ConfirmMessageHandler (uint8_t* data, int32_t nLength)
+{
+MultiDoConfirmMessage (data);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t PlayerDataHandler (uint8_t* data, int32_t nLength)
 {
 if (IsNetworkGame)
-	NetworkProcessNakedPData (data, nLength);
+	NetworkProcessPlayerData (data);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t MineDataHandler (uint8_t* data, int32_t nLength)
+{
+if (IsNetworkGame)
+	NetworkProcessMineData (data, nLength);
 return 1;
 }
 
@@ -460,7 +482,7 @@ PHINIT (PID_SEND_ALL_GAMEINFO, AllGameInfoHandler, SEQUENCE_PACKET_SIZE, (1 << N
 PHINIT (PID_PLAYERSINFO, PlayersInfoHandler, ALLNETPLAYERSINFO_SIZE, (1 << NETSTAT_WAITING) | (1 << NETSTAT_PLAYING));
 PHINIT (PID_REQUEST, RequestHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_STARTING) | (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
 PHINIT (PID_SYNC, SyncHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
-PHINIT (PID_PLAYER_DATA, PDataHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING) | (1 << NETSTAT_ENDLEVEL));
+PHINIT (PID_PLAYER_DATA, PlayerDataHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING) | (1 << NETSTAT_ENDLEVEL));
 PHINIT (PID_ADDPLAYER, AddPlayerHandler, SEQUENCE_PACKET_SIZE, (int16_t) 0xFFFF);
 PHINIT (PID_DUMP, DumpHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING));
 PHINIT (PID_ENDLEVEL, EndLevelHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_ENDLEVEL));
@@ -472,7 +494,7 @@ PHINIT (PID_PING_SEND, PingSendHandler, 0, (int16_t) 0xFFFF);
 PHINIT (PID_PING_RETURN, PingReturnHandler, 0, (int16_t) 0xFFFF);
 PHINIT (PID_GAME_UPDATE, GameUpdateHandler, 0, (int16_t) 0xFFFF);
 PHINIT (PID_ENDLEVEL_SHORT, EndLevelShortHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_ENDLEVEL));
-PHINIT (PID_MINE_DATA, NakedPDataHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING) | (1 << NETSTAT_ENDLEVEL));
+PHINIT (PID_MINE_DATA, MineDataHandler, 0, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_WAITING) | (1 << NETSTAT_ENDLEVEL));
 PHINIT (PID_GAME_PLAYERS, GamePlayersHandler, SEQUENCE_PACKET_SIZE, (1 << NETSTAT_PLAYING) | (1 << NETSTAT_STARTING) | (1 << NETSTAT_ENDLEVEL));
 PHINIT (PID_NAMES_RETURN, NamesReturnHandler, 0, 1 << NETSTAT_BROWSING);
 PHINIT (PID_EXTRA_GAMEINFO, ExtraGameInfoHandler, 0, (int16_t) 0xFFFF);
@@ -481,6 +503,8 @@ PHINIT (PID_UPLOAD, UploadHandler, 0, (1 << NETSTAT_STARTING) | (1 << NETSTAT_PL
 PHINIT (PID_XML_GAMEINFO, XMLGameInfoHandler, 0, (int16_t) 0xFFFF);
 PHINIT (PID_TRACKER_GET_SERVERLIST, TrackerHandler, 0, (int16_t) 0xFFFF);
 PHINIT (PID_TRACKER_ADD_SERVER, TrackerHandler, 0, (int16_t) 0xFFFF);
+PHINIT (PID_RESEND_MESSAGE, ResentMessageHandler, 0, (1 << NETSTAT_PLAYING));
+PHINIT (PID_CONFIRM_MESSAGE, ConfirmMessageHandler, 0, (1 << NETSTAT_PLAYING));
 }
 
 //-----------------------------------------------------------------------------------------------------------------

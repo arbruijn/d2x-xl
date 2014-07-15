@@ -217,6 +217,9 @@ void IPXSendInternetPacketData (uint8_t * data, int32_t datasize, uint8_t * serv
 // Sends a packet to everyone in the game
 int32_t IpxSendGamePacket (uint8_t *data, int32_t datasize);
 
+// Sends a packet to one player in the game
+int32_t IpxSendPlayerPacket (uint8_t nPlayer, uint8_t *data, int32_t dataSize);
+
 // Initialize and handle the protocol-specific field of the netgame struct.
 void IpxInitNetGameAuxData (uint8_t data[]);
 int32_t IpxHandleNetGameAuxData (const uint8_t data[]);

@@ -2284,6 +2284,7 @@ class CObjectData {
 		CArray<tBaseObject>		effects;
 		CObjLists					lists;
 		CArray<int16_t>			freeList;
+		CArray<int16_t>			freeListIndex;
 		CArray<int16_t>			parentObjs;
 		CArray<tObjectRef>		childObjs;
 		CArray<int16_t>			firstChild;
@@ -2830,7 +2831,7 @@ class CMultiMsgData {
 		int32_t				nIndex;
 		char					szMsg [MAX_MESSAGE_LEN];
 		char					szMacro [4][MAX_MESSAGE_LEN];
-		uint8_t				buf [MAX_MULTI_MESSAGE_LEN+4];            // This is where multiplayer message are built
+		uint8_t				buf [MULTI_MAX_MSG_LEN+4];            // This is where multiplayer message are built
 		int32_t				nReceiver;
 
 	public:

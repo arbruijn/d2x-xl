@@ -36,8 +36,8 @@ void MultiSendMessage (void)
 	int32_t bufP = 0;
 
 if (gameData.multigame.msg.nReceiver != -1) {
-	gameData.multigame.msg.buf [bufP++] = (char)MULTI_MESSAGE;            
-	gameData.multigame.msg.buf [bufP++] = (char)N_LOCALPLAYER;                       
+	gameData.multigame.msg.buf [bufP++] = (uint8_t) MULTI_MESSAGE;            
+	gameData.multigame.msg.buf [bufP++] = (uint8_t) N_LOCALPLAYER;                       
 	strncpy ((char*) gameData.multigame.msg.buf + bufP, gameData.multigame.msg.szMsg, MAX_MESSAGE_LEN); 
 	bufP += MAX_MESSAGE_LEN;
 	gameData.multigame.msg.buf [bufP-1] = '\0';

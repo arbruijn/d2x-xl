@@ -440,13 +440,15 @@ gameData.objs.InitFreeList ();
 gameData.objs.consoleP =
 gameData.objs.viewerP = OBJECTS.Buffer ();
 if (bInitPlayer) {
+	ClaimObjectSlot (0);
+	gameData.objs.nObjects = 1;				//just the player
 	InitPlayerObject ();
 	gameData.objs.consoleP->LinkToSeg (0);	//put in the world in segment 0
 	}
 //gameData.objs.consoleP->Link ();
-ClaimObjectSlot (0);
-gameData.objs.nObjects = 1;				//just the player
+#if OBJ_LIST_TYPE == 1
 gameData.objs.consoleP->ResetLinks ();
+#endif
 gameData.objs.nLastObject [0] = 0;
 }
 
@@ -714,22 +716,53 @@ objP->rType.particleInfo = *CSmokeInfo::GetInfo ();
 #endif
 
 //------------------------------------------------------------------------------
+
+void CheckFreeList (void)
+{
+#if 0
+	static uint8_t checkObjs [MAX_OBJECTS_D2X];
+
+memset (checkObjs, 0, LEVEL_OBJECTS);
+for (int32_t i = 0; i < LEVEL_OBJECTS; i++) {
+	int16_t h = gameData.objs.freeList [i];
+	if ((i < gameData.objs.nObjects - 1) && (OBJECTS [h].Type () >= MAX_OBJECT_TYPES))
+		BRP;
+	if (checkObjs [h])
+		BRP;
+	else
+		checkObjs [h] = 1;
+	}
+#endif
+}
+
+//------------------------------------------------------------------------------
 // Try to allocate the object with the index nObject in the object list
 // This is only possible if that object is in the list of unallocated objects
 // Because otherwise that object is already allocated (live)
 
 int32_t ClaimObjectSlot (int32_t nObject)
 {
-for (int32_t i = gameData.objs.nObjects; i < LEVEL_OBJECTS; i++)
+for (int32_t i = gameData.objs.nObjects; i < LEVEL_OBJECTS; i++) {
 	if (gameData.objs.freeList [i] == nObject) {
-		Swap (gameData.objs.freeList [i], gameData.objs.freeList [gameData.objs.nObjects]);
-		++gameData.objs.nObjects;
+		if (i != gameData.objs.nObjects)
+			Swap (gameData.objs.freeList [i], gameData.objs.freeList [gameData.objs.nObjects]);
+		gameData.objs.freeListIndex [nObject] = gameData.objs.nObjects++;
+#if DBG
+		CheckFreeList ();
+#endif
 		if (nObject > gameData.objs.nLastObject [0]) {
 			gameData.objs.nLastObject [0] = nObject;
 			if (gameData.objs.nLastObject [1] < gameData.objs.nLastObject [0])
 				gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
+			}
+		CObject* objP = OBJECTS + nObject;
+		objP->ResetSgmLinks ();
+#if OBJ_LIST_TYPE == 1
+		objP->SetLinkedType (OBJ_NONE);
+		objP->ResetLinks ();
+#endif
+		return nObject;
 		}
-	return nObject;
 	}
 return -1;
 }
@@ -753,8 +786,13 @@ if (nObject < 0) {
 		}
 	if (gameData.objs.nObjects >= LEVEL_OBJECTS)
 		return -1;
-	nObject = gameData.objs.freeList [gameData.objs.nObjects++];
+	nObject = gameData.objs.freeList [gameData.objs.nObjects];
+	gameData.objs.freeListIndex [nObject] = gameData.objs.nObjects++;
 	}
+
+#if DBG
+CheckFreeList ();
+#endif
 
 if (nObject > gameData.objs.nLastObject [0]) {
 	gameData.objs.nLastObject [0] = nObject;
@@ -768,8 +806,10 @@ if (objP->info.nType != OBJ_NONE)
 #endif
 memset (objP, 0, sizeof (*objP));
 objP->info.nType = OBJ_NONE;
+objP->ResetSgmLinks ();
 #if OBJ_LIST_TYPE == 1
 objP->SetLinkedType (OBJ_NONE);
+objP->ResetLinks ();
 #endif
 objP->SetAttackMode (ROBOT_IS_HOSTILE);
 objP->info.nAttachedObj =
@@ -1049,6 +1089,70 @@ info.nType = nNewType;
 }
 
 //------------------------------------------------------------------------------
+
+int32_t FreeListIndex (int32_t nObject)
+{
+#if DBG
+
+int32_t i = gameData.objs.freeListIndex [nObject];
+if (i >= 0) {
+	if (gameData.objs.freeList [i] == nObject)
+		return i;
+	}	
+for (i = gameData.objs.nObjects; i ; )
+	if (gameData.objs.freeList [--i] == nObject)
+		return gameData.objs.freeListIndex [nObject] = i;
+#if DBG
+for (i = gameData.objs.nObjects; i < LEVEL_OBJECTS; i++)
+	if (gameData.objs.freeList [i] == nObject)
+		break;
+#endif
+return -1;
+
+#else
+
+return gameData.objs.freeListIndex [nObject];
+
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+int32_t UpdateFreeList (int32_t nObject)
+{
+int32_t i = FreeListIndex (nObject);
+if (i < 0) {
+	PrintLog (0, "FreeObject: Object list is corrupted!\n");
+	return 0; 
+	}
+gameData.objs.freeListIndex [nObject] = -1;
+if (i < --gameData.objs.nObjects) {
+	Swap (gameData.objs.freeList [i], gameData.objs.freeList [gameData.objs.nObjects]);
+	gameData.objs.freeListIndex [gameData.objs.freeList [i]] = i;
+	if (OBJECTS [gameData.objs.freeList [i]].Type () >= MAX_OBJECT_TYPES)
+		BRP;
+	}
+#if DBG
+CheckFreeList ();
+#endif
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void UpdateLastObject (int32_t nObject)
+{
+if ((nObject >= gameData.objs.nLastObject [0]) || (gameData.objs.nLastObject [0] < gameData.objs.nObjects - 1)) {
+	gameData.objs.nLastObject [0] = 0;
+	for (int32_t i = 0; i < gameData.objs.nObjects; i++)
+		if (gameData.objs.nLastObject [0] < gameData.objs.freeList [i])
+			gameData.objs.nLastObject [0] = gameData.objs.freeList [i];
+	if (gameData.objs.nLastObject [1] < gameData.objs.nLastObject [0])
+		gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
+	}
+}
+
+//------------------------------------------------------------------------------
 //frees up an CObject.  Generally, ReleaseObject () should be called to get
 //rid of an CObject.  This function deallocates the CObject entry after
 //the CObject has been unlinked
@@ -1066,35 +1170,14 @@ objP->SetAttackMode (ROBOT_IS_HOSTILE);
 DelObjChildrenN (nObject);
 DelObjChildN (nObject);
 gameData.objs.bWantEffect [nObject] = 0;
-#if 1
 OBJECTS [nObject].RequestEffects (DESTROY_SMOKE | DESTROY_LIGHTNING);
-#else
-SEM_ENTER (SEM_SMOKE)
-KillObjectSmoke (nObject);
-SEM_LEAVE (SEM_SMOKE)
-SEM_ENTER (SEM_LIGHTNING)
-lightningManager.DestroyForObject (OBJECTS + nObject);
-SEM_LEAVE (SEM_LIGHTNING)
-#endif
 lightManager.Delete (-1, -1, nObject);
-for (int32_t i = gameData.objs.nObjects; i ; )
-	if (gameData.objs.freeList [--i] == nObject) {
-		Swap (gameData.objs.freeList [i], gameData.objs.freeList [--gameData.objs.nObjects]);
-		break;
-		}
-Assert (gameData.objs.nObjects >= 0);
-if (nObject == gameData.objs.nLastObject [0])
-	while (gameData.objs.nLastObject [0] && (OBJECTS [--gameData.objs.nLastObject [0]].info.nType == OBJ_NONE))
-		;
+
+if (!UpdateFreeList (nObject))
+	return;
+UpdateLastObject (nObject);
+
 #if DBG
-#	if OBJ_LIST_TYPE == 0
-if (gameData.objs.nLastObject [0] < gameData.objs.nObjects - 1) {
-	int32_t nMaxObj = gameData.objs.freeList [0];
-	for (int32_t i = 1; i < gameData.objs.nObjects; i++)
-		if (nMaxObj < gameData.objs.freeList [0])
-			nMaxObj = gameData.objs.freeList [0];
-	}
-#	endif // OBJ_LIST_TYPE == 0
 if (dbgObjP && (OBJ_IDX (dbgObjP) == nObject))
 	dbgObjP = NULL;
 #endif
@@ -1970,7 +2053,7 @@ if (Done ())
 	return NULL;
 m_objP = m_objP->Links (m_nLink).next;
 ++m_i;
-#if DBG // disable code for release builds once it has proven stable
+#if 1 //DBG // disable code for release builds once it has proven stable
 if (m_objP ? m_i >= Size () : m_i < Size ()) { // error! stop anyway
 	RebuildObjectLists ();
 	m_objP = NULL;
@@ -2060,11 +2143,13 @@ objP = Start ();
 CObject* CObjectIterator::Start (void)
 {
 m_i = 0;
-m_objP = OBJECTS.Buffer ();
-if (!m_objP)
-	return NULL;
+if (!OBJECTS.Buffer ())
+	return m_objP = NULL;
+if (!gameData.objs.nObjects)
+	return m_objP = NULL;
+m_objP = Current ();
 if (Match ())
-	return m_objP = (gameData.objs.nObjects > 0) ? &OBJECTS [0] : NULL;
+	return m_objP;
 return Step ();
 }
 
@@ -2077,29 +2162,43 @@ return m_i >= gameData.objs.nObjects;
 
 //------------------------------------------------------------------------------
 
+CObject* CObjectIterator::Current (void)
+{
+return m_objP = OBJECTS + gameData.objs.freeList [m_i];
+}
+
+//------------------------------------------------------------------------------
+
 CObject* CObjectIterator::Back (void)
 {
-return m_objP = (gameData.objs.nObjects && m_i) ? &OBJECTS [--m_i] : NULL;
+if (gameData.objs.nObjects && m_i) {
+	--m_i;
+	return Current ();
+	}
+return NULL;
 }
 
 //------------------------------------------------------------------------------
 
 CObject* CObjectIterator::Next (void)
 {
-return (m_i < gameData.objs.nObjects) ? &OBJECTS [m_i] : NULL;
+if (m_i < gameData.objs.nObjects - 1) {
+	++m_i;
+	return Current ();
+	}
+return NULL;
 }
 
 //------------------------------------------------------------------------------
 
 CObject* CObjectIterator::Step (void)
 {
-if (Done ())
-	return m_objP = NULL;
-while (m_i < gameData.objs.nObjects) {
-	++m_i;
-	if (Match ())
-		return m_objP = &OBJECTS [m_i];
-	} 
+if (!Done ())
+	while (++m_i < gameData.objs.nObjects) {
+		Current ();
+		if (Match ())
+			return m_objP;
+		}
 return m_objP = NULL;
 }
 

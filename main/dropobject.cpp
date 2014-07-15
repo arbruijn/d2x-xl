@@ -791,8 +791,8 @@ return ObjectCreateEgg (objP, bLocal, bUpdateLimits);
 //creates afterburner blobs behind the specified CObject
 void DropAfterburnerBlobs (CObject *objP, int32_t count, fix xSizeScale, fix xLifeTime, CObject *pParent, int32_t bThruster)
 {
-	int16_t				i, nSegment, nThrusters;
-	CObject			*blobObjP;
+	int16_t			i, nSegment, nThrusters;
+	CObject*			blobObjP;
 	tThrusterInfo	ti;
 
 nThrusters = thrusterFlames.CalcPos (objP, &ti, 1);

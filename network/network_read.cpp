@@ -747,7 +747,7 @@ return 1;
 
 int32_t CObjectSynchronizer::Validate (void)
 {
-return abs (m_nRemoteObj - gameData.objs.nObjects) < 10;
+return abs (m_nRemoteObj - gameData.objs.nObjects) < ((gameStates.multi.nGameType == UDP_GAME) ? 1 : 10);
 }
 
 //------------------------------------------------------------------------------

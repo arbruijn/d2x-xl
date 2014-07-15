@@ -286,7 +286,7 @@ if (!gameOpts->multi.bTimeoutPlayers)
 CObject* objP = (LOCALPLAYER.connected == CONNECT_PLAYING) ? gameData.Object (gameData.multiplayer.players [nPlayer].nObject) : NULL;
 
 if (gameData.multiplayer.players [nPlayer].TimedOut ()) {
-	if (t - gameData.multiplayer.players [nPlayer].m_tDisconnect > TIMEOUT_KICK) { // drop player when he disconnected for 3 minutes
+	if (t - gameData.multiplayer.players [nPlayer].m_tDisconnect > extraGameInfo [0].timeout.nKickPlayer) { // drop player when he disconnected for 3 minutes
 		gameData.multiplayer.players [nPlayer].callsign [0] = '\0';
 		memset (gameData.multiplayer.players [nPlayer].netAddress, 0, sizeof (gameData.multiplayer.players [nPlayer].netAddress));
 		if (objP)
@@ -445,8 +445,11 @@ Squish ();
 void CSyncPack::Send (void) 
 {
 	static CTimeout toEndLevel (500);
+	static bool bSending = false;
 
-if (IsMultiGame && LOCALPLAYER.IsConnected ()) {
+if (!bSending && IsMultiGame && LOCALPLAYER.IsConnected ()) {
+	bSending = true;
+	uint32_t nReserve = SetReserve (0); // make sure the extra data fits in the message buffer
 	MultiSendRobotFrame (0);
 	MultiSendWeapons (1);
 	MultiSendWeaponStates ();
@@ -460,6 +463,8 @@ if (IsMultiGame && LOCALPLAYER.IsConnected ()) {
 		if (toEndLevel.Expired ())
 			NetworkSendEndLevelPacket ();
 		}
+	SetReserve (nReserve);
+	bSending = false;
 	}
 Reset ();
 }
@@ -516,6 +521,8 @@ if ((networkData.syncInfo [0].nPlayer != -1) && !(gameData.app.nFrameCount & 63)
 #endif
 XMLGameInfoHandler ();
 NetworkDoSyncFrame ();
+importantMessages [0].Update ();
+importantMessages [1].Update ();
 //NetworkAdjustPPS ();
 }
 

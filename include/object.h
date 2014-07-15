@@ -128,9 +128,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define OF_ARMAGEDDON		 128 // destroyed by cheat
 
 // Different Weapon ID types...
-#define WEAPON_ID_LASER         0
+#define WEAPON_ID_LASER       0
 #define WEAPON_IDMSLLE        1
-#define WEAPON_ID_CANNONBALL    2
+#define WEAPON_ID_CANNONBALL	2
 
 // Object Initial shield...
 #define OBJECT_INITIAL_SHIELDS I2X (1)/2
@@ -154,7 +154,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define ROBOT_IS_NEUTRAL	0
 #define ROBOT_IS_FRIENDLY	1
 
-#define OBJ_LIST_TYPE		1
+#define OBJ_LIST_TYPE		0
 
 
 #define MAX_VELOCITY I2X(50)
@@ -1499,7 +1499,7 @@ class CObjectIterator {
 		CObject* Next (void);
 		CObject* Step (void);
 		CObject* Back (void);
-		CObject* Current (void) { return (m_objP); }
+		CObject* Current (void);
 		int32_t Index (void) { return m_i; }
 		virtual bool Match (void);
 };
@@ -1680,6 +1680,7 @@ void CreateShortPos(tShortPos *posP, CObject *objp, int32_t bSwapBytes = 0);
 
 // Extract information from a tShortPos, stuff in objp->orient
 // (matrix), objp->pos, objp->nSegment
+void ExtractLongPos (CObject* objP, tLongPos* posP);
 void ExtractShortPos(CObject *objp, tShortPos *spp, int32_t bSwapBytes);
 
 // delete objects, such as weapons & explosions, that shouldn't stay

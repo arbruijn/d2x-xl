@@ -22,7 +22,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // What version of the multiplayer protocol is this?
 
-#define MULTI_PROTO_VERSION 4
+#define MULTI_PROTO_VERSION			4
 
 // Protocol versions:
 //   1 Descent Shareware
@@ -52,7 +52,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_QUIT						7
 #define MULTI_PLAY_SOUND				8
 #define MULTI_BEGIN_SYNC				9
-#define MULTI_CONTROLCEN				10
+#define MULTI_DESTROY_REACTOR			10
 #define MULTI_ROBOT_CLAIM				11
 #define MULTI_END_SYNC					12
 #define MULTI_CLOAK						13
@@ -126,21 +126,21 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_WEAPONS					76
 #define MULTI_MONSTERBALL				77
 #define MULTI_CHEATING					78
-#define MULTI_TRIGGER_EXT				79
-#define MULTI_SYNC_KILLS				80
-#define MULTI_COUNTDOWN					81
-#define MULTI_PLAYER_WEAPONS			82
-#define MULTI_SYNC_MONSTERBALL		83
-#define MULTI_DROP_POWERUP				84
-#define MULTI_CREATE_WEAPON			85
-#define MULTI_AMMO						86
-#define MULTI_FUSION_CHARGE			87
-#define MULTI_PLAYER_THRUST			88
+#define MULTI_SYNC_KILLS				79
+#define MULTI_COUNTDOWN					80
+#define MULTI_PLAYER_WEAPONS			81
+#define MULTI_SYNC_MONSTERBALL		82
+#define MULTI_DROP_POWERUP				83
+#define MULTI_CREATE_WEAPON			84
+#define MULTI_AMMO						85
+#define MULTI_FUSION_CHARGE			86
+#define MULTI_PLAYER_THRUST			87
+#define MULTI_CONFIRM_MESSAGE			88
 #define MULTI_MAX_TYPE					88
 
 #define MAX_NET_CREATE_OBJECTS		40
 
-#define MAX_MULTI_MESSAGE_LEN			120
+#define MULTI_MAX_MSG_LEN				160
 
 // Exported functions
 
@@ -555,9 +555,10 @@ void MultiAdjustPowerups (void);
 void RemapLocalPlayerObject (int32_t nLocalObj, int32_t nRemoteObj);
 void MultiOnlyPlayerMsg (int32_t bMsgBox);
 
-void MultiSendStolenItems ();
-void MultiSendScoreGoalCounts ();
-void MultiSendPowerupUpdate ();
+void MultiSendConfirmMessage (int32_t nId);
+void MultiSendStolenItems (void);
+void MultiSendScoreGoalCounts (void);
+void MultiSendPowerupUpdate (void);
 void MultiSendDoorOpenSpecific (int32_t nPlayer, int32_t nSegment, int32_t nSide, uint16_t flags);
 void MultiSendWallStatusSpecific (int32_t nPlayer, int32_t wallnum, uint8_t nType, uint16_t flags, uint8_t state);
 void MultiSendLightSpecific (int32_t nPlayer, int32_t nSegment, uint8_t val);
@@ -568,5 +569,32 @@ void MultiSendDropBlobs (uint8_t nPlayer);
 void InitDefaultShipProps (void);
 void SetupPowerupFilter (tNetGameInfo* infoP = NULL);
 void MultiDestroyPlayerShip (int32_t nPlayer, int32_t bExplode = 1, int32_t nRemoteCreated = 0, int16_t* objList = NULL);
+
+bool MultiTrackMessage (uint8_t* buf);
+bool MultiProcessMessage (uint8_t* buf);
+
+// Reserve space for the message id in the message. This macro will place the message id right after the one byte message type in the message buffer.
+// bufP must point to the byte in the message buffer following the player id. The variable _msgId is created and points to the first byte of the reserved space in the message buffer.
+#define ADD_MSG_ID				uint8_t* _msgIdP = gameData.multigame.msg.buf + bufP; \
+										if (gameStates.multi.nGameType == UDP_GAME) { \
+											PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, 0); \
+											bufP += 4; \
+											}
+
+// Put the actual message id in the message buffer and add the message to the list of important messages.
+#define SET_MSG_ID				MultiTrackMessage (_msgIdP);
+
+// Check whether the message with the message id contained in it has already been processed. If yes, exit the processing function.
+// If no, add the sender's player id and the message id to the list of important messages the receipt of which needs to be confirmed and send a receipt confirmation.
+// That list entry is subsequently being used to determine whether a message has already been processed and has been resent by its originator because it hasn't received a 
+// receipt confirmation for it from all game participants
+#define CHECK_MSG_ID				if (!MultiProcessMessage (buf + bufP)) \
+											return; \
+										bufP += 4;
+
+// Same as above, just returns the value specified by _r
+#define CHECK_MSG_ID_RVAL(_r)	if (!MultiProcessMessage (buf + bufP)) \
+											return (_r); \
+										bufP += 4;
 
 #endif /* _MULTI_H */

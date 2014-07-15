@@ -41,6 +41,138 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //------------------------------------------------------------------------------
 
+class CDLLElement {
+	protected:
+		CDLLElement*	m_prev;
+		CDLLElement*	m_next;
+
+	public:
+		CDLLElement () : m_prev (NULL), m_next (NULL) {}
+		inline CDLLElement* GetPrev (void) { return m_prev; }
+		inline CDLLElement* GetNext (void) { return m_next; }
+		inline void SetPrev (CDLLElement* prev) { m_prev = prev; }
+		inline void SetNext (CDLLElement* next) { m_next = next; }
+
+		void Link (CDLLElement* prev, CDLLElement* next) {
+			if (prev)
+				prev->SetNext (this);
+			if (next)
+				next->SetPrev (this);
+			SetPrev (prev);
+			SetNext (next);
+			}
+
+		void Unlink (void) {
+			if (m_prev)
+				m_prev->SetNext (m_next);
+			if (m_next)
+				m_next->SetPrev (m_prev);
+			m_prev = m_next = NULL;
+			}
+	};
+
+
+class CDLL {
+	protected:
+		CDLLElement*	m_head;
+		CDLLElement*	m_tail;
+		CDLLElement*	m_freelist;
+		uint32_t			m_length;
+
+	public:
+		CDLL () : m_head (NULL), m_tail (NULL), m_freelist (NULL), m_length (0) {}
+
+		inline CDLLElement* GetHead (void) { return m_head; }
+		inline void SetHead (CDLLElement* head) { m_head = head; }
+		inline CDLLElement* GetTail (void) { return m_tail; }
+		inline void SetTail (CDLLElement* tail) { m_tail = tail; }
+		inline CDLLElement* GetFreeList (void) { return m_freelist; }
+		inline void SetFreeList (CDLLElement* free) { m_freelist = free; }
+
+		void Link (CDLLElement* e, bool bAppend = true) {
+			if (bAppend) {
+				e->Link (m_tail, NULL);
+				m_tail = e;
+				if (!m_head)
+					m_head = e;
+				}
+			else {
+				e->Link (NULL, m_head);
+				m_head = e;
+				if (!m_tail)
+					m_tail = e;
+				}
+			++m_length;
+			}
+
+		void Unlink (CDLLElement* e) {
+			if (m_head == e)
+				m_head = m_head->GetNext ();
+			if (m_tail == e)
+				m_tail = m_tail->GetPrev ();
+			e->Unlink ();
+			if (m_head)
+				m_head->SetPrev (NULL);
+			if (m_tail)
+				m_tail->SetNext (NULL);
+			--m_length;
+			}
+
+		bool IsElement (CDLLElement* e) {
+			for (CDLLElement* i = m_head; i; i = i->GetNext ())
+				if (i == e)
+					return true;
+			return false;
+			}
+	};
+
+//------------------------------------------------------------------------------
+
+class CMessage : public CDLLElement {
+	public:
+		uint32_t		m_id;
+		uint16_t		m_players;
+		uint32_t		m_timestamp;
+		uint32_t		m_resendTime;
+		uint8_t		m_message [MULTI_MAX_MSG_LEN];
+
+		CMessage () : m_id (0), m_players (0), m_timestamp (0), m_resendTime (0) {}
+		void Setup (uint32_t id, uint8_t* message = NULL);
+		uint16_t Acknowledge (uint8_t nPlayer);
+		int32_t Update (void);
+		inline uint8_t GetSender (void) { return uint8_t (m_id >> 24); }
+		inline void SetSender (uint8_t sender) { m_id = (m_id & 0x0FFFFFFF) | (uint32_t (sender) << 24); }
+		inline CMessage* GetPrev (void) { return reinterpret_cast<CMessage*>(CDLLElement::GetPrev ()); }
+		inline CMessage* GetNext (void) { return reinterpret_cast<CMessage*>(CDLLElement::GetNext ()); }
+	};
+
+class CMessageList : public CDLL {
+	private:
+		uint32_t	m_id;
+
+	public:
+		CMessageList () : CDLL (), m_id (0) {}
+		~CMessageList () { Destroy (); }
+		void Destroy (void);
+		inline CMessage* Head (void) { return reinterpret_cast<CMessage*>(CDLL::GetHead ()); }
+		inline CMessage* Tail (void) { return reinterpret_cast<CMessage*>(CDLL::GetTail ()); }
+		inline CMessage* FreeList (void) { return reinterpret_cast<CMessage*>(CDLL::GetFreeList ()); }
+		inline uint8_t GetSender (uint32_t id) { return uint8_t (id >> 24); }
+		CMessage* Find (uint32_t id);
+		CMessage* Acknowledge (uint8_t nPlayer, uint32_t id);
+
+		CMessage* Alloc (void);
+		void Free (CMessage* msg);
+
+		int32_t Add (uint8_t* message);
+		bool Add (uint32_t id);
+		void Update (void);
+	};
+
+extern CMessageList importantMessages [2];
+
+//------------------------------------------------------------------------------
+
 typedef union tFrameInfo {
 	tFrameInfoLong		longInfo;
 	tFrameInfoShort	shortInfo;
@@ -50,9 +182,10 @@ typedef union tFrameInfo {
 class CSyncPack {
 	public:
 		uint32_t	m_nPackets;
+		uint32_t	m_nReserve;
 
 	public:
-		CSyncPack () {}
+		CSyncPack () : m_nPackets (0), m_nReserve (2 * MULTI_MAX_MSG_LEN) {}
 		~CSyncPack () {}
 		virtual void Reset (void) { SetMsgDataSize (0); }
 		virtual int32_t HeaderSize (void) = 0;
@@ -84,6 +217,12 @@ class CSyncPack {
 		virtual void SetObjInfo (CObject* objP) = 0;
 
 		virtual bool Overflow (uint16_t msgLen) { return MsgDataSize () + msgLen > MaxDataSize (); }
+		virtual uint32_t SetReserve (uint32_t nReserve) { 
+			uint32_t h = m_nReserve;
+			m_nReserve = nReserve; 
+			return h;
+			}
+		virtual uint32_t Reserve (void) { return m_nReserve; }
 
 		virtual int AppendMessage (uint8_t* msg, uint16_t msgLen) {
 			if (Overflow (msgLen))
@@ -109,7 +248,7 @@ class CSyncPackLong : public CSyncPack {
 		~CSyncPackLong () {}
 		virtual void* Info (void) { return &m_info; }
 		virtual int32_t HeaderSize (void) { return sizeof (m_info) - UDP_PAYLOAD_SIZE; }
-		virtual int32_t MaxDataSize (void) { return UDP_PAYLOAD_SIZE - HeaderSize (); }
+		virtual int32_t MaxDataSize (void) { return UDP_PAYLOAD_SIZE - HeaderSize () - Reserve (); }
 		virtual tFrameInfoHeader& Header (void) { return m_info.header; }
 		virtual tFrameInfoData& Data (void) { return m_info.data; }
 		virtual void SetInfo (void* info) { memcpy (&m_info, info, HeaderSize () + reinterpret_cast<tFrameInfoLong*>(info)->data.dataSize); }
@@ -359,8 +498,8 @@ void NetworkProcessLiteInfo (uint8_t *data);
 int32_t NetworkProcessExtraGameInfo (uint8_t *data);
 void NetworkProcessDump (tPlayerSyncData *their);
 void NetworkProcessRequest (tPlayerSyncData *their);
-void NetworkProcessPData (uint8_t* data);
-void NetworkProcessNakedPData (uint8_t* data, int32_t len);
+void NetworkProcessPlayerData (uint8_t* data);
+void NetworkProcessMineData (uint8_t* data, int32_t len);
 void NetworkProcessNamesReturn (uint8_t* data);
 void NetworkWaitForRequests (void);
 

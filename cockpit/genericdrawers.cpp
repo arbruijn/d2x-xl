@@ -204,7 +204,7 @@ if (markerManager.DefiningMsg ()) {
 
 void CGenericCockpit::DrawMultiMessage (void)
 {
-	char szMessage [MAX_MULTI_MESSAGE_LEN + 25];
+	char szMessage [MULTI_MAX_MSG_LEN + 25];
 
 if (IsMultiGame && (gameData.multigame.msg.bSending)) {
 	fontManager.SetColorRGBi (GREEN_RGBA, 1, 0, 0);

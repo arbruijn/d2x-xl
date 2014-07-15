@@ -56,6 +56,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int32_t MultiPowerupIs4Pack (int32_t);
 
+#if DBG
+int32_t nDbgPowerup = -1;
+#endif
+
 //------------------------------------------------------------------------------
 
 void CObject::SetCreationTime (fix xCreationTime) 
@@ -315,9 +319,11 @@ else if (objP->info.controlType == CT_EXPLOSION)
 	objP->cType.explInfo.attached.nParent = -1;
 
 objP->Arm ();
-objP->ResetLinks ();
 objP->ResetSgmLinks ();
+#if OBJ_LIST_TYPE == 1
+objP->ResetLinks ();
 objP->Link ();
+#endif
 objP->LinkToSeg (nSegment);
 objP->StopSync ();
 
@@ -383,42 +389,40 @@ return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, g
 
 int32_t PowerupsInMine (int32_t nPowerup)
 {
-int32_t nCount = 0;
-if (gameStates.multi.nGameType == UDP_GAME) {
-	nCount = PowerupsOnShips (nPowerup);
-	if (MultiPowerupIs4Pack (nPowerup))
-		nCount /= 4;
-	}
-nCount += gameData.multiplayer.powerupsInMine [nPowerup];
-if (nPowerup == POW_VULCAN_AMMO) {
-	int32_t	nAmmo = 0;
-	CObject* objP;
-	FORALL_POWERUP_OBJS (objP) {
-		if ((objP->Id () == POW_VULCAN) || (objP->Id () == POW_GAUSS))
-			nAmmo += objP->cType.powerupInfo.nCount;
+	int32_t nCount = 0;
+
+if (MultiPowerupIs4Pack (nPowerup))
+	nCount = PowerupsInMine (nPowerup - 1) / 4;
+else {
+	nCount = gameData.multiplayer.powerupsInMine [nPowerup];
+	if (gameStates.multi.nGameType == UDP_GAME)
+		nCount += PowerupsOnShips (nPowerup);
+	if (nPowerup == POW_VULCAN_AMMO) {
+		int32_t	nAmmo = 0;
+		CObject* objP;
+		FORALL_POWERUP_OBJS (objP) {
+			if ((objP->Id () == POW_VULCAN) || (objP->Id () == POW_GAUSS))
+				nAmmo += objP->cType.powerupInfo.nCount;
+			}
+		nCount += (nAmmo + VULCAN_CLIP_CAPACITY - 1) / VULCAN_CLIP_CAPACITY;
 		}
-	nCount += (nAmmo + VULCAN_CLIP_CAPACITY - 1) / VULCAN_CLIP_CAPACITY;
-	}
-else if ((nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE)) {
-	int32_t nMines = 0;
-	int32_t	nId = (nPowerup == POW_PROXMINE) ? PROXMINE_ID : SMARTMINE_ID;
-	CObject* objP;
-	FORALL_WEAPON_OBJS (objP) {
-		if (objP->Id () == nId)
-			nMines++;
+	else if ((nPowerup == POW_PROXMINE) || (nPowerup == POW_SMARTMINE)) {
+		int32_t nMines = 0;
+		int32_t	nId = (nPowerup == POW_PROXMINE) ? PROXMINE_ID : SMARTMINE_ID;
+		CObject* objP;
+		FORALL_WEAPON_OBJS (objP) {
+			if (objP->Id () == nId)
+				nMines++;
+			}
+		nCount += (nMines + 3) / 4;
 		}
-	nCount += (nMines + 3) / 4;
 	}
 return nCount;
 }
 
 //-----------------------------------------------------------------------------
 
-#if DBG
-int32_t nDbgPowerup = -1;
-#endif
-
-void AddAllowedPowerup (int32_t nPowerup, int32_t nCount)
+void SetAllowedPowerup (int32_t nPowerup, uint32_t nCount)
 {
 if (nCount && powerupFilter [nPowerup]) {
 #if DBG
@@ -426,55 +430,104 @@ if (nCount && powerupFilter [nPowerup]) {
 		BRP;
 #endif
 	if (MultiPowerupIs4Pack (nPowerup))
-		gameData.multiplayer.maxPowerupsAllowed [nPowerup - 1] += 4 * nCount;
-	gameData.multiplayer.maxPowerupsAllowed [nPowerup] += nCount;
-	if ((nPowerup == POW_VULCAN) || (nPowerup == POW_GAUSS))
-		gameData.multiplayer.maxPowerupsAllowed [POW_VULCAN_AMMO] += 2 * nCount;
+		SetAllowedPowerup (nPowerup - 1, nCount * 4);
+	else if (MultiPowerupIs4Pack (nPowerup + 1)) {
+		gameData.multiplayer.maxPowerupsAllowed [nPowerup] = 4 * nCount;
+		gameData.multiplayer.maxPowerupsAllowed [nPowerup + 1] = gameData.multiplayer.maxPowerupsAllowed [nPowerup - 1] / 4;
+		}
+	else {
+		gameData.multiplayer.maxPowerupsAllowed [nPowerup] = nCount;
+		if ((nPowerup == POW_VULCAN) || (nPowerup == POW_GAUSS))
+			gameData.multiplayer.maxPowerupsAllowed [POW_VULCAN_AMMO] = 2 * nCount; // add vulcan ammo for each gatling type gun
+		}
 	}
 }
 
 //-----------------------------------------------------------------------------
 
-void RemoveAllowedPowerup (int32_t nPowerup)
+void AddAllowedPowerup (int32_t nPowerup, uint32_t nCount)
 {
-if (MultiPowerupIs4Pack (nPowerup))
-	gameData.multiplayer.maxPowerupsAllowed [nPowerup - 1] -= 4;
-gameData.multiplayer.maxPowerupsAllowed [nPowerup]--;
-if ((nPowerup == POW_VULCAN) || (nPowerup == POW_GAUSS))
-	gameData.multiplayer.maxPowerupsAllowed [POW_VULCAN_AMMO] -= 2;
-}
-
-//-----------------------------------------------------------------------------
-
-void AddPowerupInMine (int32_t nPowerup, bool bIncreaseLimit)
-{
+if (nCount && powerupFilter [nPowerup]) {
 #if DBG
-if (nPowerup == nDbgPowerup)
-	BRP;
+	if (nPowerup == nDbgPowerup)
+		BRP;
 #endif
-if (MultiPowerupIs4Pack (nPowerup))
-	gameData.multiplayer.powerupsInMine [nPowerup - 1] += 4;
-gameData.multiplayer.powerupsInMine [nPowerup]++;
-if (bIncreaseLimit)
-	AddAllowedPowerup (nPowerup);
-}
-
-//-----------------------------------------------------------------------------
-
-void RemovePowerupInMine (int32_t nPowerup)
-{
-#if DBG
-if (nPowerup == nDbgPowerup)
-	BRP;
-#endif
-if (gameData.multiplayer.powerupsInMine [nPowerup] > 0) {
-	gameData.multiplayer.powerupsInMine [nPowerup]--;
-	if (MultiPowerupIs4Pack (nPowerup)) {
-		if (gameData.multiplayer.powerupsInMine [--nPowerup] < 4)
-			gameData.multiplayer.powerupsInMine [nPowerup] = 0;
-		else
-			gameData.multiplayer.powerupsInMine [nPowerup] -= 4;
+	if (MultiPowerupIs4Pack (nPowerup)) 
+		AddAllowedPowerup (nPowerup - 1, nCount * 4);
+	else {
+		gameData.multiplayer.maxPowerupsAllowed [nPowerup] += nCount;
+		if ((nPowerup == POW_VULCAN) || (nPowerup == POW_GAUSS))
+			gameData.multiplayer.maxPowerupsAllowed [POW_VULCAN_AMMO] += 2 * nCount;
+		if (MultiPowerupIs4Pack (nPowerup + 1))
+			gameData.multiplayer.maxPowerupsAllowed [nPowerup + 1] = gameData.multiplayer.maxPowerupsAllowed [nPowerup] / 4;
 		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+
+void RemoveAllowedPowerup (int32_t nPowerup, uint32_t nCount)
+{
+if (nCount && powerupFilter [nPowerup]) {
+#if DBG
+	if (nPowerup == nDbgPowerup)
+		BRP;
+#endif
+	uint16_t h = gameData.multiplayer.maxPowerupsAllowed [nPowerup];
+	if (MultiPowerupIs4Pack (nPowerup))
+		RemoveAllowedPowerup (nPowerup - 1, nCount * 4);
+	else {
+		gameData.multiplayer.maxPowerupsAllowed [nPowerup] -= nCount;
+		if ((nPowerup == POW_VULCAN) || (nPowerup == POW_GAUSS))
+			gameData.multiplayer.maxPowerupsAllowed [POW_VULCAN_AMMO] -= 2;
+		if (gameData.multiplayer.maxPowerupsAllowed [nPowerup] > h) // overflow
+			gameData.multiplayer.maxPowerupsAllowed [nPowerup] = 0;
+		if (MultiPowerupIs4Pack (nPowerup + 1))
+			gameData.multiplayer.maxPowerupsAllowed [nPowerup + 1] = gameData.multiplayer.maxPowerupsAllowed [nPowerup] / 4;
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+
+void AddPowerupInMine (int32_t nPowerup, uint32_t nCount, bool bIncreaseLimit)
+{
+if (nCount && powerupFilter [nPowerup]) {
+#if DBG
+	if (nPowerup == nDbgPowerup)
+		BRP;
+#endif
+	if (MultiPowerupIs4Pack (nPowerup))
+		AddPowerupInMine (nPowerup - 1, nCount * 4, bIncreaseLimit);
+	else {
+		gameData.multiplayer.powerupsInMine [nPowerup] += nCount;
+		if (MultiPowerupIs4Pack (nPowerup + 1))
+			gameData.multiplayer.powerupsInMine [nPowerup + 1] = gameData.multiplayer.powerupsInMine [nPowerup] / 4;
+		if (bIncreaseLimit)
+			AddAllowedPowerup (nPowerup, nCount);
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+
+void RemovePowerupInMine (int32_t nPowerup, uint32_t nCount)
+{
+if (nCount && powerupFilter [nPowerup]) {
+#if DBG
+	if (nPowerup == nDbgPowerup)
+		BRP;
+#endif
+	if (MultiPowerupIs4Pack (nPowerup))
+		RemovePowerupInMine (nPowerup - 1, nCount * 4);
+	else {
+		if (gameData.multiplayer.powerupsInMine [nPowerup] <= nCount)
+			gameData.multiplayer.powerupsInMine [nPowerup] = 0;
+		else 
+			gameData.multiplayer.powerupsInMine [nPowerup] -= nCount;
+		if (MultiPowerupIs4Pack (nPowerup + 1))
+			gameData.multiplayer.powerupsInMine [nPowerup + 1] = gameData.multiplayer.powerupsInMine [nPowerup] / 4;
+		}	
 	}
 }
 
@@ -482,7 +535,7 @@ if (gameData.multiplayer.powerupsInMine [nPowerup] > 0) {
 
 int32_t MissingPowerups (int32_t nPowerup, int32_t bBreakDown)
 {
-return gameData.multiplayer.maxPowerupsAllowed [nPowerup] - PowerupsInMine (nPowerup);
+return powerupFilter [nPowerup] ? 0 : gameData.multiplayer.maxPowerupsAllowed [nPowerup] - PowerupsInMine (nPowerup);
 }
 
 //------------------------------------------------------------------------------
@@ -627,7 +680,7 @@ void CreateVClipOnObject (CObject *objP, fix xScale, uint8_t nVClip)
 {
 	fix			xSize;
 	CFixVector	vPos, vRand;
-	int16_t			nSegment;
+	int16_t		nSegment;
 
 vPos = objP->info.position.vPos;
 vRand = CFixVector::Random();
@@ -675,7 +728,7 @@ if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
 
 CObject *objP = OBJECTS + nObject;
 
-#if DBG
+#if DBG && OBJ_LIST_TYPE
 if (!objP->IsInList (gameData.objs.lists.all, 0))
 	return;
 #endif

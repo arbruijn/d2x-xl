@@ -66,7 +66,7 @@ static void patternRow4Pixels (uint8_t *frameP, uint8_t pat0, uint8_t pat1, uint
 	uint16_t pattern = (pat1 << 8) | pat0;
 
 while (mask != 0) {
-	*frameP++ = p [ (mask & pattern) >> shift];
+	*frameP++ = p [(mask & pattern) >> shift];
 	mask <<= 2;
 	shift += 2;
 	}
@@ -81,7 +81,7 @@ static void patternRow4Pixels2 (uint8_t *frameP, uint8_t pat0, uint8_t *p)
 	uint8_t pel;
 
 while (mask != 0) {
-	pel = p [ (mask & pat0) >> shift];
+	pel = p [(mask & pat0) >> shift];
 	frameP [0] = pel;
 	frameP [1] = pel;
 	frameP [g_width + 0] = pel;
@@ -101,7 +101,7 @@ static void patternRow4Pixels2x1 (uint8_t *frameP, uint8_t pat, uint8_t *p)
 	uint8_t pel;
 
 while (mask != 0)	{
-	pel = p [ (mask & pat) >> shift];
+	pel = p [(mask & pat) >> shift];
 	frameP [0] = pel;
 	frameP [1] = pel;
 	frameP += 2;
@@ -120,7 +120,7 @@ static void patternQuadrant4Pixels (uint8_t *frameP, uint8_t pat0, uint8_t pat1,
 	uint32_t pat = (pat3 << 24) | (pat2 << 16) | (pat1 << 8) | pat0;
 
 for (i=0; i<16; i++) {
-	frameP [i&3] = p [ (pat & mask) >> shift];
+	frameP [i&3] = p [(pat & mask) >> shift];
 	if ((i&3) == 3)
 		frameP += g_width;
 	mask <<= 2;
@@ -134,7 +134,7 @@ static void patternRow2Pixels (uint8_t *frameP, uint8_t pat, uint8_t *p)
 	uint8_t mask = 0x01;
 
 while (mask != 0)	{
-	*frameP++ = p [ (mask & pat) ? 1 : 0];
+	*frameP++ = p [(mask & pat) ? 1 : 0];
 	mask <<= 1;
 	}
 }
@@ -146,7 +146,7 @@ static void patternRow2Pixels2 (uint8_t *frameP, uint8_t pat, uint8_t *p)
 	uint8_t mask = 0x1;
 
 while (mask != 0x10) {
-	pel = p [ (mask & pat) ? 1 : 0];
+	pel = p [(mask & pat) ? 1 : 0];
 	frameP [0] = pel;              // upper-left
 	frameP [1] = pel;              // upper-right
 	frameP [g_width + 0] = pel;    // lower-left
@@ -166,7 +166,7 @@ static void patternQuadrant2Pixels (uint8_t *frameP, uint8_t pat0, uint8_t pat1,
 
 for (i=0; i<4; i++) {
 	for (j=0; j<4; j++) {
-		pel = p [ (pat & mask) ? 1 : 0];
+		pel = p [(pat & mask) ? 1 : 0];
 		frameP [j + i * g_width] = pel;
 		mask <<= 1;
 		}
@@ -825,7 +825,7 @@ switch (codeType) {
 		{
 			for (j=0; j<8; j++)
 			{
-				 (frameP) [j] = dataP [ (i+j)&1];
+				 (frameP) [j] = dataP [(i+j)&1];
 			}
 			frameP += g_width;
 		}
