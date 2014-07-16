@@ -2743,7 +2743,7 @@ void MultiSendPowerState (uint8_t id, bool bStripRobots)
 
 gameData.multigame.msg.buf [bufP++] = id;
 ADD_MSG_ID
-gameData.multigame.msg.buf [bufP] = (uint8_t) N_LOCALPLAYER;
+gameData.multigame.msg.buf [bufP++] = (uint8_t) N_LOCALPLAYER;
 SET_MSG_ID
 MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 if (bStripRobots && gameData.app.GameMode (GM_MULTI_ROBOTS))
@@ -4057,6 +4057,7 @@ void MultiRemoveGhostShips (void)
 	CObject*	objP;
 
 memset (bHaveObject, 0, sizeof (bHaveObject));
+networkThread.LockThread ();
 FORALL_PLAYER_OBJS (objP) {
 	if (objP->info.nType != OBJ_PLAYER)
 		continue;
@@ -4071,6 +4072,7 @@ FORALL_PLAYER_OBJS (objP) {
 		bHaveObject [objP->info.nId] = 1;
 		}
 	}
+networkThread.UnlockThread ();
 }
 
 //-----------------------------------------------------------------------------
@@ -4198,6 +4200,7 @@ gameData.multigame.msg.buf [bufP++] = MULTI_FLAGS;
 ADD_MSG_ID
 gameData.multigame.msg.buf [bufP++] = nPlayer;
 PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameData.multiplayer.players [int32_t (nPlayer)].flags);
+bufP += 4;
 SET_MSG_ID
 MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 }

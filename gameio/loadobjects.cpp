@@ -570,7 +570,8 @@ if (gameFileInfo.triggers.offset > -1) {
 				else {
 					tTriggerV29 trig29;
 					V29TriggerRead (trig29, cf);
-					trigP->m_info.flagsD1 = trig.flags = trig29.flags;
+					trigP->m_info.flagsD1 = trig29.flags;
+					trig.flags = 0;
 					trig.nLinks	= (char) trig29.nLinks;
 					trig.value = trig29.value;
 					trig.time = trig29.time;

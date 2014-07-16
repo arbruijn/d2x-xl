@@ -38,7 +38,7 @@
 #	define MAX_PACKET_AGE		300000
 #	define MAX_CLIENT_AGE		300000
 #else
-#	define LISTEN_TIMEOUT		10
+#	define LISTEN_TIMEOUT		8 // 125 fps, which is slight more than the recommended max. 120 fps of the renderer
 #	define SEND_TIMEOUT			0
 #	define UPDATE_TIMEOUT		500
 #	define MAX_PACKET_AGE		3000
@@ -525,7 +525,7 @@ return 0;
 //------------------------------------------------------------------------------
 
 CNetworkThread::CNetworkThread () 
-	: m_thread (NULL), m_semaphore (NULL), m_sendLock (NULL), m_recvLock (NULL), m_processLock (NULL), m_nThreadId (0), m_bUrgent (0), m_bRunning (false)
+	: m_thread (NULL), m_semaphore (NULL), m_sendLock (NULL), m_recvLock (NULL), m_processLock (NULL), m_nThreadId (0), m_bUrgent (0), m_bRunning (false), m_bListen (true), m_bSend (true), m_bActive (true)
 {
 m_packet = NULL;
 m_syncPackets = NULL;
@@ -549,6 +549,8 @@ while (m_bRunning) {
 		}
 	SendLifeSign ();
 	CheckPlayerTimeouts ();
+	importantMessages [0].Update ();
+	importantMessages [1].Update ();
 	G3_SLEEP (1);
 	}
 }
@@ -576,6 +578,7 @@ if (!m_thread) {
 	m_toSend.Setup (1000 / PPS);
 	m_toSend.Start ();
 	m_bUrgent = false;
+	m_bActive = true;
 	m_thread = SDL_CreateThread (NetworkThreadHandler, &m_nThreadId);
 	while (!Running ())
 		G3_SLEEP (0);
@@ -953,6 +956,9 @@ return 2;	// we are in some level transition mode too, so try to reconnect
 
 int32_t CNetworkThread::CheckPlayerTimeouts (void)
 {
+if (!m_bActive)
+	return 0;
+
 LockThread ();
 int32_t nTimedOut = 0;
 //if ((networkData.xLastTimeoutCheck > I2X (1)) && !gameData.reactor.bDestroyed) 
@@ -1033,14 +1039,14 @@ if (toUpdate.Expired ()) {
 
 bool CNetworkThread::SendInBackground (void)
 {
-return (SEND_IN_BACKGROUND != 0) && Available ();
+return (SEND_IN_BACKGROUND != 0) && m_bActive && m_bSend && Available ();
 }
 
 //------------------------------------------------------------------------------
 
 bool CNetworkThread::ListenInBackground (void)
 {
-return (LISTEN_IN_BACKGROUND != 0) && Available ();
+return (LISTEN_IN_BACKGROUND != 0) && m_bActive && m_bListen && Available ();
 }
 
 //------------------------------------------------------------------------------

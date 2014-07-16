@@ -214,6 +214,9 @@ class CNetworkThread {
 		int32_t					m_bUrgent;
 		int32_t					m_bImportant;
 		bool						m_bRunning;
+		bool						m_bListen;
+		bool						m_bSend;
+		bool						m_bActive;
 		CNetworkPacketQueue	m_txPacketQueue; // transmit
 		CNetworkPacketQueue	m_rxPacketQueue; // receive
 		CNetworkPacketQueue	m_processPacketQueue;
@@ -249,6 +252,22 @@ class CNetworkThread {
 		inline int32_t UnlockSend (void) { return Unlock (m_sendLock); }
 		inline int32_t LockListen (bool bTry = false) { return Lock (m_recvLock); }
 		inline int32_t UnlockListen (void) { return Unlock (m_recvLock); }
+		inline void SetListen (bool bListen) { m_bListen = bListen; }
+		inline void SetSend (bool bSend) { m_bSend = bSend; }
+		inline bool Suspend (void) { 
+			bool bActive = m_bActive;
+			m_bActive = false; 
+			m_rxPacketQueue.Flush ();
+			m_txPacketQueue.Flush ();
+			return bActive;
+			}
+		inline bool Resume (void) { 
+			bool bActive = m_bActive;
+			m_bActive = true; 
+			return bActive;
+			}
+		inline bool Suspended (void) { return !m_bActive; }
+		inline bool Active (void) { return m_bActive; }
 		int32_t LockProcess (bool bTry = false) { return Lock (m_processLock); }
 		int32_t UnlockProcess (void) { return Unlock (m_processLock); }
 		bool Send (uint8_t* data, int32_t size, uint8_t* network, uint8_t* srcNode, uint8_t* destNode = NULL);

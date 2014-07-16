@@ -626,6 +626,7 @@ bmP->SetHeight (bmh->height + ((int16_t) (bmh->wh_extra&0xf0)<<4));
 bmP->SetBPP (1);
 bmP->SetAvgColorIndex (bmh->avgColor);
 bmP->AddFlags (bmh->flags & BM_FLAGS_TO_COPY);
+bmP->CreateBuffer ();
 
 cf.Seek (nBmDataOffs + bmh->offset, SEEK_SET);
 

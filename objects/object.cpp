@@ -854,6 +854,7 @@ if (ref.tail)
 else
 	ref.head = this;
 ref.tail = this;
+link.list = &ref;
 ref.nObjects++;
 #endif
 }
@@ -895,6 +896,7 @@ void CObject::Unlink (tObjListRef& ref, int32_t nLink)
 if (link.prev || link.next) {
 	if (ref.nObjects <= 0) {
 		link.prev = link.next = NULL;
+		link.list = NULL;
 		return;
 		}
 	if (link.next) {
@@ -939,18 +941,15 @@ else if ((ref.head == this) && (ref.tail == this)) {
 	ref.head = ref.tail = NULL;
 	ref.nObjects = 0;
 	}
-#if 0
-else if (ref.head || ref.tail)
-	bRebuild = true;
-#endif
-#if DBG
+#	if DBG
 if (bRebuild) { //this actually means the list is corrupted -> rebuild all object lists
 	RebuildObjectLists ();
 	Unlink ();
+	return;
 	}
-else 
-#endif
-	link.prev = link.next = NULL;
+#	endif
+link.prev = link.next = NULL;
+link.list = NULL;
 #endif
 }
 
@@ -1001,40 +1000,43 @@ return 1;
 
 //------------------------------------------------------------------------------
 
+void CObject::GetListsForType (uint8_t nType, tObjListRef* lists [])
+{
+#if OBJ_LIST_TYPE == 1
+lists [0] = &gameData.objs.lists.all;
+lists [1] = NULL;
+if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST))
+	lists [1] = &gameData.objs.lists.players;
+else if (nType == OBJ_ROBOT)
+	lists [1] = &gameData.objs.lists.robots;
+else if (nType == OBJ_WEAPON)
+	lists [1] = &gameData.objs.lists.weapons;
+else if ((nType != OBJ_REACTOR) && (nType != OBJ_MONSTERBALL)) {
+	if (nType == OBJ_POWERUP)
+		lists [1] = &gameData.objs.lists.powerups;
+	else if (nType == OBJ_EFFECT)
+		lists [1] = &gameData.objs.lists.effects;
+	else if (nType == OBJ_LIGHT)
+		lists [1] = &gameData.objs.lists.lights;
+	lists [2] = &gameData.objs.lists.statics;
+	return;
+	}
+lists [2] = &gameData.objs.lists.actors;
+#endif
+}
+
+//------------------------------------------------------------------------------
+
 void CObject::Link (void)
 {
 #if OBJ_LIST_TYPE == 1
-	uint8_t nType = info.nType;
-
 Unlink (true);
-m_nLinkedType = nType;
-Link (gameData.objs.lists.all, 0);
-if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST))
-	Link (gameData.objs.lists.players, 1);
-else if (nType == OBJ_ROBOT)
-	Link (gameData.objs.lists.robots, 1);
-else if (nType != OBJ_REACTOR) {
-	if (nType == OBJ_WEAPON)
-		Link (gameData.objs.lists.weapons, 1);
-	else if (nType == OBJ_POWERUP)
-		Link (gameData.objs.lists.powerups, 1);
-	else if (nType == OBJ_EFFECT)
-		Link (gameData.objs.lists.effects, 1);
-	else if (nType == OBJ_LIGHT)
-		Link (gameData.objs.lists.lights, 1);
-	else
-		m_links [1].prev = m_links [1].next = NULL;
-#if DBG == 1
-	static int32_t nDbgType = -1;
-	if (nType == nDbgType)
-		BRP;
-#endif
-	if ((nType != OBJ_WEAPON) && (nType != OBJ_MONSTERBALL)) {
-		Link (gameData.objs.lists.statics, 2);
-		return;
-		}
-	}
-Link (gameData.objs.lists.actors, 2);
+m_nLinkedType = info.nType;
+tObjListRef* lists [3] = {NULL, NULL, NULL};
+GetListsForType (info.nType, lists);
+for (int32_t i = 0; i < 3; i++)
+	if (lists [i])
+		Link (*lists [i], i);
 #endif
 }
 
@@ -1043,31 +1045,31 @@ Link (gameData.objs.lists.actors, 2);
 void CObject::Unlink (bool bForce)
 {
 #if OBJ_LIST_TYPE == 1
-	uint8_t nType = m_nLinkedType;
-
-if (bForce || (nType != OBJ_NONE)) {
+if (bForce || (m_nLinkedType != OBJ_NONE)) {
 	m_nLinkedType = OBJ_NONE;
-	Unlink (gameData.objs.lists.all, 0);
-	if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST))
-		Unlink (gameData.objs.lists.players, 1);
-	else if (nType == OBJ_ROBOT)
-		Unlink (gameData.objs.lists.robots, 1);
-	else if (nType != OBJ_REACTOR) {
-		if (nType == OBJ_WEAPON)
-			Unlink (gameData.objs.lists.weapons, 1);
-		else if (nType == OBJ_POWERUP)
-			Unlink (gameData.objs.lists.powerups, 1);
-		else if (nType == OBJ_EFFECT)
-			Unlink (gameData.objs.lists.effects, 1);
-		else if (nType == OBJ_LIGHT)
-			Unlink (gameData.objs.lists.lights, 1);
-		if ((nType != OBJ_WEAPON) && (nType != OBJ_MONSTERBALL)) {
-			Unlink (gameData.objs.lists.statics, 2);
-			return;
-			}
-		}
-	Unlink (gameData.objs.lists.actors, 2);
+	for (int32_t i = 0; i < 3; i++)
+		if (m_links [i].list)
+			Unlink (*m_links [i].list, i);
 	}
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void CObject::Relink (uint8_t nNewType)
+{
+#if OBJ_LIST_TYPE == 1
+tObjListRef* lists [3] = {NULL, NULL, NULL};
+GetListsForType (nNewType, lists);
+for (int32_t i = 0; i < 3; i++) {
+	if (m_links [i].list != lists [i]) {
+		if (m_links [i].list)
+			Unlink (*m_links [i].list, i);
+		if (lists [i])
+			Link (*lists [i], i);
+		}
+	}
+m_nLinkedType = nNewType;
 #endif
 }
 
@@ -1076,16 +1078,13 @@ if (bForce || (nType != OBJ_NONE)) {
 void CObject::SetType (uint8_t nNewType, bool bLink)
 {
 #if OBJ_LIST_TYPE == 1
-if (info.nType != nNewType) {
-	if (bLink)
-		Unlink ();
-	info.nType = nNewType;
-	if (bLink)
-		Link ();
-	}
-#else
-info.nType = nNewType;
+if (info.nType == nNewType)
+	return;
+
+if (bLink)
+	Relink (nNewType);
 #endif
+info.nType = nNewType;
 }
 
 //------------------------------------------------------------------------------
@@ -1128,8 +1127,9 @@ if (i < 0) {
 gameData.objs.freeListIndex [nObject] = -1;
 if (i < --gameData.objs.nObjects) {
 	Swap (gameData.objs.freeList [i], gameData.objs.freeList [gameData.objs.nObjects]);
-	gameData.objs.freeListIndex [gameData.objs.freeList [i]] = i;
-	if (OBJECTS [gameData.objs.freeList [i]].Type () >= MAX_OBJECT_TYPES)
+	int16_t nObject = gameData.objs.freeList [i];
+	gameData.objs.freeListIndex [nObject] = i;
+	if (OBJECTS [nObject].Type () >= MAX_OBJECT_TYPES)
 		BRP;
 	}
 #if DBG

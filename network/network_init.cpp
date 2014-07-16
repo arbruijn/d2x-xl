@@ -393,10 +393,35 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].headlight.bDrainPower = 1;
 	extraGameInfo [i].timeout.nDisconnectPlayer = TIMEOUT_DISCONNECT;
 	extraGameInfo [i].timeout.nKickPlayer = TIMEOUT_KICK;
-	extraGameInfo [i].timeout.nKeepMessage = TIMEOUT_KEEP_MSG;
-	extraGameInfo [i].timeout.nResendMessage = TIMEOUT_RESEND_MSG;
+	extraGameInfo [i].timeout.nKeepMessage = TIMEOUT_MSG_KEEP_COOP;
+	extraGameInfo [i].timeout.nResendMessage = TIMEOUT_MSG_RESEND_COOP;
 	InitEntropySettings (i);
 	InitMonsterballSettings (&extraGameInfo [i].monsterball);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void NetworkSetTimeoutValues (void)
+{
+networkData.nCompetitionLevel = COMPETITION_LEVEL;
+for (int32_t i = 0; i < 2; i++) {
+	switch (networkData.nCompetitionLevel) {
+		case 2:
+			extraGameInfo [i].timeout.nKeepMessage = TIMEOUT_MSG_KEEP_COMP;
+			extraGameInfo [i].timeout.nResendMessage = TIMEOUT_MSG_RESEND_COMP;
+			break;
+
+		case 1:
+			extraGameInfo [i].timeout.nKeepMessage = TIMEOUT_MSG_KEEP_STD;
+			extraGameInfo [i].timeout.nResendMessage = TIMEOUT_MSG_RESEND_STD;
+			break;
+
+		default:
+			extraGameInfo [i].timeout.nKeepMessage = TIMEOUT_MSG_KEEP_COOP;
+			extraGameInfo [i].timeout.nResendMessage = TIMEOUT_MSG_RESEND_COOP;
+			break;
+		}
 	}
 }
 

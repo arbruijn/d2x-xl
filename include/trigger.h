@@ -218,7 +218,7 @@ class CTrigger : public CTriggerTargets {
 		void SaveState (CFile& cf, bool bObjTrigger = false);
 
 		inline uint8_t& Type (void) { return m_info.nType; }
-		inline uint16_t& Flags (void) { return m_info.flags; }
+		inline uint16_t& Flags (void) { return (Type () == TT_DESCENT1) ? m_info.flagsD1 : m_info.flags; }
 		inline fix& Value (void) { return m_info.value; }
 		inline fix GetValue (void) { return m_info.value; }
 		inline void SetValue (fix value) { m_info.value = value; }

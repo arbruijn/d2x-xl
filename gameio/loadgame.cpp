@@ -241,7 +241,7 @@ memset (gameStates.multi.bPlayerIsTyping, 0, sizeof (gameStates.multi.bPlayerIsT
 //VerifyConsoleObject ();
 nPlayers = 0;
 j = 0;
-for (CObjectIterator iter (objP); objP; objP = prevObjP ? iter.Step () : iter.Start ()) {
+for (CObjectIterator iter (objP); objP; objP = (prevObjP ? iter.Step () : iter.Start ())) {
 	prevObjP = objP;
 	t = objP->info.nType;
 	if ((t == OBJ_PLAYER) || (t == OBJ_GHOST) || (t == OBJ_COOP)) {
@@ -1361,6 +1361,7 @@ audio.SetupRouter ();
 //	Called from trigger.cpp when player is on a secret level and hits exit to return to base level.
 void ExitSecretLevel (void)
 {
+bool bResume = networkThread.Suspend ();
 if ((gameData.demo.nState == ND_STATE_RECORDING) || (gameData.demo.nState == ND_STATE_PAUSED))
 	NDStopRecording ();
 if (!(gameStates.app.bD1Mission || gameData.reactor.bDestroyed))
@@ -1393,6 +1394,8 @@ else { // File doesn't exist, so can't return to base level.  Advance to next on
 			}
 		}
 	}
+if (bResume)
+	networkThread.Resume ();
 }
 
 //------------------------------------------------------------------------------
@@ -1935,6 +1938,7 @@ static int32_t PrepareSecretLevel (int32_t nLevel, bool bLoadTextures)
 {
 	CMenu	menu (1);
 
+bool bResume = networkThread.Suspend ();
 gameStates.app.xThisLevelTime = 0;
 menu.AddText ("", " ");
 gameStates.render.cockpit.nLastDrawn [0] = -1;
@@ -2013,6 +2017,8 @@ TurnCheatsOff ();
 //	Say player can use FLASH cheat to mark path to exit.
 nLastLevelPathCreated = -1;
 gameStates.app.bFirstSecretVisit = 0;
+if (bResume)
+	networkThread.Resume ();
 return 1;
 }
 
@@ -2184,8 +2190,8 @@ for (int32_t i = 0; i < missionManager.nSecretLevels; i++) {
 //	bSecret if came from a secret level
 int32_t StartNewLevel (int32_t nLevel, bool bNewGame)
 {
-	gameStates.app.xThisLevelTime = 0;
-
+bool bResume = networkThread.Suspend ();
+gameStates.app.xThisLevelTime = 0;
 gameData.reactor.bDestroyed = 0;
 ogl.SetDrawBuffer (GL_BACK, 0);
 MakeModFolders (hogFileManager.MissionName (), nLevel);
@@ -2202,6 +2208,8 @@ else {
 	}
 if (!bNewGame)
 	ogl.ChooseDrawBuffer ();
+if (bResume)
+	networkThread.Resume ();
 return 1;
 }
 

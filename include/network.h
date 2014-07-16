@@ -83,6 +83,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define FIRST_PID							PID_LITE_INFO
 #define LAST_PID							PID_TRACKER_GET_SERVERLIST
 
+#define TIMEOUT_MSG_RESEND_COOP		300
+#define TIMEOUT_MSG_RESEND_STD		150
+#define TIMEOUT_MSG_RESEND_COMP		70
+
+#define TIMEOUT_MSG_RESEND_COUNT		8
+
+#define TIMEOUT_MSG_KEEP(TIMEOUT_MSG_RESEND)	TIMEOUT_MSG_RESEND * TIMEOUT_MSG_RESEND_COUNT + 10
+
+#define TIMEOUT_MSG_KEEP_COOP			TIMEOUT_MSG_KEEP(TIMEOUT_MSG_RESEND_COOP)
+#define TIMEOUT_MSG_KEEP_STD			TIMEOUT_MSG_KEEP(TIMEOUT_MSG_RESEND_STD)
+#define TIMEOUT_MSG_KEEP_COMP			TIMEOUT_MSG_KEEP(TIMEOUT_MSG_RESEND_COMP)
+
+
 #if DBG
 #	define TIMEOUT_DISCONNECT			30000
 #	define TIMEOUT_KICK					180000
@@ -158,22 +171,22 @@ typedef struct tFrameInfoShort {
 } __pack__ tFrameInfoShort;
 
 typedef struct tEntropyGameInfo {
-	uint16_t	nEnergyFillRate;
-	uint16_t	nShieldFillRate;
-	uint16_t	nShieldDamageRate;
-	uint16_t	nMaxVirusCapacity; 
-	char		nBumpVirusCapacity;
-	char		nBashVirusCapacity; 
-	char		nVirusGenTime; 
-	char		nVirusLifespan; 
-	char		nVirusStability;
-	char		nCaptureVirusThreshold; 
-	char		nCaptureTimeThreshold; 
-	char		bRevertRooms;
-	char		bDoCaptureWarning;
-	char		nOverrideTextures;
-	char		bBrightenRooms;
-	char		bPlayerHandicap;
+	uint16_t		nEnergyFillRate;
+	uint16_t		nShieldFillRate;
+	uint16_t		nShieldDamageRate;
+	uint16_t		nMaxVirusCapacity; 
+	char			nBumpVirusCapacity;
+	char			nBashVirusCapacity; 
+	char			nVirusGenTime; 
+	char			nVirusLifespan; 
+	char			nVirusStability;
+	char			nCaptureVirusThreshold; 
+	char			nCaptureTimeThreshold; 
+	char			bRevertRooms;
+	char			bDoCaptureWarning;
+	char			nOverrideTextures;
+	char			bBrightenRooms;
+	char			bPlayerHandicap;
 } __pack__ tEntropyGameInfo;
 
 #define MAX_MONSTERBALL_FORCES	25
@@ -201,15 +214,15 @@ typedef struct tLoadoutInfo {
 } __pack__ tLoadoutInfo;
 
 typedef struct tTimeoutInfo {
-	uint32_t					nDisconnectPlayer;
-	uint32_t					nKickPlayer;
+	int32_t					nDisconnectPlayer;
+	int32_t					nKickPlayer;
 	uint16_t					nKeepMessage;
 	uint16_t					nResendMessage;
 } __pack__ tTimeoutInfo;
 
 typedef struct tExtraGameInfo {
-	uint8_t   	nType;
-	int32_t		nVersion;
+	uint8_t   			nType;
+	int32_t				nVersion;
 
 	char					szGameName [NETGAME_NAME_LEN + 1];
 	tEntropyGameInfo	entropy;
@@ -218,124 +231,124 @@ typedef struct tExtraGameInfo {
 	tLoadoutInfo		loadout;
 	tTimeoutInfo		timeout;
 
-	char		bFriendlyFire;
-	char		bInhibitSuicide;
-	char		bFixedRespawns;
-	char		bEnhancedCTF;
-	char		bRadarEnabled;
-	char		bPowerupsOnRadar;
-	char		nZoomMode;
-	char		bRobotsHitRobots;
-	char		bAutoDownload;
-	char		bAutoBalanceTeams;
-	char		bDualMissileLaunch;
-	char		bRobotsOnRadar;
-	char		grWallTransparency;
-	char		nSpeedBoost;
-	char		bDropAllMissiles;
-	char		bImmortalPowerups;
-	char		bUseCameras;
-	char		nFusionRamp;
-	char		nOmegaRamp;
-	char		bWiggle;
-	char		bMultiBosses;
-	char		nBossCount [2];
-	char		bSmartWeaponSwitch;
-	char		bFluidPhysics;
-	char		nWeaponDropMode;
-	char		bRotateLevels;
-	char		bDisableReactor;
-	char		bMouseLook;
-	char		nWeaponIcons;
-	char		bSafeUDP;
-	char		bFastPitch;
-	char		bUseParticles;
-	char		bUseLightning;
-	char		bDamageExplosions;
-	char		bThrusterFlames;
-	char		bShadows;
-	char		bPlayerShield;
-	char		bTeleporterCams;
-	char		bDarkness;
-	char		bPowerupLights;
-	char		bBrightObjects;
-	char		bTeamDoors;
-	char		bEnableCheats;
-	char		bTargetIndicators;
-	char		bDamageIndicators;
-	char		bFriendlyIndicators;
-	char		bCloakedIndicators;
-	char		bMslLockIndicators;
-	char		bHideIndicators;
-	char		bTagOnlyHitObjs;
-	char		bTowFlags;
-	char		bUseHitAngles;
-	char		bLightTrails;
-	char		bGatlingTrails;
-	char		bTracers;
-	char		bShockwaves;
-	char		bCompetition;
-	char		bFlickerLights;
-	char		bCheckUDPPort;
-	char		bSmokeGrenades;
-	char		nMaxSmokeGrenades;
-	char		nMslTurnSpeed;
-	char		nMslStartSpeed;
-	char		nCoopPenalty;
-	char		bKillMissiles;
-	char		bTripleFusion;
-	char		bEnhancedShakers;
-	char		bShowWeapons;
-	char		bGatlingSpeedUp;
-	char		bRotateMarkers;
-	char		bAllowCustomWeapons;
-	char		nHitboxes;
-	char		nDamageModel;
-	char		nRadar;
-	char		nDrag;
-	char		nSpotSize;
-	char		nSpotStrength;
+	uint8_t				bFriendlyFire;
+	uint8_t				bInhibitSuicide;
+	uint8_t				bFixedRespawns;
+	uint8_t				bEnhancedCTF;
+	uint8_t				bRadarEnabled;
+	uint8_t				bPowerupsOnRadar;
+	uint8_t				nZoomMode;
+	uint8_t				bRobotsHitRobots;
+	uint8_t				bAutoDownload;
+	uint8_t				bAutoBalanceTeams;
+	uint8_t				bDualMissileLaunch;
+	uint8_t				bRobotsOnRadar;
+	uint8_t				grWallTransparency;
+	uint8_t				nSpeedBoost;
+	uint8_t				bDropAllMissiles;
+	uint8_t				bImmortalPowerups;
+	uint8_t				bUseCameras;
+	uint8_t				nFusionRamp;
+	uint8_t				nOmegaRamp;
+	uint8_t				bWiggle;
+	uint8_t				bMultiBosses;
+	uint8_t				nBossCount [2];
+	uint8_t				bSmartWeaponSwitch;
+	uint8_t				bFluidPhysics;
+	uint8_t				nWeaponDropMode;
+	uint8_t				bRotateLevels;
+	uint8_t				bDisableReactor;
+	uint8_t				bMouseLook;
+	uint8_t				nWeaponIcons;
+	uint8_t				bSafeUDP;
+	uint8_t				bFastPitch;
+	uint8_t				bUseParticles;
+	uint8_t				bUseLightning;
+	uint8_t				bDamageExplosions;
+	uint8_t				bThrusterFlames;
+	uint8_t				bShadows;
+	uint8_t				bPlayerShield;
+	uint8_t				bTeleporterCams;
+	uint8_t				bDarkness;
+	uint8_t				bPowerupLights;
+	uint8_t				bBrightObjects;
+	uint8_t				bTeamDoors;
+	uint8_t				bEnableCheats;
+	uint8_t				bTargetIndicators;
+	uint8_t				bDamageIndicators;
+	uint8_t				bFriendlyIndicators;
+	uint8_t				bCloakedIndicators;
+	uint8_t				bMslLockIndicators;
+	uint8_t				bHideIndicators;
+	uint8_t				bTagOnlyHitObjs;
+	uint8_t				bTowFlags;
+	uint8_t				bUseHitAngles;
+	uint8_t				bLightTrails;
+	uint8_t				bGatlingTrails;
+	uint8_t				bTracers;
+	uint8_t				bShockwaves;
+	uint8_t				bCompetition;
+	uint8_t				bFlickerLights;
+	uint8_t				bCheckUDPPort;
+	uint8_t				bSmokeGrenades;
+	uint8_t				nMaxSmokeGrenades;
+	uint8_t				nMslTurnSpeed;
+	uint8_t				nMslStartSpeed;
+	uint8_t				nCoopPenalty;
+	uint8_t				bKillMissiles;
+	uint8_t				bTripleFusion;
+	uint8_t				bEnhancedShakers;
+	uint8_t				bShowWeapons;
+	uint8_t				bGatlingSpeedUp;
+	uint8_t				bRotateMarkers;
+	uint8_t				bAllowCustomWeapons;
+	uint8_t				nHitboxes;
+	uint8_t				nDamageModel;
+	uint8_t				nRadar;
+	uint8_t				nDrag;
+	uint8_t				nSpotSize;
+	uint8_t				nSpotStrength;
 
-	int32_t		nSpawnDelay;
-	int32_t		nLightRange;
-	int32_t		nSpeedScale;
-	int32_t		nSecurity;
-	int32_t		shipsAllowed [MAX_SHIP_TYPES];
+	int32_t				nSpawnDelay;
+	int32_t				nLightRange;
+	int32_t				nSpeedScale;
+	int32_t				nSecurity;
+	int32_t				shipsAllowed [MAX_SHIP_TYPES];
 } __pack__ tExtraGameInfo;
 
 typedef struct tMpParams {
-	char	szGameName [NETGAME_NAME_LEN + 1];
-	char	szServerIpAddr [22];
-	int32_t	udpPorts [2];
-	uint8_t	nLevel;
-	uint8_t	nGameType;
-	uint8_t	nGameMode;
-	uint8_t	nGameAccess;
-	char	bShowPlayersOnAutomap;
-	char	nDifficulty;
-	int32_t	nWeaponFilter;
-	int32_t	nReactorLife;
-	uint8_t	nMaxTime;
-	uint8_t	nScoreGoal;
-	uint8_t	bInvul;
-	uint8_t	bMarkerView;
-	uint8_t	bIndestructibleLights;
-	uint8_t	bBrightPlayers;
-	uint8_t bDarkness;
-	uint8_t bTeamDoors;
-	uint8_t bEnableCheats;
-	uint8_t	bShowAllNames;
-	uint8_t	bShortPackets;
-	uint8_t	nMinPPS;
-	tMsnListEntry	mission;
+	char					szGameName [NETGAME_NAME_LEN + 1];
+	char					szServerIpAddr [22];
+	int32_t				udpPorts [2];
+	uint8_t				nLevel;
+	uint8_t				nGameType;
+	uint8_t				nGameMode;
+	uint8_t				nGameAccess;
+	uint8_t				bShowPlayersOnAutomap;
+	uint8_t				nDifficulty;
+	int32_t				nWeaponFilter;
+	int32_t				nReactorLife;
+	uint8_t				nMaxTime;
+	uint8_t				nScoreGoal;
+	uint8_t				bInvul;
+	uint8_t				bMarkerView;
+	uint8_t				bIndestructibleLights;
+	uint8_t				bBrightPlayers;
+	uint8_t				bDarkness;
+	uint8_t				bTeamDoors;
+	uint8_t				bEnableCheats;
+	uint8_t				bShowAllNames;
+	uint8_t				bShortPackets;
+	uint8_t				nMinPPS;
+	tMsnListEntry		mission;
 } __pack__ tMpParams;
 
 extern tMpParams mpParams;
 
 typedef struct tNetworkObjInfo {
-	int16_t	nObject;
-	uint8_t	nType;
-	uint8_t	nId;
+	int16_t				nObject;
+	uint8_t				nType;
+	uint8_t				nId;
 } __pack__ tNetworkObjInfo;
 
 extern tExtraGameInfo extraGameInfo [3];
@@ -572,6 +585,7 @@ class CEndLevelInfo {
 int32_t  NetworkSendRequest (void);
 int32_t  NetworkChooseConnect (void);
 int32_t  NetworkSendGameListRequest (int32_t bAutoLaunch = 0);
+void NetworkSetTimeoutValues (void);
 void NetworkAddPlayer (tPlayerSyncData *p);
 void NetworkSendGameInfo (tPlayerSyncData *their);
 void ClipRank (char *rank);
@@ -606,7 +620,8 @@ extern CAllNetPlayersInfo activeNetPlayers [MAX_ACTIVE_NETGAMES];
 extern CAllNetPlayersInfo* playerInfoP, netPlayers [2];
 extern int32_t nCoopPenalties [10];
 
-#define COMPETITION	 (IsMultiGame && !IsCoopGame && extraGameInfo [1].bCompetition)
+#define COMPETITION			(IsMultiGame && !IsCoopGame && extraGameInfo [1].bCompetition)
+#define COMPETITION_LEVEL	(IsMultiGame ? extraGameInfo [1].bCompetition ? 2 : IsCoopGame ? 0 : 1 : 0)
 
 #define MAX_PAYLOAD_SIZE ((gameStates.multi.nGameType == UDP_GAME) ? UDP_PAYLOAD_SIZE : IPX_PAYLOAD_SIZE)
 

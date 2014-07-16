@@ -35,17 +35,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // ---------- John: These variables must be saved as part of gamesave. --------
 
 typedef struct tAIStateInfo {
-	int16_t				nObject;
-	int16_t				nObjRef;
+	int16_t			nObject;
+	int16_t			nObjRef;
 	tRobotInfo*		botInfoP;
 	tAIStaticInfo*	aiP;
 	tAILocalInfo*	ailP;
 	CFixVector		vVisPos;
-	int32_t				nPrevVisibility;
-	int32_t				bVisAndVecComputed;
-	int32_t				bHaveGunPos;
-	int32_t				bMultiGame;
-	int32_t				nNewGoalState;
+	int32_t			nPrevVisibility;
+	int32_t			bVisAndVecComputed;
+	int32_t			bHaveGunPos;
+	int32_t			bMultiGame;
+	int32_t			nNewGoalState;
 	} tAIStateInfo;
 
 

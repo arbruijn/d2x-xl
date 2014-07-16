@@ -192,11 +192,14 @@ netGameInfo.m_info.nSecurity = RandShort ();  // For syncing NetGames with playe
 downloadManager.Init ();
 networkThread.Start ();
 if (NetworkSelectPlayers (bAutoRun)) {
+	networkThread.Suspend ();
 	missionManager.DeleteLevelStates ();
 	missionManager.SaveLevelStates ();
 	SetupPowerupFilter ();
+	NetworkSetTimeoutValues ();
 	StartNewLevel (netGameInfo.m_info.GetLevel (), true);
 	ResetAllPlayerTimeouts ();
+	networkThread.Resume ();
 	PrintLog (-1);
 	return 1;
 	}
@@ -521,8 +524,6 @@ if ((networkData.syncInfo [0].nPlayer != -1) && !(gameData.app.nFrameCount & 63)
 #endif
 XMLGameInfoHandler ();
 NetworkDoSyncFrame ();
-importantMessages [0].Update ();
-importantMessages [1].Update ();
 //NetworkAdjustPPS ();
 }
 

@@ -401,6 +401,7 @@ class CNetworkData {
 		int32_t					bHaveSync;
 		int16_t					nPrevFrame;
 		int32_t					bTraceFrames;
+		int32_t					nCompetitionLevel;
 		int16_t					nJoining;
 		int32_t					xmlGameInfoRequestTime;
 		tRefuseData				refuse;

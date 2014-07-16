@@ -134,6 +134,10 @@ CSegDistList& segDist = gameData.segs.segDistTable [nSegment];
 segDist.offset = nMinSeg;
 segDist.length = nMaxSeg - nMinSeg + 1;
 segDist.scale = scale;
+#if DBG
+if (nSegment == nDbgSeg)
+	BRP;
+#endif
 if (!segDist.Create ())
 	return;
 segDist.Set (nSegment, 0);
@@ -768,10 +772,14 @@ static int32_t LoadSegDistData (CFile& cf, tLightDataHeader& ldh)
 	int32_t nDistances = 0;
 
 for (int32_t i = 0; i < ldh.nSegments; i++) {
+#if DBG
+	if (i == nDbgSeg)
+		BRP;
+#endif
 	if (!gameData.segs.segDistTable [i].Read (cf, ldh.bCompressed))
 		return 0;
 	CSegDistList& segDist = gameData.segs.segDistTable [i];
-	for (uint16_t nSegment = segDist.offset; nSegment < gameData.segs.nSegments; nSegment++) {
+	for (uint16_t nSegment = segDist.offset; nSegment < segDist.offset + segDist.length; nSegment++) {
 		if (segDist.Get (nSegment) >= 0)
 			nDistances++;
 		}
@@ -824,10 +832,14 @@ static int32_t SaveSegDistData (CFile& cf, tLightDataHeader& ldh)
 	int32_t nDistances = 0;
 
 for (int32_t i = 0; i < ldh.nSegments; i++) {
+#if DBG
+	if (i == nDbgSeg)
+		BRP;
+#endif
 	if (!gameData.segs.segDistTable [i].Write (cf, ldh.bCompressed))
 		return 0;
 	CSegDistList& segDist = gameData.segs.segDistTable [i];
-	for (uint16_t nSegment = segDist.offset; nSegment < gameData.segs.nSegments; nSegment++) {
+	for (uint16_t nSegment = segDist.offset; nSegment < segDist.offset + segDist.length; nSegment++) {
 		if (segDist.Get (nSegment) >= 0)
 			nDistances++;
 		}

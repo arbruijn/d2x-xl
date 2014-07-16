@@ -787,6 +787,10 @@ if (l < 0)
 	return -1;
 if ((l > m_info.props.h * m_info.props.rowSize) && !Resize (l))
 	return -1;
+if (Size () < l) {
+	if (!Resize (l))
+		return 0;
+	}
 memcpy (Buffer (), gameData.pig.tex.rleBuffer.Buffer (), l);
 m_info.props.flags &= ~(BM_FLAG_RLE | BM_FLAG_RLE_BIG);
 return l;

@@ -62,7 +62,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // WARNING!! If you add a nType here, add its name to ObjectType_names
 // in CObject.c
-#define MAX_OBJECT_TYPES 21
+#define MAX_OBJECT_TYPES	21
 
 // Result types
 #define RESULT_NOTHING		0   // Ignore this collision
@@ -154,7 +154,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define ROBOT_IS_NEUTRAL	0
 #define ROBOT_IS_FRIENDLY	1
 
-#define OBJ_LIST_TYPE		0
+#define OBJ_LIST_TYPE		1
 
 
 #define MAX_VELOCITY I2X(50)
@@ -757,17 +757,19 @@ typedef struct tObject : public tBaseObject {
 class CObject;
 
 
-class CObjListLink {
-	public:
-		CObject	*prev, *next;
-};
-
-
 typedef struct tObjListRef {
 	CObject*		head;
 	CObject*		tail;
 	int16_t		nObjects;
 } __pack__ tObjListRef;
+
+
+class CObjListLink {
+	public:
+		tObjListRef*	list;
+		CObject*			prev;
+		CObject*			next;
+};
 
 
 class CObjHitInfo {
@@ -901,6 +903,8 @@ class CObject : public CObjectInfo {
 		// unlinks an CObject from a CSegment's list of objects
 		void Init (void);
 		void Link (void);
+		void Relink (uint8_t nNewType);
+		void GetListsForType (uint8_t nType, tObjListRef* lists []);
 		void Unlink (bool bForce = false);
 		void Link (tObjListRef& ref, int32_t nLink);
 		void Unlink (tObjListRef& ref, int32_t nLink);
