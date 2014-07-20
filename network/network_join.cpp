@@ -42,8 +42,8 @@ int32_t NetworkFindPlayer (tNetPlayerInfo *playerP)
 {
 	int32_t	i;
 
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (!CmpNetPlayers (NULL, NULL, &netPlayers [0].m_info.players [i].network, &playerP->network))
+for (i = 0; i < N_PLAYERS; i++)
+	if (!CmpNetPlayers (NULL, NULL, &NETPLAYER (i).network, &playerP->network))
 		return i;         // already got them
 return -1;
 }
@@ -54,17 +54,17 @@ int32_t GetNewPlayerNumber (tPlayerSyncData *their)
   {
 	 int32_t i;
 
-if ((gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers) && 
-	 (gameData.multiplayer.nPlayers < gameData.multiplayer.nPlayerPositions))
-	return gameData.multiplayer.nPlayers;
+if ((N_PLAYERS < gameData.multiplayer.nMaxPlayers) && 
+	 (N_PLAYERS < gameData.multiplayer.nPlayerPositions))
+	return N_PLAYERS;
 // Slots are full but game is open, see if anyone is
 // disconnected and replace the oldest player with this new one
 int32_t oldestPlayer = -1;
 fix oldestTime = gameStates.app.nSDLTicks [0];
 
-Assert (gameData.multiplayer.nPlayers == gameData.multiplayer.nMaxPlayers);
-for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if ((!gameData.multiplayer.players [i].connected) && (networkData.nLastPacketTime [i] < oldestTime)) {
+Assert (N_PLAYERS == gameData.multiplayer.nMaxPlayers);
+for (i = 0; i < N_PLAYERS; i++) {
+	if ((!PLAYER (i).connected) && (networkData.nLastPacketTime [i] < oldestTime)) {
 		oldestTime = networkData.nLastPacketTime [i];
 		oldestPlayer = i;
 		}
@@ -153,7 +153,7 @@ for (int16_t i = 0; i < networkData.nJoining; i++)
 
 void NetworkDisconnectPlayer (int32_t nPlayer)
 {
-CPlayerData& player = gameData.multiplayer.players [nPlayer];
+CPlayerData& player = PLAYER (nPlayer);
 
 player.m_tDisconnect = SDL_GetTicks ();
 if (player.Connected (CONNECT_PLAYING)) {
@@ -187,14 +187,14 @@ nPlayer = their->player.connected;
 Assert (nPlayer >= 0);
 Assert (nPlayer < gameData.multiplayer.nMaxPlayers);        
 if (gameData.demo.nState == ND_STATE_RECORDING)
-	NDRecordMultiConnect (nPlayer, nPlayer == gameData.multiplayer.nPlayers, their->player.callsign);
-memcpy (gameData.multiplayer.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN + 1);
-memcpy (netPlayers [0].m_info.players [nPlayer].callsign, their->player.callsign, CALLSIGN_LEN + 1);
+	NDRecordMultiConnect (nPlayer, nPlayer == N_PLAYERS, their->player.callsign);
+memcpy (PLAYER (nPlayer).callsign, their->player.callsign, CALLSIGN_LEN + 1);
+memcpy (NETPLAYER (nPlayer).callsign, their->player.callsign, CALLSIGN_LEN + 1);
 memset (pingStats + nPlayer, 0, sizeof (pingStats [0]));
 ClipRank (reinterpret_cast<char*> (&their->player.rank));
-netPlayers [0].m_info.players [nPlayer].rank = their->player.rank;
-netPlayers [0].m_info.players [nPlayer].versionMajor = their->player.versionMajor;
-netPlayers [0].m_info.players [nPlayer].versionMinor = their->player.versionMinor;
+NETPLAYER (nPlayer).rank = their->player.rank;
+NETPLAYER (nPlayer).versionMajor = their->player.versionMajor;
+NETPLAYER (nPlayer).versionMinor = their->player.versionMinor;
 NetworkCheckForOldVersion ((char) nPlayer);
 
 if (gameStates.multi.nGameType >= IPX_GAME) {
@@ -202,22 +202,22 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		IpxGetLocalTarget (
 			their->player.network.Network (), 
 			their->player.network.Node (), 
-			gameData.multiplayer.players [nPlayer].netAddress);
+			PLAYER (nPlayer).netAddress);
 	else
-		memcpy (gameData.multiplayer.players [nPlayer].netAddress, their->player.network.Node (), 6);
+		memcpy (PLAYER (nPlayer).netAddress, their->player.network.Node (), 6);
 	}
-memcpy (&netPlayers [0].m_info.players [nPlayer].network, &their->player.network, sizeof (CNetworkInfo));
-gameData.multiplayer.players [nPlayer].nPacketsGot = 0;
+memcpy (&NETPLAYER (nPlayer).network, &their->player.network, sizeof (CNetworkInfo));
+PLAYER (nPlayer).nPacketsGot = 0;
 CONNECT (nPlayer, CONNECT_PLAYING);
-gameData.multiplayer.players [nPlayer].netKillsTotal = 0;
-gameData.multiplayer.players [nPlayer].netKilledTotal = 0;
+PLAYER (nPlayer).netKillsTotal = 0;
+PLAYER (nPlayer).netKilledTotal = 0;
 memset (gameData.multigame.score.matrix [nPlayer], 0, MAX_NUM_NET_PLAYERS * sizeof (int16_t)); 
-gameData.multiplayer.players [nPlayer].score = 0;
-gameData.multiplayer.players [nPlayer].flags = 0;
-gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
-if (nPlayer == gameData.multiplayer.nPlayers) {
-	gameData.multiplayer.nPlayers++;
-	netGameInfo.m_info.nNumPlayers = gameData.multiplayer.nPlayers;
+PLAYER (nPlayer).score = 0;
+PLAYER (nPlayer).flags = 0;
+PLAYER (nPlayer).nScoreGoalCount = 0;
+if (nPlayer == N_PLAYERS) {
+	N_PLAYERS++;
+	netGameInfo.m_info.nNumPlayers = N_PLAYERS;
 	}
 audio.PlaySound (SOUND_HUD_MESSAGE);
 ClipRank (reinterpret_cast<char*> (&their->player.rank));
@@ -226,7 +226,7 @@ if (gameOpts->multi.bNoRankings)
 else   
    HUDInitMessage ("%s'%s' %s\n", pszRankStrings [their->player.rank], their->player.callsign, TXT_JOINING);
 MultiMakeGhostPlayer (nPlayer);
-GetPlayerSpawn (GetRandomPlayerPosition (nPlayer), OBJECTS + gameData.multiplayer.players [nPlayer].nObject);
+MovePlayerToSpawnPos (GetRandomPlayerPosition (nPlayer), OBJECTS + PLAYER (nPlayer).nObject);
 MultiSendScore ();
 MultiSortKillList ();
 // OBJECTS [nObject].CreateAppearanceEffect ();
@@ -240,28 +240,28 @@ static int32_t FindNetworkPlayer (tPlayerSyncData *player, uint8_t *newAddress)
 	uint8_t anyAddress [6];
 
 if (gameStates.multi.nGameType == UDP_GAME) {
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if (!memcmp (gameData.multiplayer.players [i].netAddress, newAddress, extraGameInfo [1].bCheckUDPPort ? 6 : 4) &&
-			 !stricmp (gameData.multiplayer.players [i].callsign, player->player.callsign)) {
-			memcpy (gameData.multiplayer.players [i].netAddress, newAddress, 6);
+	for (i = 0; i < N_PLAYERS; i++) {
+		if (!memcmp (PLAYER (i).netAddress, newAddress, extraGameInfo [1].bCheckUDPPort ? 6 : 4) &&
+			 !stricmp (PLAYER (i).callsign, player->player.callsign)) {
+			memcpy (PLAYER (i).netAddress, newAddress, 6);
 			return i;
 			}
 		}
 	memset (&anyAddress, 0xFF, sizeof (anyAddress));
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if (!memcmp (gameData.multiplayer.players [i].netAddress, anyAddress, 6) &&
-			 !stricmp (gameData.multiplayer.players [i].callsign, player->player.callsign)) {
-			memcpy (gameData.multiplayer.players [i].netAddress, newAddress, 6);
-			memcpy (netPlayers [0].m_info.players [i].network.Node (), newAddress, 6);
+	for (i = 0; i < N_PLAYERS; i++) {
+		if (!memcmp (PLAYER (i).netAddress, anyAddress, 6) &&
+			 !stricmp (PLAYER (i).callsign, player->player.callsign)) {
+			memcpy (PLAYER (i).netAddress, newAddress, 6);
+			memcpy (NETPLAYER (i).network.Node (), newAddress, 6);
 			return i;
 			}
 		}
 	}
 else {
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) 
+	for (i = 0; i < N_PLAYERS; i++) 
 		if (gameStates.multi.nGameType == IPX_GAME) {
-			if (!memcmp (gameData.multiplayer.players [i].netAddress, newAddress, 6) &&
-				 !stricmp (gameData.multiplayer.players [i].callsign, player->player.callsign)) {
+			if (!memcmp (PLAYER (i).netAddress, newAddress, 6) &&
+				 !stricmp (PLAYER (i).callsign, player->player.callsign)) {
 				return i;
 				}
 			}
@@ -282,18 +282,18 @@ if (netGameInfo.m_info.gameFlags & NETGAME_FLAG_CLOSED) {
 			DUMP_CLOSED);
 	return -1;
 	}
-if ((gameData.multiplayer.nPlayers < gameData.multiplayer.nMaxPlayers) &&
-	 (gameData.multiplayer.nPlayers < gameData.multiplayer.nPlayerPositions)) {
+if ((N_PLAYERS < gameData.multiplayer.nMaxPlayers) &&
+	 (N_PLAYERS < gameData.multiplayer.nPlayerPositions)) {
 	// Add CPlayerData in an open slot, game not full yet
 	networkData.bPlayerAdded = 1;
-	return gameData.multiplayer.nPlayers;
+	return N_PLAYERS;
 	}
 // Slots are full but game is open, see if anyone is
 // disconnected and replace the oldest CPlayerData with this new one
 int32_t oldestPlayer = -1;
 fix oldestTime = TimerGetApproxSeconds ();
-for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (!gameData.multiplayer.players [i].IsConnected () && (networkData.nLastPacketTime [i] < oldestTime)) {
+for (int32_t i = 0; i < N_PLAYERS; i++) {
+	if (!PLAYER (i).IsConnected () && (networkData.nLastPacketTime [i] < oldestTime)) {
 		oldestTime = networkData.nLastPacketTime [i];
 		oldestPlayer = i;
 		}
@@ -435,15 +435,15 @@ else {
 	networkData.bPlayerAdded = 0;
 	audio.PlaySound (SOUND_HUD_MESSAGE);
 	if (gameOpts->multi.bNoRankings)
-		HUDInitMessage ("'%s' %s", gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
+		HUDInitMessage ("'%s' %s", PLAYER (nPlayer).callsign, TXT_REJOIN);
 	else
-		HUDInitMessage ("%s'%s' %s", pszRankStrings [netPlayers [0].m_info.players [nPlayer].rank], 
-							 gameData.multiplayer.players [nPlayer].callsign, TXT_REJOIN);
+		HUDInitMessage ("%s'%s' %s", pszRankStrings [NETPLAYER (nPlayer).rank], 
+							 PLAYER (nPlayer).callsign, TXT_REJOIN);
 	}
 // Check whether this player is currently trying to sync and has a resync running
 // The resync request requires an additional join request to make the game host accept the resync request
-gameData.multiplayer.players [nPlayer].nScoreGoalCount = 0;
-gameData.multiplayer.players [nPlayer].m_nLevel = missionManager.nCurrentLevel;
+PLAYER (nPlayer).nScoreGoalCount = 0;
+PLAYER (nPlayer).m_nLevel = missionManager.nCurrentLevel;
 CONNECT (nPlayer, CONNECT_DISCONNECTED);
 // Send updated OBJECTS data to the new/returning CPlayerData
 syncInfoP->player [0] = 
@@ -466,7 +466,7 @@ void NetworkAddPlayer (tPlayerSyncData* playerInfoP)
 {
 if (NetworkFindPlayer (&playerInfoP->player) > -1)
 	return;
-tNetPlayerInfo& playerInfo = netPlayers [0].m_info.players [gameData.multiplayer.nPlayers];
+tNetPlayerInfo& playerInfo = NETPLAYER (N_PLAYERS);
 memcpy (&playerInfo.network, &playerInfoP->player.network, sizeof (CNetworkInfo));
 ClipRank (reinterpret_cast<char*> (&playerInfoP->player.rank));
 memcpy (playerInfo.callsign, playerInfoP->player.callsign, CALLSIGN_LEN + 1);
@@ -474,13 +474,14 @@ playerInfo.versionMajor = playerInfoP->player.versionMajor;
 playerInfo.versionMinor = playerInfoP->player.versionMinor;
 playerInfo.rank = playerInfoP->player.rank;
 playerInfo.connected = CONNECT_PLAYING;
-NetworkCheckForOldVersion ((char) gameData.multiplayer.nPlayers);
-CPlayerData& player = gameData.multiplayer.players [gameData.multiplayer.nPlayers];
+NetworkCheckForOldVersion ((char) N_PLAYERS);
+CPlayerData& player = PLAYER (N_PLAYERS);
+player.SetObservedPlayer (N_PLAYERS);
 memcpy (player.callsign, playerInfo.callsign, CALLSIGN_LEN + 1);
 player.nScoreGoalCount = 0;
-CONNECT (gameData.multiplayer.nPlayers, CONNECT_PLAYING);
-ResetPlayerTimeout (gameData.multiplayer.nPlayers, -1);
-netGameInfo.m_info.nNumPlayers = ++gameData.multiplayer.nPlayers;
+CONNECT (N_PLAYERS, CONNECT_PLAYING);
+ResetPlayerTimeout (N_PLAYERS, -1);
+netGameInfo.m_info.nNumPlayers = ++N_PLAYERS;
 // Broadcast updated info
 NetworkSendGameInfo (NULL);
 }
@@ -496,18 +497,18 @@ void NetworkRemovePlayer (tPlayerSyncData *player)
 if (pn < 0)
 	return;
 
-for (i = pn; i < gameData.multiplayer.nPlayers - 1; ) {
+for (i = pn; i < N_PLAYERS - 1; ) {
 	j = i++;
-	memcpy (&netPlayers [0].m_info.players [j].network, &netPlayers [0].m_info.players [i].network, sizeof (CNetworkInfo));
-	memcpy (netPlayers [0].m_info.players [j].callsign, netPlayers [0].m_info.players [i].callsign, CALLSIGN_LEN + 1);
-	netPlayers [0].m_info.players [j].versionMajor = netPlayers [0].m_info.players [i].versionMajor;
-	netPlayers [0].m_info.players [j].versionMinor = netPlayers [0].m_info.players [i].versionMinor;
-   netPlayers [0].m_info.players [j].rank = netPlayers [0].m_info.players [i].rank;
-	ClipRank (reinterpret_cast<char*> (&netPlayers [0].m_info.players [j].rank));
+	memcpy (&NETPLAYER (j).network, &NETPLAYER (i).network, sizeof (CNetworkInfo));
+	memcpy (NETPLAYER (j).callsign, NETPLAYER (i).callsign, CALLSIGN_LEN + 1);
+	NETPLAYER (j).versionMajor = NETPLAYER (i).versionMajor;
+	NETPLAYER (j).versionMinor = NETPLAYER (i).versionMinor;
+   NETPLAYER (j).rank = NETPLAYER (i).rank;
+	ClipRank (reinterpret_cast<char*> (&NETPLAYER (j).rank));
    NetworkCheckForOldVersion ((char) i);
 	}
-gameData.multiplayer.nPlayers--;
-netGameInfo.m_info.nNumPlayers = gameData.multiplayer.nPlayers;
+N_PLAYERS--;
+netGameInfo.m_info.nNumPlayers = N_PLAYERS;
 // Broadcast new info
 NetworkSendGameInfo (NULL);
 }
@@ -524,7 +525,7 @@ void DoRefuseStuff (tPlayerSyncData *their)
 ClipRank (reinterpret_cast<char*> (&their->player.rank));
 
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++)
-	if (!strcmp (their->player.callsign, gameData.multiplayer.players [i].callsign)) {
+	if (!strcmp (their->player.callsign, PLAYER (i).callsign)) {
 		NetworkWelcomePlayer (their);
 		return;
 		}

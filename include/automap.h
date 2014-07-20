@@ -55,18 +55,18 @@ typedef struct tAutomapWallColors {
 
 typedef struct tAutomapColors {
 	tAutomapWallColors	walls;
-	uint32_t						nHostage;
-	uint32_t						nMonsterball;
-	uint32_t						nWhite;
-	uint32_t						nMedGreen;
-	uint32_t						nLgtBlue;
-	uint32_t						nLgtRed;
-	uint32_t						nDkGray;
+	uint32_t					nHostage;
+	uint32_t					nMonsterball;
+	uint32_t					nWhite;
+	uint32_t					nMedGreen;
+	uint32_t					nLgtBlue;
+	uint32_t					nLgtRed;
+	uint32_t					nDkGray;
 } __pack__ tAutomapColors;
 
 typedef struct tAutomapData {
-	int32_t						bCheat;
-	int32_t						bHires;
+	int32_t					bCheat;
+	int32_t					bHires;
 	fix						nViewDist;
 	fix						nMaxDist;
 	fix						nZoom;
@@ -124,12 +124,13 @@ class CAutomap {
 		inline int32_t Radar (void) { return m_bRadar; }
 		inline int32_t SegmentLimit (void) { return m_nSegmentLimit; }
 		inline int32_t MaxSegsAway (void) { return m_nMaxSegsAway; }
-		inline int32_t Visible (int32_t nSegment) { return m_bFull || m_visited [nSegment]; }
-		inline int32_t Active (void) { return m_bActive; }
+		inline int32_t Visible (int32_t nSegment) { return m_bFull || m_visited [nSegment] || (OBSERVING && IsMultiGame && !IsCoopGame); }
+		int32_t Active (void);
 		inline void SetActive (int32_t bActive) { m_bActive = bActive; }
 
 	private:
 		int32_t SetSegmentDepths (int32_t nStartSeg, uint16_t *depthBufP);
+		void InitView (void);
 		void AdjustSegmentLimit (void);
 		void DrawEdges (void);
 		void DrawPlayer (CObject* objP);
@@ -145,6 +146,8 @@ class CAutomap {
 		void AddUnknownSegmentEdges (CSegment* segP);
 		void SetEdgeColor (int32_t nColor, int32_t bFade, float fScale = 1.e10f);
 		void DrawLine (int16_t v0, int16_t v1);
+		int32_t Texturing (void);
+
 };
 
 //------------------------------------------------------------------------------

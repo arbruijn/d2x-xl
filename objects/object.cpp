@@ -219,7 +219,7 @@ float CObject::Damage (void)
 	fix	xMaxShield;
 
 if (info.nType == OBJ_PLAYER)
-	fDmg = X2F (gameData.multiplayer.players [info.nId].Shield ()) / 100;
+	fDmg = X2F (PLAYER (info.nId).Shield ()) / 100;
 else if (info.nType == OBJ_ROBOT) {
 	if (0 >= (xMaxShield = RobotDefaultShield (this)))
 		return 1.0f;
@@ -327,7 +327,7 @@ gameData.objs.consoleP->mType.physInfo.mass = gameData.pig.ship.player->mass;
 gameData.objs.consoleP->mType.physInfo.drag = gameData.pig.ship.player->drag;
 gameData.objs.consoleP->mType.physInfo.flags |= PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUST;
 //Init render info
-gameData.objs.consoleP->info.renderType = RT_POLYOBJ;
+gameData.objs.consoleP->info.renderType = (gameData.objs.consoleP->info.nType == OBJ_GHOST) ? RT_NONE : RT_POLYOBJ;
 gameData.objs.consoleP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;		//what model is this?
 gameData.objs.consoleP->rType.polyObjInfo.nSubObjFlags = 0;		//zero the flags
 gameData.objs.consoleP->rType.polyObjInfo.nTexOverride = -1;		//no tmap override!
@@ -345,10 +345,11 @@ void InitMultiPlayerObject (int32_t nStage)
 if (nStage == 0) {
 	Assert ((N_LOCALPLAYER >= 0) && (N_LOCALPLAYER < MAX_PLAYERS));
 	if (N_LOCALPLAYER != 0) {
-		gameData.multiplayer.players [0] = LOCALPLAYER;
+		PLAYER (0) = LOCALPLAYER;
 		N_LOCALPLAYER = 0;
 		}
 	LOCALPLAYER.SetObject (0);
+	LOCALPLAYER.SetObservedPlayer (N_LOCALPLAYER);
 	LOCALPLAYER.nInvuls =
 	LOCALPLAYER.nCloaks = 0;
 	}
@@ -891,7 +892,9 @@ void CObject::Unlink (tObjListRef& ref, int32_t nLink)
 {
 #if OBJ_LIST_TYPE == 1
 	CObjListLink& link = m_links [nLink];
+#if DBG
 	bool bRebuild = false;
+#endif
 
 if (link.prev || link.next) {
 	if (ref.nObjects <= 0) {
@@ -1528,11 +1531,11 @@ void ClearTransientObjects (int32_t bClearAll)
 {
 	CObject*	objP, * prevObjP;
 
-for (CWeaponIterator iter (objP); objP; objP = prevObjP ? iter.Step () : iter.Start ()) {
+for (CWeaponIterator iter (objP); objP; objP = (prevObjP ? iter.Step () : iter.Start ())) {
 	prevObjP = objP;
 	if ((!(gameData.weapons.info [objP->info.nId].flags & WIF_PLACABLE) && (bClearAll || ((objP->info.nId != PROXMINE_ID) && (objP->info.nId != SMARTMINE_ID)))) ||
 			objP->info.nType == OBJ_FIREBALL ||	objP->info.nType == OBJ_DEBRIS || ((objP->info.nType != OBJ_NONE) && (objP->info.nFlags & OF_EXPLODING))) {
-		CObject* prevObjP = iter.Back ();
+		prevObjP = iter.Back ();
 		ReleaseObject (objP->Index ());
 		}
 	}
@@ -1773,7 +1776,7 @@ return SEGMENTS [info.nSegment].HasOpenableDoor ();
 bool CObject::Cloaked (void)
 {
 if (info.nType == OBJ_PLAYER)
-	return (gameData.multiplayer.players [info.nId].flags & PLAYER_FLAGS_CLOAKED) != 0;
+	return (PLAYER (info.nId).flags & PLAYER_FLAGS_CLOAKED) != 0;
 else if (info.nType == OBJ_ROBOT)
 	return cType.aiInfo.CLOAKED != 0;
 else

@@ -37,7 +37,7 @@ void TransformHitboxf (CObject *objP, CFloatVector *vertList, int32_t iSubObj)
 	tHitbox*				phb = gameData.models.hitboxes [objP->ModelId ()].hitboxes + iSubObj;
 	CFixVector			vMin = phb->vMin;
 	CFixVector			vMax = phb->vMax;
-	int32_t					i;
+	int32_t				i;
 
 for (i = 0; i < 8; i++) {
 	hv.v.coord.x = X2F (hitBoxOffsets [i].v.coord.x ? vMin.v.coord.x : vMax.v.coord.x);
@@ -69,7 +69,7 @@ if (!SHOW_OBJ_FX)
 if (objP->info.nType == OBJ_PLAYER) {
 	if (!EGI_FLAG (bPlayerShield, 0, 1, 0))
 		return;
-	if (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_CLOAKED) {
+	if (PLAY (objP->info.nId).flags & PLAYER_FLAGS_CLOAKED) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))
 			return;
 		fFade = (float) ci.nFadeValue / (float) FADE_LEVELS;
@@ -174,7 +174,7 @@ if (gameStates.app.nSDLTicks [0] - gameData.models.hitboxes [objP->ModelId ()].t
 	int32_t nModel = objP->rType.polyObjInfo.nModel;
 	objP->rType.polyObjInfo.nModel = -1;
 	objP->rType.polyObjInfo.nModel = nModel;
-	//SetRenderView (0, NULL);
+	//SetupRenderView (0, NULL);
 	DrawShieldSphere (&o, 1, 0, 0, 0.33f, 1);
 	}
 #endif
@@ -200,7 +200,7 @@ if (SHOW_SHADOWS &&
 	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 1) : (gameStates.render.nShadowPass != 3)))
 	return;
 if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
-	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_CLOAKED) {
+	if (PLAYER (i).flags & PLAYER_FLAGS_CLOAKED) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))
 			return;
 		scale = (float) ci.nFadeValue / (float) FADE_LEVELS;
@@ -226,7 +226,7 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 		return;
 #	endif
 #endif
-	if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
+	if (PLAYER (i).flags & PLAYER_FLAGS_INVULNERABLE)
 		nColor = 2;
 	else if (gameData.multiplayer.bWasHit [i])
 		nColor = 1;
@@ -236,10 +236,10 @@ if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
 		alpha = (gameOpts->render.effects.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / float (SHIELD_EFFECT_TIME)) * PI / 2) : 1);
 		scale *= alpha;
 		}
-	else if (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_INVULNERABLE)
+	else if (PLAYER (i).flags & PLAYER_FLAGS_INVULNERABLE)
 		alpha = 1;
 	else {
-		alpha = X2F (gameData.multiplayer.players [i].Shield ()) / X2F (gameData.multiplayer.players [i].MaxShield ());
+		alpha = X2F (PLAYER (i).Shield ()) / X2F (PLAYER (i).MaxShield ());
 		scale *= alpha;
 		if (gameData.multiplayer.spherePulse [i].fSpeed == 0.0f)
 			SetupSpherePulse (gameData.multiplayer.spherePulse + i, 0.02f, 0.5f);

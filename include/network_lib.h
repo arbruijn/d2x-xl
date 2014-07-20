@@ -489,8 +489,8 @@ void NetworkProcessSyncPacket (CNetGameInfo * sp, int32_t rsinit);
 void NetworkReadObjectPacket (uint8_t *data);
 void NetworkReadEndLevelPacket (uint8_t *data);
 void NetworkReadEndLevelShortPacket (uint8_t *data);
-void NetworkReadPDataLongPacket (tFrameInfoLong *pd);
-void NetworkReadPDataShortPacket (tFrameInfoShort *pd);
+void NetworkReadLongPlayerDataPacket (tFrameInfoLong *pd);
+void NetworkReadShortPlayerDataPacket (tFrameInfoShort *pd);
 void NetworkReadObjectPacket (uint8_t *data);
 
 void NetworkProcessMonitorVector (int32_t vector);
@@ -544,6 +544,8 @@ int32_t NetworkObjnumIsPast(int32_t nObject, tNetworkSyncInfo *syncInfoP);
 int32_t XMLGameInfoHandler (uint8_t *data = NULL, int32_t nLength = 0);
 
 void InitAddressFilter (void);
+int8_t SwitchObservedPlayer (void);
+void ObserverFrame (void);
 
 void NetworkSendPing (uint8_t);
 

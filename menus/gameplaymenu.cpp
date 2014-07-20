@@ -336,6 +336,7 @@ do {
 	m.AddCheck ("smart weapon switch", TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_M, HTX_GPLAY_SMARTSWITCH);
 	m.AddCheck ("headlight drains power", TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_O, HTX_HEADLIGHT_POWERDRAIN);
 	m.AddCheck ("suppress thief", TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
+	m.AddCheck ("observer mode", TXT_OBSERVER_MODE, gameOpts->gameplay.bObserve, KEY_B, HTX_OBSERVER_MODE);
 	m.AddCheck ("use inventory", TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_U, HTX_GPLAY_INVENTORY);
 	m.AddCheck ("spinup gatling", TXT_SPINUP_GATLING, extraGameInfo [0].bGatlingSpeedUp, KEY_G, HTX_SPINUP_GATLING);
 	if (!gameStates.app.bGameRunning)
@@ -347,7 +348,7 @@ do {
 		AddShipSelection (m, optShip);
 	if (!(gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame)) {
 		m.AddText ("", "");
-		m.AddMenu ("loadout options", TXT_LOADOUT_OPTION, KEY_B, HTX_MULTI_LOADOUT);
+		m.AddMenu ("loadout options", TXT_LOADOUT_OPTION, KEY_Q, HTX_MULTI_LOADOUT);
 		}
 
 	for (;;) {
@@ -374,6 +375,7 @@ else {
 extraGameInfo [0].bSmartWeaponSwitch = m.Value ("smart weapon switch");
 GET_VAL (gameOpts->gameplay.bInventory, "use inventory");
 GET_VAL (gameOpts->gameplay.bNoThief, "suppress thief");
+GET_VAL (gameOpts->gameplay.bObserve, "observer mode");
 GET_VAL (extraGameInfo [0].headlight.bDrainPower, "headlight drains power");
 GET_VAL (extraGameInfo [0].bGatlingSpeedUp, "spinup gatling");
 if (!gameStates.app.bGameRunning) {

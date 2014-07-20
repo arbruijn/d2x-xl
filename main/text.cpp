@@ -1770,8 +1770,8 @@ const char *defaultGameTexts [][2] = {
  {"Hochgeschwindigkeit!!", "Bullet Time!!"},
  {"Waffen-Ausstattung", "Gun Loadout"},
  {"Geraete-Ausstattung", "Device Loadout"},
- {"e~Ingebaute Ausruestung", "built-~In equipment"},
- {"e~Ingebaute Ausruestung...", "built-~In equipment..."},
+ {"eingebaute Ausruestung", "built-in equipment"},
+ {"e~Ingebaute Ausruestung...", "built-in e~Quipment..."},
  {"Boje loeschen?", "Delete Marker?"},
  {"zu Boje teleportieren?", "Teleport to marker?"},
  {"Kann nicht teleportieren: Zuwenig Energie", "Cannot teleport: Not enough energy"},
@@ -1975,6 +1975,7 @@ const char *defaultGameTexts [][2] = {
  {"jeder", "everybody"},
  {"mit bestaetigung", "confirmation"},
  {"auf einladung", "invitation"},
+ {"~Beobachtermodus erlauben", "allow o~Bserver mode"},
  
 #if 0
  {"", ""},

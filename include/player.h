@@ -96,13 +96,15 @@ class __pack__ CShipEnergy {
 	private:
 		int32_t	m_type;
 		int32_t	m_index;
-		fix	m_init;
-		fix	m_max;
-		fix*	m_current;
+		fix		m_init;
+		fix		m_max;
+		fix*		m_current;
 
 	public:
 		//default c-tor
-		CShipEnergy () { Setup (0, 0, I2X (100), NULL); }
+		CShipEnergy () { Reset (); }
+
+		void Reset (void)  { Setup (0, 0, I2X (100), NULL); }
 		// return ship type dependent scaling value
 		float Scale (void);
 		// get initial value (which is identical to the max value w/o overcharge)
@@ -146,7 +148,7 @@ class __pack__ CShipEnergy {
 #define MAX_LASER_LEVEL					3   // Note, laser levels are numbered from 0.
 #define MAX_SUPERLASER_LEVEL			5   // Note, laser levels are numbered from 0.
 
-class CPlayerInfo {
+class __pack__ CPlayerInfo {
 	public:
 		// Who am I data
 		char			callsign [CALLSIGN_LEN+1];  // The callsign of this player, for net purposes.
@@ -208,10 +210,14 @@ class CPlayerInfo {
 		inline int32_t GetConnected (void) { return connected; }
 	};
 
-class __pack__ CPlayerData : public CPlayerInfo {
+#include "flightpath.h"
+
+class CPlayerData : public CPlayerInfo {
 	public:
+		CFlightPath	m_flightPath;
 		CShipEnergy	m_shield;
 		CShipEnergy	m_energy;
+		int8_t		m_nObservedPlayer;
 		uint8_t		m_laserLevels [2];
 		uint8_t		m_bExploded;
 		uint8_t		m_nLevel;
@@ -225,7 +231,18 @@ class __pack__ CPlayerData : public CPlayerInfo {
 			Setup (); 
 			}
 
-		void Reset (void) { memset (this, 0, sizeof (*this)); }
+		void Reset (void) { 
+			m_shield.Reset ();
+			m_energy.Reset ();
+			m_flightPath.Reset (-1, -1);
+			m_nObservedPlayer = 0;
+			m_laserLevels [0] = m_laserLevels [1] = 0;
+			m_bExploded = 0;
+			m_nLevel = 0;
+			m_tDisconnect = 0;
+			m_tDeath = 0;
+			m_tWeaponInfo = 0;
+			}
 
 		void Setup (void) {
 			m_shield.Setup (0, Index (), INITIAL_SHIELD, &shield);
@@ -238,6 +255,10 @@ class __pack__ CPlayerData : public CPlayerInfo {
 
 		bool WaitingForExplosion (void);
 		bool WaitingForWeaponInfo (void);
+
+		inline CFlightPath& FlightPath (void) { return m_flightPath; }
+		inline int8_t ObservedPlayer (void) { return m_nObservedPlayer; }
+		inline void SetObservedPlayer (int8_t nPlayer) { m_nObservedPlayer = nPlayer; }
 
 #if 1
 		inline fix InitialShield (void) { return m_shield.Initial (); }

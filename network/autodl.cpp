@@ -137,7 +137,7 @@ if (nPlayer == N_LOCALPLAYER)
 	return m_bDownloading [MAX_PLAYERS - 1];
 if (nPlayer >= MAX_PLAYERS) 
 	return false;
-int32_t i = FindClient (netPlayers [0].m_info.players [nPlayer].network.Network (), netPlayers [0].m_info.players [nPlayer].network.Node ());
+int32_t i = FindClient (NETPLAYER (nPlayer).network.Network (), NETPLAYER (nPlayer).network.Node ());
 if (i < 0)
 	return false;
 return m_bDownloading [i]; 
@@ -147,9 +147,9 @@ return m_bDownloading [i];
 
 void CDownloadManager::SetDownloadFlag (int32_t nPlayer, bool bFlag)
 {
-for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (!memcmp (m_clients [nPlayer].addr.Network (), netPlayers [0].m_info.players [i].network.Network (), 4) &&
-		 !memcmp (m_clients [nPlayer].addr.Node (), netPlayers [0].m_info.players [i].network.Node (), 6)) {
+for (int32_t i = 0; i < N_PLAYERS; i++) {
+	if (!memcmp (m_clients [nPlayer].addr.Network (), NETPLAYER (i).network.Network (), 4) &&
+		 !memcmp (m_clients [nPlayer].addr.Node (), NETPLAYER (i).network.Node (), 6)) {
 		m_bDownloading [i] = bFlag;
 		return;
 		}

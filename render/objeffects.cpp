@@ -37,7 +37,7 @@ if (gameStates.app.bNostalgia)
 	return;
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
-if (IsTeamGame && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_FLAG)) {
+if (IsTeamGame && (PLAYER (objP->info.nId).flags & PLAYER_FLAGS_FLAG)) {
 
 	static CFloatVector fVerts [4] = {
 		CFloatVector::Create(0.0f, 2.0f / 3.0f, 0.0f, 1.0f),

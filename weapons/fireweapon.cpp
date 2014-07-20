@@ -650,7 +650,7 @@ int32_t LocalPlayerFireGun (void)
 	static int32_t	nSpreadfireToggle = 0;
 	static int32_t	nHelixOrient = 0;
 
-if (gameStates.app.bPlayerIsDead)
+if (gameStates.app.bPlayerIsDead || OBSERVING)
 	return 0;
 if (gameStates.app.bD2XLevel && (SEGMENTS [objP->info.nSegment].HasNoDamageProp ()))
 	return 0;
@@ -824,7 +824,7 @@ FORALL_OBJS (curObjP) {
 			continue;
 		if (IsTeamGame && (GetTeam (curObjP->info.nId) == GetTeam (OBJECTS [parent.nObject].info.nId)))
 			continue;
-		if (gameData.multiplayer.players [curObjP->info.nId].flags & PLAYER_FLAGS_CLOAKED)
+		if (PLAYER (curObjP->info.nId).flags & PLAYER_FLAGS_CLOAKED)
 			continue;
 		}
 	else if (curObjP->info.nType == OBJ_ROBOT) {
@@ -900,7 +900,7 @@ if (gameData.objs.HasGuidedMissile (N_LOCALPLAYER)) {
 	return;
 	}
 
-if (gameStates.app.bPlayerIsDead || (playerP->secondaryAmmo [gameData.weapons.nSecondary] <= 0))
+if (gameStates.app.bPlayerIsDead || OBSERVING || (playerP->secondaryAmmo [gameData.weapons.nSecondary] <= 0))
 	return;
 
 uint8_t nWeaponId = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
@@ -981,7 +981,7 @@ if (bAutoSelect)
 
 void GetPlayerMslLock (void)
 {
-if (gameStates.app.bPlayerIsDead)
+if (gameStates.app.bPlayerIsDead || OBSERVING)
 	return;
 
 	int32_t		nWeapon, nObject, nGun, h, i, j;
@@ -1000,8 +1000,6 @@ if ((objP = GuidedInMainView ())) {
 if (!AllowedToFireMissile (-1, 1))
 	return;
 if (!EGI_FLAG (bMslLockIndicators, 0, 1, 0) || COMPETITION)
-	return;
-if (gameStates.app.bPlayerIsDead)
 	return;
 nWeapon = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
 if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] <= 0)

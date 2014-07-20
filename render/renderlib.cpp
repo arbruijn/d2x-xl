@@ -35,6 +35,11 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "renderthreads.h"
 #include "cameras.h"
 #include "menubackground.h"
+#include "input.h"
+#include "mouse.h"
+#include "newdemo.h"
+#include "cockpit.h"
+#include "timer.h"
 
 //------------------------------------------------------------------------------
 
@@ -762,6 +767,253 @@ return 0;
 int32_t SegmentMayBeVisible (int16_t nStartSeg, int32_t nRadius, int32_t nMaxDist, int32_t nThread)
 {
 return gameData.render.mine.visibility [nThread + 2].SegmentMayBeVisible (nStartSeg, nRadius, nMaxDist);
+}
+
+//------------------------------------------------------------------------------
+
+int32_t SetRearView (int32_t bOn)
+{
+if (gameStates.render.bRearView == bOn)
+	return 0;
+
+if ((gameStates.render.bRearView = bOn)) {
+	SetFreeCam (0);
+	SetChaseCam (0);
+	if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) {
+		CGenericCockpit::Save ();
+		cockpit->Activate (CM_REAR_VIEW);
+		}
+	if (gameData.demo.nState == ND_STATE_RECORDING)
+		NDRecordRearView ();
+
+	}
+else {
+	if (gameStates.render.cockpit.nType == CM_REAR_VIEW)
+		CGenericCockpit::Restore ();
+	if (gameData.demo.nState == ND_STATE_RECORDING)
+		NDRecordRestoreRearView ();
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+void CheckRearView (void)
+{
+#if DBG
+if (controls [0].rearViewDownCount) {		//key/button has gone down
+	controls [0].rearViewDownCount = 0;
+	ToggleRearView ();
+	}
+#else
+	#define LEAVE_TIME 0x1000		//how long until we decide key is down	 (Used to be 0x4000)
+
+	static int32_t nLeaveMode;
+	static fix entryTime;
+
+if (controls [0].rearViewDownCount) {		//key/button has gone down
+	controls [0].rearViewDownCount = 0;
+	if (ToggleRearView () && gameStates.render.bRearView) {
+		nLeaveMode = 0;		//means wait for another key
+		entryTime = TimerGetFixedSeconds ();
+		}
+	}
+else if (controls [0].rearViewDownState) {
+	if (!nLeaveMode && (TimerGetFixedSeconds () - entryTime) > LEAVE_TIME)
+		nLeaveMode = 1;
+	}
+else if (nLeaveMode)
+	SetRearView (0);
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+int32_t ToggleRearView (void)
+{
+return SetRearView (!gameStates.render.bRearView);
+}
+
+//------------------------------------------------------------------------------
+
+void ResetRearView (void)
+{
+if (gameStates.render.bRearView) {
+	if (gameData.demo.nState == ND_STATE_RECORDING)
+		NDRecordRestoreRearView ();
+	}
+gameStates.render.bRearView = 0;
+if ((gameStates.render.cockpit.nType < 0) || (gameStates.render.cockpit.nType > 4) || (gameStates.render.cockpit.nType == CM_REAR_VIEW)) {
+	if (!CGenericCockpit::Restore ())
+		cockpit->Activate (CM_FULL_COCKPIT);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int32_t SetChaseCam (int32_t bOn)
+{
+if (gameStates.render.bChaseCam == bOn)
+	return 0;
+if ((gameStates.render.bChaseCam = bOn)) {
+	SetFreeCam (0);
+	SetRearView (0);
+	CGenericCockpit::Save ();
+	if (gameStates.render.cockpit.nType < CM_FULL_SCREEN)
+		cockpit->Activate (CM_FULL_SCREEN);
+	else
+		gameStates.zoom.nFactor = float (gameStates.zoom.nMinFactor);
+	}
+else
+	CGenericCockpit::Restore ();
+if (LOCALPLAYER.ObservedPlayer () == N_LOCALPLAYER)
+	FLIGHTPATH.Reset (-1, -1);
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t ToggleChaseCam (void)
+{
+#if !DBG
+if (IsMultiGame && !IsCoopGame && (!EGI_FLAG (bEnableCheats, 0, 0, 0) || COMPETITION)) {
+	HUDMessage (0, "Chase camera is not available");
+	return 0;
+	}
+#endif
+return 
+SetChaseCam ((OBSERVING) ? 1 : !gameStates.render.bChaseCam);
+}
+
+//------------------------------------------------------------------------------
+
+int32_t SetFreeCam (int32_t bOn)
+{
+if (gameStates.render.bFreeCam < 0)
+	return 0;
+if (OBSERVING)
+	return 0;
+if (gameStates.render.bFreeCam == bOn)
+	return 0;
+if ((gameStates.render.bFreeCam = bOn)) {
+	SetChaseCam (0);
+	SetRearView (0);
+	gameStates.app.playerPos = gameData.objs.viewerP->info.position;
+	gameStates.app.nPlayerSegment = gameData.objs.viewerP->info.nSegment;
+	CGenericCockpit::Save ();
+	if (gameStates.render.cockpit.nType < CM_FULL_SCREEN)
+		cockpit->Activate (CM_FULL_SCREEN);
+	else
+		gameStates.zoom.nFactor = float (gameStates.zoom.nMinFactor);
+	}
+else {
+	gameData.objs.viewerP->info.position = gameStates.app.playerPos;
+	gameData.objs.viewerP->RelinkToSeg (gameStates.app.nPlayerSegment);
+	CGenericCockpit::Restore ();
+	}
+return 1;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t ToggleFreeCam (void)
+{
+#if !DBG
+if (IsMultiGame && !IsCoopGame && (!EGI_FLAG (bEnableCheats, 0, 0, 0) || COMPETITION)) {
+	HUDMessage (0, "Free camera is not available");
+	return 0;
+	}
+#endif
+return SetFreeCam (!gameStates.render.bFreeCam);
+}
+
+//------------------------------------------------------------------------------
+
+void ToggleRadar (void)
+{
+gameOpts->render.cockpit.nRadarRange = (gameOpts->render.cockpit.nRadarRange + 1) % 5;
+}
+
+//------------------------------------------------------------------------------
+
+extern kcItem kcMouse [];
+
+inline int32_t ZoomKeyPressed (void)
+{
+#if 1
+	int32_t	v;
+
+return gameStates.input.keys.pressed [kcKeyboard [52].value] || gameStates.input.keys.pressed [kcKeyboard [53].value] ||
+		 (((v = kcMouse [30].value) < 255) && MouseButtonState (v));
+#else
+return (controls [0].zoomDownCount > 0);
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+void HandleZoom (void)
+{
+if (extraGameInfo [IsMultiGame].nZoomMode == 0)
+	return;
+
+	bool bAllow = (gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX);
+
+if (extraGameInfo [IsMultiGame].nZoomMode == 1) {
+	if (!gameStates.zoom.nState) {
+		if (!bAllow || ZoomKeyPressed ()) {
+			if (!bAllow) {
+				if (gameStates.zoom.nFactor <= gameStates.zoom.nMinFactor)
+					return;
+				gameStates.zoom.nDestFactor = gameStates.zoom.nMinFactor;
+				}
+			else if (gameStates.zoom.nFactor >= gameStates.zoom.nMaxFactor)
+				gameStates.zoom.nDestFactor = gameStates.zoom.nMinFactor;
+			else
+				gameStates.zoom.nDestFactor = (fix) FRound (gameStates.zoom.nFactor * pow (float (gameStates.zoom.nMaxFactor) / float (gameStates.zoom.nMinFactor), 0.25f));
+			gameStates.zoom.nStep = float (gameStates.zoom.nDestFactor - gameStates.zoom.nFactor) / 6.25f;
+			gameStates.zoom.nTime = gameStates.app.nSDLTicks [0] - 40;
+			gameStates.zoom.nState = (gameStates.zoom.nStep > 0) ? 1 : -1;
+			if (audio.ChannelIsPlaying (gameStates.zoom.nChannel))
+				audio.StopSound (gameStates.zoom.nChannel);
+			gameStates.zoom.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM1));
+			}
+		}
+	}
+else if (extraGameInfo [IsMultiGame].nZoomMode == 2) {
+	if (bAllow && ZoomKeyPressed ()) {
+		if ((gameStates.zoom.nState <= 0) && (gameStates.zoom.nFactor < gameStates.zoom.nMaxFactor)) {
+			if (audio.ChannelIsPlaying (gameStates.zoom.nChannel))
+				audio.StopSound (gameStates.zoom.nChannel);
+			gameStates.zoom.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM2));
+			gameStates.zoom.nDestFactor = gameStates.zoom.nMaxFactor;
+			gameStates.zoom.nStep = float (gameStates.zoom.nDestFactor - gameStates.zoom.nFactor) / 25.0f;
+			gameStates.zoom.nTime = gameStates.app.nSDLTicks [0] - 40;
+			gameStates.zoom.nState = 1;
+			}
+		}
+	else if ((gameStates.zoom.nState >= 0) && (gameStates.zoom.nFactor > gameStates.zoom.nMinFactor)) {
+		if (audio.ChannelIsPlaying (gameStates.zoom.nChannel))
+			audio.StopSound (gameStates.zoom.nChannel);
+		gameStates.zoom.nChannel = audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_ZOOM2));
+		gameStates.zoom.nDestFactor = gameStates.zoom.nMinFactor;
+		gameStates.zoom.nStep = float (gameStates.zoom.nDestFactor - gameStates.zoom.nFactor) / 25.0f;
+		gameStates.zoom.nTime = gameStates.app.nSDLTicks [0] - 40;
+		gameStates.zoom.nState = -1;
+		}
+	}
+if (!gameStates.zoom.nState)
+	gameStates.zoom.nChannel = -1;
+else if (gameStates.app.nSDLTicks [0] - gameStates.zoom.nTime >= 40) {
+	gameStates.zoom.nTime += 40;
+	gameStates.zoom.nFactor += gameStates.zoom.nStep;
+	if (((gameStates.zoom.nState > 0) && (gameStates.zoom.nFactor > gameStates.zoom.nDestFactor)) || 
+		 ((gameStates.zoom.nState < 0) && (gameStates.zoom.nFactor < gameStates.zoom.nDestFactor))) {
+		gameStates.zoom.nFactor = float (gameStates.zoom.nDestFactor);
+		gameStates.zoom.nState = 0;
+		gameStates.zoom.nChannel = -1;
+		}
+	}
 }
 
 //------------------------------------------------------------------------------

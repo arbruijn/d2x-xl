@@ -787,7 +787,7 @@ if (l < 0)
 	return -1;
 if ((l > m_info.props.h * m_info.props.rowSize) && !Resize (l))
 	return -1;
-if (Size () < l) {
+if (Size () < (size_t) l) {
 	if (!Resize (l))
 		return 0;
 	}

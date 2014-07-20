@@ -52,7 +52,7 @@ int32_t NetworkSelectTeams (void)
 	char		szId [100];
 
 // one time initialization
-for (i = gameData.multiplayer.nPlayers / 2; i < gameData.multiplayer.nPlayers; i++) // Put first half of players on team A
+for (i = N_PLAYERS / 2; i < N_PLAYERS; i++) // Put first half of players on team A
 	teamVector |= (1 << i);
 sprintf (teamNames [0], "%s", TXT_BLUE);
 sprintf (teamNames [1], "%s", TXT_RED);
@@ -62,18 +62,18 @@ for (;;) {
 	m.Create (MAX_PLAYERS + 4);
 
 	m.AddInput ("red team", teamNames [0], CALLSIGN_LEN);
-	for (i = j = 0; i < gameData.multiplayer.nPlayers; i++) {
+	for (i = j = 0; i < N_PLAYERS; i++) {
 		if (!(teamVector & (1 << i))) {
 			sprintf (szId, "red player %d", ++j);
-			m.AddMenu (szId, netPlayers [0].m_info.players [i].callsign);
+			m.AddMenu (szId, NETPLAYER (i).callsign);
 			playerIds [m.ToS () - 1] = i;
 			}
 		}
 	m.AddInput ("blue team", teamNames [1], CALLSIGN_LEN); 
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	for (i = 0; i < N_PLAYERS; i++) {
 		if (teamVector & (1 << i)) {
 			sprintf (szId, "blue player %d", ++j);
-			m.AddMenu (szId, netPlayers [0].m_info.players [i].callsign);
+			m.AddMenu (szId, NETPLAYER (i).callsign);
 			playerIds [m.ToS () - 1] = i;
 			}
 		}
@@ -108,21 +108,21 @@ for (;;) {
 static bool GetSelectedPlayers (CMenu& m, int32_t nSavePlayers)
 {
 // Count number of players chosen
-gameData.multiplayer.nPlayers = 0;
+N_PLAYERS = 0;
 for (int32_t i = 0; i < nSavePlayers; i++) {
 	if (m [i].Value ()) 
-		gameData.multiplayer.nPlayers++;
+		N_PLAYERS++;
 	}
-if (gameData.multiplayer.nPlayers > netGameInfo.m_info.nMaxPlayers) {
+if (N_PLAYERS > netGameInfo.m_info.nMaxPlayers) {
 	InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multiplayer.nMaxPlayers, TXT_NETPLAYERS_IN);
-	gameData.multiplayer.nPlayers = nSavePlayers;
+	N_PLAYERS = nSavePlayers;
 	return true;
 	}
 #if !DBG
-if (gameData.multiplayer.nPlayers < 2) {
+if (N_PLAYERS < 2) {
 	InfoBox (TXT_WARNING, NULL, BG_STANDARD, 1, TXT_OK, TXT_TEAM_ATLEAST_TWO);
 #	if 0
-	gameData.multiplayer.nPlayers = nSavePlayers;
+	N_PLAYERS = nSavePlayers;
 	return true;
 #	endif
 	}
@@ -132,9 +132,9 @@ if (gameData.multiplayer.nPlayers < 2) {
 if (((netGameInfo.m_info.gameMode == NETGAME_TEAM_ANARCHY) ||
 	  (netGameInfo.m_info.gameMode == NETGAME_CAPTURE_FLAG) || 
 	  (netGameInfo.m_info.gameMode == NETGAME_TEAM_HOARD)) && 
-	 (gameData.multiplayer.nPlayers < 2)) {
+	 (N_PLAYERS < 2)) {
 	InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, TXT_NEED_2PLAYERS);
-	gameData.multiplayer.nPlayers = nSavePlayers;
+	N_PLAYERS = nSavePlayers;
 #if 0	
 	return true;
 #endif	
@@ -149,7 +149,7 @@ int32_t AbortPlayerSelection (int32_t nSavePlayers)
 {
 for (int32_t i = 1; i < nSavePlayers; i++) {
 	if (gameStates.multi.nGameType >= IPX_GAME)
-		NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.Network (), netPlayers [0].m_info.players [i].network.Node (), DUMP_ABORTED);
+		NetworkDumpPlayer (NETPLAYER (i).network.Network (), NETPLAYER (i).network.Node (), DUMP_ABORTED);
 	}
 
 netGameInfo.m_info.nNumPlayers = 0;
@@ -180,7 +180,7 @@ m [0].Value () = 1;                         // Assume server will play...
 if (gameOpts->multi.bNoRankings)
 	sprintf (text [0], "%d. %-20s", 1, LOCALPLAYER.callsign);
 else
-	sprintf (text [0], "%d. %s%-20s", 1, pszRankStrings [netPlayers [0].m_info.players [N_LOCALPLAYER].rank], LOCALPLAYER.callsign);
+	sprintf (text [0], "%d. %s%-20s", 1, pszRankStrings [NETPLAYER (N_LOCALPLAYER).rank], LOCALPLAYER.callsign);
 m.AddCheck ("", text [0], 0);
 for (i = 1; i < MAX_PLAYERS + 4; i++) {
 	sprintf (text [i], "%d.  %-20s", i + 1, "");
@@ -191,58 +191,58 @@ sprintf (title, "%s %d %s", TXT_TEAM_SELECT, gameData.multiplayer.nMaxPlayers, T
 do {
 	gameStates.app.nExtGameStatus = GAMESTAT_NETGAME_PLAYER_SELECT;
 	j = m.Menu (NULL, title, NetworkStartPoll, &choice);
-	nSavePlayers = gameData.multiplayer.nPlayers;
+	nSavePlayers = N_PLAYERS;
 	if (j < 0) {
 		PrintLog (-1);
 		return AbortPlayerSelection (nSavePlayers);
 		}
 	} while (GetSelectedPlayers (m, nSavePlayers));
 // Remove players that aren't marked.
-gameData.multiplayer.nPlayers = 0;
+N_PLAYERS = 0;
 for (i = 0; i < nSavePlayers; i++) {
 	if (m [i].Value ()) {
-		if (i > gameData.multiplayer.nPlayers) {
+		if (i > N_PLAYERS) {
 			if (gameStates.multi.nGameType >= IPX_GAME) {
-				netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.SetNode (netPlayers [0].m_info.players [i].network.Node ());
-				netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.SetNetwork (netPlayers [0].m_info.players [i].network.Network ());
+				NETPLAYER (N_PLAYERS).network.SetNode (NETPLAYER (i).network.Node ());
+				NETPLAYER (N_PLAYERS).network.SetNetwork (NETPLAYER (i).network.Network ());
 				}
 			else {
-				memcpy (&netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].network.AppleTalk (), 
-						  &netPlayers [0].m_info.players [i].network.AppleTalk (), 
+				memcpy (&NETPLAYER (N_PLAYERS).network.AppleTalk (), 
+						  &NETPLAYER (i).network.AppleTalk (), 
 						  sizeof (tAppleTalkAddr));
 				}
 			memcpy (
-				netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].callsign, 
-				netPlayers [0].m_info.players [i].callsign, CALLSIGN_LEN+1);
-			netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].versionMajor = netPlayers [0].m_info.players [i].versionMajor;
-			netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].versionMinor = netPlayers [0].m_info.players [i].versionMinor;
-			netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].rank = netPlayers [0].m_info.players [i].rank;
-			ClipRank (reinterpret_cast<char*> (&netPlayers [0].m_info.players [gameData.multiplayer.nPlayers].rank));
+				NETPLAYER (N_PLAYERS).callsign, 
+				NETPLAYER (i).callsign, CALLSIGN_LEN+1);
+			NETPLAYER (N_PLAYERS).versionMajor = NETPLAYER (i).versionMajor;
+			NETPLAYER (N_PLAYERS).versionMinor = NETPLAYER (i).versionMinor;
+			NETPLAYER (N_PLAYERS).rank = NETPLAYER (i).rank;
+			ClipRank (reinterpret_cast<char*> (&NETPLAYER (N_PLAYERS).rank));
 			NetworkCheckForOldVersion ((char)i);
 			}
-		CONNECT (gameData.multiplayer.nPlayers, CONNECT_PLAYING);
-		++gameData.multiplayer.nPlayers;
+		CONNECT (N_PLAYERS, CONNECT_PLAYING);
+		++N_PLAYERS;
 		}
 	else {
 		if (gameStates.multi.nGameType >= IPX_GAME)
-			NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.Network (), netPlayers [0].m_info.players [i].network.Node (), DUMP_DORK);
+			NetworkDumpPlayer (NETPLAYER (i).network.Network (), NETPLAYER (i).network.Node (), DUMP_DORK);
 		}
 	}
 
-for (i = gameData.multiplayer.nPlayers; i < MAX_NUM_NET_PLAYERS; i++) {
+for (i = N_PLAYERS; i < MAX_NUM_NET_PLAYERS; i++) {
 	if (gameStates.multi.nGameType >= IPX_GAME) {
-		netPlayers [0].m_info.players [i].network.ResetNode ();
-		netPlayers [0].m_info.players [i].network.ResetNetwork ();
+		NETPLAYER (i).network.ResetNode ();
+		NETPLAYER (i).network.ResetNetwork ();
 	   }
 	else {
-		netPlayers [0].m_info.players [i].network.AppleTalk ().node = 0;
-		netPlayers [0].m_info.players [i].network.AppleTalk ().net = 0;
-		netPlayers [0].m_info.players [i].network.AppleTalk ().socket = 0;
+		NETPLAYER (i).network.AppleTalk ().node = 0;
+		NETPLAYER (i).network.AppleTalk ().net = 0;
+		NETPLAYER (i).network.AppleTalk ().socket = 0;
 	   }
-	memset (netPlayers [0].m_info.players [i].callsign, 0, CALLSIGN_LEN+1);
-	netPlayers [0].m_info.players [i].versionMajor = 0;
-	netPlayers [0].m_info.players [i].versionMinor = 0;
-	netPlayers [0].m_info.players [i].rank = 0;
+	memset (NETPLAYER (i).callsign, 0, CALLSIGN_LEN+1);
+	NETPLAYER (i).versionMajor = 0;
+	NETPLAYER (i).versionMinor = 0;
+	NETPLAYER (i).rank = 0;
 	}
 #if 1			
 console.printf (CON_DBG, "Select teams: Game mode is %d\n", netGameInfo.m_info.gameMode);

@@ -80,7 +80,7 @@ if (!robotP->AttacksObject (targetP))
 if (robotP->IsStatic ())
 	return;
 //	If player is dead, stop firing.
-if (OBJECTS [LOCALPLAYER.nObject].info.nType == OBJ_GHOST)
+if (LOCALOBJECT.info.nType == OBJ_GHOST)
 	return;
 if (botInfoP->attackType != 1)
 	return;

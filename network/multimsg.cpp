@@ -100,7 +100,7 @@ if (IsTeamGame && (atoi (gameData.multigame.msg.szMsg) > 0) &&
 	}
 if (!bFound)
 	if (IsTeamGame) {
-		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		for (i = 0; i < N_PLAYERS; i++) {
 			if (!strnicmp (netGameInfo.m_info.szTeamName [i], gameData.multigame.msg.szMsg, l)) {
 				if (bFound)
 					strcat (szFeedbackResult, ", ");
@@ -113,17 +113,17 @@ if (!bFound)
 			}
 		}
 if (!bFound)
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if ((!strnicmp (gameData.multiplayer.players [i].callsign, gameData.multigame.msg.szMsg, l)) && 
+	for (i = 0; i < N_PLAYERS; i++) {
+		if ((!strnicmp (PLAYER (i).callsign, gameData.multigame.msg.szMsg, l)) && 
 			(i != N_LOCALPLAYER) && 
-			(gameData.multiplayer.players [i].connected)) {
+			(PLAYER (i).connected)) {
 			if (bFound)
 				strcat (szFeedbackResult, ", ");
 			bFound++;
 			if (!(bFound % 4))
 				strcat (szFeedbackResult, "\n");
 			sprintf (szFeedbackResult+strlen (szFeedbackResult), "%s", 
-						gameData.multiplayer.players [i].callsign);
+						PLAYER (i).callsign);
 			}
 		}
 if (!bFound)
@@ -241,7 +241,7 @@ if (strlen (gameData.multigame.msg.szMsg) > 5)
 		name_index++;
 
 if (!IAmGameHost ()) {
-	HUDInitMessage (TXT_KICK_RIGHTS, gameData.multiplayer.players [WhoIsGameHost ()].callsign, pszKick);
+	HUDInitMessage (TXT_KICK_RIGHTS, PLAYER (WhoIsGameHost ()).callsign, pszKick);
 	MultiSendMsgQuit ();
 	return 1;
 	}
@@ -256,14 +256,14 @@ if (gameData.multigame.msg.szMsg [name_index] == '#' && ::isdigit (gameData.mult
 	int32_t listpos = gameData.multigame.msg.szMsg [name_index+1] - '0';
 
 	if (gameData.multigame.score.bShowList == 1 || gameData.multigame.score.bShowList == 2) {
-		if (listpos == 0 || listpos  >= gameData.multiplayer.nPlayers) {
+		if (listpos == 0 || listpos  >= N_PLAYERS) {
 			HUDInitMessage (TXT_KICK_PLR, pszKick);
 			MultiSendMsgQuit ();
 			return 1;
 			}
 		MultiGetKillList (players);
 		i = players [listpos];
-		if ((i != N_LOCALPLAYER) && (gameData.multiplayer.players [i].connected))
+		if ((i != N_LOCALPLAYER) && (PLAYER (i).connected))
 			goto kick_player;
 		}
 	else 
@@ -272,15 +272,15 @@ if (gameData.multigame.msg.szMsg [name_index] == '#' && ::isdigit (gameData.mult
 	return 1;
 	}
 
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if ((!strnicmp (gameData.multiplayer.players [i].callsign, &gameData.multigame.msg.szMsg [name_index], strlen (gameData.multigame.msg.szMsg)-name_index)) && (i != N_LOCALPLAYER) && (gameData.multiplayer.players [i].connected)) {
+for (i = 0; i < N_PLAYERS; i++)
+	if ((!strnicmp (PLAYER (i).callsign, &gameData.multigame.msg.szMsg [name_index], strlen (gameData.multigame.msg.szMsg)-name_index)) && (i != N_LOCALPLAYER) && (PLAYER (i).connected)) {
 kick_player:;
 		if (gameStates.multi.nGameType  >= IPX_GAME)
-			NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.Network (), netPlayers [0].m_info.players [i].network.Node (), DUMP_KICKED);
+			NetworkDumpPlayer (NETPLAYER (i).network.Network (), NETPLAYER (i).network.Node (), DUMP_KICKED);
 
-		HUDInitMessage (TXT_DUMPING, gameData.multiplayer.players [i].callsign);
+		HUDInitMessage (TXT_DUMPING, PLAYER (i).callsign);
 		if (bBan)
-			banList.Add (gameData.multiplayer.players [i].callsign);
+			banList.Add (PLAYER (i).callsign);
 		MultiSendMsgQuit ();
 		return 1;
 		}
@@ -307,12 +307,12 @@ if (IsNetworkGame) {
 			HUDInitMessage (TXT_PING_NAME);
 			return 1;
 			}
-		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if ((!strnicmp (gameData.multiplayer.players [i].callsign, &gameData.multigame.msg.szMsg [name_index], strlen (gameData.multigame.msg.szMsg)-name_index)) && 
-				 (i != N_LOCALPLAYER) && (gameData.multiplayer.players [i].connected)) {
+		for (i = 0; i < N_PLAYERS; i++) {
+			if ((!strnicmp (PLAYER (i).callsign, &gameData.multigame.msg.szMsg [name_index], strlen (gameData.multigame.msg.szMsg)-name_index)) && 
+				 (i != N_LOCALPLAYER) && (PLAYER (i).connected)) {
 				pingStats [i].launchTime = SDL_GetTicks (); //TimerGetFixedSeconds ();
 				NetworkSendPing ((uint8_t) i);
-				HUDInitMessage (TXT_PINGING, gameData.multiplayer.players [i].callsign);
+				HUDInitMessage (TXT_PINGING, PLAYER (i).callsign);
 				MultiSendMsgQuit ();
 				return 1;
 				}
@@ -364,16 +364,16 @@ if (IsNetworkGame && IsTeamGame) {
 			name_index++;
 
 	if (!IAmGameHost ()) {
-		HUDInitMessage (TXT_MOVE_RIGHTS, gameData.multiplayer.players [WhoIsGameHost ()].callsign);
+		HUDInitMessage (TXT_MOVE_RIGHTS, PLAYER (WhoIsGameHost ()).callsign);
 		return 1;
 		}
 	if (strlen (gameData.multigame.msg.szMsg) <= (size_t) name_index) {
 		HUDInitMessage (TXT_MOVE_NAME);
 		return 1;
 		}
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-		if ((!strnicmp (gameData.multiplayer.players [i].callsign, &gameData.multigame.msg.szMsg [name_index], strlen (gameData.multigame.msg.szMsg)-name_index)) && (gameData.multiplayer.players [i].connected)) {
-			if ((gameData.app.GameMode (GM_CAPTURE)) && (gameData.multiplayer.players [i].flags & PLAYER_FLAGS_FLAG)) {
+	for (i = 0; i < N_PLAYERS; i++)
+		if ((!strnicmp (PLAYER (i).callsign, &gameData.multigame.msg.szMsg [name_index], strlen (gameData.multigame.msg.szMsg)-name_index)) && (PLAYER (i).connected)) {
+			if ((gameData.app.GameMode (GM_CAPTURE)) && (PLAYER (i).flags & PLAYER_FLAGS_FLAG)) {
 				HUDInitMessage (TXT_MOVE_FLAG);
 				return 1;
 				}
@@ -554,8 +554,8 @@ static int32_t IsPlayerId (char *bufP, int32_t nLen)
 {
 	int32_t	i;
 
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (!strnicmp (gameData.multiplayer.players [i].callsign, bufP, nLen))
+for (i = 0; i < N_PLAYERS; i++)
+	if (!strnicmp (PLAYER (i).callsign, bufP, nLen))
 		return 1;
 return 0;
 }
@@ -595,7 +595,7 @@ msgBuf [0] = (char) 1;
 msgBuf [1] = (char) (127 + 128);
 msgBuf [2] = (char) (95 + 128);
 msgBuf [3] = (char) (0 + 128);
-strcpy (msgBuf + 4, gameData.multiplayer.players [int32_t (buf [1])].callsign);
+strcpy (msgBuf + 4, PLAYER (int32_t (buf [1])).callsign);
 t = (int32_t) strlen (msgBuf);
 msgBuf [t] = ':';
 msgBuf [t+1] = ' ';

@@ -201,8 +201,8 @@ if (bUseInitSgm) {
 if (pbFixedPos)
 	*pbFixedPos = 0;
 nDepth = BASE_NET_DROP_DEPTH + RandShort () % (BASE_NET_DROP_DEPTH * 2);
-vPlayerPos = &OBJECTS [LOCALPLAYER.nObject].info.position.vPos;
-nPlayerSeg = OBJECTS [LOCALPLAYER.nObject].info.nSegment;
+vPlayerPos = &LOCALOBJECT.info.position.vPos;
+nPlayerSeg = LOCALOBJECT.info.nSegment;
 
 if (gameStates.multi.nGameType != UDP_GAME)
 	gameStates.app.SRand ();
@@ -210,19 +210,19 @@ while (nSegment == -1) {
 	if (!IsMultiGame)
 		nPlayer = N_LOCALPLAYER;
 	else {	// chose drop segment at required minimum distance from some random player
-		nPlayer = RandShort () % gameData.multiplayer.nPlayers;
+		nPlayer = RandShort () % N_PLAYERS;
 		count = 0;
-		while ((count < gameData.multiplayer.nPlayers) &&	// make sure player is not the local player or on his team
-				 (!gameData.multiplayer.players [nPlayer].connected ||
+		while ((count < N_PLAYERS) &&	// make sure player is not the local player or on his team
+				 (!PLAYER (nPlayer).connected ||
 				  (nPlayer == N_LOCALPLAYER) ||
 				  ((gameData.app.GameMode (GM_TEAM|GM_CAPTURE|GM_ENTROPY)) && (GetTeam (nPlayer) == GetTeam (N_LOCALPLAYER))))) {
-			nPlayer = (nPlayer + 1) % gameData.multiplayer.nPlayers;
+			nPlayer = (nPlayer + 1) % N_PLAYERS;
 			count++;
 			}
-		if (count == gameData.multiplayer.nPlayers)
+		if (count == N_PLAYERS)
 			nPlayer = N_LOCALPLAYER;
 		}
-	nSegment = PickConnectedSegment (OBJECTS + gameData.multiplayer.players [nPlayer].nObject, nDepth, &nDropDepth);
+	nSegment = PickConnectedSegment (OBJECTS + PLAYER (nPlayer).nObject, nDepth, &nDropDepth);
 #if 1
 	if (nDropDepth < BASE_NET_DROP_DEPTH / 2)
 		return -1;
@@ -821,7 +821,7 @@ int32_t MaybeDropPrimaryWeaponEgg (CObject *playerObjP, int32_t nWeapon)
 {
 	int32_t nWeaponFlag = HAS_FLAG (nWeapon);
 
-if (!(gameData.multiplayer.players [playerObjP->info.nId].primaryWeaponFlags & nWeaponFlag))
+if (!(PLAYER (playerObjP->info.nId).primaryWeaponFlags & nWeaponFlag))
 	return -1;
 if ((nWeapon == 4) && gameData.weapons.bTripleFusion)
 	gameData.weapons.bTripleFusion = 0;
@@ -837,7 +837,7 @@ void MaybeDropSecondaryWeaponEgg (CObject *playerObjP, int32_t nWeapon, int32_t 
 	int32_t nWeaponFlag = HAS_FLAG (nWeapon);
 	int32_t nPowerup = secondaryWeaponToPowerup [0][nWeapon];
 
-if (gameData.multiplayer.players [playerObjP->info.nId].secondaryWeaponFlags & nWeaponFlag) {
+if (PLAYER (playerObjP->info.nId).secondaryWeaponFlags & nWeaponFlag) {
 	int32_t i, maxCount = ((EGI_FLAG (bDropAllMissiles, 0, 0, 0)) ? count : min(count, 3));
 
 	for (i = 0; i < maxCount; i++)
@@ -849,7 +849,7 @@ if (gameData.multiplayer.players [playerObjP->info.nId].secondaryWeaponFlags & n
 
 void MaybeDropDeviceEgg (CPlayerInfo *playerP, CObject *playerObjP, int32_t nDeviceFlag, int32_t nPowerupId)
 {
-if ((gameData.multiplayer.players [playerObjP->info.nId].flags & nDeviceFlag) &&
+if ((PLAYER (playerObjP->info.nId).flags & nDeviceFlag) &&
 	 !(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nDevice & nDeviceFlag)))
 	CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, nPowerupId);
 }
@@ -860,7 +860,7 @@ void DropMissile1or4 (CObject *playerObjP, int32_t nMissileIndex)
 {
 	int32_t nMissiles, nPowerupId;
 
-if (0 < (nMissiles = gameData.multiplayer.players [playerObjP->info.nId].secondaryAmmo [nMissileIndex])) {
+if (0 < (nMissiles = PLAYER (playerObjP->info.nId).secondaryAmmo [nMissileIndex])) {
 #if DBG
 	if (nMissiles > 40)
 		BRP;
@@ -1090,7 +1090,7 @@ if (nExcess > 0) {
 	LOCALPLAYER.primaryAmmo [VULCAN_INDEX] -= nClips * VULCAN_CLIP_CAPACITY;
 	if (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] < 0)
 		LOCALPLAYER.primaryAmmo [VULCAN_INDEX] = 0;
-	CallObjectCreateEgg (&OBJECTS [LOCALPLAYER.nObject], nClips, OBJ_POWERUP, POW_VULCAN_AMMO);
+	CallObjectCreateEgg (&LOCALOBJECT, nClips, OBJ_POWERUP, POW_VULCAN_AMMO);
 	}
 }
 

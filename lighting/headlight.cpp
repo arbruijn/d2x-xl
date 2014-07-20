@@ -98,7 +98,7 @@ if (automap.Active ())
 	CDynLight*	lightP;
 	bool			bHWHeadlight = (gameStates.render.bPerPixelLighting == 2) || (ogl.m_states.bHeadlight && gameOpts->ogl.bHeadlight);
 
-for (int32_t i = 0; i < MAX_PLAYERS; i++) {
+	for (int32_t i = 0; i < MAX_PLAYERS; i++) {
 	if (lightIds [i] >= 0) {
 		lightP = lightManager.Lights () + lightIds [i];
 		lightP->info.bSpot = 1;
@@ -182,7 +182,7 @@ void CHeadlightManager::Update (void)
 for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	if (lightIds [nPlayer] >= 0) {
 		lightP = lightManager.Lights () + lightIds [nPlayer];
-		objP = OBJECTS + gameData.multiplayer.players [nPlayer].nObject;
+		objP = OBJECTS + PLAYER (nPlayer).nObject;
 		lightP->info.vPos = OBJPOS (objP)->vPos;
 		lightP->vDir = OBJPOS (objP)->mOrient.m.dir.f;
 		lightP->info.vPos += lightP->vDir * (objP->info.xSize / 4);
@@ -876,7 +876,7 @@ int32_t PlayerHasHeadlight (int32_t nPlayer)
 {
 return EGI_FLAG (headlight.bAvailable, 0, 0, 0) && 
 		 ((extraGameInfo [IsMultiGame].loadout.nDevice & PLAYER_FLAGS_HEADLIGHT) ||
-		 ((gameData.multiplayer.players [(nPlayer < 0) ? N_LOCALPLAYER : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT) != 0));
+		 ((PLAYER ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer).flags & PLAYER_FLAGS_HEADLIGHT) != 0));
 }
 
 //-----------------------------------------------------------------------------
@@ -886,11 +886,11 @@ int32_t HeadlightIsOn (int32_t nPlayer)
 #if DBG
 if (!PlayerHasHeadlight (nPlayer))
 	return 0;
-if (!(gameData.multiplayer.players [(nPlayer < 0) ? N_LOCALPLAYER : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON))
+if (!(PLAYER ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer).flags & PLAYER_FLAGS_HEADLIGHT_ON))
 	return 0;
 return 1;
 #else
-return PlayerHasHeadlight (nPlayer) && ((gameData.multiplayer.players [(nPlayer < 0) ? N_LOCALPLAYER : nPlayer].flags & PLAYER_FLAGS_HEADLIGHT_ON) != 0);
+return PlayerHasHeadlight (nPlayer) && ((PLAYER ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer).flags & PLAYER_FLAGS_HEADLIGHT_ON) != 0);
 #endif
 }
 
@@ -899,9 +899,9 @@ return PlayerHasHeadlight (nPlayer) && ((gameData.multiplayer.players [(nPlayer 
 void SetPlayerHeadlight (int32_t nPlayer, int32_t bOn)
 {
 if (bOn)
-	gameData.multiplayer.players [(nPlayer < 0) ? N_LOCALPLAYER : nPlayer].flags |= PLAYER_FLAGS_HEADLIGHT_ON;
+	PLAYER ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer).flags |= PLAYER_FLAGS_HEADLIGHT_ON;
 else
-	gameData.multiplayer.players [(nPlayer < 0) ? N_LOCALPLAYER : nPlayer].flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+	PLAYER ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer).flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
 audio.StartSound (-1, SOUNDCLASS_GENERIC, I2X (1), 0xFFFF / 2, 0, 0, 0, -1, I2X (1), AddonSoundName (SND_ADDON_HEADLIGHT));
 }
 

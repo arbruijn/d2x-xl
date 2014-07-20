@@ -625,7 +625,7 @@ if (xDamage > 0) {
 	if (gameStates.app.nDifficultyLevel == 0)
 		xDamage /= 2;
 	if (info.nType == OBJ_PLAYER) {
-		if (!(gameData.multiplayer.players [info.nId].flags & PLAYER_FLAGS_INVULNERABLE))
+		if (!(PLAYER (info.nId).flags & PLAYER_FLAGS_INVULNERABLE))
 			ApplyDamageToPlayer (this, xDamage);
 		}
 	if (info.nType == OBJ_ROBOT) {
@@ -1159,7 +1159,7 @@ if (info.nId == N_LOCALPLAYER) {
 	int32_t bDrawn;
 
 	if (IsMultiGame && !IsCoopGame)
-		bDrawn = HUDInitMessage (TXT_MARKER_PLRMSG, gameData.multiplayer.players [markerP->info.nId / 2].callsign, markerManager.Message (markerP->info.nId));
+		bDrawn = HUDInitMessage (TXT_MARKER_PLRMSG, PLAYER (markerP->info.nId / 2).callsign, markerManager.Message (markerP->info.nId));
 	else {
 		if (*markerManager.Message (markerP->info.nId))
 			bDrawn = HUDInitMessage (TXT_MARKER_IDMSG, markerP->info.nId + 1, markerManager.Message (markerP->info.nId));
@@ -1850,7 +1850,7 @@ return 1;
 //	Nasty robots are the ones that attack you by running into you and doing lots of damage.
 int32_t CObject::CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt, CFixVector* vNormal)
 {
-//	if (!(ROBOTINFO (objP->info.nId).energyDrain && gameData.multiplayer.players [info.nId].energy))
+//	if (!(ROBOTINFO (objP->info.nId).energyDrain && PLAYER (info.nId).energy))
 CreateExplosion (info.nSegment, vHitPt, I2X (10) / 2, VCLIP_PLAYER_HIT);
 if (BumpTwoObjects (this, robotP, 0, vHitPt)) {//no damage from bump
 	audio.CreateSegmentSound (ROBOTINFO (robotP->info.nId).clawSound, info.nSegment, 0, vHitPt);
@@ -1920,8 +1920,7 @@ int32_t CObject::CollidePlayerAndPowerup (CObject* powerupP, CFixVector& vHitPt,
 {
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return 1;
-if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
-	(info.nId == N_LOCALPLAYER)) {
+if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead && (info.nId == N_LOCALPLAYER)) {
 	int32_t bPowerupUsed = DoPowerup (powerupP, info.nId);
 	if (bPowerupUsed) {
 		powerupP->Die ();
@@ -1932,13 +1931,13 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead &&
 else if (IsCoopGame && (info.nId != N_LOCALPLAYER)) {
 	switch (powerupP->info.nId) {
 		case POW_KEY_BLUE:
-			gameData.multiplayer.players [info.nId].flags |= PLAYER_FLAGS_BLUE_KEY;
+			PLAYER (info.nId).flags |= PLAYER_FLAGS_BLUE_KEY;
 			break;
 		case POW_KEY_RED:
-			gameData.multiplayer.players [info.nId].flags |= PLAYER_FLAGS_RED_KEY;
+			PLAYER (info.nId).flags |= PLAYER_FLAGS_RED_KEY;
 			break;
 		case POW_KEY_GOLD:
-			gameData.multiplayer.players [info.nId].flags |= PLAYER_FLAGS_GOLD_KEY;
+			PLAYER (info.nId).flags |= PLAYER_FLAGS_GOLD_KEY;
 			break;
 		default:
 			break;

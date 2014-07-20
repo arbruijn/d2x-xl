@@ -517,6 +517,7 @@ class CGameplayOptions {
 		int32_t nSlowMotionSpeedup;
 		int32_t bUseD1AI;
 		int32_t bNoThief;
+		int32_t bObserve;
 		int32_t nShip [2];
 
 	public:
@@ -630,12 +631,12 @@ typedef struct tAltBgOptions {
 
 class CMenuOptions {
 	public:
-		int32_t nStyle;
-		int32_t bFastMenus;
-		uint32_t nFade;
-		int32_t bSmartFileSearch;
-		int32_t bShowLevelVersion;
-		char nHotKeys;
+		int32_t	nStyle;
+		int32_t	bFastMenus;
+		uint32_t	nFade;
+		int32_t	bSmartFileSearch;
+		int32_t	bShowLevelVersion;
+		char		nHotKeys;
 		tAltBgOptions altBg;
 
 	public:
@@ -718,10 +719,10 @@ class CGameOptions {
 
 class CSeismicStates {
 	public:
-		fix	nMagnitude;
-		fix	nStartTime;
-		fix	nEndTime;
-		fix	nNextSoundTime;
+		fix		nMagnitude;
+		fix		nStartTime;
+		fix		nEndTime;
+		fix		nNextSoundTime;
 		int32_t	nLevel;
 		int32_t	nShakeFrequency;
 		int32_t	nShakeDuration;
@@ -734,9 +735,9 @@ class CSeismicStates {
 
 class CSlowMotionStates {
 	public:
-		float		fSpeed;
+		float			fSpeed;
 		int32_t		nState;
-		time_t	tUpdate;
+		time_t		tUpdate;
 		int32_t		bActive;
 	};
 
@@ -744,27 +745,27 @@ class CSlowMotionStates {
 
 class CGameplayStates {
 	public:	
-		int32_t bMultiBosses;
-		int32_t bFinalBossIsDead;
-		int32_t bHaveSmartMines;
-		int32_t bMineDestroyed;
-		int32_t bKillBossCheat;
-		int32_t bTagFlag;
-		int32_t nReactorCount [2];
-		int32_t nLastReactor;
-		int32_t bMineMineCheat;
-		int32_t bAfterburnerCheat;
-		int32_t bTripleFusion;
-		int32_t bLastAfterburnerState;
-		fix xLastAfterburnerCharge;
-		fix nPlayerSpeed;
-		fix xInitialShield [2];
-		fix xInitialEnergy [2];
-		CFixVector vTgtDir;
-		int32_t nDirSteps;
-		int32_t nInitialLives;
-		CSeismicStates seismic;
-		CSlowMotionStates slowmo [2];
+		int32_t				bMultiBosses;
+		int32_t				bFinalBossIsDead;
+		int32_t				bHaveSmartMines;
+		int32_t				bMineDestroyed;
+		int32_t				bKillBossCheat;
+		int32_t				bTagFlag;
+		int32_t				nReactorCount [2];
+		int32_t				nLastReactor;
+		int32_t				bMineMineCheat;
+		int32_t				bAfterburnerCheat;
+		int32_t				bTripleFusion;
+		int32_t				bLastAfterburnerState;
+		fix					xLastAfterburnerCharge;
+		fix					nPlayerSpeed;
+		fix					xInitialShield [2];
+		fix					xInitialEnergy [2];
+		CFixVector			vTgtDir;
+		int32_t				nDirSteps;
+		int32_t				nInitialLives;
+		CSeismicStates		seismic;
+		CSlowMotionStates	slowmo [2];
 
 	public:
 		fix InitialShield (void) {
@@ -791,27 +792,27 @@ class CGameplayStates {
 
 class CKeyStates {
 	public:
-		uint8_t 	nBufferType;		// 0=No buffer, 1=buffer ASCII, 2=buffer scans
-		uint8_t 	bRepeat;
-		uint8_t 	bEditorMode;
-		uint8_t 	nLastPressed;
-		uint8_t 	nLastReleased;
+		uint8_t 		nBufferType;		// 0=No buffer, 1=buffer ASCII, 2=buffer scans
+		uint8_t 		bRepeat;
+		uint8_t 		bEditorMode;
+		uint8_t		nLastPressed;
+		uint8_t		nLastReleased;
 		uint8_t		pressed [256];
 		int32_t		xLastPressTime;
 		};
 
 class CInputStates {
 	public:
-		int32_t			nPlrFileVersion;
-		int32_t			nMouseType;
-		int32_t			nJoyType;
-		int32_t			nJoysticks;
-		int32_t			bGrabMouse;
-		int32_t			bHaveTrackIR;
-		uint8_t			bCybermouseActive;
-		int32_t			bSkipControls;
-		int32_t			bControlsSkipFrame;
-		int32_t			bKeepSlackTime;
+		int32_t		nPlrFileVersion;
+		int32_t		nMouseType;
+		int32_t		nJoyType;
+		int32_t		nJoysticks;
+		int32_t		bGrabMouse;
+		int32_t		bHaveTrackIR;
+		uint8_t		bCybermouseActive;
+		int32_t		bSkipControls;
+		int32_t		bControlsSkipFrame;
+		int32_t		bKeepSlackTime;
 		time_t		kcPollTime;
 		float			kcFrameTime;
 		fix			nCruiseSpeed;
@@ -845,19 +846,20 @@ class CMovieStates {
 
 class CMultiplayerStates {
 	public:
-		int32_t bUseTracker;
-		int32_t bTrackerCall;
-		int32_t bServer [2];
-		int32_t bKeepClients;
-		int32_t bHaveLocalAddress;
-		int32_t nGameType;
-		int32_t nGameSubType;
-		int32_t bTryAutoDL;
-		int32_t nConnection;
-		int32_t bIWasKicked;
-		int32_t bCheckPorts;
-		uint8_t bSurfingNet;
-		int32_t bPlayerIsTyping [MAX_PLAYERS];
+		int32_t	bUseTracker;
+		int32_t	bTrackerCall;
+		int32_t	bServer [2];
+		int32_t	bKeepClients;
+		int32_t	bHaveLocalAddress;
+		int32_t	nGameType;
+		int32_t	nGameSubType;
+		int32_t	bTryAutoDL;
+		int32_t	nConnection;
+		int32_t	bIWasKicked;
+		int32_t	bCheckPorts;
+		uint8_t	bSurfingNet;
+		uint8_t	bSuicide;
+		int32_t	bPlayerIsTyping [MAX_PLAYERS];
 	};
 
 //------------------------------------------------------------------------------
@@ -968,25 +970,25 @@ typedef struct tRenderDetail {
 } tRenderDetail;
 
 typedef struct tRenderHistory {
-	CBitmap		*bmBot;
-	CBitmap		*bmTop;
-	CBitmap		*bmMask;
-	uint8_t			bSuperTransp;
-	uint8_t			bShaderMerge;
-	int32_t			bOverlay;
-	int32_t			bColored;
-	int32_t			nType;
-	int32_t			nBlendMode;
+	CBitmap*		bmBot;
+	CBitmap*		bmTop;
+	CBitmap*		bmMask;
+	uint8_t		bSuperTransp;
+	uint8_t		bShaderMerge;
+	int32_t		bOverlay;
+	int32_t		bColored;
+	int32_t		nType;
+	int32_t		nBlendMode;
 } tRenderHistory;
 
 class CZoomStates {
 	public:
-		int32_t			nState;
+		int32_t		nState;
 		float			nFactor;
 		fix			nMinFactor;
 		fix			nMaxFactor;
 		fix			nDestFactor;
-		int32_t			nChannel;
+		int32_t		nChannel;
 		float			nStep;
 		time_t		nTime;
 	};
@@ -996,6 +998,7 @@ class CRenderStates {
 		int32_t bChaseCam;
 		int32_t bFreeCam;
 		int32_t bEnableFreeCam;
+		int32_t bObserving;
 		int32_t bQueryOcclusion;
 		int32_t bVertexArrays;
 		int32_t bAutoMap;
@@ -1186,93 +1189,94 @@ typedef struct tSlowTick {
 
 class CApplicationStates {
 	public:
-		tSlowTick tick40fps;
-		tSlowTick tick60fps;
+		tSlowTick	tick40fps;
+		tSlowTick	tick60fps;
 	#if 1 //MULTI_THREADED
-		int32_t bExit;
-		int32_t bMultiThreaded;
-		int32_t nThreads;
+		int32_t		bExit;
+		int32_t		bMultiThreaded;
+		int32_t		nThreads;
 	#endif
-		int32_t bDemoData;
-		int32_t bCheckAndFixSetup;
+		int32_t		bDemoData;
+		int32_t		bCheckAndFixSetup;
 	#ifdef __unix__
-		int32_t bLinuxMsgBox;
+		int32_t	bLinuxMsgBox;
 	#endif
-		int32_t nSDLTicks [2];
-		int32_t nExtGameStatus;
-		int32_t nFunctionMode;
-		int32_t nLastFuncMode;
-		int32_t nCriticalError;
-		int32_t bStandalone;
-		int32_t bNostalgia;
-		int32_t iNostalgia;
-		int32_t bInitialized;
-		int32_t bD2XLevel;
-		int32_t bEnterGame;
-		int32_t bSaveScreenShot;
-		int32_t bShowVersionInfo;
-		int32_t bGameRunning;
-		int32_t bGameSuspended;
-		int32_t bGameAborted;
-		int32_t bBetweenLevels;
-		int32_t bPlayerIsDead;
-		int32_t bPlayerEggsDropped;
-		int32_t bDeathSequenceAborted;
-		int32_t bChangingShip;
-		int32_t bPlayerFiredLaserThisFrame;
-		int32_t bUseSound;
-		int32_t bMacData;
-		int32_t bCompressData;
-		int32_t bLunacy;
-		int32_t bEnglish;
-		int32_t bD1Data;
-		int32_t bD1Model;
-		int32_t bD1Mission;
-		int32_t bHaveD1Data;
-		int32_t bHaveD1Textures;
-		int32_t bHaveMod;
-		int32_t bEndLevelDataLoaded;
-		int32_t bEndLevelSequence;
-		int32_t bFirstSecretVisit;
-		int32_t bHaveExtraGameInfo [2];
-		int32_t bConfigMenu;
-		int32_t nDifficultyLevel;
-		int32_t nDetailLevel;
-		int32_t nBaseCtrlCenExplTime;
-		int32_t bUseDefaults;
-		int32_t nCompSpeed;
-		int32_t bHaveExtraData;
-		int32_t bHaveExtraMovies;
-		int32_t bDebugSpew;
-		int32_t bAutoRunMission;
-		int32_t bProgressBars;
-		int32_t bLittleEndian;
-		int32_t bUsingConverter;
-		int32_t bFixModels;
-		int32_t bAltModels;
-		int32_t bReadOnly;
-		int32_t bCacheTextures;
-		int32_t bCacheLights;
-		int32_t bCacheMeshes;
-		int32_t bCacheLightmaps;
-		int32_t bCacheModelData;
-		int32_t bUseSwapFile;
-		int32_t bSingleStep;
-		int32_t bAutoDemos;	//automatically play demos or intro movie if user is idling in the main menu
-		int32_t bShowError;
-		int32_t bClearMessage;
-		int32_t nLogLevel;
-		int32_t iDownloadTimeout;
-		int32_t bHaveSDLNet;
-		bool bCustomData;
-		bool bCustomSounds;
-		fix xThisLevelTime;
-		fix nPlayerTimeOfDeath;
-		char *szCurrentMission;
-		char *szCurrentMissionFile;
+		int32_t		nSDLTicks [2];
+		int32_t		nExtGameStatus;
+		int32_t		nFunctionMode;
+		int32_t		nLastFuncMode;
+		int32_t		nCriticalError;
+		int32_t		bStandalone;
+		int32_t		bNostalgia;
+		int32_t		iNostalgia;
+		int32_t		bInitialized;
+		int32_t		bD2XLevel;
+		int32_t		bEnterGame;
+		int32_t		bSaveScreenShot;
+		int32_t		bShowVersionInfo;
+		int32_t		bGameRunning;
+		int32_t		bGameSuspended;
+		int32_t		bGameAborted;
+		int32_t		bBetweenLevels;
+		int32_t		bPlayerIsDead;
+		int32_t		bPlayerEggsDropped;
+		int32_t		bDeathSequenceAborted;
+		int32_t		bChangingShip;
+		int32_t		bPlayerFiredLaserThisFrame;
+		int32_t		bUseSound;
+		int32_t		bMacData;
+		int32_t		bCompressData;
+		int32_t		bLunacy;
+		int32_t		bEnglish;
+		int32_t		bD1Data;
+		int32_t		bD1Model;
+		int32_t		bD1Mission;
+		int32_t		bHaveD1Data;
+		int32_t		bHaveD1Textures;
+		int32_t		bHaveMod;
+		int32_t		bEndLevelDataLoaded;
+		int32_t		bEndLevelSequence;
+		int32_t		bFirstSecretVisit;
+		int32_t		bHaveExtraGameInfo [2];
+		int32_t		bConfigMenu;
+		int32_t		nDifficultyLevel;
+		int32_t		nDetailLevel;
+		int32_t		nBaseCtrlCenExplTime;
+		int32_t		bUseDefaults;
+		int32_t		nCompSpeed;
+		int32_t		bHaveExtraData;
+		int32_t		bHaveExtraMovies;
+		int32_t		bDebugSpew;
+		int32_t		bAutoRunMission;
+		int32_t		bProgressBars;
+		int32_t		bLittleEndian;
+		int32_t		bUsingConverter;
+		int32_t		bFixModels;
+		int32_t		bAltModels;
+		int32_t		bReadOnly;
+		int32_t		bCacheTextures;
+		int32_t		bCacheLights;
+		int32_t		bCacheMeshes;
+		int32_t		bCacheLightmaps;
+		int32_t		bCacheModelData;
+		int32_t		bUseSwapFile;
+		int32_t		bSingleStep;
+		int32_t		bAutoDemos;	//automatically play demos or intro movie if user is idling in the main menu
+		int32_t		bShowError;
+		int32_t		bClearMessage;
+		int32_t		nLogLevel;
+		int32_t		iDownloadTimeout;
+		int32_t		bHaveSDLNet;
+		int32_t		nSpawnPos;
+		int16_t		nPlayerSegment;
+		uint32_t		nRandSeed;
+		bool			bCustomData;
+		bool			bCustomSounds;
+		fix			xThisLevelTime;
+		fix			nPlayerTimeOfDeath;
+		char*			szCurrentMission;
+		char*			szCurrentMissionFile;
 		tObjTransformation playerPos;
-		int16_t nPlayerSegment;
-		uint32_t nRandSeed;
 		CCheatStates cheats;
 
 		inline void SRand (uint32_t seed = 0xffffffff) {
@@ -2561,16 +2565,16 @@ typedef struct tFiringData {
 
 class CWeaponData {
 	public:
-		int8_t						nPrimary;
-		int8_t						nSecondary;
-		int8_t						nOverridden;
-		int8_t						bTripleFusion;
+		int8_t					nPrimary;
+		int8_t					nSecondary;
+		int8_t					nOverridden;
+		int8_t					bTripleFusion;
 		tFiringData				firing [2];
-		int32_t						nTypes [2];
+		int32_t					nTypes [2];
 		CStaticArray< CWeaponInfo, MAX_WEAPON_TYPES >	info; // [MAX_WEAPON_TYPES];
 		CStaticArray< CD1WeaponInfo, D1_MAX_WEAPON_TYPES >	infoD1; // [D1_MAX_WEAPON_TYPES];
 		CArray<CFloatVector>	color;
-		uint8_t						bLastWasSuper [2][MAX_PRIMARY_WEAPONS];
+		uint8_t					bLastWasSuper [2][MAX_PRIMARY_WEAPONS];
 
 	public:
 		CWeaponData ();
@@ -2711,7 +2715,7 @@ class CWeaponState {
 		tFiringData				firing [2];
 		fix						xMslFireTime;
 		fix						xFusionCharge;
-		int16_t						nAmmoUsed;
+		int16_t					nAmmoUsed;
 		char						nMissiles;
 		char						nPrimary;
 		char						nSecondary;
@@ -2719,9 +2723,9 @@ class CWeaponState {
 		char						nLaserLevel;
 		char						bTripleFusion;
 		char						nMslLaunchPos;
-		uint8_t						nBuiltinMissiles;
-		uint8_t						nThrusters [5];
-		uint8_t						nShip;
+		uint8_t					nBuiltinMissiles;
+		uint8_t					nThrusters [5];
+		uint8_t					nShip;
 
 	public:
 		CWeaponState () { memset (this, 0, sizeof (*this)); }
@@ -3839,9 +3843,13 @@ return 1.0f - float (alpha) / float (FADE_LEVELS);
 #define	CLAMP(_val,_minVal,_maxVal)	\
 		 {if ((_val) < (_minVal)) (_val) = (_minVal); else if ((_val) > (_maxVal)) (_val) = (_maxVal);}
 
-#define N_LOCALPLAYER	gameData.multiplayer.nLocalPlayer
-
-#define LOCALPLAYER		gameData.multiplayer.players [N_LOCALPLAYER]
+#define N_LOCALPLAYER			gameData.multiplayer.nLocalPlayer
+#define N_PLAYERS					gameData.multiplayer.nPlayers
+#define NETPLAYER(_nPlayer)	netPlayers [0].m_info.players [_nPlayer]
+#define PLAYER(_nPlayer)		gameData.multiplayer.players [_nPlayer]
+#define LOCALPLAYER				PLAYER (N_LOCALPLAYER)
+#define LOCALOBJECT				OBJECTS [LOCALPLAYER.nObject]
+#define OBSERVING					(gameStates.render.bObserving && OBJECTS.Buffer () && (LOCALOBJECT.Type () == OBJ_GHOST))
 
 #define ISLOCALPLAYER(_nPlayer)	((_nPlayer < 0) || ((_nPlayer) == N_LOCALPLAYER))
 

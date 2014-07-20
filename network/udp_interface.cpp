@@ -1217,7 +1217,7 @@ if (!(bTracker
 		}
 #endif //UDP_SAFEMODE
 	gameStates.multi.bHaveLocalAddress = 1;
-	netPlayers [0].m_info.players [N_LOCALPLAYER].network.SetNode (networkData.localAddress.Node ());
+	NETPLAYER (N_LOCALPLAYER).network.SetNode (networkData.localAddress.Node ());
 #if UDP_SAFEMODE
 	dataLen -= (bSafeMode ? 22 : 14);
 #else

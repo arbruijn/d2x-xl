@@ -61,8 +61,8 @@
 #define RECVLOCK 1
 #define PROCLOCK 0
 
-#define SEND_IN_BACKGROUND		1
-#define LISTEN_IN_BACKGROUND	0
+#define SEND_IN_BACKGROUND		0
+#define LISTEN_IN_BACKGROUND	1
 #define USE_PACKET_IDS			0
 
 #define MULTI_THREADED_NETWORKING 1 // set to 0 to have D2X-XL manage network traffic the old way
@@ -748,11 +748,15 @@ CNetworkPacket* CNetworkThread::GetPacket (bool bLock)
 Listen (true);
 if (!m_processPacketQueue.Head ())
 	return m_rxPacketQueue.Pop ();
+bool bStart = m_processPacketQueue.Current () == NULL;
 m_processPacketQueue.Grab (m_rxPacketQueue);
-if (!m_processPacketQueue.Current ())
+if (bStart)
 	m_processPacketQueue.Start ();
+else
+	m_processPacketQueue.Step ();
 CNetworkPacket* packet = m_processPacketQueue.Current ();
-m_processPacketQueue.Step ();
+if (bStart)
+	m_processPacketQueue.Step ();
 return packet;
 }
 
@@ -770,7 +774,6 @@ if (!packet)
 memcpy (data, packet->Buffer (), packet->Size ());
 memcpy (&networkData.packetSource, &packet->Owner ().m_address, sizeof (networkData.packetSource));
 int32_t size = packet->Size ();
-m_rxPacketQueue.Free (packet);
 return size;
 }
 
@@ -783,8 +786,11 @@ int32_t CNetworkThread::ProcessPackets (void)
 // grab the entire list of packets available for processing and then unlock again 
 // to avoid locking Listen() any longer than necessary
 m_processPacketQueue.Lock ();
+bool bStart = m_processPacketQueue.Current () == NULL;
 if (m_processPacketQueue.Grab (m_rxPacketQueue)) {
-for (m_processPacketQueue.Start (); m_processPacketQueue.Current (); m_processPacketQueue.Step ()) {
+if (bStart)
+	m_processPacketQueue.Start ();
+for (; m_processPacketQueue.Current (); m_processPacketQueue.Step ()) {
 		networkData.packetSource = m_processPacketQueue.Current ()->Owner ().m_address;
 		if (NetworkProcessPacket (m_processPacketQueue.Current ()->Buffer (), m_processPacketQueue.Current ()->Size ()))
 			++nProcessed;
@@ -939,13 +945,13 @@ return true;
 
 int32_t CNetworkThread::ConnectionStatus (int32_t nPlayer)
 {
-if (!gameData.multiplayer.players [nPlayer].callsign [0])
+if (!PLAYER (nPlayer).callsign [0])
 	return 0;
-if (gameData.multiplayer.players [nPlayer].m_nLevel && (gameData.multiplayer.players [nPlayer].m_nLevel != missionManager.nCurrentLevel))
+if (PLAYER (nPlayer).m_nLevel && (PLAYER (nPlayer).m_nLevel != missionManager.nCurrentLevel))
 	return 3;	// the client being tested is in a different level, so immediately disconnect him to make his ship disappear until he enters the current level
 if (downloadManager.Downloading (nPlayer))
 	return 1;	// try to reconnect, using relaxed timeout values
-if ((gameData.multiplayer.players [nPlayer].connected == CONNECT_DISCONNECTED) || (gameData.multiplayer.players [nPlayer].connected == CONNECT_PLAYING))
+if ((PLAYER (nPlayer).connected == CONNECT_DISCONNECTED) || (PLAYER (nPlayer).connected == CONNECT_PLAYING))
 	return 2;	// try to reconnect
 if (LOCALPLAYER.connected == CONNECT_PLAYING)
 	return 3; // the client being tested is in some level transition mode, so immediately disconnect him to make his ship disappear until he enters the current level
@@ -967,7 +973,7 @@ int32_t s = -1;
 if (to.Expired () /*&& !gameData.reactor.bDestroyed*/) 
 	{
 	int32_t t = SDL_GetTicks ();
-	for (int32_t nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
+	for (int32_t nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {
 		if (nPlayer != N_LOCALPLAYER) {
 			switch (s = ConnectionStatus (nPlayer)) {
 				case 0:
@@ -1014,10 +1020,10 @@ if (toUpdate.Expired ()) {
 		NetworkSendEndLevelPacket ();
 	else {
 		//Lock ();
-		for (int32_t nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
+		for (int32_t nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {
 			if (nPlayer == N_LOCALPLAYER) 
 				continue;
-			if (gameData.multiplayer.players [nPlayer].Connected (CONNECT_END_MENU) || gameData.multiplayer.players [nPlayer].Connected (CONNECT_ADVANCE_LEVEL)) {
+			if (PLAYER (nPlayer).Connected (CONNECT_END_MENU) || PLAYER (nPlayer).Connected (CONNECT_ADVANCE_LEVEL)) {
 #if 1
 				NetworkSendEndLevelPacket ();
 #else

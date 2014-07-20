@@ -704,7 +704,7 @@ int32_t DropMarkerObject (CFixVector& vPos, int16_t nSegment, CFixMatrix& orient
 {
 	int16_t nObject;
 
-Assert (gameData.models.nMarkerModel != -1);
+//Assert (gameData.models.nMarkerModel != -1);
 nObject = CreateObject (OBJ_MARKER, nMarker, -1, nSegment, vPos, orient,
 								gameData.models.polyModels [0][gameData.models.nMarkerModel].Rad (), CT_NONE, MT_NONE, RT_POLYOBJ);
 if (nObject >= 0) {

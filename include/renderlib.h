@@ -80,6 +80,17 @@ void OutlineSegSide (CSegment *seg, int32_t _side, int32_t edge, int32_t vert);
 void DrawWindowBox (uint32_t color, int16_t left, int16_t top, int16_t right, int16_t bot);
 #endif
 
+int32_t SetRearView (int32_t bOn);
+int32_t ToggleRearView (void);
+void ResetRearView (void);
+void CheckRearView (void);
+int32_t SetChaseCam (int32_t bOn);
+int32_t ToggleChaseCam (void);
+int32_t SetFreeCam (int32_t bOn);
+int32_t ToggleFreeCam (void);
+void ToggleRadar (void);
+void HandleZoom (void);
+
 //------------------------------------------------------------------------------
 
 extern CFloatVector segmentColors [4];

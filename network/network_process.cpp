@@ -47,9 +47,7 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 	for (j = 0, sideP = segP->m_sides; j < SEGMENT_SIDE_COUNT; j++, sideP++) {
 		if (!sideP->FaceCount ())
 			continue;
-		if (((tm = sideP->m_nOvlTex) != 0) &&
-				((ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip) != -1) &&
-				((bm = gameData.effects.effectP [ec].nDestBm) != -1)) {
+		if (((tm = sideP->m_nOvlTex) != 0) && ((ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip) != -1) && ((bm = gameData.effects.effectP [ec].nDestBm) != -1)) {
 			if (vector & (1 << count))
 				sideP->m_nOvlTex = bm;
 			count++;
@@ -199,8 +197,8 @@ if (their->player.connected != CONNECT_ADVANCE_LEVEL) {
 	networkData.nStatus = NETSTAT_MENU;
 	}
 else {
-	for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		if (!stricmp (their->player.callsign, gameData.multiplayer.players [i].callsign)) {
+	for (int32_t i = 0; i < N_PLAYERS; i++) {
+		if (!stricmp (their->player.callsign, PLAYER (i).callsign)) {
 			if (i != WhoIsGameHost ()) 
 				HUDInitMessage (TXT_KICK_ATTEMPT, their->player.callsign);
 			else {
@@ -224,11 +222,11 @@ else {
 void NetworkProcessRequest (tPlayerSyncData *their)
 {
 // Player is ready to receieve a sync packet
-for (int32_t nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
-	if (!CmpNetPlayers (their->player.callsign, netPlayers [0].m_info.players [nPlayer].callsign, 
-							  &their->player.network, &netPlayers [0].m_info.players [nPlayer].network)) {
+for (int32_t nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {
+	if (!CmpNetPlayers (their->player.callsign, NETPLAYER (nPlayer).callsign, 
+							  &their->player.network, &NETPLAYER (nPlayer).network)) {
 		CONNECT (nPlayer, CONNECT_PLAYING);
-		gameData.multiplayer.players [nPlayer].m_nLevel = missionManager.nCurrentLevel;
+		PLAYER (nPlayer).m_nLevel = missionManager.nCurrentLevel;
 		break;
 		}
 	}                       
@@ -239,9 +237,9 @@ for (int32_t nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {
 void NetworkProcessPlayerData (uint8_t* data)
 {
 if (netGameInfo.GetShortPackets ())
-	NetworkReadPDataShortPacket (reinterpret_cast<tFrameInfoShort*> (data));
+	NetworkReadShortPlayerDataPacket (reinterpret_cast<tFrameInfoShort*> (data));
 else
-	NetworkReadPDataLongPacket (reinterpret_cast<tFrameInfoLong*> (data));
+	NetworkReadLongPlayerDataPacket (reinterpret_cast<tFrameInfoLong*> (data));
 }
 
 //------------------------------------------------------------------------------
@@ -259,7 +257,7 @@ if (nPlayer < 0) {
 	return;
 	}
 
-if (!gameData.multigame.bQuitGame && (nPlayer >= gameData.multiplayer.nPlayers)) {
+if (!gameData.multigame.bQuitGame && (nPlayer >= N_PLAYERS)) {
 	if (networkData.nStatus != NETSTAT_WAITING) {
 		Int3 (); // We missed an important packet!
 		NetworkConsistencyError ();

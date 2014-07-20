@@ -702,7 +702,7 @@ if (info.nObject >= 0)
 	return &OBJECTS [info.nObject];
 if (!info.bSpot)
 	return NULL;
-return &OBJECTS [gameData.multiplayer.players [info.nPlayer].nObject];
+return &OBJECTS [PLAYER (info.nPlayer).nObject];
 }
 
 //------------------------------------------------------------------------------

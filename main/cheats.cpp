@@ -191,8 +191,8 @@ if (bVerbose)
 //	Yippee!!
 void KillEverything (int32_t bVerbose)
 {
-	int32_t     	i, j;
-	CObject	*objP;
+	int32_t  i, j;
+	CObject*	objP;
 
 if (bVerbose)
 	HUDInitMessage (TXT_KILL_ETC);

@@ -1754,7 +1754,7 @@ void DoSlowMotionFrame (void);
 
 CFixVector* PlayerSpawnPos (int32_t nPlayer);
 CFixMatrix* PlayerSpawnOrient (int32_t nPlayer);
-void GetPlayerSpawn (int32_t nPlayer, CObject *objP);
+void MovePlayerToSpawnPos (int32_t nPlayer, CObject *objP);
 void RecreateThief (CObject *objP);
 void DeadPlayerFrame (void);
 

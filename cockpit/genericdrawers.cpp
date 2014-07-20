@@ -918,7 +918,7 @@ bShowAllNames = ((gameData.demo.nState == ND_STATE_PLAYBACK) || (netGameInfo.m_i
 bShowTeamNames = (gameData.multigame.bShowReticleName && (IsCoopGame || IsTeamGame));
 
 nTeam = GetTeam (N_LOCALPLAYER);
-for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check all players
+for (nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {	//check all players
 	if (gameStates.multi.bPlayerIsTyping [nPlayer])
 		nState = 1;
 	else if (downloadManager.Downloading (nPlayer))
@@ -927,12 +927,12 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 		nState = 0;
 
 	bShowName = (nState ||
-					 (bShowAllNames && !(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED)) ||
+					 (bShowAllNames && !(PLAYER (nPlayer).flags & PLAYER_FLAGS_CLOAKED)) ||
 					 (!IsCoopGame && (bShowTeamNames && GetTeam (nPlayer) == nTeam)));
-	bHasFlag = (gameData.multiplayer.players [nPlayer].IsConnected () && (gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FLAG));
+	bHasFlag = (PLAYER (nPlayer).IsConnected () && (PLAYER (nPlayer).flags & PLAYER_FLAGS_FLAG));
 
 	if (gameData.demo.nState != ND_STATE_PLAYBACK)
-		nObject = gameData.multiplayer.players [nPlayer].nObject;
+		nObject = PLAYER (nPlayer).nObject;
 	else {
 		//if this is a demo, the nObject in the player struct is wrong,
 		//so we search the CObject list for the nObject
@@ -954,7 +954,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 		vPlayerPos.TransformAndEncode (OBJECTS [nObject].info.position.vPos);
 #else
 		//transformation.Push ();
-		SetRenderView (0, NULL, 0);
+		SetupRenderView (0, NULL, 0);
 		vPlayerPos.TransformAndEncode (OBJECTS [nObject].info.position.vPos);
 		ogl.EndFrame ();
 		//transformation.Pop ();
@@ -979,7 +979,7 @@ for (nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++) {	//check 
 						colorP = playerColors + nColor;
 						}
 
-					sprintf (s, "%s", (nState == 1) ? TXT_TYPING : (nState == 2) ? "Downloading..." : gameData.multiplayer.players [nPlayer].callsign);
+					sprintf (s, "%s", (nState == 1) ? TXT_TYPING : (nState == 2) ? "Downloading..." : PLAYER (nPlayer).callsign);
 					fontManager.Current ()->StringSize (s, w, h, aw);
 					SetFontColor (RGBA_PAL2 (colorP->Red (), colorP->Green (), colorP->Blue ()));
 					x1 = x - w / 2;
@@ -1112,9 +1112,9 @@ for (i = 0; i < nPlayers; i++) {
 		 x1 = int32_t (LHX (43) * fScale - LHX (18));
 #endif
 	nPlayer = (gameData.multigame.score.bShowList == 3) ? i : playerList [i];
-	if (gameData.multiplayer.players [nPlayer].HasLeft ())
+	if (PLAYER (nPlayer).HasLeft ())
 		continue;
-	if (!gameData.multiplayer.players [nPlayer].IsConnected ()) 
+	if (!PLAYER (nPlayer).IsConnected ()) 
 		SetFontColor (RGBA_PAL2 (12, 12, 12));
 	else {
 		int32_t color = IsTeamGame ? GetTeam (nPlayer) : nPlayer % MAX_PLAYER_COLORS;
@@ -1125,12 +1125,12 @@ for (i = 0; i < nPlayers; i++) {
 #if 0//DBG
 			sprintf (name, "%c%-8s %d.%d.%d.%d:%d",
 						teamInd [0], netGameInfo.m_info.szTeamName [i],
-						netPlayers [0].m_info.players [i].network.Node () [0],
-						netPlayers [0].m_info.players [i].network.Node () [1],
-						netPlayers [0].m_info.players [i].network.Node () [2],
-						netPlayers [0].m_info.players [i].network.Node () [3],
-						netPlayers [0].m_info.players [i].network.Node () [5] +
-						 (uint32_t) netPlayers [0].m_info.players [i].network.Node () [4] * 256);
+						NETPLAYER (i).network.Node () [0],
+						NETPLAYER (i).network.Node () [1],
+						NETPLAYER (i).network.Node () [2],
+						NETPLAYER (i).network.Node () [3],
+						NETPLAYER (i).network.Node () [5] +
+						 (uint32_t) NETPLAYER (i).network.Node () [4] * 256);
 #else
 			sprintf (name, "%c%s", teamInd [0], netGameInfo.m_info.szTeamName [GetTeam (i)]);
 #endif
@@ -1140,12 +1140,12 @@ for (i = 0; i < nPlayers; i++) {
 #if SHOW_PLAYER_IP
 			sprintf (name, "%-8s %d.%d.%d.%d:%d",
 						netGameInfo.m_info.szTeamName [i],
-						netPlayers [0].m_info.players [i].network.Node () [0],
-						netPlayers [0].m_info.players [i].network.Node () [1],
-						netPlayers [0].m_info.players [i].network.Node () [2],
-						netPlayers [0].m_info.players [i].network.Node () [3],
-						netPlayers [0].m_info.players [i].network.Node () [5] +
-						 (uint32_t) netPlayers [0].m_info.players [i].network.Node () [4] * 256);
+						NETPLAYER (i).network.Node () [0],
+						NETPLAYER (i).network.Node () [1],
+						NETPLAYER (i).network.Node () [2],
+						NETPLAYER (i).network.Node () [3],
+						NETPLAYER (i).network.Node () [5] +
+						 (uint32_t) NETPLAYER (i).network.Node () [4] * 256);
 #else
 			strcpy (name, netGameInfo.m_info.szTeamName [GetTeam (i)]);
 #endif
@@ -1155,15 +1155,15 @@ for (i = 0; i < nPlayers; i++) {
 	else
 #if 0//DBG
 		sprintf (name, "%-8s %d.%d.%d.%d:%d",
-					gameData.multiplayer.players [nPlayer].callsign,
-					netPlayers [0].m_info.players [nPlayer].network.Node () [0],
-					netPlayers [0].m_info.players [nPlayer].network.Node () [1],
-					netPlayers [0].m_info.players [nPlayer].network.Node () [2],
-					netPlayers [0].m_info.players [nPlayer].network.Node () [3],
-					netPlayers [0].m_info.players [nPlayer].network.Node () [5] +
-					 (uint32_t) netPlayers [0].m_info.players [nPlayer].network.Node () [4] * 256);
+					PLAYER (nPlayer).callsign,
+					NETPLAYER (nPlayer).network.Node () [0],
+					NETPLAYER (nPlayer).network.Node () [1],
+					NETPLAYER (nPlayer).network.Node () [2],
+					NETPLAYER (nPlayer).network.Node () [3],
+					NETPLAYER (nPlayer).network.Node () [5] +
+					 (uint32_t) NETPLAYER (nPlayer).network.Node () [4] * 256);
 #else
-		strcpy (name, gameData.multiplayer.players [nPlayer].callsign);	// Note link to above if!!
+		strcpy (name, PLAYER (nPlayer).callsign);	// Note link to above if!!
 #endif
 #if 0//DBG
 	x1 += LHX (100);
@@ -1178,13 +1178,13 @@ for (i = 0; i < nPlayers; i++) {
 	nIdKillList [0][i] = DrawHUDText (nIdKillList [0] + i, x0 + indent, y0, "%s", name);
 
 	if (gameData.multigame.score.bShowList == 2) {
-		if (gameData.multiplayer.players [nPlayer].netKilledTotal + gameData.multiplayer.players [nPlayer].netKillsTotal <= 0)
+		if (PLAYER (nPlayer).netKilledTotal + PLAYER (nPlayer).netKillsTotal <= 0)
 			nIdKillList [1][i] = DrawHUDText (nIdKillList [1] + i, x1, y0, TXT_NOT_AVAIL);
 		else
 			nIdKillList [1][i] = DrawHUDText (nIdKillList [1] + i, x1, y0, "%d%%",
-														 (int32_t) ((double) gameData.multiplayer.players [nPlayer].netKillsTotal /
-																 ((double) gameData.multiplayer.players [nPlayer].netKilledTotal +
-																  (double) gameData.multiplayer.players [nPlayer].netKillsTotal) * 100.0));
+														 (int32_t) ((double) PLAYER (nPlayer).netKillsTotal /
+																 ((double) PLAYER (nPlayer).netKilledTotal +
+																  (double) PLAYER (nPlayer).netKillsTotal) * 100.0));
 		}
 	else if (gameData.multigame.score.bShowList == 3) {
 		if (IsEntropyGame)
@@ -1195,13 +1195,13 @@ for (i = 0; i < nPlayers; i++) {
 			nIdKillList [1][i] = DrawHUDText (nIdKillList [1] + i, x1, y0, "%3d", gameData.multigame.score.nTeam [i]);
 		}
 	else if (IsCoopGame)
-		nIdKillList [1][i] = DrawHUDText (nIdKillList [1] + i, x1, y0, "%-6d", gameData.multiplayer.players [nPlayer].score);
+		nIdKillList [1][i] = DrawHUDText (nIdKillList [1] + i, x1, y0, "%-6d", PLAYER (nPlayer).score);
    else if (netGameInfo.GetPlayTimeAllowed () || netGameInfo.GetScoreGoal ())
       nIdKillList [1][i] = DrawHUDText (nIdKillList [1] + i, x1, y0, "%3d (%d)",
-													 gameData.multiplayer.players [nPlayer].netKillsTotal,
-													 gameData.multiplayer.players [nPlayer].nScoreGoalCount);
+													 PLAYER (nPlayer).netKillsTotal,
+													 PLAYER (nPlayer).nScoreGoalCount);
    else
-		nIdKillList [1][i] = DrawHUDText (nIdKillList [1] + i, x1, y0, "%3d", gameData.multiplayer.players [nPlayer].netKillsTotal);
+		nIdKillList [1][i] = DrawHUDText (nIdKillList [1] + i, x1, y0, "%3d", PLAYER (nPlayer).netKillsTotal);
 	if (gameStates.render.cockpit.bShowPingStats && (nPlayer != N_LOCALPLAYER)) {
 		if (bGetPing)
 			PingPlayer (nPlayer);
@@ -1246,7 +1246,7 @@ if (gameStates.app.bPlayerIsDead)
 							};
 
 #if 1 //!DBG
-if ((gameStates.app.nSDLTicks [0] - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 2000) && !OBJECTS [LOCALPLAYER.nObject].CriticalDamage ())
+if ((gameStates.app.nSDLTicks [0] - LOCALOBJECT.TimeLastRepaired () > 2000) && !LOCALOBJECT.CriticalDamage ())
 	return;
 #endif
 	float fScale = float (CCanvas::Current ()->Width ()) / 640.0f;

@@ -28,6 +28,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "network_lib.h"
 #include "netmisc.h"
 #include "segmath.h"
+#include "renderlib.h"
+#include "automap.h"
 
 //------------------------------------------------------------------------------
 
@@ -63,11 +65,11 @@ int32_t WhoIsGameHost (void)
 {
 if (!IsMultiGame)
 	return N_LOCALPLAYER;
-for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if (gameData.multiplayer.players [i].callsign [0]/*gameData.multiplayer.players [i].connected*/) { // if a player gets kicked, his callsign will be cleared
+for (int32_t i = 0; i < N_PLAYERS; i++) {
+	if (PLAYER (i).callsign [0]/*PLAYER (i).connected*/) { // if a player gets kicked, his callsign will be cleared
 		if (gameStates.multi.nGameType == IPX_GAME)
 			return i;
-		if (htons (*netPlayers [0].m_info.players [i].network.Port ()) == uint16_t (mpParams.udpPorts [0] + networkData.nPortOffset))
+		if (htons (*NETPLAYER (i).network.Port ()) == uint16_t (mpParams.udpPorts [0] + networkData.nPortOffset))
 			return i;
 		}
 	}
@@ -103,8 +105,8 @@ int32_t NetworkHowManyConnected (void)
  {
   int32_t n = 0, i;
 
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].connected)
+for (i = 0; i < N_PLAYERS; i++)
+	if (PLAYER (i).connected)
 		n++;
 return n;
 }
@@ -178,9 +180,9 @@ if (OBJECTS [nObject].info.nType != OBJ_PLAYER)
 	return NULL;
 if (OBJECTS [nObject].info.nId >= MAX_PLAYERS)
 	return NULL;
-if (OBJECTS [nObject].info.nId >= gameData.multiplayer.nPlayers)
+if (OBJECTS [nObject].info.nId >= N_PLAYERS)
 	return NULL;
-return gameData.multiplayer.players [OBJECTS [nObject].info.nId].callsign;
+return PLAYER (OBJECTS [nObject].info.nId).callsign;
 }
 
 //------------------------------------------------------------------------------
@@ -390,6 +392,43 @@ int32_t HoardEquipped (void)
 if (bHoard == -1)
 	bHoard = CFile::Exist ("hoard.ham", gameFolders.game.szData [0], 0) ? 1 : 0;
 return bHoard;
+}
+
+//------------------------------------------------------------------------------
+
+int8_t SwitchObservedPlayer (void)
+{
+if (LOCALOBJECT.Type () != OBJ_GHOST)
+	return 0;
+int8_t nPlayer = LOCALPLAYER.ObservedPlayer ();
+int16_t nTeam = GetTeam (N_LOCALPLAYER);
+for (uint8_t i = 0; i < N_PLAYERS; i++) {
+	nPlayer = (nPlayer + 1) % N_PLAYERS;
+	if ((nPlayer != N_LOCALPLAYER) && PLAYER (nPlayer).IsConnected () && (nPlayer != LOCALPLAYER.ObservedPlayer ()) && (!IsTeamGame || (nTeam) == GetTeam (nPlayer))) {
+		LOCALPLAYER.SetObservedPlayer (nPlayer);
+		SetChaseCam (1);
+		return nPlayer;
+		}
+	}
+LOCALPLAYER.SetObservedPlayer (-1);
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
+void ObserverFrame (void)
+{
+if (OBSERVING) {
+	if ((LOCALPLAYER.ObservedPlayer () == N_LOCALPLAYER) || gameData.reactor.bDestroyed) {
+		gameStates.render.bObserving = 0;
+		MultiMakeGhostPlayer (N_LOCALPLAYER);
+		SetChaseCam (0);
+		automap.SetActive (0);
+		StartLevel (0x7fffffff, 1);
+		}
+	else if ((LOCALPLAYER.ObservedPlayer () >= 0) && !PLAYER (LOCALPLAYER.ObservedPlayer ()).IsConnected ())
+		SwitchObservedPlayer ();
+	}
 }
 
 //------------------------------------------------------------------------------

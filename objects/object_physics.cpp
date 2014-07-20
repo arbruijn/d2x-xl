@@ -29,6 +29,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "kconfig.h"
 #include "input.h"
 #include "player.h"
+#include "automap.h"
 
 //------------------------------------------------------------------------------
 
@@ -56,7 +57,7 @@ return shipModifiers [gameData.multiplayer.weaponStates [info.nId].nShip].v.ener
 void CObject::Wiggle (void)
 {
 	fix		xWiggle;
-	int32_t		nParent;
+	int32_t	nParent;
 	CObject	*parentP;
 
 if (gameStates.render.nShadowPass == 2)
@@ -64,6 +65,8 @@ if (gameStates.render.nShadowPass == 2)
 if (gameOpts->app.bEpilepticFriendly)
 	return;
 if (!gameStates.app.bNostalgia && (!EGI_FLAG (nDrag, 0, 0, 0) || !EGI_FLAG (bWiggle, 1, 0, 1)))
+	return;
+if ((Index () == LOCALPLAYER.nObject) && automap.Active ())
 	return;
 nParent = gameData.objs.parentObjs [Index ()];
 parentP = (nParent < 0) ? NULL : OBJECTS + nParent;
@@ -73,7 +76,7 @@ if (gameData.time.xFrame < I2X (1))// Only scale wiggle if getting at least 1 FP
 	xWiggle = FixMul (xWiggle * 20, gameData.time.xFrame); //make wiggle fps-independent (based on pre-scaled amount of wiggle at 20 FPS)
 if (SPECTATOR (this))
 	OBJPOS (this)->vPos += (OBJPOS (this)->mOrient.m.dir.u * FixMul (xWiggle, gameData.pig.ship.player->wiggle)) * (I2X (1) / 20);
-else if ((info.nType == OBJ_PLAYER) || !parentP)
+else if ((info.nType == OBJ_PLAYER) || ((info.nId == N_LOCALPLAYER) && OBSERVING) || !parentP)
 	mType.physInfo.velocity += info.position.mOrient.m.dir.u * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
 else {
 	mType.physInfo.velocity += parentP->info.position.mOrient.m.dir.u * FixMul (xWiggle, gameData.pig.ship.player->wiggle);
@@ -103,8 +106,10 @@ if (gameStates.app.bPlayerIsDead || gameStates.app.bEnterGame) {
 	return;
 	}
 
-if ((info.nType != OBJ_PLAYER) || (info.nId != N_LOCALPLAYER))
+if (info.nId != N_LOCALPLAYER)
 	return;	//references to CPlayerShip require that this obj be the player
+if ((info.nType != OBJ_PLAYER) && ((info.nType != OBJ_GHOST) || !OBSERVING))
+	return;
 
 if ((gmObjP = gameData.objs.GetGuidedMissile (N_LOCALPLAYER))) {
 	CAngleVector	vRotAngs;
@@ -129,7 +134,7 @@ else {
 	mType.physInfo.rotThrust = CFixVector::Create (controls [0].pitchTime, controls [0].headingTime, controls [0].bankTime);
 	}
 forwardThrustTime = controls [0].forwardThrustTime;
-if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (RandShort () < OBJECTS [N_LOCALPLAYER].DriveDamage ())) {
+if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (RandShort () < OBJECTS [N_LOCALPLAYER].DriveDamage ()) && ((Index () != LOCALPLAYER.nObject) || !automap.Active ())) {
 	if (controls [0].afterburnerState) {			//player has key down
 		fix xAfterburnerScale;
 		int32_t oldCount, newCount;

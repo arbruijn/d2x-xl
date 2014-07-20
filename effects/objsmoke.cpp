@@ -90,7 +90,7 @@ if ((nObject >= 0) && (particleManager.GetObjectSystem (nObject) >= 0)) {
 
 void KillPlayerSmoke (int32_t i)
 {
-KillObjectSmoke (gameData.multiplayer.players [i].nObject);
+KillObjectSmoke (PLAYER (i).nObject);
 }
 
 //------------------------------------------------------------------------------
@@ -338,7 +338,7 @@ void DoPlayerSmoke (CObject *objP, int32_t nPlayer)
 
 if (nPlayer < 0)
 	nPlayer = objP->info.nId;
-if ((gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED) ||
+if ((PLAYER (nPlayer).flags & PLAYER_FLAGS_CLOAKED) ||
 	 (automap.Active () && IsMultiGame && !AM_SHOW_PLAYERS)) {
 	KillObjectSmoke (nPlayer);
 	return;
@@ -370,18 +370,18 @@ if (EGI_FLAG (bThrusterFlames, 1, 1, 0)) {
 		DropAfterburnerBlobs (objP, 2, I2X (1), -1, gameData.objs.consoleP, 1); //I2X (1) / 4);
 	}
 #endif
-if (IsNetworkGame && !gameData.multiplayer.players [nPlayer].connected)
+if (IsNetworkGame && !PLAYER (nPlayer).connected)
 	nParts = 0;
 else if (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED))
 	nParts = 0;
-else if ((nPlayer == N_LOCALPLAYER) && (gameStates.app.bPlayerIsDead || (gameData.multiplayer.players [nPlayer].Shield () < 0)))
+else if ((nPlayer == N_LOCALPLAYER) && (gameStates.app.bPlayerIsDead || (PLAYER (nPlayer).Shield () < 0)))
 	nParts = 0;
 else if (SHOW_SMOKE && gameOpts->render.particles.bPlayers) {
 	tObjTransformation* pos = OBJPOS (objP);
 	int16_t nSegment = OBJSEG (objP);
 	CFixVector* vDirP = (SPECTATOR (objP) || objP->mType.physInfo.thrust.IsZero ()) ? &vDir : NULL;
 
-	nSmoke = X2IR (gameData.multiplayer.players [nPlayer].Shield ());
+	nSmoke = X2IR (PLAYER (nPlayer).Shield ());
 	nScale = X2F (objP->info.xSize) / 2.0f;
 	nParts = 10 - nSmoke / 5;	// scale with damage, starting at 50% damage
 	if (nParts <= 0) {
@@ -895,8 +895,8 @@ void PlayerBulletFrame (void)
 {
 if (!gameOpts->render.ship.bBullets)
 	return;
-for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++)
-	DoPlayerBullets (OBJECTS + gameData.multiplayer.players [i].nObject);
+for (int32_t i = 0; i < N_PLAYERS; i++)
+	DoPlayerBullets (OBJECTS + PLAYER (i).nObject);
 }
 
 //------------------------------------------------------------------------------
@@ -905,8 +905,8 @@ void PlayerParticleFrame (void)
 {
 if (!gameOpts->render.particles.bPlayers)
 	return;
-for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++)
-	DoPlayerSmoke (OBJECTS + gameData.multiplayer.players [i].nObject, i);
+for (int32_t i = 0; i < N_PLAYERS; i++)
+	DoPlayerSmoke (OBJECTS + PLAYER (i).nObject, i);
 }
 
 //------------------------------------------------------------------------------

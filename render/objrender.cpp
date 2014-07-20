@@ -439,8 +439,8 @@ int32_t GetCloakInfo (CObject *objP, fix xCloakStartTime, fix xCloakEndTime, tCl
 
 if (!(xCloakStartTime || xCloakEndTime)) {
 	if (objP->info.nType == OBJ_PLAYER) {
-		xCloakStartTime = gameData.multiplayer.players [objP->info.nId].cloakTime;
-		xCloakEndTime = gameData.multiplayer.players [objP->info.nId].cloakTime + CLOAK_TIME_MAX;
+		xCloakStartTime = PLAYER (objP->info.nId).cloakTime;
+		xCloakEndTime = PLAYER (objP->info.nId).cloakTime + CLOAK_TIME_MAX;
 		}
 	else if (objP->info.nType == OBJ_ROBOT) {
 		if (!ROBOTINFO (objP->info.nId).bossFlag) {
@@ -667,8 +667,7 @@ if (objP->rType.polyObjInfo.nTexOverride != -1) {
 else {
 	if (bCloaked) {
 		if (objP->info.nType == OBJ_PLAYER)
-			bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.multiplayer.players [id].cloakTime,
-											 gameData.multiplayer.players [id].cloakTime + CLOAK_TIME_MAX);
+			bOk = DrawCloakedObject (objP, xLight, xEngineGlow, PLAYER (id).cloakTime, PLAYER (id).cloakTime + CLOAK_TIME_MAX);
 		else if (objP->info.nType == OBJ_ROBOT) {
 			if (!ROBOTINFO (id).bossFlag)
 				bOk = DrawCloakedObject (objP, xLight, xEngineGlow, gameData.time.xGame - I2X (10), gameData.time.xGame + I2X (10));
@@ -743,7 +742,7 @@ return bOk;
 static int32_t RenderPlayerModel (CObject* objP, int32_t bSpectate)
 {
 int32_t bDynObjLight = (gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
-if (automap.Active () && !(AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)))
+if (automap.Active () && !(OBSERVING || (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId))))
 	return 0;
 tObjTransformation savePos;
 if (bSpectate) {

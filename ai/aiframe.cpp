@@ -1070,7 +1070,7 @@ static CObject *NearestPlayerTarget (CObject* attackerP)
 FORALL_PLAYER_OBJS (candidateP, j) {
 	if (candidateP->Type () != OBJ_PLAYER) // skip ghost players
 		continue;
-	if (!gameData.multiplayer.players [candidateP->Id ()].IsConnected ())
+	if (!PLAYER (candidateP->Id ()).IsConnected ())
 		continue;
 	CFixVector vDir = OBJPOS (candidateP)->vPos - vPos;
 	curDist = vDir.Mag ();
@@ -1151,7 +1151,7 @@ if (objP->AttacksRobots () || (!siP->botInfoP->thief && (RandShort () > 2 * objP
 siP->bVisAndVecComputed = 0;
 if (TARGETOBJ->Type () == OBJ_ROBOT)
 	gameData.ai.target.vBelievedPos = objP->FrontPosition ();
-else if ((gameData.multiplayer.players [TARGETOBJ->Id ()].flags & PLAYER_FLAGS_CLOAKED) || (RandShort () > objP->AimDamage ()))
+else if ((PLAYER (TARGETOBJ->Id ()).flags & PLAYER_FLAGS_CLOAKED) || (RandShort () > objP->AimDamage ()))
 	gameData.ai.target.vBelievedPos = gameData.ai.cloakInfo [siP->nObject & (MAX_AI_CLOAK_INFO - 1)].vLastPos;
 else
 	gameData.ai.target.vBelievedPos = OBJPOS (TARGETOBJ)->vPos;

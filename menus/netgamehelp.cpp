@@ -60,7 +60,7 @@ sprintf (szText, TXT_INFO_SKILL, MENU_DIFFICULTY_TEXT (netGameInfo.m_info.diffic
 m.AddText ("", szText);
 sprintf (szText, TXT_INFO_MODE, GT (537 + netGameInfo.m_info.gameMode));
 m.AddText ("", szText);
-sprintf (szText, TXT_INFO_SERVER, gameData.multiplayer.players [WhoIsGameHost()].callsign);
+sprintf (szText, TXT_INFO_SERVER, PLAYER (WhoIsGameHost()).callsign);
 m.AddText ("", szText);
 sprintf (szText, TXT_INFO_PLRNUM, NetworkHowManyConnected (), netGameInfo.m_info.nMaxPlayers);
 m.AddText ("", szText);
@@ -79,25 +79,25 @@ if (netGameInfo.GetScoreGoal ())
 	sprintf (szText, TXT_INFO_SCOREGOAL, netGameInfo.GetScoreGoal () * 5);
 sprintf (szText, " ");
 sprintf (szText, TXT_INFO_PLRSCONN);
-netPlayers [0].m_info.players [N_LOCALPLAYER].rank = GetMyNetRanking ();
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].connected) {
+NETPLAYER (N_LOCALPLAYER).rank = GetMyNetRanking ();
+for (i = 0; i < N_PLAYERS; i++)
+	if (PLAYER (i).connected) {
 		if (!gameOpts->multi.bNoRankings) {
 			if (i == N_LOCALPLAYER)
 				sprintf (szText, "%s%s (%d/%d)",
-							pszRankStrings [netPlayers [0].m_info.players [i].rank],
-							gameData.multiplayer.players [i].callsign,
+							pszRankStrings [NETPLAYER (i).rank],
+							PLAYER (i).callsign,
 							networkData.nNetLifeKills,
 							networkData.nNetLifeKilled);
 			else
 				sprintf (szText, "%s%s %d/%d",
-							pszRankStrings[netPlayers [0].m_info.players [i].rank],
-							gameData.multiplayer.players [i].callsign,
+							pszRankStrings[NETPLAYER (i).rank],
+							PLAYER (i).callsign,
 							gameData.multigame.score.matrix[N_LOCALPLAYER][i],
 							gameData.multigame.score.matrix[i][N_LOCALPLAYER]);
 			}
 		else
-			sprintf (szText, "%s", gameData.multiplayer.players [i].callsign);
+			sprintf (szText, "%s", PLAYER (i).callsign);
 		m.AddText ("", szText);
 		}
 	m.AddText ("", "");
@@ -108,7 +108,7 @@ for (i = 0; i < gameData.multiplayer.nPlayers; i++)
 		if (gameData.score.nChampion == -1)
 			sprintf (szText, TXT_NO_RECORD2);
 		else
-			sprintf (szText, TXT_RECORD3, gameData.multiplayer.players [gameData.score.nChampion].callsign, gameData.score.nHighscore);
+			sprintf (szText, TXT_RECORD3, PLAYER (gameData.score.nChampion).callsign, gameData.score.nHighscore);
 		}
 	else if (!gameOpts->multi.bNoRankings) {
 		sprintf (szText, TXT_EFF_LIFETIME, eff);

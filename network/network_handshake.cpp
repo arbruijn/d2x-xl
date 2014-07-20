@@ -34,8 +34,8 @@ m_players = 0;
 if (message) {
 	m_id = (id & 0x0FFFFFFF) | (uint32_t (N_LOCALPLAYER) << 28);
 	m_resendTime = m_timestamp;
-	for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++)
-		if ((i != N_LOCALPLAYER) && (gameData.multiplayer.players [i].IsConnected ()))
+	for (int32_t i = 0; i < N_PLAYERS; i++)
+		if ((i != N_LOCALPLAYER) && (PLAYER (i).IsConnected ()))
 			m_players |= (1 << i);
 	m_message [0] = PID_RESEND_MESSAGE;
 	memcpy (m_message + 1, message, MultiMsgLen (message [0]));
@@ -66,7 +66,7 @@ else if ((t = SDL_GetTicks ()) - m_timestamp < extraGameInfo [0].timeout.nKeepMe
 	if (t - m_resendTime >= extraGameInfo [0].timeout.nResendMessage) { // resend every 300 ms
 		m_resendTime = t;
 		if (m_message [0]) {
-			for (uint8_t nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++)
+			for (uint8_t nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++)
 				if (m_players & (1 << nPlayer))
 					IpxSendPlayerPacket (nPlayer, m_message, MultiMsgLen (m_message [1]) + 1); // regard the additional PID
 			}
@@ -76,7 +76,7 @@ else {
 	m_id = 0;
 	if (m_message [0]) {
 		if (extraGameInfo [1].bCompetition) {
-			for (uint8_t nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++)
+			for (uint8_t nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++)
 				if (m_players & (1 << nPlayer))
 					NetworkDisconnectPlayer (nPlayer);
 			}

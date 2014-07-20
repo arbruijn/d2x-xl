@@ -1377,8 +1377,8 @@ void CControlsManager::CybermouseAdjust (void)
 {
 #if 0
 if (N_LOCALPLAYER > -1) {
-	OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
-	OBJECTS [LOCALPLAYER.nObject].mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest CSide.
+	LOCALOBJECT.mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
+	LOCALOBJECT.mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest CSide.
 	gameOpts->gameplay.nAutoLeveling = 0;
 
 	if (kc_externalVersion > 0) {
@@ -1390,8 +1390,8 @@ if (N_LOCALPLAYER > -1) {
 
 		if (Kconfig_abs_movement->p || Kconfig_abs_movement->b || Kconfig_abs_movement->h) {
 			VmAngles2Matrix (&tempm,Kconfig_abs_movement);
-			VmMatMul (&ViewMatrix,&OBJECTS [LOCALPLAYER.nObject].info.position.mOrient,&tempm);
-			OBJECTS [LOCALPLAYER.nObject].info.position.mOrient = ViewMatrix;
+			VmMatMul (&ViewMatrix,&LOCALOBJECT.info.position.mOrient,&tempm);
+			LOCALOBJECT.info.position.mOrient = ViewMatrix;
 			}
 		oem_message = reinterpret_cast<char*> (((uint32_t)Kconfig_abs_movement + sizeof (CAngleVector));
 		if (oem_message [0] != '\0')

@@ -558,12 +558,12 @@ switch (gameStates.app.bEndLevelSequence) {
 			}
 		if (!bFlyThrough ||
 			(gameData.objs.endLevelCamera->Segment () == gameData.endLevel.exit.nSegNum) || 
-			 (OBJECTS [LOCALPLAYER.nObject].Segment () == gameData.endLevel.exit.nSegNum)) {
+			 (LOCALOBJECT.Segment () == gameData.endLevel.exit.nSegNum)) {
 			gameStates.app.bEndLevelSequence = EL_OUTSIDE;
 			timer = I2X (2);
 			if (gameData.objs.endLevelCamera->Segment () != gameData.endLevel.exit.nSegNum) {
-				gameData.objs.endLevelCamera->Position () = OBJECTS [LOCALPLAYER.nObject].Position ();
-				gameData.objs.endLevelCamera->Orientation () = OBJECTS [LOCALPLAYER.nObject].Orientation ();
+				gameData.objs.endLevelCamera->Position () = LOCALOBJECT.Position ();
+				gameData.objs.endLevelCamera->Orientation () = LOCALOBJECT.Orientation ();
 				}
 			gameData.objs.endLevelCamera->info.position.mOrient.m.dir.f = -gameData.objs.endLevelCamera->info.position.mOrient.m.dir.f;
 			gameData.objs.endLevelCamera->info.position.mOrient.m.dir.r = -gameData.objs.endLevelCamera->info.position.mOrient.m.dir.r;

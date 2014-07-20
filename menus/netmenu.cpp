@@ -224,16 +224,16 @@ NetworkListen ();
 int32_t nReady = 0;
 int32_t bSecret = 0;
 
-for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if ((gameData.multiplayer.players [i].connected != CONNECT_PLAYING) && 
-		 (gameData.multiplayer.players [i].connected != CONNECT_ESCAPE_TUNNEL) && 
-		 (gameData.multiplayer.players [i].connected != CONNECT_END_MENU)) {
+for (int32_t i = 0; i < N_PLAYERS; i++) {
+	if ((PLAYER (i).connected != CONNECT_PLAYING) && 
+		 (PLAYER (i).connected != CONNECT_ESCAPE_TUNNEL) && 
+		 (PLAYER (i).connected != CONNECT_END_MENU)) {
 		nReady++;
-		if (gameData.multiplayer.players [i].connected == CONNECT_FOUND_SECRET)
+		if (PLAYER (i).connected == CONNECT_FOUND_SECRET)
 			bSecret = 1;                                        
 		}
 	}
-if (nReady == gameData.multiplayer.nPlayers) {// All players have checked in or are disconnected
+if (nReady == N_PLAYERS) {// All players have checked in or are disconnected
 	if (bSecret)
 		key = -3;
 	else
@@ -256,12 +256,12 @@ if (TimerGetApproxSeconds () > (gameData.multiplayer.xStartAbortMenuTime + (I2X 
 	key = -2;
 //if (!networkThread.Available ())
 	NetworkListen ();
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if ((gameData.multiplayer.players [i].connected != CONNECT_PLAYING) && 
-		 (gameData.multiplayer.players [i].connected != CONNECT_ESCAPE_TUNNEL) && 
-		 (gameData.multiplayer.players [i].connected != CONNECT_END_MENU))
+for (i = 0; i < N_PLAYERS; i++)
+	if ((PLAYER (i).connected != CONNECT_PLAYING) && 
+		 (PLAYER (i).connected != CONNECT_ESCAPE_TUNNEL) && 
+		 (PLAYER (i).connected != CONNECT_END_MENU))
 		nReady++;
-if (nReady == gameData.multiplayer.nPlayers) // All players have checked in or are disconnected
+if (nReady == N_PLAYERS) // All players have checked in or are disconnected
 	key = -2;
 return nCurItem;
 }
@@ -281,7 +281,7 @@ if (!menu [0].Value ()) {
 	menu [0].Rebuild ();
 	}
 for (i = 1; i < int32_t (menu.ToS ()); i++) {
-	if ((i >= gameData.multiplayer.nPlayers) && menu [i].Value ()) {
+	if ((i >= N_PLAYERS) && menu [i].Value ()) {
 		menu [i].Value () = 0;
 		menu [i].Rebuild ();
 		}
@@ -289,7 +289,7 @@ for (i = 1; i < int32_t (menu.ToS ()); i++) {
 nm = 0;
 for (i = 0; i < int32_t (menu.ToS ()); i++) {
 	if (menu [i].Value ()) {
-		if (++nm > gameData.multiplayer.nPlayers) {
+		if (++nm > N_PLAYERS) {
 			menu [i].Value () = 0;
 			menu [i].Rebuild ();
 			}
@@ -298,7 +298,7 @@ for (i = 0; i < int32_t (menu.ToS ()); i++) {
 if (nm > gameData.multiplayer.nMaxPlayers) {
 	InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, "%s %d %s", TXT_SORRY_ONLY, gameData.multiplayer.nMaxPlayers, TXT_NETPLAYERS_IN);
 	// Turn off the last CPlayerData highlighted
-	for (i = gameData.multiplayer.nPlayers; i > 0; i--)
+	for (i = N_PLAYERS; i > 0; i--)
 		if (menu [i].Value () == 1) {
 			menu [i].Value () = 0;
 			menu [i].Rebuild ();
@@ -314,30 +314,26 @@ NetworkListen ();
 if (n < netGameInfo.m_info.nNumPlayers) {
 	audio.PlaySound (SOUND_HUD_MESSAGE);
 	if (gameOpts->multi.bNoRankings)
-	   sprintf (menu [gameData.multiplayer.nPlayers - 1].Text (), "%d. %-20s", 
-					gameData.multiplayer.nPlayers, 
-					netPlayers [0].m_info.players [gameData.multiplayer.nPlayers-1].callsign);
+	   sprintf (menu [N_PLAYERS - 1].Text (), "%d. %-20s", N_PLAYERS, NETPLAYER (N_PLAYERS - 1).callsign);
 	else
-	   sprintf (menu [gameData.multiplayer.nPlayers - 1].Text (), "%d. %s%-20s", 
-					gameData.multiplayer.nPlayers, 
-					pszRankStrings [netPlayers [0].m_info.players [gameData.multiplayer.nPlayers-1].rank], 
-					netPlayers [0].m_info.players [gameData.multiplayer.nPlayers-1].callsign);
-	menu [gameData.multiplayer.nPlayers - 1].Rebuild ();
-	if (gameData.multiplayer.nPlayers <= gameData.multiplayer.nMaxPlayers)
-		menu [gameData.multiplayer.nPlayers - 1].Value () = 1;
+	   sprintf (menu [N_PLAYERS - 1].Text (), "%d. %s%-20s", 
+					N_PLAYERS, pszRankStrings [NETPLAYER (N_PLAYERS - 1).rank], NETPLAYER (N_PLAYERS - 1).callsign);
+	menu [N_PLAYERS - 1].Rebuild ();
+	if (N_PLAYERS <= gameData.multiplayer.nMaxPlayers)
+		menu [N_PLAYERS - 1].Value () = 1;
 	} 
 else if (n > netGameInfo.m_info.nNumPlayers) {
 	// One got removed...
    audio.PlaySound (SOUND_HUD_KILL);
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	for (i = 0; i < N_PLAYERS; i++) {
 		if (gameOpts->multi.bNoRankings)
-			sprintf (menu [i].Text (), "%d. %-20s", i+1, netPlayers [0].m_info.players [i].callsign);
+			sprintf (menu [i].Text (), "%d. %-20s", i+1, NETPLAYER (i).callsign);
 		else
-			sprintf (menu [i].Text (), "%d. %s%-20s", i+1, pszRankStrings [netPlayers [0].m_info.players [i].rank], netPlayers [0].m_info.players [i].callsign);
+			sprintf (menu [i].Text (), "%d. %s%-20s", i+1, pszRankStrings [NETPLAYER (i).rank], NETPLAYER (i).callsign);
 		menu [i].Value () = (i < gameData.multiplayer.nMaxPlayers);
 		menu [i].Rebuild ();
 		}
-	for (i = gameData.multiplayer.nPlayers; i<n; i++)  {
+	for (i = N_PLAYERS; i<n; i++)  {
 		sprintf (menu [i].Text (), "%d. ", i+1);          // Clear out the deleted entries...
 		menu [i].Value () = 0;
 		menu [i].Rebuild ();
@@ -1155,7 +1151,7 @@ if (!gameStates.app.bNostalgia) {
 	else
 		InitMonsterballSettings (&extraGameInfo [0].monsterball);
 	m.AddMenu ("config options", TXT_GAME_OPTIONS, KEY_O, HTX_MAIN_CONF);
-	m.AddMenu ("loadout options", TXT_LOADOUT_OPTION, KEY_I, HTX_MULTI_LOADOUT);
+	m.AddMenu ("loadout options", TXT_LOADOUT_OPTION, KEY_Q, HTX_MULTI_LOADOUT);
 	m.AddMenu ("missile options", TXT_MISSILE_LOADOUT, KEY_C, HTX_MISSILE_LOADOUT);
 	}
 }
@@ -1321,7 +1317,7 @@ networkData.nNamesInfoSecurity = -1;
 
 for (i = 0; i < MAX_PLAYERS; i++)
 	if (i != N_LOCALPLAYER)
-		gameData.multiplayer.players [i].callsign [0] = 0;
+		PLAYER (i).callsign [0] = 0;
 
 gameData.multiplayer.nMaxPlayers = MAX_NUM_NET_PLAYERS;
 if (!(FindArg ("-pps") && FindArg ("-shortpackets")))

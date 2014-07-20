@@ -695,13 +695,13 @@ return 1;
 
 void CVisibilityData::BuildSegList (CTransformation& transformation, int16_t nStartSeg, int32_t nWindow, bool bIgnoreDoors)
 {
-	int32_t				nCurrent, nHead, nTail, nStart, nSide;
-	int32_t				l, i;
-	int16_t				nChild;
-	int16_t				nChildSeg;
-	int32_t				nSegment;
-	int16_t				childList [SEGMENT_SIDE_COUNT];		//list of ordered sides to process
-	int32_t				nChildren, bCullIfBehind;					//how many sides in childList
+	int32_t			nCurrent, nHead, nTail, nStart, nSide;
+	int32_t			l, i;
+	int16_t			nChild;
+	int16_t			nChildSeg;
+	int32_t			nSegment;
+	int16_t			childList [SEGMENT_SIDE_COUNT];		//list of ordered sides to process
+	int32_t			nChildren, bCullIfBehind;					//how many sides in childList
 	CFixVector		viewDir, viewPos;
 #if DBG
 	CShortArray&	renderSegList = segments;

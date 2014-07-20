@@ -331,8 +331,8 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 		case CV_COOP: {
 			int32_t nPlayer = gameStates.render.cockpit.nCoopPlayerView [w];
 	      gameStates.render.nRenderingType = 255; // don't handle coop stuff
-			if ((nPlayer != -1) && gameData.multiplayer.players [nPlayer].IsConnected () && SameTeam (nPlayer, N_LOCALPLAYER))
-				cockpit->RenderWindow (w, &OBJECTS [gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].nObject], 0, WBU_COOP, gameData.multiplayer.players [gameStates.render.cockpit.nCoopPlayerView [w]].callsign);
+			if ((nPlayer != -1) && PLAYER (nPlayer).IsConnected () && SameTeam (nPlayer, N_LOCALPLAYER))
+				cockpit->RenderWindow (w, &OBJECTS [PLAYER (gameStates.render.cockpit.nCoopPlayerView [w]).nObject], 0, WBU_COOP, PLAYER (gameStates.render.cockpit.nCoopPlayerView [w]).callsign);
 			else {
 				cockpit->RenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
 				gameStates.render.cockpit.n3DView [w] = CV_NONE;

@@ -430,8 +430,8 @@ static inline int32_t PlayerColor (int32_t nObject)
 {
 	int32_t	nColor;
 
-for (nColor = 0; nColor < gameData.multiplayer.nPlayers; nColor++)
-	if (gameData.multiplayer.players [nColor].nObject == nObject)
+for (nColor = 0; nColor < N_PLAYERS; nColor++)
+	if (PLAYER (nColor).nObject == nObject)
 		return (nColor % MAX_PLAYER_COLORS) + 1;
 return 1;
 }
@@ -636,10 +636,10 @@ void G3DrawModel (CObject *objP, int16_t nModel, int16_t nSubModel, CArray<CBitm
 {
 	RenderModel::CModel*	modelP;
 	CDynLight*				lightP;
-	int32_t						nPass, iLight, nLights, nLightRange;
-	int32_t						bBright = gameStates.render.bFullBright || (objP && (objP->info.nType == OBJ_MARKER));
-	int32_t						bEmissive = objP && (objP->IsWeapon () && !objP->IsMissile ());
-	int32_t						bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && (bTranspFilter < 2) && !(gameStates.render.bCloaked || bEmissive || bBright);
+	int32_t					nPass, iLight, nLights, nLightRange;
+	int32_t					bBright = gameStates.render.bFullBright || (objP && (objP->info.nType == OBJ_MARKER));
+	int32_t					bEmissive = objP && (objP->IsWeapon () && !objP->IsMissile ());
+	int32_t					bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && (bTranspFilter < 2) && !(gameStates.render.bCloaked || bEmissive || bBright);
 	GLenum					hLight;
 	float						fBrightness, fLightScale = gameData.models.nLightScale ? X2F (gameData.models.nLightScale) : 1.0f;
 	CFloatVector			color;

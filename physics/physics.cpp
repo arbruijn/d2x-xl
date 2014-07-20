@@ -218,7 +218,7 @@ if (mType.physInfo.rotVel.IsZero () && mType.physInfo.rotThrust.IsZero ())
 	return 0;
 if (mType.physInfo.drag) {
 	CFixVector	accel;
-	int32_t			nTries = gameData.physics.xTime / FT;
+	int32_t		nTries = gameData.physics.xTime / FT;
 	fix			r = gameData.physics.xTime % FT;
 	fix			k = FixDiv (r, FT);
 	fix			xDrag = (mType.physInfo.drag * 5) / 2;
@@ -257,9 +257,11 @@ if (mType.physInfo.turnRoll) {
 	mOrient = info.position.mOrient * mRotate;
 	info.position.mOrient = mOrient;
 	}
-turnAngles.v.coord.p = fixang (FixMul (mType.physInfo.rotVel.v.coord.x, gameData.physics.xTime));
-turnAngles.v.coord.h = fixang (FixMul (mType.physInfo.rotVel.v.coord.y, gameData.physics.xTime));
-turnAngles.v.coord.b = fixang (FixMul (mType.physInfo.rotVel.v.coord.z, gameData.physics.xTime));
+
+fix t = OBSERVING ? gameData.physics.xTime * 2 : gameData.physics.xTime;
+turnAngles.v.coord.p = fixang (FixMul (mType.physInfo.rotVel.v.coord.x, t));
+turnAngles.v.coord.h = fixang (FixMul (mType.physInfo.rotVel.v.coord.y, t));
+turnAngles.v.coord.b = fixang (FixMul (mType.physInfo.rotVel.v.coord.z, t));
 if (!IsMultiGame) {
 	int32_t i = (this != gameData.objs.consoleP) ? 0 : 1;
 	float fSpeed = gameStates.gameplay.slowmo [i].fSpeed;
@@ -944,7 +946,7 @@ if (info.controlType == CT_AI) {
 		}
 
 //if end point not in segment, move object to last pos, or segment center
-if ((info.nSegment >= 0) && SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
+if (((Index () != LOCALPLAYER.nObject) || !OBSERVING) && (info.nSegment >= 0) && SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
 	if (FindSegment () == -1) {
 		int32_t n;
 
@@ -1084,6 +1086,16 @@ for (;;) {	//Move the object
 		simData.bUpdateOffset = 1;
 	else if (!UpdateOffset (simData))
 		break;
+
+	if ((Index () == LOCALPLAYER.nObject) && /*OBSERVING*/automap.Active ()) {
+		if (!IsMultiGame || !IsTeamGame || IsCoopGame) {
+			info.position.vPos += simData.vOffset;
+			info.position.vPos += simData.vOffset;
+			}
+		FinishPhysicsSim (simData);
+		PROF_END(ptPhysics)
+		return;
+		}	
 
 	do {
 		bRetry = -1;

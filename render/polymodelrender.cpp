@@ -65,7 +65,7 @@ else if (objP->info.nType == OBJ_POWERUP) {
 else if (objP->info.nType == OBJ_PLAYER) {
 	if (!gameOpts->render.shadows.bPlayers)
 		return 0;
-	if (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_CLOAKED)
+	if (PLAYER (objP->info.nId).flags & PLAYER_FLAGS_CLOAKED)
 		return 0;
 	}
 else if (objP->info.nType == OBJ_REACTOR) {

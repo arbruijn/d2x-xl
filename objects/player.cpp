@@ -105,12 +105,12 @@ void UpdateFiringSounds (void)
 	int32_t				bGatling, bGatlingSound, i;
 
 bGatlingSound = (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling;
-for (i = 0; i < gameData.multiplayer.nPlayers; i++, wsP++) {
-	if (!IsMultiGame || gameData.multiplayer.players [i].IsConnected ()) {
+for (i = 0; i < N_PLAYERS; i++, wsP++) {
+	if (!IsMultiGame || PLAYER (i).IsConnected ()) {
 		bGatling = (wsP->nPrimary == VULCAN_INDEX) || (wsP->nPrimary == GAUSS_INDEX);
 		fP = wsP->firing;
 		if (bGatling && bGatlingSound && (fP->bSound == 1)) {
-			audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, (int16_t) gameData.multiplayer.players [i].nObject, 0, 
+			audio.CreateObjectSound (-1, SOUNDCLASS_PLAYER, (int16_t) PLAYER (i).nObject, 0, 
 											 I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_GATLING_SPIN), 0);
 			fP->bSound = 0;
 			}
@@ -166,7 +166,6 @@ else if (gameData.weapons.firing [1].nDuration) {
 
 void UpdatePlayerWeaponInfo (void)
 {
-	int32_t			i, bUpdate = 0;
 	CWeaponState*	wsP = gameData.multiplayer.weaponStates + N_LOCALPLAYER;
 	tFiringData*	fP;
 
@@ -181,28 +180,23 @@ else
 	UpdateFiringState ();
 if (wsP->nPrimary != gameData.weapons.nPrimary) {
 	wsP->nPrimary = gameData.weapons.nPrimary;
-	bUpdate = 1;
 	}
 if (wsP->nSecondary != gameData.weapons.nSecondary) {
 	wsP->nSecondary = gameData.weapons.nSecondary;
-	bUpdate = 1;
 	}
 if (wsP->bQuadLasers != ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) != 0)) {
 	wsP->bQuadLasers = ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) != 0);
-	bUpdate = 1;
 	}
-for (i = 0, fP = wsP->firing; i < 2; i++, fP++) {
+fP = wsP->firing;
+for (int32_t i = 0; i < 2; i++, fP++) {
 	if (fP->nStart != gameData.weapons.firing [i].nStart) {
 		fP->nStart = gameData.weapons.firing [i].nStart;
-		bUpdate = 1;
 		}
 	if (fP->nDuration != gameData.weapons.firing [i].nDuration) {
 		fP->nDuration = gameData.weapons.firing [i].nDuration;
-		bUpdate = 1;
 		}
 	if (fP->nStop != gameData.weapons.firing [i].nStop) {
 		fP->nStop = gameData.weapons.firing [i].nStop;
-		bUpdate = 1;
 		}
 	if (gameData.weapons.firing [i].bSound == 1) {
 		fP->bSound = 1;
@@ -210,28 +204,22 @@ for (i = 0, fP = wsP->firing; i < 2; i++, fP++) {
 		}
 	if (fP->bSpeedUp != EGI_FLAG (bGatlingSpeedUp, 1, 0, 0)) {
 		fP->bSpeedUp = EGI_FLAG (bGatlingSpeedUp, 1, 0, 0);
-		bUpdate = 1;
 		}
 	}
 if (wsP->nMissiles != LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]) {
 	wsP->nMissiles = (char) LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary];
-	bUpdate = 1;
 	}
 if (wsP->nLaserLevel != LOCALPLAYER.LaserLevel ()) {
 	wsP->nLaserLevel = LOCALPLAYER.LaserLevel ();
-	bUpdate = 1;
 	}
 if (wsP->bTripleFusion != gameData.weapons.bTripleFusion) {
 	wsP->bTripleFusion = gameData.weapons.bTripleFusion;
-	bUpdate = 1;
 	}
 if (wsP->nMslLaunchPos != (gameData.laser.nMissileGun & 3)) {
 	wsP->nMslLaunchPos = gameData.laser.nMissileGun & 3;
-	bUpdate = 1;
 	}
 if (wsP->xMslFireTime != gameData.missiles.xNextFireTime) {
 	wsP->xMslFireTime = gameData.missiles.xNextFireTime;
-	bUpdate = 1;
 	}
 UpdateFiringSounds ();
 }
@@ -257,8 +245,8 @@ static bool PlayerInSegment (int16_t nSegment)
 {
 if (nSegment < 0)
 	return true;
-for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) 
-	if ((i != N_LOCALPLAYER) && (OBJECTS [gameData.multiplayer.players [i].nObject].Segment () == nSegment))
+for (int32_t i = 0; i < N_PLAYERS; i++) 
+	if ((i != N_LOCALPLAYER) && (OBJECTS [PLAYER (i).nObject].Segment () == nSegment))
 		return true;
 return false;
 }
@@ -267,7 +255,7 @@ return false;
 
 CFixVector *VmRandomVector (CFixVector *vRand); // from lightning.cpp
 
-void GetPlayerSpawn (int32_t nSpawnPos, CObject *objP)
+void MovePlayerToSpawnPos (int32_t nSpawnPos, CObject *objP)
 {
 	CObject	*markerP = markerManager.SpawnObject (-1);
 

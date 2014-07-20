@@ -54,6 +54,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "automap.h"
 #include "ogl_shader.h"
 #include "fastrender.h"
+#include "network_lib.h"
 
 #ifndef PI
 #	define PI 3.141592653589793240
@@ -148,6 +149,20 @@ InitColors ();
 
 //------------------------------------------------------------------------------
 
+int32_t CAutomap::Active (void)
+{
+return m_bActive || OBSERVING;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CAutomap::Texturing (void)
+{
+return OBSERVING ? 1 : gameOpts->render.automap.bTextured;
+}
+	
+//------------------------------------------------------------------------------
+
 void CAutomap::ClearVisited ()
 {
 m_visited.Clear ();
@@ -158,8 +173,8 @@ markerManager.Clear ();
 
 void CAutomap::DrawPlayer (CObject* objP)
 {
-	CFixVector	vArrowPos, vHeadPos;
-	CRenderPoint		spherePoint, arrowPoint, headPoint;
+	CFixVector		vArrowPos, vHeadPos;
+	CRenderPoint	spherePoint, arrowPoint, headPoint;
 	int32_t			size = objP->info.xSize * (m_bRadar ? 2 : 1);
 //	int32_t			bUseTransform = ogl.m_states.bUseTransform;
 
@@ -205,11 +220,11 @@ if (ogl.SizeVertexBuffer (3)) {
 
 void CAutomap::DrawObjects (void)
 {
-if (!((gameOpts->render.automap.bTextured & 2) || m_bRadar))
+if (!((Texturing () & 2) || m_bRadar))
 	return;
 int32_t color = IsTeamGame ? GetTeam (N_LOCALPLAYER) : N_LOCALPLAYER % MAX_PLAYER_COLORS;	// Note link to above if!
 CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
-int32_t bTextured = (gameOpts->render.automap.bTextured & 1) && !m_bRadar;
+int32_t bTextured = (Texturing () & 1) && !m_bRadar;
 ogl.SetFaceCulling (false);
 ogl.SetBlending (true);
 gameStates.render.grAlpha = gameStates.app.bNostalgia ? 1.0f : bTextured ? 0.5f : 0.9f;
@@ -229,14 +244,14 @@ if (!m_bRadar) {
 	}
 // Draw player(s)...
 if (AM_SHOW_PLAYERS) {
-	for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	for (int32_t i = 0; i < N_PLAYERS; i++) {
 		if ((i != N_LOCALPLAYER) && AM_SHOW_PLAYER (i)) {
-			if (OBJECTS [gameData.multiplayer.players [i].nObject].info.nType == OBJ_PLAYER) {
+			if (OBJECTS [PLAYER (i).nObject].info.nType == OBJ_PLAYER) {
 				color = IsTeamGame ? GetTeam (i) : i;
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
 				if (bTextured)
 					ogl.SetBlending (true);
-				DrawPlayer (OBJECTS + gameData.multiplayer.players [i].nObject);
+				DrawPlayer (OBJECTS + PLAYER (i).nObject);
 				}
 			}
 		}
@@ -336,6 +351,8 @@ void CAutomap::DrawLevelId (void)
 {
 if (gameStates.app.bNostalgia)
 	return;
+if (OBSERVING)
+	return;
 if (gameStates.app.bSaveScreenShot && cockpit->Hide ())
 	return;
 
@@ -390,7 +407,7 @@ if (gameOpts->render.cockpit.bHUD) {
 	fontManager.Current ()->StringSize (m_szLevelName, w, h, aw);
 	GrPrintF (NULL, CCanvas::Current ()->Width () - offs - w, offs, m_szLevelName);
 	fontManager.SetCurrent (curFont);
-	if (gameOpts->render.automap.bTextured & 1)
+	if (Texturing () & 1)
 		cockpit->DrawFrameRate ();
 	}
 }
@@ -402,8 +419,8 @@ void CAutomap::Render (fix xStereoSeparation)
 #if 1
 PROF_START
 	int32_t	bAutomapFrame = !m_bRadar &&
-								 (gameStates.render.cockpit.nType != CM_FULL_SCREEN) &&
-								 (gameStates.render.cockpit.nType != CM_LETTERBOX);
+									 (gameStates.render.cockpit.nType != CM_FULL_SCREEN) &&
+									 (gameStates.render.cockpit.nType != CM_LETTERBOX);
 	CFixMatrix	mRadar;
 
 automap.m_bFull = (LOCALPLAYER.flags & (PLAYER_FLAGS_FULLMAP_CHEAT | PLAYER_FLAGS_FULLMAP)) != 0;
@@ -422,37 +439,52 @@ else {
 	CCanvas::Current ()->Clear (RGBA_PAL2 (0,0,0));
 	}
 
-if (!gameOpts->render.automap.bTextured || gameStates.app.bNostalgia)
+if (!Texturing () || gameStates.app.bNostalgia)
 	gameOpts->render.automap.bTextured = 1;
-G3StartFrame (transformation, m_bRadar /*|| !(gameOpts->render.automap.bTextured & 1)*/, !m_bRadar, xStereoSeparation);
+G3StartFrame (transformation, m_bRadar /*|| !(Texturing () & 1)*/, !m_bRadar, xStereoSeparation);
 ogl.ResetClientStates ();
 shaderManager.Deploy (-1);
 
 if (bAutomapFrame)
 	ogl.SetViewport (RESCALE_X (27), RESCALE_Y (80), RESCALE_X (582), RESCALE_Y (334));
 RenderStartFrame ();
+
+tObjTransformation viewer;
 if (m_bRadar == 2) {
-	m_data.viewer.vPos = m_data.viewTarget + mRadar.m.dir.f * (-m_data.nViewDist);
-	SetupTransformation (transformation, m_data.viewer.vPos, mRadar, m_data.nZoom * 2, 1);
+	viewer = m_data.viewer;
+	viewer.vPos = m_data.viewTarget + mRadar.m.dir.f * (-m_data.nViewDist);
+	SetupTransformation (transformation, viewer.vPos, mRadar, m_data.nZoom * 2, 1);
 	}
 else {
-	m_data.viewer.vPos = m_data.viewTarget + m_data.viewer.mOrient.m.dir.f * -m_data.nViewDist;
-	if (!m_bRadar && xStereoSeparation) {
-		//glClear (GL_COLOR_BUFFER_BIT);
-		m_data.viewer.vPos += m_data.viewer.mOrient.m.dir.r * xStereoSeparation;
+	if (!gameStates.app.bNostalgia && !m_bRadar) {
+		viewer = LOCALOBJECT.info.position;
+		if (!OBSERVING)
+			Swap (m_data.viewer, LOCALOBJECT.info.position);
+		else if (LOCALPLAYER.ObservedPlayer () != -1) {
+			FLIGHTPATH.GetViewPoint (&viewer.vPos);
+			viewer.mOrient = FLIGHTPATH.Tail ()->mOrient;
+			}
 		}
-	SetupTransformation (transformation, m_data.viewer.vPos, m_data.viewer.mOrient, m_bRadar ? (m_data.nZoom * 3) / 2 : m_data.nZoom, 1);
+	else {
+		viewer = m_data.viewer;
+		viewer.vPos = m_data.viewTarget + m_data.viewer.mOrient.m.dir.f * -m_data.nViewDist;
+		}
+	if (!m_bRadar && xStereoSeparation)
+		viewer.vPos += viewer.mOrient.m.dir.r * xStereoSeparation;
+	SetupTransformation (transformation, viewer.vPos, viewer.mOrient, m_bRadar ? (m_data.nZoom * 3) / 2 : m_data.nZoom, 1);
 	}
 UpdateSlidingFaces ();
-if (!m_bRadar && (gameStates.app.bNostalgia < 2) && (gameOpts->render.automap.bTextured & 1)) {
-	gameData.render.mine.viewer = m_data.viewer;
+if (!m_bRadar && (gameStates.app.bNostalgia < 2) && (Texturing () & 1)) {
+	gameData.render.mine.viewer = viewer;
 	RenderMine (gameData.objs.consoleP->info.nSegment, 0, 0);
 	RenderEffects (0);
 	}
-if (m_bRadar || (gameOpts->render.automap.bTextured & 2)) {
+if (m_bRadar || (Texturing () & 2)) {
 	DrawEdges ();
 	DrawObjects ();
 	}
+if (!OBSERVING)
+	Swap (m_data.viewer, LOCALOBJECT.info.position);
 G3EndFrame (transformation, 0);
 
 if (m_bRadar) {
@@ -472,9 +504,9 @@ if (gameStates.app.bSaveScreenShot)
 void CAutomap::RenderInfo (void)
 {
 PROF_START
-	int32_t	bAutomapFrame = !m_bRadar &&
-								 (gameStates.render.cockpit.nType != CM_FULL_SCREEN) &&
-								 (gameStates.render.cockpit.nType != CM_LETTERBOX);
+	int32_t bAutomapFrame = !m_bRadar && !OBSERVING &&
+									(gameStates.render.cockpit.nType != CM_FULL_SCREEN) &&
+									(gameStates.render.cockpit.nType != CM_LETTERBOX);
 if (bAutomapFrame) {
 	backgroundManager.Draw (BG_MAP);
 	fontManager.SetCurrent (HUGE_FONT);
@@ -528,12 +560,12 @@ strcat (m_szLevelName, szExplored);
 //	Returns maximum nDepth value.
 int32_t CAutomap::SetSegmentDepths (int32_t nStartSeg, uint16_t *depthBufP)
 {
-	uint8_t		bVisited [MAX_SEGMENTS_D2X];
-	int16_t		queue [MAX_SEGMENTS_D2X];
-	int32_t		head = 0;
-	int32_t		tail = 0;
-	int32_t		nDepth = 1;
-	int32_t		nSegment, nSide, nChild;
+	uint8_t	bVisited [MAX_SEGMENTS_D2X];
+	int16_t	queue [MAX_SEGMENTS_D2X];
+	int32_t	head = 0;
+	int32_t	tail = 0;
+	int32_t	nDepth = 1;
+	int32_t	nSegment, nSide, nChild;
 	uint16_t	nParentDepth = 0;
 	int16_t*	childP;
 
@@ -586,10 +618,32 @@ return (nParentDepth + 1) * gameStates.render.bViewDist;
 
 //------------------------------------------------------------------------------
 
+void CAutomap::InitView (void)
+{
+m_vTAngles.Set (PITCH_DEFAULT, 0, 0);
+CObject*	playerP = OBJECTS + LOCALPLAYER.nObject;
+if (gameStates.app.bNostalgia) {
+	m_data.viewer.mOrient = playerP->info.position.mOrient;
+	m_data.nViewDist = ZOOM_DEFAULT;
+	}
+else {
+	m_data.viewer = playerP->info.position;
+	if (!OBSERVING) {
+		playerP->info.position.vPos += m_data.viewer.mOrient.m.dir.f * -m_data.nViewDist;
+		playerP->info.position.vPos += m_data.viewer.mOrient.m.dir.u * m_data.nViewDist;
+		CFixMatrix	m;
+		m = CFixMatrix::Create (m_vTAngles);
+		playerP->info.position.mOrient = playerP->info.position.mOrient * m;
+		}
+	}
+m_data.viewTarget = playerP->info.position.vPos;
+}
+
+//------------------------------------------------------------------------------
+
 int32_t CAutomap::Setup (int32_t bPauseGame, fix& xEntryTime)
 {
-	int32_t		i;
-	CObject	*playerP;
+	int32_t	i;
 
 if (m_bActive < 0) {
 	m_bActive = 0;
@@ -634,14 +688,7 @@ if (m_bActive < 0) {
 		m_data.nViewDist = ZOOM_DEFAULT;
 	else if (!m_data.nViewDist)
 		m_data.nViewDist = ZOOM_DEFAULT;
-	playerP = OBJECTS + LOCALPLAYER.nObject;
-	m_data.viewer.mOrient = playerP->info.position.mOrient;
-
-	m_vTAngles.v.coord.p = PITCH_DEFAULT;
-	m_vTAngles.v.coord.h = 0;
-	m_vTAngles.v.coord.b = 0;
-
-	m_data.viewTarget = playerP->info.position.vPos;
+	InitView ();
 	xEntryTime = TimerGetFixedSeconds ();
 	}
 BuildEdgeList ();
@@ -656,9 +703,20 @@ else if (m_bFull) {
 	}
 else
 	memcpy (m_visible.Buffer (), m_visited.Buffer (), m_visited.Size ());
-//m_visited [OBJECTS [LOCALPLAYER.nObject].nSegment] = 1;
+if (OBSERVING) {
+	gameOpts->render.automap.bBright = 0;
+	gameOpts->render.automap.bGrayOut = 0;
+	extraGameInfo [IsMultiGame].bPowerupsOnRadar = 1;
+	extraGameInfo [IsMultiGame].bRobotsOnRadar = 1;
+	gameOpts->render.automap.bCoronas = 
+	gameOpts->render.automap.bLightning = 
+	gameOpts->render.automap.bParticles = !COMPETITION;
+	gameOpts->render.automap.bSparks = !COMPETITION && (gameOptions [0].render.nQuality > 0);
+	}
+
+//m_visited [LOCALOBJECT.nSegment] = 1;
 m_nSegmentLimit =
-m_nMaxSegsAway = SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, m_visible.Buffer ());
+m_nMaxSegsAway = SetSegmentDepths (LOCALOBJECT.info.nSegment, m_visible.Buffer ());
 AdjustSegmentLimit ();
 m_bActive++;
 return gameData.app.bGamePaused;
@@ -668,34 +726,40 @@ return gameData.app.bGamePaused;
 
 int32_t CAutomap::Update (void)
 {
-	CObject*		playerP = OBJECTS + LOCALPLAYER.nObject;
-	CFixMatrix	m;
+		CObject* playerP = OBJECTS + LOCALPLAYER.nObject;
 
-if (controls [0].firePrimaryDownCount) {
-	// Reset orientation
-	m_data.nViewDist = ZOOM_DEFAULT;
-	m_vTAngles.v.coord.p = PITCH_DEFAULT;
-	m_vTAngles.v.coord.h = 0;
-	m_vTAngles.v.coord.b = 0;
-	m_data.viewTarget = playerP->info.position.vPos;
+if (!gameStates.app.bNostalgia) {
+	if (!OBSERVING || (LOCALPLAYER.ObservedPlayer () < 0))
+		playerP->Update ();
+	if (controls [0].firePrimaryDownCount) {
+		playerP->info.position = m_data.viewer;
+		InitView ();
+		}
 	}
-if (controls [0].forwardThrustTime)
-	m_data.viewTarget += m_data.viewer.mOrient.m.dir.f * (controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR);
-m_vTAngles.v.coord.p += (fixang) FixDiv (controls [0].pitchTime, ROT_SPEED_DIVISOR);
-m_vTAngles.v.coord.h += (fixang) FixDiv (controls [0].headingTime, ROT_SPEED_DIVISOR);
-m_vTAngles.v.coord.b += (fixang) FixDiv (controls [0].bankTime, ROT_SPEED_DIVISOR*2);
+else {
+		CFixMatrix	m;
 
-m = CFixMatrix::Create (m_vTAngles);
-if (controls [0].verticalThrustTime || controls [0].sidewaysThrustTime) {
+	if (controls [0].firePrimaryDownCount)
+		InitView ();
+	if (controls [0].forwardThrustTime)
+		m_data.viewTarget += m_data.viewer.mOrient.m.dir.f * (controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR);
+	float mineSize = X2F (CFixVector::Dist (gameData.segs.vMin, gameData.segs.vMax));
+	m_vTAngles.v.coord.p += (fixang) FixDiv (controls [0].pitchTime, ROT_SPEED_DIVISOR);
+	m_vTAngles.v.coord.h += (fixang) FixDiv (controls [0].headingTime, ROT_SPEED_DIVISOR);
+	m_vTAngles.v.coord.b += (fixang) FixDiv (controls [0].bankTime, ROT_SPEED_DIVISOR*2);
+
+	m = CFixMatrix::Create (m_vTAngles);
+	if (controls [0].verticalThrustTime || controls [0].sidewaysThrustTime) {
+		m_data.viewer.mOrient = playerP->info.position.mOrient * m;
+		m_data.viewTarget += m_data.viewer.mOrient.m.dir.u * (controls [0].verticalThrustTime * SLIDE_SPEED);
+		m_data.viewTarget += m_data.viewer.mOrient.m.dir.r * (controls [0].sidewaysThrustTime * SLIDE_SPEED);
+		}
 	m_data.viewer.mOrient = playerP->info.position.mOrient * m;
-	m_data.viewTarget += m_data.viewer.mOrient.m.dir.u * (controls [0].verticalThrustTime * SLIDE_SPEED);
-	m_data.viewTarget += m_data.viewer.mOrient.m.dir.r * (controls [0].sidewaysThrustTime * SLIDE_SPEED);
+	if (m_data.nViewDist < ZOOM_MIN_VALUE)
+		m_data.nViewDist = ZOOM_MIN_VALUE;
+	if (m_data.nViewDist > ZOOM_MAX_VALUE)
+		m_data.nViewDist = ZOOM_MAX_VALUE;
 	}
-m_data.viewer.mOrient = playerP->info.position.mOrient * m;
-if (m_data.nViewDist < ZOOM_MIN_VALUE)
-	m_data.nViewDist = ZOOM_MIN_VALUE;
-if (m_data.nViewDist > ZOOM_MAX_VALUE)
-	m_data.nViewDist = ZOOM_MAX_VALUE;
 return 1;
 }
 
@@ -714,6 +778,8 @@ int32_t CAutomap::ReadControls (int32_t nLeaveMode, int32_t bDone, int32_t& bPau
 {
 	int32_t	c, nMarker, nMaxDrop, nColor = gameOpts->render.automap.bBright | (gameOpts->render.automap.bGrayOut << 1);
 
+if (OBSERVING)
+	SetChaseCam (0);
 controls.Read ();
 if (controls [0].automapDownCount && !nLeaveMode)
 	return 1;
@@ -740,9 +806,23 @@ while ((c = KeyInKey ())) {
 			break;
 			}
 
+		case KEY_SPACEBAR: {
+			int8_t nPlayer = LOCALPLAYER.ObservedPlayer ();
+			SwitchObservedPlayer ();
+			if ((nPlayer != LOCALPLAYER.ObservedPlayer ()) && (LOCALPLAYER.ObservedPlayer () == -1)) {
+				LOCALOBJECT.info.position = m_data.viewer;
+				InitView ();
+				}
+			}
+			break;
+			// else fall through
+
 		case KEY_ESC:
-			if (!nLeaveMode)
+			if (!nLeaveMode) {
 				bDone = 1;
+				LOCALPLAYER.SetObservedPlayer (N_LOCALPLAYER);
+				SetChaseCam (0);
+				}
 			break;
 
 #if DBG
@@ -752,7 +832,7 @@ while ((c = KeyInKey ())) {
 				automap.m_visible [i] = 1;
 			BuildEdgeList ();
 			m_nSegmentLimit =
-			m_nMaxSegsAway = SetSegmentDepths (OBJECTS [LOCALPLAYER.nObject].info.nSegment, automap.m_visible.Buffer ());
+			m_nMaxSegsAway = SetSegmentDepths (LOCALOBJECT.info.nSegment, automap.m_visible.Buffer ());
 			AdjustSegmentLimit ();
 			}
 			break;
@@ -806,10 +886,10 @@ while ((c = KeyInKey ())) {
 			break;
 
 		case KEY_F1:
-			if (!gameStates.app.bNostalgia) {
-				if (gameOpts->render.automap.bTextured == 1)
+			if (!gameStates.app.bNostalgia && !OBSERVING) {
+				if (Texturing () == 1)
 					gameOpts->render.automap.bTextured = 3;
-				else if (gameOpts->render.automap.bTextured == 3)
+				else if (Texturing () == 3)
 					gameOpts->render.automap.bTextured = 2;
 				else
 					gameOpts->render.automap.bTextured = 1;
@@ -817,8 +897,8 @@ while ((c = KeyInKey ())) {
 			break;
 
 		case KEY_F2:
-			if (!gameStates.app.bNostalgia) {
-				if (gameOpts->render.automap.bTextured & 1) {
+			if (!gameStates.app.bNostalgia && !OBSERVING) {
+				if (Texturing () & 1) {
 					nColor = (nColor + 1) % 3;
 					gameOpts->render.automap.bBright = (nColor & 1) != 0;
 					gameOpts->render.automap.bGrayOut = (nColor & 2) != 0;
@@ -871,7 +951,7 @@ while ((c = KeyInKey ())) {
 			break;
 
 		case KEY_ALTED + KEY_B:
-			if (gameOpts->render.automap.bTextured & 1)
+			if (Texturing () & 1)
 				gameOpts->render.automap.bBright = !gameOpts->render.automap.bBright;
 			break;
 
@@ -997,6 +1077,9 @@ levelNumCanv = NULL;
 GrFreeCanvas (levelNameCanv);
 levelNameCanv = NULL;
 #endif
+if (!OBSERVING && !m_bRadar)
+	Swap (m_data.viewer, LOCALOBJECT.info.position);
+
 if (!gameStates.menus.nInMenu) {
 	GameFlushInputs ();
 	if (gameData.app.bGamePaused)

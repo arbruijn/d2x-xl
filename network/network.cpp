@@ -125,7 +125,7 @@ void ResetAllPlayerTimeouts (void)
 {
 	int32_t	i, t = SDL_GetTicks ();
 
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+for (i = 0; i < N_PLAYERS; i++)
 	ResetPlayerTimeout (i, t);
 }
 
@@ -170,7 +170,7 @@ if (0 > NetworkGetGameParams (bAutoRun)) {
 	PrintLog (-1);
 	return 0;
 	}
-gameData.multiplayer.nPlayers = 0;
+N_PLAYERS = 0;
 netGameInfo.m_info.difficulty = gameStates.app.nDifficultyLevel;
 netGameInfo.m_info.gameMode = mpParams.nGameMode;
 netGameInfo.m_info.gameStatus = NETSTAT_STARTING;
@@ -214,7 +214,7 @@ else {
 
 void RestartNetSearching (CMenu& menu)
 {
-gameData.multiplayer.nPlayers = 0;
+N_PLAYERS = 0;
 networkData.nActiveGames = 0;
 memset (activeNetGames, 0, sizeof (activeNetGames));
 InitNetGameMenu (menu, 0);
@@ -245,10 +245,10 @@ if (bDisconnect) {
 			}
 
 		netGameInfo.m_info.nNumPlayers = 0;
-		int32_t h = gameData.multiplayer.nPlayers;
-		gameData.multiplayer.nPlayers = 0;
+		int32_t h = N_PLAYERS;
+		N_PLAYERS = 0;
 		NetworkSendGameInfo (NULL);
-		gameData.multiplayer.nPlayers = h;
+		N_PLAYERS = h;
 		}
 	}
 CONNECT (N_LOCALPLAYER, CONNECT_DISCONNECTED);
@@ -260,7 +260,7 @@ ChangePlayerNumTo (0);
 if (gameStates.multi.nGameType != UDP_GAME)
 	SavePlayerProfile ();
 memcpy (extraGameInfo, extraGameInfo + 2, sizeof (extraGameInfo [0]));
-gameData.multiplayer.nPlayers = 1;
+N_PLAYERS = 1;
 }
 
 //------------------------------------------------------------------------------
@@ -286,12 +286,12 @@ int32_t NetworkTimeoutPlayer (int32_t nPlayer, int32_t t)
 if (!gameOpts->multi.bTimeoutPlayers)
 	return 0;
 
-CObject* objP = (LOCALPLAYER.connected == CONNECT_PLAYING) ? gameData.Object (gameData.multiplayer.players [nPlayer].nObject) : NULL;
+CObject* objP = (LOCALPLAYER.connected == CONNECT_PLAYING) ? gameData.Object (PLAYER (nPlayer).nObject) : NULL;
 
-if (gameData.multiplayer.players [nPlayer].TimedOut ()) {
-	if (t - gameData.multiplayer.players [nPlayer].m_tDisconnect > extraGameInfo [0].timeout.nKickPlayer) { // drop player when he disconnected for 3 minutes
-		gameData.multiplayer.players [nPlayer].callsign [0] = '\0';
-		memset (gameData.multiplayer.players [nPlayer].netAddress, 0, sizeof (gameData.multiplayer.players [nPlayer].netAddress));
+if (PLAYER (nPlayer).TimedOut ()) {
+	if (t - PLAYER (nPlayer).m_tDisconnect > extraGameInfo [0].timeout.nKickPlayer) { // drop player when he disconnected for 3 minutes
+		PLAYER (nPlayer).callsign [0] = '\0';
+		memset (PLAYER (nPlayer).netAddress, 0, sizeof (PLAYER (nPlayer).netAddress));
 		if (objP)
 			MultiDestroyPlayerShip (nPlayer);
 		}
@@ -310,12 +310,12 @@ if ((LOCALPLAYER.connected == CONNECT_END_MENU) || (LOCALPLAYER.connected == CON
 else if (objP) {
 	objP->CreateAppearanceEffect ();
 	audio.PlaySound (SOUND_HUD_MESSAGE);
-	HUDInitMessage ("%s %s", gameData.multiplayer.players [nPlayer].callsign, TXT_DISCONNECTING);
+	HUDInitMessage ("%s %s", PLAYER (nPlayer).callsign, TXT_DISCONNECTING);
 	}
 #if !DBG
 int32_t n = 0;
-for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].IsConnected ()) 
+for (int32_t i = 0; i < N_PLAYERS; i++)
+	if (PLAYER (i).IsConnected ()) 
 		n++;
 if (n == 1)
 	MultiOnlyPlayerMsg (0);
@@ -347,7 +347,7 @@ tracker.AddServer ();
 
 int32_t nQueries = 
 	((networkData.nStatus == NETSTAT_PLAYING) && netGameInfo.GetShortPackets () && !networkData.nJoining)
-	? gameData.multiplayer.nPlayers * MinPPS ()
+	? N_PLAYERS * MinPPS ()
 	: 999;
 
 uint8_t packet [MAX_PACKET_SIZE];
@@ -419,10 +419,10 @@ void NetworkAdjustPPS (void)
 
 if (to.Expired ()) {
 	int32_t nMaxPing = 0;
-	for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	for (int32_t i = 0; i < N_PLAYERS; i++) {
 		if (i == N_LOCALPLAYER)
 			continue;
-		if (!gameData.multiplayer.players [i].Connected (CONNECT_PLAYING))
+		if (!PLAYER (i).Connected (CONNECT_PLAYING))
 			continue;
 		if (nMaxPing < pingStats [i].averagePing)
 			nMaxPing = pingStats [i].averagePing;
@@ -437,7 +437,7 @@ void CSyncPack::Prepare (void)
 {
 SetType (PID_PLAYER_DATA);
 SetPlayer (N_LOCALPLAYER);
-SetRenderType (OBJECTS [LOCALPLAYER.nObject].info.renderType);
+SetRenderType (LOCALOBJECT.info.renderType);
 SetLevel (missionManager.nCurrentLevel);
 SetObjInfo (OBJECTS + LOCALPLAYER.nObject);
 Squish ();
@@ -557,9 +557,9 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 		mybuf [2] = LOCALPLAYER.connected;
 	networkThread.Send (
 		reinterpret_cast<uint8_t*> (mybuf), (gameStates.multi.nGameType == UDP_GAME) ? 3 : 2, 
-		netPlayers [0].m_info.players [nPlayer].network.Network (), 
-		netPlayers [0].m_info.players [nPlayer].network.Node (), 
-		gameData.multiplayer.players [nPlayer].netAddress);
+		NETPLAYER (nPlayer).network.Network (), 
+		NETPLAYER (nPlayer).network.Node (), 
+		PLAYER (nPlayer).netAddress);
 	}
 }
 
@@ -567,9 +567,9 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 
 void NetworkHandlePingReturn (uint8_t nPlayer)
 {
-if ((nPlayer >= gameData.multiplayer.nPlayers) || !pingStats [nPlayer].launchTime) {
+if ((nPlayer >= N_PLAYERS) || !pingStats [nPlayer].launchTime) {
 #if 1			
-	 console.printf (CON_DBG, "Got invalid PING RETURN from %s!\n", gameData.multiplayer.players [nPlayer].callsign);
+	 console.printf (CON_DBG, "Got invalid PING RETURN from %s!\n", PLAYER (nPlayer).callsign);
 #endif
    return;
 	}
@@ -580,7 +580,7 @@ if (pingStats [nPlayer].launchTime > 0) { // negative value suppresses display o
 	pingStats [nPlayer].totalPing += pingStats [nPlayer].ping;
 	pingStats [nPlayer].averagePing = pingStats [nPlayer].totalPing / pingStats [nPlayer].received;
 	if (!gameStates.render.cockpit.bShowPingStats)
-		HUDInitMessage ("Ping time for %s is %d ms!", gameData.multiplayer.players [nPlayer].callsign, pingStats [nPlayer].ping);
+		HUDInitMessage ("Ping time for %s is %d ms!", PLAYER (nPlayer).callsign, pingStats [nPlayer].ping);
 	pingStats [nPlayer].launchTime = 0;
 	}
 }
@@ -646,9 +646,9 @@ return rank + 1;
 
 void NetworkCheckForOldVersion (uint8_t nPlayer)
 {  
-if ((netPlayers [0].m_info.players [(int32_t) nPlayer].versionMajor == 1) && 
-	 !(netPlayers [0].m_info.players [(int32_t) nPlayer].versionMinor & 0x0F))
-	netPlayers [0].m_info.players [(int32_t) nPlayer].rank = 0;
+if ((NETPLAYER ((int32_t) nPlayer).versionMajor == 1) && 
+	 !(NETPLAYER ((int32_t) nPlayer).versionMinor & 0x0F))
+	NETPLAYER ((int32_t) nPlayer).rank = 0;
 }
 
 //------------------------------------------------------------------------------

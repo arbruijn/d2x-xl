@@ -268,24 +268,24 @@ return GraphicsFxCompMode () | WeaponFxCompMode () | ShipFxCompMode () | HUDComp
 char* XMLPlayerInfo (char* xmlGameInfo)
 {
 strcat (xmlGameInfo, "  <PlayerInfo>\n");
-for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Player%d name=\"%s\" ping=\"", i, netPlayers [0].m_info.players [N_LOCALPLAYER].callsign);
+for (int32_t i = 0; i < N_PLAYERS; i++) {
+	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <Player%d name=\"%s\" ping=\"", i, NETPLAYER (N_LOCALPLAYER).callsign);
 	if (pingStats [i].ping < 0)
 		strcat (xmlGameInfo, (i == N_LOCALPLAYER) ? "0" : "> 1s");
 	else
 		sprintf (xmlGameInfo + strlen (xmlGameInfo), "\"%d\"", pingStats [i].ping);
 
-	uint8_t* node = netPlayers [0].m_info.players [N_LOCALPLAYER].network.Node ();
+	uint8_t* node = NETPLAYER (N_LOCALPLAYER).network.Node ();
 	uint32_t ip = (uint32_t (node [0]) << 24) + (uint32_t (node [1]) << 16) + (uint32_t (node [2]) << 8) + uint32_t (node [3]);
 
 	sprintf (xmlGameInfo + strlen (xmlGameInfo), "\" score=\"%d\" kills=\"%d\" deaths=\"%d\" country=\"%s\" />\n", 
-				gameData.multiplayer.players [i].score,
-				gameData.multiplayer.players [i].netKillsTotal,
-				gameData.multiplayer.players [i].netKilledTotal,
+				PLAYER (i).score,
+				PLAYER (i).netKillsTotal,
+				PLAYER (i).netKilledTotal,
 #if 1
 				CountryFromIP (ip));
 #else
-				CountryFromIP (*((uint32_t*) netPlayers [0].m_info.players [N_LOCALPLAYER].network.Node ())));
+				CountryFromIP (*((uint32_t*) NETPLAYER (N_LOCALPLAYER).network.Node ())));
 #endif
 	}
 strcat (xmlGameInfo, "  </PlayerInfo>\n");

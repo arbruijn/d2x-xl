@@ -169,8 +169,6 @@ void ShowHelp();
 
 // show a message in a nice little box
 // turns off rear view & rear view cockpit
-void ResetRearView(void);
-
 extern int32_t Game_turbo_mode;
 
 // returns ptr to escort robot, or NULL

@@ -191,7 +191,7 @@ int32_t AllowedToFireGun (void)
 {
 	float	s;
 
-if (gameStates.app.bPlayerIsDead) {
+if (gameStates.app.bPlayerIsDead || OBSERVING) {
 	gameData.missiles.nGlobalFiringCount = 0;
 	return 0;
 	}
@@ -796,6 +796,9 @@ return bomb;
 
 void DoWeaponStuff (void)
 {
+if (OBSERVING)
+	return;
+
   int32_t i;
 
 if (controls [0].useCloakDownCount)

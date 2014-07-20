@@ -220,9 +220,9 @@ if (nType == WALL_CLOSED) {
 	if (objP && (objP->info.nType == OBJ_PLAYER)) {
 		if (IsTeamGame && ((keys >> 1) == GetTeam (objP->info.nId) + 1))
 			return WID_ILLUSORY_WALL;
-		if ((keys == KEY_BLUE) && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_BLUE_KEY))
+		if ((keys == KEY_BLUE) && (PLAYER (objP->info.nId).flags & PLAYER_FLAGS_BLUE_KEY))
 			return WID_ILLUSORY_WALL;
-		if ((keys == KEY_RED) && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_RED_KEY))
+		if ((keys == KEY_RED) && (PLAYER (objP->info.nId).flags & PLAYER_FLAGS_RED_KEY))
 			return WID_ILLUSORY_WALL;
 		}
 	}
@@ -629,21 +629,21 @@ else
 	bShowMessage = true;
 
 if (keys == KEY_BLUE) {
-	if (!(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_BLUE_KEY)) {
+	if (!(PLAYER (nPlayer).flags & PLAYER_FLAGS_BLUE_KEY)) {
 		if (bShowMessage && (nPlayer == N_LOCALPLAYER))
 			HUDInitMessage ("%s %s", TXT_BLUE, TXT_ACCESS_DENIED);
 		return WHP_NO_KEY;
 		}
 	}
 else if (keys == KEY_RED) {
-	if (!(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_RED_KEY)) {
+	if (!(PLAYER (nPlayer).flags & PLAYER_FLAGS_RED_KEY)) {
 		if (bShowMessage && (nPlayer == N_LOCALPLAYER))
 			HUDInitMessage("%s %s", TXT_RED, TXT_ACCESS_DENIED);
 		return WHP_NO_KEY;
 		}
 	}
 else if (keys == KEY_GOLD) {
-	if (!(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_GOLD_KEY)) {
+	if (!(PLAYER (nPlayer).flags & PLAYER_FLAGS_GOLD_KEY)) {
 		if (bShowMessage && (nPlayer == N_LOCALPLAYER))
 			HUDInitMessage("%s %s", TXT_YELLOW, TXT_ACCESS_DENIED);
 		return WHP_NO_KEY;

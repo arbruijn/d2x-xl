@@ -284,7 +284,7 @@ FORALL_ACTOR_OBJS (targetP) {
 		continue;
 		}
 	else if (targetP->Type () == OBJ_PLAYER) {
-		if (gameData.multiplayer.players [targetP->Id ()].flags & PLAYER_FLAGS_CLOAKED)
+		if (PLAYER (targetP->Id ()).flags & PLAYER_FLAGS_CLOAKED)
 			continue; // don't track cloaked players.
 		if (IsTeamGame) {
 			CObject *parentObjP = OBJECTS + cType.laserInfo.parent.nObject;

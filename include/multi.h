@@ -62,7 +62,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_CONTROLCEN_FIRE			17
 #define MULTI_PLAYER_DROP				18
 #define MULTI_CREATE_POWERUP			19
-#define MULTI_CONSISTENCY				20
+//unused - #define MULTI_CONSISTENCY				20
 #define MULTI_DECLOAK					21
 #define MULTI_MENU_CHOICE				22
 #define MULTI_ROBOT_POSITION			23
@@ -107,7 +107,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_MODEM_PING_RETURN		59
 #define MULTI_ORB_BONUS					60
 #define MULTI_GOT_ORB					61
-#define MULTI_DROP_ORB					62
+//unused - #define MULTI_DROP_ORB					62
 #define MULTI_PLAY_BY_PLAY				63
 #define MULTI_MAX_TYPE_D2				63
 
@@ -549,7 +549,7 @@ void MultiSendModemPing ();
 int32_t MultiFindGoalTexture (int16_t t);
 void MultiSetFlagPos (void);
 void ResetPlayerPaths (void);
-void SetPlayerPaths (void);
+void UpdatePlayerPaths (void);
 void MultiSyncKills (void);
 void MultiAdjustPowerups (void);
 void RemapLocalPlayerObject (int32_t nLocalObj, int32_t nRemoteObj);

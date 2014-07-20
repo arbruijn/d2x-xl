@@ -296,7 +296,7 @@ switch (gameStates.render.cockpit.n3DView [nWindow]) {
 			gameStates.render.cockpit.n3DView [nWindow] = CV_COOP;
 			while (1) {
 				gameStates.render.cockpit.nCoopPlayerView [nWindow]++;
-				if (gameStates.render.cockpit.nCoopPlayerView [nWindow] == gameData.multiplayer.nPlayers) {
+				if (gameStates.render.cockpit.nCoopPlayerView [nWindow] == N_PLAYERS) {
 					gameStates.render.cockpit.n3DView [nWindow] = CV_MARKER;
 					goto case_marker;
 					}

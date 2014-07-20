@@ -323,7 +323,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 if (!EGI_FLAG (bCloakedIndicators, 0, 1, 0)) {
 	if (nPlayer >= 0) {
-		if ((gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_CLOAKED) && !GetCloakInfo (objP, 0, 0, NULL))
+		if ((PLAYER (nPlayer).flags & PLAYER_FLAGS_CLOAKED) && !GetCloakInfo (objP, 0, 0, NULL))
 			return;
 		}
 	else if (objP->info.nType == OBJ_ROBOT) {
@@ -333,7 +333,7 @@ if (!EGI_FLAG (bCloakedIndicators, 0, 1, 0)) {
 	}
 if (IsTeamGame && EGI_FLAG (bFriendlyIndicators, 0, 1, 0)) {
 	if (GetTeam (nPlayer) != GetTeam (N_LOCALPLAYER)) {
-		if (!(gameData.multiplayer.players [nPlayer].flags & PLAYER_FLAGS_FLAG))
+		if (!(PLAYER (nPlayer).flags & PLAYER_FLAGS_FLAG))
 			return;
 		pc = ObjectFrameColor (NULL, NULL);
 		}

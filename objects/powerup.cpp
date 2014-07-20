@@ -361,7 +361,7 @@ return 0;
 
 int32_t PickupExtraLife (CObject *objP, int32_t nPlayer)
 {
-gameData.multiplayer.players [nPlayer].lives++;
+PLAYER (nPlayer).lives++;
 if (nPlayer == N_LOCALPLAYER)
 	PowerupBasic (15, 15, 15, 0, TXT_EXTRA_LIFE);
 return 1;
@@ -666,6 +666,8 @@ typedef int32_t (* pPickupFlag) (CObject *, int32_t, int32_t, const char *, int3
 //	returns true if powerup consumed
 int32_t DoPowerup (CObject *objP, int32_t nPlayer)
 {
+if (OBSERVING)
+	return 0;
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return 0;
 if (objP->Ignored (1, 1))
@@ -1210,7 +1212,7 @@ int16_t PowerupsOnShips (int32_t nPowerup)
 
 if (!nClass || ((nClass < 3) && (nIndex < 0)))
 	return 0;
-for (int16_t i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
+for (int16_t i = 0; i < N_PLAYERS; i++, playerP++) {
 	//if ((i == N_LOCALPLAYER) && (LOCALPLAYER.m_bExploded || gameStates.app.bPlayerIsDead))
 	//	continue;
 	if (playerP->Shield () < 0)
@@ -1222,7 +1224,7 @@ for (int16_t i = 0; i < gameData.multiplayer.nPlayers; i++, playerP++) {
 #endif
 		continue; // wait up to three minutes for a player to reconnect before dropping him and allowing to respawn his stuff
 	if (nClass == 5) {
-		if ((gameData.multiplayer.players [i].flags & PLAYER_FLAGS_FLAG) && ((nPowerup == POW_REDFLAG) != (GetTeam (i) == TEAM_RED)))
+		if ((PLAYER (i).flags & PLAYER_FLAGS_FLAG) && ((nPowerup == POW_REDFLAG) != (GetTeam (i) == TEAM_RED)))
 			nPowerups++;
 		}
 	if (nClass == 4) 

@@ -718,7 +718,7 @@ if (!gameStates.app.cheats.bRobotsFiring)
 //#endif
 
 //	If playerP is dead, stop firing.
-if (OBJECTS [LOCALPLAYER.nObject].info.nType == OBJ_GHOST)
+if (LOCALOBJECT.info.nType == OBJ_GHOST)
 	return;
 
 if (botInfoP->attackType == 1) {

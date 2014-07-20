@@ -9,8 +9,6 @@
 #define	PP_DELTAZ	-I2X(30)
 #define	PP_DELTAY	I2X(10)
 
-CFlightPath	externalView;
-
 //------------------------------------------------------------------------------
 
 void CFlightPath::Reset (int32_t nSize, int32_t nFPS)
@@ -25,7 +23,7 @@ m_tUpdate = -1;
 
 //------------------------------------------------------------------------------
 
-void CFlightPath::SetPoint (CObject *objP)
+void CFlightPath::Update (CObject *objP)
 {
 	time_t	t = SDL_GetTicks () - m_tUpdate;
 
@@ -50,8 +48,8 @@ if (m_nSize && ((m_tUpdate < 0) || (t >= m_tRefresh))) {
 
 tPathPoint* CFlightPath::GetPoint (void)
 {
-	CFixVector		*p = &m_path [m_nEnd].vPos;
-	int32_t				i;
+	CFixVector*	p = &m_path [m_nEnd].vPos;
+	int32_t		i;
 
 if (m_nStart == m_nEnd) {
 	m_posP = NULL;
@@ -71,16 +69,18 @@ return m_posP = m_path + i;
 
 //------------------------------------------------------------------------------
 
-void CFlightPath::GetViewPoint (void)
+void CFlightPath::GetViewPoint (CFixVector* vPos)
 {
 	tPathPoint* p = GetPoint ();
 
+if (!vPos)
+	vPos = &gameData.render.mine.viewer.vPos;
 if (!p)
-	gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.f * PP_DELTAZ;
+	*vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.f * PP_DELTAZ;
 else {
-	gameData.render.mine.viewer.vPos = p->vPos;
-	gameData.render.mine.viewer.vPos += p->mOrient.m.dir.f * (PP_DELTAZ * 2 / 3);
-	gameData.render.mine.viewer.vPos += p->mOrient.m.dir.u * (PP_DELTAY * 2 / 3);
+	*vPos = p->vPos;
+	*vPos += p->mOrient.m.dir.f * (PP_DELTAZ * 2 / 3);
+	*vPos += p->mOrient.m.dir.u * (PP_DELTAY * 2 / 3);
 	}
 }
 

@@ -1046,15 +1046,15 @@ if (IsTeamGame) {
 	NDWriteString (netGameInfo.m_info.szTeamName [1]);
 	}
 if (IsMultiGame) {
-	NDWriteByte (int8_t (gameData.multiplayer.nPlayers));
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		NDWriteString (gameData.multiplayer.players [i].callsign);
-		NDWriteByte (gameData.multiplayer.players [i].connected);
+	NDWriteByte (int8_t (N_PLAYERS));
+	for (i = 0; i < N_PLAYERS; i++) {
+		NDWriteString (PLAYER (i).callsign);
+		NDWriteByte (PLAYER (i).connected);
 		if (IsCoopGame)
-			NDWriteInt (gameData.multiplayer.players [i].score);
+			NDWriteInt (PLAYER (i).score);
 		else {
-			NDWriteShort ((int16_t)gameData.multiplayer.players [i].netKilledTotal);
-			NDWriteShort ((int16_t)gameData.multiplayer.players [i].netKillsTotal);
+			NDWriteShort ((int16_t)PLAYER (i).netKilledTotal);
+			NDWriteShort ((int16_t)PLAYER (i).netKillsTotal);
 			}
 		}
 	} 
@@ -1111,7 +1111,7 @@ if (gameStates.render.cameras.bActive)
 	return;
 if (gameData.demo.bViewWasRecorded [objP->Index ()])
 	return;
-//if (obj==&OBJECTS [LOCALPLAYER.nObject] && !gameStates.app.bPlayerIsDead)
+//if (obj==&LOCALOBJECT && !gameStates.app.bPlayerIsDead)
 //	return;
 StopTime ();
 NDWriteByte (ND_EVENT_RENDER_OBJECT);
@@ -1604,9 +1604,9 @@ NDWriteByte (ND_EVENT_MULTI_CONNECT);
 NDWriteByte ((int8_t)nPlayer);
 NDWriteByte ((int8_t)nNewPlayer);
 if (!nNewPlayer) {
-	NDWriteString (gameData.multiplayer.players [nPlayer].callsign);
-	NDWriteInt (gameData.multiplayer.players [nPlayer].netKilledTotal);
-	NDWriteInt (gameData.multiplayer.players [nPlayer].netKillsTotal);
+	NDWriteString (PLAYER (nPlayer).callsign);
+	NDWriteInt (PLAYER (nPlayer).netKilledTotal);
+	NDWriteInt (PLAYER (nPlayer).netKillsTotal);
 	}
 NDWriteString (pszNewCallsign);
 StartTime (0);
@@ -1657,7 +1657,7 @@ if (gameStates.render.cameras.bActive)
 StopTime ();
 NDWriteByte (ND_EVENT_MULTI_SCORE);
 NDWriteByte ((int8_t)nPlayer);
-NDWriteInt (score - gameData.multiplayer.players [nPlayer].score);      // called before score is changed!!!!
+NDWriteInt (score - PLAYER (nPlayer).score);      // called before score is changed!!!!
 StartTime (0);
 }
 
@@ -1825,20 +1825,20 @@ if (gameData.demo.nGameMode & GM_TEAM) {
 	}
 if (gameData.demo.nGameMode & GM_MULTI) {
 	MultiNewGame ();
-	gameData.multiplayer.nPlayers = int32_t (NDReadByte ());
+	N_PLAYERS = int32_t (NDReadByte ());
 	// changed this to above two lines -- breaks on the mac because of
 	// endian issues
-	//		NDReadByte (reinterpret_cast<int8_t*> (&gameData.multiplayer.nPlayers);
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		gameData.multiplayer.players [i].cloakTime = 0;
-		gameData.multiplayer.players [i].invulnerableTime = 0;
-		NDReadString (gameData.multiplayer.players [i].callsign);
+	//		NDReadByte (reinterpret_cast<int8_t*> (&N_PLAYERS);
+	for (i = 0; i < N_PLAYERS; i++) {
+		PLAYER (i).cloakTime = 0;
+		PLAYER (i).invulnerableTime = 0;
+		NDReadString (PLAYER (i).callsign);
 		CONNECT (i, (int8_t) NDReadByte ());
 		if (IsCoopGame)
-			gameData.multiplayer.players [i].score = NDReadInt ();
+			PLAYER (i).score = NDReadInt ();
 		else {
-			gameData.multiplayer.players [i].netKilledTotal = NDReadShort ();
-			gameData.multiplayer.players [i].netKillsTotal = NDReadShort ();
+			PLAYER (i).netKilledTotal = NDReadShort ();
+			PLAYER (i).netKillsTotal = NDReadShort ();
 			}
 		}
 	gameData.app.SetGameMode (gameData.demo.nGameMode);
@@ -2524,15 +2524,15 @@ while (!bDone) {
 			int8_t nPlayer = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				gameData.multiplayer.players [nPlayer].flags &= ~PLAYER_FLAGS_CLOAKED;
-				gameData.multiplayer.players [nPlayer].cloakTime = 0;
+				PLAYER (nPlayer).flags &= ~PLAYER_FLAGS_CLOAKED;
+				PLAYER (nPlayer).cloakTime = 0;
 				gameData.demo.bPlayersCloaked &= ~(1 << nPlayer);
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				gameData.multiplayer.players [nPlayer].flags |= PLAYER_FLAGS_CLOAKED;
-				gameData.multiplayer.players [nPlayer].cloakTime = gameData.time.xGame  - (CLOAK_TIME_MAX / 2);
+				PLAYER (nPlayer).flags |= PLAYER_FLAGS_CLOAKED;
+				PLAYER (nPlayer).cloakTime = gameData.time.xGame  - (CLOAK_TIME_MAX / 2);
 				gameData.demo.bPlayersCloaked |= (1 << nPlayer);
 				}
 			}
@@ -2542,15 +2542,15 @@ while (!bDone) {
 			int8_t nPlayer = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				gameData.multiplayer.players [nPlayer].flags |= PLAYER_FLAGS_CLOAKED;
-				gameData.multiplayer.players [nPlayer].cloakTime = gameData.time.xGame  - (CLOAK_TIME_MAX / 2);
+				PLAYER (nPlayer).flags |= PLAYER_FLAGS_CLOAKED;
+				PLAYER (nPlayer).cloakTime = gameData.time.xGame  - (CLOAK_TIME_MAX / 2);
 				gameData.demo.bPlayersCloaked |= (1 << nPlayer);
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				gameData.multiplayer.players [nPlayer].flags &= ~PLAYER_FLAGS_CLOAKED;
-				gameData.multiplayer.players [nPlayer].cloakTime = 0;
+				PLAYER (nPlayer).flags &= ~PLAYER_FLAGS_CLOAKED;
+				PLAYER (nPlayer).cloakTime = 0;
 				gameData.demo.bPlayersCloaked &= ~(1 << nPlayer);
 				}
 			}
@@ -2560,11 +2560,11 @@ while (!bDone) {
 			int8_t nPlayer = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multiplayer.players [nPlayer].netKilledTotal--;
+				PLAYER (nPlayer).netKilledTotal--;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multiplayer.players [nPlayer].netKilledTotal++;
+				PLAYER (nPlayer).netKilledTotal++;
 			}
 			break;
 
@@ -2573,14 +2573,14 @@ while (!bDone) {
 			int8_t kill = NDReadByte ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
-				gameData.multiplayer.players [nPlayer].netKillsTotal -= kill;
+				PLAYER (nPlayer).netKillsTotal -= kill;
 				if (gameData.demo.nGameMode & GM_TEAM)
 					gameData.multigame.score.nTeam [GetTeam (nPlayer)] -= kill;
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
-				gameData.multiplayer.players [nPlayer].netKillsTotal += kill;
+				PLAYER (nPlayer).netKillsTotal += kill;
 				if (gameData.demo.nGameMode & GM_TEAM)
 					gameData.multigame.score.nTeam [GetTeam (nPlayer)] += kill;
 				}
@@ -2607,22 +2607,22 @@ while (!bDone) {
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD)) {
 				CONNECT (nPlayer, CONNECT_DISCONNECTED);
 				if (!nNewPlayer) {
-					memcpy (gameData.multiplayer.players [nPlayer].callsign, old_callsign, CALLSIGN_LEN+1);
-					gameData.multiplayer.players [nPlayer].netKilledTotal = killedTotal;
-					gameData.multiplayer.players [nPlayer].netKillsTotal = killsTotal;
+					memcpy (PLAYER (nPlayer).callsign, old_callsign, CALLSIGN_LEN+1);
+					PLAYER (nPlayer).netKilledTotal = killedTotal;
+					PLAYER (nPlayer).netKillsTotal = killsTotal;
 					}
 				else
-					gameData.multiplayer.nPlayers--;
+					N_PLAYERS--;
 				}
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD)) {
 				CONNECT (nPlayer, CONNECT_PLAYING);
-				gameData.multiplayer.players [nPlayer].netKillsTotal = 0;
-				gameData.multiplayer.players [nPlayer].netKilledTotal = 0;
-				memcpy (gameData.multiplayer.players [nPlayer].callsign, pszNewCallsign, CALLSIGN_LEN+1);
+				PLAYER (nPlayer).netKillsTotal = 0;
+				PLAYER (nPlayer).netKilledTotal = 0;
+				memcpy (PLAYER (nPlayer).callsign, pszNewCallsign, CALLSIGN_LEN+1);
 				if (nNewPlayer)
-					gameData.multiplayer.nPlayers++;
+					N_PLAYERS++;
 				}
 			}
 			break;
@@ -2656,11 +2656,11 @@ while (!bDone) {
 			int32_t score = NDReadInt ();
 			if ((gameData.demo.nVcrState == ND_STATE_REWINDING) || 
 				 (gameData.demo.nVcrState == ND_STATE_ONEFRAMEBACKWARD))
-				gameData.multiplayer.players [nPlayer].score -= score;
+				PLAYER (nPlayer).score -= score;
 			else if ((gameData.demo.nVcrState == ND_STATE_PLAYBACK) || 
 						(gameData.demo.nVcrState == ND_STATE_FASTFORWARD) || 
 						(gameData.demo.nVcrState == ND_STATE_ONEFRAMEFORWARD))
-				gameData.multiplayer.players [nPlayer].score += score;
+				PLAYER (nPlayer).score += score;
 			gameData.app.SetGameMode (gameData.demo.nGameMode);
 			MultiSortKillList ();
 			gameData.app.SetGameMode (GM_NORMAL);
@@ -2799,8 +2799,8 @@ while (!bDone) {
 			else {
 				loadedLevel = newLevel;
 				for (i = 0; i < MAX_PLAYERS; i++) {
-					gameData.multiplayer.players [i].cloakTime = 0;
-					gameData.multiplayer.players [i].flags &= ~PLAYER_FLAGS_CLOAKED;
+					PLAYER (i).cloakTime = 0;
+					PLAYER (i).flags &= ~PLAYER_FLAGS_CLOAKED;
 					}
 				}
 			if ((loadedLevel < missionManager.nLastSecretLevel) || 
@@ -2930,18 +2930,18 @@ if (laserLevel != LOCALPLAYER.LaserLevel ()) {
 	}
 if (gameData.demo.nGameMode & GM_MULTI) {
 	c = NDReadByte ();
-	gameData.multiplayer.nPlayers = (int32_t)c;
+	N_PLAYERS = (int32_t)c;
 	// see newdemo_read_start_demo for explanation of
 	// why this is commented out
-	//		NDReadByte (reinterpret_cast<int8_t*> (&gameData.multiplayer.nPlayers);
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-		NDReadString (gameData.multiplayer.players [i].callsign);
+	//		NDReadByte (reinterpret_cast<int8_t*> (&N_PLAYERS);
+	for (i = 0; i < N_PLAYERS; i++) {
+		NDReadString (PLAYER (i).callsign);
 		CONNECT (i, NDReadByte ());
 		if (IsCoopGame)
-			gameData.multiplayer.players [i].score = NDReadInt ();
+			PLAYER (i).score = NDReadInt ();
 		else {
-			gameData.multiplayer.players [i].netKilledTotal = NDReadShort ();
-			gameData.multiplayer.players [i].netKillsTotal = NDReadShort ();
+			PLAYER (i).netKilledTotal = NDReadShort ();
+			PLAYER (i).netKillsTotal = NDReadShort ();
 			}
 		}
 	}
@@ -3098,7 +3098,7 @@ void NDPlayBackOneFrame (void)
 gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
 for (i = 0; i < MAX_PLAYERS; i++)
 	if (gameData.demo.bPlayersCloaked &(1 << i))
-		gameData.multiplayer.players [i].cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
+		PLAYER (i).cloakTime = gameData.time.xGame - (CLOAK_TIME_MAX / 2);
 if (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)
 	LOCALPLAYER.invulnerableTime = gameData.time.xGame - (INVULNERABLE_TIME_MAX / 2);
 if (gameData.demo.nVcrState == ND_STATE_PAUSED)       // render a frame or not
@@ -3299,8 +3299,8 @@ void NDFinishRecording (void)
 NDWriteByte (ND_EVENT_EOF);
 NDWriteShort ((int16_t) (gameData.demo.nFrameBytesWritten - 1));
 if (gameData.demo.nGameMode & GM_MULTI) {
-	for (l = 0; l < gameData.multiplayer.nPlayers; l++) {
-		if (gameData.multiplayer.players [l].flags & PLAYER_FLAGS_CLOAKED)
+	for (l = 0; l < N_PLAYERS; l++) {
+		if (PLAYER (l).flags & PLAYER_FLAGS_CLOAKED)
 			cloaked |= (1 << l);
 		}
 	NDWriteByte (cloaked);
@@ -3326,19 +3326,19 @@ byteCount += (sizeof (int16_t) * (MAX_PRIMARY_WEAPONS + MAX_SECONDARY_WEAPONS));
 NDWriteByte (LOCALPLAYER.LaserLevel ());
 byteCount++;
 if (gameData.demo.nGameMode & GM_MULTI) {
-	NDWriteByte ((int8_t)gameData.multiplayer.nPlayers);
+	NDWriteByte ((int8_t)N_PLAYERS);
 	byteCount++;
-	for (l = 0; l < gameData.multiplayer.nPlayers; l++) {
-		NDWriteString (gameData.multiplayer.players [l].callsign);
-		byteCount += ((int32_t) strlen (gameData.multiplayer.players [l].callsign) + 2);
-		NDWriteByte ((int8_t) gameData.multiplayer.players [l].connected);
+	for (l = 0; l < N_PLAYERS; l++) {
+		NDWriteString (PLAYER (l).callsign);
+		byteCount += ((int32_t) strlen (PLAYER (l).callsign) + 2);
+		NDWriteByte ((int8_t) PLAYER (l).connected);
 		if (IsCoopGame) {
-			NDWriteInt (gameData.multiplayer.players [l].score);
+			NDWriteInt (PLAYER (l).score);
 			byteCount += 5;
 			}
 		else {
-			NDWriteShort ((int16_t)gameData.multiplayer.players [l].netKilledTotal);
-			NDWriteShort ((int16_t)gameData.multiplayer.players [l].netKillsTotal);
+			NDWriteShort ((int16_t)PLAYER (l).netKilledTotal);
+			NDWriteShort ((int16_t)PLAYER (l).netKillsTotal);
 			byteCount += 5;
 			}
 		}

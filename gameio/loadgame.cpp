@@ -152,7 +152,7 @@ void InitStuckObjects (void);
 void ClearStuckObjects (void);
 void InitAIForShip (void);
 void ShowLevelIntro (int32_t nLevel);
-void InitPlayerPosition (int32_t bRandom);
+int32_t InitPlayerPosition (int32_t bRandom, int32_t nSpawnPos = -1);
 void ReturningToLevelMessage (void);
 void AdvancingToLevelMessage (void);
 void DoEndGame (void);
@@ -195,8 +195,6 @@ void VerifyConsoleObject (void)
 Assert (N_LOCALPLAYER > -1);
 Assert (LOCALPLAYER.nObject > -1);
 gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
-Assert (gameData.objs.consoleP->info.nType == OBJ_PLAYER);
-Assert (gameData.objs.consoleP->info.nId == N_LOCALPLAYER);
 }
 
 //------------------------------------------------------------------------------
@@ -299,7 +297,7 @@ for (i = 0; i < nPlayers; i++) {
 		gameData.multiplayer.playerInit [i].position = objP->info.position;
 		gameData.multiplayer.playerInit [i].nSegment = objP->info.nSegment;
 		gameData.multiplayer.playerInit [i].nSegType = segType;
-		gameData.multiplayer.players [i].SetObject (playerObjs [j]);
+		PLAYER (i).SetObject (playerObjs [j]);
 		objP->info.nId = i;
 		startSegs [j] = -1;
 		break;
@@ -318,7 +316,7 @@ if (gameData.multiplayer.nPlayerPositions != (bCoop ? 4 : 8)) {
 #endif
 if (IS_D2_OEM && IsMultiGame && (missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && (missionManager.nCurrentLevel == 8)) {
 	for (i = 0; i < nPlayers; i++)
-		if (gameData.multiplayer.players [i].connected && !(netPlayers [0].m_info.players [i].versionMinor & 0xF0)) {
+		if (PLAYER (i).connected && !(NETPLAYER (i).versionMinor & 0xF0)) {
 			TextBox ("Warning!", BG_STANDARD, 1, TXT_OK,
 					   "This special version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
@@ -326,7 +324,7 @@ if (IS_D2_OEM && IsMultiGame && (missionManager.nCurrentMission == missionManage
 	}
 if (IS_MAC_SHARE && IsMultiGame && (missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && (missionManager.nCurrentLevel == 4)) {
 	for (i = 0; i < nPlayers; i++)
-		if (gameData.multiplayer.players [i].connected && !(netPlayers [0].m_info.players [i].versionMinor & 0xF0)) {
+		if (PLAYER (i).connected && !(NETPLAYER (i).versionMinor & 0xF0)) {
 			TextBox ("Warning!", BG_STANDARD, 1, TXT_OK,
 					   "This shareware version of Descent II\nwill disconnect after this level.\nPlease purchase the full version\nto experience all the levels!");
 			return;
@@ -344,13 +342,13 @@ void GameStartRemoveUnusedPlayers (void)
 
 if (IsMultiGame) {
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
-		if (!gameData.multiplayer.players [i].connected || (i >= gameData.multiplayer.nPlayers))
+		if (!PLAYER (i).connected || (i >= N_PLAYERS))
 			MultiMakePlayerGhost (i);
 		}
 	}
 else {		// Note link to above if!!!
 	for (i = 1; i < gameData.multiplayer.nPlayerPositions; i++)
-		ReleaseObject ((int16_t) gameData.multiplayer.players [i].nObject);
+		ReleaseObject ((int16_t) PLAYER (i).nObject);
 	}
 }
 
@@ -379,7 +377,7 @@ OBJECTS [N_LOCALPLAYER].ResetDamage ();
 // Setup player for new game
 void ResetPlayerData (bool bNewGame, bool bSecret, bool bRestore, int32_t nPlayer)
 {
-CPlayerData& player = gameData.multiplayer.players [(nPlayer < 0) ? N_LOCALPLAYER : nPlayer];
+CPlayerData& player = PLAYER ((nPlayer < 0) ? N_LOCALPLAYER : nPlayer);
 
 player.numKillsLevel = 0;
 player.numRobotsLevel = CountRobotsInLevel ();
@@ -411,7 +409,7 @@ if (bNewGame) {
 	player.nCloaks =
 	player.nInvuls = 0;
 	if (nPlayer == N_LOCALPLAYER)
-		ResetShipData (bRestore);
+		ResetShipData (N_LOCALPLAYER, bRestore ? 1 : 0);
 	if (IsMultiGame && !IsCoopGame) {
 		if (IsTeamGame && gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bTeamDoors)
 			player.flags |= KEY_GOLD | TEAMKEY (N_LOCALPLAYER);
@@ -477,9 +475,10 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 	   LOCALPLAYER.primaryWeaponFlags &= ~(HAS_FLAG (HELIX_INDEX) | HAS_FLAG (GAUSS_INDEX) | HAS_FLAG (PHOENIX_INDEX) | HAS_FLAG (OMEGA_INDEX));
 	if (!gameStates.app.bD1Mission && IsBuiltinWeapon (SUPER_LASER_INDEX))
 		LOCALPLAYER.SetSuperLaser (MAX_SUPERLASER_LEVEL - MAX_LASER_LEVEL);
-	else if (IsBuiltinWeapon (LASER_INDEX)) {
+	else if (IsBuiltinWeapon (LASER_INDEX))
 		LOCALPLAYER.SetStandardLaser (MAX_LASER_LEVEL);
-		}
+	if (gameOpts->gameplay.nShip [0] == 1)
+		LOCALPLAYER.primaryWeaponFlags &= ~(1 << FUSION_INDEX);
 	if (!bRestore && IsBuiltinWeapon (VULCAN_INDEX) | IsBuiltinWeapon (GAUSS_INDEX))
 		LOCALPLAYER.primaryAmmo [1] = GAUSS_WEAPON_AMMO_AMOUNT;
 	LOCALPLAYER.flags |= extraGameInfo [IsMultiGame].loadout.nDevice;
@@ -495,16 +494,17 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 //------------------------------------------------------------------------------
 
 // Setup player for a brand-new ship
-void ResetShipData (bool bRestore, int32_t nPlayer)
+void ResetShipData (int32_t nPlayer, int32_t nMode)
 {
-	int32_t	i;
-
 if (nPlayer < 0)
 	nPlayer = N_LOCALPLAYER;
 
-CPlayerData& player = gameData.multiplayer.players [nPlayer];
+CPlayerData& player = PLAYER (nPlayer);
 
-gameStates.app.bChangingShip = 0;
+if (gameStates.app.bChangingShip) {
+	gameOpts->gameplay.nShip [0] = gameOpts->gameplay.nShip [1];
+	gameStates.app.bChangingShip = 0;
+	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	NDRecordLaserLevel (player.LaserLevel (), 0);
 	NDRecordPlayerWeapon (0, 0);
@@ -514,12 +514,14 @@ if (gameData.demo.nState == ND_STATE_RECORDING) {
 gameData.multiplayer.weaponStates [nPlayer].nShip = gameOpts->gameplay.nShip [0];
 
 player.Setup ();
+player.SetObservedPlayer (nPlayer);
 player.SetEnergy (gameStates.gameplay.InitialEnergy ());
 player.SetShield (gameStates.gameplay.InitialShield ());
 player.SetLaserLevels (0, 0);
 player.nKillerObj = -1;
 player.hostages.nOnBoard = 0;
 
+int32_t	i;
 for (i = 0; i < MAX_PRIMARY_WEAPONS; i++) {
 	player.primaryAmmo [i] = 0;
 	bLastPrimaryWasSuper [i] = 0;
@@ -570,8 +572,17 @@ audio.DestroyObjectSound (nPlayer);
 CObject* objP = OBJECTS.Buffer () ? OBJECTS + player.nObject : NULL;
 if (objP) {
 	OBJECTS [nPlayer].ResetDamage ();
-	AddPlayerLoadout (bRestore);
+	AddPlayerLoadout (nMode == 1);
 	objP->info.nType = OBJ_PLAYER;
+#if DBG
+	if ((nMode == 2) && (nPlayer == N_LOCALPLAYER) && gameOpts->gameplay.bObserve) {
+#else
+	if (IsMultiGame && (nMode == 2) && (nPlayer == N_LOCALPLAYER) && gameOpts->gameplay.bObserve) {
+#endif
+		gameStates.render.bObserving = 1;
+		MultiMakePlayerGhost (N_LOCALPLAYER);
+		LOCALPLAYER.SetObservedPlayer (-1);
+		}
 	objP->SetLife (IMMORTAL_TIME);
 	objP->info.nFlags = 0;
 	objP->rType.polyObjInfo.nSubObjFlags = 0;
@@ -1069,7 +1080,6 @@ PrintLog (-1);
 
 ResetNetworkObjects ();
 ResetChildObjects ();
-externalView.Reset (-1, -1);
 ResetPlayerPaths ();
 FixObjectSizes ();
 wayPointManager.Setup (!bRestore);
@@ -1179,7 +1189,7 @@ gameData.app.SetGameMode (GM_NORMAL);
 SetFunctionMode (FMODE_GAME);
 missionManager.SetNextLevel (0);
 missionManager.SetNextLevel (-1, 1);
-gameData.multiplayer.nPlayers = 1;
+N_PLAYERS = 1;
 gameData.objs.nLastObject [0] = 0;
 networkData.bNewGame = 0;
 missionManager.DeleteLevelStates ();
@@ -1711,7 +1721,11 @@ else
 Assert (!gameStates.app.bPlayerIsDead);
 VerifyConsoleObject ();
 PrintLog (0, "initializing player position\n");
-InitPlayerPosition (bRandom);
+gameStates.app.nSpawnPos = InitPlayerPosition (bRandom, gameStates.app.nSpawnPos);
+if (OBSERVING)
+	automap.SetActive (-1);
+else
+	gameStates.app.nSpawnPos = -1;
 gameData.objs.consoleP->info.controlType = CT_FLYING;
 gameData.objs.consoleP->info.movementType = MT_PHYSICS;
 MultiSendShield ();
@@ -1724,7 +1738,8 @@ if (IsMultiGame) {
 	if (IsCoopGame)
 		MultiSendScore ();
 	MultiSendPosition (LOCALPLAYER.nObject);
-	MultiSendReappear ();
+	if (LOCALOBJECT.Type () == OBJ_PLAYER)
+		MultiSendReappear ();
 	}
 PrintLog (0, "keeping network busy\n");
 if (IsNetworkGame)
@@ -1811,18 +1826,18 @@ InitHoardData ();
 SetMonsterballForces ();
 #endif
 //	gameData.objs.viewerP = OBJECTS + LOCALPLAYER.nObject;
-if (gameData.multiplayer.nPlayers > gameData.multiplayer.nPlayerPositions) {
+if (N_PLAYERS > gameData.multiplayer.nPlayerPositions) {
 	TextBox (NULL, BG_STANDARD, 1, TXT_OK, "Too many players for this level.");
 #if 1
-	while (gameData.multiplayer.nPlayers > gameData.multiplayer.nPlayerPositions) {
-		--gameData.multiplayer.nPlayers;
-		memset (gameData.multiplayer.players + gameData.multiplayer.nPlayers, 0, sizeof (gameData.multiplayer.players [gameData.multiplayer.nPlayers]));
+	while (N_PLAYERS > gameData.multiplayer.nPlayerPositions) {
+		--N_PLAYERS;
+		memset (gameData.multiplayer.players + N_PLAYERS, 0, sizeof (PLAYER (N_PLAYERS)));
 		}
 #else
 	return 0;
 #endif
 	}
-Assert (gameData.multiplayer.nPlayers <= gameData.multiplayer.nPlayerPositions);
+Assert (N_PLAYERS <= gameData.multiplayer.nPlayerPositions);
 	//If this assert fails, there's not enough start positions
 
 if (IsNetworkGame) {
@@ -1846,8 +1861,8 @@ automap.ClearVisited ();
 for (int32_t i = 0; i < MAX_NUM_NET_PLAYERS; i++)
 	ResetPlayerData (bNewGame, bSecret, bRestore, i);
 if (IsCoopGame && networkData.nJoinState) {
-	for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++)
-		gameData.multiplayer.players [i].flags |= netGameInfo.PlayerFlags () [i];
+	for (int32_t i = 0; i < N_PLAYERS; i++)
+		PLAYER (i).flags |= netGameInfo.PlayerFlags () [i];
 	}
 audio.Prepare ();
 if (IsMultiGame)
@@ -2268,11 +2283,11 @@ switch (nSegType) {
 
 int32_t GetRandomPlayerPosition (int32_t nPlayer)
 {
-	CObject		*objP;
+	CObject*		objP;
 	tSpawnTable	spawnTable [MAX_PLAYERS];
-	int32_t			nSpawnSegs = 0;
-	int32_t			nTeam = IsTeamGame ? GetTeam (nPlayer) + 1 : 3;
-	int32_t			i, j;
+	int32_t		nSpawnSegs = 0;
+	int32_t		nTeam = IsTeamGame ? GetTeam (nPlayer) + 1 : 3;
+	int32_t		i, j;
 	fix			xDist;
 
 // Put the indices of all spawn point in the spawn table that are sufficiently far away from any player in the match
@@ -2283,9 +2298,9 @@ for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 		continue; // exclude team specific spawn points of the wrong team
 	spawnTable [nSpawnSegs].i = i;
 	spawnTable [nSpawnSegs].xDist = 0x7fffffff;
-	for (j = 0; j < gameData.multiplayer.nPlayers; j++) {
+	for (j = 0; j < N_PLAYERS; j++) {
 		if (j != N_LOCALPLAYER) {
-			objP = OBJECTS + gameData.multiplayer.players [j].nObject;
+			objP = OBJECTS + PLAYER (j).nObject;
 			if ((objP->info.nType == OBJ_PLAYER)) {
 				xDist = simpleRouter [0].PathLength (objP->info.position.vPos, objP->info.nSegment,
 																 gameData.multiplayer.playerInit [i].position.vPos, gameData.multiplayer.playerInit [i].nSegment,
@@ -2311,27 +2326,24 @@ return spawnTable [(j > 1) ? RandShort () % j : 0].i;
 
 //------------------------------------------------------------------------------
 //initialize the player CObject position & orientation (at start of game, or new ship)
-void InitPlayerPosition (int32_t bRandom)
+int32_t InitPlayerPosition (int32_t bRandom, int32_t nSpawnPos)
 {
-	int32_t nSpawnPos = 0;
-
-if (!(IsMultiGame || IsCoopGame)) // If not deathmatch
-	nSpawnPos = N_LOCALPLAYER;
-else if (bRandom == 1) {
-	nSpawnPos = GetRandomPlayerPosition (N_LOCALPLAYER);
+if (nSpawnPos < 0) {
+	nSpawnPos = 0;
+	if (!IsMultiGame || IsCoopGame) // If not deathmatch
+		nSpawnPos = N_LOCALPLAYER;
+	else if (bRandom == 1)
+		nSpawnPos = GetRandomPlayerPosition (N_LOCALPLAYER);
+	else 
+		goto done; // If deathmatch and not Random, positions were already determined by sync packet
 	}
-else {
-	goto done; // If deathmatch and not Random, positions were already determined by sync packet
-	}
-Assert (nSpawnPos >= 0);
-Assert (nSpawnPos < gameData.multiplayer.nPlayerPositions);
-
-GetPlayerSpawn (nSpawnPos, gameData.objs.consoleP);
+MovePlayerToSpawnPos (nSpawnPos, gameData.objs.consoleP);
 
 done:
 
 ResetPlayerObject ();
 controls.ResetCruise ();
+return nSpawnPos;
 }
 
 //------------------------------------------------------------------------------
@@ -2339,7 +2351,7 @@ controls.ResetCruise ();
 fix RobotDefaultShield (CObject *objP)
 {
 	tRobotInfo*	botInfoP;
-	int32_t			objId, i;
+	int32_t		objId, i;
 	fix			shield;
 
 if (objP->info.nType != OBJ_ROBOT)
@@ -2439,7 +2451,7 @@ if (gameData.reactor.bDestroyed) {
 // if player dead, always leave D2 secret level, but only leave D1 secret level if reactor destroyed
 if (bSecret && (!gameStates.app.bD1Mission || gameData.reactor.bDestroyed)) {
 	ExitSecretLevel ();
-	ResetShipData ();
+	ResetShipData (-1, 2);
 	gameStates.render.cockpit.nLastDrawn [0] =
 	gameStates.render.cockpit.nLastDrawn [1] = -1;
 	}
@@ -2447,10 +2459,11 @@ else {
 	if (gameData.reactor.bDestroyed) {
 		FindNextLevel ();
 		AdvanceLevel (0, 0);
-		ResetShipData ();
+		ResetShipData (-1, 2);
 		}
 	else if (!gameStates.entropy.bExitSequence) {
-		ResetShipData ();
+		ResetShipData (-1, 2);
+		gameStates.app.nSpawnPos = -1;
 		StartLevel (0x7fffffff, 1);
 		}
 	}

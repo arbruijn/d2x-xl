@@ -208,7 +208,7 @@ if (bReactorDestroyed) {
 void DoReactorDestroyedStuff (CObject *objP)
 {
 	int32_t		i, bFinalCountdown, bReactor = objP && (objP->info.nType == OBJ_REACTOR);
-	CTrigger	*trigP = NULL;
+	CTrigger*	trigP = NULL;
 
 if (gameData.app.GameMode (GM_MULTI_ROBOTS) && gameData.reactor.bDestroyed)
    return; // Don't allow resetting if control center and boss on same level

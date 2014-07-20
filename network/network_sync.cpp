@@ -134,7 +134,6 @@ for (nPacketsLeft = OBJ_PACKETS_PER_FRAME; nPacketsLeft; nPacketsLeft--) {
 			NW_SET_SHORT (objBuf, bufI, -1);		// object number -1          
 			NW_SET_BYTE (objBuf, bufI, nPlayer);                            
 			NW_SET_SHORT (objBuf, bufI, -1);		// Placeholder for nRemoteObj, not used here
-			bufI += 2;									
 			}
 		syncInfoP->objs.nCurrent = 0;
 		nObjFrames = 1;		// first frame contains "reset object data" info
@@ -336,8 +335,8 @@ void NetworkUpdateNetGame (void)
 	int32_t i, j;
 
 netGameInfo.m_info.nConnected = 0;
-for (i = 0; i < gameData.multiplayer.nPlayers; i++)
-	if (gameData.multiplayer.players [i].IsConnected ())
+for (i = 0; i < N_PLAYERS; i++)
+	if (PLAYER (i).IsConnected ())
 		netGameInfo.m_info.nConnected++;
 
 // This is great: D2 1.0 and 1.1 ignore upper part of the gameFlags field of
@@ -357,18 +356,18 @@ if (HoardEquipped ()) {
 	}
 if (networkData.nStatus == NETSTAT_STARTING)
 	return;
-netGameInfo.m_info.nNumPlayers = gameData.multiplayer.nPlayers;
+netGameInfo.m_info.nNumPlayers = N_PLAYERS;
 netGameInfo.m_info.gameStatus = networkData.nStatus;
 netGameInfo.m_info.nMaxPlayers = gameData.multiplayer.nMaxPlayers;
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
-	memcpy (netPlayers [0].m_info.players [i].callsign, gameData.multiplayer.players [i].callsign, sizeof (netPlayers [0].m_info.players [i].callsign));
-	netPlayers [0].m_info.players [i].connected = gameData.multiplayer.players [i].connected;
+	memcpy (NETPLAYER (i).callsign, PLAYER (i).callsign, sizeof (NETPLAYER (i).callsign));
+	NETPLAYER (i).connected = PLAYER (i).connected;
 	for (j = 0; j < MAX_NUM_NET_PLAYERS; j++)
 		*netGameInfo.Kills (i, j) = gameData.multigame.score.matrix [i][j];
-	*netGameInfo.Killed (i) = gameData.multiplayer.players [i].netKilledTotal;
-	*netGameInfo.PlayerKills (i) = gameData.multiplayer.players [i].netKillsTotal;
-	*netGameInfo.PlayerScore (i) = gameData.multiplayer.players [i].score;
-	*netGameInfo.PlayerFlags (i) = (gameData.multiplayer.players [i].flags & (PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY));
+	*netGameInfo.Killed (i) = PLAYER (i).netKilledTotal;
+	*netGameInfo.PlayerKills (i) = PLAYER (i).netKillsTotal;
+	*netGameInfo.PlayerScore (i) = PLAYER (i).score;
+	*netGameInfo.PlayerFlags (i) = (PLAYER (i).flags & (PLAYER_FLAGS_BLUE_KEY | PLAYER_FLAGS_RED_KEY | PLAYER_FLAGS_GOLD_KEY));
 	}
 *netGameInfo.TeamKills (0) = gameData.multigame.score.nTeam [0];
 *netGameInfo.TeamKills (1) = gameData.multigame.score.nTeam [1];
@@ -411,6 +410,7 @@ if ((networkData.nJoinState == 1) || (networkData.nJoinState == 2)) {
 		}
 	}
 ResetSyncTimeout (); // make the join poll time out and send this request immediately 
+NetworkFlush (); // Flush any old packets
 return NetworkSendRequest ();
 }
 
@@ -419,7 +419,7 @@ return NetworkSendRequest ();
 
 int32_t NetworkSyncPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
-if (gameData.multiplayer.nPlayers && IAmGameHost ()) {
+if (N_PLAYERS && IAmGameHost ()) {
 	key = -3;
 	return nCurItem;
 	}
@@ -474,7 +474,7 @@ if (i < 0) {
 	return -1;
 	}
 #endif
-sprintf (m [0].m_text, "%s\n'%s' %s", TXT_NET_WAITING, netPlayers [0].m_info.players [i].callsign, TXT_NET_TO_ENTER);
+sprintf (m [0].m_text, "%s\n'%s' %s", TXT_NET_WAITING, NETPLAYER (i).callsign, TXT_NET_TO_ENTER);
 ResetSyncTimeout (true);
 do {
 	gameStates.menus.nInMenu = -gameStates.menus.nInMenu;
@@ -503,7 +503,7 @@ memcpy (me.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	me.player.network.SetNode (IpxGetMyLocalAddress ());
 	me.player.network.SetNetwork (IpxGetMyServerAddress ());
-	SendInternetPlayerSyncData (me, netPlayers [0].m_info.players [0].network.Network (), netPlayers [0].m_info.players [0].network.Node ());
+	SendInternetPlayerSyncData (me, NETPLAYER (0).network.Network (), NETPLAYER (0).network.Node ());
 }
 SetFunctionMode (FMODE_MENU);
 gameData.app.SetGameMode (GM_GAME_OVER);
@@ -736,11 +736,11 @@ NetworkListen ();
 
 int32_t nReady = 0;
 
-for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	if ((uint8_t) gameData.multiplayer.players [i].connected < 2)
+for (int32_t i = 0; i < N_PLAYERS; i++) {
+	if ((uint8_t) PLAYER (i).connected < 2)
 		nReady++;
 	}
-if (nReady == gameData.multiplayer.nPlayers) // All players have checked in or are disconnected
+if (nReady == N_PLAYERS) // All players have checked in or are disconnected
 	key = -2;
 return nCurItem;
 }
@@ -769,10 +769,10 @@ for (;;) {
 			continue;
 		
 		// User confirmed abort
-		for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-			if (gameData.multiplayer.players [i].IsConnected () && (i != N_LOCALPLAYER)) {
+		for (i = 0; i < N_PLAYERS; i++) {
+			if (PLAYER (i).IsConnected () && (i != N_LOCALPLAYER)) {
 				if (gameStates.multi.nGameType >= IPX_GAME)
-					NetworkDumpPlayer (netPlayers [0].m_info.players [i].network.Network (), netPlayers [0].m_info.players [i].network.Node (), DUMP_ABORTED);
+					NetworkDumpPlayer (NETPLAYER (i).network.Network (), NETPLAYER (i).network.Node (), DUMP_ABORTED);
 				}
 			}
 			longjmp (gameExitPoint, 0);  
@@ -792,10 +792,11 @@ int32_t NetworkLevelSync (void)
 	networkData.bSyncPackInited = 0;
 
 //networkThread.SetListen (false);
+bool bSuspend = networkThread.Resume ();
 NetworkFlush (); // Flush any old packets
 networkData.bHaveSync = 0;
 for (;;) {
-	if (gameData.multiplayer.nPlayers && IAmGameHost ()) {
+	if (N_PLAYERS && IAmGameHost ()) {
 		NetworkWaitForRequests ();
 		if (IAmGameHost ()) {
 			NetworkSendSync ();
@@ -805,10 +806,12 @@ for (;;) {
 		}
 	else {
 		result = NetworkWaitForSync ();
-		if (!(gameData.multiplayer.nPlayers && IAmGameHost ()))
+		if (!(N_PLAYERS && IAmGameHost ()))
 			break;
 		}
 	}
+if (bSuspend)
+	networkThread.Suspend ();
 if (result < 0) {
 	NetworkLeaveGame (false);
 	NetworkSendEndLevelPacket ();

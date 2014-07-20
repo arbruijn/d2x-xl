@@ -736,7 +736,7 @@ ProgressBar (TXT_LOADING, 0, LoadMineGaugeSize () + PagingGaugeSize () + SortLig
 
 int32_t LoadMineSegmentsCompiled (CFile& cf)
 {
-	int32_t			i, nSegments, nVertices;
+	int32_t		i, nSegments, nVertices;
 	char*			psz;
 	CFixVector	v;
 

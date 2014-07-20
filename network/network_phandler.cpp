@@ -148,7 +148,7 @@ int32_t XMLGameInfoHandler (uint8_t* data, int32_t nLength)
 if (data && (networkData.xmlGameInfoRequestTime <= 0)) {
 	if (to.Expired () && !strcmp ((char*) data + 1, "Descent Game Info Request")) {
 		networkData.xmlGameInfoRequestTime = SDL_GetTicks ();
-		for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
+		for (int32_t i = 0; i < N_PLAYERS; i++) {
 			if (i == N_LOCALPLAYER)
 				pingStats [i].ping = 0;
 			else {
@@ -162,11 +162,11 @@ if (data && (networkData.xmlGameInfoRequestTime <= 0)) {
 else if (networkData.xmlGameInfoRequestTime > 0) {
 	// check whether all players have returned a ping response
 	int32_t i;
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+	for (i = 0; i < N_PLAYERS; i++)
 		if (pingStats [i].ping < 0)
 			break;
 	// send XML game status when all players have returned a ping response or 1 second has passed since the XML game status request has arrived
-	if ((i == gameData.multiplayer.nPlayers) || (SDL_GetTicks () - networkData.xmlGameInfoRequestTime > 1000)) { 
+	if ((i == N_PLAYERS) || (SDL_GetTicks () - networkData.xmlGameInfoRequestTime > 1000)) { 
 		NetworkSendXMLGameInfo ();
 		networkData.xmlGameInfoRequestTime = -1;
 		to.Start ();
@@ -412,9 +412,9 @@ if (networkData.nStatus == NETSTAT_PLAYING) {
 		memcpy (&netGameInfo, data, sizeof (tNetGameInfoLite));
 	}
 if (IsTeamGame) {
-	for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++)
-		if (gameData.multiplayer.players [i].IsConnected ())
-		   MultiSetObjectTextures (OBJECTS + gameData.multiplayer.players [i].nObject);
+	for (int32_t i = 0; i < N_PLAYERS; i++)
+		if (PLAYER (i).IsConnected ())
+		   MultiSetObjectTextures (OBJECTS + PLAYER (i).nObject);
 	}
 return 1;
 }

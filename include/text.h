@@ -1984,10 +1984,10 @@ void LoadGameTexts(void);
 #define TXT_ACCESS_ALL					GT(1226)
 #define TXT_ACCESS_CONFIRM				GT(1227)
 #define TXT_ACCESS_INVITE				GT(1228)
+#define TXT_OBSERVER_MODE				GT(1229)
 
 #if 0
 
-#define TXT_					GT(1229)
 #define TXT_					GT(1230)
 #define TXT_					GT(1231)
 #define TXT_					GT(1232)
@@ -2618,6 +2618,7 @@ void LoadGameTexts(void);
 #define HTX_SHUFFLE_MUSIC				HT(438)
 #define HTX_GAME_TYPE					HT(439)
 #define HTX_GAME_ACCESS					HT(440)
+#define HTX_OBSERVER_MODE				HT(441)
 
 #if 0
 

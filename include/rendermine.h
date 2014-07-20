@@ -70,7 +70,7 @@ extern CAngleVector Player_head_angles;
 //
 
 void RenderStartFrame (void);
-void SetRenderView (fix xStereoSeparation, int16_t *nStartSegP, int32_t bOglScale);
+void SetupRenderView (fix xStereoSeparation, int16_t *nStartSegP, int32_t bOglScale);
 
 void RenderMine (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow);
 void RenderShadowQuad (void);

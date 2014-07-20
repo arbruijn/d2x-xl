@@ -105,16 +105,17 @@ glMatrixMode (matrixMode);
 
 //------------------------------------------------------------------------------
 
-void SetRenderView (fix xStereoSeparation, int16_t *nStartSegP, int32_t bOglScale)
+void SetupRenderView (fix xStereoSeparation, int16_t *nStartSegP, int32_t bOglScale)
 {
-	int16_t			nStartSeg;
-	bool			bPlayer = (gameData.objs.viewerP == &OBJECTS [LOCALPLAYER.nObject]);
+	int16_t		nStartSeg;
+	bool			bPlayer = (gameData.objs.viewerP == &LOCALOBJECT);
 	CFixMatrix	mView = gameData.objs.viewerP->info.position.mOrient;
 	fix			xZoom = gameStates.render.xZoom;
 
 
 gameData.render.mine.viewer = gameData.objs.viewerP->info.position;
-externalView.SetPos (NULL);
+if (LOCALPLAYER.ObservedPlayer () == N_LOCALPLAYER)
+	FLIGHTPATH.SetPos (NULL);
 
 if (gameStates.render.cameras.bActive)
 	nStartSeg = gameData.objs.viewerP->info.nSegment;
@@ -122,8 +123,10 @@ else {
 	if (bPlayer) {
 		if (xStereoSeparation)
 			gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.r * xStereoSeparation;
-		if (!gameStates.render.nWindow [0])
-			externalView.SetPoint (gameData.objs.viewerP);
+#if 0 // is done in the game loop anyway
+		if ((LOCALPLAYER.ObservedPlayer () == N_LOCALPLAYER) && !gameStates.render.nWindow [0])
+			FLIGHTPATH.Update (gameData.objs.viewerP);
+#endif
 		if (gameStates.render.bRearView) { // no zoom, no head tracking
 			mView.m.dir.f.Neg ();
 			mView.m.dir.r.Neg ();
@@ -135,9 +138,9 @@ else {
 	#else
 		else if (gameStates.render.bChaseCam && (!IsMultiGame || IsCoopGame || (EGI_FLAG (bEnableCheats, 0, 0, 0) && !COMPETITION))) {
 	#endif
-			externalView.GetViewPoint ();
-			if (externalView.GetPos ())
-				mView = externalView.GetPos ()->mOrient;
+			FLIGHTPATH.GetViewPoint ();
+			if (FLIGHTPATH.Tail ())
+				mView = FLIGHTPATH.Tail ()->mOrient;
 			}
 		else {
 			if (transformation.m_info.bUsePlayerHeadAngles) {
@@ -167,7 +170,7 @@ SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView, xZ
 CFixVector p, m_pos = OBJECTS [0].FrontPosition ();
 tScreenPos s;
 transformation.TransformAndEncode (p, m_pos);
-SetupCanvasses ();
+//SetupCanvasses ();
 gameData.render.frame.Activate ("");
 ProjectPoint (p, s, 0, 0);
 gameData.render.frame.Deactivate ();

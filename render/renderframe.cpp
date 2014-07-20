@@ -181,7 +181,7 @@ if (ogl.IsSideBySideDevice ()) {
 	SetupCanvasses ();
 	//ogl.StartFrame (0, 0, xStereoSeparation);
 	ogl.ChooseDrawBuffer ();
-	SetRenderView (xStereoSeparation, NULL, 1);
+	SetupRenderView (xStereoSeparation, NULL, 1);
 	transformation.ComputeFrustum ();
 
 	CFloatMatrix	view;
@@ -339,7 +339,7 @@ if (!nWindow) {
 	fontManager.SetCurrent (GAME_FONT);
 	gameData.render.dAspect = (double) CCanvas::Current ()->Width () / (double) CCanvas::Current ()->Height ();
 	}
-SetRenderView (xStereoSeparation, &nStartSeg, 1);
+SetupRenderView (xStereoSeparation, &nStartSeg, 1);
 transformation.ComputeFrustum ();
 #if MAX_SHADOWMAPS
 if (!(nWindow || gameStates.render.cameras.bActive)) {
@@ -405,7 +405,7 @@ if (SHOW_SHADOWS && !(nWindow || gameStates.render.cameras.bActive || automap.Ac
 			gameStates.render.nShadowBlurPass = 2;
 			gameStates.render.nShadowPass = 0;
 			ogl.StartFrame (0, 1, xStereoSeparation);
-			SetRenderView (xStereoSeparation, &nStartSeg, 1);
+			SetupRenderView (xStereoSeparation, &nStartSeg, 1);
 			RenderMine (nStartSeg, xStereoSeparation, nWindow);
 			RenderShadowTexture ();
 			}

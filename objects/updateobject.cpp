@@ -530,13 +530,13 @@ else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 #if DBG
 		bNeedEffect = true;
 #else
-		bNeedEffect = gameData.multiplayer.players [info.nId].energy < I2X (100);
+		bNeedEffect = PLAYER (info.nId).energy < I2X (100);
 #endif
 	else if (nType == SEGMENT_FUNC_REPAIRCENTER)
 #if DBG
 		bNeedEffect = true;
 #else
-		bNeedEffect = gameData.multiplayer.players [info.nId].Shield () < gameData.multiplayer.players [info.nId].MaxShield ();
+		bNeedEffect = PLAYER (info.nId).Shield () < PLAYER (info.nId).MaxShield ();
 #endif
 	else
 		bNeedEffect = false;

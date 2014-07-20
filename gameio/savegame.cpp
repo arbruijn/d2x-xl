@@ -92,7 +92,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "hogfile.h"
 
-#define STATE_VERSION				58
+#define STATE_VERSION				59
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) nId at tof.
 // 1 - Added Difficulty level save
@@ -642,15 +642,15 @@ void CSaveGameManager::SaveNetPlayers (void)
 m_cf.WriteByte ((int8_t) netPlayers [0].m_info.nType);
 m_cf.WriteInt (netPlayers [0].m_info.nSecurity);
 for (i = 0; i < MAX_NUM_NET_PLAYERS + 4; i++) {
-	m_cf.Write (netPlayers [0].m_info.players [i].callsign, 1, CALLSIGN_LEN + 1);
-	m_cf.Write (netPlayers [0].m_info.players [i].network.Network (), 1, 4);
-	m_cf.Write (netPlayers [0].m_info.players [i].network.Node (), 1, 6);
-	m_cf.WriteByte ((int8_t) netPlayers [0].m_info.players [i].versionMajor);
-	m_cf.WriteByte ((int8_t) netPlayers [0].m_info.players [i].versionMinor);
-	m_cf.WriteByte ((int8_t) netPlayers [0].m_info.players [i].computerType);
-	m_cf.WriteByte (netPlayers [0].m_info.players [i].connected);
-	m_cf.WriteShort ((int16_t) netPlayers [0].m_info.players [i].socket);
-	m_cf.WriteByte ((int8_t) netPlayers [0].m_info.players [i].rank);
+	m_cf.Write (NETPLAYER (i).callsign, 1, CALLSIGN_LEN + 1);
+	m_cf.Write (NETPLAYER (i).network.Network (), 1, 4);
+	m_cf.Write (NETPLAYER (i).network.Node (), 1, 6);
+	m_cf.WriteByte ((int8_t) NETPLAYER (i).versionMajor);
+	m_cf.WriteByte ((int8_t) NETPLAYER (i).versionMinor);
+	m_cf.WriteByte ((int8_t) NETPLAYER (i).computerType);
+	m_cf.WriteByte (NETPLAYER (i).connected);
+	m_cf.WriteShort ((int16_t) NETPLAYER (i).socket);
+	m_cf.WriteByte ((int8_t) NETPLAYER (i).rank);
 	}
 }
 
@@ -807,9 +807,9 @@ if (IsCoopGame) {
 	m_cf.WriteInt (gameData.app.nStateGameId);
 	SaveNetGame ();
 	SaveNetPlayers ();
-	m_cf.WriteInt (gameData.multiplayer.nPlayers);
+	m_cf.WriteInt (N_PLAYERS);
 	m_cf.WriteInt (N_LOCALPLAYER);
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++)
+	for (i = 0; i < N_PLAYERS; i++)
 		SavePlayer (gameData.multiplayer.players + i);
 	}
 //Save CPlayerData info
@@ -855,10 +855,13 @@ if (!m_bBetweenLevels) {
 			}
 		}
 //Save CObject info
-	i = gameData.objs.nLastObject [0] + 1;
+	i = gameData.objs.nObjects;
 	m_cf.WriteInt (i);
-	for (j = 0; j < i; j++)
-		OBJECTS [j].SaveState (m_cf);
+	CObject* objP;
+	FORALL_OBJS (objP) {
+		m_cf.WriteShort ((int16_t) objP->Index ());
+		objP->SaveState (m_cf);
+		}
 //Save CWall info
 	i = gameData.walls.nWalls;
 	m_cf.WriteInt (i);
@@ -1058,7 +1061,10 @@ m_cf.Write (&i, sizeof (int32_t), 1);
 m_cf.Write (m_description, sizeof (char) * DESC_LENGTH, 1);
 // Save the current screen shot...
 SaveImage ();
+bool bResume = networkThread.Suspend ();
 SaveGameData ();
+if (bResume)
+	networkThread.Resume ();
 if (!bSecret) {
 	for (int32_t i = 0; i < MAX_LEVELS_PER_MISSION; i++)
 		m_cf.WriteByte (int8_t (missionManager.GetLevelState (i)));
@@ -1220,8 +1226,8 @@ else {
 	gameData.app.SetGameMode (GM_NORMAL);
 	SetFunctionMode (FMODE_GAME);
 	ChangePlayerNumTo (0);
-	strcpy (pszOrgCallSign, gameData.multiplayer.players [0].callsign);
-	gameData.multiplayer.nPlayers = 1;
+	strcpy (pszOrgCallSign, PLAYER (0).callsign);
+	N_PLAYERS = 1;
 	if (!m_bSecret) {
 		InitMultiPlayerObject (0);	//make sure CPlayerData's CObject set up
 		}
@@ -1244,7 +1250,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	else {
 		nServerPlayer = -1;
 		for (i = 0; i < nPlayers; i++)
-			if (!strcmp (pszServerCallSign, netPlayers [0].m_info.players [i].callsign)) {
+			if (!strcmp (pszServerCallSign, NETPLAYER (i).callsign)) {
 				nServerPlayer = i;
 				break;
 				}
@@ -1252,7 +1258,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	if (nServerPlayer > 0) {
 		nOtherObjNum = restoredPlayers [0].nObject;
 		nServerObjNum = restoredPlayers [nServerPlayer].nObject;
-		Swap (netPlayers [0].m_info.players [0], netPlayers [0].m_info.players [nServerPlayer]);
+		Swap (NETPLAYER (0), NETPLAYER (nServerPlayer));
 		Swap (restoredPlayers [0], restoredPlayers [nServerPlayer]);
 		if (IAmGameHost ())
 			N_LOCALPLAYER = 0;
@@ -1260,9 +1266,9 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 			N_LOCALPLAYER = nServerPlayer;
 		}
 #if 0
-	memcpy (netPlayers [0].m_info.players [N_LOCALPLAYER].network.Node (), IpxGetMyLocalAddress (), 6);
-	netPlayers [0].m_info.players [N_LOCALPLAYER].network.Port () = 
-		htons (netPlayers [0].m_info.players [N_LOCALPLAYER].network.Port ());
+	memcpy (NETPLAYER (N_LOCALPLAYER).network.Node (), IpxGetMyLocalAddress (), 6);
+	NETPLAYER (N_LOCALPLAYER).network.Port () = 
+		htons (NETPLAYER (N_LOCALPLAYER).network.Port ());
 #endif
 	}
 *pnOtherObjNum = nOtherObjNum;
@@ -1278,13 +1284,11 @@ void CSaveGameManager::GetConnectedPlayers (CPlayerData *restoredPlayers, int32_
 
 for (i = 0; i < nPlayers; i++) {
 	for (j = 0; j < nPlayers; j++) {
-		if (!stricmp (restoredPlayers [i].callsign, gameData.multiplayer.players [j].callsign)) {
-			if (gameData.multiplayer.players [j].connected) {
+		if (!stricmp (restoredPlayers [i].callsign, PLAYER (j).callsign)) {
+			if (PLAYER (j).connected) {
 				if (gameStates.multi.nGameType == UDP_GAME) {
-					memcpy (restoredPlayers [i].netAddress, gameData.multiplayer.players [j].netAddress, 
-							  sizeof (gameData.multiplayer.players [j].netAddress));
-					memcpy (netPlayers [0].m_info.players [i].network.Node (), gameData.multiplayer.players [j].netAddress, 
-							  sizeof (gameData.multiplayer.players [j].netAddress));
+					memcpy (restoredPlayers [i].netAddress, PLAYER (j).netAddress, sizeof (PLAYER (j).netAddress));
+					memcpy (NETPLAYER (i).network.Node (), PLAYER (j).netAddress, sizeof (PLAYER (j).netAddress));
 					}
 				restoredPlayers [i].Connect ((int8_t) CONNECT_PLAYING);
 				break;
@@ -1295,14 +1299,14 @@ for (i = 0; i < nPlayers; i++) {
 for (i = 0; i < MAX_NUM_NET_PLAYERS; i++) {
 	if (!restoredPlayers [i].connected) {
 		memset (restoredPlayers [i].netAddress, 0xFF, sizeof (restoredPlayers [i].netAddress));
-		memset (netPlayers [0].m_info.players [i].network.Node (), 0xFF, 6);
+		memset (NETPLAYER (i).network.Node (), 0xFF, 6);
 		}
 	}
 for (i = 0; i < nPlayers; i++) 
-	(CPlayerInfo&) gameData.multiplayer.players [i] = (CPlayerInfo&) restoredPlayers [i];
-gameData.multiplayer.nPlayers = nPlayers;
+	(CPlayerInfo&) PLAYER (i) = (CPlayerInfo&) restoredPlayers [i];
+N_PLAYERS = nPlayers;
 if (IAmGameHost ()) {
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
+	for (i = 0; i < N_PLAYERS; i++) {
 		if (i == N_LOCALPLAYER)
 			continue;
    	CONNECT (i, CONNECT_DISCONNECTED);
@@ -1485,15 +1489,15 @@ void CSaveGameManager::LoadNetPlayers (void)
 netPlayers [0].m_info.nType = (uint8_t) m_cf.ReadByte ();
 netPlayers [0].m_info.nSecurity = m_cf.ReadInt ();
 for (int32_t i = 0; i < MAX_NUM_NET_PLAYERS + 4; i++) {
-	m_cf.Read (netPlayers [0].m_info.players [i].callsign, 1, CALLSIGN_LEN + 1);
-	m_cf.Read (netPlayers [0].m_info.players [i].network.Network (), 1, 4);
-	m_cf.Read (netPlayers [0].m_info.players [i].network.Node (), 1, 6);
-	netPlayers [0].m_info.players [i].versionMajor = (uint8_t) m_cf.ReadByte ();
-	netPlayers [0].m_info.players [i].versionMinor = (uint8_t) m_cf.ReadByte ();
-	netPlayers [0].m_info.players [i].computerType = m_cf.ReadByte ();
-	netPlayers [0].m_info.players [i].connected = ((int8_t) m_cf.ReadByte ());
-	netPlayers [0].m_info.players [i].socket = (uint16_t) m_cf.ReadShort ();
-	netPlayers [0].m_info.players [i].rank = (uint8_t) m_cf.ReadByte ();
+	m_cf.Read (NETPLAYER (i).callsign, 1, CALLSIGN_LEN + 1);
+	m_cf.Read (NETPLAYER (i).network.Network (), 1, 4);
+	m_cf.Read (NETPLAYER (i).network.Node (), 1, 6);
+	NETPLAYER (i).versionMajor = (uint8_t) m_cf.ReadByte ();
+	NETPLAYER (i).versionMinor = (uint8_t) m_cf.ReadByte ();
+	NETPLAYER (i).computerType = m_cf.ReadByte ();
+	NETPLAYER (i).connected = ((int8_t) m_cf.ReadByte ());
+	NETPLAYER (i).socket = (uint16_t) m_cf.ReadShort ();
+	NETPLAYER (i).rank = (uint8_t) m_cf.ReadByte ();
 	}
 }
 
@@ -1667,7 +1671,7 @@ CSaveGameManager::LoadMulti (szOrgCallSign, bMulti);
 if (IsMultiGame) {
 		char szServerCallSign [CALLSIGN_LEN + 1];
 
-	strcpy (szServerCallSign, netPlayers [0].m_info.players [0].callsign);
+	strcpy (szServerCallSign, NETPLAYER (0).callsign);
 	gameData.app.nStateGameId = m_cf.ReadInt ();
 	CSaveGameManager::LoadNetGame ();
 	CSaveGameManager::LoadNetPlayers ();
@@ -1743,18 +1747,33 @@ if (!m_bBetweenLevels) {
 	gameStates.render.bDoAppearanceEffect = 0;			// Don't do this for middle o' game stuff.
 	//Clear out all the objects from the lvl file
 	ResetSegObjLists ();
-	ResetObjects (1);
+	//ResetObjects (1);
+	InitObjects (false);
 
 	//Read objects, and pop 'em into their respective segments.
 	h = m_cf.ReadInt ();
-	gameData.objs.nLastObject [0] = h - 1;
+	//gameData.objs.nLastObject [0] = h - 1;
 	extraGameInfo [0].nBossCount [0] = 0;
-	for (i = 0; i < h; i++) {
-		OBJECTS [i].LoadState (m_cf);
-		if (OBJECTS [i].Type () < MAX_OBJECT_TYPES)
-			ClaimObjectSlot (i);
-		if ((m_nVersion < 32) && IS_BOSS (OBJECTS + i))
-			gameData.bosses.Add (i);
+	if (m_nVersion < 59) {
+		for (i = 0; i < h; i++) {
+			int16_t nObject = AllocObject (i);
+			CObject* objP = OBJECTS + nObject;
+			objP->LoadState (m_cf);
+			if (objP->Type () >= MAX_OBJECT_TYPES)
+				FreeObject (nObject);
+			else {
+				objP->Link ();
+				if ((m_nVersion < 32) && IS_BOSS (objP))
+					gameData.bosses.Add (nObject);
+				}
+			}
+		}
+	else {
+		for (i = 0; i < h; i++) {
+			int16_t nObject = AllocObject (m_cf.ReadShort ());
+			OBJECTS [nObject].LoadState (m_cf);
+			OBJECTS [nObject].Link ();
+			}
 		}
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	gameData.objs.nNextSignature = 0;
@@ -1765,7 +1784,7 @@ if (!m_bBetweenLevels) {
 	if (m_bSecret && (missionManager.nCurrentLevel >= 0)) {
 		SetPosFromReturnSegment (0);
 		if (m_bSecret == 2)
-			ResetShipData (true);
+			ResetShipData (-1, 1);
 		}
 	//Restore CWall info
 	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))
@@ -2014,11 +2033,11 @@ CSaveGameManager::LoadMulti (szOrgCallSign, bMulti);
 if (IsMultiGame) {
 		char szServerCallSign [CALLSIGN_LEN + 1];
 
-	strcpy (szServerCallSign, netPlayers [0].m_info.players [0].callsign);
+	strcpy (szServerCallSign, NETPLAYER (0).callsign);
 	m_cf.Read (&gameData.app.nStateGameId, sizeof (int32_t), 1);
 	m_cf.Read (&netGameInfo, sizeof (tNetGameInfo), 1);
 	m_cf.Read (&netPlayers [0], netPlayers [0].Size (), 1);
-	m_cf.Read (&nPlayers, sizeof (gameData.multiplayer.nPlayers), 1);
+	m_cf.Read (&nPlayers, sizeof (N_PLAYERS), 1);
 	m_cf.Read (&N_LOCALPLAYER, sizeof (N_LOCALPLAYER), 1);
 	for (i = 0; i < nPlayers; i++)
 		m_cf.Read (restoredPlayers + i, sizeof (CPlayerData), 1);
@@ -2073,7 +2092,7 @@ if (!m_bBetweenLevels) {
 	if (m_bSecret && (missionManager.nCurrentLevel >= 0)) {
 		SetPosFromReturnSegment (0);
 		if (m_bSecret == 2)
-			ResetShipData (true);
+			ResetShipData (-1, 1);
 		}
 	//Restore CWall info
 	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))
@@ -2286,7 +2305,7 @@ int32_t CSaveGameManager::LoadState (int32_t bMulti, int32_t bSecret, char *file
 {
 	char		szDescription [DESC_LENGTH + 1];
 	char		nId [5];
-	int32_t		nLevel, i;
+	int32_t	nLevel, i;
 	fix		xOldGameTime = gameData.time.xGame;
 
 StopTime ();
@@ -2317,10 +2336,13 @@ m_cf.Read (szDescription, sizeof (char) * DESC_LENGTH, 1);
 m_cf.Seek ((m_nVersion < 26) ? THUMBNAIL_W * THUMBNAIL_H : THUMBNAIL_LW * THUMBNAIL_LH, SEEK_CUR);
 // skip the palette
 m_cf.Seek (768, SEEK_CUR);
+bool bResume = networkThread.Suspend ();
 if (m_nVersion < 27)
 	i = LoadBinFormat (bMulti, xOldGameTime, &nLevel);
 else
 	i = LoadUniFormat (bMulti, xOldGameTime, &nLevel);
+if (bResume)
+	networkThread.Resume ();
 if (bSecret < 0)
 	missionManager.LoadLevelStates ();
 else if (!bSecret && (m_nVersion >= 53)) {
@@ -2348,10 +2370,10 @@ SetEquipmentMakerStates ();
 if (!IsMultiGame)
 	InitEntropySettings (0);	//required for repair centers
 else {
-	for (i = 0; i < gameData.multiplayer.nPlayers; i++) {
-	  if (!gameData.multiplayer.players [i].connected) {
+	for (i = 0; i < N_PLAYERS; i++) {
+	  if (!PLAYER (i).connected) {
 			NetworkDisconnectPlayer (i);
-  			OBJECTS [gameData.multiplayer.players [i].nObject].CreateAppearanceEffect ();
+  			OBJECTS [PLAYER (i).nObject].CreateAppearanceEffect ();
 	      }
 		}
 	}

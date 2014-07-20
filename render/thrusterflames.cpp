@@ -344,7 +344,7 @@ if (SHOW_SHADOWS && (gameStates.render.nShadowPass == 2))
 	return false;
 if (!(m_nStyle = EGI_FLAG (bThrusterFlames, 1, 1, 0)))
 	return false;
-if ((objP->info.nType == OBJ_PLAYER) && (gameData.multiplayer.players [objP->info.nId].flags & PLAYER_FLAGS_CLOAKED))
+if ((objP->info.nType == OBJ_PLAYER) && (PLAYER (objP->info.nId).flags & PLAYER_FLAGS_CLOAKED))
 	return false;
 
 bool bFallback;

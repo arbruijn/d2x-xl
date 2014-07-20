@@ -55,6 +55,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "multi.h"
 #include "playerdeath.h"
 #include "cockpit.h"
+#include "renderlib.h"
+#include "network_lib.h"
 #ifdef FORCE_FEEDBACK
 #	include "tactile.h"
 #endif
@@ -63,14 +65,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define	DEATH_SEQUENCE_EXPLODE_TIME	 (I2X (2))
 
-CObject	*viewerSaveP;
-int32_t		nPlayerFlagsSave;
+CObject*	viewerSaveP;
+int32_t	nPlayerFlagsSave;
 fix		xCameraToPlayerDistGoal=I2X (4);
-uint8_t		nControlTypeSave, nRenderTypeSave;
-int32_t		nKilledInFrame = -1;
-int16_t		nKilledObjNum = -1;
-
-extern char bMultiSuicide;
+uint8_t	nControlTypeSave, nRenderTypeSave;
+int32_t	nKilledInFrame = -1;
+int16_t	nKilledObjNum = -1;
 
 //------------------------------------------------------------------------------
 
@@ -143,6 +143,43 @@ gameStates.app.bPlayerEggsDropped = 0;
 
 //------------------------------------------------------------------------------
 
+void DestroyPlayerShip (void)
+{
+if (!LOCALPLAYER.m_bExploded) {
+	LOCALPLAYER.m_bExploded = 1;
+	if (gameStates.app.bDeathSequenceAborted) { //xTimeDead > DEATH_SEQUENCE_LENGTH) {
+		StopPlayerMovement ();
+		gameStates.app.bEnterGame = 2;
+		}
+	else {
+		if (LOCALPLAYER.hostages.nOnBoard > 1)
+			HUDInitMessage (TXT_SHIP_DESTROYED_2, LOCALPLAYER.hostages.nOnBoard);
+		else if (LOCALPLAYER.hostages.nOnBoard == 1)
+			HUDInitMessage (TXT_SHIP_DESTROYED_1);
+		else
+			HUDInitMessage (TXT_SHIP_DESTROYED_0);
+		}
+	if (IsNetworkGame) {
+		AdjustMineSpawn ();
+		MultiCapObjects ();
+		}
+	if (IsMultiGame)
+		gameStates.app.SRand ();
+	DropPlayerEggs (gameData.objs.consoleP);
+	if (IsMultiGame)
+		MultiSendPlayerExplode (MULTI_PLAYER_EXPLODE);
+	gameData.objs.consoleP->ExplodeSplashDamagePlayer ();
+	//is this next line needed, given the splash damage call above?
+	gameData.objs.consoleP->Explode (0);
+	gameData.objs.consoleP->info.nFlags &= ~OF_SHOULD_BE_DEAD;	//don't really kill player
+	gameData.objs.consoleP->info.renderType = RT_NONE;				//..just make him disappear
+	gameData.objs.consoleP->SetType (OBJ_GHOST);						//..and kill intersections
+	LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void DeadPlayerFrame (void)
 {
 	fix			xTimeDead, h;
@@ -181,26 +218,9 @@ if (gameStates.app.bPlayerIsDead) {
 			if (TactileStick)
 				ClearForces ();
 #endif
-			LOCALPLAYER.m_bExploded = 1;
-			if (IsNetworkGame) {
-				AdjustMineSpawn ();
-				MultiCapObjects ();
-				}
-			if (IsMultiGame)
-				gameStates.app.SRand ();
-			DropPlayerEggs (gameData.objs.consoleP);
-			gameStates.app.bPlayerEggsDropped = 1;
-			if (IsMultiGame)
-				MultiSendPlayerExplode (MULTI_PLAYER_EXPLODE);
-			gameData.objs.consoleP->ExplodeSplashDamagePlayer ();
-			//is this next line needed, given the splash damage call above?
-			gameData.objs.consoleP->Explode (0);
-			gameData.objs.consoleP->info.nFlags &= ~OF_SHOULD_BE_DEAD;		//don't really kill player
-			gameData.objs.consoleP->info.renderType = RT_NONE;				//..just make him disappear
-			gameData.objs.consoleP->SetType (OBJ_GHOST);						//..and kill intersections
-			LOCALPLAYER.flags &= ~PLAYER_FLAGS_HEADLIGHT_ON;
-#if 0
-			if (gameOpts->gameplay.bFastRespawn)
+			DestroyPlayerShip ();
+#if 1
+			if (gameOpts->gameplay.bObserve)
 				gameStates.app.bDeathSequenceAborted = 1;
 #endif
 			}
@@ -212,22 +232,9 @@ if (gameStates.app.bPlayerIsDead) {
 			CreateSmallFireballOnObject (gameData.objs.consoleP, I2X (1), 1);
 			}
 		}
-	if (gameStates.app.bDeathSequenceAborted) { //xTimeDead > DEATH_SEQUENCE_LENGTH) {
-		StopPlayerMovement ();
-		gameStates.app.bEnterGame = 2;
-		if (!gameStates.app.bPlayerEggsDropped) {
-			if (IsNetworkGame) {
-				AdjustMineSpawn ();
-				MultiCapObjects ();
-				}
-			if (IsMultiGame)
-				gameStates.app.SRand ();
-			DropPlayerEggs (gameData.objs.consoleP);
-			gameStates.app.bPlayerEggsDropped = 1;
-			if (IsMultiGame)
-				MultiSendPlayerExplode (MULTI_PLAYER_EXPLODE);
-			}
-		DoPlayerDead ();		//kill_playerP ();
+	if (gameStates.app.bDeathSequenceAborted) {
+		DestroyPlayerShip ();
+		DoPlayerDead ();
 		}
 	}
 }
@@ -259,7 +266,7 @@ else {
 //    Only if you haven't killed yourself
 //		This prevents cheating
 	if (IsHoardGame)
-		if (!bMultiSuicide)
+		if (!gameStates.multi.bSuicide)
 			if (LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] < 12)
 				LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]++;
 	}

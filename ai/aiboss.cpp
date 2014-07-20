@@ -293,7 +293,7 @@ OBJECTS [nObject].RelinkToSeg (nRandSeg);
 gameData.bosses [i].m_nLastTeleportTime = gameData.time.xGame;
 //	make boss point right at CPlayerData
 objP->info.position.vPos = vNewPos;
-vBossDir = OBJECTS [LOCALPLAYER.nObject].info.position.vPos - vNewPos;
+vBossDir = LOCALOBJECT.info.position.vPos - vNewPos;
 objP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
 audio.CreateSegmentSound (gameData.effects.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nRandSeg, 0, objP->info.position.vPos, 0 , I2X (1));
 audio.DestroyObjectSound (nObject);

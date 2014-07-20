@@ -273,9 +273,9 @@ objP->mType.physInfo.rotThrust.SetZero ();
 
 void DoCloakStuff (void)
 {
-for (int32_t i = 0; i < gameData.multiplayer.nPlayers; i++) {
+for (int32_t i = 0; i < N_PLAYERS; i++) {
 	if (gameData.multiplayer.players[i].flags & PLAYER_FLAGS_CLOAKED) {
-		if (gameData.time.xGame - gameData.multiplayer.players [i].cloakTime > CLOAK_TIME_MAX) {
+		if (gameData.time.xGame - PLAYER (i).cloakTime > CLOAK_TIME_MAX) {
 			gameData.multiplayer.players[i].flags &= ~PLAYER_FLAGS_CLOAKED;
 			if (i == N_LOCALPLAYER) {
 				audio.PlaySound (SOUND_CLOAK_OFF);
@@ -985,6 +985,7 @@ int32_t CGameLoop::Postprocess (void)
 PROF_START
 
 DeadPlayerFrame ();
+ObserverFrame ();
 if (gameData.demo.nState != ND_STATE_PLAYBACK) 
 	DoReactorDeadFrame ();
 ProcessSmartMinesFrame ();
@@ -1018,7 +1019,7 @@ if (gameData.reactor.bDestroyed && (gameData.demo.nState == ND_STATE_RECORDING))
 	NDRecordControlCenterDestroyed ();
 UpdateFlagClips ();
 MultiSetFlagPos ();
-SetPlayerPaths ();
+UpdatePlayerPaths ();
 FlashFrame ();
 PROF_END (ptGameStates)
 
@@ -1409,7 +1410,7 @@ playerP->CollidePlayerAndPowerup (powerupP, vCollision);
 //	way before the player gets there.
 void PowerupGrabCheatAll (void)
 {
-if (gameStates.app.tick40fps.bTick) {
+if (gameStates.app.tick40fps.bTick && (gameData.objs.consoleP->info.nSegment != -1)) {
 	int16_t nObject = SEGMENTS [gameData.objs.consoleP->info.nSegment].m_objects;
 	while (nObject != -1) {
 		if (OBJECTS [nObject].info.nType == OBJ_POWERUP)

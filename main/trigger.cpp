@@ -985,7 +985,7 @@ if (nPlayer != N_LOCALPLAYER)
 if (Flagged (TF_DISABLED))
 	return false;
 audio.StopAll ();		//kill the sounds
-StopSpeedBoost (gameData.multiplayer.players [nPlayer].nObject);
+StopSpeedBoost (PLAYER (nPlayer).nObject);
 missionManager.AdvanceLevel (X2I (GetValue ()));
 if (gameStates.app.bD1Mission) {
 	StartEndLevelSequence (0);

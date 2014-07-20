@@ -387,7 +387,7 @@ void CHUDIcons::DrawWeapons (void)
 	int32_t	nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 #if 0
 								((nWeaponIcons == 2) 
-								 && ((gameStates.app.nSDLTicks [0] - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) || 
+								 && ((gameStates.app.nSDLTicks [0] - LOCALOBJECT.TimeLastRepaired () > 3000) || 
 								     gameData.objs.consoleP->CriticalDamage ()))) ? 32 : 0;
 #endif
 	int32_t	ox = 6, 
@@ -604,7 +604,7 @@ if (ogl.IsOculusRift ())
 	int32_t		nDmgIconWidth = 0;
 #if 0
 									(nIconPos
-									 && ((gameStates.app.nSDLTicks [0] - OBJECTS [LOCALPLAYER.nObject].TimeLastRepaired () > 3000) || 
+									 && ((gameStates.app.nSDLTicks [0] - LOCALOBJECT.TimeLastRepaired () > 3000) || 
 									     gameData.objs.consoleP->CriticalDamage ()))) ? 80 : 0;
 #endif
 	float		fLineWidth = float (gameData.render.scene.Width ()) / 640.0f;

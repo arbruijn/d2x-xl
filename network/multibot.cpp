@@ -52,7 +52,7 @@ void DropStolenItems (CObject*);
 
 #define MAX_ROBOT_POWERUPS		((gameStates.multi.nGameType == UDP_GAME) ? 15 : 4)
 
-#define MULTI_ROBOT_PRIORITY(nObject, nPlayer) (((nObject % 4) + nPlayer) % gameData.multiplayer.nPlayers)
+#define MULTI_ROBOT_PRIORITY(nObject, nPlayer) (((nObject % 4) + nPlayer) % N_PLAYERS)
 
 extern void MultiSendStolenItems ();
 extern int32_t MultiPowerupIsAllowed (int32_t);
@@ -798,7 +798,7 @@ nProducer = buf [bufP++];
 nRemoteObj = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
 nType = buf [bufP];
-if ((nPlayer < 0) || (nRemoteObj < 0) || (nProducer < 0) || (nProducer >= gameData.producers.nProducers) || (nPlayer >= gameData.multiplayer.nPlayers)) {
+if ((nPlayer < 0) || (nRemoteObj < 0) || (nProducer < 0) || (nProducer >= gameData.producers.nProducers) || (nPlayer >= N_PLAYERS)) {
 	Int3 (); // Bogus data
 	return;
 	}
@@ -879,7 +879,7 @@ switch (action)  {
 		bossObjP->info.position.vPos = SEGMENTS [nTeleportSeg].Center ();
 		OBJECTS [nBossObj].RelinkToSeg (nTeleportSeg);
 		gameData.bosses [nBossIdx].m_nLastTeleportTime = gameData.time.xGame;
-		vBossDir = OBJECTS [gameData.multiplayer.players [nPlayer].nObject].info.position.vPos - bossObjP->info.position.vPos;
+		vBossDir = OBJECTS [PLAYER (nPlayer).nObject].info.position.vPos - bossObjP->info.position.vPos;
 		bossObjP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
 
 		audio.CreateSegmentSound (gameData.effects.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, bossObjP->info.position.vPos, 0, I2X (1));

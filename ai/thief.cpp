@@ -237,16 +237,16 @@ switch (ailP->mode) {
 }
 
 //	----------------------------------------------------------------------------
-//	Return true if this item (whose presence is indicated by gameData.multiplayer.players [nPlayer].flags) gets stolen.
+//	Return true if this item (whose presence is indicated by PLAYER (nPlayer).flags) gets stolen.
 int32_t MaybeStealDevice (int32_t nPlayer, int32_t deviceFlag)
 {
 if (extraGameInfo [IsMultiGame].loadout.nDevice & deviceFlag)
 	return 0;
 
-if (gameData.multiplayer.players [nPlayer].flags & deviceFlag) {
+if (PLAYER (nPlayer).flags & deviceFlag) {
 	if (RandShort () < THIEF_PROBABILITY) {
 		int32_t nPowerup = -1;
-		gameData.multiplayer.players [nPlayer].flags &= (~deviceFlag);
+		PLAYER (nPlayer).flags &= (~deviceFlag);
 		switch (deviceFlag) {
 			case PLAYER_FLAGS_INVULNERABLE:
 				nPowerup = POW_INVUL;
@@ -294,12 +294,12 @@ return 0;
 
 int32_t MaybeStealSecondaryWeapon (int32_t nPlayer, int32_t nWeapon)
 {
-if ((gameData.multiplayer.players [nPlayer].secondaryWeaponFlags & HAS_FLAG(nWeapon)) && gameData.multiplayer.players [nPlayer].secondaryAmmo [nWeapon])
+if ((PLAYER (nPlayer).secondaryWeaponFlags & HAS_FLAG(nWeapon)) && PLAYER (nPlayer).secondaryAmmo [nWeapon])
 	if (RandShort () < THIEF_PROBABILITY) {
 		if (nWeapon == PROXMINE_INDEX)
 			if (RandShort () > 8192)		//	Come in groups of 4, only add 1/4 of time.
 				return 0;
-		gameData.multiplayer.players [nPlayer].secondaryAmmo [nWeapon]--;
+		PLAYER (nPlayer).secondaryAmmo [nWeapon]--;
 		//	Smart mines and proxbombs don't get dropped because they only come in 4 packs.
 		if ((nWeapon != PROXMINE_INDEX) && (nWeapon != SMARTMINE_INDEX)) {
 			gameData.thief.stolenItems [gameData.thief.nStolenItem] = secondaryWeaponToPowerup [0][nWeapon];
@@ -318,26 +318,26 @@ return 0;
 
 int32_t MaybeStealPrimaryWeapon (int32_t nPlayer, int32_t nWeapon)
 {
-if ((gameData.multiplayer.players [nPlayer].primaryWeaponFlags & HAS_FLAG (nWeapon)) && 
-	 gameData.multiplayer.players [nPlayer].primaryAmmo [nWeapon] &&
+if ((PLAYER (nPlayer).primaryWeaponFlags & HAS_FLAG (nWeapon)) && 
+	 PLAYER (nPlayer).primaryAmmo [nWeapon] &&
 	 !(extraGameInfo [IsMultiGame].loadout.nGuns & HAS_FLAG (nWeapon))) {
 	if (RandShort () < THIEF_PROBABILITY) {
 		if (nWeapon == 0) {
-			if (gameData.multiplayer.players [nPlayer].laserLevel > 0) {
-				if (gameData.multiplayer.players [nPlayer].laserLevel > 3) {
+			if (PLAYER (nPlayer).laserLevel > 0) {
+				if (PLAYER (nPlayer).laserLevel > 3) {
 					gameData.thief.stolenItems [gameData.thief.nStolenItem] = POW_SUPERLASER;
 				} 
 				else {
 					gameData.thief.stolenItems [gameData.thief.nStolenItem] = primaryWeaponToPowerup [nWeapon];
 					}
 				ThiefMessage (TXT_LVL_DECREASED, baseGameTexts [104+nWeapon][0]);		//	Danger! Danger! Use of literal!  Danger!
-				gameData.multiplayer.players [nPlayer].laserLevel--;
+				PLAYER (nPlayer).laserLevel--;
 				audio.PlaySound(SOUND_WEAPON_STOLEN);
 				return 1;
 				}
 			} 
-		else if (gameData.multiplayer.players [nPlayer].primaryWeaponFlags & (1 << nWeapon)) {
-			gameData.multiplayer.players [nPlayer].primaryWeaponFlags &= ~(1 << nWeapon);
+		else if (PLAYER (nPlayer).primaryWeaponFlags & (1 << nWeapon)) {
+			PLAYER (nPlayer).primaryWeaponFlags &= ~(1 << nWeapon);
 			gameData.thief.stolenItems [gameData.thief.nStolenItem] = primaryWeaponToPowerup [nWeapon];
 			ThiefMessage (TXT_WPN_STOLEN, baseGameTexts [104+nWeapon][0]);		//	Danger! Danger! Use of literal!  Danger!
 			AutoSelectWeapon (0, 0);

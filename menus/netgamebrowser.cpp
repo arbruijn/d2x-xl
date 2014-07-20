@@ -273,7 +273,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	}
 LOCALPLAYER.timeLevel = 0;
 NetworkInit ();
-gameData.multiplayer.nPlayers = 0;
+N_PLAYERS = 0;
 setjmp (gameExitPoint);
 networkData.nJoining = 0; 
 networkData.nJoinState = 0;

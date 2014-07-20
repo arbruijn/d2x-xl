@@ -530,12 +530,12 @@ if (driver->HandleLeaveGame)
 
 int32_t IpxSendPlayerPacket (uint8_t nPlayer, uint8_t *data, int32_t dataSize)
 {
-if (gameData.multiplayer.players [nPlayer].IsConnected () && (nPlayer != N_LOCALPLAYER))
+if (PLAYER (nPlayer).IsConnected () && (nPlayer != N_LOCALPLAYER))
 	networkThread.Send (
 		data, dataSize, 
-		netPlayers [0].m_info.players [nPlayer].network.Network (), 
-		netPlayers [0].m_info.players [nPlayer].network.Node (),
-		gameData.multiplayer.players [nPlayer].netAddress);
+		NETPLAYER (nPlayer).network.Network (), 
+		NETPLAYER (nPlayer).network.Node (),
+		PLAYER (nPlayer).netAddress);
 return 0;
 }
 
@@ -557,8 +557,8 @@ if (driver->SendGamePacket) {
 	} 
 else {
 	// Loop through all the players unicasting the packet.
-	//printf ("Sending game packet: gameData.multiplayer.nPlayers = %i\n", gameData.multiplayer.nPlayers);
-	for (uint8_t nPlayer = 0; nPlayer < gameData.multiplayer.nPlayers; nPlayer++)
+	//printf ("Sending game packet: N_PLAYERS = %i\n", N_PLAYERS);
+	for (uint8_t nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++)
 		IpxSendPlayerPacket (nPlayer, data, dataSize);
 	return dataSize;
 	}

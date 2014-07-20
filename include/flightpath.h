@@ -28,22 +28,21 @@ class CFlightPath {
 	public:
 		CArray<tPathPoint>	m_path; // [MAX_PATH_POINTS];
 		tPathPoint*				m_posP;
-		int32_t						m_nSize;
-		int32_t						m_nStart;
-		int32_t						m_nEnd;
+		int32_t					m_nSize;
+		int32_t					m_nStart;
+		int32_t					m_nEnd;
 		time_t					m_tRefresh;
 		time_t					m_tUpdate;
 	public:
 		CFlightPath ();
-		void SetPoint (CObject *objP);
+		void Update (CObject *objP);
 		tPathPoint *GetPoint (void);
-		void GetViewPoint (void);
+		void GetViewPoint (CFixVector* vPos = NULL);
 		void Reset (int32_t nSize, int32_t nFPS);
-		tPathPoint* GetPos (void) { return m_posP; }
-		inline tPathPoint* Pos (void) { return m_posP; }
+		inline tPathPoint* Tail (void) { return m_posP; }
 		inline void SetPos (tPathPoint *posP) { m_posP = posP; }
 };
 
-extern CFlightPath externalView;
+#define FLIGHTPATH		PLAYER (LOCALPLAYER.ObservedPlayer ()).FlightPath ()
 
 #endif /* _FLIGHTPATH_H */
