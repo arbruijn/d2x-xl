@@ -1728,7 +1728,6 @@ else
 	gameStates.app.nSpawnPos = -1;
 gameData.objs.consoleP->info.controlType = CT_FLYING;
 gameData.objs.consoleP->info.movementType = MT_PHYSICS;
-MultiSendShield ();
 DisableObjectProducers ();
 PrintLog (0, "clearing transient objects\n");
 ClearTransientObjects (0);		//0 means leave proximity bombs
@@ -1737,9 +1736,9 @@ gameStates.render.bDoAppearanceEffect = 1;
 if (IsMultiGame) {
 	if (IsCoopGame)
 		MultiSendScore ();
-	MultiSendPosition (LOCALPLAYER.nObject);
 	if (LOCALOBJECT.Type () == OBJ_PLAYER)
 		MultiSendReappear ();
+	NetworkFlushData (); // will send position, shield and weapon info
 	}
 PrintLog (0, "keeping network busy\n");
 if (IsNetworkGame)

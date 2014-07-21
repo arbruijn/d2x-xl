@@ -246,7 +246,7 @@ if (!m_bRadar) {
 if (AM_SHOW_PLAYERS) {
 	for (int32_t i = 0; i < N_PLAYERS; i++) {
 		if ((i != N_LOCALPLAYER) && AM_SHOW_PLAYER (i)) {
-			if (OBJECTS [PLAYER (i).nObject].info.nType == OBJ_PLAYER) {
+			if (PLAYEROBJECT (i).info.nType == OBJ_PLAYER) {
 				color = IsTeamGame ? GetTeam (i) : i;
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
 				if (bTextured)

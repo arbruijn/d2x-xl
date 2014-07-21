@@ -613,7 +613,7 @@ if (gameStates.multi.nGameType == IPX_GAME) {
 	}
 networkData.SyncPack ().AppendMessage (buf, len);
 if (bUrgent)
-	networkData.bPacketUrgent = 1;
+	NetworkFlushData ();
 }
 
 //------------------------------------------------------------------------------

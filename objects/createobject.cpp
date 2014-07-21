@@ -102,8 +102,8 @@ LinkToSeg (nSegment);
 //-----------------------------------------------------------------------------
 
 int32_t CObject::Create (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSegment,
-							const CFixVector& vPos, const CFixMatrix& mOrient,
-							fix xSize, uint8_t cType, uint8_t mType, uint8_t rType)
+								 const CFixVector& vPos, const CFixMatrix& mOrient,
+								 fix xSize, uint8_t cType, uint8_t mType, uint8_t rType)
 {
 #if DBG
 if (nType == OBJ_WEAPON) {

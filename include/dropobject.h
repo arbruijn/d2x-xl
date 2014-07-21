@@ -20,8 +20,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EXEC_DROP		3
 
 int32_t ChooseDropSegment (CObject *objP, int32_t *pbFixedPos, int32_t nDropState);
-int32_t ObjectCreateEgg (CObject *objP, bool bLocal = false, bool bUpdateLimits = true);
-int32_t CallObjectCreateEgg (CObject *objP, int32_t count, int32_t nType, int32_t id, bool bLocal = false, bool bUpdateLimits = false);
+int32_t PrepareObjectCreateEgg (CObject *objP, int32_t count, int32_t nType, int32_t id, bool bLocal = false, bool bUpdateLimits = false);
 int32_t MaybeDropNetPowerup (int16_t nObject, int32_t powerupType, int32_t nDropState);
 void RespawnDestroyedWeapon (int16_t nObject);
 void MaybeReplacePowerupWithEnergy (CObject *del_obj);

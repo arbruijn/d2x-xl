@@ -237,26 +237,22 @@ return m;
 
 static inline uint32_t GET_INTEL_INT (void *s)
 {
-uint32_t *tmp = reinterpret_cast<uint32_t*> (s);
-return INTEL_INT (*tmp);
+return INTEL_INT (*reinterpret_cast<uint32_t*> (s));
 }
 
 static inline uint16_t GET_INTEL_SHORT (void *s)
 {
-uint16_t *tmp = reinterpret_cast<uint16_t*> (s);
-return INTEL_SHORT (*tmp);
+return INTEL_SHORT (*reinterpret_cast<uint16_t*> (s));
 }
 
 static inline void PUT_INTEL_INT (void *d, uint32_t s)
 {
-uint32_t *tmp = reinterpret_cast<uint32_t*> (d);
-*tmp = INTEL_INT (s);
+*reinterpret_cast<uint32_t*> (d) = INTEL_INT (s);
 }
 
 static inline void PUT_INTEL_SHORT (void *d, uint16_t s)
 {
-uint16_t *tmp = reinterpret_cast<uint16_t*> (d);
-*tmp = INTEL_SHORT (s);
+*reinterpret_cast<uint16_t*> (d) = INTEL_SHORT (s);
 }
 
 #endif

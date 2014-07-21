@@ -412,7 +412,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 			}
 		}
 
-	if (0 > (nObject = CallObjectCreateEgg (OBJECTS + LOCALPLAYER.nObject, 1, OBJ_POWERUP, nPowerupType, true)))
+	if (0 > (nObject = PrepareObjectCreateEgg (OBJECTS + LOCALPLAYER.nObject, 1, OBJ_POWERUP, nPowerupType, true)))
 		return 0;
 
 	CObject* objP = OBJECTS + nObject;
@@ -714,17 +714,17 @@ return nObject;
 // ----------------------------------------------------------------------------
 // Returns created CObject number. If object dropped by player, set flag.
 
-int32_t ObjectCreateEgg (CObject *objP, bool bLocal, bool bUpdateLimits)
+int32_t CObject::CreateEgg (bool bLocal, bool bUpdateLimits)
 {
 	int32_t	i, nObject = -1;
 
-if ((objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERUP)) {
+if ((info.nType != OBJ_PLAYER) && (info.contains.nType == OBJ_POWERUP)) {
 	if (IsMultiGame) {
 		if (bUpdateLimits)
-			AddAllowedPowerup (objP->info.contains.nId, objP->info.contains.nCount);
+			AddAllowedPowerup (info.contains.nId, info.contains.nCount);
 		}
 	else {
-		if (objP->info.contains.nId == POW_SHIELD_BOOST) {
+		if (info.contains.nId == POW_SHIELD_BOOST) {
 			if (LOCALPLAYER.Shield () >= I2X (100)) {
 				if (RandShort () > 16384) {
 					return -1;
@@ -736,7 +736,7 @@ if ((objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERU
 					}
 				}
 			}
-		else if (objP->info.contains.nId == POW_ENERGY) {
+		else if (info.contains.nId == POW_ENERGY) {
 			if (LOCALPLAYER.Energy () >= I2X (100)) {
 				if (RandShort () > 16384) {
 					return -1;
@@ -751,20 +751,20 @@ if ((objP->info.nType != OBJ_PLAYER) && (objP->info.contains.nType == OBJ_POWERU
 		}
 	}
 
-for (i = objP->info.contains.nCount; i; i--) {
-	nObject = DropPowerup (objP->info.contains.nType, uint8_t (objP->info.contains.nId), ObjIdx (objP), i == 1, // drop extra powerups?
-								  objP->mType.physInfo.velocity, objP->info.position.vPos, objP->info.nSegment, bLocal);
+for (i = info.contains.nCount; i; i--) {
+	nObject = DropPowerup (info.contains.nType, uint8_t (info.contains.nId), Index (), i == 1, // drop extra powerups?
+								  mType.physInfo.velocity, info.position.vPos, info.nSegment, bLocal);
 	if (nObject < 0)
 		break;
-	if (objP->info.nType == OBJ_PLAYER) {
-		if (objP->info.nId == N_LOCALPLAYER)
+	if (info.nType == OBJ_PLAYER) {
+		if (info.nId == N_LOCALPLAYER)
 			OBJECTS [nObject].info.nFlags |= OF_PLAYER_DROPPED;
 		}
-	else if (objP->info.nType == OBJ_ROBOT) {
-		if (objP->info.contains.nType == OBJ_POWERUP) {
-			if ((objP->info.contains.nId == POW_VULCAN) || (objP->info.contains.nId == POW_GAUSS))
+	else if (info.nType == OBJ_ROBOT) {
+		if (info.contains.nType == OBJ_POWERUP) {
+			if ((info.contains.nId == POW_VULCAN) || (info.contains.nId == POW_GAUSS))
 				OBJECTS [nObject].cType.powerupInfo.nCount = VULCAN_WEAPON_AMMO_AMOUNT;
-			else if (objP->info.contains.nId == POW_OMEGA)
+			else if (info.contains.nId == POW_OMEGA)
 				OBJECTS [nObject].cType.powerupInfo.nCount = MAX_OMEGA_CHARGE;
 			}
 		}
@@ -777,14 +777,14 @@ return nObject;
 //	-------------------------------------------------------------------------------------------------------
 //	Put count OBJECTS of nType nType (eg, powerup), id = id (eg, energy) into *objP, then drop them! Yippee!
 //	Returns created CObject number.
-int32_t CallObjectCreateEgg (CObject *objP, int32_t nCount, int32_t nType, int32_t nId, bool bLocal, bool bUpdateLimits)
+int32_t PrepareObjectCreateEgg (CObject *objP, int32_t nCount, int32_t nType, int32_t nId, bool bLocal, bool bUpdateLimits)
 {
 if (nCount <= 0)
 	return -1;
 objP->info.contains.nCount = nCount;
 objP->info.contains.nType = nType;
 objP->info.contains.nId = nId;
-return ObjectCreateEgg (objP, bLocal, bUpdateLimits);
+return objP->CreateEgg (bLocal, bUpdateLimits);
 }
 
 //------------------------------------------------------------------------------
@@ -827,7 +827,7 @@ if ((nWeapon == 4) && gameData.weapons.bTripleFusion)
 	gameData.weapons.bTripleFusion = 0;
 else if (gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nGuns & nWeaponFlag))
 	return -1;
-return CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, primaryWeaponToPowerup [nWeapon]);
+return PrepareObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, primaryWeaponToPowerup [nWeapon]);
 }
 
 //	-----------------------------------------------------------------------------
@@ -841,7 +841,7 @@ if (PLAYER (playerObjP->info.nId).secondaryWeaponFlags & nWeaponFlag) {
 	int32_t i, maxCount = ((EGI_FLAG (bDropAllMissiles, 0, 0, 0)) ? count : min(count, 3));
 
 	for (i = 0; i < maxCount; i++)
-		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, nPowerup);
+		PrepareObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, nPowerup);
 	}
 }
 
@@ -851,7 +851,7 @@ void MaybeDropDeviceEgg (CPlayerInfo *playerP, CObject *playerObjP, int32_t nDev
 {
 if ((PLAYER (playerObjP->info.nId).flags & nDeviceFlag) &&
 	 !(gameStates.app.bHaveExtraGameInfo [IsMultiGame] && (extraGameInfo [IsMultiGame].loadout.nDevice & nDeviceFlag)))
-	CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, nPowerupId);
+	PrepareObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, nPowerupId);
 }
 
 //	-----------------------------------------------------------------------------
@@ -871,8 +871,8 @@ if (0 < (nMissiles = PLAYER (playerObjP->info.nId).secondaryAmmo [nMissileIndex]
 	if (nMissiles > 0) {
 		if (!(IsMultiGame || EGI_FLAG (bDropAllMissiles, 0, 0, 0)) && (nMissiles > 10))
 			nMissiles = 10;
-		CallObjectCreateEgg (playerObjP, nMissiles / 4, OBJ_POWERUP, nPowerupId + 1);
-		CallObjectCreateEgg (playerObjP, nMissiles % 4, OBJ_POWERUP, nPowerupId);
+		PrepareObjectCreateEgg (playerObjP, nMissiles / 4, OBJ_POWERUP, nPowerupId + 1);
+		PrepareObjectCreateEgg (playerObjP, nMissiles % 4, OBJ_POWERUP, nPowerupId);
 		}
 	}
 }
@@ -929,14 +929,13 @@ else {
 void DropPlayerEggs (CObject *playerObjP)
 {
 if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.nType == OBJ_GHOST))) {
-	int32_t				nPlayer = playerObjP->info.nId;
-	int16_t				nObject;
-	int32_t				nVulcanAmmo = 0;
+	int32_t			nPlayer = playerObjP->info.nId;
+	int16_t			nObject;
+	int32_t			nVulcanAmmo = 0;
 	CPlayerData*	playerP = gameData.multiplayer.players + nPlayer;
-	int32_t				bResetLasers = !IsMultiGame || (nPlayer != N_LOCALPLAYER);
+	int32_t			bResetLasers = !IsMultiGame || (nPlayer != N_LOCALPLAYER);
 
-	// Seed the Random number generator so in net play the eggs will always
-	// drop the same way
+	// Seed the Random number generator so in net play the eggs will always drop the same way
 	PrintLog (1, "dropping player equipment\n");
 	if (IsMultiGame) {
 		gameData.multigame.create.nCount = 0;
@@ -949,15 +948,15 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 	//	If the player dies and he has powerful lasers, create the powerups here.
 	if (playerP->LaserLevel (1)) {
 		if (!IsBuiltinWeapon (SUPER_LASER_INDEX)) {
-			CallObjectCreateEgg (playerObjP, playerP->LaserLevel (1), OBJ_POWERUP, POW_SUPERLASER);
-			CallObjectCreateEgg (playerObjP, MAX_LASER_LEVEL, OBJ_POWERUP, POW_LASER);
+			PrepareObjectCreateEgg (playerObjP, playerP->LaserLevel (1), OBJ_POWERUP, POW_SUPERLASER);
+			PrepareObjectCreateEgg (playerObjP, MAX_LASER_LEVEL, OBJ_POWERUP, POW_LASER);
 			if (bResetLasers)
 				playerP->SetSuperLaser (0);
 			}
 		}
 	if (playerP->LaserLevel (0) > 0) {
 		if (!(IsBuiltinWeapon (LASER_INDEX) || IsBuiltinWeapon (SUPER_LASER_INDEX))) {
-			CallObjectCreateEgg (playerObjP, playerP->LaserLevel (0), OBJ_POWERUP, POW_LASER);	// Note: laserLevel = 0 for laser level 1.
+			PrepareObjectCreateEgg (playerObjP, playerP->LaserLevel (0), OBJ_POWERUP, POW_LASER);	// Note: laserLevel = 0 for laser level 1.
 			if (bResetLasers)
 				playerP->SetStandardLaser (0);
 			}
@@ -967,9 +966,9 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_QUAD_LASERS, POW_QUADLASER);
 	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_CLOAKED, POW_CLOAK);
 	while (playerP->nInvuls--)
-		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_INVUL);
+		PrepareObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_INVUL);
 	while (playerP->nCloaks--)
-		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CLOAK);
+		PrepareObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_CLOAK);
 	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_FULLMAP, POW_FULL_MAP);
 	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_AFTERBURNER, POW_AFTERBURNER);
 	MaybeDropDeviceEgg (playerP, playerObjP, PLAYER_FLAGS_AMMO_RACK, POW_AMMORACK);
@@ -987,7 +986,7 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 	playerP->nCloaks = 0;
 	playerP->flags &= ~(PLAYER_FLAGS_INVULNERABLE | PLAYER_FLAGS_CLOAKED);
 	if ((gameData.app.GameMode (GM_CAPTURE)) && (playerP->flags & PLAYER_FLAGS_FLAG))
-		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, (GetTeam (nPlayer) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG);
+		PrepareObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, (GetTeam (nPlayer) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG);
 
 #if !DBG
 	if (gameData.app.GameMode (GM_HOARD | GM_ENTROPY))
@@ -1003,7 +1002,7 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 		if (IsHoardGame && (maxCount > 12))
 			maxCount = 12;
 		for (i = 0; i < maxCount; i++)
-			CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_HOARD_ORB);
+			PrepareObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_HOARD_ORB);
 		}
 
 	//Drop the vulcan, gauss, and ammo
@@ -1016,7 +1015,7 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 
 		gameData.multiplayer.weaponStates [nPlayer].nAmmoUsed = 0;
 		if (0 < (i = nVulcanAmmo / VULCAN_CLIP_CAPACITY - 1)) {	// drop ammo in excess of presupplied Vulcan/Gauss ammo as vulcan ammo packs
-			CallObjectCreateEgg (playerObjP, i, OBJ_POWERUP, POW_VULCAN_AMMO);
+			PrepareObjectCreateEgg (playerObjP, i, OBJ_POWERUP, POW_VULCAN_AMMO);
 			nVulcanAmmo -= i * VULCAN_CLIP_CAPACITY;
 			if (nVulcanAmmo < 0)
 				nVulcanAmmo = 0;
@@ -1064,8 +1063,8 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 
 		//	Always drop a shield and energy powerup.
 	if (IsMultiGame && !gameStates.app.bChangingShip) {
-		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_SHIELD_BOOST);
-		CallObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_ENERGY);
+		PrepareObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_SHIELD_BOOST);
+		PrepareObjectCreateEgg (playerObjP, 1, OBJ_POWERUP, POW_ENERGY);
 		}
 	PrintLog (-1);
 	}
@@ -1090,7 +1089,7 @@ if (nExcess > 0) {
 	LOCALPLAYER.primaryAmmo [VULCAN_INDEX] -= nClips * VULCAN_CLIP_CAPACITY;
 	if (LOCALPLAYER.primaryAmmo [VULCAN_INDEX] < 0)
 		LOCALPLAYER.primaryAmmo [VULCAN_INDEX] = 0;
-	CallObjectCreateEgg (&LOCALOBJECT, nClips, OBJ_POWERUP, POW_VULCAN_AMMO);
+	PrepareObjectCreateEgg (&LOCALOBJECT, nClips, OBJ_POWERUP, POW_VULCAN_AMMO);
 	}
 }
 

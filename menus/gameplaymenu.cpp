@@ -311,7 +311,8 @@ void GameplayOptionsMenu (void)
 	int32_t	i;
 	int32_t	optShip = -1;
 	int32_t	nShip = (gameOpts->gameplay.nShip [0] < 0) ? 0 : gameOpts->gameplay.nShip [0];
-	char	szSlider [50];
+	char		szSlider [50];
+	bool		bRestricted = gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame;
 
 InitStrings ();
 
@@ -320,13 +321,15 @@ do {
 	m.Destroy ();
 	m.Create (20);
 
-	sprintf (szSlider + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
-	*szSlider = *(TXT_DIFFICULTY2 - 1);
-	m.AddSlider ("difficulty", szSlider + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
+	if (!bRestricted) {
+		sprintf (szSlider + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
+		*szSlider = *(TXT_DIFFICULTY2 - 1);
+		m.AddSlider ("difficulty", szSlider + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
 
-	sprintf (szSlider + 1, TXT_AI_AGGRESSIVITY, pszAggressivities [nAIAggressivity]);
-	*szSlider = *(TXT_AI_AGGRESSIVITY - 1);
-	m.AddSlider ("ai aggressivity", szSlider + 1, nAIAggressivity, 0, 5, KEY_A, HTX_AI_AGGRESSIVITY);
+		sprintf (szSlider + 1, TXT_AI_AGGRESSIVITY, pszAggressivities [nAIAggressivity]);
+		*szSlider = *(TXT_AI_AGGRESSIVITY - 1);
+		m.AddSlider ("ai aggressivity", szSlider + 1, nAIAggressivity, 0, 5, KEY_A, HTX_AI_AGGRESSIVITY);
+		}
 
 	sprintf (szSlider + 1, TXT_WEAPON_SWITCH, pszWeaponSwitch [gameOpts->gameplay.nAutoSelectWeapon]);
 	*szSlider = *(TXT_WEAPON_SWITCH - 1);
@@ -334,19 +337,23 @@ do {
 
 	m.AddText ("", "");
 	m.AddCheck ("smart weapon switch", TXT_SMART_WPNSWITCH, extraGameInfo [0].bSmartWeaponSwitch, KEY_M, HTX_GPLAY_SMARTSWITCH);
-	m.AddCheck ("headlight drains power", TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_O, HTX_HEADLIGHT_POWERDRAIN);
-	m.AddCheck ("suppress thief", TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
+	if (!bRestricted) {
+		m.AddCheck ("headlight drains power", TXT_HEADLIGHT_POWERDRAIN, extraGameInfo [0].headlight.bDrainPower, KEY_O, HTX_HEADLIGHT_POWERDRAIN);
+		m.AddCheck ("suppress thief", TXT_SUPPRESS_THIEF, gameOpts->gameplay.bNoThief, KEY_T, HTX_SUPPRESS_THIEF);
+		}
 	m.AddCheck ("observer mode", TXT_OBSERVER_MODE, gameOpts->gameplay.bObserve, KEY_B, HTX_OBSERVER_MODE);
-	m.AddCheck ("use inventory", TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_U, HTX_GPLAY_INVENTORY);
-	m.AddCheck ("spinup gatling", TXT_SPINUP_GATLING, extraGameInfo [0].bGatlingSpeedUp, KEY_G, HTX_SPINUP_GATLING);
-	if (!gameStates.app.bGameRunning)
-		m.AddCheck ("allow custom weapons", TXT_ALLOW_CUSTOM_WEAPONS, extraGameInfo [0].bAllowCustomWeapons, KEY_C, HTX_ALLOW_CUSTOM_WEAPONS);
+	if (!bRestricted) {
+		m.AddCheck ("use inventory", TXT_USE_INVENTORY, gameOpts->gameplay.bInventory, KEY_U, HTX_GPLAY_INVENTORY);
+		m.AddCheck ("spinup gatling", TXT_SPINUP_GATLING, extraGameInfo [0].bGatlingSpeedUp, KEY_G, HTX_SPINUP_GATLING);
+		if (!gameStates.app.bGameRunning)
+			m.AddCheck ("allow custom weapons", TXT_ALLOW_CUSTOM_WEAPONS, extraGameInfo [0].bAllowCustomWeapons, KEY_C, HTX_ALLOW_CUSTOM_WEAPONS);
+		}
 	m.AddText ("", "");
 	m.AddMenu ("reorder guns", TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);
 	m.AddMenu ("reorder missiles", TXT_SECONDARY_PRIO, KEY_E, HTX_OPTIONS_SECPRIO);
 	//if (gameStates.app.bGameRunning)
 		AddShipSelection (m, optShip);
-	if (!(gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame)) {
+	if (!bRestricted) {
 		m.AddText ("", "");
 		m.AddMenu ("loadout options", TXT_LOADOUT_OPTION, KEY_Q, HTX_MULTI_LOADOUT);
 		}
@@ -354,7 +361,7 @@ do {
 	for (;;) {
 		if (0 > (i = m.Menu (NULL, TXT_GAMEPLAY_OPTS, GameplayOptionsCallback, &choice)))
 			break;
-		if (choice == m.IndexOf ("loadout options"))
+		if (!bRestricted && (choice == m.IndexOf ("loadout options")))
 			LoadoutOptionsMenu ();
 		else if (choice == m.IndexOf ("reorder guns"))
 			ReorderPrimary ();
@@ -363,29 +370,33 @@ do {
 		}
 	} while (i == -2);
 
-if (nAIAggressivity == 5) {
-	gameOpts->gameplay.nAIAwareness = 1;
-	gameOpts->gameplay.nAIAggressivity = 4;
-	}
-else {
-	gameOpts->gameplay.nAIAwareness = 0;
-	gameOpts->gameplay.nAIAggressivity = nAIAggressivity;
+if (!bRestricted) {
+	if (nAIAggressivity == 5) {
+		gameOpts->gameplay.nAIAwareness = 1;
+		gameOpts->gameplay.nAIAggressivity = 4;
+		}
+	else {
+		gameOpts->gameplay.nAIAwareness = 0;
+		gameOpts->gameplay.nAIAggressivity = nAIAggressivity;
+		}
 	}
 
 extraGameInfo [0].bSmartWeaponSwitch = m.Value ("smart weapon switch");
-GET_VAL (gameOpts->gameplay.bInventory, "use inventory");
+if (!bRestricted)
+	GET_VAL (gameOpts->gameplay.bInventory, "use inventory");
 GET_VAL (gameOpts->gameplay.bNoThief, "suppress thief");
 GET_VAL (gameOpts->gameplay.bObserve, "observer mode");
-GET_VAL (extraGameInfo [0].headlight.bDrainPower, "headlight drains power");
-GET_VAL (extraGameInfo [0].bGatlingSpeedUp, "spinup gatling");
-if (!gameStates.app.bGameRunning) {
-	GET_VAL (extraGameInfo [0].bAllowCustomWeapons, "allow custom weapons");
-	extraGameInfo [1].bAllowCustomWeapons = extraGameInfo [0].bAllowCustomWeapons;
-	if (!extraGameInfo [0].bAllowCustomWeapons)
-		SetDefaultWeaponProps ();
+if (!bRestricted) {
+	GET_VAL (extraGameInfo [0].headlight.bDrainPower, "headlight drains power");
+	GET_VAL (extraGameInfo [0].bGatlingSpeedUp, "spinup gatling");
+	if (!gameStates.app.bGameRunning) {
+		GET_VAL (extraGameInfo [0].bAllowCustomWeapons, "allow custom weapons");
+		extraGameInfo [1].bAllowCustomWeapons = extraGameInfo [0].bAllowCustomWeapons;
+		if (!extraGameInfo [0].bAllowCustomWeapons)
+			SetDefaultWeaponProps ();
+		}
 	}
-//if (gameStates.app.bGameRunning)
-	GetShipSelection (m, optShip);
+GetShipSelection (m, optShip);
 DefaultGameplaySettings ();
 if (IsMultiGame && !COMPETITION && EGI_FLAG (bSmokeGrenades, 0, 0, 0))
 	LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX] = 4;

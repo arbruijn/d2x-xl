@@ -246,7 +246,7 @@ static bool PlayerInSegment (int16_t nSegment)
 if (nSegment < 0)
 	return true;
 for (int32_t i = 0; i < N_PLAYERS; i++) 
-	if ((i != N_LOCALPLAYER) && (OBJECTS [PLAYER (i).nObject].Segment () == nSegment))
+	if ((i != N_LOCALPLAYER) && (PLAYEROBJECT (i).Segment () == nSegment))
 		return true;
 return false;
 }
@@ -352,7 +352,8 @@ fix CPlayerData::SetShield (fix s, bool bScale)
 if (m_shield.Set (s, bScale)) {
 	if (OBJECTS.Buffer () && (nObject >= 0) && (IsLocalPlayer () || (nObject != LOCALPLAYER.nObject)))
 		OBJECTS [nObject].SetShield (s); 
-	MultiSendShield ();
+	if (IsLocalPlayer ())
+		NetworkFlushData (); // will send position, shield and weapon info
 	}
 UpdateDeathTime ();
 return shield;

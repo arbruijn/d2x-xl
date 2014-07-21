@@ -305,7 +305,7 @@ if (playerP->Shield () < playerP->MaxShield ()) {
 	playerP->UpdateShield (boost);
 	if (ISLOCALPLAYER (nPlayer)) {
 		PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (playerP->Shield ()));
-		MultiSendShield ();
+		NetworkFlushData (); // will send position, shield and weapon info
 		}
 	OBJECTS [nPlayer].ResetDamage ();
 	return 1;
@@ -1220,7 +1220,7 @@ for (int16_t i = 0; i < N_PLAYERS; i++, playerP++) {
 #if 0 //DBG
 	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->m_tDisconnect > 600))
 #else
-	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->m_tDisconnect > 180000))
+	if (!playerP->connected && (gameStates.app.nSDLTicks [0] - playerP->m_tDisconnect > TIMEOUT_KICK))
 #endif
 		continue; // wait up to three minutes for a player to reconnect before dropping him and allowing to respawn his stuff
 	if (nClass == 5) {

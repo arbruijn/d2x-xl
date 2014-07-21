@@ -140,7 +140,7 @@ static int32_t multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{8, -1}, //9 + MAX_FIRED_OBJECTS * sizeof (int16_t)},  // MULTI_FIRE
 	{5, 9},  // MULTI_KILL
 	{4, 8},  // MULTI_REMOVE_OBJECT
-	{106, 116}, // MULTI_PLAYER_EXPLODE
+	{106, 142}, // MULTI_PLAYER_EXPLODE
 	{37, -1}, // MULTI_MESSAGE (MAX_MESSAGE_LENGTH = 40)
 	{2, -1},  // MULTI_QUIT
 	{4, -1},  // MULTI_PLAY_SOUND
@@ -153,7 +153,7 @@ static int32_t multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{5, 9},  // MULTI_DOOR_OPEN
 	{2, -1},  // MULTI_CREATE_EXPLOSION
 	{16, -1}, // MULTI_CONTROLCEN_FIRE
-	{106, 116}, // MULTI_PLAYER_DROP
+	{106, 142}, // MULTI_PLAYER_DROP
 	{19, 23}, // MULTI_CREATE_POWERUP
 	{9, -1},  // MULTI_MISSILE_TRACK
 	{2, 6},  // MULTI_DE-CLOAK
@@ -553,8 +553,8 @@ void MultiSendWeaponStates (void)
 {
 	CWeaponState	*wsP = gameData.multiplayer.weaponStates + N_LOCALPLAYER;
 
-gameData.multigame.msg.buf [0] = char (MULTI_PLAYER_WEAPONS);
-gameData.multigame.msg.buf [1] = char (N_LOCALPLAYER);
+gameData.multigame.msg.buf [0] = uint8_t (MULTI_PLAYER_WEAPONS);
+gameData.multigame.msg.buf [1] = uint8_t (N_LOCALPLAYER);
 gameData.multigame.msg.buf [2] = wsP->nPrimary;
 gameData.multigame.msg.buf [3] = wsP->nSecondary;
 gameData.multigame.msg.buf [4] = wsP->nMissiles;
@@ -580,10 +580,10 @@ MultiSendData (gameData.multigame.msg.buf, 29, 0);
 
 void MultiSendPlayerThrust (void)
 {
-	CWeaponState	*wsP = gameData.multiplayer.weaponStates + N_LOCALPLAYER;
+	CWeaponState* wsP = gameData.multiplayer.weaponStates + N_LOCALPLAYER;
 
-gameData.multigame.msg.buf [0] = char (MULTI_PLAYER_THRUST);
-gameData.multigame.msg.buf [1] = char (N_LOCALPLAYER);
+gameData.multigame.msg.buf [0] = uint8_t (MULTI_PLAYER_THRUST);
+gameData.multigame.msg.buf [1] = uint8_t (N_LOCALPLAYER);
 memcpy (gameData.multigame.msg.buf + 2, wsP->nThrusters, sizeof (wsP->nThrusters));
 MultiSendData (gameData.multigame.msg.buf, 2 + sizeof (wsP->nThrusters), 0);
 }
@@ -1361,7 +1361,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 		gameData.multigame.weapon.nObjects [1][i] = GET_INTEL_SHORT (buf + 9 + i * sizeof (int16_t));
 	}
 
-if (OBJECTS [PLAYER (nPlayer).nObject].info.nType == OBJ_GHOST)
+if (PLAYEROBJECT (nPlayer).info.nType == OBJ_GHOST)
 	MultiMakeGhostPlayer (nPlayer);
 if (weapon == FLARE_ADJUST)
 	LaserPlayerFire (OBJECTS + PLAYER (nPlayer).nObject, FLARE_ID, 6, 1, 0, -1);
@@ -1424,7 +1424,7 @@ else {
 	tShortPos sp;
 	memcpy (reinterpret_cast<uint8_t*> (sp.orient), reinterpret_cast<uint8_t*> (buf + 1), 9);
 	memcpy (reinterpret_cast<uint8_t*> (&sp.coord), reinterpret_cast<uint8_t*> (buf + 10), 14);
-	ExtractShortPos (&OBJECTS [PLAYER (nPlayer).nObject], &sp, 1);
+	ExtractShortPos (&PLAYEROBJECT (nPlayer), &sp, 1);
 	if (objP->info.movementType == MT_PHYSICS)
 		objP->SetThrustFromVelocity ();
 #endif
@@ -1461,10 +1461,9 @@ playerP->SetShield (shield);
 // Create mapping from remote to local numbering system
 int32_t i;
 for (i = 0; (i < nRemoteCreated) && (i < gameData.multigame.create.nCount); i++) {
-	int16_t nRemoteObj = GET_INTEL_SHORT (objList);
+	int16_t nRemoteObj = GET_INTEL_SHORT (objList + i);
 	if (nRemoteObj > 0)
 		SetObjNumMapping ((int16_t) gameData.multigame.create.nObjNums [i], nRemoteObj, nPlayer);
-	objList--;
 	}
 for (; i < gameData.multigame.create.nCount; i++)
 	OBJECTS [gameData.multigame.create.nObjNums [i]].Die ();
@@ -1527,6 +1526,15 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 	bufP += 2;
 	gameStates.app.nRandSeed = (uint32_t) GET_INTEL_INT (buf + bufP);
 	bufP += 4;
+#if 1
+	CObject* objP = &PLAYEROBJECT (nPlayer);
+	objP->Velocity ().Set (GET_INTEL_INT (buf + bufP), GET_INTEL_INT (buf + bufP + 4), GET_INTEL_INT (buf + bufP + 8));
+	bufP += 12;
+	objP->Position ().Set (GET_INTEL_INT (buf + bufP), GET_INTEL_INT (buf + bufP + 4), GET_INTEL_INT (buf + bufP + 8));
+	bufP += 12;
+	objP->SetSegment (GET_INTEL_SHORT (buf + bufP));
+	bufP += 2;
+#endif
 	}
 #if 0
 MultiAdjustRemoteCap (nPlayer);
@@ -1803,7 +1811,7 @@ else
 void MultiDoCreateExplosion (uint8_t* buf)
 {
 int32_t nPlayer = (int32_t) buf [1];
-CreateSmallFireballOnObject (&OBJECTS [PLAYER (nPlayer).nObject], I2X (1), 1);
+CreateSmallFireballOnObject (&PLAYEROBJECT (nPlayer), I2X (1), 1);
 }
 
 //-----------------------------------------------------------------------------
@@ -1906,7 +1914,7 @@ memcpy (&vPos, buf + bufP, sizeof (CFixVector));
 INTEL_VECTOR (vPos);
 #endif
 gameData.multigame.create.nCount = 0;
-int32_t nLocalObj = CallObjectCreateEgg (OBJECTS + PLAYER (nPlayer).nObject, 1, OBJ_POWERUP, powerupType, true);
+int32_t nLocalObj = PrepareObjectCreateEgg (OBJECTS + PLAYER (nPlayer).nObject, 1, OBJ_POWERUP, powerupType, true);
 if (nLocalObj < 0)
 	return -1;
 NetworkResetObjSync (nLocalObj);
@@ -2173,7 +2181,7 @@ objP->info.nFlags = 0;
 
 void MultiSetObjectTextures (CObject *objP)
 {
-	int32_t				id, i, j;
+	int32_t			id, i, j;
 	CPolyModel*		modelP = gameData.models.polyModels [0] + objP->ModelId ();
 	tBitmapIndex*	bmiP;
 
@@ -2239,7 +2247,7 @@ return 1;
 
 //-----------------------------------------------------------------------------
 
-int MultiCheckPData (uint8_t* pd)
+int MultiCheckPlayerData (uint8_t* pd)
 {
 if (pd [0] != PID_PLAYER_DATA)
 	return -1;
@@ -2279,7 +2287,7 @@ gameData.multigame.msg.buf [bufP++] = uint8_t (gameData.multigame.weapon.nFlags)
 gameData.multigame.msg.buf [bufP++] = uint8_t (gameData.multigame.weapon.bFired);
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multigame.weapon.nTrack);
 bufP += 2;
-MultiSendData (gameData.multigame.msg.buf, bufP, 0);
+MultiSendData (gameData.multigame.msg.buf, bufP, gameData.multigame.weapon.bFired);
 gameData.multigame.weapon.nFired [0] = 0;
 }
 
@@ -2391,20 +2399,33 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 	gameData.multigame.msg.buf [bufP++] = uint8_t (LOCALPLAYER.m_laserLevels [1]);
 	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, gameStates.app.nRandSeed);
 	bufP += 4;
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALOBJECT.Velocity ().v.coord.x);
+	bufP += 4;
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALOBJECT.Velocity ().v.coord.y);
+	bufP += 4;
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALOBJECT.Velocity ().v.coord.z);
+	bufP += 4;
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALOBJECT.Position ().v.coord.x);
+	bufP += 4;
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALOBJECT.Position ().v.coord.y);
+	bufP += 4;
+	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALOBJECT.Position ().v.coord.z);
+	bufP += 4;
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, LOCALOBJECT.Segment ());
+	bufP += 2;
 	}
 #endif
 gameData.multigame.msg.buf [bufP++] = gameData.multigame.create.nCount;
 memset (gameData.multigame.msg.buf + bufP, -1, MAX_NET_CREATE_OBJECTS * sizeof (int16_t));
 for (i = 0; i < gameData.multigame.create.nCount; i++) {
-	if (gameData.multigame.create.nObjNums [i] <= 0) {
-		Int3 (); // Illegal value in created egg CObject numbers
-		bufP += 2;
-		continue;
+	if (gameData.multigame.create.nObjNums [i] <= 0) 
+		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, -1);
+	else {
+		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multigame.create.nObjNums [i]);
+		// We created these objs so our local number = the network number
+		SetLocalObjNumMapping (int16_t (gameData.multigame.create.nObjNums [i]));
 		}
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multigame.create.nObjNums [i]);
 	bufP += 2;
-	// We created these objs so our local number = the network number
-	SetLocalObjNumMapping (int16_t (gameData.multigame.create.nObjNums [i]));
 	}
 gameData.multigame.create.nCount = 0;
 #if DBG
@@ -2712,7 +2733,7 @@ if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (gameStates.app.n
 }
 
 //-----------------------------------------------------------------------------
-// Tell the other guy to remove an object from his list
+// Tell the other guy to remove an object from his listMu
 
 void MultiSendRemoveObject (int32_t nObject)
 {
@@ -3498,7 +3519,7 @@ FORALL_OBJS (objP) {
 		// Before deleting CObject, if it's a robot, drop it's special powerup, if any
 		if (nType == OBJ_ROBOT)
 			if (objP->info.contains.nCount && (objP->info.contains.nType == OBJ_POWERUP))
-				ObjectCreateEgg (objP);
+				objP->CreateEgg ();
 		objP->Die ();
 		}
 	}
@@ -4265,37 +4286,30 @@ gameData.multiplayer.weaponStates [int32_t (buf [1])].xFusionCharge = GET_INTEL_
 
 void MultiSendWeapons (int32_t bForce)
 {
-
-	static int32_t t0 = 0;
-
 if (!IsMultiGame || (gameStates.multi.nGameType != UDP_GAME))
 	return;
 
-int32_t t = gameStates.app.nSDLTicks [0];
-if (bForce || (t - t0 > 1000)) {
-		int32_t i, bufP = 0;
+	int32_t bufP = 0;
 
-	t0 = t;
-	gameData.multigame.msg.buf [bufP++] = MULTI_WEAPONS;
-	gameData.multigame.msg.buf [bufP++] = N_LOCALPLAYER;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.Shield ());
-	bufP += 4;
-	PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.flags);
-	bufP += 4;
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.primaryWeaponFlags);
+gameData.multigame.msg.buf [bufP++] = MULTI_WEAPONS;
+gameData.multigame.msg.buf [bufP++] = N_LOCALPLAYER;
+PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.Shield ());
+bufP += 4;
+PUT_INTEL_INT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.flags);
+bufP += 4;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.primaryWeaponFlags);
+bufP += 2;
+for (int32_t i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.secondaryAmmo [i]);
 	bufP += 2;
-	for (i = 0; i < MAX_SECONDARY_WEAPONS; i++) {
-		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, LOCALPLAYER.secondaryAmmo [i]);
-		bufP += 2;
-		}
-	gameData.multigame.msg.buf [bufP++] = LOCALPLAYER.LaserLevel (0);
-	gameData.multigame.msg.buf [bufP++] = LOCALPLAYER.LaserLevel (1);
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multiplayer.weaponStates [N_LOCALPLAYER].nAmmoUsed);
-	bufP += 2;
-	gameData.multigame.msg.buf [bufP++] = gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles;
-	MultiSendData (gameData.multigame.msg.buf, bufP, 1);
-	MultiSendShield ();
 	}
+gameData.multigame.msg.buf [bufP++] = LOCALPLAYER.LaserLevel (0);
+gameData.multigame.msg.buf [bufP++] = LOCALPLAYER.LaserLevel (1);
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multiplayer.weaponStates [N_LOCALPLAYER].nAmmoUsed);
+bufP += 2;
+gameData.multigame.msg.buf [bufP++] = gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles;
+MultiSendData (gameData.multigame.msg.buf, bufP, 1);
+MultiSendShield ();
 }
 
 //-----------------------------------------------------------------------------
@@ -4426,7 +4440,7 @@ MultiSendData (gameData.multigame.msg.buf, 2, 0);
 
 void MultiDoDropBlob (uint8_t* buf)
 {
-DropAfterburnerBlobs (&OBJECTS [PLAYER (int32_t (buf [1])).nObject], 2, I2X (1), -1, NULL, 0);
+DropAfterburnerBlobs (&PLAYEROBJECT (int32_t (buf [1])), 2, I2X (1), -1, NULL, 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -5563,7 +5577,7 @@ for (i = 0; i < MAX_POWERUP_TYPES; i++) {
 
 //-----------------------------------------------------------------------------
 
-tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
+tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE] = {
 	{MultiDoPosition, 1},
 	{MultiDoReappear, 1},
 	{MultiDoFire, 1},
@@ -5645,7 +5659,6 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE + 1] = {
 	{MultiDoWeapons, 1},
 	{MultiDoMonsterball, 1},
 	{MultiDoCheating, 1},
-	{MultiDoTrigger, 1},
 	{MultiDoSyncKills, 1},
 	{MultiDoCountdown, 1},
 	{MultiDoWeaponStates, 1},

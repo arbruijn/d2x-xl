@@ -72,7 +72,7 @@
 CNetworkThread networkThread;
 
 #if DBG
-int MultiCheckPData (uint8_t* pd);
+int MultiCheckPlayerData (uint8_t* pd);
 #endif
 
 //------------------------------------------------------------------------------
@@ -109,7 +109,7 @@ return 0;
 void CNetworkPacket::Transmit (void)
 {
 #if DBG
-MultiCheckPData (Buffer ());
+MultiCheckPlayerData (Buffer ());
 #endif
 if (HasId ()) {
 	if (m_owner.m_bHaveLocalAddress)
@@ -729,7 +729,6 @@ for (;;) {
 	if (m_packet->HasId ()) 
 		m_packet->SetSize (nSize - sizeof (int32_t)); // don't count the packet queue's 32 bit packet id!
 	else {
-		memcpy (m_packet->Buffer (), reinterpret_cast<uint8_t*>(&m_packet->m_data), m_packet->Size ());
 		m_packet->SetSize (nSize); 
 		m_packet->SetId (0);
 		}

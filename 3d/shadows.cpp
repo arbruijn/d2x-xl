@@ -1551,7 +1551,7 @@ if (FAST_SHADOWS) {
 				if (gameData.render.shadows.lightP->info.nType < 2)
 					continue;
 				if (gameData.render.shadows.lightP->info.nType == 3) {
-					lightObjP = &OBJECTS [PLAYER (gameData.render.shadows.lightP->info.nPlayer).nObject];
+					lightObjP = &PLAYEROBJECT (gameData.render.shadows.lightP->info.nPlayer);
 					}
 				else if (gameData.render.shadows.lightP->info.nType == 2) {
 					if (gameData.render.shadows.lightP->info.nObject >= 0) {

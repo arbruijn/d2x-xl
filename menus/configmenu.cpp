@@ -138,11 +138,11 @@ do {
 		m.AddMenu ("cockpit options", TXT_COCKPIT_OPTS2, KEY_C, HTX_OPTIONS_COCKPIT);
 		m.AddMenu ("render options", TXT_RENDER_OPTS2, KEY_R, HTX_OPTIONS_RENDER);
 		m.AddMenu ("effect options", TXT_EFFECT_OPTIONS, KEY_E, HTX_RENDER_EFFECTOPTS);
+		m.AddMenu ("gameplay options", TXT_GAMEPLAY_OPTS2, KEY_G, HTX_OPTIONS_GAMEPLAY);
 #if DBG == 0
 		if (!(gameStates.app.bGameRunning && IsMultiGame && !IsCoopGame))
 #endif
 			{
-			m.AddMenu ("gameplay options", TXT_GAMEPLAY_OPTS2, KEY_G, HTX_OPTIONS_GAMEPLAY);
 			m.AddMenu ("physics options", TXT_PHYSICS_MENUCALL, KEY_P, HTX_OPTIONS_PHYSICS);
 			}
 #if 0

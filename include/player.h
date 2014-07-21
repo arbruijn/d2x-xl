@@ -66,7 +66,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define PLAYER_STRUCT_VERSION   17  // increment this every time player struct changes
 
-void MultiSendShield (void);
+void NetworkFlushData (void);
 
 // defines for teams
 #define TEAM_BLUE   0
@@ -125,7 +125,11 @@ class __pack__ CShipEnergy {
 			return true;
 			}
 		// change by some value
-		inline fix Update (fix delta) { return delta ? Set (Get () + delta, false) : Get (); }	
+		inline fix Update (fix delta) { 
+			if (delta)
+				Set (Get () + delta, false);
+			return Get (); 
+			}	
 		// fill up
 		inline bool Reset (fix e) {	
 			e = (fix) FRound (e * Scale ());
@@ -271,10 +275,12 @@ class CPlayerData : public CPlayerInfo {
 		inline fix ResetShield (fix s) { return m_shield.Reset (s); }
 		inline fix ResetEnergy (fix e) { return m_energy.Reset (e); }
 		inline fix UpdateShield (fix delta) { 
-			fix shield = m_shield.Update (delta); 
-			MultiSendShield ();
-			UpdateDeathTime ();
-			return shield;
+			if (delta) {
+				m_shield.Update (delta); 
+				NetworkFlushData (); // will send position, shield and weapon info
+				UpdateDeathTime ();
+				}
+			return m_shield.Get ();
 			}
 		inline fix UpdateEnergy (fix delta) { return m_energy.Update (delta); }
 		inline fix MaxShield (void) { return m_shield.Max (); }

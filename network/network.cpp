@@ -445,21 +445,32 @@ Squish ();
 
 //------------------------------------------------------------------------------
 
+int MultiCheckBigData (uint8_t *buf, int32_t bufLen);
+
 void CSyncPack::Send (void) 
 {
+if (!(IsMultiGame && LOCALPLAYER.IsConnected ())) {
+	Reset ();
+	return;
+	}
+
 	static CTimeout toEndLevel (500);
 	static bool bSending = false;
 
-if (!bSending && IsMultiGame && LOCALPLAYER.IsConnected ()) {
+if (!bSending) {
 	bSending = true;
 	uint32_t nReserve = SetReserve (0); // make sure the extra data fits in the message buffer
 	MultiSendRobotFrame (0);
-	MultiSendWeapons (1);
+	MultiSendWeapons (0);
 	MultiSendWeaponStates ();
 	Prepare ();
+#if DBG
+	MultiCheckBigData (MsgData (), MsgDataSize ());
+#endif
 	IpxSendGamePacket (reinterpret_cast<uint8_t*>(Info ()), Size ());
 	++m_nPackets; 
 	networkData.bD2XData = 0;
+	networkData.xLastSendTime = 0;
 	if (gameData.reactor.bDestroyed) {
 		if (gameStates.app.bPlayerIsDead)
 			CONNECT (N_LOCALPLAYER, CONNECT_DIED_IN_MINE);
@@ -467,9 +478,9 @@ if (!bSending && IsMultiGame && LOCALPLAYER.IsConnected ()) {
 			NetworkSendEndLevelPacket ();
 		}
 	SetReserve (nReserve);
+	Reset ();
 	bSending = false;
 	}
-Reset ();
 }
 
 //------------------------------------------------------------------------------
@@ -485,7 +496,7 @@ gameData.multigame.weapon.bFired = 0;
 
 static int32_t SyncTimeout (void)
 {
-return I2X (1) / (networkThread.Available () ? networkThread.MinPPS () : MinPPS ());
+return I2X (1) / (networkThread.SendInBackground () ? networkThread.MinPPS () : MinPPS ());
 }
 
 //------------------------------------------------------------------------------
@@ -499,9 +510,6 @@ if ((networkData.nStatus == NETSTAT_PLAYING) && !gameStates.app.bEndLevelSequenc
 	if (networkData.refuse.bWaitForAnswer && TimerGetApproxSeconds () > (networkData.refuse.xTimeLimit + (I2X (12))))
 		networkData.refuse.bWaitForAnswer = 0;
 	networkData.xLastSendTime += gameData.time.xFrame;
-	//networkData.xLastTimeoutCheck += gameData.time.xFrame;
-
-	// Send out packet PacksPerSec times per second maximum... unless they fire, then send more often...
 	if ((networkData.xLastSendTime >= SyncTimeout ())
 #if DBG
 		 || ((networkData.xLastSendTime >= I2X (1) / MAX_PPS) && (bFlush || gameData.multigame.weapon.bFired || networkData.bPacketUrgent))

@@ -1008,6 +1008,7 @@ class CObject : public CObjectInfo {
 		void Die (void);
 		void MultiDie (void);
 		void MaybeDelete (void);
+		int32_t CreateEgg (bool bLocal = false, bool bUpdateLimits = true);
 
 		void TurnTowardsVector (CFixVector vGoal, fix rate);
 		void Wiggle (void);

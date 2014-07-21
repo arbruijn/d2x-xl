@@ -2373,7 +2373,7 @@ else {
 	for (i = 0; i < N_PLAYERS; i++) {
 	  if (!PLAYER (i).connected) {
 			NetworkDisconnectPlayer (i);
-  			OBJECTS [PLAYER (i).nObject].CreateAppearanceEffect ();
+  			PLAYEROBJECT (i).CreateAppearanceEffect ();
 	      }
 		}
 	}

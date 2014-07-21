@@ -358,7 +358,7 @@ MultiSendData (reinterpret_cast<uint8_t*> (gameData.multigame.msg.buf), bufP, 1)
 // Send robot position to other player (s).  Includes a byte
 // value describing whether or not they fired a weapon
 
-void MultiSendRobotPosition (int32_t nObject, int32_t force)
+void MultiSendRobotPosition (int32_t nObject, int32_t bForce)
 {
 	int32_t	i;
 
@@ -376,9 +376,9 @@ if (OBJECTS [nObject].cType.aiInfo.REMOTE_OWNER != N_LOCALPLAYER)
 	return;
 i = OBJECTS [nObject].cType.aiInfo.REMOTE_SLOT_NUM;
 gameData.multigame.robots.lastSendTime [i] = gameData.time.xGame;
-gameData.multigame.robots.sendPending [i] = 1+force;
-if (force & IsNetworkGame)
-	networkData.bPacketUrgent = 1;
+gameData.multigame.robots.sendPending [i] = 1+bForce;
+if (bForce & IsNetworkGame)
+	NetworkFlushData ();
 return;
 }
 
@@ -420,7 +420,7 @@ if (OBJECTS [nObject].cType.aiInfo.REMOTE_OWNER == N_LOCALPLAYER) {
 	memcpy (gameData.multigame.robots.fireBuf [slot], gameData.multigame.msg.buf, bufP);
 	gameData.multigame.robots.fired [slot] = 1;
 	if (IsNetworkGame)
-		networkData.bPacketUrgent = 1;
+		NetworkFlushData ();
 	}
 else
 	MultiSendData (gameData.multigame.msg.buf, bufP, 2); // Not our robot, send ASAP
@@ -705,7 +705,7 @@ int32_t MultiDestroyRobot (CObject* robotP, char bIsThief)
 // Drop non-Random KEY powerups locally only!
 if (IsCoopGame && (robotP->info.contains.nCount > 0) && (robotP->info.contains.nType == OBJ_POWERUP) && 
 	 (robotP->info.contains.nId >= POW_KEY_BLUE) && (robotP->info.contains.nId <= POW_KEY_GOLD))
-	ObjectCreateEgg (robotP);
+	robotP->CreateEgg ();
 /*else*/ 
 if ((robotP->cType.aiInfo.REMOTE_OWNER == -1) && IAmGameHost ()) 
 	robotP->cType.aiInfo.REMOTE_OWNER = N_LOCALPLAYER;
@@ -879,7 +879,7 @@ switch (action)  {
 		bossObjP->info.position.vPos = SEGMENTS [nTeleportSeg].Center ();
 		OBJECTS [nBossObj].RelinkToSeg (nTeleportSeg);
 		gameData.bosses [nBossIdx].m_nLastTeleportTime = gameData.time.xGame;
-		vBossDir = OBJECTS [PLAYER (nPlayer).nObject].info.position.vPos - bossObjP->info.position.vPos;
+		vBossDir = PLAYEROBJECT (nPlayer).info.position.vPos - bossObjP->info.position.vPos;
 		bossObjP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
 
 		audio.CreateSegmentSound (gameData.effects.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nTeleportSeg, 0, bossObjP->info.position.vPos, 0, I2X (1));
@@ -966,7 +966,7 @@ else {
 	}
 gameStates.app.SRand (gameStates.app.nRandSeed);
 gameData.multigame.create.nCount = 0;
-nEggObj = ObjectCreateEgg (&delObjP);
+nEggObj = delObjP.CreateEgg ();
 if (nEggObj == -1)
 	return; // Object buffer full
 #if DBG
@@ -1025,7 +1025,7 @@ if (delObjP->info.contains.nCount > 0) {
 	else
 		gameStates.app.SRand ();
 	if (delObjP->info.contains.nCount > 0)
-		nEggObj = ObjectCreateEgg (delObjP);
+		nEggObj = delObjP->CreateEgg ();
 	}
 else if (delObjP->cType.aiInfo.REMOTE_OWNER == -1) // No Random goodies for robots we weren't in control of
 	return;
@@ -1048,7 +1048,7 @@ else if (botInfoP->containsCount) {
 		else
 			gameStates.app.SRand ();
 		if (delObjP->info.contains.nCount > 0)
-			nEggObj = ObjectCreateEgg (delObjP);
+			nEggObj = delObjP->CreateEgg ();
 		}
 	}
 if (nEggObj >= 0) // Transmit the object creation to the other players	 

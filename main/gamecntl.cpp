@@ -110,7 +110,7 @@ if (e <= 0) {
 LOCALPLAYER.UpdateEnergy (-e);
 LOCALPLAYER.UpdateShield (e / CONVERTER_SCALE);
 OBJECTS [N_LOCALPLAYER].ResetDamage ();
-MultiSendShield ();
+NetworkFlushData (); // will send position, shield and weapon info
 gameStates.app.bUsingConverter = 1;
 if (last_playTime > gameData.time.xGame)
 	last_playTime = 0;

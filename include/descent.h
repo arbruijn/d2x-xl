@@ -3843,13 +3843,15 @@ return 1.0f - float (alpha) / float (FADE_LEVELS);
 #define	CLAMP(_val,_minVal,_maxVal)	\
 		 {if ((_val) < (_minVal)) (_val) = (_minVal); else if ((_val) > (_maxVal)) (_val) = (_maxVal);}
 
-#define N_LOCALPLAYER			gameData.multiplayer.nLocalPlayer
-#define N_PLAYERS					gameData.multiplayer.nPlayers
-#define NETPLAYER(_nPlayer)	netPlayers [0].m_info.players [_nPlayer]
-#define PLAYER(_nPlayer)		gameData.multiplayer.players [_nPlayer]
-#define LOCALPLAYER				PLAYER (N_LOCALPLAYER)
-#define LOCALOBJECT				OBJECTS [LOCALPLAYER.nObject]
-#define OBSERVING					(gameStates.render.bObserving && OBJECTS.Buffer () && (LOCALOBJECT.Type () == OBJ_GHOST))
+#define N_LOCALPLAYER				gameData.multiplayer.nLocalPlayer
+#define N_PLAYERS						gameData.multiplayer.nPlayers
+#define NETPLAYER(_nPlayer)		netPlayers [0].m_info.players [_nPlayer]
+#define PLAYER(_nPlayer)			gameData.multiplayer.players [_nPlayer]
+#define LOCALPLAYER					PLAYER (N_LOCALPLAYER)
+#define PLAYEROBJECT(_nPlayer)	OBJECTS [PLAYER (_nPlayer).nObject]
+#define LOCALOBJECT					PLAYEROBJECT (N_LOCALPLAYER)
+
+#define OBSERVING						(gameStates.render.bObserving && OBJECTS.Buffer () && (LOCALOBJECT.Type () == OBJ_GHOST))
 
 #define ISLOCALPLAYER(_nPlayer)	((_nPlayer < 0) || ((_nPlayer) == N_LOCALPLAYER))
 

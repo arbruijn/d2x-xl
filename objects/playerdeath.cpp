@@ -218,11 +218,10 @@ if (gameStates.app.bPlayerIsDead) {
 			if (TactileStick)
 				ClearForces ();
 #endif
-			DestroyPlayerShip ();
-#if 1
 			if (gameOpts->gameplay.bObserve)
 				gameStates.app.bDeathSequenceAborted = 1;
-#endif
+			else
+				DestroyPlayerShip ();
 			}
 		}
 	else {

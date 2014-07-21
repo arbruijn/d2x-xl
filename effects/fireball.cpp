@@ -713,7 +713,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 			if (delObjP->info.contains.nType == OBJ_POWERUP)
 				MaybeReplacePowerupWithEnergy (delObjP);
 			if ((delObjP->info.contains.nType != OBJ_ROBOT) || !(delObjP->info.nFlags & OF_ARMAGEDDON))
-				ObjectCreateEgg (delObjP);
+				delObjP->CreateEgg ();
 			}
 		if ((delObjP->info.nType == OBJ_ROBOT) && (!delObjP->info.contains.nCount || gameStates.app.bD2XLevel)) {
 			tRobotInfo	*botInfoP = &ROBOTINFO (delObjP->info.nId);
@@ -728,7 +728,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 					delObjP->info.contains.nType = botInfoP->containsType;
 					delObjP->info.contains.nId = botInfoP->containsId;
 					MaybeReplacePowerupWithEnergy (delObjP);
-					ObjectCreateEgg (delObjP);
+					delObjP->CreateEgg ();
 					}
 				}
 			if (botInfoP->thief)
