@@ -343,7 +343,7 @@ for (int32_t i = 0; i < nFiles; i++) {
 		fileList [i].bFound = CFile::Exist (fileList [i].pszFile, GetFolder (fileList + i), false) == 1;
 		if (fileList [i].bFound) {	// file exists in the source folder
 			sprintf (szSrc, "%s%s", gameFolders.game.szRoot, fileList [i].pszFile + 1);
-			sprintf (szDest, "%s%s", GetFolder (fileList + i), fileList [i].pszFile + 1);
+			sprintf (szDest, "%s%s%s", GetFolder (fileList + i), fileList [i].pszFolders [0], fileList [i].pszFile + 1);
 			cf.Copy (szSrc, szDest);
 			}
 		else if (!fileList [i].bOptional) {
@@ -497,7 +497,7 @@ if (nResult) {
 		}
 	if (nResult & 16) {
 		strcat (szMsg, "\n\nWarning - D2X-XL couldn't find the following D2X-XL files:\n\n");
-		CreateFileListMessage (szMsg, addonFiles, int32_t (sizeofa (addonFiles)), true);
+		CreateFileListMessage (szMsg, addonModelFiles, int32_t (sizeofa (addonModelFiles)), true);
 		}
 	if (nResult & 32) {
 		strcat (szMsg, "\n\nWarning - D2X-XL couldn't find the following D2X-XL texture files:\n\n");

@@ -2418,7 +2418,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 gameData.multigame.msg.buf [bufP++] = gameData.multigame.create.nCount;
 memset (gameData.multigame.msg.buf + bufP, -1, MAX_NET_CREATE_OBJECTS * sizeof (int16_t));
 for (i = 0; i < gameData.multigame.create.nCount; i++) {
-	if (gameData.multigame.create.nObjNums [i] <= 0) 
+	if (gameData.multigame.create.nObjNums [i] <= 0)
 		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, -1);
 	else {
 		PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multigame.create.nObjNums [i]);
@@ -2733,7 +2733,7 @@ if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (gameStates.app.n
 }
 
 //-----------------------------------------------------------------------------
-// Tell the other guy to remove an object from his listMu
+// Tell the other guy to remove an object from his list
 
 void MultiSendRemoveObject (int32_t nObject)
 {
@@ -4308,7 +4308,7 @@ gameData.multigame.msg.buf [bufP++] = LOCALPLAYER.LaserLevel (1);
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multiplayer.weaponStates [N_LOCALPLAYER].nAmmoUsed);
 bufP += 2;
 gameData.multigame.msg.buf [bufP++] = gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles;
-MultiSendData (gameData.multigame.msg.buf, bufP, 1);
+MultiSendData (gameData.multigame.msg.buf, bufP, bForce);
 MultiSendShield ();
 }
 

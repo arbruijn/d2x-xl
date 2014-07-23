@@ -134,6 +134,10 @@ else {
 	mType.physInfo.rotThrust = CFixVector::Create (controls [0].pitchTime, controls [0].headingTime, controls [0].bankTime);
 	}
 forwardThrustTime = controls [0].forwardThrustTime;
+#if DBG
+if (forwardThrustTime != 0)
+	BRP;
+#endif
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (RandShort () < OBJECTS [N_LOCALPLAYER].DriveDamage ()) && ((Index () != LOCALPLAYER.nObject) || !automap.Active ())) {
 	if (controls [0].afterburnerState) {			//player has key down
 		fix xAfterburnerScale;

@@ -96,7 +96,6 @@ int32_t PSecretLevelDestroyed (void);
 
 void CTriggerTargets::Check (void)
 {
-#if DBG
 	int32_t i, j;
 
 if (m_nLinks > MAX_TRIGGER_TARGETS) {
@@ -110,14 +109,12 @@ for (i = j = 0; i < m_nLinks; i++) {
 			continue;
 			}
 		}
-#if 0 // object info not yet read
 	else {
 		if ((m_segments [i] < 0) || (m_segments [i] >= gameData.objs.nObjects)) {
 			PrintLog (0, "Invalid trigger target (trigger #%d, target %d)\n", (CTrigger *) this - gameData.trigs.triggers.Buffer (), i);
 			continue;
 			}
 		}
-#endif
 	if (j < i) {
 		m_segments [j] = m_segments [i];
 		m_sides [j] = m_sides [i];
@@ -125,7 +122,6 @@ for (i = j = 0; i < m_nLinks; i++) {
 	j++;
 	}
 m_nLinks = j;
-#endif
 }
 
 //------------------------------------------------------------------------------

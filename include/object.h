@@ -581,8 +581,14 @@ class CPolyObjInfo {
 //	-----------------------------------------------------------------------------
 
 typedef struct tObjTransformation {
-	CFixVector	vPos;				// absolute x,y,z coordinate of center of object
-	CFixMatrix	mOrient;			// orientation of object in world
+	public:
+		CFixVector	vPos;				// absolute x,y,z coordinate of center of object
+		CFixMatrix	mOrient;			// orientation of object in world
+
+	tObjTransformation& operator= (tObjTransformation& other) {
+		memcpy (this, &other, sizeof (*this));
+		return *this;
+		}
 	} __pack__ tObjTransformation;
 
 class CObjTransformation {

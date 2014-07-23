@@ -1707,7 +1707,7 @@ return 1;
 
 //	-----------------------------------------------------------------------------
 
-void CObject::ApplyDamageToPlayer (CObject* killerObjP, fix xDamage)
+void CObject::ApplyDamageToPlayer (CObject* attackerObjP, fix xDamage)
 {
 if (gameStates.app.bPlayerIsDead) {
 	// PrintLog (0, "ApplyDamageToPlayer: Player is already dead\n");
@@ -1722,26 +1722,26 @@ if ((info.nId == N_LOCALPLAYER) && (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABL
 	return;
 	}
 
-CPlayerData *killerP; 
+CPlayerData *attackerP; 
 
-if (!killerObjP) 
-	killerP = NULL;
+if (!attackerObjP) 
+	attackerP = NULL;
 else {
-	if ((killerObjP->info.nType == OBJ_ROBOT) && ROBOTINFO (killerObjP->info.nId).companion) {
+	if ((attackerObjP->info.nType == OBJ_ROBOT) && ROBOTINFO (attackerObjP->info.nId).companion) {
 		// PrintLog (0, "ApplyDamageToPlayer: Player was hit by Guidebot\n");
 		return;
 		}
-	killerP = (killerObjP->info.nType == OBJ_PLAYER) ? gameData.multiplayer.players + killerObjP->info.nId : NULL;
-	if (killerP)
-		// PrintLog (0, "ApplyDamageToPlayer: Damage was inflicted by %s\n", killerP->callsign);
+	attackerP = (attackerObjP->info.nType == OBJ_PLAYER) ? gameData.multiplayer.players + attackerObjP->info.nId : NULL;
+	if (attackerP)
+		// PrintLog (0, "ApplyDamageToPlayer: Damage was inflicted by %s\n", attackerP->callsign);
 	if (gameStates.app.bHaveExtraGameInfo [1]) {
-		if ((killerObjP == this) && !COMPETITION && extraGameInfo [1].bInhibitSuicide) {
+		if ((attackerObjP == this) && !COMPETITION && extraGameInfo [1].bInhibitSuicide) {
 			// PrintLog (0, "ApplyDamageToPlayer: Suicide inhibited\n");
 			return;
 			}
-		else if (killerP && !(COMPETITION || extraGameInfo [1].bFriendlyFire)) {
+		else if (attackerP && !(COMPETITION || extraGameInfo [1].bFriendlyFire)) {
 			if (IsTeamGame) {
-				if (GetTeam (info.nId) == GetTeam (killerObjP->info.nId)) {
+				if (GetTeam (info.nId) == GetTeam (attackerObjP->info.nId)) {
 					// PrintLog (0, "ApplyDamageToPlayer: Friendly fire suppressed (team game)\n");
 					return;
 					}
@@ -1761,8 +1761,8 @@ gameData.multiplayer.bWasHit [info.nId] = -1;
 if (info.nId == N_LOCALPLAYER) {		//is this the local player?
 	// PrintLog (0, "ApplyDamageToPlayer: Processing local player damage %d\n", xDamage);
 	CPlayerData *playerP = gameData.multiplayer.players + info.nId;
-	if (IsEntropyGame && extraGameInfo [1].entropy.bPlayerHandicap && killerP) {
-		double h = (double) playerP->netKillsTotal / (double) (killerP->netKillsTotal + 1);
+	if (IsEntropyGame && extraGameInfo [1].entropy.bPlayerHandicap && attackerP) {
+		double h = (double) playerP->netKillsTotal / (double) (attackerP->netKillsTotal + 1);
 		if (h < 0.5)
 			h = 0.5;
 		else if (h > 1.0)
@@ -1774,10 +1774,10 @@ if (info.nId == N_LOCALPLAYER) {		//is this the local player?
 	playerP->UpdateShield (-xDamage);
 	paletteManager.BumpEffect (X2I (xDamage) * 4, -X2I (xDamage / 2), -X2I (xDamage / 2));	//flash red
 	if (playerP->Shield () < 0) {
-  		playerP->nKillerObj = OBJ_IDX (killerObjP);
+  		playerP->nKillerObj = OBJ_IDX (attackerObjP);
 		Die ();
 		if (gameData.escort.nObjNum != -1)
-			if (killerObjP && (killerObjP->info.nType == OBJ_ROBOT) && (ROBOTINFO (killerObjP->info.nId).companion))
+			if (attackerObjP && (attackerObjP->info.nType == OBJ_ROBOT) && (ROBOTINFO (attackerObjP->info.nId).companion))
 				gameData.escort.xSorryTime = gameData.time.xGame;
 		}
 	}

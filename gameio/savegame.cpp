@@ -464,15 +464,15 @@ if (!m_override) {
 void CSaveGameManager::PushSecretSave (int32_t nSaveSlot)
 {
 if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
-	char	tempname [32];
 	CFile m_cf;
-
 	char fc = (nSaveSlot >= 10) ? (nSaveSlot-10) + 'a' : '0' + nSaveSlot;
-	sprintf (tempname, "%csecret.sgc", fc);
-	if (m_cf.Exist (tempname, gameFolders.user.szSavegames, 0))
-		m_cf.Delete (tempname, gameFolders.user.szSavegames);
-	if (m_cf.Exist (SECRETC_FILENAME, gameFolders.user.szSavegames, 0))
-		m_cf.Copy (SECRETC_FILENAME, tempname);
+	char szSave [FILENAME_LEN], szSecret [FILENAME_LEN];
+	sprintf (szSave, "%s%csecret.sgc", gameFolders.user.szSavegames, fc);
+	sprintf (szSecret, "%s%s", gameFolders.user.szSavegames, SECRETC_FILENAME);
+	if (m_cf.Exist (szSave, NULL, 0))
+		m_cf.Delete (szSave, NULL);
+	if (m_cf.Exist (szSecret, NULL, 0))
+		m_cf.Copy (szSecret, szSave);
 	}
 }
 
@@ -1102,14 +1102,14 @@ if ((nSaveSlot != (NUM_SAVES + 1)) && m_bInGame) {
 void CSaveGameManager::PopSecretSave (int32_t nSaveSlot)
 {
 if ((nSaveSlot != -1) && !(m_bSecret || IsMultiGame)) {
-	char	tempname [32];
-
 	char fc = (nSaveSlot >= 10) ? (nSaveSlot-10) + 'a' : '0' + nSaveSlot;
-	sprintf (tempname, "%csecret.sgc", fc);
-	if (m_cf.Exist (tempname, gameFolders.user.szSavegames, 0))
-		m_cf.Copy (tempname, SECRETC_FILENAME);
+	char szSave [FILENAME_LEN], szSecret [FILENAME_LEN];
+	sprintf (szSave, "%s%csecret.sgc", gameFolders.user.szSavegames, fc);
+	sprintf (szSecret, "%s%s", gameFolders.user.szSavegames, SECRETC_FILENAME);
+	if (m_cf.Exist (szSave, NULL, 0))
+		m_cf.Copy (szSave, szSecret);
 	else
-		m_cf.Delete (SECRETC_FILENAME, gameFolders.user.szSavegames);
+		m_cf.Delete (szSecret, szSave);
 	}
 }
 

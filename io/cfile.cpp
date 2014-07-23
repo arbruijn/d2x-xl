@@ -984,9 +984,9 @@ int32_t CFile::Copy (const char *pszSrc, const char *pszDest)
 	int8_t	buf [COPY_BUF_SIZE];
 	CFile	cf;
 
-if (!cf.Open (pszDest, gameFolders.user.szSavegames, "wb", 0))
+if (!cf.Open (pszDest, NULL, "wb", 0))
 	return -1;
-if (!Open (pszSrc, gameFolders.user.szSavegames, "rb", 0))
+if (!Open (pszSrc, NULL, "rb", 0))
 	return -2;
 while (!EoF ()) {
 	int32_t bytes_read = (int32_t) Read (buf, 1, COPY_BUF_SIZE);

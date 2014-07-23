@@ -946,7 +946,7 @@ if (info.controlType == CT_AI) {
 		}
 
 //if end point not in segment, move object to last pos, or segment center
-if (((Index () != LOCALPLAYER.nObject) || !OBSERVING) && (info.nSegment >= 0) && SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
+if (((Index () != LOCALPLAYER.nObject) || !automap.Active ()) && (info.nSegment >= 0) && SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {
 	if (FindSegment () == -1) {
 		int32_t n;
 

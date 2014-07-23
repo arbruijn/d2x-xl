@@ -85,8 +85,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Map movement defines
 #define PITCH_DEFAULT			9000
 #define ZOOM_DEFAULT				I2X (20*10)
-#define ZOOM_MIN_VALUE			I2X (20*5)
-#define ZOOM_MAX_VALUE			I2X (20*100)
+#define ZOOM_MIN_VALUE			I2X (20*1)
+#define ZOOM_MAX_VALUE			I2X (20*200)
 
 #define SLIDE_SPEED 				(350)
 #define ZOOM_SPEED_FACTOR		500	// (1500)
@@ -452,20 +452,19 @@ RenderStartFrame ();
 tObjTransformation viewer;
 if (m_bRadar == 2) {
 	viewer = m_data.viewer;
-	viewer.vPos = m_data.viewTarget + mRadar.m.dir.f * (-m_data.nViewDist);
+	viewer.vPos = m_data.viewTarget + mRadar.m.dir.f * -m_data.nViewDist;
 	SetupTransformation (transformation, viewer.vPos, mRadar, m_data.nZoom * 2, 1);
 	}
 else {
-	if (!gameStates.app.bNostalgia && !m_bRadar) {
-		viewer = LOCALOBJECT.info.position;
-		if (!OBSERVING)
-			Swap (m_data.viewer, LOCALOBJECT.info.position);
-		else if (LOCALPLAYER.ObservedPlayer () != -1) {
+	if (OBSERVING) {
+		if (LOCALPLAYER.ObservedPlayer () == -1) 
+			viewer = LOCALOBJECT.info.position;
+		else {
 			FLIGHTPATH.GetViewPoint (&viewer.vPos);
 			viewer.mOrient = FLIGHTPATH.Tail ()->mOrient;
 			}
 		}
-	else {
+	else { 
 		viewer = m_data.viewer;
 		viewer.vPos = m_data.viewTarget + m_data.viewer.mOrient.m.dir.f * -m_data.nViewDist;
 		}
@@ -483,8 +482,6 @@ if (m_bRadar || (Texturing () & 2)) {
 	DrawEdges ();
 	DrawObjects ();
 	}
-if (!OBSERVING)
-	Swap (m_data.viewer, LOCALOBJECT.info.position);
 G3EndFrame (transformation, 0);
 
 if (m_bRadar) {
@@ -622,20 +619,10 @@ void CAutomap::InitView (void)
 {
 m_vTAngles.Set (PITCH_DEFAULT, 0, 0);
 CObject*	playerP = OBJECTS + LOCALPLAYER.nObject;
-if (gameStates.app.bNostalgia) {
+if (OBSERVING)
 	m_data.viewer.mOrient = playerP->info.position.mOrient;
-	m_data.nViewDist = ZOOM_DEFAULT;
-	}
-else {
-	m_data.viewer = playerP->info.position;
-	if (!OBSERVING) {
-		playerP->info.position.vPos += m_data.viewer.mOrient.m.dir.f * -m_data.nViewDist;
-		playerP->info.position.vPos += m_data.viewer.mOrient.m.dir.u * m_data.nViewDist;
-		CFixMatrix	m;
-		m = CFixMatrix::Create (m_vTAngles);
-		playerP->info.position.mOrient = playerP->info.position.mOrient * m;
-		}
-	}
+m_data.nViewDist = ZOOM_DEFAULT;
+m_data.viewer = playerP->info.position;
 m_data.viewTarget = playerP->info.position.vPos;
 }
 
@@ -643,8 +630,6 @@ m_data.viewTarget = playerP->info.position.vPos;
 
 int32_t CAutomap::Setup (int32_t bPauseGame, fix& xEntryTime)
 {
-	int32_t	i;
-
 if (m_bActive < 0) {
 	m_bActive = 0;
 	if ((m_bChaseCam = gameStates.render.bChaseCam))
@@ -656,10 +641,7 @@ if (m_bActive < 0) {
 	InitColors ();
 	if (!m_bRadar)
 		SlowMotionOff ();
-	if (m_bRadar ||
-		 (IsMultiGame &&
-		  (gameStates.app.nFunctionMode == FMODE_GAME) &&
-		  (!gameStates.app.bEndLevelSequence)))
+	if (m_bRadar || (IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME) && !gameStates.app.bEndLevelSequence))
 		bPauseGame = 0;
 	if (bPauseGame)
 		PauseGame ();
@@ -693,6 +675,8 @@ if (m_bActive < 0) {
 	}
 BuildEdgeList ();
 
+int32_t	i;
+
 if (m_bRadar) {
 	for (i = 0; i < gameData.segs.nSegments; i++)
 		m_visible [i] = 1;
@@ -703,6 +687,7 @@ else if (m_bFull) {
 	}
 else
 	memcpy (m_visible.Buffer (), m_visited.Buffer (), m_visited.Size ());
+
 if (OBSERVING) {
 	gameOpts->render.automap.bBright = 0;
 	gameOpts->render.automap.bGrayOut = 0;
@@ -728,9 +713,8 @@ int32_t CAutomap::Update (void)
 {
 		CObject* playerP = OBJECTS + LOCALPLAYER.nObject;
 
-if (!gameStates.app.bNostalgia) {
-	if (!OBSERVING || (LOCALPLAYER.ObservedPlayer () < 0))
-		playerP->Update ();
+if (OBSERVING && (LOCALPLAYER.ObservedPlayer () < 0)) {
+	playerP->Update ();
 	if (controls [0].firePrimaryDownCount) {
 		playerP->info.position = m_data.viewer;
 		InitView ();
@@ -741,24 +725,24 @@ else {
 
 	if (controls [0].firePrimaryDownCount)
 		InitView ();
+	float fZoomScale = X2F (m_data.nViewDist) / X2F (ZOOM_DEFAULT);
 	if (controls [0].forwardThrustTime)
-		m_data.viewTarget += m_data.viewer.mOrient.m.dir.f * (controls [0].forwardThrustTime * ZOOM_SPEED_FACTOR);
-	float mineSize = X2F (CFixVector::Dist (gameData.segs.vMin, gameData.segs.vMax));
-	m_vTAngles.v.coord.p += (fixang) FixDiv (controls [0].pitchTime, ROT_SPEED_DIVISOR);
-	m_vTAngles.v.coord.h += (fixang) FixDiv (controls [0].headingTime, ROT_SPEED_DIVISOR);
-	m_vTAngles.v.coord.b += (fixang) FixDiv (controls [0].bankTime, ROT_SPEED_DIVISOR*2);
-
+		m_data.nViewDist = Clamp (m_data.nViewDist - fix (float (controls [0].forwardThrustTime) * float (ZOOM_SPEED_FACTOR) * fZoomScale), ZOOM_MIN_VALUE, ZOOM_MAX_VALUE);
+	fZoomScale = pow (fZoomScale, 2.0f / 3.0f);
 	m = CFixMatrix::Create (m_vTAngles);
 	if (controls [0].verticalThrustTime || controls [0].sidewaysThrustTime) {
 		m_data.viewer.mOrient = playerP->info.position.mOrient * m;
-		m_data.viewTarget += m_data.viewer.mOrient.m.dir.u * (controls [0].verticalThrustTime * SLIDE_SPEED);
-		m_data.viewTarget += m_data.viewer.mOrient.m.dir.r * (controls [0].sidewaysThrustTime * SLIDE_SPEED);
+		m_data.viewTarget += m_data.viewer.mOrient.m.dir.u * fix (controls [0].verticalThrustTime * SLIDE_SPEED * fZoomScale);
+		m_data.viewTarget += m_data.viewer.mOrient.m.dir.r * fix (controls [0].sidewaysThrustTime * SLIDE_SPEED * fZoomScale);
 		}
 	m_data.viewer.mOrient = playerP->info.position.mOrient * m;
-	if (m_data.nViewDist < ZOOM_MIN_VALUE)
-		m_data.nViewDist = ZOOM_MIN_VALUE;
-	if (m_data.nViewDist > ZOOM_MAX_VALUE)
-		m_data.nViewDist = ZOOM_MAX_VALUE;
+
+	fZoomScale = 1.0f + sqrt (X2F (m_data.nViewDist) / X2F (ZOOM_MAX_VALUE));
+	float mineSize = X2F (CFixVector::Dist (gameData.segs.vMin, gameData.segs.vMax));
+	m_vTAngles.v.coord.p += (fixang) (float (controls [0].pitchTime) / X2F (ROT_SPEED_DIVISOR) * fZoomScale);
+	m_vTAngles.v.coord.h += (fixang) (float (controls [0].headingTime) / X2F (ROT_SPEED_DIVISOR) * fZoomScale);
+	m_vTAngles.v.coord.b += (fixang) (float (controls [0].bankTime) / X2F (ROT_SPEED_DIVISOR * 2) * fZoomScale);
+
 	}
 return 1;
 }
@@ -1077,8 +1061,6 @@ levelNumCanv = NULL;
 GrFreeCanvas (levelNameCanv);
 levelNameCanv = NULL;
 #endif
-if (!OBSERVING && !m_bRadar)
-	Swap (m_data.viewer, LOCALOBJECT.info.position);
 
 if (!gameStates.menus.nInMenu) {
 	GameFlushInputs ();
