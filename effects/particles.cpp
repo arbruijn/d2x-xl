@@ -792,40 +792,40 @@ int32_t CParticle::CollideWithWall (int32_t nThread)
 if (m_nSegment < 0)
 	return 0;
 
-	CSegment* segP;
-	CSide* sideP;
-	int32_t bInit, nSide, nChild, nFace, nFaces, nInFront;
-	fix nDist;
-
-	//redo:
-
-segP = SEGMENTS + m_nSegment;
-if ((bInit = (m_nSegment != nPartSeg [nThread])))
+wallNorm [nThread] = NULL;
+CSegment* segP = SEGMENTS + m_nSegment;
+int32_t bInit = (m_nSegment != nPartSeg [nThread]);
+if (bInit)
 	nPartSeg [nThread] = m_nSegment;
-for (nSide = 0, sideP = segP->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
+
+CSide* sideP = segP->m_sides;
+for (int32_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
+	if (sideP->m_nShape > SIDE_SHAPE_TRIANGLE)
+		continue;
 	if (bInit) {
 		bSidePokesOut [nThread][nSide] = !sideP->IsPlanar ();
 		nFaceCount [nThread][nSide] = sideP->m_nFaces;
 		}
-	nFaces = nFaceCount [nThread][nSide];
-	for (nFace = nInFront = 0; nFace < nFaces; nFace++) {
-		nDist = m_vPos.DistToPlane (sideP->m_normals [nFace],	gameData.segs.vertices [sideP->m_nMinVertex [0]]);
+	int32_t nFaces = nFaceCount [nThread][nSide];
+	int32_t nInFront = 0;
+	for (int32_t nFace = 0; nFace < nFaces; nFace++) {
+		fix nDist = m_vPos.DistToPlane (sideP->m_normals [nFace], gameData.segs.vertices [sideP->m_nMinVertex [0]]);
 		if (nDist > -PLANE_DIST_TOLERANCE)
 			nInFront++;
 		else
 			wallNorm [nThread] = sideP->m_normals + nFace;
 		}
-	if (!nInFront || (bSidePokesOut [nThread][nSide] && (nFaces == 2) && (nInFront < 2))) {
-		if (0 > (nChild = segP->m_children [nSide]))
+	if ((nInFront == 0) || ((nInFront == 1) && (nFaces == 2) && bSidePokesOut [nThread][nSide])) {
+		int32_t nChild = segP->m_children [nSide];
+		if (0 > nChild) {
+#if DBG
+			if (!wallNorm [nThread])
+				BRP;
+#endif
 			return 1;
+			}
 		m_nSegment = nChild;
 		break;
-#if 0
-		if (bRedo)
-		break;
-		bRedo = 1;
-		goto redo;
-#endif
 		}
 	}
 return 0;

@@ -192,9 +192,9 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (RandShort () < OBJECTS [N
 
 float speedScale = SpeedScale ();
 
-#if 1 || DBG
+#if DBG
 if (forwardThrustTime != 0)
-	PrintLog (0, "moving forward\n"); //BRP;
+	BRP;
 #endif
 forwardThrustTime = fix (forwardThrustTime * speedScale);
 // Set object's thrust vector for forward/backward
