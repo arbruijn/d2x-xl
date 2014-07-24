@@ -1050,7 +1050,7 @@ if (Velocity () /*simData.velocity*/.IsZero ()) {
 #	endif
 	if (this == gameData.objs.consoleP)
 		gameData.objs.speedBoost [simData.nObject].bBoosted = simData.bSpeedBoost = 0;
-#if 0
+#if 1
 	if (mType.physInfo.thrust.IsZero ())
 		return;
 #endif
@@ -1070,6 +1070,8 @@ if (Index () == nDbgObj) {
 
 PROF_CONT
 ProcessDrag (simData);
+if (Velocity ().IsZero ())
+	return;
 
 #if DBG
 if ((nDbgSeg >= 0) && (info.nSegment == nDbgSeg))
@@ -1377,8 +1379,10 @@ if (Velocity ().IsZero ()) {
 #	endif
 	if (this == gameData.objs.consoleP)
 		gameData.objs.speedBoost [simData.nObject].bBoosted = simData.speedBoost.bBoosted = 0;
+#if 1
 	if (mType.physInfo.thrust.IsZero ())
 		return;
+#endif
 	}
 
 #if DBG

@@ -61,13 +61,13 @@ if (objP->rType.polyObjInfo.nModel < 0)
 	CFloatVector	dir;
 	tHitbox*			pmhb = gameData.models.hitboxes [objP->ModelId ()].hitboxes.Buffer ();
 	tCloakInfo		ci = {0, FADE_LEVELS, 0, 0, 0, 0, 0};
-	int32_t				i, j, iBox, nBoxes, bHit = 0;
+	int32_t			i, j, iBox, nBoxes, bHit = 0;
 	float				fFade;
 
 if (!SHOW_OBJ_FX)
 	return;
 if (objP->info.nType == OBJ_PLAYER) {
-	if (!EGI_FLAG (bPlayerShield, 0, 1, 0))
+	if (!EGI_FLAG (nShieldEffect, 0, 1, gameOpts->render.effects.bShields))
 		return;
 	if (PLAY (objP->info.nId).flags & PLAYER_FLAGS_CLOAKED) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))
@@ -80,7 +80,7 @@ if (objP->info.nType == OBJ_PLAYER) {
 
 	}
 else if (objP->info.nType == OBJ_ROBOT) {
-	if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.bRobotShields))
+	if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.bShields > 1))
 		return;
 	if (objP->cType.aiInfo.CLOAKED) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))
@@ -199,7 +199,7 @@ if (!SHOW_OBJ_FX)
 if (SHOW_SHADOWS &&
 	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 1) : (gameStates.render.nShadowPass != 3)))
 	return;
-if (EGI_FLAG (bPlayerShield, 0, 1, 0)) {
+if (EGI_FLAG (nShieldEffect, 0, 1, gameOpts->render.effects.bShields)) {
 	if (PLAYER (i).flags & PLAYER_FLAGS_CLOAKED) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))
 			return;
@@ -268,7 +268,7 @@ RenderHitbox (objP, 0.5f, 0.0f, 0.6f, 0.4f);
 	tCloakInfo	ci;
 	fix			dt;
 
-if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.bRobotShields))
+if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.bShields > 1))
 	return;
 if ((objP->info.nType == OBJ_ROBOT) && objP->cType.aiInfo.CLOAKED) {
 	if (!GetCloakInfo (objP, 0, 0, &ci))

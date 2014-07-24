@@ -70,14 +70,15 @@ static const char* pszNoneBasicAdv [3];
 static const char* pszOffFastFull [3];
 static const char* pszOffOn [2];
 static const char* pszThrusters [3];
+static const char* pszShieldEffect [3];
 
 int32_t EffectOptionsCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
-	CMenuItem	*m;
-	int32_t			v;
+	CMenuItem*	m;
+	int32_t		v;
 
 if ((m = menu ["shockwaves"])) {
 	v = m->Value ();
@@ -103,6 +104,17 @@ if ((m = menu ["thrusters"])) {
 		extraGameInfo [0].bThrusterFlames = v;
 		sprintf (m->m_text, TXT_THRUSTER_FLAMES, pszThrusters [v]);
 		m->Rebuild ();
+		}
+	}
+
+if ((m = menu ["shield effect"])) {
+	v = m->Value ();
+	if (gameOpts->render.effects.bShields != v) {
+		extraGameInfo [0].nShieldEffect = 
+		gameOpts->render.effects.bShields = v;
+		sprintf (m->m_text, TXT_SHIELD_EFFECT, pszShieldEffect [v]);
+		m->Rebuild ();
+		key = -2;
 		}
 	}
 
@@ -202,6 +214,10 @@ pszThrusters [0] = TXT_NONE;
 pszThrusters [1] = TXT_2D;
 pszThrusters [2] = TXT_3D;
 
+pszShieldEffect [0] = TXT_OFF;
+pszShieldEffect [1] = TXT_PLAYERS;
+pszShieldEffect [2] = TXT_PLAYERS_AND_ROBOTS;
+
 pszOffOn [0] = TXT_OFF;
 pszOffOn [1] = TXT_ON;
 }
@@ -271,6 +287,10 @@ do {
 	sprintf (szSlider + 1, TXT_THRUSTER_FLAMES, pszThrusters [int32_t (extraGameInfo [0].bThrusterFlames)]);
 	*szSlider = *(TXT_THRUSTER_FLAMES - 1);
 	m.AddSlider ("thrusters", szSlider + 1, extraGameInfo [0].bThrusterFlames, 0, 2, KEY_U, HTX_THRUSTER_FLAMES);
+
+	sprintf (szSlider + 1, TXT_SHIELD_EFFECT, pszShieldEffect [int32_t (gameOpts->render.effects.bShields)]);
+	*szSlider = *(TXT_SHIELD_EFFECT - 1);
+	m.AddSlider ("shield effect", szSlider + 1, gameOpts->render.effects.bShields, 0, 2, KEY_S, HTX_SHIELD_EFFECT);
 
 	m.AddText ("", "");
 	if (extraGameInfo [0].bUseParticles) {

@@ -115,9 +115,9 @@ else
 	else
 		sprintf (mTexts [opt], "Weapon Fx: None");
 	opt++;
-	if (!AXI.bCompetition && (AXI.bDamageExplosions || AXI.bPlayerShield)) {
+	if (!AXI.bCompetition && (AXI.bDamageExplosions || AXI.nShieldEffect)) {
 		INITFLAGS ("Ship Fx: ");
-		ADDFLAG (AXI.bPlayerShield, "Shield");
+		ADDFLAG (AXI.nShieldEffect, "Shield");
 		ADDFLAG (AXI.bDamageExplosions, "Damage");
 		ADDFLAG (AXI.bShowWeapons, "Weapons");
 		ADDFLAG (AXI.bAllowCustomWeapons, "Custom weapons");
@@ -220,7 +220,7 @@ return (!AXI.bCompetition && (AXI.bLightTrails || AXI.bTracers)) ? 2 : 0;
 
 static int32_t ShipFxCompMode (void)
 {
-return (!AXI.bCompetition && (AXI.bPlayerShield || AXI.bDamageExplosions || AXI.bShowWeapons || AXI.bGatlingSpeedUp)) ? 2 : 0;
+return (!AXI.bCompetition && (AXI.nShieldEffect || AXI.bDamageExplosions || AXI.bShowWeapons || AXI.bGatlingSpeedUp)) ? 2 : 0;
 }
 
 //------------------------------------------------------------------------------
@@ -352,7 +352,7 @@ if (nExtensions) {
 				!AXI.bCompetition && AXI.bTracers);
 
 	sprintf (xmlGameInfo + strlen (xmlGameInfo), "    <ShipFx Shield=\"%d\" Damage=\"%d\" Weapons=\"%d\" GatlingSpeedup=\"%d\" />\n",
-				!AXI.bCompetition && AXI.bPlayerShield,
+				!AXI.bCompetition && AXI.nShieldEffect,
 				!AXI.bCompetition && AXI.bDamageExplosions,
 				!AXI.bCompetition && AXI.bShowWeapons,
 				!AXI.bCompetition && AXI.bGatlingSpeedUp);

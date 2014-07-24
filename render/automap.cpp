@@ -727,8 +727,12 @@ else {
 		InitView ();
 	float fZoomScale = X2F (m_data.nViewDist) / X2F (ZOOM_DEFAULT);
 	if (controls [0].forwardThrustTime)
+#if 1
+		m_data.viewTarget += m_data.viewer.mOrient.m.dir.f * fix (float (controls [0].forwardThrustTime) * float (ZOOM_SPEED_FACTOR));
+#else
 		m_data.nViewDist = Clamp (m_data.nViewDist - fix (float (controls [0].forwardThrustTime) * float (ZOOM_SPEED_FACTOR) * fZoomScale), ZOOM_MIN_VALUE, ZOOM_MAX_VALUE);
-	fZoomScale = pow (fZoomScale, 2.0f / 3.0f);
+#endif
+	//fZoomScale = pow (fZoomScale, 2.0f / 3.0f);
 	m = CFixMatrix::Create (m_vTAngles);
 	if (controls [0].verticalThrustTime || controls [0].sidewaysThrustTime) {
 		m_data.viewer.mOrient = playerP->info.position.mOrient * m;
@@ -737,7 +741,7 @@ else {
 		}
 	m_data.viewer.mOrient = playerP->info.position.mOrient * m;
 
-	fZoomScale = 1.0f + sqrt (X2F (m_data.nViewDist) / X2F (ZOOM_MAX_VALUE));
+	//fZoomScale = 1.0f + sqrt (X2F (m_data.nViewDist) / X2F (ZOOM_MAX_VALUE));
 	float mineSize = X2F (CFixVector::Dist (gameData.segs.vMin, gameData.segs.vMax));
 	m_vTAngles.v.coord.p += (fixang) (float (controls [0].pitchTime) / X2F (ROT_SPEED_DIVISOR) * fZoomScale);
 	m_vTAngles.v.coord.h += (fixang) (float (controls [0].headingTime) / X2F (ROT_SPEED_DIVISOR) * fZoomScale);

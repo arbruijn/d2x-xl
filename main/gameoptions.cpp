@@ -110,7 +110,7 @@ if (i) {
 	coronas.bWeapons = 0;
 	coronas.bAdditive = 0;
 	coronas.bAdditiveObjs = 0;
-	effects.bRobotShields = 0;
+	effects.bShields = 1;
 	effects.bOnlyShieldHits = 0;
 	coronas.nIntensity = 1;
 	coronas.nObjIntensity = 1;
@@ -260,7 +260,7 @@ else {
 	coronas.bAdditiveObjs = 0;
 	coronas.nIntensity = 1;
 	coronas.nObjIntensity = 1;
-	effects.bRobotShields = 0;
+	effects.bShields = 1;
 	effects.bOnlyShieldHits = 0;
 	effects.nShockwaves = 1;
 	effects.nShrapnels = 1;

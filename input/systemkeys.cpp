@@ -585,7 +585,7 @@ switch (key) {
 
 	case KEY_ALTED + KEY_P:
 #if PROFILING
-		gameData.profiler.bToggle = 1;
+		gameData.profiler.bToggle = !gameData.profiler.bToggle;
 #endif
 		break;
 

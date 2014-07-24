@@ -85,6 +85,32 @@ else {
 }
 
 // ----------------------------------------------------------------------------
+
+static void AdjustThrust (CFixVector& vThrust, fix maxThrust)
+{
+#if 1
+
+#	if 1
+fix ftMin = (maxThrust >> 15) + 1;
+fix ft = (gameData.time.xFrame < ftMin) ? ftMin : gameData.time.xFrame;
+#	else
+fix ft = gameData.time.xFrame;
+if ((ft < I2X (1) / 2) && ((ft << 15) <= maxThrust))
+	ft = (maxThrust >> 15) + 1;
+#	endif
+vThrust *= FixDiv (maxThrust, ft);
+
+#else
+
+float fScale = float (maxThrust) / float (gameData.time.xFrame);
+vThrust.v.coord.x = fix (float (vThrust.v.coord.x) * fScale);
+vThrust.v.coord.y = fix (float (vThrust.v.coord.y) * fScale);
+vThrust.v.coord.z = fix (float (vThrust.v.coord.z) * fScale);
+
+#endif
+}
+
+// ----------------------------------------------------------------------------
 //look at keyboard, mouse, joystick, CyberMan, whatever, and set
 //physics vars rotVel, velocity
 
@@ -93,9 +119,6 @@ else {
 
 void CObject::ApplyFlightControls (void)
 {
-	fix		forwardThrustTime;
-	CObject*	gmObjP;
-
 if (gameData.time.xFrame <= 0)
 	return;
 
@@ -111,7 +134,11 @@ if (info.nId != N_LOCALPLAYER)
 if ((info.nType != OBJ_PLAYER) && ((info.nType != OBJ_GHOST) || !OBSERVING))
 	return;
 
-if ((gmObjP = gameData.objs.GetGuidedMissile (N_LOCALPLAYER))) {
+CObject*	missileObjP = gameData.objs.GetGuidedMissile (N_LOCALPLAYER);
+
+if (!missileObjP) 
+	mType.physInfo.rotThrust = CFixVector::Create (controls [0].pitchTime, controls [0].headingTime, controls [0].bankTime);
+else {
 	CAngleVector	vRotAngs;
 	CFixMatrix		mRot, mOrient;
 	fix				speed;
@@ -123,35 +150,27 @@ if ((gmObjP = gameData.objs.GetGuidedMissile (N_LOCALPLAYER))) {
 	vRotAngs.v.coord.b = controls [0].bankTime / 2 + gameStates.gameplay.seismic.nMagnitude / 16;
 	vRotAngs.v.coord.h = controls [0].headingTime / 2 + gameStates.gameplay.seismic.nMagnitude / 64;
 	mRot = CFixMatrix::Create (vRotAngs);
-	mOrient = gmObjP->info.position.mOrient * mRot;
-	gmObjP->info.position.mOrient = mOrient;
-	speed = WI_speed (gmObjP->info.nId, gameStates.app.nDifficultyLevel);
-	gmObjP->mType.physInfo.velocity = gmObjP->info.position.mOrient.m.dir.f * speed;
+	mOrient = missileObjP->info.position.mOrient * mRot;
+	missileObjP->info.position.mOrient = mOrient;
+	speed = WI_speed (missileObjP->info.nId, gameStates.app.nDifficultyLevel);
+	missileObjP->mType.physInfo.velocity = missileObjP->info.position.mOrient.m.dir.f * speed;
 	if(IsMultiGame)
-		MultiSendGuidedInfo (gmObjP, 0);
+		MultiSendGuidedInfo (missileObjP, 0);
 	}
-else {
-	mType.physInfo.rotThrust = CFixVector::Create (controls [0].pitchTime, controls [0].headingTime, controls [0].bankTime);
-	}
-forwardThrustTime = controls [0].forwardThrustTime;
-#if DBG
-if (forwardThrustTime != 0)
-	BRP;
-#endif
+
+fix forwardThrustTime = controls [0].forwardThrustTime;
+
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (RandShort () < OBJECTS [N_LOCALPLAYER].DriveDamage ()) && ((Index () != LOCALPLAYER.nObject) || !automap.Active ())) {
 	if (controls [0].afterburnerState) {			//player has key down
-		fix xAfterburnerScale;
-		int32_t oldCount, newCount;
-
 		//add in value from 0..1
-		xAfterburnerScale = I2X (1) + Min (I2X (1) / 2, gameData.physics.xAfterburnerCharge) * 2;
+		fix xAfterburnerScale = I2X (1) + Min (I2X (1) / 2, gameData.physics.xAfterburnerCharge) * 2;
 		forwardThrustTime = FixMul (gameData.time.xFrame, xAfterburnerScale);	//based on full thrust
-		oldCount = (gameData.physics.xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
+		int32_t oldCount = (gameData.physics.xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
 		if (!gameStates.gameplay.bAfterburnerCheat)
 			gameData.physics.xAfterburnerCharge -= gameData.time.xFrame / AFTERBURNER_USE_SECS;
 		if (gameData.physics.xAfterburnerCharge < 0)
 			gameData.physics.xAfterburnerCharge = 0;
-		newCount = (gameData.physics.xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
+		int32_t newCount = (gameData.physics.xAfterburnerCharge / (DROP_DELTA_TIME / AFTERBURNER_USE_SECS));
 		if (gameStates.app.bNostalgia && (oldCount != newCount))
 			gameStates.render.bDropAfterburnerBlob = 1;	//drop blob (after physics called)
 		}
@@ -171,15 +190,19 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (RandShort () < OBJECTS [N
 		}
 	}
 
-float fScale = SpeedScale ();
+float speedScale = SpeedScale ();
 
-forwardThrustTime = fix (forwardThrustTime * fScale);
+#if 1 || DBG
+if (forwardThrustTime != 0)
+	PrintLog (0, "moving forward\n"); //BRP;
+#endif
+forwardThrustTime = fix (forwardThrustTime * speedScale);
 // Set object's thrust vector for forward/backward
 mType.physInfo.thrust = info.position.mOrient.m.dir.f * forwardThrustTime;
 // slide left/right
-mType.physInfo.thrust += info.position.mOrient.m.dir.r * fix (controls [0].sidewaysThrustTime * fScale);
+mType.physInfo.thrust += info.position.mOrient.m.dir.r * fix (controls [0].sidewaysThrustTime * speedScale);
 // slide up/down
-mType.physInfo.thrust += info.position.mOrient.m.dir.u * fix (controls [0].verticalThrustTime * fScale);
+mType.physInfo.thrust += info.position.mOrient.m.dir.u * fix (controls [0].verticalThrustTime * speedScale);
 mType.physInfo.thrust *= 2 * DriveDamage ();
 if (!gameStates.input.bSkipControls)
 	memcpy (&gameData.physics.playerThrust, &mType.physInfo.thrust, sizeof (gameData.physics.playerThrust));
@@ -188,37 +211,15 @@ if ((mType.physInfo.flags & PF_WIGGLE) && !gameData.objs.speedBoost [Index ()].b
 
 // As of now, mType.physInfo.thrust & mType.physInfo.rotThrust are
 // in units of time... In other words, if thrust==gameData.time.xFrame, that
-// means that the user was holding down the MaxThrust key for the
+// means that the user was holding down the thrust key for the
 // whole frame.  So we just scale them up by the max, and divide by
 // gameData.time.xFrame to make them independant of framerate
 
 //	Prevent divide overflows on high frame rates.
 //	In a signed divide, you get an overflow if num >= div<<15
-#if 0
-if (!mType.physInfo.thrust.IsZero ()) {
-	float fScale = float (gameData.pig.ship.player->maxThrust) / float (gameData.time.xFrame);
-	mType.physInfo.thrust.dir.coord.x = fix (float (mType.physInfo.thrust.dir.coord.x) * fScale);
-	mType.physInfo.thrust.dir.coord.y = fix (float (mType.physInfo.thrust.dir.coord.y) * fScale);
-	mType.physInfo.thrust.dir.coord.z = fix (float (mType.physInfo.thrust.dir.coord.z) * fScale);
-	}
-if (!mType.physInfo.rotThrust.IsZero ()) {
-	float fScale = float (gameData.pig.ship.player->maxRotThrust) / float (gameData.time.xFrame);
-	mType.physInfo.rotThrust.dir.coord.x = fix (float (mType.physInfo.rotThrust.dir.coord.x) * fScale);
-	mType.physInfo.rotThrust.dir.coord.y = fix (float (mType.physInfo.rotThrust.dir.coord.y) * fScale);
-	mType.physInfo.rotThrust.dir.coord.z = fix (float (mType.physInfo.rotThrust.dir.coord.z) * fScale);
-	}
-#else
-fix ft = gameData.time.xFrame;
-fix maxThrust = fix (gameData.pig.ship.player->maxThrust * fScale);
 
-//	Note, you must check for ft < I2X (1)/2, else you can get an overflow  on the << 15.
-if ((ft < I2X (1) / 2) && ((ft << 15) <= maxThrust))
-	ft = (maxThrust >> 15) + 1;
-mType.physInfo.thrust *= FixDiv (maxThrust, ft);
-if ((ft < I2X (1) / 2) && ((ft << 15) <= gameData.pig.ship.player->maxRotThrust))
-	ft = (gameData.pig.ship.player->maxRotThrust >> 15) + 1;
-mType.physInfo.rotThrust *= FixDiv (gameData.pig.ship.player->maxRotThrust, ft);
-#endif
+AdjustThrust (mType.physInfo.thrust, fix (gameData.pig.ship.player->maxThrust * speedScale));
+AdjustThrust (mType.physInfo.rotThrust, gameData.pig.ship.player->maxRotThrust);
 
 CWeaponState& ws = gameData.multiplayer.weaponStates [N_LOCALPLAYER];
 

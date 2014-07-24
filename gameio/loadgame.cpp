@@ -422,6 +422,8 @@ if (bNewGame) {
 		gameStates.app.bFirstSecretVisit = 1;
 	}
 else {
+	if (nPlayer == N_LOCALPLAYER)
+		gameData.multiplayer.weaponStates [nPlayer].nShip = gameOpts->gameplay.nShip [0];
 	player.lastScore = player.score;
 	player.level = missionManager.nCurrentLevel;
 	if (!networkData.nJoinState) {
@@ -501,17 +503,19 @@ if (nPlayer < 0)
 
 CPlayerData& player = PLAYER (nPlayer);
 
-if (gameStates.app.bChangingShip) {
-	gameOpts->gameplay.nShip [0] = gameOpts->gameplay.nShip [1];
-	gameStates.app.bChangingShip = 0;
+if (nPlayer == N_LOCALPLAYER) {
+	if (gameStates.app.bChangingShip) {
+		gameOpts->gameplay.nShip [0] = gameOpts->gameplay.nShip [1];
+		gameStates.app.bChangingShip = 0;
+		}
+	gameData.multiplayer.weaponStates [nPlayer].nShip = gameOpts->gameplay.nShip [0];
 	}
+
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	NDRecordLaserLevel (player.LaserLevel (), 0);
 	NDRecordPlayerWeapon (0, 0);
 	NDRecordPlayerWeapon (1, 0);
 	}
-
-gameData.multiplayer.weaponStates [nPlayer].nShip = gameOpts->gameplay.nShip [0];
 
 player.Setup ();
 player.SetObservedPlayer (nPlayer);
@@ -937,7 +941,7 @@ memset (gameData.stats.player, 0, sizeof (tPlayerStats));
 gameData.render.mine.bObjectRendered.Clear (char (0xff));
 gameData.render.mine.bRenderSegment.Clear (char (0xff));
 gameData.render.mine.bCalcVertexColor.Clear (0);
-memset (gameData.multiplayer.weaponStates, 0xff, sizeof (gameData.multiplayer.weaponStates));
+memset (gameData.multiplayer.weaponStates, 0, sizeof (gameData.multiplayer.weaponStates));
 memset (gameData.multiplayer.bWasHit, 0, sizeof (gameData.multiplayer.bWasHit));
 memset (gameData.multiplayer.nLastHitTime, 0, sizeof (gameData.multiplayer.nLastHitTime));
 memset (gameData.weapons.firing, 0, sizeof (gameData.weapons.firing));

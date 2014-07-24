@@ -324,12 +324,88 @@ return true;
 }
 
 //------------------------------------------------------------------------------
+// Retrieve the number of actual hardware CPU cores, because Intel's hyper threading 
+// actually slows multiple threads processing massive amounts of data down!
+
+#include <stdio.h>
+#include <string.h>
+#ifdef _WIN32
+#	include <intrin.h>
+#else
+#	include <cpuid.h>
+#endif
+
+typedef union {
+	int v [4];
+	struct {
+		unsigned int eax, ebx, ecx, edx;
+	} regs;
+} cpu_t;
+
+//------------------------------------------------------------------------------
+
+inline void CPUID (cpu_t& cpu, int infoType)
+{
+#ifdef _WIN32
+__cpuid (cpu.v, infoType);
+#else
+__get_cpuid (infoType, &cpu.regs.eax, &cpu.regs.ebx, &cpu.regs.ecx, &cpu.regs.edx);
+#endif
+}
+
+//------------------------------------------------------------------------------
+
+uint32_t GetCPUCores (void)
+{
+	cpu_t	cpu;
+
+CPUID (cpu, 0);
+
+//int nIds = cpu.v [0];
+
+union {
+	char	s [16];
+	int	v [4];
+} vendor;
+
+vendor.v [0] = cpu.v [1];
+vendor.v [1] = cpu.v [3];
+vendor.v [2] = cpu.v [2];
+vendor.v [3] = 0;
+
+CPUID (cpu, 1);
+
+unsigned int nFeatures = cpu.v [3];
+unsigned int nLogical = (cpu.v [1] >> 16) & 0xFF;
+unsigned int nCores = nLogical;
+
+if (!strcmp (vendor.s, "GenuineIntel")) {
+	CPUID (cpu, 4);
+	nCores = ((cpu.v [0] >> 26) & 0x3F) + 1;
+	}
+else if (!strcmp (vendor.s, "AuthenticAMD")) {
+	CPUID (cpu, 0x80000008);
+	nCores = (cpu.v [2] & 0xff) + 1;
+	}
+
+int bHyperThreads = (nFeatures & (1 << 28)) && (nCores < nLogical);
+
+PrintLog (0, "\nGetCPUCores: CPU Id = '%s'. Found %d physical and %d logical CPUs. Hyper threading = %s.\n\n",
+			 vendor.s, nCores, nLogical, bHyperThreads ? "on" : "off");
+
+return nCores / (bHyperThreads + 1);
+}
+
+//------------------------------------------------------------------------------
 
 int32_t GetNumThreads (void)
 {
 if (!gameStates.app.bMultiThreaded)
 	return gameStates.app.nThreads = 1;
+
 #if USE_OPENMP && defined(_OPENMP)
+
+int32_t nCores = GetCPUCores ();
 int32_t nThreads = omp_get_num_threads ();
 if (nThreads < 2)
 #pragma omp parallel 
@@ -337,17 +413,19 @@ if (nThreads < 2)
 	nThreads = omp_get_max_threads ();
 	}
 
+if (nCores > nThreads)
+	nCores = nThreads;
+else if (nThreads > nCores)
+	nThreads = nCores;
+
 if (gameStates.app.nThreads > MAX_THREADS)
 	gameStates.app.nThreads = MAX_THREADS;
 if (nThreads < gameStates.app.nThreads)
 	gameStates.app.nThreads = nThreads;
-else if (nThreads > gameStates.app.nThreads)
-#	if 0 //DBG
-	omp_set_num_threads (gameStates.app.nThreads = 2);
-#	else
-	omp_set_num_threads (gameStates.app.nThreads);
-#	endif
+omp_set_num_threads (gameStates.app.nThreads);
+
 #endif
+
 return gameStates.app.nThreads;
 }
 

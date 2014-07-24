@@ -2317,8 +2317,7 @@ gameOptions [0].render.effects.bMovingSparks = 1;
 if (gameOptions [0].render.nQuality < 2)
 	gameOptions [0].render.effects.bGlow = 0;
 #endif
-extraGameInfo [0].bPlayerShield = 1;
-gameOptions [0].render.effects.bRobotShields = 1;
+extraGameInfo [0].nShieldEffect = gameOpts->render.effects.bShields;
 gameOptions [0].render.effects.bOnlyShieldHits = 1;
 extraGameInfo [0].bTracers = 1;
 extraGameInfo [0].bShockwaves = 0; 

@@ -1976,6 +1976,9 @@ const char *defaultGameTexts [][2] = {
  {"mit bestaetigung", "confirmation"},
  {"auf einladung", "invitation"},
  {"~Beobachtermodus erlauben", "allow o~Bserver mode"},
+ {"~Schildeffekt: %s", "~Shield effect: %s"},
+ {"Spieler", "Players"},
+ {"Spieler & Roboter", "Players & Robots"},
  
 #if 0
  {"", ""},

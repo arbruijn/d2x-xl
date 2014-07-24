@@ -267,7 +267,7 @@ typedef struct tExtraGameInfo {
 	uint8_t				bDamageExplosions;
 	uint8_t				bThrusterFlames;
 	uint8_t				bShadows;
-	uint8_t				bPlayerShield;
+	uint8_t				nShieldEffect;
 	uint8_t				bTeleporterCams;
 	uint8_t				bDarkness;
 	uint8_t				bPowerupLights;

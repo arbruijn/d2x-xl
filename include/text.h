@@ -1985,12 +1985,12 @@ void LoadGameTexts(void);
 #define TXT_ACCESS_CONFIRM				GT(1227)
 #define TXT_ACCESS_INVITE				GT(1228)
 #define TXT_OBSERVER_MODE				GT(1229)
+#define TXT_SHIELD_EFFECT				GT(1230)
+#define TXT_PLAYERS						GT(1231)
+#define TXT_PLAYERS_AND_ROBOTS		GT(1232)
 
 #if 0
 
-#define TXT_					GT(1230)
-#define TXT_					GT(1231)
-#define TXT_					GT(1232)
 #define TXT_					GT(1233)
 #define TXT_					GT(1234)
 #define TXT_					GT(1235)
@@ -2619,11 +2619,10 @@ void LoadGameTexts(void);
 #define HTX_GAME_TYPE					HT(439)
 #define HTX_GAME_ACCESS					HT(440)
 #define HTX_OBSERVER_MODE				HT(441)
+#define HTX_SHIELD_EFFECT				HT(442)
 
 #if 0
 
-#define HTX_						HT(441)
-#define HTX_						HT(442)
 #define HTX_						HT(443)
 #define HTX_						HT(444)
 #define HTX_						HT(445)

@@ -373,7 +373,7 @@ for (i = 0; i < 2; i++) {
 		RP (extraGameInfo [i].bLightTrails, 0, 0);
 		RP (extraGameInfo [i].bMultiBosses, 0, 0);
 		RP (extraGameInfo [i].bPowerupsOnRadar, 0, 0);
-		RP (extraGameInfo [i].bPlayerShield, 0, 0);
+		//RP (extraGameInfo [i].nShieldEffect, 0, 0);
 		RP (extraGameInfo [i].bRobotsHitRobots, 0, 0);
 		RP (extraGameInfo [i].bRobotsOnRadar, 0, 0);
 		RP (extraGameInfo [i].bRotateLevels, 0, 0);
@@ -469,6 +469,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.effects.bGlow, i, 0);
 		RP (gameOptions [i].render.effects.bSoftParticles, i, 0);
 		RP (gameOptions [i].render.effects.nShrapnels, i, 0);
+		RP (gameOptions [i].render.effects.bShields, i, 1);
 		RP (gameOptions [i].render.coronas.bUse, i, 0);
 		RP (gameOptions [i].render.coronas.nStyle, i, 0);
 		RP (gameOptions [i].render.effects.bEnergySparks, i, 0);
@@ -586,7 +587,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.coronas.nObjIntensity, i, 0);
 		RP (gameOptions [i].render.coronas.bAdditive, i, 0);
 		RP (gameOptions [i].render.coronas.bAdditiveObjs, i, 0);
-		RP (gameOptions [i].render.effects.bRobotShields, i, 0);
 		RP (gameOptions [i].render.effects.bOnlyShieldHits, 0, 0);
 		RP (gameOptions [i].render.effects.bTransparent, i, 0);
 		RP (gameOptions [i].render.lightning.bAuxViews, i, 0);
@@ -1416,7 +1416,7 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].bFluidPhysics", "1"},
 	 {"extraGameInfo[0].bImmortalPowerups", "0"},
 	 {"extraGameInfo[0].bMultiBosses", "1"},
-	 {"extraGameInfo[0].bPlayerShield", "0"},
+	 {"extraGameInfo[0].nShieldEffect", "1"},
 	 {"extraGameInfo[0].bRobotsHitRobots", "1"},
 	 {"extraGameInfo[0].bTeleporterCams", "0"},
 	 {"extraGameInfo[0].bRotateMarkers", "0"},
@@ -1426,6 +1426,7 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].nMslTurnSpeed", "1"},
 	 {"extraGameInfo[0].nMslStartSpeed", "0"},
 	 {"extraGameInfo[0].nSpeedBoost", "10"},
+	 {"extraGameInfo[0].nShieldEffect", "1"},
 	 {"extraGameInfo[0].headlight.bAvailable", "1"},
 	 {"gameOptions[0].render.particles.bWiggleBubbles", "1"},
 	 {"gameOptions[0].render.particles.bWobbleBubbles", "1"},
@@ -1450,7 +1451,6 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.coronas.nIntensity", "1"},
 	 {"gameOptions[0].render.coronas.nObjIntensity", "1"},
 	 {"gameOptions[0].render.coronas.bAdditive", "1"},
-	 {"gameOptions[0].render.effects.bRobotShields", "1"},
 	 {"gameOptions[0].render.effects.bOnlyShieldHits", "1"},
 	 {"gameOptions[0].render.effects.bTransparent", "1"},
 	 {"gameOptions[0].render.cameras.bFitToWall", "0"},

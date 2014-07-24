@@ -374,7 +374,7 @@ typedef struct tEffectRenderOptions {
 	int32_t nShockwaves;
 	int32_t nShrapnels;
 	int32_t bEnergySparks;
-	int32_t bRobotShields;
+	int32_t bShields;
 	int32_t bOnlyShieldHits;
 	int32_t bAutoTransparency;
 	int32_t bTransparent;

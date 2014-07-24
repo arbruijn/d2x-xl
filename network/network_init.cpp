@@ -353,7 +353,7 @@ for (i = 0; i < 2; i++) {
 	extraGameInfo [i].bDamageExplosions = 1;
 	extraGameInfo [i].bThrusterFlames = 1;
 	extraGameInfo [i].bShadows = 1;
-	extraGameInfo [i].bPlayerShield = 1;
+	extraGameInfo [i].nShieldEffect = gameOpts->render.effects.bShields;
 	extraGameInfo [i].bTeleporterCams = 0;
 	extraGameInfo [i].bDarkness = 0;
 	extraGameInfo [i].bTeamDoors = 0;
@@ -530,7 +530,7 @@ else {
 	PrintLog (0, "bDamageExplosions: %d\n", extraGameInfo [1].bDamageExplosions);
 	PrintLog (0, "bThrusterFlames: %d\n", extraGameInfo [1].bThrusterFlames);
 	PrintLog (0, "bShadows: %d\n", extraGameInfo [1].bShadows);
-	PrintLog (0, "bPlayerShield: %d\n", extraGameInfo [1].bPlayerShield);
+	PrintLog (0, "nShieldEffect: %d\n", extraGameInfo [1].nShieldEffect);
 	PrintLog (0, "bTeleporterCams: %d\n", extraGameInfo [1].bTeleporterCams);
 	PrintLog (0, "bEnableCheats: %d\n", extraGameInfo [1].bEnableCheats);
 	PrintLog (0, "bTargetIndicators: %d\n", extraGameInfo [1].bTargetIndicators);
