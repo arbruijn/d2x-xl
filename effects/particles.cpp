@@ -358,7 +358,7 @@ else {
 					}
 				}
 			}
-		m_mOrient = *mOrient * mRot [(RandShort () % 9) * 9 + (RandShort () % 9)];
+		m_mOrient = *mOrient * mRot [Rand (9) * 9 + Rand (9)];
 		}
 	}
 
@@ -668,7 +668,7 @@ else {
 					}
 				}
 			}
-		m_mOrient = *mOrient * mRot [(RandShort () % 9) * 9 + (RandShort () % 9)];
+		m_mOrient = *mOrient * mRot [Rand (9) * 9 + Rand (9)];
 		}
 	}
 

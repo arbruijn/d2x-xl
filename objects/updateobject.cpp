@@ -104,17 +104,18 @@ if (Index () == nDbgObj)
 if (this == dbgObjP)
 	dbgObjP = dbgObjP;
 #endif
-if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (Type () == OBJ_POWERUP)) {
-	if (!IsMissile ()) 
+if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME)) {
+	if (Type () == OBJ_POWERUP) 
 		RemovePowerupInMine (Id ());
-	else {
-		int32_t i = FindDropInfo (Signature ());
-		if (i >= 0)
-			DelDropInfo (i);
-#if DBG
-		else
-			FindDropInfo (Signature ());
-#endif
+	else if (Type () == OBJ_WEAPON) {
+		if (IsMissile ()) {
+			int32_t i = FindDropInfo (Signature ());
+			if (i >= 0) {
+				if (gameData.objs.dropInfo [i].nDropTime == 0x7FFFFFFF) 
+					MaybeDropNetPowerup (i, gameData.objs.dropInfo [i].nPowerupType, FORCE_DROP);
+				DelDropInfo (i);
+				}
+			}
 		}
 	}
 }

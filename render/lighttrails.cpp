@@ -264,7 +264,7 @@ if (objP->HasLightTrail () && gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
 	}
 
 if ((objP->info.renderType != RT_POLYOBJ) || (objP->info.nId == FUSION_ID))
-	RenderWeaponCorona (objP, colorP, 0.5f, 0, 2.0f + X2F (RandShort () % (I2X (1) / 8)), 1, 0, 1);
+	RenderWeaponCorona (objP, colorP, 0.5f, 0, 2.0f + X2F (Rand (I2X (1) / 8)), 1, 0, 1);
 else
 	RenderWeaponCorona (objP, colorP, 0.75f, 0, bGatling ? 1.0f : 2.0f, 0, 0, 0);
 }
@@ -291,8 +291,8 @@ else if ((objP->info.nType == OBJ_DEBRIS) && gameOpts->render.nDebrisLife) {
 		h = (10 - h) / 20.0f;
 		if (gameStates.app.nSDLTicks [0] - t0 > 50) {
 			t0 = gameStates.app.nSDLTicks [0];
-			debrisGlow.Red () = 0.5f + X2F (RandShort () % (I2X (1) / 4));
-			debrisGlow.Green () = X2F (RandShort () % (I2X (1) / 4));
+			debrisGlow.Red () = 0.5f + X2F (Rand (I2X (1) / 4));
+			debrisGlow.Green () = X2F (Rand (I2X (1) / 4));
 			}
 		RenderWeaponCorona (objP, &debrisGlow, h, 5 * objP->info.xSize, 1.5f, 1, LIGHTTRAIL_BLENDMODE, 0);
 		}

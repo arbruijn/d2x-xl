@@ -65,7 +65,7 @@ if (!objCount)		//no OBJECTS of this nType had initially been placed in the mine
 	return NULL;	//can happen with missile packs
 if ((bUseFree = (objCount < 0)))
 	objCount = -objCount;
-h = RandShort () % objCount + 1;
+h = Rand (objCount) + 1;
 for (i = 0, objP = gameData.objs.init.Buffer (); i < gameFileInfo.objects.count; i++, objP++) {
 	if ((objP->info.nType != nType) || (objP->info.nId != id))
 		continue;
@@ -111,13 +111,13 @@ static int32_t	segQueue [MAX_SEGMENTS_D2X];
 
 int32_t PickConnectedSegment (CObject *objP, int32_t nMaxDepth, int32_t *nDepthP)
 {
-	int32_t			nCurDepth;
-	int32_t			nStartSeg;
-	int32_t			nHead, nTail;
-	int16_t			i, j, nSideCount, nSide, nChild, sideList [6];
+	int32_t		nCurDepth;
+	int32_t		nStartSeg;
+	int32_t		nHead, nTail;
+	int16_t		i, j, nSideCount, nSide, nChild, sideList [6];
 	CSegment*	segP;
 	CWall*		wallP;
-	uint8_t			bVisited [MAX_SEGMENTS_D2X];
+	uint8_t		bVisited [MAX_SEGMENTS_D2X];
 
 if (!objP)
 	return -1;
@@ -127,13 +127,14 @@ nTail = 0;
 segQueue [nHead++] = nStartSeg;
 
 memset (bVisited, 0, gameData.segs.nSegments);
+bVisited [nStartSeg] = 1;
 
 while (nTail != nHead) {
 	nCurDepth = bVisited [segQueue [nTail]];
 	if (nCurDepth >= nMaxDepth) {
 		if (nDepthP)
 			*nDepthP = nCurDepth;
-		return segQueue [nTail + RandShort () % (nHead - nTail)];
+		return segQueue [nTail + Rand (nHead - nTail)];
 		}
 	segP = SEGMENTS + segQueue [nTail++];
 
@@ -142,7 +143,7 @@ while (nTail != nHead) {
 		if (segP->Side (i)->FaceCount ())
 			sideList [nSideCount++] = i;
 	for (i = nSideCount; i; ) {
-		j = RandShort () % i;
+		j = Rand (i);
 		nSide = sideList [j];
 		if (j < --i)
 			sideList [j] = sideList [i];
@@ -164,7 +165,7 @@ while ((nTail > 0) && (bVisited [segQueue [nTail - 1]] == nCurDepth))
 	nTail--;
 if (nDepthP)
 	*nDepthP = nCurDepth + 1;
-return segQueue [nTail + RandShort () % (nHead - nTail)];
+return segQueue [nTail + Rand (nHead - nTail)];
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -200,7 +201,7 @@ if (bUseInitSgm) {
 	}
 if (pbFixedPos)
 	*pbFixedPos = 0;
-nDepth = BASE_NET_DROP_DEPTH + RandShort () % (BASE_NET_DROP_DEPTH * 2);
+nDepth = BASE_NET_DROP_DEPTH + Rand (BASE_NET_DROP_DEPTH * 2);
 vPlayerPos = &LOCALOBJECT.info.position.vPos;
 nPlayerSeg = LOCALOBJECT.info.nSegment;
 
@@ -210,7 +211,7 @@ while (nSegment == -1) {
 	if (!IsMultiGame)
 		nPlayer = N_LOCALPLAYER;
 	else {	// chose drop segment at required minimum distance from some random player
-		nPlayer = RandShort () % N_PLAYERS;
+		nPlayer = Rand (N_PLAYERS);
 		count = 0;
 		while ((count < N_PLAYERS) &&	// make sure player is not the local player or on his team
 				 (!PLAYER (nPlayer).connected ||
@@ -270,7 +271,7 @@ if (nSegment == -1) {
 #if TRACE
 	console.printf (1, "Warning: Unable to find a connected CSegment.  Picking a random one.\n");
 #endif
-	return (RandShort () % gameData.segs.nSegments);
+	return Rand (gameData.segs.nSegments);
 	}
 return nSegment;
 }
@@ -315,7 +316,7 @@ int32_t AddDropInfo (int16_t nObject, int16_t nPowerupType, int32_t nDropTime)
 
 if (gameData.objs.nFreeDropped < 0)
 	return -1;
-AddPowerupInMine (nPowerupType);
+//AddPowerupInMine (nPowerupType);
 h = gameData.objs.nFreeDropped;
 gameData.objs.nFreeDropped = gameData.objs.dropInfo [h].nNextPowerup;
 gameData.objs.dropInfo [h].nPrevPowerup = gameData.objs.nLastDropped;
@@ -387,8 +388,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (gameData.reactor.bDestroyed || gameStates.app.bEndLevelSequence)
 		return 0;
 	gameData.multigame.create.nCount = 0;
-
-
+	
 	if (IsMultiGame && (extraGameInfo [IsMultiGame].nSpawnDelay != 0)) {
 		if (nDropState == CHECK_DROP) {
 			if ((gameData.objs.dropInfo [nObject].nDropTime < 0) ||
@@ -890,7 +890,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 		return;
 	if (nAmmo > 4)
 		nAmmo = 4;
-	for (nAmmo = RandShort () % nAmmo; nAmmo; nAmmo--) {
+	for (nAmmo = Rand (nAmmo); nAmmo; nAmmo--) {
 		CFixVector vRandom = CFixVector::Random ();
 		CFixVector vDropPos = playerObjP->info.position.vPos + vRandom;
 		int16_t nNewSeg = FindSegByPos (vDropPos, playerObjP->info.nSegment, 1, 0);

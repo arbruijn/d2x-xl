@@ -633,7 +633,7 @@ gameFolders.missions.szSubFolder [strlen (gameFolders.missions.szSubFolder) - 1]
 
 int32_t CMissionManager::BuildList (int32_t bAnarchy, int32_t nSubFolder)
 {
-	int32_t nTopPlace, bSubFolder, bHaveSubFolders;
+	int32_t nTopPlace, bSubFolder, bHaveSubFolders, bDownloadFolder = nSubFolder == -2;
 
 m_nCount = 0;
 //now search for levels on disk
@@ -644,17 +644,20 @@ if (nSubFolder >= 0) {
 		MoveFolderUp ();
 	}
 
-bSubFolder = (*gameFolders.missions.szSubFolder != '\0');
-if (!bSubFolder && gameOpts->app.bSinglePlayer) {
-	strcpy (gameFolders.missions.szSubFolder, "single/");
-//		bSubFolder = 1;
+if (bDownloadFolder) 
+	bSubFolder = 0;
+else {
+	bSubFolder = (*gameFolders.missions.szSubFolder != '\0');
+	if (!bSubFolder && gameOpts->app.bSinglePlayer) {
+		strcpy (gameFolders.missions.szSubFolder, "single/");
+		}
 	}
-if (gameStates.app.bDemoData) {
+if (!bDownloadFolder && gameStates.app.bDemoData) {
 	AddBuiltinMission ();  //read built-in first
 	nBuiltIns = m_nCount;
 	}
 else {
-	if (!bSubFolder) {// || (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.missions.szSubFolder, "single"))) {
+	if (!bDownloadFolder && !bSubFolder) {// || (gameOpts->app.bSinglePlayer && !strcmp (gameFolders.missions.szSubFolder, "single"))) {
 		if (gameOpts->app.nVersionFilter & 2) {
 			AddBuiltinMission ();  //read built-in first
 			//if (gameOpts->app.bSinglePlayer)
@@ -671,7 +674,10 @@ else {
 		PrintLog (0, "   (%s%s)\n", gameFolders.missions.szRoot, gameFolders.missions.szSubFolder);
 		return 0;
 		}
-	sprintf (gameFolders.missions.szCurrent [0], "%s%s", gameFolders.missions.szRoot, gameFolders.missions.szSubFolder);
+	if (bDownloadFolder)
+		strcpy (gameFolders.missions.szCurrent [0], gameFolders.missions.szDownloads);
+	else
+		sprintf (gameFolders.missions.szCurrent [0], "%s%s", gameFolders.missions.szRoot, gameFolders.missions.szSubFolder);
 	bHaveSubFolders = 0;
 	if (gameOpts->app.nVersionFilter & 2) {
 		Add (bAnarchy, 0, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
@@ -681,7 +687,7 @@ else {
 		Add (bAnarchy, 1, bSubFolder, bHaveSubFolders, ML_MISSIONDIR);
 		bHaveSubFolders = 1;
 		}
-	if (gameFolders.bAltHogDirInited && strcmp (gameFolders.game.szAltHogs, gameFolders.game.szRoot)) {
+	if (!bDownloadFolder && gameFolders.bAltHogDirInited && strcmp (gameFolders.game.szAltHogs, gameFolders.game.szRoot)) {
 		bHaveSubFolders = 0;
 		if (strlen (gameFolders.game.szAltHogs) + strlen (MISSION_FOLDER) + strlen (gameFolders.missions.szSubFolder) >= FILENAME_LEN - 5) {
 			PrintLog (0, "   Error: Current mission folder name length exceeds internal limits\n");
@@ -1024,8 +1030,12 @@ if (nSubFolder < 0) {
 	PrintLog (1, "searching mission '%s'\n", szMissionName);
 	}
 else if (szSubFolder && *szSubFolder) {
-	strcpy (gameFolders.missions.szSubFolder, szSubFolder);
-	nSubFolder = -1;
+	if (!strcmp (szSubFolder, gameFolders.missions.szDownloads))
+		nSubFolder = -2;
+	else {
+		strcpy (gameFolders.missions.szSubFolder, szSubFolder);
+		nSubFolder = -1;
+		}
 	}
 n = BuildList (1, nSubFolder);
 for (i = 0; i < n; i++)

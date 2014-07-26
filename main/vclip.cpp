@@ -95,7 +95,7 @@ if (vcP->flags & WCF_ALTFMT) {
 		else
 			vcP->flags |= WCF_INITIALIZED;
 		if (vciP)
-			vciP->nCurFrame = RandShort () % nFrames;
+			vciP->nCurFrame = Rand (nFrames);
 		}
 	}
 return nFrames;

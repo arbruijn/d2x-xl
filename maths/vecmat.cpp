@@ -1019,7 +1019,7 @@ else
 const CFixVector CFixVector::Random (void) 
 {
 	CFixVector v;
-	int32_t i = RandShort () % 3;
+	int32_t i = Rand (3);
 
 if (i == 2) {
 	v.v.coord.x = (SRandShort ()) | 1;	// make sure we don't create null vector

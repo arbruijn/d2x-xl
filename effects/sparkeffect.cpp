@@ -49,7 +49,7 @@ if (gameStates.app.nSDLTicks [0] - m_tCreate < SPARK_FRAME_TIME)
 	return;
 m_nType = nType;
 m_tCreate = gameStates.app.nSDLTicks [0];
-if (RandShort () % m_nProb)
+if (Rand (m_nProb))
 	m_nProb--;
 else {
 	vOffs.v.coord.x = F2X (vRadf.v.coord.x - (2 * RandFloat ()) * vRadf.v.coord.x);
@@ -71,7 +71,7 @@ else {
 			m_vDir.v.coord.y = (I2X (1) / 4) - RandShort ();
 			m_vDir.v.coord.z = (I2X (1) / 4) - RandShort ();
 			CFixVector::Normalize (m_vDir);
-			m_vDir *= ((I2X (1) / (8 + RandShort () % 8)));
+			m_vDir *= (I2X (1) / (8 + Rand (8)));
 			}
 		else
 			m_vDir.SetZero ();
@@ -133,7 +133,7 @@ else {
 	m_nType = nType;
 	m_sparks.Clear ();
 	for (int32_t i = 0; i < m_nMaxSparks; i++)
-		m_sparks [i].m_nProb = RandShort () % SPARK_MIN_PROB + 1;
+		m_sparks [i].m_nProb = Rand (SPARK_MIN_PROB + 1);
 	}
 }
 

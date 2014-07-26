@@ -734,9 +734,9 @@ if (objP->rType.particleInfo.nSide <= 0) {	//don't vary emitter position for smo
 	if (!(j = i - i / 2))
 		j = 2;
 	i /= 2;
-	offs.v.coord.x = SRandShort () * (RandShort () % j + i);
-	offs.v.coord.y = SRandShort () * (RandShort () % j + i);
-	offs.v.coord.z = SRandShort () * (RandShort () % j + i);
+	offs.v.coord.x = SRandShort () * (Rand (j) + i);
+	offs.v.coord.y = SRandShort () * (Rand (j) + i);
+	offs.v.coord.z = SRandShort () * (Rand (j) + i);
 	pos = objP->info.position.vPos + offs;
 	particleManager.SetPos (nSmoke, &pos, NULL, objP->info.nSegment);
 	}

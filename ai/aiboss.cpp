@@ -164,7 +164,7 @@ if (objType < 0)
 if (objType == 255) {	// spawn an arbitrary robot
 	maxRobotTypes = gameData.bots.nTypes [gameStates.app.bD1Mission];
 	do {
-		objType = RandShort () % maxRobotTypes;
+		objType = Rand (maxRobotTypes);
 		pri = gameData.bots.info [gameStates.app.bD1Mission] + objType;
 		} while (pri->bossFlag ||	//well ... don't spawn another boss, huh? ;)
 					pri->companion || //the buddy bot isn't exactly an enemy ... ^_^
@@ -277,7 +277,7 @@ if (gameData.bosses [i].m_nTeleportSegs <= 0)
 if (gameData.bosses [i].m_nDyingStartTime > 0)
 	return;
 do {
-	nRandIndex = RandShort () % gameData.bosses [i].m_nTeleportSegs;
+	nRandIndex = Rand (gameData.bosses [i].m_nTeleportSegs);
 	nRandSeg = gameData.bosses [i].m_teleportSegs [nRandIndex];
 	Assert ((nRandSeg >= 0) && (nRandSeg <= gameData.segs.nLastSegment));
 	if (IsMultiGame)

@@ -3481,7 +3481,7 @@ if (!filename) {
 	if (nFiles == 0) {
 		return;     // No files found!
 		}
-	nRandFiles = RandShort () % nFiles;
+	nRandFiles = Rand (nFiles);
 	nFiles = 0;
 	sprintf (searchName, "%s*.dem", gameFolders.user.szDemos);
 	if (!FFF (searchName, &ffs, 0)) {

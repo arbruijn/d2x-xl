@@ -355,7 +355,7 @@ int32_t CDownloadManager::OpenFile (tClient& client, const char *pszExt)
 {
 	char	szFile [FILENAME_LEN];
 
-sprintf (szFile, "%s%s%s", gameFolders.missions.szRoot, netGameInfo.m_info.szMissionName, pszExt);
+sprintf (szFile, "%s%s%s%s", gameFolders.missions.szRoot, gameFolders.missions.szSubFolder, netGameInfo.m_info.szMissionName, pszExt);
 if (client.cf.File ())
 	client.cf.Close ();
 if (!client.cf.Open (szFile, "", "rb", 0))
@@ -531,7 +531,7 @@ switch (m_nState = m_data [0]) {
 		strlwr (pszFile);
 		CFile::SplitPath (pszFile, NULL, szFile [0], szExt);
 		CFile::SplitPath (hogFileManager.MissionName (), szFolder, szFile [1], NULL);
-		strlwr (szFile [1]);
+ 		strlwr (szFile [1]);
 		for (int32_t i = 1 + (strcmp (szFile [0], szFile [1]) == 0); i > 0; i--) {
 			if (i == 2)
 				sprintf (szDest, "%s/%s%s", szFolder, szFile [0], szExt);

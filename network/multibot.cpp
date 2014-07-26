@@ -1032,8 +1032,8 @@ else if (delObjP->cType.aiInfo.REMOTE_OWNER == -1) // No Random goodies for robo
 else if (botInfoP->containsCount) {
 	if (gameStates.multi.nGameType != UDP_GAME)
 		gameStates.app.SRand ();
-	if (RandShort () % 15 + 1 <= botInfoP->containsProb) {
-		delObjP->info.contains.nCount = (RandShort () % botInfoP->containsCount) + 1; // create at least one
+	if (Rand (15) + 1 <= botInfoP->containsProb) {
+		delObjP->info.contains.nCount = Rand (botInfoP->containsCount) + 1; // create at least one
 		if (delObjP->info.contains.nCount > MAX_ROBOT_POWERUPS)
 			delObjP->info.contains.nCount = MAX_ROBOT_POWERUPS;
 		delObjP->info.contains.nType = botInfoP->containsType;

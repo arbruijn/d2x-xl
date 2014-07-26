@@ -2324,7 +2324,7 @@ SortSpawnTable (spawnTable, 0, nSpawnSegs - 1);
 for (j = 0; j < nSpawnSegs; j++)
 	if (spawnTable [j].xDist < SPAWN_MIN_DIST)
 		break;
-return spawnTable [(j > 1) ? RandShort () % j : 0].i;
+return spawnTable [(j > 1) ? Rand (j) : 0].i;
 }
 
 //------------------------------------------------------------------------------

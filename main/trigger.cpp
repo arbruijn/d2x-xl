@@ -227,7 +227,7 @@ if (m_nLinks) {
 		nSegment = m_segments [0];
 	else {
 		do {
-			nSegment = m_segments [RandShort () % m_nLinks];
+			nSegment = m_segments [Rand (m_nLinks)];
 			} while (nSegment == m_info.nTeleportDest);
 		m_info.nTeleportDest = nSegment;
 		}
@@ -799,7 +799,7 @@ if ((nObject >= 0) && (m_nLinks > 0)) {
 		int16_t		nSegment, nSide;
 
 	StopSpeedBoost (nObject);
-	i = RandShort () % m_nLinks;
+	i = Rand (m_nLinks);
 	nSegment = m_segments [i];
 	nSide = m_sides [i];
 	// set new player direction, facing the destination nSide
@@ -1188,7 +1188,7 @@ if (m_info.tOperated < 0) {
 			SetTime (1, GetTime (0));
 		else {
 			fix h = -GetTime (0) / 10;
-			SetTime (1, h + h * (RandShort () % 10));
+			SetTime (1, h + h * Rand (10));
 			}
 		}
 	}

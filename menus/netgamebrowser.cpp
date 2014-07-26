@@ -372,8 +372,8 @@ do {
 		// Check for valid mission name
 		memcpy (&networkData.serverAddress.m_address, activeNetGames [choice].m_server, sizeof (networkData.serverAddress.m_address));
 		console.printf (CON_DBG, TXT_LOADING_MSN, AGI.m_info.szMissionName);
-		if (!(missionManager.LoadByName (AGI.m_info.szMissionName, 0, "downloads/") || missionManager.LoadByName (AGI.m_info.szMissionName, -1) ||	
-				(downloadManager.DownloadMission (AGI.m_info.szMissionName) && missionManager.LoadByName (AGI.m_info.szMissionName, 0, "downloads/")))) {
+		if (!(missionManager.LoadByName (AGI.m_info.szMissionName, 0, gameFolders.missions.szDownloads) || missionManager.LoadByName (AGI.m_info.szMissionName, -1) ||	
+				(downloadManager.DownloadMission (AGI.m_info.szMissionName) && missionManager.LoadByName (AGI.m_info.szMissionName, 0, gameFolders.missions.szDownloads)))) {
 			PrintLog (0, "Mission '%s' not found\n", AGI.m_info.szMissionName);
 			TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_MISSION_NOT_FOUND);
 			continue;

@@ -59,7 +59,7 @@ int32_t LaserHandler (CObject *objP, int32_t nLevel, int32_t& nFlags, int32_t nR
 	int16_t	nLightObj = lightClusterManager.Create (objP);
 	int16_t nFired = 0;
 
-gameData.laser.nOffset = (I2X (2) * (RandShort () % 8)) / 8;
+gameData.laser.nOffset = (I2X (2) * Rand (8)) / 8;
 if (0 <= LaserPlayerFire (objP, nLaser, 0, 1, 0, nLightObj))
 	nFired++;
 if (0 <= LaserPlayerFire (objP, nLaser, 1, 0, 0, nLightObj))

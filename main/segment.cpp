@@ -416,7 +416,7 @@ CFixVector CSegment::RandomPoint (void)
 {
 int32_t nVertex;
 do {
-	nVertex = RandShort () % m_nVertices;
+	nVertex = Rand (m_nVertices);
 } while (m_vertices [nVertex] == 0xFFFF);
 CFixVector v = gameData.segs.vertices [m_vertices [nVertex]] - m_vCenter;
 v *= (RandShort ());

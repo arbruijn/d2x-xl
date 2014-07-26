@@ -267,7 +267,6 @@ void CWayPointManager::Update (void)
 {
 if (gameStates.app.tick40fps.bTick) {
 	CObject* objP;
-	int32_t i = 0;
 
 	FORALL_EFFECT_OBJS (objP) {
 		if (objP->Id () != LIGHTNING_ID) 

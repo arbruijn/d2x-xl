@@ -778,7 +778,7 @@ if ((gameData.escort.nGoalIndex < 0) && (gameData.escort.nGoalIndex != -3)) {	//
 	}
 else {
 	if (nGoalSeg == -3) {
-		CreateNSegmentPath (objP, 16 + RandShort () % 16, -1);
+		CreateNSegmentPath (objP, 16 + Rand (16), -1);
 		aip->nPathLength = SmoothPath (objP, gameData.ai.routeSegs + aip->nHideIndex, aip->nPathLength);
 		}
 	else {

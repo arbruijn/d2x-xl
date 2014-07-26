@@ -117,13 +117,20 @@ fixang FixAtan2 (fix cos, fix sin);
 fix FixISqrt (fix a);
 
 //-----------------------------------------------------------------------------
+
+static inline int32_t Rand (int32_t nMax)
+{
+return int32_t (rand ()) % nMax;
+}
+
+//-----------------------------------------------------------------------------
 // return a random integer in the range [0 .. SHORT_RAND_MAX]
 
 #define SHORT_RAND_MAX 0x7fff
 
 static inline int32_t RandShort (void)
 {
-return int32_t (rand () & SHORT_RAND_MAX);
+return Rand (SHORT_RAND_MAX + 1);
 }
 
 //-----------------------------------------------------------------------------

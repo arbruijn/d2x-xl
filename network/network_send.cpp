@@ -550,7 +550,7 @@ else {	// randomize player positions
 	int32_t h, j = gameData.multiplayer.nPlayerPositions, posTable [MAX_PLAYERS] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,13, 14, 15};
 
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
-		h = RandShort () % j;	// compute random table index
+		h = Rand (j);	// compute random table index
 		*netGameInfo.Locations (i) = posTable [h];	// pick position using random index
 		if (h < --j)
 			posTable [h] = posTable [j];	// remove picked position from position table

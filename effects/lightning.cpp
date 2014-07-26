@@ -103,9 +103,9 @@ CFixVector *VmRandomVector (CFixVector *vRand)
 	CFixVector	vr;
 
 do {
-	vr.v.coord.x = (90 - RandShort () % 181) * (I2X (1) / 90);
-	vr.v.coord.y = (90 - RandShort () % 181) * (I2X (1) / 90);
-	vr.v.coord.z = (90 - RandShort () % 181) * (I2X (1) / 90);
+	vr.v.coord.x = (90 - Rand (181)) * (I2X (1) / 90);
+	vr.v.coord.y = (90 - Rand (181)) * (I2X (1) / 90);
+	vr.v.coord.z = (90 - Rand (181)) * (I2X (1) / 90);
 } while (vr.IsZero ());
 CFixVector::Normalize (vr);
 *vRand = vr;
@@ -131,7 +131,7 @@ do {
 	} while (CFixVector::Dot (vr, vd) > I2X (9) / 10);
 
 vr = CFixVector::Normal (CFixVector::ZERO, vd, vr);
-fix dot = nMinDot + (RandShort () % ((nMaxDot - nMinDot + 1) / 2)) * 2;
+fix dot = nMinDot + Rand ((nMaxDot - nMinDot + 1) / 2) * 2;
 double a = acos (X2D (dot));
 if (fabs (a - PI * 0.5) > 1e-6) {
 	vr *= F2X (tan (a));
@@ -404,7 +404,7 @@ for (i = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; i > 0; i--, nodeP++) {
 	}
 if ((h = nAmplitude - nMaxDist)) {
 	if (m_nNodes > 0) {
-		nMaxDist += (RandShort () % 4 + 1) * h / 4;
+		nMaxDist += (Rand (4) + 1) * h / 4;
 		for (i = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; i > 0; i--, nodeP++)
 			nodeP->m_vOffs *= FixDiv (nAmplitude, nMaxDist);
 		}

@@ -719,12 +719,12 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 			tRobotInfo	*botInfoP = &ROBOTINFO (delObjP->info.nId);
 			if (botInfoP->containsCount && ((botInfoP->containsType != OBJ_ROBOT) || !(delObjP->info.nFlags & OF_ARMAGEDDON))) {
 #if DBG
-				int32_t nProb = RandShort () % 16;
+				int32_t nProb = Rand (16);
 				if (nProb < botInfoP->containsProb) {
 #else
-				if (RandShort () % 16 < botInfoP->containsProb) {
+				if (Rand (16 < botInfoP->containsProb)) {
 #endif
-					delObjP->info.contains.nCount = (RandShort () % botInfoP->containsCount) + 1;
+					delObjP->info.contains.nCount = Rand (botInfoP->containsCount) + 1;
 					delObjP->info.contains.nType = botInfoP->containsType;
 					delObjP->info.contains.nId = botInfoP->containsId;
 					MaybeReplacePowerupWithEnergy (delObjP);

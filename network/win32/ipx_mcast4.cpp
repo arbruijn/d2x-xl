@@ -319,8 +319,8 @@ static void ipx_mcast4_InitNetGameAuxData (ipx_socket_t *sk, uint8_t buf[NETGAME
 // The first byte is the version number
 buf [0] = IPX_MCAST4_VERSION;
 // Generate a random session
-// game_addr = inet_makeaddr (239*256 + 255, RandShort () % 0xFFFF);
-sprintf (addr, "%i.%i.%i.%i", 239, 255, RandShort () % 0xFF, RandShort () % 0xFF);
+// game_addr = inet_makeaddr (239*256 + 255, Rand (0xFFFF);
+sprintf (addr, "%i.%i.%i.%i", 239, 255, Rand (0xFF), Rand (0xFF));
 game_addr.s_addr = inet_addr (addr);
 memcpy (buf + 1, &game_addr, sizeof (game_addr));
 // Since we're obviously the hosting machine, subscribe to this address

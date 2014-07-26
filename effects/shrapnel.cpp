@@ -78,7 +78,7 @@ for (; nTicks >= 25; nTicks -= 25) {
 	if (--(m_info.nTurn))
 		vOffs = m_info.vOffs;
 	else {
-		m_info.nTurn = ((m_info.xTTL > I2X (1) / 2) ? 2 : 4) + RandShort () % 4;
+		m_info.nTurn = ((m_info.xTTL > I2X (1) / 2) ? 2 : 4) + Rand (4);
 		vOffs = m_info.vDir;
 		vOffs.v.coord.x = FixMul (vOffs.v.coord.x, 2 * RandShort ());
 		vOffs.v.coord.y = FixMul (vOffs.v.coord.y, 2 * RandShort ());
@@ -101,7 +101,7 @@ void CShrapnel::Draw (void)
 if (m_info.xTTL > 0) {
 	explBlast.Bitmap ()->SetColor ();
 #if 0
-	fix xSize = I2X (1) / 2 + RandShort () % (I2X (1) / 4);
+	fix xSize = I2X (1) / 2 + Rand (I2X (1) / 4);
 	ogl.RenderSprite (explBlast.Bitmap (), m_info.vPos, xSize, xSize, X2F (m_info.xTTL) / X2F (m_info.xLife) / 2, 0, 0);
 #endif
 	}
@@ -171,7 +171,7 @@ objP->cType.explInfo.nDeleteTime = -1;
 #if DBG
 h += h / 2;
 #else
-h = 5 * h / 4 + RandShort () % (h / 2);
+h = 5 * h / 4 + Rand (h / 2);
 #endif
 if (!CStack<CShrapnel>::Create (h))
 	return 0;

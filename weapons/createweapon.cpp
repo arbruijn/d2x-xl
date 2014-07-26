@@ -118,9 +118,9 @@ if (damage > 0) {
 	CAngleVector	v;
 	CFixMatrix		m;
 
-	v.v.coord.p = fixang (damage / 2 - RandShort () % damage);
+	v.v.coord.p = fixang (damage / 2 - Rand (damage));
 	v.v.coord.b = 0;
-	v.v.coord.h = fixang (damage / 2 - RandShort () % damage);
+	v.v.coord.h = fixang (damage / 2 - Rand (damage));
 	m = CFixMatrix::Create (v);
 	vDir = m * vDir;
 	CFixVector::Normalize (vDir);
