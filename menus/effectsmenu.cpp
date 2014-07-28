@@ -224,7 +224,9 @@ pszOffOn [1] = TXT_ON;
 
 //------------------------------------------------------------------------------
 
-static const char* softParticleIds [] = {"soft sprites", "soft sparks", "soft smoke"};
+static const char* softParticleIds [] = {"soft sprites", "soft particles"};
+
+static int32_t nSoftRenderFlags [] = {SOFT_BLEND_SPRITES, SOFT_BLEND_PARTICLES};
 
 void EffectOptionsMenu (void)
 {
@@ -301,9 +303,7 @@ do {
 	if ((gameOptions [0].render.nQuality > 2) && (gameOpts->app.bExpertMode == SUPERUSER)) {
 		m.AddText ("", "");
 		m.AddCheck (softParticleIds [0], TXT_SOFT_SPRITES, gameOpts->SoftBlend (SOFT_BLEND_SPRITES) != 0, KEY_I, HTX_SOFT_SPRITES);
-		m.AddCheck (softParticleIds [1], TXT_SOFT_SPARKS, gameOpts->SoftBlend (SOFT_BLEND_SPARKS) != 0, KEY_A, HTX_SOFT_SPARKS);
-		if (extraGameInfo [0].bUseParticles)
-			m.AddCheck (softParticleIds [2], TXT_SOFT_SMOKE, gameOpts->SoftBlend (SOFT_BLEND_PARTICLES) != 0, KEY_O, HTX_SOFT_SMOKE);
+		m.AddCheck (softParticleIds [1], TXT_SOFT_PARTICLES, gameOpts->SoftBlend (SOFT_BLEND_PARTICLES) != 0, KEY_A, HTX_SOFT_PARTICLES);
 		}
 	if (gameOpts->app.bExpertMode && extraGameInfo [0].bUseParticles) {
 		m.AddText ("", "");
@@ -328,12 +328,12 @@ do {
 		if ((gameOpts->render.coronas.bUse = (nCoronas != 0)))
 			gameOpts->render.coronas.nStyle = nCoronas;
 		}
-	for (j = 0; j < 3; j++) {
+	for (j = 0; j < 2; j++) {
 		if (m.Available (softParticleIds [j])) {
 			if (m.Value (softParticleIds [j]))
-				gameOpts->render.effects.bSoftParticles |= 1 << j;
+				gameOpts->render.effects.bSoftParticles |= nSoftRenderFlags [j];
 			else
-				gameOpts->render.effects.bSoftParticles &= ~(1 << j);
+				gameOpts->render.effects.bSoftParticles &= ~nSoftRenderFlags [j];
 			}
 		}
 	GET_VAL (gameOpts->render.effects.bEnabled, "enable fx");

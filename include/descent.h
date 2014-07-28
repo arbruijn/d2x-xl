@@ -367,7 +367,8 @@ typedef struct tCoronaRenderOptions {
 
 #define SOFT_BLEND_SPRITES		1
 #define SOFT_BLEND_SPARKS		2
-#define SOFT_BLEND_PARTICLES	4
+#define SOFT_BLEND_SMOKE		4
+#define SOFT_BLEND_PARTICLES	(SOFT_BLEND_SPARKS | SOFT_BLEND_SMOKE)
 
 typedef struct tEffectRenderOptions {
 	int32_t bEnabled;
