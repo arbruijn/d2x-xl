@@ -51,7 +51,7 @@ int32_t ijTable [3][2] = {
 
 uint8_t PointIsOutsideFace (CFixVector* vRef, CFixVector* vertices, int16_t nVerts)
 {
-#if 1
+#if 0
 
 CFixVector n1 = CFixVector::Normal (vertices [0], vertices [1], *vRef);
 CFixVector n2 = CFixVector::Normal (vertices [1], vertices [2], *vRef);
@@ -84,7 +84,7 @@ return int32_t (u < 0) + (int32_t (v < 0) << 1) + (int32_t (u + v > I2X (1)) << 
 
 uint8_t PointIsOutsideFace (CFixVector* vRef, uint16_t* nVertIndex, int16_t nVerts)
 {
-#if 1
+#if 0
 
 CFixVector n1 = CFixVector::Normal (VERTICES [nVertIndex [0]], VERTICES [nVertIndex [1]], *vRef);
 CFixVector n2 = CFixVector::Normal (VERTICES [nVertIndex [1]], VERTICES [nVertIndex [2]], *vRef);

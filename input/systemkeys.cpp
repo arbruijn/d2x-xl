@@ -180,7 +180,7 @@ if (gameStates.app.bDeathSequenceAborted)
 
 void HandleDemoKey (int32_t key)
 {
-if (gameOpts->demo.bRevertFormat && (gameData.demo.nVersion > DEMO_VERSION) || OBSERVING)
+if ((gameOpts->demo.bRevertFormat && (gameData.demo.nVersion > DEMO_VERSION)) || OBSERVING)
 	return;
 switch (key) {
 	case KEY_F3:
