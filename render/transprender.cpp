@@ -1206,7 +1206,7 @@ item.nRotFrame = nRotFrame;
 item.nOrient = nOrient;
 item.nType = nType;
 item.position.Assign (position);
-if (gameOpts->SoftBlend (SOFT_BLEND_SPARKS))
+if (gameOpts->SoftBlend (SOFT_BLEND_PARTICLES))
 	m_data.bSoftBlend = 1;
 return Add (&item, position);
 #else
@@ -1404,7 +1404,7 @@ if (!sparkBuffer.nSparks)
 
 sparkArea.Reset ();
 
-	int32_t bSoftBlend = SoftBlend (SOFT_BLEND_SPARKS);
+	int32_t bSoftBlend = SoftBlend (SOFT_BLEND_PARTICLES);
 
 ogl.ResetClientStates (1);
 m_data.bmP [1] = m_data.bmP [2] = NULL;

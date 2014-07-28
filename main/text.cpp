@@ -1821,7 +1821,7 @@ const char *defaultGameTexts [][2] = {
  {"Descent 1 K~I verwenden", "use Descent 1 A~I"},
  {"treibende ~Funken", "mo~Ving sparks"},
  {"~Sprites weichzeichnen", "soften spr~Ite edges"},
- {"~Partikel weichzeichnen", "soften p~Artikle edges"},
+ {"~Partikel weichzeichnen", "soften p~Article edges"},
  {"", ""},
  {"~Dieb unterdruecken", "suppress ~Thief bots"},
  {"moderat", "moderate"},
