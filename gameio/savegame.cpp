@@ -1206,7 +1206,7 @@ int32_t CSaveGameManager::LoadMission (void)
 m_cf.Read (szMission, sizeof (char), 9);
 szMission [9] = '\0';
 gameOpts->app.nVersionFilter = 3;
-i = missionManager.LoadByName (szMission, 0, "downloads/");
+i = missionManager.LoadByName (szMission, 0, gameFolders.missions.szDownloads);
 if (!i)
 	i = missionManager.LoadByName (szMission, -1);
 gameOpts->app.nVersionFilter = nVersionFilter;

@@ -633,7 +633,7 @@ gameFolders.missions.szSubFolder [strlen (gameFolders.missions.szSubFolder) - 1]
 
 int32_t CMissionManager::BuildList (int32_t bAnarchy, int32_t nSubFolder)
 {
-	int32_t nTopPlace, bSubFolder, bHaveSubFolders, bDownloadFolder = nSubFolder == -2;
+	int32_t nTopPlace, bSubFolder, bHaveSubFolders, bDownloadFolder = nSubFolder == -3;
 
 m_nCount = 0;
 //now search for levels on disk
@@ -1031,7 +1031,7 @@ if (nSubFolder < 0) {
 	}
 else if (szSubFolder && *szSubFolder) {
 	if (!strcmp (szSubFolder, gameFolders.missions.szDownloads))
-		nSubFolder = -2;
+		nSubFolder = -3;
 	else {
 		strcpy (gameFolders.missions.szSubFolder, szSubFolder);
 		nSubFolder = -1;
