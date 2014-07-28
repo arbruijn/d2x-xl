@@ -435,9 +435,9 @@ int32_t	bLinearTMapPolyObjs = 1;
 int32_t GetCloakInfo (CObject *objP, fix xCloakStartTime, fix xCloakEndTime, tCloakInfo *ciP)
 {
 	tCloakInfo	ci = {0, CLOAKED_FADE_LEVEL, I2X (1), I2X (1), I2X (1), 0, 0};
-	int32_t			i;
+	int32_t		i;
 
-if (!(xCloakStartTime || xCloakEndTime)) {
+if (!xCloakStartTime && !xCloakEndTime) {
 	if (objP->info.nType == OBJ_PLAYER) {
 		xCloakStartTime = PLAYER (objP->info.nId).cloakTime;
 		xCloakEndTime = PLAYER (objP->info.nId).cloakTime + CLOAK_TIME_MAX;
@@ -453,6 +453,7 @@ if (!(xCloakStartTime || xCloakEndTime)) {
 			}
 		}
 	}
+
 if (xCloakStartTime != 0x7fffffff)
 	ci.xTotalTime = xCloakEndTime - xCloakStartTime;
 else
@@ -468,29 +469,20 @@ else if (objP->info.nType == OBJ_ROBOT) {
 else
 	return 0;
 
-ci.xDeltaTime = gameData.time.xGame - ((xCloakStartTime == 0x7fffffff) ? 0 : xCloakStartTime);
-#if 0
-if (ci.xDeltaTime < ci.xFadeinDuration) {	// make object transparent during second half
-	ci.nFadeValue = X2I (FixDiv (ci.xFadeinDuration - ci.xDeltaTime, ci.xFadeinDuration) * CLOAKED_FADE_LEVEL);
-	ci.bFading = 1;
-	}
-#else
+ci.xDeltaTime = (xCloakStartTime == 0x7fffffff) ? gameData.time.xGame : gameData.time.xGame - xCloakStartTime;
+
 // only decrease light during first half of cloak initiation time
 if (ci.xDeltaTime < ci.xFadeinDuration / 2) {
 	ci.xLightScale = FixDiv (ci.xFadeinDuration / 2 - ci.xDeltaTime, ci.xFadeinDuration / 2);
 	ci.bFading = -1;
 	}
-else if (ci.xDeltaTime < ci.xFadeinDuration) {	// make object transparent during second half
+else if (ci.xDeltaTime < ci.xFadeinDuration) // make object transparent during second half
 	ci.nFadeValue = X2I (FixDiv (ci.xDeltaTime - ci.xFadeinDuration / 2, ci.xFadeinDuration / 2) * CLOAKED_FADE_LEVEL);
-	ci.bFading = 1;
-	}
-#endif
-else if ((xCloakStartTime == 0x7fffffff) || (gameData.time.xGame < xCloakEndTime - ci.xFadeoutDuration)) {
+else if ((xCloakStartTime == 0x7fffffff) || (gameData.time.xGame < xCloakEndTime - ci.xFadeoutDuration)) { // fully cloaked
 	static int32_t nCloakDelta = 0, nCloakDir = 1;
 	static fix xCloakTimer = 0;
 
-	//note, if more than one cloaked CObject is visible at once, the
-	//pulse rate will change!
+	//note, if more than one cloaked CObject is visible at once, the pulse rate will change!
 	xCloakTimer -= gameData.time.xFrame;
 	while (xCloakTimer < 0) {
 		xCloakTimer += ci.xFadeoutDuration / 12;
@@ -500,10 +492,8 @@ else if ((xCloakStartTime == 0x7fffffff) || (gameData.time.xGame < xCloakEndTime
 		}
 	ci.nFadeValue = CLOAKED_FADE_LEVEL - nCloakDelta;
 	}
-else if (gameData.time.xGame < xCloakEndTime - ci.xFadeoutDuration / 2) {
+else if (gameData.time.xGame < xCloakEndTime - ci.xFadeoutDuration / 2)
 	ci.nFadeValue = X2I (FixDiv (ci.xTotalTime - ci.xFadeoutDuration / 2 - ci.xDeltaTime, ci.xFadeoutDuration / 2) * CLOAKED_FADE_LEVEL);
-	ci.bFading = -1;
-	}
 else {
 	ci.xLightScale = (fix) ((float) (ci.xFadeoutDuration / 2 - (ci.xTotalTime - ci.xDeltaTime) / (float) (ci.xFadeoutDuration / 2)));
 	ci.bFading = 1;
@@ -517,11 +507,11 @@ return ci.bFading;
 //do special cloaked render
 int32_t DrawCloakedObject (CObject *objP, fix light, fix *glow, fix xCloakStartTime, fix xCloakEndTime)
 {
-	tObjTransformation	*posP = OBJPOS (objP);
-	tCloakInfo	ci;
-	int32_t			bOk = 0;
+	tObjTransformation*	posP = OBJPOS (objP);
+	tCloakInfo				ci;
+	int32_t					bOk = 0;
 
-if (GetCloakInfo (objP, xCloakStartTime, xCloakEndTime, &ci) <= 0) {
+if (GetCloakInfo (objP, xCloakStartTime, xCloakEndTime, &ci) != 0) {
 	fix xNewLight, xSaveGlow;
 	tBitmapIndex * altTextures = NULL;
 

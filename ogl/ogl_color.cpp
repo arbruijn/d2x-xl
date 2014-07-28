@@ -439,9 +439,10 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 	else
 		lightDir = *lightP->info.vDirf.XYZ ();
 
-	if (bSelf) {
+	if (bSelf || (gameStates.render.bBuildLightmaps && (lightP->Segment () == nSegment) && (lightP->Side () == nSide))) {
 		lightPos = *colorData.vertPosP;
 		fLightDist = 0.0f;
+		lightRayDir.SetZero ();
 		}
 	else {
 		if (nType < 2)

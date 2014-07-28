@@ -1003,6 +1003,7 @@ class CRenderStates {
 		int32_t bVertexArrays;
 		int32_t bAutoMap;
 		int32_t bLightmapsOk;
+		int32_t bBuildLightmaps;
 		int32_t bHaveLightmaps;
 		int32_t bUseLightmaps;
 		int32_t bDropAfterburnerBlob;

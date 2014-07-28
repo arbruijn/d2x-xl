@@ -120,7 +120,8 @@ return int32_t (u < -PLANE_DIST_TOLERANCE) + (int32_t (v < -PLANE_DIST_TOLERANCE
 uint8_t PointIsOutsideFace (CFloatVector* vRef, uint16_t* nVertIndex, int16_t nVerts)
 {
 #if 1
-#	if 1
+#	if 0
+
 
 CFloatVector n1 = CFloatVector::Normal (FVERTICES [nVertIndex [0]], FVERTICES [nVertIndex [1]], *vRef);
 CFloatVector n2 = CFloatVector::Normal (FVERTICES [nVertIndex [1]], FVERTICES [nVertIndex [2]], *vRef);
@@ -152,7 +153,8 @@ p += v1 * v;
 p -= *vRef;
 float l = p.Mag ();
 #endif
-return (int32_t (u < -0.001f)) + ((int32_t (v < -0.001f)) << 1) + ((int32_t (u + v > 1.001f)) << 2); // compensate for numerical errors
+return (int32_t (u < -0.00001f)) + ((int32_t (v < -0.00001f)) << 1) + ((int32_t (u + v > 1.00001f)) << 2); // compensate for numerical errors
+
 
 #	endif
 
@@ -221,7 +223,8 @@ r.Assign (vRef);
 
 // compute vIntersection of vector perpendicular to the plane through vRef with the face's plane(s)
 for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
-	if (!(i && sideP->IsQuad ())) {
+	//if (!(i && sideP->IsQuad ())) 
+		{
 		CFloatVector& n = sideP->m_fNormals [i];
 		h = r - FVERTICES [vertices [j]];
 		d = CFloatVector::Dot (h, n);

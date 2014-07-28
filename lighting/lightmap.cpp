@@ -40,7 +40,7 @@ CLightmapManager lightmapManager;
 #define LMAP_REND2TEX		0
 #define TEXTURE_CHECK		1
 
-#define LIGHTMAP_DATA_VERSION 43
+#define LIGHTMAP_DATA_VERSION 44
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
 
@@ -444,13 +444,13 @@ uint8_t PointIsInTriangle (CFixVector* vRef, CFixVector* vNormal, int16_t* trian
 
 void CLightmapManager::Build (CSegFace* faceP, int32_t nThread)
 {
-	CFixVector		*pixelPosP;
-	CRGBColor		*texColorP;
+	CFixVector*		pixelPosP;
+	CRGBColor*		texColorP;
 	CFloatVector3	color;
-	int32_t				w, h, x, y, yMin, yMax;
-	uint8_t				nTriangles = faceP->m_info.nTriangles - 1;
-	int16_t				nSegment = faceP->m_info.nSegment;
-	int16_t				nSide = faceP->m_info.nSide;
+	int32_t			w, h, x, y, yMin, yMax;
+	uint8_t			nTriangles = faceP->m_info.nTriangles - 1;
+	int16_t			nSegment = faceP->m_info.nSegment;
+	int16_t			nSide = faceP->m_info.nSide;
 	bool				bBlack, bWhite;
 
 	CVertColorData	vcd = m_data.m_vcd; // need a local copy for each thread!
@@ -479,7 +479,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 vcd.vertPosP = &vcd.vertPos;
 pixelPosP = m_data.m_pixelPos + yMin * w;
 
-#if 1
+#if 0
 
 CFloatVector corners [4] = {
 	FVERTICES [m_data.m_sideVerts [0]],
@@ -526,7 +526,6 @@ else {
 	corners [3] += o2;
 	corners [3] -= o3;
 	}
-
 
 CFixVector v0, v1, v2, v3;
 
@@ -645,7 +644,7 @@ for (y = yMin; y < yMax; y++) {
 #endif
 			vcd.vertPos.Assign (*pixelPosP);
 			color.SetZero ();
-			ComputeVertexColor (-1, -1, -1, &color, &vcd, nThread);
+			ComputeVertexColor (nSegment, nSide, -1, &color, &vcd, nThread);
 			if ((color.Red () >= 1.0f / 255.0f) || (color.Green () >= 1.0f / 255.0f) || (color.Blue () >= 1.0f / 255.0f)) {
 					bBlack = false;
 				if (color.Red () >= 254.0f / 255.0f)
@@ -855,7 +854,7 @@ int32_t CLightmapManager::Load (int32_t nLevel)
 {
 	CFile						cf;
 	tLightmapDataHeader	ldh;
-	int32_t						i, bOk;
+	int32_t					i, bOk;
 	char						szFilename [FILENAME_LEN];
 	CSegFace*				faceP;
 
@@ -946,6 +945,7 @@ if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 		m_data.nWhiteLightmaps = 0; 
 		//PLANE_DIST_TOLERANCE = fix (I2X (1) * 0.001f);
 		//SetupSegments (); // set all faces up as triangles
+		gameStates.render.bBuildLightmaps = 1;
 		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 			nFace = 0;
 			ProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (FACES.nFaces), CreatePoll);
@@ -955,6 +955,7 @@ if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 			BuildAll (-1);
 			messageBox.Clear ();
 			}
+		gameStates.render.bBuildLightmaps = 0;
 		//PLANE_DIST_TOLERANCE = DEFAULT_PLANE_DIST_TOLERANCE;
 		//SetupSegments (); // standard face setup (triangles or quads)
 		//gameData.render.fAttScale [0] = (gameStates.render.bPerPixelLighting == 2) ? 1.0f : 2.0f;
