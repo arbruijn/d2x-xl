@@ -132,7 +132,7 @@ for (int32_t i = nStart; i < nEnd; i++)
 //------------------------------------------------------------------------------
 
 int32_t CParticleBuffer::bCompatible [2 * PARTICLE_TYPES] = {0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 
-																			0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+																				 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 bool CParticleBuffer::Compatible (CParticle* particleP)
 {
