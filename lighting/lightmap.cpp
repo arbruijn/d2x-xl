@@ -479,7 +479,7 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 vcd.vertPosP = &vcd.vertPos;
 pixelPosP = m_data.m_pixelPos + yMin * w;
 
-#if 0
+#if 1
 
 CFloatVector corners [4] = {
 	FVERTICES [m_data.m_sideVerts [0]],
