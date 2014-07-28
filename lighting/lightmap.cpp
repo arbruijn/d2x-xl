@@ -479,7 +479,11 @@ if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 vcd.vertPosP = &vcd.vertPos;
 pixelPosP = m_data.m_pixelPos + yMin * w;
 
-#if 1
+#if 1 
+
+// move edges for lightmap calculation slighty into the face to avoid lighting errors due to numerical errors when computing point to face visibility
+// for light sources and lightmap vertices. Otherwise these may occur at the borders of a face when the face to be lit is adjacent to a light emitting face.
+// The result of such lighting errors are dark spots at the borders of level geometry faces.
 
 CFloatVector corners [4] = {
 	FVERTICES [m_data.m_sideVerts [0]],

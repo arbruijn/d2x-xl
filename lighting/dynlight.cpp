@@ -775,8 +775,8 @@ else { // check whether light only contributes ambient light to point
 	int32_t bDiffuse = info.bDiffuse [nThread] && SeesPoint (nDestSeg, vNormal, &vDestPos, gameOpts->render.nLightmapPrecision, nThread);
 	if (nDestSeg >= 0) {
 		int32_t bSeesPoint = (info.nSide < 0) 
-							  ? bDiffuse 
-							  : SEGMENTS [nLightSeg].Side (info.nSide)->SeesPoint (vDestPos, nDestSeg, bDiffuse ? gameOpts->render.nLightmapPrecision : -gameOpts->render.nLightmapPrecision - 1, nThread);
+									? bDiffuse 
+									: SEGMENTS [nLightSeg].Side (info.nSide)->SeesPoint (vDestPos, nDestSeg, bDiffuse ? gameOpts->render.nLightmapPrecision : -gameOpts->render.nLightmapPrecision - 1, nThread);
 		info.bDiffuse [nThread] = bDiffuse && bSeesPoint;
 
 		// if point is occluded, use segment path distance to point for light range and attenuation
