@@ -98,7 +98,7 @@ if (automap.Active ())
 	CDynLight*	lightP;
 	bool			bHWHeadlight = (gameStates.render.bPerPixelLighting == 2) || (ogl.m_states.bHeadlight && gameOpts->ogl.bHeadlight);
 
-	for (int32_t i = 0; i < MAX_PLAYERS; i++) {
+for (int32_t i = 0; i < MAX_PLAYERS; i++) {
 	if (lightIds [i] >= 0) {
 		lightP = lightManager.Lights () + lightIds [i];
 		lightP->info.bSpot = 1;

@@ -217,7 +217,7 @@ void CLightManager::SetNearestToVertex (int32_t nSegment, int32_t nSide, int32_t
 if (bStatic || m_data.variableVertLights [nVertex]) {
 	int16_t*				nearestLightP = m_data.nearestVertLights + nVertex * MAX_NEAREST_LIGHTS;
 	CDynLightIndex*	sliP = &m_data.index [0][nThread];
-	int16_t					i, j, nActiveLightI = sliP->nActive;
+	int16_t				i, j, nActiveLightI = sliP->nActive;
 	CDynLight*			lightP;
 	CActiveDynLight*	activeLightsP = m_data.active [nThread].Buffer ();
 	CFixVector			vVertex = gameData.segs.vertices [nVertex];
@@ -365,9 +365,9 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 	BRP;
 #endif
 if (gameStates.render.nLightingMethod) {
-	uint8_t						nType;
-	int16_t						i = m_data.nLights [1];
-	int32_t						bSkipHeadlight = !gameStates.render.nState && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bHeadlight);
+	uint8_t					nType;
+	int16_t					i = m_data.nLights [1];
+	int32_t					bSkipHeadlight = /*!gameStates.render.nState &&*/ ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bHeadlight);
 	fix						xMaxLightRange = SEGMENTS [nSegment].AvgRad () + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE);
 	CDynLight*				lightP;
 	CFixVector&				vDestPos = SEGMENTS [nSegment].Center ();
@@ -469,7 +469,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 	BRP;
 #endif
 if (gameStates.render.nLightingMethod) {
-	int16_t						i, n = m_data.nLights [1];
+	int16_t					i, n = m_data.nLights [1];
 	fix						xMaxLightRange = F2X (fLightRad) + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE);
 	CDynLight*				lightP;
 	CActiveDynLight*		activeLightsP = m_data.active [nThread].Buffer ();
