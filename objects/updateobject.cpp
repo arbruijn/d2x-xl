@@ -579,7 +579,7 @@ if (info.nType == OBJ_ROBOT) {
 			SetShield (xMaxShield);
 		}
 	}
-info.vLastPos = info.position.vPos;			// Save the current position
+SetLastPos (info.position.vPos);			// Save the current position
 RepairDamage ();
 HandleSegmentFunction ();
 if ((info.xLifeLeft != IMMORTAL_TIME) && (info.xLifeLeft != ONE_FRAME_TIME) && (gameData.physics.xTime > 0))

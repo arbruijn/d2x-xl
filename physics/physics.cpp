@@ -1029,7 +1029,7 @@ if (!(bNewPhysCode & 1)) {
 #endif
 PROF_START
 
-	CPhysSimData simData (OBJ_IDX (this)); // must be called after initializing gameData.physics.xTime! Will call simData.Setup ()!
+	CPhysSimData simData (OBJ_IDX (this)), simData2 (OBJ_IDX (this)); // must be called after initializing gameData.physics.xTime! Will call simData.Setup ()!
 
 CFixMatrix mSaveOrient = info.position.mOrient;
 if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBOT)) && CollisionModel ()) {
@@ -1078,7 +1078,12 @@ if ((nDbgSeg >= 0) && (info.nSegment == nDbgSeg))
 	BRP;
 #endif
 
+#if DBG
+redoPhysSim:
+#endif
+
 simData.nTries = 0;
+memcpy (&simData2, &simData, sizeof (simData));
 ++gameData.physics.bIgnoreObjFlag;
 
 int32_t bRetry;
@@ -1173,6 +1178,13 @@ FixPosition (simData);
 FinishPhysicsSim (simData);
 if (CriticalHit ())
 	RandomBump (I2X (1), I2X (8), true);
+#if DBG
+if ((Index () == nDbgObj) && !simData.vOffset.IsZero() && (5 * simData.xMovedDist < CFixVector::Dist (info.vLastPos, Position ()))) {
+	Position () = info.vLastPos;
+	memcpy (&simData, &simData2, sizeof (simData));
+	goto redoPhysSim;
+	}
+#endif
 PROF_END(ptPhysics)
 }
 

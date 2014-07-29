@@ -428,7 +428,7 @@ void DoEndLevelFrame (void)
 
 vLastPosSave = gameData.objs.consoleP->info.vLastPos;	//don't let move code change this
 UpdateAllObjects ();
-gameData.objs.consoleP->info.vLastPos = vLastPosSave;
+gameData.objs.consoleP->SetLastPos (vLastPosSave);
 
 if (gameStates.render.bExtExplPlaying) {
 	externalExplosion.info.xLifeLeft -= gameData.time.xFrame;
@@ -1731,7 +1731,7 @@ void DoEndLevelFrame (void)
 
 vLastPosSave = gameData.objs.consoleP->info.vLastPos;	//don't let move code change this
 UpdateAllObjects ();
-gameData.objs.consoleP->info.vLastPos = vLastPosSave;
+gameData.objs.consoleP->SetLastPos (vLastPosSave);
 
 if (gameStates.render.bExtExplPlaying) {
 	externalExplosion.info.xLifeLeft -= gameData.time.xFrame;
