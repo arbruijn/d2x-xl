@@ -257,7 +257,6 @@ if (AM_SHOW_PLAYERS) {
 		}
 	}
 
-
 	CObject*			objP;
 	CRenderPoint	spherePoint;
 
@@ -639,8 +638,10 @@ if (m_bActive < 0) {
 
 	ogl.m_states.nContrast = 8;
 	InitColors ();
-	if (!m_bRadar)
+	if (!m_bRadar) {
 		SlowMotionOff ();
+		StopPlayerMovement ();
+		}
 	if (m_bRadar || (IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME) && !gameStates.app.bEndLevelSequence))
 		bPauseGame = 0;
 	if (bPauseGame)
