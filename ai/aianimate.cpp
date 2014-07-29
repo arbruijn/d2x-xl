@@ -35,13 +35,16 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void AIDoRandomPatrol (CObject *objP)
 {
 #if DBG
+static int bPatrols = 1;
+if (!bPatrols)
+	return;
 if (objP->Index () == nDbgObj)
 	BRP;
 #endif
 if (gameOpts->gameplay.bIdleAnims) {
-		int32_t			h, i, j;
-		CSegment		*segP = SEGMENTS + objP->info.nSegment;
-		CFixVector	*vVertex, vVecToGoal, vGoal = gameData.objs.vRobotGoals [objP->Index ()];
+		int32_t		h, i, j;
+		CSegment*	segP = SEGMENTS + objP->info.nSegment;
+		CFixVector*	vVertex, vVecToGoal, vGoal = gameData.objs.vRobotGoals [objP->Index ()];
 
 	for (i = 0; i < 8; i++) {
 		if (segP->m_vertices [i] != 0xFFFF) {
@@ -55,7 +58,7 @@ if (gameOpts->gameplay.bIdleAnims) {
 		h = 1;
 	else if (AITurnTowardsVector (&vVecToGoal, objP, ROBOTINFO (objP->info.nId).turnTime [2]) < I2X (1) - I2X (1) / 5) {
 		if (CFixVector::Dot (vVecToGoal, objP->info.position.mOrient.m.dir.f) > I2X (1) - I2X (1) / 5)
-			h = rand () % 2 == 0;
+			h = Rand (2) == 0;
 		else
 			h = 0;
 		}
@@ -63,12 +66,12 @@ if (gameOpts->gameplay.bIdleAnims) {
 #if DBG
 		objP->CheckSpeed (1);
 #endif
-		h = rand () % 8 == 0;
+		h = Rand (8) == 0;
 		}
 	else
 		h = 1;
-	if (h && (rand () % 25 == 0)) {
-		j = rand () % 8;
+	if (h && (Rand (25) == 0)) {
+		j = Rand (8);
 		if ((segP->m_vertices [j] == 0xFFFF) || (j == i) || (rand () % 3 == 0))
 			vGoal = SEGMENTS [objP->info.nSegment].Center ();
 		else
@@ -89,14 +92,14 @@ static int8_t   xlatAnimation [] = {AS_REST, AS_REST, AS_ALERT, AS_ALERT, AS_FLI
 
 int32_t DoSillyAnimation (CObject *objP)
 {
-	int32_t				nObject = objP->Index ();
+	int32_t			nObject = objP->Index ();
 	tJointPos*		jointPositions;
-	int32_t				robotType, nGun, robotState, nJointPositions;
+	int32_t			robotType, nGun, robotState, nJointPositions;
 	tPolyObjInfo*	polyObjInfo = &objP->rType.polyObjInfo;
 	tAIStaticInfo*	aiP = &objP->cType.aiInfo;
-	int32_t				nGunCount, at_goal;
-	int32_t				attackType;
-	int32_t				nFlinchAttackScale = 1;
+	int32_t			nGunCount, at_goal;
+	int32_t			attackType;
+	int32_t			nFlinchAttackScale = 1;
 
 robotType = objP->info.nId;
 if (0 > (nGunCount = ROBOTINFO (robotType).nGuns))
