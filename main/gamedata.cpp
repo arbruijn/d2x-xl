@@ -542,8 +542,8 @@ nShaderChanges = 0;
 nPowerupFilter = 0;
 nStereoOffsetType = STEREO_OFFSET_NONE;
 #if 1
-fAttScale [0] = 0.05f;
-fAttScale [1] = 0.005f;
+fAttScale [0] = 0.0125f;
+fAttScale [1] = 0.00125f;
 #else
 fAttScale [0] = 0.625f;
 fAttScale [1] = 0.0625f;

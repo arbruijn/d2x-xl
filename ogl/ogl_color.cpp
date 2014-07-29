@@ -356,11 +356,11 @@ int32_t ComputeVertexColor (int32_t nSegment, int32_t nSide, int32_t nVertex, CF
 	CDynLightIndex*	sliP = &lightManager.Index (0, nThread);
 	CActiveDynLight*	activeLightsP = lightManager.Active (nThread) + sliP->nFirst;
 	CVertColorData		colorData = *colorDataP;
-	int32_t					i, j, nType, nLights, 
+	int32_t				i, j, nType, nLights, 
 							bSelf, nSelf,
 							bSkipHeadlight = gameOpts->ogl.bHeadlight && !gameStates.render.nState,
 							bTransform = (gameStates.render.nState > 0) && !ogl.m_states.bUseTransform;
-	int32_t					bDiffuse, bSpecular = gameStates.render.bSpecularColor && (colorData.fMatShininess > 0.0f);
+	int32_t				bDiffuse, bSpecular = gameStates.render.bSpecularColor && (colorData.fMatShininess > 0.0f);
 	float					fLightDist, fAttenuation, fLightAngle, spotEffect, NdotL, RdotE;
 	CFloatVector3		lightDir, lightRayDir, lightPos, vertPos, vReflect;
 	CFloatVector3		lightColor, colorSum [2], vertColor;
