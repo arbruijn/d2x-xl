@@ -33,10 +33,10 @@
 #define PPL_DIFFUSE_LIGHT	0.7f
 
 #if 1
-#define GEO_LIN_ATT	(/*0.0*/ gameData.render.fAttScale [0])
-#define GEO_QUAD_ATT	(/*0.003333f*/ gameData.render.fAttScale [1])
-#define OBJ_LIN_ATT	(/*0.0*/ gameData.render.fAttScale [0])
-#define OBJ_QUAD_ATT	(/*0.003333f*/ gameData.render.fAttScale [1])
+#define GEO_LIN_ATT	(gameData.render.fAttScale [0] * 0.25f)
+#define GEO_QUAD_ATT	(gameData.render.fAttScale [1] * 0.25f)
+#define OBJ_LIN_ATT	(gameData.render.fAttScale [0] * 0.25f)
+#define OBJ_QUAD_ATT	(gameData.render.fAttScale [1] * 0.25f)
 #else
 #define GEO_LIN_ATT	0.05f
 #define GEO_QUAD_ATT	0.005f
