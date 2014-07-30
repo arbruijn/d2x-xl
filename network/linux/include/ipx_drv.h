@@ -15,6 +15,11 @@
 
 #define IPX_MANUAL_ADDRESS
 
+#ifndef _WIN32
+#	define UINT_PTR	uint32_t
+#	define INT_PTR		int32_t
+#endif
+
 typedef struct IPXAddressStruct {
 	uint8_t			Network [4]; // __attribute__((packed));
 	uint8_t			Node [6]; // __attribute__((packed));
