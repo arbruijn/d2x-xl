@@ -579,6 +579,10 @@ if (info.nType == OBJ_ROBOT) {
 			SetShield (xMaxShield);
 		}
 	}
+#if DBG
+if ((Index () == nDbgObj) && (info.position.vPos != info.vLastPos))
+	BRP;
+#endif
 SetLastPos (info.position.vPos);			// Save the current position
 RepairDamage ();
 HandleSegmentFunction ();
@@ -600,6 +604,7 @@ if ((info.nType == OBJ_NONE) || (info.nFlags & OF_SHOULD_BE_DEAD)) {
 	return 1;			//CObject has been deleted
 	}
 UpdatePosition ();
+SetLastPos (info.position.vPos);			// Save the current position
 UpdateEffects ();
 if (CheckTriggerHits (nPrevSegment))
 	return 0;

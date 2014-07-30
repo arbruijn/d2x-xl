@@ -217,13 +217,13 @@
     <Filter Include="Source Files\audio\Header Files">
       <UniqueIdentifier>{161c4733-62e7-43a6-a3a8-e8a152db870c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\audio\cockpit">
+    <Filter Include="Source Files\cockpit">
       <UniqueIdentifier>{811d8e26-0222-4f1d-9e23-723ddc738f0d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\audio\cockpit\Source Files">
+    <Filter Include="Source Files\cockpit\Source Files">
       <UniqueIdentifier>{9f503d93-30bc-4d0d-a718-faa64a937556}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\audio\cockpit\Header Files">
+    <Filter Include="Source Files\cockpit\Header Files">
       <UniqueIdentifier>{36480db8-b6f1-449d-957e-564c121366db}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -715,16 +715,16 @@
       <Filter>Source Files\objects\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cockpit.h">
-      <Filter>Source Files\audio\cockpit\Header Files</Filter>
+      <Filter>Source Files\cockpit\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\hud_defs.h">
-      <Filter>Source Files\audio\cockpit\Header Files</Filter>
+      <Filter>Source Files\cockpit\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\hudicons.h">
-      <Filter>Source Files\audio\cockpit\Header Files</Filter>
+      <Filter>Source Files\cockpit\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\hudmsgs.h">
-      <Filter>Source Files\audio\cockpit\Header Files</Filter>
+      <Filter>Source Files\cockpit\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\collide.h">
       <Filter>Source Files\physics\Header Files</Filter>
@@ -1656,28 +1656,28 @@
       <Filter>Source Files\objects\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\cockpit\cockpit.cpp">
-      <Filter>Source Files\audio\cockpit\Source Files</Filter>
+      <Filter>Source Files\cockpit\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\cockpit\cockpitdata.cpp">
-      <Filter>Source Files\audio\cockpit\Source Files</Filter>
+      <Filter>Source Files\cockpit\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\cockpit\genericcockpit.cpp">
-      <Filter>Source Files\audio\cockpit\Source Files</Filter>
+      <Filter>Source Files\cockpit\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\cockpit\hud.cpp">
-      <Filter>Source Files\audio\cockpit\Source Files</Filter>
+      <Filter>Source Files\cockpit\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\cockpit\hudicons.cpp">
-      <Filter>Source Files\audio\cockpit\Source Files</Filter>
+      <Filter>Source Files\cockpit\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\cockpit\hudmsgs.cpp">
-      <Filter>Source Files\audio\cockpit\Source Files</Filter>
+      <Filter>Source Files\cockpit\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\cockpit\statusbar.cpp">
-      <Filter>Source Files\audio\cockpit\Source Files</Filter>
+      <Filter>Source Files\cockpit\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\cockpit\targetindicators.cpp">
-      <Filter>Source Files\audio\cockpit\Source Files</Filter>
+      <Filter>Source Files\cockpit\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\physics\collide.cpp">
       <Filter>Source Files\physics\Source Files</Filter>
@@ -1851,13 +1851,13 @@
       <Filter>Source Files\main\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\cockpit\crosshairs.cpp">
-      <Filter>Source Files\audio\cockpit\Source Files</Filter>
+      <Filter>Source Files\cockpit\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\cockpit\utilities.cpp">
-      <Filter>Source Files\audio\cockpit\Source Files</Filter>
+      <Filter>Source Files\cockpit\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\cockpit\genericdrawers.cpp">
-      <Filter>Source Files\audio\cockpit\Source Files</Filter>
+      <Filter>Source Files\cockpit\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\input\sixense_wrapper.cpp">
       <Filter>Source Files\input\Source Files</Filter>

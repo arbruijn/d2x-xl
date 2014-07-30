@@ -873,6 +873,10 @@ else if (xDrag) {
 int32_t CObject::ProcessOffset (CPhysSimData& simData)
 {
 // update CObject's position and CSegment number
+#if DBG
+if ((Index () == nDbgObj) && (info.xSize / 2 < CFixVector::Dist (info.vLastPos, simData.hitResult.vPoint)))
+	BRP;
+#endif
 info.position.vPos = simData.hitResult.vPoint;
 if (simData.hitResult.nSegment != info.nSegment)
 	RelinkToSeg (simData.hitResult.nSegment);
@@ -1042,6 +1046,8 @@ if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBO
 #if DBG
 if (Index () == nDbgObj) 
 	BRP;
+CFixVector vLastVel = Velocity ();
+int32_t nLastSeg = info.nSegment;
 #endif
 
 if (Velocity () /*simData.velocity*/.IsZero ()) {
@@ -1121,7 +1127,10 @@ for (;;) {	//Move the object
 		simData.vOldPos = info.position.vPos;			
 		simData.nOldSeg = info.nSegment;
 		simData.vNewPos = info.position.vPos + simData.vOffset;
-
+#if DBG
+		if ((Index () == nDbgObj) && (info.xSize / 2 < CFixVector::Dist (info.vLastPos, simData.vNewPos)))
+			BRP;
+#endif
 		SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0), &simData.vNewPos);
 		simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
 		UpdateStats (this, simData.hitResult.nType);
@@ -1143,6 +1152,10 @@ for (;;) {	//Move the object
 		else
 			simData.hitResult.vPoint = simData.vNewPos;
 
+#if DBG
+		if ((Index () == nDbgObj) && (info.xSize / 2 < CFixVector::Dist (info.vLastPos, simData.hitResult.vPoint)))
+			BRP;
+#endif
 		simData.GetPhysSegs ();
 		if (simData.hitResult.nSegment == -1) {		
 			if (info.nType == OBJ_WEAPON)
@@ -1156,6 +1169,10 @@ for (;;) {	//Move the object
 			PROF_END(ptPhysics)
 			return;
 			}
+#if DBG
+		if ((Index () == nDbgObj) && (info.xSize / 2 < CFixVector::Dist (info.vLastPos, simData.hitResult.vPoint)))
+			BRP;
+#endif
 		} while (!UpdateSimTime (simData));
 
 	if (bRetry < 0)
@@ -1170,19 +1187,37 @@ for (;;) {	//Move the object
 		PROF_END(ptPhysics)
 		return;
 		}
+#if DBG
+		if ((Index () == nDbgObj) && (info.xSize / 2 < CFixVector::Dist (info.vLastPos, simData.hitResult.vPoint)))
+			BRP;
+#endif
 	if (!bRetry) 
 		break;
 	}
 
 FixPosition (simData);
+#if DBG
+		if ((Index () == nDbgObj) && (info.xSize / 2 < CFixVector::Dist (info.vLastPos, Position ())))
+			BRP;
+#endif
 FinishPhysicsSim (simData);
 if (CriticalHit ())
 	RandomBump (I2X (1), I2X (8), true);
 #if DBG
-if ((Index () == nDbgObj) && !simData.vOffset.IsZero() && (5 * simData.xMovedDist < CFixVector::Dist (info.vLastPos, Position ()))) {
-	Position () = info.vLastPos;
-	memcpy (&simData, &simData2, sizeof (simData));
-	goto redoPhysSim;
+if (Index () == nDbgObj) {
+	static int factor = 2;
+	static int bSound = 1;
+	if (info.xSize / factor  < CFixVector::Dist (info.vLastPos, Position ())) {
+		if (bSound)
+			audio.PlaySound (SOUND_HUD_MESSAGE);
+		else {
+			Position () = info.vLastPos;
+			Velocity () = vLastVel;
+			RelinkToSeg (nLastSeg);
+			memcpy (&simData, &simData2, sizeof (simData));
+			goto redoPhysSim;
+			}
+		}
 	}
 #endif
 PROF_END(ptPhysics)
