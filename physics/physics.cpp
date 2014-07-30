@@ -367,6 +367,9 @@ return 0;
 
 void CObject::Unstick (void)
 {
+#if DBG
+return;
+#endif
 if (info.nType == OBJ_PLAYER) {
 	if ((info.nId == N_LOCALPLAYER) && (gameStates.app.cheats.bPhysics == 0xBADA55))
 		return;
@@ -1159,11 +1162,12 @@ for (;;) {	//Move the object
 		else if (simData.hitResult.nType == HIT_WALL) {
 #if DBG
 			fix d = CFixVector::Dist (info.vLastPos, simData.hitResult.vPoint);
-			if ((Index () == nDbgObj) && (info.xSize / 2 < d)) {
+			if (Index () == nDbgObj) {
 				static int bRepeat = 1;
-				while (bRepeat) {
+				while (bRepeat && (info.xSize / 2 < d)) {
 					SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0), &simData.vNewPos);
 					simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
+					d = CFixVector::Dist (info.vLastPos, simData.hitResult.vPoint);
 					}
 				}
 #endif

@@ -508,7 +508,8 @@ return m;
 //	-----------------------------------------------------------------------------
 //computes a matrix from the forward and the right vector.
 //returns matrix.
-const CFixMatrix CFixMatrix::CreateFR (const CFixVector& fVec, const CFixVector& rVec) {
+const CFixMatrix CFixMatrix::CreateFR (const CFixVector& fVec, const CFixVector& rVec) 
+{
 	CFixMatrix m;
 
 m.m.dir.f = fVec;
@@ -750,8 +751,7 @@ return bClamped;
 // ------------------------------------------------------------------------
 
 // Version with vPos
-const int32_t FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, 
-											    const CFloatVector& vPos, int32_t bClamp) 
+const int32_t FindPointLineIntersection (CFloatVector& hitP, const CFloatVector& p1, const CFloatVector& p2, const CFloatVector& p3, const CFloatVector& vPos, int32_t bClamp) 
 {
 	CFloatVector	d31, d21;
 	float		m, u;

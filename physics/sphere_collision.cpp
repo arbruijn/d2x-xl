@@ -305,31 +305,27 @@ int32_t FindPlaneLineIntersection (CFixVector& vIntersection, CFixVector *vPlane
 {
 #if 0 // FLOAT_COLLISION_MATH
 // for some reason I haven't been able to figure, the following code is not equivalent to the fix point arithmetic code below it
-	CFloatVector vn, vu, vw;
+	CFloatVector n, u, w, v0, v1;
+	float r = X2F (rad);
 
-vu.Assign (*p1 - *p0);
-vn.Assign (*vNormal);
-float d = -CFloatVector::Dot (vn, vu);
-if (fabs (d) < FLOAT_DIST_TOLERANCE) // ~ parallel
+n.Assign (*vNormal);
+v0.Assign (*p0);
+v0 -= n * r;
+v1.Assign (*p1);
+v1 -= n * r;
+u = v1 - v0;
+float den = -CFloatVector::Dot (n, u);
+if (fabs (den) < FLOAT_DIST_TOLERANCE) // ~ parallel
 	return 0;
-vw.Assign (*p0 - *vPlane);
-float n = CFloatVector::Dot (vn, vw) - X2F (rad);
-float s = n / d;
-if (s < 0.0f) {
-	if (s < -1.0f - FLOAT_DIST_TOLERANCE) // compensate small numerical errors
-		return 0;
-	s = 0.0f;
-	}
-else if (s > 1.0f) {
-	if (s > 1.0f + FLOAT_DIST_TOLERANCE) // compensate small numerical errors
-		return 0;
-	s = 1.0f;
-	}
-vu *= s;
-CFixVector vi;
-vi.Assign (vu);
-vi += *p0;
-vIntersection.Assign (vu);
+w.Assign (*vPlane);
+w.Neg ();
+w += v0;
+float num = CFloatVector::Dot (n, w);
+float s = num / den;
+if ((s < -FLOAT_DIST_TOLERANCE) || (s > 1.0f + FLOAT_DIST_TOLERANCE)) // compensate small numerical errors
+	return 0;
+u *= s;
+vIntersection.Assign (u);
 vIntersection += *p0;
 return 1;
 
@@ -337,35 +333,37 @@ return 1;
 
 CFixVector u = *p1 - *p0;
 fix den = -CFixVector::Dot (*vNormal, u);
-if (!den)
+if (!den) // moving parallel to face's plane
 	return 0;
 CFixVector w = *p0 - *vPlane;
-fix num = CFixVector::Dot (*vNormal, w) - rad;
+fix num = CFixVector::Dot (*vNormal, w) - rad; // distance of p0 to plane
 //do check for potential overflow
-if (bCheckOverflow) {
-	if (den > 0) {
-		if ((num > den) || ((-num >> 15) >= den)) {//frac greater than one
-			return 0;
-			}
-		}
-	else {
-		if (num < den) {
-			return 0;
-			}
-		}
-	if (labs (num) / (I2X (1) / 2) >= labs (den)) {
+#if 0
+if (den > 0) {
+	if (num > den) { //frac greater than one
 		return 0;
 		}
-	u *= FixDiv (num, den);
 	}
 else {
-	double scale = double (num) / double (den);
-	if ((scale < -FLOAT_DIST_TOLERANCE) || (scale > 1.0f + FLOAT_DIST_TOLERANCE))
+	if (num < den) {
 		return 0;
-	u.v.coord.x = fix (DRound (double (u.v.coord.x) * scale));
-	u.v.coord.y = fix (DRound (double (u.v.coord.y) * scale));
-	u.v.coord.z = fix (DRound (double (u.v.coord.z) * scale));
+		}
 	}
+#if 0
+if (labs (num) >> 15 >= labs (den)) 
+	return 0;
+#endif
+u *= FixDiv (num, den);
+#else
+fix s = FixDiv (num, den);
+#if 1
+if (s > I2X (1))
+#else
+if ((s < PLANE_DIST_TOLERANCE) || (s > I2X (1) + PLANE_DIST_TOLERANCE))
+#endif
+	return 0;
+u *= s;
+#endif
 vIntersection = *p0 + u;
 return 1;
 
