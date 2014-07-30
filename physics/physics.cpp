@@ -367,9 +367,6 @@ return 0;
 
 void CObject::Unstick (void)
 {
-#if DBG
-return;
-#endif
 if (info.nType == OBJ_PLAYER) {
 	if ((info.nId == N_LOCALPLAYER) && (gameStates.app.cheats.bPhysics == 0xBADA55))
 		return;
@@ -1075,7 +1072,7 @@ if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBO
 		info.position.mOrient = mSaveOrient;
 	}
 
-#if DBG
+#if 0
 static CPhysSimData simData3(0);
 static CFixVector vLastLastPos;
 static CFixVector vLastVel, vLastLastVel;
@@ -1169,10 +1166,7 @@ for (;;) {	//Move the object
 		simData.vOldPos = info.position.vPos;			
 		simData.nOldSeg = info.nSegment;
 		simData.vNewPos = info.position.vPos + simData.vOffset;
-#if DBG
-		if ((Index () == nDbgObj) && (info.xSize / 2 < CFixVector::Dist (info.vLastPos, simData.vNewPos)))
-			BRP;
-#endif
+
 		SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0), &simData.vNewPos);
 		simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
 		UpdateStats (this, simData.hitResult.nType);
@@ -1194,10 +1188,6 @@ for (;;) {	//Move the object
 		else
 			simData.hitResult.vPoint = simData.vNewPos;
 
-#if DBG
-		if ((Index () == nDbgObj) && (info.xSize / 2 < CFixVector::Dist (info.vLastPos, simData.hitResult.vPoint)))
-			BRP;
-#endif
 		simData.GetPhysSegs ();
 		if (simData.hitResult.nSegment == -1) {		
 			if (info.nType == OBJ_WEAPON)
@@ -1211,10 +1201,6 @@ for (;;) {	//Move the object
 			PROF_END(ptPhysics)
 			return;
 			}
-#if DBG
-		if ((Index () == nDbgObj) && (info.xSize / 2 < CFixVector::Dist (info.vLastPos, simData.hitResult.vPoint)))
-			BRP;
-#endif
 		} while (!UpdateSimTime (simData));
 
 	if (bRetry < 0)
@@ -1229,10 +1215,6 @@ for (;;) {	//Move the object
 		PROF_END(ptPhysics)
 		return;
 		}
-#if DBG
-		if ((Index () == nDbgObj) && (info.xSize / 2 < CFixVector::Dist (info.vLastPos, simData.hitResult.vPoint)))
-			BRP;
-#endif
 	if (!bRetry) 
 		break;
 	}
@@ -1241,7 +1223,8 @@ FixPosition (simData);
 FinishPhysicsSim (simData);
 if (CriticalHit ())
 	RandomBump (I2X (1), I2X (8), true);
-#if DBG
+
+#if 0 //DBG
 if (Index () == nDbgObj) {
 	static int factor = 2;
 	static int bSound = 1;
