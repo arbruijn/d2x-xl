@@ -95,8 +95,8 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 #endif
 
 #include "ipx.h"
-#include "win32/include/ipx_drv.h"
-#include "linux/include/ipx_udp.h"
+#include "ipx_drv.h"
+#include "ipx_udp.h"
 #include "ipx.h"
 #include "descent.h"
 #include "network.h"
