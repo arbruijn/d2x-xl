@@ -367,7 +367,6 @@ return 0;
 
 void CObject::Unstick (void)
 {
-return;
 if (info.nType == OBJ_PLAYER) {
 	if ((info.nId == N_LOCALPLAYER) && (gameStates.app.cheats.bPhysics == 0xBADA55))
 		return;
@@ -1077,7 +1076,8 @@ if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBO
 		info.position.mOrient = mSaveOrient;
 	}
 
-#if 1
+#if 0 //DBG
+// allow tracking object movement back two frames
 static CPhysSimData simData3(0);
 static CFixVector vLastLastPos;
 static CFixVector vLastVel, vLastLastVel;
@@ -1128,7 +1128,7 @@ if ((nDbgSeg >= 0) && (info.nSegment == nDbgSeg))
 	BRP;
 #endif
 
-#if DBG
+#if 0// DBG
 redoPhysSim:
 #endif
 
@@ -1229,7 +1229,7 @@ FinishPhysicsSim (simData);
 if (CriticalHit ())
 	RandomBump (I2X (1), I2X (8), true);
 
-#if 1 //DBG
+#if 0 //DBG
 if (Index () == nDbgObj) {
 	static int factor = 2;
 	static int bSound = 1;
