@@ -319,7 +319,7 @@ if ((aiP->CURRENT_STATE == AIS_REST) && (aiP->GOAL_STATE == AIS_REST)) {
 		aiP->CURRENT_STATE = AIS_SEARCH;
 		}
 	else
-		AIDoRandomPatrol (objP);
+		AIDoRandomPatrol (objP, siP);
 	}
 
 if (gameData.time.xGame - siP->ailP->timeTargetSeen > CHASE_TIME_LENGTH) {
@@ -993,12 +993,12 @@ if (siP->ailP->targetAwarenessType >= PA_RETURN_FIRE - 1) // If robot got hit, h
 	return 0;
 if ((siP->aiP->behavior == AIB_STATION) && (siP->ailP->mode == AIM_FOLLOW_PATH) && (siP->aiP->nHideSegment != objP->info.nSegment)) {
 	if (gameData.ai.target.xDist > MAX_SNIPE_DIST / 2) {  // station guys not at home always processed until 250 units away.
-		AIDoRandomPatrol (objP);
+		AIDoRandomPatrol (objP, siP);
 		return 1;
 		}
 	}
 else if ((siP->aiP->behavior != AIB_STILL) && !siP->ailP->nPrevVisibility && ((gameData.ai.target.xDist >> 7) > siP->ailP->timeSinceProcessed)) {  // 128 units away (6.4 segments) processed after 1 second.
-	AIDoRandomPatrol (objP);
+	AIDoRandomPatrol (objP, siP);
 	return 1;
 	}
 return 0;
@@ -1251,7 +1251,7 @@ int32_t AIWakeupHandler (CObject *objP, tAIStateInfo *siP)
 if (!gameData.ai.nTargetVisibility &&
 	 (siP->ailP->targetAwarenessType < PA_WEAPON_WALL_COLLISION) &&
 	 (gameData.ai.target.xDist > MAX_WAKEUP_DIST)) {
-	AIDoRandomPatrol (objP);
+	AIDoRandomPatrol (objP, siP);
 	return 1;
 	}
 ComputeVisAndVec (objP, &siP->vVisPos, siP->ailP, siP->botInfoP, &siP->bVisAndVecComputed, MAX_REACTION_DIST);
@@ -1372,6 +1372,8 @@ return 0;
 
 // --------------------------------------------------------------------------------------------------------------------
 
+void CheckObjPos (void);
+
 void DoAIFrame (CObject *objP)
 {
 	tAIStateInfo	si;
@@ -1439,48 +1441,48 @@ gameData.ai.target.xDist = CFixVector::Dist (gameData.ai.target.vBelievedPos, ob
 // If this robot can fire, compute visibility from gun position.
 // Don't want to compute visibility twice, as it is expensive.  (So is call to CalcGunPoint).
 if (AIFireHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 if (AIApproachHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 if (AIRetryHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 // If in materialization center, exit
 if (AIProducerHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 if (AIAwarenessHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 if (AIPlayerDeadHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 if (AIBumpHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 if ((si.aiP->GOAL_STATE == AIS_FLINCH) && (si.aiP->CURRENT_STATE == AIS_FLINCH))
 	si.aiP->GOAL_STATE = AIS_LOCK;
 if (AIAnimationHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 if (AIBossHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 if (AIStationaryHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 // Reset time since processed, but skew OBJECTS so not everything
 // processed synchronously, else we get fast frames with the
 // occasional very slow frame.
 // AI_procTime = si.ailP->timeSinceProcessed;
 si.ailP->timeSinceProcessed = -((si.nObject & 0x03) * gameData.time.xFrame) / 2;
 if (AIBrainHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 if (AISnipeHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 if (AIBuddyHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 if (AIThiefHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 // More special ability stuff, but based on a property of a robot, not its ID.
 if ((uint16_t) si.ailP->mode > AIM_THIEF_WAIT)
 	AIMDefaultHandler2 (objP, &si);
 else if (aimHandler2 [si.ailP->mode] (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 if (AIWakeupHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 
 if (!gameData.ai.bObjAnimates)
 	si.aiP->CURRENT_STATE = si.aiP->GOAL_STATE;
@@ -1490,12 +1492,12 @@ Assert (si.aiP->CURRENT_STATE < AIS_MAX);
 Assert (si.aiP->GOAL_STATE < AIS_MAX);
 
 if (AINewGoalHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 // If new state = fire, then set all gun states to fire.
 if (AIFireGunsHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 if (AIForceFireHandler (objP, &si))
-	return;
+	{ CheckObjPos (); return; }
 // Switch to next gun for next fire.
 if (!gameData.ai.nTargetVisibility) {
 	if (++(si.aiP->CURRENT_GUN) >= ROBOTINFO (objP->info.nId).nGuns) {

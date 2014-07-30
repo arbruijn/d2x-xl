@@ -1037,6 +1037,19 @@ void CObject::FinishPhysicsSim (CPhysSimData& simData)
 
 //	-----------------------------------------------------------------------------
 
+void CheckObjPos (void)
+{
+if (nDbgObj != -1) {
+	CObject* objP = OBJECTS + nDbgObj;
+	static int32_t factor = 2;
+	fix d = CFixVector::Dist (objP->info.vLastPos, objP->Position ());
+	if (objP->info.xSize / factor  < d)
+		BRP;
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
 //Simulate a physics CObject for this frame
 
 void CObject::DoPhysicsSim (void)
@@ -1225,10 +1238,6 @@ for (;;) {	//Move the object
 	}
 
 FixPosition (simData);
-#if DBG
-		if ((Index () == nDbgObj) && (info.xSize / 2 < CFixVector::Dist (info.vLastPos, Position ())))
-			BRP;
-#endif
 FinishPhysicsSim (simData);
 if (CriticalHit ())
 	RandomBump (I2X (1), I2X (8), true);

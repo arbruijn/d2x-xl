@@ -1008,7 +1008,7 @@ while (xDistToGoal < thresholdDistance) {
 			}
 		else if (aiP->behavior == AIB_STATION) {
 			CreatePathToStation (objP, 15);
-			if ((aiP->nHideSegment != gameData.ai.routeSegs [aiP->nHideIndex+aiP->nPathLength-1].nSegment) ||
+			if ((aiP->nHideSegment != gameData.ai.routeSegs [aiP->nHideIndex+aiP->nPathLength - 1].nSegment) ||
 				 (aiP->nPathLength == 0)) {
 				ailP->mode = AIM_IDLING;
 				}

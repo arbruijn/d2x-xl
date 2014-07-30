@@ -32,7 +32,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // --------------------------------------------------------------------------------------------------------------------
 
-void AIDoRandomPatrol (CObject *objP)
+void AIDoRandomPatrol (CObject *objP, tAIStateInfo *siP)
 {
 #if DBG
 static int bPatrols = 1;
@@ -41,7 +41,7 @@ if (!bPatrols)
 if (objP->Index () == nDbgObj)
 	BRP;
 #endif
-if (gameOpts->gameplay.bIdleAnims) {
+if (gameOpts->gameplay.bIdleAnims && (siP->ailP->mode == AIM_IDLING)) {
 		int32_t		h, i, j;
 		CSegment*	segP = SEGMENTS + objP->info.nSegment;
 		CFixVector*	vVertex, vVecToGoal, vGoal = gameData.objs.vRobotGoals [objP->Index ()];
