@@ -1046,6 +1046,7 @@ if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBO
 #if DBG
 if (Index () == nDbgObj) 
 	BRP;
+SetLastPos (Position ());
 CFixVector vLastVel = Velocity ();
 int32_t nLastSeg = info.nSegment;
 #endif
@@ -1140,6 +1141,13 @@ for (;;) {	//Move the object
 				break;
 			}
 		else if (simData.hitResult.nType == HIT_WALL) {
+#if DBG
+			fix d = CFixVector::Dist (info.vLastPos, simData.hitResult.vPoint);
+			if ((Index () == nDbgObj) && (info.xSize / 2 < d)) {
+				SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0), &simData.vNewPos);
+				simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
+				}
+#endif
 			if (!HandleWallCollision (simData))
 				break;
 			}
