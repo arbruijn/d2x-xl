@@ -241,7 +241,7 @@ int32_t AIMIdlingHandler1 (CObject *objP, tAIStateInfo *siP)
 if (objP->Index () == nDbgObj)
 	BRP;
 #endif
-4if (siP->botInfoP->attackType /*&& (siP->aiP->CURRENT_STATE <= AIS_REST)*/)
+if (siP->botInfoP->attackType)
 	MoveTowardsSegmentCenter (objP);
 else if ((siP->aiP->behavior != AIB_STILL) && (siP->aiP->behavior != AIB_STATION) && (siP->aiP->behavior != AIB_FOLLOW))    // Behavior is still, so don't follow path.
 	AttemptToResumePath (objP);
