@@ -579,11 +579,6 @@ if (info.nType == OBJ_ROBOT) {
 			SetShield (xMaxShield);
 		}
 	}
-#if DBG
-if ((Index () == nDbgObj) && (info.position.vPos != info.vLastPos))
-	BRP;
-#endif
-SetLastPos (info.position.vPos);			// Save the current position
 RepairDamage ();
 HandleSegmentFunction ();
 if ((info.xLifeLeft != IMMORTAL_TIME) && (info.xLifeLeft != ONE_FRAME_TIME) && (gameData.physics.xTime > 0))
@@ -604,7 +599,6 @@ if ((info.nType == OBJ_NONE) || (info.nFlags & OF_SHOULD_BE_DEAD)) {
 	return 1;			//CObject has been deleted
 	}
 UpdatePosition ();
-SetLastPos (info.position.vPos);			// Save the current position
 UpdateEffects ();
 if (CheckTriggerHits (nPrevSegment))
 	return 0;

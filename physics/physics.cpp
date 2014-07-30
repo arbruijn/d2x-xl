@@ -900,7 +900,7 @@ info.position.vPos = simData.hitResult.vPoint;
 if (simData.hitResult.nSegment != info.nSegment)
 	RelinkToSeg (simData.hitResult.nSegment);
 //if start point not in segment, move object to center of segment
-if (SEGMENTS [info.nSegment].Masks (info.position.vPos, 0).m_center) {	//object stuck
+if (SEGMENTS [info.nSegment].Masks (info.position.vPos, info.xSize).m_center) {	//object stuck
 	int32_t n = FindSegment ();
 	if (n == -1) {
 		if (simData.bGetPhysSegs)
@@ -1063,11 +1063,20 @@ if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBO
 	}
 
 #if DBG
-if (Index () == nDbgObj) 
+static CPhysSimData simData3(0);
+static CFixVector vLastLastPos;
+static CFixVector vLastVel, vLastLastVel;
+static int32_t nLastSeg = -1, nLastLastSeg = -1;
+if (Index () == nDbgObj) {
 	BRP;
-SetLastPos (Position ());
-CFixVector vLastVel = Velocity ();
-int32_t nLastSeg = info.nSegment;
+	memcpy (&simData3, &simData2, sizeof (simData));
+	vLastLastPos = info.vLastPos;
+	SetLastPos (Position ());
+	vLastLastVel = vLastVel;
+	vLastVel = Velocity ();
+	nLastLastSeg = nLastSeg;
+	nLastSeg = info.nSegment;
+	}
 #endif
 
 if (Velocity () /*simData.velocity*/.IsZero ()) {
@@ -1160,17 +1169,6 @@ for (;;) {	//Move the object
 				break;
 			}
 		else if (simData.hitResult.nType == HIT_WALL) {
-#if DBG
-			fix d = CFixVector::Dist (info.vLastPos, simData.hitResult.vPoint);
-			if (Index () == nDbgObj) {
-				static int bRepeat = 1;
-				while (bRepeat && (info.xSize / 2 < d)) {
-					SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0), &simData.vNewPos);
-					simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
-					d = CFixVector::Dist (info.vLastPos, simData.hitResult.vPoint);
-					}
-				}
-#endif
 			if (!HandleWallCollision (simData))
 				break;
 			}
@@ -1238,14 +1236,15 @@ if (CriticalHit ())
 if (Index () == nDbgObj) {
 	static int factor = 2;
 	static int bSound = 1;
-	if (info.xSize / factor  < CFixVector::Dist (info.vLastPos, Position ())) {
+	fix d = CFixVector::Dist (info.vLastPos, Position ());
+	if (info.xSize / factor  < d) {
 		if (bSound)
 			audio.PlaySound (SOUND_HUD_MESSAGE);
 		else {
-			Position () = info.vLastPos;
-			Velocity () = vLastVel;
-			RelinkToSeg (nLastSeg);
-			memcpy (&simData, &simData2, sizeof (simData));
+			Position () = vLastLastPos;
+			Velocity () = vLastLastVel;
+			RelinkToSeg (nLastLastSeg);
+			memcpy (&simData, &simData3, sizeof (simData));
 			goto redoPhysSim;
 			}
 		}

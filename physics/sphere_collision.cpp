@@ -305,24 +305,21 @@ int32_t FindPlaneLineIntersection (CFixVector& vIntersection, CFixVector *vPlane
 {
 #if 0 // FLOAT_COLLISION_MATH
 // for some reason I haven't been able to figure, the following code is not equivalent to the fix point arithmetic code below it
-	CFloatVector n, u, w, v0, v1;
-	float r = X2F (rad);
+	CFloatVector n, u, w;
 
 n.Assign (*vNormal);
-v0.Assign (*p0);
-v0 -= n * r;
-v1.Assign (*p1);
-v1 -= n * r;
-u = v1 - v0;
-float den = -CFloatVector::Dot (n, u);
+u.Assign (*p1 - *p0);
+float den = -CFloatVector::Dot (n, u) - X2F (rad);
 if (fabs (den) < FLOAT_DIST_TOLERANCE) // ~ parallel
 	return 0;
-w.Assign (*vPlane);
-w.Neg ();
-w += v0;
+w.Assign (*p0 - *vPlane);
 float num = CFloatVector::Dot (n, w);
 float s = num / den;
+#if 1
+if (s > 1.0f) // compensate small numerical errors
+#else
 if ((s < -FLOAT_DIST_TOLERANCE) || (s > 1.0f + FLOAT_DIST_TOLERANCE)) // compensate small numerical errors
+#endif
 	return 0;
 u *= s;
 vIntersection.Assign (u);
@@ -1086,10 +1083,10 @@ int32_t ComputeHitpoint (CHitData& hitData, CHitQuery& hitQuery, int16_t* segLis
 {
 	CHitData		bestHit, curHit;
 	fix			d, dMin = 0x7fffffff;					//distance to hit refP
-	int32_t			nHitNoneSegment = -1;
-	int16_t			hitNoneSegList [MAX_FVI_SEGS];
-	int16_t			nHitNoneSegs = 0;
-	int32_t			nCurNestLevel = gameData.collisions.hitResult.nNestCount;
+	int32_t		nHitNoneSegment = -1;
+	int16_t		hitNoneSegList [MAX_FVI_SEGS];
+	int16_t		nHitNoneSegs = 0;
+	int32_t		nCurNestLevel = gameData.collisions.hitResult.nNestCount;
 	bool			bCheckVisibility = ((hitQuery.flags & FQ_VISIBILITY) != 0);
 
 bestHit.vPoint.SetZero ();
@@ -1144,10 +1141,9 @@ if (endMask) { //on the back of at least one face
 			if ((hitQuery.nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 				BRP;
 #endif
-			int32_t nFaceHitType;
-				nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
-									? segP->CheckLineToFaceSpecial (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace)
-									: segP->CheckLineToFaceRegular (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace);
+			int32_t nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
+										  ? segP->CheckLineToFaceEdges (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace)
+										  : segP->CheckLineToFaceRegular (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace);
 #if 1
 			if (bCheckVisibility && !nFaceHitType)
 					continue;
@@ -1157,14 +1153,14 @@ if (endMask) { //on the back of at least one face
 				BRP;
 				if (nFaceHitType)
 					nFaceHitType = (startMask & bit)	//start was also though.  Do extra check
-										? segP->CheckLineToFaceSpecial (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace)
+										? segP->CheckLineToFaceEdges (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace)
 										: segP->CheckLineToFaceRegular (curHit.vPoint, hitQuery.p0, hitQuery.p1, hitQuery.radP1, nSide, iFace);
 				}
 #endif
 			if (PassThrough (hitQuery.nObject, hitQuery.nSegment, nSide, iFace, hitQuery.flags, curHit.vPoint)) {
-				int32_t			i;
-				int16_t			subSegList [MAX_FVI_SEGS];
-				int16_t			nSubSegments;
+				int32_t		i;
+				int16_t		subSegList [MAX_FVI_SEGS];
+				int16_t		nSubSegments;
 				CHitData		subHit, saveHitData = gameData.collisions.hitResult;
 				CHitQuery	subHitQuery = hitQuery;
 

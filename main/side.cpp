@@ -1063,7 +1063,7 @@ return IT_NONE;
 //this version is for when the start and end positions both poke through
 //the plane of a CSide.  In this case, we must do checks against the edge
 //of faces
-int32_t CSide::CheckLineToFaceSpecialf (CFloatVector& vIntersection, CFloatVector& p0, CFloatVector& p1, float rad, int16_t iFace, CFloatVector& vNormal)
+int32_t CSide::CheckLineToFaceEdgesf (CFloatVector& vIntersection, CFloatVector& p0, CFloatVector& p1, float rad, int16_t iFace, CFloatVector& vNormal)
 {
 CFloatVector vMove = p1 - p0;
 //figure out which edge(side) to check against
@@ -1106,7 +1106,7 @@ return IT_NONE;			//no hit
 //this version is for when the start and end positions both poke through
 //the plane of a CSide.  In this case, we must do checks against the edge
 //of faces
-int32_t CSide::CheckLineToFaceSpecial (CFixVector& vIntersection, CFixVector *p0, CFixVector *p1, fix rad, int16_t iFace, CFixVector vNormal)
+int32_t CSide::CheckLineToFaceEdges (CFixVector& vIntersection, CFixVector *p0, CFixVector *p1, fix rad, int16_t iFace, CFixVector vNormal)
 {
 #if 0 // FLOAT_COLLISION_MATH
 
@@ -1115,7 +1115,7 @@ int32_t CSide::CheckLineToFaceSpecial (CFixVector& vIntersection, CFixVector *p0
 v0.Assign (*p0);
 v1.Assign (*p1);
 vn.Assign (vNormal);
-int32_t i = CheckLineToFaceSpecialf (vi, v0, v1, X2F (rad), iFace, vn);
+int32_t i = CheckLineToFaceEdgesf (vi, v0, v1, X2F (rad), iFace, vn);
 if (i != IT_NONE)
 	vIntersection.Assign (vi);
 return i;
@@ -1141,7 +1141,11 @@ fix edge_t, move_t;
 CheckLineToLine (&edge_t, &move_t, v0, &vEdge, p0, &vMove);
 //make sure t values are in valid range
 if ((move_t < 0) || (move_t > moveLen + rad))
+#if DBG
+	return CheckLineToFaceRegular (vIntersection, p0, p1, rad, iFace, vNormal);
+#else
 	return IT_NONE;
+#endif
 //now, edge_t & move_t determine closest points.  calculate the points.
 CFixVector vClosestEdgePoint = *v0 + vEdge * Clamp (edge_t, 0, edgeLen);
 CFixVector vClosestMovePoint = *p0 + vMove * Min (move_t, moveLen);

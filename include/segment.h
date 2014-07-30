@@ -234,13 +234,13 @@ class CSide {
 		void CheckSum (uint32_t& sum1, uint32_t& sum2);
 
 		int32_t CheckTransparency (void);
-		int32_t CheckLineToFaceSpecial (CFixVector& vIntersection, CFixVector *p0, CFixVector *p1, fix rad, int16_t iFace, CFixVector vNormal);
+		int32_t CheckLineToFaceEdges (CFixVector& vIntersection, CFixVector *p0, CFixVector *p1, fix rad, int16_t iFace, CFixVector vNormal);
 		int32_t CheckLineToFaceRegular (CFixVector& vIntersection, CFixVector *p0, CFixVector *p1, fix rad, int16_t iFace, CFixVector vNormal);
 		int32_t SphereToFaceRelation (CFixVector& vIntersection, fix rad, int16_t iFace, CFixVector vNormal);
 		uint32_t PointToFaceRelation (CFixVector& vIntersection, int16_t iFace, CFixVector vNormal);
 		int32_t SeesPoint (CFixVector& vPoint, int16_t nDestSeg, int32_t nLevel = 0, int32_t nThread = 0);
 
-		int32_t CheckLineToFaceSpecialf (CFloatVector& vIntersection, CFloatVector& p0, CFloatVector& p1, float rad, int16_t iFace, CFloatVector& vNormal);
+		int32_t CheckLineToFaceEdgesf (CFloatVector& vIntersection, CFloatVector& p0, CFloatVector& p1, float rad, int16_t iFace, CFloatVector& vNormal);
 		int32_t CheckLineToFaceRegularf (CFloatVector& vIntersection, CFloatVector* p0, CFloatVector* p1, float rad, int16_t iFace, CFloatVector& vNormal);
 		int32_t SphereToFaceRelationf (CFloatVector& vIntersection, float rad, int16_t iFace, CFloatVector& vNormal);
 		uint32_t PointToFaceRelationf (CFloatVector& vIntersection, int16_t iFace, CFloatVector& vNormal);
@@ -424,8 +424,8 @@ class CSegment {
 		 { return m_sides [nSide].SphereToFaceRelation (intersection, rad, iFace, Normal (nSide, iFace)); }
 		inline int32_t CheckLineToFaceRegular (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int32_t nSide, int16_t iFace)
 		 { return m_sides [nSide].CheckLineToFaceRegular (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
-		inline int32_t CheckLineToFaceSpecial (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int32_t nSide, int32_t iFace)
-		 { return m_sides [nSide].CheckLineToFaceSpecial (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
+		inline int32_t CheckLineToFaceEdges (CFixVector& intersection, CFixVector *p0, CFixVector *p1, fix rad, int32_t nSide, int32_t iFace)
+		 { return m_sides [nSide].CheckLineToFaceEdges (intersection, p0, p1, rad, iFace, Normal (nSide, iFace)); }
 
 		inline int32_t FaceCount (int32_t nSide) { return m_sides [nSide].FaceCount (); }
 		CSegMasks Masks (const CFixVector& refP, fix xRad);
