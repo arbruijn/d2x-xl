@@ -226,9 +226,9 @@ extern void mprintf_animation_info (CObject *objP);
 #endif //if DBG
 
 void AIFrameAnimation (CObject *objP);
-void AIDoRandomPatrol (CObject *objP, tAIStateInfo *siP);
+void AIDoRandomPatrol (CObject *objP, tAILocalInfo *ailP);
 int32_t DoSillyAnimation (CObject *objP);
-void ComputeVisAndVec (CObject *objP, CFixVector *pos, tAILocalInfo *ailp, tRobotInfo *robptr, int32_t *flag, fix xMaxVisibleDist);
+void ComputeVisAndVec (CObject *objP, CFixVector *pos, tAILocalInfo *ailP, tRobotInfo *robptr, int32_t *flag, fix xMaxVisibleDist);
 void DoFiringStuff (CObject *obj, int32_t player_visibility, CFixVector *vec_to_player);
 int32_t AIMaybeDoActualFiringStuff (CObject *obj, tAIStaticInfo *aip);
 void AIDoActualFiringStuff (CObject *obj, tAIStaticInfo *aip, tAILocalInfo *ailp, tRobotInfo *robptr, int32_t gun_num);
