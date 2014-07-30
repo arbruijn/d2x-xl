@@ -454,6 +454,22 @@ else
 
 void CPhysSimData::Setup (void)
 {
+xOldSimTime =
+xMovedTime =
+xMovedDist =
+xAttemptedDist = 0;
+
+vNewPos.SetZero ();
+vHitPos.SetZero ();
+vOffset.SetZero ();
+vMoved.SetZero ();
+
+bUseHitbox = 
+bStopped = 
+bBounced = 
+bIgnoreObjFlag = 0;
+nTries = 0;
+
 if ((bInitialize = (gameData.physics.xTime < 0)))
 	gameData.physics.xTime = I2X (1);
 xSimTime = gameData.physics.xTime;
@@ -468,9 +484,9 @@ velocity = objP->Velocity ();
 if (!velocity.IsZero ())
 	BRP;
 #endif
-//velocity *= I2X (extraGameInfo [IsMultiGame].nSpeedScale + 2) / 2;
-vStartPos = objP->Position ();
-nStartSeg = objP->Segment ();
+
+vOldPos = vStartPos = objP->Position ();
+nOldSeg = nStartSeg = objP->Segment ();
 #if DBG
 bUseHitbox = (objP->Type () == OBJ_PLAYER) && CollisionModel () && UseHitbox (objP);
 #else
@@ -872,7 +888,7 @@ else if (xDrag) {
 
 int32_t CObject::ProcessOffset (CPhysSimData& simData)
 {
-// update CObject's position and CSegment number
+// update object's position and segment number
 #if DBG
 if ((Index () == nDbgObj) && (info.xSize / 2 < CFixVector::Dist (info.vLastPos, simData.hitResult.vPoint)))
 	BRP;
@@ -995,7 +1011,7 @@ if ((simData.hitResult.nType == HIT_WALL) && (CFixVector::Dot (vMoveNormal, simD
 	simData.xMovedTime = 0;
 	}
 else {
-	simData.xAttemptedDist = simData.vOffset.Mag();
+	simData.xAttemptedDist = simData.vOffset.Mag ();
 	simData.xSimTime = FixMulDiv (simData.xSimTime, simData.xAttemptedDist - simData.xMovedDist, simData.xAttemptedDist);
 	simData.xMovedTime = simData.xOldSimTime - simData.xSimTime;
 	if ((simData.xSimTime < 0) || (simData.xSimTime > simData.xOldSimTime)) {
@@ -1144,8 +1160,11 @@ for (;;) {	//Move the object
 #if DBG
 			fix d = CFixVector::Dist (info.vLastPos, simData.hitResult.vPoint);
 			if ((Index () == nDbgObj) && (info.xSize / 2 < d)) {
-				SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0), &simData.vNewPos);
-				simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
+				static int bRepeat = 1;
+				while (bRepeat) {
+					SetupHitQuery (simData.hitQuery, FQ_CHECK_OBJS | ((info.nType == OBJ_WEAPON) ? FQ_TRANSPOINT : 0) | (simData.bGetPhysSegs ? FQ_GET_SEGLIST : 0), &simData.vNewPos);
+					simData.hitResult.nType = FindHitpoint (simData.hitQuery, simData.hitResult);
+					}
 				}
 #endif
 			if (!HandleWallCollision (simData))
