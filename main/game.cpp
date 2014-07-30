@@ -1031,6 +1031,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 else { // Note the link to above!
 	PROF_CONT
 	LOCALPLAYER.homingObjectDist = -1;		//	Assume not being tracked.  CObject::UpdateWeapon modifies this.
+CheckObjPos ();
 	if (!UpdateAllObjects ())
 		return 0;
 	PowerupGrabCheatAll ();

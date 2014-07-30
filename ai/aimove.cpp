@@ -52,7 +52,7 @@ fix dot = CFixVector::Dot (*vGoal, objP->info.position.mOrient.m.dir.f);
 
 if (!IsMultiGame)
 	dot = (fix) (dot / gameStates.gameplay.slowmo [0].fSpeed);
-if (dot < (I2X (1) - gameData.time.xFrame/2)) {
+if (dot < (I2X (1) - gameData.time.xFrame / 2)) {
 	fix mag, new_scale = FixDiv (gameData.time.xFrame * AI_TURN_SCALE, rate);
 	if (!IsMultiGame)
 		new_scale = (fix) (new_scale / gameStates.gameplay.slowmo [0].fSpeed);
@@ -393,7 +393,7 @@ fix MoveObjectToLegalPoint (CObject *objP, CFixVector *vGoal)
 
 vGoalDir = *vGoal - objP->info.position.vPos;
 xDistToGoal = CFixVector::Normalize (vGoalDir);
-vGoalDir *= (objP->info.xSize / 2);
+vGoalDir *= Min (FixMul (ROBOTINFO (objP->Id ()).xMaxSpeed [gameStates.app.nDifficultyLevel], gameData.time.xFrame), xDistToGoal);
 objP->info.position.vPos += vGoalDir;
 return xDistToGoal;
 }
@@ -462,6 +462,8 @@ fix MoveTowardsPoint (CObject *objP, CFixVector *vGoal, fix xMinDist)
 #if DBG
 if ((nDbgSeg >= 0) && (objP->info.nSegment == nDbgSeg))
 	BRP;
+if (objP->Index () == nDbgObj)
+	BRP;
 #endif
 vGoalDir = *vGoal - objP->info.position.vPos;
 xDistToGoal = CFixVector::Normalize (vGoalDir);
@@ -475,16 +477,10 @@ if (xDistToGoal - objP->info.xSize <= xMinDist) {
 	xDistToGoal = 0;
 	}
 else {
-	int32_t	nNewSeg;
-	fix	xRemDist = xDistToGoal - xMinDist,
-			xScale = (objP->info.xSize < xRemDist) ? objP->info.xSize : xRemDist;
-
-	if (xMinDist)
-		xScale /= 20;
 	//	Move one radius towards center.
-	vGoalDir *= xScale;
+	vGoalDir *= Min (FixMul (ROBOTINFO (objP->Id ()).xMaxSpeed [gameStates.app.nDifficultyLevel], gameData.time.xFrame), xDistToGoal - xMinDist);
 	objP->info.position.vPos += vGoalDir;
-	nNewSeg = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
+	int32_t nNewSeg = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 	if (nNewSeg == -1) {
 		objP->info.position.vPos = *vGoal;
 		MoveObjectToLegalSpot (objP, xMinDist > 0);

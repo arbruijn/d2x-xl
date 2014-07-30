@@ -1320,8 +1320,8 @@ else
 #endif
 	{
 	//	At end of line and have nowhere to go.
-	//MoveTowardsSegmentCenter (objP);
-	//if (!MoveObjectToLegalSpot (objP, 1))
+	MoveTowardsSegmentCenter (objP);
+	if (!MoveObjectToLegalSpot (objP, 1))
 		MoveObjectToLegalSpot (objP, 0);
 	CreatePathToStation (objP, 15);
 	}

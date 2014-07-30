@@ -367,6 +367,7 @@ return 0;
 
 void CObject::Unstick (void)
 {
+return;
 if (info.nType == OBJ_PLAYER) {
 	if ((info.nId == N_LOCALPLAYER) && (gameStates.app.cheats.bPhysics == 0xBADA55))
 		return;
@@ -1034,6 +1035,8 @@ void CObject::FinishPhysicsSim (CPhysSimData& simData)
 
 //	-----------------------------------------------------------------------------
 
+#if DBG
+
 void CheckObjPos (void)
 {
 if (nDbgObj != -1) {
@@ -1044,6 +1047,8 @@ if (nDbgObj != -1) {
 		BRP;
 	}
 }
+
+#endif
 
 //	-----------------------------------------------------------------------------
 
@@ -1072,7 +1077,7 @@ if (DoPhysicsSimRot () && ((info.nType == OBJ_PLAYER) || (info.nType == OBJ_ROBO
 		info.position.mOrient = mSaveOrient;
 	}
 
-#if 0
+#if 1
 static CPhysSimData simData3(0);
 static CFixVector vLastLastPos;
 static CFixVector vLastVel, vLastLastVel;
@@ -1224,7 +1229,7 @@ FinishPhysicsSim (simData);
 if (CriticalHit ())
 	RandomBump (I2X (1), I2X (8), true);
 
-#if 0 //DBG
+#if 1 //DBG
 if (Index () == nDbgObj) {
 	static int factor = 2;
 	static int bSound = 1;
