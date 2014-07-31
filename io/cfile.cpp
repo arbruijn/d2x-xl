@@ -1141,7 +1141,8 @@ return GetDiskFreeSpace (szFolder, &nSectorsPerCluster, &nBytesPerSector, &nNumb
 
 struct statvfs diskStats;
 
-statvfs (pszFolder, &diskStats);
+if (0 > statvfs (pszFolder, &diskStats))
+	return 0x7FFFFFFF;
 
 return int64_t (diskStats.f_bsize) * int64_t (diskStats.f_bfree)
 		 ? int64_t (diskStats.f_bsize) * int64_t (diskStats.f_bfree)
