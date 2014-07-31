@@ -256,9 +256,7 @@ return true;
 void CCreditsRenderer::Render (void)
 {
 	CFloatVector		colors [4] = {{{{1,1,1,1}}},{{{1,1,1,1}}},{{{1,1,1,1}}},{{{1,1,1,1}}}};
-
-
-
+	
 for (int32_t i = 0; i < ROW_SPACING; i += gameStates.menus.bHires + 1) {
 	backgroundManager.Draw (&m_background);
 	m_background.Activate ();
