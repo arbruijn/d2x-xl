@@ -226,7 +226,7 @@ else {
 		m.AddInput ("", text1, COOL_MESSAGE_LEN - 5);
 		m.Menu (TXT_HIGH_SCORE, TXT_YOU_PLACED_1ST);
 		strncpy (m_scores.szCoolSaying, text1, COOL_MESSAGE_LEN);
-		if (strlen (m_scores.szCoolSaying)<1)
+		if (strlen (m_scores.szCoolSaying) < 1)
 			sprintf (m_scores.szCoolSaying, TXT_NO_COMMENT);
 		} 
 	else {
@@ -347,7 +347,7 @@ ogl.Update (0);
 
 //------------------------------------------------------------------------------
 
-int32_t CScoreManager::HandleInput (int32_t nCurItem)
+int32_t CScoreManager::HandleInput (int32_t& nCurItem)
 {
 for (int32_t i = 0; i < 4; i++)
 	if (JoyGetButtonDownCnt (i) > 0) 
@@ -372,7 +372,19 @@ switch (k) {
 	case KEY_PRINT_SCREEN:		
 		SaveScreenShot (NULL, 0); 
 		break;
+
+#if DBG
+	case KEY_UP:
+		if (--nCurItem < 0)
+			nCurItem = MAX_HIGH_SCORES;
+		break;
 		
+	case KEY_DOWN:
+		if (++nCurItem >= MAX_HIGH_SCORES)
+			nCurItem = -1;
+		break;
+#endif
+
 	case KEY_ENTER:
 	case KEY_SPACEBAR:
 	case KEY_ESC:
@@ -395,17 +407,15 @@ backgroundManager.Setup (m_background, 640, 480, -BG_TOPMENU, -BG_SCORES);
 
 GameFlushInputs ();
 
-fix t0 = 0, t;
-
+int32_t t0 = 0;
 m_nFade = 0;
+m_bHilite = (nCurItem > -1);
 
 do {
-	m_bHilite = false;
-	if (nCurItem > -1) {
-		t	= SDL_GetTicks ();
-		if ((m_bHilite = (t - t0 >= 10)))
-			t0 = t;
-		}
+	int32_t t = SDL_GetTicks () - t0;
+	if (t < 4)
+		G3_SLEEP (4 - t);
+	t0 = SDL_GetTicks ();
 	Render (nCurItem);
 	redbook.CheckRepeat ();
 } while (HandleInput (nCurItem));

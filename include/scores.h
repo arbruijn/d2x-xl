@@ -70,7 +70,7 @@ class CScoreManager {
 		tStatsInfo	m_lastGame;
 		char			m_filename [FILENAME_LEN];
 		CBackground	m_background;
-		int32_t			m_nFade;
+		int32_t		m_nFade;
 		bool			m_bHilite;
 
 	public:
@@ -88,7 +88,7 @@ class CScoreManager {
 		void _CDECL_ RPrintF (int32_t x, int32_t y, const char * format, ...);
 		void RenderItem (int32_t i, tStatsInfo& stats);
 		void Render (int32_t nCurItem);
-		int32_t HandleInput (int32_t nCurItem);
+		int32_t HandleInput (int32_t& nCurItem);
 	};
 
 extern CScoreManager scoreManager;
