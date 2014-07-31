@@ -3253,19 +3253,13 @@ else {
 
 void NDStartRecording (void)
 {
-#if 1
-gameData.demo.nSize = 0;
-#else
 // free disk space shouldn't be an issue these days ...
-gameData.demo.nSize = GetDiskFree ();
-gameData.demo.nSize -= 100000;
-if ((gameData.demo.nSize+100000) <  2000000000) {
-	if (( (int32_t) (gameData.demo.nSize)) < 500000) {
-		TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_DEMO_NO_SPACE);
-		return;
-		}
+gameData.demo.nSize = FreeDiskSpace (gameFolders.user.szDemos) - 1000000;
+if (gameData.demo.nSize <= 1000000) {
+	TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_DEMO_NO_SPACE);
+	return;
 	}
-#endif
+
 InitDemoData ();
 gameData.demo.nWritten = 0;
 gameData.demo.bNoSpace = 0;

@@ -213,6 +213,8 @@ char* FlipBackslash (char* pszFile);
 char* FlipSlash (char* pszFile);
 char* AppendSlash (char* pszFile);
 
+int64_t FreeDiskSpace (const char* pszFolder);
+
 #ifdef _WIN32
 char *UnicodeToAsc (char *str, const wchar_t *w_str);
 wchar_t *AscToUnicode (wchar_t *w_str, const char *str);

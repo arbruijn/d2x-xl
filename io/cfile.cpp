@@ -1109,3 +1109,43 @@ return lineC;
 }
 
 // ----------------------------------------------------------------------------
+
+int64_t FreeDiskSpace (const char* pszFolder)
+{
+char szFolder [FILENAME_LEN];
+
+#ifdef _WIN32
+
+if (!pszFolder)
+	*szFolder = '\0';
+else {
+	size_t i;
+	for (i = strlen (pszFolder); i > 0; i--)
+		if (pszFolder [i - 1] == ':')
+			break;
+	strncpy (szFolder, pszFolder, i);
+	szFolder [i] = '\0';
+	}
+
+DWORD nSectorsPerCluster, nBytesPerSector, nNumberOfFreeClusters, nTotalNumberOfClusters;
+
+return GetDiskFreeSpace (szFolder, &nSectorsPerCluster, &nBytesPerSector, &nNumberOfFreeClusters, &nTotalNumberOfClusters)
+		 ? (int64_t) nNumberOfFreeClusters * (int64_t) nSectorsPerCluster * (int64_t) nBytesPerSector
+		 : 0x7FFFFFFF;
+
+#else
+
+#include <sys/statvfs.h>
+
+statvfs diskStats;
+
+statvfs (pszFolder, &diskStats);
+
+return int64_t (diskStats.f_bsize) * int64_t (diskStats.f_bfree)
+		 ? int64_t (diskStats.f_bsize) * int64_t (diskStats.f_bfree)
+		 : 0x7FFFFFFF;
+
+#endif
+}
+
+// ----------------------------------------------------------------------------

@@ -3333,37 +3333,37 @@ class CProducerData {
 
 class CDemoData {
 	public:
-		int32_t				bAuto;
+		int32_t			bAuto;
 		char				fnAuto [FILENAME_LEN];
 		CArray<int8_t>	bWasRecorded;
 		CArray<int8_t>	bViewWasRecorded;
-		int8_t				bRenderingWasRecorded [32];
+		int8_t			bRenderingWasRecorded [32];
 		char				callSignSave [CALLSIGN_LEN + 1];
-		int32_t				nVersion;
-		int32_t				nState;
-		int32_t				nVcrState;
-		int32_t				nStartFrame;
-		uint32_t				nSize;
-		uint32_t				nWritten;
-		int32_t				nGameMode;
-		int32_t				nOldCockpit;
-		int8_t				bNoSpace;
-		int8_t				bEof;
-		int8_t				bInterpolate;
-		int8_t				bPlayersCloaked;
-		int8_t				bWarningGiven;
-		int8_t				bCtrlcenDestroyed;
-		int32_t				nFrameCount;
-		int16_t				nFrameBytesWritten;
+		int32_t			nVersion;
+		int32_t			nState;
+		int32_t			nVcrState;
+		int32_t			nStartFrame;
+		int64_t			nSize;
+		int64_t			nWritten;
+		int32_t			nGameMode;
+		int32_t			nOldCockpit;
+		int8_t			bNoSpace;
+		int8_t			bEof;
+		int8_t			bInterpolate;
+		int8_t			bPlayersCloaked;
+		int8_t			bWarningGiven;
+		int8_t			bCtrlcenDestroyed;
+		int32_t			nFrameCount;
+		int16_t			nFrameBytesWritten;
 		fix				xStartTime;
 		fix				xPlaybackTotal;
 		fix				xRecordedTotal;
 		fix				xRecordedTime;
-		int8_t				nPlaybackStyle;
-		int8_t				bFirstTimePlayback;
+		int8_t			nPlaybackStyle;
+		int8_t			bFirstTimePlayback;
 		fix				xJasonPlaybackTotal;
-		int32_t				bUseShortPos;
-		int32_t				bFlyingGuided;
+		int32_t			bUseShortPos;
+		int32_t			bFlyingGuided;
 
 	public:
 		CDemoData () {memset (this, 0, sizeof (*this)); }
