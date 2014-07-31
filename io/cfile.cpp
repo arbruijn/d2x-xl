@@ -1110,11 +1110,15 @@ return lineC;
 
 // ----------------------------------------------------------------------------
 
+#ifndef _WIN32
+#	include <sys/statvfs.h>
+#endif
+
 int64_t FreeDiskSpace (const char* pszFolder)
 {
-char szFolder [FILENAME_LEN];
-
 #ifdef _WIN32
+
+	char szFolder [FILENAME_LEN];
 
 if (!pszFolder)
 	*szFolder = '\0';
@@ -1135,9 +1139,7 @@ return GetDiskFreeSpace (szFolder, &nSectorsPerCluster, &nBytesPerSector, &nNumb
 
 #else
 
-#include <sys/statvfs.h>
-
-statvfs diskStats;
+struct statvfs diskStats;
 
 statvfs (pszFolder, &diskStats);
 
