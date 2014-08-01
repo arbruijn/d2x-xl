@@ -769,7 +769,7 @@ else
 ogl.SetTransform (1);
 if (bAppearing) {
 	UnloadSphereShader ();
-	float scale = Min (1.0f, 1.0f - float (gameData.multiplayer.tAppearing [objP->Id ()][0]) * 0.25f / float (gameData.multiplayer.tAppearing [objP->Id ()][1]));
+	float scale = Min (1.0f, pow (1.0f - float (gameData.multiplayer.tAppearing [objP->Id ()][0]) / float (gameData.multiplayer.tAppearing [objP->Id ()][1]), 0.25f));
 	xScale *= scale;
 	yScale *= scale;
 	zScale *= scale;

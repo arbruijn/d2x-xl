@@ -230,7 +230,14 @@ UpdateFiringSounds ();
 void UpdatePlayerEffects (void)
 {
 for (int32_t nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {
-	if (gameData.multiplayer.tAppearing [nPlayer][0] > 0) {
+	if (gameData.multiplayer.tAppearing [nPlayer][0] < 0) {
+		gameData.multiplayer.tAppearing [nPlayer][0] += gameData.time.xFrame;
+		if (gameData.multiplayer.tAppearing [nPlayer][0] >= 0) {
+			gameData.multiplayer.tAppearing [nPlayer][0] = 1;
+			PLAYEROBJECT (nPlayer).CreateAppearanceEffect ();
+			}
+		}
+	else if (gameData.multiplayer.tAppearing [nPlayer][0] > 0) {
 		gameData.multiplayer.tAppearing [nPlayer][0] -= gameData.time.xFrame;
 		if (gameData.multiplayer.tAppearing [nPlayer][0] <= 0) {
 			if (nPlayer == N_LOCALPLAYER)

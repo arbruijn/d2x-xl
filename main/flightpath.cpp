@@ -79,8 +79,15 @@ if (!p)
 	*vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.f * PP_DELTAZ;
 else {
 	*vPos = p->vPos;
-	*vPos += p->mOrient.m.dir.f * (PP_DELTAZ * 2 / 3);
-	*vPos += p->mOrient.m.dir.u * (PP_DELTAY * 2 / 3);
+	if (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0] > 0) {
+		float fDist = Min (1.0f, 3.0f * float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0]) / float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][1]));
+		*vPos += p->mOrient.m.dir.f * fix (float (PP_DELTAZ) * fDist * 1.5f);
+		*vPos += p->mOrient.m.dir.u * fix (float (PP_DELTAY) * fDist * 0.6666667f);
+		}
+	else {
+		*vPos += p->mOrient.m.dir.f * (2 * PP_DELTAZ / 3);
+		*vPos += p->mOrient.m.dir.u * (2 * PP_DELTAY / 3);
+		}
 	}
 }
 

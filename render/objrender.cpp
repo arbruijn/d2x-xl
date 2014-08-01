@@ -740,7 +740,7 @@ if (bSpectate) {
 	objP->info.position = gameStates.app.playerPos;
 	}
 	if (gameData.multiplayer.tAppearing [objP->Id ()][0] > 0) {
-		fix xScale = F2X (Min (1.0f, 1.0f - float (gameData.multiplayer.tAppearing [objP->Id ()][0]) * 0.25f  / float (gameData.multiplayer.tAppearing [objP->Id ()][1])));
+		fix xScale = F2X (Min (1.0f, pow (1.0f - float (gameData.multiplayer.tAppearing [objP->Id ()][0]) / float (gameData.multiplayer.tAppearing [objP->Id ()][1]), 0.25f)));
 		gameData.models.vScale.Set (xScale, xScale, xScale);
 		}
 if (!DrawPolygonObject (objP, 0)) {

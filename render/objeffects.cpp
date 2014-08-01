@@ -102,23 +102,28 @@ fix flashDist = F2X (0.9f);
 //create flash for CPlayerData appearance
 void CObject::CreateAppearanceEffect (void)
 {
-	CFixVector	vPos = info.position.vPos;
+	bool bWarp = (Type () == OBJ_PLAYER) && gameOpts->render.effects.bWarpAppearance;
 
-if (this == gameData.objs.viewerP)
-	vPos += info.position.mOrient.m.dir.f * FixMul (info.xSize, flashDist);
-CObject* effectObjP = CreateExplosion (info.nSegment, vPos, info.xSize, VCLIP_PLAYER_APPEARANCE);
-if (effectObjP) {
-	effectObjP->info.position.mOrient = info.position.mOrient;
-	if (gameData.effects.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)
-		audio.CreateObjectSound (gameData.effects.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (effectObjP));
-	if ((Type () != OBJ_PLAYER) || !gameOpts->render.effects.bWarpAppearance)
-		postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP->LifeLeft (), info.xSize, 1, OBJPOS (this)->vPos));
-	else {
-		//effectObjP->SetLife (effectObjP->LifeLeft () * 2);
-		postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP->LifeLeft (), info.xSize * 2, 1, OBJPOS (this)->vPos));
-		gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = effectObjP->LifeLeft () * 2;
-		if (this == &LOCALOBJECT) 
-			SetChaseCam (1);
+if (bWarp && (gameData.multiplayer.tAppearing [Id ()][0] == 0))
+	gameData.multiplayer.tAppearing [Id ()][0] = -I2X (1) / 2;
+else {
+	CFixVector vPos = info.position.vPos;
+	if (this == gameData.objs.viewerP)
+		vPos += info.position.mOrient.m.dir.f * FixMul (info.xSize, flashDist);
+	CObject* effectObjP = CreateExplosion (info.nSegment, vPos, info.xSize, VCLIP_PLAYER_APPEARANCE);
+	if (effectObjP) {
+		effectObjP->info.position.mOrient = info.position.mOrient;
+		if (gameData.effects.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)
+			audio.CreateObjectSound (gameData.effects.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (effectObjP));
+		if (!bWarp)
+			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP->LifeLeft (), info.xSize, 1, OBJPOS (this)->vPos));
+		else {
+			//effectObjP->SetLife (effectObjP->LifeLeft () * 2);
+			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP->LifeLeft (), info.xSize * 2, 1, OBJPOS (this)->vPos));
+			gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = effectObjP->LifeLeft () * 2;
+			if (this == &LOCALOBJECT) 
+				SetChaseCam (1);
+			}
 		}
 	}
 }

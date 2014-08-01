@@ -299,13 +299,12 @@ do {
 		m.AddCheck ("static smoke", TXT_SMOKE_STATIC, gameOpts->render.particles.bStatic, KEY_X, HTX_ADVRND_STATICSMOKE);
 		m.AddCheck ("gatling trails", TXT_GATLING_TRAILS, extraGameInfo [0].bGatlingTrails, KEY_G, HTX_GATLING_TRAILS);
 		}
-
 	if ((gameOptions [0].render.nQuality > 2) && (gameOpts->app.bExpertMode == SUPERUSER)) {
-		m.AddText ("", "");
 		m.AddCheck (softParticleIds [0], TXT_SOFT_SPRITES, gameOpts->SoftBlend (SOFT_BLEND_SPRITES) != 0, KEY_I, HTX_SOFT_SPRITES);
 		m.AddCheck (softParticleIds [1], TXT_SOFT_PARTICLES, gameOpts->SoftBlend (SOFT_BLEND_PARTICLES) != 0, KEY_A, HTX_SOFT_PARTICLES);
 		}
 	m.AddCheck ("warp appearance", TXT_WARP_APPEARANCE, gameOpts->render.effects.bWarpAppearance, KEY_W, HTX_WARP_APPEARANCE);
+
 	if (gameOpts->app.bExpertMode && extraGameInfo [0].bUseParticles) {
 		m.AddText ("", "");
 		m.AddMenu ("smoke details", TXT_SMOKE_DETAILS, KEY_D, HTX_SMOKE_DETAILS);
