@@ -739,9 +739,15 @@ if (bSpectate) {
 	savePos = objP->info.position;
 	objP->info.position = gameStates.app.playerPos;
 	}
-//DoObjectSmoke (objP);
-if (!DrawPolygonObject (objP, 0))
+	if (gameData.multiplayer.tAppearing [objP->Id ()][0] > 0) {
+		fix xScale = F2X (Min (1.0f, 1.0f - float (gameData.multiplayer.tAppearing [objP->Id ()][0]) * 0.25f  / float (gameData.multiplayer.tAppearing [objP->Id ()][1])));
+		gameData.models.vScale.Set (xScale, xScale, xScale);
+		}
+if (!DrawPolygonObject (objP, 0)) {
+	gameData.models.vScale.SetZero ();
 	return 0;
+	}
+gameData.models.vScale.SetZero ();
 gameOpts->ogl.bLightObjects = bDynObjLight;
 thrusterFlames.Render (objP);
 RenderPlayerShield (objP);

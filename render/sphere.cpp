@@ -743,7 +743,7 @@ int32_t CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float
 #else
 	int32_t	bAppearing = (objP->info.nType == OBJ_PLAYER) && (gameData.multiplayer.tAppearing [objP->Id ()][0] > 0);
 	int32_t	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
-	int32_t	bGlow = (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
+	int32_t	bGlow = !bAppearing && (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
 #endif
 
 CFixVector vPos;
@@ -755,7 +755,7 @@ else
 #endif
 	bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, &fScale);
 ogl.SetDepthMode (GL_LEQUAL);
-if (bGlow && !bAppearing) {
+if (bGlow) {
 	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 	glowRenderer.Begin (GLOW_SHIELDS, 2, false, 0.85f);
 	if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, 4 * xScale / 3)) {
@@ -769,12 +769,12 @@ else
 ogl.SetTransform (1);
 if (bAppearing) {
 	UnloadSphereShader ();
-	float scale = 1.0f - float (gameData.multiplayer.tAppearing [objP->Id ()][0]) / float (gameData.multiplayer.tAppearing [objP->Id ()][1]);
+	float scale = Min (1.0f, 1.0f - float (gameData.multiplayer.tAppearing [objP->Id ()][0]) * 0.25f / float (gameData.multiplayer.tAppearing [objP->Id ()][1]));
 	xScale *= scale;
 	yScale *= scale;
 	zScale *= scale;
 	}
-if (!bEffect)
+else if (!bEffect)
 	UnloadSphereShader ();
 else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
 	if (!SetupSphereShader (objP, alpha)) {

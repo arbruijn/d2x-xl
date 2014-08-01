@@ -305,6 +305,7 @@ do {
 		m.AddCheck (softParticleIds [0], TXT_SOFT_SPRITES, gameOpts->SoftBlend (SOFT_BLEND_SPRITES) != 0, KEY_I, HTX_SOFT_SPRITES);
 		m.AddCheck (softParticleIds [1], TXT_SOFT_PARTICLES, gameOpts->SoftBlend (SOFT_BLEND_PARTICLES) != 0, KEY_A, HTX_SOFT_PARTICLES);
 		}
+	m.AddCheck ("warp appearance", TXT_WARP_APPEARANCE, gameOpts->render.bWarpAppearance, KEY_W, HTX_WARP_APPEARANCE);
 	if (gameOpts->app.bExpertMode && extraGameInfo [0].bUseParticles) {
 		m.AddText ("", "");
 		m.AddMenu ("smoke details", TXT_SMOKE_DETAILS, KEY_D, HTX_SMOKE_DETAILS);
@@ -338,6 +339,7 @@ do {
 		}
 	GET_VAL (gameOpts->render.effects.bEnabled, "enable fx");
 	GET_VAL (gameOpts->render.particles.bStatic, "static smoke");
+	GET_VAL (gameOpts->render.bWarpAppearance, "warp appearance");
 	GET_VAL (extraGameInfo [0].bGatlingTrails, "gatling trails");
 	if ((extraGameInfo [0].bLightTrails = (nLightTrails != 0)))
 		gameOpts->render.particles.bPlasmaTrails = (nLightTrails == 2);

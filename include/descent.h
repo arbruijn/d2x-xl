@@ -380,6 +380,7 @@ typedef struct tEffectRenderOptions {
 	int32_t bSoftParticles;
 	int32_t bMovingSparks;
 	int32_t bGlow;
+	int32_t bWarpAppearance;
 } tEffectRenderOptions;
 
 //------------------------------------------------------------------------------
