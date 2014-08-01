@@ -752,7 +752,7 @@ CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 
 void CLightningManager::CreateForTeleport (CObject* objP, CFloatVector *colorP, float fRodScale)
 {
 if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bExplosions) {
-	int32_t h = X2I (objP->info.xSize) * 2;
+	int32_t h = X2I (objP->info.xSize) * 4;
 
 	Create (
 		(int32_t) FRound ((h + rand () % h) * fRodScale), &objP->info.position.vPos, NULL, NULL, -1, int32_t (500 * X2F (objP->LifeLeft ())), 0,
@@ -764,7 +764,11 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bExplosions) {
 
 void CLightningManager::CreateForPlayerTeleport (CObject* objP)
 {
+#if 0
+static CFloatVector color = {{{0.25f, 0.125f, 0.0f, 0.2f}}};
+#else
 static CFloatVector color = {{{0.0f, 0.125f, 0.25f, 0.2f}}};
+#endif
 
 CreateForTeleport (objP, &color);
 }
