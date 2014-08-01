@@ -942,6 +942,7 @@ gameData.render.mine.bCalcVertexColor.Clear (0);
 memset (gameData.multiplayer.weaponStates, 0, sizeof (gameData.multiplayer.weaponStates));
 memset (gameData.multiplayer.bWasHit, 0, sizeof (gameData.multiplayer.bWasHit));
 memset (gameData.multiplayer.nLastHitTime, 0, sizeof (gameData.multiplayer.nLastHitTime));
+memset (gameData.multiplayer.tAppearing, 0, sizeof (gameData.multiplayer.tAppearing));
 memset (gameData.weapons.firing, 0, sizeof (gameData.weapons.firing));
 gameData.objs.objects.Clear ();
 lightClusterManager.Init ();

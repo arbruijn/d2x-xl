@@ -734,13 +734,14 @@ delete[] rotSphereP;
 // -----------------------------------------------------------------------------
 
 int32_t CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float yScale, float zScale,
-							float red, float green, float blue, float alpha, CBitmap *bmP, int32_t nTiles, char bAdditive)
+								 float red, float green, float blue, float alpha, CBitmap *bmP, int32_t nTiles, char bAdditive)
 {
 	float	fScale = 1.0f;
 	int32_t	bTextured = 0;
 #if 0 //DBG
 	int32_t	bEffect = 0;
 #else
+	int32_t	bAppearing = (objP->info.nType == OBJ_PLAYER) && (gameData.multiplayer.tAppearing [objP->Id ()][0] > 0);
 	int32_t	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
 	int32_t	bGlow = (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
 #endif
@@ -754,25 +755,26 @@ else
 #endif
 	bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, &fScale);
 ogl.SetDepthMode (GL_LEQUAL);
-#if ADDITIVE_SPHERE_BLENDING
-ogl.SetBlendMode (bGlow ? OGL_BLEND_REPLACE : bAdditive);
-#else
-ogl.SetBlendMode (OGL_BLEND_ALPHA);
-#endif
-if (bGlow) {
+if (bGlow && !bAppearing) {
+	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 	glowRenderer.Begin (GLOW_SHIELDS, 2, false, 0.85f);
 	if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, 4 * xScale / 3)) {
 		glowRenderer.Done (GLOW_SHIELDS);
 		return 0;
 		}
 	}
+else
+	ogl.SetBlendMode (bAdditive);
 #if RINGED_SPHERE
-#if 1
 ogl.SetTransform (1);
+if (bAppearing) {
+	UnloadSphereShader ();
+	float scale = 1.0f - float (gameData.multiplayer.tAppearing [objP->Id ()][0]) / float (gameData.multiplayer.tAppearing [objP->Id ()][1]);
+	xScale *= scale;
+	yScale *= scale;
+	zScale *= scale;
+	}
 if (!bEffect)
-#else
-if (ogl.m_states.bUseTransform = !bEffect)
-#endif
 	UnloadSphereShader ();
 else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
 	if (!SetupSphereShader (objP, alpha)) {

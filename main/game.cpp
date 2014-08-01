@@ -972,6 +972,7 @@ if (IsMultiGame) {
 #if PHYSICS_FPS < 0
 PROF_CONT
 DoEffectsFrame ();
+UpdatePlayerEffects ();
 PROF_END(ptGameStates)
 #endif
 

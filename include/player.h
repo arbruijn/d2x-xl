@@ -427,6 +427,7 @@ int32_t EquippedPlayerGun (CObject *objP);
 int32_t EquippedPlayerBomb (CObject *objP);
 int32_t EquippedPlayerMissile (CObject *objP, int32_t *nMissiles);
 void UpdatePlayerWeaponInfo (void);
+void UpdatePlayerEffects (void);
 
 extern tShipModifier shipModifiers [MAX_SHIP_TYPES];
 

@@ -2744,11 +2744,12 @@ class CMultiplayerData {
 		tObjPosition						playerInit [MAX_PLAYERS];
 		int16_t								nVirusCapacity [MAX_PLAYERS];
 		int32_t								nLastHitTime [MAX_PLAYERS];
+		int32_t								tAppearing [MAX_PLAYERS][2];
 		CWeaponState						weaponStates [MAX_PLAYERS];
 		char									bWasHit [MAX_PLAYERS];
 		int32_t								bulletEmitters [MAX_PLAYERS];
 		int32_t					 			gatlingSmoke [MAX_PLAYERS];
-		CPulseData						spherePulse [MAX_PLAYERS];
+		CPulseData							spherePulse [MAX_PLAYERS];
 		CStaticArray< uint16_t, MAX_POWERUP_TYPES >	powerupsInMine; //[MAX_POWERUP_TYPES];
 		CStaticArray< uint16_t, MAX_POWERUP_TYPES >	powerupsOnShip; //[MAX_POWERUP_TYPES];
 		CStaticArray< uint16_t, MAX_POWERUP_TYPES >	maxPowerupsAllowed; //[MAX_POWERUP_TYPES];

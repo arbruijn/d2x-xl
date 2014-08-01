@@ -10,6 +10,7 @@
 
 #include "descent.h"
 #include "input.h"
+#include "renderlib.h"
 #include "network.h"
 #include "marker.h"
 
@@ -222,6 +223,22 @@ if (wsP->xMslFireTime != gameData.missiles.xNextFireTime) {
 	wsP->xMslFireTime = gameData.missiles.xNextFireTime;
 	}
 UpdateFiringSounds ();
+}
+
+//------------------------------------------------------------------------------
+
+void UpdatePlayerEffects (void)
+{
+for (int32_t nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {
+	if (gameData.multiplayer.tAppearing [nPlayer][0] > 0) {
+		gameData.multiplayer.tAppearing [nPlayer][0] -= gameData.time.xFrame;
+		if (gameData.multiplayer.tAppearing [nPlayer][0] <= 0) {
+			if (nPlayer == N_LOCALPLAYER)
+				SetChaseCam (0);
+			gameData.multiplayer.tAppearing [nPlayer][0] = 0;
+			}
+		}
+	}
 }
 
 //------------------------------------------------------------------------------

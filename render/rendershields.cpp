@@ -188,7 +188,7 @@ ogl.SetDepthMode (GL_LESS);
 
 void RenderPlayerShield (CObject *objP)
 {
-	int32_t			bStencil, dt = 0, i = objP->info.nId, nColor = 0;
+	int32_t		bStencil, dt = 0, i = objP->info.nId, nColor = 0;
 	float			alpha, scale = 1;
 	tCloakInfo	ci;
 
@@ -199,7 +199,9 @@ if (!SHOW_OBJ_FX)
 if (SHOW_SHADOWS &&
 	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 1) : (gameStates.render.nShadowPass != 3)))
 	return;
-if (EGI_FLAG (nShieldEffect, 0, 1, gameOpts->render.effects.bShields)) {
+
+bool bAppearing = gameData.multiplayer.tAppearing [objP->Id ()][0] > 0;
+if (bAppearing || EGI_FLAG (nShieldEffect, 0, 1, gameOpts->render.effects.bShields)) {
 	if (PLAYER (i).flags & PLAYER_FLAGS_CLOAKED) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))
 			return;
@@ -226,14 +228,16 @@ if (EGI_FLAG (nShieldEffect, 0, 1, gameOpts->render.effects.bShields)) {
 		return;
 #	endif
 #endif
-	if (PLAYER (i).flags & PLAYER_FLAGS_INVULNERABLE)
+	if (bAppearing)
+		nColor = 1;
+	else if (PLAYER (i).flags & PLAYER_FLAGS_INVULNERABLE)
 		nColor = 2;
 	else if (gameData.multiplayer.bWasHit [i])
 		nColor = 1;
 	else
 		nColor = 0;
 	if (gameData.multiplayer.bWasHit [i]) {
-		alpha = (gameOpts->render.effects.bOnlyShieldHits ? (float) cos (sqrt ((double) dt / float (SHIELD_EFFECT_TIME)) * PI / 2) : 1);
+		alpha = ((!bAppearing && gameOpts->render.effects.bOnlyShieldHits) ? (float) cos (sqrt ((double) dt / float (SHIELD_EFFECT_TIME)) * PI / 2) : 1);
 		scale *= alpha;
 		}
 	else if (PLAYER (i).flags & PLAYER_FLAGS_INVULNERABLE)
