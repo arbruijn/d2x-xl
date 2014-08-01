@@ -708,19 +708,23 @@ for (CObjectIterator iter (objP); objP; objP = prevObjP ? iter.Step () : iter.St
 		continue;
 	if (!(objP->info.nFlags & OF_SHOULD_BE_DEAD))
 		continue;
-	//Assert ((objP->info.nType != OBJ_FIREBALL) || (objP->cType.explInfo.nDeleteTime == -1));
-	if (objP->info.nType != OBJ_PLAYER) {
-		CObject* prevObjP = iter.Back ();
-		ReleaseObject (objP->Index ());
-
-		}
-	else {
+	if (objP->info.nType == OBJ_PLAYER) {
 		if (objP->info.nId == N_LOCALPLAYER) {
 			if (nLocalDeadPlayerObj == -1) {
 				StartPlayerDeathSequence (objP);
 				nLocalDeadPlayerObj = objP->Index ();
 				}
 			}
+		}
+	else {
+		CObject* prevObjP = iter.Back ();
+		if ((objP->info.nType == OBJ_ROBOT) ||
+			 (objP->info.nType == OBJ_DEBRIS) ||	// exploded robot
+			 (objP->info.nType == OBJ_REACTOR) ||
+			 (objP->info.nType == OBJ_POWERUP) ||
+			 (objP->info.nType == OBJ_HOSTAGE))
+			ExecObjTriggers (objP->Index (), 0);
+		ReleaseObject (objP->Index ());
 		}
 	}
 }

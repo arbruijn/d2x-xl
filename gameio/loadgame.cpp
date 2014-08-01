@@ -338,8 +338,6 @@ void GameStartRemoveUnusedPlayers (void)
 {
 	int32_t i;
 
-	// 'Remove' the unused players
-
 if (IsMultiGame) {
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 		if (!PLAYER (i).connected || (i >= N_PLAYERS))

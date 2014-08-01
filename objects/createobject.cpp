@@ -755,12 +755,6 @@ if (objP->info.nType == OBJ_DEBRIS)
 	gameData.objs.nDebris--;
 OBJECTS [nObject].UnlinkFromSeg ();
 Assert (OBJECTS [0].info.nNextInSeg != 0);
-if ((objP->info.nType == OBJ_ROBOT) ||
-	 (objP->info.nType == OBJ_DEBRIS) ||	// exploded robot
-	 (objP->info.nType == OBJ_REACTOR) ||
-	 (objP->info.nType == OBJ_POWERUP) ||
-	 (objP->info.nType == OBJ_HOSTAGE))
-	ExecObjTriggers (nObject, 0);
 objP->info.nSignature = -1;
 objP->info.nSegment = -1;				// zero it!
 try {
