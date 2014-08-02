@@ -365,8 +365,8 @@ switch (k) {
 				CFile::Delete (GetFilename (), gameFolders.game.szData [0]);
 				paletteManager.DisableEffect ();
 				Load ();
+				}
 			}
-		}
 		break;
 
 	case KEY_PRINT_SCREEN:		
