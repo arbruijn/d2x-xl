@@ -777,9 +777,11 @@ if (bAppearing) {
 	UnloadSphereShader ();
 	float scale = objP->AppearanceScale ();
 	scale = Min (1.0f, (float) pow (1.0f - scale, 0.25f));
-	//xScale *= scale;
-	//yScale *= scale;
-	//zScale *= scale;
+#if 1
+	xScale *= scale;
+	yScale *= scale;
+	zScale *= scale;
+#endif
 	}
 else if (!bEffect)
 	UnloadSphereShader ();
