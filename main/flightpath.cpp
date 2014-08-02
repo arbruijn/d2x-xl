@@ -83,7 +83,7 @@ else {
 	*vPos = p->vPos;
 	if (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0] != 0) {
 		float fDist = (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0] > 0)
-						  ? Min (1.0f, 3.0f * float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0]) / float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][1]))
+						  ? Min (1.0f, 4.0f * float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0]) / float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][1]))
 						  : 1.0f; //1.0f - float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0]) / float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][1]);
 		if (!p->bFlipped) {
 			p->bFlipped = true;
