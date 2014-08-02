@@ -745,6 +745,8 @@ FORALL_WEAPON_OBJS (bombP) {
 	vBombPos = &bombP->info.position.vPos;
 	i = bombP->Index ();
 	FORALL_ACTOR_OBJS (actorP) {
+		if ((actorP->Type () != OBJ_PLAYER) && (actorP->Type () != OBJ_ROBOT))
+			continue;
 		j = actorP->Index ();
 		if (j == nParentObj) 
 			continue;
