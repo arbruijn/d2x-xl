@@ -90,7 +90,7 @@ else {
 			p->mOrient.m.dir.f.Neg ();
 			p->mOrient.m.dir.r.Neg ();
 		}
-		*vPos += p->mOrient.m.dir.f * fix (float (PP_DELTAZ) * fDist * 2.0f);
+		*vPos += p->mOrient.m.dir.f * fix (float (PP_DELTAZ) * fDist * 1.5f);
 		*vPos += p->mOrient.m.dir.u * fix (float (PP_DELTAY) * fDist * 0.6666667f);
 		}
 	else {
