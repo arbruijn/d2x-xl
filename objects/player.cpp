@@ -240,8 +240,9 @@ for (int32_t nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {
 	else if (gameData.multiplayer.tAppearing [nPlayer][0] > 0) {
 		gameData.multiplayer.tAppearing [nPlayer][0] -= gameData.time.xFrame;
 		if (gameData.multiplayer.tAppearing [nPlayer][0] <= 0) {
-			if (nPlayer == N_LOCALPLAYER)
+			if (nPlayer == N_LOCALPLAYER) {
 				SetChaseCam (0);
+				}
 			gameData.multiplayer.tAppearing [nPlayer][0] = 0;
 			}
 		}

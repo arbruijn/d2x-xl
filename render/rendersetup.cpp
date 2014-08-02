@@ -141,6 +141,10 @@ else {
 			FLIGHTPATH.GetViewPoint ();
 			if (FLIGHTPATH.Tail ())
 				mView = FLIGHTPATH.Tail ()->mOrient;
+			else if (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0] != 0) {
+				mView.m.dir.f.Neg ();
+				mView.m.dir.r.Neg ();
+				}
 			}
 		else {
 			if (transformation.m_info.bUsePlayerHeadAngles) {

@@ -31,11 +31,13 @@ if (m_nSize && ((m_tUpdate < 0) || (t >= m_tRefresh))) {
 	m_tUpdate = t;
 //	h = m_nEnd;
 	m_nEnd = (m_nEnd + 1) % m_nSize;
-	m_path [m_nEnd].vOrgPos = objP->info.position.vPos;
-	m_path [m_nEnd].vPos = objP->info.position.vPos;
-	m_path [m_nEnd].mOrient = objP->info.position.mOrient;
-	m_path [m_nEnd].vPos += objP->info.position.mOrient.m.dir.f * 0;
-	m_path [m_nEnd].vPos += objP->info.position.mOrient.m.dir.u * 0;
+	tPathPoint& p = m_path [m_nEnd];
+	p.vOrgPos = objP->info.position.vPos;
+	p.vPos = objP->info.position.vPos;
+	p.mOrient = objP->info.position.mOrient;
+	p.vPos += objP->info.position.mOrient.m.dir.f * 0;
+	p.vPos += objP->info.position.mOrient.m.dir.u * 0;
+	p.bFlipped = false;
 //	if (!memcmp (m_path + h, m_path + m_nEnd, sizeof (tMovementPath)))
 //		m_nEnd = h;
 //	else
@@ -79,9 +81,16 @@ if (!p)
 	*vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.f * PP_DELTAZ;
 else {
 	*vPos = p->vPos;
-	if (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0] > 0) {
-		float fDist = Min (1.0f, 3.0f * float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0]) / float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][1]));
-		*vPos += p->mOrient.m.dir.f * fix (float (PP_DELTAZ) * fDist * 1.5f);
+	if (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0] != 0) {
+		float fDist = (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0] > 0)
+						  ? Min (1.0f, 3.0f * float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0]) / float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][1]))
+						  : 1.0f; //1.0f - float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0]) / float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][1]);
+		if (!p->bFlipped) {
+			p->bFlipped = true;
+			p->mOrient.m.dir.f.Neg ();
+			p->mOrient.m.dir.r.Neg ();
+		}
+		*vPos += p->mOrient.m.dir.f * fix (float (PP_DELTAZ) * fDist * 2.0f);
 		*vPos += p->mOrient.m.dir.u * fix (float (PP_DELTAY) * fDist * 0.6666667f);
 		}
 	else {

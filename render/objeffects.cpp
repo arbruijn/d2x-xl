@@ -54,11 +54,11 @@ if (IsTeamGame && (PLAYER (objP->info.nId).flags & PLAYER_FLAGS_FLAG)) {
 
 		CFixVector		vPos = objP->info.position.vPos;
 		CFloatVector	vPosf, verts [4];
-		tFlagData		*pf = gameData.pig.flags + !GetTeam (objP->info.nId);
-		tPathPoint		*pp = pf->path.GetPoint ();
-		int32_t				i, bStencil;
+		tFlagData*		pf = gameData.pig.flags + !GetTeam (objP->info.nId);
+		tPathPoint*		pp = pf->path.GetPoint ();
+		int32_t			i, bStencil;
 		float				r;
-		CBitmap		*bmP;
+		CBitmap*			bmP;
 
 	if (pp) {
 		bStencil = ogl.StencilOff ();
@@ -104,8 +104,12 @@ void CObject::CreateAppearanceEffect (void)
 {
 	bool bWarp = (Type () == OBJ_PLAYER) && gameOpts->render.effects.bWarpAppearance;
 
-if (bWarp && (gameData.multiplayer.tAppearing [Id ()][0] == 0))
-	gameData.multiplayer.tAppearing [Id ()][0] = -I2X (1) / 2;
+if (bWarp && (gameData.multiplayer.tAppearing [Id ()][0] == 0)) {
+	gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = -I2X (1);
+	if (this == &LOCALOBJECT) {
+		SetChaseCam (1);
+		}
+	}
 else {
 	CFixVector vPos = info.position.vPos;
 	if (this == gameData.objs.viewerP)
@@ -121,8 +125,6 @@ else {
 			//effectObjP->SetLife (effectObjP->LifeLeft () * 2);
 			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP->LifeLeft (), info.xSize * 2, 1, OBJPOS (this)->vPos));
 			gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = effectObjP->LifeLeft () * 2;
-			if (this == &LOCALOBJECT) 
-				SetChaseCam (1);
 			}
 		}
 	}

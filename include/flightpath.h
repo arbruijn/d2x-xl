@@ -22,6 +22,7 @@ typedef struct tPathPoint {
 	CFixVector			vPos;
 	CFixVector			vOrgPos;
 	CFixMatrix			mOrient;
+	bool					bFlipped;
 } tPathPoint;
 
 class CFlightPath {
@@ -33,6 +34,7 @@ class CFlightPath {
 		int32_t					m_nEnd;
 		time_t					m_tRefresh;
 		time_t					m_tUpdate;
+
 	public:
 		CFlightPath ();
 		void Update (CObject *objP);

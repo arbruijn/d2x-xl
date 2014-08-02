@@ -731,7 +731,8 @@ return bOk;
 
 static int32_t RenderPlayerModel (CObject* objP, int32_t bSpectate)
 {
-int32_t bDynObjLight = (gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
+if (gameData.multiplayer.tAppearing [objP->Id ()][0] < 0)
+	return 0;
 if (automap.Active () && !(OBSERVING || (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId))))
 	return 0;
 tObjTransformation savePos;
@@ -748,7 +749,7 @@ if (!DrawPolygonObject (objP, 0)) {
 	return 0;
 	}
 gameData.models.vScale.SetZero ();
-gameOpts->ogl.bLightObjects = bDynObjLight;
+gameOpts->ogl.bLightObjects = (gameOpts->ogl.bObjLighting) || gameOpts->ogl.bLightObjects;
 thrusterFlames.Render (objP);
 RenderPlayerShield (objP);
 RenderTargetIndicator (objP, NULL);
