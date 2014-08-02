@@ -606,10 +606,17 @@ for (h = 0; h < m_nTriangles; h++, triP++, grsTriP++) {
 		}
 	grsTriP->nIndex = nIndex;
 	memcpy (grsTriP->index, triP->index, sizeof (triP->index));
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 3; i++) {
+#if DBG
+		if (nIndex + i >= FACES.vertices.Length ())
+			BRP;
+#endif
 		FACES.vertices [nIndex + i].Assign (gameData.segs.fVertices [triP->index [i]]);
+		}
 	FACES.normals [nIndex] = CFloatVector3::Normal (FACES.vertices [nIndex], FACES.vertices [nIndex + 1], FACES.vertices [nIndex + 2]);
 #if DBG
+		if (nIndex >= FACES.normals.Length ())
+			BRP;
 	if (FACES.normals [nIndex].Mag () == 0)
 		BRP;
 #endif
@@ -682,10 +689,10 @@ for (int32_t i = gameData.segs.nSegments; i; i--, segFaceP++) {
 
 void CTriMeshBuilder::CreateFaceVertLists (void)
 {
-	int32_t*				bTags = new int32_t [gameData.segs.nVertices];
+	int32_t*			bTags = new int32_t [gameData.segs.nVertices];
 	CSegFace*		faceP;
 	tFaceTriangle*	triP;
-	int32_t				h, i, j, k, nFace;
+	int32_t			h, i, j, k, nFace;
 
 //count the vertices of each face
 memset (bTags, 0xFF, gameData.segs.nVertices * sizeof (bTags [0]));
@@ -705,6 +712,8 @@ for (i = FACES.nFaces, faceP = FACES.faces.Buffer (), nFace = 0; i; i--, faceP++
 	}
 //insert each face's vertices' indices in the vertex index buffer
 memset (bTags, 0xFF, gameData.segs.nVertices * sizeof (bTags [0]));
+if (gameData.segs.nFaceVerts > FACES.faceVerts.Length ())
+	FACES.faceVerts.Resize (gameData.segs.nFaceVerts);
 gameData.segs.nFaceVerts = 0;
 for (i = FACES.nFaces, faceP = FACES.faces.Buffer (), nFace = 0; i; i--, faceP++, nFace++) {
 	faceP->triIndex = FACES.faceVerts + gameData.segs.nFaceVerts;
