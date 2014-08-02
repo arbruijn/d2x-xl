@@ -64,16 +64,15 @@ if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves)
 	return NULL;
 if (SPECTATOR (this))
 	return NULL;
-bool bAppearing = Appearing (false);
 nObject = CreateFireball (0, info.nSegment, info.position.vPos, info.xSize, RT_EXPLBLAST);
 if (nObject < 0)
 	return NULL;
 objP = OBJECTS + nObject;
-objP->SetLife (bAppearing ? BLAST_LIFE * 4 : BLAST_LIFE);
+objP->SetLife (BLAST_LIFE);
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
-objP->SetSize (bAppearing ? info.xSize * 4 : info.xSize);
+objP->SetSize (info.xSize);
 objP->info.xSize /= 3;
 if (IsMissile ()) {
 	if ((Id () == EARTHSHAKER_ID) || (Id () == ROBOT_EARTHSHAKER_ID))

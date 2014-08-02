@@ -984,6 +984,7 @@ class CObject : public CObjectInfo {
 		inline void SetLife (fix xLife) { UpdateLife (m_xTotalLife = xLife); }
 #endif
 		inline fix LifeLeft (void) { return info.xLifeLeft; }
+		inline fix TotalLife (void) { return m_xTotalLife; }
 
 		inline int32_t& WayPointId (void) { return cType.wayPointInfo.nId [1]; }
 		inline int32_t& NextWayPoint (void) { return cType.wayPointInfo.nSuccessor [0]; }

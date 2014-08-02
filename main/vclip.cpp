@@ -153,9 +153,6 @@ if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION))
 
 void DrawExplBlast (CObject *objP)
 {
-	float			fLife, fAlpha;
-	fix			xSize;
-	CFixVector	vPos, vDir;
 #if BLAST_TYPE == 1
 	int32_t			i;
 	fix			xSize2;
@@ -177,18 +174,23 @@ if (objP->info.xLifeLeft <= 0)
 	return;
 if (!explBlast.Load ())
 	return;
-fLife = X2F (BLAST_LIFE * 2 - objP->info.xLifeLeft);
-xSize = (fix) (objP->info.xSize * fLife * BLAST_SCALE);
-vPos = objP->info.position.vPos;
+float fScale = 1.0f - X2F (objP->LifeLeft ()) / X2F (objP->TotalLife ());
+fix xSize = objP->info.xSize + (fix) ((float) objP->info.xSize * fScale * 12);
+CFixVector vPos = objP->info.position.vPos;
 #if MOVE_BLAST
-vDir = gameData.objs.consoleP->info.position.vPos - vPos;
+CFixVector vViewPos;
+if (gameStates.render.bChaseCam)
+	FLIGHTPATH.GetViewPoint (&vViewPos);
+else
+	vViewPos = OBJPOS (gameData.objs.consoleP)->vPos;
+CFixVector vDir = vViewPos - vPos;
 CFixVector::Normalize (vDir);
 vDir *= (xSize - objP->info.xSize);
 vPos += vDir;
 #endif
 ogl.SetDepthWrite (false);
 #if BLAST_TYPE == 0
-fAlpha = (float) sqrt (X2F (objP->info.xLifeLeft) * 3);
+float fAlpha = (float) sqrt (fScale);
 color.Red () =
 color.Green () =
 color.Blue () =

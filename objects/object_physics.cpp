@@ -68,7 +68,7 @@ if (!gameStates.app.bNostalgia && (!EGI_FLAG (nDrag, 0, 0, 0) || !EGI_FLAG (bWig
 	return;
 if ((Index () == LOCALPLAYER.nObject) && automap.Active ())
 	return;
-if (Appearing ())
+if (Appearing (false))
 	return;
 nParent = gameData.objs.parentObjs [Index ()];
 parentP = (nParent < 0) ? NULL : OBJECTS + nParent;

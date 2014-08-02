@@ -743,7 +743,7 @@ if (Index () == nDbgObj)
 
 void CObject::SetLife (fix xLife)
 {
-SetLife (m_xTotalLife = xLife);
+UpdateLife (m_xTotalLife = xLife);
 }
 
 #endif

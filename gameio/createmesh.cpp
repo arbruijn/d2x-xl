@@ -712,7 +712,7 @@ for (i = FACES.nFaces, faceP = FACES.faces.Buffer (), nFace = 0; i; i--, faceP++
 	}
 //insert each face's vertices' indices in the vertex index buffer
 memset (bTags, 0xFF, gameData.segs.nVertices * sizeof (bTags [0]));
-if (gameData.segs.nFaceVerts > FACES.faceVerts.Length ())
+if ((uint32_t) gameData.segs.nFaceVerts > FACES.faceVerts.Length ())
 	FACES.faceVerts.Resize (gameData.segs.nFaceVerts);
 gameData.segs.nFaceVerts = 0;
 for (i = FACES.nFaces, faceP = FACES.faces.Buffer (), nFace = 0; i; i--, faceP++, nFace++) {

@@ -105,8 +105,7 @@ void CObject::CreateAppearanceEffect (void)
 	bool bWarp = (Type () == OBJ_PLAYER) && gameOpts->render.effects.bWarpAppearance;
 
 if (bWarp && !AppearanceStage ()) {
-	gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = -I2X (1);
-	CreateExplBlast ();
+	gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = -I2X (1) / 2;
 	if (this == &LOCALOBJECT) {
 		SetChaseCam (1);
 		}
@@ -124,7 +123,8 @@ else {
 			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP->LifeLeft (), info.xSize, 1, OBJPOS (this)->vPos));
 		else {
 			//effectObjP->SetLife (effectObjP->LifeLeft () * 2);
-			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP->LifeLeft (), info.xSize * 2, 1, OBJPOS (this)->vPos));
+			CreateExplBlast ();
+			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP->LifeLeft () * 2, info.xSize, 1, OBJPOS (this)->vPos));
 			gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = effectObjP->LifeLeft () * 2;
 			}
 		}
