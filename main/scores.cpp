@@ -389,7 +389,6 @@ switch (k) {
 	case KEY_SPACEBAR:
 	case KEY_ESC:
 		return 0;
-		break;
 	}
 return 1;
 }
