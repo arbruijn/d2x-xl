@@ -53,26 +53,27 @@ void DropStolenItems (CObject *objP);
 
 CObject *CObject::CreateExplBlast (void)
 {
-#if DBG
+#if 0 //DBG
 return NULL;
 #endif
 
-	int16_t		nObject;
-	CObject	*objP;
+	int16_t	nObject;
+	CObject*	objP;
 
 if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves))
 	return NULL;
 if (SPECTATOR (this))
 	return NULL;
+bool bAppearing = Appearing (false);
 nObject = CreateFireball (0, info.nSegment, info.position.vPos, info.xSize, RT_EXPLBLAST);
 if (nObject < 0)
 	return NULL;
 objP = OBJECTS + nObject;
-objP->SetLife (BLAST_LIFE);
+objP->SetLife (bAppearing ? BLAST_LIFE * 4 : BLAST_LIFE);
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
-objP->SetSize (info.xSize);
+objP->SetSize (bAppearing ? info.xSize * 4 : info.xSize);
 objP->info.xSize /= 3;
 if (IsMissile ()) {
 	if ((Id () == EARTHSHAKER_ID) || (Id () == ROBOT_EARTHSHAKER_ID))
@@ -149,7 +150,7 @@ explObjP = OBJECTS + nObject;
 //now set explosion-specific data
 explObjP->SetLife (gameData.effects.vClips [0][nVClip].xTotalTime);
 if ((nVClip != VCLIP_MORPHING_ROBOT) && 
-	 (nVClip != VCLIP_PLAYER_APPEARANCE) &&
+	 //(nVClip != VCLIP_PLAYER_APPEARANCE) &&
 	 (nVClip != VCLIP_POWERUP_DISAPPEARANCE) &&
 	 (nVClip != VCLIP_AFTERBURNER_BLOB)) {
 	explObjP->SetMoveDist (2 * explObjP->info.xSize);
@@ -602,7 +603,7 @@ if (delayTime) {		//wait a little while before creating explosion
 		}
 	CObject *objP = OBJECTS + nObject;
 	//now set explosion-specific data
-	objP->SetLife (delayTime);
+	objP->UpdateLife (delayTime);
 	objP->cType.explInfo.nDeleteObj = OBJ_IDX (this);
 #if DBG
 	if (objP->cType.explInfo.nDeleteObj < 0)
@@ -658,7 +659,7 @@ void CObject::DoExplosionSequence (void)
 Assert (info.controlType == CT_EXPLOSION);
 //See if we should die of old age
 if (info.xLifeLeft <= 0) {	// We died of old age
-	SetLife (0);
+	UpdateLife (0);
 	Die ();
 	}
 if (info.renderType == RT_EXPLBLAST)
@@ -679,8 +680,8 @@ if (m_xMoveTime) {
 	}
 //See if we should create a secondary explosion
 if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj >= 0)) {
-	CObject		*explObjP, *delObjP;
-	uint8_t			nVClip;
+	CObject*		explObjP, *delObjP;
+	uint8_t		nVClip;
 	CFixVector*	vSpawnPos;
 	fix			xSplashDamage;
 

@@ -615,7 +615,7 @@ return (objP->info.xSize && SideMasks (nSide, objP->info.position.vPos, objP->in
 int32_t CSegment::DoorIsBlocked (int32_t nSide, bool bIgnoreMarker)
 {
 	int16_t		nConnSide;
-	CSegment *connSegP;
+	CSegment*	connSegP;
 	int16_t		nObject, nType;
 
 connSegP = SEGMENTS + m_children [nSide];

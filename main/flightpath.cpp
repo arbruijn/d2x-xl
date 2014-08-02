@@ -81,10 +81,11 @@ if (!p)
 	*vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.f * PP_DELTAZ;
 else {
 	*vPos = p->vPos;
-	if (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0] != 0) {
-		float fDist = (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0] > 0)
-						  ? Min (1.0f, 4.0f * float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0]) / float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][1]))
-						  : 1.0f; //1.0f - float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][0]) / float (gameData.multiplayer.tAppearing [N_LOCALPLAYER][1]);
+	int32_t nStage = LOCALOBJECT.AppearanceStage ();
+	if (nStage) {
+		float fDist = (nStage > 0)
+						  ? Min (1.0f, 4.0f * LOCALOBJECT.AppearanceScale ())
+						  : 1.0f; //1.0f - LOCALOBJECT.AppearanceScale ();
 		if (!p->bFlipped) {
 			p->bFlipped = true;
 			p->mOrient.m.dir.f.Neg ();

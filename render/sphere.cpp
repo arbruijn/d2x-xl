@@ -741,7 +741,7 @@ int32_t CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float
 #if 0 //DBG
 	int32_t	bEffect = 0;
 #else
-	int32_t	bAppearing = (objP->info.nType == OBJ_PLAYER) && (gameData.multiplayer.tAppearing [objP->Id ()][0] > 0);
+	int32_t	bAppearing = objP->Appearing ();
 	int32_t	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
 	int32_t	bGlow = !bAppearing && (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
 #endif
@@ -769,7 +769,7 @@ else
 ogl.SetTransform (1);
 if (bAppearing) {
 	UnloadSphereShader ();
-	float scale = Min (1.0f, (float) pow (1.0f - float (gameData.multiplayer.tAppearing [objP->Id ()][0]) / float (gameData.multiplayer.tAppearing [objP->Id ()][1]), 0.25f));
+	float scale = Min (1.0f, (float) pow (1.0f - objP->AppearanceScale (), 0.25f));
 	xScale *= scale;
 	yScale *= scale;
 	zScale *= scale;

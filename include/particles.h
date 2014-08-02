@@ -236,34 +236,34 @@ class CParticle : public tParticle {
 typedef struct tParticleEmitter {
 	char					m_nType;				//smoke/light trail (corona)
 	char					m_nClass;
-	int32_t					m_nLife;				//max. particle life time
-	int32_t					m_nBirth;			//time of creation
-	int32_t					m_nSpeed;			//initial particle speed
-	int32_t					m_nParts;			//curent no. of particles
-	int32_t					m_nFirstPart;
-	int32_t					m_nMaxParts;		//max. no. of particles
+	int32_t				m_nLife;				//max. particle life time
+	int32_t				m_nBirth;			//time of creation
+	int32_t				m_nSpeed;			//initial particle speed
+	int32_t				m_nParts;			//curent no. of particles
+	int32_t				m_nFirstPart;
+	int32_t				m_nMaxParts;		//max. no. of particles
 	//int32_t					m_nDensity;			//density (opaqueness) of particle emitter
 	float					m_fPartsPerTick;
-	int32_t					m_nTicks;
-	int32_t					m_nPartsPerPos;	//particles per interpolated position mutiplier of moving objects
-	int32_t					m_nPartLimit;		//highest max. part. no ever set for this emitter
+	int32_t				m_nTicks;
+	int32_t				m_nPartsPerPos;	//particles per interpolated position mutiplier of moving objects
+	int32_t				m_nPartLimit;		//highest max. part. no ever set for this emitter
 	float					m_fScale;
-	int32_t					m_nDefBrightness;
+	int32_t				m_nDefBrightness;
 	float					m_fBrightness;
-	int32_t					m_nMoved;			//time last moved
-	int16_t					m_nSegment;
-	int32_t					m_nObject;
-	int16_t					m_nObjType;
-	int16_t					m_nObjId;
+	int32_t				m_nMoved;			//time last moved
+	int16_t				m_nSegment;
+	int32_t				m_nObject;
+	int16_t				m_nObjType;
+	int16_t				m_nObjId;
 	CFixMatrix			m_mOrient;
 	CFixVector			m_vDir;
 	CFixVector			m_vPos;				//initial particle position
 	CFixVector			m_vPrevPos;			//initial particle position
 	CFixVector			m_vEmittingFace [4];
-	uint8_t					m_bHaveDir;			//movement direction given?
-	uint8_t					m_bHavePrevPos;	//valid previous position set?
+	uint8_t				m_bHaveDir;			//movement direction given?
+	uint8_t				m_bHavePrevPos;	//valid previous position set?
 	CArray<CParticle>	m_particles;		//list of active particles
-	CFloatVector			m_color;
+	CFloatVector		m_color;
 	char					m_bHaveColor;
 	char					m_bBlowUpParts;	//blow particles up at their "birth"
 	char					m_bEmittingFace;
@@ -306,16 +306,16 @@ class CParticleEmitter : public tParticleEmitter {
 
 typedef struct tParticleSystem {
 	CArray<CParticleEmitter>	m_emitters;		//list of active emitters
-	int32_t								m_nId;
-	int32_t								m_nSignature;
-	int32_t								m_nBirth;			//time of creation
-	int32_t								m_nLife;				//max. particle life time
-	int32_t								m_nSpeed;			//initial particle speed
-	int32_t								m_nEmitters;		//number of separate particle emitters
-	int32_t								m_nMaxEmitters;	//max. no. of emitters
-	int32_t								m_nObject;
-	int16_t								m_nObjType;
-	int16_t								m_nObjId;
+	int32_t							m_nId;
+	int32_t							m_nSignature;
+	int32_t							m_nBirth;			//time of creation
+	int32_t							m_nLife;				//max. particle life time
+	int32_t							m_nSpeed;			//initial particle speed
+	int32_t							m_nEmitters;		//number of separate particle emitters
+	int32_t							m_nMaxEmitters;	//max. no. of emitters
+	int32_t							m_nObject;
+	int16_t							m_nObjType;
+	int16_t							m_nObjId;
 	bool								m_bDestroy;
 	char								m_bValid;
 	char								m_nType;				//black or white

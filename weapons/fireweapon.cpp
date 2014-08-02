@@ -467,10 +467,7 @@ return HOMINGMSL_STRAIGHT_TIME * nMslSlowDown [(int32_t) extraGameInfo [IsMultiG
 bool CObject::RemoveWeapon (void)
 {
 if (LifeLeft () == ONE_FRAME_TIME) {
-	if (IsMultiGame)
-		SetLife (OMEGA_MULTI_LIFELEFT);
-	else
-		SetLife (0);
+	UpdateLife (IsMultiGame ? OMEGA_MULTI_LIFELEFT : 0);
 	info.renderType = RT_NONE;
 	return true;
 	}

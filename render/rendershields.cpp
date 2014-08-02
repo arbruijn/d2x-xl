@@ -200,7 +200,7 @@ if (SHOW_SHADOWS &&
 	 (FAST_SHADOWS ? (gameStates.render.nShadowPass != 1) : (gameStates.render.nShadowPass != 3)))
 	return;
 
-bool bAppearing = gameData.multiplayer.tAppearing [objP->Id ()][0] > 0;
+bool bAppearing = objP->Appearing ();
 if (bAppearing || EGI_FLAG (nShieldEffect, 0, 1, gameOpts->render.effects.bShields)) {
 	if (PLAYER (i).flags & PLAYER_FLAGS_CLOAKED) {
 		if (!GetCloakInfo (objP, 0, 0, &ci))

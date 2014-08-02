@@ -754,7 +754,7 @@ FORALL_WEAPON_OBJS (bombP) {
 		if (dist - actorP->info.xSize >= I2X (20))
 			continue;
 		if (bombP->info.nSegment == actorP->info.nSegment)
-			bombP->SetLife (1);
+			bombP->UpdateLife (1);
 		else {
 			//	Object which is close enough to detonate smart mine is not in same CSegment as smart mine.
 			//	Need to do a more expensive check to make sure there isn't an obstruction.
@@ -763,7 +763,7 @@ FORALL_WEAPON_OBJS (bombP) {
 				CHitResult	hitResult;
 				int32_t fate = FindHitpoint (hitQuery, hitResult);
 				if (fate != HIT_WALL)
-					bombP->SetLife (1);
+					bombP->UpdateLife (1);
 				}
 			}
 		}

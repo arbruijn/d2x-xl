@@ -208,8 +208,8 @@ if (objP->info.nType == OBJ_MONSTERBALL) {
 	}
 else if ((objP->rType.vClipInfo.nClipIndex >= -MAX_ADDON_BITMAP_FILES) && (objP->rType.vClipInfo.nClipIndex < MAX_VCLIPS)) {
 	if ((objP->info.nId < MAX_POWERUP_TYPES_D2) || ((objP->info.nType == OBJ_EXPLOSION) && (objP->info.nId < MAX_VCLIPS))) {
-			tBitmapIndex	*frameP = gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].frames;
-			int32_t				iFrame = objP->rType.vClipInfo.nCurFrame;
+			tBitmapIndex*	frameP = gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].frames;
+			int32_t			iFrame = objP->rType.vClipInfo.nCurFrame;
 		DrawObjectBitmap (objP, frameP->index, frameP [iFrame].index, iFrame, NULL, 0);
 		}
 	else {

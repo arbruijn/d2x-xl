@@ -868,6 +868,7 @@ class CObject : public CObjectInfo {
 #endif
 		uint8_t			m_nTracers;
 		fix				m_xCreationTime;
+		fix				m_xTotalLife;
 		fix				m_xMoveTime; // move object explosions out of their origin towards the viewer during the explosion's life time
 		fix				m_xMoveDist;
 		fix				m_xTimeLastHit;
@@ -977,8 +978,10 @@ class CObject : public CObjectInfo {
 		inline int16_t Segment (void) { return info.nSegment; }
 #if DBG
 		void SetLife (fix xLife);
+		void UpdateLife (fix xLife);
 #else
-		inline void SetLife (fix xLife) { info.xLifeLeft = xLife; }
+		inline void UpdateLife (fix xLife) { info.xLifeLeft = xLife; }
+		inline void SetLife (fix xLife) { UpdateLife (m_xTotalLife = xLife); }
 #endif
 		inline fix LifeLeft (void) { return info.xLifeLeft; }
 
@@ -1202,6 +1205,9 @@ class CObject : public CObjectInfo {
 		fix ModelRadius (int32_t i);
 		fix PowerupSize (void);
 
+		bool Appearing (bool bVisible = true);
+		int32_t AppearanceStage (void);
+		float AppearanceScale (void);
 		inline bool Synchronize (void) { return m_bSynchronize; }
 		inline void StartSync (void) { m_bSynchronize = true; }
 		inline void StopSync (void) { m_bSynchronize = false; }

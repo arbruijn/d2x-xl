@@ -104,8 +104,9 @@ void CObject::CreateAppearanceEffect (void)
 {
 	bool bWarp = (Type () == OBJ_PLAYER) && gameOpts->render.effects.bWarpAppearance;
 
-if (bWarp && (gameData.multiplayer.tAppearing [Id ()][0] == 0)) {
+if (bWarp && !AppearanceStage ()) {
 	gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = -I2X (1);
+	CreateExplBlast ();
 	if (this == &LOCALOBJECT) {
 		SetChaseCam (1);
 		}

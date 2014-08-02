@@ -161,10 +161,10 @@ if (explBlast.Load ())
 int32_t CShrapnelCloud::Create (CObject* parentObjP, CObject* objP)
 {
 	float		fScale = float (sqrt (X2F (parentObjP->info.xSize))) * 1.25f;
-	int32_t		i, 
+	int32_t	i, 
 				h = (int32_t) FRound (fScale * fShrapnelScale [gameOpts->render.effects.nShrapnels]);
 
-objP->SetLife (0);
+objP->UpdateLife (0);
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
@@ -183,7 +183,7 @@ fScale = 7.0f / fScale;
 #endif
 for (i = 0; i < h; i++) 
 	m_data.buffer [i].Create (parentObjP, objP, 3.0f);
-objP->info.xLifeLeft *= 2;
+objP->SetLife (objP->LifeLeft  () * 2);
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDeleteObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;

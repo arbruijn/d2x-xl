@@ -68,7 +68,7 @@ if (!gameStates.app.bNostalgia && (!EGI_FLAG (nDrag, 0, 0, 0) || !EGI_FLAG (bWig
 	return;
 if ((Index () == LOCALPLAYER.nObject) && automap.Active ())
 	return;
-if ((Type () == OBJ_PLAYER) && (gameData.multiplayer.tAppearing [Id ()][0] != 0))
+if (Appearing ())
 	return;
 nParent = gameData.objs.parentObjs [Index ()];
 parentP = (nParent < 0) ? NULL : OBJECTS + nParent;
@@ -124,7 +124,7 @@ void CObject::ApplyFlightControls (void)
 if (gameData.time.xFrame <= 0)
 	return;
 
-if ((Type () == OBJ_PLAYER) && (gameData.multiplayer.tAppearing [Id ()][0] != 0))
+if (Appearing ())
 	return;
 
 if (gameStates.app.bPlayerIsDead || gameStates.app.bEnterGame) {

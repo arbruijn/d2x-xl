@@ -1986,6 +1986,31 @@ if (botInfoP->energyDrain && LOCALPLAYER.Energy ()) {
 }
 
 //------------------------------------------------------------------------------
+
+bool CObject::Appearing (bool bVisible)
+{
+int32_t nStage = AppearanceStage ();
+return (nStage != 0) && (!bVisible || (nStage > 0)); 
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CObject::AppearanceStage (void)
+{
+if (Type () != OBJ_PLAYER)
+	return 0;
+int32_t t = gameData.multiplayer.tAppearing [Id ()][0];
+return (t < 0) ? -1 : (t > 0) ? 1 : 0;
+}
+
+//------------------------------------------------------------------------------
+
+float CObject::AppearanceScale (void)
+{
+return Appearing () ? float (gameData.multiplayer.tAppearing [Id ()][0]) / float (gameData.multiplayer.tAppearing [Id ()][1]) : 1.0f;
+}
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 

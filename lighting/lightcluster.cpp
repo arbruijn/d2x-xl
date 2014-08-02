@@ -50,7 +50,7 @@ if (!m_bUse)
 
 FORALL_LIGHT_OBJS (objP)
 	if ((objP->info.nType == OBJ_LIGHT) && (objP->info.nId == CLUSTER_LIGHT_ID)) {
-		objP->SetLife (0);
+		objP->UpdateLife (0);
 		memset (&objP->cType.lightInfo, 0, sizeof (objP->cType.lightInfo));
 		}
 }
@@ -134,7 +134,7 @@ if (lightObjP->info.nSignature != m_objects [nObject].nSignature) {
 	}
 CObject *objP = OBJECTS + nObject;
 if (lightObjP->LifeLeft () < objP->LifeLeft ())
-	lightObjP->SetLife (objP->LifeLeft ());
+	lightObjP->UpdateLife (objP->LifeLeft ());
 if (!lightObjP->cType.lightInfo.nObjects++) {
 	lightObjP->Position () = objP->Position ();
 	lightObjP->cType.lightInfo.nSegment = objP->Segment ();

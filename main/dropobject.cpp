@@ -656,7 +656,7 @@ switch (nType) {
 			case POW_ENERGY:
 				objP->SetLife ((RandShort () + I2X (3)) * 64);		//	Lives for 3 to 3.5 binary minutes (a binary minute is 64 seconds)
 				if (IsMultiGame)
-					objP->info.xLifeLeft /= 2;
+					objP->SetLife (objP->LifeLeft () / 2);
 				break;
 			default:
 //						if (IsMultiGame)

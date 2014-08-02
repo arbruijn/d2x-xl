@@ -1471,8 +1471,8 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 		//	Make a copy of this weaponP, because the physics wants to destroy it.
 		if ((weaponP->info.nType == OBJ_WEAPON) && !WI_matter (weaponP->info.nId)) {
 			int16_t nClone = CreateObject (weaponP->info.nType, weaponP->info.nId, -1, weaponP->info.nSegment, weaponP->info.position.vPos,
-												  weaponP->info.position.mOrient, weaponP->info.xSize, 
-												  weaponP->info.controlType, weaponP->info.movementType, weaponP->info.renderType);
+												    weaponP->info.position.mOrient, weaponP->info.xSize, 
+												    weaponP->info.controlType, weaponP->info.movementType, weaponP->info.renderType);
 			if (nClone != -1) {
 				CObject	*cloneP = OBJECTS + nClone;
 				if (weaponP->info.renderType == RT_POLYOBJ) {
@@ -1983,7 +1983,7 @@ if (!gameData.weapons.info [info.nId].xDamageRadius)
 	return 0;
 fix xDist = CFixVector::Dist (info.position.vPos, otherP->info.position.vPos);
 if (xDist >= I2X (5))
-	SetLife (Min (xDist / 64, I2X (1)));
+	Life (Min (xDist / 64, I2X (1)));
 else {
 	MaybeKillWeapon (otherP);
 	if (info.nFlags & OF_SHOULD_BE_DEAD) {

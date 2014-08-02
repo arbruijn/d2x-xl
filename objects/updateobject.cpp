@@ -448,7 +448,7 @@ if (IsGuidedMissile (N_LOCALPLAYER)) {
 		if (nConnSide != -1) {
 			CTrigger* trigP = SEGMENTS [nPrevSegment].Trigger (nConnSide);
 			if (trigP && (trigP->m_info.nType == TT_EXIT))
-				gameData.objs.guidedMissile [N_LOCALPLAYER].objP->SetLife (0);
+				gameData.objs.guidedMissile [N_LOCALPLAYER].objP->UpdateLife (0);
 			}
 		}
 	}
@@ -569,7 +569,7 @@ if (info.nType == OBJ_ROBOT) {
 		ApplyDamageToRobot (info.xShield + I2X (1), -1);
 #else
 		SetShield (0);
-		SetLife (0);
+		UpdateLife (0);
 		Die ();
 #endif
 		}
@@ -732,12 +732,20 @@ for (CObjectIterator iter (objP); objP; objP = prevObjP ? iter.Step () : iter.St
 //	-----------------------------------------------------------------------------------------------------------
 
 #if DBG
-void CObject::SetLife (fix xLife)
+
+void CObject::UpdateLife (fix xLife)
 {
 info.xLifeLeft = xLife;
 if (Index () == nDbgObj)
 	BRP;
 }
+
+
+void CObject::SetLife (fix xLife)
+{
+SetLife (m_xTotalLife = xLife);
+}
+
 #endif
 
 //	-----------------------------------------------------------------------------------------------------------

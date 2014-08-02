@@ -112,9 +112,9 @@ void DrawVClipObject (CObject *objP, fix timeToLive, int32_t bLit, int32_t nVCli
 {
 	double		ta = 0, alpha = 0;
 	tVideoClip*	vcP = gameData.effects.vClips [0] + nVClip;
-	int32_t			nFrames = SetupHiresVClip (vcP, &objP->rType.vClipInfo);
-	int32_t			iFrame = CurFrame (objP, nVClip, timeToLive, nFrames);
-	int32_t			bThruster = (objP->info.renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
+	int32_t		nFrames = SetupHiresVClip (vcP, &objP->rType.vClipInfo);
+	int32_t		iFrame = CurFrame (objP, nVClip, timeToLive, nFrames);
+	int32_t		bThruster = (objP->info.renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
 
 if ((iFrame < 0) || (iFrame >= VCLIP_MAX_FRAMES))
 	return;

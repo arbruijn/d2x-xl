@@ -575,7 +575,7 @@ if (gameStates.render.bHaveSkyBox && (info.nType == OBJ_WEAPON) && (simData.hitR
 	if (SEGMENTS [simData.hitResult.nSegment].m_function == SEGMENT_FUNC_SKYBOX) { // allow missiles and shots to leave the level and enter a skybox
 		int16_t nConnSeg = SEGMENTS [simData.hitResult.nSegment].m_children [simData.hitResult.nSide];
 		if ((nConnSeg < 0) && (info.xLifeLeft > I2X (1))) {	//leaving the mine
-			info.xLifeLeft = 0;
+			UpdateLife (0);
 			info.nFlags |= OF_SHOULD_BE_DEAD;
 			}
 		simData.hitResult.nType = HIT_NONE;
@@ -1671,7 +1671,7 @@ retryMove:
 				if (SEGMENTS [simData.hitResult.nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
 					int16_t nConnSeg = SEGMENTS [simData.hitResult.nSegment].m_children [simData.hitResult.nSide];
 					if ((nConnSeg < 0) && (info.xLifeLeft > I2X (1))) {	//leaving the mine
-						info.xLifeLeft = 0;
+						UpdateLife (0);
 						info.nFlags |= OF_SHOULD_BE_DEAD;
 						}
 					simData.hitResult.nType = HIT_NONE;

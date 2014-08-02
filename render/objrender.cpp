@@ -731,7 +731,7 @@ return bOk;
 
 static int32_t RenderPlayerModel (CObject* objP, int32_t bSpectate)
 {
-if (gameData.multiplayer.tAppearing [objP->Id ()][0] < 0)
+if (objP->AppearanceStage () < 0)
 	return 0;
 if (automap.Active () && !(OBSERVING || (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId))))
 	return 0;
@@ -740,8 +740,8 @@ if (bSpectate) {
 	savePos = objP->info.position;
 	objP->info.position = gameStates.app.playerPos;
 	}
-	if (gameData.multiplayer.tAppearing [objP->Id ()][0] > 0) {
-		fix xScale = F2X (Min (1.0f, (float) pow (1.0f - float (gameData.multiplayer.tAppearing [objP->Id ()][0]) / float (gameData.multiplayer.tAppearing [objP->Id ()][1]), 0.25f)));
+	if (objP->Appearing ()) {
+		fix xScale = F2X (Min (1.0f, (float) pow (1.0f - objP->AppearanceScale (), 0.25f)));
 		gameData.models.vScale.Set (xScale, xScale, xScale);
 		}
 if (!DrawPolygonObject (objP, 0)) {

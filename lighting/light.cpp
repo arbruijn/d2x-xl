@@ -214,12 +214,12 @@ return false;
 void ApplyLight (fix xObjIntensity, int32_t nObjSeg, CFixVector *vObjPos, int32_t nRenderVertices,
 					  CArray<int16_t>& renderVertices,	int32_t nObject, CFloatVector *color)
 {
-	int32_t				iVertex, bUseColor, bForceColor;
-	int32_t				nVertex;
-	uint8_t				nObjType;
-	CFixVector		*vVertPos;
+	int32_t			iVertex, bUseColor, bForceColor;
+	int32_t			nVertex;
+	uint8_t			nObjType;
+	CFixVector*		vVertPos;
 	fix				dist, xOrigIntensity = xObjIntensity;
-	CObject*		objP = (nObject < 0) ? NULL : OBJECTS + nObject;
+	CObject*			objP = (nObject < 0) ? NULL : OBJECTS + nObject;
 	CPlayerData*	playerP = objP ? gameData.multiplayer.players + objP->info.nId : NULL;
 
 nObjType = objP ? objP->info.nType : OBJ_NONE;
