@@ -598,10 +598,10 @@ OglDrawArrays (nPrimitive, 0, nItems);
 
 void CSphere::RenderRings (float fRadius, int32_t nRings, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nTiles)
 {
-	int32_t				nCull, h, i, j, nQuads;
+	int32_t			nCull, h, i, j, nQuads;
 	CFloatVector	p [2 * MAX_SPHERE_RINGS + 2];
 	tTexCoord2f		tc [2 * MAX_SPHERE_RINGS + 2];
-	tSphereVertex	*svP [2];
+	tSphereVertex*	svP [2];
 
 if (nRings > MAX_SPHERE_RINGS)
 	nRings = MAX_SPHERE_RINGS;
@@ -743,11 +743,17 @@ int32_t CSphere::Render (CObject* objP, CFloatVector *vPosP, float xScale, float
 #else
 	int32_t	bAppearing = objP->Appearing ();
 	int32_t	bEffect = (objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT);
-	int32_t	bGlow = !bAppearing && (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
+	int32_t	bGlow = /*!bAppearing &&*/ (bAdditive != 0) && glowRenderer.Available (GLOW_SHIELDS);
 #endif
 
 CFixVector vPos;
 PolyObjPos (objP, &vPos);
+if (bAppearing) {
+	float scale = objP->AppearanceScale ();
+	red *= scale;
+	green *= scale;
+	blue *= scale;
+	}
 #if !RINGED_SPHERE
 if (m_nFaceNodes == 3)
 	bmP = NULL;
@@ -769,10 +775,11 @@ else
 ogl.SetTransform (1);
 if (bAppearing) {
 	UnloadSphereShader ();
-	float scale = Min (1.0f, (float) pow (1.0f - objP->AppearanceScale (), 0.25f));
-	xScale *= scale;
-	yScale *= scale;
-	zScale *= scale;
+	float scale = objP->AppearanceScale ();
+	scale = Min (1.0f, (float) pow (1.0f - scale, 0.25f));
+	//xScale *= scale;
+	//yScale *= scale;
+	//zScale *= scale;
 	}
 else if (!bEffect)
 	UnloadSphereShader ();
@@ -790,7 +797,7 @@ RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();
 ogl.ResetTransform (0);
 ogl.SetTransform (0);
-if (bGlow)
+if (bGlow) 
 	glowRenderer.Done (GLOW_SHIELDS);
 #else
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);

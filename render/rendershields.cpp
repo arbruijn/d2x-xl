@@ -224,7 +224,7 @@ if (bAppearing || EGI_FLAG (nShieldEffect, 0, 1, gameOpts->render.effects.bShiel
 		}
 #if !RENDER_HITBOX
 #	if DBG == 0
-	if (gameOpts->render.effects.bOnlyShieldHits && !gameData.multiplayer.bWasHit [i])
+	if (!bAppearing && (gameOpts->render.effects.bOnlyShieldHits && !gameData.multiplayer.bWasHit [i]))
 		return;
 #	endif
 #endif

@@ -114,18 +114,19 @@ else {
 	CFixVector vPos = info.position.vPos;
 	if (this == gameData.objs.viewerP)
 		vPos += info.position.mOrient.m.dir.f * FixMul (info.xSize, flashDist);
-	CObject* effectObjP = CreateExplosion (info.nSegment, vPos, info.xSize, VCLIP_PLAYER_APPEARANCE);
-	if (effectObjP) {
-		effectObjP->info.position.mOrient = info.position.mOrient;
-		if (gameData.effects.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)
-			audio.CreateObjectSound (gameData.effects.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (effectObjP));
+	CObject* effectObjP = /*bWarp ? NULL :*/ CreateExplosion (info.nSegment, vPos, info.xSize, VCLIP_PLAYER_APPEARANCE);
+	if (bWarp || effectObjP) {
+		if (effectObjP) {
+			effectObjP->info.position.mOrient = info.position.mOrient;
+			if (gameData.effects.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)
+				audio.CreateObjectSound (gameData.effects.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (effectObjP));
+			}
 		if (!bWarp)
-			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP->LifeLeft (), info.xSize, 1, OBJPOS (this)->vPos));
+			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP ? effectObjP->LifeLeft () : I2X (1), info.xSize, 1, OBJPOS (this)->vPos));
 		else {
-			//effectObjP->SetLife (effectObjP->LifeLeft () * 2);
 			CreateExplBlast ();
-			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP->LifeLeft () * 2, info.xSize, 1, OBJPOS (this)->vPos));
-			gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = effectObjP->LifeLeft () * 2;
+			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), /*effectObjP ? effectObjP->LifeLeft () : */I2X (1), info.xSize, 1, OBJPOS (this)->vPos));
+			gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = (/*effectObjP ? effectObjP->LifeLeft () :*/ I2X (1)) * 2;
 			}
 		}
 	}
