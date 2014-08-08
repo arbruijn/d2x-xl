@@ -469,7 +469,7 @@ static int32_t octaves = 6;
 void CLightning::CreatePath (int32_t nDepth, int32_t nThread)
 {
 	CLightningNode*	plh, * nodeP [2];
-	int32_t					h, i, j, nFrames, nStyle, nSmoothe, bClamp, nMinDist, nAmplitude, bPrevOffs [2] = {0,0};
+	int32_t				h, i, j, nFrames, nStyle, nSmoothe, bClamp, nMinDist, nAmplitude, bPrevOffs [2] = {0,0};
 	CFixVector			vPos [2], vBase [2], vPrevOffs [2];
 
 vBase [0] = vPos [0] = m_vPos;
@@ -561,9 +561,9 @@ if (nStyle < 2) {
 
 void CLightning::Animate (int32_t nDepth, int32_t nThread)
 {
-	CLightningNode	*nodeP;
+	CLightningNode*	nodeP;
 	int32_t				j;
-	bool				bInit;
+	bool					bInit;
 
 m_nTTL -= gameStates.app.tick40fps.nTime;
 if (m_nNodes > 0) {
@@ -927,7 +927,7 @@ if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 	ogl.SetTexturing (false);
 	glColor4fv ((GLfloat*) colorP);
 	GLfloat w = nDepth ? m_width / 2.0f : m_width; // DEFAULT_CORE_WIDTH : DEFAULT_CORE_WIDTH * 1.5f;
-	ComputeDistScale (100.0f);
+	//ComputeDistScale (100.0f);
 	if (glowRenderer.Available (GLOW_LIGHTNING) && (m_fDistScale != 0.0f)) 
 		w *= 2.0f * m_fDistScale;
 	glLineWidth ((w > 1.0f) ? w : 1.0f);
@@ -1007,6 +1007,7 @@ if (m_nLife > 0) {
 color.Red () *= (float) (0.9 + RandDouble () / 5);
 color.Green () *= (float) (0.9 + RandDouble () / 5);
 color.Blue () *= (float) (0.9 + RandDouble () / 5);
+ComputeDistScale (100.0f);
 if ((bGlow = (m_fDistScale > 0.0f) && SetupGlow ()) && glowRenderer.Available (GLOW_LIGHTNING))
 	glBlendEquation (GL_MAX);
 else

@@ -77,18 +77,18 @@ class CLightningSettings {
 		CFixVector	vPos;
 		CFixVector	vEnd;
 		CFixVector	vDelta;
-		int32_t			nBolts;
-		int32_t			nLife;
-		int32_t			nFrames;
+		int32_t		nBolts;
+		int32_t		nLife;
+		int32_t		nFrames;
 	};
 
 //------------------------------------------------------------------------------
 
 int32_t CLightningManager::Create (int32_t nBolts, CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
-										 int16_t nObject, int32_t nLife, int32_t nDelay, int32_t nLength, int32_t nAmplitude,
-										 char nAngle, int32_t nOffset, int16_t nNodes, int16_t nChildren, char nDepth, int16_t nFrames,
-										 int16_t nSmoothe, char bClamp, char bGlow, char bSound, char bLight,
-										 char nStyle, float nWidth, CFloatVector *colorP)
+											  int16_t nObject, int32_t nLife, int32_t nDelay, int32_t nLength, int32_t nAmplitude,
+											  char nAngle, int32_t nOffset, int16_t nNodes, int16_t nChildren, char nDepth, int16_t nFrames,
+											  int16_t nSmoothe, char bClamp, char bGlow, char bSound, char bLight,
+											  char nStyle, float nWidth, CFloatVector *colorP)
 {
 if (!(SHOW_LIGHTNING (1) && colorP))
 	return -1;
@@ -751,12 +751,12 @@ CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 
 
 void CLightningManager::CreateForTeleport (CObject* objP, CFloatVector *colorP, float fRodScale)
 {
-if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bExplosions) {
+if (SHOW_LIGHTNING (0) /*&& gameOpts->render.lightning.bExplosions*/) {
 	int32_t h = X2I (objP->info.xSize) * 4;
 
 	Create (
-		(int32_t) FRound ((h + rand () % h) * fRodScale), &objP->info.position.vPos, NULL, NULL, -1, int32_t (500 * X2F (objP->LifeLeft ())), 0,
-		objP->info.xSize, I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, 0, 0, 1, -1, 3.0f, colorP);
+		(int32_t) FRound ((h + rand () % h) * fRodScale), &objP->info.position.vPos, NULL, NULL, -objP->info.nSegment - 1, 1000, 0,
+		I2X (8), I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, 1, 0, 1, -1, 3.0f, colorP);
 	}
 }
 
@@ -904,8 +904,8 @@ int32_t CLightningManager::RenderForDamage (CObject* objP, CRenderPoint **pointL
 	CLightningEmitter*	emitterP;
 	CFloatVector			v, vPosf, vEndf, vNormf, vDeltaf;
 	CFixVector				vPos, vEnd, vNorm, vDelta;
-	int32_t						h, i, j, nLife = -1, bUpdate = 0;
-	int16_t						nObject;
+	int32_t					h, i, j, nLife = -1, bUpdate = 0;
+	int16_t					nObject;
 	tPolyKey					key;
 
 	static int16_t	nLastObject = -1;
