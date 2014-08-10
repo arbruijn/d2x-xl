@@ -124,7 +124,7 @@ void CObject::ApplyFlightControls (void)
 if (gameData.time.xFrame <= 0)
 	return;
 
-if (Appearing ())
+if (Appearing (false))
 	return;
 
 if (gameStates.app.bPlayerIsDead || gameStates.app.bEnterGame) {

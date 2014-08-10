@@ -691,9 +691,9 @@ m_fonts [i].font.Destroy ();
 
 //------------------------------------------------------------------------------
 
-float CFontManager::Scale (void) 
+float CFontManager::Scale (bool bScaled) 
 { 
-return m_scale; 
+return bScaled ? m_scale : m_scale / float (gameStates.app.bDemoData + 1); 
 }
 
 //------------------------------------------------------------------------------

@@ -88,7 +88,8 @@ backgroundManager.Activate (m_background);
 gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 FadeIn ();
 
-fontManager.SetScale (fontManager.Scale () * GetScale ());
+fontManager.PushScale ();
+fontManager.SetScale (fontManager.Scale (false) * GetScale ());
 fontManager.SetCurrent (NORMAL_FONT);
 GrString (0x8000, m_nTitleHeight, m_props.pszTitle);
 
@@ -120,7 +121,7 @@ for (int32_t i = Max (m_nFirstItem, 0); i < m_nFirstItem + m_nVisibleItems; i++)
 textArea.Deactivate ();
 m_background.Deactivate ();
 gameStates.render.grAlpha = 1.0f;
-fontManager.SetScale (fontManager.Scale () / GetScale ());
+fontManager.PopScale ();
 SDL_ShowCursor (1);
 }
 

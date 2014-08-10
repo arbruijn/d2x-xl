@@ -53,7 +53,8 @@ m_pszMsg = pszMsg;
 m_callback = NULL;
 Clear ();
 fontManager.SetCurrent (MEDIUM1_FONT);
-fontManager.SetScale (fontManager.Scale () * CMenu::GetScale ());
+fontManager.PushScale ();
+fontManager.SetScale (fontManager.Scale (false) * CMenu::GetScale ());
 fontManager.Current ()->StringSize (m_pszMsg, w, h, aw);
 m_x = (gameData.render.frame.Width (false) - w) / 2;
 m_y = (gameData.render.frame.Height (false) - h) / 2;
@@ -63,7 +64,7 @@ if (bFade)
 	do {
 		CMenu::Render (NULL, NULL);
 		} while (SDL_GetTicks () - m_tEnter < gameOpts->menus.nFade);
-fontManager.SetScale (fontManager.Scale () / CMenu::GetScale ());
+fontManager.PopScale ();
 }
 
 //------------------------------------------------------------------------------

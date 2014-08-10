@@ -92,7 +92,7 @@ do {
 	nDefaultMission = 0;
 	for (i = 0; i < nMissions; i++) {
 		msnNames.Push (missionManager [i].szMissionName);
-		j = MsnHasGameVer (msnNames [i]) ? 4 : 0;
+		j = MsnHasGameVer (msnNames [i]) ? 5 : 0;
 		if (!stricmp (msnNames [i] + j, gameConfig.szLastMission))
 			nDefaultMission = i;
 		}

@@ -96,7 +96,8 @@ if (m_bDone)
 	return;
 
 gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
-fontManager.SetScale (fontManager.Scale () * GetScale ());
+fontManager.PushScale ();
+fontManager.SetScale (fontManager.Scale (false) * GetScale ());
 backgroundManager.Activate (m_background);
 gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 
@@ -121,7 +122,7 @@ for (int32_t i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
 textArea.Deactivate ();
 m_background.Deactivate ();
 gameStates.render.grAlpha = 1.0f;
-fontManager.SetScale (fontManager.Scale () / GetScale ());
+fontManager.PopScale ();
 SDL_ShowCursor (1);
 }
 

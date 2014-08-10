@@ -554,7 +554,7 @@ ogl.ColorMask (1,1,1,1,0);
 backgroundManager.Activate (m_background);
 int32_t nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
 fontManager.PushScale ();
-fontManager.SetScale (fontManager.Scale () * GetScale ());
+fontManager.SetScale (fontManager.Scale (false) * GetScale ());
 int32_t i = DrawTitle (m_props.pszTitle, TITLE_FONT, RGB_PAL (31, 31, 31), m_props.yOffs);
 DrawTitle (m_props.pszSubTitle, SUBTITLE_FONT, RGB_PAL (21, 21, 21), i);
 if (!m_bRedraw)

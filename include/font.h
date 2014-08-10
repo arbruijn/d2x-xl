@@ -159,7 +159,7 @@ class CFontManager {
 		inline CFont* Current (void) { return m_current; }
 		inline CFont* GameFont (int32_t i) { return ((i >= 0) && (i < MAX_FONTS)) ? m_gameFonts [i] : NULL; }
 		float SetScale (float fScale);
-		float Scale (void);
+		float Scale (bool bScaled = true);
 		inline void PushScale (void) { m_scaleStack.Push (m_scale); }
 		inline void PopScale (void) { 
 			if (m_scaleStack.ToS ()) 

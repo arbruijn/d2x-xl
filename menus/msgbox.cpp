@@ -110,7 +110,7 @@ return mm.Menu (pszTitle, szSubTitle, callback, NULL, BG_SUBMENU, nWallpaper);
 
 int32_t _CDECL_ TextBox (const char* pszTitle, int32_t nWallpaper, int32_t nChoices, ...)
 {
-	int32_t				h, i, l, bTiny, nInMenu;
+	int32_t			h, i, l, bTiny, nInMenu;
 	char				*format, *s;
 	va_list			args;
 	char				nm_text [MSGBOX_TEXT_SIZE];
