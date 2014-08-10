@@ -139,10 +139,10 @@ return 1;
 
 void LegacyNewGameMenu (void)
 {
-	int32_t				nNewLevel, nHighestPlayerLevel;
-	int32_t				nMissions;
+	int32_t			nNewLevel, nHighestPlayerLevel;
+	int32_t			nMissions;
 	CStack<char*>	m (MAX_MISSIONS);
-	int32_t				i, choice = 0, nFolder = -1, nDefaultMission = 0;
+	int32_t			i, choice = 0, nFolder = -1, nDefaultMission = 0;
 	CListBox			lb;
 
 	static int32_t		nMission = -1;
@@ -378,26 +378,8 @@ for (;;) {
 				nMaxLevel = missionManager.nLastLevel;
 			}
 		}
-	else if (choice == m.IndexOf ("level number")) {
-		i = m.ToInt ("level number");
-#if DBG
-		if (!i || (i < -missionManager.nSecretLevels) || (i > nMaxLevel) || (i > missionManager.nLastLevel))
-#else
-		if ((i <= 0) || (i > nMaxLevel) || (i > missionManager.nLastLevel))
-#endif
-			TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_INVALID_LEVEL); 
-		else if (nLevel == i)
-			break;
-		else
-			nLevel = i;
-		}
 	else if (nMission >= 0) {
-		if (m.Available ("level number") && !(nLevel = m.ToInt ("level number"))) {
-			TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_INVALID_LEVEL); 
-			nLevel = 1;
-			}
-		else
-			break;
+		break;
 		}
 #if DBG
 	else {
