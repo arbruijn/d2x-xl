@@ -71,7 +71,7 @@ static struct {
 
 int32_t SelectAndLoadMission (int32_t bMulti, int32_t *bAnarchyOnly)
 {
-	int32_t				i, j, nMissions, nDefaultMission, nNewMission = -1;
+	int32_t			i, j, nMissions, nDefaultMission, nNewMission = -1;
 	CStack<char*>	msnNames (MAX_MISSIONS);
 	CListBox			lb;
 
@@ -222,13 +222,15 @@ if (!StartNewGame (nNewLevel))
 
 //------------------------------------------------------------------------------
 
+static int32_t	nLevel = 1;
+
 int32_t NewGameMenuCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
 	CMenuItem*	m;
-	int32_t			v;
+	int32_t		v;
 
 if ((m = menu ["difficulty"])) {
 	v = m->Value ();
@@ -239,7 +241,33 @@ if ((m = menu ["difficulty"])) {
 		m->Rebuild ();
 		}
 	}
+
+if ((m = menu ["level number"])) {
+	v = m->Value () + 1;
+	if (nLevel != v) {
+		nLevel = v;
+		char szSlider [50];
+		sprintf (szSlider, "%s %d", TXT_LEVEL_, nLevel);
+		strcpy (m->Text (), szSlider);
+		m->Rebuild ();
+		}
+	}  
+
 return nCurItem;
+}
+
+//------------------------------------------------------------------------------
+
+void UpdateSelectedMission (CMenu& m, int32_t nMission)
+{
+int32_t nOffset = 0;
+if ((nMission >= 0) &&
+		(strstr (missionManager [nMission].szMissionName, "(D1) ") || strstr (missionManager [nMission].szMissionName, "(D2) ") || strstr (missionManager [nMission].szMissionName, "(XL) ")))
+	nOffset = 5;
+char szLabel [200];
+sprintf (szLabel, "%s %s", TXT_SEL_MISSION, (nMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager [nMission].szMissionName + nOffset));
+CMenuItem* mi = m ["mission selector"];
+m ["mission selector"]->SetText (szLabel);
 }
 
 //------------------------------------------------------------------------------
@@ -247,19 +275,17 @@ return nCurItem;
 void NewGameMenu (void)
 {
 	CMenu				m;
-	int32_t				nMission = missionManager.nLastMission, bMsnLoaded = 0;
-	int32_t				i, choice = 0, bBuiltIn, bEnableMod = gameOpts->app.bEnableMods;
+	int32_t			nMission = missionManager.nLastMission, bMsnLoaded = 0;
+	int32_t			i, choice = 0, bBuiltIn, bEnableMod = gameOpts->app.bEnableMods;
 	char				szDifficulty [50];
 	char				szLevelText [32];
-	char				szLevel [5];
 #if DBG
-	int32_t				optLives;
+	int32_t			optLives;
 	char				szLives [5];
 #endif
-	int32_t				optShip = -1;
+	int32_t			optShip = -1;
 
-	static int32_t		nPlayerMaxLevel = 1;
-	static int32_t		nLevel = 1;
+	static int32_t	nMaxLevel = 1;
 
 if (gameStates.app.bNostalgia) {
 	LegacyNewGameMenu ();
@@ -276,27 +302,25 @@ else if (gameOpts->app.bSinglePlayer) {
 		nMission = -1;
 	gameFolders.missions.szSubFolder [0] = '\0';
 	}
-if (nMission >= 0) {
-	nPlayerMaxLevel = GetHighestLevel ();
-	if (nPlayerMaxLevel > missionManager.nLastLevel)
-		nPlayerMaxLevel = missionManager.nLastLevel;
-	}
 hogFileManager.UseMission ("");
 
 for (;;) {
 	m.Destroy ();
 	m.Create (20);
 
-	m.AddMenu ("mission selector", TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
-	m.AddText ("mission name", (nMission < 0) ? TXT_NONE_SELECTED : missionManager [nMission].szMissionName, 0);
-	if ((nMission >= 0) && (nPlayerMaxLevel > 1)) {
-		sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, nPlayerMaxLevel);
-		Assert (strlen (szLevelText) < 100);
-		m.AddText ("level text", szLevelText, 0); 
-		m ["level text"]->Rebuild ();
-		sprintf (szLevel, "%d", nLevel);
-		m.AddInput ("level number", szLevel, 4, HTX_MULTI_LEVEL);
+	if (nMission >= 0) {
+		nMaxLevel = GetHighestLevel ();
+		if (nMaxLevel > missionManager.nLastLevel)
+			nMaxLevel = missionManager.nLastLevel;
 		}
+
+	m.AddMenu ("mission selector", TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
+	if ((nMission >= 0) && (nMaxLevel > 1)) {
+		sprintf (szLevelText, "%s %d", TXT_LEVEL_, Clamp (nLevel, 1, nMaxLevel));
+		m.AddSlider ("level number", szLevelText, Clamp (nLevel, 1, nMaxLevel) - 1, 0, nMaxLevel - 1);
+		}
+
+	UpdateSelectedMission (m, nMission);
 
 	if (nMission >= 0) {
 		bBuiltIn = missionManager.IsBuiltIn (missionManager [nMission].szMissionName);
@@ -349,17 +373,17 @@ for (;;) {
 			nMission = i;
 			nLevel = 1;
 			PrintLog (0, "getting highest level allowed to play\n");
-			nPlayerMaxLevel = GetHighestLevel ();
-			if (nPlayerMaxLevel > missionManager.nLastLevel)
-				nPlayerMaxLevel = missionManager.nLastLevel;
+			nMaxLevel = GetHighestLevel ();
+			if (nMaxLevel > missionManager.nLastLevel)
+				nMaxLevel = missionManager.nLastLevel;
 			}
 		}
 	else if (choice == m.IndexOf ("level number")) {
 		i = m.ToInt ("level number");
 #if DBG
-		if (!i || (i < -missionManager.nSecretLevels) || (i > nPlayerMaxLevel) || (i > missionManager.nLastLevel))
+		if (!i || (i < -missionManager.nSecretLevels) || (i > nMaxLevel) || (i > missionManager.nLastLevel))
 #else
-		if ((i <= 0) || (i > nPlayerMaxLevel) || (i > missionManager.nLastLevel))
+		if ((i <= 0) || (i > nMaxLevel) || (i > missionManager.nLastLevel))
 #endif
 			TextBox (NULL, BG_STANDARD, 1, TXT_OK, TXT_INVALID_LEVEL); 
 		else if (nLevel == i)

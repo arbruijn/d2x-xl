@@ -1035,7 +1035,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-void BuildGameParamsMenu (CMenu& m, char* szName, char* szLevelText, char* szLevel, char* szIpAddr, char* szMaxPlayers, int32_t nNewMission)
+void BuildGameParamsMenu (CMenu& m, char* szName, char* szLevelText, char* szLevel, char* szIpAddr, char* szMaxPlayers, int32_t nMission)
 {
 	int32_t bHoard = HoardEquipped ();
 
@@ -1069,7 +1069,7 @@ else {
 	m ["mission selector"]->Rebuild (); 
 	pszMissionName = "mission selector";
 	}
-if ((nNewMission >= 0) && (missionManager.nLastLevel > 1)) {
+if ((nMission >= 0) && (missionManager.nLastLevel > 1)) {
 	if (gameStates.app.bNostalgia) {
 		m.AddText ("level number text", szLevelText, 0); 
 		m.AddInput ("level number", szLevel, 4, HTX_MULTI_LEVEL);
@@ -1158,24 +1158,21 @@ if (!gameStates.app.bNostalgia) {
 
 //------------------------------------------------------------------------------
 
-int32_t GameParamsMenu (CMenu& m, int32_t& key, int32_t& choice, char* szName, char* szLevelText, char* szLevel, char* szIpAddr, int32_t& nNewMission)
+int32_t GameParamsMenu (CMenu& m, int32_t& key, int32_t& choice, char* szName, char* szLevelText, char* szLevel, char* szIpAddr, int32_t& nMission)
 {
-	int32_t i, bAnarchyOnly = (nNewMission < 0) ? 0 : missionManager [nNewMission].bAnarchyOnly;
+	int32_t i, bAnarchyOnly = (nMission < 0) ? 0 : missionManager [nMission].bAnarchyOnly;
 
 if (m [pszMissionName]->Rebuilding ()) {
 	int32_t nOffset = 0;
-	if ((nNewMission >= 0) &&
-		 (strstr (missionManager [nNewMission].szMissionName, "(D1) ") || strstr (missionManager [nNewMission].szMissionName, "(D2) ") || strstr (missionManager [nNewMission].szMissionName, "(XL) ")))
+	if ((nMission >= 0) &&
+		 (strstr (missionManager [nMission].szMissionName, "(D1) ") || strstr (missionManager [nMission].szMissionName, "(D2) ") || strstr (missionManager [nMission].szMissionName, "(XL) ")))
 		nOffset = 5;
-	strncpy (netGameInfo.m_info.szMissionName, 
-				(nNewMission < 0) ? "" : missionManager [nNewMission].filename, 
-				sizeof (netGameInfo.m_info.szMissionName) - 1);
+	strncpy (netGameInfo.m_info.szMissionName, (nMission < 0) ? "" : missionManager [nMission].filename, sizeof (netGameInfo.m_info.szMissionName) - 1);
 	if (gameStates.app.bNostalgia) {
-		m ["mission name"]->SetText ((nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager [nNewMission].szMissionName + nOffset));
-		if (gameStates.app.bNostalgia && (nNewMission >= 0) && (missionManager.nLastLevel > 1)) {
+		m ["mission name"]->SetText ((nMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager [nMission].szMissionName + nOffset));
+		if ((nMission >= 0) && (missionManager.nLastLevel > 1)) {
 			sprintf (szLevelText, "%s (1-%d)", TXT_LEVEL_, missionManager.nLastLevel);
-			if (strlen (szLevelText) < 32)
-				szLevelText [31] = '\0';
+			szLevelText [31] = '\0';
 			strcpy (m ["level number text"]->Text (), szLevelText);
 			m ["level number text"]->Rebuild ();
 			}
@@ -1183,14 +1180,14 @@ if (m [pszMissionName]->Rebuilding ()) {
 		}
 	else {
 		char szLabel [200];
-		sprintf (szLabel, "%s %s", TXT_SEL_MISSION, (nNewMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager [nNewMission].szMissionName + nOffset));
+		sprintf (szLabel, "%s %s", TXT_SEL_MISSION, (nMission < 0) ? const_cast<char*> (TXT_NONE_SELECTED) : const_cast<char*> (missionManager [nMission].szMissionName + nOffset));
 		CMenuItem* mi = m ["mission selector"];
 		m ["mission selector"]->SetText (szLabel);
 		}
 	mpParams.nLevel = 1;
 	}
 
-if (!gameStates.app.bNostalgia && (nNewMission >= 0) && !m.Available ("launch game")) {
+if (!gameStates.app.bNostalgia && (nMission >= 0) && !m.Available ("launch game")) {
 	m.AddText ("", "");
 	m.AddMenu ("launch game", TXT_LAUNCH_GAME, KEY_L, "");
 	m ["launch game"]->m_bCentered = 1;
@@ -1247,7 +1244,7 @@ else if (choice == m.IndexOf ("mission selector")) {
 	int32_t h = SelectAndLoadMission (1, &bAnarchyOnly);
 	if (h < 0)
 		return 1;
-	missionManager.nLastMission = nNewMission = h;
+	missionManager.nLastMission = nMission = h;
 	m [pszMissionName]->Rebuild ();
 	mpParams.nLevel = 1;
 	return 2;
@@ -1309,7 +1306,7 @@ int32_t NetworkGetGameParams (int32_t bAutoRun)
 	char	szIpAddr [80];
 	char	szLevel [10]; //5];
 
-	int32_t nNewMission = missionManager.nLastMission;
+	int32_t nMission = missionManager.nLastMission;
 
 gameOpts->app.bSinglePlayer = 0;
 SetAllAllowablesTo (mpParams.nWeaponFilter);
@@ -1340,12 +1337,12 @@ nMaxPlayers [bCoop] = Min (gameData.multiplayer.nMaxPlayers - 2, bCoop ? 4 : MAX
 
 do {
 	PrintLog (1, "building game parameters menu\n");
-	BuildGameParamsMenu (m, szName, szLevelText, szLevel, szIpAddr, szMaxPlayers, nNewMission);
+	BuildGameParamsMenu (m, szName, szLevelText, szLevel, szIpAddr, szMaxPlayers, nMission);
 	PrintLog (-1);
 	PrintLog (1, "loading game parameters menu\n");
 	do {
-		nState = GameParamsMenu (m, key, choice, szName, szLevelText, szLevel, szIpAddr, nNewMission);
-		if ((nNewMission < 0) && (nState == 0)) {
+		nState = GameParamsMenu (m, key, choice, szName, szLevelText, szLevel, szIpAddr, nMission);
+		if ((nMission < 0) && (nState == 0)) {
 			InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_OK, "Please chose a mission");
 			nState = 1;
 			}
@@ -1381,7 +1378,7 @@ if (gameStates.app.bNostalgia) {
 	extraGameInfo [1].bTagOnlyHitObjs = 0;
 	}
 netGameInfo.m_info.szMissionName [sizeof (netGameInfo.m_info.szMissionName) - 1] = '\0';
-strncpy (netGameInfo.m_info.szMissionTitle, missionManager [nNewMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0), sizeof (netGameInfo.m_info.szMissionTitle));
+strncpy (netGameInfo.m_info.szMissionTitle, missionManager [nMission].szMissionName + (gameOpts->menus.bShowLevelVersion ? 4 : 0), sizeof (netGameInfo.m_info.szMissionTitle));
 netGameInfo.m_info.szMissionTitle [sizeof (netGameInfo.m_info.szMissionTitle) - 1] = '\0';
 netGameInfo.SetControlInvulTime (mpParams.nReactorLife * 5 * I2X (60));
 netGameInfo.SetPlayTimeAllowed (mpParams.nMaxTime);
