@@ -607,7 +607,7 @@ if (rType == 255) {
 			xSize = gameData.weapons.info [nId].blob_size;
 			break;
 		default:
-			Error ("Invalid weapon render nType in CreateNewWeapon\n");
+			PrintLog (0, "Error: Invalid weapon render nType in CreateNewWeapon\n");
 			return -1;
 		}
 	}
