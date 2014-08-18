@@ -127,7 +127,7 @@ GLhandleARB CPostEffectShockwave::m_shaderProg;
 
 void CPostEffectShockwave::InitShader (void)
 {
-if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders) {
+if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders && Enabled ()) {
 	PrintLog (1, "building shockwave shader program\n");
 	m_shaderProg = 0;
 	if (!shaderManager.Build (hShockwaveShader, shockwaveFS, shockwaveVS)) {
@@ -141,6 +141,9 @@ if (ogl.m_features.bRenderToTexture && ogl.m_features.bShaders) {
 
 bool CPostEffectShockwave::SetupShader (void)
 {
+if (!Enabled ())
+	return false;
+
 	static CFloatVector3 effectStrength = {{{10.0f, 0.8f, gameData.render.frame.Width () * 0.1f}}};
 
 if (m_nShockwaves > 0)
