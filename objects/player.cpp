@@ -244,6 +244,7 @@ for (int32_t nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {
 				SetChaseCam (0);
 				}
 			gameData.multiplayer.tAppearing [nPlayer][0] = 0;
+			gameData.multiplayer.bTeleport [nPlayer] = 0;
 			}
 		}
 	}

@@ -756,6 +756,7 @@ class CGameplayStates {
 		int32_t				bMineMineCheat;
 		int32_t				bAfterburnerCheat;
 		int32_t				bTripleFusion;
+		int32_t				bInLevelTeleport;
 		int32_t				bLastAfterburnerState;
 		fix					xLastAfterburnerCharge;
 		fix					nPlayerSpeed;
@@ -2746,6 +2747,7 @@ class CMultiplayerData {
 		int16_t								nVirusCapacity [MAX_PLAYERS];
 		int32_t								nLastHitTime [MAX_PLAYERS];
 		int32_t								tAppearing [MAX_PLAYERS][2];
+		int8_t								bTeleport [MAX_PLAYERS];
 		CWeaponState						weaponStates [MAX_PLAYERS];
 		char									bWasHit [MAX_PLAYERS];
 		int32_t								bulletEmitters [MAX_PLAYERS];

@@ -5463,11 +5463,13 @@ void MultiDoTeleport (uint8_t* buf)
 
 CHECK_MSG_ID
 
-	int16_t	nObject = PLAYER (int32_t (buf [bufP++])).nObject;
+	uint8_t nPlayer = buf [bufP++];
+	int16_t	nObject = PLAYER (int32_t (nPlayer)).nObject;
 	int16_t nSegment = GET_INTEL_SHORT (buf + bufP);
 //	int16_t	nSide = buf [bufP];
 
 TriggerSetObjPos (nObject, nSegment);
+gameData.multiplayer.bTeleport [nPlayer] = 1;
 OBJECTS [nObject].CreateAppearanceEffect ();
 }
 

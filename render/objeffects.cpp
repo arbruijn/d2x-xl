@@ -102,13 +102,12 @@ fix flashDist = F2X (0.9f);
 //create flash for CPlayerData appearance
 void CObject::CreateAppearanceEffect (void)
 {
-	bool bWarp = (Type () == OBJ_PLAYER) && ((gameOpts->render.effects.bWarpAppearance == 2) || ((gameOpts->render.effects.bWarpAppearance == 1) && (gameStates.render.bDoAppearanceEffect > 0)));
+	int8_t	nPlayer = (Type () == OBJ_PLAYER) ? Id () : -1;
+	bool		bWarp = (nPlayer >= 0) && ((gameOpts->render.effects.bWarpAppearance == 2) || ((gameOpts->render.effects.bWarpAppearance == 1) && !gameData.multiplayer.bTeleport [nPlayer]));
 
-if (bWarp && !AppearanceStage ()) {
+if (bWarp && (nPlayer == N_LOCALPLAYER) && !AppearanceStage ()) {
 	gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = -I2X (1) / 2;
-	if (this == &LOCALOBJECT) {
-		SetChaseCam (1);
-		}
+	SetChaseCam (1);
 	}
 else {
 	CFixVector vPos = info.position.vPos;
@@ -134,7 +133,6 @@ else {
 			}
 		}
 	}
-gameStates.render.bDoAppearanceEffect = 0;
 }
 
 //------------------------------------------------------------------------------
