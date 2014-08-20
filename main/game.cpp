@@ -1053,7 +1053,6 @@ else { // Note the link to above!
 PROF_CONT
 if (gameStates.render.bDoAppearanceEffect) {
 	gameData.objs.consoleP->CreateAppearanceEffect ();
-	gameStates.render.bDoAppearanceEffect = 0;
 	if (IsMultiGame && netGameInfo.m_info.invul) {
 		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
 		LOCALPLAYER.invulnerableTime = gameData.time.xGame - I2X (27);

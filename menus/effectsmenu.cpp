@@ -118,6 +118,16 @@ if ((m = menu ["shield effect"])) {
 		}
 	}
 
+if ((m = menu ["warp effect"])) {
+	v = m->Value ();
+	if (gameOpts->render.effects.bWarpAppearance != v) {
+		gameOpts->render.effects.bWarpAppearance = v;
+		sprintf (m->m_text, TXT_SHIELD_EFFECT, pszNoneBasicFull [v]);
+		m->Rebuild ();
+		key = -2;
+		}
+	}
+
 if ((m = menu ["light trails"])) {
 	v = m->Value ();
 	if (nLightTrails != v) {
@@ -294,6 +304,10 @@ do {
 	*szSlider = *(TXT_SHIELD_EFFECT - 1);
 	m.AddSlider ("shield effect", szSlider + 1, gameOpts->render.effects.bShields, 0, 2, KEY_S, HTX_SHIELD_EFFECT);
 
+	sprintf (szSlider + 1, TXT_WARP_EFFECT, pszNoneBasicFull [int32_t (gameOpts->render.effects.bWarpAppearance)]);
+	*szSlider = *(TXT_WARP_EFFECT - 1);
+	m.AddSlider ("warp effect", szSlider + 1, gameOpts->render.effects.bWarpAppearance, 0, 2, KEY_W, HTX_WARP_EFFECT);
+
 	m.AddText ("", "");
 	if (extraGameInfo [0].bUseParticles) {
 		m.AddCheck ("static smoke", TXT_SMOKE_STATIC, gameOpts->render.particles.bStatic, KEY_X, HTX_ADVRND_STATICSMOKE);
@@ -303,7 +317,6 @@ do {
 		m.AddCheck (softParticleIds [0], TXT_SOFT_SPRITES, gameOpts->SoftBlend (SOFT_BLEND_SPRITES) != 0, KEY_I, HTX_SOFT_SPRITES);
 		m.AddCheck (softParticleIds [1], TXT_SOFT_PARTICLES, gameOpts->SoftBlend (SOFT_BLEND_PARTICLES) != 0, KEY_A, HTX_SOFT_PARTICLES);
 		}
-	m.AddCheck ("warp appearance", TXT_WARP_APPEARANCE, gameOpts->render.effects.bWarpAppearance, KEY_W, HTX_WARP_APPEARANCE);
 
 	if (gameOpts->app.bExpertMode && extraGameInfo [0].bUseParticles) {
 		m.AddText ("", "");
@@ -338,7 +351,6 @@ do {
 		}
 	GET_VAL (gameOpts->render.effects.bEnabled, "enable fx");
 	GET_VAL (gameOpts->render.particles.bStatic, "static smoke");
-	GET_VAL (gameOpts->render.effects.bWarpAppearance, "warp appearance");
 	GET_VAL (extraGameInfo [0].bGatlingTrails, "gatling trails");
 	if ((extraGameInfo [0].bLightTrails = (nLightTrails != 0)))
 		gameOpts->render.particles.bPlasmaTrails = (nLightTrails == 2);

@@ -102,7 +102,7 @@ fix flashDist = F2X (0.9f);
 //create flash for CPlayerData appearance
 void CObject::CreateAppearanceEffect (void)
 {
-	bool bWarp = (Type () == OBJ_PLAYER) && gameOpts->render.effects.bWarpAppearance;
+	bool bWarp = (Type () == OBJ_PLAYER) && ((gameOpts->render.effects.bWarpAppearance == 2) || ((gameOpts->render.effects.bWarpAppearance == 1) && (gameStates.render.bDoAppearanceEffect > 0)));
 
 if (bWarp && !AppearanceStage ()) {
 	gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = -I2X (1) / 2;
@@ -134,6 +134,7 @@ else {
 			}
 		}
 	}
+gameStates.render.bDoAppearanceEffect = 0;
 }
 
 //------------------------------------------------------------------------------
