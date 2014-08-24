@@ -599,6 +599,8 @@ do {
 		m.AddSlider ("IPD", szSlider + 1, nIPD, 0, RIFT_MAX_IPD - RIFT_MIN_IPD, KEY_P, HTX_STEREO_SEPARATION);
 		}
 
+	int32_t nDevice = ogl.StereoDevice ();
+
 	if (EXPERTMODE && stereoDeviceMap [nStereoDevice]) {
 		if (stereoDeviceMap [nStereoDevice] == GLASSES_OCULUS_RIFT) {
 #if 1 //DBG
@@ -627,7 +629,6 @@ do {
 			*szSlider = *(TXT_3D_SCREEN_DIST - 1);
 			m.AddSlider ("screen distance", szSlider + 1, gameOpts->render.stereo.nScreenDist, 0, sizeofa (nScreenDists) - 1, KEY_S, HTX_3D_SCREEN_DIST);
 
-			int32_t nDevice = ogl.StereoDevice ();
 			if (nDevice > 0) {
 				sprintf (szSlider + 1, TXT_3D_DEGHOST, pszDeghost [gameOpts->render.stereo.bDeghost]);
 				*szSlider = *(TXT_3D_DEGHOST - 1);
@@ -640,7 +641,7 @@ do {
 				}
 			m.AddText ("", "");
 			m.AddCheck ("brighten scene", TXT_BUMP_BRIGHTNESS, gameOpts->render.stereo.bBrighten, KEY_T, HTX_BUMP_BRIGHTNESS);
-			if (ogl.StereoDevice (1) > 0)
+			if (nDevice > 0)
 				m.AddCheck ("enhance 3D", TXT_ENHANCE_3D, gameOpts->render.stereo.bEnhance, KEY_D, HTX_ENHANCE_3D);
 #if 0
 			m.AddCheck ("flip frames", TXT_FLIPFRAMES, gameOpts->render.stereo.bFlipFrames, KEY_F, HTX_FLIPFRAMES);
