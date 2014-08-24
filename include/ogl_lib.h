@@ -546,7 +546,7 @@ class COGL {
 		void RebuildContext (int32_t bGame);
 		void DrawArrays (GLenum mode, GLint first, GLsizei count);
 		void ColorMask (GLboolean bRed, GLboolean bGreen, GLboolean bBlue, GLboolean bAlpha, GLboolean bEyeOffset = GL_TRUE);
-		int32_t StereoDevice (int32_t bForce = 0);
+		int32_t StereoDevice (void);
 
 		inline int32_t IsAnaglyphDevice (int32_t nDevice = 0x7fffffff) { 
 			if (nDevice == 0x7fffffff)

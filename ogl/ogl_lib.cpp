@@ -174,11 +174,9 @@ ResetTextures (1, gameStates.app.bGameRunning);
 
 //------------------------------------------------------------------------------
 
-int32_t COGL::StereoDevice (int32_t bForce) 
+int32_t COGL::StereoDevice (void) 
 { 
 if (!m_features.bShaders)
-	return 0;
-if (!(bForce || gameOpts->render.stereo.bEnhance))
 	return 0;
 if ((gameOpts->render.stereo.nGlasses == GLASSES_SHUTTER_NVIDIA) && !m_states.nStereo)
 	return 0;
@@ -733,7 +731,7 @@ else
 			GLbitfield mask = 0;
 			if (!bResetColorBuf)
 				mask = GL_DEPTH_BUFFER_BIT;
-			else if (automap.Active () || (gameStates.render.bRenderIndirect > 0)) {
+			else /*if (automap.Active () || (gameStates.render.bRenderIndirect > 0))*/ {
 				glClearColor (0.0f, 0.0f, 0.0f, 1.0f);
 				mask = GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT;
 				}

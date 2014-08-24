@@ -627,10 +627,11 @@ do {
 			*szSlider = *(TXT_3D_SCREEN_DIST - 1);
 			m.AddSlider ("screen distance", szSlider + 1, gameOpts->render.stereo.nScreenDist, 0, sizeofa (nScreenDists) - 1, KEY_S, HTX_3D_SCREEN_DIST);
 
-			if (ogl.StereoDevice () > 0) {
+			int32_t nDevice = ogl.StereoDevice ();
+			if (nDevice > 0) {
 				sprintf (szSlider + 1, TXT_3D_DEGHOST, pszDeghost [gameOpts->render.stereo.bDeghost]);
 				*szSlider = *(TXT_3D_DEGHOST - 1);
-				m.AddSlider ("deghosting", szSlider + 1, gameOpts->render.stereo.bDeghost, 0, sizeofa (pszDeghost) - 2 + (ogl.StereoDevice (1) == 2), KEY_H, HTX_3D_DEGHOST);
+				m.AddSlider ("deghosting", szSlider + 1, gameOpts->render.stereo.bDeghost, 0, sizeofa (pszDeghost) - 2 + (gameOpts->render.stereo.bEnhance && (nDevice == 2)), KEY_H, HTX_3D_DEGHOST);
 				if (gameOpts->render.stereo.bDeghost < 4) {
 					sprintf (szSlider + 1, TXT_COLORGAIN, pszEnhance3D [gameOpts->render.stereo.bColorGain]);
 					*szSlider = *(TXT_COLORGAIN - 1);

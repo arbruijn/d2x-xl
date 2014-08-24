@@ -367,7 +367,7 @@ if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 if (gameStates.render.nLightingMethod) {
 	uint8_t					nType;
 	int16_t					i = m_data.nLights [1];
-	int32_t					bSkipHeadlight = /*!gameStates.render.nState &&*/ ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bHeadlight);
+	int32_t					bSkipHeadlight = (gameStates.render.nType != RENDER_TYPE_OBJECTS) && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bHeadlight);
 	fix						xMaxLightRange = SEGMENTS [nSegment].AvgRad () + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE);
 	CDynLight*				lightP;
 	CFixVector&				vDestPos = SEGMENTS [nSegment].Center ();
