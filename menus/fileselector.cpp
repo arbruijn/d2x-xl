@@ -173,17 +173,17 @@ return 1;
 
 int32_t CFileSelector::FileSelector (const char* pszTitle, const char* filespec, char* filename, int32_t bAllowAbort)
 {
-	int32_t					i;
+	int32_t				i;
 	FFS					ffs;
-	int32_t					bKeyRepeat = gameStates.input.keys.bRepeat;
-	int32_t					bInitialized = 0;
-	int32_t					exitValue = 0;
-	int32_t					nWidth, nHeight, nTitleHeight;
-	int32_t					mx, my, x1, x2, y1, y2, nMouseState, nOldMouseState;
-	int32_t					mouse2State, omouse2State, bWheelUp, bWheelDown;
-	int32_t					bDblClick = 0;
+	int32_t				bKeyRepeat = gameStates.input.keys.bRepeat;
+	int32_t				bInitialized = 0;
+	int32_t				exitValue = 0;
+	int32_t				nWidth, nHeight, nTitleHeight;
+	int32_t				x1, x2, y1, y2, nMouseState, nOldMouseState;
+	int32_t				mouse2State, omouse2State, bWheelUp, bWheelDown;
+	int32_t				bDblClick = 0;
 	char					szPattern [40];
-	int32_t					nPatternLen = 0;
+	int32_t				nPatternLen = 0;
 	char*					pszFn;
 
 gameData.render.frame.Activate ("CFileSelector::FileSelector (frame)");
@@ -489,14 +489,14 @@ while (!m_bDone) {
 	if (nMouseState || mouse2State) {
 		int32_t w, h, aw;
 
-		MouseGetPos (&mx, &my);
+		GetMousePos ();
 		for (i = m_nFirstItem; i < m_nFirstItem + m_nVisibleItems; i++) {
 			fontManager.Current ()->StringSize (m_filenames [i], w, h, aw);
 			x1 = m_nTextLeft;
 			x2 = m_nTextLeft + m_nTextWidth - 1;
 			y1 = (i - m_nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + m_nTextTop;
 			y2 = y1 + h + 1;
-			if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
+			if (((m_xMouse > x1) && (m_xMouse < x2)) && ((m_yMouse > y1) && (m_yMouse < y2))) {
 				if (i == m_nChoice && !mouse2State)
 					break;
 				m_nChoice = i;
@@ -510,12 +510,12 @@ while (!m_bDone) {
 		int32_t w, h, aw;
 
 		fontManager.Current ()->StringSize (m_filenames [m_nChoice], w, h, aw);
-		MouseGetPos (&mx, &my);
+		GetMousePos ();
 		x1 = m_nTextLeft;
 		x2 = m_nTextLeft + m_nTextWidth - 1;
 		y1 = (m_nChoice - m_nFirstItem)* (CCanvas::Current ()->Font ()->Height () + 2) + m_nTextTop;
 		y2 = y1 + h + 1;
-		if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
+		if (((m_xMouse > x1) && (m_xMouse < x2)) && ((m_yMouse > y1) && (m_yMouse < y2))) {
 			if (bDblClick) 
 				m_bDone = 1;
 			else 
@@ -524,12 +524,12 @@ while (!m_bDone) {
 		}
 
 	if (!nMouseState && nOldMouseState) {
-		MouseGetPos (&mx, &my);
+		GetMousePos ();
 		x1 = XOffset () + MENU_CLOSE_X + 2;
 		x2 = x1 + MENU_CLOSE_SIZE - 2;
 		y1 = YOffset () + MENU_CLOSE_Y + 2;
 		y2 = y1 + MENU_CLOSE_SIZE - 2;
-		if (((mx > x1) && (mx < x2)) && ((my > y1) && (my < y2))) {
+		if (((m_xMouse > x1) && (m_xMouse < x2)) && ((m_yMouse > y1) && (m_yMouse < y2))) {
 			m_nChoice = -1;
 			m_bDone = 1;
 			}
