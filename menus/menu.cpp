@@ -1236,15 +1236,20 @@ if (item.m_nType == NM_TYPE_SLIDER) {
 	fontManager.Current ()->StringSize (SLIDER_MIDDLE, mw, height, aw);
 	fontManager.Current ()->StringSize (SLIDER_RIGHT, rw, height, aw);
 
-	int32_t w = lw + mw * (item.Range () - 2) + rw;
+	int32_t w = lw + mw * item.Range ();
 	int32_t x = m_xMouse - item.m_xSlider;
 
-	if ((x >= 0) && (x < w)) {
-		i = x * item.Range () / w;
-		if (i != item.Value ()) {
-			item.Value () = i;
-			item.m_bRedraw = 2;
-			}
+	if ((x >= 0) && (x < lw))
+		i = 0;
+	else if ((x >= w) || (x < w + rw))
+		i = item.Range () - 1;
+	else if ((x >= lw) && (x < w)) 
+		i = (x - lw) * item.Range () / (w - lw);
+	else
+		i = item.Value ();
+	if (i != item.Value ()) {
+		item.Value () = i;
+		item.m_bRedraw = 2;
 		}
 	}
 
