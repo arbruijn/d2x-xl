@@ -796,36 +796,38 @@ return 1;
 void CMenu::KeyCheckOption (void)
 {
 if (m_nChoice > -1) {
-	switch (Item (m_nChoice).m_nType) {
-	case NM_TYPE_MENU:
-	case NM_TYPE_INPUT:
-	case NM_TYPE_INPUT_MENU:
-		break;
+	CMenuItem& item = Item (m_nChoice);
 
-	case NM_TYPE_CHECK:
-		if (Item (m_nChoice).Value ())
-			Item (m_nChoice).Value () = 0;
-		else
-			Item (m_nChoice).Value () = 1;
-		if (m_props.bIsScrollBox) {
-			if (m_nChoice == (m_props.nMaxOnMenu + m_props.nScrollOffset -1) || m_nChoice == m_props.nScrollOffset)
-				m_nLastScrollCheck = -1;				
-				}
+	switch (item.m_nType) {
+		case NM_TYPE_MENU:
+		case NM_TYPE_INPUT:
+		case NM_TYPE_INPUT_MENU:
+			break;
+
+		case NM_TYPE_CHECK:
+			if (item.Value ())
+				item.Value () = 0;
+			else
+				item.Value () = 1;
+			if (m_props.bIsScrollBox) {
+				if (m_nChoice == (m_props.nMaxOnMenu + m_props.nScrollOffset -1) || m_nChoice == m_props.nScrollOffset)
+					m_nLastScrollCheck = -1;				
+					}
 			
-		Item (m_nChoice).m_bRedraw = 1;
-		break;
+			item.m_bRedraw = 1;
+			break;
 
-	case NM_TYPE_RADIO:
-		for (int32_t i = 0; i < int32_t (ToS ()); i++) {
-			if ((i != m_nChoice) && (Item (i).m_nType == NM_TYPE_RADIO) && (Item (i).m_group == Item (m_nChoice).m_group) && (Item (i).Value ())) {
-				Item (i).Value () = 0;
-				Item (i).m_bRedraw = 1;
+		case NM_TYPE_RADIO:
+			for (int32_t i = 0; i < int32_t (ToS ()); i++) {
+				if ((i != m_nChoice) && (Item (i).m_nType == NM_TYPE_RADIO) && (Item (i).m_group == item.m_group) && (Item (i).Value ())) {
+					Item (i).Value () = 0;
+					Item (i).m_bRedraw = 1;
+					}
 				}
+			item.Value () = 1;
+			item.m_bRedraw = 1;
+			break;
 			}
-		Item (m_nChoice).Value () = 1;
-		Item (m_nChoice).m_bRedraw = 1;
-		break;
-		}
 	}
 }
 
@@ -833,21 +835,25 @@ if (m_nChoice > -1) {
 
 void CMenu::LaunchOption (int32_t* nCurItemP)
 {
-if ((m_nChoice > -1) && (Item (m_nChoice).m_nType == NM_TYPE_INPUT_MENU) && (Item (m_nChoice).m_group == 0)) {
-	Item (m_nChoice).m_group = 1;
-	Item (m_nChoice).m_bRedraw = 1;
-	if (!strnicmp (Item (m_nChoice).m_savedText, TXT_EMPTY, strlen (TXT_EMPTY))) {
-		Item (m_nChoice).m_text [0] = '\0';
-		Item (m_nChoice).Value () = -1;
+if (m_nChoice > -1) {
+	CMenuItem& item = Item (m_nChoice);
+
+	if ((item.m_nType == NM_TYPE_INPUT_MENU) && (item.m_group == 0)) {
+		item.m_group = 1;
+		item.m_bRedraw = 1;
+		if (!strnicmp (item.m_savedText, TXT_EMPTY, strlen (TXT_EMPTY))) {
+			item.m_text [0] = '\0';
+			item.Value () = -1;
+			}
+		else {
+			item.TrimWhitespace ();
+			}
 		}
 	else {
-		Item (m_nChoice).TrimWhitespace ();
+		if (nCurItemP)
+			*nCurItemP = m_nChoice;
+		m_bDone = 1;
 		}
-	}
-else {
-	if (nCurItemP)
-		*nCurItemP = m_nChoice;
-	m_bDone = 1;
 	}
 }
 
@@ -857,33 +863,36 @@ int32_t CMenu::EditValue (void)
 {
 if (m_nOldChoice != m_nChoice)
 	return 0;
-if ((Item (m_nChoice).m_nType != NM_TYPE_INPUT) && ((Item (m_nChoice).m_nType != NM_TYPE_INPUT_MENU) || (Item (m_nChoice).m_group != 1))) {
-	if ((m_nKey == KEY_LEFT) || (m_nKey == KEY_BACKSPACE) || (m_nKey == KEY_PAD4)) {
-		if (Item (m_nChoice).Value () == -1) 
-			Item (m_nChoice).Value () = (int32_t) strlen (Item (m_nChoice).m_text);
-		if (Item (m_nChoice).Value () > 0)
-			Item (m_nChoice).Value ()--;
-		Item (m_nChoice).m_text [Item (m_nChoice).Value ()] = '\0';
-		Item (m_nChoice).m_bRedraw = 1;
-		return 1;
-		}
-	else {
-		int32_t ascii = KeyToASCII (m_nKey);
-		if ((ascii < 255) && (Item (m_nChoice).Value () < Item (m_nChoice).m_nTextLen)) {
-			if (Item (m_nChoice).Value ()== -1)
-				Item (m_nChoice).Value () = 0;
-			int32_t bAllowed = CharAllowed ((char) ascii);
-			if (!bAllowed && ascii == ' ' && CharAllowed ('_')) {
-				ascii = '_';
-				bAllowed = 1;
-				}
-			if (bAllowed) {
-				Item (m_nChoice).m_text [Item (m_nChoice).Value ()++] = ascii;
-				Item (m_nChoice).m_text [Item (m_nChoice).Value ()] = '\0';
-				Item (m_nChoice).m_bRedraw = 1;
-				}
-			return 1;
+
+CMenuItem& item = Item (m_nChoice);
+
+if ((item.m_nType != NM_TYPE_INPUT) && ((item.m_nType != NM_TYPE_INPUT_MENU) || (item.m_group != 1)))
+	return 0;
+if ((m_nKey == KEY_LEFT) || (m_nKey == KEY_BACKSPACE) || (m_nKey == KEY_PAD4)) {
+	if (item.Value () == -1) 
+		item.Value () = (int32_t) strlen (item.m_text);
+	if (item.Value () > 0)
+		item.Value ()--;
+	item.m_text [item.Value ()] = '\0';
+	item.m_bRedraw = 1;
+	return 1;
+	}
+else {
+	int32_t ascii = KeyToASCII (m_nKey);
+	if ((ascii < 255) && (item.Value () < item.m_nTextLen)) {
+		if (item.Value ()== -1)
+			item.Value () = 0;
+		int32_t bAllowed = CharAllowed ((char) ascii);
+		if (!bAllowed && ascii == ' ' && CharAllowed ('_')) {
+			ascii = '_';
+			bAllowed = 1;
 			}
+		if (bAllowed) {
+			item.m_text [item.Value ()++] = ascii;
+			item.m_text [item.Value ()] = '\0';
+			item.m_bRedraw = 1;
+			}
+		return 1;
 		}
 	}
 return 0;
@@ -1469,6 +1478,10 @@ else if (m_bWheelDown)
 	m_nKey = KEY_DOWN;
 else
 	m_nKey = KeyInKey ();
+#if DBG
+if (m_nKey)
+	BRP;
+#endif
 if (mouseData.bDoubleClick)
 	m_nKey = KEY_ENTER;
 if ((m_props.screenWidth != gameData.render.frame.Width ()) || (m_props.screenHeight != gameData.render.frame.Height ())) {
