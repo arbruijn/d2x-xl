@@ -1166,6 +1166,8 @@ return 1;
 
 int32_t CMenu::MouseScrollUp (void)
 {
+	static CTimeout to (100);
+
 if (m_props.bIsScrollBox) {
 	if (m_props.nScrollOffset > m_props.nMaxNoScroll) {
 		int32_t arrowWidth, arrowHeight, aw;
@@ -1175,13 +1177,15 @@ if (m_props.bIsScrollBox) {
 		int32_t x1 = x2 - arrowWidth;
 		int32_t y2 = y1 + arrowHeight;
 		if (((m_xMouse > x1) && (m_xMouse < x2)) && ((m_yMouse > y1) && (m_yMouse < y2))) {
+			if (!to.Expired ())
+				return 1;
 			m_nChoice--;
 			m_nLastScrollCheck = -1;
 			if (m_nChoice < m_props.nScrollOffset) {
 				REDRAW_ALL;
 				m_props.nScrollOffset--;
-				return 1;
 				}
+			return 1;
 			}
 		}
 	}
@@ -1192,6 +1196,8 @@ return 0;
 
 int32_t CMenu::MouseScrollDown (void)
 {
+	static CTimeout to (100);
+
 if (m_props.bIsScrollBox) {
 	int32_t i = m_props.nScrollOffset + m_props.nMaxDisplayable - m_props.nMaxNoScroll;
 			
@@ -1203,13 +1209,15 @@ if (m_props.bIsScrollBox) {
 		int32_t x1 = x2 - arrowWidth;
 		int32_t y2 = y1 + arrowHeight;
 		if ((m_xMouse > x1) && (m_xMouse < x2) && (m_yMouse > y1) && (m_yMouse < y2)) {
+			if (!to.Expired ())
+				return 1;
 			m_nChoice++;
 			m_nLastScrollCheck = -1;
 			if (m_nChoice >= m_props.nMaxOnMenu + m_props.nScrollOffset) {
 				REDRAW_ALL;
 				m_props.nScrollOffset++;
-				return 1;
 				}
+			return 1;
 			}
 		}
 	}
@@ -1241,7 +1249,7 @@ if (item.m_nType == NM_TYPE_SLIDER) {
 
 	if ((x >= 0) && (x < lw))
 		i = 0;
-	else if ((x >= w) || (x < w + rw))
+	else if ((x >= w) && (x < w + rw))
 		i = item.Range () - 1;
 	else if ((x >= lw) && (x < w)) 
 		i = (x - lw) * item.Range () / (w - lw);
@@ -1286,8 +1294,8 @@ if (m_bDone)
 GetMousePos ();
 
 if (m_nMouseState) {
-	if (!m_nOldMouseState && MouseCheckOption ())
-		return 1;
+	if (!m_nOldMouseState)
+		return MouseCheckOption ();
 	if (MouseScrollUp ())
 		return 1;
 	if (MouseScrollDown ())
@@ -1506,6 +1514,8 @@ gameStates.input.keys.bRepeat = 1;
 
 while (!m_bDone) {
 	Update (pszTitle, pszSubTitle, nType, nWallpaper, width, height, bTinyMode, nCurItemP);
+	// Redraw everything...
+	Render (pszTitle, pszSubTitle, NULL);
 
 	if (callback && (SDL_GetTicks () - m_tEnter > gameOpts->menus.nFade))
 		try {
@@ -1542,7 +1552,8 @@ while (!m_bDone) {
 
 	if (HandleMouse (nCurItemP))
 		continue;
-//	 HACK! Don't redraw loadgame preview
+
+	//	 HACK! Don't redraw loadgame preview
 	if (bRestoringMenu) 
 		Item (0).m_bRedraw = 0;
 
@@ -1550,8 +1561,6 @@ while (!m_bDone) {
 		if (!QuickSelect (nCurItemP) && !EditValue ())
 			KeyScrollValue ();
 		}
-	// Redraw everything...
-	Render (pszTitle, pszSubTitle, NULL);
 	}
 FadeOut (pszTitle, pszSubTitle, NULL);
 SDL_ShowCursor (0);
