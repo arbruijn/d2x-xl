@@ -215,29 +215,37 @@ typedef int32_t (*pMenuCallback) (CMenu& mat, int32_t& lastKey, int32_t nItem, i
 
 class CMenu : public CStack<CMenuItem> {
 private:
-	int32_t				m_nGroup;
+	int32_t			m_nGroup;
 	CTimeout			m_to;
-	CMenu				* m_parent;
-	static CMenu	*m_active;
-	static int32_t		m_level;
+	CMenu*			m_parent;
+	static CMenu*	m_active;
+	static int32_t	m_level;
 
 protected:
-	int32_t				m_bStart;
-	int32_t				m_bDone;
-	int32_t				m_nLastScrollCheck;
-	int32_t				m_bRedraw;
-	int32_t				m_bCloseBox;
-	int32_t				m_bDontRestore;
-	int32_t				m_bAllText;
-	uint32_t				m_tEnter;
-	int32_t				m_nChoice;
-	int32_t				m_nKey;
-	int32_t				m_xMouse;
-	int32_t				m_yMouse;
+	int32_t			m_bStart;
+	int32_t			m_bDone;
+	int32_t			m_nLastScrollCheck;
+	int32_t			m_bRedraw;
+	int32_t			m_bCloseBox;
+	int32_t			m_bDontRestore;
+	int32_t			m_bAllText;
+	uint32_t			m_tEnter;
+	int32_t			m_nChoice;
+	int32_t			m_nOldChoice;
+	int32_t			m_nTopChoice;
+	int32_t			m_nMouseState;
+	int32_t			m_nOldMouseState;
+	int32_t			m_bWheelUp;
+	int32_t			m_bWheelDown;
+	int32_t			m_bDblClick;
+	int32_t			m_nKey;
+	int32_t			m_xMouse;
+	int32_t			m_yMouse;
+	int32_t			m_bPause;
 	bool				m_bThrottle;
 	pMenuCallback	m_callback;
 	CMenuItem		m_null;
-	CMenuItem		* m_current;
+	CMenuItem*		m_current;
 	tMenuProps		m_props;
 	CBackground		m_background;
 
@@ -378,17 +386,17 @@ public:
 	void GetMousePos (void);
 
 	int32_t Menu (const char* pszTitle, const char* pszSubTitle,
-				 pMenuCallback callback = NULL, int32_t* nCurItemP = NULL,
-				 int32_t nType = BG_SUBMENU, int32_t nWallpaper = BG_STANDARD, 
-				 int32_t width = -1, int32_t height = -1,
-				 int32_t bTinyMode = 0);
+					  pMenuCallback callback = NULL, int32_t* nCurItemP = NULL,
+					  int32_t nType = BG_SUBMENU, int32_t nWallpaper = BG_STANDARD, 
+					  int32_t width = -1, int32_t height = -1,
+					  int32_t bTinyMode = 0);
 
 	int32_t TinyMenu (const char *pszTitle, const char *pszSubTitle, pMenuCallback callBack = NULL);
 
 	int32_t FixedFontMenu (const char* pszTitle, const char* pszSubTitle,
-							 pMenuCallback callback, int32_t* nCurItemP,
-							 int32_t nType = BG_SUBMENU, int32_t nWallpaper = BG_STANDARD, 
-							 int32_t width = -1, int32_t height = -1);
+								  pMenuCallback callback, int32_t* nCurItemP,
+								  int32_t nType = BG_SUBMENU, int32_t nWallpaper = BG_STANDARD, 
+								  int32_t width = -1, int32_t height = -1);
 
 	void DrawCloseBox (int32_t x, int32_t y);
 	void FadeIn (void);
@@ -422,6 +430,24 @@ private:
 	void RestoreScreen (void);
 	void FreeTextBms (void);
 	void SwapText (int32_t i, int32_t j);
+
+	int32_t Setup (int32_t nType, int32_t width, int32_t height, int32_t bTinyMode, pMenuCallback callback, int32_t& nItem);
+	void Update (const char* pszTitle, const char* pszSubTitle, int32_t nType, int32_t nWallpaper, int32_t width, int32_t height, int32_t bTinyMode, int32_t* nCurItemP);
+	int32_t HandleKey (int32_t width, int32_t height, int32_t bTinyMode, int32_t* nCurItemP);
+	int32_t HandleMouse (int32_t* nCurItemP);
+	int32_t FindClickedOption (int32_t iMin, int32_t iMax);
+
+	void KeyScrollUp (void);
+	void KeyScrollDown (void);
+	void KeyCheckOption (void);
+	int32_t KeyScrollValue (void);
+	int32_t QuickSelect (int32_t* nCurItemP);
+	int32_t EditValue (void);
+	int32_t MouseScrollUp (void);
+	int32_t MouseScrollDown (void);
+	int32_t MouseCheckOption (void);
+	int32_t MouseScrollValue (void);
+	void LaunchOption (int32_t* nCurItemP);
 
 	CMenuItem* AddItem (void);
 	void SetId (CMenuItem& item, const char* pszId);
