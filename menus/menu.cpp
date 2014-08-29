@@ -160,8 +160,8 @@ return Menu (pszTitle, pszSubTitle, callback, NULL, BG_SUBMENU, BG_STANDARD, -1,
 //------------------------------------------------------------------------------ 
 
 int32_t CMenu::FixedFontMenu (const char* pszTitle, const char* pszSubTitle, 
-								  pMenuCallback callback, int32_t* nCurItemP, int32_t nType, int32_t nWallpaper, 
-								  int32_t width, int32_t height)
+										pMenuCallback callback, int32_t* nCurItemP, int32_t nType, int32_t nWallpaper, 
+										int32_t width, int32_t height)
 {
 SetScreenMode (SCREEN_MENU);
 return Menu (pszTitle, pszSubTitle, callback, nCurItemP, nType, nWallpaper, width, height, 0);
@@ -181,7 +181,7 @@ m_yMouse -= rc.Top ();
 //------------------------------------------------------------------------------ 
 
 //returns 1 if a control device button has been pressed
-int32_t NMCheckButtonPress ()
+int32_t NMCheckButtonPress (void)
 {
 switch (gameConfig.nControlType) {
 	case CONTROL_JOYSTICK:
@@ -1226,55 +1226,37 @@ if (i < 0)
 	return 0;
 
 m_nChoice = i;
-if (Item (m_nChoice).m_nType == NM_TYPE_SLIDER) {
+
+CMenuItem& item = Item (m_nChoice);
+
+if (item.m_nType == NM_TYPE_SLIDER) {
 	int32_t x1 = Item (i).m_x - Item (i).m_rightOffset - 6;
 	int32_t x2 = x1 + Item (i).m_w;
 	int32_t y1 = Item (i).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
 	int32_t y2 = y1 + Item (i).m_h;
 
 	char slider_text [MENU_MAX_TEXTLEN + 1], *p, *s1;
-	int32_t slider_width, height, aw, sleft_width, sright_width, smiddle_width;
+	int32_t lw, mw, rw, height, aw;
 					
-	strcpy (slider_text, Item (m_nChoice).m_savedText);
-	p = strchr (slider_text, '\t');
-	if (p) {
-		*p = '\0';
-		s1 = p + 1;
-		}
-	if (p) {
-		fontManager.Current ()->StringSize (s1, slider_width, height, aw);
-		fontManager.Current ()->StringSize (SLIDER_LEFT, sleft_width, height, aw);
-		fontManager.Current ()->StringSize (SLIDER_RIGHT, sright_width, height, aw);
-		fontManager.Current ()->StringSize (SLIDER_MIDDLE, smiddle_width, height, aw);
+	fontManager.Current ()->StringSize (SLIDER_LEFT, lw, height, aw);
+	fontManager.Current ()->StringSize (SLIDER_MIDDLE, mw, height, aw);
+	fontManager.Current ()->StringSize (SLIDER_RIGHT, rw, height, aw);
 
-		x1 = Item (m_nChoice).m_x + Item (m_nChoice).m_w - slider_width;
-		x2 = x1 + slider_width + sright_width;
-		if ((m_xMouse > x1) && (m_xMouse < (x1 + sleft_width)) && (Item (m_nChoice).Value () != Item (m_nChoice).MinValue ())) {
-			Item (m_nChoice).Value () = Item (m_nChoice).MinValue ();
-			Item (m_nChoice).m_bRedraw = 2;
+	int32_t w = lw + mw * (item.Range () - 2) + rw;
+	int32_t x = m_xMouse - item.m_xSlider;
+
+	if ((x >= 0) && (x < w)) {
+		i = x * item.Range () / w;
+		if (i != item.Value ()) {
+			item.Value () = i;
+			item.m_bRedraw = 2;
 			}
-		else if ((m_xMouse < x2) && (m_xMouse > (x2 - sright_width)) && (Item (m_nChoice).Value () != Item (m_nChoice).MaxValue ())) {
-			Item (m_nChoice).Value () = Item (m_nChoice).MaxValue ();
-			Item (m_nChoice).m_bRedraw = 2;
-			}
-		else if ((m_xMouse > (x1 + sleft_width)) && (m_xMouse < (x2 - sright_width))) {
-			int32_t numValues, value_width, newValue;
-							
-			numValues = Item (m_nChoice).MaxValue () - Item (m_nChoice).MinValue () + 1;
-			value_width = (slider_width - sleft_width - sright_width) / numValues;
-			newValue = (m_xMouse - x1 - sleft_width) / value_width;
-			if (Item (m_nChoice).Value () != newValue) {
-				Item (m_nChoice).Value () = newValue;
-				Item (m_nChoice).m_bRedraw = 2;
-				}
-			}
-		*p = '\t';
 		}
 	}
 
 if (m_nChoice != m_nOldChoice) {
-	if ((Item (m_nChoice).m_nType == NM_TYPE_INPUT) && (m_nChoice != m_nOldChoice))
-		Item (m_nChoice).Value () = -1;
+	if ((item.m_nType == NM_TYPE_INPUT) && (m_nChoice != m_nOldChoice))
+		item.Value () = -1;
 	if ((m_nOldChoice> -1) && (Item (m_nOldChoice).m_nType == NM_TYPE_INPUT_MENU) && (m_nOldChoice != m_nChoice)) {
 		Item (m_nOldChoice).m_group = 0;
 		strcpy (Item (m_nOldChoice).m_text, Item (m_nOldChoice).m_savedText);
@@ -1283,7 +1265,7 @@ if (m_nChoice != m_nOldChoice) {
 	if (m_nOldChoice> -1) 
 		Item (m_nOldChoice).m_bRedraw = 1;
 	}
-Item (m_nChoice).m_bRedraw = 1;
+item.m_bRedraw = 1;
 return 1;
 }
 

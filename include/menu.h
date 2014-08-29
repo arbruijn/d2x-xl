@@ -107,6 +107,7 @@ public:
 	int16_t m_nKey;
 	// The rest of these are used internally by by the menu system, so don't set 'em!!
 	int16_t m_x, m_y, m_xSave, m_ySave;
+	int16_t m_xSlider;
 	int16_t m_w, m_h;
 	int16_t m_rightOffset;
 	uint8_t m_bRedraw;
@@ -172,6 +173,9 @@ public:
 	}
 	inline int32_t& MaxValue (void) {
 		return m_maxValue;
+	}
+	inline int32_t Range (void) {
+		return MaxValue () - MinValue () + 1;
 	}
 	inline void Redraw (void) {
 		m_bRedraw = 1;

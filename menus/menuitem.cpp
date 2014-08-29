@@ -362,6 +362,7 @@ if (p) {
 		backgroundManager.Current ()->BlitClipped (CCanvas::Current (), x, y + h - 1, w, 1, x, y);
 		}
 	GrString (x, y, s1);
+	m_xSlider = x;
 	*p = '\t';
 	}
 }
