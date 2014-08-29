@@ -1230,12 +1230,6 @@ m_nChoice = i;
 CMenuItem& item = Item (m_nChoice);
 
 if (item.m_nType == NM_TYPE_SLIDER) {
-	int32_t x1 = Item (i).m_x - Item (i).m_rightOffset - 6;
-	int32_t x2 = x1 + Item (i).m_w;
-	int32_t y1 = Item (i).m_y - ((m_props.nStringHeight + 1) * (m_props.nScrollOffset - m_props.nMaxNoScroll));
-	int32_t y2 = y1 + Item (i).m_h;
-
-	char slider_text [MENU_MAX_TEXTLEN + 1], *p, *s1;
 	int32_t lw, mw, rw, height, aw;
 					
 	fontManager.Current ()->StringSize (SLIDER_LEFT, lw, height, aw);
