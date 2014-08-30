@@ -65,70 +65,59 @@ gameStates.app.szCurrentMissionFile = m_list [nMission].filename;
 gameStates.app.szCurrentMission = m_list [nMission].szMissionName;
 
 switch (nBuiltInHogSize [1]) {
-case D1_SHAREWARE_MISSION_HOGSIZE:
-case D1_SHAREWARE_10_MISSION_HOGSIZE:
-	nSecretLevels = 0;
+	case D1_SHAREWARE_MISSION_HOGSIZE:
+	case D1_SHAREWARE_10_MISSION_HOGSIZE:
+		nSecretLevels = 0;
+		nLastLevel = 7;
+		nLastSecretLevel = 0;
+		//build level names
+		for (i = 0; i < nLastLevel; i++)
+			sprintf (szLevelNames [i], "level%02d.sdl", i+1);
+		break;
 
-	nLastLevel = 7;
-	nLastSecretLevel = 0;
+	case D1_MAC_SHARE_MISSION_HOGSIZE:
+		nSecretLevels = 0;
+		nLastLevel = 3;
+		nLastSecretLevel = 0;
+		//build level names
+		for (i = 0; i < nLastLevel; i++)
+			sprintf (szLevelNames [i], "level%02d.sdl", i+1);
+		break;
 
-	//build level names
-	for (i=0;i<nLastLevel;i++)
-		sprintf(szLevelNames [i], "level%02d.sdl", i+1);
+	case D1_OEM_MISSION_HOGSIZE:
+	case D1_OEM_10_MISSION_HOGSIZE:
+		nSecretLevels = 1;
+		nLastLevel = 15;
+		nLastSecretLevel = -1;
+		//build level names
+		for (i = 0; i < nLastLevel - 1; i++)
+			sprintf (szLevelNames [i], "level%02d.rdl", i+1);
+		sprintf (szLevelNames [i], "saturn%02d.rdl", i+1);
+		for (i = 0; i < -nLastSecretLevel; i++)
+			sprintf (szSecretLevelNames [i], "levels%1d.rdl", i+1);
+		secretLevelTable [0] = 10;
+		break;
 
-	break;
-case D1_MAC_SHARE_MISSION_HOGSIZE:
-	nSecretLevels = 0;
+	default:
+		Int3(); // fall through
 
-	nLastLevel = 3;
-	nLastSecretLevel = 0;
-
-	//build level names
-	for (i=0;i<nLastLevel;i++)
-		sprintf(szLevelNames [i], "level%02d.sdl", i+1);
-
-	break;
-case D1_OEM_MISSION_HOGSIZE:
-case D1_OEM_10_MISSION_HOGSIZE:
-	nSecretLevels = 1;
-
-	nLastLevel = 15;
-	nLastSecretLevel = -1;
-
-	//build level names
-	for (i=0; i < nLastLevel - 1; i++)
-		sprintf(szLevelNames [i], "level%02d.rdl", i+1);
-	sprintf(szLevelNames [i], "saturn%02d.rdl", i+1);
-	for (i=0; i < -nLastSecretLevel; i++)
-		sprintf(szSecretLevelNames [i], "levels%1d.rdl", i+1);
-
-	secretLevelTable [0] = 10;
-
-	break;
-default:
-	Int3(); // fall through
-
-case D1_MISSION_HOGSIZE:
-case D1_10_MISSION_HOGSIZE:
-case D1_15_MISSION_HOGSIZE:
-case D1_3DFX_MISSION_HOGSIZE:
-case D1_MAC_MISSION_HOGSIZE:
-	nSecretLevels = 3;
-
-	nLastLevel = BIM_LAST_LEVEL;
-	nLastSecretLevel = BIM_LAST_SECRET_LEVEL;
-
-	//build level names
-	for (i=0;i<nLastLevel;i++)
-		sprintf(szLevelNames [i], "level%02d.rdl", i+1);
-	for (i=0;i<-nLastSecretLevel;i++)
-		sprintf(szSecretLevelNames [i], "levels%1d.rdl", i+1);
-
-	secretLevelTable [0] = 10;
-	secretLevelTable [1] = 21;
-	secretLevelTable [2] = 24;
-
-	break;
+	case D1_MISSION_HOGSIZE:
+	case D1_10_MISSION_HOGSIZE:
+	case D1_15_MISSION_HOGSIZE:
+	case D1_3DFX_MISSION_HOGSIZE:
+	case D1_MAC_MISSION_HOGSIZE:
+		nSecretLevels = 3;
+		nLastLevel = BIM_LAST_LEVEL;
+		nLastSecretLevel = BIM_LAST_SECRET_LEVEL;
+		//build level names
+		for (i = 0; i < nLastLevel; i++)
+			sprintf (szLevelNames [i], "level%02d.rdl", i+1);
+		for (i = 0; i < -nLastSecretLevel; i++)
+			sprintf (szSecretLevelNames [i], "levels%1d.rdl", i+1);
+		secretLevelTable [0] = 10;
+		secretLevelTable [1] = 21;
+		secretLevelTable [2] = 24;
+		break;
 	}
 strcpy (szBriefingFilename [0], BIM_BRIEFING_FILE);
 strcpy (szBriefingFilename [1], BIM_ENDING_FILE);
