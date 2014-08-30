@@ -161,7 +161,7 @@ void ComputeVisAndVec (CObject *objP, CFixVector *pos, tAILocalInfo *ailP, tRobo
 {
 if (*flag)
 	LimitTargetVisibility (xMaxVisibleDist, ailP);
-else {
+else if (!TARGETOBJ->Appearing ()) {
 	if (TARGETOBJ->Cloaked ()) {
 		fix			deltaTime, dist;
 		int32_t			nCloakIndex = (objP->Index ()) % MAX_AI_CLOAK_INFO;

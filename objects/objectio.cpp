@@ -307,7 +307,7 @@ m_nAttackRobots = -1;
 
 void CObject::LoadState (CFile& cf)
 {
-	int32_t fPos = cf.Tell ();
+//	int32_t fPos = cf.Tell ();
 
 info.nSignature = cf.ReadInt ();      
 info.nType = (uint8_t) cf.ReadByte (); 
@@ -468,7 +468,7 @@ else {
 
 void CObject::SaveState (CFile& cf)
 {
-	int32_t fPos = cf.Tell ();
+//	int32_t fPos = cf.Tell ();
 
 cf.WriteInt (info.nSignature);      
 cf.WriteByte ((int8_t) info.nType); 

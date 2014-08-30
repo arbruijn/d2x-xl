@@ -1508,6 +1508,7 @@ if (!gameData.ai.nTargetVisibility) {
 		else
 			si.aiP->CURRENT_GUN = 1;
 		}
+	AIDoRandomPatrol (objP, si.ailP);
 	}
 }
 

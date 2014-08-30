@@ -113,8 +113,8 @@ if (speed > xMaxSpeed)
 void MoveAwayFromOtherRobots (CObject *objP, CFixVector& vVecToTarget)
 {
 	fix				xAvoidRad = 0;
-	int16_t				nAvoidObjs = 0;
-	int16_t				nStartSeg = objP->info.nSegment;
+	int16_t			nAvoidObjs = 0;
+	int16_t			nStartSeg = objP->info.nSegment;
 	CFixVector		vPos = objP->info.position.vPos;
 	CFixVector		vAvoidPos;
 
@@ -180,7 +180,7 @@ void MoveAroundPlayer (CObject *objP, CFixVector *vVecToTarget, int32_t fastFlag
 {
 	tPhysicsInfo&	physInfo = objP->mType.physInfo;
 	tRobotInfo&		robotInfo = ROBOTINFO (objP->info.nId);
-	int32_t				nObject = objP->Index ();
+	int32_t			nObject = objP->Index ();
 
 if (fastFlag == 0)
 	return;

@@ -41,7 +41,7 @@ if (!bPatrols)
 if (objP->Index () == nDbgObj)
 	BRP;
 #endif
-if (gameOpts->gameplay.bIdleAnims && (ailP->mode == AIM_IDLING)) {
+if (!IsMultiGame && gameOpts->gameplay.bIdleAnims && (ailP->mode == AIM_IDLING)) {
 		int32_t		h, i, j;
 		CSegment*	segP = SEGMENTS + objP->info.nSegment;
 		CFixVector*	vVertex, vVecToGoal, vGoal = gameData.objs.vRobotGoals [objP->Index ()];
@@ -53,7 +53,8 @@ if (gameOpts->gameplay.bIdleAnims && (ailP->mode == AIM_IDLING)) {
 				break;
 			}
 		}
-	vVecToGoal = vGoal - objP->info.position.vPos; CFixVector::Normalize (vVecToGoal);
+	vVecToGoal = vGoal - objP->info.position.vPos; 
+	CFixVector::Normalize (vVecToGoal);
 	if (i == 8)
 		h = 1;
 	else if (AITurnTowardsVector (&vVecToGoal, objP, ROBOTINFO (objP->info.nId).turnTime [2]) < I2X (1) - I2X (1) / 5) {
@@ -72,7 +73,7 @@ if (gameOpts->gameplay.bIdleAnims && (ailP->mode == AIM_IDLING)) {
 		h = 1;
 	if (h && (Rand (25) == 0)) {
 		j = Rand (8);
-		if ((segP->m_vertices [j] == 0xFFFF) || (j == i) || (rand () % 3 == 0))
+		if ((segP->m_vertices [j] == 0xFFFF) || (j == i) || (Rand (3) == 0))
 			vGoal = SEGMENTS [objP->info.nSegment].Center ();
 		else
 			vGoal = gameData.segs.vertices [segP->m_vertices [j]];
