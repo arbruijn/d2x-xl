@@ -105,19 +105,21 @@ return vPos;
 
 CFixVector* RandomPointOnQuad (CFixVector *quad, CFixVector *vPos) 
 {
-	int32_t i;
+	int32_t		i;
+	CFixVector	v [4];
 
+memcpy (v, quad, sizeof (v));
 for (i = 0; i < 4; i++)
-	if ((quad [i].v.coord.x == 0x7fffffff) && (quad [i].v.coord.y == 0x7fffffff) && (quad [i].v.coord.z == 0x7fffffff))
+	if ((v [i].v.coord.x == 0x7fffffff) && (v [i].v.coord.y == 0x7fffffff) && (v [i].v.coord.z == 0x7fffffff))
 		break;
 if (i < 3)
 	return NULL;
 if (i == 3)
-	return RandomPointOnTriangle (quad, vPos);
+	return RandomPointOnTriangle (v, vPos);
 if (rand () % 2)
-	return RandomPointOnTriangle (quad, vPos);
-quad [1] = quad [0];
-return RandomPointOnTriangle (quad + 1, vPos);
+	return RandomPointOnTriangle (v, vPos);
+v [1] = v [0];
+return RandomPointOnTriangle (v + 1, vPos);
 }
 
 //------------------------------------------------------------------------------
