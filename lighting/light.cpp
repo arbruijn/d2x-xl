@@ -440,7 +440,9 @@ switch (nObjType) {
 			return 0;
 		if ((objP->info.renderType == RT_THRUSTER) || (objP->info.renderType == RT_EXPLBLAST) || (objP->info.renderType == RT_SHOCKWAVE) || (objP->info.renderType == RT_SHRAPNELS))
 			return 0;
-		else if (objP->info.nId < gameData.effects.vClips [0].Length ()) {
+		else if (objP->info.nId >= gameData.effects.vClips [0].Length ()) 
+			return 0;
+		else {
 			tVideoClip*	vcP = gameData.effects.vClips [0] + objP->info.nId;
 			fix			xLight = vcP->lightValue;
 			int32_t		i, j;
