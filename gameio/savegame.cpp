@@ -92,7 +92,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "hogfile.h"
 
-#define STATE_VERSION				59
+#define STATE_VERSION				60
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) nId at tof.
 // 1 - Added Difficulty level save
@@ -788,8 +788,8 @@ m_cf.WriteShort (gameData.multiplayer.playerInit [i].nSegType);
 
 void CSaveGameManager::SaveGameData (void)
 {
-	int32_t		i, j;
-	CObject	*objP;
+	int32_t	i, j;
+	CObject*	objP;
 
 m_cf.WriteInt (gameData.segs.nMaxSegments);
 // Save the Between levels flag...
@@ -855,13 +855,13 @@ if (!m_bBetweenLevels) {
 			}
 		}
 //Save CObject info
-	i = gameData.objs.nObjects;
-	m_cf.WriteInt (i);
+	PrintLog (0, "saving objects ...\n", i);
 	CObject* objP;
 	FORALL_OBJS (objP) {
 		m_cf.WriteShort ((int16_t) objP->Index ());
 		objP->SaveState (m_cf);
 		}
+	m_cf.WriteShort ((int16_t) -1);
 //Save CWall info
 	i = gameData.walls.nWalls;
 	m_cf.WriteInt (i);
@@ -1751,28 +1751,39 @@ if (!m_bBetweenLevels) {
 	InitObjects (false);
 
 	//Read objects, and pop 'em into their respective segments.
-	h = m_cf.ReadInt ();
-	//gameData.objs.nLastObject [0] = h - 1;
 	extraGameInfo [0].nBossCount [0] = 0;
-	if (m_nVersion < 59) {
-		for (i = 0; i < h; i++) {
-			int16_t nObject = AllocObject (i);
-			CObject* objP = OBJECTS + nObject;
-			objP->LoadState (m_cf);
-			if (objP->Type () >= MAX_OBJECT_TYPES)
-				FreeObject (nObject);
-			else {
-				objP->Link ();
-				if ((m_nVersion < 32) && IS_BOSS (objP))
-					gameData.bosses.Add (nObject);
-				}
+	if (m_nVersion > 59) {
+		int16_t nObject;
+		while (-1 < (nObject = m_cf.ReadShort ())) {
+			nObject = AllocObject (nObject);
+			OBJECTS [nObject].LoadState (m_cf);
+			OBJECTS [nObject].Link ();
 			}
 		}
 	else {
-		for (i = 0; i < h; i++) {
-			int16_t nObject = AllocObject (m_cf.ReadShort ());
-			OBJECTS [nObject].LoadState (m_cf);
-			OBJECTS [nObject].Link ();
+		h = m_cf.ReadInt ();
+		PrintLog (0, "restoring %d objects ...\n", h);
+		//gameData.objs.nLastObject [0] = h - 1;
+		if (m_nVersion < 59) {
+			for (i = 0; i < h; i++) {
+				int16_t nObject = AllocObject (i);
+				CObject* objP = OBJECTS + nObject;
+				objP->LoadState (m_cf);
+				if (objP->Type () >= MAX_OBJECT_TYPES)
+					FreeObject (nObject);
+				else {
+					objP->Link ();
+					if ((m_nVersion < 32) && IS_BOSS (objP))
+						gameData.bosses.Add (nObject);
+					}
+				}
+			}
+		else {
+			for (i = 0; i < h; i++) {
+				int16_t nObject = AllocObject (m_cf.ReadShort ());
+				OBJECTS [nObject].LoadState (m_cf);
+				OBJECTS [nObject].Link ();
+				}
 			}
 		}
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);

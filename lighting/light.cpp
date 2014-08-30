@@ -440,11 +440,11 @@ switch (nObjType) {
 			return 0;
 		if ((objP->info.renderType == RT_THRUSTER) || (objP->info.renderType == RT_EXPLBLAST) || (objP->info.renderType == RT_SHOCKWAVE) || (objP->info.renderType == RT_SHRAPNELS))
 			return 0;
-		else {
-			tVideoClip *vcP = gameData.effects.vClips [0] + objP->info.nId;
-			fix		xLight = vcP->lightValue;
+		else if (objP->info.nId < gameData.effects.vClips [0].Length ()) {
+			tVideoClip*	vcP = gameData.effects.vClips [0] + objP->info.nId;
+			fix			xLight = vcP->lightValue;
 			int32_t		i, j;
-			CBitmap	*bmoP, *bmP; // = gameData.pig.tex.bitmapP [vcP->frames [0].index].Override (-1);
+			CBitmap*		bmoP, * bmP; // = gameData.pig.tex.bitmapP [vcP->frames [0].index].Override (-1);
 #if 0
 			if (bmP) {
 				bmP->GetAvgColor (colorP);

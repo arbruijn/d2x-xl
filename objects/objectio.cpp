@@ -307,6 +307,8 @@ m_nAttackRobots = -1;
 
 void CObject::LoadState (CFile& cf)
 {
+	int32_t fPos = cf.Tell ();
+
 info.nSignature = cf.ReadInt ();      
 info.nType = (uint8_t) cf.ReadByte (); 
 info.nId = (uint8_t) cf.ReadByte ();
@@ -315,6 +317,10 @@ info.nPrevInSeg = cf.ReadShort ();
 info.controlType = (uint8_t) cf.ReadByte ();
 info.movementType = (uint8_t) cf.ReadByte ();
 info.renderType = (uint8_t) cf.ReadByte ();
+#if DBG
+if (info.renderType == 14)
+	BRP;
+#endif
 info.nFlags = (uint8_t) cf.ReadByte ();
 info.nSegment = cf.ReadShort ();
 info.nAttachedObj = cf.ReadShort ();
@@ -411,6 +417,7 @@ switch (info.renderType) {
 		rType.polyObjInfo.nAltTextures = cf.ReadInt ();
 		break;
 		}
+
 	case RT_WEAPON_VCLIP:
 	case RT_HOSTAGE:
 	case RT_POWERUP:
@@ -437,6 +444,12 @@ switch (info.renderType) {
 	case RT_SOUND:
 		rType.soundInfo.bEnabled = (saveGameManager.Version () < 48) ? 1 : cf.ReadByte ();
 		break;
+
+	default:
+#if DBG
+		BRP;
+#endif
+		break;
 	}
 if (saveGameManager.Version () < 45)
 	ResetDamage ();
@@ -444,17 +457,19 @@ else {
 	m_damage.nHits [0] = cf.ReadFix ();
 	m_damage.nHits [1] = cf.ReadFix ();
 	m_damage.nHits [2] = cf.ReadFix ();
-	if (saveGameManager.Version () < 46)
-		m_damage.tRepaired = gameStates.app.nSDLTicks [0];
-	else
-		m_damage.tRepaired = gameStates.app.nSDLTicks [0] - cf.ReadFix ();
+	m_damage.tRepaired = gameStates.app.nSDLTicks [0];
+	if (saveGameManager.Version () >= 46)
+		m_damage.tRepaired -= cf.ReadFix ();
 	}
+//PrintLog (0, "object sig=%d, type=%d, renderType=%d, pos = %d, %d\n", info.nSignature, info.nType, info.renderType, fPos, cf.Tell ());
 }
 
 //------------------------------------------------------------------------------
 
 void CObject::SaveState (CFile& cf)
 {
+	int32_t fPos = cf.Tell ();
+
 cf.WriteInt (info.nSignature);      
 cf.WriteByte ((int8_t) info.nType); 
 cf.WriteByte ((int8_t) info.nId);
@@ -463,6 +478,10 @@ cf.WriteShort (info.nPrevInSeg);
 cf.WriteByte ((int8_t) info.controlType);
 cf.WriteByte ((int8_t) info.movementType);
 cf.WriteByte ((int8_t) info.renderType);
+#if DBG
+if (info.renderType == 14)
+	BRP;
+#endif
 cf.WriteByte ((int8_t) info.nFlags);
 cf.WriteShort (info.nSegment);
 cf.WriteShort (info.nAttachedObj);
@@ -550,6 +569,7 @@ switch (info.renderType) {
 		cf.WriteInt (rType.polyObjInfo.nAltTextures);
 		break;
 		}
+
 	case RT_WEAPON_VCLIP:
 	case RT_HOSTAGE:
 	case RT_POWERUP:
@@ -576,11 +596,18 @@ switch (info.renderType) {
 	case RT_SOUND:
 		cf.WriteByte (rType.soundInfo.bEnabled);
 		break;
+
+	default:
+#if DBG
+		BRP;
+#endif
+		break;
 	}
 cf.WriteFix (m_damage.nHits [0]);
 cf.WriteFix (m_damage.nHits [1]);
 cf.WriteFix (m_damage.nHits [2]);
 cf.WriteFix (gameStates.app.nSDLTicks [0] - m_damage.tRepaired);
+//PrintLog (0, "object sig=%d, type=%d, renderType=%d, pos = %d, %d\n", info.nSignature, info.nType, info.renderType, fPos, cf.Tell ());
 }
 
 //------------------------------------------------------------------------------
