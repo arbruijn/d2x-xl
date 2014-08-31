@@ -718,13 +718,13 @@ do {
 		m.AddRadio (kbdLayoutIds [3], TXT_DVORAK, gameOpts->input.keyboard.nType == 3, KEY_D, HTX_KEYBOARD_LAYOUT);
 		i = m.Menu (NULL, TXT_KEYBOARD_CONFIG, KeyboardConfigCallback, &choice);
 		} while (i == -2);
-	if (i == -1)
-		return;
 	for (int32_t j = 0; j < 4; j++)
 		if (m.Value (kbdLayoutIds [j]) != 0) {
 			gameOpts->input.keyboard.nType = j;
 			break;
 			}
+	if (i == -1)
+		return;
 	if (choice == m.IndexOf ("customize device"))
 		controlConfig.Run (0, TXT_CFG_KBD);
 	else if (choice == m.IndexOf ("customize hotkeys"))

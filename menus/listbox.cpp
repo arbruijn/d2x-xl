@@ -213,12 +213,17 @@ while (!m_bDone) {
 		}
 
 	switch (m_nKey) {
+		case 0:
+			break;
+
 		case KEY_CTRLED + KEY_F1:
 			SwitchDisplayMode (-1);
 			break;
+
 		case KEY_CTRLED + KEY_F2:
 			SwitchDisplayMode (1);
 			break;
+
 		case KEY_CTRLED + KEY_S:
 			if (gameStates.app.bNostalgia)
 				gameOpts->menus.bSmartFileSearch = 0;
@@ -230,36 +235,44 @@ while (!m_bDone) {
 		case KEY_PRINT_SCREEN: 	
 			SaveScreenShot (NULL, 0); 
 			break;
+
 		case KEY_HOME:
 		case KEY_PAD7:
 			m_nChoice = 0;
 			break;
+
 		case KEY_END:
 		case KEY_PAD1:
 			m_nChoice = int32_t (items.ToS ()) - 1;
 			break;
+
 		case KEY_UP:
 		case KEY_PAD8:
 			m_nChoice--;		
 			break;
+
 		case KEY_DOWN:
 		case KEY_PAD2:
 			m_nChoice++;		
 			break;
+
  		case KEY_PAGEDOWN:
 		case KEY_PAD3:
 			m_nChoice += m_nVisibleItems;
 			break;
+
 		case KEY_PAGEUP:
 		case KEY_PAD9:
 			m_nChoice -= m_nVisibleItems;
 			break;
+
 		case KEY_ESC:
 			if (bAllowAbort) {
 				m_nChoice = -1;
 				m_bDone = 1;
-			}
+				}
 			break;
+
 		case KEY_ENTER:
 		case KEY_PADENTER:
 			m_bDone = 1;
@@ -273,8 +286,8 @@ while (!m_bDone) {
 				
 		default:
 			if (!gameOpts->menus.bSmartFileSearch || (nPatternLen < (int32_t) sizeof (szPattern) - 1)) {
-				int32_t nStart,
-					 ascii = KeyToASCII (m_nKey);
+				int32_t	nStart,
+							ascii = KeyToASCII (m_nKey);
 				if ((m_nKey == KEY_BACKSPACE) || (ascii < 255)) {
 					int32_t cc, bFound = 0;
 					if (!gameOpts->menus.bSmartFileSearch) {

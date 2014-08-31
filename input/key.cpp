@@ -358,13 +358,15 @@ else if (keyCode == KEY_SLASH)
 	return KEY_MINUS;
 else if (keyCode == KEY_BACKSLASH)
 	return KEY_RAPOSTRO;
-else if (keyCode & KEY_SHIFTED) {
+else if ((keyCode & KEY_SHIFTED) || ((gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT]))) {
 	int32_t h = keyCode & 0xFF;
 	if (h == KEY_7)
 		return KEY_BACKSLASH;
 	else if (h == KEY_0)
 		return KEY_EQUALS;
 	else if (h == KEY_COMMA)
+		return KEY_SEMICOLON;
+	else if (keyCode == KEY_PERIOD)
 		return KEY_SEMICOLON;
 	}
 else if (gameStates.input.keys.pressed [KEY_LCTRL] && gameStates.input.keys.pressed [KEY_RALT]) {	//ALTGR
@@ -412,7 +414,7 @@ else if (keyCode == KEY_LBRACKET)
 	return -1;
 else if (keyCode == KEY_SLASH)
 	return -1;
-else if (gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT]) {
+else if ((keyCode & KEY_SHIFTED) || ((gameStates.input.keys.pressed [KEY_LSHIFT] || gameStates.input.keys.pressed [KEY_RSHIFT]))) {
 	int32_t h = keyCode & 0xFF;
 	if (h == KEY_COMMA)
 		return KEY_PERIOD;
