@@ -127,6 +127,7 @@ else {
 			static CFloatVector color = {{{0.25f, 0.125f, 0.0f, 0.2f}}};
 			lightningManager.CreateForTeleport (this, &color);
 #endif
+			effectObjP->SetLife (I2X (1));
 			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), /*effectObjP ? effectObjP->LifeLeft () : */I2X (1), info.xSize, 1, OBJPOS (this)->vPos));
 			gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = (/*effectObjP ? effectObjP->LifeLeft () :*/ I2X (1)) * 2;
 			StopPlayerMovement ();

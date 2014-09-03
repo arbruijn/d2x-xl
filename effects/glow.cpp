@@ -785,9 +785,11 @@ else
 	radius += RAD_INCR;
 	if (!ogl.SelectBlurBuffer (0))
 		return Reset (0, 1);
+	ClearDrawBuffer (m_nType);
 	Render (-1, 0, radius, true); // Glow -> Blur 0
 	if (!ogl.SelectBlurBuffer (1))
 		return Reset (0, 1);
+	ClearDrawBuffer (m_nType);
 	Render (0, 1, radius, true); // Blur 0 -> Blur 1
 	if (m_nType != BLUR_SHADOW)
 		ogl.SetBlendMode (OGL_BLEND_ADD);
@@ -818,6 +820,7 @@ else
 	ogl.SetBlendMode ((m_nType == BLUR_SHADOW) ? OGL_BLEND_MULTIPLY : OGL_BLEND_ADD);
 	Render (-1, -1, radius, scale); // render the unblurred stuff on top of the blur
 #endif
+
 	ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);
 	glMatrixMode (GL_PROJECTION);
 	glPopMatrix ();

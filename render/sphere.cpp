@@ -442,11 +442,8 @@ return sphereP;
 
 // -----------------------------------------------------------------------------
 
-int32_t CSphere::InitSurface (float red, float green, float blue, float alpha, CBitmap *bmP, float *pfScale)
+void CSphere::Pulsate (void)
 {
-	float	fScale;
-	int32_t	bTextured = 0;
-
 if (m_pulseP) {
 	static time_t	t0 = 0;
 	if (gameStates.app.nSDLTicks [0] - t0 > 25) {
@@ -461,10 +458,16 @@ if (m_pulseP) {
 			m_pulseP->fDir = m_pulseP->fSpeed;
 			}
 		}
-	fScale = m_pulseP->fScale;
 	}
-else
-	fScale = 1;
+}
+
+// -----------------------------------------------------------------------------
+
+int32_t CSphere::InitSurface (float red, float green, float blue, float alpha, CBitmap *bmP, float *pfScale)
+{
+	int32_t	bTextured = 0;
+
+float fScale = m_pulseP ? m_pulseP->fScale : 1.0f;
 #if 1
 if (bmP && (bmP == shield.Bitmap ())) {
 	static time_t t0 = 0;
@@ -518,9 +521,9 @@ return bTextured;
 
 int32_t CSphere::Create (int32_t nRings, int32_t nTiles)
 {
-	int32_t				h, i, j;
+	int32_t			h, i, j;
 	float				t1, t2, t3, a, sint1, cost1, sint2, cost2, sint3, cost3;
-	tSphereVertex	*svP;
+	tSphereVertex*	svP;
 
 if (nRings > MAX_SPHERE_RINGS)
 	nRings = MAX_SPHERE_RINGS;
@@ -759,18 +762,20 @@ if (m_nFaceNodes == 3)
 	bmP = NULL;
 else
 #endif
-	bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, &fScale);
-ogl.SetDepthMode (GL_LEQUAL);
+Pulsate ();
 if (bGlow) {
 	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 	glowRenderer.Begin (GLOW_SHIELDS, 2, false, 0.85f);
 	if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, 4 * xScale / 3)) {
 		glowRenderer.Done (GLOW_SHIELDS);
+		ogl.SetDepthMode (GL_LEQUAL);
 		return 0;
 		}
 	}
-else
+else {
 	ogl.SetBlendMode (bAdditive);
+	ogl.SetDepthMode (GL_LEQUAL);
+	}
 #if RINGED_SPHERE
 ogl.SetTransform (1);
 if (bAppearing) {
@@ -795,12 +800,16 @@ else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
 ogl.SetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
 transformation.Begin (vPos, posP->mOrient);
-RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
+RenderRings (xScale, 32, red, green, blue, alpha, 	InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, &fScale), nTiles);
 transformation.End ();
 ogl.ResetTransform (0);
 ogl.SetTransform (0);
 if (bGlow) 
+#if 1
 	glowRenderer.Done (GLOW_SHIELDS);
+#else
+	glowRenderer.End ();
+#endif
 #else
 RenderTesselated (vPosP, xScale, yScale, zScale, red, green, blue, alpha, bmP);
 #endif //RINGED_SPHERE

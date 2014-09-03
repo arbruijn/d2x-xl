@@ -1496,14 +1496,14 @@ if (!itemP->bRendered) {
 	if (gameOpts->render.debug.bTextures && gameOpts->render.debug.bWalls)
 #endif
 	try {
+		//if ((m_data.nCurType != tiSphere) && (m_data.nPrevType == tiSphere)) // spheres somehow mess up the glow renderer; I cannot determine why though
+		//	glowRenderer.End ();
 		FlushBuffers (m_data.nCurType, itemP);
 		ogl.SetBlendMode (OGL_BLEND_ALPHA);
 		ogl.SetDepthWrite (false);
 		ogl.SetDepthMode (GL_LEQUAL);
 		ogl.SetDepthTest (true);
 		itemP->Render ();
-		if ((m_data.nCurType != tiSphere) && (m_data.nPrevType == tiSphere)) // spheres somehow mess up the glow renderer; I cannot determine why though
-			glowRenderer.End ();
 		}
 	catch(...) {
 		PrintLog (0, "invalid transparent render item (type: %d)\n", m_data.nCurType);
