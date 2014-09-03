@@ -186,9 +186,9 @@ return 1;
 //	-----------------------------------------------------------------------------
 
 int32_t CParticleManager::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
-										int16_t nSegment, int32_t nMaxEmitters, int32_t nMaxParts,
-										float fScale, /*int32_t nDensity, int32_t nPartsPerPos,*/ int32_t nLife, int32_t nSpeed, char nType,
-										int32_t nObject, CFloatVector *colorP, int32_t bBlowUpParts, char nSide)
+											 int16_t nSegment, int32_t nMaxEmitters, int32_t nMaxParts,
+											 float fScale, /*int32_t nDensity, int32_t nPartsPerPos,*/ int32_t nLife, int32_t nSpeed, char nType,
+											 int32_t nObject, CFloatVector *colorP, int32_t bBlowUpParts, char nSide)
 {
 if (!gameOpts->render.particles.nQuality)
 	return -1;
@@ -210,7 +210,7 @@ else
 if (!systemP)
 	return -1;
 int32_t i = systemP->Create (vPos, vDir, mOrient, nSegment, nMaxEmitters, nMaxParts, fScale, /*nDensity, nPartsPerPos,*/ 
-								 nLife, nSpeed, nType, nObject, colorP, bBlowUpParts, nSide);
+									  nLife, nSpeed, nType, nObject, colorP, bBlowUpParts, nSide);
 if (i < 1)
 	return i;
 return systemP->Id ();

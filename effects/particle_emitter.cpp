@@ -205,7 +205,7 @@ if ((nThread < 0) && RunEmitterThread (emitterP, nCurTime, rtUpdateParticles)) {
 else
 #endif
  {
-		int32_t				t, h, i, j, nNewParts = 0;
+		int32_t			t, h, i, j, nNewParts = 0;
 		float				fDist;
 		float				fBrightness = Brightness ();
 		CFixMatrix		mOrient = m_mOrient;

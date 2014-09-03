@@ -46,11 +46,11 @@
 //------------------------------------------------------------------------------
 
 int32_t CParticleSystem::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
-									  int16_t nSegment, int32_t nMaxEmitters, int32_t nMaxParts,
-									  float fScale, /*int32_t nDensity, int32_t nPartsPerPos,*/ int32_t nLife, int32_t nSpeed, char nType,
-									  int32_t nObject, CFloatVector *colorP, int32_t bBlowUpParts, char nSide)
+											int16_t nSegment, int32_t nMaxEmitters, int32_t nMaxParts,
+											float fScale, /*int32_t nDensity, int32_t nPartsPerPos,*/ int32_t nLife, int32_t nSpeed, char nType,
+											int32_t nObject, CFloatVector *colorP, int32_t bBlowUpParts, char nSide)
 {
-	int32_t			i;
+	int32_t		i;
 	CFixVector	vEmittingFace [4];
 
 if (nSide >= 0)
@@ -260,7 +260,7 @@ if (m_bValid < 1)
 
 	CParticleEmitter*				emitterP;
 	CArray<CParticleEmitter*>	emitters;
-	int32_t								nEmitters = 0;
+	int32_t							nEmitters = 0;
 
 if ((m_nObject == 0x7fffffff) && (m_nType <= SMOKE_PARTICLES) &&
 	 (gameStates.app.nSDLTicks [0] - m_nBirth > (MAX_SHRAPNEL_LIFE / I2X (1)) * 1000))

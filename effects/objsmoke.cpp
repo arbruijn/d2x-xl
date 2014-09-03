@@ -217,17 +217,17 @@ if (gameOpts->render.ship.bBullets) {
 		RenderModel::CModel	*pm = gameData.models.renderModels [bHires] + nModel;
 
 		if (pm->m_bBullets) {
-				int32_t			nPlayer = objP->info.nId;
-				int32_t			nGun = EquippedPlayerGun (objP);
-				int32_t			bDoEffect = (bHires >= 0) && ((nGun == VULCAN_INDEX) || (nGun == GAUSS_INDEX)) &&
-												(gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration >= GATLING_DELAY);
-				int32_t			i = gameData.multiplayer.bulletEmitters [nPlayer];
+				int32_t	nPlayer = objP->info.nId;
+				int32_t	nGun = EquippedPlayerGun (objP);
+				int32_t	bDoEffect = (bHires >= 0) && ((nGun == VULCAN_INDEX) || (nGun == GAUSS_INDEX)) &&
+											(gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration >= GATLING_DELAY);
+				int32_t	i = gameData.multiplayer.bulletEmitters [nPlayer];
 
 			if (bDoEffect) {
-					int32_t			bSpectate = SPECTATOR (objP);
-					tObjTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
-					CFixVector	vEmitter, vDir;
-					CFixMatrix	m, *viewP;
+					int32_t					bSpectate = SPECTATOR (objP);
+					tObjTransformation*	posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
+					CFixVector				vEmitter, vDir;
+					CFixMatrix				m, * viewP;
 
 				if (bSpectate) {
 					viewP = &m;
@@ -277,17 +277,17 @@ if (bHires >= 0) {
 	RenderModel::CModel	*pm = gameData.models.renderModels [bHires] + nModel;
 
 	if (pm->m_bBullets) {
-			int32_t			nPlayer = objP->info.nId;
-			int32_t			nGun = EquippedPlayerGun (objP);
-			int32_t			bDoEffect = (bHires >= 0) && ((nGun == VULCAN_INDEX) || (nGun == GAUSS_INDEX)) &&
-											(gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration >= GATLING_DELAY);
-			int32_t			i = gameData.multiplayer.gatlingSmoke [nPlayer];
+			int32_t	nPlayer = objP->info.nId;
+			int32_t	nGun = EquippedPlayerGun (objP);
+			int32_t	bDoEffect = (bHires >= 0) && ((nGun == VULCAN_INDEX) || (nGun == GAUSS_INDEX)) &&
+										(gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration >= GATLING_DELAY);
+			int32_t		i = gameData.multiplayer.gatlingSmoke [nPlayer];
 
 		if (bDoEffect) {
-				int32_t			bSpectate = SPECTATOR (objP);
-				tObjTransformation	*posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
-				CFixVector	*vGunPoints, vEmitter, vDir;
-				CFixMatrix	m, *viewP;
+				int32_t					bSpectate = SPECTATOR (objP);
+				tObjTransformation*	posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
+				CFixVector				* vGunPoints, vEmitter, vDir;
+				CFixMatrix				m, * viewP;
 
 			if (!(vGunPoints = GetGunPoints (objP, nGun)))
 				return;
@@ -328,9 +328,9 @@ if (bHires >= 0) {
 void DoPlayerSmoke (CObject *objP, int32_t nPlayer)
 {
 #if PLAYER_SMOKE
-	int32_t					nObject, nSmoke, d, nParts, nType;
+	int32_t				nObject, nSmoke, d, nParts, nType;
 	float					nScale;
-	CParticleEmitter	*emitterP;
+	CParticleEmitter*	emitterP;
 	CFixVector			fn, mn, vDir;
 	tThrusterInfo		ti;
 
@@ -522,7 +522,7 @@ else
 void DoReactorSmoke (CObject *objP)
 {
 #if REACTOR_SMOKE
-	int32_t			h = -1, nObject, nSmoke, nShield = 0, nParts;
+	int32_t		h = -1, nObject, nSmoke, nShield = 0, nParts;
 	CFixVector	vDir, vPos;
 
 nObject = objP->Index ();
@@ -571,9 +571,9 @@ else
 void DoMissileSmoke (CObject *objP)
 {
 #if MISSILE_SMOKE
-	int32_t				nParts, nSpeed, nObject, nSmoke;
-	float				nScale = 1.5f + float (gameOpts->render.particles.nQuality) / 2.0f, 
-						nLife;
+	int32_t	nParts, nSpeed, nObject, nSmoke;
+	float		nScale = 1.5f + float (gameOpts->render.particles.nQuality) / 2.0f, 
+				nLife;
 
 nObject = objP->Index ();
 if (!(SHOW_SMOKE && gameOpts->render.particles.bMissiles)) {
@@ -623,7 +623,7 @@ else
 void DoDebrisSmoke (CObject *objP)
 {
 #if DEBRIS_SMOKE
-	int32_t			nParts, nObject, nSmoke;
+	int32_t		nParts, nObject, nSmoke;
 	float			nScale = 2;
 	CFixVector	pos;
 
@@ -671,6 +671,7 @@ void DoStaticParticles (CObject *objP)
 	static CFloatVector defaultColors [7] = {{{{0.5f, 0.5f, 0.5f, 0.0f}}}, {{{0.8f, 0.9f, 1.0f, 1.0f}}}, {{{1.0f, 1.0f, 1.0f, 1.0f}}},
 														 {{{1.0f, 1.0f, 1.0f, 1.0f}}}, {{{1.0f, 1.0f, 1.0f, 1.0f}}}, {{{1.0f, 1.0f, 1.0f, 1.0f}}},
 														 {{{1.0f, 1.0f, 1.0f, 1.0f}}}};
+
 	static int32_t particleTypes [7] = {SMOKE_PARTICLES, BUBBLE_PARTICLES, FIRE_PARTICLES, WATERFALL_PARTICLES, SIMPLE_SMOKE_PARTICLES, RAIN_PARTICLES, SNOW_PARTICLES};
 
 nObject = (int32_t) objP->Index ();

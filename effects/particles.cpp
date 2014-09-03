@@ -430,10 +430,10 @@ m_bRotate = ((m_nRenderType <= SMOKE_PARTICLES) || (m_nRenderType == SNOW_PARTIC
 static int32_t bounceFlags [PARTICLE_TYPES] = {2,2,1,1,1,2,1,2,2,2};
 
 int32_t CParticle::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix *mOrient,
-							  int16_t nSegment, int32_t nLife, int32_t nSpeed, char nParticleSystemType,
-							  char nClass, float nScale, CFloatVector *colorP, int32_t nCurTime,
-							  int32_t bBlowUp, char nFadeType, float fBrightness,
-							  CFixVector *vEmittingFace) 
+									int16_t nSegment, int32_t nLife, int32_t nSpeed, char nParticleSystemType,
+									char nClass, float nScale, CFloatVector *colorP, int32_t nCurTime,
+									int32_t bBlowUp, char nFadeType, float fBrightness,
+									CFixVector *vEmittingFace) 
 {
 	int32_t nType = particleImageManager.GetType (nParticleSystemType);
 

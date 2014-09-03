@@ -512,7 +512,7 @@ class CParticleManager {
 			}
 
 		inline int32_t MaxParticles (int32_t nParts, int32_t nDens) {
-			nParts = ((nParts < 0) ? -nParts : nParts * (nDens + 1)); //(int32_t) (nParts * pow (1.2, nDens));
+			nParts = ((nParts < 0) ? -nParts : nParts * (nDens + 1)) >> int32_t (!gameOpts->render.particles.bDisperse); //(int32_t) (nParts * pow (1.2, nDens));
 			return (nParts < 100000) ? nParts : 100000;
 			}
 
