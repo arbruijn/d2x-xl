@@ -116,7 +116,7 @@ if (i < 3)
 	return NULL;
 if (i == 3)
 	return RandomPointOnTriangle (v, vPos);
-if (rand () % 2)
+if (Rand (2))
 	return RandomPointOnTriangle (v, vPos);
 v [1] = v [0];
 return RandomPointOnTriangle (v + 1, vPos);
@@ -170,7 +170,7 @@ if (!brightFlags [(int32_t) m_nType]) {
 		}
 	}
 else {
-	m_bBright = (m_nType <= SMOKE_PARTICLES) ? (rand () % 50) == 0 : 0;
+	m_bBright = (m_nType <= SMOKE_PARTICLES) ? Rand (50) == 0 : 0;
 	if (colorP) {
 		if (!m_bEmissive /*|| (m_bEmissive == 3)*/) {
 			m_color [0].Red () *= RANDOM_FADE;
@@ -209,7 +209,7 @@ else {
 #endif
 				}
 			m_color [0].Blue () = 0.0f;
-			m_nFadeTime = 50 + rand () % 150;
+			m_nFadeTime = 50 + Rand (150);
 			m_color [1].Red () *= RANDOM_FADE;
 			m_color [1].Green () *= RANDOM_FADE;
 			m_color [1].Blue () *= RANDOM_FADE;
@@ -398,7 +398,7 @@ else if ((m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) {
 	m_nOrient = 1;
 	}
 else if (m_nType == BUBBLE_PARTICLES) {
-	m_iFrame = rand () % (m_nFrames * m_nFrames);
+	m_iFrame = Rand (m_nFrames * m_nFrames);
 	m_nRotFrame = 0;
 	m_nOrient = 0;
 	}
@@ -408,18 +408,18 @@ else if ((m_nType == LIGHT_PARTICLES) || (m_nType == GATLING_PARTICLES)) {
 	m_nOrient = 0;
 	}
 else if (m_nType == FIRE_PARTICLES) {
-	m_iFrame = (rand () % 10 < 6) ? 0 : 2; // more fire than smoke (60:40)
+	m_iFrame = (Rand (10) < 6) ? 0 : 2; // more fire than smoke (60:40)
 	if (m_iFrame < 2)
 		m_nLife = 9 * m_nLife / 10;
 	else
 		m_nLife = 10 * m_nLife / 9;
-	m_nRotFrame = rand () % PARTICLE_POSITIONS;
-	m_nOrient = rand () % 4;
+	m_nRotFrame = Rand (PARTICLE_POSITIONS);
+	m_nOrient = Rand (4);
 	}
 else {
-	m_iFrame = rand () % (m_nFrames * m_nFrames);
-	m_nRotFrame = rand () % PARTICLE_POSITIONS;
-	m_nOrient = rand () % 4;
+	m_iFrame = Rand (m_nFrames * m_nFrames);
+	m_nRotFrame = Rand (PARTICLE_POSITIONS);
+	m_nOrient = Rand (4);
 	}
 m_bAnimate = (m_nType != FIRE_PARTICLES) && (gameOpts->render.particles.nQuality > 1) && (m_nFrames > 1);
 m_bRotate = ((m_nRenderType <= SMOKE_PARTICLES) || (m_nRenderType == SNOW_PARTICLES)) ? 1 : (m_nRenderType == FIRE_PARTICLES + PARTICLE_TYPES) ? -1 : 0;
@@ -491,7 +491,7 @@ if (!brightFlags [(int32_t) m_nType]) {
 		}
 	}
 else {
-	m_bBright = (m_nType <= SMOKE_PARTICLES) ? (rand () % 50) == 0 : 0;
+	m_bBright = (m_nType <= SMOKE_PARTICLES) ? Rand (50) == 0 : 0;
 	if (colorP) {
 		if (!m_bEmissive /*|| (m_bEmissive == 3)*/) {
 			m_color [0].Red () *= RANDOM_FADE;
@@ -530,7 +530,7 @@ else {
 #endif
 				}
 			m_color [0].Blue () = 0.0f;
-			m_nFadeTime = 50 + rand () % 150;
+			m_nFadeTime = 50 + Rand (150);
 			m_color [1].Red () *= RANDOM_FADE;
 			m_color [1].Green () *= RANDOM_FADE;
 			m_color [1].Blue () *= RANDOM_FADE;
@@ -704,7 +704,7 @@ else if ((m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) {
 	m_nOrient = 1;
 	}
 else if (m_nType == BUBBLE_PARTICLES) {
-	m_iFrame = rand () % (m_nFrames * m_nFrames);
+	m_iFrame = Rand (m_nFrames * m_nFrames);
 	m_nRotFrame = 0;
 	m_nOrient = 0;
 	}
@@ -714,18 +714,18 @@ else if ((m_nType == LIGHT_PARTICLES) || (m_nType == GATLING_PARTICLES)) {
 	m_nOrient = 0;
 	}
 else if (m_nType == FIRE_PARTICLES) {
-	m_iFrame = (rand () % 10 < 6) ? 0 : 2; // more fire than smoke (60:40)
+	m_iFrame = (Rand (10) < 6) ? 0 : 2; // more fire than smoke (60:40)
 	if (m_iFrame < 2)
 		m_nLife = 9 * m_nLife / 10;
 	else
 		m_nLife = 10 * m_nLife / 9;
-	m_nRotFrame = rand () % PARTICLE_POSITIONS;
-	m_nOrient = rand () % 4;
+	m_nRotFrame = Rand (PARTICLE_POSITIONS);
+	m_nOrient = Rand (4);
 	}
 else {
-	m_iFrame = rand () % (m_nFrames * m_nFrames);
-	m_nRotFrame = rand () % PARTICLE_POSITIONS;
-	m_nOrient = rand () % 4;
+	m_iFrame = Rand (m_nFrames * m_nFrames);
+	m_nRotFrame = Rand (PARTICLE_POSITIONS);
+	m_nOrient = Rand (4);
 	}
 m_bAnimate = (m_nType != FIRE_PARTICLES) && (gameOpts->render.particles.nQuality > 1) && (m_nFrames > 1);
 m_bRotate = ((m_nRenderType <= SMOKE_PARTICLES) || (m_nRenderType == SNOW_PARTICLES)) ? 1 : (m_nRenderType == FIRE_PARTICLES + PARTICLE_TYPES) ? -1 : 0;
@@ -1210,7 +1210,7 @@ if (m_bBright)
 
 m_renderColor = m_color [0];
 if (m_nType <= SMOKE_PARTICLES) {
-	fBrightness *= 0.9f + (float) (rand () % 1000) / 5000.0f;
+	fBrightness *= 0.9f + (float) Rand (1000) / 5000.0f;
 	m_renderColor.Red () *= fBrightness;
 	m_renderColor.Green () *= fBrightness;
 	m_renderColor.Blue () *= fBrightness;
@@ -1331,7 +1331,7 @@ pb [2].color =
 pb [3].color = m_renderColor;
 
 if ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles)
-vCenter.v.coord.x += (float) sin (nFrame / 4.0f * PI) / (10 + rand () % 6);
+vCenter.v.coord.x += (float) sin (nFrame / 4.0f * PI) / (10 + Rand (6));
 if (m_bRotate && gameOpts->render.particles.bRotate) {
 	int32_t i = (m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame;
 	vOffset.v.coord.x *= vRot [i].v.coord.x;
@@ -1447,7 +1447,7 @@ if (m_nType == RAIN_PARTICLES) {
 	}
 else {
 	if ((m_nType == SNOW_PARTICLES) || ((m_nType == BUBBLE_PARTICLES) && gameOpts->render.particles.bWiggleBubbles))
-		vCenter.v.coord.x += (float) sin (nFrame / 4.0f * PI) / (10 + rand () % 6);
+		vCenter.v.coord.x += (float) sin (nFrame / 4.0f * PI) / (10 + Rand (6));
 	if (m_bRotate && gameOpts->render.particles.bRotate) {
 		CFixMatrix& mOrient = mRot [1][(m_nOrient & 1) ? 63 - m_nRotFrame : m_nRotFrame];
 		uVec.Assign (mOrient.m.dir.u);

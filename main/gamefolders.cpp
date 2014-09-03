@@ -661,7 +661,7 @@ else {
 					//gameStates.app.SRand ();
 					for (i = 0; i < 23; i++) {
 						int32_t h = 23 - i;
-						int32_t j = h ? rand () % h : 0;
+						int32_t j = h ? Rand (h) : 0;
 						Swap (nShuffledLevels [i], nShuffledLevels [i + j]);
 						}
 					}

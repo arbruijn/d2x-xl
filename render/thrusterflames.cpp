@@ -385,7 +385,7 @@ if (nStages & 1) {
 	m_ti.fScale = fSpeed / float (objP->MaxSpeed ()) + 0.5f;
 	//if (m_ti.fScale < m_ti.fSize / 2)
 	//	m_ti.fScale = m_ti.fSize / 2;
-	m_ti.fScale += float (rand () % 100) / 1000.0f;
+	m_ti.fScale += float (Rand (100)) / 1000.0f;
 	if (!CalcPos (objP))
 		return false;
 	}

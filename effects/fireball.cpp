@@ -553,7 +553,7 @@ if ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER)) {
 			int32_t h = i % nModels;
 			if (/*((i == 0) || (h != 0)) &&*/
 				 ((info.nType != OBJ_ROBOT) || (info.nId != 44) || (h != 5))) 	//energy sucker energy part
-					CreateDebris (h ? h : rand () % (nModels - 1) + 1);
+					CreateDebris (h ? h : Rand (nModels - 1) + 1);
 			}
 		}
 	else {

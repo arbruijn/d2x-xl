@@ -115,7 +115,7 @@ int32_t l = PERLIN_RANDOM_SIZE;
 int32_t* p = m_random + PERLIN_RANDOM_SIZE;
 memcpy (p, permutation, sizeof (permutation));
 for (int32_t i = 0; i < PERLIN_RANDOM_SIZE; i++) {
-	int32_t j = (int32_t) (rand () % l);
+	int32_t j = (int32_t) Rand (l);
 	m_random [i] = p [j];
 	if (j < --l)
 		p [j] = p [l];

@@ -61,8 +61,8 @@ else {
 	else {
 		m_xSize = I2X (1) + 4 * RandShort ();
 		m_nFrame = 0;
-		m_nRotFrame = rand () % 64;
-		m_nOrient = rand () % 2;
+		m_nRotFrame = Rand (64);
+		m_nOrient = Rand (2);
 		m_tRender = -1;
 		m_bRendered = 0;
 		m_nProb = SPARK_MIN_PROB;

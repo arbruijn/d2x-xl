@@ -37,9 +37,9 @@ void CShrapnel::Create (CObject* parentObjP, CObject* objP, float fScale)
 	static CFloatVector color = {{{0.95f, 0.95f, 0.95f, 2.0f}}};
 
 m_info.vDir = CFixVector::Random ();
-m_info.vPos = objP->info.position.vPos + m_info.vDir * (parentObjP->info.xSize / 4 + rand () % (parentObjP->info.xSize / 2));
+m_info.vPos = objP->info.position.vPos + m_info.vDir * (parentObjP->info.xSize / 4 + Rand (parentObjP->info.xSize / 2));
 m_info.nTurn = 1;
-m_info.xSpeed = 3 * (I2X (1) / 20 + rand () % (I2X (1) / 20)) / 4;
+m_info.xSpeed = 3 * (I2X (1) / 20 + Rand (I2X (1) / 20)) / 4;
 m_info.xLife =
 m_info.xTTL = I2X (3) / 2 + rand ();
 m_info.tUpdate = gameStates.app.nSDLTicks [0];

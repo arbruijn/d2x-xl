@@ -263,7 +263,7 @@ if (!index)
 for (int32_t i = 0; i < l; i++)
 	index [i] = i;
 while (l) {
-	int32_t i = rand () % l;
+	int32_t i = Rand (l);
 	v [--l] = index [i];
 	if (i < l)
 		index [i] = index [l];

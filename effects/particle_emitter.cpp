@@ -237,9 +237,9 @@ else
 	if ((m_nPartsPerPos = (int32_t) (m_fPartsPerTick * m_nTicks)) >= 1) {
 		if ((m_nType == BUBBLE_PARTICLES) || (m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) {
 #if 1
-			m_nPartsPerPos = rand () % m_nPartsPerPos + 1;
+			m_nPartsPerPos = Rand (m_nPartsPerPos) + 1;
 #else
-			if (rand () % 4)	// create some irregularity in bubble appearance
+			if (Rand (4))	// create some irregularity in bubble appearance
 				goto funcExit;
 #endif
 			}

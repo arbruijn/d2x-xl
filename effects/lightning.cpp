@@ -308,13 +308,13 @@ if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 	int32_t nBranches = 0;
 	double nProb = double (m_nChildren) / double (m_nNodes);
 	int32_t nOffset = m_nNodes / m_nChildren / 2;
-	for (int32_t nNode = 1 + (nOffset ? rand () % nOffset : 0); (nNode < m_nNodes - nOffset) && (nBranches < m_nChildren); nNode++) {
+	for (int32_t nNode = 1 + (nOffset ? Rand (nOffset) : 0); (nNode < m_nNodes - nOffset) && (nBranches < m_nChildren); nNode++) {
 		if (RandDouble () <= nProb) {
 			nBranches++;
 			int32_t nChildNodes = m_nNodes - nNode;
 			if (nChildNodes > 1) {
 				int32_t h = 4 * nChildNodes / 5;
-				nChildNodes = h + rand () % (nChildNodes - h);
+				nChildNodes = Max (2, h + Rand ((nChildNodes - h)));
 				double scale = sqrt (double (nChildNodes) / double (m_nNodes));
 				int32_t l = (int32_t) DRound (m_nLength * scale);
 				int32_t n = (int32_t) DRound (m_nFrames * scale);
@@ -443,7 +443,7 @@ for (int32_t i = 1; i < m_nNodes; i++) {
 		nMaxOffset = nOffset;
 	}
 
-nAmplitude = 4 * nAmplitude / 5 + (rand () % (nAmplitude / 5));
+nAmplitude = 4 * nAmplitude / 5 + (Rand (nAmplitude / 5));
 CFloatVector vStart, vEnd;
 vStart.Assign (m_vPos);
 vEnd.Assign (m_vEnd);

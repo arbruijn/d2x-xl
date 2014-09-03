@@ -744,7 +744,7 @@ static CFloatVector color = {{{0.1f, 0.1f, 0.8f, 0.2f}}};
 
 int32_t h = X2I (objP->info.xSize) * 2;
 
-CreateForExplosion (objP, &color, h + rand () % h, h * (I2X (1) + I2X (1) / 2), 350);
+CreateForExplosion (objP, &color, h + Rand (h), h * (I2X (1) + I2X (1) / 2), 350);
 }
 
 //------------------------------------------------------------------------------
@@ -755,7 +755,7 @@ if (SHOW_LIGHTNING (0) /*&& gameOpts->render.lightning.bExplosions*/) {
 	int32_t h = X2I (objP->info.xSize) * 4;
 
 	Create (
-		(int32_t) FRound ((h + rand () % h) * fRodScale), &objP->info.position.vPos, NULL, NULL, -objP->info.nSegment - 1, 1000, 0,
+		(int32_t) FRound ((h + Rand (h)) * fRodScale), &objP->info.position.vPos, NULL, NULL, -objP->info.nSegment - 1, 1000, 0,
 		I2X (8), I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, 1, 0, 1, -1, 3.0f, colorP);
 	}
 }
