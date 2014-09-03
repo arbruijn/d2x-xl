@@ -478,6 +478,7 @@ if (bmP && (bmP == shield.Bitmap ())) {
 		}
 	}
 #endif
+ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 if (bmP) {
 	ogl.SelectTMU (GL_TEXTURE0, true);
 	ogl.SetTexturing (true);
@@ -494,6 +495,7 @@ if (!bmP) {
 	ogl.SetTexturing (false);
 	bTextured = 0;
 	alpha /= 2;
+	ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 	}
 if (alpha < 0)
 	alpha = (float) (1.0f - gameStates.render.grAlpha / (float) FADE_LEVELS);
@@ -800,12 +802,12 @@ else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
 ogl.SetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
 transformation.Begin (vPos, posP->mOrient);
-RenderRings (xScale, 32, red, green, blue, alpha, 	InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, &fScale), nTiles);
+RenderRings (xScale, 32, red, green, blue, alpha, InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, &fScale), nTiles);
 transformation.End ();
 ogl.ResetTransform (0);
 ogl.SetTransform (0);
 if (bGlow) 
-#if 1
+#if 0
 	glowRenderer.Done (GLOW_SHIELDS);
 #else
 	glowRenderer.End ();
