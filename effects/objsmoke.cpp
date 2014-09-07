@@ -593,12 +593,17 @@ else {
 #endif
 	}
 if (nParts) {
+	CFixVector vPos = objP->Orientation ().m.dir.f;
+	tHitbox&	hb = gameData.models.hitboxes [objP->ModelId (true)].hitboxes [0];
+	int32_t l = labs (hb.vMax.v.coord.z - hb.vMin.v.coord.z);
+	vPos *= -8 * l / 10;
+	vPos += objP->Position (); 
 	if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		if (!gameOpts->render.particles.bSyncSizes) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [3]);
 			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [3], nScale, 1);
 			}
-		nSmoke = particleManager.Create (&objP->info.position.vPos, NULL, NULL, objP->info.nSegment, 1, int32_t (nParts * nLife * nLife), nScale,
+		nSmoke = particleManager.Create (&vPos, NULL, NULL, objP->info.nSegment, 1, int32_t (nParts * nLife * nLife), nScale,
 													/*gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3], 1,*/ 
 													int32_t (nLife * MSL_PART_LIFE * 0.5), MSL_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + 1, 1, -1);
 		if (nSmoke < 0)
@@ -606,7 +611,7 @@ if (nParts) {
 		particleManager.SetObjectSystem (nObject, nSmoke);
 		}
 #if 1
-	particleManager.SetPos (nSmoke, &objP->info.position.vPos, NULL, objP->info.nSegment);
+	particleManager.SetPos (nSmoke, &vPos, NULL, objP->info.nSegment);
 #else
 	tThrusterInfo	ti;
 	thrusterFlames.CalcPos (objP, &ti);
