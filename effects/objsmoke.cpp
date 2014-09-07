@@ -596,7 +596,7 @@ if (nParts) {
 	CFixVector vPos = objP->Orientation ().m.dir.f;
 	tHitbox&	hb = gameData.models.hitboxes [objP->ModelId (true)].hitboxes [0];
 	int32_t l = labs (hb.vMax.v.coord.z - hb.vMin.v.coord.z);
-	vPos *= -8 * l / 10;
+	vPos *= (gameOpts->render.particles.bDisperse ? -4 : -8) * l / 10;
 	vPos += objP->Position (); 
 	if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		if (!gameOpts->render.particles.bSyncSizes) {
