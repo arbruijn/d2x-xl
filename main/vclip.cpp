@@ -174,7 +174,20 @@ if (objP->info.xLifeLeft <= 0)
 	return;
 if (!explBlast.Load ())
 	return;
-float fScale = 1.0f - X2F (objP->LifeLeft ()) / X2F (objP->TotalLife ());
+
+float fScale;
+if (true || objP->Collapsing ()) {
+	fix xTotalLife = objP->TotalLife ();
+	fix xPivot = xTotalLife / 8;
+	if (objP->LifeLeft () < xPivot)
+		fScale = 1.0f - X2F (xPivot - objP->LifeLeft ()) / X2F (xPivot);
+	else
+		fScale = 1.0f - X2F (objP->LifeLeft () - xPivot) / X2F (xTotalLife - xPivot);
+	}
+else {
+	fScale = 1.0f - X2F (objP->LifeLeft ()) / X2F (objP->TotalLife ());
+	}
+
 fix xSize = objP->info.xSize + (fix) ((float) objP->info.xSize * fScale * 12);
 CFixVector vPos = objP->info.position.vPos;
 #if MOVE_BLAST

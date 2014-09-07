@@ -331,9 +331,9 @@ class CAttachedInfo {
 //	-----------------------------------------------------------------------------
 
 typedef struct tExplosionInfo {
-    fix     nSpawnTime;       // when lifeleft is < this, spawn another
-    fix     nDeleteTime;      // when to delete CObject
-    int16_t   nDeleteObj;			// and what CObject to delete
+    fix		nSpawnTime;       // when lifeleft is < this, spawn another
+    fix		nDeleteTime;      // when to delete CObject
+    int16_t	nDeleteObj;			// and what CObject to delete
 	 tAttachedObjInfo	attached;
 } __pack__ tExplosionInfo;
 
@@ -399,9 +399,9 @@ class CPowerupInfo {
 
 typedef struct tVideoClipInfo {
 public:
-	int32_t     nClipIndex;
-	fix	  xTotalTime;
-	fix     xFrameTime;
+	int32_t  nClipIndex;
+	fix		xTotalTime;
+	fix		xFrameTime;
 	int8_t   nCurFrame;
 } __pack__ tVideoClipInfo;
 
@@ -428,12 +428,12 @@ class CVClipInfo {
 
 typedef struct tParticleInfo {
 public:
-	int32_t			nLife;
-	int32_t			nSize [2];
-	int32_t			nParts;
-	int32_t			nSpeed;
-	int32_t			nDrift;
-	int32_t			nBrightness;
+	int32_t		nLife;
+	int32_t		nSize [2];
+	int32_t		nParts;
+	int32_t		nSpeed;
+	int32_t		nDrift;
+	int32_t		nBrightness;
 	CRGBAColor	color;
 	char			nSide;
 	char			nType;
@@ -459,18 +459,18 @@ class CSmokeInfo {
 
 typedef struct tLightningInfo {
 public:
-	int32_t			nLife;
-	int32_t			nDelay;
-	int32_t			nLength;
-	int32_t			nAmplitude;
-	int32_t			nOffset;
-	int32_t			nWayPoint;
-	int16_t			nBolts;
-	int16_t			nId;
-	int16_t			nTarget;
-	int16_t			nNodes;
-	int16_t			nChildren;
-	int16_t			nFrames;
+	int32_t		nLife;
+	int32_t		nDelay;
+	int32_t		nLength;
+	int32_t		nAmplitude;
+	int32_t		nOffset;
+	int32_t		nWayPoint;
+	int16_t		nBolts;
+	int16_t		nId;
+	int16_t		nTarget;
+	int16_t		nNodes;
+	int16_t		nChildren;
+	int16_t		nFrames;
 	char			nWidth;
 	char			nAngle;
 	char			nStyle;
@@ -605,9 +605,9 @@ class CObjTransformation {
 //	-----------------------------------------------------------------------------
 
 typedef struct tObjContainerInfo {
-	int8_t			nType;
-	int8_t			nId;
-	int8_t			nCount;
+	int8_t		nType;
+	int8_t		nId;
+	int8_t		nCount;
 } __pack__ tObjContainerInfo;
 
 class CObjContainerInfo {
@@ -884,6 +884,7 @@ class CObject : public CObjectInfo {
 		bool				m_bMultiplayer;
 		bool				m_bRotate;
 		bool				m_bSynchronize;
+		bool				m_bCollapse;   // collapse blast effect after first expanding it
 		int32_t			m_nFrame;
 		int32_t			m_bIgnore [2]; // ignore this object (physics: type = 0, pickup powerup: type = 1)
 #if DBG
@@ -1158,9 +1159,10 @@ class CObject : public CObjectInfo {
 		void BashToShield (bool bBash);
 		void BashToEnergy (bool bBash);
 
-
 		inline void Rotate (bool bRotate) { m_bRotate = bRotate; }
-		inline bool Rotation (void) { return m_bRotate; }
+		inline bool Rotating (void) { return m_bRotate; }
+		inline void Collapse (bool bCollapse) { m_bCollapse = bCollapse; }
+		inline bool Collapsing (void) { return m_bCollapse; }
 
 		int32_t ModelId (bool bRaw = false);
 

@@ -128,6 +128,9 @@ else {
 			lightningManager.CreateForTeleport (this, &color);
 #endif
 			effectObjP->SetLife (I2X (1));
+#if 1
+			effectObjP->Collapse (true);
+#endif
 			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), /*effectObjP ? effectObjP->LifeLeft () : */I2X (1), info.xSize, 1, OBJPOS (this)->vPos));
 			gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = (/*effectObjP ? effectObjP->LifeLeft () :*/ I2X (1)) * 2;
 			StopPlayerMovement ();

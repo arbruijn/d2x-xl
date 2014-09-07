@@ -325,7 +325,7 @@ void CMarkerManager::Rotate (void)
 	int32_t	nObject; 
 
 if ((m_data.nHighlight > -1) && ((nObject = m_data.objects [m_data.nHighlight]) != -1))
-	OBJECTS [nObject].Rotate (!OBJECTS [nObject].Rotation ());
+	OBJECTS [nObject].Rotate (!OBJECTS [nObject].Rotating ());
 }
 
 //------------------------------------------------------------------------------
