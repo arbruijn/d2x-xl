@@ -1609,6 +1609,7 @@ m_data.nWrap = 0;
 m_data.nFrame = -1;
 m_data.bmP [0] =
 m_data.bmP [1] = NULL;
+glowRenderer.End ();
 if (!glowRenderer.Available (0xFFFFFFFF))
 	m_data.bRenderGlow = 0;
 if (gameOptions [0].render.nQuality < 3)
