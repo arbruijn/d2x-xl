@@ -1578,7 +1578,7 @@ extern int32_t bLog;
 void CTransparencyRenderer::Render (int32_t nWindow)
 {
 #if RENDER_TRANSPARENCY
-	int32_t				bStencil, bGlow;
+	int32_t			bStencil, bGlow;
 	bool				bCleanup = !LAZY_RESET || (ogl.StereoSeparation () >= 0) || nWindow;
 
 if (!AllocBuffers ())
@@ -1609,8 +1609,9 @@ m_data.nWrap = 0;
 m_data.nFrame = -1;
 m_data.bmP [0] =
 m_data.bmP [1] = NULL;
-glowRenderer.End ();
-if (!glowRenderer.Available (0xFFFFFFFF))
+if (glowRenderer.Available (0xFFFFFFFF))
+	glowRenderer.End ();
+else
 	m_data.bRenderGlow = 0;
 if (gameOptions [0].render.nQuality < 3)
 	m_data.bSoftBlend = 0;

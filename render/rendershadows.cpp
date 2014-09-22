@@ -104,7 +104,7 @@ glPopMatrix ();
 
 void RenderFastShadows (fix xStereoSeparation, int32_t nWindow, int16_t nStartSeg)
 {
-glowRenderer.End ();
+//glowRenderer.End ();
 gameStates.render.nShadowPass = 2;
 ogl.StartFrame (0, 0, xStereoSeparation);
 gameData.render.shadows.nFrame = !gameData.render.shadows.nFrame;
@@ -112,10 +112,12 @@ RenderMine (nStartSeg, xStereoSeparation, nWindow);
 
 gameStates.render.nShadowPass = 3;
 ogl.StartFrame (0, 0, xStereoSeparation);
+#if 1
 if (glowRenderer.Available (BLUR_SHADOW)) {
 	gameStates.render.nShadowBlurPass = 1;
 	glowRenderer.Begin (BLUR_SHADOW, 2 /*gameOpts->render.ShadowQuality ()*/, true, 1.0f);
 	}
+#endif
 RenderShadowQuad ();
 if (gameStates.render.nShadowBlurPass) {
 	glowRenderer.End ();

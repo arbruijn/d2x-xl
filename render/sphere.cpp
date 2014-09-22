@@ -463,21 +463,27 @@ if (m_pulseP) {
 
 // -----------------------------------------------------------------------------
 
-int32_t CSphere::InitSurface (float red, float green, float blue, float alpha, CBitmap *bmP, float *pfScale)
+void CSphere::Animate (CBitmap* bmP)
 {
-	int32_t	bTextured = 0;
-
-float fScale = m_pulseP ? m_pulseP->fScale : 1.0f;
 #if 1
 if (bmP && (bmP == shield.Bitmap ())) {
 	static time_t t0 = 0;
-	bTextured = 1;
 	if ((gameStates.app.nSDLTicks [0] - t0 > 40) && bmP->CurFrame ()) {
 		t0 = gameStates.app.nSDLTicks [0];
 		bmP->NextFrame ();
 		}
 	}
 #endif
+}
+
+// -----------------------------------------------------------------------------
+
+int32_t CSphere::InitSurface (float red, float green, float blue, float alpha, CBitmap *bmP, float fScale)
+{
+	int32_t	bTextured = 0;
+
+fScale = m_pulseP ? m_pulseP->fScale : 1.0f;
+ogl.ResetClientStates (1);
 ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 if (bmP) {
 	ogl.SelectTMU (GL_TEXTURE0, true);
@@ -510,7 +516,6 @@ if (alpha < 1.0f) {
 		}
 	}
 glColor4f (red, green, blue, alpha);
-*pfScale = fScale;
 ogl.SetDepthWrite (false);
 return bTextured;
 }
@@ -578,7 +583,7 @@ return 1;
 void CSphere::RenderRing (int32_t nOffset, int32_t nItems, int32_t bTextured, int32_t nPrimitive)
 {
 #if DBG
-ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+//ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 #endif
 if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].uv));
@@ -591,7 +596,7 @@ OglDrawArrays (nPrimitive, 0, nItems);
 void CSphere::RenderRing (CFloatVector *vertexP, tTexCoord2f *texCoordP, int32_t nItems, int32_t bTextured, int32_t nPrimitive)
 {
 #if DBG
-ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+//ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 #endif
 if (bTextured)
 	OglTexCoordPointer (2, GL_FLOAT, 0, texCoordP);
@@ -615,7 +620,7 @@ if (!Create (nRings, nTiles))
 h = nRings / 2;
 nQuads = 2 * nRings + 2;
 
-ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+//ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 if (ogl.UseTransform ()) {
 	glScalef (fRadius, fRadius, fRadius);
 	for (nCull = 0; nCull < 2; nCull++) {
@@ -801,8 +806,10 @@ else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
 	}
 ogl.SetupTransform (0);
 tObjTransformation *posP = OBJPOS (objP);
+Animate (bmP);
+bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, fScale);
 transformation.Begin (vPos, posP->mOrient);
-RenderRings (xScale, 32, red, green, blue, alpha, InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, &fScale), nTiles);
+RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();
 ogl.ResetTransform (0);
 ogl.SetTransform (0);

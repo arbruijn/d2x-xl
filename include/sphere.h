@@ -51,7 +51,8 @@ class CSphere : private CSphereData {
 
 	private:
 		void Pulsate (void);
-		int32_t InitSurface (float red, float green, float blue, float alpha, CBitmap *bmP, float *pfScale);
+		void Animate (CBitmap* bmP);
+		int32_t InitSurface (float red, float green, float blue, float alpha, CBitmap *bmP, float fScale);
 		void RenderRing (CFloatVector *vertexP, tTexCoord2f *texCoordP, int32_t nItems, int32_t bTextured, int32_t nPrimitive);
 		void RenderRing (int32_t nOffset, int32_t nItems, int32_t bTextured, int32_t nPrimitive);
 		void RenderRings (float fRadius, int32_t nRings, float red, float green, float blue, float alpha, int32_t bTextured, int32_t nTiles);
