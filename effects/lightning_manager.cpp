@@ -621,8 +621,8 @@ void CLightningManager::SetLights (void)
 
 ResetLights (0);
 if (SHOW_LIGHTNING (1)) {
-		tLightningLight	*llP = NULL;
-		int32_t					i, n, bDynLighting = gameStates.render.nLightingMethod;
+		tLightningLight*	llP = NULL;
+		int32_t				i, n, bDynLighting = gameStates.render.nLightingMethod;
 
 	m_nFirstLight = -1;
 	int32_t nCurrent = -1;

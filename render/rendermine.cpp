@@ -776,12 +776,14 @@ RenderCockpitModel ();
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
 //RenderSegmentOutline ();
+#	if 1
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {
 	if (!gameStates.app.bNostalgia &&
 		 (!automap.Active () || gameOpts->render.automap.bCoronas) && gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse) 
 		if (!nWindow && SetupCoronas ())
 			RenderSegmentList (RENDER_TYPE_CORONAS);
 	}
+#	endif
 #endif
 gameData.app.nMineRenderCount++;
 PROF_END(ptRenderMine);

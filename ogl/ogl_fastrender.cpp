@@ -284,8 +284,8 @@ ogl.SetTexturing (false);
 //------------------------------------------------------------------------------
 
 int32_t SetRenderStates (CSegFace *faceP, CBitmap *bmBot, CBitmap *bmTop, 
-							int32_t bTextured, int32_t bColorKey, int32_t bColored, int32_t bLightmaps, 
-							bool bForce = false)
+								 int32_t bTextured, int32_t bColorKey, int32_t bColored, int32_t bLightmaps, 
+								 bool bForce = false)
 {
 PROF_START
 if (bTextured) {

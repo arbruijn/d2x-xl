@@ -576,10 +576,10 @@ if (gameStates.render.bFullBright)
 	int32_t			nObject, nVertex, nSegment;
 	int32_t			nRenderVertices;
 	int32_t			iRenderSeg, v;
-	char			bGotColor, bKeepDynColoring = 0;
-	CObject		*objP;
-	CFixVector	*objPos;
-	fix			xObjIntensity;
+	char				bGotColor, bKeepDynColoring = 0;
+	CObject*			objP;
+	CFixVector*		objPos;
+	fix				xObjIntensity;
 	CFloatVector	color;
 
 gameData.render.lights.vertexFlags.Clear ();

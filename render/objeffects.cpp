@@ -106,14 +106,14 @@ void CObject::CreateAppearanceEffect (void)
 	bool		bWarp = (nPlayer >= 0) && ((gameOpts->render.effects.bWarpAppearance == 2) || ((gameOpts->render.effects.bWarpAppearance == 1) && !gameData.multiplayer.bTeleport [nPlayer]));
 
 if (bWarp && (nPlayer == N_LOCALPLAYER) && !AppearanceStage ()) {
-	gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = -I2X (1) / 2;
+	gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = -APPEARANCE_DELAY;
 	SetChaseCam (1);
 	}
 else {
 	CFixVector vPos = info.position.vPos;
 	if (this == gameData.objs.viewerP)
 		vPos += info.position.mOrient.m.dir.f * FixMul (info.xSize, flashDist);
-	CObject* effectObjP = bWarp ? CreateExplBlast () : CreateExplosion (info.nSegment, vPos, info.xSize, VCLIP_PLAYER_APPEARANCE);
+	CObject* effectObjP = bWarp ? CreateExplBlast (true) : CreateExplosion (info.nSegment, vPos, info.xSize, VCLIP_PLAYER_APPEARANCE);
 	if (bWarp || effectObjP) {
 		if (effectObjP) {
 			effectObjP->info.position.mOrient = info.position.mOrient;
@@ -123,16 +123,18 @@ else {
 		if (!bWarp)
 			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP ? effectObjP->LifeLeft () : I2X (1), info.xSize, 1, OBJPOS (this)->vPos));
 		else {
-#if 1
+#if 0
 			static CFloatVector color = {{{0.25f, 0.125f, 0.0f, 0.2f}}};
 			lightningManager.CreateForTeleport (this, &color);
 #endif
-			effectObjP->SetLife (I2X (1));
+			if (effectObjP) {
+				effectObjP->SetLife (I2X (1));
 #if 1
-			effectObjP->Collapse (true);
+				effectObjP->Collapse (true);
 #endif
-			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), /*effectObjP ? effectObjP->LifeLeft () : */I2X (1), info.xSize, 1, OBJPOS (this)->vPos));
-			gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = (/*effectObjP ? effectObjP->LifeLeft () :*/ I2X (1)) * 2;
+				}
+			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), I2X (1), info.xSize, 1, OBJPOS (this)->vPos));
+			gameData.multiplayer.tAppearing [Id ()][0] = gameData.multiplayer.tAppearing [Id ()][1] = I2X (2);
 			StopPlayerMovement ();
 			}
 		}

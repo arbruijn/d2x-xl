@@ -50,6 +50,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "addon_bitmaps.h"
 #include "createmesh.h"
 #include "renderthreads.h"
+#include "glow.h"
 
 #define bSavingMovieFrames 0
 
@@ -111,25 +112,42 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-void FlashMine (void)
+void FadeMine (float color)
 {
-if (gameOpts->app.bEpilepticFriendly || !gameStates.render.nFlashScale)
-	return;
-
-#if 0
-ogl.SetBlendMode (OGL_BLEND_ALPHA);
-glColor4f (0, 0, 0, /*1.0f -*/ X2F (gameStates.render.nFlashScale) * 0.75f);
-#else
 ogl.SetBlendMode (OGL_BLEND_MULTIPLY);
-float color = 1.0f - X2F (gameStates.render.nFlashScale) * 0.8f;
 glColor4f (color, color, color, 1.0f);
-#endif
 ogl.ResetClientStates (1);
 ogl.SetTexturing (false);
 ogl.SetDepthTest (false);
 ogl.RenderScreenQuad ();
 ogl.SetDepthTest (true);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
+}
+
+//------------------------------------------------------------------------------
+
+void FlashMine (void)
+{
+if (gameOpts->app.bEpilepticFriendly || !gameStates.render.nFlashScale)
+	return;
+FadeMine (1.0f - X2F (gameStates.render.nFlashScale) * 0.8f);
+}
+
+//------------------------------------------------------------------------------
+
+int32_t FadeInMine (void)
+{
+if (LOCALOBJECT.AppearanceStage () > -1)
+	return 0;
+int32_t t = LOCALOBJECT.AppearanceTimer ();
+#if 1
+FadeMine (X2F (APPEARANCE_DELAY + t) / X2F (APPEARANCE_DELAY));
+#else
+if (t > -APPEARANCE_DELAY / 2)
+	return 0;
+FadeMine (X2F (2 * (APPEARANCE_DELAY + t)));
+#endif
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -159,7 +177,8 @@ if (gameStates.app.bGameRunning) {
 	}
 if (xStereoSeparation >= 0) {
 	paletteManager.RenderEffect ();
-	FlashMine ();
+	if (!FadeInMine ())
+		FlashMine ();
 	}
 #endif
 
@@ -423,6 +442,15 @@ else {
 			RenderMine (nStartSeg, xStereoSeparation, nWindow);
 			}
 		}
+#if 1
+	// The following code is a hack resetting the blur buffers, because otherwise certain stuff rendered to it doesn't get properly blended and colored.
+	// I have not been able to determine why this is so.
+	if (glowRenderer.Available (0xFFFFFFFF)) { 
+		ogl.SelectBlurBuffer (0);
+		ogl.SelectBlurBuffer (1);
+		ogl.ChooseDrawBuffer ();
+		}
+#endif
 	}
 ogl.StencilOff ();
 #endif

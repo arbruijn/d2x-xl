@@ -1995,11 +1995,20 @@ return (nStage != 0) && (!bVisible || (nStage > 0));
 
 //------------------------------------------------------------------------------
 
+int32_t CObject::AppearanceTimer (void)
+{
+if (Type () != OBJ_PLAYER)
+	return 0;
+return gameData.multiplayer.tAppearing [Id ()][0];
+}
+
+//------------------------------------------------------------------------------
+
 int32_t CObject::AppearanceStage (void)
 {
 if (Type () != OBJ_PLAYER)
 	return 0;
-int32_t t = gameData.multiplayer.tAppearing [Id ()][0];
+int32_t t = AppearanceTimer ();
 return (t < 0) ? -1 : (t > 0) ? 1 : 0;
 }
 

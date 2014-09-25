@@ -86,7 +86,7 @@ typedef struct tSparkVertex {
 #define SPARK_BUF_SIZE	1000
 
 typedef struct tSparkBuffer {
-	int32_t				nSparks;
+	int32_t			nSparks;
 	tSparkVertex	vertices [SPARK_BUF_SIZE * 4];
 	CParticle		particles [SPARK_BUF_SIZE];
 } tSparkBuffer;
@@ -184,7 +184,7 @@ PROF_START
 	//CSegFace*		faceP = this->faceP;
 	//tFaceTriangle*	triP = this->triP;
 	CBitmap*			bmBot = bmP, *bmTop, *bmMask;
-	int32_t				bDecal, 
+	int32_t			bDecal, 
 						bLightmaps = transparencyRenderer.Data ().bLightmaps && !gameStates.render.bFullBright,
 						bTextured = (faceP->m_info.nSegColor == 0) && (bmBot != NULL), 
 						bColored = (nColors == nVertices) && (bTextured || (gameStates.render.bPerPixelLighting != 2)) && !gameStates.render.bFullBright;
@@ -1019,9 +1019,9 @@ return Add (&item, OBJPOS (objP)->vPos, 0, 0, -1);
 //------------------------------------------------------------------------------
 
 int32_t CTransparencyRenderer::AddPoly (CSegFace *faceP, tFaceTriangle *triP, CBitmap *bmP,
-												CFloatVector *vertices, char nVertices, tTexCoord2f *texCoord, CFloatVector *color,
-												CFaceColor* altColor, char nColors, char bDepthMask, int32_t nPrimitive, int32_t nWrap, int32_t bAdditive,
-												int16_t nSegment)
+													 CFloatVector *vertices, char nVertices, tTexCoord2f *texCoord, CFloatVector *color,
+													 CFaceColor* altColor, char nColors, char bDepthMask, int32_t nPrimitive, int32_t nWrap, int32_t bAdditive,
+													 int16_t nSegment)
 {
 if (gameStates.render.nShadowMap)
 	return 0;
@@ -1166,7 +1166,7 @@ return AddPoly (faceP, NULL, bmP,
 //------------------------------------------------------------------------------
 
 int32_t CTransparencyRenderer::AddSprite (CBitmap *bmP, const CFixVector& position, CFloatVector *color,
-												  int32_t nWidth, int32_t nHeight, char nFrame, char bAdditive, float fSoftRad)
+														int32_t nWidth, int32_t nHeight, char nFrame, char bAdditive, float fSoftRad)
 {
 if (gameStates.render.nShadowMap)
 	return 0;
@@ -1217,7 +1217,7 @@ return 0;
 //------------------------------------------------------------------------------
 
 int32_t CTransparencyRenderer::AddSphere (tTranspSphereType nType, float red, float green, float blue, float alpha, 
-												  CObject *objP, char bAdditive, fix nSize)
+														CObject *objP, char bAdditive, fix nSize)
 {
 if (gameStates.render.nShadowMap)
 	return 0;
@@ -1671,13 +1671,18 @@ else {
 	}
 
 
+shaderManager.Deploy (-1);
+ogl.ResetClientStates ();
+ogl.SetTexturing (false);
 ogl.SetBlendMode (OGL_BLEND_ALPHA);
 ogl.SetDepthWrite (false);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetDepthTest (true);
+
 glowRenderer.End ();
 FlushBuffers (-1);
 particleManager.EndRender ();
+
 shaderManager.Deploy (-1);
 ogl.ResetClientStates ();
 ogl.SetTexturing (false);

@@ -351,7 +351,7 @@ if (!Style ())
 if (fIntensity < 0.01f)
 	return;
 
-	int32_t				nTexture, bAdditive;
+	int32_t	nTexture, bAdditive;
 
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -376,7 +376,7 @@ float CGlareRenderer::Visibility (int32_t nQuery)
 {
 	GLuint	nSamples = 0;
 	GLint		bAvailable = 0;
-	int32_t		nAttempts = 2;
+	int32_t	nAttempts = 2;
 	float		fIntensity;
 #if DBG
 	GLint		nError;

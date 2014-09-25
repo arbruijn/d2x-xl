@@ -51,7 +51,7 @@ void DropStolenItems (CObject *objP);
 
 //------------------------------------------------------------------------------
 
-CObject *CObject::CreateExplBlast (void)
+CObject *CObject::CreateExplBlast (bool bForce)
 {
 #if 0 //DBG
 return NULL;
@@ -60,7 +60,7 @@ return NULL;
 	int16_t	nObject;
 	CObject*	objP;
 
-if (!(gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves))
+if (!(bForce || (gameOpts->render.effects.bEnabled && gameOpts->render.effects.nShockwaves)))
 	return NULL;
 if (SPECTATOR (this))
 	return NULL;

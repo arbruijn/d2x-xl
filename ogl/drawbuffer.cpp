@@ -86,7 +86,7 @@ if ((gameStates.render.bRenderIndirect <= 0) && (nType >= 0))
 if (DrawBuffer ()->Handle () && !DrawBuffer ()->Resize (DrawBufferWidth (), DrawBufferHeight ()))
 	return;
 PrintLog (1, "creating draw buffer\n");
-DrawBuffer ()->Create (DrawBufferWidth (), DrawBufferHeight (), nType, (nType != 1) ? 1 : 1 + m_features.bMultipleRenderTargets);
+DrawBuffer ()->Create (DrawBufferWidth (), DrawBufferHeight (), nType, (nType != 1) ? 1 : 3 + m_features.bMultipleRenderTargets);
 PrintLog (-1);
 }
 

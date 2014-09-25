@@ -6,6 +6,7 @@
 #include "automap.h"
 #include "glow.h"
 #include "cockpit.h"
+#include "addon_bitmaps.h"
 
 CGlowRenderer glowRenderer;
 
@@ -27,7 +28,7 @@ const char *blurFS =
 	"uniform sampler2D glowSource;\r\n" \
 	"uniform float direction;\r\n" \
 	"uniform float scale; // render target width/height\r\n" \
-	"uniform float brightness; // render target width/height\r\n" \
+	"uniform float brightness;\r\n" \
 	"vec2 offset = vec2 (1.3846153846, 3.2307692308);\r\n" \
 	"vec3 weight = vec3 (0.2270270270, 0.3162162162, 0.0702702703);\r\n" \
 	"void main() {\r\n" \
@@ -710,7 +711,7 @@ glColor4f (0.0f, 0.5f, 1.0f, 0.25f);
 ogl.EnableClientStates (1, 0, 0, GL_TEXTURE0);
 ogl.BindTexture (ogl.BlurBuffer (source)->ColorBuffer (source < 0));
 OglTexCoordPointer (2, GL_FLOAT, 0, texCoord);
-glColor3f (1,1,1);
+glColor4f (1.0f, 1.0f, 1.0f, 1.0f);
 #endif
 OglVertexPointer (2, GL_FLOAT, 0, verts [bEnableViewport && UseViewport ()]);
 OglDrawArrays (GL_QUADS, 0, 4);
@@ -768,7 +769,7 @@ else
 	ogl.SetDepthWrite (false);
 	ogl.SetAlphaTest (false);
 	ogl.SetFaceCulling (false);
-	ogl.ResetClientStates (1);
+	ogl.ResetClientStates (0);
 
 	float radius = 0.0f;
 	if (m_bViewport < 0) {
@@ -791,9 +792,9 @@ else
 		return Reset (0, 1);
 	ClearDrawBuffer (m_nType);
 	Render (0, 1, radius, true); // Blur 0 -> Blur 1
+#	if BLUR > 1
 	if (m_nType != BLUR_SHADOW)
 		ogl.SetBlendMode (OGL_BLEND_ADD);
-#	if BLUR > 1
 	for (int32_t i = 1; i < m_nStrength; i++) {
 		radius += RAD_INCR;
 		if (!ogl.SelectBlurBuffer (0))
@@ -810,15 +811,16 @@ else
 	ogl.ChooseDrawBuffer ();
 	ogl.SetDepthMode (GL_ALWAYS);
 
-	//float scale = (float) ScreenScale ();
 #if BLUR
 	ogl.SetBlendMode ((m_nType == BLUR_SHADOW) ? OGL_BLEND_MULTIPLY : OGL_BLEND_ADD);
-	Render (1, -1, radius/*, (scale == 1.0f) ? 1.0f : 8.0f*/); // Glow -> back buffer
+	Render (1, -1, radius); // Glow -> back buffer
+#	if 1
 	if (!m_bReplace)
-		Render (-1, -1, radius/*, scale*/); // render the unblurred stuff on top of the blur
+		Render (-1, -1, radius); // render the unblurred stuff on top of the blur
+#	endif
 #else
 	ogl.SetBlendMode ((m_nType == BLUR_SHADOW) ? OGL_BLEND_MULTIPLY : OGL_BLEND_ADD);
-	Render (-1, -1, radius, scale); // render the unblurred stuff on top of the blur
+	Render (-1, -1, radius); // render the unblurred stuff on top of the blur
 #endif
 
 	ogl.DisableClientStates (1, 0, 0, GL_TEXTURE0);

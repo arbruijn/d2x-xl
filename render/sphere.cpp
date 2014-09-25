@@ -480,14 +480,13 @@ if (bmP && (bmP == shield.Bitmap ())) {
 
 int32_t CSphere::InitSurface (float red, float green, float blue, float alpha, CBitmap *bmP, float fScale)
 {
-	int32_t	bTextured = 0;
+	int32_t	bTextured = bmP != NULL;
 
 fScale = m_pulseP ? m_pulseP->fScale : 1.0f;
-ogl.ResetClientStates (1);
-ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+ogl.ResetClientStates (0);
 if (bmP) {
-	ogl.SelectTMU (GL_TEXTURE0, true);
-	ogl.SetTexturing (true);
+	Animate (bmP);
+	ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 	if (bmP->CurFrame ())
 		bmP = bmP->CurFrame ();
 	if (bmP->Bind (1))
@@ -515,8 +514,9 @@ if (alpha < 1.0f) {
 		blue *= fScale;
 		}
 	}
-glColor4f (red, green, blue, alpha);
 ogl.SetDepthWrite (false);
+m_bmP = bmP;
+m_color.Set (red, green, blue, alpha);
 return bTextured;
 }
 
@@ -582,12 +582,11 @@ return 1;
 
 void CSphere::RenderRing (int32_t nOffset, int32_t nItems, int32_t bTextured, int32_t nPrimitive)
 {
-#if DBG
-//ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
-#endif
-if (bTextured)
+ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+if (bTextured && !m_bmP->Bind (1))
 	OglTexCoordPointer (2, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].uv));
 OglVertexPointer (3, GL_FLOAT, sizeof (tSphereVertex), reinterpret_cast<GLfloat*> (&m_vertices [nOffset * nItems].vPos));
+glColor4fv ((GLfloat*) m_color.v.vec);
 OglDrawArrays (nPrimitive, 0, nItems);
 }
 
@@ -595,12 +594,11 @@ OglDrawArrays (nPrimitive, 0, nItems);
 
 void CSphere::RenderRing (CFloatVector *vertexP, tTexCoord2f *texCoordP, int32_t nItems, int32_t bTextured, int32_t nPrimitive)
 {
-#if DBG
-//ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
-#endif
-if (bTextured)
+ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+if (bTextured && !m_bmP->Bind (1))
 	OglTexCoordPointer (2, GL_FLOAT, 0, texCoordP);
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), vertexP);
+glColor4fv ((GLfloat*) m_color.v.vec);
 OglDrawArrays (nPrimitive, 0, nItems);
 }
 
@@ -620,7 +618,7 @@ if (!Create (nRings, nTiles))
 h = nRings / 2;
 nQuads = 2 * nRings + 2;
 
-//ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
+ogl.EnableClientStates (bTextured, 0, 0, GL_TEXTURE0);
 if (ogl.UseTransform ()) {
 	glScalef (fRadius, fRadius, fRadius);
 	for (nCull = 0; nCull < 2; nCull++) {
@@ -771,13 +769,14 @@ else
 #endif
 Pulsate ();
 if (bGlow) {
-	ogl.SetBlendMode (OGL_BLEND_REPLACE);
 	glowRenderer.Begin (GLOW_SHIELDS, 2, false, 0.85f);
 	if (!glowRenderer.SetViewport (GLOW_SHIELDS, vPos, 4 * xScale / 3)) {
 		glowRenderer.Done (GLOW_SHIELDS);
 		ogl.SetDepthMode (GL_LEQUAL);
 		return 0;
 		}
+	ogl.SetBlendMode (OGL_BLEND_REPLACE);
+	ogl.SetDepthMode (GL_ALWAYS);
 	}
 else {
 	ogl.SetBlendMode (bAdditive);
@@ -804,14 +803,15 @@ else if (gameOpts->render.bUseShaders && ogl.m_features.bShaders.Available ()) {
 		return 0;
 		}
 	}
-ogl.SetupTransform (0);
-tObjTransformation *posP = OBJPOS (objP);
-Animate (bmP);
+
 bTextured = InitSurface (red, green, blue, bEffect ? 1.0f : alpha, bmP, fScale);
+
+//ogl.SetupTransform (0);
+tObjTransformation *posP = OBJPOS (objP);
 transformation.Begin (vPos, posP->mOrient);
 RenderRings (xScale, 32, red, green, blue, alpha, bTextured, nTiles);
 transformation.End ();
-ogl.ResetTransform (0);
+//ogl.ResetTransform (0);
 ogl.SetTransform (0);
 if (bGlow) 
 #if 0

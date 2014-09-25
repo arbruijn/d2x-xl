@@ -60,7 +60,7 @@ RenderFarShadowCapFace (v, nVertices);
 
 void RenderShadowQuad (void)
 {
-	static GLfloat shadowHue [2][4] = {{0.6f, 0.6f, 0.6f, 1.0f}, {0.25f, 0.25f, 0.25f, 1.0f}};
+	static GLfloat shadowHue [3][4] = {{0.6f, 0.6f, 0.6f, 1.0f}, {0.25f, 0.25f, 0.25f, 1.0f}};
 
 glMatrixMode (GL_MODELVIEW);
 glPushMatrix ();
@@ -81,7 +81,7 @@ if (gameStates.render.nShadowBlurPass)
 	ogl.SetBlending (false);
 else
 	ogl.SetBlendMode (OGL_BLEND_MULTIPLY); 
-glColor4fv (shadowHue [gameStates.render.nShadowBlurPass]); 
+glColor4fv (shadowHue [labs (gameStates.render.nShadowBlurPass)]); 
 glBegin (GL_QUADS);
 glVertex2f (0,0);
 glVertex2f (1,0);
@@ -129,7 +129,7 @@ if (gameStates.render.nShadowBlurPass) {
 
 void RenderNeatShadows (fix xStereoSeparation, int32_t nWindow, int16_t nStartSeg)
 {
-	int16_t			i, n;
+	int16_t		i, n;
 	CDynLight*	lightP;
 
 gameData.render.shadows.nLights = GatherShadowLightSources ();

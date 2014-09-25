@@ -468,7 +468,7 @@ void RenderSkyBoxFaces (void)
 	tSegFaces*	segFaceP;
 	CSegFace*	faceP;
 	int16_t*		segP;
-	int32_t			i, j, nSegment, bFullBright = gameStates.render.bFullBright;
+	int32_t		i, j, nSegment, bFullBright = gameStates.render.bFullBright;
 
 if (gameStates.render.bHaveSkyBox) {
 	ogl.SetDepthWrite (true);
@@ -552,8 +552,8 @@ int16_t RenderFaceList (CFaceListIndex& flx, int32_t nType, int32_t bHeadlight)
 {
 	tFaceListItem*	fliP = &gameData.render.faceList [0];
 	CSegFace*		faceP;
-	int32_t				i, j, nFaces = 0, nSegment = -1;
-	int32_t				bAutomap = (nType == RENDER_TYPE_GEOMETRY);
+	int32_t			i, j, nFaces = 0, nSegment = -1;
+	int32_t			bAutomap = (nType == RENDER_TYPE_GEOMETRY);
 
 #if 1
 if (automap.Active ())
@@ -595,7 +595,7 @@ void RenderCoronaFaceList (CFaceListIndex& flx, int32_t nPass)
 {
 	tFaceListItem*	fliP;
 	CSegFace*		faceP;
-	int32_t				i, j, nSegment;
+	int32_t			i, j, nSegment;
 
 for (i = 0; i < flx.nUsedKeys; i++) {
 	for (j = flx.roots [flx.usedKeys [i]]; j >= 0; j = fliP->nNextItem) {
@@ -687,7 +687,7 @@ int32_t SetupCoronaFaces (void)
 {
 	tSegFaces	*segFaceP;
 	CSegFace		*faceP;
-	int32_t			i, j, nSegment;
+	int32_t		i, j, nSegment;
 
 if (!(gameOpts->render.effects.bEnabled && gameOpts->render.coronas.bUse))
 	return 0;

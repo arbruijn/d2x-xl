@@ -612,6 +612,7 @@ if (m_bCloseBox) {
 	m_bCloseBox = 1;
 	}
 #endif
+
 m_background.Deactivate ();
 fontManager.PopScale ();
 m_bRedraw = 1;

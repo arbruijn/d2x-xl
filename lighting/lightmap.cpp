@@ -915,7 +915,7 @@ memset (&m_data, 0, sizeof (m_data));
 
 int32_t CLightmapManager::Create (int32_t nLevel)
 {
-if (!(gameStates.render.bUsePerPixelLighting))
+if (!gameStates.render.bUsePerPixelLighting)
 	return 0;
 if ((gameStates.render.bUsePerPixelLighting == 1) && !CreateLightmapShader (0))
 	return gameStates.render.bUsePerPixelLighting = 0;

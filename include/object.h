@@ -156,6 +156,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #define OBJ_LIST_TYPE		1
 
+#define APPEARANCE_DELAY	I2X (1)
 
 #define MAX_VELOCITY I2X(50)
 
@@ -1074,7 +1075,7 @@ class CObject : public CObjectInfo {
 		int32_t CollidePlayerAndObjProducer (void);
 
 		inline void RequestEffects (uint8_t nEffects);
-		CObject* CreateExplBlast (void);
+		CObject* CreateExplBlast (bool bForce = false);
 		CObject* CreateShockwave (void);
 		int32_t CreateWeaponEffects (int32_t bExplBlast);
 		CObject* ExplodeSplashDamage (fix damage, fix distance, fix force);
@@ -1210,6 +1211,7 @@ class CObject : public CObjectInfo {
 
 		bool Appearing (bool bVisible = true);
 		int32_t AppearanceStage (void);
+		int32_t AppearanceTimer (void);
 		float AppearanceScale (void);
 		inline bool Synchronize (void) { return m_bSynchronize; }
 		inline void StartSync (void) { m_bSynchronize = true; }

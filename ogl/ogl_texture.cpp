@@ -513,7 +513,7 @@ if (m_info.tw * m_info.th * bpp > (int32_t) sizeof (ogl.m_data.buffer))//shouldn
 		}
 
 	uint16_t		r, g, b, a;
-	int32_t			x, y, c;
+	int32_t		x, y, c;
 
 
 //bmP->Flags () &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
@@ -607,7 +607,7 @@ for (y = 0; y < m_info.h; y++) {
 							}
 						else
 #endif
-						 {
+							{
 							r = 120;
 							g = 88;
 							b = 128;
@@ -751,11 +751,11 @@ switch (m_info.format) {
 			nFormat = m_info.internalFormat;
 		else
 #endif
-			m_info.internalFormat = 4;
+		m_info.internalFormat = 4;
 		break;
 
 	case GL_RGB:
-			m_info.internalFormat = 3;
+		m_info.internalFormat = 3;
 		break;
 
 	case GL_RGB5:
@@ -1149,7 +1149,7 @@ if (!data)
 	GLubyte*		bufP = NULL;
 	CTexture		texture;
 	bool			bLocal;
-	int32_t			funcRes = 0;
+	int32_t		funcRes = 0;
 
 if ((bLocal = (m_info.texP == NULL))) {
 	texture.Setup (m_info.props.w, m_info.props.h, m_info.props.rowSize, m_info.nBPP);

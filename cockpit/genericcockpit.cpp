@@ -166,8 +166,8 @@ if ((gameStates.render.cockpit.nType >= CM_FULL_SCREEN) && (gameStates.zoom.nFac
 	static CCanvas overlapCanv;
 
 	CObject*	viewerSave = gameData.objs.viewerP;
-	int32_t		bRearViewSave = gameStates.render.bRearView;
-	int32_t		nWindowSave = gameStates.render.nWindow [0];
+	int32_t	bRearViewSave = gameStates.render.bRearView;
+	int32_t	nWindowSave = gameStates.render.nWindow [0];
 	fix		xStereoSeparation = ogl.StereoSeparation ();
 	float		nZoomSave;
 

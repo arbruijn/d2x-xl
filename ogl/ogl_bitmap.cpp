@@ -186,24 +186,28 @@ return 0;
 //------------------------------------------------------------------------------
 
 int32_t CBitmap::Render (CRectangle* destP,
-							int32_t xDest, int32_t yDest, int32_t wDest, int32_t hDest,
-							int32_t xSrc, int32_t ySrc, int32_t wSrc, int32_t hSrc,
-							int32_t bTransp, int32_t bMipMaps, int32_t bSmoothe,
-							float fAlpha, CFloatVector* colorP)
+								 int32_t xDest, int32_t yDest, int32_t wDest, int32_t hDest,
+								 int32_t xSrc, int32_t ySrc, int32_t wSrc, int32_t hSrc,
+								 int32_t bTransp, int32_t bMipMaps, int32_t bSmoothe,
+								 float fAlpha, CFloatVector* colorP)
 {
 	CBitmap*		bmoP;
 
 if ((bmoP = HasOverride ()))
 	return bmoP->Render (destP, xDest, yDest, wDest, hDest, xSrc, ySrc, wSrc, hSrc, bTransp, bMipMaps, bSmoothe, fAlpha, colorP);
 
-	int32_t			nTransp = (Flags () & BM_FLAG_TGA) ? -1 : HasTransparency () ? 2 : 0;
+	int32_t		nTransp = (Flags () & BM_FLAG_TGA) ? -1 : HasTransparency () ? 2 : 0;
 	bool			bLocal = Texture () == NULL;
 
 //	uint8_t *oldpal;
-OglVertices (xDest, yDest, wDest, hDest, I2X (1), 0, destP);
 CFloatVector color;
 int32_t nColors;
 bool bBlend = bTransp && nTransp;
+
+if (!OglBeginRender (bBlend, bMipMaps, nTransp))
+	return 1; // fail
+
+OglVertices (xDest, yDest, wDest, hDest, I2X (1), 0, destP);
 
 if (!colorP) {
 	color.Red () = color.Green () = color.Blue () = 1.0f;
@@ -213,9 +217,6 @@ if (!colorP) {
 	}
 else
 	nColors = 4;
-
-if (!OglBeginRender (bBlend, bMipMaps, nTransp))
-	return 1; // fail
 
 m_render.u1 = m_render.v1 = 0;
 if (wSrc < 0)
@@ -236,6 +237,7 @@ else {
 	else
 		m_render.v2 = m_info.texP->V ();
 	}
+
 OglRender (colorP, nColors, 0);
 OglEndRender ();
 

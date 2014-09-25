@@ -14,12 +14,14 @@ void ResetSphereShaders (void);
 
 class CSphereData {
 public:
-		int32_t						m_nRings;
-		int32_t						m_nTiles;
-		int32_t						m_nFrame;
+		int32_t					m_nRings;
+		int32_t					m_nTiles;
+		int32_t					m_nFrame;
 		tTexCoord2f				m_texCoord;
 		CPulseData				m_pulse;
 		CPulseData*				m_pulseP;
+		CBitmap*					m_bmP;
+		CFloatVector			m_color;
 
 	public:
 		CSphereData () { Init (); };
@@ -35,7 +37,7 @@ class CSphere : private CSphereData {
 			} tSphereVertex;
 
 		CArray<tSphereVertex>	m_vertices;
-		int32_t							m_nVertices;
+		int32_t						m_nVertices;
 
 	public:
 		CSphere () {}
