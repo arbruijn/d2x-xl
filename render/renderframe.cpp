@@ -446,7 +446,9 @@ else {
 	// The following code is a hack resetting the blur buffers, because otherwise certain stuff rendered to it doesn't get properly blended and colored.
 	// I have not been able to determine why this is so.
 	if (glowRenderer.Available (0xFFFFFFFF)) { 
-		ogl.SelectBlurBuffer (0);
+		if (!(ogl.BlurBuffer (0)->Handle () && ogl.BlurBuffer (0)->ColorBuffer ()))
+			ogl.SelectBlurBuffer (0);
+		if (!(ogl.BlurBuffer (1)->Handle () && ogl.BlurBuffer (1)->ColorBuffer ()))
 		ogl.SelectBlurBuffer (1);
 		ogl.ChooseDrawBuffer ();
 		}

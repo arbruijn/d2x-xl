@@ -99,11 +99,11 @@ class COglData {
 		tWindowScale	windowScale;
 		CStaticArray<CFBO, 9> drawBuffers;
 		CFBO*				drawBufferP;
-		int32_t				nPerPixelLights [9];
+		int32_t			nPerPixelLights [9];
 		float				lightRads [8];
 		CFloatVector	lightPos [8];
-		int32_t				bLightmaps;
-		int32_t				nHeadlights;
+		int32_t			bLightmaps;
+		int32_t			nHeadlights;
 		fix				xStereoSeparation;
 		GLuint			nTexture [4];
 		GLenum			nSrcBlendMode;
@@ -122,10 +122,10 @@ class COglData {
 		bool				bLineSmooth;
 		bool				bLighting;
 		bool				bPolyOffsetFill;
-		int32_t				nTMU [2];	//active driver and client TMUs
-		int32_t				clientStates [4][6];	// client states for the first 4 TMUs
-		int32_t				bClientTexCoord;
-		int32_t				bClientColor;
+		int32_t			nTMU [2];	//active driver and client TMUs
+		int32_t			clientStates [4][6];	// client states for the first 4 TMUs
+		int32_t			bClientTexCoord;
+		int32_t			bClientColor;
 #if DBG_OGL
 		tClientBuffer	clientBuffers [4][6];
 #endif

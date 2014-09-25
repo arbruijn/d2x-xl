@@ -17,14 +17,14 @@ typedef struct tFrameBuffer {
 	GLuint	bufferIds [MAX_COLOR_BUFFERS];
 	GLuint	hDepthBuffer;
 	GLuint	hStencilBuffer;
-	int32_t		nColorBuffers;
-	int32_t		nFirstBuffer;
-	int32_t		nBufferCount;
-	int32_t		nBuffer;
-	int32_t		nType;
-	int32_t		nWidth;
-	int32_t		nHeight;
-	int32_t		bActive;
+	int32_t	nColorBuffers;
+	int32_t	nFirstBuffer;
+	int32_t	nBufferCount;
+	int32_t	nBuffer;
+	int32_t	nType;
+	int32_t	nWidth;
+	int32_t	nHeight;
+	int32_t	bActive;
 	GLenum	nStatus;
 } tFrameBuffer;
 
