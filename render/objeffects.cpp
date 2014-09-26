@@ -123,7 +123,7 @@ else {
 		if (!bWarp)
 			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP ? effectObjP->LifeLeft () : I2X (1), info.xSize, 1, OBJPOS (this)->vPos));
 		else {
-#if 0
+#if 1
 			static CFloatVector color = {{{0.25f, 0.125f, 0.0f, 0.2f}}};
 			lightningManager.CreateForTeleport (this, &color);
 #endif
