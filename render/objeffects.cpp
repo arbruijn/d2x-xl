@@ -128,7 +128,7 @@ else {
 			lightningManager.CreateForTeleport (this, &color);
 #endif
 			if (effectObjP) {
-				effectObjP->SetLife (I2X (1));
+				effectObjP->SetLife (I2X (3) / 4);
 #if 1
 				effectObjP->Collapse (true);
 #endif

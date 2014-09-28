@@ -141,7 +141,12 @@ if (LOCALOBJECT.AppearanceStage () > -1)
 	return 0;
 int32_t t = LOCALOBJECT.AppearanceTimer ();
 #if 1
-FadeMine (X2F (APPEARANCE_DELAY + t) / X2F (APPEARANCE_DELAY));
+int32_t d = I2X (1);
+int32_t a = APPEARANCE_DELAY - d;
+if (t > -a)
+	return 0;
+t += a;
+FadeMine (X2F (d + t) / X2F (d));
 #else
 if (t > -APPEARANCE_DELAY / 2)
 	return 0;
