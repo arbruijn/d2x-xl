@@ -237,7 +237,7 @@ CFloatVector CFace::CalcCenterf (CModel* po)
 {
 	CFloatVector	*pv = po->m_vertsf.Buffer ();
 	uint16_t			*pfv = m_vertices;
-	int32_t				i;
+	int32_t			i;
 
 	CFloatVector	c;
 
@@ -586,7 +586,7 @@ int32_t CModel::GatherItems (void *modelDataP, CAngleVector *animAngleP, int32_t
 	uint8_t*		p = reinterpret_cast<uint8_t*> (modelDataP);
 	CSubModel*	pso = m_subModels + nThis;
 	CFace*		pf = m_faces + m_iFace;
-	int32_t			nChild;
+	int32_t		nChild;
 
 G3CheckAndSwap (modelDataP);
 nGlow = -1;
@@ -829,7 +829,7 @@ OglDrawArrays (GL_QUADS, 0, 4);
 void RenderFarShadowCapFace (CFloatVector *pv, int32_t nVerts)
 {
 	CFloatVector	v0, v1;
-	int32_t				i;
+	int32_t			i;
 
 #if DBG_SHADOWS
 if (bShadowTest == 1)
@@ -867,10 +867,10 @@ if (bCullFront && ogl.m_features.bSeparateStencilOps)
 
 	CFloatVector*	pvf, v [4];
 	CFace*			pf, ** ppf;
-	uint16_t*			pfv, * paf;
+	uint16_t*		pfv, * paf;
 	uint16_t			h, i, j, n, nVerts = 0;
 	float				fClipDist;
-	int32_t				nClip;
+	int32_t			nClip;
 
 #if DBG_SHADOWS
 if (!bShadowVolume)
@@ -1150,9 +1150,9 @@ float CSubModel::ClipDistByFaceVerts (CObject *objP, CModel* po, float fMaxDist,
 	CFixVector		v;
 	float*			pfc;
 	CFace*			pf, ** ppf;
-	uint16_t*			pfv, h, j, m, n;
-	int16_t				nObject = objP->Index ();
-	int16_t				nPointSeg, nSegment = objP->info.nSegment;
+	uint16_t*		pfv, h, j, m, n;
+	int16_t			nObject = objP->Index ();
+	int16_t			nPointSeg, nSegment = objP->info.nSegment;
 	float				fClipDist;
 
 pv = po->m_vertsf.Buffer ();
@@ -1184,13 +1184,13 @@ return fMaxDist;
 float G3ClipDistByLitVerts (CObject *objP, CModel* po, float fMaxDist, int32_t i, int32_t incr)
 {
 	CFloatVector	*pv;
-	CFixVector	v;
-	float			*pfc;
-	uint16_t		j;
+	CFixVector		v;
+	float				*pfc;
+	uint16_t			j;
 	uint8_t			*pvf;
 	int16_t			nObject = objP->Index ();
 	int16_t			nPointSeg, nSegment = objP->info.nSegment;
-	float			fClipDist;
+	float				fClipDist;
 	uint8_t			nVertFlag = po->m_nVertFlag;
 
 pv = po->m_vertsf.Buffer ();
@@ -1250,8 +1250,8 @@ void G3GetLitVertices (CModel* po, CSubModel* pso)
 {
 	CFace		*pf, **ppf;
 	uint16_t	*pfv, i, j;
-	uint8_t		*pvf;
-	uint8_t		nVertFlag = po->m_nVertFlag++;
+	uint8_t	*pvf;
+	uint8_t	nVertFlag = po->m_nVertFlag++;
 
 if (!nVertFlag)
 	po->m_vertFlags.Clear ();
@@ -1310,9 +1310,9 @@ if (bCullFront && ogl.m_features.bSeparateStencilOps)
 
 	CFloatVector*	pvf, v0, v1;
 	CFace*			pf, ** ppf;
-	uint16_t*			pfv, i, j, nVerts;
+	uint16_t*		pfv, i, j, nVerts;
 	float				fClipDist;
-	int32_t				nClip;
+	int32_t			nClip;
 
 #if DBG_SHADOWS
 if (bShadowTest) {
@@ -1400,7 +1400,7 @@ return h;
 
 int32_t POFGatherPolyModelItems (CObject *objP, void *modelDataP, CAngleVector *animAngleP, CModel* po, int32_t bShadowData)
 {
-	int32_t				j;
+	int32_t			j;
 	CFixVector*		pv;
 	CFloatVector*	pvf;
 
@@ -1513,7 +1513,6 @@ ogl.DisableClientState (GL_VERTEX_ARRAY);
 return 1;
 }
 
-
 #else //-------------------------------------------------------------------------
 
 int32_t G3DrawPolyModelShadow (CObject *objP, void *modelDataP, CAngleVector *animAngleP, int32_t nModel)
@@ -1523,7 +1522,7 @@ if (objP->IsStatic ())
 
 	CFixVector	v;
 	int16_t*		nearestLightP;
-	int32_t			h, i, j, nShadowQuality = gameOpts->render.ShadowQuality () - 1;
+	int32_t		h, i, j, nShadowQuality = gameOpts->render.ShadowQuality () - 1;
 	CModel*		po = gameData.models.pofData [gameStates.app.bD1Mission][1] + nModel;
 	CObject*		lightObjP = NULL;
 

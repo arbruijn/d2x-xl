@@ -36,8 +36,8 @@ void CModel::GetASEModelItems (int32_t nModel, ASE::CModel *pa, float fScale)
 	CFace*				pmf = m_faces.Buffer ();
 	CVertex*				pmv = m_faceVerts.Buffer ();
 	CBitmap*				bmP;
-	int32_t					h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
-	int32_t					bTextured;
+	int32_t				h, i, nFaces, iFace, nVerts = 0, nIndex = 0;
+	int32_t				bTextured;
 
 for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 	psm = m_subModels + psa->m_nSubModel;
@@ -63,7 +63,8 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 	psm->m_nWeaponPos = psa->m_nWeaponPos;
 	psm->m_nGunPoint = psa->m_nGunPoint;
 	psm->m_bBullets = (psa->m_nBullets > 0);
-	psm->m_nIndex = nIndex;
+	psm->m_nVertexIndex [0] = nIndex;
+	psm->m_nVertices = psa->m_nVerts;
 	psm->m_iFrame = 0;
 	psm->m_tFrame = 0;
 	psm->m_nFrames = (psa->m_bBarrel || psa->m_bThruster) ? 32 : 0;
@@ -97,6 +98,8 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 				pmv->m_texCoord = psa->m_texCoord [pfa->m_nTexCoord [i]];
 			h += nVerts;
 			m_vertices [h] = pmv->m_vertex;
+			m_vertexOwner [h].m_nOwner = (uint16_t) psa->m_nSubModel;
+			m_vertexOwner [h].m_nVertex = (uint16_t) h;
 			m_vertNorms [h] = pmv->m_normal;
 			pmv->m_nIndex = h;
 			psm->SetMinMax (&pmv->m_vertex);
@@ -120,7 +123,7 @@ for (psa = pa->m_subModels; psa; psa = psa->m_next) {
 int32_t CModel::BuildFromASE (CObject *objP, int32_t nModel)
 {
 	ASE::CModel*	pa = gameData.models.modelToASE [1][nModel];
-	int32_t				i, j;
+	int32_t			i, j;
 
 if (!pa) {
 	pa = gameData.models.modelToASE [0][nModel];

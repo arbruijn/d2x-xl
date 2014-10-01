@@ -48,7 +48,7 @@ void CModel::GetOOFModelItems (int32_t nModel, OOF::CModel *po, float fScale)
 	CFloatVector3*		pvn = m_vertNorms.Buffer (), vNormal;
 	CVertex*				pmv = m_faceVerts.Buffer ();
 	CFace*				pmf = m_faces.Buffer ();
-	int32_t					h, i, j, n, nIndex = 0;
+	int32_t				h, i, j, n, nIndex = 0;
 
 for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Buffer (); i; i--, pso++, psm++) {
 	psm->m_nParent = pso->m_nParent;
@@ -67,7 +67,8 @@ for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Bu
 	psm->m_bGlow = 0;
 	psm->m_bRender = 1;
 	j = pso->m_faces.m_nFaces;
-	psm->m_nIndex = nIndex;
+	psm->m_nVertexIndex [0] = nIndex;
+	psm->m_nVertices = pso->m_nVerts;
 	psm->m_nFaces = j;
 	psm->m_faces = pmf;
 	psm->InitMinMax ();
@@ -102,6 +103,8 @@ for (i = po->m_nSubModels, pso = po->m_subModels.Buffer (), psm = m_subModels.Bu
 			pmv->m_normal = vNormal;
 			m_vertices [h].Assign (pso->m_vertices [h]);
 			m_vertices [h] *= fScale;
+			m_vertexOwner [h].m_nOwner = (uint16_t) m_iSubModel;
+			m_vertexOwner [h].m_nVertex = (uint16_t) h;
 			pmv->m_vertex = m_vertices [h];
 			psm->SetMinMax (&pmv->m_vertex);
 			*pvn = vNormal;

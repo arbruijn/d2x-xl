@@ -40,21 +40,21 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 class __pack__ CSubModelData {
 	public:
 #if 1
-		int32_t			ptrs [MAX_SUBMODELS];
+		int32_t		ptrs [MAX_SUBMODELS];
 		CFixVector	offsets [MAX_SUBMODELS];
 		CFixVector	norms [MAX_SUBMODELS];   // norm for sep plane
 		CFixVector	pnts [MAX_SUBMODELS];    // point on sep plane
 		fix			rads [MAX_SUBMODELS];       // radius for each submodel
-		uint8_t			parents [MAX_SUBMODELS];    // what is parent for each submodel
+		uint8_t		parents [MAX_SUBMODELS];    // what is parent for each submodel
 		CFixVector	mins [MAX_SUBMODELS];
 		CFixVector	maxs [MAX_SUBMODELS];
 #else
-		CArray<int32_t>				ptrs ;//[MAX_SUBMODELS];
+		CArray<int32_t>		ptrs ;//[MAX_SUBMODELS];
 		CArray<CFixVector>	offsets ;//[MAX_SUBMODELS];
 		CArray<CFixVector>	norms ;//[MAX_SUBMODELS];   // norm for sep plane
 		CArray<CFixVector>	pnts ;//[MAX_SUBMODELS];    // point on sep plane
 		CArray<fix>				rads ;//[MAX_SUBMODELS];       // radius for each submodel
-		CArray<uint8_t>			parents ;//[MAX_SUBMODELS];    // what is parent for each submodel
+		CArray<uint8_t>		parents ;//[MAX_SUBMODELS];    // what is parent for each submodel
 		CArray<CFixVector>	mins ;//[MAX_SUBMODELS];
 		CArray<CFixVector>	maxs ;//[MAX_SUBMODELS];
 #endif
@@ -71,15 +71,15 @@ class __pack__ CSubModelData {
 
 typedef struct tPolyModelInfo {
 		uint16_t			nId;
-		int16_t				nType;
-		int32_t				nModels;
-		int32_t				nDataSize;
+		int16_t			nType;
+		int32_t			nModels;
+		int32_t			nDataSize;
 		CSubModelData	subModels;
 		CFixVector		mins, maxs;		// min,max for whole model
 		fix				rad [2];			// 0: recomputed rad, 1: original rad from Descent data
-		uint8_t				nTextures;
+		uint8_t			nTextures;
 		uint16_t			nFirstTexture;
-		uint8_t				nSimplerModel;	// alternate model with less detail (0 if none, nModel+1 else)
+		uint8_t			nSimplerModel;	// alternate model with less detail (0 if none, nModel+1 else)
 		bool				bCustom;
 } __pack__ tPolyModelInfo;
 
@@ -161,7 +161,7 @@ int32_t LoadPolyModel (const char* filename, int32_t nTextures, int32_t nFirstTe
 
 // draw a polygon model
 int32_t DrawPolyModel (CObject* objP, CFixVector* pos, CFixMatrix* orient, CAngleVector* animAngles, int32_t nModel, int32_t flags, fix light, 
-						 fix* glowValues, tBitmapIndex nAltTextures[], CFloatVector* obj_color);
+							  fix* glowValues, tBitmapIndex nAltTextures[], CFloatVector* obj_color);
 
 // draws the given model in the current canvas.  The distance is set to
 // more-or-less fill the canvas.  Note that this routine actually renders

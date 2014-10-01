@@ -158,8 +158,8 @@ pmf->m_vNormal = *pn;
 pmf->m_nIndex = m_iFaceVert;
 pmv = m_faceVerts + m_iFaceVert;
 pvn = m_vertNorms + m_iFaceVert;
-if (psm->m_nIndex == (uint16_t) -1)
-	psm->m_nIndex = m_iFaceVert;
+if (psm->m_nVertexIndex [0] == (uint16_t) -1)
+	psm->m_nVertexIndex [0] = m_iFaceVert;
 pmf->m_nVerts = nVerts;
 if ((pmf->m_bGlow = (nGlow >= 0)))
 	nGlow = -1;
@@ -189,19 +189,19 @@ return ++pmf;
 //------------------------------------------------------------------------------
 
 int32_t CModel::GetPOFModelItems (void *modelDataP, CAngleVector *pAnimAngles, int32_t nThis, int32_t nParent,
-										int32_t bSubObject, CArray<CBitmap*>& modelBitmaps, CFloatVector *objColorP)
+											 int32_t bSubObject, CArray<CBitmap*>& modelBitmaps, CFloatVector *objColorP)
 {
 	uint8_t*		p = reinterpret_cast<uint8_t*> (modelDataP);
 	CSubModel*	psm = m_subModels + nThis;
 	CFace*		pmf = m_faces + m_iFace;
-	int32_t			nChild;
-	int16_t			nTag;
+	int32_t		nChild;
+	int16_t		nTag;
 
 G3CheckAndSwap (modelDataP);
 nGlow = -1;
 if (bSubObject) {
 	psm->InitMinMax ();
-	psm->m_nIndex = (uint16_t) -1;
+	psm->m_nVertexIndex [0] = (uint16_t) -1;
 	psm->m_nParent = nParent;
 	psm->m_nBomb = -1;
 	psm->m_nMissile = -1;
@@ -211,6 +211,7 @@ if (bSubObject) {
 	psm->m_bThruster = 0;
 	psm->m_bGlow = 0;
 	psm->m_bRender = 1;
+	psm->m_nVertices = 0;
 	}
 for (;;) {
 	nTag = WORDVAL (p);
@@ -220,27 +221,35 @@ for (;;) {
 
 		case OP_DEFPOINTS: {
 			int32_t i, n = WORDVAL (p+2);
+			int32_t h = 0;
 			Assert (n <= int32_t (m_vertices.Length ()));
 			CFloatVector3 *pfv = m_vertices.Buffer ();
 			CFixVector *pv = VECPTR (p+4);
 			for (i = n; i; i--) {
 				pfv->Assign (*pv);
-				pfv++; pv++;
-			}
+				pfv++; 
+				pv++;
+				m_vertexOwner [h].m_nOwner = (uint16_t) nThis;
+				m_vertexOwner [h].m_nVertex = (uint16_t) h++;
+				}
+			psm->m_nVertices += n;
 			p += n * sizeof (CFixVector) + 4;
 			break;
 			}
 
 		case OP_DEFP_START: {
 			int32_t i, n = WORDVAL (p+2);
-			int32_t s = WORDVAL (p+4);
-			Assert (s + n <= int32_t (m_vertices.Length ()));
-			CFloatVector3 *pfv = m_vertices + s;
+			int32_t h = WORDVAL (p+4);
+			CFloatVector3 *pfv = m_vertices + h;
 			CFixVector *pv = VECPTR (p+8);
 			for (i = n; i; i--) {
 				pfv->Assign (*pv);
-				pfv++; pv++;
-			}
+				pfv++; 
+				pv++;
+				m_vertexOwner [h].m_nOwner = (uint16_t) nThis;
+				m_vertexOwner [h].m_nVertex = (uint16_t) h++;
+				}
+			psm->m_nVertices += n;
 			p += n * sizeof (CFixVector) + 8;
 			break;
 			}

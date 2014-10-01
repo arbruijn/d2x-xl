@@ -15,18 +15,18 @@ class CModel;
 class CFace {
 	public:
 		uint16_t				m_nVerts;
-		uint16_t*				m_vertices;
+		uint16_t*			m_vertices;
 		CFixVector			m_vCenter;
 		CFixVector			m_vNorm;
 		CFixVector			m_vRotNorm;
 		CFloatVector		m_vNormf;
 		CFloatVector		m_vCenterf;
 		float					m_fClipDist;
-		uint8_t					m_bFacingLight :1;
-		uint8_t					m_bFrontFace :1;
-		uint8_t					m_bGlow :1;
-		uint8_t					m_bTest :1;
-		uint8_t					m_bIgnore :1;
+		uint8_t				m_bFacingLight :1;
+		uint8_t				m_bFrontFace :1;
+		uint8_t				m_bGlow :1;
+		uint8_t				m_bTest :1;
+		uint8_t				m_bIgnore :1;
 		uint16_t				m_nAdjFaces;
 
 	public:
@@ -56,10 +56,10 @@ class CSubModel {
 		CFixVector			m_vPos;
 		CAngleVector		m_vAngles;
 		float					m_fClipDist;
-		int16_t					m_nParent;
-		uint16_t*				m_adjFaces;
-		int16_t					m_nRenderFlipFlop;
-		int16_t					m_bCalcClipDist;
+		int16_t				m_nParent;
+		uint16_t*			m_adjFaces;
+		int16_t				m_nRenderFlipFlop;
+		int16_t				m_bCalcClipDist;
 
 	public:
 		CSubModel () { Init (); }

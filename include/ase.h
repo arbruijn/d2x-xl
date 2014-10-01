@@ -14,7 +14,7 @@ class CFace {
 		CFloatVector3			m_vNormal;
 		uint16_t					m_nVerts [3];	// indices of vertices 
 		uint16_t					m_nTexCoord [3];
-		int16_t						m_nBitmap;
+		int16_t					m_nBitmap;
 };
 
 class CSubModel {
@@ -22,21 +22,21 @@ class CSubModel {
 		CSubModel*				m_next;
 		char						m_szName [256];
 		char						m_szParent [256];
-		int16_t						m_nSubModel;
-		int16_t						m_nParent;
-		int16_t						m_nBitmap;
+		int16_t					m_nSubModel;
+		int16_t					m_nParent;
+		int16_t					m_nBitmap;
 		uint16_t					m_nFaces;
 		uint16_t					m_nVerts;
 		uint16_t					m_nTexCoord;
 		uint16_t					m_nIndex;
-		uint8_t						m_bRender;
-		uint8_t						m_bGlow;
-		uint8_t						m_bFlare;
-		uint8_t						m_bBillboard;
-		uint8_t						m_bThruster;
-		uint8_t						m_bWeapon;
-		uint8_t						m_bHeadlight;
-		uint8_t						m_bBombMount;
+		uint8_t					m_bRender;
+		uint8_t					m_bGlow;
+		uint8_t					m_bFlare;
+		uint8_t					m_bBillboard;
+		uint8_t					m_bThruster;
+		uint8_t					m_bWeapon;
+		uint8_t					m_bHeadlight;
+		uint8_t					m_bBombMount;
 		char						m_nGun;
 		char						m_nBomb;
 		char						m_nMissile;
@@ -73,11 +73,11 @@ class CModel {
 	public:
 		CModelTextures			m_textures;
 		CSubModel*				m_subModels;
-		int32_t						m_nModel;
-		int32_t						m_nSubModels;
-		int32_t						m_nVerts;
-		int32_t						m_nFaces;
-		int32_t						m_bCustom;
+		int32_t					m_nModel;
+		int32_t					m_nSubModels;
+		int32_t					m_nVerts;
+		int32_t					m_nFaces;
+		int32_t					m_bCustom;
 
 	public:
 		CModel () { Init (); }

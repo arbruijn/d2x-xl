@@ -265,7 +265,7 @@ return CModel::Error ("unexpected end of file");
 
 int32_t CSubModel::ReadMeshFaceList (CFile& cf)
 {
-	CFace	*pf;
+	CFace*	pf;
 	int32_t	i;
 
 if (CharTok (" \t") != '{')
@@ -299,8 +299,8 @@ return CModel::Error ("unexpected end of file");
 
 int32_t CSubModel::ReadVertexTexCoord (CFile& cf)
 {
-	tTexCoord2f		*pt;
-	int32_t				i;
+	tTexCoord2f*	pt;
+	int32_t			i;
 
 if (CharTok (" \t") != '{')
 	return CModel::Error ("syntax error");
@@ -330,7 +330,7 @@ return CModel::Error ("unexpected end of file");
 
 int32_t CSubModel::ReadFaceTexCoord (CFile& cf)
 {
-	CFace	*pf;
+	CFace*	pf;
 	int32_t	i;
 
 if (CharTok (" \t") != '{')

@@ -33,23 +33,45 @@ class CVertex {
 		CFloatVector3			m_normal;
 		CFloatVector			m_baseColor;
 		uint16_t					m_nIndex;
-		char						m_bTextured;
+		uint8_t					m_bTextured;
 	};
 
 inline int32_t operator- (RenderModel::CVertex* f, CArray<RenderModel::CVertex>& a) { return a.Index (f); }
 
-class CFace {
+class CContourInfo {
+	public:
+		CFloatVector3			m_vCenterf [2];
+		CFloatVector3			m_vNormalf [2];
+		GLenum					m_faceWinding;
+		uint16_t					m_bFrontFace :1;
+		uint16_t					m_bFacingLight :1;
+		uint16_t					m_bFacingViewer :1;
+		uint16_t					m_bTransformed :1;
+
+	public:
+		int32_t IsFacingPoint (CFloatVector3& v);
+		int32_t IsFacingViewer (void);
+		int32_t IsFront (void);
+		int32_t IsLit (CFloatVector3& vLight);
+		void Transform (void);
+
+	private:
+		void RotateNormal (void);
+		void TransformCenter (void);
+};
+
+class CFace : public CContourInfo {
 	public:
 		CFixVector				m_vNormal;
 		uint16_t					m_nVerts;
-		int16_t						m_nBitmap;
+		int16_t					m_nBitmap;
 		CBitmap*					m_textureP;
 		uint16_t					m_nIndex;
 		uint16_t					m_nId;
-		uint8_t						m_nSubModel;
-		uint8_t						m_bThruster;
-		uint8_t						m_bGlow :2;
-		uint8_t						m_bBillboard;
+		uint8_t					m_nSubModel;
+		uint8_t					m_bThruster;
+		uint8_t					m_bGlow :2;
+		uint8_t					m_bBillboard;
 
 	public:
 		void SetTexture (CBitmap* textureP);
@@ -66,7 +88,7 @@ inline int32_t operator- (RenderModel::CFace* f, CArray<RenderModel::CFace>& a) 
 
 class CSubModel {
 	public:
-		int16_t						m_nSubModel;
+		int16_t					m_nSubModel;
 #if DBG
 		char						m_szName [256];
 #endif
@@ -75,30 +97,31 @@ class CSubModel {
 		CFloatVector3			m_vMin;
 		CFloatVector3			m_vMax;
 		CFace*					m_faces;
-		int16_t						m_nParent;
+		int16_t					m_nParent;
 		uint16_t					m_nFaces;
-		uint16_t					m_nIndex;
-		int16_t						m_nBitmap;
-		int16_t						m_nHitbox;
-		int32_t						m_nRad;
+		uint16_t					m_nVertices;
+		uint16_t					m_nVertexIndex [2];
+		int16_t					m_nBitmap;
+		int16_t					m_nHitbox;
+		int32_t					m_nRad;
 		uint16_t					m_nAngles;
-		uint8_t						m_nType :2;
-		uint8_t						m_bRender :1;
-		uint8_t						m_bFlare :1;
-		uint8_t						m_bWeapon :1;
-		uint8_t						m_bHeadlight :1;
-		uint8_t						m_bBullets :1;
-		uint8_t						m_bBombMount :1;
-		uint8_t						m_bGlow :2;
-		uint8_t						m_bBillboard :1;
-		uint8_t						m_bThruster;
+		uint8_t					m_nType :2;
+		uint8_t					m_bRender :1;
+		uint8_t					m_bFlare :1;
+		uint8_t					m_bWeapon :1;
+		uint8_t					m_bHeadlight :1;
+		uint8_t					m_bBullets :1;
+		uint8_t					m_bBombMount :1;
+		uint8_t					m_bGlow :2;
+		uint8_t					m_bBillboard :1;
+		uint8_t					m_bThruster;
 		char						m_nGunPoint;
 		char						m_nGun;
 		char						m_nBomb;
 		char						m_nMissile;
 		char						m_nWeaponPos;
-		uint8_t						m_nFrames;
-		uint8_t						m_iFrame;
+		uint8_t					m_nFrames;
+		uint8_t					m_iFrame;
 		time_t					m_tFrame;
 
 	public:
@@ -112,6 +135,9 @@ class CSubModel {
 		void SortFaces (CBitmap* textureP);
 		void GatherVertices (CArray<CVertex>& source, CArray<CVertex>& dest);
 		void Size (CModel* pm, CObject* objP, CFixVector* vOffset);
+
+		void GatherContourEdges (CModel* modelP);
+		void GatherLitFaces (CModel* modelP, CFloatVector3& vLight);
 	};
 
 inline int32_t operator- (RenderModel::CSubModel* f, CArray<RenderModel::CSubModel>& a) { return a.Index (f); }
@@ -119,23 +145,44 @@ inline int32_t operator- (RenderModel::CSubModel* f, CArray<RenderModel::CSubMod
 class CVertNorm {
 	public:
 		CFloatVector3	vNormal;
-		uint8_t		nVerts;
+		uint8_t			nVerts;
 	};
 
+class CModelEdge {
+	public:
+		uint16_t			m_nVertices [2];
+		CFace*			m_faces [2];
+
+	public:
+		uint16_t IsContour (void);
+	};
+
+
+class CVertexOwner {
+	public:
+		uint16_t			m_nOwner;
+		uint16_t			m_nVertex;
+
+	public:
+		inline bool operator< (CVertexOwner& other) { return (m_nOwner < other.m_nOwner) || ((m_nOwner == other.m_nOwner) && (m_nVertex < other.m_nVertex)); }
+		inline bool operator> (CVertexOwner& other) { return (m_nOwner > other.m_nOwner) || ((m_nOwner == other.m_nOwner) && (m_nVertex > other.m_nVertex)); }
+		inline bool operator!= (CVertexOwner& other) { return (m_nOwner != other.m_nOwner) || (m_nVertex != other.m_nVertex); }
+	};
 
 class CModel {
 	public:
 
 	public:
-		int16_t										m_nModel;
+		int16_t									m_nModel;
 		CArray<CBitmap>						m_textures;
-		int32_t										m_teamTextures [8];
+		int32_t									m_teamTextures [8];
 		CArray<CFloatVector3>				m_vertices;
+		CArray<CVertexOwner>					m_vertexOwner;
 		CArray<CFloatVector3>				m_vertNorms;
 		CArray<CFaceColor>					m_color;
 		CArray<CVertex>						m_faceVerts;
 		CArray<CVertex>						m_sortedVerts;
-		CArray<uint8_t>							m_vbData;
+		CArray<uint8_t>						m_vbData;
 		CArray<tTexCoord2f>					m_vbTexCoord;
 		CArray<CFloatVector>					m_vbColor;
 		CArray<CFloatVector3>				m_vbVerts;
@@ -143,11 +190,15 @@ class CModel {
 		CArray<CSubModel>						m_subModels;
 		CArray<CFace>							m_faces;
 		CArray<CRenderVertex>				m_vertBuf [2];
-		CArray<uint16_t>							m_index [2];
-		int16_t										m_nGunSubModels [MAX_GUNS];
+		CArray<uint16_t>						m_index [2];
+		CArray<CModelEdge>					m_edges;
+		CStack<CFace*>							m_litFaces;
+		CStack<uint16_t>						m_contourEdges;
+		int16_t									m_nGunSubModels [MAX_GUNS];
 		float										m_fScale;
-		int16_t										m_nType; //-1: custom mode, 0: default model, 1: alternative model, 2: hires model
+		int16_t									m_nType; //-1: custom mode, 0: default model, 1: alternative model, 2: hires model
 		uint16_t									m_nFaces;
+		uint16_t									m_nEdges;
 		uint16_t									m_iFace;
 		uint16_t									m_nVerts;
 		uint16_t									m_nFaceVerts;
@@ -155,9 +206,9 @@ class CModel {
 		uint16_t									m_nSubModels;
 		uint16_t									m_nTextures;
 		uint16_t									m_iSubModel;
-		int16_t										m_bHasTransparency;
-		int16_t										m_bValid;
-		int16_t										m_bRendered;
+		int16_t									m_bHasTransparency;
+		int16_t									m_bValid;
+		int16_t									m_bRendered;
 		uint16_t									m_bBullets;
 		CFixVector								m_vBullets;
 		GLuint									m_vboDataHandle;
@@ -196,7 +247,12 @@ class CModel {
 		int32_t CountPOFModelItems (void* modelDataP, uint16_t* pnSubModels, uint16_t* pnVerts, uint16_t* pnFaces, uint16_t* pnFaceVerts);
 		CFace* AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, uint8_t* p, CArray<CBitmap*>& modelBitmaps, CFloatVector* objColorP, bool bTextured = true);
 		int32_t GetPOFModelItems (void *modelDataP, CAngleVector *pAnimAngles, int32_t nThis, int32_t nParent,
-									 int32_t bSubObject, CArray<CBitmap*>& modelBitmaps, CFloatVector *objColorP);
+										  int32_t bSubObject, CArray<CBitmap*>& modelBitmaps, CFloatVector *objColorP);
+
+		uint16_t CountEdges (void);
+		int32_t FindEdge (uint16_t v1, uint16_t v2);
+		void AddEdge (CFace* faceP, uint16_t v1, uint16_t v2);
+		bool BuildEdgeList (void);
 
 	};	
 

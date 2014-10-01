@@ -718,8 +718,8 @@ if (args.Parse (&cf)) {
 	m_playerShip = args.Int ("-player_ship", bLocal ? m_playerShip : -1);
 	m_bTeleport = args.Int ("-teleport", bLocal ? m_bTeleport : 1);
 	m_bSecretSave = args.Int ("-secret_save", bLocal ? m_bSecretSave : 1);
-	m_bColoredSegments = args.Int ("-3d_powerups", bLocal ? m_b3DPowerups : 1);
-	m_b3DPowerups = args.Int ("-colored_segments", bLocal ? m_bColoredSegments : 1);
+	m_bColoredSegments = args.Int ("-colored_segments", bLocal ? m_b3DPowerups : 1);
+	m_b3DPowerups = args.Int ("-3d_powerups", bLocal ? m_bColoredSegments : 1);
 	m_nCollisionModel = args.Int ("-collision_model", bLocal ? m_nCollisionModel : 1);
 	}
 cf.Close ();

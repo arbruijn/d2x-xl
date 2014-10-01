@@ -6,10 +6,10 @@
 typedef struct tReplacementModel {
 	const char*	pszHires;
 	const char*	pszLores;
-	int16_t			nModel;
-	int16_t			nType;
-	int32_t			bFlipV;
-	int16_t			nId;
+	int16_t		nModel;
+	int16_t		nType;
+	int32_t		bFlipV;
+	int16_t		nId;
 } tReplacementModel;
 
 extern tReplacementModel replacementModels [];

@@ -95,10 +95,10 @@ class CFace {
 		CFloatVector		m_vRotNormal;
 		CFloatVector		m_vCenter;
 		CFloatVector		m_vRotCenter;
-		int32_t					m_nVerts;
-		int32_t					m_bTextured;
+		int32_t				m_nVerts;
+		int32_t				m_bTextured;
 		union {
-			int32_t				nTexId;
+			int32_t			nTexId;
 			CRGBColor		color;
 			} m_texProps;
 		CFaceVert*			m_vertices;
@@ -106,9 +106,9 @@ class CFace {
 		float					m_fBoundingWidth;
 		CFloatVector		m_vMin;
 		CFloatVector		m_vMax;
-		uint8_t					m_bFacingLight : 1;
-		uint8_t					m_bFacingViewer : 1;
-		uint8_t					m_bReverse : 1;
+		uint8_t				m_bFacingLight : 1;
+		uint8_t				m_bFacingViewer : 1;
+		uint8_t				m_bReverse : 1;
 
 	public:
 		int32_t Read (CFile& cf, CSubModel *pso, CFaceVert *pfv, int32_t bFlipV);
@@ -131,7 +131,7 @@ class CFaceList {
 
 class CGlowInfo {
 	public:
-		CFloatVector3		m_color;
+		CFloatVector3	m_color;
 		float				m_fSize;
 		float				m_fLength;
 		CFloatVector	m_vCenter;
@@ -195,9 +195,9 @@ class CAttachList : public CArray<CAttachPoint> {
 class CBattery {
 	public:
 		int32_t				m_nVerts;
-		CArray<int32_t>		m_vertIndex;
+		CArray<int32_t>	m_vertIndex;
 		int32_t				m_nTurrets;
-		CArray<int32_t>		m_turretIndex;
+		CArray<int32_t>	m_turretIndex;
 
 	public:
 		CBattery () { Init (); }
@@ -256,11 +256,11 @@ class CPosAnim : public CAnim {
 
 class CRotFrame {
 	public:
-		int32_t					m_iKeyFrame;
+		int32_t				m_iKeyFrame;
 		CFloatVector		m_vAxis;
-		int32_t					m_nAngle;
+		int32_t				m_nAngle;
 		CFloatMatrix		m_mMat;
-		int32_t					m_nStartTime;
+		int32_t				m_nStartTime;
 
 	public:
 		int32_t Read (CFile& cf, int32_t bTimed);
@@ -283,16 +283,16 @@ class CRotAnim : public CAnim {
 
 class CEdge {
 	public:
-		int32_t		m_v0 [2];
-		int32_t		m_v1 [2];
+		int32_t	m_v0 [2];
+		int32_t	m_v1 [2];
 		CFace*	m_faces [2];
 		char		m_bContour;
 	};
 
 class CEdgeList {
 	public:
-		int32_t				m_nEdges;
-		int32_t				m_nContourEdges;
+		int32_t			m_nEdges;
+		int32_t			m_nContourEdges;
 		CArray<CEdge>	m_list;
 
 	public:
@@ -304,24 +304,24 @@ class CEdgeList {
 
 class CSubModel {
 	public:
-		int32_t							m_nIndex;
-		int32_t							m_nParent;
-		int32_t							m_nFlags;
+		int32_t						m_nIndex;
+		int32_t						m_nParent;
+		int32_t						m_nFlags;
 		CFloatVector				m_vNormal;
 		float							m_fd;
 		CFloatVector				m_vPlaneVert;
 		CFloatVector				m_vOffset;
 		float							m_fRadius;
-		int32_t							m_nTreeOffset;
-		int32_t							m_nDataOffset;
+		int32_t						m_nTreeOffset;
+		int32_t						m_nDataOffset;
 		CFloatVector				m_vCenter;
 		char*							m_pszName;
 		char*							m_pszProps;
-		int32_t							m_nMovementType;
-		int32_t							m_nMovementAxis;
-		int32_t							m_nFSLists;
-		CArray<int32_t>					m_fsLists;
-		int32_t							m_nVerts;
+		int32_t						m_nMovementType;
+		int32_t						m_nMovementAxis;
+		int32_t						m_nFSLists;
+		CArray<int32_t>			m_fsLists;
+		int32_t						m_nVerts;
 		CArray<CFloatVector>		m_vertices;
 		CArray<CFloatVector>		m_rotVerts;
 		CArray<CFloatVector>		m_normals;
@@ -337,8 +337,8 @@ class CSubModel {
 		float							m_fFOV;
 		float							m_fRPS;
 		float							m_fUpdate;
-		int32_t							m_nChildren;
-		int32_t							m_children [OOF_MAX_SUBOBJECTS];
+		int32_t						m_nChildren;
+		int32_t						m_children [OOF_MAX_SUBOBJECTS];
 		CAngleVector				m_aMod;
 		CFloatMatrix				m_mMod;				// The angles from parent.  Stuffed by model_set_instance
 		CFloatVector				m_vMod;

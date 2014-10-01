@@ -34,6 +34,84 @@ using namespace RenderModel;
 #define DIRECT_VBO	1
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+int32_t CContourInfo::IsFacingPoint (CFloatVector3& v)
+{
+	CFloatVector3	h = v - m_vCenterf [1];
+
+return (h * m_vNormalf [1]) > 0;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CContourInfo::IsFacingViewer (void)
+{
+return CFloatVector3::Dot (m_vCenterf [1], m_vNormalf [1]) >= 0;
+}
+
+//------------------------------------------------------------------------------
+
+void CContourInfo::RotateNormal (void)
+{
+transformation.Rotate (m_vNormalf [1], m_vNormalf [0]);
+}
+
+//------------------------------------------------------------------------------
+
+void CContourInfo::TransformCenter (void)
+{
+transformation.Transform (m_vCenterf [1], m_vCenterf [0]);
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CContourInfo::IsLit (CFloatVector3& vLight)
+{
+return m_bFacingLight = IsFacingPoint (vLight);
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CContourInfo::IsFront (void)
+{
+return m_bFrontFace = IsFacingViewer ();
+}
+
+//------------------------------------------------------------------------------
+
+void CContourInfo::Transform (void)
+{
+if (!m_bTransformed) {
+	TransformCenter ();
+	RotateNormal ();
+	m_bFacingViewer = IsFacingViewer ();
+	m_bTransformed = 1;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+uint16_t CModelEdge::IsContour (void)
+{
+m_faces [0]->Transform ();
+m_faces [1]->Transform ();
+return m_faces [0]->IsFacingViewer () != m_faces [1]->IsFacingViewer ();
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+GLenum FaceWinding (CFloatVector3 *v0, CFloatVector3 *v1, CFloatVector3 *v2)
+{
+return (((*v1).v.coord.x - (*v0).v.coord.x) * ((*v2).v.coord.y - (*v1).v.coord.y) < 0) ? GL_CW : GL_CCW;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 void CModel::Init (void)
 {
@@ -64,6 +142,7 @@ m_vboIndexHandle = 0;
 bool CModel::Create (void)
 {
 m_vertices.Create (m_nVerts);
+m_vertexOwner.Create (m_nVerts);
 m_color.Create (m_nVerts);
 m_vertBuf [0].Create (m_nFaceVerts);
 m_faceVerts.Create (m_nFaceVerts);
@@ -153,6 +232,7 @@ m_vertBuf [0].Destroy ();
 m_vertBuf [1].SetBuffer (0);	//avoid trying to delete memory allocated by the graphics driver
 m_color.Destroy ();
 m_vertices.Destroy ();
+m_vertexOwner.Destroy ();
 
 Init ();
 }
@@ -278,11 +358,35 @@ if (m_nFaces > 1)
 
 void CSubModel::GatherVertices (CArray<CVertex>& source, CArray<CVertex>& dest)
 {
-	int32_t nIndex = m_nIndex;	//this submodels vertices start at m_nIndex in the models vertex buffer
+	int32_t nIndex = m_nVertexIndex [0];	//this submodels vertices start at m_nIndex in the models vertex buffer
 
 // copy vertices face by face
 for (int32_t i = 0; i < m_nFaces; i++)
 	nIndex += m_faces [i].GatherVertices (source, dest, nIndex);
+}
+
+//------------------------------------------------------------------------------
+
+void CSubModel::GatherContourEdges (CModel* modelP)
+{
+	CModelEdge* edgeP = modelP->m_edges.Buffer ();
+
+modelP->m_contourEdges.Reset ();
+for (uint16_t i = 0; i < modelP->m_nEdges; i++, edgeP++)
+	if (edgeP->IsContour ())
+		modelP->m_contourEdges.Push (i);
+}
+
+//------------------------------------------------------------------------------
+
+void CSubModel::GatherLitFaces (CModel* modelP, CFloatVector3& vLight)
+{
+	CFace*	faceP = m_faces;
+
+modelP->m_litFaces.Reset ();
+for (uint16_t i = 0; i < m_nFaces; i++)
+	if (m_faces [i].IsLit (vLight))
+		modelP->m_litFaces.Push (m_faces + i);
 }
 
 //------------------------------------------------------------------------------
@@ -298,9 +402,10 @@ void CModel::Setup (int32_t bHires, int32_t bSort)
 	tTexCoord2f*	pt;
 	CFloatVector*	pc;
 	CBitmap*			textureP = bHires ? m_textures.Buffer () : NULL;
-	int32_t				i, j;
+	int32_t			i, j;
 	uint16_t			nId;
 
+m_vertexOwner.SortAscending ();
 m_fScale = 1;
 for (i = 0, j = m_nFaceVerts; i < j; i++)
 	m_index [0][i] = i;
@@ -594,7 +699,7 @@ return F2X (fRad);
 fix CModel::Size (CObject *objP, int32_t bHires)
 {
 	CSubModel*		psm;
-	int32_t				i, j;
+	int32_t			i, j;
 	tHitbox*			phb = &gameData.models.hitboxes [m_nModel].hitboxes [0];
 	CFixVector		hv;
 	CFloatVector3	vOffset;
@@ -747,7 +852,7 @@ void CModel::SetRobotGunPoints (OOF::CModel *po)
 {
 	CSubModel*		psm;
 	OOF::CPoint*	pp;
-	int32_t				i, j = po->m_gunPoints.Length ();
+	int32_t			i, j = po->m_gunPoints.Length ();
 
 for (i = 0, pp = po->m_gunPoints.Buffer (); i < j; i++, pp++) {
 	m_nGunSubModels [i] = pp->m_nParent;
@@ -759,13 +864,69 @@ for (i = 0, pp = po->m_gunPoints.Buffer (); i < j; i++, pp++) {
 }
 
 //------------------------------------------------------------------------------
+
+int32_t CModel::FindEdge (uint16_t v1, uint16_t v2)
+{
+	CModelEdge*	edgeP = m_edges.Buffer ();
+
+for (int32_t i = 0; i < m_nEdges; i++)
+	if ((edgeP->m_nVertices [0] == v1) && (edgeP->m_nVertices [1] == v2))
+		return i;
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
+void CModel::AddEdge (CFace* faceP, uint16_t v1, uint16_t v2)
+{
+int32_t i = FindEdge (Min (v1, v2), Max (v1, v2));
+if (i >= 0)
+	m_edges [i].m_faces [1] = faceP;
+else {
+	CModelEdge*	edgeP = m_edges + m_nEdges++;
+	edgeP->m_nVertices [0] = Min (v1, v2);
+	edgeP->m_nVertices [1] = Max (v1, v2);
+	m_edges [i].m_faces [0] = faceP;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+bool CModel::BuildEdgeList (void)
+{
+	CFace*	faceP = m_faces.Buffer ();
+
+m_nEdges = 0;
+for (uint16_t i = 0; i < m_nFaces; i++)
+	m_nEdges += faceP->m_nVerts - 1;
+if (!(m_edges.Create (m_nEdges)))
+	return false;
+
+m_nEdges = 0;
+for (uint16_t i = 0; i < m_nFaces; i++) {
+	faceP = m_faces.Buffer ();
+
+	faceP->m_vCenterf [0].SetZero ();
+	for (uint16_t j = 0; j < faceP->m_nVerts; j++)
+		faceP->m_vCenterf [0] += m_faceVerts [faceP->m_nIndex + j].m_vertex;
+	faceP->m_vCenterf [0] /= float (faceP->m_nVerts);
+	faceP->m_vNormalf [0].Assign (faceP->m_vNormal);
+	faceP->m_faceWinding = FaceWinding (&m_faceVerts [faceP->m_nIndex].m_vertex, &m_faceVerts [faceP->m_nIndex + 1].m_vertex, &m_faceVerts [faceP->m_nIndex + 2].m_vertex);
+
+	for (uint16_t j = 0; j < faceP->m_nVerts; j++)
+		AddEdge (faceP, m_faceVerts [faceP->m_nIndex + j].m_nIndex, m_faceVerts [faceP->m_nIndex + (j + 1) % faceP->m_nVerts].m_nIndex);
+	}
+return m_edges.Resize (m_nEdges) != NULL;
+}
+
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 int32_t NearestGunPoint (CFixVector *vGunPoints, CFixVector *vGunPoint, int32_t nGuns, int32_t *nUsedGuns)
 {
 	fix			xDist, xMinDist = 0x7fffffff;
-	int32_t			h = 0, i;
+	int32_t		h = 0, i;
 	CFixVector	vi, v0 = *vGunPoint;
 
 v0.v.coord.z = 0;
@@ -816,8 +977,8 @@ pm->SetRobotGunPoints (po);
 
 void CModel::SetGunPoints (CObject *objP, int32_t bASE)
 {
-	CFixVector		*vGunPoints;
-	int32_t				nParent, h, i, j;
+	CFixVector*	vGunPoints;
+	int32_t		nParent, h, i, j;
 
 if (bASE) {
 	CSubModel	*psm = m_subModels.Buffer ();
