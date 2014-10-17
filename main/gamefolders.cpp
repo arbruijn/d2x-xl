@@ -45,7 +45,11 @@
 // ----------------------------------------------------------------------------
 
 #ifdef _WIN32
-#	define	DEFAULT_GAME_FOLDER		""
+#	ifdef _M_X64
+#		define	DEFAULT_GAME_FOLDER		".."
+#	else
+#		define	DEFAULT_GAME_FOLDER		""
+#	endif
 #	define	D2X_APPNAME					"d2x-xl.exe"
 #elif defined(__macosx__)
 #	define	DEFAULT_GAME_FOLDER		"/Applications/Games/D2X-XL"
@@ -191,6 +195,11 @@ if (pszRootDir != gameFolders.game.szRoot) {
 		CFile::SplitPath (pszRootDir, gameFolders.game.szRoot, NULL, NULL);
 	else
 		strcpy (gameFolders.game.szRoot, pszRootDir);
+#ifdef _M_X64
+	char* s = strstr (gameFolders.game.szRoot, "\\x64");
+	if (*s)
+		*s = '\0';
+#endif
 	}
 if (!CheckDataFolder (gameFolders.game.szRoot))
 	return 1;

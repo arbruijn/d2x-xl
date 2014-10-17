@@ -508,6 +508,11 @@ if (nResult) {
 		CreateFileListMessage (szMsg, addonSoundFiles, int32_t (sizeofa (addonSoundFiles)), true);
 		}
 	if (nResult & (1 | 8)) {
+		char s [256];
+		sprintf (s, "\n\nAssumed program folder: '%s'.\n", gameFolders.game.szRoot);
+		strcat (szMsg, s);
+		sprintf (s, "\n\nAssumed program folder: '%s'.\n", gameFolders.game.szRoot);
+		strcat (szMsg, s);
 		strcat (szMsg, "\n\nD2X-XL may not be able to run because files are missing.\n");
 			strcat (szMsg, "\nPlease download the required files. Download locations are\n");
 		if (nResult & 8)
