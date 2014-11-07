@@ -1095,7 +1095,7 @@ switch (objP->info.renderType) {
 
 	case RT_POLYOBJ:
 		if (nType == OBJ_EFFECT) {
-			objP->info.renderType = (objP->info.nId == PARTICLE_ID) ? RT_SMOKE : (objP->info.nId == LIGHTNING_ID) ? RT_LIGHTNING : RT_SOUND;
+			objP->info.renderType = (objP->info.nId == PARTICLE_ID) ? RT_PARTICLES : (objP->info.nId == LIGHTNING_ID) ? RT_LIGHTNING : RT_SOUND;
 			return 0;
 			}
 		if (nType == OBJ_PLAYER) {
@@ -1177,7 +1177,7 @@ switch (objP->info.renderType) {
 			return 0;
 		break;
 
-	case RT_SMOKE:
+	case RT_PARTICLES:
 	case RT_LIGHTNING:
 	case RT_SOUND:
 		return 0;

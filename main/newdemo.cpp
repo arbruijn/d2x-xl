@@ -747,7 +747,7 @@ switch (objP->info.renderType) {
 	case RT_LASER:
 		break;
 
-	case RT_SMOKE:
+	case RT_PARTICLES:
 		objP->rType.particleInfo.nLife = NDReadInt ();
 		objP->rType.particleInfo.nSize [0] = NDReadInt ();
 		objP->rType.particleInfo.nParts = NDReadInt ();
@@ -965,7 +965,7 @@ switch (o.info.renderType) {
 	case RT_LASER:
 		break;
 
-	case RT_SMOKE:
+	case RT_PARTICLES:
 		NDWriteInt (o.rType.particleInfo.nLife);
 		NDWriteInt (o.rType.particleInfo.nSize [0]);
 		NDWriteInt (o.rType.particleInfo.nParts);

@@ -1755,7 +1755,7 @@ if (!m_bBetweenLevels) {
 	if (m_nVersion > 59) {
 		int16_t nObject;
 		while (-1 < (nObject = m_cf.ReadShort ())) {
-			nObject = AllocObject (nObject);
+			nObject = AllocObject (nObject, false);
 			OBJECTS [nObject].LoadState (m_cf);
 			OBJECTS [nObject].Link ();
 			}
@@ -1766,7 +1766,7 @@ if (!m_bBetweenLevels) {
 		//gameData.objs.nLastObject [0] = h - 1;
 		if (m_nVersion < 59) {
 			for (i = 0; i < h; i++) {
-				int16_t nObject = AllocObject (i);
+				int16_t nObject = AllocObject (i, false);
 				CObject* objP = OBJECTS + nObject;
 				objP->LoadState (m_cf);
 				if (objP->Type () >= MAX_OBJECT_TYPES)
@@ -1780,7 +1780,7 @@ if (!m_bBetweenLevels) {
 			}
 		else {
 			for (i = 0; i < h; i++) {
-				int16_t nObject = AllocObject (m_cf.ReadShort ());
+				int16_t nObject = AllocObject (m_cf.ReadShort (), false);
 				OBJECTS [nObject].LoadState (m_cf);
 				OBJECTS [nObject].Link ();
 				}

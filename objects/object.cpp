@@ -776,7 +776,7 @@ int32_t nUnusedObjectsSlots;
 //Generally, CObject::Create() should be called to get an CObject, since it
 //fills in important fields and does the linking.
 //returns -1 if no free objects
-int32_t AllocObject (int32_t nRequestedObject)
+int32_t AllocObject (int32_t nRequestedObject, bool bReset)
 {
 	int32_t nObject = (nRequestedObject < 0) ? -1 : ClaimObjectSlot (nRequestedObject);
 
@@ -805,8 +805,10 @@ CObject* objP = OBJECTS + nObject;
 if (objP->info.nType != OBJ_NONE)
 	BRP;
 #endif
-memset (objP, 0, sizeof (*objP));
-objP->info.nType = OBJ_NONE;
+if (bReset) {
+	memset (objP, 0, sizeof (*objP));
+	objP->info.nType = OBJ_NONE;
+	}
 objP->ResetSgmLinks ();
 #if OBJ_LIST_TYPE == 1
 objP->SetLinkedType (OBJ_NONE);

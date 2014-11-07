@@ -45,12 +45,12 @@
 
 void ConvertSmokeObject (CObject *objP)
 {
-	int32_t			j;
-	CTrigger		*trigP;
+	int32_t		j;
+	CTrigger*	trigP;
 
 objP->SetType (OBJ_EFFECT);
 objP->info.nId = PARTICLE_ID;
-objP->info.renderType = RT_SMOKE;
+objP->info.renderType = RT_PARTICLES;
 trigP = FindObjTrigger (objP->Index (), TT_SMOKE_LIFE, -1);
 #if 1
 j = (trigP && trigP->m_info.value) ? trigP->m_info.value : 5;
@@ -99,7 +99,7 @@ if ((info.nType != OBJ_EFFECT) || (info.nId != PARTICLE_ID))
 	tParticleInfo*	psi = &rType.particleInfo;
 	int32_t			nLife, nSpeed, nParts, nSize;
 
-info.renderType = RT_SMOKE;
+info.renderType = RT_PARTICLES;
 nLife = psi->nLife ? psi->nLife : 5;
 #if 1
 psi->nLife = (nLife * (nLife + 1)) / 2;

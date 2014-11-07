@@ -46,6 +46,27 @@
 
 //------------------------------------------------------------------------------
 
+void CObject::FixEffectRenderType (void)
+{
+switch (info.nId) {
+	default:
+	case PARTICLE_ID:
+		info.renderType = RT_PARTICLES;
+		break;
+
+	case LIGHTNING_ID:
+		info.renderType = RT_LIGHTNING;
+		break;
+
+	case SOUND_ID:
+		info.renderType = RT_SOUND;
+		break;
+	}
+}
+
+
+//------------------------------------------------------------------------------
+
 void CObject::Read (CFile& cf)
 {
 #if DBG
@@ -219,7 +240,7 @@ switch (info.renderType) {
 	case RT_LASER:
 		break;
 
-	case RT_SMOKE:
+	case RT_PARTICLES:
 		rType.particleInfo.nLife = cf.ReadInt ();
 		rType.particleInfo.nSize [0] = cf.ReadInt ();
 		rType.particleInfo.nParts = cf.ReadInt ();
@@ -275,7 +296,7 @@ switch (info.renderType) {
 		rType.lightningInfo.bEnabled = (gameData.segs.nLevelVersion < 19) ? 1 : cf.ReadByte ();
 		if (info.nId != LIGHTNING_ID) {
 			PrintLog (0, "Lightning object #%d has invalid id %d", OBJ_IDX (this), info.nId);
-			info.nId = LIGHTNING_ID;
+			FixEffectRenderType ();
 			}
 		break;
 
@@ -309,6 +330,10 @@ void CObject::LoadState (CFile& cf)
 {
 //	int32_t fPos = cf.Tell ();
 
+#if DBG
+if (OBJ_IDX (this) == nDbgObj)
+	BRP;
+#endif
 info.nSignature = cf.ReadInt ();      
 info.nType = (uint8_t) cf.ReadByte (); 
 info.nId = (uint8_t) cf.ReadByte ();
@@ -431,7 +456,7 @@ switch (info.renderType) {
 	case RT_LASER:
 		break;
 
-	case RT_SMOKE:
+	case RT_PARTICLES:
 		rType.particleInfo.bEnabled = (saveGameManager.Version () < 49) ? 1 : cf.ReadByte ();
 		break;
 
@@ -583,7 +608,7 @@ switch (info.renderType) {
 	case RT_LASER:
 		break;
 
-	case RT_SMOKE:
+	case RT_PARTICLES:
 		cf.WriteByte (rType.particleInfo.bEnabled);
 		break;
 

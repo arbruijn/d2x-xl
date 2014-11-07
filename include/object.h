@@ -104,7 +104,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RT_THRUSTER			8	 // like afterburner, but doesn't cast light
 #define RT_EXPLBLAST			9	 // white explosion light blast
 #define RT_SHRAPNELS			10	 // smoke trails coming from explosions
-#define RT_SMOKE				11
+#define RT_PARTICLES			11
 #define RT_LIGHTNING			12
 #define RT_SOUND				13
 #define RT_SHOCKWAVE			14  // concentric shockwave effect
@@ -1252,6 +1252,7 @@ class CObject : public CObjectInfo {
 		void SetupHitQuery (CHitQuery& hitQuery, int32_t nFlags, CFixVector* vNewPos = NULL);
 		int32_t Bounce (CHitResult hitResult, float fOffs, fix *pxSideDists);
 		void DoBumpHack (void);
+		void FixEffectRenderType (void);
 
 	public:
 		void UpdateHomingWeapon (int32_t nThread = 0);
@@ -1713,7 +1714,7 @@ void ClearTransientObjects(int32_t clear_all);
 // Generally, CObject::Create() should be called to get an CObject, since it
 // fills in important fields and does the linking.  returns -1 if no
 // free objects
-int32_t AllocObject(int32_t nRequestedObject = -1);
+int32_t AllocObject(int32_t nRequestedObject = -1, bool bReset = true);
 int32_t ClaimObjectSlot (int32_t nObject);
 
 // frees up an CObject.  Generally, ReleaseObject() should be called to
