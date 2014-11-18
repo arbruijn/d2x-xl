@@ -150,6 +150,13 @@ int16_t CLightManager::Update (CFloatVector *colorP, float fBrightness, int16_t 
 {
 	int16_t	nLight = Find (nSegment, nSide, nObject);
 
+#if DBG
+if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
+	BRP;
+if ((nDbgObj >= 0) && (nObject == nDbgObj))
+	BRP;
+#endif
+
 if (nLight >= 0) {
 	CDynLight* lightP = m_data.lights + nLight;
 	if (!colorP)
@@ -316,7 +323,7 @@ return j ? i / j : 1;
 //------------------------------------------------------------------------------
 
 int32_t CLightManager::Add (CSegFace* faceP, CFloatVector *colorP, fix xBrightness, int16_t nSegment,
-							   int16_t nSide, int16_t nObject, int16_t nTexture, CFixVector *vPos, uint8_t bAmbient)
+									 int16_t nSide, int16_t nObject, int16_t nTexture, CFixVector *vPos, uint8_t bAmbient)
 {
 	int16_t			h, i;
 	float			fBrightness = X2F (xBrightness);
@@ -708,7 +715,7 @@ return &PLAYEROBJECT (info.nPlayer);
 //------------------------------------------------------------------------------
 
 int32_t CDynLight::Contribute (const int16_t nDestSeg, const int16_t nDestSide, const int16_t nDestVertex, CFixVector& vDestPos, const CFixVector* vNormal, 
-									fix xMaxLightRange, float fRangeMod, fix xDistMod, int32_t nThread)
+										 fix xMaxLightRange, float fRangeMod, fix xDistMod, int32_t nThread)
 {
 	int16_t nLightSeg = info.nSegment;
 

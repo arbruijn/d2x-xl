@@ -312,18 +312,18 @@ typedef struct tDestructableTextureProps {
 class CSegment {
 	public:
 		CSide			m_sides [SEGMENT_SIDE_COUNT];       // 6 sides
-		int16_t			m_children [SEGMENT_SIDE_COUNT];    // indices of 6 children segments, front, left, top, right, bottom, back
+		int16_t		m_children [SEGMENT_SIDE_COUNT];    // indices of 6 children segments, front, left, top, right, bottom, back
 		fix			m_childDists [2][SEGMENT_SIDE_COUNT];
 		uint16_t		m_vertices [SEGMENT_VERTEX_COUNT];    // vertex ids of 4 front and 4 back vertices
-		int16_t			m_nVertices;
-		int32_t			m_objects;    // pointer to objects in this tSegment
+		int16_t		m_nVertices;
+		int32_t		m_objects;    // pointer to objects in this tSegment
 
-		uint8_t			m_nShape;
-		uint8_t			m_function;
-		uint8_t			m_flags;
-		uint8_t			m_props;
-		int16_t			m_value;
-		int16_t			m_nObjProducer;
+		uint8_t		m_nShape;
+		uint8_t		m_function;
+		uint8_t		m_flags;
+		uint8_t		m_props;
+		int16_t		m_value;
+		int16_t		m_nObjProducer;
 		fix			m_xDamage [2];
 		fix			m_xAvgSegLight;
 
@@ -451,7 +451,7 @@ class CSegment {
 		int32_t IsPassable (int32_t nSide, CObject* objP, bool bIgnoreDoors = false);
 		int32_t HasOpenableDoor (void);
 
-		inline int32_t CheckForTranspPixel (CFixVector& intersection, int32_t nSide, int16_t iFace) 
+		inline int32_t CheckForTranspPixel (CFixVector& intersection, int16_t nSide, int16_t iFace) 
 		 { return m_sides [nSide].CheckForTranspPixel (intersection, iFace); }
 
 		int32_t Physics (int32_t nSide, fix& damage) { return m_sides [nSide].Physics (damage, m_children [nSide] == -1); }
@@ -494,48 +494,48 @@ inline int32_t operator- (CSegment* s, CArray<CSegment>& a) { return a.Index (s)
 typedef struct tFaceTriangle {
 	uint16_t				nFace;
 	uint16_t				index [3];
-	int32_t					nIndex;
+	int32_t				nIndex;
 	} tFaceTriangle;
 
 class CSegFaceInfo {
 	public:
 		uint16_t				index [4];
-		int32_t					nKey;
-		int32_t					nIndex;
-		int32_t					nTriIndex;
-		int32_t					nVerts;
-		int32_t					nTris;
-		int32_t					nFrame;
+		int32_t				nKey;
+		int32_t				nIndex;
+		int32_t				nTriIndex;
+		int32_t				nVerts;
+		int32_t				nTris;
+		int32_t				nFrame;
 		CFloatVector		color;
 		float					fRads [2];
-		int16_t					nWall;
-		int16_t					nBaseTex;
-		int16_t					nOvlTex;
-		int16_t					nCorona;
-		int16_t					nSegment;
+		int16_t				nWall;
+		int16_t				nBaseTex;
+		int16_t				nOvlTex;
+		int16_t				nCorona;
+		int16_t				nSegment;
 		uint16_t				nLightmap;
-		uint8_t					nSide;
-		uint8_t					nOvlOrient :2;
-		uint8_t					bVisible :1;
-		uint8_t					bTextured :1;
-		uint8_t					bOverlay :1;
-		uint8_t					bSplit :1;
-		uint8_t					bTransparent :1;
-		uint8_t					bIsLight :1;
-		uint8_t					bAdditive :2;
-		uint8_t					bHaveCameraBg :1;
-		uint8_t					bAnimation :1;
-		uint8_t					bTeleport :1;
-		uint8_t					bSlide :1;
-		uint8_t					bSolid :1;
-		uint8_t					bSparks :1;
-		uint8_t					nRenderType :2;
-		uint8_t					nTriangles :2;
-		uint8_t					bColored :1;
-		uint8_t					bCloaked :1;
-		uint8_t					bHasColor :1;
-		uint8_t					bSegColor :1;
-		uint8_t					widFlags;
+		uint8_t				nSide;
+		uint8_t				nOvlOrient :2;
+		uint8_t				bVisible :1;
+		uint8_t				bTextured :1;
+		uint8_t				bOverlay :1;
+		uint8_t				bSplit :1;
+		uint8_t				bTransparent :1;
+		uint8_t				bIsLight :1;
+		uint8_t				bAdditive :2;
+		uint8_t				bHaveCameraBg :1;
+		uint8_t				bAnimation :1;
+		uint8_t				bTeleport :1;
+		uint8_t				bSlide :1;
+		uint8_t				bSolid :1;
+		uint8_t				bSparks :1;
+		uint8_t				nRenderType :2;
+		uint8_t				nTriangles :2;
+		uint8_t				bColored :1;
+		uint8_t				bCloaked :1;
+		uint8_t				bHasColor :1;
+		uint8_t				bSegColor :1;
+		uint8_t				widFlags;
 		char					nCamera;
 		char					nType;
 		char					nSegColor;
@@ -547,7 +547,7 @@ class CSegFaceInfo {
 class CSegFace {
 	public:
 		CSegFaceInfo		m_info;
-		uint16_t*				triIndex;
+		uint16_t*			triIndex;
 #if USE_RANGE_ELEMENTS
 		uint32_t*					vertIndex;
 #endif

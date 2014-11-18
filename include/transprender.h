@@ -306,7 +306,7 @@ class CTransparencyRenderer {
 		void FlushBuffers (int32_t nType, CTranspItem *itemP = NULL);
 
 		int32_t SoftBlend (int32_t nFlag);
-		int32_t LoadTexture (CBitmap *bmP, int32_t nFrame, int32_t bDecal, int32_t bLightmaps, int32_t nWrap);
+		int32_t LoadTexture (CSegFace* faceP, CBitmap *bmP, int16_t nTexture, int32_t nFrame, int32_t bDecal, int32_t bLightmaps, int32_t nWrap);
 		void ResetBitmaps (void);
 
 		inline CTranspRenderData& Data (void) { return m_data; }

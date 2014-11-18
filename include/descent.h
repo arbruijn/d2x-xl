@@ -3257,7 +3257,7 @@ typedef struct tStationData {
 	CBitmap			*bmP;
 	CBitmap			**bmList [1];
 	CFixVector		vPos;
-	int32_t				nModel;
+	int32_t			nModel;
 } tStationData;
 
 class CTerrainData {
@@ -3267,14 +3267,14 @@ class CTerrainData {
 };
 
 typedef struct tExitData {
-	int32_t					nModel;
-	int32_t					nDestroyedModel;
+	int32_t				nModel;
+	int32_t				nDestroyedModel;
 	CFixVector			vMineExit;
 	CFixVector			vGroundExit;
 	CFixVector			vSideExit;
 	CFixMatrix			mOrient;
-	int16_t					nSegNum;
-	int16_t					nTransitSegNum;
+	int16_t				nSegNum;
+	int16_t				nTransitSegNum;
 } tExitData;
 
 class CEndLevelData {
@@ -3321,16 +3321,20 @@ class CProducerData {
 		CStaticArray< tProducerInfo, MAX_FUEL_CENTERS >	producers; //[MAX_FUEL_CENTERS];
 		CStaticArray< tObjectProducerInfo, MAX_ROBOT_CENTERS >	robotMakers; //[MAX_ROBOT_CENTERS];
 		CStaticArray< tObjectProducerInfo, MAX_EQUIP_CENTERS >	equipmentMakers; //[MAX_EQUIP_CENTERS];
-		int32_t				nProducers;
-		int32_t				nRobotMakers;
-		int32_t				nEquipmentMakers;
-		int32_t				nRepairCenters;
+		int32_t			nProducers;
+		int32_t			nRobotMakers;
+		int32_t			nEquipmentMakers;
+		int32_t			nRepairCenters;
 		fix				xEnergyToCreateOneRobot;
 		CStaticArray< int32_t, MAX_FUEL_CENTERS >				origProducerTypes; // [MAX_FUEL_CENTERS];
 		CSegment*		playerSegP;
 
 	public:
 		CProducerData ();
+		tObjectProducerInfo* Find (int16_t nSegment);
+
+	private:
+		tObjectProducerInfo* Find (int16_t nSegment, CStaticArray< tObjectProducerInfo, MAX_ROBOT_CENTERS >& producers);
 };
 
 //------------------------------------------------------------------------------

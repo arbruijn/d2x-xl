@@ -1119,8 +1119,8 @@ return 1;
 int32_t CSegment::BlowupTexture (int32_t nSide, CFixVector& vHit, CObject* blowerP, int32_t bForceBlowup)
 {
 	tDestructableTextureProps	dtp;
-	int16_t				nSound, bPermaTrigger;
-	uint8_t				vc;
+	int16_t			nSound, bPermaTrigger;
+	uint8_t			vc;
 	fix				u, v;
 	fix				xDestSize;
 	tEffectClip*	ecP = NULL;

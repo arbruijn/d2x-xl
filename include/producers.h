@@ -26,37 +26,37 @@ int32_t GatherFlagGoals (void);
 typedef struct tProducerInfo {
 	int32_t     nType;
 	int32_t     nSegment;
-	int8_t   bFlag;
-	int8_t   bEnabled;
-	int8_t   nLives;          // Number of times this can be enabled.
-	int8_t   pad1;
-	fix     xCapacity;
-	fix     xMaxCapacity;
-	fix     xTimer;          // used in object producer for when next robot comes out
-	fix     xDisableTime;   // Time until center disabled.
+	int8_t		bFlag;
+	int8_t		bEnabled;
+	int8_t		nLives;          // Number of times this can be enabled.
+	int8_t		pad1;
+	fix			xCapacity;
+	fix			xMaxCapacity;
+	fix			xTimer;          // used in object producer for when next robot comes out
+	fix			xDisableTime;   // Time until center disabled.
 	//CObject  *last_created_obj;
 	//int32_t     last_created_sig;
-	CFixVector vCenter;
-	bool	  bAssigned;
+	CFixVector	vCenter;
+	bool			bAssigned;
 } __pack__ tProducerInfo;
 
 // The max number of robot centers per mine.
 
 typedef struct  {
-	int32_t     objFlags;    		// Up to 32 different robots
-	fix     xHitPoints;     	// How hard it is to destroy this particular object producer
-	fix     xInterval;       	// Interval between materialogrifizations
-	int16_t   nSegment;         	// Segment this is attached to.
-	int16_t   nProducer;    		// Index in producer array.
+	int32_t		objFlags;    		// Up to 32 different robots
+	fix			xHitPoints;     	// How hard it is to destroy this particular object producer
+	fix			xInterval;       	// Interval between materialogrifizations
+	int16_t		nSegment;         // Segment this is attached to.
+	int16_t		nProducer;    		// Index in producer array.
 } __pack__ old_tObjProducerInfo;
 
 typedef struct tObjectProducerInfo {
-	int32_t     objFlags [3]; 		// Up to 92 different robots
-	fix     xHitPoints;     	// How hard it is to destroy this particular object producer
-	fix     xInterval;       	// Interval between materializations
-	int16_t   nSegment;         	// Segment this is attached to.
-	int16_t   nProducer;    		// Index in producer array.
-	bool	  bAssigned;
+	int32_t		objFlags [3]; 		// Up to 92 different robots
+	fix			xHitPoints;     	// How hard it is to destroy this particular object producer
+	fix			xInterval;       	// Interval between materializations
+	int16_t		nSegment;         // Segment this is attached to.
+	int16_t		nProducer;    		// Index in producer array.
+	bool			bAssigned;
 } __pack__ tObjectProducerInfo;
 
 //--repair-- extern CObject *RepairObj;  // which CObject getting repaired, or NULL

@@ -197,7 +197,7 @@ if (pszRootDir != gameFolders.game.szRoot) {
 		strcpy (gameFolders.game.szRoot, pszRootDir);
 #ifdef _M_X64
 	char* s = strstr (gameFolders.game.szRoot, "\\x64");
-	if (*s)
+	if (s && *s)
 		*s = '\0';
 #endif
 	}

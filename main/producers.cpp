@@ -929,3 +929,22 @@ opi->nProducer = cf.ReadShort ();
 }
 
 //--------------------------------------------------------------------
+
+tObjectProducerInfo* CProducerData::Find (int16_t nSegment, CStaticArray< tObjectProducerInfo, MAX_ROBOT_CENTERS >& producers)
+{
+for (uint32_t i = 0; i < producers.Length (); i++)
+	if (producers [i].nSegment == nSegment)
+		return producers + i;
+return NULL;
+}
+
+//--------------------------------------------------------------------
+
+tObjectProducerInfo* CProducerData::Find (int16_t nSegment)
+{
+	tObjectProducerInfo* p = Find (nSegment, robotMakers);
+
+return p ? p : Find (nSegment, equipmentMakers);
+}
+
+//--------------------------------------------------------------------

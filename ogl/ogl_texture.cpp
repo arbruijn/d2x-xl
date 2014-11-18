@@ -1103,10 +1103,26 @@ if (bAddon || (Type () == BM_TYPE_STD)) {
 
 //------------------------------------------------------------------------------
 
+int32_t BitmapFrame (CBitmap* bmP, int16_t nTexture, int16_t nSegment, int32_t nFrame)
+{
+if (nSegment < 0)
+	return nFrame;
+if (nTexture != 361)
+	return nFrame;
+tObjectProducerInfo* p = gameData.producers.Find (nSegment);
+if (!p)
+	return nFrame;
+if (gameData.producers.producers [p->nProducer].bEnabled)
+	return nFrame;
+return 3; // that's the number of the animation's darkest frame
+}
+
+//------------------------------------------------------------------------------
+
 CBitmap *LoadFaceBitmap (int16_t nTexture, int16_t nFrameIdx, int32_t bLoadTextures)
 {
 	CBitmap*	bmP, * bmoP, * bmfP;
-	int32_t		nFrames;
+	int32_t	nFrames;
 
 #if DBG
 if (nTexture == nDbgTexture)

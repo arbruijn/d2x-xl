@@ -37,6 +37,7 @@
 #include "ogl_shader.h"
 #include "ogl_render.h"
 #include "ogl_fastrender.h"
+#include "renderlib.h"
 #include "ogl_tmu.h"
 #include "texmerge.h"
 #include "transprender.h"
@@ -407,7 +408,7 @@ if (faceP && (faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m
 if (!faceP->m_info.bTextured)
 	bmBot = NULL;
 else if (bmBot)
-	bmBot = bmBot->Override (-1);
+	bmBot = bmBot->Override (BitmapFrame (bmBot, faceP->m_info.nBaseTex, faceP->m_info.nSegment));
 bTransparent = FaceIsTransparent (faceP, bmBot, bmTop);
 
 bColored = FaceIsColored (faceP);
@@ -417,7 +418,7 @@ if (bmTop)
 	bmTop = bmTop;
 #endif
 if (bmTop) {
-	if ((bmTop = bmTop->Override (-1)) && bmTop->Frames ()) {
+	if ((bmTop = bmTop->Override (BitmapFrame (bmTop, faceP->m_info.nOvlTex, faceP->m_info.nSegment))) && bmTop->Frames ()) {
 		bColorKey = (bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT) != 0;
 		bmTop = bmTop->CurFrame ();
 		}
