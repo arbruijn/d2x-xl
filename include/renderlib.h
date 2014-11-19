@@ -66,6 +66,7 @@ float WallAlpha (int16_t nSegment, int16_t nSide, int16_t nWall, uint8_t widFlag
 					  CFloatVector *colorP, int32_t& nColor, uint8_t& bTextured, uint8_t& bCloaked, uint8_t& bTransparent);
 int32_t SetupMonitorFace (int16_t nSegment, int16_t nSide, int16_t nCamera, CSegFace *faceP);
 CBitmap *LoadFaceBitmap (int16_t nTexture, int16_t nFrameIdx, int32_t bLoadTextures = 1);
+int32_t BitmapFrame (CBitmap* bmP, int16_t nTexture, int16_t nSegment, int32_t nFrame = -1);
 void DrawOutline (int32_t nVertices, CRenderPoint **pointList);
 int32_t ToggleOutlineMode (void);
 int32_t ToggleShowOnlyCurSide (void);
