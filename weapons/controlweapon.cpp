@@ -393,13 +393,13 @@ if (!bSecondary) {
 		gameData.laser.xNextFireTime = bWaitForRearm ? gameData.time.xGame + (fix) (gameStates.gameplay.slowmo [1].fSpeed * REARM_TIME) : 0;
 		gameData.laser.nGlobalFiringCount = 0;
 		} 
-	else {
+	else if (!gameStates.app.bD1Mission) {
 		// Select super version if available.
 		if (bWaitForRearm) {
 			if (!bCycling)
 				; // -- MK, only plays when can't fire weapon anyway, fixes bug -- audio.PlaySound(SOUND_ALREADY_SELECTED);
 			else
-				audio.PlaySound(SOUND_BAD_SELECTION);
+				audio.PlaySound (SOUND_BAD_SELECTION);
 			}
 		}
 	gameData.weapons.nOverridden = nWeaponNum;
@@ -435,7 +435,7 @@ else {
 		gameData.missiles.xNextFireTime = bWaitForRearm ? gameData.time.xGame + REARM_TIME : 0;
 		gameData.missiles.nGlobalFiringCount = 0;
 		}
-	else {
+	else if (!gameStates.app.bD1Mission) {
 		if (bWaitForRearm) {
 		 if (!bCycling)
 			audio.PlaySound (SOUND_ALREADY_SELECTED);
