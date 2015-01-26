@@ -121,7 +121,7 @@ else {
 	ps = stringPool + nPoolStrings;
 	}
 fontManager.Current ()->StringSize (s, w, h, aw);
-if (!(ps->bmP = CreateStringBitmap (s, 0, 0, 0, 0, w, 1))) {
+if (!(ps->bmP = CreateStringBitmap (s, 0, 0, 0, 0, w, 0, 1))) {
 	*idP = 0;
 	return NULL;
 	}
@@ -629,23 +629,24 @@ return true;
 
 extern bool bRegisterBitmaps;
 
-CBitmap *CreateStringBitmap (const char *s, int32_t nKey, uint32_t nKeyColor, int32_t *nTabs, int32_t bCentered, int32_t nMaxWidth, int32_t bForce)
+CBitmap *CreateStringBitmap (const char *s, int32_t nKey, uint32_t nKeyColor, int32_t *nTabs, int32_t bCentered, int32_t nMaxWidth, int32_t nRowPad, int32_t bForce)
 {
 	CFont*		fontP = fontManager.Current ();
 	float			fScale = fontManager.Scale ();
 	CBitmap*		bmP;
-	int32_t			w, h, aw;
+	int32_t		w, h, aw;
 
 #if 0
 if (!(bForce || (gameOpts->menus.nStyle && gameOpts->menus.bFastMenus)))
 	return NULL;
 #endif
 fontManager.SetScale (1.0f / (gameStates.app.bDemoData + 1));
-fontP->StringSizeTabbed (s, w, h, aw, nTabs, nMaxWidth);
+int32_t nLineCount = fontP->StringSizeTabbed (s, w, h, aw, nTabs, nMaxWidth);
 if (!(w && h)) {
 	fontManager.SetScale (fScale);
 	return NULL;
 	}
+h += nRowPad * nLineCount;
 
 for (;;) {
 	if (bForce) {

@@ -400,7 +400,7 @@ int32_t CAudio::CreateObjectSound (
 {
 	CObject*			objP;
 	CSoundObject*	soundObjP;
-	int16_t				nSound = 0;
+	int16_t			nSound = 0;
 
 if (maxVolume < 0)
 	return -1;
@@ -610,7 +610,7 @@ int32_t CAudio::CreateSegmentSound (
 	fix maxVolume, fix maxDistance, const char* pszSound)
 {
 
-	int32_t				nSound;
+	int32_t			nSound;
 	CSoundObject*	soundObjP;
 
 nSound = XlatSound (nOrgSound);

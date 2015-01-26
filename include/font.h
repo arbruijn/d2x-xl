@@ -67,8 +67,8 @@ class CFont {
 		uint8_t* Remap (const char *fontname, uint8_t* fontData);
 		uint8_t* Load (const char *fontname, uint8_t* fontData = NULL);
 		void Read (CFile& cf);
-		void StringSize (const char *s, int32_t& stringWidth, int32_t& stringHeight, int32_t& averageWidth);
-		void StringSizeTabbed (const char *s, int32_t& stringWidth, int32_t& stringHeight, int32_t& averageWidth, int32_t *nTabs, int32_t nMaxWidth = 0);
+		int32_t StringSize (const char *s, int32_t& stringWidth, int32_t& stringHeight, int32_t& averageWidth);
+		int32_t StringSizeTabbed (const char *s, int32_t& stringWidth, int32_t& stringHeight, int32_t& averageWidth, int32_t *nTabs, int32_t nMaxWidth = 0);
 
 		int16_t Width (void);
 		int16_t Height (void);
@@ -206,7 +206,7 @@ int32_t GrString (int32_t x, int32_t y, const char *s, int32_t *idP = NULL);
 int32_t GrUString (int32_t x, int32_t y, const char *s);
 int32_t _CDECL_ GrPrintF (int32_t *idP, int32_t x, int32_t y, const char * format, ...);
 int32_t _CDECL_ GrUPrintf (int32_t x, int32_t y, const char * format, ...);
-CBitmap *CreateStringBitmap (const char *s, int32_t nKey, uint32_t nKeyColor, int32_t *nTabs, int32_t bCentered, int32_t nMaxWidth, int32_t bForce);
+CBitmap *CreateStringBitmap (const char *s, int32_t nKey, uint32_t nKeyColor, int32_t *nTabs, int32_t bCentered, int32_t nMaxWidth, int32_t nRowPad, int32_t bForce);
 void DrawCenteredText (int32_t y, char * s);
 int32_t StringWidth (char * s, int32_t n = 0);
 int32_t CenteredStringPos (char* s);

@@ -477,7 +477,7 @@ m_info.kernDataOffs = cf.ReadInt ();
 
 //------------------------------------------------------------------------------
 
-void CFont::StringSize (const char *s, int32_t& stringWidth, int32_t& stringHeight, int32_t& averageWidth)
+int32_t CFont::StringSize (const char *s, int32_t& stringWidth, int32_t& stringHeight, int32_t& averageWidth)
 {
 	int32_t i = 0, longestWidth = 0;
 	int32_t width, spacing;
@@ -517,13 +517,15 @@ if (s && *s) {
 		}
 	fontManager.SetScale (fScale / (gameStates.app.bDemoData + 1));
 	}
+int32_t lineCount = stringHeight / (m_info.height + 2);
 stringHeight = int32_t (stringHeight * fScale);
 stringWidth = int32_t (longestWidth * fScale);
+return lineCount;
 }
 
 //------------------------------------------------------------------------------
 
-void CFont::StringSizeTabbed (const char *s, int32_t& stringWidth, int32_t& stringHeight, int32_t& averageWidth, int32_t *nTabs, int32_t nMaxWidth)
+int32_t CFont::StringSizeTabbed (const char *s, int32_t& stringWidth, int32_t& stringHeight, int32_t& averageWidth, int32_t *nTabs, int32_t nMaxWidth)
 {
 	float fScale = fontManager.Scale ();
 
@@ -532,12 +534,13 @@ stringHeight = int32_t (m_info.height * fScale);
 averageWidth = int32_t (m_info.width * fScale);
 
 if (!(s && *s))
-	return;
+	return 0;
 
 stringHeight = 0;
 
-	char	*pi, *pj;
+	char		* pi, * pj;
 	int32_t	w, h, sw = 0, nTab = 0;
+	int32_t	nLineCount = 1;
 	static char	hs [10000];
 
 strncpy (hs, s, sizeof (hs));
@@ -545,6 +548,8 @@ for (pi = pj = hs; ; pi++) {
 	switch (*pi) {
 		case '\n':
 			*pi++ = '\0';
+			if (*pi)
+				++nLineCount;
 
 		case '\0':
 			fontManager.Current ()->StringSize (pj, w, h, averageWidth);
@@ -553,7 +558,7 @@ for (pi = pj = hs; ; pi++) {
 				stringWidth = sw;
 			stringHeight += h;
 			if (*pi == '\0')
-				return;
+				return nLineCount;
 			sw = 0;
 			pj = pi;
 			nTab = 0;
@@ -569,7 +574,7 @@ for (pi = pj = hs; ; pi++) {
 				if (!gameStates.multi.bSurfingNet && nMaxWidth) {
 					if (pj) {
 						stringWidth = nMaxWidth;
-						return;
+						return nLineCount;
 						}
 					}
 				else {
@@ -579,7 +584,7 @@ for (pi = pj = hs; ; pi++) {
 							sw = xTab;
 						else {
 							stringWidth = nMaxWidth;
-							return;
+							return nLineCount;
 							}
 						}
 					}
@@ -592,6 +597,7 @@ for (pi = pj = hs; ; pi++) {
 			break;
 		}
 	} 
+return nLineCount;
 }
 
 //------------------------------------------------------------------------------

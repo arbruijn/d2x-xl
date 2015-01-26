@@ -130,8 +130,7 @@ else {
 		if (gameStates.render.bRearView) { // no zoom, no head tracking
 			mView.m.dir.f.Neg ();
 			mView.m.dir.r.Neg ();
-			SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView,  //gameStates.render.xZoom, bOglScale);
-										FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor), bOglScale, xStereoSeparation);
+			xZoom = FixDiv (gameStates.render.xZoom, gameStates.zoom.nFactor);
 			}
 	#if DBG
 		else if (gameStates.render.bChaseCam) { // no zoom, no head tracking

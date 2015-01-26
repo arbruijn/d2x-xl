@@ -2663,7 +2663,7 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann ausgewaehlt werden, ob Ausruestungsgegenstaende als\n3D-Modelle dargestellt werden oder nicht.",
   "Chose whether to display powerups as 3D models or not."},
  {"Hier kann die Art der Beleuchtung eingestellt werden:\n\n- Basis: althergebrachte Methode\n- Standard: Dynamisch (Per Vertex)\n- Fortgeschritten: Dynamisch + Lightmaps\n- Beste: Per Pixel",
- "Chose the lighting method here:\n\n- basic: old style\nstandard: dynamic (per vertex)\n-advanced: dynamic + lightmaps\nbest: per pixel"},
+ "Chose the lighting method here:\n\n- basic: old style\nstandard: dynamic (per vertex)\n-advanced: dynamic + lightmaps\n- best: per pixel"},
  {"Hier koennen Verwendung und Aufloesung von Kameras\neingestellt werden.", "Chose the camera usage and resolution here."},
  {"Hier kann Verwendung und Aussehen des Abgasstrahls von Spieler-\nschiffen, Robotern und Raketen ausgewaehlt werden.",
   "Chose the appearance of thruster flames from player ships,\nrobots and missiles here."},

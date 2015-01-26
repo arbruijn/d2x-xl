@@ -186,7 +186,7 @@ if (m_color)
 else
 	SetColor (bIsCurrent, bTiny);
 if (bCreateTextBms && FAST_MENUS && 
-	 (bmP || (bmP = CreateStringBitmap (m_text, MENU_KEY (m_nKey, - 1), gameData.menu.keyColor, nTabs, m_bCentered, m_w, 0)))) {
+	 (bmP || (bmP = CreateStringBitmap (m_text, MENU_KEY (m_nKey, - 1), gameData.menu.keyColor, nTabs, m_bCentered, m_w, bTiny * 2, 0)))) {
 	float	fScale = fontManager.Scale ();
 	bmP->Render (NULL, gameData.X (m_x), m_y, int32_t (bmP->Width () * fScale), int32_t (bmP->Height () * fScale), 
 					 0, 0, bmP->Width (), bmP->Height (), 1, gameStates.app.bDemoData ? -1 : 0);
@@ -605,7 +605,7 @@ if (m_nKey) {
 	}
 m_bRedraw = 1;
 m_y = h;
-fontManager.Current ()->StringSizeTabbed (m_text, nStringWidth, nStringHeight, nAverageWidth, nTabs);
+int32_t nLineCount = fontManager.Current ()->StringSizeTabbed (m_text, nStringWidth, nStringHeight, nAverageWidth, nTabs);
 nStringHeight += 2 * bTiny;
 m_rightOffset = 0;
 
@@ -674,7 +674,7 @@ else if (m_nType == NM_TYPE_INPUT_MENU) {
 	}
 m_w = nStringWidth;
 m_h = nStringHeight;
-return nStringHeight;
+return nLineCount;
 }
 
 //------------------------------------------------------------------------------

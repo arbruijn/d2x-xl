@@ -355,7 +355,7 @@ if (targetP) {
 #endif
 if ((info.nId == EARTHSHAKER_ID) || (info.nId == ROBOT_EARTHSHAKER_ID))
 	ShakerRockStuff (&vImpact);
-audio.CreateObjectSound (IsSplashDamageWeapon () ? SOUND_BADASS_EXPLOSION_WEAPON : SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
+audio.CreateObjectSound (gameStates.app.bD1Mission ? SOUND_STANDARD_EXPLOSION : IsSplashDamageWeapon () ? SOUND_BADASS_EXPLOSION_WEAPON : SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
 CFixVector vExplPos;
 if (gameStates.render.bPerPixelLighting != 2) 
 	vExplPos = vImpact;
@@ -379,7 +379,7 @@ CObject* CObject::ExplodeSplashDamage (fix damage, fix distance, fix force)
 CObject* explObjP = CreateSplashDamageExplosion (this, info.nSegment, info.position.vPos, info.position.vPos, info.xSize,
 																 (uint8_t) GetExplosionVClip (this, 0), damage, distance, force, OBJ_IDX (this));
 if (explObjP)
-	audio.CreateObjectSound (SOUND_BADASS_EXPLOSION_ACTOR, SOUNDCLASS_EXPLOSION, OBJ_IDX (explObjP));
+	audio.CreateObjectSound (gameStates.app.bD1Mission ? SOUND_STANDARD_EXPLOSION : SOUND_BADASS_EXPLOSION_ACTOR, SOUNDCLASS_EXPLOSION, OBJ_IDX (explObjP));
 return explObjP;
 }
 

@@ -266,12 +266,12 @@ if ((gameOpts->menus.nHotKeys > 0) && !gameStates.app.bEnglish)
 	gameOpts->menus.nHotKeys = -1;
 #endif
 for (uint32_t i = 0; i < ToS (); i++) {
-	Item (i).GetSize (Scaled (h), aw, nStringWidth, nStringHeight, nAverageWidth, nMenus, nOthers, m_props.bTinyMode);
+	int32_t nLineCount = Item (i).GetSize (Scaled (h), aw, nStringWidth, nStringHeight, nAverageWidth, nMenus, nOthers, m_props.bTinyMode);
 	if (w < nStringWidth)
 		w = nStringWidth;		// Save maximum width
 	if (aw < nAverageWidth)
 		aw = nAverageWidth;
-	h += nStringHeight + 1 + m_props.bTinyMode;		// Find the height of all strings
+	h += nStringHeight + 1 + m_props.bTinyMode * nLineCount;		// Find the height of all strings
 	}
 w = Scaled (w);
 h = Scaled (h);

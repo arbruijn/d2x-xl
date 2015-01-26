@@ -230,10 +230,10 @@ int32_t SetupSounds (CFile& cf, int32_t nSounds, int32_t nSoundStart, bool bCust
 {
 	tPIGSoundHeader	sndh;
 	CSoundSample*		soundP;
-	int32_t					i, j;
-	int32_t 					nHeaderSize = nSounds * sizeof (tPIGSoundHeader);
+	int32_t				i, j;
+	int32_t 				nHeaderSize = nSounds * sizeof (tPIGSoundHeader);
 	char					szSoundName [16];
-	int32_t					nLoadedSounds [2] = {0, 0};
+	int32_t				nLoadedSounds [2] = {0, 0};
 
 /*---*/PrintLog (1, "Loading sound data (%d sounds)\n", nSounds);
 cf.Seek (nSoundStart, SEEK_SET);
@@ -249,6 +249,9 @@ for (i = 0; i < nSounds; i++) {
 	PIGSoundHeaderRead (&sndh, cf);
 	memcpy (szSoundName, sndh.name, 8);
 	szSoundName [8] = 0;
+#if 0
+	PrintLog (0, "%3d: %s\n", i, szSoundName);
+#endif
 	if (0 > (j = bCustom ? PiggyFindSound (szSoundName) : i))
 		continue;
 	soundP = &gameData.pig.sound.soundP [j];
