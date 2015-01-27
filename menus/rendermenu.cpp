@@ -732,8 +732,8 @@ do {
 			gameOpts->render.debug.bWalls = m.Value ("draw walls");
 			gameOpts->render.debug.bDynamicLight = m.Value ("dynamic light");
 			}
-#endif
 		}
+#endif
 	} while (i == -2);
 
 gameOpts->render.stereo.nGlasses = stereoDeviceMap [nStereoDevice];
