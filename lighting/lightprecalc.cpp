@@ -70,6 +70,8 @@ typedef struct tLightDataHeader {
 
 static int32_t loadIdx = 0;
 static int32_t loadOp = 0;
+static int32_t nLevel = 0;
+static int32_t bSecret = 0;
 
 //------------------------------------------------------------------------------
 
@@ -1211,6 +1213,75 @@ PrintLog (0, "Distance table usage = %1.2f %%\n",
 #endif
 SaveLightData (nLevel);
 PrintLog (-1);
+}
+
+//------------------------------------------------------------------------------
+
+void PrecomputeLevelLightmaps (int32_t nLevel)
+{
+LoadLevel (nLevel, false, false);
+CleanupAfterGame (false);
+}
+
+//------------------------------------------------------------------------------
+
+static int32_t PrecomputeLightmapsPoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
+{
+if (nState)
+	return nCurItem;
+int32_t bProgressBars = gameStates.app.bProgressBars;
+gameStates.app.bProgressBars = 0;
+PrecomputeLevelLightmaps (bSecret * nLevel);
+gameStates.app.bProgressBars = bProgressBars;
+if (bSecret < 0) {
+	if (++nLevel > -missionManager.nLastSecretLevel) {
+		key = -2;
+		return nCurItem;
+		}
+	}
+else {
+	if (++nLevel > missionManager.nLastLevel) {
+		bSecret = -1;
+		nLevel = 1;
+		}
+	}
+menu [0].Value ()++;
+menu [0].Rebuild ();
+key = 0;
+return nCurItem;
+}
+
+//------------------------------------------------------------------------------
+
+void PrecomputeMissionLightmaps (void)
+{
+gameStates.app.bComputeLightmaps = 1;
+int32_t bPerPixelLighting = gameStates.render.bPerPixelLighting;
+int32_t nLightmapQuality = gameOpts->render.nLightmapQuality;
+int32_t nLightmapPrecision = gameOpts->render.nLightmapPrecision;
+
+gameStates.render.bPerPixelLighting = 1;
+
+SetFunctionMode (FMODE_GAME);
+nLevel = NewGameMenu ();
+if (nLevel > -1) {
+	if (gameStates.app.bProgressBars) {
+		bSecret = 1;
+		ProgressBar (TXT_COMPUTING, 0, missionManager.nLastLevel - nLevel + 1 - missionManager.nLastSecretLevel, PrecomputeLightmapsPoll);
+		}
+	else {
+		for (; nLevel <= missionManager.nLastLevel; nLevel++)
+			PrecomputeLevelLightmaps (nLevel);
+		for (nLevel = 1; nLevel <= missionManager.nLastSecretLevel; nLevel++)
+			PrecomputeLevelLightmaps (-nLevel);
+		}
+	}
+SetFunctionMode (FMODE_MENU);
+gameStates.render.bPerPixelLighting = bPerPixelLighting;
+gameOpts->render.nLightmapQuality = nLightmapQuality;
+gameOpts->render.nLightmapPrecision = nLightmapPrecision;
+
+gameStates.app.bComputeLightmaps = 0;
 }
 
 //------------------------------------------------------------------------------

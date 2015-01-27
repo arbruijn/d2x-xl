@@ -222,6 +222,8 @@ if (!StartNewGame (nNewLevel))
 
 //------------------------------------------------------------------------------
 
+int32_t LightmapOptionsCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState);
+
 static int32_t	nLevel = 1;
 
 int32_t NewGameMenuCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
@@ -253,6 +255,9 @@ if ((m = menu ["level number"])) {
 		}
 	}  
 
+if (gameStates.app.bComputeLightmaps)
+	LightmapOptionsCallback (menu, key, nCurItem, nState);
+
 return nCurItem;
 }
 
@@ -272,7 +277,10 @@ m ["mission selector"]->SetText (szLabel);
 
 //------------------------------------------------------------------------------
 
-void NewGameMenu (void)
+void AddLightmapControls (CMenu& m);
+void InitRenderMenuStrings (void);
+
+int32_t NewGameMenu (void)
 {
 	CMenu				m;
 	int32_t			nMission = missionManager.nLastMission, bMsnLoaded = 0;
@@ -289,7 +297,7 @@ void NewGameMenu (void)
 
 if (gameStates.app.bNostalgia) {
 	LegacyNewGameMenu ();
-	return;
+	return -1;
 	}
 gameStates.app.bD1Mission = 0;
 gameStates.app.bD1Data = 0;
@@ -303,6 +311,8 @@ else if (gameOpts->app.bSinglePlayer) {
 	gameFolders.missions.szSubFolder [0] = '\0';
 	}
 hogFileManager.UseMission ("");
+if (gameStates.app.bComputeLightmaps)
+	InitRenderMenuStrings ();
 
 for (;;) {
 	m.Destroy ();
@@ -327,30 +337,37 @@ for (;;) {
 		gameOpts->app.bEnableMods = 1;
 		MakeModFolders (bBuiltIn ? hogFileManager.MissionName () : missionManager [nMission].filename);
 		gameOpts->app.bEnableMods = bEnableMod;
-		m.AddText ("", "");
-		if (gameStates.app.bHaveMod == bBuiltIn)
-			m.AddCheck ("enable mods", TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
-		m.AddCheck ("allow custom weapons", TXT_ALLOW_CUSTOM_WEAPONS, extraGameInfo [IsMultiGame].bAllowCustomWeapons, KEY_C, HTX_ALLOW_CUSTOM_WEAPONS);
+		if (!gameStates.app.bComputeLightmaps) {
+			m.AddText ("", "");
+			if (gameStates.app.bHaveMod == bBuiltIn)
+				m.AddCheck ("enable mods", TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
+			m.AddCheck ("allow custom weapons", TXT_ALLOW_CUSTOM_WEAPONS, extraGameInfo [IsMultiGame].bAllowCustomWeapons, KEY_C, HTX_ALLOW_CUSTOM_WEAPONS);
+			}
 		}
 
-#if DBG
 	m.AddText ("", "");
-	m.AddText ("", "Initial Lives:");
-	sprintf (szLives, "%d", gameStates.gameplay.nInitialLives);
-	optLives = m.AddInput ("initial lives", szLives, 4);
+	if (gameStates.app.bComputeLightmaps)
+		AddLightmapControls (m);
+	else {
+#if DBG
+		m.AddText ("", "");
+		m.AddText ("", "Initial Lives:");
+		sprintf (szLives, "%d", gameStates.gameplay.nInitialLives);
+		optLives = m.AddInput ("initial lives", szLives, 4);
 #endif
 
-	m.AddText ("", "                              ", 0);
-	sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
-	*szDifficulty = *(TXT_DIFFICULTY2 - 1);
-	m.AddSlider ("difficulty", szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
-	AddShipSelection (m, optShip);
-	m.AddText ("", "");
-	m.AddMenu ("loadout", TXT_LOADOUT_OPTION, KEY_B, HTX_MULTI_LOADOUT);
+		m.AddText ("", "                              ", 0);
+		sprintf (szDifficulty + 1, TXT_DIFFICULTY2, MENU_DIFFICULTY_TEXT (gameStates.app.nDifficultyLevel));
+		*szDifficulty = *(TXT_DIFFICULTY2 - 1);
+		m.AddSlider ("difficulty", szDifficulty + 1, gameStates.app.nDifficultyLevel, 0, 4, KEY_D, HTX_GPLAY_DIFFICULTY);
+		AddShipSelection (m, optShip);
+		m.AddText ("", "");
+		m.AddMenu ("loadout", TXT_LOADOUT_OPTION, KEY_B, HTX_MULTI_LOADOUT);
+		}
 
 	if (nMission >= 0) {
 		m.AddText ("", "");
-		m.AddMenu ("launch game", TXT_LAUNCH_GAME, KEY_L, "");
+		m.AddMenu ("launch game", gameStates.app.bComputeLightmaps ? TXT_START : TXT_LAUNCH_GAME, KEY_L, "");
 		m ["launch game"]->m_bCentered = 1;
 		}
 
@@ -358,13 +375,15 @@ for (;;) {
 
 	if (i < 0) {
 		SetFunctionMode (FMODE_MENU);
-		return;
+		return -1;
 		}
-	GET_VAL (gameOpts->app.bEnableMods, "enable mods");
-	GET_VAL (extraGameInfo [IsMultiGame].bAllowCustomWeapons, "allow custom weapons");
-	if (!extraGameInfo [IsMultiGame].bAllowCustomWeapons)
-		SetDefaultWeaponProps ();
-	if (choice == m.IndexOf ("loadout"))
+	if (!gameStates.app.bComputeLightmaps) {
+		GET_VAL (gameOpts->app.bEnableMods, "enable mods");
+		GET_VAL (extraGameInfo [IsMultiGame].bAllowCustomWeapons, "allow custom weapons");
+		if (!extraGameInfo [IsMultiGame].bAllowCustomWeapons)
+			SetDefaultWeaponProps ();
+	}
+	if (!gameStates.app.bComputeLightmaps && (choice == m.IndexOf ("loadout")))
 		LoadoutOptionsMenu ();
 	else if (choice == m.IndexOf ("mission selector")) {
 		i = SelectAndLoadMission (0, NULL);
@@ -382,7 +401,7 @@ for (;;) {
 		break;
 		}
 #if DBG
-	else {
+	else if (!gameStates.app.bComputeLightmaps) {
 		i = m.ToInt ("initial lives");
 		if (i > 0)
 			gameStates.gameplay.nInitialLives = Min (i, 255);
@@ -390,19 +409,24 @@ for (;;) {
 #endif
 	}
 
-i = m.Value ("difficulty");
-if (gameStates.app.nDifficultyLevel != i) {
-	gameStates.app.nDifficultyLevel = i;
-	gameData.bosses.InitGateIntervals ();
+if (!gameStates.app.bComputeLightmaps) {
+	i = m.Value ("difficulty");
+	if (gameStates.app.nDifficultyLevel != i) {
+		gameStates.app.nDifficultyLevel = i;
+		gameData.bosses.InitGateIntervals ();
+		}
+	GetShipSelection (m, optShip);
+	SavePlayerProfile ();
 	}
-GetShipSelection (m, optShip);
-SavePlayerProfile ();
 
 paletteManager.DisableEffect ();
 if (!bMsnLoaded)
 	missionManager.Load (nMission);
-if (!StartNewGame (nLevel))
+if (!(gameStates.app.bComputeLightmaps || StartNewGame (nLevel))) {
 	SetFunctionMode (FMODE_MENU);
+	return -1;
+	}
+return nLevel;
 }
 
 //------------------------------------------------------------------------------

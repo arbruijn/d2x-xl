@@ -129,13 +129,42 @@ static const char* pszNoneBasicStdFull [4];
 static const char *pszQuality [4];
 static const char *pszPrecision [3];
 
+//------------------------------------------------------------------------------
+
+int32_t LightmapOptionsCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
+{
+	CMenuItem*	m;
+	int32_t		v;
+
+if ((m = menu ["lightmap quality"])) {
+	v = m->Value ();
+	if (gameOpts->render.nLightmapQuality != v) {
+		gameOpts->render.nLightmapQuality = v;
+		sprintf (m->Text (), TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
+		m->m_bRebuild = 1;
+		}
+	}
+
+if ((m = menu ["lightmap precision"])) {
+	v = m->Value ();
+	if (gameOpts->render.nLightmapPrecision != v) {
+		gameOpts->render.nLightmapPrecision = v;
+		sprintf (m->Text (), TXT_LMAP_PRECISION, pszPrecision [gameOpts->render.nLightmapPrecision]);
+		m->m_bRebuild = 1;
+		}
+	}
+return nCurItem;
+}
+
+//------------------------------------------------------------------------------
+
 int32_t RenderOptionsCallback (CMenu& menu, int32_t& key, int32_t nCurItem, int32_t nState)
 {
 if (nState)
 	return nCurItem;
 
 	CMenuItem*	m;
-	int32_t			v;
+	int32_t		v;
 
 if (!gameStates.app.bNostalgia) {
 	if ((m = menu ["brightness"])) {
@@ -348,23 +377,7 @@ if (!gameStates.app.bGameRunning) {
 			}
 		}	
 
-	if ((m = menu ["lightmap quality"])) {
-		v = m->Value ();
-		if (gameOpts->render.nLightmapQuality != v) {
-			gameOpts->render.nLightmapQuality = v;
-			sprintf (m->Text (), TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
-			m->m_bRebuild = 1;
-			}
-		}
-
-	if ((m = menu ["lightmap precision"])) {
-		v = m->Value ();
-		if (gameOpts->render.nLightmapPrecision != v) {
-			gameOpts->render.nLightmapPrecision = v;
-			sprintf (m->Text (), TXT_LMAP_PRECISION, pszPrecision [gameOpts->render.nLightmapPrecision]);
-			m->m_bRebuild = 1;
-			}
-		}
+	LightmapOptionsCallback (menu, key, nCurItem, nState);
 
 	if ((m = menu ["light sources"])) {
 		v = m->Value ();
@@ -382,7 +395,7 @@ return nCurItem;
 
 //------------------------------------------------------------------------------
 
-static void InitStrings (void)
+void InitRenderMenuStrings (void)
 {
 	static bool bInitialized = false;
 
@@ -479,9 +492,27 @@ psz3DMethod [1] = TXT_3D_TOE_IN;
 
 //------------------------------------------------------------------------------
 
+void AddLightmapControls (CMenu& m)
+{
+	char szSlider [50];
+
+sprintf (szSlider + 1, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
+*szSlider = *(TXT_LMAP_QUALITY - 1);
+m.AddSlider ("lightmap quality", szSlider + 1, gameOpts->render.nLightmapQuality, 0, 3, KEY_M, HTX_LMAP_QUALITY);
+
+if (gameOpts->app.bExpertMode) {
+	sprintf (szSlider + 1, TXT_LMAP_PRECISION, pszPrecision [gameOpts->render.nLightmapPrecision]);
+	*szSlider = *(TXT_LMAP_PRECISION - 1);
+	m.AddSlider ("lightmap precision", szSlider + 1, gameOpts->render.nLightmapPrecision, 0, 2, KEY_P, HTX_LMAP_PRECISION);
+	}
+
+}
+
+//------------------------------------------------------------------------------
+
 void RenderOptionsMenu (void)
 {
-	CMenu	m;
+	CMenu		m;
 	int32_t	i;
 	int32_t	nRendQualSave = gameOpts->render.nImageQuality;
 
@@ -489,7 +520,7 @@ void RenderOptionsMenu (void)
 
 	char szSlider [50];
 
-InitStrings ();
+InitRenderMenuStrings ();
 
 lightManager.SetMethod ();
 nLighting = (gameOpts->render.nLightingMethod == 0)
@@ -517,28 +548,30 @@ nIPD = X2MM (gameOpts->render.stereo.xSeparation [1]) - RIFT_MIN_IPD; //RIFT_IPD
 do {
 	m.Destroy ();
 	m.Create (50);
+	if (!gameStates.app.bComputeLightmaps) {
 #if !DBG
-	if (!gameOpts->app.bNotebookFriendly)
-		m.AddCheck ("frame cap", TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
+		if (!gameOpts->app.bNotebookFriendly)
+			m.AddCheck ("frame cap", TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
 #endif
-	if (!gameStates.app.bNostalgia) {
-		sprintf (szSlider + 1, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
-		*szSlider = *(TXT_BRIGHTNESS - 1);
-		m.AddSlider ("brightness", szSlider + 1, paletteManager.GetGamma (), 0, 15, KEY_B, HTX_RENDER_BRIGHTNESS);
-		}
-	m.AddText ("", "");
+		if (!gameStates.app.bNostalgia) {
+			sprintf (szSlider + 1, TXT_BRIGHTNESS, paletteManager.BrightnessLevel ());
+			*szSlider = *(TXT_BRIGHTNESS - 1);
+			m.AddSlider ("brightness", szSlider + 1, paletteManager.GetGamma (), 0, 15, KEY_B, HTX_RENDER_BRIGHTNESS);
+			}
+		m.AddText ("", "");
 #if !DBG
-	if (gameOpts->app.bNotebookFriendly)
+		if (gameOpts->app.bNotebookFriendly)
 #endif
-		{
-		if (gameOpts->render.nMaxFPS > 1)
-			sprintf (szSlider + 1, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
-		else if (gameOpts->render.nMaxFPS < 0)
-			sprintf (szSlider + 1, TXT_VSYNC, gameOpts->render.nMaxFPS);
-		else
-			sprintf (szSlider + 1, TXT_NO_FRAMECAP);
-		*szSlider = *(TXT_FRAMECAP - 1);
-		m.AddSlider ("frame cap", szSlider + 1, FindTableFps (gameOpts->render.nMaxFPS), 0, sizeofa (fpsTable) - 1, KEY_F, HTX_RENDER_FRAMECAP);
+			{
+			if (gameOpts->render.nMaxFPS > 1)
+				sprintf (szSlider + 1, TXT_FRAMECAP, gameOpts->render.nMaxFPS);
+			else if (gameOpts->render.nMaxFPS < 0)
+				sprintf (szSlider + 1, TXT_VSYNC, gameOpts->render.nMaxFPS);
+			else
+				sprintf (szSlider + 1, TXT_NO_FRAMECAP);
+			*szSlider = *(TXT_FRAMECAP - 1);
+			m.AddSlider ("frame cap", szSlider + 1, FindTableFps (gameOpts->render.nMaxFPS), 0, sizeofa (fpsTable) - 1, KEY_F, HTX_RENDER_FRAMECAP);
+			}
 		}
 
 	if (!(gameStates.app.bGameRunning || gameStates.app.bNostalgia)) {
@@ -546,121 +579,117 @@ do {
 		*szSlider = *(TXT_LIGHTING - 1);
 		m.AddSlider ("lighting method", szSlider + 1, nLighting, 0, (gameOpts->render.bUseShaders && ogl.m_features.bShaders) ? 3 : 1, KEY_L, HTX_LIGHTING);
 		if (nLighting >= 2) {
-			sprintf (szSlider + 1, TXT_LMAP_QUALITY, pszQuality [gameOpts->render.nLightmapQuality]);
-			*szSlider = *(TXT_LMAP_QUALITY - 1);
-			m.AddSlider ("lightmap quality", szSlider + 1, gameOpts->render.nLightmapQuality, 0, 3, KEY_M, HTX_LMAP_QUALITY);
-
-			if (gameOpts->app.bExpertMode) {
-				sprintf (szSlider + 1, TXT_LMAP_PRECISION, pszPrecision [gameOpts->render.nLightmapPrecision]);
-				*szSlider = *(TXT_LMAP_PRECISION - 1);
-				m.AddSlider ("lightmap precision", szSlider + 1, gameOpts->render.nLightmapPrecision, 0, 2, KEY_P, HTX_LMAP_PRECISION);
-				}
-
-			if (nLighting == 3) {
+			AddLightmapControls (m);
+			if (!gameStates.app.bComputeLightmaps && (nLighting == 3)) {
 				sprintf (szSlider + 1, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
 				*szSlider = *(TXT_MAX_LIGHTS_PER_PASS - 1);
 				m.AddSlider ("light sources", szSlider + 1, gameOpts->ogl.nMaxLightsPerPass - 5, 0, 8 - MIN_LIGHTS_PER_PASS, KEY_P, HTX_MAX_LIGHTS_PER_PASS);
 				}
 			}
-		sprintf (szSlider + 1, TXT_LIGHTCOLOR, pszColorLevel [gameOpts->render.color.nLevel]);
-		*szSlider = *(TXT_LIGHTCOLOR - 1);
-		m.AddSlider ("colorization", szSlider + 1, gameOpts->render.color.nLevel, 0, 2, KEY_C, HTX_RENDER_LIGHTCOLOR);
-		m.AddText ("", "");
-		}
-	sprintf (szSlider + 1, TXT_IMAGE_QUALITY, pszImgQual [gameOpts->render.nImageQuality]);
-	*szSlider = *(TXT_IMAGE_QUALITY - 1);
-	m.AddSlider ("image quality", szSlider + 1, gameOpts->render.nImageQuality, 0, 4, KEY_I, HTX_ADVRND_RENDQUAL);
-	sprintf (szSlider + 1, TXT_RENDER_QUALITY, pszRendQual [gameOpts->render.nQuality]);
-	*szSlider = *(TXT_RENDER_QUALITY + 1);
-	m.AddSlider ("render quality", szSlider + 1, gameOpts->render.nQuality, 0, 3, KEY_R, HTX_ADVRND_TEXQUAL);
-
-	if (!gameStates.app.bGameRunning) {
-		if ((gameOpts->render.nLightingMethod == 1) && !gameOpts->render.bUseLightmaps) {
-			sprintf (szSlider + 1, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
-			*szSlider = *(TXT_MESH_QUALITY - 1);
-			m.AddSlider ("mesh quality", szSlider + 1, gameOpts->render.nMeshQuality, 0, 3, KEY_V, HTX_MESH_QUALITY);
-			}
-		}
-	sprintf (szSlider + 1, TXT_CAMERAS, pszNoneBasicFull [nCameras]);
-	*szSlider = *(TXT_CAMERAS - 1);
-	m.AddSlider ("cameras", szSlider + 1, nCameras, 0, 2, KEY_A, HTX_CAMERAS);
-	sprintf (szSlider + 1, TXT_POWERUPS, pszNoneBasicFull [nPowerups]);
-	*szSlider = *(TXT_POWERUPS - 1);
-	m.AddSlider ("powerup quality", szSlider + 1, nPowerups, 0, 2, KEY_O, HTX_POWERUPS);
-
-	if (EXPERTMODE && stereoDeviceMap [nStereoDevice])
-		m.AddText ("", "");
-	sprintf (szSlider + 1, TXT_STEREO_VIEW, pszStereoDevice [nStereoDevice]);
-	*szSlider = *(TXT_STEREO_VIEW - 1);
-	m.AddSlider ("3D glasses", szSlider + 1, nStereoDevice, 0, nStereoDeviceCount - 1, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
-	if (stereoDeviceMap [nStereoDevice] == GLASSES_OCULUS_RIFT) {
-		sprintf (szSlider + 1, TXT_RIFT_IPD, nIPD + RIFT_MIN_IPD);
-		*szSlider = *(TXT_RIFT_IPD - 1);
-		m.AddSlider ("IPD", szSlider + 1, nIPD, 0, RIFT_MAX_IPD - RIFT_MIN_IPD, KEY_P, HTX_STEREO_SEPARATION);
-		}
-
-	int32_t nDevice = ogl.StereoDevice ();
-
-	if (EXPERTMODE && stereoDeviceMap [nStereoDevice]) {
-		if (stereoDeviceMap [nStereoDevice] == GLASSES_OCULUS_RIFT) {
-#if 1 //DBG
-			sprintf (szSlider + 1, TXT_RIFT_FOV, pszFOV [gameOpts->render.stereo.nRiftFOV]);
-			*szSlider = *(TXT_RIFT_FOV - 1);
-			m.AddSlider ("FOV", szSlider + 1, gameOpts->render.stereo.nRiftFOV, 0, sizeofa (pszFOV) - 1, KEY_F, HTX_STEREO_FOV);
-#endif
-			m.AddCheck ("chromAbCorr", TXT_CHROM_AB_CORR, gameOpts->render.stereo.bChromAbCorr, KEY_C, HTX_CHROM_AB_CORR);
-			}
-		else {
-			if (stereoDeviceMap [nStereoDevice] == 1) {
-				sprintf (szSlider + 1, TXT_ANAGLYPH_COLORS, pszAnaglyphColors [nAnaglyphColor]);
-				*szSlider = *(TXT_ANAGLYPH_COLORS - 1);
-				m.AddSlider ("anaglyph color", szSlider + 1, nAnaglyphColor, 0, sizeofa (pszAnaglyphColors) - 1, KEY_C, HTX_ANAGLYPH_COLORS);
-				}
-
-			sprintf (szSlider + 1, TXT_STEREO_SEPARATION, pszStereoSeparation [xStereoSeparation]);
-			*szSlider = *(TXT_STEREO_SEPARATION - 1);
-			m.AddSlider ("stereo separation", szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
-
-			sprintf (szSlider + 1, TXT_3D_METHOD, psz3DMethod [gameOpts->render.stereo.nMethod]);
-			*szSlider = *(TXT_3D_METHOD - 1);
-			m.AddSlider ("3D method", szSlider + 1, gameOpts->render.stereo.nMethod, 0, sizeofa (psz3DMethod) - 1, KEY_J, HTX_3D_METHOD);
-
-			sprintf (szSlider + 1, TXT_3D_SCREEN_DIST, nScreenDists [gameOpts->render.stereo.nScreenDist]);
-			*szSlider = *(TXT_3D_SCREEN_DIST - 1);
-			m.AddSlider ("screen distance", szSlider + 1, gameOpts->render.stereo.nScreenDist, 0, sizeofa (nScreenDists) - 1, KEY_S, HTX_3D_SCREEN_DIST);
-
-			if (nDevice > 0) {
-				sprintf (szSlider + 1, TXT_3D_DEGHOST, pszDeghost [gameOpts->render.stereo.bDeghost]);
-				*szSlider = *(TXT_3D_DEGHOST - 1);
-				m.AddSlider ("deghosting", szSlider + 1, gameOpts->render.stereo.bDeghost, 0, sizeofa (pszDeghost) - 2 + (gameOpts->render.stereo.bEnhance && (nDevice == 2)), KEY_H, HTX_3D_DEGHOST);
-				if (gameOpts->render.stereo.bDeghost < 4) {
-					sprintf (szSlider + 1, TXT_COLORGAIN, pszEnhance3D [gameOpts->render.stereo.bColorGain]);
-					*szSlider = *(TXT_COLORGAIN - 1);
-					m.AddSlider ("color gain", szSlider + 1, gameOpts->render.stereo.bColorGain, 0, sizeofa (pszEnhance3D) - 1, KEY_G, HTX_COLORGAIN);
-					}
-				}
+		if (!gameStates.app.bComputeLightmaps) {
+			sprintf (szSlider + 1, TXT_LIGHTCOLOR, pszColorLevel [gameOpts->render.color.nLevel]);
+			*szSlider = *(TXT_LIGHTCOLOR - 1);
+			m.AddSlider ("colorization", szSlider + 1, gameOpts->render.color.nLevel, 0, 2, KEY_C, HTX_RENDER_LIGHTCOLOR);
 			m.AddText ("", "");
-			m.AddCheck ("brighten scene", TXT_BUMP_BRIGHTNESS, gameOpts->render.stereo.bBrighten, KEY_T, HTX_BUMP_BRIGHTNESS);
-			if (nDevice > 0)
-				m.AddCheck ("enhance 3D", TXT_ENHANCE_3D, gameOpts->render.stereo.bEnhance, KEY_D, HTX_ENHANCE_3D);
-#if 0
-			m.AddCheck ("flip frames", TXT_FLIPFRAMES, gameOpts->render.stereo.bFlipFrames, KEY_F, HTX_FLIPFRAMES);
-#endif
 			}
 		}
-	m.AddText ("", "");
-	m.AddCheck ("movie subtitles", TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_V, HTX_RENDER_SUBTTL);
+
+	if (!gameStates.app.bComputeLightmaps) {
+		sprintf (szSlider + 1, TXT_IMAGE_QUALITY, pszImgQual [gameOpts->render.nImageQuality]);
+		*szSlider = *(TXT_IMAGE_QUALITY - 1);
+		m.AddSlider ("image quality", szSlider + 1, gameOpts->render.nImageQuality, 0, 4, KEY_I, HTX_ADVRND_RENDQUAL);
+		sprintf (szSlider + 1, TXT_RENDER_QUALITY, pszRendQual [gameOpts->render.nQuality]);
+		*szSlider = *(TXT_RENDER_QUALITY + 1);
+		m.AddSlider ("render quality", szSlider + 1, gameOpts->render.nQuality, 0, 3, KEY_R, HTX_ADVRND_TEXQUAL);
+
+		if (!gameStates.app.bGameRunning) {
+			if ((gameOpts->render.nLightingMethod == 1) && !gameOpts->render.bUseLightmaps) {
+				sprintf (szSlider + 1, TXT_MESH_QUALITY, pszMeshQual [gameOpts->render.nMeshQuality]);
+				*szSlider = *(TXT_MESH_QUALITY - 1);
+				m.AddSlider ("mesh quality", szSlider + 1, gameOpts->render.nMeshQuality, 0, 3, KEY_V, HTX_MESH_QUALITY);
+				}
+			}
+		sprintf (szSlider + 1, TXT_CAMERAS, pszNoneBasicFull [nCameras]);
+		*szSlider = *(TXT_CAMERAS - 1);
+		m.AddSlider ("cameras", szSlider + 1, nCameras, 0, 2, KEY_A, HTX_CAMERAS);
+		sprintf (szSlider + 1, TXT_POWERUPS, pszNoneBasicFull [nPowerups]);
+		*szSlider = *(TXT_POWERUPS - 1);
+		m.AddSlider ("powerup quality", szSlider + 1, nPowerups, 0, 2, KEY_O, HTX_POWERUPS);
+
+		if (EXPERTMODE && stereoDeviceMap [nStereoDevice])
+			m.AddText ("", "");
+		sprintf (szSlider + 1, TXT_STEREO_VIEW, pszStereoDevice [nStereoDevice]);
+		*szSlider = *(TXT_STEREO_VIEW - 1);
+		m.AddSlider ("3D glasses", szSlider + 1, nStereoDevice, 0, nStereoDeviceCount - 1, KEY_G, HTX_STEREO_VIEW);	//exclude shutter
+		if (stereoDeviceMap [nStereoDevice] == GLASSES_OCULUS_RIFT) {
+			sprintf (szSlider + 1, TXT_RIFT_IPD, nIPD + RIFT_MIN_IPD);
+			*szSlider = *(TXT_RIFT_IPD - 1);
+			m.AddSlider ("IPD", szSlider + 1, nIPD, 0, RIFT_MAX_IPD - RIFT_MIN_IPD, KEY_P, HTX_STEREO_SEPARATION);
+			}
+
+		int32_t nDevice = ogl.StereoDevice ();
+
+		if (EXPERTMODE && stereoDeviceMap [nStereoDevice]) {
+			if (stereoDeviceMap [nStereoDevice] == GLASSES_OCULUS_RIFT) {
+#if 1 //DBG
+				sprintf (szSlider + 1, TXT_RIFT_FOV, pszFOV [gameOpts->render.stereo.nRiftFOV]);
+				*szSlider = *(TXT_RIFT_FOV - 1);
+				m.AddSlider ("FOV", szSlider + 1, gameOpts->render.stereo.nRiftFOV, 0, sizeofa (pszFOV) - 1, KEY_F, HTX_STEREO_FOV);
+#endif
+				m.AddCheck ("chromAbCorr", TXT_CHROM_AB_CORR, gameOpts->render.stereo.bChromAbCorr, KEY_C, HTX_CHROM_AB_CORR);
+				}
+			else {
+				if (stereoDeviceMap [nStereoDevice] == 1) {
+					sprintf (szSlider + 1, TXT_ANAGLYPH_COLORS, pszAnaglyphColors [nAnaglyphColor]);
+					*szSlider = *(TXT_ANAGLYPH_COLORS - 1);
+					m.AddSlider ("anaglyph color", szSlider + 1, nAnaglyphColor, 0, sizeofa (pszAnaglyphColors) - 1, KEY_C, HTX_ANAGLYPH_COLORS);
+					}
+
+				sprintf (szSlider + 1, TXT_STEREO_SEPARATION, pszStereoSeparation [xStereoSeparation]);
+				*szSlider = *(TXT_STEREO_SEPARATION - 1);
+				m.AddSlider ("stereo separation", szSlider + 1, xStereoSeparation, 0, sizeofa (pszStereoSeparation) - 1, KEY_E, HTX_STEREO_SEPARATION);
+
+				sprintf (szSlider + 1, TXT_3D_METHOD, psz3DMethod [gameOpts->render.stereo.nMethod]);
+				*szSlider = *(TXT_3D_METHOD - 1);
+				m.AddSlider ("3D method", szSlider + 1, gameOpts->render.stereo.nMethod, 0, sizeofa (psz3DMethod) - 1, KEY_J, HTX_3D_METHOD);
+
+				sprintf (szSlider + 1, TXT_3D_SCREEN_DIST, nScreenDists [gameOpts->render.stereo.nScreenDist]);
+				*szSlider = *(TXT_3D_SCREEN_DIST - 1);
+				m.AddSlider ("screen distance", szSlider + 1, gameOpts->render.stereo.nScreenDist, 0, sizeofa (nScreenDists) - 1, KEY_S, HTX_3D_SCREEN_DIST);
+
+				if (nDevice > 0) {
+					sprintf (szSlider + 1, TXT_3D_DEGHOST, pszDeghost [gameOpts->render.stereo.bDeghost]);
+					*szSlider = *(TXT_3D_DEGHOST - 1);
+					m.AddSlider ("deghosting", szSlider + 1, gameOpts->render.stereo.bDeghost, 0, sizeofa (pszDeghost) - 2 + (gameOpts->render.stereo.bEnhance && (nDevice == 2)), KEY_H, HTX_3D_DEGHOST);
+					if (gameOpts->render.stereo.bDeghost < 4) {
+						sprintf (szSlider + 1, TXT_COLORGAIN, pszEnhance3D [gameOpts->render.stereo.bColorGain]);
+						*szSlider = *(TXT_COLORGAIN - 1);
+						m.AddSlider ("color gain", szSlider + 1, gameOpts->render.stereo.bColorGain, 0, sizeofa (pszEnhance3D) - 1, KEY_G, HTX_COLORGAIN);
+						}
+					}
+				m.AddText ("", "");
+				m.AddCheck ("brighten scene", TXT_BUMP_BRIGHTNESS, gameOpts->render.stereo.bBrighten, KEY_T, HTX_BUMP_BRIGHTNESS);
+				if (nDevice > 0)
+					m.AddCheck ("enhance 3D", TXT_ENHANCE_3D, gameOpts->render.stereo.bEnhance, KEY_D, HTX_ENHANCE_3D);
+#if 0
+				m.AddCheck ("flip frames", TXT_FLIPFRAMES, gameOpts->render.stereo.bFlipFrames, KEY_F, HTX_FLIPFRAMES);
+#endif
+				}
+			}
+		m.AddText ("", "");
+		m.AddCheck ("movie subtitles", TXT_MOVIE_SUBTTL, gameOpts->movies.bSubTitles, KEY_V, HTX_RENDER_SUBTTL);
 
 #if DBG
-	if (EXPERTMODE) {
-		m.AddText ("", "");
-		m.AddCheck ("draw wire frame", "Draw wire frame", gameOpts->render.debug.bWireFrame, 0, NULL);
-		m.AddCheck ("draw textures", "Draw textures", gameOpts->render.debug.bTextures, 0, NULL);
-		m.AddCheck ("draw walls", "Draw walls", gameOpts->render.debug.bWalls, 0, NULL);
-		m.AddCheck ("draw objects", "Draw objects", gameOpts->render.debug.bObjects, 0, NULL);
-		m.AddCheck ("dynamic light", "Dynamic Light", gameOpts->render.debug.bDynamicLight, 0, NULL);
-		}
+		if (EXPERTMODE) {
+			m.AddText ("", "");
+			m.AddCheck ("draw wire frame", "Draw wire frame", gameOpts->render.debug.bWireFrame, 0, NULL);
+			m.AddCheck ("draw textures", "Draw textures", gameOpts->render.debug.bTextures, 0, NULL);
+			m.AddCheck ("draw walls", "Draw walls", gameOpts->render.debug.bWalls, 0, NULL);
+			m.AddCheck ("draw objects", "Draw objects", gameOpts->render.debug.bObjects, 0, NULL);
+			m.AddCheck ("dynamic light", "Dynamic Light", gameOpts->render.debug.bDynamicLight, 0, NULL);
+			}
 #endif
+		}
 
 	do {
 		i = m.Menu (NULL, TXT_RENDER_OPTS, RenderOptionsCallback, &choice);
@@ -672,17 +701,20 @@ do {
 		gameOpts->render.powerups.b3DShields = (nPowerups == 2);
 	if (!gameOpts->render.powerups.b3D)
 		LoadPowerupTextures ();
-	if (m.Available ("movie subtitles"))
-		gameOpts->movies.bSubTitles = (m.Value ("movie subtitles") != 0);
+
+	if (!gameStates.app.bComputeLightmaps) {
+		if (m.Available ("movie subtitles"))
+			gameOpts->movies.bSubTitles = (m.Value ("movie subtitles") != 0);
 
 #if !DBG
-	if (!gameOpts->app.bNotebookFriendly)
-		gameOpts->render.nMaxFPS = m.Value ("frame cap") ? 1 : 120;
+		if (!gameOpts->app.bNotebookFriendly)
+			gameOpts->render.nMaxFPS = m.Value ("frame cap") ? 1 : 120;
 #endif
-	if (!gameStates.app.bNostalgia)
-		paletteManager.SetGamma (m.Value ("brightness"));
-	if (nRendQualSave != gameOpts->render.nImageQuality)
-		ogl.SetRenderQuality ();
+		if (!gameStates.app.bNostalgia)
+			paletteManager.SetGamma (m.Value ("brightness"));
+		if (nRendQualSave != gameOpts->render.nImageQuality)
+			ogl.SetRenderQuality ();
+		}
 
 	if ((gameStates.app.bNostalgia > 1) || (nLighting == 0))
 		gameOpts->render.nLightingMethod = 0;
@@ -692,14 +724,16 @@ do {
 		}
 
 #if DBG
-	if (EXPERTMODE) {
-		gameOpts->render.debug.bWireFrame = m.Value ("draw wire frame");
-		gameOpts->render.debug.bTextures = m.Value ("draw textures");
-		gameOpts->render.debug.bObjects = m.Value ("draw objects");
-		gameOpts->render.debug.bWalls = m.Value ("draw walls");
-		gameOpts->render.debug.bDynamicLight = m.Value ("dynamic light");
-		}
+	if (!gameStates.app.bComputeLightmaps) {
+		if (EXPERTMODE) {
+			gameOpts->render.debug.bWireFrame = m.Value ("draw wire frame");
+			gameOpts->render.debug.bTextures = m.Value ("draw textures");
+			gameOpts->render.debug.bObjects = m.Value ("draw objects");
+			gameOpts->render.debug.bWalls = m.Value ("draw walls");
+			gameOpts->render.debug.bDynamicLight = m.Value ("dynamic light");
+			}
 #endif
+		}
 	} while (i == -2);
 
 gameOpts->render.stereo.nGlasses = stereoDeviceMap [nStereoDevice];

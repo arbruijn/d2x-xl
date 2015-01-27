@@ -906,7 +906,7 @@ bool CTriMeshBuilder::Save (int32_t nLevel)
 	CFile					cf;
 	bool					bOk;
 	char					szFilename [FILENAME_LEN];
-	uint32_t					nTriVerts = uint32_t (mdh.nTris * 3);
+	uint32_t				nTriVerts = uint32_t (mdh.nTris * 3);
 
 if (!(gameStates.render.bTriangleMesh && gameStates.app.bCacheMeshes))
 	return 0;

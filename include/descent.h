@@ -167,11 +167,11 @@ class CThreadInfo {
 		SDL_Thread*	pThread;
 		SDL_sem*		done;
 		SDL_sem*		exec;
-		int32_t			nId;
-		int32_t			bExec;
-		int32_t			bDone;
-		int32_t			bBlock;
-		int32_t			bQuit;
+		int32_t		nId;
+		int32_t		bExec;
+		int32_t		bDone;
+		int32_t		bBlock;
+		int32_t		bQuit;
 	};
 
 //------------------------------------------------------------------------------
@@ -1251,6 +1251,7 @@ class CApplicationStates {
 		int32_t		bDebugSpew;
 		int32_t		bAutoRunMission;
 		int32_t		bProgressBars;
+		int32_t		bComputeLightmaps;
 		int32_t		bLittleEndian;
 		int32_t		bUsingConverter;
 		int32_t		bFixModels;

@@ -955,9 +955,11 @@ if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 			ProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (FACES.nFaces), CreatePoll);
 			}
 		else {
-			messageBox.Show (TXT_CALC_LIGHTMAPS);
+			if (!gameStates.app.bComputeLightmaps)
+				messageBox.Show (TXT_CALC_LIGHTMAPS);
 			BuildAll (-1);
-			messageBox.Clear ();
+			if (!gameStates.app.bComputeLightmaps)
+				messageBox.Clear ();
 			}
 		gameStates.render.bBuildLightmaps = 0;
 		//PLANE_DIST_TOLERANCE = DEFAULT_PLANE_DIST_TOLERANCE;

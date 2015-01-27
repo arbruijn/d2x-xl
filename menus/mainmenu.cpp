@@ -151,6 +151,8 @@ m.AddMenu ("play movies", TXT_PLAY_MOVIES, KEY_V, HTX_MAIN_MOVIES);
 if (!gameStates.app.bNostalgia)
 	m.AddMenu ("play songs", TXT_PLAY_SONGS, KEY_S, HTX_MAIN_SONGS);
 m.AddMenu ("view credits", TXT_CREDITS, KEY_C, HTX_MAIN_CREDITS);
+if (!gameStates.app.bNostalgia)
+	m.AddMenu ("precalc lightmaps", TXT_PRECALC_LIGHTMAPS, KEY_A, HTX_PRECALC_LIGHTMAPS);
 #if defined(_WIN32) || defined(__unix__)
 m.AddMenu ("check update", TXT_CHECK_FOR_UPDATE, KEY_U, HTX_CHECK_FOR_UPDATE);
 #endif
@@ -274,6 +276,7 @@ for (;;) {
 //------------------------------------------------------------------------------
 
 void ShowOrderForm (void);      // John didn't want this in inferno[HA] so I just externed it.
+void PrecomputeMissionLightmaps (void);
 
 //returns flag, true means quit menu
 int32_t ExecMainMenuOption (CMenu& m, int32_t nChoice) 
@@ -308,7 +311,7 @@ else if (nChoice == m.IndexOf ("load direct")) {
 	}
 #endif
 else if (nChoice == m.IndexOf ("multiplayer game"))
-		MultiplayerMenu ();
+	MultiplayerMenu ();
 else if (nChoice == m.IndexOf ("program settings")) 
 	ConfigMenu ();
 else if (nChoice == m.IndexOf ("choose pilot"))
@@ -324,7 +327,7 @@ else if (nChoice == m.IndexOf ("view highscores")) {
 	paletteManager.DisableEffect ();
 	scoreManager.Show (-1);
 	}
-else if (nChoice == m.IndexOf ("play movies"))
+else if (!gameStates.app.bNostalgia && (nChoice == m.IndexOf ("play movies")))
 	PlayMenuMovie ();
 else if (nChoice == m.IndexOf ("play songs"))
 	PlayMenuSong ();
@@ -332,6 +335,9 @@ else if (nChoice == m.IndexOf ("view credits")) {
 	paletteManager.DisableEffect ();
 	songManager.StopAll ();
 	creditsRenderer.Show (NULL); 
+	}
+else if (!gameStates.app.bNostalgia && (nChoice == m.IndexOf ("precalc lightmaps"))) {
+	PrecomputeMissionLightmaps ();
 	}
 //else if (nChoice == m.IndexOf ("show help")) 
 //	ShowHelp ();

@@ -1031,12 +1031,14 @@ int32_t CLightManager::Setup (int32_t nLevel)
 {
 SetMethod ();
 gameData.render.fBrightness = 1.0f;
-messageBox.Show (TXT_PREPARING);
+if (!gameStates.app.bComputeLightmaps)
+	messageBox.Show (TXT_PREPARING);
 lightManager.AddGeometryLights ();
 m_data.nGeometryLights = m_data.nLights [0];
 ComputeNearestLights (nLevel);
 lightmapManager.Setup (nLevel);
-messageBox.Clear ();
+if (!gameStates.app.bComputeLightmaps)
+	messageBox.Clear ();
 GatherStaticLights (nLevel);
 return 1;
 }

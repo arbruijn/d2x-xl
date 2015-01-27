@@ -1988,12 +1988,12 @@ void LoadGameTexts(void);
 #define TXT_SHIELD_EFFECT				GT(1230)
 #define TXT_PLAYERS						GT(1231)
 #define TXT_PLAYERS_AND_ROBOTS		GT(1232)
+#define TXT_PRECALC_LIGHTMAPS			GT(1233)
+#define TXT_COMPUTING					GT(1234)
+#define TXT_START 						GT(1235)
 
 #if 0
 
-#define TXT_					GT(1233)
-#define TXT_					GT(1234)
-#define TXT_					GT(1235)
 #define TXT_					GT(1236)
 #define TXT_					GT(1237)
 #define TXT_					GT(1238)
@@ -2620,10 +2620,10 @@ void LoadGameTexts(void);
 #define HTX_GAME_ACCESS					HT(440)
 #define HTX_OBSERVER_MODE				HT(441)
 #define HTX_SHIELD_EFFECT				HT(442)
+#define HTX_PRECALC_LIGHTMAPS			HT(443)
 
 #if 0
 
-#define HTX_						HT(443)
 #define HTX_						HT(444)
 #define HTX_						HT(445)
 #define HTX_						HT(446)

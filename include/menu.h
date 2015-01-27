@@ -549,7 +549,7 @@ void MainOptionsMenu (void);
 void MiscellaneousMenu (void);
 void MovieOptionsMenu (void);
 int32_t MultiplayerMenu (void);
-void NewGameMenu (void);
+int32_t NewGameMenu (void);
 void LegacyNewGameMenu (void);
 void PhysicsOptionsMenu (void);
 void PowerupOptionsMenu (void);

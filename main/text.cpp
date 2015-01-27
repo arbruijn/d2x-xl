@@ -1979,6 +1979,9 @@ const char *defaultGameTexts [][2] = {
  {"~Schildeffekt: %s", "~Shield effect: %s"},
  {"Spieler", "Players"},
  {"Spieler & Roboter", "Players & Robots"},
+ {"Lightmaps ~Vorberechnen", "precompute lightm~Aps"},
+ {"Berechne...", "Computing..."},
+ {"Start", "Start"},
  
 #if 0
  {"", ""},
@@ -2719,6 +2722,8 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann eingestellt werden, wer Zutritt zum Spiel hat.", "Restrict the access to your match here."},
  {"Hier kann der Beobachter-Modus aktiviert werden.", "Activate observer mode here."},
  {"Hier kann eingestellt werden, bei welchen Objekten Beschuss\neinen Energieschild aufleuchten laesst.", "Chose which objects will show a bright energy shield when being\nhit here."},
+ {"Hier kann die Beleuchtung fuer eine komplette Mission vor-\nberechnet werden.\n\nHinweis: Je nach Beleuchtungsqualitaet kann das sehr lange dauern", 
+  "Precompute the level lighting for an entire mission.\n\nCaveat: Depending on lightmap quality settings, this can take\na looooooong time."},
 #if 0
  {"", ""},
 #endif

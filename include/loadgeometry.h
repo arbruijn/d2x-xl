@@ -116,6 +116,7 @@ int32_t load_mine_data(CFile& cf);
 int32_t LoadMineSegmentsCompiled (CFile& cf);
 void CreateFaceList (void);
 void ComputeNearestLights (int32_t nLevel);
+void PrecomputeMissionLightmaps (void);
 void InitTexColors (void);
 
 extern int16_t tmap_xlate_table [];

@@ -973,10 +973,10 @@ extern char szAutoMission [255];
 
 int32_t LoadLevel (int32_t nLevel, bool bLoadTextures, bool bRestore)
 {
-	char*			pszLevelName;
+	char			*pszLevelName;
 	char			szHogName [FILENAME_LEN];
 	CPlayerInfo	savePlayer;
-	int32_t			nRooms, bRetry = 0, nLoadRes, nCurrentLevel = missionManager.nCurrentLevel;
+	int32_t		nRooms, nCurrentLevel = missionManager.nCurrentLevel;
 
 strlwr (pszLevelName = LevelName (nLevel));
 /*---*/PrintLog (1, "loading level '%s'\n", pszLevelName);
@@ -986,71 +986,71 @@ gameStates.app.bD1Mission = gameStates.app.bAutoRunMission ? (strstr (szAutoMiss
 MakeModFolders (hogFileManager.MissionName (), nLevel);
 if (!(gameStates.app.bHaveMod || missionManager.IsBuiltIn (hogFileManager.MissionName ())))
 	 MakeModFolders (gameStates.app.bD1Mission ? "Descent: First Strike" : "Descent 2: Counterstrike!", nLevel);
-songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
 lightManager.SetMethod ();
+
+if (!gameStates.app.bComputeLightmaps) {
+	songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
 #if 1
-if (LoadModData (NULL, 0, 0) < 0) {
-	gameStates.app.bBetweenLevels = 0;
-	missionManager.nCurrentLevel = nCurrentLevel;
-	PrintLog (-1);
-	return -1;
-	}
+	if (LoadModData (NULL, 0, 0) < 0) {
+		gameStates.app.bBetweenLevels = 0;
+		missionManager.nCurrentLevel = nCurrentLevel;
+		PrintLog (-1);
+		return -1;
+		}
 #endif
-/*---*/PrintLog (1, "Initializing particle manager\n");
-InitObjectSmoke ();
-PrintLog (-1);
-gameData.pig.tex.bitmapColors.Clear ();
-gameData.models.thrusters.Clear ();
-savePlayer = LOCALPLAYER;
-#if 0
-Assert (gameStates.app.bAutoRunMission ||
-		  ((nLevel <= missionManager.nLastLevel) &&
-		   (nLevel >= missionManager.nLastSecretLevel) &&
-			(nLevel != 0)));
-#endif
-if (!gameStates.app.bAutoRunMission &&
-	 (!nLevel || (nLevel > missionManager.nLastLevel) || (nLevel < missionManager.nLastSecretLevel))) {
-	gameStates.app.bBetweenLevels = 0;
-	missionManager.nCurrentLevel = nCurrentLevel;
-	Warning ("Invalid level number!");
+	/*---*/PrintLog (1, "Initializing particle manager\n");
+	InitObjectSmoke ();
 	PrintLog (-1);
-	return 0;
+	gameData.pig.tex.bitmapColors.Clear ();
+	gameData.models.thrusters.Clear ();
+	savePlayer = LOCALPLAYER;
+	if (!gameStates.app.bAutoRunMission &&
+		 (!nLevel || (nLevel > missionManager.nLastLevel) || (nLevel < missionManager.nLastSecretLevel))) {
+		gameStates.app.bBetweenLevels = 0;
+		missionManager.nCurrentLevel = nCurrentLevel;
+		Warning ("Invalid level number!");
+		PrintLog (-1);
+		return 0;
+		}
+	nLastMsgYCrd = -1;		//so we don't restore backgound under msg
+	if (!gameStates.app.bProgressBars)
+		messageBox.Show (TXT_LOADING);
 	}
-nLastMsgYCrd = -1;		//so we don't restore backgound under msg
-if (!gameStates.app.bProgressBars)
-	messageBox.Show (TXT_LOADING);
+
 /*---*/PrintLog (1, "loading texture brightness and color info\n");
 SetDataVersion (-1);
 
 memcpy (gameData.pig.tex.brightness.Buffer (),
-		  gameData.pig.tex.defaultBrightness [gameStates.app.bD1Mission].Buffer (),
-		  gameData.pig.tex.brightness. Size ());
+			gameData.pig.tex.defaultBrightness [gameStates.app.bD1Mission].Buffer (),
+			gameData.pig.tex.brightness. Size ());
 LoadTextureBrightness (pszLevelName, NULL);
 gameData.render.color.textures = gameData.render.color.defaultTextures [gameStates.app.bD1Mission];
 LoadTextureColors (pszLevelName, NULL);
 PrintLog (-1);
 
-/*---*/PrintLog (1, "loading mission configuration info\n");
-missionConfig.Init ();
-missionConfig.Load ();
-missionConfig.Load (pszLevelName);
-missionConfig.Apply ();
-PrintLog (-1);
+if (!gameStates.app.bComputeLightmaps) {
+	/*---*/PrintLog (1, "loading mission configuration info\n");
+	missionConfig.Init ();
+	missionConfig.Load ();
+	missionConfig.Load (pszLevelName);
+	missionConfig.Apply ();
+	PrintLog (-1);
+	}
 
 InitTexColors ();
 
-for (;;) {
+int32_t nLoadRes, nAttempts = 0;
+for (int32_t nAttempts = 0; nAttempts < 2; nAttempts++) {
 	if (!(nLoadRes = LoadLevelData (pszLevelName, nLevel)))
 		break;	//actually load the data from disk!
 	nLoadRes = 1;
-	if (bRetry)
+	if (nAttempts)
 		break;
 	if (strstr (hogFileManager.AltFiles ().szName, ".hog"))
 		break;
 	sprintf (szHogName, "%s%s%s", gameFolders.missions.szRoot, gameFolders.missions.szSubFolder, pszLevelName);
 	if (!hogFileManager.UseMission (szHogName))
 		break;
-	bRetry = 1;
 	}
 if (nLoadRes) {
 	/*---*/PrintLog (0, "Couldn't load '%s' (%d)\n", pszLevelName, nLoadRes);
@@ -1061,120 +1061,126 @@ if (nLoadRes) {
 	return 0;
 	}
 
-if (!gameStates.app.bProgressBars)
-	messageBox.Show (TXT_LOADING);
-paletteManager.SetGame (paletteManager.Load (szCurrentLevelPalette, pszLevelName, 1, 1, 1));		//don't change screen
-
+if (!gameStates.app.bComputeLightmaps) {
+	if (!gameStates.app.bProgressBars)
+		messageBox.Show (TXT_LOADING);
+	paletteManager.SetGame (paletteManager.Load (szCurrentLevelPalette, pszLevelName, 1, 1, 1));		//don't change screen
 #if 1
-if (LoadModData (pszLevelName, bLoadTextures, 1) < 0) {
-	gameStates.app.bBetweenLevels = 0;
-	missionManager.nCurrentLevel = nCurrentLevel;
-	PrintLog (-1);
-	return -1;
-	}
+	if (LoadModData (pszLevelName, bLoadTextures, 1) < 0) {
+		gameStates.app.bBetweenLevels = 0;
+		missionManager.nCurrentLevel = nCurrentLevel;
+		PrintLog (-1);
+		return -1;
+		}
 #endif
+	}
+
 if (!lightManager.Setup (nLevel)) {
 	PrintLog (-1, "Not enough memory for light data\n");
 	return -1;
 	}
-/*---*/PrintLog (1, "loading endlevel data\n");
-LoadEndLevelData (nLevel);
-PrintLog (-1);
 
-ResetNetworkObjects ();
-ResetChildObjects ();
-ResetPlayerPaths ();
-FixObjectSizes ();
-wayPointManager.Setup (!bRestore);
-/*---*/PrintLog (1, "counting entropy rooms\n");
-nRooms = CountRooms ();
-if (IsEntropyGame) {
-	if (!nRooms) {
-		Warning (TXT_NO_ENTROPY);
-		gameData.app.nGameMode &= ~GM_ENTROPY;
-		gameData.app.nGameMode |= GM_TEAM;
-		}
-	}
-else if ((gameData.app.GameMode (GM_CAPTURE | GM_HOARD)) ||
-			((gameData.app.GameMode (GM_MONSTERBALL)) == GM_MONSTERBALL)) {
-/*---*/PrintLog (1, "gathering CTF+ flag goals\n");
-	if (GatherFlagGoals () != 3) {
-		Warning (TXT_NO_CTF);
-		gameData.app.nGameMode &= ~GM_CAPTURE;
-		gameData.app.nGameMode |= GM_TEAM;
-		}
-	}
-PrintLog (-1);
-
-gameData.render.lights.segDeltas.Clear ();
-/*---*/PrintLog (1, "initializing door animations\n");
-InitDoorAnims ();
-PrintLog (-1);
-
-(CPlayerInfo&) LOCALPLAYER = savePlayer;
-gameData.hoard.nMonsterballSeg = -1;
-if (!IsMultiGame)
-	InitEntropySettings (0);	//required for repair centers
-//songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
-if (!gameStates.app.bProgressBars)
-	messageBox.Clear ();		//remove message before new palette loaded
-//paletteManager.ResumeEffect ();		//actually load the palette
-if (!bRestore) {
-	/*---*/PrintLog (1, "rebuilding OpenGL context\n");
-	ogl.SetRenderQuality ();
-	ogl.RebuildContext (1);
+if (!gameStates.app.bComputeLightmaps) {
+	/*---*/PrintLog (1, "loading endlevel data\n");
+	LoadEndLevelData (nLevel);
 	PrintLog (-1);
+
+	ResetNetworkObjects ();
+	ResetChildObjects ();
+	ResetPlayerPaths ();
+	FixObjectSizes ();
+	wayPointManager.Setup (!bRestore);
+	/*---*/PrintLog (1, "counting entropy rooms\n");
+	nRooms = CountRooms ();
+	if (IsEntropyGame) {
+		if (!nRooms) {
+			Warning (TXT_NO_ENTROPY);
+			gameData.app.nGameMode &= ~GM_ENTROPY;
+			gameData.app.nGameMode |= GM_TEAM;
+			}
+		}
+	else if ((gameData.app.GameMode (GM_CAPTURE | GM_HOARD)) ||
+				((gameData.app.GameMode (GM_MONSTERBALL)) == GM_MONSTERBALL)) {
+	/*---*/PrintLog (1, "gathering CTF+ flag goals\n");
+		if (GatherFlagGoals () != 3) {
+			Warning (TXT_NO_CTF);
+			gameData.app.nGameMode &= ~GM_CAPTURE;
+			gameData.app.nGameMode |= GM_TEAM;
+			}
+		}
+	PrintLog (-1);
+
+	gameData.render.lights.segDeltas.Clear ();
+	/*---*/PrintLog (1, "initializing door animations\n");
+	InitDoorAnims ();
+	PrintLog (-1);
+
+	(CPlayerInfo&) LOCALPLAYER = savePlayer;
+	gameData.hoard.nMonsterballSeg = -1;
+	if (!IsMultiGame)
+		InitEntropySettings (0);	//required for repair centers
+	//songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
+	if (!gameStates.app.bProgressBars)
+		messageBox.Clear ();		//remove message before new palette loaded
+	//paletteManager.ResumeEffect ();		//actually load the palette
+	if (!bRestore) {
+		/*---*/PrintLog (1, "rebuilding OpenGL context\n");
+		ogl.SetRenderQuality ();
+		ogl.RebuildContext (1);
+		PrintLog (-1);
+		}
+	ResetPingStats ();
+	gameStates.gameplay.nDirSteps = 0;
+	gameStates.gameplay.bMineMineCheat = 0;
+	gameStates.render.bAllVisited = 0;
+	gameStates.render.bViewDist = 1;
+	gameStates.render.bHaveSkyBox = -1;
+	gameStates.app.cheats.nUnlockLevel = 0;
+	gameStates.render.nFrameFlipFlop = 0;
+	gameStates.app.bUsingConverter = 0;
+	/*---*/PrintLog (1, "resetting color information\n");
+	gameData.render.color.vertices.Clear ();
+	gameData.render.color.segments.Clear ();
+	PrintLog (-1);
+	/*---*/PrintLog (1, "resetting speed boost information\n");
+	gameData.objs.speedBoost.Clear ();
+	PrintLog (-1);
+	if (!ogl.m_features.bStencilBuffer)
+		extraGameInfo [0].bShadows = 0;
+	D2SetCaption ();
+	if (!bRestore) {
+		gameData.render.lights.bInitDynColoring = 1;
+		gameData.omega.xCharge [IsMultiGame] = MAX_OMEGA_CHARGE;
+		SetMaxOmegaCharge ();
+		ConvertObjects ();
+		SetEquipmentMakerStates ();
+		SetupWalls ();
+		SetupEffects ();
+	//	lightManager.Setup (nLevel);
+		gameData.time.nPaused = 0;
+		}
+	LoadAddonImages ();
+	CreateShieldSphere ();
+	PrintLog (1, "initializing energy spark render data\n");
+	sparkManager.Setup ();
+	PrintLog (-1);
+	PrintLog (1, "setting robot generator vertigo robot flags\n");
+	SetVertigoRobotFlags ();
+	PrintLog (-1);
+	PrintLog (1, "initializing debris collision handlers\n");
+	SetDebrisCollisions ();
+	PrintLog (-1);
+	PrintLog (1, "building sky box segment list\n");
+	BuildSkyBoxSegList ();
+	PrintLog (-1);
+	/*---*/PrintLog (1, "stopping music\n");
+	//songManager.StopAll ();
+	audio.SetFxVolume ((gameConfig.nAudioVolume [1] * 32768) / 8, 1);
+	audio.SetVolumes ((gameConfig.nAudioVolume [0] * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
+	PrintLog (-1);
+	CreateSoundThread ();
 	}
-ResetPingStats ();
-gameStates.gameplay.nDirSteps = 0;
-gameStates.gameplay.bMineMineCheat = 0;
-gameStates.render.bAllVisited = 0;
-gameStates.render.bViewDist = 1;
-gameStates.render.bHaveSkyBox = -1;
-gameStates.app.cheats.nUnlockLevel = 0;
-gameStates.render.nFrameFlipFlop = 0;
-gameStates.app.bUsingConverter = 0;
-/*---*/PrintLog (1, "resetting color information\n");
-gameData.render.color.vertices.Clear ();
-gameData.render.color.segments.Clear ();
-PrintLog (-1);
-/*---*/PrintLog (1, "resetting speed boost information\n");
-gameData.objs.speedBoost.Clear ();
-PrintLog (-1);
-if (!ogl.m_features.bStencilBuffer)
-	extraGameInfo [0].bShadows = 0;
-D2SetCaption ();
-if (!bRestore) {
-	gameData.render.lights.bInitDynColoring = 1;
-	gameData.omega.xCharge [IsMultiGame] = MAX_OMEGA_CHARGE;
-	SetMaxOmegaCharge ();
-	ConvertObjects ();
-	SetEquipmentMakerStates ();
-	SetupWalls ();
-	SetupEffects ();
-//	lightManager.Setup (nLevel);
-	gameData.time.nPaused = 0;
-	}
-LoadAddonImages ();
-CreateShieldSphere ();
-PrintLog (1, "initializing energy spark render data\n");
-sparkManager.Setup ();
-PrintLog (-1);
-PrintLog (1, "setting robot generator vertigo robot flags\n");
-SetVertigoRobotFlags ();
-PrintLog (-1);
-PrintLog (1, "initializing debris collision handlers\n");
-SetDebrisCollisions ();
-PrintLog (-1);
-PrintLog (1, "building sky box segment list\n");
-BuildSkyBoxSegList ();
-PrintLog (-1);
-/*---*/PrintLog (1, "stopping music\n");
-//songManager.StopAll ();
-audio.SetFxVolume ((gameConfig.nAudioVolume [1] * 32768) / 8, 1);
-audio.SetVolumes ((gameConfig.nAudioVolume [0] * 32768) / 8, (gameConfig.nMidiVolume * 128) / 8);
-PrintLog (-1);
-CreateSoundThread ();
+
 gameStates.render.bDepthSort = 1;
 gameStates.app.bBetweenLevels = 0;
 PrintLog (-1);
@@ -1222,15 +1228,15 @@ void DoEndLevelScoreGlitz (int32_t network)
 {
 	#define N_GLITZITEMS 11
 
-	int32_t			nLevelPoints, nSkillPoints, nEnergyPoints, nShieldPoints, nHostagePoints, nAllHostagePoints, nEndGamePoints;
+	int32_t		nLevelPoints, nSkillPoints, nEnergyPoints, nShieldPoints, nHostagePoints, nAllHostagePoints, nEndGamePoints;
 	char			szAllHostages [64];
 	char			szEndGame [64];
 	char			szMenu [N_GLITZITEMS + 1][40];
 	CMenu			m (N_GLITZITEMS + 1);
-	int32_t			i, c;
+	int32_t		i, c;
 	char			szTitle [128];
-	int32_t			bIsLastLevel = 0;
-	int32_t			nMineLevel = 0;
+	int32_t		bIsLastLevel = 0;
+	int32_t		nMineLevel = 0;
 
 audio.DestroyObjectSound (LOCALPLAYER.nObject);
 audio.StopAllChannels ();
