@@ -1074,7 +1074,7 @@ if (!gameStates.app.bComputeLightmaps) {
 		}
 #endif
 	}
-#if 0
+#if 1
 if (!lightManager.Setup (nLevel)) {
 	PrintLog (-1, "Not enough memory for light data\n");
 	return -1;

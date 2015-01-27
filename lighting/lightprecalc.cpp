@@ -1260,10 +1260,13 @@ return nCurItem;
 void PrecomputeMissionLightmaps (void)
 {
 gameStates.app.bComputeLightmaps = 1;
+
+int32_t bUseLightmaps = gameOpts->render.bUseLightmaps;
 int32_t bPerPixelLighting = gameStates.render.bPerPixelLighting;
 int32_t nLightmapQuality = gameOpts->render.nLightmapQuality;
 int32_t nLightmapPrecision = gameOpts->render.nLightmapPrecision;
 
+gameOpts->render.bUseLightmaps = 1;
 gameStates.render.bPerPixelLighting = 1;
 
 SetFunctionMode (FMODE_GAME);
@@ -1281,6 +1284,8 @@ if (nLevel > -1) {
 		}
 	}
 SetFunctionMode (FMODE_MENU);
+
+gameOpts->render.bUseLightmaps = bUseLightmaps;
 gameStates.render.bPerPixelLighting = bPerPixelLighting;
 gameOpts->render.nLightmapQuality = nLightmapQuality;
 gameOpts->render.nLightmapPrecision = nLightmapPrecision;
