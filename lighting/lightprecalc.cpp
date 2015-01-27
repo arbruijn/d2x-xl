@@ -1217,10 +1217,12 @@ PrintLog (-1);
 
 //------------------------------------------------------------------------------
 
-void PrecomputeLevelLightmaps (int32_t nLevel)
+int32_t PrecomputeLevelLightmaps (int32_t nLevel)
 {
-LoadLevel (nLevel, false, false);
+if (LoadLevel (nLevel, false, false) < 0)
+	return 0;
 CleanupAfterGame (false);
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1231,7 +1233,10 @@ if (nState)
 	return nCurItem;
 int32_t bProgressBars = gameStates.app.bProgressBars;
 gameStates.app.bProgressBars = 0;
-PrecomputeLevelLightmaps (bSecret * nLevel);
+if (!PrecomputeLevelLightmaps (bSecret * nLevel)) {
+	key = -2;
+	return nCurItem;
+	}
 gameStates.app.bProgressBars = bProgressBars;
 if (bSecret < 0) {
 	if (++nLevel > -missionManager.nLastSecretLevel) {
@@ -1247,7 +1252,6 @@ else {
 	}
 menu [0].Value ()++;
 menu [0].Rebuild ();
-key = 0;
 return nCurItem;
 }
 

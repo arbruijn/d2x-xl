@@ -1036,7 +1036,8 @@ if (!gameStates.app.bComputeLightmaps)
 lightManager.AddGeometryLights ();
 m_data.nGeometryLights = m_data.nLights [0];
 ComputeNearestLights (nLevel);
-lightmapManager.Setup (nLevel);
+if (!lightmapManager.Setup (nLevel))
+	return 0;
 if (!gameStates.app.bComputeLightmaps)
 	messageBox.Clear ();
 GatherStaticLights (nLevel);

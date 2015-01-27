@@ -1074,12 +1074,12 @@ if (!gameStates.app.bComputeLightmaps) {
 		}
 #endif
 	}
-
+#if 0
 if (!lightManager.Setup (nLevel)) {
 	PrintLog (-1, "Not enough memory for light data\n");
 	return -1;
 	}
-
+#endif
 if (!gameStates.app.bComputeLightmaps) {
 	/*---*/PrintLog (1, "loading endlevel data\n");
 	LoadEndLevelData (nLevel);

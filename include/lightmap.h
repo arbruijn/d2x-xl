@@ -80,7 +80,7 @@ class CLightmapManager {
 		CLightmapManager () { Init (); } 
 		~CLightmapManager () { Destroy (); }
 		void Init (void);
-		void Setup (int32_t nLevel);
+		int32_t Setup (int32_t nLevel);
 		void Destroy (void);
 		void RestoreLights (int32_t bVariable);
 		int32_t Bind (int32_t nLightmap);
@@ -88,7 +88,7 @@ class CLightmapManager {
 		void Release (void);
 		int32_t Create (int32_t nLevel);
 		void Build (CSegFace* faceP, int32_t nThread);
-		void BuildAll (int32_t nFace);
+		int32_t BuildAll (int32_t nFace);
 		inline tLightmapBuffer* Buffer (uint32_t i = 0) { return &m_list.buffers [i]; }
 		inline int32_t HaveLightmaps (void) { return !gameStates.app.bNostalgia && (m_list.buffers.Buffer () != NULL); }
 		inline CSegFace* CurrentFace (void) { return m_data.faceP; }

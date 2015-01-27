@@ -27,6 +27,7 @@
 #include "menu.h"
 #include "menu.h"
 #include "text.h"
+#include "key.h"
 #include "netmisc.h"
 #include "gamepal.h"
 #include "loadgeometry.h"
@@ -698,7 +699,7 @@ return (k < m) ? -1 : (k > m) ? 1 : 0;
 
 //------------------------------------------------------------------------------
 
-void CLightmapManager::BuildAll (int32_t nFace)
+int32_t CLightmapManager::BuildAll (int32_t nFace)
 {
 	int32_t	nLastFace; 
 
@@ -714,6 +715,8 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
 		BRP;
 #endif
+	if (gameStates.app.bComputeLightmaps && (KeyInKey () == KEY_ESC))
+		return 0;
 	if (SEGMENTS [m_data.faceP->m_info.nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
 		m_data.faceP->m_info.nLightmap = 1;
 		continue;
@@ -751,6 +754,7 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 		m_data.faceP->m_info.nLightmap = m_list.nLightmaps++;
 		}
 	}
+return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -931,6 +935,9 @@ if (nLights < 0)
 	return 0;
 if (Load (nLevel))
 	return 1;
+
+int32_t bSuccess = 1;
+
 if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 	if (nLights) {
 		lightManager.Transform (1, 0);
@@ -957,7 +964,7 @@ if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 		else {
 			if (!gameStates.app.bComputeLightmaps)
 				messageBox.Show (TXT_CALC_LIGHTMAPS);
-			BuildAll (-1);
+			bSuccess = BuildAll (-1);
 			if (!gameStates.app.bComputeLightmaps)
 				messageBox.Clear ();
 			}
@@ -980,20 +987,22 @@ if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 	BindAll ();
 	Save (nLevel);
 	}
-return 1;
+return bSuccess;
 }
 
 //------------------------------------------------------------------------------
 
-void CLightmapManager::Setup (int32_t nLevel)
+int32_t CLightmapManager::Setup (int32_t nLevel)
 {
 if (gameStates.render.bPerPixelLighting) {
-	Create (nLevel);
+	if (!Create (nLevel))
+		return 0;
 	if (HaveLightmaps ())
 		meshBuilder.RebuildLightmapTexCoord ();	//rebuild to create proper lightmap texture coordinates
 	else
 		gameOpts->render.bUseLightmaps = 0;
 	}
+return 1;
 }
 
 //------------------------------------------------------------------------------
