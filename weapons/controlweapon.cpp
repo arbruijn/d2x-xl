@@ -510,6 +510,8 @@ else {
 	}
 
 if ((nCurrent == nWeapon) || (nCurrent == nWeapon + SUPER_WEAPON)) {
+	if (gameStates.app.bD1Mission) // no super weapons in Descent 1
+		return;
 	//already have this selected, so toggle to other of Normal/super version
 	if (!bSecondary && (nCurrent == SUPER_LASER_INDEX))
 		return;
@@ -520,6 +522,11 @@ if ((nCurrent == nWeapon) || (nCurrent == nWeapon + SUPER_WEAPON)) {
 	}
 else {
 	//go to last-select version of requested missile
+	if (gameStates.app.bD1Mission) {// no super weapons in Descent 1
+		bLastWasSuper = 0;
+		if (nWeapon >= SUPER_WEAPON) // should actually never happen here
+			nWeapon -= SUPER_WEAPON;
+		}
 	if (bLastWasSuper && (nWeapon < SUPER_WEAPON))
 		nWeapon += SUPER_WEAPON;
 	nWeaponStatus = PlayerHasWeapon (nWeapon, bSecondary, -1, 0);
