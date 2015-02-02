@@ -2722,8 +2722,22 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann eingestellt werden, wer Zutritt zum Spiel hat.", "Restrict the access to your match here."},
  {"Hier kann der Beobachter-Modus aktiviert werden.", "Activate observer mode here."},
  {"Hier kann eingestellt werden, bei welchen Objekten Beschuss\neinen Energieschild aufleuchten laesst.", "Chose which objects will show a bright energy shield when being\nhit here."},
- {"Hier kann die Beleuchtung fuer eine komplette Mission vor-\nberechnet werden.\n\nHinweis: Je nach Beleuchtungsqualitaet kann das sehr lange dauern", 
-  "Precompute the level lighting for an entire mission.\n\nCaveat: Depending on lightmap quality settings, this can take\na looooooong time."},
+ {"Hier kann die Beleuchtung fuer eine komplette Mission vorberechnet\nwerden.\n\n"
+  "Mission, Start-Level und Beleuchtungsqualitaet koennen vor der\n"
+  "Berechnung eingestellt werden. Die Berechnung kann jederzeit\n"
+  "mit Escape unterbrochen undspaeter fortgesetzt werden. Es wird\n"
+  "dann beim ersten Level weiter gemacht, dessen Beleuchtung noch\n"
+  "nicht berechnet wurde.\n\n"
+  "Hinweis: Je nach Beleuchtungsqualitaet kann die Berechnung sehr\n"
+  "lange dauern", 
+  "Precompute the level lighting for an entire mission.\n\n"
+  "Mission, start level and lighting quality can be set before the\n"
+  "computation starts. The computation can be interrupted by\n"
+  "the Escape key at any time and can be continued at a later.\n"
+  "point of time. D2X-XL will pick up at the first level the lighting\n"
+  "of which has not been computed.\n\n"
+  "Caveat: Depending on lighting quality settings, lighting\n"
+  "precalculation can take a long time."},
 #if 0
  {"", ""},
 #endif
