@@ -1194,6 +1194,8 @@ class CObject : public CObjectInfo {
 		inline void Ignore (int32_t bFlag, int32_t nType = 0) { m_bIgnore [nType] = bFlag; }
 		inline bool Ignored (int32_t bFlag, int32_t nType = 0) { return m_bIgnore [nType] == bFlag; }
 
+		inline int32_t PlayerNumber (void) { return IsPlayer () ? Id () : -1; }
+
 		inline void SetSize (fix xSize) { info.xSize = xSize; }
 		inline void AdjustSize (int32_t i = 0, fix scale = 0) { 
 			fix size = ModelRadius (i);

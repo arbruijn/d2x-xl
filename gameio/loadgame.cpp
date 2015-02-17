@@ -917,6 +917,7 @@ gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->re
 gameStates.app.bBetweenLevels = 1;
 gameStates.render.bFreeCam = (gameStates.render.bEnableFreeCam ? 0 : -1);
 gameStates.app.bGameRunning = 0;
+gameStates.app.bPlayerIsDead = 0;
 LOCALPLAYER.m_bExploded = 0;
 gameData.physics.side.nSegment = -1;
 gameData.physics.side.nSide = -1;

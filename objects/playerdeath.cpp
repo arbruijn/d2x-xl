@@ -199,11 +199,11 @@ if (gameStates.app.bPlayerIsDead) {
 		}
 	h = DEATH_SEQUENCE_EXPLODE_TIME - xTimeDead;
 	h = Max (0, h);
-	gameData.objs.consoleP->mType.physInfo.rotVel = CFixVector::Create(h / 4, h / 2, h / 3);
+	gameData.objs.consoleP->mType.physInfo.rotVel = CFixVector::Create (h / 4, h / 2, h / 3);
 	xCameraToPlayerDistGoal = Min (xTimeDead * 8, I2X (20)) + gameData.objs.consoleP->info.xSize;
 	SetCameraPos (&gameData.objs.deadPlayerCamera->info.position.vPos, gameData.objs.consoleP);
 	fVec = gameData.objs.consoleP->info.position.vPos - gameData.objs.deadPlayerCamera->info.position.vPos;
-	gameData.objs.deadPlayerCamera->info.position.mOrient = CFixMatrix::CreateF(fVec);
+	gameData.objs.deadPlayerCamera->info.position.mOrient = CFixMatrix::CreateF (fVec);
 
 	if (xTimeDead > DEATH_SEQUENCE_EXPLODE_TIME) {
 		if (!LOCALPLAYER.m_bExploded) {
@@ -242,7 +242,6 @@ if (gameStates.app.bPlayerIsDead) {
 
 void StartPlayerDeathSequence (CObject* playerObjP)
 {
-Assert (playerObjP == gameData.objs.consoleP);
 gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted = 0;
 if (gameStates.app.bPlayerIsDead)
 	return;
@@ -271,6 +270,8 @@ else {
 	}
 paletteManager.SetRedEffect (40);
 gameStates.app.bPlayerIsDead = 1;
+if (playerObjP->PlayerNumber () == N_LOCALPLAYER)
+	LOCALPLAYER.SetShield (-1);
 #ifdef FORCE_FEEDBACK
    if (TactileStick)
 	Buffeting (70);
