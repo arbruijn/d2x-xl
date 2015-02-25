@@ -531,7 +531,7 @@ else {
 	objP->info.nSegment = NDReadShort ();
 	NDReadVector (objP->mType.physInfo.velocity);
 	}
-if ((objP->info.nId == VCLIP_MORPHING_ROBOT) && 
+if ((objP->info.nId == ANIM_MORPHING_ROBOT) && 
 	 (renderType == RT_FIREBALL) && 
 	 (objP->info.controlType == CT_EXPLOSION))
 	ExtractOrientFromSegment (&objP->info.position.mOrient, SEGMENTS + objP->info.nSegment);
@@ -739,9 +739,9 @@ switch (objP->info.renderType) {
 	case RT_HOSTAGE:
 	case RT_WEAPON_VCLIP:
 	case RT_THRUSTER:
-		objP->rType.vClipInfo.nClipIndex = NDReadInt ();
-		objP->rType.vClipInfo.xFrameTime = NDReadFix ();
-		objP->rType.vClipInfo.nCurFrame = NDReadByte ();
+		objP->rType.animationInfo.nClipIndex = NDReadInt ();
+		objP->rType.animationInfo.xFrameTime = NDReadFix ();
+		objP->rType.animationInfo.nCurFrame = NDReadByte ();
 		break;
 
 	case RT_LASER:
@@ -812,10 +812,10 @@ if (!bRevertFormat)
 void NDSetPowerupClip (CObject *objP)
 {
 //if (gameStates.app.tick40fps.bTick) 
-tVideoClipInfo	*vciP = &objP->rType.vClipInfo;
+tAnimationState	*vciP = &objP->rType.animationInfo;
 if (vciP->nClipIndex >= 0) {
-	tVideoClip	*vcP = gameData.effects.vClips [0] + vciP->nClipIndex;
-	vciP->nCurFrame = vcP->xFrameTime ? ((gameData.time.xGame - gameData.demo.xStartTime) / vcP->xFrameTime) % vcP->nFrameCount : 0;
+	tAnimationInfo	*animInfoP = gameData.effects.vClips [0] + vciP->nClipIndex;
+	vciP->nCurFrame = animInfoP->xFrameTime ? ((gameData.time.xGame - gameData.demo.xStartTime) / animInfoP->xFrameTime) % animInfoP->nFrameCount : 0;
 	}
 }
 
@@ -957,9 +957,9 @@ switch (o.info.renderType) {
 	case RT_HOSTAGE:
 	case RT_WEAPON_VCLIP:
 	case RT_THRUSTER:
-		NDWriteInt (o.rType.vClipInfo.nClipIndex);
-		NDWriteFix (o.rType.vClipInfo.xFrameTime);
-		NDWriteByte (o.rType.vClipInfo.nCurFrame);
+		NDWriteInt (o.rType.animationInfo.nClipIndex);
+		NDWriteFix (o.rType.animationInfo.xFrameTime);
+		NDWriteByte (o.rType.animationInfo.nCurFrame);
 		break;
 
 	case RT_LASER:

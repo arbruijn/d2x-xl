@@ -100,7 +100,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define RT_HOSTAGE			4   // a hostage
 #define RT_POWERUP			5   // a powerup
 #define RT_MORPH				6   // a robot being morphed
-#define RT_WEAPON_VCLIP		7   // a weapon that renders as a tVideoClip
+#define RT_WEAPON_VCLIP		7   // a weapon that renders as a tAnimationInfo
 #define RT_THRUSTER			8	 // like afterburner, but doesn't cast light
 #define RT_EXPLBLAST			9	 // white explosion light blast
 #define RT_SHRAPNELS			10	 // smoke trails coming from explosions
@@ -226,7 +226,7 @@ class ControlPowerupInfo : public ControlInfo { };
 
 class RenderInfo { };
 class RenderPolyObjInfo : public RenderInfo { };      // polygon model
-class RenderVClipInfo : public RenderInfo { };     // tVideoClip
+class RenderVClipInfo : public RenderInfo { };     // tAnimationInfo
 class RenderSmokeInfo : public RenderInfo { };
 class RenderLightningInfo : public RenderInfo { };
 #endif
@@ -398,23 +398,23 @@ class CPowerupInfo {
 
 //	-----------------------------------------------------------------------------
 
-typedef struct tVideoClipInfo {
+typedef struct tAnimationState {
 public:
 	int32_t  nClipIndex;
 	fix		xTotalTime;
 	fix		xFrameTime;
 	int8_t   nCurFrame;
-} __pack__ tVideoClipInfo;
+} __pack__ tAnimationState;
 
-class CVClipInfo {
+class CAnimationInfo {
 	private:
-		tVideoClipInfo	m_info;
+		tAnimationState	m_state;
 	public:
-		inline tVideoClipInfo* GetInfo (void) { return &m_info; };
-		inline int32_t GetClipIndex (void) { return m_info.nClipIndex; }
-		inline fix GetTotalTime (void) { return m_info.xTotalTime; }
-		inline fix GetFrameTime (void) { return m_info.xFrameTime; }
-		inline int8_t GetCurFrame (void) { return m_info.nCurFrame; }
+		inline tAnimationState* GetState (void) { return &m_state; };
+		inline int32_t GetClipIndex (void) { return m_state.nClipIndex; }
+		inline fix GetTotalTime (void) { return m_state.xTotalTime; }
+		inline fix GetFrameTime (void) { return m_state.xFrameTime; }
+		inline int8_t GetCurFrame (void) { return m_state.nCurFrame; }
 };
 
 //	-----------------------------------------------------------------------------
@@ -666,7 +666,7 @@ typedef union tObjControlInfo {
 
 typedef union tObjRenderInfo {
 	tPolyObjInfo			polyObjInfo;   // polygon model
-	tVideoClipInfo			vClipInfo;     // tVideoClip
+	tAnimationState			animationInfo;     // tAnimationInfo
 	tParticleInfo			particleInfo;
 	tLightningInfo			lightningInfo;
 	tSoundInfo				soundInfo;
@@ -1821,8 +1821,8 @@ extern CObject *dbgObjP;
 
 //	-----------------------------------------------------------------------------------------------------------
 
-int32_t SetupHiresVClip (tVideoClip *vcP, tVideoClipInfo *vciP, CBitmap* bmP = NULL);
-void UpdatePowerupClip (tVideoClip *vcP, tVideoClipInfo *vciP, int32_t nObject);
+int32_t SetupHiresVClip (tAnimationInfo *animInfoP, tAnimationState *vciP, CBitmap* bmP = NULL);
+void UpdatePowerupClip (tAnimationInfo *animInfoP, tAnimationState *vciP, int32_t nObject);
 
 //	-----------------------------------------------------------------------------------------------------------
 

@@ -1119,7 +1119,7 @@ if (0 <= nSound) {
 	FORALL_STATIC_OBJS (objP)
 		if (objP->info.nType == OBJ_EXPLOSION) {
 			objP->info.renderType = RT_POWERUP;
-			objP->rType.vClipInfo.nClipIndex = objP->info.nId;
+			objP->rType.animationInfo.nClipIndex = objP->info.nId;
 			audio.CreateObjectSound (nSound, SOUNDCLASS_AMBIENT, objP->Index (), 1);
 			}
 	}

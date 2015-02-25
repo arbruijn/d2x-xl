@@ -26,18 +26,18 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 // ----------------------------------------------------------------------------
 
-fix EffectFrameTime (tEffectClip *ecP)
+fix EffectFrameTime (tEffectInfo *effectInfoP)
 {
 #if DBG
-return ecP->vClipInfo.xFrameTime;
+return effectInfoP->animationInfo.xFrameTime;
 #else
-if ((ecP->changingWallTexture < 0) && (ecP->changingObjectTexture < 0))
-	return ecP->vClipInfo.xFrameTime;
+if ((effectInfoP->changingWallTexture < 0) && (effectInfoP->changingObjectTexture < 0))
+	return effectInfoP->animationInfo.xFrameTime;
 else {
-	CBitmap	*bmP = gameData.pig.tex.bitmapP + ecP->vClipInfo.frames [0].index;
+	CBitmap	*bmP = gameData.pig.tex.bitmapP + effectInfoP->animationInfo.frames [0].index;
 	return (fix) ((((bmP->Type () == BM_TYPE_ALT) && bmP->Frames ()) ? 
-					  (ecP->vClipInfo.xFrameTime * ecP->vClipInfo.nFrameCount) / bmP->FrameCount () : 
-					  ecP->vClipInfo.xFrameTime) /  gameStates.gameplay.slowmo [0].fSpeed);
+					  (effectInfoP->animationInfo.xFrameTime * effectInfoP->animationInfo.nFrameCount) / bmP->FrameCount () : 
+					  effectInfoP->animationInfo.xFrameTime) /  gameStates.gameplay.slowmo [0].fSpeed);
 	}
 #endif
 }
@@ -56,22 +56,22 @@ for (int32_t bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 void ResetPogEffects (void)
 {
 	int32_t				i, bD1;
-	tEffectClip		*ecP;
-	tWallClip		*wcP;
-	tVideoClip		*vcP;
+	tEffectInfo*		effectInfoP;
+	tWallEffect*			wcP;
+	tAnimationInfo*	animInfoP;
 
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
-	for (i = gameData.effects.nEffects [bD1], ecP = gameData.effects.effects [bD1].Buffer (); i; i--, ecP++) {
-		//if (ecP->flags & EF_FROMPOG)
-			ecP->flags &= ~(EF_ALTFMT | EF_FROMPOG | EF_INITIALIZED);
-			ecP->nCurFrame = 0;
+	for (i = gameData.effects.nEffects [bD1], effectInfoP = gameData.effects.effects [bD1].Buffer (); i; i--, effectInfoP++) {
+		//if (effectInfoP->flags & EF_FROMPOG)
+			effectInfoP->flags &= ~(EF_ALTFMT | EF_FROMPOG | EF_INITIALIZED);
+			effectInfoP->nCurFrame = 0;
 			}
 for (i = gameData.walls.nAnims [gameStates.app.bD1Data], wcP = gameData.walls.animP.Buffer (); i; i--, wcP++)
 	//if (wcP->flags & WCF_FROMPOG)
 		wcP->flags &= ~(WCF_ALTFMT | WCF_FROMPOG | WCF_INITIALIZED);
-for (i = gameData.effects.nClips [0], vcP = gameData.effects.vClips [0].Buffer (); i; i--, vcP++)
-	//if (vcP->flags & WCF_FROMPOG)
-		vcP->flags &= ~(WCF_ALTFMT | WCF_FROMPOG | WCF_INITIALIZED);
+for (i = gameData.effects.nClips [0], animInfoP = gameData.effects.vClips [0].Buffer (); i; i--, animInfoP++)
+	//if (animInfoP->flags & WCF_FROMPOG)
+		animInfoP->flags &= ~(WCF_ALTFMT | WCF_FROMPOG | WCF_INITIALIZED);
 }
 
 // ----------------------------------------------------------------------------
@@ -81,16 +81,16 @@ void ResetSpecialEffects (void)
 	tBitmapIndex	bmi;
 
 for (int32_t bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
-	tEffectClip* ecP = gameData.effects.effects [bD1].Buffer ();
-	for (int32_t i = 0; i < gameData.effects.nEffects [bD1]; i++, ecP++) {
-		ecP->nSegment = -1;					//clear any active one-shots
-		ecP->flags &= ~(EF_STOPPED | EF_ONE_SHOT | EF_INITIALIZED);	//restart any stopped effects
-		bmi = ecP->vClipInfo.frames [ecP->nCurFrame = 0];
+	tEffectInfo* effectInfoP = gameData.effects.effects [bD1].Buffer ();
+	for (int32_t i = 0; i < gameData.effects.nEffects [bD1]; i++, effectInfoP++) {
+		effectInfoP->nSegment = -1;					//clear any active one-shots
+		effectInfoP->flags &= ~(EF_STOPPED | EF_ONE_SHOT | EF_INITIALIZED);	//restart any stopped effects
+		bmi = effectInfoP->animationInfo.frames [effectInfoP->nCurFrame = 0];
 		//reset bitmap, which could have been changed by a nCritClip
-		if (ecP->changingWallTexture != -1)
-			gameData.pig.tex.bmIndex [bD1][ecP->changingWallTexture] = bmi;
-		if (ecP->changingObjectTexture != -1)
-			gameData.pig.tex.objBmIndex [ecP->changingObjectTexture] = bmi;
+		if (effectInfoP->changingWallTexture != -1)
+			gameData.pig.tex.bmIndex [bD1][effectInfoP->changingWallTexture] = bmi;
+		if (effectInfoP->changingObjectTexture != -1)
+			gameData.pig.tex.objBmIndex [effectInfoP->changingObjectTexture] = bmi;
 		}
 	}
 }
@@ -100,11 +100,11 @@ for (int32_t bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 void CacheObjectEffects (void)
 {
 for (int32_t bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
-	tEffectClip* ecP = gameData.effects.effects [bD1].Buffer ();
-	for (int32_t i = 0; i < gameData.effects.nEffects [bD1]; i++, ecP++)
-		if ((ecP->changingObjectTexture != -1) && !(ecP->flags & EF_ALTFMT))
-			for (int32_t j = 0; j < ecP->vClipInfo.nFrameCount; j++)
-				LoadTexture (ecP->vClipInfo.frames [j].index, 0, bD1);
+	tEffectInfo* effectInfoP = gameData.effects.effects [bD1].Buffer ();
+	for (int32_t i = 0; i < gameData.effects.nEffects [bD1]; i++, effectInfoP++)
+		if ((effectInfoP->changingObjectTexture != -1) && !(effectInfoP->flags & EF_ALTFMT))
+			for (int32_t j = 0; j < effectInfoP->animationInfo.nFrameCount; j++)
+				LoadTexture (effectInfoP->animationInfo.frames [j].index, 0, bD1);
 	}	
 }
 
@@ -208,156 +208,156 @@ xEffectTime += gameData.time.xFrame;
 //if (gameStates.app.tick40fps.bTick) 
  {
 		CBitmap*			bmP = NULL;
-		tEffectClip*	ecP;
+		tEffectInfo*	effectInfoP;
 		tBitmapIndex	bmi;
 		fix				ft = 0;
 		int32_t				i, t, nFrames;
 
-	for (i = 0, ecP = gameData.effects.effectP.Buffer (); i < gameData.effects.nEffects [gameStates.app.bD1Data]; i++, ecP++) {
-		if ((t = ecP->changingWallTexture) == -1)
+	for (i = 0, effectInfoP = gameData.effects.effectP.Buffer (); i < gameData.effects.nEffects [gameStates.app.bD1Data]; i++, effectInfoP++) {
+		if ((t = effectInfoP->changingWallTexture) == -1)
 			continue;
 #if DBG
 		if ((nDbgTexture > 0) && (t == nDbgTexture))
 			BRP;
 #endif
 		if (!bSetup) {
-			if (ecP->flags & EF_STOPPED)
+			if (effectInfoP->flags & EF_STOPPED)
 				continue;
-			ecP->xTimeLeft -= (fix) (xEffectTime /  gameStates.gameplay.slowmo [0].fSpeed);
-			if (ecP->xTimeLeft > 0)
+			effectInfoP->xTimeLeft -= (fix) (xEffectTime /  gameStates.gameplay.slowmo [0].fSpeed);
+			if (effectInfoP->xTimeLeft > 0)
 				continue;
-			if (!(ft = EffectFrameTime (ecP)))
+			if (!(ft = EffectFrameTime (effectInfoP)))
 				continue;
 			}
-		nFrames = ecP->vClipInfo.nFrameCount;
-		if (ecP->flags & EF_ALTFMT) {
-			if ((ecP->flags & EF_INITIALIZED) && (bmP = gameData.pig.tex.bitmapP [ecP->vClipInfo.frames [0].index].Override ())) {
+		nFrames = effectInfoP->animationInfo.nFrameCount;
+		if (effectInfoP->flags & EF_ALTFMT) {
+			if ((effectInfoP->flags & EF_INITIALIZED) && (bmP = gameData.pig.tex.bitmapP [effectInfoP->animationInfo.frames [0].index].Override ())) {
 				if (gameOpts->ogl.bGlTexMerge)
 					nFrames = bmP->FrameCount ();
 				}
 			else {
-				bmP = SetupHiresAnim (reinterpret_cast<int16_t*> (ecP->vClipInfo.frames), nFrames, t, 0, 0, &nFrames);
+				bmP = SetupHiresAnim (reinterpret_cast<int16_t*> (effectInfoP->animationInfo.frames), nFrames, t, 0, 0, &nFrames);
 				if (!bmP)
-					ecP->flags &= ~EF_ALTFMT;
+					effectInfoP->flags &= ~EF_ALTFMT;
 				else
-					ecP->flags |= EF_INITIALIZED;
+					effectInfoP->flags |= EF_INITIALIZED;
 				}
 			}
 		if (bSetup)
 			continue;
-		while (ft && (ecP->xTimeLeft < 0)) {
-			ecP->xTimeLeft += ft;
-			if (++(ecP->nCurFrame) >= nFrames) {
-				if (ecP->flags & EF_ONE_SHOT) {
+		while (ft && (effectInfoP->xTimeLeft < 0)) {
+			effectInfoP->xTimeLeft += ft;
+			if (++(effectInfoP->nCurFrame) >= nFrames) {
+				if (effectInfoP->flags & EF_ONE_SHOT) {
 #if DBG
-					Assert (ecP->nSegment != -1);
-					Assert ((ecP->nSide >= 0) && (ecP->nSide < 6));
-					Assert (ecP->nDestBm != 0 && SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].m_nOvlTex);
+					Assert (effectInfoP->nSegment != -1);
+					Assert ((effectInfoP->nSide >= 0) && (effectInfoP->nSide < 6));
+					Assert (effectInfoP->nDestBm != 0 && SEGMENTS [effectInfoP->nSegment].m_sides [effectInfoP->nSide].m_nOvlTex);
 #endif
-					SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].m_nOvlTex = ecP->nDestBm;		//replace with destroyed
-					ecP->flags &= ~EF_ONE_SHOT;
-					ecP->nSegment = -1;		//done with this
+					SEGMENTS [effectInfoP->nSegment].m_sides [effectInfoP->nSide].m_nOvlTex = effectInfoP->nDestBm;		//replace with destroyed
+					effectInfoP->flags &= ~EF_ONE_SHOT;
+					effectInfoP->nSegment = -1;		//done with this
 					}
-				ecP->nCurFrame = 0;
+				effectInfoP->nCurFrame = 0;
 				}
 			}
-		if (ecP->flags & EF_CRITICAL)
+		if (effectInfoP->flags & EF_CRITICAL)
 			continue;
 #if DBG
-		if (gameOpts->ogl.bGlTexMerge && (ecP->flags & EF_ALTFMT) && bmP->FrameCount () && !bmP->Frames ())
+		if (gameOpts->ogl.bGlTexMerge && (effectInfoP->flags & EF_ALTFMT) && bmP->FrameCount () && !bmP->Frames ())
 			bmP = bmP;
 #endif
-		if ((ecP->nCritClip != -1) && gameData.reactor.bDestroyed) {
-			int32_t n = ecP->nCritClip;
-			bmi = gameData.effects.effectP [n].vClipInfo.frames [gameData.effects.effectP [n].nCurFrame];
+		if ((effectInfoP->nCritClip != -1) && gameData.reactor.bDestroyed) {
+			int32_t n = effectInfoP->nCritClip;
+			bmi = gameData.effects.effectP [n].animationInfo.frames [gameData.effects.effectP [n].nCurFrame];
 			gameData.pig.tex.bmIndexP [t] = bmi;
 			}
-		else if (gameOpts->ogl.bGlTexMerge && (ecP->flags & EF_ALTFMT)) {
+		else if (gameOpts->ogl.bGlTexMerge && (effectInfoP->flags & EF_ALTFMT)) {
 			bmP->SetTranspType (-1);
 			if (!bmP->Frames ())
 				bmP->NeedSetup ();
 			bmP->SetupTexture (1, 1);
-			CBitmap* bmfP = bmP->SetCurFrame (bmP->Frames () + Min (ecP->nCurFrame, bmP->FrameCount () - 1));
+			CBitmap* bmfP = bmP->SetCurFrame (bmP->Frames () + Min (effectInfoP->nCurFrame, bmP->FrameCount () - 1));
 			bmfP->SetTranspType (-1);
 			bmfP->SetupTexture (1, 1);
 			}
 		else {
-			if ((ecP->flags & EF_ALTFMT) && (ecP->nCurFrame >= nFrames))
-				ecP->nCurFrame = 0;
-			bmi = ecP->vClipInfo.frames [ecP->nCurFrame];
+			if ((effectInfoP->flags & EF_ALTFMT) && (effectInfoP->nCurFrame >= nFrames))
+				effectInfoP->nCurFrame = 0;
+			bmi = effectInfoP->animationInfo.frames [effectInfoP->nCurFrame];
 			gameData.pig.tex.bmIndexP [t] = bmi;
 			}
 		}
 
-	for (i = 0, ecP = gameData.effects.effects [0].Buffer (); i < gameData.effects.nEffects [0]; i++, ecP++) {
-		if ((t = ecP->changingObjectTexture) == -1)
+	for (i = 0, effectInfoP = gameData.effects.effects [0].Buffer (); i < gameData.effects.nEffects [0]; i++, effectInfoP++) {
+		if ((t = effectInfoP->changingObjectTexture) == -1)
 			continue;
 		if (!bSetup) {
-			if (ecP->flags & EF_STOPPED)
+			if (effectInfoP->flags & EF_STOPPED)
 				continue;
-			ecP->xTimeLeft -= xEffectTime;
-			ft = EffectFrameTime (ecP);
+			effectInfoP->xTimeLeft -= xEffectTime;
+			ft = EffectFrameTime (effectInfoP);
 			}
-		nFrames = ecP->vClipInfo.nFrameCount;
-		if (ecP->flags & EF_ALTFMT) {
+		nFrames = effectInfoP->animationInfo.nFrameCount;
+		if (effectInfoP->flags & EF_ALTFMT) {
 #if DBG
-			if (ecP->vClipInfo.frames [0].index == nDbgTexture)
+			if (effectInfoP->animationInfo.frames [0].index == nDbgTexture)
 				BRP;
 #endif
-			if (ecP->flags & EF_INITIALIZED) {
-				bmP = gameData.pig.tex.bitmapP [ecP->vClipInfo.frames [0].index].Override ();
+			if (effectInfoP->flags & EF_INITIALIZED) {
+				bmP = gameData.pig.tex.bitmapP [effectInfoP->animationInfo.frames [0].index].Override ();
 				if (gameOpts->ogl.bGlTexMerge)
 					nFrames = bmP->FrameCount ();
 				}
 			else {
-   			bmP = SetupHiresAnim (reinterpret_cast<int16_t*> (ecP->vClipInfo.frames), nFrames, t, 0, 1, &nFrames);
+   			bmP = SetupHiresAnim (reinterpret_cast<int16_t*> (effectInfoP->animationInfo.frames), nFrames, t, 0, 1, &nFrames);
 	   		if (!bmP)
-		   		ecP->flags &= ~EF_ALTFMT;
+		   		effectInfoP->flags &= ~EF_ALTFMT;
 			   else if (!gameOpts->ogl.bGlTexMerge)
-				   ecP->flags &= ~EF_ALTFMT;
+				   effectInfoP->flags &= ~EF_ALTFMT;
    			else
-	   			ecP->flags |= EF_INITIALIZED;
+	   			effectInfoP->flags |= EF_INITIALIZED;
 	   		}
 			}
 		if (bSetup)
 			continue;
-		while (ft && (ecP->xTimeLeft < 0)) {
-			ecP->xTimeLeft += ft;
-			ecP->nCurFrame++;
-			if (ecP->nCurFrame >= nFrames) {
-				if (ecP->flags & EF_ONE_SHOT) {
+		while (ft && (effectInfoP->xTimeLeft < 0)) {
+			effectInfoP->xTimeLeft += ft;
+			effectInfoP->nCurFrame++;
+			if (effectInfoP->nCurFrame >= nFrames) {
+				if (effectInfoP->flags & EF_ONE_SHOT) {
 #if DBG
-					Assert(ecP->nSegment != -1);
-					Assert((ecP->nSide >= 0) && (ecP->nSide < 6));
-					Assert(ecP->nDestBm !=0 && SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].m_nOvlTex);
+					Assert(effectInfoP->nSegment != -1);
+					Assert((effectInfoP->nSide >= 0) && (effectInfoP->nSide < 6));
+					Assert(effectInfoP->nDestBm !=0 && SEGMENTS [effectInfoP->nSegment].m_sides [effectInfoP->nSide].m_nOvlTex);
 #endif
-					SEGMENTS [ecP->nSegment].m_sides [ecP->nSide].m_nOvlTex = ecP->nDestBm;		//replace with destoyed
-					ecP->flags &= ~EF_ONE_SHOT;
-					ecP->nSegment = -1;		//done with this
+					SEGMENTS [effectInfoP->nSegment].m_sides [effectInfoP->nSide].m_nOvlTex = effectInfoP->nDestBm;		//replace with destoyed
+					effectInfoP->flags &= ~EF_ONE_SHOT;
+					effectInfoP->nSegment = -1;		//done with this
 					}
-				ecP->nCurFrame = 0;
+				effectInfoP->nCurFrame = 0;
 				}
 			}
-		if (ecP->flags & EF_CRITICAL)
+		if (effectInfoP->flags & EF_CRITICAL)
 			continue;
-		if ((ecP->nCritClip != -1) && gameData.reactor.bDestroyed) {
-			int32_t n = ecP->nCritClip;
-			bmi = gameData.effects.effects [0][n].vClipInfo.frames [gameData.effects.effects [0][n].nCurFrame];
+		if ((effectInfoP->nCritClip != -1) && gameData.reactor.bDestroyed) {
+			int32_t n = effectInfoP->nCritClip;
+			bmi = gameData.effects.effects [0][n].animationInfo.frames [gameData.effects.effects [0][n].nCurFrame];
 			gameData.pig.tex.objBmIndex [t] = bmi;
 			}
-		else if ((ecP->flags & EF_ALTFMT) && bmP->Frames ()) {
+		else if ((effectInfoP->flags & EF_ALTFMT) && bmP->Frames ()) {
 			bmP->SetTranspType (3);
 			bmP->SetupTexture (1, 1);
 			if (bmP->Frames ()) {
-				bmP->SetCurFrame (bmP->Frames () + ecP->nCurFrame);
+				bmP->SetCurFrame (bmP->Frames () + effectInfoP->nCurFrame);
 				bmP->CurFrame ()->SetTranspType (3);
 				bmP->CurFrame ()->SetupTexture (1, 1);
 				}
 			}
 		else {
-			bmi = ecP->vClipInfo.frames [ecP->nCurFrame];
-		//*ecP->bm_ptr = &gameData.pig.tex.bitmaps [gameData.effects.effects [0][n].vClipInfo.frames [gameData.effects.effects [0][n]..nCurFrame].index];
-		//if (ecP->changingObjectTexture != -1)
+			bmi = effectInfoP->animationInfo.frames [effectInfoP->nCurFrame];
+		//*effectInfoP->bm_ptr = &gameData.pig.tex.bitmaps [gameData.effects.effects [0][n].animationInfo.frames [gameData.effects.effects [0][n]..nCurFrame].index];
+		//if (effectInfoP->changingObjectTexture != -1)
 			gameData.pig.tex.objBmIndex [t] = bmi;
 			}
 		}
@@ -370,42 +370,42 @@ xEffectTime += gameData.time.xFrame;
 void RestoreEffectBitmapIcons()
 {
 	int32_t i,j;
-	tEffectClip *ecP;
+	tEffectInfo *effectInfoP;
 	tBitmapIndex	bmi;
 
-for (i = 0, j = gameData.effects.nEffects [gameStates.app.bD1Data], ecP = gameData.effects.effectP.Buffer (); i < j; i++, ecP++)
-	if (!(ecP->flags & EF_CRITICAL)) {
-		bmi = ecP->vClipInfo.frames [0];
-		if (ecP->changingWallTexture != -1)
-			gameData.pig.tex.bmIndexP[ecP->changingWallTexture] = bmi;
-		if (ecP->changingObjectTexture != -1)
-			gameData.pig.tex.objBmIndex [ecP->changingObjectTexture] = bmi;
+for (i = 0, j = gameData.effects.nEffects [gameStates.app.bD1Data], effectInfoP = gameData.effects.effectP.Buffer (); i < j; i++, effectInfoP++)
+	if (!(effectInfoP->flags & EF_CRITICAL)) {
+		bmi = effectInfoP->animationInfo.frames [0];
+		if (effectInfoP->changingWallTexture != -1)
+			gameData.pig.tex.bmIndexP[effectInfoP->changingWallTexture] = bmi;
+		if (effectInfoP->changingObjectTexture != -1)
+			gameData.pig.tex.objBmIndex [effectInfoP->changingObjectTexture] = bmi;
 		}
-for (i = 0, j = gameData.effects.nEffects [0], ecP = gameData.effects.effects [0].Buffer (); i < j; i++, ecP++)
-	if (! (ecP->flags & EF_CRITICAL)) {
-		bmi = ecP->vClipInfo.frames [0];
-		if (ecP->changingWallTexture != -1)
-			gameData.pig.tex.bmIndex [0][ecP->changingWallTexture] = bmi;
-		if (ecP->changingObjectTexture != -1)
-			gameData.pig.tex.objBmIndex [ecP->changingObjectTexture] = bmi;
+for (i = 0, j = gameData.effects.nEffects [0], effectInfoP = gameData.effects.effects [0].Buffer (); i < j; i++, effectInfoP++)
+	if (! (effectInfoP->flags & EF_CRITICAL)) {
+		bmi = effectInfoP->animationInfo.frames [0];
+		if (effectInfoP->changingWallTexture != -1)
+			gameData.pig.tex.bmIndex [0][effectInfoP->changingWallTexture] = bmi;
+		if (effectInfoP->changingObjectTexture != -1)
+			gameData.pig.tex.objBmIndex [effectInfoP->changingObjectTexture] = bmi;
 		}
 			//if (gameData.effects.effectP [i].bm_ptr != -1)
-			//	*gameData.effects.effectP [i].bm_ptr = &gameData.pig.tex.bitmaps [gameData.effects.effectP [i].vClipInfo.frames [0].index];
+			//	*gameData.effects.effectP [i].bm_ptr = &gameData.pig.tex.bitmaps [gameData.effects.effectP [i].animationInfo.frames [0].index];
 }
 
 // ----------------------------------------------------------------------------
 //stop an effect from animating.  Show first frame.
 void StopEffect(int32_t effect_num)
 {
-	tEffectClip *ecP = gameData.effects.effectP + effect_num;
-	//Assert(ecP->bm_ptr != -1);
-ecP->flags |= EF_STOPPED;
-ecP->nCurFrame = 0;
-//*ecP->bm_ptr = &gameData.pig.tex.bitmaps [ecP->vClipInfo.frames [0].index];
-if (ecP->changingWallTexture != -1)
-	gameData.pig.tex.bmIndexP[ecP->changingWallTexture] = ecP->vClipInfo.frames [0];
-if (ecP->changingObjectTexture != -1)
-	gameData.pig.tex.objBmIndex [ecP->changingObjectTexture] = ecP->vClipInfo.frames [0];
+	tEffectInfo *effectInfoP = gameData.effects.effectP + effect_num;
+	//Assert(effectInfoP->bm_ptr != -1);
+effectInfoP->flags |= EF_STOPPED;
+effectInfoP->nCurFrame = 0;
+//*effectInfoP->bm_ptr = &gameData.pig.tex.bitmaps [effectInfoP->animationInfo.frames [0].index];
+if (effectInfoP->changingWallTexture != -1)
+	gameData.pig.tex.bmIndexP[effectInfoP->changingWallTexture] = effectInfoP->animationInfo.frames [0];
+if (effectInfoP->changingObjectTexture != -1)
+	gameData.pig.tex.objBmIndex [effectInfoP->changingObjectTexture] = effectInfoP->animationInfo.frames [0];
 }
 
 // ----------------------------------------------------------------------------
@@ -420,12 +420,12 @@ gameData.effects.effectP [effect_num].flags &= ~EF_STOPPED;
 // ----------------------------------------------------------------------------
 
 /*
- * reads n tEffectClip structs from a CFile
+ * reads n tEffectInfo structs from a CFile
  */
 
-void ReadEffectClip (tEffectClip& ec, CFile& cf)
+void ReadEffectClip (tEffectInfo& ec, CFile& cf)
 {
-ReadVideoClip (ec.vClipInfo, cf);
+ReadVideoClip (ec.animationInfo, cf);
 ec.xTimeLeft = cf.ReadFix ();
 ec.nCurFrame = cf.ReadInt ();
 ec.changingWallTexture = cf.ReadShort ();
@@ -441,7 +441,7 @@ ec.nSegment = cf.ReadInt ();
 ec.nSide = cf.ReadInt ();
 }
 
-int32_t ReadEffectClips (CArray<tEffectClip>& ec, int32_t n, CFile& cf)
+int32_t ReadEffectClips (CArray<tEffectInfo>& ec, int32_t n, CFile& cf)
 {
 	int32_t i;
 

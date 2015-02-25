@@ -1922,7 +1922,7 @@ OBJECTS [nLocalObj].info.position.vPos = vPos;
 OBJECTS [nLocalObj].mType.physInfo.velocity.SetZero ();
 OBJECTS [nLocalObj].RelinkToSeg (nSegment);
 SetObjNumMapping (nLocalObj, nObject, nPlayer);
-CreateExplosion (nSegment, vPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
+CreateExplosion (nSegment, vPos, I2X (5), ANIM_POWERUP_DISAPPEARANCE);
 return nLocalObj;
 }
 
@@ -3213,9 +3213,9 @@ FORALL_STATIC_OBJS (objP) {
 			ReleaseObject (objP->Index ());
 			if (nObject != -1) {
 				CObject	*objP = OBJECTS + nObject;
-				objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].nClipIndex;
-				objP->rType.vClipInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
-				objP->rType.vClipInfo.nCurFrame = 0;
+				objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].nClipIndex;
+				objP->rType.animationInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
+				objP->rType.animationInfo.nCurFrame = 0;
 				objP->mType.physInfo.drag = 512;     //1024;
 				objP->mType.physInfo.mass = I2X (1);
 				objP->mType.physInfo.velocity.SetZero ();

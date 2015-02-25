@@ -290,9 +290,9 @@ if (!nTexture)
 if (IsMultiGame && netGameInfo.m_info.bIndestructibleLights)
 	return 0;
 int16_t nClip = gameData.pig.tex.tMapInfoP [nTexture].nEffectClip;
-tEffectClip	*ecP = (nClip < 0) ? NULL : gameData.effects.effectP + nClip;
-int16_t	nDestBM = ecP ? ecP->nDestBm : -1;
-uint8_t	bOneShot = ecP ? (ecP->flags & EF_ONE_SHOT) != 0 : 0;
+tEffectInfo	*effectInfoP = (nClip < 0) ? NULL : gameData.effects.effectP + nClip;
+int16_t	nDestBM = effectInfoP ? effectInfoP->nDestBm : -1;
+uint8_t	bOneShot = effectInfoP ? (effectInfoP->flags & EF_ONE_SHOT) != 0 : 0;
 if (nClip == -1)
 	return gameData.pig.tex.tMapInfoP [nTexture].destroyed != -1;
 return (nDestBM != -1) && !bOneShot;

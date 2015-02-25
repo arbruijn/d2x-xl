@@ -145,9 +145,9 @@ if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameDat
 		objP = OBJECTS + nObject;
 		if (IsMultiGame)
 			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
-		objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-		objP->rType.vClipInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
-		objP->rType.vClipInfo.nCurFrame = 0;
+		objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+		objP->rType.animationInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
+		objP->rType.animationInfo.nCurFrame = 0;
 		objP->info.nCreator = GetTeam (N_LOCALPLAYER) + 1;
 		}
 	return -1;
@@ -208,8 +208,8 @@ if (nWeaponType == OMEGA_ID) {
 //	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, bSpectator ? &gameStates.app.playerPos.mOrient.m.v.u : &parentP->info.position.mOrient.m.v.u, NULL);
 	if (((nParent != nViewer) || bSpectator) && (parentP->info.nType != OBJ_WEAPON)) {
 		// Muzzle flash
-		if ((weaponInfoP->nFlashVClip > -1) && ((nWeaponType != OMEGA_ID) || !gameOpts->render.lightning.bOmega || gameStates.render.bOmegaModded))
-			CreateMuzzleFlash (objP->info.nSegment, objP->info.position.vPos, weaponInfoP->xFlashSize, weaponInfoP->nFlashVClip);
+		if ((weaponInfoP->nFlashAnimation > -1) && ((nWeaponType != OMEGA_ID) || !gameOpts->render.lightning.bOmega || gameStates.render.bOmegaModded))
+			CreateMuzzleFlash (objP->info.nSegment, objP->info.position.vPos, weaponInfoP->xFlashSize, weaponInfoP->nFlashAnimation);
 		}
 	DoOmegaStuff (OBJECTS + nParent, vPosition, objP);
 	return nObject;
@@ -288,8 +288,8 @@ if (parentP && (parentP->info.nType == OBJ_WEAPON)) {
 //	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, &parentP->info.position.mOrient.m.v.u, NULL);
 if (((nParent != nViewer) || SPECTATOR (parentP)) && (parentP->info.nType != OBJ_WEAPON)) {
 	// Muzzle flash
-	if (weaponInfoP->nFlashVClip > -1)
-		CreateMuzzleFlash (objP->info.nSegment, objP->info.position.vPos, weaponInfoP->xFlashSize, weaponInfoP->nFlashVClip);
+	if (weaponInfoP->nFlashAnimation > -1)
+		CreateMuzzleFlash (objP->info.nSegment, objP->info.position.vPos, weaponInfoP->xFlashSize, weaponInfoP->nFlashAnimation);
 	}
 volume = I2X (1);
 if (bMakeSound && (weaponInfoP->flashSound > -1)) {

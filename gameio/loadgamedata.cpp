@@ -299,8 +299,8 @@ gameData.effects.nEffects [0] = cf.ReadInt ();
 /*---*/PrintLog (1, "Loading %d animation descriptions\n", gameData.effects.nEffects [0]);
 ReadEffectClips (gameData.effects.effects [0], gameData.effects.nEffects [0], cf);
 // red glow texture animates way too fast
-gameData.effects.effects [0][32].vClipInfo.xTotalTime *= 10;
-gameData.effects.effects [0][32].vClipInfo.xFrameTime *= 10;
+gameData.effects.effects [0][32].animationInfo.xTotalTime *= 10;
+gameData.effects.effects [0][32].animationInfo.xFrameTime *= 10;
 gameData.walls.nAnims [0] = cf.ReadInt ();
 PrintLog (-1);
 /*---*/PrintLog (1, "Loading %d CWall animations\n", gameData.walls.nAnims [0]);
@@ -406,15 +406,15 @@ wiP->renderType = cf.ReadByte ();
 wiP->nModel = cf.ReadByte ();
 wiP->nInnerModel = cf.ReadByte ();
 wiP->persistent = cf.ReadByte ();
-wiP->nFlashVClip = cf.ReadByte ();
+wiP->nFlashAnimation = cf.ReadByte ();
 wiP->flashSound = cf.ReadShort ();
-wiP->nRobotHitVClip = cf.ReadByte ();
+wiP->nRobotHitAnimation = cf.ReadByte ();
 wiP->nRobotHitSound = cf.ReadShort ();
-wiP->nWallHitVClip = cf.ReadByte ();
+wiP->nWallHitAnimation = cf.ReadByte ();
 wiP->nWallHitSound = cf.ReadShort ();
 wiP->fireCount = cf.ReadByte ();
 wiP->nAmmoUsage = cf.ReadByte ();
-wiP->nVClipIndex = cf.ReadByte ();
+wiP->nAnimationIndex = cf.ReadByte ();
 wiP->destructible = cf.ReadByte ();
 wiP->matter = cf.ReadByte ();
 wiP->bounce = cf.ReadByte ();
@@ -447,15 +447,15 @@ PrintLog (0, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,
 	wiP->nModel,
 	wiP->nInnerModel,
 	wiP->persistent,
-	wiP->nFlashVClip,
+	wiP->nFlashAnimation,
 	wiP->flashSound,
-	wiP->nRobotHitVClip,
+	wiP->nRobotHitAnimation,
 	wiP->nRobotHitSound,
-	wiP->nWallHitVClip,
+	wiP->nWallHitAnimation,
 	wiP->nWallHitSound,
 	wiP->fireCount,
 	wiP->nAmmoUsage,
-	wiP->nVClipIndex,
+	wiP->nAnimationIndex,
 	wiP->destructible,
 	wiP->matter,
 	wiP->bounce,
@@ -528,7 +528,7 @@ void BMReadGameDataD1 (CFile& cf)
 	D1_tmap_info	t; // only needed for sizeof term below
 	//D1Robot_info	r;
 #endif
-	tWallClip		*pw;	
+	tWallEffect		*pw;	
 	tTexMapInfo		*pt;
 	tRobotInfo		*pr;
 	CPolyModel		model;
@@ -582,7 +582,7 @@ PrintLog (-1);
 
 gameData.effects.nClips [1] = cf.ReadInt ();
 /*---*/PrintLog (1, "Loading %d animation clips\n", gameData.effects.nClips [1]);
-ReadVideoClips (gameData.effects.vClips [1], D1_VCLIP_MAXNUM, cf);
+ReadVideoClips (gameData.effects.vClips [1], D1_ANIM_MAXNUM, cf);
 PrintLog (-1);
 
 gameData.effects.nEffects [1] = cf.ReadInt ();
@@ -596,7 +596,7 @@ for (i = 0, pw = &gameData.walls.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw++)
 	//cf.Read (&w, sizeof (w), 1);
 	pw->xTotalTime = cf.ReadFix ();
 	pw->nFrameCount = cf.ReadShort ();
-	for (j = 0; j < D1_MAX_CLIP_FRAMES; j++)
+	for (j = 0; j < MAX_WALL_EFFECT_FRAMES_D1; j++)
 		pw->frames [j] = cf.ReadShort ();
 	pw->openSound = cf.ReadShort ();
 	pw->closeSound = cf.ReadShort ();
@@ -725,11 +725,11 @@ cf.Seek (
 	sizeof (uint8_t) * D1_MAX_SOUNDS +
 	sizeof (uint8_t) * D1_MAX_SOUNDS +
 	sizeof (int32_t) +
-	sizeof (tVideoClip) * D1_VCLIP_MAXNUM +
+	sizeof (tAnimationInfo) * D1_ANIM_MAXNUM +
 	sizeof (int32_t) +
 	sizeof (D1_eclip) * D1_MAX_EFFECTS +
 	sizeof (int32_t) +
-	sizeof (tD1WallClip) * D1_MAX_WALL_ANIMS +
+	sizeof (tWallEffectD1) * D1_MAX_WALL_ANIMS +
 	sizeof (int32_t) +
 	sizeof (D1Robot_info) * D1_MAX_ROBOT_TYPES +
 	sizeof (int32_t) +

@@ -77,13 +77,13 @@ return objP->ModelId ();
 int32_t InitAddonPowerup (CObject *objP)
 {
 if (objP->info.nId == POW_SLOWMOTION)
-	objP->rType.vClipInfo.nClipIndex = -1;
+	objP->rType.animationInfo.nClipIndex = -1;
 else if (objP->info.nId == POW_BULLETTIME)
-	objP->rType.vClipInfo.nClipIndex = -2;
+	objP->rType.animationInfo.nClipIndex = -2;
 else
 	return 0;
-objP->rType.vClipInfo.nCurFrame = 0;
-objP->rType.vClipInfo.xTotalTime = 0;
+objP->rType.animationInfo.nCurFrame = 0;
+objP->rType.animationInfo.xTotalTime = 0;
 return 1;
 }
 
@@ -92,9 +92,9 @@ return 1;
 void ConvertWeaponToPowerup (CObject *objP)
 {
 if (!InitAddonPowerup (objP)) {
-	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-	objP->rType.vClipInfo.xFrameTime = gameData.effects.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
-	objP->rType.vClipInfo.nCurFrame = 0;
+	objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+	objP->rType.animationInfo.xFrameTime = gameData.effects.vClipP [objP->rType.animationInfo.nClipIndex].xFrameTime;
+	objP->rType.animationInfo.nCurFrame = 0;
 	objP->SetSizeFromPowerup ();
 	}
 objP->info.controlType = CT_POWERUP;
@@ -125,9 +125,9 @@ return 1;
 
 int32_t ConvertModelToHostage (CObject *objP)
 {
-objP->rType.vClipInfo.nClipIndex = nHostageVClips [0];
-objP->rType.vClipInfo.xFrameTime = gameData.effects.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
-objP->rType.vClipInfo.nCurFrame = 0;
+objP->rType.animationInfo.nClipIndex = nHostageVClips [0];
+objP->rType.animationInfo.xFrameTime = gameData.effects.vClipP [objP->rType.animationInfo.nClipIndex].xFrameTime;
+objP->rType.animationInfo.nCurFrame = 0;
 objP->SetSize (289845);
 objP->info.controlType = CT_POWERUP;
 objP->info.renderType = RT_HOSTAGE;

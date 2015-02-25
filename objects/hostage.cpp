@@ -30,15 +30,15 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //------------- Globaly used hostage variables --------------------------------
 
 int32_t nHostageTypes = MAX_HOSTAGE_TYPES;		  			// Number of hostage types
-int32_t nHostageVClips [MAX_HOSTAGE_TYPES] = {33};	// tVideoClip num for each tpye of hostage
+int32_t nHostageVClips [MAX_HOSTAGE_TYPES] = {33};	// tAnimationInfo num for each tpye of hostage
 
 
 //-------------- Renders a hostage --------------------------------------------
 
 void DrawHostage (CObject *objP)
 {
-DrawObjectRodTexPoly (objP, gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].frames [objP->rType.vClipInfo.nCurFrame], 
-							 1, objP->rType.vClipInfo.nCurFrame);
+DrawObjectRodTexPoly (objP, gameData.effects.vClips [0][objP->rType.animationInfo.nClipIndex].frames [objP->rType.animationInfo.nCurFrame], 
+							 1, objP->rType.animationInfo.nCurFrame);
 gameData.render.nTotalSprites++;
 }
 

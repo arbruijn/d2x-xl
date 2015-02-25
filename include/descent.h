@@ -2176,11 +2176,11 @@ class CWallData {
 		CStack<CExplodingWall>	exploding; //[MAX_EXPLODING_WALLS];
 		CStack<CActiveDoor>		activeDoors; //[MAX_DOORS];
 		CStack<CCloakingWall>	cloaking; //[MAX_CLOAKING_WALLS];
-		CArray<tWallClip>			anims [2]; //[MAX_WALL_ANIMS];
+		CArray<tWallEffect>			anims [2]; //[MAX_WALL_ANIMS];
 		CArray<int32_t>					bitmaps; //[MAX_WALL_ANIMS];
 		int32_t							nWalls;
 		int32_t							nAnims [2];
-		CArray<tWallClip>			animP;
+		CArray<tWallEffect>			animP;
 
 	public:
 		CWallData ();
@@ -2457,36 +2457,36 @@ class CSoundData {
 class CTextureData {
 	public:
 		CArray<tBitmapFile>		bitmapFiles [2]; //[MAX_BITMAP_FILES];
-		CArray<uint16_t>				bitmapFlags [2]; //[MAX_BITMAP_FILES];
+		CArray<uint16_t>			bitmapFlags [2]; //[MAX_BITMAP_FILES];
 		CArray<CBitmap>			bitmaps [2]; //[MAX_BITMAP_FILES];
 		CArray<CBitmap>			altBitmaps [2]; //[MAX_BITMAP_FILES];
 		CArray<CBitmap>			addonBitmaps ; //[MAX_ADDON_BITMAP_FILES];
-		CArray<uint16_t>				bitmapXlat ; //[MAX_BITMAP_FILES];
+		CArray<uint16_t>			bitmapXlat ; //[MAX_BITMAP_FILES];
 		CArray<alias>				aliases ; //[MAX_ALIASES];
 		CArray<tBitmapIndex>		bmIndex [2]; //[MAX_TEXTURES];
 		CArray<tBitmapIndex>		objBmIndex ; //[MAX_OBJ_BITMAPS];
 		CArray<tBitmapIndex>		defaultObjBmIndex ; //[MAX_OBJ_BITMAPS];
-		CArray<int16_t>				textureIndex [2]; //[MAX_BITMAP_FILES];
-		CArray<uint16_t>				objBmIndexP ; //[MAX_OBJ_BITMAPS];
+		CArray<int16_t>			textureIndex [2]; //[MAX_BITMAP_FILES];
+		CArray<uint16_t>			objBmIndexP ; //[MAX_OBJ_BITMAPS];
 		CArray<tBitmapIndex>		cockpitBmIndex; //[N_COCKPIT_BITMAPS];
-		CArray<CFloatVector3>		bitmapColors ; //[MAX_BITMAP_FILES];
-		int32_t							nBitmaps [2];
-		int32_t							nObjBitmaps;
-		int32_t							bPageFlushed;
+		CArray<CFloatVector3>	bitmapColors ; //[MAX_BITMAP_FILES];
+		int32_t						nBitmaps [2];
+		int32_t						nObjBitmaps;
+		int32_t						bPageFlushed;
 		CArray<tTexMapInfo>		tMapInfo [2] ; //[MAX_TEXTURES];
-		int32_t							nExtraBitmaps;
-		int32_t							nAliases;
-		int32_t							nHamFileVersion;
-		int32_t							nTextures [2];
-		int32_t							nFirstMultiBitmap;
+		int32_t						nExtraBitmaps;
+		int32_t						nAliases;
+		int32_t						nHamFileVersion;
+		int32_t						nTextures [2];
+		int32_t						nFirstMultiBitmap;
 		CArray<tBitmapFile>		bitmapFileP;
 		CArray<CBitmap>			bitmapP;
 		CArray<CBitmap>			altBitmapP;
 		CArray<tBitmapIndex>		bmIndexP;
 		CArray<tTexMapInfo>		tMapInfoP;
-		CArray<uint8_t>				rleBuffer;
-		CArray<int32_t>					brightness; // [MAX_WALL_TEXTURES];
-		CArray<int32_t>					defaultBrightness [2]; //[MAX_WALL_TEXTURES];
+		CArray<uint8_t>			rleBuffer;
+		CArray<int32_t>			brightness; // [MAX_WALL_TEXTURES];
+		CArray<int32_t>			defaultBrightness [2]; //[MAX_WALL_TEXTURES];
 
 	public:
 		CTextureData ();
@@ -2497,20 +2497,20 @@ class CTextureData {
 
 class CEffectData {
 	public:
-		CArray<tEffectClip>	effects [2]; //[MAX_EFFECTS];
-		CArray<tVideoClip>	vClips [2]; //[MAX_VCLIPS];
-		int32_t						nEffects [2];
-		int32_t 						nClips [2];
-		CArray<tEffectClip>	effectP;
-		CArray<tVideoClip>	vClipP;
+		CArray<tEffectInfo>	effects [2]; //[MAX_EFFECTS];
+		CArray<tAnimationInfo>	vClips [2]; //[MAX_VCLIPS];
+		int32_t					nEffects [2];
+		int32_t 					nClips [2];
+		CArray<tEffectInfo>	effectP;
+		CArray<tAnimationInfo>	vClipP;
 
 	public:
 		CEffectData ();
 		~CEffectData () {}
 };
 
-inline int32_t operator- (tEffectClip* o, CArray<tEffectClip>& a) { return a.Index (o); }
-inline int32_t operator- (tVideoClip* o, CArray<tVideoClip>& a) { return a.Index (o); }
+inline int32_t operator- (tEffectInfo* o, CArray<tEffectInfo>& a) { return a.Index (o); }
+inline int32_t operator- (tAnimationInfo* o, CArray<tAnimationInfo>& a) { return a.Index (o); }
 
 class CShipData {
 	public:
@@ -2525,8 +2525,8 @@ class CShipData {
 
 typedef struct tFlagData {
 	tBitmapIndex		bmi;
-	tVideoClip*			vcP;
-	tVideoClipInfo		vci;
+	tAnimationInfo*	animInfoP;
+	tAnimationState	animState;
 	CFlightPath			path;
 } tFlagData;
 

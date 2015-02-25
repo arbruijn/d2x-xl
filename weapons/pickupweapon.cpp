@@ -199,8 +199,8 @@ return 1;
 //	Returns the amount picked up
 int32_t PickupAmmo (int32_t classFlag, int32_t nWeaponIndex, int32_t ammoCount, const char *pszMsg, int32_t nPlayer)
 {
-	int32_t				nMaxAmmo, nCutPoint, nSupposedWeapon = gameData.weapons.nPrimary;
-	int32_t				nOldAmmo = classFlag;		//kill warning
+	int32_t			nMaxAmmo, nCutPoint, nSupposedWeapon = gameData.weapons.nPrimary;
+	int32_t			nOldAmmo = classFlag;		//kill warning
 	CPlayerData*	playerP = gameData.multiplayer.players + nPlayer;
 
 nMaxAmmo = nMaxPrimaryAmmo [nWeaponIndex];

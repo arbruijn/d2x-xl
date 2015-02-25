@@ -74,8 +74,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define DOOR_OPEN_TIME          I2X(2)      // How long takes to open
 #define DOOR_WAIT_TIME          I2X(5)      // How long before auto door closes
 
-#define MAX_CLIP_FRAMES         50
-#define D1_MAX_CLIP_FRAMES      20
+#define MAX_WALL_EFFECT_FRAMES		50
+#define MAX_WALL_EFFECT_FRAMES_D1	20
 
 // WALL_IS_DOORWAY flags.
 #define WID_PASSABLE_FLAG			1
@@ -97,17 +97,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 typedef struct tStuckObject {
 	int16_t   nObject, nWall;
-	int32_t     nSignature;
+	int32_t   nSignature;
 } __pack__ tStuckObject;
 
 //------------------------------------------------------------------------------
 
 class CActiveDoor {
 	public:
-		int32_t     nPartCount;           // for linked walls
-		int16_t   nFrontWall [2];			// front CWall numbers for this door
-		int16_t   nBackWall [2];			// back CWall numbers for this door
-		fix     time;						// how long been opening, closing, waiting
+		int32_t  nPartCount;           // for linked walls
+		int16_t  nFrontWall [2];			// front CWall numbers for this door
+		int16_t  nBackWall [2];			// back CWall numbers for this door
+		fix		time;						// how long been opening, closing, waiting
 
 	public:
 		void LoadState (CFile& cf);
@@ -194,10 +194,10 @@ typedef struct v19_door {
 class CWall {
 	public:
 		int32_t		nSegment, nSide;		// Seg & CSide for this CWall
-		fix		hps;						// "Hit points" of the CWall.
+		fix			hps;						// "Hit points" of the CWall.
 		int32_t		nLinkedWall;			// number of linked CWall
 		uint8_t		nType;					// What kind of special CWall.
-		uint16_t	flags;					// Flags for the CWall.
+		uint16_t		flags;					// Flags for the CWall.
 		uint8_t		state;					// Opening, closing, etc.
 		uint8_t		nTrigger;				// Which CTrigger is associated with the CWall.
 		int8_t		nClip;					// Which animation associated with the CWall.
@@ -250,27 +250,27 @@ inline int32_t operator- (CWall* o, CArray<CWall>& a) { return a.Index (o); }
 #define WCF_FROMPOG		32
 #define WCF_INITIALIZED	64
 
-typedef struct {
-	fix     xTotalTime;
-	int16_t   nFrameCount;
-	int16_t   frames[MAX_CLIP_FRAMES];
-	int16_t   openSound;
-	int16_t   closeSound;
-	int16_t   flags;
-	char    filename [13];
-	char    pad;
-} __pack__ tWallClip;
+typedef struct tWallEffect {
+	fix		xTotalTime;
+	int16_t  nFrameCount;
+	int16_t  frames [MAX_WALL_EFFECT_FRAMES];
+	int16_t  openSound;
+	int16_t  closeSound;
+	int16_t  flags;
+	char		filename [13];
+	char		pad;
+} __pack__ tWallEffect;
 
-typedef struct {
-	fix     playTime;
+typedef struct tWallEffectD1 {
+	fix		 playTime;
 	int16_t   nFrameCount;
-	int16_t   frames[D1_MAX_CLIP_FRAMES];
+	int16_t   frames [MAX_WALL_EFFECT_FRAMES_D1];
 	int16_t   openSound;
 	int16_t   closeSound;
 	int16_t   flags;
-	char    filename [13];
-	char    pad;
-} __pack__ tD1WallClip;
+	char		 filename [13];
+	char      pad;
+} __pack__  tWallEffectD1;
 
 extern char pszWallNames[7][10];
 
@@ -283,7 +283,7 @@ void WallInit();
 #define WHP_BLASTABLE       2       //hit blastable CWall
 #define WHP_DOOR            3       //a door (which will now be opening)
 
-int32_t AnimFrameCount (tWallClip *anim);
+int32_t WallEffectFrameCount (tWallEffect *anim);
 
 // Determines what happens when a CWall is shot
 //obj is the CObject that hit...either a weapon or the player himself
@@ -310,11 +310,11 @@ void InitDoorAnims (void);
 // Remove any flares from a CWall
 void KillStuckObjects(int32_t nWall);
 
-int32_t ReadD1WallClips(tWallClip *wc, int32_t n, CFile& cf);
+int32_t ReadD1WallClips(tWallEffect *wc, int32_t n, CFile& cf);
 /*
- * reads n tWallClip structs from a CFILE
+ * reads n tWallEffect structs from a CFILE
  */
-int32_t ReadWallClips(CArray<tWallClip>& wc, int32_t n, CFile& cf);
+int32_t ReadWallClips(CArray<tWallEffect>& wc, int32_t n, CFile& cf);
 
 /*
  * reads a tWallV16 structure from a CFILE

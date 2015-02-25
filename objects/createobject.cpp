@@ -660,7 +660,7 @@ vPos += vRand;
 size = FixMul (size_scale, I2X (1) / 2 + RandShort () * 4 / 2);
 nSegment = FindSegByPos (vPos, objP->info.nSegment, 1, 0);
 if (nSegment != -1) {
-	CObject *explObjP = CreateExplosion (nSegment, vPos, size, VCLIP_SMALL_EXPLOSION);
+	CObject *explObjP = CreateExplosion (nSegment, vPos, size, ANIM_SMALL_EXPLOSION);
 	if (!explObjP)
 		return;
 	AttachObject (objP, explObjP);

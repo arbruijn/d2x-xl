@@ -26,29 +26,29 @@ class __pack__ CWeaponInfo {
 	public:
 		int8_t   renderType;         // How to draw 0=laser, 1=blob, 2=CObject
 		int8_t   persistent;         // 0 = dies when it hits something, 1 = continues (eg, fusion cannon)
-		int16_t   nModel;             // Model num if rendertype==2.
-		int16_t   nInnerModel;        // Model num of inner part if rendertype==2.
+		int16_t	nModel;             // Model num if rendertype==2.
+		int16_t  nInnerModel;        // Model num of inner part if rendertype==2.
 
-		int8_t   nFlashVClip;        // What tVideoClip to use for muzzle flash
-		int8_t   nRobotHitVClip;     // What tVideoClip for impact with robot
-		int16_t   flashSound;         // What sound to play when fired
+		int8_t   nFlashAnimation;     // What tAnimationInfo to use for muzzle flash
+		int8_t   nRobotHitAnimation;  // What tAnimationInfo for impact with robot
+		int16_t  flashSound;         // What sound to play when fired
 
-		int8_t   nWallHitVClip;      // What tVideoClip for impact with CWall
+		int8_t   nWallHitAnimation;  // What tAnimationInfo for impact with CWall
 		int8_t   fireCount;          // Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fireCount shots will be fired.
-		int16_t   nRobotHitSound;     // What sound for impact with robot
+		int16_t  nRobotHitSound;    // What sound for impact with robot
 
 		int8_t   nAmmoUsage;         // How many units of ammunition it uses.
-		int8_t   nVClipIndex;        // Vclip to render for the weapon, itself.
-		int16_t   nWallHitSound;      // What sound for impact with CWall
+		int8_t   nAnimationIndex;        // Vclip to render for the weapon, itself.
+		int16_t  nWallHitSound;     // What sound for impact with CWall
 
 		int8_t   destructible;       // If !0, this weapon can be destroyed by another weapon.
 		int8_t   matter;             // Flag: set if this CObject is matter (as opposed to energy)
 		int8_t   bounce;             // 1==always bounces, 2=bounces twice
 		int8_t   homingFlag;         // Set if this weapon can home in on a target.
 
-		uint8_t   speedvar;           // allowed variance in speed below average, /128: 64 = 50% meaning if speed = 100, can be 50..100
+		uint8_t  speedvar;           // allowed variance in speed below average, /128: 64 = 50% meaning if speed = 100, can be 50..100
 
-		uint8_t   flags;              // see values above
+		uint8_t  flags;              // see values above
 
 		int8_t   flash;              // Flash effect
 		int8_t   nAfterburnerSize;   // Size of blobs in I2X (1)/16 units, specify in bitmaps.tbl as floating point.  Player afterburner size = 2.5.
@@ -93,17 +93,17 @@ class __pack__ CD1WeaponInfo {
 		int8_t	nInnerModel;			// Model num of inner part if rendertype==2.
 		int8_t	persistent;					//	0 = dies when it hits something, 1 = continues (eg, fusion cannon)
 
-		int8_t	nFlashVClip;				// What tVideoClip to use for muzzle flash
+		int8_t	nFlashAnimation;				// What tAnimationInfo to use for muzzle flash
 		int16_t	flashSound;				// What sound to play when fired
-		int8_t	nRobotHitVClip;			// What tVideoClip for impact with robot
+		int8_t	nRobotHitAnimation;			// What tAnimationInfo for impact with robot
 		int16_t	nRobotHitSound;			// What sound for impact with robot
 
-		int8_t	nWallHitVClip;			// What tVideoClip for impact with CWall
+		int8_t	nWallHitAnimation;			// What tAnimationInfo for impact with CWall
 		int16_t	nWallHitSound;			// What sound for impact with CWall
 		int8_t	fireCount;					//	Number of bursts fired from EACH GUN per firing.  For weapons which fire from both sides, 3*fireCount shots will be fired.
 		int8_t	nAmmoUsage;					//	How many units of ammunition it uses.
 
-		int8_t	nVClipIndex;				//	Vclip to render for the weapon, itself.
+		int8_t	nAnimationIndex;				//	Vclip to render for the weapon, itself.
 		int8_t	destructible;				//	If !0, this weapon can be destroyed by another weapon.
 		int8_t	matter;						//	Flag: set if this CObject is matter (as opposed to energy)
 		int8_t	bounce;						//	Flag: set if this CObject bounces off walls

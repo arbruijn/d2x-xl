@@ -438,7 +438,7 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (!bFixedPos)
 		objP->info.position.vPos = vNewPos;
 	objP->RelinkToSeg (nSegment);
-	CreateExplosion (objP, nSegment, vNewPos, vNewPos, I2X (5), VCLIP_POWERUP_DISAPPEARANCE);
+	CreateExplosion (objP, nSegment, vNewPos, vNewPos, I2X (5), ANIM_POWERUP_DISAPPEARANCE);
 	return 1;
 	}
 return 0;
@@ -645,9 +645,9 @@ switch (nType) {
 		objP->mType.physInfo.drag = 512;	//1024;
 		objP->mType.physInfo.mass = I2X (1);
 		objP->mType.physInfo.flags = PF_BOUNCE;
-		objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-		objP->rType.vClipInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
-		objP->rType.vClipInfo.nCurFrame = 0;
+		objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+		objP->rType.animationInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
+		objP->rType.animationInfo.nCurFrame = 0;
 
 		switch (objP->info.nId) {
 			case POW_CONCUSSION_1:
@@ -800,11 +800,11 @@ for (i = 0; i < nThrusters; i++) {
 	nSegment = FindSegByPos (ti.vPos [i], objP->info.nSegment, 1, 0);
 	if (nSegment == -1)
 		continue;
-	if (!(blobObjP = CreateExplosion (nSegment, ti.vPos [i], xSizeScale, VCLIP_AFTERBURNER_BLOB)))
+	if (!(blobObjP = CreateExplosion (nSegment, ti.vPos [i], xSizeScale, ANIM_AFTERBURNER_BLOB)))
 		continue;
 	if (xLifeTime != -1) {
-		blobObjP->rType.vClipInfo.xTotalTime = xLifeTime;
-		blobObjP->rType.vClipInfo.xFrameTime = FixMulDiv (gameData.effects.vClips [0][VCLIP_AFTERBURNER_BLOB].xFrameTime,
+		blobObjP->rType.animationInfo.xTotalTime = xLifeTime;
+		blobObjP->rType.animationInfo.xFrameTime = FixMulDiv (gameData.effects.vClips [0][ANIM_AFTERBURNER_BLOB].xFrameTime,
 																		  xLifeTime, blobObjP->info.xLifeLeft);
 		blobObjP->SetLife (xLifeTime);
 		}

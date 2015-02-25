@@ -148,10 +148,10 @@ if (nObject < 0)
 explObjP = OBJECTS + nObject;
 //now set explosion-specific data
 explObjP->SetLife (gameData.effects.vClips [0][nVClip].xTotalTime);
-if ((nVClip != VCLIP_MORPHING_ROBOT) && 
-	 //(nVClip != VCLIP_PLAYER_APPEARANCE) &&
-	 (nVClip != VCLIP_POWERUP_DISAPPEARANCE) &&
-	 (nVClip != VCLIP_AFTERBURNER_BLOB)) {
+if ((nVClip != ANIM_MORPHING_ROBOT) && 
+	 //(nVClip != ANIM_PLAYER_APPEARANCE) &&
+	 (nVClip != ANIM_POWERUP_DISAPPEARANCE) &&
+	 (nVClip != ANIM_AFTERBURNER_BLOB)) {
 	explObjP->SetMoveDist (2 * explObjP->info.xSize);
 	explObjP->SetMoveTime (explObjP->info.xLifeLeft);
 	}
@@ -159,16 +159,16 @@ explObjP->cType.explInfo.nSpawnTime = -1;
 explObjP->cType.explInfo.nDeleteObj = -1;
 explObjP->cType.explInfo.nDeleteTime = -1;
 
-if ((parentP && (nVClip == VCLIP_POWERUP_DISAPPEARANCE)) || (nVClip == VCLIP_MORPHING_ROBOT))
+if ((parentP && (nVClip == ANIM_POWERUP_DISAPPEARANCE)) || (nVClip == ANIM_MORPHING_ROBOT))
 	postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), explObjP->LifeLeft () / 4, explObjP->info.xSize, 1, explObjP->Position ()));
 
 if (SHOW_LIGHTNING (2)) {
 	bool bDie = true;
-	if (nVClip == VCLIP_PLAYER_APPEARANCE)
+	if (nVClip == ANIM_PLAYER_APPEARANCE)
 		lightningManager.CreateForPlayerTeleport (explObjP);
-	else if (nVClip == VCLIP_MORPHING_ROBOT)
+	else if (nVClip == ANIM_MORPHING_ROBOT)
 		lightningManager.CreateForRobotTeleport (explObjP);
-	else if (nVClip == VCLIP_POWERUP_DISAPPEARANCE)
+	else if (nVClip == ANIM_POWERUP_DISAPPEARANCE)
 		lightningManager.CreateForPowerupTeleport (explObjP);
 	else
 		bDie = false;
@@ -365,7 +365,7 @@ else { //make sure explosion center is not behind some wall
 	//VmVecScale (&v, I2X (10));
 	vExplPos += vImpact;
 	}
-return CreateSplashDamageExplosion (this, info.nSegment, vExplPos, vImpact, wi->xImpactSize, wi->nRobotHitVClip,
+return CreateSplashDamageExplosion (this, info.nSegment, vExplPos, vImpact, wi->xImpactSize, wi->nRobotHitAnimation,
 												wi->strength [gameStates.app.nDifficultyLevel], 
 												wi->xDamageRadius, wi->strength [gameStates.app.nDifficultyLevel],
 												cType.laserInfo.parent.nObject);
@@ -518,7 +518,7 @@ if (objP->info.xLifeLeft > 0)
 }
 
 //------------------------------------------------------------------------------
-//what tVideoClip does this explode with?
+//what tAnimationInfo does this explode with?
 int16_t GetExplosionVClip (CObject *objP, int32_t stage)
 {
 if (objP->info.nType == OBJ_ROBOT) {
@@ -529,7 +529,7 @@ if (objP->info.nType == OBJ_ROBOT) {
 	}
 else if ((objP->info.nType == OBJ_PLAYER) && (gameData.pig.ship.player->nExplVClip >- 1))
 	return gameData.pig.ship.player->nExplVClip;
-return VCLIP_SMALL_EXPLOSION;		//default
+return ANIM_SMALL_EXPLOSION;		//default
 }
 
 //------------------------------------------------------------------------------

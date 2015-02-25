@@ -28,29 +28,26 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EF_FROMPOG		16
 #define EF_INITIALIZED	32
 
-typedef struct tEffectClip {
-	tVideoClip	vClipInfo;        //embedded tVideoClip
-	fix			xTimeLeft;			//for sequencing
-	int32_t			nCurFrame;			//for sequencing
+typedef struct tEffectInfo {
+	tAnimationInfo	animationInfo;				//embedded tAnimationInfo
+	fix				xTimeLeft;					//for sequencing
+	int32_t			nCurFrame;					//for sequencing
 	int16_t			changingWallTexture;		//Which element of Textures array to replace.
 	int16_t			changingObjectTexture;  //Which element of ObjBitmapPtrs array to replace.
-	int32_t			flags;				//see above
-	int32_t			nCritClip;			//use this clip instead of above one when mine critical
-	int32_t			nDestBm;				//use this bitmap when monitor destroyed
-	int32_t			nDestVClip;			//what tVideoClip to play when exploding
-	int32_t			nDestroyedClip;			//what tEffectClip to play when exploding
-	fix			xDestSize;			//3d size of explosion
-	int32_t			nSound;				//what sound this makes
-	int32_t			nSegment, nSide;	//what seg & CSide, for one-shot clips
-} __pack__ tEffectClip;
+	int32_t			flags;						//see above
+	int32_t			nCritClip;					//use this clip instead of above one when mine critical
+	int32_t			nDestBm;						//use this bitmap when monitor destroyed
+	int32_t			nDestVClip;					//what tAnimationInfo to play when exploding
+	int32_t			nDestroyedClip;			//what tEffectInfo to play when exploding
+	fix				xDestSize;					//3d size of explosion
+	int32_t			nSound;						//what sound this makes
+	int32_t			nSegment, nSide;			//what seg & CSide, for one-shot clips
+} __pack__ tEffectInfo;
 
-typedef tEffectClip D1_eclip;
-
-extern int32_t Num_effects [2];
-extern tEffectClip Effects [2][MAX_EFFECTS];
+typedef tEffectInfo D1_eclip;
 
 // Set up special effects.
-fix EffectFrameTime (tEffectClip* ecP);
+fix EffectFrameTime (tEffectInfo* effectInfoP);
 
 // Set up special effects.
 void InitSpecialEffects (void);
@@ -65,16 +62,16 @@ void DoSpecialEffects (bool bSetup = false);
 void RestoreEffectBitmapIcons (void);
 
 //stop an effect from animating.  Show first frame.
-void StopEffect(int32_t effect_num);
+void StopEffect (int32_t effect_num);
 
 //restart a stopped effect
 void RestartEffect (int32_t nEffect);
 
 /*
- * reads n tEffectClip structs from a CFILE
+ * reads n tEffectInfo structs from a CFILE
  */
-void ReadEffectClip (tEffectClip& ec, CFile& cf);
-int32_t ReadEffectClips (CArray<tEffectClip>& ec, int32_t n, CFile& cf);
+void ReadEffectClip (tEffectInfo& effectInfo, CFile& cf);
+int32_t ReadEffectClips (CArray<tEffectInfo>& effectInfo, int32_t n, CFile& cf);
 
 CBitmap *SetupHiresAnim (int16_t *frameP, int32_t nFrames, int32_t nBaseTex, int32_t bIndirect, int32_t bObj, int32_t *pnFrames, CBitmap* bmP = NULL);
 void ResetPogEffects (void);

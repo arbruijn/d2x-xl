@@ -11,53 +11,53 @@ AND AGREES TO THE TERMS HEREIN AND ACCEPTS THE SAME BY USE OF THIS FILE.
 COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 */
 
-#ifndef _VCLIP_H
-#define _VCLIP_H
+#ifndef _ANIM_H
+#define _ANIM_H
 
 #include "gr.h"
 #include "object.h"
 #include "piggy.h"
 #include "cfile.h"
 
-#define VCLIP_PLAYER_HIT            1
-#define VCLIP_SMALL_EXPLOSION       2
-#define VCLIP_VOLATILE_WALL_HIT     5
-#define VCLIP_MORPHING_ROBOT        10
-#define VCLIP_PLAYER_APPEARANCE     61
-#define VCLIP_POWERUP_DISAPPEARANCE 62
-#define VCLIP_WATER_HIT             84
-#define VCLIP_AFTERBURNER_BLOB      95
-#define VCLIP_MONITOR_STATIC        99
+#define ANIM_PLAYER_HIT            1
+#define ANIM_SMALL_EXPLOSION       2
+#define ANIM_VOLATILE_WALL_HIT     5
+#define ANIM_MORPHING_ROBOT        10
+#define ANIM_PLAYER_APPEARANCE     61
+#define ANIM_POWERUP_DISAPPEARANCE 62
+#define ANIM_WATER_HIT             84
+#define ANIM_AFTERBURNER_BLOB      95
+#define ANIM_MONITOR_STATIC        99
 
 #define MAX_VCLIPS                 110
-#define D1_VCLIP_MAXNUM             70
-#define VCLIP_MAX_FRAMES            30
+#define D1_ANIM_MAXNUM             70
+#define ANIM_MAX_FRAMES            30
 
-// tVideoClip flags
+// tAnimationInfo flags
 #define VF_ROD      1       // draw as a rod, not a blob
 
-typedef struct {
+typedef struct tAnimationInfo {
 	fix             xTotalTime;          // total time (in seconds) of clip
-	int32_t             nFrameCount;
+	int32_t         nFrameCount;
 	fix             xFrameTime;         // time (in seconds) of each frame
-	int32_t             flags;
-	int16_t           nSound;
-	tBitmapIndex    frames[VCLIP_MAX_FRAMES];
+	int32_t         flags;
+	int16_t         nSound;
+	tBitmapIndex    frames [ANIM_MAX_FRAMES];
 	fix             lightValue;
-} __pack__ tVideoClip;
+} __pack__ tAnimationInfo;
 
-extern int32_t Num_vclips [2];
-extern tVideoClip Vclip [2][MAX_VCLIPS];
+//extern int32_t Num_vclips [2];
+//extern tAnimationInfo Vclip [2][MAX_VCLIPS];
 
-// draw an CObject which renders as a tVideoClip.
+// draw an CObject which renders as a tAnimationInfo.
 void DrawVClipObject (CObject *objP, fix timeleft, int32_t lighted, int32_t vclip_num, CFloatVector *color);
 void DrawWeaponVClip (CObject *objP);
 void DrawExplBlast (CObject *objP);
 void DrawShockwave (CObject *objP);
 void ConvertWeaponToVClip (CObject *objP);
-CRGBColor *VClipColor (CObject *objP);
+CRGBColor *AnimationColor (CObject *objP);
 
-void ReadVideoClip (tVideoClip& vc, CFile& cf);
-int32_t ReadVideoClips (CArray<tVideoClip>& vc, int32_t n, CFile& cf);
+void ReadVideoClip (tAnimationInfo& vc, CFile& cf);
+int32_t ReadVideoClips (CArray<tAnimationInfo>& vc, int32_t n, CFile& cf);
 
-#endif /* _VCLIP_H */
+#endif /* _ANIM_H */

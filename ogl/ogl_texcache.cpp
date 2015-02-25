@@ -64,27 +64,27 @@ return bmP;
 
 //------------------------------------------------------------------------------
 
-static void OglCacheVClipTextures (tVideoClip* vcP, int32_t nTranspType)
+static void OglCacheAnimationTextures (tAnimationInfo* animInfoP, int32_t nTranspType)
 {
-for (int32_t i = 0; i < vcP->nFrameCount; i++) {
+for (int32_t i = 0; i < animInfoP->nFrameCount; i++) {
 #if DBG
-	int32_t h = vcP->frames [i].index;
+	int32_t h = animInfoP->frames [i].index;
 	if ((nDbgTexture >= 0) && (h == nDbgTexture))
 		BRP;
 #endif
-	CBitmap* bmP = OglCacheTexture (vcP->frames [i].index, nTranspType);
+	CBitmap* bmP = OglCacheTexture (animInfoP->frames [i].index, nTranspType);
 	if (!i && bmP->Override ())
-		SetupHiresVClip (vcP, NULL, bmP->Override ());
+		SetupHiresVClip (animInfoP, NULL, bmP->Override ());
 	}
 }
 
 //------------------------------------------------------------------------------
 
-static void OglCacheVClipTextures (int32_t i, int32_t nTransp)
+static void OglCacheAnimationTextures (int32_t i, int32_t nTransp)
 {
 if ((i >= 0) && !bVClipLoaded [i]) {
 	bVClipLoaded [i] = true;
-	OglCacheVClipTextures (&gameData.effects.vClips [0][i], nTransp);
+	OglCacheAnimationTextures (&gameData.effects.vClips [0][i], nTransp);
 	}
 }
 
@@ -92,13 +92,13 @@ if ((i >= 0) && !bVClipLoaded [i]) {
 
 static void OglCacheWeaponTextures (CWeaponInfo* wi)
 {
-OglCacheVClipTextures (wi->nFlashVClip, 1);
-OglCacheVClipTextures (wi->nRobotHitVClip, 1);
-OglCacheVClipTextures (wi->nWallHitVClip, 1);
+OglCacheAnimationTextures (wi->nFlashAnimation, 1);
+OglCacheAnimationTextures (wi->nRobotHitAnimation, 1);
+OglCacheAnimationTextures (wi->nWallHitAnimation, 1);
 if (wi->renderType == WEAPON_RENDER_BLOB)
 	OglCacheTexture (wi->bitmap.index, 1);
 else if (wi->renderType == WEAPON_RENDER_VCLIP)
-	OglCacheVClipTextures (wi->nVClipIndex, 3);
+	OglCacheAnimationTextures (wi->nAnimationIndex, 3);
 else if (wi->renderType == WEAPON_RENDER_POLYMODEL)
 	OglCachePolyModelTextures (wi->nModel);
 }
@@ -226,7 +226,7 @@ CAddonBitmap::Prepare ();
 int32_t OglCacheLevelTextures (void)
 {
 	int32_t				i, j, bD1;
-	tEffectClip*	ecP;
+	tEffectInfo*	effectInfoP;
 	int32_t				max_efx = 0, ef;
 	int32_t				nSegment, nSide;
 	int16_t				nBaseTex, nOvlTex;
@@ -244,17 +244,17 @@ TexMergeInit (-1);
 
 PrintLog (1, "caching effect textures\n");
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
-	for (i = 0, ecP = gameData.effects.effects [bD1].Buffer (); i < gameData.effects.nEffects [bD1]; i++, ecP++) {
-		if ((ecP->changingWallTexture == -1) && (ecP->changingObjectTexture == -1))
+	for (i = 0, effectInfoP = gameData.effects.effects [bD1].Buffer (); i < gameData.effects.nEffects [bD1]; i++, effectInfoP++) {
+		if ((effectInfoP->changingWallTexture == -1) && (effectInfoP->changingObjectTexture == -1))
 			continue;
-		if (ecP->vClipInfo.nFrameCount > max_efx)
-			max_efx = ecP->vClipInfo.nFrameCount;
+		if (effectInfoP->animationInfo.nFrameCount > max_efx)
+			max_efx = effectInfoP->animationInfo.nFrameCount;
 		}
 	for (ef = 0; ef < max_efx; ef++)
-		for (i = 0, ecP = gameData.effects.effects [bD1].Buffer (); i < gameData.effects.nEffects [bD1]; i++, ecP++) {
-			if ((ecP->changingWallTexture == -1) && (ecP->changingObjectTexture == -1))
+		for (i = 0, effectInfoP = gameData.effects.effects [bD1].Buffer (); i < gameData.effects.nEffects [bD1]; i++, effectInfoP++) {
+			if ((effectInfoP->changingWallTexture == -1) && (effectInfoP->changingObjectTexture == -1))
 				continue;
-			ecP->xTimeLeft = -1;
+			effectInfoP->xTimeLeft = -1;
 			}
 	}
 PrintLog (-1);
@@ -308,7 +308,7 @@ PrintLog (-1);
 
 PrintLog (1, "caching hostage sprites\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 3);
-OglCacheVClipTextures (33, 3);    
+OglCacheAnimationTextures (33, 3);    
 PrintLog (-1);
 
 PrintLog (1, "caching weapon sprites\n");
@@ -321,14 +321,14 @@ PrintLog (1, "caching powerup sprites\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 4);
 for (i = 0; i < MAX_POWERUP_TYPES; i++)
 	if (i != 9)
-		OglCacheVClipTextures (gameData.objs.pwrUp.info [i].nClipIndex, 3);
+		OglCacheAnimationTextures (gameData.objs.pwrUp.info [i].nClipIndex, 3);
 PrintLog (-1);
 
 PrintLog (1, "caching effect textures\n");
 CacheObjectEffects ();
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 2);
 for (i = 0; i < gameData.effects.nClips [0]; i++)
-	OglCacheVClipTextures (i, 1);
+	OglCacheAnimationTextures (i, 1);
 PrintLog (-1);
 
 PrintLog (1, "caching cockpit textures\n");

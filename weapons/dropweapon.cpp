@@ -67,9 +67,9 @@ objP->mType.physInfo.velocity = newVelocity;
 objP->mType.physInfo.drag = 512;	//1024;
 objP->mType.physInfo.mass = I2X (1);
 objP->mType.physInfo.flags = PF_BOUNCE;
-objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-objP->rType.vClipInfo.xFrameTime = gameData.effects.vClipP [objP->rType.vClipInfo.nClipIndex].xFrameTime;
-objP->rType.vClipInfo.nCurFrame = 0;
+objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+objP->rType.animationInfo.xFrameTime = gameData.effects.vClipP [objP->rType.animationInfo.nClipIndex].xFrameTime;
+objP->rType.animationInfo.nCurFrame = 0;
 if (spitterP == gameData.objs.consoleP)
 	objP->cType.powerupInfo.nFlags |= PF_SPAT_BY_PLAYER;
 switch (objP->info.nId) {

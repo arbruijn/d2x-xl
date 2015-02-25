@@ -53,7 +53,7 @@ bmP->SetAvgColorIndex (0);
 int32_t InitMonsterball (int32_t nBitmap)
 {
 	CBitmap				*bmP, *altBmP;
-	tVideoClip			*vcP;
+	tAnimationInfo			*animInfoP;
 	tPowerupTypeInfo	*ptP;
 	int32_t					i;
 
@@ -61,7 +61,7 @@ memcpy (&gameData.hoard.monsterball, &gameData.hoard.orb, sizeof (tHoardItem));
 gameData.hoard.monsterball.nClip = gameData.effects.nClips [0]++;
 memcpy (&gameData.effects.vClips [0][gameData.hoard.monsterball.nClip], 
 		  &gameData.effects.vClips [0][gameData.hoard.orb.nClip],
-		  sizeof (tVideoClip));
+		  sizeof (tAnimationInfo));
 gameData.hoard.monsterball.bm.Init ();
 
 CTGA tga (&gameData.hoard.monsterball.bm);
@@ -71,18 +71,18 @@ if (!tga.Read ("monsterball.tga", gameFolders.game.szTextures [1], -1, 1.0, 0)) 
 	if (altBmP && 
 		(tga.Read ("mballgold#0.tga", gameFolders.game.szTextures [1], -1, 1.0, 0) ||
 		 tga.Read ("mballred#0.tga", gameFolders.game.szTextures [1], -1, 1.0, 0))) {
-		vcP = &gameData.effects.vClips [0][gameData.hoard.monsterball.nClip];
+		animInfoP = &gameData.effects.vClips [0][gameData.hoard.monsterball.nClip];
 		for (i = 0; i < gameData.hoard.orb.nFrames; i++, nBitmap++) {
 			Assert (nBitmap < MAX_BITMAP_FILES);
-			vcP->frames [i].index = nBitmap;
+			animInfoP->frames [i].index = nBitmap;
 			InitHoardBitmap (&gameData.pig.tex.bitmaps [0][nBitmap], 
 									gameData.hoard.monsterball.nWidth, 
 									gameData.hoard.monsterball.nHeight, 
 									BM_FLAG_TRANSPARENT, 
 									NULL);
 			}
-		vcP->flags |= WCF_ALTFMT;
-		bmP = gameData.pig.tex.bitmaps [0] + vcP->frames [0].index;
+		animInfoP->flags |= WCF_ALTFMT;
+		bmP = gameData.pig.tex.bitmaps [0] + animInfoP->frames [0].index;
 		bmP->SetOverride (altBmP);
 		*altBmP = gameData.hoard.monsterball.bm;
 		altBmP->SetType (BM_TYPE_ALT);
@@ -105,9 +105,9 @@ void SetupHoardBitmapFrames (CFile& cf, CBitmap& bm, tBitmapIndex* frameIndex, C
 {
 	CPalette	palette;
 	uint8_t*	bmDataP;
-	int32_t		nSize = bm.Width () * bm.Height ();
-	int32_t		nFrameSize = bm.Width () * bm.Width ();
-	int32_t		nFrames =  nSize / nFrameSize;
+	int32_t	nSize = bm.Width () * bm.Height ();
+	int32_t	nFrameSize = bm.Width () * bm.Width ();
+	int32_t	nFrames =  nSize / nFrameSize;
 	char		szName [10];
 
 paletteManager.Game ();
@@ -132,11 +132,11 @@ void InitHoardData (void)
 {
 	CFile					cf;
 	CPalette				palette;
-	int32_t					i, j, fPos, nBitmap;
-	tVideoClip			*vcP;
-	tEffectClip			*ecP;
-	tPowerupTypeInfo	*ptP;
-	uint8_t					*bmDataP;
+	int32_t				i, j, fPos, nBitmap;
+	tAnimationInfo*	animInfoP;
+	tEffectInfo*		effectInfoP;
+	tPowerupTypeInfo*	ptP;
+	uint8_t*				bmDataP;
 
 #if !DBG
 if (!(gameData.app.GameMode (GM_HOARD | GM_ENTROPY | GM_MONSTERBALL)))
@@ -172,19 +172,19 @@ if (!gameData.hoard.bInitialized) {
 	//Create orb animation clip
 	gameData.hoard.orb.nClip = gameData.effects.nClips [0]++;
 	Assert (gameData.effects.nClips [0] <= MAX_VCLIPS);
-	vcP = &gameData.effects.vClips [0][gameData.hoard.orb.nClip];
-	vcP->xTotalTime = I2X (1)/2;
-	vcP->nFrameCount = gameData.hoard.orb.nFrames;
-	vcP->xFrameTime = vcP->xTotalTime / vcP->nFrameCount;
-	vcP->flags = 0;
-	vcP->nSound = -1;
-	vcP->lightValue = I2X (1);
+	animInfoP = &gameData.effects.vClips [0][gameData.hoard.orb.nClip];
+	animInfoP->xTotalTime = I2X (1)/2;
+	animInfoP->nFrameCount = gameData.hoard.orb.nFrames;
+	animInfoP->xFrameTime = animInfoP->xTotalTime / animInfoP->nFrameCount;
+	animInfoP->flags = 0;
+	animInfoP->nSound = -1;
+	animInfoP->lightValue = I2X (1);
 	bmDataP = new uint8_t [gameData.hoard.orb.nSize];
 	gameData.hoard.orb.bm.Init (BM_LINEAR, 0, 0, gameData.hoard.orb.nWidth, gameData.hoard.orb.nHeight * gameData.hoard.orb.nFrames);
 	gameData.hoard.orb.bm.SetBuffer (bmDataP, 0, gameData.hoard.orb.nSize);
 	for (i = 0; i < gameData.hoard.orb.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
-		vcP->frames [i].index = nBitmap;
+		animInfoP->frames [i].index = nBitmap;
 #if 0
 		InitHoardBitmap (&gameData.pig.tex.bitmaps [0][nBitmap], 
 							  gameData.hoard.orb.nWidth, 
@@ -205,11 +205,11 @@ if (!gameData.hoard.bInitialized) {
 	//Create orb goal wall effect
 	gameData.hoard.goal.nClip = gameData.effects.nEffects [0]++;
 	Assert (gameData.effects.nEffects [0] < MAX_EFFECTS);
-	if ((ecP = gameData.effects.effects [0] + gameData.hoard.goal.nClip)) {
-		*ecP = gameData.effects.effects [0][94];        //copy from blue goal
-		ecP->changingWallTexture = gameData.pig.tex.nTextures [0];
-		ecP->vClipInfo.nFrameCount = gameData.hoard.goal.nFrames;
-		ecP->flags &= ~EF_INITIALIZED;
+	if ((effectInfoP = gameData.effects.effects [0] + gameData.hoard.goal.nClip)) {
+		*effectInfoP = gameData.effects.effects [0][94];        //copy from blue goal
+		effectInfoP->changingWallTexture = gameData.pig.tex.nTextures [0];
+		effectInfoP->animationInfo.nFrameCount = gameData.hoard.goal.nFrames;
+		effectInfoP->flags &= ~EF_INITIALIZED;
 		}
 	i = gameData.pig.tex.nTextures [0];
 	if (0 <= (j = MultiFindGoalTexture (TMI_GOAL_BLUE)))
@@ -223,7 +223,7 @@ if (!gameData.hoard.bInitialized) {
 	gameData.hoard.goal.bm.SetBuffer (bmDataP, 0, gameData.hoard.goal.nSize);
 	for (i = 0; i < gameData.hoard.goal.nFrames; i++, nBitmap++) {
 		Assert (nBitmap < MAX_BITMAP_FILES);
-		ecP->vClipInfo.frames [i].index = nBitmap;
+		effectInfoP->animationInfo.frames [i].index = nBitmap;
 #if 0
 		InitHoardBitmap (&gameData.pig.tex.bitmaps [0][nBitmap], 
 							  gameData.hoard.goal.nWidth, 
@@ -236,7 +236,7 @@ if (!gameData.hoard.bInitialized) {
 	nBitmap = InitMonsterball (nBitmap);
 	}
 else {
-	ecP = gameData.effects.effects [0] + gameData.hoard.goal.nClip;
+	effectInfoP = gameData.effects.effects [0] + gameData.hoard.goal.nClip;
 	}
 
 //Load and remap bitmap data for orb
@@ -246,11 +246,11 @@ SetupHoardBitmapFrames (cf, gameData.hoard.orb.bm, gameData.effects.vClips [0][g
 paletteManager.Game ();
 palette.Read (cf);
 gameData.hoard.orb.palette = paletteManager.Add (palette);
-vcP = &gameData.effects.vClips [0][gameData.hoard.orb.nClip];
+animInfoP = &gameData.effects.vClips [0][gameData.hoard.orb.nClip];
 gameData.hoard.orb.bm.Read (cf);
 bmDataP = gameData.hoard.orb.bm.Buffer ();
 for (i = 0; i < gameData.hoard.orb.nFrames; i++) {
-	CBitmap* bmP = &gameData.pig.tex.bitmaps [0][vcP->frames [i].index];
+	CBitmap* bmP = &gameData.pig.tex.bitmaps [0][animInfoP->frames [i].index];
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
 	bmP->SetPalette (gameData.hoard.orb.palette, 255, -1);
@@ -259,7 +259,7 @@ for (i = 0; i < gameData.hoard.orb.nFrames; i++) {
 //Load and remap bitmap data for goal texture
 cf.ReadShort ();        //skip frame count
 #if 1
-SetupHoardBitmapFrames (cf, gameData.hoard.goal.bm, ecP->vClipInfo.frames, gameData.hoard.goal.palette, 0);
+SetupHoardBitmapFrames (cf, gameData.hoard.goal.bm, effectInfoP->animationInfo.frames, gameData.hoard.goal.palette, 0);
 #else
 paletteManager.Game ();
 palette.Read (cf);
@@ -267,7 +267,7 @@ gameData.hoard.goal.palette = paletteManager.Add (palette);
 gameData.hoard.goal.bm.Read (cf);
 bmDataP = gameData.hoard.goal.bm.Buffer ();
 for (i = 0; i < gameData.hoard.goal.nFrames; i++) {
-	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + ecP->vClipInfo.frames [i].index;
+	CBitmap* bmP = gameData.pig.tex.bitmaps [0] + effectInfoP->animationInfo.frames [i].index;
 	InitHoardBitmap (bmP, gameData.hoard.goal.nWidth, gameData.hoard.goal.nHeight, 0, bmDataP);
 	bmDataP += gameData.hoard.goal.nFrameSize;
 	bmP->SetPalette (gameData.hoard.goal.palette, 255, -1);

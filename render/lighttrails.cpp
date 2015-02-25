@@ -194,7 +194,7 @@ bGatling = objP->IsGatlingRound ();
 if (objP->info.renderType == RT_POLYOBJ)
 	colorP = gameData.weapons.color + objP->info.nId;
 else {
-	CRGBColor* clipColorP = VClipColor (objP);
+	CRGBColor* clipColorP = AnimationColor (objP);
 	color.Set (clipColorP->r, clipColorP->g, clipColorP->b);
 	color /= 255.0f;
 	colorP = &color;

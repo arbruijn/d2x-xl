@@ -545,7 +545,7 @@ return 0;
 //set the nBaseTex or nOvlTex field for a CWall/door
 void CSegment::SetTexture (int32_t nSide, CSegment *connSegP, int16_t nConnSide, int32_t nAnim, int32_t nFrame)
 {
-	tWallClip*	animP = gameData.walls.animP + nAnim;
+	tWallEffect*	animP = gameData.walls.animP + nAnim;
 	int16_t			nTexture = animP->frames [(animP->flags & WCF_ALTFMT) ? 0 : nFrame];
 	CBitmap*		bmP;
 	int32_t			nFrames;
@@ -670,7 +670,7 @@ if ((gameData.walls.animP [wallP->nClip].flags & WCF_EXPLODES) && !(wallP->flags
 else {
 	//if not exploding, set final frame, and make door passable
 	a = wallP->nClip;
-	n = AnimFrameCount (gameData.walls.animP + a);
+	n = WallEffectFrameCount (gameData.walls.animP + a);
 	SetTexture (nSide, connSegP, nConnSide, a, n - 1);
 	wallP->flags |= WALL_BLASTED;
 	if (IS_WALL (nConnWall))
@@ -729,7 +729,7 @@ wallP->hps -= damage;
 if (IS_WALL (nConnWall))
 	WALLS [nConnWall].hps -= damage;
 a = wallP->nClip;
-n = AnimFrameCount (gameData.walls.animP + a);
+n = WallEffectFrameCount (gameData.walls.animP + a);
 if (wallP->hps < WALL_HPS * 1 / n) {
 	BlastWall (nSide);
 	if (IsMultiGame)
@@ -754,8 +754,8 @@ CActiveDoor* doorP;
 if (!(doorP = wallP->OpenDoor ()))
 	return;
 
-	int16_t			nConnSide, nConnWall = NO_WALL;
-	CSegment		*connSegP;
+	int16_t		nConnSide, nConnWall = NO_WALL;
+	CSegment*	connSegP;
 // So that door can't be shot while opening
 if (m_children [nSide] < 0) {
 	if (gameOpts->legacy.bWalls)
@@ -1101,10 +1101,10 @@ if (dtpP->nEffect < 0) {
 	dtpP->nSwitchType = 0;
 	}
 else {
-	tEffectClip* ecP = gameData.effects.effectP + dtpP->nEffect;
-	if (ecP->flags & EF_ONE_SHOT)
+	tEffectInfo* effectInfoP = gameData.effects.effectP + dtpP->nEffect;
+	if (effectInfoP->flags & EF_ONE_SHOT)
 		return 0;
-	dtpP->nBitmap = ecP->nDestBm;
+	dtpP->nBitmap = effectInfoP->nDestBm;
 	if (dtpP->nBitmap < 0)
 		return 0;
 	dtpP->nSwitchType = 1;
@@ -1123,7 +1123,7 @@ int32_t CSegment::BlowupTexture (int32_t nSide, CFixVector& vHit, CObject* blowe
 	uint8_t			vc;
 	fix				u, v;
 	fix				xDestSize;
-	tEffectClip*	ecP = NULL;
+	tEffectInfo*	effectInfoP = NULL;
 	CWall*			wallP = Wall (nSide);
 	CTrigger*		trigP;
 	CObject*			parentP = (!blowerP || (blowerP->cType.laserInfo.parent.nObject < 0)) ? NULL : OBJECTS + blowerP->cType.laserInfo.parent.nObject;
@@ -1156,9 +1156,9 @@ if (!bPermaTrigger)
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordEffectBlowup (Index (), nSide, vHit);
 if (dtp.nSwitchType) {
-	ecP = gameData.effects.effectP + dtp.nEffect;
-	xDestSize = ecP->xDestSize;
-	vc = ecP->nDestVClip;
+	effectInfoP = gameData.effects.effectP + dtp.nEffect;
+	xDestSize = effectInfoP->xDestSize;
+	vc = effectInfoP->nDestVClip;
 	}
 else {
 	xDestSize = I2X (20);
@@ -1169,19 +1169,19 @@ CreateExplosion (int16_t (Index ()), vHit, xDestSize, vc);
 if (dtp.nSwitchType) {
 	if ((nSound = gameData.effects.vClipP [vc].nSound) != -1)
 		audio.CreateSegmentSound (nSound, Index (), 0, vHit);
-	if ((nSound = ecP->nSound) != -1)		//kill sound
+	if ((nSound = effectInfoP->nSound) != -1)		//kill sound
 		audio.DestroySegmentSound (Index (), nSide, nSound);
-	if (!bPermaTrigger && (ecP->nDestroyedClip != -1) && (gameData.effects.effectP [ecP->nDestroyedClip].nSegment == -1)) {
-		tEffectClip	*newEcP = gameData.effects.effectP + ecP->nDestroyedClip;
+	if (!bPermaTrigger && (effectInfoP->nDestroyedClip != -1) && (gameData.effects.effectP [effectInfoP->nDestroyedClip].nSegment == -1)) {
+		tEffectInfo	*newEcP = gameData.effects.effectP + effectInfoP->nDestroyedClip;
 		int32_t nNewBm = newEcP->changingWallTexture;
 		if (ChangeTextures (-1, nNewBm, nSide)) {
 			newEcP->xTimeLeft = EffectFrameTime (newEcP);
 			newEcP->nCurFrame = 0;
 			newEcP->nSegment = Index ();
 			newEcP->nSide = nSide;
-			newEcP->flags |= EF_ONE_SHOT | ecP->flags;
+			newEcP->flags |= EF_ONE_SHOT | effectInfoP->flags;
 			newEcP->flags &= ~EF_INITIALIZED;
-			newEcP->nDestBm = ecP->nDestBm;
+			newEcP->nDestBm = effectInfoP->nDestBm;
 
 			Assert ((nNewBm != 0) && (m_sides [nSide].m_nOvlTex != 0));
 			m_sides [nSide].m_nOvlTex = nNewBm;		//replace with destoyed

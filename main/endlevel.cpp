@@ -232,7 +232,7 @@ if (gameStates.app.bPlayerIsDead || (gameData.objs.consoleP->info.nFlags & OF_SH
 //	Dematerialize Buddy!
 FORALL_ROBOT_OBJS (objP)
 	if (IS_GUIDEBOT (objP)) {
-			CreateExplosion (objP->info.nSegment, objP->info.position.vPos, I2X (7) / 2, VCLIP_POWERUP_DISAPPEARANCE);
+			CreateExplosion (objP->info.nSegment, objP->info.position.vPos, I2X (7) / 2, ANIM_POWERUP_DISAPPEARANCE);
 			objP->Die ();
 		}
 LOCALPLAYER.homingObjectDist = -I2X (1); // Turn off homing sound.
@@ -404,7 +404,7 @@ PlayerFinishedLevel (0);
 
 //------------------------------------------------------------------------------
 
-#define VCLIP_BIG_PLAYER_EXPLOSION	58
+#define ANIM_BIG_PLAYER_EXPLOSION	58
 
 //--unused-- CFixVector upvec = {0, I2X (1), 0};
 
@@ -460,7 +460,7 @@ if (!gameStates.render.bOutsideMine) {
 		if (CFixVector::Dot (tvec, gameData.endLevel.exit.mOrient.m.dir.f) > 0) {
 			CObject *objP;
 			gameStates.render.bOutsideMine = 1;
-			objP = CreateExplosion (gameData.endLevel.exit.nSegNum, gameData.endLevel.exit.vSideExit, I2X (50), VCLIP_BIG_PLAYER_EXPLOSION);
+			objP = CreateExplosion (gameData.endLevel.exit.nSegNum, gameData.endLevel.exit.vSideExit, I2X (50), ANIM_BIG_PLAYER_EXPLOSION);
 			if (objP) {
 				externalExplosion = *objP;
 				objP->Die ();
@@ -483,7 +483,7 @@ if (!gameStates.render.bOutsideMine) {
 		vPos += gameData.objs.consoleP->info.position.mOrient.m.dir.u * (SRandShort () * 15);
 		nSegment = FindSegByPos (vPos, gameData.objs.consoleP->info.nSegment, 1, 0);
 		if (nSegment != -1) {
-			CreateExplosion (nSegment, vPos, I2X (20), VCLIP_BIG_PLAYER_EXPLOSION);
+			CreateExplosion (nSegment, vPos, I2X (20), ANIM_BIG_PLAYER_EXPLOSION);
 			if ((RandShort () < 10000) || (++nSounds == 7)) {		//pseudo-random
 				audio.CreateSegmentSound (SOUND_TUNNEL_EXPLOSION, nSegment, 0, vPos, 0, I2X (1));
 				nSounds = 0;
@@ -512,7 +512,7 @@ if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndL
 
 		FindHitpoint (hitQuery, hitResult);
 		if ((hitResult.nType == HIT_WALL) && (hitResult.nSegment != -1))
-			CreateExplosion ((int16_t) hitResult.nSegment, hitResult.vPoint, I2X (3) + RandShort () * 6, VCLIP_SMALL_EXPLOSION);
+			CreateExplosion ((int16_t) hitResult.nSegment, hitResult.vPoint, I2X (3) + RandShort () * 6, ANIM_SMALL_EXPLOSION);
 		explosion_wait2 = (0xa00 + RandShort () / 8) / 2;
 		}
 
@@ -1538,7 +1538,7 @@ if (gameStates.app.bPlayerIsDead || (gameData.objs.consoleP->info.nFlags & OF_SH
 //	Dematerialize Buddy!
 FORALL_ROBOT_OBJS (objP)
 	if (IS_GUIDEBOT (objP)) {
-			CreateExplosion (objP->info.nSegment, objP->info.position.vPos, I2X (7) / 2, VCLIP_POWERUP_DISAPPEARANCE);
+			CreateExplosion (objP->info.nSegment, objP->info.position.vPos, I2X (7) / 2, ANIM_POWERUP_DISAPPEARANCE);
 			objP->Die ();
 		}
 LOCALPLAYER.homingObjectDist = -I2X (1); // Turn off homing sound.
@@ -1707,7 +1707,7 @@ PlayerFinishedLevel (0);
 
 //------------------------------------------------------------------------------
 
-#define VCLIP_BIG_PLAYER_EXPLOSION	58
+#define ANIM_BIG_PLAYER_EXPLOSION	58
 
 //--unused-- CFixVector upvec = {0, I2X (1), 0};
 
@@ -1763,7 +1763,7 @@ if (!gameStates.render.bOutsideMine) {
 		if (CFixVector::Dot (tvec, gameData.endLevel.exit.mOrient.m.dir.f) > 0) {
 			CObject *objP;
 			gameStates.render.bOutsideMine = 1;
-			objP = CreateExplosion (gameData.endLevel.exit.nSegNum, gameData.endLevel.exit.vSideExit, I2X (50), VCLIP_BIG_PLAYER_EXPLOSION);
+			objP = CreateExplosion (gameData.endLevel.exit.nSegNum, gameData.endLevel.exit.vSideExit, I2X (50), ANIM_BIG_PLAYER_EXPLOSION);
 			if (objP) {
 				externalExplosion = *objP;
 				objP->Die ();
@@ -1786,7 +1786,7 @@ if (!gameStates.render.bOutsideMine) {
 		vPos += gameData.objs.consoleP->info.position.mOrient.m.dir.u * (SRandShort () * 15);
 		nSegment = FindSegByPos (vPos, gameData.objs.consoleP->info.nSegment, 1, 0);
 		if (nSegment != -1) {
-			CreateExplosion (nSegment, vPos, I2X (20), VCLIP_BIG_PLAYER_EXPLOSION);
+			CreateExplosion (nSegment, vPos, I2X (20), ANIM_BIG_PLAYER_EXPLOSION);
 			if ((RandShort () < 10000) || (++nSounds == 7)) {		//pseudo-random
 				audio.CreateSegmentSound (SOUND_TUNNEL_EXPLOSION, nSegment, 0, vPos, 0, I2X (1));
 				nSounds = 0;
@@ -1815,7 +1815,7 @@ if ((gameStates.app.bEndLevelSequence >= EL_FLYTHROUGH) && (gameStates.app.bEndL
 
 		FindHitpoint (hitQuery, hitResult);
 		if ((hitResult.nType == HIT_WALL) && (hitResult.nSegment != -1))
-			CreateExplosion ((int16_t) hitResult.nSegment, hitResult.vPoint, I2X (3) + RandShort () * 6, VCLIP_SMALL_EXPLOSION);
+			CreateExplosion ((int16_t) hitResult.nSegment, hitResult.vPoint, I2X (3) + RandShort () * 6, ANIM_SMALL_EXPLOSION);
 		explosion_wait2 = (0xa00 + RandShort () / 8) / 2;
 		}
 

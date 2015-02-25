@@ -443,10 +443,10 @@ switch (nObjType) {
 		else if (objP->info.nId >= gameData.effects.vClips [0].Length ()) 
 			return 0;
 		else {
-			tVideoClip*	vcP = gameData.effects.vClips [0] + objP->info.nId;
-			fix			xLight = vcP->lightValue;
+			tAnimationInfo*	animInfoP = gameData.effects.vClips [0] + objP->info.nId;
+			fix			xLight = animInfoP->lightValue;
 			int32_t		i, j;
-			CBitmap*		bmoP, * bmP; // = gameData.pig.tex.bitmapP [vcP->frames [0].index].Override (-1);
+			CBitmap*		bmoP, * bmP; // = gameData.pig.tex.bitmapP [animInfoP->frames [0].index].Override (-1);
 #if 0
 			if (bmP) {
 				bmP->GetAvgColor (colorP);
@@ -458,8 +458,8 @@ switch (nObjType) {
 				colorP->Red () =
 				colorP->Green () =
 				colorP->Blue () = 0.0f;
-				for (i = j = 0; i < vcP->nFrameCount; i++) {
-					bmP = gameData.pig.tex.bitmaps [0] + vcP->frames [i].index;
+				for (i = j = 0; i < animInfoP->nFrameCount; i++) {
+					bmP = gameData.pig.tex.bitmaps [0] + animInfoP->frames [i].index;
 					if ((bmoP = bmP->HasOverride ()))
 						bmP = bmoP;
 					CFloatVector avgRGB;

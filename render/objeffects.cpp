@@ -66,7 +66,7 @@ if (IsTeamGame && (PLAYER (objP->info.nId).flags & PLAYER_FLAGS_FLAG)) {
 		ogl.SetTexturing (true);
 		glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		LoadTexture (pf->bmi.index, 0, 0);
-		bmP = gameData.pig.tex.bitmapP + pf->vcP->frames [pf->vci.nCurFrame].index;
+		bmP = gameData.pig.tex.bitmapP + pf->animInfoP->frames [pf->animState.nCurFrame].index;
 		bmP->SetTranspType (2);
 		vPos += objP->info.position.mOrient.m.dir.f * (-objP->info.xSize);
 		r = X2F (objP->info.xSize);
@@ -113,12 +113,12 @@ else {
 	CFixVector vPos = info.position.vPos;
 	if (this == gameData.objs.viewerP)
 		vPos += info.position.mOrient.m.dir.f * FixMul (info.xSize, flashDist);
-	CObject* effectObjP = bWarp ? CreateExplBlast (true) : CreateExplosion (info.nSegment, vPos, info.xSize, VCLIP_PLAYER_APPEARANCE);
+	CObject* effectObjP = bWarp ? CreateExplBlast (true) : CreateExplosion (info.nSegment, vPos, info.xSize, ANIM_PLAYER_APPEARANCE);
 	if (bWarp || effectObjP) {
 		if (effectObjP) {
 			effectObjP->info.position.mOrient = info.position.mOrient;
-			if (gameData.effects.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound > -1)
-				audio.CreateObjectSound (gameData.effects.vClips [0][VCLIP_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (effectObjP));
+			if (gameData.effects.vClips [0][ANIM_PLAYER_APPEARANCE].nSound > -1)
+				audio.CreateObjectSound (gameData.effects.vClips [0][ANIM_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (effectObjP));
 			}
 		if (!bWarp)
 			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP ? effectObjP->LifeLeft () : I2X (1), info.xSize, 1, OBJPOS (this)->vPos));

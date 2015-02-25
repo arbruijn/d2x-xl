@@ -805,16 +805,16 @@ int32_t wallType = (nHitSide < 0) ? WHP_NOT_SPECIAL : segP->ProcessWallHit (nHit
 // Wall is volatile if either tmap 1 or 2 is volatile
 if (sideP && ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_VOLATILE) ||
 	           (sideP->m_nOvlTex && (gameData.pig.tex.tMapInfoP [sideP->m_nOvlTex].flags & TMI_VOLATILE)))) {
-	uint8_t tVideoClip;
+	uint8_t tAnimationInfo;
 	//we've hit a volatile CWall
 	audio.CreateSegmentSound (SOUND_VOLATILE_WALL_HIT, nHitSeg, 0, vHitPt);
-	//for most weapons, use volatile CWall hit.  For mega, use its special tVideoClip
-	tVideoClip = (info.nId == MEGAMSL_ID) ? weaponInfoP->nRobotHitVClip : VCLIP_VOLATILE_WALL_HIT;
+	//for most weapons, use volatile CWall hit.  For mega, use its special tAnimationInfo
+	tAnimationInfo = (info.nId == MEGAMSL_ID) ? weaponInfoP->nRobotHitAnimation : ANIM_VOLATILE_WALL_HIT;
 	//	New by MK: If powerful splash damager, explode with splash damage, not due to lava, fixes megas being wimpy in lava.
 	if (weaponInfoP->xDamageRadius >= VOLATILE_WALL_DAMAGE_RADIUS / 2)
 		ExplodeSplashDamageWeapon (vHitPt);
 	else
-		CreateSplashDamageExplosion (this, nHitSeg, vHitPt, vHitPt, weaponInfoP->xImpactSize + VOLATILE_WALL_IMPACT_SIZE, tVideoClip,
+		CreateSplashDamageExplosion (this, nHitSeg, vHitPt, vHitPt, weaponInfoP->xImpactSize + VOLATILE_WALL_IMPACT_SIZE, tAnimationInfo,
 											  nStrength / 4 + VOLATILE_WALL_EXPL_STRENGTH, weaponInfoP->xDamageRadius+VOLATILE_WALL_DAMAGE_RADIUS,
 											  nStrength / 2 + VOLATILE_WALL_DAMAGE_FORCE, cType.laserInfo.parent.nObject);
 	Die ();		//make flares die in lava
@@ -828,15 +828,15 @@ else if (sideP && ((gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_W
 		if (weaponInfoP->xDamageRadius) {
 			audio.CreateObjectSound (IsSplashDamageWeapon () ? SOUND_BADASS_EXPLOSION_WEAPON : SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, OBJ_IDX (this));
 			//	MK: 09/13/95: SplashDamage in water is 1/2 Normal intensity.
-			CreateSplashDamageExplosion (this, nHitSeg, vHitPt, vHitPt, weaponInfoP->xImpactSize/2, weaponInfoP->nRobotHitVClip,
+			CreateSplashDamageExplosion (this, nHitSeg, vHitPt, vHitPt, weaponInfoP->xImpactSize/2, weaponInfoP->nRobotHitAnimation,
 												  nStrength / 4, weaponInfoP->xDamageRadius, nStrength / 2, cType.laserInfo.parent.nObject);
 			}
 		else
-			CreateExplosion (info.nSegment, info.position.vPos, weaponInfoP->xImpactSize, weaponInfoP->nWallHitVClip);
+			CreateExplosion (info.nSegment, info.position.vPos, weaponInfoP->xImpactSize, weaponInfoP->nWallHitAnimation);
 		}
 	else {
 		audio.CreateSegmentSound (SOUND_LASER_HIT_WATER, nHitSeg, 0, vHitPt);
-		CreateExplosion (info.nSegment, info.position.vPos, weaponInfoP->xImpactSize, VCLIP_WATER_HIT);
+		CreateExplosion (info.nSegment, info.position.vPos, weaponInfoP->xImpactSize, ANIM_WATER_HIT);
 		}
 	Die ();		//make flares die in water
 	}
@@ -848,11 +848,11 @@ else {
 			 (((wallType == WHP_NOT_SPECIAL)) && !bBlewUp))
 			if ((weaponInfoP->nWallHitSound > -1) && !(info.nFlags & OF_SILENT))
 				CreateSound (weaponInfoP->nWallHitSound);
-		if (weaponInfoP->nWallHitVClip > -1) {
+		if (weaponInfoP->nWallHitAnimation > -1) {
 			if (weaponInfoP->xDamageRadius)
 				ExplodeSplashDamageWeapon (vHitPt);
 			else
-				CreateExplosion (info.nSegment, info.position.vPos, weaponInfoP->xImpactSize, weaponInfoP->nWallHitVClip);
+				CreateExplosion (info.nSegment, info.position.vPos, weaponInfoP->xImpactSize, weaponInfoP->nWallHitAnimation);
 			}
 		}
 	}
@@ -1006,7 +1006,7 @@ if (!IsStatic ()) {
 		return 1;
 	nCollisionSeg = FindSegByPos (vHitPt, playerObjP->info.nSegment, 1, 0);
 	if (nCollisionSeg != -1)
-		CreateExplosion (nCollisionSeg, vHitPt, gameData.weapons.info [0].xImpactSize, gameData.weapons.info [0].nWallHitVClip);
+		CreateExplosion (nCollisionSeg, vHitPt, gameData.weapons.info [0].xImpactSize, gameData.weapons.info [0].nWallHitAnimation);
 	if (playerObjP->info.nId == N_LOCALPLAYER) {
 		if (ROBOTINFO (info.nId).companion)	//	Player and companion don't Collide.
 			return 1;
@@ -1214,14 +1214,14 @@ if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 	if (WI_damage_radius (info.nId))
 		ExplodeSplashDamageWeapon (vHitPt, reactorP);
 	else
-		CreateExplosion (reactorP->info.nSegment, vHitPt, 3 * reactorP->info.xSize / 20, VCLIP_SMALL_EXPLOSION);
+		CreateExplosion (reactorP->info.nSegment, vHitPt, 3 * reactorP->info.xSize / 20, ANIM_SMALL_EXPLOSION);
 	audio.CreateSegmentSound (SOUND_CONTROL_CENTER_HIT, reactorP->info.nSegment, 0, vHitPt);
 	damage = FixMul (damage, cType.laserInfo.xScale);
 	reactorP->ApplyDamageToReactor (damage, cType.laserInfo.parent.nObject);
 	MaybeKillWeapon (reactorP);
 	}
 else {	//	If robotP this hits control center, blow it up, make it go away, but do no damage to control center.
-	CreateExplosion (reactorP->info.nSegment, vHitPt, 3 * reactorP->info.xSize / 20, VCLIP_SMALL_EXPLOSION);
+	CreateExplosion (reactorP->info.nSegment, vHitPt, 3 * reactorP->info.xSize / 20, ANIM_SMALL_EXPLOSION);
 	MaybeKillWeapon (reactorP);
 	}
 return 1;
@@ -1231,7 +1231,7 @@ return 1;
 
 int32_t CObject::CollideWeaponAndClutter (CObject* clutterP, CFixVector& vHitPt, CFixVector* vNormal)
 {
-uint8_t exp_vclip = VCLIP_SMALL_EXPLOSION;
+uint8_t exp_vclip = ANIM_SMALL_EXPLOSION;
 if (clutterP->info.xShield >= 0)
 	clutterP->info.xShield -= info.xShield;
 audio.CreateSegmentSound (SOUND_LASER_HIT_CLUTTER, (int16_t) info.nSegment, 0, vHitPt);
@@ -1612,7 +1612,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 	if (WI_damage_radius (info.nId)) {
 		if (bInvulBoss) {			//don't make badass sound
 			//this code copied from ExplodeSplashDamageWeapon ()
-			CreateSplashDamageExplosion (this, info.nSegment, vHitPt, vHitPt, wInfoP->xImpactSize, wInfoP->nRobotHitVClip, 
+			CreateSplashDamageExplosion (this, info.nSegment, vHitPt, vHitPt, wInfoP->xImpactSize, wInfoP->nRobotHitAnimation, 
 												  nStrength, wInfoP->xDamageRadius, nStrength, cType.laserInfo.parent.nObject);
 
 			}
@@ -1632,8 +1632,8 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 			MultiRobotRequestChange (robotP, OBJECTS [cType.laserInfo.parent.nObject].info.nId);
 		if (botInfoP->nExp1VClip > -1)
 			explObjP = CreateExplosion (info.nSegment, vHitPt, (3 * robotP->info.xSize) / 8, (uint8_t) botInfoP->nExp1VClip);
-		else if (gameData.weapons.info [info.nId].nRobotHitVClip > -1)
-			explObjP = CreateExplosion (info.nSegment, vHitPt, wInfoP->xImpactSize, (uint8_t) wInfoP->nRobotHitVClip);
+		else if (gameData.weapons.info [info.nId].nRobotHitAnimation > -1)
+			explObjP = CreateExplosion (info.nSegment, vHitPt, wInfoP->xImpactSize, (uint8_t) wInfoP->nRobotHitAnimation);
 		if (explObjP)
 			AttachObject (robotP, explObjP);
 		if (bDamage && (botInfoP->nExp1Sound > -1))
@@ -1834,7 +1834,7 @@ if (playerObjP->info.nId == N_LOCALPLAYER) {
 			MultiSendPlaySound (SOUND_WEAPON_HIT_DOOR, I2X (1));
 		}
 	}
-CreateExplosion (playerObjP->info.nSegment, vHitPt, I2X (10)/2, VCLIP_PLAYER_HIT);
+CreateExplosion (playerObjP->info.nSegment, vHitPt, I2X (10)/2, ANIM_PLAYER_HIT);
 if (WI_damage_radius (info.nId))
 	ExplodeSplashDamageWeapon (vHitPt, playerObjP);
 MaybeKillWeapon (playerObjP);
@@ -1851,7 +1851,7 @@ return 1;
 int32_t CObject::CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt, CFixVector* vNormal)
 {
 //	if (!(ROBOTINFO (objP->info.nId).energyDrain && PLAYER (info.nId).energy))
-CreateExplosion (info.nSegment, vHitPt, I2X (10) / 2, VCLIP_PLAYER_HIT);
+CreateExplosion (info.nSegment, vHitPt, I2X (10) / 2, ANIM_PLAYER_HIT);
 if (BumpTwoObjects (this, robotP, 0, vHitPt)) {//no damage from bump
 	audio.CreateSegmentSound (ROBOTINFO (robotP->info.nId).clawSound, info.nSegment, 0, vHitPt);
 	ApplyDamageToPlayer (robotP, I2X (gameStates.app.nDifficultyLevel+1));
@@ -1867,7 +1867,7 @@ int32_t CObject::CollidePlayerAndObjProducer (void)
 
 CreateSound (SOUND_PLAYER_GOT_HIT);
 //	audio.PlaySound (SOUND_PLAYER_GOT_HIT);
-CreateExplosion (info.nSegment, info.position.vPos, I2X (10) / 2, VCLIP_PLAYER_HIT);
+CreateExplosion (info.nSegment, info.position.vPos, I2X (10) / 2, ANIM_PLAYER_HIT);
 if (info.nId != N_LOCALPLAYER)
 	return 1;
 CSegment* segP = SEGMENTS + info.nSegment;
@@ -2057,7 +2057,7 @@ if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 		if (AddHitObject (this, OBJ_IDX (mBallP)) < 0)
 			return 1;
 		}
-	CreateExplosion (mBallP->info.nSegment, vHitPt, I2X (5), VCLIP_PLAYER_HIT);
+	CreateExplosion (mBallP->info.nSegment, vHitPt, I2X (5), ANIM_PLAYER_HIT);
 	if (WI_damage_radius (info.nId))
 		ExplodeSplashDamageWeapon (vHitPt, mBallP);
 	MaybeKillWeapon (mBallP);

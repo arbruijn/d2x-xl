@@ -2090,8 +2090,8 @@ if (Type () != OBJ_POWERUP) {
 	}
 info.nId = nId;
 SetSizeFromPowerup ();
-rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [nId].nClipIndex;
-rType.vClipInfo.xFrameTime = gameData.effects.vClips [0][rType.vClipInfo.nClipIndex].xFrameTime;
+rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [nId].nClipIndex;
+rType.animationInfo.xFrameTime = gameData.effects.vClips [0][rType.animationInfo.nClipIndex].xFrameTime;
 }
 
 //------------------------------------------------------------------------------

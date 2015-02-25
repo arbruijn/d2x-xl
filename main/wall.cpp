@@ -119,7 +119,7 @@ audio.Update ();
 
 //------------------------------------------------------------------------------
 
-int32_t AnimFrameCount (tWallClip *anim)
+int32_t WallEffectFrameCount (tWallEffect *anim)
 {
 	int32_t	n;
 
@@ -132,9 +132,9 @@ return (n > 1) ? n : anim->nFrameCount;
 
 //------------------------------------------------------------------------------
 
-fix AnimPlayTime (tWallClip *anim)
+fix AnimPlayTime (tWallEffect *anim)
 {
-int32_t nFrames = AnimFrameCount (anim);
+int32_t nFrames = WallEffectFrameCount (anim);
 fix pt = (fix) (anim->xTotalTime * gameStates.gameplay.slowmo [0].fSpeed);
 
 if (nFrames == anim->nFrameCount)
@@ -388,7 +388,7 @@ int32_t CWall::AnimateOpeningDoor (fix xElapsedTime)
 if (nClip < 0)
 	return 3;
 
-int32_t nFrames = AnimFrameCount (gameData.walls.animP + nClip);
+int32_t nFrames = WallEffectFrameCount (gameData.walls.animP + nClip);
 if (!nFrames)
 	return 3;
 
@@ -424,7 +424,7 @@ return 1;
 
 int32_t CWall::AnimateClosingDoor (fix xElapsedTime)
 {
-int32_t nFrames = AnimFrameCount (gameData.walls.animP + nClip);
+int32_t nFrames = WallEffectFrameCount (gameData.walls.animP + nClip);
 if (!nFrames)
 	return 0;
 
@@ -594,7 +594,7 @@ void InitDoorAnims (void)
 	int32_t			h, i;
 	CWall			*wallP;
 	CSegment		*segP;
-	tWallClip	*animP;
+	tWallEffect	*animP;
 
 for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; wallP++, i++) {
 	if (wallP->nType == WALL_DOOR) {
@@ -1016,10 +1016,10 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	//	Process only walls which have glass.
 	if ((tm = segP->m_sides [nSide].m_nOvlTex)) {
 		int32_t ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip;
-		tEffectClip* ecP = (ec < 0) ? NULL : gameData.effects.effectP + ec;
-		int32_t db = ecP ? ecP->nDestBm : -1;
+		tEffectInfo* effectInfoP = (ec < 0) ? NULL : gameData.effects.effectP + ec;
+		int32_t db = effectInfoP ? effectInfoP->nDestBm : -1;
 
-		if (((ec != -1) && (db != -1) && !(ecP->flags & EF_ONE_SHOT)) ||
+		if (((ec != -1) && (db != -1) && !(effectInfoP->flags & EF_ONE_SHOT)) ||
 		 	 ((ec == -1) && (gameData.pig.tex.tMapInfoP [tm].destroyed != -1))) {
 			pnt = segP->SideCenter (nSide);
 			dist = CFixVector::Dist(pnt, objP->info.position.vPos);
@@ -1125,19 +1125,19 @@ BngProcessSegment(objP, damage, cursegp, 0, visited);
 
 // -----------------------------------------------------------------------------------
 
-#define MAX_CLIP_FRAMES_D1 20
+#define MAX_WALL_EFFECT_FRAMES_D1 20
 
 /*
- * reads a tWallClip structure from a CFile
+ * reads a tWallEffect structure from a CFile
  */
-int32_t ReadD1WallClips (tWallClip *wc, int32_t n, CFile& cf)
+int32_t ReadD1WallClips (tWallEffect *wc, int32_t n, CFile& cf)
 {
 	int32_t i, j;
 
 	for (i = 0; i < n; i++) {
 		wc [i].xTotalTime = cf.ReadFix ();
 		wc [i].nFrameCount = cf.ReadShort ();
-		for (j = 0; j < MAX_CLIP_FRAMES_D1; j++)
+		for (j = 0; j < MAX_WALL_EFFECT_FRAMES_D1; j++)
 			wc [i].frames [j] = cf.ReadShort ();
 		wc [i].openSound = cf.ReadShort ();
 		wc [i].closeSound = cf.ReadShort ();
@@ -1151,16 +1151,16 @@ int32_t ReadD1WallClips (tWallClip *wc, int32_t n, CFile& cf)
 // -----------------------------------------------------------------------------------
 
 /*
- * reads a tWallClip structure from a CFile
+ * reads a tWallEffect structure from a CFile
  */
-int32_t ReadWallClips(CArray<tWallClip>& wc, int32_t n, CFile& cf)
+int32_t ReadWallClips(CArray<tWallEffect>& wc, int32_t n, CFile& cf)
 {
 	int32_t i, j;
 
 for (i = 0; i < n; i++) {
 	wc [i].xTotalTime = cf.ReadFix ();
 	wc [i].nFrameCount = cf.ReadShort ();
-	for (j = 0; j < MAX_CLIP_FRAMES; j++)
+	for (j = 0; j < MAX_WALL_EFFECT_FRAMES; j++)
 		wc [i].frames [j] = cf.ReadShort ();
 	wc [i].openSound = cf.ReadShort ();
 	wc [i].closeSound = cf.ReadShort ();
@@ -1433,7 +1433,7 @@ for (uint32_t i = 0; i < gameData.walls.exploding.ToS (); ) {
 		CSegment *segP = SEGMENTS + nSegment,
 					*connSegP = SEGMENTS + segP->m_children [nSide];
 		uint8_t	a = (uint8_t) segP->Wall (nSide)->nClip;
-		int16_t n = AnimFrameCount (gameData.walls.animP + a);
+		int16_t n = WallEffectFrameCount (gameData.walls.animP + a);
 		int16_t nConnSide = segP->ConnectedSide (connSegP);
 		segP->SetTexture (nSide, connSegP, nConnSide, a, n - 1);
 		segP->Wall (nSide)->flags |= WALL_BLASTED;
@@ -1468,10 +1468,10 @@ for (uint32_t i = 0; i < gameData.walls.exploding.ToS (); ) {
 		//fireballs start away from door, with subsequent ones getting closer
 		vPos += SEGMENTS [nSegment].m_sides [nSide].m_normals [0] * (size * (EXPL_WALL_TOTAL_FIREBALLS - e) / EXPL_WALL_TOTAL_FIREBALLS);
 		if (e & 3)		//3 of 4 are Normal
-			CreateExplosion ((int16_t) gameData.walls.exploding [i].nSegment, vPos, size, (uint8_t) VCLIP_SMALL_EXPLOSION);
+			CreateExplosion ((int16_t) gameData.walls.exploding [i].nSegment, vPos, size, (uint8_t) ANIM_SMALL_EXPLOSION);
 		else
 			CreateSplashDamageExplosion (NULL, (int16_t) gameData.walls.exploding [i].nSegment, vPos, vPos,
-										        size, (uint8_t) VCLIP_SMALL_EXPLOSION, I2X (4), I2X (20), I2X (50), -1);
+										        size, (uint8_t) ANIM_SMALL_EXPLOSION, I2X (4), I2X (20), I2X (50), -1);
 		}
 	if (gameData.walls.exploding [i].time >= EXPL_WALL_TIME)
 		DeleteExplodingWall (i);

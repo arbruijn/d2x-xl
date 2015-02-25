@@ -226,13 +226,13 @@ switch (info.renderType) {
 	case RT_HOSTAGE:
 	case RT_POWERUP:
 	case RT_FIREBALL:
-		rType.vClipInfo.nClipIndex	= cf.ReadInt ();
-		rType.vClipInfo.xFrameTime	= cf.ReadFix ();
-		rType.vClipInfo.nCurFrame	= cf.ReadByte ();
-		if ((rType.vClipInfo.nClipIndex < 0) || (rType.vClipInfo.nClipIndex >= MAX_VCLIPS)) {
-			rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [info.nId].nClipIndex;
-			rType.vClipInfo.xFrameTime = gameData.effects.vClipP [rType.vClipInfo.nClipIndex].xFrameTime;
-			rType.vClipInfo.nCurFrame = 0;
+		rType.animationInfo.nClipIndex	= cf.ReadInt ();
+		rType.animationInfo.xFrameTime	= cf.ReadFix ();
+		rType.animationInfo.nCurFrame	= cf.ReadByte ();
+		if ((rType.animationInfo.nClipIndex < 0) || (rType.animationInfo.nClipIndex >= MAX_VCLIPS)) {
+			rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [info.nId].nClipIndex;
+			rType.animationInfo.xFrameTime = gameData.effects.vClipP [rType.animationInfo.nClipIndex].xFrameTime;
+			rType.animationInfo.nCurFrame = 0;
 			}
 		break;
 
@@ -448,9 +448,9 @@ switch (info.renderType) {
 	case RT_POWERUP:
 	case RT_FIREBALL:
 	case RT_THRUSTER:
-		rType.vClipInfo.nClipIndex = cf.ReadInt ();
-		rType.vClipInfo.xFrameTime = cf.ReadFix ();
-		rType.vClipInfo.nCurFrame = cf.ReadByte ();
+		rType.animationInfo.nClipIndex = cf.ReadInt ();
+		rType.animationInfo.xFrameTime = cf.ReadFix ();
+		rType.animationInfo.nCurFrame = cf.ReadByte ();
 		break;
 
 	case RT_LASER:
@@ -600,9 +600,9 @@ switch (info.renderType) {
 	case RT_POWERUP:
 	case RT_FIREBALL:
 	case RT_THRUSTER:
-		cf.WriteInt (rType.vClipInfo.nClipIndex);
-		cf.WriteFix (rType.vClipInfo.xFrameTime);
-		cf.WriteByte (rType.vClipInfo.nCurFrame);
+		cf.WriteInt (rType.animationInfo.nClipIndex);
+		cf.WriteFix (rType.animationInfo.xFrameTime);
+		cf.WriteByte (rType.animationInfo.nCurFrame);
 		break;
 
 	case RT_LASER:

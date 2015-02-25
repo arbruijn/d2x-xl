@@ -1744,10 +1744,10 @@ for (; i < gameData.trigs.m_nTriggers; i++) {
 			continue;
 		}
 	else {
-		tEffectClip *ecP = gameData.effects.effectP + ec;
-		if (ecP->flags & EF_ONE_SHOT)
+		tEffectInfo *effectInfoP = gameData.effects.effectP + ec;
+		if (effectInfoP->flags & EF_ONE_SHOT)
 			continue;
-		if (ecP->nDestBm < 0)
+		if (effectInfoP->nDestBm < 0)
 			continue;
 		}
 	if (TRIGGERS [i].HasTarget (nSegment, nSide))

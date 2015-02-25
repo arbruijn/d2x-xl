@@ -1431,8 +1431,8 @@ int32_t CreateGatedRobot (int32_t nSegment, int32_t nObjId)
 	if (nObjId == 10)						//	This is a toaster guy!
 		default_behavior = D1_AIB_RUN_FROM;
 	InitAIObject (objP->Index (), default_behavior, -1 );		//	Note, -1 = CSegment this robotP goes to to hide, should probably be something useful
-	CreateExplosion (nSegment, vObjPos, I2X(10), VCLIP_MORPHING_ROBOT);
-	audio.CreateSegmentSound (gameData.effects.vClips [0][VCLIP_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0, I2X (1));
+	CreateExplosion (nSegment, vObjPos, I2X(10), ANIM_MORPHING_ROBOT);
+	audio.CreateSegmentSound (gameData.effects.vClips [0][ANIM_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0, I2X (1));
 	objP->MorphStart ();
 
 	gameData.bosses [0].m_nLastGateTime = gameData.time.xGame;

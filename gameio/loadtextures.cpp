@@ -298,26 +298,26 @@ return -1;
 			 (_eP)->changingWallTexture : \
 			 (_eP)->changingObjectTexture)
 
-tEffectClip *FindEffect (tEffectClip *ecP, int32_t tNum)
+tEffectInfo *FindEffect (tEffectInfo *effectInfoP, int32_t nTexture)
 {
-	int32_t				h, i, j;
-	tBitmapIndex	*frameP;
+	int32_t			h, i, j;
+	tBitmapIndex*	frameP;
 
-if (ecP)
-	i = (int32_t) (++ecP - gameData.effects.effectP);
+if (effectInfoP)
+	i = (int32_t) (++effectInfoP - gameData.effects.effectP);
 else {
-	ecP = gameData.effects.effectP.Buffer ();
+	effectInfoP = gameData.effects.effectP.Buffer ();
 	i = 0;
 	}
-for (h = gameData.effects.nEffects [gameStates.app.bD1Data]; i < h; i++, ecP++) {
-	for (j = ecP->vClipInfo.nFrameCount, frameP = ecP->vClipInfo.frames; j > 0; j--, frameP++)
-		if (frameP->index == tNum) {
+for (h = gameData.effects.nEffects [gameStates.app.bD1Data]; i < h; i++, effectInfoP++) {
+	for (j = effectInfoP->animationInfo.nFrameCount, frameP = effectInfoP->animationInfo.frames; j > 0; j--, frameP++)
+		if (frameP->index == nTexture) {
 #if 0
-			int32_t t = FindTextureByIndex (tNum);
+			int32_t t = FindTextureByIndex (nTexture);
 			if (t >= 0)
-				ecP->changingWallTexture = t;
+				effectInfoP->changingWallTexture = t;
 #endif
-			return ecP;
+			return effectInfoP;
 			}
 	}
 return NULL;
@@ -325,15 +325,15 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-tVideoClip *FindVClip (int32_t tNum)
+tAnimationInfo *FindAnimation (int32_t nTexture)
 {
 	int32_t	h, i, j;
-	tVideoClip *vcP = gameData.effects.vClips [0].Buffer ();
+	tAnimationInfo *animInfoP = gameData.effects.vClips [0].Buffer ();
 
-for (i = gameData.effects.nClips [0]; i; i--, vcP++) {
-	for (h = vcP->nFrameCount, j = 0; j < h; j++)
-		if (vcP->frames [j].index == tNum) {
-			return vcP;
+for (i = gameData.effects.nClips [0]; i; i--, animInfoP++) {
+	for (h = animInfoP->nFrameCount, j = 0; j < h; j++)
+		if (animInfoP->frames [j].index == nTexture) {
+			return animInfoP;
 			}
 	}
 return NULL;
@@ -341,15 +341,15 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-tWallClip *FindWallAnim (int32_t tNum)
+tWallEffect *FindWallEffect (int32_t nTexture)
 {
 	int32_t	h, i, j;
-	tWallClip *wcP = gameData.walls.animP.Buffer ();
+	tWallEffect *wallEffectP = gameData.walls.animP.Buffer ();
 
-for (i = gameData.walls.nAnims [gameStates.app.bD1Data]; i; i--, wcP++)
-	for (h = wcP->nFrameCount, j = 0; j < h; j++)
-		if (gameData.pig.tex.bmIndexP [wcP->frames [j]].index == tNum)
-			return wcP;
+for (i = gameData.walls.nAnims [gameStates.app.bD1Data]; i; i--, wallEffectP++)
+	for (h = wallEffectP->nFrameCount, j = 0; j < h; j++)
+		if (gameData.pig.tex.bmIndexP [wallEffectP->frames [j]].index == nTexture)
+			return wallEffectP;
 return NULL;
 }
 
@@ -415,8 +415,8 @@ for (bD1 = 0; bD1 < 2; bD1++)
 
 void GetFlagData (const char *bmName, int32_t nIndex)
 {
-	int32_t			i;
-	tFlagData	*pf;
+	int32_t		i;
+	tFlagData*	pf;
 
 if (strstr (bmName, "flag01#0") == bmName)
 	i = 0;
@@ -426,10 +426,10 @@ else
 	return;
 pf = gameData.pig.flags + i;
 pf->bmi.index = nIndex;
-pf->vcP = FindVClip (nIndex);
-pf->vci.nClipIndex = gameData.objs.pwrUp.info [46 + i].nClipIndex;	//46 is the blue flag powerup
-pf->vci.xFrameTime = gameData.effects.vClips [0][pf->vci.nClipIndex].xFrameTime;
-pf->vci.nCurFrame = 0;
+pf->animInfoP = FindAnimation (nIndex);
+pf->animState.nClipIndex = gameData.objs.pwrUp.info [46 + i].nClipIndex;	//46 is the blue flag powerup
+pf->animState.xFrameTime = gameData.effects.vClips [0][pf->animState.nClipIndex].xFrameTime;
+pf->animState.nCurFrame = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -815,22 +815,22 @@ bmP->SetFrameCount (uint8_t (nFrames));
 
 if ((nIndex >= 0) && (nIndex < 0x7FFFFFFF)) {	// replacement texture for a lores game texture
 	if (bmP->Height () > bmP->Width ()) {
-		tEffectClip	*ecP = NULL;
-		tWallClip *wcP;
-		tVideoClip *vcP;
-		while ((ecP = FindEffect (ecP, nIndex))) {
+		tEffectInfo	*effectInfoP = NULL;
+		tWallEffect *wcP;
+		tAnimationInfo *animInfoP;
+		while ((effectInfoP = FindEffect (effectInfoP, nIndex))) {
 			//e->vc.nFrameCount = nFrames;
-			ecP->flags |= EF_ALTFMT;
-			//ecP->vClipInfo.flags |= WCF_ALTFMT;
+			effectInfoP->flags |= EF_ALTFMT;
+			//effectInfoP->animationInfo.flags |= WCF_ALTFMT;
 			}
-		if (!ecP) {
-			if ((wcP = FindWallAnim (nIndex))) {
+		if (!effectInfoP) {
+			if ((wcP = FindWallEffect (nIndex))) {
 			//w->nFrameCount = nFrames;
 				wcP->flags |= WCF_ALTFMT;
 				}
-			else if ((vcP = FindVClip (nIndex))) {
+			else if ((animInfoP = FindAnimation (nIndex))) {
 				//v->nFrameCount = nFrames;
-				vcP->flags |= WCF_ALTFMT;
+				animInfoP->flags |= WCF_ALTFMT;
 				}
 			else {
 				PrintLog (0, "couldn't find animation for '%s'\n", bmName);
@@ -1066,21 +1066,21 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 				}
 			bm.SetFrameCount ((uint8_t) nFrames);
 			if (nFrames > 1) {
-				tEffectClip	*ecP = NULL;
-				tWallClip *wcP;
-				tVideoClip *vcP;
-				while ((ecP = FindEffect (ecP, indices [i]))) {
+				tEffectInfo	*effectInfoP = NULL;
+				tWallEffect *wcP;
+				tAnimationInfo *animInfoP;
+				while ((effectInfoP = FindEffect (effectInfoP, indices [i]))) {
 					//e->vc.nFrameCount = nFrames;
-					ecP->flags |= EF_ALTFMT | EF_FROMPOG;
+					effectInfoP->flags |= EF_ALTFMT | EF_FROMPOG;
 					}
-				if (!ecP) {
-					if ((wcP = FindWallAnim (indices [i]))) {
+				if (!effectInfoP) {
+					if ((wcP = FindWallEffect (indices [i]))) {
 						//w->nFrameCount = nFrames;
 						wcP->flags |= WCF_ALTFMT | WCF_FROMPOG;
 						}
-					else if ((vcP = FindVClip (i))) {
+					else if ((animInfoP = FindAnimation (i))) {
 						//v->nFrameCount = nFrames;
-						vcP->flags |= WCF_ALTFMT | WCF_FROMPOG;
+						animInfoP->flags |= WCF_ALTFMT | WCF_FROMPOG;
 						}
 					}
 				}

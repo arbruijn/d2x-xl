@@ -1468,9 +1468,9 @@ for (i = 1; i < playerPathLength; i++) {
 		return 1;
 		}
 	objP = OBJECTS + nObject;
-	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-	objP->rType.vClipInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
-	objP->rType.vClipInfo.nCurFrame = 0;
+	objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+	objP->rType.animationInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
+	objP->rType.animationInfo.nCurFrame = 0;
 	objP->SetLife (I2X (100) + RandShort () * 4);
 	objP->Ignore (1, 1);
 	}

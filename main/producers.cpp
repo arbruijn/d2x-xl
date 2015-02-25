@@ -376,10 +376,10 @@ if (!objProducerP->bFlag) {
 			}
 		nObject = objP->info.nNextInSeg;
 		}
-	CreateObjectProducerEffect (objProducerP, VCLIP_MORPHING_ROBOT);
+	CreateObjectProducerEffect (objProducerP, ANIM_MORPHING_ROBOT);
 	}
 else if (objProducerP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
-	if (objProducerP->xTimer < (gameData.effects.vClips [0][VCLIP_MORPHING_ROBOT].xTotalTime / 2))
+	if (objProducerP->xTimer < (gameData.effects.vClips [0][ANIM_MORPHING_ROBOT].xTotalTime / 2))
 		return;
 	objProducerP->bFlag = 0;
 	objProducerP->xTimer = 0;
@@ -396,9 +396,9 @@ else if (objProducerP->bFlag == 1) {			// Wait until 1/2 second after VCLIP star
 		gameData.multiplayer.maxPowerupsAllowed [nType]++;
 		gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 		}
-	objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-	objP->rType.vClipInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
-	objP->rType.vClipInfo.nCurFrame = 0;
+	objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+	objP->rType.animationInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
+	objP->rType.animationInfo.nCurFrame = 0;
 	objP->info.nCreator = SEGMENTS [objProducerP->nSegment].m_owner;
 	objP->SetLife (IMMORTAL_TIME);
 	}
@@ -440,10 +440,10 @@ if (!objProducerP->bFlag) {
 			}
 		nObject = objP->info.nNextInSeg;
 		}
-	CreateObjectProducerEffect (objProducerP, VCLIP_POWERUP_DISAPPEARANCE);
+	CreateObjectProducerEffect (objProducerP, ANIM_POWERUP_DISAPPEARANCE);
 	}
 else if (objProducerP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
-	if (objProducerP->xTimer < (gameData.effects.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].xTotalTime / 2))
+	if (objProducerP->xTimer < (gameData.effects.vClips [0][ANIM_POWERUP_DISAPPEARANCE].xTotalTime / 2))
 		return;
 	objProducerP->bFlag = 0;
 	objProducerP->xTimer = 0;
@@ -454,9 +454,9 @@ else if (objProducerP->bFlag == 1) {			// Wait until 1/2 second after VCLIP star
 		objP = OBJECTS + nObject;
 		if (IsMultiGame)
 			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
-		objP->rType.vClipInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-		objP->rType.vClipInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].xFrameTime;
-		objP->rType.vClipInfo.nCurFrame = 0;
+		objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+		objP->rType.animationInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
+		objP->rType.animationInfo.nCurFrame = 0;
 		objP->info.nCreator = SEGMENTS [objProducerP->nSegment].m_owner;
 		objP->SetLife (IMMORTAL_TIME);
 		}
@@ -586,10 +586,10 @@ if (!objProducerP->bFlag) {
 			return;
 			}
 		}
-	CreateObjectProducerEffect (objProducerP, VCLIP_MORPHING_ROBOT);
+	CreateObjectProducerEffect (objProducerP, ANIM_MORPHING_ROBOT);
 	}
 else if (objProducerP->bFlag == 1) {			// Wait until 1/2 second after VCLIP started.
-	if (objProducerP->xTimer <= (gameData.effects.vClips [0][VCLIP_MORPHING_ROBOT].xTotalTime / 2))
+	if (objProducerP->xTimer <= (gameData.effects.vClips [0][ANIM_MORPHING_ROBOT].xTotalTime / 2))
 		return;
 	objProducerP->xCapacity -= gameData.producers.xEnergyToCreateOneRobot;
 	objProducerP->bFlag = 0;

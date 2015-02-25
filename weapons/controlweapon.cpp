@@ -905,14 +905,14 @@ renderType = cf.ReadByte ();
 persistent = cf.ReadByte ();
 nModel = cf.ReadShort ();
 nInnerModel = cf.ReadShort ();
-nFlashVClip = cf.ReadByte ();
-nRobotHitVClip = cf.ReadByte ();
+nFlashAnimation = cf.ReadByte ();
+nRobotHitAnimation = cf.ReadByte ();
 flashSound = cf.ReadShort ();
-nWallHitVClip = cf.ReadByte ();
+nWallHitAnimation = cf.ReadByte ();
 fireCount = cf.ReadByte ();
 nRobotHitSound = cf.ReadShort ();
 nAmmoUsage = cf.ReadByte ();
-nVClipIndex = cf.ReadByte ();
+nAnimationIndex = cf.ReadByte ();
 nWallHitSound = cf.ReadShort ();
 destructible = cf.ReadByte ();
 matter = cf.ReadByte ();
@@ -992,14 +992,14 @@ PrintLog (0, "{%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
 	persistent,
 	nModel,
 	nInnerModel,
-	nFlashVClip,
-	nRobotHitVClip,
+	nFlashAnimation,
+	nRobotHitAnimation,
 	flashSound,
-	nWallHitVClip,
+	nWallHitAnimation,
 	fireCount,
 	nRobotHitSound,
 	nAmmoUsage,
-	nVClipIndex,
+	nAnimationIndex,
 	nWallHitSound,
 	destructible,
 	matter,

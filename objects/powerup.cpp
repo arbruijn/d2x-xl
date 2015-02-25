@@ -108,18 +108,18 @@ void *pickupHandler [MAX_POWERUP_TYPES];
 
 static int32_t nDbgMinFrame = 0;
 
-void UpdatePowerupClip (tVideoClip *vcP, tVideoClipInfo *vciP, int32_t nObject)
+void UpdatePowerupClip (tAnimationInfo *animInfoP, tAnimationState *vciP, int32_t nObject)
 {
-if (vcP) {
+if (animInfoP) {
 	static fix	xPowerupTime = 0;
-	int32_t			h, nFrames = SetupHiresVClip (vcP, vciP);
+	int32_t			h, nFrames = SetupHiresVClip (animInfoP, vciP);
 	fix			xTime, xFudge = (xPowerupTime * (nObject & 3)) >> 4;
 
 	xPowerupTime += gameData.physics.xTime;
 	xTime = vciP->xFrameTime - (fix) ((xPowerupTime + xFudge) / gameStates.gameplay.slowmo [0].fSpeed);
-	if ((xTime < 0) && (vcP->xFrameTime > 0)) {
-		h = (-xTime + vcP->xFrameTime - 1) / vcP->xFrameTime;
-		xTime += h * vcP->xFrameTime;
+	if ((xTime < 0) && (animInfoP->xFrameTime > 0)) {
+		h = (-xTime + animInfoP->xFrameTime - 1) / animInfoP->xFrameTime;
+		xTime += h * animInfoP->xFrameTime;
 		h %= nFrames;
 		if ((nObject & 1) && (OBJECTS [nObject].info.nType != OBJ_EXPLOSION)) 
 			vciP->nCurFrame -= h;
@@ -172,8 +172,8 @@ else {
 void UpdateFlagClips (void)
 {
 if (!gameStates.app.bDemoData) {
-	UpdatePowerupClip (gameData.pig.flags [0].vcP, &gameData.pig.flags [0].vci, 0);
-	UpdatePowerupClip (gameData.pig.flags [1].vcP, &gameData.pig.flags [1].vci, 0);
+	UpdatePowerupClip (gameData.pig.flags [0].animInfoP, &gameData.pig.flags [0].animState, 0);
+	UpdatePowerupClip (gameData.pig.flags [1].animInfoP, &gameData.pig.flags [1].animState, 0);
 	}
 }
 
@@ -184,14 +184,14 @@ void CObject::DoPowerupFrame (void)
 	int32_t	i = OBJ_IDX (this);
 //if (gameStates.app.tick40fps.bTick) 
 if (info.renderType != RT_POLYOBJ) {
-	tVideoClipInfo	*vciP = &rType.vClipInfo;
-	tVideoClip	*vcP = ((vciP->nClipIndex < 0) || (vciP->nClipIndex >= MAX_VCLIPS)) ? NULL : gameData.effects.vClips [0] + vciP->nClipIndex;
-	UpdatePowerupClip (vcP, vciP, i);
+	tAnimationState	*vciP = &rType.animationInfo;
+	tAnimationInfo	*animInfoP = ((vciP->nClipIndex < 0) || (vciP->nClipIndex >= MAX_VCLIPS)) ? NULL : gameData.effects.vClips [0] + vciP->nClipIndex;
+	UpdatePowerupClip (animInfoP, vciP, i);
 	}
 if (info.xLifeLeft <= 0) {
-	CreateExplosion (this, info.nSegment, info.position.vPos, info.position.vPos, I2X (7) / 2, VCLIP_POWERUP_DISAPPEARANCE);
-	if (gameData.effects.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound > -1)
-		audio.CreateObjectSound (gameData.effects.vClips [0][VCLIP_POWERUP_DISAPPEARANCE].nSound, SOUNDCLASS_GENERIC, i);
+	CreateExplosion (this, info.nSegment, info.position.vPos, info.position.vPos, I2X (7) / 2, ANIM_POWERUP_DISAPPEARANCE);
+	if (gameData.effects.vClips [0][ANIM_POWERUP_DISAPPEARANCE].nSound > -1)
+		audio.CreateObjectSound (gameData.effects.vClips [0][ANIM_POWERUP_DISAPPEARANCE].nSound, SOUNDCLASS_GENERIC, i);
 	}
 }
 
@@ -206,14 +206,14 @@ if (objP->info.nType == OBJ_MONSTERBALL) {
 	DrawMonsterball (objP, 1.0f, 0.5f, 0.0f, 0.9f);
 	RenderMslLockIndicator (objP);
 	}
-else if ((objP->rType.vClipInfo.nClipIndex >= -MAX_ADDON_BITMAP_FILES) && (objP->rType.vClipInfo.nClipIndex < MAX_VCLIPS)) {
+else if ((objP->rType.animationInfo.nClipIndex >= -MAX_ADDON_BITMAP_FILES) && (objP->rType.animationInfo.nClipIndex < MAX_VCLIPS)) {
 	if ((objP->info.nId < MAX_POWERUP_TYPES_D2) || ((objP->info.nType == OBJ_EXPLOSION) && (objP->info.nId < MAX_VCLIPS))) {
-			tBitmapIndex*	frameP = gameData.effects.vClips [0][objP->rType.vClipInfo.nClipIndex].frames;
-			int32_t			iFrame = objP->rType.vClipInfo.nCurFrame;
+			tBitmapIndex*	frameP = gameData.effects.vClips [0][objP->rType.animationInfo.nClipIndex].frames;
+			int32_t			iFrame = objP->rType.animationInfo.nCurFrame;
 		DrawObjectBitmap (objP, frameP->index, frameP [iFrame].index, iFrame, NULL, 0);
 		}
 	else {
-		DrawObjectBitmap (objP, objP->rType.vClipInfo.nClipIndex, objP->rType.vClipInfo.nClipIndex, objP->rType.vClipInfo.nCurFrame, NULL, 1);
+		DrawObjectBitmap (objP, objP->rType.animationInfo.nClipIndex, objP->rType.animationInfo.nClipIndex, objP->rType.animationInfo.nCurFrame, NULL, 1);
 		}
 	}
 #if DBG
