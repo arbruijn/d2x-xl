@@ -328,7 +328,7 @@ return NULL;
 tAnimationInfo *FindAnimation (int32_t nTexture)
 {
 	int32_t	h, i, j;
-	tAnimationInfo *animInfoP = gameData.effects.vClips [0].Buffer ();
+	tAnimationInfo *animInfoP = gameData.effects.animations [0].Buffer ();
 
 for (i = gameData.effects.nClips [0]; i; i--, animInfoP++) {
 	for (h = animInfoP->nFrameCount, j = 0; j < h; j++)
@@ -428,7 +428,7 @@ pf = gameData.pig.flags + i;
 pf->bmi.index = nIndex;
 pf->animInfoP = FindAnimation (nIndex);
 pf->animState.nClipIndex = gameData.objs.pwrUp.info [46 + i].nClipIndex;	//46 is the blue flag powerup
-pf->animState.xFrameTime = gameData.effects.vClips [0][pf->animState.nClipIndex].xFrameTime;
+pf->animState.xFrameTime = gameData.effects.animations [0][pf->animState.nClipIndex].xFrameTime;
 pf->animState.nCurFrame = 0;
 }
 
@@ -816,7 +816,7 @@ bmP->SetFrameCount (uint8_t (nFrames));
 if ((nIndex >= 0) && (nIndex < 0x7FFFFFFF)) {	// replacement texture for a lores game texture
 	if (bmP->Height () > bmP->Width ()) {
 		tEffectInfo	*effectInfoP = NULL;
-		tWallEffect *wcP;
+		tWallEffect *wallEffectP;
 		tAnimationInfo *animInfoP;
 		while ((effectInfoP = FindEffect (effectInfoP, nIndex))) {
 			//e->vc.nFrameCount = nFrames;
@@ -824,9 +824,9 @@ if ((nIndex >= 0) && (nIndex < 0x7FFFFFFF)) {	// replacement texture for a lores
 			//effectInfoP->animationInfo.flags |= WCF_ALTFMT;
 			}
 		if (!effectInfoP) {
-			if ((wcP = FindWallEffect (nIndex))) {
+			if ((wallEffectP = FindWallEffect (nIndex))) {
 			//w->nFrameCount = nFrames;
-				wcP->flags |= WCF_ALTFMT;
+				wallEffectP->flags |= WCF_ALTFMT;
 				}
 			else if ((animInfoP = FindAnimation (nIndex))) {
 				//v->nFrameCount = nFrames;
@@ -1067,16 +1067,16 @@ if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
 			bm.SetFrameCount ((uint8_t) nFrames);
 			if (nFrames > 1) {
 				tEffectInfo	*effectInfoP = NULL;
-				tWallEffect *wcP;
+				tWallEffect *wallEffectP;
 				tAnimationInfo *animInfoP;
 				while ((effectInfoP = FindEffect (effectInfoP, indices [i]))) {
 					//e->vc.nFrameCount = nFrames;
 					effectInfoP->flags |= EF_ALTFMT | EF_FROMPOG;
 					}
 				if (!effectInfoP) {
-					if ((wcP = FindWallEffect (indices [i]))) {
+					if ((wallEffectP = FindWallEffect (indices [i]))) {
 						//w->nFrameCount = nFrames;
-						wcP->flags |= WCF_ALTFMT | WCF_FROMPOG;
+						wallEffectP->flags |= WCF_ALTFMT | WCF_FROMPOG;
 						}
 					else if ((animInfoP = FindAnimation (i))) {
 						//v->nFrameCount = nFrames;

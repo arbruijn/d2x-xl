@@ -84,7 +84,7 @@ static void OglCacheAnimationTextures (int32_t i, int32_t nTransp)
 {
 if ((i >= 0) && !bVClipLoaded [i]) {
 	bVClipLoaded [i] = true;
-	OglCacheAnimationTextures (&gameData.effects.vClips [0][i], nTransp);
+	OglCacheAnimationTextures (&gameData.effects.animations [0][i], nTransp);
 	}
 }
 

@@ -119,18 +119,18 @@ if ((nWeaponType < 0) || (nWeaponType > gameData.weapons.nTypes [0]))
 if (gameData.weapons.info [nWeaponType].picture.index)
 	LoadTexture (gameData.weapons.info [nWeaponType].hiresPicture.index, 0, 0);
 if (gameData.weapons.info [nWeaponType].nFlashAnimation >= 0)
-	LoadVClipTextures (&gameData.effects.vClips [0][gameData.weapons.info [nWeaponType].nFlashAnimation], 0);
+	LoadVClipTextures (&gameData.effects.animations [0][gameData.weapons.info [nWeaponType].nFlashAnimation], 0);
 if (gameData.weapons.info [nWeaponType].nWallHitAnimation >= 0)
-	LoadVClipTextures (&gameData.effects.vClips [0][gameData.weapons.info [nWeaponType].nWallHitAnimation], 0);
+	LoadVClipTextures (&gameData.effects.animations [0][gameData.weapons.info [nWeaponType].nWallHitAnimation], 0);
 if (WI_damage_radius (nWeaponType)) {
 	// Robot_hit_vclips are actually badass_vclips
 	if (gameData.weapons.info [nWeaponType].nRobotHitAnimation >= 0)
-		LoadVClipTextures (&gameData.effects.vClips [0][gameData.weapons.info [nWeaponType].nRobotHitAnimation], 0);
+		LoadVClipTextures (&gameData.effects.animations [0][gameData.weapons.info [nWeaponType].nRobotHitAnimation], 0);
 	}
 switch (gameData.weapons.info [nWeaponType].renderType) {
 	case WEAPON_RENDER_VCLIP:
 		if (gameData.weapons.info [nWeaponType].nAnimationIndex >= 0)
-			LoadVClipTextures (&gameData.effects.vClips [0][gameData.weapons.info [nWeaponType].nAnimationIndex], 0);
+			LoadVClipTextures (&gameData.effects.animations [0][gameData.weapons.info [nWeaponType].nAnimationIndex], 0);
 		break;
 
 	case WEAPON_RENDER_NONE:
@@ -157,16 +157,16 @@ void LoadRobotTextures (int32_t robotIndex)
 // Page in robotIndex
 LoadModelTextures (ROBOTINFO (robotIndex).nModel);
 if (ROBOTINFO (robotIndex).nExp1VClip >= 0)
-	LoadVClipTextures (&gameData.effects.vClips [0][ROBOTINFO (robotIndex).nExp1VClip], 0);
+	LoadVClipTextures (&gameData.effects.animations [0][ROBOTINFO (robotIndex).nExp1VClip], 0);
 if (ROBOTINFO (robotIndex).nExp2VClip >= 0)
-	LoadVClipTextures (&gameData.effects.vClips [0][ROBOTINFO (robotIndex).nExp2VClip], 0);
+	LoadVClipTextures (&gameData.effects.animations [0][ROBOTINFO (robotIndex).nExp2VClip], 0);
 // Page in his weapons
 LoadWeaponTextures (ROBOTINFO (robotIndex).nWeaponType);
 // A super-boss can gate in robots...
 if (ROBOTINFO (robotIndex).bossFlag == 2) {
 	for (i = 0; i < 13; i++)
 		LoadRobotTextures (superBossGateTypeList [i]);
-	LoadVClipTextures (&gameData.effects.vClips [0][ANIM_MORPHING_ROBOT], 0);
+	LoadVClipTextures (&gameData.effects.animations [0][ANIM_MORPHING_ROBOT], 0);
 	}
 }
 
@@ -201,7 +201,7 @@ switch (info.renderType) {
 		break;
 
 	case RT_HOSTAGE:
-		LoadVClipTextures (gameData.effects.vClips [0] + rType.animationInfo.nClipIndex, 0);
+		LoadVClipTextures (gameData.effects.animations [0] + rType.animationInfo.nClipIndex, 0);
 		break;
 
 	case RT_LASER: 
@@ -212,7 +212,7 @@ switch (info.nType) {
 	case OBJ_PLAYER:
 		v = GetExplosionVClip (this, 0);
 		if (v>= 0)
-			LoadVClipTextures (gameData.effects.vClips [0] + v, 0);
+			LoadVClipTextures (gameData.effects.animations [0] + v, 0);
 		break;
 
 	case OBJ_ROBOT:
@@ -268,7 +268,7 @@ void CSegment::LoadBotGenTextures (void)
 
 if (m_function != SEGMENT_FUNC_ROBOTMAKER)
 	return;
-LoadVClipTextures (&gameData.effects.vClips [0][ANIM_MORPHING_ROBOT], 0);
+LoadVClipTextures (&gameData.effects.animations [0][ANIM_MORPHING_ROBOT], 0);
 if (!gameData.producers.robotMakers [m_nObjProducer].objFlags)
 	return;
 for (i = 0; i < 2; i++, robotIndex += 32) {
@@ -341,7 +341,7 @@ void LoadPowerupTextures (void)
 {
 for (int32_t i = 0; i < gameData.objs.pwrUp.nTypes; i++)
 	if (gameData.objs.pwrUp.info [i].nClipIndex>= 0)
-		LoadVClipTextures (&gameData.effects.vClips [0][gameData.objs.pwrUp.info [i].nClipIndex], 0);
+		LoadVClipTextures (&gameData.effects.animations [0][gameData.objs.pwrUp.info [i].nClipIndex], 0);
 }
 
 //------------------------------------------------------------------------------
@@ -396,8 +396,8 @@ LoadPowerupTextures ();
 LoadWeaponTextures ();
 LoadPowerupTextures ();
 LoadGaugeTextures ();
-LoadVClipTextures (&gameData.effects.vClips [0][ANIM_PLAYER_APPEARANCE], 0);
-LoadVClipTextures (&gameData.effects.vClips [0][ANIM_POWERUP_DISAPPEARANCE], 0);
+LoadVClipTextures (&gameData.effects.animations [0][ANIM_PLAYER_APPEARANCE], 0);
+LoadVClipTextures (&gameData.effects.animations [0][ANIM_POWERUP_DISAPPEARANCE], 0);
 LoadAddonTextures ();
 #if 0
 if (bBlackScreen) {
@@ -452,7 +452,7 @@ else if (nTouchWall < gameData.walls.nWalls) {
 else if (nTouchPowerup1 < gameData.objs.pwrUp.nTypes) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchPowerup1 < gameData.objs.pwrUp.nTypes); i++, nTouchPowerup1++)
 		if (gameData.objs.pwrUp.info [nTouchPowerup1].nClipIndex>= 0)
-			LoadVClipTextures (&gameData.effects.vClips [0][gameData.objs.pwrUp.info [nTouchPowerup1].nClipIndex], 0);
+			LoadVClipTextures (&gameData.effects.animations [0][gameData.objs.pwrUp.info [nTouchPowerup1].nClipIndex], 0);
 	}
 else if (nTouchWeapon < gameData.weapons.nTypes [0]) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchWeapon < gameData.weapons.nTypes [0]); i++)
@@ -461,7 +461,7 @@ else if (nTouchWeapon < gameData.weapons.nTypes [0]) {
 else if (nTouchPowerup2 < gameData.objs.pwrUp.nTypes) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchPowerup2 < gameData.objs.pwrUp.nTypes); i++, nTouchPowerup2++)
 		if (gameData.objs.pwrUp.info [nTouchPowerup2].nClipIndex>= 0)
-			LoadVClipTextures (&gameData.effects.vClips [0][gameData.objs.pwrUp.info [nTouchPowerup2].nClipIndex], 0);
+			LoadVClipTextures (&gameData.effects.animations [0][gameData.objs.pwrUp.info [nTouchPowerup2].nClipIndex], 0);
 	}
 else if (nTouchGauge < MAX_GAUGE_BMS) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchGauge < MAX_GAUGE_BMS); i++, nTouchGauge++)
@@ -469,8 +469,8 @@ else if (nTouchGauge < MAX_GAUGE_BMS) {
 			LoadTexture (gameData.cockpit.gauges [1][nTouchGauge].index, 0, 0);
 	}
 else {
-	LoadVClipTextures (&gameData.effects.vClips [0][ANIM_PLAYER_APPEARANCE], 0);
-	LoadVClipTextures (&gameData.effects.vClips [0][ANIM_POWERUP_DISAPPEARANCE], 0);
+	LoadVClipTextures (&gameData.effects.animations [0][ANIM_PLAYER_APPEARANCE], 0);
+	LoadVClipTextures (&gameData.effects.animations [0][ANIM_POWERUP_DISAPPEARANCE], 0);
 	LoadAddonTextures ();
 	key = -2;
 	//paletteManager.ResumeEffect ();

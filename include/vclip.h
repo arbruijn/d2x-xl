@@ -58,6 +58,6 @@ void ConvertWeaponToVClip (CObject *objP);
 CRGBColor *AnimationColor (CObject *objP);
 
 void ReadVideoClip (tAnimationInfo& vc, CFile& cf);
-int32_t ReadVideoClips (CArray<tAnimationInfo>& vc, int32_t n, CFile& cf);
+int32_t ReadAnimationInfo (CArray<tAnimationInfo>& vc, int32_t n, CFile& cf);
 
 #endif /* _ANIM_H */

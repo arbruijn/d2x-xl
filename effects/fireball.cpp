@@ -147,7 +147,7 @@ if (nObject < 0)
 
 explObjP = OBJECTS + nObject;
 //now set explosion-specific data
-explObjP->SetLife (gameData.effects.vClips [0][nVClip].xTotalTime);
+explObjP->SetLife (gameData.effects.animations [0][nVClip].xTotalTime);
 if ((nVClip != ANIM_MORPHING_ROBOT) && 
 	 //(nVClip != ANIM_PLAYER_APPEARANCE) &&
 	 (nVClip != ANIM_POWERUP_DISAPPEARANCE) &&

@@ -130,7 +130,7 @@ objP->info.nCreator = BOSS_GATE_PRODUCER_NUM;	//	flag this robot as having been 
 default_behavior = ROBOTINFO (objP->info.nId).behavior;
 InitAIObject (objP->Index (), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
 CreateExplosion (nSegment, vObjPos, I2X (10), ANIM_MORPHING_ROBOT);
-audio.CreateSegmentSound (gameData.effects.vClips [0][ANIM_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0 , I2X (1));
+audio.CreateSegmentSound (gameData.effects.animations [0][ANIM_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0 , I2X (1));
 objP->MorphStart ();
 gameData.bosses [nBoss].m_nLastGateTime = gameData.time.xGame;
 LOCALPLAYER.numRobotsLevel++;
@@ -295,7 +295,7 @@ gameData.bosses [i].m_nLastTeleportTime = gameData.time.xGame;
 objP->info.position.vPos = vNewPos;
 vBossDir = LOCALOBJECT.info.position.vPos - vNewPos;
 objP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
-audio.CreateSegmentSound (gameData.effects.vClips [0][ANIM_MORPHING_ROBOT].nSound, nRandSeg, 0, objP->info.position.vPos, 0 , I2X (1));
+audio.CreateSegmentSound (gameData.effects.animations [0][ANIM_MORPHING_ROBOT].nSound, nRandSeg, 0, objP->info.position.vPos, 0 , I2X (1));
 audio.DestroyObjectSound (nObject);
 audio.CreateObjectSound (ROBOTINFO (objP->info.nId).seeSound, SOUNDCLASS_ROBOT, objP->Index (), 1, I2X (1), I2X (512));	//	I2X (512) means play twice as loud
 //	After a teleport, boss can fire right away.

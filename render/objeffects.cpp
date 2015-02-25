@@ -117,8 +117,8 @@ else {
 	if (bWarp || effectObjP) {
 		if (effectObjP) {
 			effectObjP->info.position.mOrient = info.position.mOrient;
-			if (gameData.effects.vClips [0][ANIM_PLAYER_APPEARANCE].nSound > -1)
-				audio.CreateObjectSound (gameData.effects.vClips [0][ANIM_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (effectObjP));
+			if (gameData.effects.animations [0][ANIM_PLAYER_APPEARANCE].nSound > -1)
+				audio.CreateObjectSound (gameData.effects.animations [0][ANIM_PLAYER_APPEARANCE].nSound, SOUNDCLASS_PLAYER, OBJ_IDX (effectObjP));
 			}
 		if (!bWarp)
 			postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), effectObjP ? effectObjP->LifeLeft () : I2X (1), info.xSize, 1, OBJPOS (this)->vPos));

@@ -646,7 +646,7 @@ switch (nType) {
 		objP->mType.physInfo.mass = I2X (1);
 		objP->mType.physInfo.flags = PF_BOUNCE;
 		objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
-		objP->rType.animationInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
+		objP->rType.animationInfo.xFrameTime = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
 		objP->rType.animationInfo.nCurFrame = 0;
 
 		switch (objP->info.nId) {
@@ -804,7 +804,7 @@ for (i = 0; i < nThrusters; i++) {
 		continue;
 	if (xLifeTime != -1) {
 		blobObjP->rType.animationInfo.xTotalTime = xLifeTime;
-		blobObjP->rType.animationInfo.xFrameTime = FixMulDiv (gameData.effects.vClips [0][ANIM_AFTERBURNER_BLOB].xFrameTime,
+		blobObjP->rType.animationInfo.xFrameTime = FixMulDiv (gameData.effects.animations [0][ANIM_AFTERBURNER_BLOB].xFrameTime,
 																		  xLifeTime, blobObjP->info.xLifeLeft);
 		blobObjP->SetLife (xLifeTime);
 		}

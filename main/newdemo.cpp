@@ -814,7 +814,7 @@ void NDSetPowerupClip (CObject *objP)
 //if (gameStates.app.tick40fps.bTick) 
 tAnimationState	*vciP = &objP->rType.animationInfo;
 if (vciP->nClipIndex >= 0) {
-	tAnimationInfo	*animInfoP = gameData.effects.vClips [0] + vciP->nClipIndex;
+	tAnimationInfo	*animInfoP = gameData.effects.animations [0] + vciP->nClipIndex;
 	vciP->nCurFrame = animInfoP->xFrameTime ? ((gameData.time.xGame - gameData.demo.xStartTime) / animInfoP->xFrameTime) % animInfoP->nFrameCount : 0;
 	}
 }

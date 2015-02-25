@@ -185,13 +185,13 @@ void CObject::DoPowerupFrame (void)
 //if (gameStates.app.tick40fps.bTick) 
 if (info.renderType != RT_POLYOBJ) {
 	tAnimationState	*vciP = &rType.animationInfo;
-	tAnimationInfo	*animInfoP = ((vciP->nClipIndex < 0) || (vciP->nClipIndex >= MAX_VCLIPS)) ? NULL : gameData.effects.vClips [0] + vciP->nClipIndex;
+	tAnimationInfo	*animInfoP = ((vciP->nClipIndex < 0) || (vciP->nClipIndex >= MAX_VCLIPS)) ? NULL : gameData.effects.animations [0] + vciP->nClipIndex;
 	UpdatePowerupClip (animInfoP, vciP, i);
 	}
 if (info.xLifeLeft <= 0) {
 	CreateExplosion (this, info.nSegment, info.position.vPos, info.position.vPos, I2X (7) / 2, ANIM_POWERUP_DISAPPEARANCE);
-	if (gameData.effects.vClips [0][ANIM_POWERUP_DISAPPEARANCE].nSound > -1)
-		audio.CreateObjectSound (gameData.effects.vClips [0][ANIM_POWERUP_DISAPPEARANCE].nSound, SOUNDCLASS_GENERIC, i);
+	if (gameData.effects.animations [0][ANIM_POWERUP_DISAPPEARANCE].nSound > -1)
+		audio.CreateObjectSound (gameData.effects.animations [0][ANIM_POWERUP_DISAPPEARANCE].nSound, SOUNDCLASS_GENERIC, i);
 	}
 }
 
@@ -208,7 +208,7 @@ if (objP->info.nType == OBJ_MONSTERBALL) {
 	}
 else if ((objP->rType.animationInfo.nClipIndex >= -MAX_ADDON_BITMAP_FILES) && (objP->rType.animationInfo.nClipIndex < MAX_VCLIPS)) {
 	if ((objP->info.nId < MAX_POWERUP_TYPES_D2) || ((objP->info.nType == OBJ_EXPLOSION) && (objP->info.nId < MAX_VCLIPS))) {
-			tBitmapIndex*	frameP = gameData.effects.vClips [0][objP->rType.animationInfo.nClipIndex].frames;
+			tBitmapIndex*	frameP = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].frames;
 			int32_t			iFrame = objP->rType.animationInfo.nCurFrame;
 		DrawObjectBitmap (objP, frameP->index, frameP [iFrame].index, iFrame, NULL, 0);
 		}

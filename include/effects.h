@@ -71,7 +71,7 @@ void RestartEffect (int32_t nEffect);
  * reads n tEffectInfo structs from a CFILE
  */
 void ReadEffectClip (tEffectInfo& effectInfo, CFile& cf);
-int32_t ReadEffectClips (CArray<tEffectInfo>& effectInfo, int32_t n, CFile& cf);
+int32_t ReadEffectInfo (CArray<tEffectInfo>& effectInfo, int32_t n, CFile& cf);
 
 CBitmap *SetupHiresAnim (int16_t *frameP, int32_t nFrames, int32_t nBaseTex, int32_t bIndirect, int32_t bObj, int32_t *pnFrames, CBitmap* bmP = NULL);
 void ResetPogEffects (void);

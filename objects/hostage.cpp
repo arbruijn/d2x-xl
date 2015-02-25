@@ -37,7 +37,7 @@ int32_t nHostageVClips [MAX_HOSTAGE_TYPES] = {33};	// tAnimationInfo num for eac
 
 void DrawHostage (CObject *objP)
 {
-DrawObjectRodTexPoly (objP, gameData.effects.vClips [0][objP->rType.animationInfo.nClipIndex].frames [objP->rType.animationInfo.nCurFrame], 
+DrawObjectRodTexPoly (objP, gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].frames [objP->rType.animationInfo.nCurFrame], 
 							 1, objP->rType.animationInfo.nCurFrame);
 gameData.render.nTotalSprites++;
 }

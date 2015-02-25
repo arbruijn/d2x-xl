@@ -1286,7 +1286,7 @@ CEffectData::CEffectData ()
 {
 for (int32_t i = 0; i < 2; i++) {
 	effects [i].Create (MAX_EFFECTS);
-	vClips [i].Create (MAX_VCLIPS);
+	animations [i].Create (MAX_VCLIPS);
 	}
 }
 
@@ -2120,7 +2120,7 @@ gameData.pig.tex.bitmapFiles [gameStates.app.bD1Data].ShareBuffer (gameData.pig.
 gameData.pig.tex.tMapInfo [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex.tMapInfoP);
 gameData.pig.sound.sounds [gameStates.app.bD1Data].ShareBuffer (gameData.pig.sound.soundP);
 gameData.effects.effects [gameStates.app.bD1Data].ShareBuffer (gameData.effects.effectP);
-gameData.effects.vClips [gameStates.app.bD1Data].ShareBuffer (gameData.effects.vClipP);
+gameData.effects.animations [gameStates.app.bD1Data].ShareBuffer (gameData.effects.vClipP);
 gameData.walls.anims [gameStates.app.bD1Data].ShareBuffer (gameData.walls.animP);
 gameData.bots.info [gameStates.app.bD1Data].ShareBuffer (gameData.bots.infoP);
 }

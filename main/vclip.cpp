@@ -39,7 +39,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 inline int32_t CurFrame (CObject *objP, int32_t nClip, fix timeToLive, int32_t nFrames = -1)
 {
-tAnimationInfo	*animInfoP = gameData.effects.vClips [0] + nClip;
+tAnimationInfo	*animInfoP = gameData.effects.animations [0] + nClip;
 if (nFrames < 0)
 	nFrames = animInfoP->nFrameCount;
 //	iFrame = (nFrames - X2I (FixDiv ((nFrames - 1) * timeToLive, animInfoP->xTotalTime))) - 1;
@@ -62,7 +62,7 @@ CRGBColor *AnimationColor (CObject *objP)
 	CBitmap			*bmP;
 
 if (nVClip) {
-	tAnimationInfo *animInfoP = gameData.effects.vClips [0] + nVClip;
+	tAnimationInfo *animInfoP = gameData.effects.animations [0] + nVClip;
 	bmi = animInfoP->frames [0];
 	}
 else
@@ -111,7 +111,7 @@ return nFrames;
 void DrawVClipObject (CObject *objP, fix timeToLive, int32_t bLit, int32_t nVClip, CFloatVector *color)
 {
 	double		ta = 0, alpha = 0;
-	tAnimationInfo*	animInfoP = gameData.effects.vClips [0] + nVClip;
+	tAnimationInfo*	animInfoP = gameData.effects.animations [0] + nVClip;
 	int32_t		nFrames = SetupHiresVClip (animInfoP, &objP->rType.animationInfo);
 	int32_t		iFrame = CurFrame (objP, nVClip, timeToLive, nFrames);
 	int32_t		bThruster = (objP->info.renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
@@ -405,7 +405,7 @@ vc.lightValue = cf.ReadFix ();
 }
 
 
-int32_t ReadVideoClips (CArray<tAnimationInfo>& vc, int32_t n, CFile& cf)
+int32_t ReadAnimationInfo (CArray<tAnimationInfo>& vc, int32_t n, CFile& cf)
 {
 	int32_t i;
 

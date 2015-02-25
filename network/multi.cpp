@@ -3214,7 +3214,7 @@ FORALL_STATIC_OBJS (objP) {
 			if (nObject != -1) {
 				CObject	*objP = OBJECTS + nObject;
 				objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].nClipIndex;
-				objP->rType.animationInfo.xFrameTime = gameData.effects.vClips [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
+				objP->rType.animationInfo.xFrameTime = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
 				objP->rType.animationInfo.nCurFrame = 0;
 				objP->mType.physInfo.drag = 512;     //1024;
 				objP->mType.physInfo.mass = I2X (1);

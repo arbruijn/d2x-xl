@@ -292,19 +292,19 @@ PrintLog (-1);
 
 gameData.effects.nClips [0] = cf.ReadInt ();
 /*---*/PrintLog (1, "Loading %d animation clips\n", gameData.effects.nClips [0]);
-ReadVideoClips (gameData.effects.vClips [0], gameData.effects.nClips [0], cf);
+ReadAnimationInfo (gameData.effects.animations [0], gameData.effects.nClips [0], cf);
 PrintLog (-1);
 
 gameData.effects.nEffects [0] = cf.ReadInt ();
 /*---*/PrintLog (1, "Loading %d animation descriptions\n", gameData.effects.nEffects [0]);
-ReadEffectClips (gameData.effects.effects [0], gameData.effects.nEffects [0], cf);
+ReadEffectInfo (gameData.effects.effects [0], gameData.effects.nEffects [0], cf);
 // red glow texture animates way too fast
 gameData.effects.effects [0][32].animationInfo.xTotalTime *= 10;
 gameData.effects.effects [0][32].animationInfo.xFrameTime *= 10;
 gameData.walls.nAnims [0] = cf.ReadInt ();
 PrintLog (-1);
 /*---*/PrintLog (1, "Loading %d CWall animations\n", gameData.walls.nAnims [0]);
-ReadWallClips (gameData.walls.anims [0], gameData.walls.nAnims [0], cf);
+ReadWallEffectInfo (gameData.walls.anims [0], gameData.walls.nAnims [0], cf);
 PrintLog (-1);
 
 gameData.bots.nTypes [0] = cf.ReadInt ();
@@ -582,12 +582,12 @@ PrintLog (-1);
 
 gameData.effects.nClips [1] = cf.ReadInt ();
 /*---*/PrintLog (1, "Loading %d animation clips\n", gameData.effects.nClips [1]);
-ReadVideoClips (gameData.effects.vClips [1], D1_ANIM_MAXNUM, cf);
+ReadAnimationInfo (gameData.effects.animations [1], D1_ANIM_MAXNUM, cf);
 PrintLog (-1);
 
 gameData.effects.nEffects [1] = cf.ReadInt ();
 /*---*/PrintLog (1, "Loading %d animation descriptions\n", gameData.effects.nClips [1]);
-ReadEffectClips (gameData.effects.effects [1], D1_MAX_EFFECTS, cf);
+ReadEffectInfo (gameData.effects.effects [1], D1_MAX_EFFECTS, cf);
 PrintLog (-1);
 
 gameData.walls.nAnims [1] = cf.ReadInt ();

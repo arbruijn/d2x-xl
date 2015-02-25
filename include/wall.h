@@ -314,7 +314,7 @@ int32_t ReadD1WallClips(tWallEffect *wc, int32_t n, CFile& cf);
 /*
  * reads n tWallEffect structs from a CFILE
  */
-int32_t ReadWallClips(CArray<tWallEffect>& wc, int32_t n, CFile& cf);
+int32_t ReadWallEffectInfo(CArray<tWallEffect>& wc, int32_t n, CFile& cf);
 
 /*
  * reads a tWallV16 structure from a CFILE

@@ -440,10 +440,10 @@ switch (nObjType) {
 			return 0;
 		if ((objP->info.renderType == RT_THRUSTER) || (objP->info.renderType == RT_EXPLBLAST) || (objP->info.renderType == RT_SHOCKWAVE) || (objP->info.renderType == RT_SHRAPNELS))
 			return 0;
-		else if (objP->info.nId >= gameData.effects.vClips [0].Length ()) 
+		else if (objP->info.nId >= gameData.effects.animations [0].Length ()) 
 			return 0;
 		else {
-			tAnimationInfo*	animInfoP = gameData.effects.vClips [0] + objP->info.nId;
+			tAnimationInfo*	animInfoP = gameData.effects.animations [0] + objP->info.nId;
 			fix			xLight = animInfoP->lightValue;
 			int32_t		i, j;
 			CBitmap*		bmoP, * bmP; // = gameData.pig.tex.bitmapP [animInfoP->frames [0].index].Override (-1);
@@ -496,7 +496,7 @@ switch (nObjType) {
 				colorP->Blue () /= maxColor;
 				}
 			if (objP->info.xLifeLeft < I2X (4))
-				return FixMul (FixDiv (objP->info.xLifeLeft, gameData.effects.vClips [0][objP->info.nId].xTotalTime), xLight);
+				return FixMul (FixDiv (objP->info.xLifeLeft, gameData.effects.animations [0][objP->info.nId].xTotalTime), xLight);
 			else
 				return xLight;
 			}

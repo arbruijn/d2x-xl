@@ -57,7 +57,7 @@ void ResetPogEffects (void)
 {
 	int32_t				i, bD1;
 	tEffectInfo*		effectInfoP;
-	tWallEffect*			wcP;
+	tWallEffect*		wallEffectP;
 	tAnimationInfo*	animInfoP;
 
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
@@ -66,10 +66,10 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 			effectInfoP->flags &= ~(EF_ALTFMT | EF_FROMPOG | EF_INITIALIZED);
 			effectInfoP->nCurFrame = 0;
 			}
-for (i = gameData.walls.nAnims [gameStates.app.bD1Data], wcP = gameData.walls.animP.Buffer (); i; i--, wcP++)
-	//if (wcP->flags & WCF_FROMPOG)
-		wcP->flags &= ~(WCF_ALTFMT | WCF_FROMPOG | WCF_INITIALIZED);
-for (i = gameData.effects.nClips [0], animInfoP = gameData.effects.vClips [0].Buffer (); i; i--, animInfoP++)
+for (i = gameData.walls.nAnims [gameStates.app.bD1Data], wallEffectP = gameData.walls.animP.Buffer (); i; i--, wallEffectP++)
+	//if (wallEffectP->flags & WCF_FROMPOG)
+		wallEffectP->flags &= ~(WCF_ALTFMT | WCF_FROMPOG | WCF_INITIALIZED);
+for (i = gameData.effects.nClips [0], animInfoP = gameData.effects.animations [0].Buffer (); i; i--, animInfoP++)
 	//if (animInfoP->flags & WCF_FROMPOG)
 		animInfoP->flags &= ~(WCF_ALTFMT | WCF_FROMPOG | WCF_INITIALIZED);
 }
@@ -441,7 +441,7 @@ ec.nSegment = cf.ReadInt ();
 ec.nSide = cf.ReadInt ();
 }
 
-int32_t ReadEffectClips (CArray<tEffectInfo>& ec, int32_t n, CFile& cf)
+int32_t ReadEffectInfo (CArray<tEffectInfo>& ec, int32_t n, CFile& cf)
 {
 	int32_t i;
 
