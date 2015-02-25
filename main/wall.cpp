@@ -1017,7 +1017,7 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	if ((tm = segP->m_sides [nSide].m_nOvlTex)) {
 		int32_t ec = gameData.pig.tex.tMapInfoP [tm].nEffectClip;
 		tEffectInfo* effectInfoP = (ec < 0) ? NULL : gameData.effects.effectP + ec;
-		int32_t db = effectInfoP ? effectInfoP->nDestBm : -1;
+		int32_t db = effectInfoP ? effectInfoP->destroyed.nTexture : -1;
 
 		if (((ec != -1) && (db != -1) && !(effectInfoP->flags & EF_ONE_SHOT)) ||
 		 	 ((ec == -1) && (gameData.pig.tex.tMapInfoP [tm].destroyed != -1))) {

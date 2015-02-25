@@ -207,7 +207,7 @@ if (!gameData.hoard.bInitialized) {
 	Assert (gameData.effects.nEffects [0] < MAX_EFFECTS);
 	if ((effectInfoP = gameData.effects.effects [0] + gameData.hoard.goal.nClip)) {
 		*effectInfoP = gameData.effects.effects [0][94];        //copy from blue goal
-		effectInfoP->changingWallTexture = gameData.pig.tex.nTextures [0];
+		effectInfoP->changing.nWallTexture = gameData.pig.tex.nTextures [0];
 		effectInfoP->animationInfo.nFrameCount = gameData.hoard.goal.nFrames;
 		effectInfoP->flags &= ~EF_INITIALIZED;
 		}

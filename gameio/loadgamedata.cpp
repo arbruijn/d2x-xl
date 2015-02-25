@@ -532,7 +532,7 @@ void BMReadGameDataD1 (CFile& cf)
 	tTexMapInfo		*pt;
 	tRobotInfo		*pr;
 	CPolyModel		model;
-	uint8_t				tmpSounds [D1_MAX_SOUNDS];
+	uint8_t			tmpSounds [D1_MAX_SOUNDS];
 
 cf.ReadInt ();
 cf.Read (&gameData.pig.tex.nTextures [1], sizeof (int32_t), 1);

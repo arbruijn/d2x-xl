@@ -2176,11 +2176,11 @@ class CWallData {
 		CStack<CExplodingWall>	exploding; //[MAX_EXPLODING_WALLS];
 		CStack<CActiveDoor>		activeDoors; //[MAX_DOORS];
 		CStack<CCloakingWall>	cloaking; //[MAX_CLOAKING_WALLS];
-		CArray<tWallEffect>			anims [2]; //[MAX_WALL_ANIMS];
-		CArray<int32_t>					bitmaps; //[MAX_WALL_ANIMS];
-		int32_t							nWalls;
-		int32_t							nAnims [2];
-		CArray<tWallEffect>			animP;
+		CArray<tWallEffect>		anims [2]; //[MAX_WALL_ANIMS];
+		CArray<int32_t>			bitmaps; //[MAX_WALL_ANIMS];
+		int32_t						nWalls;
+		int32_t						nAnims [2];
+		CArray<tWallEffect>		animP;
 
 	public:
 		CWallData ();

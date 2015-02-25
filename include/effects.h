@@ -28,20 +28,28 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define EF_FROMPOG		16
 #define EF_INITIALIZED	32
 
+typedef struct tChangeEffect {
+	int16_t					nWallTexture;		//Which element of Textures array to replace.
+	int16_t					nObjectTexture;  //Which element of ObjBitmapPtrs array to replace.
+} tChangeEffect;
+
+typedef struct tDestructionEffect {
+	int32_t					nTexture;
+	int32_t					nAnimation;
+	int32_t					nEffect;
+	fix						xSize;
+} tDestroyedEffect;
+
 typedef struct tEffectInfo {
-	tAnimationInfo	animationInfo;				//embedded tAnimationInfo
-	fix				xTimeLeft;					//for sequencing
-	int32_t			nCurFrame;					//for sequencing
-	int16_t			changingWallTexture;		//Which element of Textures array to replace.
-	int16_t			changingObjectTexture;  //Which element of ObjBitmapPtrs array to replace.
-	int32_t			flags;						//see above
-	int32_t			nCritClip;					//use this clip instead of above one when mine critical
-	int32_t			nDestBm;						//use this bitmap when monitor destroyed
-	int32_t			nDestVClip;					//what tAnimationInfo to play when exploding
-	int32_t			nDestroyedClip;			//what tEffectInfo to play when exploding
-	fix				xDestSize;					//3d size of explosion
-	int32_t			nSound;						//what sound this makes
-	int32_t			nSegment, nSide;			//what seg & CSide, for one-shot clips
+	tAnimationInfo	animationInfo;						//embedded tAnimationInfo
+	fix						xTimeLeft;					//for sequencing
+	int32_t					nCurFrame;					//for sequencing
+	tChangeEffect			changing;
+	int32_t					flags;						//see above
+	int32_t					nCriticalAnimation;		//use this clip instead of above one when mine critical
+	tDestructionEffect	destroyed;
+	int32_t					nSound;						//what sound this makes
+	int32_t					nSegment, nSide;			//what seg & CSide, for one-shot clips
 } __pack__ tEffectInfo;
 
 typedef tEffectInfo D1_eclip;

@@ -547,7 +547,7 @@ void CSegment::SetTexture (int32_t nSide, CSegment *connSegP, int16_t nConnSide,
 {
 	tWallEffect*	animP = gameData.walls.animP + nAnim;
 	int16_t			nTexture = animP->frames [(animP->flags & WCF_ALTFMT) ? 0 : nFrame];
-	CBitmap*		bmP;
+	CBitmap*			bmP;
 	int32_t			nFrames;
 
 //if (gameData.demo.nState == ND_STATE_PLAYBACK)
@@ -1104,7 +1104,7 @@ else {
 	tEffectInfo* effectInfoP = gameData.effects.effectP + dtpP->nEffect;
 	if (effectInfoP->flags & EF_ONE_SHOT)
 		return 0;
-	dtpP->nBitmap = effectInfoP->nDestBm;
+	dtpP->nBitmap = effectInfoP->destroyed.nTexture;
 	if (dtpP->nBitmap < 0)
 		return 0;
 	dtpP->nSwitchType = 1;
@@ -1122,7 +1122,7 @@ int32_t CSegment::BlowupTexture (int32_t nSide, CFixVector& vHit, CObject* blowe
 	int16_t			nSound, bPermaTrigger;
 	uint8_t			vc;
 	fix				u, v;
-	fix				xDestSize;
+	fix				xDestroyedSize;
 	tEffectInfo*	effectInfoP = NULL;
 	CWall*			wallP = Wall (nSide);
 	CTrigger*		trigP;
@@ -1157,23 +1157,23 @@ if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordEffectBlowup (Index (), nSide, vHit);
 if (dtp.nSwitchType) {
 	effectInfoP = gameData.effects.effectP + dtp.nEffect;
-	xDestSize = effectInfoP->xDestSize;
-	vc = effectInfoP->nDestVClip;
+	xDestroyedSize = effectInfoP->destroyed.xSize;
+	vc = effectInfoP->destroyed.nAnimation;
 	}
 else {
-	xDestSize = I2X (20);
+	xDestroyedSize = I2X (20);
 	vc = 3;
 	}
 
-CreateExplosion (int16_t (Index ()), vHit, xDestSize, vc);
+CreateExplosion (int16_t (Index ()), vHit, xDestroyedSize, vc);
 if (dtp.nSwitchType) {
 	if ((nSound = gameData.effects.vClipP [vc].nSound) != -1)
 		audio.CreateSegmentSound (nSound, Index (), 0, vHit);
 	if ((nSound = effectInfoP->nSound) != -1)		//kill sound
 		audio.DestroySegmentSound (Index (), nSide, nSound);
-	if (!bPermaTrigger && (effectInfoP->nDestroyedClip != -1) && (gameData.effects.effectP [effectInfoP->nDestroyedClip].nSegment == -1)) {
-		tEffectInfo	*newEcP = gameData.effects.effectP + effectInfoP->nDestroyedClip;
-		int32_t nNewBm = newEcP->changingWallTexture;
+	if (!bPermaTrigger && (effectInfoP->destroyed.nEffect != -1) && (gameData.effects.effectP [effectInfoP->destroyed.nEffect].nSegment == -1)) {
+		tEffectInfo	*newEcP = gameData.effects.effectP + effectInfoP->destroyed.nEffect;
+		int32_t nNewBm = newEcP->changing.nWallTexture;
 		if (ChangeTextures (-1, nNewBm, nSide)) {
 			newEcP->xTimeLeft = EffectFrameTime (newEcP);
 			newEcP->nCurFrame = 0;
@@ -1181,7 +1181,7 @@ if (dtp.nSwitchType) {
 			newEcP->nSide = nSide;
 			newEcP->flags |= EF_ONE_SHOT | effectInfoP->flags;
 			newEcP->flags &= ~EF_INITIALIZED;
-			newEcP->nDestBm = effectInfoP->nDestBm;
+			newEcP->destroyed.nTexture = effectInfoP->destroyed.nTexture;
 
 			Assert ((nNewBm != 0) && (m_sides [nSide].m_nOvlTex != 0));
 			m_sides [nSide].m_nOvlTex = nNewBm;		//replace with destoyed

@@ -245,14 +245,14 @@ TexMergeInit (-1);
 PrintLog (1, "caching effect textures\n");
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 	for (i = 0, effectInfoP = gameData.effects.effects [bD1].Buffer (); i < gameData.effects.nEffects [bD1]; i++, effectInfoP++) {
-		if ((effectInfoP->changingWallTexture == -1) && (effectInfoP->changingObjectTexture == -1))
+		if ((effectInfoP->changing.nWallTexture == -1) && (effectInfoP->changing.nObjectTexture == -1))
 			continue;
 		if (effectInfoP->animationInfo.nFrameCount > max_efx)
 			max_efx = effectInfoP->animationInfo.nFrameCount;
 		}
 	for (ef = 0; ef < max_efx; ef++)
 		for (i = 0, effectInfoP = gameData.effects.effects [bD1].Buffer (); i < gameData.effects.nEffects [bD1]; i++, effectInfoP++) {
-			if ((effectInfoP->changingWallTexture == -1) && (effectInfoP->changingObjectTexture == -1))
+			if ((effectInfoP->changing.nWallTexture == -1) && (effectInfoP->changing.nObjectTexture == -1))
 				continue;
 			effectInfoP->xTimeLeft = -1;
 			}

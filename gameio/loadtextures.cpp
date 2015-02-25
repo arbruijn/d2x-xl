@@ -294,9 +294,9 @@ return -1;
 //------------------------------------------------------------------------------
 
 #define	CHANGING_TEXTURE(_eP)	\
-			(((_eP)->changingWallTexture >= 0) ? \
-			 (_eP)->changingWallTexture : \
-			 (_eP)->changingObjectTexture)
+			(((_eP)->changing.nWallTexture >= 0) ? \
+			 (_eP)->changing.nWallTexture : \
+			 (_eP)->changing.nObjectTexture)
 
 tEffectInfo *FindEffect (tEffectInfo *effectInfoP, int32_t nTexture)
 {
@@ -315,7 +315,7 @@ for (h = gameData.effects.nEffects [gameStates.app.bD1Data]; i < h; i++, effectI
 #if 0
 			int32_t t = FindTextureByIndex (nTexture);
 			if (t >= 0)
-				effectInfoP->changingWallTexture = t;
+				effectInfoP->changing.nWallTexture = t;
 #endif
 			return effectInfoP;
 			}

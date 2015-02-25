@@ -1747,7 +1747,7 @@ for (; i < gameData.trigs.m_nTriggers; i++) {
 		tEffectInfo *effectInfoP = gameData.effects.effectP + ec;
 		if (effectInfoP->flags & EF_ONE_SHOT)
 			continue;
-		if (effectInfoP->nDestBm < 0)
+		if (effectInfoP->destroyed.nTexture < 0)
 			continue;
 		}
 	if (TRIGGERS [i].HasTarget (nSegment, nSide))
