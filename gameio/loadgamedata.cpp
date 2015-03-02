@@ -262,8 +262,8 @@ if (left < r)
 
 void BuildTextureIndex (int32_t i, int32_t n)
 {
-	int16_t				*pti = gameData.pig.tex.textureIndex [i].Buffer ();
-	tBitmapIndex	*pbi = gameData.pig.tex.bmIndex [i].Buffer ();
+	int16_t			*pti = gameData.pig.tex.textureIndex [i].Buffer (); // translates global texture ids to level (geometry) texture ids
+	tBitmapIndex	*pbi = gameData.pig.tex.bmIndex [i].Buffer ();  // translates level texture ids to global texture ids
 
 gameData.pig.tex.textureIndex [i].Clear (0xff);
 for (i = 0; i < n; i++)
