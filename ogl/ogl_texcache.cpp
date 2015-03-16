@@ -39,7 +39,7 @@
 
 static int32_t bLoadTextures = 1;
 
-static CStaticArray< bool, MAX_VCLIPS >	bVClipLoaded;
+static CStaticArray< bool, MAX_ANIMATIONS_D2 >	bVClipLoaded;
 
 //------------------------------------------------------------------------------
 

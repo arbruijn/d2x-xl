@@ -171,7 +171,7 @@ if (!gameData.hoard.bInitialized) {
 	
 	//Create orb animation clip
 	gameData.hoard.orb.nClip = gameData.effects.nClips [0]++;
-	Assert (gameData.effects.nClips [0] <= MAX_VCLIPS);
+	Assert (gameData.effects.nClips [0] <= MAX_ANIMATIONS_D2);
 	animInfoP = &gameData.effects.animations [0][gameData.hoard.orb.nClip];
 	animInfoP->xTotalTime = I2X (1)/2;
 	animInfoP->nFrameCount = gameData.hoard.orb.nFrames;

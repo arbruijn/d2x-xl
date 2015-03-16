@@ -31,26 +31,22 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define TMI_PRODUCER     64  //this is used to remap the goals
 
 typedef struct {
-	uint8_t   flags;     //values defined above
-	uint8_t   pad[3];    //keep alignment
-	fix     lighting;  //how much light this casts
-	fix     damage;    //how much damage being against this does (for lava)
-	int16_t   nEffectClip; //the tEffectInfo that changes this, or -1
-	int16_t   destroyed; //bitmap to show when destroyed, or -1
-	int16_t   slide_u,slide_v;    //slide rates of texture, stored in 8:8 fix
-	#ifdef EDITOR
-	char    filename[13];       //used by editor to remap textures
-	char    pad2[3];
-	#endif
+	uint8_t		flags;     //values defined above
+	uint8_t		pad[3];    //keep alignment
+	fix			lighting;  //how much light this casts
+	fix			damage;    //how much damage being against this does (for lava)
+	int16_t		nEffectClip; //the tEffectInfo that changes this, or -1
+	int16_t		destroyed; //bitmap to show when destroyed, or -1
+	int16_t		slide_u,slide_v;    //slide rates of texture, stored in 8:8 fix
 } __pack__ tTexMapInfo;
 
 typedef struct {
 	char			filename[13];
-	uint8_t			flags;
+	uint8_t		flags;
 	fix			lighting;		// 0 to 1
 	fix			damage;			//how much damage being against this does
-	int32_t			nEffectClip;		//if not -1, the tEffectInfo that changes this   
-} D1_tmap_info;
+	int32_t		nEffectClip;		//if not -1, the tEffectInfo that changes this   
+} __pack__ tTexMapInfoD1;
 
 extern int32_t Num_tmaps;
 #ifdef EDITOR

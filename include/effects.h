@@ -16,7 +16,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 #include "vclip.h"
 
-#define MAX_EFFECTS 110
+#define MAX_EFFECTS	  110
 #define D1_MAX_EFFECTS 60
 
 //flags for eclips.  If no flags are set, always plays
@@ -31,17 +31,17 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 typedef struct tChangeEffect {
 	int16_t					nWallTexture;		//Which element of Textures array to replace.
 	int16_t					nObjectTexture;  //Which element of ObjBitmapPtrs array to replace.
-} tChangeEffect;
+} __pack__ tChangeEffect;
 
 typedef struct tDestructionEffect {
 	int32_t					nTexture;
 	int32_t					nAnimation;
 	int32_t					nEffect;
 	fix						xSize;
-} tDestroyedEffect;
+} __pack__ tDestroyedEffect;
 
 typedef struct tEffectInfo {
-	tAnimationInfo	animationInfo;						//embedded tAnimationInfo
+	tAnimationInfo			animationInfo;				//embedded tAnimationInfo
 	fix						xTimeLeft;					//for sequencing
 	int32_t					nCurFrame;					//for sequencing
 	tChangeEffect			changing;

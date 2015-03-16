@@ -525,7 +525,7 @@ void BMReadGameDataD1 (CFile& cf)
 {
 	int32_t				h, i, j;
 #if 1
-	D1_tmap_info	t; // only needed for sizeof term below
+	tTexMapInfoD1	t; // only needed for sizeof term below
 	//D1Robot_info	r;
 #endif
 	tWallEffect		*pw;	
@@ -582,7 +582,7 @@ PrintLog (-1);
 
 gameData.effects.nClips [1] = cf.ReadInt ();
 /*---*/PrintLog (1, "Loading %d animation clips\n", gameData.effects.nClips [1]);
-ReadAnimationInfo (gameData.effects.animations [1], D1_ANIM_MAXNUM, cf);
+ReadAnimationInfo (gameData.effects.animations [1], MAX_ANIMATIONS_D1, cf);
 PrintLog (-1);
 
 gameData.effects.nEffects [1] = cf.ReadInt ();
@@ -721,11 +721,11 @@ cf.Seek (
 	sizeof (int32_t) +
 	sizeof (int32_t) +
 	sizeof (tBitmapIndex) * D1_MAX_TEXTURES +
-	sizeof (D1_tmap_info) * D1_MAX_TEXTURES +
+	sizeof (tTexMapInfoD1) * D1_MAX_TEXTURES +
 	sizeof (uint8_t) * D1_MAX_SOUNDS +
 	sizeof (uint8_t) * D1_MAX_SOUNDS +
 	sizeof (int32_t) +
-	sizeof (tAnimationInfo) * D1_ANIM_MAXNUM +
+	sizeof (tAnimationInfo) * MAX_ANIMATIONS_D1 +
 	sizeof (int32_t) +
 	sizeof (D1_eclip) * D1_MAX_EFFECTS +
 	sizeof (int32_t) +

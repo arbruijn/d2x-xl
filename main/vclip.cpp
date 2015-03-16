@@ -116,7 +116,7 @@ void DrawVClipObject (CObject *objP, fix timeToLive, int32_t bLit, int32_t nVCli
 	int32_t		iFrame = CurFrame (objP, nVClip, timeToLive, nFrames);
 	int32_t		bThruster = (objP->info.renderType == RT_THRUSTER) && (objP->mType.physInfo.flags & PF_WIGGLE);
 
-if ((iFrame < 0) || (iFrame >= ANIM_MAX_FRAMES))
+if ((iFrame < 0) || (iFrame >= MAX_ANIMATION_FRAMES))
 	return;
 if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION)) {
 	if (bThruster) {
@@ -399,7 +399,7 @@ vc.nFrameCount = cf.ReadInt ();
 vc.xFrameTime = cf.ReadFix ();
 vc.flags = cf.ReadInt ();
 vc.nSound = cf.ReadShort ();
-for (int32_t j = 0; j < ANIM_MAX_FRAMES; j++)
+for (int32_t j = 0; j < MAX_ANIMATION_FRAMES; j++)
 	vc.frames [j].index = cf.ReadShort ();
 vc.lightValue = cf.ReadFix ();
 }

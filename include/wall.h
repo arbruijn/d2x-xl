@@ -310,7 +310,7 @@ void InitDoorAnims (void);
 // Remove any flares from a CWall
 void KillStuckObjects(int32_t nWall);
 
-int32_t ReadD1WallClips(tWallEffect *wc, int32_t n, CFile& cf);
+int32_t ReadWallEffectInfoD1(tWallEffect *wc, int32_t n, CFile& cf);
 /*
  * reads n tWallEffect structs from a CFILE
  */

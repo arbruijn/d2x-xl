@@ -169,6 +169,7 @@ vsprintf (buffer, format, args);
 if (!CCanvas::Current ()->Font ())
 	CCanvas::Current ()->SetFont (GAME_FONT);
 CCanvasColor fontColor = CCanvas::Current ()->FontColor (0);
+fontManager.PushScale ();
 fontManager.SetScale (FontScale ());
 fontManager.SetColorRGBi (FontColor (), 1, 0, 0);
 if (x < 0)
@@ -182,6 +183,7 @@ int32_t nId = GrString (x, y, buffer, idP);
 gameData.SetStereoOffsetType (nOffsetSave);
 fontManager.SetScale (1.0f);
 CCanvas::Current ()->FontColor (0) = fontColor;
+fontManager.PopScale ();
 return nId;
 }
 

@@ -2497,11 +2497,11 @@ class CTextureData {
 
 class CEffectData {
 	public:
-		CArray<tEffectInfo>	effects [2]; //[MAX_EFFECTS];
-		CArray<tAnimationInfo>	animations [2]; //[MAX_VCLIPS];
-		int32_t					nEffects [2];
-		int32_t 					nClips [2];
-		CArray<tEffectInfo>	effectP;
+		CArray<tEffectInfo>		effects [2]; //[MAX_EFFECTS];
+		CArray<tAnimationInfo>	animations [2]; //[MAX_ANIMATIONS_D2];
+		int32_t						nEffects [2];
+		int32_t 						nClips [2];
+		CArray<tEffectInfo>		effectP;
 		CArray<tAnimationInfo>	vClipP;
 
 	public:

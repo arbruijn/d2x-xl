@@ -1127,25 +1127,33 @@ BngProcessSegment(objP, damage, cursegp, 0, visited);
 
 #define MAX_WALL_EFFECT_FRAMES_D1 20
 
+// -----------------------------------------------------------------------------------
+
+void ReadWallEffectData (tWallEffect& we, CFile& cf, int16_t nFrames)
+{
+we.xTotalTime = cf.ReadFix ();
+we.nFrameCount = cf.ReadShort ();
+for (int32_t i = 0; i < nFrames; i++)
+	we.frames [i] = cf.ReadShort ();
+we.openSound = cf.ReadShort ();
+we.closeSound = cf.ReadShort ();
+we.flags = cf.ReadShort ();
+cf.Read (we.filename, 13, 1);
+we.pad = cf.ReadByte ();
+}
+
+// -----------------------------------------------------------------------------------
+
 /*
  * reads a tWallEffect structure from a CFile
  */
-int32_t ReadD1WallClips (tWallEffect *wc, int32_t n, CFile& cf)
+int32_t ReadWallEffectInfoD1 (tWallEffect *wc, int32_t n, CFile& cf)
 {
-	int32_t i, j;
+int32_t i;
 
-	for (i = 0; i < n; i++) {
-		wc [i].xTotalTime = cf.ReadFix ();
-		wc [i].nFrameCount = cf.ReadShort ();
-		for (j = 0; j < MAX_WALL_EFFECT_FRAMES_D1; j++)
-			wc [i].frames [j] = cf.ReadShort ();
-		wc [i].openSound = cf.ReadShort ();
-		wc [i].closeSound = cf.ReadShort ();
-		wc [i].flags = cf.ReadShort ();
-		cf.Read (wc [i].filename, 13, 1);
-		wc [i].pad = cf.ReadByte ();
-	}
-	return i;
+for (i = 0; i < n; i++)
+	ReadWallEffectData (wc [i], cf, MAX_WALL_EFFECT_FRAMES_D1);
+return i;
 }
 
 // -----------------------------------------------------------------------------------
@@ -1155,19 +1163,10 @@ int32_t ReadD1WallClips (tWallEffect *wc, int32_t n, CFile& cf)
  */
 int32_t ReadWallEffectInfo (CArray<tWallEffect>& wc, int32_t n, CFile& cf)
 {
-	int32_t i, j;
+	int32_t i;
 
-for (i = 0; i < n; i++) {
-	wc [i].xTotalTime = cf.ReadFix ();
-	wc [i].nFrameCount = cf.ReadShort ();
-	for (j = 0; j < MAX_WALL_EFFECT_FRAMES; j++)
-		wc [i].frames [j] = cf.ReadShort ();
-	wc [i].openSound = cf.ReadShort ();
-	wc [i].closeSound = cf.ReadShort ();
-	wc [i].flags = cf.ReadShort ();
-	cf.Read(wc [i].filename, 13, 1);
-	wc [i].pad = cf.ReadByte ();
-	}
+for (i = 0; i < n; i++) 
+	ReadWallEffectData (wc [i], cf, MAX_WALL_EFFECT_FRAMES);
 return i;
 }
 

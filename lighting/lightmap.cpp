@@ -249,7 +249,7 @@ int32_t CLightmapManager::Init (int32_t bVariable)
 {
 	CDynLight*		lightP;
 	CSegFace*		faceP = NULL;
-	int32_t				nIndex, i;
+	int32_t			nIndex, i;
 	tLightmapInfo*	lightmapInfoP;  //temporary place to put light data.
 	double			sideRad;
 
@@ -386,8 +386,8 @@ color.Blue () += sourceColor.b * w;
 
 void CLightmapManager::Blur (CSegFace* faceP, CLightmapFaceData& source, CLightmapFaceData& dest, int32_t direction)
 {
-	int32_t				w = LM_W, h = LM_H;
-	int32_t				xScale = 1 - direction, yScale = direction, xo, yo;
+	int32_t			w = LM_W, h = LM_H;
+	int32_t			xScale = 1 - direction, yScale = direction, xo, yo;
 	CRGBColor*		destColor = dest.m_texColor;
 	CFloatVector3	color;
 
@@ -879,6 +879,7 @@ if (bOk)
 			(ldh.nVertices == gameData.segs.nVertices) && 
 			(ldh.nFaces == FACES.nFaces) && 
 			(ldh.nLights == m_list.nLights) && 
+			(ldh.nBuffers == m_list.nBuffers) &&
 			(ldh.nMaxLightRange == MAX_LIGHT_RANGE);
 if (bOk) {
 	for (i = ldh.nFaces, faceP = FACES.faces.Buffer (); i; i--, faceP++) {

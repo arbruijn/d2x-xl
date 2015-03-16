@@ -91,10 +91,10 @@ void CStatusBar::DrawScore (void)
 {	                                                                                                                                                                                                                                                             
 	char	szScore [20];
 	int32_t	w, h, aw;
-	float	fontScale = fontManager.Scale ();
 
 	static int32_t nIdLabel = 0, nIdScore = 0;
 
+fontManager.SetCurrent (GAME_FONT);
 SetFontScale ((float) floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 strcpy (szScore, (IsMultiGame && !IsCoopGame) ? TXT_KILLS : TXT_SCORE);
 strcat (szScore, ":");
@@ -105,7 +105,6 @@ sprintf (szScore, "%5d", (IsMultiGame && !IsCoopGame) ? LOCALPLAYER.netKillsTota
 fontManager.Current ()->StringSize (szScore, w, h, aw);
 SetFontColor ((IsMultiGame && !IsCoopGame) ? MEDGREEN_RGBA : GREEN_RGBA);
 nIdScore = DrawHUDText (&nIdScore, ScaleX (SB_SCORE_RIGHT- w) - LHY (2), ScaleY (SB_SCORE_Y), szScore);
-SetFontScale (fontScale);
 }
 
 //	-----------------------------------------------------------------------------
@@ -137,6 +136,7 @@ if (nTime > 0) {
 		sprintf (szScore, "%s", TXT_CHEATER);
 	else
 		sprintf (szScore, "%5d", nScore);
+	fontManager.SetCurrent (GAME_FONT);
 	fontManager.Current ()->StringSize (szScore, w, h, aw);
 	x = SB_SCORE_ADDED_RIGHT - w - LHY (2);
 	SetFontColor (RGBA_PAL2 (0, color, 0));

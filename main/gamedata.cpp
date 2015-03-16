@@ -1286,7 +1286,7 @@ CEffectData::CEffectData ()
 {
 for (int32_t i = 0; i < 2; i++) {
 	effects [i].Create (MAX_EFFECTS);
-	animations [i].Create (MAX_VCLIPS);
+	animations [i].Create (MAX_ANIMATIONS_D2);
 	}
 }
 

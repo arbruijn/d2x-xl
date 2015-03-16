@@ -148,8 +148,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SOUND_OPPONENT_HAS_SCORED               87
 
 //--------------------------------------------------------------
-#define MAX_SOUNDS  254     // bad to have sound 255!
-#define D1_MAX_SOUNDS  250     // bad to have sound 255!
+#define MAX_SOUNDS		254     // bad to have sound 255!
+#define D1_MAX_SOUNDS	250     // bad to have sound 255!
 
 // I think it would be nice to have a scrape sound...
 //#define SOUND_PLAYER_SCRAPE_WALL                72

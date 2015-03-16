@@ -185,7 +185,7 @@ void CObject::DoPowerupFrame (void)
 //if (gameStates.app.tick40fps.bTick) 
 if (info.renderType != RT_POLYOBJ) {
 	tAnimationState	*vciP = &rType.animationInfo;
-	tAnimationInfo	*animInfoP = ((vciP->nClipIndex < 0) || (vciP->nClipIndex >= MAX_VCLIPS)) ? NULL : gameData.effects.animations [0] + vciP->nClipIndex;
+	tAnimationInfo	*animInfoP = ((vciP->nClipIndex < 0) || (vciP->nClipIndex >= MAX_ANIMATIONS_D2)) ? NULL : gameData.effects.animations [0] + vciP->nClipIndex;
 	UpdatePowerupClip (animInfoP, vciP, i);
 	}
 if (info.xLifeLeft <= 0) {
@@ -206,8 +206,8 @@ if (objP->info.nType == OBJ_MONSTERBALL) {
 	DrawMonsterball (objP, 1.0f, 0.5f, 0.0f, 0.9f);
 	RenderMslLockIndicator (objP);
 	}
-else if ((objP->rType.animationInfo.nClipIndex >= -MAX_ADDON_BITMAP_FILES) && (objP->rType.animationInfo.nClipIndex < MAX_VCLIPS)) {
-	if ((objP->info.nId < MAX_POWERUP_TYPES_D2) || ((objP->info.nType == OBJ_EXPLOSION) && (objP->info.nId < MAX_VCLIPS))) {
+else if ((objP->rType.animationInfo.nClipIndex >= -MAX_ADDON_BITMAP_FILES) && (objP->rType.animationInfo.nClipIndex < MAX_ANIMATIONS_D2)) {
+	if ((objP->info.nId < MAX_POWERUP_TYPES_D2) || ((objP->info.nType == OBJ_EXPLOSION) && (objP->info.nId < MAX_ANIMATIONS_D2))) {
 			tBitmapIndex*	frameP = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].frames;
 			int32_t			iFrame = objP->rType.animationInfo.nCurFrame;
 		DrawObjectBitmap (objP, frameP->index, frameP [iFrame].index, iFrame, NULL, 0);

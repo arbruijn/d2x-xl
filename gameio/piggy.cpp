@@ -435,8 +435,8 @@ int32_t ReadHamFile (bool bDefault)
 #if 1
 	char		szD1PigFileName [FILENAME_LEN];
 #endif
-	int32_t		nHAMId;
-	int32_t		nSoundOffset = 0;
+	int32_t	nHAMId;
+	int32_t	nSoundOffset = 0;
 	char		szFile [FILENAME_LEN];
 	char*		pszFile, * pszFolder;
 

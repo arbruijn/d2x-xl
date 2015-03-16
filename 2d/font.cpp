@@ -708,6 +708,10 @@ float CFontManager::SetScale (float fScale)
 { 
 float fOldScale = m_scale;
 m_scale = Clamp (fScale * (gameStates.app.bDemoData + 1), 0.1f, 10.0f); 
+#if DBG
+if (m_scale < 1.0f)
+	BRP;
+#endif
 return fOldScale;
 }
 

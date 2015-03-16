@@ -29,9 +29,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define ANIM_AFTERBURNER_BLOB      95
 #define ANIM_MONITOR_STATIC        99
 
-#define MAX_VCLIPS                 110
-#define D1_ANIM_MAXNUM             70
-#define ANIM_MAX_FRAMES            30
+#define MAX_ANIMATIONS_D2          110
+#define MAX_ANIMATIONS_D1          70
+#define MAX_ANIMATION_FRAMES       30
 
 // tAnimationInfo flags
 #define VF_ROD      1       // draw as a rod, not a blob
@@ -42,12 +42,12 @@ typedef struct tAnimationInfo {
 	fix             xFrameTime;         // time (in seconds) of each frame
 	int32_t         flags;
 	int16_t         nSound;
-	tBitmapIndex    frames [ANIM_MAX_FRAMES];
+	tBitmapIndex    frames [MAX_ANIMATION_FRAMES];
 	fix             lightValue;
 } __pack__ tAnimationInfo;
 
 //extern int32_t Num_vclips [2];
-//extern tAnimationInfo Vclip [2][MAX_VCLIPS];
+//extern tAnimationInfo Vclip [2][MAX_ANIMATIONS_D2];
 
 // draw an CObject which renders as a tAnimationInfo.
 void DrawVClipObject (CObject *objP, fix timeleft, int32_t lighted, int32_t vclip_num, CFloatVector *color);
