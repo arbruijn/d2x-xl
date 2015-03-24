@@ -25,13 +25,17 @@ const char* WallpaperName (int32_t nType, int32_t bHires = -1);
 
 class CBackground : public CCanvas {
 	private:
-		CBitmap	m_saved;				// copy of a screen area covered by a menu
-		CBitmap*	m_bitmap;			// complete background
-		int32_t	m_nType;
-		int32_t	m_nWallpaper;
+		CBitmap		m_saved;				// copy of a screen area covered by a menu
+		CBitmap*		m_bitmap;			// complete background
+		int32_t		m_nType;
+		int32_t		m_nWallpaper;
+		CRGBColor	m_boxColor;
 
 	public:
-		CBackground () { Init (); }
+		CBackground () { 
+			SetBoxColor ();
+			Init (); 
+			}
 		~CBackground () { Destroy (); }
 		void Init (void);
 		void Destroy (void);
@@ -52,7 +56,7 @@ class CBackground : public CCanvas {
 		inline void SetType (int32_t nType) { m_nType = nType; }
 		inline int32_t GetType (void) { return m_nType; }
 
-		inline void SetColor (uint8_t red = PAL2RGBA (22), uint8_t green = PAL2RGBA (22), uint8_t blue = PAL2RGBA (38)) { SetColorRGB (red, green, blue, 255); }
+		inline void SetBoxColor (uint8_t red = PAL2RGBA (22), uint8_t green = PAL2RGBA (22), uint8_t blue = PAL2RGBA (38)) { m_boxColor.Set (red, green, blue); }
 
 		void Activate (void);
 		void Deactivate (void);
