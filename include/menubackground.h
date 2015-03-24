@@ -52,6 +52,8 @@ class CBackground : public CCanvas {
 		inline void SetType (int32_t nType) { m_nType = nType; }
 		inline int32_t GetType (void) { return m_nType; }
 
+		inline void SetColor (uint8_t red = PAL2RGBA (22), uint8_t green = PAL2RGBA (22), uint8_t blue = PAL2RGBA (38)) { SetColorRGB (red, green, blue, 255); }
+
 		void Activate (void);
 		void Deactivate (void);
 		

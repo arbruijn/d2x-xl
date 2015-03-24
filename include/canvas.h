@@ -85,7 +85,7 @@ typedef struct tCanvas {
 	CPalette*		palette;
 	CFont*			font;				// the currently selected font
 	CCanvasColor	fontColors [2];   // current font background color (-1==Invisible)
-	int16_t				nDrawMode;			// fill, XOR, etc.
+	int16_t			nDrawMode;			// fill, XOR, etc.
 	bool				bRelative;
 } tCanvas;
 
@@ -109,7 +109,7 @@ class CCanvas : public CViewport, public CBitmap {
 		static float				fCanvW2, fCanvH2;
 
 		CCanvas*						m_parent;
-		int32_t							m_nActivations;
+		int32_t						m_nActivations;
 
 	public:
 		CCanvas () { Init (); }

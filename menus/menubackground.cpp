@@ -112,16 +112,16 @@ return szWallpapers [nType - 1][Hires (bHires)];
 
 //------------------------------------------------------------------------------
 
-static inline void SetBoxBorderColor (void)
+static inline void SetBoxBorderColor (CCanvas& canvas)
 {
-CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);
+CCanvas::Current ()->SetColorRGB (canvas.Color ().r, canvas.Color ().g, canvas.Color ().b, 255); //PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), 255);
 }
 
 //------------------------------------------------------------------------------
 
-static inline void SetBoxFillColor (void)
+static inline void SetBoxFillColor (CCanvas& canvas)
 {
-CCanvas::Current ()->SetColorRGB (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38), gameData.menu.alpha);
+CCanvas::Current ()->SetColorRGB (canvas.Color ().r, canvas.Color ().g, canvas.Color ().b, gameData.menu.alpha);
 }
 
 //------------------------------------------------------------------------------
@@ -131,10 +131,10 @@ static inline void DrawBox (CCanvas& canvas)
 #if 1
 gameStates.render.nFlashScale = 0;
 CCanvasColor fontColors [2] = { canvas.FontColor (0), canvas.FontColor (1) };
-SetBoxFillColor ();
+SetBoxFillColor (canvas);
 ogl.SetTexturing (false);
 OglDrawFilledRect (0, 0, canvas.Width (), canvas.Height ());
-SetBoxBorderColor ();
+SetBoxBorderColor (canvas);
 float flw = GLfloat (gameData.menu.nLineWidth) * sqrt (GLfloat (gameData.render.frame.Width ()) / 640.0f);
 glLineWidth (flw);
 int32_t lw = int32_t (ceil (flw));
@@ -156,6 +156,7 @@ m_bitmap = NULL;
 m_nType = 0;
 m_nWallpaper = 0;
 gameStates.app.bClearMessage = 0;
+SetColor ();
 }
 
 //------------------------------------------------------------------------------
@@ -171,7 +172,9 @@ Init ();
 void CBackground::Setup (int32_t width, int32_t height)
 {
 SetupCanvasses ();
+CCanvasColor color = Color ();
 CCanvas::Setup (&gameData.render.screen, (gameData.render.frame.Width () - width) / 2, (gameData.render.frame.Height () - height) / 2, width, height, true);
+Color () = color;
 }
 
 //------------------------------------------------------------------------------
@@ -383,6 +386,7 @@ void CBackgroundManager::DrawBox (int32_t left, int32_t top, int32_t right, int3
 	CCanvas	canvas;
 
 canvas.Setup (&gameData.render.frame, left - gameData.StereoOffset2D (), top, right - left + 1, bottom - top + 1, true);
+canvas.Color ().Set (PAL2RGBA (22), PAL2RGBA (22), PAL2RGBA (38));
 canvas.Activate ("CBackgroundManager::DrawBox", &gameData.render.frame);
 ::DrawBox (canvas);
 canvas.Deactivate ();
@@ -521,6 +525,7 @@ bool CBackgroundManager::Setup (CBackground& bg, int32_t width, int32_t height, 
 if (!bg.Create (width, height, nType, nWallPaper))
 	return false;
 bg.SetBitmap (m_wallpapers [BG_MENU].Bitmap ());
+bg.SetColor ();
 return true;
 }
 

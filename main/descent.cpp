@@ -923,7 +923,7 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-#define DU_BACKGROUND 0
+#define DU_BACKGROUND 1
 
 void DUKickstarterNotification (void)
 {
@@ -943,6 +943,7 @@ void DUKickstarterNotification (void)
 #endif
 
 	gameStates.app.bShowVersionInfo = 0;
+	messageBox.SetColor (160, 160, 160);
 	messageBox.Show ("A NEW DESCENT IS IN THE MAKING!\n\nPLEASE SUPPORT DESCENT UNDERGROUND\n\nON KICKSTARTER!\n", "du_kickstarter_torch.tga", true, true);
 	CTimeout to (30000);
 	do {
