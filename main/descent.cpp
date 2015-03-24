@@ -226,14 +226,17 @@ SDL_WM_SetCaption (szCaption, "D2X-XL");
 
 void PrintVersionInfo (void)
 {
-	int32_t nInfoType;
-	
 if (!gameStates.app.bShowVersionInfo)
 	return;
+
+int32_t nInfoType;
+
 if (!(gameStates.app.bGameRunning || gameStates.app.bBetweenLevels))
 	nInfoType = 0;
 else if (gameStates.app.bSaveScreenShot || (gameData.demo.nState == ND_STATE_PLAYBACK))
 	nInfoType = 1;
+else
+	return;
 
 	static int32_t bVertigo = -1;
 
@@ -939,12 +942,13 @@ void DUKickstarterNotification (void)
 	sprintf (szFolder, "%sd2x-xl/", gameFolders.game.szTextures [0]);
 	CBitmap	wallpaper;
 	CTGA		tga (&wallpaper);
-	CBitmap	*oldWallpaper = tga.Read ("descent_underground-semidark.tga", szFolder) ? backgroundManager.SetWallpaper (&wallpaper, 0) : NULL;
+	CBitmap	*oldWallpaper = tga.Read ("du_torch.tga", szFolder) ? backgroundManager.SetWallpaper (&wallpaper, 0) : NULL;
 #endif
 
+	int32_t bShowVersionInfo = gameStates.app.bShowVersionInfo;
 	gameStates.app.bShowVersionInfo = 0;
 	messageBox.SetBoxColor (0, 96, 192);
-	messageBox.Show ("A NEW DESCENT IS IN THE MAKING!\n\nPLEASE SUPPORT DESCENT UNDERGROUND\n\nON KICKSTARTER!\n", "du_kickstarter_torch.tga", true, true);
+	messageBox.Show (TXT_KICKSTART_DU, "du_kickstarter_torch.tga", true, true);
 	CTimeout to (30000);
 	do {
 		messageBox.CMenu::Render (NULL, NULL);
@@ -959,7 +963,8 @@ void DUKickstarterNotification (void)
 	if (oldWallpaper)
 		backgroundManager.SetWallpaper (oldWallpaper, 0);
 #endif
-	gameStates.app.bShowVersionInfo = 1;
+	gameStates.app.bShowVersionInfo = bShowVersionInfo;
+	messageBox.SetBoxColor (); // reset to default
 	backgroundManager.Draw (0);
 	}
 }

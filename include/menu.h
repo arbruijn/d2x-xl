@@ -385,7 +385,7 @@ public:
 	inline CMenuItem& Item (int32_t i = -1) {return (i < 0) ? m_data.buffer [ToS () - 1] : m_data.buffer [i];	}
 
 	inline CBackground& Background (void) { return m_background; }
-	void SetBoxColor (uint8_t red, uint8_t green, uint8_t blue) { Background ().SetBoxColor (red, green, blue); }
+	void SetBoxColor (uint8_t red = PAL2RGBA (22), uint8_t green = PAL2RGBA (22), uint8_t blue = PAL2RGBA (38)) { Background ().SetBoxColor (red, green, blue); }
 
 	int32_t XOffset (void);
 	int32_t YOffset (void);

@@ -101,7 +101,7 @@ fontManager.SetColorRGBi (DKGRAY_RGBA, 1, 0, 0);
 fontManager.SetCurrent (MEDIUM1_FONT);
 if (m_bm.Width ())
 	m_bm.Render (NULL, (CCanvas::Current ()->Width () - m_bm.Width ()) / 2, 24, m_bm.Width (), m_bm.Height (), 0, 0, m_bm.Width (), m_bm.Height (), 1, 0, 0, gameStates.render.grAlpha);
-GrPrintF (NULL, m_bCentered ? 0x8000 : m_x - CCanvas::Current ()->Left (), m_y - CCanvas::Current ()->Top () + m_bm.Height () + 28, m_pszMsg); 
+GrPrintF (NULL, m_bCentered ? 0x8000 : m_x - CCanvas::Current ()->Left (), m_y - CCanvas::Current ()->Top () + m_bm.Height () + (m_bm.Width () ? 28 : 0), m_pszMsg); 
 #if 0
 if (gameStates.app.bGameRunning)
 	ogl.ChooseDrawBuffer ();
