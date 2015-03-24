@@ -923,7 +923,7 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-#define DU_BACKGROUND 1
+#define DU_BACKGROUND 0
 
 void DUKickstarterNotification (void)
 {
