@@ -699,7 +699,8 @@ if (/*(CCanvas::Current ()->Mode () == BM_OGL) &&*/ (ps = GetPoolString (s, idP)
 
 Assert (fontManager.Current () != NULL);
 fontManager.Current ()->StringSize (s, w, h, aw);
-if (x == 0x8000)
+bool bCentered = (x == 0x8000);
+if (bCentered)
 	x = (CCanvas::Current ()->Width () - w) / 2;
 x = gameData.X (x);
 if ((x < 0) || (y < 0))
@@ -717,7 +718,7 @@ else if ((y + h) > CCanvas::Current ()->Height ())
 else if ((y + h) < 0)
 	clipped |= 2;
 if (!clipped)
-	return fontManager.Current ()->DrawString (x, y, s);
+	return fontManager.Current ()->DrawString (bCentered ? 0x8000 : x, y, s);
 if (clipped & 2) {
 	// Completely clipped...
 	return 0;
@@ -727,7 +728,7 @@ if (clipped & 1) {
 	}
 // Partially clipped...
 #if 1
-return fontManager.Current ()->DrawString (x, y, s);
+return fontManager.Current ()->DrawString (bCentered ? 0x8000 : x, y, s);
 #else
 if (MODE == BM_OGL)
 	return fontManager.Current ()->DrawString (x, y, s);

@@ -6,16 +6,16 @@
 
 //------------------------------------------------------------------------------
 
-#define BG_STANDARD		0
-#define BG_STARS			1
-#define BG_SCORES			2
-#define BG_MAP				3
-#define BG_LOADING		4
-#define BG_MENU			BG_SCORES
+#define BG_STANDARD			0
+#define BG_STARS				1
+#define BG_SCORES				2
+#define BG_MAP					3
+#define BG_LOADING			4
+#define BG_MENU				BG_SCORES
 
-#define BG_TOPMENU		0
-#define BG_SUBMENU		1
-#define BG_WALLPAPER		2
+#define BG_TOPMENU			0
+#define BG_SUBMENU			1
+#define BG_WALLPAPER			2
 
 //------------------------------------------------------------------------------
 
@@ -27,8 +27,8 @@ class CBackground : public CCanvas {
 	private:
 		CBitmap	m_saved;				// copy of a screen area covered by a menu
 		CBitmap*	m_bitmap;			// complete background
-		int32_t		m_nType;
-		int32_t		m_nWallpaper;
+		int32_t	m_nType;
+		int32_t	m_nWallpaper;
 
 	public:
 		CBackground () { Init (); }
@@ -67,7 +67,7 @@ class CBackground : public CCanvas {
 class CBackgroundManager : public CStack<CBackground> {
 	private:
 		CBackground		m_wallpapers [WALLPAPER_COUNT];
-		const char*			m_filenames [WALLPAPER_COUNT];
+		const char*		m_filenames [WALLPAPER_COUNT];
 		bool				m_bValid;
 		bool				m_bShadow;
 
@@ -91,9 +91,16 @@ class CBackgroundManager : public CStack<CBackground> {
 		void Draw (int32_t nWallpaper);
 		void DrawBox (int32_t left, int32_t top, int32_t right, int32_t bottom, int32_t nLineWidth, float fAlpha, int32_t bForce);
 
+		CBitmap* LoadCustomWallpaper (const char* filename = NULL);
+
+		inline CBitmap* SetWallpaper (CBitmap* wallpaper, int32_t nWallpaper) {
+			CBitmap* oldWallpaper = m_wallpapers [nWallpaper].Bitmap ();
+			m_wallpapers [nWallpaper].SetBitmap (wallpaper);
+			return oldWallpaper;
+			}
+
 	private:
 		CBitmap* LoadWallpaper (const char* filename);
-		CBitmap* LoadCustomWallpaper (void);
 		CBitmap* LoadDesktopWallpaper (void);
 		CBitmap* LoadMenuBackground (void);
 	};
@@ -105,3 +112,4 @@ extern  CBackgroundManager backgroundManager;
 //------------------------------------------------------------------------------
 
 #endif // _MENUBACKGROUND_H 
+

@@ -40,7 +40,7 @@ class CTimeout {
 				m_t0 -= m_duration + 1;
 			}
 
-		inline time_t Progress (void) { return m_t0 - SDL_GetTicks (); }
+		inline time_t Progress (void) { return SDL_GetTicks () - m_t0; }
 
 		bool Expired (bool bRestart = true) {
 			time_t t = SDL_GetTicks ();

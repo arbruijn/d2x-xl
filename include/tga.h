@@ -48,10 +48,10 @@ class CTGAHeader {
 
 class CModelTextures {
 	public:
-		int32_t						m_nBitmaps;
+		int32_t					m_nBitmaps;
 		CArray<CCharArray>	m_names;
 		CArray<CBitmap>		m_bitmaps;
-		CArray<uint8_t>			m_nTeam;
+		CArray<uint8_t>		m_nTeam;
 
 	public:
 		CModelTextures () { Init (); } 

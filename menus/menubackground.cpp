@@ -392,7 +392,7 @@ canvas.Deactivate ();
 
 extern bool bRegisterBitmaps;
 
-CBitmap* CBackgroundManager::LoadCustomWallpaper (void)
+CBitmap* CBackgroundManager::LoadCustomWallpaper (const char* filename)
 {
 if (gameStates.app.bNostalgia)
 	return NULL;
@@ -406,29 +406,46 @@ bRegisterBitmaps = b;
 if (!bmP)
 	return NULL;
 
+char	szFile [FILENAME_LEN], szFolder [FILENAME_LEN], szExt [FILENAME_LEN];
+char	*pszFile, *pszFolder;
+
 CTGA tga (bmP);
 
-int32_t bModBg = (*gameFolders.mods.szWallpapers != '\0');
+int32_t bModBg = 0;
 
-if (bModBg) {
-	if (CFile::Exist (gameOpts->menus.altBg.szName [1], gameFolders.mods.szWallpapers, 0))
-		bModBg = 1;
-	else {
-		strcpy (gameOpts->menus.altBg.szName [1], "default.tga");
-		bModBg = CFile::Exist (gameOpts->menus.altBg.szName [1], gameFolders.mods.szWallpapers, 0);
+if (filename) {
+	CFile::SplitPath (filename, szFolder, szFile, szExt);
+	strcat (szFile, szExt);
+	if (CFile::Exist (szFile, szFolder, 0)) {
+		pszFile = szFile;
+		pszFolder = szFolder;
+		bModBg = -1;
 		}
+	}
+if (bModBg == 0) {
+	bModBg = (*gameFolders.mods.szWallpapers != '\0');
+	if (bModBg) {
+		if (CFile::Exist (gameOpts->menus.altBg.szName [1], gameFolders.mods.szWallpapers, 0))
+			bModBg = 1;
+		else {
+			strcpy (gameOpts->menus.altBg.szName [1], "default.tga");
+			bModBg = CFile::Exist (gameOpts->menus.altBg.szName [1], gameFolders.mods.szWallpapers, 0);
+		}
+	}
+	pszFile = gameOpts->menus.altBg.szName [bModBg];
+	pszFolder = bModBg ? gameFolders.mods.szWallpapers : gameFolders.user.szWallpapers;
 	}
 
 //if (filename && strcmp (filename, gameOpts->menus.altBg.szName [bModBg]))
 //	return NULL;
-if (!tga.Read (gameOpts->menus.altBg.szName [bModBg], bModBg ? gameFolders.mods.szWallpapers : gameFolders.user.szWallpapers, 
+if (!tga.Read (pszFile, pszFolder, 
 				   (gameOpts->menus.altBg.alpha < 0) ? -1 : (int32_t) (gameOpts->menus.altBg.alpha * 255),
 					gameOpts->menus.altBg.brightness, gameOpts->menus.altBg.grayscale)) {
 	delete bmP;
 	gameOpts->menus.altBg.bHave = -1;
 	return NULL;
 	}
-bmP->SetName (m_filenames [0] = gameOpts->menus.altBg.szName [bModBg]);
+bmP->SetName (m_filenames [0] = (bModBg < 0) ? filename : gameOpts->menus.altBg.szName [bModBg]);
 gameOpts->menus.altBg.bHave = 1;
 return bmP;
 }

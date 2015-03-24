@@ -627,7 +627,7 @@ gameStates.render.grAlpha = 1.0f;
 
 //------------------------------------------------------------------------------ 
 
-void CMenu::FadeIn (void)
+bool CMenu::FadeIn (void)
 {
 if (gameOpts->menus.nFade && !gameStates.app.bNostalgia) {
 	if (m_tEnter == uint32_t (-1))
@@ -636,10 +636,12 @@ if (gameOpts->menus.nFade && !gameStates.app.bNostalgia) {
 	if (t < 0)
 		t = 0;
 	gameStates.render.grAlpha = (t < int32_t (gameOpts->menus.nFade)) ? float (t) / float (gameOpts->menus.nFade) : 1.0f;
+	return true;
 	}
 else {
 	m_tEnter = 0;
 	gameStates.render.grAlpha = 1.0f;
+	return false;
 	}
 }
 
@@ -1462,6 +1464,8 @@ if (gameStates.app.bGameRunning && IsMultiGame) {
 	}
 if (!JOYDEFS_CALIBRATING)
 	SDL_ShowCursor (1); // possibly hidden
+
+#if 1
 m_nOldMouseState = m_nMouseState;
 if (!gameStates.menus.bReordering) {
 	int32_t b = gameOpts->legacy.bInput;
@@ -1479,6 +1483,8 @@ else if (m_bWheelDown)
 	m_nKey = KEY_DOWN;
 else
 	m_nKey = KeyInKey ();
+#endif
+
 #if DBG
 if (m_nKey)
 	BRP;
@@ -1530,7 +1536,6 @@ while (!m_bDone) {
 	Update (pszTitle, pszSubTitle, nType, nWallpaper, width, height, bTinyMode, nCurItemP);
 	// Redraw everything...
 	Render (pszTitle, pszSubTitle, NULL);
-
 	if (callback && (SDL_GetTicks () - m_tEnter > gameOpts->menus.nFade))
 		try {
 			m_nChoice = (*callback) (*this, m_nKey, m_nChoice, 0);
@@ -1541,6 +1546,7 @@ while (!m_bDone) {
 			break;
 			}
 
+#if 1
 	if (!bTimeStopped) {
 		// Save current menu box
 		if (MultiMenuPoll () == -1)
@@ -1575,6 +1581,7 @@ while (!m_bDone) {
 		if (!QuickSelect (nCurItemP) && !EditValue ())
 			KeyScrollValue ();
 		}
+#endif
 	}
 FadeOut (pszTitle, pszSubTitle, NULL);
 SDL_ShowCursor (0);

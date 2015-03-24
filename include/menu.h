@@ -403,7 +403,7 @@ public:
 								  int32_t width = -1, int32_t height = -1);
 
 	void DrawCloseBox (int32_t x, int32_t y);
-	void FadeIn (void);
+	bool FadeIn (void);
 	void FadeOut (const char* pszTitle = NULL, const char* pszSubTitle = NULL, CCanvas* gameCanvasP = NULL);
 
 	inline void SetThrottle (time_t t) {
@@ -502,14 +502,16 @@ public:
 class CMessageBox: public CMenu {
 	int32_t m_nDrawBuffer;
 	const char* m_pszMsg;
-	int32_t m_x;
-	int32_t m_y;
+	CBitmap		m_bm;
+	int32_t		m_x;
+	int32_t		m_y;
+	bool			m_bCentered;
 
 public:
 	~CMessageBox () {
 		Clear ();
 	}
-	void Show (const char *pszMsg, bool bFade = true);
+	void Show (const char *pszMsg, const char *pszImage = NULL, bool bFade = true, bool bCentered = false);
 	void Clear (void);
 	virtual void Render (void);
 };

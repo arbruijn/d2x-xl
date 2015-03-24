@@ -228,12 +228,12 @@ void PrintVersionInfo (void)
 {
 	int32_t nInfoType;
 	
+if (!gameStates.app.bShowVersionInfo)
+	return;
 if (!(gameStates.app.bGameRunning || gameStates.app.bBetweenLevels))
 	nInfoType = 0;
-else if (gameStates.app.bShowVersionInfo || gameStates.app.bSaveScreenShot || (gameData.demo.nState == ND_STATE_PLAYBACK))
+else if (gameStates.app.bSaveScreenShot || (gameData.demo.nState == ND_STATE_PLAYBACK))
 	nInfoType = 1;
-else
-	return;
 
 	static int32_t bVertigo = -1;
 
@@ -923,6 +923,48 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
+#define DU_BACKGROUND 1
+
+void DUKickstarterNotification (void)
+{
+//gameStates.app.SRand ();
+//if (!Rand (3)) 
+	{	// display randomly about every third program start
+	SetScreenMode (SCREEN_MENU);
+	int32_t nFade = gameOpts->menus.nFade;
+	gameOpts->menus.nFade = 250;
+
+#if DU_BACKGROUND
+	char szFolder [FILENAME_LEN];
+	sprintf (szFolder, "%sd2x-xl/", gameFolders.game.szTextures [0]);
+	CBitmap	wallpaper;
+	CTGA		tga (&wallpaper);
+	CBitmap	*oldWallpaper = tga.Read ("descent_underground.tga", szFolder) ? backgroundManager.SetWallpaper (&wallpaper, 0) : NULL;
+#endif
+
+	gameStates.app.bShowVersionInfo = 0;
+	messageBox.Show ("A NEW DESCENT IS IN THE MAKING!\n\nPLEASE SUPPORT DESCENT UNDERGROUND\n\nON KICKSTARTER!\n", "du_kickstarter_torch.tga", true, true);
+	CTimeout to (30000);
+	do {
+		messageBox.CMenu::Render (NULL, NULL);
+		int32_t nKey = KeyInKey ();
+		if (/*(to.Progress () > 3000) &&*/ (nKey == KEY_ESC))
+			break;
+	} while (!to.Expired ());
+	gameOpts->menus.nFade = 500;
+	messageBox.Clear ();
+	gameOpts->menus.nFade = nFade;
+#if DU_BACKGROUND
+	if (oldWallpaper)
+		backgroundManager.SetWallpaper (oldWallpaper, 0);
+#endif
+	gameStates.app.bShowVersionInfo = 1;
+	backgroundManager.Draw (0);
+	}
+}
+
+// ----------------------------------------------------------------------------
+
 void DonationNotification (void)
 {
 if (gameConfig.nTotalTime > (20 * 60)) {	// played for more than 25 hours
@@ -930,7 +972,11 @@ if (gameConfig.nTotalTime > (20 * 60)) {	// played for more than 25 hours
 	int32_t nFade = gameOpts->menus.nFade;
 	gameOpts->menus.nFade = 250;
 	messageBox.Show (TXT_PLEASE_DONATE);
-	G3_SLEEP (15000);
+	CTimeout to (15000);
+	do {
+		messageBox.CMenu::Render (NULL, NULL);
+		KeyInKey (); // this invokes the windows message pump among others, making sure the game window is properly restored
+	} while (!to.Expired ());
 	gameOpts->menus.nFade = 500;
 	messageBox.Clear ();
 	gameOpts->menus.nFade = nFade;
@@ -997,8 +1043,11 @@ if (!ogl.m_features.bShaders && (gameConfig.nVersion != D2X_IVER)) {
 		messageBox.Clear ();
 		}
 #endif
-	messageBox.Show (TXT_BAD_HARDWARE);
-	G3_SLEEP (5000);
+	CTimeout to (5000);
+	do {
+		messageBox.CMenu::Render (NULL, NULL);
+		KeyInKey ();
+	} while (!to.Expired ());
 	gameOpts->menus.nFade = 500;
 	messageBox.Clear ();
 	gameOpts->menus.nFade = nFade;
@@ -1036,6 +1085,7 @@ if (*szAutoHogFile && *szAutoMission) {
 	hogFileManager.UseMission (szAutoHogFile);
 	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
 	}
+DUKickstarterNotification ();
 DonationNotification ();
 BadHardwareNotification ();
 PrintLog (-1);
