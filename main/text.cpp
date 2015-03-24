@@ -1982,6 +1982,8 @@ const char *defaultGameTexts [][2] = {
  {"Lightmaps ~Vorberechnen", "precompute lightm~Aps"},
  {"Berechne...", "Computing..."},
  {"Start", "Start"},
+ {"Ein neues Descent entsteht!\n\nBitte unterstuetze Descent Underground\n\nauf Kickstarter!", "A NEW DESCENT IS IN THE MAKING!\n\nPLEASE SUPPORT DESCENT UNDERGROUND\n\nON KICKSTARTER!\n"},
+ {"~Kickstart descent underground", "~Kickstart descent underground"},
  
 #if 0
  {"", ""},

@@ -155,6 +155,7 @@ if (!gameStates.app.bNostalgia)
 	m.AddMenu ("precalc lightmaps", TXT_PRECALC_LIGHTMAPS, KEY_A, HTX_PRECALC_LIGHTMAPS);
 #if defined(_WIN32) || defined(__unix__)
 m.AddMenu ("check update", TXT_CHECK_FOR_UPDATE, KEY_U, HTX_CHECK_FOR_UPDATE);
+m.AddMenu ("kickstart du", TXT_KS_DU_MENU, KEY_K, "");
 #endif
 m.AddMenu ("quit", TXT_QUIT, KEY_Q, HTX_MAIN_QUIT);
 return m.ToS ();
@@ -277,6 +278,7 @@ for (;;) {
 
 void ShowOrderForm (void);      // John didn't want this in inferno[HA] so I just externed it.
 void PrecomputeMissionLightmaps (void);
+void DUKickstarterNotification (void);
 
 //returns flag, true means quit menu
 int32_t ExecMainMenuOption (CMenu& m, int32_t nChoice) 
@@ -346,6 +348,8 @@ else if (!gameStates.app.bNostalgia && (nChoice == m.IndexOf ("precalc lightmaps
 #if defined(_WIN32) || defined(__unix__)
 else if (nChoice == m.IndexOf ("check update"))
 	CheckForUpdate ();
+else if (nChoice == m.IndexOf ("kickstart du"))
+	DUKickstarterNotification ();
 #endif
 else if (nChoice == m.IndexOf ("quit")) {
 	paletteManager.DisableEffect ();

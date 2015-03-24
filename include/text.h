@@ -1991,11 +1991,11 @@ void LoadGameTexts(void);
 #define TXT_PRECALC_LIGHTMAPS			GT(1233)
 #define TXT_COMPUTING					GT(1234)
 #define TXT_START 						GT(1235)
+#define TXT_KICKSTART_DU				GT(1236)
+#define TXT_KS_DU_MENU					GT(1237)
 
 #if 0
 
-#define TXT_					GT(1236)
-#define TXT_					GT(1237)
 #define TXT_					GT(1238)
 #define TXT_					GT(1239)
 #define TXT_					GT(1240)
