@@ -1987,7 +1987,7 @@ const char *defaultGameTexts [][2] = {
  {"la~Yout schiffsstatus: %s", "ship status la~Yout: %s"},
  {"la~Yout schiffsstatus: %s", "ship status la~Yout: %s"},
  {"Spalten", "Columns"},
- {"Zeilen", "Rows"}
+ {"Zeilen", "Rows"},
  
 #if 0
  {"", ""},
