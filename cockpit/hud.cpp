@@ -293,7 +293,10 @@ if (ShowTextGauges ()) {
 	if (gameOpts->render.cockpit.bGaugesAtReticle && !gameStates.menus.nInMenu) {
 		ScaleUp (Info ());
 		sprintf (szGauge, "%i", (int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
-		x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET + 4) - StringWidth (szGauge);
+		if (gameOpts->render.cockpit.bGaugesAtReticle == 1)
+			x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET + 4) - StringWidth (szGauge);
+		//else
+			x = gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET);
 		y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET);
 		SetFontColor (RGBA (0,128,255,255));
 		ScaleDown (Info ());
@@ -399,7 +402,9 @@ if (ShowTextGauges ()) {
 		ScaleUp (Info ());
 		sprintf (szGauge, "%i", h);
 		x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET + 4) - StringWidth (szGauge);
-		y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + LineSpacing ();
+		y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET);
+		if (gameOpts->render.cockpit.bGaugesAtReticle == 1)
+			;//y += LineSpacing ();
 		SetFontColor (GOLD_RGBA);
 		ScaleDown (Info ());
 		//gameStates.render.grAlpha = 0.5f;
@@ -674,7 +679,7 @@ if (ogl.IsOculusRift () && EGI_FLAG (nWeaponIcons, 1, 1, 0))
 
 	char			szWeapon [32], szLabel [32];
 	int32_t		y, w, h, aw;
-	int32_t		bCompress = gameOpts->render.cockpit.bGaugesAtReticle && !gameStates.menus.nInMenu;
+	int32_t		bCompress = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.bGaugesAtReticle ? 2 : 0;
 
 	static int32_t nIdWeapons [2] = {0, 0};
 
@@ -731,7 +736,10 @@ m_info.bAdjustCoords = true;
 if (bCompress) {
 	ScaleUp (Info ());
 	//gameStates.render.grAlpha = 0.5f;
-	nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET), gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET), szLabel);
+	if (bCompress == 1)
+		nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET), gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET), szLabel);
+	else
+		nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET + 4) - StringWidth (szLabel), gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + LineSpacing (), szLabel);
 	}
 else
 	nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, -5 - w, y - 2 * LineSpacing (), szLabel);
