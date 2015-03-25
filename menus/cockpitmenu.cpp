@@ -238,7 +238,6 @@ if ((m = menu ["ship state layout"])) {
 	v = m->Value ();
 	if (gameOpts->render.cockpit.nShipStateLayout != v) {
 		gameOpts->render.cockpit.nShipStateLayout = m->Value ();
-		sprintf (m->m_text, TXT_SHIP_STATE_LAYOUT, szLayout [v]);
 		m->Rebuild ();
 		key = -2;
 		}

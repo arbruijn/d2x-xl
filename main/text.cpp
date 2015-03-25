@@ -1985,7 +1985,6 @@ const char *defaultGameTexts [][2] = {
  {"Ein neues Descent entsteht!\n\nBitte unterstuetze Descent Underground\n\nauf Kickstarter!", "A NEW DESCENT IS IN THE MAKING!\n\nPLEASE SUPPORT DESCENT UNDERGROUND\n\nON KICKSTARTER!\n"},
  {"~Kickstart descent underground", "~Kickstart descent underground"},
  {"la~Yout schiffsstatus: %s", "ship status la~Yout: %s"},
- {"la~Yout schiffsstatus: %s", "ship status la~Yout: %s"},
  {"Spalten", "Columns"},
  {"Zeilen", "Rows"},
  
