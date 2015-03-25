@@ -57,6 +57,8 @@ if (ogl.IsOculusRift ()) {
 	info.yScale *= 0.5f;
 	}
 cockpit->SetFontScale (sqrt (floor (float (CCanvas::Current ()->Width ()) / 640.0f)));
+fontManager.PushScale ();
+fontManager.SetScale (cockpit->FontScale ());
 }
 
 //	-----------------------------------------------------------------------------
@@ -68,6 +70,7 @@ if (ogl.IsOculusRift ()) {
 	info.yScale *= 2.0f;
 	}
 info.xScale /= float (HUD_ASPECT);
+fontManager.PopScale ();
 cockpit->SetFontScale (1.0f);
 }
 
@@ -298,7 +301,7 @@ if (ShowTextGauges ()) {
 		ScaleUp (Info ());
 		sprintf (szGauge, "%i", (int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
 		if (gameOpts->render.cockpit.nShipStateLayout == 1)
-			x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET + int32_t (FontScale () * FontScale () * 4)) - StringWidth (szGauge);
+			x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET) - StringWidth (szGauge);
 		else
 			x = gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET);
 		y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET);
@@ -408,10 +411,10 @@ if (ShowTextGauges ()) {
 	if (nLayout) {
 		ScaleUp (Info ());
 		sprintf (szGauge, "%i", h);
-		x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET + int32_t (FontScale () * FontScale () * 4)) - StringWidth (szGauge);
+		x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET) - StringWidth (szGauge);
 		y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET);
 		if (gameOpts->render.cockpit.nShipStateLayout == 1)
-			y += int32_t (FontScale () * LineSpacing ());
+			y += LineSpacing ();
 		SetFontColor (GOLD_RGBA);
 		//gameStates.render.grAlpha = 0.5f;
 		}
@@ -507,8 +510,8 @@ if (ShowTextGauges ()) {
 	if (nLayout) {
 		ScaleUp (Info ());
 		sprintf (szGauge, "%i", h);
-		x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET + int32_t (FontScale () * FontScale () * 4)) - StringWidth (szGauge);
-		y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + int32_t (FontScale () * 2 * LineSpacing ());
+		x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET) - StringWidth (szGauge);
+		y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + 2 * LineSpacing ();
 		SetFontColor (RED_RGBA);
 		//gameStates.render.grAlpha = 0.5f;
 		}
@@ -653,7 +656,7 @@ fontManager.SetColorRGBi (nColor, 1, 0, 0);
 if (nLayout) {
 	ScaleUp (Info ());
 	x = gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET);
-	y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + int32_t (FontScale () * 2 * LineSpacing ());
+	y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + 2 * LineSpacing ();
 	}
 else {
 	x = gameData.render.scene.Width () - 3 * GAME_FONT->Width () - gameStates.render.fonts.bHires - 1;
@@ -757,8 +760,8 @@ if (nLayout) {
 	if (nLayout == 1)
 		nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET), gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET), szLabel);
 	else
-		nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET + int32_t (FontScale () * FontScale () * 4)) - StringWidth (szLabel), 
-												gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + int32_t (FontScale () * LineSpacing ()), szLabel);
+		nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET) - StringWidth (szLabel), 
+												gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + LineSpacing (), szLabel);
 	}
 else
 	nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, -5 - w, y - 2 * LineSpacing (), szLabel);
@@ -789,7 +792,7 @@ m_info.bAdjustCoords = true;
 if (nLayout) {
 	cockpit->SetFontScale (sqrt (floor (float (CCanvas::Current ()->Width ()) / 640.0f)));
 	nIdWeapons [1] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET), 
-											gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + int32_t (FontScale () * LineSpacing ()), szLabel);
+											gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + LineSpacing (), szLabel);
 	ScaleDown (Info ());
 	gameStates.render.grAlpha = 1.0f;
 	}
