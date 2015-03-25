@@ -87,6 +87,7 @@ static int32_t	optWeaponIcons, bShowWeaponIcons, optIconAlpha;
 #endif
 
 static const char* szHUDType [3];
+static const char* szLayout [3];
 static const char* szWindowType [7];
 static const char* szWindowSize [4];
 static const char* szWindowPos [2];
@@ -233,10 +234,11 @@ if ((m = menu ["target indicators"])) {
 		}
 	}
 
-if ((m = menu ["gauges at reticle"])) {
+if ((m = menu ["ship state layout"])) {
 	v = m->Value ();
-	if (gameOpts->render.cockpit.bGaugesAtReticle != v) {
-		gameOpts->render.cockpit.bGaugesAtReticle = m->Value ();
+	if (gameOpts->render.cockpit.nShipStateLayout != v) {
+		gameOpts->render.cockpit.nShipStateLayout = m->Value ();
+		sprintf (m->m_text, TXT_SHIP_STATE_LAYOUT, szLayout [v]);
 		m->Rebuild ();
 		key = -2;
 		}
@@ -258,6 +260,10 @@ bInitialized = true;
 szHUDType [0] = TXT_OFF;
 szHUDType [1] = TXT_MINIMAL;
 szHUDType [2] = TXT_FULL;
+
+szLayout [0] = TXT_STANDARD;
+szLayout [1] = TXT_COLUMNS;
+szLayout [2] = TXT_ROWS;
 
 szWindowSize [0] = TXT_AUXWIN_SMALL;
 szWindowSize [1] = TXT_AUXWIN_MEDIUM;
@@ -359,8 +365,7 @@ do {
 
 	m.AddCheck ("show reticle", TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_S, HTX_CPIT_SHOWRETICLE);
 	m.AddCheck ("missile view", TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_M, HTX_CPIT_MSLVIEW);
-	m.AddCheck ("gauges at reticle", TXT_GAUGES_AT_RETICLE, gameOpts->render.cockpit.bGaugesAtReticle, KEY_G, HTX_CPIT_GAUGES_AT_RETICLE);
-	if (!gameOpts->render.cockpit.bGaugesAtReticle)
+	if (!gameOpts->render.cockpit.nShipStateLayout)
 		m.AddCheck ("text gauges", TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_G, HTX_CPIT_GFXGAUGES);
 	m.AddCheck ("object tally", TXT_OBJECT_TALLY, gameOpts->render.cockpit.bObjectTally, KEY_T, HTX_CPIT_OBJTALLY);
 	m.AddCheck ("zoom style", TXT_ZOOM_SMOOTH, extraGameInfo [IsMultiGame].nZoomMode - 1, KEY_O, HTX_GPLAY_ZOOMSMOOTH);
@@ -368,6 +373,8 @@ do {
 	m.AddCheck ("target indicators", TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
 #else
 	m.AddText ("", "");
+	sprintf (szSlider, TXT_SHIP_STATE_LAYOUT, szLayout [gameOpts->render.cockpit.nShipStateLayout]);
+	m.AddSlider ("ship state layout", szSlider, gameOpts->render.cockpit.nShipStateLayout, 0, 2, KEY_Y, HTX_SHIP_STATE_LAYOUT);
 	sprintf (szSlider, TXT_TARGET_INDICATORS, szTgtInd [nTgtInd]);
 	m.AddSlider ("target indicators", szSlider, nTgtInd, 0, 2, KEY_T, HTX_CPIT_TGTIND);
 	if (nTgtInd)
@@ -444,7 +451,7 @@ do {
 	GET_VAL (gameOpts->render.cockpit.bMissileView, "missile view");
 	GET_VAL (gameOpts->render.cockpit.bObjectTally, "object tally");
 	GET_VAL (extraGameInfo [0].bHideIndicators, "hide target indicators");
-	GET_VAL (gameOpts->render.cockpit.bGaugesAtReticle, "gauges at reticle");
+	GET_VAL (gameOpts->render.cockpit.nShipStateLayout, "ship state layout");
 	//GET_VAL (extraGameInfo [0].bTargetIndicators, "target indicators");
 	if (m.Available ( "text gauges"))
 		gameOpts->render.cockpit.bTextGauges = !m.Value ("text gauges");

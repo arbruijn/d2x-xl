@@ -1984,7 +1984,10 @@ const char *defaultGameTexts [][2] = {
  {"Start", "Start"},
  {"Ein neues Descent entsteht!\n\nBitte unterstuetze Descent Underground\n\nauf Kickstarter!", "A NEW DESCENT IS IN THE MAKING!\n\nPLEASE SUPPORT DESCENT UNDERGROUND\n\nON KICKSTARTER!\n"},
  {"~Kickstart descent underground", "~Kickstart descent underground"},
- {"Schiffsstatus am fadenkreu~Z anzeigen", "show ship status at crossh~Airs"},
+ {"la~Yout schiffsstatus: %s", "ship status la~Yout: %s"},
+ {"la~Yout schiffsstatus: %s", "ship status la~Yout: %s"},
+ {"Spalten", "Columns"},
+ {"Zeilen", "Rows"}
  
 #if 0
  {"", ""},
@@ -2741,7 +2744,8 @@ const char *defaultHelpTexts [][2] = {
   "of which has not been computed.\n\n"
   "Caveat: Depending on lighting quality settings, lighting\n"
   "precalculation can take a long time."},
- {"Wenn angekreuzt, werden Waffen-, Schild- und Energiestatus\nam Fadenkreuz angezeigt.", "If checked, weapon, shield and energy status\nare displayed at the reticle"},
+ {"Hiermit kann die Anordnung der Anzeige von Waffen-,\nSchild- und Energiestatus kontrolliert werden.\n\nStandard: In den Bildschirmecken.\nSpalten: Energie links, Waffen rechts am Fadenkreuz.\nZeilen: Schilde und Energie oben, darunter Waffen.", 
+  "Control the layout of weapon, shield and energy\n states with this option.\n\nStandard: In the corners of the screen.\nColums: Energy left, weapons right of the reticle.\nRows: Shields and energy on top, weapons below."},
 #if 0
  {"", ""},
 #endif

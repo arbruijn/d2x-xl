@@ -1993,12 +1993,12 @@ void LoadGameTexts(void);
 #define TXT_START 						GT(1235)
 #define TXT_KICKSTART_DU				GT(1236)
 #define TXT_KS_DU_MENU					GT(1237)
-#define TXT_GAUGES_AT_RETICLE			GT(1238)
+#define TXT_SHIP_STATE_LAYOUT			GT(1238)
+#define TXT_COLUMNS						GT(1239)
+#define TXT_ROWS							GT(1240)
 
 #if 0
 
-#define TXT_					GT(1239)
-#define TXT_					GT(1240)
 #define TXT_					GT(1241)
 #define TXT_					GT(1242)
 #define TXT_					GT(1243)
@@ -2621,7 +2621,7 @@ void LoadGameTexts(void);
 #define HTX_OBSERVER_MODE				HT(441)
 #define HTX_SHIELD_EFFECT				HT(442)
 #define HTX_PRECALC_LIGHTMAPS			HT(443)
-#define HTX_CPIT_GAUGES_AT_RETICLE	HT(444)
+#define HTX_SHIP_STATE_LAYOUT			HT(444)
 
 #if 0
 

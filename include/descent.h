@@ -233,7 +233,7 @@ typedef struct tCockpitOptions {
 	int32_t bSplitHUDMsgs;	//split player and other message displays
 	int32_t bWideDisplays;
 	int32_t bReticle;
-	int32_t bGaugesAtReticle;
+	int32_t nShipStateLayout;
 	int32_t bMouseIndicator;
 	int32_t bTextGauges;
 	int32_t bScaleGauges;
