@@ -1241,7 +1241,7 @@ if (gameStates.app.bPlayerIsDead)
 #endif
 	int32_t				i;
 
-	static uint32_t		dmgColors [3][4] = {
+	static uint32_t	dmgColors [3][4] = {
 							{RGBA (64, 16, 64, 96), RGBA (192, 0, 0, 96), RGBA (255, 208, 0, 96), RGBA (0, 192, 0, 96)},
 							{RGBA (96, 32, 96, 96), RGBA (255, 0, 0, 96), RGBA (255, 255, 0, 96), RGBA (0, 255, 0, 96)},
 							{RGBA (96, 32, 96, 96), RGBA (255, 0, 0, 96), RGBA (255, 255, 0, 96), RGBA (0, 255, 0, 96)}
@@ -1258,7 +1258,7 @@ if ((gameStates.app.nSDLTicks [0] - LOCALOBJECT.TimeLastRepaired () > 2000) && !
 	int32_t	nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_FIXED);
 
 if (ShowTextGauges ()) {
-	int32_t				nColor, nDamage [3], h [4], w [4], aw [4], tw = 0;
+	int32_t			nColor, nDamage [3], h [4], w [4], aw [4], tw = 0;
 	char				szDamage [3][10];
 	CCanvasColor	dmgColor;
 

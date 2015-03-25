@@ -818,20 +818,31 @@ if (cockpit->Hide ())
 
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 	 (((LOCALPLAYER.invulnerableTime + INVULNERABLE_TIME_MAX - gameData.time.xGame) > I2X (4)) || (gameData.time.xGame & 0x8000))) {
-	SetFontColor (GREEN_RGBA);
 
-	if (ogl.IsOculusRift ()) {
-		int32_t w, h, aw;
-		fontManager.Current ()->StringSize ("INVUL CLOAK ", w, h, aw);
-		nIdInvul = DrawHUDText (&nIdInvul, CCanvas::Current ()->Width () - w, -2 * LineSpacing (), "%s", "INVUL");
+	int32_t		nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
+	
+	if (nLayout) {
+		ScaleUp (Info ());
+		SetFontColor (RGBA (192, 192, 192, 255));
+		nIdInvul = DrawHUDText (&nIdInvul, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET), 
+										gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + 3 * LineSpacing (), "%s", "INV");
+		ScaleDown (Info ());
 		}
 	else {
-		int32_t y = IsMultiGame ? -10 * LineSpacing () : -5 * LineSpacing ();
-		if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !ShowTextGauges ())
-			y -= LineSpacing () + gameStates.render.fonts.bHires + 1;
-		nIdInvul = DrawHUDText (&nIdInvul, 2, y, "%s", TXT_INVULNERABLE);
-		}	
+		SetFontColor (GREEN_RGBA);
 
+		if (ogl.IsOculusRift ()) {
+			int32_t w, h, aw;
+			fontManager.Current ()->StringSize ("INVUL CLOAK ", w, h, aw);
+			nIdInvul = DrawHUDText (&nIdInvul, CCanvas::Current ()->Width () - w, -2 * LineSpacing (), "%s", "INVUL");
+			}
+		else {
+			int32_t y = IsMultiGame ? -10 * LineSpacing () : -5 * LineSpacing ();
+			if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !ShowTextGauges ())
+				y -= LineSpacing () + gameStates.render.fonts.bHires + 1;
+			nIdInvul = DrawHUDText (&nIdInvul, 2, y, "%s", TXT_INVULNERABLE);
+			}	
+		}
 	}
 }
 
@@ -846,18 +857,29 @@ if (cockpit->Hide ())
 
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) &&
 	 ((LOCALPLAYER.cloakTime + CLOAK_TIME_MAX - gameData.time.xGame > I2X (3)) || (gameData.time.xGame & 0x8000))) {
-	SetFontColor (GREEN_RGBA);
-
-	if (ogl.IsOculusRift ()) {
-		int32_t w, h, aw;
-		fontManager.Current ()->StringSize ("CLOAK ", w, h, aw);
-		nIdCloak = DrawHUDText (&nIdCloak, CCanvas::Current ()->Width () - w, -2 * LineSpacing (), "%s", "CLOAK");
+	int32_t		nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
+	
+	if (nLayout) {
+		ScaleUp (Info ());
+		SetFontColor (RGBA (192, 192, 192, 255));
+		nIdCloak = DrawHUDText (&nIdCloak, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET) - StringWidth ("CLK"), 
+										gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + 3 * LineSpacing (), "%s", "CLK");
+		ScaleDown (Info ());
 		}
 	else {
-		int32_t y = IsMultiGame ? -7 * LineSpacing () : -4 * LineSpacing ();
-		if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !ShowTextGauges ())
-			y -= LineSpacing () + gameStates.render.fonts.bHires + 1;
-		nIdCloak = DrawHUDText (&nIdCloak, 2, y, "%s", TXT_CLOAKED);
+		SetFontColor (GREEN_RGBA);
+
+		if (ogl.IsOculusRift ()) {
+			int32_t w, h, aw;
+			fontManager.Current ()->StringSize ("CLOAK ", w, h, aw);
+			nIdCloak = DrawHUDText (&nIdCloak, CCanvas::Current ()->Width () - w, -2 * LineSpacing (), "%s", "CLOAK");
+			}
+		else {
+			int32_t y = IsMultiGame ? -7 * LineSpacing () : -4 * LineSpacing ();
+			if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !ShowTextGauges ())
+				y -= LineSpacing () + gameStates.render.fonts.bHires + 1;
+			nIdCloak = DrawHUDText (&nIdCloak, 2, y, "%s", TXT_CLOAKED);
+			}
 		}
 	}
 }
