@@ -44,6 +44,29 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hudicons.h"
 #include "gr.h"
 
+
+//	-----------------------------------------------------------------------------
+
+inline void ScaleUp (CCockpitInfo& info)
+{
+info.xScale *= float (HUD_ASPECT);
+if (ogl.IsOculusRift ()) {
+	info.xScale *= 0.5f;
+	info.yScale *= 0.5f;
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
+inline void ScaleDown (CCockpitInfo& info)
+{
+if (ogl.IsOculusRift ()) {
+	info.xScale *= 2.0f;
+	info.yScale *= 2.0f;
+	}
+info.xScale /= float (HUD_ASPECT);
+}
+
 //	-----------------------------------------------------------------------------
 
 void CHUD::GetHostageWindowCoords (int32_t& x, int32_t& y, int32_t& w, int32_t& h)
@@ -262,10 +285,27 @@ if (cockpit->Hide ())
 	static int32_t nIdShield = 0;
 
 if (ShowTextGauges ()) {
-	int32_t y = IsMultiGame ? -6 * LineSpacing () : -2 * LineSpacing ();
-	SetFontColor (GREEN_RGBA);
+	char szGauge [20];
+
+	int32_t x, y;
+	if (gameOpts->render.cockpit.bGaugesAtReticle && !gameStates.menus.nInMenu) {
+		ScaleUp (Info ());
+		sprintf (szGauge, "%i", (int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
+		x = gameData.render.scene.Width () / 2 - ScaleX (80) - StringWidth (szGauge);
+		y = gameData.render.scene.Height () / 2;
+		SetFontColor (RGBA (0,128,255,255));
+		ScaleDown (Info ());
+		//gameStates.render.grAlpha = 0.5f;
+		}
+	else {
+		sprintf (szGauge, "%s: %i", TXT_SHIELD, (int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
+		x = 2;
+		y = IsMultiGame ? -6 * LineSpacing () : -2 * LineSpacing ();
+		SetFontColor (GREEN_RGBA);
+		}
 	m_info.bAdjustCoords = true;
-	nIdShield = DrawHUDText (&nIdShield, 2, y, "%s: %i", TXT_SHIELD, (int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
+	nIdShield = DrawHUDText (&nIdShield, x, y, szGauge);
+	gameStates.render.grAlpha = 1.0f;
 	}
 }
 
@@ -277,10 +317,10 @@ if (cockpit->Hide ())
 	return;
 
 	static int32_t		bShow = 1;
-	static time_t	tToggle = 0, nBeep = -1;
+	static time_t		tToggle = 0, nBeep = -1;
 	//static int32_t		nIdLevel = 0;
 
-	time_t			t = gameStates.app.nSDLTicks [0];
+	time_t				t = gameStates.app.nSDLTicks [0];
 	int32_t				bLastFlash = gameStates.render.cockpit.nShieldFlash;
 
 if (!ShowTextGauges ()) {
@@ -346,15 +386,31 @@ void CHUD::DrawEnergyText (void)
 if (cockpit->Hide ())
 	return;
 
-	int32_t h, y;
+	int32_t h, x, y;
 	static int32_t nIdEnergy = 0;
 
 h = LOCALPLAYER.Energy () ? X2IR (LOCALPLAYER.Energy ()) : 0;
 if (ShowTextGauges ()) {
-	y = IsMultiGame ? -5 * LineSpacing () : -LineSpacing ();
-	SetFontColor (GREEN_RGBA);
+	char szGauge [20];
+
+	if (gameOpts->render.cockpit.bGaugesAtReticle && !gameStates.menus.nInMenu) {
+		ScaleUp (Info ());
+		sprintf (szGauge, "%i", h);
+		x = gameData.render.scene.Width () / 2 - ScaleX (80) - StringWidth (szGauge);
+		y = gameData.render.scene.Height () / 2 + LineSpacing ();
+		SetFontColor (GOLD_RGBA);
+		ScaleDown (Info ());
+		//gameStates.render.grAlpha = 0.5f;
+		}
+	else {
+		sprintf (szGauge, "%s: %i", TXT_ENERGY, h);
+		x = 2;
+		y = IsMultiGame ? -5 * LineSpacing () : -LineSpacing ();
+		SetFontColor (GREEN_RGBA);
+		}
 	m_info.bAdjustCoords = true;
-	nIdEnergy = DrawHUDText (&nIdEnergy, 2, y, "%s: %i", TXT_ENERGY, h);
+	nIdEnergy = DrawHUDText (&nIdEnergy, x, y, szGauge);
+	gameStates.render.grAlpha = 1.0f;
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	int32_t energy = X2IR (LOCALPLAYER.Energy ());
@@ -592,22 +648,28 @@ if (cockpit->Hide ())
 if (ogl.IsOculusRift () && EGI_FLAG (nWeaponIcons, 1, 1, 0))
 	return;
 
-	int32_t	w, h, aw;
-	int32_t	y;
-	const char	*pszWeapon;
-	char	szWeapon [32];
+	char			szWeapon [32], szLabel [32];
+	int32_t		y, w, h, aw;
+	int32_t		bCompress = gameOpts->render.cockpit.bGaugesAtReticle && !gameStates.menus.nInMenu;
 
 	static int32_t nIdWeapons [2] = {0, 0};
 
 SetFontColor (GREEN_RGBA);
 y = IsMultiGame ? -4 * LineSpacing () : 0;
-pszWeapon = PRIMARY_WEAPON_NAMES_SHORT (gameData.weapons.nPrimary);
+strcpy (szWeapon, PRIMARY_WEAPON_NAMES_SHORT (gameData.weapons.nPrimary));
+if (bCompress)
+	szWeapon [3] = '\0';
+
 switch (gameData.weapons.nPrimary) {
 	case LASER_INDEX:
-		if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS)
-			sprintf (szWeapon, "%s %s %i", TXT_QUAD, pszWeapon, LOCALPLAYER.LaserLevel () + 1);
+		if (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) {
+			if (bCompress)
+				sprintf (szLabel, "QLS %i", LOCALPLAYER.LaserLevel () + 1);
+			else
+				sprintf (szLabel, "%s %s %i", TXT_QUAD, szWeapon, LOCALPLAYER.LaserLevel () + 1);
+			}
 		else
-			sprintf (szWeapon, "%s %i", pszWeapon, LOCALPLAYER.LaserLevel () + 1);
+			sprintf (szLabel, "%s %i", szWeapon, LOCALPLAYER.LaserLevel () + 1);
 		break;
 
 	case SUPER_LASER_INDEX:
@@ -616,8 +678,8 @@ switch (gameData.weapons.nPrimary) {
 
 	case VULCAN_INDEX:
 	case GAUSS_INDEX:
-		sprintf (szWeapon, "%s: %i", pszWeapon, X2I ((uint32_t) LOCALPLAYER.primaryAmmo [VULCAN_INDEX] * (uint32_t) VULCAN_AMMO_SCALE));
-		Convert1s (szWeapon);
+		sprintf (szLabel, "%s: %i", szWeapon, X2I ((uint32_t) LOCALPLAYER.primaryAmmo [VULCAN_INDEX] * (uint32_t) VULCAN_AMMO_SCALE));
+		Convert1s (szLabel);
 		break;
 
 	case SPREADFIRE_INDEX:
@@ -625,23 +687,30 @@ switch (gameData.weapons.nPrimary) {
 	case FUSION_INDEX:
 	case HELIX_INDEX:
 	case PHOENIX_INDEX:
-		strcpy (szWeapon, pszWeapon);
+		strcpy (szLabel, szWeapon);
 		break;
 
 	case OMEGA_INDEX:
-		sprintf (szWeapon, "%s: %03i", pszWeapon, gameData.omega.xCharge [IsMultiGame] * 100 / MAX_OMEGA_CHARGE);
-		Convert1s (szWeapon);
+		sprintf (szLabel, "%s: %03i", bCompress ? "OMG" : szWeapon, gameData.omega.xCharge [IsMultiGame] * 100 / MAX_OMEGA_CHARGE);
+		Convert1s (szLabel);
 		break;
 
 	default:
 		Int3 ();
-		szWeapon [0] = 0;
+		szLabel [0] = 0;
 		break;
 	}
 
-fontManager.Current ()->StringSize (szWeapon, w, h, aw);
+fontManager.Current ()->StringSize (szLabel, w, h, aw);
 m_info.bAdjustCoords = true;
-nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, -5 - w, y - 2 * LineSpacing (), szWeapon);
+
+if (bCompress) {
+	ScaleUp (Info ());
+	//gameStates.render.grAlpha = 0.5f;
+	nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 + ScaleX (80), gameData.render.scene.Height () / 2, szLabel);
+	}
+else
+	nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, -5 - w, y - 2 * LineSpacing (), szLabel);
 
 if (gameData.weapons.nPrimary == VULCAN_INDEX) {
 	if (LOCALPLAYER.primaryAmmo [gameData.weapons.nPrimary] != m_history [0].ammo [0]) {
@@ -659,11 +728,21 @@ if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 		}
 	}
 
-pszWeapon = SECONDARY_WEAPON_NAMES_VERY_SHORT (gameData.weapons.nSecondary);
-sprintf (szWeapon, "%s %d", pszWeapon, LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
-fontManager.Current ()->StringSize (szWeapon, w, h, aw);
+strcpy (szWeapon, SECONDARY_WEAPON_NAMES_VERY_SHORT (gameData.weapons.nSecondary));
+if (gameOpts->render.cockpit.bGaugesAtReticle && !gameStates.menus.nInMenu)
+	szWeapon [3] = '\0';
+sprintf (szLabel, "%s %d", szWeapon, LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary]);
+fontManager.Current ()->StringSize (szLabel, w, h, aw);
 m_info.bAdjustCoords = true;
-nIdWeapons [1] = DrawHUDText (nIdWeapons + 1, -5 - w, y - LineSpacing (), szWeapon);
+
+if (bCompress) {
+	nIdWeapons [1] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 + ScaleX (80), gameData.render.scene.Height () / 2 + LineSpacing (), szLabel);
+	ScaleDown (Info ());
+	gameStates.render.grAlpha = 1.0f;
+	}
+else
+	nIdWeapons [1] = DrawHUDText (nIdWeapons + 1, -5 - w, y - LineSpacing (), szLabel);
+
 
 if (LOCALPLAYER.secondaryAmmo [gameData.weapons.nSecondary] != m_history [0].ammo [1]) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)

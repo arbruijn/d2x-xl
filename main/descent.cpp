@@ -953,7 +953,7 @@ void DUKickstarterNotification (void)
 	do {
 		messageBox.CMenu::Render (NULL, NULL);
 		int32_t nKey = KeyInKey ();
-		if (/*(to.Progress () > 3000) &&*/ (nKey == KEY_ESC))
+		if (/*(to.Progress () > 3000) &&*/ (nKey == KEY_ESC) || (nKey == KEY_ENTER))
 			break;
 	} while (!to.Expired ());
 	gameOpts->menus.nFade = 500;

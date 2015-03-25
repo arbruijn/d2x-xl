@@ -170,7 +170,7 @@ extern int32_t bSavingMovieFrames;
 
 bool CGenericCockpit::ShowTextGauges (void)
 {
-return gameOpts->render.cockpit.bTextGauges || ogl.IsOculusRift ();
+return gameOpts->render.cockpit.bTextGauges || gameOpts->render.cockpit.bGaugesAtReticle || ogl.IsOculusRift ();
 }
 
 //	-----------------------------------------------------------------------------

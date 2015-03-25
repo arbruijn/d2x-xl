@@ -233,6 +233,15 @@ if ((m = menu ["target indicators"])) {
 		}
 	}
 
+if ((m = menu ["gauges at reticle"])) {
+	v = m->Value ();
+	if (gameOpts->render.cockpit.bGaugesAtReticle != v) {
+		gameOpts->render.cockpit.bGaugesAtReticle = m->Value ();
+		m->Rebuild ();
+		key = -2;
+		}
+	}
+
 return nCurItem;
 }
 
@@ -350,7 +359,9 @@ do {
 
 	m.AddCheck ("show reticle", TXT_SHOW_RETICLE, gameOpts->render.cockpit.bReticle, KEY_S, HTX_CPIT_SHOWRETICLE);
 	m.AddCheck ("missile view", TXT_MISSILE_VIEW, gameOpts->render.cockpit.bMissileView, KEY_M, HTX_CPIT_MSLVIEW);
-	m.AddCheck ("text gauges", TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_G, HTX_CPIT_GFXGAUGES);
+	m.AddCheck ("gauges at reticle", TXT_GAUGES_AT_RETICLE, gameOpts->render.cockpit.bGaugesAtReticle, KEY_G, HTX_CPIT_GAUGES_AT_RETICLE);
+	if (!gameOpts->render.cockpit.bGaugesAtReticle)
+		m.AddCheck ("text gauges", TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_G, HTX_CPIT_GFXGAUGES);
 	m.AddCheck ("object tally", TXT_OBJECT_TALLY, gameOpts->render.cockpit.bObjectTally, KEY_T, HTX_CPIT_OBJTALLY);
 	m.AddCheck ("zoom style", TXT_ZOOM_SMOOTH, extraGameInfo [IsMultiGame].nZoomMode - 1, KEY_O, HTX_GPLAY_ZOOMSMOOTH);
 #if 0
@@ -426,15 +437,17 @@ do {
 #endif
 	} while (i >= 0);
 
-	for (i = 0; i < 2; i++)
-		gameStates.render.cockpit.n3DView [i] = winFuncList [winFunc [i]];
+	for (int32_t j = 0; j < 2; j++)
+		gameStates.render.cockpit.n3DView [i] = winFuncList [winFunc [j]];
 	GET_VAL (gameOpts->render.cockpit.bReticle, "show reticle");
 	GET_VAL (gameOpts->render.cockpit.bHUD, "show hud");
 	GET_VAL (gameOpts->render.cockpit.bMissileView, "missile view");
 	GET_VAL (gameOpts->render.cockpit.bObjectTally, "object tally");
 	GET_VAL (extraGameInfo [0].bHideIndicators, "hide target indicators");
+	GET_VAL (gameOpts->render.cockpit.bGaugesAtReticle, "gauges at reticle");
 	//GET_VAL (extraGameInfo [0].bTargetIndicators, "target indicators");
-	gameOpts->render.cockpit.bTextGauges = !m.Value ("text gauges");
+	if (m.Available ( "text gauges"))
+		gameOpts->render.cockpit.bTextGauges = !m.Value ("text gauges");
 	gameOpts->render.cockpit.nWindowPos = nWindowPos * 3 + nWindowAlign;
 //if (gameOpts->app.bExpertMode)
 	extraGameInfo [IsMultiGame].nZoomMode = m.Value ("zoom style") + 1;

@@ -1984,6 +1984,7 @@ const char *defaultGameTexts [][2] = {
  {"Start", "Start"},
  {"Ein neues Descent entsteht!\n\nBitte unterstuetze Descent Underground\n\nauf Kickstarter!", "A NEW DESCENT IS IN THE MAKING!\n\nPLEASE SUPPORT DESCENT UNDERGROUND\n\nON KICKSTARTER!\n"},
  {"~Kickstart descent underground", "~Kickstart descent underground"},
+ {"Schiffsstatus am fadenkreu~Z anzeigen", "show ship status at crossh~Airs"},
  
 #if 0
  {"", ""},
@@ -2740,6 +2741,7 @@ const char *defaultHelpTexts [][2] = {
   "of which has not been computed.\n\n"
   "Caveat: Depending on lighting quality settings, lighting\n"
   "precalculation can take a long time."},
+ {"Wenn angekreuzt, werden Waffen-, Schild- und Energiestatus\nam Fadenkreuz angezeigt.", "If checked, weapon, shield and energy status\nare displayed at the reticle"},
 #if 0
  {"", ""},
 #endif
