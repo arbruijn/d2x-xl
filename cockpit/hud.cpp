@@ -702,7 +702,7 @@ switch (gameData.weapons.nPrimary) {
 
 	case VULCAN_INDEX:
 	case GAUSS_INDEX:
-		sprintf (szLabel, "%s: %i", szWeapon, X2I ((uint32_t) LOCALPLAYER.primaryAmmo [VULCAN_INDEX] * (uint32_t) VULCAN_AMMO_SCALE));
+		sprintf (szLabel, "%s%s%i", szWeapon, bCompress ? " " : ": ", X2I ((uint32_t) LOCALPLAYER.primaryAmmo [VULCAN_INDEX] * (uint32_t) VULCAN_AMMO_SCALE));
 		Convert1s (szLabel);
 		break;
 
@@ -715,7 +715,7 @@ switch (gameData.weapons.nPrimary) {
 		break;
 
 	case OMEGA_INDEX:
-		sprintf (szLabel, "%s: %03i", bCompress ? "OMG" : szWeapon, gameData.omega.xCharge [IsMultiGame] * 100 / MAX_OMEGA_CHARGE);
+		sprintf (szLabel, "%s%s%03i", bCompress ? "OMG" : szWeapon, bCompress ? " " : ": ", gameData.omega.xCharge [IsMultiGame] * 100 / MAX_OMEGA_CHARGE);
 		Convert1s (szLabel);
 		break;
 
