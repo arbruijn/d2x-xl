@@ -181,7 +181,7 @@ if (y < 0)
 int32_t nOffsetSave = AdjustCockpitXY (buffer, x, y);
 int32_t nId = GrString (x, y, buffer, idP);
 gameData.SetStereoOffsetType (nOffsetSave);
-fontManager.SetScale (1.0f);
+//fontManager.SetScale (1.0f);
 CCanvas::Current ()->FontColor (0) = fontColor;
 fontManager.PopScale ();
 return nId;

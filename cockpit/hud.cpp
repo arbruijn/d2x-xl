@@ -56,6 +56,7 @@ if (ogl.IsOculusRift ()) {
 	info.xScale *= 0.5f;
 	info.yScale *= 0.5f;
 	}
+cockpit->SetFontScale (sqrt (floor (float (CCanvas::Current ()->Width ()) / 640.0f)));
 }
 
 //	-----------------------------------------------------------------------------
@@ -67,6 +68,7 @@ if (ogl.IsOculusRift ()) {
 	info.yScale *= 2.0f;
 	}
 info.xScale /= float (HUD_ASPECT);
+cockpit->SetFontScale (1.0f);
 }
 
 //	-----------------------------------------------------------------------------
@@ -289,17 +291,18 @@ if (cockpit->Hide ())
 if (ShowTextGauges ()) {
 	char szGauge [20];
 
-	int32_t x, y;
-	if (gameOpts->render.cockpit.nShipStateLayout && !gameStates.menus.nInMenu) {
+	int32_t	x, y;
+	int32_t	nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
+
+	if (nLayout) {
 		ScaleUp (Info ());
 		sprintf (szGauge, "%i", (int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
 		if (gameOpts->render.cockpit.nShipStateLayout == 1)
-			x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET + 4) - StringWidth (szGauge);
+			x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET + int32_t (FontScale () * FontScale () * 4)) - StringWidth (szGauge);
 		else
 			x = gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET);
 		y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET);
 		SetFontColor (RGBA (0,128,255,255));
-		ScaleDown (Info ());
 		//gameStates.render.grAlpha = 0.5f;
 		}
 	else {
@@ -310,6 +313,8 @@ if (ShowTextGauges ()) {
 		}
 	m_info.bAdjustCoords = true;
 	nIdShield = DrawHUDText (&nIdShield, x, y, szGauge);
+	if (nLayout)
+		ScaleDown (Info ());
 	gameStates.render.grAlpha = 1.0f;
 	}
 }
@@ -398,15 +403,16 @@ h = LOCALPLAYER.Energy () ? X2IR (LOCALPLAYER.Energy ()) : 0;
 if (ShowTextGauges ()) {
 	char szGauge [20];
 
-	if (gameOpts->render.cockpit.nShipStateLayout && !gameStates.menus.nInMenu) {
+	int32_t	nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
+
+	if (nLayout) {
 		ScaleUp (Info ());
 		sprintf (szGauge, "%i", h);
-		x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET + 4) - StringWidth (szGauge);
+		x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET + int32_t (FontScale () * FontScale () * 4)) - StringWidth (szGauge);
 		y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET);
 		if (gameOpts->render.cockpit.nShipStateLayout == 1)
-			y += LineSpacing ();
+			y += int32_t (FontScale () * LineSpacing ());
 		SetFontColor (GOLD_RGBA);
-		ScaleDown (Info ());
 		//gameStates.render.grAlpha = 0.5f;
 		}
 	else {
@@ -417,6 +423,8 @@ if (ShowTextGauges ()) {
 		}
 	m_info.bAdjustCoords = true;
 	nIdEnergy = DrawHUDText (&nIdEnergy, x, y, szGauge);
+	if (nLayout)
+		ScaleDown (Info ());
 	gameStates.render.grAlpha = 1.0f;
 	}
 if (gameData.demo.nState == ND_STATE_RECORDING) {
@@ -494,13 +502,14 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER))
 h = FixMul (gameData.physics.xAfterburnerCharge, 100);
 if (ShowTextGauges ()) {
 	char szGauge [20];
-	if (gameOpts->render.cockpit.nShipStateLayout && !gameStates.menus.nInMenu) {
+	int32_t	nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
+
+	if (nLayout) {
 		ScaleUp (Info ());
 		sprintf (szGauge, "%i", h);
-		x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET + 4) - StringWidth (szGauge);
-		y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + 2 * LineSpacing ();
+		x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET + int32_t (FontScale () * FontScale () * 4)) - StringWidth (szGauge);
+		y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + int32_t (FontScale () * 2 * LineSpacing ());
 		SetFontColor (RED_RGBA);
-		ScaleDown (Info ());
 		//gameStates.render.grAlpha = 0.5f;
 		}
 	else {
@@ -511,6 +520,9 @@ if (ShowTextGauges ()) {
 		}
 	m_info.bAdjustCoords = true;
 	nIdAfterBurner = DrawHUDText (&nIdAfterBurner, x, y, szGauge, h);
+	if (nLayout)
+		ScaleDown (Info ());
+	gameStates.render.grAlpha = 1.0f;
 	}
 }
 
@@ -636,11 +648,12 @@ CGenericCockpit::DrawBombCount (0, 0, BLACK_RGBA, 0);
 int32_t CHUD::DrawBombCount (int32_t& nIdBombCount, int32_t x, int32_t y, int32_t nColor, char* pszBombCount)
 {
 fontManager.SetColorRGBi (nColor, 1, 0, 0);
-if (gameOpts->render.cockpit.nShipStateLayout && !gameStates.menus.nInMenu) {
+	int32_t	nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
+
+if (nLayout) {
 	ScaleUp (Info ());
 	x = gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET);
-	y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + 2 * LineSpacing ();
-	ScaleDown (Info ());
+	y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + int32_t (FontScale () * 2 * LineSpacing ());
 	}
 else {
 	x = gameData.render.scene.Width () - 3 * GAME_FONT->Width () - gameStates.render.fonts.bHires - 1;
@@ -649,8 +662,13 @@ else {
 		x -= LHX (20);
 	}
 int32_t nOffsetSave = AdjustCockpitXY (pszBombCount, x, y);
-return GrString (x, y, pszBombCount, &nIdBombCount);
+fontManager.PushScale ();
+fontManager.SetScale (FontScale ());
+int32_t retCode = GrString (x, y, pszBombCount, &nIdBombCount);
+fontManager.PopScale ();
+ScaleDown (Info ());
 gameData.SetStereoOffsetType (nOffsetSave);
+return retCode;
 }
 
 //	-----------------------------------------------------------------------------
@@ -739,7 +757,8 @@ if (nLayout) {
 	if (nLayout == 1)
 		nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET), gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET), szLabel);
 	else
-		nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET + 4) - StringWidth (szLabel), gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + LineSpacing (), szLabel);
+		nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET + int32_t (FontScale () * FontScale () * 4)) - StringWidth (szLabel), 
+												gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + int32_t (FontScale () * LineSpacing ()), szLabel);
 	}
 else
 	nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, -5 - w, y - 2 * LineSpacing (), szLabel);
@@ -768,7 +787,9 @@ fontManager.Current ()->StringSize (szLabel, w, h, aw);
 m_info.bAdjustCoords = true;
 
 if (nLayout) {
-	nIdWeapons [1] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET), gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + LineSpacing (), szLabel);
+	cockpit->SetFontScale (sqrt (floor (float (CCanvas::Current ()->Width ()) / 640.0f)));
+	nIdWeapons [1] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET), 
+											gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + int32_t (FontScale () * LineSpacing ()), szLabel);
 	ScaleDown (Info ());
 	gameStates.render.grAlpha = 1.0f;
 	}
