@@ -174,7 +174,7 @@ return -1;
 
 int32_t CDownloadManager::FindClient (void)
 {
-return FindClient (networkData.packetSource.Network (), networkData.packetSource.Node ());
+return FindClient (networkData.packetDest.Network (), networkData.packetDest.Node ());
 }
 
 //------------------------------------------------------------------------------
@@ -188,8 +188,8 @@ if (i >= 0)
 else if (m_nClients >= MAX_PLAYERS)
 	return -1;
 i = m_freeList [MAX_PLAYERS - ++m_nClients];
-m_clients [i].addr.SetNetwork (networkData.packetSource.Network ());
-m_clients [i].addr.SetNode (networkData.packetSource.Node ());
+m_clients [i].addr.SetNetwork (networkData.packetDest.Network ());
+m_clients [i].addr.SetNode (networkData.packetDest.Node ());
 SetDownloadFlag (i, 1);
 m_clients [i].nTimeout = SDL_GetTicks ();
 m_clients [i].nState = DL_CONNECT;

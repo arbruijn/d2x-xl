@@ -30,9 +30,10 @@ class CHUDIcons {
 		inline bool Visible (void) { return !(gameStates.app.bNostalgia || gameStates.app.bEndLevelSequence || gameStates.render.bRearView); }
 		inline bool Inventory (void) { return Visible () && gameOpts->render.weaponIcons.bEquipment && bHaveInvBms; }
 
-	private:
 		int32_t GetWeaponState (int32_t& bHave, int32_t& bAvailable, int32_t& bActive, int32_t i, int32_t j, int32_t l);
 		int32_t GetAmmo (char* szAmmo, int32_t i, int32_t j, int32_t l);
+
+	private:
 		int32_t GetWeaponIndex (int32_t i, int32_t j, int32_t& nMaxAutoSelect);
 		CBitmap* LoadWeaponIcon (int32_t i, int32_t l);
 		void SetWeaponFillColor (int32_t bHave, int32_t bAvailable, float alpha);

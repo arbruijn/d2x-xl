@@ -413,6 +413,7 @@ class CNetworkData {
 		CTimeout					toWaitAllPoll;
 		CTimeout					toSyncPoll;
 		CPacketAddress			packetSource;
+		CPacketAddress			packetDest;
 		CSyncPackLong			longSyncPack;
 		CSyncPackShort			shortSyncPack;
 

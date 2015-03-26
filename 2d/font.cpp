@@ -499,9 +499,9 @@ if (s && *s) {
 		if (*s == 0) 
 			break;
 
-		//	1 = next byte specifies color, so skip the 1 and the color value
+		//	1 = next 3 bytes specify color, so skip the 1 and the color value
 		if (*s == CC_COLOR)
-			s += 2;
+			s += 4;
 		else if (*s == CC_LSPACING) {
 			stringHeight += *(s + 1) - '0';
 			s += 2;

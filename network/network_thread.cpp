@@ -771,7 +771,7 @@ if (!packet)
 	return 0;
 
 memcpy (data, packet->Buffer (), packet->Size ());
-memcpy (&networkData.packetSource, &packet->Owner ().m_address, sizeof (networkData.packetSource));
+memcpy (&networkData.packetDest, &packet->Owner ().m_address, sizeof (networkData.packetDest));
 int32_t size = packet->Size ();
 return size;
 }
@@ -790,7 +790,7 @@ if (m_processPacketQueue.Grab (m_rxPacketQueue)) {
 if (bStart)
 	m_processPacketQueue.Start ();
 for (; m_processPacketQueue.Current (); m_processPacketQueue.Step ()) {
-		networkData.packetSource = m_processPacketQueue.Current ()->Owner ().m_address;
+		networkData.packetDest = m_processPacketQueue.Current ()->Owner ().m_address;
 		if (NetworkProcessPacket (m_processPacketQueue.Current ()->Buffer (), m_processPacketQueue.Current ()->Size ()))
 			++nProcessed;
 		}

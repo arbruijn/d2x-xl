@@ -454,11 +454,11 @@ return pszDest;
 int32_t CFont::DrawString (int32_t left, int32_t top, const char *s)
 {
 	const char*		textP, * nextRowP, * text_ptr1;
-	int32_t				width, spacing, letter;
-	int32_t				x, y;
-	int32_t				origColor = CCanvas::Current ()->FontColor (0).index; //to allow easy reseting to default string color with colored strings -MPM
+	int32_t			width, spacing, letter;
+	int32_t			x, y;
+	int32_t			origColor = CCanvas::Current ()->FontColor (0).index; //to allow easy reseting to default string color with colored strings -MPM
 	float				fScale = fontManager.Scale ();
-	uint8_t				c;
+	uint8_t			c;
 	CBitmap*			bmf;
 	CCanvasColor*	colorP = (m_info.flags & FT_COLOR) ? NULL : &CCanvas::Current ()->FontColor (0);
 	
@@ -688,8 +688,8 @@ int32_t GrString (int32_t x, int32_t y, const char *s, int32_t *idP)
 if (/*(CCanvas::Current ()->Mode () == BM_OGL) &&*/ (ps = GetPoolString (s, idP))) {
 	CBitmap* bmP = ps->bmP;
 	float		fScale = fontManager.Scale ();
-	int32_t		w = int32_t (bmP->Width () * fScale);
-	int32_t		xs = gameData.X (x);
+	int32_t	w = int32_t (bmP->Width () * fScale);
+	int32_t	xs = gameData.X (x);
 
 	ps->bmP->RenderScaled (xs, y, gameData.X (x + w) - xs, int32_t (bmP->Height () * fScale), I2X (1), 0, &CCanvas::Current ()->FontColor (0), !gameStates.app.bDemoData);
 	return (int32_t) (ps - stringPool) + 1;

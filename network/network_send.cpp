@@ -416,7 +416,7 @@ void NetworkSendXMLGameInfo (void)
 if (IAmGameHost ()) {
 	gameStates.multi.bTrackerCall = 2;
 	char* szInfo = XMLGameInfo ();
-	SendInternetXMLGameInfoPacket (szInfo, networkData.packetSource.Network (), networkData.packetSource.Node ());
+	SendInternetXMLGameInfoPacket (szInfo, networkData.packetDest.Network (), networkData.packetDest.Node ());
 	gameStates.multi.bTrackerCall = 0;
 	}
 }

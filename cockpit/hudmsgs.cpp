@@ -89,7 +89,7 @@ void HUDRenderMessages (uint8_t nType)
 if (gameStates.app.bSaveScreenShot)
 	return;
 
-	int32_t			h, i, n, w, y, aw, yStart;
+	int32_t		h, i, n, w, y, aw, yStart;
 	CHUDMessage *pMsgs = gameData.hud.msgs + nType;
 
 if ((pMsgs->nMessages < 0) || (pMsgs->nMessages > HUD_MAX_MSGS))
@@ -207,7 +207,7 @@ if (gameOpts->render.cockpit.bSplitHUDMsgs)
 int32_t HUDInitMessageVA (uint8_t nType, const char * format, va_list args)
 {
 	CHUDMessage *pMsgs = gameData.hud.msgs + (gameOpts->render.cockpit.bSplitHUDMsgs ? nType : 0);
-	int32_t			temp;
+	int32_t		temp;
 	char			*pszMsg = NULL, 
 					*pszLastMsg = NULL;
 	char			con_message [HUD_MESSAGE_LENGTH + 3];

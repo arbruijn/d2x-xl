@@ -510,8 +510,12 @@ if (ShowTextGauges ()) {
 	if (nLayout) {
 		ScaleUp (Info ());
 		sprintf (szGauge, "%i", h);
-		x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET) - StringWidth (szGauge);
-		y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + 2 * LineSpacing ();
+		x = (nLayout == 1)
+			 ? gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET) - StringWidth (szGauge)
+			 : gameData.render.scene.Width () / 2 - StringWidth (szGauge) / 2;
+		y = (nLayout == 1)
+			 ? gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + 2 * LineSpacing ()
+			 : gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET);
 		SetFontColor (RED_RGBA);
 		//gameStates.render.grAlpha = 0.5f;
 		}
@@ -653,7 +657,7 @@ int32_t CHUD::DrawBombCount (int32_t& nIdBombCount, int32_t x, int32_t y, int32_
 fontManager.SetColorRGBi (nColor, 1, 0, 0);
 	int32_t	nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
 
-if (nLayout) {
+if (nLayout == 1) {
 	ScaleUp (Info ());
 	x = gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET);
 	y = gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + 2 * LineSpacing ();
@@ -690,6 +694,146 @@ DrawAmmoInfo (SECONDARY_AMMO_X, SECONDARY_AMMO_Y, ammoCount, 0);
 
 //	-----------------------------------------------------------------------------
 
+static const char* CC_AVAILABLE = "\x1\x1\xff\x1\x0";
+static const char* CC_EQUIPPED = "\x1\xff\xe0\x1\x0";
+static const char* CC_EMPTY = "\x1\xC0\xC0\xC0\x0";
+
+static int32_t AddWeaponStateColor (char* pszList, int32_t l, int32_t bAvailable, int32_t bActive)
+{
+memcpy (pszList + l, bAvailable ? bActive ? CC_EQUIPPED : CC_AVAILABLE : CC_EMPTY, 4);
+return l + 4;
+}
+
+
+char* PrimaryWeaponList (char* pszList)
+{
+// Q6SPVF HPGO - (Quad) Lasers <level>, Spreafire, Plasma, Vulcan, Fusion, Helix, Gauss, Omega
+	static char* szWeaponIds = "LVSPFSGHPO";
+
+	int32_t	n = (gameStates.app.bD1Mission) ? 5 : 10;
+	int32_t	l = 0;
+	int32_t	nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
+	int32_t	nState [2] = {-1, 0};
+	char		szList [100], szAmmo [20];
+
+szAmmo [0] = '\0';
+for (int32_t j = 0; j < n; j++) {
+	int32_t bActive, bHave, bAvailable;
+
+#if 0
+	if (!gameStates.app.bD1Mission && extraGameInfo [0].bSmartWeaponSwitch && ((j == 1) || (j == 2)) && LOCALPLAYER.primaryWeaponFlags & (1 << (j + 5)))
+		continue; // skip Vulcan / Spreadfire if player has Gauss / Helix and smart weapon switch is enabled
+#endif
+
+	hudIcons.GetWeaponState (bHave, bAvailable, bActive, 0, j, j);
+	nState [1] = (bHave | bAvailable) | (bActive << 1);
+
+	if (j == 0) { // standard laser
+		if (!bHave) {
+			hudIcons.GetWeaponState (bHave, bAvailable, bActive, 0, 5, 5); // super laser
+			nState [1] = (bHave | bAvailable) | (bActive << 1);
+			}
+		if (nState [1] != nState [0])
+			l = AddWeaponStateColor (szList, l, bHave && bAvailable, bActive);
+		szList [l++] = (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) ? 'Q' : 'L';
+		szList [l++] = 48 + LOCALPLAYER.LaserLevel () + 1;
+		szList [l++] = ' ';
+		}
+	else if (j == 5) { // 5 == super laser, handled above
+		szList [l++] = ' ';
+		continue;
+		}
+	else {
+		if (nState [1] != nState [0])
+			l = AddWeaponStateColor (szList, l, bHave && bAvailable, bActive);
+		szList [l++] = szWeaponIds [j];
+		}
+
+	nState [0] = nState [1];
+
+	if (bActive) {
+		int32_t nAmmo;
+
+		if ((j == 1) || (j == 6))
+			nAmmo = X2I ((uint32_t) LOCALPLAYER.primaryAmmo [VULCAN_INDEX] * (uint32_t) VULCAN_AMMO_SCALE);
+		else if (j == 9)
+			nAmmo = gameData.omega.xCharge [IsMultiGame] * 100 / MAX_OMEGA_CHARGE;
+		else
+			continue;
+
+		AddWeaponStateColor (szAmmo, 0, bHave && bAvailable, 1);
+		sprintf (szAmmo + 4, "%d ", nAmmo);
+		}
+
+	}
+szList [l] = '\0';
+pszList [0] = '\0';
+if (nLayout == 2)
+	strcpy (pszList + 1, szAmmo);
+else
+	pszList [1] = '\0';
+strcat (pszList + 1, szList);
+return pszList;
+}
+
+//	-----------------------------------------------------------------------------
+
+char* SecondaryWeaponList (char* pszList)
+{
+// CHSM MGFS - Concussion, Homer, Smart, Mega, Mercury, Guided, Flash, Shaker
+	static char* szWeaponIds = "CHSMMGFSBS";
+
+	int32_t	n = (gameStates.app.bD1Mission) ? 5 : 10;
+	int32_t	l = 1;
+	int32_t	bActive, bHave, bAvailable;
+	int32_t	nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
+	int32_t	nState [2] = {-1, 0};
+	char		szAmmo [20];
+
+pszList [0] = '\0';
+szAmmo [0] = '\0';
+
+for (int32_t j = 0; j < n; j++) {
+
+	hudIcons.GetWeaponState (bHave, bAvailable, bActive, 1, j, j);
+	if (bActive) {
+		AddWeaponStateColor (szAmmo, 0, bHave && bAvailable, 1);
+		sprintf (szAmmo + 4, " %d",  LOCALPLAYER.secondaryAmmo [j]);
+		}
+
+	nState [1] = (bHave | bAvailable) | (bActive << 1);
+
+	if (gameStates.app.bD1Mission) {
+		if (j == 2) // prox bomb
+			continue;
+		}
+	else {
+		if ((j == 4) || (j == 8))
+			pszList [l++] = ' ';
+		}
+	if (nState [1] != nState [0])
+		l = AddWeaponStateColor (pszList, l, bHave && bAvailable, bActive);
+	pszList [l++] = szWeaponIds [j];
+	nState [0] = nState [1];
+	}
+
+if (gameStates.app.bD1Mission) { // handle prox bomb
+	hudIcons.GetWeaponState (bHave, bAvailable, bActive, 1, 2, 2);
+	nState [1] = (bHave | bAvailable) | (bActive << 1);
+	pszList [l++] = ' ';
+	if (nState [1] != nState [0])
+		l = AddWeaponStateColor (pszList, l, bHave && bAvailable, bActive);
+	pszList [l++] = 'B';
+	}
+
+pszList [l] = '\0';
+if (nLayout == 2)
+	strcat (pszList + 1, szAmmo);
+return pszList;
+}
+
+//	-----------------------------------------------------------------------------
+
 //convert '1' characters to special wide ones
 void CHUD::DrawWeapons (void)
 {
@@ -698,7 +842,7 @@ if (cockpit->Hide ())
 if (ogl.IsOculusRift () && EGI_FLAG (nWeaponIcons, 1, 1, 0))
 	return;
 
-	char			szWeapon [32], szLabel [32];
+	char			szWeapon [100], szLabel [100];
 	int32_t		y, w, h, aw;
 	int32_t		nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
 
@@ -758,10 +902,16 @@ if (nLayout) {
 	ScaleUp (Info ());
 	//gameStates.render.grAlpha = 0.5f;
 	if (nLayout == 1)
-		nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET), gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET), szLabel);
+		nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET), 
+												gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET), szLabel);
+#if 0
 	else
 		nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET) - StringWidth (szLabel), 
 												gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + LineSpacing (), szLabel);
+#endif
+	PrimaryWeaponList (szLabel);
+	DrawHUDText (NULL, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET) - StringWidth (szLabel + 1), 
+					 gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + LineSpacing () * ((nLayout == 1) ? 3 : 1), szLabel);
 	}
 else
 	nIdWeapons [0] = DrawHUDText (nIdWeapons + 0, -5 - w, y - 2 * LineSpacing (), szLabel);
@@ -791,8 +941,14 @@ m_info.bAdjustCoords = true;
 
 if (nLayout) {
 	cockpit->SetFontScale (sqrt (floor (float (CCanvas::Current ()->Width ()) / 640.0f)));
-	nIdWeapons [1] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET), 
-											gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + LineSpacing (), szLabel);
+	if (nLayout == 1)
+		nIdWeapons [1] = DrawHUDText (nIdWeapons + 0, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET), 
+												gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + LineSpacing (), szLabel);
+#if 1
+	SecondaryWeaponList (szLabel);
+	DrawHUDText (NULL, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET), // skip leading '\0', which indicates DrawHUDText to directly render the string
+					 gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + LineSpacing () * ((nLayout == 1) ? 3 : 1), szLabel);
+#endif
 	ScaleDown (Info ());
 	gameStates.render.grAlpha = 1.0f;
 	}
@@ -825,7 +981,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 		ScaleUp (Info ());
 		SetFontColor (RGBA (192, 192, 192, 255));
 		nIdInvul = DrawHUDText (&nIdInvul, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET), 
-										gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + 3 * LineSpacing (), "%s", "INV");
+										gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + ((nLayout == 1) ? 4 : 2) * LineSpacing (), "%s", "INV");
 		ScaleDown (Info ());
 		}
 	else {
@@ -863,7 +1019,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) &&
 		ScaleUp (Info ());
 		SetFontColor (RGBA (192, 192, 192, 255));
 		nIdCloak = DrawHUDText (&nIdCloak, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET) - StringWidth ("CLK"), 
-										gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + 3 * LineSpacing (), "%s", "CLK");
+										gameData.render.scene.Height () / 2 + ScaleX (Y_GAUGE_OFFSET) + ((nLayout == 1) ? 4 : 2) * LineSpacing (), "%s", "CLK");
 		ScaleDown (Info ());
 		}
 	else {

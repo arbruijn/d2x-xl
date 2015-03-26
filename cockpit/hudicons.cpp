@@ -219,6 +219,7 @@ static uint8_t ammoType [2][10] = {{0, 1, 0, 0, 0, 0, 1, 0, 0, 0}, {1, 1, 1, 1, 
 
 int32_t CHUDIcons::GetWeaponState (int32_t& bHave, int32_t& bAvailable, int32_t& bActive, int32_t i, int32_t j, int32_t l)
 {
+bActive = bAvailable = 0;
 if (i)
 	bHave = (LOCALPLAYER.secondaryWeaponFlags & (1 << l));
 else if (!l) {
@@ -232,10 +233,10 @@ else if (l == 5) {
 		return 0;
 	}
 else {
-	bHave = (LOCALPLAYER.primaryWeaponFlags & (1 << l));
+	bHave = (LOCALPLAYER.primaryWeaponFlags & (1 << l)) != 0;
 	if (bHave && extraGameInfo [0].bSmartWeaponSwitch && ((l == 1) || (l == 2)) &&
-			LOCALPLAYER.primaryWeaponFlags & (1 << (l + 5)))
-		return 0;
+		 LOCALPLAYER.primaryWeaponFlags & (1 << (l + 5)))
+		return bHave = 0;
 	}
 
 if (!bHave)
@@ -303,7 +304,7 @@ return GREEN_RGBA;
 
 int32_t CHUDIcons::GetWeaponIndex (int32_t i, int32_t j, int32_t& nMaxAutoSelect)
 {
-	static int32_t nLvlMap [2][10] = {{9, 4, 8, 3, 7, 2, 6, 1, 5, 0}, {4, 3, 2, 1, 0, 4, 3, 2, 1, 0}};
+	static int32_t nLvlMap [2][10] = {{9, 4, 8, 3, 7, 2, 6, 1, 5, 0}, {4, 3, 2, 1, 0, 4, 3, 1, 0, 2}};
 
 if (gameOpts->render.weaponIcons.nSort && !gameStates.app.bD1Mission) {
 	int32_t l = nWeaponOrder [i][j];
@@ -311,7 +312,7 @@ if (gameOpts->render.weaponIcons.nSort && !gameStates.app.bD1Mission) {
 		nMaxAutoSelect = j;
 	return nWeaponOrder [i][j + (j >= nMaxAutoSelect)];
 	}
-return nLvlMap [gameStates.app.bD1Mission][j];
+return nLvlMap [gameStates.app.bD1Mission][j + (gameStates.app.bD1Mission ? i * 5 : 0)];
 }
 
 //	-----------------------------------------------------------------------------
@@ -589,19 +590,19 @@ if (ogl.IsOculusRift ())
 
 	CBitmap*	bmP;
 	char		szCount [20];
-	int32_t		nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) ? 3 : 2;
-	int32_t		nIconPos = extraGameInfo [0].nWeaponIcons & 1;
-	int32_t		nHiliteColor = gameOpts->app.bColorblindFriendly;
-	int32_t		fw, fh, faw;
-	int32_t		j, n, firstItem, 
+	int32_t	nIconScale = (gameOpts->render.weaponIcons.bSmall || (gameStates.render.cockpit.nType != CM_FULL_SCREEN)) ? 3 : 2;
+	int32_t	nIconPos = extraGameInfo [0].nWeaponIcons & 1;
+	int32_t	nHiliteColor = gameOpts->app.bColorblindFriendly;
+	int32_t	fw, fh, faw;
+	int32_t	j, n, firstItem, 
 				oy = 6, 
 				ox = 6, 
 				x, y, dy;
-	int32_t		w = bmpInventory->Width (), 
+	int32_t	w = bmpInventory->Width (), 
 				h = bmpInventory->Width ();
-	int32_t		wIcon = (int32_t) ((w + nIconScale - 1) / nIconScale * m_xScale), 
+	int32_t	wIcon = (int32_t) ((w + nIconScale - 1) / nIconScale * m_xScale), 
 				hIcon = (int32_t) ((h + nIconScale - 1) / nIconScale * m_yScale);
-	int32_t		nDmgIconWidth = 0;
+	int32_t	nDmgIconWidth = 0;
 #if 0
 									(nIconPos
 									 && ((gameStates.app.nSDLTicks [0] - LOCALOBJECT.TimeLastRepaired () > 3000) || 

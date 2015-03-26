@@ -149,7 +149,7 @@ return 1;
 int32_t CTracker::ReceiveServerList (uint8_t *data)
 {
 	tServerListTable	*pslt;
-	int32_t					i = Find (reinterpret_cast<tUdpAddress*> (networkData.packetSource.Node ()));
+	int32_t				i = Find (reinterpret_cast<tUdpAddress*> (networkData.packetSource.Node ()));
 
 if (i < 0)
 	return 0;

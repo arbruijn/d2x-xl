@@ -162,10 +162,15 @@ return GrString ((x < 0) ? -x : ScaleX (x), (y < 0) ? -y : ScaleY (y), szBuf, id
 int32_t _CDECL_ CGenericCockpit::DrawHUDText (int32_t *idP, int32_t x, int32_t y, const char * format, ...)
 {
 	static char buffer [1000];
+	char*			bufP = buffer;
 	va_list args;
 
-va_start (args, format);
-vsprintf (buffer, format, args);
+if (!*format)
+	bufP = const_cast<char*>(format + 1);
+else {
+	va_start (args, format);
+	vsprintf (buffer, format, args);
+	}	
 if (!CCanvas::Current ()->Font ())
 	CCanvas::Current ()->SetFont (GAME_FONT);
 CCanvasColor fontColor = CCanvas::Current ()->FontColor (0);
@@ -175,11 +180,11 @@ fontManager.SetColorRGBi (FontColor (), 1, 0, 0);
 if (x < 0)
 	x = CCanvas::Current ()->Width () + x;
 else if (x == 0x8000)
-	x = CenteredStringPos (buffer);
+	x = CenteredStringPos (bufP);
 if (y < 0)
 	y = CCanvas::Current ()->Height () + y;
-int32_t nOffsetSave = AdjustCockpitXY (buffer, x, y);
-int32_t nId = GrString (x, y, buffer, idP);
+int32_t nOffsetSave = AdjustCockpitXY (bufP, x, y);
+int32_t nId = GrString (x, y, bufP, idP);
 gameData.SetStereoOffsetType (nOffsetSave);
 //fontManager.SetScale (1.0f);
 CCanvas::Current ()->FontColor (0) = fontColor;
