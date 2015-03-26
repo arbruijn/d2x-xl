@@ -708,12 +708,14 @@ return l + 4;
 char* PrimaryWeaponList (char* pszList)
 {
 // Q6SPVF HPGO - (Quad) Lasers <level>, Spreafire, Plasma, Vulcan, Fusion, Helix, Gauss, Omega
-	static char* szWeaponIds = "LVSPFSGHPO";
+	static char* szWeaponIds = "LVSPFSGHXO";
 
 	int32_t	n = (gameStates.app.bD1Mission) ? 5 : 10;
 	int32_t	l = 0;
 	int32_t	nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
 	int32_t	nState [2] = {-1, 0};
+	int32_t	nMaxAutoSelect = 255;
+	bool		bLasers = false;
 	char		szList [100], szAmmo [20];
 
 szAmmo [0] = '\0';
@@ -725,28 +727,36 @@ for (int32_t j = 0; j < n; j++) {
 		continue; // skip Vulcan / Spreadfire if player has Gauss / Helix and smart weapon switch is enabled
 #endif
 
-	hudIcons.GetWeaponState (bHave, bAvailable, bActive, 0, j, j);
+	int32_t	k = hudIcons.GetWeaponIndex (0, j, nMaxAutoSelect);
+
+	if (k == 0)
+		k = 5;
+
+	hudIcons.GetWeaponState (bHave, bAvailable, bActive, 0, j, k);
 	nState [1] = (bHave | bAvailable) | (bActive << 1);
 
-	if (j == 0) { // standard laser
+	if (k == 5) { // standard laser
+		if (bLasers)
+			continue;
+		bLasers = true;
 		if (!bHave) {
-			hudIcons.GetWeaponState (bHave, bAvailable, bActive, 0, 5, 5); // super laser
+			hudIcons.GetWeaponState (bHave, bAvailable, bActive, 0, 0, 0); // super laser
 			nState [1] = (bHave | bAvailable) | (bActive << 1);
 			}
 		if (nState [1] != nState [0])
 			l = AddWeaponStateColor (szList, l, bHave && bAvailable, bActive);
 		szList [l++] = (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) ? 'Q' : 'L';
 		szList [l++] = 48 + LOCALPLAYER.LaserLevel () + 1;
-		szList [l++] = ' ';
+		//szList [l++] = ' ';
 		}
-	else if (j == 5) { // 5 == super laser, handled above
-		szList [l++] = ' ';
+	else if (k == 0) { // 5 == super laser, handled above
+		//szList [l++] = ' ';
 		continue;
 		}
 	else {
 		if (nState [1] != nState [0])
 			l = AddWeaponStateColor (szList, l, bHave && bAvailable, bActive);
-		szList [l++] = szWeaponIds [j];
+		szList [l++] = szWeaponIds [k];
 		}
 
 	nState [0] = nState [1];
@@ -754,9 +764,9 @@ for (int32_t j = 0; j < n; j++) {
 	if (bActive) {
 		int32_t nAmmo;
 
-		if ((j == 1) || (j == 6))
+		if ((k == 1) || (k == 6))
 			nAmmo = X2I ((uint32_t) LOCALPLAYER.primaryAmmo [VULCAN_INDEX] * (uint32_t) VULCAN_AMMO_SCALE);
-		else if (j == 9)
+		else if (k == 9)
 			nAmmo = gameData.omega.xCharge [IsMultiGame] * 100 / MAX_OMEGA_CHARGE;
 		else
 			continue;
@@ -764,8 +774,8 @@ for (int32_t j = 0; j < n; j++) {
 		AddWeaponStateColor (szAmmo, 0, bHave && bAvailable, 1);
 		sprintf (szAmmo + 4, "%d ", nAmmo);
 		}
-
 	}
+
 szList [l] = '\0';
 pszList [0] = '\0';
 if (nLayout == 2)
@@ -778,15 +788,29 @@ return pszList;
 
 //	-----------------------------------------------------------------------------
 
+int32_t ProxMineStatus (char* pszList, int32_t l, int32_t n, char tag, int32_t* nState)
+{
+int32_t	bActive, bHave, bAvailable;
+hudIcons.GetWeaponState (bHave, bAvailable, bActive, 1, n, n);
+nState [1] = (bHave | bAvailable) | (bActive << 1);
+if (nState [1] != nState [0])
+	l = AddWeaponStateColor (pszList, l, bHave && bAvailable, bActive);
+pszList [l++] = tag;
+return l;
+}
+
+//	-----------------------------------------------------------------------------
+
 char* SecondaryWeaponList (char* pszList)
 {
 // CHSM MGFS - Concussion, Homer, Smart, Mega, Mercury, Guided, Flash, Shaker
-	static char* szWeaponIds = "CHSMMGFSBS";
+	static char* szWeaponIds = "CHBSMFGEYS";
 
 	int32_t	n = (gameStates.app.bD1Mission) ? 5 : 10;
 	int32_t	l = 1;
 	int32_t	bActive, bHave, bAvailable;
 	int32_t	nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
+	int32_t	nMaxAutoSelect = 255;
 	int32_t	nState [2] = {-1, 0};
 	char		szAmmo [20];
 
@@ -795,36 +819,27 @@ szAmmo [0] = '\0';
 
 for (int32_t j = 0; j < n; j++) {
 
-	hudIcons.GetWeaponState (bHave, bAvailable, bActive, 1, j, j);
+	int32_t k = hudIcons.GetWeaponIndex (1, j, nMaxAutoSelect);
+
+	if ((k == 2) || (k == 7)) // prox bomb, smart mine
+			continue;
+
+	hudIcons.GetWeaponState (bHave, bAvailable, bActive, 1, j, k);
 	if (bActive) {
 		AddWeaponStateColor (szAmmo, 0, bHave && bAvailable, 1);
-		sprintf (szAmmo + 4, " %d",  LOCALPLAYER.secondaryAmmo [j]);
+		sprintf (szAmmo + 4, " %d",  LOCALPLAYER.secondaryAmmo [/*gameStates.app.bD1Mission ? k - (k > 2) :*/ k]);
 		}
-
 	nState [1] = (bHave | bAvailable) | (bActive << 1);
-
-	if (gameStates.app.bD1Mission) {
-		if (j == 2) // prox bomb
-			continue;
-		}
-	else {
-		if ((j == 4) || (j == 8))
-			pszList [l++] = ' ';
-		}
 	if (nState [1] != nState [0])
 		l = AddWeaponStateColor (pszList, l, bHave && bAvailable, bActive);
-	pszList [l++] = szWeaponIds [j];
+	pszList [l++] = szWeaponIds [gameStates.app.bD1Mission ? k - (k > 2) : k];
 	nState [0] = nState [1];
 	}
 
-if (gameStates.app.bD1Mission) { // handle prox bomb
-	hudIcons.GetWeaponState (bHave, bAvailable, bActive, 1, 2, 2);
-	nState [1] = (bHave | bAvailable) | (bActive << 1);
-	pszList [l++] = ' ';
-	if (nState [1] != nState [0])
-		l = AddWeaponStateColor (pszList, l, bHave && bAvailable, bActive);
-	pszList [l++] = 'B';
-	}
+pszList [l++] = ' ';
+l = ProxMineStatus (pszList, l, 2, 'B', nState);
+if (!gameStates.app.bD1Mission) 
+	l = ProxMineStatus (pszList, l, 8, 'S', nState);
 
 pszList [l] = '\0';
 if (nLayout == 2)

@@ -221,7 +221,7 @@ int32_t CHUDIcons::GetWeaponState (int32_t& bHave, int32_t& bAvailable, int32_t&
 {
 bActive = bAvailable = 0;
 if (i)
-	bHave = (LOCALPLAYER.secondaryWeaponFlags & (1 << l));
+	bHave = (LOCALPLAYER.secondaryWeaponFlags & (1 << l)) != 0;
 else if (!l) {
 	bHave = (LOCALPLAYER.LaserLevel ()  <= MAX_LASER_LEVEL);
 	if (!bHave)
@@ -304,7 +304,7 @@ return GREEN_RGBA;
 
 int32_t CHUDIcons::GetWeaponIndex (int32_t i, int32_t j, int32_t& nMaxAutoSelect)
 {
-	static int32_t nLvlMap [2][10] = {{9, 4, 8, 3, 7, 2, 6, 1, 5, 0}, {4, 3, 2, 1, 0, 4, 3, 1, 0, 2}};
+	static int32_t nLvlMap [2][10] = {{9, 4, 8, 3, 7, 2, 6, 1, 5, 0}, {0, 1, 2, 3, 4, 4, 3, 1, 0, 2}};
 
 if (gameOpts->render.weaponIcons.nSort && !gameStates.app.bD1Mission) {
 	int32_t l = nWeaponOrder [i][j];

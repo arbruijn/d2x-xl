@@ -879,7 +879,7 @@ if (bOk)
 			(ldh.nVertices == gameData.segs.nVertices) && 
 			(ldh.nFaces == FACES.nFaces) && 
 			(ldh.nLights == m_list.nLights) && 
-			(ldh.nBuffers == m_list.nBuffers) &&
+			(ldh.nBuffers <= m_list.nBuffers) &&
 			(ldh.nMaxLightRange == MAX_LIGHT_RANGE);
 if (bOk) {
 	for (i = ldh.nFaces, faceP = FACES.faces.Buffer (); i; i--, faceP++) {
