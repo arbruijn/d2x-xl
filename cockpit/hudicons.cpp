@@ -400,9 +400,9 @@ void CHUDIcons::DrawWeapons (void)
 	char	szAmmo [10];
 
 	static int32_t	wIcon = 0, 
-					hIcon = 0;
+						hIcon = 0;
 	static int32_t	w = -1, 
-					h = -1;
+						h = -1;
 	static int32_t bInitIcons = 1;
 	static int32_t nIdIcons [2][10] = {{0,0,0,0,0,0,0,0,0,0},{0,0,0,0,0,0,0,0,0,0}};
 

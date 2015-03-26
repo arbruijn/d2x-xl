@@ -46,22 +46,28 @@ else
 
 void CreateLongPos (tLongPos* posP, CObject* objP)
 {
-posP->nSegment = objP->Segment ();
-posP->pos = objP->Position ();
-posP->orient = objP->Orientation ();
-posP->vel = objP->Velocity ();
-posP->rotVel = objP->RotVelocity ();
+if (!objP) 
+	memset (posP, 0, sizeof (*posP));
+else {
+	posP->nSegment = objP->Segment ();
+	posP->pos = objP->Position ();
+	posP->orient = objP->Orientation ();
+	posP->vel = objP->Velocity ();
+	posP->rotVel = objP->RotVelocity ();
+	}
 }
 
 // -------------------------------------------------------------------------------
 
 void ExtractLongPos (CObject* objP, tLongPos* posP)
 {
-objP->SetSegment (posP->nSegment);
-objP->Position () = posP->pos;
-objP->Orientation () = posP->orient;
-objP->Velocity () = posP->vel;
-objP->RotVelocity () = posP->rotVel;
+if (objP) {
+	objP->SetSegment (posP->nSegment);
+	objP->Position () = posP->pos;
+	objP->Orientation () = posP->orient;
+	objP->Velocity () = posP->vel;
+	objP->RotVelocity () = posP->rotVel;
+	}
 }
 
 // -------------------------------------------------------------------------------
@@ -71,42 +77,46 @@ objP->RotVelocity () = posP->rotVel;
 //	Stuff CSegment in a int16_t.
 void CreateShortPos (tShortPos *posP, CObject *objP, int32_t bSwapBytes)
 {
+if (!objP) 
+	memset (posP, 0, sizeof (*posP));
+else {
 	// int32_t	nSegment;
-	CFixMatrix orient = objP->info.position.mOrient;
-	int8_t   *segP = posP->orient;
-	CFixVector *pv;
+	CFixMatrix	orient = objP->info.position.mOrient;
+	int8_t		*segP = posP->orient;
+	CFixVector	*pv;
 
-*segP++ = ConvertToByte (orient.m.dir.r.v.coord.x);
-*segP++ = ConvertToByte (orient.m.dir.u.v.coord.x);
-*segP++ = ConvertToByte (orient.m.dir.f.v.coord.x);
-*segP++ = ConvertToByte (orient.m.dir.r.v.coord.y);
-*segP++ = ConvertToByte (orient.m.dir.u.v.coord.y);
-*segP++ = ConvertToByte (orient.m.dir.f.v.coord.y);
-*segP++ = ConvertToByte (orient.m.dir.r.v.coord.z);
-*segP++ = ConvertToByte (orient.m.dir.u.v.coord.z);
-*segP++ = ConvertToByte (orient.m.dir.f.v.coord.z);
+	*segP++ = ConvertToByte (orient.m.dir.r.v.coord.x);
+	*segP++ = ConvertToByte (orient.m.dir.u.v.coord.x);
+	*segP++ = ConvertToByte (orient.m.dir.f.v.coord.x);
+	*segP++ = ConvertToByte (orient.m.dir.r.v.coord.y);
+	*segP++ = ConvertToByte (orient.m.dir.u.v.coord.y);
+	*segP++ = ConvertToByte (orient.m.dir.f.v.coord.y);
+	*segP++ = ConvertToByte (orient.m.dir.r.v.coord.z);
+	*segP++ = ConvertToByte (orient.m.dir.u.v.coord.z);
+	*segP++ = ConvertToByte (orient.m.dir.f.v.coord.z);
 
-pv = gameData.segs.vertices + SEGMENTS [objP->info.nSegment].m_vertices [0];
-posP->pos [0] = (int16_t) ((objP->info.position.vPos.v.coord.x - pv->v.coord.x) >> RELPOS_PRECISION);
-posP->pos [1] = (int16_t) ((objP->info.position.vPos.v.coord.y - pv->v.coord.y) >> RELPOS_PRECISION);
-posP->pos [2] = (int16_t) ((objP->info.position.vPos.v.coord.z - pv->v.coord.z) >> RELPOS_PRECISION);
+	pv = gameData.segs.vertices + SEGMENTS [objP->info.nSegment].m_vertices [0];
+	posP->pos [0] = (int16_t) ((objP->info.position.vPos.v.coord.x - pv->v.coord.x) >> RELPOS_PRECISION);
+	posP->pos [1] = (int16_t) ((objP->info.position.vPos.v.coord.y - pv->v.coord.y) >> RELPOS_PRECISION);
+	posP->pos [2] = (int16_t) ((objP->info.position.vPos.v.coord.z - pv->v.coord.z) >> RELPOS_PRECISION);
 
-posP->nSegment = objP->info.nSegment;
+	posP->nSegment = objP->info.nSegment;
 
-posP->vel [0] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.x) >> VEL_PRECISION);
-posP->vel [1] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.y) >> VEL_PRECISION);
-posP->vel [2] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.z) >> VEL_PRECISION);
+	posP->vel [0] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.x) >> VEL_PRECISION);
+	posP->vel [1] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.y) >> VEL_PRECISION);
+	posP->vel [2] = (int16_t) ((objP->mType.physInfo.velocity.v.coord.z) >> VEL_PRECISION);
 
-// swap the int16_t values for the big-endian machines.
+	// swap the int16_t values for the big-endian machines.
 
-if (bSwapBytes) {
-	posP->pos [0] = INTEL_SHORT (posP->pos [0]);
-	posP->pos [1] = INTEL_SHORT (posP->pos [1]);
-	posP->pos [2] = INTEL_SHORT (posP->pos [2]);
-	posP->nSegment = INTEL_SHORT (posP->nSegment);
-	posP->vel [0] = INTEL_SHORT (posP->vel [0]);
-	posP->vel [1] = INTEL_SHORT (posP->vel [1]);
-	posP->vel [2] = INTEL_SHORT (posP->vel [2]);
+	if (bSwapBytes) {
+		posP->pos [0] = INTEL_SHORT (posP->pos [0]);
+		posP->pos [1] = INTEL_SHORT (posP->pos [1]);
+		posP->pos [2] = INTEL_SHORT (posP->pos [2]);
+		posP->nSegment = INTEL_SHORT (posP->nSegment);
+		posP->vel [0] = INTEL_SHORT (posP->vel [0]);
+		posP->vel [1] = INTEL_SHORT (posP->vel [1]);
+		posP->vel [2] = INTEL_SHORT (posP->vel [2]);
+		}
 	}
 }
 
@@ -114,8 +124,9 @@ if (bSwapBytes) {
 
 void ExtractShortPos (CObject *objP, tShortPos *spp, int32_t bSwapBytes)
 {
-	int32_t	nSegment;
-	int8_t   *segP;
+if (objP) {
+	int32_t		nSegment;
+	int8_t		*segP;
 	CFixVector *pv;
 
 	segP = spp->orient;
@@ -154,7 +165,7 @@ void ExtractShortPos (CObject *objP, tShortPos *spp, int32_t bSwapBytes)
 	objP->mType.physInfo.velocity.v.coord.z = (spp->vel [2] << VEL_PRECISION);
 
 	objP->RelinkToSeg (nSegment);
-
+	}
 }
 
 // -----------------------------------------------------------------------------

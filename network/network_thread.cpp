@@ -904,17 +904,18 @@ return (packet && packet->Type () == PID_OBJECT_DATA);
 
 bool CNetworkThread::Send (uint8_t* data, int32_t size, uint8_t* network, uint8_t* node, uint8_t* localAddress)
 {
+LockSend ();
 if (!SendInBackground ()) {
 	if (localAddress)
 		IPXSendPacketData (data, size, network, node, localAddress);
 	else
 		IPXSendInternetPacketData (data, size, network, node);
+	UnlockSend ();
 	return true;
 	}
 
 CNetworkPacket* packet;
 
-LockSend ();
 m_txPacketQueue.Lock (true, __FUNCTION__);
 // try to combine data sent to the same player
 if ((packet = m_txPacketQueue.Head ()) && packet->Combine (data, size, network, node))

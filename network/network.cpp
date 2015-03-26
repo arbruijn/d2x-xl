@@ -439,7 +439,7 @@ SetType (PID_PLAYER_DATA);
 SetPlayer (N_LOCALPLAYER);
 SetRenderType (OBJECTS.Buffer () ? LOCALOBJECT.info.renderType : 0);
 SetLevel (missionManager.nCurrentLevel);
-SetObjInfo (OBJECTS + LOCALPLAYER.nObject);
+SetObjInfo (gameData.Object (LOCALPLAYER.nObject));
 Squish ();
 }
 
