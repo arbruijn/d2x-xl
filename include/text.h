@@ -1996,12 +1996,12 @@ void LoadGameTexts(void);
 #define TXT_SHIP_STATE_LAYOUT			GT(1238)
 #define TXT_COLUMNS						GT(1239)
 #define TXT_ROWS							GT(1240)
+#define TXT_MINIMALIST_HUD				GT(1241)
+#define TXT_HORIZONTAL					GT(1242)
+#define TXT_VERTICAL						GT(1243)
 
 #if 0
 
-#define TXT_					GT(1241)
-#define TXT_					GT(1242)
-#define TXT_					GT(1243)
 #define TXT_					GT(1244)
 #define TXT_					GT(1245)
 #define TXT_					GT(1246)
@@ -2622,10 +2622,10 @@ void LoadGameTexts(void);
 #define HTX_SHIELD_EFFECT				HT(442)
 #define HTX_PRECALC_LIGHTMAPS			HT(443)
 #define HTX_SHIP_STATE_LAYOUT			HT(444)
+#define HTX_MINIMALIST_HUD				HT(445)
 
 #if 0
 
-#define HTX_						HT(445)
 #define HTX_						HT(446)
 #define HTX_						HT(447)
 #define HTX_						HT(448)

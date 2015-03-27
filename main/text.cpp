@@ -1985,9 +1985,12 @@ const char *defaultGameTexts [][2] = {
  {"\x01\xff\xe0\x01 Ein neues Descent entsteht!\n\nBitte unterstuetze\x01\xff\x01\x01 Descent Underground\x01\xff\xe0\x01 \n\nauf Kickstarter!", 
   "\x01\xff\xe0\x01 A NEW DESCENT IS IN THE MAKING!\n\nPLEASE SUPPORT\x01\xff\x01\x01 DESCENT:UNDERGROUND\n\n\x01\xff\xe0\x01ON KICKSTARTER!\n"},
  {"descent under~Ground", "descent under~Ground"},
- {"la~Yout schiffsstatus: %s", "ship status la~Yout: %s"},
+ {"m~Inimal-hud: %s", "m~Inimalist hud: %s"},
  {"Spalten", "Columns"},
  {"Zeilen", "Rows"},
+ {"minimalistisches hud", "minimalist hud"},
+ {"horizontal", "horizontal"},
+ {"vertikal", "vertical"},
  
 #if 0
  {"", ""},
@@ -2746,6 +2749,8 @@ const char *defaultHelpTexts [][2] = {
   "precalculation can take a long time."},
  {"Hiermit kann die Anordnung der Anzeige von Waffen-,\nSchild- und Energiestatus kontrolliert werden.\n\nStandard: In den Bildschirmecken.\nSpalten: Energie links, Waffen rechts am Fadenkreuz.\nZeilen: Schilde und Energie oben, darunter Waffen.", 
   "Control the layout of weapon, shield and energy\n states with this option.\n\nStandard: In the corners of the screen.\nColums: Energy left, weapons right of the reticle.\nRows: Shields and energy on top, weapons below."},
+ {"Wenn angekreuzt, werden alle wichtigen Schiffsdaten, wie Bewaffnung\nund Energiestati in Kurzform direkt am Fadenkreuz angezeigt.\n\nAktive Waffen sind gelb, verfuegbare Waffen sind gruen und\nnicht verfuegbare Waffen sind grau.\n\nUnterhalb der Primaerwaffen wird die verfuegbare Munition\nbzw. bei Lasern die Leistung und die Ausstattung mit Quad-Lasern\nangezeigt.\n\nUnterhalb der Raketen wird die verfuegbare Menge angezeigt.\nEin Stern bedeutet, dass es 10 oder Raketen gibt.", 
+  "If checked, all important ship data, like weapon loadout and\nenergy levels are displayed in short form directly at the reticle.\n\nEquipped weapons are yellow, available ones are green\nand unavailable ones are gray.\n\nBelow the primary weapons, available ammunition is displayed.\nFor lasers, their level and whether a Quad Laser is equipped is shown.\n\nBelow the missiles the missile count is displayed.\nAn asterisk means that there are 10 or more missiles."},
 #if 0
  {"", ""},
 #endif
