@@ -345,6 +345,21 @@ class CHUD : public CGenericCockpit {
 					 ? m_info.nLineSpacing
 					 : 5 * GAME_FONT->Height () / 4;
 			}
+
+		void ScaleUp (void);
+		void ScaleDown (void);
+		char* StrPrimaryWeapon (char* szLabel);
+		char* StrSecondaryWeapon (char* szLabel);
+		int32_t StrWeaponStateColor (char* pszList, int32_t l, int32_t bAvailable, int32_t bActive);
+		int32_t StrProxMineStatus (char* pszList, int32_t l, int32_t n, char tag, int32_t* nState);
+		char* StrPrimaryWeaponList (char* pszList, char* pszAmmo);
+		char* StrSecondaryWeaponList (char* pszList);
+		void SetWeaponStateColor (int32_t bAvailable, int32_t bActive);
+		void DrawPrimaryWeaponList (void);
+		void DrawSecondaryWeaponList (void);
+		void DrawSecondaryAmmoList (char* pszList);
+		int32_t DrawAmmoCount (char* szLabel, int32_t x, int32_t y, int32_t j, int32_t k, int32_t* nState);
+
 	};
 
 //	-----------------------------------------------------------------------------
