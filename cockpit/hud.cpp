@@ -809,7 +809,7 @@ static void DrawPrimaryWeaponList (void)
 	int32_t	nState [2] = {-1, 0};
 	int32_t	nLineSpacing = cockpit->LineSpacing ();
 	int32_t	x = gameData.render.scene.Width () / 2 - cockpit->ScaleX (X_GAUGE_OFFSET * 3);
-	int32_t	y = gameData.render.scene.Height () / 2 - 2 * nLineSpacing; //(n * nLineSpacing) / 2;
+	int32_t	y = gameData.render.scene.Height () / 2 - (gameStates.app.bD1Mission ? 1 : 2) * nLineSpacing; //(n * nLineSpacing) / 2;
 	int32_t	nMaxAutoSelect = 255;
 	bool		bLasers = false;
 	char		szLabel [2] = {'\0', '\0'}, szAmmo [20];
@@ -955,7 +955,7 @@ static void DrawSecondaryWeaponList (void)
 	int32_t	nState [2] = {-1, 0};
 	int32_t	nLineSpacing = cockpit->LineSpacing ();
 	int32_t	x = gameData.render.scene.Width () / 2 + cockpit->ScaleX (X_GAUGE_OFFSET * 3);
-	int32_t	y = gameData.render.scene.Height () / 2 - 2 * nLineSpacing; //((n + 1) * nLineSpacing) / 2;
+	int32_t	y = gameData.render.scene.Height () / 2 - (gameStates.app.bD1Mission ? 1 : 2) * nLineSpacing; //((n + 1) * nLineSpacing) / 2;
 	char		szLabel [2] = {'\0', '\0'}, szAmmo [20];
 
 for (int32_t nType = 0; nType < 2; nType++) {
@@ -972,7 +972,7 @@ for (int32_t nType = 0; nType < 2; nType++) {
 		GrPrintF (NULL, x, y, szLabel);
 		if (LOCALPLAYER.secondaryAmmo [k]) {
 			sprintf (szAmmo, "%d", LOCALPLAYER.secondaryAmmo [k]);
-			GrPrintF (NULL, x + 20, y, szAmmo);
+			GrPrintF (NULL, x + 64 - StringWidth (szAmmo), y, szAmmo);
 			}
 		y += nLineSpacing;
 		}
