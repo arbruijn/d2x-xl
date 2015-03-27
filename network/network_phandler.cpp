@@ -531,7 +531,7 @@ else if (!(piP->nStatusFilter & (1 << networkData.nStatus)))
 else if (!NetworkBadPacketSize (nLength, piP->nLength, piP->pszInfo)) {
 	console.printf (0, "received %s\n", piP->pszInfo);
 	if (!addressFilter [pId])	// patch the proper IP address into the packet header
-		memcpy (&reinterpret_cast<tPlayerSyncData*>(data)->player.network, &networkData.packetDest.Address (), sizeof (tNetworkNode));
+		reinterpret_cast<tPlayerSyncData*>(data)->player.network.SetServer (networkData.packetDest.Server ());
 	nFuncRes = piP->packetHandler (data, nLength);
 	}
 return nFuncRes;
