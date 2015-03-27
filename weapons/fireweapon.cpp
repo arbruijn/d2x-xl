@@ -493,9 +493,12 @@ return false;
 //sequence this weapon object for this _frame_ (underscores added here to aid MK in his searching!)
 // This function is only called every 25 ms max. (-> updating at 40 fps or less) 
 
+#define HOMER_FPS			25
+#define HOMER_FRAMETIME	(I2X (1) / HOMER_FPS)
+
 void CObject::UpdateHomingWeapon (int32_t nThread)
 {
-for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= I2X (1) / 40; xFrameTime -= I2X (1) / 40) {
+for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= HOMER_FRAMETIME; xFrameTime -= HOMER_FRAMETIME) {
 	CFixVector	vVecToObject, vNewVel;
 	fix			dot = I2X (1);
 	fix			speed, xMaxSpeed, xDist;

@@ -120,12 +120,8 @@ if (!InFont (letter)) {				//not in font, draw as space
 		spacing = m_info.width;
 	}
 else {
-	if (m_info.flags & FT_PROPORTIONAL)
-		width = m_info.widths [letter];
-	else
-		width = m_info.width;
+	width = (m_info.flags & FT_PROPORTIONAL) ? m_info.widths [letter] : m_info.width;
 	spacing = width;
-
 	if (m_info.flags & FT_KERNED) {
 		if ((cNext != 0) && (cNext != '\n')) {
 			int32_t letter2 = cNext - m_info.minChar;
@@ -141,7 +137,7 @@ else {
 #if DBG
 if (fontManager.Scale () != 1.0f)
 #endif
-	spacing = (int32_t) FRound (spacing * fontManager.Scale ());
+spacing = (int32_t) FRound (spacing * fontManager.Scale ());
 }
 
 //------------------------------------------------------------------------------

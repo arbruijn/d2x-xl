@@ -105,6 +105,11 @@ class CFont {
 		inline int32_t Range (void) { return m_info.maxChar - m_info.minChar + 1; }
 
 		void GetCharWidth (uint8_t c, uint8_t c2, int32_t& width, int32_t& spacing);
+		inline int32_t GetCharWidth (char* psz) {
+			int32_t w, s;
+			GetCharWidth (*psz, *(psz + 1), w, s);
+			return s;
+			}
 		int32_t GetLineWidth (const char *s, float scale = 1.0f);
 		int32_t GetCenteredX (const char *s, float scale = 1.0f);
 		int32_t TotalWidth (float scale = 1.0f);

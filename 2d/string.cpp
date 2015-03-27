@@ -479,6 +479,7 @@ while (nextRowP != NULL) {
 		fontManager.Current ()->GetCharWidth (c, textP [1], width, spacing);
 		if (c <= 0x06) {	//not in font, draw as space
 			textP = ScanEmbeddedColors (c, textP, origColor, 128, 2);
+			colorP = &CCanvas::Current ()->FontColor (0);
 			continue;
 			}
 		if (fontManager.Current ()->InFont (letter)) {
