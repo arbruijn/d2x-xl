@@ -738,9 +738,8 @@ for (int32_t j = 0; j < n; j++) {
 			}
 		if (nState [1] != nState [0])
 			l = AddWeaponStateColor (szList, l, bHave && bAvailable, bActive);
-#if 1
 		szList [l++] = 'L';
-#else
+#if 0
 		szList [l++] = (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) ? 'Q' : 'L';
 		szList [l++] = 48 + LOCALPLAYER.LaserLevel () + 1;
 #endif
@@ -835,7 +834,11 @@ for (int32_t j = 0; j < n; j++) {
 			}
 		if (nState [1] != nState [0])
 			SetWeaponStateColor (bHave && bAvailable, bActive);
+#if 1
 		szLabel [0] = 'L';
+#else
+		szLabel [0] = (LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) ? 'Q' : 'L';
+#endif
 		}
 	else if (k == 0) { // 5 == super laser, handled above
 		continue;
