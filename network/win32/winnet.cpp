@@ -252,7 +252,7 @@ if ((i = FindArg ("-ipxnetwork")) && appConfig [i + 1]) {
 if ((nSocket >= 0) && driver->OpenSocket (&ipxSocketData, nSocket))
 	return IPX_NOT_INSTALLED;
 driver->GetMyAddress ();
-ipx_network.a = ipx_MyAddress.network.a;
+ipx_network.a = ipx_MyAddress.GetNetwork ();
 nIpxNetworks = 0;
 ipxNetworks [nIpxNetworks++].a = ipx_network.a;
 bIpxInstalled = 1;

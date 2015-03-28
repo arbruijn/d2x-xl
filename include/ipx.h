@@ -83,12 +83,12 @@ typedef union {
 
 //------------------------------------------------------------------------------
 
-class CNetworkAddress : public tNetworkAddress {
+class CNetworkAddress /*: public tNetworkAddress*/ {
 	public:
 		tNetworkAddress	m_address;
 
 		CNetworkAddress () {}
-		CNetworkAddress (tNetworkAddress& address) { *this = address; }
+		CNetworkAddress (tNetworkAddress& address) { /**this*/ m_address = address; }
 
 		inline uint8_t* Network (void) { return m_address.network.octets; }
 		inline uint8_t* Node (void) { return m_address.node.b; }
