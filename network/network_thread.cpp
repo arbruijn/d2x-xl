@@ -902,14 +902,16 @@ return (packet && packet->Type () == PID_OBJECT_DATA);
 
 //------------------------------------------------------------------------------
 
-bool CNetworkThread::Send (uint8_t* data, int32_t size, uint8_t* network, uint8_t* node, uint8_t* localAddress)
+bool CNetworkThread::Send (uint8_t* data, int32_t size, uint8_t* network, uint8_t* node, uint8_t* localAddress, int32_t bTrackerCall)
 {
 LockSend ();
+gameStates.multi.bTrackerCall = bTrackerCall;
 if (!SendInBackground ()) {
 	if (localAddress)
 		IPXSendPacketData (data, size, network, node, localAddress);
 	else
 		IPXSendInternetPacketData (data, size, network, node);
+	gameStates.multi.bTrackerCall = 0;
 	UnlockSend ();
 	return true;
 	}

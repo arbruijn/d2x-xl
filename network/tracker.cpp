@@ -98,9 +98,7 @@ void CTracker::Call (int32_t i, uint8_t *pData, int32_t nDataLen)
 
 UDP_ADDR (&tracker) = UDP_ADDR (trackerList.servers + i);
 UDP_PORT (&tracker) = htons (UDP_PORT (trackerList.servers + i));
-gameStates.multi.bTrackerCall = 1;
-networkThread.Send (pData, nDataLen, reinterpret_cast<uint8_t*> (&network), reinterpret_cast<uint8_t*> (&tracker));
-gameStates.multi.bTrackerCall = 0;
+networkThread.Send (pData, nDataLen, reinterpret_cast<uint8_t*> (&network), reinterpret_cast<uint8_t*> (&tracker), 1);
 }
 
 //------------------------------------------------------------------------------
