@@ -149,8 +149,10 @@ switch (info.controlType) {
 	case CT_EXPLOSION:
 		cType.explInfo.nSpawnTime = cf.ReadFix ();
 		cType.explInfo.nDeleteTime	= cf.ReadFix ();
-		cType.explInfo.nDeleteObj = cf.ReadShort ();
-		cType.explInfo.attached.nNext = cType.explInfo.attached.nPrev = cType.explInfo.attached.nParent = -1;
+		cType.explInfo.nDestroyedObj = cf.ReadShort ();
+		cType.explInfo.attached.nNext = 
+		cType.explInfo.attached.nPrev = 
+		cType.explInfo.attached.nParent = -1;
 		break;
 
 	case CT_WEAPON: //do I really need to read these?  Are they even saved to disk?
@@ -213,7 +215,7 @@ switch (info.renderType) {
 	case RT_MORPH:
 	case RT_POLYOBJ: {
 		rType.polyObjInfo.nModel = cf.ReadInt ();
-		for (int32_t i = 0; i <MAX_SUBMODELS; i++)
+		for (int32_t i = 0; i < MAX_SUBMODELS; i++)
 			cf.ReadAngVec(rType.polyObjInfo.animAngles [i]);
 		rType.polyObjInfo.nSubObjFlags = cf.ReadInt ();
 		int32_t tmo = cf.ReadInt ();
@@ -226,8 +228,8 @@ switch (info.renderType) {
 	case RT_HOSTAGE:
 	case RT_POWERUP:
 	case RT_FIREBALL:
-		rType.animationInfo.nClipIndex	= cf.ReadInt ();
-		rType.animationInfo.xFrameTime	= cf.ReadFix ();
+		rType.animationInfo.nClipIndex = cf.ReadInt ();
+		rType.animationInfo.xFrameTime = cf.ReadFix ();
 		rType.animationInfo.nCurFrame	= cf.ReadByte ();
 		if ((rType.animationInfo.nClipIndex < 0) || (rType.animationInfo.nClipIndex >= MAX_ANIMATIONS_D2)) {
 			rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [info.nId].nClipIndex;
@@ -402,7 +404,7 @@ switch (info.controlType) {
 	case CT_EXPLOSION:
 		cType.explInfo.nSpawnTime = cf.ReadFix ();
 		cType.explInfo.nDeleteTime = cf.ReadFix ();
-		cType.explInfo.nDeleteObj = cf.ReadShort ();
+		cType.explInfo.nDestroyedObj = cf.ReadShort ();
 		cType.explInfo.attached.nParent = cf.ReadShort ();
 		cType.explInfo.attached.nPrev = cf.ReadShort ();
 		cType.explInfo.attached.nNext = cf.ReadShort ();
@@ -491,6 +493,22 @@ else {
 
 //------------------------------------------------------------------------------
 
+inline int16_t ObjId (int16_t nIndex)
+{
+if (saveGameManager.Version () < 59) 
+	return nIndex;
+if (saveGameManager.Version () < 61)
+	return -1; // prevent a bug to strike introduced with save game version 59
+if (nIndex < 0) 
+	return -1;
+CObject* objP = gameData.Object (nIndex);
+if (!objP)
+	return -1;
+return objP->GetId ();
+}
+
+//------------------------------------------------------------------------------
+
 void CObject::SaveState (CFile& cf)
 {
 //	int32_t fPos = cf.Tell ();
@@ -498,8 +516,8 @@ void CObject::SaveState (CFile& cf)
 cf.WriteInt (info.nSignature);      
 cf.WriteByte ((int8_t) info.nType); 
 cf.WriteByte ((int8_t) info.nId);
-cf.WriteShort (info.nNextInSeg);
-cf.WriteShort (info.nPrevInSeg);
+cf.WriteShort (ObjId (info.nNextInSeg));
+cf.WriteShort (ObjId (info.nPrevInSeg));
 cf.WriteByte ((int8_t) info.controlType);
 cf.WriteByte ((int8_t) info.movementType);
 cf.WriteByte ((int8_t) info.renderType);
@@ -509,7 +527,7 @@ if (info.renderType == 14)
 #endif
 cf.WriteByte ((int8_t) info.nFlags);
 cf.WriteShort (info.nSegment);
-cf.WriteShort (info.nAttachedObj);
+cf.WriteShort (ObjId (info.nAttachedObj));
 cf.WriteVector (OBJPOS (this)->vPos);     
 cf.WriteMatrix (OBJPOS (this)->mOrient);  
 cf.WriteFix (info.xSize); 
@@ -539,24 +557,24 @@ else if (info.movementType == MT_SPINNING) {
 switch (info.controlType) {
 	case CT_WEAPON:
 		cf.WriteShort (cType.laserInfo.parent.nType);
-		cf.WriteShort (cType.laserInfo.parent.nObject);
+		cf.WriteShort (ObjId (cType.laserInfo.parent.nObject));
 		cf.WriteInt (cType.laserInfo.parent.nSignature);
 		cf.WriteFix (cType.laserInfo.xCreationTime);
 		if (cType.laserInfo.nLastHitObj)
 			cf.WriteShort (gameData.objs.nHitObjects [Index () * MAX_HIT_OBJECTS + cType.laserInfo.nLastHitObj - 1]);
 		else
 			cf.WriteShort (-1);
-		cf.WriteShort (cType.laserInfo.nHomingTarget);
+		cf.WriteShort (ObjId (cType.laserInfo.nHomingTarget));
 		cf.WriteFix (cType.laserInfo.xScale);
 		break;
 
 	case CT_EXPLOSION:
 		cf.WriteFix (cType.explInfo.nSpawnTime);
 		cf.WriteFix (cType.explInfo.nDeleteTime);
-		cf.WriteShort (cType.explInfo.nDeleteObj);
-		cf.WriteShort (cType.explInfo.attached.nParent);
-		cf.WriteShort (cType.explInfo.attached.nPrev);
-		cf.WriteShort (cType.explInfo.attached.nNext);
+		cf.WriteShort (ObjId (cType.explInfo.nDestroyedObj));
+		cf.WriteShort (ObjId (cType.explInfo.attached.nParent));
+		cf.WriteShort (ObjId (cType.explInfo.attached.nPrev));
+		cf.WriteShort (ObjId (cType.explInfo.attached.nNext));
 		break;
 
 	case CT_AI:

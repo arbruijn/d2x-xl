@@ -70,7 +70,7 @@ if (nObject < 0)
 objP = OBJECTS + nObject;
 objP->SetLife (BLAST_LIFE);
 objP->cType.explInfo.nSpawnTime = -1;
-objP->cType.explInfo.nDeleteObj = -1;
+objP->cType.explInfo.nDestroyedObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
 objP->SetSize (info.xSize);
 objP->info.xSize /= 3;
@@ -106,7 +106,7 @@ if (nObject < 0)
 objP = OBJECTS + nObject;
 objP->SetLife (SHOCKWAVE_LIFE);
 objP->cType.explInfo.nSpawnTime = -1;
-objP->cType.explInfo.nDeleteObj = -1;
+objP->cType.explInfo.nDestroyedObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
 #if 0
 objP->Orientation () = Orientation ();
@@ -156,7 +156,7 @@ if ((nVClip != ANIM_MORPHING_ROBOT) &&
 	explObjP->SetMoveTime (explObjP->info.xLifeLeft);
 	}
 explObjP->cType.explInfo.nSpawnTime = -1;
-explObjP->cType.explInfo.nDeleteObj = -1;
+explObjP->cType.explInfo.nDestroyedObj = -1;
 explObjP->cType.explInfo.nDeleteTime = -1;
 
 if ((parentP && (nVClip == ANIM_POWERUP_DISAPPEARANCE)) || (nVClip == ANIM_MORPHING_ROBOT))
@@ -603,9 +603,9 @@ if (delayTime) {		//wait a little while before creating explosion
 	CObject *objP = OBJECTS + nObject;
 	//now set explosion-specific data
 	objP->UpdateLife (delayTime);
-	objP->cType.explInfo.nDeleteObj = OBJ_IDX (this);
+	objP->cType.explInfo.nDestroyedObj = OBJ_IDX (this);
 #if DBG
-	if (objP->cType.explInfo.nDeleteObj < 0)
+	if (objP->cType.explInfo.nDestroyedObj < 0)
 		Int3 (); // See Rob!
 #endif
 	objP->cType.explInfo.nDeleteTime = -1;
@@ -678,21 +678,21 @@ if (m_xMoveTime) {
 	Position () = Origin () + vOffset;
 	}
 //See if we should create a secondary explosion
-if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj >= 0)) {
+if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDestroyedObj >= 0)) {
 	CObject*		explObjP, *delObjP;
 	uint8_t		nVClip;
 	CFixVector*	vSpawnPos;
 	fix			xSplashDamage;
 
-	if ((cType.explInfo.nDeleteObj < 0) ||
-		 (cType.explInfo.nDeleteObj > gameData.objs.nLastObject [0])) {
+	if ((cType.explInfo.nDestroyedObj < 0) ||
+		 (cType.explInfo.nDestroyedObj > gameData.objs.nLastObject [0])) {
 #if TRACE
-		console.printf (CON_DBG, "Warning: Illegal value for nDeleteObj in fireball.c\n");
+		console.printf (CON_DBG, "Warning: Illegal value for nDestroyedObj in fireball.c\n");
 #endif
 		Int3 (); // get Rob, please... thanks
 		return;
 		}
-	delObjP = OBJECTS + cType.explInfo.nDeleteObj;
+	delObjP = OBJECTS + cType.explInfo.nDestroyedObj;
 	xSplashDamage = (fix) ROBOTINFO (delObjP->info.nId).splashDamage;
 	vSpawnPos = &delObjP->info.position.vPos;
 	nType = delObjP->info.nType;
@@ -761,9 +761,9 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 			explObjP->mType.physInfo = delObjP->mType.physInfo;
 			}
 		explObjP->cType.explInfo.nDeleteTime = explObjP->info.xLifeLeft / 2;
-		explObjP->cType.explInfo.nDeleteObj = OBJ_IDX (delObjP);
+		explObjP->cType.explInfo.nDestroyedObj = OBJ_IDX (delObjP);
 #if DBG
-		if (cType.explInfo.nDeleteObj < 0)
+		if (cType.explInfo.nDestroyedObj < 0)
 		  	Int3 (); // See Rob!
 #endif
 		}
@@ -775,8 +775,8 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDeleteObj 
 		}
 	}
 	//See if we should delete an CObject
-if ((info.xLifeLeft <= cType.explInfo.nDeleteTime) && (cType.explInfo.nDeleteObj >= 0)) {
-	CObject *delObjP = OBJECTS + cType.explInfo.nDeleteObj;
+if ((info.xLifeLeft <= cType.explInfo.nDeleteTime) && (cType.explInfo.nDestroyedObj >= 0)) {
+	CObject *delObjP = OBJECTS + cType.explInfo.nDestroyedObj;
 	cType.explInfo.nDeleteTime = -1;
 	delObjP->MaybeDelete ();
 	}

@@ -334,7 +334,7 @@ class CAttachedInfo {
 typedef struct tExplosionInfo {
     fix		nSpawnTime;       // when lifeleft is < this, spawn another
     fix		nDeleteTime;      // when to delete CObject
-    int16_t	nDeleteObj;			// and what CObject to delete
+    int16_t	nDestroyedObj;			// and what CObject to delete
 	 tAttachedObjInfo	attached;
 } __pack__ tExplosionInfo;
 
@@ -345,10 +345,10 @@ class CExplosionInfo : public CAttachedInfo {
 		inline tExplosionInfo* GetInfo (void) { return &m_info; };
 		inline fix GetSpawnTime (void) { return m_info.nSpawnTime; }
 		inline fix GetDeleteTime (void) { return m_info.nDeleteTime; }
-		inline int16_t GetDeleteObj (void) { return m_info.nDeleteObj; }
+		inline int16_t GetDeleteObj (void) { return m_info.nDestroyedObj; }
 		inline void SetSpawnTime (fix nSpawnTime) { m_info.nSpawnTime = nSpawnTime; }
 		inline void SetDeleteTime (fix nDeleteTime) { m_info.nDeleteTime = nDeleteTime; }
-		inline void SetDeleteObj (int16_t nDeleteObj) { m_info.nDeleteObj = nDeleteObj; }
+		inline void SetDeleteObj (int16_t nDestroyedObj) { m_info.nDestroyedObj = nDestroyedObj; }
 };
 
 //	-----------------------------------------------------------------------------
@@ -859,6 +859,7 @@ class CObject : public CObjectInfo {
 		inline bool Reprogrammed (void) { return (m_nAttackRobots >= ROBOT_IS_FRIENDLY); }
 
 	private:
+		int16_t			m_nId;
 		int16_t			m_nKey;
 		CObject*			m_prev;
 		CObject*			m_next;
@@ -904,8 +905,10 @@ class CObject : public CObjectInfo {
 #endif
 		// initialize a new CObject.  adds to the list for the given CSegment
 		// returns the CObject number
+		inline int16_t GetId (void) { return m_nId; }
+		inline void SetId (uint16_t nId) { m_nId = nId; }
 		int32_t Create (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos,
-						const CFixMatrix& mOrient, fix xSize, uint8_t cType, uint8_t mType, uint8_t rType);
+							 const CFixMatrix& mOrient, fix xSize, uint8_t cType, uint8_t mType, uint8_t rType);
 
 		inline bool Exists (void) { return !(Flags () & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED)); }
 		inline bool Multiplayer (void) { return m_bMultiplayer; }

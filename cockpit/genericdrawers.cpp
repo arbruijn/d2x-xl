@@ -626,7 +626,10 @@ CCanvas::Current ()->SetColorRGBi (RGB_PAL (0, 0, 0));
 SetFontColor (RED_RGBA);
 sprintf (szAmmo, "%03d", ammoCount);
 Convert1s (szAmmo);
+if ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) || (gameStates.render.cockpit.nType == CM_STATUS_BAR))
+	SetFontScale ((float) floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 nIdAmmo [bPrimary] = DrawHUDText (&nIdAmmo [bPrimary], x, y, szAmmo);
+fontManager.SetScale (1.0f);
 }
 
 //	-----------------------------------------------------------------------------

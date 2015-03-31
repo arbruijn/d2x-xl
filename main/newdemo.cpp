@@ -676,7 +676,7 @@ switch (objP->info.controlType) {
 	case CT_EXPLOSION:
 		objP->cType.explInfo.nSpawnTime = NDReadFix ();
 		objP->cType.explInfo.nDeleteTime = NDReadFix ();
-		objP->cType.explInfo.nDeleteObj = NDReadShort ();
+		objP->cType.explInfo.nDestroyedObj = NDReadShort ();
 		objP->cType.explInfo.attached.nNext = 
 		objP->cType.explInfo.attached.nPrev = 
 		objP->cType.explInfo.attached.nParent = -1;
@@ -904,7 +904,7 @@ switch (o.info.controlType) {
 	case CT_EXPLOSION:
 		NDWriteFix (o.cType.explInfo.nSpawnTime);
 		NDWriteFix (o.cType.explInfo.nDeleteTime);
-		NDWriteShort (o.cType.explInfo.nDeleteObj);
+		NDWriteShort (o.cType.explInfo.nDestroyedObj);
 		break;
 
 	case CT_WEAPON:

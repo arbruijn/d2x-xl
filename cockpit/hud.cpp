@@ -56,7 +56,7 @@ if (ogl.IsOculusRift ()) {
 	m_info.xScale *= 0.5f;
 	m_info.yScale *= 0.5f;
 	}
-cockpit->SetFontScale (sqrt (floor (float (CCanvas::Current ()->Width ()) / 640.0f)));
+SetFontScale (sqrt (floor (float (CCanvas::Current ()->Width ()) / 640.0f)));
 fontManager.PushScale ();
 fontManager.SetScale (cockpit->FontScale ());
 }
@@ -71,7 +71,7 @@ if (ogl.IsOculusRift ()) {
 	}
 m_info.xScale /= float (HUD_ASPECT);
 fontManager.PopScale ();
-cockpit->SetFontScale (1.0f);
+SetFontScale (1.0f);
 }
 
 //	-----------------------------------------------------------------------------
@@ -124,6 +124,7 @@ else
 	sprintf (szScore, "   %s: %5d", TXT_SCORE, LOCALPLAYER.score);
 fontManager.Current ()->StringSize (szScore, w, h, aw);
 SetFontColor (GREEN_RGBA);
+SetFontScale (1.0f);
 DrawHUDText (NULL, -w - LHX (2), 3, szScore);
 }
 
@@ -1164,7 +1165,7 @@ if (!nLayout) {
 	nIdWeapons [1] = DrawHUDText (nIdWeapons + 1, -5 - w, y - LineSpacing (), szLabel);
 	}
 else {
-	cockpit->SetFontScale (sqrt (floor (float (CCanvas::Current ()->Width ()) / 640.0f)));
+	SetFontScale (sqrt (floor (float (CCanvas::Current ()->Width ()) / 640.0f)));
 	if (nLayout == 2)
 		DrawSecondaryWeaponList ();
 	else {

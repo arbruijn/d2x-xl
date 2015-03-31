@@ -172,10 +172,10 @@ if (RenderObject (objP, nWindow, 0)) {
 
 for (int32_t i = objP->info.nAttachedObj; i != -1; i = objP->cType.explInfo.attached.nNext) {
 	objP = OBJECTS + i;
-	Assert (objP->info.nType == OBJ_FIREBALL);
-	Assert (objP->info.controlType == CT_EXPLOSION);
-	Assert (objP->info.nFlags & OF_ATTACHED);
-	RenderObject (objP, nWindow, 1);
+	if ((objP->info.nType == OBJ_FIREBALL) &&
+		 (objP->info.controlType == CT_EXPLOSION) &&
+		 (objP->info.nFlags & OF_ATTACHED))
+		RenderObject (objP, nWindow, 1);
 	}
 }
 

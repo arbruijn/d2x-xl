@@ -27,14 +27,14 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 class CSaveGameManager {
 	private:
 		CFile			m_cf;
-		int32_t			m_bInGame;
-		int32_t			m_bBetweenLevels;
-		int32_t			m_bSecret;
-		int32_t			m_bQuick;
-		int32_t			m_nDefaultSlot;
-		int32_t			m_nLastSlot;
-		int32_t			m_nVersion;
-		int32_t			m_nGameId;
+		int32_t		m_bInGame;
+		int32_t		m_bBetweenLevels;
+		int32_t		m_bSecret;
+		int32_t		m_bQuick;
+		int32_t		m_nDefaultSlot;
+		int32_t		m_nLastSlot;
+		int32_t		m_nVersion;
+		int32_t		m_nGameId;
 		char			m_filename [FILENAME_LEN];
 		char			m_description [DESC_LENGTH + 1];
 		const char*	m_override;

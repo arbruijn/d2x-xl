@@ -1206,7 +1206,7 @@ return objP->info.nType == OBJ_DEBRIS;
 
 int32_t FreeFireballFilter (CObject *objP)
 {
-return (objP->info.nType == OBJ_FIREBALL) && (objP->cType.explInfo.nDeleteObj == -1);
+return (objP->info.nType == OBJ_FIREBALL) && (objP->cType.explInfo.nDestroyedObj == -1);
 }
 
 
@@ -1567,8 +1567,13 @@ Assert (childObjP->cType.explInfo.attached.nPrev != OBJ_IDX (childObjP));
 //dettaches one CObject
 void DetachFromParent (CObject *objP)
 {
-if ((OBJECTS [objP->cType.explInfo.attached.nParent].info.nType != OBJ_NONE) &&
-	 (OBJECTS [objP->cType.explInfo.attached.nParent].info.nAttachedObj != -1)) {
+	CObject* parentObjP = gameData.Object (objP->cType.explInfo.attached.nParent);
+
+#if DBG
+if (!parentObjP)
+	BRP;
+#endif
+if (parentObjP && (parentObjP->Type () != OBJ_NONE) && (parentObjP->info.nAttachedObj != -1)) {
 	if (objP->cType.explInfo.attached.nNext != -1) {
 		OBJECTS [objP->cType.explInfo.attached.nNext].cType.explInfo.attached.nPrev = objP->cType.explInfo.attached.nPrev;
 		}
@@ -1577,7 +1582,7 @@ if ((OBJECTS [objP->cType.explInfo.attached.nParent].info.nType != OBJ_NONE) &&
 			objP->cType.explInfo.attached.nNext;
 		}
 	else {
-		OBJECTS [objP->cType.explInfo.attached.nParent].info.nAttachedObj = objP->cType.explInfo.attached.nNext;
+		parentObjP->info.nAttachedObj = objP->cType.explInfo.attached.nNext;
 		}
 	}
 objP->cType.explInfo.attached.nNext =
@@ -1590,8 +1595,17 @@ objP->info.nFlags &= ~OF_ATTACHED;
 //dettaches all OBJECTS from this CObject
 void DetachChildObjects (CObject *parentP)
 {
-while (parentP->info.nAttachedObj != -1)
-	DetachFromParent (OBJECTS + parentP->info.nAttachedObj);
+	int32_t i =parentP->info.nAttachedObj;
+
+parentP->info.nAttachedObj = -1;
+while (i != -1) {
+	CObject* objP = gameData.Object (i);
+	i = objP->cType.explInfo.attached.nNext;
+	objP->cType.explInfo.attached.nNext =
+	objP->cType.explInfo.attached.nPrev =
+	objP->cType.explInfo.attached.nParent = -1;
+	objP->info.nFlags &= ~OF_ATTACHED;
+	}
 }
 
 //------------------------------------------------------------------------------

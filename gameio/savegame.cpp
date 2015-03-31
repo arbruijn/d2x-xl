@@ -92,7 +92,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "hogfile.h"
 
-#define STATE_VERSION				60
+#define STATE_VERSION				61
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) nId at tof.
 // 1 - Added Difficulty level save
@@ -857,9 +857,22 @@ if (!m_bBetweenLevels) {
 //Save CObject info
 	PrintLog (0, "saving objects ...\n", i);
 	CObject* objP;
+	int16_t nId = 0;
 	FORALL_OBJS (objP) {
-		m_cf.WriteShort ((int16_t) objP->Index ());
-		objP->SaveState (m_cf);
+		int16_t nObject = (int16_t) objP->Index ();
+		if (nObject >= 0)
+			objP->SetId (nId++);
+			}
+	FORALL_OBJS (objP) {
+		int16_t nObject = (int16_t) objP->Index ();
+		if (nObject >= 0) {
+			m_cf.WriteShort (nObject);
+			objP->SaveState (m_cf);
+			}
+#if DBG
+		else
+			BRP;
+#endif
 		}
 	m_cf.WriteShort ((int16_t) -1);
 //Save CWall info
@@ -1640,8 +1653,8 @@ int32_t CSaveGameManager::LoadUniFormat (int32_t bMulti, fix xOldGameTime, int32
 	int32_t		nPlayers, nServerPlayer = -1;
 	int32_t		nOtherObjNum = -1, nServerObjNum = -1, nLocalObjNum = -1;
 	int32_t		nCurrentLevel, nNextLevel;
-	CWall		*wallP;
-	char		szOrgCallSign [CALLSIGN_LEN+16];
+	CWall			*wallP;
+	char			szOrgCallSign [CALLSIGN_LEN+16];
 	int32_t		h, i, j;
 
 if (m_nVersion >= 39) {
@@ -2244,7 +2257,7 @@ if (m_nVersion >= 7) {
 	m_cf.Read (&gameStates.app.bLunacy, sizeof (int32_t), 1);
 	if (gameStates.app.bLunacy)
 		DoLunacyOn ();
-}
+	}
 
 if (m_nVersion >= 17)
 	markerManager.LoadState (m_cf, true);
@@ -2257,7 +2270,7 @@ else {
 	m_cf.Seek (num * (sizeof (CFixVector) + 40), SEEK_CUR);
 	for (num = 0; num < NUM_MARKERS; num++)
 		markerManager.SetObject (num, -1);
-}
+	}
 
 if (m_nVersion >= 11) {
 	if (m_bSecret != 1)
@@ -2265,8 +2278,8 @@ if (m_nVersion >= 11) {
 	else {
 		fix	dummy_fix;
 		m_cf.Read (&dummy_fix, sizeof (fix), 1);
+		}
 	}
-}
 if (m_nVersion < 12)
 	paletteManager.ResetEffect ();
 else {

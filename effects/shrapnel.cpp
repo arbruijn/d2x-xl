@@ -166,7 +166,7 @@ int32_t CShrapnelCloud::Create (CObject* parentObjP, CObject* objP)
 
 objP->UpdateLife (0);
 objP->cType.explInfo.nSpawnTime = -1;
-objP->cType.explInfo.nDeleteObj = -1;
+objP->cType.explInfo.nDestroyedObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
 #if DBG
 h += h / 2;
@@ -185,7 +185,7 @@ for (i = 0; i < h; i++)
 	m_data.buffer [i].Create (parentObjP, objP, 3.0f);
 objP->SetLife (objP->LifeLeft  () * 2);
 objP->cType.explInfo.nSpawnTime = -1;
-objP->cType.explInfo.nDeleteObj = -1;
+objP->cType.explInfo.nDestroyedObj = -1;
 objP->cType.explInfo.nDeleteTime = -1;
 return 1;
 }
