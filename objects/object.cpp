@@ -1667,6 +1667,7 @@ void AttachObject (CObject *parentObjP, CObject *childObjP)
 {
 if (!CheckAttachedObject (childObjP, 3))
 	return;
+#if DBG
 if (parentObjP->info.nAttachedObj != -1) {
 	CObject *objP = gameData.Object (parentObjP->info.nAttachedObj);
 	if (!objP)
@@ -1674,8 +1675,6 @@ if (parentObjP->info.nAttachedObj != -1) {
 	else
 		FixObjectList (parentObjP, objP);
 	}
-
-#if DBG
 if (FindAttachedObject (parentObjP, childObjP))
 	return;
 #endif

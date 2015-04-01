@@ -211,7 +211,7 @@ m_nNodes = abs (m_nNodes);
 m_iStep = 0;
 if (m_parent) {
 	i = m_parent->m_nChildren + 1;
-	l = m_nNodes * m_parent->m_nLength / m_parent->m_nNodes;
+	l = m_nNodes * m_parent->m_nLength / abs (m_parent->m_nNodes);
 	m_nLength = ComputeChildEnd (&m_vPos, &m_vEnd, &m_vDir, &m_parent->m_vDir, l);// + 3 * l / (m_nNode + 1));
 #if DBG
 	if (m_nLength < 0)
