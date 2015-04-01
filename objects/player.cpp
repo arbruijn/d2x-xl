@@ -471,12 +471,11 @@ e = Clamp (e, 0, Max ());
 if (*m_current == e)
 	return false;
 if (*m_current > e) {
-	m_toRecharge [0].Setup (RechargeDelay (extraGameInfo [IsMultiGame].nRechargeDelay));
-	m_toRecharge [1].Setup (0);
-	m_toRecharge [0].Start ();
+	SetRechargeDelay (RechargeDelay (extraGameInfo [IsMultiGame].nRechargeDelay));
+	m_toRecharge.Start ();
 	}
 else
-	m_toRecharge [0].Setup (-1);
+	m_toRecharge.Setup (-1);
 *m_current = e;
 return true;
 }
@@ -491,18 +490,12 @@ if (!m_current)
 	return;
 if (*m_current >= m_max / 2)
 	return;
-if (m_toRecharge [0].Suspended ())
+if (m_toRecharge.Suspended ())
 	return;
-if (!m_toRecharge [0].Expired (false))
+if (!m_toRecharge.Expired (false))
 	return;
-m_toRecharge [0].Setup (0);
-if (!m_toRecharge [1].Expired (false))
-	return;
-m_toRecharge [1].Setup (25);
-m_toRecharge [1].Start ();
-*m_current += I2X (1) / 16;
-if (*m_current > m_max)
-	*m_current = m_max;
+Update (FixMul (gameData.time.xFrame, gameData.producers.xFuelGiveAmount / (1 << extraGameInfo [IsMultiGame].nRechargeSpeed)));
+SetRechargeDelay (0);
 }
 
 //-------------------------------------------------------------------------
@@ -513,10 +506,9 @@ m_type = type;
 m_index = index;
 m_init = init;
 m_max = 2 * init;
-m_toRecharge [0].Setup (-1);
-m_toRecharge [1].Setup (-1);
 if ((m_current = current))
 	Set (init);
+SetRechargeDelay (0);
 }
 
 //-------------------------------------------------------------------------

@@ -102,7 +102,7 @@ class __pack__ CShipEnergy {
 		fix		m_init;
 		fix		m_max;
 		fix*		m_current;
-		CTimeout	m_toRecharge [2];
+		CTimeout	m_toRecharge;
 
 		static time_t m_nRechargeDelays [RECHARGE_DELAY_COUNT];
 
@@ -141,6 +141,10 @@ class __pack__ CShipEnergy {
 		void Setup (int32_t type, int32_t index, fix init, fix* current);
 
 		void Recharge (void);
+
+		inline time_t RechargeDelay (void) { return m_toRecharge.Duration (); }
+
+		inline void SetRechargeDelay (time_t delay) { m_toRecharge.Setup (delay); }
 	};
 
 
@@ -266,6 +270,10 @@ class CPlayerData : public CPlayerInfo {
 		inline fix Energy (bool bScale = true) { return m_energy.Get (bScale); }
 		inline fix MaxShield (void) { return m_shield.Max (); }
 		inline fix MaxEnergy (void) { return m_energy.Max (); }
+		inline int32_t ShieldRechargeDelay (void) { return (int32_t) m_shield.RechargeDelay (); }
+		inline int32_t EnergyRechargeDelay (void) { return (int32_t) m_energy.RechargeDelay (); }
+		inline void SetShieldRechargeDelay (int32_t delay) { m_shield.SetRechargeDelay (delay); }
+		inline void SetEnergyRechargeDelay (int32_t delay) { m_energy.SetRechargeDelay (delay); }
 		fix SetShield (fix s, bool bScale = true);
 		fix SetEnergy (fix e, bool bScale = true);
 		void Recharge (void) {

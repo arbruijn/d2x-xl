@@ -92,7 +92,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "hogfile.h"
 
-#define STATE_VERSION				61
+#define STATE_VERSION				62
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) nId at tof.
 // 1 - Added Difficulty level save
@@ -667,8 +667,10 @@ m_cf.WriteInt (playerP->nObject);                // What CObject number this CPl
 m_cf.WriteInt (playerP->nPacketsGot);         // How many packets we got from them
 m_cf.WriteInt (playerP->nPacketsSent);        // How many packets we sent to them
 m_cf.WriteInt ((int32_t) playerP->flags);           // Powerup flags, see below...
-m_cf.WriteFix (playerP->energy);                // Amount of energy remaining.
+m_cf.WriteFix (playerP->Energy ());                // Amount of energy remaining.
+m_cf.WriteInt (playerP->EnergyRechargeDelay ());
 m_cf.WriteFix (playerP->Shield ());               // shield remaining (protection)
+m_cf.WriteInt (playerP->ShieldRechargeDelay ());
 m_cf.WriteByte (playerP->lives);                // Lives remaining, 0 = game over.
 m_cf.WriteByte (playerP->level);                // Current level CPlayerData is playing. (must be signed for secret levels)
 m_cf.WriteByte ((int8_t) playerP->LaserLevel ());  // Current level of the laser.
@@ -1529,7 +1531,9 @@ playerP->nPacketsSent = m_cf.ReadInt ();				// How many packets we sent to them
 playerP->flags = (uint32_t) m_cf.ReadInt ();           // Powerup flags, see below...
 playerP->Setup ();
 playerP->SetEnergy (m_cf.ReadFix (), false);			// Amount of energy remaining.
+playerP->SetEnergyRechargeDelay ((m_nVersion < 62) ? 0: m_cf.ReadInt ());
 playerP->SetShield (m_cf.ReadFix (), false);			// shield remaining (protection)
+playerP->SetShieldRechargeDelay ((m_nVersion < 62) ? 0: m_cf.ReadInt ());
 playerP->lives = m_cf.ReadByte ();						// Lives remaining, 0 = game over.
 playerP->level = m_cf.ReadByte ();						// Current level CPlayerData is playing. (must be signed for secret levels)
 playerP->ComputeLaserLevels (m_cf.ReadByte ());		// Current level of the laser.

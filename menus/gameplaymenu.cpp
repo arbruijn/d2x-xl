@@ -56,6 +56,7 @@
 
 static const char *pszAggressivities [6];
 static const char *pszWeaponSwitch [3];
+static const char *pszSpeed [3];
 
 void DefaultGameplaySettings (bool bSetup = false);
 
@@ -248,6 +249,15 @@ if ((m = menu ["recharge delay"])) {
 		}
 	}
 
+if ((m = menu ["recharge speed"])) {
+	v = m->Value ();
+	if (extraGameInfo [0].nRechargeSpeed != v) {
+		extraGameInfo [0].nRechargeSpeed = v;
+		sprintf (m->m_text, TXT_RECHARGE_SPEED, pszSpeed [extraGameInfo [0].nRechargeSpeed]);
+		m->m_bRebuild = 1;
+		}
+	}
+
 return nCurItem;
 }
 
@@ -317,6 +327,10 @@ pszAggressivities [5] = TXT_EXTREME;
 pszWeaponSwitch [0] = TXT_NEVER;
 pszWeaponSwitch [1] = TXT_WHEN_EMPTY;
 pszWeaponSwitch [2] = TXT_CHOSE_BEST;
+
+pszSpeed [0] = TXT_FAST;
+pszSpeed [1] = TXT_MEDIUM;
+pszSpeed [2] = TXT_SLOW;
 }
 
 //------------------------------------------------------------------------------
@@ -370,6 +384,9 @@ do {
 			sprintf (szSlider + 1, TXT_RECHARGE_DELAY, CShipEnergy::RechargeDelay (extraGameInfo [0].nRechargeDelay) / 1000);
 			*szSlider = *(TXT_RECHARGE_DELAY - 1);
 			m.AddSlider ("recharge delay", szSlider + 1, extraGameInfo [0].nRechargeDelay, 0, CShipEnergy::RechargeDelayCount () - 1, KEY_Y, HTX_RECHARGE_DELAY);
+			sprintf (szSlider + 1, TXT_RECHARGE_SPEED, pszSpeed [extraGameInfo [0].nRechargeSpeed]);
+			*szSlider = *(TXT_RECHARGE_SPEED - 1);
+			m.AddSlider ("recharge speed", szSlider + 1, extraGameInfo [0].nRechargeSpeed, 0, 2, KEY_S, HTX_RECHARGE_SPEED);
 			}
 		}
 	m.AddText ("", "");

@@ -672,6 +672,7 @@ for (i = 0; i < 2; i++) {
 	RP (extraGameInfo [i].nDamageModel, i, 0);
 	RP (extraGameInfo [i].bRechargeEnergy, i, 0);
 	RP (extraGameInfo [i].nRechargeDelay, i, 0);
+	RP (extraGameInfo [i].nRechargeSpeed, i, 0);
 
 	RP (gameOptions [i].input.joystick.bUse, i, 0);
 	RP (gameOptions [i].input.mouse.bUse, i, 0);
@@ -889,6 +890,7 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].nZoomMode", "1"},
 	 {"extraGameInfo[0].bRechargeEnergy", "0"},
 	 {"extraGameInfo[0].nRechargeDelay", "6"},
+	 {"extraGameInfo[0].nRechargeSpeed ", "1"},
 	 {"extraGameInfo[0].entropy.nCaptureVirusThreshold", "1"},
 	 {"extraGameInfo[0].entropy.nCaptureTimeThreshold", "1"},
 	 {"extraGameInfo[0].entropy.nMaxVirusCapacity", "0"},
