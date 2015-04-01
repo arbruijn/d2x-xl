@@ -472,9 +472,11 @@ if (*m_current == e)
 	return false;
 if (*m_current > e) {
 	m_toRecharge [0].Setup (RechargeDelay (extraGameInfo [IsMultiGame].nRechargeDelay));
+	m_toRecharge [0].Setup (0);
 	m_toRecharge [0].Start ();
 	}
-m_toRecharge [0].Setup (-1);
+else
+	m_toRecharge [0].Setup (-1);
 *m_current = e;
 return true;
 }
