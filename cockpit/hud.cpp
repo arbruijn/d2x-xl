@@ -444,7 +444,7 @@ if (cockpit->Hide ())
 	return;
 
 if (!ShowTextGauges ()) {
-	static int32_t		bFlash = 0, bShow = 1;
+	static int32_t	bFlash = 0, bShow = 1;
 	static time_t	tToggle;
 	//static int32_t		nIdLevel = 0;
 	time_t			t;
@@ -971,7 +971,7 @@ for (int32_t nType = 0; nType < 2; nType++) {
 		nState [1] = (bHave | bAvailable) | (bActive << 1);
 		if (nState [1] != nState [0])
 			SetWeaponStateColor (bHave && bAvailable, bActive);
-		szLabel [0] = szWeaponIds [gameStates.app.bD1Mission ? k - (k > 2) : k];
+		szLabel [0] = szWeaponIds [k];
 		nState [0] = nState [1];
 		GrPrintF (NULL, x, y, szLabel);
 		if (LOCALPLAYER.secondaryAmmo [k]) {
