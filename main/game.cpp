@@ -987,6 +987,7 @@ PROF_START
 
 DeadPlayerFrame ();
 ObserverFrame ();
+LOCALPLAYER.Recharge ();
 if (gameData.demo.nState != ND_STATE_PLAYBACK) 
 	DoReactorDeadFrame ();
 ProcessSmartMinesFrame ();

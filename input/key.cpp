@@ -710,9 +710,9 @@ if (!bInstalled)
 event_poll (SDL_KEYDOWNMASK | SDL_KEYUPMASK);
 if (keyData.nKeyTail != keyData.nKeyHead) {
 	key = keyData.keyBuffer [keyData.nKeyHead];
-	if (key == KEY_CTRLED + KEY_ALTED + KEY_ENTER)
+	if ((key == KEY_CTRLED + KEY_ALTED + KEY_ENTER) || (key == KEY_ALTED + KEY_F4))
 		exit (0);
-	keyData.nKeyHead = KeyAddKey(keyData.nKeyHead);
+	keyData.nKeyHead = KeyAddKey (keyData.nKeyHead);
 	if (time)
 		*time = keyData.xTimePressed [keyData.nKeyHead];
 	}

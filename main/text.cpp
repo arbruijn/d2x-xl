@@ -1991,6 +1991,8 @@ const char *defaultGameTexts [][2] = {
  {"minimalistisches hud", "minimalist hud"},
  {"horizontal", "horizontal"},
  {"vertikal", "vertical"},
+ {"energie auf~Laden", "re~Charge energy"},
+ {"lade~Verzoegerung: %d s", "recharge ~Delay: %d s"},
  
 #if 0
  {"", ""},
@@ -2751,6 +2753,8 @@ const char *defaultHelpTexts [][2] = {
   "Control the layout of weapon, shield and energy\n states with this option.\n\nStandard: In the corners of the screen.\nColums: Energy left, weapons right of the reticle.\nRows: Shields and energy on top, weapons below."},
  {"Wenn angekreuzt, werden alle wichtigen Schiffsdaten, wie Bewaffnung\nund Energiestati in Kurzform direkt am Fadenkreuz angezeigt.\n\nAktive Waffen sind gelb, verfuegbare Waffen sind gruen und\nnicht verfuegbare Waffen sind grau.\n\nUnterhalb der Primaerwaffen wird die verfuegbare Munition\nbzw. bei Lasern die Leistung und die Ausstattung mit Quad-Lasern\nangezeigt.\n\nUnterhalb der Raketen wird die verfuegbare Menge angezeigt.\nEin Stern bedeutet, dass es 10 oder Raketen gibt.", 
   "If checked, all important ship data, like weapon loadout and\nenergy levels are displayed in short form directly at the reticle.\n\nEquipped weapons are yellow, available ones are green\nand unavailable ones are gray.\n\nBelow the primary weapons, available ammunition is displayed.\nFor lasers, their level and whether a Quad Laser is equipped is shown.\n\nBelow the missiles the missile count is displayed.\nAn asterisk means that there are 10 or more missiles."},
+ {"If checked, the player ship's energy and shield will start to\nrecharge after a while.", "Wenn angekreuzt, werden Energie und Schild des Spielerschiffs\nnach einer Weile automatisch aufgeladen."},
+ {"Set the delay for recharging of ship energy and shields after\ntheir supply has been last decreased.", "Hier kann die Verzoegerung eingestellt werden,\nmit der Schiffsenergie und -schilde auf-\ngeladen werden, nachdem ihr Stand zuletzt reduziert wurde."},
 #if 0
  {"", ""},
 #endif

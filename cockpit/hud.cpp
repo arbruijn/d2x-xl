@@ -727,7 +727,7 @@ for (int32_t j = 0; j < n; j++) {
 		k = 5;
 
 	hudIcons.GetWeaponState (bHave, bAvailable, bActive, 0, j, k);
-	nState [1] = (bHave | bAvailable) | (bActive << 1);
+	nState [1] = (bHave && bAvailable) | (bActive << 1);
 
 	if (k == 5) { // standard laser
 		if (bLasers)
@@ -735,7 +735,7 @@ for (int32_t j = 0; j < n; j++) {
 		bLasers = true;
 		if (!bHave) {
 			hudIcons.GetWeaponState (bHave, bAvailable, bActive, 0, 0, 0); // super laser
-			nState [1] = (bHave | bAvailable) | (bActive << 1);
+			nState [1] = (bHave && bAvailable) | (bActive << 1);
 			}
 		if (nState [1] != nState [0])
 			l = StrWeaponStateColor (szList, l, bHave && bAvailable, bActive);
@@ -823,7 +823,7 @@ for (int32_t j = 0; j < n; j++) {
 		k = 5;
 
 	hudIcons.GetWeaponState (bHave, bAvailable, bActive, 0, j, k);
-	nState [1] = (bHave | bAvailable) | (bActive << 1);
+	nState [1] = (bHave && bAvailable) | (bActive << 1);
 
 	if (k == 5) { // standard laser
 		if (bLasers)
@@ -831,7 +831,7 @@ for (int32_t j = 0; j < n; j++) {
 		bLasers = true;
 		if (!bHave) {
 			hudIcons.GetWeaponState (bHave, bAvailable, bActive, 0, 0, 0); // super laser
-			nState [1] = (bHave | bAvailable) | (bActive << 1);
+			nState [1] = (bHave && bAvailable) | (bActive << 1);
 			}
 		if (nState [1] != nState [0])
 			SetWeaponStateColor (bHave && bAvailable, bActive);
@@ -891,7 +891,7 @@ int32_t CHUD::StrProxMineStatus (char* pszList, int32_t l, int32_t n, char tag, 
 {
 int32_t	bActive, bHave, bAvailable;
 hudIcons.GetWeaponState (bHave, bAvailable, bActive, 1, n, n);
-nState [1] = (bHave | bAvailable) | (bActive << 1);
+nState [1] = (bHave && bAvailable) | (bActive << 1);
 if (nState [1] != nState [0])
 	l = StrWeaponStateColor (pszList, l, bHave && bAvailable, bActive);
 pszList [l++] = tag;
@@ -927,7 +927,7 @@ for (int32_t j = 0; j < n; j++) {
 		StrWeaponStateColor (szAmmo, 0, bHave && bAvailable, 1);
 		sprintf (szAmmo + 4, " %d",  LOCALPLAYER.secondaryAmmo [/*gameStates.app.bD1Mission ? k - (k > 2) :*/ k]);
 		}
-	nState [1] = (bHave | bAvailable) | (bActive << 1);
+	nState [1] = (bHave && bAvailable) | (bActive << 1);
 	if (nState [1] != nState [0])
 		l = StrWeaponStateColor (pszList, l, bHave && bAvailable, bActive);
 	pszList [l++] = szWeaponIds [gameStates.app.bD1Mission ? k - (k > 2) : k];
@@ -968,7 +968,7 @@ for (int32_t nType = 0; nType < 2; nType++) {
 		if (nType != ((k == 2) || (k == 7))) // prox bomb, smart mine
 			continue;
 		hudIcons.GetWeaponState (bHave, bAvailable, bActive, 1, j, k);
-		nState [1] = (bHave | bAvailable) | (bActive << 1);
+		nState [1] = (bHave && bAvailable) | (bActive << 1);
 		if (nState [1] != nState [0])
 			SetWeaponStateColor (bHave && bAvailable, bActive);
 		szLabel [0] = szWeaponIds [k];
@@ -990,7 +990,7 @@ int32_t CHUD::DrawAmmoCount (char* szLabel, int32_t x, int32_t y, int32_t j, int
 {
 int32_t	bActive, bHave, bAvailable;
 hudIcons.GetWeaponState (bHave, bAvailable, bActive, 1, j, k);
-nState [1] = (bHave | bAvailable) | (bActive << 1);
+nState [1] = (bHave && bAvailable) | (bActive << 1);
 if (nState [1] != nState [0])
 	SetWeaponStateColor (bHave && bAvailable, bActive);
 nState [0] = nState [1];

@@ -442,5 +442,81 @@ return (nShip < MAX_SHIP_TYPES) ? shipModifiers [nShip].a [m_type] : 1.0f;
 }
 
 //-------------------------------------------------------------------------
+
+time_t CShipEnergy::m_nRechargeDelays [RECHARGE_DELAY_COUNT] = {0, 1, 2, 3, 4, 5, 10, 15, 30, 60};
+
+//-------------------------------------------------------------------------
+
+int32_t CShipEnergy::RechargeDelayCount (void) 
+{
+return sizeofa (m_nRechargeDelays);
+}
+
+//-------------------------------------------------------------------------
+
+time_t CShipEnergy::RechargeDelay (uint8_t i)
+{
+return m_nRechargeDelays [Clamp (i, (uint8_t) i, (uint8_t) RechargeDelayCount)];
+}
+
+//-------------------------------------------------------------------------
+
+bool CShipEnergy::Set (fix e, bool bScale = true) 
+{
+if (bScale)
+	e = (fix) FRound (e * Scale ());
+if (e > Max ())
+	e = Max ();
+if (!m_current || (*m_current == e))
+	return false;
+if (*m_current > e) {
+	m_toRecharge [0].Setup (RechargeDelay (extraGameInfo [IsMultiGame].nRechargeDelay));
+	m_toRecharge [0].Start ();
+	}
+*m_current = e;
+return true;
+}
+
+//-------------------------------------------------------------------------
+
+void CShipEnergy::Recharge (void) 
+{
+if (!EGI_FLAG (bRechargeEnergy, false, true, false))
+	return;
+if (!m_current)
+	return;
+if (*m_current >= m_max)
+	return;
+if (!m_toRecharge [0].Expired (false))
+	return;
+m_toRecharge [0].Setup (0);
+if (!m_toRecharge [1].Expired (false))
+	return;
+m_toRecharge [1].Setup (25);
+m_toRecharge [1].Start ();
+*m_current += I2X (1) / 250;
+if (*m_current > m_max)
+	*m_current = m_max;
+}
+
+//-------------------------------------------------------------------------
+
+bool CShipEnergy::Set (fix e, bool bScale = true) 
+{
+if (bScale)
+	e = (fix) FRound (e * Scale ());
+if (e > Max ())
+	e = Max ();
+if (!m_current || (*m_current == e))
+	return false;
+if (*m_current > e) {
+	m_toRecharge [0].Setup (extraGameInfo [IsMultiGame].nRechargeDelay);
+	m_toRecharge [0].Start ();
+	}
+*m_current = e;
+return true;
+}
+
+//-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------

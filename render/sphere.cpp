@@ -776,12 +776,11 @@ if (bGlow) {
 		return 0;
 		}
 	ogl.SetBlendMode (OGL_BLEND_REPLACE);
-	ogl.SetDepthMode (GL_ALWAYS);
 	}
 else {
 	ogl.SetBlendMode (bAdditive);
-	ogl.SetDepthMode (GL_LEQUAL);
 	}
+ogl.SetDepthMode (GL_LEQUAL);
 #if RINGED_SPHERE
 ogl.SetTransform (1);
 if (bAppearing) {

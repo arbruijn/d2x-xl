@@ -437,6 +437,7 @@ for (i = 0; i < 2; i++) {
 			RP (extraGameInfo [i].monsterball.forces [j].nWeaponId, 0, j);
 			RP (extraGameInfo [i].monsterball.forces [j].nForce, 0, j);
 			}
+
 		for (j = 0; j < 3; j++) {
 			RP (gameOptions [i].input.keyboard.bRamp [j], i, j);
 			RP (gameOptions [i].input.mouse.sensitivity [j], 0, j);
@@ -669,6 +670,9 @@ for (i = 0; i < 2; i++) {
 	RP (extraGameInfo [i].nCoopPenalty, i, 0);
 	RP (extraGameInfo [i].nHitboxes, i, 0);
 	RP (extraGameInfo [i].nDamageModel, i, 0);
+	RP (extraGameInfo [i].bRechargeEnergy, i, 0);
+	RP (extraGameInfo [i].nRechargeDelay, i, 0);
+
 	RP (gameOptions [i].input.joystick.bUse, i, 0);
 	RP (gameOptions [i].input.mouse.bUse, i, 0);
 	RP (gameOptions [i].input.trackIR.bUse, i, 0);
@@ -883,6 +887,8 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].nWeaponDropMode", "1"},
 	 {"extraGameInfo[0].nWeaponIcons", "3"},
 	 {"extraGameInfo[0].nZoomMode", "1"},
+	 {"extraGameInfo[0].bRechargeEnergy", "0"},
+	 {"extraGameInfo[0].nRechargeDelay", "5000"},
 	 {"extraGameInfo[0].entropy.nCaptureVirusThreshold", "1"},
 	 {"extraGameInfo[0].entropy.nCaptureTimeThreshold", "1"},
 	 {"extraGameInfo[0].entropy.nMaxVirusCapacity", "0"},

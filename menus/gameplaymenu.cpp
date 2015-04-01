@@ -64,7 +64,7 @@ void DefaultGameplaySettings (bool bSetup = false);
 static const char *pszGuns [] = {"Laser", "Vulcan", "Spreadfire", "Plasma", "Fusion", "Super Laser", "Gauss", "Helix", "Phoenix", "Omega"};
 static const char *pszDevices [] = {"Full Map", "Ammo Rack", "Converter", "Quad Lasers", "Afterburner", "Headlight", "Slow Motion", "Bullet Time"};
 static int32_t nDeviceFlags [] = {PLAYER_FLAGS_FULLMAP, PLAYER_FLAGS_AMMO_RACK, PLAYER_FLAGS_CONVERTER, PLAYER_FLAGS_QUAD_LASERS,
-										PLAYER_FLAGS_AFTERBURNER, PLAYER_FLAGS_HEADLIGHT, PLAYER_FLAGS_SLOWMOTION, PLAYER_FLAGS_BULLETTIME};
+											 PLAYER_FLAGS_AFTERBURNER, PLAYER_FLAGS_HEADLIGHT, PLAYER_FLAGS_SLOWMOTION, PLAYER_FLAGS_BULLETTIME};
 
 static int32_t optGuns, optDevices;
 
@@ -230,6 +230,24 @@ if ((m = menu ["weapon switch"])) {
 		}
 	}
 
+if ((m = menu ["recharge energy"])) {
+	v = m->Value ();
+	if (extraGameInfo [0].bRechargeEnergy != v) {
+		extraGameInfo [0].bRechargeEnergy = v;
+		m->m_bRebuild = 1;
+		key = -2;
+		}
+	}
+
+if ((m = menu ["recharge delay"])) {
+	v = m->Value ();
+	if (extraGameInfo [0].nRechargeDelay != v) {
+		extraGameInfo [0].nRechargeDelay = v;
+		sprintf (m->m_text, TXT_RECHARGE_DELAY, extraGameInfo [0].nRechargeDelay);
+		m->m_bRebuild = 1;
+		}
+	}
+
 return nCurItem;
 }
 
@@ -347,6 +365,12 @@ do {
 		m.AddCheck ("spinup gatling", TXT_SPINUP_GATLING, extraGameInfo [0].bGatlingSpeedUp, KEY_G, HTX_SPINUP_GATLING);
 		if (!gameStates.app.bGameRunning)
 			m.AddCheck ("allow custom weapons", TXT_ALLOW_CUSTOM_WEAPONS, extraGameInfo [0].bAllowCustomWeapons, KEY_C, HTX_ALLOW_CUSTOM_WEAPONS);
+		m.AddCheck ("recharge energy", TXT_RECHARGE_ENERGY, extraGameInfo [0].bRechargeEnergy, KEY_R, HTX_RECHARGE_ENERGY);
+		if (extraGameInfo [0].bRechargeEnergy) {
+			sprintf (szSlider + 1, TXT_RECHARGE_DELAY, CShipEnergy::RechargeDelay (extraGameInfo [0].nRechargeDelay));
+			*szSlider = *(TXT_RECHARGE_DELAY - 1);
+			m.AddSlider ("recharge delay", szSlider + 1, extraGameInfo [0].nRechargeDelay, 0, CShipEnergy::RechargeDelayCount () - 1, KEY_D, HTX_RECHARGE_DELAY);
+			}
 		}
 	m.AddText ("", "");
 	m.AddMenu ("reorder guns", TXT_PRIMARY_PRIO, KEY_P, HTX_OPTIONS_PRIMPRIO);

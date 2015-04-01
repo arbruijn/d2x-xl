@@ -17,6 +17,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "fix.h"
 #include "vecmat.h"
 #include "weapon.h"
+#include "timeout.h"
 
 #define MAX_PLAYERS_D2		8
 #define MAX_PLAYERS_D2X		16
@@ -92,6 +93,8 @@ typedef union tShipModifier {
 } __pack__ tShipModifier;
 
 
+#define RECHARGE_DELAY_COUNT	10
+
 class __pack__ CShipEnergy {
 	private:
 		int32_t	m_type;
@@ -99,9 +102,15 @@ class __pack__ CShipEnergy {
 		fix		m_init;
 		fix		m_max;
 		fix*		m_current;
+		CTimeout	m_toRecharge [2];
+
+		static time_t m_nRechargeDelays [RECHARGE_DELAY_COUNT];
 
 	public:
 		//default c-tor
+		static int32_t RechargeDelayCount (void);
+		static time_t RechargeDelay (uint8_t i);
+
 		CShipEnergy () { Reset (); }
 
 		void Reset (void)  { Setup (0, 0, I2X (100), NULL); }
@@ -121,6 +130,10 @@ class __pack__ CShipEnergy {
 				e = Max ();
 			if (!m_current || (*m_current == e))
 				return false;
+			if (*m_current > e) {
+				m_toRecharge [0].Setup (5000);
+				m_toRecharge [0].Start ();
+				}
 			*m_current = e;
 			return true;
 			}
@@ -143,9 +156,13 @@ class __pack__ CShipEnergy {
 			m_index = index;
 			m_init = init;
 			m_max = 2 * init;
+			m_toRecharge [0].Setup (0);
+			m_toRecharge [1].Setup (0);
 			if ((m_current = current))
 				Set (init);
 			}
+
+		void Recharge (void);
 	};
 
 
@@ -271,6 +288,10 @@ class CPlayerData : public CPlayerInfo {
 		inline fix Energy (bool bScale = true) { return m_energy.Get (bScale); }
 		fix SetShield (fix s, bool bScale = true);
 		fix SetEnergy (fix e, bool bScale = true);
+		void Recharge (void) {
+			m_energy.Recharge ();
+			m_shield.Recharge (); 
+			}
 		void UpdateDeathTime (void);
 		inline fix ResetShield (fix s) { return m_shield.Reset (s); }
 		inline fix ResetEnergy (fix e) { return m_energy.Reset (e); }
@@ -404,8 +425,8 @@ typedef struct player16 {
 
 class __pack__ CPlayerShip {
 	public:
-		int32_t			nModel;
-		int32_t			nExplVClip;
+		int32_t		nModel;
+		int32_t		nExplVClip;
 		fix			mass;
 		fix			drag;
 		fix			maxThrust;
@@ -417,6 +438,7 @@ class __pack__ CPlayerShip {
 
 	public:
 		CPlayerShip () { memset (this, 0, sizeof (*this)); }
+
 };
 
 /*

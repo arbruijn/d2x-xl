@@ -302,6 +302,8 @@ typedef struct tExtraGameInfo {
 	uint8_t				bGatlingSpeedUp;
 	uint8_t				bRotateMarkers;
 	uint8_t				bAllowCustomWeapons;
+	uint8_t				bRechargeEnergy;
+	uint8_t				nRechargeDelay;
 	uint8_t				nHitboxes;
 	uint8_t				nDamageModel;
 	uint8_t				nRadar;
