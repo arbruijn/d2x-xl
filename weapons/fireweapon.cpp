@@ -725,16 +725,12 @@ while (gameData.laser.xNextFireTime <= gameData.time.xGame) {
 				MultiSendAmmo ();
 				}
 			else {
-				playerP->energy -= (xEnergyUsed * fired) / gameData.weapons.info [nWeaponIndex].fireCount;
-				if (playerP->energy < 0)
-					playerP->energy = 0;
+				playerP->UpdateEnergy (-(xEnergyUsed * fired) / gameData.weapons.info [nWeaponIndex].fireCount);
 				}
 			}
 #else
 		rVal += FireWeapon ((int16_t) LOCALPLAYER.nObject, (uint8_t) gameData.weapons.nPrimary, nLaserLevel, flags, nRoundsPerShot);
-		playerP->energy -= (xEnergyUsed * rVal) / gameData.weapons.info [nWeaponIndex].fireCount;
-		if (playerP->energy < 0)
-			playerP->energy = 0;
+		playerP->UpdateEnergy (-(xEnergyUsed * rVal) / gameData.weapons.info [nWeaponIndex].fireCount);
 		if (rVal && ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary == GAUSS_INDEX))) {
 			if (nAmmoUsed > playerP->primaryAmmo [VULCAN_INDEX])
 				playerP->primaryAmmo [VULCAN_INDEX] = 0;

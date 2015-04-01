@@ -138,16 +138,7 @@ class __pack__ CShipEnergy {
 		// fill rate in percent
 		inline int32_t Level (void) { return (int32_t) FRound (100.0f * float (Get ()) / float (Initial ())); }
 		// initialize
-		void Setup (int32_t type, int32_t index, fix init, fix* current) {
-			m_type = type;
-			m_index = index;
-			m_init = init;
-			m_max = 2 * init;
-			m_toRecharge [0].Setup (0);
-			m_toRecharge [1].Setup (0);
-			if ((m_current = current))
-				Set (init);
-			}
+		void Setup (int32_t type, int32_t index, fix init, fix* current);
 
 		void Recharge (void);
 	};
@@ -273,6 +264,8 @@ class CPlayerData : public CPlayerInfo {
 		inline fix InitialEnergy (void) { return m_energy.Initial (); }
 		inline fix Shield (bool bScale = true) { return m_shield.Get (bScale); }
 		inline fix Energy (bool bScale = true) { return m_energy.Get (bScale); }
+		inline fix MaxShield (void) { return m_shield.Max (); }
+		inline fix MaxEnergy (void) { return m_energy.Max (); }
 		fix SetShield (fix s, bool bScale = true);
 		fix SetEnergy (fix e, bool bScale = true);
 		void Recharge (void) {
@@ -291,8 +284,6 @@ class CPlayerData : public CPlayerInfo {
 			return m_shield.Get ();
 			}
 		inline fix UpdateEnergy (fix delta) { return m_energy.Update (delta); }
-		inline fix MaxShield (void) { return m_shield.Max (); }
-		inline fix MaxEnergy (void) { return m_energy.Max (); }
 		inline int32_t ShieldLevel (void) { return m_shield.Level (); }
 		inline int32_t EnergyLevel (void) { return m_energy.Level (); }
 		inline float ShieldScale (void) { return m_shield.Scale (); }

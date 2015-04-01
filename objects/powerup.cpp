@@ -275,16 +275,13 @@ int32_t PickupEnergyBoost (CObject *objP, int32_t nPlayer)
 {
 	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
 
-if (playerP->energy < MAX_ENERGY) {
+if (playerP->Energy () < playerP->MaxEnergy ()) {
 	fix boost = I2X (3) * (NDL - gameStates.app.nDifficultyLevel + 1);
 	if (gameStates.app.nDifficultyLevel == 0)
 		boost += boost / 2;
-	playerP->energy += boost;
-	if (playerP->energy > MAX_ENERGY)
-		playerP->energy = MAX_ENERGY;
+	playerP->UpdateEnergy (boost);
 	if (ISLOCALPLAYER (nPlayer))
-		PowerupBasic (15,15,7, ENERGY_SCORE, "%s %s %d",
-						 TXT_ENERGY, TXT_BOOSTED_TO, X2IR (playerP->energy));
+		PowerupBasic (15,15,7, ENERGY_SCORE, "%s %s %d", TXT_ENERGY, TXT_BOOSTED_TO, X2IR (playerP->energy));
 	return 1;
 	} 
 else if (ISLOCALPLAYER (nPlayer))

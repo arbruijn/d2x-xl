@@ -463,16 +463,18 @@ return m_nRechargeDelays [Clamp (i, (uint8_t) 0, (uint8_t) RechargeDelayCount ()
 
 bool CShipEnergy::Set (fix e, bool bScale) 
 {
+if (!m_current)
+	return false;
 if (bScale)
 	e = (fix) FRound (e * Scale ());
-if (e > Max ())
-	e = Max ();
-if (!m_current || (*m_current == e))
+e = Clamp (e 0, Max ());
+if (*m_current == e)
 	return false;
 if (*m_current > e) {
 	m_toRecharge [0].Setup (RechargeDelay (extraGameInfo [IsMultiGame].nRechargeDelay));
 	m_toRecharge [0].Start ();
 	}
+m_toRecharge [0].Setup (-1);
 *m_current = e;
 return true;
 }
@@ -487,6 +489,8 @@ if (!m_current)
 	return;
 if (*m_current >= m_max / 2)
 	return;
+if (m_toRecharge [0].Suspended ())
+	return;
 if (!m_toRecharge [0].Expired (false))
 	return;
 m_toRecharge [0].Setup (0);
@@ -494,9 +498,23 @@ if (!m_toRecharge [1].Expired (false))
 	return;
 m_toRecharge [1].Setup (25);
 m_toRecharge [1].Start ();
-*m_current += I2X (1) / 10;
+*m_current += I2X (1) / 16;
 if (*m_current > m_max)
 	*m_current = m_max;
+}
+
+//-------------------------------------------------------------------------
+
+void CShipEnergy::Setup (int32_t type, int32_t index, fix init, fix* current) 
+{
+m_type = type;
+m_index = index;
+m_init = init;
+m_max = 2 * init;
+m_toRecharge [0].Setup (-1);
+m_toRecharge [1].Setup (-1);
+if ((m_current = current))
+	Set (init);
 }
 
 //-------------------------------------------------------------------------
