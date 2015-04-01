@@ -381,12 +381,14 @@ do {
 			m.AddCheck ("allow custom weapons", TXT_ALLOW_CUSTOM_WEAPONS, extraGameInfo [0].bAllowCustomWeapons, KEY_C, HTX_ALLOW_CUSTOM_WEAPONS);
 		m.AddCheck ("recharge energy", TXT_RECHARGE_ENERGY, extraGameInfo [0].bRechargeEnergy, KEY_R, HTX_RECHARGE_ENERGY);
 		if (extraGameInfo [0].bRechargeEnergy) {
-			sprintf (szSlider + 1, TXT_RECHARGE_DELAY, CShipEnergy::RechargeDelay (extraGameInfo [0].nRechargeDelay) / 1000);
-			*szSlider = *(TXT_RECHARGE_DELAY - 1);
-			m.AddSlider ("recharge delay", szSlider + 1, extraGameInfo [0].nRechargeDelay, 0, CShipEnergy::RechargeDelayCount () - 1, KEY_Y, HTX_RECHARGE_DELAY);
-			sprintf (szSlider + 1, TXT_RECHARGE_SPEED, pszSpeed [extraGameInfo [0].nRechargeSpeed]);
-			*szSlider = *(TXT_RECHARGE_SPEED - 1);
-			m.AddSlider ("recharge speed", szSlider + 1, extraGameInfo [0].nRechargeSpeed, 0, 2, KEY_S, HTX_RECHARGE_SPEED);
+			if (gameOpts->app.bExpertMode == SUPERUSER) {
+				sprintf (szSlider + 1, TXT_RECHARGE_DELAY, CShipEnergy::RechargeDelay (extraGameInfo [0].nRechargeDelay) / 1000);
+				*szSlider = *(TXT_RECHARGE_DELAY - 1);
+				m.AddSlider ("recharge delay", szSlider + 1, extraGameInfo [0].nRechargeDelay, 0, CShipEnergy::RechargeDelayCount () - 1, KEY_Y, HTX_RECHARGE_DELAY);
+				sprintf (szSlider + 1, TXT_RECHARGE_SPEED, pszSpeed [extraGameInfo [0].nRechargeSpeed]);
+				*szSlider = *(TXT_RECHARGE_SPEED - 1);
+				m.AddSlider ("recharge speed", szSlider + 1, extraGameInfo [0].nRechargeSpeed, 0, 2, KEY_S, HTX_RECHARGE_SPEED);
+				}
 			}
 		}
 	m.AddText ("", "");
