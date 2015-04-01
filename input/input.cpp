@@ -511,7 +511,7 @@ if (bGetSlideBank == 2) {
 		if ((v = HaveKey (kcKeyboard, 34 + i)) < 255)
 			m_info [0].dropBombDownCount += KeyDownCount (v);
 		// charge chield
-		if (LOCALPLAYER.flags & PLAYER_FLAGS_CONVERTER) {
+		if ((LOCALPLAYER.flags & PLAYER_FLAGS_CONVERTER) && !EGI_FLAG (bRechargeEnergy, false, true, false)) {
 			if (gameStates.input.keys.pressed [v = HaveKey (kcKeyboard, 56 + i)])
 				TransferEnergyToShield (KeyDownTime (v));
 			}

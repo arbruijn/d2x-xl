@@ -443,7 +443,7 @@ return (nShip < MAX_SHIP_TYPES) ? shipModifiers [nShip].a [m_type] : 1.0f;
 
 //-------------------------------------------------------------------------
 
-time_t CShipEnergy::m_nRechargeDelays [RECHARGE_DELAY_COUNT] = {0, 1, 2, 3, 4, 5, 10, 15, 30, 60};
+time_t CShipEnergy::m_nRechargeDelays [RECHARGE_DELAY_COUNT] = {1, 2, 3, 4, 5, 10, 15, 30};
 
 //-------------------------------------------------------------------------
 

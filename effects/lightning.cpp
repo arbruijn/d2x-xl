@@ -213,6 +213,10 @@ if (m_parent) {
 	i = m_parent->m_nChildren + 1;
 	l = m_nNodes * m_parent->m_nLength / m_parent->m_nNodes;
 	m_nLength = ComputeChildEnd (&m_vPos, &m_vEnd, &m_vDir, &m_parent->m_vDir, l);// + 3 * l / (m_nNode + 1));
+#if DBG
+	if (m_nLength < 0)
+		m_nLength = ComputeChildEnd (&m_vPos, &m_vEnd, &m_vDir, &m_parent->m_vDir, l);
+#endif
 	vDir = m_vDir * (m_nLength / (m_nNodes - 1));
 	}
 for (i = 0; i < m_nNodes; i++) {
@@ -259,6 +263,10 @@ m_bRandom = bRandom;
 m_nLife = nLife;
 m_nTTL = abs (nLife);
 m_nLength = nLength;
+#if DBG
+if (m_nLength < 0)
+	BRP;
+#endif
 m_nDelay = abs (nDelay) * 10;
 m_nAmplitude = nAmplitude;
 m_nAngle = nAngle;
@@ -647,6 +655,10 @@ m_nodes [m_nNodes - 1].m_vPos =
 m_vEnd = vNewEnd;
 m_vDir = m_vEnd - m_vPos;
 m_nLength = xNewLength;
+#if DBG
+if (m_nLength < 0)
+	BRP;
+#endif
 m_nSegment = nSegment;
 }
 
@@ -1096,7 +1108,7 @@ if (!m_nodes.Buffer ())
 if (0 < (j = m_nNodes)) {
 	if (!(nStride = (int32_t) DRound ((double (m_nLength) / I2X (20)))))
 		nStride = 1;
-	if (!(nStep = double (j - 1) / double (nStride)))
+	if (0 >= (nStep = double (j - 1) / double (nStride)))
 		nStep = double ((int32_t) DRound (j));
 #if DBG
 	if (m_nSegment == nDbgSeg)

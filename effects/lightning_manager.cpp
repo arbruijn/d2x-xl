@@ -756,7 +756,7 @@ if (SHOW_LIGHTNING (0) /*&& gameOpts->render.lightning.bExplosions*/) {
 
 	Create (
 		(int32_t) FRound ((h + Rand (h)) * fRodScale), &objP->info.position.vPos, NULL, NULL, -objP->info.nSegment - 1, 1000, 0,
-		I2X (8), I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, 1, 0, 1, -1, 3.0f, colorP);
+		I2X (8), I2X (4), 0, I2X (2), 50, 0, 1, 3, 1, 1, -1, 0, 1, -1, 3.0f, colorP);
 	}
 }
 

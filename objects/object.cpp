@@ -59,8 +59,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define LIMIT_PHYSICS_FPS	0
 
 void NDRecordGuidedEnd (void);
-void DetachChildObjects (CObject *parent);
-void DetachFromParent (CObject *sub);
+void DetachChildObjects (CObject *parentObjP);
+void DetachFromParent (CObject *childObjP);
 int32_t FreeObjectSlots (int32_t nRequested);
 
 //info on the various types of OBJECTS
@@ -1080,12 +1080,44 @@ m_nLinkedType = nNewType;
 
 //------------------------------------------------------------------------------
 
+bool CheckAttachedObject (CObject* objP, int32_t nFlags)
+{
+if (nFlags & 1) {
+	if (objP->info.nType != OBJ_FIREBALL)
+		return false;
+	if (objP->info.controlType != CT_EXPLOSION)
+		return false;
+	}
+if (nFlags & 2) {
+	if (objP->cType.explInfo.attached.nPrev != -1)
+		return false;
+	if (objP->cType.explInfo.attached.nNext != -1)
+		return false;
+	if (objP->cType.explInfo.attached.nParent != -1)
+		return false;
+	}
+if (nFlags & 4) {
+	if (objP->cType.explInfo.attached.nPrev != -1)
+		return true;
+	if (objP->cType.explInfo.attached.nNext != -1)
+		return true;
+	if (objP->cType.explInfo.attached.nParent != -1)
+		return true;
+	return false;
+	}
+return true;
+}
+
+//------------------------------------------------------------------------------
+
 void CObject::SetType (uint8_t nNewType, bool bLink)
 {
 #if OBJ_LIST_TYPE == 1
 if (info.nType == nNewType)
 	return;
 
+//if (info.nFlags & OF_ATTACHED)
+DetachFromParent (this);
 if (bLink)
 	Relink (nNewType);
 #endif
@@ -1170,6 +1202,9 @@ if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
 CObject	*objP = OBJECTS + nObject;
 
 objP->Unlink ();
+#if DBG
+CheckAttachedObject (objP, 2);
+#endif
 objP->info.nType = OBJ_NONE;		//unused!
 objP->SetAttackMode (ROBOT_IS_HOSTILE);
 DelObjChildrenN (nObject);
@@ -1186,6 +1221,58 @@ UpdateLastObject (nObject);
 if (dbgObjP && (OBJ_IDX (dbgObjP) == nObject))
 	dbgObjP = NULL;
 #endif
+}
+
+//------------------------------------------------------------------------------
+
+//remove CObject from the world
+void ReleaseObject (int16_t nObject)
+{
+if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
+	return;
+	int32_t nParent;
+
+CObject *objP = OBJECTS + nObject;
+
+#if DBG && OBJ_LIST_TYPE
+if (!objP->IsInList (gameData.objs.lists.all, 0))
+	return;
+#endif
+
+
+if (objP->info.nType == OBJ_WEAPON) {
+	if (gameData.demo.nVcrState != ND_STATE_PLAYBACK)
+		RespawnDestroyedWeapon (nObject);
+	if (objP->info.nId == GUIDEDMSL_ID) {
+		nParent = OBJECTS [objP->cType.laserInfo.parent.nObject].info.nId;
+		if (nParent != N_LOCALPLAYER)
+			gameData.objs.SetGuidedMissile (nParent, NULL);
+		else if (gameData.demo.nState == ND_STATE_RECORDING)
+			NDRecordGuidedEnd ();
+		}
+	}
+if (objP == gameData.objs.viewerP)		//deleting the viewerP?
+	gameData.objs.viewerP = gameData.objs.consoleP;						//..make the player the viewerP
+//if (objP->info.nFlags & OF_ATTACHED)		//detach this from CObject
+DetachFromParent (objP);
+if (objP->info.nAttachedObj != -1)		//detach all OBJECTS from this
+	DetachChildObjects (objP);
+objP->cType.explInfo.attached.nParent = 
+objP->cType.explInfo.attached.nPrev = 
+objP->cType.explInfo.attached.nNext = -1; 
+if (objP->info.nType == OBJ_DEBRIS)
+	gameData.objs.nDebris--;
+OBJECTS [nObject].UnlinkFromSeg ();
+Assert (OBJECTS [0].info.nNextInSeg != 0);
+objP->info.nSignature = -1;
+objP->info.nSegment = -1;				// zero it!
+try {
+	FreeObject (nObject);
+	}
+catch (...) {
+	PrintLog (0, "Error freeing an object\n");
+	}
+SpawnLeftoverPowerups (nObject);
 }
 
 //-----------------------------------------------------------------------------
@@ -1544,15 +1631,55 @@ for (CWeaponIterator iter (objP); objP; objP = (prevObjP ? iter.Step () : iter.S
 }
 
 //------------------------------------------------------------------------------
+
+int32_t FindAttachedObject (CObject* parentObjP, CObject *childObjP)
+{
+if (!parentObjP)
+	return -1;
+int32_t nObject = parentObjP->info.nAttachedObj;
+CObject* objP;
+while ((objP = gameData.Object (nObject))) {
+	if (objP == childObjP)
+		return 1;
+	nObject = objP->cType.explInfo.attached.nNext;
+	}
+return 0;
+}
+
+//------------------------------------------------------------------------------
+
+void FixObjectList (CObject *parentObjP, CObject *childObjP)
+{
+for (;;) {
+	int32_t nObject = childObjP->cType.explInfo.attached.nPrev;
+	if (nObject == -1)
+		break;
+	childObjP = gameData.Object (nObject);
+	if (!childObjP)
+		break;
+	parentObjP->info.nAttachedObj = nObject;
+	}
+}
+
+//------------------------------------------------------------------------------
 //attaches an CObject, such as a fireball, to another CObject, such as a robot
 void AttachObject (CObject *parentObjP, CObject *childObjP)
 {
-Assert (childObjP->info.nType == OBJ_FIREBALL);
-Assert (childObjP->info.controlType == CT_EXPLOSION);
-Assert (childObjP->cType.explInfo.attached.nNext==-1);
-Assert (childObjP->cType.explInfo.attached.nPrev==-1);
-Assert (parentObjP->info.nAttachedObj == -1 ||
-		  OBJECTS [parentObjP->info.nAttachedObj].cType.explInfo.attached.nPrev==-1);
+if (!CheckAttachedObject (childObjP, 3))
+	return;
+if (parentObjP->info.nAttachedObj != -1) {
+	CObject *objP = gameData.Object (parentObjP->info.nAttachedObj);
+	if (!objP)
+		parentObjP->info.nAttachedObj = -1;
+	else
+		FixObjectList (parentObjP, objP);
+	}
+
+#if DBG
+if (FindAttachedObject (parentObjP, childObjP))
+	return;
+#endif
+
 childObjP->cType.explInfo.attached.nNext = parentObjP->info.nAttachedObj;
 if (childObjP->cType.explInfo.attached.nNext != -1)
 	OBJECTS [childObjP->cType.explInfo.attached.nNext].cType.explInfo.attached.nPrev = OBJ_IDX (childObjP);
@@ -1565,30 +1692,43 @@ Assert (childObjP->cType.explInfo.attached.nPrev != OBJ_IDX (childObjP));
 
 //------------------------------------------------------------------------------
 //dettaches one CObject
-void DetachFromParent (CObject *objP)
+void DetachFromParent (CObject *childObjP)
 {
-	CObject* parentObjP = gameData.Object (objP->cType.explInfo.attached.nParent);
+if (!CheckAttachedObject (childObjP, 5))
+	return;
+
+	CObject* parentObjP = gameData.Object (childObjP->cType.explInfo.attached.nParent);
+	CObject*	refObjP = NULL;
 
 #if DBG
-if (!parentObjP)
-	BRP;
-#endif
-if (parentObjP && (parentObjP->Type () != OBJ_NONE) && (parentObjP->info.nAttachedObj != -1)) {
-	if (objP->cType.explInfo.attached.nNext != -1) {
-		OBJECTS [objP->cType.explInfo.attached.nNext].cType.explInfo.attached.nPrev = objP->cType.explInfo.attached.nPrev;
-		}
-	if (objP->cType.explInfo.attached.nPrev != -1) {
-		OBJECTS [objP->cType.explInfo.attached.nPrev].cType.explInfo.attached.nNext =
-			objP->cType.explInfo.attached.nNext;
-		}
-	else {
-		parentObjP->info.nAttachedObj = objP->cType.explInfo.attached.nNext;
+if (parentObjP) {
+	if (parentObjP->info.nAttachedObj < 0)
+		FixObjectList (parentObjP, childObjP);
+	else if (!FindAttachedObject (parentObjP, childObjP)) {
+		FindAttachedObject (parentObjP, childObjP);
+		parentObjP = NULL;
 		}
 	}
-objP->cType.explInfo.attached.nNext =
-objP->cType.explInfo.attached.nPrev =
-objP->cType.explInfo.attached.nParent = -1;
-objP->info.nFlags &= ~OF_ATTACHED;
+#endif
+if (childObjP->cType.explInfo.attached.nNext != -1) {
+	refObjP = gameData.Object (childObjP->cType.explInfo.attached.nNext);
+	refObjP->cType.explInfo.attached.nPrev = childObjP->cType.explInfo.attached.nPrev;
+	}
+if (childObjP->cType.explInfo.attached.nPrev != -1) {
+	refObjP = gameData.Object (childObjP->cType.explInfo.attached.nPrev);
+	refObjP->cType.explInfo.attached.nNext = childObjP->cType.explInfo.attached.nNext;
+	}
+else if (parentObjP)
+	parentObjP->info.nAttachedObj = childObjP->cType.explInfo.attached.nNext;
+if (!parentObjP && refObjP) {
+	parentObjP = gameData.Object (refObjP->cType.explInfo.attached.nParent);
+	FixObjectList (parentObjP, refObjP);
+	}
+
+childObjP->cType.explInfo.attached.nNext =
+childObjP->cType.explInfo.attached.nPrev =
+childObjP->cType.explInfo.attached.nParent = -1;
+childObjP->info.nFlags &= ~OF_ATTACHED;
 }
 
 //------------------------------------------------------------------------------

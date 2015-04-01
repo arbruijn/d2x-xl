@@ -1365,7 +1365,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	// hack for a bug I haven't yet been able to fix 
 	if ((objP->info.nType != OBJ_REACTOR) && (objP->info.xShield < 0)) {
 		j = gameData.bosses.Find (i);
-		if ((j < 0) || (gameData.bosses [j].m_nDying != i))
+		if ((j < 0) || (gameData.bosses [j].m_nDying != i)) 
 			objP->info.nType = OBJ_NONE;
 		}
 	objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;

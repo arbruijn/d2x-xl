@@ -675,7 +675,6 @@ if (nSegment != -1) {
 
 //------------------------------------------------------------------------------
 
-
 void CreateVClipOnObject (CObject *objP, fix xScale, uint8_t nVClip)
 {
 	fix			xSize;
@@ -715,55 +714,6 @@ if (nObject >= 0) {
 	objP->SetLife (IMMORTAL_TIME);
 	}
 return nObject;
-}
-
-//------------------------------------------------------------------------------
-
-//remove CObject from the world
-void ReleaseObject (int16_t nObject)
-{
-if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
-	return;
-	int32_t nParent;
-
-CObject *objP = OBJECTS + nObject;
-
-#if DBG && OBJ_LIST_TYPE
-if (!objP->IsInList (gameData.objs.lists.all, 0))
-	return;
-#endif
-
-
-if (objP->info.nType == OBJ_WEAPON) {
-	if (gameData.demo.nVcrState != ND_STATE_PLAYBACK)
-		RespawnDestroyedWeapon (nObject);
-	if (objP->info.nId == GUIDEDMSL_ID) {
-		nParent = OBJECTS [objP->cType.laserInfo.parent.nObject].info.nId;
-		if (nParent != N_LOCALPLAYER)
-			gameData.objs.SetGuidedMissile (nParent, NULL);
-		else if (gameData.demo.nState == ND_STATE_RECORDING)
-			NDRecordGuidedEnd ();
-		}
-	}
-if (objP == gameData.objs.viewerP)		//deleting the viewerP?
-	gameData.objs.viewerP = gameData.objs.consoleP;						//..make the player the viewerP
-if (objP->info.nFlags & OF_ATTACHED)		//detach this from CObject
-	DetachFromParent (objP);
-if (objP->info.nAttachedObj != -1)		//detach all OBJECTS from this
-	DetachChildObjects (objP);
-if (objP->info.nType == OBJ_DEBRIS)
-	gameData.objs.nDebris--;
-OBJECTS [nObject].UnlinkFromSeg ();
-Assert (OBJECTS [0].info.nNextInSeg != 0);
-objP->info.nSignature = -1;
-objP->info.nSegment = -1;				// zero it!
-try {
-	FreeObject (nObject);
-	}
-catch (...) {
-	PrintLog (0, "Error freeing an object\n");
-	}
-SpawnLeftoverPowerups (nObject);
 }
 
 //------------------------------------------------------------------------------
