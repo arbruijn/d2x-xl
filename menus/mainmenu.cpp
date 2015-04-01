@@ -72,6 +72,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // Function Prototypes added after LINTING
 int32_t ExecMainMenuOption (CMenu& m, int32_t nChoice);
 int32_t ExecMultiMenuOption (CMenu& m, int32_t nChoice);
+int32_t GetDate (int32_t& day, int32_t& month, int32_t& year);
 
 //returns the number of demo files on the disk
 int32_t NDCountDemos (void);
@@ -155,7 +156,9 @@ if (!gameStates.app.bNostalgia)
 	m.AddMenu ("precalc lightmaps", TXT_PRECALC_LIGHTMAPS, KEY_A, HTX_PRECALC_LIGHTMAPS);
 #if defined(_WIN32) || defined(__unix__)
 m.AddMenu ("check update", TXT_CHECK_FOR_UPDATE, KEY_U, HTX_CHECK_FOR_UPDATE);
-m.AddMenu ("kickstart du", TXT_KS_DU_MENU, KEY_G, "");
+int32_t day, month, year, t = GetDate (day, month, year);
+if ((t > 0) && (year == 2015) && (month == 4) && (day <= 10))
+	m.AddMenu ("descent underground", TXT_KS_DU_MENU, KEY_G, "");
 #endif
 m.AddMenu ("quit", TXT_QUIT, KEY_Q, HTX_MAIN_QUIT);
 return m.ToS ();
@@ -348,7 +351,7 @@ else if (!gameStates.app.bNostalgia && (nChoice == m.IndexOf ("precalc lightmaps
 #if defined(_WIN32) || defined(__unix__)
 else if (nChoice == m.IndexOf ("check update"))
 	CheckForUpdate ();
-else if (nChoice == m.IndexOf ("kickstart du"))
+else if (nChoice == m.IndexOf ("descent underground"))
 	DUKickstarterNotification ();
 #endif
 else if (nChoice == m.IndexOf ("quit")) {

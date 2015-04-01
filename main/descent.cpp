@@ -26,8 +26,10 @@ char copyright[] = "DESCENT II  COPYRIGHT (C) 1994-1996 PARALLAX SOFTWARE CORPOR
 #if defined(__unix__) || defined(__macosx__)
 #include <unistd.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 #endif
+
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #ifdef __macosx__
 #	include "SDL/SDL_main.h"
@@ -926,10 +928,28 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
+int32_t GetDate (int32_t& day, int32_t& month, int32_t& year)
+{
+time_t h;
+time (&h);
+struct tm *t = localtime (&h);
+if (!t)
+	return -1;
+month = t->tm_mon + 1;
+day = t->tm_mday;
+year = t->tm_year + 1900;
+return (year << 16) + (month << 8) + day;
+}
+
+// ----------------------------------------------------------------------------
+
+
 #define DU_BACKGROUND 1
 
 void DUKickstarterNotification (void)
 {
+int32_t day, month, year, t = GetDate (day, month, year);
+if ((t > 0) && (year == 2015) && (month == 4) && (day <= 10))
 //gameStates.app.SRand ();
 //if (!Rand (3)) 
 	{	// display randomly about every third program start
@@ -1091,7 +1111,7 @@ if (*szAutoHogFile && *szAutoMission) {
 	hogFileManager.UseMission (szAutoHogFile);
 	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
 	}
-#if !DBG
+#if 1 //!DBG
 DUKickstarterNotification ();
 #endif
 DonationNotification ();

@@ -227,7 +227,7 @@ else {
 		m_info.image->SetPalette (&palette, -1, -1);
 		}
 	struct tm	*t;
-	int32_t			h;
+	int32_t		h;
 #ifdef _WIN32
 	char	fn [FILENAME_LEN];
 
