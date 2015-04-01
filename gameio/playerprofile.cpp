@@ -888,7 +888,7 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].nWeaponIcons", "3"},
 	 {"extraGameInfo[0].nZoomMode", "1"},
 	 {"extraGameInfo[0].bRechargeEnergy", "0"},
-	 {"extraGameInfo[0].nRechargeDelay", "5000"},
+	 {"extraGameInfo[0].nRechargeDelay", "6"},
 	 {"extraGameInfo[0].entropy.nCaptureVirusThreshold", "1"},
 	 {"extraGameInfo[0].entropy.nCaptureTimeThreshold", "1"},
 	 {"extraGameInfo[0].entropy.nMaxVirusCapacity", "0"},

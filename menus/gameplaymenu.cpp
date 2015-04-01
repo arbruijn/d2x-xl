@@ -243,7 +243,7 @@ if ((m = menu ["recharge delay"])) {
 	v = m->Value ();
 	if (extraGameInfo [0].nRechargeDelay != v) {
 		extraGameInfo [0].nRechargeDelay = v;
-		sprintf (m->m_text, TXT_RECHARGE_DELAY, extraGameInfo [0].nRechargeDelay);
+		sprintf (m->m_text, TXT_RECHARGE_DELAY, CShipEnergy::RechargeDelay (extraGameInfo [0].nRechargeDelay) / 1000);
 		m->m_bRebuild = 1;
 		}
 	}
@@ -367,9 +367,9 @@ do {
 			m.AddCheck ("allow custom weapons", TXT_ALLOW_CUSTOM_WEAPONS, extraGameInfo [0].bAllowCustomWeapons, KEY_C, HTX_ALLOW_CUSTOM_WEAPONS);
 		m.AddCheck ("recharge energy", TXT_RECHARGE_ENERGY, extraGameInfo [0].bRechargeEnergy, KEY_R, HTX_RECHARGE_ENERGY);
 		if (extraGameInfo [0].bRechargeEnergy) {
-			sprintf (szSlider + 1, TXT_RECHARGE_DELAY, CShipEnergy::RechargeDelay (extraGameInfo [0].nRechargeDelay));
+			sprintf (szSlider + 1, TXT_RECHARGE_DELAY, CShipEnergy::RechargeDelay (extraGameInfo [0].nRechargeDelay) / 1000);
 			*szSlider = *(TXT_RECHARGE_DELAY - 1);
-			m.AddSlider ("recharge delay", szSlider + 1, extraGameInfo [0].nRechargeDelay, 0, CShipEnergy::RechargeDelayCount () - 1, KEY_D, HTX_RECHARGE_DELAY);
+			m.AddSlider ("recharge delay", szSlider + 1, extraGameInfo [0].nRechargeDelay, 0, CShipEnergy::RechargeDelayCount () - 1, KEY_Y, HTX_RECHARGE_DELAY);
 			}
 		}
 	m.AddText ("", "");

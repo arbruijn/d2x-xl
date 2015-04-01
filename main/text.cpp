@@ -1991,8 +1991,8 @@ const char *defaultGameTexts [][2] = {
  {"minimalistisches hud", "minimalist hud"},
  {"horizontal", "horizontal"},
  {"vertikal", "vertical"},
- {"energie auf~Laden", "re~Charge energy"},
- {"lade~Verzoegerung: %d s", "recharge ~Delay: %d s"},
+ {"energie auf~Laden", "~Recharge energy"},
+ {"lade~Verzoegerung: %d s", "recharge dela~Y: %d s"},
  
 #if 0
  {"", ""},

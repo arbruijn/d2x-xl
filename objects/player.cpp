@@ -456,7 +456,7 @@ return sizeofa (m_nRechargeDelays);
 
 time_t CShipEnergy::RechargeDelay (uint8_t i)
 {
-return m_nRechargeDelays [Clamp (i, (uint8_t) i, (uint8_t) RechargeDelayCount)];
+return m_nRechargeDelays [Clamp (i, (uint8_t) 0, (uint8_t) RechargeDelayCount ())] * 1000;
 }
 
 //-------------------------------------------------------------------------
@@ -485,7 +485,7 @@ if (!EGI_FLAG (bRechargeEnergy, false, true, false))
 	return;
 if (!m_current)
 	return;
-if (*m_current >= m_max)
+if (*m_current >= m_max / 2)
 	return;
 if (!m_toRecharge [0].Expired (false))
 	return;
@@ -494,7 +494,7 @@ if (!m_toRecharge [1].Expired (false))
 	return;
 m_toRecharge [1].Setup (25);
 m_toRecharge [1].Start ();
-*m_current += I2X (1) / 250;
+*m_current += I2X (1) / 10;
 if (*m_current > m_max)
 	*m_current = m_max;
 }
