@@ -467,7 +467,7 @@ if (!m_current)
 	return false;
 if (bScale)
 	e = (fix) FRound (e * Scale ());
-e = Clamp (e 0, Max ());
+e = Clamp (e, 0, Max ());
 if (*m_current == e)
 	return false;
 if (*m_current > e) {
