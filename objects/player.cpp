@@ -484,6 +484,8 @@ return true;
 
 void CShipEnergy::Recharge (void) 
 {
+	static fix nRechargeSpeeds [] = {1, 4, 8};
+
 if (!EGI_FLAG (bRechargeEnergy, false, true, false))
 	return;
 if (!m_current)
@@ -494,7 +496,7 @@ if (m_toRecharge.Suspended ())
 	return;
 if (!m_toRecharge.Expired (false))
 	return;
-Update (FixMul (gameData.time.xFrame, gameData.producers.xFuelGiveAmount / (1 << extraGameInfo [IsMultiGame].nRechargeSpeed)));
+Update (FixMul (gameData.time.xFrame, gameData.producers.xFuelGiveAmount / nRechargeSpeeds [extraGameInfo [IsMultiGame].nRechargeSpeed]));
 SetRechargeDelay (0);
 }
 
