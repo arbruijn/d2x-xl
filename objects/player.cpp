@@ -500,23 +500,5 @@ if (*m_current > m_max)
 }
 
 //-------------------------------------------------------------------------
-
-bool CShipEnergy::Set (fix e, bool bScale = true) 
-{
-if (bScale)
-	e = (fix) FRound (e * Scale ());
-if (e > Max ())
-	e = Max ();
-if (!m_current || (*m_current == e))
-	return false;
-if (*m_current > e) {
-	m_toRecharge [0].Setup (extraGameInfo [IsMultiGame].nRechargeDelay);
-	m_toRecharge [0].Start ();
-	}
-*m_current = e;
-return true;
-}
-
-//-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
 //-------------------------------------------------------------------------
