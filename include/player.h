@@ -123,20 +123,7 @@ class __pack__ CShipEnergy {
 		// get current value
 		inline fix Get (bool bScale = true) { return bScale ? *m_current : (fix) FRound (*m_current / Scale ()); }
 		// set by fixed value
-		inline bool Set (fix e, bool bScale = true) {
-			if (bScale)
-				e = (fix) FRound (e * Scale ());
-			if (e > Max ())
-				e = Max ();
-			if (!m_current || (*m_current == e))
-				return false;
-			if (*m_current > e) {
-				m_toRecharge [0].Setup (5000);
-				m_toRecharge [0].Start ();
-				}
-			*m_current = e;
-			return true;
-			}
+		inline bool Set (fix e, bool bScale = true);
 		// change by some value
 		inline fix Update (fix delta) { 
 			if (delta)

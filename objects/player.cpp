@@ -461,7 +461,7 @@ return m_nRechargeDelays [Clamp (i, (uint8_t) i, (uint8_t) RechargeDelayCount)];
 
 //-------------------------------------------------------------------------
 
-bool CShipEnergy::Set (fix e, bool bScale = true) 
+bool CShipEnergy::Set (fix e, bool bScale) 
 {
 if (bScale)
 	e = (fix) FRound (e * Scale ());
