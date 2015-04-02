@@ -283,7 +283,6 @@ for (;;) {
 
 void ShowOrderForm (void);      // John didn't want this in inferno[HA] so I just externed it.
 void PrecomputeMissionLightmaps (void);
-void DUKickstarterNotification (void);
 
 //returns flag, true means quit menu
 int32_t ExecMainMenuOption (CMenu& m, int32_t nChoice) 
@@ -353,8 +352,6 @@ else if (!gameStates.app.bNostalgia && (nChoice == m.IndexOf ("precalc lightmaps
 #if defined(_WIN32) || defined(__unix__)
 else if (nChoice == m.IndexOf ("check update"))
 	CheckForUpdate ();
-else if (nChoice == m.IndexOf ("descent underground"))
-	DUKickstarterNotification ();
 #endif
 else if (nChoice == m.IndexOf ("quit")) {
 	paletteManager.DisableEffect ();
