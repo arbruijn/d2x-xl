@@ -490,13 +490,13 @@ if (!EGI_FLAG (bRechargeEnergy, false, true, false))
 	return;
 if (!m_current)
 	return;
-if (*m_current >= m_max / 2)
-	return;
 if (m_toRecharge.Suspended ())
 	return;
 if (!m_toRecharge.Expired (false))
 	return;
-Update (FixMul (gameData.time.xFrame, gameData.producers.xFuelGiveAmount / nRechargeSpeeds [extraGameInfo [IsMultiGame].nRechargeSpeed]));
+fix delta = Min (FixMul (gameData.time.xFrame, gameData.producers.xFuelGiveAmount / nRechargeSpeeds [extraGameInfo [IsMultiGame].nRechargeSpeed]), m_max / 2 - *m_current);
+if (delta > 0)
+	Update (delta);
 SetRechargeDelay (0);
 }
 
