@@ -75,6 +75,8 @@ if (OBJ_IDX (this) == nDbgObj)
 #endif
 info.nType = cf.ReadByte ();
 info.nId = cf.ReadByte ();
+if ((gameStates.app.bD1Mission) && (info.nType == OBJ_REACTOR))
+	info.nId = 0;
 #if DBG
 if ((info.nType == nDbgObjType) && ((nDbgObjId < 0) || (info.nId == nDbgObjId)))
 	BRP;
@@ -339,6 +341,8 @@ if (OBJ_IDX (this) == nDbgObj)
 info.nSignature = cf.ReadInt ();      
 info.nType = (uint8_t) cf.ReadByte (); 
 info.nId = (uint8_t) cf.ReadByte ();
+if ((gameStates.app.bD1Mission) && (info.nType == OBJ_REACTOR))
+	info.nId = 0;
 info.nNextInSeg = cf.ReadShort ();
 info.nPrevInSeg = cf.ReadShort ();
 info.controlType = (uint8_t) cf.ReadByte ();

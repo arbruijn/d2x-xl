@@ -268,7 +268,7 @@ memset (gameData.reactor.states + gameStates.gameplay.nReactorCount [0], 0,
 //do whatever this thing does in a frame
 void DoReactorFrame (CObject *objP)
 {
-	int32_t				nBestGun, i;
+	int32_t			nBestGun, i;
 	tReactorStates	*rStatP;
 
 	//	If a boss level, then gameData.reactor.bPresent will be 0.
@@ -279,12 +279,11 @@ if (i < 0)
 	return;
 rStatP = gameData.reactor.states + i;
 #if DBG
-if (!objP->AttacksPlayer () || (gameStates.app.bGameSuspended & SUSP_ROBOTS))
-	return;
-#else
-if (!objP->AttacksPlayer ())
+if (gameStates.app.bGameSuspended & SUSP_ROBOTS)
 	return;
 #endif
+if (!objP->AttacksPlayer ())
+	return;
 
 if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 	if (gameStates.app.tick40fps.bTick) {		//	Do ever so often...
@@ -345,13 +344,13 @@ if ((rStatP->nNextFireTime < 0) &&
 	nBestGun = CalcBestReactorGun (gameData.reactor.props [objP->info.nId].nGuns, rStatP->vGunPos, rStatP->vGunDir, 
 											 (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) ? &gameData.ai.target.vBelievedPos : &gameData.objs.consoleP->info.position.vPos);
 	if (nBestGun != -1) {
-		int32_t			nRandProb, count;
+		int32_t		nRandProb, count;
 		CFixVector	vecToGoal;
 		fix			xDistToPlayer;
 		fix			xDeltaFireTime;
 
 		if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
-			vecToGoal = gameData.ai.target.vBelievedPos - rStatP->vGunPos[nBestGun];
+			vecToGoal = gameData.ai.target.vBelievedPos - rStatP->vGunPos [nBestGun];
 			xDistToPlayer = CFixVector::Normalize (vecToGoal);
 			} 
 		else {

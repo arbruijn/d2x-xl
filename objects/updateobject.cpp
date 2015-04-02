@@ -269,6 +269,10 @@ if ((info.nType == OBJ_PLAYER) && (N_LOCALPLAYER == info.nId)) {
 
 int32_t CObject::UpdateMovement (void)
 {
+#if DBG
+if (info.nType == OBJ_REACTOR)
+	BRP;
+#endif
 switch (info.controlType) {
 	case CT_NONE:
 		break;
@@ -634,6 +638,10 @@ gameData.objs.update.Reset ();
 #endif
 ++gameData.objs.nFrameCount;
 FORALL_OBJS (objP) {
+#if DBG
+	if (objP->info.nType == OBJ_REACTOR)
+		BRP;
+#endif
 	if ((objP->info.nType != OBJ_NONE) && (objP->info.nType != OBJ_GHOST) && !(objP->info.nFlags & OF_SHOULD_BE_DEAD) && !objP->Update ()) {
 		PROF_END(ptObjectStates)
 		return 0;
