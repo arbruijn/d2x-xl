@@ -1,4 +1,3 @@
-
 /* conf.h.  Generated from conf.h.in by configure.  */
 /* conf.h.in.  Generated from configure.ac by autoheader.  */
 
@@ -12,7 +11,7 @@
 #define D2XMAJOR 1
 
 /* d2x micro version */
-#define D2XMICRO 105
+#define D2XMICRO 106
 
 /* d2x minor version */
 #define D2XMINOR 17

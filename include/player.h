@@ -95,7 +95,7 @@ typedef union tShipModifier {
 
 #define RECHARGE_DELAY_COUNT	10
 
-class __pack__ CShipEnergy {
+class CShipEnergy {
 	private:
 		int32_t	m_type;
 		int32_t	m_index;
@@ -123,7 +123,7 @@ class __pack__ CShipEnergy {
 		// get current value
 		inline fix Get (bool bScale = true) { return bScale ? *m_current : (fix) FRound (*m_current / Scale ()); }
 		// set by fixed value
-		inline bool Set (fix e, bool bScale = true);
+		bool Set (fix e, bool bScale = true);
 		// change by some value
 		inline fix Update (fix delta) { 
 			if (delta)
