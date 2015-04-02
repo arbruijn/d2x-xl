@@ -2416,7 +2416,7 @@ gameOptions [0].gameplay.bUseD1AI = 1;
 //	extraGameInfo [0].nZoomMode = 1;
 gameData.multiplayer.weaponStates [N_LOCALPLAYER].nShip = gameOpts->gameplay.nShip [0];
 if (gameOpts->app.bExpertMode != SUPERUSER) {
-	extraGameInfo [0].nRechargeDelay = 6;
+	extraGameInfo [0].nRechargeDelay = 4;
 	extraGameInfo [0].nRechargeSpeed = 1;
 	}
 MultiSendWeaponStates ();
