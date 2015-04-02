@@ -156,6 +156,8 @@ if (!gameStates.app.bNostalgia)
 	m.AddMenu ("precalc lightmaps", TXT_PRECALC_LIGHTMAPS, KEY_A, HTX_PRECALC_LIGHTMAPS);
 #if defined(_WIN32) || defined(__unix__)
 m.AddMenu ("check update", TXT_CHECK_FOR_UPDATE, KEY_U, HTX_CHECK_FOR_UPDATE);
+#endif
+#if 0
 int32_t day, month, year, t = GetDate (day, month, year);
 if ((t > 0) && (year == 2015) && (month == 4) && (day <= 10))
 	m.AddMenu ("descent underground", TXT_KS_DU_MENU, KEY_G, "");

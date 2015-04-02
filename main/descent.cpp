@@ -943,54 +943,6 @@ return (year << 16) + (month << 8) + day;
 
 // ----------------------------------------------------------------------------
 
-
-#define DU_BACKGROUND 1
-
-void DUKickstarterNotification (void)
-{
-int32_t day, month, year, t = GetDate (day, month, year);
-if ((t > 0) && (year == 2015) && (month == 4) && (day <= 10))
-//gameStates.app.SRand ();
-//if (!Rand (3)) 
-	{	// display randomly about every third program start
-	SetScreenMode (SCREEN_MENU);
-	int32_t nFade = gameOpts->menus.nFade;
-	gameOpts->menus.nFade = 250;
-
-#if DU_BACKGROUND
-	char szFolder [FILENAME_LEN];
-	sprintf (szFolder, "%sd2x-xl/", gameFolders.game.szTextures [0]);
-	CBitmap	wallpaper;
-	CTGA		tga (&wallpaper);
-	CBitmap	*oldWallpaper = tga.Read ("du_torch.tga", szFolder) ? backgroundManager.SetWallpaper (&wallpaper, 0) : NULL;
-#endif
-
-	int32_t bShowVersionInfo = gameStates.app.bShowVersionInfo;
-	gameStates.app.bShowVersionInfo = 0;
-	messageBox.SetBoxColor (0, 96, 192);
-	messageBox.Show (TXT_KICKSTART_DU, "du_kickstarter_torch.tga", true, true);
-	CTimeout to (30000);
-	do {
-		messageBox.CMenu::Render (NULL, NULL);
-		int32_t nKey = KeyInKey ();
-		if (/*(to.Progress () > 3000) &&*/ (nKey == KEY_ESC) || (nKey == KEY_ENTER))
-			break;
-	} while (!to.Expired ());
-	gameOpts->menus.nFade = 500;
-	messageBox.Clear ();
-	gameOpts->menus.nFade = nFade;
-#if DU_BACKGROUND
-	if (oldWallpaper)
-		backgroundManager.SetWallpaper (oldWallpaper, 0);
-#endif
-	gameStates.app.bShowVersionInfo = bShowVersionInfo;
-	messageBox.SetBoxColor (); // reset to default
-	backgroundManager.Draw (0);
-	}
-}
-
-// ----------------------------------------------------------------------------
-
 void DonationNotification (void)
 {
 if (gameConfig.nTotalTime > (20 * 60)) {	// played for more than 25 hours
@@ -1111,9 +1063,6 @@ if (*szAutoHogFile && *szAutoMission) {
 	hogFileManager.UseMission (szAutoHogFile);
 	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
 	}
-#if !DBG
-DUKickstarterNotification ();
-#endif
 DonationNotification ();
 BadHardwareNotification ();
 PrintLog (-1);
