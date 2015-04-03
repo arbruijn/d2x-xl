@@ -81,6 +81,9 @@ Push (nNode, -1, -1, 0);
 
 bool CDialHeap::Push (int16_t nNode, int16_t nPredNode, int16_t nEdge, uint32_t nNewCost)
 {
+if (!m_cost.Buffer () || !m_index.Buffer ()) // -> Bug!
+	return false;
+
 	uint32_t nOldCost = m_cost [nNode] & ~0x80000000;
 
 if (nNewCost >= nOldCost)

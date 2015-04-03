@@ -1355,11 +1355,13 @@ void MultiDoFire (uint8_t* buf)
 
 gameData.multigame.weapon.nTrack = GET_INTEL_SHORT (buf + 6);
 
+#if 0
 if (gameStates.multi.nGameType == UDP_GAME) {
 	gameData.multigame.weapon.nFired [1] = buf [8];
 	for (int32_t i = 0; i < gameData.multigame.weapon.nFired [1]; i++)
 		gameData.multigame.weapon.nObjects [1][i] = GET_INTEL_SHORT (buf + 9 + i * sizeof (int16_t));
 	}
+#endif
 
 if (PLAYEROBJECT (nPlayer).info.nType == OBJ_GHOST)
 	MultiMakeGhostPlayer (nPlayer);

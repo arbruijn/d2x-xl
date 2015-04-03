@@ -363,7 +363,9 @@ if (nLaserType == OMEGA_ID)
 	return -1;
 if (nObject == -1)
 	return -1;
-//TrackWeaponObject (nObject, int32_t (nPlayer));
+#if 0 // debug stuff
+TrackWeaponObject (nObject, int32_t (nPlayer));
+#endif
 weaponP = OBJECTS + nObject;
 if ((nLaserType == GUIDEDMSL_ID) && gameData.multigame.bIsGuided)
 	gameData.objs.SetGuidedMissile (nPlayer, weaponP);

@@ -501,8 +501,8 @@ return xDist;
 
 fix CDACSUniDirRouter::FindPath (void)
 {
-	uint32_t			nDist;
-	int16_t			nSegment, nSide;
+	uint32_t		nDist;
+	int16_t		nSegment, nSide;
 	CSegment*	segP;
 
 m_heap.Setup (m_nStartSeg);
