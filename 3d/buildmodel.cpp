@@ -381,8 +381,6 @@ for (uint16_t i = 0; i < modelP->m_nEdges; i++, edgeP++)
 
 void CSubModel::GatherLitFaces (CModel* modelP, CFloatVector3& vLight)
 {
-	CFace*	faceP = m_faces;
-
 modelP->m_litFaces.Reset ();
 for (uint16_t i = 0; i < m_nFaces; i++)
 	if (m_faces [i].IsLit (vLight))
