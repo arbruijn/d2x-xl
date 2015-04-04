@@ -231,7 +231,6 @@ void GameStartInitNetworkPlayers (void)
 				playerObjs [MAX_PLAYERS], startSegs [MAX_PLAYERS],
 				nPlayers, nMaxPlayers = bCoop ? MAX_COOP_PLAYERS + 1 : MAX_PLAYERS;
 	CObject*	objP, * prevObjP;
-	bool		bRelease = false;
 
 	// Initialize network player start locations and CObject numbers
 
@@ -1040,7 +1039,7 @@ if (!gameStates.app.bComputeLightmaps) {
 
 InitTexColors ();
 
-int32_t nLoadRes, nAttempts = 0;
+int32_t nLoadRes;
 for (int32_t nAttempts = 0; nAttempts < 2; nAttempts++) {
 	if (!(nLoadRes = LoadLevelData (pszLevelName, nLevel)))
 		break;	//actually load the data from disk!

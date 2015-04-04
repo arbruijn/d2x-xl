@@ -743,7 +743,6 @@ else {
 	m_data.viewer.mOrient = playerP->info.position.mOrient * m;
 
 	//fZoomScale = 1.0f + sqrt (X2F (m_data.nViewDist) / X2F (ZOOM_MAX_VALUE));
-	float mineSize = X2F (CFixVector::Dist (gameData.segs.vMin, gameData.segs.vMax));
 	m_vTAngles.v.coord.p += (fixang) (float (controls [0].pitchTime) / X2F (ROT_SPEED_DIVISOR) * fZoomScale);
 	m_vTAngles.v.coord.h += (fixang) (float (controls [0].headingTime) / X2F (ROT_SPEED_DIVISOR) * fZoomScale);
 	m_vTAngles.v.coord.b += (fixang) (float (controls [0].bankTime) / X2F (ROT_SPEED_DIVISOR * 2) * fZoomScale);

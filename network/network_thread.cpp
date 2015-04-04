@@ -352,7 +352,7 @@ CNetworkPacket* CNetworkPacketQueue::Pop (bool bDrop, bool bLock)
 {
 CNetworkPacket* packet;
 Lock (bLock, __FUNCTION__);
-if (packet = m_packets [0]) {
+if ((packet = m_packets [0])) {
 	if (!(m_packets [0] = packet->Next ()))
 		m_packets [1] = NULL;
 	if (bDrop) {
