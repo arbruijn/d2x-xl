@@ -138,7 +138,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // physics flags
 #define PF_TURNROLL         0x01    // roll when turning
 #define PF_LEVELLING        0x02    // level CObject with closest CSide
-#define PF_BOUNCE           0x04    // bounce (not slide) when hit will
+#define PF_BOUNCES           0x04    // bounce (not slide) when hit will
 #define PF_WIGGLE           0x08    // wiggle while flying
 #define PF_STICK            0x10    // CObject sticks (stops moving) when hits CWall
 #define PF_PERSISTENT       0x20    // CObject keeps going even after it hits another CObject (eg, fusion cannon)

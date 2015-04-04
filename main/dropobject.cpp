@@ -644,7 +644,7 @@ switch (nType) {
 		objP->mType.physInfo.velocity = vNewVel;
 		objP->mType.physInfo.drag = 512;	//1024;
 		objP->mType.physInfo.mass = I2X (1);
-		objP->mType.physInfo.flags = PF_BOUNCE;
+		objP->mType.physInfo.flags = PF_BOUNCES;
 		objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 		objP->rType.animationInfo.xFrameTime = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
 		objP->rType.animationInfo.nCurFrame = 0;

@@ -128,7 +128,7 @@ if ((behavior == AIB_SNIPE) || (behavior == AIB_STATION) || (behavior == AIB_RUN
 	}
 aiP->SKIP_AI_COUNT = 0;
 aiP->CLOAKED = (botInfoP->cloakType == RI_CLOAKED_ALWAYS);
-objP->mType.physInfo.flags |= (PF_BOUNCE | PF_TURNROLL);
+objP->mType.physInfo.flags |= (PF_BOUNCES | PF_TURNROLL);
 aiP->REMOTE_OWNER = -1;
 aiP->bDyingSoundPlaying = 0;
 aiP->xDyingStartTime = 0;

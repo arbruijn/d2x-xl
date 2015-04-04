@@ -342,7 +342,7 @@ objP->mType.physInfo.drag = 512;
 //objP->info.controlType = CT_WEAPON;
 objP->info.renderType = RT_POLYOBJ;
 objP->info.movementType = MT_PHYSICS;
-objP->mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
+objP->mType.physInfo.flags = PF_BOUNCES | PF_FREE_SPINNING;
 if (0 > (objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel))
 	objP->rType.polyObjInfo.nModel = nModel;
 #if 0

@@ -2027,11 +2027,11 @@ if (!(IsWeapon () || IsMissile ()))
 	return false;
 if ((m_weaponInfo [Id ()] & OBJ_BOUNCES) == 0)
 	return false;
-if ((mType.physInfo.flags & PF_BOUNCE) == 0)
+if ((mType.physInfo.flags & PF_BOUNCES) == 0)
 	return false;
 return true;
 #else
-return (IsWeapon () || IsMissile ()) && ((mType.physInfo.flags & PF_BOUNCE) != 0) && ((m_weaponInfo [Id ()] & OBJ_BOUNCES) != 0);
+return (IsWeapon () || IsMissile ()) && ((mType.physInfo.flags & PF_BOUNCES) != 0) && ((m_weaponInfo [Id ()] & OBJ_BOUNCES) != 0);
 #endif
 }
 

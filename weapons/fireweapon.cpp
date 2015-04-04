@@ -509,7 +509,7 @@ for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= HOMER_FRAMETIME;
 	if (cType.laserInfo.xCreationTime + HomingMslStraightTime (nObjId) < gameData.time.xGame) {
 		//	If it's time to do tracking, then it's time to grow up, stop bouncing and start exploding!.
 		if (Bounces ())
-			mType.physInfo.flags &= ~PF_BOUNCE;
+			mType.physInfo.flags &= ~PF_BOUNCES;
 		//	Make sure the CObject we are tracking is still trackable.
 		int32_t nTarget = UpdateHomingTarget (cType.laserInfo.nHomingTarget, dot, nThread);
 		if (nTarget != -1) {

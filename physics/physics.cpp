@@ -705,19 +705,29 @@ int32_t bCheckVel = 0;
 //We're constrained by a wall, so subtract wall part from velocity vector
 
 xWallPart = CFixVector::Dot (simData.hitResult.vNormal, Velocity () /*simData.velocity*/);
-if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWall
+if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCES)) {		//bounce off CWall
 	xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
 	if (bForceFieldBounce) {
 		bCheckVel = 1;				//check for max velocity
 		if (info.nType == OBJ_PLAYER)
 			xWallPart *= 2;		//CPlayerData bounce twice as much
 		}
-	if ((mType.physInfo.flags & (PF_BOUNCE | PF_BOUNCES_TWICE)) == (PF_BOUNCE | PF_BOUNCES_TWICE)) {
+#if 0
+	if ((mType.physInfo.flags & (PF_BOUNCES | PF_BOUNCES_TWICE)) == (PF_BOUNCES | PF_BOUNCES_TWICE)) {
+		//Assert (mType.physInfo.flags & PF_BOUNCES);
 		if (mType.physInfo.flags & PF_HAS_BOUNCED)
-			mType.physInfo.flags &= ~(PF_BOUNCE | PF_HAS_BOUNCED | PF_BOUNCES_TWICE);
+			mType.physInfo.flags &= ~(PF_BOUNCES | PF_HAS_BOUNCED | PF_BOUNCES_TWICE);
 		else
 			mType.physInfo.flags |= PF_HAS_BOUNCED;
 		}
+#else
+	if (mType.physInfo.flags & PF_BOUNCES_TWICE)
+		mType.physInfo.flags &= ~PF_BOUNCES_TWICE;
+	else if (mType.physInfo.flags & PF_BOUNCES) {
+		mType.physInfo.flags &= ~PF_BOUNCES;
+		mType.physInfo.flags |= PF_HAS_BOUNCED;
+		}
+#endif
 	simData.bBounced = 1;		//this CObject simData.bBounced
 	Velocity () /*simData.velocity*/ -= simData.hitResult.vNormal * xWallPart;
 	}
@@ -1817,7 +1827,7 @@ retryMove:
 			if (!(info.nFlags & OF_SHOULD_BE_DEAD) && (info.nType != OBJ_DEBRIS)) {
 				int32_t bForceFieldBounce;		//bounce off a forcefield
 
-				///Assert (gameStates.app.cheats.bBouncingWeapons || ((mType.physInfo.flags & (PF_STICK | PF_BOUNCE)) != (PF_STICK | PF_BOUNCE)));	//can't be bounce and stick
+				///Assert (gameStates.app.cheats.bBouncingWeapons || ((mType.physInfo.flags & (PF_STICK | PF_BOUNCES)) != (PF_STICK | PF_BOUNCES)));	//can't be bounce and stick
 				bForceFieldBounce = (gameData.pig.tex.tMapInfoP [SEGMENTS [simData.hitResult.nSideSegment].m_sides [simData.hitResult.nSide].m_nBaseTex].flags & TMI_FORCE_FIELD);
 				if (!bForceFieldBounce && (mType.physInfo.flags & PF_STICK)) {		//stop moving
 					AddStuckObject (this, simData.hitResult.nSideSegment, simData.hitResult.nSide);
@@ -1830,17 +1840,17 @@ retryMove:
 					//We're constrained by a wall, so subtract wall part from velocity vector
 
 					xWallPart = CFixVector::Dot (simData.hitResult.vNormal, Velocity ());
-					if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCE)) {		//bounce off CWall
+					if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCES)) {		//bounce off CWall
 						xWallPart *= 2;	//Subtract out wall part twice to achieve bounce
 						if (bForceFieldBounce) {
 							bCheckVel = 1;				//check for max velocity
 							if (info.nType == OBJ_PLAYER)
 								xWallPart *= 2;		//CPlayerData bounce twice as much
 							}
-						if ((mType.physInfo.flags & (PF_BOUNCE | PF_BOUNCES_TWICE)) == (PF_BOUNCE | PF_BOUNCES_TWICE)) {
-							//Assert (mType.physInfo.flags & PF_BOUNCE);
+						if ((mType.physInfo.flags & (PF_BOUNCES | PF_BOUNCES_TWICE)) == (PF_BOUNCES | PF_BOUNCES_TWICE)) {
+							//Assert (mType.physInfo.flags & PF_BOUNCES);
 							if (mType.physInfo.flags & PF_HAS_BOUNCED)
-								mType.physInfo.flags &= ~(PF_BOUNCE | PF_HAS_BOUNCED | PF_BOUNCES_TWICE);
+								mType.physInfo.flags &= ~(PF_BOUNCES | PF_HAS_BOUNCED | PF_BOUNCES_TWICE);
 							else
 								mType.physInfo.flags |= PF_HAS_BOUNCED;
 							}

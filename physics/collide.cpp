@@ -759,7 +759,7 @@ if (info.nId == GUIDEDMSL_ID) {
 #if TRACE
 		console.printf (CON_DBG, "Guided missile loses bounciness. \n");
 #endif
-		mType.physInfo.flags &= ~PF_BOUNCE;
+		mType.physInfo.flags &= ~PF_BOUNCES;
 		}
 	else {
 		CFixVector vReflect = CFixVector::Reflect (info.position.mOrient.m.dir.f, sideP->m_normals[0]);
@@ -768,7 +768,7 @@ if (info.nId == GUIDEDMSL_ID) {
 		}
 	}
 
-int32_t bBounce = (mType.physInfo.flags & PF_BOUNCE) != 0;
+int32_t bBounce = (mType.physInfo.flags & PF_BOUNCES) != 0;
 if (!bBounce)
 	CreateWeaponEffects (1);
 //if an energy this hits a forcefield, let it bounce

@@ -86,9 +86,9 @@ objP->mType.physInfo.mass = WI_mass (nWeaponType);
 objP->mType.physInfo.drag = WI_drag (nWeaponType);
 objP->mType.physInfo.thrust.SetZero ();
 if (gameData.weapons.info [nWeaponType].bounce == 1)
-	objP->mType.physInfo.flags |= PF_BOUNCE;
+	objP->mType.physInfo.flags |= PF_BOUNCES;
 if ((gameData.weapons.info [nWeaponType].bounce == 2) || gameStates.app.cheats.bBouncingWeapons)
-	objP->mType.physInfo.flags |= PF_BOUNCE + PF_BOUNCES_TWICE;
+	objP->mType.physInfo.flags |= PF_BOUNCES + PF_BOUNCES_TWICE;
 return nObject;
 }
 
@@ -249,14 +249,14 @@ if ((nWeaponType == SMARTMSL_BLOB_ID) ||
 	 (nWeaponType == ROBOT_SMARTMSL_BLOB_ID) ||
 	 (nWeaponType == ROBOT_SMARTMINE_BLOB_ID) ||
 	 (nWeaponType == EARTHSHAKER_MEGA_ID))
-	objP->mType.physInfo.flags |= PF_BOUNCE;
+	objP->mType.physInfo.flags |= PF_BOUNCES;
 if (weaponInfoP->renderType == WEAPON_RENDER_POLYMODEL)
 	xLaserLength = gameData.models.polyModels [0][objP->ModelId ()].Rad () * 2;
 if (nWeaponType == FLARE_ID)
 	objP->mType.physInfo.flags |= PF_STICK;		//this obj sticks to walls
 objP->info.xShield = WI_strength (nWeaponType, gameStates.app.nDifficultyLevel);
 // Fill in laser-specific data
-objP->info.xLifeLeft	= WI_lifetime (nWeaponType);
+objP->SetLife (WI_lifetime (nWeaponType));
 //	Assign nParent nType to highest level creator.  This propagates nParent nType down from
 //	the original creator through weapons which create children of their own (ie, smart missile)
 if (parentP && (parentP->info.nType == OBJ_WEAPON)) {

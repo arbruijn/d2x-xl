@@ -188,7 +188,7 @@ mType.physInfo.brakes = 0;
 info.controlType = CT_WEAPON;
 info.renderType = RT_POLYOBJ;
 info.movementType = MT_PHYSICS;
-mType.physInfo.flags = PF_BOUNCE | PF_FREE_SPINNING;
+mType.physInfo.flags = PF_BOUNCES | PF_FREE_SPINNING;
 rType.polyObjInfo.nModel = nModel;
 if (bHasModel)
 	AdjustSize ();
