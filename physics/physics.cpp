@@ -712,21 +712,20 @@ if (bForceFieldBounce || (mType.physInfo.flags & PF_BOUNCES)) {		//bounce off CW
 		if (info.nType == OBJ_PLAYER)
 			xWallPart *= 2;		//CPlayerData bounce twice as much
 		}
-#if 0
-	if ((mType.physInfo.flags & (PF_BOUNCES | PF_BOUNCES_TWICE)) == (PF_BOUNCES | PF_BOUNCES_TWICE)) {
-		//Assert (mType.physInfo.flags & PF_BOUNCES);
-		if (mType.physInfo.flags & PF_HAS_BOUNCED)
-			mType.physInfo.flags &= ~(PF_BOUNCES | PF_HAS_BOUNCED | PF_BOUNCES_TWICE);
+#if 1
+	if (mType.physInfo.flags & PF_BOUNCES_TWICE) {
+		if (mType.physInfo.flags & PF_BOUNCED_ONCE)
+			mType.physInfo.flags &= ~(PF_BOUNCES | PF_BOUNCED_ONCE | PF_BOUNCES_TWICE);
 		else
-			mType.physInfo.flags |= PF_HAS_BOUNCED;
+			mType.physInfo.flags |= PF_BOUNCED_ONCE;
 		}
 #else
-	if (mType.physInfo.flags & PF_BOUNCES_TWICE)
+	if (mType.physInfo.flags & PF_BOUNCES_TWICE) {
 		mType.physInfo.flags &= ~PF_BOUNCES_TWICE;
-	else if (mType.physInfo.flags & PF_BOUNCES) {
-		mType.physInfo.flags &= ~PF_BOUNCES;
-		mType.physInfo.flags |= PF_HAS_BOUNCED;
+		mType.physInfo.flags |= PF_BOUNCED_ONCE;
 		}
+	else if (mType.physInfo.flags & PF_BOUNCES)
+		mType.physInfo.flags &= ~(PF_BOUNCES | PF_BOUNCED_ONCE);
 #endif
 	simData.bBounced = 1;		//this CObject simData.bBounced
 	Velocity () /*simData.velocity*/ -= simData.hitResult.vNormal * xWallPart;
@@ -1849,10 +1848,10 @@ retryMove:
 							}
 						if ((mType.physInfo.flags & (PF_BOUNCES | PF_BOUNCES_TWICE)) == (PF_BOUNCES | PF_BOUNCES_TWICE)) {
 							//Assert (mType.physInfo.flags & PF_BOUNCES);
-							if (mType.physInfo.flags & PF_HAS_BOUNCED)
-								mType.physInfo.flags &= ~(PF_BOUNCES | PF_HAS_BOUNCED | PF_BOUNCES_TWICE);
+							if (mType.physInfo.flags & PF_BOUNCED_ONCE)
+								mType.physInfo.flags &= ~(PF_BOUNCES | PF_BOUNCED_ONCE | PF_BOUNCES_TWICE);
 							else
-								mType.physInfo.flags |= PF_HAS_BOUNCED;
+								mType.physInfo.flags |= PF_BOUNCED_ONCE;
 							}
 						simData.bBounced = 1;		//this CObject simData.bBounced
 						}

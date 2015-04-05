@@ -495,9 +495,6 @@ return false;
 //sequence this weapon object for this _frame_ (underscores added here to aid MK in his searching!)
 // This function is only called every 25 ms max. (-> updating at 40 fps or less) 
 
-#define HOMER_FPS			25
-#define HOMER_FRAMETIME	(I2X (1) / HOMER_FPS)
-
 void CObject::UpdateHomingWeapon (int32_t nThread)
 {
 for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= HOMER_FRAMETIME; xFrameTime -= HOMER_FRAMETIME) {
@@ -586,25 +583,26 @@ Assert (info.controlType == CT_WEAPON);
 //	If you want an CObject to last for exactly one frame, then give it a lifeleft of ONE_FRAME_TIME
 if (RemoveWeapon ())
 	return;
-if ((info.nType == OBJ_WEAPON) && (info.nId == FUSION_ID)) {		//always set fusion weapon to max vel
-	CFixVector::Normalize (mType.physInfo.velocity);
-	mType.physInfo.velocity *= (WI_speed (info.nId, gameStates.app.nDifficultyLevel));
-	}
-//	For homing missiles, turn towards target. (unless it's a guided missile still under player control)
-if ((gameOpts->legacy.bHomers || (gameData.laser.xUpdateTime >= I2X (1) / 40)) && // limit update frequency to 40 fps
-	 (info.nType == OBJ_WEAPON) &&
-    (gameStates.app.cheats.bHomingWeapons || WI_homingFlag (info.nId)) &&
-	 !(info.nFlags & PF_HAS_BOUNCED) &&
-	 !IsGuidedMissile ()) {
+if (info.nType == OBJ_WEAPON) {
+	if (info.nId == FUSION_ID) {		//always set fusion weapon to max vel
+		CFixVector::Normalize (mType.physInfo.velocity);
+		mType.physInfo.velocity *= (WI_speed (info.nId, gameStates.app.nDifficultyLevel));
+		}
+	//	For homing missiles, turn towards target. (unless it's a guided missile still under player control)
+	if ((gameOpts->legacy.bHomers || (gameData.laser.xUpdateTime >= HOMER_FRAMETIME)) && // limit update frequency to 40 fps
+	    (gameStates.app.cheats.bHomingWeapons || WI_homingFlag (info.nId)) &&
+		 !(info.nFlags & PF_BOUNCED_ONCE) &&
+		!IsGuidedMissile ()) {
 #if USE_OPENMP //> 1
-	if (gameStates.app.bMultiThreaded)
-		gameData.objs.update.Push (this);
-	else
+		if (gameStates.app.bMultiThreaded)
+			gameData.objs.update.Push (this);
+		else
 #endif
-		UpdateHomingWeapon ();
+			UpdateHomingWeapon ();
+			return;
+		}
 	}
-else
-	UpdateWeaponSpeed ();
+UpdateWeaponSpeed ();
 }
 
 //	--------------------------------------------------------------------------------------------------

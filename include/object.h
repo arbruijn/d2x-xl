@@ -138,12 +138,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 // physics flags
 #define PF_TURNROLL         0x01    // roll when turning
 #define PF_LEVELLING        0x02    // level CObject with closest CSide
-#define PF_BOUNCES           0x04    // bounce (not slide) when hit will
+#define PF_BOUNCES          0x04    // bounce (not slide) when hit will
 #define PF_WIGGLE           0x08    // wiggle while flying
 #define PF_STICK            0x10    // CObject sticks (stops moving) when hits CWall
 #define PF_PERSISTENT       0x20    // CObject keeps going even after it hits another CObject (eg, fusion cannon)
 #define PF_USES_THRUST      0x40    // this CObject uses its thrust
-#define PF_HAS_BOUNCED      0x80    // Weapon has bounced once.
+#define PF_BOUNCED_ONCE     0x80    // Weapon has bounced once.
 #define PF_FREE_SPINNING    0x100   // Drag does not apply to rotation of this CObject
 #define PF_BOUNCES_TWICE    0x200   // This weapon bounces twice, then dies
 
@@ -1807,6 +1807,9 @@ void InitMultiPlayerObject (int32_t nStage);
 #define	IS_BOSS_I(_i)			IS_BOSS (gameData.objs.objects + (_i))
 #define	IS_MISSILE(_objP)		((_objP)->IsMissile ())
 #define	IS_MISSILE_I(_i)		IS_MISSILE (gameData.objs.objects + (_i))
+
+#define HOMER_FPS			25
+#define HOMER_FRAMETIME	(I2X (1) / HOMER_FPS)
 
 #if DBG
 extern CObject *dbgObjP;

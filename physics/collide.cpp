@@ -755,7 +755,7 @@ if (info.nId == GUIDEDMSL_ID) {
 #if TRACE
 	console.printf (CON_DBG, "Guided missile dot = %7.3f \n", X2F (dot));
 #endif
-	if (dot < -I2X (1)/6) {
+	if (dot < -I2X (1) / 6) {
 #if TRACE
 		console.printf (CON_DBG, "Guided missile loses bounciness. \n");
 #endif
@@ -1489,7 +1489,7 @@ if (bossProps [gameStates.app.bD1Mission][d2BossIndex].bInvulSpot) {
 				vImpulse += vWeapon * (-I2X (2));
 				vImpulse *= (speed / 4);
 				cloneP->mType.physInfo.velocity = vImpulse;
-				cloneP->info.nFlags |= PF_HAS_BOUNCED;
+				cloneP->info.nFlags |= PF_BOUNCED_ONCE;
 				}
 			}
 		}
