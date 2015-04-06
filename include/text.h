@@ -2007,9 +2007,9 @@ void LoadGameTexts(void);
 #define TXT_NARROW						GT(1249)
 #define TXT_WIDE							GT(1250)
 #define TXT_MINIMALIST_HUD_HEIGHT	GT(1251)
-#define TXT_HIGH							GT(1252)
-#define TXT_MIDDLE						GT(1253)
-#define TXT_LOW							GT(1254)
+#define TXT_MINIMALIST_HUD_HIGH		GT(1252)
+#define TXT_MINIMALIST_HUD_MIDDLE	GT(1253)
+#define TXT_MINIMALIST_HUD_LOW		GT(1254)
 
 #if 0
 
