@@ -150,7 +150,7 @@ memset (&netPlayers [0], 0, sizeof (netPlayers [0]));
 networkData.thisPlayer.nType = PID_REQUEST;
 memcpy (networkData.thisPlayer.player.callsign, LOCALPLAYER.callsign, CALLSIGN_LEN+1);
 networkData.thisPlayer.player.versionMajor = D2X_MAJOR;
-networkData.thisPlayer.player.versionMinor = D2X_MINOR | (IS_D2_OEM ? NETWORK_OEM : 2);
+networkData.thisPlayer.player.versionMinor = D2X_MINOR | (IS_D2_OEM ? NETWORK_OEM : 3);
 networkData.thisPlayer.player.rank=GetMyNetRanking ();
 if (gameStates.multi.nGameType >= IPX_GAME) {
 	memcpy (networkData.thisPlayer.player.network.Node (), IpxGetMyLocalAddress (), 6);
