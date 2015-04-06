@@ -499,16 +499,9 @@ else {
 
 inline int16_t ObjId (int16_t nIndex)
 {
-if (saveGameManager.Version () < 59) 
-	return nIndex;
-if (saveGameManager.Version () < 61)
+if ((saveGameManager.Version () > 58) && (saveGameManager.Version () < 63))
 	return -1; // prevent a bug to strike introduced with save game version 59
-if (nIndex < 0) 
-	return -1;
-CObject* objP = gameData.Object (nIndex);
-if (!objP)
-	return -1;
-return objP->GetId ();
+return nIndex;
 }
 
 //------------------------------------------------------------------------------

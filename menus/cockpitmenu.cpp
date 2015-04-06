@@ -88,6 +88,7 @@ static int32_t	optWeaponIcons, bShowWeaponIcons, optIconAlpha;
 
 static const char* szHUDType [3];
 static const char* szLayout [3];
+static const char* szColorScheme [3];
 static const char* szWindowType [7];
 static const char* szWindowSize [4];
 static const char* szWindowPos [2];
@@ -243,6 +244,15 @@ if ((m = menu ["minimalist hud"])) {
 		}
 	}
 
+if ((m = menu ["color scheme"])) {
+	v = m->Value ();
+	if (gameOpts->render.cockpit.nColorScheme != v) {
+		gameOpts->render.cockpit.nColorScheme = v;
+		sprintf (m->m_text, TXT_HUD_COLOR_SCHEME, szColorScheme [v]);
+		m->Rebuild ();
+		}
+	}
+
 return nCurItem;
 }
 
@@ -263,6 +273,10 @@ szHUDType [2] = TXT_FULL;
 szLayout [0] = TXT_OFF;
 szLayout [1] = TXT_HORIZONTAL;
 szLayout [2] = TXT_VERTICAL;
+
+szColorScheme [0] = TXT_RED;
+szColorScheme [1] = TXT_YELLOW;
+szColorScheme [2] = TXT_BLUE;
 
 szWindowSize [0] = TXT_AUXWIN_SMALL;
 szWindowSize [1] = TXT_AUXWIN_MEDIUM;
@@ -378,6 +392,10 @@ do {
 #if 1
 	sprintf (szSlider, TXT_SHIP_STATE_LAYOUT, szLayout [gameOpts->render.cockpit.nShipStateLayout]);
 	m.AddSlider ("minimalist hud", szSlider, gameOpts->render.cockpit.nShipStateLayout, 0, 2, KEY_Y, HTX_SHIP_STATE_LAYOUT);
+	if (gameOpts->render.cockpit.nShipStateLayout) {
+		sprintf (szSlider, TXT_HUD_COLOR_SCHEME, szColorScheme [gameOpts->render.cockpit.nColorScheme]);
+		m.AddSlider ("color scheme", szSlider, gameOpts->render.cockpit.nColorScheme, 0, 2, KEY_Y, HTX_HUD_COLOR_SCHEME);
+		}
 #endif
 	sprintf (szSlider, TXT_TARGET_INDICATORS, szTgtInd [nTgtInd]);
 	m.AddSlider ("target indicators", szSlider, nTgtInd, 0, 2, KEY_T, HTX_CPIT_TGTIND);
@@ -456,6 +474,8 @@ do {
 	GET_VAL (gameOpts->render.cockpit.bObjectTally, "object tally");
 	GET_VAL (extraGameInfo [0].bHideIndicators, "hide target indicators");
 	GET_VAL (gameOpts->render.cockpit.nShipStateLayout, "minimalist hud");
+	if (gameOpts->render.cockpit.nShipStateLayout)
+		GET_VAL (gameOpts->render.cockpit.nColorScheme, "color scheme");
 	//GET_VAL (extraGameInfo [0].bTargetIndicators, "target indicators");
 	if (m.Available ( "text gauges"))
 		gameOpts->render.cockpit.bTextGauges = !m.Value ("text gauges");

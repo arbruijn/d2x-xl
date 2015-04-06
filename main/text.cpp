@@ -1994,6 +1994,7 @@ const char *defaultGameTexts [][2] = {
  {"energie auf~Laden", "~Recharge energy"},
  {"lade~Verzoegerung: %d s", "recharge dela~Y: %d s"},
  {"lade~Geschwindigkeit: %s", "recharge ~Speed: %s"},
+ {"~Farbschema: %s", "~Color scheme: %s"},
  
 #if 0
  {"", ""},
@@ -2757,6 +2758,7 @@ const char *defaultHelpTexts [][2] = {
  {"Wenn angekreuzt, werden Energie und Schild des Spielerschiffs\nnach einer Weile automatisch aufgeladen.", "If checked, the player ship's energy and shield will start to\nrecharge after a while."},
  {"Hier kann die Verzoegerung eingestellt werden,\nmit der Schiffsenergie und -schilde auf-\ngeladen werden, nachdem ihr Stand zuletzt reduziert wurde.", "Set the delay for recharging of ship energy and shields after\ntheir supply has been last decreased."},
  {"Mit diesem Regler kann die Ladegeschwindigkeit von Schiffsenergie\nund -schild angepasst werden.", "Adjust the speed at which ship energy and shields are recharged\nwith this slider."},
+ {"Hier kann die Farbe ausgeruesteter Waffen ausgewaehlt werden.", "Chose the color of equipped weapons here."},
 #if 0
  {"", ""},
 #endif

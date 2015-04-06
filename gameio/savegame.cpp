@@ -92,7 +92,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "marker.h"
 #include "hogfile.h"
 
-#define STATE_VERSION				62
+#define STATE_VERSION				63
 #define STATE_COMPATIBLE_VERSION 20
 // 0 - Put DGSS (Descent Game State Save) nId at tof.
 // 1 - Added Difficulty level save
@@ -858,6 +858,7 @@ if (!m_bBetweenLevels) {
 		}
 //Save CObject info
 	PrintLog (0, "saving objects ...\n", i);
+#if 0
 	CObject* objP;
 	int16_t nId = 0;
 	FORALL_OBJS (objP) {
@@ -865,6 +866,7 @@ if (!m_bBetweenLevels) {
 		if (nObject >= 0)
 			objP->SetId (nId++);
 			}
+#endif
 	FORALL_OBJS (objP) {
 		int16_t nObject = (int16_t) objP->Index ();
 		if (nObject >= 0) {

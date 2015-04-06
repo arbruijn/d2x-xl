@@ -119,8 +119,9 @@ class CStaticCanvasColor : public CCanvasColor {
 #define DKBLUE_RGBA					RGBA (0,0,80,255)
 #define ORANGE_RGBA					RGBA (255,128,0,255)
 #define GOLD_RGBA						RGBA (255,224,0,255)
+#define CYAN_RGBA						RGBA (0,255,255,255)
 
-#define D2BLUE_RGBA			RGB_PAL (35,35,55)
+#define D2BLUE_RGBA					RGB_PAL (35,35,55)
 
 //-----------------------------------------------------------------------------
 

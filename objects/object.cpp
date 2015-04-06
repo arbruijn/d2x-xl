@@ -1650,15 +1650,16 @@ return 0;
 
 void FixObjectList (CObject *parentObjP, CObject *childObjP)
 {
-for (;;) {
-	int32_t nObject = childObjP->cType.explInfo.attached.nPrev;
-	if (nObject == -1)
-		break;
-	childObjP = gameData.Object (nObject);
-	if (!childObjP)
-		break;
-	parentObjP->info.nAttachedObj = nObject;
-	}
+if (parentObjP)
+	for (;;) {
+		int32_t nObject = childObjP->cType.explInfo.attached.nPrev;
+		if (nObject == -1)
+			break;
+		childObjP = gameData.Object (nObject);
+		if (!childObjP)
+			break;
+		parentObjP->info.nAttachedObj = nObject;
+		}
 }
 
 //------------------------------------------------------------------------------
