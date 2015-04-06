@@ -81,8 +81,10 @@ Push (nNode, -1, -1, 0);
 
 bool CDialHeap::Push (int16_t nNode, int16_t nPredNode, int16_t nEdge, uint32_t nNewCost)
 {
-if (!m_cost.Buffer () || !m_index.Buffer ()) // -> Bug!
+if (!m_index.Buffer ()) { // -> Bug!
+	PrintLog (0, "Dial heap has not been initialized!\n");
 	return false;
+	}
 
 	uint32_t nOldCost = m_cost [nNode] & ~0x80000000;
 
@@ -126,6 +128,11 @@ return true;
 
 int32_t CDialHeap::Scan (int32_t nStart, int32_t nLength)
 {
+if (!m_cost.Buffer () || !m_index.Buffer ()) { // -> Bug!
+	PrintLog (0, "Dial heap has not been initialized!\n");
+	return -1;
+	}
+
 	int16_t* bufP = m_index.Buffer (nStart);
 
 for (; nLength; nLength--, bufP++)
@@ -174,6 +181,11 @@ return -1;
 
 int16_t CDialHeap::RouteLength (int16_t nNode)
 {
+if (!m_pred.Buffer ()) { // -> Bug!
+	PrintLog (0, "Dial heap has not been initialized!\n");
+	return false;
+	}
+
 	int16_t	h = nNode, i = 0;
 
 while (0 <= (h = m_pred [h]))
@@ -185,6 +197,11 @@ return i + 1;
 
 int16_t CDialHeap::BuildRoute (int16_t nNode, int32_t bReverse, tPathNode* route)
 {
+if (!m_pred.Buffer ()) { // -> Bug!
+	PrintLog (0, "Dial heap has not been initialized!\n");
+	return false;
+	}
+
 	int16_t	h = RouteLength (nNode);
 
 if (!route) {
