@@ -263,6 +263,15 @@ if ((m = menu ["hud width"])) {
 		}
 	}
 
+if ((m = menu ["hud height"])) {
+	v = m->Value ();
+	if (gameOpts->render.cockpit.nMinimalistHeight != v) {
+		gameOpts->render.cockpit.nMinimalistHeight = v;
+		sprintf (m->m_text, TXT_MINIMALIST_HUD_HEIGHT, szHUDHeight [v]);
+		m->Rebuild ();
+		}
+	}
+
 return nCurItem;
 }
 
@@ -412,6 +421,8 @@ do {
 		if (gameOpts->render.cockpit.nShipStateLayout == 2) {
 			sprintf (szSlider, TXT_MINIMALIST_HUD_WIDTH, szHUDWidth [gameOpts->render.cockpit.nMinimalistWidth]);
 			m.AddSlider ("hud width", szSlider, gameOpts->render.cockpit.nMinimalistWidth, 0, 2, KEY_W, HTX_MINIMALIST_HUD_WIDTH);
+			sprintf (szSlider, TXT_MINIMALIST_HUD_HEIGHT, szHUDWidth [gameOpts->render.cockpit.nMinimalistHeight]);
+			m.AddSlider ("hud height", szSlider, gameOpts->render.cockpit.nMinimalistHeight, 0, 2, KEY_H, HTX_MINIMALIST_HUD_HEIGHT);
 			}
 		}
 #endif

@@ -45,7 +45,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "gr.h"
 
 #define X_GAUGE_OFFSET (20 + gameOpts->render.cockpit.nMinimalistWidth * 20)
-#define Y_GAUGE_OFFSET 30
+#define Y_GAUGE_OFFSET (30 + gameOpts->render.cockpit.nMinimalistHeight * 30)
 
 //	-----------------------------------------------------------------------------
 

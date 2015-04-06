@@ -1998,6 +1998,10 @@ const char *defaultGameTexts [][2] = {
  {"hud-~Breite: %s", "hud ~Width: %s"},
  {"schmal", "narrow"},
  {"weit", "wide"},
+ {"hud-~Hoehe: %s", "hud ~Height: %s"},
+ {"oben", "high"},
+ {"mitte", "middle"},
+ {"unten", "low"},
  
 #if 0
  {"", ""},
@@ -2764,6 +2768,7 @@ const char *defaultHelpTexts [][2] = {
  {"Hier kann die Farbe ausgeruesteter Waffen ausgewaehlt werden.", "Chose the color of equipped weapons here."},
  {"Hier kann der Abstand des Minimal-HUDs vom Fadenkreuz angepasst werden.", "Adjust the distance of the minimalist HUD from the reticle here."},
 #if 0
+ {"Hier kann der Abstand des Minimal-HUDs vom oberen Bildschirmrand\nangepasst werden.", "Adjust the distance of the minimalist HUD from the\nupper screen border here."},
  {"", ""},
 #endif
  {"", ""}
