@@ -44,8 +44,9 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hudicons.h"
 #include "gr.h"
 
-#define X_GAUGE_OFFSET (20 + gameOpts->render.cockpit.nMinimalistWidth * 20)
-#define Y_GAUGE_OFFSET (30 + gameOpts->render.cockpit.nMinimalistHeight * 30)
+#define X_GAUGE_BASE_OFFSET 20
+#define X_GAUGE_OFFSET(_pos) (20 + (_pos) * 20)
+#define Y_GAUGE_OFFSET(_pos) (30 + (_pos) * 60)
 
 //	-----------------------------------------------------------------------------
 
@@ -301,8 +302,8 @@ if (ShowTextGauges ()) {
 	if (nLayout) {
 		ScaleUp ();
 		sprintf (szGauge, "%i", (int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
-		x = gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET);
-		y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET);
+		x = gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistWidth*/0));
+		y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistHeight*/0));
 		SetFontColor (RGBA (0,128,255,255));
 		//gameStates.render.grAlpha = 0.5f;
 		}
@@ -409,8 +410,8 @@ if (ShowTextGauges ()) {
 	if (nLayout) {
 		ScaleUp ();
 		sprintf (szGauge, "%i", h);
-		x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET) - StringWidth (szGauge);
-		y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET);
+		x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistWidth*/0)) - StringWidth (szGauge);
+		y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistHeight*/0));
 		SetFontColor (GOLD_RGBA);
 		//gameStates.render.grAlpha = 0.5f;
 		}
@@ -507,7 +508,7 @@ if (ShowTextGauges ()) {
 		ScaleUp ();
 		sprintf (szGauge, "%i", h);
 		x = gameData.render.scene.Width () / 2 - StringWidth (szGauge) / 2;
-		y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET);
+		y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistHeight*/0));
 		SetFontColor (RED_RGBA);
 		//gameStates.render.grAlpha = 0.5f;
 		}
@@ -810,8 +811,8 @@ void CHUD::DrawPrimaryWeaponList (void)
 	int32_t	nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
 	int32_t	nState [2] = {-1, 0};
 	int32_t	nLineSpacing = cockpit->LineSpacing ();
-	int32_t	x = gameData.render.scene.Width () / 2 - cockpit->ScaleX (X_GAUGE_OFFSET * 3);
-	int32_t	y = gameData.render.scene.Height () / 2 - (gameStates.app.bD1Mission ? 1 : 2) * nLineSpacing; //(n * nLineSpacing) / 2;
+	int32_t	x = gameData.render.scene.Width () / 2 - cockpit->ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth) * 3);
+	int32_t	y = gameData.render.scene.Height () / 2 - (gameStates.app.bD1Mission ? 1 : 2) * nLineSpacing + gameOpts->render.cockpit.nMinimalistHeight * nLineSpacing * 2; //(n * nLineSpacing) / 2;
 	int32_t	nMaxAutoSelect = 255;
 	bool		bLasers = false;
 	char		szLabel [2] = {'\0', '\0'}, szAmmo [20];
@@ -960,8 +961,8 @@ void CHUD::DrawSecondaryWeaponList (void)
 	int32_t	nMaxAutoSelect = 255;
 	int32_t	nState [2] = {-1, 0};
 	int32_t	nLineSpacing = cockpit->LineSpacing ();
-	int32_t	x = gameData.render.scene.Width () / 2 + cockpit->ScaleX (X_GAUGE_OFFSET * 3);
-	int32_t	y = gameData.render.scene.Height () / 2 - (gameStates.app.bD1Mission ? 1 : 2) * nLineSpacing; //((n + 1) * nLineSpacing) / 2;
+	int32_t	x = gameData.render.scene.Width () / 2 + cockpit->ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth) * 3);
+	int32_t	y = gameData.render.scene.Height () / 2 - (gameStates.app.bD1Mission ? 1 : 2) * nLineSpacing + gameOpts->render.cockpit.nMinimalistHeight * nLineSpacing * 2; //((n + 1) * nLineSpacing) / 2;
 	char		szLabel [2] = {'\0', '\0'}, szAmmo [20];
 
 for (int32_t nType = 0; nType < 2; nType++) {
@@ -1025,8 +1026,9 @@ void CHUD::DrawSecondaryAmmoList (char* pszList)
 	int32_t	l = 0;
 	int32_t	nMaxAutoSelect = 255;
 	int32_t	nState [2] = {-1, 0};
-	int32_t	x = gameData.render.scene.Width () / 2 + cockpit->ScaleX (X_GAUGE_OFFSET);
-	int32_t	y = gameData.render.scene.Height () / 2 + cockpit->ScaleY (Y_GAUGE_OFFSET) + cockpit->LineSpacing () * 2;
+	int32_t	nLineSpacing = cockpit->LineSpacing ();
+	int32_t	x = gameData.render.scene.Width () / 2 + cockpit->ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth));
+	int32_t	y = gameData.render.scene.Height () / 2 + cockpit->ScaleY (Y_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistHeight)) + nLineSpacing * 2 + gameOpts->render.cockpit.nMinimalistHeight * nLineSpacing * 2;
 
 for (int32_t j = 0; j < n; j++) {
 	if (pszList [l] == '\01')
@@ -1135,10 +1137,10 @@ else {
 	if (nLayout == 2)
 		DrawPrimaryWeaponList ();
 	else {
-		DrawHUDText (NULL, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET) - StringWidth (szLabel + 1), 
-						 gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET) + LineSpacing () * ((nLayout == 2) ? 3 : 1), StrPrimaryWeaponList (szLabel, szAmmo));
-		DrawHUDText (NULL, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET) - StringWidth (szAmmo), 
-						 gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET) + LineSpacing () * 2, szAmmo);
+		DrawHUDText (NULL, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth)) - StringWidth (szLabel + 1), 
+						 gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistHeight)) + LineSpacing () * ((nLayout == 2) ? 3 : 1), StrPrimaryWeaponList (szLabel, szAmmo));
+		DrawHUDText (NULL, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth)) - StringWidth (szAmmo), 
+						 gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistHeight)) + LineSpacing () * 2, szAmmo);
 		}
 	//ScaleDown ();
 	}
@@ -1171,8 +1173,8 @@ else {
 	if (nLayout == 2)
 		DrawSecondaryWeaponList ();
 	else {
-		DrawHUDText (NULL, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET), 
-						 gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET) + LineSpacing () * ((nLayout == 2) ? 3 : 1), StrSecondaryWeaponList (szLabel));
+		DrawHUDText (NULL, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth)), 
+						 gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistHeight)) + LineSpacing () * ((nLayout == 2) ? 3 : 1), StrSecondaryWeaponList (szLabel));
 		DrawSecondaryAmmoList (szLabel + 1);
 		}
 	ScaleDown ();
@@ -1203,8 +1205,8 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 	if (nLayout) {
 		ScaleUp ();
 		SetFontColor (RGBA (192, 192, 192, 255));
-		nIdInvul = DrawHUDText (&nIdInvul, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET), 
-										gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET) + ((nLayout == 2) ? 1 : 3) * LineSpacing (), "%s", "INV");
+		nIdInvul = DrawHUDText (&nIdInvul, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth)), 
+										gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistHeight*/0)) + ((nLayout == 2) ? 1 : 3) * LineSpacing (), "%s", "INV");
 		ScaleDown ();
 		}
 	else {
@@ -1241,8 +1243,8 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) &&
 	if (nLayout) {
 		ScaleUp ();
 		SetFontColor (RGBA (192, 192, 192, 255));
-		nIdCloak = DrawHUDText (&nIdCloak, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET) - StringWidth ("CLK"), 
-										gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET) + ((nLayout == 2) ? 1 : 3) * LineSpacing (), "%s", "CLK");
+		nIdCloak = DrawHUDText (&nIdCloak, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth)) - StringWidth ("CLK"), 
+										gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistHeight*/0)) + ((nLayout == 2) ? 1 : 3) * LineSpacing (), "%s", "CLK");
 		ScaleDown ();
 		}
 	else {
