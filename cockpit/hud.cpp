@@ -572,9 +572,9 @@ void CHUD::DrawEnergyLevelsCombined (void)
 
 int32_t				i, nColor, h [4], w [4], aw [4], tw = 0;
 int32_t				nEnergy [3] = {LOCALPLAYER.Energy () ? X2IR (LOCALPLAYER.Energy ()) : 0, 
-										(int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()), 
-										(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) ? FixMul (gameData.physics.xAfterburnerCharge, 100) : -1
-									  };
+											(int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()), 
+											(LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) ? FixMul (gameData.physics.xAfterburnerCharge, 100) : -1
+										  };
 char				szEnergy [3][10];
 CCanvasColor	color;
 
@@ -802,6 +802,16 @@ return pszList;
 
 //	-----------------------------------------------------------------------------
 
+static int32_t WeaponListTop (void)
+{
+if (gameOpts->render.cockpit.nMinimalistHeight == 2)
+	return gameData.render.scene.Height () / 2 + cockpit->ScaleY (Y_GAUGE_OFFSET (0));
+int32_t nLineSpacing = cockpit->LineSpacing ();
+return gameData.render.scene.Height () / 2 - (gameStates.app.bD1Mission ? 1 : 2) * nLineSpacing + gameOpts->render.cockpit.nMinimalistHeight * nLineSpacing * 2;
+}
+
+//	-----------------------------------------------------------------------------
+
 void CHUD::DrawPrimaryWeaponList (void)
 {
 // Q6SPVF HPGO - (Quad) Lasers <level>, Spreafire, Plasma, Vulcan, Fusion, Helix, Gauss, Omega
@@ -812,7 +822,7 @@ void CHUD::DrawPrimaryWeaponList (void)
 	int32_t	nState [2] = {-1, 0};
 	int32_t	nLineSpacing = cockpit->LineSpacing ();
 	int32_t	x = gameData.render.scene.Width () / 2 - cockpit->ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth) * 3);
-	int32_t	y = gameData.render.scene.Height () / 2 - (gameStates.app.bD1Mission ? 1 : 2) * nLineSpacing + gameOpts->render.cockpit.nMinimalistHeight * nLineSpacing * 2; //(n * nLineSpacing) / 2;
+	int32_t	y = WeaponListTop ();
 	int32_t	nMaxAutoSelect = 255;
 	bool		bLasers = false;
 	char		szLabel [2] = {'\0', '\0'}, szAmmo [20];
@@ -962,7 +972,7 @@ void CHUD::DrawSecondaryWeaponList (void)
 	int32_t	nState [2] = {-1, 0};
 	int32_t	nLineSpacing = cockpit->LineSpacing ();
 	int32_t	x = gameData.render.scene.Width () / 2 + cockpit->ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth) * 3);
-	int32_t	y = gameData.render.scene.Height () / 2 - (gameStates.app.bD1Mission ? 1 : 2) * nLineSpacing + gameOpts->render.cockpit.nMinimalistHeight * nLineSpacing * 2; //((n + 1) * nLineSpacing) / 2;
+	int32_t	y = WeaponListTop ();
 	char		szLabel [2] = {'\0', '\0'}, szAmmo [20];
 
 for (int32_t nType = 0; nType < 2; nType++) {
@@ -1028,7 +1038,7 @@ void CHUD::DrawSecondaryAmmoList (char* pszList)
 	int32_t	nState [2] = {-1, 0};
 	int32_t	nLineSpacing = cockpit->LineSpacing ();
 	int32_t	x = gameData.render.scene.Width () / 2 + cockpit->ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth));
-	int32_t	y = gameData.render.scene.Height () / 2 + cockpit->ScaleY (Y_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistHeight)) + nLineSpacing * 2 + gameOpts->render.cockpit.nMinimalistHeight * nLineSpacing * 2;
+	int32_t	y = WeaponListTop ();
 
 for (int32_t j = 0; j < n; j++) {
 	if (pszList [l] == '\01')
@@ -1205,7 +1215,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 	if (nLayout) {
 		ScaleUp ();
 		SetFontColor (RGBA (192, 192, 192, 255));
-		nIdInvul = DrawHUDText (&nIdInvul, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth)), 
+		nIdInvul = DrawHUDText (&nIdInvul, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistWidth*/0)), 
 										gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistHeight*/0)) + ((nLayout == 2) ? 1 : 3) * LineSpacing (), "%s", "INV");
 		ScaleDown ();
 		}
@@ -1243,7 +1253,7 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) &&
 	if (nLayout) {
 		ScaleUp ();
 		SetFontColor (RGBA (192, 192, 192, 255));
-		nIdCloak = DrawHUDText (&nIdCloak, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth)) - StringWidth ("CLK"), 
+		nIdCloak = DrawHUDText (&nIdCloak, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistWidth*/0)) - StringWidth ("CLK"), 
 										gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistHeight*/0)) + ((nLayout == 2) ? 1 : 3) * LineSpacing (), "%s", "CLK");
 		ScaleDown ();
 		}
