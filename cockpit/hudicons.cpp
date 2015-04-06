@@ -304,7 +304,7 @@ return GREEN_RGBA;
 
 int32_t CHUDIcons::GetWeaponIndex (int32_t i, int32_t j, int32_t& nMaxAutoSelect)
 {
-	static int32_t nLvlMap [2][10] = {{9, 4, 8, 3, 7, 2, 6, 1, 5, 0}, {0, 1, 2, 3, 4, 4, 3, 1, 0, 2}};
+	static int32_t nLvlMap [2][10] = {{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, {0, 1, 2, 3, 4, 4, 3, 1, 0, 2}};
 
 if (gameOpts->render.weaponIcons.nSort && !gameStates.app.bD1Mission) {
 	int32_t l = nWeaponOrder [i][j];

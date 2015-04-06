@@ -2346,13 +2346,13 @@ gameOptions [0].render.textures.nQuality = gameOptions [0].render.nQuality;
 
 gameOptions [0].render.weaponIcons.bEquipment = 1;
 gameOptions [0].render.weaponIcons.bSmall = 1;
-gameOptions [0].render.weaponIcons.nSort = 1;
 gameOptions [0].render.weaponIcons.bShowAmmo = 1;
 gameOptions [0].render.weaponIcons.alpha = 4;
 
 if (!SetSideBySideDisplayMode ())
 	gameOpts->render.stereo.nGlasses = 0;
 if (bSetup || !gameOpts->app.bExpertMode) {
+	gameOptions [0].render.weaponIcons.nSort = 1;
 	gameOpts->render.nLightmapPrecision = 1;
 	if (gameOpts->render.stereo.nGlasses) {
 		gameOpts->render.stereo.nMethod = 1;
@@ -2463,6 +2463,11 @@ gameOptions [0].render.cockpit.bFlashGauges = 1;
 //gameOptions [0].gameplay.bShieldWarning = 0;
 //gameOptions [0].render.cockpit.bObjectTally = 1;
 gameOptions [0].render.cockpit.bPlayerStats = 0;
+
+if (!gameOpts->app.bExpertMode) {
+	gameOpts->render.cockpit.nMinimalistWidth = 0;
+	gameOpts->render.cockpit.nMinimalistHeight = 0;
+	}
 
 extraGameInfo [0].nRadar = (gameOpts->render.cockpit.nRadarRange > 0);
 }

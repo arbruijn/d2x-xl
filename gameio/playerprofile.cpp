@@ -564,6 +564,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.particles.bMissiles, i, 0);
 		RP (gameOptions [i].render.particles.bPlayers, i, 0);
 		RP (gameOptions [i].render.particles.bRobots, i, 0);
+		RP (gameOptions [i].render.weaponIcons.nSort, i, 0);
 #if 0
 		RP (gameOpts->render.cockpit.bWideDisplays, 0, 1);
 		RP (gameOptions [i].render.cockpit.bGuidedInMainView, 0, 0);
@@ -642,7 +643,6 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.weaponIcons.bShowAmmo, i, 0);
 		RP (gameOptions [i].render.weaponIcons.bSmall, i, 0);
 		RP (gameOptions [i].render.weaponIcons.bBoldHighlight, i, 0);
-		RP (gameOptions [i].render.weaponIcons.nSort, i, 0);
 		RP (gameOptions [i].render.weaponIcons.nHiliteColor, i, 0);
 		RP (gameOptions [i].app.nVersionFilter, i, 0);
 		RP (gameOptions [i].sound.xCustomSoundVolume, i, 0);
@@ -1416,7 +1416,8 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.particles.bMissiles", "1"},
 	 {"gameOptions[0].render.particles.bPlayers", "1"},
 	 {"gameOptions[0].render.particles.bRobots", "1"},
-	 {"gameOptions[0].render.particles.bBubbles", "1"}
+	 {"gameOptions[0].render.particles.bBubbles", "1"},
+	 {"gameOptions[0].render.weaponIcons.nSort", "1"},
 
 #if 0
 	 {"gameData.app.bUseMultiThreading[0]", "1"},
@@ -1517,7 +1518,6 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].render.weaponIcons.bShowAmmo", "1"},
 	 {"gameOptions[0].render.weaponIcons.bSmall", "1"},
 	 {"gameOptions[0].render.weaponIcons.bBoldHighlight", "0"},
-	 {"gameOptions[0].render.weaponIcons.nSort", "1"},
 	 {"gameOptions[0].render.weaponIcons.nHiliteColor", "0"},
 	 {"gameOptions[0].gameplay.bIdleAnims", "1"},
 	 {"gameOptions[0].gameplay.bShieldWarning", "1"},

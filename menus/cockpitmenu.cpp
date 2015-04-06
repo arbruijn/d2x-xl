@@ -413,6 +413,8 @@ do {
 		m.AddCheck ("text gauges", TXT_SHOW_GFXGAUGES, !gameOpts->render.cockpit.bTextGauges, KEY_G, HTX_MINIMALIST_HUD);
 	m.AddCheck ("object tally", TXT_OBJECT_TALLY, gameOpts->render.cockpit.bObjectTally, KEY_Y, HTX_CPIT_OBJTALLY);
 	m.AddCheck ("zoom style", TXT_ZOOM_SMOOTH, extraGameInfo [IsMultiGame].nZoomMode - 1, KEY_O, HTX_GPLAY_ZOOMSMOOTH);
+	if (gameOpts->app.bExpertMode)
+		m.AddCheck ("sort weapon icons", TXT_SORT_WPNICONS, gameOpts->render.weaponIcons.nSort	, KEY_S, HTX_CPIT_SORTICONS);
 #if 0
 	m.AddCheck ("target indicators", TXT_TARGET_INDICATORS, extraGameInfo [0].bTargetIndicators, KEY_T, HTX_CPIT_TGTIND);
 #else
@@ -424,10 +426,12 @@ do {
 		sprintf (szSlider, TXT_HUD_COLOR_SCHEME, szColorScheme [gameOpts->render.cockpit.nColorScheme]);
 		m.AddSlider ("color scheme", szSlider, gameOpts->render.cockpit.nColorScheme, 0, 2, KEY_C, HTX_HUD_COLOR_SCHEME);
 		if (gameOpts->render.cockpit.nShipStateLayout == 2) {
-			sprintf (szSlider, TXT_MINIMALIST_HUD_WIDTH, szHUDWidth [gameOpts->render.cockpit.nMinimalistWidth]);
-			m.AddSlider ("hud width", szSlider, gameOpts->render.cockpit.nMinimalistWidth, 0, 2, KEY_W, HTX_MINIMALIST_HUD_WIDTH);
-			sprintf (szSlider, TXT_MINIMALIST_HUD_HEIGHT, szHUDHeight [gameOpts->render.cockpit.nMinimalistHeight]);
-			m.AddSlider ("hud height", szSlider, gameOpts->render.cockpit.nMinimalistHeight, 0, 2, KEY_H, HTX_MINIMALIST_HUD_HEIGHT);
+			if (gameOpts->app.bExpertMode) {
+				sprintf (szSlider, TXT_MINIMALIST_HUD_WIDTH, szHUDWidth [gameOpts->render.cockpit.nMinimalistWidth]);
+				m.AddSlider ("hud width", szSlider, gameOpts->render.cockpit.nMinimalistWidth, 0, 2, KEY_W, HTX_MINIMALIST_HUD_WIDTH);
+				sprintf (szSlider, TXT_MINIMALIST_HUD_HEIGHT, szHUDHeight [gameOpts->render.cockpit.nMinimalistHeight]);
+				m.AddSlider ("hud height", szSlider, gameOpts->render.cockpit.nMinimalistHeight, 0, 2, KEY_H, HTX_MINIMALIST_HUD_HEIGHT);
+				}
 			}
 		}
 #endif
@@ -506,6 +510,8 @@ do {
 	GET_VAL (gameOpts->render.cockpit.bHUD, "show hud");
 	GET_VAL (gameOpts->render.cockpit.bMissileView, "missile view");
 	GET_VAL (gameOpts->render.cockpit.bObjectTally, "object tally");
+	if (gameOpts->app.bExpertMode)
+		GET_VAL (gameOpts->render.weaponIcons.nSort, "sort weapon icons");
 	GET_VAL (extraGameInfo [0].bHideIndicators, "hide target indicators");
 	GET_VAL (gameOpts->render.cockpit.nShipStateLayout, "minimalist hud");
 	if (gameOpts->render.cockpit.nShipStateLayout)
