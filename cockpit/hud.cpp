@@ -680,13 +680,13 @@ DrawAmmoInfo (SECONDARY_AMMO_X, SECONDARY_AMMO_Y, ammoCount, 0);
 
 //	-----------------------------------------------------------------------------
 
-static const char* CC_AVAILABLE = "\x1\x1\xff\x1\x0";
-static const char* CC_EQUIPPED [3] = {"\xff\x1\x1\x0", "\x1\xff\xe0\x1\x0", "\x1\xff\xff\x0" };
-static const char* CC_EMPTY = "\x1\xC0\xC0\xC0\x0";
+static const char* CC_AVAILABLE = "\x1\x80\xf0\x80\x0";
+static const char* CC_EQUIPPED [3] = {"\x1\xff\x80\x80\x0", "\x1\xff\xe0\x80\x0", "\x1\x80\xff\xff\x0" };
+static const char* CC_EMPTY = "\x1\xA0\xA0\xA0\x0";
 
 int32_t CHUD::StrWeaponStateColor (char* pszList, int32_t l, int32_t bAvailable, int32_t bActive)
 {
-	memcpy (pszList + l, bAvailable ? bActive ? CC_EQUIPPED [gameOpts->render.cockpit.nColorScheme] : CC_AVAILABLE : CC_EMPTY, 4);
+memcpy (pszList + l, bAvailable ? bActive ? CC_EQUIPPED [gameOpts->render.cockpit.nColorScheme] : CC_AVAILABLE : CC_EMPTY, 4);
 return l + 4;
 }
 
@@ -696,7 +696,7 @@ void CHUD::SetWeaponStateColor (int32_t bAvailable, int32_t bActive)
 {
 	static uint32_t equippedColors [3] = { RED_RGBA, GOLD_RGBA, CYAN_RGBA };
 
-fontManager.SetColorRGBi (bAvailable ? bActive ? equippedColors [gameOpts->render.cockpit.nColorScheme] : GREEN_RGBA : RGBA (160, 160, 160, 255), 1, 0, 0);
+fontManager.SetColorRGBi (bAvailable ? bActive ? equippedColors [gameOpts->render.cockpit.nColorScheme] : /*GREEN_RGBA*/ RGBA (0, 224, 0, 255) : RGBA (160, 160, 160, 255), 1, 0, 0);
 }
 
 //	-----------------------------------------------------------------------------
