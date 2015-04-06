@@ -88,6 +88,7 @@ static int32_t	optWeaponIcons, bShowWeaponIcons, optIconAlpha;
 
 static const char* szHUDType [3];
 static const char* szHUDWidth [3];
+static const char* szHUDHeight [3];
 static const char* szLayout [3];
 static const char* szColorScheme [3];
 static const char* szWindowType [7];
@@ -296,6 +297,10 @@ szLayout [2] = TXT_VERTICAL;
 szHUDWidth [0] = TXT_NARROW;
 szHUDWidth [1] = TXT_MEDIUM;
 szHUDWidth [2] = TXT_WIDE;
+
+szHUDHeight [0] = TXT_MINIMALIST_HUD_HIGH;
+szHUDHeight [1] = TXT_MINIMALIST_HUD_MIDDLE;
+szHUDHeight [2] = TXT_MINIMALIST_HUD_LOW;
 
 szColorScheme [0] = TXT_RED;
 szColorScheme [1] = TXT_YELLOW;
