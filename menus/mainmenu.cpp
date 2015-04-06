@@ -157,7 +157,7 @@ if (!gameStates.app.bNostalgia)
 #if defined(_WIN32) || defined(__unix__)
 m.AddMenu ("check update", TXT_CHECK_FOR_UPDATE, KEY_U, HTX_CHECK_FOR_UPDATE);
 #endif
-#if 0
+#if 1
 int32_t day, month, year, t = GetDate (day, month, year);
 if ((t > 0) && (year == 2015) && (month == 4) && (day <= 10))
 	m.AddMenu ("descent underground", TXT_KS_DU_MENU, KEY_G, "");
@@ -283,6 +283,7 @@ for (;;) {
 
 void ShowOrderForm (void);      // John didn't want this in inferno[HA] so I just externed it.
 void PrecomputeMissionLightmaps (void);
+void DUKickstarterNotification (void);
 
 //returns flag, true means quit menu
 int32_t ExecMainMenuOption (CMenu& m, int32_t nChoice) 
@@ -353,6 +354,8 @@ else if (!gameStates.app.bNostalgia && (nChoice == m.IndexOf ("precalc lightmaps
 else if (nChoice == m.IndexOf ("check update"))
 	CheckForUpdate ();
 #endif
+else if (nChoice == m.IndexOf ("descent underground"))
+	DUKickstarterNotification ();
 else if (nChoice == m.IndexOf ("quit")) {
 	paletteManager.DisableEffect ();
 	SetFunctionMode (FMODE_EXIT);
