@@ -2003,12 +2003,12 @@ void LoadGameTexts(void);
 #define TXT_RECHARGE_DELAY				GT(1245)
 #define TXT_RECHARGE_SPEED				GT(1246)
 #define TXT_HUD_COLOR_SCHEME			GT(1247)
+#define TXT_MINIMALIST_HUD_WIDTH		GT(1248)
+#define TXT_NARROW						GT(1249)
+#define TXT_WIDE							GT(1250)
 
 #if 0
 
-#define TXT_					GT(1248)
-#define TXT_					GT(1249)
-#define TXT_					GT(1250)
 #define TXT_					GT(1251)
 #define TXT_					GT(1252)
 #define TXT_					GT(1253)
@@ -2627,10 +2627,10 @@ void LoadGameTexts(void);
 #define HTX_RECHARGE_DELAY				HT(447)
 #define HTX_RECHARGE_SPEED				HT(448)
 #define HTX_HUD_COLOR_SCHEME			HT(449)
+#define HTX_MINIMALIST_HUD_WIDTH		HT(450)
 
 #if 0
 
-#define HTX_						HT(450)
 #define HTX_						HT(451)
 #define HTX_						HT(452)
 #define HTX_						HT(453)

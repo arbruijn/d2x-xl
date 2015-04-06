@@ -44,7 +44,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "hudicons.h"
 #include "gr.h"
 
-#define X_GAUGE_OFFSET 20
+#define X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth ? 40 : 20)
 #define Y_GAUGE_OFFSET 30
 
 //	-----------------------------------------------------------------------------

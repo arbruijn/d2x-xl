@@ -87,6 +87,7 @@ static int32_t	optWeaponIcons, bShowWeaponIcons, optIconAlpha;
 #endif
 
 static const char* szHUDType [3];
+static const char* szHUDWidth [2];
 static const char* szLayout [3];
 static const char* szColorScheme [3];
 static const char* szWindowType [7];
@@ -253,6 +254,15 @@ if ((m = menu ["color scheme"])) {
 		}
 	}
 
+if ((m = menu ["hud width"])) {
+	v = m->Value ();
+	if (gameOpts->render.cockpit.nMinimalistWidth != v) {
+		gameOpts->render.cockpit.nMinimalistWidth = v;
+		sprintf (m->m_text, TXT_MINIMALIST_HUD_WIDTH, szHUDWidth [v]);
+		m->Rebuild ();
+		}
+	}
+
 return nCurItem;
 }
 
@@ -273,6 +283,9 @@ szHUDType [2] = TXT_FULL;
 szLayout [0] = TXT_OFF;
 szLayout [1] = TXT_HORIZONTAL;
 szLayout [2] = TXT_VERTICAL;
+
+szHUDWidth [0] = TXT_NARROW;
+szHUDWidth [1] = TXT_WIDE;
 
 szColorScheme [0] = TXT_RED;
 szColorScheme [1] = TXT_YELLOW;
@@ -395,6 +408,10 @@ do {
 	if (gameOpts->render.cockpit.nShipStateLayout) {
 		sprintf (szSlider, TXT_HUD_COLOR_SCHEME, szColorScheme [gameOpts->render.cockpit.nColorScheme]);
 		m.AddSlider ("color scheme", szSlider, gameOpts->render.cockpit.nColorScheme, 0, 2, KEY_C, HTX_HUD_COLOR_SCHEME);
+		if (gameOpts->render.cockpit.nShipStateLayout == 2) {
+			sprintf (szSlider, TXT_MINIMALIST_HUD_WIDTH, szHUDWidth [gameOpts->render.cockpit.nMinimalistWidth]);
+			m.AddSlider ("hud width", szSlider, gameOpts->render.cockpit.nMinimalistWidth, 0, 1, KEY_W, HTX_MINIMALIST_HUD_WIDTH);
+			}
 		}
 #endif
 	sprintf (szSlider, TXT_TARGET_INDICATORS, szTgtInd [nTgtInd]);

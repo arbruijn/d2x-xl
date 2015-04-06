@@ -1110,7 +1110,7 @@ if (*szAutoHogFile && *szAutoMission) {
 	hogFileManager.UseMission (szAutoHogFile);
 	gameStates.app.bAutoRunMission = hogFileManager.AltFiles ().bInitialized;
 	}
-#if 1 //!DBG
+#if !DBG
 DUKickstarterNotification ();
 #endif
 DonationNotification ();
