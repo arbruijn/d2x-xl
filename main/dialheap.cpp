@@ -128,7 +128,7 @@ return true;
 
 int32_t CDialHeap::Scan (int32_t nStart, int32_t nLength)
 {
-if (!m_cost.Buffer () || !m_index.Buffer ()) { // -> Bug!
+if (!m_index.Buffer ()) { // -> Bug!
 	PrintLog (0, "Dial heap has not been initialized!\n");
 	return -1;
 	}
@@ -197,7 +197,7 @@ return i + 1;
 
 int16_t CDialHeap::BuildRoute (int16_t nNode, int32_t bReverse, tPathNode* route)
 {
-if (!m_pred.Buffer ()) { // -> Bug!
+if (!m_pred.Buffer () || !m_edge.Buffer ()) { // -> Bug!
 	PrintLog (0, "Dial heap has not been initialized!\n");
 	return 0;
 	}
