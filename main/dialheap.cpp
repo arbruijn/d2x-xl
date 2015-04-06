@@ -183,7 +183,7 @@ int16_t CDialHeap::RouteLength (int16_t nNode)
 {
 if (!m_pred.Buffer ()) { // -> Bug!
 	PrintLog (0, "Dial heap has not been initialized!\n");
-	return false;
+	return 0;
 	}
 
 	int16_t	h = nNode, i = 0;
@@ -199,7 +199,7 @@ int16_t CDialHeap::BuildRoute (int16_t nNode, int32_t bReverse, tPathNode* route
 {
 if (!m_pred.Buffer ()) { // -> Bug!
 	PrintLog (0, "Dial heap has not been initialized!\n");
-	return false;
+	return 0;
 	}
 
 	int16_t	h = RouteLength (nNode);
