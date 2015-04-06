@@ -236,7 +236,7 @@ return pszFilename;
 
 FILE *CFile::GetFileHandle (const char *filename, const char *folder, const char *mode) 
 {
-	FILE	*fp;
+	FILE	*fp = NULL;
 	char	fn [FILENAME_LEN];
 	const char *pfn;
 
@@ -250,16 +250,30 @@ if ((*filename != '/') && (strstr (filename, "./") != filename) && folder && *fo
  else
  	pfn = filename;
  
-if ((fp = fopen (pfn, mode))) {
-	if (ferror (fp)) {
+fp = fopen (pfn, mode);
+if (fp && ferror (fp)) {
+	fclose (fp);
+	fp = NULL;
+	}
+
+if (!fp && (*gameFolders.missions.szDownloads)) {
+	sprintf (fn, "%s%s", gameFolders.missions.szDownloads, filename);
+	pfn = fn;
+   fp = fopen (pfn, mode);
+	if (fp && ferror (fp)) {
 		fclose (fp);
 		fp = NULL;
 		}
 	}
-else if (gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.game.szAltHogs)) {
+
+if (!fp && (gameFolders.bAltHogDirInited && strcmp (folder, gameFolders.game.szAltHogs))) {
    sprintf (fn, "%s%s", gameFolders.game.szAltHogs, filename);
    pfn = fn;
    fp = fopen (pfn, mode);
+	if (fp && ferror (fp)) {
+		fclose (fp);
+		fp = NULL;
+		}
 	}
 //if (!fp) PrintLog (0, "CFGetFileHandle (): error opening %s\n", pfn);
 return fp;
