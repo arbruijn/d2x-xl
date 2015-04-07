@@ -59,10 +59,13 @@ nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.particles.nDens [0]);
 if (!m_emitters.Create (nMaxEmitters)) {
 	return 0;
 	}
-if ((m_nObject = nObject) < 0x70000000) {
-	m_nSignature = gameData.Object (nObject)->info.nSignature;
-	m_nObjType = gameData.Object (nObject)->info.nType;
-	m_nObjId = gameData.Object (nObject)->info.nId;
+
+CObject* objP;
+
+if (((m_nObject = nObject) < 0x70000000) && (objP = gameData.Object (m_nObject))) {
+	m_nSignature = objP->info.nSignature;
+	m_nObjType = objP->info.nType;
+	m_nObjId = objP->info.nId;
 	}
 m_nEmitters = 0;
 m_nLife = nLife;
@@ -125,11 +128,14 @@ if (m_bValid < 1)
 if (emitterP) {
 	if (!particleImageManager.Load (m_nType))
 		return 0;
-	if ((m_nObject >= 0) && (m_nObject < 0x70000000) &&
-		 ((gameData.Object (m_nObject)->info.nType == OBJ_NONE) ||
-		  (gameData.Object (m_nObject)->info.nSignature != m_nSignature) ||
-		  (particleManager.GetObjectSystem (m_nObject) < 0)))
+	if (m_nObject < 0x70000000) {
+		CObject* objP = gameData.Object (m_nObject);
+		if (!objP ||
+			 (objP->info.nType == OBJ_NONE) ||
+			 (gameData.Object (m_nObject)->info.nSignature != m_nSignature) ||
+			 (particleManager.GetObjectSystem (m_nObject) < 0))
 		SetLife (0);
+		}
 	for (int32_t i = m_nEmitters; i; i--, emitterP++)
 		h += emitterP->Render (nThread);
 	}
@@ -267,8 +273,8 @@ if ((m_nObject == 0x7fffffff) && (m_nType <= SMOKE_PARTICLES) &&
 	SetLife (0);
 
 if ((emitterP = m_emitters.Buffer ()) && emitters.Create (m_nEmitters)) {
-	bool bKill = (m_nObject < 0) || ((m_nObject < 0x70000000) &&
-					 ((gameData.Object (m_nObject)->info.nSignature != m_nSignature) || (gameData.Object (m_nObject)->info.nType == OBJ_NONE)));
+	CObject *objP = gameData.Object (m_nObject);
+	bool bKill = (m_nObject < 0x70000000) && (!objP || (objP->info.nSignature != m_nSignature) || (objP->info.nType == OBJ_NONE));
 	while (nEmitters < m_nEmitters) {
 		if (!emitterP)
 			return 0;
