@@ -1231,7 +1231,6 @@ void ReleaseObject (int16_t nObject)
 {
 if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
 	return;
-	int32_t nParent;
 
 CObject *objP = gameData.Object (nObject);
 
@@ -1245,11 +1244,13 @@ if (objP->info.nType == OBJ_WEAPON) {
 	if (gameData.demo.nVcrState != ND_STATE_PLAYBACK)
 		RespawnDestroyedWeapon (nObject);
 	if (objP->info.nId == GUIDEDMSL_ID) {
-		nParent = gameData.Object (objP->cType.laserInfo.parent.nObject)->info.nId;
-		if (nParent != N_LOCALPLAYER)
-			gameData.objs.SetGuidedMissile (nParent, NULL);
-		else if (gameData.demo.nState == ND_STATE_RECORDING)
-			NDRecordGuidedEnd ();
+		CObject* parentP = gameData.Object (objP->cType.laserInfo.parent.nObject);
+		if (parentP) {
+			if (parentP->info.nId != N_LOCALPLAYER)
+				gameData.objs.SetGuidedMissile (parentP->info.nId, NULL);
+			else if (gameData.demo.nState == ND_STATE_RECORDING)
+				NDRecordGuidedEnd ();
+			}
 		}
 	}
 if (objP == gameData.objs.viewerP)		//deleting the viewerP?
@@ -1961,7 +1962,7 @@ CObject* CObject::Parent (void)
 if (cType.laserInfo.parent.nObject < 0)
 	return NULL;
 CObject*	objP = gameData.Object (cType.laserInfo.parent.nObject);
-if (objP->Signature () != cType.laserInfo.parent.nSignature)
+if (!objP || (objP->Signature () != cType.laserInfo.parent.nSignature))
 	return NULL;
 return objP;
 }
