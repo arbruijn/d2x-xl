@@ -109,13 +109,13 @@ void find_goal_texture (CObject * obj, uint8_t nType, int32_t gun_num, int32_t m
 void CreateFlare (CObject *obj);
 int32_t LasersAreRelated (int32_t o1, int32_t o2);
 int32_t FireWeaponDelayedWithSpread (CObject *objP, uint8_t laserType, int32_t gun_num, fix spreadr, 
-										   fix spreadu, fix delayTime, int32_t makeSound, int32_t harmless, int16_t nLightObj);
-int32_t LocalPlayerFireGun(void);
-void DoMissileFiring(int32_t do_autoselect);
-void NetMissileFiring(int32_t CPlayerData, int32_t weapon, int32_t flags);
+												 fix spreadu, fix delayTime, int32_t makeSound, int32_t harmless, int16_t nLightObj);
+int32_t LocalPlayerFireGun (void);
+void DoMissileFiring (int32_t do_autoselect);
+void NetMissileFiring (int32_t CPlayerData, int32_t weapon, int32_t flags);
 void DoMuzzleStuff (int32_t nSegment, CFixVector *pos);
 
-int32_t CreateNewWeapon(CFixVector * direction, CFixVector * position, int16_t nSegment, int16_t parent, uint8_t nType, int32_t makeSound);
+int32_t CreateNewWeapon (CFixVector * direction, CFixVector * position, int16_t nSegment, int16_t nParent, uint8_t nType, int32_t makeSound);
 
 // Fires a laser-nType weapon (a Primary weapon)
 // Fires from CObject nObject, weapon nType weapon_id.

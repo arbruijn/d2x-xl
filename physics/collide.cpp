@@ -695,10 +695,10 @@ int32_t OkToDoOmegaDamage (CObject* weaponP)
 if (!IsMultiGame)
 	return 1;
 int32_t nParentSig = weaponP->cType.laserInfo.parent.nSignature;
-int32_t nParentObj = weaponP->cType.laserInfo.parent.nObject;
-if (gameData.Object (nParentObj)->info.nSignature != nParentSig)
+CObject *parentP = gameData.Object (weaponP->cType.laserInfo.parent.nObject);
+if (parentP->info.nSignature != nParentSig)
 	return 1;
-fix dist = CFixVector::Dist (gameData.Object (nParentObj)->info.position.vPos, weaponP->info.position.vPos);
+fix dist = CFixVector::Dist (parentP->info.position.vPos, weaponP->info.position.vPos);
 if (dist > MAX_OMEGA_DIST)
 	return 0;
 return 1;
@@ -782,7 +782,7 @@ if (sideP && (gameData.pig.tex.tMapInfoP [sideP->m_nBaseTex].flags & TMI_FORCE_F
 	return 1;	//bail here. physics code will bounce this CObject
 	}
 
-int32_t bEscort = parentObjP->IsGuideBot ();
+int32_t bEscort = parentObjP && parentObjP->IsGuideBot ();
 if (bEscort) {
 	if (IsMultiGame) {
 		Int3 ();  // Get Jason!
@@ -1078,21 +1078,21 @@ return 0;
 
 void CObject::ApplyDamageToReactor (fix xDamage, int16_t nAttacker)
 {
-	int32_t	whotype, i;
+	int32_t	i;
 
 	//	Only allow a player to xDamage the control center.
-
-if ((nAttacker < 0) || (nAttacker > gameData.objs.nLastObject [0]))
+CObject *attackerP = gameData.Object (nAttacker);
+if (!attackerP)
 	return;
-whotype = gameData.Object (nAttacker)->info.nType;
-if (whotype != OBJ_PLAYER) {
+int32_t attackerType = attackerP->info.nType;
+if (attackerType != OBJ_PLAYER) {
 #if TRACE
 	console.printf (CON_DBG, "Damage to control center by CObject of nType %i prevented by MK! \n", whotype);
 #endif
 	return;
 	}
 if (IsMultiGame && !IsCoopGame && (LOCALPLAYER.timeLevel < netGameInfo.GetControlInvulTime ())) {
-	if (gameData.Object (nAttacker)->info.nId == N_LOCALPLAYER) {
+	if (attackerP->info.nId == N_LOCALPLAYER) {
 		int32_t t = netGameInfo.GetControlInvulTime () - LOCALPLAYER.timeLevel;
 		int32_t secs = X2I (t) % 60;
 		int32_t mins = X2I (t) / 60;
@@ -1100,7 +1100,7 @@ if (IsMultiGame && !IsCoopGame && (LOCALPLAYER.timeLevel < netGameInfo.GetContro
 		}
 	return;
 	}
-if (gameData.Object (nAttacker)->info.nId == N_LOCALPLAYER) {
+if (attackerP->info.nId == N_LOCALPLAYER) {
 	if (0 >= (i = FindReactor (this)))
 		gameData.reactor.states [i].bHit = 1;
 	AIDoCloakStuff ();
@@ -1208,7 +1208,8 @@ if (info.nId == OMEGA_ID)
 		return 1;
 if (cType.laserInfo.parent.nType == OBJ_PLAYER) {
 	fix damage = info.xShield;
-	if (gameData.Object (cType.laserInfo.parent.nObject)->info.nId == N_LOCALPLAYER)
+	CObject* parentP = gameData.Object (cType.laserInfo.parent.nObject);
+	if (parentP && (parentP->info.nId == N_LOCALPLAYER))
 		if (0 <= (i = FindReactor (reactorP)))
 			gameData.reactor.states [i].bHit = 1;
 	if (WI_damage_radius (info.nId))
@@ -1547,8 +1548,8 @@ int32_t CObject::CollideWeaponAndRobot (CObject* robotP, CFixVector& vHitPt, CFi
 if (robotP->IsGeometry ())
 	return CollideWeaponAndWall (WI_speed (info.nId, gameStates.app.nDifficultyLevel), robotP->Segment (), -1, vHitPt);
 
-	int32_t			bDamage = 1;
-	int32_t			bInvulBoss = 0;
+	int32_t		bDamage = 1;
+	int32_t		bInvulBoss = 0;
 	fix			nStrength = WI_strength (info.nId, gameStates.app.nDifficultyLevel);
 	CObject		*parentP = ((cType.laserInfo.parent.nType != OBJ_ROBOT) || (cType.laserInfo.parent.nObject < 0)) ? NULL : gameData.Object (cType.laserInfo.parent.nObject);
 	tRobotInfo	*botInfoP = &ROBOTINFO (robotP->info.nId);
@@ -1620,7 +1621,7 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 			ExplodeSplashDamageWeapon (vHitPt, robotP);
 		}
 	if (((cType.laserInfo.parent.nType == OBJ_PLAYER) || bAttackRobots) && !(robotP->info.nFlags & OF_EXPLODING)) {
-		CObject* explObjP = NULL;
+		CObject *parentP, *explObjP = NULL;
 		if (cType.laserInfo.parent.nObject == LOCALPLAYER.nObject) {
 			CreateAwarenessEvent (this, WEAPON_ROBOT_COLLISION);			// object "this" can attract attention to tPlayer
 			if (USE_D1_AI)
@@ -1628,8 +1629,8 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 			else
 				DoAIRobotHit (robotP, WEAPON_ROBOT_COLLISION);
 			}
-	  	else
-			MultiRobotRequestChange (robotP, gameData.Object (cType.laserInfo.parent.nObject)->info.nId);
+	  	else if ((parentP = gameData.Object (cType.laserInfo.parent.nObject)))
+			MultiRobotRequestChange (robotP, parentP->info.nId);
 		if (botInfoP->nExp1VClip > -1)
 			explObjP = CreateExplosion (info.nSegment, vHitPt, (3 * robotP->info.xSize) / 8, (uint8_t) botInfoP->nExp1VClip);
 		else if (gameData.weapons.info [info.nId].nRobotHitAnimation > -1)
@@ -1839,8 +1840,9 @@ if (WI_damage_radius (info.nId))
 	ExplodeSplashDamageWeapon (vHitPt, playerObjP);
 MaybeKillWeapon (playerObjP);
 BumpTwoObjects (playerObjP, this, 0, vHitPt);	//no xDamage from bump
-if (!WI_damage_radius (info.nId) && (cType.laserInfo.parent.nObject > -1) && !(info.nFlags & OF_HARMLESS))
-	playerObjP->ApplyDamageToPlayer (gameData.Object (cType.laserInfo.parent.nObject), xDamage);
+CObject* parentP;
+if (!WI_damage_radius (info.nId) && !(info.nFlags & OF_HARMLESS) && (parentP = gameData.Object (cType.laserInfo.parent.nObject)))
+	playerObjP->ApplyDamageToPlayer (parentP, xDamage);
 //	Robots become aware of you if you get hit.
 AIDoCloakStuff ();
 return 1;

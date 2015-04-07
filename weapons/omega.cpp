@@ -219,10 +219,10 @@ if (LOCALPLAYER.Energy ()) {
 
 void DoOmegaStuff (CObject *parentObjP, CFixVector *vMuzzle, CObject *weaponObjP)
 {
-	int16_t			nTargetObj, nFiringSeg, nParentSeg;
+	int16_t		nTargetObj, nFiringSeg, nParentSeg;
 	CFixVector	vTargetPos;
-	int32_t			nPlayer = (parentObjP->info.nType == OBJ_PLAYER) ? parentObjP->info.nId : -1;
-	int32_t			bSpectate = SPECTATOR (parentObjP);
+	int32_t		nPlayer = (parentObjP && (parentObjP->info.nType == OBJ_PLAYER)) ? parentObjP->info.nId : -1;
+	int32_t		bSpectate = SPECTATOR (parentObjP);
 	static		int32_t nDelay = 0;
 
 #if 1

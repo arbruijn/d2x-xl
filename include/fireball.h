@@ -23,7 +23,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define SHOCKWAVE_LIFE	I2X (1)
 
 CObject *CreateSplashDamageExplosion (CObject* parentObjP, int16_t nSegment, CFixVector& position, CFixVector& impact, fix size, uint8_t vclipType,
-										        fix maxdamage, fix maxdistance, fix maxforce, int16_t parent);
+										        fix maxdamage, fix maxdistance, fix maxforce, int16_t nParent);
 
 // blows up a splash damage weapon, creating the splash damage explosion
 // return the explosion CObject

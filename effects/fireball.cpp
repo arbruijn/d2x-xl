@@ -197,7 +197,7 @@ FORALL_OBJS (objP) {
 		if (nParent < 0)
 			continue;
 		CObject* parentP = gameData.Object (nParent);
-		if (parentP->IsRobot () && (parentP->Id () == id))
+		if (parentP && parentP->IsRobot () && (parentP->Id () == id))
 			continue;
 		}
 	else if ((nType != OBJ_REACTOR) && (nType != OBJ_PLAYER))
@@ -319,9 +319,9 @@ return explObjP;
 //------------------------------------------------------------------------------
 
 CObject* CreateSplashDamageExplosion (CObject* objP, int16_t nSegment, CFixVector& position, CFixVector &impact, fix size, uint8_t nVClip,
-												  fix maxDamage, fix maxDistance, fix maxForce, int16_t parent)
+												  fix maxDamage, fix maxDistance, fix maxForce, int16_t nParent)
 {
-CObject* explObjP = CreateExplosion (objP, nSegment, position, impact, size, nVClip, maxDamage, maxDistance, maxForce, parent);
+CObject* explObjP = CreateExplosion (objP, nSegment, position, impact, size, nVClip, maxDamage, maxDistance, maxForce, nParent);
 if (explObjP) {
 	if (!objP ||
 		 ((objP->info.nType == OBJ_PLAYER) && !SPECTATOR (objP)) || 

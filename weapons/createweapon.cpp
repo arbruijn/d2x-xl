@@ -98,8 +98,8 @@ return nObject;
 //	Returns CObject number.
 int32_t CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, int16_t nSegment, int16_t nParent, uint8_t nWeaponType, int32_t bMakeSound)
 {
-	int32_t			nObject, nViewer, bBigMsl;
-	CObject		*objP, *parentP = (nParent < 0) ? NULL : gameData.Object (nParent);
+	int32_t		nObject, nViewer, bBigMsl;
+	CObject		*objP, *parentP = gameData.Object (nParent);
 	CWeaponInfo	*weaponInfoP;
 	fix			xParentSpeed, xWeaponSpeed;
 	fix			volume;
@@ -141,8 +141,8 @@ else if (gameStates.app.bD2XLevel &&
 #if 1
 if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameData.app.GameMode (GM_HOARD | GM_ENTROPY))) {
 	nObject = CreatePowerup (POW_HOARD_ORB, -1, nSegment, *vPosition, 0);
-	if (nObject >= 0) {
-		objP = gameData.Object (nObject);
+	objP = gameData.Object (nObject);
+	if (objP) {
 		if (IsMultiGame)
 			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 		objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
@@ -154,7 +154,8 @@ if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameDat
 	}
 #endif
 nObject = CreateWeaponObject (nWeaponType, nSegment, vPosition, nParent);
-if (nObject < 0)
+objP = gameData.Object (nObject);
+if (!objP)
 	return -1;
 #if 0
 if (parentP == gameData.objs.consoleP) {
@@ -185,7 +186,6 @@ if (parentP == gameData.objs.consoleP) {
 		}
 	}
 #endif
-objP = gameData.Object (nObject);
 objP->cType.laserInfo.parent.nObject = nParent;
 if (parentP) {
 	objP->cType.laserInfo.parent.nType = parentP->info.nType;
