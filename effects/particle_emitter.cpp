@@ -49,6 +49,8 @@ char CParticleEmitter::ObjectClass (int32_t nObject)
 {
 if ((nObject >= 0) && (nObject < 0x70000000)) {
 	CObject	*objP = gameData.Object (nObject);
+	if (!objP)
+		return 0;
 	if (objP->info.nType == OBJ_PLAYER)
 		return 1;
 	if (objP->info.nType == OBJ_ROBOT)
@@ -87,7 +89,7 @@ if (m_nObjType == OBJ_DEBRIS)
 if ((m_nObjType == OBJ_WEAPON) && (m_nObjId == PROXMINE_ID))
 	return 0.2f;
 objP = gameData.Object (m_nObject);
-if ((objP->info.nType != m_nObjType) || (objP->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
+if (!objP || (objP->info.nType != m_nObjType) || (objP->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
 	return m_fBrightness;
 return m_fBrightness = (float) objP->Damage () * 0.5f + 0.1f;
 }
@@ -154,9 +156,10 @@ m_fScale = fScale;
 //m_nPartsPerPos = nPartsPerPos;
 m_nSegment = nSegment;
 m_nObject = nObject;
-if ((nObject >= 0) && (nObject < 0x70000000)) {
-	m_nObjType = gameData.Object (nObject)->info.nType;
-	m_nObjId = gameData.Object (nObject)->info.nId;
+CObject* objP;
+if ((nObject >= 0) && (nObject < 0x70000000) && (objP = gameData.Object (nObject))) {
+	m_nObjType = objP->info.nType;
+	m_nObjId = objP->info.nId;
 	}
 m_fPartsPerTick = float (nMaxParts) / float (abs (nLife) * 1.25f);
 m_nTicks = 0;

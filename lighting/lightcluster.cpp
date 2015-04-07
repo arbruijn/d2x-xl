@@ -199,14 +199,14 @@ if (nObject == nDbgObj)
 #endif
 if (nPrevShot >= 0) {
 	CObject *prevShotP = gameData.Object (nPrevShot);
-	if (prevShotP->info.nSignature == objP->Shots ().nSignature) {
+	if (prevShotP && (prevShotP->info.nSignature == objP->Shots ().nSignature)) {
 		CObject *lightP, *shotP = gameData.Object (nShot);
 		int16_t nLight = m_objects [nPrevShot].nObject;
 		if (nLight < 0)
 			lightP = prevShotP;
 		else {
 			lightP = gameData.Object (nLight);
-			if (lightP->info.nSignature != m_objects [nPrevShot].nSignature) {
+			if (lightP && (lightP->info.nSignature != m_objects [nPrevShot].nSignature)) {
 				lightP = prevShotP;
 				nLight = -1;
 				}
