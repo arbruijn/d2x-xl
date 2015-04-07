@@ -325,7 +325,8 @@ if (ObjectIsTrackable (nTarget, dot) && (!gameOpts->legacy.bHomers || (nFrame % 
 
 if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 	//	If player fired missile, then search for an CObject, if not, then give up.
-	if ((cType.laserInfo.parent.nObject >= 0) && gameData.Object (cType.laserInfo.parent.nObject)->IsPlayer ()) {
+	CObject *targetP, *parentP = gameData.Object (cType.laserInfo.parent.nObject);
+	if (parentP && parentP->IsPlayer ()) {
 		if (nTarget == -1) {
 			if (IsMultiGame) {
 				if (IsCoopGame)
@@ -338,8 +339,8 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 			else
 				rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, OBJ_ROBOT, nThread);
 			} 
-		else {
-			targetType1 = gameData.Object (cType.laserInfo.nHomingTarget)->Type ();
+		else if ((targetP = gameData.Object (cType.laserInfo.nHomingTarget))) {
+			targetType1 = targetP->Type ();
 			if ((targetType1 == OBJ_PLAYER) || (targetType1 == OBJ_ROBOT) || (targetType1 == OBJ_MONSTERBALL))
 				rVal = FindAnyHomingTarget (Position (), targetType1, -1, nThread);
 			else
@@ -351,9 +352,8 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 			targetType2 = OBJ_ROBOT;
 		if (nTarget == -1)
 			rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, targetType2, nThread);
-		else {
-			targetType1 = gameData.Object (cType.laserInfo.nHomingTarget)->Type ();
-			rVal = FindAnyHomingTarget (Position (), targetType1, targetType2, nThread);
+		else if ((targetP = gameData.Object (cType.laserInfo.nHomingTarget))) {
+			rVal = FindAnyHomingTarget (Position (), targetP->Type (), targetType2, nThread);
 			}
 		}
 	Assert (rVal != -2);		//	This means it never got set which is bad! Contact Mike.
