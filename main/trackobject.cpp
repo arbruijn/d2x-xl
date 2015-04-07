@@ -288,7 +288,7 @@ FORALL_ACTOR_OBJS (targetP) {
 			continue; // don't track cloaked players.
 		if (IsTeamGame) {
 			CObject *parentObjP = gameData.Object (cType.laserInfo.parent.nObject);
-			if ((parentObjP->Type () == OBJ_PLAYER) && (GetTeam (targetP->Id ()) == GetTeam (parentObjP->Id ())))
+			if (parentObjP && (parentObjP->Type () == OBJ_PLAYER) && (GetTeam (targetP->Id ()) == GetTeam (parentObjP->Id ())))
 				continue; // don't track teammates in team games
 			}
 		}

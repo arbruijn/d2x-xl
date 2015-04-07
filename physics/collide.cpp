@@ -1551,7 +1551,7 @@ if (robotP->IsGeometry ())
 	int32_t		bDamage = 1;
 	int32_t		bInvulBoss = 0;
 	fix			nStrength = WI_strength (info.nId, gameStates.app.nDifficultyLevel);
-	CObject		*parentP = ((cType.laserInfo.parent.nType != OBJ_ROBOT) || (cType.laserInfo.parent.nObject < 0)) ? NULL : gameData.Object (cType.laserInfo.parent.nObject);
+	CObject		*parentP = (cType.laserInfo.parent.nType != OBJ_ROBOT) ? NULL : gameData.Object (cType.laserInfo.parent.nObject);
 	tRobotInfo	*botInfoP = &ROBOTINFO (robotP->info.nId);
 	CWeaponInfo *wInfoP = gameData.weapons.info + info.nId;
 	bool			bAttackRobots = parentP ? parentP->AttacksRobots () || (EGI_FLAG (bRobotsHitRobots, 0, 0, 0) && gameStates.app.cheats.bRobotsKillRobots) : false;
