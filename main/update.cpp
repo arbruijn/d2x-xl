@@ -65,8 +65,8 @@ class CDownloadCallback : public IBindStatusCallback {
 
 class CDownload {
 	protected:
-		int32_t			m_nState;
-		int32_t			m_nResult;
+		int32_t		m_nState;
+		int32_t		m_nResult;
 		const char* m_pszSrc;
 		const char* m_pszDest;
 		bool		m_bProgressBar;
@@ -74,12 +74,12 @@ class CDownload {
 		static CDownload* m_handler;
 
 	private:
-		int32_t			m_nProgress;
-		int32_t			m_nProgressMax;
-		int32_t			m_nPercent;
+		int32_t		m_nProgress;
+		int32_t		m_nProgressMax;
+		int32_t		m_nPercent;
 		SDL_Thread*	m_thread;
-		int32_t			m_nOptPercentage;
-		int32_t			m_nOptProgress;
+		int32_t		m_nOptPercentage;
+		int32_t		m_nOptProgress;
 		CMenu			m_menu;
 
 	private:
@@ -108,7 +108,7 @@ class CDownload {
 		virtual ~CDownload () {}
 
 		CDownload (CDownload const&) : m_nState (-1), m_nResult (0), m_pszSrc (NULL), m_pszDest (NULL), m_bProgressBar (false), m_nProgress (0), m_nProgressMax (0),
-					m_nPercent (0), m_thread (NULL), m_nOptPercentage (0), m_nOptProgress (0) {}
+												 m_nPercent (0), m_thread (NULL), m_nOptPercentage (0), m_nOptProgress (0) {}
 
 		CDownload& operator= (CDownload const&) { return *this; }
 
@@ -374,7 +374,7 @@ sprintf (szDest, "%sd2x-xl-%s-%d.%d.%d.%s", gameFolders.var.szDownloads,
 			FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
 #if 1
 messageBox.Show ("Downloading...");
-sprintf (szSrc, "%sd2x-xl-%s-%d.%d.%d.%s", pszSource [nLocation], FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
+sprintf (szSrc, "%s/d2x-xl-%s-%d.%d.%d.%s", pszSource [nLocation], FILETYPE, nVersion [0], nVersion [1], nVersion [2], FILEEXT);
 if (DownloadFile (szSrc, szDest, true)) {
 	messageBox.Clear ();
 	InfoBox (TXT_ERROR, NULL, BG_STANDARD, 1, TXT_CLOSE, TXT_DOWNLOAD_FAILED);

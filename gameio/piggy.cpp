@@ -577,7 +577,7 @@ void PiggyCriticalError (void)
 {
 gameData.render.screen.Activate ("PiggyCriticalError");
 int32_t i = InfoBox ("Disk Error", (pMenuCallback) NULL, BG_STANDARD, 2, "Retry", "Exit", "%s\non drive %c:", 
-					 szCriticalErrors [descent_critical_errcode & 0xf], (descent_critical_deverror & 0xf) + 'A');
+							szCriticalErrors [descent_critical_errcode & 0xf], (descent_critical_deverror & 0xf) + 'A');
 gameData.render.screen.Deactivate ();
 if (i == 1)
 	exit (1);
