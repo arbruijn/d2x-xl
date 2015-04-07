@@ -73,15 +73,15 @@ FORALL_WEAPON_OBJS (objP)
 
 void CreateOmegaBlobs (int16_t nFiringSeg, CFixVector *vMuzzle, CFixVector *vTargetPos, CObject *parentObjP, CObject *targetObjP)
 {
-	int16_t			nLastSeg, nLastCreatedObj = -1;
+	int16_t		nLastSeg, nLastCreatedObj = -1;
 	CFixVector	vGoal;
 	fix			xGoalDist;
-	int32_t			nOmegaBlobs;
+	int32_t		nOmegaBlobs;
 	fix			xOmegaBlobDist;
 	CFixVector	vOmegaDelta;
 	CFixVector	vBlobPos, vPerturb;
 	fix			xPerturbArray [MAX_OMEGA_BLOBS];
-	int32_t			i;
+	int32_t		i;
 
 if (IsMultiGame)
 	DeleteOldOmegaBlobs (parentObjP);
@@ -130,7 +130,7 @@ vPerturb = CFixVector::Random ();
 vPerturb += parentObjP->info.position.mOrient.m.dir.u * (-I2X (1) / 2);
 for (i = 0; i < nOmegaBlobs; i++) {
 	CFixVector	vTempPos;
-	int16_t			nBlobObj, nSegment;
+	int16_t		nBlobObj, nSegment;
 
 	//	This will put the last blob right at the destination CObject, causing damage.
 	if (i == nOmegaBlobs - 1)
@@ -246,7 +246,7 @@ if (nPlayer == N_LOCALPLAYER) {
 	}
 
 weaponObjP->cType.laserInfo.parent.nType = parentObjP->info.nType;
-weaponObjP->cType.laserInfo.parent.nObject = OBJ_IDX (parentObjP);
+weaponObjP->cType.laserInfo.parent.nObject = parentObjP ? OBJ_IDX (parentObjP) : -1;
 weaponObjP->cType.laserInfo.parent.nSignature = parentObjP->info.nSignature;
 
 if (gameStates.limitFPS.bOmega && !gameStates.app.tick40fps.bTick)
