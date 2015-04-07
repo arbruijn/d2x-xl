@@ -2200,9 +2200,9 @@ class CTriggerData {
 		CArray<CTrigger>			objTriggers; // [MAX_TRIGGERS];
 		CArray<tObjTriggerRef>	objTriggerRefs; // [MAX_OBJ_TRIGGERS];
 //		CArray<int16_t>				firstObjTrigger; // [MAX_OBJECTS_D2X];
-		CArray<int32_t>					delay; // [MAX_TRIGGERS];
-		int32_t							m_nTriggers;
-		int32_t							m_nObjTriggers;
+		CArray<int32_t>			delay; // [MAX_TRIGGERS];
+		int32_t						m_nTriggers;
+		int32_t						m_nObjTriggers;
 	public:
 		CTriggerData ();
 		bool Create (int32_t nTriggers, bool bObjTriggers);
@@ -2245,7 +2245,7 @@ typedef struct tBox {
 	tQuad					faces [6];
 #if 0
 	tQuad					rotFaces [6];	//transformed faces
-	int16_t					nTransformed;
+	int16_t				nTransformed;
 #endif
 	} tBox;
 
@@ -2256,7 +2256,7 @@ typedef struct tHitbox {
 	CFixVector			vOffset;
 	tBox					box;
 	CAngleVector		angles;			//rotation angles
-	int16_t					nParent;			//parent hitbox
+	int16_t				nParent;			//parent hitbox
 } tHitbox;
 
 //------------------------------------------------------------------------------
@@ -3390,16 +3390,16 @@ class CDemoData {
 
 class CEscortData {
 	public:
-		int32_t				nMaxLength;
-		int32_t				nObjNum;
-		int32_t				bSearchingMarker;
-		int32_t				nLastKey;
-		int32_t				nKillObject;
-		int32_t				nGoalObject;
-		int32_t				nSpecialGoal;
-		int32_t				nGoalIndex;
-		int32_t				bMayTalk;
-		int32_t				bMsgsSuppressed;
+		int32_t			nMaxLength;
+		int32_t			nObjNum;
+		int32_t			bSearchingMarker;
+		int32_t			nLastKey;
+		int32_t			nKillObject;
+		int32_t			nGoalObject;
+		int32_t			nSpecialGoal;
+		int32_t			nGoalIndex;
+		int32_t			bMayTalk;
+		int32_t			bMsgsSuppressed;
 		fix				xSorryTime;
 		fix				xLastMsgTime;
 		fix				xLastPathCreated;
@@ -3415,7 +3415,7 @@ class CEscortData {
 class CThiefData {
 	public:
 		CStaticArray< uint8_t, MAX_STOLEN_ITEMS >	stolenItems; // [MAX_STOLEN_ITEMS];
-		int32_t				nStolenItem;
+		int32_t			nStolenItem;
 		fix				xReInitTime;
 		fix				xWaitTimes [NDL];
 
@@ -3426,28 +3426,28 @@ class CThiefData {
 //------------------------------------------------------------------------------
 
 typedef struct tHoardItem {
-	int32_t			nWidth;
-	int32_t			nHeight;
-	int32_t			nFrameSize;
-	int32_t			nSize;
-	int32_t			nFrames;
-	int32_t			nClip;
+	int32_t		nWidth;
+	int32_t		nHeight;
+	int32_t		nFrameSize;
+	int32_t		nSize;
+	int32_t		nFrames;
+	int32_t		nClip;
 	CBitmap		bm;
 	CPalette		*palette;
 } tHoardItem;
 
 class CHoardData {
 	public:
-		int32_t			bInitialized;
-		int32_t			nTextures;
+		int32_t		bInitialized;
+		int32_t		nTextures;
 		tHoardItem	orb;
 		tHoardItem	icon [2];
 		tHoardItem	goal;
 		tHoardItem	monsterball;
-		int16_t			nMonsterballSeg;
+		int16_t		nMonsterballSeg;
 		CFixVector	vMonsterballPos;
 		CObject		*monsterballP;
-		int16_t			nLastHitter;
+		int16_t		nLastHitter;
 };
 
 //------------------------------------------------------------------------------
@@ -3456,13 +3456,13 @@ class CHoardData {
 
 class CHUDMessage {
 	public:
-		int32_t					nFirst;
-		int32_t					nLast;
-		int32_t					nMessages;
-		fix					xTimer;
-		uint32_t					nColor;
-		char					szMsgs [HUD_MAX_MSGS][HUD_MESSAGE_LENGTH + 5];
-		int32_t					nMsgIds [HUD_MAX_MSGS];
+		int32_t			nFirst;
+		int32_t			nLast;
+		int32_t			nMessages;
+		fix				xTimer;
+		uint32_t			nColor;
+		char				szMsgs [HUD_MAX_MSGS][HUD_MESSAGE_LENGTH + 5];
+		int32_t			nMsgIds [HUD_MAX_MSGS];
 
 	public:
 		CHUDMessage ();
@@ -3470,8 +3470,8 @@ class CHUDMessage {
 
 class CHUDData {
 	public:	
-		CHUDMessage			msgs [2];
-		int32_t					bPlayerMessage;
+		CHUDMessage		msgs [2];
+		int32_t			bPlayerMessage;
 
 	public:
 		CHUDData ();
@@ -3531,21 +3531,21 @@ class CLaserData {
 		fix		xLastFiredTime;
 		fix		xNextFireTime;
 		fix		xUpdateTime;
-		int32_t		nGlobalFiringCount;
-		int32_t		nMissileGun;
-		int32_t		nOffset;
-		int32_t		nProximityDropped;
-		int32_t		nSmartMinesDropped;
+		int32_t	nGlobalFiringCount;
+		int32_t	nMissileGun;
+		int32_t	nOffset;
+		int32_t	nProximityDropped;
+		int32_t	nSmartMinesDropped;
 };
 
 //------------------------------------------------------------------------------
 
 class CFusionData {
 	public:
-		fix	xAutoFireTime;
-		fix	xCharge;
-		fix	xNextSoundTime;
-		fix	xLastSoundTime;
+		fix		xAutoFireTime;
+		fix		xCharge;
+		fix		xNextSoundTime;
+		fix		xLastSoundTime;
 		int32_t	xFrameTime;
 };
 
@@ -3555,7 +3555,7 @@ class COmegaData {
 	public:
 		fix		xCharge [2];
 		fix		xMaxCharge;
-		int32_t		nLastFireFrame;
+		int32_t	nLastFireFrame;
 
 	public:
 		COmegaData ();
@@ -3717,8 +3717,25 @@ class CGameData {
 				render.nStereoOffsetType = nType; 
 			return nOldType;
 			}
-		inline CObject* Object (int32_t nObject) { return (objs.objects.Buffer () && (nObject >= 0) && (nObject <= objs.nLastObject [0])) ? objs.objects + nObject : NULL; }
-		inline CSegment* Segment (int32_t nSegment) { return (segs.segments.Buffer () && (nSegment >= 0) && (nSegment < segs.nSegments)) ? segs.segments + nSegment : NULL; }
+#if DBG <= 0
+		CObject* Object (int32_t nObject, bool bCheck = true);
+		CSegment* Segment (int32_t nSegment, bool bCheck = true);
+		CWall* Wall (int32_t nWall, bool bCheck = true);
+		CTrigger* Trigger (int32_t nTrigger, bool bCheck = true);
+#else
+		inline CObject* Object (int32_t nObject, bool bCheck = true) { 
+			return (!bCheck || (objs.objects.Buffer () && (nObject >= 0) && (nObject <= objs.nLastObject [0]))) ? objs.objects + nObject : NULL; 
+			}
+		inline CSegment* Segment (int32_t nSegment, bool bCheck = true) { 
+			return (!bCheck || (segs.segments.Buffer () && (nSegment >= 0) && (nSegment < segs.nSegments))) ? segs.segments + nSegment : NULL; 
+			}
+		inline CWall* Wall (int32_t nWall, bool bCheck = true) { 
+			return (!bCheck || (walls.walls.Buffer () && (nWall >= 0) && (nWall < walls.nWalls))) ? walls.walls + nWall : NULL; 
+			}
+		inline CTrigger* Trigger (int32_t nTrigger, bool bCheck = true) { 
+			return (!bCheck || (trigs.triggers.Buffer () && (nTrigger >= 0) && (nTrigger < trigs.m_nTriggers))) ? trigs.triggers + nTrigger : NULL; 
+			}
+#endif
 		inline int32_t X (int32_t x, bool bForce = false) { return render.nStereoOffsetType ? x - ((render.nStereoOffsetType == STEREO_OFFSET_FLOATING) ? FloatingStereoOffset2D (x, bForce) : StereoOffset2D ()) : x; }
 };
 
@@ -3747,7 +3764,7 @@ extern char szAutoHogFile [255];
 #if 0
 static inline uint16_t WallNumS (CSide *sideP) { return (sideP)->nWall; }
 static inline uint16_t WallNumP (CSegment *segP, int16_t nSide) { return WallNumS ((segP)->m_sides + (nSide)); }
-static inline uint16_t WallNumI (int16_t nSegment, int16_t nSide) { return WallNumP(SEGMENTS + (nSegment), nSide); }
+static inline uint16_t WallNumI (int16_t nSegment, int16_t nSide) { return WallNumP (gameData.Segment (nSegment), nSide); }
 #endif
 
 //-----------------------------------------------------------------------------
@@ -3861,10 +3878,10 @@ return 1.0f - float (alpha) / float (FADE_LEVELS);
 #define NETPLAYER(_nPlayer)		netPlayers [0].m_info.players [_nPlayer]
 #define PLAYER(_nPlayer)			gameData.multiplayer.players [_nPlayer]
 #define LOCALPLAYER					PLAYER (N_LOCALPLAYER)
-#define PLAYEROBJECT(_nPlayer)	OBJECTS [PLAYER (_nPlayer).nObject]
+#define PLAYEROBJECT(_nPlayer)	gameData.Object (PLAYER (_nPlayer).nObject)
 #define LOCALOBJECT					PLAYEROBJECT (N_LOCALPLAYER)
 
-#define OBSERVING						(gameStates.render.bObserving && OBJECTS.Buffer () && (LOCALOBJECT.Type () == OBJ_GHOST))
+#define OBSERVING						(gameStates.render.bObserving && OBJECTS.Buffer () && (LOCALOBJECT->Type () == OBJ_GHOST))
 
 #define ISLOCALPLAYER(_nPlayer)	((_nPlayer < 0) || ((_nPlayer) == N_LOCALPLAYER))
 

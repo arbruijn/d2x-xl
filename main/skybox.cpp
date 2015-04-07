@@ -41,7 +41,7 @@ if (!nSegments)
 if (!gameData.segs.skybox.Create (nSegments))
 	return 0;
 for (int32_t i = 0; i < gameData.segs.nSegments; i++)
-	if (SEGMENTS [i].m_function == SEGMENT_FUNC_SKYBOX)
+	if (gameData.Segment (i)->m_function == SEGMENT_FUNC_SKYBOX)
 		gameData.segs.skybox.Push (i);
 gameStates.render.bHaveSkyBox = (gameData.segs.skybox.ToS () > 0);
 return gameData.segs.skybox.ToS ();

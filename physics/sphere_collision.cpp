@@ -213,7 +213,7 @@ return true;
 
 float DistToFace (CFloatVector3 vRef, int16_t nSegment, uint8_t nSide, CFloatVector3* vHit)
 {
-	CSide*			sideP = SEGMENTS [nSegment].Side (nSide);
+	CSide*			sideP = gameData.Segment (nSegment)->Side (nSide);
 	CFloatVector	h, r;
 	uint16_t*		vertices = sideP->m_vertices;
 	int32_t			i, j;
@@ -916,9 +916,9 @@ return (t == nObject);
 
 int32_t ComputeObjectHitpoint (CHitData& hitData, CHitQuery &hitQuery)
 {
-	CObject		* thisObjP = (hitQuery.nObject < 0) ? NULL : OBJECTS + hitQuery.nObject,
+	CObject		* thisObjP = (hitQuery.nObject < 0) ? NULL : gameData.Object (hitQuery.nObject),
 			 		* otherObjP;
-	int32_t		nThisType = (hitQuery.nObject < 0) ? -1 : OBJECTS [hitQuery.nObject].info.nType;
+	int32_t		nThisType = (hitQuery.nObject < 0) ? -1 : gameData.Object (hitQuery.nObject)->info.nType;
 	int32_t		nObjSegList [7], nObjSegs = 1, i;
 	fix			dMin = 0x7FFFFFFF;
 	bool			bCheckVisibility = ((hitQuery.flags & FQ_VISIBILITY) != 0);
@@ -932,7 +932,7 @@ if (hitQuery.nSegment == nDbgSeg)
 	BRP;
 #	endif
 #if 1
-CSegment* segP = SEGMENTS + hitQuery.nSegment;
+CSegment* segP = gameData.Segment (hitQuery.nSegment);
 for (int32_t nSide = 0; nSide < 6; nSide++) {
 	int16_t nSegment = segP->m_children [nSide];
 	if (0 > nSegment)
@@ -948,16 +948,16 @@ for (int32_t nSide = 0; nSide < 6; nSide++) {
 #endif
 for (int32_t iObjSeg = 0; iObjSeg < nObjSegs; iObjSeg++) {
 	int16_t nSegment = nObjSegList [iObjSeg];
-	segP = SEGMENTS + nSegment;
+	segP = gameData.Segment (nSegment);
 #if DBG
 restart:
 #endif
 	if (nSegment == nDbgSeg)
 		BRP;
 	int16_t nSegObjs = gameData.objs.nObjects;
-	int16_t nFirstObj = SEGMENTS [nSegment].m_objects;
+	int16_t nFirstObj = gameData.Segment (nSegment)->m_objects;
 	for (int16_t nObject = nFirstObj; nObject != -1; nObject = otherObjP->info.nNextInSeg, nSegObjs--) {
-		otherObjP = OBJECTS + nObject;
+		otherObjP = gameData.Object (nObject);
 #if DBG
 		if (nObject == nDbgObj)
 			BRP;
@@ -1030,8 +1030,8 @@ return dMin;
 
 static inline int32_t PassThrough (int16_t nObject, int16_t nSegment, int16_t nSide, int16_t nFace, int32_t flags, CFixVector& vHitPoint)
 {
-CSegment* segP = SEGMENTS + nSegment;
-int32_t widResult = segP->IsPassable (nSide, (nObject < 0) ? NULL : OBJECTS + nObject);
+CSegment* segP = gameData.Segment (nSegment);
+int32_t widResult = segP->IsPassable (nSide, (nObject < 0) ? NULL : gameData.Object (nObject));
 
 if (widResult & WID_PASSABLE_FLAG) // check whether side can be passed through
 	return 1; 
@@ -1053,7 +1053,7 @@ if (nObject != LOCALPLAYER.nObject)
 int16_t nChildSeg = segP->m_children [nSide];
 if (nChildSeg < 0)
 	return 0;
-CSegment* childSegP = SEGMENTS + nChildSeg;
+CSegment* childSegP = gameData.Segment (nChildSeg);
 if (childSegP->HasBlockedProp () ||
     (gameData.objs.speedBoost [nObject].bBoosted && ((segP->m_function != SEGMENT_FUNC_SPEEDBOOST) || (childSegP->m_function == SEGMENT_FUNC_SPEEDBOOST))))
 	return 1;
@@ -1103,8 +1103,8 @@ if (hitQuery.flags & FQ_CHECK_OBJS) {
 	}
 #endif
 
-CSegment* segP = SEGMENTS + hitQuery.nSegment;
-if ((hitQuery.nObject > -1) && (gameData.objs.collisionResult [OBJECTS [hitQuery.nObject].info.nType][OBJ_WALL] == RESULT_NOTHING))
+CSegment* segP = gameData.Segment (hitQuery.nSegment);
+if ((hitQuery.nObject > -1) && (gameData.objs.collisionResult [gameData.Object (hitQuery.nObject)->info.nType][OBJ_WALL] == RESULT_NOTHING))
 	hitQuery.radP1 = 0;		//HACK - ignore when edges hit walls
 //now, check segment walls
 #if DBG
@@ -1261,6 +1261,7 @@ int32_t FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult)
 	CHitData		curHit, newHit;
 	int32_t		i, nHitboxes = extraGameInfo [IsMultiGame].nHitboxes; // save value
 
+gameData.collisions.hitResult.nAltSegment = -1;
 gameData.collisions.hitResult.vNormal.SetZero ();
 gameData.collisions.hitResult.nNormals = 0;
 if ((hitQuery.nSegment > gameData.segs.nLastSegment) || (hitQuery.nSegment < 0)) {
@@ -1285,7 +1286,7 @@ gameData.collisions.hitResult.nObject = -1;
 //Assert(check_point_in_seg(p0, startseg, 0).m_center==0);	//start refP not in seg
 
 // gameData.objs.viewerP is not in CSegment as claimed, so say there is no hit.
-CSegMasks masks = SEGMENTS [hitQuery.nSegment].Masks (*hitQuery.p0, 0);
+CSegMasks masks = gameData.Segment (hitQuery.nSegment)->Masks (*hitQuery.p0, 0);
 if (masks.m_center) {
 	hitQuery.nSegment = FindSegByPos (*hitQuery.p0, -1, 1, 0);
 	if (hitQuery.nSegment < 0) {
@@ -1305,18 +1306,22 @@ gameData.collisions.hitResult.nNestCount = 0;
 if (hitQuery.flags & FQ_VISIBILITY)
 	extraGameInfo [IsMultiGame].nHitboxes = 0;
 ComputeHitpoint (curHit, hitQuery, hitResult.segList, &hitResult.nSegments, -2);
-#if DBG
-if (curHit.nSegment >= gameData.segs.nSegments)
+#if 1 //DBG
+if (curHit.nSegment >= gameData.segs.nSegments) {
+	PrintLog (0, "Invalid hit segment in collision detection\n");
 	ComputeHitpoint (curHit, hitQuery, hitResult.segList, &hitResult.nSegments, -2);
+	if (curHit.nSegment > gameData.segs.nSegments) 
+		curHit.nSegment = -1;
+	}
 #endif
 extraGameInfo [IsMultiGame].nHitboxes = nHitboxes;
 
-if ((curHit.nSegment == -1) || SEGMENTS [curHit.nSegment].Masks (curHit.vPoint, 0).m_center)
+if ((curHit.nSegment < 0) || gameData.Segment (curHit.nSegment)->Masks (curHit.vPoint, 0).m_center)
 	curHit.nSegment = FindSegByPos (curHit.vPoint, hitQuery.nSegment, 1, 0);
 
 //MATT: TAKE OUT THIS HACK AND FIX THE BUGS!
 if ((curHit.nType == HIT_WALL) && (curHit.nSegment == -1))
-	if ((gameData.collisions.hitResult.nAltSegment != -1) && !SEGMENTS [gameData.collisions.hitResult.nAltSegment].Masks (curHit.vPoint, 0).m_center)
+	if ((gameData.collisions.hitResult.nAltSegment != -1) && !gameData.Segment (gameData.collisions.hitResult.nAltSegment)->Masks (curHit.vPoint, 0).m_center)
 		curHit.nSegment = gameData.collisions.hitResult.nAltSegment;
 
 if (curHit.nSegment == -1) {
@@ -1369,7 +1374,7 @@ if (nSegment == -1) {
 if ((gameData.collisions.nSegsVisited < 0) || (gameData.collisions.nSegsVisited > MAX_SEGS_VISITED))
 	gameData.collisions.nSegsVisited = 0;
 gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nSegment;
-segP = SEGMENTS + nSegment;
+segP = gameData.Segment (nSegment);
 faceMask = segP->Masks (*vPoint, rad).m_face;
 if (faceMask != 0) {				//on the back of at least one face
 	int32_t		nSide, bit, iFace, nChild, i;
@@ -1442,7 +1447,7 @@ if (!nDepth) {
 
 for (;;) {
 	bVisited [nStartSeg] = bFlag;
-	segP = &SEGMENTS [nStartSeg];
+	segP = gameData.Segment (nStartSeg);
 	sideP = segP->Side (0);
 	// check all sides of current segment whether they are penetrated by the vector p0,p1.
 	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {

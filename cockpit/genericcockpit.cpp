@@ -332,7 +332,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 			int32_t nPlayer = gameStates.render.cockpit.nCoopPlayerView [w];
 	      gameStates.render.nRenderingType = 255; // don't handle coop stuff
 			if ((nPlayer != -1) && PLAYER (nPlayer).IsConnected () && SameTeam (nPlayer, N_LOCALPLAYER))
-				cockpit->RenderWindow (w, &PLAYEROBJECT (gameStates.render.cockpit.nCoopPlayerView [w]), 0, WBU_COOP, PLAYER (gameStates.render.cockpit.nCoopPlayerView [w]).callsign);
+				cockpit->RenderWindow (w, PLAYEROBJECT (gameStates.render.cockpit.nCoopPlayerView [w]), 0, WBU_COOP, PLAYER (gameStates.render.cockpit.nCoopPlayerView [w]).callsign);
 			else {
 				cockpit->RenderWindow (w, NULL, 0, WBU_WEAPON, NULL);
 				gameStates.render.cockpit.n3DView [w] = CV_NONE;
@@ -349,7 +349,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 				break;
 				}
 			sprintf (label, "Marker %d", markerManager.Viewer (w) + 1);
-			cockpit->RenderWindow (w, OBJECTS + markerManager.Objects (markerManager.Viewer (w)), 0, WBU_MARKER, label);
+			cockpit->RenderWindow (w, gameData.Object (markerManager.Objects (markerManager.Viewer (w))), 0, WBU_MARKER, label);
 			break;
 			}
 

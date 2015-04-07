@@ -149,14 +149,14 @@ int16_t m_nDepth = m_path [nPredSeg].m_nDepth + 1;
 if (m_nDepth > scanInfo.m_maxDist)
 	return m_nLinkSeg = scanInfo.Scanning (m_nDir) ? 0 : -1;
 
-CSegment* segP = SEGMENTS + nPredSeg;
+CSegment* segP = gameData.Segment (nPredSeg);
 for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	int16_t nSuccSeg = segP->m_children [nSide];
 	if (nSuccSeg < 0)
 		continue;
 	if (m_nDir) {
-		CSegment* otherSegP = SEGMENTS + nSuccSeg;
-		int16_t nOtherSide = SEGMENTS [nPredSeg].ConnectedSide (otherSegP);
+		CSegment* otherSegP = gameData.Segment (nSuccSeg);
+		int16_t nOtherSide = gameData.Segment (nPredSeg)->ConnectedSide (otherSegP);
 		if ((nOtherSide == -1) || !(otherSegP->IsPassable (nOtherSide, NULL) & scanInfo.m_widFlag))
 			continue;
 		}
@@ -270,8 +270,8 @@ if (m_nDestSeg >= 0) {
 #endif
 	// adjacent segments?
 	if (m_cacheType >= 0) {
-		int16_t nSide = SEGMENTS [m_nStartSeg].ConnectedSide (SEGMENTS + m_nDestSeg);
-		if ((nSide != -1) && (SEGMENTS [m_nDestSeg].IsPassable (nSide, NULL) & m_widFlag)) {
+		int16_t nSide = gameData.Segment (m_nStartSeg)->ConnectedSide (gameData.Segment (m_nDestSeg));
+		if ((nSide != -1) && (gameData.Segment (m_nDestSeg)->IsPassable (nSide, NULL) & m_widFlag)) {
 			m_cache [m_cacheType].SetPathLength (1);
 			return CFixVector::Dist (m_p0, m_p1);
 			}
@@ -312,16 +312,16 @@ fix CSimpleUniDirRouter::BuildPath (void)
 	int16_t	nPredSeg, nSuccSeg = m_nDestSeg;
 
 nPredSeg = --m_scanInfo.m_nLinkSeg;
-xDist = CFixVector::Dist (m_p1, SEGMENTS [nPredSeg].Center ());
+xDist = CFixVector::Dist (m_p1, gameData.Segment (nPredSeg)->Center ());
 for (;;) {
 	nPredSeg = m_heap.m_path [nSuccSeg].m_nPred;
 	if (nPredSeg == m_heap.m_nStartSeg)
 		break;
 	nLength++;
-	xDist += SEGMENTS [nPredSeg].m_childDists [0][m_heap.m_path [nSuccSeg].m_nEdge];
+	xDist += gameData.Segment (nPredSeg)->m_childDists [0][m_heap.m_path [nSuccSeg].m_nEdge];
 	nSuccSeg = nPredSeg;
 	}
-xDist += CFixVector::Dist (m_p0, SEGMENTS [nSuccSeg].Center ());
+xDist += CFixVector::Dist (m_p0, gameData.Segment (nSuccSeg)->Center ());
 if (m_cacheType >= 0) 
 	m_cache [m_cacheType].Add (m_heap.m_nStartSeg, m_heap.m_nDestSeg, nLength + 3, xDist);
 return xDist;
@@ -363,13 +363,13 @@ for (int32_t nDir = 0; nDir < 2; nDir++) {
 		if (nPredSeg < 0)
 			break;
 		if (nPredSeg == heap.m_nStartSeg) {
-			xDist += CFixVector::Dist (nDir ? m_p1 : m_p0, SEGMENTS [nSuccSeg].Center ());
+			xDist += CFixVector::Dist (nDir ? m_p1 : m_p0, gameData.Segment (nSuccSeg)->Center ());
 			break;
 			}
 		++nLength;
 		if ((nLength > 2 * m_scanInfo.m_maxDist + 2) || (nLength > gameData.segs.nSegments))
 			return -0x7FFFFFFF;
-		xDist += SEGMENTS [nPredSeg].m_childDists [0][heap.m_path [nSuccSeg].m_nEdge];
+		xDist += gameData.Segment (nPredSeg)->m_childDists [0][heap.m_path [nSuccSeg].m_nEdge];
 		nSuccSeg = nPredSeg;
 		}
 	}
@@ -465,15 +465,15 @@ for (int32_t i = 0, j; i < h; i = j) {
 	nStartSeg = route [i].nNode;
 	if ((nStartSeg < 0) || (nStartSeg >= gameData.segs.nSegments))
 		return -2;
-	/*fq.*/p0 = p1 = &SEGMENTS [nStartSeg].Center ();
+	/*fq.*/p0 = p1 = &gameData.Segment (nStartSeg)->Center ();
 	for (j = i + 1; j < h; j++) { 
 		nDestSeg = route [j].nNode;
 #if 1
 		if (!gameData.segs.SegVis (nStartSeg, nDestSeg))
 			break;
-		p1 = &SEGMENTS [nDestSeg].Center ();
+		p1 = &gameData.Segment (nDestSeg)->Center ();
 #else
-		fq.p1 = &SEGMENTS [nDestSeg].Center ();
+		fq.p1 = &gameData.Segment (nDestSeg)->Center ();
 		int32_t nHitType = FindHitpoint (&fq, &hitResult);
 		if (nHitType && ((nHitType != HIT_WALL) || (hitResult.nSegment != nDestSeg)))
 			break;
@@ -481,14 +481,14 @@ for (int32_t i = 0, j; i < h; i = j) {
 #endif
 		}	
 	if (j < i + 2) // can only see next segment after route [i].nNode
-		xDist += SEGMENTS [nStartSeg].m_childDists [0][route [i].nEdge];
+		xDist += gameData.Segment (nStartSeg)->m_childDists [0][route [i].nEdge];
 	else {// skipped some segment(s)
 		xDist += CFixVector::Dist (*p0, *p1);
 		--j;
 		}
 	}
 if	(m_nDestSeg >= 0) {
-	xDist += CFixVector::Dist (m_p0, SEGMENTS [route [1].nNode].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [route [h].nNode].Center ());
+	xDist += CFixVector::Dist (m_p0, gameData.Segment (route [1].nNode)->Center ()) + CFixVector::Dist (m_p1, gameData.Segment (route [h].nNode)->Center ());
 	if (m_cacheType >= 0) 
 		m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, h + 2, xDist);
 	}
@@ -515,7 +515,7 @@ for (;;) {
 		return (m_nDestSeg < 0) ? nExpanded : -1;
 	if (nSegment == m_nDestSeg)
 		return BuildPath (nSegment);
-	segP = SEGMENTS + nSegment;
+	segP = gameData.Segment (nSegment);
 #if DBG
 	if (nSegment == nDbgSeg)
 		BRP;
@@ -563,7 +563,7 @@ if ((nSegment < 0) || (nSegment == m_nDestSeg))
 	return nSegment;
 if (m_heap [!nDir].Popped (nSegment))
 	return nSegment;
-CSegment* segP = SEGMENTS + nSegment;
+CSegment* segP = gameData.Segment (nSegment);
 for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	if ((segP->m_children [nSide] >= 0) && (segP->IsPassable (nSide, NULL) & m_widFlag)) {
 		uint32_t nNewDist = nDist + uint16_t (segP->m_childDists [1][nSide]);
@@ -586,8 +586,8 @@ if (m_nSegments [1] >= 0)
 	j += m_heap [1].BuildRoute (nSegment, 1, m_route + j);
 fix xDist = 0;
 for (int32_t i = 1; i < j; i++)
-	xDist += SEGMENTS [m_route [i - 1].nNode].m_childDists [0][m_route [i].nEdge];
-xDist += CFixVector::Dist (m_p0, SEGMENTS [m_route [1].nNode].Center ()) + CFixVector::Dist (m_p1, SEGMENTS [m_route [j].nNode].Center ());
+	xDist += gameData.Segment (m_route [i - 1].nNode)->m_childDists [0][m_route [i].nEdge];
+xDist += CFixVector::Dist (m_p0, gameData.Segment (m_route [1].nNode)->Center ()) + CFixVector::Dist (m_p1, gameData.Segment (m_route [j].nNode)->Center ());
 if (m_cacheType >= 0) 
 	m_cache [m_cacheType].Add (m_nStartSeg, m_nDestSeg, j + 2, xDist);
 return xDist;

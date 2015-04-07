@@ -578,6 +578,14 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 						bmP = modelP->m_textures + nBitmap;
 						}
 					}
+#if 0
+				bmP->AvgColor ();
+				CRGBColor *colorP = bmP->GetAvgColor ();
+				if (!gameStates.render.bCloaked)
+					glColor4f ((float) colorP->Red () / 255.0f, (float) colorP->Green () / 255.0f, (float) colorP->Blue () / 255.0f, gameStates.render.grAlpha);
+				ogl.SetTexturing (false);
+				ogl.DisableClientState (GL_COLOR_ARRAY);
+#else
 				ogl.SelectTMU (GL_TEXTURE0, true);
 				ogl.SetTexturing (true);
 				bmP = bmP->Override (-1);
@@ -586,6 +594,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 				if (bmP->Bind (1))
 					continue;
 				bmP->Texture ()->Wrap (GL_REPEAT);
+#endif
 				}
 			}
 		nIndex = pmf->m_nIndex;
@@ -743,7 +752,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				}
 			else if ((lightP = lightManager.GetActive (activeLightsP, 0))) {
 #if DBG
-				if ((nDbgSeg >= 0) && (lightP->info.nObject >= 0) && (OBJECTS [lightP->info.nObject].info.nSegment == nDbgSeg))
+				if ((nDbgSeg >= 0) && (lightP->info.nObject >= 0) && (gameData.Object (lightP->info.nObject)->info.nSegment == nDbgSeg))
 					BRP;
 #endif
 				hLight = GL_LIGHT0 + iLight++;

@@ -69,7 +69,7 @@ class CDownload {
 		int32_t		m_nResult;
 		const char* m_pszSrc;
 		const char* m_pszDest;
-		bool		m_bProgressBar;
+		bool			m_bProgressBar;
 
 		static CDownload* m_handler;
 

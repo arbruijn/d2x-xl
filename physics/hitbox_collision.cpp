@@ -365,7 +365,7 @@ if (nTotalHits) {
 #	if 0
 	if (gameStates.app.nSDLTicks [0] - tMarker > 3000) {
 		if (nMarker >= 0)
-			OBJECTS [nMarker].Die ();
+			gameData.Object (nMarker)->Die ();
 		nMarker = DropMarkerObject (intersection, objP1->Segment (), objP1->Orientation (), 0);
 		tMarker = gameStates.app.nSDLTicks [0];
 		}
@@ -490,7 +490,7 @@ if (!p1)
 intersection.Create (0x7fffffff, 0x7fffffff, 0x7fffffff);
 tHitbox* hb = TransformHitboxes (objP, p1);
 
-CSide* sideP = SEGMENTS [nSegment].Side (nSide);
+CSide* sideP = gameData.Segment (nSegment)->Side (nSide);
 
 for (int32_t i = 0; i < 2; i++) {
 	for (int32_t j = iModel; j <= nModels; j++) {

@@ -43,7 +43,7 @@ if (objP->Index () == nDbgObj)
 #endif
 if (!IsMultiGame && gameOpts->gameplay.bIdleAnims && (ailP->mode == AIM_IDLING)) {
 		int32_t		h, i, j;
-		CSegment*	segP = SEGMENTS + objP->info.nSegment;
+		CSegment*	segP = gameData.Segment (objP->info.nSegment);
 		CFixVector*	vVertex, vVecToGoal, vGoal = gameData.objs.vRobotGoals [objP->Index ()];
 
 	for (i = 0; i < 8; i++) {
@@ -74,7 +74,7 @@ if (!IsMultiGame && gameOpts->gameplay.bIdleAnims && (ailP->mode == AIM_IDLING))
 	if (h && (Rand (25) == 0)) {
 		j = Rand (8);
 		if ((segP->m_vertices [j] == 0xFFFF) || (j == i) || (Rand (3) == 0))
-			vGoal = SEGMENTS [objP->info.nSegment].Center ();
+			vGoal = gameData.Segment (objP->info.nSegment)->Center ();
 		else
 			vGoal = gameData.segs.vertices [segP->m_vertices [j]];
 		gameData.objs.vRobotGoals [objP->Index ()] = vGoal;

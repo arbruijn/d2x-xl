@@ -243,7 +243,7 @@ else if ((objP->info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers
 		static CFloatVector color = {{{0.666f, 0.0f, 0.75f, 0.2f}}};
 		return &color;
 		}
-	int32_t f = SEGMENTS [objP->info.nSegment].m_function;
+	int32_t f = gameData.Segment (objP->info.nSegment)->m_function;
 	if (f == SEGMENT_FUNC_FUELCENTER) {
 		static CFloatVector color = {{{1.0f, 0.8f, 0.3f, 0.2f}}};
 		return &color;
@@ -827,7 +827,7 @@ if (SHOW_LIGHTNING (1) && gameOpts->render.lightning.bRobots && OBJECT_EXISTS (o
 		MoveForObject (objP);
 	else {
 		robotLightningInfo.color.Set (uint8_t (255 * colorP->v.color.r), uint8_t (255 * colorP->v.color.g), uint8_t (255 * colorP->v.color.b));
-		int32_t h = lightningManager.Create (robotLightningInfo, &objP->Position (), &OBJPOS (OBJECTS + LOCALPLAYER.nObject)->vPos, NULL, nObject);
+		int32_t h = lightningManager.Create (robotLightningInfo, &objP->Position (), &OBJPOS (gameData.Object (LOCALPLAYER.nObject))->vPos, NULL, nObject);
 		if (h >= 0)
 			m_objects [nObject] = h;
 		}

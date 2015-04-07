@@ -54,15 +54,15 @@ int32_t CParticleSystem::Create (CFixVector *vPos, CFixVector *vDir, CFixMatrix 
 	CFixVector	vEmittingFace [4];
 
 if (nSide >= 0)
-	SEGMENTS [nSegment].GetCornerVertices (nSide, vEmittingFace);
+	gameData.Segment (nSegment)->GetCornerVertices (nSide, vEmittingFace);
 nMaxParts = MAX_PARTICLES (nMaxParts, gameOpts->render.particles.nDens [0]);
 if (!m_emitters.Create (nMaxEmitters)) {
 	return 0;
 	}
 if ((m_nObject = nObject) < 0x70000000) {
-	m_nSignature = OBJECTS [nObject].info.nSignature;
-	m_nObjType = OBJECTS [nObject].info.nType;
-	m_nObjId = OBJECTS [nObject].info.nId;
+	m_nSignature = gameData.Object (nObject)->info.nSignature;
+	m_nObjType = gameData.Object (nObject)->info.nType;
+	m_nObjId = gameData.Object (nObject)->info.nId;
 	}
 m_nEmitters = 0;
 m_nLife = nLife;
@@ -126,8 +126,8 @@ if (emitterP) {
 	if (!particleImageManager.Load (m_nType))
 		return 0;
 	if ((m_nObject >= 0) && (m_nObject < 0x70000000) &&
-		 ((OBJECTS [m_nObject].info.nType == OBJ_NONE) ||
-		  (OBJECTS [m_nObject].info.nSignature != m_nSignature) ||
+		 ((gameData.Object (m_nObject)->info.nType == OBJ_NONE) ||
+		  (gameData.Object (m_nObject)->info.nSignature != m_nSignature) ||
 		  (particleManager.GetObjectSystem (m_nObject) < 0)))
 		SetLife (0);
 	for (int32_t i = m_nEmitters; i; i--, emitterP++)
@@ -268,7 +268,7 @@ if ((m_nObject == 0x7fffffff) && (m_nType <= SMOKE_PARTICLES) &&
 
 if ((emitterP = m_emitters.Buffer ()) && emitters.Create (m_nEmitters)) {
 	bool bKill = (m_nObject < 0) || ((m_nObject < 0x70000000) &&
-					 ((OBJECTS [m_nObject].info.nSignature != m_nSignature) || (OBJECTS [m_nObject].info.nType == OBJ_NONE)));
+					 ((gameData.Object (m_nObject)->info.nSignature != m_nSignature) || (gameData.Object (m_nObject)->info.nType == OBJ_NONE)));
 	while (nEmitters < m_nEmitters) {
 		if (!emitterP)
 			return 0;

@@ -131,7 +131,7 @@ if (objP) {
 else {
 	m_data.objP = &m_data.obj;
 	if (bTeleport) {
-		CFixVector n = *SEGMENTS [srcSeg].m_sides [srcSide].m_normals;
+		CFixVector n = *gameData.Segment (srcSeg)->m_sides [srcSide].m_normals;
 		/*
 		n.v.coord.x = -n.v.coord.x;
 		n.v.coord.y = -n.v.coord.y;
@@ -140,12 +140,12 @@ else {
 		a = n.ToAnglesVec ();
 		}
 	else
-		a = SEGMENTS [srcSeg].m_sides [srcSide].m_normals [0].ToAnglesVec ();
+		a = gameData.Segment (srcSeg)->m_sides [srcSide].m_normals [0].ToAnglesVec ();
 	m_data.obj.info.position.mOrient = CFixMatrix::Create(a);
 	if (bTeleport)
-		m_data.obj.info.position.vPos = SEGMENTS [srcSeg].Center ();
+		m_data.obj.info.position.vPos = gameData.Segment (srcSeg)->Center ();
 	else
-		m_data.obj.info.position.vPos = SEGMENTS [srcSeg].SideCenter (srcSide);
+		m_data.obj.info.position.vPos = gameData.Segment (srcSeg)->SideCenter (srcSide);
 	m_data.obj.info.nSegment = srcSeg;
 	m_data.bMirror = (tgtSeg == srcSeg) && (tgtSide == srcSide);
 	}

@@ -70,7 +70,7 @@ if (nObject < 0)
 if (nObject == nDbgObj)
 	BRP;
 #endif
-objP = OBJECTS + nObject;
+objP = gameData.Object (nObject);
 if (gameData.weapons.info [nWeaponType].renderType == WEAPON_RENDER_POLYMODEL) {
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel;
 	objP->AdjustSize (1, gameData.weapons.info [objP->info.nId].poLenToWidthRatio);
@@ -99,7 +99,7 @@ return nObject;
 int32_t CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, int16_t nSegment, int16_t nParent, uint8_t nWeaponType, int32_t bMakeSound)
 {
 	int32_t			nObject, nViewer, bBigMsl;
-	CObject		*objP, *parentP = (nParent < 0) ? NULL : OBJECTS + nParent;
+	CObject		*objP, *parentP = (nParent < 0) ? NULL : gameData.Object (nParent);
 	CWeaponInfo	*weaponInfoP;
 	fix			xParentSpeed, xWeaponSpeed;
 	fix			volume;
@@ -136,13 +136,13 @@ if (parentP->info.nType == OBJ_ROBOT)
 	DoMuzzleStuff (nSegment, vPosition);
 else if (gameStates.app.bD2XLevel &&
 			(parentP == gameData.objs.consoleP) &&
-			(SEGMENTS [gameData.objs.consoleP->info.nSegment].HasNoDamageProp ()))
+			(gameData.Segment (gameData.objs.consoleP->info.nSegment)->HasNoDamageProp ()))
 	return -1;
 #if 1
 if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameData.app.GameMode (GM_HOARD | GM_ENTROPY))) {
 	nObject = CreatePowerup (POW_HOARD_ORB, -1, nSegment, *vPosition, 0);
 	if (nObject >= 0) {
-		objP = OBJECTS + nObject;
+		objP = gameData.Object (nObject);
 		if (IsMultiGame)
 			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 		objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
@@ -185,7 +185,7 @@ if (parentP == gameData.objs.consoleP) {
 		}
 	}
 #endif
-objP = OBJECTS + nObject;
+objP = gameData.Object (nObject);
 objP->cType.laserInfo.parent.nObject = nParent;
 if (parentP) {
 	objP->cType.laserInfo.parent.nType = parentP->info.nType;
@@ -211,7 +211,7 @@ if (nWeaponType == OMEGA_ID) {
 		if ((weaponInfoP->nFlashAnimation > -1) && ((nWeaponType != OMEGA_ID) || !gameOpts->render.lightning.bOmega || gameStates.render.bOmegaModded))
 			CreateMuzzleFlash (objP->info.nSegment, objP->info.position.vPos, weaponInfoP->xFlashSize, weaponInfoP->nFlashAnimation);
 		}
-	DoOmegaStuff (OBJECTS + nParent, vPosition, objP);
+	DoOmegaStuff (gameData.Object (nParent), vPosition, objP);
 	return nObject;
 	}
 else if (nWeaponType == FUSION_ID) {
@@ -262,20 +262,20 @@ objP->SetLife (WI_lifetime (nWeaponType));
 if (parentP && (parentP->info.nType == OBJ_WEAPON)) {
 	int32_t		nRoot = nParent;
 	int32_t		count = 0;
-	CObject*	rootP = OBJECTS + nRoot;
+	CObject*	rootP = gameData.Object (nRoot);
 
 	while ((count++ < 10) && (rootP->info.nType == OBJ_WEAPON)) {
 		int32_t nNextParent = rootP->cType.laserInfo.parent.nObject;
 		if (nNextParent < 0)
 			break;
-		if (OBJECTS [nNextParent].info.nSignature != rootP->cType.laserInfo.parent.nSignature)
+		if (gameData.Object (nNextParent)->info.nSignature != rootP->cType.laserInfo.parent.nSignature)
 			break;	//	Probably means nParent was killed.  Just continue.
 		if (nNextParent == nRoot) {
 			Int3 ();	//	Hmm, CObject is nParent of itself.  This would seem to be bad, no?
 			break;
 			}
 		nRoot = nNextParent;
-		rootP = OBJECTS + nRoot;
+		rootP = gameData.Object (nRoot);
 		objP->cType.laserInfo.parent.nObject = nRoot;
 		objP->cType.laserInfo.parent.nType = rootP->info.nType;
 		objP->cType.laserInfo.parent.nSignature = rootP->info.nSignature;
@@ -388,7 +388,7 @@ return nObject;
 int32_t CreateNewWeaponSimple (CFixVector* vDirection, CFixVector* vPosition, int16_t parent, uint8_t nWeaponType, int32_t bMakeSound)
 {
 	CHitResult	hitResult;
-	CObject*		parentObjP = OBJECTS + parent;
+	CObject*		parentObjP = gameData.Object (parent);
 	int32_t			fate;
 
 	//	Find segment containing laser fire position.  If the robot is straddling a segment, the position from

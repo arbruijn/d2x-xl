@@ -176,13 +176,13 @@ char *NetworkGetPlayerName (int32_t nObject)
 {
 if (nObject < 0)
 	return NULL;
-if (OBJECTS [nObject].info.nType != OBJ_PLAYER)
+if (gameData.Object (nObject)->info.nType != OBJ_PLAYER)
 	return NULL;
-if (OBJECTS [nObject].info.nId >= MAX_PLAYERS)
+if (gameData.Object (nObject)->info.nId >= MAX_PLAYERS)
 	return NULL;
-if (OBJECTS [nObject].info.nId >= N_PLAYERS)
+if (gameData.Object (nObject)->info.nId >= N_PLAYERS)
 	return NULL;
-return PLAYER (OBJECTS [nObject].info.nId).callsign;
+return PLAYER (gameData.Object (nObject)->info.nId).callsign;
 }
 
 //------------------------------------------------------------------------------
@@ -295,7 +295,7 @@ int32_t GotTeamSpawnPos (void)
 
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	j = FindSegByPos (*PlayerSpawnPos (i), -1, 1, 0);
-	gameData.multiplayer.playerInit [i].nSegType = (j < 0) ? SEGMENT_FUNC_NONE : SEGMENTS [j].m_function;
+	gameData.multiplayer.playerInit [i].nSegType = (j < 0) ? SEGMENT_FUNC_NONE : gameData.Segment (j)->m_function;
 	switch (gameData.multiplayer.playerInit [i].nSegType) {
 		case SEGMENT_FUNC_GOAL_BLUE:
 		case SEGMENT_FUNC_TEAM_BLUE:
@@ -398,7 +398,7 @@ return bHoard;
 
 int8_t SwitchObservedPlayer (void)
 {
-if (LOCALOBJECT.Type () != OBJ_GHOST)
+if (LOCALOBJECT->Type () != OBJ_GHOST)
 	return 0;
 int8_t nPlayer = LOCALPLAYER.ObservedPlayer ();
 int16_t nTeam = GetTeam (N_LOCALPLAYER);

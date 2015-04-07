@@ -108,7 +108,7 @@ glMatrixMode (matrixMode);
 void SetupRenderView (fix xStereoSeparation, int16_t *nStartSegP, int32_t bOglScale)
 {
 	int16_t		nStartSeg;
-	bool			bPlayer = (gameData.objs.viewerP == &LOCALOBJECT);
+	bool			bPlayer = (gameData.objs.viewerP == LOCALOBJECT);
 	CFixMatrix	mView = gameData.objs.viewerP->info.position.mOrient;
 	fix			xZoom = gameStates.render.xZoom;
 
@@ -170,7 +170,7 @@ if (nStartSegP)
 SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView, xZoom, bOglScale, xStereoSeparation);
 #if DBG
 {
-CFixVector p, m_pos = OBJECTS [0].FrontPosition ();
+CFixVector p, m_pos = gameData.Object (0)->FrontPosition ();
 tScreenPos s;
 transformation.TransformAndEncode (p, m_pos);
 //SetupCanvasses ();

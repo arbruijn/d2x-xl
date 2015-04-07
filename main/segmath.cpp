@@ -95,7 +95,7 @@ else {
 	*segP++ = ConvertToByte (orient.m.dir.u.v.coord.z);
 	*segP++ = ConvertToByte (orient.m.dir.f.v.coord.z);
 
-	pv = gameData.segs.vertices + SEGMENTS [objP->info.nSegment].m_vertices [0];
+	pv = gameData.segs.vertices + gameData.Segment (objP->info.nSegment)->m_vertices [0];
 	posP->pos [0] = (int16_t) ((objP->info.position.vPos.v.coord.x - pv->v.coord.x) >> RELPOS_PRECISION);
 	posP->pos [1] = (int16_t) ((objP->info.position.vPos.v.coord.y - pv->v.coord.y) >> RELPOS_PRECISION);
 	posP->pos [2] = (int16_t) ((objP->info.position.vPos.v.coord.z - pv->v.coord.z) >> RELPOS_PRECISION);
@@ -155,7 +155,7 @@ if (objP) {
 
 	Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
 
-	pv = gameData.segs.vertices + SEGMENTS [nSegment].m_vertices [0];
+	pv = gameData.segs.vertices + gameData.Segment (nSegment)->m_vertices [0];
 	objP->info.position.vPos.v.coord.x = (spp->pos [0] << RELPOS_PRECISION) + pv->v.coord.x;
 	objP->info.position.vPos.v.coord.y = (spp->pos [1] << RELPOS_PRECISION) + pv->v.coord.y;
 	objP->info.position.vPos.v.coord.z = (spp->pos [2] << RELPOS_PRECISION) + pv->v.coord.z;

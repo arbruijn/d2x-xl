@@ -459,7 +459,7 @@ for (; nSegment < nLastSeg; nSegment++) {
 		BRP;
 #endif
 	SEGFACES [nSegment].nFaces = 0;
-	SEGMENTS [nSegment].Read (cf);
+	gameData.Segment (nSegment)->Read (cf);
 	}
 }
 
@@ -470,7 +470,7 @@ void LoadExtSegmentsCompiled (CFile& cf)
 gameData.producers.nRepairCenters = 0;
 for (int32_t i = 0; i < gameData.segs.nSegments; i++) {
 	if (gameData.segs.nLevelVersion > 5)
-		SEGMENTS [i].ReadExtras (cf);
+		gameData.Segment (i)->ReadExtras (cf);
 #if DBG
 	if (i == nDbgSeg)
 		BRP;
@@ -482,7 +482,7 @@ for (int32_t i = 0; i < gameData.segs.nSegments; i++) {
 	if (i == nDbgSeg)
 		BRP;
 #endif
-	SEGMENTS [i].CreateGenerator (SEGMENTS [i].m_function);
+	gameData.Segment (i)->CreateGenerator (gameData.Segment (i)->m_function);
 	}
 }
 
@@ -591,7 +591,7 @@ void ComputeSegSideCenters (int32_t nSegment)
 
 INIT_PROGRESS_LOOP (nSegment, j, gameData.segs.nSegments);
 
-for (i = nSegment * 6, segP = SEGMENTS + nSegment; nSegment < j; nSegment++, segP++) {
+for (i = nSegment * 6, segP = gameData.Segment (nSegment); nSegment < j; nSegment++, segP++) {
 	segP->ComputeCenter ();
 #if CALC_SEGRADS
 	segP->GetSideDists (segP->m_vCenter, xSideDists, 0);
@@ -623,7 +623,7 @@ void ComputeChildDists (int32_t nSegment)
 INIT_PROGRESS_LOOP (nSegment, j, gameData.segs.nSegments);
 
 for (; nSegment < j; nSegment++)
-	SEGMENTS [nSegment].ComputeChildDists ();
+	gameData.Segment (nSegment)->ComputeChildDists ();
 }
 
 //------------------------------------------------------------------------------

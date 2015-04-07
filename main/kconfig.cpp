@@ -1668,9 +1668,9 @@ else if (m_version > 0)  {
 		temp_ptr += sizeof (CFixVector);
 		ship_orient = reinterpret_cast<CFixMatrix*> (temp_ptr);
 		// Fill in ship postion...
-		*ship_pos = LOCALOBJECT.info.position.vPos;
+		*ship_pos = LOCALOBJECT->info.position.vPos;
 		// Fill in ship orientation...
-		*ship_orient = LOCALOBJECT.info.position.mOrient;
+		*ship_orient = LOCALOBJECT->info.position.mOrient;
 		}
     if (m_version>=4) {
 	   advanced_ext_control_info *temp_ptr = reinterpret_cast<advanced_ext_control_info*> (m_info);
@@ -1706,8 +1706,8 @@ else if (m_version > 0)  {
 	//memset (&r,0,sizeof (r);
 
 	if (N_LOCALPLAYER > -1) {
-		LOCALOBJECT.mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
-		LOCALOBJECT.mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest CSide.
+		LOCALOBJECT->mType.physInfo.flags &= (~PF_TURNROLL);	// Turn off roll when turning
+		LOCALOBJECT->mType.physInfo.flags &= (~PF_LEVELLING);	// Turn off leveling to nearest CSide.
 		gameOpts->gameplay.nAutoLeveling = 0;
 
 		if (m_version > 0) {
@@ -1719,8 +1719,8 @@ else if (m_version > 0)  {
 
 			if (!Kconfig_abs_movement->IsZero ()) {
 				tempm = CFixMatrix::Create(*Kconfig_abs_movement);
-				ViewMatrix = LOCALOBJECT.info.position.mOrient * tempm;
-				LOCALOBJECT.info.position.mOrient = ViewMatrix;
+				ViewMatrix = LOCALOBJECT->info.position.mOrient * tempm;
+				LOCALOBJECT->info.position.mOrient = ViewMatrix;
 			}
 			oem_message = reinterpret_cast<char*> ((size_t) Kconfig_abs_movement + sizeof (CAngleVector));
 			if (oem_message [0] != '\0')

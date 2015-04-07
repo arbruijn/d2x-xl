@@ -67,10 +67,10 @@ int32_t ChooseThiefRecreationSegment (void)
 
 nDepth = THIEF_DEPTH;
 while (nSegment == -1) {
-	nSegment = PickConnectedSegment (OBJECTS + LOCALPLAYER.nObject, nDepth, &nDropDepth);
+	nSegment = PickConnectedSegment (gameData.Object (LOCALPLAYER.nObject), nDepth, &nDropDepth);
 	if (nDropDepth < THIEF_DEPTH / 2)
 		return (RandShort () * gameData.segs.nLastSegment) >> 15;
-	if ((nSegment >= 0) && (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_REACTOR))
+	if ((nSegment >= 0) && (gameData.Segment (nSegment)->m_function == SEGMENT_FUNC_REACTOR))
 		nSegment = -1;
 	nDepth--;
 	}
@@ -92,8 +92,8 @@ void RecreateThief (CObject *objP)
 	CObject*		newObjP;
 
 nSegment = ChooseThiefRecreationSegment ();
-vCenter = SEGMENTS [nSegment].Center ();
-newObjP = CreateMorphRobot( &SEGMENTS [nSegment], &vCenter, objP->info.nId);
+vCenter = gameData.Segment (nSegment)->Center ();
+newObjP = CreateMorphRobot( gameData.Segment (nSegment), &vCenter, objP->info.nId);
 InitAIObject (OBJ_IDX (newObjP), AIB_SNIPE, -1);
 gameData.thief.xReInitTime = gameData.time.xGame + I2X (10);		//	In 10 seconds, re-initialize thief.
 }

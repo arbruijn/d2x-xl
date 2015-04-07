@@ -55,7 +55,7 @@ int32_t	bOutLineMode = 0,
 int32_t FaceIsVisible (int16_t nSegment, int16_t nSide)
 {
 #if SW_CULLING
-CSegment *segP = SEGMENTS + nSegment;
+CSegment *segP = gameData.Segment (nSegment);
 CSide *sideP = segP->m_sides + nSide;
 CFixVector v;
 if (sideP->m_nType == SIDE_IS_QUAD) {
@@ -153,7 +153,7 @@ if (nSegment < 0)
 	return 0;
 //if (!gameStates.render.nLightingMethod)
 //	return 0;
-CSegment* segP = SEGMENTS + nSegment;
+CSegment* segP = gameData.Segment (nSegment);
 if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0))
 	return (segP->m_owner == 1) ? 2 : 1;
 if (!missionConfig.m_bColoredSegments)
@@ -179,8 +179,8 @@ char IsColoredSegFace (int16_t nSegment, int16_t nSide)
 if (!gameStates.render.nLightingMethod)
 	return 0;
 #endif
-	CSegment*	segP = SEGMENTS + nSegment;
-	CSegment*	connSegP = (segP->m_children [nSide] < 0) ? NULL : SEGMENTS + segP->m_children [nSide];
+	CSegment*	segP = gameData.Segment (nSegment);
+	CSegment*	connSegP = (segP->m_children [nSide] < 0) ? NULL : gameData.Segment (segP->m_children [nSide]);
 
 if (IsEntropyGame && (extraGameInfo [1].entropy.nOverrideTextures == 2) && (segP->m_owner > 0)) {
 	if (!connSegP || (connSegP->m_owner != segP->m_owner))
@@ -226,8 +226,8 @@ CFloatVector *ColoredSegmentColor (int32_t nSegment, int32_t nSide, char nColor)
 //if (!gameStates.render.nLightingMethod)
 //	return NULL;
 
-	CSegment*	segP = SEGMENTS + nSegment;
-	CSegment*	connSegP = (segP->m_children [nSide] < 0) ? NULL : SEGMENTS + segP->m_children [nSide];
+	CSegment*	segP = gameData.Segment (nSegment);
+	CSegment*	connSegP = (segP->m_children [nSide] < 0) ? NULL : gameData.Segment (segP->m_children [nSide]);
 
 #if DBG
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -481,7 +481,7 @@ if (!IS_WALL (nWall))
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	BRP;
 #endif
-if (!(wallP = WALLS + nWall))
+if (!(wallP = gameData.Wall (nWall)))
 	return 1;
 if (SHOW_DYN_LIGHT) {
 	bTransparent = (wallP->state == WALL_DOOR_CLOAKING) || (wallP->state == WALL_DOOR_DECLOAKING);
@@ -509,8 +509,8 @@ if (bCloaked || bTransparent || (widFlags & WID_TRANSPCOLOR_FLAG)) {
 
 	if (!gameOpts->render.color.bWalls)
 		c = 0;
-	if (WALLS [nWall].hps)
-		fAlpha = (float) fabs ((1.0f - (float) WALLS [nWall].hps / ((float) I2X (100))));
+	if (gameData.Wall (nWall)->hps)
+		fAlpha = (float) fabs ((1.0f - (float) gameData.Wall (nWall)->hps / ((float) I2X (100))));
 	else if (IsMultiGame && gameStates.app.bHaveExtraGameInfo [1])
 		fAlpha = COMPETITION ? 0.5f : (float) (FADE_LEVELS - extraGameInfo [1].grWallTransparency) / (float) FADE_LEVELS;
 	else
@@ -538,7 +538,7 @@ if (gameStates.app.bD2XLevel) {
 	c = wallP->cloakValue;
 	return colorP->Alpha () = (c && (c < FADE_LEVELS)) ? (float) (FADE_LEVELS - c) / (float) FADE_LEVELS : 1.0f;
 	}
-if (gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (SEGMENTS [nSegment].m_sides [nSide].m_nBaseTex))
+if (gameOpts->render.effects.bAutoTransparency && IsTransparentTexture (gameData.Segment (nSegment)->m_sides [nSide].m_nBaseTex))
 	return colorP->Alpha () = 0.8f;
 return colorP->Alpha () = 1.0f;
 }
@@ -660,7 +660,7 @@ void RotateSideNorms (void)
 	CSide			*sideP;
 
 for (i = 0; i < gameData.segs.nSegments; i++)
-	for (j = 6, sideP = SEGMENTS [i].m_sides; j; j--, sideP++) {
+	for (j = 6, sideP = gameData.Segment (i)->m_sides; j; j--, sideP++) {
 		transformation.Rotate (sideP->m_rotNorms [0], sideP->m_normals [0], 0);
 		transformation.Rotate (sideP->m_rotNorms [1], sideP->m_normals [1], 0);
 		}
@@ -747,9 +747,9 @@ for (int32_t i = 0, j = 1; nRadius; nRadius--) {
 	for (int32_t h = i, i = j; h < i; h++) {
 		int32_t nSegment = segListP [h];
 		if ((bVisible [nSegment] == nVisible) &&
-			 (!nMaxDist || (CFixVector::Dist (SEGMENTS [nStartSeg].Center (), SEGMENTS [nSegment].Center ()) <= nMaxDist)))
+			 (!nMaxDist || (CFixVector::Dist (gameData.Segment (nStartSeg)->Center (), gameData.Segment (nSegment)->Center ()) <= nMaxDist)))
 			return 1;
-		CSegment* segP = SEGMENTS + nSegment;
+		CSegment* segP = gameData.Segment (nSegment);
 		for (int32_t nChild = 0; nChild < SEGMENT_SIDE_COUNT; nChild++) {
 			int32_t nChildSeg = segP->m_children [nChild];
 			if ((nChildSeg >= 0) && (visitedP [nChildSeg] != nVisited) && (segP->IsPassable (nChild, NULL) & WID_TRANSPARENT_FLAG)) {

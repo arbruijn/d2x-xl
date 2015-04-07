@@ -883,7 +883,7 @@ if (!m_bBetweenLevels) {
 	i = gameData.walls.nWalls;
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
-		WALLS [j].SaveState (m_cf);
+		gameData.Wall (j)->SaveState (m_cf);
 //Save exploding wall info
 	i = int32_t (gameData.walls.exploding.ToS ());
 	m_cf.WriteInt (i);
@@ -932,7 +932,7 @@ if (!m_bBetweenLevels) {
 		}
 //Save tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)
-		SEGMENTS [i].SaveState (m_cf);
+		gameData.Segment (i)->SaveState (m_cf);
 // Save the producer info
 	m_cf.WriteInt (gameData.reactor.bDestroyed);
 	m_cf.WriteFix (gameData.reactor.countdown.nTimer);
@@ -1336,18 +1336,18 @@ if (IAmGameHost ()) {
 void CSaveGameManager::FixNetworkObjects (int32_t nServerPlayer, int32_t nOtherObjNum, int32_t nServerObjNum)
 {
 if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 0)) {
-	CObject h = OBJECTS [nServerObjNum];
-	OBJECTS [nServerObjNum] = OBJECTS [nOtherObjNum];
-	OBJECTS [nOtherObjNum] = h;
-	OBJECTS [nServerObjNum].info.nId = nServerObjNum;
-	OBJECTS [nOtherObjNum].info.nId = 0;
+	CObject h = *gameData.Object (nServerObjNum);
+	*gameData.Object (nServerObjNum) = *gameData.Object (nOtherObjNum);
+	*gameData.Object (nOtherObjNum) = h;
+	gameData.Object (nServerObjNum)->info.nId = nServerObjNum;
+	gameData.Object (nOtherObjNum)->info.nId = 0;
 	if (N_LOCALPLAYER == nServerObjNum) {
-		OBJECTS [nServerObjNum].info.controlType = CT_FLYING;
-		OBJECTS [nOtherObjNum].info.controlType = CT_REMOTE;
+		gameData.Object (nServerObjNum)->info.controlType = CT_FLYING;
+		gameData.Object (nOtherObjNum)->info.controlType = CT_REMOTE;
 		}
 	else if (N_LOCALPLAYER == nOtherObjNum) {
-		OBJECTS [nServerObjNum].info.controlType = CT_REMOTE;
-		OBJECTS [nOtherObjNum].info.controlType = CT_FLYING;
+		gameData.Object (nServerObjNum)->info.controlType = CT_REMOTE;
+		gameData.Object (nOtherObjNum)->info.controlType = CT_FLYING;
 		}
 	}
 }
@@ -1775,8 +1775,8 @@ if (!m_bBetweenLevels) {
 		int16_t nObject;
 		while (-1 < (nObject = m_cf.ReadShort ())) {
 			nObject = AllocObject (nObject, false);
-			OBJECTS [nObject].LoadState (m_cf);
-			OBJECTS [nObject].Link ();
+			gameData.Object (nObject)->LoadState (m_cf);
+			gameData.Object (nObject)->Link ();
 			}
 		}
 	else {
@@ -1786,7 +1786,7 @@ if (!m_bBetweenLevels) {
 		if (m_nVersion < 59) {
 			for (i = 0; i < h; i++) {
 				int16_t nObject = AllocObject (i, false);
-				CObject* objP = OBJECTS + nObject;
+				CObject* objP = gameData.Object (nObject);
 				objP->LoadState (m_cf);
 				if (objP->Type () >= MAX_OBJECT_TYPES)
 					FreeObject (nObject);
@@ -1800,8 +1800,8 @@ if (!m_bBetweenLevels) {
 		else {
 			for (i = 0; i < h; i++) {
 				int16_t nObject = AllocObject (m_cf.ReadShort (), false);
-				OBJECTS [nObject].LoadState (m_cf);
-				OBJECTS [nObject].Link ();
+				gameData.Object (nObject)->LoadState (m_cf);
+				gameData.Object (nObject)->Link ();
 				}
 			}
 		}
@@ -1902,7 +1902,7 @@ if (!m_bBetweenLevels) {
 		m_cf.ReadShort ();
 	//Restore tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)
-		SEGMENTS [i].LoadState (m_cf);
+		gameData.Segment (i)->LoadState (m_cf);
 	//Restore the producer info
 	audio.Prepare ();
 	SetupWalls ();
@@ -2111,7 +2111,7 @@ if (!m_bBetweenLevels) {
 	m_cf.Read (&gameData.objs.nObjects, sizeof (int32_t), 1);
 	gameData.objs.nLastObject [0] = gameData.objs.nObjects - 1;
 	for (i = 0; i < gameData.objs.nObjects; i++)
-		m_cf.Read (&OBJECTS [i].info, sizeof (tBaseObject), 1);
+		m_cf.Read (&gameData.Object (i)->info, sizeof (tBaseObject), 1);
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	FixObjects ();
 	ClaimObjectSlots ();
@@ -2130,19 +2130,19 @@ if (!m_bBetweenLevels) {
 	for (i = 0; i < gameData.walls.nWalls; i++) {
 		tCompatibleWall w;
 		m_cf.Read (&w, sizeof (w), 1);
-		WALLS [i].nSegment = w.nSegment;
-		WALLS [i].nSide = w.nSide;
-		WALLS [i].hps = w.hps;
-		WALLS [i].nLinkedWall = w.nLinkedWall;
-		WALLS [i].nType = w.nType;
-		WALLS [i].flags = w.flags;
-		WALLS [i].state = w.state;
-		WALLS [i].nTrigger = w.nTrigger;
-		WALLS [i].nClip = w.nClip;
-		WALLS [i].keys = w.keys;
-		WALLS [i].controllingTrigger = w.controllingTrigger;
-		WALLS [i].cloakValue = w.cloakValue;
-		WALLS [i].bVolatile = 0;
+		gameData.Wall (i)->nSegment = w.nSegment;
+		gameData.Wall (i)->nSide = w.nSide;
+		gameData.Wall (i)->hps = w.hps;
+		gameData.Wall (i)->nLinkedWall = w.nLinkedWall;
+		gameData.Wall (i)->nType = w.nType;
+		gameData.Wall (i)->flags = w.flags;
+		gameData.Wall (i)->state = w.state;
+		gameData.Wall (i)->nTrigger = w.nTrigger;
+		gameData.Wall (i)->nClip = w.nClip;
+		gameData.Wall (i)->keys = w.keys;
+		gameData.Wall (i)->controllingTrigger = w.controllingTrigger;
+		gameData.Wall (i)->cloakValue = w.cloakValue;
+		gameData.Wall (i)->bVolatile = 0;
 		}
 	//now that we have the walls, check if any sounds are linked to
 	//walls that are now open
@@ -2403,12 +2403,12 @@ else {
 	for (i = 0; i < N_PLAYERS; i++) {
 	  if (!PLAYER (i).connected) {
 			NetworkDisconnectPlayer (i);
-  			PLAYEROBJECT (i).CreateAppearanceEffect ();
+  			PLAYEROBJECT (i)->CreateAppearanceEffect ();
 	      }
 		}
 	}
 gameData.objs.viewerP = 
-gameData.objs.consoleP = OBJECTS + LOCALPLAYER.nObject;
+gameData.objs.consoleP = gameData.Object (LOCALPLAYER.nObject);
 StartTriggeredSounds ();
 StartTime (1);
 if (!extraGameInfo [0].nBossCount [0] && (!IsMultiGame || IsCoopGame) && OpenExits ())

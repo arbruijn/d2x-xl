@@ -246,7 +246,7 @@ if (nVertex == nDbgVertex)
 				continue;
 			}
 #if 1
-		if (!lightP->Contribute (nSegment, nSide, nVertex, vVertex, vNormal, xMaxLightRange, 1.0f, (lightP->info.nSegment >= 0) ? -SEGMENTS [lightP->info.nSegment].AvgRad () : 0, nThread))
+		if (!lightP->Contribute (nSegment, nSide, nVertex, vVertex, vNormal, xMaxLightRange, 1.0f, (lightP->info.nSegment >= 0) ? -gameData.Segment (lightP->info.nSegment)->AvgRad () : 0, nThread))
 			continue;
 #else
 		CFixVector vLightToVertex = vVertex - lightP->info.vPos;
@@ -259,7 +259,7 @@ if (nVertex == nDbgVertex)
 				continue;
 			}
 		if (lightP->info.nSegment >= 0)
-			lightP->render.xDistance [nThread] -= SEGMENTS [lightP->info.nSegment].AvgRad ();
+			lightP->render.xDistance [nThread] -= gameData.Segment (lightP->info.nSegment)->AvgRad ();
 		if (lightP->render.xDistance [nThread] > xMaxLightRange)
 			continue;
 #endif
@@ -286,7 +286,7 @@ nFrameCount = gameData.app.nFrameCount;
 #endif
 	int32_t			i;
 	CFixVector	vNormal;
-	CSide*		sideP = SEGMENTS [faceP->m_info.nSegment].m_sides + faceP->m_info.nSide;
+	CSide*		sideP = gameData.Segment (faceP->m_info.nSegment)->m_sides + faceP->m_info.nSide;
 
 #if DBG
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
@@ -321,8 +321,8 @@ if (gameStates.render.nLightingMethod) {
 	int16_t					i, j;
 	CDynLight*			lightP;
 	CActiveDynLight*	activeLightsP = m_data.active [nThread].Buffer ();
-	fix					xMaxLightRange = SEGMENTS [nSegment].AvgRad () + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE);
-	CFixVector			c = SEGMENTS [nSegment].Center ();
+	fix					xMaxLightRange = gameData.Segment (nSegment)->AvgRad () + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE);
+	CFixVector			c = gameData.Segment (nSegment)->Center ();
 
 	//m_data.iStaticLights [nThread] = m_data.index [0][nThread].nActive;
 	for (i = MAX_NEAREST_LIGHTS; i; i--, nearestLightP++) {
@@ -368,9 +368,9 @@ if (gameStates.render.nLightingMethod) {
 	uint8_t					nType;
 	int16_t					i = m_data.nLights [1];
 	int32_t					bSkipHeadlight = (gameStates.render.nType != RENDER_TYPE_OBJECTS) && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bHeadlight);
-	fix						xMaxLightRange = SEGMENTS [nSegment].AvgRad () + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE);
+	fix						xMaxLightRange = gameData.Segment (nSegment)->AvgRad () + (/*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE);
 	CDynLight*				lightP;
-	CFixVector&				vDestPos = SEGMENTS [nSegment].Center ();
+	CFixVector&				vDestPos = gameData.Segment (nSegment)->Center ();
 	CActiveDynLight*		activeLightsP = m_data.active [nThread].Buffer ();
 
 	lightManager.ResetAllUsed (0, nThread);
@@ -419,7 +419,7 @@ if (gameStates.render.nLightingMethod) {
 			lightP->info.bDiffuse [nThread] = (lightP->info.nSide >= 0) 
 													 ? gameData.segs.LightVis (lightP->Index (), nSegment) 
 													 : gameData.segs.SegVis (lightP->info.nSegment, nSegment);
-		else if ((lightP->info.nObject >= 0) && ((lightP->info.nSegment = OBJECTS [lightP->info.nObject].info.nSegment) >= 0))
+		else if ((lightP->info.nObject >= 0) && ((lightP->info.nSegment = gameData.Object (lightP->info.nObject)->info.nSegment) >= 0))
 			lightP->info.bDiffuse [nThread] = gameData.segs.SegVis (lightP->info.nSegment, nSegment);
 		else
 			continue;
@@ -501,7 +501,7 @@ if (gameStates.render.nLightingMethod) {
 		if ((bForce = (lightP->info.nSegment == nSegment) && (lightP->info.nSide == nSide)))
 			lightP->info.bDiffuse [nThread] = 1;
 #if 1
-		else if (!lightP->Contribute (nSegment, nSide, -1, *vPixelPos, &SEGMENTS [nSegment].Normal (nSide, 2), xMaxLightRange, 1.0f, 0, nThread))
+		else if (!lightP->Contribute (nSegment, nSide, -1, *vPixelPos, &gameData.Segment (nSegment)->Normal (nSide, 2), xMaxLightRange, 1.0f, 0, nThread))
 			continue;
 #else
 		else {
@@ -540,7 +540,7 @@ return m_data.index [0][nThread].nActive;
 int32_t CLightManager::SetNearestToSgmAvg (int16_t nSegment, int32_t nThread)
 {
 	int32_t			i;
-	CSegment		*segP = SEGMENTS + nSegment;
+	CSegment		*segP = gameData.Segment (nSegment);
 
 #if DBG
 if (nSegment == nDbgSeg)
@@ -576,7 +576,7 @@ if (nSegment == nDbgSeg)
 	BRP;
 #endif
 nThread = ThreadId (nThread);
-if (SEGMENTS [nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
+if (gameData.Segment (nSegment)->m_function == SEGMENT_FUNC_SKYBOX) {
 	segColorP->Red () = segColorP->Green () = segColorP->Blue () = segColorP->Alpha () = 1.0f;
 	segColorP->index = 1;
 	}
@@ -593,7 +593,7 @@ else if (gameStates.render.bPerPixelLighting) {
 		if (vPosP)
 			vcd.vertPos.Assign (*vPosP);
 		else {
-			vCenter = SEGMENTS [nSegment].Center ();
+			vCenter = gameData.Segment (nSegment)->Center ();
 			vcd.vertPos.Assign (vCenter);
 			}
 		vcd.vertPosP = &vcd.vertPos;
@@ -609,13 +609,13 @@ else if (gameStates.render.bPerPixelLighting) {
 	}
 else {
 	if (vPosP) {
-		vCenter = SEGMENTS [nSegment].Center ();
+		vCenter = gameData.Segment (nSegment)->Center ();
 		//transformation.Transform (&vCenter, &vCenter);
 		ds = 0.0f;
 		}
 	else
 		ds = 1.0f;
-	pv = SEGMENTS [nSegment].m_vertices;
+	pv = gameData.Segment (nSegment)->m_vertices;
 	c.Set (0.0f, 0.0f, 0.0f, 1.0f);
 	c.index = 0;
 	for (i = 0; i < 8; i++, pv++) {

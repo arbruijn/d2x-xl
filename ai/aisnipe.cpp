@@ -43,8 +43,8 @@ void MakeNearbyRobotSnipe (void)
 
 CreateBfsList (OBJSEG (TARGETOBJ), bfsList, &nBfsLength, MNRS_SEG_MAX);
 for (i = 0; i < nBfsLength; i++) {
-	for (nObject = SEGMENTS [bfsList [i]].m_objects; nObject >= 0; nObject = objP->info.nNextInSeg) {
-		objP = OBJECTS + nObject;
+	for (nObject = gameData.Segment (bfsList [i])->m_objects; nObject >= 0; nObject = objP->info.nNextInSeg) {
+		objP = gameData.Object (nObject);
 		if (objP->info.nType != OBJ_ROBOT)  
 			continue;
 		if ((objP->info.nId == ROBOT_BRAIN) || (objP->info.nId == 255))

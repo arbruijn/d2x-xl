@@ -718,7 +718,7 @@ if (!gameStates.app.cheats.bRobotsFiring)
 //#endif
 
 //	If playerP is dead, stop firing.
-if (LOCALOBJECT.info.nType == OBJ_GHOST)
+if (LOCALOBJECT->info.nType == OBJ_GHOST)
 	return;
 
 if (botInfoP->attackType == 1) {
@@ -1048,7 +1048,7 @@ void ai_move_relative_to_player(CObject *objP, tAILocalInfo *ailP, fix dist_to_p
 
 // New way, green guys don't evade:	if ((botInfoP->attackType == 0) && (objP->cType.aiInfo.nDangerLaser != -1)) {
 	if (objP->cType.aiInfo.nDangerLaser != -1) {
-		dangerObjP = &OBJECTS [objP->cType.aiInfo.nDangerLaser];
+		dangerObjP = gameData.Object (objP->cType.aiInfo.nDangerLaser);
 
 		if ((dangerObjP->info.nType == OBJ_WEAPON) && (dangerObjP->info.nSignature == objP->cType.aiInfo.nDangerLaserSig)) {
 			fix			dot, dist_to_laser, fieldOfView;
@@ -1265,13 +1265,13 @@ void move_object_to_legal_spot(CObject *objP)
 {
 	CFixVector	original_pos = objP->info.position.vPos;
 	int32_t			i;
-	CSegment*	segP = SEGMENTS + objP->info.nSegment;
+	CSegment*	segP = gameData.Segment (objP->info.nSegment);
 
 	for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 		if (segP->IsPassable (i, objP) & WID_PASSABLE_FLAG) {
 			CFixVector	vSegCenter, goal_dir;
 
-			vSegCenter = SEGMENTS [segP->m_children [i]].Center ();
+			vSegCenter = gameData.Segment (segP->m_children [i])->Center ();
 			goal_dir = vSegCenter - objP->info.position.vPos;
 			goal_dir *= objP->info.xSize;
 			objP->info.position.vPos += goal_dir;
@@ -1299,7 +1299,7 @@ void move_towards_segment_center(CObject *objP)
 	fix			dist_to_center;
 	CFixVector	vSegCenter, goal_dir;
 
-	vSegCenter = SEGMENTS [objP->info.nSegment].Center ();
+	vSegCenter = gameData.Segment (objP->info.nSegment)->Center ();
 	goal_dir = vSegCenter - objP->info.position.vPos;
 	dist_to_center = CFixVector::Normalize (goal_dir);
 	if (dist_to_center < objP->info.xSize) {
@@ -1333,7 +1333,7 @@ int32_t ai_door_is_openable(CObject *objP, CSegment *segP, int32_t sidenum)
 	if (objP == gameData.objs.consoleP) {
 		int32_t	nWall = segP->m_sides [sidenum].m_nWall;
 
-		if (WALLS [nWall].nType == WALL_DOOR)
+		if (gameData.Wall (nWall)->nType == WALL_DOOR)
 			return 1;
 	}
 
@@ -1341,7 +1341,7 @@ int32_t ai_door_is_openable(CObject *objP, CSegment *segP, int32_t sidenum)
 		nWall = segP->m_sides [sidenum].m_nWall;
 
 		if (nWall != -1)
-			if ((WALLS [nWall].nType == WALL_DOOR) && (WALLS [nWall].keys == KEY_NONE) && !(WALLS [nWall].flags & WALL_DOOR_LOCKED))
+			if ((gameData.Wall (nWall)->nType == WALL_DOOR) && (gameData.Wall (nWall)->keys == KEY_NONE) && !(gameData.Wall (nWall)->flags & WALL_DOOR_LOCKED))
 				return 1;
 	}
 
@@ -1353,7 +1353,7 @@ int32_t ai_door_is_openable(CObject *objP, CSegment *segP, int32_t sidenum)
 //--int32_t door_openable_by_robot(CObject *objP, int32_t nWall)
 //--{
 //--	if (objP->info.nId == ROBOT_BRAIN)
-//--		if (WALLS [nWall].keys == KEY_NONE)
+//--		if (gameData.Wall (nWall)->keys == KEY_NONE)
 //--			return 1;
 //--
 //--	return 0;
@@ -1363,12 +1363,12 @@ int32_t ai_door_is_openable(CObject *objP, CSegment *segP, int32_t sidenum)
 //	Return true if a special CObject (playerP or control center) is in this CSegment.
 int32_t special_object_in_seg (int32_t nSegment)
 {
-	int32_t nObject = SEGMENTS [nSegment].m_objects;
+	int32_t nObject = gameData.Segment (nSegment)->m_objects;
 
 while (nObject != -1) {
-	if ((OBJECTS [nObject].info.nType == OBJ_PLAYER) || (OBJECTS [nObject].info.nType == OBJ_REACTOR))
+	if ((gameData.Object (nObject)->info.nType == OBJ_PLAYER) || (gameData.Object (nObject)->info.nType == OBJ_REACTOR))
 		return 1;
-	nObject = OBJECTS [nObject].info.nNextInSeg;
+	nObject = gameData.Object (nObject)->info.nNextInSeg;
 	}
 return 0;
 }
@@ -1377,7 +1377,7 @@ return 0;
 //	Randomly select a CSegment attached to *segP, reachable by flying.
 int32_t get_random_child(int32_t nSegment)
 {
-CSegment	*segP = SEGMENTS + nSegment;
+CSegment	*segP = gameData.Segment (nSegment);
 int32_t sidenum = (RandShort () * 6) >> 15;
 while (!(segP->IsPassable (sidenum, NULL) & WID_PASSABLE_FLAG))
 	sidenum = (RandShort () * 6) >> 15;
@@ -1390,7 +1390,7 @@ int32_t CreateGatedRobot (int32_t nSegment, int32_t nObjId)
 {
 	int32_t		nObject;
 	CObject*		objP;
-	CSegment*	segP = &SEGMENTS [nSegment];
+	CSegment*	segP = gameData.Segment (nSegment);
 	CFixVector	vObjPos;
 	tRobotInfo*	botInfoP = &gameData.bots.info [1][nObjId];
 	int32_t		count = 0;
@@ -1417,7 +1417,7 @@ int32_t CreateGatedRobot (int32_t nSegment, int32_t nObjId)
 		return -1;
 		}
 
-	objP = &OBJECTS [nObject];
+	objP = gameData.Object (nObject);
 	//Set polygon-CObject-specific data
 	objP->rType.polyObjInfo.nModel = botInfoP->nModel;
 	objP->rType.polyObjInfo.nSubObjFlags = 0;
@@ -1464,9 +1464,9 @@ int32_t boss_fits_in_seg (CObject *bossObjP, int32_t nSegment)
 {
 	CFixVector	vCenter;
 	int32_t			nBossObj = bossObjP - OBJECTS;
-	CSegment*	segP = SEGMENTS + nSegment;
+	CSegment*	segP = gameData.Segment (nSegment);
 
-vCenter = SEGMENTS [nSegment].Center ();
+vCenter = gameData.Segment (nSegment)->Center ();
 for (int32_t nPos = 0; nPos < 9; nPos++) {
 	if (!nPos) 
 		bossObjP->info.position.vPos = vCenter;
@@ -1477,7 +1477,7 @@ for (int32_t nPos = 0; nPos < 9; nPos++) {
 		vPos = gameData.segs.vertices [segP->m_vertices [nPos - 1]];
 		bossObjP->info.position.vPos = CFixVector::Avg(vPos, vCenter);
 		}
-	OBJECTS [nBossObj].RelinkToSeg (nSegment);
+	gameData.Object (nBossObj)->RelinkToSeg (nSegment);
 	if (!ObjectIntersectsWall (bossObjP))
 		return 1;
 	}
@@ -1846,7 +1846,7 @@ if (DoAnyRobotDyingFrame (objP))
 
 	//	- -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -  - -
  	//	If in materialization center, exit
- 	if (!(IsMultiGame) && (SEGMENTS [objP->info.nSegment].m_function == SEGMENT_FUNC_ROBOTMAKER)) {
+ 	if (!(IsMultiGame) && (gameData.Segment (objP->info.nSegment)->m_function == SEGMENT_FUNC_ROBOTMAKER)) {
  		AIFollowPath (objP, 1, 1, NULL);		// 1 = playerP is visible, which might be a lie, but it works.
  		return;
  	}
@@ -2281,7 +2281,7 @@ if (DoAnyRobotDyingFrame (objP))
 
 			if (!ai_multiplayer_awareness(objP, 62))
 				return;
-			vCenter = SEGMENTS [objP->info.nSegment].SideCenter (aiP->GOALSIDE);
+			vCenter = gameData.Segment (objP->info.nSegment)->SideCenter (aiP->GOALSIDE);
 			vGoal = vCenter - objP->info.position.vPos;
 			CFixVector::Normalize (vGoal);
 			ai_turn_towards_vector (&vGoal, objP, botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
@@ -2530,7 +2530,7 @@ void dump_ai_objects_all()
 		fprintf(D1_AI_dump_file, "Error message: %s\n", D1_AI_error_message);
 
 	for (nObject=0; nObject <= gameData.objs.nLastObject; nObject++) {
-		CObject		*objP = &OBJECTS [nObject];
+		CObject		*objP = gameData.Object (nObject);
 		tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 		tAILocalInfo		*ailP = &gameData.ai.localInfo [nObject];
 		fix			dist_to_player;

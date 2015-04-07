@@ -86,7 +86,7 @@ if (objP) {
 void StopPlayerMovement (void)
 {
 if (OBJECTS.Buffer () && !(gameData.objs.speedBoost.Buffer () && gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted)) {
-	StopObjectMovement (OBJECTS + LOCALPLAYER.nObject);
+	StopObjectMovement (gameData.Object (LOCALPLAYER.nObject));
 	memset (&gameData.physics.playerThrust, 0, sizeof (gameData.physics.playerThrust));
 //	gameData.time.SetTime (I2X (1));
 	gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted = 0;
@@ -183,7 +183,7 @@ int32_t CObject::CheckWallPhysics (void)
 
 if (info.nType != OBJ_PLAYER)
 	return 0;
-CSegment* segP = SEGMENTS + info.nSegment;
+CSegment* segP = gameData.Segment (info.nSegment);
 int32_t sideMask = segP->Masks (info.position.vPos, info.xSize).m_side;
 if (sideMask) {
 	int16_t		nSide;
@@ -230,7 +230,7 @@ return nType;
 void CObject::HandleSegmentFunction (void)
 {
 if ((info.nType == OBJ_PLAYER) && (N_LOCALPLAYER == info.nId)) {
-	CSegment*		segP = SEGMENTS + info.nSegment;
+	CSegment*		segP = gameData.Segment (info.nSegment);
 	CPlayerData*	playerP = gameData.multiplayer.players + N_LOCALPLAYER;
 
    if (gameData.app.GameMode (GM_CAPTURE))
@@ -253,7 +253,7 @@ if ((info.nType == OBJ_PLAYER) && (N_LOCALPLAYER == info.nId)) {
 		StartPlayerDeathSequence (this);
 	else {
 		segP->ConquerCheck ();
-		//CObject* objP = OBJECTS + playerP->nObject;
+		//CObject* objP = gameData.Object (playerP->nObject);
 		fix energy = segP->Refuel (fix (playerP->InitialEnergy ()) - playerP->Energy ());
 		if (energy > 0)
 			playerP->UpdateEnergy (energy);
@@ -428,9 +428,9 @@ for (i = 0; i < gameData.physics.nSegments - 1; i++) {
 	if (gameData.physics.segments [i] > gameData.segs.nLastSegment)
 		PrintLog (0, "invalid segment in gameData.physics.segments\n");
 #endif
-	nConnSide = SEGMENTS [gameData.physics.segments [i + 1]].ConnectedSide (SEGMENTS + gameData.physics.segments [i]);
+	nConnSide = gameData.Segment (gameData.physics.segments [i + 1])->ConnectedSide (gameData.Segment (gameData.physics.segments [i]));
 	if (nConnSide != -1)
-		SEGMENTS [gameData.physics.segments [i]].OperateTrigger (nConnSide, this, 0);
+		gameData.Segment (gameData.physics.segments [i])->OperateTrigger (nConnSide, this, 0);
 #if DBG
 	else	// segments are not directly connected, so do binary subdivision until you find connected segments.
 		PrintLog (0, "Unconnected segments %d, %d\n", gameData.physics.segments [i + 1], gameData.physics.segments [i]);
@@ -448,9 +448,9 @@ void CObject::CheckGuidedMissileThroughExit (int16_t nPrevSegment)
 {
 if (IsGuidedMissile (N_LOCALPLAYER)) {
 	if (nPrevSegment != info.nSegment) {
-		int16_t nConnSide = SEGMENTS [info.nSegment].ConnectedSide (SEGMENTS + nPrevSegment);
+		int16_t nConnSide = gameData.Segment (info.nSegment)->ConnectedSide (gameData.Segment (nPrevSegment));
 		if (nConnSide != -1) {
-			CTrigger* trigP = SEGMENTS [nPrevSegment].Trigger (nConnSide);
+			CTrigger* trigP = gameData.Segment (nPrevSegment)->Trigger (nConnSide);
 			if (trigP && (trigP->m_info.nType == TT_EXIT))
 				gameData.objs.guidedMissile [N_LOCALPLAYER].objP->UpdateLife (0);
 			}
@@ -528,7 +528,7 @@ if ((info.nType == OBJ_ROBOT) && gameOpts->render.lightning.bRobots) {
 	}
 else if ((info.nType == OBJ_PLAYER) && gameOpts->render.lightning.bPlayers) {
 	nEffect = PLAYER_LIGHTNING;
-	int32_t nType = SEGMENTS [OBJSEG (this)].m_function;
+	int32_t nType = gameData.Segment (OBJSEG (this))->m_function;
 	if (gameData.FusionCharge (info.nId) > I2X (2))
 		bNeedEffect = true;
 	else if (nType == SEGMENT_FUNC_FUELCENTER)
@@ -687,7 +687,7 @@ int32_t frameFilter = gameData.app.nFrameCount & 3;
 for (int32_t i = windowRenderedData [nWindow].nObjects; i; ) {
 	int32_t nObject = windowRenderedData [nWindow].renderedObjects [--i];
 	if ((nObject & 3) == frameFilter) {
-		CObject* objP = OBJECTS + nObject;
+		CObject* objP = gameData.Object (nObject);
 		if (objP->info.nType == OBJ_ROBOT) {
 			if (CFixVector::Dist (viewerP->info.position.vPos, objP->info.position.vPos) < I2X (100)) {
 				tAILocalInfo* ailP = gameData.ai.localInfo + nObject;

@@ -217,11 +217,11 @@ DoReactorDestroyedStuff (NULL);
 for (i = 0; i < gameData.trigs.m_nTriggers; i++) {
 	if (TRIGGERS [i].IsExit ()) {
 		for (j = 0; j < gameData.walls.nWalls; j++) {
-			if (WALLS [j].nTrigger == i) {
-				int16_t nSegment = WALLS [j].nSegment;
-				gameData.objs.consoleP->info.position.vPos = SEGMENTS [nSegment].Center ();
+			if (gameData.Wall (j)->nTrigger == i) {
+				int16_t nSegment = gameData.Wall (j)->nSegment;
+				gameData.objs.consoleP->info.position.vPos = gameData.Segment (nSegment)->Center ();
 				gameData.objs.consoleP->RelinkToSeg (nSegment);
-				gameData.objs.consoleP->info.position.mOrient.m.dir.f = SEGMENTS [nSegment].m_sides [WALLS [j].nSide].m_normals [0];
+				gameData.objs.consoleP->info.position.mOrient.m.dir.f = gameData.Segment (nSegment)->m_sides [gameData.Wall (j)->nSide].m_normals [0];
 				gameData.objs.consoleP->info.position.mOrient.m.dir.f.Neg ();
 				return;
 				}
@@ -519,7 +519,7 @@ if (bVerbose)
 void GasolineCheat (int32_t bVerbose)
 {
 LOCALPLAYER.SetShield (LOCALPLAYER.MaxShield (), false);
-OBJECTS [N_LOCALPLAYER].ResetDamage ();
+gameData.Object (N_LOCALPLAYER)->ResetDamage ();
 LOCALPLAYER.SetEnergy (MAX_ENERGY);
 if (bVerbose)
 	HUDInitMessage (TXT_SLURP);
@@ -553,7 +553,7 @@ void InvulCheat (int32_t bVerbose)
 
 if (!(LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE)) {
 	LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
-	OBJECTS [N_LOCALPLAYER].ResetDamage ();
+	gameData.Object (N_LOCALPLAYER)->ResetDamage ();
 	}
 else if (LOCALPLAYER.invulnerableTime == 0x7fffffff)
 	LOCALPLAYER.flags &= ~PLAYER_FLAGS_INVULNERABLE;
@@ -808,7 +808,7 @@ SetMaxOmegaCharge ();
 cockpit->UpdateLaserWeaponInfo ();
 if (bInitialize)
 	SetLastSuperWeaponStates ();
-OBJECTS [N_LOCALPLAYER].ResetDamage ();
+gameData.Object (N_LOCALPLAYER)->ResetDamage ();
 }
 
 //------------------------------------------------------------------------------
@@ -829,7 +829,7 @@ if (gameStates.gameplay.bMineMineCheat) {
 	LOCALPLAYER.flags &= ~(/*PLAYER_FLAGS_CLOAKED |*/ PLAYER_FLAGS_INVULNERABLE);
 	LOCALPLAYER.invulnerableTime =
 	LOCALPLAYER.cloakTime = 0;
-	OBJECTS [N_LOCALPLAYER].ResetDamage ();
+	gameData.Object (N_LOCALPLAYER)->ResetDamage ();
 	}
 else {
 	AccessoryCheat (bVerbose);

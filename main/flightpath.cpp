@@ -81,11 +81,11 @@ if (!p)
 	*vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.f * PP_DELTAZ;
 else {
 	*vPos = p->vPos;
-	int32_t nStage = LOCALOBJECT.AppearanceStage ();
+	int32_t nStage = LOCALOBJECT->AppearanceStage ();
 	if (nStage) {
 		float fDist = (nStage > 0)
-						  ? Min (1.0f, 4.0f * LOCALOBJECT.AppearanceScale ())
-						  : 1.0f; //1.0f - LOCALOBJECT.AppearanceScale ();
+						  ? Min (1.0f, 4.0f * LOCALOBJECT->AppearanceScale ())
+						  : 1.0f; //1.0f - LOCALOBJECT->AppearanceScale ();
 		if (!p->bFlipped) {
 			p->bFlipped = true;
 			p->mOrient.m.dir.f.Neg ();

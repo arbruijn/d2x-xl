@@ -200,7 +200,7 @@ objP->info.position.mOrient.m.dir.u.v.coord.z = *sp++ << MATRIX_PRECISION;
 objP->info.position.mOrient.m.dir.f.v.coord.z = *sp++ << MATRIX_PRECISION;
 nSegment = spp->nSegment;
 objP->info.nSegment = nSegment;
-const CFixVector& v = gameData.segs.vertices [SEGMENTS [nSegment].m_vertices [0]];
+const CFixVector& v = gameData.segs.vertices [gameData.Segment (nSegment)->m_vertices [0]];
 objP->info.position.vPos.v.coord.x = (spp->pos [0] << RELPOS_PRECISION) + v.v.coord.x;
 objP->info.position.vPos.v.coord.y = (spp->pos [1] << RELPOS_PRECISION) + v.v.coord.y;
 objP->info.position.vPos.v.coord.z = (spp->pos [2] << RELPOS_PRECISION) + v.v.coord.z;
@@ -534,7 +534,7 @@ else {
 if ((objP->info.nId == ANIM_MORPHING_ROBOT) && 
 	 (renderType == RT_FIREBALL) && 
 	 (objP->info.controlType == CT_EXPLOSION))
-	ExtractOrientFromSegment (&objP->info.position.mOrient, SEGMENTS + objP->info.nSegment);
+	ExtractOrientFromSegment (&objP->info.position.mOrient, gameData.Segment (objP->info.nSegment));
 if (!(bRevertFormat || bSkip)) {
 	bRevertFormat = 1;
 	NDWritePosition (objP);
@@ -684,7 +684,7 @@ switch (objP->info.controlType) {
 			Assert (prevObjP != NULL);
 			if (prevObjP->info.controlType == CT_EXPLOSION) {
 				if ((prevObjP->info.nFlags & OF_ATTACHED) && (prevObjP->cType.explInfo.attached.nParent != -1))
-					AttachObject (OBJECTS + prevObjP->cType.explInfo.attached.nParent, objP);
+					AttachObject (gameData.Object (prevObjP->cType.explInfo.attached.nParent), objP);
 				else
 					objP->info.nFlags &= ~OF_ATTACHED;
 				}
@@ -1111,7 +1111,7 @@ if (gameStates.render.cameras.bActive)
 	return;
 if (gameData.demo.bViewWasRecorded [objP->Index ()])
 	return;
-//if (obj==&LOCALOBJECT && !gameStates.app.bPlayerIsDead)
+//if (obj==LOCALOBJECT && !gameStates.app.bPlayerIsDead)
 //	return;
 StopTime ();
 NDWriteByte (ND_EVENT_RENDER_OBJECT);
@@ -1207,7 +1207,7 @@ if (gameStates.render.cameras.bActive)
 StopTime ();
 NDWriteByte (ND_EVENT_LINK_SOUND_TO_OBJ);
 NDWriteInt (soundno);
-NDWriteInt (OBJECTS [nObject].info.nSignature);
+NDWriteInt (gameData.Object (nObject)->info.nSignature);
 NDWriteInt (maxVolume);
 NDWriteInt (maxDistance);
 NDWriteInt (loop_start);
@@ -1223,7 +1223,7 @@ if (gameStates.render.cameras.bActive)
 	return;
 StopTime ();
 NDWriteByte (ND_EVENT_KILL_SOUND_TO_OBJ);
-NDWriteInt (OBJECTS [nObject].info.nSignature);
+NDWriteInt (gameData.Object (nObject)->info.nSignature);
 StartTime (0);
 }
 
@@ -1756,14 +1756,14 @@ NDWriteByte ((int8_t)missionManager.nCurrentLevel);
 if (bJustStartedRecording == 1) {
 	NDWriteInt (gameData.walls.nWalls);
 	for (i = 0; i < gameData.walls.nWalls; i++) {
-		NDWriteByte (WALLS [i].nType);
+		NDWriteByte (gameData.Wall (i)->nType);
 		if (gameStates.app.bNostalgia || gameOpts->demo.bOldFormat)
-			NDWriteByte (uint8_t (WALLS [i].flags));
+			NDWriteByte (uint8_t (gameData.Wall (i)->flags));
 		else
-			NDWriteShort (WALLS [i].flags);
-		NDWriteByte (WALLS [i].state);
-		segP = &SEGMENTS [WALLS [i].nSegment];
-		nSide = WALLS [i].nSide;
+			NDWriteShort (gameData.Wall (i)->flags);
+		NDWriteByte (gameData.Wall (i)->state);
+		segP = gameData.Segment (gameData.Wall (i)->nSegment);
+		nSide = gameData.Wall (i)->nSide;
 		NDWriteShort (segP->m_sides [nSide].m_nBaseTex);
 		NDWriteShort (segP->m_sides [nSide].m_nOvlTex | (segP->m_sides [nSide].m_nOvlOrient << 14));
 		bJustStartedRecording = 0;
@@ -1899,9 +1899,9 @@ void NDPopCtrlCenTriggers ()
 	CSegment *segP, *connSegP;
 
 for (i = 0; i < gameData.reactor.triggers.m_nLinks; i++) {
-	segP = SEGMENTS + gameData.reactor.triggers.m_segments [i];
+	segP = gameData.Segment (gameData.reactor.triggers.m_segments [i]);
 	side = gameData.reactor.triggers.m_sides [i];
-	connSegP = SEGMENTS + segP->m_children [side];
+	connSegP = gameData.Segment (segP->m_children [side]);
 	nConnSide = segP->ConnectedSide (connSegP);
 	anim_num = segP->Wall (side)->nClip;
 	n = gameData.walls.animP [anim_num].nFrameCount;
@@ -1959,7 +1959,7 @@ bDone = 0;
 nTag = 255;
 #if 0
 for (int32_t nObject = 1; nObject < gameData.objs.nLastObject [0]; nObject++)
-	if ((OBJECTS [nObject].info.nType != OBJ_NONE) && (OBJECTS [nObject].info.nType != OBJ_EFFECT))
+	if ((gameData.Object (nObject)->info.nType != OBJ_NONE) && (gameData.Object (nObject)->info.nType != OBJ_EFFECT))
 		ReleaseObject (nObject);
 #else
 if (gameData.demo.nVcrState != ND_STATE_PAUSED)
@@ -2035,7 +2035,7 @@ while (!bDone) {
 			if (nObject == nDbgObj)
 				BRP;
 #endif
-			objP = OBJECTS + nObject;
+			objP = gameData.Object (nObject);
 			NDReadObject (objP);
 			CATCH_BAD_READ
 			if (objP->info.controlType == CT_POWERUP)
@@ -2106,7 +2106,7 @@ while (!bDone) {
 			loop_end = NDReadInt ();
 			nObject = NDFindObject (nSignature);
 			if (nObject > -1)   //  @mk, 2/22/96, John told me to.
-				audio.CreateObjectSound ((int16_t) soundno, OBJECTS [nObject].SoundClass (), (int16_t) nObject, 1, maxVolume, maxDistance, loop_start, loop_end);
+				audio.CreateObjectSound ((int16_t) soundno, gameData.Object (nObject)->SoundClass (), (int16_t) nObject, 1, maxVolume, maxDistance, loop_start, loop_end);
 			}
 			break;
 
@@ -2130,7 +2130,7 @@ while (!bDone) {
 			player = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-				SEGMENTS [nSegment].ProcessWallHit ((int16_t) nSide, damage, player, &(OBJECTS [0]));
+				gameData.Segment (nSegment)->ProcessWallHit ((int16_t) nSide, damage, player, gameData.Object (0));
 			break;
 		}
 
@@ -2141,7 +2141,7 @@ while (!bDone) {
 			bShot = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
-				CSegment*	segP = SEGMENTS + nSegment;
+				CSegment*	segP = gameData.Segment (nSegment);
 				CTrigger*	trigP = segP->Trigger (nSide);
 				if (trigP && (trigP->m_info.nType == TT_SECRET_EXIT)) {
 					int32_t truth;
@@ -2150,10 +2150,10 @@ while (!bDone) {
 					Assert (nTag == ND_EVENT_SECRET_THINGY);
 					truth = NDReadInt ();
 					if (!truth)
-						segP->OperateTrigger ((int16_t) nSide, OBJECTS + nObject, bShot);
+						segP->OperateTrigger ((int16_t) nSide, gameData.Object (nObject), bShot);
 					} 
 				else
-					segP->OperateTrigger ((int16_t) nSide, OBJECTS + nObject, bShot);
+					segP->OperateTrigger ((int16_t) nSide, gameData.Object (nObject), bShot);
 				}
 			break;
 
@@ -2171,7 +2171,7 @@ while (!bDone) {
 			nObject = AllocObject ();
 			if (nObject==-1)
 				break;
-			objP = OBJECTS + nObject;
+			objP = gameData.Object (nObject);
 			NDReadObject (objP);
 			objP->info.renderType = RT_POLYOBJ;
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
@@ -2190,7 +2190,7 @@ while (!bDone) {
 			nSide = NDReadInt ();
 			CATCH_BAD_READ
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-				SEGMENTS [nSegment].ToggleWall (nSide);
+				gameData.Segment (nSegment)->ToggleWall (nSide);
 			break;
 
 		case ND_EVENT_CONTROL_CENTER_DESTROYED:
@@ -2377,7 +2377,7 @@ while (!bDone) {
 			nSide = NDReadByte ();
 			NDReadVector (pnt);
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED)
-				SEGMENTS [nSegment].BlowupTexture (nSide, pnt, &dummy, 0);
+				gameData.Segment (nSegment)->BlowupTexture (nSide, pnt, &dummy, 0);
 			}
 			break;
 
@@ -2480,9 +2480,9 @@ while (!bDone) {
 				 (gameData.demo.nVcrState != ND_STATE_REWINDING) &&
 				 (gameData.demo.nVcrState != ND_STATE_ONEFRAMEBACKWARD)) {
 				if (gameData.demo.nVersion >= 18)
-					SEGMENTS [nSegment].SetTexture (nSide, SEGMENTS + nConnSeg, nConnSide, nAnim, nFrame);
+					gameData.Segment (nSegment)->SetTexture (nSide, gameData.Segment (nConnSeg), nConnSide, nAnim, nFrame);
 				else
-					SEGMENTS [nSegment].m_sides [nSide].m_nBaseTex = SEGMENTS [nConnSeg].m_sides [nConnSide].m_nBaseTex = tmap;
+					gameData.Segment (nSegment)->m_sides [nSide].m_nBaseTex = gameData.Segment (nConnSeg)->m_sides [nConnSide].m_nBaseTex = tmap;
 				}
 			}
 			break;
@@ -2505,15 +2505,15 @@ while (!bDone) {
 			if ((gameData.demo.nVcrState != ND_STATE_PAUSED) &&
 				 (gameData.demo.nVcrState != ND_STATE_REWINDING) &&
 				 (gameData.demo.nVcrState != ND_STATE_ONEFRAMEBACKWARD)) {
-				Assert (tmap!=0 && SEGMENTS [nSegment].m_sides [nSide].m_nOvlTex!=0);
+				Assert (tmap!=0 && gameData.Segment (nSegment)->m_sides [nSide].m_nOvlTex!=0);
 				if (gameData.demo.nVersion >= 18)
-					SEGMENTS [nSegment].SetTexture (nSide, SEGMENTS + nConnSeg, nConnSide, nAnim, nFrame);
+					gameData.Segment (nSegment)->SetTexture (nSide, gameData.Segment (nConnSeg), nConnSide, nAnim, nFrame);
 				else {
-					SEGMENTS [nSegment].m_sides [nSide].m_nOvlTex = tmap & 0x3fff;
-					SEGMENTS [nSegment].m_sides [nSide].m_nOvlOrient = (tmap >> 14) & 3;
+					gameData.Segment (nSegment)->m_sides [nSide].m_nOvlTex = tmap & 0x3fff;
+					gameData.Segment (nSegment)->m_sides [nSide].m_nOvlOrient = (tmap >> 14) & 3;
 					if (nConnSide < 6) {
-						SEGMENTS [nConnSeg].m_sides [nConnSide].m_nOvlTex = tmap & 0x3fff;
-						SEGMENTS [nConnSeg].m_sides [nConnSide].m_nOvlOrient = (tmap >> 14) & 3;
+						gameData.Segment (nConnSeg)->m_sides [nConnSide].m_nOvlTex = tmap & 0x3fff;
+						gameData.Segment (nConnSeg)->m_sides [nConnSide].m_nOvlOrient = (tmap >> 14) & 3;
 						}
 					}
 				}
@@ -2714,8 +2714,8 @@ while (!bDone) {
 				int32_t nConnSide;
 				CSegment *segP, *oppSegP;
 
-				segP = SEGMENTS + nSegment;
-				oppSegP = SEGMENTS + segP->m_children [nSide];
+				segP = gameData.Segment (nSegment);
+				oppSegP = gameData.Segment (segP->m_children [nSide]);
 				nConnSide = segP->ConnectedSide (oppSegP);
 				anim_num = segP->Wall (nSide)->nClip;
 				if (gameData.walls.animP [anim_num].flags & WCF_TMAP1)
@@ -2726,7 +2726,7 @@ while (!bDone) {
 					oppSegP->m_sides [nConnSide].m_nOvlTex = gameData.walls.animP [anim_num].frames [0];
 				}
 			else
-				SEGMENTS [nSegment].OpenDoor (nSide);
+				gameData.Segment (nSegment)->OpenDoor (nSide);
 			}
 			break;
 
@@ -2764,20 +2764,20 @@ while (!bDone) {
 			l1 = NDReadShort ();
 			l2 = NDReadShort ();
 			l3 = NDReadShort ();
-			WALLS [nFrontWall].nType = nType;
-			WALLS [nFrontWall].state = state;
-			WALLS [nFrontWall].cloakValue = cloakValue;
-			segP = SEGMENTS + WALLS [nFrontWall].nSegment;
-			nSide = WALLS [nFrontWall].nSide;
+			gameData.Wall (nFrontWall)->nType = nType;
+			gameData.Wall (nFrontWall)->state = state;
+			gameData.Wall (nFrontWall)->cloakValue = cloakValue;
+			segP = gameData.Segment (gameData.Wall (nFrontWall)->nSegment);
+			nSide = gameData.Wall (nFrontWall)->nSide;
 			segP->m_sides [nSide].m_uvls [0].l = ((int32_t) l0) << 8;
 			segP->m_sides [nSide].m_uvls [1].l = ((int32_t) l1) << 8;
 			segP->m_sides [nSide].m_uvls [2].l = ((int32_t) l2) << 8;
 			segP->m_sides [nSide].m_uvls [3].l = ((int32_t) l3) << 8;
-			WALLS [nBackWall].nType = nType;
-			WALLS [nBackWall].state = state;
-			WALLS [nBackWall].cloakValue = cloakValue;
-			segP = &SEGMENTS [WALLS [nBackWall].nSegment];
-			nSide = WALLS [nBackWall].nSide;
+			gameData.Wall (nBackWall)->nType = nType;
+			gameData.Wall (nBackWall)->state = state;
+			gameData.Wall (nBackWall)->cloakValue = cloakValue;
+			segP = gameData.Segment (gameData.Wall (nBackWall)->nSegment);
+			nSide = gameData.Wall (nBackWall)->nSide;
 			segP->m_sides [nSide].m_uvls [0].l = ((int32_t) l0) << 8;
 			segP->m_sides [nSide].m_uvls [1].l = ((int32_t) l1) << 8;
 			segP->m_sides [nSide].m_uvls [2].l = ((int32_t) l2) << 8;
@@ -2815,14 +2815,14 @@ while (!bDone) {
 			if (bJustStartedPlayback) {
 				gameData.walls.nWalls = NDReadInt ();
 				for (i = 0; i < gameData.walls.nWalls; i++) {   // restore the walls
-					WALLS [i].nType = NDReadByte ();
+					gameData.Wall (i)->nType = NDReadByte ();
 					if (gameData.demo.nVersion < 19)
-						WALLS [i].flags = uint16_t (NDReadByte ());
+						gameData.Wall (i)->flags = uint16_t (NDReadByte ());
 					else
-						WALLS [i].flags = uint16_t (NDReadShort ());
-					WALLS [i].state = NDReadByte ();
-					segP = SEGMENTS + WALLS [i].nSegment;
-					nSide = WALLS [i].nSide;
+						gameData.Wall (i)->flags = uint16_t (NDReadShort ());
+					gameData.Wall (i)->state = NDReadByte ();
+					segP = gameData.Segment (gameData.Wall (i)->nSegment);
+					nSide = gameData.Wall (i)->nSide;
 					segP->m_sides [nSide].m_nBaseTex = NDReadShort ();
 					nTexture = NDReadShort ();
 					segP->m_sides [nSide].m_nOvlTex = nTexture & 0x3fff;
@@ -3018,7 +3018,7 @@ nCurObjs = gameData.objs.nLastObject [0];
 memcpy (curObjs, OBJECTS.Buffer (), OBJECTS.Size ());
 #else
 for (i = 0; i <= nCurObjs; i++)
-	memcpy (&(curObjs [i]), &(OBJECTS [i]), sizeof (CObject));
+	memcpy (&(curObjs [i]), gameData.Object (i), sizeof (CObject));
 #endif
 gameData.demo.nVcrState = ND_STATE_PAUSED;
 if (NDReadFrameInfo () == -1) {

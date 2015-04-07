@@ -72,7 +72,7 @@ tPointSeg *InsertTransitPoint (tPointSeg *curSegP, tPointSeg *predSegP, tPointSe
 	CFixVector	vCenter, vPoint;
 	int16_t			nSegment;
 
-vCenter = SEGMENTS [predSegP->nSegment].SideCenter (nConnSide);
+vCenter = gameData.Segment (predSegP->nSegment)->SideCenter (nConnSide);
 vPoint = predSegP->point - vCenter;
 vPoint.v.coord.x /= 16;
 vPoint.v.coord.y /= 16;
@@ -208,7 +208,7 @@ for (i = 1, --j; i < j; i++) {
 	if (e.Mag () < I2X (1)/2)
 		Int3 ();
 #endif
-	xSegSize = SEGMENTS [nSegment].AvgRad ();
+	xSegSize = gameData.Segment (nSegment)->AvgRad ();
 	if (xSegSize > I2X (40))
 		xSegSize = I2X (40);
 	vGoalPos = ptSegs [i].point + e * (xSegSize / 4);
@@ -312,7 +312,7 @@ if (bRandom)
 nCurSeg = nStartSeg;
 bVisited [nCurSeg] = 1;
 while (nCurSeg != nEndSeg) {
-	segP = SEGMENTS + nCurSeg;
+	segP = gameData.Segment (nCurSeg);
 	if (bRandom && (RandShort () < 8192))	//create a different xlate at random time intervals
 		CreateRandomXlate (randomXlate);
 
@@ -384,7 +384,7 @@ if (bSafeMode && ((pointSegP - gameData.ai.routeSegs) + 2 * lNumPoints + 1 >= LE
 	return -1;
 	}
 pointSegP->nSegment = nStartSeg;
-pointSegP->point = SEGMENTS [nStartSeg].Center ();
+pointSegP->point = gameData.Segment (nStartSeg)->Center ();
 if (bSafeMode)
 	lNumPoints *= 2;
 j = lNumPoints++;
@@ -393,7 +393,7 @@ for (i = qTail; i >= 0; j -= h) {
 	nDestSeg = segmentQ [i].end;
 	nParentSeg = segmentQ [i].start;
 	pointSegP [j].nSegment = nDestSeg;
-	pointSegP [j].point = SEGMENTS [nDestSeg].Center ();
+	pointSegP [j].point = gameData.Segment (nDestSeg)->Center ();
 	pointSegP [j].nConnSide = segmentQ [i].nConnSide;
 	if (nParentSeg == nStartSeg)
 		break;
@@ -515,7 +515,7 @@ for (i = 1; i < numPoints; i++) {
 		}
 	if (nCurSeg != nNextSeg) {
 		for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++)
-			if (SEGMENTS [nCurSeg].m_sides [nSide].FaceCount () && (SEGMENTS [nCurSeg].m_children [nSide] == nNextSeg))
+			if (gameData.Segment (nCurSeg)->m_sides [nSide].FaceCount () && (gameData.Segment (nCurSeg)->m_children [nSide] == nNextSeg))
 				break;
 		if (nSide == SEGMENT_SIDE_COUNT) {
 #if TRACE
@@ -774,7 +774,7 @@ if (nSegment == -1) {
 	Int3 ();	//	Oops, CObject is not in any CSegment.
 				// Contact Mike: This is impossible.p.
 	//	Hack, move CObject to center of CSegment it used to be in.
-	objP->Position () = SEGMENTS [objP->info.nSegment].Center ();
+	objP->Position () = gameData.Segment (objP->info.nSegment)->Center ();
 	}
 else
 	objP->RelinkToSeg (nSegment);
@@ -792,7 +792,7 @@ else
 // -- too much work -- 	if (gameData.escort.nKillObject == -1)
 // -- too much work -- 		return 0;
 // -- too much work --
-// -- too much work -- 	kill_objp = &OBJECTS [gameData.escort.nKillObject];
+// -- too much work -- 	kill_objp = gameData.Object (gameData.escort.nKillObject);
 // -- too much work --
 // -- too much work -- 	fq.p0						= &objP->Position ();
 // -- too much work -- 	fq.startSeg				= objP->info.nSegment;
@@ -1203,7 +1203,7 @@ if (nObjects > 0) {
 		objectList.SortAscending (0, nObjects - 1);
 	for (nObjIdx = 0; nObjIdx < nObjects; nObjIdx++) {
 		nObject = objectList [nObjIdx].nObject;
-		objP = OBJECTS + nObject;
+		objP = gameData.Object (nObject);
 		aiP = &objP->cType.aiInfo;
 #if DBG
 		if (aiP->nHideIndex < 0)

@@ -228,11 +228,11 @@ if (!(pDists = new tLightDist [lightManager.LightCount (0)])) {
 
 nMaxLights = MAX_NEAREST_LIGHTS;
 i = GetLoopLimits (i, j, gameData.segs.nSegments, nThread);
-for (segP = SEGMENTS + i; i < j; i++, segP++) {
+for (segP = gameData.Segment (i); i < j; i++, segP++) {
 	center = segP->Center ();
 	lightP = lightManager.Lights ();
 	for (l = n = 0; l < lightManager.LightCount (0); l++, lightP++) {
-		if (!((lightP->info.nSegment < 0) ? gameData.segs.SegVis (OBJECTS [lightP->info.nObject].info.nSegment, i) : gameData.segs.LightVis (lightP->Index (), i)))
+		if (!((lightP->info.nSegment < 0) ? gameData.segs.SegVis (gameData.Object (lightP->info.nObject)->info.nSegment, i) : gameData.segs.LightVis (lightP->Index (), i)))
 			continue;
 		h = int32_t (CFixVector::Dist (center, lightP->info.vPos) - F2X (lightP->info.fRad));
 		if (h < 0)
@@ -302,7 +302,7 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 		if (IsLightVert (nVertex, lightP->info.faceP))
 			h = 0;
 		else {
-			h = (lightP->info.nSegment < 0) ? OBJECTS [lightP->info.nObject].info.nSegment : lightP->info.nSegment;
+			h = (lightP->info.nSegment < 0) ? gameData.Object (lightP->info.nObject)->info.nSegment : lightP->info.nSegment;
 			if (!VERTVIS (h, nVertex))
 				continue;
 			vLightToVert = *vertP - lightP->info.vPos;
@@ -311,7 +311,7 @@ for (vertP = gameData.segs.vertices + nVertex; nVertex < j; nVertex++, vertP++) 
 				continue;
 #if 0
 			if ((lightP->info.nSegment >= 0) && (lightP->info.nSide >= 0)) {
-				CSide* sideP = SEGMENTS [lightP->info.nSegment].m_sides + lightP->info.nSide;
+				CSide* sideP = gameData.Segment (lightP->info.nSegment)->m_sides + lightP->info.nSide;
 				if ((CFixVector::Dot (sideP->m_normals [0], vLightToVert) < 0) &&
 					 ((sideP->m_nType == SIDE_IS_QUAD) || (CFixVector::Dot (sideP->m_normals [1], vLightToVert) < 0))) {
 					h = simpleRouter [nThread].PathLength (VERTICES [nVertex], -1, lightP->info.vPos, lightP->info.nSegment, X2I (xMaxLightRange / 5), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
@@ -461,7 +461,7 @@ else {
 	nStartSeg = lightManager.Lights (nLight)->info.nSegment;
 	SetLightVis (nLight, nStartSeg);
 	}
-startSegP = SEGMENTS + nStartSeg;
+startSegP = gameData.Segment (nStartSeg);
 sideP = startSegP->m_sides + nFirstSide;
 	
 viewer.info.nSegment = nStartSeg;
@@ -475,7 +475,7 @@ for (nSide = nFirstSide; nSide <= nLastSide; nSide++, sideP++) {
 #endif
 	fVec = sideP->m_normals [2];
 	if (!bLights) {
-		viewer.info.position.vPos = SEGMENTS [nStartSeg].Center ();// + fVec;
+		viewer.info.position.vPos = gameData.Segment (nStartSeg)->Center ();// + fVec;
 		fVec.Neg (); // point from segment center outwards
 		rVec = CFixVector::Avg (VERTICES [sideP->m_corners [0]], VERTICES [sideP->m_corners [1]]) - sideP->Center ();
 		CFixVector::Normalize (rVec);
@@ -530,7 +530,7 @@ if ((nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		if (nSegment >= gameData.segs.nSegments)
 			continue;
 #endif
-		if (!SegmentIsVisible (SEGMENTS + nSegment, transformation, nThread))
+		if (!SegmentIsVisible (gameData.Segment (nSegment), transformation, nThread))
 			continue;
 		if (!bLights)
 			SetSegVis (nStartSeg, nSegment);
@@ -609,7 +609,7 @@ uint8_t flag = 3 << ((i & 3) << 1);
 
 if ((0 < dPath) || // path from light to dest blocked
 	 (lightP->info.bSelf && (nLightSeg != nDestSeg)) || // light only illuminates its own face
-	 (CFixVector::Dist (SEGMENTS [nLightSeg].Center (), SEGMENTS [nDestSeg].Center ()) - SEGMENTS [nLightSeg].MaxRad () - SEGMENTS [nDestSeg].MaxRad () >= xMaxDist)) { // distance to great
+	 (CFixVector::Dist (gameData.Segment (nLightSeg)->Center (), gameData.Segment (nDestSeg)->Center ()) - gameData.Segment (nLightSeg)->MaxRad () - gameData.Segment (nDestSeg)->MaxRad () >= xMaxDist)) { // distance to great
 
 #ifdef _OPENMP
 #	pragma omp atomic
@@ -623,12 +623,12 @@ if (*flagP & flag) // face visible
 	CHitQuery		hitQuery (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &VERTICES [0], &VERTICES [0], nLightSeg, -1, 1, 0);
 	CHitResult		hitResult;
 	CFloatVector	v0, v1;
-	CSegment*		segP = SEGMENTS + nLightSeg;
+	CSegment*		segP = gameData.Segment (nLightSeg);
 	CSide*			sideP = segP->m_sides;
 	fix				d, dMin = 0x7FFFFFFF;
 
 // cast rays from light segment (corners and center) to target segment and see if at least one of them isn't blocked by geometry
-segP = SEGMENTS + nDestSeg;
+segP = gameData.Segment (nDestSeg);
 for (i = 4; i >= -4; i--) {
 	if (i == 4) 
 		v0.Assign (sideP->Center ());

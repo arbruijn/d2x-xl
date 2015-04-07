@@ -25,6 +25,7 @@ class CLightClusterManager {
 		int32_t Add (int16_t nObject, CFloatVector *color, fix xObjIntensity);
 		void Add (int16_t nObject, int16_t nLightObj);
 		void AddForAI (CObject *objP, int16_t nObject, int16_t nShot);
+		void Delete (int16_t nObject);
 		int16_t Create (CObject *objP);
 		inline bool Use (void) { return m_bUse; }
 		inline void SetUsage (bool bUse) { m_bUse = bUse; }

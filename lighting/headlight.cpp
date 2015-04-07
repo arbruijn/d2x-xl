@@ -182,7 +182,7 @@ void CHeadlightManager::Update (void)
 for (nPlayer = 0; nPlayer < MAX_PLAYERS; nPlayer++) {
 	if (lightIds [nPlayer] >= 0) {
 		lightP = lightManager.Lights () + lightIds [nPlayer];
-		objP = OBJECTS + PLAYER (nPlayer).nObject;
+		objP = gameData.Object (PLAYER (nPlayer).nObject);
 		lightP->info.vPos = OBJPOS (objP)->vPos;
 		lightP->vDir = OBJPOS (objP)->mOrient.m.dir.f;
 		lightP->info.vPos += lightP->vDir * (objP->info.xSize / 4);

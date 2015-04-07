@@ -117,7 +117,7 @@ return m_nBestObj;
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
-//	Return true if weapon *trackerP is able to track CObject OBJECTS [nTarget], else return false.
+//	Return true if weapon *trackerP is able to track CObject gameData.Object (nTarget), else return false.
 //	In order for the CObject to be trackable, it must be within a reasonable turning radius for the missile
 //	and it must not be obstructed by a CWall.
 int32_t CObject::ObjectIsTrackable (int32_t nTarget, fix& xDot)
@@ -126,7 +126,7 @@ if (nTarget == -1)
 	return 0;
 if (IsCoopGame)
 	return 0;
-CObject* targetP = OBJECTS + nTarget;
+CObject* targetP = gameData.Object (nTarget);
 //	Don't track player if he's cloaked.
 if ((nTarget == LOCALPLAYER.nObject) && (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
 	return 0;
@@ -230,7 +230,7 @@ for (int32_t i = windowRenderedData [nWindow].nObjects - 1; i >= 0; i--) {
 	int16_t nObject = windowRenderedData [nWindow].renderedObjects [i];
 	if (nObject == LOCALPLAYER.nObject)
 		continue;
-	CObject* targetP = OBJECTS + nObject;
+	CObject* targetP = gameData.Object (nObject);
 	//	Can't track AI CObject if he's cloaked.
 	int32_t nType = targetP->Type ();
 	if (nType == OBJ_ROBOT) {
@@ -287,7 +287,7 @@ FORALL_ACTOR_OBJS (targetP) {
 		if (PLAYER (targetP->Id ()).flags & PLAYER_FLAGS_CLOAKED)
 			continue; // don't track cloaked players.
 		if (IsTeamGame) {
-			CObject *parentObjP = OBJECTS + cType.laserInfo.parent.nObject;
+			CObject *parentObjP = gameData.Object (cType.laserInfo.parent.nObject);
 			if ((parentObjP->Type () == OBJ_PLAYER) && (GetTeam (targetP->Id ()) == GetTeam (parentObjP->Id ())))
 				continue; // don't track teammates in team games
 			}
@@ -325,7 +325,7 @@ if (ObjectIsTrackable (nTarget, dot) && (!gameOpts->legacy.bHomers || (nFrame % 
 
 if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 	//	If player fired missile, then search for an CObject, if not, then give up.
-	if ((cType.laserInfo.parent.nObject >= 0) && OBJECTS [cType.laserInfo.parent.nObject].IsPlayer ()) {
+	if ((cType.laserInfo.parent.nObject >= 0) && gameData.Object (cType.laserInfo.parent.nObject)->IsPlayer ()) {
 		if (nTarget == -1) {
 			if (IsMultiGame) {
 				if (IsCoopGame)
@@ -339,7 +339,7 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 				rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, OBJ_ROBOT, nThread);
 			} 
 		else {
-			targetType1 = OBJECTS [cType.laserInfo.nHomingTarget].Type ();
+			targetType1 = gameData.Object (cType.laserInfo.nHomingTarget)->Type ();
 			if ((targetType1 == OBJ_PLAYER) || (targetType1 == OBJ_ROBOT) || (targetType1 == OBJ_MONSTERBALL))
 				rVal = FindAnyHomingTarget (Position (), targetType1, -1, nThread);
 			else
@@ -352,7 +352,7 @@ if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
 		if (nTarget == -1)
 			rVal = FindAnyHomingTarget (Position (), OBJ_PLAYER, targetType2, nThread);
 		else {
-			targetType1 = OBJECTS [cType.laserInfo.nHomingTarget].Type ();
+			targetType1 = gameData.Object (cType.laserInfo.nHomingTarget)->Type ();
 			rVal = FindAnyHomingTarget (Position (), targetType1, targetType2, nThread);
 			}
 		}

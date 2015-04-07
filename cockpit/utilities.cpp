@@ -183,7 +183,7 @@ if (nObject < 0)
 
 	CHitQuery hitQuery ((bCheckObjs ? FQ_VISIBILITY | FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_VISIBILITY | FQ_TRANSWALL),
 							  &gameData.objs.viewerP->info.position.vPos,
-							  &OBJECTS [nObject].info.position.vPos,
+							  &gameData.Object (nObject)->info.position.vPos,
 							  gameData.objs.viewerP->info.nSegment,
 							  gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP),
 							  0, 0,

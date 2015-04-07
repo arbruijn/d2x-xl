@@ -973,7 +973,7 @@ return 1;
 int32_t LineHitsFace (CFixVector *pHit, CFixVector *p0, CFixVector *p1, int16_t nSegment, int16_t nSide)
 {
 	uint16_t		i, nFaces;
-	CSegment*	segP = SEGMENTS + nSegment;
+	CSegment*	segP = gameData.Segment (nSegment);
 
 nFaces = segP->Side (nSide)->FaceCount ();
 for (i = 0; i < nFaces; i++)
@@ -1031,7 +1031,7 @@ if (bPrintLine) {
 
 vHit = *vPos;
 for (;;) {
-	segP = SEGMENTS + nSegment;
+	segP = gameData.Segment (nSegment);
 	bVisited [nSegment] = nVisited;
 	nHitSide = -1;
 #if USE_SEGRADS
@@ -1068,7 +1068,7 @@ for (;;) {
 		bHit = 1;
 		break;
 		}
-	nWID = segP->IsPassable (nHitSide, OBJECTS + nObject);
+	nWID = segP->IsPassable (nHitSide, gameData.Object (nObject));
 	if (!(nWID & WID_PASSABLE_FLAG) &&
 		 (((nWID & (WID_VISIBLE_FLAG | WID_TRANSPARENT_FLAG)) != (WID_VISIBLE_FLAG | WID_TRANSPARENT_FLAG)))) {
 		bHit = 1;
@@ -1550,11 +1550,11 @@ if (FAST_SHADOWS) {
 				if (gameData.render.shadows.lightP->info.nType < 2)
 					continue;
 				if (gameData.render.shadows.lightP->info.nType == 3) {
-					lightObjP = &PLAYEROBJECT (gameData.render.shadows.lightP->info.nPlayer);
+					lightObjP = PLAYEROBJECT (gameData.render.shadows.lightP->info.nPlayer);
 					}
 				else if (gameData.render.shadows.lightP->info.nType == 2) {
 					if (gameData.render.shadows.lightP->info.nObject >= 0) {
-						lightObjP = &OBJECTS [gameData.render.shadows.lightP->info.nObject];
+						lightObjP = gameData.Object (gameData.render.shadows.lightP->info.nObject);
 						int32_t nType = lightObjP->Type ();
 						if ((nType != OBJ_FIREBALL) && (nType != OBJ_FLARE) && (nType != OBJ_LIGHT) && !lightObjP->IsEnergyWeapon ())
 							continue;

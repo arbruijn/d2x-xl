@@ -71,7 +71,7 @@ if ((Index () == LOCALPLAYER.nObject) && automap.Active ())
 if (Appearing (false))
 	return;
 nParent = gameData.objs.parentObjs [Index ()];
-parentP = (nParent < 0) ? NULL : OBJECTS + nParent;
+parentP = (nParent < 0) ? NULL : gameData.Object (nParent);
 FixFastSinCos (fix (gameData.time.xGame / gameStates.gameplay.slowmo [1].fSpeed), &xWiggle, NULL);
 xWiggle = 100 * xWiggle / (100 + extraGameInfo [0].nSpeedScale * 25);
 if (gameData.time.xFrame < I2X (1))// Only scale wiggle if getting at least 1 FPS, to avoid causing the opposite problem.
@@ -165,7 +165,7 @@ else {
 
 fix forwardThrustTime = controls [0].forwardThrustTime;
 
-if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (RandShort () < OBJECTS [N_LOCALPLAYER].DriveDamage ()) && ((Index () != LOCALPLAYER.nObject) || !automap.Active ())) {
+if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && (RandShort () < gameData.Object (N_LOCALPLAYER)->DriveDamage ()) && ((Index () != LOCALPLAYER.nObject) || !automap.Active ())) {
 	if (controls [0].afterburnerState) {			//player has key down
 		//add in value from 0..1
 		fix xAfterburnerScale = I2X (1) + Min (I2X (1) / 2, gameData.physics.xAfterburnerCharge) * 2;

@@ -62,7 +62,7 @@ if (nObject < 0) {
 	Int3();
 	return nObject;
 	}
-objP = OBJECTS + nObject;
+objP = gameData.Object (nObject);
 objP->mType.physInfo.velocity = newVelocity;
 objP->mType.physInfo.drag = 512;	//1024;
 objP->mType.physInfo.mass = I2X (1);
@@ -157,12 +157,12 @@ if ((gameData.weapons.nPrimary == VULCAN_INDEX) || (gameData.weapons.nPrimary ==
 		ammo /= 2;		//if both vulcan & gauss, drop half
 	LOCALPLAYER.primaryAmmo [VULCAN_INDEX] -= ammo;
 	if (nObject >= 0)
-		OBJECTS [nObject].cType.powerupInfo.nCount = ammo;
+		gameData.Object (nObject)->cType.powerupInfo.nCount = ammo;
 	}
 if (gameData.weapons.nPrimary == OMEGA_INDEX) {
 	//dropped weapon has current energy
 	if (nObject >= 0)
-		OBJECTS [nObject].cType.powerupInfo.nCount = gameData.omega.xCharge [IsMultiGame];
+		gameData.Object (nObject)->cType.powerupInfo.nCount = gameData.omega.xCharge [IsMultiGame];
 	}
 if (IsMultiGame)
 	MultiSendDropWeapon (nObject);

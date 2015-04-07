@@ -261,7 +261,7 @@ for (i = nStart; i < nEnd; i++) {
 	if (nSegment == nDbgSeg)
 		BRP;
 #endif
-	if (0 > (nColor = SetupFace (nSegment, nSide, SEGMENTS + nSegment, faceP, faceColor, fAlpha))) {
+	if (0 > (nColor = SetupFace (nSegment, nSide, gameData.Segment (nSegment), faceP, faceColor, fAlpha))) {
 		faceP->m_info.bVisible = 0;
 		continue;
 		}
@@ -402,7 +402,7 @@ if (ogl.m_states.bVertexLighting)
 for (i = nStart; i < nEnd; i++) {
 	if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
 		continue;
-	segP = SEGMENTS + nSegment;
+	segP = gameData.Segment (nSegment);
 	segFaceP = SEGFACES + nSegment;
 	if (!(/*gameStates.app.bMultiThreaded ||*/ SegmentIsVisible (segP))) {
 		gameData.render.mine.visibility [0].segments [i] = -gameData.render.mine.visibility [0].segments [i];
@@ -525,7 +525,7 @@ if (ogl.m_states.bVertexLighting)
 for (i = nStart; i < nEnd; i++) {
 	if (0 > (nSegment = visibleSegs [i]))
 		continue;
-	segP = SEGMENTS + nSegment;
+	segP = gameData.Segment (nSegment);
 	segFaceP = SEGFACES + nSegment;
 	if (!(/*gameStates.app.bMultiThreaded ||*/ SegmentIsVisible (segP))) {
 		visibleSegs [i] = -visibleSegs [i] - 1;
@@ -657,7 +657,7 @@ gameStates.render.nState = 0;
 for (i = nStart; i < nEnd; i++) {
 	if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
 		continue;
-	segP = SEGMENTS + nSegment;
+	segP = gameData.Segment (nSegment);
 	segFaceP = SEGFACES + nSegment;
 	if (!(/*gameStates.app.bMultiThreaded ||*/ SegmentIsVisible (segP))) {
 		gameData.render.mine.visibility [0].segments [i] = -gameData.render.mine.visibility [0].segments [i] - 1;
@@ -713,7 +713,7 @@ int32_t CountRenderFaces (void)
 
 ogl.m_states.bUseTransform = 1; // prevent vertex transformation from setting FVERTICES!
 for (i = nSegments = nFaces = 0; i < gameData.render.mine.visibility [0].nSegments; i++) {
-	segP = SEGMENTS + gameData.render.mine.visibility [0].segments [i];
+	segP = gameData.Segment (gameData.render.mine.visibility [0].segments [i]);
 	if (SegmentIsVisible (segP)) {
 		nSegments++;
 		nFaces += SEGFACES [i].nFaces;

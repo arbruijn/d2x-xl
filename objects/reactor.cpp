@@ -95,10 +95,10 @@ if (gameStates.gameplay.nReactorCount [0] < gameStates.gameplay.nReactorCount [1
 
 	for (int32_t i = 0; i < gameStates.gameplay.nReactorCount [1]; i++, rStatP++) {
 		if ((rStatP->nDeadObj != -1) && 
-			 (OBJECTS [rStatP->nDeadObj].info.nType == OBJ_REACTOR) &&
+			 (gameData.Object (rStatP->nDeadObj)->info.nType == OBJ_REACTOR) &&
 			 (gameData.reactor.countdown.nSecsLeft > 0))
 		if (RandShort () < gameData.time.xFrame * 4)
-			CreateSmallFireballOnObject (OBJECTS + rStatP->nDeadObj, I2X (1), 1);
+			CreateSmallFireballOnObject (gameData.Object (rStatP->nDeadObj), I2X (1), 1);
 		}
 	}
 if (!gameStates.app.bEndLevelSequence)
@@ -223,7 +223,7 @@ if (bFinalCountdown ||
 	if (bFinalCountdown) {
 		KillAllBossRobots (0);
 		for (i = 0; i < gameData.reactor.triggers.m_nLinks; i++)
-			SEGMENTS [gameData.reactor.triggers.m_segments [i]].ToggleWall (gameData.reactor.triggers.m_sides [i]);
+			gameData.Segment (gameData.reactor.triggers.m_segments [i])->ToggleWall (gameData.reactor.triggers.m_sides [i]);
 		if (missionManager.nCurrentLevel < 0)
 			CFile::Delete ("secret.sgc", gameFolders.user.szSavegames);
 		}
@@ -290,7 +290,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 		CFixVector	vecToPlayer;
 		fix			xDistToPlayer;
 		int32_t			i;
-		CSegment		*segP = SEGMENTS + objP->info.nSegment;
+		CSegment		*segP = gameData.Segment (objP->info.nSegment);
 
 		// This is a hack.  Since the control center is not processed by
 		// ai_do_frame, it doesn't know how to deal with cloaked dudes.  It
@@ -301,7 +301,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 		// center can spot cloaked dudes.
 
 		if (IsMultiGame)
-			gameData.ai.target.vBelievedPos = OBJPOS (OBJECTS + LOCALPLAYER.nObject)->vPos;
+			gameData.ai.target.vBelievedPos = OBJPOS (gameData.Object (LOCALPLAYER.nObject))->vPos;
 
 		//	Hack for special control centers which are isolated and not reachable because the
 		//	real control center is inside the boss.
@@ -478,7 +478,7 @@ FORALL_ACTOR_OBJS (objP) {
 			++extraGameInfo [0].nBossCount [1];
 			if (ROBOTINFO (objP->info.nId).bEndsLevel) {
 				++extraGameInfo [0].nBossCount [0];
-				if ((nBossObj >= 0) && !ROBOTINFO (OBJECTS [nBossObj].info.nId).bEndsLevel)
+				if ((nBossObj >= 0) && !ROBOTINFO (gameData.Object (nBossObj)->info.nId).bEndsLevel)
 					nBossObj = objP->Index ();
 				}
 			else if (nBossObj < 0)
@@ -504,7 +504,7 @@ if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
 	gameData.reactor.bDisabled = 0;
 else if (gameData.bosses.ToS () > 0) {
 	for (j = 0; j < gameStates.gameplay.nReactorCount [0]; j++) {
-		objP = &OBJECTS [gameData.reactor.states [j].nObject];
+		objP = gameData.Object (gameData.reactor.states [j].nObject);
 		objP->BashToShield (true);
 		--extraGameInfo [0].nBossCount [1];
 		if (ROBOTINFO (objP->info.nId).bEndsLevel) 

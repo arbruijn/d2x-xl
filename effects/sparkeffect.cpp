@@ -35,7 +35,7 @@ CSparkManager sparkManager;
 
 void CEnergySpark::Setup (int16_t nSegment, uint8_t nType)
 {
-	CSegment*			segP = SEGMENTS + nSegment;
+	CSegment*			segP = gameData.Segment (nSegment);
 	CFixVector			vOffs;
 	CFloatVector		vRadf;
 
@@ -124,7 +124,7 @@ for (int32_t i = 0; i < m_nMaxSparks; i++)
 
 void CSparks::Setup (int16_t nSegment, uint8_t nType)
 {
-m_nMaxSparks = (uint16_t) FRound (2 * SEGMENTS [nSegment].AvgRadf ());
+m_nMaxSparks = (uint16_t) FRound (2 * gameData.Segment (nSegment)->AvgRadf ());
 if (!m_sparks.Create (m_nMaxSparks))
 	m_nMaxSparks = 0;
 else {
@@ -173,7 +173,7 @@ if (m_bUpdate) {
 
 inline int32_t CSparkManager::Type (int16_t nObjProducer)
 {
-return SEGMENTS [m_segments [nObjProducer]].m_function == SEGMENT_FUNC_FUELCENTER;
+return gameData.Segment (m_segments [nObjProducer])->m_function == SEGMENT_FUNC_FUELCENTER;
 }
 
 //-----------------------------------------------------------------------------

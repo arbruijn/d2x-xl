@@ -131,10 +131,10 @@ void CTGA::SetProperties (int32_t alpha, int32_t bGrayScale, double brightness, 
 	int32_t			i, n, nAlpha = 0, nFrames;
 	int32_t			h = m_bmP->Height ();
 	int32_t			w = m_bmP->Width ();
-	float			nVisible = 0;
+	float				nVisible = 0;
 	CFloatVector	avgColor;
-	CRGBColor	avgColorb;
-	float			a;
+	CRGBColor		avgColorb;
+	float				a;
 
 //CRGBAColor *p;
 //if (!gameStates.app.bMultiThreaded)

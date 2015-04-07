@@ -142,7 +142,7 @@ if (m_bmP) {
 //------------------------------------------------------------------------------
 
 CAnimation::CAnimation (const char* pszName, uint32_t nFrames) 
-	: m_nFrames (nFrames) 
+	: m_nFrames (nFrames), m_bLoaded (false) 
 {
 if (pszName)
 	strncpy (m_szName, pszName, sizeof (m_szName));
@@ -158,6 +158,8 @@ bool CAnimation::Load (const char* pszName)
 {
 if (!m_frames.Buffer ())
 	return false;
+if (m_bLoaded)
+	return true;
 
 if (!pszName)
 	pszName = m_szName;
@@ -173,7 +175,7 @@ for (uint32_t i = 0; i < m_nFrames; i++) {
 		return false;
 		}
 	}
-return true;
+return m_bLoaded = true;
 }
 
 //------------------------------------------------------------------------------
@@ -182,6 +184,7 @@ void CAnimation::Unload (void)
 {
 for (uint32_t i = 0; i < m_nFrames; i++)
 	m_frames [i].Unload ();
+m_bLoaded = false;
 }
 
 //------------------------------------------------------------------------------

@@ -287,7 +287,7 @@ m_width = nWidth;
 
 bool CLightning::Create (char nDepth, int32_t nThread)
 {
-if ((m_nObject >= 0) && (0 > (m_nSegment = OBJECTS [m_nObject].info.nSegment)))
+if ((m_nObject >= 0) && (0 > (m_nSegment = gameData.Object (m_nObject)->info.nSegment)))
 	return NULL;
 if (!m_nodes.Create (m_nNodes))
 	return false;

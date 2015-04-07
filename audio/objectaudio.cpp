@@ -78,7 +78,7 @@ if ((m_flags & SOF_PERMANENT) && (audio.ActiveObjects () >= Max (1, 33 * audio.G
 m_channel =
 	audio.StartSound (m_nSound, m_soundClass, m_volume, m_pan, (m_flags & SOF_PLAY_FOREVER) != 0, m_nLoopStart, m_nLoopEnd,
 							int32_t (this - audio.Objects ().Buffer ()), I2X (1), m_szSound,
-							(m_flags & SOF_LINK_TO_OBJ) ? &OBJECTS [m_linkType.obj.nObject].info.position.vPos : &m_linkType.pos.position);
+							(m_flags & SOF_LINK_TO_OBJ) ? &gameData.Object (m_linkType.obj.nObject)->info.position.vPos : &m_linkType.pos.position);
 if (m_channel < 0)
 	return false;
 audio.ActivateObject ();
@@ -175,12 +175,12 @@ if ((m_nListenerSeg != m_router [nThread].StartSeg ()) || (m_router [nThread].De
 		int16_t l = m_router [nThread].RouteLength (nSoundSeg);
 		if (l < 3)
 			continue;
-		CSegment* segP = &SEGMENTS [nListenerSeg];
+		CSegment* segP = gameData.Segment (nListenerSeg);
 		int16_t nChild = m_router [nThread].Route (1)->nNode;
-		fix corrStart = CFixVector::Dist (vListenerPos, SEGMENTS [nChild].Center ()) - segP->m_childDists [0][segP->ChildIndex (nChild)];
-		segP = &SEGMENTS [nSoundSeg];
+		fix corrStart = CFixVector::Dist (vListenerPos, gameData.Segment (nChild)->Center ()) - segP->m_childDists [0][segP->ChildIndex (nChild)];
+		segP = gameData.Segment (nSoundSeg);
 		nChild = m_router [nThread].Route (l - 2)->nNode;
-		fix corrEnd = CFixVector::Dist (vSoundPos, SEGMENTS [nChild].Center ()) - segP->m_childDists [0][segP->ChildIndex (nChild)];
+		fix corrEnd = CFixVector::Dist (vSoundPos, gameData.Segment (nChild)->Center ()) - segP->m_childDists [0][segP->ChildIndex (nChild)];
 		if (corrStart + corrEnd < pathDistance)
 		pathDistance += corrStart + corrEnd;
 		if (pathDistance <= 0)
@@ -199,14 +199,14 @@ if (gameData.segs.SegVis (nListenerSeg, nSoundSeg))
 else {
 	int16_t l = m_router [nThread].RouteLength (nSoundSeg);
 	if (l > 2) {
-		CSegment* segP = &SEGMENTS [nListenerSeg];
+		CSegment* segP = gameData.Segment (nListenerSeg);
 		int16_t nChild = m_router [nThread].Route (1)->nNode;
 		pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
-		pathDistance += CFixVector::Dist (vListenerPos, SEGMENTS [nChild].Center ());
-		segP = &SEGMENTS [nSoundSeg];
+		pathDistance += CFixVector::Dist (vListenerPos, gameData.Segment (nChild)->Center ());
+		segP = gameData.Segment (nSoundSeg);
 		nChild = m_router [nThread].Route (l - 2)->nNode;
 		pathDistance -= segP->m_childDists [0][segP->ChildIndex (nChild)];
-		pathDistance += CFixVector::Dist (vSoundPos, SEGMENTS [nChild].Center ());
+		pathDistance += CFixVector::Dist (vSoundPos, gameData.Segment (nChild)->Center ());
 		if (pathDistance > 0)
 			distance = pathDistance;
 		//fCorrFactor += float (pathDistance) / float (distance);
@@ -415,7 +415,7 @@ if (!(pszSound && *pszSound)) {
 		return -1;
 		}
 	}
-objP = OBJECTS + nObject;
+objP = gameData.Object (nObject);
 if (!bForever) { 	// Hack to keep sounds from building up...
 	int32_t nVolume, nPan;
 	GetVolPan (gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos,
@@ -585,7 +585,7 @@ while (i) {
 	if ((soundObjP->m_flags & (SOF_USED | SOF_LINK_TO_OBJ)) != (SOF_USED | SOF_LINK_TO_OBJ))
 		continue;
 	if (nObject < 0) { // kill all sounds belonging to disappeared objects
-		if ((soundObjP->m_linkType.obj.nObject >= 0) && (OBJECTS [soundObjP->m_linkType.obj.nObject].Signature () == soundObjP->m_linkType.obj.nObjSig))
+		if ((soundObjP->m_linkType.obj.nObject >= 0) && (gameData.Object (soundObjP->m_linkType.obj.nObject)->Signature () == soundObjP->m_linkType.obj.nObjSig))
 			continue;
 		}
 	else {
@@ -775,10 +775,10 @@ while (i) {
 		else if (soundObjP->m_flags & SOF_LINK_TO_OBJ) {
 			if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 				int32_t nObject = NDFindObject (soundObjP->m_linkType.obj.nObjSig);
-				objP = OBJECTS + ((nObject > -1) ? nObject : 0);
+				objP = gameData.Object (((nObject > -1) ? nObject : 0));
 				}
 			else
-				objP = OBJECTS + soundObjP->m_linkType.obj.nObject;
+				objP = gameData.Object (soundObjP->m_linkType.obj.nObject);
 			if ((objP->info.nType == OBJ_NONE) || (objP->info.nSignature != soundObjP->m_linkType.obj.nObjSig)) {
 				DeleteSoundObject (i);	// The object that this is linked to is dead, so just end this sound if it is looping.
 				continue;
@@ -1037,7 +1037,7 @@ gameStates.sound.bD1Sound = gameStates.app.bD1Mission && gameOpts->sound.bUseD1S
 
 static int32_t SideIsSoundSource (int16_t nSegment, int16_t nSide)
 {
-CSegment* segP = &SEGMENTS [nSegment];
+CSegment* segP = gameData.Segment (nSegment);
 if (!(segP->IsPassable (nSide, NULL) & WID_VISIBLE_FLAG))
 	return -1;
 int16_t nOvlTex = segP->m_sides [nSide].m_nOvlTex;
@@ -1058,7 +1058,7 @@ int16_t nConnSeg = segP->m_children [nSide];
 
 if (IS_CHILD (nConnSeg) && (nConnSeg < nSegment) &&
 	 (segP->IsPassable (nSide, NULL) & (WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG))) {
-	CSegment* connSegP = SEGMENTS + segP->m_children [nSide];
+	CSegment* connSegP = gameData.Segment (segP->m_children [nSide]);
 	int16_t nConnSide = segP->ConnectedSide (connSegP);
 	if (connSegP->m_sides [nConnSide].m_nOvlTex == segP->m_sides [nSide].m_nOvlTex)
 		return -1;		//skip this one

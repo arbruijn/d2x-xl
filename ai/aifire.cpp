@@ -80,7 +80,7 @@ if (!robotP->AttacksObject (targetP))
 if (robotP->IsStatic ())
 	return;
 //	If player is dead, stop firing.
-if (LOCALOBJECT.info.nType == OBJ_GHOST)
+if (LOCALOBJECT->info.nType == OBJ_GHOST)
 	return;
 if (botInfoP->attackType != 1)
 	return;
@@ -183,14 +183,14 @@ return 1;
 //	When this routine is complete, the parameter gameData.ai.target.vDir should not be necessary.
 void AIFireLaserAtTarget (CObject *objP, CFixVector *vFirePoint, int32_t nGun, CFixVector *vBelievedTargetPos)
 {
-	int16_t				nShot, nObject = objP->Index ();
+	int16_t			nShot, nObject = objP->Index ();
 	tAILocalInfo	*ailP = gameData.ai.localInfo + nObject;
 	tRobotInfo		*botInfoP = &ROBOTINFO (objP->info.nId);
 	CFixVector		vFire;
 	CFixVector		vRandTargetPos;
-	int16_t				nWeaponType;
+	int16_t			nWeaponType;
 	fix				aim, dot;
-	int32_t				count, i;
+	int32_t			count, i;
 
 Assert (nObject >= 0);
 //	If this robot is only awake because a camera woke it up, don't fire.
@@ -230,11 +230,11 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 	//	This is almost always ok, but it is not ok if something solid is in between.
 	int32_t	nGunSeg = FindSegByPos (*vFirePoint, objP->info.nSegment, 1, 0);
 	//	See if these segments are connected, which should almost always be the case.
-	int16_t nConnSide = (nGunSeg < 0) ? -1 : SEGMENTS [nGunSeg].ConnectedSide (&SEGMENTS [objP->info.nSegment]);
+	int16_t nConnSide = (nGunSeg < 0) ? -1 : gameData.Segment (nGunSeg)->ConnectedSide (gameData.Segment (objP->info.nSegment));
 	if (nConnSide != -1) {
 		//	They are connected via nConnSide in CSegment objP->info.nSegment.
 		//	See if they are unobstructed.
-		if (!(SEGMENTS [objP->info.nSegment].IsPassable (nConnSide, NULL) & WID_PASSABLE_FLAG)) {
+		if (!(gameData.Segment (objP->info.nSegment)->IsPassable (nConnSide, NULL) & WID_PASSABLE_FLAG)) {
 			//	Can't fly through, so don't let this bot fire through!
 			return;
 			}
@@ -315,7 +315,7 @@ if ((nWeaponType == FUSION_ID) && (gameStates.app.nSDLTicks [0] - objP->TimeLast
 
 lightClusterManager.AddForAI (objP, nObject, nShot);
 objP->Shots ().nObject = nShot;
-objP->Shots ().nSignature = OBJECTS [nShot].info.nSignature;
+objP->Shots ().nSignature = gameData.Object (nShot)->info.nSignature;
 
 if (IsMultiGame) {
 	AIMultiSendRobotPos (nObject, -1);

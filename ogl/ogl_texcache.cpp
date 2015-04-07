@@ -144,7 +144,7 @@ static void CacheSideTextures (int32_t nSegment)
 	int16_t			nSide, tMap1, tMap2;
 	CBitmap*		bmP, * bm2, * bmm;
 	CSide*		sideP;
-	CSegment*	segP = SEGMENTS + nSegment;
+	CSegment*	segP = gameData.Segment (nSegment);
 
 for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	sideP = segP->m_sides + nSide;

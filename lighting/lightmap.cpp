@@ -83,7 +83,7 @@ int32_t InitLightData (int32_t bVariable);
 
 void CLightmapFaceData::Setup (CSegFace* faceP)
 {
-CSide* sideP = SEGMENTS [faceP->m_info.nSegment].m_sides + faceP->m_info.nSide;
+CSide* sideP = gameData.Segment (faceP->m_info.nSegment)->m_sides + faceP->m_info.nSide;
 m_nType = sideP->m_nType;
 m_vNormal = sideP->m_normals [2];
 m_vCenter = sideP->Center ();
@@ -214,7 +214,7 @@ double CLightmapManager::SideRad (int32_t nSegment, int32_t nSide)
 	double		h, xMin, xMax, yMin, yMax, zMin, zMax;
 	double		dx, dy, dz;
 	CFixVector	*v;
-	CSide*		sideP = SEGMENTS [nSegment].Side (nSide);
+	CSide*		sideP = gameData.Segment (nSegment)->Side (nSide);
 	uint16_t*		sideVerts = sideP->Corners ();
 
 xMin = yMin = zMin = 1e300;
@@ -286,10 +286,10 @@ for (lightP = lightManager.Lights (), i = lightManager.LightCount (0); i; i--, l
 	//Process found light.
 	lightmapInfoP->range += sideRad;
 	//find where it is in the level.
-	lightmapInfoP->vPos = SEGMENTS [faceP->m_info.nSegment].SideCenter (faceP->m_info.nSide);
+	lightmapInfoP->vPos = gameData.Segment (faceP->m_info.nSegment)->SideCenter (faceP->m_info.nSide);
 	lightmapInfoP->nIndex = nIndex; 
 	//find light direction, currently based on first 3 points of CSide, not always right.
-	CFixVector *normalP = SEGMENTS [faceP->m_info.nSegment].m_sides [faceP->m_info.nSide].m_normals;
+	CFixVector *normalP = gameData.Segment (faceP->m_info.nSegment)->m_sides [faceP->m_info.nSide].m_normals;
 	lightmapInfoP->vDir = CFixVector::Avg(normalP[0], normalP[1]);
 	lightmapInfoP++; 
 	}
@@ -336,14 +336,15 @@ bool CLightmapManager::FaceIsInvisible (CSegFace* faceP)
 if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 	BRP;
 #endif
-if (SEGMENTS [faceP->m_info.nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
+CSegment *segP = gameData.Segment (faceP->m_info.nSegment);
+if (segP->m_function == SEGMENT_FUNC_SKYBOX) {
 	faceP->m_info.nLightmap = 1;
 	return true;
 	}
-if (SEGMENTS [faceP->m_info.nSegment].m_children [faceP->m_info.nSide] < 0)
+if (segP->m_children [faceP->m_info.nSide] < 0)
 	return false;
 
-CWall* wallP = SEGMENTS [faceP->m_info.nSegment].m_sides [faceP->m_info.nSide].Wall ();
+CWall* wallP = segP->m_sides [faceP->m_info.nSide].Wall ();
 if (!wallP || (wallP->nType != WALL_OPEN)) 
 	return false;
 
@@ -717,7 +718,7 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 #endif
 	if (gameStates.app.bComputeLightmaps && (KeyInKey () == KEY_ESC))
 		return 0;
-	if (SEGMENTS [m_data.faceP->m_info.nSegment].m_function == SEGMENT_FUNC_SKYBOX) {
+	if (gameData.Segment (m_data.faceP->m_info.nSegment)->m_function == SEGMENT_FUNC_SKYBOX) {
 		m_data.faceP->m_info.nLightmap = 1;
 		continue;
 		}

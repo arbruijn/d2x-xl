@@ -230,7 +230,7 @@ ogl.SetBlending (true);
 gameStates.render.grAlpha = gameStates.app.bNostalgia ? 1.0f : bTextured ? 0.5f : 0.9f;
 ogl.SetTexturing (false);
 glLineWidth (2 * GLfloat (gameData.render.screen.Width ()) / 640.0f);
-DrawPlayer (OBJECTS + LOCALPLAYER.nObject);
+DrawPlayer (gameData.Object (LOCALPLAYER.nObject));
 if (!m_bRadar) {
 	markerManager.Render ();
 	if ((markerManager.Highlight () > -1) && (markerManager.Message () [0] != 0)) {
@@ -246,12 +246,12 @@ if (!m_bRadar) {
 if (AM_SHOW_PLAYERS) {
 	for (int32_t i = 0; i < N_PLAYERS; i++) {
 		if ((i != N_LOCALPLAYER) && AM_SHOW_PLAYER (i)) {
-			if (PLAYEROBJECT (i).info.nType == OBJ_PLAYER) {
+			if (PLAYEROBJECT (i)->info.nType == OBJ_PLAYER) {
 				color = IsTeamGame ? GetTeam (i) : i;
 				CCanvas::Current ()->SetColorRGBi (RGBA_PAL2 (playerColors [color].r, playerColors [color].g, playerColors [color].b));
 				if (bTextured)
 					ogl.SetBlending (true);
-				DrawPlayer (OBJECTS + PLAYER (i).nObject);
+				DrawPlayer (gameData.Object (PLAYER (i).nObject));
 				}
 			}
 		}
@@ -457,7 +457,7 @@ if (m_bRadar == 2) {
 else {
 	if (OBSERVING) {
 		if (LOCALPLAYER.ObservedPlayer () == -1) 
-			viewer = LOCALOBJECT.info.position;
+			viewer = LOCALOBJECT->info.position;
 		else {
 			FLIGHTPATH.GetViewPoint (&viewer.vPos);
 			viewer.mOrient = FLIGHTPATH.Tail ()->mOrient;
@@ -585,7 +585,7 @@ while (head < tail) {
 		BRP;
 #endif
 	nParentDepth = depthBufP [nSegment];
-	childP = SEGMENTS [nSegment].m_children;
+	childP = gameData.Segment (nSegment)->m_children;
 	for (nSide = SEGMENT_SIDE_COUNT; nSide; nSide--, childP++) {
 		if (0 > (nChild = *childP))
 			continue;
@@ -617,7 +617,7 @@ return (nParentDepth + 1) * gameStates.render.bViewDist;
 void CAutomap::InitView (void)
 {
 m_vTAngles.Set (PITCH_DEFAULT, 0, 0);
-CObject*	playerP = OBJECTS + LOCALPLAYER.nObject;
+CObject*	playerP = gameData.Object (LOCALPLAYER.nObject);
 if (OBSERVING)
 	m_data.viewer.mOrient = playerP->info.position.mOrient;
 m_data.nViewDist = ZOOM_DEFAULT;
@@ -700,9 +700,9 @@ if (OBSERVING) {
 	gameOpts->render.automap.bSparks = !COMPETITION && (gameOptions [0].render.nQuality > 0);
 	}
 
-//m_visited [LOCALOBJECT.nSegment] = 1;
+//m_visited [LOCALOBJECT->nSegment] = 1;
 m_nSegmentLimit =
-m_nMaxSegsAway = SetSegmentDepths (LOCALOBJECT.info.nSegment, m_visible.Buffer ());
+m_nMaxSegsAway = SetSegmentDepths (LOCALOBJECT->info.nSegment, m_visible.Buffer ());
 AdjustSegmentLimit ();
 m_bActive++;
 return gameData.app.bGamePaused;
@@ -712,7 +712,7 @@ return gameData.app.bGamePaused;
 
 int32_t CAutomap::Update (void)
 {
-		CObject* playerP = OBJECTS + LOCALPLAYER.nObject;
+		CObject* playerP = gameData.Object (LOCALPLAYER.nObject);
 
 if (OBSERVING && (LOCALPLAYER.ObservedPlayer () < 0)) {
 	playerP->Update ();
@@ -798,7 +798,7 @@ while ((c = KeyInKey ())) {
 			int8_t nPlayer = LOCALPLAYER.ObservedPlayer ();
 			SwitchObservedPlayer ();
 			if ((nPlayer != LOCALPLAYER.ObservedPlayer ()) && (LOCALPLAYER.ObservedPlayer () == -1)) {
-				LOCALOBJECT.info.position = m_data.viewer;
+				LOCALOBJECT->info.position = m_data.viewer;
 				InitView ();
 				}
 			}
@@ -820,7 +820,7 @@ while ((c = KeyInKey ())) {
 				automap.m_visible [i] = 1;
 			BuildEdgeList ();
 			m_nSegmentLimit =
-			m_nMaxSegsAway = SetSegmentDepths (LOCALOBJECT.info.nSegment, automap.m_visible.Buffer ());
+			m_nMaxSegsAway = SetSegmentDepths (LOCALOBJECT->info.nSegment, automap.m_visible.Buffer ());
 			AdjustSegmentLimit ();
 			}
 			break;
@@ -1187,7 +1187,7 @@ for (i = 0; i <= m_nLastEdge; i++) {
 		tv1 = gameData.segs.vertices + edgeP->verts [0];
 		j = 0;
 		while ((j < edgeP->nFaces) && !(nfacing && nnfacing)) {
-			if (!G3CheckNormalFacing (*tv1, SEGMENTS [edgeP->nSegment [j]].m_sides [edgeP->sides [j]].m_normals [0]))
+			if (!G3CheckNormalFacing (*tv1, gameData.Segment (edgeP->nSegment [j])->m_sides [edgeP->sides [j]].m_normals [0]))
 				nfacing++;
 			else
 				nnfacing++;
@@ -1460,8 +1460,8 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 				else if (!(gameData.walls.animP [wallP->nClip].flags & WCF_HIDDEN)) {
 					int16_t	nConnSeg = segP->m_children [nSide];
 					if (nConnSeg != -1) {
-						int16_t nConnSide = segP->ConnectedSide (SEGMENTS + nConnSeg);
-						CWall* connWallP = SEGMENTS [nConnSeg].Wall (nConnSide);
+						int16_t nConnSide = segP->ConnectedSide (gameData.Segment (nConnSeg));
+						CWall* connWallP = gameData.Segment (nConnSeg)->Wall (nConnSide);
 						if (connWallP) {
 							switch (connWallP->keys) {
 								case KEY_BLUE:
@@ -1513,7 +1513,7 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 
 addEdge:
 
-		corners = SEGMENTS [nSegment].Corners (nSide);
+		corners = gameData.Segment (nSegment)->Corners (nSide);
 		int32_t nCorners = sideP->CornerCount ();
 		for (int32_t i = 0; i < nCorners; i++)
 			AddEdge (corners [i % nCorners], corners [(i + 1) % nCorners], color, nSide, nSegment, bHidden, 0, bNoFade);
@@ -1565,7 +1565,7 @@ m_nLastEdge = -1;
 if (m_data.bCheat || (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP)) {
 	// Cheating, add all edges as visited
 	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
-		AddSegmentEdges (&SEGMENTS [nSegment]);
+		AddSegmentEdges (gameData.Segment (nSegment));
 	}
 else {
 	// Not cheating, add visited edges, and then unvisited edges
@@ -1575,7 +1575,7 @@ else {
 			BRP;
 #endif
 		if (m_visited [nSegment]) 
-			AddSegmentEdges (&SEGMENTS [nSegment]);
+			AddSegmentEdges (gameData.Segment (nSegment));
 		}
 	for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++) {
 #if DBG
@@ -1583,7 +1583,7 @@ else {
 			BRP;
 #endif
 		if (!m_visited [nSegment]) 
-			AddUnknownSegmentEdges (&SEGMENTS [nSegment]);
+			AddUnknownSegmentEdges (gameData.Segment (nSegment));
 		}
 	}	
 
@@ -1596,8 +1596,8 @@ for (i = 0; i <= m_nLastEdge; i++) {
 	for (e1 = 0; e1 < e->nFaces; e1++) {
 		for (e2 = 1; e2 < e->nFaces; e2++) {
 			if ((e1 != e2) && (e->nSegment [e1] != e->nSegment [e2])) {
-				if (CFixVector::Dot (SEGMENTS [e->nSegment [e1]].m_sides [e->sides [e1]].m_normals [0],
-											SEGMENTS [e->nSegment [e2]].m_sides [e->sides [e2]].m_normals [0]) > (I2X (1)- (I2X (1)/10))) {
+				if (CFixVector::Dot (gameData.Segment (e->nSegment [e1])->m_sides [e->sides [e1]].m_normals [0],
+											gameData.Segment (e->nSegment [e2])->m_sides [e->sides [e2]].m_normals [0]) > (I2X (1)- (I2X (1)/10))) {
 					e->flags &= (~EF_DEFINING);
 					break;
 					}

@@ -91,7 +91,7 @@ void pae_aux (int32_t nSegment, int32_t nType, int32_t level)
 if ((nSegment >= 0) && (nSegment < gameData.segs.nSegments)) {
 	if (newAwareness [nSegment] < nType)
 		newAwareness [nSegment] = nType;
-	CSegment* segP = SEGMENTS + nSegment;
+	CSegment* segP = gameData.Segment (nSegment);
 	for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 		if (IS_CHILD (segP->m_children [i])) {
 			if (level <= 3) {
@@ -126,7 +126,7 @@ ProcessAwarenessEvents ();
 FORALL_OBJS (objP)
 	if (objP->info.controlType == CT_AI) {
 		i = objP->Index ();
-		nSegment = OBJECTS [i].info.nSegment;
+		nSegment = gameData.Object (i)->info.nSegment;
 		if (newAwareness [nSegment] > gameData.ai.localInfo [i].targetAwarenessType) {
 			gameData.ai.localInfo [i].targetAwarenessType = newAwareness [nSegment];
 			gameData.ai.localInfo [i].targetAwarenessTime = PLAYER_AWARENESS_INITIAL_TIME;
@@ -151,7 +151,7 @@ if (USE_D1_AI)
 	return;
 if (gameData.ai.nLastMissileCamera != -1) {
 	// Clear if supposed misisle camera is not a weapon, or just every so often, just in case.
-	if (((gameData.app.nFrameCount & 0x0f) == 0) || (OBJECTS [gameData.ai.nLastMissileCamera].info.nType != OBJ_WEAPON)) {
+	if (((gameData.app.nFrameCount & 0x0f) == 0) || (gameData.Object (gameData.ai.nLastMissileCamera)->info.nType != OBJ_WEAPON)) {
 		gameData.ai.nLastMissileCamera = -1;
 		FORALL_ROBOT_OBJS (objP) {
 			objP->cType.aiInfo.SUB_FLAGS &= ~SUB_FLAGS_CAMERA_AWAKE;
@@ -161,7 +161,7 @@ if (gameData.ai.nLastMissileCamera != -1) {
 for (h = gameData.bosses.ToS (), j = 0; j < h; j++)
 	if (gameData.bosses [j].m_nDying) {
 		if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
-			DoBossDyingFrame (OBJECTS + gameData.bosses [j].m_nDying);
+			DoBossDyingFrame (gameData.Object (gameData.bosses [j].m_nDying));
 		else {
 			CObject *objP = OBJECTS.Buffer ();
 			FORALL_ROBOT_OBJS (objP)

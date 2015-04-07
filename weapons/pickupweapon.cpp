@@ -155,7 +155,7 @@ if (playerP->secondaryAmmo [nWeaponIndex] > nMaxAmount) {
 		int16_t nObject = objP->Index ();
 		gameData.multiplayer.leftoverPowerups [nObject].nCount = nAmount - nPickedUp;
 		gameData.multiplayer.leftoverPowerups [nObject].nType = secondaryWeaponToPowerup [0][nWeaponIndex];
-		gameData.multiplayer.leftoverPowerups [nObject].spitterP = OBJECTS + playerP->nObject;
+		gameData.multiplayer.leftoverPowerups [nObject].spitterP = gameData.Object (playerP->nObject);
 		}
 	}
 if (ISLOCALPLAYER (nPlayer)) {

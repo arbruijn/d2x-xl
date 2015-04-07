@@ -795,7 +795,7 @@ for (i = 0, j = int32_t (OBJECTS.Length ()); i < j; i++, objP++) {
 #endif
 memset (&o, 0, sizeof (o));
 o.info.nType = OBJ_WEAPON;
-o.info.position = OBJECTS [0].info.position;
+o.info.position = gameData.Object (0)->info.position;
 o.rType.polyObjInfo.nTexOverride = -1;
 PrintLog (1, "building optimized replacement model data\n");
 #if BUILD_ALL_MODELS

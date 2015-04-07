@@ -35,9 +35,10 @@ class CAddonBitmap : public CTGA {
 
 class CAnimation {
 	private:
-		uint32_t						m_nFrames;
+		uint32_t					m_nFrames;
 		CArray<CAddonBitmap>	m_frames;
 		char						m_szName [FILENAME_LEN];
+		bool						m_bLoaded;
 
 	public:
 		CAnimation (const char* pszName = NULL, uint32_t nFrames = 0);
@@ -47,6 +48,7 @@ class CAnimation {
 		void Destroy (void) {
 			m_frames.Destroy ();
 			m_nFrames = 0;
+			m_bLoaded = false;
 			}
 
 		bool Load (const char* pszName = NULL);

@@ -121,7 +121,7 @@ if (animInfoP) {
 		h = (-xTime + animInfoP->xFrameTime - 1) / animInfoP->xFrameTime;
 		xTime += h * animInfoP->xFrameTime;
 		h %= nFrames;
-		if ((nObject & 1) && (OBJECTS [nObject].info.nType != OBJ_EXPLOSION)) 
+		if ((nObject & 1) && (gameData.Object (nObject)->info.nType != OBJ_EXPLOSION)) 
 			vciP->nCurFrame -= h;
 		else
 			vciP->nCurFrame += h;
@@ -304,17 +304,17 @@ if (playerP->Shield () < playerP->MaxShield ()) {
 		PowerupBasic (0, 0, 15, SHIELD_SCORE, "%s %s %d", TXT_SHIELD, TXT_BOOSTED_TO, X2IR (playerP->Shield ()));
 		NetworkFlushData (); // will send position, shield and weapon info
 		}
-	OBJECTS [nPlayer].ResetDamage ();
+	gameData.Object (nPlayer)->ResetDamage ();
 	return 1;
 	}
 else if (ISLOCALPLAYER (nPlayer)) {
-	if (OBJECTS [N_LOCALPLAYER].ResetDamage ())
+	if (gameData.Object (N_LOCALPLAYER)->ResetDamage ())
 		return 1;
 	else
 		HUDInitMessage (TXT_MAXED_OUT, TXT_SHIELD);
 	}
 else
-	OBJECTS [nPlayer].ResetDamage ();
+	gameData.Object (nPlayer)->ResetDamage ();
 return 0;
 }
 
@@ -385,8 +385,8 @@ else if (IsEntropyGame) {
 	if (objP->info.nCreator != GetTeam (N_LOCALPLAYER) + 1) {
 		if ((extraGameInfo [1].entropy.nVirusStability < 2) ||
 			 ((extraGameInfo [1].entropy.nVirusStability < 3) && 
-			 ((SEGMENTS [objP->info.nSegment].m_owner != objP->info.nCreator) ||
-			 (SEGMENTS [objP->info.nSegment].m_function != SEGMENT_FUNC_ROBOTMAKER))))
+			 ((gameData.Segment (objP->info.nSegment)->m_owner != objP->info.nCreator) ||
+			 (gameData.Segment (objP->info.nSegment)->m_function != SEGMENT_FUNC_ROBOTMAKER))))
 			objP->Die ();	//make orb disappear if touched by opposing team CPlayerData
 		}
 	else if (!extraGameInfo [1].entropy.nMaxVirusCapacity ||
@@ -679,7 +679,7 @@ if (objP->Ignored (1, 1))
 if (nPlayer < 0)
 	nPlayer = N_LOCALPLAYER;
 playerP = gameData.multiplayer.players + nPlayer;
-if (SPECTATOR (OBJECTS + playerP->nObject))
+if (SPECTATOR (gameData.Object (playerP->nObject)))
 	return 0;
 bLocalPlayer = (nPlayer == N_LOCALPLAYER);
 if (bLocalPlayer &&
@@ -752,7 +752,7 @@ spitterP->mType.physInfo.velocity.SetZero ();
 for (i = nCount; i; i--) {
 	nObject = SpitPowerup (spitterP, nId);
 	if (nObject >= 0) {
-		objP = OBJECTS + nObject;
+		objP = gameData.Object (nObject);
 		MultiSendCreatePowerup (nId, objP->info.nSegment, nObject, &objP->info.position.vPos);
 		}
 	}
@@ -776,7 +776,7 @@ memset (&gameData.multiplayer.leftoverPowerups [nObject], 0,
 void CheckInventory (void)
 {
 	CPlayerData	*playerP = gameData.multiplayer.players + N_LOCALPLAYER;
-	CObject	*objP = OBJECTS + playerP->nObject;
+	CObject	*objP = gameData.Object (playerP->nObject);
 
 if (SpawnPowerup (objP, POW_CLOAK, playerP->nCloaks - MAX_INV_ITEMS))
 	playerP->nCloaks = MAX_INV_ITEMS;

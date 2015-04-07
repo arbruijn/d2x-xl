@@ -139,7 +139,7 @@ if (gameData.render.mine.bObjectRendered [nObject] == gameStates.render.nFrameCo
 	return;
 #endif
 
-CObject*	objP = OBJECTS + nObject;
+CObject*	objP = gameData.Object (nObject);
 
 #if DBG
 if (nWindow && (objP->info.nType == OBJ_WEAPON))
@@ -171,7 +171,7 @@ if (RenderObject (objP, nWindow, 0)) {
 	}
 
 for (int32_t i = objP->info.nAttachedObj; i != -1; i = objP->cType.explInfo.attached.nNext) {
-	objP = OBJECTS + i;
+	objP = gameData.Object (i);
 	if (objP->info.nType != OBJ_FIREBALL) 
 		break;
 	if (objP->info.controlType != CT_EXPLOSION)
@@ -226,7 +226,7 @@ for (i = gameData.render.mine.objRenderList.ref [nSegment], j = 0; i >= 0; i = p
 	pi = gameData.render.mine.objRenderList.objs + i;
 	objRenderList [j++] = *pi;
 #if DBG
-	if (OBJECTS [pi->nObject].info.nSegment != nSegment)
+	if (gameData.Object (pi->nObject)->info.nSegment != nSegment)
 		BRP;
 #endif
 	}
@@ -279,7 +279,7 @@ PROF_START
 gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nState = 1;
 for (i = gameData.segs.skybox.ToS (), segNumP = gameData.segs.skybox.Buffer (); i; i--, segNumP++)
-	for (nObject = SEGMENTS [*segNumP].m_objects; nObject != -1; nObject = OBJECTS [nObject].info.nNextInSeg)
+	for (nObject = gameData.Segment (*segNumP)->m_objects; nObject != -1; nObject = gameData.Object (nObject)->info.nNextInSeg)
 		DoRenderObject (nObject, gameStates.render.nWindow [0]);
 PROF_END(ptRenderObjects)
 }
@@ -584,7 +584,7 @@ tObjRenderListItem* pi;
 
 for (i = gameData.render.mine.objRenderList.ref [nSegment]; i >= 0; i = pi->nNextItem) {
 	pi = gameData.render.mine.objRenderList.objs + i;
-	int32_t nType = OBJECTS [pi->nObject].info.nType;
+	int32_t nType = gameData.Object (pi->nObject)->info.nType;
 	if (nType == OBJ_POWERUP) {
 		if (extraGameInfo [IsMultiGame].bPowerupsOnRadar)
 			return VerifyObjectRenderSegment (nSegment);
@@ -730,14 +730,14 @@ if (bCockpit && bHave3DCockpit && (gameStates.render.cockpit.nType == CM_FULL_CO
 	int32_t bFullBright = gameStates.render.bFullBright;
 	gameStates.render.bFullBright = 1;
 	ogl.SetTransform (1);
-	CFixVector vOffset = /*OBJECTS [0].Orientation ().m.dir.f * F2X (xOffset) +*/ OBJECTS [0].Orientation ().m.dir.u * F2X (yOffset);
-	OBJECTS [0].Position () -= vOffset;
+	CFixVector vOffset = /*gameData.Object (0)->Orientation ().m.dir.f * F2X (xOffset) +*/ gameData.Object (0)->Orientation ().m.dir.u * F2X (yOffset);
+	gameData.Object (0)->Position () -= vOffset;
 	gameData.render.scene.Activate ("RenderCockpitModel (scene)");
 	gameData.models.vScale.Set (F2X (float (gameData.render.screen.Width ()) / float (gameData.render.screen.Height ()) * 0.75f), I2X (1), I2X (1));
-	bHave3DCockpit = (G3RenderModel (&OBJECTS [0], COCKPIT_MODEL, -1, NULL, gameData.models.textures, NULL, NULL, 0, NULL, NULL) > 0);
+	bHave3DCockpit = (G3RenderModel (gameData.Object (0), COCKPIT_MODEL, -1, NULL, gameData.models.textures, NULL, NULL, 0, NULL, NULL) > 0);
 	gameData.models.vScale.Set (I2X (1), I2X (1), I2X (1));
 	CCanvas::Current ()->SetViewport ();
-	OBJECTS [0].Position () += vOffset;
+	gameData.Object (0)->Position () += vOffset;
 	ogl.SetTransform (0);
 	gameStates.render.bFullBright = bFullBright;
 	gameData.render.scene.Deactivate ();

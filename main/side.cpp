@@ -626,7 +626,7 @@ return minDist;
 
 CWall* CSide::Wall (void) 
 { 
-return (m_nFaces && IS_WALL (m_nWall)) ? WALLS + m_nWall : NULL; 
+return (m_nFaces && IS_WALL (m_nWall)) ? gameData.Wall (m_nWall) : NULL; 
 }
 
 //	-----------------------------------------------------------------------------
@@ -1227,7 +1227,7 @@ if (l)
 
 bool CSide::IsOpenableDoor (void)
 {
-return IS_WALL (m_nWall) ? WALLS [m_nWall].IsOpenableDoor () : false;
+return IS_WALL (m_nWall) ? gameData.Wall (m_nWall)->IsOpenableDoor () : false;
 }
 
 //------------------------------------------------------------------------------
@@ -1270,7 +1270,7 @@ return IS_WALL (m_nWall) ? Wall ()->Trigger () : NULL;
 
 bool CSide::IsVolatile (void)
 {
-return IsWall () && WALLS [m_nWall].IsVolatile ();
+return IsWall () && gameData.Wall (m_nWall)->IsVolatile ();
 }
 
 
@@ -1316,7 +1316,7 @@ bmP = gameData.pig.tex.bitmapP [gameData.pig.tex.bmIndexP [m_nBaseTex].index].Ov
 if (bmP->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT))
 	return 1;
 if (gameStates.app.bD2XLevel && IS_WALL (m_nWall)) {
-	int16_t c = WALLS [m_nWall].cloakValue;
+	int16_t c = gameData.Wall (m_nWall)->cloakValue;
 	if (c && (c < FADE_LEVELS))
 		return 1;
 	}

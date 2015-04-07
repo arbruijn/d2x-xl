@@ -190,10 +190,10 @@ if (gameStates.app.bPlayerIsDead) {
 
 	//	If unable to create camera at time of death, create now.
 	if (!gameData.objs.deadPlayerCamera) {
-		CObject *playerP = OBJECTS + LOCALPLAYER.nObject;
+		CObject *playerP = gameData.Object (LOCALPLAYER.nObject);
 		int32_t nObject = CreateCamera (playerP);
 		if (nObject != -1)
-			gameData.objs.viewerP = gameData.objs.deadPlayerCamera = OBJECTS + nObject;
+			gameData.objs.viewerP = gameData.objs.deadPlayerCamera = gameData.Object (nObject);
 		else
 			Int3 ();
 		}
@@ -284,7 +284,7 @@ gameStates.app.nPlayerTimeOfDeath = gameData.time.xGame;
 int32_t nObject = CreateCamera (playerObjP);
 viewerSaveP = gameData.objs.viewerP;
 if (nObject != -1)
-	gameData.objs.viewerP = gameData.objs.deadPlayerCamera = OBJECTS + nObject;
+	gameData.objs.viewerP = gameData.objs.deadPlayerCamera = gameData.Object (nObject);
 else {
 	Int3 ();
 	gameData.objs.deadPlayerCamera = NULL;

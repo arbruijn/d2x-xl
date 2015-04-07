@@ -522,7 +522,7 @@ if (m_info.source == 0xFFFFFFFF) {
 		return -1;
 	alSourcef (m_info.source, AL_GAIN, ((nVolume < I2X (1)) ? X2F (nVolume) : 1) * 2 * X2F (m_info.nVolume));
 	alSourcei (m_info.source, AL_LOOPING, (ALuint) ((nSoundObj > -1) || bLooping || (nVolume > I2X (1))));
-	fPos.Assign (vPos ? *vPos : LOCALOBJECT.nPosition.vPos);
+	fPos.Assign (vPos ? *vPos : LOCALOBJECT->nPosition.vPos);
 	alSourcefv (m_info.source, AL_POSITION, reinterpret_cast<ALfloat*> (fPos));
 	alSource3f (m_info.source, AL_VELOCITY, 0, 0, 0);
 	alSource3f (m_info.source, AL_DIRECTION, 0, 0, 0);

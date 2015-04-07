@@ -236,7 +236,7 @@ if ((objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_ROBOT) && (objP
 int16_t nObject = CreateFireball (0, objP->info.nSegment, objP->info.position.vPos, 1, RT_SHRAPNELS);
 if (0 > nObject)
 	return 0;
-return m_data.buffer [nObject].Create (objP, OBJECTS + nObject);
+return m_data.buffer [nObject].Create (objP, gameData.Object (nObject));
 #endif
 }
 

@@ -494,6 +494,7 @@ if (bHaveLevel)
 	MultiLeaveGame ();
 if (gameData.demo.nState == ND_STATE_PLAYBACK)
 	NDStopPlayback ();
+gameData.Destroy ();
 postProcessManager.Destroy ();
 transparencyRenderer.ResetBuffers ();
 CGenericCockpit::Rewind (false);
@@ -510,7 +511,6 @@ shaderManager.Destroy (true);
 ogl.InitEnhanced3DShader (); // always need the stereo rendering shaders 
 meshBuilder.DestroyVBOs ();
 UnloadLevelData ();
-gameData.Destroy ();
 missionConfig.Init ();
 PiggyCloseFile ();
 SavePlayerProfile ();
@@ -1337,7 +1337,7 @@ if (!gameData.segs.bHaveSlideSegs)
 	ComputeSlideSegs ();
 for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 	nSegment = gameData.segs.slideSegs [h].nSegment;
-	segP = SEGMENTS + nSegment;
+	segP = gameData.Segment (nSegment);
 	sides = gameData.segs.slideSegs [h].nSides;
 	for (nSide = 0, sideP = segP->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 		if (!(segP->Side (nSide)->FaceCount () && (sides & (1 << nSide))))
@@ -1390,7 +1390,7 @@ void PowerupGrabCheat (CObject *playerP, int32_t nObject)
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return;
 
-	CObject*					powerupP = OBJECTS + nObject;
+	CObject*					powerupP = gameData.Object (nObject);
 	tObjTransformation*	posP = OBJPOS (playerP);
 	CFixVector				vCollision;
 
@@ -1413,11 +1413,11 @@ playerP->CollidePlayerAndPowerup (powerupP, vCollision);
 void PowerupGrabCheatAll (void)
 {
 if (gameStates.app.tick40fps.bTick && (gameData.objs.consoleP->info.nSegment != -1)) {
-	int16_t nObject = SEGMENTS [gameData.objs.consoleP->info.nSegment].m_objects;
+	int16_t nObject = gameData.Segment (gameData.objs.consoleP->info.nSegment)->m_objects;
 	while (nObject != -1) {
-		if (OBJECTS [nObject].info.nType == OBJ_POWERUP)
+		if (gameData.Object (nObject)->info.nType == OBJ_POWERUP)
 			PowerupGrabCheat (gameData.objs.consoleP, nObject);
-		nObject = OBJECTS [nObject].info.nNextInSeg;
+		nObject = gameData.Object (nObject)->info.nNextInSeg;
 		}
 	}
 }
@@ -1468,7 +1468,7 @@ for (i = 1; i < playerPathLength; i++) {
 		Int3 ();		//	Unable to drop energy powerup for path
 		return 1;
 		}
-	objP = OBJECTS + nObject;
+	objP = gameData.Object (nObject);
 	objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 	objP->rType.animationInfo.xFrameTime = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
 	objP->rType.animationInfo.nCurFrame = 0;
@@ -1484,7 +1484,7 @@ int32_t MarkPathToExit (void)
 {
 for (int32_t i = 0; i <= gameData.segs.nLastSegment; i++) {
 	for (int32_t j = 0, h = SEGMENT_SIDE_COUNT; j < h; j++)
-		if (SEGMENTS [i].m_children [j] == -2)
+		if (gameData.Segment (i)->m_children [j] == -2)
 			return MarkPlayerPathToSegment (i);
 	}
 return 0;

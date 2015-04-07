@@ -73,12 +73,12 @@ m_nGateInterval = I2X (4) - gameStates.app.nDifficultyLevel * I2X (2) / 3;
 bool CBossInfo::SetupSegments (CShortArray& segments, int32_t bSizeCheck, int32_t bOneWallHack)
 {
 	CSegment		*segP;
-	CObject		*bossObjP = OBJECTS + m_nObject;
+	CObject		*bossObjP = gameData.Object (m_nObject);
 	CFixVector	vBossHomePos;
-	int32_t			nMaxSegments, nSegments = 0;
-	int32_t			nBossHomeSeg;
-	int32_t			head, tail, w, childSeg;
-	int32_t			nGroup, nSide;
+	int32_t		nMaxSegments, nSegments = 0;
+	int32_t		nBossHomeSeg;
+	int32_t		head, tail, w, childSeg;
+	int32_t		nGroup, nSide;
 	CIntArray	queue;
 	fix			xBossSizeSave;
 
@@ -89,7 +89,7 @@ xBossSizeSave = bossObjP->info.xSize;
 // -- Causes problems!!	-- bossObjP->SetSize (FixMul (I2X (3) / 4, bossObjP->info.xSize));
 nBossHomeSeg = bossObjP->info.nSegment;
 vBossHomePos = bossObjP->info.position.vPos;
-nGroup = SEGMENTS [nBossHomeSeg].m_group;
+nGroup = gameData.Segment (nBossHomeSeg)->m_group;
 if (!queue.Create (gameData.segs.nSegments))
 	return false;
 head = 1;
@@ -100,7 +100,7 @@ nMaxSegments = Min (MAX_BOSS_TELEPORT_SEGS, LEVEL_SEGMENTS);
 gameData.render.mine.visibility [0].BumpVisitedFlag ();
 
 while (tail != head) {
-	segP = SEGMENTS + queue [tail++];
+	segP = gameData.Segment (queue [tail++]);
 	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 		childSeg = segP->m_children [nSide];
 		if (!bOneWallHack) {
@@ -115,7 +115,7 @@ while (tail != head) {
 			bOneWallHack--;
 		if (gameData.render.mine.Visited (childSeg))
 			continue;
-		if (nGroup != SEGMENTS [childSeg].m_group)
+		if (nGroup != gameData.Segment (childSeg)->m_group)
 			continue;
 		gameData.render.mine.Visit (childSeg);
 		if (bSizeCheck && !BossFitsInSeg (bossObjP, childSeg))
@@ -139,7 +139,7 @@ if (!(nSegments && segments.Create (nSegments)))
 memcpy (segments.Buffer (), bossSegs, nSegments * sizeof (segments [0]));
 bossObjP->SetSize (xBossSizeSave);
 bossObjP->info.position.vPos = vBossHomePos;
-OBJECTS [m_nObject].RelinkToSeg (nBossHomeSeg);
+gameData.Object (m_nObject)->RelinkToSeg (nBossHomeSeg);
 return true;
 }
 
@@ -260,7 +260,7 @@ cf.Read (&m_nDyingStartTime, sizeof (fix), 1);
 int32_t h;
 cf.Read (&h, sizeof (int32_t), 1);
 m_nDying = int16_t (h);
-if ((m_nDying < 0) || (m_nDying >= gameData.objs.nObjects) || !ROBOTINFO (OBJECTS [m_nDying].info.nId).bossFlag)
+if ((m_nDying < 0) || (m_nDying >= gameData.objs.nObjects) || !ROBOTINFO (gameData.Object (m_nDying)->info.nId).bossFlag)
 	m_nDying = 0;
 else if (m_nDying && (m_nDyingStartTime > gameData.time.xGame))
 	m_nDyingStartTime = gameData.time.xGame;
@@ -382,7 +382,7 @@ if (!m_info.Grow ())
 	return -1;
 m_info.Top ()->Init ();
 m_info.Top ()->Setup (nObject);
-if (ROBOTINFO (OBJECTS [nObject].info.nId).bEndsLevel)
+if (ROBOTINFO (gameData.Object (nObject)->info.nId).bEndsLevel)
 	extraGameInfo [0].nBossCount [0]++;
 return nBoss;
 }
@@ -397,7 +397,7 @@ if ((nBoss < 0) || (nBoss >= int16_t (m_info.ToS ())))
 int16_t nObject = m_info [nBoss].m_nObject;
 
 if (m_info.Delete (nBoss)) {
-	if (ROBOTINFO (OBJECTS [nObject].info.nId).bEndsLevel)
+	if (ROBOTINFO (gameData.Object (nObject)->info.nId).bEndsLevel)
 		extraGameInfo [0].nBossCount [0]--;
 	memset (&m_info [m_info.ToS ()], 0, sizeof (CBossInfo));
 	}

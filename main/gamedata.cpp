@@ -1573,7 +1573,7 @@ void CObjectData::InitFreeList (void)
 for (int32_t i = 0; i < LEVEL_OBJECTS; i++) {
 	gameData.objs.freeList [i] = i;
 	gameData.objs.freeListIndex.Clear (0xff);
-	OBJECTS [i].Init ();
+	gameData.Object (i, false)->Init ();
 	}
 }
 
@@ -1638,8 +1638,8 @@ void CObjectData::GatherEffects (void)
 if (nEffects && effects.Create (nEffects)) {
 	int32_t i, j;
 	for (i = j = 0; i < gameFileInfo.objects.count; i++) {
-		if (OBJECTS [i].info.nType == OBJ_EFFECT) {
-			effects [j] = OBJECTS [i];
+		if (gameData.Object (i)->info.nType == OBJ_EFFECT) {
+			effects [j] = *gameData.Object (i);
 			effects [j].info.nPrevInSeg = effects [j].info.nNextInSeg = -1;
 			j++;
 			}
@@ -1663,12 +1663,12 @@ if (nEffects && effects.Buffer ()) {
 											 -bo.info.nSegment - 2, bo.info.position.vPos, bo.info.position.mOrient,
 											 bo.info.xSize, bo.info.controlType, bo.info.movementType, bo.info.renderType);
 		if (nObject >= 0) {
-			OBJECTS [nObject].info = bo.info;
-			OBJECTS [nObject].mType = bo.mType;
-			OBJECTS [nObject].cType = bo.cType;
-			OBJECTS [nObject].rType = bo.rType;
-			if (OBJECTS [nObject].info.nId == PARTICLE_ID)
-				OBJECTS [nObject].SetupSmoke ();
+			gameData.Object (nObject)->info = bo.info;
+			gameData.Object (nObject)->mType = bo.mType;
+			gameData.Object (nObject)->cType = bo.cType;
+			gameData.Object (nObject)->rType = bo.rType;
+			if (gameData.Object (nObject)->info.nId == PARTICLE_ID)
+				gameData.Object (nObject)->SetupSmoke ();
 			j++;
 			}
 		}
@@ -2499,5 +2499,66 @@ DefaultPhysicsSettings (bSetup);
 DefaultRenderSettings (bSetup);
 //DefaultSettings ();
 }
+
+// ----------------------------------------------------------------------------
+
+#if DBG <= 0
+
+CObject* CGameData::Object (int32_t nObject, bool bCheck) 
+{ 
+if (bCheck) {
+	if (!objs.objects.Buffer ())
+		return NULL;
+	if (nObject < 0)
+		return NULL;
+	if (nObject > objs.nLastObject [0])
+		return NULL;
+	}
+return objs.objects + nObject; 
+}
+
+
+CSegment* CGameData::Segment (int32_t nSegment, bool bCheck) 
+{ 
+if (bCheck) {
+	if (!segs.segments.Buffer ())
+		return NULL;
+	if (nSegment < 0)
+		return NULL;
+	if (nSegment >= segs.nSegments)
+		return NULL;
+	}
+return segs.segments + nSegment; 
+}
+
+
+CWall* CGameData::Wall (int32_t nWall, bool bCheck) 
+{ 
+if (bCheck) {
+	if (!walls.walls.Buffer ())
+		return NULL;
+	if (nWall < 0)
+		return NULL;
+	if (nWall >= walls.nWalls)
+		return NULL;
+	}
+return walls.walls + nWall; 
+}
+
+
+CTrigger* CGameData::Trigger (int32_t nTrigger, bool bCheck) 
+{
+if (bCheck) {
+	if (!trigs.triggers.Buffer ())
+		return NULL;
+	if (nTrigger < 0)
+		return NULL;
+	if (nTrigger >= trigs.m_nTriggers)
+		return NULL;
+	}
+return trigs.triggers + nTrigger; 
+}
+
+#endif
 
 // ----------------------------------------------------------------------------
