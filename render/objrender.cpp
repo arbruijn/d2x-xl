@@ -523,7 +523,7 @@ if (GetCloakInfo (objP, xCloakStartTime, xCloakEndTime, &ci) != 0) {
 	gameData.models.nLightScale = ci.xLightScale;
 	bOk = DrawPolyModel (objP, &posP->vPos, &posP->mOrient,
 								reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
-								objP->ModelId (), objP->rType.polyObjInfo.nSubObjFlags,
+								objP->ModelId (true), objP->rType.polyObjInfo.nSubObjFlags,
 								xNewLight, glow, altTextures, NULL);
 	gameData.models.nLightScale = 0;
 	glow [0] = xSaveGlow;
@@ -535,7 +535,7 @@ else {
 	fpDrawTexPolyMulti = G3DrawTexPolyFlat;
 	bOk = DrawPolyModel (objP, &posP->vPos, &posP->mOrient,
 								reinterpret_cast<CAngleVector*> (&objP->rType.polyObjInfo.animAngles),
-								objP->ModelId (), objP->rType.polyObjInfo.nSubObjFlags,
+								objP->ModelId (true), objP->rType.polyObjInfo.nSubObjFlags,
 								light, glow, NULL, NULL);
 	fpDrawTexPolyMulti = G3DrawTexPolyMulti;
 	gameStates.render.grAlpha = 1.0f;
