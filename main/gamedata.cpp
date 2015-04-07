@@ -2502,7 +2502,7 @@ DefaultRenderSettings (bSetup);
 
 // ----------------------------------------------------------------------------
 
-#if DBG <= 0
+#if DBG
 
 CObject* CGameData::Object (int32_t nObject, bool bCheck) 
 { 

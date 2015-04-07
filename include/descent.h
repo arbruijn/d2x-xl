@@ -3717,7 +3717,7 @@ class CGameData {
 				render.nStereoOffsetType = nType; 
 			return nOldType;
 			}
-#if DBG <= 0
+#if DBG
 		CObject* Object (int32_t nObject, bool bCheck = true);
 		CSegment* Segment (int32_t nSegment, bool bCheck = true);
 		CWall* Wall (int32_t nWall, bool bCheck = true);
