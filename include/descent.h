@@ -2386,8 +2386,8 @@ class CPhysicsData {
 		fix					xAfterburnerCharge;
 		fix					xBossInvulDot;
 		CFixVector			playerThrust;
-		int32_t					nSegments;
-		int32_t					bIgnoreObjFlag;
+		int32_t				nSegments;
+		int32_t				bIgnoreObjFlag;
 
 	public:
 		CPhysicsData ();
@@ -2409,13 +2409,13 @@ class CRobotData {
 		CArray<tRobotInfo>	defaultInfo ; //[MAX_ROBOT_TYPES];
 		CArray<tJointPos>		joints ; //[MAX_ROBOT_JOINTS];
 		CArray<tJointPos>		defaultJoints ; //[MAX_ROBOT_JOINTS];
-		int32_t						nJoints;
-		int32_t						nDefaultJoints;
-		int32_t						nCamBotId;
-		int32_t						nCamBotModel;
-		int32_t						nTypes [2];
-		int32_t						nDefaultTypes;
-		int32_t						bReplacementsLoaded;
+		int32_t					nJoints;
+		int32_t					nDefaultJoints;
+		int32_t					nCamBotId;
+		int32_t					nCamBotModel;
+		int32_t					nTypes [2];
+		int32_t					nDefaultTypes;
+		int32_t					bReplacementsLoaded;
 		CArray<tRobotInfo>	infoP;
 		CArray<POF::CModel>	pofData;
 	public:
@@ -2439,10 +2439,10 @@ typedef struct tOpenALData {
 
 class CSoundData {
 	public:
-		int32_t						nType;	// 0: D2, 1: D1
+		int32_t					nType;	// 0: D2, 1: D1
 		//CArray<uint8_t>			data [2];
 		CArray<CSoundSample>	sounds [2]; //[MAX_SOUND_FILES];
-		int32_t						nSoundFiles [2];
+		int32_t					nSoundFiles [2];
 		CArray<CSoundSample>	soundP;
 #if USE_OPENAL
 		tOpenALData				openAL;
@@ -3723,6 +3723,7 @@ class CGameData {
 		CWall* Wall (int32_t nWall, int32_t nChecks = 7, const char* pszFile = "", int32_t nLine = 0);
 		CTrigger* Trigger (int32_t nTrigger, int32_t nChecks = 7, const char* pszFile = "", int32_t nLine = 0);
 		CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = 7, const char* pszFile = "", int32_t nLine = 0);
+		tRobotInfo* CGameData::RobotInfo (int32_t nId, int32_t nChecks, const char* pszFile, int32_t nLine);
 #else
 		inline CObject* Object (int32_t nObject, int32_t nChecks = 7) { 
 			if (nChecks) {
@@ -3787,6 +3788,20 @@ class CGameData {
 				}
 			return trigs.objTriggers + nTrigger; 
 			}
+
+		inline tRobotInfo* CGameData::RobotInfo (int32_t nId, int32_t nChecks) {
+			CArray<tRobotInfo>& a = gameData.bots.info [D1ROBOT (nId)];
+			if (nChecks) {
+				if ((nChecks & 1) && !s.Buffer ())
+					return NULL;
+				if ((nChecks & 2) && (nId < 0))
+					return NULL;
+				if ((nChecks & 4) && (nId >= a.Length ()))
+					return NULL;
+				}
+			return a + nId; 
+			}
+
 #endif
 		inline int32_t X (int32_t x, bool bForce = false) { return render.nStereoOffsetType ? x - ((render.nStereoOffsetType == STEREO_OFFSET_FLOATING) ? FloatingStereoOffset2D (x, bForce) : StereoOffset2D ()) : x; }
 };

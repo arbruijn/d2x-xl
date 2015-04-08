@@ -5185,7 +5185,7 @@ void MultiDoStartTrigger (uint8_t* buf)
 
 CHECK_MSG_ID
 
-CTrigger* trigP = TRIGGER ((int32_t) buf [bufP]]);
+CTrigger* trigP = TRIGGER ((int32_t) buf [bufP]);
 if (trigP)
 	trigP->m_info.flags |= TF_DISABLED;
 }
