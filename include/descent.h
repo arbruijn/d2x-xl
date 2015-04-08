@@ -3803,9 +3803,9 @@ class CGameData {
 			}
 
 		inline tRobotInfo* CGameData::RobotInfo (int32_t nId, int32_t nChecks) {
-			CArray<tRobotInfo>& a = gameData.bots.info [D1ROBOT (nId)];
+			CArray<tRobotInfo>& a = bots.info [D1ROBOT (nId)];
 			if (nChecks) {
-				if ((nChecks & 1) && !s.Buffer ())
+				if ((nChecks & 1) && !a.Buffer ())
 					return NULL;
 				if ((nChecks & 2) && (nId < 0))
 					return NULL;
