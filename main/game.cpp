@@ -710,7 +710,7 @@ void DoAmbientSounds (void)
 if (gameStates.app.bPlayerIsDead)
 	return;
 
-CSegment* segP = gameData.Segment (gameData.objs.consoleP->info.nSegment);
+CSegment* segP = SEGMENT (gameData.objs.consoleP->info.nSegment);
 if (!segP)
 	return;
 
@@ -1337,7 +1337,7 @@ if (!gameData.segs.bHaveSlideSegs)
 	ComputeSlideSegs ();
 for (h = 0; h < gameData.segs.nSlideSegs; h++) {
 	nSegment = gameData.segs.slideSegs [h].nSegment;
-	segP = gameData.Segment (nSegment);
+	segP = SEGMENT (nSegment);
 	sides = gameData.segs.slideSegs [h].nSides;
 	for (nSide = 0, sideP = segP->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 		if (!(segP->Side (nSide)->FaceCount () && (sides & (1 << nSide))))
@@ -1390,7 +1390,7 @@ void PowerupGrabCheat (CObject *playerP, int32_t nObject)
 if (gameStates.app.bGameSuspended & SUSP_POWERUPS)
 	return;
 
-	CObject*					powerupP = gameData.Object (nObject);
+	CObject*					powerupP = OBJECT (nObject);
 	tObjTransformation*	posP = OBJPOS (playerP);
 	CFixVector				vCollision;
 
@@ -1413,11 +1413,11 @@ playerP->CollidePlayerAndPowerup (powerupP, vCollision);
 void PowerupGrabCheatAll (void)
 {
 if (gameStates.app.tick40fps.bTick && (gameData.objs.consoleP->info.nSegment != -1)) {
-	int16_t nObject = gameData.Segment (gameData.objs.consoleP->info.nSegment)->m_objects;
+	int16_t nObject = SEGMENT (gameData.objs.consoleP->info.nSegment)->m_objects;
 	while (nObject != -1) {
-		if (gameData.Object (nObject)->info.nType == OBJ_POWERUP)
+		if (OBJECT (nObject)->info.nType == OBJ_POWERUP)
 			PowerupGrabCheat (gameData.objs.consoleP, nObject);
-		nObject = gameData.Object (nObject)->info.nNextInSeg;
+		nObject = OBJECT (nObject)->info.nNextInSeg;
 		}
 	}
 }
@@ -1468,7 +1468,7 @@ for (i = 1; i < playerPathLength; i++) {
 		Int3 ();		//	Unable to drop energy powerup for path
 		return 1;
 		}
-	objP = gameData.Object (nObject);
+	objP = OBJECT (nObject);
 	objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
 	objP->rType.animationInfo.xFrameTime = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
 	objP->rType.animationInfo.nCurFrame = 0;
@@ -1484,7 +1484,7 @@ int32_t MarkPathToExit (void)
 {
 for (int32_t i = 0; i <= gameData.segs.nLastSegment; i++) {
 	for (int32_t j = 0, h = SEGMENT_SIDE_COUNT; j < h; j++)
-		if (gameData.Segment (i)->m_children [j] == -2)
+		if (SEGMENT (i)->m_children [j] == -2)
 			return MarkPlayerPathToSegment (i);
 	}
 return 0;

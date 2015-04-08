@@ -98,7 +98,7 @@ return 1;
 
 static inline bool SendObject (int32_t nMode, int32_t nLocalObj, int32_t nPlayer)
 {
-if (NetworkFilterObject (gameData.Object (nLocalObj))) 
+if (NetworkFilterObject (OBJECT (nLocalObj))) 
 	return false;
 return nMode
 		 ? (gameData.multigame.nObjOwner [nLocalObj] == -1) || (gameData.multigame.nObjOwner [nLocalObj] == nPlayer) // send objects owned by the local player or by nobody
@@ -148,7 +148,7 @@ for (nPacketsLeft = OBJ_PACKETS_PER_FRAME; nPacketsLeft; nPacketsLeft--) {
 			NW_SET_SHORT (objBuf, bufI, nLocalObj);      
 			NW_SET_BYTE (objBuf, bufI, nObjOwner);                                 
 			NW_SET_SHORT (objBuf, bufI, nRemoteObj); 
-			NW_SET_BYTES (objBuf, bufI, &gameData.Object (nLocalObj)->info, sizeof (tBaseObject));
+			NW_SET_BYTES (objBuf, bufI, &OBJECT (nLocalObj)->info, sizeof (tBaseObject));
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)
 			if (gameStates.multi.nGameType >= IPX_GAME)
 				SwapObject (reinterpret_cast<CObject*> (objBuf + bufI - sizeof (tBaseObject)));

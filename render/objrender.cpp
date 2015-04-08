@@ -225,7 +225,7 @@ if (gameStates.app.bPlayerFiredLaserThisFrame != -1) {
 	//completely ignores z, which may not be good
 	if ((abs (temp.ViewPos ().v.coord.x) < I2X (4)) && (abs (temp.ViewPos ().v.coord.y) < I2X (4))) {
 		objP->cType.aiInfo.nDangerLaser = gameStates.app.bPlayerFiredLaserThisFrame;
-		objP->cType.aiInfo.nDangerLaserSig = gameData.Object (gameStates.app.bPlayerFiredLaserThisFrame)->info.nSignature;
+		objP->cType.aiInfo.nDangerLaserSig = OBJECT (gameStates.app.bPlayerFiredLaserThisFrame)->info.nSignature;
 		}
 	}
 }
@@ -606,7 +606,7 @@ int32_t DrawPolygonObject (CObject *objP, int32_t bForce)
 if (objP->info.nType == 255)
 	return 0;
 #if DBG
-if ((objP->info.nType != OBJ_PLAYER) && (objP->info.position.vPos == gameData.Object (0)->info.position.vPos))
+if ((objP->info.nType != OBJ_PLAYER) && (objP->info.position.vPos == OBJECT (0)->info.position.vPos))
 	BRP;
 #endif
 id = (int32_t) objP->info.nId;

@@ -122,8 +122,8 @@ vAvoidPos.SetZero ();
 if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 	// move out from all other robots in same segment that are too close
 	CObject* avoidObjP;
-	for (int16_t nObject = gameData.Segment (nStartSeg)->m_objects; nObject != -1; nObject = avoidObjP->info.nNextInSeg) {
-		avoidObjP = gameData.Object (nObject);
+	for (int16_t nObject = SEGMENT (nStartSeg)->m_objects; nObject != -1; nObject = avoidObjP->info.nNextInSeg) {
+		avoidObjP = OBJECT (nObject);
 		if ((avoidObjP->info.nType != OBJ_ROBOT) || (avoidObjP->info.nSignature >= objP->info.nSignature))
 			continue;	// comparing the sigs ensures that only one of two bots tested against each other will move, keeping them from bouncing around
 		fix xDist = CFixVector::Dist (vPos, avoidObjP->info.position.vPos);
@@ -136,7 +136,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 	if (nAvoidObjs) {
 		xAvoidRad /= nAvoidObjs;
 		vAvoidPos /= I2X (nAvoidObjs);
-		CSegment* segP = gameData.Segment (nStartSeg);
+		CSegment* segP = SEGMENT (nStartSeg);
 		for (nAvoidObjs = 5; nAvoidObjs; nAvoidObjs--) {
 			CFixVector vNewPos = CFixVector::Random ();
 			vNewPos *= objP->info.xSize;
@@ -145,7 +145,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId).companion) {
 			if (0 > nDestSeg)
 				continue;
 			if (nStartSeg != nDestSeg) {
-				int16_t nSide = segP->ConnectedSide (gameData.Segment (nDestSeg));
+				int16_t nSide = segP->ConnectedSide (SEGMENT (nDestSeg));
 				if (0 > nSide)
 					continue;
 				if (!((segP->IsPassable (nSide, NULL) & WID_PASSABLE_FLAG) || (AIDoorIsOpenable (objP, segP, nSide))))
@@ -305,7 +305,7 @@ void AIMoveRelativeToTarget (CObject *objP, tAILocalInfo *ailP, fix xDistToTarge
 
 	// New way, green guys don't evade:	if ((botInfoP->attackType == 0) && (objP->cType.aiInfo.nDangerLaser != -1)) {
 if (objP->cType.aiInfo.nDangerLaser != -1) {
-	dObjP = gameData.Object (objP->cType.aiInfo.nDangerLaser);
+	dObjP = OBJECT (objP->cType.aiInfo.nDangerLaser);
 
 	if ((dObjP->info.nType == OBJ_WEAPON) && (dObjP->info.nSignature == objP->cType.aiInfo.nDangerLaserSig)) {
 		fix			dot, xDistToLaser, fieldOfView;
@@ -404,21 +404,21 @@ return xDistToGoal;
 bool MoveObjectToLegalSpot (CObject *objP, int32_t bMoveToCenter)
 {
 	CFixVector	vSegCenter, vOrigPos = objP->info.position.vPos;
-	CSegment*	segP = gameData.Segment (objP->info.nSegment);
+	CSegment*	segP = SEGMENT (objP->info.nSegment);
 
 #if DBG
 if (objP - OBJECTS == nDbgObj)
 	BRP;
 #endif
 if (bMoveToCenter) {
-	vSegCenter = gameData.Segment (objP->info.nSegment)->Center ();
+	vSegCenter = SEGMENT (objP->info.nSegment)->Center ();
 	MoveObjectToLegalPoint (objP, &vSegCenter);
 	return !ObjectIntersectsWall (objP);
 	}
 else {
 	for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 		if (segP->IsPassable ((int16_t) i, objP) & WID_PASSABLE_FLAG) {
-			vSegCenter = gameData.Segment (segP->m_children [i])->Center ();
+			vSegCenter = SEGMENT (segP->m_children [i])->Center ();
 			objP->info.position.vPos = vSegCenter;
 			if (ObjectIntersectsWall (objP))
 				objP->info.position.vPos = vOrigPos;
@@ -495,7 +495,7 @@ return xDistToGoal;
 //	If CSegment center is nearer than 2 radii, move it to center.
 fix MoveTowardsSegmentCenter (CObject *objP)
 {
-CFixVector vSegCenter = gameData.Segment (objP->info.nSegment)->Center ();
+CFixVector vSegCenter = SEGMENT (objP->info.nSegment)->Center ();
 return MoveTowardsPoint (objP, &vSegCenter, 0);
 }
 

@@ -128,7 +128,7 @@ else {
 for (handleP = m_handles + i; h; h--) {
 	for (int32_t j = 0; j < 2; j++) {
 		if ((nLightning = handleP->nLightning [j]) >= 0) {
-			parentObjP = gameData.Object (handleP->nParentObj);
+			parentObjP = OBJECT (handleP->nParentObj);
 			if (parentObjP->info.nType == OBJ_PLAYER) {
 				wsP = gameData.multiplayer.weaponStates + parentObjP->info.nId;
 				if ((wsP->nPrimary != OMEGA_INDEX) || !wsP->firing [0].nStart) {
@@ -136,7 +136,7 @@ for (handleP = m_handles + i; h; h--) {
 					continue;
 					}
 				}
-			targetObjP = (handleP->nTargetObj >= 0) ? gameData.Object (handleP->nTargetObj) : NULL;
+			targetObjP = (handleP->nTargetObj >= 0) ? OBJECT (handleP->nTargetObj) : NULL;
 			GetGunPoint (parentObjP, &vMuzzle);
 			nSegment = SPECTATOR (parentObjP) ? gameStates.app.nPlayerSegment : parentObjP->info.nSegment;
 			lightningManager.Move (nLightning, vMuzzle, nSegment);

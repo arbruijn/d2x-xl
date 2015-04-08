@@ -113,7 +113,7 @@ void CLightManager::SetPos (int16_t nObject)
 if (SHOW_DYN_LIGHT) {
 	int32_t	nLight = m_data.owners [nObject];
 	if (nLight >= 0)
-		m_data.lights [nLight].info.vPos = gameData.Object (nObject)->info.position.vPos;
+		m_data.lights [nLight].info.vPos = OBJECT (nObject)->info.position.vPos;
 	}
 }
 
@@ -162,7 +162,7 @@ if (nLight >= 0) {
 	if (!colorP)
 		colorP = &lightP->info.color;
 	if (nObject >= 0)
-		lightP->info.vPos = gameData.Object (nObject)->info.position.vPos;
+		lightP->info.vPos = OBJECT (nObject)->info.position.vPos;
 	if ((lightP->info.fBrightness != fBrightness) ||
 		 (lightP->info.color.Red () != colorP->Red ()) || (lightP->info.color.Green () != colorP->Green ()) || (lightP->info.color.Blue () != colorP->Blue ())) {
 		SetColor (nLight, colorP->Red (), colorP->Green (), colorP->Blue (), fBrightness);
@@ -227,12 +227,12 @@ if (!colorP || colorP->index) {
 	CAngleVector	vec;
 #endif
 	pli->nIndex = (int32_t) nSegment * 6 + nSide;
-	pli->coord = gameData.Segment (nSegment)->m_SideCenter (nSide);
+	pli->coord = SEGMENT (nSegment)->m_SideCenter (nSide);
 	OOF_VecVms2Gl (pli->glPos, &pli->coord);
 	pli->nSegNum = nSegment;
 	pli->nSideNum = (uint8_t) nSide;
 #if DBG
-	VmExtractAnglesVector (&vec, gameData.Segment (nSegment)->m_sides [nSide].m_normals);
+	VmExtractAnglesVector (&vec, SEGMENT (nSegment)->m_sides [nSide].m_normals);
 	VmAngles2Matrix (&pli->position.mOrient, &vec);
 #endif
 	}
@@ -248,24 +248,24 @@ if ((nSegment < 0) || (nSide < 0))
 
 	CTrigger*	trigP;
 	int32_t			i = 0;
-	bool			bForceField = (gameData.pig.tex.tMapInfoP [gameData.Segment (nSegment)->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0;
+	bool			bForceField = (gameData.pig.tex.tMapInfoP [SEGMENT (nSegment)->m_sides [nSide].m_nBaseTex].flags & TMI_FORCE_FIELD) != 0;
 
 while ((i = FindTriggerTarget (nSegment, nSide, i))) {
 	if (i < 0)
-		trigP = &OBJTRIGGERS [-i - 1];
+		trigP = OBJTRIGGER (-i - 1);
 	else
-		trigP = &TRIGGERS [i - 1];
-	if ((trigP->m_info.nType == TT_OPEN_WALL) || (trigP->m_info.nType == TT_CLOSE_WALL))
+		trigP = TRIGGER (i - 1);
+	if (trigP && ((trigP->m_info.nType == TT_OPEN_WALL) || (trigP->m_info.nType == TT_CLOSE_WALL)))
 		return 1;
 	if (!bForceField) {
-		if ((trigP->m_info.nType == TT_LIGHT_OFF) || (trigP->m_info.nType == TT_LIGHT_ON))
+		if (trigP && ((trigP->m_info.nType == TT_LIGHT_OFF) || (trigP->m_info.nType == TT_LIGHT_ON)))
 			return 1;
 		}
 	}
 if (bOppSide || !bForceField)
 	return 0;
-int16_t nConnSeg = gameData.Segment (nSegment)->m_children [nSide];
-return (nConnSeg >= 0) && IsTriggered (nConnSeg, gameData.Segment (nSegment)->ConnectedSide (gameData.Segment (nConnSeg)), true);
+int16_t nConnSeg = SEGMENT (nSegment)->m_children [nSide];
+return (nConnSeg >= 0) && IsTriggered (nConnSeg, SEGMENT (nSegment)->ConnectedSide (SEGMENT (nConnSeg)), true);
 }
 
 //-----------------------------------------------------------------------------
@@ -390,7 +390,7 @@ light.info.bSelf = 0;
 //2: object/lightning
 //3: headlight
 if (nObject >= 0) {
-	CObject *objP = gameData.Object (nObject);
+	CObject *objP = OBJECT (nObject);
 	//HUDMessage (0, "Adding object light %d, type %d", m_data.nLights [0], objP->info.nType);
 	light.info.nType = 2;
 	light.info.bVariable = 1;
@@ -407,7 +407,7 @@ if (nObject >= 0) {
 #endif
 		}
 	light.info.vPos = objP->info.position.vPos;
-	light.info.fRad = 0; //X2F (gameData.Object (nObject)->size) / 2;
+	light.info.fRad = 0; //X2F (OBJECT (nObject)->size) / 2;
 	if (fBrightness > 1) {
 		if ((objP->info.nType == OBJ_FIREBALL) || (objP->info.nType == OBJ_EXPLOSION)) {
 			light.info.fBoost = 1;
@@ -423,7 +423,7 @@ if (nObject >= 0) {
 else if (nSegment >= 0) {
 #if 0
 	CFixVector	vOffs;
-	CSide			*sideP = gameData.Segment (nSegment)->m_sides + nSide;
+	CSide			*sideP = SEGMENT (nSegment)->m_sides + nSide;
 #endif
 	if (nSide < 0) {
 		light.info.nType = 2;
@@ -432,7 +432,7 @@ else if (nSegment >= 0) {
 		if (vPos)
 			light.info.vPos = *vPos;
 		else
-			light.info.vPos = gameData.Segment (nSegment)->Center ();
+			light.info.vPos = SEGMENT (nSegment)->Center ();
 		}
 	else {
 #if DBG
@@ -440,12 +440,12 @@ else if (nSegment >= 0) {
 			BRP;
 #endif
 		light.info.nType = 0;
-		light.info.bSelf = gameData.Segment (nSegment)->HasOutdoorsProp ();
+		light.info.bSelf = SEGMENT (nSegment)->HasOutdoorsProp ();
 		light.info.fRad = faceP ? faceP->m_info.fRads [1] / 2.0f : 0;
 		//RegisterLight (NULL, nSegment, nSide);
-		light.info.bVariable = IsDestructible (nTexture) || IsFlickering (nSegment, nSide) || IsTriggered (nSegment, nSide) || gameData.Segment (nSegment)->Side (nSide)->IsVolatile ();
+		light.info.bVariable = IsDestructible (nTexture) || IsFlickering (nSegment, nSide) || IsTriggered (nSegment, nSide) || SEGMENT (nSegment)->Side (nSide)->IsVolatile ();
 		m_data.nVariable += light.info.bVariable;
-		CSide* sideP = gameData.Segment (nSegment)->m_sides + nSide;
+		CSide* sideP = SEGMENT (nSegment)->m_sides + nSide;
 		light.info.vPos = sideP->Center ();
 		CFixVector vOffs = sideP->m_normals [2];
 		light.info.vDirf.Assign (vOffs);
@@ -641,7 +641,7 @@ if (info.nSide < 0) {
 else {
 		static int32_t nLevels [3] = {4, 0, -4};
 
-		CSide*	sideP = gameData.Segment (nLightSeg)->Side (info.nSide);
+		CSide*	sideP = SEGMENT (nLightSeg)->Side (info.nSide);
 		int32_t		i, j = nLevels [nLevel];
 
 	v1.Assign (*vPoint);
@@ -684,7 +684,7 @@ return (!nHitType || ((nHitType == HIT_WALL) && (hitResult.nSegment == nDestSeg)
 
 int32_t CDynLight::SeesPoint (const int16_t nSegment, const int16_t nSide, CFixVector* vPoint, const int32_t nLevel, int32_t nThread)
 {
-return SeesPoint (nSegment, &gameData.Segment (nSegment)->Side (nSide)->Normal (2), vPoint, nLevel, nThread);
+return SeesPoint (nSegment, &SEGMENT (nSegment)->Side (nSide)->Normal (2), vPoint, nLevel, nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -706,7 +706,7 @@ CObject* CDynLight::Object (void)
 if (info.nSegment >= 0)
 	return NULL;
 if (info.nObject >= 0)
-	return gameData.Object (info.nObject);
+	return OBJECT (info.nObject);
 if (!info.bSpot)
 	return NULL;
 return PLAYEROBJECT (info.nPlayer);
@@ -731,7 +731,7 @@ if ((nLightSeg >= 0) && (nDestSeg >= 0)) {
 		if (nDestSeg == nDbgSeg)
 			BRP;
 #endif
-		if (gameData.Segment (nLightSeg)->HasOutdoorsProp ()) {
+		if (SEGMENT (nLightSeg)->HasOutdoorsProp ()) {
 			if ((nDestSide >= 0) && ((info.nSide != nDestSide) || (nLightSeg != nDestSeg)))
 				return 0;
 			info.bDiffuse [nThread] = 1;
@@ -783,7 +783,7 @@ else { // check whether light only contributes ambient light to point
 	if (nDestSeg >= 0) {
 		int32_t bSeesPoint = (info.nSide < 0) 
 									? bDiffuse 
-									: gameData.Segment (nLightSeg)->Side (info.nSide)->SeesPoint (vDestPos, nDestSeg, bDiffuse ? gameOpts->render.nLightmapPrecision : -gameOpts->render.nLightmapPrecision - 1, nThread);
+									: SEGMENT (nLightSeg)->Side (info.nSide)->SeesPoint (vDestPos, nDestSeg, bDiffuse ? gameOpts->render.nLightmapPrecision : -gameOpts->render.nLightmapPrecision - 1, nThread);
 		info.bDiffuse [nThread] = bDiffuse && bSeesPoint;
 
 		// if point is occluded, use segment path distance to point for light range and attenuation
@@ -822,7 +822,7 @@ if (!(info.visibleVertices || (info.visibleVertices = new CByteArray ())))
 	return -1;
 if (!info.visibleVertices->Create (gameData.segs.nVertices))
 	return -1;
-CSide* sideP = gameData.Segment (nLightSeg)->Side (info.nSide);
+CSide* sideP = SEGMENT (nLightSeg)->Side (info.nSide);
 for (int32_t i = 0; i < gameData.segs.nVertices; i++)
 	(*info.visibleVertices) [i] = sideP->SeesPoint (VERTICES [i], -1, 2, nThread);
 return 1;
@@ -864,7 +864,7 @@ if (gameStates.render.nLightingMethod)
 m_data.Init ();
 for (nFace = FACES.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--, faceP++) {
 	nSegment = faceP->m_info.nSegment;
-	if (gameData.Segment (nSegment)->m_function == SEGMENT_FUNC_SKYBOX)
+	if (SEGMENT (nSegment)->m_function == SEGMENT_FUNC_SKYBOX)
 		continue;
 #if DBG
 	if (nSegment == nDbgSeg)
@@ -881,7 +881,7 @@ for (nFace = FACES.nFaces, faceP = FACES.faces.Buffer (); nFace; nFace--, faceP+
 	colorP = gameData.render.color.textures + nTexture;
 	if ((nLight = IsLight (nTexture)))
 		Add (faceP, colorP, nLight, (int16_t) nSegment, (int16_t) nSide, -1, nTexture, NULL, 1);
-	faceP->m_info.nOvlTex = gameData.Segment (faceP->m_info.nSegment)->Side (faceP->m_info.nSide)->m_nOvlTex;
+	faceP->m_info.nOvlTex = SEGMENT (faceP->m_info.nSegment)->Side (faceP->m_info.nSide)->m_nOvlTex;
 	nTexture = faceP->m_info.nOvlTex;
 #if 0//DBG
 	if (gameStates.app.bD1Mission && (nTexture == 289)) //empty, light

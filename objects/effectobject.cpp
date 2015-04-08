@@ -122,13 +122,13 @@ psi->nSize [0] = nSize + 1;
 psi->nSize [1] = (nSize * (nSize + 1)) / 2;
 psi->nParts = 90 + (nParts * psi->nLife * 3 * (1 << nSpeed)) / (11 - nParts);
 if (psi->nSide > 0) {
-	float faceSize = gameData.Segment (info.nSegment)->FaceSize (psi->nSide - 1);
+	float faceSize = SEGMENT (info.nSegment)->FaceSize (psi->nSide - 1);
 	psi->nParts = (int32_t) (psi->nParts * ((faceSize < 1) ? sqrt (faceSize) : faceSize));
 	if (gameData.segs.nLevelVersion >= 18) {
 		if (psi->nType == SMOKE_TYPE_SPRAY)
 			psi->nParts *= 4;
 		}
-	else if ((gameData.segs.nLevelVersion < 18) && IsWaterTexture (gameData.Segment (info.nSegment)->m_sides [psi->nSide - 1].m_nBaseTex)) {
+	else if ((gameData.segs.nLevelVersion < 18) && IsWaterTexture (SEGMENT (info.nSegment)->m_sides [psi->nSide - 1].m_nBaseTex)) {
 		psi->nParts *= 4;
 		//psi->nSize [1] /= 2;
 		}

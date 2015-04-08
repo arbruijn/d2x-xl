@@ -170,7 +170,7 @@ if (nStartSegP)
 SetupTransformation (transformation, gameData.render.mine.viewer.vPos, mView, xZoom, bOglScale, xStereoSeparation);
 #if DBG
 {
-CFixVector p, m_pos = gameData.Object (0)->FrontPosition ();
+CFixVector p, m_pos = OBJECT (0)->FrontPosition ();
 tScreenPos s;
 transformation.TransformAndEncode (p, m_pos);
 //SetupCanvasses ();

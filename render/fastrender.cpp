@@ -481,7 +481,7 @@ if (gameStates.render.bHaveSkyBox) {
 		for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
 			if (!(faceP->m_info.bVisible = FaceIsVisible (nSegment, faceP->m_info.nSide)))
 				continue;
-			RenderMineFace (gameData.Segment (nSegment), faceP, RENDER_TYPE_SKYBOX);
+			RenderMineFace (SEGMENT (nSegment), faceP, RENDER_TYPE_SKYBOX);
 			}
 		}
 	gameStates.render.bFullBright = bFullBright;
@@ -499,7 +499,7 @@ if (bAutomap) {
 	if (automap.Active ()) {
 		if (!(automap.m_bFull || automap.m_visible [nSegment]))
 			return 0;
-		if (!gameOpts->render.automap.bSkybox && (gameData.Segment (nSegment)->m_function == SEGMENT_FUNC_SKYBOX))
+		if (!gameOpts->render.automap.bSkybox && (SEGMENT (nSegment)->m_function == SEGMENT_FUNC_SKYBOX))
 			return 0;
 		}
 	else if (gameData.objs.viewerP == gameData.objs.consoleP) {
@@ -564,7 +564,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		faceP = fliP [j].faceP;
 		if (!faceP->m_info.bVisible)
 			continue;
-		LoadFaceBitmaps (gameData.Segment (faceP->m_info.nSegment), faceP);
+		LoadFaceBitmaps (SEGMENT (faceP->m_info.nSegment), faceP);
 #if DBG
 		if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSide == nDbgSide)))
 			BRP;
@@ -582,7 +582,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 			if (gameStates.render.bPerPixelLighting == 2)
 				lightManager.Index (0,0).nActive = -1;
 			}
-		if (RenderMineFace (gameData.Segment (nSegment), faceP, nType))
+		if (RenderMineFace (SEGMENT (nSegment), faceP, nType))
 			nFaces++;
 		}
 	}
@@ -607,7 +607,7 @@ for (i = 0; i < flx.nUsedKeys; i++) {
 		if (automap.Active ()) {
 			if (!(automap.m_bFull || automap.m_visible [nSegment]))
 				return;
-			if (!gameOpts->render.automap.bSkybox && (gameData.Segment (nSegment)->m_function == SEGMENT_FUNC_SKYBOX))
+			if (!gameOpts->render.automap.bSkybox && (SEGMENT (nSegment)->m_function == SEGMENT_FUNC_SKYBOX))
 				continue;
 			}
 		if (nPass == 1) {
@@ -695,8 +695,8 @@ gameData.render.lights.nCoronas = 0;
 for (i = 0; i < gameData.render.mine.visibility [0].nSegments; i++) {
 	if (0 > (nSegment = gameData.render.mine.visibility [0].segments [i]))
 		continue;
-	if ((gameData.Segment (nSegment)->m_function == SEGMENT_FUNC_SKYBOX) ||
-		 (gameData.Segment (nSegment)->HasOutdoorsProp ()))
+	if ((SEGMENT (nSegment)->m_function == SEGMENT_FUNC_SKYBOX) ||
+		 (SEGMENT (nSegment)->HasOutdoorsProp ()))
 		continue;
 	segFaceP = SEGFACES + nSegment;
 #if DBG
@@ -744,10 +744,10 @@ for (i = segFaceP->nFaces, faceP = segFaceP->faceP; i; i--, faceP++) {
 #endif
 	if (!faceP->m_info.bVisible)
 		continue;
-	LoadFaceBitmaps (gameData.Segment (faceP->m_info.nSegment), faceP);
+	LoadFaceBitmaps (SEGMENT (faceP->m_info.nSegment), faceP);
 	faceP->m_info.nTransparent = FaceIsTransparent (faceP, faceP->bmBot, faceP->bmTop);
 	faceP->m_info.nColored = FaceIsColored (faceP);
-	if (RenderMineFace (gameData.Segment (nSegment), faceP, nType))
+	if (RenderMineFace (SEGMENT (nSegment), faceP, nType))
 		nFaces++;
 	}
 return nFaces;
@@ -764,7 +764,7 @@ if (nType == RENDER_TYPE_CORONAS) {
 	if (gameData.render.mine.visibility [0].nSegments == gameData.segs.nSegments) {
 		CSegFace *faceP = FACES.faces.Buffer ();
 		for (i = FACES.nFaces; i; i--, faceP++)
-			if (RenderMineFace (gameData.Segment (faceP->m_info.nSegment), faceP, nType))
+			if (RenderMineFace (SEGMENT (faceP->m_info.nSegment), faceP, nType))
 				nFaces++;
 		}
 	else {

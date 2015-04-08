@@ -374,13 +374,13 @@ return 0;
 // -- {
 // -- 	int32_t	nObject;
 // --
-// -- 	nObject = gameData.Segment (nSegment)->m_objects;
+// -- 	nObject = SEGMENT (nSegment)->m_objects;
 // --
 // -- 	while (nObject != -1) {
-// -- 		if ((gameData.Object (nObject)->nType == OBJ_PLAYER) || (gameData.Object (nObject)->nType == OBJ_REACTOR)) {
+// -- 		if ((OBJECT (nObject)->nType == OBJ_PLAYER) || (OBJECT (nObject)->nType == OBJ_REACTOR)) {
 // -- 			return 1;
 // -- 		} else
-// -- 			nObject = gameData.Object (nObject)->next;
+// -- 			nObject = OBJECT (nObject)->next;
 // -- 	}
 // --
 // -- 	return 0;
@@ -391,7 +391,7 @@ return 0;
 // -- int32_t get_random_child (int32_t nSegment)
 // -- {
 // -- 	int32_t	nSide;
-// -- 	CSegment	*segP = gameData.Segment (nSegment);
+// -- 	CSegment	*segP = SEGMENT (nSegment);
 // --
 // -- 	nSide = (rand () * 6) >> 15;
 // --
@@ -411,7 +411,7 @@ int32_t CheckObjectObjectIntersection (CFixVector *pos, fix size, CSegment *segP
 int16_t nObject = segP->m_objects;
 CObject *objP;
 while (nObject != -1) {
-	objP = gameData.Object (nObject);
+	objP = OBJECT (nObject);
 	if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR)) {
 		if (CFixVector::Dist (*pos, objP->info.position.vPos) < size + objP->info.xSize)
 			return 1;

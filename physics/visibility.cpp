@@ -143,7 +143,7 @@ int32_t CanSeeObject (int32_t nObject, int32_t bCheckObjs)
 {
 	CHitQuery	hitQuery (bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL,
 								 &gameData.objs.viewerP->info.position.vPos,
-								 &gameData.Object (nObject)->info.position.vPos,
+								 &OBJECT (nObject)->info.position.vPos,
 								 gameData.objs.viewerP->info.nSegment,
 								 gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP),
 								 0, 0,
@@ -214,7 +214,7 @@ CHitQuery hitQuery (FQ_CHECK_OBJS | FQ_VISIBLE_OBJS | FQ_IGNORE_POWERUPS | FQ_TR
 int32_t nHitType = FindHitpoint (hitQuery, hitResult);
 if (nHitType != HIT_OBJECT)
 	return 0;
-objP = gameData.Object (hitResult.nObject);
+objP = OBJECT (hitResult.nObject);
 nType = objP->Type ();
 if (nType == OBJ_ROBOT) 
 	return int32_t (!objP->IsGuideBot ());

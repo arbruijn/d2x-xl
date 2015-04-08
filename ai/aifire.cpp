@@ -230,11 +230,11 @@ if (objP->cType.aiInfo.SUB_FLAGS & SUB_FLAGS_GUNSEG) {
 	//	This is almost always ok, but it is not ok if something solid is in between.
 	int32_t	nGunSeg = FindSegByPos (*vFirePoint, objP->info.nSegment, 1, 0);
 	//	See if these segments are connected, which should almost always be the case.
-	int16_t nConnSide = (nGunSeg < 0) ? -1 : gameData.Segment (nGunSeg)->ConnectedSide (gameData.Segment (objP->info.nSegment));
+	int16_t nConnSide = (nGunSeg < 0) ? -1 : SEGMENT (nGunSeg)->ConnectedSide (SEGMENT (objP->info.nSegment));
 	if (nConnSide != -1) {
 		//	They are connected via nConnSide in CSegment objP->info.nSegment.
 		//	See if they are unobstructed.
-		if (!(gameData.Segment (objP->info.nSegment)->IsPassable (nConnSide, NULL) & WID_PASSABLE_FLAG)) {
+		if (!(SEGMENT (objP->info.nSegment)->IsPassable (nConnSide, NULL) & WID_PASSABLE_FLAG)) {
 			//	Can't fly through, so don't let this bot fire through!
 			return;
 			}
@@ -315,7 +315,7 @@ if ((nWeaponType == FUSION_ID) && (gameStates.app.nSDLTicks [0] - objP->TimeLast
 
 lightClusterManager.AddForAI (objP, nObject, nShot);
 objP->Shots ().nObject = nShot;
-objP->Shots ().nSignature = gameData.Object (nShot)->info.nSignature;
+objP->Shots ().nSignature = OBJECT (nShot)->info.nSignature;
 
 if (IsMultiGame) {
 	AIMultiSendRobotPos (nObject, -1);

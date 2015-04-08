@@ -93,7 +93,7 @@ FORALL_LIGHT_OBJS (objP) {
 				objP->cType.lightInfo.nSegment = (nSegment < 0) ? abs (objP->cType.lightInfo.nSegment) : nSegment;
 				}
 			if (objP->info.nSegment != objP->cType.lightInfo.nSegment)
-				gameData.Object (i)->RelinkToSeg (objP->cType.lightInfo.nSegment);
+				OBJECT (i)->RelinkToSeg (objP->cType.lightInfo.nSegment);
 			lightManager.Add (NULL, &objP->cType.lightInfo.color, objP->cType.lightInfo.intensity, -1, -1, i, -1, NULL);
 			}
 		}
@@ -108,7 +108,7 @@ if (!m_bUse)
 	return -1;
 int16_t nObject = CreateLight (CLUSTER_LIGHT_ID, objP->info.nSegment, OBJPOS (objP)->vPos);
 if (nObject >= 0)
-	gameData.Object (nObject)->SetLife (IMMORTAL_TIME);
+	OBJECT (nObject)->SetLife (IMMORTAL_TIME);
 return nObject;
 }
 
@@ -136,12 +136,12 @@ if (0 > nLightObj)
 if (nDbgObj == nLightObj)
 	BRP;
 #endif
-CObject *lightObjP = gameData.Object (nLightObj);
+CObject *lightObjP = OBJECT (nLightObj);
 if (!lightObjP || (lightObjP->info.nSignature != m_objects [nObject].nSignature)) {
 	m_objects [nObject].nObject = -1;
 	return 0;
 	}
-CObject *objP = gameData.Object (nObject);
+CObject *objP = OBJECT (nObject);
 if (lightObjP->LifeLeft () < objP->LifeLeft ())
 	lightObjP->UpdateLife (objP->LifeLeft ());
 if (!lightObjP->cType.lightInfo.nObjects++) {
@@ -175,8 +175,8 @@ void CLightClusterManager::Add (int16_t nObject, int16_t nLightObj)
 {
 m_objects [nObject].nObject = nLightObj;
 if (nLightObj >= 0) {
-	m_objects [nObject].nSignature = gameData.Object (nLightObj)->info.nSignature;
-	gameData.Object (nLightObj)->cType.lightInfo.nObjects++;
+	m_objects [nObject].nSignature = OBJECT (nLightObj)->info.nSignature;
+	OBJECT (nLightObj)->cType.lightInfo.nObjects++;
 	}
 }
 
@@ -198,14 +198,14 @@ if (nObject == nDbgObj)
 	nObject = nDbgObj;
 #endif
 if (nPrevShot >= 0) {
-	CObject *prevShotP = gameData.Object (nPrevShot);
+	CObject *prevShotP = OBJECT (nPrevShot);
 	if (prevShotP && (prevShotP->info.nSignature == objP->Shots ().nSignature)) {
-		CObject *lightP, *shotP = gameData.Object (nShot);
+		CObject *lightP, *shotP = OBJECT (nShot);
 		int16_t nLight = m_objects [nPrevShot].nObject;
 		if (nLight < 0)
 			lightP = prevShotP;
 		else {
-			lightP = gameData.Object (nLight);
+			lightP = OBJECT (nLight);
 			if (lightP && (lightP->info.nSignature != m_objects [nPrevShot].nSignature)) {
 				lightP = prevShotP;
 				nLight = -1;
@@ -221,7 +221,7 @@ if (nPrevShot >= 0) {
 				m_objects [nShot].nObject =
 				m_objects [nPrevShot].nObject = nLight;
 				if (nLight >= 0) {
-					lightP = gameData.Object (nLight);
+					lightP = OBJECT (nLight);
 					m_objects [nShot].nSignature =
 					m_objects [nPrevShot].nSignature = lightP->info.nSignature;
 					lightP->cType.lightInfo.nObjects = 2;

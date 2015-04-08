@@ -213,7 +213,7 @@ if (Type () != OBJ_EFFECT) {
 	if (nSegment != Segment ()) {
 		if (nSegment < 0) {
 			nSegment = FindClosestSeg (Position ());
-			SetPos (&gameData.Segment (nSegment)->Center ());
+			SetPos (&SEGMENT (nSegment)->Center ());
 			}
 		SetSegment (nSegment);
 		}
@@ -411,33 +411,33 @@ if (gameFileInfo.walls.count && (gameFileInfo.walls.offset > -1)) {
 		}
 	for (i = 0; i < gameFileInfo.walls.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 20)
-			gameData.Wall (i, false)->Read (cf); // v20 walls and up.
+			WALL (i, false)->Read (cf); // v20 walls and up.
 		else if (gameTopFileInfo.fileinfoVersion >= 17) {
 			tWallV19 w;
 
 			ReadWallV19(w, cf);
-			gameData.Wall (i)->nSegment	   = w.nSegment;
-			gameData.Wall (i)->nSide			= w.nSide;
-			gameData.Wall (i)->nLinkedWall	= w.nLinkedWall;
-			gameData.Wall (i)->nType			= w.nType;
-			gameData.Wall (i)->flags			= w.flags;
-			gameData.Wall (i)->hps				= w.hps;
-			gameData.Wall (i)->nTrigger		= w.nTrigger;
-			gameData.Wall (i)->nClip			= w.nClip;
-			gameData.Wall (i)->keys				= w.keys;
-			gameData.Wall (i)->state			= WALL_DOOR_CLOSED;
+			WALL (i)->nSegment	   = w.nSegment;
+			WALL (i)->nSide			= w.nSide;
+			WALL (i)->nLinkedWall	= w.nLinkedWall;
+			WALL (i)->nType			= w.nType;
+			WALL (i)->flags			= w.flags;
+			WALL (i)->hps				= w.hps;
+			WALL (i)->nTrigger		= w.nTrigger;
+			WALL (i)->nClip			= w.nClip;
+			WALL (i)->keys				= w.keys;
+			WALL (i)->state			= WALL_DOOR_CLOSED;
 			}
 		else {
 			tWallV16 w;
 
 			ReadWallV16(w, cf);
-			gameData.Wall (i)->nSegment = gameData.Wall (i)->nSide = gameData.Wall (i)->nLinkedWall = -1;
-			gameData.Wall (i)->nType		= w.nType;
-			gameData.Wall (i)->flags		= w.flags;
-			gameData.Wall (i)->hps			= w.hps;
-			gameData.Wall (i)->nTrigger	= w.nTrigger;
-			gameData.Wall (i)->nClip		= w.nClip;
-			gameData.Wall (i)->keys			= w.keys;
+			WALL (i)->nSegment = WALL (i)->nSide = WALL (i)->nLinkedWall = -1;
+			WALL (i)->nType		= w.nType;
+			WALL (i)->flags		= w.flags;
+			WALL (i)->hps			= w.hps;
+			WALL (i)->nTrigger	= w.nTrigger;
+			WALL (i)->nClip		= w.nClip;
+			WALL (i)->keys			= w.keys;
 			}
 		}
 	}
@@ -465,11 +465,11 @@ if (gameFileInfo.doors.offset > -1) {
 			ReadActiveDoorV19 (d, cf);
 			gameData.walls.activeDoors [i].nPartCount = d.nPartCount;
 			for (int32_t j = 0; j < d.nPartCount; j++) {
-				segP = gameData.Segment (d.seg [j]);
+				segP = SEGMENT (d.seg [j]);
 				nConnSeg = segP->m_children [d.nSide [j]];
-				nConnSide = segP->ConnectedSide (gameData.Segment (nConnSeg));
+				nConnSide = segP->ConnectedSide (SEGMENT (nConnSeg));
 				gameData.walls.activeDoors [i].nFrontWall [j] = segP->WallNum (d.nSide [j]);
-				gameData.walls.activeDoors [i].nBackWall [j] = gameData.Segment (nConnSeg)->WallNum (nConnSide);
+				gameData.walls.activeDoors [i].nBackWall [j] = SEGMENT (nConnSeg)->WallNum (nConnSide);
 				}
 			}
 		}
@@ -671,7 +671,7 @@ static int32_t AssignProducer (tObjectProducerInfo& producerInfo, int32_t nObjPr
 {
 #if 1
 
-	CSegment* segP = gameData.Segment (0);
+	CSegment* segP = SEGMENT (0);
 
 for (int32_t i = 0, j = gameData.segs.nSegments; i < j; i++, segP++) {
 	if ((segP->Function () == nFunction) && (segP->m_nObjProducer == nObjProducer)) {
@@ -690,7 +690,7 @@ return -1;
 
 #elif 0
 
-CSegment* segP = gameData.Segment (producerInfo.nSegment);
+CSegment* segP = SEGMENT (producerInfo.nSegment);
 if (segP->m_function != nFunction)
 	return -1;
 producerInfo.nProducer = segP->m_nObjProducer;
@@ -724,7 +724,7 @@ int32_t nProducer = objProducer.nProducer;
 tProducerInfo& producer = gameData.producers.producers [nProducer];
 if (producer.nSegment < 0)
 	return -1;
-CSegment* segP = gameData.Segment (producer.nSegment);
+CSegment* segP = SEGMENT (producer.nSegment);
 if (segP->m_value != nProducer)
 	return -1;
 if (segP->m_function != nFunction) // this object producer has an invalid segment
@@ -911,7 +911,7 @@ for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
 			objP->SetType (OBJ_NONE);
 		else {
 			objP->info.nSegment = -1;	
-			gameData.Object (i)->LinkToSeg (nObjSeg);
+			OBJECT (i)->LinkToSeg (nObjSeg);
 			}
 		}
 	}
@@ -948,11 +948,11 @@ static void CheckAndFixWalls (void)
 	CWall*	wallP;
 
 for (i = 0; i < gameData.walls.nWalls; i++)
-	if ((gameData.Wall (i)->nTrigger >= gameData.trigs.m_nTriggers) && (gameData.Wall (i)->nTrigger != NO_TRIGGER)) {
+	if ((WALL (i)->nTrigger >= gameData.trigs.m_nTriggers) && (WALL (i)->nTrigger != NO_TRIGGER)) {
 #if TRACE
-		PrintLog (0, "Removing reference to invalid trigger %d from wall %d\n", gameData.Wall (i)->nTrigger, i);
+		PrintLog (0, "Removing reference to invalid trigger %d from wall %d\n", WALL (i)->nTrigger, i);
 #endif
-		gameData.Wall (i)->nTrigger = NO_TRIGGER;	//kill CTrigger
+		WALL (i)->nTrigger = NO_TRIGGER;	//kill CTrigger
 		}
 
 if (gameTopFileInfo.fileinfoVersion < 17) {
@@ -970,10 +970,10 @@ if (gameTopFileInfo.fileinfoVersion < 17) {
 // mark all triggers on "open" segment sides (i.e. which are connected to an adjacent segment) as "fly through" 
 // to simplify internal trigger management
 for (i = 0; i < gameData.walls.nWalls; i++) {
-	uint8_t nTrigger = gameData.Wall (i)->nTrigger;
-	if (nTrigger == NO_TRIGGER)
-		continue;
-	TRIGGERS [nTrigger].m_info.nWall = i;
+	uint8_t nTrigger = ;
+	CTrigger* trigP = TRIGGER (WALL (i)->nTrigger);
+	if (trigP)
+		trigP->m_info.nWall = i;
 	}
 }
 
@@ -987,13 +987,13 @@ static void CheckAndFixTriggers (void)
 for (i = 0; i < gameData.trigs.m_nTriggers; ) {
 	//	Find which CWall this CTrigger is connected to.
 	for (j = 0; j < gameData.walls.nWalls; j++)
-		if (gameData.Wall (j)->nTrigger == i)
+		if (WALL (j)->nTrigger == i)
 			break;
 		i++;
 	}
 
 for (i = 0; i < gameData.walls.nWalls; i++)
-	gameData.Wall (i)->controllingTrigger = -1;
+	WALL (i)->controllingTrigger = -1;
 
 //	MK, 10/17/95: Make walls point back at the triggers that control them.
 //	Go through all triggers, stuffing controllingTrigger field in WALLS.
@@ -1011,11 +1011,11 @@ for (i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
 				}
 			else {
 				nSide = trigP->m_sides [j];
-				nWall = gameData.Segment (nSegment)->WallNum (nSide);
+				nWall = SEGMENT (nSegment)->WallNum (nSide);
 				//check to see that if a CTrigger requires a CWall that it has one,
 				//and if it requires a botGen that it has one
 				if (trigP->m_info.nType == TT_OBJECT_PRODUCER) {
-					if ((gameData.Segment (nSegment)->m_function != SEGMENT_FUNC_ROBOTMAKER) && (gameData.Segment (nSegment)->m_function != SEGMENT_FUNC_EQUIPMAKER)) {
+					if ((SEGMENT (nSegment)->m_function != SEGMENT_FUNC_ROBOTMAKER) && (SEGMENT (nSegment)->m_function != SEGMENT_FUNC_EQUIPMAKER)) {
 						if (j < --h) {
 							trigP->m_segments [j] = trigP->m_segments [h];
 							trigP->m_sides [j] = trigP->m_sides [h];
@@ -1025,7 +1025,7 @@ for (i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
 					}
 				else if ((trigP->m_info.nType != TT_LIGHT_OFF) && (trigP->m_info.nType != TT_LIGHT_ON)) { //light triggers don't require walls
 					if (IS_WALL (nWall))
-						gameData.Wall (nWall)->controllingTrigger = i;
+						WALL (nWall)->controllingTrigger = i;
 					else {
 #if 0
 						if (j < --h) {
@@ -1050,7 +1050,7 @@ void CreateGenerators (void)
 {
 gameData.producers.nRepairCenters = 0;
 for (int32_t i = 0; i < gameData.segs.nSegments; i++) {
-	gameData.Segment (i)->CreateGenerator (gameData.Segment (i)->m_function);
+	SEGMENT (i)->CreateGenerator (SEGMENT (i)->m_function);
 	}
 }
 

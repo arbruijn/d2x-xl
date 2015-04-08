@@ -252,9 +252,9 @@ xEffectTime += gameData.time.xFrame;
 #if DBG
 					Assert (effectInfoP->nSegment != -1);
 					Assert ((effectInfoP->nSide >= 0) && (effectInfoP->nSide < 6));
-					Assert (effectInfoP->destroyed.nTexture != 0 && gameData.Segment (effectInfoP->nSegment)->m_sides [effectInfoP->nSide].m_nOvlTex);
+					Assert (effectInfoP->destroyed.nTexture != 0 && SEGMENT (effectInfoP->nSegment)->m_sides [effectInfoP->nSide].m_nOvlTex);
 #endif
-					gameData.Segment (effectInfoP->nSegment)->m_sides [effectInfoP->nSide].m_nOvlTex = effectInfoP->destroyed.nTexture;		//replace with destroyed
+					SEGMENT (effectInfoP->nSegment)->m_sides [effectInfoP->nSide].m_nOvlTex = effectInfoP->destroyed.nTexture;		//replace with destroyed
 					effectInfoP->flags &= ~EF_ONE_SHOT;
 					effectInfoP->nSegment = -1;		//done with this
 					}
@@ -329,9 +329,9 @@ xEffectTime += gameData.time.xFrame;
 #if DBG
 					Assert(effectInfoP->nSegment != -1);
 					Assert((effectInfoP->nSide >= 0) && (effectInfoP->nSide < 6));
-					Assert(effectInfoP->destroyed.nTexture !=0 && gameData.Segment (effectInfoP->nSegment)->m_sides [effectInfoP->nSide].m_nOvlTex);
+					Assert(effectInfoP->destroyed.nTexture !=0 && SEGMENT (effectInfoP->nSegment)->m_sides [effectInfoP->nSide].m_nOvlTex);
 #endif
-					gameData.Segment (effectInfoP->nSegment)->m_sides [effectInfoP->nSide].m_nOvlTex = effectInfoP->destroyed.nTexture;		//replace with destoyed
+					SEGMENT (effectInfoP->nSegment)->m_sides [effectInfoP->nSide].m_nOvlTex = effectInfoP->destroyed.nTexture;		//replace with destoyed
 					effectInfoP->flags &= ~EF_ONE_SHOT;
 					effectInfoP->nSegment = -1;		//done with this
 					}

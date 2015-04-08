@@ -3718,22 +3718,74 @@ class CGameData {
 			return nOldType;
 			}
 #if DBG
-		CObject* Object (int32_t nObject, bool bCheck = true);
-		CSegment* Segment (int32_t nSegment, bool bCheck = true);
-		CWall* Wall (int32_t nWall, bool bCheck = true);
-		CTrigger* Trigger (int32_t nTrigger, bool bCheck = true);
+		CObject* Object (int32_t nObject, int32_t nChecks = 7, const char* pszFile = "", int32_t nLine = 0);
+		CSegment* Segment (int32_t nSegment, int32_t nChecks = 7, const char* pszFile = "", int32_t nLine = 0);
+		CWall* Wall (int32_t nWall, int32_t nChecks = 7, const char* pszFile = "", int32_t nLine = 0);
+		CTrigger* Trigger (int32_t nTrigger, int32_t nChecks = 7, const char* pszFile = "", int32_t nLine = 0);
+		CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = 7, const char* pszFile = "", int32_t nLine = 0);
 #else
-		inline CObject* Object (int32_t nObject, bool bCheck = true) { 
-			return (!bCheck || (objs.objects.Buffer () && (nObject >= 0) && (nObject <= objs.nLastObject [0]))) ? objs.objects + nObject : NULL; 
+		inline CObject* Object (int32_t nObject, int32_t nChecks = 7) { 
+			if (nChecks) {
+				if ((nChecks & 1) && !objs.objects.Buffer ())
+					return NULL;
+				if ((nChecks & 2) && (nObject < 0))
+					return NULL;
+				if ((nChecks & 4) && (nObject > objs.nLastObject [0]))
+					return NULL;
+				}
+			return objs.objects + nObject; 
 			}
-		inline CSegment* Segment (int32_t nSegment, bool bCheck = true) { 
-			return (!bCheck || (segs.segments.Buffer () && (nSegment >= 0) && (nSegment < segs.nSegments))) ? segs.segments + nSegment : NULL; 
+
+		inline CSegment* Segment (int32_t nSegment, int32_t nChecks = 7) { 
+			if (nChecks) {
+				if ((nChecks & 1) && !segs.segments.Buffer ())
+					return NULL;
+				if ((nChecks & 2) && (nSegment < 0))
+					return NULL;
+				if ((nChecks & 4) && (nSegment >= segs.nSegments))
+					return NULL;
+				}
+			return segs.segments + nSegment; 
 			}
-		inline CWall* Wall (int32_t nWall, bool bCheck = true) { 
-			return (!bCheck || (walls.walls.Buffer () && (nWall >= 0) && (nWall < walls.nWalls))) ? walls.walls + nWall : NULL; 
+
+		inline CWall* Wall (int32_t nWall, int32_t nChecks = 7) { 
+			if (nChecks) {
+				if ((nChecks & 1) && !walls.walls.Buffer ())
+					return NULL;
+				if ((nChecks & 2) && (nWall < 0))
+					return NULL;
+				if ((nChecks & 4) && (nWall >= walls.nWalls))
+					return NULL;
+				}
+			return walls.walls + nWall; 
 			}
-		inline CTrigger* Trigger (int32_t nTrigger, bool bCheck = true) { 
-			return (!bCheck || (trigs.triggers.Buffer () && (nTrigger >= 0) && (nTrigger < trigs.m_nTriggers))) ? trigs.triggers + nTrigger : NULL; 
+
+		inline CTrigger* Trigger (int32_t nTrigger, int32_t nChecks = 7) { 
+			if (nChecks) {
+				if ((nChecks & 1) && !trigs.triggers.Buffer ())
+					return NULL;
+				if ((nChecks & 2) && (nTrigger < 0))
+					return NULL;
+				if ((nChecks & 2) && (nTrigger == NO_TRIGGER))
+					return NULL;
+				if ((nChecks & 4) && (nTrigger >= trigs.m_nTriggers))
+					return NULL;
+				}
+			return trigs.triggers + nTrigger; 
+			}
+
+		inline CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = 7) { 
+			if (nChecks) {
+				if ((nChecks & 1) && !trigs.objTriggers.Buffer ())
+					return NULL;
+				if ((nChecks & 2) && (nTrigger < 0))
+					return NULL;
+				if ((nChecks & 2) && (nTrigger == NO_TRIGGER))
+					return NULL;
+				if ((nChecks & 4) && (nTrigger >= trigs.m_nObjTriggers))
+					return NULL;
+				}
+			return trigs.objTriggers + nTrigger; 
 			}
 #endif
 		inline int32_t X (int32_t x, bool bForce = false) { return render.nStereoOffsetType ? x - ((render.nStereoOffsetType == STEREO_OFFSET_FLOATING) ? FloatingStereoOffset2D (x, bForce) : StereoOffset2D ()) : x; }
@@ -3764,7 +3816,7 @@ extern char szAutoHogFile [255];
 #if 0
 static inline uint16_t WallNumS (CSide *sideP) { return (sideP)->nWall; }
 static inline uint16_t WallNumP (CSegment *segP, int16_t nSide) { return WallNumS ((segP)->m_sides + (nSide)); }
-static inline uint16_t WallNumI (int16_t nSegment, int16_t nSide) { return WallNumP (gameData.Segment (nSegment), nSide); }
+static inline uint16_t WallNumI (int16_t nSegment, int16_t nSide) { return WallNumP (SEGMENT (nSegment), nSide); }
 #endif
 
 //-----------------------------------------------------------------------------
@@ -3878,7 +3930,7 @@ return 1.0f - float (alpha) / float (FADE_LEVELS);
 #define NETPLAYER(_nPlayer)		netPlayers [0].m_info.players [_nPlayer]
 #define PLAYER(_nPlayer)			gameData.multiplayer.players [_nPlayer]
 #define LOCALPLAYER					PLAYER (N_LOCALPLAYER)
-#define PLAYEROBJECT(_nPlayer)	gameData.Object (PLAYER (_nPlayer).nObject)
+#define PLAYEROBJECT(_nPlayer)	OBJECT (PLAYER (_nPlayer).nObject)
 #define LOCALOBJECT					PLAYEROBJECT (N_LOCALPLAYER)
 
 #define OBSERVING						(gameStates.render.bObserving && OBJECTS.Buffer () && (LOCALOBJECT->Type () == OBJ_GHOST))
@@ -3912,6 +3964,31 @@ extern fix nDebrisLife [];
 #define FACES				gameData.segs.faces
 #define RENDERPOINTS		gameData.render.mine.visibility [0].points
 #define TRIANGLES			FACES.tris
+
+#if DBG
+	#define SEGMENT(_i)				gameData.Segment (_i, 7, __FILE__, __LINE__)
+	#define OBJECT(_i)				gameData.Object (_i, 7, __FILE__, __LINE__)
+	#define WALL(_i)					gameData.Wall (_i, 7, __FILE__, __LINE__)
+	#define TRIGGER(_i)				gameData.Trigger (_i, 7, __FILE__, __LINE__)
+	#define OBJTRIGGER(_i)			gameData.ObjTrigger (_i, 7, __FILE__, __LINE__)
+	#define SEGMENTX(_i, _f)		gameData.Segment (_i, _f, __FILE__, __LINE__)
+	#define OBJECTX(_i, _f)			gameData.Object (_i, _f, __FILE__, __LINE__)
+	#define WALLX(_i, _f)			gameData.Wall (_i, _f, __FILE__, __LINE__)
+	#define TRIGGERX(_i, _f)		gameData.Trigger (_i, _f, __FILE__, __LINE__)
+	#define OBJTRIGGERX(_i, _f)	gameData.ObjTrigger (_i, _f, __FILE__, __LINE__)
+#else
+	#define SEGMENT(_i)				gameData.Segment (_i, 7)
+	#define OBJECT(_i)				gameData.Object (_i, 7)
+	#define WALL(_i)					gameData.Wall (_i, 7)
+	#define TRIGGER(_i)				gameData.Trigger (_i, 7)
+	#define OBJTRIGGER(_i)			gameData.Trigger (_i, 7)
+	#define SEGMENTX(_i, _f)		gameData.Segment (_i, _f)
+	#define OBJECTX(_i, _f)			gameData.Object (_i, _f)
+	#define WALLX(_i, _f)			gameData.Wall (_i, _f)
+	#define TRIGGERX(_i, _f)		gameData.Trigger (_i, _f)
+	#define OBJTRIGGERX(_i, _f)	gameData.Trigger (_i, _f)
+#endif
+
 
 #define SPECTATOR(_objP)	((gameStates.render.bFreeCam > 0) && OBJECTS.IsElement (_objP) && (OBJ_IDX (_objP) == LOCALPLAYER.nObject))
 #define OBJPOS(_objP)		(SPECTATOR (_objP) ? &gameStates.app.playerPos : &(_objP)->info.position)

@@ -110,7 +110,7 @@ extern int32_t bOutLineMode, bShowOnlyCurSide;
 
 static inline int32_t IsTransparentFace (tFaceProps *propsP)
 {
-return IsTransparentTexture (gameData.Segment (propsP->segNum)->m_sides [propsP->sideNum].m_nBaseTex);
+return IsTransparentTexture (SEGMENT (propsP->segNum)->m_sides [propsP->sideNum].m_nBaseTex);
 }
 
 //------------------------------------------------------------------------------

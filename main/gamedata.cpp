@@ -1573,7 +1573,7 @@ void CObjectData::InitFreeList (void)
 for (int32_t i = 0; i < LEVEL_OBJECTS; i++) {
 	gameData.objs.freeList [i] = i;
 	gameData.objs.freeListIndex.Clear (0xff);
-	gameData.Object (i, false)->Init ();
+	OBJECT (i, false)->Init ();
 	}
 }
 
@@ -1638,8 +1638,8 @@ void CObjectData::GatherEffects (void)
 if (nEffects && effects.Create (nEffects)) {
 	int32_t i, j;
 	for (i = j = 0; i < gameFileInfo.objects.count; i++) {
-		if (gameData.Object (i)->info.nType == OBJ_EFFECT) {
-			effects [j] = *gameData.Object (i);
+		if (OBJECT (i)->info.nType == OBJ_EFFECT) {
+			effects [j] = *OBJECT (i);
 			effects [j].info.nPrevInSeg = effects [j].info.nNextInSeg = -1;
 			j++;
 			}
@@ -1663,12 +1663,12 @@ if (nEffects && effects.Buffer ()) {
 											 -bo.info.nSegment - 2, bo.info.position.vPos, bo.info.position.mOrient,
 											 bo.info.xSize, bo.info.controlType, bo.info.movementType, bo.info.renderType);
 		if (nObject >= 0) {
-			gameData.Object (nObject)->info = bo.info;
-			gameData.Object (nObject)->mType = bo.mType;
-			gameData.Object (nObject)->cType = bo.cType;
-			gameData.Object (nObject)->rType = bo.rType;
-			if (gameData.Object (nObject)->info.nId == PARTICLE_ID)
-				gameData.Object (nObject)->SetupSmoke ();
+			OBJECT (nObject)->info = bo.info;
+			OBJECT (nObject)->mType = bo.mType;
+			OBJECT (nObject)->cType = bo.cType;
+			OBJECT (nObject)->rType = bo.rType;
+			if (OBJECT (nObject)->info.nId == PARTICLE_ID)
+				OBJECT (nObject)->SetupSmoke ();
 			j++;
 			}
 		}
@@ -2504,59 +2504,78 @@ DefaultRenderSettings (bSetup);
 
 #if DBG
 
-CObject* CGameData::Object (int32_t nObject, bool bCheck) 
+CObject* CGameData::Object (int32_t nObject, int32_t nChecks, const char* pszFile, int32_t nLine) 
 { 
-if (bCheck) {
-	if (!objs.objects.Buffer ())
+if (nChecks) {
+	if ((nChecks & 1) && !objs.objects.Buffer ()) {
+		PrintLog (0, "Invalid object reference (no objects) at %s (%d)\n", pszFile, nLine);
 		return NULL;
-	if (nObject < 0)
+		}
+	if ((nChecks & 2) && (nObject < 0))
 		return NULL;
-	if (nObject > objs.nLastObject [0])
+	if ((nChecks & 4) && (nObject > objs.nLastObject [0]))
 		return NULL;
 	}
 return objs.objects + nObject; 
 }
 
 
-CSegment* CGameData::Segment (int32_t nSegment, bool bCheck) 
+CSegment* CGameData::Segment (int32_t nSegment, int32_t nChecks, const char* pszFile, int32_t nLine) 
 { 
-if (bCheck) {
-	if (!segs.segments.Buffer ())
+if (nChecks) {
+	if ((nChecks & 1) && !segs.segments.Buffer ())
 		return NULL;
-	if (nSegment < 0)
+	if ((nChecks & 2) && (nSegment < 0))
 		return NULL;
-	if (nSegment >= segs.nSegments)
+	if ((nChecks & 4) && (nSegment >= segs.nSegments))
 		return NULL;
 	}
 return segs.segments + nSegment; 
 }
 
 
-CWall* CGameData::Wall (int32_t nWall, bool bCheck) 
+CWall* CGameData::Wall (int32_t nWall, int32_t nChecks, const char* pszFile, int32_t nLine) 
 { 
-if (bCheck) {
-	if (!walls.walls.Buffer ())
+if (nChecks) {
+	if ((nChecks & 1) && !walls.walls.Buffer ())
 		return NULL;
-	if (nWall < 0)
+	if ((nChecks & 2) && (nWall < 0))
 		return NULL;
-	if (nWall >= walls.nWalls)
+	if ((nChecks & 4) && (nWall >= walls.nWalls))
 		return NULL;
 	}
 return walls.walls + nWall; 
 }
 
 
-CTrigger* CGameData::Trigger (int32_t nTrigger, bool bCheck) 
+CTrigger* CGameData::Trigger (int32_t nTrigger, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {
-if (bCheck) {
-	if (!trigs.triggers.Buffer ())
+if (nChecks) {
+	if ((nChecks & 1) && !trigs.triggers.Buffer ())
 		return NULL;
-	if (nTrigger < 0)
+	if ((nChecks & 2) && (nTrigger < 0))
 		return NULL;
-	if (nTrigger >= trigs.m_nTriggers)
+	if ((nChecks & 2) && (nTrigger == NO_TRIGGER))
+		return NULL;
+	if ((nChecks & 4) && (nTrigger >= trigs.m_nTriggers))
 		return NULL;
 	}
 return trigs.triggers + nTrigger; 
+}
+
+CTrigger* CGameData::ObjTrigger (int32_t nTrigger, int32_t nChecks, const char* pszFile, int32_t nLine) 
+{
+if (nChecks) {
+	if ((nChecks & 1) && !trigs.objTriggers.Buffer ())
+		return NULL;
+	if ((nChecks & 2) && (nTrigger < 0))
+		return NULL;
+	if ((nChecks & 2) && (nTrigger == NO_TRIGGER))
+		return NULL;
+	if ((nChecks & 4) && (nTrigger >= trigs.m_nObjTriggers))
+		return NULL;
+	}
+return trigs.objTriggers + nTrigger; 
 }
 
 #endif

@@ -41,7 +41,7 @@ if (nDropSeg >= 0)
 	gameData.hoard.nMonsterballSeg = nDropSeg;
 else {
 	nDropSeg = ChooseDropSegment (NULL, NULL, EXEC_DROP);
-	gameData.hoard.vMonsterballPos = gameData.Segment (nDropSeg)->Center ();
+	gameData.hoard.vMonsterballPos = SEGMENT (nDropSeg)->Center ();
 	}
 #endif
 if (nDropSeg >= 0) {
@@ -49,7 +49,7 @@ if (nDropSeg >= 0) {
 	if (nObject >= 0) {
 		gameData.render.monsterball.SetupPulse (0.005f, 0.9f);
 		gameData.render.monsterball.SetPulse (gameData.render.monsterball.Pulse ());
-		gameData.hoard.monsterballP = gameData.Object (nObject);
+		gameData.hoard.monsterballP = OBJECT (nObject);
 		gameData.hoard.monsterballP->SetType (OBJ_MONSTERBALL);
 		gameData.hoard.monsterballP->SetLife (IMMORTAL_TIME);
 		gameData.hoard.monsterballP->Position () =  gameData.hoard.vMonsterballPos;
@@ -126,7 +126,7 @@ if (!gameData.hoard.monsterballP)
 	return 0;
 if (gameData.hoard.nLastHitter != LOCALPLAYER.nObject)
 	return 0;
-uint8_t segFunc = gameData.Segment (gameData.hoard.monsterballP->info.nSegment)->m_function;
+uint8_t segFunc = SEGMENT (gameData.hoard.monsterballP->info.nSegment)->m_function;
 if ((segFunc != SEGMENT_FUNC_GOAL_BLUE) && (segFunc != SEGMENT_FUNC_GOAL_RED))
 	return 0;
 if ((GetTeam (N_LOCALPLAYER) == TEAM_RED) == (segFunc == SEGMENT_FUNC_GOAL_RED))

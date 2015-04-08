@@ -414,7 +414,7 @@ if (networkData.nStatus == NETSTAT_PLAYING) {
 if (IsTeamGame) {
 	for (int32_t i = 0; i < N_PLAYERS; i++)
 		if (PLAYER (i).IsConnected ())
-		   MultiSetObjectTextures (gameData.Object (PLAYER (i).nObject));
+		   MultiSetObjectTextures (OBJECT (PLAYER (i).nObject));
 	}
 return 1;
 }

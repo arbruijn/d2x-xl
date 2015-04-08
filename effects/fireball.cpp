@@ -67,7 +67,7 @@ if (SPECTATOR (this))
 nObject = CreateFireball (0, info.nSegment, info.position.vPos, info.xSize, RT_EXPLBLAST);
 if (nObject < 0)
 	return NULL;
-objP = gameData.Object (nObject);
+objP = OBJECT (nObject);
 objP->SetLife (BLAST_LIFE);
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDestroyedObj = -1;
@@ -103,7 +103,7 @@ if (SPECTATOR (this))
 nObject = CreateFireball (0, info.nSegment, info.position.vPos, 10 * info.xSize, RT_SHOCKWAVE);
 if (nObject < 0)
 	return NULL;
-objP = gameData.Object (nObject);
+objP = OBJECT (nObject);
 objP->SetLife (SHOCKWAVE_LIFE);
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDestroyedObj = -1;
@@ -145,7 +145,7 @@ nObject = CreateFireball (nVClip, nSegment, vPos, xSize, RT_FIREBALL);
 if (nObject < 0)
 	return NULL;
 
-explObjP = gameData.Object (nObject);
+explObjP = OBJECT (nObject);
 //now set explosion-specific data
 explObjP->SetLife (gameData.effects.animations [0][nVClip].xTotalTime);
 if ((nVClip != ANIM_MORPHING_ROBOT) && 
@@ -196,7 +196,7 @@ FORALL_OBJS (objP) {
 	else if (nType == OBJ_ROBOT) {
 		if (nParent < 0)
 			continue;
-		CObject* parentP = gameData.Object (nParent);
+		CObject* parentP = OBJECT (nParent);
 		if (parentP && parentP->IsRobot () && (parentP->Id () == id))
 			continue;
 		}
@@ -295,7 +295,7 @@ FORALL_OBJS (objP) {
 			killerP = parentP;
 		vRotForce = vForce;
 		if (nParent > -1) {
-			killerP = gameData.Object (nParent);
+			killerP = OBJECT (nParent);
 			if (killerP != gameData.objs.consoleP)	{	// if someone else whacks you, cut force by 2x
 				vRotForce.v.coord.x /= 2;
 				vRotForce.v.coord.y /= 2;
@@ -502,12 +502,12 @@ if (nObject < 0)
 #if 0
 if (nSubObj == 0) {
 	rType.polyObjInfo.nSubObjFlags = 1;
-	gameData.Object (nObject)->SetupRandomMovement ();
+	OBJECT (nObject)->SetupRandomMovement ();
 	}
 else
 #endif
-	gameData.Object (nObject)->SetupDebris (nSubObj, ModelId (), rType.polyObjInfo.nTexOverride);
-return gameData.Object (nObject);
+	OBJECT (nObject)->SetupDebris (nSubObj, ModelId (), rType.polyObjInfo.nTexOverride);
+return OBJECT (nObject);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -601,7 +601,7 @@ if (delayTime) {		//wait a little while before creating explosion
 		Int3 ();
 		return;
 		}
-	CObject *objP = gameData.Object (nObject);
+	CObject *objP = OBJECT (nObject);
 	//now set explosion-specific data
 	objP->UpdateLife (delayTime);
 	objP->cType.explInfo.nDestroyedObj = OBJ_IDX (this);
@@ -693,7 +693,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDestroyedO
 		Int3 (); // get Rob, please... thanks
 		return;
 		}
-	delObjP = gameData.Object (cType.explInfo.nDestroyedObj);
+	delObjP = OBJECT (cType.explInfo.nDestroyedObj);
 	xSplashDamage = (fix) ROBOTINFO (delObjP->info.nId).splashDamage;
 	vSpawnPos = &delObjP->info.position.vPos;
 	nType = delObjP->info.nType;
@@ -777,7 +777,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDestroyedO
 	}
 	//See if we should delete an CObject
 if ((info.xLifeLeft <= cType.explInfo.nDeleteTime) && (cType.explInfo.nDestroyedObj >= 0)) {
-	CObject *delObjP = gameData.Object (cType.explInfo.nDestroyedObj);
+	CObject *delObjP = OBJECT (cType.explInfo.nDestroyedObj);
 	cType.explInfo.nDeleteTime = -1;
 	delObjP->MaybeDelete ();
 	}

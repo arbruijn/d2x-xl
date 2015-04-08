@@ -883,7 +883,7 @@ if (!m_bBetweenLevels) {
 	i = gameData.walls.nWalls;
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
-		gameData.Wall (j)->SaveState (m_cf);
+		WALL (j)->SaveState (m_cf);
 //Save exploding wall info
 	i = int32_t (gameData.walls.exploding.ToS ());
 	m_cf.WriteInt (i);
@@ -902,7 +902,7 @@ if (!m_bBetweenLevels) {
 //Save CTrigger info
 	m_cf.WriteInt (gameData.trigs.m_nTriggers);
 	for (i = 0; i < gameData.trigs.m_nTriggers; i++)
-		TRIGGERS [i].SaveState (m_cf);
+		TRIGGER (i)->SaveState (m_cf);
 	m_cf.WriteInt (gameData.trigs.m_nObjTriggers);
 	if (!gameData.trigs.m_nObjTriggers)
 		m_cf.WriteShort (0);
@@ -932,7 +932,7 @@ if (!m_bBetweenLevels) {
 		}
 //Save tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)
-		gameData.Segment (i)->SaveState (m_cf);
+		SEGMENT (i)->SaveState (m_cf);
 // Save the producer info
 	m_cf.WriteInt (gameData.reactor.bDestroyed);
 	m_cf.WriteFix (gameData.reactor.countdown.nTimer);
@@ -1336,18 +1336,18 @@ if (IAmGameHost ()) {
 void CSaveGameManager::FixNetworkObjects (int32_t nServerPlayer, int32_t nOtherObjNum, int32_t nServerObjNum)
 {
 if (IsMultiGame && (gameStates.multi.nGameType >= IPX_GAME) && (nServerPlayer > 0)) {
-	CObject h = *gameData.Object (nServerObjNum);
-	*gameData.Object (nServerObjNum) = *gameData.Object (nOtherObjNum);
-	*gameData.Object (nOtherObjNum) = h;
-	gameData.Object (nServerObjNum)->info.nId = nServerObjNum;
-	gameData.Object (nOtherObjNum)->info.nId = 0;
+	CObject h = *OBJECT (nServerObjNum);
+	*OBJECT (nServerObjNum) = *OBJECT (nOtherObjNum);
+	*OBJECT (nOtherObjNum) = h;
+	OBJECT (nServerObjNum)->info.nId = nServerObjNum;
+	OBJECT (nOtherObjNum)->info.nId = 0;
 	if (N_LOCALPLAYER == nServerObjNum) {
-		gameData.Object (nServerObjNum)->info.controlType = CT_FLYING;
-		gameData.Object (nOtherObjNum)->info.controlType = CT_REMOTE;
+		OBJECT (nServerObjNum)->info.controlType = CT_FLYING;
+		OBJECT (nOtherObjNum)->info.controlType = CT_REMOTE;
 		}
 	else if (N_LOCALPLAYER == nOtherObjNum) {
-		gameData.Object (nServerObjNum)->info.controlType = CT_REMOTE;
-		gameData.Object (nOtherObjNum)->info.controlType = CT_FLYING;
+		OBJECT (nServerObjNum)->info.controlType = CT_REMOTE;
+		OBJECT (nOtherObjNum)->info.controlType = CT_FLYING;
 		}
 	}
 }
@@ -1775,8 +1775,8 @@ if (!m_bBetweenLevels) {
 		int16_t nObject;
 		while (-1 < (nObject = m_cf.ReadShort ())) {
 			nObject = AllocObject (nObject, false);
-			gameData.Object (nObject)->LoadState (m_cf);
-			gameData.Object (nObject)->Link ();
+			OBJECT (nObject)->LoadState (m_cf);
+			OBJECT (nObject)->Link ();
 			}
 		}
 	else {
@@ -1786,7 +1786,7 @@ if (!m_bBetweenLevels) {
 		if (m_nVersion < 59) {
 			for (i = 0; i < h; i++) {
 				int16_t nObject = AllocObject (i, false);
-				CObject* objP = gameData.Object (nObject);
+				CObject* objP = OBJECT (nObject);
 				objP->LoadState (m_cf);
 				if (objP->Type () >= MAX_OBJECT_TYPES)
 					FreeObject (nObject);
@@ -1800,8 +1800,8 @@ if (!m_bBetweenLevels) {
 		else {
 			for (i = 0; i < h; i++) {
 				int16_t nObject = AllocObject (m_cf.ReadShort (), false);
-				gameData.Object (nObject)->LoadState (m_cf);
-				gameData.Object (nObject)->Link ();
+				OBJECT (nObject)->LoadState (m_cf);
+				OBJECT (nObject)->Link ();
 				}
 			}
 		}
@@ -1857,7 +1857,7 @@ if (!m_bBetweenLevels) {
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.m_nTriggers))
 		return 0;
 	for (i = 0; i < gameData.trigs.m_nTriggers; i++)
-		TRIGGERS [i].LoadState (m_cf);
+		TRIGGER (i)->LoadState (m_cf);
 	//Restore CObject CTrigger info
 	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.m_nObjTriggers))
 		return 0;
@@ -1902,7 +1902,7 @@ if (!m_bBetweenLevels) {
 		m_cf.ReadShort ();
 	//Restore tmap info
 	for (i = 0; i <= gameData.segs.nLastSegment; i++)
-		gameData.Segment (i)->LoadState (m_cf);
+		SEGMENT (i)->LoadState (m_cf);
 	//Restore the producer info
 	audio.Prepare ();
 	SetupWalls ();
@@ -2111,7 +2111,7 @@ if (!m_bBetweenLevels) {
 	m_cf.Read (&gameData.objs.nObjects, sizeof (int32_t), 1);
 	gameData.objs.nLastObject [0] = gameData.objs.nObjects - 1;
 	for (i = 0; i < gameData.objs.nObjects; i++)
-		m_cf.Read (&gameData.Object (i)->info, sizeof (tBaseObject), 1);
+		m_cf.Read (&OBJECT (i)->info, sizeof (tBaseObject), 1);
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	FixObjects ();
 	ClaimObjectSlots ();
@@ -2130,19 +2130,19 @@ if (!m_bBetweenLevels) {
 	for (i = 0; i < gameData.walls.nWalls; i++) {
 		tCompatibleWall w;
 		m_cf.Read (&w, sizeof (w), 1);
-		gameData.Wall (i)->nSegment = w.nSegment;
-		gameData.Wall (i)->nSide = w.nSide;
-		gameData.Wall (i)->hps = w.hps;
-		gameData.Wall (i)->nLinkedWall = w.nLinkedWall;
-		gameData.Wall (i)->nType = w.nType;
-		gameData.Wall (i)->flags = w.flags;
-		gameData.Wall (i)->state = w.state;
-		gameData.Wall (i)->nTrigger = w.nTrigger;
-		gameData.Wall (i)->nClip = w.nClip;
-		gameData.Wall (i)->keys = w.keys;
-		gameData.Wall (i)->controllingTrigger = w.controllingTrigger;
-		gameData.Wall (i)->cloakValue = w.cloakValue;
-		gameData.Wall (i)->bVolatile = 0;
+		WALL (i)->nSegment = w.nSegment;
+		WALL (i)->nSide = w.nSide;
+		WALL (i)->hps = w.hps;
+		WALL (i)->nLinkedWall = w.nLinkedWall;
+		WALL (i)->nType = w.nType;
+		WALL (i)->flags = w.flags;
+		WALL (i)->state = w.state;
+		WALL (i)->nTrigger = w.nTrigger;
+		WALL (i)->nClip = w.nClip;
+		WALL (i)->keys = w.keys;
+		WALL (i)->controllingTrigger = w.controllingTrigger;
+		WALL (i)->cloakValue = w.cloakValue;
+		WALL (i)->bVolatile = 0;
 		}
 	//now that we have the walls, check if any sounds are linked to
 	//walls that are now open
@@ -2178,14 +2178,14 @@ if (!m_bBetweenLevels) {
 	for (i = 0; i < gameData.trigs.m_nTriggers; i++) {
 		tCompatibleTrigger t;
 		m_cf.Read (&t, sizeof (t), 1);
-		TRIGGERS [i].m_info.nType = t.type;
-		TRIGGERS [i].m_info.flags = t.flags;
-		TRIGGERS [i].m_info.value = t.value;
-		TRIGGERS [i].m_info.time [0] = t.time;
-		TRIGGERS [i].m_info.time [1] = -1;
-		TRIGGERS [i].m_nLinks = t.num_links;
-		memcpy (TRIGGERS [i].m_segments, t.seg, sizeof (t.seg));
-		memcpy (TRIGGERS [i].m_sides, t.side, sizeof (t.side));
+		TRIGGER (i)->m_info.nType = t.type;
+		TRIGGER (i)->m_info.flags = t.flags;
+		TRIGGER (i)->m_info.value = t.value;
+		TRIGGER (i)->m_info.time [0] = t.time;
+		TRIGGER (i)->m_info.time [1] = -1;
+		TRIGGER (i)->m_nLinks = t.num_links;
+		memcpy (TRIGGER (i)->m_segments, t.seg, sizeof (t.seg));
+		memcpy (TRIGGER (i)->m_sides, t.side, sizeof (t.side));
 		}
 	if (m_nVersion >= 26) {
 		//Restore CObject CTrigger info
@@ -2408,7 +2408,7 @@ else {
 		}
 	}
 gameData.objs.viewerP = 
-gameData.objs.consoleP = gameData.Object (LOCALPLAYER.nObject);
+gameData.objs.consoleP = OBJECT (LOCALPLAYER.nObject);
 StartTriggeredSounds ();
 StartTime (1);
 if (!extraGameInfo [0].nBossCount [0] && (!IsMultiGame || IsCoopGame) && OpenExits ())

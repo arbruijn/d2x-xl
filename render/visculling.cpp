@@ -223,8 +223,8 @@ int32_t FindAdjacentSideNorms (CSegment *segP, int16_t s0, int16_t s1, tSideNorm
 	int32_t		otherSide0, otherSide1;
 
 Assert(s0 != -1 && s1 != -1);
-seg0 = gameData.Segment (segP->m_children [s0]);
-seg1 = gameData.Segment (segP->m_children [s1]);
+seg0 = SEGMENT (segP->m_children [s0]);
+seg1 = SEGMENT (segP->m_children [s1]);
 edgeVerts [0] = segP->m_vertices [edgeBetweenTwoSides [s0][s1][0]];
 edgeVerts [1] = segP->m_vertices [edgeBetweenTwoSides [s0][s1][1]];
 Assert(edgeVerts [0] != -1 && edgeVerts [1] != -1);
@@ -386,8 +386,8 @@ if (nObject == nDbgObj)
 pi->nNextItem = gameData.render.mine.objRenderList.ref [nSegment];
 gameData.render.mine.objRenderList.ref [nSegment] = gameData.render.mine.objRenderList.nUsed++;
 pi->nObject = nObject;
-pi->xDist = CFixVector::Dist (gameData.Object (nObject)->Position (), gameData.render.mine.viewer.vPos);
-gameData.Object (nObject)->SetFrame (gameData.app.nFrameCount);
+pi->xDist = CFixVector::Dist (OBJECT (nObject)->Position (), gameData.render.mine.viewer.vPos);
+OBJECT (nObject)->SetFrame (gameData.app.nFrameCount);
 }
 
 //------------------------------------------------------------------------------
@@ -401,19 +401,19 @@ int16_t CObject::Visible (void)
 memset (bVisited, 0, sizeof (bVisited [0]) * gameData.segs.nSegments);
 segList [tail++] = Segment ();
 while (head != tail) {
-	CSegment* segP = gameData.Segment (segList [head++]);
+	CSegment* segP = SEGMENT (segList [head++]);
 	for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 		int16_t nSegment = segP->m_children [i];
 		if (nSegment < 0)
 			continue;
 		if (bVisited [nSegment])
 			continue;
-		CSegment* childSegP = gameData.Segment (nSegment);
+		CSegment* childSegP = SEGMENT (nSegment);
 		// quick check whether object could reach into this child segment
 		if (CFixVector::Dist (Position (), childSegP->Center ()) >= info.xSize + childSegP->MaxRad ())
 			continue;
 		// check whether the object actually penetrates the side between the current segment and the child segment
-		CSegMasks mask = gameData.Segment (info.nSegment)->Masks (Position (), info.xSize);
+		CSegMasks mask = SEGMENT (info.nSegment)->Masks (Position (), info.xSize);
 		if (!(mask.m_side & (1 << i)))
 			continue;
 		if (gameData.render.mine.Visible (nSegment))
@@ -469,18 +469,18 @@ for (nListPos = 0; nListPos < nSegCount; nListPos++) {
 	if (nSegment == nDbgSeg)
 		BRP;
 #endif
-	for (nObject = gameData.Segment (nSegment)->m_objects; nObject != -1; nObject = objP->info.nNextInSeg) {
+	for (nObject = SEGMENT (nSegment)->m_objects; nObject != -1; nObject = objP->info.nNextInSeg) {
 #if DBG
 		if (nObject == nDbgObj)
 			BRP;
 #endif
-		objP = gameData.Object (nObject);
+		objP = OBJECT (nObject);
 		//Assert (objP->info.nSegment == nSegment);
 		if (objP->info.nFlags & OF_ATTACHED)
 			continue;		//ignore this CObject
 		nNewSeg = nSegment;
 		if ((objP->info.nType != OBJ_REACTOR) && ((objP->info.nType != OBJ_ROBOT) || (objP->info.nId == 65))) { //don't migrate controlcen
-			CSegment* newSegP = gameData.Segment (nNewSeg);
+			CSegment* newSegP = SEGMENT (nNewSeg);
 			mask = newSegP->Masks (OBJPOS (objP)->vPos, objP->info.xSize);
 			if (mask.m_side) {
 				for (nSide = 0, sideFlag = 1; nSide < SEGMENT_SIDE_COUNT; nSide++, sideFlag <<= 1) {
@@ -512,7 +512,7 @@ PROF_END(ptBuildObjList)
 void CalcRenderDepth (void)
 {
 CFixVector vCenter;
-transformation.Transform (vCenter, gameData.Segment (gameData.objs.viewerP->info.nSegment)->Center (), 0);
+transformation.Transform (vCenter, SEGMENT (gameData.objs.viewerP->info.nSegment)->Center (), 0);
 CFixVector v;
 transformation.Transform (v, gameData.segs.vMin, 0);
 fix d1 = CFixVector::Dist (v, vCenter);
@@ -585,7 +585,7 @@ void CVisibilityData::InitZRef (int32_t i, int32_t j, int32_t nThread)
 
 vViewer.Assign (gameData.render.mine.viewer.vPos);
 for (; i < j; i++, ps++) {
-	segP = gameData.Segment (segments [i]);
+	segP = SEGMENT (segments [i]);
 #if TRANSP_DEPTH_HASH
 	vCenter.Assign (segP->Center ());
 	float d = CFloatVector::Dist (vCenter, vViewer);
@@ -681,7 +681,7 @@ if (!(automap.Active () && gameOpts->render.automap.bTextured && !automap.Radar 
 
 for (int32_t i = nSegments = 0; i < gameData.segs.nSegments; i++)
 	if (automap.Visible (i)
-		 && (bSkyBox || (gameData.Segment (i)->m_function != SEGMENT_FUNC_SKYBOX)) 
+		 && (bSkyBox || (SEGMENT (i)->m_function != SEGMENT_FUNC_SKYBOX)) 
 		 && (bUnlimited || (automap.m_visible [i] <= nSegmentLimit))) {
 		segments [nSegments++] = i;
 		bVisible [i] = nVisible;
@@ -780,7 +780,7 @@ for (l = 0; l < nRenderDepth; l++) {
 #if DBG
 		nIterations++;
 #endif
-		CSegment* segP = gameData.Segment (nSegment);
+		CSegment* segP = SEGMENT (nSegment);
 		int32_t bRotated = 0;
 		//look at all sides of this segment.
 		//tricky code to look at sides in correct order follows
@@ -977,7 +977,7 @@ for (i = 0; i < nSegments; i++) {
 if (gameStates.render.nShadowMap) {
 	for (i = 0; i < nSegments; i++) {
 		if (renderSegList [i] >= 0) {
-			CSegment* segP = gameData.Segment (renderSegList [i]);
+			CSegment* segP = SEGMENT (renderSegList [i]);
 			if (CFixVector::Dist (viewPos, segP->Center ()) > I2X (400) + segP->MaxRad ()) {
 				renderSegList [i] = -renderSegList [i] - 1;
 				bVisible [renderSegList [i]] = nVisible - 1;

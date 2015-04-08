@@ -76,11 +76,11 @@ static CFloatVector smokeColors [] = {
 void KillObjectSmoke (int32_t nObject)
 {
 if ((nObject >= 0) && (particleManager.GetObjectSystem (nObject) >= 0)) {
-	if (gameData.Object (nObject)->Type () == OBJ_EFFECT)
+	if (OBJECT (nObject)->Type () == OBJ_EFFECT)
 		audio.DestroyObjectSound (nObject);
 	particleManager.SetLife (particleManager.GetObjectSystem (nObject), 0);
 	particleManager.SetObjectSystem (nObject, -1);
-	shrapnelManager.Destroy (gameData.Object (nObject));
+	shrapnelManager.Destroy (OBJECT (nObject));
 	}
 }
 
@@ -138,7 +138,7 @@ if (EGI_FLAG (bDamageExplosions, 1, 0, 0) &&
 	 (gameStates.app.nSDLTicks [0] - *particleManager.ObjExplTime (i) > 100)) {
 	*particleManager.ObjExplTime (i) = gameStates.app.nSDLTicks [0];
 	if (!RandN (11 - h))
-		CreateSmallFireballOnObject (gameData.Object (i), I2X (1), 1);
+		CreateSmallFireballOnObject (OBJECT (i), I2X (1), 1);
 	}
 }
 
@@ -902,7 +902,7 @@ void PlayerBulletFrame (void)
 if (!gameOpts->render.ship.bBullets)
 	return;
 for (int32_t i = 0; i < N_PLAYERS; i++)
-	DoPlayerBullets (gameData.Object (PLAYER (i).nObject));
+	DoPlayerBullets (OBJECT (PLAYER (i).nObject));
 }
 
 //------------------------------------------------------------------------------
@@ -912,7 +912,7 @@ void PlayerParticleFrame (void)
 if (!gameOpts->render.particles.bPlayers)
 	return;
 for (int32_t i = 0; i < N_PLAYERS; i++)
-	DoPlayerSmoke (gameData.Object (PLAYER (i).nObject), i);
+	DoPlayerSmoke (OBJECT (PLAYER (i).nObject), i);
 }
 
 //------------------------------------------------------------------------------

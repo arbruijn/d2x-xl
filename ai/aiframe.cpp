@@ -607,7 +607,7 @@ int32_t AIMOpenDoorHandler2 (CObject *objP, tAIStateInfo *siP)
 Assert (objP->info.nId == ROBOT_BRAIN);     // Make sure this guy is allowed to be in this mode.
 if (!AILocalPlayerControlsRobot (objP, 62))
 	return 1;
-vCenter = gameData.Segment (objP->info.nSegment)->SideCenter (siP->aiP->GOALSIDE);
+vCenter = SEGMENT (objP->info.nSegment)->SideCenter (siP->aiP->GOALSIDE);
 vGoal = vCenter - objP->info.position.vPos;
 CFixVector::Normalize (vGoal);
 AITurnTowardsVector (&vGoal, objP, siP->botInfoP->turnTime [gameStates.app.nDifficultyLevel]);
@@ -842,7 +842,7 @@ if (siP->botInfoP->companion) {
 	DoEscortFrame (objP, gameData.ai.target.xDist, gameData.ai.nTargetVisibility);
 
 	if (objP->cType.aiInfo.nDangerLaser != -1) {
-		CObject *dObjP = gameData.Object (objP->cType.aiInfo.nDangerLaser);
+		CObject *dObjP = OBJECT (objP->cType.aiInfo.nDangerLaser);
 
 		if ((dObjP->info.nType == OBJ_WEAPON) && (dObjP->info.nSignature == objP->cType.aiInfo.nDangerLaserSig)) {
 			fix circleDistance = siP->botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + TARGETOBJ->info.xSize;
@@ -858,9 +858,9 @@ if (siP->botInfoP->companion) {
 		else if (aiP->nHideIndex >= 0) {
 			int16_t nSegment;
 			int32_t i = aiP->nHideIndex + aiP->nCurPathIndex;
-			if (((nSegment = AIRouteSeg (uint32_t (i + aiP->PATH_DIR))) >= 0) && (gameData.Segment (nSegment)->HasOpenableDoor () != -1))
+			if (((nSegment = AIRouteSeg (uint32_t (i + aiP->PATH_DIR))) >= 0) && (SEGMENT (nSegment)->HasOpenableDoor () != -1))
 				bDoStuff = 1;
-			else if (((nSegment = AIRouteSeg (uint32_t (i + 2 * aiP->PATH_DIR))) >= 0) && (gameData.Segment (nSegment)->HasOpenableDoor () != -1))
+			else if (((nSegment = AIRouteSeg (uint32_t (i + 2 * aiP->PATH_DIR))) >= 0) && (SEGMENT (nSegment)->HasOpenableDoor () != -1))
 				bDoStuff = 1;
 			}
 		if (!bDoStuff && (siP->ailP->mode == AIM_GOTO_PLAYER) && (gameData.ai.target.xDist < 3 * MIN_ESCORT_DISTANCE / 2)) {
@@ -896,9 +896,9 @@ if (siP->botInfoP->thief) {
 		else {
 			int16_t nSegment;
 			int32_t i = aiP->nHideIndex + aiP->nCurPathIndex;
-			if (((nSegment = AIRouteSeg (uint32_t (i + aiP->PATH_DIR))) >= 0) && (gameData.Segment (nSegment)->HasOpenableDoor () != -1))
+			if (((nSegment = AIRouteSeg (uint32_t (i + aiP->PATH_DIR))) >= 0) && (SEGMENT (nSegment)->HasOpenableDoor () != -1))
 				bDoStuff = 1;
-			else if (((nSegment = AIRouteSeg (uint32_t (i + 2 * aiP->PATH_DIR))) >= 0) && (gameData.Segment (nSegment)->HasOpenableDoor () != -1))
+			else if (((nSegment = AIRouteSeg (uint32_t (i + 2 * aiP->PATH_DIR))) >= 0) && (SEGMENT (nSegment)->HasOpenableDoor () != -1))
 				bDoStuff = 1;
 			}
 		if (bDoStuff) {
@@ -1012,9 +1012,9 @@ return 0;
 
 int32_t AIProducerHandler (CObject *objP, tAIStateInfo *siP)
 {
-if (siP->bMultiGame || (gameData.Segment (objP->info.nSegment)->m_function != SEGMENT_FUNC_ROBOTMAKER))
+if (siP->bMultiGame || (SEGMENT (objP->info.nSegment)->m_function != SEGMENT_FUNC_ROBOTMAKER))
 	return 0;
-if (!gameData.producers.producers [gameData.Segment (objP->info.nSegment)->m_value].bEnabled)
+if (!gameData.producers.producers [SEGMENT (objP->info.nSegment)->m_value].bEnabled)
 	return 0;
 AIFollowPath (objP, 1, 1, NULL);    // 1 = player is visible, which might be a lie, but it works.
 return 1;
@@ -1107,7 +1107,7 @@ static CObject *NearestRobotTarget (CObject* attackerP, tAIStateInfo *siP)
 	CObject*		candidateP, *targetP = NULL;
 	CFixVector	vPos = attackerP->AttacksRobots ()
 							 ? OBJPOS (attackerP)->vPos	// find robot closest to this robot
-							 : OBJPOS (gameData.Object (N_LOCALPLAYER))->vPos;	// find robot closest to player
+							 : OBJPOS (OBJECT (N_LOCALPLAYER))->vPos;	// find robot closest to player
 	CFixVector	vViewDir = attackerP->info.position.mOrient.m.dir.f;
 
 FORALL_ROBOT_OBJS (candidateP) {
@@ -1143,7 +1143,7 @@ int32_t AITargetPosHandler (CObject *objP, tAIStateInfo *siP)
 
 objP->SetTarget (gameData.ai.target.objP = targetP);
 if ((siP->aiP->SUB_FLAGS & SUB_FLAGS_CAMERA_AWAKE) && (gameData.ai.nLastMissileCamera != -1)) {
-	gameData.ai.target.vBelievedPos = OBJPOS (gameData.Object (gameData.ai.nLastMissileCamera))->vPos;
+	gameData.ai.target.vBelievedPos = OBJPOS (OBJECT (gameData.ai.nLastMissileCamera))->vPos;
 	return 0;
 	}
 if (objP->AttacksRobots () || (!siP->botInfoP->thief && (RandShort () > 2 * objP->AimDamage ()))) {

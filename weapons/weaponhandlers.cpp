@@ -73,7 +73,7 @@ if (nFlags & LASER_QUAD) {
 		nFired++;
 	}
 if (!nFired && (nLightObj >= 0))
-	gameData.Object (nLightObj)->Die ();
+	OBJECT (nLightObj)->Die ();
 return nFired ? nRoundsPerShot : 0;
 }
 
@@ -123,7 +123,7 @@ else {
 if (0 <= LaserPlayerFireSpread (objP, SPREADFIRE_ID, 6, 0, 0, 1, 0, nLightObj))
 	nFired++;
 if (!nFired && (nLightObj >= 0))
-	gameData.Object (nLightObj)->Die ();
+	OBJECT (nLightObj)->Die ();
 return nFired ? nRoundsPerShot : 0;
 }
 
@@ -139,7 +139,7 @@ if (0 <= LaserPlayerFire (objP, PLASMA_ID, 0, 1, 0, nLightObj))
 if (0 <= LaserPlayerFire (objP, PLASMA_ID, 1, 0, 0, nLightObj))
 	nFired++;
 if (!nFired && (nLightObj >= 0))
-	gameData.Object (nLightObj)->Die ();
+	OBJECT (nLightObj)->Die ();
 if (nRoundsPerShot > 1) {
 	nLightObj = lightClusterManager.Create (objP);
 	if (0 <= FireWeaponDelayedWithSpread (objP, PLASMA_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj))
@@ -147,7 +147,7 @@ if (nRoundsPerShot > 1) {
 	if (0 <= FireWeaponDelayedWithSpread (objP, PLASMA_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj))
 		nFired++;
 	if (!nFired && (nLightObj >= 0))
-		gameData.Object (nLightObj)->Die ();
+		OBJECT (nLightObj)->Die ();
 	}
 return nFired ? nRoundsPerShot : 0;
 }
@@ -171,7 +171,7 @@ nFlags = int8_t (gameData.FusionCharge () >> 12);
 gameData.SetFusionCharge (0);
 if (!nFired) {
 	if (nLightObj >= 0)
-		gameData.Object (nLightObj)->Die ();
+		OBJECT (nLightObj)->Die ();
 	return 0;
 	}
 postProcessManager.Add (new CPostEffectShockwave (SDL_GetTicks (), I2X (1) / 3, objP->info.xSize, 1, 
@@ -208,7 +208,7 @@ if (nFlags & LASER_QUAD) {
 		nFired++;
 	}
 if (!nFired && (nLightObj >= 0))
-	gameData.Object (nLightObj)->Die ();
+	OBJECT (nLightObj)->Die ();
 return nFired ? nRoundsPerShot : 0;
 }
 
@@ -271,7 +271,7 @@ if (0 <= LaserPlayerFireSpread (objP, HELIX_ID, 6,  spread.r * 2,  spread.u * 2,
 if (0 <= LaserPlayerFireSpread (objP, HELIX_ID, 6, -spread.r * 2, -spread.u * 2, 0, 0, nLightObj))
 	nFired++;
 if (!nFired && (nLightObj >= 0))
-	gameData.Object (nLightObj)->Die ();
+	OBJECT (nLightObj)->Die ();
 return nFired ? nRoundsPerShot : 0;
 }
 
@@ -287,7 +287,7 @@ if (0 <= LaserPlayerFire (objP, PHOENIX_ID, 0, 1, 0, nLightObj))
 if (0 <= LaserPlayerFire (objP, PHOENIX_ID, 1, 0, 0, nLightObj))
 	nFired++;
 if (!nFired && (nLightObj >= 0))
-	gameData.Object (nLightObj)->Die ();
+	OBJECT (nLightObj)->Die ();
 if (nRoundsPerShot > 1) {
 	nLightObj = lightClusterManager.Create (objP);
 	if (0 <= FireWeaponDelayedWithSpread (objP, PHOENIX_ID, 0, 0, 0, gameData.time.xFrame / 2, 1, 0, nLightObj))
@@ -295,7 +295,7 @@ if (nRoundsPerShot > 1) {
 	if (0 <= FireWeaponDelayedWithSpread (objP, PHOENIX_ID, 1, 0, 0, gameData.time.xFrame / 2, 0, 0, nLightObj))
 	nFired++;
 	if (!nFired && (nLightObj >= 0))
-		gameData.Object (nLightObj)->Die ();
+		OBJECT (nLightObj)->Die ();
 	}
 return nFired ? nRoundsPerShot : 0;
 }
@@ -341,7 +341,7 @@ if (nWeapon > OMEGA_INDEX) {
 	}
 else {
 	gameData.multigame.weapon.nFired [0] = 0;
-	nRoundsPerShot = weaponHandlers [nWeapon] (gameData.Object (nObject), nLevel, nFlags, nRoundsPerShot);
+	nRoundsPerShot = weaponHandlers [nWeapon] (OBJECT (nObject), nLevel, nFlags, nRoundsPerShot);
 	}
 if (IsMultiGame && (nObject == LOCALPLAYER.nObject)) {
 	gameData.multigame.weapon.bFired = nRoundsPerShot;

@@ -72,7 +72,7 @@ for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer ();
 				 (gameData.producers.origProducerTypes [f] != SEGMENT_FUNC_NONE))
 				virusGens [--kk] = f;
 			for (nObject = segP->m_objects; nObject >= 0; nObject = objP->info.nNextInSeg) {
-				objP = gameData.Object (nObject);
+				objP = OBJECT (nObject);
 				if ((objP->info.nType == OBJ_POWERUP) && (objP->info.nType == POW_ENTROPY_VIRUS))
 					objP->info.nCreator = newOwner;
 				}
@@ -96,7 +96,7 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 		jj += (MAX_FUEL_CENTERS - kk);
 		for (j = 0; j < jj; j++) {
 			fuelP = gameData.producers.producers + virusGens [j];
-			CSegment* fuelSegP = gameData.Segment (fuelP->nSegment);
+			CSegment* fuelSegP = SEGMENT (fuelP->nSegment);
 			fuelSegP->m_function = gameData.producers.origProducerTypes [uint32_t (fuelP - gameData.producers.producers.Buffer ())];
 			fuelSegP->CreateProducer (fuelSegP->m_function);
 			fuelSegP->ChangeTexture (newOwner);
@@ -109,7 +109,7 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 // preferrably convert repair centers
 for (i = 0, h = -1, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++)
 	if (segP->m_owner == oldOwner) 
-		switch (gameData.Segment (i)->m_function) {
+		switch (SEGMENT (i)->m_function) {
 			case SEGMENT_FUNC_VIRUSMAKER:
 				return;
 			case SEGMENT_FUNC_FUELCENTER:
@@ -117,12 +117,12 @@ for (i = 0, h = -1, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; 
 					h = i;
 				break;
 			case SEGMENT_FUNC_REPAIRCENTER:
-				if ((h < 0) || (gameData.Segment (h)->m_function == SEGMENT_FUNC_FUELCENTER))
+				if ((h < 0) || (SEGMENT (h)->m_function == SEGMENT_FUNC_FUELCENTER))
 					h = i;
 			}
 if (h < 0)
 	return;
-segP = gameData.Segment (h);
+segP = SEGMENT (h);
 i = segP->m_function;
 segP->m_function = SEGMENT_FUNC_VIRUSMAKER;
 segP->CreateRobotMaker (i);

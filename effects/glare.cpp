@@ -51,8 +51,8 @@ int32_t CGlareRenderer::CalcFaceDimensions (int16_t nSegment, int16_t nSide, fix
 	int32_t		i, j;
 
 if (!corners) 
-	corners = gameData.Segment (nSegment)->Corners (nSide);
-m_nVertices = gameData.Segment (nSegment)->Side (nSide)->CornerCount ();
+	corners = SEGMENT (nSegment)->Corners (nSide);
+m_nVertices = SEGMENT (nSegment)->Side (nSide)->CornerCount ();
 for (i = j = 0; j < m_nVertices; j++) {
 	fix d = CFixVector::Dist (gameData.segs.vertices [corners [j]], gameData.segs.vertices [corners [(j + 1) % m_nVertices]]);
 	if (dMax < d) {
@@ -91,7 +91,7 @@ if (IsMultiGame && extraGameInfo [1].bDarkness)
 if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	BRP;
 #endif
-sideP = gameData.Segment (nSegment)->m_sides + nSide;
+sideP = SEGMENT (nSegment)->m_sides + nSide;
 CWall* wallP = sideP->Wall ();
 if (wallP) {
 	uint8_t nType = wallP->nType;
@@ -184,19 +184,19 @@ return nTexture;
 
 float CGlareRenderer::ComputeCoronaSprite (int16_t nSegment, int16_t nSide)
 {
-	CSide*			sideP = gameData.Segment (nSegment)->m_sides + nSide;
+	CSide*			sideP = SEGMENT (nSegment)->m_sides + nSide;
 	uint16_t*			corners;
 	int32_t				i;
 	float				fLight = 0;
 	CFloatVector	v;
 
-corners = gameData.Segment (nSegment)->Corners (nSide);
-m_nVertices = gameData.Segment (nSegment)->Side (nSide)->CornerCount ();
+corners = SEGMENT (nSegment)->Corners (nSide);
+m_nVertices = SEGMENT (nSegment)->Side (nSide)->CornerCount ();
 for (i = 0; i < m_nVertices; i++) {
 	fLight += X2F (sideP->m_uvls [i].l);
 	transformation.Transform (m_sprite [i], gameData.segs.fVertices [corners [i]], 0);
 	}
-v.Assign (gameData.Segment (nSegment)->SideCenter (nSide));
+v.Assign (SEGMENT (nSegment)->SideCenter (nSide));
 transformation.Transform (m_vCenter, v, 0);
 return fLight;
 }

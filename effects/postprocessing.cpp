@@ -199,10 +199,10 @@ CFixVector p [5];
 bool bTransform = true;
 
 if (m_nObject >= 0) {
-	if ((gameData.objs.viewerP != gameData.Object (m_nObject)) || SPECTATOR (gameData.objs.viewerP))
-		m_pos = gameData.Object (m_nObject)->FrontPosition ();
+	if ((gameData.objs.viewerP != OBJECT (m_nObject)) || SPECTATOR (gameData.objs.viewerP))
+		m_pos = OBJECT (m_nObject)->FrontPosition ();
 	else {
-		p [0].Set (0, 0, gameData.Object (m_nObject)->Size ());
+		p [0].Set (0, 0, OBJECT (m_nObject)->Size ());
 		bTransform = false;
 		}
 	}

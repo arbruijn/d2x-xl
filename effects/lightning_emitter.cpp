@@ -273,7 +273,7 @@ void CLightningEmitter::MoveForObject (void)
 if (!m_bValid)
 	return;
 
-	CObject* objP = gameData.Object (m_nObject);
+	CObject* objP = OBJECT (m_nObject);
 
 Move (OBJPOS (objP)->vPos, objP->info.nSegment);
 }
@@ -287,7 +287,7 @@ if (m_bValid < 1)
 
 if (automap.Active () && !(gameStates.render.bAllVisited || automap.m_bFull)) {
 	if (m_nObject >= 0) {
-		if (!automap.m_visited [gameData.Object (m_nObject)->Segment ()])
+		if (!automap.m_visited [OBJECT (m_nObject)->Segment ()])
 			return;
 		}
 	else if (!automap.m_bFull) {

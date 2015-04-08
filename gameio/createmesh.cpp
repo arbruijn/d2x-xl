@@ -1016,7 +1016,7 @@ if (bRebuild)
 	m_faceP->m_info.nTris = 0;
 else
 	memset (m_faceP, 0, sizeof (*m_faceP));
-CSide* sideP = gameData.Segment (nSegment)->Side (nSide);
+CSide* sideP = SEGMENT (nSegment)->Side (nSide);
 m_faceP->m_info.nSegment = nSegment;
 m_faceP->m_info.nVerts = sideP->CornerCount ();
 m_faceP->m_info.nFrame = -1;
@@ -1058,7 +1058,7 @@ if (strstr (pszName, "misc17") != NULL)
 	m_faceP->m_info.bSparks = (nTexture == m_faceP->m_info.nBaseTex) ? 1 : 2;
 if (m_nWallType < 2)
 	m_faceP->m_info.bAdditive = 0;
-else if (gameData.Wall (m_nWall)->flags & WALL_RENDER_ADDITIVE)
+else if (WALL (m_nWall)->flags & WALL_RENDER_ADDITIVE)
 	m_faceP->m_info.bAdditive = 2;
 else if (strstr (pszName, "lava"))
 	m_faceP->m_info.bAdditive = 2;
@@ -1075,7 +1075,7 @@ m_faceP->m_info.bTransparent = 1;
 m_faceP->m_info.bSegColor = missionConfig.m_bColoredSegments;
 m_faceP->m_info.bAdditive = 0;
 #if DBG
-if ((gameData.Segment (nSegment)->m_props & (SEGMENT_PROP_WATER | SEGMENT_PROP_LAVA)) != 0)
+if ((SEGMENT (nSegment)->m_props & (SEGMENT_PROP_WATER | SEGMENT_PROP_LAVA)) != 0)
 	BRP;
 #endif
 }
@@ -1242,7 +1242,7 @@ for (int32_t i = 0; i < FACES.nFaces; i++, faceP++) {
 	else if (faceP->m_info.nOvlTex <= 0)
 		faceP->m_info.nKey = int32_t (faceP->m_info.nBaseTex);
 	else {
-		LoadFaceBitmaps (gameData.Segment (faceP->m_info.nSegment), faceP);
+		LoadFaceBitmaps (SEGMENT (faceP->m_info.nSegment), faceP);
 		if (faceP->bmTop && (faceP->bmTop->Flags () & BM_FLAG_SUPER_TRANSPARENT))
 			faceP->m_info.nKey = int32_t (faceP->m_info.nBaseTex) + int32_t (faceP->m_info.nOvlTex) * MAX_WALL_TEXTURES * MAX_WALL_TEXTURES;
 		else
@@ -1296,7 +1296,7 @@ m_faceP = FACES.faces.Buffer ();
 m_lMapTexCoordP = FACES.lMapTexCoord.Buffer ();
 for (nFace = FACES.nFaces; nFace; nFace--, m_faceP++) {
 	SetupLMapTexCoord (lMapTexCoord);
-	h = (gameData.Segment (m_faceP->m_info.nSegment)->Type (m_faceP->m_info.nSide) == SIDE_IS_TRI_13);
+	h = (SEGMENT (m_faceP->m_info.nSegment)->Type (m_faceP->m_info.nSide) == SIDE_IS_TRI_13);
 	for (i = 0; i < m_faceP->m_info.nTriangles; i++, m_triP++) {
 		triVertP = n2TriVerts [h][i];
 		for (j = 0; j < 3; j++) {
@@ -1496,7 +1496,7 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++) {
 			if (!m_sideP->FaceCount ())
 				continue;
 			m_nWall = m_segP->WallNum (nSide);
-			m_nWallType = IS_WALL (m_nWall) ? gameData.Wall (m_nWall)->IsInvisible () ? 0 : 2 : (m_segP->m_children [nSide] == -1) ? 1 : 0;
+			m_nWallType = IS_WALL (m_nWall) ? WALL (m_nWall)->IsInvisible () ? 0 : 2 : (m_segP->m_children [nSide] == -1) ? 1 : 0;
 			if (m_nWallType)
 				FACES.nFaces++;
 			else if (IsColoredSeg (m_segP->m_children [nSide]) != 0)
@@ -1563,8 +1563,8 @@ for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, m_segP++, m_s
 		if (!m_sideP->FaceCount ())
 			continue;
 		m_nWall = m_segP->WallNum (nSide);
-		m_nWallType = IS_WALL (m_nWall) ? gameData.Wall (m_nWall)->IsInvisible () ? 0 : 2 : (m_segP->m_children [nSide] == -1) ? 1 : 0;
-		CSegment* childSegP = (m_segP->m_children [nSide] < 0) ? NULL : gameData.Segment (m_segP->m_children [nSide]);
+		m_nWallType = IS_WALL (m_nWall) ? WALL (m_nWall)->IsInvisible () ? 0 : 2 : (m_segP->m_children [nSide] == -1) ? 1 : 0;
+		CSegment* childSegP = (m_segP->m_children [nSide] < 0) ? NULL : SEGMENT (m_segP->m_children [nSide]);
 		bool bColoredChild = IsColoredSeg (m_segP->m_children [nSide]) != 0;
 		if (bColoredSeg || bColoredChild || m_nWallType) {
 #if DBG

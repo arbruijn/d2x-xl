@@ -109,7 +109,7 @@ if (e <= 0) {
 
 LOCALPLAYER.UpdateEnergy (-e);
 LOCALPLAYER.UpdateShield (e / CONVERTER_SCALE);
-gameData.Object (N_LOCALPLAYER)->ResetDamage ();
+OBJECT (N_LOCALPLAYER)->ResetDamage ();
 NetworkFlushData (); // will send position, shield and weapon info
 gameStates.app.bUsingConverter = 1;
 if (last_playTime > gameData.time.xGame)
@@ -353,13 +353,13 @@ void SpeedtestFrame(void)
 
 	gameData.speedtest.nSide=gameData.speedtest.nSegment % SEGMENT_SIDE_COUNT;
 
-	gameData.objs.viewerP->info.position.vPos = gameData.Segment (gameData.speedtest.nSegment)->Center ();
+	gameData.objs.viewerP->info.position.vPos = SEGMENT (gameData.speedtest.nSegment)->Center ();
 	gameData.objs.viewerP->info.position.vPos.v.coord.x += 0x10;	
 	gameData.objs.viewerP->info.position.vPos.v.coord.y -= 0x10;	
 	gameData.objs.viewerP->info.position.vPos.v.coord.z += 0x17;
 
 	gameData.objs.viewerP->RelinkToSeg (gameData.speedtest.nSegment);
-	center_point = gameData.Segment (gameData.speedtest.nSegment)->SideCenter (gameData.speedtest.nSide);
+	center_point = SEGMENT (gameData.speedtest.nSegment)->SideCenter (gameData.speedtest.nSide);
 	CFixVector::NormalizedDir(view_dir, center_point, gameData.objs.viewerP->info.position.vPos);
 	//gameData.objs.viewerP->info.position.mOrient = CFixMatrix::Create(view_dir, NULL, NULL);
 	gameData.objs.viewerP->info.position.mOrient = CFixMatrix::CreateF(view_dir);

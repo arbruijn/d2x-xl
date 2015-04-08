@@ -68,7 +68,7 @@ int32_t CObject::CreateGatedRobot (int16_t nSegment, uint8_t nObjId, CFixVector*
 {
 	int32_t		nObject, nTries = 5;
 	CObject*		objP;
-	CSegment*	segP = gameData.Segment (nSegment);
+	CSegment*	segP = SEGMENT (nSegment);
 	CFixVector	vObjPos;
 	tRobotInfo*	botInfoP = &ROBOTINFO (nObjId);
 	int32_t		nBoss, count = 0;
@@ -116,7 +116,7 @@ if (nObject < 0) {
 	}
 // added lifetime increase depending on difficulty level 04/26/06 DM
 gameData.multigame.create.nObjNums [0] = nObject; // A convenient global to get nObject back to caller for multiplayer
-objP = gameData.Object (nObject);
+objP = OBJECT (nObject);
 objP->SetLife (I2X (30) + (I2X (1) / 2) * (gameStates.app.nDifficultyLevel * 15));	//	Gated in robots only live 30 seconds.
 //Set polygon-CObject-specific data
 objP->rType.polyObjInfo.nModel = botInfoP->nModel;
@@ -158,7 +158,7 @@ if (nSegment == -1) {
 	return -1;
 	}
 if (!vPos) 
-	vPos = &gameData.Segment (nSegment)->Center ();
+	vPos = &SEGMENT (nSegment)->Center ();
 if (objType < 0)
 	objType = spewBots [gameStates.app.bD1Mission][nBossIndex][(maxSpewBots [nBossIndex] * RandShort ()) >> 15];
 if (objType == 255) {	// spawn an arbitrary robot
@@ -173,7 +173,7 @@ if (objType == 255) {	// spawn an arbitrary robot
 nObject = CreateGatedRobot (nSegment, (uint8_t) objType, vPos);
 //	Make spewed robot come tumbling out as if blasted by a flash missile.
 if (nObject != -1) {
-	CObject	*newObjP = gameData.Object (nObject);
+	CObject	*newObjP = OBJECT (nObject);
 	int32_t		xForce = I2X (1) / (gameData.time.xFrame ? gameData.time.xFrame : 1);
 	if (xForce) {
 		newObjP->cType.aiInfo.SKIP_AI_COUNT += xForce;
@@ -209,7 +209,7 @@ if (nSegment < 0) {
 	nSegment = gameData.bosses [nBoss].m_gateSegs [(RandShort () * gameData.bosses [nBoss].m_nGateSegs) >> 15];
 	}
 Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
-return gameData.Object (nObject)->CreateGatedRobot (nSegment, nType, NULL);
+return OBJECT (nObject)->CreateGatedRobot (nSegment, nType, NULL);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -219,7 +219,7 @@ int32_t BossFitsInSeg (CObject *bossObjP, int32_t nSegment)
 	int32_t			nObject = OBJ_IDX (bossObjP);
 	int32_t			nPos;
 	CFixVector	vSegCenter, vVertPos;
-	CSegment*	segP = gameData.Segment (nSegment);
+	CSegment*	segP = SEGMENT (nSegment);
 
 gameData.collisions.nSegsVisited = 0;
 vSegCenter = segP->Center ();
@@ -232,7 +232,7 @@ for (nPos = 0; nPos < 9; nPos++) {
 		vVertPos = gameData.segs.vertices [segP->m_vertices [nPos - 1]];
 		bossObjP->info.position.vPos = CFixVector::Avg (vVertPos, vSegCenter);
 		}
-	gameData.Object (nObject)->RelinkToSeg (nSegment);
+	OBJECT (nObject)->RelinkToSeg (nSegment);
 	if (!ObjectIntersectsWall (bossObjP))
 		return 1;
 	}
@@ -282,14 +282,14 @@ do {
 	Assert ((nRandSeg >= 0) && (nRandSeg <= gameData.segs.nLastSegment));
 	if (IsMultiGame)
 		MultiSendBossActions (nObject, 1, nRandSeg, 0);
-	vNewPos = gameData.Segment (nRandSeg)->Center ();
+	vNewPos = SEGMENT (nRandSeg)->Center ();
 	if (IsValidTeleportDest (&vNewPos, objP->info.xSize))
 		break;
 	}
 	while (--nAttempts);
 if (!nAttempts)
 	return;
-gameData.Object (nObject)->RelinkToSeg (nRandSeg);
+OBJECT (nObject)->RelinkToSeg (nRandSeg);
 gameData.bosses [i].m_nLastTeleportTime = gameData.time.xGame;
 //	make boss point right at CPlayerData
 objP->info.position.vPos = vNewPos;

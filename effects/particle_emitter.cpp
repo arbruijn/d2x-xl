@@ -48,7 +48,7 @@
 char CParticleEmitter::ObjectClass (int32_t nObject)
 {
 if ((nObject >= 0) && (nObject < 0x70000000)) {
-	CObject	*objP = gameData.Object (nObject);
+	CObject	*objP = OBJECT (nObject);
 	if (!objP)
 		return 0;
 	if (objP->info.nType == OBJ_PLAYER)
@@ -67,7 +67,7 @@ return 0;
 
 inline int32_t CParticleEmitter::MayBeVisible (int32_t nThread)
 {
-return (m_nSegment < 0) || (gameData.Segment (m_nSegment)->m_function == SEGMENT_FUNC_SKYBOX) || SegmentMayBeVisible (m_nSegment, 5, -1, nThread);
+return (m_nSegment < 0) || (SEGMENT (m_nSegment)->m_function == SEGMENT_FUNC_SKYBOX) || SegmentMayBeVisible (m_nSegment, 5, -1, nThread);
 }
 
 //------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ if (m_nObjType == OBJ_DEBRIS)
 	return 0.5f;
 if ((m_nObjType == OBJ_WEAPON) && (m_nObjId == PROXMINE_ID))
 	return 0.2f;
-objP = gameData.Object (m_nObject);
+objP = OBJECT (m_nObject);
 if (!objP || (objP->info.nType != m_nObjType) || (objP->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
 	return m_fBrightness;
 return m_fBrightness = (float) objP->Damage () * 0.5f + 0.1f;
@@ -157,7 +157,7 @@ m_fScale = fScale;
 m_nSegment = nSegment;
 m_nObject = nObject;
 CObject* objP;
-if ((nObject >= 0) && (nObject < 0x70000000) && (objP = gameData.Object (nObject))) {
+if ((nObject >= 0) && (nObject < 0x70000000) && (objP = OBJECT (nObject))) {
 	m_nObjType = objP->info.nType;
 	m_nObjId = objP->info.nId;
 	}

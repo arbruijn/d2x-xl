@@ -286,7 +286,7 @@ int32_t NetworkTimeoutPlayer (int32_t nPlayer, int32_t t)
 if (!gameOpts->multi.bTimeoutPlayers)
 	return 0;
 
-CObject* objP = (LOCALPLAYER.connected == CONNECT_PLAYING) ? gameData.Object (PLAYER (nPlayer).nObject) : NULL;
+CObject* objP = (LOCALPLAYER.connected == CONNECT_PLAYING) ? OBJECT (PLAYER (nPlayer).nObject) : NULL;
 
 if (PLAYER (nPlayer).TimedOut ()) {
 	if (t - PLAYER (nPlayer).m_tDisconnect > extraGameInfo [0].timeout.nKickPlayer) { // drop player when he disconnected for 3 minutes
@@ -439,7 +439,7 @@ SetType (PID_PLAYER_DATA);
 SetPlayer (N_LOCALPLAYER);
 SetRenderType (OBJECTS.Buffer () ? LOCALOBJECT->info.renderType : 0);
 SetLevel (missionManager.nCurrentLevel);
-SetObjInfo (gameData.Object (LOCALPLAYER.nObject));
+SetObjInfo (OBJECT (LOCALPLAYER.nObject));
 Squish ();
 }
 

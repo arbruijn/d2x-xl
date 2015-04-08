@@ -443,7 +443,7 @@ m_nType = nType;
 m_nClass = nClass;
 m_nFadeType = nFadeType;
 m_nSegment = nSegment;
-m_bSkybox = gameData.Segment (nSegment)->Function () == SEGMENT_FUNC_SKYBOX;
+m_bSkybox = SEGMENT (nSegment)->Function () == SEGMENT_FUNC_SKYBOX;
 #if DBG
 if (nSegment < 0)
 	BRP;
@@ -752,7 +752,7 @@ if ((m_nSegment < 0) || (m_nSegment >= gameData.segs.nSegments))
 	return false;
 if (gameData.render.mine.Visible (m_nSegment))
 	return true;
-int16_t* childP = gameData.Segment (m_nSegment)->m_children;
+int16_t* childP = SEGMENT (m_nSegment)->m_children;
 for (int32_t i = 6; i; i--, childP++) {
 	if ((*childP >= 0) && (gameData.render.mine.Visible (*childP)))
 		return true;
@@ -795,7 +795,7 @@ if (m_nSegment < 0)
 	return 0;
 
 wallNorm [nThread] = NULL;
-CSegment* segP = gameData.Segment (m_nSegment);
+CSegment* segP = SEGMENT (m_nSegment);
 int32_t bInit = (m_nSegment != nPartSeg [nThread]);
 if (bInit)
 	nPartSeg [nThread] = m_nSegment;
@@ -1008,18 +1008,18 @@ if (nSegment < 0) {
 		}
 	}
 else if (m_nType == BUBBLE_PARTICLES) {
-	if (!gameData.Segment (nSegment)->HasWaterProp ()) {
+	if (!SEGMENT (nSegment)->HasWaterProp ()) {
 		m_nLife = -1;
 		return 0;
 		}
 	}
 else if ((m_nType == RAIN_PARTICLES) || (m_nType == SNOW_PARTICLES)) {
-	if (gameData.Segment (nSegment)->HasWaterProp () || gameData.Segment (nSegment)->HasLavaProp ()) {
+	if (SEGMENT (nSegment)->HasWaterProp () || SEGMENT (nSegment)->HasLavaProp ()) {
 		m_nLife = -1;
 		return 0;
 		}
 #if 1
-	if ((m_nSegment >= 0) && (nSegment != m_nSegment) && gameData.Segment (m_nSegment)->HasFunction (SEGMENT_FUNC_SKYBOX)) {
+	if ((m_nSegment >= 0) && (nSegment != m_nSegment) && SEGMENT (m_nSegment)->HasFunction (SEGMENT_FUNC_SKYBOX)) {
 		if (m_nTTL - m_nLife > 500) {
 			m_nLife = -1;
 			return 0;

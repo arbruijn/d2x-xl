@@ -152,7 +152,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 		if (nBlobObj == -1)
 			break;
 		nLastCreatedObj = nBlobObj;
-		objP = gameData.Object (nBlobObj);
+		objP = OBJECT (nBlobObj);
 		objP->SetLife (ONE_FRAME_TIME);
 		objP->mType.physInfo.velocity = vGoal;
 		//	Only make the last one move fast, else multiple blobs might collide with target.
@@ -169,7 +169,7 @@ for (i = 0; i < nOmegaBlobs; i++) {
 
 	//	Make last one move faster, but it's already moving at speed = I2X (4).
 if (nLastCreatedObj != -1) {
-	CObject* objP = gameData.Object (nLastCreatedObj);
+	CObject* objP = OBJECT (nLastCreatedObj);
 	objP->mType.physInfo.velocity *= gameData.weapons.info [OMEGA_ID].speed [gameStates.app.nDifficultyLevel] / 4;
 	objP->info.movementType = MT_PHYSICS;
 	}
@@ -280,7 +280,7 @@ else
 //	Delete the original CObject.  Its only purpose in life was to determine which CObject to home in on.
 ReleaseObject (OBJ_IDX (weaponObjP));
 if (nTargetObj != -1)
-	vTargetPos = gameData.Object (nTargetObj)->info.position.vPos;
+	vTargetPos = OBJECT (nTargetObj)->info.position.vPos;
 else {	//	If couldn't lock on anything, fire straight ahead.
 	CFixVector	vPerturb, perturbed_fvec;
 
@@ -303,7 +303,7 @@ else {	//	If couldn't lock on anything, fire straight ahead.
 		}
 	}
 //	This is where we create a pile of omega blobs!
-CreateOmegaBlobs (nFiringSeg, vMuzzle, &vTargetPos, parentObjP, (nTargetObj < 0) ? NULL : gameData.Object (nTargetObj));
+CreateOmegaBlobs (nFiringSeg, vMuzzle, &vTargetPos, parentObjP, (nTargetObj < 0) ? NULL : OBJECT (nTargetObj));
 }
 
 // ---------------------------------------------------------------------------------

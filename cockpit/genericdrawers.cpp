@@ -961,11 +961,11 @@ for (nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {	//check all players
 		CRenderPoint	vPlayerPos;
 
 #if 1
-		vPlayerPos.TransformAndEncode (gameData.Object (nObject)->info.position.vPos);
+		vPlayerPos.TransformAndEncode (OBJECT (nObject)->info.position.vPos);
 #else
 		//transformation.Push ();
 		SetupRenderView (0, NULL, 0);
-		vPlayerPos.TransformAndEncode (gameData.Object (nObject)->info.position.vPos);
+		vPlayerPos.TransformAndEncode (OBJECT (nObject)->info.position.vPos);
 		ogl.EndFrame ();
 		//transformation.Pop ();
 #endif
@@ -1003,8 +1003,8 @@ for (nPlayer = 0; nPlayer < N_PLAYERS; nPlayer++) {	//check all players
 					}
 
 				if (bHasFlag && (gameStates.app.bNostalgia || !(EGI_FLAG (bTargetIndicators, 0, 1, 0) || EGI_FLAG (bTowFlags, 0, 1, 0)))) {// Draw box on HUD
-					fix dy = -FixMulDiv (gameData.Object (nObject)->info.xSize, I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.ViewPos ().v.coord.z);
-//					fix dy = -FixMulDiv (FixMul (gameData.Object (nObject)->size, transformation.m_info.scale.y), I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.m_z);
+					fix dy = -FixMulDiv (OBJECT (nObject)->info.xSize, I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.ViewPos ().v.coord.z);
+//					fix dy = -FixMulDiv (FixMul (OBJECT (nObject)->size, transformation.m_info.scale.y), I2X (CCanvas::Current ()->Height ())/2, vPlayerPos.m_z);
 					fix dx = FixMul (dy, gameData.render.screen.Aspect ());
 					fix w = dx / 4;
 					fix h = dy / 4;

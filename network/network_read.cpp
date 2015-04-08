@@ -247,7 +247,7 @@ if (!networkData.nJoinState) {
 			}
 		else
 			j = *netGameInfo.Locations (i);
-		MovePlayerToSpawnPos (j, gameData.Object (PLAYER (i).nObject));
+		MovePlayerToSpawnPos (j, OBJECT (PLAYER (i).nObject));
 		}
 	}
 LOCALOBJECT->SetType (OBJ_PLAYER);
@@ -348,7 +348,7 @@ if ((int8_t) pd->data.nLevel != missionManager.nCurrentLevel) {
 	return;
 	}
 
-objP = gameData.Object (nObject);
+objP = OBJECT (nObject);
 NetworkTrackPackets (nPlayer, pd->header.nPackets);
 //------------ Read the player's ship's object info ----------------------
 objP->info.position.vPos = pd->objData.pos;
@@ -358,7 +358,7 @@ objP->mType.physInfo.rotVel = pd->objData.rotVel;
 PLAYER (nPlayer).m_flightPath.Update (objP);
 if ((objP->info.renderType != pd->data.nRenderType) && (pd->data.nRenderType == RT_POLYOBJ))
 	MultiMakeGhostPlayer (nPlayer);
-gameData.Object (nObject)->RelinkToSeg (pd->objData.nSegment);
+OBJECT (nObject)->RelinkToSeg (pd->objData.nSegment);
 if (objP->info.movementType == MT_PHYSICS)
 	objP->SetThrustFromVelocity ();
 //------------ Welcome them back if reconnecting --------------
@@ -369,7 +369,7 @@ if (!PLAYER (nPlayer).connected) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nPlayer);
 	MultiMakeGhostPlayer (nPlayer);
-	gameData.Object (nObject)->CreateAppearanceEffect ();
+	OBJECT (nObject)->CreateAppearanceEffect ();
 	audio.PlaySound (SOUND_HUD_MESSAGE);
 	ClipRank (reinterpret_cast<char*> (&NETPLAYER (nPlayer).rank));
 	if (gameOpts->multi.bNoRankings)
@@ -472,7 +472,7 @@ if ((int8_t) pd->data.nLevel != missionManager.nCurrentLevel) {
 #endif
 	return;
 	}
-objP = gameData.Object (nObject);
+objP = OBJECT (nObject);
 NetworkTrackPackets (nPlayer, pd->header.nPackets);
 //------------ Read the player's ship's CObject info ----------------------
 ExtractShortPos (objP, &pd->objData, 0);
@@ -488,7 +488,7 @@ if (!PLAYER (nPlayer).connected) {
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nPlayer);
 	MultiMakeGhostPlayer (nPlayer);
-	gameData.Object (nObject)->CreateAppearanceEffect ();
+	OBJECT (nObject)->CreateAppearanceEffect ();
 	audio.PlaySound (SOUND_HUD_MESSAGE);
 	ClipRank (reinterpret_cast<char*> (&NETPLAYER (nPlayer).rank));
 	if (gameOpts->multi.bNoRankings)
@@ -693,7 +693,7 @@ if (((m_nObjOwner == N_LOCALPLAYER) || (m_nObjOwner == -1)) && (m_nLocalObj != m
 	return -1;
 	}
 
-CObject* objP = gameData.Object (m_nLocalObj);
+CObject* objP = OBJECT (m_nLocalObj);
 NW_GET_BYTES (m_data, m_bufI, &objP->info, sizeof (tBaseObject));
 if (objP->info.nType != OBJ_NONE) {
 #if defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__)

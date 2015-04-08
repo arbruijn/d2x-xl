@@ -283,7 +283,7 @@ for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 	if (0 > m_children [i])
 		dist = -1;
 	else {
-		dist = CFixVector::Dist (Center (), gameData.Segment (m_children [i])->Center ());
+		dist = CFixVector::Dist (Center (), SEGMENT (m_children [i])->Center ());
 		if (dist == 0)
 			dist = 1;
 		}
@@ -403,7 +403,7 @@ for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 	m_sides [i].Setup (Index (), m_vertices, sideVertIndex [i], m_children [i] < 0);
 	if (!m_sides [i].FaceCount () && (m_children [i] >= 0)) {
 		PrintLog (0, "Segment %d, side %d is collapsed, but has child %d!\n", SEG_IDX (this), i, m_children [i]);
-		gameData.Segment (m_children [i])->m_children [(int32_t) oppSideTable [i]] = -1;
+		SEGMENT (m_children [i])->m_children [(int32_t) oppSideTable [i]] = -1;
 		m_children [i] = -1;
 		}
 	}
@@ -459,8 +459,8 @@ if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 if (!objP) 
 	return wallP ? wallP->IsPassable (NULL, bIgnoreDoors) : WID_PASSABLE_FLAG | WID_TRANSPARENT_FLAG;
 
-uint8_t nChildType = gameData.Segment (nChildSeg)->m_function;
-if (gameData.Segment (nChildSeg)->HasBlockedProp ()) {
+uint8_t nChildType = SEGMENT (nChildSeg)->m_function;
+if (SEGMENT (nChildSeg)->HasBlockedProp ()) {
 	if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_POWERUP))
 		return WID_VISIBLE_FLAG;
 	}
@@ -490,7 +490,7 @@ if (nChild == -2)
 	return WID_EXTERNAL_FLAG;
 
 CWall* wallP = m_sides [nSide].Wall ();
-CSegment* childP = gameData.Segment (nChild);
+CSegment* childP = SEGMENT (nChild);
 
 #if DBG
 if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -500,7 +500,7 @@ if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 if ((objP == gameData.objs.consoleP) &&
 	 gameData.objs.speedBoost [objP->Index ()].bBoosted &&
 	 (m_function == SEGMENT_FUNC_SPEEDBOOST) && (childP->m_function != SEGMENT_FUNC_SPEEDBOOST) &&
-	 (!wallP || (TRIGGERS [wallP->nTrigger].m_info.nType != TT_SPEEDBOOST)))
+	 (!wallP || (TRIGGER (wallP->nTrigger)->m_info.nType != TT_SPEEDBOOST)))
 	return WID_VISIBLE_FLAG;
 
 if (childP->HasBlockedProp ())
@@ -605,7 +605,7 @@ if (connSegP)
 
 int32_t CSegment::PokesThrough (int32_t nObject, int32_t nSide)
 {
-	CObject *objP = gameData.Object (nObject);
+	CObject *objP = OBJECT (nObject);
 
 return (objP->info.xSize && SideMasks (nSide, objP->info.position.vPos, objP->info.xSize, true).m_side);
 }
@@ -618,15 +618,15 @@ int32_t CSegment::DoorIsBlocked (int32_t nSide, bool bIgnoreMarker)
 	CSegment*	connSegP;
 	int16_t		nObject, nType;
 
-connSegP = gameData.Segment (m_children [nSide]);
+connSegP = SEGMENT (m_children [nSide]);
 nConnSide = ConnectedSide (connSegP);
 Assert(nConnSide != -1);
 
 //go through each CObject in each of two segments, and see if
 //it pokes into the connecting segP
 
-for (nObject = m_objects; nObject != -1; nObject = gameData.Object (nObject)->info.nNextInSeg) {
-	nType = gameData.Object (nObject)->info.nType;
+for (nObject = m_objects; nObject != -1; nObject = OBJECT (nObject)->info.nNextInSeg) {
+	nType = OBJECT (nObject)->info.nType;
 	if ((nType == OBJ_WEAPON) || (nType == OBJ_FIREBALL) || (nType == OBJ_EXPLOSION) || (nType == OBJ_EFFECT) || (bIgnoreMarker && (nType == OBJ_MARKER)))
 		continue;
 	if (PokesThrough (nObject, nSide) || connSegP->PokesThrough (nObject, nConnSide))
@@ -656,7 +656,7 @@ if (m_children [nSide] < 0) {
 	nConnWall = NO_WALL;
 	}
 else {
-	connSegP = gameData.Segment (m_children [nSide]);
+	connSegP = SEGMENT (m_children [nSide]);
 	nConnSide = ConnectedSide (connSegP);
 	Assert (nConnSide != -1);
 	nConnWall = connSegP->WallNum (nConnSide);
@@ -674,7 +674,7 @@ else {
 	SetTexture (nSide, connSegP, nConnSide, a, n - 1);
 	wallP->flags |= WALL_BLASTED;
 	if (IS_WALL (nConnWall))
-		gameData.Wall (nConnWall)->flags |= WALL_BLASTED;
+		WALL (nConnWall)->flags |= WALL_BLASTED;
 	}
 }
 
@@ -720,14 +720,14 @@ if (m_children [nSide] < 0) {
 	nConnWall = NO_WALL;
 	}
 else {
-	connSegP = gameData.Segment (m_children [nSide]);
+	connSegP = SEGMENT (m_children [nSide]);
 	nConnSide = ConnectedSide (connSegP);
 	Assert(nConnSide != -1);
 	nConnWall = connSegP->WallNum (nConnSide);
 	}
 wallP->hps -= damage;
 if (IS_WALL (nConnWall))
-	gameData.Wall (nConnWall)->hps -= damage;
+	WALL (nConnWall)->hps -= damage;
 a = wallP->nClip;
 n = WallEffectFrameCount (gameData.walls.animP + a);
 if (wallP->hps < WALL_HPS * 1 / n) {
@@ -765,7 +765,7 @@ if (m_children [nSide] < 0) {
 	nConnWall = NO_WALL;
 	}
 else {
-	connSegP = gameData.Segment (m_children [nSide]);
+	connSegP = SEGMENT (m_children [nSide]);
 	nConnSide = ConnectedSide (connSegP);
 	if (nConnSide >= 0) {
 		CWall* wallP = connSegP->Wall (nConnSide);
@@ -781,12 +781,12 @@ Assert(SEG_IDX (this) != -1);
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordDoorOpening (SEG_IDX (this), nSide);
 if (IS_WALL (wallP->nLinkedWall) && IS_WALL (nConnWall) && (wallP->nLinkedWall == nConnWall)) {
-	CWall *linkedWallP = gameData.Wall (wallP->nLinkedWall);
-	CSegment *linkedSegP = gameData.Segment (linkedWallP->nSegment);
+	CWall *linkedWallP = WALL (wallP->nLinkedWall);
+	CSegment *linkedSegP = SEGMENT (linkedWallP->nSegment);
 	linkedWallP->state = WALL_DOOR_OPENING;
-	connSegP = gameData.Segment (linkedSegP->m_children [linkedWallP->nSide]);
+	connSegP = SEGMENT (linkedSegP->m_children [linkedWallP->nSide]);
 	if (IS_WALL (nConnWall))
-		gameData.Wall (nConnWall)->state = WALL_DOOR_OPENING;
+		WALL (nConnWall)->state = WALL_DOOR_OPENING;
 	doorP->nPartCount = 2;
 	doorP->nFrontWall [1] = wallP->nLinkedWall;
 	doorP->nBackWall [1] = linkedSegP->ConnectedSide (connSegP);
@@ -822,11 +822,11 @@ if (!(doorP = wallP->CloseDoor (bForce)))
 	CSegment*		connSegP;
 	int16_t				nConnSide, nConnWall;
 
-connSegP = gameData.Segment (m_children [nSide]);
+connSegP = SEGMENT (m_children [nSide]);
 nConnSide = ConnectedSide (connSegP);
 nConnWall = connSegP->WallNum (nConnSide);
 if (IS_WALL (nConnWall))
-	gameData.Wall (nConnWall)->state = WALL_DOOR_CLOSING;
+	WALL (nConnWall)->state = WALL_DOOR_CLOSING;
 doorP->nFrontWall [0] = WallNum (nSide);
 doorP->nBackWall [0] = nConnWall;
 Assert(SEG_IDX (this) != -1);
@@ -866,7 +866,7 @@ if (wallP->nType == WALL_OPEN || wallP->state == WALL_DOOR_CLOAKING)		//already 
 	int16_t				nConnWall;
 
 
-connSegP = gameData.Segment (m_children [nSide]);
+connSegP = SEGMENT (m_children [nSide]);
 nConnSide = ConnectedSide (connSegP);
 
 if (!(cloakWallP = wallP->StartCloak ())) {
@@ -878,7 +878,7 @@ if (!(cloakWallP = wallP->StartCloak ())) {
 
 nConnWall = connSegP->WallNum (nConnSide);
 if (IS_WALL (nConnWall))
-	gameData.Wall (nConnWall)->state = WALL_DOOR_CLOAKING;
+	WALL (nConnWall)->state = WALL_DOOR_CLOAKING;
 cloakWallP->nFrontWall = WallNum (nSide);
 cloakWallP->nBackWall = nConnWall;
 Assert(SEG_IDX (this) != -1);
@@ -911,7 +911,7 @@ if (wallP->nType == WALL_CLOSED || wallP->state == WALL_DOOR_DECLOAKING)		//alre
 	CSegment			*connSegP;
 	int32_t				i;
 
-connSegP = gameData.Segment (m_children [nSide]);
+connSegP = SEGMENT (m_children [nSide]);
 nConnSide = ConnectedSide (connSegP);
 if (!(cloakWallP = wallP->StartDecloak ())) {
 	wallP->state = WALL_CLOSED;
@@ -976,7 +976,7 @@ if (m_children [nSide] < 0) {
 	nConnSide = -1;
 	}
 else {
-	connSegP = gameData.Segment (m_children [nSide]);
+	connSegP = SEGMENT (m_children [nSide]);
 	nConnSide = ConnectedSide (connSegP);
 	if ((wallP = connSegP->Wall (nConnSide)))
 		wallP->flags &= ~WALL_ILLUSION_OFF;
@@ -1005,7 +1005,7 @@ if (m_children [nSide] < 0) {
 	connSegP = NULL;
 	}
 else {
-	connSegP = gameData.Segment (m_children [nSide]);
+	connSegP = SEGMENT (m_children [nSide]);
 	if ((wallP = connSegP->Wall (nSide))) {
 		wallP->flags |= WALL_ILLUSION_OFF;
 		KillStuckObjects (wallP - WALLS);
@@ -1126,7 +1126,7 @@ int32_t CSegment::BlowupTexture (int32_t nSide, CFixVector& vHit, CObject* blowe
 	tEffectInfo*	effectInfoP = NULL;
 	CWall*			wallP = Wall (nSide);
 	CTrigger*		trigP;
-	CObject*			parentP = (!blowerP || (blowerP->cType.laserInfo.parent.nObject < 0)) ? NULL : gameData.Object (blowerP->cType.laserInfo.parent.nObject);
+	CObject*			parentP = (!blowerP || (blowerP->cType.laserInfo.parent.nObject < 0)) ? NULL : OBJECT (blowerP->cType.laserInfo.parent.nObject);
 	//	If this CWall has a CTrigger and the blowerP-upper is not the player or the buddy, abort!
 
 if (parentP) {
@@ -1268,14 +1268,14 @@ CSide* CSegment::OppositeSide (int32_t nSide)
 {
 if (m_children [nSide] < 0)
 	return NULL;
-return gameData.Segment (m_children [nSide])->AdjacentSide (Index ());
+return SEGMENT (m_children [nSide])->AdjacentSide (Index ());
 }
 
 //------------------------------------------------------------------------------
 
 CSegment* CSegFace::Segment (void) 
 { 
-return gameData.Segment (m_info.nSegment); 
+return SEGMENT (m_info.nSegment); 
 }
 
 //------------------------------------------------------------------------------
@@ -1305,7 +1305,7 @@ PLANE_DIST_TOLERANCE = (xPlaneDistTolerance < 0) ? DEFAULT_PLANE_DIST_TOLERANCE 
 gameOpts->render.nMathFormat = 0;
 RENDERPOINTS.Clear ();
 for (int32_t i = 0; i <= gameData.segs.nLastSegment; i++)
-	gameData.Segment (i)->Setup ();
+	SEGMENT (i)->Setup ();
 ComputeVertexNormals ();
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
 }

@@ -162,14 +162,14 @@ if (player.Connected (CONNECT_PLAYING)) {
 	KillPlayerSmoke (nPlayer);
 	gameData.multiplayer.weaponStates [nPlayer].firing [0].nDuration =
 	gameData.multiplayer.weaponStates [nPlayer].firing [1].nDuration = 0;
-	KillPlayerBullets (gameData.Object (player.nObject));
-	KillGatlingSmoke (gameData.Object (player.nObject));
+	KillPlayerBullets (OBJECT (player.nObject));
+	KillGatlingSmoke (OBJECT (player.nObject));
 	for (int16_t i = 0; i < networkData.nJoining; i++)
 		if (networkData.syncInfo [i].nPlayer == nPlayer) {
 			DeleteSyncData (i);
 			NetworkResetSyncStates ();
 			}
-	// gameData.Object (player.nObject)->CreateAppearanceEffect ();
+	// OBJECT (player.nObject)->CreateAppearanceEffect ();
 	MultiMakePlayerGhost (nPlayer);
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiDisconnect (nPlayer);
@@ -226,10 +226,10 @@ if (gameOpts->multi.bNoRankings)
 else   
    HUDInitMessage ("%s'%s' %s\n", pszRankStrings [their->player.rank], their->player.callsign, TXT_JOINING);
 MultiMakeGhostPlayer (nPlayer);
-MovePlayerToSpawnPos (GetRandomPlayerPosition (nPlayer), gameData.Object (PLAYER (nPlayer).nObject));
+MovePlayerToSpawnPos (GetRandomPlayerPosition (nPlayer), OBJECT (PLAYER (nPlayer).nObject));
 MultiSendScore ();
 MultiSortKillList ();
-// gameData.Object (nObject)->CreateAppearanceEffect ();
+// OBJECT (nObject)->CreateAppearanceEffect ();
 }
 
 //------------------------------------------------------------------------------

@@ -131,7 +131,7 @@ if (objP) {
 else {
 	m_data.objP = &m_data.obj;
 	if (bTeleport) {
-		CFixVector n = *gameData.Segment (srcSeg)->m_sides [srcSide].m_normals;
+		CFixVector n = *SEGMENT (srcSeg)->m_sides [srcSide].m_normals;
 		/*
 		n.v.coord.x = -n.v.coord.x;
 		n.v.coord.y = -n.v.coord.y;
@@ -140,12 +140,12 @@ else {
 		a = n.ToAnglesVec ();
 		}
 	else
-		a = gameData.Segment (srcSeg)->m_sides [srcSide].m_normals [0].ToAnglesVec ();
+		a = SEGMENT (srcSeg)->m_sides [srcSide].m_normals [0].ToAnglesVec ();
 	m_data.obj.info.position.mOrient = CFixMatrix::Create(a);
 	if (bTeleport)
-		m_data.obj.info.position.vPos = gameData.Segment (srcSeg)->Center ();
+		m_data.obj.info.position.vPos = SEGMENT (srcSeg)->Center ();
 	else
-		m_data.obj.info.position.vPos = gameData.Segment (srcSeg)->SideCenter (srcSide);
+		m_data.obj.info.position.vPos = SEGMENT (srcSeg)->SideCenter (srcSide);
 	m_data.obj.info.nSegment = srcSeg;
 	m_data.bMirror = (tgtSeg == srcSeg) && (tgtSide == srcSide);
 	}
@@ -558,8 +558,8 @@ if (gameData.trigs.m_nTriggers) {
 		t = wallP->nTrigger;
 		if (t >= TRIGGERS.Length ())
 			continue;
-		triggerP = TRIGGERS + t;
-		if (triggerP->m_info.nType == TT_CAMERA) {
+		triggerP = TRIGGER (t);
+		if (triggerP && (triggerP->m_info.nType == TT_CAMERA)) {
 			for (j = 0; j < triggerP->m_nLinks; j++)
 				if (m_cameras.Grow () &&
 					 m_cameras.Top ()->Create (m_cameras.ToS () - 1, (int16_t) wallP->nSegment, (int16_t) wallP->nSide, triggerP->m_segments [j], triggerP->m_sides [j], NULL, 0, 0))
@@ -579,7 +579,8 @@ if (gameData.trigs.m_nObjTriggers) {
 	FORALL_OBJS (objP) {
 		if ((j = gameData.trigs.objTriggerRefs [objP->Index ()].nFirst) >= int32_t (OBJTRIGGERS.Length ()))
 			continue;
-		triggerP = OBJTRIGGERS + j;
+		if (!(triggerP = OBJTRIGGER (j)))
+			continue;
 		j = gameData.trigs.objTriggerRefs [objP->Index ()].nCount;
 #if DBG
 		if (j >= 0)

@@ -63,7 +63,7 @@ extern int32_t MultiPowerupIsAllowed (int32_t);
 int32_t MultiCanControlRobot (int32_t nObject, int32_t agitation)
 {
 	int32_t nRemOwner;
-	CObject *objP = gameData.Object (nObject);
+	CObject *objP = OBJECT (nObject);
 
 	// Claim robot if necessary.
 if (LOCALPLAYER.m_bExploded)
@@ -115,7 +115,7 @@ if (gameData.time.xGame > lastcheck + I2X (1)) {
 	for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 		if ((gameData.multigame.robots.controlled [i] != -1) && 
 			 (gameData.multigame.robots.lastSendTime [i] + ROBOT_TIMEOUT < gameData.time.xGame)) {
-			nRemOwner = gameData.Object (gameData.multigame.robots.controlled [i])->cType.aiInfo.REMOTE_OWNER;
+			nRemOwner = OBJECT (gameData.multigame.robots.controlled [i])->cType.aiInfo.REMOTE_OWNER;
 			if (nRemOwner != N_LOCALPLAYER) {	
 				gameData.multigame.robots.controlled [i] = -1;
 				Int3 (); // Non-terminal but Rob is interesting, step over please...
@@ -175,14 +175,14 @@ int32_t MultiAddControlledRobot (int32_t nObject, int32_t agitation)
 	int32_t lowest_agitated_bot = -1;
 	int32_t first_freeRobot = -1;
 
-if (ROBOTINFO (gameData.Object (nObject)->info.nId).bossFlag) // this is a boss, so make sure he gets a slot
+if (ROBOTINFO (OBJECT (nObject)->info.nId).bossFlag) // this is a boss, so make sure he gets a slot
 	agitation = (agitation * 3) + N_LOCALPLAYER;  
-if (gameData.Object (nObject)->cType.aiInfo.REMOTE_SLOT_NUM > 0) {
-	gameData.Object (nObject)->cType.aiInfo.REMOTE_SLOT_NUM -= 1;
+if (OBJECT (nObject)->cType.aiInfo.REMOTE_SLOT_NUM > 0) {
+	OBJECT (nObject)->cType.aiInfo.REMOTE_SLOT_NUM -= 1;
 	return 0;
 	}
 for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
-	if ((gameData.multigame.robots.controlled [i] == -1) || (gameData.Object (gameData.multigame.robots.controlled [i])->info.nType != OBJ_ROBOT)) {
+	if ((gameData.multigame.robots.controlled [i] == -1) || (OBJECT (gameData.multigame.robots.controlled [i])->info.nType != OBJ_ROBOT)) {
 		first_freeRobot = i;
 		break;
 		}
@@ -213,8 +213,8 @@ else
 MultiSendClaimRobot (nObject);
 gameData.multigame.robots.controlled [i] = nObject;
 gameData.multigame.robots.agitation [i] = agitation;
-gameData.Object (nObject)->cType.aiInfo.REMOTE_OWNER = N_LOCALPLAYER;
-gameData.Object (nObject)->cType.aiInfo.REMOTE_SLOT_NUM = i;
+OBJECT (nObject)->cType.aiInfo.REMOTE_OWNER = N_LOCALPLAYER;
+OBJECT (nObject)->cType.aiInfo.REMOTE_SLOT_NUM = i;
 gameData.multigame.robots.controlledTime [i] = gameData.time.xGame;
 gameData.multigame.robots.lastSendTime [i] = gameData.multigame.robots.lastMsgTime [i] = gameData.time.xGame;
 return 1;
@@ -229,7 +229,7 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
 	return;
 for (int32_t i = 0; i < MAX_ROBOTS_CONTROLLED; i++)
 	if (gameData.multigame.robots.controlled [i] == nObject) {
-		CObject* objP = gameData.Object (nObject);
+		CObject* objP = OBJECT (nObject);
 		if (objP) {
 			if (objP->cType.aiInfo.REMOTE_SLOT_NUM != i) {
 				Int3 ();  // can't release this bot!
@@ -252,7 +252,7 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 (); // See rob
 	return;
 	}
-if (gameData.Object (nObject)->info.nType != OBJ_ROBOT) {
+if (OBJECT (nObject)->info.nType != OBJ_ROBOT) {
 	Int3 (); // See rob
 	return;
 	}
@@ -277,7 +277,7 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 (); // See rob
 	return;
 	}
-if (gameData.Object (nObject)->info.nType != OBJ_ROBOT) {
+if (OBJECT (nObject)->info.nType != OBJ_ROBOT) {
 	Int3 (); // See rob
 	return;
 	}
@@ -342,7 +342,7 @@ s = GetRemoteObjNum (nObject, reinterpret_cast<int8_t&> (gameData.multigame.msg.
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, s);
 bufP += 3;
 #if ! (defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-CreateShortPos (reinterpret_cast<tShortPos*> (gameData.multigame.msg.buf + bufP), gameData.Object (nObject), 0);	
+CreateShortPos (reinterpret_cast<tShortPos*> (gameData.multigame.msg.buf + bufP), OBJECT (nObject), 0);	
 bufP += sizeof (tShortPos);
 #else
 CreateShortPos (&sp, OBJECTS+nObject, 1);
@@ -368,13 +368,13 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 (); // See rob
 	return;
 	}
-if (gameData.Object (nObject)->info.nType != OBJ_ROBOT) {
+if (OBJECT (nObject)->info.nType != OBJ_ROBOT) {
 	Int3 (); // See rob
 	return;
 	}
-if (gameData.Object (nObject)->cType.aiInfo.REMOTE_OWNER != N_LOCALPLAYER)
+if (OBJECT (nObject)->cType.aiInfo.REMOTE_OWNER != N_LOCALPLAYER)
 	return;
-i = gameData.Object (nObject)->cType.aiInfo.REMOTE_SLOT_NUM;
+i = OBJECT (nObject)->cType.aiInfo.REMOTE_SLOT_NUM;
 gameData.multigame.robots.lastSendTime [i] = gameData.time.xGame;
 gameData.multigame.robots.sendPending [i] = 1+bForce;
 if (bForce & IsNetworkGame)
@@ -411,8 +411,8 @@ vSwapped.dir.coord.z = (fix) INTEL_INT ((int32_t) (*vFire).dir.coord.z);
 memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, sizeof (CFixVector)); 
 bufP += sizeof (CFixVector);
 #endif
-if (gameData.Object (nObject)->cType.aiInfo.REMOTE_OWNER == N_LOCALPLAYER) {
-	int32_t slot = gameData.Object (nObject)->cType.aiInfo.REMOTE_SLOT_NUM;
+if (OBJECT (nObject)->cType.aiInfo.REMOTE_OWNER == N_LOCALPLAYER) {
+	int32_t slot = OBJECT (nObject)->cType.aiInfo.REMOTE_SLOT_NUM;
 	if ((slot < 0) || (slot >= MAX_ROBOTS_CONTROLLED))
 		return;
 	if (gameData.multigame.robots.fired [slot] != 0)
@@ -487,7 +487,7 @@ gameData.multigame.msg.buf [bufP++] = (int8_t)secondary;  // More info for what 
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, nObject);                  
 bufP += 2; // Objnum of CObject created by gate-in action
 if (action == 3) {
-	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.Object (nObject)->info.nSegment); 
+	PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, OBJECT (nObject)->info.nSegment); 
 	bufP += 2; // Segment number CObject created in (for gate only)
 	}
 else 
@@ -538,7 +538,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 
 // successively send all robot powerups just created (their count is in gameData.multigame.create.nCount)
 while (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS)
-	gameData.Object (gameData.multigame.create.nObjNums [--gameData.multigame.create.nCount])->Die ();
+	OBJECT (gameData.multigame.create.nObjNums [--gameData.multigame.create.nCount])->Die ();
 gameData.multigame.msg.buf [hBufP] = (uint8_t) delObjP->info.contains.nCount;
 
 int32_t i;
@@ -569,7 +569,7 @@ int16_t nRobot = GetLocalObjNum (nRemoteBot, (int8_t)buf [bufP]);
 if ((nRobot > gameData.objs.nLastObject [0]) || (nRobot < 0))
 	return;
 
-CObject* objP = gameData.Object (nRobot);
+CObject* objP = OBJECT (nRobot);
 if (objP->info.nType != OBJ_ROBOT)
 	return;
 if (objP->cType.aiInfo.REMOTE_OWNER != -1)
@@ -597,7 +597,7 @@ int16_t nRobot = GetLocalObjNum (nRemoteBot, (int8_t)buf [bufP]);
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
 	return;
 
-CObject* objP = gameData.Object (nRobot);
+CObject* objP = OBJECT (nRobot);
 if (objP->info.nType != OBJ_ROBOT)
 	return;
 if (objP->cType.aiInfo.REMOTE_OWNER != nPlayer)
@@ -624,7 +624,7 @@ nRobot = GetLocalObjNum (nRemoteBot, (int8_t)buf [bufP+2]);
 bufP += 3;
 if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
 	return;
-CObject* objP = gameData.Object (nRobot);
+CObject* objP = OBJECT (nRobot);
 if ((objP->info.nType != OBJ_ROBOT) || 
 	 (objP->info.nFlags & OF_EXPLODING)) 
 	return;
@@ -664,7 +664,7 @@ void MultiDoRobotFire (uint8_t* buf)
 
 nRemoteBot = GET_INTEL_SHORT (buf + bufP);
 nRobot = GetLocalObjNum (nRemoteBot, (int8_t)buf [bufP+2]); 
-CObject* objP = gameData.Object (nRobot);
+CObject* objP = OBJECT (nRobot);
 bufP += 3;
 nGun = (int8_t)buf [bufP++];                                      
 memcpy (&vFire, buf+bufP, sizeof (CFixVector));
@@ -733,7 +733,7 @@ return 1;
 
 int32_t MultiExplodeRobot (int32_t nRobot, int32_t nKiller, char bIsThief)
 {
-CObject* objP = gameData.Object (nRobot);
+CObject* objP = OBJECT (nRobot);
 if (!objP)
 	return 0;
 if (objP->info.nType != OBJ_ROBOT) // Object is robotP?
@@ -767,7 +767,7 @@ if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
 	return;
 if (MultiExplodeRobot (nRobot, nKiller, buf [bufP])) {
 	if (nKiller == LOCALPLAYER.nObject)
-		cockpit->AddPointsToScore (ROBOTINFO (gameData.Object (nRobot)->info.nId).scoreValue);
+		cockpit->AddPointsToScore (ROBOTINFO (OBJECT (nRobot)->info.nId).scoreValue);
 	}
 }
 
@@ -797,20 +797,20 @@ if ((nPlayer < 0) || (nRemoteObj < 0) || (nProducer < 0) || (nProducer >= gameDa
 	}
 robotGenP = gameData.producers.producers + nProducer;
 // Play effect and sound
-vObjPos = gameData.Segment (robotGenP->nSegment)->Center ();
+vObjPos = SEGMENT (robotGenP->nSegment)->Center ();
 objP = CreateExplosion ((int16_t) robotGenP->nSegment, vObjPos, I2X (10), ANIM_MORPHING_ROBOT);
 if (objP)
-	ExtractOrientFromSegment (&objP->info.position.mOrient, gameData.Segment (robotGenP->nSegment));
+	ExtractOrientFromSegment (&objP->info.position.mOrient, SEGMENT (robotGenP->nSegment));
 if (gameData.effects.animations [0][ANIM_MORPHING_ROBOT].nSound > -1)
 	audio.CreateSegmentSound (gameData.effects.animations [0][ANIM_MORPHING_ROBOT].nSound, (int16_t) robotGenP->nSegment, 0, vObjPos, 0, I2X (1));
 // Set robot center flags, in case we become the master for the next one
 robotGenP->bFlag = 0;
 robotGenP->xCapacity -= gameData.producers.xEnergyToCreateOneRobot;
 robotGenP->xTimer = 0;
-if (! (objP = CreateMorphRobot (gameData.Segment (robotGenP->nSegment), &vObjPos, nType)))
+if (! (objP = CreateMorphRobot (SEGMENT (robotGenP->nSegment), &vObjPos, nType)))
 	return; // Cannot create CObject!
 objP->info.nCreator = ((int16_t) (robotGenP - gameData.producers.producers.Buffer ())) | 0x80;
-//	ExtractOrientFromSegment (&objP->info.position.mOrient, &gameData.Segment (robotGenP->nSegment));
+//	ExtractOrientFromSegment (&objP->info.position.mOrient, &SEGMENT (robotGenP->nSegment));
 direction = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
 objP->info.position.mOrient = CFixMatrix::CreateFU(direction, objP->info.position.mOrient.m.dir.u);
 //objP->info.position.mOrient = CFixMatrix::CreateFU(direction, &objP->info.position.mOrient.m.v.u, NULL);
@@ -849,7 +849,7 @@ if ((nBossObj < 0) || (nBossObj > gameData.objs.nLastObject [0])) {
 nBossIdx = gameData.bosses.Find (nBossObj);
 if (nBossIdx < 0)
 	return;
-bossObjP = gameData.Object (nBossObj);
+bossObjP = OBJECT (nBossObj);
 if ((bossObjP->info.nType != OBJ_ROBOT) || !(ROBOTINFO (bossObjP->info.nId).bossFlag)) {
 	Int3 (); // Got boss actions for a robot who's not a boss?
 	return;
@@ -869,8 +869,8 @@ switch (action)  {
 			Int3 ();  // See Rob
 			return;
 			}
-		bossObjP->info.position.vPos = gameData.Segment (nTeleportSeg)->Center ();
-		gameData.Object (nBossObj)->RelinkToSeg (nTeleportSeg);
+		bossObjP->info.position.vPos = SEGMENT (nTeleportSeg)->Center ();
+		OBJECT (nBossObj)->RelinkToSeg (nTeleportSeg);
 		gameData.bosses [nBossIdx].m_nLastTeleportTime = gameData.time.xGame;
 		vBossDir = PLAYEROBJECT (nPlayer)->info.position.vPos - bossObjP->info.position.vPos;
 		bossObjP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
@@ -967,13 +967,13 @@ if (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS)
 	BRP;
 #endif
 while (gameData.multigame.create.nCount > MAX_ROBOT_POWERUPS) 
-	gameData.Object (gameData.multigame.create.nObjNums [--gameData.multigame.create.nCount])->Die ();
+	OBJECT (gameData.multigame.create.nObjNums [--gameData.multigame.create.nCount])->Die ();
 for (i = 0; i < gameData.multigame.create.nCount; i++) {
 	s = GET_INTEL_SHORT (buf + bufP);
 	if (s != -1)
 		SetObjNumMapping ((int16_t)gameData.multigame.create.nObjNums [i], s, nPlayer);
 	else
-		gameData.Object (gameData.multigame.create.nObjNums [i])->Die (); // Delete OBJECTS other guy didn't create one of
+		OBJECT (gameData.multigame.create.nObjNums [i])->Die (); // Delete OBJECTS other guy didn't create one of
 	bufP += 2;
 	}
 }
@@ -991,7 +991,7 @@ if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
 	Int3 ();  // See rob
 	return;
 	}
-delObjP = gameData.Object (nObject);
+delObjP = OBJECT (nObject);
 if (delObjP->info.nType != OBJ_ROBOT) {
 	Int3 (); // dropping powerups for non-robot, Rob's fault
 	return;

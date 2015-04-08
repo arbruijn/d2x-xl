@@ -71,7 +71,7 @@ return AIM_IDLING;
 //	initial_mode == -1 means leave mode unchanged.
 void InitAIObject (int16_t nObject, int16_t behavior, int16_t nHideSegment)
 {
-	CObject		*objP = gameData.Object (nObject);
+	CObject		*objP = OBJECT (nObject);
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 	tAILocalInfo		*ailP = gameData.ai.localInfo + nObject;
 	tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);

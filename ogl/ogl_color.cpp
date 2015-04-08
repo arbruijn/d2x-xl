@@ -425,7 +425,7 @@ for (j = 0; (i > 0) && (nLights > 0); activeLightsP++, i--) {
 		continue;
 
 	if (!gameStates.render.bHaveLightmaps && (bSelf = lightP->info.bAmbient)) {
-		if ((lightP->Segment () >= 0) && !gameData.Segment (lightP->Segment ())->HasVertex ((uint8_t) lightP->Side (), nVertex))
+		if ((lightP->Segment () >= 0) && !SEGMENT (lightP->Segment ())->HasVertex ((uint8_t) lightP->Side (), nVertex))
 			continue;
 #if DBG
 		if ((nDbgVertex >= 0) && (nVertex == nDbgVertex))

@@ -304,8 +304,8 @@ if (m_function == SEGMENT_FUNC_ROBOTMAKER)
 	LoadBotGenTextures ();
 for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) 
 	m_sides [nSide].LoadTextures ();
-for (nObject = m_objects; nObject != -1; nObject = gameData.Object (nObject)->info.nNextInSeg)
-	gameData.Object (nObject)->LoadTextures ();
+for (nObject = m_objects; nObject != -1; nObject = OBJECT (nObject)->info.nNextInSeg)
+	OBJECT (nObject)->LoadTextures ();
 }
 
 //------------------------------------------------------------------------------
@@ -324,7 +324,7 @@ if (nClip>= 0) {
 void LoadWallTextures (void)
 {
 for (int32_t i = 0; i < gameData.walls.nWalls; i++)
-	gameData.Wall (i)->LoadTextures ();
+	WALL (i)->LoadTextures ();
 }
 
 //------------------------------------------------------------------------------
@@ -332,7 +332,7 @@ for (int32_t i = 0; i < gameData.walls.nWalls; i++)
 void LoadSegmentTextures (void)
 {
 for (int32_t i = 0; i < gameData.segs.nSegments; i++)
-	gameData.Segment (i)->LoadTextures ();
+	SEGMENT (i)->LoadTextures ();
 }
 
 //------------------------------------------------------------------------------
@@ -442,12 +442,12 @@ if (nTouchSeg < gameData.segs.nSegments) {
 		if (nTouchSeg == nDbgSeg)
 			BRP;
 #endif
-		gameData.Segment (nTouchSeg++)->LoadTextures ();
+		SEGMENT (nTouchSeg++)->LoadTextures ();
 		}
 	}
 else if (nTouchWall < gameData.walls.nWalls) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchWall < gameData.walls.nWalls); i++)
-		gameData.Wall (nTouchWall++)->LoadTextures ();
+		WALL (nTouchWall++)->LoadTextures ();
 	}
 else if (nTouchPowerup1 < gameData.objs.pwrUp.nTypes) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchPowerup1 < gameData.objs.pwrUp.nTypes); i++, nTouchPowerup1++)

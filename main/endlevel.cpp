@@ -124,7 +124,7 @@ return (abs (delta0 = a - b) < abs (delta1 = b - a)) ? delta0 : delta1;
 //return though which CSide of seg0 is seg1
 int32_t ELFindConnectedSide (int32_t seg0, int32_t seg1)
 {
-	CSegment *segP = gameData.Segment (seg0);
+	CSegment *segP = SEGMENT (seg0);
 	
 int32_t i = SEGMENT_SIDE_COUNT;
 for (; i; )
@@ -271,13 +271,13 @@ void StartRenderedEndLevelSequence (void)
 nOldSeg = gameData.objs.consoleP->info.nSegment;
 nExitSide = FindExitSide (gameData.objs.consoleP);
 exitFlightObjects [0].entrySide = oppSideTable [nExitSide];
-nSegment = gameData.Segment (nOldSeg)->m_children [nExitSide];
+nSegment = SEGMENT (nOldSeg)->m_children [nExitSide];
 nTunnelLength = 0;
 do {
 	nEntrySide = ELFindConnectedSide (nSegment, nOldSeg);
 	nExitSide = oppSideTable [nEntrySide];
 	nOldSeg = nSegment;
-	nSegment = gameData.Segment (nSegment)->m_children [nExitSide];
+	nSegment = SEGMENT (nSegment)->m_children [nExitSide];
 	nTunnelLength++;
 	} while (nSegment >= 0);
 if (nSegment != -2) {
@@ -288,13 +288,13 @@ nLastSeg = nOldSeg;
 //now pick transition nSegment 1/3 of the way in
 nOldSeg = gameData.objs.consoleP->info.nSegment;
 nExitSide = FindExitSide (gameData.objs.consoleP);
-nSegment = gameData.Segment (nOldSeg)->m_children [nExitSide];
+nSegment = SEGMENT (nOldSeg)->m_children [nExitSide];
 i = nTunnelLength / 3;
 while (i--) {
 	nEntrySide = ELFindConnectedSide (nSegment, nOldSeg);
 	nExitSide = oppSideTable [nEntrySide];
 	nOldSeg = nSegment;
-	nSegment = gameData.Segment (nSegment)->m_children [nExitSide];
+	nSegment = SEGMENT (nSegment)->m_children [nExitSide];
 	}
 gameData.endLevel.exit.nTransitSegNum = nSegment;
 CGenericCockpit::Save ();
@@ -534,7 +534,7 @@ switch (gameStates.app.bEndLevelSequence) {
 					StopEndLevelSequence ();
 					return;
 					}
-				gameData.objs.viewerP = gameData.objs.endLevelCamera = gameData.Object (nObject);
+				gameData.objs.viewerP = gameData.objs.endLevelCamera = OBJECT (nObject);
 				cockpit->Activate (CM_LETTERBOX);
 				exitFlightObjects [1] = exitFlightObjects [0];
 				exitFlightObjects [1].objP = gameData.objs.endLevelCamera;
@@ -699,7 +699,7 @@ int32_t FindExitSide (CObject *objP)
 	CFixVector	vPreferred, vSegCenter, vSide;
 	fix			d, xBestVal = -I2X (2);
 	int32_t			nBestSide, i;
-	CSegment		*segP = gameData.Segment (objP->info.nSegment);
+	CSegment		*segP = SEGMENT (objP->info.nSegment);
 
 //find exit CSide
 CFixVector::NormalizedDir (vPreferred, objP->info.position.vPos, objP->info.vLastPos);
@@ -937,7 +937,7 @@ if (objP->info.nSegment < 0)
 if (bStart || (exitFlightData.pathDot <= 0)) {
 	if (objP->info.nSegment < 0)
 		return 0;
-	CSegment*		segP = gameData.Segment (objP->info.nSegment);
+	CSegment*		segP = SEGMENT (objP->info.nSegment);
 	fix				xStepSize, xSegTime;
 	int16_t				nUpSide = 0;	//what sides we entry and leave through
 	CFixVector		vDest;			//where we are heading (center of exitFlightData.exitSide)
@@ -956,7 +956,7 @@ if (bStart || (exitFlightData.pathDot <= 0)) {
 			}
 		exitFlightData.entrySide = ELFindConnectedSide (nNextSeg, objP->info.nSegment);
 		objP->RelinkToSeg (nNextSeg);
-		segP = gameData.Segment (nNextSeg);
+		segP = SEGMENT (nNextSeg);
 		}
 	exitFlightData.exitSide = oppSideTable [exitFlightData.entrySide];
 	fix dLargest = -I2X (1);
@@ -1008,7 +1008,7 @@ if (bStart || (exitFlightData.pathDot <= 0)) {
 	int16_t nNextSeg = segP->m_children [exitFlightData.exitSide];
 	if (nNextSeg < 0)
 		return 0;
-	exitFlightData.vHeading = gameData.Segment (nNextSeg)->Center ();
+	exitFlightData.vHeading = SEGMENT (nNextSeg)->Center ();
 	exitFlightData.vHeading -= segP->Center ();
 	mDest = CFixMatrix::CreateFU (exitFlightData.vHeading, segP->m_sides [nUpSide].m_normals [2]);
 	aDest = mDest.ComputeAngles ();
@@ -1255,7 +1255,7 @@ for (nSegment = 0, gameData.endLevel.exit.nSegNum = -1;
 	  (gameData.endLevel.exit.nSegNum == -1) && (nSegment <= gameData.segs.nLastSegment);
 	  nSegment++)
 	for (nSide = 0; nSide < 6; nSide++)
-		if (gameData.Segment (nSegment)->m_children [nSide] == -2) {
+		if (SEGMENT (nSegment)->m_children [nSide] == -2) {
 			gameData.endLevel.exit.nSegNum = nSegment;
 			nExitSide = nSide;
 			break;
@@ -1268,9 +1268,9 @@ if (gameData.endLevel.exit.nSegNum == -1) {
 	gameStates.app.bEndLevelDataLoaded = 0; // won't be able to play endlevel sequence
 	return;
 	}
-gameData.endLevel.exit.vMineExit = gameData.Segment (gameData.endLevel.exit.nSegNum)->Center ();
-ExtractOrientFromSegment (&gameData.endLevel.exit.mOrient, gameData.Segment (gameData.endLevel.exit.nSegNum));
-gameData.endLevel.exit.vSideExit = gameData.Segment (gameData.endLevel.exit.nSegNum)->SideCenter (nExitSide);
+gameData.endLevel.exit.vMineExit = SEGMENT (gameData.endLevel.exit.nSegNum)->Center ();
+ExtractOrientFromSegment (&gameData.endLevel.exit.mOrient, SEGMENT (gameData.endLevel.exit.nSegNum));
+gameData.endLevel.exit.vSideExit = SEGMENT (gameData.endLevel.exit.nSegNum)->SideCenter (nExitSide);
 gameData.endLevel.exit.vGroundExit = gameData.endLevel.exit.vMineExit + gameData.endLevel.exit.mOrient.m.dir.u * (-I2X (20));
 //compute orientation of surface
 {
@@ -1430,7 +1430,7 @@ return (abs (delta0 = a - b) < abs (delta1 = b - a)) ? delta0 : delta1;
 //return though which CSide of seg0 is seg1
 int32_t ELFindConnectedSide (int32_t nSegment, int32_t nChildSeg)
 {
-CSegment *segP = gameData.Segment (nSegment);
+CSegment *segP = SEGMENT (nSegment);
 
 for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++)
 	if (segP->m_children [i] == nChildSeg)
@@ -1576,13 +1576,13 @@ void StartRenderedEndLevelSequence (void)
 //count segments in exit tunnel
 nOldSeg = gameData.objs.consoleP->info.nSegment;
 nExitSide = FindExitSide (gameData.objs.consoleP);
-nSegment = gameData.Segment (nOldSeg)->m_children [nExitSide];
+nSegment = SEGMENT (nOldSeg)->m_children [nExitSide];
 nTunnelLength = 0;
 do {
 	nEntrySide = ELFindConnectedSide (nSegment, nOldSeg);
 	nExitSide = oppSideTable [nEntrySide];
 	nOldSeg = nSegment;
-	nSegment = gameData.Segment (nSegment)->m_children [nExitSide];
+	nSegment = SEGMENT (nSegment)->m_children [nExitSide];
 	nTunnelLength++;
 	} while (nSegment >= 0);
 if (nSegment != -2) {
@@ -1592,13 +1592,13 @@ if (nSegment != -2) {
 //now pick transition nSegment 1/3 of the way in
 nOldSeg = gameData.objs.consoleP->info.nSegment;
 nExitSide = FindExitSide (gameData.objs.consoleP);
-nSegment = gameData.Segment (nOldSeg)->m_children [nExitSide];
+nSegment = SEGMENT (nOldSeg)->m_children [nExitSide];
 i = nTunnelLength / 3;
 while (i--) {
 	nEntrySide = ELFindConnectedSide (nSegment, nOldSeg);
 	nExitSide = oppSideTable [nEntrySide];
 	nOldSeg = nSegment;
-	nSegment = gameData.Segment (nSegment)->m_children [nExitSide];
+	nSegment = SEGMENT (nSegment)->m_children [nExitSide];
 	}
 gameData.endLevel.exit.nTransitSegNum = nSegment;
 CGenericCockpit::Save ();
@@ -1839,7 +1839,7 @@ switch (gameStates.app.bEndLevelSequence) {
 					StopEndLevelSequence ();
 					return;
 					}
-				gameData.objs.viewerP = gameData.objs.endLevelCamera = gameData.Object (nObject);
+				gameData.objs.viewerP = gameData.objs.endLevelCamera = OBJECT (nObject);
 				cockpit->Activate (CM_LETTERBOX);
 				exitFlightObjects [1] = exitFlightObjects [0];
 				exitFlightObjects [1].objP = gameData.objs.endLevelCamera;
@@ -1998,7 +1998,7 @@ int32_t FindExitSide (CObject *objP)
 	CFixVector	vPreferred, vSegCenter, vSide;
 	fix			d, xBestVal = -I2X (2);
 	int32_t			nBestSide, i;
-	CSegment		*segP = gameData.Segment (objP->info.nSegment);
+	CSegment		*segP = SEGMENT (objP->info.nSegment);
 
 //find exit CSide
 CFixVector::NormalizedDir (vPreferred, objP->info.position.vPos, objP->info.vLastPos);
@@ -2229,7 +2229,7 @@ if (!exitFlightDataP->bStart) {
 	}
 //check new player seg
 if (exitFlightDataP->bStart || (UpdateObjectSeg (objP, false) > 0)) {
-	segP = gameData.Segment (objP->info.nSegment);
+	segP = SEGMENT (objP->info.nSegment);
 	if (exitFlightDataP->bStart || (objP->info.nSegment != nOldPlayerSeg)) {		//moved into new seg
 		CFixVector curcenter, nextcenter;
 		fix xStepSize, xSegTime;
@@ -2291,7 +2291,7 @@ if (exitFlightDataP->bStart || (UpdateObjectSeg (objP, false) > 0)) {
 			xStepSize = CFixVector::Normalize (exitFlightDataP->vStep);
 			exitFlightDataP->vStep *= exitFlightDataP->speed;
 			curcenter = segP->Center ();
-			nextcenter = gameData.Segment (segP->m_children [nExitSide])->Center ();
+			nextcenter = SEGMENT (segP->m_children [nExitSide])->Center ();
 			exitFlightDataP->vHeading = nextcenter - curcenter;
 			mDest = CFixMatrix::CreateFU (exitFlightDataP->vHeading, segP->m_sides [nUpSide].m_normals [0]);
 			aDest = mDest.ComputeAngles ();
@@ -2570,9 +2570,9 @@ if (gameData.endLevel.exit.nSegNum == -1) {
 	return;
 	}
 PrintLog (1, "computing endlevel element orientation\n");
-gameData.endLevel.exit.vMineExit = gameData.Segment (gameData.endLevel.exit.nSegNum)->Center ();
-ExtractOrientFromSegment (&gameData.endLevel.exit.mOrient, gameData.Segment (gameData.endLevel.exit.nSegNum));
-gameData.endLevel.exit.vSideExit = gameData.Segment (gameData.endLevel.exit.nSegNum)->SideCenter (nExitSide);
+gameData.endLevel.exit.vMineExit = SEGMENT (gameData.endLevel.exit.nSegNum)->Center ();
+ExtractOrientFromSegment (&gameData.endLevel.exit.mOrient, SEGMENT (gameData.endLevel.exit.nSegNum));
+gameData.endLevel.exit.vSideExit = SEGMENT (gameData.endLevel.exit.nSegNum)->SideCenter (nExitSide);
 gameData.endLevel.exit.vGroundExit = gameData.endLevel.exit.vMineExit + gameData.endLevel.exit.mOrient.m.dir.u * (-I2X (20));
 //compute orientation of surface
 {

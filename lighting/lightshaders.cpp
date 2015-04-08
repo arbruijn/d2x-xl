@@ -1126,7 +1126,7 @@ for (nLights = 0;
 		continue;
 	if (psl->info.nObject < 1)
 		continue;
-	if (gameData.Object (psl->info.nObject)->info.nType != OBJ_LIGHT)
+	if (OBJECT (psl->info.nObject)->info.nType != OBJ_LIGHT)
 		continue;
 #endif
 #if 0//DBG

@@ -289,8 +289,8 @@ if (!(cameraP || (cameraP = cameraManager.AddShadowMap (nLight, lightP))))
 	return 0;
 
 if (cameraP->HaveBuffer (0))
-	cameraP->Setup (cameraP->Id (), lightP->info.nSegment, lightP->info.nSide, -1, -1, (lightP->info.nObject < 0) ? NULL : gameData.Object (lightP->info.nObject), 0);
-else if (!cameraP->Create (cameraManager.Count () - 1, lightP->info.nSegment, lightP->info.nSide, -1, -1, (lightP->info.nObject < 0) ? NULL : gameData.Object (lightP->info.nObject), 1, 0)) {
+	cameraP->Setup (cameraP->Id (), lightP->info.nSegment, lightP->info.nSide, -1, -1, (lightP->info.nObject < 0) ? NULL : OBJECT (lightP->info.nObject), 0);
+else if (!cameraP->Create (cameraManager.Count () - 1, lightP->info.nSegment, lightP->info.nSide, -1, -1, (lightP->info.nObject < 0) ? NULL : OBJECT (lightP->info.nObject), 1, 0)) {
 	cameraManager.DestroyShadowMap (nLight);
 	return 0;
 	}
@@ -655,7 +655,7 @@ for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
 #endif
 	texCoordP = FACES.texCoord + faceP->m_info.nIndex;
 	ovlTexCoordP = FACES.ovlTexCoord + faceP->m_info.nIndex;
-	uvlP = gameData.Segment (faceP->m_info.nSegment)->m_sides [faceP->m_info.nSide].m_uvls;
+	uvlP = SEGMENT (faceP->m_info.nSegment)->m_sides [faceP->m_info.nSide].m_uvls;
 	nOffset = faceP->m_info.nType == SIDE_IS_TRI_13;
 	if (gameStates.render.bTriangleMesh) {
 		static int16_t nTriVerts [2][6] = {{0,1,2,0,2,3},{0,1,3,1,2,3}};

@@ -143,8 +143,8 @@ int32_t LasersAreRelated (int32_t o1, int32_t o2)
 
 if ((o1 < 0) || (o2 < 0))
 	return 0;
-objP1 = gameData.Object (o1);
-objP2 = gameData.Object (o2);
+objP1 = OBJECT (o1);
+objP2 = OBJECT (o2);
 id1 = objP1->info.nId;
 ct1 = objP1->cType.laserInfo.xCreationTime;
 // See if o2 is the parent of o1
@@ -356,7 +356,7 @@ if (nObject == -1)
 #if 0 // debug stuff
 TrackWeaponObject (nObject, int32_t (nPlayer));
 #endif
-weaponP = gameData.Object (nObject);
+weaponP = OBJECT (nObject);
 if ((nLaserType == GUIDEDMSL_ID) && gameData.multigame.bIsGuided)
 	gameData.objs.SetGuidedMissile (nPlayer, weaponP);
 gameData.multigame.bIsGuided = 0;
@@ -501,11 +501,11 @@ for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= HOMER_FRAMETIME;
 		int32_t nTarget = UpdateHomingTarget (cType.laserInfo.nHomingTarget, dot, nThread);
 		if (nTarget != -1) {
 			if (nTarget == LOCALPLAYER.nObject) {
-				fix xDistToTarget = CFixVector::Dist (info.position.vPos, gameData.Object (nTarget)->info.position.vPos);
+				fix xDistToTarget = CFixVector::Dist (info.position.vPos, OBJECT (nTarget)->info.position.vPos);
 				if ((xDistToTarget < LOCALPLAYER.homingObjectDist) || (LOCALPLAYER.homingObjectDist < 0))
 					LOCALPLAYER.homingObjectDist = xDistToTarget;
 				}
-			vVecToObject = gameData.Object (nTarget)->info.position.vPos - info.position.vPos;
+			vVecToObject = OBJECT (nTarget)->info.position.vPos - info.position.vPos;
 			xDist = CFixVector::Normalize (vVecToObject);
 			vNewVel = mType.physInfo.velocity;
 			speed = CFixVector::Normalize (vNewVel);
@@ -629,7 +629,7 @@ controls.StopSecondaryFire ();
 int32_t LocalPlayerFireGun (void)
 {
 	CPlayerData*	playerP = gameData.multiplayer.players + N_LOCALPLAYER;
-	CObject*			objP = gameData.Object (playerP->nObject);
+	CObject*			objP = OBJECT (playerP->nObject);
 	fix				xEnergyUsed;
 	int32_t			nAmmoUsed, nPrimaryAmmo;
 	int32_t			nWeaponIndex;
@@ -642,7 +642,7 @@ int32_t LocalPlayerFireGun (void)
 
 if (gameStates.app.bPlayerIsDead || OBSERVING)
 	return 0;
-if (gameStates.app.bD2XLevel && (gameData.Segment (objP->info.nSegment)->HasNoDamageProp ()))
+if (gameStates.app.bD2XLevel && (SEGMENT (objP->info.nSegment)->HasNoDamageProp ()))
 	return 0;
 nWeaponIndex = primaryWeaponToWeaponInfo [gameData.weapons.nPrimary];
 xEnergyUsed = WI_energy_usage (nWeaponIndex);
@@ -750,14 +750,14 @@ int32_t CreateHomingWeapon (CObject *objP, int32_t nGoalObj, uint8_t objType, in
 if (nGoalObj == -1)
 	vGoal = CFixVector::Random ();
 else { //	Create a vector towards the goal, then add some noise to it.
-	CFixVector::NormalizedDir (vGoal, gameData.Object (nGoalObj)->info.position.vPos, objP->info.position.vPos);
+	CFixVector::NormalizedDir (vGoal, OBJECT (nGoalObj)->info.position.vPos, objP->info.position.vPos);
 	vRandom = CFixVector::Random ();
 	vGoal += vRandom * (I2X (1)/4);
 	CFixVector::Normalize (vGoal);
 	}
 if (0 > (nObject = CreateNewWeapon (&vGoal, &objP->info.position.vPos, objP->info.nSegment, objP->Index (), objType, bMakeSound)))
 	return -1;
-gameData.Object (nObject)->cType.laserInfo.nHomingTarget = nGoalObj;
+OBJECT (nObject)->cType.laserInfo.nHomingTarget = nGoalObj;
 return nObject;
 }
 
@@ -808,7 +808,7 @@ FORALL_OBJS (curObjP) {
 			continue;
 		if ((parent.nType == OBJ_PLAYER) && (IsCoopGame))
 			continue;
-		if (IsTeamGame && (GetTeam (curObjP->info.nId) == GetTeam (gameData.Object (parent.nObject)->info.nId)))
+		if (IsTeamGame && (GetTeam (curObjP->info.nId) == GetTeam (OBJECT (parent.nObject)->info.nId)))
 			continue;
 		if (PLAYER (curObjP->info.nId).flags & PLAYER_FLAGS_CLOAKED)
 			continue;
@@ -980,7 +980,7 @@ gameData.objs.trackGoals [1] = NULL;
 if ((objP = GuidedInMainView ())) {
 	nObject = objP->FindVisibleHomingTarget (objP->info.position.vPos);
 	gameData.objs.trackGoals [0] =
-	gameData.objs.trackGoals [1] = (nObject < 0) ? NULL : gameData.Object (nObject);
+	gameData.objs.trackGoals [1] = (nObject < 0) ? NULL : OBJECT (nObject);
 	return;
 	}
 if (!AllowedToFireMissile (-1, 1))
@@ -1010,7 +1010,7 @@ for (i = 0; i < j; i++, h = !h) {
 		vGunPos = *viewP * vGunPos;
 		vGunPos += gameData.objs.consoleP->info.position.vPos;
 		nObject = gameData.objs.consoleP->FindVisibleHomingTarget (vGunPos);
-		gameData.objs.trackGoals [i] = (nObject < 0) ? NULL : gameData.Object (nObject);
+		gameData.objs.trackGoals [i] = (nObject < 0) ? NULL : OBJECT (nObject);
 		}
 	}
 }

@@ -752,7 +752,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				}
 			else if ((lightP = lightManager.GetActive (activeLightsP, 0))) {
 #if DBG
-				if ((nDbgSeg >= 0) && (lightP->info.nObject >= 0) && (gameData.Object (lightP->info.nObject)->info.nSegment == nDbgSeg))
+				if ((nDbgSeg >= 0) && (lightP->info.nObject >= 0) && (OBJECT (lightP->info.nObject)->info.nSegment == nDbgSeg))
 					BRP;
 #endif
 				hLight = GL_LIGHT0 + iLight++;

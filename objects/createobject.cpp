@@ -108,7 +108,7 @@ int32_t CObject::Create (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t n
 #if DBG
 if (nType == OBJ_WEAPON) {
 	nType = nType;
-	if ((nCreator >= 0) && (gameData.Object (nCreator)->info.nType == OBJ_ROBOT))
+	if ((nCreator >= 0) && (OBJECT (nCreator)->info.nType == OBJ_ROBOT))
 		nType = nType;
 	if (nId == FLARE_ID)
 		nType = nType;
@@ -209,7 +209,7 @@ int32_t CreateObject (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSeg
 #if DBG
 if (nType == OBJ_WEAPON) {
 	BRP;
-	if ((nCreator >= 0) && (gameData.Object (nCreator)->info.nType == OBJ_ROBOT)) {
+	if ((nCreator >= 0) && (OBJECT (nCreator)->info.nType == OBJ_ROBOT)) {
 		BRP;
 		if ((nDbgSeg >= 0) && (nSegment == nDbgSeg))
 			BRP;
@@ -267,7 +267,7 @@ if (nType == OBJ_DEBRIS) {
 // Find next free object
 if (0 > (nObject = AllocObject ()))
 	return -1;
-objP = gameData.Object (nObject);
+objP = OBJECT (nObject);
 objP->SetKey (nObject);
 objP->SetCreationTime ();
 // Zero out object structure to keep weird bugs from happening in uninitialized fields.
@@ -281,11 +281,11 @@ objP->SetSize (xSize);
 objP->info.nCreator = int8_t (nCreator);
 objP->SetLife (IMMORTAL_TIME);
 
-CObject* creatorP = gameData.Object (nCreator, false);
+CObject* creatorP = OBJECT (nCreator, false);
 
 if (IsMultiGame && IsEntropyGame && (nType == OBJ_POWERUP) && (nId == POW_ENTROPY_VIRUS)) {
 	if (creatorP && (creatorP->info.nType == OBJ_PLAYER))
-		objP->info.nCreator = int8_t (GetTeam (gameData.Object (nCreator)->info.nId) + 1);
+		objP->info.nCreator = int8_t (GetTeam (OBJECT (nCreator)->info.nId) + 1);
 	if (extraGameInfo [1].entropy.nVirusLifespan > 0)
 		objP->SetLife (I2X (extraGameInfo [1].entropy.nVirusLifespan));
 	}
@@ -357,7 +357,7 @@ int32_t CloneObject (CObject *objP)
 
 if (0 > (nObject = AllocObject ()))
 	return -1;
-cloneP = gameData.Object (nObject);
+cloneP = OBJECT (nObject);
 nSignature = cloneP->info.nSignature;
 memcpy (cloneP, objP, sizeof (CObject));
 cloneP->info.nSignature = nSignature;
@@ -710,7 +710,7 @@ int32_t DropMarkerObject (CFixVector& vPos, int16_t nSegment, CFixMatrix& orient
 nObject = CreateObject (OBJ_MARKER, nMarker, -1, nSegment, vPos, orient,
 								gameData.models.polyModels [0][gameData.models.nMarkerModel].Rad (), CT_NONE, MT_NONE, RT_POLYOBJ);
 if (nObject >= 0) {
-	CObject *objP = gameData.Object (nObject);
+	CObject *objP = OBJECT (nObject);
 	objP->rType.polyObjInfo.nModel = gameData.models.nMarkerModel;
 	objP->mType.spinRate = objP->info.position.mOrient.m.dir.u * (I2X (1) / 2);
 	//	MK, 10/16/95: Using lifeleft to make it flash, thus able to trim lightlevel from all OBJECTS.

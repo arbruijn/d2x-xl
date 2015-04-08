@@ -33,12 +33,12 @@ class CArray : public CQuickSort < _T > {
 	template < class _U > 
 	class CArrayData {
 		public:
-			_U		*buffer;
-			_U		null;
+			_U			*buffer;
+			_U			null;
 			uint32_t	length;
 			uint32_t	pos;
 			int32_t	nMode;
-			bool	bWrap;
+			bool		bWrap;
 
 		public:
 			inline uint32_t Length (void) { return length; }

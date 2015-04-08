@@ -1075,7 +1075,7 @@ else
 #endif
 	{
 	if (faceP)
-		return Add (&item, gameData.Segment (faceP->m_info.nSegment)->Side (faceP->m_info.nSide)->Center (), 0, true, -1);
+		return Add (&item, SEGMENT (faceP->m_info.nSegment)->Side (faceP->m_info.nSide)->Center (), 0, true, -1);
 	CFloatVector v = item.vertices [0];
 	for (i = 1; i < item.nVertices; i++) 
 		v += item.vertices [i];

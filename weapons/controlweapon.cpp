@@ -195,7 +195,7 @@ if (gameStates.app.bPlayerIsDead || OBSERVING) {
 	gameData.missiles.nGlobalFiringCount = 0;
 	return 0;
 	}
-if (gameStates.app.bD2XLevel && (gameData.Segment (gameData.objs.consoleP->info.nSegment)->HasNoDamageProp ()))
+if (gameStates.app.bD2XLevel && (SEGMENT (gameData.objs.consoleP->info.nSegment)->HasNoDamageProp ()))
 	return 0;
 //	Make sure enough time has elapsed to fire laser, but if it looks like it will
 //	be a long while before laser can be fired, then there must be some mistake!
@@ -238,7 +238,7 @@ int32_t AllowedToFireMissile (int32_t nPlayer, int32_t bCheckSegment)
 //	Make sure enough time has elapsed to fire missile, but if it looks like it will
 //	be a long while before missile can be fired, then there must be some mistake!
 if (gameStates.app.bD2XLevel && bCheckSegment && (gameData.objs.consoleP->info.nSegment != -1) &&
-    (gameData.Segment (gameData.objs.consoleP->info.nSegment)->HasNoDamageProp ()))
+    (SEGMENT (gameData.objs.consoleP->info.nSegment)->HasNoDamageProp ()))
 	return 0;
 if (!IsMultiGame && ((s = gameStates.gameplay.slowmo [0].fSpeed) > 1)) {
 	t = gameData.missiles.xLastFiredTime + (fix) ((gameData.missiles.xNextFireTime - gameData.missiles.xLastFiredTime) * s);
@@ -841,7 +841,7 @@ if (gameData.missiles.nGlobalFiringCount < 0)
 	gameData.missiles.nGlobalFiringCount = 0;
 //	Drop proximity bombs.
 if (controls [0].dropBombDownCount) {
-	if (gameStates.app.bD2XLevel && (gameData.Segment (gameData.objs.consoleP->info.nSegment)->HasNoDamageProp ()))
+	if (gameStates.app.bD2XLevel && (SEGMENT (gameData.objs.consoleP->info.nSegment)->HasNoDamageProp ()))
 		controls [0].dropBombDownCount = 0;
 	else {
 		int32_t ssw_save = gameData.weapons.nSecondary;

@@ -219,7 +219,7 @@ void ApplyLight (fix xObjIntensity, int32_t nObjSeg, CFixVector *vObjPos, int32_
 	uint8_t			nObjType;
 	CFixVector*		vVertPos;
 	fix				dist, xOrigIntensity = xObjIntensity;
-	CObject*			objP = (nObject < 0) ? NULL : gameData.Object (nObject);
+	CObject*			objP = (nObject < 0) ? NULL : OBJECT (nObject);
 	CPlayerData*	playerP = objP ? gameData.multiplayer.players + objP->info.nId : NULL;
 
 nObjType = objP ? objP->info.nType : OBJ_NONE;
@@ -272,7 +272,7 @@ if (xObjIntensity) {
 	// for pretty dim sources, only process vertices in CObject's own CSegment.
 	//	12/04/95, MK, markers only cast light in own CSegment.
 	if (objP && ((abs (obji_64) <= I2X (8)) || (nObjType == OBJ_MARKER))) {
-		uint16_t *vp = gameData.Segment (nObjSeg)->m_vertices;
+		uint16_t *vp = SEGMENT (nObjSeg)->m_vertices;
 		for (iVertex = 0; iVertex < SEGMENT_VERTEX_COUNT; iVertex++) {
 			nVertex = vp [iVertex];
 			if (nVertex == 0xFFFF)
@@ -396,7 +396,7 @@ fix	objLightXlat [16] =
 
 fix ComputeLightIntensity (int32_t nObject, CFloatVector *colorP, char *pbGotColor)
 {
-	CObject*	objP = gameData.Object (nObject);
+	CObject*	objP = OBJECT (nObject);
 	int32_t		nObjType = objP->info.nType;
    fix		s;
 	static CFloatVector powerupColors [9] = {
@@ -595,7 +595,7 @@ if (!gameStates.render.nLightingMethod) {
 	for (iRenderSeg = 0; iRenderSeg < gameData.render.mine.visibility [0].nSegments; iRenderSeg++) {
 		nSegment = gameData.render.mine.visibility [0].segments [iRenderSeg];
 		if (nSegment != -1) {
-			uint16_t* vp = gameData.Segment (nSegment)->m_vertices;
+			uint16_t* vp = SEGMENT (nSegment)->m_vertices;
 			for (v = 0; v < SEGMENT_VERTEX_COUNT; v++) {
 				nv = vp [v];
 				if (nv == 0xFFFF)
@@ -692,7 +692,7 @@ if (!bKeepDynColoring)
 fix ComputeSegDynamicLight (int32_t nSegment)
 {
 fix sum = 0;
-uint16_t *verts = gameData.Segment (nSegment)->m_vertices;
+uint16_t *verts = SEGMENT (nSegment)->m_vertices;
 for (int32_t i = 8; i; i--, verts++)
 	if (*verts != 0xFFFF)
 		sum += gameData.render.lights.dynamicLight [*verts];
@@ -742,7 +742,7 @@ if (gameStates.render.nLightingMethod && (objP->info.renderType != RT_POLYOBJ)) 
 	}
 else
 #endif
-	light = gameData.Segment (objP->info.nSegment)->m_xAvgSegLight;
+	light = SEGMENT (objP->info.nSegment)->m_xAvgSegLight;
 //return light;
 //Now, maybe return different value to smooth transitions
 if (!bResetLightingHack && (gameData.objs.nLightSig [nObject] == objP->info.nSignature)) {
@@ -812,11 +812,11 @@ for (l = gameData.render.lights.flicker.Length (); l; l--, flP++) {
 	//make sure this is actually a light
 	nSegment = flP->m_nSegment;
 	nSide = flP->m_nSide;
-	if (!(gameData.Segment (nSegment)->IsPassable (nSide, NULL) & WID_VISIBLE_FLAG)) {
+	if (!(SEGMENT (nSegment)->IsPassable (nSide, NULL) & WID_VISIBLE_FLAG)) {
 		flP->m_timer = (fix) 0x80000000;		//disabled
 		continue;
 		}
-	sideP = gameData.Segment (nSegment)->m_sides + nSide;
+	sideP = SEGMENT (nSegment)->m_sides + nSide;
 	if (!(gameData.pig.tex.brightness [sideP->m_nBaseTex] ||
 			gameData.pig.tex.brightness [sideP->m_nOvlTex])) {
 		flP->m_timer = (fix) 0x80000000;		//disabled
@@ -923,7 +923,7 @@ if (i == nChangedSegs) {
 if (nCallDepth < 2)
 	for (nSide=0; nSide<6; nSide++) {
 		if (segP->IsPassable (nSide, NULL) & WID_TRANSPARENT_FLAG)
-			ApplyLightToSegment (gameData.Segment (segP->m_children [nSide]), vSegCenter, xBrightness, nCallDepth+1);
+			ApplyLightToSegment (SEGMENT (segP->m_children [nSide]), vSegCenter, xBrightness, nCallDepth+1);
 		}
 }
 
@@ -934,7 +934,7 @@ extern CObject *oldViewer;
 //this code is copied from the editor routine calim_process_all_lights ()
 void ChangeSegmentLight (int16_t nSegment, int16_t nSide, int32_t dir)
 {
-	CSegment *segP = gameData.Segment (nSegment);
+	CSegment *segP = SEGMENT (nSegment);
 
 if (segP->IsPassable (nSide, NULL) & WID_VISIBLE_FLAG) {
 	CSide	*sideP = segP->m_sides+nSide;
@@ -1026,7 +1026,7 @@ if ((!gameStates.render.nLightingMethod || gameStates.app.bNostalgia) && gameDat
 				if (dlP->nSegment == nDbgSeg)
 					BRP;
 #endif
-				CSide* sideP = gameData.Segment (dlP->nSegment)->Side (dlP->nSide);
+				CSide* sideP = SEGMENT (dlP->nSegment)->Side (dlP->nSide);
 				uvlP = sideP->m_uvls;
 				segLightDeltaP = gameData.render.lights.segDeltas + dlP->nSegment * 6 + dlP->nSide;
 				for (k = 0; k < sideP->CornerCount (); k++, uvlP++) {
@@ -1122,7 +1122,7 @@ for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, seg
 				xTotal += sideP->m_uvls [k].l;
 			}
 		}
-	gameData.Segment (i)->m_xAvgSegLight = h ? xTotal / (h * 4) : 0;
+	SEGMENT (i)->m_xAvgSegLight = h ? xTotal / (h * 4) : 0;
 	}
 }
 

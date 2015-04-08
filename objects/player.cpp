@@ -260,7 +260,7 @@ int32_t CountPlayerObjects (int32_t nPlayer, int32_t nType, int32_t nId)
 FORALL_OBJS (objP) 
 	if ((objP->info.nType == nType) && (objP->info.nId == nId) &&
 		 (objP->cType.laserInfo.parent.nType == OBJ_PLAYER) &&
-		 (gameData.Object (objP->cType.laserInfo.parent.nObject)->info.nId == nPlayer))
+		 (OBJECT (objP->cType.laserInfo.parent.nObject)->info.nId == nPlayer))
 	h++;
 return h;
 }
@@ -300,11 +300,11 @@ else {
 	// If the chosen spawn segment is occupied by another player,
 	// try to place this player in an unoccupied adjacent segment
 	if (PlayerInSegment (nSegment)) {
-		CSegment* segP = gameData.Segment (nSegment);
+		CSegment* segP = SEGMENT (nSegment);
 		for (int16_t nSide = 0; nSide < 6; nSide++) {
 			nSegment = segP->ChildId (nSide);
 			if (!PlayerInSegment (nSegment)) {
-				objP->info.position.vPos = gameData.Segment (nSegment)->Center ();
+				objP->info.position.vPos = SEGMENT (nSegment)->Center ();
 			 	objP->RelinkToSeg (nSegment);
 				nSegment = -1;
 				break;
@@ -317,8 +317,8 @@ else {
 		// chose a random spawn position in the segment 
 		if (PlayerInSegment (nSegment)) {
 			CFixVector v;
-			fix r = gameData.Segment (nSegment)->MinRad () / 2;
-			objP->info.position.vPos = gameData.Segment (nSegment)->Center () + *VmRandomVector (&v) * (r + fix (r * RandFloat (2.0f)));
+			fix r = SEGMENT (nSegment)->MinRad () / 2;
+			objP->info.position.vPos = SEGMENT (nSegment)->Center () + *VmRandomVector (&v) * (r + fix (r * RandFloat (2.0f)));
 			}
 		}
 	}
@@ -377,7 +377,7 @@ fix CPlayerData::SetShield (fix s, bool bScale)
 { 
 if (m_shield.Set (s, bScale)) {
 	if (OBJECTS.Buffer () && (nObject >= 0) && (IsLocalPlayer () || (nObject != LOCALPLAYER.nObject)))
-		gameData.Object (nObject)->SetShield (s); 
+		OBJECT (nObject)->SetShield (s); 
 	if (IsLocalPlayer ())
 		NetworkFlushData (); // will send position, shield and weapon info
 	}
@@ -404,7 +404,7 @@ nObject = n;
 
 CObject* CPlayerData::Object (void)
 {
-return (nObject < 0) ? NULL : gameData.Object (nObject);
+return (nObject < 0) ? NULL : OBJECT (nObject);
 }
 
 //-------------------------------------------------------------------------

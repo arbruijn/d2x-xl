@@ -349,7 +349,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 				break;
 				}
 			sprintf (label, "Marker %d", markerManager.Viewer (w) + 1);
-			cockpit->RenderWindow (w, gameData.Object (markerManager.Objects (markerManager.Viewer (w))), 0, WBU_MARKER, label);
+			cockpit->RenderWindow (w, OBJECT (markerManager.Objects (markerManager.Viewer (w))), 0, WBU_MARKER, label);
 			break;
 			}
 

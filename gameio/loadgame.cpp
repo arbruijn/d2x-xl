@@ -194,7 +194,7 @@ void VerifyConsoleObject (void)
 {
 Assert (N_LOCALPLAYER > -1);
 Assert (LOCALPLAYER.nObject > -1);
-gameData.objs.consoleP = gameData.Object (LOCALPLAYER.nObject);
+gameData.objs.consoleP = OBJECT (LOCALPLAYER.nObject);
 }
 
 //------------------------------------------------------------------------------
@@ -272,26 +272,26 @@ for (i = 0; i < nPlayers; i++) {
 		segNum = startSegs [j];
 		if (segNum < 0)
 			continue;
-		segType = bCoop ? gameData.Segment (segNum)->m_function : SEGMENT_FUNC_NONE;
+		segType = bCoop ? SEGMENT (segNum)->m_function : SEGMENT_FUNC_NONE;
 #if 0
 		switch (segType) {
 			case SEGMENT_FUNC_GOAL_RED:
 			case SEGMENT_FUNC_TEAM_RED:
 				if (i < nPlayers / 2) // (GetTeam (i) != TEAM_RED)
 					continue;
-				gameData.Segment (segNum)->m_nType = SEGMENT_FUNC_NONE;
+				SEGMENT (segNum)->m_nType = SEGMENT_FUNC_NONE;
 				break;
 			case SEGMENT_FUNC_GOAL_BLUE:
 			case SEGMENT_FUNC_TEAM_BLUE:
 				if (i >= nPlayers / 2) //GetTeam (i) != TEAM_BLUE)
 					continue;
-				gameData.Segment (segNum)->m_nType = SEGMENT_FUNC_NONE;
+				SEGMENT (segNum)->m_nType = SEGMENT_FUNC_NONE;
 				break;
 			default:
 				break;
 			}
 #endif
-		objP = gameData.Object (playerObjs [j]);
+		objP = OBJECT (playerObjs [j]);
 		objP->SetType (OBJ_PLAYER);
 		gameData.multiplayer.playerInit [i].position = objP->info.position;
 		gameData.multiplayer.playerInit [i].nSegment = objP->info.nSegment;
@@ -366,7 +366,7 @@ if (LOCALPLAYER.secondaryAmmo [0] < BUILTIN_MISSILES)
 gameData.multiplayer.weaponStates [N_LOCALPLAYER].nBuiltinMissiles = BUILTIN_MISSILES;
 if (LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) 
 	gameData.physics.xAfterburnerCharge = I2X (1);
-gameData.Object (N_LOCALPLAYER)->ResetDamage ();
+OBJECT (N_LOCALPLAYER)->ResetDamage ();
 }
 
 //------------------------------------------------------------------------------
@@ -570,9 +570,9 @@ if (nPlayer == N_LOCALPLAYER) {
 audio.DestroyObjectSound (nPlayer);
 // When the ship got blown up, its root submodel had been converted to a debris object.
 // Make it a player object again.
-CObject* objP = gameData.Object (player.nObject);
+CObject* objP = OBJECT (player.nObject);
 if (objP) {
-	gameData.Object (nPlayer)->ResetDamage ();
+	OBJECT (nPlayer)->ResetDamage ();
 	AddPlayerLoadout (nMode == 1);
 	objP->info.nType = OBJ_PLAYER;
 #if DBG
@@ -1364,7 +1364,7 @@ GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players a
 HUDClearMessages ();
 automap.ClearVisited ();
 ResetPlayerData (false, true, false);
-gameData.objs.viewerP = gameData.Object (LOCALPLAYER.nObject);
+gameData.objs.viewerP = OBJECT (LOCALPLAYER.nObject);
 GameStartRemoveUnusedPlayers ();
 if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
 	gameStates.app.bGameSuspended &= ~(SUSP_ROBOTS | SUSP_TEMPORARY);
@@ -1710,9 +1710,9 @@ StartTime (0);
 //	Set the player's position from the globals gameData.segs.secret.nReturnSegment and gameData.segs.secret.returnOrient.
 void SetPosFromReturnSegment (int32_t bRelink)
 {
-	CObject*	objP = gameData.Object (LOCALPLAYER.nObject);
+	CObject*	objP = OBJECT (LOCALPLAYER.nObject);
 
-objP->info.position.vPos = gameData.Segment (gameData.segs.secret.nReturnSegment)->Center ();
+objP->info.position.vPos = SEGMENT (gameData.segs.secret.nReturnSegment)->Center ();
 if (bRelink)
 	objP->RelinkToSeg (gameData.segs.secret.nReturnSegment);
 ResetPlayerObject ();
@@ -1833,7 +1833,7 @@ GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players a
 InitHoardData ();
 SetMonsterballForces ();
 #endif
-//	gameData.objs.viewerP = gameData.Object (LOCALPLAYER.nObject);
+//	gameData.objs.viewerP = OBJECT (LOCALPLAYER.nObject);
 if (N_PLAYERS > gameData.multiplayer.nPlayerPositions) {
 	TextBox (NULL, BG_STANDARD, 1, TXT_OK, "Too many players for this level.");
 #if 1
@@ -2308,7 +2308,7 @@ for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	spawnTable [nSpawnSegs].xDist = 0x7fffffff;
 	for (j = 0; j < N_PLAYERS; j++) {
 		if (j != N_LOCALPLAYER) {
-			objP = gameData.Object (PLAYER (j).nObject);
+			objP = OBJECT (PLAYER (j).nObject);
 			if ((objP->info.nType == OBJ_PLAYER)) {
 				xDist = simpleRouter [0].PathLength (objP->info.position.vPos, objP->info.nSegment,
 																 gameData.multiplayer.playerInit [i].position.vPos, gameData.multiplayer.playerInit [i].nSegment,

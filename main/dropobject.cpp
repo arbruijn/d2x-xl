@@ -37,8 +37,8 @@ for (i = 0, objP = gameData.objs.init.Buffer (); i < gameFileInfo.objects.count;
 	if ((objP->info.nType != nType) || (objP->info.nId != id))
 		continue;
 	nTotal++;
-	for (bFree = 1, j = gameData.Segment (objP->info.nSegment)->m_objects; j != -1; j = gameData.Object (j)->info.nNextInSeg)
-		if ((gameData.Object (j)->info.nType == nType) && (gameData.Object (j)->info.nId == id)) {
+	for (bFree = 1, j = SEGMENT (objP->info.nSegment)->m_objects; j != -1; j = OBJECT (j)->info.nNextInSeg)
+		if ((OBJECT (j)->info.nType == nType) && (OBJECT (j)->info.nId == id)) {
 			bFree = 0;
 			break;
 			}
@@ -72,8 +72,8 @@ for (i = 0, objP = gameData.objs.init.Buffer (); i < gameFileInfo.objects.count;
 	// if the current CSegment does not contain a powerup of the nType being looked for,
 	// return that CSegment
 	if (bUseFree) {
-		for (bUsed = 0, j = gameData.Segment (objP->info.nSegment)->m_objects; j != -1; j = gameData.Object (j)->info.nNextInSeg)
-			if ((gameData.Object (j)->info.nType == nType) && (gameData.Object (j)->info.nId == id)) {
+		for (bUsed = 0, j = SEGMENT (objP->info.nSegment)->m_objects; j != -1; j = OBJECT (j)->info.nNextInSeg)
+			if ((OBJECT (j)->info.nType == nType) && (OBJECT (j)->info.nId == id)) {
 				bUsed = 1;
 				break;
 				}
@@ -136,7 +136,7 @@ while (nTail != nHead) {
 			*nDepthP = nCurDepth;
 		return segQueue [nTail + Rand (nHead - nTail)];
 		}
-	segP = gameData.Segment (segQueue [nTail++]);
+	segP = SEGMENT (segQueue [nTail++]);
 
 	//	select sides randomly
 	for (i = 0, nSideCount = 0; i < SEGMENT_SIDE_COUNT; i++)
@@ -223,7 +223,7 @@ while (nSegment == -1) {
 		if (count == N_PLAYERS)
 			nPlayer = N_LOCALPLAYER;
 		}
-	nSegment = PickConnectedSegment (gameData.Object (PLAYER (nPlayer).nObject), nDepth, &nDropDepth);
+	nSegment = PickConnectedSegment (OBJECT (PLAYER (nPlayer).nObject), nDepth, &nDropDepth);
 #if 1
 	if (nDropDepth < BASE_NET_DROP_DEPTH / 2)
 		return -1;
@@ -236,7 +236,7 @@ while (nSegment == -1) {
 		continue;
 		}
 
-	CSegment* segP = gameData.Segment (nSegment);
+	CSegment* segP = SEGMENT (nSegment);
 	int32_t nSegFunc = segP->m_function;
 	if (segP->HasBlockedProp () ||
 		 (nSegFunc == SEGMENT_FUNC_REACTOR) ||
@@ -248,7 +248,7 @@ while (nSegment == -1) {
 	else {	//don't drop in any children of control centers
 		for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 			int32_t nChild = segP->m_children [i];
-			if (IS_CHILD (nChild) && (gameData.Segment (nChild)->m_function == SEGMENT_FUNC_REACTOR)) {
+			if (IS_CHILD (nChild) && (SEGMENT (nChild)->m_function == SEGMENT_FUNC_REACTOR)) {
 				nSegment = -1;
 				break;
 				}
@@ -322,7 +322,7 @@ gameData.objs.nFreeDropped = gameData.objs.dropInfo [h].nNextPowerup;
 gameData.objs.dropInfo [h].nPrevPowerup = gameData.objs.nLastDropped;
 gameData.objs.dropInfo [h].nNextPowerup = -1;
 gameData.objs.dropInfo [h].nObject = nObject;
-gameData.objs.dropInfo [h].nSignature = gameData.Object (nObject)->Signature ();
+gameData.objs.dropInfo [h].nSignature = OBJECT (nObject)->Signature ();
 gameData.objs.dropInfo [h].nPowerupType = nPowerupType;
 gameData.objs.dropInfo [h].nDropTime = (nDropTime > 0) ? nDropTime : (extraGameInfo [IsMultiGame].nSpawnDelay <= 0) ? -1 : gameStates.app.nSDLTicks [0];
 if (gameData.objs.nFirstDropped >= 0)
@@ -405,19 +405,19 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 			}
 		}
 	else {
-		if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (nDropState == INIT_DROP) && gameData.Object (nObject)->IsMissile ()) {
+		if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (nDropState == INIT_DROP) && OBJECT (nObject)->IsMissile ()) {
 			//if (!(MultiPowerupIs4Pack (nPowerupType + 1) && MissingPowerups (nPowerupType + 1))) 
 				AddDropInfo (nObject, nPowerupType, 0x7FFFFFFF); // respawn missiles only after their destruction
 			return 0;
 			}
 		}
 
-	if (0 > (nObject = PrepareObjectCreateEgg (gameData.Object (LOCALPLAYER.nObject), 1, OBJ_POWERUP, nPowerupType, true)))
+	if (0 > (nObject = PrepareObjectCreateEgg (OBJECT (LOCALPLAYER.nObject), 1, OBJ_POWERUP, nPowerupType, true)))
 		return 0;
 
-	CObject* objP = gameData.Object (nObject);
+	CObject* objP = OBJECT (nObject);
 	int32_t bFixedPos = 0;
-	int16_t nSegment = ChooseDropSegment (gameData.Object (nObject), &bFixedPos, nDropState);
+	int16_t nSegment = ChooseDropSegment (OBJECT (nObject), &bFixedPos, nDropState);
 	if (0 > nSegment) {
 		objP->Die ();
 		return 0;
@@ -428,9 +428,9 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	if (bFixedPos)
 		vNewPos = objP->info.position.vPos;
 	else {
-		CFixVector vOffset = gameData.Segment (nSegment)->Center () - vNewPos;
+		CFixVector vOffset = SEGMENT (nSegment)->Center () - vNewPos;
 		CFixVector::Normalize (vOffset);
-		vNewPos = gameData.Segment (nSegment)->RandomPoint ();
+		vNewPos = SEGMENT (nSegment)->RandomPoint ();
 		vNewPos += vOffset * objP->info.xSize;
 		}
 	nSegment = FindSegByPos (vNewPos, nSegment, 1, 0);
@@ -452,12 +452,12 @@ int32_t SegmentContainsObject (int32_t objType, int32_t obj_id, int32_t nSegment
 
 if (nSegment == -1)
 	return 0;
-nObject = gameData.Segment (nSegment)->m_objects;
+nObject = SEGMENT (nSegment)->m_objects;
 while (nObject != -1)
-	if ((gameData.Object (nObject)->info.nType == objType) && (gameData.Object (nObject)->info.nId == obj_id))
+	if ((OBJECT (nObject)->info.nType == objType) && (OBJECT (nObject)->info.nId == obj_id))
 		return 1;
 	else
-		nObject = gameData.Object (nObject)->info.nNextInSeg;
+		nObject = OBJECT (nObject)->info.nNextInSeg;
 return 0;
 }
 
@@ -469,7 +469,7 @@ if (depth == 0)
 	return 0;
 if (SegmentContainsObject (objectType, object_id, nSegment))
 	return 1;
-CSegment* segP = gameData.Segment (nSegment);
+CSegment* segP = SEGMENT (nSegment);
 for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 	int16_t nChildSeg = segP->m_children [i];
 	if ((nChildSeg != -1) && ObjectNearbyAux (nChildSeg, objectType, object_id, depth-1))
@@ -640,7 +640,7 @@ switch (nType) {
 #endif
 			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 			}
-		objP = gameData.Object (nObject);
+		objP = OBJECT (nObject);
 		objP->mType.physInfo.velocity = vNewVel;
 		objP->mType.physInfo.drag = 512;	//1024;
 		objP->mType.physInfo.mass = I2X (1);
@@ -679,7 +679,7 @@ switch (nType) {
 			return nObject;
 		if (IsMultiGame)
 			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
-		objP = gameData.Object (nObject);
+		objP = OBJECT (nObject);
 		//Set polygon-CObject-specific data
 		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId).nModel;
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
@@ -758,14 +758,14 @@ for (i = info.contains.nCount; i; i--) {
 		break;
 	if (info.nType == OBJ_PLAYER) {
 		if (info.nId == N_LOCALPLAYER)
-			gameData.Object (nObject)->info.nFlags |= OF_PLAYER_DROPPED;
+			OBJECT (nObject)->info.nFlags |= OF_PLAYER_DROPPED;
 		}
 	else if (info.nType == OBJ_ROBOT) {
 		if (info.contains.nType == OBJ_POWERUP) {
 			if ((info.contains.nId == POW_VULCAN) || (info.contains.nId == POW_GAUSS))
-				gameData.Object (nObject)->cType.powerupInfo.nCount = VULCAN_WEAPON_AMMO_AMOUNT;
+				OBJECT (nObject)->cType.powerupInfo.nCount = VULCAN_WEAPON_AMMO_AMOUNT;
 			else if (info.contains.nId == POW_OMEGA)
-				gameData.Object (nObject)->cType.powerupInfo.nCount = MAX_OMEGA_CHARGE;
+				OBJECT (nObject)->cType.powerupInfo.nCount = MAX_OMEGA_CHARGE;
 			}
 		}
 	}
@@ -1030,7 +1030,7 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 			nVulcanAmmo /= 2;
 		for (i = 0; i < 2; i++) {
 			if (nGunObjs [i] >= 0)
-				gameData.Object (nGunObjs [i])->cType.powerupInfo.nCount = nVulcanAmmo;
+				OBJECT (nGunObjs [i])->cType.powerupInfo.nCount = nVulcanAmmo;
 			}
 		}
 	//	Drop the rest of the primary weapons
@@ -1043,7 +1043,7 @@ if (playerObjP && ((playerObjP->info.nType == OBJ_PLAYER) || (playerObjP->info.n
 	MaybeDropPrimaryWeaponEgg (playerObjP, PHOENIX_INDEX);
 	nObject = MaybeDropPrimaryWeaponEgg (playerObjP, OMEGA_INDEX);
 	if (nObject >= 0)
-		gameData.Object (nObject)->cType.powerupInfo.nCount =
+		OBJECT (nObject)->cType.powerupInfo.nCount =
 			(playerObjP->info.nId == N_LOCALPLAYER) ? gameData.omega.xCharge [IsMultiGame] : DEFAULT_MAX_OMEGA_CHARGE;
 	//	Drop the secondary weapons
 	//	Note, proximity weapon only comes in packets of 4.  So drop n/2, but a max of 3 (handled inside maybe_drop..)  Make sense?
@@ -1100,7 +1100,7 @@ int32_t ReturnFlagHome (CObject *objP)
 	CObject	*initObjP;
 
 if (gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnhancedCTF) {
-	if (gameData.Segment (objP->info.nSegment)->m_function == ((objP->info.nId == POW_REDFLAG) ? SEGMENT_FUNC_GOAL_RED : SEGMENT_FUNC_GOAL_BLUE))
+	if (SEGMENT (objP->info.nSegment)->m_function == ((objP->info.nId == POW_REDFLAG) ? SEGMENT_FUNC_GOAL_RED : SEGMENT_FUNC_GOAL_BLUE))
 		return objP->info.nSegment;
 	if ((initObjP = FindInitObject (objP))) {
 		objP->info.position.vPos = initObjP->info.position.vPos;
