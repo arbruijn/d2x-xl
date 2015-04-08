@@ -3965,23 +3965,28 @@ extern fix nDebrisLife [];
 #define RENDERPOINTS		gameData.render.mine.visibility [0].points
 #define TRIANGLES			FACES.tris
 
+#define GAMEDATA_CHECK_BUFFER		1
+#define GAMEDATA_CHECK_UNDERFLOW	2
+#define GAMEDATA_CHECK_OVERFLOW	4
+#define GAMEDATA_CHECK_ALL			(GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_UNDERFLOW | GAMEDATA_CHECK_OVERFLOW)
+
 #if DBG
-	#define SEGMENT(_i)				gameData.Segment (_i, 7, __FILE__, __LINE__)
-	#define OBJECT(_i)				gameData.Object (_i, 7, __FILE__, __LINE__)
-	#define WALL(_i)					gameData.Wall (_i, 7, __FILE__, __LINE__)
-	#define TRIGGER(_i)				gameData.Trigger (_i, 7, __FILE__, __LINE__)
-	#define OBJTRIGGER(_i)			gameData.ObjTrigger (_i, 7, __FILE__, __LINE__)
+	#define SEGMENT(_i)				gameData.Segment (_i, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
+	#define OBJECT(_i)				gameData.Object (_i, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
+	#define WALL(_i)					gameData.Wall (_i, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
+	#define TRIGGER(_i)				gameData.Trigger (_i, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
+	#define OBJTRIGGER(_i)			gameData.ObjTrigger (_i, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
 	#define SEGMENTX(_i, _f)		gameData.Segment (_i, _f, __FILE__, __LINE__)
 	#define OBJECTX(_i, _f)			gameData.Object (_i, _f, __FILE__, __LINE__)
 	#define WALLX(_i, _f)			gameData.Wall (_i, _f, __FILE__, __LINE__)
 	#define TRIGGERX(_i, _f)		gameData.Trigger (_i, _f, __FILE__, __LINE__)
 	#define OBJTRIGGERX(_i, _f)	gameData.ObjTrigger (_i, _f, __FILE__, __LINE__)
 #else
-	#define SEGMENT(_i)				gameData.Segment (_i, 7)
-	#define OBJECT(_i)				gameData.Object (_i, 7)
-	#define WALL(_i)					gameData.Wall (_i, 7)
-	#define TRIGGER(_i)				gameData.Trigger (_i, 7)
-	#define OBJTRIGGER(_i)			gameData.Trigger (_i, 7)
+	#define SEGMENT(_i)				gameData.Segment (_i, GAMEDATA_CHECK_ALL)
+	#define OBJECT(_i)				gameData.Object (_i, GAMEDATA_CHECK_ALL)
+	#define WALL(_i)					gameData.Wall (_i, GAMEDATA_CHECK_ALL)
+	#define TRIGGER(_i)				gameData.Trigger (_i, GAMEDATA_CHECK_ALL)
+	#define OBJTRIGGER(_i)			gameData.Trigger (_i, GAMEDATA_CHECK_ALL)
 	#define SEGMENTX(_i, _f)		gameData.Segment (_i, _f)
 	#define OBJECTX(_i, _f)			gameData.Object (_i, _f)
 	#define WALLX(_i, _f)			gameData.Wall (_i, _f)

@@ -281,7 +281,7 @@ objP->SetSize (xSize);
 objP->info.nCreator = int8_t (nCreator);
 objP->SetLife (IMMORTAL_TIME);
 
-CObject* creatorP = OBJECT (nCreator, false);
+CObject* creatorP = OBJECT (nCreator, GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_OVERFLOW);
 
 if (IsMultiGame && IsEntropyGame && (nType == OBJ_POWERUP) && (nId == POW_ENTROPY_VIRUS)) {
 	if (creatorP && (creatorP->info.nType == OBJ_PLAYER))

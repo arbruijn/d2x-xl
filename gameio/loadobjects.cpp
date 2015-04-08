@@ -411,7 +411,7 @@ if (gameFileInfo.walls.count && (gameFileInfo.walls.offset > -1)) {
 		}
 	for (i = 0; i < gameFileInfo.walls.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 20)
-			WALL (i, false)->Read (cf); // v20 walls and up.
+			WALL (i, GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_OVERFLOW)->Read (cf); // v20 walls and up.
 		else if (gameTopFileInfo.fileinfoVersion >= 17) {
 			tWallV19 w;
 
@@ -970,7 +970,6 @@ if (gameTopFileInfo.fileinfoVersion < 17) {
 // mark all triggers on "open" segment sides (i.e. which are connected to an adjacent segment) as "fly through" 
 // to simplify internal trigger management
 for (i = 0; i < gameData.walls.nWalls; i++) {
-	uint8_t nTrigger = ;
 	CTrigger* trigP = TRIGGER (WALL (i)->nTrigger);
 	if (trigP)
 		trigP->m_info.nWall = i;

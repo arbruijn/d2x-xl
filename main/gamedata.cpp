@@ -1573,7 +1573,7 @@ void CObjectData::InitFreeList (void)
 for (int32_t i = 0; i < LEVEL_OBJECTS; i++) {
 	gameData.objs.freeList [i] = i;
 	gameData.objs.freeListIndex.Clear (0xff);
-	OBJECT (i, false)->Init ();
+	OBJECT (i, GAMEDATA_CHECK_BUFFER)->Init ();
 	}
 }
 
