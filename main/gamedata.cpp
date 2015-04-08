@@ -2504,7 +2504,7 @@ DefaultRenderSettings (bSetup);
 
 #if DBG
 
-inline void* GameDataError (const char* szData, const char* szType, const char* pszFile, int32_t nLine) 
+void* GameDataError (const char* szData, const char* szType, const char* pszFile, int32_t nLine) 
 {
 if (*pszFile)
 	PrintLog (0, "Invalid %s reference (%s) in file %s (%d)\n", szData, szType, pszFile, nLine);
