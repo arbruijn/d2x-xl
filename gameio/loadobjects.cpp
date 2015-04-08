@@ -106,23 +106,14 @@ if (Type () == OBJ_ROBOT) {
 		SetId (Id () % gameData.bots.nTypes [0]);
 	// Make sure model number & size are correct...
 	if (info.renderType == RT_POLYOBJ) {
-		Assert(ROBOTINFO (Id ()).nModel != -1);
-			//if you fail this assert, it means that a robot in this level
-			//hasn't been loaded, possibly because he's marked as
-			//non-shareware.  To see what robot number, print Id ().
-		Assert(ROBOTINFO (Id ()).always_0xabcd == 0xabcd);
-			//if you fail this assert, it means that the robot_ai for
-			//a robot in this level hasn't been loaded, possibly because
-			//it's marked as non-shareware.  To see what robot number,
-			//print Id ().
-		rType.polyObjInfo.nModel = ROBOTINFO (Id ()).nModel;
+		rType.polyObjInfo.nModel = ROBOTINFO (Id ())->nModel;
 		AdjustSize ();
 		}
 	if (Id () == 65)						//special "reactor" robots
 		info.movementType = MT_NONE;
 	if (info.movementType == MT_PHYSICS) {
-		mType.physInfo.mass = ROBOTINFO (Id ()).mass;
-		mType.physInfo.drag = ROBOTINFO (Id ()).drag;
+		mType.physInfo.mass = ROBOTINFO (Id ())->mass;
+		mType.physInfo.drag = ROBOTINFO (Id ())->drag;
 		}
 	}
 else if (Type () == OBJ_EFFECT) {
@@ -411,7 +402,7 @@ if (gameFileInfo.walls.count && (gameFileInfo.walls.offset > -1)) {
 		}
 	for (i = 0; i < gameFileInfo.walls.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 20)
-			WALL (i, GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_OVERFLOW)->Read (cf); // v20 walls and up.
+			WALLX (i, GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_OVERFLOW)->Read (cf); // v20 walls and up.
 		else if (gameTopFileInfo.fileinfoVersion >= 17) {
 			tWallV19 w;
 

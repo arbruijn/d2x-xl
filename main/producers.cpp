@@ -304,7 +304,7 @@ if (nObject < 0) {
 	}
 objP = OBJECT (nObject);
 //Set polygon-CObject-specific data
-botInfoP = &ROBOTINFO (objP->info.nId);
+botInfoP = ROBOTINFO (objP->info.nId);
 objP->rType.polyObjInfo.nModel = botInfoP->nModel;
 objP->rType.polyObjInfo.nSubObjFlags = 0;
 //set Physics info

@@ -694,7 +694,8 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDestroyedO
 		return;
 		}
 	delObjP = OBJECT (cType.explInfo.nDestroyedObj);
-	xSplashDamage = (fix) ROBOTINFO (delObjP->info.nId).splashDamage;
+	tRobotInfo* botInfoP = delObjP->IsRobot () ? ROBOTINFO (delObjP->info.nId) : NULL; 
+	xSplashDamage = botInfoP ? (fix) botInfoP->splashDamage : 0;
 	vSpawnPos = &delObjP->info.position.vPos;
 	nType = delObjP->info.nType;
 	if (((nType != OBJ_ROBOT) && (nType != OBJ_CLUTTER) && (nType != OBJ_REACTOR) && (nType != OBJ_PLAYER)) ||
@@ -717,7 +718,6 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDestroyedO
 				delObjP->CreateEgg ();
 			}
 		if ((delObjP->info.nType == OBJ_ROBOT) && (!delObjP->info.contains.nCount || gameStates.app.bD2XLevel)) {
-			tRobotInfo	*botInfoP = &ROBOTINFO (delObjP->info.nId);
 			if (botInfoP->containsCount && ((botInfoP->containsType != OBJ_ROBOT) || !(delObjP->info.nFlags & OF_ARMAGEDDON))) {
 #if DBG
 				int32_t nProb = Rand (16);
@@ -740,8 +740,8 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDestroyedO
 #endif
 			}
 		}
-	if (ROBOTINFO (delObjP->info.nId).nExp2Sound > -1)
-		audio.CreateSegmentSound (ROBOTINFO (delObjP->info.nId).nExp2Sound, delObjP->info.nSegment, 0, *vSpawnPos, 0, I2X (1));
+	if (botInfoP && (botInfoP->nExp2Sound > -1))
+		audio.CreateSegmentSound (botInfoP->nExp2Sound, delObjP->info.nSegment, 0, *vSpawnPos, 0, I2X (1));
 		//PLAY_SOUND_3D (ROBOTINFO (delObjP->info.nId).nExp2Sound, vSpawnPos, delObjP->info.nSegment);
 	cType.explInfo.nSpawnTime = -1;
 	//make debris

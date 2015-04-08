@@ -809,7 +809,7 @@ if (rad < 0)
 	size = 0;
 else {
 	size = thisObjP->info.xSize;
-	if (!thisObjP->IsStatic () && (thisObjP->info.nType == OBJ_ROBOT) && ROBOTINFO (thisObjP->info.nId).attackType)
+	if (!thisObjP->IsStatic () && ROBOTINFO (thisObjP) && ROBOTINFO (thisObjP)->attackType)
 		size = 3 * size / 4;
 	//if obj is CPlayerData, and bumping into other CPlayerData or a weapon of another coop CPlayerData, reduce radius
 	if ((thisObjP->info.nType == OBJ_PLAYER) &&
@@ -990,7 +990,7 @@ restart:
 		if (nThisType == OBJ_ROBOT) {
 			if ((hitQuery.flags & FQ_ANY_OBJECT) ? (nOtherType != OBJ_ROBOT) : (nOtherType == OBJ_ROBOT))
 				continue;
-			if (ROBOTINFO (thisObjP->info.nId).attackType)
+			if (ROBOTINFO (thisObjP) && ROBOTINFO (thisObjP)->attackType)
 				nFudgedRad = 3 * hitQuery.radP1 / 4;
 			}
 		//if obj is CPlayerData, and bumping into other CPlayerData or a weapon of another coop CPlayerData, reduce radius

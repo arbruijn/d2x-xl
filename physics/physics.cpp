@@ -1376,7 +1376,8 @@ else {
 		if (xRate < I2X (1)/4)
 			xRate = I2X (1)/4;
 		//	Changed by mk, 10/24/95, claw guys should not slow down when attacking!
-		if (!(ROBOTINFO (info.nId).thief || ROBOTINFO (info.nId).attackType)) {
+		tRobotInfo* botInfoP = ROBOTINFO (info.nId);
+		if (!botInfoP || !(botInfoP->thief || botInfoP->attackType)) {
 			if (cType.aiInfo.SKIP_AI_COUNT * gameData.physics.xTime < I2X (3)/4) {
 				fix	xTime = FixDiv (I2X (1), 8 * gameData.physics.xTime);
 				int32_t	nTime = X2I (xTime);

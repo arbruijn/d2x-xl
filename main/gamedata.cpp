@@ -1573,7 +1573,7 @@ void CObjectData::InitFreeList (void)
 for (int32_t i = 0; i < LEVEL_OBJECTS; i++) {
 	gameData.objs.freeList [i] = i;
 	gameData.objs.freeListIndex.Clear (0xff);
-	OBJECT (i, GAMEDATA_CHECK_BUFFER)->Init ();
+	OBJECTX (i, GAMEDATA_CHECK_BUFFER)->Init ();
 	}
 }
 
@@ -2597,6 +2597,13 @@ if (nChecks) {
 		return (tRobotInfo*) GameDataError ("robot info", "overflow", pszFile, nLine);
 	}
 return a + nId; 
+}
+
+tRobotInfo* CGameData::RobotInfo (CObject* objP, int32_t nChecks, const char* pszFile, int32_t nLine) 
+{
+return (objP && Object (objP->Index (), GAMEDATA_CHECK_ALL, pszFile, nLine) && objP->IsRobot ()) 
+		 ? RobotInfo (objP->Id (), nChecks, pszFile, nLine) 
+		 : (tRobotInfo*) GameDataError ("robot info", "object type", pszFile, nLine);
 }
 
 #endif

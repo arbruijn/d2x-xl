@@ -3724,6 +3724,8 @@ class CGameData {
 		CTrigger* Trigger (int32_t nTrigger, int32_t nChecks = 7, const char* pszFile = "", int32_t nLine = 0);
 		CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = 7, const char* pszFile = "", int32_t nLine = 0);
 		tRobotInfo* CGameData::RobotInfo (int32_t nId, int32_t nChecks, const char* pszFile, int32_t nLine);
+		tRobotInfo* CGameData::RobotInfo (CObject* objP, int32_t nChecks, const char* pszFile, int32_t nLine);
+
 #else
 		inline CObject* Object (int32_t nObject, int32_t nChecks = 7) { 
 			if (nChecks) {
@@ -3800,6 +3802,10 @@ class CGameData {
 					return NULL;
 				}
 			return a + nId; 
+			}
+
+		inline tRobotInfo* CGameData::RobotInfo (CObject* objP, int32_t nChecks) {
+			return objP->IsRobot () ? RobotInfo (objP->Id (), nChecks) : NULL;
 			}
 
 #endif

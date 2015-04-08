@@ -112,8 +112,9 @@ return 0;
 //given the specified vForce, apply damage from that vForce to an CObject
 void CObject::ApplyForceDamage (fix vForce, CObject* otherObjP)
 {
-	int32_t	result;
-	fix	xDamage;
+	int32_t		result;
+	fix			xDamage;
+	tRobotInfo* botInfoP;
 
 if (info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD))
 	return;		//already exploding or dead
@@ -122,7 +123,8 @@ if ((otherObjP->info.nType == OBJ_PLAYER) && gameStates.app.cheats.bMonsterMode)
 	xDamage = 0x7fffffff;
 	switch (info.nType) {
 		case OBJ_ROBOT:
-			if (ROBOTINFO (info.nId).attackType == 1) {
+			botInfoP = ROBOTINFO (info.nId);
+			if (botInfoP->attackType == 1) {
 				if (otherObjP->info.nType == OBJ_WEAPON)
 					result = ApplyDamageToRobot (xDamage / 4, otherObjP->cType.laserInfo.parent.nObject);
 				else
@@ -139,13 +141,14 @@ if ((otherObjP->info.nType == OBJ_PLAYER) && gameStates.app.cheats.bMonsterMode)
 #else
 			if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS) && result && (otherObjP->cType.laserInfo.parent.nSignature == gameData.objs.consoleP->info.nSignature))
 #endif
-				cockpit->AddPointsToScore (ROBOTINFO (info.nId).scoreValue);
+				cockpit->AddPointsToScore (botInfoP->scoreValue);
 			break;
 
 		case OBJ_PLAYER:
 			//	If colliding with a claw nType robotP, do xDamage proportional to gameData.time.xFrame because you can Collide with those
 			//	bots every frame since they don't move.
-			if ((otherObjP->info.nType == OBJ_ROBOT) && (ROBOTINFO (otherObjP->info.nId).attackType))
+			botInfoP = ROBOTINFO (otherObjP);
+			if (botInfoP && botInfoP->attackType)
 				xDamage = FixMul (xDamage, gameData.time.xFrame*2);
 			//	Make trainee easier.
 			if (gameStates.app.nDifficultyLevel == 0)
@@ -189,7 +192,8 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 		else {
 			vForce *= 0.25f;
 			ApplyForce (vForce);
-			if (bDamage && ((otherObjP->info.nType != OBJ_ROBOT) || !ROBOTINFO (otherObjP->info.nId).companion)) 
+			tRobotInfo* botInfoP;
+			if (bDamage && (!(botInfoP = ROBOTINFO (otherObjP)) || !botInfoP->companion)) 
 				ApplyForceDamage (vForce.Mag (), otherObjP);
 			}
 		}
@@ -211,7 +215,7 @@ if (!(mType.physInfo.flags & PF_PERSISTENT)) {
 				MultiSendMonsterball (1, 0);
 			}
 		else if (info.nType == OBJ_ROBOT) {
-			if (ROBOTINFO (info.nId).bossFlag)
+			if (ROBOTINFO (info.nId)->bossFlag)
 				return;
 			}
 		else if ((info.nType != OBJ_CLUTTER) && (info.nType != OBJ_DEBRIS) && (info.nType != OBJ_REACTOR))
@@ -1008,18 +1012,18 @@ if (!IsStatic ()) {
 	if (nCollisionSeg != -1)
 		CreateExplosion (nCollisionSeg, vHitPt, gameData.weapons.info [0].xImpactSize, gameData.weapons.info [0].nWallHitAnimation);
 	if (playerObjP->info.nId == N_LOCALPLAYER) {
-		if (ROBOTINFO (info.nId).companion)	//	Player and companion don't Collide.
+		if (ROBOTINFO (info.nId)->companion)	//	Player and companion don't Collide.
 			return 1;
-		if (ROBOTINFO (info.nId).kamikaze) {
+		if (ROBOTINFO (info.nId)->kamikaze) {
 			ApplyDamageToRobot (info.xShield + 1, OBJ_IDX (playerObjP));
 	#if DBG
 			if (playerObjP == gameData.objs.consoleP)
 	#else
 			if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS) && (playerObjP == gameData.objs.consoleP))
 	#endif
-				cockpit->AddPointsToScore (ROBOTINFO (info.nId).scoreValue);
+				cockpit->AddPointsToScore (ROBOTINFO (info.nId)->scoreValue);
 			}
-		if (ROBOTINFO (info.nId).thief) {
+		if (ROBOTINFO (info.nId)->thief) {
 			if (gameData.ai.localInfo [OBJ_IDX (this)].mode == AIM_THIEF_ATTACK) {
 				gameData.time.xLastThiefHitTime = gameData.time.xGame;
 				AttemptToStealItem (this, playerObjP->info.nId);
@@ -1046,7 +1050,7 @@ if (!IsStatic ()) {
 	// added this if to remove the bump sound if it's the thief.
 	// A "steal" sound was added and it was getting obscured by the bump. -AP 10/3/95
 	//	Changed by MK to make this sound unless the this stole.
-	if (!(bTheftAttempt || ROBOTINFO (info.nId).energyDrain))
+	if (!(bTheftAttempt || ROBOTINFO (info.nId)->energyDrain))
 		audio.CreateSegmentSound (SOUND_ROBOT_HIT_PLAYER, playerObjP->info.nSegment, 0, vHitPt);
 	}
 BumpTwoObjects (this, playerObjP, 1, vHitPt, vNormal);
@@ -1294,7 +1298,7 @@ void MultiSendFinishGame ();
 
 bool CObject::Indestructible (void)
 {
-return ROBOTINFO (info.nId).strength <= 0; // indestructible static object
+return ROBOTINFO (info.nId)->strength <= 0; // indestructible static object
 }
 
 //	------------------------------------------------------------------------------------------------------
@@ -1318,7 +1322,7 @@ if (!AttacksRobots ()) {
 	if (killerObjP && (killerObjP->info.nType == OBJ_ROBOT) && !ROBOTINFO (killerObjP->info.nId).companion)
 		return 0;
 	}
-if ((bIsBoss = ROBOTINFO (info.nId).bossFlag)) {
+if ((bIsBoss = ROBOTINFO (info.nId)->bossFlag)) {
 	int32_t i = gameData.bosses.Find (OBJ_IDX (this));
 	if (i >= 0) {
 		gameData.bosses [i].m_nHitTime = gameData.time.xGame;
@@ -1328,7 +1332,7 @@ if ((bIsBoss = ROBOTINFO (info.nId).bossFlag)) {
 
 //	Buddy invulnerable on level 24 so he can give you his important messages.  Bah.
 //	Also invulnerable if his cheat for firing weapons is in effect.
-if (ROBOTINFO (info.nId).companion) {
+if (ROBOTINFO (info.nId)->companion) {
 	if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) &&
 		 (missionManager.nCurrentLevel == missionManager.nLastLevel))
 		return 0;
@@ -1363,16 +1367,16 @@ if (info.xShield >= 0) {
 	return 0;
 	}
 if (IsMultiGame) {
-	bIsThief = (ROBOTINFO (info.nId).thief != 0);
+	bIsThief = (ROBOTINFO (info.nId)->thief != 0);
 	if (bIsThief)
 		memcpy (tempStolen, &gameData.thief.stolenItems [0], gameData.thief.stolenItems.Size ());
 	if (IsMultiGame)
 		gameStates.app.SRand (); // required for sync'ing the stuff the robot drops/spawns on the clients 
-	if (!MultiExplodeRobot (OBJ_IDX (this), nKillerObj, ROBOTINFO (info.nId).thief)) 
+	if (!MultiExplodeRobot (OBJ_IDX (this), nKillerObj, ROBOTINFO (info.nId)->thief)) 
 		return 0;
 	if (bIsThief)
 		memcpy (&gameData.thief.stolenItems [0], tempStolen, gameData.thief.stolenItems.Size ());
-	MultiSendRobotExplode (OBJ_IDX (this), nKillerObj, ROBOTINFO (info.nId).thief);
+	MultiSendRobotExplode (OBJ_IDX (this), nKillerObj, ROBOTINFO (info.nId)->thief);
 	if (bIsThief)
 		gameData.thief.stolenItems.Clear (char (0xff));
 	return 1;
@@ -1385,12 +1389,12 @@ if (nKillerObj >= 0) {
 
 if (bIsBoss)
 	StartBossDeathSequence (this);	//DoReactorDestroyedStuff (NULL);
-else if (ROBOTINFO (info.nId).bDeathRoll)
+else if (ROBOTINFO (info.nId)->bDeathRoll)
 	StartRobotDeathSequence (this);	//DoReactorDestroyedStuff (NULL);
 else {
 	if (info.nId == SPECIAL_REACTOR_ROBOT)
 		SpecialReactorStuff ();
-	Explode (ROBOTINFO (info.nId).kamikaze ? 1 : STANDARD_EXPL_DELAY);		//	Kamikaze, explode right away, IN YOUR FACE!
+	Explode (ROBOTINFO (info.nId)->kamikaze ? 1 : STANDARD_EXPL_DELAY);		//	Kamikaze, explode right away, IN YOUR FACE!
 	}
 return 1;
 }
@@ -1898,8 +1902,8 @@ int32_t CObject::CollideRobotAndObjProducer (void)
 
 CreateSound (SOUND_ROBOT_HIT);
 //	audio.PlaySound (SOUND_ROBOT_HIT);
-if (ROBOTINFO (info.nId).nExp1VClip > -1)
-	CreateExplosion ((int16_t) info.nSegment, info.position.vPos, 3 * info.xSize / 8, (uint8_t) ROBOTINFO (info.nId).nExp1VClip);
+if (ROBOTINFO (info.nId)->nExp1VClip > -1)
+	CreateExplosion ((int16_t) info.nSegment, info.position.vPos, 3 * info.xSize / 8, (uint8_t) ROBOTINFO (info.nId)->nExp1VClip);
 vExitDir.SetZero ();
 for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++)
 	if (segP->IsPassable (nSide, NULL) & WID_PASSABLE_FLAG) {
