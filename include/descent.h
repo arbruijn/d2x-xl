@@ -3815,7 +3815,7 @@ class CGameData {
 			return a + nId; 
 			}
 
-		inline tRobotInfo* CGameData::RobotInfo (CObject* objP, int32_t nChecks) {
+		inline tRobotInfo* RobotInfo (CObject* objP, int32_t nChecks) {
 			return objP->IsRobot () ? RobotInfo (objP->Id (), nChecks) : NULL;
 			}
 
