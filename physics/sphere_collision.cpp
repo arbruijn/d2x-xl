@@ -804,12 +804,13 @@ fix CheckVectorObjectCollision (CHitData& hitData, CFixVector *p0, CFixVector *p
 	CFixVector	vHit, vNormal, v0, v1, vn, vPos;
 	int32_t		bThisPoly, bOtherPoly;
 	int16_t		nModel = -1;
+	tRobotInfo*	botInfoP;
 
 if (rad < 0)
 	size = 0;
 else {
 	size = thisObjP->info.xSize;
-	if (!thisObjP->IsStatic () && ROBOTINFO (thisObjP) && ROBOTINFO (thisObjP)->attackType)
+	if (!thisObjP->IsStatic () && (botInfoP = ROBOTINFO (thisObjP)) && botInfoP->attackType)
 		size = 3 * size / 4;
 	//if obj is CPlayerData, and bumping into other CPlayerData or a weapon of another coop CPlayerData, reduce radius
 	if ((thisObjP->info.nType == OBJ_PLAYER) &&

@@ -2605,9 +2605,11 @@ return a + nId;
 
 tRobotInfo* CGameData::RobotInfo (CObject* objP, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {
-return (objP && Object (objP->Index (), GAMEDATA_CHECK_ALL, pszFile, nLine) && objP->IsRobot ()) 
-		 ? RobotInfo (objP->Id (), nChecks, pszFile, nLine) 
-		 : (tRobotInfo*) GameDataError ("robot info", "object type", pszFile, nLine);
+if (!objP || !Object (objP->Index (), GAMEDATA_CHECK_ALL, pszFile, nLine))
+	 return (tRobotInfo*) GameDataError ("robot info", "object buffer", pszFile, nLine);
+if ((nChecks & GAMEDATA_CHECK_TYPE) && !objP->IsRobot ())
+	return (tRobotInfo*) GameDataError ("robot info", "object type", pszFile, nLine);
+return RobotInfo (objP->Id (), nChecks, pszFile, nLine);
 }
 
 #endif
