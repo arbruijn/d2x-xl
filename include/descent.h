@@ -3764,13 +3764,17 @@ class CGameData {
 			}
 
 		inline CTrigger* Trigger (int32_t nTrigger, int32_t nChecks = 7) { 
+			if (nTrigger == NO_TRIGGER)
+				return NULL;
 			if (nChecks) {
 				if ((nChecks & 1) && !trigs.triggers.Buffer ())
 					return NULL;
 				if ((nChecks & 2) && (nTrigger < 0))
 					return NULL;
+#if 0
 				if ((nChecks & 2) && (nTrigger == NO_TRIGGER))
 					return NULL;
+#endif
 				if ((nChecks & 4) && (nTrigger >= trigs.m_nTriggers))
 					return NULL;
 				}

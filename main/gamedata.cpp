@@ -2557,13 +2557,17 @@ return walls.walls + nWall;
 
 CTrigger* CGameData::Trigger (int32_t nTrigger, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {
+if (nTrigger == NO_TRIGGER)
+	return NULL;
 if (nChecks) {
 	if ((nChecks & GAMEDATA_CHECK_BUFFER) && !trigs.triggers.Buffer ())
 		return (CTrigger*) GameDataError ("trigger", "buffer", pszFile, nLine);
 	if ((nChecks & GAMEDATA_CHECK_UNDERFLOW) && (nTrigger < 0))
 		return (CTrigger*) GameDataError ("trigger", "underflow", pszFile, nLine);
+#if 0
 	if ((nChecks & GAMEDATA_CHECK_UNDERFLOW) && (nTrigger == NO_TRIGGER))
 		return (CTrigger*) GameDataError ("trigger", "null", pszFile, nLine);
+#endif
 	if ((nChecks & GAMEDATA_CHECK_OVERFLOW) && (nTrigger >= trigs.m_nTriggers))
 		return (CTrigger*) GameDataError ("trigger", "overflow", pszFile, nLine);
 	}

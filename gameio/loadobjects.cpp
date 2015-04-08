@@ -402,7 +402,7 @@ if (gameFileInfo.walls.count && (gameFileInfo.walls.offset > -1)) {
 		}
 	for (i = 0; i < gameFileInfo.walls.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 20)
-			WALLX (i, GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_OVERFLOW)->Read (cf); // v20 walls and up.
+			WALLX (i, GAMEDATA_CHECK_BUFFER)->Read (cf); // v20 walls and up.
 		else if (gameTopFileInfo.fileinfoVersion >= 17) {
 			tWallV19 w;
 
@@ -1072,10 +1072,12 @@ if (ReadObjectInfo (cf))
 	return -1;
 if (ReadWallInfo (cf))
 	return -1;
+gameData.walls.nWalls = gameFileInfo.walls.count;
 if (ReadDoorInfo (cf))
 	return -1;
 if (ReadTriggerInfo (cf))
 	return -1;
+gameData.trigs.m_nTriggers = gameFileInfo.triggers.count;
 if (ReadReactorInfo (cf))
 	return -1;
 if (ReadBotGenInfo (cf))
