@@ -198,7 +198,7 @@ if (nObject == nDbgObj)
 	nObject = nDbgObj;
 #endif
 if (nPrevShot >= 0) {
-	CObject *prevShotP = OBJECT (nPrevShot);
+	CObject *prevShotP = OBJECTEX (nPrevShot, GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_INDEX);
 	if (prevShotP && (prevShotP->info.nSignature == objP->Shots ().nSignature)) {
 		CObject *lightP, *shotP = OBJECT (nShot);
 		int16_t nLight = m_objects [nPrevShot].nObject;

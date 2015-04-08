@@ -3649,6 +3649,15 @@ class CCockpitData {
 		CCockpitData ();
 	};
 
+
+#define GAMEDATA_CHECK_BUFFER		1
+#define GAMEDATA_CHECK_UNDERFLOW	2
+#define GAMEDATA_CHECK_OVERFLOW	4
+#define GAMEDATA_CHECK_TYPE		8
+#define GAMEDATA_ERROR_LOG			16
+#define GAMEDATA_CHECK_INDEX		(GAMEDATA_CHECK_UNDERFLOW | GAMEDATA_CHECK_OVERFLOW)
+#define GAMEDATA_CHECK_ALL			(GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_INDEX | GAMEDATA_ERROR_LOG)
+
 class CGameData {
 	public:
 		CSegmentData		segs;
@@ -3718,16 +3727,16 @@ class CGameData {
 			return nOldType;
 			}
 #if DBG
-		CObject* Object (int32_t nObject, int32_t nChecks = 7, const char* pszFile = "", int32_t nLine = 0);
-		CSegment* Segment (int32_t nSegment, int32_t nChecks = 7, const char* pszFile = "", int32_t nLine = 0);
-		CWall* Wall (int32_t nWall, int32_t nChecks = 7, const char* pszFile = "", int32_t nLine = 0);
-		CTrigger* Trigger (int32_t nTrigger, int32_t nChecks = 7, const char* pszFile = "", int32_t nLine = 0);
-		CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = 7, const char* pszFile = "", int32_t nLine = 0);
+		CObject* Object (int32_t nObject, int32_t nChecks = GAMEDATA_CHECK_ALL, const char* pszFile = "", int32_t nLine = 0);
+		CSegment* Segment (int32_t nSegment, int32_t nChecks = GAMEDATA_CHECK_ALL, const char* pszFile = "", int32_t nLine = 0);
+		CWall* Wall (int32_t nWall, int32_t nChecks = GAMEDATA_CHECK_ALL, const char* pszFile = "", int32_t nLine = 0);
+		CTrigger* Trigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_CHECK_ALL, const char* pszFile = "", int32_t nLine = 0);
+		CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_CHECK_ALL, const char* pszFile = "", int32_t nLine = 0);
 		tRobotInfo* CGameData::RobotInfo (int32_t nId, int32_t nChecks, const char* pszFile, int32_t nLine);
 		tRobotInfo* CGameData::RobotInfo (CObject* objP, int32_t nChecks, const char* pszFile, int32_t nLine);
 
 #else
-		inline CObject* Object (int32_t nObject, int32_t nChecks = 7) { 
+		inline CObject* Object (int32_t nObject, int32_t nChecks = GAMEDATA_CHECK_ALL) { 
 			if (nChecks) {
 				if ((nChecks & 1) && !objs.objects.Buffer ())
 					return NULL;
@@ -3739,7 +3748,7 @@ class CGameData {
 			return objs.objects + nObject; 
 			}
 
-		inline CSegment* Segment (int32_t nSegment, int32_t nChecks = 7) { 
+		inline CSegment* Segment (int32_t nSegment, int32_t nChecks = GAMEDATA_CHECK_ALL) { 
 			if (nChecks) {
 				if ((nChecks & 1) && !segs.segments.Buffer ())
 					return NULL;
@@ -3751,7 +3760,7 @@ class CGameData {
 			return segs.segments + nSegment; 
 			}
 
-		inline CWall* Wall (int32_t nWall, int32_t nChecks = 7) { 
+		inline CWall* Wall (int32_t nWall, int32_t nChecks = GAMEDATA_CHECK_ALL) { 
 			if (nChecks) {
 				if ((nChecks & 1) && !walls.walls.Buffer ())
 					return NULL;
@@ -3763,7 +3772,7 @@ class CGameData {
 			return walls.walls + nWall; 
 			}
 
-		inline CTrigger* Trigger (int32_t nTrigger, int32_t nChecks = 7) { 
+		inline CTrigger* Trigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_CHECK_ALL) { 
 			if (nTrigger == NO_TRIGGER)
 				return NULL;
 			if (nChecks) {
@@ -3771,17 +3780,15 @@ class CGameData {
 					return NULL;
 				if ((nChecks & 2) && (nTrigger < 0))
 					return NULL;
-#if 0
 				if ((nChecks & 2) && (nTrigger == NO_TRIGGER))
 					return NULL;
-#endif
 				if ((nChecks & 4) && (nTrigger >= trigs.m_nTriggers))
 					return NULL;
 				}
 			return trigs.triggers + nTrigger; 
 			}
 
-		inline CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = 7) { 
+		inline CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_CHECK_ALL) { 
 			if (nChecks) {
 				if ((nChecks & 1) && !trigs.objTriggers.Buffer ())
 					return NULL;
@@ -3989,14 +3996,6 @@ extern fix nDebrisLife [];
 #define FACES				gameData.segs.faces
 #define RENDERPOINTS		gameData.render.mine.visibility [0].points
 #define TRIANGLES			FACES.tris
-
-#define GAMEDATA_CHECK_BUFFER		1
-#define GAMEDATA_CHECK_UNDERFLOW	2
-#define GAMEDATA_CHECK_OVERFLOW	4
-#define GAMEDATA_CHECK_TYPE		8
-#define GAMEDATA_ERROR_LOG			16
-#define GAMEDATA_CHECK_INDEX		(GAMEDATA_CHECK_UNDERFLOW | GAMEDATA_CHECK_OVERFLOW)
-#define GAMEDATA_CHECK_ALL			(GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_INDEX | GAMEDATA_ERROR_LOG)
 
 #if DBG
 	#define SEGMENT(_id)				gameData.Segment (_id, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)

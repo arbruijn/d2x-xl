@@ -131,48 +131,48 @@ typedef struct tParticle {
 #if !EXTRA_VERTEX_ARRAYS
 	tPartPos		m_glPos;
 #endif
-	CFixMatrix	m_mOrient;
-	CFixVector	m_vPos;				//position
-	CFloatVector m_vPosf;
-	CFixVector	m_vStartPos;		//initial position
-	CFixVector	m_vTransPos;		//transformed position
-	CFixVector	m_vDir;				//movement direction
-	CFixVector	m_vDrift;
+	CFixMatrix		m_mOrient;
+	CFixVector		m_vPos;				//position
+	CFloatVector	m_vPosf;
+	CFixVector		m_vStartPos;		//initial position
+	CFixVector		m_vTransPos;		//transformed position
+	CFixVector		m_vDir;				//movement direction
+	CFixVector		m_vDrift;
 	int32_t			m_nTTL;				//time to live
 	int32_t			m_nLife;				//remaining life time
 	int32_t			m_nFadeTime;
-	float			m_decay;
+	float				m_decay;
 	int32_t			m_nDelay;			//time between creation and appearance
 	int32_t			m_nUpdated;
 	int32_t			m_nMoved;			//time last moved
-	float			m_nWidth;
-	float			m_nHeight;
-	float			m_nRad;
+	float				m_nWidth;
+	float				m_nHeight;
+	float				m_nRad;
 	int16_t			m_nSegment;
-	tTexCoord2f	m_texCoord;
-	float			m_deltaUV;
+	tTexCoord2f		m_texCoord;
+	float				m_deltaUV;
 	CFloatVector	m_color [2];		//well ... the color, ya know =)
 	CFloatVector	m_renderColor;
-	char			m_nType;				//black or white
-	char			m_nRenderType;
-	char			m_nBounce;
-	char			m_bHaveDir;
-	char			m_bBlowUp;
-	char			m_bBright;
-	char			m_bEmissive;
-	char			m_bReversed;
-	char			m_nFadeType;
-	char			m_nClass;
-	char			m_iFrame;
-	char			m_nFrames;
-	char			m_nRotFrame;
-	char			m_nOrient;
-	char			m_bChecked;
-	char			m_bSkybox;
-	char			m_bAnimate;
-	char			m_bRotate;
-	char			m_nDelayPosUpdate;
-} tParticle;
+	char				m_nType;				//black or white
+	char				m_nRenderType;
+	char				m_nBounce;
+	char				m_bHaveDir;
+	char				m_bBlowUp;
+	char				m_bBright;
+	char				m_bEmissive;
+	char				m_bReversed;
+	char				m_nFadeType;
+	char				m_nClass;
+	char				m_iFrame;
+	char				m_nFrames;
+	char				m_nRotFrame;
+	char				m_nOrient;
+	char				m_bChecked;
+	char				m_bSkybox;
+	char				m_bAnimate;
+	char				m_bRotate;
+	char				m_nDelayPosUpdate;
+} tParticle;	
 
 class CParticle : public tParticle {
 	public:

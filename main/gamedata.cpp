@@ -2566,10 +2566,8 @@ if (nChecks) {
 		return (CTrigger*) GameDataError ("trigger", "buffer", nChecks, pszFile, nLine);
 	if ((nChecks & GAMEDATA_CHECK_UNDERFLOW) && (nTrigger < 0))
 		return (CTrigger*) GameDataError ("trigger", "underflow", nChecks, pszFile, nLine);
-#if 0
 	if ((nChecks & GAMEDATA_CHECK_UNDERFLOW) && (nTrigger == NO_TRIGGER))
 		return (CTrigger*) GameDataError ("trigger", "null", nChecks, pszFile, nLine);
-#endif
 	if ((nChecks & GAMEDATA_CHECK_OVERFLOW) && (nTrigger >= trigs.m_nTriggers))
 		return (CTrigger*) GameDataError ("trigger", "overflow", nChecks, pszFile, nLine);
 	}
