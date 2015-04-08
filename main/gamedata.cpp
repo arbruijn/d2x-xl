@@ -2591,7 +2591,7 @@ return trigs.objTriggers + nTrigger;
 
 tRobotInfo* CGameData::RobotInfo (int32_t nId, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {
-CArray<tRobotInfo>& a = bots.info [D1ROBOT (nId)];
+CArray<tRobotInfo>& a = bots.info [gameStates.app.bD1Mission && (nId < bots.nTypes [1])];
 if (nChecks) {
 	if ((nChecks & GAMEDATA_CHECK_BUFFER) && !a.Buffer ())
 		return (tRobotInfo*) GameDataError ("robot info", "buffer", nChecks, pszFile, nLine);
