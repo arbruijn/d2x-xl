@@ -152,19 +152,21 @@ int8_t superBossGateTypeList [13] = {0, 1, 8, 9, 10, 11, 12, 15, 16, 18, 19, 20,
 
 void LoadRobotTextures (int32_t robotIndex)
 {
-	int32_t i;
+tRobotInfo* botInfoP = ROBOTINFO (robotIndex);
 
+if (!botInfoP)
+	return;
 // Page in robotIndex
-LoadModelTextures (ROBOTINFO (robotIndex).nModel);
-if (ROBOTINFO (robotIndex).nExp1VClip >= 0)
-	LoadAnimationTextures (&gameData.effects.animations [0][ROBOTINFO (robotIndex).nExp1VClip], 0);
-if (ROBOTINFO (robotIndex).nExp2VClip >= 0)
-	LoadAnimationTextures (&gameData.effects.animations [0][ROBOTINFO (robotIndex).nExp2VClip], 0);
+LoadModelTextures (botInfoP->nModel);
+if (botInfoP->nExp1VClip >= 0)
+	LoadAnimationTextures (&gameData.effects.animations [0][botInfoP->nExp1VClip], 0);
+if (botInfoP->nExp2VClip >= 0)
+	LoadAnimationTextures (&gameData.effects.animations [0][botInfoP->nExp2VClip], 0);
 // Page in his weapons
-LoadWeaponTextures (ROBOTINFO (robotIndex).nWeaponType);
+LoadWeaponTextures (botInfoP->nWeaponType);
 // A super-boss can gate in robots...
 if (ROBOTINFO (robotIndex)->bossFlag == 2) {
-	for (i = 0; i < 13; i++)
+	for (int32_t i = 0; i < 13; i++)
 		LoadRobotTextures (superBossGateTypeList [i]);
 	LoadAnimationTextures (&gameData.effects.animations [0][ANIM_MORPHING_ROBOT], 0);
 	}
