@@ -585,7 +585,8 @@ while (i) {
 	if ((soundObjP->m_flags & (SOF_USED | SOF_LINK_TO_OBJ)) != (SOF_USED | SOF_LINK_TO_OBJ))
 		continue;
 	if (nObject < 0) { // kill all sounds belonging to disappeared objects
-		if ((soundObjP->m_linkType.obj.nObject >= 0) && (OBJECT (soundObjP->m_linkType.obj.nObject)->Signature () == soundObjP->m_linkType.obj.nObjSig))
+		CObject* parentP = OBJECT (soundObjP->m_linkType.obj.nObject);
+		if (parentP && (parentP->Signature () == soundObjP->m_linkType.obj.nObjSig))
 			continue;
 		}
 	else {
@@ -775,7 +776,7 @@ while (i) {
 		else if (soundObjP->m_flags & SOF_LINK_TO_OBJ) {
 			if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 				int32_t nObject = NDFindObject (soundObjP->m_linkType.obj.nObjSig);
-				objP = OBJECT (((nObject > -1) ? nObject : 0));
+				objP = OBJECT (nObject);
 				}
 			else
 				objP = OBJECT (soundObjP->m_linkType.obj.nObject);
