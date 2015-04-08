@@ -1573,7 +1573,7 @@ void CObjectData::InitFreeList (void)
 for (int32_t i = 0; i < LEVEL_OBJECTS; i++) {
 	gameData.objs.freeList [i] = i;
 	gameData.objs.freeListIndex.Clear (0xff);
-	OBJECTX (i, GAMEDATA_CHECK_BUFFER)->Init ();
+	OBJECTEX (i, GAMEDATA_CHECK_BUFFER)->Init ();
 	}
 }
 
@@ -2504,12 +2504,14 @@ DefaultRenderSettings (bSetup);
 
 #if DBG
 
-void* GameDataError (const char* szData, const char* szType, const char* pszFile, int32_t nLine) 
+void* GameDataError (const char* szData, const char* szType, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {
-if (*pszFile)
-	PrintLog (0, "Invalid %s reference (%s) in file %s (%d)\n", szData, szType, pszFile, nLine);
-else
-	PrintLog (0, "Invalid %s reference (%s)\n", szData, szType);
+if (nChecks & GAMEDATA_ERROR_LOG) {
+	if (*pszFile)
+		PrintLog (0, "Invalid %s reference (%s) in file %s (%d)\n", szData, szType, pszFile, nLine);
+	else
+		PrintLog (0, "Invalid %s reference (%s)\n", szData, szType);
+	}
 return NULL;
 }
 
@@ -2517,11 +2519,11 @@ CObject* CGameData::Object (int32_t nObject, int32_t nChecks, const char* pszFil
 { 
 if (nChecks) {
 	if ((nChecks & GAMEDATA_CHECK_BUFFER) && !objs.objects.Buffer ())
-		return (CObject*) GameDataError ("object", "buffer", pszFile, nLine);
+		return (CObject*) GameDataError ("object", "buffer", nChecks, pszFile, nLine);
 	if ((nChecks & GAMEDATA_CHECK_UNDERFLOW) && (nObject < 0))
-		return (CObject*) GameDataError ("object", "underflow", pszFile, nLine);
+		return (CObject*) GameDataError ("object", "underflow", nChecks, pszFile, nLine);
 	if ((nChecks & GAMEDATA_CHECK_OVERFLOW) && (nObject > objs.nLastObject [0])) 
-		return (CObject*) GameDataError ("object", "overflow", pszFile, nLine);
+		return (CObject*) GameDataError ("object", "overflow", nChecks, pszFile, nLine);
 	}
 return objs.objects + nObject; 
 }
@@ -2531,11 +2533,11 @@ CSegment* CGameData::Segment (int32_t nSegment, int32_t nChecks, const char* psz
 { 
 if (nChecks) {
 	if ((nChecks & GAMEDATA_CHECK_BUFFER) && !segs.segments.Buffer ())		
-		return (CSegment*) GameDataError ("segment", "buffer", pszFile, nLine);
+		return (CSegment*) GameDataError ("segment", "buffer", nChecks, pszFile, nLine);
 	if ((nChecks & GAMEDATA_CHECK_UNDERFLOW) && (nSegment < 0))
-		return (CSegment*) GameDataError ("segment", "underflow", pszFile, nLine);
+		return (CSegment*) GameDataError ("segment", "underflow", nChecks, pszFile, nLine);
 	if ((nChecks & GAMEDATA_CHECK_OVERFLOW) && (nSegment >= segs.nSegments))
-		return (CSegment*) GameDataError ("segment", "overflow", pszFile, nLine);
+		return (CSegment*) GameDataError ("segment", "overflow", nChecks, pszFile, nLine);
 	}
 return segs.segments + nSegment; 
 }
@@ -2545,11 +2547,11 @@ CWall* CGameData::Wall (int32_t nWall, int32_t nChecks, const char* pszFile, int
 { 
 if (nChecks) {
 	if ((nChecks & GAMEDATA_CHECK_BUFFER) && !walls.walls.Buffer ())
-		return (CWall*) GameDataError ("wall", "buffer", pszFile, nLine);
+		return (CWall*) GameDataError ("wall", "buffer", nChecks, pszFile, nLine);
 	if ((nChecks & GAMEDATA_CHECK_UNDERFLOW) && (nWall < 0))
-		return (CWall*) GameDataError ("wall", "underflow", pszFile, nLine);
+		return (CWall*) GameDataError ("wall", "underflow", nChecks, pszFile, nLine);
 	if ((nChecks & GAMEDATA_CHECK_OVERFLOW) && (nWall >= walls.nWalls))
-		return (CWall*) GameDataError ("wall", "overflow", pszFile, nLine);
+		return (CWall*) GameDataError ("wall", "overflow", nChecks, pszFile, nLine);
 	}
 return walls.walls + nWall; 
 }
@@ -2561,15 +2563,15 @@ if (nTrigger == NO_TRIGGER)
 	return NULL;
 if (nChecks) {
 	if ((nChecks & GAMEDATA_CHECK_BUFFER) && !trigs.triggers.Buffer ())
-		return (CTrigger*) GameDataError ("trigger", "buffer", pszFile, nLine);
+		return (CTrigger*) GameDataError ("trigger", "buffer", nChecks, pszFile, nLine);
 	if ((nChecks & GAMEDATA_CHECK_UNDERFLOW) && (nTrigger < 0))
-		return (CTrigger*) GameDataError ("trigger", "underflow", pszFile, nLine);
+		return (CTrigger*) GameDataError ("trigger", "underflow", nChecks, pszFile, nLine);
 #if 0
 	if ((nChecks & GAMEDATA_CHECK_UNDERFLOW) && (nTrigger == NO_TRIGGER))
-		return (CTrigger*) GameDataError ("trigger", "null", pszFile, nLine);
+		return (CTrigger*) GameDataError ("trigger", "null", nChecks, pszFile, nLine);
 #endif
 	if ((nChecks & GAMEDATA_CHECK_OVERFLOW) && (nTrigger >= trigs.m_nTriggers))
-		return (CTrigger*) GameDataError ("trigger", "overflow", pszFile, nLine);
+		return (CTrigger*) GameDataError ("trigger", "overflow", nChecks, pszFile, nLine);
 	}
 return trigs.triggers + nTrigger; 
 }
@@ -2578,13 +2580,13 @@ CTrigger* CGameData::ObjTrigger (int32_t nTrigger, int32_t nChecks, const char* 
 {
 if (nChecks) {
 	if ((nChecks & GAMEDATA_CHECK_BUFFER) && !trigs.objTriggers.Buffer ())
-		return (CTrigger*) GameDataError ("object trigger", "buffer", pszFile, nLine);
+		return (CTrigger*) GameDataError ("object trigger", "buffer", nChecks, pszFile, nLine);
 	if ((nChecks & GAMEDATA_CHECK_UNDERFLOW) && (nTrigger < 0))
-		return (CTrigger*) GameDataError ("object trigger", "underflow", pszFile, nLine);
+		return (CTrigger*) GameDataError ("object trigger", "underflow", nChecks, pszFile, nLine);
 	if ((nChecks & GAMEDATA_CHECK_UNDERFLOW) && (nTrigger == NO_TRIGGER))
-		return (CTrigger*) GameDataError ("object trigger", "null", pszFile, nLine);
+		return (CTrigger*) GameDataError ("object trigger", "null", nChecks, pszFile, nLine);
 	if ((nChecks & GAMEDATA_CHECK_OVERFLOW) && (nTrigger >= trigs.m_nObjTriggers))
-		return (CTrigger*) GameDataError ("object trigger", "overflow", pszFile, nLine);
+		return (CTrigger*) GameDataError ("object trigger", "overflow", nChecks, pszFile, nLine);
 	}
 return trigs.objTriggers + nTrigger; 
 }
@@ -2594,11 +2596,11 @@ tRobotInfo* CGameData::RobotInfo (int32_t nId, int32_t nChecks, const char* pszF
 CArray<tRobotInfo>& a = gameData.bots.info [D1ROBOT (nId)];
 if (nChecks) {
 	if ((nChecks & GAMEDATA_CHECK_BUFFER) && !a.Buffer ())
-		return (tRobotInfo*) GameDataError ("robot info", "buffer", pszFile, nLine);
+		return (tRobotInfo*) GameDataError ("robot info", "buffer", nChecks, pszFile, nLine);
 	if ((nChecks & GAMEDATA_CHECK_UNDERFLOW) && (nId < 0))
-		return (tRobotInfo*) GameDataError ("robot info", "underflow", pszFile, nLine);
+		return (tRobotInfo*) GameDataError ("robot info", "underflow", nChecks, pszFile, nLine);
 	if ((nChecks & GAMEDATA_CHECK_OVERFLOW) && ((uint32_t) nId >= a.Length ()))
-		return (tRobotInfo*) GameDataError ("robot info", "overflow", pszFile, nLine);
+		return (tRobotInfo*) GameDataError ("robot info", "overflow", nChecks, pszFile, nLine);
 	}
 return a + nId; 
 }
@@ -2606,9 +2608,9 @@ return a + nId;
 tRobotInfo* CGameData::RobotInfo (CObject* objP, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {
 if (!objP || !Object (objP->Index (), GAMEDATA_CHECK_ALL, pszFile, nLine))
-	 return (tRobotInfo*) GameDataError ("robot info", "object buffer", pszFile, nLine);
+	 return (tRobotInfo*) GameDataError ("robot info", "object buffer", nChecks, pszFile, nLine);
 if ((nChecks & GAMEDATA_CHECK_TYPE) && !objP->IsRobot ())
-	return (tRobotInfo*) GameDataError ("robot info", "object type", pszFile, nLine);
+	return (tRobotInfo*) GameDataError ("robot info", "object type", nChecks, pszFile, nLine);
 return RobotInfo (objP->Id (), nChecks, pszFile, nLine);
 }
 

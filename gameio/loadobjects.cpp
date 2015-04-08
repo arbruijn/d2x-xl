@@ -402,7 +402,7 @@ if (gameFileInfo.walls.count && (gameFileInfo.walls.offset > -1)) {
 		}
 	for (i = 0; i < gameFileInfo.walls.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 20)
-			WALLX (i, GAMEDATA_CHECK_BUFFER)->Read (cf); // v20 walls and up.
+			WALLEX (i, GAMEDATA_CHECK_BUFFER)->Read (cf); // v20 walls and up.
 		else if (gameTopFileInfo.fileinfoVersion >= 17) {
 			tWallV19 w;
 
