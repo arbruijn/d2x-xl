@@ -165,7 +165,7 @@ for (h = gameData.bosses.ToS (), j = 0; j < h; j++)
 		else {
 			CObject *objP = OBJECTS.Buffer ();
 			FORALL_ROBOT_OBJS (objP)
-				if (ROBOTINFO (objP->info.nId).bossFlag)
+				if (ROBOTINFO (objP->info.nId)->bossFlag)
 					DoBossDyingFrame (objP);
 		}
 	}

@@ -254,7 +254,7 @@ for (CObjectIterator iter (objP); objP; objP = (prevObjP ? iter.Step () : iter.S
 		j++;
 		}
 	else if (t == OBJ_ROBOT) {
-		if (ROBOTINFO (objP->info.nId).companion && IsMultiGame) {
+		if (ROBOTINFO (objP->info.nId)->companion && IsMultiGame) {
 			prevObjP = iter.Back ();
 			ReleaseObject (objP->Index ());
 			}

@@ -286,7 +286,7 @@ if (dt < SHIELD_EFFECT_TIME) {
 	DrawShieldSphere (objP, shieldColors [2].Red () * scale, shieldColors [2].Green () * scale, shieldColors [2].Blue () * scale, 0.5f * scale, 1);
 	}
 else if (!gameOpts->render.effects.bOnlyShieldHits) {
-	if ((objP->info.nType != OBJ_ROBOT) || ROBOTINFO (objP->info.nId).companion)
+	if ((objP->info.nType != OBJ_ROBOT) || ROBOTINFO (objP->info.nId)->companion)
 		DrawShieldSphere (objP, 0.0f, 0.5f * scale, 1.0f * scale, objP->Damage () / 2 * scale, 1);
 	else
 		DrawShieldSphere (objP, 0.75f * scale, 0.0f, 0.75f * scale, objP->Damage () / 2 * scale, 1);

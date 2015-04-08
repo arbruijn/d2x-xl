@@ -1852,7 +1852,7 @@ return 1;
 //	Nasty robots are the ones that attack you by running into you and doing lots of damage.
 int32_t CObject::CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt, CFixVector* vNormal)
 {
-//	if (!(ROBOTINFO (objP->info.nId).energyDrain && PLAYER (info.nId).energy))
+//	if (!(ROBOTINFO (objP->info.nId)->energyDrain && PLAYER (info.nId).energy))
 CreateExplosion (info.nSegment, vHitPt, I2X (10) / 2, ANIM_PLAYER_HIT);
 if (BumpTwoObjects (this, robotP, 0, vHitPt)) {//no damage from bump
 	audio.CreateSegmentSound (ROBOTINFO (robotP->info.nId).clawSound, info.nSegment, 0, vHitPt);

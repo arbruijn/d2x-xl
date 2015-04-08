@@ -681,14 +681,14 @@ switch (nType) {
 			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 		objP = OBJECT (nObject);
 		//Set polygon-CObject-specific data
-		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId).nModel;
+		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId)->nModel;
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
 		//set Physics info
 		objP->mType.physInfo.velocity = vNewVel;
-		objP->mType.physInfo.mass = ROBOTINFO (objP->info.nId).mass;
-		objP->mType.physInfo.drag = ROBOTINFO (objP->info.nId).drag;
+		objP->mType.physInfo.mass = ROBOTINFO (objP->info.nId)->mass;
+		objP->mType.physInfo.drag = ROBOTINFO (objP->info.nId)->drag;
 		objP->mType.physInfo.flags |= (PF_LEVELLING);
-		objP->SetShield (ROBOTINFO (objP->info.nId).strength);
+		objP->SetShield (ROBOTINFO (objP->info.nId)->strength);
 		objP->cType.aiInfo.behavior = AIB_NORMAL;
 		gameData.ai.localInfo [nObject].targetAwarenessType = WEAPON_ROBOT_COLLISION;
 		gameData.ai.localInfo [nObject].targetAwarenessTime = I2X (3);

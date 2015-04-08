@@ -2424,7 +2424,7 @@ class CRobotData {
 };
 
 #define D1ROBOT(_id)		(gameStates.app.bD1Mission && ((_id) < gameData.bots.nTypes [1]))
-#define ROBOTINFO(_id)	gameData.bots.info [D1ROBOT (_id)][_id]
+//#define ROBOTINFO(_id)	gameData.bots.info [D1ROBOT (_id)][_id]
 
 //------------------------------------------------------------------------------
 
@@ -3986,27 +3986,31 @@ extern fix nDebrisLife [];
 #define GAMEDATA_CHECK_ALL			(GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_UNDERFLOW | GAMEDATA_CHECK_OVERFLOW)
 
 #if DBG
-	#define SEGMENT(_i)				gameData.Segment (_i, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
-	#define OBJECT(_i)				gameData.Object (_i, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
-	#define WALL(_i)					gameData.Wall (_i, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
-	#define TRIGGER(_i)				gameData.Trigger (_i, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
-	#define OBJTRIGGER(_i)			gameData.ObjTrigger (_i, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
-	#define SEGMENTX(_i, _f)		gameData.Segment (_i, _f, __FILE__, __LINE__)
-	#define OBJECTX(_i, _f)			gameData.Object (_i, _f, __FILE__, __LINE__)
-	#define WALLX(_i, _f)			gameData.Wall (_i, _f, __FILE__, __LINE__)
-	#define TRIGGERX(_i, _f)		gameData.Trigger (_i, _f, __FILE__, __LINE__)
-	#define OBJTRIGGERX(_i, _f)	gameData.ObjTrigger (_i, _f, __FILE__, __LINE__)
+	#define SEGMENT(_id)				gameData.Segment (_id, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
+	#define OBJECT(_id)				gameData.Object (_id, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
+	#define WALL(_id)					gameData.Wall (_id, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
+	#define TRIGGER(_id)				gameData.Trigger (_id, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
+	#define OBJTRIGGER(_id)			gameData.ObjTrigger (_id, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
+	#define ROBOTINFO(_id)			gameData.RobotInfo (_id, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
+	#define SEGMENTX(_id, _f)		gameData.Segment (_id, _f, __FILE__, __LINE__)
+	#define OBJECTX(_id, _f)		gameData.Object (_id, _f, __FILE__, __LINE__)
+	#define WALLX(_id, _f)			gameData.Wall (_id, _f, __FILE__, __LINE__)
+	#define TRIGGERX(_id, _f)		gameData.Trigger (_id, _f, __FILE__, __LINE__)
+	#define OBJTRIGGERX(_id, _f)	gameData.ObjTrigger (_id, _f, __FILE__, __LINE__)
+	#define ROBOTINFOX(_id, _f)	gameData.RobotInfo (_id, _f, __FILE__, __LINE__)
 #else
-	#define SEGMENT(_i)				gameData.Segment (_i, GAMEDATA_CHECK_ALL)
-	#define OBJECT(_i)				gameData.Object (_i, GAMEDATA_CHECK_ALL)
-	#define WALL(_i)					gameData.Wall (_i, GAMEDATA_CHECK_ALL)
-	#define TRIGGER(_i)				gameData.Trigger (_i, GAMEDATA_CHECK_ALL)
-	#define OBJTRIGGER(_i)			gameData.Trigger (_i, GAMEDATA_CHECK_ALL)
-	#define SEGMENTX(_i, _f)		gameData.Segment (_i, _f)
-	#define OBJECTX(_i, _f)			gameData.Object (_i, _f)
-	#define WALLX(_i, _f)			gameData.Wall (_i, _f)
-	#define TRIGGERX(_i, _f)		gameData.Trigger (_i, _f)
-	#define OBJTRIGGERX(_i, _f)	gameData.Trigger (_i, _f)
+	#define SEGMENT(_id)				gameData.Segment (_id, GAMEDATA_CHECK_ALL)
+	#define OBJECT(_id)				gameData.Object (_id, GAMEDATA_CHECK_ALL)
+	#define WALL(_id)					gameData.Wall (_id, GAMEDATA_CHECK_ALL)
+	#define TRIGGER(_id)				gameData.Trigger (_id, GAMEDATA_CHECK_ALL)
+	#define OBJTRIGGER(_id)			gameData.Trigger (_id, GAMEDATA_CHECK_ALL)
+	#define ROBOTINFO(_id)			gameData.RobotInfo (_id, GAMEDATA_CHECK_ALL)
+	#define SEGMENTX(_id, _f)		gameData.Segment (_id, _f)
+	#define OBJECTX(_id, _f)		gameData.Object (_id, _f)
+	#define WALLX(_id, _f)			gameData.Wall (_id, _f)
+	#define TRIGGERX(_id, _f)		gameData.Trigger (_id, _f)
+	#define OBJTRIGGERX(_id, _f)	gameData.Trigger (_id, _f)
+	#define ROBOTINFOX(_id, _f)	gameData.RobotInfo (_id, _f)
 #endif
 
 

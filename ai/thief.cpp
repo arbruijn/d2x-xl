@@ -165,7 +165,7 @@ switch (ailP->mode) {
 					if (aiP->nPathLength < 4) {
 						CreateNSegmentPath (objP, 10, -1);
 						}
-					else if (objP->info.xShield * 4 < ROBOTINFO (objP->info.nId).strength) {
+					else if (objP->info.xShield * 4 < ROBOTINFO (objP->info.nId)->strength) {
 						//	If robot really low on hits, will run through player with even longer path
 						if (aiP->nPathLength < 8) {
 							CreateNSegmentPath (objP, 10, -1);

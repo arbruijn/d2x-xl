@@ -127,7 +127,7 @@ objP->mType.physInfo.drag = botInfoP->drag;
 objP->mType.physInfo.flags |= (PF_LEVELLING);
 objP->SetShield (botInfoP->strength);
 objP->info.nCreator = BOSS_GATE_PRODUCER_NUM;	//	flag this robot as having been created by the boss.
-default_behavior = ROBOTINFO (objP->info.nId).behavior;
+default_behavior = ROBOTINFO (objP->info.nId)->behavior;
 InitAIObject (objP->Index (), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
 CreateExplosion (nSegment, vObjPos, I2X (10), ANIM_MORPHING_ROBOT);
 audio.CreateSegmentSound (gameData.effects.animations [0][ANIM_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0 , I2X (1));
@@ -297,7 +297,7 @@ vBossDir = LOCALOBJECT->info.position.vPos - vNewPos;
 objP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
 audio.CreateSegmentSound (gameData.effects.animations [0][ANIM_MORPHING_ROBOT].nSound, nRandSeg, 0, objP->info.position.vPos, 0 , I2X (1));
 audio.DestroyObjectSound (nObject);
-audio.CreateObjectSound (ROBOTINFO (objP->info.nId).seeSound, SOUNDCLASS_ROBOT, objP->Index (), 1, I2X (1), I2X (512));	//	I2X (512) means play twice as loud
+audio.CreateObjectSound (ROBOTINFO (objP->info.nId)->seeSound, SOUNDCLASS_ROBOT, objP->Index (), 1, I2X (1), I2X (512));	//	I2X (512) means play twice as loud
 //	After a teleport, boss can fire right away.
 gameData.ai.localInfo [nObject].nextPrimaryFire = 0;
 gameData.ai.localInfo [nObject].nextSecondaryFire = 0;
@@ -307,7 +307,7 @@ gameData.ai.localInfo [nObject].nextSecondaryFire = 0;
 
 void StartBossDeathSequence (CObject *objP)
 {
-if (ROBOTINFO (objP->info.nId).bossFlag) {
+if (ROBOTINFO (objP->info.nId)->bossFlag) {
 	int32_t	nObject = objP->Index (),
 			i = gameData.bosses.Find (nObject);
 
@@ -330,10 +330,10 @@ if (i < 0)
 	return;
 rval = DoRobotDyingFrame (objP, gameData.bosses [i].m_nDyingStartTime, BOSS_DEATH_DURATION,
 								  &gameData.bosses [i].m_bDyingSoundPlaying,
-								  ROBOTINFO (objP->info.nId).deathrollSound, I2X (4), I2X (4));
+								  ROBOTINFO (objP->info.nId)->deathrollSound, I2X (4), I2X (4));
 if (rval) {
 	gameData.bosses.Remove (i);
-	if (ROBOTINFO (objP->info.nId).bEndsLevel)
+	if (ROBOTINFO (objP->info.nId)->bEndsLevel)
 		DoReactorDestroyedStuff (NULL);
 #if 0
 	audio.CreateObjectSound (-1, SOUNDCLASS_EXPLOSION, objP->Index (), 0, I2X (4), I2X (512), -1, -1, AddonSoundName (SND_ADDON_NUKE_EXPLOSION), 1);
@@ -354,7 +354,7 @@ nObject = objP->Index ();
 i = gameData.bosses.Find (nObject);
 if (i < 0)
 	return;
-nBossId = ROBOTINFO (objP->info.nId).bossFlag;
+nBossId = ROBOTINFO (objP->info.nId)->bossFlag;
 //	Assert ((nBossId >= BOSS_D2) && (nBossId < BOSS_D2 + NUM_D2_BOSSES));
 nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 #if DBG

@@ -945,14 +945,14 @@ if (Buddy_last_missileTime > gameData.time.xGame)
 if (Buddy_last_missileTime + I2X (2) < gameData.time.xGame) {
 	//	See if a robot potentially in view cone
 	FORALL_ROBOT_OBJS (objP)
-		if (!ROBOTINFO (objP->info.nId).companion)
+		if (!ROBOTINFO (objP->info.nId)->companion)
 			if (MaybeBuddyFireMega (objP->Index ())) {
 				Buddy_last_missileTime = gameData.time.xGame;
 				return;
 			}
 	//	See if a robot near enough that buddy should fire smart missile
 	FORALL_ROBOT_OBJS (objP)
-		if (!ROBOTINFO (objP->info.nId).companion)
+		if (!ROBOTINFO (objP->info.nId)->companion)
 			if (MaybeBuddyFireSmart (objP->Index ())) {
 				Buddy_last_missileTime = gameData.time.xGame;
 				return;
@@ -1127,7 +1127,7 @@ if (gameStates.app.bD1Mission)
 	CObject	*objP;
 
 FORALL_ROBOT_OBJS (objP) {
-	if (ROBOTINFO (objP->info.nId).companion)
+	if (ROBOTINFO (objP->info.nId)->companion)
 		break;
 	}
 

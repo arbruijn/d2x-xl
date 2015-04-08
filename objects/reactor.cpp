@@ -476,7 +476,7 @@ FORALL_ACTOR_OBJS (objP) {
 		if ((BOSS_COUNT < int32_t (gameData.bosses.ToS ())) || gameData.bosses.Grow ()) {
 			gameData.bosses [BOSS_COUNT].m_nObject = objP->Index ();
 			++extraGameInfo [0].nBossCount [1];
-			if (ROBOTINFO (objP->info.nId).bEndsLevel) {
+			if (ROBOTINFO (objP->info.nId)->bEndsLevel) {
 				++extraGameInfo [0].nBossCount [0];
 				if ((nBossObj >= 0) && !ROBOTINFO (OBJECT (nBossObj)->info.nId).bEndsLevel)
 					nBossObj = objP->Index ();
@@ -507,7 +507,7 @@ else if (gameData.bosses.ToS () > 0) {
 		objP = OBJECT (gameData.reactor.states [j].nObject);
 		objP->BashToShield (true);
 		--extraGameInfo [0].nBossCount [1];
-		if (ROBOTINFO (objP->info.nId).bEndsLevel) 
+		if (ROBOTINFO (objP->info.nId)->bEndsLevel) 
 			--extraGameInfo [0].nBossCount [0];
 		if (j < --gameStates.gameplay.nReactorCount [0])
 			gameData.reactor.states [j] = gameData.reactor.states [gameStates.gameplay.nReactorCount [0]];

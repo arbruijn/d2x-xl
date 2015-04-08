@@ -141,7 +141,7 @@ void KillAllRobots (int32_t bVerbose)
 	
 // Kill all bots except for Buddy bot and boss.  However, if only boss and buddy left, kill boss.
 FORALL_ROBOT_OBJS (objP)
-	if (!(ROBOTINFO (objP->info.nId).companion || ROBOTINFO (objP->info.nId).bossFlag || objP->IsGeometry ())) {
+	if (!(ROBOTINFO (objP->info.nId)->companion || ROBOTINFO (objP->info.nId)->bossFlag || objP->IsGeometry ())) {
 		nKilled++;
 		if (gameStates.app.bNostalgia)
 			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
@@ -168,7 +168,7 @@ if (gameStates.gameplay.bKillBossCheat)
 	gameStates.gameplay.bKillBossCheat = 0;
 else {
 	FORALL_ROBOT_OBJS (objP)
-		if (ROBOTINFO (objP->info.nId).bossFlag) {
+		if (ROBOTINFO (objP->info.nId)->bossFlag) {
 			nKilled++;
 			if (gameStates.app.bNostalgia)
 				objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;

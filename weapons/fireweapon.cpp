@@ -221,7 +221,7 @@ if (objP->info.nType == OBJ_PLAYER) {
 	nDefaultGuns = N_PLAYER_GUNS;
 	}
 else if (objP->info.nType == OBJ_ROBOT) {
-	vDefaultGunPoints = ROBOTINFO (objP->info.nId).gunPoints;
+	vDefaultGunPoints = ROBOTINFO (objP->info.nId)->gunPoints;
 	nDefaultGuns = MAX_GUNS;
 	}
 else
@@ -818,7 +818,7 @@ FORALL_OBJS (curObjP) {
 			continue;
 		if (parent.nType == OBJ_ROBOT)	//	Robot blobs can't track robots.
 			continue;
-		if ((parent.nType == OBJ_PLAYER) &&	ROBOTINFO (curObjP->info.nId).companion)	// Your shots won't track the buddy.
+		if ((parent.nType == OBJ_PLAYER) &&	ROBOTINFO (curObjP->info.nId)->companion)	// Your shots won't track the buddy.
 			continue;
 		}
 	else

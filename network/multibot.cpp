@@ -78,7 +78,7 @@ else if (objP->info.nType != OBJ_ROBOT) {
 	return 0;
 	}
 #endif
-else if (ROBOTINFO (objP->info.nId).bossFlag) {
+else if (ROBOTINFO (objP->info.nId)->bossFlag) {
 	int32_t i = gameData.bosses.Find (nObject);
 	if ((i >= 0) && gameData.bosses [i].m_nDying == 1)
 		return 0;
