@@ -3802,7 +3802,7 @@ class CGameData {
 			return trigs.objTriggers + nTrigger; 
 			}
 
-		inline tRobotInfo* CGameData::RobotInfo (int32_t nId, int32_t nChecks) {
+		inline tRobotInfo* RobotInfo (int32_t nId, int32_t nChecks) {
 			CArray<tRobotInfo>& a = bots.info [gameStates.app.bD1Mission && (nId < bots.nTypes [1])];
 			if (nChecks) {
 				if ((nChecks & 1) && !a.Buffer ())
