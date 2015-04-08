@@ -66,12 +66,12 @@ return 1;
 //takes the robot nType (CObject id), gun number, and desired state
 int32_t RobotGetAnimState (tJointPos **jointPosP, int32_t robotType, int32_t nGun, int32_t state)
 {
-	int32_t nJoints = ROBOTINFO (robotType).animStates [nGun][state].n_joints;
+	int32_t nJoints = ROBOTINFO (robotType)->animStates [nGun][state].n_joints;
 
 if (nJoints <= 0)
 	memset (jointPosP, 0, sizeof (*jointPosP));
 else
-	*jointPosP = &gameData.bots.joints [ROBOTINFO (robotType).animStates [nGun][state].offset];
+	*jointPosP = &gameData.bots.joints [ROBOTINFO (robotType)->animStates [nGun][state].offset];
 return nJoints;
 }
 

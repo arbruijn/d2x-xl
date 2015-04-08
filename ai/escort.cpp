@@ -155,7 +155,7 @@ if (gameData.escort.bMayTalk)
 	return 1;
 if ((OBJECT (gameData.escort.nObjNum)->IsRobot ()) &&
 	 (gameData.escort.nObjNum <= gameData.objs.nLastObject [0]) &&
-	!ROBOTINFO (OBJECT (gameData.escort.nObjNum)->info.nId).companion) {
+	!ROBOTINFO (OBJECT (gameData.escort.nObjNum))->companion) {
 	FORALL_ROBOT_OBJS (objP)
 		if (IS_GUIDEBOT (objP))
 			break;

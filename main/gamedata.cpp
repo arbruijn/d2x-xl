@@ -2593,7 +2593,7 @@ if (nChecks) {
 		return (tRobotInfo*) GameDataError ("robot info", "buffer", pszFile, nLine);
 	if ((nChecks & GAMEDATA_CHECK_UNDERFLOW) && (nId < 0))
 		return (tRobotInfo*) GameDataError ("robot info", "underflow", pszFile, nLine);
-	if ((nChecks & GAMEDATA_CHECK_OVERFLOW) && (nId >= a.Length ()))
+	if ((nChecks & GAMEDATA_CHECK_OVERFLOW) && ((uint32_t) nId >= a.Length ()))
 		return (tRobotInfo*) GameDataError ("robot info", "overflow", pszFile, nLine);
 	}
 return a + nId; 

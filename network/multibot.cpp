@@ -175,7 +175,7 @@ int32_t MultiAddControlledRobot (int32_t nObject, int32_t agitation)
 	int32_t lowest_agitated_bot = -1;
 	int32_t first_freeRobot = -1;
 
-if (ROBOTINFO (OBJECT (nObject)->info.nId).bossFlag) // this is a boss, so make sure he gets a slot
+if (ROBOTINFO (OBJECT (nObject))->bossFlag) // this is a boss, so make sure he gets a slot
 	agitation = (agitation * 3) + N_LOCALPLAYER;  
 if (OBJECT (nObject)->cType.aiInfo.REMOTE_SLOT_NUM > 0) {
 	OBJECT (nObject)->cType.aiInfo.REMOTE_SLOT_NUM -= 1;
@@ -767,7 +767,7 @@ if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
 	return;
 if (MultiExplodeRobot (nRobot, nKiller, buf [bufP])) {
 	if (nKiller == LOCALPLAYER.nObject)
-		cockpit->AddPointsToScore (ROBOTINFO (OBJECT (nRobot)->info.nId).scoreValue);
+		cockpit->AddPointsToScore (ROBOTINFO (OBJECT (nRobot))->scoreValue);
 	}
 }
 

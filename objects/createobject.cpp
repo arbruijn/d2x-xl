@@ -281,7 +281,7 @@ objP->SetSize (xSize);
 objP->info.nCreator = int8_t (nCreator);
 objP->SetLife (IMMORTAL_TIME);
 
-CObject* creatorP = OBJECT (nCreator, GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_OVERFLOW);
+CObject* creatorP = OBJECTX (nCreator, GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_OVERFLOW);
 
 if (IsMultiGame && IsEntropyGame && (nType == OBJ_POWERUP) && (nId == POW_ENTROPY_VIRUS)) {
 	if (creatorP && (creatorP->info.nType == OBJ_PLAYER))
@@ -385,7 +385,7 @@ if (nId >= gameData.bots.nTypes [gameStates.app.bD1Mission]) {
 	PrintLog (0, "Trying to create non-existent robot (type %d)\n", nId);
 	return -1;
 	}
-return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.models.polyModels [0][ROBOTINFO (nId).nModel].Rad (),CT_AI, MT_PHYSICS, RT_POLYOBJ);
+return CreateObject (OBJ_ROBOT, nId, -1, nSegment, vPos, CFixMatrix::IDENTITY, gameData.models.polyModels [0][ROBOTINFO (nId)->nModel].Rad (),CT_AI, MT_PHYSICS, RT_POLYOBJ);
 }
 
 //------------------------------------------------------------------------------

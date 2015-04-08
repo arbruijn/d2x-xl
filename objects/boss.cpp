@@ -260,7 +260,7 @@ cf.Read (&m_nDyingStartTime, sizeof (fix), 1);
 int32_t h;
 cf.Read (&h, sizeof (int32_t), 1);
 m_nDying = int16_t (h);
-if ((m_nDying < 0) || (m_nDying >= gameData.objs.nObjects) || !ROBOTINFO (OBJECT (m_nDying)->info.nId).bossFlag)
+if ((m_nDying < 0) || (m_nDying >= gameData.objs.nObjects) || !ROBOTINFO (OBJECT (m_nDying))->bossFlag)
 	m_nDying = 0;
 else if (m_nDying && (m_nDyingStartTime > gameData.time.xGame))
 	m_nDyingStartTime = gameData.time.xGame;
@@ -382,7 +382,7 @@ if (!m_info.Grow ())
 	return -1;
 m_info.Top ()->Init ();
 m_info.Top ()->Setup (nObject);
-if (ROBOTINFO (OBJECT (nObject)->info.nId).bEndsLevel)
+if (ROBOTINFO (OBJECT (nObject))->bEndsLevel)
 	extraGameInfo [0].nBossCount [0]++;
 return nBoss;
 }
@@ -397,7 +397,7 @@ if ((nBoss < 0) || (nBoss >= int16_t (m_info.ToS ())))
 int16_t nObject = m_info [nBoss].m_nObject;
 
 if (m_info.Delete (nBoss)) {
-	if (ROBOTINFO (OBJECT (nObject)->info.nId).bEndsLevel)
+	if (ROBOTINFO (OBJECT (nObject))->bEndsLevel)
 		extraGameInfo [0].nBossCount [0]--;
 	memset (&m_info [m_info.ToS ()], 0, sizeof (CBossInfo));
 	}

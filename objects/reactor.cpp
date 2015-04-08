@@ -478,7 +478,7 @@ FORALL_ACTOR_OBJS (objP) {
 			++extraGameInfo [0].nBossCount [1];
 			if (ROBOTINFO (objP)->bEndsLevel) {
 				++extraGameInfo [0].nBossCount [0];
-				if ((nBossObj >= 0) && !ROBOTINFO (OBJECT (nBossObj)->info.nId).bEndsLevel)
+				if ((nBossObj >= 0) && !ROBOTINFO (OBJECT (nBossObj))->bEndsLevel)
 					nBossObj = objP->Index ();
 				}
 			else if (nBossObj < 0)

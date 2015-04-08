@@ -1800,13 +1800,13 @@ void InitMultiPlayerObject (int32_t nStage);
 
 #define	SHOW_SHADOWS			(SHOW_OBJ_FX && EGI_FLAG (bShadows, 0, 1, 0))
 
-#define	IS_BOSS(_objP)			((_objP)->IsRobot && ROBOTINFO ((_objP))->bossFlag)
-#define	IS_GUIDEBOT(_objP)	((_objP)->IsRobot && ROBOTINFO ((_objP))->companion)
-#define	IS_THIEF(_objP)		((_objP)->IsRobot && ROBOTINFO ((_objP))->thief)
-#define	IS_BOSS(_objP)			((_objP)->IsRobot && ROBOTINFO ((_objP))->bossFlag)
-#define	IS_BOSS_I(_i)			IS_BOSS (gameData.Object (_i))
+#define	IS_BOSS(_objP)			((_objP)->IsRobot () && ROBOTINFO ((_objP))->bossFlag)
+#define	IS_GUIDEBOT(_objP)	((_objP)->IsRobot () && ROBOTINFO ((_objP))->companion)
+#define	IS_THIEF(_objP)		((_objP)->IsRobot () && ROBOTINFO ((_objP))->thief)
+#define	IS_BOSS(_objP)			((_objP)->IsRobot () && ROBOTINFO ((_objP))->bossFlag)
+#define	IS_BOSS_I(_i)			IS_BOSS (OBJECT (_i))
 #define	IS_MISSILE(_objP)		((_objP)->IsMissile ())
-#define	IS_MISSILE_I(_i)		IS_MISSILE (gameData.Object (_i))
+#define	IS_MISSILE_I(_i)		IS_MISSILE (OBJECT (_i))
 
 #define HOMER_FPS			25
 #define HOMER_FRAMETIME	(I2X (1) / HOMER_FPS)

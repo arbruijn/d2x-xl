@@ -2465,7 +2465,7 @@ int32_t CPositionTracker::Check (int32_t nId)
 {
 	CFixVector	v0, v1;
 	fix			t0, t1;
-	float			maxSpeed = X2F (ROBOTINFO (nId).xMaxSpeed [gameStates.app.nDifficultyLevel]);
+	float			maxSpeed = X2F (ROBOTINFO (nId)->xMaxSpeed [gameStates.app.nDifficultyLevel]);
 
 for (int32_t i = m_nCurPos, j = 0; j < m_nPosCount; j++, i = (i + 1) % POSTRACK_MAXFRAMES) {
 	if (!j) {

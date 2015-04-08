@@ -567,10 +567,9 @@ int32_t t = SDL_GetTicks ();
 if (t - m_info.tAnimate < 10)
 	return;
 
-Assert (ROBOTINFO (m_info.nRobot).nModel != -1);
 if (m_info.bInitAnimate) {
 	paletteManager.Load ("", "", 0, 0, 1);
-	OglCachePolyModelTextures (ROBOTINFO (m_info.nRobot).nModel);
+	OglCachePolyModelTextures (ROBOTINFO (m_info.nRobot)->nModel);
 	//paletteManager.ResumeEffect ();
 	m_info.bInitAnimate = SDL_GetTicks ();
 	}
@@ -699,7 +698,7 @@ for (fc.Begin (); fc.Continue (); fc.End ()) {
 		case 6:
 			{
 			SetupAnimationCanvas (baseCanv);
-			DrawModelPicture (ROBOTINFO (m_info.nRobot).nModel, &m_info.vRobotAngles);
+			DrawModelPicture (ROBOTINFO (m_info.nRobot)->nModel, &m_info.vRobotAngles);
 			AnimCanv ().Deactivate ();
 			glLineWidth (1);
 			AnimCanv ().Deactivate ();
