@@ -51,7 +51,7 @@ for (i = 0; i < nBfsLength; i++) {
 			continue;
 		if ((objP->cType.aiInfo.behavior == AIB_SNIPE) || (objP->cType.aiInfo.behavior == AIB_RUN_FROM))
 			continue;
-		botInfoP = &ROBOTINFO (objP->info.nId);
+		botInfoP = ROBOTINFO (objP);
 		if (botInfoP->bossFlag || botInfoP->companion)
 			continue;
 		objP->cType.aiInfo.behavior = AIB_SNIPE;

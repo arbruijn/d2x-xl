@@ -705,7 +705,7 @@ if (!siP->bHaveGunPos) {
 	if (siP->ailP->nextPrimaryFire <= 0)
 		siP->bHaveGunPos = CalcGunPoint (&gameData.ai.vGunPoint, objP, siP->aiP->CURRENT_GUN);
 	else
-		siP->bHaveGunPos = CalcGunPoint (&gameData.ai.vGunPoint, objP, (ROBOTINFO (objP->info.nId)->nGuns == 1) ? 0 : !siP->aiP->CURRENT_GUN);
+		siP->bHaveGunPos = CalcGunPoint (&gameData.ai.vGunPoint, objP, (ROBOTINFO (objP)->nGuns == 1) ? 0 : !siP->aiP->CURRENT_GUN);
 	siP->vVisPos = gameData.ai.vGunPoint;
 	}
 AIDoActualFiringStuff (objP, siP->aiP, siP->ailP, siP->botInfoP, siP->aiP->CURRENT_GUN);
@@ -1176,7 +1176,7 @@ if ((siP->nPrevVisibility || !(siP->nObjRef & 3)) && ReadyToFire (siP->botInfoP,
 		siP->bHaveGunPos = CalcGunPoint (&gameData.ai.vGunPoint, objP, siP->aiP->CURRENT_GUN);
 	else
 		siP->bHaveGunPos = CalcGunPoint (&gameData.ai.vGunPoint, objP,
-													(ROBOTINFO (objP->info.nId)->nGuns == 1) ? 0 : !siP->aiP->CURRENT_GUN);
+													(ROBOTINFO (objP)->nGuns == 1) ? 0 : !siP->aiP->CURRENT_GUN);
 	siP->vVisPos = gameData.ai.vGunPoint;
 	}
 else {
@@ -1391,7 +1391,7 @@ si.aiP = &objP->cType.aiInfo;
 si.ailP = gameData.ai.localInfo + si.nObject;
 si.bHaveGunPos = 0;
 si.bVisAndVecComputed = 0;
-si.botInfoP = &ROBOTINFO (objP->info.nId);
+si.botInfoP = ROBOTINFO (objP);
 si.bMultiGame = !IsRobotGame;
 
 #if 0 //DBG
@@ -1502,7 +1502,7 @@ if (AIForceFireHandler (objP, &si))
 	return;
 // Switch to next gun for next fire.
 if (!gameData.ai.nTargetVisibility) {
-	if (++(si.aiP->CURRENT_GUN) >= ROBOTINFO (objP->info.nId)->nGuns) {
+	if (++(si.aiP->CURRENT_GUN) >= ROBOTINFO (objP)->nGuns) {
 		if ((si.botInfoP->nGuns == 1) || (si.botInfoP->nSecWeaponType == -1))  // Two weapon types hack.
 			si.aiP->CURRENT_GUN = 0;
 		else

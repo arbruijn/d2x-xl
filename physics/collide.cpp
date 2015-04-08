@@ -61,7 +61,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void CObject::CollideRobotAndWall (fix xHitSpeed, int16_t nHitSeg, int16_t nHitSide, CFixVector& vHitPt)
 {
 	tAILocalInfo	*ailP = gameData.ai.localInfo + OBJ_IDX (this);
-	tRobotInfo		*botInfoP = &ROBOTINFO (info.nId);
+	tRobotInfo		*botInfoP = ROBOTINFO (info.nId);
 
 if ((info.nId != ROBOT_BRAIN) &&
 	 (cType.aiInfo.behavior != AIB_RUN_FROM) &&
@@ -1319,7 +1319,7 @@ if (gameData.time.xGame - CreationTime () < I2X (1))
 	return 0;
 if (!AttacksRobots ()) {
 	// guidebot may kill other bots
-	if (killerObjP && (killerObjP->info.nType == OBJ_ROBOT) && !ROBOTINFO (killerObjP->info.nId).companion)
+	if (killerObjP && (killerObjP->info.nType == OBJ_ROBOT) && !ROBOTINFO (killerObjP->info.nId)->companion)
 		return 0;
 	}
 if ((bIsBoss = ROBOTINFO (info.nId)->bossFlag)) {
@@ -1411,7 +1411,7 @@ int32_t DoBossWeaponCollision (CObject* robotP, CObject* weaponP, CFixVector& vH
 	int32_t	bDamage = 1;
 	int32_t	bKinetic = WI_matter (weaponP->info.nId);
 
-d2BossIndex = ROBOTINFO (robotP->info.nId).bossFlag - BOSS_D2;
+d2BossIndex = ROBOTINFO (robotP)->bossFlag - BOSS_D2;
 Assert ((d2BossIndex >= 0) && (d2BossIndex < NUM_D2_BOSSES));
 
 //	See if should spew a bot.
@@ -1556,7 +1556,7 @@ if (robotP->IsGeometry ())
 	int32_t		bInvulBoss = 0;
 	fix			nStrength = WI_strength (info.nId, gameStates.app.nDifficultyLevel);
 	CObject		*parentP = (cType.laserInfo.parent.nType != OBJ_ROBOT) ? NULL : OBJECT (cType.laserInfo.parent.nObject);
-	tRobotInfo	*botInfoP = &ROBOTINFO (robotP->info.nId);
+	tRobotInfo	*botInfoP = ROBOTINFO (robotP);
 	CWeaponInfo *wInfoP = gameData.weapons.info + info.nId;
 	bool			bAttackRobots = parentP ? parentP->AttacksRobots () || (EGI_FLAG (bRobotsHitRobots, 0, 0, 0) && gameStates.app.cheats.bRobotsKillRobots) : false;
 
@@ -1732,7 +1732,7 @@ CPlayerData *attackerP;
 if (!attackerObjP) 
 	attackerP = NULL;
 else {
-	if ((attackerObjP->info.nType == OBJ_ROBOT) && ROBOTINFO (attackerObjP->info.nId).companion) {
+	if ((attackerObjP->info.nType == OBJ_ROBOT) && ROBOTINFO (attackerObjP)->companion) {
 		// PrintLog (0, "ApplyDamageToPlayer: Player was hit by Guidebot\n");
 		return;
 		}
@@ -1782,7 +1782,7 @@ if (info.nId == N_LOCALPLAYER) {		//is this the local player?
   		playerP->nKillerObj = OBJ_IDX (attackerObjP);
 		Die ();
 		if (gameData.escort.nObjNum != -1)
-			if (attackerObjP && (attackerObjP->info.nType == OBJ_ROBOT) && (ROBOTINFO (attackerObjP->info.nId).companion))
+			if (attackerObjP && (attackerObjP->info.nType == OBJ_ROBOT) && (ROBOTINFO (attackerObjP)->companion))
 				gameData.escort.xSorryTime = gameData.time.xGame;
 		}
 	}
@@ -1856,10 +1856,10 @@ return 1;
 //	Nasty robots are the ones that attack you by running into you and doing lots of damage.
 int32_t CObject::CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt, CFixVector* vNormal)
 {
-//	if (!(ROBOTINFO (objP->info.nId)->energyDrain && PLAYER (info.nId).energy))
+//	if (!(ROBOTINFO (objP)->energyDrain && PLAYER (info.nId).energy))
 CreateExplosion (info.nSegment, vHitPt, I2X (10) / 2, ANIM_PLAYER_HIT);
 if (BumpTwoObjects (this, robotP, 0, vHitPt)) {//no damage from bump
-	audio.CreateSegmentSound (ROBOTINFO (robotP->info.nId).clawSound, info.nSegment, 0, vHitPt);
+	audio.CreateSegmentSound (ROBOTINFO (robotP)->clawSound, info.nSegment, 0, vHitPt);
 	ApplyDamageToPlayer (robotP, I2X (gameStates.app.nDifficultyLevel+1));
 	}
 return 1;

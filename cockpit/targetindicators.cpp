@@ -45,7 +45,7 @@ if (objP) {
 	if (objP->info.nType == OBJ_REACTOR)
 		return &reactorDefColor;
 	else if (objP->info.nType == OBJ_ROBOT) {
-		if (!ROBOTINFO (objP->info.nId)->companion)
+		if (!ROBOTINFO (objP)->companion)
 			return &botDefColor;
 		}
 	else if (objP->info.nType == OBJ_PLAYER) {

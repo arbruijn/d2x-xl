@@ -1990,14 +1990,14 @@ return (this == gameData.objs.guidedMissile [nPlayer].objP) && (Signature () == 
 
 bool CObject::IsGuideBot (void) 
 {
-return (info.nType == OBJ_ROBOT) && (info.nId < MAX_ROBOT_TYPES) && ROBOTINFO (info.nId).companion;
+return (info.nType == OBJ_ROBOT) && (info.nId < MAX_ROBOT_TYPES) && ROBOTINFO (info.nId)->companion;
 }
 
 //------------------------------------------------------------------------------
 
 inline bool CObject::IsThief (void) 
 {
-return (info.nType == OBJ_ROBOT) && (info.nId < MAX_ROBOT_TYPES) && ROBOTINFO (info.nId).thief;
+return (info.nType == OBJ_ROBOT) && (info.nId < MAX_ROBOT_TYPES) && ROBOTINFO (info.nId)->thief;
 }
 
 //------------------------------------------------------------------------------
@@ -2136,7 +2136,7 @@ return (fix) gameData.objs.pwrUp.info [info.nId].size;
 
 void CObject::DrainEnergy (void) 
 { 
-tRobotInfo* botInfoP = &ROBOTINFO (info.nId);
+tRobotInfo* botInfoP = ROBOTINFO (info.nId);
 if (botInfoP->energyDrain && LOCALPLAYER.Energy ()) {
 	m_xTimeEnergyDrain = gameStates.app.nSDLTicks [0];
 	LOCALPLAYER.UpdateEnergy (-I2X (botInfoP->energyDrain));

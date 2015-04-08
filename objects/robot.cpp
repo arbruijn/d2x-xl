@@ -41,7 +41,7 @@ int32_t CalcGunPoint (CFixVector *vGunPoint, CObject *objP, int32_t nGun)
 Assert(objP->info.renderType == RT_POLYOBJ || objP->info.renderType == RT_MORPH);
 //Assert(objP->info.nId < gameData.bots.nTypes [gameStates.app.bD1Data]);
 
-botInfoP = &ROBOTINFO (objP->info.nId);
+botInfoP = ROBOTINFO (objP);
 if (!(vGunPoints = GetGunPoints (objP, nGun)))
 	return 0;
 vGunPos = vGunPoints [nGun];
@@ -85,7 +85,7 @@ void SetRobotState (CObject *objP, int32_t state)
 	jointlist*	jl;
 
 Assert(objP->info.nType == OBJ_ROBOT);
-ri = &ROBOTINFO (objP->info.nId);
+ri = ROBOTINFO (objP);
 for (g = 0; g < ri->nGuns + 1; g++) {
 	jl = &ri->animStates [g][state];
 	jo = jl->offset;

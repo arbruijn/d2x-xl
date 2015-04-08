@@ -221,7 +221,7 @@ if (objP->info.nType == OBJ_PLAYER) {
 	nDefaultGuns = N_PLAYER_GUNS;
 	}
 else if (objP->info.nType == OBJ_ROBOT) {
-	vDefaultGunPoints = ROBOTINFO (objP->info.nId)->gunPoints;
+	vDefaultGunPoints = ROBOTINFO (objP)->gunPoints;
 	nDefaultGuns = MAX_GUNS;
 	}
 else

@@ -606,10 +606,10 @@ switch (objP->info.nType) {
 			objP->info.movementType = MT_PHYSICS;
 		else
 			objP->info.movementType = MT_NONE;
-		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP->info.nId)->nModel;
+		objP->rType.polyObjInfo.nModel = ROBOTINFO (objP)->nModel;
 		objP->AdjustSize ();
 		objP->rType.polyObjInfo.nSubObjFlags = 0;
-		objP->cType.aiInfo.CLOAKED = (ROBOTINFO (objP->info.nId)->cloakType?1:0);
+		objP->cType.aiInfo.CLOAKED = (ROBOTINFO (objP)->cloakType?1:0);
 		break;
 
 	case OBJ_POWERUP:
@@ -649,7 +649,7 @@ else {
 	objP->SetLife (lifeLeft << 12);
 	}
 if (objP->info.nType == OBJ_ROBOT) {
-	if (ROBOTINFO (objP->info.nId)->bossFlag) {
+	if (ROBOTINFO (objP)->bossFlag) {
 		int8_t cloaked = NDReadByte ();
 		objP->cType.aiInfo.CLOAKED = cloaked;
 		}

@@ -78,7 +78,7 @@ else if (objP->info.nType != OBJ_ROBOT) {
 	return 0;
 	}
 #endif
-else if (ROBOTINFO (objP->info.nId)->bossFlag) {
+else if (ROBOTINFO (objP)->bossFlag) {
 	int32_t i = gameData.bosses.Find (nObject);
 	if ((i >= 0) && gameData.bosses [i].m_nDying == 1)
 		return 0;
@@ -681,7 +681,7 @@ if (nGun == -1 || nGun==-2)
 	vGunPoint = objP->info.position.vPos + vFire;
 else 
 	CalcGunPoint (&vGunPoint, objP, nGun);
-robotP = &ROBOTINFO (objP->info.nId);
+robotP = ROBOTINFO (objP);
 if (nGun == -1) 
 	CreateNewWeaponSimple (&vFire, &vGunPoint, nRobot, PROXMINE_ID, 1);
 else if (nGun == -2)
@@ -996,7 +996,7 @@ if (delObjP->info.nType != OBJ_ROBOT) {
 	Int3 (); // dropping powerups for non-robot, Rob's fault
 	return;
 	}
-botInfoP = &ROBOTINFO (delObjP->info.nId);
+botInfoP = ROBOTINFO (delObjP->info.nId);
 gameData.multigame.create.nCount = 0;
 
 if (delObjP->info.contains.nCount > 0) { 

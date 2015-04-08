@@ -304,7 +304,7 @@ if (nObject < 0) {
 	}
 objP = OBJECT (nObject);
 //Set polygon-CObject-specific data
-botInfoP = ROBOTINFO (objP->info.nId);
+botInfoP = ROBOTINFO (objP);
 objP->rType.polyObjInfo.nModel = botInfoP->nModel;
 objP->rType.polyObjInfo.nSubObjFlags = 0;
 //set Physics info
@@ -313,7 +313,7 @@ objP->mType.physInfo.drag = botInfoP->drag;
 objP->mType.physInfo.flags |= (PF_LEVELLING);
 objP->SetShield (RobotDefaultShield (objP));
 default_behavior = botInfoP->behavior;
-if (ROBOTINFO (objP->info.nId)->bossFlag)
+if (ROBOTINFO (objP)->bossFlag)
 	gameData.bosses.Add (nObject);
 InitAIObject (objP->Index (), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
 CreateNSegmentPath (objP, 6, -1);		//	Create a 6 CSegment path from creation point.

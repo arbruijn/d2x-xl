@@ -233,7 +233,7 @@ if (m_objects [i] >= 0)
 CFloatVector *CLightningManager::LightningColor (CObject* objP)
 {
 if (objP->info.nType == OBJ_ROBOT) {
-	if (ROBOTINFO (objP->info.nId)->energyDrain) {
+	if (ROBOTINFO (objP)->energyDrain) {
 		static CFloatVector color = {{{1.0f, 0.8f, 0.3f, 0.2f}}};
 		return &color;
 		}

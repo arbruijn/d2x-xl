@@ -505,9 +505,9 @@ switch (nObjType) {
 	case OBJ_ROBOT:
 		*pbGotColor = 1;
 #if 0//DBG
-		return ROBOTINFO (objP->info.nId)->lighting;
+		return ROBOTINFO (objP)->lighting;
 #else
-		return ROBOTINFO (objP->info.nId)->lightcast ? ROBOTINFO (objP->info.nId)->lighting ? ROBOTINFO (objP->info.nId)->lighting : I2X (1) : 0;
+		return ROBOTINFO (objP)->lightcast ? ROBOTINFO (objP)->lighting ? ROBOTINFO (objP)->lighting : I2X (1) : 0;
 #endif
 		break;
 

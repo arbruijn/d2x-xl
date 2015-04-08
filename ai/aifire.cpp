@@ -73,7 +73,7 @@ else {
 void DoAIRobotHitAttack (CObject *robotP, CObject *targetP, CFixVector *vCollision)
 {
 	tAILocalInfo	*ailP = gameData.ai.localInfo + OBJ_IDX (robotP);
-	tRobotInfo		*botInfoP = &ROBOTINFO (robotP->info.nId);
+	tRobotInfo		*botInfoP = ROBOTINFO (robotP->info.nId);
 
 if (!robotP->AttacksObject (targetP))
 	return;
@@ -141,7 +141,7 @@ dot = CFixVector::Dot (vVecToTarget, vTargetMovementDir);
 if ((dot < -LEAD_RANGE) || (dot > LEAD_RANGE))
 	return 0;
 //	Looks like it might be worth trying to lead the player.
-botInfoP = &ROBOTINFO (objP->info.nId);
+botInfoP = ROBOTINFO (objP);
 nWeaponType = botInfoP->nWeaponType;
 if ((nGuns == 0) && (botInfoP->nSecWeaponType != -1))
 	nWeaponType = botInfoP->nSecWeaponType;
@@ -185,7 +185,7 @@ void AIFireLaserAtTarget (CObject *objP, CFixVector *vFirePoint, int32_t nGun, C
 {
 	int16_t			nShot, nObject = objP->Index ();
 	tAILocalInfo	*ailP = gameData.ai.localInfo + nObject;
-	tRobotInfo		*botInfoP = &ROBOTINFO (objP->info.nId);
+	tRobotInfo		*botInfoP = ROBOTINFO (objP);
 	CFixVector		vFire;
 	CFixVector		vRandTargetPos;
 	int16_t			nWeaponType;
@@ -207,7 +207,7 @@ if (objP->cType.aiInfo.xDyingStartTime)
 	return;		//	No firing while in death roll.
 //	Don't let the boss fire while in death roll.  Sorry, this is the easiest way to do this.
 //	If you try to key the boss off objP->cType.aiInfo.xDyingStartTime, it will hose the endlevel stuff.
-if (ROBOTINFO (objP->info.nId)->bossFlag) {
+if (ROBOTINFO (objP)->bossFlag) {
 	i = gameData.bosses.Find (nObject);
 	if ((i < 0) || (gameData.bosses [i].m_nDyingStartTime))
 		return;
@@ -383,7 +383,7 @@ if (objP->cType.aiInfo.behavior != AIB_STILL)
 	return;
 int32_t r = RandShort ();
 //	Attack robots (eg, green guy) shouldn't have behavior = still.
-//Assert (ROBOTINFO (objP->info.nId)->attackType == 0);
+//Assert (ROBOTINFO (objP)->attackType == 0);
 //	1/8 time, charge player, 1/4 time create path, rest of time, do nothing
 if (r < 4096) {
 	CreatePathToTarget (objP, 10, 1);

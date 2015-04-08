@@ -246,7 +246,7 @@ else
 	xLight = ComputeObjectLight (objP, NULL);
 //make robots brighter according to robot glow field
 if (objP->info.nType == OBJ_ROBOT)
-	xLight += (ROBOTINFO (objP->info.nId)->glow << 12);		//convert 4:4 to 16:16
+	xLight += (ROBOTINFO (objP)->glow << 12);		//convert 4:4 to 16:16
 else if (objP->info.nType == OBJ_WEAPON) {
 	if (objP->info.nId == FLARE_ID)
 		xLight += I2X (2);
@@ -443,7 +443,7 @@ if (!xCloakStartTime && !xCloakEndTime) {
 		xCloakEndTime = PLAYER (objP->info.nId).cloakTime + CLOAK_TIME_MAX;
 		}
 	else if (objP->info.nType == OBJ_ROBOT) {
-		if (!ROBOTINFO (objP->info.nId)->bossFlag) {
+		if (!ROBOTINFO (objP)->bossFlag) {
 			xCloakStartTime = gameData.time.xGame - I2X (10);
 			xCloakEndTime = gameData.time.xGame + I2X (10);
 			}

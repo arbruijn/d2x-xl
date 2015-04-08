@@ -68,7 +68,7 @@ if (dot < (I2X (1) - gameData.time.xFrame / 2)) {
 	}
 if (gameStates.gameplay.seismic.nMagnitude) {
 	CFixVector vRandom = CFixVector::Random();
-	fix scale = FixDiv (2 * gameStates.gameplay.seismic.nMagnitude, ROBOTINFO (objP->info.nId)->mass);
+	fix scale = FixDiv (2 * gameStates.gameplay.seismic.nMagnitude, ROBOTINFO (objP)->mass);
 	fVecNew += vRandom * scale;
 	}
 objP->info.position.mOrient = CFixMatrix::CreateFR(fVecNew, objP->info.position.mOrient.m.dir.r);
@@ -81,7 +81,7 @@ return dot;
 void MoveTowardsVector (CObject *objP, CFixVector *vGoalVec, int32_t bDotBased)
 {
 	tPhysicsInfo&	physicsInfo = objP->mType.physInfo;
-	tRobotInfo		*botInfoP = ROBOTINFO (objP->info.nId);
+	tRobotInfo		*botInfoP = ROBOTINFO (objP);
 
 	//	Trying to move towards player.  If forward vector much different than velocity vector,
 	//	bash velocity vector twice as much towards CPlayerData as usual.
@@ -118,7 +118,7 @@ void MoveAwayFromOtherRobots (CObject *objP, CFixVector& vVecToTarget)
 	CFixVector		vAvoidPos;
 
 vAvoidPos.SetZero ();
-if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP->info.nId)->companion) {
+if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP)->companion) {
 	// move out from all other robots in same segment that are too close
 	CObject* avoidObjP;
 	for (int16_t nObject = SEGMENT (nStartSeg)->m_objects; nObject != -1; nObject = avoidObjP->info.nNextInSeg) {
@@ -178,7 +178,7 @@ MoveTowardsVector (objP, vVecToTarget, 1);
 void MoveAroundPlayer (CObject *objP, CFixVector *vVecToTarget, int32_t fastFlag)
 {
 	tPhysicsInfo&	physInfo = objP->mType.physInfo;
-	tRobotInfo&		robotInfo = *ROBOTINFO (objP->info.nId);
+	tRobotInfo&		robotInfo = *ROBOTINFO (objP);
 	int32_t			nObject = objP->Index ();
 
 if (fastFlag == 0)
@@ -280,7 +280,7 @@ if (attackType) {
 		}
 	}
 
-if (physicsInfo.velocity.Mag () > ROBOTINFO (objP->info.nId)->xMaxSpeed [gameStates.app.nDifficultyLevel]) {
+if (physicsInfo.velocity.Mag () > ROBOTINFO (objP)->xMaxSpeed [gameStates.app.nDifficultyLevel]) {
 	physicsInfo.velocity.v.coord.x = 3 * physicsInfo.velocity.v.coord.x / 4;
 	physicsInfo.velocity.v.coord.y = 3 * physicsInfo.velocity.v.coord.y / 4;
 	physicsInfo.velocity.v.coord.z = 3 * physicsInfo.velocity.v.coord.z / 4;
@@ -296,7 +296,7 @@ void AIMoveRelativeToTarget (CObject *objP, tAILocalInfo *ailP, fix xDistToTarge
 									  int32_t nTargetVisibility)
 {
 	CObject		*dObjP;
-	tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);
+	tRobotInfo	*botInfoP = ROBOTINFO (objP);
 
 	Assert (gameData.ai.nTargetVisibility != -1);
 
@@ -310,7 +310,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 		fix			dot, xDistToLaser, fieldOfView;
 		CFixVector	vVecToLaser, fVecLaser;
 
-		fieldOfView = ROBOTINFO (objP->info.nId)->fieldOfView [gameStates.app.nDifficultyLevel];
+		fieldOfView = ROBOTINFO (objP)->fieldOfView [gameStates.app.nDifficultyLevel];
 		vVecToLaser = dObjP->info.position.vPos - objP->info.position.vPos;
 		xDistToLaser = CFixVector::Normalize (vVecToLaser);
 		dot = CFixVector::Dot (vVecToLaser, objP->info.position.mOrient.m.dir.f);
@@ -332,7 +332,7 @@ if (objP->cType.aiInfo.nDangerLaser != -1) {
 			dotLaserRobot = CFixVector::Dot (fVecLaser, vLaserToRobot);
 
 			if ((dotLaserRobot > I2X (7) / 8) && (xDistToLaser < I2X (80))) {
-				int32_t evadeSpeed = ROBOTINFO (objP->info.nId)->evadeSpeed [gameStates.app.nDifficultyLevel];
+				int32_t evadeSpeed = ROBOTINFO (objP)->evadeSpeed [gameStates.app.nDifficultyLevel];
 				gameData.ai.bEvaded = 1;
 				MoveAroundPlayer (objP, &gameData.ai.target.vDir, evadeSpeed);
 				}
@@ -436,7 +436,7 @@ else {
 		}
 	}
 
-if (ROBOTINFO (objP->info.nId)->bossFlag) {
+if (ROBOTINFO (objP)->bossFlag) {
 	Int3 ();		//	Note: Boss is poking outside mine.  Will try to resolve.
 	TeleportBoss (objP);
 	return true;

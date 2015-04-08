@@ -420,7 +420,7 @@ ValidatePath (3, origPointSegs, lNumPoints);
 // -- MK, 10/30/95 -- This code causes apparent discontinuities in the path, moving a point
 //	into a new CSegment.  It is not necessarily bad, but it makes it hard to track down actual
 //	discontinuity xProblems.
-if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP->info.nId)->companion)
+if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP)->companion)
 	MoveTowardsOutside (origPointSegs, &lNumPoints, objP, 0);
 
 #if PATH_VALIDATION
@@ -457,7 +457,7 @@ if (numPoints <= 4)
 	return numPoints;
 
 //	Prevent the buddy from polishing his path twice in one frame, which can cause him to get hung up.  Pretty ugly, huh?
-if (ROBOTINFO (objP->info.nId)->companion) {
+if (ROBOTINFO (objP)->companion) {
 	if (gameData.app.nFrameCount == Last_buddy_polish_path_frame)
 		return numPoints;
 	Last_buddy_polish_path_frame = gameData.app.nFrameCount;
@@ -818,7 +818,7 @@ void AIFollowPath (CObject *objP, int32_t nTargetVisibility, int32_t nPrevVisibi
 
 	CFixVector		vGoalPoint;
 	fix				xDistToGoal;
-	tRobotInfo*		botInfoP = &ROBOTINFO (objP->info.nId);
+	tRobotInfo*		botInfoP = ROBOTINFO (objP);
 	int32_t				originalDir, originalIndex;
 	fix				xDistToTarget;
 	int16_t				nGoalSeg = -1;
@@ -902,7 +902,7 @@ if (!(nTargetVisibility || nPrevVisibility) && (xDistToTarget > I2X (200)) && !I
 		return;
 		}
 	else {
-		tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);
+		tRobotInfo	*botInfoP = ROBOTINFO (objP);
 		fix	xCurSpeed = botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel] / 2;
 		fix	xCoverableDist = FixMul (gameData.time.xFrame, xCurSpeed);
 		// int32_t	nConnSide = ConnectedSide (objP->info.nSegment, nGoalSeg);
@@ -1112,7 +1112,7 @@ void AIPathSetOrientAndVel (CObject *objP, CFixVector *vGoalPoint, int32_t nTarg
 	fix			xSpeedScale;
 	fix			xMaxSpeed;
 	fix			dot;
-	tRobotInfo	*botInfoP = &ROBOTINFO (objP->info.nId);
+	tRobotInfo	*botInfoP = ROBOTINFO (objP);
 
 //	If evading CPlayerData, use highest difficulty level speed, plus something based on diff level
 xMaxSpeed = FixMul (botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel], 2 * objP->DriveDamage ());
@@ -1299,7 +1299,7 @@ void AttemptToResumePath (CObject *objP)
 //	int32_t				nGoalSegnum, object_segnum,
 //	int32_t				nAbsIndex, nNewPathIndex;
 
-if ((aiP->behavior == AIB_STATION) && (ROBOTINFO (objP->info.nId)->companion != 1))
+if ((aiP->behavior == AIB_STATION) && (ROBOTINFO (objP)->companion != 1))
 	if (RandShort () > 8192) {
 		tAILocalInfo *ailP = &gameData.ai.localInfo [objP->Index ()];
 

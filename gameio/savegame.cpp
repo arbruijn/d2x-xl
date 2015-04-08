@@ -1378,7 +1378,7 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 			gameData.objs.nNextSignature = objP->info.nSignature;
 		}
 	//look for, and fix, boss with bogus shield
-	if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP->info.nId)->bossFlag) {
+	if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP)->bossFlag) {
 		fix xShieldSave = objP->info.xShield;
 		CopyDefaultsToRobot (objP);		//calculate starting shield
 		//if in valid range, use loaded shield value

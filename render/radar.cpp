@@ -339,7 +339,7 @@ FORALL_OBJS (objP) {
 		}
 	else if (objP->info.nType == OBJ_ROBOT) {
 		if (AM_SHOW_ROBOTS) {
-			if (ROBOTINFO (objP->info.nId)->companion)
+			if (ROBOTINFO (objP)->companion)
 				RenderBlip (objP, guidebotColor.Red (), guidebotColor.Green (), guidebotColor.Blue (), 0.9f * 0.25f, bAbove);
 			else
 				RenderBlip (objP, robotColor.Red (), robotColor.Green (), robotColor.Blue (), 0.9f * 0.25f, bAbove);

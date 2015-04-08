@@ -229,7 +229,7 @@ FORALL_OBJS (objP) {
 
 		objP->ApplyForce (vForce);
 		//	If not a boss, stun for 2 seconds at 32 force, 1 second at 16 force
-		if (flash && !ROBOTINFO (objP->info.nId)->bossFlag) {
+		if (flash && !ROBOTINFO (objP)->bossFlag) {
 			tAIStaticInfo	*aip = &objP->cType.aiInfo;
 			int32_t				nForce = X2I (FixDiv (vForce.Mag () * flash, gameData.time.xFrame) / 128) + 2;
 
@@ -252,8 +252,8 @@ FORALL_OBJS (objP) {
 #endif
 		objP->ApplyRotForce (vNegForce);
 		if (objP->info.xShield >= 0) {
-			if (ROBOTINFO (objP->info.nId)->bossFlag &&
-				 bossProps [gameStates.app.bD1Mission][ROBOTINFO (objP->info.nId)->bossFlag - BOSS_D2].bInvulKinetic)
+			if (ROBOTINFO (objP)->bossFlag &&
+				 bossProps [gameStates.app.bD1Mission][ROBOTINFO (objP)->bossFlag - BOSS_D2].bInvulKinetic)
 				damage /= 4;
 			if (objP->ApplyDamageToRobot (damage, nParent)) {
 #if DBG
@@ -261,10 +261,10 @@ FORALL_OBJS (objP) {
 #else
 				if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS) && parentP && (nParent == LOCALPLAYER.nObject))
 #endif
-					cockpit->AddPointsToScore (ROBOTINFO (objP->info.nId)->scoreValue);
+					cockpit->AddPointsToScore (ROBOTINFO (objP)->scoreValue);
 				}
 			}
-		if (!flash && ROBOTINFO (objP->info.nId)->companion)
+		if (!flash && ROBOTINFO (objP)->companion)
 			BuddyOuchMessage (damage);
 		}
 	else if (nType == OBJ_REACTOR) {
@@ -523,10 +523,10 @@ if (objP->info.xLifeLeft > 0)
 int16_t GetExplosionVClip (CObject *objP, int32_t stage)
 {
 if (objP->info.nType == OBJ_ROBOT) {
-	if ((stage == 0) && (ROBOTINFO (objP->info.nId)->nExp1VClip > -1))
-		return ROBOTINFO (objP->info.nId)->nExp1VClip;
-	else if ((stage == 1) && (ROBOTINFO (objP->info.nId)->nExp2VClip > -1))
-		return ROBOTINFO (objP->info.nId)->nExp2VClip;
+	if ((stage == 0) && (ROBOTINFO (objP)->nExp1VClip > -1))
+		return ROBOTINFO (objP)->nExp1VClip;
+	else if ((stage == 1) && (ROBOTINFO (objP)->nExp2VClip > -1))
+		return ROBOTINFO (objP)->nExp2VClip;
 	}
 else if ((objP->info.nType == OBJ_PLAYER) && (gameData.pig.ship.player->nExplVClip >- 1))
 	return gameData.pig.ship.player->nExplVClip;
