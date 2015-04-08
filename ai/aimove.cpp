@@ -392,7 +392,7 @@ fix MoveObjectToLegalPoint (CObject *objP, CFixVector *vGoal)
 
 vGoalDir = *vGoal - objP->info.position.vPos;
 xDistToGoal = CFixVector::Normalize (vGoalDir);
-vGoalDir *= Min (FixMul (ROBOTINFO (objP->Id ()).xMaxSpeed [gameStates.app.nDifficultyLevel], gameData.time.xFrame), xDistToGoal);
+vGoalDir *= Min (FixMul (ROBOTINFO (objP)->xMaxSpeed [gameStates.app.nDifficultyLevel], gameData.time.xFrame), xDistToGoal);
 objP->info.position.vPos += vGoalDir;
 return xDistToGoal;
 }
@@ -477,7 +477,7 @@ if (xDistToGoal - objP->info.xSize <= xMinDist) {
 	}
 else {
 	//	Move one radius towards center.
-	vGoalDir *= Min (FixMul (ROBOTINFO (objP->Id ()).xMaxSpeed [gameStates.app.nDifficultyLevel], gameData.time.xFrame), xDistToGoal - xMinDist);
+	vGoalDir *= Min (FixMul (ROBOTINFO (objP)->xMaxSpeed [gameStates.app.nDifficultyLevel], gameData.time.xFrame), xDistToGoal - xMinDist);
 	objP->info.position.vPos += vGoalDir;
 	int32_t nNewSeg = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 	if (nNewSeg == -1) {

@@ -708,20 +708,22 @@ if (robotP->cType.aiInfo.REMOTE_OWNER == N_LOCALPLAYER) {
 	robotP->cType.aiInfo.REMOTE_OWNER = -1;
 	MultiDeleteControlledRobot (nRobot);
 	}
-if (bIsThief || ROBOTINFO (robotP->info.nId).thief)
+
+tRobotInfo* botInfoP = ROBOTINFO (robotP);
+if (bIsThief || botInfoP->thief)
 	DropStolenItems (robotP);
-if (ROBOTINFO (robotP->info.nId).bossFlag) {
+if (botInfoP->bossFlag) {
 	int32_t i = gameData.bosses.Find (robotP->Index ());
 	if ((i >= 0) && gameData.bosses [i].m_nDying)
 		return 0;
 	StartBossDeathSequence (robotP);
 	}
-else if (ROBOTINFO (robotP->info.nId).bDeathRoll)
+else if (botInfoP->bDeathRoll)
 	StartRobotDeathSequence (robotP);
 else {
 	if (robotP->info.nId == SPECIAL_REACTOR_ROBOT)
 		SpecialReactorStuff ();
-	if (ROBOTINFO (robotP->info.nId).kamikaze)
+	if (botInfoP->kamikaze)
 		robotP->Explode (1);	//	Kamikaze, explode right away, IN YOUR FACE!
 	else
 		robotP->Explode (STANDARD_EXPL_DELAY);
@@ -850,7 +852,7 @@ nBossIdx = gameData.bosses.Find (nBossObj);
 if (nBossIdx < 0)
 	return;
 bossObjP = OBJECT (nBossObj);
-if ((bossObjP->info.nType != OBJ_ROBOT) || !(ROBOTINFO (bossObjP->info.nId).bossFlag)) {
+if ((bossObjP->info.nType != OBJ_ROBOT) || !(ROBOTINFO (bossObjP->info.nId)->bossFlag)) {
 	Int3 (); // Got boss actions for a robot who's not a boss?
 	return;
 	}

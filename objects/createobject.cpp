@@ -117,7 +117,7 @@ if (nType == OBJ_WEAPON) {
 	}
 else if (nType == OBJ_ROBOT) {
 #if 0
-	if (ROBOTINFO ((int32_t) nId).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
+	if (ROBOTINFO ((int32_t) nId)->bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
 		return -1;
 #endif
 	}
@@ -226,7 +226,7 @@ if (nType == OBJ_WEAPON) {
 else if (nType == OBJ_ROBOT) {
 	BRP;
 #if 0
-	if (ROBOTINFO ((int32_t) nId).bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
+	if (ROBOTINFO ((int32_t) nId)->bossFlag && (BOSS_COUNT >= MAX_BOSS_COUNT))
 		return -1;
 #endif
 	}

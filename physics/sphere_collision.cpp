@@ -891,7 +891,7 @@ CreatePowerup (POW_SHIELD_BOOST, thisObjP->Index (), otherObjP->info.nSegment, v
 #endif
 if (!bCheckVisibility && (otherObjP->info.nType != OBJ_POWERUP) 
 #if 0 // well, the Guidebot should actually cause critical damage when ramming the player, shouldn't it?
-	 && ((otherObjP->info.nType != OBJ_ROBOT) || !ROBOTINFO (otherObjP->info.nId).companion)
+	 && ((otherObjP->info.nType != OBJ_ROBOT) || !ROBOTINFO (otherObjP->info.nId)->companion)
 #endif
 	 ) {
 	vHit = thisObjP->RegisterHit (vHit, nModel);

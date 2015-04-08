@@ -870,7 +870,7 @@ else {
 	NDWriteByte ((uint8_t)life);
 	}
 if (o.info.nType == OBJ_ROBOT) {
-	if (ROBOTINFO (o.info.nId).bossFlag) {
+	if (ROBOTINFO (o.info.nId)->bossFlag) {
 		int32_t i = gameData.bosses.Find (objP->Index ());
 		if ((i >= 0) &&
 			 (gameData.time.xGame > gameData.bosses [i].m_nCloakStartTime) && 

@@ -1131,7 +1131,7 @@ int32_t CSegment::BlowupTexture (int32_t nSide, CFixVector& vHit, CObject* blowe
 
 if (parentP) {
 	// only the player and the guidebot may blow a texture up if a trigger is attached to it
-	if (parentP && (parentP->info.nType != OBJ_PLAYER) && ((parentP->info.nType != OBJ_ROBOT) || !ROBOTINFO (parentP->info.nId).companion) && wallP && (wallP->nTrigger < gameData.trigs.m_nTriggers))
+	if (parentP && (parentP->info.nType != OBJ_PLAYER) && ((parentP->info.nType != OBJ_ROBOT) || !ROBOTINFO (parentP)->companion) && wallP && (wallP->nTrigger < gameData.trigs.m_nTriggers))
 		return 0;
 	}
 

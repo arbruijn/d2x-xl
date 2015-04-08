@@ -95,17 +95,17 @@ int32_t DoSillyAnimation (CObject *objP)
 {
 	int32_t			nObject = objP->Index ();
 	tJointPos*		jointPositions;
-	int32_t			robotType, nGun, robotState, nJointPositions;
+	int32_t			robotType = objP->info.nId, nGun, robotState, nJointPositions;
 	tPolyObjInfo*	polyObjInfo = &objP->rType.polyObjInfo;
 	tAIStaticInfo*	aiP = &objP->cType.aiInfo;
 	int32_t			nGunCount, at_goal;
 	int32_t			attackType;
 	int32_t			nFlinchAttackScale = 1;
+	tRobotInfo*		botInfoP = ROBOTINFO (robotType);
 
-robotType = objP->info.nId;
-if (0 > (nGunCount = ROBOTINFO (robotType).nGuns))
+if (0 > (nGunCount = botInfoP->nGuns))
 	return 0;
-attackType = ROBOTINFO (robotType).attackType;
+attackType = botInfoP->attackType;
 robotState = xlatAnimation [aiP->GOAL_STATE];
 if (attackType) // && ((robotState == AS_FIRE) || (robotState == AS_RECOIL)))
 	nFlinchAttackScale = nAttackScale;
