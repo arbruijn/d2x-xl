@@ -199,7 +199,7 @@ int16_t nPrevShot = objP->Shots ().nObject;
 if (nObject == nDbgObj)
 	nObject = nDbgObj;
 #endif
-CObject *prevShotP = OBJECTEX (nPrevShot, GAMEDATA_CHECK_BUFFER);
+CObject *prevShotP = OBJECTEX (nPrevShot, GAMEDATA_ERRLOG_BUFFER);
 if (prevShotP && (prevShotP->info.nSignature == objP->Shots ().nSignature)) { // the previous shot fired by that object is still alive
 	CObject *lightP, *shotP = OBJECT (nShot);
 	int16_t nLight = m_objects [nPrevShot].nObject; // get that shot's light object
