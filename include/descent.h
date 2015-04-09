@@ -3761,7 +3761,7 @@ class CGameData {
 			}
 
 		inline tRobotInfo* RobotInfo (int32_t nId, int32_t nChecks = GAMEDATA_ERRLOG_NONE) {
-			return botData.info [gameStates.app.bD1Mission && (nId < bots.nTypes [1])] + nId; 
+			return botData.info [gameStates.app.bD1Mission && (nId < botData.nTypes [1])] + nId; 
 			}
 
 		inline tRobotInfo* RobotInfo (CObject* objP, int32_t nChecks) {
