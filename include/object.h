@@ -951,6 +951,11 @@ class CObject : public CObjectInfo {
 		inline fix TimeLastHit (void) { return m_xTimeLastHit; }
 		inline fix TimeLastEffect (void) { return m_xTimeLastEffect; }
 		inline tShotInfo& Shots (void) { return m_shots; }
+		inline bool IsShot (CObject* objP) { return (m_shots.nObject == objP->Index ()) && (m_shots.nSignature == objP->Signature ()); }
+		inline void ClearShot (void) { 
+			m_shots.nObject = -1; 
+			m_shots.nSignature = -1; 
+			}
 		inline CFixVector StartVel (void) { return m_vStartVel; }
 		inline CFixVector RenderPos (void) { return m_vRenderPos.IsZero () ? info.position.vPos : m_vRenderPos; }
 

@@ -199,35 +199,33 @@ int16_t nPrevShot = objP->Shots ().nObject;
 if (nObject == nDbgObj)
 	nObject = nDbgObj;
 #endif
-if (nPrevShot >= 0) {
-	CObject *prevShotP = OBJECTEX (nPrevShot, GAMEDATA_ERRLOG_ALL);
-	if (prevShotP && (prevShotP->info.nSignature == objP->Shots ().nSignature)) {
-		CObject *lightP, *shotP = OBJECT (nShot);
-		int16_t nLight = m_objects [nPrevShot].nObject;
-		if (nLight < 0)
+CObject *prevShotP = OBJECTEX (nPrevShot, GAMEDATA_CHECK_BUFFER);
+if (prevShotP && (prevShotP->info.nSignature == objP->Shots ().nSignature)) { // the previous shot fired by that object is still alive
+	CObject *lightP, *shotP = OBJECT (nShot);
+	int16_t nLight = m_objects [nPrevShot].nObject; // get that shot's light object
+	if (nLight < 0)
+		lightP = prevShotP;
+	else {
+		lightP = OBJECT (nLight);
+		if (!lightP || (lightP->info.nSignature != m_objects [nPrevShot].nSignature)) {
 			lightP = prevShotP;
-		else {
-			lightP = OBJECT (nLight);
-			if (!lightP || (lightP->info.nSignature != m_objects [nPrevShot].nSignature)) {
-				lightP = prevShotP;
-				nLight = -1;
-				}
+			nLight = -1;
 			}
-		if (CFixVector::Dist (shotP->info.position.vPos, lightP->info.position.vPos) < I2X (15)) {
+		}
+	if (CFixVector::Dist (shotP->info.position.vPos, lightP->info.position.vPos) < I2X (15)) {
+		if (nLight >= 0) {
+			m_objects [nShot].nObject = nLight;
+			lightP->cType.lightInfo.nObjects++;
+			}
+		else {
+			nLight = Create (prevShotP);
+			m_objects [nShot].nObject =
+			m_objects [nPrevShot].nObject = nLight;
 			if (nLight >= 0) {
-				m_objects [nShot].nObject = nLight;
-				lightP->cType.lightInfo.nObjects++;
-				}
-			else {
-				nLight = Create (prevShotP);
-				m_objects [nShot].nObject =
-				m_objects [nPrevShot].nObject = nLight;
-				if (nLight >= 0) {
-					lightP = OBJECT (nLight);
-					m_objects [nShot].nSignature =
-					m_objects [nPrevShot].nSignature = lightP->info.nSignature;
-					lightP->cType.lightInfo.nObjects = 2;
-					}
+				lightP = OBJECT (nLight);
+				m_objects [nShot].nSignature =
+				m_objects [nPrevShot].nSignature = lightP->info.nSignature;
+				lightP->cType.lightInfo.nObjects = 2;
 				}
 			}
 		}

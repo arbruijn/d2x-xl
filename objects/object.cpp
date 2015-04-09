@@ -1720,8 +1720,11 @@ if (childObjP->cType.explInfo.attached.nPrev != -1) {
 	refObjP = OBJECT (childObjP->cType.explInfo.attached.nPrev);
 	refObjP->cType.explInfo.attached.nNext = childObjP->cType.explInfo.attached.nNext;
 	}
-else if (parentObjP)
+else if (parentObjP) {
 	parentObjP->info.nAttachedObj = childObjP->cType.explInfo.attached.nNext;
+	if (parentObjP->IsShot (childObjP))
+		parentObjP->ClearShot ();
+	}
 if (!parentObjP && refObjP) {
 	parentObjP = OBJECT (refObjP->cType.explInfo.attached.nParent);
 	FixObjectList (parentObjP, refObjP);

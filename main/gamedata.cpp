@@ -2524,6 +2524,8 @@ if (nChecks) {
 		return (CObject*) GameDataError ("object", "underflow", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
 	if (nObject > objData.nLastObject [0])
 		return (CObject*) GameDataError ("object", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
+	if ((uint32_t) nObject >= objData.objects.Length ())
+		return (CObject*) GameDataError ("object", "overflow", nChecks & GAMEDATA_ERRLOG_BUFFER, pszFile, nLine);
 	}
 return objData.objects + nObject; 
 }
@@ -2538,6 +2540,8 @@ if (nChecks) {
 		return (CSegment*) GameDataError ("segment", "underflow", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
 	if (nSegment >= segData.nSegments)
 		return (CSegment*) GameDataError ("segment", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
+	if ((uint32_t) nSegment >= segData.segments.Length ())
+		return (CSegment*) GameDataError ("segment", "overflow", nChecks & GAMEDATA_ERRLOG_BUFFER, pszFile, nLine);
 	}
 return segData.segments + nSegment; 
 }
@@ -2552,6 +2556,8 @@ if (nChecks) {
 		return (CWall*) GameDataError ("wall", "underflow", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
 	if (nWall >= wallData.nWalls)
 		return (CWall*) GameDataError ("wall", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
+	if ((uint32_t) nWall >= wallData.walls.Length ())
+		return (CWall*) GameDataError ("wall", "overflow", nChecks & GAMEDATA_ERRLOG_BUFFER, pszFile, nLine);
 	}
 return wallData.walls + nWall; 
 }
@@ -2570,6 +2576,8 @@ if (nChecks) {
 		return (CTrigger*) GameDataError ("trigger", "null", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
 	if (nTrigger >= trigData.m_nTriggers [nType])
 		return (CTrigger*) GameDataError ("trigger", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
+	if ((uint32_t) nTrigger >= trigData.triggers [nType].Length ())
+		return (CTrigger*) GameDataError ("trigger", "overflow", nChecks & GAMEDATA_ERRLOG_BUFFER, pszFile, nLine);
 	}
 return trigData.triggers [nType] + nTrigger; 
 }
