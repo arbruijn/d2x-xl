@@ -3985,12 +3985,12 @@ extern fix nDebrisLife [];
 #define RENDERPOINTS			gameData.render.mine.visibility [0].points
 
 #if DBG
-	#define SEGMENT(_id)				gameData.Segment (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
-	#define OBJECT(_id)				gameData.Object (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
-	#define WALL(_id)					gameData.Wall (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
-	#define GEOTRIGGER(_id)			gameData.GeoTrigger (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
-	#define OBJTRIGGER(_id)			gameData.ObjTrigger (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
-	#define ROBOTINFO(_id)			gameData.RobotInfo (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
+	#define SEGMENT(_id)				gameData.Segment (_id, GAMEDATA_ERRLOG_DEFAULT, __FILE__, __LINE__)
+	#define OBJECT(_id)				gameData.Object (_id, GAMEDATA_ERRLOG_DEFAULT, __FILE__, __LINE__)
+	#define WALL(_id)					gameData.Wall (_id, GAMEDATA_ERRLOG_DEFAULT, __FILE__, __LINE__)
+	#define GEOTRIGGER(_id)			gameData.GeoTrigger (_id, GAMEDATA_ERRLOG_DEFAULT, __FILE__, __LINE__)
+	#define OBJTRIGGER(_id)			gameData.ObjTrigger (_id, GAMEDATA_ERRLOG_DEFAULT, __FILE__, __LINE__)
+	#define ROBOTINFO(_id)			gameData.RobotInfo (_id, GAMEDATA_ERRLOG_DEFAULT, __FILE__, __LINE__)
 	#define SEGMENTEX(_id, _f)		gameData.Segment (_id, _f, __FILE__, __LINE__)
 	#define OBJECTEX(_id, _f)		gameData.Object (_id, _f, __FILE__, __LINE__)
 	#define WALLEX(_id, _f)			gameData.Wall (_id, _f, __FILE__, __LINE__)
