@@ -617,7 +617,7 @@ uint16_t CalcSegmentCheckSum (void)
 	uint32_t sum1, sum2;
 
 sum1 = sum2 = 0;
-for (int32_t i = 0; i < gameData.segs.nSegments; i++)
+for (int32_t i = 0; i < gameData.segData.nSegments; i++)
 	SEGMENTS [i].CheckSum (sum1, sum2);
 return sum1 * 256 + sum2 % 255;
 }
