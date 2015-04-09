@@ -475,7 +475,7 @@ if (gameStates.render.bHaveSkyBox) {
 	gameStates.render.nType = RENDER_TYPE_SKYBOX;
 	gameStates.render.bFullBright = 1;
 	BeginRenderFaces (RENDER_TYPE_SKYBOX);
-	for (i = gameData.segs.skybox.ToS (), segP = gameData.segs.skybox.Buffer (); i; i--, segP++) {
+	for (i = gameData.segData.skybox.ToS (), segP = gameData.segData.skybox.Buffer (); i; i--, segP++) {
 		nSegment = *segP;
 		segFaceP = SEGFACES + nSegment;
 		for (j = segFaceP->nFaces, faceP = segFaceP->faceP; j; j--, faceP++) {
@@ -502,7 +502,7 @@ if (bAutomap) {
 		if (!gameOpts->render.automap.bSkybox && (SEGMENT (nSegment)->m_function == SEGMENT_FUNC_SKYBOX))
 			return 0;
 		}
-	else if (gameData.objs.viewerP == gameData.objs.consoleP) {
+	else if (gameData.objData.viewerP == gameData.objData.consoleP) {
 #if DBG
 		if (gameStates.render.nWindow [0])
 			BRP;
@@ -761,7 +761,7 @@ int16_t RenderSegments (int32_t nType, int32_t bHeadlight)
 
 if (nType == RENDER_TYPE_CORONAS) {
 	// render mine segment by segment
-	if (gameData.render.mine.visibility [0].nSegments == gameData.segs.nSegments) {
+	if (gameData.render.mine.visibility [0].nSegments == gameData.segData.nSegments) {
 		CSegFace *faceP = FACES.faces.Buffer ();
 		for (i = FACES.nFaces; i; i--, faceP++)
 			if (RenderMineFace (SEGMENT (faceP->m_info.nSegment), faceP, nType))

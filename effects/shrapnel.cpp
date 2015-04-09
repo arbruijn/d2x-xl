@@ -280,8 +280,8 @@ FORALL_STATIC_OBJS (objP)
 		Update (objP);
 FORALL_ACTOR_OBJS (objP) {
 	i = objP->Index ();
-	if (gameData.objs.bWantEffect [i] & SHRAPNEL_SMOKE) {
-		gameData.objs.bWantEffect [i] &= ~SHRAPNEL_SMOKE;
+	if (gameData.objData.bWantEffect [i] & SHRAPNEL_SMOKE) {
+		gameData.objData.bWantEffect [i] &= ~SHRAPNEL_SMOKE;
 		Create (objP);
 		}
 	}

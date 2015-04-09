@@ -228,7 +228,7 @@ objProducerP->xDisableTime = OBJECT_PRODUCER_LIFE;
 
 //	Create a bright CObject in the CSegment.
 pos = objProducerP->vCenter;
-delta = gameData.segs.vertices [SEGMENT (nSegment)->m_vertices [0]] - objProducerP->vCenter;
+delta = gameData.segData.vertices [SEGMENT (nSegment)->m_vertices [0]] - objProducerP->vCenter;
 pos += delta * (I2X (1)/2);
 nObject = CreateLight (SINGLE_LIGHT_ID, nSegment, pos);
 if (nObject != -1) {
@@ -395,7 +395,7 @@ else if (objProducerP->bFlag == 1) {			// Wait until 1/2 second after VCLIP star
 		gameData.multiplayer.maxPowerupsAllowed [nType]++;
 		gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 		}
-	objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+	objP->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [objP->info.nId].nClipIndex;
 	objP->rType.animationInfo.xFrameTime = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
 	objP->rType.animationInfo.nCurFrame = 0;
 	objP->info.nCreator = SEGMENT (objProducerP->nSegment)->m_owner;
@@ -453,7 +453,7 @@ else if (objProducerP->bFlag == 1) {			// Wait until 1/2 second after VCLIP star
 		objP = OBJECT (nObject);
 		if (IsMultiGame)
 			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
-		objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+		objP->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [objP->info.nId].nClipIndex;
 		objP->rType.animationInfo.xFrameTime = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
 		objP->rType.animationInfo.nCurFrame = 0;
 		objP->info.nCreator = SEGMENT (objProducerP->nSegment)->m_owner;
@@ -470,7 +470,7 @@ else {
 
 inline int32_t VertigoObjFlags (tObjectProducerInfo *miP)
 {
-return miP->objFlags [2] = gameData.objs.nVertigoBotFlags;
+return miP->objFlags [2] = gameData.objData.nVertigoBotFlags;
 }
 
 //	----------------------------------------------------------------------------------------------------------
@@ -520,7 +520,7 @@ if (!(gameData.producers.robotMakers [nObjProducer].objFlags [0] ||
 	return;
 
 // Wait until we have a free slot for this puppy...
-if (/*!gameStates.app.bD2XLevel &&*/ (LOCALPLAYER.RemainingRobots () >= gameData.objs.nInitialRobots + MAX_EXCESS_OBJECTS)) {
+if (/*!gameStates.app.bD2XLevel &&*/ (LOCALPLAYER.RemainingRobots () >= gameData.objData.nInitialRobots + MAX_EXCESS_OBJECTS)) {
 #if DBG
 	if (gameData.app.nFrameCount > FrameCount_last_msg + 20) {
 #if TRACE
@@ -536,7 +536,7 @@ if (!objProducerP->bFlag) {
 	if (IsMultiGame)
 		topTime = ROBOT_GEN_TIME;
 	else {
-		xDistToPlayer = CFixVector::Dist(gameData.objs.consoleP->info.position.vPos, objProducerP->vCenter);
+		xDistToPlayer = CFixVector::Dist(gameData.objData.consoleP->info.position.vPos, objProducerP->vCenter);
 		topTime = xDistToPlayer / 64 + RandShort () * 2 + I2X (2);
 		if (topTime > ROBOT_GEN_TIME)
 			topTime = ROBOT_GEN_TIME + RandShort ();
@@ -611,7 +611,7 @@ else if (objProducerP->bFlag == 1) {			// Wait until 1/2 second after VCLIP star
 		MultiSendCreateRobot (PRODUCER_IDX (objProducerP), objP->Index (), nType);
 	objP->info.nCreator = (PRODUCER_IDX (objProducerP)) | 0x80;
 	// Make object face player...
-	vDir = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
+	vDir = gameData.objData.consoleP->info.position.vPos - objP->info.position.vPos;
 	objP->info.position.mOrient = CFixMatrix::CreateFU(vDir, objP->info.position.mOrient.m.dir.u);
 	//objP->info.position.mOrient = CFixMatrix::CreateFU(vDir, &objP->info.position.mOrient.m.v.u, NULL);
 	objP->MorphStart ();
@@ -808,7 +808,7 @@ int32_t GatherFlagGoals (void)
 	CSegment*	segP = SEGMENTS.Buffer ();
 
 memset (flagGoalList, 0xff, sizeof (flagGoalList));
-for (h = i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
+for (h = i = 0; i <= gameData.segData.nLastSegment; i++, segP++) {
 	if (segP->m_function == SEGMENT_FUNC_GOAL_BLUE) {
 		j = 0;
 		h |= 1;

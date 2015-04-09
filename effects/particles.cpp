@@ -748,7 +748,7 @@ bool CParticle::IsVisible (int32_t nThread)
 #if 0
 	return gameData.render.mine.Visible (m_nSegment);
 #else
-if ((m_nSegment < 0) || (m_nSegment >= gameData.segs.nSegments))
+if ((m_nSegment < 0) || (m_nSegment >= gameData.segData.nSegments))
 	return false;
 if (gameData.render.mine.Visible (m_nSegment))
 	return true;
@@ -811,7 +811,7 @@ for (int32_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 	int32_t nFaces = nFaceCount [nThread][nSide];
 	int32_t nInFront = 0;
 	for (int32_t nFace = 0; nFace < nFaces; nFace++) {
-		fix nDist = m_vPos.DistToPlane (sideP->m_normals [nFace], gameData.segs.vertices [sideP->m_nMinVertex [0]]);
+		fix nDist = m_vPos.DistToPlane (sideP->m_normals [nFace], gameData.segData.vertices [sideP->m_nMinVertex [0]]);
 		if (nDist > -PLANE_DIST_TOLERANCE)
 			nInFront++;
 		else
@@ -1370,9 +1370,9 @@ void CParticle::Setup (bool alphaControl, float fBrightness, char nFrame, char n
 	float fScale;
 
 #if 0
-vCenter.Assign (gameData.objs.consoleP->Orientation ().m.dir.f); //m_vPos);
+vCenter.Assign (gameData.objData.consoleP->Orientation ().m.dir.f); //m_vPos);
 vCenter *= 10.0;
-fVec.Assign (gameData.objs.consoleP->Position ()); 
+fVec.Assign (gameData.objData.consoleP->Position ()); 
 vCenter += fVec;
 #else
 vCenter.Assign (m_vPos);

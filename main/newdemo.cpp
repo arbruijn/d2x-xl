@@ -200,7 +200,7 @@ objP->info.position.mOrient.m.dir.u.v.coord.z = *sp++ << MATRIX_PRECISION;
 objP->info.position.mOrient.m.dir.f.v.coord.z = *sp++ << MATRIX_PRECISION;
 nSegment = spp->nSegment;
 objP->info.nSegment = nSegment;
-const CFixVector& v = gameData.segs.vertices [SEGMENT (nSegment)->m_vertices [0]];
+const CFixVector& v = gameData.segData.vertices [SEGMENT (nSegment)->m_vertices [0]];
 objP->info.position.vPos.v.coord.x = (spp->pos [0] << RELPOS_PRECISION) + v.v.coord.x;
 objP->info.position.vPos.v.coord.y = (spp->pos [1] << RELPOS_PRECISION) + v.v.coord.y;
 objP->info.position.vPos.v.coord.z = (spp->pos [2] << RELPOS_PRECISION) + v.v.coord.z;
@@ -1754,8 +1754,8 @@ NDWriteByte ((int8_t)level_num);
 NDWriteByte ((int8_t)missionManager.nCurrentLevel);
 
 if (bJustStartedRecording == 1) {
-	NDWriteInt (gameData.walls.nWalls);
-	for (i = 0; i < gameData.walls.nWalls; i++) {
+	NDWriteInt (gameData.wallData.nWalls);
+	for (i = 0; i < gameData.wallData.nWalls; i++) {
 		NDWriteByte (WALL (i)->nType);
 		if (gameStates.app.bNostalgia || gameOpts->demo.bOldFormat)
 			NDWriteByte (uint8_t (WALL (i)->flags));
@@ -1904,13 +1904,13 @@ for (i = 0; i < gameData.reactor.triggers.m_nLinks; i++) {
 	connSegP = SEGMENT (segP->m_children [side]);
 	nConnSide = segP->ConnectedSide (connSegP);
 	anim_num = segP->Wall (side)->nClip;
-	n = gameData.walls.animP [anim_num].nFrameCount;
-	if (gameData.walls.animP [anim_num].flags & WCF_TMAP1)
+	n = gameData.wallData.animP [anim_num].nFrameCount;
+	if (gameData.wallData.animP [anim_num].flags & WCF_TMAP1)
 		segP->m_sides [side].m_nBaseTex = 
-		connSegP->m_sides [nConnSide].m_nBaseTex = gameData.walls.animP [anim_num].frames [n-1];
+		connSegP->m_sides [nConnSide].m_nBaseTex = gameData.wallData.animP [anim_num].frames [n-1];
 	else
 		segP->m_sides [side].m_nOvlTex = 
-		connSegP->m_sides [nConnSide].m_nOvlTex = gameData.walls.animP [anim_num].frames [n-1];
+		connSegP->m_sides [nConnSide].m_nOvlTex = gameData.wallData.animP [anim_num].frames [n-1];
 	}
 }
 
@@ -1958,7 +1958,7 @@ int32_t NDReadFrameInfo (void)
 bDone = 0;
 nTag = 255;
 #if 0
-for (int32_t nObject = 1; nObject < gameData.objs.nLastObject [0]; nObject++)
+for (int32_t nObject = 1; nObject < gameData.objData.nLastObject [0]; nObject++)
 	if ((OBJECT (nObject)->info.nType != OBJ_NONE) && (OBJECT (nObject)->info.nType != OBJ_EFFECT))
 		ReleaseObject (nObject);
 #else
@@ -2006,23 +2006,23 @@ while (!bDone) {
 					}
 				}
 			else {
-				gameData.objs.viewerP = OBJECTS.Buffer ();
-				NDReadObject (gameData.objs.viewerP);
+				gameData.objData.viewerP = OBJECTS.Buffer ();
+				NDReadObject (gameData.objData.viewerP);
 				if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 					CATCH_BAD_READ
-					nSegment = gameData.objs.viewerP->info.nSegment;
-					gameData.objs.viewerP->info.nNextInSeg = 
-					gameData.objs.viewerP->info.nPrevInSeg = 
-					gameData.objs.viewerP->info.nSegment = -1;
+					nSegment = gameData.objData.viewerP->info.nSegment;
+					gameData.objData.viewerP->info.nNextInSeg = 
+					gameData.objData.viewerP->info.nPrevInSeg = 
+					gameData.objData.viewerP->info.nSegment = -1;
 
 					// HACK HACK HACK -- since we have multiple level recording, it can be the case
 					// HACK HACK HACK -- that when rewinding the demo, the viewer is in a CSegment
 					// HACK HACK HACK -- that is greater than the highest index of segments.  Bash
 					// HACK HACK HACK -- the viewer to CSegment 0 for bogus view.
 
-					if (nSegment > gameData.segs.nLastSegment)
+					if (nSegment > gameData.segData.nLastSegment)
 						nSegment = 0;
-					gameData.objs.viewerP->LinkToSeg (nSegment);
+					gameData.objData.viewerP->LinkToSeg (nSegment);
 					}
 				}
 			break;
@@ -2043,9 +2043,9 @@ while (!bDone) {
 			if (gameData.demo.nVcrState != ND_STATE_PAUSED) {
 				nSegment = objP->info.nSegment;
 				objP->info.nNextInSeg = objP->info.nPrevInSeg = objP->info.nSegment = -1;
-				// HACK HACK HACK -- don't render OBJECTS is segments greater than gameData.segs.nLastSegment
+				// HACK HACK HACK -- don't render OBJECTS is segments greater than gameData.segData.nLastSegment
 				// HACK HACK HACK -- (see above)
-				if (nSegment > gameData.segs.nLastSegment)
+				if (nSegment > gameData.segData.nLastSegment)
 					break;
 				objP->LinkToSeg (nSegment);
 				if ((objP->info.nType == OBJ_PLAYER) && (gameData.demo.nGameMode & GM_MULTI)) {
@@ -2718,12 +2718,12 @@ while (!bDone) {
 				oppSegP = SEGMENT (segP->m_children [nSide]);
 				nConnSide = segP->ConnectedSide (oppSegP);
 				anim_num = segP->Wall (nSide)->nClip;
-				if (gameData.walls.animP [anim_num].flags & WCF_TMAP1)
+				if (gameData.wallData.animP [anim_num].flags & WCF_TMAP1)
 					segP->m_sides [nSide].m_nBaseTex = oppSegP->m_sides [nConnSide].m_nBaseTex =
-						gameData.walls.animP [anim_num].frames [0];
+						gameData.wallData.animP [anim_num].frames [0];
 				else
 					segP->m_sides [nSide].m_nOvlTex = 
-					oppSegP->m_sides [nConnSide].m_nOvlTex = gameData.walls.animP [anim_num].frames [0];
+					oppSegP->m_sides [nConnSide].m_nOvlTex = gameData.wallData.animP [anim_num].frames [0];
 				}
 			else
 				SEGMENT (nSegment)->OpenDoor (nSide);
@@ -2813,8 +2813,8 @@ while (!bDone) {
 			meshBuilder.ComputeFaceKeys ();
 			gameData.demo.bCtrlcenDestroyed = 0;
 			if (bJustStartedPlayback) {
-				gameData.walls.nWalls = NDReadInt ();
-				for (i = 0; i < gameData.walls.nWalls; i++) {   // restore the walls
+				gameData.wallData.nWalls = NDReadInt ();
+				for (i = 0; i < gameData.wallData.nWalls; i++) {   // restore the walls
 					WALL (i)->nType = NDReadByte ();
 					if (gameData.demo.nVersion < 19)
 						WALL (i)->flags = uint16_t (NDReadByte ());
@@ -2990,7 +2990,7 @@ for (i = nFrames; i; i--) {
 
 /*
  *  routine to interpolate the viewer position.  the current position is
- *  stored in the gameData.objs.viewerP CObject.  Save this position, and read the next
+ *  stored in the gameData.objData.viewerP CObject.  Save this position, and read the next
  *  frame to get all OBJECTS read in.  Calculate the delta playback and
  *  the delta recording frame times between the two frames, then intepolate
  *  the viewers position accordingly.  gameData.demo.xRecordedTime is the time that it
@@ -3013,7 +3013,7 @@ void NDInterpolateFrame (fix d_play, fix d_recorded)
 factor = FixDiv (d_play, d_recorded);
 if (factor > I2X (1))
 	factor = I2X (1);
-nCurObjs = gameData.objs.nLastObject [0];
+nCurObjs = gameData.objData.nLastObject [0];
 #if 1
 memcpy (curObjs, OBJECTS.Buffer (), OBJECTS.Size ());
 #else
@@ -3076,7 +3076,7 @@ for (i = curObjs + nCurObjs, curObjP = curObjs; curObjP < i; curObjP++) {
 
 // get back to original position in the demo file.  Reread the current
 // frame information again to reset all of the CObject stuff not covered
-// with gameData.objs.nLastObject [0] and the CObject array (previously rendered
+// with gameData.objData.nLastObject [0] and the CObject array (previously rendered
 // OBJECTS, etc....)
 NDBackFrames (1);
 NDBackFrames (1);
@@ -3084,7 +3084,7 @@ if (NDReadFrameInfo () == -1)
 	NDStopPlayback ();
 gameData.demo.nVcrState = ND_STATE_PLAYBACK;
 OBJECTS = curObjs;
-gameData.objs.nLastObject [0] = nCurObjs;
+gameData.objData.nLastObject [0] = nCurObjs;
 }
 
 //	-----------------------------------------------------------------------------
@@ -3191,7 +3191,7 @@ else {
 				CObject *curObjs, *objP;
 				int32_t i, j, nObjects, nLevel, nSig;
 
-				nObjects = gameData.objs.nLastObject [0];
+				nObjects = gameData.objData.nLastObject [0];
 				if (!(curObjs = new CObject [nObjects + 1])) {
 					Warning (TXT_INTERPOLATE_BOTS, sizeof (CObject) * nObjects);
 					break;
@@ -3524,7 +3524,7 @@ else
 bNDBadRead = 0;
 ChangePlayerNumTo (0);                 // force playernum to 0
 strncpy (gameData.demo.callSignSave, LOCALPLAYER.callsign, CALLSIGN_LEN);
-gameData.objs.viewerP = gameData.objs.consoleP = OBJECTS.Buffer ();   // play properly as if console player
+gameData.objData.viewerP = gameData.objData.consoleP = OBJECTS.Buffer ();   // play properly as if console player
 if (NDReadDemoStart (bRandom)) {
 	ndInFile.Close ();
 	ndOutFile.Close ();

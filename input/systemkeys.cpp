@@ -162,7 +162,7 @@ else if (key == KEY_PAUSE)   {
 	gameStates.app.bDeathSequenceAborted = 0;		// Clear because code above sets this for any key.
 	}
 else if (key == KEY_ESC) {
-	if (gameData.objs.consoleP->info.nFlags & OF_EXPLODING)
+	if (gameData.objData.consoleP->info.nFlags & OF_EXPLODING)
 		gameStates.app.bDeathSequenceAborted = 1;
 	}
 else if (key == KEY_BACKSPACE)  {
@@ -771,7 +771,7 @@ void HandleTestKey(int32_t key)
 			break;
 #endif
 		case KEYDBGGED + KEY_SHIFTED + KEY_LAPOSTRO:
-			gameData.objs.viewerP=gameData.objs.consoleP;
+			gameData.objData.viewerP=gameData.objData.consoleP;
 			break;
 
 	#if DBG
@@ -838,11 +838,11 @@ void HandleTestKey(int32_t key)
 		case KEYDBGGED + KEY_SPACEBAR:		//KEY_F7:				// Toggle physics flying
 			slew_stop ();
 			GameFlushInputs ();
-			if (gameData.objs.consoleP->info.controlType != CT_FLYING) {
-				FlyInit(gameData.objs.consoleP);
+			if (gameData.objData.consoleP->info.controlType != CT_FLYING) {
+				FlyInit(gameData.objData.consoleP);
 				gameStates.app.bGameSuspended &= ~SUSP_ROBOTS;	//robots move
 			} else {
-				slew_init(gameData.objs.consoleP);			//start player slewing
+				slew_init(gameData.objData.consoleP);			//start player slewing
 				gameStates.app.bGameSuspended |= SUSP_ROBOTS;	//robots don't move
 			}
 			break;
@@ -906,13 +906,13 @@ if (!gameStates.app.bEndLevelSequence && !gameStates.app.bPlayerIsDead) {
 	//	If automap key pressed, enable automap unless you are in network mode, control center destroyed and < 10 seconds left
 	if (controls [0].automapDownCount &&
 		 !LOCALOBJECT->Appearing (false) &&
-		 !gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted &&
+		 !gameData.objData.speedBoost [OBJ_IDX (gameData.objData.consoleP)].bBoosted &&
 		 !(IsMultiGame && gameData.reactor.bDestroyed && (gameData.reactor.countdown.nSecsLeft < 10)))
 		automap.SetActive (-1);
 	DoWeaponStuff ();
 	hudIcons.ToggleWeaponIcons ();
 	}
-if (LOCALPLAYER.m_bExploded) { //gameStates.app.bPlayerIsDead && (gameData.objs.consoleP->flags & OF_EXPLODING)) {
+if (LOCALPLAYER.m_bExploded) { //gameStates.app.bPlayerIsDead && (gameData.objData.consoleP->flags & OF_EXPLODING)) {
 	if (!explodingFlag)  {
 		explodingFlag = 1;			// When player starts exploding, clear all input devices...
 		GameFlushInputs ();

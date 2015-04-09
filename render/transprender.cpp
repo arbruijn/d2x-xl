@@ -1115,7 +1115,7 @@ for (h = faceP->m_info.nTris; h; h--, triP++) {
 		transformation.Transform (vertices [i], *(reinterpret_cast<CFloatVector*> (FACES.vertices + j)), 0);
 #else
 		if (automap.Active ())
-			transformation.Transform (vertices + i, gameData.segs.fVertices + triP->index [i], 0);
+			transformation.Transform (vertices + i, gameData.segData.fVertices + triP->index [i], 0);
 		else
 			vertices [i].Assign (RENDERPOINTS [triP->index [i]].m_vertex [1]);
 #endif
@@ -1151,7 +1151,7 @@ for (i = 0, j = faceP->m_info.nIndex; i < 4; i++, j++) {
 	transformation.Transform (vertices [i], *(reinterpret_cast<CFloatVector*> (FACES.vertices + j)), 0);
 #else
 	if (automap.Active ())
-		transformation.Transform(vertices [i], gameData.segs.fVertices [faceP->m_info.index [i]], 0);
+		transformation.Transform(vertices [i], gameData.segData.fVertices [faceP->m_info.index [i]], 0);
 	else
 		vertices [i].Assign (RENDERPOINTS [faceP->m_info.index [i]].m_vertex [1]);
 #endif

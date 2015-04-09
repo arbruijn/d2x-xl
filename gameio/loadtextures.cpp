@@ -344,9 +344,9 @@ return NULL;
 tWallEffect *FindWallEffect (int32_t nTexture)
 {
 	int32_t	h, i, j;
-	tWallEffect *wallEffectP = gameData.walls.animP.Buffer ();
+	tWallEffect *wallEffectP = gameData.wallData.animP.Buffer ();
 
-for (i = gameData.walls.nAnims [gameStates.app.bD1Data]; i; i--, wallEffectP++)
+for (i = gameData.wallData.nAnims [gameStates.app.bD1Data]; i; i--, wallEffectP++)
 	for (h = wallEffectP->nFrameCount, j = 0; j < h; j++)
 		if (gameData.pig.tex.bmIndexP [wallEffectP->frames [j]].index == nTexture)
 			return wallEffectP;
@@ -427,7 +427,7 @@ else
 pf = gameData.pig.flags + i;
 pf->bmi.index = nIndex;
 pf->animInfoP = FindAnimation (nIndex);
-pf->animState.nClipIndex = gameData.objs.pwrUp.info [46 + i].nClipIndex;	//46 is the blue flag powerup
+pf->animState.nClipIndex = gameData.objData.pwrUp.info [46 + i].nClipIndex;	//46 is the blue flag powerup
 pf->animState.xFrameTime = gameData.effects.animations [0][pf->animState.nClipIndex].xFrameTime;
 pf->animState.nCurFrame = 0;
 }

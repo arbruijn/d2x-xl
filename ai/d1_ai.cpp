@@ -279,8 +279,8 @@ uint8_t	john_cheats_2 [2*JOHN_CHEATS_SIZE_2] = { 	KEY_P ^ 0x00 ^ 0x43, 0x66,
 static CHitResult aiHitResult;
 
 // ---------------------------------------------------------
-//	On entry, gameData.bots.nTypes [1] had darn sure better be set.
-//	Mallocs gameData.bots.nTypes [1] tRobotInfo structs into global tRobotInfo.
+//	On entry, gameData.botData.nTypes [1] had darn sure better be set.
+//	Mallocs gameData.botData.nTypes [1] tRobotInfo structs into global tRobotInfo.
 void john_cheat_func_1(int32_t key)
 {
 	if (!gameStates.app.cheats.bEnabled)
@@ -331,11 +331,11 @@ void do_lunacy_on(void)
 		gameStates.app.nDifficultyLevel = NDL-1;
 
 		for (i=0; i<MAX_ROBOT_TYPES; i++) {
-			primaryFiringWaitCopy [i] = gameData.bots.info [1][i].primaryFiringWait [NDL-1];
-			nRapidFireCountCopy [i] = gameData.bots.info [1][i].nRapidFireCount [NDL-1];
+			primaryFiringWaitCopy [i] = gameData.botData.info [1][i].primaryFiringWait [NDL-1];
+			nRapidFireCountCopy [i] = gameData.botData.info [1][i].nRapidFireCount [NDL-1];
 
-			gameData.bots.info [1][i].primaryFiringWait [NDL-1] = gameData.bots.info [1][i].primaryFiringWait [1];
-			gameData.bots.info [1][i].nRapidFireCount [NDL-1] = gameData.bots.info [1][i].nRapidFireCount [1];
+			gameData.botData.info [1][i].primaryFiringWait [NDL-1] = gameData.botData.info [1][i].primaryFiringWait [1];
+			gameData.botData.info [1][i].nRapidFireCount [NDL-1] = gameData.botData.info [1][i].nRapidFireCount [1];
 		}
 	}
 }
@@ -347,8 +347,8 @@ void do_lunacy_off(void)
 	if ( Lunacy ) {
 		Lunacy = 0;
 		for (i=0; i<MAX_ROBOT_TYPES; i++) {
-			gameData.bots.info [1][i].primaryFiringWait [NDL-1] = primaryFiringWaitCopy [i];
-			gameData.bots.info [1][i].nRapidFireCount [NDL-1] = nRapidFireCountCopy [i];
+			gameData.botData.info [1][i].primaryFiringWait [NDL-1] = primaryFiringWaitCopy [i];
+			gameData.botData.info [1][i].nRapidFireCount [NDL-1] = nRapidFireCountCopy [i];
 		}
 		gameStates.app.nDifficultyLevel = Diff_save;
 	}
@@ -599,9 +599,9 @@ int32_t do_silly_animation (CObject *objP)
 	int32_t				nFlinchAttackScale = 1;
 
 robotType = objP->info.nId;
-if (0 > (nGunCount = gameData.bots.info [1][robotType].nGuns))
+if (0 > (nGunCount = gameData.botData.info [1][robotType].nGuns))
 	return 0;
-attackType = gameData.bots.info [1][robotType].attackType;
+attackType = gameData.botData.info [1][robotType].attackType;
 robotState = xlatD1Animation [aiP->GOAL_STATE];
 if (attackType) // && ((robotState == AS_FIRE) || (robotState == AS_RECOIL)))
 	nFlinchAttackScale = nAttackScaleD1;
@@ -710,7 +710,7 @@ else {
 void DoD1AIRobotHitAttack (CObject *robotP, CObject *playerP, CFixVector *vCollision)
 {
 	tAILocalInfo	*ailP = &gameData.ai.localInfo [OBJECTS.Index (robotP)];
-	tRobotInfo		*botInfoP = &gameData.bots.info [1][robotP->info.nId];
+	tRobotInfo		*botInfoP = &gameData.botData.info [1][robotP->info.nId];
 
 //#if DBG
 if (!gameStates.app.cheats.bRobotsFiring)
@@ -724,8 +724,8 @@ if (LOCALOBJECT->info.nType == OBJ_GHOST)
 if (botInfoP->attackType == 1) {
 	if (ailP->nextPrimaryFire <= 0) {
 		if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
-			if (CFixVector::Dist (OBJPOS (gameData.objs.consoleP)->vPos, robotP->info.position.vPos) <
-				 robotP->info.xSize + gameData.objs.consoleP->info.xSize + I2X (2))
+			if (CFixVector::Dist (OBJPOS (gameData.objData.consoleP)->vPos, robotP->info.position.vPos) <
+				 robotP->info.xSize + gameData.objData.consoleP->info.xSize + I2X (2))
 				playerP->CollidePlayerAndNastyRobot (robotP, *vCollision);
 
 		robotP->cType.aiInfo.GOAL_STATE = D1_AIS_RECO;
@@ -751,7 +751,7 @@ void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 {
 	int32_t				nObject = objP->Index ();
 	tAILocalInfo*	ailP = &gameData.ai.localInfo [nObject];
-	tRobotInfo*		botInfoP = &gameData.bots.info [1][objP->info.nId];
+	tRobotInfo*		botInfoP = &gameData.botData.info [1][objP->info.nId];
 	CFixVector		vFire;
 	CFixVector		bpp_diff;
 
@@ -842,7 +842,7 @@ void move_towards_vector (CObject *objP, CFixVector *vec_goal)
 {
 	tPhysicsInfo	*piP = &objP->mType.physInfo;
 	fix				speed, dot, xMaxSpeed;
-	tRobotInfo		*botInfoP = &gameData.bots.info [1][objP->info.nId];
+	tRobotInfo		*botInfoP = &gameData.botData.info [1][objP->info.nId];
 	CFixVector		vel;
 
 	//	Trying to move towards playerP.  If forward vector much different than velocity vector,
@@ -891,7 +891,7 @@ void move_around_player(CObject *objP, CFixVector *vec_to_player, int32_t fast_f
 {
 	tPhysicsInfo	*piP = &objP->mType.physInfo;
 	fix				speed;
-	tRobotInfo		*botInfoP = &gameData.bots.info [1][objP->info.nId];
+	tRobotInfo		*botInfoP = &gameData.botData.info [1][objP->info.nId];
 	int32_t				nObject = objP->Index ();
 	int32_t				dir;
 	int32_t				dir_change;
@@ -951,7 +951,7 @@ void move_around_player(CObject *objP, CFixVector *vec_to_player, int32_t fast_f
 		//	Evasion speed is scaled by percentage of shield left so wounded robots evade less effectively.
 
 		dot = CFixVector::Dot (*vec_to_player, objP->info.position.mOrient.m.dir.f);
-		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) && !(gameData.objs.consoleP->info.nFlags & PLAYER_FLAGS_CLOAKED)) {
+		if ((dot > botInfoP->fieldOfView [gameStates.app.nDifficultyLevel]) && !(gameData.objData.consoleP->info.nFlags & PLAYER_FLAGS_CLOAKED)) {
 			fix	damage_scale;
 
 			damage_scale = FixDiv (objP->info.xShield, botInfoP->strength);
@@ -980,7 +980,7 @@ void move_away_from_player(CObject *objP, CFixVector *vec_to_player, int32_t att
 {
 	fix				speed;
 	tPhysicsInfo	*piP = &objP->mType.physInfo;
-	tRobotInfo		*botInfoP = &gameData.bots.info [1][objP->info.nId];
+	tRobotInfo		*botInfoP = &gameData.botData.info [1][objP->info.nId];
 	int32_t				objref;
 
 	piP->velocity -= *vec_to_player * (gameData.time.xFrame * 16);
@@ -1009,7 +1009,7 @@ void move_away_from_player(CObject *objP, CFixVector *vec_to_player, int32_t att
 
 //--old--	fix				speed, dot;
 //--old--	tPhysicsInfo	*piP = &objP->mType.physInfo;
-//--old--	tRobotInfo		*botInfoP = &gameData.bots.info [1][objP->info.nId];
+//--old--	tRobotInfo		*botInfoP = &gameData.botData.info [1][objP->info.nId];
 //--old--
 //--old--	//	Trying to move away from playerP.  If forward vector much different than velocity vector,
 //--old--	//	bash velocity vector twice as much away from playerP as usual.
@@ -1042,7 +1042,7 @@ void move_away_from_player(CObject *objP, CFixVector *vec_to_player, int32_t att
 void ai_move_relative_to_player(CObject *objP, tAILocalInfo *ailP, fix dist_to_player, CFixVector *vec_to_player, fix circle_distance, int32_t evade_only)
 {
 	CObject		*dangerObjP;
-	tRobotInfo	*botInfoP = &gameData.bots.info [1][objP->info.nId];
+	tRobotInfo	*botInfoP = &gameData.botData.info [1][objP->info.nId];
 
 	//	See if should take avoidance.
 
@@ -1054,7 +1054,7 @@ void ai_move_relative_to_player(CObject *objP, tAILocalInfo *ailP, fix dist_to_p
 			fix			dot, dist_to_laser, fieldOfView;
 			CFixVector	vec_to_laser, laser_fVec;
 
-			fieldOfView = gameData.bots.info [1][objP->info.nId].fieldOfView [gameStates.app.nDifficultyLevel];
+			fieldOfView = gameData.botData.info [1][objP->info.nId].fieldOfView [gameStates.app.nDifficultyLevel];
 
 			vec_to_laser = dangerObjP->info.position.vPos - objP->info.position.vPos;
 			dist_to_laser = CFixVector::Normalize (vec_to_laser);
@@ -1080,7 +1080,7 @@ void ai_move_relative_to_player(CObject *objP, tAILocalInfo *ailP, fix dist_to_p
 					int32_t	evadeSpeed;
 
 					D1_AI_evaded = 1;
-					evadeSpeed = gameData.bots.info [1][objP->info.nId].evadeSpeed [gameStates.app.nDifficultyLevel];
+					evadeSpeed = gameData.botData.info [1][objP->info.nId].evadeSpeed [gameStates.app.nDifficultyLevel];
 
 					move_around_player(objP, vec_to_player, evadeSpeed);
 				}
@@ -1330,7 +1330,7 @@ int32_t ai_door_is_openable(CObject *objP, CSegment *segP, int32_t sidenum)
 	int32_t	nWall;
 
 	//	The mighty console CObject can open all doors (for purposes of determining paths).
-	if (objP == gameData.objs.consoleP) {
+	if (objP == gameData.objData.consoleP) {
 		int32_t	nWall = segP->m_sides [sidenum].m_nWall;
 
 		if (WALL (nWall)->nType == WALL_DOOR)
@@ -1392,7 +1392,7 @@ int32_t CreateGatedRobot (int32_t nSegment, int32_t nObjId)
 	CObject*		objP;
 	CSegment*	segP = SEGMENT (nSegment);
 	CFixVector	vObjPos;
-	tRobotInfo*	botInfoP = &gameData.bots.info [1][nObjId];
+	tRobotInfo*	botInfoP = &gameData.botData.info [1][nObjId];
 	int32_t		count = 0;
 	fix			objsize = gameData.models.polyModels [0][botInfoP->nModel].Rad ();
 	int32_t		default_behavior;
@@ -1474,7 +1474,7 @@ for (int32_t nPos = 0; nPos < 9; nPos++) {
 		continue;
 	else {
 		CFixVector	vPos;
-		vPos = gameData.segs.vertices [segP->m_vertices [nPos - 1]];
+		vPos = gameData.segData.vertices [segP->m_vertices [nPos - 1]];
 		bossObjP->info.position.vPos = CFixVector::Avg(vPos, vCenter);
 		}
 	OBJECT (nBossObj)->RelinkToSeg (nSegment);
@@ -1585,7 +1585,7 @@ void do_super_boss_stuff(CObject *objP, fix dist_to_player, int32_t player_visib
 
 				Assert(randtype < int32_t (D1_MAX_GATE_INDEX));
 				randtype = super_boss_gate_list [randtype];
-				Assert(randtype < gameData.bots.nTypes [1]);
+				Assert(randtype < gameData.botData.nTypes [1]);
 
 				nObject = gate_in_robot(randtype, -1);
 				if ((nObject >= 0) && (IsMultiGame))
@@ -1623,12 +1623,12 @@ if (player_visibility == 2) {
 		dot = CFixVector::Dot (objP->info.position.mOrient.m.dir.f, *vec_to_player);
 		if (dot >= I2X (7)/8) {
 
-			if (aiP->CURRENT_GUN < gameData.bots.info [1][objP->info.nId].nGuns) {
+			if (aiP->CURRENT_GUN < gameData.botData.info [1][objP->info.nId].nGuns) {
 				if (botInfoP->attackType == 1) {
-					if (!LOCALPLAYER.m_bExploded && (dist_to_player < objP->info.xSize + gameData.objs.consoleP->info.xSize + I2X (2))) {		// botInfoP->circle_distance [gameStates.app.nDifficultyLevel] + gameData.objs.consoleP->info.xSize) {
+					if (!LOCALPLAYER.m_bExploded && (dist_to_player < objP->info.xSize + gameData.objData.consoleP->info.xSize + I2X (2))) {		// botInfoP->circle_distance [gameStates.app.nDifficultyLevel] + gameData.objData.consoleP->info.xSize) {
 						if (!ai_multiplayer_awareness(objP, ROBOT_FIRE_AGITATION-2))
 							return;
-						DoD1AIRobotHitAttack(objP, gameData.objs.consoleP, &objP->info.position.vPos);
+						DoD1AIRobotHitAttack(objP, gameData.objData.consoleP, &objP->info.position.vPos);
 					} else {
 						return;
 					}
@@ -1653,7 +1653,7 @@ if (player_visibility == 2) {
 
 			// Switch to next gun for next fire.
 			aiP->CURRENT_GUN++;
-			if (aiP->CURRENT_GUN >= gameData.bots.info [1][objP->info.nId].nGuns)
+			if (aiP->CURRENT_GUN >= gameData.botData.info [1][objP->info.nId].nGuns)
 				aiP->CURRENT_GUN = 0;
 			}
 		}
@@ -1671,12 +1671,12 @@ else if (WI_homingFlag (objP->info.nId) == 1) {
 
 		// Switch to next gun for next fire.
 		aiP->CURRENT_GUN++;
-		if (aiP->CURRENT_GUN >= gameData.bots.info [1][objP->info.nId].nGuns)
+		if (aiP->CURRENT_GUN >= gameData.botData.info [1][objP->info.nId].nGuns)
 			aiP->CURRENT_GUN = 0;
 	} else {
 		// Switch to next gun for next fire.
 		aiP->CURRENT_GUN++;
-		if (aiP->CURRENT_GUN >= gameData.bots.info [1][objP->info.nId].nGuns)
+		if (aiP->CURRENT_GUN >= gameData.botData.info [1][objP->info.nId].nGuns)
 			aiP->CURRENT_GUN = 0;
 		}
 	}
@@ -1740,9 +1740,9 @@ if (DoAnyRobotDyingFrame (objP))
 	}
 
 	Assert(objP->info.nSegment != -1);
-	Assert(objP->info.nId < gameData.bots.nTypes [1]);
+	Assert(objP->info.nId < gameData.botData.nTypes [1]);
 
-	botInfoP = &gameData.bots.info [1][objP->info.nId];
+	botInfoP = &gameData.botData.info [1][objP->info.nId];
 	Assert(botInfoP->always_0xabcd == 0xabcd);
 	obj_ref = nObject ^ gameData.app.nFrameCount;
 	// -- if (ailP->wait_time > -I2X (8))
@@ -1761,7 +1761,7 @@ if (DoAnyRobotDyingFrame (objP))
 			aiP->CLOAKED = 0;
 		}
 	if (!(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
-		gameData.ai.target.vBelievedPos = OBJPOS (gameData.objs.consoleP)->vPos;
+		gameData.ai.target.vBelievedPos = OBJPOS (gameData.objData.consoleP)->vPos;
 
 	dist_to_player = CFixVector::Dist(gameData.ai.target.vBelievedPos, objP->info.position.vPos);
 	//	If this robotP can fire, compute visibility from gun position.
@@ -1913,7 +1913,7 @@ if (DoAnyRobotDyingFrame (objP))
 		object_animates = 0;		//	If we're not doing the animation, then should pretend it doesn't animate.
 		}
 
-	switch (gameData.bots.info [1][objP->info.nId].bossFlag) {
+	switch (gameData.botData.info [1][objP->info.nId].bossFlag) {
 		case 0:
 			break;
 		case 1:
@@ -1940,7 +1940,7 @@ if (DoAnyRobotDyingFrame (objP))
 			//	If playerP cloaked, visibility is screwed up and superboss will gate in robots when not supposed to.
 			if (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) {
 				pv = 0;
-				dtp = CFixVector::Dist(OBJPOS (gameData.objs.consoleP)->vPos, objP->info.position.vPos)/4;
+				dtp = CFixVector::Dist(OBJPOS (gameData.objData.consoleP)->vPos, objP->info.position.vPos)/4;
 			}
 
 			do_super_boss_stuff(objP, dtp, pv);
@@ -1982,7 +1982,7 @@ if (DoAnyRobotDyingFrame (objP))
 		case ROBOT_BRAIN:
 			//	Robots function nicely if behavior is Station.  This means they won't move until they
 			//	can see the playerP, at which time they will start wandering about opening doors.
-			if (gameData.objs.consoleP->info.nSegment == objP->info.nSegment) {
+			if (gameData.objData.consoleP->info.nSegment == objP->info.nSegment) {
 				if (!ai_multiplayer_awareness(objP, 97))
 					return;
 				compute_vis_and_vec (objP, &vVisVecPos, ailP, &vec_to_player, &player_visibility, botInfoP, &bVisAndVecComputed);
@@ -2020,7 +2020,7 @@ if (DoAnyRobotDyingFrame (objP))
 		case D1_AIM_CHASE_OBJECT: {		// chasing playerP, sort of, chase if far, back off if close, circle in between
 			fix	circle_distance;
 
-			circle_distance = botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + gameData.objs.consoleP->info.xSize;
+			circle_distance = botInfoP->circleDistance [gameStates.app.nDifficultyLevel] + gameData.objData.consoleP->info.xSize;
 			//	Green guy doesn't get his circle distance boosted, else he might never attack.
 			if (botInfoP->attackType != 1)
 				circle_distance += I2X (nObject&0xf) / 2;
@@ -2337,7 +2337,7 @@ if (DoAnyRobotDyingFrame (objP))
 	//	If new state = fire, then set all gun states to fire.
 	if ((aiP->GOAL_STATE == D1_AIS_FIRE) ) {
 		int32_t	i,nGunCount;
-		nGunCount = gameData.bots.info [1][objP->info.nId].nGuns;
+		nGunCount = gameData.botData.info [1][objP->info.nId].nGuns;
 		for (i=0; i<nGunCount; i++)
 			ailP->goalState [i] = D1_AIS_FIRE;
 	}
@@ -2443,7 +2443,7 @@ if (DoAnyRobotDyingFrame (objP))
 	// Switch to next gun for next fire.
 	if (player_visibility == 0) {
 		aiP->CURRENT_GUN++;
-		if (aiP->CURRENT_GUN >= gameData.bots.info [1][objP->info.nId].nGuns)
+		if (aiP->CURRENT_GUN >= gameData.botData.info [1][objP->info.nId].nGuns)
 			aiP->CURRENT_GUN = 0;
 	}
 
@@ -2466,7 +2466,7 @@ void ai_do_cloak_stuff(void)
 	int32_t	i;
 
 	for (i=0; i<D1_MAX_AI_CLOAK_INFO; i++) {
-		gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objs.consoleP)->vPos;
+		gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objData.consoleP)->vPos;
 		gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
 	}
 
@@ -2529,13 +2529,13 @@ void dump_ai_objects_all()
 	if (D1_AI_error_message [0])
 		fprintf(D1_AI_dump_file, "Error message: %s\n", D1_AI_error_message);
 
-	for (nObject=0; nObject <= gameData.objs.nLastObject; nObject++) {
+	for (nObject=0; nObject <= gameData.objData.nLastObject; nObject++) {
 		CObject		*objP = OBJECT (nObject);
 		tAIStaticInfo	*aiP = &objP->cType.aiInfo;
 		tAILocalInfo		*ailP = &gameData.ai.localInfo [nObject];
 		fix			dist_to_player;
 
-		dist_to_player = vm_vec_dist(&objP->info.position.vPos, &OBJPOS (gameData.objs.consoleP)->vPos);
+		dist_to_player = vm_vec_dist(&objP->info.position.vPos, &OBJPOS (gameData.objData.consoleP)->vPos);
 
 		if (objP->info.controlType == CT_AI) {
 			fprintf(D1_AI_dump_file, "%3i: %3i %8.3f %8s %8s [%3i %4i]\n",

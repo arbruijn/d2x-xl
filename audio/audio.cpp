@@ -710,7 +710,7 @@ InitSounds ();
 void CAudio::Prepare (void)
 {
 for (int32_t i = 0; i < gameStates.app.nThreads; i++)
-	uniDacsRouter [i].Create (gameData.segs.nSegments);
+	uniDacsRouter [i].Create (gameData.segData.nSegments);
 }
 
 //------------------------------------------------------------------------------
@@ -839,7 +839,7 @@ void CAudio::SetupRouter (void)
 {
 m_nListenerSeg = -1;
 for (int32_t i = 0; i < MAX_THREADS; i++)
-	m_router [i].Create (gameData.segs.nSegments) /*&& m_segDists.Create (gameData.segs.nSegments)*/;
+	m_router [i].Create (gameData.segData.nSegments) /*&& m_segDists.Create (gameData.segData.nSegments)*/;
 }
 
 //------------------------------------------------------------------------------

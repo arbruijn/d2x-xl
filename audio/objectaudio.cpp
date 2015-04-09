@@ -168,7 +168,7 @@ if (m_nListenerSeg != nListenerSeg)
 if ((m_nListenerSeg != m_router [nThread].StartSeg ()) || (m_router [nThread].DestSeg () > -1)) { // either we had a different start last time, or the last calculation was a 1:1 routing
 	m_router [nThread].PathLength (CFixVector::ZERO, nListenerSeg, CFixVector::ZERO, -1, /*I2X (5 * 256 / 4)*/maxDistance, WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, -1);
 #if 0 //DBG
-	for (int32_t i = 0; i < gameData.segs.nSegments; i++) {
+	for (int32_t i = 0; i < gameData.segData.nSegments; i++) {
 		fix pathDistance = m_router [nThread].Distance (i);
 		if (pathDistance <= 0)
 			continue;
@@ -194,7 +194,7 @@ if ((m_nListenerSeg != m_router [nThread].StartSeg ()) || (m_router [nThread].De
 fix pathDistance = m_router [nThread].Distance (nSoundSeg);
 if (pathDistance < 0)
 	return -1;
-if (gameData.segs.SegVis (nListenerSeg, nSoundSeg))
+if (gameData.segData.SegVis (nListenerSeg, nSoundSeg))
 	distance += fix (distance * 0.6f * float (distance) / float (maxDistance));
 else {
 	int16_t l = m_router [nThread].RouteLength (nSoundSeg);
@@ -404,7 +404,7 @@ int32_t CAudio::CreateObjectSound (
 
 if (maxVolume < 0)
 	return -1;
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
+if ((nObject < 0) || (nObject > gameData.objData.nLastObject [0]))
 	return -1;
 if (!(pszSound && *pszSound)) {
 	nSound = XlatSound (nOrgSound);
@@ -418,8 +418,8 @@ if (!(pszSound && *pszSound)) {
 objP = OBJECT (nObject);
 if (!bForever) { 	// Hack to keep sounds from building up...
 	int32_t nVolume, nPan;
-	GetVolPan (gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos,
-				  gameData.objs.viewerP->info.nSegment, objP->info.position.vPos, objP->info.nSegment, maxVolume, &nVolume, &nPan,
+	GetVolPan (gameData.objData.viewerP->info.position.mOrient, gameData.objData.viewerP->info.position.vPos,
+				  gameData.objData.viewerP->info.nSegment, objP->info.position.vPos, objP->info.nSegment, maxVolume, &nVolume, &nPan,
 				  maxDistance, nDecay, nThread);
 	PlaySound (nOrgSound, nSoundClass, nVolume, nPan, 0, -1, pszSound, &objP->info.position.vPos);
 	return -1;
@@ -455,8 +455,8 @@ if (gameStates.sound.bDontStartObjects) { 		//started at level start
 	}
 else {
 	GetVolPan (
-		gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos,
-		gameData.objs.viewerP->info.nSegment, objP->info.position.vPos, objP->info.nSegment, soundObjP->m_maxVolume,
+		gameData.objData.viewerP->info.position.mOrient, gameData.objData.viewerP->info.position.vPos,
+		gameData.objData.viewerP->info.nSegment, objP->info.position.vPos, objP->info.nSegment, soundObjP->m_maxVolume,
       &soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay, nThread);
 	soundObjP->Start ();
 	// If it's a one-shot sound effect, and it can't start right away, then
@@ -624,12 +624,12 @@ if (!gameData.pig.sound.sounds [gameStates.sound.bD1Sound][nSound].data) {
 	Int3 ();
 	return -1;
 	}
-if ((nSegment < 0)|| (nSegment > gameData.segs.nLastSegment))
+if ((nSegment < 0)|| (nSegment > gameData.segData.nLastSegment))
 	return -1;
 if (!bForever) { 	//&& gameData.pig.sound.sounds [nSound - SOUND_OFFSET].length < SOUND_3D_THRESHHOLD) {
 	// Hack to keep sounds from building up...
 	int32_t nVolume, nPan;
-	GetVolPan (gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos, gameData.objs.viewerP->info.nSegment,
+	GetVolPan (gameData.objData.viewerP->info.position.mOrient, gameData.objData.viewerP->info.position.vPos, gameData.objData.viewerP->info.nSegment,
 				  vPos, nSegment, maxVolume, &nVolume, &nPan, maxDistance, 0);
 	PlaySound (nOrgSound, SOUNDCLASS_GENERIC, nVolume, nPan, 0, -1, pszSound, &vPos);
 	return -1;
@@ -664,8 +664,8 @@ if (gameStates.sound.bDontStartObjects) {		//started at level start
 	}
 else {
 	GetVolPan (
-		gameData.objs.viewerP->info.position.mOrient, gameData.objs.viewerP->info.position.vPos,
-		gameData.objs.viewerP->info.nSegment, soundObjP->m_linkType.pos.position,
+		gameData.objData.viewerP->info.position.mOrient, gameData.objData.viewerP->info.position.vPos,
+		gameData.objData.viewerP->info.nSegment, soundObjP->m_linkType.pos.position,
 		soundObjP->m_linkType.pos.nSegment, soundObjP->m_maxVolume, &soundObjP->m_volume, &soundObjP->m_pan, soundObjP->m_maxDistance, soundObjP->m_nDecay);
 	soundObjP->Start ();
 	// If it's a one-shot sound effect, and it can't start right away, then
@@ -727,9 +727,9 @@ if (!OBJECTS.Buffer ())
 						nAudioVolume [2] = {audio.Volume (0), audio.Volume (1)};
 	uint32_t				i;
 	CObject*			objP = NULL;
-	CFixVector		vListenerPos = gameData.objs.viewerP->info.position.vPos;
-	CFixMatrix		mListenerOrient = gameData.objs.viewerP->info.position.mOrient;
-	int16_t				nListenerSeg = gameData.objs.viewerP->info.nSegment;
+	CFixVector		vListenerPos = gameData.objData.viewerP->info.position.vPos;
+	CFixMatrix		mListenerOrient = gameData.objData.viewerP->info.position.mOrient;
+	int16_t				nListenerSeg = gameData.objData.viewerP->info.nSegment;
 
 if (gameData.demo.nState == ND_STATE_RECORDING) {
 	if (!gameStates.sound.bWasRecording)
@@ -1080,7 +1080,7 @@ void SetSoundSources (void)
 SetD1Sound ();
 audio.InitSounds ();		//clear old sounds
 gameStates.sound.bDontStartObjects = 1;
-for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segs.nLastSegment; segP++, nSegment++) {
+for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment <= gameData.segData.nLastSegment; segP++, nSegment++) {
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		BRP;

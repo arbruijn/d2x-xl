@@ -195,7 +195,7 @@ if (gameStates.app.bPlayerIsDead || OBSERVING) {
 	gameData.missiles.nGlobalFiringCount = 0;
 	return 0;
 	}
-if (gameStates.app.bD2XLevel && (SEGMENT (gameData.objs.consoleP->info.nSegment)->HasNoDamageProp ()))
+if (gameStates.app.bD2XLevel && (SEGMENT (gameData.objData.consoleP->info.nSegment)->HasNoDamageProp ()))
 	return 0;
 //	Make sure enough time has elapsed to fire laser, but if it looks like it will
 //	be a long while before laser can be fired, then there must be some mistake!
@@ -237,8 +237,8 @@ int32_t AllowedToFireMissile (int32_t nPlayer, int32_t bCheckSegment)
 
 //	Make sure enough time has elapsed to fire missile, but if it looks like it will
 //	be a long while before missile can be fired, then there must be some mistake!
-if (gameStates.app.bD2XLevel && bCheckSegment && (gameData.objs.consoleP->info.nSegment != -1) &&
-    (SEGMENT (gameData.objs.consoleP->info.nSegment)->HasNoDamageProp ()))
+if (gameStates.app.bD2XLevel && bCheckSegment && (gameData.objData.consoleP->info.nSegment != -1) &&
+    (SEGMENT (gameData.objData.consoleP->info.nSegment)->HasNoDamageProp ()))
 	return 0;
 if (!IsMultiGame && ((s = gameStates.gameplay.slowmo [0].fSpeed) > 1)) {
 	t = gameData.missiles.xLastFiredTime + (fix) ((gameData.missiles.xNextFireTime - gameData.missiles.xLastFiredTime) * s);
@@ -816,7 +816,7 @@ if (controls [0].useInvulDownCount)
 	ApplyInvul (0, -1);
 if (controls [0].fireFlareDownCount)
 	if (AllowedToFireFlare ())
-		CreateFlare (gameData.objs.consoleP);
+		CreateFlare (gameData.objData.consoleP);
 if (AllowedToFireMissile (-1, 1)) {
 	i = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
 	gameData.missiles.nGlobalFiringCount += WI_fireCount (i) * (controls [0].fireSecondaryState || controls [0].fireSecondaryDownCount);
@@ -841,7 +841,7 @@ if (gameData.missiles.nGlobalFiringCount < 0)
 	gameData.missiles.nGlobalFiringCount = 0;
 //	Drop proximity bombs.
 if (controls [0].dropBombDownCount) {
-	if (gameStates.app.bD2XLevel && (SEGMENT (gameData.objs.consoleP->info.nSegment)->HasNoDamageProp ()))
+	if (gameStates.app.bD2XLevel && (SEGMENT (gameData.objData.consoleP->info.nSegment)->HasNoDamageProp ()))
 		controls [0].dropBombDownCount = 0;
 	else {
 		int32_t ssw_save = gameData.weapons.nSecondary;

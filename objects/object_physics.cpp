@@ -70,7 +70,7 @@ if ((Index () == LOCALPLAYER.nObject) && automap.Active ())
 	return;
 if (Appearing (false))
 	return;
-nParent = gameData.objs.parentObjs [Index ()];
+nParent = gameData.objData.parentObjs [Index ()];
 parentP = (nParent < 0) ? NULL : OBJECT (nParent);
 FixFastSinCos (fix (gameData.time.xGame / gameStates.gameplay.slowmo [1].fSpeed), &xWiggle, NULL);
 xWiggle = 100 * xWiggle / (100 + extraGameInfo [0].nSpeedScale * 25);
@@ -139,7 +139,7 @@ if (info.nId != N_LOCALPLAYER)
 if ((info.nType != OBJ_PLAYER) && ((info.nType != OBJ_GHOST) || !OBSERVING))
 	return;
 
-CObject*	missileObjP = gameData.objs.GetGuidedMissile (N_LOCALPLAYER);
+CObject*	missileObjP = gameData.objData.GetGuidedMissile (N_LOCALPLAYER);
 
 if (!missileObjP) 
 	mType.physInfo.rotThrust = CFixVector::Create (controls [0].pitchTime, controls [0].headingTime, controls [0].bankTime);
@@ -211,7 +211,7 @@ mType.physInfo.thrust += info.position.mOrient.m.dir.u * fix (controls [0].verti
 mType.physInfo.thrust *= 2 * DriveDamage ();
 if (!gameStates.input.bSkipControls)
 	memcpy (&gameData.physics.playerThrust, &mType.physInfo.thrust, sizeof (gameData.physics.playerThrust));
-if ((mType.physInfo.flags & PF_WIGGLE) && !gameData.objs.speedBoost [Index ()].bBoosted)
+if ((mType.physInfo.flags & PF_WIGGLE) && !gameData.objData.speedBoost [Index ()].bBoosted)
 	Wiggle ();
 
 // As of now, mType.physInfo.thrust & mType.physInfo.rotThrust are

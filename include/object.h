@@ -1408,7 +1408,7 @@ extern tWindowRenderedData windowRenderedData [MAX_RENDERED_WINDOWS];
  * VARIABLES
  */
 
-// ie gameData.objs.collisionResult[a][b]==  what happens to a when it collides with b
+// ie gameData.objData.collisionResult[a][b]==  what happens to a when it collides with b
 
 extern char *robot_names[];         // name of each robot
 
@@ -1594,9 +1594,9 @@ class CStaticObjectIterator : public CObjectIterator {
 #define FORALL_ACTOR_OBJS(_objP)						for (CActorIterator actorIter ((_objP)); !actorIter.Done (); (_objP) = actorIter.Step ())
 #define FORALL_STATIC_OBJS(_objP)					for (CStaticObjectIterator staticsIter ((_objP)); !staticsIter.Done (); (_objP) = staticsIter.Step ())
 
-#define IS_OBJECT(_objP, _i)							((_i) <= gameData.objs.nLastObject [0])
+#define IS_OBJECT(_objP, _i)							((_i) <= gameData.objData.nLastObject [0])
 
-#	define FORALL_OBJSi(_objP,_i)						for ((_objP) = OBJECTS.Buffer (), (_i) = 0; (_i) <= gameData.objs.nLastObject [0]; (_i)++, (_objP)++)
+#	define FORALL_OBJSi(_objP,_i)						for ((_objP) = OBJECTS.Buffer (), (_i) = 0; (_i) <= gameData.objData.nLastObject [0]; (_i)++, (_objP)++)
 
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
@@ -1816,8 +1816,8 @@ extern CObject *dbgObjP;
 #endif
 
 #define SET_COLLISION(type1, type2, result) \
-	gameData.objs.collisionResult [type1][type2] = result; \
-	gameData.objs.collisionResult [type2][type1] = result;
+	gameData.objData.collisionResult [type1][type2] = result; \
+	gameData.objData.collisionResult [type2][type1] = result;
 
 #define ENABLE_COLLISION(type1, type2)		SET_COLLISION(type1, type2, RESULT_CHECK)
 

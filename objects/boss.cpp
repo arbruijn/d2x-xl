@@ -90,7 +90,7 @@ xBossSizeSave = bossObjP->info.xSize;
 nBossHomeSeg = bossObjP->info.nSegment;
 vBossHomePos = bossObjP->info.position.vPos;
 nGroup = SEGMENT (nBossHomeSeg)->m_group;
-if (!queue.Create (gameData.segs.nSegments))
+if (!queue.Create (gameData.segData.nSegments))
 	return false;
 head = 1;
 tail = 0;
@@ -260,7 +260,7 @@ cf.Read (&m_nDyingStartTime, sizeof (fix), 1);
 int32_t h;
 cf.Read (&h, sizeof (int32_t), 1);
 m_nDying = int16_t (h);
-if ((m_nDying < 0) || (m_nDying >= gameData.objs.nObjects) || !ROBOTINFO (OBJECT (m_nDying))->bossFlag)
+if ((m_nDying < 0) || (m_nDying >= gameData.objData.nObjects) || !ROBOTINFO (OBJECT (m_nDying))->bossFlag)
 	m_nDying = 0;
 else if (m_nDying && (m_nDyingStartTime > gameData.time.xGame))
 	m_nDyingStartTime = gameData.time.xGame;

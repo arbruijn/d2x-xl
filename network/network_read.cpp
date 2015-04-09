@@ -667,7 +667,7 @@ if (networkData.nJoinState == 2) { // re-sync'ing?
 	}
 else {
 	InitObjects (false);
-	gameData.objs.nObjects = 0;
+	gameData.objData.nObjects = 0;
 	ChangePlayerNumTo (m_nPlayer);
 	InitMultiPlayerObject (1);
 	//ClaimObjectSlot (LOCALPLAYER.nObject);
@@ -748,7 +748,7 @@ return 1;
 
 int32_t CObjectSynchronizer::Validate (void)
 {
-return abs (m_nRemoteObj - gameData.objs.nObjects) < ((gameStates.multi.nGameType == UDP_GAME) ? 2 : 10);
+return abs (m_nRemoteObj - gameData.objData.nObjects) < ((gameStates.multi.nGameType == UDP_GAME) ? 2 : 10);
 }
 
 //------------------------------------------------------------------------------
@@ -766,7 +766,7 @@ if (!m_nState || !Validate ()) {
 	}
 
 NetworkCountPowerupsInMine ();
-gameData.objs.RebuildEffects ();
+gameData.objData.RebuildEffects ();
 networkData.syncInfo [0].objs.nFrame = 0;
 m_nState = 0;
 if (networkData.bHaveSync)
@@ -811,7 +811,7 @@ void NetworkReadObjectPacket (uint8_t* data)
 static bool bWait = true;
 
 if (bWait) {
-	while (networkThread.RxPacketQueue ().Length () < (gameData.objs.nObjects + 4) / 5)
+	while (networkThread.RxPacketQueue ().Length () < (gameData.objData.nObjects + 4) / 5)
 		G3_SLEEP (0);
 	bWait = false;
 	}

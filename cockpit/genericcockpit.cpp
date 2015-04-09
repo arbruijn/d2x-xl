@@ -165,7 +165,7 @@ if ((gameStates.render.cockpit.nType >= CM_FULL_SCREEN) && (gameStates.zoom.nFac
 
 	static CCanvas overlapCanv;
 
-	CObject*	viewerSave = gameData.objs.viewerP;
+	CObject*	viewerSave = gameData.objData.viewerP;
 	int32_t	bRearViewSave = gameStates.render.bRearView;
 	int32_t	nWindowSave = gameStates.render.nWindow [0];
 	fix		xStereoSeparation = ogl.StereoSeparation ();
@@ -186,7 +186,7 @@ if (!viewerP) {								//this nUser is done
 	}
 UpdateRenderedData (nWindow + 1, viewerP, bRearView, nUser);
 m_info.weaponBoxUser [nWindow] = nUser;						//say who's using window
-gameData.objs.viewerP = viewerP;
+gameData.objData.viewerP = viewerP;
 gameStates.render.bRearView = -bRearView;
 transformation.Push ();
 SetupWindow (nWindow);
@@ -257,7 +257,7 @@ if (gameStates.render.cockpit.nType >= CM_FULL_SCREEN) {
 //force redraw when done
 m_history [0].weapon [nWindow] = m_history [0].ammo [nWindow] = -1;
 
-gameData.objs.viewerP = viewerSave;
+gameData.objData.viewerP = viewerSave;
 ogl.SetDepthTest (true);
 gameData.render.window.Deactivate ();
 gameStates.render.bRearView = bRearViewSave;
@@ -277,7 +277,7 @@ if (ogl.IsOculusRift ())
 if (gameData.demo.nState == ND_STATE_PLAYBACK) {
    if (nDemoDoLeft) {
       if (nDemoDoLeft == 3)
-			cockpit->RenderWindow (0, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
+			cockpit->RenderWindow (0, gameData.objData.consoleP, 1, WBU_REAR, "REAR");
       else
 			cockpit->RenderWindow (0, &demoLeftExtra, bDemoRearCheck [nDemoDoLeft], nDemoWBUType [nDemoDoLeft], szDemoExtraMessage [nDemoDoLeft]);
 		}
@@ -285,7 +285,7 @@ if (gameData.demo.nState == ND_STATE_PLAYBACK) {
 		cockpit->RenderWindow (0, NULL, 0, WBU_WEAPON, NULL);
 	if (nDemoDoRight) {
       if (nDemoDoRight == 3)
-			cockpit->RenderWindow (1, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
+			cockpit->RenderWindow (1, gameData.objData.consoleP, 1, WBU_REAR, "REAR");
       else
 			cockpit->RenderWindow (1, &demoRightExtra, bDemoRearCheck [nDemoDoRight], nDemoWBUType [nDemoDoRight], szDemoExtraMessage [nDemoDoRight]);
 		}
@@ -307,11 +307,11 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 		case CV_REAR:
 			if (gameStates.render.bRearView) {		//if big window is rear view, show front here
 				gameStates.render.nRenderingType = 3+ (w<<4);
-				cockpit->RenderWindow (w, gameData.objs.consoleP, 0, WBU_REAR, "FRONT");
+				cockpit->RenderWindow (w, gameData.objData.consoleP, 0, WBU_REAR, "FRONT");
 				}
 			else {					//show Normal rear view
 				gameStates.render.nRenderingType = 3+ (w<<4);
-				cockpit->RenderWindow (w, gameData.objs.consoleP, 1, WBU_REAR, "REAR");
+				cockpit->RenderWindow (w, gameData.objData.consoleP, 1, WBU_REAR, "REAR");
 				}
 			break;
 
@@ -356,7 +356,7 @@ for (w = 0; w < 2 - bDidMissileView; w++) {
 		case CV_RADAR_TOPDOWN:
 		case CV_RADAR_HEADSUP:
 			if (!(gameStates.app.bNostalgia || COMPETITION) && EGI_FLAG (bRadarEnabled, 0, 1, 0))
-				cockpit->RenderWindow (w, gameData.objs.consoleP, 0,
+				cockpit->RenderWindow (w, gameData.objData.consoleP, 0,
 					(gameStates.render.cockpit.n3DView [w] == CV_RADAR_TOPDOWN) ? WBU_RADAR_TOPDOWN : WBU_RADAR_HEADSUP, "MINI MAP");
 			else
 				gameStates.render.cockpit.n3DView [w] = CV_NONE;
@@ -441,9 +441,9 @@ fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
 m_info.nLineSpacing = int32_t (GAME_FONT->Height () + GAME_FONT->Height () * fontManager.Scale () / 4);
 fontManager.PopScale ();
 m_info.heightPad = (ScaleY (m_info.fontHeight) - m_info.fontHeight) / 2;
-m_info.nDamage [0] = gameData.objs.consoleP->AimDamage ();
-m_info.nDamage [1] = gameData.objs.consoleP->DriveDamage ();
-m_info.nDamage [2] = gameData.objs.consoleP->GunDamage ();
+m_info.nDamage [0] = gameData.objData.consoleP->AimDamage ();
+m_info.nDamage [1] = gameData.objData.consoleP->DriveDamage ();
+m_info.nDamage [2] = gameData.objData.consoleP->GunDamage ();
 m_info.bCloak = ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0);
 m_info.nCockpit = (gameStates.video.nDisplayMode && !gameStates.app.bDemoData) ? gameData.models.nCockpits / 2 : 0;
 m_info.nEnergy = LOCALPLAYER.EnergyLevel ();

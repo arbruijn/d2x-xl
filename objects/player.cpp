@@ -291,7 +291,7 @@ if (markerP) {
 	}
 else {
 	int16_t nSegment = gameData.multiplayer.playerInit [nSpawnPos].nSegment;
-	if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments))
+	if ((nSegment < 0) || (nSegment >= gameData.segData.nSegments))
 		GameStartInitNetworkPlayers ();
 	objP->info.position = gameData.multiplayer.playerInit [nSpawnPos].position;
 

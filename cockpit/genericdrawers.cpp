@@ -256,8 +256,8 @@ void CGenericCockpit::DrawCruise (int32_t x, int32_t y)
 if (!gameStates.render.bRearView &&
 	 (gameStates.input.nCruiseSpeed > 0) &&
 	 (N_LOCALPLAYER > -1) &&
-	 (gameData.objs.viewerP->info.nType == OBJ_PLAYER) &&
-	 (gameData.objs.viewerP->info.nId == N_LOCALPLAYER))
+	 (gameData.objData.viewerP->info.nType == OBJ_PLAYER) &&
+	 (gameData.objData.viewerP->info.nId == N_LOCALPLAYER))
 	DrawHUDText (NULL, x, y, "%s %2d%%", TXT_CRUISE, X2I (gameStates.input.nCruiseSpeed));
 }
 
@@ -1374,7 +1374,7 @@ if (showViewTextTimer > 0) {
 	showViewTextTimer -= gameData.time.xFrame;
 
 	viewer_id = const_cast<char*>("");
-	switch (gameData.objs.viewerP->info.nType) {
+	switch (gameData.objData.viewerP->info.nType) {
 		case OBJ_FIREBALL:
 			viewer_name = const_cast<char*>("Fireball");
 			break;
@@ -1407,7 +1407,7 @@ if (showViewTextTimer > 0) {
 			break;
 		}
 
-	switch (gameData.objs.viewerP->info.controlType) {
+	switch (gameData.objData.viewerP->info.controlType) {
 		case CT_NONE:
 			control_name = const_cast<char*>("Stopped");
 			break;
@@ -1431,7 +1431,7 @@ if (showViewTextTimer > 0) {
 			break;
 		}
 	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
-	GrPrintF (NULL, 0x8000, 45, "%i: %s [%s] View - %s", OBJ_IDX (gameData.objs.viewerP), viewer_name, viewer_id, control_name);
+	GrPrintF (NULL, 0x8000, 45, "%i: %s [%s] View - %s", OBJ_IDX (gameData.objData.viewerP), viewer_name, viewer_id, control_name);
 	}
 }
 #endif

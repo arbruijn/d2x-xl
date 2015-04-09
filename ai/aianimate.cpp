@@ -44,11 +44,11 @@ if (objP->Index () == nDbgObj)
 if (!IsMultiGame && gameOpts->gameplay.bIdleAnims && (ailP->mode == AIM_IDLING)) {
 		int32_t		h, i, j;
 		CSegment*	segP = SEGMENT (objP->info.nSegment);
-		CFixVector*	vVertex, vVecToGoal, vGoal = gameData.objs.vRobotGoals [objP->Index ()];
+		CFixVector*	vVertex, vVecToGoal, vGoal = gameData.objData.vRobotGoals [objP->Index ()];
 
 	for (i = 0; i < 8; i++) {
 		if (segP->m_vertices [i] != 0xFFFF) {
-			vVertex = gameData.segs.vertices + segP->m_vertices [i];
+			vVertex = gameData.segData.vertices + segP->m_vertices [i];
 			if ((vGoal.v.coord.x == (*vVertex).v.coord.x) && (vGoal.v.coord.y == (*vVertex).v.coord.y) && (vGoal.v.coord.z == (*vVertex).v.coord.z))
 				break;
 			}
@@ -76,8 +76,8 @@ if (!IsMultiGame && gameOpts->gameplay.bIdleAnims && (ailP->mode == AIM_IDLING))
 		if ((segP->m_vertices [j] == 0xFFFF) || (j == i) || (Rand (3) == 0))
 			vGoal = SEGMENT (objP->info.nSegment)->Center ();
 		else
-			vGoal = gameData.segs.vertices [segP->m_vertices [j]];
-		gameData.objs.vRobotGoals [objP->Index ()] = vGoal;
+			vGoal = gameData.segData.vertices [segP->m_vertices [j]];
+		gameData.objData.vRobotGoals [objP->Index ()] = vGoal;
 		DoSillyAnimation (objP);
 		}
 	}

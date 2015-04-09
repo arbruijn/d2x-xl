@@ -321,7 +321,7 @@ if (nSegment == nDbgSeg)
 	BRP;
 #endif
 m_nSegment = nSegment;
-if (gameData.segs.nLevelVersion > 24) 
+if (gameData.segData.nLevelVersion > 24) 
 	index = m_corners;
 SetupCorners (verts, index);
 bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_nShape ? 0xFFFF : m_corners [3], vSorted);
@@ -1349,7 +1349,7 @@ int32_t CSide::Read (CFile& cf, uint16_t* segVerts, uint16_t* sideVerts, bool bS
 m_nFrame = 0;
 m_nShape = 0;
 m_nCorners = 4;
-if (gameData.segs.nLevelVersion > 24) {
+if (gameData.segData.nLevelVersion > 24) {
 	for (int32_t i = 0; i < 4; i++) 
 		if (0xff == (m_corners [i] = cf.ReadUByte ()))
 			m_nShape++;
@@ -1371,7 +1371,7 @@ else {
 		nTexture = 0;
 		m_nBaseTex = cf.ReadShort ();
 		}
-	if (gameData.segs.nLevelVersion <= 1)
+	if (gameData.segData.nLevelVersion <= 1)
 		m_nBaseTex = ConvertD1Texture (m_nBaseTex, 0);
 	if (bNewFileFormat && !(nTexture & 0x8000))
 		m_nOvlTex = 0;
@@ -1380,7 +1380,7 @@ else {
 		nTexture = cf.ReadShort ();
 		m_nOvlTex = nTexture & 0x3fff;
 		m_nOvlOrient = (nTexture >> 14) & 3;
-		if ((gameData.segs.nLevelVersion <= 1) && m_nOvlTex)
+		if ((gameData.segData.nLevelVersion <= 1) && m_nOvlTex)
 			m_nOvlTex = ConvertD1Texture (m_nOvlTex, 0);
 		}
 	// guess what? One level from D2:CS contains a texture id "910". D'oh.
@@ -1406,7 +1406,7 @@ return nType;
 
 void CSide::ReadWallNum (CFile& cf, bool bWall)
 {
-m_nWall = uint16_t (bWall ? (gameData.segs.nLevelVersion >= 13) ? cf.ReadUShort () : cf.ReadUByte () : -1);
+m_nWall = uint16_t (bWall ? (gameData.segData.nLevelVersion >= 13) ? cf.ReadUShort () : cf.ReadUByte () : -1);
 }
 
 //------------------------------------------------------------------------------

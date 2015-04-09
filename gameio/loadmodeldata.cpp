@@ -145,27 +145,27 @@ ReadWeaponInfos (N_D2_WEAPON_TYPES, t, cf, 3, bVertigoData != 0);
 //now read robot info
 
 t = cf.ReadInt ();
-gameData.bots.nTypes [0] = N_D2_ROBOT_TYPES + t;
-if (gameData.bots.nTypes [0] >= MAX_ROBOT_TYPES) {
+gameData.botData.nTypes [0] = N_D2_ROBOT_TYPES + t;
+if (gameData.botData.nTypes [0] >= MAX_ROBOT_TYPES) {
 	Warning ("Too many robots (%d) in <%s>.  Max is %d.", t, fname, MAX_ROBOT_TYPES - N_D2_ROBOT_TYPES);
 	return -1;
 	}
-ReadRobotInfos (gameData.bots.info [0], t, cf, N_D2_ROBOT_TYPES);
+ReadRobotInfos (gameData.botData.info [0], t, cf, N_D2_ROBOT_TYPES);
 if (bVertigoData) {
-	gameData.bots.nDefaultTypes = gameData.bots.nTypes [0];
-	memcpy (&gameData.bots.defaultInfo [N_D2_ROBOT_TYPES], &gameData.bots.info [0][N_D2_ROBOT_TYPES], sizeof (gameData.bots.info [0][0]) * t);
+	gameData.botData.nDefaultTypes = gameData.botData.nTypes [0];
+	memcpy (&gameData.botData.defaultInfo [N_D2_ROBOT_TYPES], &gameData.botData.info [0][N_D2_ROBOT_TYPES], sizeof (gameData.botData.info [0][0]) * t);
 	}
 
 t = cf.ReadInt ();
-gameData.bots.nJoints = N_D2_ROBOT_JOINTS + t;
-if (gameData.bots.nJoints >= MAX_ROBOT_JOINTS) {
+gameData.botData.nJoints = N_D2_ROBOT_JOINTS + t;
+if (gameData.botData.nJoints >= MAX_ROBOT_JOINTS) {
 	Warning ("Too many robot joints (%d) in <%s>.  Max is %d.", t, fname, MAX_ROBOT_JOINTS - N_D2_ROBOT_JOINTS);
 	return -1;
 	}
-ReadJointPositions (gameData.bots.joints, t, cf, N_D2_ROBOT_JOINTS);
+ReadJointPositions (gameData.botData.joints, t, cf, N_D2_ROBOT_JOINTS);
 if (bVertigoData) {
-	gameData.bots.nDefaultJoints = gameData.bots.nJoints;
-	memcpy (&gameData.bots.defaultJoints [N_D2_ROBOT_TYPES], &gameData.bots.joints [N_D2_ROBOT_TYPES], sizeof (gameData.bots.joints [0]) * t);
+	gameData.botData.nDefaultJoints = gameData.botData.nJoints;
+	memcpy (&gameData.botData.defaultJoints [N_D2_ROBOT_TYPES], &gameData.botData.joints [N_D2_ROBOT_TYPES], sizeof (gameData.botData.joints [0]) * t);
 	}
 
 t = cf.ReadInt ();
@@ -219,8 +219,8 @@ int32_t LoadRobotReplacements (const char* szLevel, const char* szFolder, int32_
 	CFile			cf;
 	CPolyModel*	modelP;
 	int32_t			t, i, j;
-	int32_t			nBotTypeSave = gameData.bots.nTypes [gameStates.app.bD1Mission], 
-					nBotJointSave = gameData.bots.nJoints, 
+	int32_t			nBotTypeSave = gameData.botData.nTypes [gameStates.app.bD1Mission], 
+					nBotJointSave = gameData.botData.nJoints, 
 					nPolyModelSave = gameData.models.nPolyModels;
 	tRobotInfo	botInfoSave;
 	char			szFile [FILENAME_LEN];
@@ -244,53 +244,53 @@ t = cf.ReadInt ();			//read number of robots
 for (j = 0; j < t; j++) {
 	i = cf.ReadInt ();		//read robot number
 	if (bAddBots) {
-		if (gameData.bots.nTypes [gameStates.app.bD1Mission] >= MAX_ROBOT_TYPES) {
+		if (gameData.botData.nTypes [gameStates.app.bD1Mission] >= MAX_ROBOT_TYPES) {
 			Warning (TXT_ROBOT_NO, szLevel, i, MAX_ROBOT_TYPES);
 			return -1;
 			}
-		i = gameData.bots.nTypes [gameStates.app.bD1Mission]++;
+		i = gameData.botData.nTypes [gameStates.app.bD1Mission]++;
 		}
-	else if (i < 0 || i >= gameData.bots.nTypes [gameStates.app.bD1Mission]) {
-		Warning (TXT_ROBOT_NO, szLevel, i, gameData.bots.nTypes [gameStates.app.bD1Mission] - 1);
-		gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
-		gameData.bots.nJoints = nBotJointSave;
+	else if (i < 0 || i >= gameData.botData.nTypes [gameStates.app.bD1Mission]) {
+		Warning (TXT_ROBOT_NO, szLevel, i, gameData.botData.nTypes [gameStates.app.bD1Mission] - 1);
+		gameData.botData.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
+		gameData.botData.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
 		return -1;
 		}
 	if (bAltModels)
 		cf.Seek (sizeof (tRobotInfo), SEEK_CUR);
 	else {
-		botInfoSave = gameData.bots.info [gameStates.app.bD1Mission][i];
-		ReadRobotInfos (gameData.bots.info [gameStates.app.bD1Mission], 1, cf, i);
+		botInfoSave = gameData.botData.info [gameStates.app.bD1Mission][i];
+		ReadRobotInfos (gameData.botData.info [gameStates.app.bD1Mission], 1, cf, i);
 		}
 	}
 t = cf.ReadInt ();			//read number of joints
 for (j = 0; j < t; j++) {
 	i = cf.ReadInt ();		//read joint number
 	if (bAddBots) {
-		if (gameData.bots.nJoints < MAX_ROBOT_JOINTS) 
-			i = gameData.bots.nJoints++;
+		if (gameData.botData.nJoints < MAX_ROBOT_JOINTS) 
+			i = gameData.botData.nJoints++;
 		else {
 			Warning ("%s: Robots joint (%d) out of range (valid range = 0 - %d).",
 						szLevel, i, MAX_ROBOT_JOINTS - 1);
-			gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
-			gameData.bots.nJoints = nBotJointSave;
+			gameData.botData.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
+			gameData.botData.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;
 			return -1;
 			}
 		}
-	else if ((i < 0) || (i >= gameData.bots.nJoints)) {
+	else if ((i < 0) || (i >= gameData.botData.nJoints)) {
 		Warning ("%s: Robots joint (%d) out of range (valid range = 0 - %d).",
-					szLevel, i, gameData.bots.nJoints - 1);
-		gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
-		gameData.bots.nJoints = nBotJointSave;
+					szLevel, i, gameData.botData.nJoints - 1);
+		gameData.botData.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
+		gameData.botData.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
 		return -1;
 		}
 	if (bAltModels)
 		cf.Seek (4 * sizeof (int16_t), SEEK_CUR);
 	else
-		ReadJointPositions (gameData.bots.joints, 1, cf, i);
+		ReadJointPositions (gameData.botData.joints, 1, cf, i);
 	}
 t = cf.ReadInt ();			//read number of polygon models
 for (j = 0; j < t; j++) {
@@ -301,8 +301,8 @@ for (j = 0; j < t; j++) {
 		else {
 			Warning ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
 						szLevel, i, gameData.models.nPolyModels - 1);
-			gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
-			gameData.bots.nJoints = nBotJointSave;
+			gameData.botData.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
+			gameData.botData.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;
 			return -1;
 			}
@@ -314,8 +314,8 @@ for (j = 0; j < t; j++) {
 			else {
 				Warning ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
 							szLevel, i, gameData.models.nPolyModels - 1);
-				gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
-				gameData.bots.nJoints = nBotJointSave;
+				gameData.botData.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
+				gameData.botData.nJoints = nBotJointSave;
 				gameData.models.nPolyModels = nPolyModelSave;
 				return -1;
 				}
@@ -323,8 +323,8 @@ for (j = 0; j < t; j++) {
 		else if ((gameData.models.nPolyModels > N_D2_POLYGON_MODELS) || (i >= N_D2_POLYGON_MODELS + N_VERTIGO_POLYGON_MODELS)) {
 			Warning ("%s: Polygon model (%d) out of range (valid range = 0 - %d).",
 						szLevel, i, gameData.models.nPolyModels - 1);
-			gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
-			gameData.bots.nJoints = nBotJointSave;
+			gameData.botData.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
+			gameData.botData.nJoints = nBotJointSave;
 			gameData.models.nPolyModels = nPolyModelSave;
 			return -1;
 			}
@@ -361,8 +361,8 @@ for (j = 0; j < t; j++) {
 	if (!bAddBots && ((i < 0) || (i >= MAX_OBJ_BITMAPS))) {
 		Warning ("%s: Object bitmap number (%d) out of range (valid range = 0 - %d).",
 					szLevel, i, MAX_OBJ_BITMAPS - 1);
-		gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
-		gameData.bots.nJoints = nBotJointSave;
+		gameData.botData.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
+		gameData.botData.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
 		return -1;
 		}
@@ -374,8 +374,8 @@ for (j = 0; j < t; j++) {
 	if ((i < 0) || (i >= MAX_OBJ_BITMAPS)) {
 		Warning ("%s: Object bitmap pointer (%d) out of range (valid range = 0 - %d).",
 					szLevel, i, MAX_OBJ_BITMAPS - 1);
-		gameData.bots.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
-		gameData.bots.nJoints = nBotJointSave;
+		gameData.botData.nTypes [gameStates.app.bD1Mission] = nBotTypeSave;
+		gameData.botData.nJoints = nBotJointSave;
 		gameData.models.nPolyModels = nPolyModelSave;
 		return -1;
 		}
@@ -561,8 +561,8 @@ void RestoreDefaultModels (void)
 	CPolyModel*	modelP = &gameData.models.polyModels [0][0];
 	int32_t			i;
 
-gameData.bots.info [0] = gameData.bots.defaultInfo;
-gameData.bots.joints = gameData.bots.defaultJoints;
+gameData.botData.info [0] = gameData.botData.defaultInfo;
+gameData.botData.joints = gameData.botData.defaultJoints;
 gameData.pig.tex.objBmIndex = gameData.pig.tex.defaultObjBmIndex;
 for (i = 0; i < gameData.models.nDefPolyModels; i++, modelP++) {
 #if DBG
@@ -576,8 +576,8 @@ for (i = 0; i < gameData.models.nDefPolyModels; i++, modelP++) {
 	}
 for (; i < gameData.models.nPolyModels; i++, modelP++)
 	modelP->Destroy ();
-gameData.bots.nTypes [0] = gameData.bots.nDefaultTypes;
-gameData.bots.nJoints = gameData.bots.nDefaultJoints;
+gameData.botData.nTypes [0] = gameData.botData.nDefaultTypes;
+gameData.botData.nJoints = gameData.botData.nDefaultJoints;
 }
 
 //------------------------------------------------------------------------------

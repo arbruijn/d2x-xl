@@ -249,7 +249,7 @@ if ((nListPos < 0) || (nListPos >= gameData.render.mine.nObjRenderSegs)) {
 	BRP;
 	return;
 	}
-if ((gameData.render.mine.objRenderSegList [nListPos] < 0) || (gameData.render.mine.objRenderSegList [nListPos] >= gameData.segs.nSegments)) {
+if ((gameData.render.mine.objRenderSegList [nListPos] < 0) || (gameData.render.mine.objRenderSegList [nListPos] >= gameData.segData.nSegments)) {
 	//PrintLog (0, "invalid segment at object render list [%d]!\n", nListPos);
 	BRP;
 	return;
@@ -278,7 +278,7 @@ PROF_START
 
 gameStates.render.nType = RENDER_TYPE_OBJECTS;
 gameStates.render.nState = 1;
-for (i = gameData.segs.skybox.ToS (), segNumP = gameData.segs.skybox.Buffer (); i; i--, segNumP++)
+for (i = gameData.segData.skybox.ToS (), segNumP = gameData.segData.skybox.Buffer (); i; i--, segNumP++)
 	for (nObject = SEGMENT (*segNumP)->m_objects; nObject != -1; nObject = OBJECT (nObject)->info.nNextInSeg)
 		DoRenderObject (nObject, gameStates.render.nWindow [0]);
 PROF_END(ptRenderObjects)

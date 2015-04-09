@@ -238,8 +238,8 @@ side0 = seg0->m_sides + otherSide0;
 side1 = seg1->m_sides + otherSide1;
 memcpy (s [0].n, side0->m_normals, 2 * sizeof (CFixVector));
 memcpy (s [1].n, side1->m_normals, 2 * sizeof (CFixVector));
-s [0].facePortal = gameData.segs.vertices + seg0->m_vertices [sideVertIndex [otherSide0][(s [0].t = side0->m_nType) == 3]];
-s [1].facePortal = gameData.segs.vertices + seg1->m_vertices [sideVertIndex [otherSide1][(s [1].t = side1->m_nType) == 3]];
+s [0].facePortal = gameData.segData.vertices + seg0->m_vertices [sideVertIndex [otherSide0][(s [0].t = side0->m_nType) == 3]];
+s [1].facePortal = gameData.segData.vertices + seg1->m_vertices [sideVertIndex [otherSide1][(s [1].t = side1->m_nType) == 3]];
 return 1;
 }
 
@@ -398,7 +398,7 @@ int16_t CObject::Visible (void)
 	uint8_t bVisited [MAX_SEGMENTS_D2X];
 	int16_t	head = 0, tail = 0;
 
-memset (bVisited, 0, sizeof (bVisited [0]) * gameData.segs.nSegments);
+memset (bVisited, 0, sizeof (bVisited [0]) * gameData.segData.nSegments);
 segList [tail++] = Segment ();
 while (head != tail) {
 	CSegment* segP = SEGMENT (segList [head++]);
@@ -512,16 +512,16 @@ PROF_END(ptBuildObjList)
 void CalcRenderDepth (void)
 {
 CFixVector vCenter;
-transformation.Transform (vCenter, SEGMENT (gameData.objs.viewerP->info.nSegment)->Center (), 0);
+transformation.Transform (vCenter, SEGMENT (gameData.objData.viewerP->info.nSegment)->Center (), 0);
 CFixVector v;
-transformation.Transform (v, gameData.segs.vMin, 0);
+transformation.Transform (v, gameData.segData.vMin, 0);
 fix d1 = CFixVector::Dist (v, vCenter);
-transformation.Transform (v, gameData.segs.vMax, 0);
+transformation.Transform (v, gameData.segData.vMax, 0);
 fix d2 = CFixVector::Dist (v, vCenter);
 
 if (d1 < d2)
 	d1 = d2;
-fix r = gameData.segs.segRads [1][gameData.objs.viewerP->info.nSegment];
+fix r = gameData.segData.segRads [1][gameData.objData.viewerP->info.nSegment];
 gameData.render.zMin = 0;
 gameData.render.zMax = vCenter.v.coord.z + d1 + r;
 }
@@ -679,7 +679,7 @@ if (!(automap.Active () && gameOpts->render.automap.bTextured && !automap.Radar 
 	int32_t bUnlimited = nSegmentLimit == automap.MaxSegsAway ();
 	int32_t bSkyBox = gameOpts->render.automap.bSkybox;
 
-for (int32_t i = nSegments = 0; i < gameData.segs.nSegments; i++)
+for (int32_t i = nSegments = 0; i < gameData.segData.nSegments; i++)
 	if (automap.Visible (i)
 		 && (bSkyBox || (SEGMENT (i)->m_function != SEGMENT_FUNC_SKYBOX)) 
 		 && (bUnlimited || (automap.m_visible [i] <= nSegmentLimit))) {
@@ -745,7 +745,7 @@ portals [0].bot = CCanvas::Current ()->Height () - 1;
 #ifdef _OPENMP
 #	pragma omp parallel for
 #endif
-for (i = 0; i < gameData.segs.nVertices; i++) 
+for (i = 0; i < gameData.segData.nVertices; i++) 
 	renderPoints [i].Reset ();
 
 #if DBG
@@ -753,7 +753,7 @@ if (nStartSeg == nDbgSeg)
 	BRP;
 int32_t nIterations = 0;
 #endif
-int32_t nRenderDepth = Min (4 * (int32_t (gameStates.render.detail.nRenderDepth) + 1), gameData.segs.nSegments);
+int32_t nRenderDepth = Min (4 * (int32_t (gameStates.render.detail.nRenderDepth) + 1), gameData.segData.nSegments);
 
 // Starting at the viewer's segment, the following code looks through each open side of a segment
 // the projected rectangular area of that side is that side's "portal".
@@ -949,7 +949,7 @@ for (l = 0; l < nRenderDepth; l++) {
 				else if (h > 0)
 					bExpand = true;
 				if (bExpand) {
-					if (nCurrent < gameData.segs.nSegments)
+					if (nCurrent < gameData.segData.nSegments)
 						renderSegList [nCurrent] = -0x7fff;
 					oldPortal = newPortal;		//get updated tPortal
 					processed [nPos] = nProcessed - 1;		//force reprocess

@@ -137,9 +137,9 @@ if ((otherObjP->info.nType == OBJ_PLAYER) && gameStates.app.cheats.bMonsterMode)
 					result = ApplyDamageToRobot (xDamage / 2, OBJ_IDX (otherObjP));
 				}
 #if DBG
-			if (result && (otherObjP->cType.laserInfo.parent.nSignature == gameData.objs.consoleP->info.nSignature))
+			if (result && (otherObjP->cType.laserInfo.parent.nSignature == gameData.objData.consoleP->info.nSignature))
 #else
-			if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS) && result && (otherObjP->cType.laserInfo.parent.nSignature == gameData.objs.consoleP->info.nSignature))
+			if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS) && result && (otherObjP->cType.laserInfo.parent.nSignature == gameData.objData.consoleP->info.nSignature))
 #endif
 				cockpit->AddPointsToScore (botInfoP->scoreValue);
 			break;
@@ -238,7 +238,7 @@ if (mType.physInfo.flags & PF_PERSISTENT)
 if (IsStatic ())
 	return;
 if (info.nType == OBJ_PLAYER) {
-	if ((this == gameData.objs.consoleP) && gameData.objs.speedBoost [OBJ_IDX (this)].bBoosted)
+	if ((this == gameData.objData.consoleP) && gameData.objData.speedBoost [OBJ_IDX (this)].bBoosted)
 		return;
 	vRotForce *= (I2X (1) / 4);
 	}
@@ -1017,9 +1017,9 @@ if (!IsStatic ()) {
 		if (ROBOTINFO (info.nId)->kamikaze) {
 			ApplyDamageToRobot (info.xShield + 1, OBJ_IDX (playerObjP));
 	#if DBG
-			if (playerObjP == gameData.objs.consoleP)
+			if (playerObjP == gameData.objData.consoleP)
 	#else
-			if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS) && (playerObjP == gameData.objs.consoleP))
+			if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS) && (playerObjP == gameData.objData.consoleP))
 	#endif
 				cockpit->AddPointsToScore (ROBOTINFO (info.nId)->scoreValue);
 			}
@@ -1362,7 +1362,7 @@ if (bIsBoss) {
 	}
 
 if (info.xShield >= 0) {
-	if (killerObjP == gameData.objs.consoleP)
+	if (killerObjP == gameData.objData.consoleP)
 		ExecObjTriggers (OBJ_IDX (this), 1);
 	return 0;
 	}
@@ -1514,7 +1514,7 @@ return bDamage;
 
 int32_t FindHitObject (CObject* objP, int16_t nObject)
 {
-	int16_t	*p = gameData.objs.nHitObjects + objP->Index () * MAX_HIT_OBJECTS;
+	int16_t	*p = gameData.objData.nHitObjects + objP->Index () * MAX_HIT_OBJECTS;
 	int32_t	i;
 
 for (i = objP->cType.laserInfo.nLastHitObj; i; i--, p++)
@@ -1532,7 +1532,7 @@ int32_t AddHitObject (CObject* objP, int16_t nObject)
 
 if (FindHitObject (objP, nObject))
 	return -1;
-p = gameData.objs.nHitObjects + objP->Index () * MAX_HIT_OBJECTS;
+p = gameData.objData.nHitObjects + objP->Index () * MAX_HIT_OBJECTS;
 i = objP->cType.laserInfo.nLastHitObj;
 if (i >= MAX_HIT_OBJECTS) {
 	memcpy (p + 1, p, (MAX_HIT_OBJECTS - 1) * sizeof (*p));
@@ -1657,9 +1657,9 @@ if ((cType.laserInfo.parent.nType == OBJ_PLAYER) && botInfoP->energyBlobs)
 			if (!robotP->ApplyDamageToRobot (xDamage, cType.laserInfo.parent.nObject))
 				BumpTwoObjects (robotP, this, 0, vHitPt);		//only bump if not dead. no xDamage from bump
 #if DBG
-			else if (cType.laserInfo.parent.nSignature == gameData.objs.consoleP->info.nSignature) {
+			else if (cType.laserInfo.parent.nSignature == gameData.objData.consoleP->info.nSignature) {
 #else
-			else if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS) && (cType.laserInfo.parent.nSignature == gameData.objs.consoleP->info.nSignature)) {
+			else if (!(gameStates.app.bGameSuspended & SUSP_ROBOTS) && (cType.laserInfo.parent.nSignature == gameData.objData.consoleP->info.nSignature)) {
 #endif
 				cockpit->AddPointsToScore (botInfoP->scoreValue);
 				DetectEscortGoalAccomplished (OBJ_IDX (robotP));
@@ -1685,7 +1685,7 @@ return 1;
 
 int32_t CObject::CollidePlayerAndHostage (CObject* hostageP, CFixVector& vHitPt, CFixVector* vNormal)
 {
-if (this == gameData.objs.consoleP) {
+if (this == gameData.objData.consoleP) {
 	DetectEscortGoalAccomplished (OBJ_IDX (hostageP));
 	cockpit->AddPointsToScore (HOSTAGE_SCORE);
 	// Do effect
@@ -2239,7 +2239,7 @@ void CollideInit (void)
 
 for (i = 0; i < MAX_OBJECT_TYPES; i++)
 	for (j = 0; j < MAX_OBJECT_TYPES; j++)
-		gameData.objs.collisionResult [i][j] = RESULT_NOTHING;
+		gameData.objData.collisionResult [i][j] = RESULT_NOTHING;
 
 ENABLE_COLLISION (OBJ_WALL, OBJ_ROBOT);
 ENABLE_COLLISION (OBJ_WALL, OBJ_WEAPON);

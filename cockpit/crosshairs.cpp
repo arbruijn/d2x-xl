@@ -57,7 +57,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 bool GuidedMissileActive (void)
 {
-return gameData.objs.HasGuidedMissile (N_LOCALPLAYER);
+return gameData.objData.HasGuidedMissile (N_LOCALPLAYER);
 }
 
 //	-----------------------------------------------------------------------------

@@ -256,9 +256,9 @@ else
 		}
 	else {
 		int32_t bFlip = SortVertsForNormal (v [0], v [1], v [2], 0xFFFF, vSorted);
-		vNormal = CFixVector::Normal (gameData.segs.vertices [vSorted [0]],
-												gameData.segs.vertices [vSorted [1]],
-												gameData.segs.vertices [vSorted [2]]);
+		vNormal = CFixVector::Normal (gameData.segData.vertices [vSorted [0]],
+												gameData.segData.vertices [vSorted [1]],
+												gameData.segData.vertices [vSorted [2]]);
 		if (bFlip)
 			vNormal.Neg ();
 		if (!ogl.UseTransform ())
@@ -288,9 +288,9 @@ else {
 		}
 	else {
 		int32_t bFlip = SortVertsForNormal (v [0], v [1], v [2], 0xFFFF, vSorted);
-		vNormal = CFixVector::Normal (gameData.segs.vertices [vSorted [0]],
-												gameData.segs.vertices [vSorted [1]],
-												gameData.segs.vertices [vSorted [2]]);
+		vNormal = CFixVector::Normal (gameData.segData.vertices [vSorted [0]],
+												gameData.segData.vertices [vSorted [1]],
+												gameData.segData.vertices [vSorted [2]]);
 		if (bFlip)
 			vNormal.Neg ();
 		}

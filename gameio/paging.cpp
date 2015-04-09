@@ -315,7 +315,7 @@ for (nObject = m_objects; nObject != -1; nObject = OBJECT (nObject)->info.nNextI
 void CWall::LoadTextures (void)
 {
 if (nClip>= 0) {
-	tWallEffect* anim = gameData.walls.animP + nClip;
+	tWallEffect* anim = gameData.wallData.animP + nClip;
 	for (int32_t j = 0; j < anim->nFrameCount; j++)
 		LoadTexture (gameData.pig.tex.bmIndexP [anim->frames [j]].index, j, gameStates.app.bD1Data);
 	}
@@ -325,7 +325,7 @@ if (nClip>= 0) {
 
 void LoadWallTextures (void)
 {
-for (int32_t i = 0; i < gameData.walls.nWalls; i++)
+for (int32_t i = 0; i < gameData.wallData.nWalls; i++)
 	WALL (i)->LoadTextures ();
 }
 
@@ -333,7 +333,7 @@ for (int32_t i = 0; i < gameData.walls.nWalls; i++)
 
 void LoadSegmentTextures (void)
 {
-for (int32_t i = 0; i < gameData.segs.nSegments; i++)
+for (int32_t i = 0; i < gameData.segData.nSegments; i++)
 	SEGMENT (i)->LoadTextures ();
 }
 
@@ -341,9 +341,9 @@ for (int32_t i = 0; i < gameData.segs.nSegments; i++)
 
 void LoadPowerupTextures (void)
 {
-for (int32_t i = 0; i < gameData.objs.pwrUp.nTypes; i++)
-	if (gameData.objs.pwrUp.info [i].nClipIndex >= 0)
-		LoadAnimationTextures (&gameData.effects.animations [0][gameData.objs.pwrUp.info [i].nClipIndex], 0);
+for (int32_t i = 0; i < gameData.objData.pwrUp.nTypes; i++)
+	if (gameData.objData.pwrUp.info [i].nClipIndex >= 0)
+		LoadAnimationTextures (&gameData.effects.animations [0][gameData.objData.pwrUp.info [i].nClipIndex], 0);
 }
 
 //------------------------------------------------------------------------------
@@ -414,9 +414,9 @@ StartTime (0);
 
 int32_t PagingGaugeSize (void)
 {
-return PROGRESS_STEPS (gameData.segs.nSegments) + 
+return PROGRESS_STEPS (gameData.segData.nSegments) + 
 		 PROGRESS_STEPS (gameFileInfo.walls.count) +
-		 PROGRESS_STEPS (gameData.objs.pwrUp.nTypes) * 2 +
+		 PROGRESS_STEPS (gameData.objData.pwrUp.nTypes) * 2 +
 		 PROGRESS_STEPS (gameData.weapons.nTypes [0]) + 
 		 PROGRESS_STEPS (MAX_GAUGE_BMS);
 }
@@ -438,8 +438,8 @@ if (nState)
 	int32_t	i;
 
 //paletteManager.ResumeEffect ();
-if (nTouchSeg < gameData.segs.nSegments) {
-	for (i = 0; (i < PROGRESS_INCR) && (nTouchSeg < gameData.segs.nSegments); i++) {
+if (nTouchSeg < gameData.segData.nSegments) {
+	for (i = 0; (i < PROGRESS_INCR) && (nTouchSeg < gameData.segData.nSegments); i++) {
 #if DBG
 		if (nTouchSeg == nDbgSeg)
 			BRP;
@@ -447,23 +447,23 @@ if (nTouchSeg < gameData.segs.nSegments) {
 		SEGMENT (nTouchSeg++)->LoadTextures ();
 		}
 	}
-else if (nTouchWall < gameData.walls.nWalls) {
-	for (i = 0; (i < PROGRESS_INCR) && (nTouchWall < gameData.walls.nWalls); i++)
+else if (nTouchWall < gameData.wallData.nWalls) {
+	for (i = 0; (i < PROGRESS_INCR) && (nTouchWall < gameData.wallData.nWalls); i++)
 		WALL (nTouchWall++)->LoadTextures ();
 	}
-else if (nTouchPowerup1 < gameData.objs.pwrUp.nTypes) {
-	for (i = 0; (i < PROGRESS_INCR) && (nTouchPowerup1 < gameData.objs.pwrUp.nTypes); i++, nTouchPowerup1++)
-		if (gameData.objs.pwrUp.info [nTouchPowerup1].nClipIndex>= 0)
-			LoadAnimationTextures (&gameData.effects.animations [0][gameData.objs.pwrUp.info [nTouchPowerup1].nClipIndex], 0);
+else if (nTouchPowerup1 < gameData.objData.pwrUp.nTypes) {
+	for (i = 0; (i < PROGRESS_INCR) && (nTouchPowerup1 < gameData.objData.pwrUp.nTypes); i++, nTouchPowerup1++)
+		if (gameData.objData.pwrUp.info [nTouchPowerup1].nClipIndex>= 0)
+			LoadAnimationTextures (&gameData.effects.animations [0][gameData.objData.pwrUp.info [nTouchPowerup1].nClipIndex], 0);
 	}
 else if (nTouchWeapon < gameData.weapons.nTypes [0]) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchWeapon < gameData.weapons.nTypes [0]); i++)
 		LoadWeaponTextures (nTouchWeapon++);
 	}
-else if (nTouchPowerup2 < gameData.objs.pwrUp.nTypes) {
-	for (i = 0; (i < PROGRESS_INCR) && (nTouchPowerup2 < gameData.objs.pwrUp.nTypes); i++, nTouchPowerup2++)
-		if (gameData.objs.pwrUp.info [nTouchPowerup2].nClipIndex>= 0)
-			LoadAnimationTextures (&gameData.effects.animations [0][gameData.objs.pwrUp.info [nTouchPowerup2].nClipIndex], 0);
+else if (nTouchPowerup2 < gameData.objData.pwrUp.nTypes) {
+	for (i = 0; (i < PROGRESS_INCR) && (nTouchPowerup2 < gameData.objData.pwrUp.nTypes); i++, nTouchPowerup2++)
+		if (gameData.objData.pwrUp.info [nTouchPowerup2].nClipIndex>= 0)
+			LoadAnimationTextures (&gameData.effects.animations [0][gameData.objData.pwrUp.info [nTouchPowerup2].nClipIndex], 0);
 	}
 else if (nTouchGauge < MAX_GAUGE_BMS) {
 	for (i = 0; (i < PROGRESS_INCR) && (nTouchGauge < MAX_GAUGE_BMS); i++, nTouchGauge++)

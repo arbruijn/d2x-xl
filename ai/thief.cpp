@@ -69,7 +69,7 @@ nDepth = THIEF_DEPTH;
 while (nSegment == -1) {
 	nSegment = PickConnectedSegment (OBJECT (LOCALPLAYER.nObject), nDepth, &nDropDepth);
 	if (nDropDepth < THIEF_DEPTH / 2)
-		return (RandShort () * gameData.segs.nLastSegment) >> 15;
+		return (RandShort () * gameData.segData.nLastSegment) >> 15;
 	if ((nSegment >= 0) && (SEGMENT (nSegment)->m_function == SEGMENT_FUNC_REACTOR))
 		nSegment = -1;
 	nDepth--;
@@ -80,7 +80,7 @@ if (nSegment >= 0)
 #if TRACE
 console.printf (1, "Warning: Unable to find a connected CSegment for thief recreation.\n");
 #endif
-return (RandShort () * gameData.segs.nLastSegment) >> 15;
+return (RandShort () * gameData.segData.nLastSegment) >> 15;
 }
 
 //	----------------------------------------------------------------------
@@ -117,7 +117,7 @@ if ((gameData.ai.target.xDist > I2X (500)) && (ailP->nextActionTime > 0))
 if (objP->Disarmed () || objP->Reprogrammed ())
 	return;
 
-gameData.ai.target.objP = gameData.objs.consoleP;
+gameData.ai.target.objP = gameData.objData.consoleP;
 if (gameStates.app.bPlayerIsDead)
 	ailP->mode = AIM_THIEF_RETREAT;
 
@@ -131,7 +131,7 @@ switch (ailP->mode) {
 			return;
 			}
 		if (gameData.ai.nTargetVisibility) {
-			CreateNSegmentPath (objP, 15, gameData.objs.consoleP->info.nSegment);
+			CreateNSegmentPath (objP, 15, gameData.objData.consoleP->info.nSegment);
 			ailP->mode = AIM_THIEF_RETREAT;
 			return;
 			}
@@ -159,7 +159,7 @@ switch (ailP->mode) {
 				tAIStaticInfo* aiP = &objP->cType.aiInfo;
 				if (((aiP->nCurPathIndex <= 1) && (aiP->PATH_DIR == -1)) || ((aiP->nCurPathIndex >= aiP->nPathLength-1) && (aiP->PATH_DIR == 1))) {
 					ailP->targetAwarenessType = 0;
-					CreateNSegmentPath (objP, 10, gameData.objs.consoleP->info.nSegment);
+					CreateNSegmentPath (objP, 10, gameData.objData.consoleP->info.nSegment);
 
 					//	If path is real int16_t, try again, allowing to go through player's CSegment
 					if (aiP->nPathLength < 4) {
@@ -187,7 +187,7 @@ switch (ailP->mode) {
 		if (ailP->targetAwarenessType >= PA_PLAYER_COLLISION) {
 			ailP->targetAwarenessType = 0;
 			if (RandShort () > 8192) {
-				CreateNSegmentPath (objP, 10, gameData.objs.consoleP->info.nSegment);
+				CreateNSegmentPath (objP, 10, gameData.objData.consoleP->info.nSegment);
 				gameData.ai.localInfo [objP->Index ()].nextActionTime = gameData.thief.xWaitTimes [gameStates.app.nDifficultyLevel] / 2;
 				gameData.ai.localInfo [objP->Index ()].mode = AIM_THIEF_RETREAT;
 				}
@@ -203,9 +203,9 @@ switch (ailP->mode) {
 				//	If the player is close to looking at the thief, thief shall run away.
 				//	No more stupid thief trying to sneak up on you when you're looking right at him!
 				if (gameData.ai.target.xDist > I2X (60)) {
-					fix dot = CFixVector::Dot (gameData.ai.target.vDir, OBJPOS (gameData.objs.consoleP)->mOrient.m.dir.f);
+					fix dot = CFixVector::Dot (gameData.ai.target.vDir, OBJPOS (gameData.objData.consoleP)->mOrient.m.dir.f);
 					if (dot < -I2X (1)/2) {	//	Looking at least towards thief, so thief will run!
-						CreateNSegmentPath (objP, 10, gameData.objs.consoleP->info.nSegment);
+						CreateNSegmentPath (objP, 10, gameData.objData.consoleP->info.nSegment);
 						gameData.ai.localInfo [objP->Index ()].nextActionTime = gameData.thief.xWaitTimes [gameStates.app.nDifficultyLevel] / 2;
 						gameData.ai.localInfo [objP->Index ()].mode = AIM_THIEF_RETREAT;
 						}
@@ -433,7 +433,7 @@ for (i = 0; i < 3; i++) {
 	//	about 1/3 of time, steal another item
 	rval += AttemptToStealItem2 (objP, nPlayer);
 	} 
-CreateNSegmentPath (objP, 10, gameData.objs.consoleP->info.nSegment);
+CreateNSegmentPath (objP, 10, gameData.objData.consoleP->info.nSegment);
 gameData.ai.localInfo [objP->Index ()].nextActionTime = gameData.thief.xWaitTimes [gameStates.app.nDifficultyLevel] / 2;
 gameData.ai.localInfo [objP->Index ()].mode = AIM_THIEF_RETREAT;
 if (rval) {

@@ -44,7 +44,7 @@ if (gameData.fusion.xAutoFireTime) {
 			return 0;
 		t0 = t;
 		gameData.laser.nGlobalFiringCount = 0;
-		gameData.objs.consoleP->RandomBump (I2X (1) / 8, (gameData.FusionCharge () > I2X (2)) ? gameData.FusionCharge () * 4 : I2X (4));
+		gameData.objData.consoleP->RandomBump (I2X (1) / 8, (gameData.FusionCharge () > I2X (2)) ? gameData.FusionCharge () * 4 : I2X (4));
 		}
 	}
 return 1;
@@ -88,10 +88,10 @@ else {
 	if (gameData.fusion.xNextSoundTime < gameData.time.xGame) {
 		if (gameData.FusionCharge () > I2X (2)) {
 			audio.PlaySound (11);
-			gameData.objs.consoleP->ApplyDamageToPlayer (gameData.objs.consoleP, RandShort () * 4);
+			gameData.objData.consoleP->ApplyDamageToPlayer (gameData.objData.consoleP, RandShort () * 4);
 			}
 		else {
-			CreateAwarenessEvent (gameData.objs.consoleP, WEAPON_ROBOT_COLLISION);
+			CreateAwarenessEvent (gameData.objData.consoleP, WEAPON_ROBOT_COLLISION);
 			audio.PlaySound (SOUND_FUSION_WARMUP);
 			if (IsMultiGame)
 				MultiSendPlaySound (SOUND_FUSION_WARMUP, I2X (1));

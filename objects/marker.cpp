@@ -208,7 +208,7 @@ void CMarkerManager::Drop (char nPlayerMarker, int32_t bSpawn)
 if (!(bSpawn && markerManager.MoveSpawnPoint (&playerP->info.position, playerP->info.nSegment))) {
 	m_data.position [nMarker] = playerP->info.position.vPos;
 	int16_t nObject = m_data.objects [nMarker];
-	if ((nObject >= 0) && (nObject <= gameData.objs.nLastObject [0]) && (OBJECT (nObject)->info.nType == OBJ_MARKER))
+	if ((nObject >= 0) && (nObject <= gameData.objData.nLastObject [0]) && (OBJECT (nObject)->info.nType == OBJ_MARKER))
 		ReleaseObject (nObject);
 	if (bSpawn)
 		strcpy (m_data.szMessage [nMarker], "SPAWN");
@@ -333,7 +333,7 @@ if ((m_data.nHighlight > -1) && ((nObject = m_data.objects [m_data.nHighlight]) 
 void CMarkerManager::Delete (int32_t bForce)
 {
 if ((m_data.nHighlight > -1) && (m_data.objects [m_data.nHighlight] != -1)) {
-	gameData.objs.viewerP = OBJECT (m_data.objects [m_data.nHighlight]);
+	gameData.objData.viewerP = OBJECT (m_data.objects [m_data.nHighlight]);
 	if (bForce || !InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_DELETE_MARKER)) {
 		int32_t	h, i;
 		ReleaseObject (m_data.objects [m_data.nHighlight]);
@@ -355,7 +355,7 @@ if ((m_data.nHighlight > -1) && (m_data.objects [m_data.nHighlight] != -1)) {
 			m_data.szMessage [i][0] = '\0';
 			}
 		}
-	gameData.objs.viewerP = gameData.objs.consoleP;
+	gameData.objData.viewerP = gameData.objData.consoleP;
 	}
 }
 
@@ -370,7 +370,7 @@ if (!IsMultiGame || IsCoopGame) {
 	else
 #endif
 	if ((m_data.nHighlight > -1) && (m_data.objects [m_data.nHighlight] != -1)) {
-		gameData.objs.viewerP = OBJECT (m_data.objects [m_data.nHighlight]);
+		gameData.objData.viewerP = OBJECT (m_data.objects [m_data.nHighlight]);
 		if (!InfoBox (NULL,NULL,  BG_STANDARD, 2, TXT_YES, TXT_NO, TXT_JUMP_TO_MARKER)) {
 			CObject	*markerP = OBJECT (m_data.objects [m_data.nHighlight]);
 
@@ -382,7 +382,7 @@ if (!IsMultiGame || IsCoopGame) {
 			LOCALOBJECT->RelinkToSeg (markerP->info.nSegment);
 			gameStates.render.bDoAppearanceEffect = 1;
 			}
-		gameData.objs.viewerP = gameData.objs.consoleP;
+		gameData.objData.viewerP = gameData.objData.consoleP;
 		}
 	}
 }

@@ -358,11 +358,11 @@ TrackWeaponObject (nObject, int32_t (nPlayer));
 #endif
 weaponP = OBJECT (nObject);
 if ((nLaserType == GUIDEDMSL_ID) && gameData.multigame.bIsGuided)
-	gameData.objs.SetGuidedMissile (nPlayer, weaponP);
+	gameData.objData.SetGuidedMissile (nPlayer, weaponP);
 gameData.multigame.bIsGuided = 0;
 if (CObject::IsMissile (nLaserType) && (nLaserType != GUIDEDMSL_ID)) {
-	if (!gameData.objs.missileViewerP && (nPlayer == N_LOCALPLAYER))
-		gameData.objs.missileViewerP = weaponP;
+	if (!gameData.objData.missileViewerP && (nPlayer == N_LOCALPLAYER))
+		gameData.objData.missileViewerP = weaponP;
 	}
 //	If this weapon is supposed to be silent, set that bit!
 #if 0 
@@ -378,11 +378,11 @@ if (bHarmless)
 
 //	If the object firing the laser is the player, then indicate the laser object so robots can dodge.
 //	New by MK on 6/8/95, don't let robots evade proximity bombs, thereby decreasing uselessness of bombs.
-if ((objP == gameData.objs.consoleP) && !weaponP->IsPlayerMine ())
+if ((objP == gameData.objData.consoleP) && !weaponP->IsPlayerMine ())
 	gameStates.app.bPlayerFiredLaserThisFrame = nObject;
 
 if (gameStates.app.cheats.bHomingWeapons || gameData.weapons.info [nLaserType].homingFlag) {
-	if (objP == gameData.objs.consoleP) {
+	if (objP == gameData.objData.consoleP) {
 		weaponP->cType.laserInfo.nHomingTarget = weaponP->FindVisibleHomingTarget (vLaserPos);
 		gameData.multigame.weapon.nTrack = weaponP->cType.laserInfo.nHomingTarget;
 		}
@@ -585,7 +585,7 @@ if (info.nType == OBJ_WEAPON) {
 		!IsGuidedMissile ()) {
 #if USE_OPENMP //> 1
 		if (gameStates.app.bMultiThreaded)
-			gameData.objs.update.Push (this);
+			gameData.objData.update.Push (this);
 		else
 #endif
 			UpdateHomingWeapon ();
@@ -857,16 +857,16 @@ for (i = 0; i < nSmartChildren; i++) {
 void ReleaseGuidedMissile (int32_t nPlayer)
 {
 if (nPlayer == N_LOCALPLAYER) {
-	CObject* gmObjP = gameData.objs.GetGuidedMissile (nPlayer);
+	CObject* gmObjP = gameData.objData.GetGuidedMissile (nPlayer);
 	if (!gmObjP)
 		return;
-	gameData.objs.missileViewerP = gmObjP;
+	gameData.objData.missileViewerP = gmObjP;
 	if (IsMultiGame)
 	 	MultiSendGuidedInfo (gmObjP, 1);
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 	 	NDRecordGuidedEnd ();
 	 }
-gameData.objs.SetGuidedMissile (nPlayer, NULL);
+gameData.objData.SetGuidedMissile (nPlayer, NULL);
 }
 
 //	-------------------------------------------------------------------------------------------
@@ -879,7 +879,7 @@ void DoMissileFiring (int32_t bAutoSelect)
 	CPlayerData*	playerP = gameData.multiplayer.players + N_LOCALPLAYER;
 
 Assert (gameData.weapons.nSecondary < MAX_SECONDARY_WEAPONS);
-if (gameData.objs.HasGuidedMissile (N_LOCALPLAYER)) {
+if (gameData.objData.HasGuidedMissile (N_LOCALPLAYER)) {
 	ReleaseGuidedMissile (N_LOCALPLAYER);
 	i = secondaryWeaponToWeaponInfo [gameData.weapons.nSecondary];
 	gameData.missiles.xNextFireTime = gameData.time.xGame + WI_fire_wait (i);
@@ -906,7 +906,7 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 		nGun += (gunFlag = (gameData.laser.nMissileGun & 1));
 		gameData.laser.nMissileGun++;
 		}
-	int32_t nObject = LaserPlayerFire (gameData.objs.consoleP, nWeaponId, nGun, 1, 0, -1);
+	int32_t nObject = LaserPlayerFire (gameData.objData.consoleP, nWeaponId, nGun, 1, 0, -1);
 	if (0 > nObject)
 		return;
 	if (gameData.weapons.nSecondary == PROXMINE_INDEX) {
@@ -940,14 +940,14 @@ for (i = 0; (i <= h) && (playerP->secondaryAmmo [gameData.weapons.nSecondary] > 
 	else if ((gameData.weapons.nSecondary == MEGA_INDEX) || (gameData.weapons.nSecondary == EARTHSHAKER_INDEX)) {
 		CFixVector vForce;
 
-	vForce.v.coord.x = - (gameData.objs.consoleP->info.position.mOrient.m.dir.f.v.coord.x << 7);
-	vForce.v.coord.y = - (gameData.objs.consoleP->info.position.mOrient.m.dir.f.v.coord.y << 7);
-	vForce.v.coord.z = - (gameData.objs.consoleP->info.position.mOrient.m.dir.f.v.coord.z << 7);
-	gameData.objs.consoleP->ApplyForce (vForce);
+	vForce.v.coord.x = - (gameData.objData.consoleP->info.position.mOrient.m.dir.f.v.coord.x << 7);
+	vForce.v.coord.y = - (gameData.objData.consoleP->info.position.mOrient.m.dir.f.v.coord.y << 7);
+	vForce.v.coord.z = - (gameData.objData.consoleP->info.position.mOrient.m.dir.f.v.coord.z << 7);
+	gameData.objData.consoleP->ApplyForce (vForce);
 	vForce.v.coord.x = (vForce.v.coord.x >> 4) + SRandShort ();
 	vForce.v.coord.y = (vForce.v.coord.y >> 4) + SRandShort ();
 	vForce.v.coord.z = (vForce.v.coord.z >> 4) + SRandShort ();
-	gameData.objs.consoleP->ApplyRotForce (vForce);
+	gameData.objData.consoleP->ApplyRotForce (vForce);
 	break; //no dual mega/smart missile launch
 	}
 }
@@ -975,12 +975,12 @@ if (gameStates.app.bPlayerIsDead || OBSERVING)
 	CFixMatrix*	viewP;
 	CObject*		objP;
 
-gameData.objs.trackGoals [0] =
-gameData.objs.trackGoals [1] = NULL;
+gameData.objData.trackGoals [0] =
+gameData.objData.trackGoals [1] = NULL;
 if ((objP = GuidedInMainView ())) {
 	nObject = objP->FindVisibleHomingTarget (objP->info.position.vPos);
-	gameData.objs.trackGoals [0] =
-	gameData.objs.trackGoals [1] = (nObject < 0) ? NULL : OBJECT (nObject);
+	gameData.objData.trackGoals [0] =
+	gameData.objData.trackGoals [1] = (nObject < 0) ? NULL : OBJECT (nObject);
 	return;
 	}
 if (!AllowedToFireMissile (-1, 1))
@@ -1002,15 +1002,15 @@ else {
 	j = !COMPETITION && (EGI_FLAG (bDualMissileLaunch, 0, 1, 0)) ? 2 : 1;
 	h = gameData.laser.nMissileGun & 1;
 	}
-viewP = gameData.objs.consoleP->View (0);
+viewP = gameData.objData.consoleP->View (0);
 for (i = 0; i < j; i++, h = !h) {
 	nGun = secondaryWeaponToGunNum [gameData.weapons.nSecondary] + h;
-	if ((vGunPoints = GetGunPoints (gameData.objs.consoleP, nGun))) {
+	if ((vGunPoints = GetGunPoints (gameData.objData.consoleP, nGun))) {
 		vGunPos = vGunPoints [nGun];
 		vGunPos = *viewP * vGunPos;
-		vGunPos += gameData.objs.consoleP->info.position.vPos;
-		nObject = gameData.objs.consoleP->FindVisibleHomingTarget (vGunPos);
-		gameData.objs.trackGoals [i] = (nObject < 0) ? NULL : OBJECT (nObject);
+		vGunPos += gameData.objData.consoleP->info.position.vPos;
+		nObject = gameData.objData.consoleP->FindVisibleHomingTarget (vGunPos);
+		gameData.objData.trackGoals [i] = (nObject < 0) ? NULL : OBJECT (nObject);
 		}
 	}
 }

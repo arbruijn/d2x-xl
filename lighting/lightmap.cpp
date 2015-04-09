@@ -220,7 +220,7 @@ double CLightmapManager::SideRad (int32_t nSegment, int32_t nSide)
 xMin = yMin = zMin = 1e300;
 xMax = yMax = zMax = -1e300;
 for (i = 0; i < sideP->CornerCount (); i++) {
-	v = gameData.segs.vertices +sideVerts [i];
+	v = gameData.segData.vertices +sideVerts [i];
 	h = (*v).v.coord.x;
 	if (xMin > h)
 		xMin = h;
@@ -352,7 +352,7 @@ int32_t nTrigger = 0;
 for (;;) {
 	if (0 > (nTrigger = wallP->IsTriggerTarget (nTrigger)))
 		return false;
-	CTrigger* trigP = TRIGGER (nTrigger);
+	CTrigger* trigP = GEOTRIGGER (nTrigger);
 	if (trigP && (trigP->m_info.nType == TT_CLOSE_WALL))
 		return false;
 	nTrigger++;
@@ -823,8 +823,8 @@ int32_t CLightmapManager::Save (int32_t nLevel)
 	CFile				cf;
 	tLightmapDataHeader ldh = {LIGHTMAP_DATA_VERSION, 
 										CalcSegmentCheckSum (),
-										gameData.segs.nSegments, 
-										gameData.segs.nVertices, 
+										gameData.segData.nSegments, 
+										gameData.segData.nVertices, 
 										FACES.nFaces, 
 										m_list.nLights, 
 										MAX_LIGHT_RANGE,
@@ -877,8 +877,8 @@ bOk = (cf.Read (&ldh, sizeof (ldh), 1) == 1);
 if (bOk)
 	bOk = (ldh.nVersion == LIGHTMAP_DATA_VERSION) && 
 			(ldh.nCheckSum == CalcSegmentCheckSum ()) &&
-			(ldh.nSegments == gameData.segs.nSegments) && 
-			(ldh.nVertices == gameData.segs.nVertices) && 
+			(ldh.nSegments == gameData.segData.nSegments) && 
+			(ldh.nVertices == gameData.segData.nVertices) && 
 			(ldh.nFaces == FACES.nFaces) && 
 			(ldh.nLights == m_list.nLights) && 
 			(ldh.nBuffers <= m_list.nBuffers) &&

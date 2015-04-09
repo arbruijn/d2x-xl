@@ -445,12 +445,12 @@ if (gameStates.render.cockpit.nType != CM_FULL_SCREEN)
 	cockpit->Activate (CM_FULL_SCREEN);
 //gameOpts->render.nMaxFPS = 1;
 if (ReleaseBuffer ()) {
-	CObject* viewerP = gameData.objs.viewerP;
-	gameData.objs.viewerP = m_data.objP ? m_data.objP : &m_data.obj;
+	CObject* viewerP = gameData.objData.viewerP;
+	gameData.objData.viewerP = m_data.objP ? m_data.objP : &m_data.obj;
 	Activate ("CCamera::Render");
 	RenderFrame (0, 0);
 	Deactivate ();
-	gameData.objs.viewerP = viewerP;
+	gameData.objData.viewerP = viewerP;
 	m_data.bValid = 1;
 	DisableBuffer ();
 	}
@@ -540,7 +540,7 @@ if (!m_cameras.Create (MAX_CAMERAS)) {
 	PrintLog (-1);
 	return 0;
 	}
-if (!m_faceCameras.Create (gameData.segs.nSegments * 6)) {
+if (!m_faceCameras.Create (gameData.segData.nSegments * 6)) {
 	PrintLog (-1);
 	return 0;
 	}
@@ -553,12 +553,12 @@ m_objectCameras.Clear (0xFF);
 #if MAX_SHADOWMAPS
 m_shadowMaps.Clear (0xFF);
 #endif
-if (gameData.trigs.m_nTriggers) {
-	for (i = 0, wallP = WALLS.Buffer (); (i < gameData.walls.nWalls) && (m_cameras.ToS () < MAX_CAMERAS); i++, wallP++) {
+if (gameData.trigData.m_nTriggers [0]) {
+	for (i = 0, wallP = WALLS.Buffer (); (i < gameData.wallData.nWalls) && (m_cameras.ToS () < MAX_CAMERAS); i++, wallP++) {
 		t = wallP->nTrigger;
 		if (t >= TRIGGERS.Length ())
 			continue;
-		triggerP = TRIGGER (t);
+		triggerP = GEOTRIGGER (t);
 		if (triggerP && (triggerP->m_info.nType == TT_CAMERA)) {
 			for (j = 0; j < triggerP->m_nLinks; j++)
 				if (m_cameras.Grow () &&
@@ -575,13 +575,13 @@ if (gameData.trigs.m_nTriggers) {
 		}
 	}
 
-if (gameData.trigs.m_nObjTriggers) {
+if (gameData.trigData.m_nTriggers [1]) {
 	FORALL_OBJS (objP) {
-		if ((j = gameData.trigs.objTriggerRefs [objP->Index ()].nFirst) >= int32_t (OBJTRIGGERS.Length ()))
+		if ((j = gameData.trigData.objTriggerRefs [objP->Index ()].nFirst) >= int32_t (OBJTRIGGERS.Length ()))
 			continue;
 		if (!(triggerP = OBJTRIGGER (j)))
 			continue;
-		j = gameData.trigs.objTriggerRefs [objP->Index ()].nCount;
+		j = gameData.trigData.objTriggerRefs [objP->Index ()].nCount;
 #if DBG
 		if (j >= 0)
 			j = j;
@@ -623,7 +623,7 @@ if (m_cameras.Buffer ()) {
 int32_t CCameraManager::Render (void)
 {
 	uint32_t		i;
-	CObject	*viewerSave = gameData.objs.viewerP;
+	CObject	*viewerSave = gameData.objData.viewerP;
 	time_t	t;
 	int32_t		nCamsRendered;
 	int32_t		cm = gameStates.render.cockpit.nType;
@@ -652,7 +652,7 @@ if (m_current) {
 	m_current->Reset ();
 	nCamsRendered += m_current->Render ();
 	}
-gameData.objs.viewerP = viewerSave;
+gameData.objData.viewerP = viewerSave;
 //gameOpts->render.nMaxFPS = frameCap;
 if (gameStates.render.cockpit.nType != cm) {
 	cockpit->Activate (cm);

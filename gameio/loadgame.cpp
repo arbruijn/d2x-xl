@@ -194,7 +194,7 @@ void VerifyConsoleObject (void)
 {
 Assert (N_LOCALPLAYER > -1);
 Assert (LOCALPLAYER.nObject > -1);
-gameData.objs.consoleP = OBJECT (LOCALPLAYER.nObject);
+gameData.objData.consoleP = OBJECT (LOCALPLAYER.nObject);
 }
 
 //------------------------------------------------------------------------------
@@ -302,7 +302,7 @@ for (i = 0; i < nPlayers; i++) {
 		break;
 		}
 	}
-gameData.objs.viewerP = gameData.objs.consoleP = OBJECTS.Buffer (); // + LOCALPLAYER.nObject;
+gameData.objData.viewerP = gameData.objData.consoleP = OBJECTS.Buffer (); // + LOCALPLAYER.nObject;
 gameData.multiplayer.nPlayerPositions = nPlayers;
 
 #if DBG
@@ -459,7 +459,7 @@ else {
 	if (TactileStick)
 		tactile_set_button_jolt ();
 #endif
-	gameData.objs.missileViewerP = NULL;
+	gameData.objData.missileViewerP = NULL;
 	}
 gameData.bosses.ResetHitTimes ();
 }
@@ -558,7 +558,7 @@ if (nPlayer == N_LOCALPLAYER) {
 	gameData.physics.xAfterburnerCharge = (player.flags & PLAYER_FLAGS_AFTERBURNER) ? I2X (1) : 0;
 	gameStates.app.bPlayerIsDead = 0;		//player no longer dead
 	gameStates.gameplay.bLastAfterburnerState = 0;
-	gameData.objs.missileViewerP = NULL;		///reset missile camera if out there
+	gameData.objData.missileViewerP = NULL;		///reset missile camera if out there
 	controls [0].afterburnerState = 0;
 	if (gameOpts->gameplay.nShip [1] < 0)
 		gameOpts->gameplay.nShip [1] = (missionConfig.m_playerShip < 0) ? missionConfig.SelectShip (gameOpts->gameplay.nShip [0]) : missionConfig.SelectShip (missionConfig.m_playerShip);
@@ -627,10 +627,10 @@ void SetVertigoRobotFlags (void)
 {
 	CObject*	objP;
 
-gameData.objs.nVertigoBotFlags = 0;
+gameData.objData.nVertigoBotFlags = 0;
 FORALL_ROBOT_OBJS (objP)
 	if ((objP->info.nId >= 66) && !IS_BOSS (objP))
-		gameData.objs.nVertigoBotFlags |= (1 << (objP->info.nId - 64));
+		gameData.objData.nVertigoBotFlags |= (1 << (objP->info.nId - 64));
 }
 
 
@@ -877,9 +877,9 @@ else {
 		return -1;
 		}
 	/*---*/PrintLog (1, "loading cambot\n");
-	gameData.bots.nCamBotId = (LoadRobotReplacements ("cambot.hxm", NULL, 1, 0) > 0) ? gameData.bots.nTypes [0] - 1 : -1;
+	gameData.botData.nCamBotId = (LoadRobotReplacements ("cambot.hxm", NULL, 1, 0) > 0) ? gameData.botData.nTypes [0] - 1 : -1;
 	PrintLog (-1);
-	gameData.bots.nCamBotModel = gameData.models.nPolyModels - 1;
+	gameData.botData.nCamBotModel = gameData.models.nPolyModels - 1;
 	PrintLog (-1);
 
 	/*---*/PrintLog (1, "loading replacement models\n");
@@ -929,7 +929,7 @@ ogl.m_data.nHeadlights = -1;
 gameData.render.nColoredFaces = 0;
 gameData.app.nFrameCount = 0;
 gameData.app.nMineRenderCount = 0;
-gameData.objs.lists.Init ();
+gameData.objData.lists.Init ();
 memset (gameData.app.semaphores, 0, sizeof (gameData.app.semaphores));
 transparencyRenderer.Init ();
 #if PROFILING
@@ -944,12 +944,12 @@ memset (gameData.multiplayer.bWasHit, 0, sizeof (gameData.multiplayer.bWasHit));
 memset (gameData.multiplayer.nLastHitTime, 0, sizeof (gameData.multiplayer.nLastHitTime));
 memset (gameData.multiplayer.tAppearing, 0, sizeof (gameData.multiplayer.tAppearing));
 memset (gameData.weapons.firing, 0, sizeof (gameData.weapons.firing));
-gameData.objs.objects.Clear ();
+gameData.objData.objects.Clear ();
 lightClusterManager.Init ();
 gameData.render.faceIndex.Init ();
 lightManager.ResetIndex ();
 for (int32_t i = 0; i < MAX_PLAYERS; i++)
-	gameData.objs.SetGuidedMissile (i, NULL);
+	gameData.objData.SetGuidedMissile (i, NULL);
 omegaLightning.Init ();
 SetRearView (0);
 SetFreeCam (0);
@@ -1143,7 +1143,7 @@ if (!gameStates.app.bComputeLightmaps) {
 	gameData.render.color.segments.Clear ();
 	PrintLog (-1);
 	/*---*/PrintLog (1, "resetting speed boost information\n");
-	gameData.objs.speedBoost.Clear ();
+	gameData.objData.speedBoost.Clear ();
 	PrintLog (-1);
 	if (!ogl.m_features.bStencilBuffer)
 		extraGameInfo [0].bShadows = 0;
@@ -1199,7 +1199,7 @@ SetFunctionMode (FMODE_GAME);
 missionManager.SetNextLevel (0);
 missionManager.SetNextLevel (-1, 1);
 N_PLAYERS = 1;
-gameData.objs.nLastObject [0] = 0;
+gameData.objData.nLastObject [0] = 0;
 networkData.bNewGame = 0;
 missionManager.DeleteLevelStates ();
 missionManager.SaveLevelStates ();
@@ -1364,7 +1364,7 @@ GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players a
 HUDClearMessages ();
 automap.ClearVisited ();
 ResetPlayerData (false, true, false);
-gameData.objs.viewerP = OBJECT (LOCALPLAYER.nObject);
+gameData.objData.viewerP = OBJECT (LOCALPLAYER.nObject);
 GameStartRemoveUnusedPlayers ();
 if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
 	gameStates.app.bGameSuspended &= ~(SUSP_ROBOTS | SUSP_TEMPORARY);
@@ -1707,16 +1707,16 @@ StartTime (0);
 }
 
 //	-----------------------------------------------------------------------------------
-//	Set the player's position from the globals gameData.segs.secret.nReturnSegment and gameData.segs.secret.returnOrient.
+//	Set the player's position from the globals gameData.segData.secret.nReturnSegment and gameData.segData.secret.returnOrient.
 void SetPosFromReturnSegment (int32_t bRelink)
 {
 	CObject*	objP = OBJECT (LOCALPLAYER.nObject);
 
-objP->info.position.vPos = SEGMENT (gameData.segs.secret.nReturnSegment)->Center ();
+objP->info.position.vPos = SEGMENT (gameData.segData.secret.nReturnSegment)->Center ();
 if (bRelink)
-	objP->RelinkToSeg (gameData.segs.secret.nReturnSegment);
+	objP->RelinkToSeg (gameData.segData.secret.nReturnSegment);
 ResetPlayerObject ();
-objP->info.position.mOrient = gameData.segs.secret.returnOrient;
+objP->info.position.mOrient = gameData.segData.secret.returnOrient;
 }
 
 //------------------------------------------------------------------------------
@@ -1735,12 +1735,12 @@ if (OBSERVING)
 	automap.SetActive (-1);
 else
 	gameStates.app.nSpawnPos = -1;
-gameData.objs.consoleP->info.controlType = CT_FLYING;
-gameData.objs.consoleP->info.movementType = MT_PHYSICS;
+gameData.objData.consoleP->info.controlType = CT_FLYING;
+gameData.objData.consoleP->info.movementType = MT_PHYSICS;
 DisableObjectProducers ();
 PrintLog (0, "clearing transient objects\n");
 ClearTransientObjects (0);		//0 means leave proximity bombs
-// gameData.objs.consoleP->CreateAppearanceEffect ();
+// gameData.objData.consoleP->CreateAppearanceEffect ();
 gameStates.render.bDoAppearanceEffect = 1;
 if (IsMultiGame) {
 	if (IsCoopGame)
@@ -1833,7 +1833,7 @@ GameStartInitNetworkPlayers (); // Initialize the gameData.multiplayer.players a
 InitHoardData ();
 SetMonsterballForces ();
 #endif
-//	gameData.objs.viewerP = OBJECT (LOCALPLAYER.nObject);
+//	gameData.objData.viewerP = OBJECT (LOCALPLAYER.nObject);
 if (N_PLAYERS > gameData.multiplayer.nPlayerPositions) {
 	TextBox (NULL, BG_STANDARD, 1, TXT_OK, "Too many players for this level.");
 #if 1
@@ -1936,11 +1936,11 @@ static void StartSecretLevel (void)
 Assert (!gameStates.app.bPlayerIsDead);
 InitPlayerPosition (0);
 VerifyConsoleObject ();
-gameData.objs.consoleP->info.controlType = CT_FLYING;
-gameData.objs.consoleP->info.movementType = MT_PHYSICS;
+gameData.objData.consoleP->info.controlType = CT_FLYING;
+gameData.objData.consoleP->info.movementType = MT_PHYSICS;
 // -- WHY? -- DisableObjectProducers ();
 ClearTransientObjects (0);		//0 means leave proximity bombs
-// gameData.objs.consoleP->CreateAppearanceEffect ();
+// gameData.objData.consoleP->CreateAppearanceEffect ();
 gameStates.render.bDoAppearanceEffect = 1;
 AIResetAllPaths ();
 ResetTime ();
@@ -2089,7 +2089,7 @@ if (Type () != OBJ_POWERUP) {
 	}
 info.nId = nId;
 SetSizeFromPowerup ();
-rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [nId].nClipIndex;
+rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [nId].nClipIndex;
 rType.animationInfo.xFrameTime = gameData.effects.animations [0][rType.animationInfo.nClipIndex].xFrameTime;
 }
 
@@ -2345,7 +2345,7 @@ if (nSpawnPos < 0) {
 	else 
 		goto done; // If deathmatch and not Random, positions were already determined by sync packet
 	}
-MovePlayerToSpawnPos (nSpawnPos, gameData.objs.consoleP);
+MovePlayerToSpawnPos (nSpawnPos, gameData.objData.consoleP);
 
 done:
 
@@ -2365,9 +2365,9 @@ fix RobotDefaultShield (CObject *objP)
 if (objP->info.nType != OBJ_ROBOT)
 	return (objP->info.nType == OBJ_REACTOR) ? ReactorStrength () : 0;
 objId = objP->info.nId;
-//Assert (objId < gameData.bots.nTypes [0]);
-i = gameStates.app.bD1Mission && (objId < gameData.bots.nTypes [1]);
-botInfoP = gameData.bots.info [i] + objId;
+//Assert (objId < gameData.botData.nTypes [0]);
+i = gameStates.app.bD1Mission && (objId < gameData.botData.nTypes [1]);
+botInfoP = gameData.botData.info [i] + objId;
 //	Boost shield for Thief and Buddy based on level.
 shield = botInfoP->strength;
 if (botInfoP->thief || botInfoP->companion) {
@@ -2399,7 +2399,7 @@ return shield;
 }
 
 //------------------------------------------------------------------------------
-//	Initialize default parameters for one robot, copying from gameData.bots.infoP to *objP.
+//	Initialize default parameters for one robot, copying from gameData.botData.infoP to *objP.
 //	What about setting size!?  Where does that come from?
 void CopyDefaultsToRobot (CObject *objP)
 {

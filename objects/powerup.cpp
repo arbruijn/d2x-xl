@@ -422,8 +422,8 @@ else {
 		id = objP->info.nId;
 		if (id >= MAX_POWERUP_TYPES_D2)
 			id = POW_AFTERBURNER;
-		MultiSendPlaySound (gameData.objs.pwrUp.info [id].hitSound, I2X (1));
-		audio.PlaySound ((int16_t) gameData.objs.pwrUp.info [id].hitSound);
+		MultiSendPlaySound (gameData.objData.pwrUp.info [id].hitSound, I2X (1));
+		audio.PlaySound ((int16_t) gameData.objData.pwrUp.info [id].hitSound);
 		PowerupBasic (15, 0, 15, 0, pszGot, nPlayer);
 		}
 	bUsed = -1;
@@ -515,8 +515,8 @@ if (ISLOCALPLAYER (nPlayer)) {
 
 	if (playerP->flags & nKey)
 		return 0;
-	MultiSendPlaySound (gameData.objs.pwrUp.info [objP->info.nId].hitSound, I2X (1));
-	audio.PlaySound ((int16_t) gameData.objs.pwrUp.info[objP->info.nId].hitSound);
+	MultiSendPlaySound (gameData.objData.pwrUp.info [objP->info.nId].hitSound, I2X (1));
+	audio.PlaySound ((int16_t) gameData.objData.pwrUp.info[objP->info.nId].hitSound);
 	playerP->flags |= nKey;
 	PowerupBasic (15, 0, 0, KEY_SCORE, "%s %s", pszKey, TXT_ACCESS_GRANTED);
 	InvalidateEscortGoal ();
@@ -557,12 +557,12 @@ if ((bApply = (id < 0)))
 	id = -id;
 if (id >= MAX_POWERUP_TYPES_D2)
 	id = POW_AFTERBURNER;
-if (gameData.objs.pwrUp.info [id].hitSound > -1) {
+if (gameData.objData.pwrUp.info [id].hitSound > -1) {
 	if (!bApply && (gameOpts->gameplay.bInventory && (!IsMultiGame || IsCoopGame)) && ((id == POW_CLOAK) || (id == POW_INVUL)))
 		id = POW_SHIELD_BOOST;
 	if (IsMultiGame) // Added by Rob, take this out if it turns out to be not good for net games!
-		MultiSendPlaySound (gameData.objs.pwrUp.info [id].hitSound, I2X (1));
-	audio.PlaySound (int16_t (gameData.objs.pwrUp.info [id].hitSound));
+		MultiSendPlaySound (gameData.objData.pwrUp.info [id].hitSound, I2X (1));
+	audio.PlaySound (int16_t (gameData.objData.pwrUp.info [id].hitSound));
 	}
 }
 
@@ -684,7 +684,7 @@ if (SPECTATOR (OBJECT (playerP->nObject)))
 bLocalPlayer = (nPlayer == N_LOCALPLAYER);
 if (bLocalPlayer &&
 	 (gameStates.app.bPlayerIsDead || 
-	  (gameData.objs.consoleP->info.nType == OBJ_GHOST) || 
+	  (gameData.objData.consoleP->info.nType == OBJ_GHOST) || 
 	  (playerP->Shield () < 0)))
 	return 0;
 if (objP->cType.powerupInfo.xCreationTime > gameData.time.xGame)		//gametime wrapped!

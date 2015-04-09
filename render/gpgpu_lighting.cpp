@@ -308,7 +308,7 @@ if (nState == 0) {
 else if (nState == 1) {
 	CDynLight*		lightP;
 	int32_t				bSkipHeadlight = ogl.m_states.bHeadlight && (lightManager.Headlights ().nLights > 0) && !gameStates.render.nState;
-	CFloatVector	vPos = gameData.segs.fVertices [nVertex],
+	CFloatVector	vPos = gameData.segData.fVertices [nVertex],
 						vNormal = *RENDERPOINTS [nVertex].GetNormal ();
 		
 	lightManager.SetNearestToVertex (-1, -1, nVertex, NULL, 1, 0, 1, 0);

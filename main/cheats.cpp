@@ -214,15 +214,15 @@ extraGameInfo [0].nBossCount [1] =
 extraGameInfo [1].nBossCount [0] = 
 extraGameInfo [1].nBossCount [1] = 0;
 DoReactorDestroyedStuff (NULL);
-for (i = 0; i < gameData.trigs.m_nTriggers; i++) {
-	if (TRIGGER (i)->IsExit ()) {
-		for (j = 0; j < gameData.walls.nWalls; j++) {
+for (i = 0; i < gameData.trigData.m_nTriggers [0]; i++) {
+	if (GEOTRIGGER (i)->IsExit ()) {
+		for (j = 0; j < gameData.wallData.nWalls; j++) {
 			if (WALL (j)->nTrigger == i) {
 				int16_t nSegment = WALL (j)->nSegment;
-				gameData.objs.consoleP->info.position.vPos = SEGMENT (nSegment)->Center ();
-				gameData.objs.consoleP->RelinkToSeg (nSegment);
-				gameData.objs.consoleP->info.position.mOrient.m.dir.f = SEGMENT (nSegment)->m_sides [WALL (j)->nSide].m_normals [0];
-				gameData.objs.consoleP->info.position.mOrient.m.dir.f.Neg ();
+				gameData.objData.consoleP->info.position.vPos = SEGMENT (nSegment)->Center ();
+				gameData.objData.consoleP->RelinkToSeg (nSegment);
+				gameData.objData.consoleP->info.position.mOrient.m.dir.f = SEGMENT (nSegment)->m_sides [WALL (j)->nSide].m_normals [0];
+				gameData.objData.consoleP->info.position.mOrient.m.dir.f.Neg ();
 				return;
 				}
 			}
@@ -425,7 +425,7 @@ bCloaked = (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) != 0;
 if (bVerbose)
 	HUDInitMessage ("%s %s!", TXT_CLOAKED, bCloaked ? TXT_ON : TXT_OFF);
 LOCALPLAYER.cloakTime = bCloaked ? 0x7fffffff : 0; //gameData.time.xGame + I2X (1000);
-audio.PlaySound (int16_t (gameData.objs.pwrUp.info [POW_CLOAK].hitSound));
+audio.PlaySound (int16_t (gameData.objData.pwrUp.info [POW_CLOAK].hitSound));
 }
 
 //------------------------------------------------------------------------------
@@ -436,7 +436,7 @@ void SegmentWarpCheat (int32_t bVerbose)
 
 if (!MenuGetValues (TXT_ENTER_SEGNUM, nNewSegSide, 2))
 	return;
-if ((nNewSegSide [0] >= 0) && (nNewSegSide [0] <= gameData.segs.nLastSegment)) {
+if ((nNewSegSide [0] >= 0) && (nNewSegSide [0] <= gameData.segData.nLastSegment)) {
 	DoCheatPenalty ();
 	if (nNewSegSide [1] < 0)
 		nNewSegSide [1] = 0;
@@ -465,7 +465,7 @@ void SegmentPathCheat (int32_t bVerbose)
 
 if (!MenuGetValues (TXT_ENTER_SEGNUM, &nSegment, 1))
 	return;
-if ((nSegment >= 0) && (nSegment < gameData.segs.nSegments)) {
+if ((nSegment >= 0) && (nSegment < gameData.segData.nSegments)) {
 	DoCheatPenalty ();
 	MarkPlayerPathToSegment (nSegment);
 	}
@@ -561,7 +561,7 @@ bInvul = (LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) != 0;
 if (bVerbose)
 	HUDInitMessage ("%s %s!", TXT_INVULNERABILITY, bInvul ? TXT_ON : TXT_OFF);
 LOCALPLAYER.invulnerableTime = bInvul ? 0x7fffffff : 0; //gameData.time.xGame + I2X (1000);
-audio.PlaySound (int16_t (gameData.objs.pwrUp.info [POW_INVUL].hitSound));
+audio.PlaySound (int16_t (gameData.objData.pwrUp.info [POW_INVUL].hitSound));
 SetupSpherePulse (gameData.multiplayer.spherePulse + N_LOCALPLAYER, 0.02f, 0.5f);
 }
 

@@ -226,7 +226,7 @@ else if (info.nType == OBJ_ROBOT) {
 		return 1.0f;
 	fDmg = X2F (info.xShield) / X2F (xMaxShield);
 #if 0
-	if (gameData.bots.info [0][info.nId].companion)
+	if (gameData.botData.info [0][info.nId].companion)
 		fDmg /= 2;
 #endif
 	}
@@ -249,7 +249,7 @@ void ObjectGotoNextViewer (void)
 
 FORALL_OBJS (objP) {
 	if (objP->info.nType != OBJ_NONE) {
-		gameData.objs.viewerP = objP;
+		gameData.objData.viewerP = objP;
 		return;
 		}
 	}
@@ -263,12 +263,12 @@ void ObjectGotoPrevViewer (void)
 	CObject*	objP;
 	int32_t 	nStartObj = 0;
 
-nStartObj = OBJ_IDX (gameData.objs.viewerP);		//get viewerP CObject number
+nStartObj = OBJ_IDX (gameData.objData.viewerP);		//get viewerP CObject number
 FORALL_OBJS (objP) {
 	if (--nStartObj < 0)
-		nStartObj = gameData.objs.nLastObject [0];
+		nStartObj = gameData.objData.nLastObject [0];
 	if (OBJECT (nStartObj)->info.nType != OBJ_NONE) {
-		gameData.objs.viewerP = OBJECT (nStartObj);
+		gameData.objData.viewerP = OBJECT (nStartObj);
 		return;
 		}
 	}
@@ -319,28 +319,28 @@ FORALL_OBJS (objP)
 void ResetPlayerObject (void)
 {
 //Init physics
-gameData.objs.consoleP->mType.physInfo.velocity.SetZero ();
-gameData.objs.consoleP->mType.physInfo.thrust.SetZero ();
-gameData.objs.consoleP->mType.physInfo.rotVel.SetZero ();
-gameData.objs.consoleP->mType.physInfo.rotThrust.SetZero ();
-gameData.objs.consoleP->mType.physInfo.brakes = gameData.objs.consoleP->mType.physInfo.turnRoll = 0;
-gameData.objs.consoleP->mType.physInfo.mass = gameData.pig.ship.player->mass;
-gameData.objs.consoleP->mType.physInfo.drag = gameData.pig.ship.player->drag;
-gameData.objs.consoleP->mType.physInfo.flags |= PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUST;
+gameData.objData.consoleP->mType.physInfo.velocity.SetZero ();
+gameData.objData.consoleP->mType.physInfo.thrust.SetZero ();
+gameData.objData.consoleP->mType.physInfo.rotVel.SetZero ();
+gameData.objData.consoleP->mType.physInfo.rotThrust.SetZero ();
+gameData.objData.consoleP->mType.physInfo.brakes = gameData.objData.consoleP->mType.physInfo.turnRoll = 0;
+gameData.objData.consoleP->mType.physInfo.mass = gameData.pig.ship.player->mass;
+gameData.objData.consoleP->mType.physInfo.drag = gameData.pig.ship.player->drag;
+gameData.objData.consoleP->mType.physInfo.flags |= PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUST;
 //Init render info
-gameData.objs.consoleP->info.renderType = (gameData.objs.consoleP->info.nType == OBJ_GHOST) ? RT_NONE : RT_POLYOBJ;
-gameData.objs.consoleP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;		//what model is this?
-gameData.objs.consoleP->rType.polyObjInfo.nSubObjFlags = 0;		//zero the flags
-gameData.objs.consoleP->rType.polyObjInfo.nTexOverride = -1;		//no tmap override!
+gameData.objData.consoleP->info.renderType = (gameData.objData.consoleP->info.nType == OBJ_GHOST) ? RT_NONE : RT_POLYOBJ;
+gameData.objData.consoleP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;		//what model is this?
+gameData.objData.consoleP->rType.polyObjInfo.nSubObjFlags = 0;		//zero the flags
+gameData.objData.consoleP->rType.polyObjInfo.nTexOverride = -1;		//no tmap override!
 for (int32_t i = 0; i < MAX_SUBMODELS; i++)
-	gameData.objs.consoleP->rType.polyObjInfo.animAngles [i].SetZero ();
+	gameData.objData.consoleP->rType.polyObjInfo.animAngles [i].SetZero ();
 // Clear misc
-gameData.objs.consoleP->info.nFlags = 0;
+gameData.objData.consoleP->info.nFlags = 0;
 }
 
 //------------------------------------------------------------------------------
 
-//sets up N_LOCALPLAYER & gameData.objs.consoleP
+//sets up N_LOCALPLAYER & gameData.objData.consoleP
 void InitMultiPlayerObject (int32_t nStage)
 {
 if (nStage == 0) {
@@ -355,13 +355,13 @@ if (nStage == 0) {
 	LOCALPLAYER.nCloaks = 0;
 	}
 else {
-	gameData.objs.consoleP = OBJECT (LOCALPLAYER.nObject);
+	gameData.objData.consoleP = OBJECT (LOCALPLAYER.nObject);
 	// at this point, SetType () must not be called, as it links the object to the internal object lists 
 	// which causes list corruption during multiplayer object sync'ing
-	gameData.objs.consoleP->info.nType = OBJ_PLAYER; 
-	gameData.objs.consoleP->info.nId = N_LOCALPLAYER;
-	gameData.objs.consoleP->info.controlType = CT_FLYING;
-	gameData.objs.consoleP->info.movementType = MT_PHYSICS;
+	gameData.objData.consoleP->info.nType = OBJ_PLAYER; 
+	gameData.objData.consoleP->info.nId = N_LOCALPLAYER;
+	gameData.objData.consoleP->info.controlType = CT_FLYING;
+	gameData.objData.consoleP->info.movementType = MT_PHYSICS;
 	gameStates.entropy.nTimeLastMoved = -1;
 	}
 }
@@ -370,14 +370,14 @@ else {
 //make object0 the player, setting all relevant fields
 void InitPlayerObject (void)
 {
-gameData.objs.consoleP->SetType (OBJ_PLAYER, false);
-gameData.objs.consoleP->info.nId = 0;					//no sub-types for player
-gameData.objs.consoleP->info.nSignature = 0;			//player has zero, others start at 1
-gameData.objs.consoleP->SetSize (gameData.models.polyModels [0][gameData.pig.ship.player->nModel].Rad ());
-gameData.objs.consoleP->info.controlType = CT_SLEW;			//default is player slewing
-gameData.objs.consoleP->info.movementType = MT_PHYSICS;		//change this sometime
-gameData.objs.consoleP->SetLife (IMMORTAL_TIME);
-gameData.objs.consoleP->info.nAttachedObj = -1;
+gameData.objData.consoleP->SetType (OBJ_PLAYER, false);
+gameData.objData.consoleP->info.nId = 0;					//no sub-types for player
+gameData.objData.consoleP->info.nSignature = 0;			//player has zero, others start at 1
+gameData.objData.consoleP->SetSize (gameData.models.polyModels [0][gameData.pig.ship.player->nModel].Rad ());
+gameData.objData.consoleP->info.controlType = CT_SLEW;			//default is player slewing
+gameData.objData.consoleP->info.movementType = MT_PHYSICS;		//change this sometime
+gameData.objData.consoleP->SetLife (IMMORTAL_TIME);
+gameData.objData.consoleP->info.nAttachedObj = -1;
 ResetPlayerObject ();
 InitMultiPlayerObject (1);
 }
@@ -408,7 +408,7 @@ m_vStartVel.SetZero ();
 
 bool ObjectIsLinked (CObject *objP, int16_t nSegment)
 {
-if ((nSegment >= 0) && (nSegment < gameData.segs.nSegments)) {
+if ((nSegment >= 0) && (nSegment < gameData.segData.nSegments)) {
 	int16_t nObject = objP->Index ();
 	for (int16_t i = SEGMENT (nSegment)->m_objects, j = -1; i >= 0; j = i, i = OBJECT (i)->info.nNextInSeg) {
 		if (i == nObject) {
@@ -427,31 +427,31 @@ void InitObjects (bool bInitPlayer)
 
 #if OBJ_LIST_TYPE == 1
 CObject* objP, * nextObjP = NULL;
-for (objP = gameData.objs.lists.all.head; objP; objP = nextObjP) {
+for (objP = gameData.objData.lists.all.head; objP; objP = nextObjP) {
 	nextObjP = objP->Links (0).next;
 	ReleaseObject (objP->Index ());
 	}
 #else
-while (gameData.objs.nObjects)
-	ReleaseObject (gameData.objs.freeList [0]);
+while (gameData.objData.nObjects)
+	ReleaseObject (gameData.objData.freeList [0]);
 #endif
 CollideInit ();
 ResetSegObjLists ();
-gameData.objs.lists.Init ();
-gameData.objs.InitFreeList ();
-gameData.objs.consoleP =
-gameData.objs.viewerP = OBJECTS.Buffer ();
+gameData.objData.lists.Init ();
+gameData.objData.InitFreeList ();
+gameData.objData.consoleP =
+gameData.objData.viewerP = OBJECTS.Buffer ();
 if (bInitPlayer) {
 	ClaimObjectSlot (0);
-	gameData.objs.nObjects = 1;				//just the player
+	gameData.objData.nObjects = 1;				//just the player
 	InitPlayerObject ();
-	gameData.objs.consoleP->LinkToSeg (0);	//put in the world in segment 0
+	gameData.objData.consoleP->LinkToSeg (0);	//put in the world in segment 0
 	}
-//gameData.objs.consoleP->Link ();
+//gameData.objData.consoleP->Link ();
 #if OBJ_LIST_TYPE == 1
-gameData.objs.consoleP->ResetLinks ();
+gameData.objData.consoleP->ResetLinks ();
 #endif
-gameData.objs.nLastObject [0] = 0;
+gameData.objData.nLastObject [0] = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -462,13 +462,13 @@ gameData.objs.nLastObject [0] = 0;
 
 void ClaimObjectSlots (void)
 {
-gameData.objs.nObjects = LEVEL_OBJECTS;
-gameData.objs.nLastObject [0] = 0;
-gameData.objs.lists.Init ();
+gameData.objData.nObjects = LEVEL_OBJECTS;
+gameData.objData.nLastObject [0] = 0;
+gameData.objData.lists.Init ();
 Assert (OBJECT (0)->info.nType != OBJ_NONE);		//0 should be used
 
 CObject* objP = OBJECT (0);
-for (int32_t i = gameData.objs.nLastObject [0]; i; i--, objP++) {
+for (int32_t i = gameData.objData.nLastObject [0]; i; i--, objP++) {
 #if OBJ_LIST_TYPE == 1
 	objP->InitLinks ();
 #endif
@@ -503,7 +503,7 @@ int32_t SearchAllSegsForObject (int32_t nObject)
 	int32_t i;
 	int32_t count = 0;
 
-	for (i = 0; i <= gameData.segs.nLastSegment; i++) {
+	for (i = 0; i <= gameData.segData.nLastSegment; i++) {
 		count += IsObjectInSeg (i, nObject);
 	}
 	return count;
@@ -530,7 +530,7 @@ void RemoveAllObjectsBut (int32_t nSegment, int32_t nObject)
 {
 	int32_t i;
 
-for (i = 0; i <= gameData.segs.nLastSegment; i++)
+for (i = 0; i <= gameData.segData.nLastSegment; i++)
 	if (nSegment != i)
 		if (IsObjectInSeg (i, nObject))
 			JohnsObjUnlink (i, nObject);
@@ -726,8 +726,8 @@ void CheckFreeList (void)
 
 memset (checkObjs, 0, LEVEL_OBJECTS);
 for (int32_t i = 0; i < LEVEL_OBJECTS; i++) {
-	int16_t h = gameData.objs.freeList [i];
-	if ((i < gameData.objs.nObjects - 1) && (OBJECT (h)->Type () >= MAX_OBJECT_TYPES))
+	int16_t h = gameData.objData.freeList [i];
+	if ((i < gameData.objData.nObjects - 1) && (OBJECT (h)->Type () >= MAX_OBJECT_TYPES))
 		BRP;
 	if (checkObjs [h])
 		BRP;
@@ -744,18 +744,18 @@ for (int32_t i = 0; i < LEVEL_OBJECTS; i++) {
 
 int32_t ClaimObjectSlot (int32_t nObject)
 {
-for (int32_t i = gameData.objs.nObjects; i < LEVEL_OBJECTS; i++) {
-	if (gameData.objs.freeList [i] == nObject) {
-		if (i != gameData.objs.nObjects)
-			Swap (gameData.objs.freeList [i], gameData.objs.freeList [gameData.objs.nObjects]);
-		gameData.objs.freeListIndex [nObject] = gameData.objs.nObjects++;
+for (int32_t i = gameData.objData.nObjects; i < LEVEL_OBJECTS; i++) {
+	if (gameData.objData.freeList [i] == nObject) {
+		if (i != gameData.objData.nObjects)
+			Swap (gameData.objData.freeList [i], gameData.objData.freeList [gameData.objData.nObjects]);
+		gameData.objData.freeListIndex [nObject] = gameData.objData.nObjects++;
 #if DBG
 		CheckFreeList ();
 #endif
-		if (nObject > gameData.objs.nLastObject [0]) {
-			gameData.objs.nLastObject [0] = nObject;
-			if (gameData.objs.nLastObject [1] < gameData.objs.nLastObject [0])
-				gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
+		if (nObject > gameData.objData.nLastObject [0]) {
+			gameData.objData.nLastObject [0] = nObject;
+			if (gameData.objData.nLastObject [1] < gameData.objData.nLastObject [0])
+				gameData.objData.nLastObject [1] = gameData.objData.nLastObject [0];
 			}
 		CObject* objP = OBJECT (nObject);
 		objP->ResetSgmLinks ();
@@ -773,7 +773,7 @@ return -1;
 
 int32_t nUnusedObjectsSlots;
 
-//returns the number of a free object, updating gameData.objs.nLastObject [0].
+//returns the number of a free object, updating gameData.objData.nLastObject [0].
 //Generally, CObject::Create() should be called to get an CObject, since it
 //fills in important fields and does the linking.
 //returns -1 if no free objects
@@ -782,24 +782,24 @@ int32_t AllocObject (int32_t nRequestedObject, bool bReset)
 	int32_t nObject = (nRequestedObject < 0) ? -1 : ClaimObjectSlot (nRequestedObject);
 
 if (nObject < 0) {
-	if (gameData.objs.nObjects >= LEVEL_OBJECTS - 2) {
+	if (gameData.objData.nObjects >= LEVEL_OBJECTS - 2) {
 		FreeObjectSlots (LEVEL_OBJECTS - 10);
 		CleanupObjects ();
 		}
-	if (gameData.objs.nObjects >= LEVEL_OBJECTS)
+	if (gameData.objData.nObjects >= LEVEL_OBJECTS)
 		return -1;
-	nObject = gameData.objs.freeList [gameData.objs.nObjects];
-	gameData.objs.freeListIndex [nObject] = gameData.objs.nObjects++;
+	nObject = gameData.objData.freeList [gameData.objData.nObjects];
+	gameData.objData.freeListIndex [nObject] = gameData.objData.nObjects++;
 	}
 
 #if DBG
 CheckFreeList ();
 #endif
 
-if (nObject > gameData.objs.nLastObject [0]) {
-	gameData.objs.nLastObject [0] = nObject;
-	if (gameData.objs.nLastObject [1] < gameData.objs.nLastObject [0])
-		gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
+if (nObject > gameData.objData.nLastObject [0]) {
+	gameData.objData.nLastObject [0] = nObject;
+	if (gameData.objData.nLastObject [1] < gameData.objData.nLastObject [0])
+		gameData.objData.nLastObject [1] = gameData.objData.nLastObject [0];
 	}
 CObject* objP = OBJECT (nObject);
 #if DBG
@@ -876,11 +876,11 @@ bRebuilding = true;
 PrintLog (0, "Warning: Rebuilding corrupted object lists ...\n");
 
 CObject* objP = OBJECTS.Buffer ();
-for (int32_t nObject = gameData.objs.nLastObject [0]; nObject; nObject--, objP++) 
+for (int32_t nObject = gameData.objData.nLastObject [0]; nObject; nObject--, objP++) 
 	objP->ResetLinks ();
-gameData.objs.lists.Init ();
+gameData.objData.lists.Init ();
 objP = OBJECTS.Buffer ();
-for (int32_t nObject = gameData.objs.nLastObject [0]; nObject; nObject--, objP++) {
+for (int32_t nObject = gameData.objData.nLastObject [0]; nObject; nObject--, objP++) {
 	if (objP->Type () < MAX_OBJECT_TYPES) {
 		objP->Link ();
 		}
@@ -969,7 +969,7 @@ int32_t VerifyObjLists (int32_t nObject)
 {
 #if OBJ_LIST_TYPE == 1
 	CObject* refObjP = (nObject < 0) ? NULL : OBJECT (nObject);
-	CObject* objP, * firstObjP = gameData.objs.lists.all.head;
+	CObject* objP, * firstObjP = gameData.objData.lists.all.head;
 	int32_t		i = 0;
 
 if (refObjP && !refObjP->Links (0).prev  && !refObjP->Links (0).next)
@@ -1009,25 +1009,25 @@ return 1;
 void CObject::GetListsForType (uint8_t nType, tObjListRef* lists [])
 {
 #if OBJ_LIST_TYPE == 1
-lists [0] = &gameData.objs.lists.all;
+lists [0] = &gameData.objData.lists.all;
 lists [1] = NULL;
 if ((nType == OBJ_PLAYER) || (nType == OBJ_GHOST))
-	lists [1] = &gameData.objs.lists.players;
+	lists [1] = &gameData.objData.lists.players;
 else if (nType == OBJ_ROBOT)
-	lists [1] = &gameData.objs.lists.robots;
+	lists [1] = &gameData.objData.lists.robots;
 else if (nType == OBJ_WEAPON)
-	lists [1] = &gameData.objs.lists.weapons;
+	lists [1] = &gameData.objData.lists.weapons;
 else if ((nType != OBJ_REACTOR) && (nType != OBJ_MONSTERBALL)) {
 	if (nType == OBJ_POWERUP)
-		lists [1] = &gameData.objs.lists.powerups;
+		lists [1] = &gameData.objData.lists.powerups;
 	else if (nType == OBJ_EFFECT)
-		lists [1] = &gameData.objs.lists.effects;
+		lists [1] = &gameData.objData.lists.effects;
 	else if (nType == OBJ_LIGHT)
-		lists [1] = &gameData.objs.lists.lights;
-	lists [2] = &gameData.objs.lists.statics;
+		lists [1] = &gameData.objData.lists.lights;
+	lists [2] = &gameData.objData.lists.statics;
 	return;
 	}
-lists [2] = &gameData.objs.lists.actors;
+lists [2] = &gameData.objData.lists.actors;
 #endif
 }
 
@@ -1131,24 +1131,24 @@ int32_t FreeListIndex (int32_t nObject)
 {
 #if DBG
 
-int32_t i = gameData.objs.freeListIndex [nObject];
+int32_t i = gameData.objData.freeListIndex [nObject];
 if (i >= 0) {
-	if (gameData.objs.freeList [i] == nObject)
+	if (gameData.objData.freeList [i] == nObject)
 		return i;
 	}	
-for (i = gameData.objs.nObjects; i ; )
-	if (gameData.objs.freeList [--i] == nObject)
-		return gameData.objs.freeListIndex [nObject] = i;
+for (i = gameData.objData.nObjects; i ; )
+	if (gameData.objData.freeList [--i] == nObject)
+		return gameData.objData.freeListIndex [nObject] = i;
 #if DBG
-for (i = gameData.objs.nObjects; i < LEVEL_OBJECTS; i++)
-	if (gameData.objs.freeList [i] == nObject)
+for (i = gameData.objData.nObjects; i < LEVEL_OBJECTS; i++)
+	if (gameData.objData.freeList [i] == nObject)
 		break;
 #endif
 return -1;
 
 #else
 
-return gameData.objs.freeListIndex [nObject];
+return gameData.objData.freeListIndex [nObject];
 
 #endif
 }
@@ -1162,11 +1162,11 @@ if (i < 0) {
 	PrintLog (0, "FreeObject: Object list is corrupted!\n");
 	return 0; 
 	}
-gameData.objs.freeListIndex [nObject] = -1;
-if (i < --gameData.objs.nObjects) {
-	Swap (gameData.objs.freeList [i], gameData.objs.freeList [gameData.objs.nObjects]);
-	int16_t nObject = gameData.objs.freeList [i];
-	gameData.objs.freeListIndex [nObject] = i;
+gameData.objData.freeListIndex [nObject] = -1;
+if (i < --gameData.objData.nObjects) {
+	Swap (gameData.objData.freeList [i], gameData.objData.freeList [gameData.objData.nObjects]);
+	int16_t nObject = gameData.objData.freeList [i];
+	gameData.objData.freeListIndex [nObject] = i;
 	if (OBJECT (nObject)->Type () >= MAX_OBJECT_TYPES)
 		BRP;
 	}
@@ -1180,13 +1180,13 @@ return 1;
 
 void UpdateLastObject (int32_t nObject)
 {
-if ((nObject >= gameData.objs.nLastObject [0]) || (gameData.objs.nLastObject [0] < gameData.objs.nObjects - 1)) {
-	gameData.objs.nLastObject [0] = 0;
-	for (int32_t i = 0; i < gameData.objs.nObjects; i++)
-		if (gameData.objs.nLastObject [0] < gameData.objs.freeList [i])
-			gameData.objs.nLastObject [0] = gameData.objs.freeList [i];
-	if (gameData.objs.nLastObject [1] < gameData.objs.nLastObject [0])
-		gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
+if ((nObject >= gameData.objData.nLastObject [0]) || (gameData.objData.nLastObject [0] < gameData.objData.nObjects - 1)) {
+	gameData.objData.nLastObject [0] = 0;
+	for (int32_t i = 0; i < gameData.objData.nObjects; i++)
+		if (gameData.objData.nLastObject [0] < gameData.objData.freeList [i])
+			gameData.objData.nLastObject [0] = gameData.objData.freeList [i];
+	if (gameData.objData.nLastObject [1] < gameData.objData.nLastObject [0])
+		gameData.objData.nLastObject [1] = gameData.objData.nLastObject [0];
 	}
 }
 
@@ -1210,7 +1210,7 @@ objP->info.nType = OBJ_NONE;		//unused!
 objP->SetAttackMode (ROBOT_IS_HOSTILE);
 DelObjChildrenN (nObject);
 DelObjChildN (nObject);
-gameData.objs.bWantEffect [nObject] = 0;
+gameData.objData.bWantEffect [nObject] = 0;
 OBJECT (nObject)->RequestEffects (DESTROY_SMOKE | DESTROY_LIGHTNING);
 lightManager.Delete (-1, -1, nObject);
 
@@ -1235,7 +1235,7 @@ if ((nObject < 0) || (nObject >= LEVEL_OBJECTS))
 CObject *objP = OBJECT (nObject);
 
 #if DBG && OBJ_LIST_TYPE
-if (!objP->IsInList (gameData.objs.lists.all, 0))
+if (!objP->IsInList (gameData.objData.lists.all, 0))
 	return;
 #endif
 
@@ -1247,14 +1247,14 @@ if (objP->info.nType == OBJ_WEAPON) {
 		CObject* parentP = OBJECT (objP->cType.laserInfo.parent.nObject);
 		if (parentP) {
 			if (parentP->info.nId != N_LOCALPLAYER)
-				gameData.objs.SetGuidedMissile (parentP->info.nId, NULL);
+				gameData.objData.SetGuidedMissile (parentP->info.nId, NULL);
 			else if (gameData.demo.nState == ND_STATE_RECORDING)
 				NDRecordGuidedEnd ();
 			}
 		}
 	}
-if (objP == gameData.objs.viewerP)		//deleting the viewerP?
-	gameData.objs.viewerP = gameData.objs.consoleP;						//..make the player the viewerP
+if (objP == gameData.objData.viewerP)		//deleting the viewerP?
+	gameData.objData.viewerP = gameData.objData.consoleP;						//..make the player the viewerP
 //if (objP->info.nFlags & OF_ATTACHED)		//detach this from CObject
 DetachFromParent (objP);
 lightClusterManager.Delete (nObject);
@@ -1264,7 +1264,7 @@ objP->cType.explInfo.attached.nParent =
 objP->cType.explInfo.attached.nPrev = 
 objP->cType.explInfo.attached.nNext = -1; 
 if (objP->info.nType == OBJ_DEBRIS)
-	gameData.objs.nDebris--;
+	gameData.objData.nDebris--;
 OBJECT (nObject)->UnlinkFromSeg ();
 objP->info.nSignature = -1;
 objP->info.nSegment = -1;				// zero it!
@@ -1344,12 +1344,12 @@ int32_t FreeObjectSlots (int32_t nRequested)
 	int32_t		candidates [MAX_OBJECTS_D2X];
 	int32_t		nAlreadyFree, nToFree, nOrgNumToFree;
 
-nAlreadyFree = LEVEL_OBJECTS - gameData.objs.nLastObject [0] - 1;
+nAlreadyFree = LEVEL_OBJECTS - gameData.objData.nLastObject [0] - 1;
 
 if (LEVEL_OBJECTS - nAlreadyFree < nRequested)
 	return 0;
 
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++) {
+for (i = 0; i <= gameData.objData.nLastObject [0]; i++) {
 	if (OBJECT (i)->info.nFlags & OF_SHOULD_BE_DEAD) {
 		nAlreadyFree++;
 		if (LEVEL_OBJECTS - nAlreadyFree < nRequested)
@@ -1425,9 +1425,9 @@ return false;
 
 void CObject::LinkToSeg (int32_t nSegment)
 {
-if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments)) {
+if ((nSegment < 0) || (nSegment >= gameData.segData.nSegments)) {
 	nSegment = FindSegByPos (*GetPos (), 0, 0, 0);
-	if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments))
+	if ((nSegment < 0) || (nSegment >= gameData.segData.nSegments))
 		return;
 	}
 SetSegment (nSegment);
@@ -1456,7 +1456,7 @@ if (info.nNextInSeg != -1)
 //from its old CSegment, and links it into the new CSegment
 void CObject::RelinkToSeg (int32_t nNewSeg)
 {
-if ((nNewSeg < 0) || (nNewSeg >= gameData.segs.nSegments))
+if ((nNewSeg < 0) || (nNewSeg >= gameData.segData.nSegments))
 	return;
 UnlinkFromSeg ();
 LinkToSeg (nNewSeg);
@@ -1514,7 +1514,7 @@ void ResetObjects (int32_t nObjects)
 if (!objP)
 	return;
 
-gameData.objs.nObjects = nObjects;
+gameData.objData.nObjects = nObjects;
 
 	int32_t	i;
 
@@ -1524,7 +1524,7 @@ for (i = 0; i < nObjects; i++, objP++)
 for (; i < LEVEL_OBJECTS; i++, objP++) {
 	if ((gameData.demo.nState == ND_STATE_PLAYBACK) && ((objP->info.nType == OBJ_CAMBOT) || (objP->info.nType == OBJ_EFFECT)))
 		continue;
-	gameData.objs.freeList [i] = i;
+	gameData.objData.freeList [i] = i;
 	objP->info.nType = OBJ_NONE;
 	objP->info.nSegment =
 	objP->cType.explInfo.attached.nNext =
@@ -1534,8 +1534,8 @@ for (; i < LEVEL_OBJECTS; i++, objP++) {
 	objP->rType.polyObjInfo.nSubObjFlags = 0;
 	objP->info.nFlags = 0;
 	}
-gameData.objs.nLastObject [0] = gameData.objs.nObjects - 1;
-gameData.objs.nDebris = 0;
+gameData.objData.nLastObject [0] = gameData.objData.nObjects - 1;
+gameData.objData.nDebris = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1757,13 +1757,13 @@ void ResetChildObjects (void)
 	int32_t	i;
 
 for (i = 0; i < LEVEL_OBJECTS; i++) {
-	gameData.objs.childObjs [i].objIndex = -1;
-	gameData.objs.childObjs [i].nextObj = i + 1;
+	gameData.objData.childObjs [i].objIndex = -1;
+	gameData.objData.childObjs [i].nextObj = i + 1;
 	}
-gameData.objs.childObjs [i - 1].nextObj = -1;
-gameData.objs.nChildFreeList = 0;
-gameData.objs.firstChild.Clear (0xff);
-gameData.objs.parentObjs.Clear (0xff);
+gameData.objData.childObjs [i - 1].nextObj = -1;
+gameData.objData.nChildFreeList = 0;
+gameData.objData.firstChild.Clear (0xff);
+gameData.objData.parentObjs.Clear (0xff);
 }
 
 //------------------------------------------------------------------------------
@@ -1772,13 +1772,13 @@ int32_t CheckChildList (int32_t nParent)
 {
 	int32_t h, i, j;
 
-if (gameData.objs.firstChild [nParent] == gameData.objs.nChildFreeList)
+if (gameData.objData.firstChild [nParent] == gameData.objData.nChildFreeList)
 	return 0;
-for (h = 0, i = gameData.objs.firstChild [nParent]; i >= 0; i = j, h++) {
-	j = gameData.objs.childObjs [i].nextObj;
+for (h = 0, i = gameData.objData.firstChild [nParent]; i >= 0; i = j, h++) {
+	j = gameData.objData.childObjs [i].nextObj;
 	if (j == i)
 		return 0;
-	if (h > gameData.objs.nLastObject [0])
+	if (h > gameData.objData.nLastObject [0])
 		return 0;
 	}
 return 1;
@@ -1790,14 +1790,14 @@ int32_t AddChildObjectN (int32_t nParent, int32_t nChild)
 {
 	int32_t	h, i;
 
-if (gameData.objs.nChildFreeList < 0)
+if (gameData.objData.nChildFreeList < 0)
 	return 0;
-h = gameData.objs.firstChild [nParent];
-i = gameData.objs.firstChild [nParent] = gameData.objs.nChildFreeList;
-gameData.objs.nChildFreeList = gameData.objs.childObjs [gameData.objs.nChildFreeList].nextObj;
-gameData.objs.childObjs [i].nextObj = h;
-gameData.objs.childObjs [i].objIndex = nChild;
-gameData.objs.parentObjs [nChild] = nParent;
+h = gameData.objData.firstChild [nParent];
+i = gameData.objData.firstChild [nParent] = gameData.objData.nChildFreeList;
+gameData.objData.nChildFreeList = gameData.objData.childObjs [gameData.objData.nChildFreeList].nextObj;
+gameData.objData.childObjs [i].nextObj = h;
+gameData.objData.childObjs [i].objIndex = nChild;
+gameData.objData.parentObjs [nChild] = nParent;
 CheckChildList (nParent);
 return 1;
 }
@@ -1816,11 +1816,11 @@ int32_t DelObjChildrenN (int32_t nParent)
 {
 	int32_t	i, j;
 
-for (i = gameData.objs.firstChild [nParent]; i >= 0; i = j) {
-	j = gameData.objs.childObjs [i].nextObj;
-	gameData.objs.childObjs [i].nextObj = gameData.objs.nChildFreeList;
-	gameData.objs.childObjs [i].objIndex = -1;
-	gameData.objs.nChildFreeList = i;
+for (i = gameData.objData.firstChild [nParent]; i >= 0; i = j) {
+	j = gameData.objData.childObjs [i].nextObj;
+	gameData.objData.childObjs [i].nextObj = gameData.objData.nChildFreeList;
+	gameData.objData.childObjs [i].objIndex = -1;
+	gameData.objData.nChildFreeList = i;
 	}
 return 1;
 }
@@ -1838,18 +1838,18 @@ int32_t DelObjChildN (int32_t nChild)
 {
 	int32_t	nParent, h = -1, i, j;
 
-if (0 > (nParent = gameData.objs.parentObjs [nChild]))
+if (0 > (nParent = gameData.objData.parentObjs [nChild]))
 	return 0;
-for (i = gameData.objs.firstChild [nParent]; i >= 0; i = j) {
-	j = gameData.objs.childObjs [i].nextObj;
-	if (gameData.objs.childObjs [i].objIndex == nChild) {
+for (i = gameData.objData.firstChild [nParent]; i >= 0; i = j) {
+	j = gameData.objData.childObjs [i].nextObj;
+	if (gameData.objData.childObjs [i].objIndex == nChild) {
 		if (h < 0)
-			gameData.objs.firstChild [nParent] = j;
+			gameData.objData.firstChild [nParent] = j;
 		else
-			gameData.objs.childObjs [h].nextObj = j;
-		gameData.objs.childObjs [i].nextObj = gameData.objs.nChildFreeList;
-		gameData.objs.childObjs [i].objIndex = -1;
-		gameData.objs.nChildFreeList = i;
+			gameData.objData.childObjs [h].nextObj = j;
+		gameData.objData.childObjs [i].nextObj = gameData.objData.nChildFreeList;
+		gameData.objData.childObjs [i].objIndex = -1;
+		gameData.objData.nChildFreeList = i;
 		CheckChildList (nParent);
 		return 1;
 		}
@@ -1869,9 +1869,9 @@ return DelObjChildN (OBJ_IDX (pChild));
 
 tObjectRef *GetChildObjN (int16_t nParent, tObjectRef *pChildRef)
 {
-	int32_t i = pChildRef ? pChildRef->nextObj : gameData.objs.firstChild [nParent];
+	int32_t i = pChildRef ? pChildRef->nextObj : gameData.objData.firstChild [nParent];
 
-return (i < 0) ? NULL : gameData.objs.childObjs + i;
+return (i < 0) ? NULL : gameData.objData.childObjs + i;
 }
 
 //------------------------------------------------------------------------------
@@ -1885,16 +1885,16 @@ return GetChildObjN (OBJ_IDX (pParent), pChildRef);
 
 CFixMatrix *CObject::View (int32_t i)
 {
-	tObjectViewData* viewP = gameData.objs.viewData + Index ();
+	tObjectViewData* viewP = gameData.objData.viewData + Index ();
 
-if (viewP->nFrame [i] != gameData.objs.nFrameCount) {
+if (viewP->nFrame [i] != gameData.objData.nFrameCount) {
 	if (i == 0)
 		viewP->mView [0] = OBJPOS (this)->mOrient.Transpose ();
 	else {
 		View (0);
 		viewP->mView [1] = viewP->mView [0].Inverse ();
 		}
-	viewP->nFrame [i] = gameData.objs.nFrameCount;
+	viewP->nFrame [i] = gameData.objData.nFrameCount;
 	}
 return &viewP->mView [i];
 }
@@ -1952,7 +1952,7 @@ return OBJ_IDX (this);
 
 CObject* CObject::Target (void)
 {
-return m_target ? m_target : gameData.objs.consoleP;
+return m_target ? m_target : gameData.objData.consoleP;
 }
 
 //------------------------------------------------------------------------------
@@ -1983,7 +1983,7 @@ if (nPlayer < 0) {
 		return false;
 	nPlayer = parentObjP->Id ();
 	}
-return (this == gameData.objs.guidedMissile [nPlayer].objP) && (Signature () == gameData.objs.guidedMissile [nPlayer].nSignature);
+return (this == gameData.objData.guidedMissile [nPlayer].objP) && (Signature () == gameData.objData.guidedMissile [nPlayer].nSignature);
 }
 
 //------------------------------------------------------------------------------
@@ -2129,7 +2129,7 @@ return gameData.models.polyModels [0][nId].Rad (i);
 
 fix CObject::PowerupSize (void)
 {
-return (fix) gameData.objs.pwrUp.info [info.nId].size;
+return (fix) gameData.objData.pwrUp.info [info.nId].size;
 }
 
 //------------------------------------------------------------------------------
@@ -2212,7 +2212,7 @@ return m_objP = Head ();
 
 CObject* CObjectIterator::Head (void)
 {
-return gameData.objs.lists.all.head;
+return gameData.objData.lists.all.head;
 }
 
 //------------------------------------------------------------------------------
@@ -2259,41 +2259,41 @@ return m_objP;
 
 //------------------------------------------------------------------------------
 
-CObject* CPlayerIterator::Head (void) { return gameData.objs.lists.players.head; }
+CObject* CPlayerIterator::Head (void) { return gameData.objData.lists.players.head; }
 
-CObject* CRobotIterator::Head (void) { return gameData.objs.lists.robots.head; }
+CObject* CRobotIterator::Head (void) { return gameData.objData.lists.robots.head; }
 
-CObject* CWeaponIterator::Head (void) { return gameData.objs.lists.weapons.head; }
+CObject* CWeaponIterator::Head (void) { return gameData.objData.lists.weapons.head; }
 
-CObject* CPowerupIterator::Head (void) { return gameData.objs.lists.powerups.head; }
+CObject* CPowerupIterator::Head (void) { return gameData.objData.lists.powerups.head; }
 
-CObject* CEffectIterator::Head (void) { return gameData.objs.lists.effects.head; }
+CObject* CEffectIterator::Head (void) { return gameData.objData.lists.effects.head; }
 
-CObject* CLightIterator::Head (void) { return gameData.objs.lists.lights.head; }
+CObject* CLightIterator::Head (void) { return gameData.objData.lists.lights.head; }
 
-CObject* CActorIterator::Head (void) { return gameData.objs.lists.actors.head; }
+CObject* CActorIterator::Head (void) { return gameData.objData.lists.actors.head; }
 
-CObject* CStaticObjectIterator::Head (void) { return gameData.objs.lists.statics.head; }
+CObject* CStaticObjectIterator::Head (void) { return gameData.objData.lists.statics.head; }
 
 //------------------------------------------------------------------------------
 
-int32_t CObjectIterator::Size (void) { return gameData.objs.lists.all.nObjects; }
+int32_t CObjectIterator::Size (void) { return gameData.objData.lists.all.nObjects; }
 
-int32_t CPlayerIterator::Size (void) { return gameData.objs.lists.players.nObjects; }
+int32_t CPlayerIterator::Size (void) { return gameData.objData.lists.players.nObjects; }
 
-int32_t CRobotIterator::Size (void) { return gameData.objs.lists.robots.nObjects; }
+int32_t CRobotIterator::Size (void) { return gameData.objData.lists.robots.nObjects; }
 
-int32_t CWeaponIterator::Size (void) { return gameData.objs.lists.weapons.nObjects; }
+int32_t CWeaponIterator::Size (void) { return gameData.objData.lists.weapons.nObjects; }
 
-int32_t CPowerupIterator::Size (void) { return gameData.objs.lists.powerups.nObjects; }
+int32_t CPowerupIterator::Size (void) { return gameData.objData.lists.powerups.nObjects; }
 
-int32_t CEffectIterator::Size (void) { return gameData.objs.lists.effects.nObjects; }
+int32_t CEffectIterator::Size (void) { return gameData.objData.lists.effects.nObjects; }
 
-int32_t CLightIterator::Size (void) { return gameData.objs.lists.lights.nObjects; }
+int32_t CLightIterator::Size (void) { return gameData.objData.lists.lights.nObjects; }
 
-int32_t CActorIterator::Size (void) { return gameData.objs.lists.actors.nObjects; }
+int32_t CActorIterator::Size (void) { return gameData.objData.lists.actors.nObjects; }
 
-int32_t CStaticObjectIterator::Size (void) { return gameData.objs.lists.statics.nObjects; }
+int32_t CStaticObjectIterator::Size (void) { return gameData.objData.lists.statics.nObjects; }
 
 //------------------------------------------------------------------------------
 // Despite doing the same as CObjectIterator::Start(), these c'tors are required
@@ -2340,7 +2340,7 @@ CObject* CObjectIterator::Start (void)
 m_i = 0;
 if (!OBJECTS.Buffer ())
 	return m_objP = NULL;
-if (!gameData.objs.nObjects)
+if (!gameData.objData.nObjects)
 	return m_objP = NULL;
 m_objP = Current ();
 if (Match ())
@@ -2352,21 +2352,21 @@ return Step ();
 
 bool CObjectIterator::Done (void)
 {
-return m_i >= gameData.objs.nObjects;
+return m_i >= gameData.objData.nObjects;
 }
 
 //------------------------------------------------------------------------------
 
 CObject* CObjectIterator::Current (void)
 {
-return m_objP = OBJECT (gameData.objs.freeList [m_i]);
+return m_objP = OBJECT (gameData.objData.freeList [m_i]);
 }
 
 //------------------------------------------------------------------------------
 
 CObject* CObjectIterator::Back (void)
 {
-if (gameData.objs.nObjects && m_i) {
+if (gameData.objData.nObjects && m_i) {
 	--m_i;
 	return Current ();
 	}
@@ -2377,7 +2377,7 @@ return NULL;
 
 CObject* CObjectIterator::Next (void)
 {
-if (m_i < gameData.objs.nObjects - 1) {
+if (m_i < gameData.objData.nObjects - 1) {
 	++m_i;
 	return Current ();
 	}
@@ -2389,7 +2389,7 @@ return NULL;
 CObject* CObjectIterator::Step (void)
 {
 if (!Done ())
-	while (++m_i < gameData.objs.nObjects) {
+	while (++m_i < gameData.objData.nObjects) {
 		Current ();
 		if (Match ())
 			return m_objP;

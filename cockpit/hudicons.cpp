@@ -389,7 +389,7 @@ void CHUDIcons::DrawWeapons (void)
 #if 0
 								((nWeaponIcons == 2) 
 								 && ((gameStates.app.nSDLTicks [0] - LOCALOBJECT->TimeLastRepaired () > 3000) || 
-								     gameData.objs.consoleP->CriticalDamage ()))) ? 32 : 0;
+								     gameData.objData.consoleP->CriticalDamage ()))) ? 32 : 0;
 #endif
 	int32_t	ox = 6, 
 			oy = 6, 
@@ -606,7 +606,7 @@ if (ogl.IsOculusRift ())
 #if 0
 									(nIconPos
 									 && ((gameStates.app.nSDLTicks [0] - LOCALOBJECT->TimeLastRepaired () > 3000) || 
-									     gameData.objs.consoleP->CriticalDamage ()))) ? 80 : 0;
+									     gameData.objData.consoleP->CriticalDamage ()))) ? 80 : 0;
 #endif
 	float		fLineWidth = float (gameData.render.scene.Width ()) / 640.0f;
 	uint8_t		alpha = gameOpts->render.weaponIcons.alpha;

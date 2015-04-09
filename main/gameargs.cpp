@@ -520,7 +520,7 @@ if ((t = FindArg ("-compress_data"))) {
 else
 	gameStates.app.bCompressData = 0;
 if (gameStates.app.bNostalgia)
-	gameData.segs.nMaxSegments = MAX_SEGMENTS_D2;
+	gameData.segData.nMaxSegments = MAX_SEGMENTS_D2;
 }
 
 // ----------------------------------------------------------------------------

@@ -108,24 +108,24 @@ glMatrixMode (matrixMode);
 void SetupRenderView (fix xStereoSeparation, int16_t *nStartSegP, int32_t bOglScale)
 {
 	int16_t		nStartSeg;
-	bool			bPlayer = (gameData.objs.viewerP == LOCALOBJECT);
-	CFixMatrix	mView = gameData.objs.viewerP->info.position.mOrient;
+	bool			bPlayer = (gameData.objData.viewerP == LOCALOBJECT);
+	CFixMatrix	mView = gameData.objData.viewerP->info.position.mOrient;
 	fix			xZoom = gameStates.render.xZoom;
 
 
-gameData.render.mine.viewer = gameData.objs.viewerP->info.position;
+gameData.render.mine.viewer = gameData.objData.viewerP->info.position;
 if (LOCALPLAYER.ObservedPlayer () == N_LOCALPLAYER)
 	FLIGHTPATH.SetPos (NULL);
 
 if (gameStates.render.cameras.bActive)
-	nStartSeg = gameData.objs.viewerP->info.nSegment;
+	nStartSeg = gameData.objData.viewerP->info.nSegment;
 else {
 	if (bPlayer) {
 		if (xStereoSeparation)
-			gameData.render.mine.viewer.vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.r * xStereoSeparation;
+			gameData.render.mine.viewer.vPos += gameData.objData.viewerP->info.position.mOrient.m.dir.r * xStereoSeparation;
 #if 0 // is done in the game loop anyway
 		if ((LOCALPLAYER.ObservedPlayer () == N_LOCALPLAYER) && !gameStates.render.nWindow [0])
-			FLIGHTPATH.Update (gameData.objs.viewerP);
+			FLIGHTPATH.Update (gameData.objData.viewerP);
 #endif
 		if (gameStates.render.bRearView) { // no zoom, no head tracking
 			mView.m.dir.f.Neg ();
@@ -148,7 +148,7 @@ else {
 		else {
 			if (transformation.m_info.bUsePlayerHeadAngles) {
 				CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
-				mView = gameData.objs.viewerP->info.position.mOrient * mHead;
+				mView = gameData.objData.viewerP->info.position.mOrient * mHead;
 				}
 			if (!IsMultiGame || gameStates.app.bHaveExtraGameInfo [1]) { // zoom?
 				if (!(gameStates.zoom.nMinFactor = I2X (gameStates.render.glAspect)))
@@ -161,8 +161,8 @@ else {
 		}
 	if (!nStartSegP)
 		nStartSeg = gameStates.render.nStartSeg; // re-use start segment
-	else if (0 > (nStartSeg = FindSegByPos (gameData.render.mine.viewer.vPos, gameData.objs.viewerP->info.nSegment, 1, 0)))
-		nStartSeg = gameData.objs.viewerP->info.nSegment;
+	else if (0 > (nStartSeg = FindSegByPos (gameData.render.mine.viewer.vPos, gameData.objData.viewerP->info.nSegment, 1, 0)))
+		nStartSeg = gameData.objData.viewerP->info.nSegment;
 	}
 if (nStartSegP)
 	*nStartSegP = nStartSeg;
@@ -237,7 +237,7 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 	lightManager.Transform (0, 1);
 	}
 PROF_END(ptAux);
-return !gameStates.render.cameras.bActive && (gameData.objs.viewerP->info.nType != OBJ_ROBOT);
+return !gameStates.render.cameras.bActive && (gameData.objData.viewerP->info.nType != OBJ_ROBOT);
 }
 
 //------------------------------------------------------------------------------
@@ -326,23 +326,23 @@ if ((gameStates.render.nRenderPass <= 0) && (gameStates.render.nShadowPass < 2))
 			)
 			{
 			gameStates.render.nThreads = 1;
-			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.visibility [0].nSegments < gameData.segs.nSegments))
+			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.visibility [0].nSegments < gameData.segData.nSegments))
 				ComputeFaceLight (0, gameData.render.mine.visibility [0].nSegments, 0);
 			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
 				ComputeFaceLight (0, FACES.nFaces, 0);
 			else
-				ComputeFaceLight (0, gameData.segs.nSegments, 0);
+				ComputeFaceLight (0, gameData.segData.nSegments, 0);
 			}
 #if USE_OPENMP //> 1
 		else {
 				int32_t	nStart, nEnd, nMax;
 
-			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.visibility [0].nSegments < gameData.segs.nSegments))
+			if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.visibility [0].nSegments < gameData.segData.nSegments))
 				nMax = gameData.render.mine.visibility [0].nSegments;
 			else if (gameStates.app.bEndLevelSequence < EL_OUTSIDE)
 				nMax = FACES.nFaces;
 			else
-				nMax = gameData.segs.nSegments;
+				nMax = gameData.segData.nSegments;
 			if (gameStates.app.nThreads & 1) {
 #			pragma omp parallel for private (nStart, nEnd)
 				for (int32_t i = 0; i < gameStates.app.nThreads; i++) {

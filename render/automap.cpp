@@ -474,7 +474,7 @@ else {
 UpdateSlidingFaces ();
 if (!m_bRadar && (gameStates.app.bNostalgia < 2) && (Texturing () & 1)) {
 	gameData.render.mine.viewer = viewer;
-	RenderMine (gameData.objs.consoleP->info.nSegment, 0, 0);
+	RenderMine (gameData.objData.consoleP->info.nSegment, 0, 0);
 	RenderEffects (0);
 	}
 if (m_bRadar || (Texturing () & 2)) {
@@ -544,10 +544,10 @@ if ((missionManager.nCurrentMission == missionManager.nBuiltInMission [0]) && (m
 else
 	strcpy (m_szLevelName, " ");
 strcat (m_szLevelName, missionManager.szCurrentLevel);
-for (h = i = 0; i < gameData.segs.nSegments; i++)
+for (h = i = 0; i < gameData.segData.nSegments; i++)
 	if (m_visited [i])
 		h++;
-sprintf (szExplored, " (%1.1f %s)", (float) (h * 100) / (float) gameData.segs.nSegments, TXT_PERCENT_EXPLORED);
+sprintf (szExplored, " (%1.1f %s)", (float) (h * 100) / (float) gameData.segData.nSegments, TXT_PERCENT_EXPLORED);
 strcat (m_szLevelName, szExplored);
 }
 
@@ -568,12 +568,12 @@ int32_t CAutomap::SetSegmentDepths (int32_t nStartSeg, uint16_t *depthBufP)
 	head = 0;
 	tail = 0;
 
-if ((nStartSeg < 0) || (nStartSeg >= gameData.segs.nSegments))
+if ((nStartSeg < 0) || (nStartSeg >= gameData.segData.nSegments))
 	return 1;
 if (depthBufP [nStartSeg] == 0)
 	return 1;
 queue [tail++] = nStartSeg;
-memset (bVisited, 0, sizeof (*bVisited) * gameData.segs.nSegments);
+memset (bVisited, 0, sizeof (*bVisited) * gameData.segData.nSegments);
 bVisited [nStartSeg] = 1;
 depthBufP [nStartSeg] = nDepth++;
 if (nDepth == 0)
@@ -590,7 +590,7 @@ while (head < tail) {
 		if (0 > (nChild = *childP))
 			continue;
 #if DBG
-		if (nChild >= gameData.segs.nSegments) {
+		if (nChild >= gameData.segData.nSegments) {
 			Error ("Invalid segment in SetSegmentDepths()\nsegment=%d, side=%d, child=%d",
 					 nSegment, nSide, nChild);
 			return 1;
@@ -679,11 +679,11 @@ BuildEdgeList ();
 int32_t	i;
 
 if (m_bRadar) {
-	for (i = 0; i < gameData.segs.nSegments; i++)
+	for (i = 0; i < gameData.segData.nSegments; i++)
 		m_visible [i] = 1;
 	}
 else if (m_bFull) {
-	for (i = 0; i < gameData.segs.nSegments; i++)
+	for (i = 0; i < gameData.segData.nSegments; i++)
 		m_visible [i] = 1;
 	}
 else
@@ -816,7 +816,7 @@ while ((c = KeyInKey ())) {
 #if DBG
 		case KEYDBGGED+KEY_F: {
 			int32_t i;
-			for (i = 0; i <= gameData.segs.nLastSegment; i++)
+			for (i = 0; i <= gameData.segData.nLastSegment; i++)
 				automap.m_visible [i] = 1;
 			BuildEdgeList ();
 			m_nSegmentLimit =
@@ -987,12 +987,12 @@ if (!bPauseGame) {
 	uint16_t bWiggleSave;
 	controlInfoSave = controls [0];				// Save controls so we can zero them
 	controls.Reset ();
-	bWiggleSave = gameData.objs.consoleP->mType.physInfo.flags & PF_WIGGLE;	// Save old wiggle
-	gameData.objs.consoleP->mType.physInfo.flags &= ~PF_WIGGLE;		// Turn off wiggle
+	bWiggleSave = gameData.objData.consoleP->mType.physInfo.flags & PF_WIGGLE;	// Save old wiggle
+	gameData.objData.consoleP->mType.physInfo.flags &= ~PF_WIGGLE;		// Turn off wiggle
 	if (MultiMenuPoll ())
 		bDone = 1;
 	::GameFrame (0, 0);		// Do game loop with no rendering and no reading controls.
-	gameData.objs.consoleP->mType.physInfo.flags |= bWiggleSave;	// Restore wiggle
+	gameData.objData.consoleP->mType.physInfo.flags |= bWiggleSave;	// Restore wiggle
 	controls [0] = controlInfoSave;
 	}
 return bDone;
@@ -1184,7 +1184,7 @@ for (i = 0; i <= m_nLastEdge; i++) {
 		minDistance = distance;
 	if (!cc.ccAnd)  {	//all off screen?
 		nfacing = nnfacing = 0;
-		tv1 = gameData.segs.vertices + edgeP->verts [0];
+		tv1 = gameData.segData.vertices + edgeP->verts [0];
 		j = 0;
 		while ((j < edgeP->nFaces) && !(nfacing && nnfacing)) {
 			if (!G3CheckNormalFacing (*tv1, SEGMENT (edgeP->nSegment [j])->m_sides [edgeP->sides [j]].m_normals [0]))
@@ -1457,7 +1457,7 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 					bNoFade = 1;
 					color = m_colors.walls.nDoorRed;
 					}
-				else if (!(gameData.walls.animP [wallP->nClip].flags & WCF_HIDDEN)) {
+				else if (!(gameData.wallData.animP [wallP->nClip].flags & WCF_HIDDEN)) {
 					int16_t	nConnSeg = segP->m_children [nSide];
 					if (nConnSeg != -1) {
 						int16_t nConnSide = segP->ConnectedSide (SEGMENT (nConnSeg));
@@ -1564,12 +1564,12 @@ m_nLastEdge = -1;
 
 if (m_data.bCheat || (LOCALPLAYER.flags & PLAYER_FLAGS_FULLMAP)) {
 	// Cheating, add all edges as visited
-	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++)
+	for (nSegment = 0; nSegment <= gameData.segData.nLastSegment; nSegment++)
 		AddSegmentEdges (SEGMENT (nSegment));
 	}
 else {
 	// Not cheating, add visited edges, and then unvisited edges
-	for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++) {
+	for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++) {
 #if DBG
 		if (nSegment == nDbgSeg)
 			BRP;
@@ -1577,7 +1577,7 @@ else {
 		if (m_visited [nSegment]) 
 			AddSegmentEdges (SEGMENT (nSegment));
 		}
-	for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++) {
+	for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++) {
 #if DBG
 		if (nSegment == nDbgSeg)
 			BRP;

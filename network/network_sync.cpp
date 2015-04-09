@@ -139,7 +139,7 @@ for (nPacketsLeft = OBJ_PACKETS_PER_FRAME; nPacketsLeft; nPacketsLeft--) {
 		nObjFrames = 1;		// first frame contains "reset object data" info
 		}
 
-	for (nLocalObj = syncInfoP->objs.nCurrent; nLocalObj <= gameData.objs.nLastObject [0]; nLocalObj++) {
+	for (nLocalObj = syncInfoP->objs.nCurrent; nLocalObj <= gameData.objData.nLastObject [0]; nLocalObj++) {
 		if (SendObject (syncInfoP->objs.nMode, nLocalObj, nPlayer)) {
 			if ((MAX_PAYLOAD_SIZE - bufI - 1) < int32_t (sizeof (tBaseObject)) + 5)
 				break; // Not enough room for another CObject
@@ -184,7 +184,7 @@ for (nPacketsLeft = OBJ_PACKETS_PER_FRAME; nPacketsLeft; nPacketsLeft--) {
 	if (syncInfoP->objs.nCurrent < 0)
 		continue;
 
-	if (nLocalObj > gameData.objs.nLastObject [0]) {
+	if (nLocalObj > gameData.objData.nLastObject [0]) {
 		if (syncInfoP->objs.nMode) { // need to send the finishing object data
 			syncInfoP->objs.nCurrent = nLocalObj;
 			// Send count so other CSide can make sure he got them all

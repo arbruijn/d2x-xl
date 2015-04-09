@@ -793,7 +793,7 @@ void CSaveGameManager::SaveGameData (void)
 	int32_t	i, j;
 	CObject*	objP;
 
-m_cf.WriteInt (gameData.segs.nMaxSegments);
+m_cf.WriteInt (gameData.segData.nMaxSegments);
 // Save the Between levels flag...
 m_cf.WriteInt (m_bBetweenLevels);
 m_cf.WriteInt (gameOpts->app.bEnableMods);
@@ -880,50 +880,50 @@ if (!m_bBetweenLevels) {
 		}
 	m_cf.WriteShort ((int16_t) -1);
 //Save CWall info
-	i = gameData.walls.nWalls;
+	i = gameData.wallData.nWalls;
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
 		WALL (j)->SaveState (m_cf);
 //Save exploding wall info
-	i = int32_t (gameData.walls.exploding.ToS ());
+	i = int32_t (gameData.wallData.exploding.ToS ());
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
-		gameData.walls.exploding [j].SaveState (m_cf);
+		gameData.wallData.exploding [j].SaveState (m_cf);
 //Save door info
-	i = gameData.walls.activeDoors.ToS ();
+	i = gameData.wallData.activeDoors.ToS ();
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
-		gameData.walls.activeDoors [j].SaveState (m_cf);
+		gameData.wallData.activeDoors [j].SaveState (m_cf);
 //Save cloaking CWall info
-	i = gameData.walls.cloaking.ToS ();
+	i = gameData.wallData.cloaking.ToS ();
 	m_cf.WriteInt (i);
 	for (j = 0; j < i; j++)
-		gameData.walls.cloaking [j].SaveState (m_cf);
+		gameData.wallData.cloaking [j].SaveState (m_cf);
 //Save CTrigger info
-	m_cf.WriteInt (gameData.trigs.m_nTriggers);
-	for (i = 0; i < gameData.trigs.m_nTriggers; i++)
-		TRIGGER (i)->SaveState (m_cf);
-	m_cf.WriteInt (gameData.trigs.m_nObjTriggers);
-	if (!gameData.trigs.m_nObjTriggers)
+	m_cf.WriteInt (gameData.trigData.m_nTriggers [0]);
+	for (i = 0; i < gameData.trigData.m_nTriggers [0]; i++)
+		GEOTRIGGER (i)->SaveState (m_cf);
+	m_cf.WriteInt (gameData.trigData.m_nTriggers [1]);
+	if (!gameData.trigData.m_nTriggers [1])
 		m_cf.WriteShort (0);
 	else {
-		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
+		for (i = 0; i < gameData.trigData.m_nTriggers [1]; i++)
 			OBJTRIGGERS [i].SaveState (m_cf, true);
 #if 0
-		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
-			SaveObjTriggerRef (gameData.trigs.objTriggerRefs + i);
+		for (i = 0; i < gameData.trigData.m_nTriggers [1]; i++)
+			SaveObjTriggerRef (gameData.trigData.objTriggerRefs + i);
 		nObjsWithTrigger = 0;
 		FORALL_OBJS (objP, nObject) {
 			nObject = objP->Index ();
-			nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
-			if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.m_nObjTriggers))
+			nFirstTrigger = gameData.trigData.firstObjTrigger [nObject];
+			if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigData.m_nTriggers [1]))
 				nObjsWithTrigger++;
 			}
 		m_cf.WriteShort (nObjsWithTrigger);
 		FORALL_OBJS (objP, nObject) {
 			nObject = objP->Index ();
-			nFirstTrigger = gameData.trigs.firstObjTrigger [nObject];
-			if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigs.m_nObjTriggers)) {
+			nFirstTrigger = gameData.trigData.firstObjTrigger [nObject];
+			if ((nFirstTrigger >= 0) && (nFirstTrigger < gameData.trigData.m_nTriggers [1])) {
 				m_cf.WriteShort (nObject);
 				m_cf.WriteShort (nFirstTrigger);
 				}
@@ -931,7 +931,7 @@ if (!m_bBetweenLevels) {
 #endif
 		}
 //Save tmap info
-	for (i = 0; i <= gameData.segs.nLastSegment; i++)
+	for (i = 0; i <= gameData.segData.nLastSegment; i++)
 		SEGMENT (i)->SaveState (m_cf);
 // Save the producer info
 	m_cf.WriteInt (gameData.reactor.bDestroyed);
@@ -1360,8 +1360,8 @@ void CSaveGameManager::FixObjects (void)
 	int32_t	i, j, nSegment;
 
 ConvertObjects ();
-gameData.objs.nNextSignature = 0;
-for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
+gameData.objData.nNextSignature = 0;
+for (i = 0; i <= gameData.objData.nLastObject [0]; i++, objP++) {
 	objP->rType.polyObjInfo.nAltTextures = -1;
 	nSegment = objP->info.nSegment;
 	// hack for a bug I haven't yet been able to fix 
@@ -1374,8 +1374,8 @@ for (i = 0; i <= gameData.objs.nLastObject [0]; i++, objP++) {
 	if (objP->info.nType != OBJ_NONE) {
 		objP->Link ();
 		objP->LinkToSeg (nSegment);
-		if (objP->info.nSignature > gameData.objs.nNextSignature)
-			gameData.objs.nNextSignature = objP->info.nSignature;
+		if (objP->info.nSignature > gameData.objData.nNextSignature)
+			gameData.objData.nNextSignature = objP->info.nSignature;
 		}
 	//look for, and fix, boss with bogus shield
 	if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP)->bossFlag) {
@@ -1644,7 +1644,7 @@ m_cf.ReadMatrix (gameData.multiplayer.playerInit [i].position.mOrient);
 gameData.multiplayer.playerInit [i].nSegment = m_cf.ReadShort ();
 gameData.multiplayer.playerInit [i].nSegType = m_cf.ReadShort ();
 return (gameData.multiplayer.playerInit [i].nSegment >= 0) &&
-		 (gameData.multiplayer.playerInit [i].nSegment < gameData.segs.nSegments) &&
+		 (gameData.multiplayer.playerInit [i].nSegment < gameData.segData.nSegments) &&
 		 (gameData.multiplayer.playerInit [i].nSegment ==
 		  FindSegByPos (gameData.multiplayer.playerInit [i].position.vPos, 
 							 gameData.multiplayer.playerInit [i].nSegment, 1, 0));
@@ -1666,7 +1666,7 @@ int32_t CSaveGameManager::LoadUniFormat (int32_t bMulti, fix xOldGameTime, int32
 if (m_nVersion >= 39) {
 	h = m_cf.ReadInt ();
 #if 0
-	if (h != gameData.segs.nMaxSegments) {
+	if (h != gameData.segData.nMaxSegments) {
 		Warning (TXT_MAX_SEGS_WARNING, h);
 		return 0;
 		}
@@ -1712,8 +1712,8 @@ if (!PrepareLevel (nCurrentLevel, true, m_bSecret == 1, true, m_bSecret == 0)) {
 
 #if 1
 if (m_nVersion >= 39) {
-	if (gameData.segs.nSegments > gameData.segs.nMaxSegments) {
-		Warning (TXT_MAX_SEGS_WARNING, gameData.segs.nSegments);
+	if (gameData.segData.nSegments > gameData.segData.nMaxSegments) {
+		Warning (TXT_MAX_SEGS_WARNING, gameData.segData.nSegments);
 		return 0;
 		}
 	}
@@ -1782,7 +1782,7 @@ if (!m_bBetweenLevels) {
 	else {
 		h = m_cf.ReadInt ();
 		PrintLog (0, "restoring %d objects ...\n", h);
-		//gameData.objs.nLastObject [0] = h - 1;
+		//gameData.objData.nLastObject [0] = h - 1;
 		if (m_nVersion < 59) {
 			for (i = 0; i < h; i++) {
 				int16_t nObject = AllocObject (i, false);
@@ -1806,9 +1806,9 @@ if (!m_bBetweenLevels) {
 			}
 		}
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
-	gameData.objs.nNextSignature = 0;
+	gameData.objData.nNextSignature = 0;
 	InitCamBots (1);
-	gameData.objs.nNextSignature++;
+	gameData.objData.nNextSignature++;
 	//	1 = Didn't die on secret level.
 	//	2 = Died on secret level.
 	if (m_bSecret && (missionManager.nCurrentLevel >= 0)) {
@@ -1817,9 +1817,9 @@ if (!m_bBetweenLevels) {
 			ResetShipData (-1, 1);
 		}
 	//Restore CWall info
-	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))
+	if (ReadBoundedInt (MAX_WALLS, &gameData.wallData.nWalls))
 		return 0;
-	for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++) {
+	for (i = 0, wallP = WALLS.Buffer (); i < gameData.wallData.nWalls; i++, wallP++) {
 		wallP->LoadState (m_cf);
 		if (wallP->nType == WALL_OPEN)
 			audio.DestroySegmentSound ((int16_t) wallP->nSegment, (int16_t) wallP->nSide, -1);	//-1 means kill any sound
@@ -1827,51 +1827,51 @@ if (!m_bBetweenLevels) {
 	//Restore exploding wall info
 	if (ReadBoundedInt (MAX_EXPLODING_WALLS, &i))
 		return 0;
-	gameData.walls.exploding.Reset ();
+	gameData.wallData.exploding.Reset ();
 	for (; i; i--)
-		if (gameData.walls.exploding.Grow ()) {
-			gameData.walls.exploding.Top ()->LoadState (m_cf);
-			if (gameData.walls.exploding.Top ()->nSegment < 0)
-				gameData.walls.exploding.Shrink ();
+		if (gameData.wallData.exploding.Grow ()) {
+			gameData.wallData.exploding.Top ()->LoadState (m_cf);
+			if (gameData.wallData.exploding.Top ()->nSegment < 0)
+				gameData.wallData.exploding.Shrink ();
 			}
 		else
 			return 0;
 	//Restore door info
 	if (ReadBoundedInt (MAX_DOORS, &i))
 		return 0;
-	gameData.walls.activeDoors.Reset ();
+	gameData.wallData.activeDoors.Reset ();
 	for (; i; i--)
-		if (gameData.walls.activeDoors.Grow ())
-			gameData.walls.activeDoors.Top ()->LoadState (m_cf);
+		if (gameData.wallData.activeDoors.Grow ())
+			gameData.wallData.activeDoors.Top ()->LoadState (m_cf);
 		else
 			return 0;
 	if (ReadBoundedInt (MAX_CLOAKING_WALLS, &i))
 		return 0;
-	gameData.walls.cloaking.Reset ();
+	gameData.wallData.cloaking.Reset ();
 	for (; i; i--)
-		if (gameData.walls.cloaking.Grow ())
-			gameData.walls.cloaking.Top ()->LoadState (m_cf);
+		if (gameData.wallData.cloaking.Grow ())
+			gameData.wallData.cloaking.Top ()->LoadState (m_cf);
 		else
 			return 0;
 	//Restore CTrigger info
-	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.m_nTriggers))
+	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigData.m_nTriggers [0]))
 		return 0;
-	for (i = 0; i < gameData.trigs.m_nTriggers; i++)
-		TRIGGER (i)->LoadState (m_cf);
+	for (i = 0; i < gameData.trigData.m_nTriggers [0]; i++)
+		GEOTRIGGER (i)->LoadState (m_cf);
 	//Restore CObject CTrigger info
-	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.m_nObjTriggers))
+	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigData.m_nTriggers [1]))
 		return 0;
-	gameData.trigs.objTriggerRefs.Clear (0xff);
-	if (gameData.trigs.m_nObjTriggers > 0) {
-		for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
+	gameData.trigData.objTriggerRefs.Clear (0xff);
+	if (gameData.trigData.m_nTriggers [1] > 0) {
+		for (i = 0; i < gameData.trigData.m_nTriggers [1]; i++)
 			OBJTRIGGERS [i].LoadState (m_cf, true);
 		if (m_nVersion < 51) {
-			for (i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
+			for (i = 0; i < gameData.trigData.m_nTriggers [1]; i++) {
 #if 1
 				m_cf.Seek (2 * sizeof (int16_t), SEEK_CUR);
 				OBJTRIGGERS [i].m_info.nObject = m_cf.ReadShort ();
 #else
-				CSaveGameManager::LoadObjTriggerRef (gameData.trigs.objTriggerRefs + i);
+				CSaveGameManager::LoadObjTriggerRef (gameData.trigData.objTriggerRefs + i);
 #endif
 				}
 			if (m_nVersion < 36) {
@@ -1901,7 +1901,7 @@ if (!m_bBetweenLevels) {
 	else
 		m_cf.ReadShort ();
 	//Restore tmap info
-	for (i = 0; i <= gameData.segs.nLastSegment; i++)
+	for (i = 0; i <= gameData.segData.nLastSegment; i++)
 		SEGMENT (i)->LoadState (m_cf);
 	//Restore the producer info
 	audio.Prepare ();
@@ -2108,15 +2108,15 @@ if (!m_bBetweenLevels) {
 	ResetSegObjLists ();
 	ResetObjects (1);
 	//Read objects, and pop 'em into their respective segments.
-	m_cf.Read (&gameData.objs.nObjects, sizeof (int32_t), 1);
-	gameData.objs.nLastObject [0] = gameData.objs.nObjects - 1;
-	for (i = 0; i < gameData.objs.nObjects; i++)
+	m_cf.Read (&gameData.objData.nObjects, sizeof (int32_t), 1);
+	gameData.objData.nLastObject [0] = gameData.objData.nObjects - 1;
+	for (i = 0; i < gameData.objData.nObjects; i++)
 		m_cf.Read (&OBJECT (i)->info, sizeof (tBaseObject), 1);
 	FixNetworkObjects (nServerPlayer, nOtherObjNum, nServerObjNum);
 	FixObjects ();
 	ClaimObjectSlots ();
 	InitCamBots (1);
-	gameData.objs.nNextSignature++;
+	gameData.objData.nNextSignature++;
 	//	1 = Didn't die on secret level.
 	//	2 = Died on secret level.
 	if (m_bSecret && (missionManager.nCurrentLevel >= 0)) {
@@ -2125,9 +2125,9 @@ if (!m_bBetweenLevels) {
 			ResetShipData (-1, 1);
 		}
 	//Restore CWall info
-	if (ReadBoundedInt (MAX_WALLS, &gameData.walls.nWalls))
+	if (ReadBoundedInt (MAX_WALLS, &gameData.wallData.nWalls))
 		return 0;
-	for (i = 0; i < gameData.walls.nWalls; i++) {
+	for (i = 0; i < gameData.wallData.nWalls; i++) {
 		tCompatibleWall w;
 		m_cf.Read (&w, sizeof (w), 1);
 		WALL (i)->nSegment = w.nSegment;
@@ -2146,54 +2146,54 @@ if (!m_bBetweenLevels) {
 		}
 	//now that we have the walls, check if any sounds are linked to
 	//walls that are now open
-	for (i = 0, wallP = WALLS.Buffer (); i < gameData.walls.nWalls; i++, wallP++)
+	for (i = 0, wallP = WALLS.Buffer (); i < gameData.wallData.nWalls; i++, wallP++)
 		if (wallP->nType == WALL_OPEN)
 			audio.DestroySegmentSound ((int16_t) wallP->nSegment, (int16_t) wallP->nSide, -1);	//-1 means kill any sound
 	//Restore exploding wall info
 	if (m_nVersion >= 10) {
 		m_cf.Read (&i, sizeof (int32_t), 1);
 		if (i > 0) {
-			gameData.walls.exploding.Grow (static_cast<uint32_t> (i));
-			gameData.walls.exploding.Read (m_cf, i);
+			gameData.wallData.exploding.Grow (static_cast<uint32_t> (i));
+			gameData.wallData.exploding.Read (m_cf, i);
 			}
 		}
 	//Restore door info
 	if (ReadBoundedInt (MAX_DOORS, &i))
 		return 0;
 	if (i > 0) {
-		gameData.walls.activeDoors.Grow (static_cast<uint32_t> (i));
-		gameData.walls.activeDoors.Read (m_cf, gameData.walls.activeDoors.ToS ());
+		gameData.wallData.activeDoors.Grow (static_cast<uint32_t> (i));
+		gameData.wallData.activeDoors.Read (m_cf, gameData.wallData.activeDoors.ToS ());
 		}
 	if (m_nVersion >= 14) {		//Restore cloaking CWall info
 		if (ReadBoundedInt (MAX_WALLS, &i))
 			return 0;
 		if (i > 0) {
-			gameData.walls.cloaking.Grow (static_cast<uint32_t> (i));
-			gameData.walls.cloaking.Read (m_cf, gameData.walls.cloaking.ToS ());
+			gameData.wallData.cloaking.Grow (static_cast<uint32_t> (i));
+			gameData.wallData.cloaking.Read (m_cf, gameData.wallData.cloaking.ToS ());
 			}
 		}
 	//Restore CTrigger info
-	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigs.m_nTriggers))
+	if (ReadBoundedInt (MAX_TRIGGERS, &gameData.trigData.m_nTriggers [0]))
 		return 0;
-	for (i = 0; i < gameData.trigs.m_nTriggers; i++) {
+	for (i = 0; i < gameData.trigData.m_nTriggers [0]; i++) {
 		tCompatibleTrigger t;
 		m_cf.Read (&t, sizeof (t), 1);
-		TRIGGER (i)->m_info.nType = t.type;
-		TRIGGER (i)->m_info.flags = t.flags;
-		TRIGGER (i)->m_info.value = t.value;
-		TRIGGER (i)->m_info.time [0] = t.time;
-		TRIGGER (i)->m_info.time [1] = -1;
-		TRIGGER (i)->m_nLinks = t.num_links;
-		memcpy (TRIGGER (i)->m_segments, t.seg, sizeof (t.seg));
-		memcpy (TRIGGER (i)->m_sides, t.side, sizeof (t.side));
+		GEOTRIGGER (i)->m_info.nType = t.type;
+		GEOTRIGGER (i)->m_info.flags = t.flags;
+		GEOTRIGGER (i)->m_info.value = t.value;
+		GEOTRIGGER (i)->m_info.time [0] = t.time;
+		GEOTRIGGER (i)->m_info.time [1] = -1;
+		GEOTRIGGER (i)->m_nLinks = t.num_links;
+		memcpy (GEOTRIGGER (i)->m_segments, t.seg, sizeof (t.seg));
+		memcpy (GEOTRIGGER (i)->m_sides, t.side, sizeof (t.side));
 		}
 	if (m_nVersion >= 26) {
 		//Restore CObject CTrigger info
 
-		m_cf.Read (&gameData.trigs.m_nObjTriggers, sizeof (gameData.trigs.m_nObjTriggers), 1);
-		if (gameData.trigs.m_nObjTriggers > 0) {
-			OBJTRIGGERS.Read (m_cf, gameData.trigs.m_nObjTriggers);
-			m_cf.Seek (gameData.trigs.m_nObjTriggers * 6 * sizeof (int16_t), SEEK_CUR);
+		m_cf.Read (&gameData.trigData.m_nTriggers [1], sizeof (gameData.trigData.m_nTriggers [1]), 1);
+		if (gameData.trigData.m_nTriggers [1] > 0) {
+			OBJTRIGGERS.Read (m_cf, gameData.trigData.m_nTriggers [1]);
+			m_cf.Seek (gameData.trigData.m_nTriggers [1] * 6 * sizeof (int16_t), SEEK_CUR);
 			m_cf.Seek (700 * sizeof (int16_t), SEEK_CUR);
 			BuildObjTriggerRef ();
 			}
@@ -2203,7 +2203,7 @@ if (!m_bBetweenLevels) {
 	//Restore tmap info
 	CSegment* segP = SEGMENTS.Buffer ();
 	CSide* sideP;
-	for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
+	for (i = 0; i <= gameData.segData.nLastSegment; i++, segP++) {
 		sideP = segP->m_sides;
 		for (j = 0; j < SEGMENT_SIDE_COUNT; j++, sideP++) {
 			sideP->m_nWall = m_cf.ReadShort ();
@@ -2407,8 +2407,8 @@ else {
 	      }
 		}
 	}
-gameData.objs.viewerP = 
-gameData.objs.consoleP = OBJECT (LOCALPLAYER.nObject);
+gameData.objData.viewerP = 
+gameData.objData.consoleP = OBJECT (LOCALPLAYER.nObject);
 StartTriggeredSounds ();
 StartTime (1);
 if (!extraGameInfo [0].nBossCount [0] && (!IsMultiGame || IsCoopGame) && OpenExits ())

@@ -220,7 +220,7 @@ if (bStatic || m_data.variableVertLights [nVertex]) {
 	int16_t				i, j, nActiveLightI = sliP->nActive;
 	CDynLight*			lightP;
 	CActiveDynLight*	activeLightsP = m_data.active [nThread].Buffer ();
-	CFixVector			vVertex = gameData.segs.vertices [nVertex];
+	CFixVector			vVertex = gameData.segData.vertices [nVertex];
 	fix					xMaxLightRange = /*(gameStates.render.bPerPixelLighting == 2) ? MAX_LIGHT_RANGE * 2 :*/ MAX_LIGHT_RANGE;
 
 #if DBG
@@ -251,7 +251,7 @@ if (nVertex == nDbgVertex)
 #else
 		CFixVector vLightToVertex = vVertex - lightP->info.vPos;
 		fix xLightDist = CFixVector::Normalize (vLightToVertex.Mag ());
-		if ((lightP->info.bDiffuse [nThread] = gameData.segs.LightVis (lightP->Index (), nSegment) && lightP->SeesPoint (vNormal, &vLightToVertex)) || (nSegment < 0))
+		if ((lightP->info.bDiffuse [nThread] = gameData.segData.LightVis (lightP->Index (), nSegment) && lightP->SeesPoint (vNormal, &vLightToVertex)) || (nSegment < 0))
 			lightP->render.xDistance [nThread] = fix (xLightDist / lightP->info.fRange);
 		else if (nSegment >= 0) {
 			lightP->render.xDistance [nThread] = lightP->LightPathLength (nSegment, vVertex);
@@ -417,10 +417,10 @@ if (gameStates.render.nLightingMethod) {
 		int16_t nLightSeg = lightP->info.nSegment;
 		if (nLightSeg >= 0) 
 			lightP->info.bDiffuse [nThread] = (lightP->info.nSide >= 0) 
-													 ? gameData.segs.LightVis (lightP->Index (), nSegment) 
-													 : gameData.segs.SegVis (lightP->info.nSegment, nSegment);
+													 ? gameData.segData.LightVis (lightP->Index (), nSegment) 
+													 : gameData.segData.SegVis (lightP->info.nSegment, nSegment);
 		else if ((lightP->info.nObject >= 0) && ((lightP->info.nSegment = OBJECT (lightP->info.nObject)->info.nSegment) >= 0))
-			lightP->info.bDiffuse [nThread] = gameData.segs.SegVis (lightP->info.nSegment, nSegment);
+			lightP->info.bDiffuse [nThread] = gameData.segData.SegVis (lightP->info.nSegment, nSegment);
 		else
 			continue;
 		lightP->render.xDistance [nThread] = (fix) ((float) CFixVector::Dist (vDestPos, lightP->info.vPos) / (lightP->info.fRange * Max (lightP->info.fRad, 1.0f)));
@@ -505,7 +505,7 @@ if (gameStates.render.nLightingMethod) {
 			continue;
 #else
 		else {
-			lightP->info.bDiffuse [nThread] = gameData.segs.LightVis (lightP->Index (), nSegment);
+			lightP->info.bDiffuse [nThread] = gameData.segData.LightVis (lightP->Index (), nSegment);
 			CFixVector vLightToPixel = *vPixelPos - lightP->info.vPos;
 			fix xLightDist = CFixVector::Normalize (vLightToPixel);
 			lightP->render.xDistance [nThread] = (fix) (float (xLightDist) / lightP->info.fRange);
@@ -623,7 +623,7 @@ else {
 			continue;
 		vertColorP = gameData.render.color.vertices + *pv;
 		if (vPosP) {
-			vVertex = gameData.segs.vertices [*pv];
+			vVertex = gameData.segData.vertices [*pv];
 			//transformation.Transform (&vVertex, &vVertex);
 			d = 2.0f - X2F (CFixVector::Dist(vVertex, *vPosP)) / X2F (CFixVector::Dist(vCenter, vVertex));
 			c += *vertColorP * d;
@@ -648,7 +648,7 @@ return segColorP;
 
 void CLightManager::ResetSegmentLights (void)
 {
-for (int16_t i = 0; i < gameData.segs.nSegments; i++)
+for (int16_t i = 0; i < gameData.segData.nSegments; i++)
 	gameData.render.color.segments [i].index = -1;
 }
 

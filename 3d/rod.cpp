@@ -166,12 +166,12 @@ else {
 		texCoords [i].v.v = X2F (rodUvlList [i].v);
 		}
 	if (objP->info.nType == OBJ_FIREBALL)
-		transparencyRenderer.AddPoly (NULL, NULL, bmP, vertices, 4, texCoords, NULL, &gameData.objs.color, 1, 1, GL_TRIANGLE_FAN, GL_REPEAT, 1, -1);
+		transparencyRenderer.AddPoly (NULL, NULL, bmP, vertices, 4, texCoords, NULL, &gameData.objData.color, 1, 1, GL_TRIANGLE_FAN, GL_REPEAT, 1, -1);
 	else {
 		bmP = bmP->Override (-1);
 		bmP->SetupTexture (1, 0);
 		bmP->SetTexCoord (texCoords);
-		bmP->SetColor (&gameData.objs.color);
+		bmP->SetColor (&gameData.objData.color);
 		ogl.RenderQuad (bmP, vertices, 3);
 		}
 	}

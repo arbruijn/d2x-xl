@@ -195,7 +195,7 @@ CFixVector vViewPos;
 if (gameStates.render.bChaseCam)
 	FLIGHTPATH.GetViewPoint (&vViewPos);
 else
-	vViewPos = OBJPOS (gameData.objs.consoleP)->vPos;
+	vViewPos = OBJPOS (gameData.objData.consoleP)->vPos;
 CFixVector vDir = vViewPos - vPos;
 CFixVector::Normalize (vDir);
 vDir *= (xSize - objP->info.xSize);
@@ -284,7 +284,7 @@ transparencyRenderer.AddPoly (NULL, NULL, bmP, vertices, 4, texCoord, &color, NU
 
 void ConvertPowerupToVClip (CObject *objP)
 {
-objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+objP->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [objP->info.nId].nClipIndex;
 objP->rType.animationInfo.xFrameTime = gameData.effects.vClipP [objP->rType.animationInfo.nClipIndex].xFrameTime;
 objP->rType.animationInfo.nCurFrame = 0;
 objP->SetSizeFromPowerup ();
@@ -321,7 +321,7 @@ int16_t	nModel = WeaponToModel (objP->info.nId);
 if (!(nModel && HaveReplacementModel (nModel)))
 	return 0;
 #if 0 //DBG
-objP->Orientation () = gameData.objs.consoleP->Orientation ();
+objP->Orientation () = gameData.objData.consoleP->Orientation ();
 objP->mType.physInfo.rotVel.v.coord.x =
 objP->mType.physInfo.rotVel.v.coord.y =
 objP->mType.physInfo.rotVel.v.coord.z = 0;

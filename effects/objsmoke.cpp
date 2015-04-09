@@ -367,7 +367,7 @@ if (gameOpts->render.particles.bDecreaseLag && (nPlayer == N_LOCALPLAYER)) {
 #if 0
 if (EGI_FLAG (bThrusterFlames, 1, 1, 0)) {
 	if ((vec <= I2X (1) / 4) && (vec || !gameStates.input.bControlsSkipFrame))	//no thruster flames if moving backward
-		DropAfterburnerBlobs (objP, 2, I2X (1), -1, gameData.objs.consoleP, 1); //I2X (1) / 4);
+		DropAfterburnerBlobs (objP, 2, I2X (1), -1, gameData.objData.consoleP, 1); //I2X (1) / 4);
 	}
 #endif
 if (IsNetworkGame && !PLAYER (nPlayer).connected)
@@ -534,7 +534,7 @@ if (!(SHOW_SMOKE && gameOpts->render.particles.bRobots)) {
 if ((objP->info.xShield < 0) || (objP->info.nFlags & (OF_SHOULD_BE_DEAD | OF_DESTROYED)))
 	nParts = 0;
 else {
-	nShield = X2IR (gameData.bots.info [gameStates.app.bD1Mission][objP->info.nId].strength);
+	nShield = X2IR (gameData.botData.info [gameStates.app.bD1Mission][objP->info.nId].strength);
 	h = nShield ? X2IR (objP->info.xShield) * 100 / nShield : 0;
 	}
 if (h < 0)
@@ -925,9 +925,9 @@ if (!SHOW_SMOKE)
 #endif
 CObject	*objP = OBJECTS.Buffer ();
 
-for (int32_t i = 0; i <= gameData.objs.nLastObject [1]; i++, objP++) {
-	if (gameData.objs.bWantEffect [i] & DESTROY_SMOKE) {
-		gameData.objs.bWantEffect [i] &= ~DESTROY_SMOKE;
+for (int32_t i = 0; i <= gameData.objData.nLastObject [1]; i++, objP++) {
+	if (gameData.objData.bWantEffect [i] & DESTROY_SMOKE) {
+		gameData.objData.bWantEffect [i] &= ~DESTROY_SMOKE;
 		KillObjectSmoke (i);
 		}
 	else if (objP->info.nType == OBJ_NONE)

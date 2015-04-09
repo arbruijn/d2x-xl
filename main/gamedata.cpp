@@ -476,9 +476,9 @@ for (int32_t i = 0, j = gameStates.app.nThreads + 2; i < j; i++)
 if (nState == 1) {
 	CREATE (objRenderSegList, LEVEL_SEGMENTS, 0);
 	CREATE (renderFaceListP, FACES.nFaces, 0);
-	CREATE (bObjectRendered, gameData.objs.nMaxObjects, 0);
+	CREATE (bObjectRendered, gameData.objData.nMaxObjects, 0);
 	CREATE (bRenderSegment, LEVEL_SEGMENTS, 0);
-	CREATE (nRenderObjList, gameData.objs.nMaxObjects, 0);
+	CREATE (nRenderObjList, gameData.objData.nMaxObjects, 0);
 	CREATE (bCalcVertexColor, LEVEL_VERTICES, 0);
 	CREATE (bAutomapVisited, LEVEL_SEGMENTS, 0);
 	CREATE (bAutomapVisible, LEVEL_SEGMENTS, 0);
@@ -801,7 +801,7 @@ CREATE (normals, LEVEL_TRIANGLES * 3 * 2, 0);
 CREATE (color, LEVEL_TRIANGLES * 3, 0);
 CREATE (texCoord, LEVEL_TRIANGLES * 2 * 2, 0);
 CREATE (ovlTexCoord, LEVEL_TRIANGLES * 2 * 2, 0);
-CREATE (lMapTexCoord, gameData.segs.nFaces * 3 * 2, 0);
+CREATE (lMapTexCoord, gameData.segData.nFaces * 3 * 2, 0);
 Init ();
 return true;
 }
@@ -823,7 +823,7 @@ RESIZE (normals, LEVEL_TRIANGLES * 3 * 2);
 RESIZE (color, LEVEL_TRIANGLES * 3);
 RESIZE (texCoord, LEVEL_TRIANGLES * 2 * 2);
 RESIZE (ovlTexCoord, LEVEL_TRIANGLES * 2 * 2);
-RESIZE (lMapTexCoord, gameData.segs.nFaces * 3 * 2);
+RESIZE (lMapTexCoord, gameData.segData.nFaces * 3 * 2);
 return true;
 }
 
@@ -849,7 +849,7 @@ DESTROY (lMapTexCoord);
 
 CFaceListIndex::CFaceListIndex ()
 {
-gameData.segs.nFaceKeys = -1;
+gameData.segData.nFaceKeys = -1;
 }
 
 //------------------------------------------------------------------------------
@@ -864,9 +864,9 @@ Destroy ();
 void CFaceListIndex::Create (void)
 {
 Destroy (true);
-roots.Create (gameData.segs.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
-tails.Create (gameData.segs.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
-usedKeys.Create (gameData.segs.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
+roots.Create (gameData.segData.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
+tails.Create (gameData.segData.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
+usedKeys.Create (gameData.segData.nFaceKeys); //((MAX_WALL_TEXTURES  + MAX_WALL_TEXTURES / 10) * 3);
 Init ();
 }
 
@@ -875,7 +875,7 @@ Init ();
 void CFaceListIndex::Destroy (bool bRebuild)
 {
 if (!bRebuild)
-	gameData.segs.nFaceKeys = -1;
+	gameData.segData.nFaceKeys = -1;
 nUsedKeys = 0;
 roots.Destroy ();
 tails.Destroy ();
@@ -950,10 +950,10 @@ for (i = 0; i < LEVEL_SEGMENTS; i++)
 Init ();
 #if 0
 #	if BIDIRECTIONAL_DACS
-dialHeaps [0].Create (gameData.segs.nSegments);
-dialHeaps [1].Create (gameData.segs.nSegments);
+dialHeaps [0].Create (gameData.segData.nSegments);
+dialHeaps [1].Create (gameData.segData.nSegments);
 #	else
-dialHeap.Create (gameData.segs.nSegments);
+dialHeap.Create (gameData.segData.nSegments);
 #	endif
 #endif
 return true; //faces.Create ();
@@ -964,36 +964,36 @@ return true; //faces.Create ();
 bool CSegmentData::Resize (void)
 {
 return gameData.render.mine.Resize () &&
-		 gameData.segs.vertices.Resize (LEVEL_VERTICES) &&
-		 gameData.segs.fVertices.Resize (LEVEL_VERTICES) &&
-		 gameData.segs.vertexOwners.Resize (LEVEL_VERTICES);
+		 gameData.segData.vertices.Resize (LEVEL_VERTICES) &&
+		 gameData.segData.fVertices.Resize (LEVEL_VERTICES) &&
+		 gameData.segData.vertexOwners.Resize (LEVEL_VERTICES);
 }
 
 // ----------------------------------------------------------------------------
 
 void CSegmentData::Destroy (void)
 {
-DESTROY (gameData.segs.vertices);
-DESTROY (gameData.segs.fVertices);
-DESTROY (gameData.segs.vertexOwners);
+DESTROY (gameData.segData.vertices);
+DESTROY (gameData.segData.fVertices);
+DESTROY (gameData.segData.vertexOwners);
 DESTROY (SEGMENTS);
 #if CALC_SEGRADS
-DESTROY (gameData.segs.segRads [0]);
-DESTROY (gameData.segs.segRads [1]);
-DESTROY (gameData.segs.extent);
+DESTROY (gameData.segData.segRads [0]);
+DESTROY (gameData.segData.segRads [1]);
+DESTROY (gameData.segData.extent);
 #endif
-DESTROY (gameData.segs.segCenters [0]);
-DESTROY (gameData.segs.segCenters [1]);
-DESTROY (gameData.segs.sideCenters);
-DESTROY (gameData.segs.bSegVis);
-DESTROY (gameData.segs.bLightVis);
+DESTROY (gameData.segData.segCenters [0]);
+DESTROY (gameData.segData.segCenters [1]);
+DESTROY (gameData.segData.sideCenters);
+DESTROY (gameData.segData.bSegVis);
+DESTROY (gameData.segData.bLightVis);
 for (int32_t i = 0; i < LEVEL_SEGMENTS; i++)
-	gameData.segs.segDistTable [i].Destroy ();
-DESTROY (gameData.segs.segDistTable);
-DESTROY (gameData.segs.slideSegs);
-DESTROY (gameData.segs.segFaces);
-gameData.segs.grids [0].Destroy ();
-gameData.segs.grids [1].Destroy ();
+	gameData.segData.segDistTable [i].Destroy ();
+DESTROY (gameData.segData.segDistTable);
+DESTROY (gameData.segData.slideSegs);
+DESTROY (gameData.segData.segFaces);
+gameData.segData.grids [0].Destroy ();
+gameData.segData.grids [1].Destroy ();
 nSegments = 0;
 nFaces = 0;
 faces.Destroy ();
@@ -1075,7 +1075,7 @@ Destroy ();
 m_vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
 m_vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
 segP = SEGMENTS.Buffer ();
-for (i = gameData.segs.nSegments, j = 0; i; i--, segP++) {
+for (i = gameData.segData.nSegments, j = 0; i; i--, segP++) {
 	if ((segP->m_function == SEGMENT_FUNC_SKYBOX) == bSkyBox) {
 		j++;
 		v0 = segP->m_extents [0];
@@ -1109,7 +1109,7 @@ if (!m_index.Create (size))
 m_index.Clear ();
 
 segP = SEGMENTS.Buffer ();
-for (i = gameData.segs.nSegments; i; i--, segP++) {
+for (i = gameData.segData.nSegments; i; i--, segP++) {
 	if ((segP->m_function == SEGMENT_FUNC_SKYBOX) == bSkyBox) {
 #if DBG
 		if (segP - SEGMENTS.Buffer () == nDbgSeg)
@@ -1151,7 +1151,7 @@ if (!m_segments.Create (j)) {
 	}
 
 segP = SEGMENTS.Buffer ();
-for (i = 0; i < gameData.segs.nSegments; i++, segP++) {
+for (i = 0; i < gameData.segData.nSegments; i++, segP++) {
 	if ((segP->m_function == SEGMENT_FUNC_SKYBOX) == bSkyBox) {
 #if DBG
 		if (segP - SEGMENTS.Buffer () == nDbgSeg)
@@ -1522,8 +1522,8 @@ void InitWeaponFlags (void)
 
 void InitIdToOOF (void)
 {
-gameData.objs.idToOOF.Clear (0);
-gameData.objs.idToOOF [MEGAMSL_ID] = OOF_MEGA;
+gameData.objData.idToOOF.Clear (0);
+gameData.objData.idToOOF [MEGAMSL_ID] = OOF_MEGA;
 }
 
 // ----------------------------------------------------------------------------
@@ -1571,8 +1571,8 @@ nMaxUsedObjects = LEVEL_OBJECTS - 20;
 void CObjectData::InitFreeList (void)
 {
 for (int32_t i = 0; i < LEVEL_OBJECTS; i++) {
-	gameData.objs.freeList [i] = i;
-	gameData.objs.freeListIndex.Clear (0xff);
+	gameData.objData.freeList [i] = i;
+	gameData.objData.freeListIndex.Clear (0xff);
 	OBJECTEX (i, GAMEDATA_ERRLOG_BUFFER)->Init ();
 	}
 }
@@ -1582,25 +1582,25 @@ for (int32_t i = 0; i < LEVEL_OBJECTS; i++) {
 bool CObjectData::Create (void)
 {
 Init ();
-CREATE (gameData.objs.objects, LEVEL_OBJECTS, 0);
-CREATE (gameData.objs.update, LEVEL_OBJECTS, 0);
-CREATE (gameData.objs.freeList, LEVEL_OBJECTS, 0);
-CREATE (gameData.objs.freeListIndex, LEVEL_OBJECTS, 0xff);
-CREATE (gameData.objs.parentObjs, LEVEL_OBJECTS, (char) 0xff);
-CREATE (gameData.objs.childObjs, LEVEL_OBJECTS, 0);
-CREATE (gameData.objs.firstChild, LEVEL_OBJECTS, (char) 0xff);
-CREATE (gameData.objs.init, LEVEL_OBJECTS, 0);
-CREATE (gameData.objs.dropInfo, LEVEL_OBJECTS, 0);
-CREATE (gameData.objs.speedBoost, LEVEL_OBJECTS, 0);
-CREATE (gameData.objs.vRobotGoals, LEVEL_OBJECTS, 0);
-CREATE (gameData.objs.xLastAfterburnerTime, LEVEL_OBJECTS, 0);
-CREATE (gameData.objs.xLight, LEVEL_OBJECTS, 0);
-CREATE (gameData.objs.nLightSig, LEVEL_OBJECTS, 0);
-CREATE (gameData.objs.nHitObjects, LEVEL_OBJECTS * MAX_HIT_OBJECTS, 0);
-CREATE (gameData.objs.viewData, LEVEL_OBJECTS, (char) 0xFF);
-CREATE (gameData.objs.bWantEffect, LEVEL_OBJECTS, (char) 0);
+CREATE (gameData.objData.objects, LEVEL_OBJECTS, 0);
+CREATE (gameData.objData.update, LEVEL_OBJECTS, 0);
+CREATE (gameData.objData.freeList, LEVEL_OBJECTS, 0);
+CREATE (gameData.objData.freeListIndex, LEVEL_OBJECTS, 0xff);
+CREATE (gameData.objData.parentObjs, LEVEL_OBJECTS, (char) 0xff);
+CREATE (gameData.objData.childObjs, LEVEL_OBJECTS, 0);
+CREATE (gameData.objData.firstChild, LEVEL_OBJECTS, (char) 0xff);
+CREATE (gameData.objData.init, LEVEL_OBJECTS, 0);
+CREATE (gameData.objData.dropInfo, LEVEL_OBJECTS, 0);
+CREATE (gameData.objData.speedBoost, LEVEL_OBJECTS, 0);
+CREATE (gameData.objData.vRobotGoals, LEVEL_OBJECTS, 0);
+CREATE (gameData.objData.xLastAfterburnerTime, LEVEL_OBJECTS, 0);
+CREATE (gameData.objData.xLight, LEVEL_OBJECTS, 0);
+CREATE (gameData.objData.nLightSig, LEVEL_OBJECTS, 0);
+CREATE (gameData.objData.nHitObjects, LEVEL_OBJECTS * MAX_HIT_OBJECTS, 0);
+CREATE (gameData.objData.viewData, LEVEL_OBJECTS, (char) 0xFF);
+CREATE (gameData.objData.bWantEffect, LEVEL_OBJECTS, (char) 0);
 InitFreeList ();
-memset (&gameData.objs.lists, 0, sizeof (gameData.objs.lists));
+memset (&gameData.objData.lists, 0, sizeof (gameData.objData.lists));
 return gameData.render.mine.Create (0) && lightClusterManager.Init () && shrapnelManager.Init ();
 }
 
@@ -1608,24 +1608,24 @@ return gameData.render.mine.Create (0) && lightClusterManager.Init () && shrapne
 
 void CObjectData::Destroy (void)
 {
-DESTROY (gameData.objs.objects);
-DESTROY (gameData.objs.effects);
-DESTROY (gameData.objs.freeListIndex);
-DESTROY (gameData.objs.freeList);
-DESTROY (gameData.objs.parentObjs);
-DESTROY (gameData.objs.childObjs);
-DESTROY (gameData.objs.firstChild);
-DESTROY (gameData.objs.init);
-DESTROY (gameData.objs.dropInfo);
-DESTROY (gameData.objs.speedBoost);
-DESTROY (gameData.objs.vRobotGoals);
-DESTROY (gameData.objs.xLastAfterburnerTime);
-DESTROY (gameData.objs.xLight);
-DESTROY (gameData.objs.nLightSig);
-DESTROY (gameData.objs.nHitObjects);
-DESTROY (gameData.objs.viewData);
-DESTROY (gameData.objs.bWantEffect);
-memset (&gameData.objs.lists, 0, sizeof (gameData.objs.lists));
+DESTROY (gameData.objData.objects);
+DESTROY (gameData.objData.effects);
+DESTROY (gameData.objData.freeListIndex);
+DESTROY (gameData.objData.freeList);
+DESTROY (gameData.objData.parentObjs);
+DESTROY (gameData.objData.childObjs);
+DESTROY (gameData.objData.firstChild);
+DESTROY (gameData.objData.init);
+DESTROY (gameData.objData.dropInfo);
+DESTROY (gameData.objData.speedBoost);
+DESTROY (gameData.objData.vRobotGoals);
+DESTROY (gameData.objData.xLastAfterburnerTime);
+DESTROY (gameData.objData.xLight);
+DESTROY (gameData.objData.nLightSig);
+DESTROY (gameData.objData.nHitObjects);
+DESTROY (gameData.objData.viewData);
+DESTROY (gameData.objData.bWantEffect);
+memset (&gameData.objData.lists, 0, sizeof (gameData.objData.lists));
 nObjects = 0;
 lightManager.Reset ();
 shrapnelManager.Reset ();
@@ -2051,8 +2051,8 @@ return
 
 bool CGameData::Create (int32_t nSegments, int32_t nVertices)
 {
-if (!(gameData.segs.Create (nSegments, nVertices) &&
-		gameData.objs.Create () &&
+if (!(gameData.segData.Create (nSegments, nVertices) &&
+		gameData.objData.Create () &&
 		gameData.render.color.Create () &&
 		gameData.render.lights.Create () &&
 		gameData.render.shadows.Create () &&
@@ -2069,7 +2069,7 @@ lightningManager.Init ();
 markerManager.Init ();
 gameData.physics.Init ();
 gameData.bosses.Create ();
-gameData.walls.Reset ();
+gameData.wallData.Reset ();
 return true;
 }
 
@@ -2077,10 +2077,10 @@ return true;
 
 void CGameData::Destroy (void)
 {
-gameData.segs.Destroy ();
-gameData.objs.Destroy ();
-gameData.walls.Destroy ();
-gameData.trigs.Destroy ();
+gameData.segData.Destroy ();
+gameData.objData.Destroy ();
+gameData.wallData.Destroy ();
+gameData.trigData.Destroy ();
 gameData.render.color.Destroy ();
 gameData.render.lights.Destroy ();
 gameData.render.shadows.Destroy ();
@@ -2121,8 +2121,8 @@ gameData.pig.tex.tMapInfo [gameStates.app.bD1Data].ShareBuffer (gameData.pig.tex
 gameData.pig.sound.sounds [gameStates.app.bD1Data].ShareBuffer (gameData.pig.sound.soundP);
 gameData.effects.effects [gameStates.app.bD1Data].ShareBuffer (gameData.effects.effectP);
 gameData.effects.animations [gameStates.app.bD1Data].ShareBuffer (gameData.effects.vClipP);
-gameData.walls.anims [gameStates.app.bD1Data].ShareBuffer (gameData.walls.animP);
-gameData.bots.info [gameStates.app.bD1Data].ShareBuffer (gameData.bots.infoP);
+gameData.wallData.anims [gameStates.app.bD1Data].ShareBuffer (gameData.wallData.animP);
+gameData.botData.info [gameStates.app.bD1Data].ShareBuffer (gameData.botData.infoP);
 }
 
 // ----------------------------------------------------------------------------
@@ -2518,86 +2518,84 @@ return NULL;
 CObject* CGameData::Object (int32_t nObject, int32_t nChecks, const char* pszFile, int32_t nLine) 
 { 
 if (nChecks) {
-	if (!objs.objects.Buffer ())
+	if (!objData.objects.Buffer ())
 		return (CObject*) GameDataError ("object", "buffer", nChecks & GAMEDATA_ERRLOG_BUFFER, pszFile, nLine);
 	if (nObject < 0)
 		return (CObject*) GameDataError ("object", "underflow", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
-	if (nObject > objs.nLastObject [0])
+	if (nObject > objData.nLastObject [0])
 		return (CObject*) GameDataError ("object", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
 	}
-return objs.objects + nObject; 
+return objData.objects + nObject; 
 }
 
 
 CSegment* CGameData::Segment (int32_t nSegment, int32_t nChecks, const char* pszFile, int32_t nLine) 
 { 
 if (nChecks) {
-	if (!segs.segments.Buffer ())	
+	if (!segData.segments.Buffer ())	
 		return (CSegment*) GameDataError ("segment", "buffer", nChecks & GAMEDATA_ERRLOG_BUFFER, pszFile, nLine);
 	if (nSegment < 0)
 		return (CSegment*) GameDataError ("segment", "underflow", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
-	if (nSegment >= segs.nSegments)
+	if (nSegment >= segData.nSegments)
 		return (CSegment*) GameDataError ("segment", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
 	}
-return segs.segments + nSegment; 
+return segData.segments + nSegment; 
 }
 
 
 CWall* CGameData::Wall (int32_t nWall, int32_t nChecks, const char* pszFile, int32_t nLine) 
 { 
 if (nChecks) {
-	if (!walls.walls.Buffer ())
+	if (!wallData.walls.Buffer ())
 		return (CWall*) GameDataError ("wall", "buffer", nChecks & GAMEDATA_ERRLOG_BUFFER, pszFile, nLine);
 	if (nWall < 0)
 		return (CWall*) GameDataError ("wall", "underflow", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
-	if (nWall >= walls.nWalls)
+	if (nWall >= wallData.nWalls)
 		return (CWall*) GameDataError ("wall", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
 	}
-return walls.walls + nWall; 
+return wallData.walls + nWall; 
 }
 
 
-CTrigger* CGameData::Trigger (int32_t nTrigger, int32_t nChecks, const char* pszFile, int32_t nLine) 
+CTrigger* CGameData::Trigger (int32_t nType, int32_t nTrigger, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {
 if (nTrigger == NO_TRIGGER)
 	return NULL;
 if (nChecks) {
-	if (!trigs.triggers.Buffer ())
+	if (!trigData.triggers [nType].Buffer ())
 		return (CTrigger*) GameDataError ("trigger", "buffer", nChecks & GAMEDATA_ERRLOG_BUFFER, pszFile, nLine);
 	if (nTrigger < 0)
 		return (CTrigger*) GameDataError ("trigger", "underflow", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
 	if (nTrigger == NO_TRIGGER)
 		return (CTrigger*) GameDataError ("trigger", "null", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
-	if (nTrigger >= trigs.m_nTriggers)
+	if (nTrigger >= trigData.m_nTriggers [nType])
 		return (CTrigger*) GameDataError ("trigger", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
 	}
-return trigs.triggers + nTrigger; 
+return trigData.triggers [nType] + nTrigger; 
+}
+
+CTrigger* CGameData::GeoTrigger (int32_t nTrigger, int32_t nChecks, const char* pszFile, int32_t nLine) 
+{
+return Trigger (0, nTrigger, nChecks, pszFile, nLine);
 }
 
 CTrigger* CGameData::ObjTrigger (int32_t nTrigger, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {
-if (nChecks) {
-	if (!trigs.objTriggers.Buffer ())
-		return (CTrigger*) GameDataError ("object trigger", "buffer", nChecks & GAMEDATA_ERRLOG_BUFFER, pszFile, nLine);
-	if (nTrigger < 0)
-		return (CTrigger*) GameDataError ("object trigger", "underflow", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
-	if (nTrigger == NO_TRIGGER)
-		return (CTrigger*) GameDataError ("object trigger", "null", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
-	if (nTrigger >= trigs.m_nObjTriggers)
-		return (CTrigger*) GameDataError ("object trigger", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
-	}
-return trigs.objTriggers + nTrigger; 
+return Trigger (1, nTrigger, nChecks, pszFile, nLine);
 }
 
 tRobotInfo* CGameData::RobotInfo (int32_t nId, int32_t nChecks, const char* pszFile, int32_t nLine) 
 {
-CArray<tRobotInfo>& a = bots.info [gameStates.app.bD1Mission && (nId < bots.nTypes [1])];
+int32_t bD1 = gameStates.app.bD1Mission && (nId < botData.nTypes [1]);
+CArray<tRobotInfo>& a = botData.info [bD1];
 if (nChecks) {
 	if (!a.Buffer ())
 		return (tRobotInfo*) GameDataError ("robot info", "buffer", nChecks & GAMEDATA_ERRLOG_BUFFER, pszFile, nLine);
 	if (nId < 0)
 		return (tRobotInfo*) GameDataError ("robot info", "underflow", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
 	if ((uint32_t) nId >= a.Length ())
+		return (tRobotInfo*) GameDataError ("robot info", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
+	if (nId >= botData.nTypes [bD1])
 		return (tRobotInfo*) GameDataError ("robot info", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
 	}
 return a + nId; 

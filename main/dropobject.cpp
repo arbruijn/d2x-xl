@@ -33,7 +33,7 @@ int32_t InitObjectCount (CObject *objP)
 	int16_t	id = objP->info.nId;
 
 nFree = nTotal = 0;
-for (i = 0, objP = gameData.objs.init.Buffer (); i < gameFileInfo.objects.count; i++, objP++) {
+for (i = 0, objP = gameData.objData.init.Buffer (); i < gameFileInfo.objects.count; i++, objP++) {
 	if ((objP->info.nType != nType) || (objP->info.nId != id))
 		continue;
 	nTotal++;
@@ -66,7 +66,7 @@ if (!objCount)		//no OBJECTS of this nType had initially been placed in the mine
 if ((bUseFree = (objCount < 0)))
 	objCount = -objCount;
 h = Rand (objCount) + 1;
-for (i = 0, objP = gameData.objs.init.Buffer (); i < gameFileInfo.objects.count; i++, objP++) {
+for (i = 0, objP = gameData.objData.init.Buffer (); i < gameFileInfo.objects.count; i++, objP++) {
 	if ((objP->info.nType != nType) || (objP->info.nId != id))
 		continue;
 	// if the current CSegment does not contain a powerup of the nType being looked for,
@@ -126,7 +126,7 @@ nHead =
 nTail = 0;
 segQueue [nHead++] = nStartSeg;
 
-memset (bVisited, 0, gameData.segs.nSegments);
+memset (bVisited, 0, gameData.segData.nSegments);
 bVisited [nStartSeg] = 1;
 
 while (nTail != nHead) {
@@ -271,7 +271,7 @@ if (nSegment == -1) {
 #if TRACE
 	console.printf (1, "Warning: Unable to find a connected CSegment.  Picking a random one.\n");
 #endif
-	return Rand (gameData.segs.nSegments);
+	return Rand (gameData.segData.nSegments);
 	}
 return nSegment;
 }
@@ -281,11 +281,11 @@ return nSegment;
 void DropPowerups (void)
 {
 if (extraGameInfo [IsMultiGame].nSpawnDelay != 0) {
-	int16_t	h = gameData.objs.nFirstDropped, i;
+	int16_t	h = gameData.objData.nFirstDropped, i;
 	while (h >= 0) {
 		i = h;
-		h = gameData.objs.dropInfo [i].nNextPowerup;
-		if ((gameData.objs.dropInfo [i].nDropTime != 0x7FFFFFFF) && !MaybeDropNetPowerup (i, gameData.objs.dropInfo [i].nPowerupType, CHECK_DROP))
+		h = gameData.objData.dropInfo [i].nNextPowerup;
+		if ((gameData.objData.dropInfo [i].nDropTime != 0x7FFFFFFF) && !MaybeDropNetPowerup (i, gameData.objData.dropInfo [i].nPowerupType, CHECK_DROP))
 			break;
 		}
 	}
@@ -295,15 +295,15 @@ if (extraGameInfo [IsMultiGame].nSpawnDelay != 0) {
 
 void RespawnDestroyedWeapon (int16_t nObject)
 {
-	int32_t	h = gameData.objs.nFirstDropped, i;
+	int32_t	h = gameData.objData.nFirstDropped, i;
 
 while (h >= 0) {
 	i = h;
-	h = gameData.objs.dropInfo [i].nNextPowerup;
-	if ((gameData.objs.dropInfo [i].nObject == nObject) &&
-		 (gameData.objs.dropInfo [i].nDropTime < 0)) {
-		gameData.objs.dropInfo [i].nDropTime = 0;
-		MaybeDropNetPowerup (i, gameData.objs.dropInfo [i].nPowerupType, CHECK_DROP);
+	h = gameData.objData.dropInfo [i].nNextPowerup;
+	if ((gameData.objData.dropInfo [i].nObject == nObject) &&
+		 (gameData.objData.dropInfo [i].nDropTime < 0)) {
+		gameData.objData.dropInfo [i].nDropTime = 0;
+		MaybeDropNetPowerup (i, gameData.objData.dropInfo [i].nPowerupType, CHECK_DROP);
 		}
 	}
 }
@@ -314,23 +314,23 @@ int32_t AddDropInfo (int16_t nObject, int16_t nPowerupType, int32_t nDropTime)
 {
 	int32_t	h;
 
-if (gameData.objs.nFreeDropped < 0)
+if (gameData.objData.nFreeDropped < 0)
 	return -1;
 //AddPowerupInMine (nPowerupType);
-h = gameData.objs.nFreeDropped;
-gameData.objs.nFreeDropped = gameData.objs.dropInfo [h].nNextPowerup;
-gameData.objs.dropInfo [h].nPrevPowerup = gameData.objs.nLastDropped;
-gameData.objs.dropInfo [h].nNextPowerup = -1;
-gameData.objs.dropInfo [h].nObject = nObject;
-gameData.objs.dropInfo [h].nSignature = OBJECT (nObject)->Signature ();
-gameData.objs.dropInfo [h].nPowerupType = nPowerupType;
-gameData.objs.dropInfo [h].nDropTime = (nDropTime > 0) ? nDropTime : (extraGameInfo [IsMultiGame].nSpawnDelay <= 0) ? -1 : gameStates.app.nSDLTicks [0];
-if (gameData.objs.nFirstDropped >= 0)
-	gameData.objs.dropInfo [gameData.objs.nLastDropped].nNextPowerup = h;
+h = gameData.objData.nFreeDropped;
+gameData.objData.nFreeDropped = gameData.objData.dropInfo [h].nNextPowerup;
+gameData.objData.dropInfo [h].nPrevPowerup = gameData.objData.nLastDropped;
+gameData.objData.dropInfo [h].nNextPowerup = -1;
+gameData.objData.dropInfo [h].nObject = nObject;
+gameData.objData.dropInfo [h].nSignature = OBJECT (nObject)->Signature ();
+gameData.objData.dropInfo [h].nPowerupType = nPowerupType;
+gameData.objData.dropInfo [h].nDropTime = (nDropTime > 0) ? nDropTime : (extraGameInfo [IsMultiGame].nSpawnDelay <= 0) ? -1 : gameStates.app.nSDLTicks [0];
+if (gameData.objData.nFirstDropped >= 0)
+	gameData.objData.dropInfo [gameData.objData.nLastDropped].nNextPowerup = h;
 else
-	gameData.objs.nFirstDropped = h;
-gameData.objs.nLastDropped = h;
-gameData.objs.nDropped++;
+	gameData.objData.nFirstDropped = h;
+gameData.objData.nLastDropped = h;
+gameData.objData.nDropped++;
 return h;
 }
 
@@ -342,32 +342,32 @@ void DelDropInfo (int32_t h)
 
 if (h < 0)
 	return;
-RemovePowerupInMine (gameData.objs.dropInfo [h].nPowerupType);
-i = gameData.objs.dropInfo [h].nPrevPowerup;
-j = gameData.objs.dropInfo [h].nNextPowerup;
+RemovePowerupInMine (gameData.objData.dropInfo [h].nPowerupType);
+i = gameData.objData.dropInfo [h].nPrevPowerup;
+j = gameData.objData.dropInfo [h].nNextPowerup;
 if (i < 0)
-	gameData.objs.nFirstDropped = j;
+	gameData.objData.nFirstDropped = j;
 else
-	gameData.objs.dropInfo [i].nNextPowerup = j;
+	gameData.objData.dropInfo [i].nNextPowerup = j;
 if (j < 0)
-	gameData.objs.nLastDropped = i;
+	gameData.objData.nLastDropped = i;
 else
-	gameData.objs.dropInfo [j].nPrevPowerup = i;
-gameData.objs.dropInfo [h].nNextPowerup = gameData.objs.nFreeDropped;
-gameData.objs.nFreeDropped = h;
-gameData.objs.nDropped--;
+	gameData.objData.dropInfo [j].nPrevPowerup = i;
+gameData.objData.dropInfo [h].nNextPowerup = gameData.objData.nFreeDropped;
+gameData.objData.nFreeDropped = h;
+gameData.objData.nDropped--;
 }
 
 //	------------------------------------------------------------------------------------------------------
 
 int32_t FindDropInfo (int32_t nSignature)
 {
-	int16_t	i = gameData.objs.nFirstDropped;
+	int16_t	i = gameData.objData.nFirstDropped;
 
 while (i >= 0) {
-	if (gameData.objs.dropInfo [i].nSignature == nSignature)
+	if (gameData.objData.dropInfo [i].nSignature == nSignature)
 		return i;
-	i = gameData.objs.dropInfo [i].nNextPowerup;
+	i = gameData.objData.dropInfo [i].nNextPowerup;
 	}
 return -1;
 }
@@ -391,8 +391,8 @@ if (EGI_FLAG (bImmortalPowerups, 0, 0, 0) || (IsMultiGame && !IsCoopGame)) {
 	
 	if (IsMultiGame && (extraGameInfo [IsMultiGame].nSpawnDelay != 0)) {
 		if (nDropState == CHECK_DROP) {
-			if ((gameData.objs.dropInfo [nObject].nDropTime < 0) ||
-				 (gameStates.app.nSDLTicks [0] - gameData.objs.dropInfo [nObject].nDropTime < extraGameInfo [IsMultiGame].nSpawnDelay))
+			if ((gameData.objData.dropInfo [nObject].nDropTime < 0) ||
+				 (gameStates.app.nSDLTicks [0] - gameData.objData.dropInfo [nObject].nDropTime < extraGameInfo [IsMultiGame].nSpawnDelay))
 				return 0;
 			nDropState = EXEC_DROP;
 			}
@@ -645,7 +645,7 @@ switch (nType) {
 		objP->mType.physInfo.drag = 512;	//1024;
 		objP->mType.physInfo.mass = I2X (1);
 		objP->mType.physInfo.flags = PF_BOUNCES;
-		objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+		objP->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [objP->info.nId].nClipIndex;
 		objP->rType.animationInfo.xFrameTime = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
 		objP->rType.animationInfo.nCurFrame = 0;
 

@@ -33,7 +33,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 void AIDoCloakStuff (void)
 {
-	CObject*	objP = TARGETOBJ ? TARGETOBJ : gameData.objs.consoleP;
+	CObject*	objP = TARGETOBJ ? TARGETOBJ : gameData.objData.consoleP;
 
 for (int32_t i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 	gameData.ai.cloakInfo [i].vLastPos = OBJPOS (objP)->vPos;
@@ -88,7 +88,7 @@ int8_t newAwareness [MAX_SEGMENTS_D2X];
 
 void pae_aux (int32_t nSegment, int32_t nType, int32_t level)
 {
-if ((nSegment >= 0) && (nSegment < gameData.segs.nSegments)) {
+if ((nSegment >= 0) && (nSegment < gameData.segData.nSegments)) {
 	if (newAwareness [nSegment] < nType)
 		newAwareness [nSegment] = nType;
 	CSegment* segP = SEGMENT (nSegment);
@@ -107,7 +107,7 @@ if ((nSegment >= 0) && (nSegment < gameData.segs.nSegments)) {
 void ProcessAwarenessEvents (void)
 {
 if (IsRobotGame) {
-	memset (newAwareness, 0, sizeof (newAwareness [0]) * gameData.segs.nSegments);
+	memset (newAwareness, 0, sizeof (newAwareness [0]) * gameData.segData.nSegments);
 	for (int32_t i = 0; i < gameData.ai.nAwarenessEvents; i++)
 		pae_aux (gameData.ai.awarenessEvents [i].nSegment, gameData.ai.awarenessEvents [i].nType, 1);
 	}

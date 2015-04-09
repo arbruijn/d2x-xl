@@ -339,7 +339,7 @@ return nObject;
 
 int32_t GetRemoteObjNum (int32_t nLocalObj, int8_t& nObjOwner)
 {
-if ((nLocalObj < 0) || (nLocalObj > gameData.objs.nLastObject [0])) {
+if ((nLocalObj < 0) || (nLocalObj > gameData.objData.nLastObject [0])) {
 	nObjOwner = -1;
 	return -1;
 	}
@@ -363,7 +363,7 @@ if (nLocalObj != nRemoteObj)
 		if (PLAYER (i).nObject == nRemoteObj) {
 			PLAYER (i).SetObject (nLocalObj);
 			if (i == N_LOCALPLAYER)
-				gameData.objs.consoleP = OBJECT (nLocalObj);
+				gameData.objData.consoleP = OBJECT (nLocalObj);
 			break;
 			}
 }
@@ -834,7 +834,7 @@ gameData.multigame.menu.bLeave = 0;
 gameData.multigame.bQuitGame = 0;
 GameDisableCheats ();
 LOCALPLAYER.m_bExploded = 0;
-gameData.objs.deadPlayerCamera = 0;
+gameData.objData.deadPlayerCamera = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -955,8 +955,8 @@ gameData.score.nKillsChanged = 1;
 gameStates.multi.bSuicide = 0;
 
 // Both CObject numbers are localized already!
-if ((nKilled < 0) || (nKilled > gameData.objs.nLastObject [0]) ||
-	 (nKiller < 0) || (nKiller > gameData.objs.nLastObject [0])) {
+if ((nKilled < 0) || (nKilled > gameData.objData.nLastObject [0]) ||
+	 (nKiller < 0) || (nKiller > gameData.objData.nLastObject [0])) {
 	Int3 (); // See Rob, illegal value passed to computeKill;
 	return;
 	}
@@ -1259,7 +1259,7 @@ if (IsNetworkGame) {
 	fix shield = LOCALPLAYER.Shield ();
 	LOCALPLAYER.SetShield (-1);
 	gameStates.app.SRand (); // required to sync the player ship explosion on the clients
-	DropPlayerEggs (gameData.objs.consoleP);
+	DropPlayerEggs (gameData.objData.consoleP);
 	LOCALPLAYER.SetShield (shield);
 	MultiSendPlayerExplode (MULTI_PLAYER_DROP);
 	}
@@ -1785,7 +1785,7 @@ bufP += 2;
 int8_t nSide = buf [bufP++];
 uint8_t flag = buf [bufP++];
 
-if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment) || (nSide < 0) || (nSide > 5)) {
+if ((nSegment < 0) || (nSegment > gameData.segData.nLastSegment) || (nSide < 0) || (nSide > 5)) {
 	Int3 ();
 	return;
 	}
@@ -1834,7 +1834,7 @@ vTarget.dir.coord.z = (fix)INTEL_INT ((int32_t) vTarget.dir.coord.z);
 #endif
 nGun = buf [count++];
 nObject = GET_INTEL_SHORT (buf + count);
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
+if ((nObject < 0) || (nObject > gameData.objData.nLastObject [0]))
 	return;
 if (0 <= (i = FindReactor (OBJECT (nObject))))
 	CreateNewWeaponSimple (&vTarget, gameData.reactor.states [i].vGunPos + (int32_t) nGun, nObject, CONTROLCEN_WEAPON_NUM, 1);
@@ -1864,7 +1864,7 @@ nSegment = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
 nObject = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
-if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment)) {
+if ((nSegment < 0) || (nSegment > gameData.segData.nLastSegment)) {
 	Int3 ();
 	return;
 	}
@@ -1907,7 +1907,7 @@ int16_t nSegment = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
 int16_t nObject = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
-if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment)) {
+if ((nSegment < 0) || (nSegment > gameData.segData.nLastSegment)) {
 	Int3 ();
 	return -1;
 	}
@@ -1950,7 +1950,7 @@ void MultiDoPlaySound (uint8_t* buf)
 if (!PLAYER (nPlayer).IsConnected ())
 	return;
 if ((PLAYER (nPlayer).nObject >= 0) &&
-	 (PLAYER (nPlayer).nObject <= gameData.objs.nLastObject [0]))
+	 (PLAYER (nPlayer).nObject <= gameData.objData.nLastObject [0]))
 	audio.CreateObjectSound (nSound, SOUNDCLASS_PLAYER, (int16_t) PLAYER (nPlayer).nObject, 0, volume);
 }
 
@@ -1986,12 +1986,12 @@ if ((nPlayer < 0) || (nPlayer >= N_PLAYERS) || (nPlayer == N_LOCALPLAYER)) {
 	return;
 	}
 uint8_t nTrigger = buf [bufP++];
-if ((nTrigger < 0) || (nTrigger  >= gameData.trigs.m_nTriggers)) {
+if ((nTrigger < 0) || (nTrigger  >= gameData.trigData.m_nTriggers [0])) {
 	Int3 (); // Illegal nTrigger number in multiplayer
 	return;
 	}
 int16_t nObject = (gameStates.multi.nGameType == UDP_GAME) ? GET_INTEL_SHORT (buf + bufP) : PLAYER (nPlayer).nObject;
-CTrigger* trigP = TRIGGER (nTrigger);
+CTrigger* trigP = GEOTRIGGER (nTrigger);
 if (trigP)
 	trigP->Operate (nObject, nPlayer, 0, 0);
 }
@@ -2067,7 +2067,7 @@ CHECK_MSG_ID
 
 int16_t nWall = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
-if ((!IS_WALL (nWall)) || (nWall > gameData.walls.nWalls))
+if ((!IS_WALL (nWall)) || (nWall > gameData.wallData.nWalls))
 	return;
 int16_t hps = GET_INTEL_INT (buf + bufP);
 if (hps < 0)
@@ -2143,7 +2143,7 @@ void MultiResetStuff (void)
 {
 DeadPlayerEnd ();
 LOCALPLAYER.homingObjectDist = -I2X (1); // Turn off homing sound.
-gameData.objs.deadPlayerCamera = 0;
+gameData.objData.deadPlayerCamera = 0;
 gameStates.app.bEndLevelSequence = 0;
 ResetRearView ();
 }
@@ -2155,7 +2155,7 @@ void MultiResetPlayerObject (CObject *objP)
 	int32_t i;
 
 //Init physics for a non-console player
-if (objP > OBJECT (gameData.objs.nLastObject [0]))
+if (objP > OBJECT (gameData.objData.nLastObject [0]))
 	return;
 if ((objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_GHOST))
 	return;
@@ -2740,7 +2740,7 @@ if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME) && (gameStates.app.n
 
 void MultiSendRemoveObject (int32_t nObject)
 {
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
+if ((nObject < 0) || (nObject > gameData.objData.nLastObject [0]))
 	return;
 
 	int8_t	nObjOwner;
@@ -3197,7 +3197,7 @@ for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 	gameData.multigame.robots.agitation [i] = 0;
 	gameData.multigame.robots.fired [i] = 0;
 	}
-gameData.objs.viewerP = gameData.objs.consoleP = OBJECT (LOCALPLAYER.nObject);
+gameData.objData.viewerP = gameData.objData.consoleP = OBJECT (LOCALPLAYER.nObject);
 if (!IsCoopGame)
 	MultiDeleteExtraObjects (); // Removes monsters from level
 if (gameData.app.GameMode (GM_MULTI_ROBOTS))
@@ -3216,7 +3216,7 @@ FORALL_STATIC_OBJS (objP) {
 			ReleaseObject (objP->Index ());
 			if (nObject != -1) {
 				CObject	*objP = OBJECT (nObject);
-				objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].nClipIndex;
+				objP->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [POW_SHIELD_BOOST].nClipIndex;
 				objP->rType.animationInfo.xFrameTime = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
 				objP->rType.animationInfo.nCurFrame = 0;
 				objP->mType.physInfo.drag = 512;     //1024;
@@ -3365,7 +3365,7 @@ if (gameData.app.GameMode (GM_CAPTURE | GM_HOARD | GM_ENTROPY | GM_MONSTERBALL))
 ResetMonsterball (IAmGameHost () != 0);	//will simply delete all Monsterballs for non-Monsterball games
 MultiSortKillList ();
 MultiShowPlayerList ();
-gameData.objs.consoleP->info.controlType = CT_FLYING;
+gameData.objData.consoleP->info.controlType = CT_FLYING;
 ResetPlayerObject ();
 }
 
@@ -3475,7 +3475,7 @@ void MultiApplyGoalTextures ()
 	int32_t		i;
 
 if (!IsEntropyGame || (extraGameInfo [1].entropy.nOverrideTextures == 1))
-	for (i = 0; i <= gameData.segs.nLastSegment; i++)
+	for (i = 0; i <= gameData.segData.nLastSegment; i++)
 		SEGMENT (i)->ChangeTexture (-1);
 }
 
@@ -3488,7 +3488,7 @@ void MultiSetRobotAI (void)
 
 	//      int32_t i;
 	//
-	//      for (i = 0; i <= gameData.objs.nLastObject [0]; i++)
+	//      for (i = 0; i <= gameData.objData.nLastObject [0]; i++)
 	// {
 	//              CObject* objP = OBJECT (i);
 	//              if (objP->IsRobot ()) {
@@ -3845,7 +3845,7 @@ static int32_t fun = 200;
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	tShortPos sp;
 #endif
-CObject *missileP = gameData.objs.GetGuidedMissile (nPlayer);
+CObject *missileP = gameData.objData.GetGuidedMissile (nPlayer);
 
 if (missileP == NULL) {
 	if (++fun >= 50)
@@ -3860,7 +3860,7 @@ if (buf [bufP++]) {
 	return;
 	}
 if ((missileP < OBJECTS.Buffer ()) ||
-		(missileP - OBJECTS > gameData.objs.nLastObject [0])) {
+		(missileP - OBJECTS > gameData.objData.nLastObject [0])) {
 	Int3 ();  // Get Jason immediately!
 	return;
 	}
@@ -3955,7 +3955,7 @@ CHECK_MSG_ID
 int16_t nWall = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
 
-if (nWall >= gameData.walls.nWalls)
+if (nWall >= gameData.wallData.nWalls)
 	return;
 
 CWall& wall = *WALL (nWall);
@@ -4043,7 +4043,7 @@ if (gameData.reactor.bDestroyed) {
 #endif
 countDown = -1;
 gameStates.entropy.bExitSequence = 0;
-for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++)
+for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segData.nLastSegment; i++, segP++)
 	if ((t = (int32_t) segP->m_owner) > 0) {
 		bGotRoom [--t] = 1;
 		if (bGotRoom [!t])
@@ -4063,7 +4063,7 @@ for (h = i = 0; i < N_PLAYERS; i++)
 if ((h  >= extraGameInfo [1].entropy.nCaptureVirusThreshold) && extraGameInfo [1].entropy.nVirusStability)
 	return;
 HUDInitMessage (TXT_WINNING_TEAM, t ? TXT_RED : TXT_BLUE);
-for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++) {
+for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segData.nLastSegment; i++, segP++) {
 	if (segP->m_owner != t + 1)
 		segP->m_owner = t + 1;
 	segP->ChangeTexture (-1);
@@ -4487,9 +4487,9 @@ void MultiSendActiveDoor (int32_t i)
 
 gameData.multigame.msg.buf [0] = MULTI_ACTIVE_DOOR;
 gameData.multigame.msg.buf [1] = i;
-gameData.multigame.msg.buf [2] = gameData.walls.nOpenDoors;
+gameData.multigame.msg.buf [2] = gameData.wallData.nOpenDoors;
 count = 3;
-memcpy (gameData.multigame.msg.buf + 3, gameData.walls.activeDoors + i, sizeof (CActiveDoor);
+memcpy (gameData.multigame.msg.buf + 3, gameData.wallData.activeDoors + i, sizeof (CActiveDoor);
 count += sizeof (CActiveDoor);
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 CActiveDoor *doorP = reinterpret_cast<CActiveDoor*> (gameData.multigame.msg.buf + 3);
@@ -4519,7 +4519,7 @@ doorP->nBackWall [1] = INTEL_SHORT (doorP->nBackWall [1]);
 doorP->time = INTEL_INT (doorP->time);
 #endif //WORDS_BIGENDIAN
 if (!FindActiveDoor (doorP->nFrontWall [0]))
-	gameData.walls.activeDoors.Push (*doorP);
+	gameData.wallData.activeDoors.Push (*doorP);
 }
 
 //-----------------------------------------------------------------------------
@@ -4814,7 +4814,7 @@ if (!LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]) {
 	HUDInitMessage (IsHoardGame ? TXT_NO_ORBS : TXT_NO_VIRUS);
 	return;
 	}
-nObject = SpitPowerup (gameData.objs.consoleP, POW_HOARD_ORB);
+nObject = SpitPowerup (gameData.objData.consoleP, POW_HOARD_ORB);
 if (nObject < 0)
 	return;
 HUDInitMessage (IsHoardGame ? TXT_DROP_ORB : TXT_DROP_VIRUS);
@@ -4845,7 +4845,7 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG)) {
 	}
 HUDInitMessage (TXT_DROP_FLAG);
 audio.PlaySound (SOUND_DROP_WEAPON);
-nObject = SpitPowerup (gameData.objs.consoleP, (uint8_t) ((GetTeam (N_LOCALPLAYER) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG));
+nObject = SpitPowerup (gameData.objData.consoleP, (uint8_t) ((GetTeam (N_LOCALPLAYER) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG));
 if (nObject < 0)
 	return;
 if ((gameData.app.GameMode (GM_CAPTURE)) && (nObject > -1))
@@ -5185,7 +5185,7 @@ void MultiDoStartTrigger (uint8_t* buf)
 
 CHECK_MSG_ID
 
-CTrigger* trigP = TRIGGER ((int32_t) buf [bufP]);
+CTrigger* trigP = GEOTRIGGER ((int32_t) buf [bufP]);
 if (trigP)
 	trigP->m_info.flags |= TF_DISABLED;
 }

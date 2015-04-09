@@ -433,7 +433,7 @@ CSegFace *FindDupFace (int16_t nSegment, int16_t nSide)
 for (i = segFaceP->nFaces, faceP0 = segFaceP->faceP; i; faceP0++, i--)
 	if (faceP0->m_info.nSide == nSide)
 		break;
-for (i = 0, segFaceP = SEGFACES.Buffer (); i < gameData.segs.nSegments; i++, segFaceP++) {
+for (i = 0, segFaceP = SEGFACES.Buffer (); i < gameData.segData.nSegments; i++, segFaceP++) {
 	for (j = segFaceP->nFaces, faceP1 = segFaceP->faceP; j; faceP1++, j--) {
 		if (faceP1 == faceP0)
 			continue;
@@ -452,7 +452,7 @@ void LoadSegmentsCompiled (int16_t nSegment, CFile& cf)
 {
 	int16_t			nLastSeg;
 
-INIT_PROGRESS_LOOP (nSegment, nLastSeg, gameData.segs.nSegments);
+INIT_PROGRESS_LOOP (nSegment, nLastSeg, gameData.segData.nSegments);
 for (; nSegment < nLastSeg; nSegment++) {
 #if DBG
 	if (nSegment == nDbgSeg)
@@ -468,8 +468,8 @@ for (; nSegment < nLastSeg; nSegment++) {
 void LoadExtSegmentsCompiled (CFile& cf)
 {
 gameData.producers.nRepairCenters = 0;
-for (int32_t i = 0; i < gameData.segs.nSegments; i++) {
-	if (gameData.segs.nLevelVersion > 5)
+for (int32_t i = 0; i < gameData.segData.nSegments; i++) {
+	if (gameData.segData.nLevelVersion > 5)
 		SEGMENT (i)->ReadExtras (cf);
 #if DBG
 	if (i == nDbgSeg)
@@ -477,7 +477,7 @@ for (int32_t i = 0; i < gameData.segs.nSegments; i++) {
 #endif
 	}
 // can only process producers after knowing all segment's type producer information!
-for (int32_t i = 0; i < gameData.segs.nSegments; i++) {
+for (int32_t i = 0; i < gameData.segData.nSegments; i++) {
 #if DBG
 	if (i == nDbgSeg)
 		BRP;
@@ -494,13 +494,13 @@ void LoadVertLightsCompiled (int32_t i, CFile& cf)
 
 gameData.render.shadows.nLights = 0;
 if (gameStates.app.bD2XLevel) {
-	INIT_PROGRESS_LOOP (i, j, gameData.segs.nVertices);
+	INIT_PROGRESS_LOOP (i, j, gameData.segData.nVertices);
 	for (; i < j; i++) {
 #if DBG
 		if (i == nDbgVertex)
 			BRP;
 #endif
-		ReadColor (cf, gameData.render.color.ambient + i, gameData.segs.nLevelVersion <= 14, 1);
+		ReadColor (cf, gameData.render.color.ambient + i, gameData.segData.nLevelVersion <= 14, 1);
 		}
 	}
 }
@@ -515,7 +515,7 @@ int32_t HasColoredLight (void)
 if (!gameStates.app.bD2XLevel)
 	return 0;
 // get the default colors
-for (i = 0; i < gameData.segs.nVertices; i++, pvc++) {
+for (i = 0; i < gameData.segData.nVertices; i++, pvc++) {
 #if 0
 	if (pvc->index <= 0)
 		continue;
@@ -557,7 +557,7 @@ void LoadTexColorsCompiled (int32_t i, CFile& cf)
 if (gameStates.app.bD2XLevel) {
 	INIT_PROGRESS_LOOP (i, j, MAX_WALL_TEXTURES);
 	for (; i < j; i++)
-		ReadColor (cf, gameData.render.color.textures + i, gameData.segs.nLevelVersion <= 15,
+		ReadColor (cf, gameData.render.color.textures + i, gameData.segData.nLevelVersion <= 15,
 					  gameStates.render.nLightingMethod);
 	}
 }
@@ -571,10 +571,10 @@ void LoadSideLightsCompiled (int32_t i, CFile& cf)
 
 gameData.render.shadows.nLights = 0;
 if (gameStates.app.bD2XLevel) {
-	INIT_PROGRESS_LOOP (i, j, gameData.segs.nSegments * 6);
+	INIT_PROGRESS_LOOP (i, j, gameData.segData.nSegments * 6);
 	colorP = gameData.render.color.lights + i;
 	for (; i < j; i++, colorP++) {
-		ReadColor (cf, colorP, gameData.segs.nLevelVersion <= 13, 1);
+		ReadColor (cf, colorP, gameData.segData.nLevelVersion <= 13, 1);
 		}
 	}
 }
@@ -589,7 +589,7 @@ void ComputeSegSideCenters (int32_t nSegment)
 	fix			xSideDists [6], xMinDist;
 #endif
 
-INIT_PROGRESS_LOOP (nSegment, j, gameData.segs.nSegments);
+INIT_PROGRESS_LOOP (nSegment, j, gameData.segData.nSegments);
 
 for (i = nSegment * 6, segP = SEGMENT (nSegment); nSegment < j; nSegment++, segP++) {
 	segP->ComputeCenter ();
@@ -620,7 +620,7 @@ void ComputeChildDists (int32_t nSegment)
 {
 	int32_t			j;
 
-INIT_PROGRESS_LOOP (nSegment, j, gameData.segs.nSegments);
+INIT_PROGRESS_LOOP (nSegment, j, gameData.segData.nSegments);
 
 for (; nSegment < j; nSegment++)
 	SEGMENT (nSegment)->ComputeChildDists ();
@@ -641,7 +641,7 @@ if (nState)
 if (loadOp == 0) {
 	LoadSegmentsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
-	if (loadIdx >= gameData.segs.nSegments) {
+	if (loadIdx >= gameData.segData.nSegments) {
 		loadIdx = 0;
 		loadOp = 1;
 		}
@@ -653,7 +653,7 @@ else if (loadOp == 1) {
 else if (loadOp == 2) {
 	ComputeSegSideCenters (loadIdx);
 	loadIdx += PROGRESS_INCR;
-	if (loadIdx >= gameData.segs.nSegments) {
+	if (loadIdx >= gameData.segData.nSegments) {
 		loadIdx = 0;
 		loadOp++;
 		}
@@ -661,7 +661,7 @@ else if (loadOp == 2) {
 else if (loadOp == 3) {
 	ComputeChildDists (loadIdx);
 	loadIdx += PROGRESS_INCR;
-	if (loadIdx >= gameData.segs.nSegments) {
+	if (loadIdx >= gameData.segData.nSegments) {
 		loadIdx = 0;
 		loadOp++;
 		}
@@ -673,7 +673,7 @@ else if (loadOp == 4) {
 else if (loadOp == 5) {
 	LoadVertLightsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
-	if (!gameStates.app.bD2XLevel || (loadIdx >= gameData.segs.nVertices)) {
+	if (!gameStates.app.bD2XLevel || (loadIdx >= gameData.segData.nVertices)) {
 		loadIdx = 0;
 		loadOp++;
 		}
@@ -681,7 +681,7 @@ else if (loadOp == 5) {
 else if (loadOp == 6) {
 	LoadSideLightsCompiled (loadIdx, *mineDataFile);
 	loadIdx += PROGRESS_INCR;
-	if (loadIdx >= (gameStates.app.bD2XLevel ? gameData.segs.nSegments * 6 : gameData.segs.nSegments)) {
+	if (loadIdx >= (gameStates.app.bD2XLevel ? gameData.segData.nSegments * 6 : gameData.segData.nSegments)) {
 		loadIdx = 0;
 		loadOp++;
 		}
@@ -710,14 +710,14 @@ return nCurItem;
 
 int32_t LoadMineGaugeSize (void)
 {
-	int32_t	i = 3 * PROGRESS_STEPS (gameData.segs.nSegments) + 3;
+	int32_t	i = 3 * PROGRESS_STEPS (gameData.segData.nSegments) + 3;
 
 if (gameStates.app.bD2XLevel) {
-	i += PROGRESS_STEPS (gameData.segs.nVertices) + PROGRESS_STEPS (MAX_WALL_TEXTURES);
-	i += PROGRESS_STEPS (gameData.segs.nSegments * 6);
+	i += PROGRESS_STEPS (gameData.segData.nVertices) + PROGRESS_STEPS (MAX_WALL_TEXTURES);
+	i += PROGRESS_STEPS (gameData.segData.nSegments * 6);
 	}
 else {
-	i += PROGRESS_STEPS (gameData.segs.nSegments) + 1;
+	i += PROGRESS_STEPS (gameData.segData.nSegments) + 1;
 	}
 return i;
 }
@@ -740,11 +740,11 @@ int32_t LoadMineSegmentsCompiled (CFile& cf)
 	char*			psz;
 	CFixVector	v;
 
-gameData.segs.vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
-gameData.segs.vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
+gameData.segData.vMin.Set (0x7fffffff, 0x7fffffff, 0x7fffffff);
+gameData.segData.vMax.Set (-0x7fffffff, -0x7fffffff, -0x7fffffff);
 gameStates.render.bColored = 0;
 bD1PigPresent = CFile::Exist (D1_PIGFILE, gameFolders.game.szData [0], 0);
-psz = strchr (gameData.segs.szLevelFilename, '.');
+psz = strchr (gameData.segData.szLevelFilename, '.');
 bNewFileFormat = !psz || strcmp (psz, ".sdl");
 #if TRACE
 uint8_t nCompiledVersion = cf.ReadByte ();
@@ -757,7 +757,7 @@ cf.ReadByte ();
 nVertices = bNewFileFormat ? cf.ReadShort () : cf.ReadInt ();
 Assert (nVertices <= MAX_VERTICES);
 #if TRACE
-console.printf (CON_DBG, "   %d vertices\n", gameData.segs.nVertices);
+console.printf (CON_DBG, "   %d vertices\n", gameData.segData.nVertices);
 #endif
 nSegments = bNewFileFormat ? cf.ReadShort () : cf.ReadInt ();
 if (nSegments > MAX_SEGMENTS) {
@@ -767,38 +767,38 @@ if (nSegments > MAX_SEGMENTS) {
 if (!InitGame (nSegments, nVertices))
 	return -1;
 #if TRACE
-console.printf (CON_DBG, "   %d segments\n", gameData.segs.nSegments);
+console.printf (CON_DBG, "   %d segments\n", gameData.segData.nSegments);
 #endif
-for (i = 0; i < gameData.segs.nVertices; i++) {
+for (i = 0; i < gameData.segData.nVertices; i++) {
 	cf.ReadVector (v);
-	gameData.segs.vertices [i] = v;
+	gameData.segData.vertices [i] = v;
 #if !FLOAT_COORD
-	gameData.segs.fVertices [i].Assign (v);
+	gameData.segData.fVertices [i].Assign (v);
 #endif
-	if (gameData.segs.vMin.v.coord.x > v.v.coord.x)
-		gameData.segs.vMin.v.coord.x = v.v.coord.x;
-	if (gameData.segs.vMin.v.coord.y > v.v.coord.y)
-		gameData.segs.vMin.v.coord.y = v.v.coord.y;
-	if (gameData.segs.vMin.v.coord.z > v.v.coord.z)
-		gameData.segs.vMin.v.coord.z = v.v.coord.z;
-	if (gameData.segs.vMax.v.coord.x < v.v.coord.x)
-		gameData.segs.vMax.v.coord.x = v.v.coord.x;
-	if (gameData.segs.vMax.v.coord.y < v.v.coord.y)
-		gameData.segs.vMax.v.coord.y = v.v.coord.y;
-	if (gameData.segs.vMax.v.coord.z < v.v.coord.z)
-		gameData.segs.vMax.v.coord.z = v.v.coord.z;
+	if (gameData.segData.vMin.v.coord.x > v.v.coord.x)
+		gameData.segData.vMin.v.coord.x = v.v.coord.x;
+	if (gameData.segData.vMin.v.coord.y > v.v.coord.y)
+		gameData.segData.vMin.v.coord.y = v.v.coord.y;
+	if (gameData.segData.vMin.v.coord.z > v.v.coord.z)
+		gameData.segData.vMin.v.coord.z = v.v.coord.z;
+	if (gameData.segData.vMax.v.coord.x < v.v.coord.x)
+		gameData.segData.vMax.v.coord.x = v.v.coord.x;
+	if (gameData.segData.vMax.v.coord.y < v.v.coord.y)
+		gameData.segData.vMax.v.coord.y = v.v.coord.y;
+	if (gameData.segData.vMax.v.coord.z < v.v.coord.z)
+		gameData.segData.vMax.v.coord.z = v.v.coord.z;
 	}
 
-gameData.segs.xDistScale = X2I (CFixVector::Dist (gameData.segs.vMin, gameData.segs.vMax));
-if (!gameData.segs.xDistScale)
-	gameData.segs.xDistScale = 1;
+gameData.segData.xDistScale = X2I (CFixVector::Dist (gameData.segData.vMin, gameData.segData.vMax));
+if (!gameData.segData.xDistScale)
+	gameData.segData.xDistScale = 1;
 
 SEGMENTS.Clear ();
 #if TRACE
 console.printf (CON_DBG, "   loading segments ...\n");
 #endif
-gameData.segs.nLastVertex = gameData.segs.nVertices - 1;
-gameData.segs.nLastSegment = gameData.segs.nSegments - 1;
+gameData.segData.nLastVertex = gameData.segData.nVertices - 1;
+gameData.segData.nLastSegment = gameData.segData.nSegments - 1;
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
 	LoadSegmentsGauge (cf);
 else {
@@ -811,9 +811,9 @@ else {
 	ComputeSegSideCenters (-1);
 	ComputeChildDists (-1);
 	}
-gameData.segs.BuildGrid (40, 0);
-gameData.segs.BuildGrid (80, 1);
-gameData.segs.fRad = X2F (CFixVector::Dist (gameData.segs.vMax, gameData.segs.vMin));
+gameData.segData.BuildGrid (40, 0);
+gameData.segData.BuildGrid (80, 1);
+gameData.segData.fRad = X2F (CFixVector::Dist (gameData.segData.vMax, gameData.segData.vMin));
 ResetObjects (1);		//one CObject, the player
 return 0;
 }

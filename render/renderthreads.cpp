@@ -135,11 +135,11 @@ do {
 		gameData.render.mine.visibility [nId].InitZRef (nStart, nEnd, nId);
 		}
 	else if (tiRender.nTask == rtStaticVertLight) {
-		ComputeThreadRange (nId, gameData.segs.nVertices, nStart, nEnd);
+		ComputeThreadRange (nId, gameData.segData.nVertices, nStart, nEnd);
 		lightManager.GatherStaticVertexLights (nStart, nEnd, nId);
 		}
 	else if (tiRender.nTask == rtComputeFaceLight) {
-		if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.visibility [0].nSegments < gameData.segs.nSegments)) {
+		if (gameStates.render.bTriangleMesh || !gameStates.render.bApplyDynLight || (gameData.render.mine.visibility [0].nSegments < gameData.segData.nSegments)) {
 			// special handling: 
 			// tiMiddle is the index at which an equal number of visible faces is both at indices below and above it
 			// use it to balance thread load
@@ -163,7 +163,7 @@ do {
 			if (gameStates.app.bEndLevelSequence < EL_OUTSIDE) 
 				ComputeThreadRange (nId, FACES.nFaces, nStart, nEnd);
 			else 
-				ComputeThreadRange (nId, gameData.segs.nSegments, nStart, nEnd);
+				ComputeThreadRange (nId, gameData.segData.nSegments, nStart, nEnd);
 			ComputeFaceLight (nStart, nEnd, nId);
 			}
 		}

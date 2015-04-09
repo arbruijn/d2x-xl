@@ -927,7 +927,7 @@ int32_t ComputeObjectHitpoint (CHitData& hitData, CHitQuery &hitQuery)
 
 nObjSegList [0] = hitQuery.nSegment;
 #	if DBG
-if ((thisObjP->info.nType == OBJ_WEAPON) && (thisObjP->info.nSegment == gameData.objs.consoleP->info.nSegment))
+if ((thisObjP->info.nType == OBJ_WEAPON) && (thisObjP->info.nSegment == gameData.objData.consoleP->info.nSegment))
 	hitQuery.flags = hitQuery.flags;
 if (hitQuery.nSegment == nDbgSeg)
 	BRP;
@@ -955,7 +955,7 @@ restart:
 #endif
 	if (nSegment == nDbgSeg)
 		BRP;
-	int16_t nSegObjs = gameData.objs.nObjects;
+	int16_t nSegObjs = gameData.objData.nObjects;
 	int16_t nFirstObj = SEGMENT (nSegment)->m_objects;
 	for (int16_t nObject = nFirstObj; nObject != -1; nObject = otherObjP->info.nNextInSeg, nSegObjs--) {
 		otherObjP = OBJECT (nObject);
@@ -981,8 +981,8 @@ restart:
 		if (LasersAreRelated (nObject, hitQuery.nObject))
 			continue;
 		if (hitQuery.nObject > -1) {
-			if ((gameData.objs.collisionResult [nThisType][nOtherType] == RESULT_NOTHING) &&
-				 (gameData.objs.collisionResult [nOtherType][nThisType] == RESULT_NOTHING))
+			if ((gameData.objData.collisionResult [nThisType][nOtherType] == RESULT_NOTHING) &&
+				 (gameData.objData.collisionResult [nOtherType][nThisType] == RESULT_NOTHING))
 				continue;
 			}
 		int32_t nFudgedRad = hitQuery.radP1;
@@ -1056,7 +1056,7 @@ if (nChildSeg < 0)
 	return 0;
 CSegment* childSegP = SEGMENT (nChildSeg);
 if (childSegP->HasBlockedProp () ||
-    (gameData.objs.speedBoost [nObject].bBoosted && ((segP->m_function != SEGMENT_FUNC_SPEEDBOOST) || (childSegP->m_function == SEGMENT_FUNC_SPEEDBOOST))))
+    (gameData.objData.speedBoost [nObject].bBoosted && ((segP->m_function != SEGMENT_FUNC_SPEEDBOOST) || (childSegP->m_function == SEGMENT_FUNC_SPEEDBOOST))))
 	return 1;
 
 return 0;
@@ -1105,7 +1105,7 @@ if (hitQuery.flags & FQ_CHECK_OBJS) {
 #endif
 
 CSegment* segP = SEGMENT (hitQuery.nSegment);
-if ((hitQuery.nObject > -1) && (gameData.objs.collisionResult [OBJECT (hitQuery.nObject)->info.nType][OBJ_WALL] == RESULT_NOTHING))
+if ((hitQuery.nObject > -1) && (gameData.objData.collisionResult [OBJECT (hitQuery.nObject)->info.nType][OBJ_WALL] == RESULT_NOTHING))
 	hitQuery.radP1 = 0;		//HACK - ignore when edges hit walls
 //now, check segment walls
 #if DBG
@@ -1265,7 +1265,7 @@ int32_t FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult)
 gameData.collisions.hitResult.nAltSegment = -1;
 gameData.collisions.hitResult.vNormal.SetZero ();
 gameData.collisions.hitResult.nNormals = 0;
-if ((hitQuery.nSegment > gameData.segs.nLastSegment) || (hitQuery.nSegment < 0)) {
+if ((hitQuery.nSegment > gameData.segData.nLastSegment) || (hitQuery.nSegment < 0)) {
 	hitQuery.nSegment = FindSegByPos (*hitQuery.p0, -1, 1, 0);
 	if (hitQuery.nSegment < 0) {
 		hitResult.nType = HIT_BAD_P0;
@@ -1286,7 +1286,7 @@ gameData.collisions.hitResult.nObject = -1;
 //check to make sure start refP is in seg its supposed to be in
 //Assert(check_point_in_seg(p0, startseg, 0).m_center==0);	//start refP not in seg
 
-// gameData.objs.viewerP is not in CSegment as claimed, so say there is no hit.
+// gameData.objData.viewerP is not in CSegment as claimed, so say there is no hit.
 CSegMasks masks = SEGMENT (hitQuery.nSegment)->Masks (*hitQuery.p0, 0);
 if (masks.m_center) {
 	hitQuery.nSegment = FindSegByPos (*hitQuery.p0, -1, 1, 0);
@@ -1308,10 +1308,10 @@ if (hitQuery.flags & FQ_VISIBILITY)
 	extraGameInfo [IsMultiGame].nHitboxes = 0;
 ComputeHitpoint (curHit, hitQuery, hitResult.segList, &hitResult.nSegments, -2);
 #if 1 //DBG
-if (curHit.nSegment >= gameData.segs.nSegments) {
+if (curHit.nSegment >= gameData.segData.nSegments) {
 	PrintLog (0, "Invalid hit segment in collision detection\n");
 	ComputeHitpoint (curHit, hitQuery, hitResult.segList, &hitResult.nSegments, -2);
-	if (curHit.nSegment > gameData.segs.nSegments) 
+	if (curHit.nSegment > gameData.segData.nSegments) 
 		curHit.nSegment = -1;
 	}
 #endif
@@ -1435,11 +1435,11 @@ int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, i
 
 if (!nDepth) {
 #if 0
-	memset (bVisited, 0, gameData.segs.nSegments * sizeof (*bVisited));
+	memset (bVisited, 0, gameData.segData.nSegments * sizeof (*bVisited));
 #else
 	if (!++segVisFlags [nThread]) {
 		++segVisFlags [nThread];
-		memset (bVisited, 0, gameData.segs.nSegments * sizeof (*bVisited));
+		memset (bVisited, 0, gameData.segData.nSegments * sizeof (*bVisited));
 		}
 #endif
 	}

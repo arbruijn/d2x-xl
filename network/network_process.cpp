@@ -43,7 +43,7 @@ void NetworkProcessMonitorVector (int32_t vector)
 	CSegment	*segP = SEGMENTS.Buffer ();
 	CSide		*sideP;
 
-for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
+for (i = 0; i <= gameData.segData.nLastSegment; i++, segP++) {
 	for (j = 0, sideP = segP->m_sides; j < SEGMENT_SIDE_COUNT; j++, sideP++) {
 		if (!sideP->FaceCount ())
 			continue;

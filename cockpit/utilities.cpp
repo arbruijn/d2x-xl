@@ -111,7 +111,7 @@ void CGenericCockpit::CheckForExtraLife (int32_t nPrevScore)
 if (LOCALPLAYER.score / EXTRA_SHIP_SCORE != nPrevScore / EXTRA_SHIP_SCORE) {
 	LOCALPLAYER.lives += LOCALPLAYER.score / EXTRA_SHIP_SCORE - nPrevScore / EXTRA_SHIP_SCORE;
 	PowerupBasic (20, 20, 20, 0, TXT_EXTRA_LIFE);
-	int16_t nSound = gameData.objs.pwrUp.info [POW_EXTRA_LIFE].hitSound;
+	int16_t nSound = gameData.objData.pwrUp.info [POW_EXTRA_LIFE].hitSound;
 	if (nSound > -1)
 		audio.PlaySound (nSound);
 	}
@@ -182,10 +182,10 @@ if (nObject < 0)
 	return 0;
 
 	CHitQuery hitQuery ((bCheckObjs ? FQ_VISIBILITY | FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_VISIBILITY | FQ_TRANSWALL),
-							  &gameData.objs.viewerP->info.position.vPos,
+							  &gameData.objData.viewerP->info.position.vPos,
 							  &OBJECT (nObject)->info.position.vPos,
-							  gameData.objs.viewerP->info.nSegment,
-							  gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP),
+							  gameData.objData.viewerP->info.nSegment,
+							  gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objData.viewerP),
 							  0, 0,
 							  ++gameData.physics.bIgnoreObjFlag
 							 );

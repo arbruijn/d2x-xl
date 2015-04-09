@@ -142,10 +142,10 @@ return nHitType != HIT_WALL;
 int32_t CanSeeObject (int32_t nObject, int32_t bCheckObjs)
 {
 	CHitQuery	hitQuery (bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL,
-								 &gameData.objs.viewerP->info.position.vPos,
+								 &gameData.objData.viewerP->info.position.vPos,
 								 &OBJECT (nObject)->info.position.vPos,
-								 gameData.objs.viewerP->info.nSegment,
-								 gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objs.viewerP),
+								 gameData.objData.viewerP->info.nSegment,
+								 gameStates.render.cameras.bActive ? -1 : OBJ_IDX (gameData.objData.viewerP),
 								 0, 0,
 								 ++gameData.physics.bIgnoreObjFlag
 								);
@@ -182,7 +182,7 @@ do {
 		}
 	else
 		hitQuery.nSegment	= bSpectate ? gameStates.app.nPlayerSegment : objP1->info.nSegment;
-	fate = gameData.segs.SegVis (hitQuery.nSegment, objP2->Segment ()) ? FindHitpoint (hitQuery, hitResult) : HIT_WALL;
+	fate = gameData.segData.SegVis (hitQuery.nSegment, objP2->Segment ()) ? FindHitpoint (hitQuery, hitResult) : HIT_WALL;
 	}
 while ((fate == HIT_BAD_P0) && (nTries < 2));
 return (fate == HIT_NONE) || (fate == HIT_BAD_P0) || ((fate == HIT_OBJECT) && (hitResult.nObject == objP2->Index ()));
@@ -201,12 +201,12 @@ return 0;
 
 	//see if we can see this CPlayerData
 
-CFixVector vEndPos = gameData.objs.viewerP->info.position.vPos + gameData.objs.viewerP->info.position.mOrient.m.dir.f * I2X (2000);
+CFixVector vEndPos = gameData.objData.viewerP->info.position.vPos + gameData.objData.viewerP->info.position.mOrient.m.dir.f * I2X (2000);
 CHitQuery hitQuery (FQ_CHECK_OBJS | FQ_VISIBLE_OBJS | FQ_IGNORE_POWERUPS | FQ_TRANSWALL | FQ_VISIBILITY,
-						  &gameData.objs.viewerP->info.position.vPos,
+						  &gameData.objData.viewerP->info.position.vPos,
 						  &vEndPos,
-						  gameData.objs.viewerP->info.nSegment,
-						  OBJ_IDX (gameData.objs.viewerP),
+						  gameData.objData.viewerP->info.nSegment,
+						  OBJ_IDX (gameData.objData.viewerP),
 						  0, 0,
 						  ++gameData.physics.bIgnoreObjFlag
 						  );
@@ -226,7 +226,7 @@ if (IsCoopGame)
 	return 0;
 if (!IsTeamGame)
 	return 1;
-return GetTeam (gameData.objs.consoleP->info.nId) != GetTeam (objP->info.nId);
+return GetTeam (gameData.objData.consoleP->info.nId) != GetTeam (objP->info.nId);
 #endif
 }
 

@@ -278,7 +278,7 @@ FORALL_OBJS (objP) {
 		//	Hack!Warning!Test code!
 		if (flash && (objP->info.nId == N_LOCALPLAYER)) {
 			int32_t fe = Min (I2X (4), force * flash / 32);	//	For four seconds or less
-			if (parentP->cType.laserInfo.parent.nSignature == gameData.objs.consoleP->info.nSignature) {
+			if (parentP->cType.laserInfo.parent.nSignature == gameData.objData.consoleP->info.nSignature) {
 				fe /= 2;
 				force /= 2;
 				}
@@ -296,7 +296,7 @@ FORALL_OBJS (objP) {
 		vRotForce = vForce;
 		if (nParent > -1) {
 			killerP = OBJECT (nParent);
-			if (killerP != gameData.objs.consoleP)	{	// if someone else whacks you, cut force by 2x
+			if (killerP != gameData.objData.consoleP)	{	// if someone else whacks you, cut force by 2x
 				vRotForce.v.coord.x /= 2;
 				vRotForce.v.coord.y /= 2;
 				vRotForce.v.coord.z /= 2;
@@ -490,7 +490,7 @@ CObject* CObject::CreateDebris (int32_t nSubObj)
 
 Assert ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER));
 nObject = ::CreateDebris (this, nSubObj);
-if ((nObject < 0) && (gameData.objs.nLastObject [0] >= LEVEL_OBJECTS - 1)) {
+if ((nObject < 0) && (gameData.objData.nLastObject [0] >= LEVEL_OBJECTS - 1)) {
 #if TRACE
 	console.printf (1, "Can't create object in ObjectCreateDebris.\n");
 #endif
@@ -672,7 +672,7 @@ if (info.renderType == RT_SHRAPNELS) {
 	}
 
 if (m_xMoveTime) {
-	CFixVector vOffset = gameData.objs.viewerP->Position () - Origin ();
+	CFixVector vOffset = gameData.objData.viewerP->Position () - Origin ();
 	CFixVector::Normalize (vOffset);
 	fix xOffset = fix (m_xMoveDist * double (m_xMoveTime - info.xLifeLeft) / double (m_xMoveTime));
 	vOffset *= xOffset;
@@ -686,7 +686,7 @@ if ((info.xLifeLeft <= cType.explInfo.nSpawnTime) && (cType.explInfo.nDestroyedO
 	fix			xSplashDamage;
 
 	if ((cType.explInfo.nDestroyedObj < 0) ||
-		 (cType.explInfo.nDestroyedObj > gameData.objs.nLastObject [0])) {
+		 (cType.explInfo.nDestroyedObj > gameData.objData.nLastObject [0])) {
 #if TRACE
 		console.printf (CON_DBG, "Warning: Illegal value for nDestroyedObj in fireball.c\n");
 #endif

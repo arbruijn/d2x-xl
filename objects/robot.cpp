@@ -39,7 +39,7 @@ int32_t CalcGunPoint (CFixVector *vGunPoint, CObject *objP, int32_t nGun)
 	int32_t		nSubModel;				//submodel number
 
 Assert(objP->info.renderType == RT_POLYOBJ || objP->info.renderType == RT_MORPH);
-//Assert(objP->info.nId < gameData.bots.nTypes [gameStates.app.bD1Data]);
+//Assert(objP->info.nId < gameData.botData.nTypes [gameStates.app.bD1Data]);
 
 botInfoP = ROBOTINFO (objP);
 if (!(vGunPoints = GetGunPoints (objP, nGun)))
@@ -71,7 +71,7 @@ int32_t RobotGetAnimState (tJointPos **jointPosP, int32_t robotType, int32_t nGu
 if (nJoints <= 0)
 	memset (jointPosP, 0, sizeof (*jointPosP));
 else
-	*jointPosP = &gameData.bots.joints [ROBOTINFO (robotType)->animStates [nGun][state].offset];
+	*jointPosP = &gameData.botData.joints [ROBOTINFO (robotType)->animStates [nGun][state].offset];
 return nJoints;
 }
 
@@ -90,8 +90,8 @@ for (g = 0; g < ri->nGuns + 1; g++) {
 	jl = &ri->animStates [g][state];
 	jo = jl->offset;
 	for (j = 0; j < jl->n_joints; j++, jo++) {
-		int32_t jn = gameData.bots.joints [jo].jointnum;
-		objP->rType.polyObjInfo.animAngles [jn] = gameData.bots.joints [jo].angles;
+		int32_t jn = gameData.botData.joints [jo].jointnum;
+		objP->rType.polyObjInfo.animAngles [jn] = gameData.botData.joints [jo].angles;
 		}
 	}
 }
@@ -119,14 +119,14 @@ for (g = 0; g < botInfoP->nGuns; g++) {
 for (g = 0; g < botInfoP->nGuns + 1; g++) {
 	for (state = 0; state < N_ANIM_STATES; state++) {
 		botInfoP->animStates [g][state].n_joints = 0;
-		botInfoP->animStates [g][state].offset = gameData.bots.nJoints;
+		botInfoP->animStates [g][state].offset = gameData.botData.nJoints;
 		for (m = 0; m < modelP->ModelCount (); m++) {
 			if (nGunCounts [m] == g) {
-				gameData.bots.joints [gameData.bots.nJoints].jointnum = m;
-				gameData.bots.joints [gameData.bots.nJoints].angles = angs [state][m];
+				gameData.botData.joints [gameData.botData.nJoints].jointnum = m;
+				gameData.botData.joints [gameData.botData.nJoints].angles = angs [state][m];
 				botInfoP->animStates [g][state].n_joints++;
-				gameData.bots.nJoints++;
-				Assert(gameData.bots.nJoints < MAX_ROBOT_JOINTS);
+				gameData.botData.nJoints++;
+				Assert(gameData.botData.nJoints < MAX_ROBOT_JOINTS);
 				}
 			}
 		}
@@ -137,12 +137,12 @@ for (g = 0; g < botInfoP->nGuns + 1; g++) {
 
 void InitCamBots (int32_t bReset)
 {
-	tRobotInfo&	camBotInfo = gameData.bots.info [0][gameData.bots.nCamBotId];
+	tRobotInfo&	camBotInfo = gameData.botData.info [0][gameData.botData.nCamBotId];
 	CObject*		objP;
 
-if ((gameData.bots.nCamBotId < 0) || gameStates.app.bD1Mission)
+if ((gameData.botData.nCamBotId < 0) || gameStates.app.bD1Mission)
 	return;
-camBotInfo.nModel = gameData.bots.nCamBotModel;
+camBotInfo.nModel = gameData.botData.nCamBotModel;
 camBotInfo.attackType = 0;
 camBotInfo.containsId = 0;
 camBotInfo.containsCount = 0;
@@ -164,12 +164,12 @@ memset (camBotInfo.circleDistance, 0, sizeof (camBotInfo.circleDistance));
 memset (camBotInfo.nRapidFireCount, 0, sizeof (camBotInfo.nRapidFireCount));
 FORALL_STATIC_OBJS (objP) 
 	if (objP->info.nType == OBJ_CAMBOT) {
-		objP->info.nId	= gameData.bots.nCamBotId;
+		objP->info.nId	= gameData.botData.nCamBotId;
 		objP->AdjustSize ();
 		objP->SetLife (IMMORTAL_TIME);
 		objP->info.controlType = CT_CAMERA;
 		objP->info.movementType = MT_NONE;
-		objP->rType.polyObjInfo.nModel = gameData.bots.nCamBotModel;
+		objP->rType.polyObjInfo.nModel = gameData.botData.nCamBotModel;
 		gameData.ai.localInfo [objP->Index ()].mode = AIM_IDLING;
 		}
 	else if (objP->info.nType == OBJ_EFFECT) {
@@ -184,9 +184,9 @@ FORALL_STATIC_OBJS (objP)
 
 void UnloadCamBot (void)
 {
-if (gameData.bots.nCamBotId >= 0) {
-	gameData.bots.nTypes [0] = gameData.bots.nCamBotId;
-	gameData.bots.nCamBotId = -1;
+if (gameData.botData.nCamBotId >= 0) {
+	gameData.botData.nTypes [0] = gameData.botData.nCamBotId;
+	gameData.botData.nCamBotId = -1;
 	}
 }
 

@@ -67,10 +67,10 @@ objP->mType.physInfo.velocity = newVelocity;
 objP->mType.physInfo.drag = 512;	//1024;
 objP->mType.physInfo.mass = I2X (1);
 objP->mType.physInfo.flags = PF_BOUNCES;
-objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+objP->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [objP->info.nId].nClipIndex;
 objP->rType.animationInfo.xFrameTime = gameData.effects.vClipP [objP->rType.animationInfo.nClipIndex].xFrameTime;
 objP->rType.animationInfo.nCurFrame = 0;
-if (spitterP == gameData.objs.consoleP)
+if (spitterP == gameData.objData.consoleP)
 	objP->cType.powerupInfo.nFlags |= PF_SPAT_BY_PLAYER;
 switch (objP->info.nId) {
 	case POW_CONCUSSION_1:
@@ -109,7 +109,7 @@ if (IsMultiGame)
 if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 	if ((LOCALPLAYER.flags & PLAYER_FLAGS_QUAD_LASERS) && !IsBuiltInDevice (PLAYER_FLAGS_QUAD_LASERS)) {
 		LOCALPLAYER.flags &= ~PLAYER_FLAGS_QUAD_LASERS;
-		nObject = SpitPowerup (gameData.objs.consoleP, POW_QUADLASER);
+		nObject = SpitPowerup (gameData.objData.consoleP, POW_QUADLASER);
 		if (nObject < 0) {
 			LOCALPLAYER.flags |= PLAYER_FLAGS_QUAD_LASERS;
 			return;
@@ -117,7 +117,7 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 		HUDInitMessage(TXT_DROP_QLASER);
 		}
 	else if (!IsBuiltinWeapon (SUPER_LASER_INDEX) && LOCALPLAYER.DropSuperLaser ()) {
-		nObject = SpitPowerup (gameData.objs.consoleP, POW_SUPERLASER);
+		nObject = SpitPowerup (gameData.objData.consoleP, POW_SUPERLASER);
 		if (nObject < 0) {
 			LOCALPLAYER.AddSuperLaser ();
 			return;
@@ -125,7 +125,7 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 		HUDInitMessage (TXT_DROP_SLASER);
 		}
 	else if (!IsBuiltinWeapon (SUPER_LASER_INDEX) && LOCALPLAYER.DropStandardLaser ()) {
-		nObject = SpitPowerup (gameData.objs.consoleP, POW_LASER);
+		nObject = SpitPowerup (gameData.objData.consoleP, POW_LASER);
 		if (nObject < 0) {
 			LOCALPLAYER.AddStandardLaser ();
 			return;
@@ -136,11 +136,11 @@ if (gameData.weapons.nPrimary == 0) {	//special laser drop handling
 else {
 	if ((gameData.weapons.nPrimary == 4) && gameData.weapons.bTripleFusion) {
 		gameData.weapons.bTripleFusion = 0;
-		nObject = SpitPowerup (gameData.objs.consoleP, primaryWeaponToPowerup [gameData.weapons.nPrimary]);
+		nObject = SpitPowerup (gameData.objData.consoleP, primaryWeaponToPowerup [gameData.weapons.nPrimary]);
 		}
 	else if (gameData.weapons.nPrimary && !IsBuiltinWeapon (gameData.weapons.nPrimary)) { //if selected weapon was not the laser
 		LOCALPLAYER.primaryWeaponFlags &= (~(1 << gameData.weapons.nPrimary));
-		nObject = SpitPowerup (gameData.objs.consoleP, primaryWeaponToPowerup [gameData.weapons.nPrimary]);
+		nObject = SpitPowerup (gameData.objData.consoleP, primaryWeaponToPowerup [gameData.weapons.nPrimary]);
 		}
 	if (nObject < 0) {	// couldn't drop
 		if (gameData.weapons.nPrimary) 	//if selected weapon was not the laser
@@ -210,7 +210,7 @@ else {
 	}
 
 for (int32_t i = 0; i < nItems; i++) {
-	int32_t nObject = SpitPowerup (gameData.objs.consoleP, nPowerup);
+	int32_t nObject = SpitPowerup (gameData.objData.consoleP, nPowerup);
 	if (nObject == -1) { // can't put any more objects in the mine
 		if (bMine)
 			LOCALPLAYER.secondaryAmmo [nWeapon] += 4;

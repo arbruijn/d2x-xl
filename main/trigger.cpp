@@ -100,18 +100,18 @@ void CTriggerTargets::Check (void)
 
 if (m_nLinks > MAX_TRIGGER_TARGETS) {
 	m_nLinks = MAX_TRIGGER_TARGETS;
-	PrintLog (0, "Invalid trigger target count (trigger #%d)\n", (CTrigger *) this - gameData.trigs.triggers.Buffer ());
+	PrintLog (0, "Invalid trigger target count (trigger #%d)\n", (CTrigger *) this - gameData.trigData.triggers [0].Buffer ());
 	}
 for (i = j = 0; i < m_nLinks; i++) {
 	if (m_sides [i] >= 0) {
-		if ((m_segments [i] < 0) || (m_segments [i] >= gameData.segs.nSegments) || (m_sides [i] < 0) || (m_sides [i] > 5)) {
-			PrintLog (0, "Invalid trigger target (trigger #%d, target %d)\n", (CTrigger *) this - gameData.trigs.triggers.Buffer (), i);
+		if ((m_segments [i] < 0) || (m_segments [i] >= gameData.segData.nSegments) || (m_sides [i] < 0) || (m_sides [i] > 5)) {
+			PrintLog (0, "Invalid trigger target (trigger #%d, target %d)\n", (CTrigger *) this - gameData.trigData.triggers [0].Buffer (), i);
 			continue;
 			}
 		}
 	else {
-		if ((m_segments [i] < 0) || (m_segments [i] >= gameData.objs.nObjects)) {
-			PrintLog (0, "Invalid trigger target (trigger #%d, target %d)\n", (CTrigger *) this - gameData.trigs.triggers.Buffer (), i);
+		if ((m_segments [i] < 0) || (m_segments [i] >= gameData.objData.nObjects)) {
+			PrintLog (0, "Invalid trigger target (trigger #%d, target %d)\n", (CTrigger *) this - gameData.trigData.triggers [0].Buffer (), i);
 			continue;
 			}
 		}
@@ -323,8 +323,8 @@ return false;
 // Return trigger number if door is controlled by a Wall switch, else return -1.
 int32_t DoorSwitch (int32_t nWall)
 {
-for (int32_t i = 0; i < gameData.trigs.m_nTriggers; i++) {
-	CTrigger* trigP = TRIGGER (i);
+for (int32_t i = 0; i < gameData.trigData.m_nTriggers [0]; i++) {
+	CTrigger* trigP = GEOTRIGGER (i);
 	if (trigP && trigP->TargetsWall (nWall))
 		return i;
 	}
@@ -335,7 +335,7 @@ return -1;
 
 void FlagTriggeredDoors (void)
 {
-for (int32_t i = 0; i < gameData.walls.nWalls; i++)
+for (int32_t i = 0; i < gameData.wallData.nWalls; i++)
 	if (DoorSwitch (i) >= 0)
 		WALL (i)->SetFlags (WALL_WALL_SWITCH);
 }
@@ -383,7 +383,7 @@ int32_t CTrigger::DoMasterTrigger (int16_t nObject, int32_t nPlayer, bool bObjTr
 
 for (int32_t i = 0; i < m_nLinks; i++) {
 #if DBG
-	if ((m_segments [i] < 0) || (m_segments [i] >= gameData.segs.nSegments))
+	if ((m_segments [i] < 0) || (m_segments [i] >= gameData.segData.nSegments))
 		continue;
 #endif
 	if ((trigP = SEGMENT (m_segments [i])->Trigger (m_sides [i])))
@@ -553,10 +553,10 @@ int32_t CTrigger::DoChangeWalls (void)
 	bool			bForceField;
 
 for (int32_t i = 0; i < m_nLinks; i++) {
-	if ((m_segments [i] < 0) || (m_segments [i] >= gameData.segs.nSegments)) {
+	if ((m_segments [i] < 0) || (m_segments [i] >= gameData.segData.nSegments)) {
 		PrintLog (0, "%s trigger %d has invalid target segment\n", 
-					 gameData.trigs.triggers.IsElement (this) ? "Standard" : "Object", 
-					 gameData.trigs.triggers.IsElement (this) ? gameData.trigs.triggers.Index (this) : gameData.trigs.objTriggers.Index (this));
+					 gameData.trigData.triggers [0].IsElement (this) ? "Standard" : "Object", 
+					 gameData.trigData.triggers [0].IsElement (this) ? gameData.trigData.triggers [0].Index (this) : gameData.trigData.triggers [1].Index (this));
 		continue;
 		}
 	if (!(segP = SEGMENT (m_segments [i])))
@@ -818,7 +818,7 @@ if ((nObject >= 0) && (m_nLinks > 0)) {
 
 CWall* TriggerParentWall (int16_t nTrigger)
 {
-for (int32_t i = 0; i < gameData.walls.nWalls; i++)
+for (int32_t i = 0; i < gameData.wallData.nWalls; i++)
 	if (WALL (i)->nTrigger == nTrigger)
 		return WALL (i);
 return NULL;
@@ -837,7 +837,7 @@ void SetSpeedBoostVelocity (int16_t nObject, fix speed,
 	CFixVector			n, h;
 	CObject				*objP = OBJECT (nObject);
 	int32_t					v;
-	tSpeedBoostData	sbd = gameData.objs.speedBoost [nObject];
+	tSpeedBoostData	sbd = gameData.objData.speedBoost [nObject];
 
 if (speed < 0)
 	speed = speedBoostSpeed;
@@ -938,7 +938,7 @@ if (sbd.bBoosted) {
 		TriggerSetObjOrient (nObject, destSegnum, destSidenum, 0, -1);
 		gameStates.gameplay.nDirSteps = MAX_ORIENT_STEPS - 1;
 		}
-	gameData.objs.speedBoost [nObject] = sbd;
+	gameData.objData.speedBoost [nObject] = sbd;
 	}
 else {
 	objP->mType.physInfo.velocity.v.coord.x = objP->mType.physInfo.velocity.v.coord.x / v * 60;
@@ -959,7 +959,7 @@ if (gameStates.app.tick40fps.bTick && gameStates.gameplay.nDirSteps)
 
 void CTrigger::StopSpeedBoost (int16_t nObject)
 {
-gameData.objs.speedBoost [nObject].bBoosted = 0;
+gameData.objData.speedBoost [nObject].bBoosted = 0;
 SetSpeedBoostVelocity ((int16_t) nObject, -1, -1, -1, -1, -1, NULL, NULL, 0);
 }
 
@@ -969,7 +969,7 @@ void CTrigger::DoSpeedBoost (int16_t nObject)
 {
 if (!(COMPETITION /*|| IsCoopGame*/) || extraGameInfo [IsMultiGame].nSpeedBoost) {
 	CWall* wallP = TriggerParentWall (Index ());
-	gameData.objs.speedBoost [nObject].bBoosted = (GetValue () && (m_nLinks > 0));
+	gameData.objData.speedBoost [nObject].bBoosted = (GetValue () && (m_nLinks > 0));
 	SetSpeedBoostVelocity ((int16_t) nObject, GetValue (),
 								  (int16_t) (wallP ? wallP->nSegment : -1), (int16_t) (wallP ? wallP->nSide : -1),
 								  m_segments [0], m_sides [0], NULL, NULL, Flagged (TF_SET_ORIENT) != 0);
@@ -992,7 +992,7 @@ if (gameStates.app.bD1Mission) {
 	return true;
 	}
 else if (missionManager.nCurrentLevel > 0) {
-	if ((gameData.segs.nLevelVersion > 20) && (missionManager.GetLevelState (missionManager.NextLevel ()) < 0))
+	if ((gameData.segData.nLevelVersion > 20) && (missionManager.GetLevelState (missionManager.NextLevel ()) < 0))
 		return false;
 	if (!Flagged (TF_PERMANENT))
 		SetFlags (TF_DISABLED);
@@ -1092,7 +1092,7 @@ int32_t CTrigger::OperateD1 (int16_t nObject, int32_t nPlayer, int32_t bShot)
 for (int32_t i = 0; i < int32_t (sizeofa (xlatTriggers)); i++)
 	if (m_info.flagsD1 & xlatTriggers [i].nFlag) {
 		Type () = xlatTriggers [i].nType;
-		gameData.trigs.delay [nTrigger] = -1;
+		gameData.trigData.delay [nTrigger] = -1;
 		if (!Operate (nObject, nPlayer, bShot, false))
 			h = 0;
 		if ((xlatTriggers [i].nFlag == TRIGGER_EXIT) || (xlatTriggers [i].nFlag == TRIGGER_SECRET_EXIT))
@@ -1100,7 +1100,7 @@ for (int32_t i = 0; i < int32_t (sizeofa (xlatTriggers)); i++)
 		}
 Type () = TT_DESCENT1;
 if (!h)
-	gameData.trigs.delay [nTrigger] = gameStates.app.nSDLTicks [0];
+	gameData.trigData.delay [nTrigger] = gameStates.app.nSDLTicks [0];
 return h;
 }
 
@@ -1115,7 +1115,7 @@ int32_t CTrigger::Operate (int16_t nObject, int32_t nPlayer, int32_t bShot, bool
 {
 	static int32_t nDepth = -1;
 #if DBG
-if (this - gameData.trigs.triggers.Buffer () == nDbgTrigger)
+if (this - gameData.trigData.triggers [0].Buffer () == nDbgTrigger)
 	BRP;
 if (bObjTrigger)
 	BRP;
@@ -1175,11 +1175,11 @@ if (nTrigger < 0) {
 
 if (!nDepth && !bObjTrigger && (Type () != TT_TELEPORT) && (Type () != TT_SPEEDBOOST)) {
 	int32_t t = gameStates.app.nSDLTicks [0];
-	if ((gameData.trigs.delay [nTrigger] >= 0) && (t - gameData.trigs.delay [nTrigger] < 750)) {
+	if ((gameData.trigData.delay [nTrigger] >= 0) && (t - gameData.trigData.delay [nTrigger] < 750)) {
 		nDepth--;
 		return 1;
 		}
-	gameData.trigs.delay [nTrigger] = gameStates.app.nSDLTicks [0];
+	gameData.trigData.delay [nTrigger] = gameStates.app.nSDLTicks [0];
 	}
 
 if (m_info.tOperated < 0) {
@@ -1198,7 +1198,7 @@ if (m_info.tOperated < 0) {
 	}
 
 if (Delay () > 0) {
-	gameData.trigs.delay [nTrigger] = -1;
+	gameData.trigData.delay [nTrigger] = -1;
 	nDepth--;
 	return 1;
 	}
@@ -1322,9 +1322,9 @@ switch (Type ()) {
 	case TT_SHIELD_DAMAGE:
 		if (!gameStates.app.bPlayerIsDead) {
 			if (gameStates.app.bD1Mission)
-				LOCALPLAYER.UpdateShield (-TRIGGER (nTrigger)->GetValue ());
+				LOCALPLAYER.UpdateShield (-GEOTRIGGER (nTrigger)->GetValue ());
 			else
-				LOCALPLAYER.UpdateShield (-fix ((float (I2X (1)) * X2F (TRIGGER (nTrigger)->GetValue ()))));
+				LOCALPLAYER.UpdateShield (-fix ((float (I2X (1)) * X2F (GEOTRIGGER (nTrigger)->GetValue ()))));
 			if (LOCALPLAYER.Shield () < 0)
 				StartPlayerDeathSequence (OBJECT (LOCALPLAYER.nObject));
 			}
@@ -1333,9 +1333,9 @@ switch (Type ()) {
 	case TT_ENERGY_DRAIN:
 		if (!gameStates.app.bPlayerIsDead) {
 			if (gameStates.app.bD1Mission)
-				LOCALPLAYER.UpdateEnergy (-TRIGGER (nTrigger)->GetValue ());
+				LOCALPLAYER.UpdateEnergy (-GEOTRIGGER (nTrigger)->GetValue ());
 			else
-				LOCALPLAYER.UpdateEnergy (-fix (LOCALPLAYER.Energy () * X2F (TRIGGER (nTrigger)->GetValue ()) / 100));
+				LOCALPLAYER.UpdateEnergy (-fix (LOCALPLAYER.Energy () * X2F (GEOTRIGGER (nTrigger)->GetValue ()) / 100));
 			}
 		break;
 
@@ -1419,7 +1419,7 @@ if (Flagged (TF_ONE_SHOT))		//if this is a one-shot...
 if (Flagged (TF_ALTERNATE))
 	Type () = oppTrigTypes [Type ()];
 #if DBG
-if ((this - gameData.trigs.triggers.Buffer () == nDbgTrigger) && (nDbgType == Type ()))
+if ((this - gameData.trigData.triggers [0].Buffer () == nDbgTrigger) && (nDbgType == Type ()))
 	BRP;
 nDbgType = Type ();
 #endif
@@ -1563,13 +1563,13 @@ CTrigger *FindObjTrigger (int16_t nObject, int16_t nType, int16_t nTrigger)
 {
 if (!OBJTRIGGERS.Buffer ())
 	return NULL;
-if (!gameData.trigs.objTriggerRefs [nObject].nCount)
+if (!gameData.trigData.objTriggerRefs [nObject].nCount)
 	return NULL;
-if (gameData.trigs.objTriggerRefs [nObject].nFirst >= OBJTRIGGERS.Length ())
+if (gameData.trigData.objTriggerRefs [nObject].nFirst >= OBJTRIGGERS.Length ())
 	return NULL;
 if (nTrigger < 0)
-	return OBJTRIGGER (gameData.trigs.objTriggerRefs [nObject].nFirst);
-if (++nTrigger - gameData.trigs.objTriggerRefs [nObject].nFirst < gameData.trigs.objTriggerRefs [nObject].nCount)
+	return OBJTRIGGER (gameData.trigData.objTriggerRefs [nObject].nFirst);
+if (++nTrigger - gameData.trigData.objTriggerRefs [nObject].nFirst < gameData.trigData.objTriggerRefs [nObject].nCount)
 	return OBJTRIGGER (nTrigger);
 return NULL;
 }
@@ -1581,7 +1581,7 @@ void ExecObjTriggers (int16_t nObject, int32_t bDamage)
 if (!OBJTRIGGERS.Buffer ())
 	return;
 
-	uint8_t i = gameData.trigs.objTriggerRefs [nObject].nFirst, j = gameData.trigs.objTriggerRefs [nObject].nCount;
+	uint8_t i = gameData.trigData.objTriggerRefs [nObject].nFirst, j = gameData.trigData.objTriggerRefs [nObject].nCount;
 
 if (i >= OBJTRIGGERS.Length ())
 	return;
@@ -1606,7 +1606,7 @@ void TriggersFrameProcess (void)
 	int32_t		i;
 
 trigP = TRIGGERS.Buffer ();
-for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
+for (i = gameData.trigData.m_nTriggers [0]; i > 0; i--, trigP++) {
 #if DBG
 	if (trigP->Index () == nDbgTrigger)
 		BRP;
@@ -1632,7 +1632,7 @@ for (i = gameData.trigs.m_nTriggers; i > 0; i--, trigP++) {
 	}
 
 trigP = OBJTRIGGERS.Buffer ();
-for (i = gameData.trigs.m_nObjTriggers; i > 0; i--, trigP++) {
+for (i = gameData.trigData.m_nTriggers [1]; i > 0; i--, trigP++) {
 	if (trigP->Flagged (TF_AUTOPLAY) && (trigP->m_info.nObject >= 0) && (trigP->m_info.tOperated < 0) && (!IsMultiGame || IAmGameHost ())) {
 		trigP->Operate (trigP->m_info.nObject, -1, 0, true);
 		trigP->SetFlags (TF_DISABLED);
@@ -1656,8 +1656,8 @@ for (int32_t i = triggers.Length (); i > 0; i--, trigP++)
 
 void StartTriggeredSounds (void)
 {
-StartTriggeredSounds (gameData.trigs.triggers);
-StartTriggeredSounds (gameData.trigs.objTriggers);
+StartTriggeredSounds (gameData.trigData.triggers [0]);
+StartTriggeredSounds (gameData.trigData.triggers [1]);
 }
 
 //------------------------------------------------------------------------------
@@ -1674,8 +1674,8 @@ for (int32_t i = triggers.Length (); i > 0; i--, trigP++)
 
 void StopTriggeredSounds (void)
 {
-StopTriggeredSounds (gameData.trigs.triggers);
-StopTriggeredSounds (gameData.trigs.objTriggers);
+StopTriggeredSounds (gameData.trigData.triggers [0]);
+StopTriggeredSounds (gameData.trigData.triggers [1]);
 }
 
 //------------------------------------------------------------------------------
@@ -1694,7 +1694,7 @@ CWall *FindTriggerWall (int16_t nTrigger)
 {
 	int32_t	i;
 
-for (i = 0; i < gameData.walls.nWalls; i++)
+for (i = 0; i < gameData.wallData.nWalls; i++)
 	if (WALL (i)->nTrigger == nTrigger)
 		return WALL (i);
 return NULL;
@@ -1718,8 +1718,8 @@ int32_t ObjTriggerIsValid (int32_t nTrigger)
 
 FORALL_OBJS (objP) {
 	int32_t j = objP->Index ();
-	if ((nTrigger >= gameData.trigs.objTriggerRefs [j].nFirst) && 
-		 (nTrigger < gameData.trigs.objTriggerRefs [j].nFirst + gameData.trigs.objTriggerRefs [j].nCount) &&
+	if ((nTrigger >= gameData.trigData.objTriggerRefs [j].nFirst) && 
+		 (nTrigger < gameData.trigData.objTriggerRefs [j].nFirst + gameData.trigData.objTriggerRefs [j].nCount) &&
 		 (trigP = OBJTRIGGER (nTrigger)) &&
 		 (trigP->m_info.nObject >= 0))
 		return 1;
@@ -1732,11 +1732,11 @@ return 0;
 int32_t FindTriggerTarget (int16_t nSegment, int16_t nSide, int32_t i)
 {
 if (i < 0)
-	i = gameData.trigs.m_nTriggers - i;
+	i = gameData.trigData.m_nTriggers [0] - i;
 
 	int32_t	j = i, nSegSide, nOvlTex, ec;
 
-for (; i < gameData.trigs.m_nTriggers; i++) {
+for (; i < gameData.trigData.m_nTriggers [0]; i++) {
 	nSegSide = FindTriggerSegSide (i);
 	if (nSegSide == -1)
 		continue;
@@ -1755,10 +1755,10 @@ for (; i < gameData.trigs.m_nTriggers; i++) {
 		if (effectInfoP->destroyed.nTexture < 0)
 			continue;
 		}
-	if (TRIGGER (i)->HasTarget (nSegment, nSide))
+	if (GEOTRIGGER (i)->HasTarget (nSegment, nSide))
 		return i + 1;
 	}
-for (j = i - gameData.trigs.m_nTriggers; i < gameData.trigs.m_nTriggers + gameData.trigs.m_nObjTriggers; i++, j++) {
+for (j = i - gameData.trigData.m_nTriggers [0]; i < gameData.trigData.m_nTriggers [0] + gameData.trigData.m_nTriggers [1]; i++, j++) {
 	CTrigger* trigP = OBJTRIGGER (j);
 	if (!trigP || !trigP->HasTarget (nSegment, nSide))
 		continue;
@@ -1846,7 +1846,7 @@ int32_t OpenExits (void)
 	CWall		*wallP;
 	int32_t		nExits = 0;
 
-for (int32_t i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
+for (int32_t i = 0; i < gameData.trigData.m_nTriggers [0]; i++, trigP++) {
 	if (trigP->Type () == TT_EXIT) {
 		wallP = FindTriggerWall (i);
 		if (wallP) {
@@ -1864,12 +1864,12 @@ int32_t FindNextLevel (void)
 {
 missionManager.SetNextLevel (missionManager.nCurrentLevel + 1);
 
-if (gameData.segs.nLevelVersion > 20) {
+if (gameData.segData.nLevelVersion > 20) {
 	CTrigger *trigP = TRIGGERS.Buffer ();
 	int32_t nNextLevel = 0x7FFFFFFF;
 	int32_t nLevelState = 0x7FFFFFFF;
 
-	for (int32_t i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
+	for (int32_t i = 0; i < gameData.trigData.m_nTriggers [0]; i++, trigP++) {
 		if (trigP->Type () == TT_EXIT) {
 			int32_t l = (X2I (trigP->GetValue ()) > 0) ? X2I (trigP->GetValue ()) : missionManager.nCurrentLevel + 1;
 			int32_t s = missionManager.GetLevelState (l);

@@ -54,7 +54,7 @@ if (!corners)
 	corners = SEGMENT (nSegment)->Corners (nSide);
 m_nVertices = SEGMENT (nSegment)->Side (nSide)->CornerCount ();
 for (i = j = 0; j < m_nVertices; j++) {
-	fix d = CFixVector::Dist (gameData.segs.vertices [corners [j]], gameData.segs.vertices [corners [(j + 1) % m_nVertices]]);
+	fix d = CFixVector::Dist (gameData.segData.vertices [corners [j]], gameData.segData.vertices [corners [(j + 1) % m_nVertices]]);
 	if (dMax < d) {
 		dMax = d;
 		i = j;
@@ -65,13 +65,13 @@ if (w)
 if (i > 2)
 	i--;
 j = i + 1;
-d1 = VmLinePointDist (gameData.segs.vertices [corners [i]],
-                      gameData.segs.vertices [corners [j]],
-                      gameData.segs.vertices [corners [(j + 1) % m_nVertices]]);
+d1 = VmLinePointDist (gameData.segData.vertices [corners [i]],
+                      gameData.segData.vertices [corners [j]],
+                      gameData.segData.vertices [corners [(j + 1) % m_nVertices]]);
 if (m_nVertices == 4)
-	d2 = VmLinePointDist (gameData.segs.vertices [corners [i]],
-								 gameData.segs.vertices [corners [j]],
-								 gameData.segs.vertices [corners [(j + 2) % m_nVertices]]);
+	d2 = VmLinePointDist (gameData.segData.vertices [corners [i]],
+								 gameData.segData.vertices [corners [j]],
+								 gameData.segData.vertices [corners [(j + 2) % m_nVertices]]);
 if (h)
 	*h = (m_nVertices < 3) ? d1 : (d1 > d2) ? d1 : d2;
 return i;
@@ -194,7 +194,7 @@ corners = SEGMENT (nSegment)->Corners (nSide);
 m_nVertices = SEGMENT (nSegment)->Side (nSide)->CornerCount ();
 for (i = 0; i < m_nVertices; i++) {
 	fLight += X2F (sideP->m_uvls [i].l);
-	transformation.Transform (m_sprite [i], gameData.segs.fVertices [corners [i]], 0);
+	transformation.Transform (m_sprite [i], gameData.segData.fVertices [corners [i]], 0);
 	}
 v.Assign (SEGMENT (nSegment)->SideCenter (nSide));
 transformation.Transform (m_vCenter, v, 0);

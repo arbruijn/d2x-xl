@@ -85,11 +85,11 @@ if (objP) {
 
 void StopPlayerMovement (void)
 {
-if (OBJECTS.Buffer () && !(gameData.objs.speedBoost.Buffer () && gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted)) {
+if (OBJECTS.Buffer () && !(gameData.objData.speedBoost.Buffer () && gameData.objData.speedBoost [OBJ_IDX (gameData.objData.consoleP)].bBoosted)) {
 	StopObjectMovement (OBJECT (LOCALPLAYER.nObject));
 	memset (&gameData.physics.playerThrust, 0, sizeof (gameData.physics.playerThrust));
 //	gameData.time.SetTime (I2X (1));
-	gameData.objs.speedBoost [OBJ_IDX (gameData.objs.consoleP)].bBoosted = 0;
+	gameData.objData.speedBoost [OBJ_IDX (gameData.objData.consoleP)].bBoosted = 0;
 	}
 }
 
@@ -111,8 +111,8 @@ if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME)) {
 		if (IsMissile ()) {
 			int32_t i = FindDropInfo (Signature ());
 			if (i >= 0) {
-				if (gameData.objs.dropInfo [i].nDropTime == 0x7FFFFFFF) 
-					MaybeDropNetPowerup (i, gameData.objs.dropInfo [i].nPowerupType, FORCE_DROP);
+				if (gameData.objData.dropInfo [i].nDropTime == 0x7FFFFFFF) 
+					MaybeDropNetPowerup (i, gameData.objData.dropInfo [i].nPowerupType, FORCE_DROP);
 				DelDropInfo (i);
 				}
 			}
@@ -425,7 +425,7 @@ for (i = 0; i < gameData.physics.nSegments - 1; i++) {
 	if (gameData.physics.segments [i + 1] < 0)
 		continue;
 #if DBG
-	if (gameData.physics.segments [i] > gameData.segs.nLastSegment)
+	if (gameData.physics.segments [i] > gameData.segData.nLastSegment)
 		PrintLog (0, "invalid segment in gameData.physics.segments\n");
 #endif
 	nConnSide = SEGMENT (gameData.physics.segments [i + 1])->ConnectedSide (SEGMENT (gameData.physics.segments [i]));
@@ -452,7 +452,7 @@ if (IsGuidedMissile (N_LOCALPLAYER)) {
 		if (nConnSide != -1) {
 			CTrigger* trigP = SEGMENT (nPrevSegment)->Trigger (nConnSide);
 			if (trigP && (trigP->m_info.nType == TT_EXIT))
-				gameData.objs.guidedMissile [N_LOCALPLAYER].objP->UpdateLife (0);
+				gameData.objData.guidedMissile [N_LOCALPLAYER].objP->UpdateLife (0);
 			}
 		}
 	}
@@ -463,7 +463,7 @@ if (IsGuidedMissile (N_LOCALPLAYER)) {
 void CObject::CheckAfterburnerBlobDrop (void)
 {
 if (gameStates.render.bDropAfterburnerBlob) {
-	Assert (this == gameData.objs.consoleP);
+	Assert (this == gameData.objData.consoleP);
 	DropAfterburnerBlobs (this, 2, I2X (5) / 2, -1, NULL, 0);	//	-1 means use default lifetime
 	if (IsMultiGame)
 		MultiSendDropBlobs (N_LOCALPLAYER);
@@ -507,10 +507,10 @@ if ((info.nType == OBJ_WEAPON) && (gameData.weapons.info [info.nId].nAfterburner
 
 	nObject = OBJ_IDX (this);
 	if (bSmoke ||
-		 (gameData.objs.xLastAfterburnerTime [nObject] + delay < gameData.time.xGame) ||
-		 (gameData.objs.xLastAfterburnerTime [nObject] > gameData.time.xGame)) {
+		 (gameData.objData.xLastAfterburnerTime [nObject] + delay < gameData.time.xGame) ||
+		 (gameData.objData.xLastAfterburnerTime [nObject] > gameData.time.xGame)) {
 		DropAfterburnerBlobs (this, 1, nSize, lifetime, NULL, bSmoke);
-		gameData.objs.xLastAfterburnerTime [nObject] = gameData.time.xGame;
+		gameData.objData.xLastAfterburnerTime [nObject] = gameData.time.xGame;
 		}
 	}
 }
@@ -620,13 +620,13 @@ int32_t UpdateAllObjects (void)
 PROF_START
 	CObject*	objP;
 
-if (gameData.objs.nLastObject [0] > gameData.objs.nMaxUsedObjects)
-	FreeObjectSlots (gameData.objs.nMaxUsedObjects);		//	Free all possible CObject slots.
+if (gameData.objData.nLastObject [0] > gameData.objData.nMaxUsedObjects)
+	FreeObjectSlots (gameData.objData.nMaxUsedObjects);		//	Free all possible CObject slots.
 CleanupObjects ();
 if (gameOpts->gameplay.nAutoLeveling)
-	gameData.objs.consoleP->mType.physInfo.flags |= PF_LEVELLING;
+	gameData.objData.consoleP->mType.physInfo.flags |= PF_LEVELLING;
 else
-	gameData.objs.consoleP->mType.physInfo.flags &= ~PF_LEVELLING;
+	gameData.objData.consoleP->mType.physInfo.flags &= ~PF_LEVELLING;
 gameData.physics.xTime = gameData.time.xFrame;
 gameData.laser.xUpdateTime %= HOMER_FRAMETIME;
 gameData.laser.xUpdateTime += gameData.time.xFrame;
@@ -634,9 +634,9 @@ gameData.laser.xUpdateTime += gameData.time.xFrame;
 gameStates.entropy.bConquering = 0;
 UpdatePlayerOrient ();
 #if USE_OPENMP //> 1
-gameData.objs.update.Reset ();
+gameData.objData.update.Reset ();
 #endif
-++gameData.objs.nFrameCount;
+++gameData.objData.nFrameCount;
 FORALL_OBJS (objP) {
 #if DBG
 	if (objP->info.nType == OBJ_REACTOR)
@@ -655,11 +655,11 @@ FORALL_OBJS (objP) {
 #if USE_OPENMP //> 1
 #pragma omp parallel 
 if (gameStates.app.bMultiThreaded) {
-	int32_t h = int32_t (gameData.objs.update.ToS ());
+	int32_t h = int32_t (gameData.objData.update.ToS ());
 	#pragma omp for
 	for (int32_t nThread = 0; nThread < gameStates.app.nThreads; nThread++) {
 		for (int32_t i = nThread; i < h; i += gameStates.app.nThreads)
-			gameData.objs.update [i]->UpdateHomingWeapon (nThread);
+			gameData.objData.update [i]->UpdateHomingWeapon (nThread);
 		}
 	}
 #endif

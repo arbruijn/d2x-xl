@@ -267,7 +267,7 @@ if (!IS_CHILD (segP->m_children [nSide]))
 if (!(wallP = segP->Wall (nSide)))
 	return 1;				//d:\temp\dm_testthen say it can't be opened
 	//	The mighty console CObject can open all doors (for purposes of determining paths).
-if (objP == gameData.objs.consoleP) {
+if (objP == gameData.objData.consoleP) {
 	if (wallP->nType == WALL_DOOR)
 		return 1;
 	}
@@ -325,7 +325,7 @@ if ((objP == NULL) || (ROBOTINFO (objP)->companion == 1)) {
 
 		if (nClip == -1)
 			return 1;
-		else if (gameData.walls.animP [nClip].flags & WCF_HIDDEN) {
+		else if (gameData.wallData.animP [nClip].flags & WCF_HIDDEN) {
 			if (wallP->state == WALL_DOOR_CLOSED)
 				return 0;
 			else
@@ -344,7 +344,7 @@ if ((objP == NULL) || (ROBOTINFO (objP)->companion == 1)) {
 			if (nClip == -1)
 				return 1;
 			//	Buddy allowed to go through secret doors to get to player.
-			else if ((ailp_mode != AIM_GOTO_PLAYER) && (gameData.walls.animP [nClip].flags & WCF_HIDDEN)) {
+			else if ((ailp_mode != AIM_GOTO_PLAYER) && (gameData.wallData.animP [nClip].flags & WCF_HIDDEN)) {
 				if (wallP->state == WALL_DOOR_CLOSED)
 					return 0;
 				else

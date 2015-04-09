@@ -26,7 +26,7 @@ int32_t CountRooms (void)
 
 memset (gameData.entropy.nRoomOwners, 0xFF, sizeof (gameData.entropy.nRoomOwners));
 memset (gameData.entropy.nTeamRooms, 0, sizeof (gameData.entropy.nTeamRooms));
-for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++)
+for (i = 0; i <= gameData.segData.nLastSegment; i++, segP++)
 	if ((segP->m_owner >= 0) && (segP->m_group >= 0) && 
 		 /* (segP->m_group <= N_MAX_ROOMS) &&*/ (gameData.entropy.nRoomOwners [(int32_t) segP->m_group] < 0))
 		gameData.entropy.nRoomOwners [(int32_t) segP->m_group] = segP->m_owner;
@@ -61,7 +61,7 @@ void ConquerRoom (int32_t newOwner, int32_t oldOwner, int32_t roomId)
 gameData.entropy.nTeamRooms [oldOwner]--;
 gameData.entropy.nTeamRooms [newOwner]++;
 for (i = 0, j = jj = 0, k = kk = MAX_FUEL_CENTERS, segP = SEGMENTS.Buffer (); 
-	  i < gameData.segs.nSegments; 
+	  i < gameData.segData.nSegments; 
 	  i++, segP++) {
 	if ((segP->m_group == roomId) && (segP->m_owner == oldOwner)) {
 		segP->m_owner = newOwner;
@@ -107,7 +107,7 @@ if (extraGameInfo [1].entropy.bRevertRooms && (jj + (MAX_FUEL_CENTERS - kk)) && 
 // check if the old owner's last virus center has been conquered
 // if so, find a fuel or repair center owned by that and turn it into a virus generator
 // preferrably convert repair centers
-for (i = 0, h = -1, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++)
+for (i = 0, h = -1, segP = SEGMENTS.Buffer (); i <= gameData.segData.nLastSegment; i++, segP++)
 	if (segP->m_owner == oldOwner) 
 		switch (SEGMENT (i)->m_function) {
 			case SEGMENT_FUNC_VIRUSMAKER:

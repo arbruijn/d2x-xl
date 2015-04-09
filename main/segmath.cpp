@@ -95,7 +95,7 @@ else {
 	*segP++ = ConvertToByte (orient.m.dir.u.v.coord.z);
 	*segP++ = ConvertToByte (orient.m.dir.f.v.coord.z);
 
-	pv = gameData.segs.vertices + SEGMENT (objP->info.nSegment)->m_vertices [0];
+	pv = gameData.segData.vertices + SEGMENT (objP->info.nSegment)->m_vertices [0];
 	posP->pos [0] = (int16_t) ((objP->info.position.vPos.v.coord.x - pv->v.coord.x) >> RELPOS_PRECISION);
 	posP->pos [1] = (int16_t) ((objP->info.position.vPos.v.coord.y - pv->v.coord.y) >> RELPOS_PRECISION);
 	posP->pos [2] = (int16_t) ((objP->info.position.vPos.v.coord.z - pv->v.coord.z) >> RELPOS_PRECISION);
@@ -153,9 +153,9 @@ if (objP) {
 
 	nSegment = spp->nSegment;
 
-	Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
+	Assert ((nSegment >= 0) && (nSegment <= gameData.segData.nLastSegment));
 
-	pv = gameData.segs.vertices + SEGMENT (nSegment)->m_vertices [0];
+	pv = gameData.segData.vertices + SEGMENT (nSegment)->m_vertices [0];
 	objP->info.position.vPos.v.coord.x = (spp->pos [0] << RELPOS_PRECISION) + pv->v.coord.x;
 	objP->info.position.vPos.v.coord.y = (spp->pos [1] << RELPOS_PRECISION) + pv->v.coord.y;
 	objP->info.position.vPos.v.coord.z = (spp->pos [2] << RELPOS_PRECISION) + pv->v.coord.z;
@@ -182,7 +182,7 @@ CSide* sideP = segP->Side (start);
 for (int32_t i = 0, j = sideP->CornerCount (); i < j; i++) {
 	uint16_t n = sideP->m_corners [i];
 	if (n != 0xFFFF) {
-		vs += gameData.segs.vertices [n];
+		vs += gameData.segData.vertices [n];
 		nVertices++;
 		}
 	}
@@ -191,7 +191,7 @@ for (int32_t i = 0, j = sideP->CornerCount (); i < j; i++) {
 	uint16_t n = sideP->m_corners [i];
 	n = segP->m_vertices [sideVertIndex [end][i]];
 	if (n != 0xFFFF) {
-		ve += gameData.segs.vertices [n];
+		ve += gameData.segData.vertices [n];
 		nVertices++;
 		}
 	}
@@ -260,7 +260,7 @@ void ComputeVertexNormals (void)
 {
 	CRenderPoint* pp = RENDERPOINTS.Buffer ();
 
-for (int32_t i = gameData.segs.nVertices; i; i--, pp++)
+for (int32_t i = gameData.segData.nVertices; i; i--, pp++)
 	pp->Normal ().Normalize ();
 }
 
@@ -270,7 +270,7 @@ void ResetVertexNormals (void)
 {
 	CRenderPoint* pp = RENDERPOINTS.Buffer ();
 
-for (int32_t i = gameData.segs.nVertices; i; i--, pp++)
+for (int32_t i = gameData.segData.nVertices; i; i--, pp++)
 	pp->Normal ().Reset ();
 }
 

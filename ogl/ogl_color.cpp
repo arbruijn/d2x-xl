@@ -753,7 +753,7 @@ else {
 		}
 	}
 if ((bVertexLights = !(gameStates.render.nState || vertColorP))) {
-	vertPos.Assign (gameData.segs.vertices [nVertex]);
+	vertPos.Assign (gameData.segData.vertices [nVertex]);
 	vVertPosP = &vertPos;
 	lightManager.SetNearestToVertex (nSegment, nSide, nVertex, NULL, 1, 0, 1, nThread);
 	}

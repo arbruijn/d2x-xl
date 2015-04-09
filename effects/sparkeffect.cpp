@@ -219,7 +219,7 @@ int32_t CSparkManager::BuildSegList (void)
 	int16_t			nSegment;
 
 m_nSegments = 0;
-for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++)
+for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, segP++)
 	if ((segP->m_function == SEGMENT_FUNC_FUELCENTER) || (segP->m_function == SEGMENT_FUNC_REPAIRCENTER))
 		m_segments [m_nSegments++] = nSegment;
 return m_nSegments;

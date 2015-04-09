@@ -234,7 +234,7 @@ switch (info.renderType) {
 		rType.animationInfo.xFrameTime = cf.ReadFix ();
 		rType.animationInfo.nCurFrame	= cf.ReadByte ();
 		if ((rType.animationInfo.nClipIndex < 0) || (rType.animationInfo.nClipIndex >= MAX_ANIMATIONS_D2)) {
-			rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [info.nId].nClipIndex;
+			rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [info.nId].nClipIndex;
 			rType.animationInfo.xFrameTime = gameData.effects.vClipP [rType.animationInfo.nClipIndex].xFrameTime;
 			rType.animationInfo.nCurFrame = 0;
 			}
@@ -256,11 +256,11 @@ switch (info.renderType) {
 		rType.particleInfo.color.Blue () = cf.ReadByte ();
 		rType.particleInfo.color.Alpha () = cf.ReadByte ();
 		rType.particleInfo.nSide = cf.ReadByte ();
-		if (gameData.segs.nLevelVersion < 18)
+		if (gameData.segData.nLevelVersion < 18)
 			rType.particleInfo.nType = 0;
 		else
 			rType.particleInfo.nType = cf.ReadByte ();
-		if (gameData.segs.nLevelVersion < 19)
+		if (gameData.segData.nLevelVersion < 19)
 			rType.particleInfo.bEnabled = 1;
 		else
 			rType.particleInfo.bEnabled = cf.ReadByte ();
@@ -276,14 +276,14 @@ switch (info.renderType) {
 		rType.lightningInfo.nLength = cf.ReadInt ();
 		rType.lightningInfo.nAmplitude = cf.ReadInt ();
 		rType.lightningInfo.nOffset = cf.ReadInt ();
-		rType.lightningInfo.nWayPoint = (gameData.segs.nLevelVersion <= 22) ? -1 : cf.ReadInt ();
+		rType.lightningInfo.nWayPoint = (gameData.segData.nLevelVersion <= 22) ? -1 : cf.ReadInt ();
 		rType.lightningInfo.nBolts = cf.ReadShort ();
 		rType.lightningInfo.nId = cf.ReadShort ();
 		rType.lightningInfo.nTarget = cf.ReadShort ();
 		rType.lightningInfo.nNodes = cf.ReadShort ();
 		rType.lightningInfo.nChildren = cf.ReadShort ();
 		rType.lightningInfo.nFrames = cf.ReadShort ();
-		rType.lightningInfo.nWidth = (gameData.segs.nLevelVersion <= 21) ? 3 : cf.ReadByte ();
+		rType.lightningInfo.nWidth = (gameData.segData.nLevelVersion <= 21) ? 3 : cf.ReadByte ();
 		rType.lightningInfo.nAngle = cf.ReadByte ();
 		rType.lightningInfo.nStyle = cf.ReadByte ();
 		rType.lightningInfo.nSmoothe = cf.ReadByte ();
@@ -297,7 +297,7 @@ switch (info.renderType) {
 		rType.lightningInfo.color.Green () = cf.ReadByte ();
 		rType.lightningInfo.color.Blue () = cf.ReadByte ();
 		rType.lightningInfo.color.Alpha () = cf.ReadByte ();
-		rType.lightningInfo.bEnabled = (gameData.segs.nLevelVersion < 19) ? 1 : cf.ReadByte ();
+		rType.lightningInfo.bEnabled = (gameData.segData.nLevelVersion < 19) ? 1 : cf.ReadByte ();
 		if (info.nId != LIGHTNING_ID) {
 			PrintLog (0, "Lightning object #%d has invalid id %d", OBJ_IDX (this), info.nId);
 			FixEffectRenderType ();
@@ -309,7 +309,7 @@ switch (info.renderType) {
 		rType.soundInfo.szFilename [sizeof (rType.soundInfo.szFilename) - 1] = '\0';
 		strlwr (rType.soundInfo.szFilename);
 		rType.soundInfo.nVolume = (int32_t) FRound (float (cf.ReadInt ()) * float (I2X (1)) / 10.0f);
-		if (gameData.segs.nLevelVersion < 19)
+		if (gameData.segData.nLevelVersion < 19)
 			rType.soundInfo.bEnabled = 1;
 		else
 			rType.soundInfo.bEnabled = cf.ReadByte ();
@@ -398,7 +398,7 @@ switch (info.controlType) {
 		if (cType.laserInfo.nLastHitObj < 0)
 			cType.laserInfo.nLastHitObj = 0;
 		else {
-			gameData.objs.nHitObjects [Index () * MAX_HIT_OBJECTS] = cType.laserInfo.nLastHitObj;
+			gameData.objData.nHitObjects [Index () * MAX_HIT_OBJECTS] = cType.laserInfo.nLastHitObj;
 			cType.laserInfo.nLastHitObj = 1;
 			}
 		cType.laserInfo.nHomingTarget = cf.ReadShort ();
@@ -558,7 +558,7 @@ switch (info.controlType) {
 		cf.WriteInt (cType.laserInfo.parent.nSignature);
 		cf.WriteFix (cType.laserInfo.xCreationTime);
 		if (cType.laserInfo.nLastHitObj)
-			cf.WriteShort (gameData.objs.nHitObjects [Index () * MAX_HIT_OBJECTS + cType.laserInfo.nLastHitObj - 1]);
+			cf.WriteShort (gameData.objData.nHitObjects [Index () * MAX_HIT_OBJECTS + cType.laserInfo.nLastHitObj - 1]);
 		else
 			cf.WriteShort (-1);
 		cf.WriteShort (ObjId (cType.laserInfo.nHomingTarget));

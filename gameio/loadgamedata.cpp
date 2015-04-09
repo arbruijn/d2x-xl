@@ -301,24 +301,24 @@ ReadEffectInfo (gameData.effects.effects [0], gameData.effects.nEffects [0], cf)
 // red glow texture animates way too fast
 gameData.effects.effects [0][32].animationInfo.xTotalTime *= 10;
 gameData.effects.effects [0][32].animationInfo.xFrameTime *= 10;
-gameData.walls.nAnims [0] = cf.ReadInt ();
+gameData.wallData.nAnims [0] = cf.ReadInt ();
 PrintLog (-1);
-/*---*/PrintLog (1, "Loading %d CWall animations\n", gameData.walls.nAnims [0]);
-ReadWallEffectInfo (gameData.walls.anims [0], gameData.walls.nAnims [0], cf);
-PrintLog (-1);
-
-gameData.bots.nTypes [0] = cf.ReadInt ();
-/*---*/PrintLog (1, "Loading %d robot descriptions\n", gameData.bots.nTypes [0]);
-ReadRobotInfos (gameData.bots.info [0], gameData.bots.nTypes [0], cf);
-gameData.bots.nDefaultTypes = gameData.bots.nTypes [0];
-gameData.bots.defaultInfo = gameData.bots.info [0];
+/*---*/PrintLog (1, "Loading %d CWall animations\n", gameData.wallData.nAnims [0]);
+ReadWallEffectInfo (gameData.wallData.anims [0], gameData.wallData.nAnims [0], cf);
 PrintLog (-1);
 
-gameData.bots.nJoints = cf.ReadInt ();
-/*---*/PrintLog (1, "Loading %d robot joint descriptions\n", gameData.bots.nJoints);
-ReadJointPositions (gameData.bots.joints, gameData.bots.nJoints, cf);
-gameData.bots.nDefaultJoints = gameData.bots.nJoints;
-gameData.bots.defaultJoints = gameData.bots.joints;
+gameData.botData.nTypes [0] = cf.ReadInt ();
+/*---*/PrintLog (1, "Loading %d robot descriptions\n", gameData.botData.nTypes [0]);
+ReadRobotInfos (gameData.botData.info [0], gameData.botData.nTypes [0], cf);
+gameData.botData.nDefaultTypes = gameData.botData.nTypes [0];
+gameData.botData.defaultInfo = gameData.botData.info [0];
+PrintLog (-1);
+
+gameData.botData.nJoints = cf.ReadInt ();
+/*---*/PrintLog (1, "Loading %d robot joint descriptions\n", gameData.botData.nJoints);
+ReadJointPositions (gameData.botData.joints, gameData.botData.nJoints, cf);
+gameData.botData.nDefaultJoints = gameData.botData.nJoints;
+gameData.botData.defaultJoints = gameData.botData.joints;
 PrintLog (-1);
 
 gameData.weapons.nTypes [0] = cf.ReadInt ();
@@ -328,9 +328,9 @@ gameData.weapons.info [48].light = I2X (1); // fix light for BPer shots and smar
 BMSetAfterburnerSizes ();
 PrintLog (-1);
 
-gameData.objs.pwrUp.nTypes = cf.ReadInt ();
-/*---*/PrintLog (1, "Loading %d powerup descriptions\n", gameData.objs.pwrUp.nTypes);
-ReadPowerupTypeInfos (gameData.objs.pwrUp.info.Buffer (), gameData.objs.pwrUp.nTypes, cf);
+gameData.objData.pwrUp.nTypes = cf.ReadInt ();
+/*---*/PrintLog (1, "Loading %d powerup descriptions\n", gameData.objData.pwrUp.nTypes);
+ReadPowerupTypeInfos (gameData.objData.pwrUp.info.Buffer (), gameData.objData.pwrUp.nTypes, cf);
 PrintLog (-1);
 
 gameData.models.nPolyModels = cf.ReadInt ();
@@ -590,9 +590,9 @@ gameData.effects.nEffects [1] = cf.ReadInt ();
 ReadEffectInfo (gameData.effects.effects [1], D1_MAX_EFFECTS, cf);
 PrintLog (-1);
 
-gameData.walls.nAnims [1] = cf.ReadInt ();
-/*---*/PrintLog (1, "Loading %d wall animations\n", gameData.walls.nAnims [1]);
-for (i = 0, pw = &gameData.walls.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw++) {
+gameData.wallData.nAnims [1] = cf.ReadInt ();
+/*---*/PrintLog (1, "Loading %d wall animations\n", gameData.wallData.nAnims [1]);
+for (i = 0, pw = &gameData.wallData.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw++) {
 	//cf.Read (&w, sizeof (w), 1);
 	pw->xTotalTime = cf.ReadFix ();
 	pw->nFrameCount = cf.ReadShort ();
@@ -606,16 +606,16 @@ for (i = 0, pw = &gameData.walls.anims [1][0]; i < D1_MAX_WALL_ANIMS; i++, pw++)
 	}
 PrintLog (-1);
 
-/*---*/PrintLog (1, "Loading %d robot descriptions\n", gameData.bots.nTypes [1]);
-cf.Read (&gameData.bots.nTypes [1], sizeof (int32_t), 1);
+/*---*/PrintLog (1, "Loading %d robot descriptions\n", gameData.botData.nTypes [1]);
+cf.Read (&gameData.botData.nTypes [1], sizeof (int32_t), 1);
 PrintLog (-1);
-gameData.bots.info [1] = gameData.bots.info [0];
+gameData.botData.info [1] = gameData.botData.info [0];
 if (!gameOpts->sound.bUseD1Sounds) {
 	PrintLog (-1);
 	return;
 	}
 
-for (i = 0, pr = &gameData.bots.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr++) {
+for (i = 0, pr = &gameData.botData.info [1][0]; i < D1_MAX_ROBOT_TYPES; i++, pr++) {
 	//cf.Read (&r, sizeof (r), 1);
 	cf.Seek (
 		sizeof (int32_t) * 3 + 
@@ -670,8 +670,8 @@ PrintLog (-1);
 cf.Read (tmpSounds, sizeof (uint8_t), D1_MAX_SOUNDS);
 PrintLog (-1);
 
-//for (i = 0, pr = &gameData.bots.info [1][0]; i < gameData.bots.nTypes [1]; i++, pr++) 
-pr = gameData.bots.info [1] + 17;
+//for (i = 0, pr = &gameData.botData.info [1][0]; i < gameData.botData.nTypes [1]; i++, pr++) 
+pr = gameData.botData.info [1] + 17;
 /*---*/PrintLog (1, "Initializing sound data\n", i);
 for (i = 0; i < D1_MAX_SOUNDS; i++) {
 	if (Sounds [1][i] == tmpSounds [pr->seeSound])
@@ -681,7 +681,7 @@ for (i = 0; i < D1_MAX_SOUNDS; i++) {
 	if (Sounds [1][i] == tmpSounds [pr->clawSound])
 		pr->clawSound = i;
 	}
-pr = gameData.bots.info [1] + 23;
+pr = gameData.botData.info [1] + 23;
 for (i = 0; i < D1_MAX_SOUNDS; i++) {
 	if (Sounds [1][i] == tmpSounds [pr->seeSound])
 		pr->seeSound = i;
@@ -691,8 +691,8 @@ for (i = 0; i < D1_MAX_SOUNDS; i++) {
 		pr->clawSound = i;
 	}
 cf.Read (tmpSounds, sizeof (uint8_t), D1_MAX_SOUNDS);
-//	for (i = 0, pr = &gameData.bots.info [1][0]; i < gameData.bots.nTypes [1]; i++, pr++) {
-pr = gameData.bots.info [1] + 17;
+//	for (i = 0, pr = &gameData.botData.info [1][0]; i < gameData.botData.nTypes [1]; i++, pr++) {
+pr = gameData.botData.info [1] + 17;
 for (i = 0; i < D1_MAX_SOUNDS; i++) {
 	if (AltSounds [1][i] == tmpSounds [pr->seeSound])
 		pr->seeSound = i;
@@ -701,7 +701,7 @@ for (i = 0; i < D1_MAX_SOUNDS; i++) {
 	if (AltSounds [1][i] == tmpSounds [pr->clawSound])
 		pr->clawSound = i;
 	}
-pr = gameData.bots.info [1] + 23;
+pr = gameData.botData.info [1] + 23;
 for (i = 0; i < D1_MAX_SOUNDS; i++) {
 	if (AltSounds [1][i] == tmpSounds [pr->seeSound])
 		pr->seeSound = i;

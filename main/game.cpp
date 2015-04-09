@@ -191,13 +191,13 @@ void MovePlayerToSegment (CSegment* segP, int32_t nSide)
 {
 	CFixVector vp;
 
-gameData.objs.consoleP->info.position.vPos = segP->Center ();
-vp = segP->SideCenter (nSide) - gameData.objs.consoleP->info.position.vPos;
+gameData.objData.consoleP->info.position.vPos = segP->Center ();
+vp = segP->SideCenter (nSide) - gameData.objData.consoleP->info.position.vPos;
 /*
-gameData.objs.consoleP->info.position.mOrient = CFixMatrix::Create(vp, NULL, NULL);
+gameData.objData.consoleP->info.position.mOrient = CFixMatrix::Create(vp, NULL, NULL);
 */
-gameData.objs.consoleP->info.position.mOrient = CFixMatrix::CreateF (vp);
-gameData.objs.consoleP->RelinkToSeg (segP->Index ());
+gameData.objData.consoleP->info.position.mOrient = CFixMatrix::CreateF (vp);
+gameData.objData.consoleP->RelinkToSeg (segP->Index ());
 }
 
 //------------------------------------------------------------------------------
@@ -319,8 +319,8 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 //@@	rx = (abScale * FixMul (SRandShort (), I2X (1)/8 + (((gameData.time.xGame + 0x4000)*4) & 0x3fff)))/16;
 //@@	rz = (abScale * FixMul (SRandShort (), I2X (1)/2 + ((gameData.time.xGame*4) & 0xffff)))/16;
 //@@
-//@@	gameData.objs.consoleP->mType.physInfo.rotVel.x += rx;
-//@@	gameData.objs.consoleP->mType.physInfo.rotVel.z += rz;
+//@@	gameData.objData.consoleP->mType.physInfo.rotVel.x += rx;
+//@@	gameData.objData.consoleP->mType.physInfo.rotVel.z += rz;
 //@@
 //@@}
 
@@ -550,7 +550,7 @@ if (i) {
 	gameStates.app.tick40fps.bTick = 1;
 	while (i--) {
 		HUDMessage (0, "physics tick %d", i);
-		gameData.objs.nFrameCount++;
+		gameData.objData.nFrameCount++;
 		h = DoGameFrame (0, 0, 0);
 		controls.ResetTriggers ();
 		gameStates.app.tick40fps.bTick = 0;
@@ -649,7 +649,7 @@ PrintLog (1, "unloading extra texture data\n");
 UnloadAddonImages ();
 PrintLog (-1);
 PrintLog (1, "unloading palettes\n");
-gameData.segs.skybox.Destroy ();
+gameData.segData.skybox.Destroy ();
 PrintLog (-1);
 #if GPGPU_VERTEX_LIGHTING
 gpgpuLighting.End ();
@@ -710,7 +710,7 @@ void DoAmbientSounds (void)
 if (gameStates.app.bPlayerIsDead)
 	return;
 
-CSegment* segP = SEGMENT (gameData.objs.consoleP->info.nSegment);
+CSegment* segP = SEGMENT (gameData.objData.consoleP->info.nSegment);
 if (!segP)
 	return;
 
@@ -907,8 +907,8 @@ SetScreenMode (SCREEN_GAME);
 SetWarnFunc (ShowInGameWarning);
 cockpit->Init ();
 gameStates.input.keys.bRepeat = 1;                // Do allow repeat in game
-gameData.objs.viewerP = gameData.objs.consoleP;
-FlyInit (gameData.objs.consoleP);
+gameData.objData.viewerP = gameData.objData.consoleP;
+FlyInit (gameData.objData.consoleP);
 if (gameStates.app.bGameSuspended & SUSP_TEMPORARY)
 	gameStates.app.bGameSuspended &= ~(SUSP_ROBOTS | SUSP_TEMPORARY);
 ResetTime ();
@@ -931,7 +931,7 @@ int32_t CGameLoop::Preprocess (void)
 {
 PROF_START
 //gameStates.render.nFrameFlipFlop = !gameStates.render.nFrameFlipFlop;
-gameData.objs.nLastObject [1] = gameData.objs.nLastObject [0];
+gameData.objData.nLastObject [1] = gameData.objData.nLastObject [0];
 
 if (gameStates.gameplay.bMineMineCheat) {
 	DoWowieCheat (0, 0);
@@ -1053,7 +1053,7 @@ else { // Note the link to above!
 
 PROF_CONT
 if (gameStates.render.bDoAppearanceEffect) {
-	gameData.objs.consoleP->CreateAppearanceEffect ();
+	gameData.objData.consoleP->CreateAppearanceEffect ();
 	gameStates.render.bDoAppearanceEffect = 0;
 	if (IsMultiGame && netGameInfo.m_info.invul) {
 		LOCALPLAYER.flags |= PLAYER_FLAGS_INVULNERABLE;
@@ -1300,8 +1300,8 @@ void ComputeSlideSegs (void)
 	int32_t		nSegment, nSide, bIsSlideSeg, nTexture;
 	CSegment*	segP = SEGMENTS.Buffer ();
 
-gameData.segs.nSlideSegs = 0;
-for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++, segP++) {
+gameData.segData.nSlideSegs = 0;
+for (nSegment = 0; nSegment <= gameData.segData.nLastSegment; nSegment++, segP++) {
 	bIsSlideSeg = 0;
 	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 		if (!segP->Side (nSide)->FaceCount ())
@@ -1310,16 +1310,16 @@ for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++, segP++) {
 		if (gameData.pig.tex.tMapInfoP [nTexture].slide_u  || gameData.pig.tex.tMapInfoP [nTexture].slide_v) {
 			if (!bIsSlideSeg) {
 				bIsSlideSeg = 1;
-				gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSegment = nSegment;
-				gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSides = 0;
+				gameData.segData.slideSegs [gameData.segData.nSlideSegs].nSegment = nSegment;
+				gameData.segData.slideSegs [gameData.segData.nSlideSegs].nSides = 0;
 				}
-			gameData.segs.slideSegs [gameData.segs.nSlideSegs].nSides |= (1 << nSide);
+			gameData.segData.slideSegs [gameData.segData.nSlideSegs].nSides |= (1 << nSide);
 			}
 		}
 	if (bIsSlideSeg)
-		gameData.segs.nSlideSegs++;
+		gameData.segData.nSlideSegs++;
 	}
-gameData.segs.bHaveSlideSegs = 1;
+gameData.segData.bHaveSlideSegs = 1;
 }
 
 //	-----------------------------------------------------------------------------
@@ -1333,12 +1333,12 @@ void SlideTextures (void)
 	tUVL*			uvlP;
 	fix			slideU, slideV, xDelta;
 
-if (!gameData.segs.bHaveSlideSegs)
+if (!gameData.segData.bHaveSlideSegs)
 	ComputeSlideSegs ();
-for (h = 0; h < gameData.segs.nSlideSegs; h++) {
-	nSegment = gameData.segs.slideSegs [h].nSegment;
+for (h = 0; h < gameData.segData.nSlideSegs; h++) {
+	nSegment = gameData.segData.slideSegs [h].nSegment;
 	segP = SEGMENT (nSegment);
-	sides = gameData.segs.slideSegs [h].nSides;
+	sides = gameData.segData.slideSegs [h].nSides;
 	for (nSide = 0, sideP = segP->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 		if (!(segP->Side (nSide)->FaceCount () && (sides & (1 << nSide))))
 			continue;
@@ -1412,11 +1412,11 @@ playerP->CollidePlayerAndPowerup (powerupP, vCollision);
 //	way before the player gets there.
 void PowerupGrabCheatAll (void)
 {
-if (gameStates.app.tick40fps.bTick && (gameData.objs.consoleP->info.nSegment != -1)) {
-	int16_t nObject = SEGMENT (gameData.objs.consoleP->info.nSegment)->m_objects;
+if (gameStates.app.tick40fps.bTick && (gameData.objData.consoleP->info.nSegment != -1)) {
+	int16_t nObject = SEGMENT (gameData.objData.consoleP->info.nSegment)->m_objects;
 	while (nObject != -1) {
 		if (OBJECT (nObject)->info.nType == OBJ_POWERUP)
-			PowerupGrabCheat (gameData.objs.consoleP, nObject);
+			PowerupGrabCheat (gameData.objData.consoleP, nObject);
 		nObject = OBJECT (nObject)->info.nNextInSeg;
 		}
 	}
@@ -1431,7 +1431,7 @@ int32_t nLastLevelPathCreated = -1;
 int32_t MarkPlayerPathToSegment (int32_t nSegment)
 {
 	int32_t		i;
-	CObject* objP = gameData.objs.consoleP;
+	CObject* objP = gameData.objData.consoleP;
 	int16_t		playerPathLength = 0;
 	int32_t		playerHideIndex = -1;
 
@@ -1469,7 +1469,7 @@ for (i = 1; i < playerPathLength; i++) {
 		return 1;
 		}
 	objP = OBJECT (nObject);
-	objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+	objP->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [objP->info.nId].nClipIndex;
 	objP->rType.animationInfo.xFrameTime = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
 	objP->rType.animationInfo.nCurFrame = 0;
 	objP->SetLife (I2X (100) + RandShort () * 4);
@@ -1482,7 +1482,7 @@ return 1;
 //	Return true if it happened, else return false.
 int32_t MarkPathToExit (void)
 {
-for (int32_t i = 0; i <= gameData.segs.nLastSegment; i++) {
+for (int32_t i = 0; i <= gameData.segData.nLastSegment; i++) {
 	for (int32_t j = 0, h = SEGMENT_SIDE_COUNT; j < h; j++)
 		if (SEGMENT (i)->m_children [j] == -2)
 			return MarkPlayerPathToSegment (i);

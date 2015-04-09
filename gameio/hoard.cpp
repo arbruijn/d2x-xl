@@ -91,11 +91,11 @@ if (!tga.Read ("monsterball.tga", gameFolders.game.szTextures [1], -1, 1.0, 0)) 
 	}
 
 //Create monsterball powerup
-ptP = gameData.objs.pwrUp.info + POW_MONSTERBALL;
+ptP = gameData.objData.pwrUp.info + POW_MONSTERBALL;
 ptP->nClipIndex = gameData.hoard.monsterball.nClip;
-ptP->hitSound = -1; //gameData.objs.pwrUp.info [POW_SHIELD_BOOST].hitSound;
-ptP->size = (gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size * extraGameInfo [1].monsterball.nSizeMod) / 2;
-ptP->light = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].light;
+ptP->hitSound = -1; //gameData.objData.pwrUp.info [POW_SHIELD_BOOST].hitSound;
+ptP->size = (gameData.objData.pwrUp.info [POW_SHIELD_BOOST].size * extraGameInfo [1].monsterball.nSizeMod) / 2;
+ptP->light = gameData.objData.pwrUp.info [POW_SHIELD_BOOST].light;
 return nBitmap;
 }
 
@@ -196,11 +196,11 @@ if (!gameData.hoard.bInitialized) {
 		}
 	
 	//Create hoard orb powerup
-	ptP = gameData.objs.pwrUp.info + POW_HOARD_ORB;
+	ptP = gameData.objData.pwrUp.info + POW_HOARD_ORB;
 	ptP->nClipIndex = gameData.hoard.orb.nClip;
-	ptP->hitSound = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].hitSound;
-	ptP->size = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size;
-	ptP->light = gameData.objs.pwrUp.info [POW_SHIELD_BOOST].light;
+	ptP->hitSound = gameData.objData.pwrUp.info [POW_SHIELD_BOOST].hitSound;
+	ptP->size = gameData.objData.pwrUp.info [POW_SHIELD_BOOST].size;
+	ptP->light = gameData.objData.pwrUp.info [POW_SHIELD_BOOST].light;
 	
 	//Create orb goal wall effect
 	gameData.hoard.goal.nClip = gameData.effects.nEffects [0]++;

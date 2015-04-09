@@ -13,7 +13,7 @@
 #include "segmath.h"
 #include "text.h"
 
-// Number of vertices in current mine (ie, gameData.segs.vertices, pointed to by Vp)
+// Number of vertices in current mine (ie, gameData.segData.vertices, pointed to by Vp)
 //	Translate table to get opposite CSide of a face on a CSegment.
 char	oppSideTable [SEGMENT_SIDE_COUNT] = {WRIGHT, WBOTTOM, WLEFT, WTOP, WFRONT, WBACK};
 
@@ -52,8 +52,8 @@ return this - SEGMENTS;
 
 int32_t CSegment::HasVertex (uint8_t nSide, uint16_t nVertex) 
 { 
-if ((gameData.segs.vertexOwners [nVertex].nSegment == Index ()) && 
-	 (gameData.segs.vertexOwners [nVertex].nSide == nSide))
+if ((gameData.segData.vertexOwners [nVertex].nSegment == Index ()) && 
+	 (gameData.segData.vertexOwners [nVertex].nSide == nSide))
 	return 1;
 return Side (nSide)->HasVertex (nVertex);
 }
@@ -150,7 +150,7 @@ m_xDamage [1] = 0;
 void CSegment::ReadExtras (CFile& cf)
 {
 m_function = cf.ReadByte ();
-if (gameData.segs.nLevelVersion < 24) {
+if (gameData.segData.nLevelVersion < 24) {
 	m_nObjProducer = cf.ReadByte ();
 	m_value = cf.ReadByte ();
 	}
@@ -159,7 +159,7 @@ else {
 	m_value = cf.ReadShort ();
 	}
 m_flags = cf.ReadByte ();
-if (gameData.segs.nLevelVersion <= 20)
+if (gameData.segData.nLevelVersion <= 20)
 	Upgrade ();
 else {
 	m_props = cf.ReadByte ();
@@ -190,7 +190,7 @@ else {
 
 uint8_t flags = bNewFileFormat ? cf.ReadByte () : 0x7f;
 
-if (gameData.segs.nLevelVersion == 5) { // d2 SHAREWARE level
+if (gameData.segData.nLevelVersion == 5) { // d2 SHAREWARE level
 	ReadFunction (cf, flags);
 	ReadVerts (cf);
 	ReadChildren (cf, flags);
@@ -198,13 +198,13 @@ if (gameData.segs.nLevelVersion == 5) { // d2 SHAREWARE level
 else {
 	ReadChildren (cf, flags);
 	ReadVerts (cf);
-	if (gameData.segs.nLevelVersion <= 1) { // descent 1 level
+	if (gameData.segData.nLevelVersion <= 1) { // descent 1 level
 		ReadFunction (cf, flags);
 		}
 	}
 m_objects = -1;
 
-if (gameData.segs.nLevelVersion <= 5) // descent 1 thru d2 SHAREWARE level
+if (gameData.segData.nLevelVersion <= 5) // descent 1 thru d2 SHAREWARE level
 	m_xAvgSegLight	= fix (cf.ReadShort ()) << 4;
 
 // Read the walls as a 6 byte array
@@ -218,11 +218,11 @@ for (i = 0; i < SEGMENT_SIDE_COUNT; i++)
 uint16_t sideVerts [4];
 
 for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
-	if (gameData.segs.nLevelVersion < 25)
+	if (gameData.segData.nLevelVersion < 25)
 		GetCornerIndex (i, sideVerts);
 	m_sides [i].Read (cf, m_vertices, sideVerts, m_children [i] == -1);
 	}
-if (gameData.segs.nLevelVersion > 24) 
+if (gameData.segData.nLevelVersion > 24) 
 	RemapVertices ();
 }
 
@@ -297,7 +297,7 @@ for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 	if (0 > m_children [i])
 		dist = 0xFFFF;
 	else {
-		dist = m_childDists [0][i] / gameData.segs.xDistScale;
+		dist = m_childDists [0][i] / gameData.segData.xDistScale;
 		if (dist == 0)
 			dist = 1;
 		}
@@ -317,7 +317,7 @@ vMin.v.coord.x = vMin.v.coord.y = vMin.v.coord.z = 0x7FFFFFFF;
 vMax.v.coord.x = vMax.v.coord.y = vMax.v.coord.z = -0x7FFFFFFF;
 for (int32_t i = 0; i < 8; i++) {
 	if (m_vertices [i] != 0xFFFF) {
-		v = gameData.segs.vertices [m_vertices [i]];
+		v = gameData.segData.vertices [m_vertices [i]];
 		if (vMin.v.coord.x > v.v.coord.x)
 			vMin.v.coord.x = v.v.coord.x;
 		if (vMin.v.coord.y > v.v.coord.y)
@@ -418,7 +418,7 @@ int32_t nVertex;
 do {
 	nVertex = Rand (m_nVertices);
 } while (m_vertices [nVertex] == 0xFFFF);
-CFixVector v = gameData.segs.vertices [m_vertices [nVertex]] - m_vCenter;
+CFixVector v = gameData.segData.vertices [m_vertices [nVertex]] - m_vCenter;
 v *= (RandShort ());
 return v + m_vCenter;
 }
@@ -466,7 +466,7 @@ if (SEGMENT (nChildSeg)->HasBlockedProp ()) {
 	}
 else if ((m_function == SEGMENT_FUNC_SPEEDBOOST) && (nChildType != SEGMENT_FUNC_SPEEDBOOST)) {
 	// handle the player in a speed boost area. The player must only exit speed boost areas through a segment side with a speed boost trigger
-	if ((objP == gameData.objs.consoleP) && gameData.objs.speedBoost [objP->Index ()].bBoosted) {
+	if ((objP == gameData.objData.consoleP) && gameData.objData.speedBoost [objP->Index ()].bBoosted) {
 		if (!wallP)
 			return WID_VISIBLE_FLAG;
 		CTrigger* trigP = wallP->Trigger ();
@@ -497,10 +497,10 @@ if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 	BRP;
 #endif
 
-if ((objP == gameData.objs.consoleP) &&
-	 gameData.objs.speedBoost [objP->Index ()].bBoosted &&
+if ((objP == gameData.objData.consoleP) &&
+	 gameData.objData.speedBoost [objP->Index ()].bBoosted &&
 	 (m_function == SEGMENT_FUNC_SPEEDBOOST) && (childP->m_function != SEGMENT_FUNC_SPEEDBOOST) &&
-	 (!wallP || (TRIGGER (wallP->nTrigger)->m_info.nType != TT_SPEEDBOOST)))
+	 (!wallP || (GEOTRIGGER (wallP->nTrigger)->m_info.nType != TT_SPEEDBOOST)))
 	return WID_VISIBLE_FLAG;
 
 if (childP->HasBlockedProp ())
@@ -545,7 +545,7 @@ return 0;
 //set the nBaseTex or nOvlTex field for a CWall/door
 void CSegment::SetTexture (int32_t nSide, CSegment *connSegP, int16_t nConnSide, int32_t nAnim, int32_t nFrame)
 {
-	tWallEffect*	animP = gameData.walls.animP + nAnim;
+	tWallEffect*	animP = gameData.wallData.animP + nAnim;
 	int16_t			nTexture = animP->frames [(animP->flags & WCF_ALTFMT) ? 0 : nFrame];
 	CBitmap*			bmP;
 	int32_t			nFrames;
@@ -665,12 +665,12 @@ else {
 KillStuckObjects (WallNum (nSide));
 
 //if this is an exploding wall, explode it
-if ((gameData.walls.animP [wallP->nClip].flags & WCF_EXPLODES) && !(wallP->flags & WALL_BLASTED))
+if ((gameData.wallData.animP [wallP->nClip].flags & WCF_EXPLODES) && !(wallP->flags & WALL_BLASTED))
 	ExplodeWall (Index (), nSide);
 else {
 	//if not exploding, set final frame, and make door passable
 	a = wallP->nClip;
-	n = WallEffectFrameCount (gameData.walls.animP + a);
+	n = WallEffectFrameCount (gameData.wallData.animP + a);
 	SetTexture (nSide, connSegP, nConnSide, a, n - 1);
 	wallP->flags |= WALL_BLASTED;
 	if (IS_WALL (nConnWall))
@@ -729,7 +729,7 @@ wallP->hps -= damage;
 if (IS_WALL (nConnWall))
 	WALL (nConnWall)->hps -= damage;
 a = wallP->nClip;
-n = WallEffectFrameCount (gameData.walls.animP + a);
+n = WallEffectFrameCount (gameData.wallData.animP + a);
 if (wallP->hps < WALL_HPS * 1 / n) {
 	BlastWall (nSide);
 	if (IsMultiGame)
@@ -794,8 +794,8 @@ if (IS_WALL (wallP->nLinkedWall) && IS_WALL (nConnWall) && (wallP->nLinkedWall =
 else
 	doorP->nPartCount = 1;
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	if ((wallP->nClip >= 0) && (gameData.walls.animP [wallP->nClip].openSound > -1))
-		CreateSound (gameData.walls.animP [wallP->nClip].openSound, nSide);
+	if ((wallP->nClip >= 0) && (gameData.wallData.animP [wallP->nClip].openSound > -1))
+		CreateSound (gameData.wallData.animP [wallP->nClip].openSound, nSide);
 	}
 }
 
@@ -839,8 +839,8 @@ else
 #endif
 	doorP->nPartCount = 1;
 if (gameData.demo.nState != ND_STATE_PLAYBACK) {
-	if (gameData.walls.animP [wallP->nClip].openSound > -1)
-		CreateSound (gameData.walls.animP [wallP->nClip].openSound, nSide);
+	if (gameData.wallData.animP [wallP->nClip].openSound > -1)
+		CreateSound (gameData.wallData.animP [wallP->nClip].openSound, nSide);
 	}
 }
 
@@ -1131,7 +1131,7 @@ int32_t CSegment::BlowupTexture (int32_t nSide, CFixVector& vHit, CObject* blowe
 
 if (parentP) {
 	// only the player and the guidebot may blow a texture up if a trigger is attached to it
-	if (parentP && (parentP->info.nType != OBJ_PLAYER) && ((parentP->info.nType != OBJ_ROBOT) || !ROBOTINFO (parentP)->companion) && wallP && (wallP->nTrigger < gameData.trigs.m_nTriggers))
+	if (parentP && (parentP->info.nType != OBJ_PLAYER) && ((parentP->info.nType != OBJ_ROBOT) || !ROBOTINFO (parentP)->companion) && wallP && (wallP->nTrigger < gameData.trigData.m_nTriggers [0]))
 		return 0;
 	}
 
@@ -1292,8 +1292,8 @@ return sideP->IsWall () && sideP->Wall ()->IsSolid ();
 
 // -------------------------------------------------------------------------------
 //	Set up all segments.
-//	gameData.segs.nLastSegment must be set.
-//	For all used segments (number <= gameData.segs.nLastSegment), nSegment field must be != -1.
+//	gameData.segData.nLastSegment must be set.
+//	For all used segments (number <= gameData.segData.nLastSegment), nSegment field must be != -1.
 
 void SetupSegments (fix xPlaneDistTolerance)
 {
@@ -1304,7 +1304,7 @@ PLANE_DIST_TOLERANCE = (xPlaneDistTolerance < 0) ? DEFAULT_PLANE_DIST_TOLERANCE 
 #endif
 gameOpts->render.nMathFormat = 0;
 RENDERPOINTS.Clear ();
-for (int32_t i = 0; i <= gameData.segs.nLastSegment; i++)
+for (int32_t i = 0; i <= gameData.segData.nLastSegment; i++)
 	SEGMENT (i)->Setup ();
 ComputeVertexNormals ();
 gameOpts->render.nMathFormat = gameOpts->render.nDefMathFormat;
@@ -1345,9 +1345,9 @@ for (int32_t i = 0; i < 4; i++) {
 	if (h != 0xFFFF) 
 		v [nVertices++] = h;
 	}
-float nSize = TriangleSize (gameData.segs.vertices [v [0]], gameData.segs.vertices [v [1]], gameData.segs.vertices [v [2]]);
+float nSize = TriangleSize (gameData.segData.vertices [v [0]], gameData.segData.vertices [v [1]], gameData.segData.vertices [v [2]]);
 if (nVertices == 4)
-nSize += TriangleSize (gameData.segs.vertices [v [0]], gameData.segs.vertices [v [2]], gameData.segs.vertices [v [3]]);
+nSize += TriangleSize (gameData.segData.vertices [v [0]], gameData.segData.vertices [v [2]], gameData.segData.vertices [v [3]]);
 return nSize;
 }
 

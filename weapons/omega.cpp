@@ -272,7 +272,7 @@ if (0 > (nFiringSeg = FindSegByPos (*vMuzzle, nParentSeg, 1, 0))) {
 	return;
 	}
 //	Play sound.
-if (parentObjP == gameData.objs.viewerP)
+if (parentObjP == gameData.objData.viewerP)
 	audio.PlaySound (gameData.weapons.info [weaponObjP->info.nId].flashSound);
 else
 	audio.CreateSegmentSound (gameData.weapons.info [weaponObjP->info.nId].flashSound,

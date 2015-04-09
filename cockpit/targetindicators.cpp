@@ -28,7 +28,7 @@
 #	define fabsf(_f)	(float) fabs (_f)
 #endif
 
-#define IS_TRACK_GOAL(_objP)	(((_objP) == gameData.objs.trackGoals [0]) || ((_objP) == gameData.objs.trackGoals [1]))
+#define IS_TRACK_GOAL(_objP)	(((_objP) == gameData.objData.trackGoals [0]) || ((_objP) == gameData.objData.trackGoals [1]))
 
 // -----------------------------------------------------------------------------
 
@@ -89,7 +89,7 @@ return ((_C / d - _A) / _B + 1.0f) * 0.5f;
 
 static float AlphaScale (CObject* objP)
 {
-float scale = X2F (CFixVector::Dist (objP->Position (), gameData.objs.viewerP->Position ()));
+float scale = X2F (CFixVector::Dist (objP->Position (), gameData.objData.viewerP->Position ()));
 scale = /*ZFAR **/ 1.0f - sqrt (scale / ZFAR);
 //scale = NDC (scale);
 //scale /= ZFAR;

@@ -111,7 +111,7 @@ if (bWarp && (nPlayer == N_LOCALPLAYER) && !AppearanceStage ()) {
 	}
 else {
 	CFixVector vPos = info.position.vPos;
-	if (this == gameData.objs.viewerP)
+	if (this == gameData.objData.viewerP)
 		vPos += info.position.mOrient.m.dir.f * FixMul (info.xSize, flashDist);
 	CObject* effectObjP = bWarp ? CreateExplBlast (true) : CreateExplosion (info.nSegment, vPos, info.xSize, ANIM_PLAYER_APPEARANCE);
 	if (bWarp || effectObjP) {

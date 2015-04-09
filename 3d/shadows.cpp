@@ -1005,7 +1005,7 @@ v = *vPos - vLightPos;
 CFixVector::Normalize (v);
 v *= I2X (G3_INFINITY);
 if (!nVisited++)
-	memset (bVisited, 0, gameData.segs.nSegments * sizeof (uint32_t));
+	memset (bVisited, 0, gameData.segData.nSegments * sizeof (uint32_t));
 
 #if DBG_SHADOWS
 if (bPrintLine) {
@@ -1039,8 +1039,8 @@ for (;;) {
 		nChild = segP->m_children [nSide];
 		if ((nChild < 0) || (bVisited [nChild] == nVisited))
 			continue;
-		xDist = VmLinePointDist (vPos, &dir, gameData.segs.segCenters [1] + nChild);
-		if (xDist <= gameData.segs.segRads [0][nChild]) {
+		xDist = VmLinePointDist (vPos, &dir, gameData.segData.segCenters [1] + nChild);
+		if (xDist <= gameData.segData.segRads [0][nChild]) {
 			nHitSide = LineHitsFace (&vHit, vPos, &dir, nSegment, nSide);
 			break;
 			}
@@ -1598,7 +1598,7 @@ if (FAST_SHADOWS) {
 				transformation.Transform (vShadowOffset, objP->Position ());
 				vShadowOffset -= vLightPos;
 				CFixVector::Normalize (vShadowOffset);
-				float dist = X2F (CFixVector::Dist (objP->Position (), gameData.objs.viewerP->Position ()));
+				float dist = X2F (CFixVector::Dist (objP->Position (), gameData.objData.viewerP->Position ()));
 				if (dist > 400.0)
 					dist = 400.0;
 				vShadowOffset *= F2X (sqrt (dist / 400.0));

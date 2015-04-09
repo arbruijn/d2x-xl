@@ -285,7 +285,7 @@ if (xObjIntensity) {
 			if ((nVertex ^ gameData.app.nFrameCount) & 1)
 #endif
 		 {
-				vVertPos = gameData.segs.vertices + nVertex;
+				vVertPos = gameData.segData.vertices + nVertex;
 				dist = CFixVector::Dist (*vObjPos, *vVertPos) / 4;
 				dist = FixMul (dist, dist);
 				if (dist < abs (obji_64)) {
@@ -332,7 +332,7 @@ if (xObjIntensity) {
 			if ((nVertex ^ gameData.app.nFrameCount) & 1)
 #endif
 				{
-				vVertPos = gameData.segs.vertices + nVertex;
+				vVertPos = gameData.segData.vertices + nVertex;
 				dist = CFixVector::Dist (*vObjPos, *vVertPos);
 				if ((dist >> headlightShift) < abs (obji_64)) {
 					if (dist < MIN_LIGHT_DIST)
@@ -546,7 +546,7 @@ switch (nObjType) {
 		if (objP->info.nId < 9)
 			*colorP = powerupColors [objP->info.nId];
 		*pbGotColor = 1;
-		return gameData.objs.pwrUp.info [objP->info.nId].light;
+		return gameData.objData.pwrUp.info [objP->info.nId].light;
 		break;
 
 	case OBJ_DEBRIS:
@@ -610,7 +610,7 @@ if (!gameStates.render.nLightingMethod) {
 		}
 	for (iVertex = 0; iVertex < nRenderVertices; iVertex++) {
 		nVertex = gameData.render.lights.vertices [iVertex];
-		Assert (nVertex >= 0 && nVertex <= gameData.segs.nLastVertex);
+		Assert (nVertex >= 0 && nVertex <= gameData.segData.nLastVertex);
 #if FLICKERFIX == 0
 		if ((nVertex ^ gameData.app.nFrameCount) & 1)
 #endif
@@ -727,7 +727,7 @@ fix ComputeObjectLight (CObject *objP, CFixVector *vTransformed)
 	if (nObject < 0)
 		return I2X (1);
 #if DBG
-	if (nObject > gameData.objs.nLastObject [0])
+	if (nObject > gameData.objData.nLastObject [0])
 		return 0;
 #endif
 	//First, get static light for this CSegment
@@ -736,7 +736,7 @@ fix light;
 if (gameStates.render.nLightingMethod && (objP->info.renderType != RT_POLYOBJ)) {
 	int32_t nState = gameStates.render.nState;
 	gameStates.render.nState = -1;
-	gameData.objs.color = *lightManager.AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos, 0);
+	gameData.objData.color = *lightManager.AvgSgmColor (objP->info.nSegment, &objP->info.position.vPos, 0);
 	gameStates.render.nState = nState;
 	light = I2X (1);
 	}
@@ -745,21 +745,21 @@ else
 	light = SEGMENT (objP->info.nSegment)->m_xAvgSegLight;
 //return light;
 //Now, maybe return different value to smooth transitions
-if (!bResetLightingHack && (gameData.objs.nLightSig [nObject] == objP->info.nSignature)) {
+if (!bResetLightingHack && (gameData.objData.nLightSig [nObject] == objP->info.nSignature)) {
 	fix xDeltaLight, xFrameDelta;
-	xDeltaLight = light - gameData.objs.xLight [nObject];
+	xDeltaLight = light - gameData.objData.xLight [nObject];
 	xFrameDelta = FixMul (LIGHT_RATE, gameData.time.xFrame);
 	if (abs (xDeltaLight) <= xFrameDelta)
-		gameData.objs.xLight [nObject] = light;		//we've hit the goal
+		gameData.objData.xLight [nObject] = light;		//we've hit the goal
 	else
 		if (xDeltaLight < 0)
-			light = gameData.objs.xLight [nObject] -= xFrameDelta;
+			light = gameData.objData.xLight [nObject] -= xFrameDelta;
 		else
-			light = gameData.objs.xLight [nObject] += xFrameDelta;
+			light = gameData.objData.xLight [nObject] += xFrameDelta;
 	}
 else {		//new CObject, initialize
-	gameData.objs.nLightSig [nObject] = objP->info.nSignature;
-	gameData.objs.xLight [nObject] = light;
+	gameData.objData.nLightSig [nObject] = objP->info.nSignature;
+	gameData.objData.xLight [nObject] = light;
 	}
 //Next, add in headlight on this CObject
 // -- Matt code: light += ComputeHeadlight (vTransformed,I2X (1));
@@ -1083,7 +1083,7 @@ void ApplyAllChangedLight (void)
 	uint8_t	h;
 	CSegment* segP = SEGMENTS.Buffer ();
 
-for (i = 0; i < gameData.segs.nSegments; i++, segP++) {
+for (i = 0; i < gameData.segData.nSegments; i++, segP++) {
 	h = gameData.render.lights.subtracted [i];
 	for (j = 0; j < SEGMENT_SIDE_COUNT; j++)
 		if (segP->Side (j)->FaceCount () && (h & (1 << j)))
@@ -1113,7 +1113,7 @@ void ComputeAllStaticLight (void)
 	CSide		*sideP;
 	fix		xTotal;
 
-for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segs.nLastSegment; i++, segP++) {
+for (i = 0, segP = SEGMENTS.Buffer (); i <= gameData.segData.nLastSegment; i++, segP++) {
 	xTotal = 0;
 	for (h = j = 0, sideP = segP->m_sides; j < SEGMENT_SIDE_COUNT; j++, sideP++) {
 		if (sideP->FaceCount () && ((segP->m_children [j] < 0) || sideP->IsWall ())) {
@@ -1134,7 +1134,7 @@ void CLightDelta::Read (CFile& cf)
 nSegment = cf.ReadShort ();
 nSide = cf.ReadByte ();
 cf.ReadByte ();
-bValid = (nSegment >= 0) && (nSegment < gameData.segs.nSegments) && (nSide >= 0) && (nSide < 6);
+bValid = (nSegment >= 0) && (nSegment < gameData.segData.nSegments) && (nSide >= 0) && (nSide < 6);
 cf.Read (vertLight, sizeof (vertLight [0]), sizeofa (vertLight));
 }
 

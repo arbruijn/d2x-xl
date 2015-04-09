@@ -226,7 +226,7 @@ if (gameOpts->render.debug.bWireFrame) {
 		glLineWidth (6);
 		if (ogl.SizeVertexBuffer (4)) {
 			for (int32_t i = 0; i < 4; i++)
-				ogl.VertexBuffer () [i] = gameData.segs.fVertices [faceP->m_info.index [i]];
+				ogl.VertexBuffer () [i] = gameData.segData.fVertices [faceP->m_info.index [i]];
 			ogl.FlushBuffers (GL_LINE_LOOP, 4);
 			}	
 		if (gameStates.render.bTriangleMesh) {

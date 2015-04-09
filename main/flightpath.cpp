@@ -78,7 +78,7 @@ void CFlightPath::GetViewPoint (CFixVector* vPos)
 if (!vPos)
 	vPos = &gameData.render.mine.viewer.vPos;
 if (!p)
-	*vPos += gameData.objs.viewerP->info.position.mOrient.m.dir.f * PP_DELTAZ;
+	*vPos += gameData.objData.viewerP->info.position.mOrient.m.dir.f * PP_DELTAZ;
 else {
 	*vPos = p->vPos;
 	int32_t nStage = LOCALOBJECT->AppearanceStage ();

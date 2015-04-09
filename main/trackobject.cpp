@@ -177,7 +177,7 @@ int32_t CObject::FindTargetWindow (void)
 {
 for (int32_t i = 0; i < MAX_RENDERED_WINDOWS; i++)
 	if ((windowRenderedData [i].nFrame >= gameData.app.nFrameCount - 1) &&
-		 ((windowRenderedData [i].viewerP == gameData.objs.consoleP) || (this == GuidedInMainView ())) &&
+		 ((windowRenderedData [i].viewerP == gameData.objData.consoleP) || (this == GuidedInMainView ())) &&
 		 !windowRenderedData [i].bRearView) {
 		return i;
 		}
@@ -213,7 +213,7 @@ if (IsMultiGame)
 
 //	Not in network mode.  If not fired by player, then track player.
 if ((Type () != OBJ_PLAYER) && (cType.laserInfo.parent.nObject != LOCALPLAYER.nObject) && !(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
-	return OBJ_IDX (gameData.objs.consoleP);
+	return OBJ_IDX (gameData.objData.consoleP);
 
 	int32_t nWindow = FindTargetWindow ();
 

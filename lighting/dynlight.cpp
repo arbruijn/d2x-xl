@@ -254,7 +254,7 @@ while ((i = FindTriggerTarget (nSegment, nSide, i))) {
 	if (i < 0)
 		trigP = OBJTRIGGER (-i - 1);
 	else
-		trigP = TRIGGER (i - 1);
+		trigP = GEOTRIGGER (i - 1);
 	if (trigP && ((trigP->m_info.nType == TT_OPEN_WALL) || (trigP->m_info.nType == TT_CLOSE_WALL)))
 		return 1;
 	if (!bForceField) {
@@ -593,7 +593,7 @@ return 0;
 int32_t CDynLight::LightPathLength (const int16_t nLightSeg, const int16_t nDestSeg, const CFixVector& vDestPos, fix xMaxLightRange, int32_t bFastRoute, int32_t nThread)
 {
 fix dist = (bFastRoute) 
-			  ? gameData.segs.SegDist (nLightSeg, nDestSeg)
+			  ? gameData.segData.SegDist (nLightSeg, nDestSeg)
 			  : simpleRouter [nThread].PathLength (info.vPos, nLightSeg, vDestPos, nDestSeg, X2I (xMaxLightRange / 5), WID_TRANSPARENT_FLAG | WID_PASSABLE_FLAG, 0);
 if (dist < 0)
 	return -1;
@@ -725,7 +725,7 @@ if ((nLightSeg >= 0) && (nDestSeg >= 0)) {
 		BRP;
 #endif
 	if (info.nSide < 0) 
-		info.bDiffuse [nThread] = gameData.segs.SegVis (nLightSeg, nDestSeg);
+		info.bDiffuse [nThread] = gameData.segData.SegVis (nLightSeg, nDestSeg);
 	else {
 #if DBG
 		if (nDestSeg == nDbgSeg)
@@ -736,14 +736,14 @@ if ((nLightSeg >= 0) && (nDestSeg >= 0)) {
 				return 0;
 			info.bDiffuse [nThread] = 1;
 			}
-		else if (0 > (info.bDiffuse [nThread] = gameData.segs.LightVis (Index (), nDestSeg)))
+		else if (0 > (info.bDiffuse [nThread] = gameData.segData.LightVis (Index (), nDestSeg)))
 			return 0;
 		}
 	}
 #if 0 //DBG
 #else
 else if ((nLightSeg = LightSeg ()) >= 0)
-	info.bDiffuse [nThread] = (nDestSeg < 0) || gameData.segs.SegVis (nLightSeg, nDestSeg);
+	info.bDiffuse [nThread] = (nDestSeg < 0) || gameData.segData.SegVis (nLightSeg, nDestSeg);
 #endif
 else
 	return 0;
@@ -820,10 +820,10 @@ if ((nLightSeg < 0) || (info.nSide < 0))
 	return 0;
 if (!(info.visibleVertices || (info.visibleVertices = new CByteArray ())))
 	return -1;
-if (!info.visibleVertices->Create (gameData.segs.nVertices))
+if (!info.visibleVertices->Create (gameData.segData.nVertices))
 	return -1;
 CSide* sideP = SEGMENT (nLightSeg)->Side (info.nSide);
-for (int32_t i = 0; i < gameData.segs.nVertices; i++)
+for (int32_t i = 0; i < gameData.segData.nVertices; i++)
 	(*info.visibleVertices) [i] = sideP->SeesPoint (VERTICES [i], -1, 2, nThread);
 return 1;
 }
@@ -914,7 +914,7 @@ for (; nVertex < nMax; nVertex++, pf++) {
 	if (nVertex == nDbgVertex)
 		BRP;
 #endif
-	vVertex.Assign (gameData.segs.vertices [nVertex]);
+	vVertex.Assign (gameData.segData.vertices [nVertex]);
 	lightManager.ResetActive (nThread, 0);
 	lightManager.ResetAllUsed (0, nThread);
 	lightManager.SetNearestToVertex (-1, -1, nVertex, NULL, 1, 1, bColorize, nThread);
@@ -943,7 +943,7 @@ m_data.renderLights.Clear ();
 for (i = 0; i < MAX_THREADS; i++)
 	m_data.active [i].Clear (0);
 Transform (1, bColorize);
-for (i = 0; i < gameData.segs.nVertices; i++) {
+for (i = 0; i < gameData.segData.nVertices; i++) {
 #if DBG
 	if (i == nDbgVertex)
 		BRP;
@@ -958,13 +958,13 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 		CFaceColor*	pf = gameData.render.color.ambient.Buffer ();
 		CSegment*	segP;
 
-	memset (pf, 0, gameData.segs.nVertices * sizeof (*pf));
+	memset (pf, 0, gameData.segData.nVertices * sizeof (*pf));
 #if USE_OPENMP // > 1
 	if (gameStates.app.bMultiThreaded) {
 		int32_t nStart, nEnd;
 #	pragma omp parallel for private (nStart, nEnd)
 		for (i = 0; i < gameStates.app.nThreads; i++) {
-			ComputeThreadRange (i, gameData.segs.nVertices, nStart, nEnd);
+			ComputeThreadRange (i, gameData.segData.nVertices, nStart, nEnd);
 			lightManager.GatherStaticVertexLights (nStart, nEnd, i);
 			}
 		}
@@ -972,9 +972,9 @@ if (gameStates.render.nLightingMethod || (gameStates.render.bAmbientColor && !ga
 #else
 	//if (!RunRenderThreads (rtStaticVertLight))
 #endif
-		lightManager.GatherStaticVertexLights (0, gameData.segs.nVertices, 0);
+		lightManager.GatherStaticVertexLights (0, gameData.segData.nVertices, 0);
 	pf = gameData.render.color.ambient.Buffer ();
-	for (i = 0, segP = SEGMENTS.Buffer (); i < gameData.segs.nSegments; i++, segP++) {
+	for (i = 0, segP = SEGMENTS.Buffer (); i < gameData.segData.nSegments; i++, segP++) {
 		if (segP->m_function == SEGMENT_FUNC_SKYBOX) {
 			uint16_t* sv = segP->m_vertices;
 			for (j = 8; j; j--, sv++)

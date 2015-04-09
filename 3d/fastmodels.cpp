@@ -119,8 +119,8 @@ if (SHOW_DYN_LIGHT && (gameOpts->ogl.bObjLighting ||
 		G3DynLightModel (objP, modelP, 0, modelP->m_nVerts, 0, modelP->m_nFaceVerts);
 	}
 else {
-	if (gameData.objs.color.index)
-		baseColor.Assign (gameData.objs.color);
+	if (gameData.objData.color.index)
+		baseColor.Assign (gameData.objData.color);
 	else
 		baseColor.Set (1.0f, 1.0f, 1.0f);
 	baseColor.Alpha () = fAlpha;

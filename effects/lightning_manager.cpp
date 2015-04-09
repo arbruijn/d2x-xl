@@ -279,9 +279,9 @@ if (SHOW_LIGHTNING (1)) {
 		return 0;
 #	endif
 #endif
-	for (i = 0, objP = OBJECTS.Buffer (); i <= gameData.objs.nLastObject [1]; i++, objP++) {
-		if (gameData.objs.bWantEffect [i] & DESTROY_LIGHTNING) {
-			gameData.objs.bWantEffect [i] &= ~DESTROY_LIGHTNING;
+	for (i = 0, objP = OBJECTS.Buffer (); i <= gameData.objData.nLastObject [1]; i++, objP++) {
+		if (gameData.objData.bWantEffect [i] & DESTROY_LIGHTNING) {
+			gameData.objData.bWantEffect [i] &= ~DESTROY_LIGHTNING;
 			DestroyForObject (objP);
 			}
 		}
@@ -318,7 +318,7 @@ if (SHOW_LIGHTNING (1)) {
 
 	FORALL_OBJS (objP) {
 		i = objP->Index ();
-		h = gameData.objs.bWantEffect [i];
+		h = gameData.objData.bWantEffect [i];
 		if (h & EXPL_LIGHTNING) {
 			if ((objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_DEBRIS) || (objP->info.nType == OBJ_REACTOR))
 				CreateForBlowup (objP);
@@ -355,7 +355,7 @@ if (SHOW_LIGHTNING (1)) {
 			if ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT))
 				MoveForObject (objP);
 			}
-		gameData.objs.bWantEffect [i] &= ~(PLAYER_LIGHTNING | ROBOT_LIGHTNING | MISSILE_LIGHTNING | EXPL_LIGHTNING | MOVE_LIGHTNING);
+		gameData.objData.bWantEffect [i] &= ~(PLAYER_LIGHTNING | ROBOT_LIGHTNING | MISSILE_LIGHTNING | EXPL_LIGHTNING | MOVE_LIGHTNING);
 		}
 	}
 }
@@ -559,7 +559,7 @@ else {
 
 void CLightningManager::SetSegmentLight (int16_t nSegment, CFixVector *vPosP, CFloatVector *colorP)
 {
-if ((nSegment < 0) || (nSegment >= gameData.segs.nSegments))
+if ((nSegment < 0) || (nSegment >= gameData.segData.nSegments))
 	return;
 else {
 		tLightningLight	*llP = m_lights + nSegment;
@@ -730,7 +730,7 @@ if (objP->IsMissile ()) {
 		CreateForMega (objP);
 	else
 		return 0;
-	gameData.objs.bWantEffect [objP->Index ()] &= ~DESTROY_LIGHTNING;
+	gameData.objData.bWantEffect [objP->Index ()] &= ~DESTROY_LIGHTNING;
 	return 1;
 	}
 return 0;

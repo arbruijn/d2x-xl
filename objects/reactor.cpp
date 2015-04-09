@@ -143,8 +143,8 @@ xScale = 1;
 if (gameStates.app.nDifficultyLevel == 0)
 	xScale = 4;
 h = I2X (3) / 16 + (I2X (16 - fc)) / 32;
-gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.x += (FixMul (SRandShort (), h)) / xScale;
-gameData.objs.consoleP->mType.physInfo.rotVel.v.coord.z += (FixMul (SRandShort (), h)) / xScale;
+gameData.objData.consoleP->mType.physInfo.rotVel.v.coord.x += (FixMul (SRandShort (), h)) / xScale;
+gameData.objData.consoleP->mType.physInfo.rotVel.v.coord.z += (FixMul (SRandShort (), h)) / xScale;
 //	Hook in the rumble sound effect here.
 oldTime = gameData.reactor.countdown.nTimer;
 if (!TimeStopped ())
@@ -311,7 +311,7 @@ if (!(rStatP->bHit || rStatP->bSeenPlayer)) {
 		if (i == SEGMENT_SIDE_COUNT)
 			return;
 
-		vecToPlayer = OBJPOS (gameData.objs.consoleP)->vPos - objP->info.position.vPos;
+		vecToPlayer = OBJPOS (gameData.objData.consoleP)->vPos - objP->info.position.vPos;
 		xDistToPlayer = CFixVector::Normalize (vecToPlayer);
 		if (xDistToPlayer < I2X (200)) {
 			rStatP->bSeenPlayer = AICanSeeTarget (objP, &objP->info.position.vPos, 0, &vecToPlayer);
@@ -328,7 +328,7 @@ if (rStatP->bHit || rStatP->bSeenPlayer) {
 		CFixVector	vecToPlayer;
 		fix			xDistToPlayer;
 
-		vecToPlayer = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
+		vecToPlayer = gameData.objData.consoleP->info.position.vPos - objP->info.position.vPos;
 		xDistToPlayer = CFixVector::Normalize (vecToPlayer);
 		rStatP->xLastVisCheckTime = gameData.time.xGame;
 		if (xDistToPlayer < I2X (120)) {
@@ -342,7 +342,7 @@ if (rStatP->bHit || rStatP->bSeenPlayer) {
 if ((rStatP->nNextFireTime < 0) && 
 	 !(gameStates.app.bPlayerIsDead && (gameData.time.xGame > gameStates.app.nPlayerTimeOfDeath + I2X (2)))) {
 	nBestGun = CalcBestReactorGun (gameData.reactor.props [objP->info.nId].nGuns, rStatP->vGunPos, rStatP->vGunDir, 
-											 (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) ? &gameData.ai.target.vBelievedPos : &gameData.objs.consoleP->info.position.vPos);
+											 (LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) ? &gameData.ai.target.vBelievedPos : &gameData.objData.consoleP->info.position.vPos);
 	if (nBestGun != -1) {
 		int32_t		nRandProb, count;
 		CFixVector	vecToGoal;
@@ -354,7 +354,7 @@ if ((rStatP->nNextFireTime < 0) &&
 			xDistToPlayer = CFixVector::Normalize (vecToGoal);
 			} 
 		else {
-			vecToGoal = gameData.objs.consoleP->info.position.vPos - rStatP->vGunPos [nBestGun];
+			vecToGoal = gameData.objData.consoleP->info.position.vPos - rStatP->vGunPos [nBestGun];
 			xDistToPlayer = CFixVector::Normalize (vecToGoal);
 			}
 		if (xDistToPlayer > I2X (300)) {

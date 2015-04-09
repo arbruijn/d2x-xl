@@ -287,10 +287,10 @@ void RenderObjectShadows (void)
 {
 	CObject* objP;
 	int32_t	j, bSee;
-	CObject	fakePlayerPos = *gameData.objs.viewerP;
+	CObject	fakePlayerPos = *gameData.objData.viewerP;
 
 FORALL_ACTOR_OBJS (objP)
-	if (objP == gameData.objs.consoleP)
+	if (objP == gameData.objData.consoleP)
 		RenderObject (objP, 0, 0);
 	else if ((objP->info.nType == OBJ_PLAYER) || 
 				(gameOpts->render.shadows.bRobots && (objP->info.nType == OBJ_ROBOT))) {

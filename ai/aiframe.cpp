@@ -1096,7 +1096,7 @@ if (targetP) {
 	return TARGETOBJ;
 	}
 #endif
-return gameData.objs.consoleP;
+return gameData.objData.consoleP;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -1431,7 +1431,7 @@ if (((si.aiP->GOAL_STATE == AIS_FLINCH) || (si.ailP->targetAwarenessType == PA_R
 	}
 if ((si.aiP->behavior < MIN_BEHAVIOR) || (si.aiP->behavior > MAX_BEHAVIOR))
 	si.aiP->behavior = AIB_NORMAL;
-//Assert (objP->info.nId < gameData.bots.nTypes [gameStates.app.bD1Data]);
+//Assert (objP->info.nId < gameData.botData.nTypes [gameStates.app.bD1Data]);
 if (AINextFireHandler (objP, &si))
 	return;
 

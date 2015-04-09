@@ -73,7 +73,7 @@ int32_t RenderMissileView (void)
 if (GuidedMslView (&objP)) {
 	if (gameOpts->render.cockpit.bGuidedInMainView) {
 		gameStates.render.nRenderingType = 6 + (1 << 4);
-		cockpit->RenderWindow (1, gameData.objs.viewerP, 0, WBUMSL, "SHIP");
+		cockpit->RenderWindow (1, gameData.objData.viewerP, 0, WBUMSL, "SHIP");
 		}
 	else {
 		gameStates.render.nRenderingType = 1+ (1 << 4);
@@ -85,22 +85,22 @@ else {
 	if (objP) {		//used to be active
 		if (!gameOpts->render.cockpit.bGuidedInMainView)
 			cockpit->RenderWindow (1, NULL, 0, WBU_STATIC, NULL);
-		gameData.objs.SetGuidedMissile (N_LOCALPLAYER, NULL);
+		gameData.objData.SetGuidedMissile (N_LOCALPLAYER, NULL);
 		}
-	if (gameData.objs.missileViewerP && !gameStates.render.bChaseCam) {		//do missile view
+	if (gameData.objData.missileViewerP && !gameStates.render.bChaseCam) {		//do missile view
 		static int32_t mslViewerSig = -1;
 		if (mslViewerSig == -1)
-			mslViewerSig = gameData.objs.missileViewerP->info.nSignature;
+			mslViewerSig = gameData.objData.missileViewerP->info.nSignature;
 		if (gameOpts->render.cockpit.bMissileView &&
-			 (gameData.objs.missileViewerP->info.nType != OBJ_NONE) &&
-			 (gameData.objs.missileViewerP->info.nSignature == mslViewerSig)) {
+			 (gameData.objData.missileViewerP->info.nType != OBJ_NONE) &&
+			 (gameData.objData.missileViewerP->info.nSignature == mslViewerSig)) {
 			//HUDMessage (0, "missile view");
   			gameStates.render.nRenderingType = 2 + (1 << 4);
-			cockpit->RenderWindow (1, gameData.objs.missileViewerP, 0, WBUMSL, "MISSILE");
+			cockpit->RenderWindow (1, gameData.objData.missileViewerP, 0, WBUMSL, "MISSILE");
 			return 1;
 			}
 		else {
-			gameData.objs.missileViewerP = NULL;
+			gameData.objData.missileViewerP = NULL;
 			mslViewerSig = -1;
 			gameStates.render.nRenderingType = 255;
 			cockpit->RenderWindow (1, NULL, 0, WBU_STATIC, NULL);
@@ -209,9 +209,9 @@ if (ogl.IsSideBySideDevice ()) {
 	transformation.ComputeFrustum ();
 
 	CFloatMatrix	view;
-	view.Assign (*gameData.objs.viewerP->View ());
+	view.Assign (*gameData.objData.viewerP->View ());
 	CFloatVector3	vPos;
-	vPos.Assign (gameData.objs.viewerP->Position ());
+	vPos.Assign (gameData.objData.viewerP->Position ());
 
 	CFloatVector3 quadVerts [4];
 
@@ -308,7 +308,7 @@ static void RenderShadowMaps (fix xStereoSeparation)
 {
 if (EGI_FLAG (bShadows, 0, 1, 0)) {
 	lightManager.ResetActive (1, 0);
-	int16_t nSegment = OBJSEG (gameData.objs.viewerP);
+	int16_t nSegment = OBJSEG (gameData.objData.viewerP);
 	lightManager.ResetNearestStatic (nSegment, 1);
 	lightManager.SetNearestStatic (nSegment, 1, 1);
 	CDynLightIndex* sliP = &lightManager.Index (0,1);
@@ -345,10 +345,10 @@ if ((gameData.demo.nState == ND_STATE_RECORDING) && (xStereoSeparation >= 0)) {
    if (!gameStates.render.nRenderingType)
    	NDRecordStartFrame (gameData.app.nFrameCount, gameData.time.xFrame);
    if (gameStates.render.nRenderingType != 255)
-   	NDRecordViewerObject (gameData.objs.viewerP);
+   	NDRecordViewerObject (gameData.objData.viewerP);
 	}
 
-StartLightingFrame (gameData.objs.viewerP);		//this is for ugly light-smoothing hack
+StartLightingFrame (gameData.objData.viewerP);		//this is for ugly light-smoothing hack
 //ogl.m_states.bEnableScissor = !gameStates.render.cameras.bActive && nWindow;
 
 if (!nWindow) 
@@ -513,10 +513,10 @@ if (xStereoSeparation <= 0) {
 	PROF_END(ptLighting)
 	}
 
-if (gameOpts->render.cockpit.bGuidedInMainView && gameData.objs.GetGuidedMissile (N_LOCALPLAYER)) {
+if (gameOpts->render.cockpit.bGuidedInMainView && gameData.objData.GetGuidedMissile (N_LOCALPLAYER)) {
 	int32_t w, h, aw;
 	const char *msg = "Guided Missile View";
-	CObject *viewerSave = gameData.objs.viewerP;
+	CObject *viewerSave = gameData.objData.viewerP;
 
    if (gameStates.render.cockpit.nType == CM_FULL_COCKPIT) {
 		gameStates.render.cockpit.bBigWindowSwitch = 1;
@@ -524,14 +524,14 @@ if (gameOpts->render.cockpit.bGuidedInMainView && gameData.objs.GetGuidedMissile
 		cockpit->Activate (CM_STATUS_BAR);
 		return;
 		}
-  	gameData.objs.viewerP = gameData.objs.GetGuidedMissile (N_LOCALPLAYER);
-	UpdateRenderedData (0, gameData.objs.viewerP, 0, 0);
+  	gameData.objData.viewerP = gameData.objData.GetGuidedMissile (N_LOCALPLAYER);
+	UpdateRenderedData (0, gameData.objData.viewerP, 0, 0);
 	if ((xStereoSeparation <= 0) && cameraManager.Render ())
 		CCanvas::Current ()->SetViewport ();
 	RenderFrame (xStereoSeparation, 0);
 	if (xStereoSeparation <= 0)
-  		WakeupRenderedObjects (gameData.objs.viewerP, 0);
-	gameData.objs.viewerP = viewerSave;
+  		WakeupRenderedObjects (gameData.objData.viewerP, 0);
+	gameData.objData.viewerP = viewerSave;
 	fontManager.SetCurrent (GAME_FONT);    //GAME_FONT);
 	fontManager.SetColorRGBi (RED_RGBA, 1, 0, 0);
 	fontManager.Current ()->StringSize (msg, w, h, aw);
@@ -546,7 +546,7 @@ else {
 		gameStates.render.cockpit.bBigWindowSwitch = 0;
 		return;
 		}
-	UpdateRenderedData (0, gameData.objs.viewerP, gameStates.render.bRearView, 0);
+	UpdateRenderedData (0, gameData.objData.viewerP, gameStates.render.bRearView, 0);
 	if ((xStereoSeparation <= 0) && cameraManager.Render ())
 		CCanvas::Current ()->SetViewport ();
 	RenderFrame (xStereoSeparation, 0);
@@ -682,7 +682,7 @@ for (faceP = FACES.slidingFaces; faceP; faceP = faceP->nextSlidingFace) {
 
 void GameRenderFrame (void)
 {
-if (gameData.segs.nFaceKeys < 0)
+if (gameData.segData.nFaceKeys < 0)
 	meshBuilder.ComputeFaceKeys ();
 PROF_START
 UpdateSlidingFaces ();

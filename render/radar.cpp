@@ -96,11 +96,11 @@ for (i = 0; i < RADAR_SLICES; i++) {
 void CRadar::ComputeCenter (void)
 {
 	CFloatVector vf, vu, vr;
-	CFixMatrix	mView = gameData.objs.viewerP->info.position.mOrient;
+	CFixMatrix	mView = gameData.objData.viewerP->info.position.mOrient;
 
 if (transformation.m_info.bUsePlayerHeadAngles) {
 	CFixMatrix mHead = CFixMatrix::Create (transformation.m_info.playerHeadAngles);
-	mView = gameData.objs.viewerP->info.position.mOrient * mHead;
+	mView = gameData.objData.viewerP->info.position.mOrient * mHead;
 	}
 
 vf.Assign (mView.m.dir.f);
@@ -110,7 +110,7 @@ vu *= m_offset.v.coord.y;
 vr.Assign (mView.m.dir.r);
 vr *= m_offset.v.coord.x;
 m_vCenter.Assign (vf + vu + vr);
-m_vCenter += gameData.objs.viewerP->Position ();
+m_vCenter += gameData.objData.viewerP->Position ();
 m_vCenterf.Assign (m_vCenter);
 }
 
@@ -138,7 +138,7 @@ void CRadar::RenderBackground (void)
 // glPushMatrix ();
 RenderSetup ();
 ogl.SetTransform (1);
-CFixMatrix mOrient = gameData.objs.viewerP->Orientation ();
+CFixMatrix mOrient = gameData.objData.viewerP->Orientation ();
 transformation.Begin (m_vCenter, mOrient);
 glScalef (m_radius * 1.2f, m_radius * 1.2f, m_radius * 1.2f);
 glColor4f (0.0f, 0.0f, 0.0f, 0.5f);
@@ -200,7 +200,7 @@ transformation.End ();
 
 // render the radar plane
 // glPushMatrix ();
-mOrient = gameData.objs.viewerP->Orientation ();
+mOrient = gameData.objData.viewerP->Orientation ();
 transformation.Begin (m_vCenter, mOrient);
 
 // render the transparent green dish
@@ -291,7 +291,7 @@ void CRadar::RenderBlip (CObject *objP, float r, float g, float b, float a, int3
 
 v [0].Assign (objP->info.position.vPos);
 transformation.Transform (v [0], v [0], 0);
-if ((v [0].v.coord.y < X2F (gameData.objs.viewerP->Position ().v.coord.y)) != bAbove)
+if ((v [0].v.coord.y < X2F (gameData.objData.viewerP->Position ().v.coord.y)) != bAbove)
 	return;
 if ((m = v [0].Mag ()) > RADAR_RANGE)
 	return;
@@ -331,7 +331,7 @@ void CRadar::RenderObjects (int32_t bAbove)
 // glPushMatrix ();
 glLineWidth (GLfloat (2 + gameOpts->render.cockpit.nRadarSize));
 FORALL_OBJS (objP) {
-	if ((objP->info.nType == OBJ_PLAYER) && (objP != gameData.objs.consoleP)) {
+	if ((objP->info.nType == OBJ_PLAYER) && (objP != gameData.objData.consoleP)) {
 		if (AM_SHOW_PLAYERS && AM_SHOW_PLAYER (objP->info.nId)) {
 			colorP = shipColors + (IsTeamGame ? GetTeam (objP->info.nId) : objP->info.nId);
 			RenderBlip (objP, colorP->Red (), colorP->Green (), colorP->Blue (), 0.9f / 4, bAbove);

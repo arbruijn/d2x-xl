@@ -341,7 +341,7 @@ void SpeedtestInit(void)
 	gameData.speedtest.nSide = 0;
 	gameData.speedtest.nFrameStart = gameData.app.nFrameCount;
 #if TRACE
-	console.printf (CON_DBG, "Starting speedtest.  Will be %i frames.  Each . = 10 frames.\n", gameData.segs.nLastSegment+1);
+	console.printf (CON_DBG, "Starting speedtest.  Will be %i frames.  Each . = 10 frames.\n", gameData.segData.nLastSegment+1);
 #endif
 }
 
@@ -353,16 +353,16 @@ void SpeedtestFrame(void)
 
 	gameData.speedtest.nSide=gameData.speedtest.nSegment % SEGMENT_SIDE_COUNT;
 
-	gameData.objs.viewerP->info.position.vPos = SEGMENT (gameData.speedtest.nSegment)->Center ();
-	gameData.objs.viewerP->info.position.vPos.v.coord.x += 0x10;	
-	gameData.objs.viewerP->info.position.vPos.v.coord.y -= 0x10;	
-	gameData.objs.viewerP->info.position.vPos.v.coord.z += 0x17;
+	gameData.objData.viewerP->info.position.vPos = SEGMENT (gameData.speedtest.nSegment)->Center ();
+	gameData.objData.viewerP->info.position.vPos.v.coord.x += 0x10;	
+	gameData.objData.viewerP->info.position.vPos.v.coord.y -= 0x10;	
+	gameData.objData.viewerP->info.position.vPos.v.coord.z += 0x17;
 
-	gameData.objs.viewerP->RelinkToSeg (gameData.speedtest.nSegment);
+	gameData.objData.viewerP->RelinkToSeg (gameData.speedtest.nSegment);
 	center_point = SEGMENT (gameData.speedtest.nSegment)->SideCenter (gameData.speedtest.nSide);
-	CFixVector::NormalizedDir(view_dir, center_point, gameData.objs.viewerP->info.position.vPos);
-	//gameData.objs.viewerP->info.position.mOrient = CFixMatrix::Create(view_dir, NULL, NULL);
-	gameData.objs.viewerP->info.position.mOrient = CFixMatrix::CreateF(view_dir);
+	CFixVector::NormalizedDir(view_dir, center_point, gameData.objData.viewerP->info.position.vPos);
+	//gameData.objData.viewerP->info.position.mOrient = CFixMatrix::Create(view_dir, NULL, NULL);
+	gameData.objData.viewerP->info.position.mOrient = CFixMatrix::CreateF(view_dir);
 	if (((gameData.app.nFrameCount - gameData.speedtest.nFrameStart) % 10) == 0) {
 #if TRACE
 		console.printf (CON_DBG, ".");
@@ -370,7 +370,7 @@ void SpeedtestFrame(void)
 		}
 	gameData.speedtest.nSegment++;
 
-	if (gameData.speedtest.nSegment > gameData.segs.nLastSegment) {
+	if (gameData.speedtest.nSegment > gameData.segData.nLastSegment) {
 		char    msg[128];
 
 		sprintf(msg, TXT_SPEEDTEST, 

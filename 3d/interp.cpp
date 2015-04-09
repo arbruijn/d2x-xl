@@ -493,7 +493,7 @@ for (;;) {
 				uvlList [i].l = l;
 				pointList [i] = modelPointList + WORDPTR (p) [i];
 				}
-			tMapColor = gameData.objs.color;
+			tMapColor = gameData.objData.color;
 			if (gameStates.render.bCloaked)
 				G3DrawTexPolyFlat (nVerts, pointList, uvlList, NULL, modelBitmaps [WORDVAL (p-2)], NULL, NULL, VECPTR (p+16), 0, 1, 0, -1);
 			else

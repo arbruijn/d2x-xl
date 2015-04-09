@@ -100,10 +100,10 @@ void CObject::Verify (void)
 {
 SetLife (IMMORTAL_TIME);		//all loaded CObject are immortal, for now
 if (Type () == OBJ_ROBOT) {
-	++gameData.objs.nInitialRobots;
+	++gameData.objData.nInitialRobots;
 	// Make sure valid id...
-	if (Id () >= gameData.bots.nTypes [gameStates.app.bD1Data])
-		SetId (Id () % gameData.bots.nTypes [0]);
+	if (Id () >= gameData.botData.nTypes [gameStates.app.bD1Data])
+		SetId (Id () % gameData.botData.nTypes [0]);
 	// Make sure model number & size are correct...
 	if (info.renderType == RT_POLYOBJ) {
 		rType.polyObjInfo.nModel = ROBOTINFO (Id ())->nModel;
@@ -117,7 +117,7 @@ if (Type () == OBJ_ROBOT) {
 		}
 	}
 else if (Type () == OBJ_EFFECT) {
-	gameData.objs.nEffects++;
+	gameData.objData.nEffects++;
 	}
 else {		//Robots taken care of above
 	if ((info.renderType == RT_POLYOBJ) && (nSavePOFNames > 0)) {
@@ -132,7 +132,7 @@ else {		//Robots taken care of above
 		}
 	}
 if (Type () == OBJ_POWERUP) {
-	if (Id () >= gameData.objs.pwrUp.nTypes + POWERUP_ADDON_COUNT) {
+	if (Id () >= gameData.objData.pwrUp.nTypes + POWERUP_ADDON_COUNT) {
 		SetId (0);
 		Assert(info.renderType != RT_POLYOBJ);
 		}
@@ -170,13 +170,13 @@ else if (Type () == OBJ_WEAPON) {
 else if (Type () == OBJ_REACTOR) {
 	info.renderType = RT_POLYOBJ;
 	info.controlType = CT_CNTRLCEN;
-	if (gameData.segs.nLevelVersion <= 1) { // descent 1 reactor
+	if (gameData.segData.nLevelVersion <= 1) { // descent 1 reactor
 		SetId (0);                         // used to be only one kind of reactor
 		rType.polyObjInfo.nModel = gameData.reactor.props [0].nModel;// descent 1 reactor
 		}
 	}
 else if (Type () == OBJ_PLAYER) {
-	if (this == gameData.objs.consoleP)	
+	if (this == gameData.objData.consoleP)	
 		InitPlayerObject ();
 	else
 		if (info.renderType == RT_POLYOBJ)	//recover from Matt's pof file matchup bug
@@ -294,7 +294,7 @@ if (gameTopFileInfo.fileinfoVersion >= 29) {
 	gameFileInfo.lightDeltaIndices.Read (cf);
 	gameFileInfo.lightDeltas.Read (cf);
 	}
-if (gameStates.app.bD2XLevel && (gameData.segs.nLevelVersion > 15))
+if (gameStates.app.bD2XLevel && (gameData.segData.nLevelVersion > 15))
 	gameFileInfo.equipGen.Read (cf);
 return 0;
 }
@@ -347,7 +347,7 @@ if ((gameFileInfo.objects.offset > -1) && gameFileInfo.objects.count) {
 		return -1;
 		}
 	OBJECTS.Clear (0, gameFileInfo.objects.count);
-	gameData.objs.nObjects = 0;				//just the player
+	gameData.objData.nObjects = 0;				//just the player
 	i = 0;
 	while (i < gameFileInfo.objects.count) {
 #if DBG
@@ -362,7 +362,7 @@ if ((gameFileInfo.objects.offset > -1) && gameFileInfo.objects.count) {
 		if (!IsMultiGame && objP->Multiplayer ())
 			gameFileInfo.objects.count--;
 		else {
-			objP->info.nSignature = gameData.objs.nNextSignature++;
+			objP->info.nSignature = gameData.objData.nNextSignature++;
 #if DBG
 			if (i == nDbgObj) {
 				extern int32_t dbgObjInstances;
@@ -370,18 +370,18 @@ if ((gameFileInfo.objects.offset > -1) && gameFileInfo.objects.count) {
 				}
 #endif
 			objP->Verify ();
-			gameData.objs.init [i] = *objP;
+			gameData.objData.init [i] = *objP;
 			i++, objP++;
 			}
 		}
 	}
-gameData.objs.GatherEffects ();
+gameData.objData.GatherEffects ();
 for (i = 0; i < LEVEL_OBJECTS - 1; i++)
-	gameData.objs.dropInfo [i].nNextPowerup = i + 1;
-gameData.objs.dropInfo [i].nNextPowerup = -1;
-gameData.objs.nFirstDropped =
-gameData.objs.nLastDropped = -1;
-gameData.objs.nFreeDropped = 0;
+	gameData.objData.dropInfo [i].nNextPowerup = i + 1;
+gameData.objData.dropInfo [i].nNextPowerup = -1;
+gameData.objData.nFirstDropped =
+gameData.objData.nLastDropped = -1;
+gameData.objData.nFreeDropped = 0;
 return 0;
 }
 
@@ -392,7 +392,7 @@ static int32_t ReadWallInfo (CFile& cf)
 if (gameFileInfo.walls.count && (gameFileInfo.walls.offset > -1)) {
 	int32_t	i;
 
-	if (!gameData.walls.walls.Resize (gameFileInfo.walls.count)) {
+	if (!gameData.wallData.walls.Resize (gameFileInfo.walls.count)) {
 		Error ("Not enough memory for wall data\n");
 		return -1;
 		}
@@ -447,20 +447,20 @@ if (gameFileInfo.doors.offset > -1) {
 		}
 	for (i = 0; i < gameFileInfo.doors.count; i++) {
 		if (gameTopFileInfo.fileinfoVersion >= 20)
-			ReadActiveDoor (gameData.walls.activeDoors [i], cf); // version 20 and up
+			ReadActiveDoor (gameData.wallData.activeDoors [i], cf); // version 20 and up
 		else {
 			v19_door d;
 			int16_t nConnSeg, nConnSide;
 			CSegment* segP;
 
 			ReadActiveDoorV19 (d, cf);
-			gameData.walls.activeDoors [i].nPartCount = d.nPartCount;
+			gameData.wallData.activeDoors [i].nPartCount = d.nPartCount;
 			for (int32_t j = 0; j < d.nPartCount; j++) {
 				segP = SEGMENT (d.seg [j]);
 				nConnSeg = segP->m_children [d.nSide [j]];
 				nConnSide = segP->ConnectedSide (SEGMENT (nConnSeg));
-				gameData.walls.activeDoors [i].nFrontWall [j] = segP->WallNum (d.nSide [j]);
-				gameData.walls.activeDoors [i].nBackWall [j] = SEGMENT (nConnSeg)->WallNum (nConnSide);
+				gameData.wallData.activeDoors [i].nFrontWall [j] = segP->WallNum (d.nSide [j]);
+				gameData.wallData.activeDoors [i].nBackWall [j] = SEGMENT (nConnSeg)->WallNum (nConnSide);
 				}
 			}
 		}
@@ -483,8 +483,8 @@ for (i = 0, trigP = TRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, tr
 	for (h = trigP->m_nLinks, j = 0; j < h; ) {
 		if ((trigP->m_segments [j] >= 0) && 
 			 (trigP->m_sides [j] >= 0) 
-			 ? (trigP->m_segments [j] < gameData.segs.nSegments) && (trigP->m_sides [j] < 6) 
-			 : (trigP->m_segments [j] < gameData.objs.nObjects) && (trigP->m_sides [j] == -1))
+			 ? (trigP->m_segments [j] < gameData.segData.nSegments) && (trigP->m_sides [j] < 6) 
+			 : (trigP->m_segments [j] < gameData.objData.nObjects) && (trigP->m_sides [j] == -1))
 			j++;
 		else if (--h) {
 			trigP->m_segments [j] = trigP->m_segments [h];
@@ -507,23 +507,23 @@ return (pv->m_info.nObject < pm->m_info.nObject) ? -1 : (pv->m_info.nObject > pm
 
 void BuildObjTriggerRef (void)
 {
-if (gameData.trigs.m_nObjTriggers) {
+if (gameData.trigData.m_nTriggers [1]) {
 	CQuickSort<CTrigger>	qs;
-	qs.SortAscending (OBJTRIGGERS.Buffer (), 0, gameData.trigs.m_nObjTriggers - 1, &CmpObjTriggers);
+	qs.SortAscending (OBJTRIGGERS.Buffer (), 0, gameData.trigData.m_nTriggers [1] - 1, &CmpObjTriggers);
 	CTrigger* trigP = OBJTRIGGERS.Buffer ();
 	int32_t i;
 	int16_t nObject = -1;
-	for (i = 0; i < gameData.trigs.m_nObjTriggers; i++, trigP++) {
+	for (i = 0; i < gameData.trigData.m_nTriggers [1]; i++, trigP++) {
 		if (nObject != trigP->m_info.nObject) {
 			if (nObject >= 0)
-				gameData.trigs.objTriggerRefs [nObject].nCount = i - gameData.trigs.objTriggerRefs [nObject].nFirst;
+				gameData.trigData.objTriggerRefs [nObject].nCount = i - gameData.trigData.objTriggerRefs [nObject].nFirst;
 			nObject = trigP->m_info.nObject;
 			if (nObject >= 0)
-				gameData.trigs.objTriggerRefs [nObject].nFirst = i;
+				gameData.trigData.objTriggerRefs [nObject].nFirst = i;
 			}
 		}
 	if (nObject >= 0)
-		gameData.trigs.objTriggerRefs [nObject].nCount = i - gameData.trigs.objTriggerRefs [nObject].nFirst;
+		gameData.trigData.objTriggerRefs [nObject].nCount = i - gameData.trigData.objTriggerRefs [nObject].nFirst;
 	}
 }
 
@@ -534,14 +534,14 @@ static int32_t ReadTriggerInfo (CFile& cf)
 	int32_t		i;
 	CTrigger	*trigP;
 
-gameData.trigs.m_nObjTriggers = 0;
-gameData.trigs.objTriggerRefs.Clear (0xff);
+gameData.trigData.m_nTriggers [1] = 0;
+gameData.trigData.objTriggerRefs.Clear (0xff);
 if (gameFileInfo.triggers.offset > -1) {
 	if (gameFileInfo.triggers.count) {
 #if TRACE
 		console.printf(CON_DBG, "   loading CTrigger data ...\n");
 #endif
-		if (!gameData.trigs.Create (gameFileInfo.triggers.count, false)) {
+		if (!gameData.trigData.Create (gameFileInfo.triggers.count, false)) {
 			Error ("Not enough memory for trigger data");
 			return -1;
 			}
@@ -601,20 +601,20 @@ if (gameFileInfo.triggers.offset > -1) {
 		}
 
 	if (gameTopFileInfo.fileinfoVersion >= 33) {
-		gameData.trigs.m_nObjTriggers = cf.ReadInt ();
-		if (gameData.trigs.m_nObjTriggers) {
-			if (!gameData.trigs.Create (gameData.trigs.m_nObjTriggers, true)) {
+		gameData.trigData.m_nTriggers [1] = cf.ReadInt ();
+		if (gameData.trigData.m_nTriggers [1]) {
+			if (!gameData.trigData.Create (gameData.trigData.m_nTriggers [1], true)) {
 				Error ("Not enough memory for object trigger data");
 				return -1;
 				}
-			for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
+			for (i = 0; i < gameData.trigData.m_nTriggers [1]; i++)
 				OBJTRIGGERS [i].Read (cf, 1);
 			if (gameTopFileInfo.fileinfoVersion >= 40) {
-				for (i = 0; i < gameData.trigs.m_nObjTriggers; i++)
+				for (i = 0; i < gameData.trigData.m_nTriggers [1]; i++)
 					OBJTRIGGERS [i].m_info.nObject = cf.ReadShort ();
 				}
 			else {
-				for (i = 0; i < gameData.trigs.m_nObjTriggers; i++) {
+				for (i = 0; i < gameData.trigData.m_nTriggers [1]; i++) {
 					cf.Seek (2 * sizeof (int16_t), SEEK_CUR);
 					OBJTRIGGERS [i].m_info.nObject = cf.ReadShort ();
 					}
@@ -664,7 +664,7 @@ static int32_t AssignProducer (tObjectProducerInfo& producerInfo, int32_t nObjPr
 
 	CSegment* segP = SEGMENT (0);
 
-for (int32_t i = 0, j = gameData.segs.nSegments; i < j; i++, segP++) {
+for (int32_t i = 0, j = gameData.segData.nSegments; i < j; i++, segP++) {
 	if ((segP->Function () == nFunction) && (segP->m_nObjProducer == nObjProducer)) {
 		tObjectProducerInfo& objProducer = (nFunction == SEGMENT_FUNC_ROBOTMAKER) 
 													  ? gameData.producers.robotMakers [nObjProducer] 
@@ -740,7 +740,7 @@ if (gameFileInfo.botGen.offset > -1) {
 		return -1;
 		}
 	tObjectProducerInfo m;
-	m.objFlags [2] = gameData.objs.nVertigoBotFlags;
+	m.objFlags [2] = gameData.objData.nVertigoBotFlags;
 	for (int32_t i = 0; i < gameFileInfo.botGen.count; ) {
 		ReadObjectProducerInfo (&m, cf, gameTopFileInfo.fileinfoVersion < 27);
 		int32_t h = AssignProducer (m, i, SEGMENT_FUNC_ROBOTMAKER, 1);
@@ -792,7 +792,7 @@ return 0;
 void CleanupProducerInfo (void)
 {
 CSegment* segP = SEGMENTS.Buffer ();
-for (int32_t i = gameData.segs.nSegments; i; i--, segP++) {
+for (int32_t i = gameData.segData.nSegments; i; i--, segP++) {
 	if (segP->m_function == SEGMENT_FUNC_ROBOTMAKER) {
 		tProducerInfo& producer = gameData.producers.producers [segP->m_value];
 		if (producer.bFlag) {
@@ -898,7 +898,7 @@ for (i = 0; i < gameFileInfo.objects.count; i++, objP++) {
 	objP->info.nNextInSeg = objP->info.nPrevInSeg = -1;
 	if (objP->Type () != OBJ_NONE) {
 		nObjSeg = objP->info.nSegment;
-		if ((nObjSeg < 0) || (nObjSeg > gameData.segs.nLastSegment))	
+		if ((nObjSeg < 0) || (nObjSeg > gameData.segData.nLastSegment))	
 			objP->SetType (OBJ_NONE);
 		else {
 			objP->info.nSegment = -1;	
@@ -914,16 +914,16 @@ static void CheckAndFixDoors (void)
 {
 	CSegment* segP = SEGMENTS.Buffer ();
 
-for (int32_t i = 0; i < gameData.segs.nSegments; i++, segP++) {
+for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
 	CSide* sideP = segP->m_sides;
 	for (int32_t j = 0; j < SEGMENT_SIDE_COUNT; j++, sideP++) {
 		CWall* wallP = sideP->Wall ();
 		if (!wallP || (wallP->nType != WALL_DOOR))
 			continue;
-		else if ((wallP->nClip < 0) || (wallP->nClip >= int32_t (gameData.walls.animP.Length ()))) 
+		else if ((wallP->nClip < 0) || (wallP->nClip >= int32_t (gameData.wallData.animP.Length ()))) 
 			wallP->nClip = -1;
-		else if (gameData.walls.animP [wallP->nClip].flags & WCF_TMAP1) {
-			sideP->m_nBaseTex = gameData.walls.animP [wallP->nClip].frames [0];
+		else if (gameData.wallData.animP [wallP->nClip].flags & WCF_TMAP1) {
+			sideP->m_nBaseTex = gameData.wallData.animP [wallP->nClip].frames [0];
 			sideP->m_nOvlTex = 0;
 			}
 		}
@@ -938,8 +938,8 @@ static void CheckAndFixWalls (void)
 	int16_t		nSegment, nSide;
 	CWall*	wallP;
 
-for (i = 0; i < gameData.walls.nWalls; i++)
-	if ((WALL (i)->nTrigger >= gameData.trigs.m_nTriggers) && (WALL (i)->nTrigger != NO_TRIGGER)) {
+for (i = 0; i < gameData.wallData.nWalls; i++)
+	if ((WALL (i)->nTrigger >= gameData.trigData.m_nTriggers [0]) && (WALL (i)->nTrigger != NO_TRIGGER)) {
 #if TRACE
 		PrintLog (0, "Removing reference to invalid trigger %d from wall %d\n", WALL (i)->nTrigger, i);
 #endif
@@ -948,7 +948,7 @@ for (i = 0; i < gameData.walls.nWalls; i++)
 
 if (gameTopFileInfo.fileinfoVersion < 17) {
 	CSegment* segP = SEGMENTS.Buffer ();
-	for (nSegment = 0; nSegment <= gameData.segs.nLastSegment; nSegment++, segP++) {
+	for (nSegment = 0; nSegment <= gameData.segData.nLastSegment; nSegment++, segP++) {
 		for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 			if ((wallP = segP->Wall (nSide))) {
 				wallP->nSegment = nSegment;
@@ -960,8 +960,8 @@ if (gameTopFileInfo.fileinfoVersion < 17) {
 
 // mark all triggers on "open" segment sides (i.e. which are connected to an adjacent segment) as "fly through" 
 // to simplify internal trigger management
-for (i = 0; i < gameData.walls.nWalls; i++) {
-	CTrigger* trigP = TRIGGER (WALL (i)->nTrigger);
+for (i = 0; i < gameData.wallData.nWalls; i++) {
+	CTrigger* trigP = GEOTRIGGER (WALL (i)->nTrigger);
 	if (trigP)
 		trigP->m_info.nWall = i;
 	}
@@ -974,26 +974,26 @@ static void CheckAndFixTriggers (void)
 	int32_t	h, i, j;
 	int16_t	nSegment, nSide, nWall;
 
-for (i = 0; i < gameData.trigs.m_nTriggers; ) {
+for (i = 0; i < gameData.trigData.m_nTriggers [0]; ) {
 	//	Find which CWall this CTrigger is connected to.
-	for (j = 0; j < gameData.walls.nWalls; j++)
+	for (j = 0; j < gameData.wallData.nWalls; j++)
 		if (WALL (j)->nTrigger == i)
 			break;
 		i++;
 	}
 
-for (i = 0; i < gameData.walls.nWalls; i++)
+for (i = 0; i < gameData.wallData.nWalls; i++)
 	WALL (i)->controllingTrigger = -1;
 
 //	MK, 10/17/95: Make walls point back at the triggers that control them.
 //	Go through all triggers, stuffing controllingTrigger field in WALLS.
 
 CTrigger* trigP = TRIGGERS.Buffer ();
-for (i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
+for (i = 0; i < gameData.trigData.m_nTriggers [0]; i++, trigP++) {
 	for (h = trigP->m_nLinks, j = 0; j < h; ) {
 		if (trigP->m_sides [j] >= 0) {
 			nSegment = trigP->m_segments [j];
-			if (nSegment >= gameData.segs.nSegments) {
+			if (nSegment >= gameData.segData.nSegments) {
 				if (j < --h) {
 					trigP->m_segments [j] = trigP->m_segments [h];
 					trigP->m_sides [j] = trigP->m_sides [h];
@@ -1039,7 +1039,7 @@ for (i = 0; i < gameData.trigs.m_nTriggers; i++, trigP++) {
 void CreateGenerators (void)
 {
 gameData.producers.nRepairCenters = 0;
-for (int32_t i = 0; i < gameData.segs.nSegments; i++) {
+for (int32_t i = 0; i < gameData.segData.nSegments; i++) {
 	SEGMENT (i)->CreateGenerator (SEGMENT (i)->m_function);
 	}
 }
@@ -1064,20 +1064,20 @@ gameStates.render.bD2XLights = gameStates.app.bD2XLevel && (gameTopFileInfo.file
 if (bFileInfo)
 	return 0;
 
-gameData.objs.nNextSignature = 0;
+gameData.objData.nNextSignature = 0;
 gameData.render.lights.nStatic = 0;
-gameData.objs.nInitialRobots = 0;
+gameData.objData.nInitialRobots = 0;
 nGameSavePlayers = 0;
 if (ReadObjectInfo (cf))
 	return -1;
 if (ReadWallInfo (cf))
 	return -1;
-gameData.walls.nWalls = gameFileInfo.walls.count;
+gameData.wallData.nWalls = gameFileInfo.walls.count;
 if (ReadDoorInfo (cf))
 	return -1;
 if (ReadTriggerInfo (cf))
 	return -1;
-gameData.trigs.m_nTriggers = gameFileInfo.triggers.count;
+gameData.trigData.m_nTriggers [0] = gameFileInfo.triggers.count;
 if (ReadReactorInfo (cf))
 	return -1;
 if (ReadBotGenInfo (cf))
@@ -1095,9 +1095,9 @@ CheckAndLinkObjects ();
 ClearTransientObjects (1);		//1 means clear proximity bombs
 CheckAndFixDoors ();
 CheckTriggerInfo ();
-//gameData.walls.nOpenDoors = gameFileInfo.doors.count;
-gameData.trigs.m_nTriggers = gameFileInfo.triggers.count;
-gameData.walls.nWalls = gameFileInfo.walls.count;
+//gameData.wallData.nOpenDoors = gameFileInfo.doors.count;
+gameData.trigData.m_nTriggers [0] = gameFileInfo.triggers.count;
+gameData.wallData.nWalls = gameFileInfo.walls.count;
 CheckAndFixWalls ();
 CheckAndFixTriggers ();
 gameData.producers.nRobotMakers = gameFileInfo.botGen.count;
@@ -1119,7 +1119,7 @@ void	SetAmbientSoundFlags (void);
 //2 -> 3  add control center explosion time
 //3 -> 4  add reactor strength
 //4 -> 5  killed hostage text stuff
-//5 -> 6  added gameData.segs.secret.nReturnSegment and gameData.segs.secret.returnOrient
+//5 -> 6  added gameData.segData.secret.nReturnSegment and gameData.segData.secret.returnOrient
 //6 -> 7  added flickering lights
 //7 -> 8  made version 8 to be not compatible with D2 1.0 & 1.1
 
@@ -1135,29 +1135,29 @@ void CreateVertexSegmentList (void)
 {
 #if 0
 CArray<int16_t> segCount;
-segCount.Create (gameData.segs.nVertices);
+segCount.Create (gameData.segData.nVertices);
 segCount.Clear ();
 
 CSegment* segP = SEGMENTS.Buffer ();
-for (int32_t i = gameData.segs.nSegments; i; i--, segP++) {
+for (int32_t i = gameData.segData.nSegments; i; i--, segP++) {
 	for (int32_t j = 0; j < 8; j++)
 		if (segP->m_vertices [j] != 0xFFFF)
 			segCount [segP->m_vertices [j]]++;
 	}
 
 CArray<CVertSegRef> vertSegIndex;
-vertSegIndex.Create (gameData.segs.nVertices);
+vertSegIndex.Create (gameData.segData.nVertices);
 vertSegIndex.Clear ();
 CArray<int16_t> vertSegs;
-vertSegs.Create (8 * gameData.segs.nSegments);
+vertSegs.Create (8 * gameData.segData.nSegments);
 vertSegs.Clear ();
-for (int32_t h = 0, i = 0; i < gameData.segs.nSegments; i++) {
+for (int32_t h = 0, i = 0; i < gameData.segData.nSegments; i++) {
 	vertSegIndex [i].nIndex = h;
 	h += segCount [i];
 	}
 
 segP = SEGMENTS.Buffer ();
-for (int32_t i = gameData.segs.nSegments; i; i--, segP++) {
+for (int32_t i = gameData.segData.nSegments; i; i--, segP++) {
 	for (int32_t j = 0; j < 8; j++) {
 		if (segP->m_vertices [j] != 0xFFFF) {
 			CVertSegRef* refP = &vertSegIndex [segP->m_vertices [j]];
@@ -1180,7 +1180,7 @@ int32_t LoadLevelData (char * pszFilename, int32_t nLevel)
 
 /*---*/PrintLog (1, "loading level data\n");
 SetDataVersion (-1);
-gameData.segs.bHaveSlideSegs = 0;
+gameData.segData.bHaveSlideSegs = 0;
 if (IsNetworkGame) {
 	gameData.multiplayer.maxPowerupsAllowed.Clear (0);
 	gameData.multiplayer.powerupsInMine.Clear (0);
@@ -1194,27 +1194,27 @@ for (;;) {
 		return 1;
 		}
 
-	strcpy(gameData.segs.szLevelFilename, filename);
+	strcpy(gameData.segData.szLevelFilename, filename);
 
 	cf.ReadInt ();
-	gameData.segs.nLevelVersion = cf.ReadInt ();
-	gameStates.app.bD2XLevel = (gameData.segs.nLevelVersion >= 10);
+	gameData.segData.nLevelVersion = cf.ReadInt ();
+	gameStates.app.bD2XLevel = (gameData.segData.nLevelVersion >= 10);
 	#if TRACE
-	console.printf (CON_DBG, "gameData.segs.nLevelVersion = %d\n", gameData.segs.nLevelVersion);
+	console.printf (CON_DBG, "gameData.segData.nLevelVersion = %d\n", gameData.segData.nLevelVersion);
 	#endif
 	nMineDataOffset = cf.ReadInt ();
 	nGameDataOffset = cf.ReadInt ();
 
-	if (gameData.segs.nLevelVersion >= 8) {    //read dummy data
+	if (gameData.segData.nLevelVersion >= 8) {    //read dummy data
 		cf.ReadInt ();
 		cf.ReadShort ();
 		cf.ReadByte ();
 	}
 
-	if (gameData.segs.nLevelVersion < 5)
+	if (gameData.segData.nLevelVersion < 5)
 		cf.ReadInt ();       //was hostagetext_offset
 
-	if (gameData.segs.nLevelVersion > 1) {
+	if (gameData.segData.nLevelVersion > 1) {
 		for (int32_t i = 0; i < (int32_t) sizeof (szCurrentLevelPalette); i++) {
 			szCurrentLevelPalette [i] = (char) cf.ReadByte ();
 			if (szCurrentLevelPalette [i] == '\n')
@@ -1223,20 +1223,20 @@ for (;;) {
 				break;
 			}
 		}
-	if ((gameData.segs.nLevelVersion <= 1) || (szCurrentLevelPalette [0] == 0)) // descent 1 level
+	if ((gameData.segData.nLevelVersion <= 1) || (szCurrentLevelPalette [0] == 0)) // descent 1 level
 		strcpy (szCurrentLevelPalette, /*gameStates.app.bD1Mission ? D1_PALETTE :*/ DEFAULT_LEVEL_PALETTE); //D1_PALETTE looks off in D2X-XL
 
-	if (gameData.segs.nLevelVersion >= 3)
+	if (gameData.segData.nLevelVersion >= 3)
 		gameStates.app.nBaseCtrlCenExplTime = cf.ReadInt ();
 	else
 		gameStates.app.nBaseCtrlCenExplTime = DEFAULT_CONTROL_CENTER_EXPLOSION_TIME;
 
-	if (gameData.segs.nLevelVersion >= 4)
+	if (gameData.segData.nLevelVersion >= 4)
 		gameData.reactor.nStrength = cf.ReadInt ();
 	else
 		gameData.reactor.nStrength = -1;  //use old defaults
 
-	if (gameData.segs.nLevelVersion >= 7) {
+	if (gameData.segData.nLevelVersion >= 7) {
 	#if TRACE
 		console.printf (CON_DBG, "   loading dynamic lights ...\n");
 	#endif
@@ -1247,14 +1247,14 @@ for (;;) {
 			}
 		}	
 
-	if (gameData.segs.nLevelVersion < 6) {
-		gameData.segs.secret.nReturnSegment = 0;
-		gameData.segs.secret.returnOrient = CFixMatrix::IDENTITY;
+	if (gameData.segData.nLevelVersion < 6) {
+		gameData.segData.secret.nReturnSegment = 0;
+		gameData.segData.secret.returnOrient = CFixMatrix::IDENTITY;
 		}
 	else {
-		gameData.segs.secret.nReturnSegment = cf.ReadInt ();
+		gameData.segData.secret.nReturnSegment = cf.ReadInt ();
 		for (int32_t i = 0; i < 9; i++)
-			gameData.segs.secret.returnOrient.m.vec [i] = cf.ReadInt ();
+			gameData.segData.secret.returnOrient.m.vec [i] = cf.ReadInt ();
 		}
 
 	//NOTE LINK TO ABOVE!!
@@ -1270,7 +1270,7 @@ for (;;) {
 		return 2;
 		}
 	cf.Seek (nGameDataOffset, SEEK_SET);
-	gameData.objs.lists.Init ();
+	gameData.objData.lists.Init ();
 	nError = LoadMineDataCompiled (cf, 0);
 	if (nError == -1) {   //error!!
 		cf.Close ();

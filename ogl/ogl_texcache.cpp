@@ -179,9 +179,9 @@ static int32_t TexCachePoll (CMenu& menu, int32_t& key, int32_t nCurItem, int32_
 if (nState)
 	return nCurItem;
 
-if (nCacheSeg < gameData.segs.nSegments)
+if (nCacheSeg < gameData.segData.nSegments)
 	CacheSideTextures (nCacheSeg++);
-else if (nCacheObj <= gameData.objs.nLastObject [0]) 
+else if (nCacheObj <= gameData.objData.nLastObject [0]) 
 	CacheSideTextures (nCacheObj++);
 else {
 	key = -2;
@@ -200,7 +200,7 @@ int32_t OglCacheTextures (void)
 	CMenu	m (3);
 	int32_t	i;
 
-m.AddGauge ("progress bar", "                    ", -1, gameData.segs.nSegments + gameData.objs.nLastObject [0] + 4); 
+m.AddGauge ("progress bar", "                    ", -1, gameData.segData.nSegments + gameData.objData.nLastObject [0] + 4); 
 nCacheSeg = 0;
 nCacheObj = -3;
 do {
@@ -260,7 +260,7 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 PrintLog (-1);
 PrintLog (1, "caching geometry textures\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 0);
-for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
+for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, segP++) {
 	for (nSide = 0, sideP = segP->m_sides; nSide < SEGMENT_SIDE_COUNT; nSide++, sideP++) {
 		if (!sideP->FaceCount ())
 			continue;
@@ -321,7 +321,7 @@ PrintLog (1, "caching powerup sprites\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 4);
 for (i = 0; i < MAX_POWERUP_TYPES; i++)
 	if (i != 9)
-		OglCacheAnimationTextures (gameData.objs.pwrUp.info [i].nClipIndex, 3);
+		OglCacheAnimationTextures (gameData.objData.pwrUp.info [i].nClipIndex, 3);
 PrintLog (-1);
 
 PrintLog (1, "caching effect textures\n");

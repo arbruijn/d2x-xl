@@ -69,7 +69,7 @@ int32_t MultiCanControlRobot (int32_t nObject, int32_t agitation)
 if (LOCALPLAYER.m_bExploded)
 	return 0;
 #if DBG
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
+if ((nObject < 0) || (nObject > gameData.objData.nLastObject [0])) {
 	Int3 ();
 	return 0;
 	}
@@ -225,7 +225,7 @@ return 1;
 
 void MultiDeleteControlledRobot (int32_t nObject)
 {
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0]))
+if ((nObject < 0) || (nObject > gameData.objData.nLastObject [0]))
 	return;
 for (int32_t i = 0; i < MAX_ROBOTS_CONTROLLED; i++)
 	if (gameData.multigame.robots.controlled [i] == nObject) {
@@ -248,7 +248,7 @@ for (int32_t i = 0; i < MAX_ROBOTS_CONTROLLED; i++)
 
 void MultiSendClaimRobot (int32_t nObject)
 {
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
+if ((nObject < 0) || (nObject > gameData.objData.nLastObject [0])) {
 	Int3 (); // See rob
 	return;
 	}
@@ -273,7 +273,7 @@ MultiSendData (gameData.multigame.msg.buf, bufP, 2);
 
 void MultiSendReleaseRobot (int32_t nObject)
 {
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
+if ((nObject < 0) || (nObject > gameData.objData.nLastObject [0])) {
 	Int3 (); // See rob
 	return;
 	}
@@ -364,7 +364,7 @@ void MultiSendRobotPosition (int32_t nObject, int32_t bForce)
 
 if (! IsMultiGame)
 	return;
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
+if ((nObject < 0) || (nObject > gameData.objData.nLastObject [0])) {
 	Int3 (); // See rob
 	return;
 	}
@@ -566,7 +566,7 @@ uint8_t nPlayer = buf [bufP++];
 int16_t nRemoteBot = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
 int16_t nRobot = GetLocalObjNum (nRemoteBot, (int8_t)buf [bufP]);
-if ((nRobot > gameData.objs.nLastObject [0]) || (nRobot < 0))
+if ((nRobot > gameData.objData.nLastObject [0]) || (nRobot < 0))
 	return;
 
 CObject* objP = OBJECT (nRobot);
@@ -594,7 +594,7 @@ uint8_t nPlayer = buf [bufP++];
 int16_t nRemoteBot = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
 int16_t nRobot = GetLocalObjNum (nRemoteBot, (int8_t)buf [bufP]);
-if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
+if ((nRobot < 0) || (nRobot > gameData.objData.nLastObject [0]))
 	return;
 
 CObject* objP = OBJECT (nRobot);
@@ -622,7 +622,7 @@ void MultiDoRobotPosition (uint8_t* buf)
 nRemoteBot = GET_INTEL_SHORT (buf + bufP);
 nRobot = GetLocalObjNum (nRemoteBot, (int8_t)buf [bufP+2]); 
 bufP += 3;
-if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
+if ((nRobot < 0) || (nRobot > gameData.objData.nLastObject [0]))
 	return;
 CObject* objP = OBJECT (nRobot);
 if ((objP->info.nType != OBJ_ROBOT) || 
@@ -671,7 +671,7 @@ memcpy (&vFire, buf+bufP, sizeof (CFixVector));
 vFire.v.coord.x = (fix)INTEL_INT ((int32_t)vFire.v.coord.x);
 vFire.v.coord.y = (fix)INTEL_INT ((int32_t)vFire.v.coord.y);
 vFire.v.coord.z = (fix)INTEL_INT ((int32_t)vFire.v.coord.z);
-if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]) || 
+if ((nRobot < 0) || (nRobot > gameData.objData.nLastObject [0]) || 
 	 (objP->info.nType != OBJ_ROBOT) || 
 	 (objP->info.nFlags & OF_EXPLODING))
 	return;
@@ -765,7 +765,7 @@ bufP += 3;
 int16_t nRemoteBot = GET_INTEL_SHORT (buf + bufP);
 int32_t nRobot = GetLocalObjNum (nRemoteBot, int32_t (buf [bufP+2])); 
 bufP += 3;
-if ((nRobot < 0) || (nRobot > gameData.objs.nLastObject [0]))
+if ((nRobot < 0) || (nRobot > gameData.objData.nLastObject [0]))
 	return;
 if (MultiExplodeRobot (nRobot, nKiller, buf [bufP])) {
 	if (nKiller == LOCALPLAYER.nObject)
@@ -813,7 +813,7 @@ if (! (objP = CreateMorphRobot (SEGMENT (robotGenP->nSegment), &vObjPos, nType))
 	return; // Cannot create CObject!
 objP->info.nCreator = ((int16_t) (robotGenP - gameData.producers.producers.Buffer ())) | 0x80;
 //	ExtractOrientFromSegment (&objP->info.position.mOrient, &SEGMENT (robotGenP->nSegment));
-direction = gameData.objs.consoleP->info.position.vPos - objP->info.position.vPos;
+direction = gameData.objData.consoleP->info.position.vPos - objP->info.position.vPos;
 objP->info.position.mOrient = CFixMatrix::CreateFU(direction, objP->info.position.mOrient.m.dir.u);
 //objP->info.position.mOrient = CFixMatrix::CreateFU(direction, &objP->info.position.mOrient.m.v.u, NULL);
 objP->MorphStart ();
@@ -844,7 +844,7 @@ nRemoteObj = GET_INTEL_SHORT (buf + bufP);
 bufP += 2;
 nSegment = GET_INTEL_SHORT (buf + bufP);                
 bufP += 2;
-if ((nBossObj < 0) || (nBossObj > gameData.objs.nLastObject [0])) {
+if ((nBossObj < 0) || (nBossObj > gameData.objData.nLastObject [0])) {
 	Int3 ();  // See Rob
 	return;
 	}
@@ -867,7 +867,7 @@ switch (action)  {
 			return;
 			}
 		nTeleportSeg = gameData.bosses [nBossIdx].m_teleportSegs[secondary];
-		if ((nTeleportSeg < 0) || (nTeleportSeg > gameData.segs.nLastSegment)) {
+		if ((nTeleportSeg < 0) || (nTeleportSeg > gameData.segData.nLastSegment)) {
 			Int3 ();  // See Rob
 			return;
 			}
@@ -900,7 +900,7 @@ switch (action)  {
 	case 3: // Gate in robots!
 		// Do some validity checking
 		if ((nRemoteObj >= LEVEL_OBJECTS) || (nRemoteObj < 0) || (nSegment < 0) || 
-				(nSegment > gameData.segs.nLastSegment)) {
+				(nSegment > gameData.segData.nLastSegment)) {
 			Int3 (); // See Rob, bad data in boss gate action message
 			return;
 			}
@@ -989,7 +989,7 @@ void MultiDropRobotPowerups (int32_t nObject)
 	int32_t		nEggObj = -1;
 	tRobotInfo	*botInfoP; 
 
-if ((nObject < 0) || (nObject > gameData.objs.nLastObject [0])) {
+if ((nObject < 0) || (nObject > gameData.objData.nLastObject [0])) {
 	Int3 ();  // See rob
 	return;
 	}

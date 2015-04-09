@@ -162,10 +162,10 @@ if (!vPos)
 if (objType < 0)
 	objType = spewBots [gameStates.app.bD1Mission][nBossIndex][(maxSpewBots [nBossIndex] * RandShort ()) >> 15];
 if (objType == 255) {	// spawn an arbitrary robot
-	maxRobotTypes = gameData.bots.nTypes [gameStates.app.bD1Mission];
+	maxRobotTypes = gameData.botData.nTypes [gameStates.app.bD1Mission];
 	do {
 		objType = Rand (maxRobotTypes);
-		pri = gameData.bots.info [gameStates.app.bD1Mission] + objType;
+		pri = gameData.botData.info [gameStates.app.bD1Mission] + objType;
 		} while (pri->bossFlag ||	//well ... don't spawn another boss, huh? ;)
 					pri->companion || //the buddy bot isn't exactly an enemy ... ^_^
 					(pri->scoreValue < 700)); //avoid spawning a ... spawn nType bot
@@ -208,7 +208,7 @@ if (nSegment < 0) {
 		return -1;
 	nSegment = gameData.bosses [nBoss].m_gateSegs [(RandShort () * gameData.bosses [nBoss].m_nGateSegs) >> 15];
 	}
-Assert ((nSegment >= 0) && (nSegment <= gameData.segs.nLastSegment));
+Assert ((nSegment >= 0) && (nSegment <= gameData.segData.nLastSegment));
 return OBJECT (nObject)->CreateGatedRobot (nSegment, nType, NULL);
 }
 
@@ -229,7 +229,7 @@ for (nPos = 0; nPos < 9; nPos++) {
 	else if (segP->m_vertices [nPos - 1] == 0xFFFF)
 		continue;
 	else {
-		vVertPos = gameData.segs.vertices [segP->m_vertices [nPos - 1]];
+		vVertPos = gameData.segData.vertices [segP->m_vertices [nPos - 1]];
 		bossObjP->info.position.vPos = CFixVector::Avg (vVertPos, vSegCenter);
 		}
 	OBJECT (nObject)->RelinkToSeg (nSegment);
@@ -279,7 +279,7 @@ if (gameData.bosses [i].m_nDyingStartTime > 0)
 do {
 	nRandIndex = Rand (gameData.bosses [i].m_nTeleportSegs);
 	nRandSeg = gameData.bosses [i].m_teleportSegs [nRandIndex];
-	Assert ((nRandSeg >= 0) && (nRandSeg <= gameData.segs.nLastSegment));
+	Assert ((nRandSeg >= 0) && (nRandSeg <= gameData.segData.nLastSegment));
 	if (IsMultiGame)
 		MultiSendBossActions (nObject, 1, nRandSeg, 0);
 	vNewPos = SEGMENT (nRandSeg)->Center ();

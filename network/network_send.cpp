@@ -44,7 +44,7 @@ void NetworkSendDoorUpdates (int32_t nPlayer)
 	CWall* wallP = WALLS.Buffer ();
    
 //   Assert (nPlayer>-1 && nPlayer<N_PLAYERS);
-for (int32_t i = 0; i < gameData.walls.nWalls; i++, wallP++) {
+for (int32_t i = 0; i < gameData.wallData.nWalls; i++, wallP++) {
    if ((wallP->nType == WALL_DOOR) && 
 		 ((wallP->state == WALL_DOOR_OPENING) || 
 		  (wallP->state == WALL_DOOR_WAITING) || 
@@ -621,7 +621,7 @@ if (bUrgent)
 
 void NetworkSendSmashedLights (int32_t nPlayer) 
 {
-for (int32_t i = 0; i <= gameData.segs.nLastSegment; i++)
+for (int32_t i = 0; i <= gameData.segData.nLastSegment; i++)
 	if (gameData.render.lights.subtracted [i])
 		MultiSendLightSpecific (nPlayer, i, gameData.render.lights.subtracted [i]);
 }
@@ -631,8 +631,8 @@ for (int32_t i = 0; i <= gameData.segs.nLastSegment; i++)
 void NetworkSendFlyThruTriggers (int32_t nPlayer) 
  {
 // send the fly thru triggers that have been disabled
-for (int32_t i = 0; i < gameData.trigs.m_nTriggers; i++)
-	if (TRIGGER (i)->m_info.flags & TF_DISABLED)
+for (int32_t i = 0; i < gameData.trigData.m_nTriggers [0]; i++)
+	if (GEOTRIGGER (i)->m_info.flags & TF_DISABLED)
 		MultiSendTriggerSpecific (nPlayer, (uint8_t) i);
  }
 

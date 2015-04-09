@@ -92,7 +92,7 @@ return 1;
 void ConvertWeaponToPowerup (CObject *objP)
 {
 if (!InitAddonPowerup (objP)) {
-	objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+	objP->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [objP->info.nId].nClipIndex;
 	objP->rType.animationInfo.xFrameTime = gameData.effects.vClipP [objP->rType.animationInfo.nClipIndex].xFrameTime;
 	objP->rType.animationInfo.nCurFrame = 0;
 	objP->SetSizeFromPowerup ();
@@ -166,7 +166,7 @@ if (!bHasModel && !IsMissile () && !(nModel && HaveReplacementModel (nModel)))
 		return 0;
 
 #if 0 //DBG
-Orientation () = gameData.objs.consoleP->Orientation ();
+Orientation () = gameData.objData.consoleP->Orientation ();
 mType.physInfo.rotVel.v.coord.x =
 mType.physInfo.rotVel.v.coord.y =
 mType.physInfo.rotVel.v.coord.z = 0;
@@ -686,7 +686,7 @@ else {
 				}
 			if (bBlendPolys) {
 #if 0
-				fix xDistToEye = CFixVector::Dist(gameData.objs.viewerP->info.position.vPos, objP->info.position.vPos);
+				fix xDistToEye = CFixVector::Dist(gameData.objData.viewerP->info.position.vPos, objP->info.position.vPos);
 				if (xDistToEye < gameData.models.nSimpleModelThresholdScale * I2X (2))
 #endif
 					bOk = DrawPolyModel (objP, &objP->info.position.vPos, &objP->info.position.mOrient,
@@ -1053,10 +1053,10 @@ if (nObject == nDbgObj)
 	BRP;
 #endif
 if (nObject != LOCALPLAYER.nObject) {
-	if (objP == gameData.objs.viewerP)
+	if (objP == gameData.objData.viewerP)
 		return 0;
 	 }
-else if ((gameData.objs.viewerP == gameData.objs.consoleP) && !automap.Active ()) {
+else if ((gameData.objData.viewerP == gameData.objData.consoleP) && !automap.Active ()) {
 	if ((bSpectate = ((gameStates.render.bFreeCam > 0) && !nWindow)))
 		;
 #if DBG
@@ -1086,7 +1086,7 @@ if ((nType == OBJ_NONE)/* || (nType==OBJ_CAMBOT)*/){
 	}
 int32_t mldSave = gameStates.render.detail.nMaxLinearDepth;
 gameStates.render.nState = 1;
-gameData.objs.color.index = 0;
+gameData.objData.color.index = 0;
 gameStates.render.detail.nMaxLinearDepth = gameStates.render.detail.nMaxLinearDepthObjects;
 
 switch (objP->info.renderType) {

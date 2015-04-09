@@ -79,7 +79,7 @@ return gameData.time.xGame - m_xCreationTime;
 void CObject::Initialize (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos,
 								  const CFixMatrix& mOrient, fix xSize, uint8_t cType, uint8_t mType, uint8_t rType)
 {
-SetSignature (gameData.objs.nNextSignature++);
+SetSignature (gameData.objData.nNextSignature++);
 SetType (nType);
 SetKey (nId);
 SetLastPos (vPos);
@@ -138,17 +138,17 @@ else if (nType == OBJ_POWERUP)
 #endif
 
 SetSegment (FindSegByPos (vPos, nSegment, 1, 0));
-if ((Segment () < 0) || (Segment () > gameData.segs.nLastSegment))
+if ((Segment () < 0) || (Segment () > gameData.segData.nLastSegment))
 	return -1;
 
 if (nType == OBJ_DEBRIS) {
-	if (!gameOpts->render.effects.nShrapnels && (gameData.objs.nDebris >= gameStates.render.detail.nMaxDebrisObjects))
+	if (!gameOpts->render.effects.nShrapnels && (gameData.objData.nDebris >= gameStates.render.detail.nMaxDebrisObjects))
 		return -1;
 	}
 
 // Zero out object structure to keep weird bugs from happening in uninitialized fields.
 SetKey (OBJ_IDX (this));
-SetSignature (gameData.objs.nNextSignature++);
+SetSignature (gameData.objData.nNextSignature++);
 SetType (nType);
 SetKey (nId);
 SetLastPos (vPos);
@@ -181,7 +181,7 @@ if (GetType () == OBJ_WEAPON) {
 	CLaserInfo::SetScale (I2X (1));
 	}
 else if (GetType () == OBJ_DEBRIS)
-	gameData.objs.nDebris++;
+	gameData.objData.nDebris++;
 if (GetControlType () == CT_POWERUP)
 	CPowerupInfo::SetCreationTime (gameData.time.xGame);
 else if (GetControlType () == CT_EXPLOSION) {
@@ -256,11 +256,11 @@ if (nSegment < -1)
 	nSegment = -nSegment - 2;
 else
 	nSegment = FindSegByPos (vPos, nSegment, 1, 0);
-if ((nSegment < 0) || (nSegment > gameData.segs.nLastSegment))
+if ((nSegment < 0) || (nSegment > gameData.segData.nLastSegment))
 	return -1;
 
 if (nType == OBJ_DEBRIS) {
-	if (!gameOpts->render.effects.nShrapnels && (gameData.objs.nDebris >= gameStates.render.detail.nMaxDebrisObjects))
+	if (!gameOpts->render.effects.nShrapnels && (gameData.objData.nDebris >= gameStates.render.detail.nMaxDebrisObjects))
 		return -1;
 	}
 
@@ -271,7 +271,7 @@ objP = OBJECT (nObject);
 objP->SetKey (nObject);
 objP->SetCreationTime ();
 // Zero out object structure to keep weird bugs from happening in uninitialized fields.
-objP->info.nSignature = gameData.objs.nNextSignature++;
+objP->info.nSignature = gameData.objData.nNextSignature++;
 objP->info.nType = nType;
 objP->info.nId = nId;
 objP->info.vLastPos =
@@ -313,7 +313,7 @@ if (objP->info.nType == OBJ_WEAPON) {
 	objP->cType.laserInfo.xScale = I2X (1);
 	}
 else if (objP->info.nType == OBJ_DEBRIS)
-	gameData.objs.nDebris++;
+	gameData.objData.nDebris++;
 if (objP->info.controlType == CT_POWERUP)
 	objP->cType.powerupInfo.xCreationTime = gameData.time.xGame;
 else if (objP->info.controlType == CT_EXPLOSION)
@@ -381,7 +381,7 @@ return nObject;
 
 int32_t CreateRobot (uint8_t nId, int16_t nSegment, const CFixVector& vPos)
 {
-if (nId >= gameData.bots.nTypes [gameStates.app.bD1Mission]) {
+if (nId >= gameData.botData.nTypes [gameStates.app.bD1Mission]) {
 	PrintLog (0, "Trying to create non-existent robot (type %d)\n", nId);
 	return -1;
 	}
@@ -581,7 +581,7 @@ if (!bIgnoreLimits && TooManyPowerups ((int32_t) nId)) {
 	}
 if (gameStates.gameplay.bMineMineCheat && !bForce && (CObject::IsEquipment (nId) < 2))
 	return -1;
-int16_t nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objs.pwrUp.info [nId].size, CT_POWERUP, MT_PHYSICS, RT_POWERUP);
+int16_t nObject = CreateObject (OBJ_POWERUP, nId, nCreator, nSegment, vPos, CFixMatrix::IDENTITY, gameData.objData.pwrUp.info [nId].size, CT_POWERUP, MT_PHYSICS, RT_POWERUP);
 if ((nObject >= 0) && IsMultiGame && PowerupClass (nId)) 
 	AddPowerupInMine ((int32_t) nId);
 return nObject;

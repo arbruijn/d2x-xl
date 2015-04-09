@@ -37,8 +37,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 //	It is not valid to use gameData.time.xFrame because robots do not get moved every frame.
 
 // ---------------------------------------------------------
-//	On entry, gameData.bots.nTypes had darn sure better be set.
-//	Mallocs gameData.bots.nTypes tRobotInfo structs into global gameData.bots.infoP.
+//	On entry, gameData.botData.nTypes had darn sure better be set.
+//	Mallocs gameData.botData.nTypes tRobotInfo structs into global gameData.botData.infoP.
 void InitAISystem (void)
 {
 }
@@ -179,12 +179,12 @@ gameStates.app.bLunacy = 1;
 nDiffSave = gameStates.app.nDifficultyLevel;
 gameStates.app.nDifficultyLevel = NDL-1;
 for (i = 0; i < MAX_ROBOT_TYPES; i++) {
-	Firing_wait_copy [i] = gameData.bots.infoP [i].primaryFiringWait [NDL-1];
-	Firing_wait2_copy [i] = gameData.bots.infoP [i].secondaryFiringWait [NDL-1];
-	RapidfireCount_copy [i] = gameData.bots.infoP [i].nRapidFireCount [NDL-1];
-	gameData.bots.infoP [i].primaryFiringWait [NDL-1] = gameData.bots.infoP [i].primaryFiringWait [1];
-	gameData.bots.infoP [i].secondaryFiringWait [NDL-1] = gameData.bots.infoP [i].secondaryFiringWait [1];
-	gameData.bots.infoP [i].nRapidFireCount [NDL-1] = gameData.bots.infoP [i].nRapidFireCount [1];
+	Firing_wait_copy [i] = gameData.botData.infoP [i].primaryFiringWait [NDL-1];
+	Firing_wait2_copy [i] = gameData.botData.infoP [i].secondaryFiringWait [NDL-1];
+	RapidfireCount_copy [i] = gameData.botData.infoP [i].nRapidFireCount [NDL-1];
+	gameData.botData.infoP [i].primaryFiringWait [NDL-1] = gameData.botData.infoP [i].primaryFiringWait [1];
+	gameData.botData.infoP [i].secondaryFiringWait [NDL-1] = gameData.botData.infoP [i].secondaryFiringWait [1];
+	gameData.botData.infoP [i].nRapidFireCount [NDL-1] = gameData.botData.infoP [i].nRapidFireCount [1];
 	}
 }
 
@@ -198,9 +198,9 @@ if (!gameStates.app.bLunacy)	//already off
 	return;
 gameStates.app.bLunacy = 0;
 for (i = 0; i < MAX_ROBOT_TYPES; i++) {
-	gameData.bots.infoP [i].primaryFiringWait [NDL-1] = Firing_wait_copy [i];
-	gameData.bots.infoP [i].secondaryFiringWait [NDL-1] = Firing_wait2_copy [i];
-	gameData.bots.infoP [i].nRapidFireCount [NDL-1] = RapidfireCount_copy [i];
+	gameData.botData.infoP [i].primaryFiringWait [NDL-1] = Firing_wait_copy [i];
+	gameData.botData.infoP [i].secondaryFiringWait [NDL-1] = Firing_wait2_copy [i];
+	gameData.botData.infoP [i].nRapidFireCount [NDL-1] = RapidfireCount_copy [i];
 	}
 gameStates.app.nDifficultyLevel = nDiffSave;
 }
@@ -211,9 +211,9 @@ void InitAIForShip (void)
 {
 for (int32_t i = 0; i < MAX_AI_CLOAK_INFO; i++) {
 	gameData.ai.cloakInfo [i].lastTime = gameData.time.xGame;
-	if (gameData.objs.consoleP) {
-		gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.objs.consoleP);
-		gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objs.consoleP)->vPos;
+	if (gameData.objData.consoleP) {
+		gameData.ai.cloakInfo [i].nLastSeg = OBJSEG (gameData.objData.consoleP);
+		gameData.ai.cloakInfo [i].vLastPos = OBJPOS (gameData.objData.consoleP)->vPos;
 		}
 	else {
 		gameData.ai.cloakInfo [i].nLastSeg = -1;

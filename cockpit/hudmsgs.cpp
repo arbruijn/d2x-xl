@@ -154,7 +154,7 @@ if (pMsgs->nMessages > 0) {
 		else
 			yStart = SMALL_FONT->Height () / 2;
 		if (gameOpts->render.cockpit.bGuidedInMainView) {
-			if (gameData.objs.HasGuidedMissile (N_LOCALPLAYER))
+			if (gameData.objData.HasGuidedMissile (N_LOCALPLAYER))
 				yStart += SMALL_FONT->Height () + 3;
 			}
 

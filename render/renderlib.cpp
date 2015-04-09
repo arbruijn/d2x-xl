@@ -59,7 +59,7 @@ CSegment *segP = SEGMENT (nSegment);
 CSide *sideP = segP->m_sides + nSide;
 CFixVector v;
 if (sideP->m_nType == SIDE_IS_QUAD) {
-	v = gameData.render.mine.viewer.vPos - segP->SideCenter (nSide); //gameData.segs.vertices + segP->m_vertices [sideVertIndex [nSide][0]]);
+	v = gameData.render.mine.viewer.vPos - segP->SideCenter (nSide); //gameData.segData.vertices + segP->m_vertices [sideVertIndex [nSide][0]]);
 	return CFixVector::Dot (sideP->m_normals [0], v) >= 0;
 	}
 v = gameData.render.mine.viewer.vPos - VERTICES [sideP->m_vertices [(sideP->m_nType == SIDE_IS_TRI_13) ? 3 : 0]];
@@ -627,9 +627,9 @@ static inline CRenderPoint* TransformVertex (int32_t i)
 {
 CRenderPoint& p = RENDERPOINTS [i];
 p.SetFlags (0);
-p.TransformAndEncode (gameData.segs.vertices [i]);
+p.TransformAndEncode (gameData.segData.vertices [i]);
 if (!ogl.m_states.bUseTransform) 
-	gameData.segs.fVertices [i].Assign (p.ViewPos ());
+	gameData.segData.fVertices [i].Assign (p.ViewPos ());
 p.SetIndex (i);
 return &p;
 }
@@ -659,7 +659,7 @@ void RotateSideNorms (void)
 	int32_t			i, j;
 	CSide			*sideP;
 
-for (i = 0; i < gameData.segs.nSegments; i++)
+for (i = 0; i < gameData.segData.nSegments; i++)
 	for (j = 6, sideP = SEGMENT (i)->m_sides; j; j--, sideP++) {
 		transformation.Rotate (sideP->m_rotNorms [0], sideP->m_normals [0], 0);
 		transformation.Rotate (sideP->m_rotNorms [1], sideP->m_normals [1], 0);
@@ -674,8 +674,8 @@ void TransformSideCenters (void)
 {
 	int32_t	i;
 
-for (i = 0; i < gameData.segs.nSegments; i++)
-	transformation.Transform (gameData.segs.segCenters [1] + i, gameData.segs.segCenters [0] + i, 0);
+for (i = 0; i < gameData.segData.nSegments; i++)
+	transformation.Transform (gameData.segData.segCenters [1] + i, gameData.segData.segCenters [0] + i, 0);
 }
 
 #endif
@@ -898,8 +898,8 @@ if (gameStates.render.bFreeCam == bOn)
 if ((gameStates.render.bFreeCam = bOn)) {
 	SetChaseCam (0);
 	SetRearView (0);
-	gameStates.app.playerPos = gameData.objs.viewerP->info.position;
-	gameStates.app.nPlayerSegment = gameData.objs.viewerP->info.nSegment;
+	gameStates.app.playerPos = gameData.objData.viewerP->info.position;
+	gameStates.app.nPlayerSegment = gameData.objData.viewerP->info.nSegment;
 	CGenericCockpit::Save ();
 	if (gameStates.render.cockpit.nType < CM_FULL_SCREEN)
 		cockpit->Activate (CM_FULL_SCREEN);
@@ -907,8 +907,8 @@ if ((gameStates.render.bFreeCam = bOn)) {
 		gameStates.zoom.nFactor = float (gameStates.zoom.nMinFactor);
 	}
 else {
-	gameData.objs.viewerP->info.position = gameStates.app.playerPos;
-	gameData.objs.viewerP->RelinkToSeg (gameStates.app.nPlayerSegment);
+	gameData.objData.viewerP->info.position = gameStates.app.playerPos;
+	gameData.objData.viewerP->RelinkToSeg (gameStates.app.nPlayerSegment);
 	CGenericCockpit::Restore ();
 	}
 return 1;

@@ -288,11 +288,11 @@ bAvoidTarget = TARGETOBJ->info.nSegment == nAvoidSeg;
 if (nMaxDepth == -1)
 	nMaxDepth = MAX_PATH_LENGTH;
 lNumPoints = 0;
-memset (bVisited, 0, sizeof (bVisited [0]) * gameData.segs.nSegments);
-memset (depth, 0, sizeof (depth [0]) * gameData.segs.nSegments);
+memset (bVisited, 0, sizeof (bVisited [0]) * gameData.segData.nSegments);
+memset (depth, 0, sizeof (depth [0]) * gameData.segData.nSegments);
 //	If there is a CSegment we're not allowed to visit, mark it.
 if (nAvoidSeg != -1) {
-	Assert (nAvoidSeg <= gameData.segs.nLastSegment);
+	Assert (nAvoidSeg <= gameData.segData.nLastSegment);
 	if ((nStartSeg != nAvoidSeg) && (nEndSeg != nAvoidSeg)) {
 		bVisited [nAvoidSeg] = 1;
 		depth [nAvoidSeg] = 0;
@@ -491,7 +491,7 @@ int32_t ValidatePath (int32_t debugFlag, tPointSeg *pointSegP, int32_t numPoints
 	int32_t i, nCurSeg, nSide, nNextSeg;
 
 nCurSeg = pointSegP->nSegment;
-if ((nCurSeg < 0) || (nCurSeg > gameData.segs.nLastSegment)) {
+if ((nCurSeg < 0) || (nCurSeg > gameData.segData.nLastSegment)) {
 #if TRACE
 	console.printf (CON_DBG, "Path beginning at index %i, length=%i is bogus!\n", pointSegP-gameData.ai.routeSegs, numPoints);
 #endif
@@ -506,7 +506,7 @@ if (numPoints == 0)
 	return 1;
 for (i = 1; i < numPoints; i++) {
 	nNextSeg = pointSegP [i].nSegment;
-	if ((nNextSeg < 0) || (nNextSeg > gameData.segs.nLastSegment)) {
+	if ((nNextSeg < 0) || (nNextSeg > gameData.segData.nLastSegment)) {
 #if TRACE
 		console.printf (CON_DBG, "Path beginning at index %i, length=%i is bogus!\n", pointSegP-gameData.ai.routeSegs, numPoints);
 #endif
@@ -606,8 +606,8 @@ void CreatePathToSegment (CObject *objP, int16_t goalseg, int32_t nMaxDepth, int
 
 if (nMaxDepth == -1)
 	nMaxDepth = MAX_DEPTH_TO_SEARCH_FOR_PLAYER;
-else if (nMaxDepth > gameData.segs.nSegments)
-	nMaxDepth = gameData.segs.nSegments;
+else if (nMaxDepth > gameData.segData.nSegments)
+	nMaxDepth = gameData.segData.nSegments;
 ailP->timeTargetSeen = gameData.time.xGame;			//	Prevent from resetting path quickly.
 ailP->nGoalSegment = goalseg;
 nStartSeg = objP->info.nSegment;
@@ -892,7 +892,7 @@ else {
 	xDistToGoal = CFixVector::Dist (vGoalPoint, objP->Position ());
 	}
 if (gameStates.app.bPlayerIsDead)
-	xDistToTarget = CFixVector::Dist (objP->Position (), gameData.objs.viewerP->Position ());
+	xDistToTarget = CFixVector::Dist (objP->Position (), gameData.objData.viewerP->Position ());
 else
 	xDistToTarget = CFixVector::Dist (objP->Position (), OBJPOS (TARGETOBJ)->vPos);
 	//	Efficiency hack: If far away from CPlayerData, move in big quantized jumps.

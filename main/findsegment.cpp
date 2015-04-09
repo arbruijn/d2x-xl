@@ -66,7 +66,7 @@ static int32_t TraceSegs (const CFixVector& vPos, int32_t nCurSeg, int32_t nTrac
 	fix			xSideDists [6], xMaxDist;
 	int32_t			centerMask, nMaxSide, nSide, bit, nMatchSeg = -1;
 
-if (nTraceDepth >= gameData.segs.nSegments) //gameData.segs.nSegments)
+if (nTraceDepth >= gameData.segData.nSegments) //gameData.segData.nSegments)
 	return -1;
 if (bVisited [nCurSeg] == bFlag)
 	return -1;
@@ -103,7 +103,7 @@ static int32_t TraceSegsf (const CFloatVector& vPos, int32_t nCurSeg, int32_t nT
 	float				fSideDists [6], fMaxDist;
 	int32_t				centerMask, nMaxSide, nSide, bit, nMatchSeg = -1;
 
-if (nTraceDepth >= gameData.segs.nSegments)
+if (nTraceDepth >= gameData.segData.nSegments)
 	return -1;
 if (bVisited [nCurSeg] == bFlag)
 	return -1;
@@ -161,10 +161,10 @@ if ((nStartSeg >= 0) && (PointInSeg (SEGMENT (nStartSeg), vPos)))
 	int16_t*		segListP = NULL;
 	CSegment*	segP;
 
-if (gameData.segs.HaveGrid (bSkyBox)) {
-	for (i = gameData.segs.GetSegList (vPos, segListP, bSkyBox); i; i--, segListP++) {
+if (gameData.segData.HaveGrid (bSkyBox)) {
+	for (i = gameData.segData.GetSegList (vPos, segListP, bSkyBox); i; i--, segListP++) {
 #if DBG
-		if ((*segListP < 0) || (*segListP >= gameData.segs.nSegments))
+		if ((*segListP < 0) || (*segListP >= gameData.segData.nSegments))
 			continue;
 #endif
 		if (PointInSeg (SEGMENT (*segListP), vPos))
@@ -172,7 +172,7 @@ if (gameData.segs.HaveGrid (bSkyBox)) {
 		}
 	}
 else if (bSkyBox) {
-	for (i = gameData.segs.skybox.GetSegList (segListP); i; i--, segListP++) {
+	for (i = gameData.segData.skybox.GetSegList (segListP); i; i--, segListP++) {
 		segP = SEGMENT (*segListP);
 		if ((segP->m_function == SEGMENT_FUNC_SKYBOX) && PointInSeg (segP, vPos))
 			return *segListP;
@@ -180,7 +180,7 @@ else if (bSkyBox) {
 	}
 else {
 	segP = SEGMENTS.Buffer ();
-	for (i = 0; i <= gameData.segs.nLastSegment; i++) {
+	for (i = 0; i <= gameData.segData.nLastSegment; i++) {
 		segP = SEGMENT (i);
 		if ((segP->m_function != SEGMENT_FUNC_SKYBOX) && PointInSeg (segP, vPos))
 			return i;
@@ -201,7 +201,7 @@ int32_t FindSegByPos (const CFixVector& vPos, int32_t nStartSeg, int32_t bExhaus
 if (nStartSeg >= 0) {
 	if (PointInSeg (SEGMENT (nStartSeg), vPos))
 		return nStartSeg;
-	if (!xTolerance && bExhaustive && gameData.segs.HaveGrid (bSkyBox)) 
+	if (!xTolerance && bExhaustive && gameData.segData.HaveGrid (bSkyBox)) 
 		return FindSegByPosExhaustive (vPos, SEGMENT (nStartSeg)->m_function == SEGMENT_FUNC_SKYBOX, nStartSeg);
 	if (SEGMENT (nStartSeg)->m_function == SEGMENT_FUNC_SKYBOX) {
 		if (0 <= (nSegment = TraceSegs (vPos, nStartSeg, 1, bVisited [nThread], bFlags [nThread], xTolerance))) 
@@ -235,7 +235,7 @@ int16_t FindClosestSeg (CFixVector& vPos)
 	int16_t			nSegment, nClosestSeg = -1;
 	fix			nDist, nMinDist = 0x7fffffff;
 
-for (nSegment = 0; nSegment < gameData.segs.nSegments; nSegment++, segP++) {
+for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, segP++) {
 	nDist = CFixVector::Dist (vPos, segP->Center ()) - segP->MinRad ();
 	if (nDist < nMinDist) {
 		nMinDist = nDist;
@@ -279,13 +279,13 @@ void SetAmbientSoundFlagsCommon (int32_t tmi_bit, int32_t s2f_bit)
 	//	Now, all segments containing ambient lava or water sound makers are flagged.
 	//	Additionally flag all segments which are within range of them.
 memset (markedSegs, 0, sizeof (markedSegs));
-for (i = 0; i <= gameData.segs.nLastSegment; i++) {
+for (i = 0; i <= gameData.segData.nLastSegment; i++) {
 	SEGMENT (i)->m_flags &= ~s2f_bit;
 	}
 
 //	Mark all segments which are sources of the sound.
 CSegment	*segP = SEGMENTS.Buffer ();
-for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
+for (i = 0; i <= gameData.segData.nLastSegment; i++, segP++) {
 	CSide	*sideP = segP->m_sides;
 	for (j = 0; j < SEGMENT_SIDE_COUNT; j++, sideP++) {
 		if (!sideP->FaceCount ())
@@ -301,12 +301,12 @@ for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
 	}
 //	Next mark all segments within N segments of a source.
 segP = SEGMENTS.Buffer ();
-for (i = 0; i <= gameData.segs.nLastSegment; i++, segP++) {
+for (i = 0; i <= gameData.segData.nLastSegment; i++, segP++) {
 	if (segP->m_flags & s2f_bit)
 		AmbientMarkBfs (i, markedSegs, AMBIENT_SEGMENT_DEPTH);
 	}
 //	Now, flip bits in all segments which can hear the ambient sound.
-for (i = 0; i <= gameData.segs.nLastSegment; i++)
+for (i = 0; i <= gameData.segData.nLastSegment; i++)
 	if (markedSegs [i])
 		SEGMENT (i)->m_flags |= s2f_bit;
 }

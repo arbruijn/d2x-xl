@@ -90,7 +90,7 @@ int32_t AddFaceListItem (CSegFace *faceP, int32_t nThread);
 
 static inline bool GuidedMslView (CObject ** objPP)
 {
-return (*objPP = gameData.objs.GetGuidedMissile (N_LOCALPLAYER)) != NULL;
+return (*objPP = gameData.objData.GetGuidedMissile (N_LOCALPLAYER)) != NULL;
 }
 
 //------------------------------------------------------------------------------

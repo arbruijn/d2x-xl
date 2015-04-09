@@ -66,7 +66,7 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++)
 			effectInfoP->flags &= ~(EF_ALTFMT | EF_FROMPOG | EF_INITIALIZED);
 			effectInfoP->nCurFrame = 0;
 			}
-for (i = gameData.walls.nAnims [gameStates.app.bD1Data], wallEffectP = gameData.walls.animP.Buffer (); i; i--, wallEffectP++)
+for (i = gameData.wallData.nAnims [gameStates.app.bD1Data], wallEffectP = gameData.wallData.animP.Buffer (); i; i--, wallEffectP++)
 	//if (wallEffectP->flags & WCF_FROMPOG)
 		wallEffectP->flags &= ~(WCF_ALTFMT | WCF_FROMPOG | WCF_INITIALIZED);
 for (i = gameData.effects.nClips [0], animInfoP = gameData.effects.animations [0].Buffer (); i; i--, animInfoP++)

@@ -174,7 +174,7 @@ tv = mSurfaceOrient.m.dir.f * TERRAIN_GRID_SCALE;
 transformation.RotateScaled (delta_j, tv);
 gameData.render.terrain.vStartPoint = *vOrgPoint - mSurfaceOrient.m.dir.r * ((gameData.render.terrain.orgI - iLow) * TERRAIN_GRID_SCALE);
 gameData.render.terrain.vStartPoint -= mSurfaceOrient.m.dir.f * ((gameData.render.terrain.orgJ - jLow) * TERRAIN_GRID_SCALE);
-tv = gameData.objs.viewerP->info.position.vPos - gameData.render.terrain.vStartPoint;
+tv = gameData.objData.viewerP->info.position.vPos - gameData.render.terrain.vStartPoint;
 iViewer = CFixVector::Dot (tv, mSurfaceOrient.m.dir.r) / TERRAIN_GRID_SCALE;
 if (iViewer > iHigh)
 	iViewer = iHigh;

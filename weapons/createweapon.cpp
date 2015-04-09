@@ -135,8 +135,8 @@ if (nWeaponType >= gameData.weapons.nTypes [0])
 if (parentP->info.nType == OBJ_ROBOT)
 	DoMuzzleStuff (nSegment, vPosition);
 else if (gameStates.app.bD2XLevel &&
-			(parentP == gameData.objs.consoleP) &&
-			(SEGMENT (gameData.objs.consoleP->info.nSegment)->HasNoDamageProp ()))
+			(parentP == gameData.objData.consoleP) &&
+			(SEGMENT (gameData.objData.consoleP->info.nSegment)->HasNoDamageProp ()))
 	return -1;
 #if 1
 if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameData.app.GameMode (GM_HOARD | GM_ENTROPY))) {
@@ -145,7 +145,7 @@ if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameDat
 	if (objP) {
 		if (IsMultiGame)
 			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
-		objP->rType.animationInfo.nClipIndex = gameData.objs.pwrUp.info [objP->info.nId].nClipIndex;
+		objP->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [objP->info.nId].nClipIndex;
 		objP->rType.animationInfo.xFrameTime = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
 		objP->rType.animationInfo.nCurFrame = 0;
 		objP->info.nCreator = GetTeam (N_LOCALPLAYER) + 1;
@@ -158,7 +158,7 @@ objP = OBJECT (nObject);
 if (!objP)
 	return -1;
 #if 0
-if (parentP == gameData.objs.consoleP) {
+if (parentP == gameData.objData.consoleP) {
 	switch (nWeaponType) {
 		case LASER_ID:
 		case LASER_ID + 1:
@@ -199,7 +199,7 @@ else {
 	}
 //	Do the special Omega Cannon stuff.  Then return on account of everything that follows does
 //	not apply to the Omega Cannon.
-nViewer = OBJ_IDX (gameData.objs.viewerP);
+nViewer = OBJ_IDX (gameData.objData.viewerP);
 weaponInfoP = gameData.weapons.info + nWeaponType;
 if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
@@ -235,7 +235,7 @@ if (parentP && (parentP->info.nType == OBJ_PLAYER)) {
 		objP->cType.laserInfo.xScale = I2X (3) / 4;
 	else if (nWeaponType == GUIDEDMSL_ID) {
 		if (nParent == LOCALPLAYER.nObject) {
-			gameData.objs.SetGuidedMissile (N_LOCALPLAYER, objP);
+			gameData.objData.SetGuidedMissile (N_LOCALPLAYER, objP);
 			if (gameData.demo.nState == ND_STATE_RECORDING)
 				NDRecordGuidedStart ();
 			}

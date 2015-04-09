@@ -154,8 +154,8 @@ memset (nMonsterballForces, 0, sizeof (nMonsterballForces));
 for (int32_t i = 0; i < MAX_MONSTERBALL_FORCES - 1; i++, forceP++)
 	nMonsterballForces [forceP->nWeaponId] = forceP->nForce;
 nMonsterballPyroForce = forceP->nForce;
-gameData.objs.pwrUp.info [POW_MONSTERBALL].size =
-	(gameData.objs.pwrUp.info [POW_SHIELD_BOOST].size * extraGameInfo [IsMultiGame].monsterball.nSizeMod) / 2;
+gameData.objData.pwrUp.info [POW_MONSTERBALL].size =
+	(gameData.objData.pwrUp.info [POW_SHIELD_BOOST].size * extraGameInfo [IsMultiGame].monsterball.nSizeMod) / 2;
 }
 
 //------------------------------------------------------------------------------

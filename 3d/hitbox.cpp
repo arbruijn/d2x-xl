@@ -237,9 +237,9 @@ tHitbox* TransformHitboxes (CObject *objP, CFixVector *vPos)
 	tHitbox*		hb = &gameData.models.hitboxes [nId].hitboxes [0];
 
 #if !DBG
-if (gameData.models.hitboxes [nId].nFrame == gameData.objs.nFrameCount)
+if (gameData.models.hitboxes [nId].nFrame == gameData.objData.nFrameCount)
 	return hb;
-gameData.models.hitboxes [nId].nFrame = gameData.objs.nFrameCount;
+gameData.models.hitboxes [nId].nFrame = gameData.objData.nFrameCount;
 #endif
 	tQuad*		pf;
 	CFixVector	rotVerts [8];

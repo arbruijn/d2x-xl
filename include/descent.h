@@ -1868,8 +1868,8 @@ typedef struct tSlideSegs {
 
 //------------------------------------------------------------------------------
 
-#define SEGVIS_FLAGS			((gameData.segs.nSegments + 7) >> 3)
-#define VERTVIS_FLAGS		((gameData.segs.nVertices + 7) >> 3)
+#define SEGVIS_FLAGS			((gameData.segData.nSegments + 7) >> 3)
+#define VERTVIS_FLAGS		((gameData.segData.nVertices + 7) >> 3)
 
 #define USE_RANGE_ELEMENTS	0
 
@@ -1947,10 +1947,10 @@ class CSkyBox : public CStack< int16_t > {
 
 //	-----------------------------------------------------------------------------------------------------------
 
-#define LEVEL_SEGMENTS			gameData.segs.nSegments
-#define LEVEL_OBJECTS			(gameData.objs.nMaxObjects)
-#define LEVEL_VERTICES			(gameData.segs.nVertices)
-#define LEVEL_POINT_SEGS		(gameData.segs.nSegments * 4)
+#define LEVEL_SEGMENTS			gameData.segData.nSegments
+#define LEVEL_OBJECTS			(gameData.objData.nMaxObjects)
+#define LEVEL_VERTICES			(gameData.segData.nVertices)
+#define LEVEL_POINT_SEGS		(gameData.segData.nSegments * 4)
 #define LEVEL_SIDES				(LEVEL_SEGMENTS * 6)
 #define LEVEL_FACES				(FACES.nFaces * 2)
 #define LEVEL_TRIANGLES			(FACES.nTriangles ? FACES.nTriangles : LEVEL_FACES << gameStates.render.nMeshQuality)
@@ -2055,7 +2055,7 @@ typedef struct tVertexOwner {
 
 class CSegmentData {
 	public:
-		int32_t							nMaxSegments;
+		int32_t						nMaxSegments;
 		CArray<CFixVector>		vertices;
 		CArray<CFloatVector>		fVertices;
 		CArray<tVertexOwner>		vertexOwners;
@@ -2074,24 +2074,24 @@ class CSegmentData {
 		float							fRad;
 		CArray<CFixVector>		segCenters [2];
 		CArray<CFixVector>		sideCenters;
-		CArray<uint8_t>				bSegVis;
-		CArray<uint8_t>				bVertVis;
-		CArray<uint8_t>				bLightVis;
-		CArray<CSegDistList>		segDistTable;
-		CArray<int16_t>				vertexSegments; // all segments using this vertex
-		int32_t							nVertices;
-		int32_t							nFaceVerts;
-		int32_t							nLastVertex;
-		int32_t							nSegments;
-		int32_t							nLastSegment;
-		int32_t							nFaces;
-		int32_t							nFaceKeys;
-		int32_t							nLevelVersion;
+		CArray<uint8_t>			bSegVis;
+		CArray<uint8_t>			bVertVis;
+		CArray<uint8_t>			bLightVis;
+		CArray<CSegDistList>		egDistTable;
+		CArray<int16_t>			vertexSegments; // all segments using this vertex
+		int32_t						nVertices;
+		int32_t						nFaceVerts;
+		int32_t						nLastVertex;
+		int32_t						nSegments;
+		int32_t						nLastSegment;
+		int32_t						nFaces;
+		int32_t						nFaceKeys;
+		int32_t						nLevelVersion;
 		char							szLevelFilename [FILENAME_LEN];
 		CSecretData					secret;
 		CArray<tSlideSegs>		slideSegs;
-		int16_t							nSlideSegs;
-		int32_t							bHaveSlideSegs;
+		int16_t						nSlideSegs;
+		int32_t						bHaveSlideSegs;
 		CFaceData					faces;
 
 	public:
@@ -2196,13 +2196,11 @@ class CWallData {
 
 class CTriggerData {
 	public:
-		CArray<CTrigger>			triggers; // [MAX_TRIGGERS];
-		CArray<CTrigger>			objTriggers; // [MAX_TRIGGERS];
+		CArray<CTrigger>			triggers [2]; // [MAX_TRIGGERS];
 		CArray<tObjTriggerRef>	objTriggerRefs; // [MAX_OBJ_TRIGGERS];
 //		CArray<int16_t>				firstObjTrigger; // [MAX_OBJECTS_D2X];
 		CArray<int32_t>			delay; // [MAX_TRIGGERS];
-		int32_t						m_nTriggers;
-		int32_t						m_nObjTriggers;
+		int32_t						m_nTriggers [2];
 	public:
 		CTriggerData ();
 		bool Create (int32_t nTriggers, bool bObjTriggers);
@@ -2423,8 +2421,8 @@ class CRobotData {
 		~CRobotData () {}
 };
 
-#define D1ROBOT(_id)		(gameStates.app.bD1Mission && ((_id) < gameData.bots.nTypes [1]))
-//#define ROBOTINFO(_id)	gameData.bots.info [D1ROBOT (_id)][_id]
+#define D1ROBOT(_id)		(gameStates.app.bD1Mission && ((_id) < gameData.botData.nTypes [1]))
+//#define ROBOTINFO(_id)	gameData.botData.info [D1ROBOT (_id)][_id]
 
 //------------------------------------------------------------------------------
 
@@ -3213,7 +3211,7 @@ class CAITarget {
 		CObject*						objP;
 };
 
-#define TARGETOBJ	(gameData.ai.target.objP ? gameData.ai.target.objP : gameData.objs.consoleP)
+#define TARGETOBJ	(gameData.ai.target.objP ? gameData.ai.target.objP : gameData.objData.consoleP)
 
 class CAIData {
 	public:
@@ -3650,6 +3648,7 @@ class CCockpitData {
 	};
 
 
+#define GAMEDATA_ERRLOG_NONE			0
 #define GAMEDATA_ERRLOG_BUFFER		1
 #define GAMEDATA_ERRLOG_UNDERFLOW	2
 #define GAMEDATA_ERRLOG_OVERFLOW		4
@@ -3660,11 +3659,11 @@ class CCockpitData {
 
 class CGameData {
 	public:
-		CSegmentData		segs;
-		CWallData			walls;
-		CTriggerData		trigs;
-		CObjectData			objs;
-		CRobotData			bots;
+		CSegmentData		segData;
+		CWallData			wallData;
+		CTriggerData		trigData;
+		CObjectData			objData;
+		CRobotData			botData;
 		CRenderData			render;
 		CEffectData			effects;
 		CPigData				pig;
@@ -3730,86 +3729,73 @@ class CGameData {
 		CObject* Object (int32_t nObject, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
 		CSegment* Segment (int32_t nSegment, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
 		CWall* Wall (int32_t nWall, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
-		CTrigger* Trigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
+		CTrigger* Trigger (int32_t nType, int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
+		CTrigger* GeoTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
 		CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
 		tRobotInfo* CGameData::RobotInfo (int32_t nId, int32_t nChecks, const char* pszFile, int32_t nLine);
 		tRobotInfo* CGameData::RobotInfo (CObject* objP, int32_t nChecks, const char* pszFile, int32_t nLine);
 
 #else
-		inline CObject* Object (int32_t nObject, int32_t nChecks = GAMEDATA_ERRLOG_ALL) { 
-			if (nChecks) {
-				if ((nChecks & 1) && !objs.objects.Buffer ())
-					return NULL;
-				if ((nChecks & 2) && (nObject < 0))
-					return NULL;
-				if ((nChecks & 4) && (nObject > objs.nLastObject [0]))
-					return NULL;
-				}
-			return objs.objects + nObject; 
+		inline CObject* Object (int32_t nObject, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
+			if (!objData.objects.Buffer ())
+				return NULL;
+			if (nObject < 0)
+				return NULL;
+			if (nObject > objs.nLastObject [0])
+				return NULL;
+			return objData.objects + nObject; 
 			}
 
-		inline CSegment* Segment (int32_t nSegment, int32_t nChecks = GAMEDATA_ERRLOG_ALL) { 
-			if (nChecks) {
-				if ((nChecks & 1) && !segs.segments.Buffer ())
-					return NULL;
-				if ((nChecks & 2) && (nSegment < 0))
-					return NULL;
-				if ((nChecks & 4) && (nSegment >= segs.nSegments))
-					return NULL;
-				}
-			return segs.segments + nSegment; 
+		inline CSegment* Segment (int32_t nSegment, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
+			if (!segData.segments.Buffer ())
+				return NULL;
+			if (nSegment < 0)
+				return NULL;
+			if (nSegment >= segs.nSegments)
+				return NULL;
+			return segData.segments + nSegment; 
 			}
 
-		inline CWall* Wall (int32_t nWall, int32_t nChecks = GAMEDATA_ERRLOG_ALL) { 
-			if (nChecks) {
-				if ((nChecks & 1) && !walls.walls.Buffer ())
-					return NULL;
-				if ((nChecks & 2) && (nWall < 0))
-					return NULL;
-				if ((nChecks & 4) && (nWall >= walls.nWalls))
-					return NULL;
-				}
-			return walls.walls + nWall; 
+		inline CWall* Wall (int32_t nWall, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
+			if (!wallData.walls.Buffer ())
+				return NULL;
+			if (nWall < 0)
+				return NULL;
+			if (nWall >= walls.nWalls)
+				return NULL;
+			return wallData.walls + nWall; 
 			}
 
-		inline CTrigger* Trigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_ALL) { 
+		inline CTrigger* Trigger (int32_t nType, int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
 			if (nTrigger == NO_TRIGGER)
 				return NULL;
-			if (nChecks) {
-				if ((nChecks & 1) && !trigs.triggers.Buffer ())
-					return NULL;
-				if ((nChecks & 2) && (nTrigger < 0))
-					return NULL;
-				if ((nChecks & 2) && (nTrigger == NO_TRIGGER))
-					return NULL;
-				if ((nChecks & 4) && (nTrigger >= trigs.m_nTriggers))
-					return NULL;
-				}
-			return trigs.triggers + nTrigger; 
+			if (!trigData.triggers [nType].Buffer ())
+				return NULL;
+			if (nTrigger < 0)
+				return NULL;
+			if (nTrigger == NO_TRIGGER))
+				return NULL;
+			if (nTrigger >= trigData.m_nTriggers [0] [nType])
+				return NULL;
+			return trigData.triggers [nType] + nTrigger; 
 			}
 
-		inline CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_ALL) { 
-			if (nChecks) {
-				if ((nChecks & 1) && !trigs.objTriggers.Buffer ())
-					return NULL;
-				if ((nChecks & 2) && (nTrigger < 0))
-					return NULL;
-				if ((nChecks & 2) && (nTrigger == NO_TRIGGER))
-					return NULL;
-				if ((nChecks & 4) && (nTrigger >= trigs.m_nObjTriggers))
-					return NULL;
-				}
-			return trigs.objTriggers + nTrigger; 
+		inline CTrigger* GeoTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
+			return Trigger (0, nTrigger, nChecks);
+			}
+
+		inline CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
+			return Trigger (1, nTrigger, nChecks);
 			}
 
 		inline tRobotInfo* RobotInfo (int32_t nId, int32_t nChecks) {
 			CArray<tRobotInfo>& a = bots.info [gameStates.app.bD1Mission && (nId < bots.nTypes [1])];
 			if (nChecks) {
-				if ((nChecks & 1) && !a.Buffer ())
+				if (!a.Buffer ())
 					return NULL;
-				if ((nChecks & 2) && (nId < 0))
+				if (nId < 0)
 					return NULL;
-				if ((nChecks & 4) && ((uint32_t) nId >= a.Length ()))
+				if ((uint32_t) nId >= a.Length ())
 					return NULL;
 				}
 			return a + nId; 
@@ -3894,11 +3880,11 @@ extern tGameFileInfo gameFileInfo;
 static inline int16_t ObjIdx (CObject *objP)
 {
 #if DBG
-if (gameData.objs.objects.IsElement (objP))
-	return gameData.objs.objects.Index (objP);
+if (gameData.objData.objects.IsElement (objP))
+	return gameData.objData.objects.Index (objP);
 return -1;
 #else
-return gameData.objs.objects.IsElement (objP) ? gameData.objs.objects.Index (objP) : -1;
+return gameData.objData.objects.IsElement (objP) ? gameData.objData.objects.Index (objP) : -1;
 #endif
 }
 
@@ -3984,24 +3970,25 @@ extern fix nDebrisLife [];
 
 #define CLEAR(_v)		memset (_v, 0, sizeof (_v))
 
-#define SEGMENTS			gameData.segs.segments
-#define VERTICES			gameData.segs.vertices
-#define FVERTICES			gameData.segs.fVertices
-#define VERTEX_OWNERS	gameData.segs.vertexOwners
-#define SEGFACES			gameData.segs.segFaces
-#define OBJECTS			gameData.objs.objects
-#define WALLS				gameData.walls.walls
-#define TRIGGERS			gameData.trigs.triggers
-#define OBJTRIGGERS		gameData.trigs.objTriggers
-#define FACES				gameData.segs.faces
-#define RENDERPOINTS		gameData.render.mine.visibility [0].points
-#define TRIANGLES			FACES.tris
+#define SEGMENTS				gameData.segData.segments
+#define VERTICES				gameData.segData.vertices
+#define FVERTICES				gameData.segData.fVertices
+#define VERTEX_OWNERS		gameData.segData.vertexOwners
+#define SEGFACES				gameData.segData.segFaces
+#define FACES					gameData.segData.faces
+#define TRIANGLES				FACES.tris
+#define OBJECTS				gameData.objData.objects
+#define WALLS					gameData.wallData.walls
+#define TRIGGERS(_nType)	gameData.trigData.triggers [nType]
+#define GEOTRIGGERS			TRIGGERS(0)
+#define OBJTRIGGERS			TRIGGERS(1)
+#define RENDERPOINTS			gameData.render.mine.visibility [0].points
 
 #if DBG
 	#define SEGMENT(_id)				gameData.Segment (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
 	#define OBJECT(_id)				gameData.Object (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
 	#define WALL(_id)					gameData.Wall (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
-	#define TRIGGER(_id)				gameData.Trigger (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
+	#define GEOTRIGGER(_id)			gameData.GeoTrigger (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
 	#define OBJTRIGGER(_id)			gameData.ObjTrigger (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
 	#define ROBOTINFO(_id)			gameData.RobotInfo (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
 	#define SEGMENTEX(_id, _f)		gameData.Segment (_id, _f, __FILE__, __LINE__)
@@ -4014,7 +4001,7 @@ extern fix nDebrisLife [];
 	#define SEGMENT(_id)				gameData.Segment (_id, GAMEDATA_ERRLOG_ALL)
 	#define OBJECT(_id)				gameData.Object (_id, GAMEDATA_ERRLOG_ALL)
 	#define WALL(_id)					gameData.Wall (_id, GAMEDATA_ERRLOG_ALL)
-	#define TRIGGER(_id)				gameData.Trigger (_id, GAMEDATA_ERRLOG_ALL)
+	#define GEOTRIGGER(_id)				gameData.Trigger (_id, GAMEDATA_ERRLOG_ALL)
 	#define OBJTRIGGER(_id)			gameData.Trigger (_id, GAMEDATA_ERRLOG_ALL)
 	#define ROBOTINFO(_id)			gameData.RobotInfo (_id, GAMEDATA_ERRLOG_ALL)
 	#define SEGMENTEX(_id, _f)		gameData.Segment (_id, _f)
@@ -4048,7 +4035,7 @@ return vPosP;
 
 inline void CObject::RequestEffects (uint8_t nEffects)
 {
-gameData.objs.bWantEffect [OBJ_IDX (this)] |= nEffects;
+gameData.objData.bWantEffect [OBJ_IDX (this)] |= nEffects;
 }
 
 //	-----------------------------------------------------------------------------

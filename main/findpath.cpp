@@ -107,7 +107,7 @@ m_nLinkSeg = 0;
 m_bScanning = 3;
 m_heap = heap;
 m_widFlag = nWidFlag;
-m_maxDist = (nMaxDist < 0) ? gameData.segs.nSegments : nMaxDist;
+m_maxDist = (nMaxDist < 0) ? gameData.segData.nSegments : nMaxDist;
 if (!++m_bFlag)
 	m_bFlag = 1;
 return m_bFlag;
@@ -168,11 +168,11 @@ for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 #if DBG_SCAN
 	if (nSuccSeg == nDbgSeg)
 		BRP;
-	if (nSuccSeg >= gameData.segs.nSegments) {
+	if (nSuccSeg >= gameData.segData.nSegments) {
 		PrintLog (0, "internal error in simple router!\n");
 		return -1;
 		}
-	if ((nSuccSeg < 0) || (nSuccSeg >= gameData.segs.nSegments)) {
+	if ((nSuccSeg < 0) || (nSuccSeg >= gameData.segData.nSegments)) {
 		PrintLog (0, "invalid successor in CSimpleHeap::Expand\n");
 		return -1;
 		}
@@ -188,7 +188,7 @@ for (int16_t nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	pathNode.m_nDepth = m_nDepth;
 	m_queue [m_nHead++] = nSuccSeg;
 #if DBG_SCAN
-	if (m_nHead >= gameData.segs.nSegments) {
+	if (m_nHead >= gameData.segData.nSegments) {
 		PrintLog (0, "internal error in simple router!\n");
 		return -1;
 		}
@@ -367,7 +367,7 @@ for (int32_t nDir = 0; nDir < 2; nDir++) {
 			break;
 			}
 		++nLength;
-		if ((nLength > 2 * m_scanInfo.m_maxDist + 2) || (nLength > gameData.segs.nSegments))
+		if ((nLength > 2 * m_scanInfo.m_maxDist + 2) || (nLength > gameData.segData.nSegments))
 			return -0x7FFFFFFF;
 		xDist += SEGMENT (nPredSeg)->m_childDists [0][heap.m_path [nSuccSeg].m_nEdge];
 		nSuccSeg = nPredSeg;
@@ -463,13 +463,13 @@ for (int32_t i = 0, j; i < h; i = j) {
 	// the center of segment route [i].nNode. That way, the distance calculation is corrected by using direct lines of sight between
 	// segments of the route that can "see" each other even if they aren't directly connected.
 	nStartSeg = route [i].nNode;
-	if ((nStartSeg < 0) || (nStartSeg >= gameData.segs.nSegments))
+	if ((nStartSeg < 0) || (nStartSeg >= gameData.segData.nSegments))
 		return -2;
 	/*fq.*/p0 = p1 = &SEGMENT (nStartSeg)->Center ();
 	for (j = i + 1; j < h; j++) { 
 		nDestSeg = route [j].nNode;
 #if 1
-		if (!gameData.segs.SegVis (nStartSeg, nDestSeg))
+		if (!gameData.segData.SegVis (nStartSeg, nDestSeg))
 			break;
 		p1 = &SEGMENT (nDestSeg)->Center ();
 #else
