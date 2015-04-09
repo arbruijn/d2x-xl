@@ -296,7 +296,7 @@ void AIMoveRelativeToTarget (CObject *objP, tAILocalInfo *ailP, fix xDistToTarge
 									  int32_t nTargetVisibility)
 {
 	tRobotInfo	*botInfoP = ROBOTINFO (objP);
-	CObject		*dObjP = OBJECTEX (objP->cType.aiInfo.nDangerLaser, GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_INDEX);
+	CObject		*dObjP = OBJECTEX (objP->cType.aiInfo.nDangerLaser, GAMEDATA_ERRLOG_ALL);
 
 	Assert (gameData.ai.nTargetVisibility != -1);
 

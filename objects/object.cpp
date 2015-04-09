@@ -1640,7 +1640,7 @@ if (!parentObjP)
 	return -1;
 int32_t nObject = parentObjP->info.nAttachedObj;
 CObject* objP;
-while ((objP = OBJECTEX (nObject, GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_UNDERFLOW | GAMEDATA_CHECK_OVERFLOW))) {
+while ((objP = OBJECT (nObject))) {
 	if (objP == childObjP)
 		return 1;
 	nObject = objP->cType.explInfo.attached.nNext;

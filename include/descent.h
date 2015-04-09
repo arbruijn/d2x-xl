@@ -3650,13 +3650,13 @@ class CCockpitData {
 	};
 
 
-#define GAMEDATA_CHECK_BUFFER		1
-#define GAMEDATA_CHECK_UNDERFLOW	2
-#define GAMEDATA_CHECK_OVERFLOW	4
-#define GAMEDATA_CHECK_TYPE		8
-#define GAMEDATA_ERROR_LOG			16
-#define GAMEDATA_CHECK_INDEX		(GAMEDATA_CHECK_UNDERFLOW | GAMEDATA_CHECK_OVERFLOW)
-#define GAMEDATA_CHECK_ALL			(GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_INDEX | GAMEDATA_ERROR_LOG)
+#define GAMEDATA_ERRLOG_BUFFER		1
+#define GAMEDATA_ERRLOG_UNDERFLOW	2
+#define GAMEDATA_ERRLOG_OVERFLOW		4
+#define GAMEDATA_ERRLOG_TYPE			8
+#define GAMEDATA_ERRLOG_INDEX			(GAMEDATA_ERRLOG_UNDERFLOW | GAMEDATA_ERRLOG_OVERFLOW)
+#define GAMEDATA_ERRLOG_ALL			(GAMEDATA_ERRLOG_BUFFER | GAMEDATA_ERRLOG_INDEX)
+#define GAMEDATA_ERRLOG_DEFAULT		(GAMEDATA_ERRLOG_BUFFER | GAMEDATA_ERRLOG_OVERFLOW)
 
 class CGameData {
 	public:
@@ -3727,16 +3727,16 @@ class CGameData {
 			return nOldType;
 			}
 #if DBG
-		CObject* Object (int32_t nObject, int32_t nChecks = GAMEDATA_CHECK_ALL, const char* pszFile = "", int32_t nLine = 0);
-		CSegment* Segment (int32_t nSegment, int32_t nChecks = GAMEDATA_CHECK_ALL, const char* pszFile = "", int32_t nLine = 0);
-		CWall* Wall (int32_t nWall, int32_t nChecks = GAMEDATA_CHECK_ALL, const char* pszFile = "", int32_t nLine = 0);
-		CTrigger* Trigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_CHECK_ALL, const char* pszFile = "", int32_t nLine = 0);
-		CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_CHECK_ALL, const char* pszFile = "", int32_t nLine = 0);
+		CObject* Object (int32_t nObject, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
+		CSegment* Segment (int32_t nSegment, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
+		CWall* Wall (int32_t nWall, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
+		CTrigger* Trigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
+		CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
 		tRobotInfo* CGameData::RobotInfo (int32_t nId, int32_t nChecks, const char* pszFile, int32_t nLine);
 		tRobotInfo* CGameData::RobotInfo (CObject* objP, int32_t nChecks, const char* pszFile, int32_t nLine);
 
 #else
-		inline CObject* Object (int32_t nObject, int32_t nChecks = GAMEDATA_CHECK_ALL) { 
+		inline CObject* Object (int32_t nObject, int32_t nChecks = GAMEDATA_ERRLOG_ALL) { 
 			if (nChecks) {
 				if ((nChecks & 1) && !objs.objects.Buffer ())
 					return NULL;
@@ -3748,7 +3748,7 @@ class CGameData {
 			return objs.objects + nObject; 
 			}
 
-		inline CSegment* Segment (int32_t nSegment, int32_t nChecks = GAMEDATA_CHECK_ALL) { 
+		inline CSegment* Segment (int32_t nSegment, int32_t nChecks = GAMEDATA_ERRLOG_ALL) { 
 			if (nChecks) {
 				if ((nChecks & 1) && !segs.segments.Buffer ())
 					return NULL;
@@ -3760,7 +3760,7 @@ class CGameData {
 			return segs.segments + nSegment; 
 			}
 
-		inline CWall* Wall (int32_t nWall, int32_t nChecks = GAMEDATA_CHECK_ALL) { 
+		inline CWall* Wall (int32_t nWall, int32_t nChecks = GAMEDATA_ERRLOG_ALL) { 
 			if (nChecks) {
 				if ((nChecks & 1) && !walls.walls.Buffer ())
 					return NULL;
@@ -3772,7 +3772,7 @@ class CGameData {
 			return walls.walls + nWall; 
 			}
 
-		inline CTrigger* Trigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_CHECK_ALL) { 
+		inline CTrigger* Trigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_ALL) { 
 			if (nTrigger == NO_TRIGGER)
 				return NULL;
 			if (nChecks) {
@@ -3788,7 +3788,7 @@ class CGameData {
 			return trigs.triggers + nTrigger; 
 			}
 
-		inline CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_CHECK_ALL) { 
+		inline CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_ALL) { 
 			if (nChecks) {
 				if ((nChecks & 1) && !trigs.objTriggers.Buffer ())
 					return NULL;
@@ -3998,12 +3998,12 @@ extern fix nDebrisLife [];
 #define TRIANGLES			FACES.tris
 
 #if DBG
-	#define SEGMENT(_id)				gameData.Segment (_id, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
-	#define OBJECT(_id)				gameData.Object (_id, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
-	#define WALL(_id)					gameData.Wall (_id, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
-	#define TRIGGER(_id)				gameData.Trigger (_id, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
-	#define OBJTRIGGER(_id)			gameData.ObjTrigger (_id, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
-	#define ROBOTINFO(_id)			gameData.RobotInfo (_id, GAMEDATA_CHECK_ALL, __FILE__, __LINE__)
+	#define SEGMENT(_id)				gameData.Segment (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
+	#define OBJECT(_id)				gameData.Object (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
+	#define WALL(_id)					gameData.Wall (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
+	#define TRIGGER(_id)				gameData.Trigger (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
+	#define OBJTRIGGER(_id)			gameData.ObjTrigger (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
+	#define ROBOTINFO(_id)			gameData.RobotInfo (_id, GAMEDATA_ERRLOG_ALL, __FILE__, __LINE__)
 	#define SEGMENTEX(_id, _f)		gameData.Segment (_id, _f, __FILE__, __LINE__)
 	#define OBJECTEX(_id, _f)		gameData.Object (_id, _f, __FILE__, __LINE__)
 	#define WALLEX(_id, _f)			gameData.Wall (_id, _f, __FILE__, __LINE__)
@@ -4011,12 +4011,12 @@ extern fix nDebrisLife [];
 	#define OBJTRIGGEREX(_id, _f)	gameData.ObjTrigger (_id, _f, __FILE__, __LINE__)
 	#define ROBOTINFOEX(_id, _f)	gameData.RobotInfo (_id, _f, __FILE__, __LINE__)
 #else
-	#define SEGMENT(_id)				gameData.Segment (_id, GAMEDATA_CHECK_ALL)
-	#define OBJECT(_id)				gameData.Object (_id, GAMEDATA_CHECK_ALL)
-	#define WALL(_id)					gameData.Wall (_id, GAMEDATA_CHECK_ALL)
-	#define TRIGGER(_id)				gameData.Trigger (_id, GAMEDATA_CHECK_ALL)
-	#define OBJTRIGGER(_id)			gameData.Trigger (_id, GAMEDATA_CHECK_ALL)
-	#define ROBOTINFO(_id)			gameData.RobotInfo (_id, GAMEDATA_CHECK_ALL)
+	#define SEGMENT(_id)				gameData.Segment (_id, GAMEDATA_ERRLOG_ALL)
+	#define OBJECT(_id)				gameData.Object (_id, GAMEDATA_ERRLOG_ALL)
+	#define WALL(_id)					gameData.Wall (_id, GAMEDATA_ERRLOG_ALL)
+	#define TRIGGER(_id)				gameData.Trigger (_id, GAMEDATA_ERRLOG_ALL)
+	#define OBJTRIGGER(_id)			gameData.Trigger (_id, GAMEDATA_ERRLOG_ALL)
+	#define ROBOTINFO(_id)			gameData.RobotInfo (_id, GAMEDATA_ERRLOG_ALL)
 	#define SEGMENTEX(_id, _f)		gameData.Segment (_id, _f)
 	#define OBJECTEX(_id, _f)		gameData.Object (_id, _f)
 	#define WALLEX(_id, _f)			gameData.Wall (_id, _f)
