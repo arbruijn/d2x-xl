@@ -153,7 +153,7 @@ if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameDat
 	return -1;
 	}
 #endif
-nObject = CreateWeaponObject (nWeaponType, nSegment, vPosition, nParent);
+nObject = CreateWeaponObject (nWeaponType, nSegment, vPosition, -1);
 objP = OBJECT (nObject);
 if (!objP)
 	return -1;

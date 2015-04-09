@@ -1243,9 +1243,11 @@ if (!objP->IsInList (gameData.objData.lists.all, 0))
 if (objP->info.nType == OBJ_WEAPON) {
 	if (gameData.demo.nVcrState != ND_STATE_PLAYBACK)
 		RespawnDestroyedWeapon (nObject);
-	if (objP->info.nId == GUIDEDMSL_ID) {
-		CObject* parentP = OBJECT (objP->cType.laserInfo.parent.nObject);
-		if (parentP) {
+	CObject* parentP = OBJECT (objP->cType.laserInfo.parent.nObject);
+	if (parentP) {
+		if (parentP->IsShot (objP))
+			parentP->ClearShot ();
+		if (objP->info.nId == GUIDEDMSL_ID) {
 			if (parentP->info.nId != N_LOCALPLAYER)
 				gameData.objData.SetGuidedMissile (parentP->info.nId, NULL);
 			else if (gameData.demo.nState == ND_STATE_RECORDING)
