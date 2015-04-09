@@ -556,7 +556,7 @@ m_shadowMaps.Clear (0xFF);
 if (gameData.trigData.m_nTriggers [0]) {
 	for (i = 0, wallP = WALLS.Buffer (); (i < gameData.wallData.nWalls) && (m_cameras.ToS () < MAX_CAMERAS); i++, wallP++) {
 		t = wallP->nTrigger;
-		if (t >= TRIGGERS.Length ())
+		if (t >= GEOTRIGGERS.Length ())
 			continue;
 		triggerP = GEOTRIGGER (t);
 		if (triggerP && (triggerP->m_info.nType == TT_CAMERA)) {

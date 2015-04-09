@@ -1244,12 +1244,12 @@ CTriggerData::CTriggerData ()
 bool CTriggerData::Create (int32_t nTriggers, bool bObjTriggers)
 {
 if (bObjTriggers) {
-	objTriggers.Create (nTriggers);
+	triggers [1].Create (nTriggers);
 #if 0
 	objTriggerRefs.Create (MAX_OBJ_TRIGGERS);
 	objTriggerRefs.Clear (0xff);
 #endif
-	m_nObjTriggers = nTriggers;
+	m_nTriggers [1] = nTriggers;
 	}
 else {
 #if 0
@@ -1257,10 +1257,10 @@ else {
 #else
 	CREATE (objTriggerRefs, LEVEL_OBJECTS, 0);
 #endif
-	triggers.Create (nTriggers);
+	triggers [0].Create (nTriggers);
 	delay.Create (nTriggers);
 	delay.Clear (0xff);
-	m_nTriggers = nTriggers;
+	m_nTriggers [0] = nTriggers;
 	}
 return true;
 }
@@ -1272,12 +1272,12 @@ void CTriggerData::Destroy (void)
 #if 0
 firstObjTrigger.Destroy ();
 #endif
-triggers.Destroy ();
-objTriggers.Destroy ();
+triggers [0].Destroy ();
+triggers [1].Destroy ();
 objTriggerRefs.Destroy ();
 delay.Destroy ();
-m_nTriggers = 0;
-m_nObjTriggers = 0;
+m_nTriggers [0] = 0;
+m_nTriggers [1] = 0;
 }
 
 // ----------------------------------------------------------------------------

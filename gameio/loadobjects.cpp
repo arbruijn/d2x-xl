@@ -475,7 +475,7 @@ static void CheckTriggerInfo (void)
 	int32_t		h, i, j;
 	CTrigger	*trigP;
 
-for (i = 0, trigP = TRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, trigP++) {
+for (i = 0, trigP = GEOTRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, trigP++) {
 	if (trigP->m_nLinks < 0)
 		trigP->m_nLinks = 0;
 	else if (trigP->m_nLinks > MAX_TRIGGER_TARGETS)
@@ -549,7 +549,7 @@ if (gameFileInfo.triggers.offset > -1) {
 			Error ("Error seeking to trigger data\n(file damaged or invalid)");
 			return -1;
 			}
-		for (i = 0, trigP = TRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, trigP++) {
+		for (i = 0, trigP = GEOTRIGGERS.Buffer (); i < gameFileInfo.triggers.count; i++, trigP++) {
 			trigP->m_info.flagsD1 = 0;
 			if (gameTopFileInfo.fileinfoVersion >= 31) 
 				trigP->Read (cf, 0);
@@ -988,7 +988,7 @@ for (i = 0; i < gameData.wallData.nWalls; i++)
 //	MK, 10/17/95: Make walls point back at the triggers that control them.
 //	Go through all triggers, stuffing controllingTrigger field in WALLS.
 
-CTrigger* trigP = TRIGGERS.Buffer ();
+CTrigger* trigP = GEOTRIGGERS.Buffer ();
 for (i = 0; i < gameData.trigData.m_nTriggers [0]; i++, trigP++) {
 	for (h = trigP->m_nLinks, j = 0; j < h; ) {
 		if (trigP->m_sides [j] >= 0) {

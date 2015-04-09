@@ -3979,7 +3979,7 @@ extern fix nDebrisLife [];
 #define TRIANGLES				FACES.tris
 #define OBJECTS				gameData.objData.objects
 #define WALLS					gameData.wallData.walls
-#define TRIGGERS(_nType)	gameData.trigData.triggers [nType]
+#define TRIGGERS(_nType)	gameData.trigData.triggers [_nType]
 #define GEOTRIGGERS			TRIGGERS(0)
 #define OBJTRIGGERS			TRIGGERS(1)
 #define RENDERPOINTS			gameData.render.mine.visibility [0].points

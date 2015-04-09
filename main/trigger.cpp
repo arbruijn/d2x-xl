@@ -163,7 +163,7 @@ for (int32_t i = 0; i < MAX_TRIGGER_TARGETS; i++) {
 
 inline int32_t CTrigger::Index (void)
 {
-return this - TRIGGERS;
+return this - GEOTRIGGERS;
 }
 
 //------------------------------------------------------------------------------
@@ -1086,7 +1086,7 @@ tXlatTriggers xlatTriggers [] = {
 int32_t CTrigger::OperateD1 (int16_t nObject, int32_t nPlayer, int32_t bShot)
 {
 	int32_t	h = 1;
-	int32_t	nTrigger = TRIGGERS.Index (this);
+	int32_t	nTrigger = GEOTRIGGERS.Index (this);
 
 
 for (int32_t i = 0; i < int32_t (sizeofa (xlatTriggers)); i++)
@@ -1167,7 +1167,7 @@ else {
 		}
 	}
 
-int32_t nTrigger = bObjTrigger ? OBJTRIGGERS.Index (this) : TRIGGERS.Index (this);
+int32_t nTrigger = bObjTrigger ? OBJTRIGGERS.Index (this) : GEOTRIGGERS.Index (this);
 if (nTrigger < 0) {
 	nDepth--;
 	return 1;
@@ -1605,7 +1605,7 @@ void TriggersFrameProcess (void)
 	CTrigger	*trigP;
 	int32_t		i;
 
-trigP = TRIGGERS.Buffer ();
+trigP = GEOTRIGGERS.Buffer ();
 for (i = gameData.trigData.m_nTriggers [0]; i > 0; i--, trigP++) {
 #if DBG
 	if (trigP->Index () == nDbgTrigger)
@@ -1842,7 +1842,7 @@ for (i = 0; i < MAX_TRIGGER_TARGETS; i++)
 
 int32_t OpenExits (void)
 {
-	CTrigger *trigP = TRIGGERS.Buffer ();
+	CTrigger *trigP = GEOTRIGGERS.Buffer ();
 	CWall		*wallP;
 	int32_t		nExits = 0;
 
@@ -1865,7 +1865,7 @@ int32_t FindNextLevel (void)
 missionManager.SetNextLevel (missionManager.nCurrentLevel + 1);
 
 if (gameData.segData.nLevelVersion > 20) {
-	CTrigger *trigP = TRIGGERS.Buffer ();
+	CTrigger *trigP = GEOTRIGGERS.Buffer ();
 	int32_t nNextLevel = 0x7FFFFFFF;
 	int32_t nLevelState = 0x7FFFFFFF;
 

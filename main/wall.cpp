@@ -1044,7 +1044,7 @@ for (i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 
 int32_t CWall::IsTriggerTarget (int32_t i)
 {
-CTrigger *triggerP = TRIGGERS.Buffer (i);
+CTrigger *triggerP = GEOTRIGGERS.Buffer (i);
 for (; i < gameData.trigData.m_nTriggers [0]; i++, triggerP++) {
 	int16_t *nSegP = triggerP->m_segments;
 	int16_t *nSideP = triggerP->m_sides;
@@ -1066,7 +1066,7 @@ if (bVolatile < 0) {
 	else if ((nType == WALL_CLOAKED) && (cloakValue < FADE_LEVELS))
 		bVolatile = 1;
 	else {
-		CTrigger *triggerP = TRIGGERS.Buffer ();
+		CTrigger *triggerP = GEOTRIGGERS.Buffer ();
 		for (int32_t i = 0; i < gameData.trigData.m_nTriggers [0]; i++, triggerP++) {
 			int16_t *nSegP = triggerP->m_segments;
 			int16_t *nSideP = triggerP->m_sides;
