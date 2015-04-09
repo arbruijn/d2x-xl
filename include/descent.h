@@ -2077,7 +2077,7 @@ class CSegmentData {
 		CArray<uint8_t>			bSegVis;
 		CArray<uint8_t>			bVertVis;
 		CArray<uint8_t>			bLightVis;
-		CArray<CSegDistList>		egDistTable;
+		CArray<CSegDistList>		segDistTable;
 		CArray<int16_t>			vertexSegments; // all segments using this vertex
 		int32_t						nVertices;
 		int32_t						nFaceVerts;
