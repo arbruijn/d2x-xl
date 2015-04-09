@@ -3736,36 +3736,36 @@ class CGameData {
 		tRobotInfo* CGameData::RobotInfo (CObject* objP, int32_t nChecks, const char* pszFile, int32_t nLine);
 
 #else
-		inline CObject* Object (int32_t nObject, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
+		inline CObject* Object (int32_t nObject) { 
 			return (nObject < 0) ? NULL : objData.objects + nObject; 
 			}
 
-		inline CSegment* Segment (int32_t nSegment, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
+		inline CSegment* Segment (int32_t nSegment) { 
 			return (nSegment < 0) ? NULL : segData.segments + nSegment; 
 			}
 
-		inline CWall* Wall (int32_t nWall, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
+		inline CWall* Wall (int32_t nWall) { 
 			return (nWall < 0) ? NULL : wallData.walls + nWall; 
 			}
 
-		inline CTrigger* Trigger (int32_t nType, int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
+		inline CTrigger* Trigger (int32_t nType, int32_t nTrigger) { 
 			return ((nTrigger < 0) || (nTrigger == NO_TRIGGER)) ? NULL : trigData.triggers [nType] + nTrigger; 
 			}
 
-		inline CTrigger* GeoTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
-			return Trigger (0, nTrigger, nChecks);
+		inline CTrigger* GeoTrigger (int32_t nTrigger) { 
+			return Trigger (0, nTrigger);
 			}
 
-		inline CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
-			return Trigger (1, nTrigger, nChecks);
+		inline CTrigger* ObjTrigger (int32_t nTrigger) { 
+			return Trigger (1, nTrigger);
 			}
 
-		inline tRobotInfo* RobotInfo (int32_t nId, int32_t nChecks = GAMEDATA_ERRLOG_NONE) {
+		inline tRobotInfo* RobotInfo (int32_t nId) {
 			return botData.info [gameStates.app.bD1Mission && (nId < botData.nTypes [1])] + nId; 
 			}
 
-		inline tRobotInfo* RobotInfo (CObject* objP, int32_t nChecks) {
-			return objP->IsRobot () ? RobotInfo (objP->Id (), nChecks) : NULL;
+		inline tRobotInfo* RobotInfo (CObject* objP) {
+			return objP->IsRobot () ? RobotInfo (objP->Id ()) : NULL;
 			}
 
 #endif
@@ -3961,18 +3961,18 @@ extern fix nDebrisLife [];
 	#define OBJTRIGGEREX(_id, _f)	gameData.ObjTrigger (_id, _f, __FILE__, __LINE__)
 	#define ROBOTINFOEX(_id, _f)	gameData.RobotInfo (_id, _f, __FILE__, __LINE__)
 #else
-	#define SEGMENT(_id)				gameData.Segment (_id, GAMEDATA_ERRLOG_ALL)
-	#define OBJECT(_id)				gameData.Object (_id, GAMEDATA_ERRLOG_ALL)
-	#define WALL(_id)					gameData.Wall (_id, GAMEDATA_ERRLOG_ALL)
-	#define GEOTRIGGER(_id)			gameData.Trigger (_id, GAMEDATA_ERRLOG_ALL)
-	#define OBJTRIGGER(_id)			gameData.Trigger (_id, GAMEDATA_ERRLOG_ALL)
-	#define ROBOTINFO(_id)			gameData.RobotInfo (_id, GAMEDATA_ERRLOG_ALL)
-	#define SEGMENTEX(_id, _f)		gameData.Segment (_id, _f)
-	#define OBJECTEX(_id, _f)		gameData.Object (_id, _f)
-	#define WALLEX(_id, _f)			gameData.Wall (_id, _f)
-	#define TRIGGEREX(_id, _f)		gameData.Trigger (_id, _f)
-	#define OBJTRIGGEREX(_id, _f)	gameData.Trigger (_id, _f)
-	#define ROBOTINFOEX(_id, _f)	gameData.RobotInfo (_id, _f)
+	#define SEGMENT(_id)				gameData.Segment (_id)
+	#define OBJECT(_id)				gameData.Object (_id)
+	#define WALL(_id)					gameData.Wall (_id)
+	#define GEOTRIGGER(_id)			gameData.Trigger (_id)
+	#define OBJTRIGGER(_id)			gameData.Trigger (_id)
+	#define ROBOTINFO(_id)			gameData.RobotInfo (_id)
+	#define SEGMENTEX(_id, _f)		gameData.Segment (_id)
+	#define OBJECTEX(_id, _f)		gameData.Object (_id)
+	#define WALLEX(_id, _f)			gameData.Wall (_id)
+	#define TRIGGEREX(_id, _f)		gameData.Trigger (_id)
+	#define OBJTRIGGEREX(_id, _f)	gameData.Trigger (_id)
+	#define ROBOTINFOEX(_id, _f)	gameData.RobotInfo (_id)
 #endif
 
 
