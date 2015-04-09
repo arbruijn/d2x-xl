@@ -295,50 +295,46 @@ void AIMoveRelativeToTarget (CObject *objP, tAILocalInfo *ailP, fix xDistToTarge
 									  CFixVector *vVecToTarget, fix circleDistance, int32_t bEvadeOnly,
 									  int32_t nTargetVisibility)
 {
-	CObject		*dObjP;
 	tRobotInfo	*botInfoP = ROBOTINFO (objP);
+	CObject		*dObjP = OBJECTEX (objP->cType.aiInfo.nDangerLaser, GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_INDEX);
 
 	Assert (gameData.ai.nTargetVisibility != -1);
 
 	//	See if should take avoidance.
 
 	// New way, green guys don't evade:	if ((botInfoP->attackType == 0) && (objP->cType.aiInfo.nDangerLaser != -1)) {
-if (objP->cType.aiInfo.nDangerLaser != -1) {
-	dObjP = OBJECT (objP->cType.aiInfo.nDangerLaser);
+if (dObjP && (dObjP->info.nType == OBJ_WEAPON) && (dObjP->info.nSignature == objP->cType.aiInfo.nDangerLaserSig)) {
+	fix			dot, xDistToLaser, fieldOfView;
+	CFixVector	vVecToLaser, fVecLaser;
 
-	if ((dObjP->info.nType == OBJ_WEAPON) && (dObjP->info.nSignature == objP->cType.aiInfo.nDangerLaserSig)) {
-		fix			dot, xDistToLaser, fieldOfView;
-		CFixVector	vVecToLaser, fVecLaser;
+	fieldOfView = ROBOTINFO (objP)->fieldOfView [gameStates.app.nDifficultyLevel];
+	vVecToLaser = dObjP->info.position.vPos - objP->info.position.vPos;
+	xDistToLaser = CFixVector::Normalize (vVecToLaser);
+	dot = CFixVector::Dot (vVecToLaser, objP->info.position.mOrient.m.dir.f);
 
-		fieldOfView = ROBOTINFO (objP)->fieldOfView [gameStates.app.nDifficultyLevel];
-		vVecToLaser = dObjP->info.position.vPos - objP->info.position.vPos;
-		xDistToLaser = CFixVector::Normalize (vVecToLaser);
-		dot = CFixVector::Dot (vVecToLaser, objP->info.position.mOrient.m.dir.f);
+	if ((dot > fieldOfView) || (botInfoP->companion)) {
+		fix			dotLaserRobot;
+		CFixVector	vLaserToRobot;
 
-		if ((dot > fieldOfView) || (botInfoP->companion)) {
-			fix			dotLaserRobot;
-			CFixVector	vLaserToRobot;
-
-			//	The laser is seen by the robot, see if it might hit the robot.
-			//	Get the laser's direction.  If it's a polyobjP, it can be gotten cheaply from the orientation matrix.
-			if (dObjP->info.renderType == RT_POLYOBJ)
-				fVecLaser = dObjP->info.position.mOrient.m.dir.f;
-			else {		//	Not a polyobjP, get velocity and Normalize.
-				fVecLaser = dObjP->mType.physInfo.velocity;	//dObjP->info.position.mOrient.m.v.f;
-				CFixVector::Normalize (fVecLaser);
-				}
-			vLaserToRobot = objP->info.position.vPos - dObjP->info.position.vPos;
-			CFixVector::Normalize (vLaserToRobot);
-			dotLaserRobot = CFixVector::Dot (fVecLaser, vLaserToRobot);
-
-			if ((dotLaserRobot > I2X (7) / 8) && (xDistToLaser < I2X (80))) {
-				int32_t evadeSpeed = ROBOTINFO (objP)->evadeSpeed [gameStates.app.nDifficultyLevel];
-				gameData.ai.bEvaded = 1;
-				MoveAroundPlayer (objP, &gameData.ai.target.vDir, evadeSpeed);
-				}
+		//	The laser is seen by the robot, see if it might hit the robot.
+		//	Get the laser's direction.  If it's a polyobjP, it can be gotten cheaply from the orientation matrix.
+		if (dObjP->info.renderType == RT_POLYOBJ)
+			fVecLaser = dObjP->info.position.mOrient.m.dir.f;
+		else {		//	Not a polyobjP, get velocity and Normalize.
+			fVecLaser = dObjP->mType.physInfo.velocity;	//dObjP->info.position.mOrient.m.v.f;
+			CFixVector::Normalize (fVecLaser);
 			}
-		return;
+		vLaserToRobot = objP->info.position.vPos - dObjP->info.position.vPos;
+		CFixVector::Normalize (vLaserToRobot);
+		dotLaserRobot = CFixVector::Dot (fVecLaser, vLaserToRobot);
+
+		if ((dotLaserRobot > I2X (7) / 8) && (xDistToLaser < I2X (80))) {
+			int32_t evadeSpeed = ROBOTINFO (objP)->evadeSpeed [gameStates.app.nDifficultyLevel];
+			gameData.ai.bEvaded = 1;
+			MoveAroundPlayer (objP, &gameData.ai.target.vDir, evadeSpeed);
+			}
 		}
+	return;
 	}
 
 //	If only allowed to do evade code, then done.

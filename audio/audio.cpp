@@ -619,8 +619,7 @@ m_info.nSound = nSound;
 m_info.bAmbient = (nSoundClass == SOUNDCLASS_AMBIENT);
 m_info.bPlaying = 1;
 m_info.bPersistent = bPersistent;
-if (m_info.nIndex < 0)
-	m_info.nIndex = audio.RegisterChannel (this);
+m_info.nIndex = audio.RegisterChannel (this);
 return audio.FreeChannel ();
 }
 
@@ -903,35 +902,40 @@ if (gameStates.sound.bDynamic && m_info.bAvailable) {
 
 int32_t CAudio::RegisterChannel (CAudioChannel* channelP)
 {
-if (m_usedChannels.Push (int32_t (channelP - m_channels.Buffer ())))
+	int32_t nChannel = int32_t (channelP - m_channels.Buffer ());
+	int32_t nIndex = channelP->GetIndex ();
+	int32_t nToS = int32_t (m_usedChannels.ToS ());
+
+if ((nIndex >= 0) && (nIndex < nToS) && (m_usedChannels [nIndex] == nChannel))
+	return nIndex;
+if (m_usedChannels.Push (int32_t (nChannel)))
 	return m_usedChannels.ToS () - 1;
 for (int32_t i = int32_t (m_usedChannels.ToS ()); i; )
 	if (!m_channels [m_usedChannels [--i]].Playing ())
 		UnregisterChannel (i);
-#if DBG
-if (m_usedChannels.Push (int32_t (channelP - m_channels.Buffer ())))
+if (m_usedChannels.Push (nChannel))
 	return m_usedChannels.ToS () - 1;
 return -1;
-#else
-return m_usedChannels.Push (int32_t (channelP - m_channels.Buffer ())) ? m_usedChannels.ToS () - 1 : -1;
-#endif
 }
 
 //------------------------------------------------------------------------------
 
 void CAudio::UnregisterChannel (int32_t nIndex)
 {
-if ((nIndex >= 0) && (nIndex < int32_t (m_usedChannels.ToS ()))) {
-	m_usedChannels.Delete ((uint32_t) nIndex);
-	if (nIndex < int32_t (m_usedChannels.ToS ())) {
-#if 0 //DBG
-		if (!m_channels [m_usedChannels [nIndex]].Playing ())
-			ArrayError ("error in audio channel registry\n");
-		else
-#endif
-		m_channels [m_usedChannels [nIndex]].SetIndex (nIndex);
-		}
+if (nIndex < 0)
+	return;
+
+int32_t nToS = int32_t (m_usedChannels.ToS ());
+
+if (nIndex >= nToS)
+	return;
+
+if (nIndex < --nToS) { // move the top most entry in m_usedChannels to the position used for the unregistered channel
+	m_channels [m_usedChannels [nIndex]].SetIndex (-1);
+	m_usedChannels [nIndex] = m_usedChannels [nToS]; // remap the moved channel's index in m_usedChannels
+	m_channels [m_usedChannels [nIndex]].SetIndex (nIndex);
 	}
+m_usedChannels.Shrink ();
 }
 
 //------------------------------------------------------------------------------

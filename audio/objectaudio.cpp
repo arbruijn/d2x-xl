@@ -779,7 +779,7 @@ while (i) {
 				objP = OBJECT (nObject);
 				}
 			else
-				objP = OBJECT (soundObjP->m_linkType.obj.nObject);
+				objP = OBJECTEX (soundObjP->m_linkType.obj.nObject, GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_INDEX);
 			if (!objP || (objP->info.nType == OBJ_NONE) || (objP->info.nSignature != soundObjP->m_linkType.obj.nObjSig)) {
 				DeleteSoundObject (i);	// The object that this is linked to is dead, so just end this sound if it is looping.
 				continue;

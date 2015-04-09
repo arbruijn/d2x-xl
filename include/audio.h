@@ -147,24 +147,24 @@ class CAudioChannel {
 	private:
 		typedef struct tChannelInfo {
 			public:
-				int32_t				nSound;
+				int32_t			nSound;
 				fix				nPan;				// 0 = far left, 1 = far right
 				fix				nVolume;			// 0 = nothing, 1 = fully on
 				CByteArray		sample;
-				uint32_t				nLength;			// Length of the sample
-				uint32_t				nPosition;		// Position we are at at the moment.
-				int32_t				nSoundObj;		// Which soundobject is on this nChannel
-				int32_t				nSoundClass;
-				int32_t				nIndex;
-				uint8_t				bPlaying;		// Is there a sample playing on this nChannel?
-				uint8_t				bLooped;			// Play this sample looped?
-				uint8_t				bPersistent;	// This can't be pre-empted
-				uint8_t				bResampled;
-				uint8_t				bBuiltIn;
-				uint8_t				bAmbient;
+				uint32_t			nLength;			// Length of the sample
+				uint32_t			nPosition;		// Position we are at at the moment.
+				int32_t			nSoundObj;		// Which soundobject is on this nChannel
+				int32_t			nSoundClass;
+				int32_t			nIndex;
+				uint8_t			bPlaying;		// Is there a sample playing on this nChannel?
+				uint8_t			bLooped;			// Play this sample looped?
+				uint8_t			bPersistent;	// This can't be pre-empted
+				uint8_t			bResampled;
+				uint8_t			bBuiltIn;
+				uint8_t			bAmbient;
 #if USE_SDL_MIXER
 				Mix_Chunk*		mixChunkP;
-				int32_t				nChannel;
+				int32_t			nChannel;
 #endif
 #if USE_OPENAL
 				ALuint			source;
@@ -188,6 +188,7 @@ class CAudioChannel {
 		void Mix (uint8_t* stream, int32_t len);
 		inline int32_t Playing (void) { return m_info.bPlaying && m_info.mixChunkP; }
 		void SetPlaying (int32_t bPlaying);
+		inline int32_t GetIndex (void) { return m_info.nIndex; }
 		inline void SetIndex (int32_t nIndex) { m_info.nIndex = nIndex; }
 		fix Duration (void);
 		inline int32_t SoundObject (void) { return m_info.nSoundObj; }
@@ -268,17 +269,17 @@ class CAudio {
 				int16_t		nLoopingStart;
 				int16_t		nLoopingEnd;
 				int16_t		nLoopingChannel;
-				float		fSlowDown;
+				float			fSlowDown;
 			};
 
 	private:
 		CAudioInfo					m_info;
 		CArray<CAudioChannel>	m_channels;
 		CStack<CSoundObject>		m_objects;
-		CStack<int32_t>					m_usedChannels;
+		CStack<int32_t>			m_usedChannels;
 		CDACSUniDirRouter			m_router [MAX_THREADS];
 		//CArray<fix>					m_segDists;
-		int16_t							m_nListenerSeg;
+		int16_t						m_nListenerSeg;
 		bool							m_bSDLInitialized;
 
 	private:

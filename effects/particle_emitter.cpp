@@ -88,7 +88,7 @@ if (m_nObjType == OBJ_DEBRIS)
 	return 0.5f;
 if ((m_nObjType == OBJ_WEAPON) && (m_nObjId == PROXMINE_ID))
 	return 0.2f;
-objP = OBJECT (m_nObject);
+objP = OBJECTEX (m_nObject, GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_INDEX);
 if (!objP || (objP->info.nType != m_nObjType) || (objP->info.nFlags & (OF_EXPLODING | OF_SHOULD_BE_DEAD | OF_DESTROYED | OF_ARMAGEDDON)))
 	return m_fBrightness;
 return m_fBrightness = (float) objP->Damage () * 0.5f + 0.1f;

@@ -173,10 +173,12 @@ return 1;
 
 void CLightClusterManager::Add (int16_t nObject, int16_t nLightObj)
 {
-m_objects [nObject].nObject = nLightObj;
-if (nLightObj >= 0) {
-	m_objects [nObject].nSignature = OBJECT (nLightObj)->info.nSignature;
-	OBJECT (nLightObj)->cType.lightInfo.nObjects++;
+CObject* lightP = OBJECTEX (nLightObj, GAMEDATA_CHECK_BUFFER | GAMEDATA_CHECK_INDEX);
+
+m_objects [nObject].nObject = lightP ? nLightObj : -1;
+if (lightP) {
+	m_objects [nObject].nSignature = lightP->info.nSignature;
+	lightP->cType.lightInfo.nObjects++;
 	}
 }
 
@@ -206,7 +208,7 @@ if (nPrevShot >= 0) {
 			lightP = prevShotP;
 		else {
 			lightP = OBJECT (nLight);
-			if (lightP && (lightP->info.nSignature != m_objects [nPrevShot].nSignature)) {
+			if (!lightP || (lightP->info.nSignature != m_objects [nPrevShot].nSignature)) {
 				lightP = prevShotP;
 				nLight = -1;
 				}
