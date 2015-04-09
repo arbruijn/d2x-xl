@@ -3737,47 +3737,19 @@ class CGameData {
 
 #else
 		inline CObject* Object (int32_t nObject, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
-			if (!objData.objects.Buffer ())
-				return NULL;
-			if (nObject < 0)
-				return NULL;
-			if (nObject > objs.nLastObject [0])
-				return NULL;
-			return objData.objects + nObject; 
+			return (nObject < 0) ? NULL : objData.objects + nObject; 
 			}
 
 		inline CSegment* Segment (int32_t nSegment, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
-			if (!segData.segments.Buffer ())
-				return NULL;
-			if (nSegment < 0)
-				return NULL;
-			if (nSegment >= segs.nSegments)
-				return NULL;
-			return segData.segments + nSegment; 
+			return (nSegment < 0) ? NULL : segData.segments + nSegment; 
 			}
 
 		inline CWall* Wall (int32_t nWall, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
-			if (!wallData.walls.Buffer ())
-				return NULL;
-			if (nWall < 0)
-				return NULL;
-			if (nWall >= walls.nWalls)
-				return NULL;
-			return wallData.walls + nWall; 
+			return (nWall < 0) ? NULL : wallData.walls + nWall; 
 			}
 
 		inline CTrigger* Trigger (int32_t nType, int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
-			if (nTrigger == NO_TRIGGER)
-				return NULL;
-			if (!trigData.triggers [nType].Buffer ())
-				return NULL;
-			if (nTrigger < 0)
-				return NULL;
-			if (nTrigger == NO_TRIGGER))
-				return NULL;
-			if (nTrigger >= trigData.m_nTriggers [0] [nType])
-				return NULL;
-			return trigData.triggers [nType] + nTrigger; 
+			return ((nTrigger < 0) || (nTrigger == NO_TRIGGER)) ? NULL : trigData.triggers [nType] + nTrigger; 
 			}
 
 		inline CTrigger* GeoTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_NONE) { 
@@ -3788,17 +3760,8 @@ class CGameData {
 			return Trigger (1, nTrigger, nChecks);
 			}
 
-		inline tRobotInfo* RobotInfo (int32_t nId, int32_t nChecks) {
-			CArray<tRobotInfo>& a = bots.info [gameStates.app.bD1Mission && (nId < bots.nTypes [1])];
-			if (nChecks) {
-				if (!a.Buffer ())
-					return NULL;
-				if (nId < 0)
-					return NULL;
-				if ((uint32_t) nId >= a.Length ())
-					return NULL;
-				}
-			return a + nId; 
+		inline tRobotInfo* RobotInfo (int32_t nId, int32_t nChecks = GAMEDATA_ERRLOG_NONE) {
+			return botData.info [gameStates.app.bD1Mission && (nId < bots.nTypes [1])] + nId; 
 			}
 
 		inline tRobotInfo* RobotInfo (CObject* objP, int32_t nChecks) {
@@ -3855,11 +3818,11 @@ typedef struct tGameItemInfo {
 } __pack__ tGameItemInfo;
 
 typedef struct {
-	uint16_t  fileinfo_signature;
-	uint16_t  fileinfoVersion;
-	int32_t     fileinfo_sizeof;
-	char    mine_filename [15];
-	int32_t     level;
+	uint16_t			fileinfo_signature;
+	uint16_t			fileinfoVersion;
+	int32_t			fileinfo_sizeof;
+	char				mine_filename [15];
+	int32_t			level;
 	tGameItemInfo	player;
 	tGameItemInfo	objects;
 	tGameItemInfo	walls;
@@ -4001,7 +3964,7 @@ extern fix nDebrisLife [];
 	#define SEGMENT(_id)				gameData.Segment (_id, GAMEDATA_ERRLOG_ALL)
 	#define OBJECT(_id)				gameData.Object (_id, GAMEDATA_ERRLOG_ALL)
 	#define WALL(_id)					gameData.Wall (_id, GAMEDATA_ERRLOG_ALL)
-	#define GEOTRIGGER(_id)				gameData.Trigger (_id, GAMEDATA_ERRLOG_ALL)
+	#define GEOTRIGGER(_id)			gameData.Trigger (_id, GAMEDATA_ERRLOG_ALL)
 	#define OBJTRIGGER(_id)			gameData.Trigger (_id, GAMEDATA_ERRLOG_ALL)
 	#define ROBOTINFO(_id)			gameData.RobotInfo (_id, GAMEDATA_ERRLOG_ALL)
 	#define SEGMENTEX(_id, _f)		gameData.Segment (_id, _f)
