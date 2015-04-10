@@ -848,7 +848,8 @@ OglDrawFilledRect (m_closeX + LHX (1), m_closeY + LHX (1), m_closeX + m_closeSiz
 
 DrawHeader ();
 DrawTable ();
-DrawQuestion (m_items + m_nCurItem);
+if (m_nChangeMode != BT_NONE)
+	DrawQuestion (m_items + m_nCurItem);
 m_background.Deactivate ();
 SDL_ShowCursor (0);
 m_bRedraw = 1;
