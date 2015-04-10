@@ -342,7 +342,7 @@ if (i < 0)
 	return;
 
 int32_t rval = DoRobotDyingFrame (objP, gameData.bosses [i].m_nDyingStartTime, BOSS_DEATH_DURATION,
-											 &gameData.bosses [i].m_bDyingSoundPlaying, botInfoP->deathrollSound : 0, I2X (4), I2X (4));
+											 &gameData.bosses [i].m_bDyingSoundPlaying, botInfoP->deathrollSound, I2X (4), I2X (4));
 if (rval) {
 	gameData.bosses.Remove (i);
 	if (botInfoP->bEndsLevel)
