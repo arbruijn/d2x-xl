@@ -250,7 +250,7 @@ if (!networkData.nJoinState) {
 		MovePlayerToSpawnPos (j, OBJECT (PLAYER (i).nObject));
 		}
 	}
-LOCALOBJECT->SetType (OBJ_PLAYER);
+OBJECTS [LOCALPLAYER.nObject].SetType (OBJ_PLAYER);
 networkData.nStatus = (IAmGameHost () || (networkData.nJoinState >= 4)) ? NETSTAT_PLAYING : NETSTAT_WAITING;
 SetFunctionMode (FMODE_GAME);
 networkData.bHaveSync = 1;

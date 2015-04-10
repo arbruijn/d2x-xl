@@ -871,9 +871,11 @@ if ((nPlayer == N_LOCALPLAYER) || (nPlayer >= MAX_NUM_NET_PLAYERS)) {
 #endif
 
 CObject *objP = OBJECT (PLAYER (nPlayer).nObject);
-objP->SetType (OBJ_PLAYER);
-objP->info.movementType = MT_PHYSICS;
-MultiResetPlayerObject (objP);
+if (objP) {
+	objP->SetType (OBJ_PLAYER);
+	objP->info.movementType = MT_PHYSICS;
+	MultiResetPlayerObject (objP);
+	}
 }
 
 //-----------------------------------------------------------------------------
