@@ -482,7 +482,7 @@ if (nObject != -1) {
 			return nObject;
 		if (curObjP->info.nType == objType) {
 			//	Don't find escort robots if looking for robot!
-			if (IS_GUIDEBOT (curObjP))
+			if (curObjP->IsGuideBot ())
 				;
 			else if (objId == -1)
 				return nObject;
