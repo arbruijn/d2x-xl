@@ -37,9 +37,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void MakeNearbyRobotSnipe (void)
 {
 	CObject		*objP;
-	tRobotInfo	*botInfoP;
-	int16_t			bfsList [MNRS_SEG_MAX];
-	int32_t			nObject, nBfsLength, i;
+	int16_t		bfsList [MNRS_SEG_MAX];
+	int32_t		nObject, nBfsLength, i;
 
 CreateBfsList (OBJSEG (TARGETOBJ), bfsList, &nBfsLength, MNRS_SEG_MAX);
 for (i = 0; i < nBfsLength; i++) {
