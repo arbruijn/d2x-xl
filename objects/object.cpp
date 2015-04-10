@@ -355,7 +355,7 @@ if (nStage == 0) {
 	LOCALPLAYER.nCloaks = 0;
 	}
 else {
-	gameData.objData.consoleP = OBJECT (LOCALPLAYER.nObject);
+	gameData.objData.consoleP = OBJECTS + LOCALPLAYER.nObject;
 	// at this point, SetType () must not be called, as it links the object to the internal object lists 
 	// which causes list corruption during multiplayer object sync'ing
 	gameData.objData.consoleP->info.nType = OBJ_PLAYER; 
