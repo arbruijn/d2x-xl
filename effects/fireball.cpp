@@ -229,7 +229,7 @@ FORALL_OBJS (objP) {
 
 		objP->ApplyForce (vForce);
 		//	If not a boss, stun for 2 seconds at 32 force, 1 second at 16 force
-		if (flash && !ROBOTINFO (objP)->bossFlag) {
+		if (flash && !objP->IsBoss ()) {
 			tAIStaticInfo	*aip = &objP->cType.aiInfo;
 			int32_t				nForce = X2I (FixDiv (vForce.Mag () * flash, gameData.time.xFrame) / 128) + 2;
 
@@ -252,8 +252,7 @@ FORALL_OBJS (objP) {
 #endif
 		objP->ApplyRotForce (vNegForce);
 		if (objP->info.xShield >= 0) {
-			if (ROBOTINFO (objP)->bossFlag &&
-				 bossProps [gameStates.app.bD1Mission][ROBOTINFO (objP)->bossFlag - BOSS_D2].bInvulKinetic)
+			if (objP->IsBoss () && bossProps [gameStates.app.bD1Mission][objP->BossId () - BOSS_D2].bInvulKinetic)
 				damage /= 4;
 			if (objP->ApplyDamageToRobot (damage, nParent)) {
 #if DBG

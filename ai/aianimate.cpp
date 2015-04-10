@@ -43,8 +43,9 @@ if (objP->Index () == nDbgObj)
 #endif
 if (!IsMultiGame && gameOpts->gameplay.bIdleAnims && (ailP->mode == AIM_IDLING)) {
 		int32_t		h, i, j;
-		CSegment*	segP = SEGMENT (objP->info.nSegment);
-		CFixVector*	vVertex, vVecToGoal, vGoal = gameData.objData.vRobotGoals [objP->Index ()];
+		CSegment		*segP = SEGMENT (objP->info.nSegment);
+		CFixVector	*vVertex, vVecToGoal, vGoal = gameData.objData.vRobotGoals [objP->Index ()];
+		tRobotInfo	*botInfoP;
 
 	for (i = 0; i < 8; i++) {
 		if (segP->m_vertices [i] != 0xFFFF) {
@@ -57,7 +58,7 @@ if (!IsMultiGame && gameOpts->gameplay.bIdleAnims && (ailP->mode == AIM_IDLING))
 	CFixVector::Normalize (vVecToGoal);
 	if (i == 8)
 		h = 1;
-	else if (AITurnTowardsVector (&vVecToGoal, objP, ROBOTINFO (objP)->turnTime [2]) < I2X (1) - I2X (1) / 5) {
+	else if ((botInfoP = ROBOTINFO (objP)) && (AITurnTowardsVector (&vVecToGoal, objP, botInfoP->turnTime [2]) < I2X (1) - I2X (1) / 5)) {
 		if (CFixVector::Dot (vVecToGoal, objP->info.position.mOrient.m.dir.f) > I2X (1) - I2X (1) / 5)
 			h = Rand (2) == 0;
 		else
@@ -103,6 +104,8 @@ int32_t DoSillyAnimation (CObject *objP)
 	int32_t			nFlinchAttackScale = 1;
 	tRobotInfo*		botInfoP = ROBOTINFO (robotType);
 
+if (!botInfoP)
+	return 0;
 if (0 > (nGunCount = botInfoP->nGuns))
 	return 0;
 attackType = botInfoP->attackType;
@@ -262,14 +265,15 @@ if (!objP->cType.aiInfo.xDyingStartTime) { // if not already dying
 int32_t DoAnyRobotDyingFrame (CObject *objP)
 {
 if (objP->cType.aiInfo.xDyingStartTime) {
-	int32_t bDeathRoll = ROBOTINFO (objP)->bDeathRoll;
+	tRobotInfo	*botInfoP = ROBOTINFO (objP);
+	int32_t bDeathRoll = botInfoP ? botInfoP->bDeathRoll : 0;
 	int32_t rval = DoRobotDyingFrame (objP, objP->cType.aiInfo.xDyingStartTime, I2X (Min (bDeathRoll / 2 + 1, 6)), 
-											&objP->cType.aiInfo.bDyingSoundPlaying, ROBOTINFO (objP)->deathrollSound, 
-											I2X (bDeathRoll) / 8, I2X (bDeathRoll) / 2);
+												 &objP->cType.aiInfo.bDyingSoundPlaying, botInfoP ? botInfoP->deathrollSound : 0, 
+												 I2X (bDeathRoll) / 8, I2X (bDeathRoll) / 2);
 	if (rval) {
 		objP->Explode (I2X (1)/4);
 		audio.CreateObjectSound (SOUND_STANDARD_EXPLOSION, SOUNDCLASS_EXPLOSION, objP->Index (), 0, I2X (2), I2X (512));
-		if (!gameOpts->gameplay.bNoThief && (missionManager.nCurrentLevel < 0) && (ROBOTINFO (objP)->thief))
+		if (!gameOpts->gameplay.bNoThief && (missionManager.nCurrentLevel < 0) && objP->IsThief ())
 			RecreateThief (objP);
 		}
 	return 1;

@@ -1378,7 +1378,8 @@ for (i = 0; i <= gameData.objData.nLastObject [0]; i++, objP++) {
 			gameData.objData.nNextSignature = objP->info.nSignature;
 		}
 	//look for, and fix, boss with bogus shield
-	if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP)->bossFlag) {
+	tRobotInfo *botInfoP;
+	if (objP->IsBoss ()) {
 		fix xShieldSave = objP->info.xShield;
 		CopyDefaultsToRobot (objP);		//calculate starting shield
 		//if in valid range, use loaded shield value
@@ -1775,8 +1776,9 @@ if (!m_bBetweenLevels) {
 		int16_t nObject;
 		while (-1 < (nObject = m_cf.ReadShort ())) {
 			nObject = AllocObject (nObject, false);
-			OBJECT (nObject)->LoadState (m_cf);
-			OBJECT (nObject)->Link ();
+			CObject* objP = OBJECT (nObject);
+			objP->LoadState (m_cf);
+			objP->Link ();
 			}
 		}
 	else {

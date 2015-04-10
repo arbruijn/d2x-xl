@@ -207,7 +207,7 @@ if (objP->cType.aiInfo.xDyingStartTime)
 	return;		//	No firing while in death roll.
 //	Don't let the boss fire while in death roll.  Sorry, this is the easiest way to do this.
 //	If you try to key the boss off objP->cType.aiInfo.xDyingStartTime, it will hose the endlevel stuff.
-if (ROBOTINFO (objP)->bossFlag) {
+if (objP->IsBoss ()) {
 	i = gameData.bosses.Find (nObject);
 	if ((i < 0) || (gameData.bosses [i].m_nDyingStartTime))
 		return;
@@ -434,7 +434,7 @@ if ((gameData.ai.nTargetVisibility == 2) ||
 	// as well as not cause me to wonder, in the future, why I was writing AI code for onearm ten months before he existed.
 	if (!gameData.ai.bObjAnimates || ReadyToFire (botInfoP, ailP)) {
 		fix dot = CFixVector::Dot (objP->info.position.mOrient.m.dir.f, gameData.ai.target.vDir);
-		if ((dot >= I2X (7) / 8) || ((dot > I2X (1) / 4) && botInfoP->bossFlag)) {
+		if ((dot >= I2X (7) / 8) || ((dot > I2X (1) / 4) && objP->IsBoss ())) {
 			if (nGun < botInfoP->nGuns) {
 				if (botInfoP->attackType == 1) {
 					if ((TARGETOBJ->Type () == OBJ_PLAYER) && LOCALPLAYER.m_bExploded)

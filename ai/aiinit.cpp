@@ -71,12 +71,17 @@ return AIM_IDLING;
 //	initial_mode == -1 means leave mode unchanged.
 void InitAIObject (int16_t nObject, int16_t behavior, int16_t nHideSegment)
 {
-	CObject		*objP = OBJECT (nObject);
+	CObject			*objP = OBJECT (nObject);
 	tAIStaticInfo	*aiP = &objP->cType.aiInfo;
-	tAILocalInfo		*ailP = gameData.ai.localInfo + nObject;
-	tRobotInfo	*botInfoP = ROBOTINFO (objP);
+	tAILocalInfo	*ailP = gameData.ai.localInfo + nObject;
+	tRobotInfo		*botInfoP = ROBOTINFO (objP);
 
-Assert (nObject >= 0);
+#if DBG
+if (!objP->IsRobot ())
+	BRP;
+#endif
+if (!botInfoP)
+	return;
 if (behavior == AIB_STATIC) {
 	objP->info.controlType = CT_NONE;
 	objP->info.movementType = MT_NONE;
@@ -139,20 +144,25 @@ aiP->xDyingStartTime = 0;
 
 void InitAIObjects (void)
 {
-	int16_t		i, j;
-	CObject*	objP;
+	int16_t		nBosses = 0;
+	CObject		*objP;
+	tRobotInfo	*botInfoP;
 
 gameData.ai.target.objP = NULL;
 gameData.ai.freePointSegs = gameData.ai.routeSegs.Buffer ();
-for (i = j = 0, objP = OBJECTS.Buffer (); i < LEVEL_OBJECTS; i++, objP++) {
-	if (objP->info.controlType == CT_AI)
-		InitAIObject (i, objP->cType.aiInfo.behavior, objP->cType.aiInfo.nHideSegment);
-	if ((objP->info.nType == OBJ_ROBOT) && ROBOTINFO (objP)->bossFlag) {
-		if (j < (int32_t) gameData.bosses.ToS () || gameData.bosses.Grow ())
-			gameData.bosses [j++].Setup (i);
+FORALL_OBJS (objP) {
+	if (objP->IsRobot ()) {
+		if (objP->info.controlType == CT_AI)
+			InitAIObject (objP->Index (), objP->cType.aiInfo.behavior, objP->cType.aiInfo.nHideSegment);
+		if (objP->IsBoss ()) {
+			if (nBosses < (int32_t) gameData.bosses.ToS () || gameData.bosses.Grow ())
+				gameData.bosses [nBosses++].Setup (objP->Index ());
+			}
 		}
 	}
-if (0 < (i = gameData.bosses.Count () - j)) {
+
+int32_t i = gameData.bosses.Count () - nBosses;
+if (0 < i) {
 	gameData.bosses.Shrink (uint32_t (i));
 	extraGameInfo [0].nBossCount [0] -= i;
 	extraGameInfo [0].nBossCount [1] -= i;

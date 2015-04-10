@@ -432,7 +432,7 @@ else {
 		}
 	}
 
-if (ROBOTINFO (objP)->bossFlag) {
+if (objP->IsBoss ()) {
 	Int3 ();		//	Note: Boss is poking outside mine.  Will try to resolve.
 	TeleportBoss (objP);
 	return true;

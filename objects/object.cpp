@@ -1995,14 +1995,31 @@ return (this == gameData.objData.guidedMissile [nPlayer].objP) && (Signature () 
 
 bool CObject::IsGuideBot (void) 
 {
-return (info.nType == OBJ_ROBOT) && (info.nId < MAX_ROBOT_TYPES) && ROBOTINFO (info.nId)->companion;
+tRobotInfo* botInfoP;
+return (info.nType == OBJ_ROBOT) && (botInfoP = ROBOTINFO (info.nId)) && botInfoP->companion;
 }
 
 //------------------------------------------------------------------------------
 
 inline bool CObject::IsThief (void) 
 {
-return (info.nType == OBJ_ROBOT) && (info.nId < MAX_ROBOT_TYPES) && ROBOTINFO (info.nId)->thief;
+tRobotInfo* botInfoP;
+return (info.nType == OBJ_ROBOT) && (botInfoP = ROBOTINFO (info.nId)) && botInfoP->thief;
+}
+
+//------------------------------------------------------------------------------
+
+inline bool CObject::IsBoss (void) 
+{
+return BossId () != 0;
+}
+
+//------------------------------------------------------------------------------
+
+inline int8_t CObject::BossId (void) 
+{
+tRobotInfo* botInfoP;
+return (info.nType == OBJ_ROBOT) && (botInfoP = ROBOTINFO (info.nId)) ? botInfoP->bossFlag : 0;
 }
 
 //------------------------------------------------------------------------------
@@ -2142,7 +2159,7 @@ return (fix) gameData.objData.pwrUp.info [info.nId].size;
 void CObject::DrainEnergy (void) 
 { 
 tRobotInfo* botInfoP = ROBOTINFO (info.nId);
-if (botInfoP->energyDrain && LOCALPLAYER.Energy ()) {
+if (botInfoP && botInfoP->energyDrain && LOCALPLAYER.Energy ()) {
 	m_xTimeEnergyDrain = gameStates.app.nSDLTicks [0];
 	LOCALPLAYER.UpdateEnergy (-I2X (botInfoP->energyDrain));
 	}
@@ -2468,9 +2485,13 @@ if (m_nPosCount < POSTRACK_MAXFRAMES)
 
 int32_t CPositionTracker::Check (int32_t nId)
 {
+tRobotInfo*	botInfoP = ROBOTINFO (nId);
+if (!botInfoP)
+	return 1;
+
 	CFixVector	v0, v1;
 	fix			t0, t1;
-	float			maxSpeed = X2F (ROBOTINFO (nId)->xMaxSpeed [gameStates.app.nDifficultyLevel]);
+	float			maxSpeed = X2F (botInfoP->xMaxSpeed [gameStates.app.nDifficultyLevel]);
 
 for (int32_t i = m_nCurPos, j = 0; j < m_nPosCount; j++, i = (i + 1) % POSTRACK_MAXFRAMES) {
 	if (!j) {

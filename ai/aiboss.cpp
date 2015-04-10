@@ -66,11 +66,14 @@ int32_t	maxSpewBots [NUM_D2_BOSSES] = {2, 1, 2, 3, 3, 3, 3, 3};
 //	If pos == NULL, pick random spot in CSegment.
 int32_t CObject::CreateGatedRobot (int16_t nSegment, uint8_t nObjId, CFixVector* vPos)
 {
+tRobotInfo*	botInfoP = ROBOTINFO (nObjId);
+if (!botInfoP)
+	return -1;
+
 	int32_t		nObject, nTries = 5;
 	CObject*		objP;
 	CSegment*	segP = SEGMENT (nSegment);
 	CFixVector	vObjPos;
-	tRobotInfo*	botInfoP = ROBOTINFO (nObjId);
 	int32_t		nBoss, count = 0;
 	fix			objsize = gameData.models.polyModels [0][botInfoP->nModel].Rad ();
 	uint8_t		default_behavior;
@@ -127,7 +130,8 @@ objP->mType.physInfo.drag = botInfoP->drag;
 objP->mType.physInfo.flags |= (PF_LEVELLING);
 objP->SetShield (botInfoP->strength);
 objP->info.nCreator = BOSS_GATE_PRODUCER_NUM;	//	flag this robot as having been created by the boss.
-default_behavior = ROBOTINFO (objP)->behavior;
+botInfoP = ROBOTINFO (objP);
+default_behavior = botInfoP ? botInfoP->behavior : 0;
 InitAIObject (objP->Index (), default_behavior, -1);		//	Note, -1 = CSegment this robot goes to to hide, should probably be something useful
 CreateExplosion (nSegment, vObjPos, I2X (10), ANIM_MORPHING_ROBOT);
 audio.CreateSegmentSound (gameData.effects.animations [0][ANIM_MORPHING_ROBOT].nSound, nSegment, 0, vObjPos, 0 , I2X (1));
@@ -142,14 +146,17 @@ return objP->Index ();
 //	objP points at a boss.  He was presumably just hit and he's supposed to create a bot at the hit location *pos.
 int32_t CObject::BossSpewRobot (CFixVector *vPos, int16_t objType, int32_t bObjTrigger)
 {
-	int16_t			nObject, nSegment, maxRobotTypes;
-	int16_t			nBossIndex, nBossId = ROBOTINFO (info.nId)->bossFlag;
-	tRobotInfo	*pri;
-
-if (!bObjTrigger && FindObjTrigger (OBJ_IDX (this), TT_SPAWN_BOT, -1))
+if (!bObjTrigger && FindObjTrigger (OBJ_IDX (this), TT_SPAWN_BOT, -1)) // not caused by an object trigger, but object has an object trigger
 	return -1;
+
+tRobotInfo *botInfoP = ROBOTINFO (info.nId);
+if (!botInfoP)
+	return -1;
+
+	int16_t			nObject, nSegment, maxRobotTypes;
+	int16_t			nBossIndex, nBossId = botInfoP->bossFlag;
+
 nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
-Assert ((nBossIndex >= 0) && (nBossIndex < NUM_D2_BOSSES));
 nSegment = vPos ? FindSegByPos (*vPos, info.nSegment, 1, 0) : info.nSegment;
 if (nSegment == -1) {
 #if TRACE
@@ -164,11 +171,11 @@ if (objType < 0)
 if (objType == 255) {	// spawn an arbitrary robot
 	maxRobotTypes = gameData.botData.nTypes [gameStates.app.bD1Mission];
 	do {
-		objType = Rand (maxRobotTypes);
-		pri = gameData.botData.info [gameStates.app.bD1Mission] + objType;
-		} while (pri->bossFlag ||	//well ... don't spawn another boss, huh? ;)
-					pri->companion || //the buddy bot isn't exactly an enemy ... ^_^
-					(pri->scoreValue < 700)); //avoid spawning a ... spawn nType bot
+		botInfoP = ROBOTINFO (Rand (maxRobotTypes));
+		} while (!botInfoP ||							//should be a valid robot ...
+					botInfoP->bossFlag ||				//well ... don't spawn another boss, huh? ;)
+					botInfoP->companion ||				//the buddy bot isn't exactly an enemy ... ^_^
+					(botInfoP->scoreValue < 700));	//avoid spawning a ... spawn nType bot
 	}
 nObject = CreateGatedRobot (nSegment, (uint8_t) objType, vPos);
 //	Make spewed robot come tumbling out as if blasted by a flash missile.
@@ -260,7 +267,7 @@ return 0;
 
 void TeleportBoss (CObject *objP)
 {
-	int16_t			i, nAttempts = 5, nRandSeg = 0, nRandIndex, nObject = objP->Index ();
+	int16_t		i, nAttempts = 5, nRandSeg = 0, nRandIndex, nObject = objP->Index ();
 	CFixVector	vBossDir, vNewPos;
 
 //	Pick a random CSegment from the list of boss-teleportable-to segments.
@@ -297,7 +304,9 @@ vBossDir = LOCALOBJECT->info.position.vPos - vNewPos;
 objP->info.position.mOrient = CFixMatrix::CreateF(vBossDir);
 audio.CreateSegmentSound (gameData.effects.animations [0][ANIM_MORPHING_ROBOT].nSound, nRandSeg, 0, objP->info.position.vPos, 0 , I2X (1));
 audio.DestroyObjectSound (nObject);
-audio.CreateObjectSound (ROBOTINFO (objP)->seeSound, SOUNDCLASS_ROBOT, objP->Index (), 1, I2X (1), I2X (512));	//	I2X (512) means play twice as loud
+tRobotInfo* botInfoP = ROBOTINFO (objP);
+if (botInfoP)
+	audio.CreateObjectSound (botInfoP->seeSound, SOUNDCLASS_ROBOT, objP->Index (), 1, I2X (1), I2X (512));	//	I2X (512) means play twice as loud
 //	After a teleport, boss can fire right away.
 gameData.ai.localInfo [nObject].nextPrimaryFire = 0;
 gameData.ai.localInfo [nObject].nextSecondaryFire = 0;
@@ -307,9 +316,9 @@ gameData.ai.localInfo [nObject].nextSecondaryFire = 0;
 
 void StartBossDeathSequence (CObject *objP)
 {
-if (ROBOTINFO (objP)->bossFlag) {
+if (objP->IsBoss ()) {
 	int32_t	nObject = objP->Index (),
-			i = gameData.bosses.Find (nObject);
+				i = gameData.bosses.Find (nObject);
 
 	if (i < 0)
 		StartRobotDeathSequence (objP);	//kill it anyway, somehow
@@ -324,16 +333,19 @@ if (ROBOTINFO (objP)->bossFlag) {
 
 void DoBossDyingFrame (CObject *objP)
 {
-	int32_t	rval, i = gameData.bosses.Find (objP->Index ());
+tRobotInfo	*botInfoP = ROBOTINFO (objP);
+if (!botInfoP)
+	return;
 
+int32_t	i = gameData.bosses.Find (objP->Index ());
 if (i < 0)
 	return;
-rval = DoRobotDyingFrame (objP, gameData.bosses [i].m_nDyingStartTime, BOSS_DEATH_DURATION,
-								  &gameData.bosses [i].m_bDyingSoundPlaying,
-								  ROBOTINFO (objP)->deathrollSound, I2X (4), I2X (4));
+
+int32_t rval = DoRobotDyingFrame (objP, gameData.bosses [i].m_nDyingStartTime, BOSS_DEATH_DURATION,
+											 &gameData.bosses [i].m_bDyingSoundPlaying, botInfoP->deathrollSound : 0, I2X (4), I2X (4));
 if (rval) {
 	gameData.bosses.Remove (i);
-	if (ROBOTINFO (objP)->bEndsLevel)
+	if (botInfoP->bEndsLevel)
 		DoReactorDestroyedStuff (NULL);
 #if 0
 	audio.CreateObjectSound (-1, SOUNDCLASS_EXPLOSION, objP->Index (), 0, I2X (4), I2X (512), -1, -1, AddonSoundName (SND_ADDON_NUKE_EXPLOSION), 1);
@@ -348,15 +360,15 @@ if (rval) {
 //	Do special stuff for a boss.
 void DoBossStuff (CObject *objP, int32_t nTargetVisibility)
 {
-	int32_t	i, nBossId, nBossIndex, nObject;
+int32_t nBossId = objP->BossId ();
+if (!nBossId)
+	return;
 
-nObject = objP->Index ();
-i = gameData.bosses.Find (nObject);
+int32_t nObject = objP->Index ();
+int32_t i = gameData.bosses.Find (nObject);
 if (i < 0)
 	return;
-nBossId = ROBOTINFO (objP)->bossFlag;
-//	Assert ((nBossId >= BOSS_D2) && (nBossId < BOSS_D2 + NUM_D2_BOSSES));
-nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
+int32_t nBossIndex = (nBossId >= BOSS_D2) ? nBossId - BOSS_D2 : nBossId;
 #if DBG
 if (objP->info.xShield != gameData.bosses [i].m_xPrevShield) {
 #if TRACE

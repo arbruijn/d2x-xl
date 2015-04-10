@@ -1186,6 +1186,8 @@ class CObject : public CObjectInfo {
 
 		bool IsGuideBot (void);
 		bool IsThief (void);
+		bool IsBoss (void);
+		int8_t BossId (void);
 		inline bool IsPlayer (void) { return (Type () == OBJ_PLAYER); }
 		inline bool IsRobot (void) { return (Type () == OBJ_ROBOT); }
 		inline bool IsReactor (void) { return (Type () == OBJ_REACTOR); }
@@ -1805,10 +1807,9 @@ void InitMultiPlayerObject (int32_t nStage);
 
 #define	SHOW_SHADOWS			(SHOW_OBJ_FX && EGI_FLAG (bShadows, 0, 1, 0))
 
-#define	IS_BOSS(_objP)			((_objP)->IsRobot () && ROBOTINFO ((_objP))->bossFlag)
-#define	IS_GUIDEBOT(_objP)	((_objP)->IsRobot () && ROBOTINFO ((_objP))->companion)
-#define	IS_THIEF(_objP)		((_objP)->IsRobot () && ROBOTINFO ((_objP))->thief)
-#define	IS_BOSS(_objP)			((_objP)->IsRobot () && ROBOTINFO ((_objP))->bossFlag)
+#define	IS_BOSS(_objP)			((_objP)->IsBoss ())
+#define	IS_GUIDEBOT(_objP)	((_objP)->IsGuideBot)
+#define	IS_THIEF(_objP)		((_objP)->IsThief ())
 #define	IS_BOSS_I(_i)			IS_BOSS (OBJECT (_i))
 #define	IS_MISSILE(_objP)		((_objP)->IsMissile ())
 #define	IS_MISSILE_I(_i)		IS_MISSILE (OBJECT (_i))

@@ -832,7 +832,7 @@ void ai_fire_laser_at_player(CObject *objP, CFixVector *fire_point)
 	SetNextPrimaryFireTime(ailP, botInfoP);
 
 	//	If the boss fired, allow him to teleport very soon (right after firing, cool!), pending other factors.
-	if (botInfoP->bossFlag)
+	if (objP->IsBoss ())
 		gameData.bosses [0].m_nLastTeleportTime -= gameData.bosses [0].m_nTeleportInterval/2;
 }
 

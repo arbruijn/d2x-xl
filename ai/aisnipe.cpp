@@ -51,8 +51,7 @@ for (i = 0; i < nBfsLength; i++) {
 			continue;
 		if ((objP->cType.aiInfo.behavior == AIB_SNIPE) || (objP->cType.aiInfo.behavior == AIB_RUN_FROM))
 			continue;
-		botInfoP = ROBOTINFO (objP);
-		if (botInfoP->bossFlag || botInfoP->companion)
+		if (objP->IsBoss () || objP->IsGuideBot ())
 			continue;
 		objP->cType.aiInfo.behavior = AIB_SNIPE;
 		gameData.ai.localInfo [nObject].mode = AIM_SNIPE_ATTACK;
