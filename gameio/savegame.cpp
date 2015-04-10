@@ -1378,7 +1378,6 @@ for (i = 0; i <= gameData.objData.nLastObject [0]; i++, objP++) {
 			gameData.objData.nNextSignature = objP->info.nSignature;
 		}
 	//look for, and fix, boss with bogus shield
-	tRobotInfo *botInfoP;
 	if (objP->IsBoss ()) {
 		fix xShieldSave = objP->info.xShield;
 		CopyDefaultsToRobot (objP);		//calculate starting shield
