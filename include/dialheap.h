@@ -39,7 +39,7 @@ class CDialHeap {
 		inline uint32_t Cost (short nNode) { return m_cost [nNode]; }
 		inline bool Pushed (short nNode) { return Cost (nNode) < 0xFFFFFFFF; }
 		inline bool Popped (short nNode) { return !Pushed (nNode) && ((Cost (nNode) & 0x80000000) != 0); }
-		inline tPathNode* Route (uint32_t i = 0) { return m_route.Element (i); }
+		inline tPathNode* Route (uint32_t i = 0) { return m_route.Buffer (i); }
 
 	private:
 		int Scan (int nStart, int nLength);

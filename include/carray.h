@@ -194,9 +194,7 @@ class CArray : public CQuickSort < _T > {
 			return m_data.buffer;
 			}
 			
-		virtual inline _T* Buffer (void) const { return m_data.buffer; }
-		
-		virtual inline _T* Element (uint32_t i = 0) const { return m_data.buffer + i; }
+		virtual inline _T* Buffer (uint32_t i = 0) const { return m_data.buffer + i; }
 		
 		void SetBuffer (_T *buffer, int32_t nMode = 0, uint32_t length = 0xffffffff) {
 			if (m_data.buffer != buffer) {

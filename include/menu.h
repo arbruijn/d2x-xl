@@ -325,40 +325,40 @@ public:
 
 	inline int32_t Value (const char* szId) {
 		int32_t i = IndexOf (szId);
-		return (i < 0) ? 0 : Element (i)->Value ();
+		return (i < 0) ? 0 : Buffer (i)->Value ();
 		}
 
 	inline void SetValue (const char* szId, int32_t value) {
 		int32_t i = IndexOf (szId);
 		if (i >= 0)
-			Element (i)->Value () = value;
+			Buffer (i)->Value () = value;
 		}
 
 	inline int32_t MinValue (const char* szId) {
 		int32_t i = IndexOf (szId);
 		if (i >= 0)
-			return Element (i)->MinValue ();
+			return Buffer (i)->MinValue ();
 		return 0;
 		}
 
 	inline int32_t MaxValue (const char* szId) {
 		int32_t i = IndexOf (szId);
 		if (i >= 0)
-			return Element (i)->MaxValue ();
+			return Buffer (i)->MaxValue ();
 		return 0;
 		}
 
 	inline char* Text (const char* szId) {
 		int32_t i = IndexOf (szId);
 		if (i >= 0)
-			return Element (i)->Text ();
+			return Buffer (i)->Text ();
 		return NULL;
 		}
 
 	inline int32_t ToInt (const char* szId) {
 		int32_t i = IndexOf (szId);
 		if (i >= 0)
-			return Element (i)->ToInt ();
+			return Buffer (i)->ToInt ();
 		return 0;
 		}
 
@@ -368,7 +368,7 @@ public:
 
 	inline CMenuItem* operator[] (const char* szId) {
 		int32_t i = IndexOf (szId);
-		return (i < 0) ? NULL : Element (i);
+		return (i < 0) ? NULL : Buffer (i);
 		}
 
 	int32_t AddCheck (const char* szId, const char* szText, int32_t nValue, int32_t nKey = 0, const char* szHelp = NULL);

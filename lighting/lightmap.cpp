@@ -1019,7 +1019,7 @@ if ((faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (faceP->m_info.nSi
 int32_t i = faceP->m_info.nLightmap / LIGHTMAP_BUFSIZE;
 if (!lightmapManager.Bind (i))
 	return 0;
-GLuint h = lightmapManager.Element (i)->handle;
+GLuint h = lightmapManager.Buffer (i)->handle;
 #if 1 //!DBG
 if (0 <= ogl.IsBound (h))
 	return 1;
