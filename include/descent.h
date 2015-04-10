@@ -3775,7 +3775,7 @@ class CGameData {
 			}
 
 		inline tRobotInfo* RobotInfo (CObject* objP) {
-			return objP->IsRobot () ? RobotInfo (objP->Id ()) : NULL;
+			return (objP->IsRobot () || objP->IsReactor ()) ? RobotInfo (objP->Id ()) : NULL;
 			}
 
 #endif

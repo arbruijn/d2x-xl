@@ -2605,7 +2605,7 @@ tRobotInfo* CGameData::RobotInfo (CObject* objP, int32_t nChecks, const char* ps
 {
 if (!objP || !Object (objP->Index (), GAMEDATA_ERRLOG_ALL, pszFile, nLine))
 	 return (tRobotInfo*) GameDataError ("robot info", "object buffer", nChecks, pszFile, nLine);
-if ((nChecks & GAMEDATA_ERRLOG_TYPE) && !objP->IsRobot ())
+if ((nChecks & GAMEDATA_ERRLOG_TYPE) && !objP->IsRobot () && !objP->IsReactor ())
 	return (tRobotInfo*) GameDataError ("robot info", "object type", nChecks, pszFile, nLine);
 return RobotInfo (objP->Id (), nChecks, pszFile, nLine);
 }
