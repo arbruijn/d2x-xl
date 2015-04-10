@@ -119,20 +119,20 @@ class CPaletteData {
 		tPaletteList*		list;
 		char					szLastLoaded [FILENAME_LEN];
 		char					szLastPig [FILENAME_LEN];
-		int32_t					nPalettes;
-		int32_t					nGamma;
-		int32_t					nLastGamma;
+		int32_t				nPalettes;
+		int32_t				nGamma;
+		int32_t				nLastGamma;
 		fix					xFadeDelay;
 		fix					xFadeDuration [2];
 		fix					xLastDelay;
 		fix					xLastEffectTime;
 
-		uint8_t					fadeTable [PALETTE_SIZE * MAX_FADE_LEVELS];
+		uint8_t				fadeTable [PALETTE_SIZE * MAX_FADE_LEVELS];
 		CFloatVector3		flash;
 		CFloatVector3		effect;
 		CFloatVector3		lastEffect;
 		bool					bDoEffect;
-		int32_t					nSuspended;
+		int32_t				nSuspended;
 	};
 
 

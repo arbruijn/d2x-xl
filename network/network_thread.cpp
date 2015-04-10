@@ -503,10 +503,10 @@ void CNetworkClientList::Cleanup (void)
 	uint32_t i = 0;
 
 while (i < ToS ()) {
-	if (t - Buffer (i)->m_timestamp < MAX_CLIENT_AGE)
+	if (t - Element (i)->m_timestamp < MAX_CLIENT_AGE)
 		++i;
 	else {
-		*Buffer (i) = *Top ();
+		*Element (i) = *Top ();
 		--m_tos;
 		}
 	}
