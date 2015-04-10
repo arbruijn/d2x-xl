@@ -3732,8 +3732,8 @@ class CGameData {
 		CTrigger* Trigger (int32_t nType, int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
 		CTrigger* GeoTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
 		CTrigger* ObjTrigger (int32_t nTrigger, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
-		tRobotInfo* CGameData::RobotInfo (int32_t nId, int32_t nChecks, const char* pszFile, int32_t nLine);
-		tRobotInfo* CGameData::RobotInfo (CObject* objP, int32_t nChecks, const char* pszFile, int32_t nLine);
+		tRobotInfo* RobotInfo (int32_t nId, int32_t nChecks, const char* pszFile, int32_t nLine);
+		tRobotInfo* RobotInfo (CObject* objP, int32_t nChecks, const char* pszFile, int32_t nLine);
 
 #else
 		inline CObject* Object (int32_t nObject) { 
