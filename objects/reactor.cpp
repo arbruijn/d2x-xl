@@ -476,7 +476,7 @@ FORALL_ACTOR_OBJS (objP) {
 		if ((BOSS_COUNT < int32_t (gameData.bosses.ToS ())) || gameData.bosses.Grow ()) {
 			gameData.bosses [BOSS_COUNT].m_nObject = objP->Index ();
 			++extraGameInfo [0].nBossCount [1];
-			if (ROBOTINFO (objP)->bEndsLevel) {
+			if (ROBOTINFO (objP) && ROBOTINFO (objP)->bEndsLevel) {
 				++extraGameInfo [0].nBossCount [0];
 				if ((nBossObj >= 0) && !ROBOTINFO (OBJECT (nBossObj))->bEndsLevel)
 					nBossObj = objP->Index ();
@@ -505,12 +505,14 @@ if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
 else if (gameData.bosses.ToS () > 0) {
 	for (j = 0; j < gameStates.gameplay.nReactorCount [0]; j++) {
 		objP = OBJECT (gameData.reactor.states [j].nObject);
-		objP->BashToShield (true);
-		--extraGameInfo [0].nBossCount [1];
-		if (ROBOTINFO (objP)->bEndsLevel) 
-			--extraGameInfo [0].nBossCount [0];
-		if (j < --gameStates.gameplay.nReactorCount [0])
-			gameData.reactor.states [j] = gameData.reactor.states [gameStates.gameplay.nReactorCount [0]];
+		if (objP) {
+			--extraGameInfo [0].nBossCount [1];
+			if (ROBOTINFO (objP) && ROBOTINFO (objP)->bEndsLevel) 
+				--extraGameInfo [0].nBossCount [0];
+			if (j < --gameStates.gameplay.nReactorCount [0])
+				gameData.reactor.states [j] = gameData.reactor.states [gameStates.gameplay.nReactorCount [0]];
+			objP->BashToShield (true);
+			}
 		}
 	gameData.reactor.bPresent = 0;
 	gameData.reactor.bDisabled = 1;
