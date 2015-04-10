@@ -146,7 +146,6 @@ void InitAIObjects (void)
 {
 	int16_t		nBosses = 0;
 	CObject		*objP;
-	tRobotInfo	*botInfoP;
 
 gameData.ai.target.objP = NULL;
 gameData.ai.freePointSegs = gameData.ai.routeSegs.Buffer ();
