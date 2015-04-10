@@ -848,6 +848,7 @@ OglDrawFilledRect (m_closeX + LHX (1), m_closeY + LHX (1), m_closeX + m_closeSiz
 
 DrawHeader ();
 DrawTable ();
+DrawQuestion (m_items + m_nCurItem);
 m_background.Deactivate ();
 SDL_ShowCursor (0);
 m_bRedraw = 1;
@@ -918,7 +919,7 @@ return BT_NONE;
 
 //------------------------------------------------------------------------------
 
-uint8_t CControlConfig::KeyCtrlFunc (void)
+uint8_t CControlConfig::KeyCtrlFunc (int32_t nChangeState)
 {
 	int32_t	i, n, f;
 
@@ -937,7 +938,7 @@ return 255;
 
 //------------------------------------------------------------------------------
 
-uint8_t CControlConfig::JoyBtnCtrlFunc (void)
+uint8_t CControlConfig::JoyBtnCtrlFunc (int32_t nChangeState)
 {
 	int32_t	i;
 	uint8_t code = 255;
@@ -975,7 +976,7 @@ return code;
 
 //------------------------------------------------------------------------------
 
-uint8_t CControlConfig::MouseBtnCtrlFunc (void)
+uint8_t CControlConfig::MouseBtnCtrlFunc (int32_t nChangeState)
 {
 int32_t i, b = MouseGetButtons ();
 for (i = 0; i < 16; i++)
@@ -986,20 +987,24 @@ return 255;
 
 //------------------------------------------------------------------------------
 
-uint8_t CControlConfig::JoyAxisCtrlFunc (void)
+uint8_t CControlConfig::JoyAxisCtrlFunc (int32_t nChangeState)
 {
+	static int32_t axisTotal [JOY_MAX_AXES];
+
 	int32_t curAxis [JOY_MAX_AXES];
 	int32_t i, hd, dd;
 	int32_t bLinJoySensSave = gameOpts->input.joystick.bLinearSens;
 	uint8_t code = 255;
 
-memset (curAxis, 0, sizeof (curAxis));
+if (nChangeState == 0)
+	memset (curAxis, 0, sizeof (curAxis));
 gameOpts->input.joystick.bLinearSens = 1;
 controls.SetPollTime (128);
 controls.ReadJoystick (curAxis);
 gameOpts->input.joystick.bLinearSens = bLinJoySensSave;
 for (i = dd = 0; i < JOY_MAX_AXES; i++) {
-	hd = abs (curAxis [i]); // - m_startAxis [i]);
+	axisTotal [i] += abs (curAxis [i]);
+	hd = axisTotal [i]; // - m_startAxis [i]);
   	if ((hd > (128 * 3 / 4)) && (hd > dd)) {
 		dd = hd;
 		code = i;
@@ -1011,21 +1016,24 @@ return code;
 
 //------------------------------------------------------------------------------
 
-uint8_t CControlConfig::MouseAxisCtrlFunc (void)
+uint8_t CControlConfig::MouseAxisCtrlFunc (int32_t nChangeState)
 {
-	int32_t dx, dy;
-	int32_t dz;
+	static int32_t dxTotal, dyTotal, dzTotal;
+
+	int32_t dx, dy, dz;
 	uint8_t code = 255;
 
+if (nChangeState == 0)
+	dxTotal = dyTotal = dzTotal = 0;
 MouseGetDeltaZ (&dx, &dy, &dz);
 console.printf (CON_VERBOSE, "mouse: %3d %3d\n", dx, dy);
-dx = abs (dx);
-dy = abs (dy);
-if (Max (dx, dy) > 20) {
-	code = dy > dx;
+dxTotal += abs (dx);
+dyTotal += abs (dy);
+if (Max (dxTotal, dyTotal) > 20) {
+	code = dyTotal > dxTotal;
 	}
-dz = abs (dz);
-if ((dz > 20) && (dz > code ? dy : dx))
+dzTotal += abs (dz);
+if ((dzTotal > 20) && (dzTotal > code ? dyTotal : dxTotal))
 	code = 2;
 return code;
 }
@@ -1050,9 +1058,8 @@ int32_t CControlConfig::ChangeControl (kcItem *item, int32_t nType, kc_ctrlfunc_
 		}
 	//if (ogl.m_states.nDrawBuffer == GL_FRONT)
 	//	G3_SLEEP (10);
-	DrawQuestion (item);
 	}
-return AssignControl (item, nType, ctrlfunc ());
+return AssignControl (item, nType, ctrlfunc (m_nChangeState));
 }
 
 //------------------------------------------------------------------------------
@@ -1070,8 +1077,8 @@ return BT_NONE;
 
 void CControlConfig::QSortItemPos (tItemPos *pos, int32_t left, int32_t right)
 {
-	int32_t			l = left,
-					r = right;
+	int32_t	l = left,
+				r = right;
 	tItemPos	h, m = pos [(l + r) / 2];
 
 do {
@@ -1132,8 +1139,8 @@ return ref;
 
 void CControlConfig::LinkKbdEntries (void)
 {
-	int32_t			i, j, *ref;
-	tItemPos*	pos = GetItemPos (kcKeyboard, NUM_KEY_CONTROLS);
+	int32_t	i, j, *ref;
+	tItemPos	*pos = GetItemPos (kcKeyboard, NUM_KEY_CONTROLS);
 
 if (pos) {
 	if ((ref = GetItemRef (NUM_KEY_CONTROLS, pos))) {
@@ -1153,8 +1160,8 @@ if (pos) {
 
 void CControlConfig::LinkJoyEntries (void)
 {
-	int32_t			i, j, *ref;
-	tItemPos*	pos = GetItemPos (kcJoystick, NUM_JOY_CONTROLS);
+	int32_t	i, j, *ref;
+	tItemPos	*pos = GetItemPos (kcJoystick, NUM_JOY_CONTROLS);
 
 if (pos) {
 	if ((ref = GetItemRef (NUM_JOY_CONTROLS, pos))) {
@@ -1174,8 +1181,8 @@ if (pos) {
 
 void CControlConfig::LinkMouseEntries (void)
 {
-	int32_t			i, j, *ref;
-	tItemPos*	pos = GetItemPos (kcMouse, NUM_MOUSE_CONTROLS);
+	int32_t	i, j, *ref;
+	tItemPos	*pos = GetItemPos (kcMouse, NUM_MOUSE_CONTROLS);
 
 if (pos) {
 	if ((ref = GetItemRef (NUM_MOUSE_CONTROLS, pos))) {
@@ -1195,8 +1202,8 @@ if (pos) {
 
 void CControlConfig::LinkHotkeyEntries (void)
 {
-	int32_t			i, j, *ref;
-	tItemPos*	pos = GetItemPos (kcHotkeys, NUM_HOTKEY_CONTROLS);
+	int32_t	i, j, *ref;
+	tItemPos	*pos = GetItemPos (kcHotkeys, NUM_HOTKEY_CONTROLS);
 
 if (pos) {
 	if ((ref = GetItemRef (NUM_HOTKEY_CONTROLS, pos))) {
@@ -1234,6 +1241,7 @@ nLinked |= tableFlags;
 int32_t CControlConfig::HandleControl (void)
 {
 m_nPrevChangeMode = m_nChangeMode;
+m_nChangeState = 0;
 do {
 	CMenu::Render (NULL, NULL, CCanvas::Current ());
 
@@ -1261,6 +1269,7 @@ do {
 		default:
 			m_nChangeMode = BT_NONE;
 		}
+	m_nChangeState = 1;
 	m_nPrevChangeMode = m_nChangeMode;
 	SDL_ShowCursor (1);
 	m_bRedraw = 0;
@@ -1483,8 +1492,8 @@ Quit ();
 void CControlConfig::Run (int32_t nType, const char* pszTitle)
 {
 CBitmap*	bmSave;
-int32_t		i, j, b = gameOpts->legacy.bInput;
-uint8_t*	controlsP; // required to make sure the g++ optimizer doesn't break the loops below
+int32_t	i, j, b = gameOpts->legacy.bInput;
+uint8_t	*controlsP; // required to make sure the g++ optimizer doesn't break the loops below
 
 m_pszTitle = pszTitle;
 m_xOffs = (CCanvas::Current ()->Width () - 640) / 2;

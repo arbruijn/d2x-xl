@@ -284,7 +284,7 @@ class CControlConfig : public CMenu {
 		void Run (int32_t nType, const char* pszTitle);
 
 	private:
-		typedef uint8_t kc_ctrlfuncType (void);
+		typedef uint8_t kc_ctrlfuncType (int32_t);
 		typedef kc_ctrlfuncType *kc_ctrlfunc_ptr;
 
 		typedef struct tItemPos {
@@ -293,13 +293,14 @@ class CControlConfig : public CMenu {
 
 	private:
 		kcItem*		m_items;
-		int32_t			m_nItems;
-		int32_t			m_nCurItem, m_nPrevItem;
-		int32_t			m_nChangeMode, m_nPrevChangeMode;
-		int32_t			m_nMouseState, m_nPrevMouseState;
-		int32_t			m_bTimeStopped;
-		int32_t			m_xOffs, m_yOffs;
-		int32_t			m_closeX, m_closeY, m_closeSize;
+		int32_t		m_nItems;
+		int32_t		m_nCurItem, m_nPrevItem;
+		int32_t		m_nChangeMode, m_nPrevChangeMode;
+		int32_t		m_nMouseState, m_nPrevMouseState;
+		int32_t		m_bTimeStopped;
+		int32_t		m_xOffs, m_yOffs;
+		int32_t		m_closeX, m_closeY, m_closeSize;
+		int32_t		m_nChangeState;
 		const char*	m_pszTitle;
 
 		static int32_t	m_startAxis [JOY_MAX_AXES];
@@ -327,11 +328,11 @@ class CControlConfig : public CMenu {
 		void ReadFCS (int32_t raw_axis);
 
 		int32_t AssignControl (kcItem *item, int32_t nType, uint8_t code);
-		static uint8_t KeyCtrlFunc (void);
-		static uint8_t JoyBtnCtrlFunc (void);
-		static uint8_t MouseBtnCtrlFunc (void);
-		static uint8_t JoyAxisCtrlFunc (void);
-		static uint8_t MouseAxisCtrlFunc (void);
+		static uint8_t KeyCtrlFunc (int32_t nChangeState);
+		static uint8_t JoyBtnCtrlFunc (int32_t nChangeState);
+		static uint8_t MouseBtnCtrlFunc (int32_t nChangeState);
+		static uint8_t JoyAxisCtrlFunc (int32_t nChangeState);
+		static uint8_t MouseAxisCtrlFunc (int32_t nChangeState);
 		int32_t ChangeControl (kcItem *item, int32_t nType, kc_ctrlfunc_ptr ctrlfunc, const char *pszMsg);
 
 		inline int32_t ChangeKey (kcItem *item) { return ChangeControl (item, BT_KEY, &CControlConfig::KeyCtrlFunc, TXT_PRESS_NEW_KEY); }

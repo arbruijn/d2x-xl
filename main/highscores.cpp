@@ -191,8 +191,8 @@ if (! (gameData.app.GameMode (GM_MODEM | GM_SERIAL)))
 y+=LHY (20);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 if (LOCALPLAYER.connected == CONNECT_ADVANCE_LEVEL) {
-   fontManager.Current ()->StringSize ("Waiting for other players...",sw, sh, aw);
-   GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"Waiting for other players...");
+   fontManager.Current ()->StringSize (TXT_CLIENT_WAIT, sw, sh, aw);
+   GrPrintF (NULL, CENTERSCREEN- (sw/2), y, TXT_CLIENT_WAIT);
    }
 else {
    fontManager.Current ()->StringSize (TXT_PRESS_ANY_KEY2, sw, sh, aw);
@@ -238,8 +238,8 @@ if (! (gameData.app.GameMode (GM_MODEM | GM_SERIAL)))
 y+=LHY (20);
 fontManager.SetColorRGBi (WHITE_RGBA, 1, 0, 0);
 if (LOCALPLAYER.connected == CONNECT_ADVANCE_LEVEL) {
-	fontManager.Current ()->StringSize ("Waiting for other players...",sw, sh, aw);
-	GrPrintF (NULL, CENTERSCREEN- (sw/2), y,"Waiting for other players...");
+	fontManager.Current ()->StringSize (TXT_CLIENT_WAIT, sw, sh, aw);
+	GrPrintF (NULL, CENTERSCREEN- (sw/2), y, TXT_CLIENT_WAIT);
 	}
 else {
 	fontManager.Current ()->StringSize (TXT_PRESS_ANY_KEY2, sw, sh, aw);

@@ -290,8 +290,11 @@ do {
 		if (i == -1)
 			return;
 		gameConfig.nControlType = gameOpts->input.mouse.bUse ? CONTROL_MOUSE : gameConfig.nControlType;
-		if (choice == m.IndexOf ("customize device"))
+		if (choice == m.IndexOf ("customize device")) {
+			GrabMouse (1, 1);
 			controlConfig.Run (2, TXT_CFG_MOUSE);
+			GrabMouse (0, 1);
+			}
 	} while (i >= 0);
 }
 
