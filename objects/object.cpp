@@ -2001,7 +2001,7 @@ return (info.nType == OBJ_ROBOT) && (botInfoP = ROBOTINFO (info.nId)) && botInfo
 
 //------------------------------------------------------------------------------
 
-inline bool CObject::IsThief (void) 
+bool CObject::IsThief (void) 
 {
 tRobotInfo* botInfoP;
 return (info.nType == OBJ_ROBOT) && (botInfoP = ROBOTINFO (info.nId)) && botInfoP->thief;
@@ -2009,14 +2009,14 @@ return (info.nType == OBJ_ROBOT) && (botInfoP = ROBOTINFO (info.nId)) && botInfo
 
 //------------------------------------------------------------------------------
 
-inline bool CObject::IsBoss (void) 
+bool CObject::IsBoss (void) 
 {
 return BossId () != 0;
 }
 
 //------------------------------------------------------------------------------
 
-inline int8_t CObject::BossId (void) 
+int8_t CObject::BossId (void) 
 {
 tRobotInfo* botInfoP;
 return (info.nType == OBJ_ROBOT) && (botInfoP = ROBOTINFO (info.nId)) ? botInfoP->bossFlag : 0;
