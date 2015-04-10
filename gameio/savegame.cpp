@@ -1794,7 +1794,7 @@ if (!m_bBetweenLevels) {
 					FreeObject (nObject);
 				else {
 					objP->Link ();
-					if ((m_nVersion < 32) && IS_BOSS (objP))
+					if ((m_nVersion < 32) && objP->IsBoss ())
 						gameData.bosses.Add (nObject);
 					}
 				}

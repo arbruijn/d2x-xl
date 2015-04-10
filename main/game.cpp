@@ -698,7 +698,7 @@ CObject *FindEscort ()
 	CObject	*objP = OBJECTS.Buffer ();
 
 FORALL_ROBOT_OBJS (objP)
-	if (IS_GUIDEBOT (objP))
+	if (objP->IsGuideBot ())
 		return objP;
 return NULL;
 }

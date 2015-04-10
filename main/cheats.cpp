@@ -118,7 +118,7 @@ int32_t KillAllBuddyBots (int32_t bVerbose)
 	int32_t		nKilled = 0;
 
 FORALL_ROBOT_OBJS (objP)
-	if (IS_GUIDEBOT (objP)) {
+	if (objP->IsGuideBot ()) {
 		if (gameStates.app.bNostalgia)
 			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		else 
@@ -240,7 +240,7 @@ void KillThief (int32_t bVerbose)
 	CObject*	objP;
 
 FORALL_ROBOT_OBJS (objP)
-	if (IS_THIEF (objP)) {
+	if (objP->IsThief ()) {
 		if (gameStates.app.bNostalgia)
 			objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		else {
@@ -281,7 +281,7 @@ void KillBuddy (int32_t bVerbose)
 
 //	Kill buddy.
 FORALL_ROBOT_OBJS (objP)
-	if (IS_GUIDEBOT (objP)) {
+	if (objP->IsGuideBot ()) {
 		objP->info.nFlags |= OF_EXPLODING | OF_SHOULD_BE_DEAD;
 		if (bVerbose)
 			HUDInitMessage (TXT_BUDDY_TOASTED);

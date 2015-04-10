@@ -492,7 +492,7 @@ bUseHitbox = (objP->Type () == OBJ_PLAYER) && CollisionModel () && UseHitbox (ob
 #else
 bUseHitbox = 0;
 #endif
-bScaleSpeed = !(gameStates.app.bNostalgia || bInitialize) && (IS_MISSILE (objP) && (objP->Id () != EARTHSHAKER_MEGA_ID) && (objP->Id () != ROBOT_SHAKER_MEGA_ID)) ;
+bScaleSpeed = !(gameStates.app.bNostalgia || bInitialize) && (objP->IsMissile () && (objP->Id () != EARTHSHAKER_MEGA_ID) && (objP->Id () != ROBOT_SHAKER_MEGA_ID)) ;
 
 if (extraGameInfo [IsMultiGame].bFluidPhysics) {
 	if (SEGMENT (nStartSeg)->HasWaterProp ())
@@ -1575,7 +1575,7 @@ do {	//Move the object
 			break;
 		}
 	else {
-		float fScale = !(gameStates.app.bNostalgia || simData.bInitialize) && (IS_MISSILE (this) && (info.nId != EARTHSHAKER_MEGA_ID) && (info.nId != ROBOT_SHAKER_MEGA_ID)) 
+		float fScale = !(gameStates.app.bNostalgia || simData.bInitialize) && (IsMissile () && (info.nId != EARTHSHAKER_MEGA_ID) && (info.nId != ROBOT_SHAKER_MEGA_ID)) 
 							? MissileSpeedScale (this) 
 							: 1;
 		if (fScale < 1) {

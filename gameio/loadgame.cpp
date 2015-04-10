@@ -629,7 +629,7 @@ void SetVertigoRobotFlags (void)
 
 gameData.objData.nVertigoBotFlags = 0;
 FORALL_ROBOT_OBJS (objP)
-	if ((objP->info.nId >= 66) && !IS_BOSS (objP))
+	if ((objP->info.nId >= 66) && !objP->IsBoss ())
 		gameData.objData.nVertigoBotFlags |= (1 << (objP->info.nId - 64));
 }
 

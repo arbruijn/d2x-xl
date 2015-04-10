@@ -132,7 +132,7 @@ if (!tiP)
 	tiP = &m_ti;
 
 	tThrusterInfo	ti = *tiP;
-	int32_t				i, bMissile = IS_MISSILE (objP);
+	int32_t				i, bMissile = objP->IsMissile ();
 
 m_pt = NULL;
 ti.pp = NULL;

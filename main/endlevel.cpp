@@ -231,7 +231,7 @@ if (gameStates.app.bPlayerIsDead || (gameData.objData.consoleP->info.nFlags & OF
 	return;				//don't start if dead!
 //	Dematerialize Buddy!
 FORALL_ROBOT_OBJS (objP)
-	if (IS_GUIDEBOT (objP)) {
+	if (objP->IsGuideBot ()) {
 			CreateExplosion (objP->info.nSegment, objP->info.position.vPos, I2X (7) / 2, ANIM_POWERUP_DISAPPEARANCE);
 			objP->Die ();
 		}
@@ -1537,7 +1537,7 @@ if (gameStates.app.bPlayerIsDead || (gameData.objData.consoleP->info.nFlags & OF
 	return;				//don't start if dead!
 //	Dematerialize Buddy!
 FORALL_ROBOT_OBJS (objP)
-	if (IS_GUIDEBOT (objP)) {
+	if (objP->IsGuideBot ()) {
 			CreateExplosion (objP->info.nSegment, objP->info.position.vPos, I2X (7) / 2, ANIM_POWERUP_DISAPPEARANCE);
 			objP->Die ();
 		}

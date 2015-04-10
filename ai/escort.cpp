@@ -77,7 +77,7 @@ gameData.escort.nSpecialGoal = -1;
 gameData.escort.nGoalIndex = -1;
 gameData.escort.bMsgsSuppressed = 0;
 FORALL_ROBOT_OBJS (objP)
-	if (IS_GUIDEBOT (objP))
+	if (objP->IsGuideBot ())
 		break;
 if (IS_OBJECT (objP, objP->Index ()))
 	gameData.escort.nObjNum = objP->Index ();
@@ -157,7 +157,7 @@ if ((OBJECT (gameData.escort.nObjNum)->IsRobot ()) &&
 	 (gameData.escort.nObjNum <= gameData.objData.nLastObject [0]) &&
 	!ROBOTINFO (OBJECT (gameData.escort.nObjNum))->companion) {
 	FORALL_ROBOT_OBJS (objP)
-		if (IS_GUIDEBOT (objP))
+		if (objP->IsGuideBot ())
 			break;
 	if (!IS_OBJECT (objP, objP->Index ()))
 		return 0;
@@ -377,7 +377,7 @@ if (!gameData.escort.bMayTalk) {
 		CObject*	objP;
 
 		FORALL_ROBOT_OBJS (objP)
-			if (IS_GUIDEBOT (objP)) {
+			if (objP->IsGuideBot ()) {
 				HUDInitMessage (TXT_GB_RELEASE, gameData.escort.szName);
 				return;
 				}
