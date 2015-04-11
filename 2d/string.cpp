@@ -440,7 +440,7 @@ if (sw + swf <= nLength) {
 		int32_t l = sw + i * swf;
 		if (l < nLength)
 			PadString (pszDest, pszText, " ", nLength - l);
-		if (!*pszDest);
+		if (!*pszDest)
 			strcpy (pszDest, pszText);
 		for (; i; i--)
 			strcat (pszDest, pszFiller);
