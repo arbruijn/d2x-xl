@@ -991,7 +991,7 @@ if (!(szFilename && *szFilename))
 	return 0;
 
 	CFile		cf;
-	int32_t		h, i;
+	int32_t	h, i;
 	char		szBin [FILENAME_LEN];
 
 strcpy (szBin, szFilename);

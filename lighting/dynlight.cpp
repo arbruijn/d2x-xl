@@ -661,9 +661,13 @@ else {
 			continue;
 		if (vNormal && (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f)) // light doesn't "see" face
 			continue;
+		if (0 <= SEGMENT (nLightSeg)->ChildIndex (nDestSeg)) // don't check point to point visibility for connected segments
+			break;
+		if (!PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, FAST_POINTVIS - 1, nThread))
+			continue;
 		break;
 		}
-	return (i >= j);
+	return (i >= j); // && PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, FAST_POINTVIS - 1, nThread);
 #if DBG
 	if ((nDbgSeg >= 0) && (nDbgVertex >= 0) && (nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (info.nSide == nDbgSide)) && (nDbgVertex >= 0) && (*vPoint == VERTICES [nDbgVertex]))
 		BRP;

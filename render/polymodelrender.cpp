@@ -82,12 +82,14 @@ return 1;
 CPolyModel* GetPolyModel (CObject *objP, CFixVector *pos, int32_t nModel, int32_t flags, int32_t* bCustomModel)
 {
 	CPolyModel	*modelP = NULL;
-	int32_t			bHaveAltModel, bIsDefModel;
+	int32_t		bHaveAltModel, bIsDefModel;
 
 #if DBG
 if (nModel == nDbgModel)
 	BRP;
 #endif
+if (nModel < 0)
+	return NULL;
 bCustomModel = 0;
 if (gameStates.app.bEndLevelSequence && 
 	 ((nModel == gameData.endLevel.exit.nModel) || (nModel == gameData.endLevel.exit.nDestroyedModel))) {
@@ -146,8 +148,8 @@ int32_t DrawPolyModel (
 	CFixVector*		pos,
 	CFixMatrix*		orient,
 	CAngleVector*	animAngles,
-	int32_t				nModel,
-	int32_t				flags,
+	int32_t			nModel,
+	int32_t			flags,
 	fix				light,
 	fix*				glowValues,
 	tBitmapIndex	altTextures [],
@@ -164,6 +166,8 @@ if (!gameStates.render.bBuildModels) {
 	}
 #endif
 
+if (nModel < 0)
+	return 1;
 #if !MAX_SHADOWMAPS
 if ((gameStates.render.nShadowPass == 2) && !ObjectHasShadow (objP))
 	return 1;

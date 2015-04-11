@@ -41,7 +41,7 @@ CLightmapManager lightmapManager;
 #define LMAP_REND2TEX		0
 #define TEXTURE_CHECK		1
 
-#define LIGHTMAP_DATA_VERSION 44
+#define LIGHTMAP_DATA_VERSION 45
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
 
