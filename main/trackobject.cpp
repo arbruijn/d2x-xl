@@ -230,6 +230,8 @@ for (int32_t i = windowRenderedData [nWindow].nObjects - 1; i >= 0; i--) {
 	if (nObject == LOCALPLAYER.nObject)
 		continue;
 	CObject* targetP = OBJECT (nObject);
+	if (!targetP)
+		continue;
 	//	Can't track AI CObject if he's cloaked.
 	int32_t nType = targetP->Type ();
 	if (nType == OBJ_ROBOT) {
