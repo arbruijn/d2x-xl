@@ -3736,6 +3736,7 @@ class CGameData {
 			return nOldType;
 			}
 #if DBG
+
 		CObject* Object (int32_t nObject, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
 		CSegment* Segment (int32_t nSegment, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
 		CWall* Wall (int32_t nWall, int32_t nChecks = GAMEDATA_ERRLOG_DEFAULT, const char* pszFile = "", int32_t nLine = 0);
@@ -3746,37 +3747,15 @@ class CGameData {
 		tRobotInfo* RobotInfo (CObject* objP, int32_t nChecks, const char* pszFile, int32_t nLine);
 
 #else
-		inline CObject* Object (int32_t nObject) { 
-			return ((nObject < 0) || (nObject > objData.nLastObject [0])) ? NULL : objData.objects + nObject; 
-			}
 
-		inline CSegment* Segment (int32_t nSegment) { 
-			return ((nSegment < 0) || (nSegment >= segData.nSegments)) ? NULL : segData.segments + nSegment; 
-			}
-
-		inline CWall* Wall (int32_t nWall) { 
-			return ((nWall < 0) || (nWall == NO_WALL) || (nWall >= wallData.nWalls)) ? NULL : wallData.walls + nWall; 
-			}
-
-		inline CTrigger* Trigger (int32_t nType, int32_t nTrigger) { 
-			return ((nTrigger < 0) || (nTrigger == NO_TRIGGER) || (nTrigger >= trigData.nTriggers [nType])) ? NULL : trigData.triggers [nType] + nTrigger; 
-			}
-
-		inline CTrigger* GeoTrigger (int32_t nTrigger) { 
-			return Trigger (0, nTrigger);
-			}
-
-		inline CTrigger* ObjTrigger (int32_t nTrigger) { 
-			return Trigger (1, nTrigger);
-			}
-
-		inline tRobotInfo* RobotInfo (int32_t nId) {
-			return botData.info [gameStates.app.bD1Mission && (nId < botData.nTypes [1])] + nId; 
-			}
-
-		inline tRobotInfo* RobotInfo (CObject* objP) {
-			return (objP->IsRobot () || objP->IsReactor ()) ? RobotInfo (objP->Id ()) : NULL;
-			}
+		CObject* Object (int32_t nObject);
+		CSegment* Segment (int32_t nSegment);
+		CWall* Wall (int32_t nWall);
+		CTrigger* Trigger (int32_t nType, int32_t nTrigger);
+		CTrigger* GeoTrigger (int32_t nTrigger);
+		CTrigger* ObjTrigger (int32_t nTrigger);
+		tRobotInfo* RobotInfo (int32_t nId);
+		tRobotInfo* RobotInfo (CObject* objP);
 
 #endif
 		inline int32_t X (int32_t x, bool bForce = false) { return render.nStereoOffsetType ? x - ((render.nStereoOffsetType == STEREO_OFFSET_FLOATING) ? FloatingStereoOffset2D (x, bForce) : StereoOffset2D ()) : x; }
@@ -4164,6 +4143,43 @@ inline _T Max (_T a, _T b) { return (a >= b) ? a : b; }
 
 void CheckEndian (void);
 
+//	-----------------------------------------------------------------------------------------------------------
+
+#if !DBG
+
+inline CObject* CGameData::Object (int32_t nObject) { 
+	return ((nObject < 0) || (nObject > objData.nLastObject [0])) ? NULL : objData.objects + nObject; 
+	}
+
+inline CSegment* CGameData::Segment (int32_t nSegment) { 
+	return ((nSegment < 0) || (nSegment >= segData.nSegments)) ? NULL : segData.segments + nSegment; 
+	}
+
+inline CWall* CGameData::Wall (int32_t nWall) { 
+	return ((nWall < 0) || (nWall == NO_WALL) || (nWall >= wallData.nWalls)) ? NULL : wallData.walls + nWall; 
+	}
+
+inline CTrigger* CGameData::Trigger (int32_t nType, int32_t nTrigger) { 
+	return ((nTrigger < 0) || (nTrigger == NO_TRIGGER) || (nTrigger >= trigData.m_nTriggers [nType])) ? NULL : trigData.triggers [nType] + nTrigger; 
+	}
+
+inline CTrigger* CGameData::GeoTrigger (int32_t nTrigger) { 
+	return Trigger (0, nTrigger);
+	}
+
+inline CTrigger* CGameData::ObjTrigger (int32_t nTrigger) { 
+	return Trigger (1, nTrigger);
+	}
+
+inline tRobotInfo* CGameData::RobotInfo (int32_t nId) {
+	return botData.info [gameStates.app.bD1Mission && (nId < botData.nTypes [1])] + nId; 
+	}
+
+inline tRobotInfo* CGameData::RobotInfo (CObject* objP) {
+	return (objP->IsRobot () || objP->IsReactor ()) ? RobotInfo (objP->Id ()) : NULL;
+	}
+
+#endif
 //	-----------------------------------------------------------------------------------------------------------
 
 #define EX_OUT_OF_MEMORY		1
