@@ -3747,19 +3747,19 @@ class CGameData {
 
 #else
 		inline CObject* Object (int32_t nObject) { 
-			return (nObject < 0) ? NULL : objData.objects + nObject; 
+			return ((nObject < 0) || (nObject > objData.nLastObject [0])) ? NULL : objData.objects + nObject; 
 			}
 
 		inline CSegment* Segment (int32_t nSegment) { 
-			return (nSegment < 0) ? NULL : segData.segments + nSegment; 
+			return ((nSegment < 0) || (nSegment >= segData.nSegments)) ? NULL : segData.segments + nSegment; 
 			}
 
 		inline CWall* Wall (int32_t nWall) { 
-			return (nWall < 0) ? NULL : wallData.walls + nWall; 
+			return ((nWall < 0) || (nWall == NO_WALL) || (nWall >= wallData.nWalls)) ? NULL : wallData.walls + nWall; 
 			}
 
 		inline CTrigger* Trigger (int32_t nType, int32_t nTrigger) { 
-			return ((nTrigger < 0) || (nTrigger == NO_TRIGGER)) ? NULL : trigData.triggers [nType] + nTrigger; 
+			return ((nTrigger < 0) || (nTrigger == NO_TRIGGER) || (nTrigger >= trigData.nTriggers [nType])) ? NULL : trigData.triggers [nType] + nTrigger; 
 			}
 
 		inline CTrigger* GeoTrigger (int32_t nTrigger) { 

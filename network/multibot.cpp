@@ -345,7 +345,7 @@ bufP += 3;
 CreateShortPos (reinterpret_cast<tShortPos*> (gameData.multigame.msg.buf + bufP), OBJECT (nObject), 0);	
 bufP += sizeof (tShortPos);
 #else
-CreateShortPos (&sp, OBJECTS+nObject, 1);
+CreateShortPos (&sp, OBJECT (nObject), 1);
 memcpy (gameData.multigame.msg.buf + bufP, reinterpret_cast<uint8_t*> (sp.orient), 9);
 bufP += 9;
 memcpy (gameData.multigame.msg.buf + bufP, reinterpret_cast<uint8_t*> (&sp.coord), 14);
@@ -1043,7 +1043,7 @@ else if (botInfoP->containsCount) {
 		else
 			gameStates.app.SRand ();
 		if (delObjP->info.contains.nCount > 0)
-			nEggObj = delObjP->CreateEgg ();
+			nEggObj = delObjP->CreateEgg (false, true);
 		}
 	}
 if (nEggObj >= 0) // Transmit the object creation to the other players	 

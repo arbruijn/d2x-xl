@@ -2549,6 +2549,8 @@ if (!wallData.walls.Buffer ())
 	return (CWall*) GameDataError ("wall", "buffer", nChecks & GAMEDATA_ERRLOG_BUFFER, pszFile, nLine);
 if (nWall < 0)
 	return (CWall*) GameDataError ("wall", "underflow", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
+if (nWall == NO_WALL)
+	return (CWall*) GameDataError ("wall", "null", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
 if (nWall >= wallData.nWalls)
 	return (CWall*) GameDataError ("wall", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
 if ((uint32_t) nWall >= wallData.walls.Length ())

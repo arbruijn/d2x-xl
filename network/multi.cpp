@@ -2587,7 +2587,8 @@ if (PlayerHasHeadlight (nPlayer) && !(extraGameInfo [IsMultiGame].loadout.nDevic
 
 void MultiAdjustPowerupCap (void)
 {
-if (IAmGameHost ()) {
+//if (IAmGameHost ()) 
+	{
 	for (int32_t i = 0; i < N_PLAYERS; i++) {
 		if ((i != N_LOCALPLAYER) && PLAYER (i).IsConnected () && gameData.multiplayer.bAdjustPowerupCap [i]) {
 			MultiAdjustCapForPlayer (i);
