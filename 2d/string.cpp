@@ -991,7 +991,7 @@ int32_t StringWidth (char * s, int32_t n)
 	char		p;
 
 if (n > 0) {
-	if (n >= strlen (s)) 
+	if (n >= (int32_t) strlen (s)) 
 		n = 0;
 	else {
 		p = s [n];
