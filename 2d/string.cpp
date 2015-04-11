@@ -987,11 +987,17 @@ return 0;
 // Returns the length of the first 'n' characters of a string.
 int32_t StringWidth (char * s, int32_t n)
 {
-	int32_t w, h, aw;
-	char p = s [n];
+	int32_t	w, h, aw;
+	char		p;
 
-if (n)
-	s [n] = 0;
+if (n > 0) {
+	if (n >= strlen (s)) 
+		n = 0;
+	else {
+		p = s [n];
+		s [n] = 0;
+		}
+	}
 fontManager.Current ()->StringSize (s, w, h, aw);
 if (n)
 	s [n] = p;

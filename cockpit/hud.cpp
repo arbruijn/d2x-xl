@@ -43,6 +43,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "automap.h"
 #include "hudicons.h"
 #include "gr.h"
+#include "font.h"
 
 #define X_GAUGE_BASE_OFFSET 20
 #define X_GAUGE_OFFSET(_pos) (20 + (_pos) * 20)
@@ -1248,23 +1249,21 @@ if (cockpit->Hide ())
 
 if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) &&
 	 ((LOCALPLAYER.cloakTime + CLOAK_TIME_MAX - gameData.time.xGame > I2X (3)) || (gameData.time.xGame & 0x8000))) {
-	int32_t		nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
+	int32_t nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
 	
+	fontManager.SetCurrent (GAME_FONT);
 	if (nLayout) {
 		ScaleUp ();
 		SetFontColor (RGBA (192, 192, 192, 255));
-		nIdCloak = DrawHUDText (&nIdCloak, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistWidth*/0)) - StringWidth ("CLK"), 
+		nIdCloak = DrawHUDText (&nIdCloak, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistWidth*/0)) - StringWidth ("CLK", 0), 
 										gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistHeight*/0)) + ((nLayout == 2) ? 1 : 3) * LineSpacing (), "%s", "CLK");
 		ScaleDown ();
 		}
 	else {
 		SetFontColor (GREEN_RGBA);
 
-		if (ogl.IsOculusRift ()) {
-			int32_t w, h, aw;
-			fontManager.Current ()->StringSize ("CLOAK ", w, h, aw);
-			nIdCloak = DrawHUDText (&nIdCloak, CCanvas::Current ()->Width () - w, -2 * LineSpacing (), "%s", "CLOAK");
-			}
+		if (ogl.IsOculusRift ())
+			nIdCloak = DrawHUDText (&nIdCloak, CCanvas::Current ()->Width () - StringWidth ("CLOAK "), -2 * LineSpacing (), "%s", "CLOAK");
 		else {
 			int32_t y = IsMultiGame ? -7 * LineSpacing () : -4 * LineSpacing ();
 			if ((LOCALPLAYER.flags & PLAYER_FLAGS_AFTERBURNER) && !ShowTextGauges ())

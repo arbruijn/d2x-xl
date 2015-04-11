@@ -112,7 +112,7 @@ void UpdatePowerupClip (tAnimationInfo *animInfoP, tAnimationState *vciP, int32_
 {
 if (animInfoP) {
 	static fix	xPowerupTime = 0;
-	int32_t			h, nFrames = SetupHiresVClip (animInfoP, vciP);
+	int32_t		h, nFrames = SetupHiresVClip (animInfoP, vciP);
 	fix			xTime, xFudge = (xPowerupTime * (nObject & 3)) >> 4;
 
 	xPowerupTime += gameData.physics.xTime;
