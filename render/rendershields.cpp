@@ -233,7 +233,7 @@ if (bAppearing || EGI_FLAG (nShieldEffect, 0, 1, gameOpts->render.effects.bShiel
 	else if (PLAYER (i).flags & PLAYER_FLAGS_INVULNERABLE)
 		nColor = 2;
 	else if (gameData.multiplayer.bWasHit [i])
-		nColor = 1;
+		nColor = 0;
 	else
 		nColor = 0;
 	if (gameData.multiplayer.bWasHit [i]) {
