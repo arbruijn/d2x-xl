@@ -1102,7 +1102,10 @@ if (Index () == nDbgObj) {
 	nLastSeg = info.nSegment;
 	}
 #endif
-
+#if DBG
+if (IsWeapon ())
+	BRP;
+#endif
 if (Velocity () .IsZero ()) {
 #	if UNSTICK_OBJS
 	Unstick ();
