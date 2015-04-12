@@ -1799,6 +1799,8 @@ void DetachChildObjects (CObject *parentP);
 
 void InitMultiPlayerObject (int32_t nStage);
 
+bool FixWeaponObject (CObject* objP, bool bFixType = false);
+
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------
 //	-----------------------------------------------------------------------------

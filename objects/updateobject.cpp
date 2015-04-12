@@ -563,16 +563,8 @@ int32_t CObject::Update (void)
 if (OBJ_IDX (this) == nDbgObj)
 	BRP;
 #endif
-if (info.nType == OBJ_WEAPON) {
-	if (info.movementType != MT_PHYSICS) {
-		PrintLog (0, "weapon object has invalid movement type %s\n", info.movementType);
-		info.movementType = MT_PHYSICS;
-		}	
-	if (info.controlType != CT_WEAPON) {
-		PrintLog (0, "weapon object has invalid control type %s\n", info.controlType);
-		info.controlType = CT_WEAPON;
-		}	
-	}
+if (!FixWeaponObject (this))
+	return 0;
 if (info.nType == OBJ_ROBOT) {
 	if (gameOpts->gameplay.bNoThief && (!IsMultiGame || IsCoopGame) && ROBOTINFO (info.nId)->thief) {
 #if 1

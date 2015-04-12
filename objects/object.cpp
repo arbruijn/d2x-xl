@@ -214,6 +214,34 @@ char	szObjectTypeNames [MAX_OBJECT_TYPES][10] = {
 
 // -----------------------------------------------------------------------------
 
+bool FixWeaponObject (CObject* objP, bool bFixType)
+{
+if (bFixType && !objP->IsWeapon ()) {
+	objP->SetType (OBJ_WEAPON);
+	CreateWeaponSpeed (objP);
+	}
+if (!objP->IsWeapon ())
+	return true;
+if (objP->Velocity ().IsZero ()) {
+	PrintLog (0, "weapon object has invalid velocity\n");
+	CreateWeaponSpeed (objP);
+	}
+if (objP->info.movementType != MT_PHYSICS) {
+	PrintLog (0, "weapon object has invalid movement type %s\n", objP->info.movementType);
+	objP->info.movementType = MT_PHYSICS;
+	}	
+if (objP->info.controlType != CT_WEAPON) {
+	PrintLog (0, "weapon object has invalid control type %s\n", objP->info.controlType);
+	objP->info.controlType = CT_WEAPON;
+	}	
+if (!objP->Velocity ().IsZero ())
+	return true;
+objP->Die ();
+return false;
+}
+
+// -----------------------------------------------------------------------------
+
 float CObject::Damage (void)
 {
 	float	fDmg;
