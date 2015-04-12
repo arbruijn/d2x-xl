@@ -48,7 +48,7 @@ void NDRecordGuidedStart (void);
 //creates a weapon CObject
 int32_t CreateWeaponObject (uint8_t nWeaponType, int16_t nSegment, CFixVector *vPosition, int16_t nParent)
 {
-	int32_t		nObject;
+	int32_t	nObject;
 	CObject	*objP;
 
 switch (gameData.weapons.info [nWeaponType].renderType) {
@@ -94,23 +94,138 @@ return nObject;
 
 // ---------------------------------------------------------------------------------
 
-// Initializes a laser after Fire is pressed
-//	Returns CObject number.
-int32_t CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, int16_t nSegment, int16_t nParent, uint8_t nWeaponType, int32_t bMakeSound)
+int32_t CreateWeaponSpeed (CObject* weaponP)
 {
-	int32_t		nObject, nViewer, bBigMsl;
-	CObject		*objP, *parentP = OBJECT (nParent);
-	CWeaponInfo	*weaponInfoP;
-	fix			xParentSpeed, xWeaponSpeed;
-	fix			volume;
-	fix			xLaserLength = 0;
-	CFixVector	vDir = *vDirection;
+	uint8_t			nWeaponType = weaponP->Id ();
+	CWeaponInfo&	weaponInfo = gameData.weapons.info [nWeaponType];
+	CObject			*parentP = OBJECT (weaponP->cType.laserInfo.parent.nObject);
+	fix				xParentSpeed;
+	fix				xLaserLength = (weaponInfo.renderType == WEAPON_RENDER_POLYMODEL) ? gameData.models.polyModels [0][weaponP->ModelId ()].Rad () * 2 : 0;
+	CFixVector		vDir = weaponP->Heading ();
+
+//	Here's where to fix the problem with OBJECTS which are moving backwards imparting higher velocity to their weaponfire.
+//	Find out if moving backwards.
+if (!parentP || !CObject::IsMine (nWeaponType))
+	xParentSpeed = 0;
+else {
+	xParentSpeed = parentP->mType.physInfo.velocity.Mag ();
+	if (CFixVector::Dot (parentP->mType.physInfo.velocity, parentP->info.position.mOrient.m.dir.f) < 0)
+		xParentSpeed = -xParentSpeed;
+	}
+
+//	Fire the laser from the gun tip so that the back end of the laser bolt is at the gun tip.
+// Move 1 frame, so that the end-tip of the laser is touching the gun barrel.
+// This also jitters the laser a bit so that it doesn't alias.
+//	Don't do for weapons created by weapons.
+if (parentP && (parentP->info.nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].renderType != WEAPON_RENDER_NONE) && (nWeaponType != FLARE_ID) && !CObject::IsMissile (nWeaponType)) {
+#if 1
+	weaponP->mType.physInfo.velocity = vDir * (gameData.laser.nOffset + (xLaserLength / 2));
+#if 0 //DBG
+	CFixVector	vEndPos = vDir * (gameData.laser.nOffset + (xLaserLength / 2));
+	vEndPos += weaponP->info.position.vPos;
+#endif
+	fix xTime = gameData.physics.xTime;
+	gameData.physics.xTime = -1;	// make it move the entire velocity vector
+	weaponP->Update ();
+	gameData.physics.xTime = xTime;
+	if (weaponP->info.nFlags & OF_SHOULD_BE_DEAD) {
+		ReleaseObject (weaponP->Index ());
+		return -1;
+		}
+#endif
+	}
+
+fix xWeaponSpeed = WI_speed (weaponP->info.nId, gameStates.app.nDifficultyLevel);
+if (weaponInfo.speedvar != 128) {
+	fix randval = I2X (1) - ((RandShort () * weaponInfo.speedvar) >> 6);	//	Get a scale factor between speedvar% and 1.0.
+	xWeaponSpeed = FixMul (xWeaponSpeed, randval);
+	}
+//	Ugly hack (too bad we're on a deadline), for homing missiles dropped by smart bomb, start them out slower.
+if ((nWeaponType == SMARTMSL_BLOB_ID) ||
+	 (nWeaponType == SMARTMINE_BLOB_ID) ||
+	 (nWeaponType == ROBOT_SMARTMSL_BLOB_ID) ||
+	 (nWeaponType == ROBOT_SMARTMINE_BLOB_ID) ||
+	 (nWeaponType == EARTHSHAKER_MEGA_ID))
+	xWeaponSpeed /= 4;
+if (WIThrust (nWeaponType) != 0)
+	xWeaponSpeed /= 2;
+/*test*/weaponP->mType.physInfo.velocity = vDir * (xWeaponSpeed + xParentSpeed);
+if (parentP)
+	weaponP->SetStartVel (&parentP->mType.physInfo.velocity);
+//	Set thrust
+if (WIThrust (nWeaponType) != 0) {
+	weaponP->mType.physInfo.thrust = weaponP->mType.physInfo.velocity;
+	weaponP->mType.physInfo.thrust *= FixDiv (WIThrust (weaponP->info.nId), xWeaponSpeed + xParentSpeed);
+	}
+return weaponP->Index ();
+}
+
+// ---------------------------------------------------------------------------------
+
+void CreateWeaponSound (CObject* weaponP, int32_t bMakeSound)
+{
+	uint8_t			nWeaponType = weaponP->Id ();
+	CWeaponInfo&	weaponInfo = gameData.weapons.info [nWeaponType];
+	fix				volume = I2X (1);
+	int32_t			nParent = weaponP->cType.laserInfo.parent.nObject;
+	CObject			*parentP = OBJECT (nParent);
+	int32_t			nWeapon = weaponP->Index ();
+	int32_t			nViewer = OBJ_IDX (gameData.objData.viewerP);
 
 	static int32_t	nMslSounds [2] = {SND_ADDON_MISSILE_SMALL, SND_ADDON_MISSILE_BIG};
 	static int32_t	nGatlingSounds [2] = {SND_ADDON_VULCAN, SND_ADDON_GAUSS};
 
-	if (RandShort () > parentP->GunDamage ())
-		return -1;
+if (bMakeSound && (weaponInfo.flashSound > -1)) {
+	int32_t bGatling = weaponP->IsGatlingRound ();
+	if (parentP && (nParent != nViewer)) {
+		if (bGatling && (parentP->info.nType == OBJ_PLAYER) && (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling)
+			audio.CreateSegmentSound (weaponInfo.flashSound, weaponP->info.nSegment, 0, weaponP->info.position.vPos, 0, volume, I2X (256),
+											  AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
+		else
+			audio.CreateSegmentSound (weaponInfo.flashSound, weaponP->info.nSegment, 0, weaponP->info.position.vPos, 0, volume);
+		}
+	else {
+		if (nWeaponType == VULCAN_ID)	// Make your own vulcan gun  1/2 as loud.
+			volume = I2X (1) / 2;
+		if (bGatling && (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling)
+			audio.PlaySound (-1, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER, volume, DEFAULT_PAN, 0, -1,
+								  AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
+		else
+			audio.PlaySound (weaponInfo.flashSound, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER, volume);
+		}
+	if (gameOpts->sound.bMissiles && CObject::IsMissile (nWeaponType)) {
+		int32_t bBigMsl = (nWeaponType == SMARTMSL_ID) ||
+								(nWeaponType == MEGAMSL_ID) ||
+								(nWeaponType == EARTHSHAKER_ID) ||
+								(nWeaponType == ROBOT_SMARTMSL_ID) ||
+								(nWeaponType == ROBOT_MEGAMSL_ID) ||
+								(nWeaponType == ROBOT_EARTHSHAKER_ID);
+		audio.CreateObjectSound (-1, SOUNDCLASS_MISSILE, nWeapon, 1, I2X (gameOpts->sound.xCustomSoundVolume) / 10, I2X (256), -1, -1,
+										 AddonSoundName (nMslSounds [bBigMsl]), 1);
+		}
+	else if (nWeaponType == FLARE_ID)
+		audio.CreateObjectSound (nWeapon, SOUNDCLASS_GENERIC, -1, 0, I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_FLARE));
+	}
+}
+
+// ---------------------------------------------------------------------------------
+
+// Initializes a laser after Fire is pressed
+//	Returns CObject number.
+int32_t CreateNewWeapon (CFixVector* vDirection, CFixVector* vPosition, int16_t nSegment, int16_t nParent, uint8_t nWeaponType, int32_t bMakeSound)
+{
+	CObject		*objP, *parentP = OBJECT (nParent);
+
+if (!parentP)
+	return -1;
+
+	int32_t		nObject, nViewer;
+	CWeaponInfo	weaponInfo = gameData.weapons.info [nWeaponType];
+	fix			xLaserLength = 0;
+	CFixVector	vDir = *vDirection;
+
+if (RandShort () > parentP->GunDamage ())
+	return -1;
 
 	fix			damage = (I2X (1) / 2 - parentP->AimDamage ()) >> 3;
 
@@ -128,11 +243,10 @@ if (damage > 0) {
 
 //this is a horrible hack.  guided missile stuff should not be
 //handled in the middle of a routine that is dealing with the player
-Assert (nWeaponType < gameData.weapons.nTypes [0]);
 if (nWeaponType >= gameData.weapons.nTypes [0])
 	nWeaponType = 0;
 //	Don't let homing blobs make muzzle flash.
-if (parentP->info.nType == OBJ_ROBOT)
+if (parentP->IsRobot ())
 	DoMuzzleStuff (nSegment, vPosition);
 else if (gameStates.app.bD2XLevel &&
 			(parentP == gameData.objData.consoleP) &&
@@ -200,7 +314,6 @@ else {
 //	Do the special Omega Cannon stuff.  Then return on account of everything that follows does
 //	not apply to the Omega Cannon.
 nViewer = OBJ_IDX (gameData.objData.viewerP);
-weaponInfoP = gameData.weapons.info + nWeaponType;
 if (nWeaponType == OMEGA_ID) {
 	// Create orientation matrix for tracking purposes.
 	int32_t bSpectator = SPECTATOR (parentP);
@@ -208,8 +321,8 @@ if (nWeaponType == OMEGA_ID) {
 //	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, bSpectator ? &gameStates.app.playerPos.mOrient.m.v.u : &parentP->info.position.mOrient.m.v.u, NULL);
 	if (((nParent != nViewer) || bSpectator) && (parentP->info.nType != OBJ_WEAPON)) {
 		// Muzzle flash
-		if ((weaponInfoP->nFlashAnimation > -1) && ((nWeaponType != OMEGA_ID) || !gameOpts->render.lightning.bOmega || gameStates.render.bOmegaModded))
-			CreateMuzzleFlash (objP->info.nSegment, objP->info.position.vPos, weaponInfoP->xFlashSize, weaponInfoP->nFlashAnimation);
+		if ((weaponInfo.nFlashAnimation > -1) && ((nWeaponType != OMEGA_ID) || !gameOpts->render.lightning.bOmega || gameStates.render.bOmegaModded))
+			CreateMuzzleFlash (objP->info.nSegment, objP->info.position.vPos, weaponInfo.xFlashSize, weaponInfo.nFlashAnimation);
 		}
 	DoOmegaStuff (OBJECT (nParent), vPosition, objP);
 	return nObject;
@@ -250,7 +363,7 @@ if ((nWeaponType == SMARTMSL_BLOB_ID) ||
 	 (nWeaponType == ROBOT_SMARTMINE_BLOB_ID) ||
 	 (nWeaponType == EARTHSHAKER_MEGA_ID))
 	objP->mType.physInfo.flags |= PF_BOUNCES;
-if (weaponInfoP->renderType == WEAPON_RENDER_POLYMODEL)
+if (weaponInfo.renderType == WEAPON_RENDER_POLYMODEL)
 	xLaserLength = gameData.models.polyModels [0][objP->ModelId ()].Rad () * 2;
 if (nWeaponType == FLARE_ID)
 	objP->mType.physInfo.flags |= PF_STICK;		//this obj sticks to walls
@@ -260,22 +373,26 @@ objP->SetLife (WI_lifetime (nWeaponType));
 //	Assign nParent nType to highest level creator.  This propagates nParent nType down from
 //	the original creator through weapons which create children of their own (ie, smart missile)
 if (parentP && (parentP->info.nType == OBJ_WEAPON)) {
-	int32_t		nRoot = nParent;
+	int32_t		nRoot = -1, nChild = nParent;
 	int32_t		count = 0;
-	CObject*	rootP = OBJECT (nRoot);
+	CObject		*rootP = NULL, *childP = OBJECT (nChild);
 
-	while ((count++ < 10) && (rootP->info.nType == OBJ_WEAPON)) {
-		int32_t nNextParent = rootP->cType.laserInfo.parent.nObject;
-		if (nNextParent < 0)
+	while ((count++ < 10) && (childP->IsWeapon ())) {
+		if (!(rootP = OBJECT (nRoot = childP->cType.laserInfo.parent.nObject)))
 			break;
-		if (OBJECT (nNextParent)->info.nSignature != rootP->cType.laserInfo.parent.nSignature)
+		if (rootP->info.nSignature != childP->cType.laserInfo.parent.nSignature) {
+			rootP = NULL;
 			break;	//	Probably means nParent was killed.  Just continue.
-		if (nNextParent == nRoot) {
-			Int3 ();	//	Hmm, CObject is nParent of itself.  This would seem to be bad, no?
+			}
+		if (nChild == nRoot) {
+			childP->cType.laserInfo.parent.nObject = -1;
+			rootP = NULL;
 			break;
 			}
-		nRoot = nNextParent;
-		rootP = OBJECT (nRoot);
+		nChild = nRoot;
+		childP = rootP;
+		}
+	if (rootP) {
 		objP->cType.laserInfo.parent.nObject = nRoot;
 		objP->cType.laserInfo.parent.nType = rootP->info.nType;
 		objP->cType.laserInfo.parent.nSignature = rootP->info.nSignature;
@@ -288,95 +405,12 @@ if (parentP && (parentP->info.nType == OBJ_WEAPON)) {
 //	objP->info.position.mOrient = CFixMatrix::CreateFU (vDir, &parentP->info.position.mOrient.m.v.u, NULL);
 if (((nParent != nViewer) || SPECTATOR (parentP)) && (parentP->info.nType != OBJ_WEAPON)) {
 	// Muzzle flash
-	if (weaponInfoP->nFlashAnimation > -1)
-		CreateMuzzleFlash (objP->info.nSegment, objP->info.position.vPos, weaponInfoP->xFlashSize, weaponInfoP->nFlashAnimation);
+	if (weaponInfo.nFlashAnimation > -1)
+		CreateMuzzleFlash (objP->info.nSegment, objP->info.position.vPos, weaponInfo.xFlashSize, weaponInfo.nFlashAnimation);
 	}
-volume = I2X (1);
-if (bMakeSound && (weaponInfoP->flashSound > -1)) {
-	int32_t bGatling = objP->IsGatlingRound ();
-	if (nParent != nViewer) {
-		if (bGatling && (parentP->info.nType == OBJ_PLAYER) && (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling)
-			audio.CreateSegmentSound (weaponInfoP->flashSound, objP->info.nSegment, 0, objP->info.position.vPos, 0, volume, I2X (256),
-											  AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
-		else
-			audio.CreateSegmentSound (weaponInfoP->flashSound, objP->info.nSegment, 0, objP->info.position.vPos, 0, volume);
-		}
-	else {
-		if (nWeaponType == VULCAN_ID)	// Make your own vulcan gun  1/2 as loud.
-			volume = I2X (1) / 2;
-		if (bGatling && (gameOpts->UseHiresSound () == 2) && gameOpts->sound.bGatling)
-			audio.PlaySound (-1, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER, volume, DEFAULT_PAN, 0, -1,
-								  AddonSoundName (nGatlingSounds [nWeaponType == GAUSS_ID]));
-		else
-			audio.PlaySound (weaponInfoP->flashSound, (nParent == nViewer) ? SOUNDCLASS_PLAYER : SOUNDCLASS_LASER, volume);
-		}
-	if (gameOpts->sound.bMissiles && CObject::IsMissile (nWeaponType)) {
-		bBigMsl = (nWeaponType == SMARTMSL_ID) ||
-					 (nWeaponType == MEGAMSL_ID) ||
-					 (nWeaponType == EARTHSHAKER_ID) ||
-					 (nWeaponType == ROBOT_SMARTMSL_ID) ||
-					 (nWeaponType == ROBOT_MEGAMSL_ID) ||
-					 (nWeaponType == ROBOT_EARTHSHAKER_ID);
-		audio.CreateObjectSound (-1, SOUNDCLASS_MISSILE, nObject, 1, I2X (gameOpts->sound.xCustomSoundVolume) / 10, I2X (256), -1, -1,
-										 AddonSoundName (nMslSounds [bBigMsl]), 1);
-		}
-	else if (nWeaponType == FLARE_ID)
-		audio.CreateObjectSound (nObject, SOUNDCLASS_GENERIC, -1, 0, I2X (1), I2X (256), -1, -1, AddonSoundName (SND_ADDON_FLARE));
-	}
-//	Here's where to fix the problem with OBJECTS which are moving backwards imparting higher velocity to their weaponfire.
-//	Find out if moving backwards.
-if (!CObject::IsMine (nWeaponType))
-	xParentSpeed = 0;
-else {
-	xParentSpeed = parentP->mType.physInfo.velocity.Mag ();
-	if (CFixVector::Dot (parentP->mType.physInfo.velocity, parentP->info.position.mOrient.m.dir.f) < 0)
-		xParentSpeed = -xParentSpeed;
-	}
-
-//	Fire the laser from the gun tip so that the back end of the laser bolt is at the gun tip.
-// Move 1 frame, so that the end-tip of the laser is touching the gun barrel.
-// This also jitters the laser a bit so that it doesn't alias.
-//	Don't do for weapons created by weapons.
-if ((parentP->info.nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].renderType != WEAPON_RENDER_NONE) && (nWeaponType != FLARE_ID) && !CObject::IsMissile (nWeaponType)) {
-#if 1
-	objP->mType.physInfo.velocity = vDir * (gameData.laser.nOffset + (xLaserLength / 2));
-#if 0 //DBG
-	CFixVector	vEndPos = vDir * (gameData.laser.nOffset + (xLaserLength / 2));
-	vEndPos += objP->info.position.vPos;
-#endif
-	fix xTime = gameData.physics.xTime;
-	gameData.physics.xTime = -1;	// make it move the entire velocity vector
-	objP->Update ();
-	gameData.physics.xTime = xTime;
-	if (objP->info.nFlags & OF_SHOULD_BE_DEAD) {
-		ReleaseObject (objP->Index ());
-		return -1;
-		}
-#endif
-	}
-
-xWeaponSpeed = WI_speed (objP->info.nId, gameStates.app.nDifficultyLevel);
-if (weaponInfoP->speedvar != 128) {
-	fix randval = I2X (1) - ((RandShort () * weaponInfoP->speedvar) >> 6);	//	Get a scale factor between speedvar% and 1.0.
-	xWeaponSpeed = FixMul (xWeaponSpeed, randval);
-	}
-//	Ugly hack (too bad we're on a deadline), for homing missiles dropped by smart bomb, start them out slower.
-if ((objP->info.nId == SMARTMSL_BLOB_ID) ||
-	 (objP->info.nId == SMARTMINE_BLOB_ID) ||
-	 (objP->info.nId == ROBOT_SMARTMSL_BLOB_ID) ||
-	 (objP->info.nId == ROBOT_SMARTMINE_BLOB_ID) ||
-	 (objP->info.nId == EARTHSHAKER_MEGA_ID))
-	xWeaponSpeed /= 4;
-if (WIThrust (objP->info.nId) != 0)
-	xWeaponSpeed /= 2;
-/*test*/objP->mType.physInfo.velocity = vDir * (xWeaponSpeed + xParentSpeed);
-if (parentP)
-	objP->SetStartVel (&parentP->mType.physInfo.velocity);
-//	Set thrust
-if (WIThrust (nWeaponType) != 0) {
-	objP->mType.physInfo.thrust = objP->mType.physInfo.velocity;
-	objP->mType.physInfo.thrust *= FixDiv (WIThrust (objP->info.nId), xWeaponSpeed + xParentSpeed);
-	}
+CreateWeaponSound (objP, bMakeSound);
+if (!CreateWeaponSpeed (objP))
+	return -1;
 if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FLARE_ID))
 	objP->info.xLifeLeft += SRandShort () << 2;		//	add in -2..2 seconds
 

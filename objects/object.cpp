@@ -2129,6 +2129,14 @@ return (bRaw || (info.nType != OBJ_PLAYER))
 
 //------------------------------------------------------------------------------
 
+CFixVector CObject::Heading (void)
+{
+tObjTransformation* objPos = OBJPOS (this);
+return objPos->mOrient.m.dir.f;
+}
+
+//------------------------------------------------------------------------------
+
 CFixVector CObject::FrontPosition (void)
 {
 tObjTransformation* objPos = OBJPOS (this);

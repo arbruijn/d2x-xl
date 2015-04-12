@@ -203,7 +203,7 @@ return Key ();
 
 int32_t CreateObject (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, const CFixMatrix& mOrient, fix xSize, uint8_t cType, uint8_t mType, uint8_t rType)
 {
-	int16_t		nObject;
+	int16_t	nObject;
 	CObject	*objP;
 
 #if DBG
@@ -245,9 +245,9 @@ else if (nType == OBJ_PLAYER)
 else if (nType == OBJ_POWERUP) {
 	BRP;
 	if (nId == POW_MONSTERBALL)
-		nId = nId;
+		BRP;
 	if (nId == 27) // unknown powerup type
-		nId = nId;
+		BRP;
 	}
 #endif
 
