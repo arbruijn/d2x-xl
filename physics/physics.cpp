@@ -1103,10 +1103,6 @@ if (Index () == nDbgObj) {
 	}
 #endif
 
-#if DBG
-	if (IsWeapon ())
-		BRP;
-#endif
 if (Velocity () .IsZero ()) {
 #	if UNSTICK_OBJS
 	Unstick ();
