@@ -1107,18 +1107,30 @@ if (Index () == nDbgObj) {
 	if (IsWeapon ())
 		BRP;
 #endif
-if (Velocity () /*simData.velocity*/.IsZero ()) {
-	if (IsWeapon ())
-		CreateWeaponSpeed (this);
+if (Velocity () .IsZero ()) {
 #	if UNSTICK_OBJS
 	Unstick ();
 #	endif
-	if (this == gameData.objData.consoleP)
-		gameData.objData.speedBoost [simData.nObject].bBoosted = simData.bSpeedBoost = 0;
-#if 1
-	if (mType.physInfo.thrust.IsZero ())
+	if (IsWeapon ()) {// actually this indicates a bug, but a workaround is needed. Alternatively, the weapon object could (and probably should) be killed
+#	if 1
+		CreateWeaponSpeed (this);
+		if (Velocity () .IsZero ()) {
+			Die ();
+			return;
+			}
+#	else
+		Die ();
 		return;
+#	endif
+		}
+	else {
+		if (this == gameData.objData.consoleP)
+			gameData.objData.speedBoost [simData.nObject].bBoosted = simData.bSpeedBoost = 0;
+#if 1
+		if (mType.physInfo.thrust.IsZero ())
+			return;
 #endif
+		}
 	}
 PROF_END(ptPhysics)
 
