@@ -433,8 +433,11 @@ for (i = 0; i < MAX_PLAYERS; i++, playerP++) {
 void UpdatePlayerPaths (void)
 {
 for (int32_t i = 0; i < N_PLAYERS; i++) {
-	gameData.render.thrusters [i].path.Update (OBJECT (PLAYER (i).nObject));
-	PLAYER (i).m_flightPath.Update (OBJECT (PLAYER (i).nObject));
+	CObject* objP = OBJECT (PLAYER (i).nObject);
+	if (objP) {
+		gameData.render.thrusters [i].path.Update (objP);
+		PLAYER (i).m_flightPath.Update (objP);
+		}
 	}
 }
 
@@ -2186,6 +2189,9 @@ objP->info.nFlags = 0;
 
 void MultiSetObjectTextures (CObject *objP)
 {
+if (!objP)
+	return;
+
 	int32_t			id, i, j;
 	CPolyModel*		modelP = gameData.models.polyModels [0] + objP->ModelId ();
 	tBitmapIndex*	bmiP;
@@ -2618,7 +2624,7 @@ if (IsNetworkGame)
 	return;
 
 CObject* objP = OBJECT (nObject);
-if (objP->Type () != OBJ_PLAYER)
+if (!objP || (objP->Type () != OBJ_PLAYER))
 	return;
 
 int32_t bufP = 0;
@@ -2902,6 +2908,9 @@ void MultiSendCreateWeapon (int32_t nObject)
 	// Create a powerup on a remote machine, used for remote
 	// placement of used powerups like missiles and cloaking
 	// powerups.
+CObject* objP = OBJECT (nObject);
+if (!objP)
+	return;
 
 #if defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__)
 	CFixVector vSwapped;
@@ -2911,25 +2920,25 @@ void MultiSendCreateWeapon (int32_t nObject)
 gameData.multigame.msg.buf [bufP++] = MULTI_CREATE_WEAPON;
 ADD_MSG_ID
 gameData.multigame.msg.buf [bufP++] = N_LOCALPLAYER;
-gameData.multigame.msg.buf [bufP++] = OBJECT (nObject)->info.nId;
-PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, OBJECT (nObject)->info.nSegment);
+gameData.multigame.msg.buf [bufP++] = objP->info.nId;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, objP->info.nSegment);
 bufP += 2;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, nObject);
 bufP += 2;
 #if !(defined (WORDS_BIGENDIAN) || defined (__BIG_ENDIAN__))
-memcpy (gameData.multigame.msg.buf + bufP, &OBJECT (nObject)->info.position.vPos, sizeof (CFixVector));
+memcpy (gameData.multigame.msg.buf + bufP, &objP->info.position.vPos, sizeof (CFixVector));
 bufP += sizeof (CFixVector);
-memcpy (gameData.multigame.msg.buf + bufP, &OBJECT (nObject)->mType.physInfo.velocity, sizeof (CFixVector));
+memcpy (gameData.multigame.msg.buf + bufP, &objP->mType.physInfo.velocity, sizeof (CFixVector));
 bufP += sizeof (CFixVector);
 #else
-vSwapped.dir.coord.x = (fix)INTEL_INT (int32_t (OBJECT (nObject)->info.position.vPos.dir.coord.x));
-vSwapped.dir.coord.y = (fix)INTEL_INT (int32_t (OBJECT (nObject)->info.position.vPos.dir.coord.y));
-vSwapped.dir.coord.z = (fix)INTEL_INT (int32_t (OBJECT (nObject)->info.position.vPos.dir.coord.z));
+vSwapped.dir.coord.x = (fix)INTEL_INT (int32_t (objP->info.position.vPos.dir.coord.x));
+vSwapped.dir.coord.y = (fix)INTEL_INT (int32_t (objP->info.position.vPos.dir.coord.y));
+vSwapped.dir.coord.z = (fix)INTEL_INT (int32_t (objP->info.position.vPos.dir.coord.z));
 memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, 12);
 bufP += 12;
-vSwapped.dir.coord.x = (fix)INTEL_INT (int32_t (OBJECT (nObject)->mType.physInfo.velocity.dir.coord.x));
-vSwapped.dir.coord.y = (fix)INTEL_INT (int32_t (OBJECT (nObject)->mType.physInfo.velocity.dir.coord.y));
-vSwapped.dir.coord.z = (fix)INTEL_INT (int32_t (OBJECT (nObject)->mType.physInfo.velocity.dir.coord.z));
+vSwapped.dir.coord.x = (fix)INTEL_INT (int32_t (objP->mType.physInfo.velocity.dir.coord.x));
+vSwapped.dir.coord.y = (fix)INTEL_INT (int32_t (objP->mType.physInfo.velocity.dir.coord.y));
+vSwapped.dir.coord.z = (fix)INTEL_INT (int32_t (objP->mType.physInfo.velocity.dir.coord.z));
 memcpy (gameData.multigame.msg.buf + bufP, &vSwapped, 12);
 bufP += 12;
 #endif
@@ -3189,11 +3198,13 @@ networkData.nConsistencyErrorCount = 0;
 memset (gameData.multigame.score.pFlags, 0, MAX_NUM_NET_PLAYERS * sizeof (gameData.multigame.score.pFlags [0]));
 for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 	objP = OBJECT (PLAYER (i).nObject);
-	if (i != N_LOCALPLAYER)
-		objP->info.controlType = CT_REMOTE;
-	objP->info.movementType = MT_PHYSICS;
-	MultiResetPlayerObject (objP);
-	networkData.nLastPacketTime [i] = 0;
+	if (objP) {
+		if (i != N_LOCALPLAYER)
+			objP->info.controlType = CT_REMOTE;
+		objP->info.movementType = MT_PHYSICS;
+		MultiResetPlayerObject (objP);
+		networkData.nLastPacketTime [i] = 0;
+		}
 	}
 for (i = 0; i < MAX_ROBOTS_CONTROLLED; i++) {
 	gameData.multigame.robots.controlled [i] = -1;
@@ -3219,12 +3230,14 @@ FORALL_STATIC_OBJS (objP) {
 			ReleaseObject (objP->Index ());
 			if (nObject != -1) {
 				CObject	*objP = OBJECT (nObject);
-				objP->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [POW_SHIELD_BOOST].nClipIndex;
-				objP->rType.animationInfo.xFrameTime = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
-				objP->rType.animationInfo.nCurFrame = 0;
-				objP->mType.physInfo.drag = 512;     //1024;
-				objP->mType.physInfo.mass = I2X (1);
-				objP->mType.physInfo.velocity.SetZero ();
+				if (objP) {
+					objP->rType.animationInfo.nClipIndex = gameData.objData.pwrUp.info [POW_SHIELD_BOOST].nClipIndex;
+					objP->rType.animationInfo.xFrameTime = gameData.effects.animations [0][objP->rType.animationInfo.nClipIndex].xFrameTime;
+					objP->rType.animationInfo.nCurFrame = 0;
+					objP->mType.physInfo.drag = 512;     //1024;
+					objP->mType.physInfo.mass = I2X (1);
+					objP->mType.physInfo.velocity.SetZero ();
+					}
 				}
 			}
 		}
@@ -3756,6 +3769,8 @@ void MultiSendDropWeapon (int32_t nObject)
 if (nObject < 0)
 	return;
 objP = OBJECT (nObject);
+if (!objP)
+	return;
 ammoCount = objP->cType.powerupInfo.nCount;
 if (objP->info.nId == POW_OMEGA && ammoCount == I2X (1))
 	ammoCount = I2X (1) - 1; //make fit in int16_t
@@ -3793,10 +3808,12 @@ bufP += 2;
 int32_t seed = GET_INTEL_INT (buf + bufP);
 bufP += 4;
 CObject* objP = OBJECT (PLAYER (nPlayer).nObject);
-int16_t nObject = SpitPowerup (objP, powerupId, seed);
-if (nObject >= 0) {
-	SetObjNumMapping (nObject, nRemoteObj, nPlayer);
-	OBJECT (nObject)->cType.powerupInfo.nCount = ammo;
+if (objP) {
+	int16_t nObject = SpitPowerup (objP, powerupId, seed);
+	if	(nObject >= 0) {
+		SetObjNumMapping (nObject, nRemoteObj, nPlayer);
+		OBJECT (nObject)->cType.powerupInfo.nCount = ammo;
+		}
 	}
 }
 
@@ -4861,6 +4878,10 @@ LOCALPLAYER.flags &= ~ (PLAYER_FLAGS_FLAG);
 void MultiSendDropFlag (int32_t nObject, int32_t seed)
 {
 	CObject *objP = OBJECT (nObject);
+
+if (!objP)
+	return;
+
 	int32_t bufP = 0;
 
 gameData.multigame.msg.buf [bufP++] = MULTI_DROP_FLAG;
@@ -4897,14 +4918,18 @@ bufP += 2;
 int32_t seed = GET_INTEL_INT (buf + bufP);
 
 CObject* objP = OBJECT (PLAYER (nPlayer).nObject);
+if (!objP)
+	return;
 int16_t nObject = SpitPowerup (objP, powerupId, seed);
-SetObjNumMapping (nObject, nRemoteObj, nPlayer);
-if (nObject != -1)
-	OBJECT (nObject)->cType.powerupInfo.nCount = ammo;
-if (IsEntropyGame)
-	OBJECT (nObject)->info.nCreator = GetTeam (nPlayer) + 1;
-else if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
-	PLAYER (nPlayer).flags &= ~(PLAYER_FLAGS_FLAG);
+objP = OBJECT (nObject);
+if (objP) {
+	SetObjNumMapping (nObject, nRemoteObj, nPlayer);
+	objP->cType.powerupInfo.nCount = ammo;
+	if (IsEntropyGame)
+		objP->info.nCreator = GetTeam (nPlayer) + 1;
+	else if (!(gameData.app.nGameMode & (GM_HOARD | GM_ENTROPY))) {
+		PLAYER (nPlayer).flags &= ~(PLAYER_FLAGS_FLAG);
+		}
 	}
 }
 
@@ -5378,12 +5403,16 @@ FORALL_POWERUP_OBJS (objP) {
 
 void MultiSendReturnFlagHome (int16_t nObject)
 {
-	int32_t bufP = 0;
+CObject* objP = OBJECT (nObject);
+if (!objP)
+	return;
+
+int32_t bufP = 0;
 
 gameData.multigame.msg.buf [bufP++] = MULTI_RETURN_FLAG;
 ADD_MSG_ID
-gameData.multigame.msg.buf [bufP++] = (char) OBJECT (nObject)->info.nType;
-gameData.multigame.msg.buf [bufP++] = (char) OBJECT (nObject)->info.nId;
+gameData.multigame.msg.buf [bufP++] = (char) objP->info.nType;
+gameData.multigame.msg.buf [bufP++] = objP->info.nId;
 SET_MSG_ID
 MultiSendData (gameData.multigame.msg.buf, bufP, 0);
 }
@@ -5479,7 +5508,8 @@ CHECK_MSG_ID
 
 TriggerSetObjPos (nObject, nSegment);
 gameData.multiplayer.bTeleport [nPlayer] = 1;
-OBJECT (nObject)->CreateAppearanceEffect ();
+if (OBJECT (nObject))
+	OBJECT (nObject)->CreateAppearanceEffect ();
 }
 
 //-----------------------------------------------------------------------------

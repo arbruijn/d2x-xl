@@ -25,6 +25,9 @@ m_tUpdate = -1;
 
 void CFlightPath::Update (CObject *objP)
 {
+if (!objP)
+	return;
+
 	time_t	t = SDL_GetTicks () - m_tUpdate;
 
 if (m_nSize && ((m_tUpdate < 0) || (t >= m_tRefresh))) {
