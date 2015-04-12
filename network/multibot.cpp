@@ -54,14 +54,14 @@ void DropStolenItems (CObject*);
 
 #define MULTI_ROBOT_PRIORITY(nObject, nPlayer) (((nObject % 4) + nPlayer) % N_PLAYERS)
 
-extern void MultiSendStolenItems ();
-extern int32_t MultiPowerupIsAllowed (int32_t);
+void MultiSendStolenItems (void);
+int32_t MultiPowerupIsAllowed (int32_t);
 
 //-----------------------------------------------------------------------------
 
 #if DBG
 
-CObject* MultiRobot (int32_t nObject, const char* pszFile = "", const int32_t nLine = 0)
+CObject* MultiRobot (int32_t nObject, const char* pszFile, const int32_t nLine)
 {
 CObject *objP = OBJECT (nObject);
 if (!objP) {

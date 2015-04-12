@@ -1109,6 +1109,10 @@ if (Velocity () /*simData.velocity*/.IsZero ()) {
 #	endif
 	if (this == gameData.objData.consoleP)
 		gameData.objData.speedBoost [simData.nObject].bBoosted = simData.bSpeedBoost = 0;
+#if DBG
+	if (IsWeapon ())
+		BRP;
+#endif
 #if 1
 	if (mType.physInfo.thrust.IsZero ())
 		return;
