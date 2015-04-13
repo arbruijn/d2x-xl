@@ -94,7 +94,7 @@ return nObject;
 
 // ---------------------------------------------------------------------------------
 
-int32_t CreateWeaponSpeed (CObject* weaponP)
+int32_t CreateWeaponSpeed (CObject* weaponP, bool bFix)
 {
 	uint8_t			nWeaponType = weaponP->Id ();
 	CWeaponInfo&	weaponInfo = gameData.weapons.info [nWeaponType];
@@ -117,20 +117,20 @@ else {
 // Move 1 frame, so that the end-tip of the laser is touching the gun barrel.
 // This also jitters the laser a bit so that it doesn't alias.
 //	Don't do for weapons created by weapons.
-if (parentP && (parentP->info.nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].renderType != WEAPON_RENDER_NONE) && (nWeaponType != FLARE_ID) && !CObject::IsMissile (nWeaponType)) {
+if (!bFix && parentP && (parentP->info.nType == OBJ_PLAYER) && (gameData.weapons.info [nWeaponType].renderType != WEAPON_RENDER_NONE) && (nWeaponType != FLARE_ID) && !CObject::IsMissile (nWeaponType)) {
 #if 1
-	weaponP->mType.physInfo.velocity = vDir * (gameData.laser.nOffset + (xLaserLength / 2));
-#if 0 //DBG
-	CFixVector	vEndPos = vDir * (gameData.laser.nOffset + (xLaserLength / 2));
-	vEndPos += weaponP->info.position.vPos;
-#endif
-	fix xTime = gameData.physics.xTime;
-	gameData.physics.xTime = -1;	// make it move the entire velocity vector
-	weaponP->Update ();
-	gameData.physics.xTime = xTime;
-	if (weaponP->info.nFlags & OF_SHOULD_BE_DEAD) {
-		ReleaseObject (weaponP->Index ());
-		return -1;
+	weaponP->mType.physInfo.velocity = vDir * (gameData.laser.nOffset + xLaserLength / 2);
+	if (weaponP->Velocity ().IsZero ()) 
+		PrintLog (0, "weapon parent has no velocity\n");
+	else {
+		fix xTime = gameData.physics.xTime;
+		gameData.physics.xTime = -1;	// make it move the entire velocity vector
+		weaponP->Update ();
+		gameData.physics.xTime = xTime;
+		if (weaponP->info.nFlags & OF_SHOULD_BE_DEAD) {
+			ReleaseObject (weaponP->Index ());
+			return -1;
+			}
 		}
 #endif
 	}

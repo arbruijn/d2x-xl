@@ -220,11 +220,11 @@ if (!objP->IsWeapon ()) {
 	if (!bFixType) 
 		return true;
 	objP->SetType (OBJ_WEAPON);
-	CreateWeaponSpeed (objP);
+	CreateWeaponSpeed (objP, true);
 	}
 if (objP->Velocity ().IsZero ()) {
 	PrintLog (0, "weapon object has invalid velocity\n");
-	CreateWeaponSpeed (objP);
+	CreateWeaponSpeed (objP, true);
 	if (objP->Velocity ().IsZero ()) {
 		objP->Die ();
 		return false;

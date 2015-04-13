@@ -1622,7 +1622,7 @@ int32_t CreateObject (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSeg
 int32_t CloneObject (CObject *objP);
 int32_t CreateRobot (uint8_t nId, int16_t nSegment, const CFixVector& vPos);
 int32_t CreatePowerup (uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, int32_t bIgnoreLimits, bool bForce = false);
-int32_t CreateWeaponSpeed (CObject* weaponP);
+int32_t CreateWeaponSpeed (CObject* weaponP, bool bFix = false);
 int32_t CreateWeapon (uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, fix xSize, uint8_t rType);
 int32_t CreateFireball (uint8_t nId, int16_t nSegment, const CFixVector& vPos, fix xSize, uint8_t rType);
 int32_t CreateDebris (CObject *parentP, int16_t nSubModel);

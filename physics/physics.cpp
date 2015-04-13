@@ -1112,7 +1112,7 @@ if (Velocity () .IsZero ()) {
 #	endif
 	if (IsWeapon ()) {// actually this indicates a bug, but a workaround is needed. Alternatively, the weapon object could (and probably should) be killed
 #	if 1
-		CreateWeaponSpeed (this);
+		CreateWeaponSpeed (this, true);
 		if (Velocity () .IsZero ()) {
 			Die ();
 			return;
