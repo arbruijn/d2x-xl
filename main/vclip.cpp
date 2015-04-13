@@ -57,7 +57,7 @@ return (iFrame < nFrames) ? iFrame : nFrames - 1;
 
 CRGBColor *AnimationColor (CObject *objP)
 {
-	int32_t				nVClip = gameData.weapons.info [objP->info.nId].nAnimationIndex;
+	int32_t			nVClip = gameData.weapons.info [objP->info.nId].nAnimationIndex;
 	tBitmapIndex	bmi;
 	CBitmap			*bmP;
 

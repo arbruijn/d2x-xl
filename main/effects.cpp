@@ -429,6 +429,12 @@ ReadVideoClip (ec.animationInfo, cf);
 ec.xTimeLeft = cf.ReadFix ();
 ec.nCurFrame = cf.ReadInt ();
 ec.changing.nWallTexture = cf.ReadShort ();
+#if DBG
+if (ec.changing.nWallTexture < 0)
+	BRP;
+if (ec.changing.nWallTexture == nDbgTexture)
+	BRP;
+#endif
 ec.changing.nObjectTexture = cf.ReadShort ();
 ec.flags = cf.ReadInt ();
 ec.nCriticalAnimation = cf.ReadInt ();

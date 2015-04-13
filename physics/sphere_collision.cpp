@@ -226,7 +226,7 @@ for (i = j = 0; i < sideP->m_nFaces; i++, j += 3) {
 	//if (!(i && sideP->IsQuad ())) 
 		{
 		CFloatVector& n = sideP->m_fNormals [i];
-		if (n.Mag () < 1e6f) // there is something wrong with this face
+		if (n.Mag () < 1e-6f) // there is something wrong with this face
 			continue;
 		h = r - FVERTICES [vertices [j]];
 		d = CFloatVector::Dot (h, n);

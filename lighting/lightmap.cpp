@@ -41,7 +41,7 @@ CLightmapManager lightmapManager;
 #define LMAP_REND2TEX		0
 #define TEXTURE_CHECK		1
 
-#define LIGHTMAP_DATA_VERSION 45
+#define LIGHTMAP_DATA_VERSION 46
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
 
@@ -630,6 +630,8 @@ for (y = yMin; y < yMax; y++) {
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			BRP;
+			if ((x == w - 1) && (y == w - 1))
+				BRP;
 			if (((x == 0) || (x == w - 1)) || ((y == 0) || (y == w - 1)))
 				BRP;
 			if (x == 0)

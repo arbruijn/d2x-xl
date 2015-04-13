@@ -636,7 +636,7 @@ if (info.nSide < 0) {
 		if (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f) // light doesn't "see" face
 			return 0;
 		}
-	return (nDestSeg < 0) || PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, FAST_POINTVIS - 1, nThread);
+	return (nDestSeg < 0) || PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, /*FAST_POINTVIS - 1*/0, nThread);
 	}
 else {
 		static int32_t nLevels [3] = {4, 0, -4};
@@ -663,11 +663,11 @@ else {
 			continue;
 		if (0 <= SEGMENT (nLightSeg)->ChildIndex (nDestSeg)) // don't check point to point visibility for connected segments
 			break;
-		if (!PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, FAST_POINTVIS - 1, nThread))
+		if (!PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, /*FAST_POINTVIS - 1*/0, nThread))
 			continue;
 		break;
 		}
-	return (i >= j); // && PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, FAST_POINTVIS - 1, nThread);
+	return (i >= j); // && PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, /*FAST_POINTVIS - 1*/0, nThread);
 #if DBG
 	if ((nDbgSeg >= 0) && (nDbgVertex >= 0) && (nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (info.nSide == nDbgSide)) && (nDbgVertex >= 0) && (*vPoint == VERTICES [nDbgVertex]))
 		BRP;
@@ -723,6 +723,9 @@ int32_t CDynLight::Contribute (const int16_t nDestSeg, const int16_t nDestSide, 
 {
 	int16_t nLightSeg = info.nSegment;
 
+#if 1
+info.bDiffuse [nThread] = 1;
+#else
 if ((nLightSeg >= 0) && (nDestSeg >= 0)) {
 #if DBG
 	if ((nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (nDbgSide == info.nSide)))
@@ -751,6 +754,7 @@ else if ((nLightSeg = LightSeg ()) >= 0)
 #endif
 else
 	return 0;
+#endif
 
 	fix xDistance, xRad;
 
