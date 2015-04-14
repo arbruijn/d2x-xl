@@ -2590,16 +2590,14 @@ tRobotInfo* CGameData::RobotInfo (int32_t nId, int32_t nChecks, const char* pszF
 {
 int32_t bD1 = gameStates.app.bD1Mission && (nId < botData.nTypes [1]);
 CArray<tRobotInfo>& a = botData.info [bD1];
-if (nChecks) {
-	if (!a.Buffer ())
-		return (tRobotInfo*) GameDataError ("robot info", "buffer", nChecks & GAMEDATA_ERRLOG_BUFFER, pszFile, nLine);
-	if (nId < 0)
-		return (tRobotInfo*) GameDataError ("robot info", "underflow", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
-	if ((uint32_t) nId >= a.Length ())
-		return (tRobotInfo*) GameDataError ("robot info", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
-	if (nId >= botData.nTypes [bD1])
-		return (tRobotInfo*) GameDataError ("robot info", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
-	}
+if (!a.Buffer ())
+	return (tRobotInfo*) GameDataError ("robot info", "buffer", nChecks & GAMEDATA_ERRLOG_BUFFER, pszFile, nLine);
+if (nId < 0)
+	return (tRobotInfo*) GameDataError ("robot info", "underflow", nChecks & GAMEDATA_ERRLOG_UNDERFLOW, pszFile, nLine);
+if ((uint32_t) nId >= a.Length ())
+	return (tRobotInfo*) GameDataError ("robot info", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
+if (nId >= botData.nTypes [bD1])
+	return (tRobotInfo*) GameDataError ("robot info", "overflow", nChecks & GAMEDATA_ERRLOG_OVERFLOW, pszFile, nLine);
 return a + nId; 
 }
 

@@ -1509,11 +1509,11 @@ if (gameData.render.screen.Width () && gameData.render.screen.Height ()) {
 	gameData.menu.warnColor = RED_RGBA;
 	gameData.menu.colorOverride = gameData.menu.warnColor;
 	if (!ps)
-		InfoBox (TXT_WARNING, (pMenuCallback) NULL, BG_STANDARD, -3, s, " ", TXT_OK);
+		InfoBox (TXT_WARNING, (pMenuCallback) NULL, BG_STANDARD, -3, s, " ", TXT_OK, "");
 	else {
 		for (ps += 5; *ps && !isalnum (*ps); ps++)
 			;
-		InfoBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, -3, ps, " ", TXT_OK);
+		InfoBox (TXT_ERROR, (pMenuCallback) NULL, BG_STANDARD, -3, ps, " ", TXT_OK, "");
 		}
 	gameData.menu.colorOverride = 0;
 	if (!(IsMultiGame && (gameStates.app.nFunctionMode == FMODE_GAME)))

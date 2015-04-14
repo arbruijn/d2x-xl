@@ -83,7 +83,7 @@ else {
 	}
 lightP->info.color.Alpha () = 1.0;
 lightP->info.fBrightness = fBrightness;
-lightP->info.fRange = (float) sqrt (fBrightness / 2.0f);
+lightP->info.fRange = 1.0f; //(float) sqrt (fBrightness / 2.0f);
 lightP->fSpecular.Red () = red;
 lightP->fSpecular.Green () = green;
 lightP->fSpecular.Blue () = blue;

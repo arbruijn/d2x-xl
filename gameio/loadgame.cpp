@@ -816,10 +816,10 @@ if (nStage == 0) {
 			}
 		}
 #endif
-	if (missionManager.nEnhancedMission) {
+	if (!gameStates.app.bD1Mission/*missionManager.nEnhancedMission*/) {
 		sprintf (szFile, "d2x.ham");
 		/*---*/PrintLog (1, "trying vertigo custom robots (d2x.ham)\n");
-		nLoadRes = LoadRobotExtensions ("d2x.ham", gameFolders.missions.szRoot, missionManager.nEnhancedMission);
+		nLoadRes = LoadRobotExtensions ("d2x.ham", gameFolders.missions.szRoot, /*missionManager.nEnhancedMission*/2);
 		PrintLog (-1);
 		}
 	if (gameStates.app.bHaveMod) {

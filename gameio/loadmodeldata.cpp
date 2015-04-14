@@ -218,8 +218,8 @@ int32_t LoadRobotReplacements (const char* szLevel, const char* szFolder, int32_
 {
 	CFile			cf;
 	CPolyModel*	modelP;
-	int32_t			t, i, j;
-	int32_t			nBotTypeSave = gameData.botData.nTypes [gameStates.app.bD1Mission], 
+	int32_t		t, i, j;
+	int32_t		nBotTypeSave = gameData.botData.nTypes [gameStates.app.bD1Mission], 
 					nBotJointSave = gameData.botData.nJoints, 
 					nPolyModelSave = gameData.models.nPolyModels;
 	tRobotInfo	botInfoSave;
