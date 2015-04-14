@@ -455,5 +455,40 @@ if (!hitResult.nSegment) {
 return CreateNewWeapon (vDirection, &hitResult.vPoint, (int16_t) hitResult.nSegment, parent, nWeaponType, bMakeSound);
 }
 
+// -----------------------------------------------------------------------------
+
+bool FixWeaponObject (CObject* objP, bool bFixType)
+{
+if (!objP->IsWeapon ()) {
+	if (!bFixType) 
+		return true;
+	objP->SetType (OBJ_WEAPON);
+	CreateWeaponSpeed (objP, true);
+	}
+if (objP->Velocity ().IsZero ()) {
+	PrintLog (0, "weapon object has invalid velocity\n");
+	CreateWeaponSpeed (objP, true);
+	if (objP->Velocity ().IsZero ()) {
+		objP->Die ();
+		return false;
+		}
+	}
+if (objP->LifeLeft () > WI_lifetime (objP->Id ())) {
+	PrintLog (0, "weapon object has invalid life time\n");
+	objP->Die ();
+	return false;
+	}
+
+if (objP->info.movementType != MT_PHYSICS) {
+	PrintLog (0, "weapon object has invalid movement type %s\n", objP->info.movementType);
+	objP->info.movementType = MT_PHYSICS;
+	}	
+if (objP->info.controlType != CT_WEAPON) {
+	PrintLog (0, "weapon object has invalid control type %s\n", objP->info.controlType);
+	objP->info.controlType = CT_WEAPON;
+	}	
+return true;
+}
+
 //	-------------------------------------------------------------------------------------------
 // eof
