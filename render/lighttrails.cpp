@@ -133,7 +133,7 @@ else
 // -----------------------------------------------------------------------------
 
 int32_t RenderWeaponCorona (CObject *objP, CFloatVector *colorP, float alpha, fix xOffset,
-								float fScale, int32_t bSimple, int32_t bViewerOffset, int32_t bDepthSort)
+									 float fScale, int32_t bSimple, int32_t bViewerOffset, int32_t bDepthSort)
 {
 if (!SHOW_OBJ_FX)
 	return 0;
@@ -187,6 +187,8 @@ if (!SHOW_OBJ_FX)
 	return;
 if (!objP->IsWeapon ())
 	return;
+if (objP->Velocity ().IsZero ())
+	return;
 if (SHOW_SHADOWS && (gameStates.render.nShadowPass != 1))
 	return;
 
@@ -205,7 +207,7 @@ if (objP->HasLightTrail () && gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
 		;//DoObjectSmoke (objP);
 	else if (EGI_FLAG (bLightTrails, 1, 1, 0) && (objP->info.nType == OBJ_WEAPON) &&
 				objP->HasLightTrail () &&
-				(!objP->mType.physInfo.velocity.IsZero ()) &&
+				!objP->Velocity ().IsZero () &&
 				glare.Load ()) {
 			CFloatVector	vNorm, vCenter, vOffs, vTrailVerts [8];
 			float				h, l, r, dx, dy;
@@ -217,7 +219,10 @@ if (objP->HasLightTrail () && gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
 				{{0.0f,0.0f}},{{1.0f,0.0f}},{{1.0f,0.5f}},{{0.0f,0.5f}},
 				{{0.0f,0.5f}},{{1.0f,0.5f}},{{1.0f,1.0f}},{{0.0f,1.0f}}
 				};
-
+#if DBG
+		if (objP->mType.physInfo.flags & PF_STICK)
+			BRP;
+#endif
 		vCenter.Assign (objP->info.position.vPos);
 		vOffs.Assign (objP->info.position.mOrient.m.dir.f);
 		if (objP->info.renderType == RT_POLYOBJ) {
@@ -237,11 +242,15 @@ if (objP->HasLightTrail () && gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
 		float fScale = coronaIntensities [gameOpts->render.coronas.nObjIntensity] / 2;
 		trailColor *= fScale;
 		vTrailVerts [0] = vCenter + vOffs * l;
-		h = X2F (CFixVector::Dist (objP->info.position.vPos, objP->Origin ()));
-		if (h > 50.0f)
-			h = 50.0f;
-		else if (h < 1.0f)
-			h = 1.0f;
+		if (objP->mType.physInfo.flags & PF_STICK)
+			h = 2 * l;
+		else {
+			h = X2F (CFixVector::Dist (objP->info.position.vPos, objP->Origin ()));
+			if (h > 50.0f)
+				h = 50.0f;
+			else if (h < 1.0f)
+				h = 1.0f;
+			}
 		vTrailVerts [7] = vTrailVerts [0] - vOffs * (h + l);
 		transformation.Transform (vCenter, vCenter, 0);
 		transformation.Transform (vTrailVerts [0], vTrailVerts [0], 0);

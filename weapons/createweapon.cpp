@@ -465,6 +465,8 @@ if (!objP->IsWeapon ()) {
 	objP->SetType (OBJ_WEAPON);
 	CreateWeaponSpeed (objP, true);
 	}
+if (objP->mType.physInfo.flags & PF_STICK)
+	return true;
 if (objP->Velocity ().IsZero ()) {
 	PrintLog (0, "weapon object has invalid velocity\n");
 	CreateWeaponSpeed (objP, true);
