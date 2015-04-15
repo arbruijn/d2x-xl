@@ -25,7 +25,7 @@ typedef struct tLightmapInfo {
 	GLfloat		color [3];
 	//float		bright;
 	double		range;
-	int32_t			nIndex;  //(seg*6)+CSide ie which CSide the light is on
+	int32_t		nIndex;  //(seg*6)+CSide ie which CSide the light is on
 } tLightmapInfo;
 
 typedef struct tLightmap {
@@ -40,8 +40,8 @@ typedef struct tLightmapBuffer {
 typedef struct tLightmapList {
 	CArray<tLightmapInfo>	info;
 	CArray<tLightmapBuffer>	buffers;
-	int32_t							nBuffers;
-	int32_t							nLights; 
+	int32_t						nBuffers;
+	int32_t						nLights; 
 	uint16_t						nLightmaps;
 } tLightmapList;
 
@@ -50,8 +50,8 @@ typedef CSegFace* tSegFacePtr;
 
 class CLightmapFaceData {
 	public:
-		int32_t						m_nType;
-		int32_t						m_nColor;
+		int32_t					m_nType;
+		int32_t					m_nColor;
 		CFixVector				m_vNormal;
 		CFixVector				m_vCenter;
 		uint16_t					m_sideVerts [4]; 
@@ -66,8 +66,8 @@ class CLightmapData : public CLightmapFaceData {
 	public:
 		float						nOffset [MAX_LIGHTMAP_WIDTH];
 		CArray<tSegFacePtr>	faceList;
-		int32_t						nBlackLightmaps;
-		int32_t						nWhiteLightmaps;
+		int32_t					nBlackLightmaps;
+		int32_t					nWhiteLightmaps;
 		CSegFace*				faceP;
 	};
 
@@ -75,6 +75,7 @@ class CLightmapManager {
 	private:
 		CLightmapData	m_data;
 		tLightmapList	m_list;
+		int32_t			m_bSuccess;
 
 	public:
 		CLightmapManager () { Init (); } 

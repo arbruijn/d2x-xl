@@ -1430,7 +1430,7 @@ int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, i
 	CSegment*		segP;
 	CSide*			sideP;
 	CWall*			wallP;
-	CFloatVector	vIntersection, v0, v1;
+	CFloatVector	vRay, vIntersection, v0, v1;
 	float				l0, l1 = 0.0f;
 	int16_t			nSide, nFace, nFaceCount, nChildSeg;
 	uint32_t*		bVisited = segVisList [nThread];
@@ -1448,6 +1448,8 @@ if (!nDepth) {
 
 	uint32_t			bFlag = segVisFlags [nThread];
 
+vRay = *p1 - *p0;
+CFloatVector::Normalize (vRay);
 for (;;) {
 	bVisited [nStartSeg] = bFlag;
 	segP = SEGMENT (nStartSeg);
@@ -1468,6 +1470,8 @@ for (;;) {
 		for (nFace = 0; nFace < nFaceCount; nFace++, vertices += 3) {
 			if (!(nFace && sideP->IsQuad ())) {
 				CFloatVector* n = sideP->m_fNormals + nFace;
+				if (CFloatVector::Dot (vRay, *n) >= 0.0f)
+					continue;
 				if (!FindPlaneLineIntersection (vIntersection, &FVERTICES [*vertices], n, p0, p1))
 					continue;
 				v0 = *p0 - vIntersection;

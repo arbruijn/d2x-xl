@@ -41,7 +41,7 @@ CLightmapManager lightmapManager;
 #define LMAP_REND2TEX		0
 #define TEXTURE_CHECK		1
 
-#define LIGHTMAP_DATA_VERSION 46
+#define LIGHTMAP_DATA_VERSION 47
 #define LM_W	LIGHTMAP_WIDTH
 #define LM_H	LIGHTMAP_WIDTH
 
@@ -370,6 +370,16 @@ static float weight [5] = {0.2270270270f, 0.1945945946f, 0.1216216216f, 0.054054
 
 static inline void Add (CLightmapFaceData& source, int32_t x, int32_t y, int32_t offset, CFloatVector3& color)
 {
+#if 0
+if (x < 0)
+	return;
+if (x >= LM_W)
+	return;
+if (y < 0)
+	return;
+if (y >= LM_H)
+	return;
+#else
 if (x < 0)
 	x = 0;
 else if (x >= LM_W)
@@ -378,6 +388,7 @@ if (y < 0)
 	y = 0;
 else if (y >= LM_H)
 	y = LM_H - 1;
+#endif
 CRGBColor& sourceColor = source.m_texColor [y * LM_W + x];
 float w = weight [offset];
 color.Red () += sourceColor.r * w;
@@ -412,7 +423,7 @@ for (int32_t y = 0; y < h; y++) {
 
 void CLightmapManager::Blur (CSegFace* faceP, CLightmapFaceData& source)
 {
-#if !DBG
+#if 1 //!DBG
 	CLightmapFaceData	tempData;
 
 Blur (faceP, source, tempData, 0);
@@ -620,6 +631,15 @@ else {
 
 bBlack = bWhite = true;
 for (y = yMin; y < yMax; y++) {
+
+	int32_t nKey = KeyInKey ();
+	if (nKey == KEY_ESC)
+		m_bSuccess = 0;
+	if (nKey == KEY_ALTED + KEY_F4)
+		exit (0);
+	if (!m_bSuccess)
+		return;
+
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
 		BRP;
@@ -719,8 +739,6 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
 		BRP;
 #endif
-	if (gameStates.app.bComputeLightmaps && (KeyInKey () == KEY_ESC))
-		return 0;
 	if (SEGMENT (m_data.faceP->m_info.nSegment)->m_function == SEGMENT_FUNC_SKYBOX) {
 		m_data.faceP->m_info.nLightmap = 1;
 		continue;
@@ -740,6 +758,8 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 			Build (m_data.faceP, -1);
 #endif
 		}
+	if (!m_bSuccess)
+		return 0;
 #if DBG
 	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
 		BRP;
@@ -772,7 +792,10 @@ if (nState)
 
 //paletteManager.ResumeEffect ();
 if (nFace < FACES.nFaces) {
-	lightmapManager.BuildAll (nFace);
+	if (!lightmapManager.BuildAll (nFace)) {
+		key = -2;
+		return nCurItem;
+		}
 	nFace += PROGRESS_INCR;
 	}
 else {
@@ -941,7 +964,7 @@ if (nLights < 0)
 if (Load (nLevel))
 	return 1;
 
-int32_t bSuccess = 1;
+m_bSuccess = 1;
 
 if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 	if (nLights) {
@@ -969,10 +992,14 @@ if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 		else {
 			if (!gameStates.app.bComputeLightmaps)
 				messageBox.Show (TXT_CALC_LIGHTMAPS);
-			bSuccess = BuildAll (-1);
+			GrabMouse (0, 0);
+			m_bSuccess = BuildAll (-1);
+			GrabMouse (1, 0);
 			if (!gameStates.app.bComputeLightmaps)
 				messageBox.Clear ();
 			}
+		if (!m_bSuccess)
+			return 0;
 		gameStates.render.bBuildLightmaps = 0;
 		//PLANE_DIST_TOLERANCE = DEFAULT_PLANE_DIST_TOLERANCE;
 		//SetupSegments (); // standard face setup (triangles or quads)
@@ -992,7 +1019,7 @@ if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 	BindAll ();
 	Save (nLevel);
 	}
-return bSuccess;
+return m_bSuccess;
 }
 
 //------------------------------------------------------------------------------
