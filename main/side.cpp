@@ -408,7 +408,9 @@ else {
 #endif
 
 ComputeCenter ();
-FixNormals (nSegment);
+#if DBG
+FixNormals ();
+#endif
 m_bIsQuad = !m_nShape && (m_normals [0] == m_normals [1]);
 for (int32_t i = 0; i < m_nCorners; i++)
 	AddToVertexNormal (m_corners [i], m_normals [2]);
