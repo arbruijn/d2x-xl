@@ -586,7 +586,7 @@ ReadAnimationInfo (gameData.effects.animations [1], MAX_ANIMATIONS_D1, cf);
 PrintLog (-1);
 
 gameData.effects.nEffects [1] = cf.ReadInt ();
-/*---*/PrintLog (1, "Loading %d animation descriptions\n", gameData.effects.nClips [1]);
+/*---*/PrintLog (1, "Loading %d animation descriptions\n", gameData.effects.nEffects [1]);
 ReadEffectInfo (gameData.effects.effects [1], D1_MAX_EFFECTS, cf);
 PrintLog (-1);
 
