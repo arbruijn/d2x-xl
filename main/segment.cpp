@@ -395,6 +395,7 @@ return m_sides [nSide].Masks (refP, xRad, 1, faceBit, bCheckPoke);
 //		create new vector normals
 void CSegment::Setup (void)
 {
+ComputeCenter ();
 for (int32_t i = 0; i < SEGMENT_SIDE_COUNT; i++) {
 #if DBG
 	if ((SEG_IDX (this) == nDbgSeg) && ((nDbgSide < 0) || (i == nDbgSide)))

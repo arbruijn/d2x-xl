@@ -1422,6 +1422,8 @@ return SphereIntersectsWall (&objP->info.position.vPos, objP->info.nSegment, obj
 //------------------------------------------------------------------------------
 // Check whether point p1 from segment nDestSeg can be seen from point p0 located in segment nStartSeg.
 
+#define CHECK_FACE_ORIENT 1
+
 int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, int16_t nDestSeg, int32_t nDepth, int32_t nThread)
 {
 	static			uint32_t segVisList [MAX_THREADS][MAX_SEGMENTS_D2X];
@@ -1430,7 +1432,7 @@ int32_t PointSeesPoint (CFloatVector* p0, CFloatVector* p1, int16_t nStartSeg, i
 	CSegment*		segP;
 	CSide*			sideP;
 	CWall*			wallP;
-	CFloatVector	vRay, vIntersection, v0, v1;
+	CFloatVector	vIntersection, v0, v1;
 	float				l0, l1 = 0.0f;
 	int16_t			nSide, nFace, nFaceCount, nChildSeg;
 	uint32_t*		bVisited = segVisList [nThread];
@@ -1439,6 +1441,10 @@ if (!nDepth) {
 #if 0
 	memset (bVisited, 0, gameData.segData.nSegments * sizeof (*bVisited));
 #else
+#if DBG
+	if ((nDbgSeg >= 0) && (nStartSeg == nDbgSeg))
+		BRP;
+#endif
 	if (!++segVisFlags [nThread]) {
 		++segVisFlags [nThread];
 		memset (bVisited, 0, gameData.segData.nSegments * sizeof (*bVisited));
@@ -1448,8 +1454,11 @@ if (!nDepth) {
 
 	uint32_t			bFlag = segVisFlags [nThread];
 
-vRay = *p1 - *p0;
+#if CHECK_FACE_ORIENT
+CFloatVector vRay = *p1 - *p0;
 CFloatVector::Normalize (vRay);
+#endif
+
 for (;;) {
 	bVisited [nStartSeg] = bFlag;
 	segP = SEGMENT (nStartSeg);
@@ -1470,8 +1479,22 @@ for (;;) {
 		for (nFace = 0; nFace < nFaceCount; nFace++, vertices += 3) {
 			if (!(nFace && sideP->IsQuad ())) {
 				CFloatVector* n = sideP->m_fNormals + nFace;
-				if (CFloatVector::Dot (vRay, *n) >= 0.0f)
+#if DBG
+				if ((nDbgSeg >= 0) && (nStartSeg == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+					BRP;
+#endif
+#if CHECK_FACE_ORIENT
+				if (CFloatVector::Dot (vRay, *n) >= 0.0f) {
+#	if DBG
+					const CFloatVector h = CFloatVector::Normal (FVERTICES [vertices [0]], FVERTICES [vertices [1]], FVERTICES [vertices [2]]);
+					float dot = CFloatVector::Dot (vRay, h);
+					if (dot >= 0.0f)
+						continue;
+					}
+#	else
 					continue;
+#	endif
+#endif
 				if (!FindPlaneLineIntersection (vIntersection, &FVERTICES [*vertices], n, p0, p1))
 					continue;
 				v0 = *p0 - vIntersection;

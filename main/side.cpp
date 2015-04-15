@@ -218,6 +218,21 @@ SetupVertexList (verts, index);
 
 // -------------------------------------------------------------------------------
 
+void CSide::FixNormals (int16_t nSegment)
+{
+	CFixVector	vRef = SEGMENT (nSegment)->Center () - m_vCenter;
+
+CFixVector::Normalize (vRef);
+for (int32_t i = 0; i < 3; i++) {
+	if (CFixVector::Dot (m_normals [i], vRef) < 0) {
+		m_normals [i].Neg ();
+		m_fNormals [i].Neg ();
+		}
+	}
+}
+
+// -------------------------------------------------------------------------------
+
 void CSide::SetupAsTriangles (bool bSolid, uint16_t* verts, uint16_t* index)
 {
 	CFixVector		vNormal;
@@ -321,6 +336,7 @@ if (nSegment == nDbgSeg)
 	BRP;
 #endif
 m_nSegment = nSegment;
+ComputeCenter ();
 if (gameData.segData.nLevelVersion > 24) 
 	index = m_corners;
 SetupCorners (verts, index);
@@ -370,6 +386,7 @@ else {
 	}
 #endif
 
+FixNormals (nSegment);
 m_bIsQuad = !m_nShape && (m_normals [0] == m_normals [1]);
 for (int32_t i = 0; i < m_nCorners; i++)
 	AddToVertexNormal (m_corners [i], m_normals [2]);

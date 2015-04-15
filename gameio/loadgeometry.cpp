@@ -581,9 +581,9 @@ if (gameStates.app.bD2XLevel) {
 
 //------------------------------------------------------------------------------
 
-void ComputeSegSideCenters (int32_t nSegment)
+void ComputeSegSideRads (int32_t nSegment)
 {
-	int32_t			i, j, nSide;
+	int32_t		i, j, nSide;
 	CSegment*	segP;
 #if CALC_SEGRADS
 	fix			xSideDists [6], xMinDist;
@@ -592,13 +592,11 @@ void ComputeSegSideCenters (int32_t nSegment)
 INIT_PROGRESS_LOOP (nSegment, j, gameData.segData.nSegments);
 
 for (i = nSegment * 6, segP = SEGMENT (nSegment); nSegment < j; nSegment++, segP++) {
-	segP->ComputeCenter ();
 #if CALC_SEGRADS
 	segP->GetSideDists (segP->m_vCenter, xSideDists, 0);
 	xMinDist = 0x7fffffff;
 #endif
 	for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++, i++) {
-		segP->ComputeSideCenter (nSide);
 #if CALC_SEGRADS
 		if (xMinDist > xSideDists [nSide])
 			xMinDist = xSideDists [nSide];
@@ -651,7 +649,7 @@ else if (loadOp == 1) {
 	loadOp++;
 	}
 else if (loadOp == 2) {
-	ComputeSegSideCenters (loadIdx);
+	ComputeSegSideRads (loadIdx);
 	loadIdx += PROGRESS_INCR;
 	if (loadIdx >= gameData.segData.nSegments) {
 		loadIdx = 0;
@@ -808,7 +806,7 @@ else {
 	LoadVertLightsCompiled (-1, cf);
 	LoadSideLightsCompiled (-1, cf);
 	LoadTexColorsCompiled (-1, cf);
-	ComputeSegSideCenters (-1);
+	ComputeSegSideRads (-1);
 	ComputeChildDists (-1);
 	}
 gameData.segData.BuildGrid (40, 0);
