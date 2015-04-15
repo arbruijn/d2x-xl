@@ -219,10 +219,6 @@ if (objP->HasLightTrail () && gameStates.app.bHaveExtraGameInfo [IsMultiGame] &&
 				{{0.0f,0.0f}},{{1.0f,0.0f}},{{1.0f,0.5f}},{{0.0f,0.5f}},
 				{{0.0f,0.5f}},{{1.0f,0.5f}},{{1.0f,1.0f}},{{0.0f,1.0f}}
 				};
-#if DBG
-		if (objP->mType.physInfo.flags & PF_STICK)
-			BRP;
-#endif
 		vCenter.Assign (objP->info.position.vPos);
 		vOffs.Assign (objP->info.position.mOrient.m.dir.f);
 		if (objP->info.renderType == RT_POLYOBJ) {
