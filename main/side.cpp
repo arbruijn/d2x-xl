@@ -218,17 +218,33 @@ SetupVertexList (verts, index);
 
 // -------------------------------------------------------------------------------
 
-void CSide::FixNormals (int16_t nSegment)
+void CSide::FixNormals (void)
 {
-	CFixVector	vRef = SEGMENT (nSegment)->Center () - m_vCenter;
+#if 1
+	CFloatVector vRef;
+	
+vRef.Assign (SEGMENT (m_nSegment)->Center () - m_vCenter);
+CFloatVector::Normalize (vRef);
 
-CFixVector::Normalize (vRef);
+#if DBG
+if (((nDbgSeg > 0) && (nDbgSeg == m_nSegment)) && ((nDbgSide < 0) || (this - SEGMENT (m_nSegment)->m_sides == nDbgSide)))
+	BRP;
+bool bFlip = false;
+#endif
+
 for (int32_t i = 0; i < 3; i++) {
-	if (CFixVector::Dot (m_normals [i], vRef) < 0) {
+	if (CFloatVector::Dot (m_fNormals [i], vRef) < 0) {
+#if DBG
+		if (!bFlip) {
+			BRP;
+			bFlip = true;
+			}
+#endif
 		m_normals [i].Neg ();
 		m_fNormals [i].Neg ();
 		}
 	}
+#endif
 }
 
 // -------------------------------------------------------------------------------
@@ -273,22 +289,24 @@ if (bSolid) {
 	}
 else {
 	uint16_t	vSorted [4];
-	int32_t		bFlip;
-
-	bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
+	int32_t	bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_corners [3], vSorted);
 	if ((vSorted [0] == m_corners [0]) || (vSorted [0] == m_corners [2])) {
 		m_nType = SIDE_IS_TRI_02;
 		//	Now, get vertices for Normal for each triangle based on triangulation nType.
 		bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], 0xFFFF, vSorted);
 		m_normals [0] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 		m_fNormals [0] = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
-		if (bFlip)
+		if (bFlip) {
 			m_normals [0].Neg ();
+			m_fNormals [0].Neg ();
+			}
 		bFlip = SortVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 0xFFFF, vSorted);
 		m_normals [1] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 		m_fNormals [1] = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
-		if (bFlip)
+		if (bFlip) {
 			m_normals [1].Neg ();
+			m_fNormals [1].Neg ();
+			}
 		SortVertsForNormal (m_corners [0], m_corners [2], m_corners [3], 0xFFFF, vSorted);
 		}
 	else {
@@ -297,13 +315,17 @@ else {
 		bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [3], 0xFFFF, vSorted);
 		m_normals [0] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 		m_fNormals [0] = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
-		if (bFlip)
+		if (bFlip) {
 			m_normals [0].Neg ();
+			m_fNormals [0].Neg ();
+			}
 		bFlip = SortVertsForNormal (m_corners [1], m_corners [2], m_corners [3], 0xFFFF, vSorted);
 		m_normals [1] = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
 		m_fNormals [1] = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
-		if (bFlip)
+		if (bFlip) {
 			m_normals [1].Neg ();
+			m_fNormals [1].Neg ();
+			}
 		}
 	}
 SetupVertexList (verts, index);
@@ -336,22 +358,21 @@ if (nSegment == nDbgSeg)
 	BRP;
 #endif
 m_nSegment = nSegment;
-ComputeCenter ();
 if (gameData.segData.nLevelVersion > 24) 
 	index = m_corners;
 SetupCorners (verts, index);
-bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_nShape ? 0xFFFF : m_corners [3], vSorted);
-vNormal = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
-vNormalf = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
-if (bFlip) {
-	vNormal.Neg ();
-	vNormalf.Neg ();
-	}
-
 #if 1
 if (m_nShape) {
 	m_nType = SIDE_IS_TRI_02;
 	SetupVertexList (verts, index);
+	bFlip = SortVertsForNormal (m_corners [0], m_corners [1], m_corners [2], m_nShape ? 0xFFFF : m_corners [3], vSorted);
+	vNormal = CFixVector::Normal (VERTICES [vSorted [0]], VERTICES [vSorted [1]], VERTICES [vSorted [2]]);
+	vNormalf = CFloatVector::Normal (FVERTICES [vSorted [0]], FVERTICES [vSorted [1]], FVERTICES [vSorted [2]]);
+	if (bFlip) {
+		vNormal.Neg ();
+		vNormalf.Neg ();
+		}
+
 	m_normals [0] = m_normals [1] = m_normals [2] = vNormal;
 	m_fNormals [0] = m_fNormals [1] = m_fNormals [2] = vNormalf;
 	}
@@ -386,6 +407,7 @@ else {
 	}
 #endif
 
+ComputeCenter ();
 FixNormals (nSegment);
 m_bIsQuad = !m_nShape && (m_normals [0] == m_normals [1]);
 for (int32_t i = 0; i < m_nCorners; i++)

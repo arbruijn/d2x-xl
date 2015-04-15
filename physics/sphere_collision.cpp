@@ -1486,14 +1486,16 @@ for (;;) {
 #if CHECK_FACE_ORIENT
 				if (CFloatVector::Dot (vRay, *n) >= 0.0f) {
 #	if DBG
-					const CFloatVector h = CFloatVector::Normal (FVERTICES [vertices [0]], FVERTICES [vertices [1]], FVERTICES [vertices [2]]);
-					float dot = CFloatVector::Dot (vRay, h);
-					if (dot >= 0.0f)
-						continue;
-					}
-#	else
-					continue;
+					CFloatVector vRef;
+					vRef.Assign (segP->Center () - sideP->Center ());
+					CFloatVector::Normalize (vRef);
+					float dot = CFloatVector::Dot (vRef, *n);
+					if (dot < 0.0f)
+						BRP;
+					else
 #	endif
+					continue;
+					}
 #endif
 				if (!FindPlaneLineIntersection (vIntersection, &FVERTICES [*vertices], n, p0, p1))
 					continue;

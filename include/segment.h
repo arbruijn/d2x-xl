@@ -255,7 +255,7 @@ class CSide {
 		fix AvgRad (void) { return (m_rads [0] + m_rads [1]) / 2; }
 
 		void Setup (int16_t nSegment, uint16_t* verts, uint16_t* index, bool bSolid);
-		void FixNormals (int16_t nSegment);
+		void FixNormals (void);
 
 		void SetTextures (int32_t nBaseTex, int32_t nOvlTex);
 
