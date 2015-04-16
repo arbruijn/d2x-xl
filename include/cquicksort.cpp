@@ -16,8 +16,8 @@ template <typename _T>
 void CQuickSort< _T >::SortAscending (_T* buffer, int32_t left, int32_t right) 
 {
 	int32_t	l = left,
-			r = right;
-	_T		median = buffer [(l + r) / 2];
+				r = right;
+	_T			median = buffer [(l + r) / 2];
 
 do {
 	while (buffer [l] < median)
@@ -43,8 +43,8 @@ template <typename _T>
 void CQuickSort< _T >::SortDescending (_T* buffer, int32_t left, int32_t right) 
 {
 	int32_t	l = left,
-			r = right;
-	_T		median = buffer [(l + r) / 2];
+				r = right;
+	_T			median = buffer [(l + r) / 2];
 
 do {
 	while (buffer [l] > median)
@@ -70,8 +70,8 @@ template <typename _T>
 void CQuickSort< _T >::SortAscending (_T* buffer, int32_t left, int32_t right, comparator compare) 
 {
 	int32_t	l = left,
-			r = right;
-	_T		median = buffer [(l + r) / 2];
+				r = right;
+	_T			median = buffer [(l + r) / 2];
 
 do {
 	while (compare (buffer + l, &median) < 0)
@@ -97,8 +97,8 @@ template <typename _T>
 void CQuickSort< _T >::SortDescending (_T* buffer, int32_t left, int32_t right, comparator compare) 
 {
 	int32_t	l = left,
-			r = right;
-	_T		m = buffer [(l + r) / 2];
+				r = right;
+	_T			m = buffer [(l + r) / 2];
 
 do {
 	while (compare (buffer + l, &m) > 0)

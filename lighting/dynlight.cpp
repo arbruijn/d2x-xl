@@ -641,33 +641,61 @@ if (info.nSide < 0) {
 else {
 		static int32_t nLevels [3] = {4, 0, -4};
 
-		CSide*	sideP = SEGMENT (nLightSeg)->Side (info.nSide);
-		int32_t		i, j = nLevels [nLevel];
+		class CLightPoint {
+			public:
+				CFloatVector	v;
+				CFloatVector	vRay;
+				float				d;
+
+			inline bool operator< (CLightPoint& other) { return d < other.d; }
+			inline bool operator> (CLightPoint& other) { return d > other.d; }
+			};
+	
+		CSide* sideP = SEGMENT (nLightSeg)->Side (info.nSide);
+
+		if (sideP->Shape () > SIDE_SHAPE_TRIANGLE)
+			return 0;
+
+		CStaticArray<CLightPoint, 9>	vLight;
+		int32_t	nVertices = 0, i, j = nLevels [nLevel];
+
+	vLight [nVertices++].v.Assign (sideP->Center ());
+	if (nLevel) {
+		for (i = 0; i < sideP->m_nCorners; i++)
+			vLight [nVertices++].v = FVERTICES [sideP->m_corners [i]];
+		if (nLevel > 1) {
+			for (i = 0; i < sideP->m_nCorners; i++) {
+				vLight [nVertices].v = FVERTICES [sideP->m_corners [i]];
+				vLight [nVertices].v += FVERTICES [sideP->m_corners [(i + 1) % sideP->m_nCorners]];
+				vLight [nVertices++].v /= 2;
+				}
+			}
+		}
 
 	v1.Assign (*vPoint);
+	for (i = 0; i < nVertices; i++) {
+		vLight [i].vRay = v1 - vLight [i].v;
+		vLight [i].d = vLight [i].vRay.Mag ();
+		}
+
+	vLight.SortAscending ();
+
 	if (vNormal) 
 		vNormalf.Assign (*vNormal);
-	for (i = 4; i >= j; i--) {
-		if (i == 4)
-			v0.Assign (info.vPos);
-		else if (i >= 0)
-			v0 = FVERTICES [sideP->m_corners [i]];
-		else
-			v0 = CFloatVector::Avg (FVERTICES [sideP->m_corners [4 + i]], FVERTICES [sideP->m_corners [(5 + i) & 3]]); // center of face's edges
+	for (i = 0; i < nVertices; i++) {
 
-		vLightToPointf = v1 - v0;
+		vLightToPointf = v1 - vLight [i].vRay;
 		CFloatVector::Normalize (vLightToPointf);
 		if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.001f) // light doesn't see point
 			continue;
 		if (vNormal && (CFloatVector::Dot (vLightToPointf, vNormalf) > 0.001f)) // light doesn't "see" face
 			continue;
 		if (0 <= SEGMENT (nLightSeg)->ChildIndex (nDestSeg)) // don't check point to point visibility for connected segments
-			break;
-		if (!PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, /*FAST_POINTVIS - 1*/0, nThread))
-			continue;
-		break;
+			return 1;
+		if (PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, /*FAST_POINTVIS - 1*/0, nThread))
+			return 1;
 		}
-	return (i >= j); // && PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, /*FAST_POINTVIS - 1*/0, nThread);
+	return 0; // && PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, /*FAST_POINTVIS - 1*/0, nThread);
 #if DBG
 	if ((nDbgSeg >= 0) && (nDbgVertex >= 0) && (nLightSeg == nDbgSeg) && ((nDbgSide < 0) || (info.nSide == nDbgSide)) && (nDbgVertex >= 0) && (*vPoint == VERTICES [nDbgVertex]))
 		BRP;
