@@ -234,7 +234,7 @@ typedef struct tCockpitOptions {
 	int32_t bWideDisplays;
 	int32_t bReticle;
 	int32_t nShipStateLayout;
-	int32_t bDecoration;
+	int32_t bSeparators;
 	int32_t bMouseIndicator;
 	int32_t bTextGauges;
 	int32_t bScaleGauges;

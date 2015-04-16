@@ -51,6 +51,19 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 //	-----------------------------------------------------------------------------
 
+static void DrawSeparator (int32_t l, int32_t t, int32_t r, int32_t b)
+{
+int32_t nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
+if (gameOpts->render.cockpit.bSeparators && (nLayout == 2)) {
+	CCanvas::Current ()->Color ().Set (128, 128, 128, 192);
+	glLineWidth (2);
+	OglDrawLine (l, t, r, b);
+	glLineWidth (1);
+	}
+}
+
+//	-----------------------------------------------------------------------------
+
 void CHUD::ScaleUp (void)
 {
 m_info.xScale *= float (HUD_ASPECT);
@@ -898,12 +911,7 @@ for (int32_t j = 0; j < n; j++) {
 	GrPrintF (NULL, x - StringWidth (szAmmo), y, szAmmo);
 	y += nLineSpacing;
 	}
-if (gameOpts->render.cockpit.bDecoration) {
-	CCanvas::Current ()->Color ().Set (128, 128, 128, 255);
-	glLineWidth (2);
-	OglDrawLine (x + 2, t, x + 2, y - 2);
-	glLineWidth (1);
-	}
+DrawSeparator (x + 2, t, x + 2, y - 2);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1005,12 +1013,7 @@ for (int32_t nType = 0; nType < 2; nType++) {
 		}
 	y += nLineSpacing / 2;
 	}
-if (gameOpts->render.cockpit.bDecoration) {
-	CCanvas::Current ()->Color ().Set (128, 128, 128, 255);
-	glLineWidth (2);
-	OglDrawLine (x - 4, t, x - 4, y - nLineSpacing / 2 - 2);
-	glLineWidth (1);
-	}
+DrawSeparator (x - 4, t, x - 4, y - nLineSpacing / 2 - 2);
 }
 
 //	-----------------------------------------------------------------------------
@@ -1338,17 +1341,22 @@ sprintf (szSlowMotion, "M%1.1f  S%1.1f",
 
 SetFontColor (GREEN_RGBA);
 ScaleUp ();
+int32_t s = LineSpacing ();
 int32_t x = gameData.render.scene.Width () / 2;
-int32_t y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (0)) + (((nLayout == 1) ? 8 : 7) * LineSpacing ()) / 2;
+int32_t y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (0)) + (((nLayout == 1) ? 4 : 2) * s);
+if (nLayout == 2)
+	y += s; //(gameOpts->render.cockpit.bSeparators ? s / 2 : s);
 int32_t w, h, aw;
 fontManager.Current ()->StringSize (szSlowMotion, w, h, aw);
 w /= 2;
 DrawHUDText (NULL, x - w, y, "%s", szSlowMotion);
-if (gameOpts->render.cockpit.bDecoration) {
+if (gameOpts->render.cockpit.bSeparators) {
 	int32_t l = x - w - 4;
 	int32_t r = x + w + 1;
 	int32_t t = y - 4;
 	int32_t b = y + h + 3;
+
+	DrawSeparator (x - 3 * w / 2, t - 4, x + 3 * w / 2 - 1, t - 4);
 
 	//CCanvas::Current ()->Color ().Set (0, 255, 0, 255);
 	CCanvas::Current ()->Color ().Set (0, 160, 0, 100);

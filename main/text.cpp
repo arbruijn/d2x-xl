@@ -2002,7 +2002,7 @@ const char *defaultGameTexts [][2] = {
  {"oben", "high"},
  {"mitte", "middle"},
  {"unten", "low"},
- {"hud-de~Koration", "hud de~Coration"},
+ {"hud-~Trenner", "hud se~Parators"},
  
 #if 0
  {"", ""},
