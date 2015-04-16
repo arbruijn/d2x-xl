@@ -616,7 +616,7 @@ int32_t nLightSeg = info.nSegment;
 int32_t nLightSeg = LightSeg ();
 #endif
 
-		CFloatVector	v0, v1, vLightToPointf, vNormalf;
+		CFloatVector	v1, vNormalf;
 
 #if FAST_POINTVIS
 
@@ -624,8 +624,9 @@ if (info.nSide < 0) {
 	if (nLightSeg < 0)
 		return 1;
 	v1.Assign (*vPoint);
+	CFloatVector v0;
 	v0.Assign (info.vPos);
-	vLightToPointf = v1 - v0;
+	CFloatVector vLightToPointf = v1 - v0;
 	float dist = CFloatVector::Normalize (vLightToPointf);
 	if (dist > info.fRange * X2F (MAX_LIGHT_RANGE))
 		return 0;
@@ -656,35 +657,28 @@ else {
 		if (sideP->Shape () > SIDE_SHAPE_TRIANGLE)
 			return 0;
 
-		CStaticArray<CLightPoint, 9>	vLight;
+		CStaticArray<CFloatVector, 9>	vLight;
 		int32_t	nVertices = 0, i, j = nLevels [nLevel];
 
-	vLight [nVertices++].v.Assign (sideP->Center ());
+	vLight [nVertices++].Assign (sideP->Center ());
 	if (nLevel) {
 		for (i = 0; i < sideP->m_nCorners; i++)
-			vLight [nVertices++].v = FVERTICES [sideP->m_corners [i]];
+			vLight [nVertices++] = FVERTICES [sideP->m_corners [i]];
 		if (nLevel > 1) {
 			for (i = 0; i < sideP->m_nCorners; i++) {
-				vLight [nVertices].v = FVERTICES [sideP->m_corners [i]];
-				vLight [nVertices].v += FVERTICES [sideP->m_corners [(i + 1) % sideP->m_nCorners]];
-				vLight [nVertices++].v /= 2;
+				vLight [nVertices] = FVERTICES [sideP->m_corners [i]];
+				vLight [nVertices] += FVERTICES [sideP->m_corners [(i + 1) % sideP->m_nCorners]];
+				vLight [nVertices++] /= 2;
 				}
 			}
 		}
 
 	v1.Assign (*vPoint);
-	for (i = 0; i < nVertices; i++) {
-		vLight [i].vRay = v1 - vLight [i].v;
-		vLight [i].d = vLight [i].vRay.Mag ();
-		}
-
-	vLight.SortAscending ();
 
 	if (vNormal) 
 		vNormalf.Assign (*vNormal);
 	for (i = 0; i < nVertices; i++) {
-
-		vLightToPointf = v1 - vLight [i].vRay;
+		CFloatVector vLightToPointf = v1 - vLight [i];
 		CFloatVector::Normalize (vLightToPointf);
 		if (CFloatVector::Dot (vLightToPointf, info.vDirf) < -0.001f) // light doesn't see point
 			continue;
@@ -692,7 +686,7 @@ else {
 			continue;
 		if (0 <= SEGMENT (nLightSeg)->ChildIndex (nDestSeg)) // don't check point to point visibility for connected segments
 			return 1;
-		if (PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, /*FAST_POINTVIS - 1*/0, nThread))
+		if (PointSeesPoint (&vLight [i], &v1, nLightSeg, nDestSeg, /*FAST_POINTVIS - 1*/0, nThread))
 			return 1;
 		}
 	return 0; // && PointSeesPoint (&v0, &v1, nLightSeg, nDestSeg, /*FAST_POINTVIS - 1*/0, nThread);
