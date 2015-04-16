@@ -136,7 +136,7 @@ static double dMaxAxis = 127.0;
 
 int32_t CControlsManager::AttenuateAxis (double a, int32_t nAxis)
 {
-if (gameOpts->input.joystick.bLinearSens)
+if (Configuring () || gameOpts->input.joystick.bLinearSens)
 	return (int32_t) a;
 else if (!a)
 	return 0;
@@ -170,7 +170,7 @@ else {
 
 int32_t CControlsManager::ReadJoyAxis (int32_t i, int32_t rawJoyAxis [])
 {
-int32_t dz = joyDeadzone [i % UNIQUE_JOY_AXES]; // / 128;
+int32_t dz = Configuring () ? 0 : joyDeadzone [i % UNIQUE_JOY_AXES]; // / 128;
 int32_t h = rawJoyAxis [i]; // JoyGetScaledReading (rawJoyAxis [i], i);
 if (gameOpts->input.joystick.bSyncAxis && (dz < 16384) && ((kcJoystick [18].value == i) || (kcJoystick [48].value == i)))		// If this is the throttle
 	dz *= 2;				// Then use a larger dead-zone
@@ -180,7 +180,8 @@ else if (h < -dz)
 	h = (int32_t) FRound ((h + dz) * 32767.0f / float (32767 - dz));
 else
 	h = 0;
-return (int32_t) ((AttenuateAxis (h / 256, i) * m_pollTime) / 128);
+h = AttenuateAxis (h / 256, i);
+return Configuring () ? h : (int32_t) ((h * m_pollTime) / 128);
 }
 
 //------------------------------------------------------------------------------
@@ -190,7 +191,7 @@ int32_t CControlsManager::ReadJoystick (int32_t* joyAxis)
 	int32_t	rawJoyAxis [JOY_MAX_AXES];
 	uint32_t	channelMasks;
 	int32_t	i, bUseJoystick = 0;
-	fix	ctime = 0;
+	fix		ctime = 0;
 
 memset (joyAxis, 0, sizeof (*joyAxis) * JOY_MAX_AXES);
 

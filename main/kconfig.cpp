@@ -990,23 +990,17 @@ return 255;
 
 uint8_t CControlConfig::JoyAxisCtrlFunc (int32_t nChangeState)
 {
-	static int32_t axisTotal [JOY_MAX_AXES];
-
 	int32_t curAxis [JOY_MAX_AXES];
 	int32_t i, hd, dd;
-	int32_t bLinJoySensSave = gameOpts->input.joystick.bLinearSens;
 	uint8_t code = 255;
 
-if (nChangeState == 0)
-	memset (curAxis, 0, sizeof (curAxis));
-gameOpts->input.joystick.bLinearSens = 1;
-controls.SetPollTime (128);
+memset (curAxis, 0, sizeof (curAxis));
+controls.Configure (true);
 controls.ReadJoystick (curAxis);
-gameOpts->input.joystick.bLinearSens = bLinJoySensSave;
+controls.Configure (false);
 for (i = dd = 0; i < JOY_MAX_AXES; i++) {
-	axisTotal [i] += abs (curAxis [i]);
-	hd = axisTotal [i]; // - m_startAxis [i]);
-  	if ((hd > (128 * 3 / 4)) && (hd > dd)) {
+	hd = abs (curAxis [i]); // - m_startAxis [i]);
+  	if ((hd > 3 * 128 / 4) && (hd > dd)) {
 		dd = hd;
 		code = i;
 		m_startAxis [i] = curAxis [i];
@@ -1261,7 +1255,7 @@ do {
 			break;
 		case BT_JOY_AXIS:
 			//if (m_nChangeMode != m_nPrevChangeMode)
-				controls.ReadJoystick (m_startAxis);
+			//controls.ReadJoystick (m_startAxis);
 			m_nChangeMode = ChangeJoyAxis (m_items + m_nCurItem);
 			break;
 		case BT_INVERT:

@@ -32,8 +32,8 @@ int32_t joyDeadzone [4] = {32767 / 10, 32767 / 10, 32767 / 10, 32767 / 10};	//10
 
 class CJoyInfo {
 	public:
-		int32_t			nAxes;
-		int32_t			nButtons;
+		int32_t		nAxes;
+		int32_t		nButtons;
 		tJoyAxis		axes [MAX_JOYSTICKS * JOY_MAX_AXES];
 		tJoyButton	buttons [MAX_JOYSTICKS * JOY_MAX_BUTTONS];
 

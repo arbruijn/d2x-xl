@@ -15,12 +15,14 @@ class CControlsManager {
 		float				m_frameTime;
 		float				m_lastTick;
 		int32_t			m_joyAxis [JOY_MAX_AXES];
+		bool				m_bConfiguring;
 
 	public:
 		CControlsManager () {
 			m_frameCount = m_maxTurnRate = 0;
 			m_lastTick = 0;
 			m_slackTurnRate = 0;
+			m_bConfiguring = false;
 			}
 		int32_t ReadJoystick (int32_t* joyAxis);
 		void ReadFCS (int32_t nRawAxis);
@@ -50,6 +52,9 @@ class CControlsManager {
 		inline tControlInfo& operator[] (int32_t i) { return m_info [i]; }
 
 		inline int32_t JoyAxis (int32_t i) { return m_joyAxis [i]; }
+
+		inline void Configure (bool bConfigure) { m_bConfiguring = bConfigure; }
+		inline bool Configuring (void) { return m_bConfiguring; }
 
 	private:
 		int32_t AllowToToggle (int32_t i);
