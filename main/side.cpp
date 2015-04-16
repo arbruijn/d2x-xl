@@ -429,7 +429,7 @@ else {
 #endif
 
 ComputeCenter ();
-#if DBG
+#if 1 //DBG
 FixNormals ();
 #endif
 m_bIsQuad = !m_nShape && (m_normals [0] == m_normals [1]);
