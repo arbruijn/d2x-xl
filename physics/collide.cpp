@@ -796,7 +796,7 @@ if (bEscort) {
 	parentObjP = OBJECT (LOCALPLAYER.nObject);
 	}
 else {
-	nPlayer = parentObjP->IsPlayer () ? parentObjP->info.nId : -1;
+	nPlayer = (parentObjP && parentObjP->IsPlayer ()) ? parentObjP->info.nId : -1;
 	}
 
 int32_t bBlewUp = (nHitSide < 0) ? 0 : segP->BlowupTexture (nHitSide, vHitPt, this, 0);

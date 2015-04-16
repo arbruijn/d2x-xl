@@ -1740,18 +1740,19 @@ childObjP->info.nFlags &= ~OF_ATTACHED;
 
 //------------------------------------------------------------------------------
 //dettaches all OBJECTS from this CObject
-void DetachChildObjects (CObject *parentP)
+void DetachChildObjects (CObject *objP)
 {
-	int32_t i =parentP->info.nAttachedObj;
+	int32_t i = objP->info.nAttachedObj;
+	int32_t nParent = objP->IsWeapon () ? objP->cType.explInfo.attached.nParent : -1;
 
-parentP->info.nAttachedObj = -1;
+objP->info.nAttachedObj = -1;
 while (i != -1) {
-	CObject* objP = OBJECT (i);
-	i = objP->cType.explInfo.attached.nNext;
-	objP->cType.explInfo.attached.nNext =
-	objP->cType.explInfo.attached.nPrev =
-	objP->cType.explInfo.attached.nParent = -1;
-	objP->info.nFlags &= ~OF_ATTACHED;
+	CObject* childP = OBJECT (i);
+	i = childP->cType.explInfo.attached.nNext;
+	childP->cType.explInfo.attached.nNext =
+	childP->cType.explInfo.attached.nPrev = -1;
+	childP->cType.explInfo.attached.nParent = nParent;
+	childP->info.nFlags &= ~OF_ATTACHED;
 	}
 }
 

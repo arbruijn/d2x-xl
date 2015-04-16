@@ -58,7 +58,7 @@ static   int32_t nMslTurnSpeeds [3] = {I2X (1) / 2, 3 * I2X (1) / 4, 5 * I2X (1)
 #define	HOMINGMSL_SCALE		nMslTurnSpeeds [(IsMultiGame && !IsCoopGame) ? 2 : extraGameInfo [IsMultiGame].nMslTurnSpeed]
 
 #define	MAX_SMART_DISTANCE	I2X (150)
-#define	MAX_OBJDISTS			30
+#define	MAX_TARGET_OBJS		30
 
 //---------------------------------------------------------------------------------
 
@@ -765,10 +765,10 @@ return nObject;
 // Create the children of a smart bomb, which is a bunch of homing missiles.
 void CreateSmartChildren (CObject *objP, int32_t nSmartChildren)
 {
-	tParentInfo	parent;
+	tParentInfo		parent;
 	int32_t			bMakeSound;
 	int32_t			nObjects = 0;
-	int32_t			objList [MAX_OBJDISTS];
+	int32_t			targetList [MAX_TARGET_OBJS];
 	uint8_t			nBlobId, 
 						nObjType = objP->info.nType, 
 						nObjId = objP->info.nId;
@@ -796,8 +796,8 @@ if (nObjType == OBJ_WEAPON) {
 else if (nObjType != OBJ_ROBOT) // && ((nObjType != OBJ_WEAPON) || (gameData.weapons.info [nObjId].children < 1)))
 	return;
 
+CObject	*curObjP;
 int32_t	i, nObject;
-CObject*	curObjP;
 
 if (IsMultiGame)
 	gameStates.app.SRand (8321L);
@@ -824,15 +824,10 @@ FORALL_OBJS (curObjP) {
 	else
 		continue;
 	fix dist = CFixVector::Dist (objP->info.position.vPos, curObjP->info.position.vPos);
-	if (dist < MAX_SMART_DISTANCE) {
-		int32_t	oovis = ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL);
-		if (oovis) { //ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL)) {
-			objList [nObjects++] = nObject;
-			if (nObjects >= MAX_OBJDISTS) {
-				nObjects = MAX_OBJDISTS;
-				break;
-				}
-			}
+	if ((dist < MAX_SMART_DISTANCE) && ObjectToObjectVisibility (objP, curObjP, FQ_TRANSWALL)) {
+		targetList [nObjects++] = nObject;
+		if (nObjects >= MAX_TARGET_OBJS)
+			break;
 		}
 	}
 //	Get type of weapon for child from parent.
@@ -843,10 +838,14 @@ else {
 	Assert (nObjType == OBJ_ROBOT);
 	nBlobId = ROBOT_SMARTMSL_BLOB_ID;
 	}
+
 bMakeSound = 1;
+CObject *parentP = objP->IsWeapon () ? OBJECT (parent.nObject) : objP;
+if (!parentP)
+	parentP = objP;
 for (i = 0; i < nSmartChildren; i++) {
-	int16_t nTarget = nObjects ? objList [(RandShort () * nObjects) >> 15] : -1;
-	CreateHomingWeapon (objP, nTarget, nBlobId, bMakeSound);
+	int16_t nTarget = nObjects ? targetList [Rand (nObjects)] : -1;
+	CreateHomingWeapon (parentP, nTarget, nBlobId, bMakeSound);
 	bMakeSound = 0;
 	}
 }

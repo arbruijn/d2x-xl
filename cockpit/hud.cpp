@@ -194,32 +194,51 @@ if (cockpit->Hide ())
 #if 0 //DBG
 if (gameData.time.xGame & 0x4000) {
 #else
-if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
+//if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) 
+{
 #endif
 	int32_t	x, y, nOffsetSave = -1;
+	int32_t nLayout = ogl.IsOculusRift () ? -1 : gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
+	int32_t w, h, aw;
 
-	if (ogl.IsOculusRift ()) {
-		int32_t w, h, aw;
+	if (nLayout >= 0) {
+		ScaleUp ();
 		fontManager.Current ()->StringSize (TXT_LOCK, w, h, aw);
-		x = CCanvas::Current ()->Width () / 2 - w / 2;
-		y = AdjustCockpitY (-4 * LineSpacing ());
-		//y = CCanvas::Current ()->Height () / 2 + 4 * h;
-		nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
+		x = gameData.render.scene.Width () / 2 - w / 2;
+		y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (0)) + (nLayout ? LineSpacing () : 0);
+		if (!nLayout) 
+			SetFontColor (RED_RGBA);
+		else {
+			CCanvas::Current ()->SetColorRGB (255, 0, 0, 255);
+			OglDrawFilledRect (x - 5, y - 4, x + w + 3, y + h + 3);
+			SetFontColor (BLACK_RGBA);
+			}
+		nIdLock = DrawHUDText (&nIdLock, x, y, TXT_LOCK);
+		ScaleDown ();
 		}
 	else {
-		x = 0x8000;
-		y = CCanvas::Current ()->Height () - LineSpacing ();
-		if ((hudIcons.Visible () && (extraGameInfo [0].nWeaponIcons == 2)) ||
-			(hudIcons.Inventory () && (extraGameInfo [0].nWeaponIcons & 1)))
-			y -= LHY (30);
-		m_info.bAdjustCoords = true;
+		fontManager.Current ()->StringSize (TXT_LOCK, w, h, aw);
+		if (nLayout < 0) {
+			x = CCanvas::Current ()->Width () / 2 - w / 2;
+			y = AdjustCockpitY (-4 * LineSpacing ());
+			//y = CCanvas::Current ()->Height () / 2 + 4 * h;
+			nOffsetSave = gameData.SetStereoOffsetType (STEREO_OFFSET_NONE);
+			}
+		else {
+			x = 0x8000;
+			y = CCanvas::Current ()->Height () - LineSpacing ();
+			if ((hudIcons.Visible () && (extraGameInfo [0].nWeaponIcons == 2)) ||
+				(hudIcons.Inventory () && (extraGameInfo [0].nWeaponIcons & 1)))
+				y -= LHY (30);
+			m_info.bAdjustCoords = true;
+			}
+		if ((m_info.weaponBoxUser [0] != WBU_WEAPON) || (m_info.weaponBoxUser [1] != WBU_WEAPON)) {
+			int32_t wy = (m_info.weaponBoxUser [0] != WBU_WEAPON) ? SW_y [0] : SW_y [1];
+			y = Min (y, (wy - LineSpacing () - gameData.render.frame.Top ()));
+			}
+		SetFontColor (RED_RGBA);
+		nIdLock = DrawHUDText (&nIdLock, x, y, TXT_LOCK);
 		}
-	if ((m_info.weaponBoxUser [0] != WBU_WEAPON) || (m_info.weaponBoxUser [1] != WBU_WEAPON)) {
-		int32_t wy = (m_info.weaponBoxUser [0] != WBU_WEAPON) ? SW_y [0] : SW_y [1];
-		y = Min (y, (wy - LineSpacing () - gameData.render.frame.Top ()));
-		}
-	SetFontColor (RED_RGBA);
-	nIdLock = DrawHUDText (&nIdLock, x, y, TXT_LOCK);
 	gameData.SetStereoOffsetType (nOffsetSave);
 	}
 }
@@ -316,8 +335,8 @@ if (ShowTextGauges ()) {
 	if (nLayout) {
 		ScaleUp ();
 		sprintf (szGauge, "%i", (int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
-		x = gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistWidth*/0));
-		y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistHeight*/0));
+		x = gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET (0));
+		y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (0));
 		SetFontColor (RGBA (0,128,255,255));
 		//gameStates.render.grAlpha = 0.5f;
 		}
@@ -424,8 +443,8 @@ if (ShowTextGauges ()) {
 	if (nLayout) {
 		ScaleUp ();
 		sprintf (szGauge, "%i", h);
-		x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistWidth*/0)) - StringWidth (szGauge);
-		y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistHeight*/0));
+		x = gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (0)) - StringWidth (szGauge);
+		y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (0));
 		SetFontColor (GOLD_RGBA);
 		//gameStates.render.grAlpha = 0.5f;
 		}
@@ -522,7 +541,7 @@ if (ShowTextGauges ()) {
 		ScaleUp ();
 		sprintf (szGauge, "%i", h);
 		x = gameData.render.scene.Width () / 2 - StringWidth (szGauge) / 2;
-		y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistHeight*/0));
+		y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (0));
 		SetFontColor (RED_RGBA);
 		//gameStates.render.grAlpha = 0.5f;
 		}
@@ -1235,8 +1254,8 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_INVULNERABLE) &&
 	if (nLayout) {
 		ScaleUp ();
 		SetFontColor (RGBA (192, 192, 192, 255));
-		nIdInvul = DrawHUDText (&nIdInvul, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistWidth*/0)), 
-										gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistHeight*/0)) + ((nLayout == 2) ? 1 : 3) * LineSpacing (), "%s", "INV");
+		nIdInvul = DrawHUDText (&nIdInvul, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET (0)), 
+										gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (0)) + ((nLayout == 2) ? 1 : 3) * LineSpacing (), "%s", "INV");
 		ScaleDown ();
 		}
 	else {
@@ -1274,8 +1293,8 @@ if ((LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED) &&
 	if (nLayout) {
 		ScaleUp ();
 		SetFontColor (RGBA (192, 192, 192, 255));
-		nIdCloak = DrawHUDText (&nIdCloak, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistWidth*/0)) - StringWidth ("CLK", 0), 
-										gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (/*gameOpts->render.cockpit.nMinimalistHeight*/0)) + ((nLayout == 2) ? 1 : 3) * LineSpacing (), "%s", "CLK");
+		nIdCloak = DrawHUDText (&nIdCloak, gameData.render.scene.Width () / 2 - ScaleX (X_GAUGE_OFFSET (0)) - StringWidth ("CLK", 0), 
+										gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (0)) + ((nLayout == 2) ? 1 : 3) * LineSpacing (), "%s", "CLK");
 		ScaleDown ();
 		}
 	else {
