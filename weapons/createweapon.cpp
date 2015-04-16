@@ -459,6 +459,8 @@ return CreateNewWeapon (vDirection, &hitResult.vPoint, (int16_t) hitResult.nSegm
 
 bool FixWeaponObject (CObject* objP, bool bFixType)
 {
+if (!IsMultiGame)
+	return true;
 if (!objP->IsWeapon ()) {
 	if (!bFixType) 
 		return true;
