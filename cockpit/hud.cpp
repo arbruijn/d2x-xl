@@ -824,6 +824,7 @@ void CHUD::DrawPrimaryWeaponList (void)
 	int32_t	nLineSpacing = cockpit->LineSpacing ();
 	int32_t	x = gameData.render.scene.Width () / 2 - cockpit->ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth) * 3);
 	int32_t	y = WeaponListTop ();
+	int32_t	t = y;
 	int32_t	nMaxAutoSelect = 255;
 	bool		bLasers = false;
 	char		szLabel [2] = {'\0', '\0'}, szAmmo [20];
@@ -897,6 +898,12 @@ for (int32_t j = 0; j < n; j++) {
 	GrPrintF (NULL, x - StringWidth (szAmmo), y, szAmmo);
 	y += nLineSpacing;
 	}
+if (gameOpts->render.cockpit.bDecoration) {
+	CCanvas::Current ()->Color ().Set (128, 128, 128, 255);
+	glLineWidth (2);
+	OglDrawLine (x + 2, t, x + 2, y - 2);
+	glLineWidth (1);
+	}
 }
 
 //	-----------------------------------------------------------------------------
@@ -904,10 +911,11 @@ for (int32_t j = 0; j < n; j++) {
 int32_t CHUD::StrProxMineStatus (char* pszList, int32_t l, int32_t n, char tag, int32_t* nState)
 {
 int32_t	bActive, bHave, bAvailable;
-hudIcons.GetWeaponState (bHave, bAvailable, bActive, 1, n, n);
+hudIcons.GetWeaponState (bHave, bAvailable, bActive, 1, (n == 2) ? 9 : 8, n);
 nState [1] = (bHave && bAvailable) | (bActive << 1);
 if (nState [1] != nState [0])
 	l = StrWeaponStateColor (pszList, l, bHave && bAvailable, bActive);
+nState [0] = nState [1];
 pszList [l++] = tag;
 return l;
 }
@@ -970,10 +978,11 @@ void CHUD::DrawSecondaryWeaponList (void)
 	int32_t	bActive, bHave, bAvailable;
 	int32_t	nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
 	int32_t	nMaxAutoSelect = 255;
-	int32_t	nState [2] = {-1, 0};
 	int32_t	nLineSpacing = cockpit->LineSpacing ();
+	int32_t	nState [2] = {-1, 0};
 	int32_t	x = gameData.render.scene.Width () / 2 + cockpit->ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth) * 3);
 	int32_t	y = WeaponListTop ();
+	int32_t	t = y;
 	char		szLabel [2] = {'\0', '\0'}, szAmmo [20];
 
 for (int32_t nType = 0; nType < 2; nType++) {
@@ -981,12 +990,12 @@ for (int32_t nType = 0; nType < 2; nType++) {
 		int32_t k = nType ? j : hudIcons.GetWeaponIndex (1, j, nMaxAutoSelect);
 		if (nType != ((k == 2) || (k == 7))) // prox bomb, smart mine
 			continue;
-		hudIcons.GetWeaponState (bHave, bAvailable, bActive, 1, j, k);
+		hudIcons.GetWeaponState (bHave, bAvailable, bActive, 1, nType ? (j == 2) ? 9 : 8 : j, k);
 		nState [1] = (bHave && bAvailable) | (bActive << 1);
 		if (nState [1] != nState [0])
 			SetWeaponStateColor (bHave && bAvailable, bActive);
 		szLabel [0] = szWeaponIds [k];
-		nState [0] = nState [1];
+		nState [1] = nState [1];
 		GrPrintF (NULL, x, y, szLabel);
 		if (LOCALPLAYER.secondaryAmmo [k]) {
 			sprintf (szAmmo, "%d", LOCALPLAYER.secondaryAmmo [k]);
@@ -996,6 +1005,12 @@ for (int32_t nType = 0; nType < 2; nType++) {
 		}
 	y += nLineSpacing / 2;
 	}
+if (gameOpts->render.cockpit.bDecoration) {
+	CCanvas::Current ()->Color ().Set (128, 128, 128, 255);
+	glLineWidth (2);
+	OglDrawLine (x - 4, t, x - 4, y - nLineSpacing / 2 - 2);
+	glLineWidth (1);
+	}
 }
 
 //	-----------------------------------------------------------------------------
@@ -1003,6 +1018,7 @@ for (int32_t nType = 0; nType < 2; nType++) {
 int32_t CHUD::DrawAmmoCount (char* szLabel, int32_t x, int32_t y, int32_t j, int32_t k, int32_t* nState)
 {
 int32_t	bActive, bHave, bAvailable;
+
 hudIcons.GetWeaponState (bHave, bAvailable, bActive, 1, j, k);
 nState [1] = (bHave && bAvailable) | (bActive << 1);
 if (nState [1] != nState [0])
@@ -1039,7 +1055,7 @@ void CHUD::DrawSecondaryAmmoList (char* pszList)
 	int32_t	nState [2] = {-1, 0};
 	int32_t	nLineSpacing = cockpit->LineSpacing ();
 	int32_t	x = gameData.render.scene.Width () / 2 + cockpit->ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth));
-	int32_t	y = WeaponListTop ();
+	int32_t	y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistHeight)) + LineSpacing () * 2;
 
 for (int32_t j = 0; j < n; j++) {
 	if (pszList [l] == '\01')
@@ -1053,11 +1069,11 @@ for (int32_t j = 0; j < n; j++) {
 x += fontManager.Current ()->GetCharWidth (pszList + l++);
 if (pszList [l] == '\01')
 	l += 4;
-x = DrawAmmoCount (pszList + l++, x, y, 2, 2, nState);
+x = DrawAmmoCount (pszList + l++, x, y, 9, 2, nState);
 if (!gameStates.app.bD1Mission) {
 	if (pszList [l] == '\01')
 		l += 4;
-	x = DrawAmmoCount (pszList + l, x, y, 7, 7, nState);
+	x = DrawAmmoCount (pszList + l, x, y, 8, 7, nState);
 	}
 }
 
@@ -1185,7 +1201,7 @@ else {
 		DrawSecondaryWeaponList ();
 	else {
 		DrawHUDText (NULL, gameData.render.scene.Width () / 2 + ScaleX (X_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistWidth)), 
-						 gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistHeight)) + LineSpacing () * ((nLayout == 2) ? 3 : 1), StrSecondaryWeaponList (szLabel));
+						 gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (gameOpts->render.cockpit.nMinimalistHeight)) + LineSpacing (), StrSecondaryWeaponList (szLabel));
 		DrawSecondaryAmmoList (szLabel + 1);
 		}
 	ScaleDown ();
@@ -1294,6 +1310,62 @@ else if (LOCALPLAYER.lives > 1)  {
 	SetFontColor (MEDGREEN_RGBA);
 	nIdLives = DrawHUDText (&nIdLives, 10 + bmP->Width () + 4, 4, "x %d", LOCALPLAYER.lives - 1);
 	}
+}
+
+//	-----------------------------------------------------------------------------
+
+void CHUD::DrawSlowMotion (void)
+{
+int32_t nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
+
+if (!nLayout) {
+	CGenericCockpit::DrawSlowMotion ();
+	return;
+	}
+
+if (Hide ())
+	return;
+if (gameStates.render.bRearView)
+	return;
+if ((LOCALPLAYER.Energy () <= I2X (10)) || !(LOCALPLAYER.flags & PLAYER_FLAGS_SLOWMOTION))
+	return;
+
+char szSlowMotion [40];
+
+sprintf (szSlowMotion, "M%1.1f  S%1.1f",
+			gameStates.gameplay.slowmo [0].fSpeed,
+			gameStates.gameplay.slowmo [1].fSpeed);
+
+SetFontColor (GREEN_RGBA);
+ScaleUp ();
+int32_t x = gameData.render.scene.Width () / 2;
+int32_t y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (0)) + (((nLayout == 1) ? 8 : 7) * LineSpacing ()) / 2;
+int32_t w, h, aw;
+fontManager.Current ()->StringSize (szSlowMotion, w, h, aw);
+w /= 2;
+DrawHUDText (NULL, x - w, y, "%s", szSlowMotion);
+if (gameOpts->render.cockpit.bDecoration) {
+	int32_t l = x - w - 4;
+	int32_t r = x + w + 1;
+	int32_t t = y - 4;
+	int32_t b = y + h + 3;
+
+	//CCanvas::Current ()->Color ().Set (0, 255, 0, 255);
+	CCanvas::Current ()->Color ().Set (0, 160, 0, 100);
+	OglDrawLine (l, t + 4, l, b - 3);
+	OglDrawLine (l + 1, t + 2, l + 1, b - 1);
+	OglDrawLine (r, t + 4, r, b - 3);
+	OglDrawLine (r - 1, t + 2, r - 1, b - 1);
+
+	OglDrawLine (l + 3, t, r - 4, t);
+	OglDrawLine (l + 1, t + 1, r - 2, t + 1);
+	OglDrawLine (l + 3, b, r - 4, b);
+	OglDrawLine (l + 1, b - 1, r - 2, b - 1);
+
+	CCanvas::Current ()->Color ().Set (0, 160, 0, 100);
+	OglDrawFilledRect (l + 1, t + 2, r - 2, b - 1);
+	}
+ScaleDown ();
 }
 
 //	-----------------------------------------------------------------------------

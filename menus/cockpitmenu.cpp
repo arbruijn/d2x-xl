@@ -240,6 +240,8 @@ if ((m = menu ["target indicators"])) {
 if ((m = menu ["minimalist hud"])) {
 	v = m->Value ();
 	if (gameOpts->render.cockpit.nShipStateLayout != v) {
+		if (!gameOpts->render.cockpit.nShipStateLayout)
+			nCurItem = -nCurItem;
 		gameOpts->render.cockpit.nShipStateLayout = v;
 		m->Rebuild ();
 		key = -2;
@@ -431,8 +433,10 @@ do {
 				m.AddSlider ("hud width", szSlider, gameOpts->render.cockpit.nMinimalistWidth, 0, 2, KEY_W, HTX_MINIMALIST_HUD_WIDTH);
 				sprintf (szSlider, TXT_MINIMALIST_HUD_HEIGHT, szHUDHeight [gameOpts->render.cockpit.nMinimalistHeight]);
 				m.AddSlider ("hud height", szSlider, gameOpts->render.cockpit.nMinimalistHeight, 0, 2, KEY_H, HTX_MINIMALIST_HUD_HEIGHT);
+				m.AddCheck ("hud deco", TXT_MINIMALIST_HUD_DECO, gameOpts->render.cockpit.bDecoration, KEY_C, HTX_MINIMALIST_HUD_DECO);
 				}
 			}
+		m.AddText ("", "");
 		}
 #endif
 	sprintf (szSlider, TXT_TARGET_INDICATORS, szTgtInd [nTgtInd]);
@@ -514,6 +518,7 @@ do {
 		GET_VAL (gameOpts->render.weaponIcons.nSort, "sort weapon icons");
 	GET_VAL (extraGameInfo [0].bHideIndicators, "hide target indicators");
 	GET_VAL (gameOpts->render.cockpit.nShipStateLayout, "minimalist hud");
+	GET_VAL (gameOpts->render.cockpit.bDecoration, "hud deco");
 	if (gameOpts->render.cockpit.nShipStateLayout)
 		GET_VAL (gameOpts->render.cockpit.nColorScheme, "color scheme");
 	//GET_VAL (extraGameInfo [0].bTargetIndicators, "target indicators");

@@ -181,7 +181,6 @@ class CGenericCockpit {
 		void DrawPacketLoss (void);
 		void DrawFrameRate (void);
 		void DrawPlayerStats (void);
-		void DrawSlowMotion (void);
 		void DrawTime (void);
 		void DrawTimerCount (void);
 		void PlayHomingWarning (void);
@@ -251,6 +250,7 @@ class CGenericCockpit {
 		virtual void DrawCockpit (bool bAlphaTest = false) = 0;
 		virtual void SetupWindow (int32_t nWindow) = 0;
 		virtual bool Setup (bool bScene = false, bool bRebuild = false);
+		virtual void DrawSlowMotion (void);
 
 		inline CCockpitInfo& Info (void) { return m_info; }
 		inline int32_t Type (void) { return m_info.nType; }
@@ -318,6 +318,7 @@ class CHUD : public CGenericCockpit {
 		virtual void DrawAfterburnerText (void);
 		virtual void DrawAfterburnerBar (void);
 		virtual void DrawEnergyLevels (void);
+		virtual void DrawSlowMotion (void);
 		virtual void ClearBombCount (int32_t bgColor);
 		virtual void DrawBombCount (void);
 		virtual int32_t DrawBombCount (int32_t& nIdBombCount, int32_t y, int32_t x, int32_t nColor, char* pszBombCount);

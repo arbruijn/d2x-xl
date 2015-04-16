@@ -173,7 +173,7 @@ return 1;
 
 void CLightClusterManager::Add (int16_t nObject, int16_t nLightObj)
 {
-CObject* lightP = OBJECTEX (nLightObj, GAMEDATA_ERRLOG_ALL);
+CObject* lightP = OBJECT (nLightObj);
 
 m_objects [nObject].nObject = lightP ? nLightObj : -1;
 if (lightP) {

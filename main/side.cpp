@@ -221,29 +221,50 @@ SetupVertexList (verts, index);
 void CSide::FixNormals (void)
 {
 #if 1
-	CFloatVector vRef;
-	
-vRef.Assign (SEGMENT (m_nSegment)->Center () - m_vCenter);
-CFloatVector::Normalize (vRef);
-
 #if DBG
 if (((nDbgSeg > 0) && (nDbgSeg == m_nSegment)) && ((nDbgSide < 0) || (this - SEGMENT (m_nSegment)->m_sides == nDbgSide)))
 	BRP;
 bool bFlip = false;
 #endif
 
-for (int32_t i = 0; i < 3; i++) {
-	if (CFloatVector::Dot (m_fNormals [i], vRef) < 0) {
+{
+	CFloatVector vRef;
+	vRef.Assign (SEGMENT (m_nSegment)->Center () - m_vCenter);
+	CFloatVector::Normalize (vRef);
+
+	for (int32_t i = 0; i < 2; i++) {
+		if (CFloatVector::Dot (m_fNormals [i], vRef) < 0) {
 #if DBG
-		if (!bFlip) {
-			BRP;
-			bFlip = true;
-			}
+			if (!bFlip) {
+				BRP;
+				bFlip = true;
+				}
 #endif
-		m_normals [i].Neg ();
-		m_fNormals [i].Neg ();
+			m_fNormals [i].Neg ();
+			}
 		}
+	m_fNormals [2] = CFloatVector::Avg (m_fNormals [0], m_fNormals [1]);
 	}
+
+{
+	CFixVector vRef;
+	vRef = SEGMENT (m_nSegment)->Center () - m_vCenter;
+	CFixVector::Normalize (vRef);
+
+	for (int32_t i = 0; i < 2; i++) {
+		if (CFixVector::Dot (m_normals [i], vRef) < 0) {
+#if DBG
+			if (!bFlip) {
+				BRP;
+				bFlip = true;
+				}
+#endif
+			m_fNormals [i].Neg ();
+			}
+		}
+	m_normals [2] = CFixVector::Avg (m_normals [0], m_normals [1]);
+	}
+
 #endif
 }
 

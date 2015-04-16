@@ -2010,10 +2010,10 @@ void LoadGameTexts(void);
 #define TXT_MINIMALIST_HUD_HIGH		GT(1252)
 #define TXT_MINIMALIST_HUD_MIDDLE	GT(1253)
 #define TXT_MINIMALIST_HUD_LOW		GT(1254)
+#define TXT_MINIMALIST_HUD_DECO		GT(1255)
 
 #if 0
 
-#define TXT_					GT(1255)
 #define TXT_					GT(1256)
 #define TXT_					GT(1257)
 #define TXT_					GT(1258)
@@ -2629,10 +2629,10 @@ void LoadGameTexts(void);
 #define HTX_HUD_COLOR_SCHEME			HT(449)
 #define HTX_MINIMALIST_HUD_WIDTH		HT(450)
 #define HTX_MINIMALIST_HUD_HEIGHT	HT(451)
+#define HTX_MINIMALIST_HUD_DECO		HT(452)
 
 #if 0
 
-#define HTX_						HT(452)
 #define HTX_						HT(453)
 #define HTX_						HT(454)
 #define HTX_						HT(455)

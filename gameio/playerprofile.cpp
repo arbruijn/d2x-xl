@@ -485,6 +485,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.cockpit.bObjectTally, i, 0);
 		RP (gameOptions [i].render.cockpit.bPlayerStats, i, 0);
 		RP (gameOptions [i].render.cockpit.nShipStateLayout, i, 0);
+		RP (gameOptions [i].render.cockpit.bDecoration, i, 0);
 		RP (gameOptions [i].render.cockpit.nColorScheme, i, 0);
 		RP (gameOptions [i].render.cockpit.nMinimalistWidth, i, 0);
 		RP (gameOptions [i].render.cockpit.nMinimalistHeight, i, 0);

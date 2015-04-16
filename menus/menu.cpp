@@ -1555,12 +1555,12 @@ while (!m_bDone) {
 
 	if (m_nKey < -1) {
 		m_bDontRestore = (m_nKey == -3);		// - 3 means don't restore
-		if (m_nChoice >= 0)
-			m_nChoice = m_nKey;
-		else {
-			m_nChoice = -m_nChoice -1;
-			*nCurItemP = m_nChoice;
+		if (m_nChoice < 0) {
+			m_nChoice = -m_nChoice - 1;
+			if (nCurItemP)
+				*nCurItemP = m_nChoice;
 			}
+		m_nChoice = m_nKey;
 		m_nKey = -1;
 		m_bDone = 1;
 		}

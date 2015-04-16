@@ -243,15 +243,15 @@ return vGunPoints;
 CFixVector *TransformGunPoint (CObject *objP, CFixVector *vGunPoints, int32_t nGun,
 										 fix xDelay, uint8_t nLaserType, CFixVector *vMuzzle, CFixMatrix *mP)
 {
-	int32_t						bSpectate = SPECTATOR (objP);
+	int32_t					bSpectate = SPECTATOR (objP);
 	tObjTransformation*	posP = bSpectate ? &gameStates.app.playerPos : &objP->info.position;
 	CFixMatrix				m, *viewP;
 	CFixVector				v [2];
 #if FULL_COCKPIT_OFFS
-	int32_t						bLaserOffs = ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) &&
+	int32_t					bLaserOffs = ((gameStates.render.cockpit.nType == CM_FULL_COCKPIT) &&
 												  (objP->Index () == LOCALPLAYER.nObject));
 #else
-	int32_t						bLaserOffs = 0;
+	int32_t					bLaserOffs = 0;
 #endif
 
 if (nGun < 0) {	// use center between gunPoints nGun and nGun + 1

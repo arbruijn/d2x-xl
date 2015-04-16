@@ -107,7 +107,7 @@ int32_t CLightmapManager::Bind (int32_t nLightmap)
 {
 	tLightmapBuffer	*lmP = &m_list.buffers [nLightmap];
 #if DBG
-	int32_t					nError;
+	int32_t				nError;
 #endif
 
 if (lmP->handle)
@@ -423,7 +423,7 @@ for (int32_t y = 0; y < h; y++) {
 
 void CLightmapManager::Blur (CSegFace* faceP, CLightmapFaceData& source)
 {
-#if 1 //!DBG
+#if !DBG
 	CLightmapFaceData	tempData;
 
 Blur (faceP, source, tempData, 0);

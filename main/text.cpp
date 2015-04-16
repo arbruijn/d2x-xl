@@ -1985,7 +1985,7 @@ const char *defaultGameTexts [][2] = {
  {"\x01\xff\xe0\x80 Ein neues Descent entsteht!\n\nBitte unterstuetze\x01\xff\x80\x80 Descent Underground\x01\xff\xe0\x80 \n\nauf Kickstarter!", 
   "\x01\xff\xe0\x80 A NEW DESCENT IS IN THE MAKING!\n\nPLEASE SUPPORT\x01\xff\x80\x80 DESCENT:UNDERGROUND\n\n\x01\xff\xe0\x80ON KICKSTARTER!\n"},
  {"descent under~Ground", "descent under~Ground"},
- {"m~Inimal-hud: %s", "m~Inimalist hud: %s"},
+ {"~Minimal-hud: %s", "~Minimalist hud: %s"},
  {"Spalten", "Columns"},
  {"Zeilen", "Rows"},
  {"~Minimalistisches hud", "~Minimalist hud"},
@@ -2002,6 +2002,7 @@ const char *defaultGameTexts [][2] = {
  {"oben", "high"},
  {"mitte", "middle"},
  {"unten", "low"},
+ {"hud-de~Koration", "hud de~Coration"},
  
 #if 0
  {"", ""},
@@ -2767,8 +2768,9 @@ const char *defaultHelpTexts [][2] = {
  {"Mit diesem Regler kann die Ladegeschwindigkeit von Schiffsenergie\nund -schild angepasst werden.", "Adjust the speed at which ship energy and shields are recharged\nwith this slider."},
  {"Hier kann die Farbe ausgeruesteter Waffen ausgewaehlt werden.", "Chose the color of equipped weapons here."},
  {"Hier kann der Abstand des Minimal-HUDs vom Fadenkreuz angepasst werden.", "Adjust the distance of the minimalist HUD from the reticle here."},
-#if 0
  {"Hier kann der Abstand des Minimal-HUDs vom oberen Bildschirmrand\nangepasst werden.", "Adjust the distance of the minimalist HUD from the\nupper screen border here."},
+ {"Wenn angekreuzt, wird das Minimal-HUD mit zusätzlichen Linien\nversehen, um seine Elemente besser abzusetzen.", "If checked, the minimalist HUD is drawn with additional\nlines to better separate it from the reticle."},
+#if 0
  {"", ""},
 #endif
  {"", ""}

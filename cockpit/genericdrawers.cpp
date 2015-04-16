@@ -401,33 +401,17 @@ if (gameStates.render.bRearView)
 	return;
 if ((LOCALPLAYER.Energy () <= I2X (10)) || !(LOCALPLAYER.flags & PLAYER_FLAGS_SLOWMOTION))
 	return;
-
-	char	szScore [40];
-	int32_t	w, h, aw;
-
 if ((gameData.hud.msgs [0].nMessages > 0) &&
 	 (strlen (gameData.hud.msgs [0].szMsgs [gameData.hud.msgs [0].nFirst]) > 38))
 	return;
-szScore [0] = (char) 1;
-szScore [1] = (char) (127 + 128);
-szScore [2] = (char) (127 + 128);
-szScore [3] = (char) (0 + 128);
-#if !DBG
-if (!SlowMotionActive ())
-	strcpy (szScore + 4, "          ");
-else
-#endif
-	sprintf (szScore + 4, "M%1.1f S%1.1f ",
-				gameStates.gameplay.slowmo [0].fSpeed,
-				gameStates.gameplay.slowmo [1].fSpeed);
-szScore [14] = (char) 1;
-szScore [15] = (char) (0 + 128);
-szScore [16] = (char) (127 + 128);
-szScore [17] = (char) (0 + 128);
-szScore [18] = (char) (0);
-fontManager.Current ()->StringSize (szScore, w, h, aw);
-SetFontColor (GREEN_RGBA);
-DrawHUDText (NULL, -2 * w - LHX (2), 3, szScore);
+
+char		szSlowMotion [40];
+sprintf (szSlowMotion, "M%1.1f S%1.1f ",
+			gameStates.gameplay.slowmo [0].fSpeed,
+			gameStates.gameplay.slowmo [1].fSpeed);
+SetFontColor (GOLD_RGBA);
+int32_t nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
+DrawHUDText (NULL, -3 * StringWidth (szSlowMotion) - LHX (2), 3, szSlowMotion);
 }
 
 //	-----------------------------------------------------------------------------
