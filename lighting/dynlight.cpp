@@ -674,9 +674,9 @@ else {
 		}
 
 	v1.Assign (*vPoint);
-
 	if (vNormal) 
 		vNormalf.Assign (*vNormal);
+
 	for (i = 0; i < nVertices; i++) {
 		CFloatVector vLightToPointf = v1 - vLight [i];
 		CFloatVector::Normalize (vLightToPointf);
