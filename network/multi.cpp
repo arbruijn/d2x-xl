@@ -852,7 +852,7 @@ if ((nPlayer == N_LOCALPLAYER) || (nPlayer >= MAX_NUM_NET_PLAYERS) || (nPlayer <
 #endif
 
 CObject *objP = OBJECT (PLAYER (nPlayer).nObject);
-if (objP && (objP->Type () == OBJ_PLAYER)) {
+if (objP) {
 	objP->SetType (OBJ_GHOST);
 	objP->info.renderType = RT_NONE;
 	objP->info.movementType = MT_NONE;
@@ -874,7 +874,7 @@ if ((nPlayer == N_LOCALPLAYER) || (nPlayer >= MAX_NUM_NET_PLAYERS)) {
 #endif
 
 CObject *objP = OBJECT (PLAYER (nPlayer).nObject);
-if (objP && (objP->Type () == OBJ_GHOST)) {
+if (objP) {
 	objP->SetType (OBJ_PLAYER);
 	objP->info.movementType = MT_PHYSICS;
 	MultiResetPlayerObject (objP);

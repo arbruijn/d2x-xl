@@ -666,7 +666,7 @@ typedef union tObjControlInfo {
 
 typedef union tObjRenderInfo {
 	tPolyObjInfo			polyObjInfo;   // polygon model
-	tAnimationState			animationInfo;     // tAnimationInfo
+	tAnimationState		animationInfo;     // tAnimationInfo
 	tParticleInfo			particleInfo;
 	tLightningInfo			lightningInfo;
 	tSoundInfo				soundInfo;
