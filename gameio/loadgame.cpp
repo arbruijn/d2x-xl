@@ -492,6 +492,23 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 
 //------------------------------------------------------------------------------
 
+bool StartObserverMode (int32_t nPlayer, int32_t nMode)
+{
+#if DBG
+if ((nMode == 2) && (nPlayer == N_LOCALPLAYER) && gameOpts->gameplay.bObserve) {
+#else
+if (IsMultiGame && (nMode == 2) && (nPlayer == N_LOCALPLAYER) && gameOpts->gameplay.bObserve) {
+#endif
+	gameStates.render.bObserving = 1;
+	MultiMakePlayerGhost (N_LOCALPLAYER);
+	LOCALPLAYER.SetObservedPlayer (-1);
+	return true;
+	}
+return false;
+}
+
+//------------------------------------------------------------------------------
+
 // Setup player for a brand-new ship
 void ResetShipData (int32_t nPlayer, int32_t nMode)
 {
@@ -575,15 +592,7 @@ if (objP) {
 	OBJECT (nPlayer)->ResetDamage ();
 	AddPlayerLoadout (nMode == 1);
 	objP->info.nType = OBJ_PLAYER;
-#if DBG
-	if ((nMode == 2) && (nPlayer == N_LOCALPLAYER) && gameOpts->gameplay.bObserve) {
-#else
-	if (IsMultiGame && (nMode == 2) && (nPlayer == N_LOCALPLAYER) && gameOpts->gameplay.bObserve) {
-#endif
-		gameStates.render.bObserving = 1;
-		MultiMakePlayerGhost (N_LOCALPLAYER);
-		LOCALPLAYER.SetObservedPlayer (-1);
-		}
+	StartObserverMode (nPlayer, nMode);
 	objP->SetLife (IMMORTAL_TIME);
 	objP->info.nFlags = 0;
 	objP->rType.polyObjInfo.nSubObjFlags = 0;
@@ -1733,8 +1742,10 @@ PrintLog (0, "initializing player position\n");
 gameStates.app.nSpawnPos = InitPlayerPosition (bRandom, gameStates.app.nSpawnPos);
 if (OBSERVING)
 	automap.SetActive (-1);
-else
+else {
 	gameStates.app.nSpawnPos = -1;
+	MultiMakeGhostPlayer (N_LOCALPLAYER);
+	}
 gameData.objData.consoleP->info.controlType = CT_FLYING;
 gameData.objData.consoleP->info.movementType = MT_PHYSICS;
 DisableObjectProducers ();
