@@ -316,26 +316,33 @@ FORALL_OBJS (objP)
 
 //------------------------------------------------------------------------------
 
-void ResetPlayerObject (void)
+bool ResetPlayerObject (CObject* objP)
 {
 //Init physics
-gameData.objData.consoleP->mType.physInfo.velocity.SetZero ();
-gameData.objData.consoleP->mType.physInfo.thrust.SetZero ();
-gameData.objData.consoleP->mType.physInfo.rotVel.SetZero ();
-gameData.objData.consoleP->mType.physInfo.rotThrust.SetZero ();
-gameData.objData.consoleP->mType.physInfo.brakes = gameData.objData.consoleP->mType.physInfo.turnRoll = 0;
-gameData.objData.consoleP->mType.physInfo.mass = gameData.pig.ship.player->mass;
-gameData.objData.consoleP->mType.physInfo.drag = gameData.pig.ship.player->drag;
-gameData.objData.consoleP->mType.physInfo.flags |= PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUST;
+if (!objP)
+	objP = gameData.objData.consoleP;
+if (objP > OBJECT (gameData.objData.nLastObject [0]))
+	return false;
+if ((objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_GHOST))
+	return false;
+objP->mType.physInfo.velocity.SetZero ();
+objP->mType.physInfo.thrust.SetZero ();
+objP->mType.physInfo.rotVel.SetZero ();
+objP->mType.physInfo.rotThrust.SetZero ();
+objP->mType.physInfo.brakes = objP->mType.physInfo.turnRoll = 0;
+objP->mType.physInfo.mass = gameData.pig.ship.player->mass;
+objP->mType.physInfo.drag = gameData.pig.ship.player->drag;
+objP->mType.physInfo.flags |= PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUST;
 //Init render info
-gameData.objData.consoleP->info.renderType = (gameData.objData.consoleP->info.nType == OBJ_GHOST) ? RT_NONE : RT_POLYOBJ;
-gameData.objData.consoleP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;		//what model is this?
-gameData.objData.consoleP->rType.polyObjInfo.nSubObjFlags = 0;		//zero the flags
-gameData.objData.consoleP->rType.polyObjInfo.nTexOverride = -1;		//no tmap override!
+objP->info.renderType = (objP->info.nType == OBJ_GHOST) ? RT_NONE : RT_POLYOBJ;
+objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;		//what model is this?
+objP->rType.polyObjInfo.nSubObjFlags = 0;		//zero the flags
+objP->rType.polyObjInfo.nTexOverride = -1;		//no tmap override!
 for (int32_t i = 0; i < MAX_SUBMODELS; i++)
-	gameData.objData.consoleP->rType.polyObjInfo.animAngles [i].SetZero ();
+	objP->rType.polyObjInfo.animAngles [i].SetZero ();
 // Clear misc
-gameData.objData.consoleP->info.nFlags = 0;
+objP->info.nFlags = 0;
+return true;
 }
 
 //------------------------------------------------------------------------------

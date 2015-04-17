@@ -1754,8 +1754,8 @@ void WakeupRenderedObjects (CObject *viewerP, int32_t nWindow);
 
 void AdjustMineSpawn (void);
 
-void ResetPlayerObject(void);
-void StopObjectMovement (CObject *obj);
+bool ResetPlayerObject(CObject *objP = NULL);
+void StopObjectMovement (CObject *objP);
 void StopPlayerMovement (void);
 
 void ObjectGotoNextViewer (void);

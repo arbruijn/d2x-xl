@@ -2157,32 +2157,9 @@ ResetRearView ();
 
 void MultiResetPlayerObject (CObject *objP)
 {
-	int32_t i;
-
-//Init physics for a non-console player
-if (objP > OBJECT (gameData.objData.nLastObject [0]))
-	return;
-if ((objP->info.nType != OBJ_PLAYER) && (objP->info.nType != OBJ_GHOST))
-	return;
-objP->mType.physInfo.velocity.SetZero ();
-objP->mType.physInfo.thrust.SetZero ();
-objP->mType.physInfo.rotVel.SetZero ();
-objP->mType.physInfo.rotThrust.SetZero ();
-objP->mType.physInfo.brakes = objP->mType.physInfo.turnRoll = 0;
-objP->mType.physInfo.mass = gameData.pig.ship.player->mass;
-objP->mType.physInfo.drag = gameData.pig.ship.player->drag;
-//      objP->mType.physInfo.flags &= ~ (PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUST);
-objP->mType.physInfo.flags &= ~(PF_TURNROLL | PF_LEVELLING | PF_WIGGLE);
-//Init render info
-objP->info.renderType = (objP->info.nType == OBJ_GHOST) ? RT_NONE : RT_POLYOBJ;
-objP->rType.polyObjInfo.nModel = gameData.pig.ship.player->nModel;               //what model is this?
-objP->rType.polyObjInfo.nSubObjFlags = 0;         //zero the flags
-for (i = 0; i < MAX_SUBMODELS; i++)
-	objP->rType.polyObjInfo.animAngles [i].SetZero ();
 //reset textures for this, if not player 0
-MultiSetObjectTextures (objP);
-// Clear misc
-objP->info.nFlags = 0;
+if (ResetPlayerObject (objP))
+	MultiSetObjectTextures (objP);
 }
 
 //-----------------------------------------------------------------------------
