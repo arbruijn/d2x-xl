@@ -167,7 +167,7 @@ return nLength;
 void CLightning::Setup (bool bInit)
 {
 	CFixVector		vPos, vDir, vRefDir, vDelta [2], v;
-	int32_t				i = 0, l;
+	int32_t			i = 0, l;
 
 m_vPos = m_vBase;
 if (m_bRandom) {
@@ -244,10 +244,11 @@ if (nObject < 0) {
 else {
 	m_nObject = nObject;
 	}
+m_bRandom = bRandom ? nNodes / 5 : 0;
 m_parent = parentP;
 m_nNode = nNode;
-m_nNodes = nNodes;
-m_nChildren = (extraGameInfo [0].bUseLightning > 1) ? (nChildren < 0) ? nNodes / 10 : nChildren : 0;
+m_nNodes = nNodes + m_bRandom;
+m_nChildren = (extraGameInfo [0].bUseLightning > 1) ? (nChildren < 0) ? (nNodes - m_bRandom) / 10 : nChildren : 0;
 if (m_nChildren > m_nNodes)
 	m_nChildren = m_nNodes;
 if (vEnd) {
@@ -259,10 +260,13 @@ if (vDelta)
 else
 	m_vDelta.SetZero ();
 m_bInPlane = !m_vDelta.IsZero ();
-m_bRandom = bRandom;
 m_nLife = nLife;
 m_nTTL = abs (nLife);
 m_nLength = nLength;
+if (bRandom) {
+	m_nLength *= m_nNodes;
+	m_nLength /= nNodes;
+	}
 #if DBG
 if (m_nLength < 0)
 	BRP;
@@ -316,7 +320,7 @@ if ((extraGameInfo [0].bUseLightning > 1) && nDepth && m_nChildren) {
 	int32_t nBranches = 0;
 	double nProb = double (m_nChildren) / double (m_nNodes);
 	int32_t nOffset = m_nNodes / m_nChildren / 2;
-	for (int32_t nNode = 1 + (nOffset ? Rand (nOffset) : 0); (nNode < m_nNodes - nOffset) && (nBranches < m_nChildren); nNode++) {
+	for (int32_t nNode = 1 + (nOffset ? Rand (nOffset) : 0); (nNode < m_nNodes - nOffset - m_bRandom) && (nBranches < m_nChildren); nNode++) {
 		if (RandDouble () <= nProb) {
 			nBranches++;
 			int32_t nChildNodes = m_nNodes - nNode;
@@ -387,7 +391,7 @@ for (i = m_nNodes - 1, j = 0, pfi = m_nodes.Buffer (), plh = NULL; j < i; j++) {
 void CLightning::ComputeOffsets (void)
 {
 if (m_nNodes > 0)
-	for (int32_t i = 1, j = m_nNodes - 1 - !m_bRandom; i < j; i++)
+	for (int32_t i = 1, j = m_nNodes - 1 - (m_bRandom == 0); i < j; i++)
 		m_nodes [i].ComputeOffset (m_nFrames);
 }
 
@@ -403,7 +407,7 @@ void CLightning::Bump (void)
 nAmplitude = m_nAmplitude;
 vBase [0] = m_vPos;
 vBase [1] = m_nodes [m_nNodes - 1].m_vPos;
-for (i = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; i > 0; i--, nodeP++) {
+for (i = m_nNodes - 1 - (m_bRandom == 0), nodeP = m_nodes + 1; i > 0; i--, nodeP++) {
 	nDist = CFixVector::Dist (nodeP->m_vNewPos, nodeP->m_vPos);
 	if (nMaxDist < nDist) {
 		nMaxDist = nDist;
@@ -413,7 +417,7 @@ for (i = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; i > 0; i--, nodeP++) {
 if ((h = nAmplitude - nMaxDist)) {
 	if (m_nNodes > 0) {
 		nMaxDist += (Rand (4) + 1) * h / 4;
-		for (i = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; i > 0; i--, nodeP++)
+		for (i = m_nNodes - 1 - (m_bRandom == 0), nodeP = m_nodes + 1; i > 0; i--, nodeP++)
 			nodeP->m_vOffs *= FixDiv (nAmplitude, nMaxDist);
 		}
 	}
@@ -581,7 +585,7 @@ if (m_nNodes > 0) {
 		CreatePath (nDepth + 1, nThread);
 		m_iStep = m_nFrames;
 		}
-	for (j = m_nNodes - 1 - !m_bRandom, nodeP = m_nodes + 1; j > 0; j--, nodeP++)
+	for (j = m_nNodes - 1 - (m_bRandom == 0), nodeP = m_nodes + 1; j > 0; j--, nodeP++)
 		nodeP->Animate (bInit, m_nSegment, nDepth, nThread);
 	RenderSetup (nDepth, nThread);
 	(m_iStep)--;
@@ -753,7 +757,7 @@ if (!nodeP)
 	CFloatVector*		srcP, * dstP, vEye, vn, vd, 
 							vPos [2] = {CFloatVector::ZERO, CFloatVector::ZERO};
 	tTexCoord2f*		texCoordP;
-	int32_t					h, i, j;
+	int32_t				h, i, j;
 	bool					bGlow = !nDepth && (m_bGlow > 0) && gameOpts->render.lightning.bGlow; // && glowRenderer.Available (GLOW_LIGHTNING);
 #if 0
 	float					fWidth = bGlow ? 4.0f : (m_bGlow > 0) ? 2.0f : (m_bGlow < 0) ? (m_width / 16.0f) : (m_width / 8.0f);
@@ -768,7 +772,7 @@ else
 	vEye.Assign (gameData.render.mine.viewer.vPos);
 dstP = m_plasmaVerts.Buffer ();
 texCoordP = m_plasmaTexCoord.Buffer ();
-for (h = m_nNodes - 1, i = 0; i <= h; i++, nodeP++) {
+for (h = m_nNodes - 1 - m_bRandom, i = 0; i <= h; i++, nodeP++) {
 #if DBG
 	if (i >= h - 1)
 		BRP;
@@ -802,13 +806,13 @@ memcpy (texCoordP - 4, plasmaTexCoord [2], 4 * sizeof (tTexCoord2f));
 memcpy (&m_plasmaTexCoord [0], plasmaTexCoord [1], 4 * sizeof (tTexCoord2f));
 
 dstP = m_plasmaVerts.Buffer ();
-for (h = 4 * (m_nNodes - 2), i = 2, j = 4; i < h; i += 4, j += 4) {
+for (h = 4 * (m_nNodes - 2 - m_bRandom), i = 2, j = 4; i < h; i += 4, j += 4) {
 	dstP [i+1] = dstP [j] = CFloatVector::Avg (dstP [i+1], dstP [j]);
 	dstP [i] = dstP [j+1] = CFloatVector::Avg (dstP [i], dstP [j+1]);
 	}
 
 if (bGlow) {
-	int32_t h = 4 * (m_nNodes - 1);
+	int32_t h = 4 * (m_nNodes - 1 - m_bRandom);
 	//for (j = 0; j < 2; j++) 
 		{
 		memcpy (texCoordP, texCoordP - h, h * sizeof (tTexCoord2f));
@@ -846,7 +850,7 @@ else if (m_coreVerts.Buffer ())
 else
 	return;
 if (extraGameInfo [0].bUseLightning > 1)
-	for (int32_t i = 0; i < m_nNodes; i++)
+	for (int32_t i = 0; i < m_nNodes - m_bRandom; i++)
 		if (m_nodes [i].GetChild ())
 			m_nodes [i].GetChild ()->RenderSetup (nDepth + 1, nThread);
 }
@@ -867,10 +871,10 @@ OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), m_plasmaVerts.Buffer ());
 ogl.SetBlendMode (OGL_BLEND_ADD);
 if (nDepth || (m_bGlow < 1)) {
 	glColor3fv (reinterpret_cast<GLfloat*> (colorP));
-	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1));
+	OglDrawArrays (GL_QUADS, 0, 4 * (m_nNodes - 1 - m_bRandom));
 	}
 else {
-	int32_t h = 4 * (m_nNodes - 1);
+	int32_t h = 4 * (m_nNodes - 1 - m_bRandom);
 	glColor3f (colorP->Red () / 2.0f, colorP->Green () / 2.0f, colorP->Blue () / 2.0f);
 	for (int32_t i = 1; i >= 0; i--) {
 		OglDrawArrays (GL_QUADS, i * h, h);
@@ -944,7 +948,7 @@ if (ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0)) {
 		w *= 2.0f * m_fDistScale;
 	glLineWidth ((w > 1.0f) ? w : 1.0f);
 	OglVertexPointer (3, GL_FLOAT, 0, m_coreVerts.Buffer ());
-	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes);
+	OglDrawArrays (GL_LINE_STRIP, 0, m_nNodes - m_bRandom);
 	ogl.DisableClientStates (0, 0, 0, -1);
 	}
 #if GL_FALLBACK

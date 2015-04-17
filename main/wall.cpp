@@ -906,22 +906,17 @@ if (wallP) {
 //	Removes up to one/frame.
 void RemoveObsoleteStuckObjects (void)
 {
-	int16_t	nObject, nWall;
-	CObject			*objP;
-	tStuckObject	*stuckObjP;
-
-	//	Safety and efficiency code.  If no stuck OBJECTS, should never get inside the IF, but this is faster.
+//	Safety and efficiency code.  If no stuck OBJECTS, should never get inside the IF, but this is faster.
 if (!nStuckObjects)
 	return;
-nObject = gameData.app.nFrameCount % MAX_STUCK_OBJECTS;
-stuckObjP = stuckObjects + nObject;
-objP = OBJECT (stuckObjP->nObject);
-nWall = stuckObjP->nWall;
-if (IS_WALL (nWall) &&
-	 ((WALL (nWall)->state != WALL_DOOR_CLOSED) ||
-	  (objP->info.nSignature != stuckObjP->nSignature))) {
+int16_t nObject = gameData.app.nFrameCount % MAX_STUCK_OBJECTS;
+tStuckObject *stuckObjP = stuckObjects + nObject;
+CObject *objP = OBJECT (stuckObjP->nObject);
+CWall* wallP = WALL (stuckObjP->nWall);
+if (wallP && (wallP->state != WALL_DOOR_CLOSED) || !objP || (objP->info.nSignature != stuckObjP->nSignature)) {
 	nStuckObjects--;
-	objP->UpdateLife (I2X (1) / 8);
+	if (objP)
+		objP->UpdateLife (I2X (1) / 8);
 	stuckObjP->nWall = NO_WALL;
 	}
 }
@@ -930,7 +925,7 @@ if (IS_WALL (nWall) &&
 //	Door with CWall index nWall is opening, kill all OBJECTS stuck in it.
 void KillStuckObjects (int32_t nWall)
 {
-	int32_t				i;
+	int32_t			i;
 	tStuckObject	*stuckObjP;
 	CObject			*objP;
 
@@ -941,7 +936,7 @@ nStuckObjects = 0;
 for (i = 0, stuckObjP = stuckObjects; i < MAX_STUCK_OBJECTS; i++, stuckObjP++)
 	if (stuckObjP->nWall == nWall) {
 		objP = OBJECT (stuckObjP->nObject);
-		if (objP->info.nType == OBJ_WEAPON)
+		if (objP && (objP->info.nType == OBJ_WEAPON))
 			objP->UpdateLife (I2X (1) / 8);
 		else {
 #if TRACE
@@ -979,7 +974,7 @@ void ClearStuckObjects (void)
 for (int32_t i = 0; i < MAX_STUCK_OBJECTS; i++, stuckObjP++) {
 	if (IS_WALL (stuckObjP->nWall)) {
 		objP = OBJECT (stuckObjP->nObject);
-		if ((objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FLARE_ID))
+		if (objP && (objP->info.nType == OBJ_WEAPON) && (objP->info.nId == FLARE_ID))
 			objP->UpdateLife (I2X (1) / 8);
 		stuckObjP->nWall = NO_WALL;
 		nStuckObjects--;
@@ -1006,7 +1001,7 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 	if (!segP->Side (nSide)->FaceCount ())
 		continue;
 		
-		int32_t			tm;
+		int32_t		tm;
 		fix			dist;
 		CFixVector	pnt;
 
@@ -1022,9 +1017,9 @@ for (nSide = 0; nSide < SEGMENT_SIDE_COUNT; nSide++) {
 			dist = CFixVector::Dist(pnt, objP->info.position.vPos);
 			if (dist < damage / 2) {
 				dist = simpleRouter [0].PathLength (pnt, segP->Index (), objP->info.position.vPos, objP->info.nSegment, MAX_BLAST_GLASS_DEPTH, WID_TRANSPARENT_FLAG, -1);
-				if ((dist > 0) && (dist < damage / 2) &&
-					 segP->BlowupTexture (nSide, pnt, (objP->cType.laserInfo.parent.nObject < 0) ? NULL : OBJECT (objP->cType.laserInfo.parent.nObject), 1))
-						segP->OperateTrigger (nSide, OBJECT (objP->cType.laserInfo.parent.nObject), 1);
+				CObject* parentP = OBJECT (objP->cType.laserInfo.parent.nObject);
+				if ((dist > 0) && (dist < damage / 2) && segP->BlowupTexture (nSide, pnt, parentP, 1))
+						segP->OperateTrigger (nSide, parentP, 1);
 				}
 			}
 		}

@@ -98,6 +98,8 @@ SEM_ENTER (SEM_LIGHTNING)
 CLightningEmitter* emitterP = m_emitters.Pop ();
 if (!emitterP)
 	return -1;
+// for random lightning, add a few extra nodes. These won't get rendered, but will cause the end of the lightning bolts to dance around a bit,
+// making them look more natural
 if (!(emitterP->Create (nBolts, vPos, vEnd, vDelta, nObject, nLife, nDelay, nLength, nAmplitude,
 							   nAngle, nOffset, nNodes, nChildren, nDepth, nFrames, nSmoothe, bClamp, bGlow, bSound, bLight,
 							   nStyle, nWidth, colorP))) {

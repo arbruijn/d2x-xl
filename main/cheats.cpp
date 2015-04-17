@@ -874,31 +874,31 @@ static char *pszCheat;
 
 //------------------------------------------------------------------------------
 
-inline int32_t Cheat (tCheat *pCheat)
+inline int32_t Cheat (tCheat *cheatP)
 {
-if (strcmp (pCheat->bEncrypted ? pszCheat : szCheatBuf + CHEATEND - strlen (pCheat->pszCheat), 
-				pCheat->pszCheat))
+if (strcmp (cheatP->bEncrypted ? pszCheat : szCheatBuf + CHEATEND - strlen (cheatP->pszCheat), cheatP->pszCheat))
 	return 0;	// not this cheatcode
+memset (pszCheat, 0, sizeof (pszCheat));
 #if !DBG
-if (pCheat->bPunish && IsMultiGame &&
+if (cheatP->bPunish && IsMultiGame &&
 	 !(gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnableCheats)) {	//trying forbidden cheatcode in multiplayer
 	MultiDoCheatPenalty ();
 	return 1;
 	}
-if ((pCheat->bD1Cheat != -1) && (pCheat->bD1Cheat != gameStates.app.bD1Mission)) {	//trying cheat code from other game version
+if ((cheatP->bD1Cheat != -1) && (cheatP->bD1Cheat != gameStates.app.bD1Mission)) {	//trying cheat code from other game version
 	MultiDoCheatPenalty ();
 	return 1;
 	}
-if ((pCheat->bD1Cheat > 0) && !gameStates.app.cheats.bD1CheatsEnabled)	//D1 cheats not enabled
+if ((cheatP->bD1Cheat > 0) && !gameStates.app.cheats.bD1CheatsEnabled)	//D1 cheats not enabled
 	return 1;
 #endif
-if (pCheat->bPunish > 0) {
+if (cheatP->bPunish > 0) {
 	DoCheatPenalty ();
 	if (IsMultiGame)
 		MultiSendCheating ();
 	}
-if (pCheat->cheatFunc) {
-	pCheat->cheatFunc (1);
+if (cheatP->cheatFunc) {
+	cheatP->cheatFunc (1);
 	}
 return 1;
 }
@@ -910,7 +910,7 @@ return 1;
 char szAccessoryCheat [9]			= "dWdz[kCK";		// al-ifalafel
 char szAcidCheat [9]					= "qPmwxz\"S";		// bit-tersweet
 char szAfterburnerCheat [9]		= "emontree";		// L-emontree ("The World's Fastest Indian" anybody? ;)
-char szDisarmRobotsCheat [9]				= "!Uscq_yc";		// New for 1.1 / im-agespace 
+char szDisarmRobotsCheat [9]		= "!Uscq_yc";		// New for 1.1 / im-agespace 
 char szAllKeysCheat [9]				= "%v%MrgbU";		//only Matt knows / or-algroove
 char szBlueOrbCheat [8]				= "blueorb";
 char szBouncyCheat [9]				= "bGbiChQJ";		//only Matt knows / duddaboo
@@ -961,7 +961,7 @@ tCheat cheats [] = {
  {szFinishLevelCheat, FinishLevelCheat, 1, 1, 0}, 
  {szFramerateCheat, FramerateCheat, 0, 1, -1}, 
  {szGasolineCheat, GasolineCheat, 1, 1, 0}, 
- {szFullMapCheat, FullMapCheat, 1, 1, 0}, 
+ {szFullMapCheat, FullMapCheat, 1, 1, -1}, 
  {szHomingCheat, HomingCheat, 1, 1, 0}, 
  {szInvulCheat, InvulCheat, 1, 1, 0}, 
  {szJohnHeadCheat, JohnHeadCheat, 0, 1, 0}, 
@@ -1014,15 +1014,11 @@ tCheat cheats [] = {
 
 void FinalCheats (int32_t key)
 {
-	int32_t		i;
-	tCheat	*pCheat;
-
 key = KeyToASCII (key);
-for (i = 0; i < 15; i++)
-	szCheatBuf [i] = szCheatBuf [i+1];
+memcpy (szCheatBuf, szCheatBuf + 1, sizeof (szCheatBuf) - 1);
 szCheatBuf [CHEATSPOT] = key;
 pszCheat = jcrypt (szCheatBuf + 7);
-for (pCheat = cheats; pCheat->pszCheat && !Cheat (pCheat); pCheat++)
+for (tCheat *cheatP = cheats; cheatP->pszCheat && !Cheat (cheatP); cheatP++)
 	;
 }
 

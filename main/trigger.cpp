@@ -1131,7 +1131,7 @@ if (nDepth > 15)
 
 nDepth++;
 
-CObject*	objP = (nObject >= 0) ? OBJECT (nObject) : NULL;
+CObject*	objP = OBJECT (nObject);
 bool bIsPlayer = objP && objP->IsPlayer ();
 
 if (bIsPlayer) {

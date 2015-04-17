@@ -1071,7 +1071,10 @@ CTrigger* trigP = Trigger (nSide);
 if (!trigP)
 	return;
 
-if (trigP->Operate (objP->Index (), objP->IsPlayer () ? objP->info.nId : objP->IsGuideBot () ? N_LOCALPLAYER : -1, bShot, 0))
+if (objP
+	 ? trigP->Operate (objP->Index (), objP->IsPlayer () ? objP->info.nId : objP->IsGuideBot () ? N_LOCALPLAYER : -1, bShot, 0)
+	 : trigP->Operate (-1, -1, bShot, 0)
+	)
 	return;
 if (gameData.demo.nState == ND_STATE_RECORDING)
 	NDRecordTrigger (Index (), nSide, objP->Index (), bShot);

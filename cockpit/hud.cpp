@@ -194,8 +194,7 @@ if (cockpit->Hide ())
 #if 0 //DBG
 if (gameData.time.xGame & 0x4000) {
 #else
-//if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) 
-{
+if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
 #endif
 	int32_t	x, y, nOffsetSave = -1;
 	int32_t nLayout = ogl.IsOculusRift () ? -1 : gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
