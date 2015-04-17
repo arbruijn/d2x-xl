@@ -140,11 +140,6 @@ for (nPacketsLeft = OBJ_PACKETS_PER_FRAME; nPacketsLeft; nPacketsLeft--) {
 		}
 
 	for (nLocalObj = syncInfoP->objs.nCurrent; nLocalObj <= gameData.objData.nLastObject [0]; nLocalObj++) {
-#if 1 //DBG
-		CObject *objP = OBJECT (nLocalObj);
-		if ((objP->Type () == OBJ_PLAYER) && (objP->Id () != N_LOCALPLAYER))
-			Breakpoint ();
-#endif
 		if (SendObject (syncInfoP->objs.nMode, nLocalObj, nPlayer)) {
 			if ((MAX_PAYLOAD_SIZE - bufI - 1) < int32_t (sizeof (tBaseObject)) + 5)
 				break; // Not enough room for another CObject
