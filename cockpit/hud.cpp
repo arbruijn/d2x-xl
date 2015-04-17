@@ -197,15 +197,15 @@ if (gameData.time.xGame & 0x4000) {
 if ((LOCALPLAYER.homingObjectDist >= 0) && (gameData.time.xGame & 0x4000)) {
 #endif
 	int32_t	x, y, nOffsetSave = -1;
-	int32_t nLayout = ogl.IsOculusRift () ? -1 : gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
+	int32_t nLayout = ogl.IsOculusRift () ? -1 : gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout + 1;
 	int32_t w, h, aw;
 
-	if (nLayout >= 0) {
+	if (nLayout) {
 		ScaleUp ();
 		fontManager.Current ()->StringSize (TXT_LOCK, w, h, aw);
 		x = gameData.render.scene.Width () / 2 - w / 2;
 		y = gameData.render.scene.Height () / 2 + ScaleY (Y_GAUGE_OFFSET (0)) + (nLayout ? LineSpacing () : 0);
-		if (!nLayout) 
+		if (nLayout == 1) 
 			SetFontColor (RED_RGBA);
 		else {
 			CCanvas::Current ()->SetColorRGB (255, 0, 0, 255);
