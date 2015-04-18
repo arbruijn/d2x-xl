@@ -690,7 +690,7 @@ return 1;
 
 // ----------------------------------------------------------------------------
 
-#if 0
+#if OCULUS_RIFT
 static inline float AddDeadzone (float v)
 {
 float deadzone = float (gameOpts->input.oculusRift.nDeadzone) * 0.5f;
