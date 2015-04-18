@@ -704,6 +704,7 @@ int32_t nHitType = FindHitpoint (&fq, &hitResult);
 return (!nHitType || ((nHitType == HIT_WALL) && (hitResult.nSegment == nDestSeg)));
 
 #endif
+return 0;
 }
 
 //------------------------------------------------------------------------------

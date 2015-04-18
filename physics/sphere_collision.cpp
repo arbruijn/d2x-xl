@@ -930,7 +930,7 @@ int32_t ComputeObjectHitpoint (CHitData& hitData, CHitQuery &hitQuery)
 nObjSegList [0] = hitQuery.nSegment;
 #	if DBG
 if ((thisObjP->info.nType == OBJ_WEAPON) && (thisObjP->info.nSegment == gameData.objData.consoleP->info.nSegment))
-	hitQuery.flags = hitQuery.flags;
+	BRP;
 if (hitQuery.nSegment == nDbgSeg)
 	BRP;
 #	endif
@@ -1541,7 +1541,7 @@ for (;;) {
 		}
 #if DBG
 	if (!nDepth)
-		nDepth = nDepth;
+		BRP;
 #endif
 	return (nDestSeg < 0) || (nStartSeg == nDestSeg); // line doesn't intersect any side of this segment -> p1 must be inside segment
 	}

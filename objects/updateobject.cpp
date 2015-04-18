@@ -102,7 +102,7 @@ info.nFlags |= OF_SHOULD_BE_DEAD;
 if (Index () == nDbgObj)
 	BRP;
 if (this == dbgObjP)
-	dbgObjP = dbgObjP;
+	BRP;
 #endif
 if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME)) {
 	if (Type () == OBJ_POWERUP) 
@@ -127,7 +127,7 @@ void CObject::MultiDie (void)
 info.nFlags |= OF_SHOULD_BE_DEAD;
 #if DBG
 if (this == dbgObjP)
-	dbgObjP = dbgObjP;
+	BRP;
 #endif
 }
 

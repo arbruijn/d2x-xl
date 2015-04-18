@@ -410,7 +410,6 @@ sprintf (szSlowMotion, "M%1.1f S%1.1f ",
 			gameStates.gameplay.slowmo [0].fSpeed,
 			gameStates.gameplay.slowmo [1].fSpeed);
 SetFontColor (GOLD_RGBA);
-int32_t nLayout = gameStates.menus.nInMenu ? 0 : gameOpts->render.cockpit.nShipStateLayout;
 DrawHUDText (NULL, -3 * StringWidth (szSlowMotion) - LHX (2), 3, szSlowMotion);
 }
 

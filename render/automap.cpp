@@ -1335,7 +1335,7 @@ if (va > vb)
 
 #if DBG
 if ((va == 1) && (vb == 3))
-	va = va;
+	BRP;
 #endif
 
 found = FindEdge (va, vb, edgeP);
