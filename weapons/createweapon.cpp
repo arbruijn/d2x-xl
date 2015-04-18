@@ -226,7 +226,6 @@ if (!parentP)
 
 	int32_t		nObject, nViewer;
 	CWeaponInfo	weaponInfo = gameData.weapons.info [nWeaponType];
-	fix			xLaserLength = 0;
 	CFixVector	vDir = *vDirection;
 
 if (RandShort () > parentP->GunDamage ())
@@ -373,8 +372,6 @@ if ((nWeaponType == SMARTMSL_BLOB_ID) ||
 	 (nWeaponType == ROBOT_SMARTMINE_BLOB_ID) ||
 	 (nWeaponType == EARTHSHAKER_MEGA_ID))
 	objP->mType.physInfo.flags |= PF_BOUNCES;
-if (weaponInfo.renderType == WEAPON_RENDER_POLYMODEL)
-	xLaserLength = gameData.models.polyModels [0][objP->ModelId ()].Rad () * 2;
 if (nWeaponType == FLARE_ID)
 	objP->mType.physInfo.flags |= PF_STICK;		//this obj sticks to walls
 objP->info.xShield = WI_strength (nWeaponType, gameStates.app.nDifficultyLevel);

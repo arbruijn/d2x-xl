@@ -2821,8 +2821,6 @@ MultiSendData (gameData.multigame.msg.buf, bufP, 2);
 //-----------------------------------------------------------------------------
 // For sending doors only to a specific person (usually when they're joining)
 
-extern void NetworkSendMineSyncPacket (char *, int16_t, int32_t);
-
 void MultiSendDoorOpenSpecific (int32_t nPlayer, int32_t nSegment, int32_t nSide, uint16_t flags)
 {
 	int32_t bufP = 0;

@@ -660,7 +660,6 @@ else
 	 GT (636 + nWeaponId - FLASHMSL_INDEX))
 
 //return which bomb will be dropped next time the bomb key is pressed
-int32_t ArmedBomb ();
 
 //	-----------------------------------------------------------------------------
 
