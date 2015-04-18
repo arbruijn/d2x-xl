@@ -2739,6 +2739,20 @@ class CWeaponState {
 
 #define BUILTIN_MISSILES	(2 + NDL - gameStates.app.nDifficultyLevel)
 
+class CExtraPlayerData {
+	public:
+		int16_t								nVirusCapacity;
+		int32_t								nLastHitTime;
+		int32_t								tAppearing [2];
+		int8_t								bTeleport;
+		int8_t								bWasHit;
+		CWeaponState						weaponStates;
+		int32_t								bulletEmitters;
+		int32_t								gatlingSmoke;
+		CPulseData							spherePulse;
+		bool									bAdjustPowerupCap;
+};
+
 class CMultiplayerData {
 	public:
 		int32_t 								nPlayers;				

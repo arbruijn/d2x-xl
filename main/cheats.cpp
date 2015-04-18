@@ -878,7 +878,7 @@ inline int32_t Cheat (tCheat *cheatP)
 {
 if (strcmp (cheatP->bEncrypted ? pszCheat : szCheatBuf + CHEATEND - strlen (cheatP->pszCheat), cheatP->pszCheat))
 	return 0;	// not this cheatcode
-memset (pszCheat, 0, sizeof (pszCheat));
+memset (szCheatBuf, 0, sizeof (szCheatBuf));
 #if !DBG
 if (cheatP->bPunish && IsMultiGame &&
 	 !(gameStates.app.bHaveExtraGameInfo [1] && extraGameInfo [1].bEnableCheats)) {	//trying forbidden cheatcode in multiplayer
