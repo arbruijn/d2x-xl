@@ -2064,7 +2064,7 @@ if ((mType.physInfo.flags & PF_BOUNCES) == 0)
 	return false;
 return true;
 #else
-return (IsWeapon () && ((mType.physInfo.flags & PF_BOUNCES) != 0) && ((m_weaponInfo [Id ()] & OBJ_BOUNCES) != 0);
+return (IsWeapon () && ((mType.physInfo.flags & PF_BOUNCES) != 0) && ((m_weaponInfo [Id ()] & OBJ_BOUNCES) != 0));
 #endif
 }
 
