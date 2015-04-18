@@ -174,15 +174,16 @@ return 0;
 
 char *NetworkGetPlayerName (int32_t nObject)
 {
-if (nObject < 0)
+CObject *objP = OBJECT (nObject);
+if (!objP)
 	return NULL;
-if (OBJECT (nObject)->info.nType != OBJ_PLAYER)
+if (objP->info.nType != OBJ_PLAYER)
 	return NULL;
-if (OBJECT (nObject)->info.nId >= MAX_PLAYERS)
+if (objP->info.nId >= MAX_PLAYERS)
 	return NULL;
-if (OBJECT (nObject)->info.nId >= N_PLAYERS)
+if (objP->info.nId >= N_PLAYERS)
 	return NULL;
-return PLAYER (OBJECT (nObject)->info.nId).callsign;
+return PLAYER (objP->info.nId).callsign;
 }
 
 //------------------------------------------------------------------------------

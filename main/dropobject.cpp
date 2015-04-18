@@ -629,10 +629,9 @@ switch (nType) {
 				return -1;
 			}
 		nObject = CreatePowerup (nId, owner, nSegment, vNewPos, 0);
-		if (nObject < 0) {
-			Int3 ();
-			return nObject;
-			}
+		objP = OBJECT (nObject);
+		if (!objP) 
+			return -1;
 		if (IsMultiGame) {
 #if 0
 			if ((gameStates.multi.nGameType == UDP_GAME) && !bLocal)
@@ -640,7 +639,6 @@ switch (nType) {
 #endif
 			gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;
 			}
-		objP = OBJECT (nObject);
 		objP->mType.physInfo.velocity = vNewVel;
 		objP->mType.physInfo.drag = 512;	//1024;
 		objP->mType.physInfo.mass = I2X (1);
@@ -754,18 +752,19 @@ if ((info.nType != OBJ_PLAYER) && (info.contains.nType == OBJ_POWERUP)) {
 for (i = info.contains.nCount; i; i--) {
 	nObject = DropPowerup (info.contains.nType, uint8_t (info.contains.nId), Index (), i == 1, // drop extra powerups?
 								  mType.physInfo.velocity, info.position.vPos, info.nSegment, bLocal);
-	if (nObject < 0)
-		break;
+	CObject *objP = OBJECT (nObject);
+	if (!objP)
+		return -1;
 	if (info.nType == OBJ_PLAYER) {
 		if (info.nId == N_LOCALPLAYER)
-			OBJECT (nObject)->info.nFlags |= OF_PLAYER_DROPPED;
+			objP->info.nFlags |= OF_PLAYER_DROPPED;
 		}
 	else if (info.nType == OBJ_ROBOT) {
 		if (info.contains.nType == OBJ_POWERUP) {
 			if ((info.contains.nId == POW_VULCAN) || (info.contains.nId == POW_GAUSS))
-				OBJECT (nObject)->cType.powerupInfo.nCount = VULCAN_WEAPON_AMMO_AMOUNT;
+				objP->cType.powerupInfo.nCount = VULCAN_WEAPON_AMMO_AMOUNT;
 			else if (info.contains.nId == POW_OMEGA)
-				OBJECT (nObject)->cType.powerupInfo.nCount = MAX_OMEGA_CHARGE;
+				objP->cType.powerupInfo.nCount = MAX_OMEGA_CHARGE;
 			}
 		}
 	}
@@ -897,7 +896,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 		if (nNewSeg == -1)
 			return;
 		int16_t nObject = CreateNewWeapon (&vRandom, &vDropPos, nNewSeg, OBJ_IDX (playerObjP), nId, 0);
-		if (nObject < 0)
+		if (!OBJECT (nObject))
 			return;
 	#if 0
 		if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME))
@@ -914,7 +913,7 @@ else {
 		if (nNewSeg == -1)
 			return;
 		int16_t nObject = CreateNewWeapon (&vRandom, &vDropPos, nNewSeg, OBJ_IDX (playerObjP), nId, 0);
-		if (nObject < 0)
+		if (!OBJECT (nObject))
 			return;
 	#if 0
 		if (IsMultiGame && (gameStates.multi.nGameType == UDP_GAME))

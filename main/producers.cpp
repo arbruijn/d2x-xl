@@ -295,14 +295,14 @@ CObject *CreateMorphRobot (CSegment *segP, CFixVector *vObjPosP, uint8_t nObjId)
 LOCALPLAYER.numRobotsLevel++;
 LOCALPLAYER.numRobotsTotal++;
 nObject = CreateRobot (nObjId, segP->Index (), *vObjPosP);
-if (nObject < 0) {
+objP = OBJECT (nObject);
+if (!objP) {
 #if TRACE
 	console.printf (1, "Can't create morph robot.  Aborting morph.\n");
 #endif
 	Int3 ();
 	return NULL;
 	}
-objP = OBJECT (nObject);
 //Set polygon-CObject-specific data
 botInfoP = ROBOTINFO (objP);
 objP->rType.polyObjInfo.nModel = botInfoP->nModel;
@@ -388,9 +388,9 @@ else if (objProducerP->bFlag == 1) {			// Wait until 1/2 second after VCLIP star
 	vPos = SEGMENT (objProducerP->nSegment)->Center ();
 	// If this is the first materialization, set to valid robot.
 	nObject = CreatePowerup (nType, -1, (int16_t) objProducerP->nSegment, vPos, 1, true);
-	if (nObject < 0)
-		return;
 	objP = OBJECT (nObject);
+	if (!objP)
+		return;
 	if (IsMultiGame) {
 		gameData.multiplayer.maxPowerupsAllowed [nType]++;
 		gameData.multigame.create.nObjNums [gameData.multigame.create.nCount++] = nObject;

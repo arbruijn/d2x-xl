@@ -64,13 +64,18 @@ switch (gameData.weapons.info [nWeaponType].renderType) {
 	}
 
 nObject = CreateWeapon (nWeaponType, nParent, nSegment, *vPosition, 0, 255);
-if (nObject < 0)
+objP = OBJECT (nObject);
+if (!objP) {
+#if DBG
+	if (nObject > -1)
+		BRP;
+#endif
 	return -1;
+	}
 #if DBG
 if (nObject == nDbgObj)
 	BRP;
 #endif
-objP = OBJECT (nObject);
 if (gameData.weapons.info [nWeaponType].renderType == WEAPON_RENDER_POLYMODEL) {
 	objP->rType.polyObjInfo.nModel = gameData.weapons.info [objP->info.nId].nModel;
 	objP->AdjustSize (1, gameData.weapons.info [objP->info.nId].poLenToWidthRatio);
@@ -269,8 +274,13 @@ if ((nParent == LOCALPLAYER.nObject) && (nWeaponType == PROXMINE_ID) && (gameDat
 #endif
 nObject = CreateWeaponObject (nWeaponType, nSegment, vPosition, -1);
 objP = OBJECT (nObject);
-if (!objP)
+if (!objP) {
+#if DBG
+	if (nObject > -1)
+		BRP;
+#endif
 	return -1;
+	}
 #if 0
 if (parentP == gameData.objData.consoleP) {
 	switch (nWeaponType) {

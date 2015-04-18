@@ -101,10 +101,10 @@ return vMuzzle;
 int32_t COmegaLightning::Update (CObject* parentObjP, CObject* targetObjP, CFixVector* vTargetPos)
 {
 	CFixVector					vMuzzle;
-	tOmegaLightningHandles*	handleP;
+	tOmegaLightningHandles	*handleP;
 	CWeaponState*				wsP;
-	int32_t							h, i, nHandle, nLightning;
-	int16_t							nSegment;
+	int32_t						h, i, nHandle, nLightning;
+	int16_t						nSegment;
 
 if (!(SHOW_LIGHTNING (1) && gameOpts->render.lightning.bOmega && !gameStates.render.bOmegaModded))
 	return -1;

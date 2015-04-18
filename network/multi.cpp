@@ -329,7 +329,7 @@ if (nOwner == -1)
 if ((nRemoteObj < 0) || (nRemoteObj >= LEVEL_OBJECTS))
 	return -1;
 nObject = gameData.multigame.remoteToLocal [nOwner][nRemoteObj];
-if (nObject < 0)
+if (OBJECT (nObject))
 	return -1;
 return nObject;
 }
@@ -3743,8 +3743,6 @@ void MultiSendDropWeapon (int32_t nObject)
 	int32_t bufP = 0;
 	int32_t ammoCount;
 
-if (nObject < 0)
-	return;
 objP = OBJECT (nObject);
 if (!objP)
 	return;
@@ -4803,16 +4801,14 @@ else
 
 void DropOrb (void)
 {
-	int32_t nObject;
-
 if (!(gameData.app.nGameMode &(GM_HOARD | GM_ENTROPY)))
 	return; // How did we get here? Get Leighton!
 if (!LOCALPLAYER.secondaryAmmo [PROXMINE_INDEX]) {
 	HUDInitMessage (IsHoardGame ? TXT_NO_ORBS : TXT_NO_VIRUS);
 	return;
 	}
-nObject = SpitPowerup (gameData.objData.consoleP, POW_HOARD_ORB);
-if (nObject < 0)
+int32_t nObject = SpitPowerup (gameData.objData.consoleP, POW_HOARD_ORB);
+if (!OBJECT (nObject))
 	return;
 HUDInitMessage (IsHoardGame ? TXT_DROP_ORB : TXT_DROP_VIRUS);
 audio.PlaySound (SOUND_DROP_WEAPON);
@@ -4843,7 +4839,7 @@ if (!(LOCALPLAYER.flags & PLAYER_FLAGS_FLAG)) {
 HUDInitMessage (TXT_DROP_FLAG);
 audio.PlaySound (SOUND_DROP_WEAPON);
 nObject = SpitPowerup (gameData.objData.consoleP, (uint8_t) ((GetTeam (N_LOCALPLAYER) == TEAM_RED) ? POW_BLUEFLAG : POW_REDFLAG));
-if (nObject < 0)
+if (!OBJECT (nObject))
 	return;
 if ((gameData.app.GameMode (GM_CAPTURE)) && (nObject > -1))
 	MultiSendDropFlag (nObject, RandShort ());

@@ -237,7 +237,7 @@ void CLightning::Init (CFixVector *vPos, CFixVector *vEnd, CFixVector *vDelta,
 	int32_t	bRandom = (vEnd == NULL) || (nAngle > 0);
 
 memset (this, 0, sizeof (*this));
-if (nObject < 0) {
+if (OBJECT (nObject)) {
 	m_nObject = -1;
 	m_nSegment = -nObject - 1;
 	}

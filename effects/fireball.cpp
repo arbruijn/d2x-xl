@@ -65,9 +65,9 @@ if (!(bForce || (gameOpts->render.effects.bEnabled && gameOpts->render.effects.n
 if (SPECTATOR (this))
 	return NULL;
 nObject = CreateFireball (0, info.nSegment, info.position.vPos, info.xSize, RT_EXPLBLAST);
-if (nObject < 0)
-	return NULL;
 objP = OBJECT (nObject);
+if (!objP)
+	return NULL;
 objP->SetLife (BLAST_LIFE);
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDestroyedObj = -1;
@@ -101,9 +101,9 @@ if ((info.nType != OBJ_PLAYER) && (info.nType != OBJ_ROBOT) && (info.nType != OB
 if (SPECTATOR (this))
 	return NULL;
 nObject = CreateFireball (0, info.nSegment, info.position.vPos, 10 * info.xSize, RT_SHOCKWAVE);
-if (nObject < 0)
-	return NULL;
 objP = OBJECT (nObject);
+if (!objP)
+	return NULL;
 objP->SetLife (SHOCKWAVE_LIFE);
 objP->cType.explInfo.nSpawnTime = -1;
 objP->cType.explInfo.nDestroyedObj = -1;
@@ -142,10 +142,10 @@ CObject* CreateExplosion (CObject* parentP, int16_t nSegment, CFixVector& vPos, 
 	int32_t		flash = parentP ? static_cast<int32_t> (gameData.weapons.info [parentP->info.nId].flash) : 0;
 
 nObject = CreateFireball (nVClip, nSegment, vPos, xSize, RT_FIREBALL);
-if (nObject < 0)
+explObjP = OBJECT (nObject);
+if (!explObjP)
 	return NULL;
 
-explObjP = OBJECT (nObject);
 //now set explosion-specific data
 explObjP->SetLife (gameData.effects.animations [0][nVClip].xTotalTime);
 if ((nVClip != ANIM_MORPHING_ROBOT) && 
@@ -485,10 +485,7 @@ mType.physInfo.flags &= ~(PF_TURNROLL | PF_LEVELLING | PF_WIGGLE | PF_USES_THRUS
 
 CObject* CObject::CreateDebris (int32_t nSubObj)
 {
-	int32_t 			nObject;
-
-Assert ((info.nType == OBJ_ROBOT) || (info.nType == OBJ_PLAYER));
-nObject = ::CreateDebris (this, nSubObj);
+int32_t nObject = ::CreateDebris (this, nSubObj);
 if ((nObject < 0) && (gameData.objData.nLastObject [0] >= LEVEL_OBJECTS - 1)) {
 #if TRACE
 	console.printf (1, "Can't create object in ObjectCreateDebris.\n");
@@ -496,17 +493,12 @@ if ((nObject < 0) && (gameData.objData.nLastObject [0] >= LEVEL_OBJECTS - 1)) {
 	Int3 ();
 	return NULL;
 	}
-if (nObject < 0)
+
+CObject* objP = OBJECT (nObject);
+if (!objP)
 	return NULL;				// Not enough debris slots!
-#if 0
-if (nSubObj == 0) {
-	rType.polyObjInfo.nSubObjFlags = 1;
-	OBJECT (nObject)->SetupRandomMovement ();
-	}
-else
-#endif
-	OBJECT (nObject)->SetupDebris (nSubObj, ModelId (), rType.polyObjInfo.nTexOverride);
-return OBJECT (nObject);
+objP->SetupDebris (nSubObj, ModelId (), rType.polyObjInfo.nTexOverride);
+return objP;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -592,7 +584,8 @@ if (info.nFlags & OF_EXPLODING)
 if (delayTime) {		//wait a little while before creating explosion
 	//create a placeholder CObject to do the delay, with id==-1
 	int32_t nObject = CreateFireball (uint8_t (-1), info.nSegment, info.position.vPos, 0, RT_NONE);
-	if (nObject < 0) {
+	CObject *objP = OBJECT (nObject);
+	if (!objP) {
 		MaybeDelete ();		//no explosion, die instantly
 #if TRACE
 		console.printf (1, "Couldn't start explosion, deleting object now\n");
@@ -600,7 +593,6 @@ if (delayTime) {		//wait a little while before creating explosion
 		Int3 ();
 		return;
 		}
-	CObject *objP = OBJECT (nObject);
 	//now set explosion-specific data
 	objP->UpdateLife (delayTime);
 	objP->cType.explInfo.nDestroyedObj = OBJ_IDX (this);

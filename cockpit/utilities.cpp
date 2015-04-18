@@ -178,7 +178,7 @@ return gameOpts->render.cockpit.bTextGauges || gameOpts->render.cockpit.nShipSta
 
 int32_t CGenericCockpit::CanSeeObject (int32_t nObject, int32_t bCheckObjs)
 {
-if (nObject < 0)
+if (OBJECT (nObject))
 	return 0;
 
 	CHitQuery hitQuery ((bCheckObjs ? FQ_VISIBILITY | FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_VISIBILITY | FQ_TRANSWALL),

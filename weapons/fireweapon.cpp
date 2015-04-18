@@ -348,15 +348,20 @@ if (xSpreadR || xSpreadU) {
 if (bLaserOffs)
 	vLaserDir += m.m.dir.u * LASER_OFFS;
 nObject = CreateNewWeapon (&vLaserDir, &vLaserPos, nLaserSeg, objP->Index (), nLaserType, bMakeSound);
+weaponP = OBJECT (nObject);
+if (!weaponP) {
+#if DBG
+	if (nObject > -1)
+		BRP;
+#endif
+	return -1;
+	}
 //	Omega cannon is a hack, not surprisingly.  Don't want to do the rest of this stuff.
 if (nLaserType == OMEGA_ID)
-	return -1;
-if (nObject == -1)
 	return -1;
 #if 0 // debug stuff
 TrackWeaponObject (nObject, int32_t (nPlayer));
 #endif
-weaponP = OBJECT (nObject);
 if ((nLaserType == GUIDEDMSL_ID) && gameData.multigame.bIsGuided)
 	gameData.objData.SetGuidedMissile (nPlayer, weaponP);
 gameData.multigame.bIsGuided = 0;

@@ -1412,12 +1412,12 @@ int32_t CreateGatedRobot (int32_t nSegment, int32_t nObjId)
 		return 0;
 		}
 	nObject = CreateRobot (nObjId, nSegment, vObjPos);
-	if (nObject < 0) {
+	objP = OBJECT (nObject);
+	if (!objP) {
 		gameData.bosses [0].m_nLastGateTime = gameData.time.xGame - 3*gameData.bosses [0].m_nGateInterval/4;
 		return -1;
 		}
 
-	objP = OBJECT (nObject);
 	//Set polygon-CObject-specific data
 	objP->rType.polyObjInfo.nModel = botInfoP->nModel;
 	objP->rType.polyObjInfo.nSubObjFlags = 0;

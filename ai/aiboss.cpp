@@ -113,13 +113,13 @@ for (;;) {
 		break;
 	}
 nObject = CreateRobot (nObjId, nSegment, vObjPos);
-if (nObject < 0) {
+objP = OBJECT (nObject);
+if (!objP) {
 	gameData.bosses [nBoss].m_nLastGateTime = gameData.time.xGame - 3 * gameData.bosses [nBoss].m_nGateInterval / 4;
 	return -1;
 	}
 // added lifetime increase depending on difficulty level 04/26/06 DM
 gameData.multigame.create.nObjNums [0] = nObject; // A convenient global to get nObject back to caller for multiplayer
-objP = OBJECT (nObject);
 objP->SetLife (I2X (30) + (I2X (1) / 2) * (gameStates.app.nDifficultyLevel * 15));	//	Gated in robots only live 30 seconds.
 //Set polygon-CObject-specific data
 objP->rType.polyObjInfo.nModel = botInfoP->nModel;

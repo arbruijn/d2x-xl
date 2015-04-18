@@ -201,6 +201,8 @@ return Key ();
 //searches for the correct CSegment
 //returns the CObject number
 
+void UpdateLastObject (int32_t nObject);
+
 int32_t CreateObject (uint8_t nType, uint8_t nId, int16_t nCreator, int16_t nSegment, const CFixVector& vPos, const CFixMatrix& mOrient, fix xSize, uint8_t cType, uint8_t mType, uint8_t rType)
 {
 	int16_t	nObject;
@@ -265,9 +267,15 @@ if (nType == OBJ_DEBRIS) {
 	}
 
 // Find next free object
-if (0 > (nObject = AllocObject ()))
-	return -1;
+nObject = AllocObject ();
 objP = OBJECT (nObject);
+if (!objP) {
+#if DBG
+	if (nObject > -1)
+		UpdateLastObject (0x7fffffff);
+#endif
+	return -1;
+	}
 objP->SetKey (nObject);
 objP->SetCreationTime ();
 // Zero out object structure to keep weird bugs from happening in uninitialized fields.

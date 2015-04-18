@@ -58,11 +58,9 @@ newPos = posP->vPos + posP->mOrient.m.dir.f * spitterP->info.xSize;
 if (IsMultiGame && (gameData.multigame.create.nCount >= MAX_NET_CREATE_OBJECTS))
 	return -1;
 nObject = CreatePowerup (id, int16_t (GetTeam (N_LOCALPLAYER) + 1), int16_t (OBJSEG (spitterP)), newPos, 0);
-if (nObject < 0) {
-	Int3();
-	return nObject;
-	}
 objP = OBJECT (nObject);
+if (!objP)
+	return -1;
 objP->mType.physInfo.velocity = newVelocity;
 objP->mType.physInfo.drag = 512;	//1024;
 objP->mType.physInfo.mass = I2X (1);
@@ -101,7 +99,7 @@ return gameStates.app.bHaveExtraGameInfo [IsMultiGame] && ((extraGameInfo [IsMul
 void DropCurrentWeapon (void)
 {
 	int32_t	nObject = -1,
-			ammo = 0;
+				ammo = 0;
 
 if (IsMultiGame)
 	gameStates.app.SRand ();
