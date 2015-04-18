@@ -913,7 +913,7 @@ int16_t nObject = gameData.app.nFrameCount % MAX_STUCK_OBJECTS;
 tStuckObject *stuckObjP = stuckObjects + nObject;
 CObject *objP = OBJECT (stuckObjP->nObject);
 CWall* wallP = WALL (stuckObjP->nWall);
-if (wallP && (wallP->state != WALL_DOOR_CLOSED) || !objP || (objP->info.nSignature != stuckObjP->nSignature)) {
+if ((wallP && (wallP->state != WALL_DOOR_CLOSED)) || !objP || (objP->info.nSignature != stuckObjP->nSignature)) {
 	nStuckObjects--;
 	if (objP)
 		objP->UpdateLife (I2X (1) / 8);
