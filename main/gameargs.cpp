@@ -81,8 +81,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "cvar.h"
 #include "lightcluster.h"
 
-void PrintVersion (void);
-
 // ----------------------------------------------------------------------------
 
 void EvalAutoNetGameArgs (void)

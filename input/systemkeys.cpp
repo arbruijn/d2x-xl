@@ -389,7 +389,7 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 					NDStartRecording ();
 			break;
 
-		case KEY_ALTED + KEY_F4:
+		case KEY_CTRLED + KEY_F4:
 			gameData.multigame.bShowReticleName = (gameData.multigame.bShowReticleName + 1) % 2;
 
 		case KEY_F7:

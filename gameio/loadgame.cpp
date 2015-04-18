@@ -180,12 +180,9 @@ void HUDClearMessages (); // From hud.c
 #endif
 
 void SetFunctionMode (int32_t);
-void InitHoardData (void);
 void FreeHoardData (void);
 
 extern int32_t nLastLevelPathCreated;
-extern int32_t nTimeLastMoved;
-extern int32_t nDescentCriticalError;
 extern int32_t nLastMsgYCrd;
 
 //--------------------------------------------------------------------
@@ -478,7 +475,7 @@ if (gameStates.app.bHaveExtraGameInfo [IsMultiGame]) {
 		LOCALPLAYER.SetStandardLaser (MAX_LASER_LEVEL);
 	if (gameOpts->gameplay.nShip [0] == 1)
 		LOCALPLAYER.primaryWeaponFlags &= ~(1 << FUSION_INDEX);
-	if (!bRestore && IsBuiltinWeapon (VULCAN_INDEX) | IsBuiltinWeapon (GAUSS_INDEX))
+	if (!bRestore && (IsBuiltinWeapon (VULCAN_INDEX) | IsBuiltinWeapon (GAUSS_INDEX)))
 		LOCALPLAYER.primaryAmmo [1] = GAUSS_WEAPON_AMMO_AMOUNT;
 	LOCALPLAYER.flags |= extraGameInfo [IsMultiGame].loadout.nDevice;
 	if (extraGameInfo [1].bDarkness)

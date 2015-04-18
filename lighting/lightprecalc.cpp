@@ -1022,6 +1022,8 @@ return 0;
 
 //------------------------------------------------------------------------------
 
+#if 0
+
 static void StartLightPrecalcThreads (pThreadFunc threadFunc)
 {
 	int32_t	i;
@@ -1044,6 +1046,8 @@ for (i = 0; i < gameStates.app.nThreads; i++) {
 	SDL_DestroySemaphore (ti [i].done);
 	}
 }
+
+#endif
 
 #endif // _OPENMP --------------------------------------------------------------
 #endif //MULTI_THREADED_PRECALC ------------------------------------------------

@@ -49,8 +49,6 @@ char szWarnMsg[MAX_MSG_LEN];
 int32_t nLogDate = 0;
 int32_t glHWHash = 0;
 
-void ShowInGameWarning (const char *s);
-
 #ifdef __unix__
 #	define LINUX_MSGBOX	0
 #else

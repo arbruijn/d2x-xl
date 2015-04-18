@@ -78,8 +78,6 @@ void RenderSkyBox (int32_t nWindow);
 
 //------------------------------------------------------------------------------
 
-extern int32_t bLog;
-
 CCanvas *reticleCanvas = NULL;
 
 void _CDECL_ FreeReticleCanvas (void)
@@ -435,10 +433,6 @@ m_nActiveThreads = m_nRenderThreads;
 // tell the render process that this segment's objects can be rendered, and waits
 // for the render process to reset its semaphore before proceeding with the next 
 // segment.
-#if DBG
-static int32_t nDbgThread = -1;
-#endif
-
 int32_t CThreadedObjectRenderer::Illuminate (void* nThreadP)
 {
 #if 1

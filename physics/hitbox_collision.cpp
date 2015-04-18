@@ -122,6 +122,7 @@ return minDist;
 // Given: p3
 // Find: intersection with p1,p2 of the line through p3 that is perpendicular on p1,p2
 
+#if 0
 static int32_t FindPointLineIntersectionf (CFixVector* pv1, CFixVector* pv2, CFixVector* pv3)
 {
 	CFloatVector	p1, p2, p3, d31, d21, h, v [2];
@@ -145,6 +146,7 @@ if (m >= 1)
 	return 1;
 return 0;
 }
+#endif
 
 //	-----------------------------------------------------------------------------
 // find the point on the specified plane where the line intersects
@@ -202,6 +204,7 @@ return 1;
 // of the quad must hit each edge between the edge's end points (provided vHit
 // is in the quad's plane).
 
+#if 0
 static int32_t CheckLineHitsQuad (CFixVector& intersection, CFixVector* planeP)
 {
 for (int32_t i = 0; i < 4; i++)
@@ -209,6 +212,7 @@ for (int32_t i = 0; i < 4; i++)
 		return 0;	//doesn't hit
 return 1;	//hits
 }
+#endif
 
 //	-----------------------------------------------------------------------------
 
@@ -315,7 +319,7 @@ return nHits;
 
 //	-----------------------------------------------------------------------------
 
-int32_t DropMarkerObject (CFixVector& vPos, int16_t nSegment, CFixMatrix& orient, uint8_t nMarker);
+//int32_t DropMarkerObject (CFixVector& vPos, int16_t nSegment, CFixMatrix& orient, uint8_t nMarker);
 
 fix CheckHitboxCollision (CFixVector& intersection, CFixVector& normal, CObject *objP1, CObject *objP2, CFixVector* p0, CFixVector* p1, int16_t& nModel)
 {

@@ -119,8 +119,6 @@ CBitmap bmBackground;
 #define cv_w  Bitmap ().Width ()
 #define cv_h  Bitmap ().Height ()
 
-void NDRecordCockpitChange (int32_t);
-
 void FireGun (void);
 void SlideTextures (void);
 void PowerupGrabCheatAll (void);
@@ -129,7 +127,6 @@ void PowerupGrabCheatAll (void);
 void MultiCheckForScoreGoalWinner (bool bForce);
 void MultiCheckForEntropyWinner (void);
 void MultiSendSoundFunction (char, char);
-void DefaultAllSettings (bool bSetup);
 void ProcessSmartMinesFrame (void);
 void DoSeismicStuff (void);
 void ReadControls (void);		// located in gamecntl.c
@@ -140,10 +137,6 @@ void MultiRemoveGhostShips (void);
 void GameRenderFrame (void);
 void OmegaChargeFrame (void);
 void FlickerLights (void);
-
-#if DBG
-void DrawFrameRate (void);
-#endif
 
 void DoLunacyOn (void);
 void DoLunacyOff (void);

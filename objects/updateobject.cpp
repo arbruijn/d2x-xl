@@ -282,7 +282,8 @@ switch (info.controlType) {
 		break;
 
 	case CT_REPAIRCEN:
-		Int3 ();	// -- hey!these are no longer supported!!-- do_repair_sequence (this); break;
+		Int3 ();	// -- hey!these are no longer supported!!-- do_repair_sequence (this);
+		break;
 
 	case CT_POWERUP:
 		DoPowerupFrame ();

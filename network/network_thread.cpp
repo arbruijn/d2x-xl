@@ -529,6 +529,7 @@ CNetworkThread::CNetworkThread ()
 {
 m_packet = NULL;
 m_syncPackets = NULL;
+m_bImportant = false;
 m_rxPacketQueue.SetType (LISTEN_QUEUE);
 m_txPacketQueue.SetType (SEND_QUEUE);
 }

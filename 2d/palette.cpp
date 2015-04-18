@@ -319,12 +319,6 @@ SetEffect (0, 0, 0);
 
 //------------------------------------------------------------------------------
 
-#ifdef min
-#	undef min
-#endif
-static inline int32_t min(int32_t x, int32_t y) { return x < y ? x : y; }
-//end changes by adb
-
 int32_t CPaletteManager::ClearEffect (CPalette* palette)
 {
 if (m_data.nLastGamma == m_data.nGamma)

@@ -1021,7 +1021,6 @@ for (int32_t nType = 0; nType < 2; nType++) {
 		if (nState [1] != nState [0])
 			SetWeaponStateColor (bHave && bAvailable, bActive);
 		szLabel [0] = szWeaponIds [k];
-		nState [1] = nState [1];
 		GrPrintF (NULL, x, y, szLabel);
 		if (LOCALPLAYER.secondaryAmmo [k]) {
 			sprintf (szAmmo, "%d", LOCALPLAYER.secondaryAmmo [k]);

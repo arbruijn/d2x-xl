@@ -82,7 +82,6 @@ char *pszPauseMsg = NULL;
 
 void SpeedtestInit(void);
 void SpeedtestFrame(void);
-void PlayTestSound(void);
 
 // Functions ------------------------------------------------------------------
 

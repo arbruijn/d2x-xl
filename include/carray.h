@@ -56,8 +56,8 @@ class CArray : public CQuickSort < _T > {
 				_V*			m_p;
 				CArray<_V>&	m_a;
 			public:
-				Iterator () : m_p (NULL) {}
-				Iterator (CArray<_V>& a) : m_a (a), m_p (NULL) {}
+				Iterator () : m_start (NULL), m_end (NULL), m_p (NULL) {}
+				Iterator (CArray<_V>& a) : m_start (NULL), m_end (NULL), m_p (NULL), m_a (a) {}
 				operator bool() const { return m_p != NULL; }
 				_V* operator*() const { return m_p; }
 				Iterator& operator++() { 
@@ -78,8 +78,14 @@ class CArray : public CQuickSort < _T > {
 						}
 					return *this;
 					}
-				_V* Start (void) { m_p = m_start = m_a.Start (); m_end = m_a.End (); }
-				_V* End (void) { m_p = m_start = m_a.End (); m_end = m_a.Start (); }
+				_V* Start (void) {
+					m_p = m_start = m_a.Start (); m_end = m_a.End ();
+					return m_p;
+					}
+				_V* End (void) {
+					m_p = m_start = m_a.End (); m_end = m_a.Start ();
+					return m_p;
+					}
 			};
 
 		explicit CArray<_T> () { 

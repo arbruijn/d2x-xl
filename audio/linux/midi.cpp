@@ -56,6 +56,7 @@ if (hmp) {
 	nVolume = midiOutSetVolume((HMIDIOUT)hmp->hmidi, mmVolume | (mmVolume << 16));
 	}
 #endif
+return midiVolume;
 }
 
 //------------------------------------------------------------------------------

@@ -82,11 +82,6 @@ tGameFileInfo	gameFileInfo;
 game_top_fileinfo	gameTopFileInfo;
 
 //  LINT: adding function prototypes
-void ReadObject(CObject *objP, CFile *f, int32_t version);
-#if DBG
-void dump_mine_info(void);
-#endif
-
 int32_t nGameSavePlayers = 0;
 int32_t nSavePOFNames = 0;
 char szSavePOFNames [MAX_POLYGON_MODELS][SHORT_FILENAME_LEN];
@@ -217,12 +212,6 @@ if (Type () != OBJ_EFFECT) {
 //
 //	cf.Seek (file,len,SEEK_CUR);
 //}
-
-//------------------------------------------------------------------------------
-
-int32_t MultiPowerupIs4Pack(int32_t);
-//reads one CObject of the given version from the given file
-extern int32_t RemoveTriggerNum (int32_t trigger_num);
 
 // -----------------------------------------------------------------------------
 
@@ -1110,7 +1099,6 @@ return 0;
 
 // ----------------------------------------------------------------------------
 
-int32_t CheckSegmentConnections (void);
 void	SetAmbientSoundFlags (void);
 
 

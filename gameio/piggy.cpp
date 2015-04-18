@@ -103,8 +103,6 @@ uint8_t d1ColorMap [256];
 
 #define PIGBITMAPHEADER_D1_SIZE 17 // no wh_extra
 
-int32_t RequestCD (void);
-
 CFile cfPiggy [2];
 
 char szCurrentPigFile [2][SHORT_FILENAME_LEN] = {"",""};
@@ -112,9 +110,6 @@ char szCurrentPigFile [2][SHORT_FILENAME_LEN] = {"",""};
 int32_t bPigFileInitialized = 0;
 
 uint8_t bBigPig = 0;
-
-extern char szLastPalettePig [];
-extern char CDROM_dir [];
 
 //------------------------------------------------------------------------------
 

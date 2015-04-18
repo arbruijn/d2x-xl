@@ -80,8 +80,6 @@ uint8_t fadeValues_hires[480] = { 1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,4,5,5,5,
 
 CPalette *creditsPalette = NULL;
 
-extern uint8_t *grBitBltFadeTable;
-
 #define ALLOWED_CHAR 'R'
 
 #if !DBG

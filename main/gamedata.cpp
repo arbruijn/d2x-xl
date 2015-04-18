@@ -215,11 +215,13 @@ CLightRenderData::CLightRenderData ()
 CLEAR (vPosf);
 memset (xDistance, 0, sizeof (xDistance));
 CLEAR (nVerts);
+nType = 0;
 nTarget = 0;	//lit segment/face
 nFrame = 0;
 bShadow = 0;
 bLightning = 0;
 bExclusive = 0;
+bState = 0;
 CLEAR (bUsed);
 CLEAR (activeLightsP);
 }
@@ -412,6 +414,10 @@ tPulse = 0;
 
 CVisibilityData::CVisibilityData ()
 {
+nSegments = 0;
+nVisible = 0;
+nVisited = 0;
+nProcessed = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -465,6 +471,8 @@ DESTROY (points);
 
 CMineRenderData::CMineRenderData ()
 {
+bSetAutomapVisited = 0;
+nObjRenderSegs = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -519,6 +527,24 @@ DESTROY (bRadarVisited);
 CRenderData::CRenderData ()
 {
 transpColor = DEFAULT_TRANSPARENCY_COLOR; //transparency color bitmap index
+dAspect = 1.0;
+fBrightness = 1.0f;
+nTotalObjects = 0;
+nTotalFaces = 0;
+nUsedFaces = 0;
+nTotalLights = 0;
+nTotalSprites = 0;
+nColoredFaces = 0;
+nMaxLights = 32;
+nPowerupFilter = 0;
+nShaderChanges = 0;
+nStateChanges = 0;
+nStereoOffsetType = 0;
+xFlashEffect = 0;
+xTimeFlashLastPlayed = 0;
+zMin = zMax = 0;
+vertexList = NULL;
+vertP = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -664,6 +690,7 @@ return 1;
 
 // ----------------------------------------------------------------------------
 
+#if 0
 static inline float AddDeadzone (float v)
 {
 float deadzone = float (gameOpts->input.oculusRift.nDeadzone) * 0.5f;
@@ -679,7 +706,7 @@ if (v > deadzone)
 	return (v - deadzone) * (1.0f + h * fabs (v));
 return 0.0f;
 }
-
+#endif
 
 int32_t CRiftData::GetHeadAngles (CAngleVector* angles)
 {
@@ -761,6 +788,20 @@ faceIndex.Destroy ();
 
 CFaceData::CFaceData ()
 {
+iColor = 0;
+nVertices = 0;
+iVertices = 0;
+iNormals = 0;
+iLMapTexCoord = 0;
+iTexCoord = 0;
+iOvlTexCoord = 0;
+nFaces = 0;
+nTriangles = 0;
+slidingFaces = NULL;
+indexP = NULL;
+vboDataHandle = 0;
+vboIndexHandle = 0;
+vertexP = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -849,6 +890,7 @@ DESTROY (lMapTexCoord);
 
 CFaceListIndex::CFaceListIndex ()
 {
+nUsedKeys = 0;
 gameData.segData.nFaceKeys = -1;
 }
 
@@ -899,11 +941,20 @@ CSegmentData::CSegmentData ()
 {
 nMaxSegments = MAX_SEGMENTS_D2X;
 nLevelVersion = 0;
-nVertices = 0;
 nSegments = 0;
+nLastSegment = 0;
+nSlideSegs = 0;
+nVertices = 0;
+nLastVertex = 0;
+nFaces = 0;
+nFaceVerts = 0;
+nFaceKeys = 0;
+fRad = 20.0f;
+xDistScale = 0;
 vMin.SetZero ();
 vMax.SetZero ();
 CLEAR (szLevelFilename);
+bHaveSlideSegs = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1237,6 +1288,7 @@ nWalls = 0;
 
 CTriggerData::CTriggerData ()
 {
+
 }
 
 // ----------------------------------------------------------------------------
@@ -1297,6 +1349,7 @@ CSoundData::CSoundData ()
 for (int32_t i = 0; i < 2; i++)
 	sounds [i].Create (MAX_SOUND_FILES); //[MAX_SOUND_FILES];
 sounds [0].ShareBuffer (soundP);
+nType = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -1362,6 +1415,7 @@ nProducers = 0;
 nRobotMakers = 0;
 nEquipmentMakers = 0;
 nRepairCenters = 0;
+playerSegP = NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -1394,6 +1448,11 @@ CReactorData::CReactorData ()
 {
 for (int32_t i = 0; i < MAX_BOSS_COUNT; i++)
 	states [i].nDeadObj = -1;
+nReactors = 0;
+bDestroyed = 0;
+bDisabled = 0;
+bPresent = 0;
+nStrength = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -1530,6 +1589,28 @@ gameData.objData.idToOOF [MEGAMSL_ID] = OOF_MEGA;
 
 CObjectData::CObjectData ()
 {
+consoleP = NULL;
+viewerP = NULL;
+deadPlayerCamera = NULL;
+endLevelCamera = NULL;
+missileViewerP = NULL;
+nChildFreeList = 0;
+nDeadControlCenter = -1;
+nDebris = 0;
+nFirstDropped = 0;
+nLastDropped = 0;
+nFreeDropped = 0;
+nDropped = 0;
+nDrops = 0;
+nEffects = 0;
+nFrameCount = 0;
+nInitialRobots = 0;
+nObjects = 0;
+nMaxObjects = 0;
+nMaxUsedObjects = 0;
+nObjectLimit = 0;
+nNextSignature = 0;
+nVertigoBotFlags = 0;
 InitWeaponFlags ();
 CollideInit ();
 InitIdToOOF ();
@@ -1714,6 +1795,7 @@ if (textures.Create (MAX_WALL_TEXTURES))
 for (int32_t i = 0; i < 2; i++)
 	if (defaultTextures [i].Create (MAX_WALL_TEXTURES))
 		defaultTextures [i].Clear ();
+nVisibleLights = 0;
 }
 
 // ----------------------------------------------------------------------------
@@ -1914,6 +1996,13 @@ gameData.ai.target.nDistToLastPosFiredAt = 0;
 cloakInfo.Create (MAX_AI_CLOAK_INFO);
 awarenessEvents.Create (MAX_AWARENESS_EVENTS);
 gameData.ai.freePointSegs = gameData.ai.routeSegs.Buffer ();
+nHitSeg = -1;
+nHitType = -1;
+bObjAnimates = 0;
+nLastMissileCamera = -1;
+nMaxAwareness = 0;
+nOverallAgitation = 0;
+nTargetVisibility = 0;
 }
 
 // ----------------------------------------------------------------------------

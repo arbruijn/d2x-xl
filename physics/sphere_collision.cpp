@@ -1525,7 +1525,7 @@ for (;;) {
 				return 1; // any segment acceptable
 			if (nStartSeg == nDestSeg)
 				return 1; // point is in desired segment
-			if ((nChildSeg == nDestSeg) && !((wallP = sideP->Wall ()) && !(wallP->IsVolatile () || wallP->IsPassable (NULL, false) & WID_TRANSPARENT_FLAG)))
+			if ((nChildSeg == nDestSeg) && !((wallP = sideP->Wall ()) && !(wallP->IsVolatile () || (wallP->IsPassable (NULL, false) & WID_TRANSPARENT_FLAG))))
 				return 1; // point at border to destination segment and the portal to that segment is passable
 			nFace = nFaceCount; // no eligible child segment, so try next segment side
 			break; 
@@ -1534,7 +1534,7 @@ for (;;) {
 			continue; // line doesn't intersect with this side
 		if (0 > nChildSeg) // solid wall
 			continue;
-		if ((wallP = sideP->Wall ()) && !(wallP->IsVolatile () || wallP->IsPassable (NULL, false) & WID_TRANSPARENT_FLAG)) // impassable
+		if ((wallP = sideP->Wall ()) && !(wallP->IsVolatile () || (wallP->IsPassable (NULL, false) & WID_TRANSPARENT_FLAG))) // impassable
 			continue;
 		if (PointSeesPoint (p0, p1, nChildSeg, nDestSeg, nDepth + 1, nThread))
 			return 1;

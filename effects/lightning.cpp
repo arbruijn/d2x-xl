@@ -987,7 +987,7 @@ return 0;
 
 //------------------------------------------------------------------------------
 
-#if !USE_OPENMP
+#if 0 //!USE_OPENMP
 
 static inline void WaitForRenderThread (int32_t nThread)
 {

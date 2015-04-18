@@ -156,7 +156,6 @@ if	 ((gameStates.multi.nGameType == UDP_GAME) &&
 //------------------------------------------------------------------------------
 
 static int32_t nOpenSockets = 0;
-static const int32_t val_one=1;
 static uint8_t qhbuf [6];
 
 //------------------------------------------------------------------------------

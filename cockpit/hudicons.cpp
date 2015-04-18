@@ -235,7 +235,7 @@ else if (l == 5) {
 else {
 	bHave = (LOCALPLAYER.primaryWeaponFlags & (1 << l)) != 0;
 	if (bHave && extraGameInfo [0].bSmartWeaponSwitch && ((l == 1) || (l == 2)) &&
-		 LOCALPLAYER.primaryWeaponFlags & (1 << (l + 5)))
+		 (LOCALPLAYER.primaryWeaponFlags & (1 << (l + 5))))
 		return bHave = 0;
 	}
 

@@ -1804,7 +1804,7 @@ class CRenderData {
 	public:
 		CRiftData					rift;
 		CColorData					color;
-		int32_t							transpColor;
+		int32_t						transpColor;
 		CFaceListIndex				faceIndex;
 		CVertColorData				vertColor;
 		CSphere						shield;
@@ -1829,19 +1829,19 @@ class CRenderData {
 		fix							zMax;
 		double						dAspect;
 		CFBO							glareBuffer;
-		int32_t							nTotalFaces;
-		int32_t							nTotalObjects;
-		int32_t							nTotalSprites;
-		int32_t							nTotalLights;
-		int32_t							nMaxLights;
-		int32_t							nColoredFaces;
-		int32_t							nStateChanges;
-		int32_t							nShaderChanges;
-		int32_t							nUsedFaces;
-		int32_t							nStereoOffsetType;
+		int32_t						nTotalFaces;
+		int32_t						nTotalObjects;
+		int32_t						nTotalSprites;
+		int32_t						nTotalLights;
+		int32_t						nMaxLights;
+		int32_t						nColoredFaces;
+		int32_t						nStateChanges;
+		int32_t						nShaderChanges;
+		int32_t						nUsedFaces;
+		int32_t						nStereoOffsetType;
 		float							fAttScale [2];
 		float							fBrightness;
-		uint8_t							nPowerupFilter;
+		uint8_t						nPowerupFilter;
 
 	public:
 		CRenderData ();
@@ -1895,7 +1895,7 @@ class CFaceData {
 		CArray<tTexCoord2f>		ovlTexCoord;
 		CArray<tTexCoord2f>		lMapTexCoord;
 		CArray<CFloatVector>		color;
-		CArray<uint16_t>				faceVerts;
+		CArray<uint16_t>			faceVerts;
 		CSegFace*					slidingFaces;
 #if USE_RANGE_ELEMENTS
 		CArray<GLuint>				vertIndex;
@@ -1903,16 +1903,16 @@ class CFaceData {
 		GLuint						vboDataHandle;
 		GLuint						vboIndexHandle;
 		uint8_t*						vertexP;
-		uint16_t*						indexP;
-		int32_t							nFaces;
-		int32_t							nTriangles;
-		int32_t							nVertices;
-		int32_t							iVertices;
-		int32_t							iNormals;
-		int32_t							iColor;
-		int32_t							iTexCoord;
-		int32_t							iOvlTexCoord;
-		int32_t							iLMapTexCoord;
+		uint16_t*					indexP;
+		int32_t						nFaces;
+		int32_t						nTriangles;
+		int32_t						nVertices;
+		int32_t						iVertices;
+		int32_t						iNormals;
+		int32_t						iColor;
+		int32_t						iTexCoord;
+		int32_t						iOvlTexCoord;
+		int32_t						iLMapTexCoord;
 	public:
 		CFaceData ();
 		void Init (void);

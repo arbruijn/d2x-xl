@@ -1443,6 +1443,7 @@ class CObjectIterator {
 	public:
 		CObjectIterator ();
 		CObjectIterator (CObject*& objP);
+		virtual ~CObjectIterator () {}
 
 		virtual CObject* Start (void);
 		virtual CObject* Head (void);

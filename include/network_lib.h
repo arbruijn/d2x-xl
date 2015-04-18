@@ -186,7 +186,7 @@ class CSyncPack {
 
 	public:
 		CSyncPack () : m_nPackets (0), m_nReserve (2 * MULTI_MAX_MSG_LEN) {}
-		~CSyncPack () {}
+		virtual ~CSyncPack () {}
 		virtual void Reset (void) { SetMsgDataSize (0); }
 		virtual int32_t HeaderSize (void) = 0;
 		virtual int32_t MaxDataSize (void) = 0;

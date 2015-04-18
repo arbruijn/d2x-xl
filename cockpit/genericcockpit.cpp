@@ -80,7 +80,6 @@ CGenericCockpit* cockpit = &fullCockpit;
 //	-----------------------------------------------------------------------------
 
 void DrawGuidedCrosshairs (fix xStereoSeparation);
-void DrawZoomCrosshairs (void);
 void DrawWindowLabel (void);
 
 extern fix staticTime [2];

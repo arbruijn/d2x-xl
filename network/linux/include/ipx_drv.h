@@ -57,8 +57,8 @@ class CPacketAddress : public CNetworkAddress {
 		uint16_t	m_destSocket;
 
 	public:
-		CPacketAddress () {}
-		CPacketAddress (tNetworkAddress& address) : CNetworkAddress (address) {}
+		CPacketAddress () : m_nType (0), m_srcSocket (0), m_destSocket (0) {}
+		CPacketAddress (tNetworkAddress& address) : CNetworkAddress (address), m_nType (0), m_srcSocket (0), m_destSocket (0) {}
 
 		inline void SetType (int32_t nType) { m_nType = nType; }
 		inline void SetSockets (uint16_t srcSocket, uint16_t destSocket) {

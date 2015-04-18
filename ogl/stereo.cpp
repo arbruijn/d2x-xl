@@ -148,8 +148,10 @@ return true;
 
 //-----------------------------------------------------------------------------------
 
-#if DBG
+#if OCULUS_RIFT
+#	if DBG
 static bool bWarpFrame = true;
+#	endif
 #endif
 
 bool RiftWarpScene (void)

@@ -45,7 +45,7 @@ class CNetworkPacketOwner {
 		uint8_t				m_nPlayer;
 
 	public:
-		CNetworkPacketOwner () { m_bHaveLocalAddress = 0; }
+		CNetworkPacketOwner () : m_bHaveLocalAddress (0), m_nPlayer (0) {}
 
 		void SetAddress (uint8_t* network, uint8_t* node) {
 			m_address.SetNetwork (network);

@@ -64,6 +64,8 @@ class CGenericFrameTime {
 		virtual time_t Elapsed (void) = 0;
 
 	public:
+		CGenericFrameTime () : m_tMinFrame (0) {}
+		virtual ~CGenericFrameTime () {}
 		virtual void Compute (int32_t fps = 0) = 0;
 	};
 
@@ -82,6 +84,8 @@ class CFrameTime : public CGenericFrameTime {
 			}
 
 	public:
+		CFrameTime () {}
+		virtual ~CFrameTime () {}
 		virtual void Compute (int32_t fps = 0) {
 			while (Elapsed () < m_tMinFrame)
 				G3_SLEEP (0);

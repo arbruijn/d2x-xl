@@ -74,10 +74,6 @@ int32_t lightmapWidth [5] = {16, 32, 64, 128, 256};
 tLightmap dummyLightmap;
 
 //------------------------------------------------------------------------------
-
-int32_t InitLightData (int32_t bVariable);
-
-//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
@@ -453,8 +449,6 @@ Copy (texColorP, nLightmap);
 
 //------------------------------------------------------------------------------
 // build one entire lightmap in single threaded mode or in horizontal stripes when multi threaded
-
-uint8_t PointIsInTriangle (CFixVector* vRef, CFixVector* vNormal, int16_t* triangleVerts);
 
 void CLightmapManager::Build (CSegFace* faceP, int32_t nThread)
 {

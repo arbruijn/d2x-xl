@@ -103,7 +103,7 @@ class CRenderPoint {
 		CRenderNormal	m_normal;
 
 	public:
-		CRenderPoint () : m_flags (0), m_index (-1) {}
+		CRenderPoint () : m_codes (0), m_flags (0), m_key (0), m_index (-1) {}
 
 		void Project (void);
 

@@ -30,7 +30,7 @@
 #include "transformation.h"
 
 #define TEST_AMBIENT			0
-#define CHECK_LIGHT_VERT	1
+#define CHECK_LIGHT_VERT	0
 #define BRIGHT_SHOTS			0
 #if DBG
 #	define USE_FACE_DIST		1

@@ -1020,7 +1020,7 @@ else if (gameStates.app.nSDLTicks [0] - gameStates.zoom.nTime >= 40) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-CFrameController::CFrameController () : m_nFrames (0), m_iFrame (0), m_nEye (0) 
+CFrameController::CFrameController () : m_nFrames (0), m_iFrame (0), m_nEye (0), m_nOffsetSave (9)
 {
 }
 
