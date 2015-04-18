@@ -833,10 +833,11 @@ class CObject : public CObjectInfo {
 
 	public:
 		static void InitTables (void);
-		static inline bool IsWeapon (int16_t nId) { return (m_weaponInfo [nId] & OBJ_IS_WEAPON) != 0; }
-		static inline bool IsEnergyWeapon (int16_t nId) { return (m_weaponInfo [nId] & OBJ_IS_ENERGY_WEAPON) != 0; }
+		static inline bool IsProjectile (int16_t nId) { return (m_weaponInfo [nId] & OBJ_IS_PROJECTILE) != 0; }
+		static inline bool IsEnergyProjectile (int16_t nId) { return (m_weaponInfo [nId] & OBJ_IS_ENERGY_PROJECTILE) != 0; }
 		static inline bool HasLightTrail (int16_t nId) { return (m_weaponInfo [nId] & OBJ_HAS_LIGHT_TRAIL) != 0; }
 		static inline bool IsMissile (int16_t nId) { return (m_weaponInfo [nId] & OBJ_IS_MISSILE) != 0; }
+		static inline bool IsWeapon (int16_t nId) { return IsProjectile (nId) || IsMissile (nId); }
 		static inline uint8_t IsEquipment (int16_t nId) { return m_bIsEquipment [nId]; }
 		static bool IsPlayerMine (int16_t nId);
 		static bool IsRobotMine (int16_t nId);
@@ -1193,10 +1194,11 @@ class CObject : public CObjectInfo {
 		inline bool IsRobot (void) { return (Type () == OBJ_ROBOT); }
 		inline bool IsReactor (void) { return (Type () == OBJ_REACTOR); }
 		inline bool IsPowerup (void) { return (Type () == OBJ_POWERUP); }
-		inline bool IsWeapon (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsWeapon (Id ()); }
-		inline bool IsEnergyWeapon (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsEnergyWeapon (Id ()); }
+		inline bool IsProjectile (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsProjectile (Id ()); }
+		inline bool IsEnergyProjectile (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsEnergyProjectile (Id ()); }
 		inline bool HasLightTrail (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && HasLightTrail (Id ()); }
 		inline bool IsMissile (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsMissile (Id ()); }
+		inline bool IsWeapon (void) { return IsProjectile () || IsMissile (); }
 		inline bool IsEquipment (void) { return (Type () == OBJ_WEAPON) && (Id () < m_weaponInfo.Length ()) && IsEquipment (Id ()); }
 		inline bool IsStatic (void) { return cType.aiInfo.behavior == AIB_STATIC; }
 		bool IsGuidedMissile (int8_t nPlayer = -1);

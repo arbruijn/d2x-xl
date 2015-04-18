@@ -845,12 +845,9 @@ else {
 	}
 
 bMakeSound = 1;
-CObject *parentP = objP->IsWeapon () ? OBJECT (parent.nObject) : objP;
-if (!parentP)
-	parentP = objP;
 for (i = 0; i < nSmartChildren; i++) {
 	int16_t nTarget = nObjects ? targetList [Rand (nObjects)] : -1;
-	CreateHomingWeapon (parentP, nTarget, nBlobId, bMakeSound);
+	CreateHomingWeapon (objP, nTarget, nBlobId, bMakeSound);
 	bMakeSound = 0;
 	}
 }

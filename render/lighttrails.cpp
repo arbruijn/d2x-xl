@@ -185,7 +185,7 @@ void RenderLightTrail (CObject *objP)
 
 if (!SHOW_OBJ_FX)
 	return;
-if (!objP->IsWeapon ())
+if (!objP->IsProjectile ())
 	return;
 if (objP->Velocity ().IsZero ())
 	return;

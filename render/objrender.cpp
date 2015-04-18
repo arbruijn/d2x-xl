@@ -613,7 +613,7 @@ id = (int32_t) objP->info.nId;
 if ((id < 0) || (id == 255))
 	bEnergyWeapon = id = 0;
 else {
-	bEnergyWeapon = objP->IsEnergyWeapon ();
+	bEnergyWeapon = objP->IsEnergyProjectile ();
 	}
 if (!bForce && FAST_SHADOWS && !gameOpts->render.shadows.bSoft && (gameStates.render.nShadowPass == 3))
 	return 1;

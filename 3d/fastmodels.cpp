@@ -62,7 +62,7 @@ void G3DynLightModel (CObject *objP, RenderModel::CModel *modelP, uint16_t iVert
 	RenderModel::CVertex*	pmv;
 	CFaceColor*					colorP;
 	float							fAlpha = gameStates.render.grAlpha;
-	int32_t						h, i, bEmissive = objP->IsWeapon () && !objP->IsMissile ();
+	int32_t						h, i, bEmissive = objP->IsProjectile ();
 
 if (!gameStates.render.bBrightObject) {
 	vPos.Assign (objP->info.position.vPos);
@@ -101,7 +101,7 @@ void G3LightModel (CObject *objP, int32_t nModel, fix xModelLight, fix *xGlowVal
 	CFloatVector				baseColor, *colorP;
 	float							fLight, fAlpha = gameStates.render.grAlpha;
 	int32_t						h, i, j, l;
-	int32_t						bEmissive = (objP->info.nType == OBJ_MARKER) || (objP->IsWeapon () && !objP->IsMissile ());
+	int32_t						bEmissive = (objP->info.nType == OBJ_MARKER) || (objP->IsProjectile ());
 
 #if DBG
 if (objP->Index () == nDbgObj)
@@ -688,7 +688,7 @@ void G3DrawModel (CObject *objP, int16_t nModel, int16_t nSubModel, CArray<CBitm
 	CDynLight*				lightP;
 	int32_t					nPass, iLight, nLights, nLightRange;
 	int32_t					bBright = gameStates.render.bFullBright || (objP && (objP->info.nType == OBJ_MARKER));
-	int32_t					bEmissive = objP && (objP->IsWeapon () && !objP->IsMissile ());
+	int32_t					bEmissive = objP && (objP->IsProjectile ());
 	int32_t					bLighting = SHOW_DYN_LIGHT && gameOpts->ogl.bObjLighting && (bTranspFilter < 2) && !(gameStates.render.bCloaked || bEmissive || bBright);
 	GLenum					hLight;
 	float						fBrightness, fLightScale = gameData.models.nLightScale ? X2F (gameData.models.nLightScale) : 1.0f;
@@ -884,7 +884,7 @@ if (objP && (objP->info.nType == OBJ_PLAYER) && (nModel > 0) && (nModel != COCKP
 	int32_t	i = 0, 
 			bHires = (nModel > 0), 
 			bUseVBO = ogl.m_features.bVertexBufferObjects && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
-			bEmissive = (objP != NULL) && objP->IsWeapon () && !objP->IsMissile (),
+			bEmissive = (objP != NULL) && objP->IsProjectile (),
 			nGunId, nBombId, nMissileId, nMissiles;
 
 nModel = abs (nModel);

@@ -382,12 +382,12 @@ objP->info.xShield = WI_strength (nWeaponType, gameStates.app.nDifficultyLevel);
 objP->SetLife (WI_lifetime (nWeaponType));
 //	Assign nParent nType to highest level creator.  This propagates nParent nType down from
 //	the original creator through weapons which create children of their own (ie, smart missile)
-if (parentP && (parentP->info.nType == OBJ_WEAPON)) {
+if (parentP && (parentP->Type () == OBJ_WEAPON)) {
 	int32_t		nRoot = -1, nChild = nParent;
 	int32_t		count = 0;
 	CObject		*rootP = NULL, *childP = OBJECT (nChild);
 
-	while ((count++ < 10) && (childP->IsWeapon ())) {
+	while ((count++ < 10) && (childP->Type () == OBJ_WEAPON)) {
 		if (!(rootP = OBJECT (nRoot = childP->cType.laserInfo.parent.nObject)))
 			break;
 		if (rootP->info.nSignature != childP->cType.laserInfo.parent.nSignature) {
