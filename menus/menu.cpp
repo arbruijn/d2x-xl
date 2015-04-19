@@ -489,13 +489,14 @@ void CMenu::Render (const char* pszTitle, const char* pszSubTitle, CCanvas* game
 {
 	static	int32_t t0 = 0;
 
+m_props.pszTitle = pszTitle;
+m_props.pszSubTitle = pszSubTitle;
+
 if (!MenuRenderTimeout (t0, m_tEnter))
 	return;
 
 m_bRedraw = 0;
 
-m_props.pszTitle = pszTitle;
-m_props.pszSubTitle = pszSubTitle;
 if (gameStates.app.bGameRunning) {
 	if (!gameStates.app.bShowError) {
 		gameData.render.frame.Activate ("CMenu::Render (frame, 1)");
