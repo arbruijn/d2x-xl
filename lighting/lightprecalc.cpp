@@ -1242,16 +1242,16 @@ if (!PrecomputeLevelLightmaps (bSecret * nLevel)) {
 	return nCurItem;
 	}
 gameStates.app.bProgressBars = bProgressBars;
+if (bSecret > 0) {
+	if (++nLevel > missionManager.nLastLevel) {
+		bSecret = -1;
+		nLevel = 0;
+		}
+	}
 if (bSecret < 0) {
 	if (++nLevel > -missionManager.nLastSecretLevel) {
 		key = -2;
 		return nCurItem;
-		}
-	}
-else {
-	if (++nLevel > missionManager.nLastLevel) {
-		bSecret = -1;
-		nLevel = 1;
 		}
 	}
 menu [0].Value ()++;
