@@ -842,7 +842,7 @@ gameData.objData.deadPlayerCamera = 0;
 
 //-----------------------------------------------------------------------------
 
-void MultiMakePlayerGhost (int32_t nPlayer)
+void MultiTurnPlayerToGhost (int32_t nPlayer)
 {
 #if 0
 if ((nPlayer == N_LOCALPLAYER) || (nPlayer >= MAX_NUM_NET_PLAYERS) || (nPlayer < 0)) {
@@ -864,7 +864,7 @@ if (gameData.app.GameMode (GM_MULTI_ROBOTS))
 
 //-----------------------------------------------------------------------------
 
-void MultiMakeGhostPlayer (int32_t nPlayer)
+void MultiTurnGhostToPlayer (int32_t nPlayer)
 {
 #if 0
 if ((nPlayer == N_LOCALPLAYER) || (nPlayer >= MAX_NUM_NET_PLAYERS)) {
@@ -1369,7 +1369,7 @@ if (gameStates.multi.nGameType == UDP_GAME) {
 #endif
 
 if (PLAYEROBJECT (nPlayer)->info.nType == OBJ_GHOST)
-	MultiMakeGhostPlayer (nPlayer);
+	MultiTurnGhostToPlayer (nPlayer);
 if (weapon == FLARE_ADJUST)
 	LaserPlayerFire (OBJECT (PLAYER (nPlayer).nObject), FLARE_ID, 6, 1, 0, -1);
 else if (weapon >= MISSILE_ADJUST) {
@@ -1444,7 +1444,7 @@ void MultiDoReappear (uint8_t* buf)
 {
 CObject *objP = OBJECT (GET_INTEL_SHORT (buf + 1));
 if (objP) {
-	MultiMakeGhostPlayer (objP->info.nId);
+	MultiTurnGhostToPlayer (objP->info.nId);
 	objP->CreateAppearanceEffect ();
 	gameData.multigame.score.pFlags [objP->info.nId] = 0;
 	}
@@ -1478,7 +1478,7 @@ if (bExplode) {
 	KillPlayerSmoke (nPlayer);
 	objP->ExplodeSplashDamagePlayer ();
 	objP->info.nFlags &= ~OF_SHOULD_BE_DEAD;              //don't really kill player
-	MultiMakePlayerGhost (nPlayer);
+	MultiTurnPlayerToGhost (nPlayer);
 	}
 else
 	objP->CreateAppearanceEffect ();
@@ -1641,7 +1641,7 @@ else if (bSecret == 1) {
 		gameData.multigame.bGotoSecret = 1;
 	}
 OBJECT (nObject)->CreateAppearanceEffect ();
-MultiMakePlayerGhost (nPlayer);
+MultiTurnPlayerToGhost (nPlayer);
 }
 
 //-----------------------------------------------------------------------------

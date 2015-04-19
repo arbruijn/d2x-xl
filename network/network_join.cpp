@@ -170,7 +170,7 @@ if (player.Connected (CONNECT_PLAYING)) {
 			NetworkResetSyncStates ();
 			}
 	// OBJECT (player.nObject)->CreateAppearanceEffect ();
-	MultiMakePlayerGhost (nPlayer);
+	MultiTurnPlayerToGhost (nPlayer);
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiDisconnect (nPlayer);
 	MultiStripRobots (nPlayer);
@@ -225,7 +225,7 @@ if (gameOpts->multi.bNoRankings)
 	HUDInitMessage ("'%s' %s\n", their->player.callsign, TXT_JOINING);
 else   
    HUDInitMessage ("%s'%s' %s\n", pszRankStrings [their->player.rank], their->player.callsign, TXT_JOINING);
-MultiMakeGhostPlayer (nPlayer);
+MultiTurnGhostToPlayer (nPlayer);
 MovePlayerToSpawnPos (GetRandomPlayerPosition (nPlayer), OBJECT (PLAYER (nPlayer).nObject));
 MultiSendScore ();
 MultiSortKillList ();

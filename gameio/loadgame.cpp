@@ -337,7 +337,7 @@ void GameStartRemoveUnusedPlayers (void)
 if (IsMultiGame) {
 	for (i = 0; i < gameData.multiplayer.nPlayerPositions; i++) {
 		if (!PLAYER (i).connected || (i >= N_PLAYERS))
-			MultiMakePlayerGhost (i);
+			MultiTurnPlayerToGhost (i);
 		}
 	}
 else {		// Note link to above if!!!
@@ -497,11 +497,23 @@ if ((nMode == 2) && (nPlayer == N_LOCALPLAYER) && gameOpts->gameplay.bObserve) {
 if (IsMultiGame && (nMode == 2) && (nPlayer == N_LOCALPLAYER) && gameOpts->gameplay.bObserve) {
 #endif
 	gameStates.render.bObserving = 1;
-	MultiMakePlayerGhost (N_LOCALPLAYER);
+	MultiTurnPlayerToGhost (N_LOCALPLAYER);
 	LOCALPLAYER.SetObservedPlayer (-1);
 	return true;
 	}
 return false;
+}
+
+//------------------------------------------------------------------------------
+
+void StopObserverMode (void)
+{
+if (OBSERVING) {
+	gameStates.render.bObserving = 0;
+	MultiTurnGhostToPlayer (N_LOCALPLAYER);
+	SetChaseCam (0);
+	automap.SetActive (0);
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -984,6 +996,9 @@ int32_t LoadLevel (int32_t nLevel, bool bLoadTextures, bool bRestore)
 	CPlayerInfo	savePlayer;
 	int32_t		nRooms, nCurrentLevel = missionManager.nCurrentLevel;
 
+SetChaseCam (0);
+SetFreeCam (0);
+StopObserverMode ();
 strlwr (pszLevelName = LevelName (nLevel));
 /*---*/PrintLog (1, "loading level '%s'\n", pszLevelName);
 CleanupBeforeGame (nLevel, bRestore);
@@ -1741,7 +1756,7 @@ if (OBSERVING)
 	automap.SetActive (-1);
 else {
 	gameStates.app.nSpawnPos = -1;
-	MultiMakeGhostPlayer (N_LOCALPLAYER);
+	MultiTurnGhostToPlayer (N_LOCALPLAYER);
 	}
 gameData.objData.consoleP->info.controlType = CT_FLYING;
 gameData.objData.consoleP->info.movementType = MT_PHYSICS;

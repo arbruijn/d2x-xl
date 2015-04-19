@@ -417,14 +417,13 @@ return -1;
 
 //------------------------------------------------------------------------------
 
+void StopObserverMode (void);
+
 void ObserverFrame (void)
 {
 if (OBSERVING) {
 	if ((LOCALPLAYER.ObservedPlayer () == N_LOCALPLAYER) || gameData.reactor.bDestroyed) {
-		gameStates.render.bObserving = 0;
-		MultiMakeGhostPlayer (N_LOCALPLAYER);
-		SetChaseCam (0);
-		automap.SetActive (0);
+		StopObserverMode ();
 		StartLevel (0x7fffffff, 1);
 		}
 	else if ((LOCALPLAYER.ObservedPlayer () >= 0) && !PLAYER (LOCALPLAYER.ObservedPlayer ()).IsConnected ())

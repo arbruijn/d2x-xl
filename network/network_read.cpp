@@ -357,7 +357,7 @@ objP->mType.physInfo.velocity = pd->objData.vel;
 objP->mType.physInfo.rotVel = pd->objData.rotVel;
 PLAYER (nPlayer).m_flightPath.Update (objP);
 if ((objP->info.renderType != pd->data.nRenderType) && (pd->data.nRenderType == RT_POLYOBJ))
-	MultiMakeGhostPlayer (nPlayer);
+	MultiTurnGhostToPlayer (nPlayer);
 OBJECT (nObject)->RelinkToSeg (pd->objData.nSegment);
 if (objP->info.movementType == MT_PHYSICS)
 	objP->SetThrustFromVelocity ();
@@ -368,7 +368,7 @@ if (!PLAYER (nPlayer).connected) {
 	CONNECT (nPlayer, CONNECT_PLAYING);
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nPlayer);
-	MultiMakeGhostPlayer (nPlayer);
+	MultiTurnGhostToPlayer (nPlayer);
 	OBJECT (nObject)->CreateAppearanceEffect ();
 	audio.PlaySound (SOUND_HUD_MESSAGE);
 	ClipRank (reinterpret_cast<char*> (&NETPLAYER (nPlayer).rank));
@@ -477,7 +477,7 @@ NetworkTrackPackets (nPlayer, pd->header.nPackets);
 //------------ Read the player's ship's CObject info ----------------------
 ExtractShortPos (objP, &pd->objData, 0);
 if ((objP->info.renderType != pd->data.nRenderType) && (pd->data.nRenderType == RT_POLYOBJ))
-	MultiMakeGhostPlayer (nPlayer);
+	MultiTurnGhostToPlayer (nPlayer);
 if (objP->info.movementType == MT_PHYSICS)
 	objP->SetThrustFromVelocity ();
 //------------ Welcome them back if reconnecting --------------
@@ -487,7 +487,7 @@ if (!PLAYER (nPlayer).connected) {
 	CONNECT (nPlayer, CONNECT_PLAYING);
 	if (gameData.demo.nState == ND_STATE_RECORDING)
 		NDRecordMultiReconnect (nPlayer);
-	MultiMakeGhostPlayer (nPlayer);
+	MultiTurnGhostToPlayer (nPlayer);
 	OBJECT (nObject)->CreateAppearanceEffect ();
 	audio.PlaySound (SOUND_HUD_MESSAGE);
 	ClipRank (reinterpret_cast<char*> (&NETPLAYER (nPlayer).rank));
