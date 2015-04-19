@@ -979,6 +979,9 @@ UnloadLevelData (bRestore, false);
 ControlRenderThreads ();
 /*---*/PrintLog (1, "restoring default robot settings\n");
 RestoreDefaultModels ();
+SetChaseCam (0);
+SetFreeCam (0);
+StopObserverMode ();
 PrintLog (-1);
 paletteManager.EnableEffect (true);
 PrintLog (-1);
@@ -996,9 +999,6 @@ int32_t LoadLevel (int32_t nLevel, bool bLoadTextures, bool bRestore)
 	CPlayerInfo	savePlayer;
 	int32_t		nRooms, nCurrentLevel = missionManager.nCurrentLevel;
 
-SetChaseCam (0);
-SetFreeCam (0);
-StopObserverMode ();
 strlwr (pszLevelName = LevelName (nLevel));
 /*---*/PrintLog (1, "loading level '%s'\n", pszLevelName);
 CleanupBeforeGame (nLevel, bRestore);
