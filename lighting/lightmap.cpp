@@ -733,6 +733,9 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
 		BRP;
 #endif
+	CMenu* m;
+	if (!gameStates.app.bProgressBars && (m = CMenu::Active ()))
+		m->Render (m->Title (), m->SubTitle ());
 	if (SEGMENT (m_data.faceP->m_info.nSegment)->m_function == SEGMENT_FUNC_SKYBOX) {
 		m_data.faceP->m_info.nLightmap = 1;
 		continue;

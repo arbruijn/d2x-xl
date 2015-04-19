@@ -1223,10 +1223,9 @@ PrintLog (-1);
 
 int32_t PrecomputeLevelLightmaps (int32_t nLevel)
 {
-if (LoadLevel (nLevel, false, false) < 0)
-	return 0;
+int32_t nResult = LoadLevel (nLevel, false, false) >= 0;
 CleanupAfterGame (false);
-return 1;
+return nResult;
 }
 
 //------------------------------------------------------------------------------
@@ -1239,6 +1238,7 @@ int32_t bProgressBars = gameStates.app.bProgressBars;
 gameStates.app.bProgressBars = 0;
 if (!PrecomputeLevelLightmaps (bSecret * nLevel)) {
 	key = -2;
+	gameStates.app.bProgressBars = bProgressBars;
 	return nCurItem;
 	}
 gameStates.app.bProgressBars = bProgressBars;

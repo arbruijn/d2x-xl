@@ -415,6 +415,8 @@ public:
 
 	void Render (const char* pszTitle, const char* pszSubTitle, CCanvas* gameCanvasP = NULL);
 	virtual void Render (void);
+	inline const char* Title (void) { return m_props.pszTitle; }
+	inline const char* SubTitle (void) { return m_props.pszSubTitle; }
 
 	static float GetScale (void);
 	static inline int32_t Scaled (int32_t v) { return (int32_t) FRound ((float (v) * GetScale ())); }
@@ -458,6 +460,7 @@ private:
 
 	CMenuItem* AddItem (void);
 	void SetId (CMenuItem& item, const char* pszId);
+
 };
 
 //------------------------------------------------------------------------------
