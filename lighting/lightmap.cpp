@@ -626,20 +626,6 @@ else {
 bBlack = bWhite = true;
 for (y = yMin; y < yMax; y++) {
 
-	int32_t nKey = KeyInKey ();
-	if (nKey == KEY_ESC)
-		m_bSuccess = 0;
-	if (nKey == KEY_ALTED + KEY_F4)
-		exit (0);
-	if (!m_bSuccess)
-		return;
-
-	CMenu* m;
-	if ((m = CMenu::Active ())) {
-		static CTimeout to (33);
-		if (to.Expired ())
-			m->Render (m->Title (), m->SubTitle ());
-		}
 
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
@@ -648,6 +634,24 @@ for (y = yMin; y < yMax; y++) {
 	int32_t h = nTriangles ? w : y + 1;
 	pixelPosP = m_data.m_pixelPos + y * w;
 	for (x = 0; x < h; x++, pixelPosP++) { 
+
+	if (!nThread) {
+		static CTimeout to (33);
+		if (to.Expired ()) {
+			int32_t nKey = KeyInKey ();
+			if (nKey == KEY_ESC)
+				m_bSuccess = 0;
+			if (nKey == KEY_ALTED + KEY_F4)
+				exit (0);
+
+			CMenu* m = CMenu::Active ();
+			if (m)
+				m->Render (m->Title (), m->SubTitle ());
+			}
+		}
+
+	if (!m_bSuccess)
+		return;
 #if DBG
 		if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide))) {
 			BRP;
