@@ -141,7 +141,7 @@ class CCameraManager {
 			if (!cameraP)
 				return NULL;
 			m_shadowMaps [i].nCamera = Index (cameraP);
-			m_shadowMaps [i].lightP = lightP;
+			m_shadowMaps [i].BRP;
 			return cameraP;
 			}
 		inline void DestroyShadowMap (int32_t i) {

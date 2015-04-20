@@ -153,7 +153,7 @@ if ((nDbgObj >= 0) && (lightP->info.nObject == nDbgObj))
 #endif
 
 activeLightsP->nType = nType;
-activeLightsP->lightP = lightP;
+activeLightsP->BRP;
 lightP->render.activeLightsP [nThread] = activeLightsP;
 lightP->render.bUsed [nThread] = uint8_t (nType);
 
@@ -380,15 +380,15 @@ if (gameStates.render.nLightingMethod) {
 			continue;
 #if DBG
 		if ((nDbgSeg >= 0) && (lightP->info.nSegment == nDbgSeg))
-			lightP = lightP;
+			BRP;
 #endif
 		if (gameData.threads.vertColor.data.bNoShadow && lightP->render.bShadow)
 			continue;
 #if DBG
 		if ((nDbgSeg >= 0) && (lightP->info.nSegment == nDbgSeg))
-			lightP = lightP;
+			BRP;
 		if ((lightP->info.nSegment >= 0) && (lightP->info.nSide < 0))
-			lightP = lightP;
+			BRP;
 #endif
 		nType = lightP->info.nType;
 		lightP->info.bDiffuse [nThread] = 1;
@@ -437,7 +437,7 @@ if (gameStates.render.nLightingMethod) {
 #if DBG
 		if (SetActive (activeLightsP, lightP, 1, nThread)) {
 			if ((nSegment == nDbgSeg) && (nDbgObj >= 0) && (lightP->info.nObject == nDbgObj))
-				lightP = lightP;
+				BRP;
 			if (nFace < 0)
 				lightP->render.nTarget = -nSegment - 1;
 			else
@@ -482,7 +482,7 @@ if (gameStates.render.nLightingMethod) {
 			continue;
 #if DBG
 		if ((nDbgSeg >= 0) && (lightP->info.nSegment == nDbgSeg))
-			lightP = lightP;
+			BRP;
 #endif
 		if (lightP->info.nType)
 			break;

@@ -768,7 +768,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				glLightfv (hLight, GL_SPECULAR, reinterpret_cast<GLfloat*> (&color));
 				if (lightP->info.bSpot) {
 #if 0
-					lightP = lightP;
+					BRP;
 #else
 					glLighti (hLight, GL_SPOT_EXPONENT, 12);
 					glLighti (hLight, GL_SPOT_CUTOFF, 25);
