@@ -138,7 +138,7 @@ for (i = 0; i < n; i++) {
 	lightP = lightManager.RenderLights (i);
 	if (!lightP->render.bShadow)
 		continue;
-	gameData.render.shadows.BRP;
+	gameData.render.shadows.lightP = lightP;
 	lightP->render.bExclusive = 1;
 #if 1
 	gameStates.render.nShadowPass = 2;

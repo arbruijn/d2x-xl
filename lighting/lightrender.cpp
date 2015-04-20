@@ -153,7 +153,7 @@ if ((nDbgObj >= 0) && (lightP->info.nObject == nDbgObj))
 #endif
 
 activeLightsP->nType = nType;
-activeLightsP->BRP;
+activeLightsP->lightP = lightP;
 lightP->render.activeLightsP [nThread] = activeLightsP;
 lightP->render.bUsed [nThread] = uint8_t (nType);
 
