@@ -264,21 +264,25 @@ switch (key) {
 
 //------------------------------------------------------------------------------
 
-void HandleDisplayKey (int32_t key)
+int32_t HandleDisplayKey (int32_t key)
 {
 switch (key) {
 	case KEY_CTRLED + KEY_F1:
 		SwitchDisplayMode (-1);
+		return 1;
 		break;
 	case KEY_CTRLED + KEY_F2:
 		SwitchDisplayMode (1);
+		return 1;
 		break;
 
 	case KEY_ALTED + KEY_ENTER:
 	case KEY_ALTED + KEY_PADENTER:
 		GrToggleFullScreenGame ();
+		return 1;
 		break;
 	}
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -510,11 +514,11 @@ if (!gameStates.app.bPlayerIsDead || (LOCALPLAYER.lives > 1)) {
 			break;
 
 		default:
+			if (!HandleDisplayKey (key))
 				return bScreenChanged;
 		}	 //switch (key)
 	}
 
-HandleDisplayKey (key);
 if (bStopPlayerMovement) {
 	StopPlayerMovement ();
 	gameStates.app.bEnterGame = 2;

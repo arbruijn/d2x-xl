@@ -33,7 +33,6 @@
 #include "loadgeometry.h"
 #include "renderthreads.h"
 #include "createmesh.h"
-#include "systemkeys.h"
 
 CLightmapManager lightmapManager;
 
@@ -634,10 +633,13 @@ for (y = yMin; y < yMax; y++) {
 		exit (0);
 	if (!m_bSuccess)
 		return;
-	HandleDisplayKey (nKey);
+
 	CMenu* m;
-	if ((m = CMenu::Active ()))
-		m->Render (m->Title (), m->SubTitle ());
+	if ((m = CMenu::Active ())) {
+		static CTimeout to (33);
+		if (to.Expired ())
+			m->Render (m->Title (), m->SubTitle ());
+		}
 
 #if DBG
 	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
