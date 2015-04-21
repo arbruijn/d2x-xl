@@ -1366,7 +1366,8 @@ switch (Type ()) {
 		break;
 
 	case TT_MESSAGE:
-		DoShowMessage ();
+		if (nPlayer == N_LOCALPLAYER)
+			DoShowMessage ();
 		break;
 
 	case TT_SOUND:
