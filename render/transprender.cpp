@@ -460,6 +460,7 @@ if (USE_PARTICLE_SHADER) {
 	p.m_nHeight = X2F (nSize);
 	p.m_bEmissive = -1;
 	p.m_bRotate = 1;
+	p.m_bBlowUp = -1;
 	p.m_nRotFrame = (nRotFrame + nFrame) % 64;
 	p.m_vPosf = position;
 	p.m_vPos.Assign (position);

@@ -216,7 +216,7 @@ m_sparks [nObjProducer].Destroy ();
 int32_t CSparkManager::BuildSegList (void)
 {
 	CSegment*	segP = SEGMENTS.Buffer ();
-	int16_t			nSegment;
+	int16_t		nSegment;
 
 m_nSegments = 0;
 for (nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, segP++)

@@ -1414,7 +1414,7 @@ if (m_nType <= SMOKE_PARTICLES) {
 #else
 		fScale = m_bBlowUp ? 1.0f / float (pow (m_decay, 1.0f / 3.0f)) : 1.0f;
 #endif
-		if (m_decay > 0.9f)
+		if ((m_bBlowUp >= 0) && (m_decay > 0.9f))
 			fScale *= sqrt ((1.0f - m_decay) / 0.1f);
 		}
 #else
