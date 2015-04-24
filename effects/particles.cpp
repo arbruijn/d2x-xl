@@ -241,7 +241,11 @@ else {
 if (nParticleSystemType == SIMPLE_SMOKE_PARTICLES)
 	m_color [1].Alpha () /= 3.5f - float (1 + int32_t (gameOpts->render.particles.nQuality > 1)) / 2.0f; //colorP ? 2.0f + (color.Red () + color.Green () + color.Blue ()) / 3.0f : 2.0f;
 else if (nParticleSystemType == SMOKE_PARTICLES)
+#if 1
+	m_color [1].Alpha () /= colorP ? 3.0f - Luminance (color) : 2.5f;
+#else
 	m_color [1].Alpha () /= colorP ? 3.0f - (color.Red () + color.Green () + color.Blue ()) / 3.0f : 2.5f;
+#endif
 else if ((nParticleSystemType == BUBBLE_PARTICLES) || (nParticleSystemType == RAIN_PARTICLES) || (nParticleSystemType == SNOW_PARTICLES))
 	m_color [1].Alpha () /= 2.0f;
 else if (nParticleSystemType == GATLING_PARTICLES)
@@ -566,7 +570,11 @@ else {
 if (nParticleSystemType == SIMPLE_SMOKE_PARTICLES)
 	m_color [1].Alpha () /= 3.5f - float (1 + int32_t (gameOpts->render.particles.nQuality > 1)) / 2.0f; //colorP ? 2.0f + (color.Red () + color.Green () + color.Blue ()) / 3.0f : 2.0f;
 else if (nParticleSystemType == SMOKE_PARTICLES)
+#if 1
+	m_color [1].Alpha () /= colorP ? 3.0f - Luminance (color) : 2.5f;
+#else
 	m_color [1].Alpha () /= colorP ? 3.0f - (color.Red () + color.Green () + color.Blue ()) / 3.0f : 2.5f;
+#endif
 else if ((nParticleSystemType == BUBBLE_PARTICLES) || (nParticleSystemType == RAIN_PARTICLES) || (nParticleSystemType == SNOW_PARTICLES))
 	m_color [1].Alpha () /= 2.0f;
 else if (nParticleSystemType == GATLING_PARTICLES)
