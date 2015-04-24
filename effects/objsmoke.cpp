@@ -596,15 +596,17 @@ if (nParts) {
 	CFixVector vPos = objP->Orientation ().m.dir.f;
 	tHitbox&	hb = gameData.models.hitboxes [objP->ModelId (true)].hitboxes [0];
 	int32_t l = labs (hb.vMax.v.coord.z - hb.vMin.v.coord.z);
-	vPos *= (gameOpts->render.particles.bDisperse ? -2 : -4) * l / 10;
+	vPos *= l / -5/*(gameOpts->render.particles.bDisperse ? -2 : -2) * l / 10*/;
 	vPos += objP->Position (); 
 	if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		if (!gameOpts->render.particles.bSyncSizes) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [3]);
 			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [3], nScale, 1);
 			}
-		if ((objP->Id () == MERCURYMSL_ID) || (objP->Id () == ROBOT_MERCURYMSL_ID))
+		if ((objP->Id () == MERCURYMSL_ID) || (objP->Id () == ROBOT_MERCURYMSL_ID)) {
 			nParts *= 2;
+			nLife /= 2;
+			}
 		nSmoke = particleManager.Create (&vPos, NULL, NULL, objP->info.nSegment, 1, int32_t (nParts * nLife * nLife), nScale,
 													/*gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3], 1,*/ 
 													int32_t (nLife * MSL_PART_LIFE * 0.5), MSL_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + 1, 1, -1);
