@@ -225,7 +225,7 @@ class CParticle : public tParticle {
 #else
 		void InitColor (CFloatVector* colorP, float fBrightness, char nParticleSystemType);
 		int32_t InitDrift (CFixVector* vDir, int32_t nSpeed);
-		bool InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient);
+		bool InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient, bool bPointSource);
 		void InitSize (float nScale, CFixMatrix *mOrient);
 		void InitAnimation (void);
 #endif
