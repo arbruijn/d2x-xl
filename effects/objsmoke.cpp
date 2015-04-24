@@ -41,7 +41,7 @@ static CFloatVector smokeColors [] = {
 
 #define MSL_MAX_PARTS				750
 #define MSL_PART_LIFE				-3000
-#define MSL_PART_SPEED				-100
+#define MSL_PART_SPEED				-50
 
 #define LASER_MAX_PARTS				250
 #define LASER_PART_LIFE				-500
@@ -596,7 +596,7 @@ if (nParts) {
 	CFixVector vPos = objP->Orientation ().m.dir.f;
 	tHitbox&	hb = gameData.models.hitboxes [objP->ModelId (true)].hitboxes [0];
 	int32_t l = labs (hb.vMax.v.coord.z - hb.vMin.v.coord.z);
-	vPos *= (gameOpts->render.particles.bDisperse ? -4 : -8) * l / 10;
+	vPos *= l / 5; //(gameOpts->render.particles.bDisperse ? -2 : -4) * l / 10;
 	vPos += objP->Position (); 
 	if (0 > (nSmoke = particleManager.GetObjectSystem (nObject))) {
 		if (!gameOpts->render.particles.bSyncSizes) {

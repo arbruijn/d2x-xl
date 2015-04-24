@@ -687,8 +687,8 @@ if (m_bBlowUp) {
 else {
 	m_nWidth = (m_nType == WATERFALL_PARTICLES) 
 				  ? m_nRad * 0.3333333f
-			     : m_nRad * 2;
-	m_nHeight = m_nRad * 2;
+			     : m_nRad /** 2*/;
+	m_nHeight = m_nRad /** 2*/;
 	}
 m_nWidth /= 65536.0f;
 m_nHeight /= 65536.0f;
@@ -921,7 +921,7 @@ if (m_nType == WATERFALL_PARTICLES) {
 	h *= h;
 	return F2X (h);
 	} 
-return I2X (1); //F2X (m_decay); // decelerate
+return (m_decay > 0.9f) ? F2X (sqrt ((1.0f - m_decay) / 0.1f)) : I2X (1); //F2X (m_decay); // decelerate
 }
 
 //------------------------------------------------------------------------------
@@ -950,6 +950,8 @@ return 1;
 int32_t CParticle::UpdateDrift (int32_t nCurTime, int32_t nThread) 
 {
 fix t = nCurTime - m_nUpdated;
+if (m_decay > 0.9f) 
+	t = fix (t * sqrt ((1.0f - m_decay) / 0.1f));
 m_nUpdated = nCurTime;
 m_vPos += m_vDrift * t; // (I2X (t) / 1000);
 
@@ -1230,8 +1232,7 @@ if (m_nFadeType == 0) { // default (start fully visible, fade out)
 #endif
 	}
 else if (m_nFadeType == 1) { // quickly fade in, then gently fade out
-	m_renderColor.Alpha () *= float (
-			sin (double (sqr (1.0f - m_decay)) * PI * 1.5) * 0.5 + 0.5);
+	m_renderColor.Alpha () *= float (sin (double (sqr (1.0f - m_decay)) * PI * 1.5) * 0.5 + 0.5);
 	if (m_decay >= 0.666f)
 		return 1;
 } else if (m_nFadeType == 2) { // fade in, then gently fade out
@@ -1382,14 +1383,14 @@ vCenter += fVec;
 vCenter.Assign (m_vPos);
 #endif
 
-if ((m_nType <= SMOKE_PARTICLES) && m_bBlowUp) {
+if (m_nType <= SMOKE_PARTICLES) {
 #if 1 //DBG
 	if (m_nFadeType == 3)
-		fScale = 1.0;
+		fScale = 1.0f;
 	else {
-		fScale = 1.0f / float (pow (m_decay, 1.0f / 3.0f));
-		if (m_decay > 0.5f)
-			fScale *= sqrt ((1.0f - m_decay) / 0.5f);
+		fScale = m_bBlowUp ? 1.0f / float (pow (m_decay, 1.0f / 3.0f)) : 1.0f;
+		if (m_decay > 0.9f)
+			fScale *= sqrt ((1.0f - m_decay) / 0.1f);
 		}
 #else
 	fScale = (m_nFadeType == 3)
