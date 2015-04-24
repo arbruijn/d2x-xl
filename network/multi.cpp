@@ -223,8 +223,8 @@ static int32_t multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{6, -1},  // MULTI_AMMO
 	{6, -1},  // MULTI_FUSION_CHARGE
 	{7, -1},  // MULTI_PLAYER_THRUST
-	{6, -1},  // MULTI_CONFIRM_MESSAGE
-	{6, -1}   // MULTI_PICKUP_KEY
+	{6, 10},  // MULTI_PICKUP_KEY
+	{6, -1}   // MULTI_CONFIRM_MESSAGE
 };
 
 void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerInfo * pd);
@@ -4277,7 +4277,7 @@ gameData.multiplayer.weaponStates [int32_t (nPlayer)].nAmmoUsed = GET_INTEL_SHOR
 
 int32_t PickupKey (CObject *objP, int32_t nKey, const char *pszKey, int32_t nPlayer);
 
-void MultiDoPickupKey (uint8_t* buf)
+void MultiDoKeys (uint8_t* buf)
 {
 	int32_t	nPlayer = int32_t (buf [1]);
 	int32_t	nFlags = GET_INTEL_INT (buf + 2);
@@ -4349,17 +4349,19 @@ MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 
 //-----------------------------------------------------------------------------
 
-void MultiSendPickupKey (void)
+void MultiSendKeys (void)
 {
 if (!IsMultiGame || !IsCoopGame || (gameStates.multi.nGameType != UDP_GAME))
 	return;
 
 	int32_t bufP = 0;
 
-gameData.multigame.msg.buf [bufP++] = MULTI_PICKUP_KEY;
+gameData.multigame.msg.buf [bufP++] = MULTI_KEYS;
+ADD_MSG_ID
 gameData.multigame.msg.buf [bufP++] = N_LOCALPLAYER;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, int16_t (LOCALPLAYER.flags));
 bufP += 4;
+SET_MSG_ID
 MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 }
 
@@ -4383,8 +4385,8 @@ MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 
 void MultiDoMonsterball (uint8_t* buf)
 {
-	int32_t			bCreate, bufP = 1;
-	int16_t			nSegment;
+	int32_t		bCreate, bufP = 1;
+	int16_t		nSegment;
 	CFixVector	v;
 
 bCreate = (int32_t) buf [bufP++];
@@ -5715,7 +5717,8 @@ tMultiHandlerInfo multiHandlers [MULTI_MAX_TYPE] = {
 	{MultiDoCreateWeapon, 1},
 	{MultiDoAmmo, 1},
 	{MultiDoFusionCharge, 1},
-	{MultiDoPlayerThrust, 1}
+	{MultiDoPlayerThrust, 1},
+	{MultiDoKeys, 1}
 	};
 
 //-----------------------------------------------------------------------------
@@ -6070,6 +6073,10 @@ switch (nType) {
 	case MULTI_PLAYER_THRUST:
 		if (!gameStates.app.bEndLevelSequence)
 			MultiDoPlayerThrust (buf);
+		break;
+	case MULTI_KEYS:
+		if (!gameStates.app.bEndLevelSequence)
+			MultiDoKeys (buf);
 		break;
 	default:
 		return 0;

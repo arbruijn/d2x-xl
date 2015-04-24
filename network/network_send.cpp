@@ -407,6 +407,7 @@ if (gameStates.multi.nGameType >= IPX_GAME) {
 	} 
 SetMonsterballForces ();
 MultiSendWeaponStates ();
+MultiSendKeys ();
 }
 
 //------------------------------------------------------------------------------

@@ -615,7 +615,12 @@ else {
 		m_nPollTime = t;
 		if ((m_nState == DL_CREATE_FILE) || (m_nState == DL_DATA)) {
 			if (m_nSrcLen && m_nDestLen) {
-				int32_t h = m_nDestLen * 100 / m_nSrcLen;
+				int32_t h = int32_t (float (m_nDestLen) / float (m_nSrcLen) * 100.0f);
+#if DBG
+				if (h < 0)
+					BRP;
+				else
+#endif
 				if (h != m_nProgress) {
 					m_nProgress = h;
 					sprintf (menu [m_nOptPercentage].m_text, TXT_PROGRESS, m_nProgress, '%');

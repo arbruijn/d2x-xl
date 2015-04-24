@@ -333,7 +333,7 @@ if ((m_nType == BUBBLE_PARTICLES) || (m_nType == SNOW_PARTICLES))
 	m_nRad = m_nRad / 20 + float (RandN (int32_t (9 * m_nRad / 20)));
 else {
 	if (m_nType <= SMOKE_PARTICLES) {
-		if (m_bBlowUp)
+		if (!m_bBlowUp)
 			m_nLife = 2 * m_nLife / 3;
 		m_nLife = 4 * m_nLife / 5 + RandN (2 * m_nLife / 5);
 		m_nRad += float (RandN (int32_t (m_nRad)));

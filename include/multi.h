@@ -135,8 +135,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_AMMO						85
 #define MULTI_FUSION_CHARGE			86
 #define MULTI_PLAYER_THRUST			87
-#define MULTI_CONFIRM_MESSAGE			88
-#define MULTI_PICKUP_KEY				89
+#define MULTI_KEYS						88
+#define MULTI_CONFIRM_MESSAGE			89
 #define MULTI_MAX_TYPE					89
 
 #define MAX_NET_CREATE_OBJECTS		40
@@ -161,6 +161,7 @@ void MultiSendPlayerThrust (void);
 void MultiSendFlags (uint8_t);
 void MultiSendWeapons (int32_t bForce);
 void MultiSendAmmo (void);
+void MultiSendKeys (void);
 void MultiSendMonsterball (int32_t bForce, int32_t bCreate);
 void MultiSendFire (void);
 void MultiSendDestroyReactor (int32_t nObject, int32_t nPlayer);
