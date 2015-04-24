@@ -603,6 +603,8 @@ if (nParts) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [3]);
 			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [3], nScale, 1);
 			}
+		if ((objP->Id () == MERCURYMSL_ID) || (objP->Id () == ROBOT_MERCURYMSL_ID))
+			nParts *= 2;
 		nSmoke = particleManager.Create (&vPos, NULL, NULL, objP->info.nSegment, 1, int32_t (nParts * nLife * nLife), nScale,
 													/*gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3], 1,*/ 
 													int32_t (nLife * MSL_PART_LIFE * 0.5), MSL_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + 1, 1, -1);

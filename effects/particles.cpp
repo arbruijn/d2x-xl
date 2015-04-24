@@ -373,8 +373,8 @@ if (m_bBlowUp) {
 else {
 	m_nWidth = (m_nType == WATERFALL_PARTICLES) 
 				  ? m_nRad * 0.3333333f
-			     : m_nRad * 2;
-	m_nHeight = m_nRad * 2;
+			     : m_nRad/* * 2*/;
+	m_nHeight = m_nRad /** 2*/;
 	}
 m_nWidth /= 65536.0f;
 m_nHeight /= 65536.0f;
@@ -538,8 +538,8 @@ else {
 			m_color [1].Red () *= RANDOM_FADE;
 			m_color [1].Green () *= RANDOM_FADE;
 			m_color [1].Blue () *= RANDOM_FADE;
-			m_nWidth *= 0.75;
-			m_nHeight *= 0.75;
+			//m_nWidth *= 0.75;
+			//m_nHeight *= 0.75;
 			m_color [1].Alpha () = SmokeStartAlpha (m_bBlowUp, m_nClass);
 			}
 		if (m_bBlowUp && !m_bBright) {
@@ -860,8 +860,8 @@ if (m_nType <= SMOKE_PARTICLES) {
 			}
 		else {
 			m_color [0] = m_color [1];
-			m_nWidth *= 1.25;
-			m_nHeight *= 1.25;
+			//m_nWidth *= 1.25;
+			//m_nHeight *= 1.25;
 			m_bEmissive = false;
 			m_nFadeTime = -1;
 			}
@@ -1388,7 +1388,7 @@ if (m_nType <= SMOKE_PARTICLES) {
 	if (m_nFadeType == 3)
 		fScale = 1.0f;
 	else {
-		fScale = m_bBlowUp ? 1.0f / float (pow (m_decay, 1.0f / 3.0f)) : 1.0f;
+		fScale = 1.0f / float (pow (m_decay, 1.0f / 3.0f)); //m_bBlowUp ? 1.0f / float (pow (m_decay, 1.0f / 3.0f)) : 1.0f;
 		if (m_decay > 0.9f)
 			fScale *= sqrt ((1.0f - m_decay) / 0.1f);
 		}
