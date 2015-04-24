@@ -799,10 +799,10 @@ void DoParticleTrail (CObject *objP)
 {
 #if PARTICLE_TRAIL
 	int32_t			nParts, nObject, nSmoke, id = objP->info.nId, 
-					bGatling = objP->IsGatlingRound (),
-					bOmega = (id == OMEGA_ID);
-	float			nScale;
-	CFixVector	pos;
+						bGatling = objP->IsGatlingRound (),
+						bOmega = (id == OMEGA_ID);
+	float				nScale;
+	CFixVector		pos;
 	CFloatVector	c;
 
 if (!(SHOW_OBJ_FX && (bGatling ? EGI_FLAG (bUseParticles, 0, 0, 0) && EGI_FLAG (bGatlingTrails, 1, 1, 0) : EGI_FLAG (bLightTrails, 1, 1, 0))))
