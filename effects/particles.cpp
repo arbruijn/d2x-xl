@@ -300,13 +300,13 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-bool CParticle::InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient)
+bool CParticle::InitPosition (CFixVector* vPos, CFixVector* vEmittingFace, CFixMatrix *mOrient, bool bPointSource)
 {
 if (vEmittingFace)
 	m_vPos = *RandomPointOnQuad (vEmittingFace, vPos);
 else if ((m_nType != BUBBLE_PARTICLES) && (m_nType != RAIN_PARTICLES) && (m_nType != SNOW_PARTICLES))
 	m_vPos = *vPos + m_vDrift * (I2X (1) / 64);
-else {
+else if (!bPointSource) {
 	//m_vPos = *vPos + vDrift * (I2X (1) / 32);
 	int32_t nSpeed = m_vDrift.Mag () / 16;
 	CFixVector v = CFixVector::Avg ((*mOrient).m.dir.r * (nSpeed - RandN (2 * nSpeed)), (*mOrient).m.dir.u * (nSpeed - RandN (2 * nSpeed)));
@@ -457,12 +457,16 @@ m_nLife = nLife;
 m_nDelay = 0; //bStart ? RandN (nLife) : 0;
 m_nRenderType = RenderType ();
 
+bool bPointSource = nSpeed < 0;
+if (bPointSource)
+	nSpeed = -nSpeed;
+
 #if 0
 
 InitColor (colorP, fBrightness, nParticleSystemType);
 if (!InitDrift (vDir, nSpeed))
 	return 0;
-if (!InitPosition (vPos, vEmittingFace, mOrient)) // needs InitDrift() to be executed first!
+if (!InitPosition (vPos, vEmittingFace, mOrient, bPointSource)) // needs InitDrift() to be executed first!
 	return 0;
 InitSize (nScale, mOrient);
 InitAnimation ();
@@ -621,7 +625,7 @@ if (vEmittingFace)
 	m_vPos = *RandomPointOnQuad (vEmittingFace, vPos);
 else if ((m_nType != BUBBLE_PARTICLES) && (m_nType != RAIN_PARTICLES) && (m_nType != SNOW_PARTICLES))
 	m_vPos = *vPos + m_vDrift * (I2X (1) / 64);
-else {
+else if (!bPointSource) {
 	//m_vPos = *vPos + vDrift * (I2X (1) / 32);
 	int32_t nSpeed = m_vDrift.Mag () / 16;
 	CFixVector v = CFixVector::Avg ((*mOrient).m.dir.r * (nSpeed - RandN (2 * nSpeed)), (*mOrient).m.dir.u * (nSpeed - RandN (2 * nSpeed)));
@@ -1379,18 +1383,19 @@ vCenter.Assign (m_vPos);
 #endif
 
 if ((m_nType <= SMOKE_PARTICLES) && m_bBlowUp) {
-#if DBG
+#if 1 //DBG
 	if (m_nFadeType == 3)
 		fScale = 1.0;
-	else if (m_decay > 0.9f)
-		fScale = (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.25f));
-	else
-		fScale = 1.0f / float (pow (m_decay, 0.25f));
+	else {
+		fScale = 1.0f / float (pow (m_decay, 1.0f / 3.0f));
+		if (m_decay > 0.5f)
+			fScale *= sqrt ((1.0f - m_decay) / 0.5f);
+		}
 #else
 	fScale = (m_nFadeType == 3)
 				? 1.0f
 				: (m_decay > 0.9f) // start from zero size by scaling with pow (m_decay, 44f) which is < 0.01 for m_decay == 0.9f
-					? (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.3333333f))
+					? (1.0f - pow (m_decay, 44.0f)) / float (pow (m_decay, 0.3333333f)) 0.1 - 1.0 + m_decay
 					: 1.0f / float (pow (m_decay, 0.3333333f));
 #endif
 	}

@@ -41,7 +41,7 @@ static CFloatVector smokeColors [] = {
 
 #define MSL_MAX_PARTS				750
 #define MSL_PART_LIFE				-3000
-#define MSL_PART_SPEED				100
+#define MSL_PART_SPEED				-100
 
 #define LASER_MAX_PARTS				250
 #define LASER_PART_LIFE				-500
