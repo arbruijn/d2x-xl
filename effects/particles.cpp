@@ -1388,7 +1388,11 @@ if (m_nType <= SMOKE_PARTICLES) {
 	if (m_nFadeType == 3)
 		fScale = 1.0f;
 	else {
-		fScale = 1.0f / float (pow (m_decay, 1.0f / 3.0f)); //m_bBlowUp ? 1.0f / float (pow (m_decay, 1.0f / 3.0f)) : 1.0f;
+#if 1
+		fScale = m_bBlowUp ? 1.0f / float (sqrt (m_decay)) : 1.0f;
+#else
+		fScale = m_bBlowUp ? 1.0f / float (pow (m_decay, 1.0f / 3.0f)) : 1.0f;
+#endif
 		if (m_decay > 0.9f)
 			fScale *= sqrt ((1.0f - m_decay) / 0.1f);
 		}
