@@ -136,7 +136,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MULTI_FUSION_CHARGE			86
 #define MULTI_PLAYER_THRUST			87
 #define MULTI_CONFIRM_MESSAGE			88
-#define MULTI_MAX_TYPE					88
+#define MULTI_PICKUP_KEY				89
+#define MULTI_MAX_TYPE					89
 
 #define MAX_NET_CREATE_OBJECTS		40
 
@@ -197,6 +198,7 @@ void MultiSendCaptureBonus (uint8_t nPlayer);
 void MultiSendShield (void);
 void MultiSendCheating (void);
 void MultiSendFusionCharge (void);
+void MultiSendPickupKey (void);
 
 void MultiEndLevelScore (void);
 void MultiPrepLevel (void);

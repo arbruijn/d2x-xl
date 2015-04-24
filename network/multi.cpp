@@ -223,7 +223,8 @@ static int32_t multiMessageLengths [MULTI_MAX_TYPE+1][2] = {
 	{6, -1},  // MULTI_AMMO
 	{6, -1},  // MULTI_FUSION_CHARGE
 	{7, -1},  // MULTI_PLAYER_THRUST
-	{6, -1}   // MULTI_CONFIRM_MESSAGE
+	{6, -1},  // MULTI_CONFIRM_MESSAGE
+	{6, -1}   // MULTI_PICKUP_KEY
 };
 
 void ExtractNetPlayerStats (tNetPlayerStats *ps, CPlayerInfo * pd);
@@ -4274,6 +4275,25 @@ gameData.multiplayer.weaponStates [int32_t (nPlayer)].nAmmoUsed = GET_INTEL_SHOR
 
 //-----------------------------------------------------------------------------
 
+int32_t PickupKey (CObject *objP, int32_t nKey, const char *pszKey, int32_t nPlayer);
+
+void MultiDoPickupKey (uint8_t* buf)
+{
+	int32_t	nPlayer = int32_t (buf [1]);
+	int32_t	nFlags = GET_INTEL_INT (buf + 2);
+
+	static uint32_t nKeys [] = { PLAYER_FLAGS_BLUE_KEY, PLAYER_FLAGS_RED_KEY, PLAYER_FLAGS_GOLD_KEY };
+
+for (int32_t i = 0; i < gameData.multiplayer.nMaxPlayers; i++)
+	for (int32_t j = 0; j < 0; j++) {
+		int32_t nKey = nKeys [j];
+		if (PLAYER (i).IsConnected () && (nFlags & nKey) && !(PLAYER (i).flags & nKey))
+			PickupKey (NULL, nKey, GAMETEXT (12 + nKey), i);
+		}
+}
+
+//-----------------------------------------------------------------------------
+
 void MultiDoFusionCharge (uint8_t* buf)
 {
 gameData.multiplayer.weaponStates [int32_t (buf [1])].xFusionCharge = GET_INTEL_INT (buf + 2);
@@ -4324,6 +4344,22 @@ PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, int16_t (LOCALPLAYER.primary
 bufP += 2;
 PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, gameData.multiplayer.weaponStates [N_LOCALPLAYER].nAmmoUsed);
 bufP += 2;
+MultiSendData (gameData.multigame.msg.buf, bufP, 1);
+}
+
+//-----------------------------------------------------------------------------
+
+void MultiSendPickupKey (void)
+{
+if (!IsMultiGame || !IsCoopGame || (gameStates.multi.nGameType != UDP_GAME))
+	return;
+
+	int32_t bufP = 0;
+
+gameData.multigame.msg.buf [bufP++] = MULTI_PICKUP_KEY;
+gameData.multigame.msg.buf [bufP++] = N_LOCALPLAYER;
+PUT_INTEL_SHORT (gameData.multigame.msg.buf + bufP, int16_t (LOCALPLAYER.flags));
+bufP += 4;
 MultiSendData (gameData.multigame.msg.buf, bufP, 1);
 }
 

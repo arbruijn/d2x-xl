@@ -510,15 +510,18 @@ return PickupEquipment (objP, PLAYER_FLAGS_BULLETTIME, TXT_THE_BULLETTIME, TXT_G
 
 int32_t PickupKey (CObject *objP, int32_t nKey, const char *pszKey, int32_t nPlayer)
 {
-if (ISLOCALPLAYER (nPlayer)) {
+//if (ISLOCALPLAYER (nPlayer)) 
+	{
 	CPlayerData	*playerP = gameData.multiplayer.players + nPlayer;
 
 	if (playerP->flags & nKey)
 		return 0;
-	MultiSendPlaySound (gameData.objData.pwrUp.info [objP->info.nId].hitSound, I2X (1));
-	audio.PlaySound ((int16_t) gameData.objData.pwrUp.info[objP->info.nId].hitSound);
+	if (objP) {
+		MultiSendPlaySound (gameData.objData.pwrUp.info [objP->info.nId].hitSound, I2X (1));
+		audio.PlaySound ((int16_t) gameData.objData.pwrUp.info [objP->info.nId].hitSound);
+		}
 	playerP->flags |= nKey;
-	PowerupBasic (15, 0, 0, KEY_SCORE, "%s %s", pszKey, TXT_ACCESS_GRANTED);
+	PowerupBasic (15, 0, 0, ISLOCALPLAYER (nPlayer) ? KEY_SCORE : 0, "%s %s", pszKey, TXT_ACCESS_GRANTED);
 	InvalidateEscortGoal ();
 	return IsMultiGame == 0;
 	}
