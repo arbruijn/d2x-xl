@@ -587,10 +587,6 @@ else {
 	nSpeed = WI_speed (objP->info.nId, gameStates.app.nDifficultyLevel);
 	nLife = float (gameOpts->render.particles.nLife [3]) * sqrt (float (nSpeed) / float (WI_speed (CONCUSSION_ID, gameStates.app.nDifficultyLevel)));
 	nParts = int32_t (MSL_MAX_PARTS /** nLife*/); //int32_t (MSL_MAX_PARTS * X2F (nSpeed) / (15.0f * (4 - nLife)));
-#if 0
-	if ((objP->info.nId == EARTHSHAKER_MEGA_ID) || (objP->info.nId == ROBOT_SHAKER_MEGA_ID))
-		nParts /= 2;
-#endif
 	}
 if (nParts) {
 	CFixVector vPos = objP->Orientation ().m.dir.f;
@@ -603,13 +599,22 @@ if (nParts) {
 			nParts = -MAX_PARTICLES (nParts, gameOpts->render.particles.nDens [3]);
 			nScale = PARTICLE_SIZE (gameOpts->render.particles.nSize [3], nScale, 1);
 			}
-		if ((objP->Id () == MERCURYMSL_ID) || (objP->Id () == ROBOT_MERCURYMSL_ID)) {
+		uint8_t nId = objP->Id ();
+		if ((nId == MERCURYMSL_ID) || (nId == ROBOT_MERCURYMSL_ID)) {
 			nParts *= 2;
 			nLife /= 2;
 			}
+		else if ((nId == EARTHSHAKER_MEGA_ID) || (nId == ROBOT_SHAKER_MEGA_ID)) {
+			//nParts /= 2;
+			nLife /= 2;
+			}
+#if 0
+	if ((objP->info.nId == EARTHSHAKER_MEGA_ID) || (objP->info.nId == ROBOT_SHAKER_MEGA_ID))
+		nParts /= 2;
+#endif
 		nSmoke = particleManager.Create (&vPos, NULL, NULL, objP->info.nSegment, 1, int32_t (nParts * nLife * nLife), nScale,
 													/*gameOpts->render.particles.bSyncSizes ? -1 : gameOpts->render.particles.nSize [3], 1,*/ 
-													int32_t (nLife * MSL_PART_LIFE * 0.5), MSL_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + 1, 1, -1);
+													int32_t (nLife * MSL_PART_LIFE * 0.5), MSL_PART_SPEED, SMOKE_PARTICLES, nObject, smokeColors + 2, 1, -1);
 		if (nSmoke < 0)
 			return;
 		particleManager.SetObjectSystem (nObject, nSmoke);
