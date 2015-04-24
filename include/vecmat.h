@@ -208,6 +208,10 @@ class CFloatVector {
 		static const float Dot (const CFloatVector& v0, const CFloatVector& v1);
 		static const float Dot (const float x, const float y, const float z, const CFloatVector& v);
 		static const float Normalize (CFloatVector& vec);
+		static const CFloatVector Min (CFloatVector& v, const float l);
+		static const CFloatVector Max (CFloatVector& v, const float l);
+		static const CFloatVector Min (CFloatVector& v, const CFloatVector l);
+		static const CFloatVector Max (CFloatVector& v, const CFloatVector l);
 		static const CFloatVector Perp (const CFloatVector& p0, const CFloatVector& p1, const CFloatVector& p2);
 		static CFloatVector& Perp (CFloatVector& dest, const CFloatVector& p0, const CFloatVector& p1, const CFloatVector& p2);
 		static const CFloatVector Normal (const CFloatVector& p0, const CFloatVector& p1, const CFloatVector& p2);
@@ -488,6 +492,34 @@ inline const CFloatVector CFloatVector::Normal (const CFloatVector& p0, const CF
 
 inline const CFloatVector CFloatVector::Reflect (const CFloatVector& d, const CFloatVector& n) {
 	return n * (Dot (d, n) * -2.0f) + d;
+}
+
+inline const CFloatVector CFloatVector::Min (CFloatVector& v, const float l) {
+	v.v.vec [0] = ::Min (v.v.vec [0], l);
+	v.v.vec [1] = ::Min (v.v.vec [1], l);
+	v.v.vec [2] = ::Min (v.v.vec [2], l);
+	return v;
+}
+
+inline const CFloatVector CFloatVector::Max (CFloatVector& v, const float l) {
+	v.v.vec [0] = ::Max (v.v.vec [0], l);
+	v.v.vec [1] = ::Max (v.v.vec [1], l);
+	v.v.vec [2] = ::Max (v.v.vec [2], l);
+	return v;
+}
+
+inline const CFloatVector CFloatVector::Min (CFloatVector& v, const CFloatVector l) {
+	v.v.vec [0] = ::Min (v.v.vec [0], l.v.vec [0]);
+	v.v.vec [1] = ::Min (v.v.vec [1], l.v.vec [1]);
+	v.v.vec [2] = ::Min (v.v.vec [2], l.v.vec [2]);
+	return v;
+}
+
+inline const CFloatVector CFloatVector::Max (CFloatVector& v, const CFloatVector l) {
+	v.v.vec [0] = ::Max (v.v.vec [0], l.v.vec [0]);
+	v.v.vec [1] = ::Max (v.v.vec [1], l.v.vec [1]);
+	v.v.vec [2] = ::Max (v.v.vec [2], l.v.vec [2]);
+	return v;
 }
 
 // -----------------------------------------------------------------------------

@@ -66,6 +66,19 @@ return n * n;
 }
 
 //------------------------------------------------------------------------------
+// Create a luminance value for an RGB color
+// Greater values have stronger influence
+
+static inline float Luminance (CFloatVector& color)
+{
+#if 1 
+return sqrt ((sqr (Min (color.v.color.r, 1.0f) * 255.0f) + sqr (Min (color.v.color.g, 1.0f) * 255.0f) + sqr (Min (color.v.color.b, 1.0f) * 255.0f)) / 3.0f) / 255.0f;
+#else
+return pow ((sqr (Min (color.v.color.r, 1.0f) * 255.0f, 3.0f) + sqr (Min (color.v.color.g, 1.0f) * 255.0f, 3.0f) + sqr (Min (color.v.color.b, 1.0f) * 255.0f, 3.0f)) / 3.0f, 1.0f / 3.0f) / 255.0f;
+#endif
+}
+
+//------------------------------------------------------------------------------
 
 static inline float SmokeStartAlpha (char bBlowUp, char nClass)
 {
@@ -159,7 +172,7 @@ m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES)
 						//: ((nParticleSystemType <= SMOKE_PARTICLES) || (nParticleSystemType <= WATERFALL_PARTICLES))
 						//	? 3
 						: 0;
-m_color [0] = m_color [1] = color = (colorP && (m_bEmissive != 2)) ? *colorP : defaultParticleColor;
+m_color [0] = m_color [1] = color = CFloatVector::Min ((colorP && (m_bEmissive != 2)) ? *colorP : defaultParticleColor, 1.0f);
 
 if (!brightFlags [(int32_t) m_nType]) {
 	m_bBright = 0;
@@ -484,7 +497,7 @@ m_bEmissive = (nParticleSystemType == LIGHT_PARTICLES)
 						//: ((nParticleSystemType <= SMOKE_PARTICLES) || (nParticleSystemType <= WATERFALL_PARTICLES))
 						//	? 3
 						: 0;
-m_color [0] = m_color [1] = color = (colorP && (m_bEmissive != 2)) ? *colorP : defaultParticleColor;
+m_color [0] = m_color [1] = color = CFloatVector::Min ((colorP && (m_bEmissive != 2)) ? *colorP : defaultParticleColor, 1.0f);
 
 if (!brightFlags [(int32_t) m_nType]) {
 	m_bBright = 0;

@@ -159,4 +159,19 @@ return double (rand ()) / double (RAND_MAX);
 
 //-----------------------------------------------------------------------------
 
+
+template<typename _T> 
+inline void Swap (_T& a, _T& b) { _T h = a; a = b; b = h; }
+
+template<typename _T> 
+inline const _T Clamp (const _T v, const _T vMin, const _T vMax) { return (v < vMin) ? vMin : (v > vMax) ? vMax : v; }
+
+template<typename _T> 
+inline const _T Min (const _T a, const _T b) { return (a <= b) ? a : b; }
+
+template<typename _T> 
+inline const _T Max (const _T a, const _T b) { return (a >= b) ? a : b; }
+
+//-----------------------------------------------------------------------------
+
 #endif
