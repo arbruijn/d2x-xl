@@ -410,19 +410,15 @@ return I2X (gameData.reactor.nStrength);
 //	If this level contains a boss and mode == multiplayer, do control center stuff.
 void InitReactorForLevel (int32_t bRestore)
 {
-	int32_t		i, j = 0, nGuns, bNew;
-	CObject	*objP;
-	int16_t		nBossObj = -1;
-	tReactorStates*	rStatP = &gameData.reactor.states [0];
-
 gameStates.gameplay.bMultiBosses = gameStates.app.bD2XLevel && EGI_FLAG (bMultiBosses, 0, 0, 0);
 extraGameInfo [0].nBossCount [0] = 
 extraGameInfo [0].nBossCount [1] = 0;
 gameStates.gameplay.nReactorCount [0] =
 gameStates.gameplay.nReactorCount [1] = 0;
 gameData.reactor.bPresent = 0;
+
 if (bRestore) {
-	for (i = 0; i < MAX_BOSS_COUNT; i++)
+	for (int32_t i = 0; i < MAX_BOSS_COUNT; i++)
 		if (gameData.reactor.states [i].nObject <= 0) {
 			gameStates.gameplay.nLastReactor = i - 1;
 			break;
@@ -432,27 +428,26 @@ else {
 	gameStates.gameplay.nLastReactor = -1;
 	gameData.reactor.states.Clear (char (0xff));
 	}
+
+CObject *objP;
 FORALL_ACTOR_OBJS (objP) {
 	if (objP->info.nType == OBJ_REACTOR) {
-		if (gameStates.gameplay.nReactorCount [0] && !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)) {
-#if TRACE
-			console.printf (1, "Warning: Two or more control centers including %i and %i\n", 
-							gameData.reactor.states [0].nObject, objP->Index ());
-#endif
-			}			
-		//else 
-		 {
+		if (gameStates.gameplay.nReactorCount [0] && !(gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses))
+			PrintLog (0, "Warning: Two or more control centers including %i and %i\n", gameData.reactor.states [0].nObject, objP->Index ());
+		else {
 			//	Compute all gun positions.
-			if ((bNew = (!bRestore || (0 > (j = FindReactor (objP))))))
+			int32_t j = bRestore ? -1 : FindReactor (objP);
+			int32_t bNew = j < 0;
+			if (bNew)
 				j = gameStates.gameplay.nReactorCount [0];
-			rStatP = gameData.reactor.states + j;
+			tReactorStates *rStatP = gameData.reactor.states + j;
 			if (gameStates.gameplay.nLastReactor < j)
 				gameStates.gameplay.nLastReactor = j;
 			if (bNew)
 				rStatP->nDeadObj = -1;
 			rStatP->xLastVisCheckTime = 0;
 			if (rStatP->nDeadObj < 0) {
-				nGuns = gameData.reactor.props [objP->info.nId].nGuns;
+				int32_t nGuns = gameData.reactor.props [objP->info.nId].nGuns;
 				for (j = 0; j < nGuns; j++)
 					CalcReactorGunPoint (rStatP->vGunPos + j, rStatP->vGunDir + j, objP, j);
 				gameData.reactor.bPresent = 1;
@@ -473,6 +468,7 @@ FORALL_ACTOR_OBJS (objP) {
 		}
 
 	if (objP->IsBoss ()) {
+		int16_t nBossObj = -1;
 		if ((BOSS_COUNT < int32_t (gameData.bosses.ToS ())) || gameData.bosses.Grow ()) {
 			gameData.bosses [BOSS_COUNT].m_nObject = objP->Index ();
 			++extraGameInfo [0].nBossCount [1];
@@ -483,19 +479,15 @@ FORALL_ACTOR_OBJS (objP) {
 				}
 			else if (nBossObj < 0)
 				nBossObj = objP->Index ();
-#if TRACE
 			else
-				console.printf (1, "Warning: Two or more bosses including %i and %i\n", objP->Index (), nBossObj);
-#endif
+				PrintLog (0, "Warning: Two or more bosses including %i and %i\n", objP->Index (), nBossObj);
 			}
 		}
 	}
 
 #if DBG
 if ((BOSS_COUNT <= 0) && !gameStates.gameplay.nReactorCount [0]) {
-#if TRACE
-	console.printf (1, "Warning: No control center.\n");
-#endif
+	PrintLog (0, "Warning: No control center.\n");
 	return;
 	}
 #endif
@@ -503,7 +495,7 @@ if ((BOSS_COUNT <= 0) && !gameStates.gameplay.nReactorCount [0]) {
 if (gameStates.app.bD2XLevel && gameStates.gameplay.bMultiBosses)
 	gameData.reactor.bDisabled = 0;
 else if (gameData.bosses.ToS () > 0) {
-	for (j = 0; j < gameStates.gameplay.nReactorCount [0]; j++) {
+	for (int32_t j = 0; j < gameStates.gameplay.nReactorCount [0]; j++) {
 		objP = OBJECT (gameData.reactor.states [j].nObject);
 		if (objP) {
 			--extraGameInfo [0].nBossCount [1];
