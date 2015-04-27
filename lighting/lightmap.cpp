@@ -730,9 +730,24 @@ return (k < m) ? -1 : (k > m) ? 1 : 0;
 
 int32_t CLightmapManager::BuildAll (int32_t nFace)
 {
-	int32_t	nLastFace; 
+	CMenu			*progressMenu = NULL;
+	CMenuItem	*progressBar = NULL;
+	int32_t		nLastFace; 
 
 INIT_PROGRESS_LOOP (nFace, nLastFace, FACES.nFaces);
+
+if (gameStates.app.bPrecomputeLightmaps) {
+	progressMenu = CMenu::Active ();
+	if (progressMenu) {
+		if ((progressBar = (*progressMenu) ["subtitle 1"])) {
+			progressBar->SetText ("level progress");
+			}
+		if ((progressBar = (*progressMenu) ["progress bar 2"])) {
+			progressBar->Value () = 0;
+			progressBar->MaxValue () = FACES.nFaces;
+			}
+		}
+	}
 if (nFace <= 0) {
 	CreateSpecial (m_data.m_texColor, 0, 0);
 	CreateSpecial (m_data.m_texColor, 1, 255);
@@ -744,6 +759,11 @@ for (m_data.faceP = &FACES.faces [nFace]; nFace < nLastFace; nFace++, m_data.fac
 	if ((m_data.faceP->m_info.nSegment == nDbgSeg) && ((nDbgSide < 0) || (m_data.faceP->m_info.nSide == nDbgSide)))
 		BRP;
 #endif
+		if (gameStates.app.bPrecomputeLightmaps && progressMenu && progressBar) {
+			progressBar->Value ()++;
+			progressBar->Rebuild ();
+			progressMenu->Render (progressMenu->Title (), progressMenu->SubTitle ());
+			}
 	if (SEGMENT (m_data.faceP->m_info.nSegment)->m_function == SEGMENT_FUNC_SKYBOX) {
 		m_data.faceP->m_info.nLightmap = 1;
 		continue;
@@ -861,7 +881,7 @@ int32_t CLightmapManager::Save (int32_t nLevel)
 										m_list.nBuffers,
 										gameStates.app.bCompressData
 										};
-	int32_t				i, bOk;
+	int32_t			i, bOk;
 	char				szFilename [FILENAME_LEN];
 	CSegFace			*faceP;
 
@@ -990,17 +1010,17 @@ if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 		//PLANE_DIST_TOLERANCE = fix (I2X (1) * 0.001f);
 		//SetupSegments (); // set all faces up as triangles
 		gameStates.render.bBuildLightmaps = 1;
-		if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
+		if (!gameStates.app.bPrecomputeLightmaps && gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 			nFace = 0;
-			ProgressBar (TXT_CALC_LIGHTMAPS, 0, PROGRESS_STEPS (FACES.nFaces), CreatePoll);
+			ProgressBar (TXT_CALC_LIGHTMAPS, 1, 0, PROGRESS_STEPS (FACES.nFaces), CreatePoll);
 			}
 		else {
-			if (!gameStates.app.bComputeLightmaps)
+			if (!gameStates.app.bPrecomputeLightmaps)
 				messageBox.Show (TXT_CALC_LIGHTMAPS);
 			GrabMouse (0, 0);
 			m_bSuccess = BuildAll (-1);
 			GrabMouse (1, 0);
-			if (!gameStates.app.bComputeLightmaps)
+			if (!gameStates.app.bPrecomputeLightmaps)
 				messageBox.Clear ();
 			}
 		if (!m_bSuccess)

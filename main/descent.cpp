@@ -795,7 +795,7 @@ return nCurItem;
 void InitializeGauge (void)
 {
 loadOp = 0;
-ProgressBar (TXT_INITIALIZING, 0, InitGaugeSize (), InitializePoll);
+ProgressBar (TXT_INITIALIZING, 1, 0, InitGaugeSize (), InitializePoll);
 }
 
 // ----------------------------------------------------------------------------

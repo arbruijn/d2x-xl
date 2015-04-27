@@ -281,7 +281,7 @@ return Scaled (nStringHeight);
 
 //------------------------------------------------------------------------------ 
 
-void CMenu::SetItemPos (int32_t twidth, int32_t xOffs, int32_t yOffs, int32_t m_rightOffset)
+void CMenu::SetItemPos (int32_t titleWidth, int32_t xOffs, int32_t yOffs, int32_t m_rightOffset)
 {
 for (uint32_t i = 0; i < ToS (); i++) {
 	if (((Item (i).m_x == int16_t (0x8000)) || Item (i).m_bCentered)) {
@@ -289,7 +289,7 @@ for (uint32_t i = 0; i < ToS (); i++) {
 		Item (i).m_x = -1;
 		}
 	else
-		Item (i).m_x = xOffs + twidth + m_rightOffset;
+		Item (i).m_x = xOffs + titleWidth + m_rightOffset;
 	Item (i).m_y += yOffs;
 	Item (i).m_xSave = Item (i).m_x;
 	Item (i).m_ySave = Item (i).m_y;
@@ -1842,15 +1842,26 @@ delete[] tbuf;
 
 //------------------------------------------------------------------------------ 
 
-void ProgressBar (const char* szCaption, int32_t nCurProgress, int32_t nMaxProgress, pMenuCallback doProgress)
+void ProgressBar (const char* szCaption, int32_t nBars, int32_t nCurProgress, int32_t nMaxProgress, pMenuCallback doProgress)
 {
 	int32_t	i, nInMenu;
-	CMenu	menu;
+	CMenu		menu;
 
-menu.Create (3);
-menu.AddGauge ("progress bar", "                    ", -1, nMaxProgress); //the blank string denotes the screen width of the gauge
-menu.Item (0).m_bCentered = 1;
-menu.Item (0).Value () = nCurProgress;
+nBars = Clamp (nBars, 1, 2);
+menu.Create (3 + (nBars - 1) * 3);
+for (i = 0; i < nBars; i++) {
+	char szId [20];
+	if (i) {
+		menu.AddText ("", "");
+		sprintf (szId, "subtitle %d", i);
+		menu.AddText (szId, "");
+		menu.Item (menu.ToS () - 1).m_bCentered = 1;
+		}
+	sprintf (szId, "progress bar %d", i + 1);
+	menu.AddGauge (szId, "                    ", -1, nMaxProgress); //the blank string denotes the screen width of the gauge
+	menu.Item (menu.ToS () - 1).m_bCentered = 1;
+	menu.Item (menu.ToS () - 1).Value () = i ? 0 : nCurProgress;
+	}
 nInMenu = gameStates.menus.nInMenu;
 gameStates.menus.nInMenu = 0;
 gameData.app.bGamePaused = 1;

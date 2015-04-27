@@ -255,7 +255,7 @@ if ((m = menu ["level number"])) {
 		}
 	}  
 
-if (gameStates.app.bComputeLightmaps)
+if (gameStates.app.bPrecomputeLightmaps)
 	LightmapOptionsCallback (menu, key, nCurItem, nState);
 
 return nCurItem;
@@ -311,7 +311,7 @@ else if (gameOpts->app.bSinglePlayer) {
 	gameFolders.missions.szSubFolder [0] = '\0';
 	}
 hogFileManager.UseMission ("");
-if (gameStates.app.bComputeLightmaps)
+if (gameStates.app.bPrecomputeLightmaps)
 	InitRenderMenuStrings ();
 
 for (;;) {
@@ -337,7 +337,7 @@ for (;;) {
 		gameOpts->app.bEnableMods = 1;
 		MakeModFolders (bBuiltIn ? hogFileManager.MissionName () : missionManager [nMission].filename);
 		gameOpts->app.bEnableMods = bEnableMod;
-		if (!gameStates.app.bComputeLightmaps) {
+		if (!gameStates.app.bPrecomputeLightmaps) {
 			m.AddText ("", "");
 			if (gameStates.app.bHaveMod == bBuiltIn)
 				m.AddCheck ("enable mods", TXT_ENABLE_MODS, gameOpts->app.bEnableMods, KEY_O, HTX_ENABLE_MODS);
@@ -346,7 +346,7 @@ for (;;) {
 		}
 
 	m.AddText ("", "");
-	if (gameStates.app.bComputeLightmaps)
+	if (gameStates.app.bPrecomputeLightmaps)
 		AddLightmapControls (m);
 	else {
 #if DBG
@@ -367,7 +367,7 @@ for (;;) {
 
 	if (nMission >= 0) {
 		m.AddText ("", "");
-		m.AddMenu ("launch game", gameStates.app.bComputeLightmaps ? TXT_START : TXT_LAUNCH_GAME, KEY_L, "");
+		m.AddMenu ("launch game", gameStates.app.bPrecomputeLightmaps ? TXT_START : TXT_LAUNCH_GAME, KEY_L, "");
 		m ["launch game"]->m_bCentered = 1;
 		}
 
@@ -377,13 +377,13 @@ for (;;) {
 		SetFunctionMode (FMODE_MENU);
 		return -1;
 		}
-	if (!gameStates.app.bComputeLightmaps) {
+	if (!gameStates.app.bPrecomputeLightmaps) {
 		GET_VAL (gameOpts->app.bEnableMods, "enable mods");
 		GET_VAL (extraGameInfo [IsMultiGame].bAllowCustomWeapons, "allow custom weapons");
 		if (!extraGameInfo [IsMultiGame].bAllowCustomWeapons)
 			SetDefaultWeaponProps ();
 	}
-	if (!gameStates.app.bComputeLightmaps && (choice == m.IndexOf ("loadout")))
+	if (!gameStates.app.bPrecomputeLightmaps && (choice == m.IndexOf ("loadout")))
 		LoadoutOptionsMenu ();
 	else if (choice == m.IndexOf ("mission selector")) {
 		i = SelectAndLoadMission (0, NULL);
@@ -401,7 +401,7 @@ for (;;) {
 		break;
 		}
 #if DBG
-	else if (!gameStates.app.bComputeLightmaps) {
+	else if (!gameStates.app.bPrecomputeLightmaps) {
 		i = m.ToInt ("initial lives");
 		if (i > 0)
 			gameStates.gameplay.nInitialLives = Min (i, 255);
@@ -409,7 +409,7 @@ for (;;) {
 #endif
 	}
 
-if (!gameStates.app.bComputeLightmaps) {
+if (!gameStates.app.bPrecomputeLightmaps) {
 	i = m.Value ("difficulty");
 	if (gameStates.app.nDifficultyLevel != i) {
 		gameStates.app.nDifficultyLevel = i;
@@ -422,7 +422,7 @@ if (!gameStates.app.bComputeLightmaps) {
 paletteManager.DisableEffect ();
 if (!bMsnLoaded)
 	missionManager.Load (nMission);
-if (!(gameStates.app.bComputeLightmaps || StartNewGame (nLevel))) {
+if (!(gameStates.app.bPrecomputeLightmaps || StartNewGame (nLevel))) {
 	SetFunctionMode (FMODE_MENU);
 	return -1;
 	}

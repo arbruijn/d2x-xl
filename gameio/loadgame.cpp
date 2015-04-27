@@ -1009,7 +1009,7 @@ if (!(gameStates.app.bHaveMod || missionManager.IsBuiltIn (hogFileManager.Missio
 	 MakeModFolders (gameStates.app.bD1Mission ? "Descent: First Strike" : "Descent 2: Counterstrike!", nLevel);
 lightManager.SetMethod ();
 
-if (!gameStates.app.bComputeLightmaps) {
+if (!gameStates.app.bPrecomputeLightmaps) {
 	songManager.PlayLevelSong (missionManager.nCurrentLevel, 1);
 #if 1
 	if (LoadModData (NULL, 0, 0) < 0) {
@@ -1049,7 +1049,7 @@ gameData.render.color.textures = gameData.render.color.defaultTextures [gameStat
 LoadTextureColors (pszLevelName, NULL);
 PrintLog (-1);
 
-if (!gameStates.app.bComputeLightmaps) {
+if (!gameStates.app.bPrecomputeLightmaps) {
 	/*---*/PrintLog (1, "loading mission configuration info\n");
 	missionConfig.Init ();
 	missionConfig.Load ();
@@ -1082,7 +1082,7 @@ if (nLoadRes) {
 	return 0;
 	}
 
-if (!gameStates.app.bComputeLightmaps) {
+if (!gameStates.app.bPrecomputeLightmaps) {
 	if (!gameStates.app.bProgressBars)
 		messageBox.Show (TXT_LOADING);
 	paletteManager.SetGame (paletteManager.Load (szCurrentLevelPalette, pszLevelName, 1, 1, 1));		//don't change screen
@@ -1101,7 +1101,7 @@ if (!lightManager.Setup (nLevel)) {
 	return -1;
 	}
 #endif
-if (!gameStates.app.bComputeLightmaps) {
+if (!gameStates.app.bPrecomputeLightmaps) {
 	/*---*/PrintLog (1, "loading endlevel data\n");
 	LoadEndLevelData (nLevel);
 	PrintLog (-1);

@@ -501,7 +501,7 @@ if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 	nTouchPowerup1 = 0;
 	nTouchPowerup2 = 0;
 	nTouchGauge = 0;
-	ProgressBar (TXT_LOADING, i, i + PagingGaugeSize () + SortLightsGaugeSize () + SegDistGaugeSize (), LoadTexturesPoll); 
+	ProgressBar (TXT_LOADING, 1, i, i + PagingGaugeSize () + SortLightsGaugeSize () + SegDistGaugeSize (), LoadTexturesPoll); 
 	}
 else
 	LoadAllTextures ();

@@ -410,7 +410,7 @@ void LoadModelsGauge (void)
 {
 loadIdx = 0;
 loadOp = gameOpts->render.bHiresModels [0] ? 0 : 1;
-ProgressBar (TXT_LOADING_MODELS, 0, ModelsGaugeSize (), LoadModelsPoll); 
+ProgressBar (TXT_LOADING_MODELS, 1, 0, ModelsGaugeSize (), LoadModelsPoll); 
 }
 
 // ----------------------------------------------------------------------------

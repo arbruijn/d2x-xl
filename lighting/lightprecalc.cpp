@@ -1166,7 +1166,7 @@ nSavedCount = 0;
 if (gameStates.app.bMultiThreaded && (gameData.segData.nSegments > 15)) {
 	gameData.physics.side.bCache = 0;
 	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
-		ProgressBar (TXT_LOADING, 0, 6, PrecalcLightPollMT);
+		ProgressBar (TXT_LOADING, 1, 0, 6, PrecalcLightPollMT);
 	else {
 		PrintLog (0, "Computing segment visibility\n");
 		StartLightPrecalcThreads (SegVisThread);
@@ -1189,7 +1189,7 @@ else
 	int32_t bMultiThreaded = gameStates.app.bMultiThreaded;
 	gameStates.app.bMultiThreaded = 0;
 	if (gameStates.app.bProgressBars && gameOpts->menus.nStyle)
-		ProgressBar (TXT_LOADING,
+		ProgressBar (TXT_LOADING, 1,
 						 LoadMineGaugeSize () + PagingGaugeSize (),
 						 LoadMineGaugeSize () + PagingGaugeSize () + SortLightsGaugeSize () + SegDistGaugeSize (), PrecalcLightPollST);
 	else {
@@ -1263,7 +1263,7 @@ return nCurItem;
 
 void PrecomputeMissionLightmaps (void)
 {
-gameStates.app.bComputeLightmaps = 1;
+gameStates.app.bPrecomputeLightmaps = 1;
 
 int32_t bUseLightmaps = gameOpts->render.bUseLightmaps;
 int32_t bPerPixelLighting = gameStates.render.bPerPixelLighting;
@@ -1278,7 +1278,7 @@ nLevel = NewGameMenu ();
 if (nLevel > -1) {
 	if (gameStates.app.bProgressBars) {
 		bSecret = 1;
-		ProgressBar (TXT_COMPUTING, 0, missionManager.nLastLevel - nLevel + 1 - missionManager.nLastSecretLevel, PrecomputeLightmapsPoll);
+		ProgressBar (TXT_CALC_LIGHTMAPS, 2, 0, missionManager.nLastLevel - nLevel + 1 - missionManager.nLastSecretLevel, PrecomputeLightmapsPoll);
 		}
 	else {
 		for (; nLevel <= missionManager.nLastLevel; nLevel++)
@@ -1294,7 +1294,7 @@ gameStates.render.bPerPixelLighting = bPerPixelLighting;
 gameOpts->render.nLightmapQuality = nLightmapQuality;
 gameOpts->render.nLightmapPrecision = nLightmapPrecision;
 
-gameStates.app.bComputeLightmaps = 0;
+gameStates.app.bPrecomputeLightmaps = 0;
 }
 
 //------------------------------------------------------------------------------

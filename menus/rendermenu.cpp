@@ -548,7 +548,7 @@ nIPD = X2MM (gameOpts->render.stereo.xSeparation [1]) - RIFT_MIN_IPD; //RIFT_IPD
 do {
 	m.Destroy ();
 	m.Create (50);
-	if (!gameStates.app.bComputeLightmaps) {
+	if (!gameStates.app.bPrecomputeLightmaps) {
 #if !DBG
 		if (!gameOpts->app.bNotebookFriendly)
 			m.AddCheck ("frame cap", TXT_VSYNC, gameOpts->render.nMaxFPS == 1, KEY_V, HTX_RENDER_FRAMECAP);
@@ -580,13 +580,13 @@ do {
 		m.AddSlider ("lighting method", szSlider + 1, nLighting, 0, (gameOpts->render.bUseShaders && ogl.m_features.bShaders) ? 3 : 1, KEY_L, HTX_LIGHTING);
 		if (nLighting >= 2) {
 			AddLightmapControls (m);
-			if (!gameStates.app.bComputeLightmaps && (nLighting == 3)) {
+			if (!gameStates.app.bPrecomputeLightmaps && (nLighting == 3)) {
 				sprintf (szSlider + 1, TXT_MAX_LIGHTS_PER_PASS, gameOpts->ogl.nMaxLightsPerPass);
 				*szSlider = *(TXT_MAX_LIGHTS_PER_PASS - 1);
 				m.AddSlider ("light sources", szSlider + 1, gameOpts->ogl.nMaxLightsPerPass - 5, 0, 8 - MIN_LIGHTS_PER_PASS, KEY_P, HTX_MAX_LIGHTS_PER_PASS);
 				}
 			}
-		if (!gameStates.app.bComputeLightmaps) {
+		if (!gameStates.app.bPrecomputeLightmaps) {
 			sprintf (szSlider + 1, TXT_LIGHTCOLOR, pszColorLevel [gameOpts->render.color.nLevel]);
 			*szSlider = *(TXT_LIGHTCOLOR - 1);
 			m.AddSlider ("colorization", szSlider + 1, gameOpts->render.color.nLevel, 0, 2, KEY_C, HTX_RENDER_LIGHTCOLOR);
@@ -594,7 +594,7 @@ do {
 			}
 		}
 
-	if (!gameStates.app.bComputeLightmaps) {
+	if (!gameStates.app.bPrecomputeLightmaps) {
 		sprintf (szSlider + 1, TXT_IMAGE_QUALITY, pszImgQual [gameOpts->render.nImageQuality]);
 		*szSlider = *(TXT_IMAGE_QUALITY - 1);
 		m.AddSlider ("image quality", szSlider + 1, gameOpts->render.nImageQuality, 0, 4, KEY_I, HTX_ADVRND_RENDQUAL);
@@ -702,7 +702,7 @@ do {
 	if (!gameOpts->render.powerups.b3D)
 		LoadPowerupTextures ();
 
-	if (!gameStates.app.bComputeLightmaps) {
+	if (!gameStates.app.bPrecomputeLightmaps) {
 		if (m.Available ("movie subtitles"))
 			gameOpts->movies.bSubTitles = (m.Value ("movie subtitles") != 0);
 
@@ -724,7 +724,7 @@ do {
 		}
 
 #if DBG
-	if (!gameStates.app.bComputeLightmaps) {
+	if (!gameStates.app.bPrecomputeLightmaps) {
 		if (EXPERTMODE) {
 			gameOpts->render.debug.bWireFrame = m.Value ("draw wire frame");
 			gameOpts->render.debug.bTextures = m.Value ("draw textures");

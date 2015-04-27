@@ -176,7 +176,7 @@ if (!cf.Open (pszFile, gameFolders.game.szData [1], "rb", 0))
 #if 0 //slows it down too much
 if (gameStates.app.bProgressBars && gameOpts->menus.nStyle) {
 	nProgressStep = (nRecords + 99) / 100;
-	ProgressBar (TXT_LOADING_IPTOCOUNTRY, 0, nRecords, LoadIpToCountryPoll); 
+	ProgressBar (TXT_LOADING_IPTOCOUNTRY, 1, 0, nRecords, LoadIpToCountryPoll); 
 	}
 #endif
 else {

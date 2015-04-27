@@ -533,7 +533,7 @@ int32_t _CDECL_ TextBox (const char *pszTitle, int32_t nWallpaper, int32_t nChoi
 // Same as above, but you can pass a function
 int32_t _CDECL_ InfoBox (const char *pszTitle, pMenuCallback callBack, int32_t nWallpaper, int32_t nChoices, ...);
 
-void ProgressBar (const char *szCaption, int32_t nCurProgress, int32_t nMaxProgress, pMenuCallback doProgress);
+void ProgressBar (const char *szCaption, int32_t nBars, int32_t nCurProgress, int32_t nMaxProgress, pMenuCallback doProgress);
 
 int32_t FileList (const char *pszTitle, const char *filespec, char *filename);
 
