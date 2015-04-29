@@ -162,7 +162,7 @@ int32_t ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int32_t transT
 {
 	CHitQuery	hitQuery;
 	CHitResult	hitResult;
-	int32_t			fate, nTries = 0, bSpectate = SPECTATOR (objP1);
+	int32_t		fate, nTries = 0, bSpectate = SPECTATOR (objP1);
 
 do {
 	hitQuery.flags = transType | FQ_CHECK_OBJS;

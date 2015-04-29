@@ -1118,8 +1118,8 @@ class CObject : public CObjectInfo {
 		void RotateCamera (void);
 		void RotateMarker (void);
 
-		int32_t SelectHomingTarget (CFixVector& vTrackerPos);
-		int32_t FindVisibleHomingTarget (CFixVector& vTrackerPos);
+		int32_t SelectHomingTarget (CFixVector& vTrackerPos, int32_t nThread);
+		int32_t FindVisibleHomingTarget (CFixVector& vTrackerPos, int32_t nThread);
 		int32_t FindAnyHomingTarget (CFixVector& vTrackerPos, int32_t nTargetType1, int32_t nTargetType2, int32_t nThread = 0);
 		int32_t UpdateHomingTarget (int32_t nTarget, fix& dot, int32_t nThread = 0);
 		int32_t MaxTrackableDist (int32_t& xBestDot);

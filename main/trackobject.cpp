@@ -42,12 +42,12 @@ static CStack<class CTarget>	targetLists [MAX_THREADS];
 
 class CHomingTargetData {
 	public:
-		CObject* m_trackerP;
-		CFixVector m_vTrackerPos;
-		CFixVector m_vTrackerViewDir;
-		fix	m_xMaxDist;
-		fix	m_xBestDot;
-		int32_t	m_nBestObj;
+		CObject		*m_trackerP;
+		CFixVector	m_vTrackerPos;
+		CFixVector	m_vTrackerViewDir;
+		fix			m_xMaxDist;
+		fix			m_xBestDot;
+		int32_t		m_nBestObj;
 		CStack<class CTarget>& m_targets;
 
 		CHomingTargetData (CObject* trackerP, CFixVector& vTrackerPos, CStack<class CTarget>& targets) 
@@ -63,7 +63,7 @@ class CHomingTargetData {
 
 		void Add (CObject* targetP, float dotScale = 1.0f);
 
-		int32_t Target (void);
+		int32_t Target (int32_t nThread);
 	};
 
 //	-----------------------------------------------------------------------------
@@ -96,7 +96,7 @@ if (ObjectToObjectVisibility (m_trackerP, targetP, FQ_TRANSWALL)) {
 
 //	-----------------------------------------------------------------------------
 
-int32_t CHomingTargetData::Target (void)
+int32_t CHomingTargetData::Target (int32_t nThread)
 {
 #if NEW_TARGETTING
 if (m_targets.ToS () < 1)
@@ -105,7 +105,7 @@ if (m_targets.ToS () > 1)
 	m_targets.SortDescending ();
 
 for (uint32_t i = 0; i < m_targets.ToS (); i++) {
-	if (ObjectToObjectVisibility (m_trackerP, m_targets[i].m_objP, FQ_TRANSWALL))
+	if (ObjectToObjectVisibility (m_trackerP, m_targets[i].m_objP, FQ_TRANSWALL, nThread))
 		return m_targets[i].m_objP->Index ();
 	}
 return -1;
@@ -157,18 +157,18 @@ return 0;
 
 //	-----------------------------------------------------------------------------
 
-int32_t CObject::SelectHomingTarget (CFixVector& vTrackerPos)
+int32_t CObject::SelectHomingTarget (CFixVector& vTrackerPos, int32_t nThread)
 {
 if (!IsMultiGame)
-	return FindAnyHomingTarget (vTrackerPos, OBJ_ROBOT, -1);
+	return FindAnyHomingTarget (vTrackerPos, OBJ_ROBOT, -1, nThread);
 if ((Type () == OBJ_PLAYER) || (cType.laserInfo.parent.nType == OBJ_PLAYER)) {
 	//	It's fired by a player, so if robots present, track robot, else track player.
 	return IsCoopGame 
-			 ? FindAnyHomingTarget (vTrackerPos, OBJ_ROBOT, -1) 
-			 : FindAnyHomingTarget (vTrackerPos, OBJ_PLAYER, OBJ_ROBOT);
+			 ? FindAnyHomingTarget (vTrackerPos, OBJ_ROBOT, -1, nThread) 
+			 : FindAnyHomingTarget (vTrackerPos, OBJ_PLAYER, OBJ_ROBOT, nThread);
 		} 
 CObject* parentP = Parent ();
-return FindAnyHomingTarget (vTrackerPos, OBJ_PLAYER, (parentP && (parentP->Target ()->Type () == OBJ_ROBOT)) ? OBJ_ROBOT : -1);
+return FindAnyHomingTarget (vTrackerPos, OBJ_PLAYER, (parentP && (parentP->Target ()->Type () == OBJ_ROBOT)) ? OBJ_ROBOT : -1, nThread);
 }
 
 //	-----------------------------------------------------------------------------
@@ -205,11 +205,11 @@ return MAX_TRACKABLE_DIST;
 //	-----------------------------------------------------------------------------
 //	Find CObject to home in on.
 //	Scan list of OBJECTS rendered last frame, find one that satisfies function of nearness to center and distance.
-int32_t CObject::FindVisibleHomingTarget (CFixVector& vTrackerPos)
+int32_t CObject::FindVisibleHomingTarget (CFixVector& vTrackerPos, int32_t nThread)
 {
 //	Find an CObject to track based on game mode (eg, whether in network play) and who fired it.
 if (IsMultiGame)
-	return SelectHomingTarget (vTrackerPos);
+	return SelectHomingTarget (vTrackerPos, nThread);
 
 //	Not in network mode.  If not fired by player, then track player.
 if ((Type () != OBJ_PLAYER) && (cType.laserInfo.parent.nObject != LOCALPLAYER.nObject) && !(LOCALPLAYER.flags & PLAYER_FLAGS_CLOAKED))
@@ -218,7 +218,7 @@ if ((Type () != OBJ_PLAYER) && (cType.laserInfo.parent.nObject != LOCALPLAYER.nO
 	int32_t nWindow = FindTargetWindow ();
 
 if (nWindow == -1)
-	return SelectHomingTarget (vTrackerPos);
+	return SelectHomingTarget (vTrackerPos, nThread);
 
 	bool bOmega = (Type () == OBJ_WEAPON) && (Id () == OMEGA_ID);
 	bool bPlayer = (Type () == OBJ_PLAYER);
@@ -251,7 +251,7 @@ for (int32_t i = windowRenderedData [nWindow].nObjects - 1; i >= 0; i--) {
 
 	targetData.Add (targetP);
 	}
-return targetData.Target ();
+return targetData.Target (nThread);
 }
 
 //	-----------------------------------------------------------------------------
@@ -303,7 +303,7 @@ FORALL_ACTOR_OBJS (targetP) {
 	targetData.Add (targetP, dotScale);
 	}
 
-return targetData.Target ();
+return targetData.Target (nThread);
 }
 
 //	---------------------------------------------------------------------------------------------
