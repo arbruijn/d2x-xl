@@ -228,7 +228,7 @@ int32_t BossFitsInSeg (CObject *bossObjP, int32_t nSegment)
 	CFixVector	vSegCenter, vVertPos;
 	CSegment*	segP = SEGMENT (nSegment);
 
-gameData.collisions.nSegsVisited = 0;
+memset (gameData.collisions.nSegsVisited, 0, sizeof (gameData.collisions.nSegsVisited));
 vSegCenter = segP->Center ();
 for (nPos = 0; nPos < 9; nPos++) {
 	if (!nPos)
