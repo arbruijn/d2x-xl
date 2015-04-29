@@ -212,7 +212,7 @@ class CPhysSimData {
 //  ingore_obj_list	NULL, or ptr to a list of objnums to ignore, terminated with -1
 //  check_objFlag	determines whether collisions with objects are checked
 //Returns the hitResult->hitType
-int32_t FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult);
+int32_t FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult, int32_t nThread = 0);
 
 //finds the uv coords of the given point on the given seg & CSide
 //fills in u & v. if l is non-NULL fills it in also

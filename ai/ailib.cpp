@@ -69,7 +69,7 @@ if ((*vPos) != objP->info.position.vPos) {
 else
 	hitQuery.nSegment	= objP->info.nSegment;
 
-gameData.ai.nHitType = FindHitpoint (hitQuery, gameData.ai.hitResult);
+gameData.ai.nHitType = FindHitpoint (hitQuery, gameData.ai.hitResult, 0);
 gameData.ai.vHitPos = gameData.ai.hitResult.vPoint;
 gameData.ai.nHitSeg = gameData.ai.hitResult.nSegment;
 if ((gameData.ai.nHitType != HIT_OBJECT) || (gameData.ai.hitResult.nObject != TARGETOBJ->Index ()))
@@ -122,10 +122,10 @@ nSize = objP->info.xSize;
 objP->rType.polyObjInfo.nModel = -1;	//make sure sphere/hitbox and not hitbox/hitbox collisions get tested
 objP->SetSize (I2X (2));					//chose some meaningful small size to simulate a weapon
 
-gameData.ai.nHitType = FindHitpoint (hitQuery, gameData.ai.hitResult);
+gameData.ai.nHitType = FindHitpoint (hitQuery, gameData.ai.hitResult, 0);
 #if DBG
 if (gameData.ai.nHitType == 0)
-	FindHitpoint (hitQuery, gameData.ai.hitResult);
+	FindHitpoint (hitQuery, gameData.ai.hitResult, 0);
 #endif
 objP->rType.polyObjInfo.nModel = nModel;
 gameData.ai.vHitPos = gameData.ai.hitResult.vPoint;

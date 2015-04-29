@@ -943,9 +943,9 @@ for (int32_t nSide = 0; nSide < 6; nSide++) {
 	CWall* wallP = segP->Wall (nSide);
 	if (wallP && (wallP->IsPassable (NULL) & (WID_TRANSPARENT_WALL | WID_SOLID_WALL)))
 		continue;
-	for (i = 0; i < gameData.collisions.nSegsVisited && (nSegment != gameData.collisions.segsVisited [i]); i++)
+	for (i = 0; i < gameData.collisions.nSegsVisited [nThread] && (nSegment != gameData.collisions.segsVisited [nThread][i]); i++)
 		;
-	if (i == gameData.collisions.nSegsVisited)
+	if (i == gameData.collisions.nSegsVisited [nThread])
 		nObjSegList [nObjSegs++] = nSegment;
 	}
 #endif
@@ -1082,7 +1082,7 @@ return 0;
 
 #define FVI_NEWCODE 2
 
-int32_t ComputeHitpoint (CHitData& hitData, CHitQuery& hitQuery, int16_t* segList, int16_t* nSegments, int32_t nEntrySeg)
+int32_t ComputeHitpoint (CHitData& hitData, CHitQuery& hitQuery, int16_t* segList, int16_t* nSegments, int32_t nEntrySeg, int32_t nThread)
 {
 	CHitData		bestHit, curHit;
 	fix			d, dMin = 0x7fffffff;					//distance to hit refP
@@ -1172,13 +1172,13 @@ if (endMask) { //on the back of at least one face
 				if (subHitQuery.nSegment == nDbgSeg)
 					BRP;
 #endif
-				for (i = 0; i < gameData.collisions.nSegsVisited && (subHitQuery.nSegment != gameData.collisions.segsVisited [i]); i++)
+				for (i = 0; i < gameData.collisions.nSegsVisited [nThread] && (subHitQuery.nSegment != gameData.collisions.segsVisited [nThread][i]); i++)
 					;
-				if (i == gameData.collisions.nSegsVisited) {                //haven't visited here yet
-					if (gameData.collisions.nSegsVisited >= MAX_SEGS_VISITED)
+				if (i == gameData.collisions.nSegsVisited [nThread]) {                //haven't visited here yet
+					if (gameData.collisions.nSegsVisited [nThread] >= MAX_SEGS_VISITED)
 						goto hitPointDone;	//we've looked a long time, so give up
-					gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = subHitQuery.nSegment;
-					subHit.nType = ComputeHitpoint (subHit, subHitQuery, subSegList, &nSubSegments, hitQuery.nSegment);
+					gameData.collisions.segsVisited [nThread][gameData.collisions.nSegsVisited [nThread]++] = subHitQuery.nSegment;
+					subHit.nType = ComputeHitpoint (subHit, subHitQuery, subSegList, &nSubSegments, hitQuery.nSegment, nThread);
 					if (subHit.nType != HIT_NONE) {
 						d = CFixVector::Dist (subHit.vPoint, *hitQuery.p0);
 						if (d < dMin) {
@@ -1259,7 +1259,7 @@ return bestHit.nType;
 //  ingore_obj			ignore collisions with this CObject
 //  check_objFlag	determines whether collisions with OBJECTS are checked
 //Returns the hitResult->nHitType
-int32_t FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult)
+int32_t FindHitpoint (CHitQuery& hitQuery, CHitResult& hitResult, int32_t nThread)
 {
 	CHitData		curHit, newHit;
 	int32_t		i, nHitboxes = extraGameInfo [IsMultiGame].nHitboxes; // save value
@@ -1303,16 +1303,16 @@ if (masks.m_center) {
 		return hitResult.nType;
 		}
 	}
-gameData.collisions.segsVisited [0] = hitQuery.nSegment;
-gameData.collisions.nSegsVisited = 1;
+gameData.collisions.segsVisited [nThread][0] = hitQuery.nSegment;
+gameData.collisions.nSegsVisited [nThread] = 1;
 gameData.collisions.hitResult.nNestCount = 0;
 if (hitQuery.flags & FQ_VISIBILITY)
 	extraGameInfo [IsMultiGame].nHitboxes = 0;
-ComputeHitpoint (curHit, hitQuery, hitResult.segList, &hitResult.nSegments, -2);
+ComputeHitpoint (curHit, hitQuery, hitResult.segList, &hitResult.nSegments, -2, nThread);
 #if 1 //DBG
 if (curHit.nSegment >= gameData.segData.nSegments) {
 	PrintLog (0, "Invalid hit segment in collision detection\n");
-	ComputeHitpoint (curHit, hitQuery, hitResult.segList, &hitResult.nSegments, -2);
+	ComputeHitpoint (curHit, hitQuery, hitResult.segList, &hitResult.nSegments, -2, nThread);
 	if (curHit.nSegment > gameData.segData.nSegments) 
 		curHit.nSegment = -1;
 	}
@@ -1336,7 +1336,7 @@ if (curHit.nSegment == -1) {
 	//problems, try using zero radius and see if we hit a wall
 	if (hitQuery.flags & FQ_VISIBILITY)
 		extraGameInfo [IsMultiGame].nHitboxes = 0;
-	ComputeHitpoint (altHit, altQuery, hitResult.segList, &hitResult.nSegments, -2);
+	ComputeHitpoint (altHit, altQuery, hitResult.segList, &hitResult.nSegments, -2, nThread);
 	extraGameInfo [IsMultiGame].nHitboxes = nHitboxes;
 	if (altHit.nSegment != -1)
 		curHit = altHit;
@@ -1362,7 +1362,7 @@ return curHit.nType;
 
 //	-----------------------------------------------------------------------------
 //new function for Mike
-//note: gameData.collisions.nSegsVisited must be set to zero before this is called
+//note: gameData.collisions.nSegsVisited [nThread] must be set to zero before this is called
 int32_t SphereIntersectsWall (CFixVector *vPoint, int16_t nSegment, fix rad)
 {
 	int32_t		faceMask;
@@ -1374,9 +1374,9 @@ if (nSegment == -1) {
 	return 0;
 	}
 #endif
-if ((gameData.collisions.nSegsVisited < 0) || (gameData.collisions.nSegsVisited > MAX_SEGS_VISITED))
-	gameData.collisions.nSegsVisited = 0;
-gameData.collisions.segsVisited [gameData.collisions.nSegsVisited++] = nSegment;
+if ((gameData.collisions.nSegsVisited [nThread] < 0) || (gameData.collisions.nSegsVisited [nThread] > MAX_SEGS_VISITED))
+	gameData.collisions.nSegsVisited [nThread] = 0;
+gameData.collisions.segsVisited [nThread][gameData.collisions.nSegsVisited [nThread]++] = nSegment;
 segP = SEGMENT (nSegment);
 faceMask = segP->Masks (*vPoint, rad).m_face;
 if (faceMask != 0) {				//on the back of at least one face
@@ -1392,9 +1392,9 @@ if (faceMask != 0) {				//on the back of at least one face
 				if (nFaceHitType) {            //through this CWall/door
 					//if what we have hit is a door, check the adjoining segP
 					nChild = segP->m_children [nSide];
-					for (i = 0; (i < gameData.collisions.nSegsVisited) && (nChild != gameData.collisions.segsVisited [i]); i++)
+					for (i = 0; (i < gameData.collisions.nSegsVisited [nThread]) && (nChild != gameData.collisions.segsVisited [nThread][i]); i++)
 						;
-					if (i == gameData.collisions.nSegsVisited) {                //haven't visited here yet
+					if (i == gameData.collisions.nSegsVisited [nThread]) {                //haven't visited here yet
 						if (!IS_CHILD (nChild))
 							return 1;
 						if (SphereIntersectsWall (vPoint, nChild, rad))

@@ -122,7 +122,7 @@ return nTranspType;
 
 //------------------------------------------------------------------------------
 
-int32_t CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, int16_t nSegment, fix xRad)
+int32_t CanSeePoint (CObject *objP, CFixVector *vSource, CFixVector *vDest, int16_t nSegment, fix xRad, int32_t nThread)
 {
 	CHitQuery	hitQuery (FQ_TRANSWALL, vSource, vDest, -1, objP ? objP->Index () : -1, 1, xRad);
 	CHitResult	hitResult;
@@ -132,14 +132,14 @@ if (SPECTATOR (objP))
 else
 	hitQuery.nSegment = objP ? objP->info.nSegment : nSegment;
 
-int32_t nHitType = FindHitpoint (hitQuery, hitResult);
+int32_t nHitType = FindHitpoint (hitQuery, hitResult, nThread);
 return nHitType != HIT_WALL;
 }
 
 //	-----------------------------------------------------------------------------
 //returns true if viewerP can see CObject
 
-int32_t CanSeeObject (int32_t nObject, int32_t bCheckObjs)
+int32_t CanSeeObject (int32_t nObject, int32_t bCheckObjs, int32_t nThread)
 {
 	CHitQuery	hitQuery (bCheckObjs ? FQ_CHECK_OBJS | FQ_TRANSWALL : FQ_TRANSWALL,
 								 &gameData.objData.viewerP->info.position.vPos,
@@ -151,14 +151,14 @@ int32_t CanSeeObject (int32_t nObject, int32_t bCheckObjs)
 								);
 	CHitResult		hitResult;
 
-int32_t nHitType = FindHitpoint (hitQuery, hitResult);
+int32_t nHitType = FindHitpoint (hitQuery, hitResult, nThread);
 return bCheckObjs ? (nHitType == HIT_OBJECT) && (hitResult.nObject == nObject) : (nHitType != HIT_WALL);
 }
 
 //	-----------------------------------------------------------------------------------------------------------
 //	Determine if two OBJECTS are on a line of sight.  If so, return true, else return false.
 //	Calls fvi.
-int32_t ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int32_t transType)
+int32_t ObjectToObjectVisibility (CObject *objP1, CObject *objP2, int32_t transType, int32_t nThread)
 {
 	CHitQuery	hitQuery;
 	CHitResult	hitResult;
@@ -182,7 +182,7 @@ do {
 		}
 	else
 		hitQuery.nSegment	= bSpectate ? gameStates.app.nPlayerSegment : objP1->info.nSegment;
-	fate = gameData.segData.SegVis (hitQuery.nSegment, objP2->Segment ()) ? FindHitpoint (hitQuery, hitResult) : HIT_WALL;
+	fate = gameData.segData.SegVis (hitQuery.nSegment, objP2->Segment ()) ? FindHitpoint (hitQuery, hitResult, nThread) : HIT_WALL;
 	}
 while ((fate == HIT_BAD_P0) && (nTries < 2));
 return (fate == HIT_NONE) || (fate == HIT_BAD_P0) || ((fate == HIT_OBJECT) && (hitResult.nObject == objP2->Index ()));

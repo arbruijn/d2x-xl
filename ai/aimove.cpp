@@ -152,7 +152,7 @@ if ((objP->info.nType == OBJ_ROBOT) && !ROBOTINFO (objP)->companion) {
 
 				CHitResult hitResult;
 				CHitQuery hitQuery (0, &objP->info.position.vPos, &vNewPos, nStartSeg, objP->Index (), objP->info.xSize, objP->info.xSize);
-				int32_t hitType = FindHitpoint (hitQuery, hitResult);
+				int32_t hitType = FindHitpoint (hitQuery, hitResult, 0);
 				if (hitType != HIT_NONE)
 					continue;
 				}

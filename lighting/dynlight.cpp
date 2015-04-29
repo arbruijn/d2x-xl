@@ -700,7 +700,7 @@ else {
 
 CHitQuery fq (FQ_TRANSWALL | FQ_TRANSPOINT | FQ_VISIBILITY, &info.vPos, vPoint, nLightSeg, -1, 1, 0);
 CHitResult	hitResult;
-int32_t nHitType = FindHitpoint (&fq, &hitResult);
+int32_t nHitType = FindHitpoint (&fq, &hitResult, nThread);
 return (!nHitType || ((nHitType == HIT_WALL) && (hitResult.nSegment == nDestSeg)));
 
 #endif

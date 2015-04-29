@@ -415,7 +415,7 @@ FORALL_OBJS (objP) {
 			continue;
 		if (!lightP->render.bState)
 			continue;
-		if (!CanSeePoint (objP, &objP->info.position.vPos, &lightP->info.vPos, objP->info.nSegment))
+		if (!CanSeePoint (objP, &objP->info.position.vPos, &lightP->info.vPos, objP->info.nSegment, 0, 0))
 			continue;
 		vLightDir = objP->info.position.vPos - lightP->info.vPos;
 		CFixVector::Normalize (vLightDir);

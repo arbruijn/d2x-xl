@@ -82,12 +82,12 @@ class CCockpitHistory {
 		uint32_t		flags;
 		int32_t		bCloak;
 		int32_t		lives;
-		fix		afterburner;
+		fix			afterburner;
 		int32_t		bombCount;
 		int32_t		laserLevel;
 		int32_t		weapon [2];
 		int32_t		ammo [2];
-		fix		xOmegaCharge;
+		fix			xOmegaCharge;
 
 	public:
 		void Init (void);
@@ -98,21 +98,21 @@ class CCockpitInfo {
 		int32_t		nCloakFadeState;
 		int32_t		bLastHomingWarningDrawn [2];
 		int32_t		addedScore [2];
-		fix		scoreTime;
-		fix		lastWarningBeepTime [2];
+		fix			scoreTime;
+		fix			lastWarningBeepTime [2];
 		int32_t		bHaveGaugeCanvases;
 		int32_t		nInvulnerableFrame;
 		int32_t		weaponBoxStates [2];
-		fix		weaponBoxFadeValues [2];
+		fix			weaponBoxFadeValues [2];
 		int32_t		weaponBoxUser [2];
 		int32_t		nLineSpacing;
 		int32_t		nType;
 		int32_t		nColor;
-		float		xScale;
-		float		yScale;
-		float		xGaugeScale;
-		float		yGaugeScale;
-		float		fontScale;
+		float			xScale;
+		float			yScale;
+		float			xGaugeScale;
+		float			yGaugeScale;
+		float			fontScale;
 		int32_t		fontWidth;
 		int32_t		fontHeight;
 		uint32_t		fontColor;
@@ -123,10 +123,10 @@ class CCockpitInfo {
 		int32_t		bCloak;
 		int32_t		bAdjustCoords;
 		int32_t		nDamage [3];
-		fix		tInvul;
-		fix		xStereoSeparation;
-		CCanvas	windows [2];
-		bool		bRebuild;
+		fix			tInvul;
+		fix			xStereoSeparation;
+		CCanvas		windows [2];
+		bool			bRebuild;
 
 		static bool	bWindowDrawn [2];
 

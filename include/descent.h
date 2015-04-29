@@ -3594,15 +3594,15 @@ typedef struct tPlayerStats {
 class CStatsData {
 	public:
 		tPlayerStats	player [2];	//per level/per session
-		int32_t				nDisplayMode;
+		int32_t			nDisplayMode;
 	};
 
 //------------------------------------------------------------------------------
 
 class CCollisionData {
 	public:
-		int32_t			nSegsVisited;
-		CStaticArray< int16_t, MAX_SEGS_VISITED >	segsVisited; // [MAX_SEGS_VISITED];
+		int32_t			nSegsVisited [MAX_THREADS];
+		CStaticArray< int16_t, MAX_SEGS_VISITED >	segsVisited [MAX_THREADS]; // [MAX_SEGS_VISITED];
 		CHitInfo hitResult;
 };
 
@@ -3641,9 +3641,9 @@ class CTextData {
 		char*			textBuffer;
 		tTextIndex*	index;
 		tTextIndex*	currentMsg;
-		int32_t			nMessages;
-		int32_t			nStartTime;
-		int32_t			nEndTime;
+		int32_t		nMessages;
+		int32_t		nStartTime;
+		int32_t		nEndTime;
 		CBitmap*		bmP;
 };
 

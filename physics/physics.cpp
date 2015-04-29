@@ -790,9 +790,9 @@ info.position.vPos = simData.vNewPos;
 
 int32_t CObject::ProcessObjectCollision (CPhysSimData& simData)
 {
-if (simData.hitResult.nObject < 0)
-	return 1;
 CObject* hitObjP = OBJECT (simData.hitResult.nObject);
+if (!hitObjP)
+	return -1;
 CFixVector vOldVel = Velocity () /*simData.velocity*/;
 if (!hitObjP->IsPowerup () && (CollisionModel () || hitObjP->IsStatic ())) {
 	CollideTwoObjects (this, hitObjP, simData.hitResult.vPoint, &simData.hitResult.vNormal);
