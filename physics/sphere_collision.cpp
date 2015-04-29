@@ -1374,9 +1374,9 @@ if (nSegment == -1) {
 	return 0;
 	}
 #endif
-if ((gameData.collisions.nSegsVisited [nThread] < 0) || (gameData.collisions.nSegsVisited [nThread] > MAX_SEGS_VISITED))
-	gameData.collisions.nSegsVisited [nThread] = 0;
-gameData.collisions.segsVisited [nThread][gameData.collisions.nSegsVisited [nThread]++] = nSegment;
+if ((gameData.collisions.nSegsVisited [0] < 0) || (gameData.collisions.nSegsVisited [0] > MAX_SEGS_VISITED))
+	gameData.collisions.nSegsVisited [0] = 0;
+gameData.collisions.segsVisited [0][gameData.collisions.nSegsVisited [0]++] = nSegment;
 segP = SEGMENT (nSegment);
 faceMask = segP->Masks (*vPoint, rad).m_face;
 if (faceMask != 0) {				//on the back of at least one face
@@ -1392,9 +1392,9 @@ if (faceMask != 0) {				//on the back of at least one face
 				if (nFaceHitType) {            //through this CWall/door
 					//if what we have hit is a door, check the adjoining segP
 					nChild = segP->m_children [nSide];
-					for (i = 0; (i < gameData.collisions.nSegsVisited [nThread]) && (nChild != gameData.collisions.segsVisited [nThread][i]); i++)
+					for (i = 0; (i < gameData.collisions.nSegsVisited [0]) && (nChild != gameData.collisions.segsVisited [0][i]); i++)
 						;
-					if (i == gameData.collisions.nSegsVisited [nThread]) {                //haven't visited here yet
+					if (i == gameData.collisions.nSegsVisited [0]) {                //haven't visited here yet
 						if (!IS_CHILD (nChild))
 							return 1;
 						if (SphereIntersectsWall (vPoint, nChild, rad))

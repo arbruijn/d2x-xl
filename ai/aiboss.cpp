@@ -223,8 +223,8 @@ return OBJECT (nObject)->CreateGatedRobot (nSegment, nType, NULL);
 
 int32_t BossFitsInSeg (CObject *bossObjP, int32_t nSegment)
 {
-	int32_t			nObject = OBJ_IDX (bossObjP);
-	int32_t			nPos;
+	int32_t		nObject = OBJ_IDX (bossObjP);
+	int32_t		nPos;
 	CFixVector	vSegCenter, vVertPos;
 	CSegment*	segP = SEGMENT (nSegment);
 

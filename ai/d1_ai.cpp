@@ -1275,7 +1275,7 @@ void move_object_to_legal_spot(CObject *objP)
 			goal_dir = vSegCenter - objP->info.position.vPos;
 			goal_dir *= objP->info.xSize;
 			objP->info.position.vPos += goal_dir;
-			if (!ObjectIntersectsWall(objP)) {
+			if (!ObjectIntersectsWall (objP)) {
 				int32_t	nNewSeg = FindSegByPos (objP->info.position.vPos, objP->info.nSegment, 1, 0);
 
 				if (nNewSeg != -1) {
