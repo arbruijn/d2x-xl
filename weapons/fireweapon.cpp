@@ -585,7 +585,7 @@ if (info.nType == OBJ_WEAPON) {
 		else
 #endif
 			UpdateHomingWeapon ();
-			return;
+		return;
 		}
 	}
 UpdateWeaponSpeed ();

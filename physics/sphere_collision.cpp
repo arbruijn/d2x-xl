@@ -917,7 +917,7 @@ return (t == nObject);
 
 //	-----------------------------------------------------------------------------
 
-int32_t ComputeObjectHitpoint (CHitData& hitData, CHitQuery &hitQuery)
+int32_t ComputeObjectHitpoint (CHitData& hitData, CHitQuery &hitQuery, int32_t nThread)
 {
 	CObject		* thisObjP = (hitQuery.nObject < 0) ? NULL : OBJECT (hitQuery.nObject),
 			 		* otherObjP;
@@ -1102,7 +1102,7 @@ gameData.collisions.hitResult.nNestCount++;
 #if 1
 if (hitQuery.flags & FQ_CHECK_OBJS) {
 	//PrintLog (1, "checking objects...");
-	dMin = ComputeObjectHitpoint (bestHit, hitQuery);
+	dMin = ComputeObjectHitpoint (bestHit, hitQuery, nThread);
 	}
 #endif
 
