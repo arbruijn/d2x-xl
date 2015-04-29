@@ -3601,8 +3601,8 @@ class CStatsData {
 
 class CCollisionData {
 	public:
-		int32_t			nSegsVisited [MAX_THREADS];
-		CStaticArray< int16_t, MAX_SEGS_VISITED >	segsVisited [MAX_THREADS]; // [MAX_SEGS_VISITED];
+		int32_t			nSegsVisited [MAX_THREADS + 1];
+		CStaticArray< int16_t, MAX_SEGS_VISITED >	segsVisited [MAX_THREADS + 1]; // [MAX_SEGS_VISITED];
 		CHitInfo hitResult;
 };
 

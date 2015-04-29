@@ -1246,7 +1246,7 @@ class CObject : public CObjectInfo {
 		void SetupRandomMovement (void);
 		void SetupDebris (int32_t nSubObj, int32_t nId, int32_t nTexOverride);
 
-		int32_t ObjectIsTrackable (int32_t nTarget, fix& xDot);
+		int32_t ObjectIsTrackable (int32_t nTarget, fix& xDot, int32_t nThread);
 		int32_t FindTargetWindow (void);
 		void AddHomingTarget (CObject* targetP, CFixVector* vTrackerPos, fix maxTrackableDist, fix& xBestDot, int32_t& nBestObj);
 

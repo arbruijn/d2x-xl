@@ -87,7 +87,7 @@ m_targets.Push (CTarget (fix (dist * (1.0f - X2F (dot) / 2.0f)), targetP));
 //	Note: This uses the constant, not-scaled-by-frametime value, because it is only used
 //	to determine if an CObject is initially trackable.  FindHomingTarget is called on subsequent
 //	frames to determine if the CObject remains trackable.
-if (ObjectToObjectVisibility (m_trackerP, targetP, FQ_TRANSWALL)) {
+if (ObjectToObjectVisibility (m_trackerP, targetP, FQ_TRANSWALL, nThread)) {
 	m_xBestDot = dot;
 	m_nBestObj = targetP->Index ();
 	}
@@ -120,7 +120,7 @@ return m_nBestObj;
 //	Return true if weapon *trackerP is able to track CObject OBJECT (nTarget), else return false.
 //	In order for the CObject to be trackable, it must be within a reasonable turning radius for the missile
 //	and it must not be obstructed by a CWall.
-int32_t CObject::ObjectIsTrackable (int32_t nTarget, fix& xDot)
+int32_t CObject::ObjectIsTrackable (int32_t nTarget, fix& xDot, int32_t nThread)
 {
 if (nTarget == -1)
 	return 0;
@@ -150,7 +150,7 @@ if ((xDot < xMinTrackableDot) && (xDot > I2X (9) / 10)) {
 if ((xDot >= xMinTrackableDot) || 
 	 (EGI_FLAG (bEnhancedShakers, 0, 0, 0) && (Type () == OBJ_WEAPON) && (Id () == EARTHSHAKER_MEGA_ID) /*&& (xDot >= 0)*/)) {
 	//	xDot is in legal range, now see if CObject is visible
-	return ObjectToObjectVisibility (this, targetP, FQ_TRANSWALL);
+	return ObjectToObjectVisibility (this, targetP, FQ_TRANSWALL, nThread);
 	}
 return 0;
 }
@@ -321,7 +321,7 @@ int32_t CObject::UpdateHomingTarget (int32_t nTarget, fix& dot, int32_t nThread)
 //if (!gameOpts->legacy.bHomers && gameStates.limitFPS.bHomers && !gameStates.app.tick40fps.bTick)
 	//	Every 8 frames for each CObject, scan all OBJECTS.
 nFrame = OBJ_IDX (this) ^ gameData.app.nFrameCount;
-if (ObjectIsTrackable (nTarget, dot) && (!gameOpts->legacy.bHomers || (nFrame % 8)))
+if (ObjectIsTrackable (nTarget, dot, nThread) && (!gameOpts->legacy.bHomers || (nFrame % 8)))
 	return nTarget;
 
 if (!gameOpts->legacy.bHomers || (nFrame % 4 == 0)) {
