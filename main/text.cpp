@@ -1410,7 +1410,7 @@ const char *defaultGameTexts [][2] = {
  {"gross", "large"},
  {"sehr gross", "very large"},
  {"sehr hoch", "very high"},
- {"extrem", "extreme"},
+ {"ultrahoch", "ultra high"},
  {"E~Xplosionen wenn beschaedigt", "Show eXplosions if damaged"},
  {"kein ~Abgasstrahl", "no thruster ~Flames"},
  {"~Kollisionserkennung Rauch", "smoke collIsion detection"},
@@ -2003,9 +2003,9 @@ const char *defaultGameTexts [][2] = {
  {"mitte", "middle"},
  {"unten", "low"},
  {"hud-~Trenner", "hud se~Parators"},
+ {"hab dich!", "dodge this!"},
  
 #if 0
- {"", ""},
 #endif
  {"", ""}
 	};

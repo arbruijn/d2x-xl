@@ -46,6 +46,10 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void BlastNearbyGlass (CObject *objP, fix damage);
 void NDRecordGuidedEnd (void);
 
+static int32_t homingMslFrameTimes [3] = { 1000 / 25, 1000 / 40, 1000 / 60 }; // 25 fps, 40 fps, 60 fps
+
+#define HOMING_MSL_FRAMETIME	homingMslFrameTimes [extraGameInfo [IsMultiGame].nMslTurnSpeed]
+
 //	-------------------------------------------------------------------------------------------------------------------------------
 //	***** HEY ARTISTS!!*****
 //	Here are the constants you're looking for!--MK
@@ -53,19 +57,8 @@ void NDRecordGuidedEnd (void);
 #define	FULL_COCKPIT_OFFS 0
 #define	LASER_OFFS	 (I2X (29) / 100)
 
-static   int32_t nMslTurnSpeeds [3] = {I2X (1) / 2, 3 * I2X (1) / 4, 5 * I2X (1) / 4};
-
-#define	HOMINGMSL_SCALE		nMslTurnSpeeds [(IsMultiGame && !IsCoopGame) ? 2 : extraGameInfo [IsMultiGame].nMslTurnSpeed]
-
 #define	MAX_SMART_DISTANCE	I2X (150)
 #define	MAX_TARGET_OBJS		30
-
-//---------------------------------------------------------------------------------
-
-inline int32_t HomingMslScale (void)
-{
-return (int32_t) (HOMINGMSL_SCALE / sqrt (gameStates.gameplay.slowmo [0].fSpeed));
-}
 
 //---------------------------------------------------------------------------------
 
@@ -492,7 +485,7 @@ return false;
 
 void CObject::UpdateHomingWeapon (int32_t nThread)
 {
-for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= HOMER_FRAMETIME; xFrameTime -= HOMER_FRAMETIME) {
+for (fix xFrameTime = gameData.laser.xUpdateTime; xFrameTime >= HOMING_MSL_FRAMETIME; xFrameTime -= HOMING_MSL_FRAMETIME) {
 	CFixVector	vVecToObject, vNewVel;
 	fix			dot = I2X (1);
 	fix			speed, xMaxSpeed, xDist;
@@ -584,7 +577,7 @@ if (info.nType == OBJ_WEAPON) {
 		mType.physInfo.velocity *= (WI_speed (info.nId, gameStates.app.nDifficultyLevel));
 		}
 	//	For homing missiles, turn towards target. (unless it's a guided missile still under player control)
-	if ((gameOpts->legacy.bHomers || (gameData.laser.xUpdateTime >= HOMER_FRAMETIME)) && // limit update frequency to 40 fps
+	if ((gameOpts->legacy.bHomers || (gameData.laser.xUpdateTime >= HOMING_MSL_FRAMETIME)) && // limit update frequency to 40 fps
 	    (gameStates.app.cheats.bHomingWeapons || WI_homingFlag (info.nId)) &&
 		 !(info.nFlags & PF_BOUNCED_ONCE) &&
 		!IsGuidedMissile ()) {

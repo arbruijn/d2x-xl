@@ -196,9 +196,9 @@ if (bInitialized)
 	return;
 bInitialized = true;
 
-pszMslTurnSpeeds [0] = TXT_SLOW;
-pszMslTurnSpeeds [1] = TXT_MEDIUM;
-pszMslTurnSpeeds [2] = TXT_STANDARD;
+pszMslTurnSpeeds [0] = TXT_STANDARD;
+pszMslTurnSpeeds [1] = TXT_FAST;
+pszMslTurnSpeeds [2] = TXT_DODGE_THIS;
 
 pszMslStartSpeeds [0] = TXT_VERY_SLOW;
 pszMslStartSpeeds [1] = TXT_SLOW;

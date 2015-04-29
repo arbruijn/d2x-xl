@@ -1443,7 +1443,7 @@ tParamValue defaultParams [] = {
 	 {"extraGameInfo[0].bWiggle", "1"},
 	 {"extraGameInfo[0].grWallTransparency", "19"},
 	 {"extraGameInfo[0].nOmegaRamp", "4"},
-	 {"extraGameInfo[0].nMslTurnSpeed", "1"},
+	 {"extraGameInfo[0].nMslTurnSpeed", "0"},
 	 {"extraGameInfo[0].nMslStartSpeed", "0"},
 	 {"extraGameInfo[0].nSpeedBoost", "10"},
 	 {"extraGameInfo[0].nShieldEffect", "1"},

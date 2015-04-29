@@ -2011,10 +2011,10 @@ void LoadGameTexts(void);
 #define TXT_MINIMALIST_HUD_MIDDLE	GT(1253)
 #define TXT_MINIMALIST_HUD_LOW		GT(1254)
 #define TXT_HUD_SEPARATORS				GT(1255)
+#define TXT_DODGE_THIS					GT(1256)
 
 #if 0
 
-#define TXT_					GT(1256)
 #define TXT_					GT(1257)
 #define TXT_					GT(1258)
 #define TXT_					GT(1259)

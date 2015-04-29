@@ -1814,9 +1814,6 @@ bool FixWeaponObject (CObject* objP, bool bFixType = false);
 
 #define	SHOW_SHADOWS			(SHOW_OBJ_FX && EGI_FLAG (bShadows, 0, 1, 0))
 
-#define HOMER_FPS			25
-#define HOMER_FRAMETIME	(I2X (1) / HOMER_FPS)
-
 #if DBG
 extern CObject *dbgObjP;
 #endif
