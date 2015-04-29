@@ -379,7 +379,7 @@ if ((objP == gameData.objData.consoleP) && !weaponP->IsPlayerMine ())
 
 if (gameStates.app.cheats.bHomingWeapons || gameData.weapons.info [nLaserType].homingFlag) {
 	if (objP == gameData.objData.consoleP) {
-		weaponP->cType.laserInfo.nHomingTarget = weaponP->FindVisibleHomingTarget (vLaserPos);
+		weaponP->cType.laserInfo.nHomingTarget = weaponP->FindVisibleHomingTarget (vLaserPos, 0);
 		gameData.multigame.weapon.nTrack = weaponP->cType.laserInfo.nHomingTarget;
 		}
 	else {// Some other player shot the homing thing
@@ -970,7 +970,7 @@ if (gameStates.app.bPlayerIsDead || OBSERVING)
 gameData.objData.trackGoals [0] =
 gameData.objData.trackGoals [1] = NULL;
 if ((objP = GuidedInMainView ())) {
-	nObject = objP->FindVisibleHomingTarget (objP->info.position.vPos);
+	nObject = objP->FindVisibleHomingTarget (objP->info.position.vPos, 0);
 	gameData.objData.trackGoals [0] =
 	gameData.objData.trackGoals [1] = (nObject < 0) ? NULL : OBJECT (nObject);
 	return;
@@ -1001,7 +1001,7 @@ for (i = 0; i < j; i++, h = !h) {
 		vGunPos = vGunPoints [nGun];
 		vGunPos = *viewP * vGunPos;
 		vGunPos += gameData.objData.consoleP->info.position.vPos;
-		nObject = gameData.objData.consoleP->FindVisibleHomingTarget (vGunPos);
+		nObject = gameData.objData.consoleP->FindVisibleHomingTarget (vGunPos, 0);
 		gameData.objData.trackGoals [i] = (nObject < 0) ? NULL : OBJECT (nObject);
 		}
 	}
