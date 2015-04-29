@@ -810,7 +810,7 @@ PrintLog (1, "loading mod data (state %d)\n", nStage);
 if (nStage == 0) {
 	SetD1Sound ();
 	SetDataVersion (-1);
-	if (ReadHamFile (false))
+	if (ReadHamFile (1) || ReadHamFile (2))
 		gameStates.app.bCustomData = true;
 	else if (gameStates.app.bCustomData) {
 		ReadHamFile ();

@@ -95,7 +95,7 @@ int32_t LoadExitModels (void);
 int32_t LoadRobotExtensions (const char *fname, char *folder, int32_t nType);
 void FreeModelExtensions (void);
 int32_t LoadRobotReplacements (const char *pszLevel, const char* pszFolder, int32_t bAddBots, int32_t bOnlyModels, bool bCustom = false, bool bUseHog = true);
-int32_t ReadHamFile (bool bDefault = true);
+int32_t ReadHamFile (int32_t nVersion = 0); // nVersion = 0: default, 1: from mission, 2: from mod
 int32_t LoadD2Sounds (bool bCustom = false);
 bool LoadD1Sounds (bool bCustom);
 void UnloadSounds (int32_t bD1);

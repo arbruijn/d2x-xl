@@ -401,7 +401,7 @@ if ((*mode == 'w') && gameStates.app.bReadOnly)
 
 m_info.file = NULL;
 if (*filename != '\x01') {
-	fp = GetFileHandle (filename, folder, mode);		// Check for non-hogP file first...
+	fp = GetFileHandle (filename, folder, mode);		// Check for non-hog file first...
 	if (!fp && 
 		 ((pszFileExt = strstr (filename, ".rdl")) || (pszFileExt = strstr (filename, ".rl2"))) &&
 		 (pszHogExt = strchr (hogFileManager.AltHogFile (), '.')) &&

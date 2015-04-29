@@ -424,7 +424,7 @@ bPigFileInitialized = 1;
 
 //------------------------------------------------------------------------------
 
-int32_t ReadHamFile (bool bDefault)
+int32_t ReadHamFile (int32_t nType) // 0: default, 1: level, 2: mod
 {
 	CFile		cf;
 #if 1
@@ -435,11 +435,16 @@ int32_t ReadHamFile (bool bDefault)
 	char		szFile [FILENAME_LEN];
 	char*		pszFile, * pszFolder;
 
-if (bDefault) {
+if (!nType) {
 	pszFile = DefaultHamFile ();
 	pszFolder = gameFolders.game.szData [0];
 	}
-else {
+if (nType == 1) {
+	sprintf (szFile, "\x01%s", DefaultHamFile ());
+	pszFile = szFile;
+	pszFolder = gameFolders.game.szData [0];
+	}
+else if (nType == 2) {
 	if (!*gameFolders.mods.szName)
 		return 0;
 	sprintf (szFile, "%s.ham", gameFolders.mods.szName);
@@ -448,7 +453,7 @@ else {
 	}
 
 if (!cf.Open (pszFile, pszFolder, "rb", 0)) {
-	bMustWriteHamFile = 1;
+	bMustWriteHamFile = (nType == 0);
 	return 0;
 	}
 //make sure ham is valid nType file & is up-to-date
@@ -458,7 +463,7 @@ if (nHAMId != HAMFILE_ID)
 	Error ("Cannot open ham file %s\n", DefaultHamFile ());
 if (gameData.pig.tex.nHamFileVersion < 3) // hamfile contains sound info
 	nSoundOffset = cf.ReadInt ();
-BMReadAll (cf, bDefault);
+BMReadAll (cf, nType != 2);
 /*---*/PrintLog (0, "Loading bitmap index translation table\n");
 	gameData.pig.tex.bitmapXlat.Read (cf, MAX_BITMAP_FILES);
 if (gameData.pig.tex.nHamFileVersion < 3) {

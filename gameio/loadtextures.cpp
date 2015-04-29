@@ -1003,8 +1003,8 @@ void LoadReplacementBitmaps (const char *pszLevelName)
 PrintLog (1, "loading replacement textures\n");
 CFile::ChangeFilenameExtension (szFilename, pszLevelName, ".pog");
 if (cf.Open (szFilename, gameFolders.game.szData [0], "rb", 0)) {
-	int32_t					id, version, nBitmapNum, bHaveTGA;
-	int32_t					bmDataOffset, bmOffset;
+	int32_t				id, version, nBitmapNum, bHaveTGA;
+	int32_t				bmDataOffset, bmOffset;
 	uint16_t				*indices;
 	tPIGBitmapHeader	*bmh;
 
