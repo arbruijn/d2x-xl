@@ -46,9 +46,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 void BlastNearbyGlass (CObject *objP, fix damage);
 void NDRecordGuidedEnd (void);
 
-static int32_t homingMslFrameTimes [3] = { 1000 / 25, 1000 / 40, 1000 / 60 }; // 25 fps, 40 fps, 60 fps
-
-#define HOMING_MSL_FRAMETIME	homingMslFrameTimes [extraGameInfo [IsMultiGame].nMslTurnSpeed]
+int32_t homingMslFrameTimes [3] = { 1000 / 25, 1000 / 40, 1000 / 60 }; // 25 fps, 40 fps, 60 fps
 
 //	-------------------------------------------------------------------------------------------------------------------------------
 //	***** HEY ARTISTS!!*****

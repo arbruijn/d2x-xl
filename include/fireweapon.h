@@ -192,4 +192,8 @@ return LaserPlayerFireSpread (objP, laserType, nGun, 0, 0, makeSound, harmless, 
 
 //	-----------------------------------------------------------------------------------------------------------
 
+extern int32_t homingMslFrameTimes [3];
+
+#define HOMING_MSL_FRAMETIME	homingMslFrameTimes [extraGameInfo [IsMultiGame].nMslTurnSpeed]
+
 #endif /* _LASER_H */
