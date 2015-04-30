@@ -240,9 +240,9 @@ sprintf (szEnergy, "%d", (int32_t) DRound (m_info.nEnergy * LOCALPLAYER.EnergySc
 fontManager.Current ()->StringSize (szEnergy, w, h, aw);
 SetFontColor (RGBA_PAL2 (25, 18, 6));
 nIdEnergy = DrawHUDText (&nIdEnergy, 
-						  (ScaleX (SB_ENERGY_GAUGE_X) + (ScaleX (SB_ENERGY_GAUGE_W) - w) / 2), 
-						  (ScaleY (SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H - m_info.nLineSpacing) + HeightPad ()), 
-						  "%d", (int32_t) FRound (m_info.nEnergy * LOCALPLAYER.EnergyScale ()));
+								 ScaleX (SB_ENERGY_GAUGE_X + (SB_ENERGY_GAUGE_W - w) / 2), 
+								 ScaleY (SB_ENERGY_GAUGE_Y + SB_ENERGY_GAUGE_H - m_info.nLineSpacing) + HeightPad (), 
+								 "%d", (int32_t) FRound (m_info.nEnergy * LOCALPLAYER.EnergyScale ()));
 }
 
 //	-----------------------------------------------------------------------------
@@ -287,8 +287,8 @@ else
 int32_t w, h, aw;
 fontManager.Current ()->StringSize (szAB, w, h, aw);
 nIdAfterBurner = DrawHUDText (&nIdAfterBurner, 
-										(ScaleX (SB_AFTERBURNER_GAUGE_X) + (ScaleX (SB_AFTERBURNER_GAUGE_W) - w) / 2), 
-										(ScaleY (SB_AFTERBURNER_GAUGE_Y + SB_AFTERBURNER_GAUGE_H - m_info.nLineSpacing) + HeightPad ()), 
+										ScaleX (SB_AFTERBURNER_GAUGE_X + (SB_AFTERBURNER_GAUGE_W - w) / 2), 
+										ScaleY (SB_AFTERBURNER_GAUGE_Y + SB_AFTERBURNER_GAUGE_H - m_info.nLineSpacing) + HeightPad (), 
 										"AB");
 }
 
@@ -327,8 +327,8 @@ sprintf (szShield, "%d", (int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldSc
 fontManager.Current ()->StringSize (szShield, w, h, aw);
 SetFontColor (RGBA_PAL2 (14, 14, 23));
 nIdShield = DrawHUDText (&nIdShield, 
-							  (ScaleX (SB_SHIELD_NUM_X + (gameStates.video.nDisplayMode ? 13 : 6)) - w / 2), 
-							  (ScaleY (SB_SHIELD_NUM_Y) + HeightPad ()), 
+							  ScaleX (SB_SHIELD_NUM_X + (SB_SHIELD_NUM_W - w) / 2), 
+							  ScaleY (SB_SHIELD_NUM_Y) + HeightPad (), 
 							  "%d", (int32_t) FRound (m_info.nShield * LOCALPLAYER.ShieldScale ()));
 }
 

@@ -192,7 +192,7 @@ return (fate == HIT_NONE) || (fate == HIT_BAD_P0) || ((fate == HIT_OBJECT) && (h
 
 int32_t TargetInLineOfFire (void)
 {
-#if DBG
+#if 0 //DBG
 return 0;
 #else
 	int32_t			nType;

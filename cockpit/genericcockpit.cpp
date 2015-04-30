@@ -435,11 +435,16 @@ m_info.yScale = gameData.render.scene.YScale ();
 m_info.xScale = Canvas ()->XScale ();
 m_info.yScale = Canvas ()->YScale ();
 #endif
+#if 1
+m_info.nLineSpacing = int32_t (GAME_FONT->Height () + GAME_FONT->Height () * fontManager.Scale () * 0.25f);
+m_info.heightPad = 0;
+#else
 fontManager.PushScale ();
 fontManager.SetScale (floor (float (CCanvas::Current ()->Width ()) / 640.0f));
-m_info.nLineSpacing = int32_t (GAME_FONT->Height () + GAME_FONT->Height () * fontManager.Scale () / 4);
+m_info.nLineSpacing = int32_t (GAME_FONT->Height () + FRound (GAME_FONT->Height () * fontManager.Scale () * 0.25f));
 fontManager.PopScale ();
 m_info.heightPad = (ScaleY (m_info.fontHeight) - m_info.fontHeight) / 2;
+#endif
 m_info.nDamage [0] = gameData.objData.consoleP->AimDamage ();
 m_info.nDamage [1] = gameData.objData.consoleP->DriveDamage ();
 m_info.nDamage [2] = gameData.objData.consoleP->GunDamage ();

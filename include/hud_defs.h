@@ -152,93 +152,94 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define AFTERBURNER_GAUGE_W_H	21
 #define AFTERBURNER_GAUGE_H_H	65
 
-#define AFTERBURNER_GAUGE_X	 (gameStates.video.nDisplayMode ? AFTERBURNER_GAUGE_X_H : AFTERBURNER_GAUGE_X_L)
-#define AFTERBURNER_GAUGE_Y	 (gameStates.video.nDisplayMode ? AFTERBURNER_GAUGE_Y_H : AFTERBURNER_GAUGE_Y_L)
-#define AFTERBURNER_GAUGE_W	 (gameStates.video.nDisplayMode ? AFTERBURNER_GAUGE_W_H : AFTERBURNER_GAUGE_W_L)
-#define AFTERBURNER_GAUGE_H	 (gameStates.video.nDisplayMode ? AFTERBURNER_GAUGE_H_H : AFTERBURNER_GAUGE_H_L)
+#define AFTERBURNER_GAUGE_X		(gameStates.video.nDisplayMode ? AFTERBURNER_GAUGE_X_H : AFTERBURNER_GAUGE_X_L)
+#define AFTERBURNER_GAUGE_Y		(gameStates.video.nDisplayMode ? AFTERBURNER_GAUGE_Y_H : AFTERBURNER_GAUGE_Y_L)
+#define AFTERBURNER_GAUGE_W		(gameStates.video.nDisplayMode ? AFTERBURNER_GAUGE_W_H : AFTERBURNER_GAUGE_W_L)
+#define AFTERBURNER_GAUGE_H		(gameStates.video.nDisplayMode ? AFTERBURNER_GAUGE_H_H : AFTERBURNER_GAUGE_H_L)
 
 // sb afterburner gauge
 
-#define SB_AFTERBURNER_GAUGE_X 		 (gameStates.video.nDisplayMode ? 196 : 98)
-#define SB_AFTERBURNER_GAUGE_Y 		 (gameStates.video.nDisplayMode ? 446 : 184)
-#define SB_AFTERBURNER_GAUGE_W 		 (gameStates.video.nDisplayMode ? 33 : 16)
-#define SB_AFTERBURNER_GAUGE_H 		 (gameStates.video.nDisplayMode ? 29 : 13)
+#define SB_AFTERBURNER_GAUGE_X 	(gameStates.video.nDisplayMode ? 196 : 98)
+#define SB_AFTERBURNER_GAUGE_Y 	(gameStates.video.nDisplayMode ? 446 : 184)
+#define SB_AFTERBURNER_GAUGE_W 	(gameStates.video.nDisplayMode ? 33 : 16)
+#define SB_AFTERBURNER_GAUGE_H 	(gameStates.video.nDisplayMode ? 29 : 13)
 
 // sb energy gauge
 
-#define SB_ENERGY_GAUGE_X 		 (gameStates.video.nDisplayMode ? 196 : 98)
-#define SB_ENERGY_GAUGE_Y 		 (gameStates.video.nDisplayMode ? 382 :  (155-2))
-#define SB_ENERGY_GAUGE_W 		 (gameStates.video.nDisplayMode ? 32 : 16)
-#define SB_ENERGY_GAUGE_H 		 ((gameStates.video.nDisplayMode ? 60 : 29) + (gameStates.app.bD1Mission  ?  SB_AFTERBURNER_GAUGE_H  :  0))
+#define SB_ENERGY_GAUGE_X 			(gameStates.video.nDisplayMode ? 196 : 98)
+#define SB_ENERGY_GAUGE_Y 			(gameStates.video.nDisplayMode ? 382 :  (155-2))
+#define SB_ENERGY_GAUGE_W 			(gameStates.video.nDisplayMode ? 32 : 16)
+#define SB_ENERGY_GAUGE_H 			((gameStates.video.nDisplayMode ? 60 : 29) + (gameStates.app.bD1Mission  ?  SB_AFTERBURNER_GAUGE_H  :  0))
 
-#define SB_ENERGY_NUM_X 		 (SB_ENERGY_GAUGE_X+ (gameStates.video.nDisplayMode ? 4 : 2))
-#define SB_ENERGY_NUM_Y 		 (gameStates.video.nDisplayMode ? 457 : 175)
+#define SB_ENERGY_NUM_X 			(SB_ENERGY_GAUGE_X+ (gameStates.video.nDisplayMode ? 4 : 2))
+#define SB_ENERGY_NUM_Y 			(gameStates.video.nDisplayMode ? 457 : 175)
 
-#define SHIELD_GAUGE_X 			 (gameStates.video.nDisplayMode ? 292 : 146)
-#define SHIELD_GAUGE_Y			 (gameStates.video.nDisplayMode ? 374 : 155)
-#define SHIELD_GAUGE_W 			 (gameStates.video.nDisplayMode ? 70 : 35)
-#define SHIELD_GAUGE_H			 (gameStates.video.nDisplayMode ? 77 : 32)
+#define SHIELD_GAUGE_X 				(gameStates.video.nDisplayMode ? 292 : 146)
+#define SHIELD_GAUGE_Y				(gameStates.video.nDisplayMode ? 374 : 155)
+#define SHIELD_GAUGE_W 				(gameStates.video.nDisplayMode ? 70 : 35)
+#define SHIELD_GAUGE_H				(gameStates.video.nDisplayMode ? 77 : 32)
 
-#define SHIP_GAUGE_X 			 (SHIELD_GAUGE_X+ (gameStates.video.nDisplayMode ? 11 : 5))
-#define SHIP_GAUGE_Y				 (SHIELD_GAUGE_Y+ (gameStates.video.nDisplayMode ? 10 : 5))
+#define SHIP_GAUGE_X 				(SHIELD_GAUGE_X + (gameStates.video.nDisplayMode ? 11 : 5))
+#define SHIP_GAUGE_Y					(SHIELD_GAUGE_Y + (gameStates.video.nDisplayMode ? 10 : 5))
 
-#define SB_SHIELD_GAUGE_X 		 (gameStates.video.nDisplayMode ? 247 : 123)		//139
-#define SB_SHIELD_GAUGE_Y 		 (gameStates.video.nDisplayMode ? 395 : 163)
+#define SB_SHIELD_GAUGE_X 			(gameStates.video.nDisplayMode ? 247 : 123)		//139
+#define SB_SHIELD_GAUGE_Y 			(gameStates.video.nDisplayMode ? 395 : 163)
 
-#define SB_SHIP_GAUGE_X 		 (SB_SHIELD_GAUGE_X+ (gameStates.video.nDisplayMode ? 11 : 5))
-#define SB_SHIP_GAUGE_Y 		 (SB_SHIELD_GAUGE_Y+ (gameStates.video.nDisplayMode ? 10 : 5))
+#define SB_SHIP_GAUGE_X 			(SB_SHIELD_GAUGE_X + (gameStates.video.nDisplayMode ? 11 : 5))
+#define SB_SHIP_GAUGE_Y 			(SB_SHIELD_GAUGE_Y + (gameStates.video.nDisplayMode ? 10 : 5))
 
-#define SB_SHIELD_NUM_X 		 (SB_SHIELD_GAUGE_X+ (gameStates.video.nDisplayMode ? 21 : 12))	//151
-#define SB_SHIELD_NUM_Y 		 (SB_SHIELD_GAUGE_Y- (gameStates.video.nDisplayMode ? 16 : 8))			//156 -- MWA used to be hard coded to 156
+#define SB_SHIELD_NUM_X 			(SB_SHIELD_GAUGE_X + (gameStates.video.nDisplayMode ? 21 : 12))	//151
+#define SB_SHIELD_NUM_Y 			(SB_SHIELD_GAUGE_Y - (gameStates.video.nDisplayMode ? 16 : 8))			//156 -- MWA used to be hard coded to 156
+#define SB_SHIELD_NUM_W 			(2 * SB_AFTERBURNER_GAUGE_W / 2)
 
-#define NUMERICAL_GAUGE_X		 (gameStates.video.nDisplayMode ? 308 : 154)
-#define NUMERICAL_GAUGE_Y		 (gameStates.video.nDisplayMode ? 316 : 130)
-#define NUMERICAL_GAUGE_W		 (gameStates.video.nDisplayMode ? 38 : 19)
-#define NUMERICAL_GAUGE_H		 (gameStates.video.nDisplayMode ? 55 : 22)
+#define NUMERICAL_GAUGE_X			(gameStates.video.nDisplayMode ? 308 : 154)
+#define NUMERICAL_GAUGE_Y			(gameStates.video.nDisplayMode ? 316 : 130)
+#define NUMERICAL_GAUGE_W			(gameStates.video.nDisplayMode ? 38 : 19)
+#define NUMERICAL_GAUGE_H			(gameStates.video.nDisplayMode ? 55 : 22)
 
-#define PRIMARY_W_PIC_X			 (gameStates.video.nDisplayMode ?  (135-10) : 64)
-#define PRIMARY_W_PIC_Y			 (gameStates.video.nDisplayMode ? 370 : 154)
-#define PRIMARY_W_TEXT_X		 (gameStates.video.nDisplayMode ? 182 : 87)
-#define PRIMARY_W_TEXT_Y		 (gameStates.video.nDisplayMode ? 400 : 157)
-#define PRIMARY_AMMO_X			 (gameStates.video.nDisplayMode ? 186 :  (96-3))
-#define PRIMARY_AMMO_Y			 (gameStates.video.nDisplayMode ? 420 : 171)
+#define PRIMARY_W_PIC_X				(gameStates.video.nDisplayMode ?  (135-10) : 64)
+#define PRIMARY_W_PIC_Y				(gameStates.video.nDisplayMode ? 370 : 154)
+#define PRIMARY_W_TEXT_X			(gameStates.video.nDisplayMode ? 182 : 87)
+#define PRIMARY_W_TEXT_Y			(gameStates.video.nDisplayMode ? 400 : 157)
+#define PRIMARY_AMMO_X				(gameStates.video.nDisplayMode ? 186 :  (96-3))
+#define PRIMARY_AMMO_Y				(gameStates.video.nDisplayMode ? 420 : 171)
 
-#define SECONDARY_W_PIC_X		 (gameStates.video.nDisplayMode ? 466 : 234)
-#define SECONDARY_W_PIC_Y		 (gameStates.video.nDisplayMode ? 374 : 154)
-#define SECONDARY_W_TEXT_X		 (gameStates.video.nDisplayMode ? 413 : 207)
-#define SECONDARY_W_TEXT_Y		 (gameStates.video.nDisplayMode ? 378 : 157)
-#define SECONDARY_AMMO_X		 (gameStates.video.nDisplayMode ? 428 : 213)
-#define SECONDARY_AMMO_Y		 (gameStates.video.nDisplayMode ? 407 : 171)
+#define SECONDARY_W_PIC_X			(gameStates.video.nDisplayMode ? 466 : 234)
+#define SECONDARY_W_PIC_Y			(gameStates.video.nDisplayMode ? 374 : 154)
+#define SECONDARY_W_TEXT_X			(gameStates.video.nDisplayMode ? 413 : 207)
+#define SECONDARY_W_TEXT_Y			(gameStates.video.nDisplayMode ? 378 : 157)
+#define SECONDARY_AMMO_X			(gameStates.video.nDisplayMode ? 428 : 213)
+#define SECONDARY_AMMO_Y			(gameStates.video.nDisplayMode ? 407 : 171)
 
-#define SB_LIVES_X				 (gameStates.video.nDisplayMode ?  (550-10-3) : 266)
-#define SB_LIVES_Y				 (gameStates.video.nDisplayMode ? 450-3 : 185)
-#define SB_LIVES_LABEL_X		 (gameStates.video.nDisplayMode ? 475 : 237)
-#define SB_LIVES_LABEL_Y		 (SB_LIVES_Y+1)
+#define SB_LIVES_X					(gameStates.video.nDisplayMode ?  (550-10-3) : 266)
+#define SB_LIVES_Y					(gameStates.video.nDisplayMode ? 450-3 : 185)
+#define SB_LIVES_LABEL_X			(gameStates.video.nDisplayMode ? 475 : 237)
+#define SB_LIVES_LABEL_Y			(SB_LIVES_Y+1)
 
-#define SB_SCORE_RIGHT_L		301
-#define SB_SCORE_RIGHT_H		 (605+8)
-#define SB_SCORE_RIGHT			 (gameStates.video.nDisplayMode ? SB_SCORE_RIGHT_H : SB_SCORE_RIGHT_L)
+#define SB_SCORE_RIGHT_L			301
+#define SB_SCORE_RIGHT_H			(605+8)
+#define SB_SCORE_RIGHT				(gameStates.video.nDisplayMode ? SB_SCORE_RIGHT_H : SB_SCORE_RIGHT_L)
 
-#define SB_SCORE_Y				 (gameStates.video.nDisplayMode ? 398 : 158)
-#define SB_SCORE_LABEL_X		 (gameStates.video.nDisplayMode ? 475 : 237)
+#define SB_SCORE_Y					(gameStates.video.nDisplayMode ? 398 : 158)
+#define SB_SCORE_LABEL_X			(gameStates.video.nDisplayMode ? 475 : 237)
 
-#define SB_SCORE_ADDED_RIGHT	 (gameStates.video.nDisplayMode ? SB_SCORE_RIGHT_H : SB_SCORE_RIGHT_L)
-#define SB_SCORE_ADDED_Y		 (gameStates.video.nDisplayMode ? 413 : 165)
+#define SB_SCORE_ADDED_RIGHT		(gameStates.video.nDisplayMode ? SB_SCORE_RIGHT_H : SB_SCORE_RIGHT_L)
+#define SB_SCORE_ADDED_Y			(gameStates.video.nDisplayMode ? 413 : 165)
 
-#define HOMING_WARNING_X				(gameStates.video.nDisplayMode ? 14 : 7)
-#define HOMING_WARNING_Y				(gameStates.video.nDisplayMode ? 415 : 171)
+#define HOMING_WARNING_X			(gameStates.video.nDisplayMode ? 14 : 7)
+#define HOMING_WARNING_Y			(gameStates.video.nDisplayMode ? 415 : 171)
 
-#define BOMB_COUNT_X						(gameStates.video.nDisplayMode ? 546 : 275)
-#define BOMB_COUNT_Y						(gameStates.video.nDisplayMode ? 445 : 186)
+#define BOMB_COUNT_X					(gameStates.video.nDisplayMode ? 546 : 275)
+#define BOMB_COUNT_Y					(gameStates.video.nDisplayMode ? 445 : 186)
 
-#define SB_BOMB_COUNT_X					(gameStates.video.nDisplayMode ? 342 : 171)
-#define SB_BOMB_COUNT_Y					(gameStates.video.nDisplayMode ? 458 : 191)
+#define SB_BOMB_COUNT_X				(gameStates.video.nDisplayMode ? 342 : 171)
+#define SB_BOMB_COUNT_Y				(gameStates.video.nDisplayMode ? 458 : 191)
 
-#define N_LEFT_WINDOW_SPANS			sizeofa (weaponWindowLeft)
-#define N_RIGHT_WINDOW_SPANS			sizeofa (weaponWindowRight)
+#define N_LEFT_WINDOW_SPANS		sizeofa (weaponWindowLeft)
+#define N_RIGHT_WINDOW_SPANS		sizeofa (weaponWindowRight)
 
-#define N_LEFT_WINDOW_SPANS_H			sizeofa (weaponWindowLeftHires)
-#define N_RIGHT_WINDOW_SPANS_H		sizeofa (weaponWindowRightHires)
+#define N_LEFT_WINDOW_SPANS_H		sizeofa (weaponWindowLeftHires)
+#define N_RIGHT_WINDOW_SPANS_H	sizeofa (weaponWindowRightHires)
 
 // defining box boundries for weapon pictures
 
