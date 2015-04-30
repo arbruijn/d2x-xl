@@ -463,7 +463,7 @@ if (nHAMId != HAMFILE_ID)
 	Error ("Cannot open ham file %s\n", DefaultHamFile ());
 if (gameData.pig.tex.nHamFileVersion < 3) // hamfile contains sound info
 	nSoundOffset = cf.ReadInt ();
-BMReadAll (cf, nType != 2);
+BMReadAll (cf, nType == 0);
 /*---*/PrintLog (0, "Loading bitmap index translation table\n");
 	gameData.pig.tex.bitmapXlat.Read (cf, MAX_BITMAP_FILES);
 if (gameData.pig.tex.nHamFileVersion < 3) {
@@ -475,17 +475,19 @@ if (gameData.pig.tex.nHamFileVersion < 3) {
 	PrintLog (-1);
 	}
 cf.Close ();
-/*---*/PrintLog (0, "Looking for Descent 1 data files\n");
-strcpy (szD1PigFileName, "descent.pig");
-if (cfPiggy [1].File ())
-	cfPiggy [1].Seek (0, SEEK_SET);
-else
-	cfPiggy [1].Open (szD1PigFileName, gameFolders.game.szData [0], "rb", 0);
-if (cfPiggy [1].File ()) {
-	gameStates.app.bHaveD1Data = 1;
-/*---*/PrintLog (1, "Loading Descent 1 data\n");
-	BMReadGameDataD1 (cfPiggy [1]);
-	PrintLog (-1);
+if (!nType) {
+	/*---*/PrintLog (0, "Looking for Descent 1 data files\n");
+	strcpy (szD1PigFileName, "descent.pig");
+	if (cfPiggy [1].File ())
+		cfPiggy [1].Seek (0, SEEK_SET);
+	else
+		cfPiggy [1].Open (szD1PigFileName, gameFolders.game.szData [0], "rb", 0);
+	if (cfPiggy [1].File ()) {
+		gameStates.app.bHaveD1Data = 1;
+	/*---*/PrintLog (1, "Loading Descent 1 data\n");
+		BMReadGameDataD1 (cfPiggy [1]);
+		PrintLog (-1);
+		}
 	}
 return 1;
 }

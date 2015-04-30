@@ -810,12 +810,6 @@ PrintLog (1, "loading mod data (state %d)\n", nStage);
 if (nStage == 0) {
 	SetD1Sound ();
 	SetDataVersion (-1);
-	if (ReadHamFile (1) || ReadHamFile (2))
-		gameStates.app.bCustomData = true;
-	else if (gameStates.app.bCustomData) {
-		ReadHamFile ();
-		gameStates.app.bCustomData = false;
-		}
 #if 0
 	LoadD2Sounds (true);
 #else
@@ -839,6 +833,12 @@ if (nStage == 0) {
 		/*---*/PrintLog (1, "trying vertigo custom robots (d2x.ham)\n");
 		nLoadRes = LoadRobotExtensions ("d2x.ham", gameFolders.missions.szRoot, /*missionManager.nEnhancedMission*/2);
 		PrintLog (-1);
+		}
+	if (ReadHamFile (1) || ReadHamFile (2))
+		gameStates.app.bCustomData = true;
+	else if (gameStates.app.bCustomData) {
+		ReadHamFile ();
+		gameStates.app.bCustomData = false;
 		}
 	if (gameStates.app.bHaveMod) {
 		/*---*/PrintLog (1, "trying custom robots (hxm) from mod '%s'\n", gameFolders.mods.szName);
