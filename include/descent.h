@@ -2365,12 +2365,12 @@ class CObjectData {
 
 class CFVISideData {
 	public:
-		int32_t					bCache;
-		int32_t					vertices [6];
-		int32_t					nFaces;
-		int16_t					nSegment;
-		int16_t					nSide;
-		int16_t					nType;
+		int32_t				bCache;
+		int32_t				vertices [6];
+		int32_t				nFaces;
+		int16_t				nSegment;
+		int16_t				nSide;
+		int16_t				nType;
 
 	public:
 		CFVISideData ();
@@ -2387,6 +2387,7 @@ class CPhysicsData {
 		CFixVector			playerThrust;
 		int32_t				nSegments;
 		int32_t				bIgnoreObjFlag;
+		int32_t				nHomingMslFPS [4];
 
 	public:
 		CPhysicsData ();
@@ -3580,7 +3581,7 @@ class CMissileData {
 	public:
 		fix		xLastFiredTime;
 		fix		xNextFireTime;
-		int32_t		nGlobalFiringCount;
+		int32_t	nGlobalFiringCount;
 };
 
 //------------------------------------------------------------------------------

@@ -196,9 +196,10 @@ if (bInitialized)
 	return;
 bInitialized = true;
 
-pszMslTurnSpeeds [0] = TXT_STANDARD;
-pszMslTurnSpeeds [1] = TXT_FAST;
-pszMslTurnSpeeds [2] = TXT_DODGE_THIS;
+pszMslTurnSpeeds [0] = TXT_LOW;
+pszMslTurnSpeeds [1] = TXT_MEDIUM;
+pszMslTurnSpeeds [2] = TXT_HIGH;
+pszMslTurnSpeeds [3] = TXT_DODGE_THIS;
 
 pszMslStartSpeeds [0] = TXT_VERY_SLOW;
 pszMslStartSpeeds [1] = TXT_SLOW;
@@ -260,7 +261,7 @@ do {
 	if (gameOpts->app.bExpertMode == SUPERUSER) {
 		sprintf (szSlider + 1, TXT_MSL_TURNSPEED, pszMslTurnSpeeds [int32_t (extraGameInfo [0].nMslTurnSpeed)]);
 		*szSlider = *(TXT_MSL_TURNSPEED - 1);
-		m.AddSlider ("msl turn speed", szSlider + 1, extraGameInfo [0].nMslTurnSpeed, 0, 2, KEY_T, HTX_GPLAY_MSL_TURNSPEED);
+		m.AddSlider ("msl turn speed", szSlider + 1, extraGameInfo [0].nMslTurnSpeed, 0, 3, KEY_T, HTX_GPLAY_MSL_TURNSPEED);
 		sprintf (szSlider + 1, TXT_MSL_STARTSPEED, pszMslStartSpeeds [int32_t (3) - extraGameInfo [0].nMslStartSpeed]);
 		*szSlider = *(TXT_MSL_STARTSPEED - 1);
 		m.AddSlider ("msl start speed", szSlider + 1, 3 - extraGameInfo [0].nMslStartSpeed, 0, 3, KEY_S, HTX_MSL_STARTSPEED);

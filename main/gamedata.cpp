@@ -1860,6 +1860,10 @@ playerThrust.SetZero ();
 segments.Clear (0xff);
 nSegments = 0;
 bIgnoreObjFlag = 0;
+nHomingMslFPS [0] = 25;
+nHomingMslFPS [1] = 33;
+nHomingMslFPS [2] = 40;
+nHomingMslFPS [3] = 60;
 }
 
 // ----------------------------------------------------------------------------
