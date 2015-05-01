@@ -325,7 +325,9 @@ for (;;) {
 		}
 
 	m.AddMenu ("mission selector", TXT_SEL_MISSION, KEY_I, HTX_MULTI_MISSION);
-	if ((nMission >= 0) && (nMaxLevel > 1)) {
+	if (gameStates.app.bPrecomputeLightmaps)
+		nLevel = 1;
+	else if ((nMission >= 0) && (nMaxLevel > 1)) {
 		sprintf (szLevelText, "%s %d", TXT_LEVEL_, Clamp (nLevel, 1, nMaxLevel));
 		m.AddSlider ("level number", szLevelText, Clamp (nLevel, 1, nMaxLevel) - 1, 0, nMaxLevel - 1);
 		}
