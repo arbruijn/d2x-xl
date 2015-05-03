@@ -924,27 +924,44 @@ if (!cf.Open (Filename (szFilename, nLevel), gameFolders.var.szLightmaps, "rb", 
 	 !cf.Open (Filename (szFilename, nLevel), gameFolders.var.szCache, "rb", 0))
 	return 0;
 bOk = (cf.Read (&ldh, sizeof (ldh), 1) == 1);
-if (bOk)
-	bOk = (ldh.nVersion == LIGHTMAP_DATA_VERSION) && 
-			(ldh.nCheckSum == CalcSegmentCheckSum ()) &&
-			(ldh.nSegments == gameData.segData.nSegments) && 
-			(ldh.nVertices == gameData.segData.nVertices) && 
-			(ldh.nFaces == FACES.nFaces) && 
-			(ldh.nLights == m_list.nLights) && 
-			(ldh.nBuffers <= m_list.nBuffers) &&
-			(ldh.nMaxLightRange == MAX_LIGHT_RANGE);
+if (!bOk) 
+	PrintLog (0, "Error reading lightmap header data\n");
+else {
+	bOk = false;
+	if (ldh.nVersion != LIGHTMAP_DATA_VERSION) 
+		PrintLog (0, "lightmap data outdated (version)\n");
+	else if (ldh.nCheckSum != CalcSegmentCheckSum ())
+		PrintLog (0, "lightmap data outdated (level data)\n");
+	else if (ldh.nSegments != gameData.segData.nSegments) 
+		PrintLog (0, "lightmap data outdated (segment count)\n");
+	else if (ldh.nVertices != gameData.segData.nVertices) 
+		PrintLog (0, "lightmap data outdated (vertex count)\n");
+	else if (ldh.nFaces != FACES.nFaces) 
+		PrintLog (0, "lightmap data outdated (face count)\n");
+	else if (ldh.nLights != m_list.nLights) 
+		PrintLog (0, "lightmap data outdated (light count)\n");
+	else if (ldh.nBuffers >> m_list.nBuffers)
+		PrintLog (0, "lightmap data outdated (buffer count)\n");
+	else if (ldh.nMaxLightRange != MAX_LIGHT_RANGE)
+		PrintLog (0, "lightmap data outdated (light range)\n");
+	else bOk = true;
+	}
 if (bOk) {
 	for (i = ldh.nFaces, faceP = FACES.faces.Buffer (); i; i--, faceP++) {
 		bOk = cf.Read (&faceP->m_info.nLightmap, sizeof (faceP->m_info.nLightmap), 1) == 1;
-		if (!bOk)
+		if (!bOk) {
+			PrintLog (0, "error reading lightmap count\n");
 			break;
+			}
 		}
 	}
 if (bOk) {
 	for (i = 0; i < ldh.nBuffers; i++) {
 		bOk = cf.Read (m_list.buffers [i].bmP, sizeof (m_list.buffers [i].bmP), 1, ldh.bCompressed) == 1;
-		if (!bOk)
+		if (!bOk) {
+			PrintLog (0, "error reading lightmap data\n");
 			break;
+			}
 		}
 	}
 cf.Close ();
