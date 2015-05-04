@@ -291,7 +291,9 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segData.nSegme
 PrintLog (-1);
 
 PrintLog (1, "caching addon textures\n");
+gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 CacheAddonTextures ();
+gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 PrintLog (-1);
 
 PrintLog (1, "caching model textures\n");

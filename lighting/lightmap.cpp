@@ -1080,8 +1080,10 @@ if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 #if 1
 	if (gameOpts->render.color.nLevel < 2)
 		ToGrayScale ();
+#	if 0
 	if (gameOpts->render.bCartoonStyle)
 		Posterize ();
+#	endif
 #endif
 	}
 return m_bSuccess;
