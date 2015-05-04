@@ -7,16 +7,16 @@ namespace Mesh {
 
 	typedef struct tEdge {
 		int32_t			nNext;
-		uint16_t		verts [2];
+		uint16_t			verts [2];
 		int32_t			tris [2];
-		float			fLength;
+		float				fLength;
 		} __pack__ tEdge;
 
 	typedef struct tTriangle {
 		int32_t			nFace;
 		int32_t			nIndex;
 		int32_t			lines [3];
-		uint16_t		index [3];
+		uint16_t			index [3];
 		int16_t			nPass;
 		int16_t			nId;
 		tTexCoord2f	texCoord [3];
@@ -28,14 +28,14 @@ class CTriMeshBuilder {
 	private:
 		CArray<tEdge>		m_edges;
 		CArray<tTriangle>	m_triangles;
-		int32_t					m_nEdges;
-		int32_t					m_nFreeEdges;
-		int32_t					m_nTriangles;
-		int32_t					m_nMaxTriangles;
-		int32_t					m_nMaxEdges;
-		int32_t					m_nVertices;
-		int32_t					m_nTris;
-		int32_t					m_nQuality;
+		int32_t				m_nEdges;
+		int32_t				m_nFreeEdges;
+		int32_t				m_nTriangles;
+		int32_t				m_nMaxTriangles;
+		int32_t				m_nMaxEdges;
+		int32_t				m_nVertices;
+		int32_t				m_nTris;
+		int32_t				m_nQuality;
 
 	private:
 		void FreeData (void);
@@ -70,20 +70,20 @@ class CTriMeshBuilder {
 
 class CQuadMeshBuilder {
 	private:
-		CSegFace*		m_faceP;
-		tFaceTriangle*	m_triP;
-		CFloatVector3*	m_vertexP;
-		CFloatVector3*	m_normalP;
-		tTexCoord2f*	m_texCoordP;
-		tTexCoord2f*	m_ovlTexCoordP;
-		tTexCoord2f*	m_lMapTexCoordP;
-		CFloatVector*	m_faceColorP;
-		CFaceColor*		m_colorP;
-		CSegment*		m_segP;
-		tSegFaces*		m_segFaceP;
-		CSide*			m_sideP;
+		CSegFace*			m_faceP;
+		tFaceTriangle*		m_triP;
+		CFloatVector3*		m_vertexP;
+		CFloatVector3*		m_normalP;
+		tTexCoord2f*		m_texCoordP;
+		tTexCoord2f*		m_ovlTexCoordP;
+		tTexCoord2f*		m_lMapTexCoordP;
+		CFloatVector*		m_faceColorP;
+		CFaceColor*			m_colorP;
+		CSegment*			m_segP;
+		tSegFaces*			m_segFaceP;
+		CSide*				m_sideP;
 
-		uint16_t			m_sideVerts [5];
+		uint16_t				m_sideVerts [5];
 		int16_t				m_nOvlTexCount;
 		int16_t				m_nWall;
 		int16_t				m_nWallType;

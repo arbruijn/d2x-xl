@@ -1635,4 +1635,98 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
+
+int32_t CountEdges (void)
+{
+	CSegment	*segP = gameData.Segment (0);
+	int32_t	nEdges = 0;
+
+for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
+	CSide* sideP = segP->Side (0);
+	for (int32_t j = 0; j < 6; j++, sideP++) {
+		if (segP->ChildId (j) >= 0) {
+			switch (sideP->Shape ()) {
+				case SIDE_SHAPE_RECTANGLE:
+					nEdges += 4;
+					break;
+				case SIDE_SHAPE_TRIANGLE:
+					nEdges += 3;
+					break;
+				}
+			}
+		}
+	}
+return nEdges;
+}
+
+//------------------------------------------------------------------------------
+
+CEdge *FindEdge (int16_t nVertex1, int16_t nVertex2)
+{
+	CEdge	*edgeP = gameData.segData.edges.Buffer ();
+
+for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++)
+	if ((edgeP->m_nVertices [0] == nVertex1) && (edgeP->m_nVertices [1] == nVertex2))
+		return edgeP;
+return NULL;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t AddEdge (int16_t nSegment, int16_t nSide, int16_t nVertex1, int16_t nVertex2)
+{
+if (nVertex1 > nVertex2)
+	Swap (nVertex1, nVertex2);
+CEdge *edgeP = FindEdge (nVertex1, nVertex2);
+
+int32_t i;
+
+if (edgeP)
+	i = 1;
+else {
+	i = 0;
+	edgeP = &gameData.segData.edges [gameData.segData.nEdges++];
+	edgeP->m_nVertices [0] = nVertex1;
+	edgeP->m_nVertices [1] = nVertex2;
+	}
+edgeP->m_faces [i].m_nItem = nSegment;
+edgeP->m_faces [i].m_nFace = nSide;
+edgeP->m_faces [i].m_vNormal = gameData.Segment (nSegment)->Side (nSide)->Normal (2);
+return i == 0;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t BuildEdgeList (void)
+{
+if (!gameData.segData.edges.Create (CountEdges ()))
+	return -1;
+
+CSegment	*segP = gameData.Segment (0);
+gameData.segData.nEdges = 0;
+
+for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
+	CSide* sideP = segP->Side (0);
+	for (int32_t j = 0; j < 6; j++, sideP++) {
+		if (segP->ChildId (j) < 0)
+			continue;
+		int32_t nVertices;
+		switch (sideP->Shape ()) {
+			case SIDE_SHAPE_RECTANGLE:
+				nVertices = 4;
+				break;
+			case SIDE_SHAPE_TRIANGLE:
+				nVertices = 3;
+				break;
+			default:
+				continue;
+			}
+		for (int32_t k = 0; k <= nVertices; k++)
+			AddEdge (i, j, sideP->m_corners [k], sideP->m_corners [(k + 1) % nVertices]);
+		}
+	}
+return gameData.segData.nEdges;
+}
+
+//------------------------------------------------------------------------------
 //eof

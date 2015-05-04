@@ -304,9 +304,9 @@ class CSide {
 typedef struct tDestructableTextureProps {
 	uint16_t			nOvlTex;
 	uint16_t			nOvlOrient;
-	int32_t				nEffect;
-	int32_t				nBitmap;
-	int32_t				nSwitchType;
+	int32_t			nEffect;
+	int32_t			nBitmap;
+	int32_t			nSwitchType;
 } tDestructableTextureProps;
 
 //------------------------------------------------------------------------------

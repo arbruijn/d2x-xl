@@ -1978,7 +1978,7 @@ class CSegmentGrid {
 		CFixVector					m_vDim;
 		CFixVector					m_vMin;
 		CFixVector					m_vMax;
-		int32_t							m_nGridSize;
+		int32_t						m_nGridSize;
 
 	public:
 		bool Create (int32_t nGridSize, int32_t bSkyBox);
@@ -2055,6 +2055,24 @@ typedef struct tVertexOwner {
 	uint8_t		nSide;
 } tVertexOwner;
 
+
+//------------------------------------------------------------------------------
+
+class CEdgeFaceInfo {
+	public:
+		int16_t		m_nItem;		// segment / (sub) model id
+		int16_t		m_nFace;
+		CFixVector	m_vNormal;
+	};
+
+class CEdge {
+	public:
+		CEdgeFaceInfo	m_faces [2];
+		int16_t			m_nVertices [2];
+	};
+
+//------------------------------------------------------------------------------
+
 class CSegmentData {
 	public:
 		int32_t						nMaxSegments;
@@ -2063,6 +2081,7 @@ class CSegmentData {
 		CArray<tVertexOwner>		vertexOwners;
 		CArray<CSegment>			segments;
 		CArray<tSegFaces>			segFaces;
+		CArray<CEdge>				edges;
 		CArray<fix>					segDists;
 		CSkyBox						skybox;
 		CSegmentGrid				grids [2];
@@ -2088,6 +2107,7 @@ class CSegmentData {
 		int32_t						nLastSegment;
 		int32_t						nFaces;
 		int32_t						nFaceKeys;
+		int32_t						nEdges;
 		int32_t						nLevelVersion;
 		char							szLevelFilename [FILENAME_LEN];
 		CSecretData					secret;
