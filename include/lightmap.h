@@ -106,6 +106,7 @@ class CLightmapManager {
 		int32_t Save (int32_t nLevel);
 		int32_t Load (int32_t nLevel);
 		void ToGrayScale (void);
+		void Posterize (void);
 		char* Filename (char *pszFilename, int32_t nLevel);
 		void Blur (CSegFace* faceP, CLightmapFaceData& source, CLightmapFaceData& dest, int32_t direction);
 		void Blur (CSegFace* faceP, CLightmapFaceData& source);

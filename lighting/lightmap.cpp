@@ -868,6 +868,17 @@ for (int32_t i = 0; i < m_list.nBuffers; i++) {
 
 //------------------------------------------------------------------------------
 
+void CLightmapManager::Posterize (void)
+{
+for (int32_t i = 0; i < m_list.nBuffers; i++) {
+	CRGBColor* colorP = &m_list.buffers [i].bmP [0][0];
+	for (int32_t j = LIGHTMAP_BUFWIDTH * LIGHTMAP_BUFWIDTH; j; j--, colorP++)
+		colorP->Posterize ();
+	}
+}
+
+//------------------------------------------------------------------------------
+
 int32_t CLightmapManager::Save (int32_t nLevel)
 {
 	CFile				cf;
@@ -967,9 +978,11 @@ if (bOk) {
 cf.Close ();
 if (bOk) {
 	Realloc (ldh.nBuffers);
-#if 0
+#if 1
 	if (gameOpts->render.color.nLevel < 2)
 		ToGrayScale ();
+	if (gameOpts->render.bCartoonStyle)
+		Posterize ();
 #endif
 	}
 return bOk;

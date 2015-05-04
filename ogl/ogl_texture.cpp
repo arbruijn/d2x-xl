@@ -497,7 +497,7 @@ if (m_info.tw * m_info.th * bpp > (int32_t) sizeof (ogl.m_data.buffer))//shouldn
 	uint8_t*		rawData = bmP->Buffer ();
 	GLubyte*		bufP = ogl.m_data.buffer;
 	CRGBColor*	colorP;
-	int32_t			transparencyColor, superTranspColor;
+	int32_t		transparencyColor, superTranspColor;
 #if 1
 	if (bmP) {
 		colorP = bmP->Palette ()->Color ();
@@ -514,6 +514,7 @@ if (m_info.tw * m_info.th * bpp > (int32_t) sizeof (ogl.m_data.buffer))//shouldn
 
 	uint16_t		r, g, b, a;
 	int32_t		x, y, c;
+	int32_t		bPosterize = gameOpts->render.bCartoonStyle;
 
 
 //bmP->Flags () &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
@@ -575,6 +576,11 @@ for (y = 0; y < m_info.h; y++) {
 						r = colorP [c].Red () * 4;
 						g = colorP [c].Green () * 4;
 						b = colorP [c].Blue () * 4;
+						if (bPosterize) {
+							r = (r / 16) * 16;
+							g = (g / 16) * 16;
+							b = (b / 16) * 16;
+							}
 						if ((r < ogl.m_states.nTransparencyLimit) &&
 							 (g < ogl.m_states.nTransparencyLimit) &&
 							 (b < ogl.m_states.nTransparencyLimit)) {
@@ -618,6 +624,11 @@ for (y = 0; y < m_info.h; y++) {
 						r = colorP [c].Red () * 4;
 						g = colorP [c].Green () * 4;
 						b = colorP [c].Blue () * 4;
+						if (bPosterize) {
+							r = (r / 16) * 16;
+							g = (g / 16) * 16;
+							b = (b / 16) * 16;
+							}
 						if ((r < ogl.m_states.nTransparencyLimit) &&
 							 (g < ogl.m_states.nTransparencyLimit) &&
 							 (b < ogl.m_states.nTransparencyLimit))

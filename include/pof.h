@@ -82,30 +82,30 @@ inline int32_t operator- (CSubModel* o, CArray<CSubModel>& a) { return a.Index (
 
 class CModel {
 	public:
-		CArray<CSubModel>		m_subModels;
+		CArray<CSubModel>			m_subModels;
 		int16_t						m_nSubModels;
-		uint16_t					m_nVerts;
-		uint16_t					m_nFaces;
-		uint16_t					m_nFaceVerts;
-		uint16_t					m_nLitFaces;
-		uint16_t					m_nAdjFaces;
-		CArray<CFixVector>	m_vertices;
-		CArray<CFloatVector>	m_vertsf;
-		CArray<float>			m_fClipDist;
+		uint16_t						m_nVerts;
+		uint16_t						m_nFaces;
+		uint16_t						m_nFaceVerts;
+		uint16_t						m_nLitFaces;
+		uint16_t						m_nAdjFaces;
+		CArray<CFixVector>		m_vertices;
+		CArray<CFloatVector>		m_vertsf;
+		CArray<float>				m_fClipDist;
 		CArray<uint8_t>			m_vertFlags;
-		CArray<CRenderNormal>		m_vertNorms;
-		CFixVector				m_vCenter;
-		CArray<CFixVector>	m_rotVerts;
-		CArray<CFace>			m_faces;
-		CStack<CFace*>			m_litFaces;
+		CArray<CRenderNormal>	m_vertNorms;
+		CFixVector					m_vCenter;
+		CArray<CFixVector>		m_rotVerts;
+		CArray<CFace>				m_faces;
+		CStack<CFace*>				m_litFaces;
 		CArray<uint16_t>			m_adjFaces;
 		CArray<uint16_t>			m_faceVerts;
 		CArray<uint16_t>			m_vertMap;
 		int16_t						m_iSubObj;
-		uint16_t					m_iVert;
-		uint16_t					m_iFace;
-		uint16_t					m_iFaceVert;
-		char						m_nState;
+		uint16_t						m_iVert;
+		uint16_t						m_iFace;
+		uint16_t						m_iFaceVert;
+		char							m_nState;
 		uint8_t						m_nVertFlag;
 
 	public:

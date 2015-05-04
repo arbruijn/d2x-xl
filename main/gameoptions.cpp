@@ -127,6 +127,7 @@ if (i) {
 	bHiresModels [0] =
 	bHiresModels [1] = 0;
 	bUseLightmaps = 0;
+	bCartoonStyle = 0;
 	effects.bAutoTransparency = 0;
 	nMeshQuality = 0;
 	nMathFormat = 2;
@@ -245,6 +246,7 @@ else {
 	bHiresModels [0] =
 	bHiresModels [1] = 1;
 	bUseLightmaps = 0;
+	bCartoonStyle = 1;
 	effects.bAutoTransparency = 1;
 	nMathFormat = 2;
 	nDefMathFormat = 2;

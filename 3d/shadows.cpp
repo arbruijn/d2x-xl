@@ -470,7 +470,7 @@ return pf;
 void CSubModel::RotateNormals (void)
 {
 	CFace*	pf;
-	int32_t		i;
+	int32_t	i;
 
 for (i = m_nFaces, pf = m_faces; i; i--, pf++) {
 	pf->RotateNormal ();
@@ -494,7 +494,7 @@ return m_vertsf.Buffer ();
 int32_t CSubModel::FindEdge (CFace* pf0, int32_t v0, int32_t v1)
 {
 	int32_t		h, i, j, n;
-	CFace*	pf1;
+	CFace*		pf1;
 	uint16_t*	pfv;
 
 for (i = m_nFaces, pf1 = m_faces; i; i--, pf1++) {
@@ -991,7 +991,7 @@ float NearestShadowedWallDist (int16_t nObject, int16_t nSegment, CFixVector *vP
 #if 1
 	CFixVector	vHit, v, vh;
 	CSegment		*segP;
-	int32_t			nSide, nHitSide, nChild, nWID, bHit = 0;
+	int32_t		nSide, nHitSide, nChild, nWID, bHit = 0;
 	float			fDist;
 #if USE_SEGRADS
 	fix			xDist;

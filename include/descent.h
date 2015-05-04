@@ -446,6 +446,7 @@ class CRenderOptions {
 		int32_t nQuality;
 		int32_t nImageQuality;
 		int32_t nDebrisLife;
+		int32_t bCartoonStyle;
 		tCameraOptions cameras;
 		tColorOptions color;
 		tCockpitOptions cockpit;

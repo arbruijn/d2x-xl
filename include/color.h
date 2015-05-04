@@ -25,15 +25,24 @@ class CRGBColor {
 	inline uint8_t& Red (void) { return r; }
 	inline uint8_t& Green (void) { return g; }
 	inline uint8_t& Blue (void) { return b; }
+
 	inline void Set (uint8_t red, uint8_t green, uint8_t blue) {
 		r = red, g = green, b = blue;
 		}
+
 	inline void ToGrayScale (int32_t bWeighted = 0) {
 		if (bWeighted)
 			r = g = b = (uint8_t) FRound (((float) r + (float) g + (float) b) / 3.0f);
 		else
 			r = g = b = (uint8_t) FRound ((float) r * 0.30f + (float) g * 0.584f + (float) b * 0.116f);
 		}
+
+	inline void Posterize (void) {
+		r = (r / 16) * 16;
+		g = (g / 16) * 16;
+		b = (b / 16) * 16;
+		}
+
 	inline void Assign (CRGBColor& other) { r = other.r, g = other.g, b = other.b;	}
 	};
 
