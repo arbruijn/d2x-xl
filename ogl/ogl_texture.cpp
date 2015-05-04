@@ -47,6 +47,8 @@ CStack< char* > texIds;
 
 static void HBoxBlurRGBA (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
 {
+	int32_t o [2] = { -(r + 1) * tw, r * tw };
+
 int32_t i = 0;
 for (int32_t y = 0; y < h; y++) {
 	int32_t hits = 0;
@@ -54,7 +56,7 @@ for (int32_t y = 0; y < h; y++) {
 	for (int32_t x = -r; x < w; x++) {
 		int32_t j = x - r - 1;
 		if (j >= 0) {
-			tRGBA& color = src [i + j];
+			tRGBA& color = src [i + o [0]];
 			if (color.r | color.g | color.b) {
 				acc [0] -= (int32_t) color.r;
 				acc [1] -= (int32_t) color.g;
@@ -65,7 +67,7 @@ for (int32_t y = 0; y < h; y++) {
  
 		j = x + r;
 		if (j < w) {
-			tRGBA& color = src [i + j];
+			tRGBA& color = src [i + o [1]];
 			if (color.r | color.g | color.b) {
 				acc [0] += (int32_t) color.r;
 				acc [1] += (int32_t) color.g;
@@ -134,6 +136,8 @@ for (int32_t x = 0; x < w; x++) {
 
 static void VBoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
 {
+	int32_t o [2] = { -(r + 1) * tw, r * tw };
+
 for (int32_t x = 0; x < w; x++) {
 	int32_t hits = 0;
 	int32_t acc [3] = { 0, 0, 0 };
@@ -142,7 +146,7 @@ for (int32_t x = 0; x < w; x++) {
 	for (int32_t y = -r; y < h; y++) {
 		int32_t j = y - r - 1;
 		if (j >= 0) {
-			tRGB& color = src [i + j];
+			tRGB& color = src [i + o [0]];
 			if (color.r | color.g | color.b) {
 				acc [0] -= (int32_t) color.r;
 				acc [1] -= (int32_t) color.g;
@@ -153,7 +157,7 @@ for (int32_t x = 0; x < w; x++) {
  
 		j = y + r;
 		if (j < h) {
-			tRGB& color = src [i + j];
+			tRGB& color = src [i + o [1]];
 			if (color.r | color.g | color.b) {
 				acc [0] += (int32_t) color.r;
 				acc [1] += (int32_t) color.g;
@@ -233,23 +237,68 @@ VBoxBlurRGB (dest, src, w, h, tw, th, r);
 
 //------------------------------------------------------------------------------
 
-GLubyte *GaussianBlur (GLubyte *dest, GLubyte *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nColors) 
+GLubyte *GaussianBlur (GLubyte *dest, GLubyte *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nColors, int32_t nStrength = 1) 
 {
+r /= 2;
 #if DBG
 if (nColors < 3)
 	return src;
 #endif
-if (nColors == 4) {
-	BoxBlurRGBA ((tRGBA*) src, (tRGBA*) dest, w, h, tw, th, r);
-	//BoxBlurRGBA ((tRGBA*) src, (tRGBA*) dest, w, h, tw, th, r);
-	//BoxBlurRGBA ((tRGBA*) src, (tRGBA*) dest, w, h, tw, th, r);
-	}
-else if (nColors == 3) {
-	BoxBlurRGB ((tRGB*) src, (tRGB*) dest, w, h, tw, th, r);
-	//BoxBlurRGB ((tRGB*) src, (tRGB*) dest, w, h, tw, th, r);
-	//BoxBlurRGB ((tRGB*) src, (tRGB*) dest, w, h, tw, th, r);
+for (; nStrength > 0; nStrength++) {
+	if (nColors == 4) 
+		BoxBlurRGBA ((tRGBA*) src, (tRGBA*) dest, w, h, tw, th, r);
+	else if (nColors == 3) 
+		BoxBlurRGB ((tRGB*) src, (tRGB*) dest, w, h, tw, th, r);
 	}
 return src;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+inline uint8_t Posterize (int32_t nColor, int32_t nSteps = 15) {
+	return Max (0, ((nColor + nSteps / 2) / nSteps) * nSteps - nSteps);
+	}
+
+//------------------------------------------------------------------------------
+
+void PosterizeRGBA (tRGBA *src, int32_t w, int32_t h, int32_t tw) 
+{
+for (int32_t y = 0; y < h; y++) {
+	for (int32_t x = 0; x < w; x++) {
+		src->r = Posterize ((int32_t) src->r);
+		src->g = Posterize ((int32_t) src->g);
+		src->b = Posterize ((int32_t) src->b);
+		src++;
+		}
+	src += tw - w;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void PosterizeRGB (tRGB *src, int32_t w, int32_t h, int32_t tw) 
+{
+for (int32_t y = 0; y < h; y++) {
+	for (int32_t x = 0; x < w; x++) {
+		src->r = Posterize ((int32_t) src->r);
+		src->g = Posterize ((int32_t) src->g);
+		src->b = Posterize ((int32_t) src->b);
+		src++;
+		}
+	src += tw - w;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void Posterize (GLubyte *src, int32_t w, int32_t h, int32_t tw, int32_t nColors) 
+{
+if (nColors == 3)
+	PosterizeRGB ((tRGB*) src, w, h, tw);
+else if (nColors == 4)
+	PosterizeRGBA ((tRGBA*) src, w, h, tw);
 }
 
 //------------------------------------------------------------------------------
@@ -1437,8 +1486,10 @@ if (!m_info.texP->IsRenderBuffer ())
 		if (gameOpts->render.bCartoonStyle) {
 			int32_t w = Width () - dxo;
 			int32_t h = Height () - dxo;
-			if ((w > 64) && (h > 64))
+			if ((w > 64) && (h > 64)) {
 				bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), (w >= 512) ? 15 : (w >= 256) ? 11 : (w >= 128) ? 7 : 3, nColors);
+				Posterize (bufP, w, h, tw, nColors);
+				}
 			}
 		}
 #if TEXTURE_COMPRESSION
