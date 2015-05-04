@@ -1043,10 +1043,12 @@ for (int32_t i = 0; i < LEVEL_SEGMENTS; i++)
 DESTROY (gameData.segData.segDistTable);
 DESTROY (gameData.segData.slideSegs);
 DESTROY (gameData.segData.segFaces);
+DESTROY (gameData.segData.edges);
 gameData.segData.grids [0].Destroy ();
 gameData.segData.grids [1].Destroy ();
 nSegments = 0;
 nFaces = 0;
+nEdges = 0;
 faces.Destroy ();
 #if 0
 #	if BIDIRECTIONAL_DACS

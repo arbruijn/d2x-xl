@@ -815,6 +815,8 @@ RenderCockpitModel ();
 #endif
 #if 1
 RenderSkyBoxObjects ();
+if (gameOpts->render.bCartoonStyle)
+	RenderEdges ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
 //RenderSegmentOutline ();
 #	if 1

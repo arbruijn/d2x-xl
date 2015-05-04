@@ -1287,6 +1287,8 @@ if (!gameData.render.mine.Create (1)) {
 	return 4;
 	}
 PrintLog (-1);
+if (gameOpts->render.bCartoonStyle)
+	gameData.segData.BuildEdgeList ();
 //lightManager.Setup (nLevel); 
 SetAmbientSoundFlags ();
 PrintLog (-1);

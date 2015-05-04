@@ -1636,7 +1636,7 @@ return 1;
 
 //------------------------------------------------------------------------------
 
-int32_t CountEdges (void)
+int32_t CSegmentData::CountEdges (void)
 {
 	CSegment	*segP = gameData.Segment (0);
 	int32_t	nEdges = 0;
@@ -1661,7 +1661,7 @@ return nEdges;
 
 //------------------------------------------------------------------------------
 
-CEdge *FindEdge (int16_t nVertex1, int16_t nVertex2)
+CEdge *CSegmentData::FindEdge (int16_t nVertex1, int16_t nVertex2)
 {
 	CEdge	*edgeP = gameData.segData.edges.Buffer ();
 
@@ -1673,7 +1673,7 @@ return NULL;
 
 //------------------------------------------------------------------------------
 
-int32_t AddEdge (int16_t nSegment, int16_t nSide, int16_t nVertex1, int16_t nVertex2)
+int32_t CSegmentData::AddEdge (int16_t nSegment, int16_t nSide, int16_t nVertex1, int16_t nVertex2)
 {
 if (nVertex1 > nVertex2)
 	Swap (nVertex1, nVertex2);
@@ -1697,7 +1697,7 @@ return i == 0;
 
 //------------------------------------------------------------------------------
 
-int32_t BuildEdgeList (void)
+int32_t CSegmentData::BuildEdgeList (void)
 {
 if (!gameData.segData.edges.Create (CountEdges ()))
 	return -1;

@@ -2192,7 +2192,12 @@ class CSegmentData {
 		inline bool BuildGrid (int32_t nSize, int32_t bSkyBox) { return grids [bSkyBox].Create (nSize, bSkyBox); }
 		inline int32_t GetSegList (CFixVector vPos, int16_t*& listP, int32_t bSkyBox) { return grids [bSkyBox].GetSegList (vPos, listP); }
 		inline bool HaveGrid (int32_t bSkyBox) { return grids [bSkyBox].Available (); }
-};
+
+		int32_t CountEdges (void);
+		CEdge *FindEdge (int16_t nVertex1, int16_t nVertex2);
+		int32_t AddEdge (int16_t nSegment, int16_t nSide, int16_t nVertex1, int16_t nVertex2);
+		int32_t BuildEdgeList (void);
+	};
 
 //------------------------------------------------------------------------------
 
