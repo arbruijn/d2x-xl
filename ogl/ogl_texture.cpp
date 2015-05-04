@@ -244,7 +244,7 @@ r /= 2;
 if (nColors < 3)
 	return src;
 #endif
-for (; nStrength > 0; nStrength++) {
+for (; nStrength > 0; nStrength--) {
 	if (nColors == 4) 
 		BoxBlurRGBA ((tRGBA*) src, (tRGBA*) dest, w, h, tw, th, r);
 	else if (nColors == 3) 
@@ -1488,7 +1488,7 @@ if (!m_info.texP->IsRenderBuffer ())
 			int32_t h = Height () - dxo;
 			if ((w > 64) && (h > 64)) {
 				bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), (w >= 512) ? 15 : (w >= 256) ? 11 : (w >= 128) ? 7 : 3, nColors);
-				Posterize (bufP, w, h, tw, nColors);
+				Posterize (bufP, w, h, m_info.texP->TW (), nColors);
 				}
 			}
 		}
