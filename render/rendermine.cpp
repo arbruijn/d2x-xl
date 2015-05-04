@@ -767,7 +767,7 @@ ogl.SetBlendMode (GL_LEQUAL);
 for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 	int32_t nVisible = 0;
 	for (int32_t j = 0; j < 2; j++) {
-		int16_t nSegment = edgeP->m_faces [i].m_nItem;
+		int16_t nSegment = edgeP->m_faces [j].m_nItem;
 		if ((nSegment <= nVisibleSegs) && gameData.render.mine.visibility [0].Visible (nSegment))
 			nVisible |= 1 << j;
 		}
