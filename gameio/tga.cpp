@@ -376,7 +376,7 @@ if (m_header.Bits () == 24) {
 else {
 	m_bmP->AddFlags (BM_FLAG_SEE_THRU | BM_FLAG_TRANSPARENT);
 	if (bReverse) {
-		tRGBA	coord;
+		tRGBA			coord;
 		CRGBAColor	*p = reinterpret_cast<CRGBAColor*> (m_bmP->Buffer ());
 		int32_t nSuperTransp;
 

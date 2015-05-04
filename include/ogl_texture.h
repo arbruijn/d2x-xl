@@ -91,7 +91,7 @@ class CTexture {
 		inline void SetRenderBuffer (CFBO *fbo);
 #endif
 		uint8_t *Copy (int32_t dxo, int32_t dyo, uint8_t *data);
-		uint8_t *Convert (int32_t dxo, int32_t dyo,  CBitmap *bmP, int32_t nTransp, int32_t bSuperTransp);
+		uint8_t *Convert (int32_t dxo, int32_t dyo,  CBitmap *bmP, int32_t nTransp, int32_t bSuperTransp, int32_t& bpp);
 #if TEXTURE_COMPRESSION
 		int32_t Compress ();
 #endif

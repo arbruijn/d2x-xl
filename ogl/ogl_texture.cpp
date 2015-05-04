@@ -45,119 +45,211 @@ CStack< char* > texIds;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int32_t* BoxesForGauss (float sigma, int32_t n)  // standard deviation, number of boxes
+static void HBoxBlurRGBA (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t r, int32_t tw, int32_t th)
 {
-float wIdeal = sqrt ((12 * sigma * sigma / n) + 1);  // Ideal averaging filter width 
-int32_t wl = int32_t (floor (wIdeal));  
-if (wl % 2 == 0) 
-	wl--;
-int32_t wu = wl + 2;
-				
-float mIdeal = (12 * sigma * sigma - n * wl * wl - 4 * n * wl - 3 * n) / (-4 * wl - 4);
-int32_t m = int32_t (FRound (mIdeal));
-			
-int32_t *sizes = new int32_t [n];
-if (sizes) { 
-	for (int32_t i = 0; i < n; i++) 
-		sizes [i] = (i < m) ? wl : wu;
-	}
-return sizes;
-}
-
-//------------------------------------------------------------------------------
-
-void BoxBlurH (GLubyte *src, GLubyte *dest, int32_t w, int32_t h, int32_t r) 
-{
-float iarr = 1.0f / float (r + r + 1);
-
-for (int32_t c = 0; c < 4; c++) {
-	for (int32_t i = h; i; i--) {
-		int32_t ti = i * 4 * w + c, li = ti, ri = ti + r;
-		int32_t fv = src [ti], lv = src [ti + 4 * w - 4], val = (r + 1) * fv;
-
-		for(int32_t j = 0; j < r; j++) 
-			val += src [ti + 4 * j];
-
-		for(int32_t j = 0; j <= r; j++, ri += 4, ti += 4) {
-			val += src [ri] - fv;   
-			dest [ti] = (GLubyte) FRound (float (val) * iarr); 
+int32_t i = 0;
+for (int32_t y = 0; y < h; y++) {
+	int32_t hits = 0;
+	int32_t acc [3] = { 0, 0, 0 };
+	for (int32_t x = -r; x < w; x++) {
+		int32_t j = x - r - 1;
+		if (j >= 0) {
+			tRGBA& color = src [i + j];
+			if (color.r | color.g | color.b) {
+				acc [0] -= (int32_t)color.r;
+				acc [1] -= (int32_t)color.g;
+				acc [2] -= (int32_t)color.b;
+				}
+			hits--;
 			}
-
-		for(int32_t j = r + 1; j < w - r; j++, li += 4, ri += 4, ti += 4) { 
-			val += src [ri] - src [li];
-			dest [ti] = (GLubyte) FRound (float (val) * iarr); 
+ 
+		j = x + r;
+		if (j < w) {
+			tRGBA& color = src [i + j];
+			if (color.r | color.g | color.b) {
+				acc [0] += (int32_t)color.r;
+				acc [1] += (int32_t)color.g;
+				acc [2] += (int32_t)color.b;
+				}
+			hits++;
 			}
-
-		for(int32_t j = w - r; j < w; j++, li += 4, ti += 4) { 
-			val += lv - src [li];   
-			dest [ti] = (GLubyte) FRound (float (val) * iarr); 
+ 
+		if (x >= 0) {
+			tRGBA& color = dest [i + x];
+			color.r = uint8_t (acc [0] / hits);
+			color.g = uint8_t (acc [1] / hits);
+			color.b = uint8_t (acc [2] / hits);
+			color.a = src [i + x].a;
 			}
 		}
+	i += tw;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void BoxBlurT (GLubyte *src, GLubyte *dest, int32_t w, int32_t h, int32_t r) 
+static void VBoxBlurRGBA (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t r, int32_t tw, int32_t th)
 {
-float iarr = 1 / (r + r + 1);
+for (int32_t x = 0; x < w; x++) {
+	int32_t hits = 0;
+	int32_t acc [3] = { 0, 0, 0 };
 
-w *= 4;
-
-for (int32_t c = 0; c < 4; c++) {
-	for(int32_t i = w / 4; i; i--) {
-		int32_t ti = i + c, li = ti, ri = ti + r * w;
-		int32_t fv = src [ti], lv = src [ti + w * (h - 1)], val = (r + 1) * fv;
-
-		for(int32_t j = 0; j < r; j++) 
-			val += src [ti + j * w];
-
-		for(int32_t j = 0; j <= r; j++) { 
-			val += src [ri] - fv;  
-			dest [ti] = (GLubyte) FRound (float (val) * iarr);  
-			ri += w; 
-			ti += w; 
+	int32_t i = -r * w + x;
+	for (int32_t y = -r; y < h; y++) {
+		int32_t j = y - r - 1;
+		if (j >= 0) {
+			tRGBA& color = src [i + j];
+			if (color.r | color.g | color.b) {
+				acc [0] -= (int32_t)color.r;
+				acc [1] -= (int32_t)color.g;
+				acc [2] -= (int32_t)color.b;
+				}
+			hits--;
 			}
-
-		for(int32_t j = r + 1; j < h - r; j++) { 
-			val += src [ri] - src [li];  
-			dest [ti] = (GLubyte) FRound (float (val) * iarr);  
-			li += w; 
-			ri += w; 
-			ti += w; 
+ 
+		j = y + r;
+		if (j < h) {
+			tRGBA& color = src [i + j];
+			if (color.r | color.g | color.b) {
+				acc [0] += (int32_t)color.r;
+				acc [1] += (int32_t)color.g;
+				acc [2] += (int32_t)color.b;
+				}
+			hits++;
 			}
-
-		for(int32_t j = h - r; j < h; j++) { 
-			val += lv - src [li];  
-			dest [ti] = (GLubyte) FRound (float (val) * iarr);  
-			li += w; 
-			ti += w; 
+ 
+		if (y >= 0) {
+			tRGBA& color = dest [y * w + x];
+			color.r = uint8_t (acc [0] / hits);
+			color.g = uint8_t (acc [1] / hits);
+			color.b = uint8_t (acc [2] / hits);
+			color.a = src [y * w + x].a;
 			}
 		}
+	i += tw;
 	}
 }
 
 //------------------------------------------------------------------------------
 
-void BoxBlur (GLubyte *src, GLubyte *dest, int32_t w, int32_t h, int32_t r) 
+static void VBoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t r, int32_t tw, int32_t th)
 {
-//memcpy (dest, src, w * h * 4);
-BoxBlurH (src, dest, w, h, r);
-BoxBlurT (dest, src, w, h, r);
+for (int32_t x = 0; x < w; x++) {
+	int32_t hits = 0;
+	int32_t acc [3] = { 0, 0, 0 };
+
+	int32_t i = -r * w + x;
+	for (int32_t y = -r; y < h; y++) {
+		int32_t j = y - r - 1;
+		if (j >= 0) {
+			tRGB& color = src [i + j];
+			if (color.r | color.g | color.b) {
+				acc [0] -= (int32_t)color.r;
+				acc [1] -= (int32_t)color.g;
+				acc [2] -= (int32_t)color.b;
+				}
+			hits--;
+			}
+ 
+		j = y + r;
+		if (j < h) {
+			tRGB& color = src [i + j];
+			if (color.r | color.g | color.b) {
+				acc [0] += (int32_t)color.r;
+				acc [1] += (int32_t)color.g;
+				acc [2] += (int32_t)color.b;
+				}
+			hits++;
+			}
+ 
+		if (y >= 0) {
+			tRGB& color = dest [y * w + x];
+			color.r = uint8_t (acc [0] / hits);
+			color.g = uint8_t (acc [1] / hits);
+			color.b = uint8_t (acc [2] / hits);
+			}
+		}
+	i += tw;
+	}
 }
 
 //------------------------------------------------------------------------------
 
-GLubyte *GaussianBlur (GLubyte *src, GLubyte *dest, int32_t w, int32_t h, int32_t r) 
+static void HBoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t r, int32_t tw, int32_t th)
 {
-int32_t *boxes = BoxesForGauss (r, 3);
-if (boxes) {
-	BoxBlur (src, dest, w, h, (boxes [0] - 1) / 2);
-	BoxBlur (src, dest, w, h, (boxes [1] - 1) / 2);
-	BoxBlur (src, dest, w, h, (boxes [2] - 1) / 2);
-	delete boxes;
+int32_t i = 0;
+for (int32_t y = 0; y < h; y++) {
+	int32_t hits = 0;
+	int32_t acc [3] = { 0, 0, 0 };
+	for (int32_t x = -r; x < w; x++) {
+		int32_t j = x - r - 1;
+		if (j >= 0) {
+			tRGB& color = src [i + j];
+			if (color.r | color.g | color.b) {
+				acc [0] -= (int32_t)color.r;
+				acc [1] -= (int32_t)color.g;
+				acc [2] -= (int32_t)color.b;
+				}
+			hits--;
+			}
+ 
+		j = x + r;
+		if (j < w) {
+			tRGB& color = src [i + j];
+			if (color.r | color.g | color.b) {
+				acc [0] += (int32_t)color.r;
+				acc [1] += (int32_t)color.g;
+				acc [2] += (int32_t)color.b;
+				}
+			hits++;
+			}
+ 
+		if (x >= 0) {
+			tRGB& color = dest [i + x];
+			color.r = uint8_t (acc [0] / hits);
+			color.g = uint8_t (acc [1] / hits);
+			color.b = uint8_t (acc [2] / hits);
+			}
+		}
+	i += tw;
 	}
-return src;
+}
+
+//------------------------------------------------------------------------------
+
+void BoxBlurRGBA (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t r, int32_t tw, int32_t th) 
+{
+HBoxBlurRGBA (src, dest, w, h, r, tw, th);
+//VBoxBlurRGBA (dest, src, w, h, r, tw, th);
+}
+
+//------------------------------------------------------------------------------
+
+void BoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t r, int32_t tw, int32_t th) 
+{
+HBoxBlurRGB (src, dest, w, h, r, tw, th);
+//VBoxBlurRGB (dest, src, w, h, r, tw, th);
+}
+
+//------------------------------------------------------------------------------
+
+GLubyte *GaussianBlur (GLubyte *dest, GLubyte *src, int32_t w, int32_t h, int32_t r, int32_t tw, int32_t th, int32_t nColors) 
+{
+#if DBG
+if (nColors < 3)
+	return src;
+#endif
+if (nColors == 4) {
+	BoxBlurRGBA ((tRGBA*) src, (tRGBA*) dest, w, h, r, tw, th);
+	//BoxBlurRGBA ((tRGBA*) src, (tRGBA*) dest, w, h, r, tw, th);
+	//BoxBlurRGBA ((tRGBA*) src, (tRGBA*) dest, w, h, r, tw, th);
+	}
+else if (nColors == 3) {
+	BoxBlurRGB ((tRGB*) src, (tRGB*) dest, w, h, r, tw, th);
+	//BoxBlurRGB ((tRGB*) src, (tRGB*) dest, w, h, r, tw, th);
+	//BoxBlurRGB ((tRGB*) src, (tRGB*) dest, w, h, r, tw, th);
+	}
+return dest;
 }
 
 //------------------------------------------------------------------------------
@@ -574,7 +666,7 @@ return 0;
 // will be computed so that only the part of the buffer containing the image
 // is rendered.
 
-uint8_t* CTexture::Convert (int32_t dxo, int32_t dyo, CBitmap* bmP, int32_t nTranspType, int32_t bSuperTransp)
+uint8_t* CTexture::Convert (int32_t dxo, int32_t dyo, CBitmap* bmP, int32_t nTranspType, int32_t bSuperTransp, int32_t& bpp)
 {
 paletteManager.SetTexture (bmP->Parent () ? bmP->Parent ()->Palette () : bmP->Palette ());
 if (!paletteManager.Texture ())
@@ -587,8 +679,6 @@ if (!bTransp)
 if (!nTranspType)
 	nTranspType = 0;
 #endif
-
-int32_t bpp;
 
 restart:
 
@@ -809,7 +899,7 @@ return ogl.m_data.buffer [0];
 
 uint8_t *CTexture::Copy (int32_t dxo, int32_t dyo, uint8_t *data)
 {
-if (!dxo && !dyo && (m_info.w == m_info.tw) && (m_info.h == m_info.th))
+if (!gameOpts->render.bCartoonStyle && !dxo && !dyo && (m_info.w == m_info.tw) && (m_info.h == m_info.th))
 	return data;	//can use data 1:1
 else {	//need to reformat
 	int32_t	h, w, tw;
@@ -1329,14 +1419,20 @@ if (!m_info.texP->IsRenderBuffer ())
 			bufP = CompressedBuffer ().Buffer ();
 		else
 #endif
-		if (m_info.nTranspType < 0)
+		int32_t nColors;
+		if (m_info.nTranspType < 0) {
 			bufP = m_info.texP->Copy (dxo, dyo, data);
-		else
-			bufP = m_info.texP->Convert (dxo = 0, dyo = 0, this, m_info.nTranspType, superTransp);
+			nColors = BPP ();
+			}
+		else {
+			bufP = m_info.texP->Convert (dxo = 0, dyo = 0, this, m_info.nTranspType, superTransp, nColors);
+			nColors = 4;
+			}
 		if (gameOpts->render.bCartoonStyle) {
 			int32_t w = Width () - dxo;
 			int32_t h = Height () - dxo;
-			bufP = GaussianBlur (bufP, ogl.m_data.buffer [1], w, h, (w >= 512) ? 15 : (w >= 256) ? 11 : (w >= 128) ? 7 : 3);
+			bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), (w >= 512) ? 15 : (w >= 256) ? 11 : (w >= 128) ? 7 : 3, nColors);
+			}
 		}
 #if TEXTURE_COMPRESSION
 	m_info.texP->Load (bufP, m_info.compressed.buffer.Size (), m_info.compressed.nFormat, m_info.compressed.bCompressed);

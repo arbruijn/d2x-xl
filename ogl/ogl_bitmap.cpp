@@ -278,7 +278,7 @@ if (bTGA) {
 	sy += Top ();
 	for (i = 0; i < h; i++) {
 		d = buffer + dx + (dy + i) * rowSize;
-		s = ogl.m_data.buffer + ((hScreen - (i + sy + 1)) * wScreen + sx) * 4;
+		s = &ogl.m_data.buffer [0][((hScreen - (i + sy + 1)) * wScreen + sx) * 4];
 		memcpy (d, s, w * 4);
 		}
 	}
@@ -287,7 +287,7 @@ else {
 	sy += Top ();
 	for (i = 0; i < h; i++) {
 		d = buffer + dx + (dy + i) * rowSize;
-		s = ogl.m_data.buffer + ((hScreen - (i + sy + 1)) * wScreen + sx) * 3;
+		s = &ogl.m_data.buffer [0][((hScreen - (i + sy + 1)) * wScreen + sx) * 3];
 		for (j = 0; j < w; j++) {
 			*d++ = dest->Palette ()->ClosestColor (s [0] / 4, s [1] / 4, s [2] / 4);
 			s += 3;
