@@ -445,7 +445,7 @@ static int32_t BestShrinkFactor (CBitmap *bmP, int32_t nShrinkFactor)
 {
 	int32_t	nBaseSize, nTargetSize, nBaseFactor;
 
-if ((bmP->Width () != Pow2ize (bmP->Width (), 65536)) || (bmP->Height () != Pow2ize (bmP->Height (), 65536)))
+if ((bmP->Width () != Pow2ize (bmP->Width (), 65536)) || ((bmP->Height () != Pow2ize (bmP->Height (), 65536)) && (bmP->Height () % bmP->Width () != 0)))
 	return 1;
 #if 0
 if (bmP->Width () >= 2 * bmP->Width ()) {
@@ -755,7 +755,7 @@ return false;
 int32_t ReadHiresBitmap (CBitmap* bmP, const char* bmName, int32_t nIndex, int32_t bD1)
 {
 #if DBG
-if (strstr (bmName, "hostage#0"))
+if (strstr (bmName, "door05#0"))
 	BRP;
 #endif
 
@@ -856,6 +856,10 @@ else
 	if (CompressTGA (bmP))
 		bmP->SaveS3TC (gameFolders.var.szTextures [(nFile < 2) ? 4 : (nFile < 4) ? 3 : bD1 + 1], bmName);
 	else {
+#endif
+#if DBG
+		if (strstr (bmName, "door05#0"))
+			BRP;
 #endif
 		int32_t nBestShrinkFactor = BestShrinkFactor (bmP, ShrinkFactor (bmName));
 		CTGA tga (bmP);

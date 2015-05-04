@@ -225,11 +225,11 @@ CAddonBitmap::Prepare ();
 
 int32_t OglCacheLevelTextures (void)
 {
-	int32_t				i, j, bD1;
+	int32_t			i, j, bD1;
 	tEffectInfo*	effectInfoP;
-	int32_t				max_efx = 0, ef;
-	int32_t				nSegment, nSide;
-	int16_t				nBaseTex, nOvlTex;
+	int32_t			max_efx = 0, ef;
+	int32_t			nSegment, nSide;
+	int16_t			nBaseTex, nOvlTex;
 	CBitmap*			bmBot,* bmTop, * bmm;
 	CSegment*		segP;
 	CSide*			sideP;
@@ -241,6 +241,8 @@ if (gameStates.render.bBriefing)
 PrintLog (1, "caching level textures\n");
 TexMergeClose ();
 TexMergeInit (-1);
+
+gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 
 PrintLog (1, "caching effect textures\n");
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
@@ -337,6 +339,8 @@ for (i = 0; i < 2; i++)
 		if (gameData.cockpit.gauges [i][j].index != 0xffff)
 			LoadTexture (gameData.cockpit.gauges [i][j].index, 0, 0);
 PrintLog (-1);
+
+gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 
 ResetSpecialEffects ();
 InitSpecialEffects ();
