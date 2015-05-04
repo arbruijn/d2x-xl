@@ -768,6 +768,8 @@ for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 	int32_t nVisible = 0;
 	for (int32_t j = 0; j < 2; j++) {
 		int16_t nSegment = edgeP->m_faces [j].m_nItem;
+		if (nSegment < 0)
+			continue;
 		if ((nSegment <= nVisibleSegs) && gameData.render.mine.visibility [0].Visible (nSegment))
 			nVisible |= 1 << j;
 		}
