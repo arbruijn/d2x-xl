@@ -337,10 +337,10 @@ else {
 	}
 SetProperties (alpha, bGrayScale, brightness, bReverse == 0);
 #else
-	int32_t				i, j, n, nAlpha = 0, nVisible = 0, nFrames;
-	int32_t				h = m_bmP->Height ();
-	int32_t				w = m_bmP->Width ();
-	CFloatVector3		avgColor;
+	int32_t			i, j, n, nAlpha = 0, nVisible = 0, nFrames;
+	int32_t			h = m_bmP->Height ();
+	int32_t			w = m_bmP->Width ();
+	CFloatVector3	avgColor;
 	CRGBColor		avgColorb;
 	float				vec, avgAlpha = 0;
 

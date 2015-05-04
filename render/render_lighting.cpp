@@ -235,9 +235,9 @@ void ComputeDynamicFaceLight (int32_t nStart, int32_t nEnd, int32_t nThread)
 #if 0
 	uint8_t			nThreadFlags [3] = {1 << nThread, 1 << !nThread, ~(1 << nThread)};
 #endif
-	int32_t				nVertex, nSegment, nSide;
+	int32_t			nVertex, nSegment, nSide;
 	float				fAlpha;
-	int32_t				h, i, nColor, nLights = 0;
+	int32_t			h, i, nColor, nLights = 0;
 	//int32_t				bVertexLight = gameStates.render.bPerPixelLighting != 2;
 	bool				bNeedLight = !gameStates.render.bFullBright && (gameStates.render.bPerPixelLighting != 2);
 	static			CFaceColor brightColor;
@@ -708,8 +708,8 @@ ogl.SetTransform (0);
 int32_t CountRenderFaces (void)
 {
 	CSegment*	segP;
-	int16_t			nSegment;
-	int32_t			h, i, j, nFaces, nSegments;
+	int16_t		nSegment;
+	int32_t		h, i, j, nFaces, nSegments;
 
 ogl.m_states.bUseTransform = 1; // prevent vertex transformation from setting FVERTICES!
 for (i = nSegments = nFaces = 0; i < gameData.render.mine.visibility [0].nSegments; i++) {

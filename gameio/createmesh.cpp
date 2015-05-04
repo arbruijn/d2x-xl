@@ -1706,6 +1706,8 @@ CSegment	*segP = gameData.Segment (0);
 gameData.segData.nEdges = 0;
 
 for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
+	if (segP->m_function == SEGMENT_FUNC_SKYBOX)
+		continue;
 	CSide* sideP = segP->Side (0);
 	for (int32_t j = 0; j < 6; j++, sideP++) {
 		if (segP->ChildId (j) < 0)

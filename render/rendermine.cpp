@@ -753,6 +753,50 @@ glPolygonMode (GL_BACK, GL_FILL);       // Draw Backfacing Polygons As Wireframe
 }
 
 //------------------------------------------------------------------------------
+
+void RenderEdges (void)
+{
+	CEdge				*edgeP = gameData.segData.edges.Buffer ();
+	CFixVector		vViewDir = gameData.objData.viewerP->Orientation ().m.dir.f;
+	int32_t			nVisibleSegs = gameData.render.mine.visibility [0].nSegments;
+	CShortArray&	visibleSegs = gameData.render.mine.visibility [0].segments;
+
+glColor3f (0, 0, 0);
+ogl.SetTexturing (false);
+ogl.SetBlending (GL_LEQUAL);
+for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
+	int32_t nVisible = 0;
+	for (int32_t j = 0; j < 2; j++) {
+		int16_t nSegment = edgeP->m_faces [i].m_nItem;
+		if ((nSegment <= nVisibleSegs) && gameData.render.mine.visibility [0].Visible (nSegment))
+			nVisible |= 1 << j;
+		}
+	if (!nVisible)
+		continue;
+	int32_t nVisible = 0;
+	for (int32_t j = 0; j < 2; j++) {
+		fix dot = CFixVector::Dot (vViewDir, edgeP->m_faces [j].m_vNormal);
+		if (dot >= 0)
+			nVisible |= 1 << j;
+		}
+	if (!nVisible)
+		continue;
+	if (nVisible != 3) // only one visible -> contour edge
+		glLineWidth (4);
+	else {
+		fix dot = CFixVector::Dot (edgeP->m_faces [0].m_vNormal, edgeP->m_faces [1].m_vNormal);
+		if (dot < 56756) // ~ cos (-150°)
+			continue;
+		glLineWidth (2);
+		}
+	glBegin (GL_LINES);
+	glVertex3fv ((GLfloat*) &gameData.segData.fVertices [edgeP->m_nVertices [0]]);
+	glVertex3fv ((GLfloat*) &gameData.segData.fVertices [edgeP->m_nVertices [1]]);
+	glEnd ();
+	}
+}
+
+//------------------------------------------------------------------------------
 //renders onto current canvas
 
 void RenderMine (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow)
