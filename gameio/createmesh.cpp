@@ -1644,7 +1644,7 @@ int32_t CSegmentData::CountEdges (void)
 for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
 	CSide* sideP = segP->Side (0);
 	for (int32_t j = 0; j < 6; j++, sideP++) {
-		if (segP->ChildId (j) >= 0) {
+		if (segP->ChildId (j) < 0) {
 			switch (sideP->Shape ()) {
 				case SIDE_SHAPE_RECTANGLE:
 					nEdges += 4;
@@ -1710,7 +1710,7 @@ for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
 		continue;
 	CSide* sideP = segP->Side (0);
 	for (int32_t j = 0; j < 6; j++, sideP++) {
-		if (segP->ChildId (j) < 0)
+		if (segP->ChildId (j) >= 0)
 			continue;
 		int32_t nVertices;
 		switch (sideP->Shape ()) {
