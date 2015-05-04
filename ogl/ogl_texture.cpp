@@ -94,7 +94,7 @@ for (int32_t x = 0; x < w; x++) {
 	int32_t hits = 0;
 	int32_t acc [3] = { 0, 0, 0 };
 
-	int32_t i = -r * w + x;
+	int32_t i = -r * tw + x;
 	for (int32_t y = -r; y < h; y++) {
 		int32_t j = y - r - 1;
 		if (j >= 0) {
@@ -119,14 +119,14 @@ for (int32_t x = 0; x < w; x++) {
 			}
  
 		if (y >= 0) {
-			tRGBA& color = dest [y * w + x];
+			tRGBA& color = dest [y * tw + x];
 			color.r = uint8_t (acc [0] / hits);
 			color.g = uint8_t (acc [1] / hits);
 			color.b = uint8_t (acc [2] / hits);
-			color.a = src [y * w + x].a;
+			color.a = src [y * tw + x].a;
 			}
+		i += tw;
 		}
-	i += tw;
 	}
 }
 
@@ -138,7 +138,7 @@ for (int32_t x = 0; x < w; x++) {
 	int32_t hits = 0;
 	int32_t acc [3] = { 0, 0, 0 };
 
-	int32_t i = -r * w + x;
+	int32_t i = -r * tw + x;
 	for (int32_t y = -r; y < h; y++) {
 		int32_t j = y - r - 1;
 		if (j >= 0) {
@@ -163,13 +163,13 @@ for (int32_t x = 0; x < w; x++) {
 			}
  
 		if (y >= 0) {
-			tRGB& color = dest [y * w + x];
+			tRGB& color = dest [y * tw + x];
 			color.r = uint8_t (acc [0] / hits);
 			color.g = uint8_t (acc [1] / hits);
 			color.b = uint8_t (acc [2] / hits);
 			}
+		i += tw;
 		}
-	i += tw;
 	}
 }
 
@@ -228,7 +228,7 @@ HBoxBlurRGBA (src, dest, w, h, tw, th, r);
 void BoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r) 
 {
 HBoxBlurRGB (src, dest, w, h, tw, th, r);
-//VBoxBlurRGB (dest, src, w, h, tw, th, r);
+VBoxBlurRGB (dest, src, w, h, tw, th, r);
 }
 
 //------------------------------------------------------------------------------
@@ -249,7 +249,7 @@ else if (nColors == 3) {
 	//BoxBlurRGB ((tRGB*) src, (tRGB*) dest, w, h, tw, th, r);
 	//BoxBlurRGB ((tRGB*) src, (tRGB*) dest, w, h, tw, th, r);
 	}
-return dest;
+return src;
 }
 
 //------------------------------------------------------------------------------
