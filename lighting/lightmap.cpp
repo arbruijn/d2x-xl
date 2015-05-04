@@ -839,10 +839,14 @@ return nCurItem;
 
 char *CLightmapManager::Filename (char *pszFilename, int32_t nLevel)
 {
+#if 1
+return GameDataFilename (pszFilename, "lmap", nLevel, (gameOpts->render.nLightmapQuality + 1) * (gameOpts->render.nLightmapPrecision + 1) - 1);
+#else
 if (gameOpts->render.color.nLevel == 2)
 	return GameDataFilename (pszFilename, "lmap", nLevel, (gameOpts->render.nLightmapQuality + 1) * (gameOpts->render.nLightmapPrecision + 1) - 1);
 else
 	return GameDataFilename (pszFilename, "bw.lmap", nLevel, (gameOpts->render.nLightmapQuality + 1) * (gameOpts->render.nLightmapPrecision + 1) - 1);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1073,6 +1077,12 @@ if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 		}
 	BindAll ();
 	Save (nLevel);
+#if 1
+	if (gameOpts->render.color.nLevel < 2)
+		ToGrayScale ();
+	if (gameOpts->render.bCartoonStyle)
+		Posterize ();
+#endif
 	}
 return m_bSuccess;
 }
