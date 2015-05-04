@@ -355,8 +355,8 @@ m_info.parentBitmap.PrepareTexture (0, 0, NULL);
 //remap a font by re-reading its data & palette
 void CFont::Setup (const char *fontname, uint8_t* fontData, CPalette& palette)
 {
-	int32_t		i;
-	int32_t		nChars;
+	int32_t	i;
+	int32_t	nChars;
 	uint8_t*	ptr;
 
 Destroy ();
