@@ -37,10 +37,14 @@ class CRGBColor {
 			r = g = b = (uint8_t) FRound ((float) r * 0.30f + (float) g * 0.584f + (float) b * 0.116f);
 		}
 
-	inline void Posterize (void) {
-		r = (r / 16) * 16;
-		g = (g / 16) * 16;
-		b = (b / 16) * 16;
+	inline uint8_t Posterize (int32_t nColor, int32_t nSteps) {
+		return Max (0, ((nColor + nSteps / 2) / nSteps) * nSteps - nSteps);
+		}
+
+	inline void Posterize (int32_t nSteps = 15) {
+		r = Posterize (r, nSteps);
+		g = Posterize (g, nSteps);
+		b = Posterize (b, nSteps);
 		}
 
 	inline void Assign (CRGBColor& other) { r = other.r, g = other.g, b = other.b;	}

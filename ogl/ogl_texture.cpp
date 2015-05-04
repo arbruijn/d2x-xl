@@ -42,6 +42,127 @@ CStack< char* > texIds;
 #endif
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+int32_t* BoxesForGauss (float sigma, int32_t n)  // standard deviation, number of boxes
+{
+float wIdeal = sqrt ((12 * sigma * sigma / n) + 1);  // Ideal averaging filter width 
+int32_t wl = int32_t (floor (wIdeal));  
+if (wl % 2 == 0) 
+	wl--;
+int32_t wu = wl + 2;
+				
+float mIdeal = (12 * sigma * sigma - n * wl * wl - 4 * n * wl - 3 * n) / (-4 * wl - 4);
+int32_t m = int32_t (FRound (mIdeal));
+			
+int32_t *sizes = new int32_t [n];
+if (sizes) { 
+	for (int32_t i = 0; i < n; i++) 
+		sizes [i] = (i < m) ? wl : wu;
+	}
+return sizes;
+}
+
+//------------------------------------------------------------------------------
+
+void BoxBlurH (GLubyte *src, GLubyte *dest, int32_t w, int32_t h, int32_t r) 
+{
+float iarr = 1.0f / float (r + r + 1);
+
+for (int32_t c = 0; c < 4; c++) {
+	for (int32_t i = h; i; i--) {
+		int32_t ti = i * 4 * w + c, li = ti, ri = ti + r;
+		int32_t fv = src [ti], lv = src [ti + 4 * w - 4], val = (r + 1) * fv;
+
+		for(int32_t j = 0; j < r; j++) 
+			val += src [ti + 4 * j];
+
+		for(int32_t j = 0; j <= r; j++, ri += 4, ti += 4) {
+			val += src [ri] - fv;   
+			dest [ti] = (GLubyte) FRound (float (val) * iarr); 
+			}
+
+		for(int32_t j = r + 1; j < w - r; j++, li += 4, ri += 4, ti += 4) { 
+			val += src [ri] - src [li];
+			dest [ti] = (GLubyte) FRound (float (val) * iarr); 
+			}
+
+		for(int32_t j = w - r; j < w; j++, li += 4, ti += 4) { 
+			val += lv - src [li];   
+			dest [ti] = (GLubyte) FRound (float (val) * iarr); 
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void BoxBlurT (GLubyte *src, GLubyte *dest, int32_t w, int32_t h, int32_t r) 
+{
+float iarr = 1 / (r + r + 1);
+
+w *= 4;
+
+for (int32_t c = 0; c < 4; c++) {
+	for(int32_t i = w / 4; i; i--) {
+		int32_t ti = i + c, li = ti, ri = ti + r * w;
+		int32_t fv = src [ti], lv = src [ti + w * (h - 1)], val = (r + 1) * fv;
+
+		for(int32_t j = 0; j < r; j++) 
+			val += src [ti + j * w];
+
+		for(int32_t j = 0; j <= r; j++) { 
+			val += src [ri] - fv;  
+			dest [ti] = (GLubyte) FRound (float (val) * iarr);  
+			ri += w; 
+			ti += w; 
+			}
+
+		for(int32_t j = r + 1; j < h - r; j++) { 
+			val += src [ri] - src [li];  
+			dest [ti] = (GLubyte) FRound (float (val) * iarr);  
+			li += w; 
+			ri += w; 
+			ti += w; 
+			}
+
+		for(int32_t j = h - r; j < h; j++) { 
+			val += lv - src [li];  
+			dest [ti] = (GLubyte) FRound (float (val) * iarr);  
+			li += w; 
+			ti += w; 
+			}
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void BoxBlur (GLubyte *src, GLubyte *dest, int32_t w, int32_t h, int32_t r) 
+{
+//memcpy (dest, src, w * h * 4);
+BoxBlurH (src, dest, w, h, r);
+BoxBlurT (dest, src, w, h, r);
+}
+
+//------------------------------------------------------------------------------
+
+GLubyte *GaussianBlur (GLubyte *src, GLubyte *dest, int32_t w, int32_t h, int32_t r) 
+{
+int32_t *boxes = BoxesForGauss (r, 3);
+if (boxes) {
+	BoxBlur (src, dest, w, h, (boxes [0] - 1) / 2);
+	BoxBlur (src, dest, w, h, (boxes [1] - 1) / 2);
+	BoxBlur (src, dest, w, h, (boxes [2] - 1) / 2);
+	delete boxes;
+	}
+return src;
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 #define TEXTURE_LIST_SIZE 5000
 
@@ -491,11 +612,11 @@ switch (m_info.format) {
 		break;
 	}
 
-if (m_info.tw * m_info.th * bpp > (int32_t) sizeof (ogl.m_data.buffer))//shouldn'texP happen, descent never uses textures that big.
+if (m_info.tw * m_info.th * bpp > (int32_t) sizeof (ogl.m_data.buffer [0]))//shouldn'texP happen, descent never uses textures that big.
 	Error ("texture too big %i %i", m_info.tw, m_info.th);
 
 	uint8_t*		rawData = bmP->Buffer ();
-	GLubyte*		bufP = ogl.m_data.buffer;
+	GLubyte*		bufP = ogl.m_data.buffer [0];
 	CRGBColor*	colorP;
 	int32_t		transparencyColor, superTranspColor;
 #if 1
@@ -680,7 +801,7 @@ else if (m_info.format == GL_RGBA)
 	m_info.internalFormat = 4;
 else if ((m_info.format == GL_RGB5) || (m_info.format == GL_RGBA4))
 	m_info.internalFormat = 2;
-return ogl.m_data.buffer;
+return ogl.m_data.buffer [0];
 }
 
 //------------------------------------------------------------------------------
@@ -691,13 +812,13 @@ uint8_t *CTexture::Copy (int32_t dxo, int32_t dyo, uint8_t *data)
 if (!dxo && !dyo && (m_info.w == m_info.tw) && (m_info.h == m_info.th))
 	return data;	//can use data 1:1
 else {	//need to reformat
-	int32_t		h, w, tw;
+	int32_t	h, w, tw;
 	GLubyte	*bufP;
 
 	h = m_info.lw / m_info.w;
 	w = (m_info.w - dxo) * h;
 	data += m_info.lw * dyo + h * dxo;
-	bufP = ogl.m_data.buffer;
+	bufP = ogl.m_data.buffer [0];
 	tw = m_info.tw * h;
 	h = tw - w;
 	for (; dyo < m_info.h; dyo++, data += m_info.lw) {
@@ -706,8 +827,8 @@ else {	//need to reformat
 		memset (bufP, 0, h);
 		bufP += h;
 		}
-	memset (bufP, 0, m_info.th * tw - (bufP - ogl.m_data.buffer));
-	return ogl.m_data.buffer;
+	memset (bufP, 0, m_info.th * tw - (bufP - ogl.m_data.buffer [0]));
+	return ogl.m_data.buffer [0];
 	}
 }
 
@@ -751,7 +872,7 @@ switch (m_info.format) {
 
 glTexParameteri (GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_FALSE);
 glTexImage2D (GL_PROXY_TEXTURE_2D, 0, m_info.internalFormat, m_info.tw, m_info.th, 0,
-				  m_info.format, GL_UNSIGNED_BYTE, ogl.m_data.buffer);//NULL?
+				  m_info.format, GL_UNSIGNED_BYTE, ogl.m_data.buffer [0]);//NULL?
 glGetTexLevelParameteriv (GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &nFormat);
 switch (m_info.format) {
 	case GL_RGBA:
@@ -1211,7 +1332,11 @@ if (!m_info.texP->IsRenderBuffer ())
 		if (m_info.nTranspType < 0)
 			bufP = m_info.texP->Copy (dxo, dyo, data);
 		else
-			bufP = m_info.texP->Convert (dxo, dyo, this, m_info.nTranspType, superTransp);
+			bufP = m_info.texP->Convert (dxo = 0, dyo = 0, this, m_info.nTranspType, superTransp);
+		if (gameOpts->render.bCartoonStyle) {
+			int32_t w = Width () - dxo;
+			int32_t h = Height () - dxo;
+			bufP = GaussianBlur (bufP, ogl.m_data.buffer [1], w, h, (w >= 512) ? 15 : (w >= 256) ? 11 : (w >= 128) ? 7 : 3);
 		}
 #if TEXTURE_COMPRESSION
 	m_info.texP->Load (bufP, m_info.compressed.buffer.Size (), m_info.compressed.nFormat, m_info.compressed.bCompressed);

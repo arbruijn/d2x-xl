@@ -84,14 +84,14 @@ typedef union tWindowScale {
 typedef struct tClientBuffer {
 	const GLvoid*	buffer;
 	const char*		pszFile;
-	int32_t				nLine;
+	int32_t			nLine;
 } tClientBuffer;
 
 #endif
 
 class COglData {
 	public:
-		GLubyte			buffer [OGLTEXBUFSIZE];
+		GLubyte			buffer [2][OGLTEXBUFSIZE];
 		CPalette*		palette;
 		float				zNear;
 		float				zFar;
@@ -259,7 +259,7 @@ class COglBuffers {
 		CArray<tTexCoord2f>		texCoord [2];
 		CArray<CFloatVector>		color;
 		CUShortArray				indices;
-		int32_t							m_nVertices;
+		int32_t						m_nVertices;
 
 	public:
 		COglBuffers () { 
