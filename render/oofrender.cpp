@@ -133,7 +133,7 @@ return pso->m_faces.m_nFaces;
 int32_t OOF_GetSilhouette (CSubModel *pso)
 {
 	CEdge		*pe;
-	int32_t				h, i, j;
+	int32_t	h, i, j;
 
 OOF_GetLitFaces (pso);
 for (h = j = 0, i = pso->m_edges.m_nEdges, pe = pso->m_edges.m_list.Buffer (); i; i--, pe++) {

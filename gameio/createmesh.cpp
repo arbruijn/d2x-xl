@@ -1661,9 +1661,9 @@ return nEdges;
 
 //------------------------------------------------------------------------------
 
-CEdge *CSegmentData::FindEdge (int16_t nVertex1, int16_t nVertex2)
+CGeoEdge *CSegmentData::FindEdge (int16_t nVertex1, int16_t nVertex2)
 {
-	CEdge	*edgeP = gameData.segData.edges.Buffer ();
+	CGeoEdge	*edgeP = gameData.segData.edges.Buffer ();
 
 for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++)
 	if ((edgeP->m_nVertices [0] == nVertex1) && (edgeP->m_nVertices [1] == nVertex2))
@@ -1677,7 +1677,7 @@ int32_t CSegmentData::AddEdge (int16_t nSegment, int16_t nSide, int16_t nVertex1
 {
 if (nVertex1 > nVertex2)
 	Swap (nVertex1, nVertex2);
-CEdge *edgeP = FindEdge (nVertex1, nVertex2);
+CGeoEdge *edgeP = FindEdge (nVertex1, nVertex2);
 
 int32_t i;
 

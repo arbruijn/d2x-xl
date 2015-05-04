@@ -2065,7 +2065,7 @@ class CEdgeFaceInfo {
 		CFixVector	m_vNormal;
 	};
 
-class CEdge {
+class CGeoEdge {
 	public:
 		CEdgeFaceInfo	m_faces [2];
 		int16_t			m_nVertices [2];
@@ -2081,7 +2081,7 @@ class CSegmentData {
 		CArray<tVertexOwner>		vertexOwners;
 		CArray<CSegment>			segments;
 		CArray<tSegFaces>			segFaces;
-		CArray<CEdge>				edges;
+		CArray<CGeoEdge>			edges;
 		CArray<fix>					segDists;
 		CSkyBox						skybox;
 		CSegmentGrid				grids [2];
@@ -2194,7 +2194,7 @@ class CSegmentData {
 		inline bool HaveGrid (int32_t bSkyBox) { return grids [bSkyBox].Available (); }
 
 		int32_t CountEdges (void);
-		CEdge *FindEdge (int16_t nVertex1, int16_t nVertex2);
+		CGeoEdge *FindEdge (int16_t nVertex1, int16_t nVertex2);
 		int32_t AddEdge (int16_t nSegment, int16_t nSide, int16_t nVertex1, int16_t nVertex2);
 		int32_t BuildEdgeList (void);
 	};
