@@ -713,33 +713,31 @@ void G3DrawModel (CObject *objP, int16_t nModel, int16_t nSubModel, CArray<CBitm
 
 ogl.SetupTransform (1);
 
-if (!bEdges) {
-	if (bLighting) {
-		nLights = sliP->nActive;
-		if (nLights > gameStates.render.nMaxLightsPerObject)
-			nLights = gameStates.render.nMaxLightsPerObject;
-		ogl.EnableLighting (0);
-		}
-	else
-		nLights = 1;
-	ogl.SetBlending (true);
-	ogl.SetDepthWrite (false);
-	if (bEmissive || (bTranspFilter == 2))
-		ogl.SetBlendMode (OGL_BLEND_ADD);
-	else if (gameStates.render.bCloaked)
-		ogl.SetBlendMode (OGL_BLEND_ALPHA);
-	else if (bTranspFilter)
-		ogl.SetBlendMode (OGL_BLEND_ALPHA);
-	else {
-		ogl.SetBlendMode (OGL_BLEND_REPLACE);
-		ogl.SetDepthWrite (true);
-		}
-
-	if (!bLighting || (sliP->nLast < 0))
-		nLightRange = 0;
-	else
-		nLightRange = sliP->nLast - sliP->nFirst + 1;
+if (bLighting) {
+	nLights = sliP->nActive;
+	if (nLights > gameStates.render.nMaxLightsPerObject)
+		nLights = gameStates.render.nMaxLightsPerObject;
+	ogl.EnableLighting (0);
 	}
+else
+	nLights = 1;
+ogl.SetBlending (true);
+ogl.SetDepthWrite (false);
+if (bEmissive || (bTranspFilter == 2))
+	ogl.SetBlendMode (OGL_BLEND_ADD);
+else if (gameStates.render.bCloaked)
+	ogl.SetBlendMode (OGL_BLEND_ALPHA);
+else if (bTranspFilter)
+	ogl.SetBlendMode (OGL_BLEND_ALPHA);
+else {
+	ogl.SetBlendMode (OGL_BLEND_REPLACE);
+	ogl.SetDepthWrite (true);
+	}
+
+if (!bLighting || (sliP->nLast < 0))
+	nLightRange = 0;
+else
+	nLightRange = sliP->nLast - sliP->nFirst + 1;
 
 for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	if (bLighting) {
@@ -1040,10 +1038,9 @@ else {
 		gameData.models.thrusters [nModel].nCount = -gameData.models.thrusters [nModel].nCount;
 	if ((objP->info.nType != OBJ_DEBRIS) && bHires && modelP->m_bHasTransparency)
 		transparencyRenderer.AddObject (objP);
+	if (gameOpts->render.bCartoonStyle)
+		G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles, 1);
 	}
-
-if (gameOpts->render.bCartoonStyle)
-	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles, 1);
 
 gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 
