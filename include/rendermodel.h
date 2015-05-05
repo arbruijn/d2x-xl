@@ -100,7 +100,6 @@ class CModelEdge : public CGeoEdge {
 		virtual int32_t Type (void);
 		virtual CFloatVector& Normal (int32_t i);
 		virtual CFloatVector& Vertex (int32_t i);
-		void Setup (void);
 	};
 
 

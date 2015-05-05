@@ -170,7 +170,7 @@ int32_t OOF_DrawShadowVolume (CModel *po, CSubModel *pso, int32_t bCullFront)
 if (bCullFront && ogl.m_features.bSeparateStencilOps.Available ())
 	return 1;
 
-	OOF:CEdge		*pe;
+	OOF::CEdge		*pe;
 	CFloatVector	*modelVertP;
 	int32_t			nVerts, nEdges;
 

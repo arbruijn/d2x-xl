@@ -844,7 +844,6 @@ if (!gameData.segData.edgeVertices.Buffer ())
 	CFloatVector	vViewer;
 	int32_t			nVisibleSegs = gameData.render.mine.visibility [0].nSegments;
 	CShortArray&	visibleSegs = gameData.render.mine.visibility [0].segments;
-	CFloatVector	vertices [2];
 	int32_t			nVertices [2] = { 0, gameData.segData.nEdges };
 
 vViewer.Assign (gameData.objData.viewerP->Position ());
