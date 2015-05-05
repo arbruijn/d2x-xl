@@ -2063,6 +2063,8 @@ class CEdgeFaceInfo {
 		int16_t			m_nItem;		// segment / (sub) model id
 		int16_t			m_nFace;
 		CFloatVector	m_vNormal;
+
+		CEdgeFaceInfo () : m_nItem (-1), m_nFace (-1), m_vNormal (CFloatVector::ZERO) {}
 	};
 
 class CGeoEdge {
@@ -2075,7 +2077,9 @@ class CGeoEdge {
 		float				m_fOffset;
 		CFloatVector	m_vOffset;
 
-		CGeoEdge () : m_fDot (0.0f), m_fScale (-1.0f), m_fSplit (0.0f), m_fOffset (0.0f) {}
+		CGeoEdge () : m_fDot (0.0f), m_fScale (-1.0f), m_fSplit (0.0f), m_fOffset (0.0f) {
+			m_nVertices [0] = m_nVertices [1] = -1;
+			}
 		void Setup (void);
 		virtual int32_t Visibility (void);
 		virtual int32_t Type (void);

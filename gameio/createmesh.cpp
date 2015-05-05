@@ -1740,7 +1740,6 @@ int32_t CSegmentData::BuildEdgeList (void)
 {
 if (!gameData.segData.edges.Create (CountEdges ()))
 	return -1;
-gameData.segData.edges.Clear (0xff);
 
 CSegment	*segP = gameData.Segment (0);
 gameData.segData.nEdges = 0;
