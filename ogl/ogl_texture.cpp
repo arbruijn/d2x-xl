@@ -45,35 +45,42 @@ CStack< char* > texIds;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+static inline int32_t Wrap (int32_t i, int32_t l)
+{
+if (i < 0)
+	return i + l;
+return i % l;
+}
+
+//------------------------------------------------------------------------------
+
 static void HBoxBlurRGBA (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
 {
-	int32_t o [2] = { -(r + 1) * tw, r * tw };
-
 int32_t i = 0;
 for (int32_t y = 0; y < h; y++) {
-	int32_t hits = 0;
+	int32_t hits = 2 * r + 1;
 	int32_t acc [3] = { 0, 0, 0 };
 	for (int32_t x = -r; x < w; x++) {
-		int32_t j = x - r - 1;
-		if (j >= 0) {
-			tRGBA& color = src [i + o [0]];
+		int32_t j = Wrap (x - r, w);
+		if (x > 0) {
+			tRGBA& color = src [i + j];
 			if (color.r | color.g | color.b) {
 				acc [0] -= (int32_t) color.r;
 				acc [1] -= (int32_t) color.g;
 				acc [2] -= (int32_t) color.b;
 				}
-			hits--;
+			//hits--;
 			}
  
-		j = x + r;
+		j = Wrap (x + r, w);
 		if (j < w) {
-			tRGBA& color = src [i + o [1]];
+			tRGBA& color = src [i + j];
 			if (color.r | color.g | color.b) {
 				acc [0] += (int32_t) color.r;
 				acc [1] += (int32_t) color.g;
 				acc [2] += (int32_t) color.b;
 				}
-			hits++;
+			//hits++;
 			}
  
 		if (x >= 0) {
@@ -92,32 +99,34 @@ for (int32_t y = 0; y < h; y++) {
 
 static void VBoxBlurRGBA (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
 {
+	int32_t o [2] = { -(r + 1) * tw, r * tw };
+
 for (int32_t x = 0; x < w; x++) {
-	int32_t hits = 0;
+	int32_t hits = 2 * r + 1;
 	int32_t acc [3] = { 0, 0, 0 };
 
 	int32_t i = -r * tw + x;
 	for (int32_t y = -r; y < h; y++) {
-		int32_t j = y - r - 1;
-		if (j >= 0) {
-			tRGBA& color = src [i + j];
+		int32_t j = Wrap (y - r, h);
+		if (y > 0) {
+			tRGBA& color = src [i + o [0]];
 			if (color.r | color.g | color.b) {
 				acc [0] -= (int32_t) color.r;
 				acc [1] -= (int32_t) color.g;
 				acc [2] -= (int32_t) color.b;
 				}
-			hits--;
+			//hits--;
 			}
  
-		j = y + r;
+		j = Wrap (y + r, h);
 		if (j < h) {
-			tRGBA& color = src [i + j];
+			tRGBA& color = src [i + o [1]];
 			if (color.r | color.g | color.b) {
 				acc [0] += (int32_t) color.r;
 				acc [1] += (int32_t) color.g;
 				acc [2] += (int32_t) color.b;
 				}
-			hits++;
+			//hits++;
 			}
  
 		if (y >= 0) {
@@ -134,70 +143,25 @@ for (int32_t x = 0; x < w; x++) {
 
 //------------------------------------------------------------------------------
 
-static void VBoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
-{
-	int32_t o [2] = { -(r + 1) * tw, r * tw };
-
-for (int32_t x = 0; x < w; x++) {
-	int32_t hits = 0;
-	int32_t acc [3] = { 0, 0, 0 };
-
-	int32_t i = -r * tw + x;
-	for (int32_t y = -r; y < h; y++) {
-		int32_t j = y - r - 1;
-		if (j >= 0) {
-			tRGB& color = src [i + o [0]];
-			if (color.r | color.g | color.b) {
-				acc [0] -= (int32_t) color.r;
-				acc [1] -= (int32_t) color.g;
-				acc [2] -= (int32_t) color.b;
-				}
-			hits--;
-			}
- 
-		j = y + r;
-		if (j < h) {
-			tRGB& color = src [i + o [1]];
-			if (color.r | color.g | color.b) {
-				acc [0] += (int32_t) color.r;
-				acc [1] += (int32_t) color.g;
-				acc [2] += (int32_t) color.b;
-				}
-			hits++;
-			}
- 
-		if (y >= 0) {
-			tRGB& color = dest [y * tw + x];
-			color.r = uint8_t (acc [0] / hits);
-			color.g = uint8_t (acc [1] / hits);
-			color.b = uint8_t (acc [2] / hits);
-			}
-		i += tw;
-		}
-	}
-}
-
-//------------------------------------------------------------------------------
-
 static void HBoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
 {
 int32_t i = 0;
 for (int32_t y = 0; y < h; y++) {
-	int32_t hits = 0;
+	int32_t hits = 2 * r + 1;
 	int32_t acc [3] = { 0, 0, 0 };
 	for (int32_t x = -r; x < w; x++) {
-		int32_t j = x - r - 1;
-		if (j >= 0) {
+		int32_t j = Wrap (x - r, w);
+		if (x > 0) {
 			tRGB& color = src [i + j];
 			if (color.r | color.g | color.b) {
 				acc [0] -= (int32_t) color.r;
 				acc [1] -= (int32_t) color.g;
 				acc [2] -= (int32_t) color.b;
 				}
-			hits--;
+			//hits--;
 			}
  
-		j = x + r;
+		j = Wrap (x + r, w);
 		if (j < w) {
 			tRGB& color = src [i + j];
 			if (color.r | color.g | color.b) {
@@ -205,7 +169,7 @@ for (int32_t y = 0; y < h; y++) {
 				acc [1] += (int32_t) color.g;
 				acc [2] += (int32_t) color.b;
 				}
-			hits++;
+			//hits++;
 			}
  
 		if (x >= 0) {
@@ -216,6 +180,51 @@ for (int32_t y = 0; y < h; y++) {
 			}
 		}
 	i += tw;
+	}
+}
+
+//------------------------------------------------------------------------------
+
+static void VBoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
+{
+	int32_t o [2] = { -(r + 1) * tw, r * tw };
+
+for (int32_t x = 0; x < w; x++) {
+	int32_t hits = 2 * r + 1;
+	int32_t acc [3] = { 0, 0, 0 };
+
+	int32_t i = -r * tw + x;
+	for (int32_t y = -r; y < h; y++) {
+		int32_t j = Wrap (y - r, h);
+		if (y > 0) {
+			tRGB& color = src [i + o [0]];
+			if (color.r | color.g | color.b) {
+				acc [0] -= (int32_t) color.r;
+				acc [1] -= (int32_t) color.g;
+				acc [2] -= (int32_t) color.b;
+				}
+			//hits--;
+			}
+ 
+		j = Wrap (y + r, h);
+		if (j < h) {
+			tRGB& color = src [i + o [1]];
+			if (color.r | color.g | color.b) {
+				acc [0] += (int32_t) color.r;
+				acc [1] += (int32_t) color.g;
+				acc [2] += (int32_t) color.b;
+				}
+			//hits++;
+			}
+ 
+		if (y >= 0) {
+			tRGB& color = dest [y * tw + x];
+			color.r = uint8_t (acc [0] / hits);
+			color.g = uint8_t (acc [1] / hits);
+			color.b = uint8_t (acc [2] / hits);
+			}
+		i += tw;
+		}
 	}
 }
 
@@ -232,7 +241,7 @@ HBoxBlurRGBA (src, dest, w, h, tw, th, r);
 void BoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r) 
 {
 HBoxBlurRGB (src, dest, w, h, tw, th, r);
-VBoxBlurRGB (dest, src, w, h, tw, th, r);
+//VBoxBlurRGB (dest, src, w, h, tw, th, r);
 }
 
 //------------------------------------------------------------------------------
