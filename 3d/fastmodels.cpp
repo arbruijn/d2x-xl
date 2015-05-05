@@ -566,7 +566,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 		glColor4f (0, 0, 0, gameStates.render.grAlpha);
 	if (bEdges) {
 		RenderModel::CModelEdge* edgeP = subModelP->m_edges.Buffer ();
-		int32_t nVertices [2] = { 0, 0 };
+		int32_t nVertices [2] = { 0, gameData.segData.nEdges };
 		for (i = subModelP->m_nEdges; i; edgeP++) 
 			edgeP->Render (CFloatVector::ZERO, nVertices);
 		RenderOutline (nVertices);
