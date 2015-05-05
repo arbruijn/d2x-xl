@@ -107,7 +107,9 @@ for (int32_t i = 0; i < 2; i++) {
 
 int32_t CModelEdge::IsFacingViewer (int16_t nFace)
 {
-return CFloatVector::Dot (m_vertices [1][0], m_normals [1][nFace]) < 0.0f;
+CFloatVector v = m_vertices [1][0];
+CFloatVector::Normalize (v);
+return CFloatVector::Dot (v, m_normals [1][nFace]) < 0.0f;
 }
 
 //------------------------------------------------------------------------------
@@ -457,6 +459,7 @@ if (v1 > v2)
 int32_t i = FindEdge (v1, v2);
 if (i >= 0) {
 	CModelEdge *edgeP = m_edges + i;
+	edgeP->m_nFaces = 2;
 	edgeP->m_normals [0][1].Assign (faceP->m_vNormalf [0]);
 	if (faceP->m_faceWinding == GL_CW)
 		edgeP->m_normals [0][1].Neg ();
@@ -464,6 +467,7 @@ if (i >= 0) {
 	}
 else {
 	CModelEdge *edgeP = m_edges + m_nEdges++;
+	edgeP->m_nFaces = 1;
 	edgeP->m_nVertices [0] = v1;
 	edgeP->m_nVertices [1] = v2;
 	edgeP->m_vertices [0][0].Assign (modelP->m_vertices [v1]);

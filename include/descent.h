@@ -2070,14 +2070,15 @@ class CEdgeFaceInfo {
 class CGeoEdge {
 	public:
 		CEdgeFaceInfo	m_faces [2];
-		int16_t			m_nVertices [2];
+		int32_t			m_nVertices [2];
+		int16_t			m_nFaces;
 		float				m_fDot;
 		float				m_fScale;
 		float				m_fSplit;
 		float				m_fOffset;
 		CFloatVector	m_vOffset;
 
-		CGeoEdge () : m_fDot (0.0f), m_fScale (-1.0f), m_fSplit (0.0f), m_fOffset (0.0f) {
+		CGeoEdge () : m_nFaces (0), m_fDot (0.0f), m_fScale (-1.0f), m_fSplit (0.0f), m_fOffset (0.0f) {
 			m_nVertices [0] = m_nVertices [1] = -1;
 			}
 		void Setup (void);

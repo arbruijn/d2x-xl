@@ -786,6 +786,9 @@ return gameData.segData.fVertices [m_nVertices [i]];
 
 void CGeoEdge::Render (CFloatVector vViewer, int32_t nVertices [])
 {
+if (m_nFaces < 2)
+	return;
+
 int32_t nType = Type ();
 if (nType < 0)
 	return;

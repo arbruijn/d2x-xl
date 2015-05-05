@@ -88,7 +88,6 @@ inline int32_t operator- (RenderModel::CFace* f, CArray<RenderModel::CFace>& a) 
 
 class CModelEdge : public CGeoEdge {
 	public:
-		uint16_t			m_nVertices [2];
 		CFloatVector	m_vertices [2][2];
 		CFloatVector	m_normals [2][2];
 

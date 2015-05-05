@@ -1711,7 +1711,9 @@ CGeoEdge *edgeP = FindEdge (nVertex1, nVertex2);
 int32_t i;
 
 if (edgeP) {
-	if (edgeP->m_faces [1].m_nItem >= 0) {
+	if (edgeP->m_nFaces < 2) 
+		edgeP->m_nFaces = 2;
+	else {
 		CGeoEdge *newEdgeP = &gameData.segData.edges [gameData.segData.nEdges++];
 		memcpy (newEdgeP, edgeP, sizeof (CGeoEdge));
 		edgeP = newEdgeP;
@@ -1723,6 +1725,7 @@ else {
 	edgeP = &gameData.segData.edges [gameData.segData.nEdges++];
 	edgeP->m_nVertices [0] = nVertex1;
 	edgeP->m_nVertices [1] = nVertex2;
+	edgeP->m_nFaces = 1;
 	}
 edgeP->m_faces [i].m_nItem = nSegment;
 edgeP->m_faces [i].m_nFace = nSide;
