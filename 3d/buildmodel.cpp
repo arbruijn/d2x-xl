@@ -92,6 +92,8 @@ if (!m_bTransformed) {
 }
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 void CModelEdge::Transform (void)
 {
@@ -105,7 +107,7 @@ for (int32_t i = 0; i < 2; i++) {
 
 int32_t CModelEdge::IsFacingViewer (int16_t nFace)
 {
-return CFloatVector3::Dot (m_vertices [1][0], m_normals [1][nFace]) >= 0;
+return CFloatVector::Dot (m_vertices [1][0], m_normals [1][nFace]) >= 0;
 }
 
 //------------------------------------------------------------------------------
@@ -131,6 +133,20 @@ int32_t CModelEdge::Type (void)
 {
 int32_t h = Visibility ();
 return ((h == 0) ? -1 : (h != 3) ? 0 : (m_fDot > 0.97f) ? -1 : 1);
+}
+
+//------------------------------------------------------------------------------
+
+CFloatVector& CModelEdge::Normal (int32_t i)
+{
+return m_normals [0][i];
+}
+
+//------------------------------------------------------------------------------
+
+CFloatVector& CModelEdge::Vertex (int32_t i)
+{
+return m_vertices [1][i];
 }
 
 //------------------------------------------------------------------------------
@@ -441,16 +457,16 @@ if (v1 > v2)
 int32_t i = FindEdge (v1, v2);
 if (i >= 0) {
 	CModelEdge *edgeP = m_edges + i;
-	edgeP->m_normals [0][1] = faceP->m_vNormalf [0];
-	edgeP->m_fDot = fabs (CFloatVector3::Dot (edgeP->m_normals [0][0], edgeP->m_normals [0][1]));
+	edgeP->m_normals [0][1].Assign (faceP->m_vNormalf [0]);
+	edgeP->Setup ();
 	}
 else {
 	CModelEdge *edgeP = m_edges + m_nEdges++;
 	edgeP->m_nVertices [0] = v1;
 	edgeP->m_nVertices [1] = v2;
-	edgeP->m_vertices [0][0] = modelP->m_vertices [v1];
-	edgeP->m_vertices [0][1] = modelP->m_vertices [v2];
-	edgeP->m_normals [0][0] = faceP->m_vNormalf [0];
+	edgeP->m_vertices [0][0].Assign (modelP->m_vertices [v1]);
+	edgeP->m_vertices [0][1].Assign (modelP->m_vertices [v2]);
+	edgeP->m_normals [0][0].Assign (faceP->m_vNormalf [0]);
 	}
 }
 
@@ -462,7 +478,7 @@ bool CSubModel::BuildEdgeList (CModel* modelP)
 
 m_nEdges = 0;
 for (uint16_t i = 0; i < m_nFaces; i++, faceP++)
-	m_nEdges += faceP->m_nVerts - 1;
+	m_nEdges += faceP->m_nVerts;
 if (!(m_edges.Create (m_nEdges)))
 	return false;
 
@@ -511,6 +527,7 @@ for (i = 0; i < m_nSubModels; i++) {
 		if (bSort) {
 			psm->SortFaces (textureP);
 			psm->GatherVertices (m_faceVerts, m_sortedVerts);
+			psm->BuildEdgeList (this);
 			}
 		pfi = psm->m_faces;
 		pfi->SetTexture (textureP);

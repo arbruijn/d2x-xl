@@ -44,6 +44,13 @@ return gameStates.render.bRendering ? m_rotNorms [nFace] : m_normals [nFace];
 }
 
 // ------------------------------------------------------------------------------------------
+
+CFloatVector& CSide::Normalf (int32_t nFace)
+{ 
+return m_fNormals [nFace]; 
+}
+
+// ------------------------------------------------------------------------------------------
 // Compute the center point of a CSide of a CSegment.
 //	The center point is defined to be the average of the 4 points defining the CSide.
 void CSide::ComputeCenter (void)

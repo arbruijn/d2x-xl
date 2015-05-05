@@ -270,6 +270,7 @@ class CSide {
 		CFixVector& Vertex (int32_t nVertex);
 		CFixVector& MinVertex (void);
 		CFixVector& Normal (int32_t nFace);
+		CFloatVector& Normalf (int32_t nFace);
 		fix Height (void);
 		bool IsPlanar (void);
 		uint8_t Dist (const CFixVector& point, fix& xSideDist, int32_t bBehind, int16_t sideBit);

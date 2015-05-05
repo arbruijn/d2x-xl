@@ -73,6 +73,7 @@ void RenderStartFrame (void);
 void SetupRenderView (fix xStereoSeparation, int16_t *nStartSegP, int32_t bOglScale);
 
 void RenderMine (int16_t nStartSeg, fix xStereoSeparation, int32_t nWindow);
+void RenderOutline (int32_t nVertices []);
 void RenderShadowQuad (void);
 void UpdateRenderedData (int32_t window_num, CObject *viewer, int32_t rearViewFlag, int32_t user);
 void RenderObjList (int32_t nListPos, int32_t nWindow);

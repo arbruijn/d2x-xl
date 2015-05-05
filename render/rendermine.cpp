@@ -740,19 +740,99 @@ if (bCockpit && bHave3DCockpit && (gameStates.render.cockpit.nType == CM_FULL_CO
 }
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
-void RenderSegmentOutline (void)
+int32_t CGeoEdge::Visibility (void)
 {
-ogl.SetCullMode ((gameStates.render.bRearView < 0) ? GL_BACK : GL_FRONT);
-glPolygonMode (GL_BACK, GL_LINE);       // Draw Backfacing Polygons As Wireframes
-glLineWidth (4.0);         // Set The Line Width
-ogl.SetDepthMode (GL_LEQUAL);            // Change The Depth Mode
-glColor3f (0, 0, 0);   
-RenderSegmentList (RENDER_TYPE_OUTLINE);
-ogl.SetCullMode ((gameStates.render.bRearView < 0) ? GL_FRONT : GL_BACK);
-glPolygonMode (GL_BACK, GL_FILL);       // Draw Backfacing Polygons As Wireframes
+	CFloatVector		vViewDir, vViewer;
+	
+vViewer.Assign (gameData.objData.viewerP->Position ());
+
+int32_t nVisible = 0;
+vViewDir = vViewer - Vertex (0);
+for (int32_t j = 0; j < 2; j++) {
+	CFloatVector::Normalize (vViewDir);
+	float dot = CFloatVector::Dot (vViewDir, Normal (j));
+	if (dot >= 0.0f)
+		nVisible |= 1 << j;
+	}
+return nVisible;
 }
 
+//------------------------------------------------------------------------------
+
+int32_t CGeoEdge::Type (void)
+{
+int32_t h = Visibility ();
+return ((h == 0) ? -1 : (h != 3) ? 0 : (m_fDot > 0.97f) ? -1 : 1);
+}
+
+//------------------------------------------------------------------------------
+
+CFloatVector& CGeoEdge::Normal (int32_t i)
+{
+return m_faces [i].m_vNormal;
+}
+
+//------------------------------------------------------------------------------
+
+CFloatVector& CGeoEdge::Vertex (int32_t i)
+{
+return gameData.segData.fVertices [m_nVertices [i]];
+}
+
+//------------------------------------------------------------------------------
+
+void CGeoEdge::Render (CFloatVector vViewer, int32_t nVertices [])
+{
+int32_t nType = Type ();
+if (nType < 0)
+	return;
+
+int32_t bSplit = m_fSplit != 0.0f;
+
+CFloatVector vertices [2];
+
+for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
+	for (int32_t j = 0; j < 2; j++) {
+		vertices [j] = Vertex (j);
+		CFloatVector v;
+		if (j && nType && (m_fDot > 0.9f)) {
+			v = vertices [1];
+			v -= vertices [0];
+			v *= m_fScale;
+			if (bSplit) { // if outline is split, each partial outline starts at one of the edge's vertices
+				v *= h ? 1.0f - m_fSplit : m_fSplit;
+				if (h == 1) 
+					vertices [0] = vertices [1] - v;
+				else
+					vertices [1] = vertices [0] + v;
+				}
+			else { // otherwise the outline is offset from the edge's start vertex
+				vertices [1] = vertices [0] + v;
+				vertices [0] += m_vOffset;
+				vertices [1] += m_vOffset;
+				}
+			}
+		}
+
+	for (int32_t j = 0; j < 2; j++) {
+		CFloatVector v = vViewer;	// pull a bit closer to viewer to avoid z fighting with related polygon
+		v -= vertices [j];
+		float l = CFloatVector::Normalize (v);
+		v /= sqrt (sqrt (l));
+		v += vertices [j]; 
+		if (nType) 
+			gameData.segData.edgeVertices [--nVertices [1]] = v;
+		else
+			gameData.segData.edgeVertices [nVertices [0]++] = v;
+		}
+	}
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
 void RenderEdges (void)
@@ -761,12 +841,13 @@ if (!gameData.segData.edgeVertices.Buffer ())
 	return;
 
 	CGeoEdge			*edgeP = gameData.segData.edges.Buffer ();
-	CFixVector		vViewDir, vViewer = gameData.objData.viewerP->Position ();
+	CFloatVector	vViewer;
 	int32_t			nVisibleSegs = gameData.render.mine.visibility [0].nSegments;
 	CShortArray&	visibleSegs = gameData.render.mine.visibility [0].segments;
 	CFloatVector	vertices [2];
 	int32_t			nVertices [2] = { 0, gameData.segData.nEdges };
-	float				nLineWidths [2] = { automap.Active () ? 6.0f : 12.0f, automap.Active () ? 4.0f : 8.0f };
+
+vViewer.Assign (gameData.objData.viewerP->Position ());
 
 for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 	int32_t nVisible = 0;
@@ -784,70 +865,21 @@ for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 	if (!nVisible)
 		continue;
 
-	nVisible = 0;
-	vViewDir = vViewer - gameData.segData.vertices [edgeP->m_nVertices [0]];
-	for (int32_t j = 0; j < 2; j++) {
-		CFixVector::Normalize (vViewDir);
-		fix dot = CFixVector::Dot (vViewDir, edgeP->m_faces [j].m_vNormal);
-		if (dot >= 0)
-			nVisible |= 1 << j;
-		}
-	if (!nVisible)
-		continue;
-
-	int32_t nType = nVisible == 3;
-	if (nType && (edgeP->m_dot > 63500)) // don't draw a line at flat angles
-			continue;
-
-	int32_t bSplit = edgeP->m_fSplit != 0.0f;
-
-#if 0
-	if (!nType || !bSplit || !(dot > 60000))
-		continue;
-#endif
-
-	for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
-		for (int32_t j = 0; j < 2; j++) {
-			vertices [j] = gameData.segData.fVertices [edgeP->m_nVertices [j]];
-			CFloatVector v;
-#if 1
-			if (j && nType && (edgeP->m_dot > 60000)) {
-				v = vertices [1];
-				v -= vertices [0];
-				v *= edgeP->m_fScale;
-				if (bSplit) { // if outline is split, each partial outline starts at one of the edge's vertices
-					v *= h ? 1.0f - edgeP->m_fSplit : edgeP->m_fSplit;
-					if (h == 1) 
-						vertices [0] = vertices [1] - v;
-					else
-						vertices [1] = vertices [0] + v;
-					}
-				else { // otherwise the outline is offset from the edge's start vertex
-					vertices [1] = vertices [0] + v;
-					vertices [0] += edgeP->m_vOffset;
-					vertices [1] += edgeP->m_vOffset;
-					}
-				}
-#endif
-			}
-
-		for (int32_t j = 0; j < 2; j++) {
-			CFloatVector v;	// pull a bit closer to viewer to avoid z fighting with related polygon
-			v.Assign (vViewer - vertices [j]);
-			float l = CFloatVector::Normalize (v);
-			v /= sqrt (sqrt (l));
-			v += vertices [j]; 
-			if (nType) 
-				gameData.segData.edgeVertices [--nVertices [1]] = v;
-			else
-				gameData.segData.edgeVertices [nVertices [0]++] = v;
-			}
-		}
+	edgeP->Render (vViewer, nVertices);
 	}
+RenderOutline (nVertices);
+}
+
+//------------------------------------------------------------------------------
+
+void RenderOutline (int32_t nVertices [])
+{
+float	nLineWidths [2] = { automap.Active () ? 6.0f : 12.0f, automap.Active () ? 4.0f : 8.0f };
 
 ogl.SetBlendMode (GL_LEQUAL);
 ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 ogl.SetTexturing (false);
+ogl.SetLineSmooth (true);
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), gameData.segData.edgeVertices.Buffer ());
 #if 1
 glColor3f (0.01f, 0.01f, 0.01f);
@@ -859,7 +891,6 @@ glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
 ogl.SetupTransform (1);
 
 int32_t bGlow = glowRenderer.Available (BLUR_OUTLINE);
-
 for (int32_t j = 0; j < 2; j++) {
 	int32_t h = j ? gameData.segData.nEdges - nVertices [1] : nVertices [0];
 	if (h) {

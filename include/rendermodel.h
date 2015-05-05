@@ -86,19 +86,21 @@ class CFace : public CContourInfo {
 
 inline int32_t operator- (RenderModel::CFace* f, CArray<RenderModel::CFace>& a) { return a.Index (f); }
 
-class CModelEdge {
+class CModelEdge : public CGeoEdge {
 	public:
 		uint16_t			m_nVertices [2];
-		CFloatVector3	m_vertices [2][2];
-		CFloatVector3	m_normals [2][2];
-		float				m_fDot;
+		CFloatVector	m_vertices [2][2];
+		CFloatVector	m_normals [2][2];
 
 	public:
 		void Transform (void);
 		int32_t IsFacingViewer (int16_t nFace);
 		int32_t IsContour (void);
-		int32_t Visibility (void);
-		int32_t Type (void);
+		virtual int32_t Visibility (void);
+		virtual int32_t Type (void);
+		virtual CFloatVector& Normal (int32_t i);
+		virtual CFloatVector& Vertex (int32_t i);
+		void Setup (void);
 	};
 
 

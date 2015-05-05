@@ -2060,22 +2060,28 @@ typedef struct tVertexOwner {
 
 class CEdgeFaceInfo {
 	public:
-		int16_t		m_nItem;		// segment / (sub) model id
-		int16_t		m_nFace;
-		CFixVector	m_vNormal;
+		int16_t			m_nItem;		// segment / (sub) model id
+		int16_t			m_nFace;
+		CFloatVector	m_vNormal;
 	};
 
 class CGeoEdge {
 	public:
 		CEdgeFaceInfo	m_faces [2];
 		int16_t			m_nVertices [2];
-		fix				m_dot;
+		float				m_fDot;
 		float				m_fScale;
 		float				m_fSplit;
+		float				m_fOffset;
 		CFloatVector	m_vOffset;
 
-		CGeoEdge () : m_dot (0), m_fScale (-1.0f), m_fSplit (0.0f) {}
+		CGeoEdge () : m_fDot (0.0f), m_fScale (-1.0f), m_fSplit (0.0f), m_fOffset (0.0f) {}
 		void Setup (void);
+		virtual int32_t Visibility (void);
+		virtual int32_t Type (void);
+		virtual CFloatVector& Normal (int32_t i);
+		virtual CFloatVector& Vertex (int32_t i);
+		void Render (CFloatVector vViewer, int32_t nVertices []);
 	};
 
 //------------------------------------------------------------------------------
