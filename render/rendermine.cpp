@@ -887,7 +887,8 @@ glColor3f (1,1,1);
 #endif
 
 glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
-ogl.SetupTransform (1);
+if (gameStates.render.nType = RENDER_TYPE_GEOMETRY)
+	ogl.SetupTransform (1);
 
 int32_t bGlow = glowRenderer.Available (BLUR_OUTLINE);
 for (int32_t j = 0; j < 2; j++) {
@@ -898,7 +899,8 @@ for (int32_t j = 0; j < 2; j++) {
 		}
 	}
 ogl.DisableClientStates (0, 0, 0);
-ogl.ResetTransform (1);
+if (gameStates.render.nType = RENDER_TYPE_GEOMETRY)
+	ogl.ResetTransform (1);
 glowRenderer.End ();
 }
 
