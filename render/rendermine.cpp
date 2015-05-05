@@ -840,6 +840,8 @@ void RenderEdges (void)
 if (!gameData.segData.edgeVertices.Buffer ())
 	return;
 
+gameStates.render.nType = RENDER_TYPE_GEOMETRY;
+
 	CGeoEdge			*edgeP = gameData.segData.edges.Buffer ();
 	CFloatVector	vViewer;
 	int32_t			nVisibleSegs = gameData.render.mine.visibility [0].nSegments;
@@ -887,7 +889,7 @@ glColor3f (1,1,1);
 #endif
 
 glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
-if (gameStates.render.nType = RENDER_TYPE_GEOMETRY)
+if (gameStates.render.nType == RENDER_TYPE_GEOMETRY)
 	ogl.SetupTransform (1);
 
 int32_t bGlow = glowRenderer.Available (BLUR_OUTLINE);
@@ -899,7 +901,7 @@ for (int32_t j = 0; j < 2; j++) {
 		}
 	}
 ogl.DisableClientStates (0, 0, 0);
-if (gameStates.render.nType = RENDER_TYPE_GEOMETRY)
+if (gameStates.render.nType == RENDER_TYPE_GEOMETRY)
 	ogl.ResetTransform (1);
 glowRenderer.End ();
 }
