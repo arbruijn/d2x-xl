@@ -816,22 +816,31 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 		for (; iLight < 8; iLight++)
 			glDisable (GL_LIGHT0 + iLight);
 		}
-	transformation.Begin (posP->vPos, posP->mOrient);
+
 	modelP = gameData.models.renderModels [bHires] + nModel;
+
+	if (bEdges) {
+		if (bHires) {
+		for (int32_t i = 0; i < modelP->m_nSubModels; i++)
+				if (modelP->m_subModels [i].m_nParent == -1) 
+					G3TransformSubModel (objP, nModel, i, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
+												bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
+			}
+		else {
+			G3TransformSubModel (objP, nModel, 0, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
+										bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
+			}
+		}
+
+	transformation.Begin (posP->vPos, posP->mOrient);
 	if (bHires) {
 		for (int32_t i = 0; i < modelP->m_nSubModels; i++)
 			if (modelP->m_subModels [i].m_nParent == -1) {
-				if (bEdges)
-					G3TransformSubModel (objP, nModel, i, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
-												bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 				G3DrawSubModel (objP, nModel, i, nSubModel, modelBitmaps, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
 									 bHires, bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 				}
 		}
 	else {
-		if (bEdges)
-			G3TransformSubModel (objP, nModel, 0, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
-										bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 		G3DrawSubModel (objP, nModel, 0, nSubModel, modelBitmaps, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
 							 bHires, bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 		}
