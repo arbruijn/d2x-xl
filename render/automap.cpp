@@ -1146,14 +1146,14 @@ else {
 void CAutomap::DrawEdges (void)
 {
 	tRenderCodes	cc;
-	int32_t				i, j, nbright = 0;
-	uint8_t				nfacing, nnfacing;
+	int32_t			i, j, nbright = 0;
+	uint8_t			nfacing, nnfacing;
 	tEdgeInfo*		edgeP;
 	CFixVector		*tv1;
 	fix				distance;
 	fix				minDistance = 0x7fffffff;
 	CRenderPoint	*p1;
-	int32_t				bUseTransform = ogl.UseTransform ();
+	int32_t			bUseTransform = ogl.UseTransform ();
 	
 m_bDrawBuffers = ogl.SizeBuffers (1000);
 ogl.SetTransform (1);

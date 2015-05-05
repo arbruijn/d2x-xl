@@ -445,9 +445,9 @@ void G3TransformSubModel (CObject *objP, int16_t nModel, int16_t nSubModel, CAng
 	RenderModel::CSubModel*	subModelP = modelP->m_subModels + nSubModel;
 	CAngleVector				va = animAnglesP ? animAnglesP [subModelP->m_nAngles] : CAngleVector::ZERO;
 	CFixVector					vo;
-	int32_t						i, j;
+	int32_t						i, j, bTransform = ogl.UseTransform ();
 
-if (subModelP->m_bThruster) {
+if (subModelP->m_bThruster)
 	return;
 if (G3FilterSubModel (objP, subModelP, nGunId, nBombId, nMissileId, nMissiles))
 	return;
@@ -455,6 +455,7 @@ vo = subModelP->m_vOffset;
 if (!gameData.models.vScale.IsZero ())
 	vo *= gameData.models.vScale;
 #if 1
+ogl.SetTransform (0);
 if (vOffsetP) {
 	transformation.Begin (vo, va);
 	vo += *vOffsetP;
@@ -462,7 +463,7 @@ if (vOffsetP) {
 #endif
 if (bEdges) {
 	RenderModel::CModelEdge *edgeP = subModelP->m_edges.Buffer ();
-	for (i = 0; i < subModelP->m_nEdges; i++, edgeP++)
+	for (i = subModelP->m_nEdges; i; i--, edgeP++)
 		edgeP->Transform ();
 	}
 else {
@@ -476,11 +477,12 @@ else {
 		transformation.Transform (modelP->m_vertices [h], modelP->m_vertices [h]);
 		}
 	}
-for (i = 0, j = modelP->m_nSubModels, subModelP = modelP->m_subModels.Buffer (); i < j; i++, subModelP++)
+for (i = 0, j = modelP->m_nSubModels, subModelP = modelP->m_subModels.Buffer (); i < j; i++, subModelP++) {
 	if (subModelP->m_nParent == nSubModel)
 		G3TransformSubModel (objP, nModel, i, animAnglesP, &vo, bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 	}
 transformation.End ();
+ogl.SetTransform (bTransform);
 }
 
 //------------------------------------------------------------------------------
@@ -818,13 +820,21 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	modelP = gameData.models.renderModels [bHires] + nModel;
 	if (bHires) {
 		for (int32_t i = 0; i < modelP->m_nSubModels; i++)
-			if (modelP->m_subModels [i].m_nParent == -1)
+			if (modelP->m_subModels [i].m_nParent == -1) {
+				if (bEdges)
+					G3TransformSubModel (objP, nModel, i, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
+												bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 				G3DrawSubModel (objP, nModel, i, nSubModel, modelBitmaps, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
 									 bHires, bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles, bEdges);
+				}
 		}
-	else
+	else {
+		if (bEdges)
+			G3TransformSubModel (objP, nModel, 0, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
+										bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 		G3DrawSubModel (objP, nModel, 0, nSubModel, modelBitmaps, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
 							 bHires, bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles, bEdges);
+		}
 	//if (nSubModel < 0)
 		transformation.End ();
 	if (!bLighting)

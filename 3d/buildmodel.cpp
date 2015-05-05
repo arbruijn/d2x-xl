@@ -98,8 +98,8 @@ if (!m_bTransformed) {
 void CModelEdge::Transform (void)
 {
 for (int32_t i = 0; i < 2; i++) {
-	transformation.Rotate (m_normals [0][i], m_normals [1][i]);
-	transformation.Transform (m_vertices [0][i], m_vertices [1][i]);
+	transformation.Rotate (m_normals [1][i], m_normals [0][i]);
+	transformation.Transform (m_vertices [1][i], m_vertices [0][i]);
 	}
 }
 
@@ -146,7 +146,7 @@ return m_normals [0][i];
 
 CFloatVector& CModelEdge::Vertex (int32_t i)
 {
-return m_vertices [1][i];
+return m_vertices [0][i];
 }
 
 //------------------------------------------------------------------------------
