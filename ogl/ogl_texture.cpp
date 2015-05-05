@@ -73,7 +73,7 @@ for (int32_t y = 0; y < h; y++) {
 			//hits--;
 			}
  
-		int32_t j = Wrap (x + r, w);
+		int32_t j = Wrap (x, w);
 		//if (j < w) 
 			{
 			tRGBA& color = src [i + j];
@@ -91,7 +91,7 @@ for (int32_t y = 0; y < h; y++) {
 			color.r = uint8_t (acc [0] / l);
 			color.g = uint8_t (acc [1] / l);
 			color.b = uint8_t (acc [2] / l);
-			color.a = src [i + x].a;
+			color.a = src [i + x - r].a;
 			}
 		}
 	i += tw;
@@ -102,17 +102,15 @@ for (int32_t y = 0; y < h; y++) {
 
 static void VBoxBlurRGBA (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
 {
-	int32_t o [2] = { -(r + 1) * tw, r * tw };
+	int32_t l = 2 * r + 1;
 
 for (int32_t x = 0; x < w; x++) {
-	int32_t l = 2 * r + 1;
 	int32_t acc [3] = { 0, 0, 0 };
 
-	int32_t i = -r * tw + x;
-	for (int32_t y = -r; y < h; y++) {
+	for (int32_t y = -r; y < h + r; y++) {
 		if (y > r) {
 			int32_t j = Wrap (y - l, h);
-			tRGBA& color = src [i + o [0]];
+			tRGBA& color = src [j * tw + x];
 			//if (color.r | color.g | color.b) 
 				{
 				acc [0] -= (int32_t) color.r;
@@ -122,10 +120,10 @@ for (int32_t x = 0; x < w; x++) {
 			//hits--;
 			}
  
-		int32_t j = Wrap (y + r, h);
+		int32_t j = Wrap (y, h);
 		//if (j < h) 
 			{
-			tRGBA& color = src [i + o [1]];
+			tRGBA& color = src [j * tw + x];
 			//if (color.r | color.g | color.b) 
 				{
 				acc [0] += (int32_t) color.r;
@@ -140,9 +138,8 @@ for (int32_t x = 0; x < w; x++) {
 			color.r = uint8_t (acc [0] / l);
 			color.g = uint8_t (acc [1] / l);
 			color.b = uint8_t (acc [2] / l);
-			color.a = src [y * tw + x].a;
+			color.a = src [(y - r) * tw + x].a;
 			}
-		i += tw;
 		}
 	}
 }
@@ -196,17 +193,15 @@ for (int32_t y = 0; y < h; y++) {
 
 static void VBoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
 {
-	int32_t o [2] = { -(r + 1) * tw, r * tw };
+	int32_t l = 2 * r + 1;
 
 for (int32_t x = 0; x < w; x++) {
-	int32_t l = 2 * r + 1;
 	int32_t acc [3] = { 0, 0, 0 };
 
-	int32_t i = -r * tw + x;
 	for (int32_t y = -r; y < h + r; y++) {
 		if (y > r) {
 			int32_t j = Wrap (y - l, h);
-			tRGB& color = src [i + o [0]];
+			tRGB& color = src [j * tw + x];
 			//if (color.r | color.g | color.b) 
 				{
 				acc [0] -= (int32_t) color.r;
@@ -216,10 +211,10 @@ for (int32_t x = 0; x < w; x++) {
 			//hits--;
 			}
  
-		int32_t j = Wrap (y + r, h);
+		int32_t j = Wrap (y, h);
 		//if (j < h) 
 			{
-			tRGB& color = src [i + o [1]];
+			tRGB& color = src [j * tw + x];
 			//if (color.r | color.g | color.b) 
 				{
 				acc [0] += (int32_t) color.r;
@@ -235,7 +230,6 @@ for (int32_t x = 0; x < w; x++) {
 			color.g = uint8_t (acc [1] / l);
 			color.b = uint8_t (acc [2] / l);
 			}
-		i += tw;
 		}
 	}
 }
