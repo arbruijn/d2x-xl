@@ -761,9 +761,11 @@ void RenderEdges (void)
 	int32_t			nVisibleSegs = gameData.render.mine.visibility [0].nSegments;
 	CShortArray&	visibleSegs = gameData.render.mine.visibility [0].segments;
 
-glColor3f (0, 0, 0);
+glColor3f (0.1f, 0.1f, 0.1f);
 ogl.SetTexturing (false);
 ogl.SetBlendMode (GL_LEQUAL);
+ogl.SetupTransform (1);
+
 for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 	int32_t nVisible = 0;
 	for (int32_t j = 0; j < 2; j++) {
@@ -786,18 +788,20 @@ for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 		continue;
 
 	if (nVisible != 3) // only one visible -> contour edge
-		glLineWidth (4);
+		glLineWidth (8);
 	else {
 		fix dot = CFixVector::Dot (edgeP->m_faces [0].m_vNormal, edgeP->m_faces [1].m_vNormal);
 		if (dot < 56756) // ~ cos (-150°)
 			continue;
-		glLineWidth (2);
+		glLineWidth (4);
 		}
 	glBegin (GL_LINES);
 	glVertex3fv ((GLfloat*) &gameData.segData.fVertices [edgeP->m_nVertices [0]]);
 	glVertex3fv ((GLfloat*) &gameData.segData.fVertices [edgeP->m_nVertices [1]]);
 	glEnd ();
 	}
+ogl.ResetTransform (1);
+
 }
 
 //------------------------------------------------------------------------------
