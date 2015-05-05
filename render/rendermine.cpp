@@ -760,27 +760,37 @@ void RenderEdges (void)
 	CFixVector		vViewDir, vViewer = gameData.objData.viewerP->Position ();
 	int32_t			nVisibleSegs = gameData.render.mine.visibility [0].nSegments;
 	CShortArray&	visibleSegs = gameData.render.mine.visibility [0].segments;
+	CFloatVector	vertices [2];
+	float				nLineWidths [2] = { automap.Active () ? 6.0f : 12.0f, automap.Active () ? 4.0f : 8.0f };
 
-glColor3f (0.01f, 0.01f, 0.01f);
 ogl.SetTexturing (false);
 ogl.SetBlendMode (GL_LEQUAL);
 ogl.SetupTransform (1);
+#if 1
+glColor3f (0.01f, 0.01f, 0.01f);
+#else
+glColor3f (1, 1, 1);
+#endif
 
 for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 	int32_t nVisible = 0;
 	for (int32_t j = 0; j < 2; j++) {
 		int16_t nSegment = edgeP->m_faces [j].m_nItem;
+#if DBG
+		if (nSegment == nDbgSeg)
+			BRP;
+#endif
 		if (nSegment < 0)
 			continue;
-		if ((nSegment <= nVisibleSegs) && gameData.render.mine.visibility [0].Visible (nSegment))
+		if (gameData.render.mine.visibility [0].Visible (nSegment))
 			nVisible |= 1 << j;
 		}
 	if (!nVisible)
 		continue;
 
 	nVisible = 0;
+	vViewDir = vViewer - gameData.segData.vertices [edgeP->m_nVertices [0]];
 	for (int32_t j = 0; j < 2; j++) {
-		vViewDir = vViewer - gameData.segData.vertices [edgeP->m_nVertices [0]];
 		CFixVector::Normalize (vViewDir);
 		fix dot = CFixVector::Dot (vViewDir, edgeP->m_faces [j].m_vNormal);
 		if (dot >= 0)
@@ -789,21 +799,29 @@ for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 	if (!nVisible)
 		continue;
 
-	if (nVisible != 3) // only one visible -> contour edge
-		glLineWidth (12);
+	if (nVisible != 3) { // only one visible -> contour edge
+		glLineWidth (nLineWidths [0]);
+		}
 	else {
 		fix dot = CFixVector::Dot (edgeP->m_faces [0].m_vNormal, edgeP->m_faces [1].m_vNormal);
-		if (dot < 56756) // ~ cos (-150°)
+		if ((dot < -56756) || (dot > 56756)) // ~ cos (-150°)
 			continue;
-		glLineWidth (6);
+		glLineWidth (nLineWidths [1]);
+		}
+	for (int32_t j = 0; j < 2; j++) {
+		CFloatVector v;
+		v.Assign (vViewer - gameData.segData.vertices [edgeP->m_nVertices [j]]);
+		float l = CFloatVector::Normalize (v);
+		vertices [j] = gameData.segData.fVertices [edgeP->m_nVertices [j]];
+		v /= sqrt (l);
+		vertices [j] += v; 
 		}
 	glBegin (GL_LINES);
-	glVertex3fv ((GLfloat*) &gameData.segData.fVertices [edgeP->m_nVertices [0]]);
-	glVertex3fv ((GLfloat*) &gameData.segData.fVertices [edgeP->m_nVertices [1]]);
+	glVertex3fv ((GLfloat*) &vertices [0]);
+	glVertex3fv ((GLfloat*) &vertices [1]);
 	glEnd ();
 	}
 ogl.ResetTransform (1);
-
 }
 
 //------------------------------------------------------------------------------
@@ -825,9 +843,9 @@ RenderCockpitModel ();
 #endif
 #if 1
 RenderSkyBoxObjects ();
+RenderSegmentList (RENDER_TYPE_GEOMETRY);
 if (gameOpts->render.bCartoonStyle)
 	RenderEdges ();
-RenderSegmentList (RENDER_TYPE_GEOMETRY);
 //RenderSegmentOutline ();
 #	if 1
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {
