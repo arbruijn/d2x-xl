@@ -713,8 +713,8 @@ void G3DrawModel (CObject *objP, int16_t nModel, int16_t nSubModel, CArray<CBitm
 	CActiveDynLight*		activeLightsP = sliP ? lightManager.Active (0) + sliP->nFirst : NULL;
 	tObjTransformation*	posP = OBJPOS (objP);
 
-ogl.SetupTransform (1);
-
+if (!bEdges)
+	ogl.SetupTransform (1);
 if (bLighting) {
 	nLights = sliP->nActive;
 	if (nLights > gameStates.render.nMaxLightsPerObject)
@@ -830,6 +830,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 			G3TransformSubModel (objP, nModel, 0, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
 										bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 			}
+		ogl.SetupTransform (1);
 		}
 
 	transformation.Begin (posP->vPos, posP->mOrient);
