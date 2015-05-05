@@ -1666,7 +1666,7 @@ if (!m_info.texP->IsRenderBuffer ())
 		if (gameOpts->render.bCartoonStyle < 0) {
 			int32_t w = Width () - dxo;
 			int32_t h = Height () - dxo;
-			bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), (w >= 512) ? 15 : (w >= 256) ? 11 : (w >= 128) ? 7 : 3, bWrapBlur, nColors);
+			bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), (w >= 512) ? 15 : (w >= 256) ? 11 : (w >= 128) ? 7 : 3, nColors, bWrapBlur, 1);
 			Posterize (bufP, w, h, m_info.texP->TW (), nColors);
 			}
 		}
