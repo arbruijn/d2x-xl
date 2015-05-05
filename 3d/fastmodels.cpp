@@ -445,7 +445,7 @@ void G3TransformSubModel (CObject *objP, int16_t nModel, int16_t nSubModel, CAng
 	RenderModel::CSubModel*	subModelP = modelP->m_subModels + nSubModel;
 	CAngleVector				va = animAnglesP ? animAnglesP [subModelP->m_nAngles] : CAngleVector::ZERO;
 	CFixVector					vo;
-	int32_t						i, j, bTransform = ogl.UseTransform ();
+	int32_t						i, j;
 
 if (subModelP->m_bThruster)
 	return;
@@ -455,7 +455,6 @@ vo = subModelP->m_vOffset;
 if (!gameData.models.vScale.IsZero ())
 	vo *= gameData.models.vScale;
 #if 1
-ogl.SetTransform (0);
 if (vOffsetP) {
 	transformation.Begin (vo, va);
 	vo += *vOffsetP;
@@ -482,7 +481,6 @@ for (i = 0, j = modelP->m_nSubModels, subModelP = modelP->m_subModels.Buffer ();
 		G3TransformSubModel (objP, nModel, i, animAnglesP, &vo, bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 	}
 transformation.End ();
-ogl.SetTransform (bTransform);
 }
 
 //------------------------------------------------------------------------------
@@ -820,6 +818,8 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	modelP = gameData.models.renderModels [bHires] + nModel;
 
 	if (bEdges) {
+		ogl.SetTransform (0);
+		transformation.Begin (posP->vPos, posP->mOrient);
 		if (bHires) {
 		for (int32_t i = 0; i < modelP->m_nSubModels; i++)
 				if (modelP->m_subModels [i].m_nParent == -1) 
@@ -830,6 +830,8 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 			G3TransformSubModel (objP, nModel, 0, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
 										bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 			}
+		transformation.End ();
+		ogl.SetTransform (1);
 		ogl.SetupTransform (1);
 		}
 
