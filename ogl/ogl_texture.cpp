@@ -58,13 +58,14 @@ static void HBoxBlurRGBA (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t
 {
 int32_t i = 0;
 for (int32_t y = 0; y < h; y++) {
-	int32_t hits = 2 * r + 1;
+	int32_t l = 2 * r + 1;
 	int32_t acc [3] = { 0, 0, 0 };
-	for (int32_t x = -r; x < w; x++) {
-		int32_t j = Wrap (x - r, w);
-		if (x > 0) {
+	for (int32_t x = -r; x < w + r; x++) {
+		if (x > r) {
+			int32_t j = Wrap (x - l, w);
 			tRGBA& color = src [i + j];
-			if (color.r | color.g | color.b) {
+			//if (color.r | color.g | color.b) 
+				{
 				acc [0] -= (int32_t) color.r;
 				acc [1] -= (int32_t) color.g;
 				acc [2] -= (int32_t) color.b;
@@ -72,10 +73,12 @@ for (int32_t y = 0; y < h; y++) {
 			//hits--;
 			}
  
-		j = Wrap (x + r, w);
-		if (j < w) {
+		int32_t j = Wrap (x + r, w);
+		//if (j < w) 
+			{
 			tRGBA& color = src [i + j];
-			if (color.r | color.g | color.b) {
+			//if (color.r | color.g | color.b) 
+				{
 				acc [0] += (int32_t) color.r;
 				acc [1] += (int32_t) color.g;
 				acc [2] += (int32_t) color.b;
@@ -83,11 +86,11 @@ for (int32_t y = 0; y < h; y++) {
 			//hits++;
 			}
  
-		if (x >= 0) {
-			tRGBA& color = dest [i + x];
-			color.r = uint8_t (acc [0] / hits);
-			color.g = uint8_t (acc [1] / hits);
-			color.b = uint8_t (acc [2] / hits);
+		if (x >= r) {
+			tRGBA& color = dest [i + x - r];
+			color.r = uint8_t (acc [0] / l);
+			color.g = uint8_t (acc [1] / l);
+			color.b = uint8_t (acc [2] / l);
 			color.a = src [i + x].a;
 			}
 		}
@@ -102,15 +105,16 @@ static void VBoxBlurRGBA (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t
 	int32_t o [2] = { -(r + 1) * tw, r * tw };
 
 for (int32_t x = 0; x < w; x++) {
-	int32_t hits = 2 * r + 1;
+	int32_t l = 2 * r + 1;
 	int32_t acc [3] = { 0, 0, 0 };
 
 	int32_t i = -r * tw + x;
 	for (int32_t y = -r; y < h; y++) {
-		int32_t j = Wrap (y - r, h);
-		if (y > 0) {
+		if (y > r) {
+			int32_t j = Wrap (y - l, h);
 			tRGBA& color = src [i + o [0]];
-			if (color.r | color.g | color.b) {
+			//if (color.r | color.g | color.b) 
+				{
 				acc [0] -= (int32_t) color.r;
 				acc [1] -= (int32_t) color.g;
 				acc [2] -= (int32_t) color.b;
@@ -118,10 +122,12 @@ for (int32_t x = 0; x < w; x++) {
 			//hits--;
 			}
  
-		j = Wrap (y + r, h);
-		if (j < h) {
+		int32_t j = Wrap (y + r, h);
+		//if (j < h) 
+			{
 			tRGBA& color = src [i + o [1]];
-			if (color.r | color.g | color.b) {
+			//if (color.r | color.g | color.b) 
+				{
 				acc [0] += (int32_t) color.r;
 				acc [1] += (int32_t) color.g;
 				acc [2] += (int32_t) color.b;
@@ -129,11 +135,11 @@ for (int32_t x = 0; x < w; x++) {
 			//hits++;
 			}
  
-		if (y >= 0) {
-			tRGBA& color = dest [y * tw + x];
-			color.r = uint8_t (acc [0] / hits);
-			color.g = uint8_t (acc [1] / hits);
-			color.b = uint8_t (acc [2] / hits);
+		if (y >= r) {
+			tRGBA& color = dest [(y - r) * tw + x];
+			color.r = uint8_t (acc [0] / l);
+			color.g = uint8_t (acc [1] / l);
+			color.b = uint8_t (acc [2] / l);
 			color.a = src [y * tw + x].a;
 			}
 		i += tw;
@@ -147,13 +153,14 @@ static void HBoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw
 {
 int32_t i = 0;
 for (int32_t y = 0; y < h; y++) {
-	int32_t hits = 2 * r + 1;
+	int32_t l = 2 * r + 1;
 	int32_t acc [3] = { 0, 0, 0 };
-	for (int32_t x = -r; x < w; x++) {
-		int32_t j = Wrap (x - r, w);
-		if (x > 0) {
+	for (int32_t x = -r; x < w + r; x++) {
+		if (x > r) {
+			int32_t j = Wrap (x - l, w);
 			tRGB& color = src [i + j];
-			if (color.r | color.g | color.b) {
+			//if (color.r | color.g | color.b) 
+				{
 				acc [0] -= (int32_t) color.r;
 				acc [1] -= (int32_t) color.g;
 				acc [2] -= (int32_t) color.b;
@@ -161,10 +168,12 @@ for (int32_t y = 0; y < h; y++) {
 			//hits--;
 			}
  
-		j = Wrap (x + r, w);
-		if (j < w) {
+		int32_t j = Wrap (x, w);
+		//if (j < w) 
+			{
 			tRGB& color = src [i + j];
-			if (color.r | color.g | color.b) {
+			//if (color.r | color.g | color.b) 
+				{
 				acc [0] += (int32_t) color.r;
 				acc [1] += (int32_t) color.g;
 				acc [2] += (int32_t) color.b;
@@ -172,11 +181,11 @@ for (int32_t y = 0; y < h; y++) {
 			//hits++;
 			}
  
-		if (x >= 0) {
-			tRGB& color = dest [i + x];
-			color.r = uint8_t (acc [0] / hits);
-			color.g = uint8_t (acc [1] / hits);
-			color.b = uint8_t (acc [2] / hits);
+		if (x >= r) {
+			tRGB& color = dest [i + x - r];
+			color.r = uint8_t (acc [0] / l);
+			color.g = uint8_t (acc [1] / l);
+			color.b = uint8_t (acc [2] / l);
 			}
 		}
 	i += tw;
@@ -190,15 +199,16 @@ static void VBoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw
 	int32_t o [2] = { -(r + 1) * tw, r * tw };
 
 for (int32_t x = 0; x < w; x++) {
-	int32_t hits = 2 * r + 1;
+	int32_t l = 2 * r + 1;
 	int32_t acc [3] = { 0, 0, 0 };
 
 	int32_t i = -r * tw + x;
-	for (int32_t y = -r; y < h; y++) {
-		int32_t j = Wrap (y - r, h);
-		if (y > 0) {
+	for (int32_t y = -r; y < h + r; y++) {
+		if (y > r) {
+			int32_t j = Wrap (y - l, h);
 			tRGB& color = src [i + o [0]];
-			if (color.r | color.g | color.b) {
+			//if (color.r | color.g | color.b) 
+				{
 				acc [0] -= (int32_t) color.r;
 				acc [1] -= (int32_t) color.g;
 				acc [2] -= (int32_t) color.b;
@@ -206,10 +216,12 @@ for (int32_t x = 0; x < w; x++) {
 			//hits--;
 			}
  
-		j = Wrap (y + r, h);
-		if (j < h) {
+		int32_t j = Wrap (y + r, h);
+		//if (j < h) 
+			{
 			tRGB& color = src [i + o [1]];
-			if (color.r | color.g | color.b) {
+			//if (color.r | color.g | color.b) 
+				{
 				acc [0] += (int32_t) color.r;
 				acc [1] += (int32_t) color.g;
 				acc [2] += (int32_t) color.b;
@@ -217,11 +229,11 @@ for (int32_t x = 0; x < w; x++) {
 			//hits++;
 			}
  
-		if (y >= 0) {
-			tRGB& color = dest [y * tw + x];
-			color.r = uint8_t (acc [0] / hits);
-			color.g = uint8_t (acc [1] / hits);
-			color.b = uint8_t (acc [2] / hits);
+		if (y >= r) {
+			tRGB& color = dest [(y - r) * tw + x];
+			color.r = uint8_t (acc [0] / l);
+			color.g = uint8_t (acc [1] / l);
+			color.b = uint8_t (acc [2] / l);
 			}
 		i += tw;
 		}
@@ -233,7 +245,7 @@ for (int32_t x = 0; x < w; x++) {
 void BoxBlurRGBA (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r) 
 {
 HBoxBlurRGBA (src, dest, w, h, tw, th, r);
-//VBoxBlurRGBA (dest, src, w, h, tw, th, r);
+VBoxBlurRGBA (dest, src, w, h, tw, th, r);
 }
 
 //------------------------------------------------------------------------------
@@ -241,7 +253,7 @@ HBoxBlurRGBA (src, dest, w, h, tw, th, r);
 void BoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r) 
 {
 HBoxBlurRGB (src, dest, w, h, tw, th, r);
-//VBoxBlurRGB (dest, src, w, h, tw, th, r);
+VBoxBlurRGB (dest, src, w, h, tw, th, r);
 }
 
 //------------------------------------------------------------------------------
