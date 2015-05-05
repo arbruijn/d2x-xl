@@ -45,11 +45,17 @@ CStack< char* > texIds;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+#define WRAP_BLUR 0
+
 static inline int32_t Wrap (int32_t i, int32_t l)
 {
+#if WRAP_BLUR
 if (i < 0)
 	return i + l;
 return i % l;
+#else
+return i;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -60,11 +66,14 @@ int32_t i = 0;
 for (int32_t y = 0; y < h; y++) {
 	int32_t l = 2 * r + 1;
 	int32_t acc [3] = { 0, 0, 0 };
+	int32_t hits = 0;
+
 	for (int32_t x = -r; x < w + r; x++) {
 		if (x > r) {
 			int32_t j = Wrap (x - l, w);
-			tRGBA& color = src [i + j];
-			//if (color.r | color.g | color.b) 
+			if (j >= 0) {
+				tRGBA& color = src [i + j];
+			if (color.r | color.g | color.b) 
 				{
 				acc [0] -= (int32_t) color.r;
 				acc [1] -= (int32_t) color.g;
@@ -197,6 +206,7 @@ static void VBoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw
 
 for (int32_t x = 0; x < w; x++) {
 	int32_t acc [3] = { 0, 0, 0 };
+	int32_t hits = 0;
 
 	for (int32_t y = -r; y < h + r; y++) {
 		if (y > r) {

@@ -804,7 +804,7 @@ for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 		}
 	else {
 		fix dot = CFixVector::Dot (edgeP->m_faces [0].m_vNormal, edgeP->m_faces [1].m_vNormal);
-		if ((dot < -56756) || (dot > 56756)) // ~ cos (-150°)
+		if ((dot < -62500) || (dot > 62500)) // ~ cos (-150°)
 			continue;
 		glLineWidth (nLineWidths [1]);
 		}
