@@ -1724,7 +1724,7 @@ for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
 			default:
 				continue;
 			}
-		for (int32_t k = 0; k <= nVertices; k++)
+		for (int32_t k = 0; k < nVertices; k++)
 			AddEdge (i, j, sideP->m_corners [k], sideP->m_corners [(k + 1) % nVertices]);
 		}
 	}
