@@ -789,6 +789,9 @@ void CGeoEdge::Render (CFloatVector vViewer, int32_t nVertices [])
 int32_t nType = Type ();
 if (nType < 0)
 	return;
+if (nType && (gameStates.render.nType == RENDER_TYPE_OBJECTS))
+	return;
+
 
 int32_t bSplit = m_fSplit != 0.0f;
 
@@ -892,11 +895,17 @@ glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
 if (gameStates.render.nType == RENDER_TYPE_GEOMETRY)
 	ogl.SetupTransform (1);
 
-int32_t bGlow = glowRenderer.Available (BLUR_OUTLINE);
+float fScale = 1.0f;
+
+if (glowRenderer.Available (BLUR_OUTLINE))
+	fScale *= 2.0f;
+if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
+	fScale *= 0.25f;
+
 for (int32_t j = 0; j < 2; j++) {
 	int32_t h = j ? gameData.segData.nEdges - nVertices [1] : nVertices [0];
 	if (h) {
-		glLineWidth (bGlow ? 2 * nLineWidths [j] : nLineWidths [j]);
+		glLineWidth (fScale * nLineWidths [j]);
 		OglDrawArrays (GL_LINES, j ? nVertices [1] : 0, h);
 		}
 	}

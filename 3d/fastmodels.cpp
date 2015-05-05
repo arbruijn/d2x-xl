@@ -1020,8 +1020,10 @@ if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
 
 gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 
-if (bHires && !gameStates.render.bCloaked && (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY) && modelP->m_bHasTransparency) {
-	if ((objP->info.nType != OBJ_DEBRIS)) {
+int32_t bRenderTransparency = bHires && !gameStates.render.bCloaked && (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY) && modelP->m_bHasTransparency;
+
+if (bRenderTransparency) {
+	if (objP->info.nType != OBJ_DEBRIS) {
 		if (modelP->m_bHasTransparency & 5)
 			G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 1, nGunId, nBombId, nMissileId, nMissiles, 0);
 		if (modelP->m_bHasTransparency & 10) {
@@ -1042,14 +1044,13 @@ if (bHires && !gameStates.render.bCloaked && (gameStates.render.nType == RENDER_
 		}
 	}
 else {
-	//G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles, 0);
+	if (!gameOpts->render.bCartoonStyle)
+		G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles, 0);
 	modelP->m_bRendered = 1;
 	if (gameData.models.thrusters [nModel].nCount < 0)
 		gameData.models.thrusters [nModel].nCount = -gameData.models.thrusters [nModel].nCount;
 	if ((objP->info.nType != OBJ_DEBRIS) && bHires && modelP->m_bHasTransparency)
 		transparencyRenderer.AddObject (objP);
-	if (gameOpts->render.bCartoonStyle)
-		G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles, 1);
 	}
 
 gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
@@ -1065,6 +1066,10 @@ else
 if (gameOpts->render.debug.bWireFrame)
 	glLineWidth (3.0f);
 #endif
+
+if (gameOpts->render.bCartoonStyle && !bRenderTransparency)
+	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles, 1);
+
 #if 1 //!DBG
 if (gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) {
 	if (objP && ((objP->info.nType == OBJ_PLAYER) || (objP->info.nType == OBJ_ROBOT) || (objP->info.nType == OBJ_REACTOR))) {

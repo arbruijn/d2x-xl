@@ -107,7 +107,7 @@ for (int32_t i = 0; i < 2; i++) {
 
 int32_t CModelEdge::IsFacingViewer (int16_t nFace)
 {
-return CFloatVector::Dot (m_vertices [1][0], m_normals [1][nFace]) >= 0;
+return CFloatVector::Dot (m_vertices [1][0], m_normals [1][nFace]) < 0.0f;
 }
 
 //------------------------------------------------------------------------------
@@ -458,6 +458,8 @@ int32_t i = FindEdge (v1, v2);
 if (i >= 0) {
 	CModelEdge *edgeP = m_edges + i;
 	edgeP->m_normals [0][1].Assign (faceP->m_vNormalf [0]);
+	if (faceP->m_faceWinding == GL_CW)
+		edgeP->m_normals [0][1].Neg ();
 	edgeP->Setup ();
 	}
 else {
@@ -467,6 +469,8 @@ else {
 	edgeP->m_vertices [0][0].Assign (modelP->m_vertices [v1]);
 	edgeP->m_vertices [0][1].Assign (modelP->m_vertices [v2]);
 	edgeP->m_normals [0][0].Assign (faceP->m_vNormalf [0]);
+	if (faceP->m_faceWinding == GL_CW)
+		edgeP->m_normals [0][0].Neg ();
 	}
 }
 
@@ -489,7 +493,11 @@ for (uint16_t i = 0; i < m_nFaces; i++, faceP++) {
 	for (uint16_t j = 0; j < faceP->m_nVerts; j++)
 		faceP->m_vCenterf [0] += modelP->m_faceVerts [faceP->m_nIndex + j].m_vertex;
 	faceP->m_vCenterf [0] /= float (faceP->m_nVerts);
-	faceP->m_vNormalf [0].Assign (faceP->m_vNormal);
+	faceP->m_vNormalf [0] = CFloatVector3::Normal (modelP->m_faceVerts [faceP->m_nIndex].m_vertex, 
+																  modelP->m_faceVerts [faceP->m_nIndex + 1].m_vertex, 
+																  modelP->m_faceVerts [faceP->m_nIndex + 2].m_vertex);
+	CFixVector vNormal;
+	faceP->m_vNormal.Assign (faceP->m_vNormalf [0]);
 	faceP->m_faceWinding = FaceWinding (&modelP->m_faceVerts [faceP->m_nIndex].m_vertex, 
 													&modelP->m_faceVerts [faceP->m_nIndex + 1].m_vertex, 
 													&modelP->m_faceVerts [faceP->m_nIndex + 2].m_vertex);
