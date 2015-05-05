@@ -46,6 +46,7 @@ CStack< char* > texIds;
 //------------------------------------------------------------------------------
 
 static int32_t bWrapBlur = 1;
+static int32_t nBlurStrength = 3;
 
 static inline int32_t Wrap (int32_t i, int32_t l)
 {
@@ -1128,7 +1129,7 @@ return ogl.m_data.buffer [0];
 
 uint8_t *CTexture::Copy (int32_t dxo, int32_t dyo, uint8_t *data)
 {
-if (!gameOpts->render.bCartoonStyle && !dxo && !dyo && (m_info.w == m_info.tw) && (m_info.h == m_info.th))
+if ((gameOpts->render.bCartoonStyle >= 0) && !dxo && !dyo && (m_info.w == m_info.tw) && (m_info.h == m_info.th))
 	return data;	//can use data 1:1
 else {	//need to reformat
 	int32_t	h, w, tw;
@@ -1637,6 +1638,12 @@ if (!(m_info.compressed.bCompressed || Parent ())) {
 m_info.texP->Prepare ();
 #endif
 
+#if DBG
+if (strstr (m_info.szName, "ASE model 108"))
+	BRP;
+if (strstr (m_info.szName, "rbot"))
+	BRP;
+#endif
 //	if (width!=twidth || height!=theight)
 #if RENDER2TEXTURE
 if (!m_info.texP->IsRenderBuffer ())
@@ -1655,18 +1662,17 @@ if (!m_info.texP->IsRenderBuffer ())
 			}
 		else {
 			bufP = m_info.texP->Convert (dxo = 0, dyo = 0, this, m_info.nTranspType, superTransp, nColors);
-			nColors = 4;
 			}
 #if DBG
-		if (strstr (m_info.szName, "door05#0"))
+		if (strstr (m_info.szName, "pyrorl-body"))
 			BRP;
-		if (strstr (m_info.szName, "misc040"))
+		if (strstr (m_info.szName, "rbot"))
 			BRP;
 #endif
 		if (gameOpts->render.bCartoonStyle < 0) {
 			int32_t w = Width () - dxo;
 			int32_t h = Height () - dxo;
-			bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), (w >= 512) ? 15 : (w >= 256) ? 11 : (w >= 128) ? 7 : 3, nColors, bWrapBlur, 1);
+			bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), (w >= 512) ? 15 : (w >= 256) ? 11 : (w >= 128) ? 7 : 3, nColors, bWrapBlur, nBlurStrength);
 			Posterize (bufP, w, h, m_info.texP->TW (), nColors);
 			}
 		}

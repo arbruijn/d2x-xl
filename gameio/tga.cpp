@@ -1001,7 +1001,7 @@ return q;
 CBitmap* CTGA::ReadModelTexture (const char *pszFile, int32_t bCustom)
 {
 	char			fn [FILENAME_LEN], en [FILENAME_LEN], fnBase [FILENAME_LEN], szShrunkFolder [FILENAME_LEN];
-	int32_t		nShrinkFactor = gameOpts->render.bCartoonStyle ? 8 : 1 << (3 - gameStates.render.nModelQuality);
+	int32_t		nShrinkFactor = /*gameOpts->render.bCartoonStyle ? 8 :*/ 1 << (3 - gameStates.render.nModelQuality);
 	time_t		tBase, tShrunk;
 
 if (!pszFile)

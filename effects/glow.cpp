@@ -21,7 +21,9 @@ CGlowRenderer glowRenderer;
 
 int32_t hBlurShader = -1;
 
-#	if 1
+#define LINEAR_SAMPLING 0
+
+#	if LINEAR_SAMPLING
 
 // linear sampling
 const char *blurFS = 
@@ -248,6 +250,8 @@ if (gameStates.render.cameras.bActive) {
 	}
 #endif
 if (nType == BLUR_SHADOW) 
+	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
+else if (nType == BLUR_OUTLINE) 
 	glClearColor (1.0f, 1.0f, 1.0f, 1.0f);
 else 
 #if 0 && DBG
@@ -812,7 +816,8 @@ else
 	ogl.SetDepthMode (GL_ALWAYS);
 
 #if BLUR
-	ogl.SetBlendMode ((m_nType == BLUR_SHADOW) ? OGL_BLEND_MULTIPLY : OGL_BLEND_ADD);
+	ogl.SetBlending (true);
+	ogl.SetBlendMode ((m_nType == BLUR_OUTLINE) ? OGL_BLEND_MULTIPLY : (m_nType == BLUR_SHADOW) ? OGL_BLEND_MULTIPLY : OGL_BLEND_ADD);
 	Render (1, -1, radius); // Glow -> back buffer
 #	if 1
 	if (!m_bReplace)

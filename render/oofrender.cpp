@@ -132,8 +132,8 @@ return pso->m_faces.m_nFaces;
 
 int32_t OOF_GetSilhouette (CSubModel *pso)
 {
-	CEdge		*pe;
-	int32_t	h, i, j;
+	OOF::CEdge	*pe;
+	int32_t		h, i, j;
 
 OOF_GetLitFaces (pso);
 for (h = j = 0, i = pso->m_edges.m_nEdges, pe = pso->m_edges.m_list.Buffer (); i; i--, pe++) {
@@ -170,9 +170,9 @@ int32_t OOF_DrawShadowVolume (CModel *po, CSubModel *pso, int32_t bCullFront)
 if (bCullFront && ogl.m_features.bSeparateStencilOps.Available ())
 	return 1;
 
-	CEdge*					pe;
-	CFloatVector*			modelVertP;
-	int32_t						nVerts, nEdges;
+	OOF:CEdge		*pe;
+	CFloatVector	*modelVertP;
+	int32_t			nVerts, nEdges;
 
 if (!bCullFront)
 	OOF_GetSilhouette (pso);

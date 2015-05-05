@@ -386,7 +386,7 @@ int32_t G3DrawPolyModel (
 	fix*					xGlowValues,
 	CFloatVector*		colorP,
 	POF::CModel*		po,
-	int32_t					nModel)
+	int32_t				nModel)
 {
 	uint8_t *p = reinterpret_cast<uint8_t*> (modelDataP);
 	int16_t	nTag;

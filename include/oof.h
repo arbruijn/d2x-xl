@@ -70,7 +70,7 @@ class CTriangle {
 class CQuad {
 	public:
 		CFloatVector	p [4];
-		CFloatVector c;
+		CFloatVector	c;
 	};
 
 class CChunkHeader {
@@ -118,7 +118,7 @@ class CFace {
 
 class CFaceList {
 	public:
-		int32_t					m_nFaces;
+		int32_t				m_nFaces;
 		CArray<CFace>		m_list;
 		CArray<CFaceVert>	m_vertices;
 
@@ -164,7 +164,7 @@ class CSpecialList : public CArray<CSpecialPoint> {
 
 class CPoint {
 	public:
-		int32_t				m_nParent;
+		int32_t			m_nParent;
 	   CFloatVector	m_vPos;
 		CFloatVector	m_vDir;
 

@@ -436,6 +436,10 @@ if (ec.changing.nWallTexture == nDbgTexture)
 	BRP;
 #endif
 ec.changing.nObjectTexture = cf.ReadShort ();
+#if DBG
+if ((nDbgTexture >= 0) && (nDbgTexture == ec.changing.nObjectTexture))
+	BRP;
+#endif
 ec.flags = cf.ReadInt ();
 ec.nCriticalAnimation = cf.ReadInt ();
 ec.destroyed.nTexture = cf.ReadInt ();

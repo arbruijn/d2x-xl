@@ -698,8 +698,8 @@ return &m_vRotNormal;
 
 int32_t CFace::Read (CFile& cf, CSubModel *pso, CFaceVert *pfv, int32_t bFlipV)
 {
-	int32_t	i, v0 = 0;
-	CEdge	e;
+	int32_t		i, v0 = 0;
+	OOF::CEdge	e;
 
 nIndent += 2;
 OOF_PrintLog ("reading face\n");
@@ -876,8 +876,8 @@ return i;
 
 int32_t CSubModel::FindEdge (int32_t i0, int32_t i1)
 {
-	int32_t				i;
-	CEdge				h;
+	int32_t			i;
+	OOF::CEdge		h;
 	CFloatVector	v0, v1, hv0, hv1;
 
 #if DBG
@@ -920,8 +920,8 @@ return -1;
 
 int32_t CSubModel::AddEdge (CFace *pf, int32_t v0, int32_t v1)
 {
-	int32_t	i = FindEdge (v0, v1);
-	CEdge	*pe;
+	int32_t		i = FindEdge (v0, v1);
+	OOF::CEdge	*pe;
 
 if (m_nFlags & (OOF_SOF_GLOW | OOF_SOF_THRUSTER))
 	return -1;

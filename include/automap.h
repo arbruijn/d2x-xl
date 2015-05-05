@@ -34,7 +34,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define MAX_EDGES 65536 // Determined by loading all the levels by John & Mike, Feb 9, 1995
 
 typedef struct tEdgeInfo {
-	uint16_t	verts [2];     // 4 bytes
+	uint16_t		verts [2];     // 4 bytes
 	uint8_t		sides [4];     // 4 bytes
 	int16_t		nSegment [4];  // 8 bytes  // This might not need to be stored... If you can access the normals of a CSide.
 	uint32_t		color;			// 4 bytes
@@ -45,12 +45,12 @@ typedef struct tEdgeInfo {
 //------------------------------------------------------------------------------
 
 typedef struct tAutomapWallColors {
-	uint32_t	nNormal;
-	uint32_t	nDoor;
-	uint32_t	nDoorBlue;
-	uint32_t	nDoorGold;
-	uint32_t	nDoorRed;
-	uint32_t	nRevealed;
+	uint32_t		nNormal;
+	uint32_t		nDoor;
+	uint32_t		nDoorBlue;
+	uint32_t		nDoorGold;
+	uint32_t		nDoorRed;
+	uint32_t		nRevealed;
 } tAutomapWallColors;
 
 typedef struct tAutomapColors {

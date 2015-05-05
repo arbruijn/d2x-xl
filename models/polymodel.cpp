@@ -765,7 +765,7 @@ return gameData.models.nPolyModels - 1;
 
 void CModelData::Prepare (void)
 {
-	int32_t			h, i, j;
+	int32_t		h, i, j;
 	CObject		o, *objP = OBJECTS.Buffer ();
 	const char*	pszHires;
 

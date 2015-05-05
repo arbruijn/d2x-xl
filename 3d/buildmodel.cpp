@@ -93,11 +93,44 @@ if (!m_bTransformed) {
 
 //------------------------------------------------------------------------------
 
-uint16_t CModelEdge::IsContour (void)
+void CModelEdge::Transform (void)
 {
-m_faces [0]->Transform ();
-m_faces [1]->Transform ();
-return m_faces [0]->IsFacingViewer () != m_faces [1]->IsFacingViewer ();
+for (int32_t i = 0; i < 2; i++) {
+	transformation.Rotate (m_normals [0][i], m_normals [1][i]);
+	transformation.Transform (m_vertices [0][i], m_vertices [1][i]);
+	}
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CModelEdge::IsFacingViewer (int16_t nFace)
+{
+return CFloatVector3::Dot (m_vertices [1][0], m_normals [1][nFace]) >= 0;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CModelEdge::Visibility (void)
+{
+return IsFacingViewer (0) | (IsFacingViewer (1) << 1);
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CModelEdge::IsContour (void)
+{
+return IsFacingViewer (0) != IsFacingViewer (1);
+}
+
+//------------------------------------------------------------------------------
+// -1: edge invisible
+// 0: contour
+// 1: both faces visible
+
+int32_t CModelEdge::Type (void)
+{
+int32_t h = Visibility ();
+return ((h == 0) ? -1 : (h != 3) ? 0 : (m_fDot > 0.97f) ? -1 : 1);
 }
 
 //------------------------------------------------------------------------------
@@ -369,10 +402,10 @@ for (int32_t i = 0; i < m_nFaces; i++)
 
 void CSubModel::GatherContourEdges (CModel* modelP)
 {
-	CModelEdge* edgeP = modelP->m_edges.Buffer ();
+	CModelEdge* edgeP = m_edges.Buffer ();
 
 modelP->m_contourEdges.Reset ();
-for (uint16_t i = 0; i < modelP->m_nEdges; i++, edgeP++)
+for (uint16_t i = 0; i < m_nEdges; i++, edgeP++)
 	if (edgeP->IsContour ())
 		modelP->m_contourEdges.Push (i);
 }
@@ -385,6 +418,70 @@ modelP->m_litFaces.Reset ();
 for (uint16_t i = 0; i < m_nFaces; i++)
 	if (m_faces [i].IsLit (vLight))
 		modelP->m_litFaces.Push (m_faces + i);
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CSubModel::FindEdge (uint16_t v1, uint16_t v2)
+{
+	CModelEdge*	edgeP = m_edges.Buffer ();
+
+for (int32_t i = 0; i < m_nEdges; i++)
+	if ((edgeP->m_nVertices [0] == v1) && (edgeP->m_nVertices [1] == v2))
+		return i;
+return -1;
+}
+
+//------------------------------------------------------------------------------
+
+void CSubModel::AddEdge (CModel *modelP, CFace* faceP, uint16_t v1, uint16_t v2)
+{
+if (v1 > v2)
+	Swap (v1, v2);
+int32_t i = FindEdge (v1, v2);
+if (i >= 0) {
+	CModelEdge *edgeP = m_edges + i;
+	edgeP->m_normals [0][1] = faceP->m_vNormalf [0];
+	edgeP->m_fDot = fabs (CFloatVector3::Dot (edgeP->m_normals [0][0], edgeP->m_normals [0][1]));
+	}
+else {
+	CModelEdge *edgeP = m_edges + m_nEdges++;
+	edgeP->m_nVertices [0] = v1;
+	edgeP->m_nVertices [1] = v2;
+	edgeP->m_vertices [0][0] = modelP->m_vertices [v1];
+	edgeP->m_vertices [0][1] = modelP->m_vertices [v2];
+	edgeP->m_normals [0][0] = faceP->m_vNormalf [0];
+	}
+}
+
+//------------------------------------------------------------------------------
+
+bool CSubModel::BuildEdgeList (CModel* modelP)
+{
+	CFace*	faceP = m_faces;
+
+m_nEdges = 0;
+for (uint16_t i = 0; i < m_nFaces; i++, faceP++)
+	m_nEdges += faceP->m_nVerts - 1;
+if (!(m_edges.Create (m_nEdges)))
+	return false;
+
+m_nEdges = 0;
+faceP = m_faces;
+for (uint16_t i = 0; i < m_nFaces; i++, faceP++) {
+	faceP->m_vCenterf [0].SetZero ();
+	for (uint16_t j = 0; j < faceP->m_nVerts; j++)
+		faceP->m_vCenterf [0] += modelP->m_faceVerts [faceP->m_nIndex + j].m_vertex;
+	faceP->m_vCenterf [0] /= float (faceP->m_nVerts);
+	faceP->m_vNormalf [0].Assign (faceP->m_vNormal);
+	faceP->m_faceWinding = FaceWinding (&modelP->m_faceVerts [faceP->m_nIndex].m_vertex, 
+													&modelP->m_faceVerts [faceP->m_nIndex + 1].m_vertex, 
+													&modelP->m_faceVerts [faceP->m_nIndex + 2].m_vertex);
+
+	for (uint16_t j = 0; j < faceP->m_nVerts; j++)
+		AddEdge (modelP, faceP, modelP->m_faceVerts [faceP->m_nIndex + j].m_nIndex, modelP->m_faceVerts [faceP->m_nIndex + (j + 1) % faceP->m_nVerts].m_nIndex);
+	}
+return m_edges.Resize (m_nEdges) != NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -481,8 +578,15 @@ if (ogl.m_features.bVertexBufferObjects) {
 	}
 m_sortedVerts.Destroy ();
 
+#if DBG
+if (m_nModel == nDbgModel)
+	BRP;
+#endif
+
+gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 for (i = 0; i < (int32_t) m_textures.Length (); i++)
 	m_textures [i].PrepareTexture (1, 0);
+gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 }
 
 //------------------------------------------------------------------------------
@@ -859,62 +963,6 @@ for (i = 0, pp = po->m_gunPoints.Buffer (); i < j; i++, pp++) {
 	pp->m_vPos.v.coord.y = (psm->m_vMax.v.coord.y + psm->m_vMin.v.coord.y) / 2;
   	pp->m_vPos.v.coord.z = psm->m_vMax.v.coord.z;
 	}
-}
-
-//------------------------------------------------------------------------------
-
-int32_t CModel::FindEdge (uint16_t v1, uint16_t v2)
-{
-	CModelEdge*	edgeP = m_edges.Buffer ();
-
-for (int32_t i = 0; i < m_nEdges; i++)
-	if ((edgeP->m_nVertices [0] == v1) && (edgeP->m_nVertices [1] == v2))
-		return i;
-return -1;
-}
-
-//------------------------------------------------------------------------------
-
-void CModel::AddEdge (CFace* faceP, uint16_t v1, uint16_t v2)
-{
-int32_t i = FindEdge (Min (v1, v2), Max (v1, v2));
-if (i >= 0)
-	m_edges [i].m_faces [1] = faceP;
-else {
-	CModelEdge*	edgeP = m_edges + m_nEdges++;
-	edgeP->m_nVertices [0] = Min (v1, v2);
-	edgeP->m_nVertices [1] = Max (v1, v2);
-	m_edges [i].m_faces [0] = faceP;
-	}
-}
-
-//------------------------------------------------------------------------------
-
-bool CModel::BuildEdgeList (void)
-{
-	CFace*	faceP = m_faces.Buffer ();
-
-m_nEdges = 0;
-for (uint16_t i = 0; i < m_nFaces; i++)
-	m_nEdges += faceP->m_nVerts - 1;
-if (!(m_edges.Create (m_nEdges)))
-	return false;
-
-m_nEdges = 0;
-for (uint16_t i = 0; i < m_nFaces; i++) {
-	faceP = m_faces.Buffer ();
-
-	faceP->m_vCenterf [0].SetZero ();
-	for (uint16_t j = 0; j < faceP->m_nVerts; j++)
-		faceP->m_vCenterf [0] += m_faceVerts [faceP->m_nIndex + j].m_vertex;
-	faceP->m_vCenterf [0] /= float (faceP->m_nVerts);
-	faceP->m_vNormalf [0].Assign (faceP->m_vNormal);
-	faceP->m_faceWinding = FaceWinding (&m_faceVerts [faceP->m_nIndex].m_vertex, &m_faceVerts [faceP->m_nIndex + 1].m_vertex, &m_faceVerts [faceP->m_nIndex + 2].m_vertex);
-
-	for (uint16_t j = 0; j < faceP->m_nVerts; j++)
-		AddEdge (faceP, m_faceVerts [faceP->m_nIndex + j].m_nIndex, m_faceVerts [faceP->m_nIndex + (j + 1) % faceP->m_nVerts].m_nIndex);
-	}
-return m_edges.Resize (m_nEdges) != NULL;
 }
 
 //------------------------------------------------------------------------------

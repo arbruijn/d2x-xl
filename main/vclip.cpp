@@ -399,8 +399,13 @@ vc.nFrameCount = cf.ReadInt ();
 vc.xFrameTime = cf.ReadFix ();
 vc.flags = cf.ReadInt ();
 vc.nSound = cf.ReadShort ();
-for (int32_t j = 0; j < MAX_ANIMATION_FRAMES; j++)
+for (int32_t j = 0; j < MAX_ANIMATION_FRAMES; j++) {
 	vc.frames [j].index = cf.ReadShort ();
+#if DBG
+	if ((nDbgTexture >= 0) && (vc.frames [j].index == nDbgTexture))
+		BRP;
+#endif
+	}
 vc.lightValue = cf.ReadFix ();
 }
 

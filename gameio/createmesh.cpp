@@ -1635,6 +1635,37 @@ return 1;
 }
 
 //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
+void CGeoEdge::Setup (void)
+{
+m_fScale = 1.0f;
+m_fSplit = 0.0f;
+m_vOffset.SetZero ();
+m_dot = abs (CFixVector::Dot (m_faces [0].m_vNormal, m_faces [1].m_vNormal));
+if ((m_dot > 60000) && (m_dot <= 63500)) { 
+	m_fScale = X2F (m_dot);
+	m_fScale  = (0.5f + 0.5f * (1.0f - m_fScale  * m_fScale));
+	if (m_fScale < 0.75f) {
+		if (Rand (8) == 0)
+			m_fSplit = 0.3f + 0.4f * RandFloat ();
+		else {
+			m_fSplit = 0.0f;
+			m_vOffset = gameData.segData.fVertices [m_nVertices [1]];
+			m_vOffset -= gameData.segData.fVertices [m_nVertices [0]];
+			float h = (1.0f - m_fScale) * 0.25f;
+			m_vOffset *= h + (2.0f * h) * RandFloat ();
+			}
+		}
+	}
+else {
+	}
+}
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 int32_t CSegmentData::CountEdges (void)
 {
@@ -1644,7 +1675,7 @@ int32_t CSegmentData::CountEdges (void)
 for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
 	CSide* sideP = segP->Side (0);
 	for (int32_t j = 0; j < 6; j++, sideP++) {
-		if (segP->ChildId (j) < 0) {
+		if ((segP->ChildId (j) < 0) || (sideP->Wall () && !sideP->Wall ()->IsInvisible ())) {
 			switch (sideP->Shape ()) {
 				case SIDE_SHAPE_RECTANGLE:
 					nEdges += 4;
@@ -1698,7 +1729,11 @@ else {
 edgeP->m_faces [i].m_nItem = nSegment;
 edgeP->m_faces [i].m_nFace = nSide;
 edgeP->m_faces [i].m_vNormal = gameData.Segment (nSegment)->Side (nSide)->Normal (2);
-return i == 0;
+
+if (i == 0)
+	return 1;
+edgeP->Setup ();
+return 0;
 }
 
 //------------------------------------------------------------------------------
@@ -1717,7 +1752,7 @@ for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
 		continue;
 	CSide* sideP = segP->Side (0);
 	for (int32_t j = 0; j < 6; j++, sideP++) {
-		if (segP->ChildId (j) >= 0)
+		if ((segP->ChildId (j) >= 0) && (!sideP->Wall () || sideP->Wall ()->IsInvisible ())) 
 			continue;
 		int32_t nVertices;
 		switch (sideP->Shape ()) {
@@ -1734,6 +1769,8 @@ for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
 			AddEdge (i, j, sideP->m_corners [k], sideP->m_corners [(k + 1) % nVertices]);
 		}
 	}
+if (!gameData.segData.edgeVertices.Create (gameData.segData.nEdges * 2))
+	return -1;
 return gameData.segData.nEdges;
 }
 

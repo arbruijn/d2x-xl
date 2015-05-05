@@ -86,6 +86,22 @@ class CFace : public CContourInfo {
 
 inline int32_t operator- (RenderModel::CFace* f, CArray<RenderModel::CFace>& a) { return a.Index (f); }
 
+class CModelEdge {
+	public:
+		uint16_t			m_nVertices [2];
+		CFloatVector3	m_vertices [2][2];
+		CFloatVector3	m_normals [2][2];
+		float				m_fDot;
+
+	public:
+		void Transform (void);
+		int32_t IsFacingViewer (int16_t nFace);
+		int32_t IsContour (void);
+		int32_t Visibility (void);
+		int32_t Type (void);
+	};
+
+
 class CSubModel {
 	public:
 		int16_t					m_nSubModel;
@@ -123,6 +139,8 @@ class CSubModel {
 		uint8_t					m_nFrames;
 		uint8_t					m_iFrame;
 		time_t					m_tFrame;
+		CArray<CModelEdge>	m_edges;
+		uint16_t					m_nEdges;
 
 	public:
 		CSubModel () { Init (); }
@@ -136,6 +154,11 @@ class CSubModel {
 		void GatherVertices (CArray<CVertex>& source, CArray<CVertex>& dest);
 		void Size (CModel* pm, CObject* objP, CFixVector* vOffset);
 
+		uint16_t CountEdges (void);
+		int32_t FindEdge (uint16_t v1, uint16_t v2);
+		void AddEdge (CModel *modelP, CFace* faceP, uint16_t v1, uint16_t v2);
+		bool BuildEdgeList (CModel* modelP);
+
 		void GatherContourEdges (CModel* modelP);
 		void GatherLitFaces (CModel* modelP, CFloatVector3& vLight);
 	};
@@ -147,16 +170,6 @@ class CVertNorm {
 		CFloatVector3	vNormal;
 		uint8_t			nVerts;
 	};
-
-class CModelEdge {
-	public:
-		uint16_t			m_nVertices [2];
-		CFace*			m_faces [2];
-
-	public:
-		uint16_t IsContour (void);
-	};
-
 
 class CVertexOwner {
 	public:
@@ -191,14 +204,12 @@ class CModel {
 		CArray<CFace>							m_faces;
 		CArray<CRenderVertex>				m_vertBuf [2];
 		CArray<uint16_t>						m_index [2];
-		CArray<CModelEdge>					m_edges;
 		CStack<CFace*>							m_litFaces;
 		CStack<uint16_t>						m_contourEdges;
 		int16_t									m_nGunSubModels [MAX_GUNS];
 		float										m_fScale;
 		int16_t									m_nType; //-1: custom mode, 0: default model, 1: alternative model, 2: hires model
 		uint16_t									m_nFaces;
-		uint16_t									m_nEdges;
 		uint16_t									m_iFace;
 		uint16_t									m_nVerts;
 		uint16_t									m_nFaceVerts;
@@ -248,11 +259,6 @@ class CModel {
 		CFace* AddPOFFace (CSubModel* psm, CFace* pmf, CFixVector* pn, uint8_t* p, CArray<CBitmap*>& modelBitmaps, CFloatVector* objColorP, bool bTextured = true);
 		int32_t GetPOFModelItems (void *modelDataP, CAngleVector *pAnimAngles, int32_t nThis, int32_t nParent,
 										  int32_t bSubObject, CArray<CBitmap*>& modelBitmaps, CFloatVector *objColorP);
-
-		uint16_t CountEdges (void);
-		int32_t FindEdge (uint16_t v1, uint16_t v2);
-		void AddEdge (CFace* faceP, uint16_t v1, uint16_t v2);
-		bool BuildEdgeList (void);
 
 	};	
 

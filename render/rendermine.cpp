@@ -60,6 +60,7 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #include "sparkeffect.h"
 #include "createmesh.h"
 #include "systemkeys.h"
+#include "glow.h"
 #include "postprocessing.h"
 
 #if USE_OPENMP
@@ -756,21 +757,16 @@ glPolygonMode (GL_BACK, GL_FILL);       // Draw Backfacing Polygons As Wireframe
 
 void RenderEdges (void)
 {
+if (!gameData.segData.edgeVertices.Buffer ())
+	return;
+
 	CGeoEdge			*edgeP = gameData.segData.edges.Buffer ();
 	CFixVector		vViewDir, vViewer = gameData.objData.viewerP->Position ();
 	int32_t			nVisibleSegs = gameData.render.mine.visibility [0].nSegments;
 	CShortArray&	visibleSegs = gameData.render.mine.visibility [0].segments;
 	CFloatVector	vertices [2];
+	int32_t			nVertices [2] = { 0, gameData.segData.nEdges };
 	float				nLineWidths [2] = { automap.Active () ? 6.0f : 12.0f, automap.Active () ? 4.0f : 8.0f };
-
-ogl.SetTexturing (false);
-ogl.SetBlendMode (GL_LEQUAL);
-ogl.SetupTransform (1);
-#if 1
-glColor3f (0.01f, 0.01f, 0.01f);
-#else
-glColor3f (1, 1, 1);
-#endif
 
 for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 	int32_t nVisible = 0;
@@ -799,29 +795,81 @@ for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 	if (!nVisible)
 		continue;
 
-	if (nVisible != 3) { // only one visible -> contour edge
-		glLineWidth (nLineWidths [0]);
-		}
-	else {
-		fix dot = CFixVector::Dot (edgeP->m_faces [0].m_vNormal, edgeP->m_faces [1].m_vNormal);
-		if ((dot < -62500) || (dot > 62500)) // ~ cos (-150°)
+	int32_t nType = nVisible == 3;
+	if (nType && (edgeP->m_dot > 63500)) // don't draw a line at flat angles
 			continue;
-		glLineWidth (nLineWidths [1]);
+
+	int32_t bSplit = edgeP->m_fSplit != 0.0f;
+
+#if 0
+	if (!nType || !bSplit || !(dot > 60000))
+		continue;
+#endif
+
+	for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
+		for (int32_t j = 0; j < 2; j++) {
+			vertices [j] = gameData.segData.fVertices [edgeP->m_nVertices [j]];
+			CFloatVector v;
+#if 1
+			if (j && nType && (edgeP->m_dot > 60000)) {
+				v = vertices [1];
+				v -= vertices [0];
+				v *= edgeP->m_fScale;
+				if (bSplit) { // if outline is split, each partial outline starts at one of the edge's vertices
+					v *= h ? 1.0f - edgeP->m_fSplit : edgeP->m_fSplit;
+					if (h == 1) 
+						vertices [0] = vertices [1] - v;
+					else
+						vertices [1] = vertices [0] + v;
+					}
+				else { // otherwise the outline is offset from the edge's start vertex
+					vertices [1] = vertices [0] + v;
+					vertices [0] += edgeP->m_vOffset;
+					vertices [1] += edgeP->m_vOffset;
+					}
+				}
+#endif
+			}
+
+		for (int32_t j = 0; j < 2; j++) {
+			CFloatVector v;	// pull a bit closer to viewer to avoid z fighting with related polygon
+			v.Assign (vViewer - vertices [j]);
+			float l = CFloatVector::Normalize (v);
+			v /= sqrt (sqrt (l));
+			v += vertices [j]; 
+			if (nType) 
+				gameData.segData.edgeVertices [--nVertices [1]] = v;
+			else
+				gameData.segData.edgeVertices [nVertices [0]++] = v;
+			}
 		}
-	for (int32_t j = 0; j < 2; j++) {
-		CFloatVector v;
-		v.Assign (vViewer - gameData.segData.vertices [edgeP->m_nVertices [j]]);
-		float l = CFloatVector::Normalize (v);
-		vertices [j] = gameData.segData.fVertices [edgeP->m_nVertices [j]];
-		v /= sqrt (l);
-		vertices [j] += v; 
-		}
-	glBegin (GL_LINES);
-	glVertex3fv ((GLfloat*) &vertices [0]);
-	glVertex3fv ((GLfloat*) &vertices [1]);
-	glEnd ();
 	}
+
+ogl.SetBlendMode (GL_LEQUAL);
+ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
+ogl.SetTexturing (false);
+OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), gameData.segData.edgeVertices.Buffer ());
+#if 1
+glColor3f (0.01f, 0.01f, 0.01f);
+#else
+glColor3f (1,1,1);
+#endif
+
+glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
+ogl.SetupTransform (1);
+
+int32_t bGlow = glowRenderer.Available (BLUR_OUTLINE);
+
+for (int32_t j = 0; j < 2; j++) {
+	int32_t h = j ? gameData.segData.nEdges - nVertices [1] : nVertices [0];
+	if (h) {
+		glLineWidth (bGlow ? 2 * nLineWidths [j] : nLineWidths [j]);
+		OglDrawArrays (GL_LINES, j ? nVertices [1] : 0, h);
+		}
+	}
+ogl.DisableClientStates (0, 0, 0);
 ogl.ResetTransform (1);
+glowRenderer.End ();
 }
 
 //------------------------------------------------------------------------------

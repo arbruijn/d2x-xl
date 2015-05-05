@@ -1044,6 +1044,7 @@ DESTROY (gameData.segData.segDistTable);
 DESTROY (gameData.segData.slideSegs);
 DESTROY (gameData.segData.segFaces);
 DESTROY (gameData.segData.edges);
+DESTROY (gameData.segData.edgeVertices);
 gameData.segData.grids [0].Destroy ();
 gameData.segData.grids [1].Destroy ();
 nSegments = 0;
