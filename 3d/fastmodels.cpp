@@ -567,7 +567,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 	if (bEdges) {
 		RenderModel::CModelEdge* edgeP = subModelP->m_edges.Buffer ();
 		int32_t nVertices [2] = { 0, gameData.segData.nEdges };
-		for (i = subModelP->m_nEdges; i; edgeP++) 
+		for (i = subModelP->m_nEdges; i; i--, edgeP++) 
 			edgeP->Render (CFloatVector::ZERO, nVertices);
 		RenderOutline (nVertices);
 		}
