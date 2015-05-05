@@ -443,7 +443,6 @@ void G3TransformSubModel (CObject *objP, int16_t nModel, int16_t nSubModel, CAng
 {
 	RenderModel::CModel*		modelP = gameData.models.renderModels [bHires] + nModel;
 	RenderModel::CSubModel*	subModelP = modelP->m_subModels + nSubModel;
-	RenderModel::CFace*		faceP;
 	CAngleVector				va = animAnglesP ? animAnglesP [subModelP->m_nAngles] : CAngleVector::ZERO;
 	CFixVector					vo;
 	int32_t						i, j;
@@ -532,8 +531,7 @@ bRestoreMatrix = G3AnimateSubModel (objP, subModelP, nModel);
 if ((nExclusive < 0) || (nSubModel != nExclusive)) {
 	for (i = 0, j = modelP->m_nSubModels, subModelP = modelP->m_subModels.Buffer (); i < j; i++, subModelP++)
 		if (subModelP->m_nParent == nSubModel)
-			G3DrawSubModel (objP, nModel, i, nExclusive, modelBitmaps, animAnglesP, &vo, bHires,
-								 bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles);
+			G3DrawSubModel (objP, nModel, i, nExclusive, modelBitmaps, animAnglesP, &vo, bHires,bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 	}
 #endif
 #if 0
