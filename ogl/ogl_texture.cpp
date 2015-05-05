@@ -420,9 +420,9 @@ if (nColors < 3)
 #endif
 for (; nStrength > 0; nStrength--) {
 	if (nColors == 4) 
-		BoxBlurRGBA ((tRGBA*) src, (tRGBA*) dest, w, h, tw, th, r);
+		BoxBlurRGBA ((tRGBA*) src, (tRGBA*) dest, w, h, tw, th, r, bWrap);
 	else if (nColors == 3) 
-		BoxBlurRGB ((tRGB*) src, (tRGB*) dest, w, h, tw, th, r);
+		BoxBlurRGB ((tRGB*) src, (tRGB*) dest, w, h, tw, th, r, bWrap);
 	}
 return src;
 }
