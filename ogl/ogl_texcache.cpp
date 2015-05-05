@@ -290,11 +290,13 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segData.nSegme
 	}
 PrintLog (-1);
 
-//gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
+gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 
 PrintLog (1, "caching addon textures\n");
 CacheAddonTextures ();
 PrintLog (-1);
+
+gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 
 PrintLog (1, "caching model textures\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 1);
@@ -310,7 +312,6 @@ FORALL_OBJS (objP) {
 	}
 PrintLog (-1);
 
-//gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 
 PrintLog (1, "caching hostage sprites\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 3);
