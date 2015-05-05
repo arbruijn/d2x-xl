@@ -146,7 +146,7 @@ return m_normals [0][i];
 
 CFloatVector& CModelEdge::Vertex (int32_t i)
 {
-return m_vertices [0][i];
+return m_vertices [1][i];
 }
 
 //------------------------------------------------------------------------------

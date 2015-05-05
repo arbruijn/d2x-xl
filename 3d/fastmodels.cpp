@@ -711,7 +711,9 @@ void G3DrawModel (CObject *objP, int16_t nModel, int16_t nSubModel, CArray<CBitm
 	CActiveDynLight*		activeLightsP = sliP ? lightManager.Active (0) + sliP->nFirst : NULL;
 	tObjTransformation*	posP = OBJPOS (objP);
 
-if (!bEdges)
+if (bEdges)
+	ogl.SetTransform (0);
+else
 	ogl.SetupTransform (1);
 if (bLighting) {
 	nLights = sliP->nActive;
@@ -815,11 +817,10 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 			glDisable (GL_LIGHT0 + iLight);
 		}
 
-	modelP = gameData.models.renderModels [bHires] + nModel;
+	transformation.Begin (posP->vPos, posP->mOrient);
 
+	modelP = gameData.models.renderModels [bHires] + nModel;
 	if (bEdges) {
-		ogl.SetTransform (0);
-		transformation.Begin (posP->vPos, posP->mOrient);
 		if (bHires) {
 		for (int32_t i = 0; i < modelP->m_nSubModels; i++)
 				if (modelP->m_subModels [i].m_nParent == -1) 
@@ -830,12 +831,8 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 			G3TransformSubModel (objP, nModel, 0, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
 										bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 			}
-		transformation.End ();
-		ogl.SetTransform (1);
-		ogl.SetupTransform (1);
 		}
 
-	transformation.Begin (posP->vPos, posP->mOrient);
 	if (bHires) {
 		for (int32_t i = 0; i < modelP->m_nSubModels; i++)
 			if (modelP->m_subModels [i].m_nParent == -1) {
@@ -847,8 +844,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 		G3DrawSubModel (objP, nModel, 0, nSubModel, modelBitmaps, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
 							 bHires, bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 		}
-	//if (nSubModel < 0)
-		transformation.End ();
+	transformation.End ();
 	if (!bLighting)
 		break;
 	}
