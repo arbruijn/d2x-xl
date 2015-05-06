@@ -790,11 +790,11 @@ if ((gameStates.render.nType == RENDER_TYPE_OBJECTS) && (m_nFaces < 2))
 	BRP;
 //	return;
 
-int32_t nType = /*(gameStates.render.nType == RENDER_TYPE_OBJECTS) ? 0 :*/ (m_nFaces < 2) ? 0 : Type ();
+int32_t nType = Type ();
 if (nType < 0)
 	return;
 
-#if 0
+#if 0 //DBG
 if (gameStates.render.nType == RENDER_TYPE_OBJECTS) {
 	if (nType)
 		return;
@@ -838,18 +838,24 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 		}
 
 	for (int32_t j = 0; j < 2; j++) {
-		if (0 || (gameStates.render.nType == RENDER_TYPE_OBJECTS)) {
+#if 1
+		if (gameStates.render.nType == RENDER_TYPE_OBJECTS) {
 			if (nType) 
 				gameData.segData.edgeVertices [--nVertices [1]] = vertices [j];
 			else
 				gameData.segData.edgeVertices [nVertices [0]++] = vertices [j];
 			}
-		else {
+		else 
+#endif
+			{
 			CFloatVector v = vViewer;	// pull a bit closer to viewer to avoid z fighting with related polygon
 			v -= vertices [j];
 			float l = CFloatVector::Normalize (v);
-			//v /= sqrt (sqrt (l));
+#if 0
+			v /= sqrt (sqrt (l));
+#else
 			v *= 2.0f;
+#endif
 			v += vertices [j]; 
 			if (nType) 
 				gameData.segData.edgeVertices [--nVertices [1]] = v;

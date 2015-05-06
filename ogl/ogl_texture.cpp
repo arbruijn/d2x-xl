@@ -45,6 +45,52 @@ CStack< char* > texIds;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+#if 0
+
+int32_t XGradient (tRGBA* image, int32_t x, int32_t y, int32_t w, int32_t h)
+{
+    return image.at<uchar>(y-1, x-1) +
+                2*image.at<uchar>(y, x-1) +
+                 image.at<uchar>(y+1, x-1) -
+                  image.at<uchar>(y-1, x+1) -
+                   2*image.at<uchar>(y, x+1) -
+                    image.at<uchar>(y+1, x+1);
+}
+
+// Computes the y component of the gradient vector
+// at a given point in a image
+// returns gradient in the y direction
+
+int32_t yGradient(Mat image, int32_t x, int32_t y, int32_t w, int32_t h)
+{
+    return image.at<uchar>(y-1, x-1) +
+                2*image.at<uchar>(y-1, x) +
+                 image.at<uchar>(y-1, x+1) -
+                  image.at<uchar>(y+1, x-1) -
+                   2*image.at<uchar>(y+1, x) -
+                    image.at<uchar>(y+1, x+1);
+}
+
+int32_t SobelFilterRGBA (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th)
+{
+for (int32_t y = 0; y < h; y++) {
+   for (int32_t x = 0; x < w; x++) {
+      gx = XGradient (src, x, y, w);
+      gy = YGradient (src, x, y, h);
+      sum = abs(gx) + abs(gy);
+      sum = sum > 255 ? 255:sum;
+      sum = sum < 0 ? 0 : sum;
+      dst.at<uchar>(y,x) = sum;
+		}
+   }
+}
+		  
+#endif
+
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+
 static int32_t bWrapBlur = 1;
 static int32_t nBlurStrength = 1;
 
