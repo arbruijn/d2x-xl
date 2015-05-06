@@ -223,9 +223,9 @@ if (!flags) {	//draw entire object
 	ogl.SetTransform ((gameStates.app.bEndLevelSequence < EL_OUTSIDE) && 
 							!(SHOW_DYN_LIGHT && (gameOpts->ogl.bObjLighting || gameOpts->ogl.bLightObjects)));
 	transformation.Begin (*pos, *orient);
-	gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
+	gameOpts->render.EnableCartoonStyle ();
 	G3DrawPolyModel (objP, modelP->Data (), gameData.models.textures, animAngles, NULL, light, glowValues, colorP, NULL, nModel);
-	gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
+	gameOpts->render.DisableCartoonStyle ();
 	transformation.End ();
 	}
 else {	
@@ -246,10 +246,10 @@ else {
 				G3RenderModel (objP, nModel, i, modelP, gameData.models.textures, animAngles, &vOffset, light, glowValues, colorP);
 #endif
 				transformation.Begin (vOffset);
-				gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
+				gameOpts->render.EnableCartoonStyle ();
 				G3DrawPolyModel (objP, modelP->Data () + modelP->SubModels ().ptrs [i], gameData.models.textures,
 									  animAngles, NULL, light, glowValues, colorP, NULL, nModel);
-				gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
+				gameOpts->render.DisableCartoonStyle ();
 				transformation.End ();
 				}
 			}

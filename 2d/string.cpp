@@ -657,6 +657,7 @@ for (;;) {
 	bool b = bRegisterBitmaps;
 	bRegisterBitmaps = false;
 	bmP = CBitmap::Create (0, w, h, 4);
+	bmP->SetRenderStyle (0);
 	bRegisterBitmaps = b;
 	if (!bmP) {
 		fontManager.SetScale (fScale);

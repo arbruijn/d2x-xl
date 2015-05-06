@@ -467,7 +467,24 @@ class CRenderOptions {
 		CRenderOptions () { Init (); }
 		void Init (int32_t i = 0);
 		int32_t ShadowQuality (void);
+
+		inline int32_t SetCartoonStyle (int32_t bNewStyle) {
+			int32_t bOldStyle = bCartoonStyle;
+			bCartoonStyle = bNewStyle;
+			return bOldStyle;
+			}
+
+		inline int32_t ToggleCartoonStyle (void) { return SetCartoonStyle (-bCartoonStyle); }
+#if DBG
+		inline int32_t EnableCartoonStyle (void);
+		inline int32_t DisableCartoonStyle (void);
+#endif
 	};
+
+#if !DBG
+#	define	EnableCartoonStyle	ToggleCartoonStyle
+#	define	DisableCartoonStyle	ToggleCartoonStyle
+#endif
 
 //------------------------------------------------------------------------------
 

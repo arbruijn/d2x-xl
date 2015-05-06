@@ -1777,7 +1777,7 @@ if (!m_info.texP->IsRenderBuffer ())
 			bufP = m_info.texP->Convert (dxo = 0, dyo = 0, this, m_info.nTranspType, superTransp, nColors);
 			}
 #if DBG
-		if (strstr (m_info.szName, "ship"))
+		if (strstr (m_info.szName, "String Bitmap"))
 			BRP;
 		if (strstr (m_info.szName, "rbot"))
 			BRP;

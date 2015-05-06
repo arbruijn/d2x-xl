@@ -145,9 +145,9 @@ int32_t CAddonBitmap::Bind (int32_t bMipMaps)
 {
 if (!m_bmP)
 	return -1;
-gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
+gameOpts->render.EnableCartoonStyle ();
 int32_t h = m_bmP->Bind (bMipMaps);
-gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
+gameOpts->render.DisableCartoonStyle ();
 return h;
 }
 
@@ -219,7 +219,7 @@ return (nFrame >= m_nFrames) ? NULL : m_frames [nFrame].Bitmap ();
 
 int32_t LoadAddonBitmap (CBitmap **bmPP, const char *pszName, int32_t *bHaveP, bool bBind)
 {
-gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
+gameOpts->render.EnableCartoonStyle ();
 if (!*bHaveP) {
 	char	szFilename [FILENAME_LEN];
 	CFile	cf;
@@ -240,7 +240,7 @@ if (!*bHaveP) {
 		}
 	*bmPP = bmP;
 	}
-gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
+gameOpts->render.DisableCartoonStyle ();
 return *bHaveP > 0;
 }
 

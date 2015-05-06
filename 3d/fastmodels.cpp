@@ -1027,8 +1027,6 @@ if (!bHires && (objP->info.nType == OBJ_POWERUP)) {
 		gameData.models.vScale.Set (I2X (3) / 2, I2X (3) / 2, I2X (3) / 2);
 	}
 
-//gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
-
 int32_t bRenderTransparency = bHires && !gameStates.render.bCloaked && (gameStates.render.nType == RENDER_TYPE_TRANSPARENCY) && modelP->m_bHasTransparency;
 
 if (bRenderTransparency) {
@@ -1060,8 +1058,6 @@ else {
 	if ((objP->info.nType != OBJ_DEBRIS) && bHires && modelP->m_bHasTransparency)
 		transparencyRenderer.AddObject (objP);
 	}
-
-//gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 
 glBindBufferARB (GL_ARRAY_BUFFER_ARB, 0);
 glBindBufferARB (GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
