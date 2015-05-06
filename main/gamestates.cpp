@@ -370,4 +370,20 @@ InitSoundStates ();
 InitVideoStates ();
 }
 
+//------------------------------------------------------------------------------
+
+#if DBG
+
+int32_t CRenderStates::EnableCartoonStyle (void)
+{
+return ToggleCartoonStyle ();
+}
+
+int32_t CRenderStates::DisableCartoonStyle (void)
+{
+return ToggleCartoonStyle ();
+}
+
+#endif
+
 // ----------------------------------------------------------------------------

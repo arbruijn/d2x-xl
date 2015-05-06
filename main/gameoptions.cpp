@@ -381,22 +381,6 @@ return 2;
 
 //------------------------------------------------------------------------------
 
-#if DBG
-
-int32_t CRenderOptions::EnableCartoonStyle (void)
-{
-return ToggleCartoonStyle ();
-}
-
-int32_t CRenderOptions::DisableCartoonStyle (void)
-{
-return ToggleCartoonStyle ();
-}
-
-#endif
-
-//------------------------------------------------------------------------------
-
 void CGameplayOptions::Init (int32_t i)
 {
 if (i) {
