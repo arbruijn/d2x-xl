@@ -93,6 +93,7 @@ for (int32_t y = 0; y < h; y++) {
 
 static int32_t bWrapBlur = 1;
 static int32_t nBlurStrength = 1;
+static int32_t nColorSteps = 15;
 
 static inline int32_t Wrap (int32_t i, int32_t l)
 {
@@ -488,9 +489,9 @@ void PosterizeRGBA (tRGBA *src, int32_t w, int32_t h, int32_t tw)
 {
 for (int32_t y = 0; y < h; y++) {
 	for (int32_t x = 0; x < w; x++) {
-		src->r = Posterize ((int32_t) src->r);
-		src->g = Posterize ((int32_t) src->g);
-		src->b = Posterize ((int32_t) src->b);
+		src->r = Posterize ((int32_t) src->r, nColorSteps);
+		src->g = Posterize ((int32_t) src->g, nColorSteps);
+		src->b = Posterize ((int32_t) src->b, nColorSteps);
 		src++;
 		}
 	src += tw - w;
@@ -503,9 +504,9 @@ void PosterizeRGB (tRGB *src, int32_t w, int32_t h, int32_t tw)
 {
 for (int32_t y = 0; y < h; y++) {
 	for (int32_t x = 0; x < w; x++) {
-		src->r = Posterize ((int32_t) src->r);
-		src->g = Posterize ((int32_t) src->g);
-		src->b = Posterize ((int32_t) src->b);
+		src->r = Posterize ((int32_t) src->r, nColorSteps);
+		src->g = Posterize ((int32_t) src->g, nColorSteps);
+		src->b = Posterize ((int32_t) src->b, nColorSteps);
 		src++;
 		}
 	src += tw - w;
