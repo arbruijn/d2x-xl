@@ -1687,7 +1687,7 @@ m_info.texP->Prepare ();
 #if DBG
 if (strstr (m_info.szName, "ASE model"))
 	BRP;
-if (strstr (m_info.szName, "rbot"))
+if (strstr (m_info.szName, "shield.tga"))
 	BRP;
 #endif
 //	if (width!=twidth || height!=theight)
@@ -1750,6 +1750,8 @@ if ((m_info.nType == BM_TYPE_STD) && Parent () && (Parent () != this))
 
 #if DBG
 if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
+	BRP;
+if (strstr (m_info.szName, "shield.tga"))
 	BRP;
 #endif
 
@@ -1934,6 +1936,11 @@ if ((bmP = HasOverride ()) && (bmP != this)) {
 
 #endif
 
+#if DBG
+if (strstr (m_info.szName, "shield.tga"))
+	BRP;
+#endif
+
 #if RENDER2TEXTURE
 if (!(m_info.texP && m_info.texP->IsRenderBuffer ()))
 #endif
@@ -2005,7 +2012,10 @@ if ((nDbgTexture >= 0) && (m_info.nId == nDbgTexture))
 	BRP;
 if (bMipMaps < 0)
 	BRP;
+if (strstr (m_info.szName, "shield.tga"))
+	BRP;
 #endif
+
 switch (m_info.nType) {
 	case BM_TYPE_STD: // primary (low res) texture
 		if ((bmP = HasOverride ())) {

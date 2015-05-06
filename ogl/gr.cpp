@@ -160,7 +160,7 @@ if (gameStates.app.bInitialized && ogl.m_states.bInitialized) {
 int32_t FindDisplayMode (int16_t w, int16_t h)
 {
 	CDisplayModeInfo	dmi;
-	int32_t					i;
+	int32_t				i;
 
 dmi.w = w;
 dmi.h = h;

@@ -298,8 +298,6 @@ PrintLog (1, "caching addon textures\n");
 CacheAddonTextures ();
 PrintLog (-1);
 
-gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
-
 PrintLog (1, "caching model textures\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 1);
 bModelLoaded.Clear ();
