@@ -936,7 +936,7 @@ for (int32_t j = 0; j < 2; j++) {
 	if (glowRenderer.Available (BLUR_OUTLINE))
 		fScale *= 2.0f;
 	if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
-		fScale *= 0.5f / float (j);
+		fScale *= 0.5f / float (j + 1);
 
 	int32_t h = j ? gameData.segData.nEdges - nVertices [1] : nVertices [0];
 	if (h) {
