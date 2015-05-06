@@ -1685,7 +1685,7 @@ m_info.texP->Prepare ();
 #endif
 
 #if DBG
-if (strstr (m_info.szName, "ASE model 108"))
+if (strstr (m_info.szName, "ASE model"))
 	BRP;
 if (strstr (m_info.szName, "rbot"))
 	BRP;
@@ -1710,7 +1710,7 @@ if (!m_info.texP->IsRenderBuffer ())
 			bufP = m_info.texP->Convert (dxo = 0, dyo = 0, this, m_info.nTranspType, superTransp, nColors);
 			}
 #if DBG
-		if (strstr (m_info.szName, "pyrorl-body"))
+		if (strstr (m_info.szName, "ASE model"))
 			BRP;
 		if (strstr (m_info.szName, "rbot"))
 			BRP;

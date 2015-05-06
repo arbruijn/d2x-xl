@@ -784,7 +784,7 @@ return gameData.segData.fVertices [m_nVertices [i]];
 
 //------------------------------------------------------------------------------
 
-void CGeoEdge::Render (CFloatVector vViewer, int32_t nVertices [])
+void CGeoEdge::Render (CFloatVector vViewer, int32_t nVertices [], int32_t bOnlyOutline)
 {
 if ((gameStates.render.nType == RENDER_TYPE_OBJECTS) && (m_nFaces < 2))
 	BRP;
@@ -792,6 +792,8 @@ if ((gameStates.render.nType == RENDER_TYPE_OBJECTS) && (m_nFaces < 2))
 
 int32_t nType = Type ();
 if (nType < 0)
+	return;
+if (nType && bOnlyOutline)
 	return;
 
 #if 0 //DBG
@@ -927,16 +929,15 @@ glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
 if (gameStates.render.nType == RENDER_TYPE_GEOMETRY)
 	ogl.SetupTransform (1);
 
-float fScale = 1.0f;
-
-if (glowRenderer.Available (BLUR_OUTLINE))
-	fScale *= 2.0f;
-if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
-	fScale *= 0.5f;
-
 ogl.SetDepthMode (GL_LEQUAL);
 
 for (int32_t j = 0; j < 2; j++) {
+	float fScale = 1.0f;
+	if (glowRenderer.Available (BLUR_OUTLINE))
+		fScale *= 2.0f;
+	if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
+		fScale *= 0.5f / float (j);
+
 	int32_t h = j ? gameData.segData.nEdges - nVertices [1] : nVertices [0];
 	if (h) {
 		glLineWidth (fScale * nLineWidths [j]);

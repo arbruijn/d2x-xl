@@ -1645,7 +1645,7 @@ m_fSplit = 0.0f;
 m_vOffset.SetZero ();
 m_fDot = fabs (CFloatVector::Dot (Normal (0), Normal (1)));
 if ((m_fDot > 0.9f) && (m_fDot <= 0.975f)) { 
-	m_fScale  = (0.5f + 0.5f * (1.0f - m_fDot * m_fDot));
+	m_fScale = (0.5f + 0.5f * (1.0f - m_fDot * m_fDot));
 	if (m_fScale < 0.75f) {
 		if (Rand (8) == 0)
 			m_fSplit = 0.3f + 0.4f * RandFloat ();
@@ -1653,8 +1653,13 @@ if ((m_fDot > 0.9f) && (m_fDot <= 0.975f)) {
 			m_fSplit = 0.0f;
 			m_vOffset = Vertex (1);
 			m_vOffset -= Vertex (0);
+#if 1
+			if (Rand (2) == 0)
+				m_fOffset = 1.0f - m_fScale;
+#else
 			m_fOffset = (1.0f - m_fScale) * 0.25f;
 			m_fOffset *= m_fOffset + (2.0f * m_fOffset) * RandFloat ();
+#endif
 			m_vOffset *= m_fOffset;
 			}
 		}

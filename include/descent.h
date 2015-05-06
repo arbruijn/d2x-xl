@@ -2087,7 +2087,7 @@ class CGeoEdge {
 		virtual int32_t Type (void);
 		virtual CFloatVector& Normal (int32_t i);
 		virtual CFloatVector& Vertex (int32_t i);
-		void Render (CFloatVector vViewer, int32_t nVertices []);
+		void Render (CFloatVector vViewer, int32_t nVertices [], int32_t bOnlyOutline = false);
 	};
 
 //------------------------------------------------------------------------------
