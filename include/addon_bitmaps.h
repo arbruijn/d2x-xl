@@ -25,7 +25,7 @@ class CAddonBitmap : public CTGA {
 		void Unload (void);
 		inline CBitmap* Bitmap (void) { return m_bmP; }
 		inline CTexture* Texture (void) { return m_bmP ? m_bmP->Texture () : NULL; }
-		inline int32_t Bind (int32_t bMipMaps) { return m_bmP ? m_bmP->Bind (bMipMaps) : -1; }
+		int32_t Bind (int32_t bMipMaps);
 		~CAddonBitmap () { Unload (); }
 };
 

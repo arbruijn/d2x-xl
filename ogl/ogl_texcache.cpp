@@ -214,7 +214,11 @@ return 1;
 static void CacheAddonTextures (void)
 {
 for (int32_t i = 0; i < MAX_ADDON_BITMAP_FILES; i++) {
+	if (i > 1)
+		gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 	PageInAddonBitmap (-i - 1);
+	if (i > 1)
+		gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 	BM_ADDON (i)->SetTranspType (0);
 	BM_ADDON (i)->SetupTexture (1, 1); 
 	}
@@ -289,8 +293,6 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segData.nSegme
 		}
 	}
 PrintLog (-1);
-
-gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 
 PrintLog (1, "caching addon textures\n");
 CacheAddonTextures ();

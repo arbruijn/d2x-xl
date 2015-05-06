@@ -971,6 +971,7 @@ RenderSegmentList (RENDER_TYPE_ZCULL);	// render depth only
 RenderCockpitModel ();
 #endif
 #if 1
+gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
 if (gameOpts->render.bCartoonStyle)
@@ -985,6 +986,7 @@ if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {
 	}
 #	endif
 #endif
+gameOpts->render.bCartoonStyle = -gameOpts->render.bCartoonStyle;
 gameData.app.nMineRenderCount++;
 PROF_END(ptRenderMine);
 }
