@@ -567,8 +567,9 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 	if (bEdges) {
 		RenderModel::CModelEdge* edgeP = subModelP->m_edges.Buffer ();
 		int32_t nVertices [2] = { 0, gameData.segData.nEdges };
+		int32_t bOnlyOutline = bHires || objP->IsWeapon ();
 		for (i = subModelP->m_nEdges; i; i--, edgeP++) 
-			edgeP->Render (CFloatVector::ZERO, nVertices, /*bHires*/0);
+			edgeP->Render (CFloatVector::ZERO, nVertices, bOnlyOutline);
 		RenderOutline (nVertices);
 		}
 	else {
@@ -1052,8 +1053,7 @@ if (bRenderTransparency) {
 		}
 	}
 else {
-	//if (!gameOpts->render.bCartoonStyle)
-		G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles, 0);
+	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles, 0);
 	modelP->m_bRendered = 1;
 	if (gameData.models.thrusters [nModel].nCount < 0)
 		gameData.models.thrusters [nModel].nCount = -gameData.models.thrusters [nModel].nCount;
@@ -1075,7 +1075,7 @@ if (gameOpts->render.debug.bWireFrame)
 	glLineWidth (3.0f);
 #endif
 
-if (gameOpts->render.bCartoonStyle && !bRenderTransparency)
+if (gameOpts->render.bCartoonStyle && !bRenderTransparency && (!objP->IsWeapon () || objP->IsMissile ()))
 	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles, 1);
 
 #if 1 //!DBG
