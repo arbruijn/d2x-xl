@@ -246,7 +246,7 @@ else {
 	bHiresModels [0] =
 	bHiresModels [1] = 1;
 	bUseLightmaps = 0;
-	bCartoonStyle = 1;
+	bCartoonStyle = 0;
 	effects.bAutoTransparency = 1;
 	nMathFormat = 2;
 	nDefMathFormat = 2;

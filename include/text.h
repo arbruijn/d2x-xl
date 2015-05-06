@@ -2012,12 +2012,12 @@ void LoadGameTexts(void);
 #define TXT_MINIMALIST_HUD_LOW		GT(1254)
 #define TXT_HUD_SEPARATORS				GT(1255)
 #define TXT_DODGE_THIS					GT(1256)
+#define TXT_RENDER_STYLE				GT(1257)
+#define TXT_REALISTIC					GT(1258)
+#define TXT_CARTOON						GT(1259)
 
 #if 0
 
-#define TXT_					GT(1257)
-#define TXT_					GT(1258)
-#define TXT_					GT(1259)
 #define TXT_					GT(1260)
 #define TXT_					GT(1261)
 #define TXT_					GT(1262)
@@ -2630,10 +2630,10 @@ void LoadGameTexts(void);
 #define HTX_MINIMALIST_HUD_WIDTH		HT(450)
 #define HTX_MINIMALIST_HUD_HEIGHT	HT(451)
 #define HTX_HUD_SEPARATORS				HT(452)
+#define HTX_RENDER_STYLE				HT(453)
 
 #if 0
 
-#define HTX_						HT(453)
 #define HTX_						HT(454)
 #define HTX_						HT(455)
 #define HTX_						HT(456)

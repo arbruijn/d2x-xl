@@ -466,6 +466,7 @@ for (i = 0; i < 2; i++) {
 		RP (gameOptions [i].render.nLightingMethod, i, 0);
 
 		RP (gameOptions [i].render.nQuality, i, 0);
+		RP (gameOptions [i].render.bCartoonStyle, i, 0);
 		RP (gameOptions [i].render.effects.bEnabled, i, 0);
 		RP (gameOptions [i].render.effects.bGlow, i, 0);
 		RP (gameOptions [i].render.effects.bSoftParticles, i, 0);
@@ -1025,6 +1026,7 @@ tParamValue defaultParams [] = {
 	 {"gameOptions[0].ogl.nMaxLightsPerPass", "8"},
 	 {"gameOptions[0].render.nLightingMethod", "0"},
 	 {"gameOptions[0].render.nQuality", "2"},
+	 {"gameOptions[0].render.bCartoonStyle", "0"},
 	 {"gameOptions[0].render.stereo.nGlasses", "0"},
 	 {"gameOptions[0].render.stereo.nMethod", "0"},
 	 {"gameOptions[0].render.stereo.nScreenDist", "3"},

@@ -74,6 +74,7 @@ static int32_t fpsTable [] = {0, 60};
 #endif
 
 static const char *pszRendQual [4];
+static const char *pszRendStyle [2];
 static const char *pszMeshQual [5];
 static const char *pszImgQual [5];
 static const char *pszColorLevel [3];
@@ -211,6 +212,15 @@ if ((m = menu ["colorization"])) {
 	if (gameOpts->render.color.nLevel != v) {
 		gameOpts->render.color.nLevel = v;
 		sprintf (m->Text (), TXT_LIGHTCOLOR, pszColorLevel [gameOpts->render.color.nLevel]);
+		m->m_bRebuild = 1;
+		}
+	}
+
+if ((m = menu ["render style"])) {
+	v = m->Value ();
+	if (gameOpts->render.bCartoonStyle != v) {
+		gameOpts->render.bCartoonStyle = v;
+		sprintf (m->Text (), TXT_RENDER_STYLE, pszRendStyle [gameOpts->render.bCartoonStyle]);
 		m->m_bRebuild = 1;
 		}
 	}
@@ -427,6 +437,9 @@ pszRendQual [1] = TXT_QUALITY_MED;
 pszRendQual [2] = TXT_QUALITY_HIGH;
 pszRendQual [3] = TXT_QUALITY_MAX;
 
+pszRendStyle [0] = TXT_REALISTIC;
+pszRendStyle [1] = TXT_CARTOON;
+
 pszMeshQual [0] = TXT_NONE;
 pszMeshQual [1] = TXT_SMALL;
 pszMeshQual [2] = TXT_MEDIUM;
@@ -595,6 +608,9 @@ do {
 		}
 
 	if (!gameStates.app.bPrecomputeLightmaps) {
+		sprintf (szSlider + 1, TXT_RENDER_STYLE, pszRendStyle [gameOpts->render.bCartoonStyle]);
+		*szSlider = *(TXT_RENDER_STYLE - 1);
+		m.AddSlider ("render style", szSlider + 1, gameOpts->render.bCartoonStyle, 0, 1, KEY_S, HTX_RENDER_STYLE);
 		sprintf (szSlider + 1, TXT_IMAGE_QUALITY, pszImgQual [gameOpts->render.nImageQuality]);
 		*szSlider = *(TXT_IMAGE_QUALITY - 1);
 		m.AddSlider ("image quality", szSlider + 1, gameOpts->render.nImageQuality, 0, 4, KEY_I, HTX_ADVRND_RENDQUAL);
