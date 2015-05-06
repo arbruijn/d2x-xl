@@ -794,7 +794,7 @@ int32_t nType = /*(gameStates.render.nType == RENDER_TYPE_OBJECTS) ? 0 :*/ (m_nF
 if (nType < 0)
 	return;
 
-#if 1
+#if 0
 if (gameStates.render.nType == RENDER_TYPE_OBJECTS) {
 	if (nType)
 		return;
@@ -918,6 +918,8 @@ if (glowRenderer.Available (BLUR_OUTLINE))
 	fScale *= 2.0f;
 if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
 	fScale *= 0.5f;
+
+ogl.SetDepthMode (GL_LEQUAL);
 
 for (int32_t j = 0; j < 2; j++) {
 	int32_t h = j ? gameData.segData.nEdges - nVertices [1] : nVertices [0];
