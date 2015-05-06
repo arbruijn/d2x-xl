@@ -542,9 +542,9 @@ src += nStart * tw;
 for (int32_t y = nStart; y < h; y += nStep) {
 	tRGBA *dest = src;
 	for (int32_t x = 0; x < w; x++) {
-		dest->r = Posterize ((int32_t) dest->r, nColorSteps);
-		dest->g = Posterize ((int32_t) dest->g, nColorSteps);
-		dest->b = Posterize ((int32_t) dest->b, nColorSteps);
+		dest->r = Posterize ((int32_t) dest->r);
+		dest->g = Posterize ((int32_t) dest->g);
+		dest->b = Posterize ((int32_t) dest->b);
 		dest++;
 		}
 	src += nStep * tw;
@@ -559,9 +559,9 @@ src += nStart * tw;
 for (int32_t y = nStart; y < h; y += nStep) {
 	tRGB *dest = src;
 	for (int32_t x = 0; x < w; x++) {
-		dest->r = Posterize ((int32_t) dest->r, nColorSteps);
-		dest->g = Posterize ((int32_t) dest->g, nColorSteps);
-		dest->b = Posterize ((int32_t) dest->b, nColorSteps);
+		dest->r = Posterize ((int32_t) dest->r);
+		dest->g = Posterize ((int32_t) dest->g);
+		dest->b = Posterize ((int32_t) dest->b);
 		dest++;
 		}
 	src += nStep * tw;
@@ -572,13 +572,16 @@ for (int32_t y = nStart; y < h; y += nStep) {
 
 void Posterize (GLubyte *src, int32_t w, int32_t h, int32_t tw, int32_t nColors) 
 {
-#if USE_OPENMP
+#if 0 //USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
+	if (nColors == 3) {
 #	pragma omp parallel
-	for (int32_t i = 0; i < gameStates.app.nThreads; i++) {
-		if (nColors == 3)
+		for (int32_t i = 0; i < gameStates.app.nThreads; i++)
 			PosterizeRGB ((tRGB*) src, w, h, tw, i, gameStates.app.nThreads);
-		else if (nColors == 4)
+		}
+	else if (nColors == 4) {
+#	pragma omp parallel
+		for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 			PosterizeRGBA ((tRGBA*) src, w, h, tw, i, gameStates.app.nThreads);
 		}
 	}
