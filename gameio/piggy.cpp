@@ -406,7 +406,7 @@ for (i = 0; i < nBitmapNum; i++) {
 		sprintf (szName, "%s#%d", szNameRead, bmh.dflags & DBM_NUM_FRAMES);
 	else
 		strcpy (szName, szNameRead);
-	memset (&bm, 0, sizeof (bm)); // important, because this texture will be cloned and must not contain any pointers to itself
+	bm.Reset ();
 	bm.SetWidth (bmh.width + ((int16_t) (bmh.wh_extra & 0x0f) << 8));
 	bm.SetHeight (bmh.height + ((int16_t) (bmh.wh_extra & 0xf0) << 4));
 	bm.SetBPP (1);

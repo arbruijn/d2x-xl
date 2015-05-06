@@ -514,6 +514,10 @@ nDescentCriticalError = 0;
 
 if (gameStates.app.nLogLevel > 1)
 	PrintLog (0, "loading lores texture '%s'\n", bmP->Name ());
+#if DBG
+if (strstr (bmP->Name (), "ship"))
+	BRP;
+#endif
 CFile* cfP = cfPiggy + bD1;
 if (!cfP->File ())
 	PiggyInitPigFile (NULL);

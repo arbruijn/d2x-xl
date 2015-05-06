@@ -1752,7 +1752,7 @@ m_info.texP->Prepare ();
 #endif
 
 #if DBG
-if (strstr (m_info.szName, "ASE model"))
+if (strstr (m_info.szName, "ship"))
 	BRP;
 if (strstr (m_info.szName, "shield.tga"))
 	BRP;
@@ -1777,7 +1777,7 @@ if (!m_info.texP->IsRenderBuffer ())
 			bufP = m_info.texP->Convert (dxo = 0, dyo = 0, this, m_info.nTranspType, superTransp, nColors);
 			}
 #if DBG
-		if (strstr (m_info.szName, "ASE model"))
+		if (strstr (m_info.szName, "ship"))
 			BRP;
 		if (strstr (m_info.szName, "rbot"))
 			BRP;
@@ -1785,7 +1785,7 @@ if (!m_info.texP->IsRenderBuffer ())
 		if (m_info.bCartoonize && (gameOpts->render.bCartoonStyle < 0)) {
 			int32_t w = Width () - dxo;
 			int32_t h = Height () - dxo;
-			bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), (w >= 512) ? 15 : (w >= 256) ? 11 : (w >= 128) ? 7 : 3, nColors, bWrapBlur, nBlurStrength);
+			bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), (w >= 512) ? 15 : (w >= 256) ? 11 : (w >= 128) ? 7 : 7, nColors, bWrapBlur, nBlurStrength);
 			Posterize (bufP, w, h, m_info.texP->TW (), nColors);
 			}
 		}
