@@ -1770,7 +1770,7 @@ if (!m_info.texP->IsRenderBuffer ())
 		if (strstr (m_info.szName, "rbot"))
 			BRP;
 #endif
-		if (gameOpts->render.bCartoonStyle < 0) {
+		if (m_info.bCartoonize && (gameOpts->render.bCartoonStyle < 0)) {
 			int32_t w = Width () - dxo;
 			int32_t h = Height () - dxo;
 			bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), (w >= 512) ? 15 : (w >= 256) ? 11 : (w >= 128) ? 7 : 3, nColors, bWrapBlur, nBlurStrength);
@@ -1865,7 +1865,7 @@ else {
 
 	m_info.frames.bmP = new CBitmap [nFrames];
 
-	int32_t		i, w = m_info.props.w;
+	int32_t	i, w = m_info.props.w;
 	CBitmap* bmfP = m_info.frames.currentP = m_info.frames.bmP;
 
 	m_info.frames.nCurrent = 0;
@@ -1884,6 +1884,7 @@ else {
 			nFlags |= BM_FLAG_SUPER_TRANSPARENT;
 		bmfP->SetFlags (nFlags);
 		bmfP->SetTranspType (m_info.nTranspType);
+		bmfP->SetRenderStyle (m_info.bCartoonize);
 		bmfP->SetStatic (1);	// don't unload because this is just a child texture
 		if (bLoad)
 			bmfP->PrepareTexture (bMipMaps, 0, NULL);

@@ -34,14 +34,14 @@ CAddonBitmap corona (const_cast<char*>("corona.tga"));
 CAddonBitmap glare (const_cast<char*>("glare.tga"));
 CAddonBitmap halo (const_cast<char*>("halo.tga"));
 CAddonBitmap thruster (const_cast<char*>("thruster.tga"));
-CAddonBitmap shield (const_cast<char*>("shield.tga"));
+CAddonBitmap shield (const_cast<char*>("shield.tga"), 1);
 CAddonBitmap deadzone (const_cast<char*>("deadzone.tga"));
 CAddonBitmap damageIcon [3];
 CAddonBitmap scope (const_cast<char*>("scope.tga"));
 CAddonBitmap sparks (const_cast<char*>("sparks.tga"));
 CAddonBitmap joyMouse (const_cast<char*>("joymouse.tga"));
 
-CAnimation shockwave (const_cast<char*>("shockwave1.tga"), 96);
+CAnimation shockwave (const_cast<char*>("shockwave1.tga"), 96, 1);
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -77,13 +77,14 @@ for (uint32_t i = 0; i < m_list.ToS (); i++)
 
 //------------------------------------------------------------------------------
 
-CAddonBitmap::CAddonBitmap (char *pszName) 
+CAddonBitmap::CAddonBitmap (char *pszName, int32_t bCartoonize) 
 {
 if (pszName)
 	strncpy (m_szName, pszName, sizeof (m_szName));
 else
 	m_szName [0] = '\0';
 m_bAvailable = 0;
+m_bCartoonize = bCartoonize;
 m_bmP = NULL;
 }
 //------------------------------------------------------------------------------
@@ -117,6 +118,7 @@ if (!m_bmP)
 else {
 	m_bAvailable = 1;
 	Register (this);
+	m_bmP->SetRenderStyle (m_bCartoonize);
 	m_bmP->SetFrameCount ();
 	m_bmP->SetTranspType (-1);
 	//m_bmP->Bind (1);
@@ -153,7 +155,7 @@ return h;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-CAnimation::CAnimation (const char* pszName, uint32_t nFrames) 
+CAnimation::CAnimation (const char* pszName, uint32_t nFrames, int32_t bCartoonize) 
 	: m_nFrames (nFrames), m_bLoaded (false) 
 {
 if (pszName)
@@ -162,6 +164,7 @@ else
 	*m_szName = '\0';
 if (m_nFrames)
 	m_frames.Create (m_nFrames);
+m_bCartoonize = bCartoonize;
 }
 
 //------------------------------------------------------------------------------
@@ -182,6 +185,7 @@ CFile::SplitPath (pszName, szFolder, szFile, szExt);
 
 for (uint32_t i = 0; i < m_nFrames; i++) {
 	sprintf (szName, "%s%s-%02d%s", szFolder, szFile, i + 1, szExt);
+	m_frames [i].SetRenderStyle (m_bCartoonize);
 	if (!m_frames [i].Load (szName)) {
 		Destroy ();
 		return false;

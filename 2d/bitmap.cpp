@@ -224,6 +224,7 @@ m_info.maskP = NULL;
 void CBitmap::Reset (void) 
 {
 memset (&m_info, 0, sizeof (m_info));
+m_info.nRenderStyle = 1;
 m_info.texture.Init ();
 m_info.texP = &m_info.texture;
 m_info.texture.SetBitmap (this);
