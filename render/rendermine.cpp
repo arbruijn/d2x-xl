@@ -772,7 +772,7 @@ return ((h == 0) ? -1 : (h != 3) ? 0 : (m_fDot > 0.97f) ? -1 : 1);
 
 CFloatVector& CGeoEdge::Normal (int32_t i)
 {
-return m_faces [i].m_vNormal;
+return m_faces [i].m_vNormal [0];
 }
 
 //------------------------------------------------------------------------------
