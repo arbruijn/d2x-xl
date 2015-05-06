@@ -1052,7 +1052,7 @@ if (bRenderTransparency) {
 		}
 	}
 else {
-	if (!gameOpts->render.bCartoonStyle)
+	//if (!gameOpts->render.bCartoonStyle)
 		G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles, 0);
 	modelP->m_bRendered = 1;
 	if (gameData.models.thrusters [nModel].nCount < 0)

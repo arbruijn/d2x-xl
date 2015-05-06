@@ -790,16 +790,23 @@ if ((gameStates.render.nType == RENDER_TYPE_OBJECTS) && (m_nFaces < 2))
 	BRP;
 //	return;
 
-int32_t nType = (gameStates.render.nType == RENDER_TYPE_OBJECTS) ? 0 : (m_nFaces < 2) ? 0 : Type ();
+int32_t nType = /*(gameStates.render.nType == RENDER_TYPE_OBJECTS) ? 0 :*/ (m_nFaces < 2) ? 0 : Type ();
 if (nType < 0)
 	return;
-if (nType && (gameStates.render.nType == RENDER_TYPE_OBJECTS))
+
+if (gameStates.render.nType == RENDER_TYPE_OBJECTS) {
+	if (nType)
+		return;
+	gameData.segData.edgeVertices [nVertices [0]++] = m_faces [0].m_vCenter [1];
+	gameData.segData.edgeVertices [nVertices [0]++] = m_faces [0].m_vCenter [1] + m_faces [0].m_vNormal [1];
+	gameData.segData.edgeVertices [nVertices [0]++] = m_faces [1].m_vCenter [1];
+	gameData.segData.edgeVertices [nVertices [0]++] = m_faces [1].m_vCenter [1] + m_faces [1].m_vNormal [1];
 	return;
-
-
-int32_t bSplit = nType && (m_fSplit != 0.0f);
+	}
 
 CFloatVector vertices [2];
+
+int32_t bSplit = nType && (m_fSplit != 0.0f);
 
 for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 	for (int32_t j = 0; j < 2; j++) {
@@ -904,7 +911,7 @@ float fScale = 1.0f;
 if (glowRenderer.Available (BLUR_OUTLINE))
 	fScale *= 2.0f;
 if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
-	fScale *= 0.25f;
+	fScale *= 0.333f;
 
 for (int32_t j = 0; j < 2; j++) {
 	int32_t h = j ? gameData.segData.nEdges - nVertices [1] : nVertices [0];
