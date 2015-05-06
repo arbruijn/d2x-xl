@@ -838,15 +838,24 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 		}
 
 	for (int32_t j = 0; j < 2; j++) {
-		CFloatVector v = vViewer;	// pull a bit closer to viewer to avoid z fighting with related polygon
-		v -= vertices [j];
-		float l = CFloatVector::Normalize (v);
-		v /= sqrt (sqrt (l));
-		v += vertices [j]; 
-		if (nType) 
-			gameData.segData.edgeVertices [--nVertices [1]] = v;
-		else
-			gameData.segData.edgeVertices [nVertices [0]++] = v;
+		if (0 || (gameStates.render.nType == RENDER_TYPE_OBJECTS)) {
+			if (nType) 
+				gameData.segData.edgeVertices [--nVertices [1]] = vertices [j];
+			else
+				gameData.segData.edgeVertices [nVertices [0]++] = vertices [j];
+			}
+		else {
+			CFloatVector v = vViewer;	// pull a bit closer to viewer to avoid z fighting with related polygon
+			v -= vertices [j];
+			float l = CFloatVector::Normalize (v);
+			//v /= sqrt (sqrt (l));
+			v *= 2.0f;
+			v += vertices [j]; 
+			if (nType) 
+				gameData.segData.edgeVertices [--nVertices [1]] = v;
+			else
+				gameData.segData.edgeVertices [nVertices [0]++] = v;
+			}
 		}
 	}
 }
