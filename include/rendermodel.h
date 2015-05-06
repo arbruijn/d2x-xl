@@ -223,6 +223,8 @@ class CModel {
 		CFixVector								m_vBullets;
 		GLuint									m_vboDataHandle;
 		GLuint									m_vboIndexHandle;
+		CArray<CModelEdge>					m_edges;
+		uint16_t									m_nEdges;
 
 	public:
 		CModel () { Init (); }

@@ -186,6 +186,7 @@ m_iFaceVert = 0;
 m_nSubModels = 0;
 m_nTextures = 0;
 m_iSubModel = 0;
+m_nEdges = 0;
 m_bHasTransparency = 0;
 m_bValid = 0;
 m_bRendered = 0;
@@ -209,6 +210,7 @@ m_subModels.Create (m_nSubModels);
 m_faces.Create (m_nFaces);
 m_index [0].Create (m_nFaceVerts);
 m_sortedVerts.Create (m_nFaceVerts);
+m_edges.Create (m_nFaceVerts);
 
 m_vertices.Clear (0);
 m_color.Clear (0xff);
@@ -448,12 +450,16 @@ for (uint16_t i = 0; i < m_nFaces; i++)
 
 //------------------------------------------------------------------------------
 
-#define DIST_TOLERANCE 1e-3f
+#define DIST_TOLERANCE	0.001f
+#define MATCH_METHOD		0
+
+#define EDGE_LIST			m_edges	// modelP->m_edges
+#define EDGE_COUNT		m_nEdges	// modelP->m_nEdges
 
 int32_t CSubModel::FindEdge (CModel* modelP, uint16_t v1, uint16_t v2)
 {
-	CModelEdge		*edgeP = m_edges.Buffer ();
-#if 0
+	CModelEdge		*edgeP = EDGE_LIST.Buffer ();
+#if MATCH_METHOD
 	CFloatVector	v [2], d;
 	float				l;
 	
@@ -461,11 +467,11 @@ v [0].Assign (modelP->m_vertices [v1]);
 v [1].Assign (modelP->m_vertices [v2]);
 #endif
 
-for (int32_t i = m_nEdges; i; i--, edgeP++) {
-#if 1
-	if ((edgeP->m_nVertices [0] == v1) && (edgeP->m_nVertices [1] == v2))
+for (int32_t i = 0; i < EDGE_COUNT; i++, edgeP++) {
+#if !MATCH_METHOD
+	if ((edgeP->m_nFaces < 2) && (edgeP->m_nVertices [0] == v1) && (edgeP->m_nVertices [1] == v2))
 		return i;
-#elif 0
+#elif MATCH_METHOD == 1
 	if (((edgeP->m_vertices [0][0] == v [0]) && (edgeP->m_vertices [0][1] == v [1])) ||
 		 ((edgeP->m_vertices [0][0] == v [1]) && (edgeP->m_vertices [0][1] == v [0])))
 		return i;
@@ -498,8 +504,13 @@ int32_t i = FindEdge (modelP, v1, v2);
 CModelEdge *edgeP;
 
 if (i >= 0) {
-	edgeP = m_edges + i;
+	edgeP = EDGE_LIST + i;
+	if (edgeP->m_faces [0].m_nItem != faceP->m_nSubModel)
+		BRP;
+	if (edgeP->m_nFaces < 1)
+		i = FindEdge (modelP, v1, v2);
 	edgeP->m_nFaces = 2;
+	edgeP->m_faces [1].m_nItem = faceP->m_nSubModel;
 	edgeP->m_faces [1].m_vNormal [0].Assign (faceP->m_vNormalf [0]);
 	edgeP->m_faces [1].m_vCenter [0].Assign (faceP->m_vCenterf [0]);
 	if (faceP->m_faceWinding == GL_CW)
@@ -507,12 +518,15 @@ if (i >= 0) {
 	edgeP->Setup ();
 	}
 else {
-	edgeP = m_edges + m_nEdges++;
+	edgeP = EDGE_LIST + EDGE_COUNT++;
 	edgeP->m_nFaces = 1;
 	edgeP->m_nVertices [0] = v1;
 	edgeP->m_nVertices [1] = v2;
 	edgeP->m_vertices [0][0].Assign (modelP->m_vertices [v1]);
 	edgeP->m_vertices [0][1].Assign (modelP->m_vertices [v2]);
+	if (faceP->m_nSubModel < 0)
+		BRP;
+	edgeP->m_faces [0].m_nItem = faceP->m_nSubModel;
 	edgeP->m_faces [0].m_vNormal [0].Assign (faceP->m_vNormalf [0]);
 	edgeP->m_faces [0].m_vCenter [0].Assign (faceP->m_vCenterf [0]);
 	if (faceP->m_faceWinding == GL_CW)
@@ -529,22 +543,28 @@ bool CSubModel::BuildEdgeList (CModel* modelP)
 	int32_t	nComplete = 0;
 
 m_nEdges = 0;
+#if 1
 for (uint16_t i = 0; i < m_nFaces; i++, faceP++)
 	m_nEdges += faceP->m_nVerts;
 if (!(m_edges.Create (m_nEdges)))
 	return false;
-
 m_nEdges = 0;
+#endif
+
 faceP = m_faces;
 for (uint16_t i = 0; i < m_nFaces; i++, faceP++) {
 	faceP->m_vCenterf [0].SetZero ();
 	for (uint16_t j = 0; j < faceP->m_nVerts; j++)
 		faceP->m_vCenterf [0] += modelP->m_faceVerts [faceP->m_nIndex + j].m_vertex;
 	faceP->m_vCenterf [0] /= float (faceP->m_nVerts);
+#if 1
+	faceP->m_vNormalf [0].Assign (faceP->m_vNormal);
+#else
 	faceP->m_vNormalf [0] = CFloatVector3::Normal (modelP->m_faceVerts [faceP->m_nIndex].m_vertex, 
 																  modelP->m_faceVerts [faceP->m_nIndex + 1].m_vertex, 
 																  modelP->m_faceVerts [faceP->m_nIndex + 2].m_vertex);
 	faceP->m_vNormal.Assign (faceP->m_vNormalf [0]);
+#endif
 	faceP->m_faceWinding = FaceWinding (&modelP->m_faceVerts [faceP->m_nIndex].m_vertex, 
 													&modelP->m_faceVerts [faceP->m_nIndex + 1].m_vertex, 
 													&modelP->m_faceVerts [faceP->m_nIndex + 2].m_vertex);
@@ -553,7 +573,16 @@ for (uint16_t i = 0; i < m_nFaces; i++, faceP++) {
 		if (AddEdge (modelP, faceP, modelP->m_faceVerts [faceP->m_nIndex + j].m_nIndex, modelP->m_faceVerts [faceP->m_nIndex + (j + 1) % faceP->m_nVerts].m_nIndex))
 			++nComplete;
 	}
-return m_edges.Resize (m_nEdges) != NULL;
+
+#if 0 //DBG
+CModelEdge *edgeP = m_edges.Buffer ();
+int32_t nIncomplete = 0;
+for (int32_t i = m_nEdges; i; i--, edgeP++) 
+	if (edgeP->m_nFaces < 2) 
+		nIncomplete++;
+#endif
+
+return 1; //m_edges.Resize (m_nEdges) != NULL;
 }
 
 //------------------------------------------------------------------------------
@@ -601,6 +630,15 @@ for (i = 0; i < m_nSubModels; i++) {
 		pfi->m_nId = nId;
 		}
 	}
+
+#if 0// DBG
+CModelEdge *edgeP = m_edges.Buffer ();
+int32_t nIncomplete = 0;
+for (int32_t i = m_nEdges; i; i--, edgeP++) 
+	if (edgeP->m_nFaces < 2) 
+		nIncomplete++;
+#endif
+
 m_vbVerts.SetBuffer (reinterpret_cast<CFloatVector3*> (m_vertBuf [0].Buffer ()), 1, m_vertBuf [0].Length ());
 m_vbNormals.SetBuffer (m_vbVerts.Buffer () + m_nFaceVerts, true, m_vertBuf [0].Length ());
 m_vbColor.SetBuffer (reinterpret_cast<CFloatVector*> (m_vbNormals.Buffer () + m_nFaceVerts), 1, m_vertBuf [0].Length ());

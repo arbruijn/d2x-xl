@@ -786,17 +786,18 @@ return gameData.segData.fVertices [m_nVertices [i]];
 
 void CGeoEdge::Render (CFloatVector vViewer, int32_t nVertices [])
 {
-if (m_nFaces < 2)
-	return;
+if ((gameStates.render.nType == RENDER_TYPE_OBJECTS) && (m_nFaces < 2))
+	BRP;
+//	return;
 
-int32_t nType = Type ();
+int32_t nType = (gameStates.render.nType == RENDER_TYPE_OBJECTS) ? 0 : (m_nFaces < 2) ? 0 : Type ();
 if (nType < 0)
 	return;
 if (nType && (gameStates.render.nType == RENDER_TYPE_OBJECTS))
 	return;
 
 
-int32_t bSplit = m_fSplit != 0.0f;
+int32_t bSplit = nType && (m_fSplit != 0.0f);
 
 CFloatVector vertices [2];
 

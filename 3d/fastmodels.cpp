@@ -915,7 +915,7 @@ if (objP && (objP->info.nType == OBJ_PLAYER) && (nModel > 0) && (nModel != COCKP
 	nModel += gameData.multiplayer.weaponStates [objP->info.nId].nShip;
 
 	int32_t	i = 0, 
-			bHires = (nModel > 0), 
+			bHires = (nModel > 0) && (gameOpts->render.bCartoonStyle == 0), 
 			bUseVBO = ogl.m_features.bVertexBufferObjects && ((gameStates.render.bPerPixelLighting == 2) || gameOpts->ogl.bObjLighting),
 			bEmissive = (objP != NULL) && objP->IsProjectile (),
 			nGunId, nBombId, nMissileId, nMissiles;
