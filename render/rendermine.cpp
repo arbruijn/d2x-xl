@@ -975,10 +975,10 @@ RenderSegmentList (RENDER_TYPE_ZCULL);	// render depth only
 RenderCockpitModel ();
 #endif
 #if 1
-gameOpts->render.EnableCartoonStyle ();
+gameStates.render.EnableCartoonStyle ();
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
-if (gameOpts->render.bCartoonStyle)
+if (gameStates.render.bCartoonStyle)
 	RenderEdges ();
 //RenderSegmentOutline ();
 #	if 1
@@ -990,7 +990,7 @@ if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {
 	}
 #	endif
 #endif
-gameOpts->render.DisableCartoonStyle ();
+gameStates.render.DisableCartoonStyle ();
 gameData.app.nMineRenderCount++;
 PROF_END(ptRenderMine);
 }

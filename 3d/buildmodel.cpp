@@ -705,10 +705,10 @@ if (m_nModel == nDbgModel)
 	BRP;
 #endif
 
-gameOpts->render.EnableCartoonStyle ();
+gameStates.render.EnableCartoonStyle ();
 for (i = 0; i < (int32_t) m_textures.Length (); i++)
 	m_textures [i].PrepareTexture (1, 0);
-gameOpts->render.DisableCartoonStyle ();
+gameStates.render.DisableCartoonStyle ();
 }
 
 //------------------------------------------------------------------------------

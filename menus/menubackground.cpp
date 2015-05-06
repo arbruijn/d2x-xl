@@ -220,10 +220,10 @@ if (m_nType == BG_WALLPAPER) {
 		gameData.render.frame.Activate ("CBackGround::Draw (frame)");
 		int32_t bCartoonStyle;
 		if (gameOptions [0].menus.altBg.bCartoonize)
-			bCartoonStyle = gameOpts->render.SetCartoonStyle (-1);
+			bCartoonStyle = gameStates.render.SetCartoonStyle (-1);
 		m_bitmap->RenderStretched ();
 		if (gameOptions [0].menus.altBg.bCartoonize)
-			gameOpts->render.SetCartoonStyle (bCartoonStyle);
+			gameStates.render.SetCartoonStyle (bCartoonStyle);
 		PrintVersionInfo ();
 		gameData.render.frame.Deactivate ();
 		}
@@ -511,10 +511,10 @@ bmP->SetTranspType (3);
 
 int32_t bCartoonStyle;
 if (gameOptions [0].menus.altBg.bCartoonize)
-	bCartoonStyle = gameOpts->render.SetCartoonStyle (-1);
+	bCartoonStyle = gameStates.render.SetCartoonStyle (-1);
 bmP->Bind (0);
 if (gameOptions [0].menus.altBg.bCartoonize)
-	gameOpts->render.SetCartoonStyle (bCartoonStyle);
+	gameStates.render.SetCartoonStyle (bCartoonStyle);
 return bmP;
 }
 

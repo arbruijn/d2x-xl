@@ -985,7 +985,7 @@ if (bOk) {
 #if 1
 	if (gameOpts->render.color.nLevel < 2)
 		ToGrayScale ();
-	if (gameOpts->render.bCartoonStyle)
+	if (gameStates.render.bCartoonStyle)
 		Posterize ();
 #endif
 	}
@@ -1081,7 +1081,7 @@ if (gameStates.render.bPerPixelLighting && FACES.nFaces) {
 	if (gameOpts->render.color.nLevel < 2)
 		ToGrayScale ();
 #	if 0
-	if (gameOpts->render.bCartoonStyle)
+	if (gameStates.render.bCartoonStyle)
 		Posterize ();
 #	endif
 #endif

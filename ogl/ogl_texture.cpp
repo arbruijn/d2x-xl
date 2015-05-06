@@ -1068,7 +1068,7 @@ if (m_info.tw * m_info.th * bpp > (int32_t) sizeof (ogl.m_data.buffer [0]))//sho
 
 	uint16_t		r, g, b, a;
 	int32_t		x, y, c;
-	int32_t		bPosterize = gameOpts->render.bCartoonStyle;
+	int32_t		bPosterize = gameStates.render.bCartoonStyle;
 
 
 //bmP->Flags () &= ~(BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT);
@@ -1242,7 +1242,7 @@ return ogl.m_data.buffer [0];
 
 uint8_t *CTexture::Copy (int32_t dxo, int32_t dyo, uint8_t *data)
 {
-if ((gameOpts->render.bCartoonStyle >= 0) && !dxo && !dyo && (m_info.w == m_info.tw) && (m_info.h == m_info.th))
+if ((gameStates.render.bCartoonStyle >= 0) && !dxo && !dyo && (m_info.w == m_info.tw) && (m_info.h == m_info.th))
 	return data;	//can use data 1:1
 else {	//need to reformat
 	int32_t	h, w, tw;
@@ -1782,7 +1782,7 @@ if (!m_info.texP->IsRenderBuffer ())
 		if (strstr (m_info.szName, "rbot"))
 			BRP;
 #endif
-		if (m_info.bCartoonize && (gameOpts->render.bCartoonStyle < 0)) {
+		if (m_info.bCartoonize && (gameStates.render.bCartoonStyle < 0)) {
 			int32_t w = Width () - dxo;
 			int32_t h = Height () - dxo;
 			bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), (w >= 512) ? 15 : (w >= 256) ? 14 : (w >= 128) ? 9 : 7, nColors, bWrapBlur, nBlurStrength);

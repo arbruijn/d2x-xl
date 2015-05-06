@@ -242,7 +242,7 @@ PrintLog (1, "caching level textures\n");
 TexMergeClose ();
 TexMergeInit (-1);
 
-gameOpts->render.EnableCartoonStyle ();
+gameStates.render.EnableCartoonStyle ();
 
 PrintLog (1, "caching effect textures\n");
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
@@ -291,9 +291,9 @@ for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segData.nSegme
 PrintLog (-1);
 
 PrintLog (1, "caching addon textures\n");
-gameOpts->render.DisableCartoonStyle ();
+gameStates.render.DisableCartoonStyle ();
 CacheAddonTextures ();
-gameOpts->render.EnableCartoonStyle ();
+gameStates.render.EnableCartoonStyle ();
 PrintLog (-1);
 
 PrintLog (1, "caching model textures\n");
@@ -343,7 +343,7 @@ for (i = 0; i < 2; i++)
 			LoadTexture (gameData.cockpit.gauges [i][j].index, 0, 0);
 PrintLog (-1);
 
-gameOpts->render.DisableCartoonStyle ();
+gameStates.render.DisableCartoonStyle ();
 
 ResetSpecialEffects ();
 InitSpecialEffects ();

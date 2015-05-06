@@ -467,24 +467,7 @@ class CRenderOptions {
 		CRenderOptions () { Init (); }
 		void Init (int32_t i = 0);
 		int32_t ShadowQuality (void);
-
-		inline int32_t SetCartoonStyle (int32_t bNewStyle) {
-			int32_t bOldStyle = bCartoonStyle;
-			bCartoonStyle = bNewStyle;
-			return bOldStyle;
-			}
-
-		inline int32_t ToggleCartoonStyle (void) { return SetCartoonStyle (-bCartoonStyle); }
-#if DBG
-		int32_t EnableCartoonStyle (void);
-		int32_t DisableCartoonStyle (void);
-#endif
 	};
-
-#if !DBG
-#	define	EnableCartoonStyle	ToggleCartoonStyle
-#	define	DisableCartoonStyle	ToggleCartoonStyle
-#endif
 
 //------------------------------------------------------------------------------
 
@@ -1080,6 +1063,7 @@ class CRenderStates {
 		int32_t bSpecularColor;
 		int32_t bDoCameras;
 		int32_t bRenderIndirect;
+		int32_t bCartoonStyle;
 		int32_t bBuildModels;
 		int32_t bShowFrameRate;
 		int32_t bShowTime;
@@ -1132,7 +1116,24 @@ class CRenderStates {
 			}
 
 		inline bool Dirty (void) { return (nWindow [0] != nWindow [1]) || (xStereoSeparation [0] != xStereoSeparation [1]); }
+		inline int32_t SetCartoonStyle (int32_t bNewStyle) {
+			int32_t bOldStyle = bCartoonStyle;
+			bCartoonStyle = bNewStyle;
+			return bOldStyle;
+			}
+
+		inline int32_t ToggleCartoonStyle (void) { return SetCartoonStyle (-bCartoonStyle); }
+#if DBG
+		int32_t EnableCartoonStyle (void);
+		int32_t DisableCartoonStyle (void);
+#endif
 	};
+
+#if !DBG
+#	define	EnableCartoonStyle	ToggleCartoonStyle
+#	define	DisableCartoonStyle	ToggleCartoonStyle
+#endif
+
 
 //------------------------------------------------------------------------------
 

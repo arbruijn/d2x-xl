@@ -1756,6 +1756,7 @@ SetMaxOmegaCharge ();
 if (bRewriteIt)
 	SavePlayerProfile ();
 
+gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonStyle);
 gameStates.render.nLightingMethod = gameStates.app.bNostalgia ? 0 : gameOpts->render.nLightingMethod;
 if ((gameOpts->render.nLightingMethod > 1) && !ogl.m_features.bShaders)
 	gameOpts->render.nLightingMethod = 1;

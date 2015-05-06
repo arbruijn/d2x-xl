@@ -757,6 +757,7 @@ do {
 gameOpts->render.stereo.nGlasses = stereoDeviceMap [nStereoDevice];
 if (gameOpts->render.stereo.nGlasses == 1)
 	gameOpts->render.stereo.nGlasses += nAnaglyphColor;
+gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonStyle);
 #if 0
 if (ogl.IsOculusRift ())
 	gameData.render.rift.m_magCalTO.Start (-1, true);
