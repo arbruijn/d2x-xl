@@ -2004,9 +2004,9 @@ const char *defaultGameTexts [][2] = {
  {"unten", "low"},
  {"hud-~Trenner", "hud se~Parators"},
  {"hab dich!", "dodge this!"},
- {"~Darstellung: %s", "~Style: %s"}
- {"realistisch", "realistic"}
- {"cartoon", "cartoon"}
+ {"~Darstellung: %s", "~Style: %s"},
+ {"realistisch", "realistic"},
+ {"cartoon", "cartoon"},
 
 #if 0
 #endif
