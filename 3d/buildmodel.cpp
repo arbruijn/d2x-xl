@@ -123,7 +123,7 @@ return CFloatVector::Dot (v, m_faces [nFace].m_vNormal [1]) < 0.0f;
 
 int32_t CModelEdge::Visibility (void)
 {
-return IsFacingViewer (0) | (IsFacingViewer (1) << 1);
+return IsFacingViewer (0) | ((m_nFaces == 1) ? 0 : (IsFacingViewer (1) << 1));
 }
 
 //------------------------------------------------------------------------------
@@ -565,15 +565,17 @@ for (uint16_t i = 0; i < m_nFaces; i++, faceP++) {
 	faceP->m_vNormalf [0] = CFloatVector3::Normal (modelP->m_faceVerts [faceP->m_nIndex].m_vertex, 
 																  modelP->m_faceVerts [faceP->m_nIndex + 1].m_vertex, 
 																  modelP->m_faceVerts [faceP->m_nIndex + 2].m_vertex);
-#	if 1
+#	if 0
+#		if 0
 	CFloatVector3 v = faceP->m_vCenterf [0];
 	v -= vCenter;
 	CFloatVector3::Normalize (v);
 	if (CFloatVector3::Dot (v, faceP->m_vNormalf [0]) < 0.0f)
 		faceP->m_vNormalf [0].Neg ();
-#else
+#	else
 	if (faceP->m_faceWinding == GL_CW)
 		faceP->m_vNormalf [0].Neg ();
+#		endif
 #	endif
 	faceP->m_vNormal.Assign (faceP->m_vNormalf [0]);
 #endif

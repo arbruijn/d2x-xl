@@ -750,7 +750,7 @@ int32_t CGeoEdge::Visibility (void)
 vViewer.Assign (gameData.objData.viewerP->Position ());
 
 int32_t nVisible = 0;
-for (int32_t j = 0; j < 2; j++) {
+for (int32_t j = 0; j < m_nFaces; j++) {
 	vViewDir = vViewer - m_faces [j].m_vCenter [0];
 	CFloatVector::Normalize (vViewDir);
 	float dot = CFloatVector::Dot (vViewDir, Normal (j));
@@ -794,15 +794,21 @@ int32_t nType = /*(gameStates.render.nType == RENDER_TYPE_OBJECTS) ? 0 :*/ (m_nF
 if (nType < 0)
 	return;
 
+#if 1
 if (gameStates.render.nType == RENDER_TYPE_OBJECTS) {
 	if (nType)
 		return;
+#	if 0
 	gameData.segData.edgeVertices [nVertices [0]++] = m_faces [0].m_vCenter [1];
-	gameData.segData.edgeVertices [nVertices [0]++] = m_faces [0].m_vCenter [1] + m_faces [0].m_vNormal [1];
+	gameData.segData.edgeVertices [nVertices [0]++] = m_faces [0].m_vCenter [1] + m_faces [0].m_vNormal [1] * 0.5f;
 	gameData.segData.edgeVertices [nVertices [0]++] = m_faces [1].m_vCenter [1];
-	gameData.segData.edgeVertices [nVertices [0]++] = m_faces [1].m_vCenter [1] + m_faces [1].m_vNormal [1];
+	gameData.segData.edgeVertices [nVertices [0]++] = m_faces [1].m_vCenter [1] + m_faces [1].m_vNormal [1] * 0.5f;
+#	endif
+#	if 0
 	return;
+#	endif
 	}
+#endif
 
 CFloatVector vertices [2];
 
@@ -911,7 +917,7 @@ float fScale = 1.0f;
 if (glowRenderer.Available (BLUR_OUTLINE))
 	fScale *= 2.0f;
 if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
-	fScale *= 0.333f;
+	fScale *= 0.5f;
 
 for (int32_t j = 0; j < 2; j++) {
 	int32_t h = j ? gameData.segData.nEdges - nVertices [1] : nVertices [0];
