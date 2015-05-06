@@ -1730,6 +1730,7 @@ else {
 edgeP->m_faces [i].m_nItem = nSegment;
 edgeP->m_faces [i].m_nFace = nSide;
 edgeP->m_faces [i].m_vNormal = gameData.Segment (nSegment)->Side (nSide)->Normalf (2);
+edgeP->m_faces [i].m_vCenter.Assign (gameData.Segment (nSegment)->Side (nSide)->Center ());
 
 if (i == 0)
 	return 1;

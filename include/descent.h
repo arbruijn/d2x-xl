@@ -2062,9 +2062,10 @@ class CEdgeFaceInfo {
 	public:
 		int16_t			m_nItem;		// segment / (sub) model id
 		int16_t			m_nFace;
-		CFloatVector	m_vNormal;
+		CFloatVector	m_vNormal [2];
+		CFloatVector	m_vCenter [2];
 
-		CEdgeFaceInfo () : m_nItem (-1), m_nFace (-1), m_vNormal (CFloatVector::ZERO) {}
+		CEdgeFaceInfo () : m_nItem (-1), m_nFace (-1) {}
 	};
 
 class CGeoEdge {

@@ -98,8 +98,9 @@ if (!m_bTransformed) {
 void CModelEdge::Transform (void)
 {
 for (int32_t i = 0; i < 2; i++) {
-	transformation.Rotate (m_normals [1][i], m_normals [0][i]);
+	transformation.Rotate (m_faces [i].m_vNormal [1], m_faces [i].m_vNormal [0]);
 	transformation.Transform (m_vertices [1][i], m_vertices [0][i]);
+	transformation.Transform (m_faces [i].m_vCenter [1], m_faces [i].m_vCenter [0]);
 	}
 }
 
@@ -107,9 +108,13 @@ for (int32_t i = 0; i < 2; i++) {
 
 int32_t CModelEdge::IsFacingViewer (int16_t nFace)
 {
-CFloatVector v = m_vertices [1][0];
+#if 1
+return CFloatVector::Dot (m_faces [nFace].m_vCenter [1], m_faces [nFace].m_vNormal [1]) < 0.0f;
+#else
+CFloatVector v = m_faces [nFace].m_vCenter [1];
 CFloatVector::Normalize (v);
-return CFloatVector::Dot (v, m_normals [1][nFace]) < 0.0f;
+return CFloatVector::Dot (v, m_faces [nFace].m_vNormal [1]) < 0.0f;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -139,16 +144,16 @@ return ((h == 0) ? -1 : (h != 3) ? 0 : (m_fDot > 0.97f) ? -1 : 1);
 
 //------------------------------------------------------------------------------
 
-CFloatVector& CModelEdge::Normal (int32_t i)
+CFloatVector& CModelEdge::Normal (int32_t nFace)
 {
-return m_normals [0][i];
+return m_faces [nFace].m_vNormal [0];
 }
 
 //------------------------------------------------------------------------------
 
-CFloatVector& CModelEdge::Vertex (int32_t i)
+CFloatVector& CModelEdge::Vertex (int32_t nFace)
 {
-return m_vertices [1][i];
+return m_vertices [1][nFace];
 }
 
 //------------------------------------------------------------------------------
@@ -460,9 +465,10 @@ int32_t i = FindEdge (v1, v2);
 if (i >= 0) {
 	CModelEdge *edgeP = m_edges + i;
 	edgeP->m_nFaces = 2;
-	edgeP->m_normals [0][1].Assign (faceP->m_vNormalf [0]);
+	edgeP->m_faces [1].m_vNormal [0].Assign (faceP->m_vNormalf [0]);
+	edgeP->m_faces [1].m_vCenter [0].Assign (faceP->m_vCenterf [0]);
 	if (faceP->m_faceWinding == GL_CW)
-		edgeP->m_normals [0][1].Neg ();
+		edgeP->m_faces [0].m_vNormal [1].Neg ();
 	edgeP->Setup ();
 	}
 else {
@@ -472,9 +478,10 @@ else {
 	edgeP->m_nVertices [1] = v2;
 	edgeP->m_vertices [0][0].Assign (modelP->m_vertices [v1]);
 	edgeP->m_vertices [0][1].Assign (modelP->m_vertices [v2]);
-	edgeP->m_normals [0][0].Assign (faceP->m_vNormalf [0]);
+	edgeP->m_faces [0].m_vNormal [0].Assign (faceP->m_vNormalf [0]);
+	edgeP->m_faces [0].m_vCenter [0].Assign (faceP->m_vCenterf [0]);
 	if (faceP->m_faceWinding == GL_CW)
-		edgeP->m_normals [0][0].Neg ();
+		edgeP->m_faces [0].m_vNormal [0].Neg ();
 	}
 }
 
