@@ -840,7 +840,7 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 		}
 
 	for (int32_t j = 0; j < 2; j++) {
-#if 1
+#if 0
 		if (gameStates.render.nType == RENDER_TYPE_OBJECTS) {
 			if (nType) 
 				gameData.segData.edgeVertices [--nVertices [1]] = vertices [j];
@@ -853,13 +853,16 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 			CFloatVector v = vViewer;	// pull a bit closer to viewer to avoid z fighting with related polygon
 			v -= vertices [j];
 			float l = CFloatVector::Normalize (v);
-#if 0
-			v /= sqrt (sqrt (l));
+			if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
+				v *= 0.002f;
+			else
+#if 1
+				v /= pow (l, 0.25f);
 #else
-			v *= 2.0f;
+				v *= 2.0f;
 #endif
 			v += vertices [j]; 
-			if (nType) 
+			if (nType && (m_fScale != 1.0f)) 
 				gameData.segData.edgeVertices [--nVertices [1]] = v;
 			else
 				gameData.segData.edgeVertices [nVertices [0]++] = v;
@@ -912,7 +915,7 @@ RenderOutline (nVertices);
 
 void RenderOutline (int32_t nVertices [])
 {
-float	nLineWidths [2] = { automap.Active () ? 6.0f : 12.0f, automap.Active () ? 4.0f : 8.0f };
+float	nLineWidths [2] = { automap.Active () ? 6.0f : 12.0f, automap.Active () ? 2.0f : 4.0f };
 
 ogl.SetBlendMode (GL_LEQUAL);
 ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
@@ -936,7 +939,7 @@ for (int32_t j = 0; j < 2; j++) {
 	if (glowRenderer.Available (BLUR_OUTLINE))
 		fScale *= 2.0f;
 	if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
-		fScale *= 0.5f / float (j + 1);
+		fScale *= 0.5f;
 
 	int32_t h = j ? gameData.segData.nEdges - nVertices [1] : nVertices [0];
 	if (h) {
