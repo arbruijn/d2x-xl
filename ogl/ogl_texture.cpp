@@ -116,8 +116,7 @@ return i % l;
 
 static void HBoxBlurRGBAWrapped (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nStart = 0, int32_t nStep = 1)
 {
-int32_t i = 0;
-
+int32_t i = nStart * tw;
 for (int32_t y = nStart; y < h; y += nStep) {
 	int32_t l = 2 * r + 1;
 	int32_t acc [3] = { 0, 0, 0 };
@@ -198,7 +197,7 @@ for (int32_t x = nStart; x < w; x += nStep) {
 
 static void HBoxBlurRGBWrapped (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nStart = 0, int32_t nStep = 1)
 {
-int32_t i = 0;
+int32_t i = nStart * tw;
 for (int32_t y = nStart; y < h; y += nStep) {
 	int32_t l = 2 * r + 1;
 	int32_t acc [3] = { 0, 0, 0 };
@@ -267,7 +266,7 @@ for (int32_t x = nStart; x < w; x += nStep) {
 
 static void HBoxBlurRGBAClamped (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nStart = 0, int32_t nStep = 1)
 {
-int32_t i = 0;
+int32_t i = nStart * tw;
 for (int32_t y = nStart; y < h; y += nStep) {
 	int32_t hits = 0;
 	int32_t acc [3] = { 0, 0, 0 };
@@ -401,7 +400,7 @@ for (int32_t x = nStart; x < w; x += nStep) {
 
 static void HBoxBlurRGBClamped (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nStart = 0, int32_t nStep = 1)
 {
-int32_t i = 0;
+int32_t i = nStart * tw;
 for (int32_t y = nStart; y < h; y += nStep) {
 	int32_t hits = 0;
 	int32_t acc [3] = { 0, 0, 0 };
@@ -443,7 +442,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 
 void BoxBlurRGBA (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t bWrap) 
 {
-#if 0 //USE_OPENMP
+#if USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
 	if (bWrap) {
 #	pragma omp parallel
@@ -478,7 +477,7 @@ else {
 
 void BoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t bWrap) 
 {
-#if 0 //USE_OPENMP
+#if USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
 	if (bWrap) {
 #	pragma omp parallel
@@ -539,14 +538,16 @@ inline uint8_t Posterize (int32_t nColor, int32_t nSteps = 15) {
 
 void PosterizeRGBA (tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t nStart = 0, int32_t nStep = 1) 
 {
+src += nStart * tw;
 for (int32_t y = nStart; y < h; y += nStep) {
+	tRGBA *dest = src;
 	for (int32_t x = 0; x < w; x++) {
-		src->r = Posterize ((int32_t) src->r, nColorSteps);
-		src->g = Posterize ((int32_t) src->g, nColorSteps);
-		src->b = Posterize ((int32_t) src->b, nColorSteps);
-		src++;
+		dest->r = Posterize ((int32_t) dest->r, nColorSteps);
+		dest->g = Posterize ((int32_t) dest->g, nColorSteps);
+		dest->b = Posterize ((int32_t) dest->b, nColorSteps);
+		dest++;
 		}
-	src += (nStep - 1) * tw + tw - w;
+	src += nStep * tw;
 	}
 }
 
@@ -556,13 +557,14 @@ void PosterizeRGB (tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t nStart =
 {
 src += nStart * tw;
 for (int32_t y = nStart; y < h; y += nStep) {
+	tRGB *dest = src;
 	for (int32_t x = 0; x < w; x++) {
-		src->r = Posterize ((int32_t) src->r, nColorSteps);
-		src->g = Posterize ((int32_t) src->g, nColorSteps);
-		src->b = Posterize ((int32_t) src->b, nColorSteps);
-		src++;
+		dest->r = Posterize ((int32_t) dest->r, nColorSteps);
+		dest->g = Posterize ((int32_t) dest->g, nColorSteps);
+		dest->b = Posterize ((int32_t) dest->b, nColorSteps);
+		dest++;
 		}
-	src += (nStep - 1) * tw + tw - w;
+	src += nStep * tw;
 	}
 }
 
