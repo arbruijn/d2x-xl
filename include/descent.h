@@ -476,8 +476,8 @@ class CRenderOptions {
 
 		inline int32_t ToggleCartoonStyle (void) { return SetCartoonStyle (-bCartoonStyle); }
 #if DBG
-		inline int32_t EnableCartoonStyle (void);
-		inline int32_t DisableCartoonStyle (void);
+		int32_t EnableCartoonStyle (void);
+		int32_t DisableCartoonStyle (void);
 #endif
 	};
 
