@@ -216,15 +216,6 @@ if ((m = menu ["colorization"])) {
 		}
 	}
 
-if ((m = menu ["render style"])) {
-	v = m->Value ();
-	if (gameOpts->render.bCartoonStyle != v) {
-		gameOpts->render.bCartoonStyle = v;
-		sprintf (m->Text (), TXT_RENDER_STYLE, pszRendStyle [gameOpts->render.bCartoonStyle]);
-		m->m_bRebuild = 1;
-		}
-	}
-
 if ((m = menu ["image quality"])) {
 	v = m->Value ();
 	if (gameOpts->render.nImageQuality != v) {
@@ -377,6 +368,15 @@ if ((m = menu ["powerup quality"])) {
 	}	
 
 if (!gameStates.app.bGameRunning) {
+	if ((m = menu ["render style"])) {
+		v = m->Value ();
+		if (gameOpts->render.bCartoonStyle != v) {
+			gameOpts->render.bCartoonStyle = v;
+			sprintf (m->Text (), TXT_RENDER_STYLE, pszRendStyle [gameOpts->render.bCartoonStyle]);
+			m->m_bRebuild = 1;
+			}
+		}
+
 	if ((m = menu ["lighting method"])) {
 		v = m->Value ();
 		if (nLighting != v) {
@@ -608,9 +608,11 @@ do {
 		}
 
 	if (!gameStates.app.bPrecomputeLightmaps) {
-		sprintf (szSlider + 1, TXT_RENDER_STYLE, pszRendStyle [gameOpts->render.bCartoonStyle]);
-		*szSlider = *(TXT_RENDER_STYLE - 1);
-		m.AddSlider ("render style", szSlider + 1, gameOpts->render.bCartoonStyle, 0, 1, KEY_S, HTX_RENDER_STYLE);
+		if (!(gameStates.app.bGameRunning || gameStates.app.bNostalgia)) {
+			sprintf (szSlider + 1, TXT_RENDER_STYLE, pszRendStyle [gameOpts->render.bCartoonStyle]);
+			*szSlider = *(TXT_RENDER_STYLE - 1);
+			m.AddSlider ("render style", szSlider + 1, gameOpts->render.bCartoonStyle, 0, 1, KEY_S, HTX_RENDER_STYLE);
+			}
 		sprintf (szSlider + 1, TXT_IMAGE_QUALITY, pszImgQual [gameOpts->render.nImageQuality]);
 		*szSlider = *(TXT_IMAGE_QUALITY - 1);
 		m.AddSlider ("image quality", szSlider + 1, gameOpts->render.nImageQuality, 0, 4, KEY_I, HTX_ADVRND_RENDQUAL);

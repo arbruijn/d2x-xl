@@ -568,7 +568,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 
 void Posterize (GLubyte *src, int32_t w, int32_t h, int32_t tw, int32_t nColors) 
 {
-#if USE_OPENMP
+#if 0 //USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
 	if (nColors == 3) {
 #	pragma omp parallel
