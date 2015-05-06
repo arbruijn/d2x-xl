@@ -111,7 +111,6 @@ class CSubModel {
 		CFixVector				m_vCenter;
 		CFloatVector3			m_vMin;
 		CFloatVector3			m_vMax;
-		CFloatVector3			m_vCenter;
 		CFace*					m_faces;
 		int16_t					m_nParent;
 		uint16_t					m_nFaces;

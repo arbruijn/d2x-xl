@@ -401,7 +401,6 @@ if (m_vMax.v.coord.y < v.v.coord.y)
 	m_vMax.v.coord.y = v.v.coord.y;
 if (m_vMax.v.coord.z < v.v.coord.z)
 	m_vMax.v.coord.z = v.v.coord.z;
-m_vCenter += v;
 }
 
 //------------------------------------------------------------------------------
@@ -536,11 +535,13 @@ return edgeP->m_nFaces == 2;
 
 bool CSubModel::BuildEdgeList (CModel* modelP)
 {
-	CFace*	faceP = m_faces;
-	int32_t	nComplete = 0;
+	CFace*			faceP = m_faces;
+	CFloatVector3	vCenter;
+	int32_t			nComplete = 0;
 
+vCenter.Assign (m_vCenter);
 m_nEdges = 0;
-m_vCenter /= m_nVertices;
+
 #if 1
 for (uint16_t i = 0; i < m_nFaces; i++, faceP++)
 	m_nEdges += faceP->m_nVerts;
@@ -566,7 +567,7 @@ for (uint16_t i = 0; i < m_nFaces; i++, faceP++) {
 																  modelP->m_faceVerts [faceP->m_nIndex + 2].m_vertex);
 #	if 1
 	CFloatVector3 v = faceP->m_vCenterf [0];
-	v -= m_vCenter;
+	v -= vCenter;
 	CFloatVector3::Normalize (v);
 	if (CFloatVector3::Dot (v, faceP->m_vNormalf [0]) < 0.0f)
 		faceP->m_vNormalf [0].Neg ();
