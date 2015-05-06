@@ -503,7 +503,13 @@ if (PCXReadBitmap (filename, bmP, bmP->Mode (), 0) != PCX_ERROR_NONE) {
 	}
 bmP->SetName (filename);
 bmP->SetTranspType (3);
+
+int32_t bCartoonStyle = gameOpts->render.bCartoonStyle;
+if (gameOptions [0].menus.altBg.bCartoonize)
+	gameOpts->render.bCartoonStyle = -1;
 bmP->Bind (0);
+if (gameOptions [0].menus.altBg.bCartoonize)
+	gameOpts->render.bCartoonStyle = bCartoonStyle;
 return bmP;
 }
 

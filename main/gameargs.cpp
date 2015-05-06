@@ -279,6 +279,8 @@ if ((t = FindArg ("-altbg_brightness")) && *appConfig [t+1]) {
 	}
 if ((t = FindArg ("-altbg_grayscale")))
 	gameOptions [0].menus.altBg.grayscale = NumArg (t, 1);
+if ((t = FindArg ("-altbg_cartoonize")))
+	gameOptions [0].menus.altBg.bCartoonize = NumArg (t, 1);
 if ((t = FindArg ("-altbg_name")) && *appConfig [t+1])
 	strncpy (gameOptions [0].menus.altBg.szName [0], appConfig [t+1], sizeof (gameOptions [0].menus.altBg.szName [0]));
 if ((t = FindArg ("-use_swapfile")))

@@ -626,10 +626,11 @@ class CSoundOptions {
 //------------------------------------------------------------------------------
 
 typedef struct tAltBgOptions {
-	int32_t bHave;
-	double alpha;
-	double brightness;
-	int32_t grayscale;
+	int32_t	bHave;
+	double	alpha;
+	double	brightness;
+	int32_t	grayscale;
+	int32_t	bCartoonize;
 	char szName [2][FILENAME_LEN];
 } tAltBgOptions;
 
