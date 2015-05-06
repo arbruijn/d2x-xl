@@ -853,9 +853,11 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 			CFloatVector v = vViewer;	// pull a bit closer to viewer to avoid z fighting with related polygon
 			v -= vertices [j];
 			float l = CFloatVector::Normalize (v);
+#if 0
 			if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
 				v *= 0.002f;
 			else
+#endif
 #if 1
 				v /= pow (l, 0.25f);
 #else

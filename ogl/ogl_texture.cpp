@@ -151,7 +151,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 			color.a = src [i + x - r].a;
 			}
 		}
-	i += tw;
+	i += nStep * tw;
 	}
 }
 
@@ -224,7 +224,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 			color.b = uint8_t (acc [2] / l);
 			}
 		}
-	i += tw;
+	i += nStep * tw;
 	}
 }
 
@@ -302,7 +302,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 			color.a = src [i + x].a;
 			}
 		}
-	i += tw;
+	i += nStep * tw;
 	}
 }
 
@@ -347,7 +347,7 @@ for (int32_t x = nStart; x < w; x += nStep) {
 			color.b = uint8_t (acc [2] / hits);
 			color.a = src [y * tw + x].a;
 			}
-		i += tw;
+		i += nStep * tw;
 		}
 	}
 }
@@ -392,7 +392,7 @@ for (int32_t x = nStart; x < w; x += nStep) {
 			color.g = uint8_t (acc [1] / hits);
 			color.b = uint8_t (acc [2] / hits);
 			}
-		i += tw;
+		i += nStep * tw;
 		}
 	}
 }
@@ -435,7 +435,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 			color.b = uint8_t (acc [2] / hits);
 			}
 		}
-	i += tw;
+	i += nStep * tw;
 	}
 }
 
@@ -443,18 +443,23 @@ for (int32_t y = nStart; y < h; y += nStep) {
 
 void BoxBlurRGBA (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t bWrap) 
 {
-#if USE_OPENMP
+#if 0 //USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
+	if (bWrap) {
 #	pragma omp parallel
-	for (int32_t i = 0; i < gameStates.app.nThreads; i++) {
-		if (bWrap) {
+		for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 			HBoxBlurRGBAWrapped (src, dest, w, h, tw, th, r, i, gameStates.app.nThreads);
+#	pragma omp parallel
+		for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 			VBoxBlurRGBAWrapped (dest, src, w, h, tw, th, r, i, gameStates.app.nThreads);
-			}
-		else {
+		}
+	else {
+#	pragma omp parallel
+		for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 			HBoxBlurRGBAClamped (src, dest, w, h, tw, th, r, i, gameStates.app.nThreads);
+#	pragma omp parallel
+		for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 			VBoxBlurRGBAClamped (dest, src, w, h, tw, th, r, i, gameStates.app.nThreads);
-			}
 		}
 	}
 else
@@ -473,18 +478,23 @@ else {
 
 void BoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t bWrap) 
 {
-#if USE_OPENMP
+#if 0 //USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
+	if (bWrap) {
 #	pragma omp parallel
-	for (int32_t i = 0; i < gameStates.app.nThreads; i++) {
-		if (bWrap) {
+		for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 			HBoxBlurRGBWrapped (src, dest, w, h, tw, th, r, i, gameStates.app.nThreads);
+#	pragma omp parallel
+		for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 			VBoxBlurRGBWrapped (dest, src, w, h, tw, th, r, i, gameStates.app.nThreads);
-			}
-		else {
+		}
+	else {
+#	pragma omp parallel
+		for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 			HBoxBlurRGBClamped (src, dest, w, h, tw, th, r, i, gameStates.app.nThreads);
+#	pragma omp parallel
+		for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 			VBoxBlurRGBClamped (dest, src, w, h, tw, th, r, i, gameStates.app.nThreads);
-			}
 		}
 	}
 else
@@ -536,7 +546,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 		src->b = Posterize ((int32_t) src->b, nColorSteps);
 		src++;
 		}
-	src += tw - w;
+	src += (nStep - 1) * tw + tw - w;
 	}
 }
 
@@ -551,7 +561,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 		src->b = Posterize ((int32_t) src->b, nColorSteps);
 		src++;
 		}
-	src += tw - w;
+	src += (nStep - 1) * tw + tw - w;
 	}
 }
 
@@ -559,7 +569,7 @@ for (int32_t y = nStart; y < h; y += nStep) {
 
 void Posterize (GLubyte *src, int32_t w, int32_t h, int32_t tw, int32_t nColors) 
 {
-#if USE_OPENMP
+#if 0 //USE_OPENMP
 if (gameStates.app.bMultiThreaded) {
 #	pragma omp parallel
 	for (int32_t i = 0; i < gameStates.app.nThreads; i++) {
