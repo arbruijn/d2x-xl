@@ -1643,7 +1643,7 @@ void CGeoEdge::Setup (void)
 m_fScale = 1.0f;
 m_fSplit = 0.0f;
 m_vOffset.SetZero ();
-m_fDot = abs (CFloatVector::Dot (m_faces [0].m_vNormal, m_faces [1].m_vNormal));
+m_fDot = fabs (CFloatVector::Dot (Normal (0), Normal (1)));
 if ((m_fDot > 0.9f) && (m_fDot <= 0.975f)) { 
 	m_fScale  = (0.5f + 0.5f * (1.0f - m_fDot * m_fDot));
 	if (m_fScale < 0.75f) {
@@ -1651,8 +1651,8 @@ if ((m_fDot > 0.9f) && (m_fDot <= 0.975f)) {
 			m_fSplit = 0.3f + 0.4f * RandFloat ();
 		else {
 			m_fSplit = 0.0f;
-			m_vOffset = gameData.segData.fVertices [m_nVertices [1]];
-			m_vOffset -= gameData.segData.fVertices [m_nVertices [0]];
+			m_vOffset = Vertex (1);
+			m_vOffset -= Vertex (0);
 			m_fOffset = (1.0f - m_fScale) * 0.25f;
 			m_fOffset *= m_fOffset + (2.0f * m_fOffset) * RandFloat ();
 			m_vOffset *= m_fOffset;
@@ -1729,8 +1729,8 @@ else {
 	}
 edgeP->m_faces [i].m_nItem = nSegment;
 edgeP->m_faces [i].m_nFace = nSide;
-edgeP->m_faces [i].m_vNormal = gameData.Segment (nSegment)->Side (nSide)->Normalf (2);
-edgeP->m_faces [i].m_vCenter.Assign (gameData.Segment (nSegment)->Side (nSide)->Center ());
+edgeP->m_faces [i].m_vNormal [0] = gameData.Segment (nSegment)->Side (nSide)->Normalf (2);
+edgeP->m_faces [i].m_vCenter [0].Assign (gameData.Segment (nSegment)->Side (nSide)->Center ());
 
 if (i == 0)
 	return 1;

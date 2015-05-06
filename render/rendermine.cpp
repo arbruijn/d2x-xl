@@ -750,8 +750,8 @@ int32_t CGeoEdge::Visibility (void)
 vViewer.Assign (gameData.objData.viewerP->Position ());
 
 int32_t nVisible = 0;
-vViewDir = vViewer - Vertex (0);
 for (int32_t j = 0; j < 2; j++) {
+	vViewDir = vViewer - m_faces [j].m_vCenter [0];
 	CFloatVector::Normalize (vViewDir);
 	float dot = CFloatVector::Dot (vViewDir, Normal (j));
 	if (dot >= 0.0f)
