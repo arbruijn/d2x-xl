@@ -104,11 +104,11 @@ return i % l;
 
 //------------------------------------------------------------------------------
 
-static void HBoxBlurRGBAWrapped (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
+static void HBoxBlurRGBAWrapped (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nStart = 0, int32_t nStep = 1)
 {
 int32_t i = 0;
 
-for (int32_t y = 0; y < h; y++) {
+for (int32_t y = nStart; y < h; y += nStep) {
 	int32_t l = 2 * r + 1;
 	int32_t acc [3] = { 0, 0, 0 };
 	int32_t hits = 0;
@@ -147,11 +147,11 @@ for (int32_t y = 0; y < h; y++) {
 
 //------------------------------------------------------------------------------
 
-static void VBoxBlurRGBAWrapped (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
+static void VBoxBlurRGBAWrapped (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nStart = 0, int32_t nStep = 1)
 {
 	int32_t l = 2 * r + 1;
 
-for (int32_t x = 0; x < w; x++) {
+for (int32_t x = nStart; x < w; x += nStep) {
 	int32_t acc [3] = { 0, 0, 0 };
 
 	for (int32_t y = -r; y < h + r; y++) {
@@ -186,10 +186,10 @@ for (int32_t x = 0; x < w; x++) {
 
 //------------------------------------------------------------------------------
 
-static void HBoxBlurRGBWrapped (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
+static void HBoxBlurRGBWrapped (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nStart = 0, int32_t nStep = 1)
 {
 int32_t i = 0;
-for (int32_t y = 0; y < h; y++) {
+for (int32_t y = nStart; y < h; y += nStep) {
 	int32_t l = 2 * r + 1;
 	int32_t acc [3] = { 0, 0, 0 };
 	for (int32_t x = -r; x < w + r; x++) {
@@ -220,11 +220,11 @@ for (int32_t y = 0; y < h; y++) {
 
 //------------------------------------------------------------------------------
 
-static void VBoxBlurRGBWrapped (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
+static void VBoxBlurRGBWrapped (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nStart = 0, int32_t nStep = 1)
 {
 	int32_t l = 2 * r + 1;
 
-for (int32_t x = 0; x < w; x++) {
+for (int32_t x = nStart; x < w; x += nStep) {
 	int32_t acc [3] = { 0, 0, 0 };
 	int32_t hits = 0;
 
@@ -255,10 +255,10 @@ for (int32_t x = 0; x < w; x++) {
 
 //------------------------------------------------------------------------------
 
-static void HBoxBlurRGBAClamped (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
+static void HBoxBlurRGBAClamped (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nStart = 0, int32_t nStep = 1)
 {
 int32_t i = 0;
-for (int32_t y = 0; y < h; y++) {
+for (int32_t y = nStart; y < h; y += nStep) {
 	int32_t hits = 0;
 	int32_t acc [3] = { 0, 0, 0 };
 	for (int32_t x = -r; x < w; x++) {
@@ -298,11 +298,11 @@ for (int32_t y = 0; y < h; y++) {
 
 //------------------------------------------------------------------------------
 
-static void VBoxBlurRGBAClamped (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
+static void VBoxBlurRGBAClamped (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nStart = 0, int32_t nStep = 1)
 {
 	int32_t o [2] = { -(r + 1) * tw, r * tw };
 
-for (int32_t x = 0; x < w; x++) {
+for (int32_t x = nStart; x < w; x += nStep) {
 	int32_t hits = 0;
 	int32_t acc [3] = { 0, 0, 0 };
 
@@ -344,11 +344,11 @@ for (int32_t x = 0; x < w; x++) {
 
 //------------------------------------------------------------------------------
 
-static void VBoxBlurRGBClamped (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
+static void VBoxBlurRGBClamped (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nStart = 0, int32_t nStep = 1)
 {
 	int32_t o [2] = { -(r + 1) * tw, r * tw };
 
-for (int32_t x = 0; x < w; x++) {
+for (int32_t x = nStart; x < w; x += nStep) {
 	int32_t hits = 0;
 	int32_t acc [3] = { 0, 0, 0 };
 
@@ -389,10 +389,10 @@ for (int32_t x = 0; x < w; x++) {
 
 //------------------------------------------------------------------------------
 
-static void HBoxBlurRGBClamped (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r)
+static void HBoxBlurRGBClamped (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t nStart = 0, int32_t nStep = 1)
 {
 int32_t i = 0;
-for (int32_t y = 0; y < h; y++) {
+for (int32_t y = nStart; y < h; y += nStep) {
 	int32_t hits = 0;
 	int32_t acc [3] = { 0, 0, 0 };
 	for (int32_t x = -r; x < w; x++) {
@@ -433,6 +433,22 @@ for (int32_t y = 0; y < h; y++) {
 
 void BoxBlurRGBA (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t bWrap) 
 {
+#if USE_OPENMP
+if (gameStates.app.bMultiThreaded) {
+#	pragma omp parallel
+	for (int32_t i = 0; i < gameStates.app.nThreads; i++) {
+		if (bWrap) {
+			HBoxBlurRGBAWrapped (src, dest, w, h, tw, th, r, i, gameStates.app.nThreads);
+			VBoxBlurRGBAWrapped (dest, src, w, h, tw, th, r, i, gameStates.app.nThreads);
+			}
+		else {
+			HBoxBlurRGBAClamped (src, dest, w, h, tw, th, r, i, gameStates.app.nThreads);
+			VBoxBlurRGBAClamped (dest, src, w, h, tw, th, r, i, gameStates.app.nThreads);
+			}
+		}
+	}
+else
+#endif
 if (bWrap) {
 	HBoxBlurRGBAWrapped (src, dest, w, h, tw, th, r);
 	VBoxBlurRGBAWrapped (dest, src, w, h, tw, th, r);
@@ -447,6 +463,22 @@ else {
 
 void BoxBlurRGB (tRGB *dest, tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t th, int32_t r, int32_t bWrap) 
 {
+#if USE_OPENMP
+if (gameStates.app.bMultiThreaded) {
+#	pragma omp parallel
+	for (int32_t i = 0; i < gameStates.app.nThreads; i++) {
+		if (bWrap) {
+			HBoxBlurRGBWrapped (src, dest, w, h, tw, th, r, i, gameStates.app.nThreads);
+			VBoxBlurRGBWrapped (dest, src, w, h, tw, th, r, i, gameStates.app.nThreads);
+			}
+		else {
+			HBoxBlurRGBClamped (src, dest, w, h, tw, th, r, i, gameStates.app.nThreads);
+			VBoxBlurRGBClamped (dest, src, w, h, tw, th, r, i, gameStates.app.nThreads);
+			}
+		}
+	}
+else
+#endif
 if (bWrap) {
 	HBoxBlurRGBWrapped (src, dest, w, h, tw, th, r);
 	VBoxBlurRGBWrapped (dest, src, w, h, tw, th, r);
@@ -485,9 +517,9 @@ inline uint8_t Posterize (int32_t nColor, int32_t nSteps = 15) {
 
 //------------------------------------------------------------------------------
 
-void PosterizeRGBA (tRGBA *src, int32_t w, int32_t h, int32_t tw) 
+void PosterizeRGBA (tRGBA *src, int32_t w, int32_t h, int32_t tw, int32_t nStart = 0, int32_t nStep = 1) 
 {
-for (int32_t y = 0; y < h; y++) {
+for (int32_t y = nStart; y < h; y += nStep) {
 	for (int32_t x = 0; x < w; x++) {
 		src->r = Posterize ((int32_t) src->r, nColorSteps);
 		src->g = Posterize ((int32_t) src->g, nColorSteps);
@@ -500,9 +532,9 @@ for (int32_t y = 0; y < h; y++) {
 
 //------------------------------------------------------------------------------
 
-void PosterizeRGB (tRGB *src, int32_t w, int32_t h, int32_t tw) 
+void PosterizeRGB (tRGB *src, int32_t w, int32_t h, int32_t tw, int32_t nStart = 0, int32_t nStep = 1) 
 {
-for (int32_t y = 0; y < h; y++) {
+for (int32_t y = nStart; y < h; y += nStep) {
 	for (int32_t x = 0; x < w; x++) {
 		src->r = Posterize ((int32_t) src->r, nColorSteps);
 		src->g = Posterize ((int32_t) src->g, nColorSteps);
@@ -517,6 +549,18 @@ for (int32_t y = 0; y < h; y++) {
 
 void Posterize (GLubyte *src, int32_t w, int32_t h, int32_t tw, int32_t nColors) 
 {
+#if USE_OPENMP
+if (gameStates.app.bMultiThreaded) {
+#	pragma omp parallel
+	for (int32_t i = 0; i < gameStates.app.nThreads; i++) {
+		if (nColors == 3)
+			PosterizeRGB ((tRGB*) src, w, h, tw, i, gameStates.app.nThreads);
+		else if (nColors == 4)
+			PosterizeRGBA ((tRGBA*) src, w, h, tw, i, gameStates.app.nThreads);
+		}
+	}
+else
+#endif
 if (nColors == 3)
 	PosterizeRGB ((tRGB*) src, w, h, tw);
 else if (nColors == 4)
