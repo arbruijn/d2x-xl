@@ -823,7 +823,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 	if (bEdges) {
 		if (bHires) {
 		for (int32_t i = 0; i < modelP->m_nSubModels; i++)
-				if (modelP->m_subModels [i].m_nParent == -1) 
+				if (modelP->m_subModels [i].m_nParent == -1 && i == 7) 
 					G3TransformSubModel (objP, nModel, i, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
 												bHires, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 			}
@@ -835,7 +835,7 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 
 	if (bHires) {
 		for (int32_t i = 0; i < modelP->m_nSubModels; i++)
-			if (modelP->m_subModels [i].m_nParent == -1) {
+			if (modelP->m_subModels [i].m_nParent == -1 && i == 7) {
 				G3DrawSubModel (objP, nModel, i, nSubModel, modelBitmaps, animAnglesP, (nSubModel < 0) ? &modelP->m_subModels [0].m_vOffset : vOffsetP,
 									 bHires, bUseVBO, nPass, bTranspFilter, nGunId, nBombId, nMissileId, nMissiles, bEdges);
 				}

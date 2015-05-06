@@ -109,7 +109,9 @@ for (int32_t i = 0; i < 2; i++) {
 int32_t CModelEdge::IsFacingViewer (int16_t nFace)
 {
 #if 1
-return CFloatVector::Dot (m_faces [nFace].m_vCenter [1], m_faces [nFace].m_vNormal [1]) < 0.0f;
+//return CFloatVector::Dot (m_vertices [1][nFace]/*m_faces [nFace].m_vCenter [1]*/, m_faces [nFace].m_vNormal [1]) < 0.0f;
+float dot = CFloatVector::Dot (m_vertices [1][nFace]/*m_faces [nFace].m_vCenter [1]*/, m_faces [nFace].m_vNormal [1]);
+return dot < 0.0f;
 #else
 CFloatVector v = m_faces [nFace].m_vCenter [1];
 CFloatVector::Normalize (v);
@@ -349,7 +351,8 @@ m_textureP = (textureP && (m_nBitmap >= 0)) ? textureP + m_nBitmap : NULL;
 }
 
 //------------------------------------------------------------------------------
-
+// Before this function is executed, m_nIndex points into the CRenderModel::m_faceVerts
+// After it is executed, it points into CRenderModel::m_sortedVerts
 int32_t CFace::GatherVertices (CArray<CVertex>& source, CArray<CVertex>& dest, int32_t nIndex)
 {
 #if DBG
@@ -414,7 +417,7 @@ if (m_nFaces > 1)
 
 void CSubModel::GatherVertices (CArray<CVertex>& source, CArray<CVertex>& dest)
 {
-	int32_t nIndex = m_nVertexIndex [0];	//this submodels vertices start at m_nIndex in the models vertex buffer
+	int32_t nIndex = m_nVertexIndex [0];	//this submodel's vertices start at m_nIndex in the model's vertex buffer
 
 // copy vertices face by face
 for (int32_t i = 0; i < m_nFaces; i++)
@@ -445,34 +448,66 @@ for (uint16_t i = 0; i < m_nFaces; i++)
 
 //------------------------------------------------------------------------------
 
-int32_t CSubModel::FindEdge (uint16_t v1, uint16_t v2)
-{
-	CModelEdge*	edgeP = m_edges.Buffer ();
+#define DIST_TOLERANCE 1e-3f
 
-for (int32_t i = 0; i < m_nEdges; i++)
+int32_t CSubModel::FindEdge (CModel* modelP, uint16_t v1, uint16_t v2)
+{
+	CModelEdge		*edgeP = m_edges.Buffer ();
+#if 0
+	CFloatVector	v [2], d;
+	float				l;
+	
+v [0].Assign (modelP->m_vertices [v1]);
+v [1].Assign (modelP->m_vertices [v2]);
+#endif
+
+for (int32_t i = m_nEdges; i; i--, edgeP++) {
+#if 1
 	if ((edgeP->m_nVertices [0] == v1) && (edgeP->m_nVertices [1] == v2))
 		return i;
+#elif 0
+	if (((edgeP->m_vertices [0][0] == v [0]) && (edgeP->m_vertices [0][1] == v [1])) ||
+		 ((edgeP->m_vertices [0][0] == v [1]) && (edgeP->m_vertices [0][1] == v [0])))
+		return i;
+#else
+	d = edgeP->m_vertices [0][0] - v [0];
+	if ((l = d.Mag ()) < DIST_TOLERANCE) {
+		d = edgeP->m_vertices [0][1] - v [1];
+		if ((l = d.Mag ()) < DIST_TOLERANCE)
+			return i;
+		}
+	d = edgeP->m_vertices [0][0] - v [1];
+	if ((l = d.Mag ()) < DIST_TOLERANCE) {
+		d = edgeP->m_vertices [0][1] - v [0];
+		if ((l = d.Mag ()) < DIST_TOLERANCE)
+			return i;
+		}
+#endif
+	}
 return -1;
 }
 
 //------------------------------------------------------------------------------
 
-void CSubModel::AddEdge (CModel *modelP, CFace* faceP, uint16_t v1, uint16_t v2)
+int32_t CSubModel::AddEdge (CModel *modelP, CFace* faceP, uint16_t v1, uint16_t v2)
 {
 if (v1 > v2)
 	Swap (v1, v2);
-int32_t i = FindEdge (v1, v2);
+int32_t i = FindEdge (modelP, v1, v2);
+
+CModelEdge *edgeP;
+
 if (i >= 0) {
-	CModelEdge *edgeP = m_edges + i;
+	edgeP = m_edges + i;
 	edgeP->m_nFaces = 2;
 	edgeP->m_faces [1].m_vNormal [0].Assign (faceP->m_vNormalf [0]);
 	edgeP->m_faces [1].m_vCenter [0].Assign (faceP->m_vCenterf [0]);
 	if (faceP->m_faceWinding == GL_CW)
-		edgeP->m_faces [0].m_vNormal [1].Neg ();
+		edgeP->m_faces [1].m_vNormal [0].Neg ();
 	edgeP->Setup ();
 	}
 else {
-	CModelEdge *edgeP = m_edges + m_nEdges++;
+	edgeP = m_edges + m_nEdges++;
 	edgeP->m_nFaces = 1;
 	edgeP->m_nVertices [0] = v1;
 	edgeP->m_nVertices [1] = v2;
@@ -483,6 +518,7 @@ else {
 	if (faceP->m_faceWinding == GL_CW)
 		edgeP->m_faces [0].m_vNormal [0].Neg ();
 	}
+return edgeP->m_nFaces == 2;
 }
 
 //------------------------------------------------------------------------------
@@ -490,6 +526,7 @@ else {
 bool CSubModel::BuildEdgeList (CModel* modelP)
 {
 	CFace*	faceP = m_faces;
+	int32_t	nComplete = 0;
 
 m_nEdges = 0;
 for (uint16_t i = 0; i < m_nFaces; i++, faceP++)
@@ -507,14 +544,14 @@ for (uint16_t i = 0; i < m_nFaces; i++, faceP++) {
 	faceP->m_vNormalf [0] = CFloatVector3::Normal (modelP->m_faceVerts [faceP->m_nIndex].m_vertex, 
 																  modelP->m_faceVerts [faceP->m_nIndex + 1].m_vertex, 
 																  modelP->m_faceVerts [faceP->m_nIndex + 2].m_vertex);
-	CFixVector vNormal;
 	faceP->m_vNormal.Assign (faceP->m_vNormalf [0]);
 	faceP->m_faceWinding = FaceWinding (&modelP->m_faceVerts [faceP->m_nIndex].m_vertex, 
 													&modelP->m_faceVerts [faceP->m_nIndex + 1].m_vertex, 
 													&modelP->m_faceVerts [faceP->m_nIndex + 2].m_vertex);
 
 	for (uint16_t j = 0; j < faceP->m_nVerts; j++)
-		AddEdge (modelP, faceP, modelP->m_faceVerts [faceP->m_nIndex + j].m_nIndex, modelP->m_faceVerts [faceP->m_nIndex + (j + 1) % faceP->m_nVerts].m_nIndex);
+		if (AddEdge (modelP, faceP, modelP->m_faceVerts [faceP->m_nIndex + j].m_nIndex, modelP->m_faceVerts [faceP->m_nIndex + (j + 1) % faceP->m_nVerts].m_nIndex))
+			++nComplete;
 	}
 return m_edges.Resize (m_nEdges) != NULL;
 }
@@ -543,10 +580,10 @@ for (i = 0, j = m_nFaceVerts; i < j; i++)
 for (i = 0; i < m_nSubModels; i++) {
 	psm = &m_subModels [i];
 	if (psm->m_nFaces) {
+		psm->BuildEdgeList (this);
 		if (bSort) {
 			psm->SortFaces (textureP);
 			psm->GatherVertices (m_faceVerts, m_sortedVerts);
-			psm->BuildEdgeList (this);
 			}
 		pfi = psm->m_faces;
 		pfi->SetTexture (textureP);
@@ -676,8 +713,8 @@ void CSubModel::Size (CModel* pm, CObject* objP, CFixVector* vOffset)
 {
 	tHitbox		*phb = (m_nHitbox < 0) ? NULL : gameData.models.hitboxes [pm->m_nModel].hitboxes + m_nHitbox;
 	CFixVector	vMin, vMax, vOffs;
-	int32_t			i, j;
-	CSubModel*	psm;
+	int32_t		i, j;
+	CSubModel	*psm;
 
 if (vOffset)
 	vOffs = *vOffset + m_vOffset;	//compute absolute offset (i.e. including offsets of all parent submodels)
@@ -938,7 +975,7 @@ return Radius (objP);
 int32_t CModel::MinMax (tHitbox *phb)
 {
 	CSubModel*	psm;
-	int32_t			i;
+	int32_t		i;
 
 for (i = m_nSubModels, psm = m_subModels.Buffer (); i; i--, psm++) {
 	if (!psm->m_bThruster && (psm->m_nGunPoint < 0)) {

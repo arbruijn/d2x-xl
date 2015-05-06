@@ -46,7 +46,7 @@ CStack< char* > texIds;
 //------------------------------------------------------------------------------
 
 static int32_t bWrapBlur = 1;
-static int32_t nBlurStrength = 3;
+static int32_t nBlurStrength = 1;
 
 static inline int32_t Wrap (int32_t i, int32_t l)
 {

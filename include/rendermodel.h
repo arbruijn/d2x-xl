@@ -154,8 +154,8 @@ class CSubModel {
 		void Size (CModel* pm, CObject* objP, CFixVector* vOffset);
 
 		uint16_t CountEdges (void);
-		int32_t FindEdge (uint16_t v1, uint16_t v2);
-		void AddEdge (CModel *modelP, CFace* faceP, uint16_t v1, uint16_t v2);
+		int32_t FindEdge (CModel* modelP, uint16_t v1, uint16_t v2);
+		int32_t AddEdge (CModel *modelP, CFace* faceP, uint16_t v1, uint16_t v2);
 		bool BuildEdgeList (CModel* modelP);
 
 		void GatherContourEdges (CModel* modelP);
