@@ -178,9 +178,9 @@ else {
 
 void G3ScaleModel (int32_t nModel, int32_t bHires)
 {
-	RenderModel::CModel			*modelP = gameData.models.renderModels [bHires] + nModel;
+	RenderModel::CModel	*modelP = gameData.models.renderModels [bHires] + nModel;
 	CFloatVector			fScale;
-	int32_t				i;
+	int32_t					i;
 	CFloatVector3			*pv;
 	RenderModel::CVertex	*pmv;
 
@@ -499,6 +499,19 @@ void G3DrawSubModel (CObject *objP, int16_t nModel, int16_t nSubModel, int16_t n
 	int16_t						nId, nBitmap = -1, nTeamColor;
 	uint16_t						nFaceVerts, nVerts, nIndex;
 
+#if DBG
+if (nModel == nDbgModel)
+	nDbgModel = nModel;
+if (objP) {
+	if (ObjIdx (objP) == nDbgObj)
+		BRP;
+	if (objP->info.nSegment == nDbgSeg)
+		BRP;
+	if (objP->info.nType == OBJ_DEBRIS)
+		BRP;
+	}
+#endif
+
 if (objP->info.nType == OBJ_PLAYER)
 	nTeamColor = IsMultiGame ? IsTeamGame ? GetTeam (objP->info.nId) + 1 : PlayerColor (objP->Index ()) : gameOpts->render.ship.nColor;
 else
@@ -539,15 +552,10 @@ subModelP = modelP->m_subModels + nSubModel;
 if (subModelP->m_bBillboard)
 #endif
 if ((nExclusive < 0) || (nSubModel == nExclusive)) {
-#if 0
-	if (vOffsetP && (nSubModel == nExclusive))
-		transformation.Begin (vOffsetP, NULL);
-#endif
 	subModelP = modelP->m_subModels + nSubModel;
 	if (subModelP->m_bBillboard) {
 		if (!bRestoreMatrix) {
 			bRestoreMatrix = 1;
-			//glMatrixMode (GL_MODELVIEW);
 			glPushMatrix ();
 			}
 		float modelView [16];
@@ -561,16 +569,19 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #endif
 		glLoadMatrixf (modelView);
 		}
+
 	ogl.SetTexturing (false);
 	if (gameStates.render.bCloaked)
 		glColor4f (0, 0, 0, gameStates.render.grAlpha);
 	if (bEdges) {
-		RenderModel::CModelEdge* edgeP = subModelP->m_edges.Buffer ();
-		int32_t nVertices [2] = { 0, gameData.segData.nEdges };
-		int32_t bOnlyOutline = 1; //bHires || objP->IsWeapon ();
-		for (i = subModelP->m_nEdges; i; i--, edgeP++) 
-			edgeP->Render (CFloatVector::ZERO, nVertices, bOnlyOutline);
-		RenderOutline (nVertices);
+		if (!subModelP->m_bThruster) {
+			RenderModel::CModelEdge* edgeP = subModelP->m_edges.Buffer ();
+			int32_t nVertices [2] = { 0, gameData.segData.nEdges };
+			int32_t nEdgeFilter = objP->IsWeapon () ? 0 : bHires; //bHires || objP->IsWeapon ();
+			for (i = subModelP->m_nEdges; i; i--, edgeP++) 
+				edgeP->Render (CFloatVector::ZERO, nVertices, nEdgeFilter);
+			RenderOutline (nVertices);
+			}	
 		}
 	else {
 		RenderModel::CFace* faceP = subModelP->m_faces;
@@ -646,7 +657,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #ifdef _WIN32
 			if (glDrawRangeElements)
 #endif
-#if DBG
+#if 0 //DBG
 				if (bUseVBO)
 #	if 1
 					glDrawRangeElements (gameOpts->render.debug.bWireFrame ? GL_LINE_LOOP : (nFaceVerts == 3) ? GL_TRIANGLES : (nFaceVerts == 4) ? GL_QUADS : GL_TRIANGLE_FAN,
@@ -688,7 +699,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 if (bRestoreMatrix)
 	glPopMatrix ();
 #if 1
-if ((nExclusive < 0) /*|| (nSubModel == nExclusive)*/)
+if (vOffsetP && (nExclusive < 0))
 	transformation.End ();
 #endif
 }
@@ -712,9 +723,11 @@ void G3DrawModel (CObject *objP, int16_t nModel, int16_t nSubModel, CArray<CBitm
 	CActiveDynLight*		activeLightsP = sliP ? lightManager.Active (0) + sliP->nFirst : NULL;
 	tObjTransformation*	posP = OBJPOS (objP);
 
+#if 0 // only required if not transforming model outlines via OpenGL when rendering
 if (bEdges)
 	ogl.SetTransform (0);
 else
+#endif
 	ogl.SetupTransform (1);
 if (bLighting) {
 	nLights = sliP->nActive;
@@ -786,27 +799,20 @@ for (nPass = 0; ((nLightRange > 0) && (nLights > 0)) || !nPass; nPass++) {
 				glLightfv (hLight, GL_DIFFUSE, reinterpret_cast<GLfloat*> (&color));
 				glLightfv (hLight, GL_SPECULAR, reinterpret_cast<GLfloat*> (&color));
 				if (lightP->info.bSpot) {
-#if 0
-					BRP;
-#else
 					glLighti (hLight, GL_SPOT_EXPONENT, 12);
 					glLighti (hLight, GL_SPOT_CUTOFF, 25);
 					glLightfv (hLight, GL_SPOT_DIRECTION, reinterpret_cast<GLfloat*> (&lightP->info.vDirf));
-#endif
 					glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.0f); //0.1f / fBrightness);
 					glLightf (hLight, GL_LINEAR_ATTENUATION, 0.05f / fBrightness);
 					glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.005f / fBrightness);
 					}
 				else {
 					glLightf (hLight, GL_CONSTANT_ATTENUATION, 0.0f); //0.1f / fBrightness);
-#if 1
 					if (X2F (CFixVector::Dist (objP->info.position.vPos, lightP->info.vPos)) <= lightP->info.fRad) {
 						glLightf (hLight, GL_LINEAR_ATTENUATION, 0.01f / fBrightness);
 						glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.001f / fBrightness);
 						}
-					else 
-#endif
-						{
+					else {
 						glLightf (hLight, GL_LINEAR_ATTENUATION, 0.05f / fBrightness);
 						glLightf (hLight, GL_QUADRATIC_ATTENUATION, 0.005f / fBrightness);
 						}
@@ -929,10 +935,14 @@ if (!objP)
 #if DBG
 if (nModel == nDbgModel)
 	nDbgModel = nModel;
-if (objP && (ObjIdx (objP) == nDbgObj))
-	BRP;
-if (objP->info.nSegment == nDbgSeg)
-	BRP;
+if (objP) {
+	if (ObjIdx (objP) == nDbgObj)
+		BRP;
+	if (objP->info.nSegment == nDbgSeg)
+		BRP;
+	if (objP->info.nType == OBJ_DEBRIS)
+		BRP;
+	}
 #endif
 
 if (bHires) {
@@ -1071,7 +1081,7 @@ if (gameOpts->render.debug.bWireFrame)
 	glLineWidth (3.0f);
 #endif
 
-if (gameStates.render.bCartoonStyle && !bRenderTransparency && (!objP->IsWeapon () || objP->IsMissile ()))
+if (gameStates.render.bCartoonize && !bRenderTransparency && (!objP->IsWeapon () || objP->IsMissile ()))
 	G3DrawModel (objP, nModel, nSubModel, modelBitmaps, animAnglesP, vOffsetP, bHires, bUseVBO, 0, nGunId, nBombId, nMissileId, nMissiles, 1);
 
 #if 1 //!DBG
@@ -1094,7 +1104,7 @@ if (gameStates.render.nType != RENDER_TYPE_TRANSPARENCY) {
 			for (int32_t i = 0, j = modelP->m_nSubModels; i < j; i++, subModelP++)
 				if ((subModelP->m_nParent == -1) && !G3FilterSubModel (objP, subModelP, nGunId, nBombId, nMissileId, nMissiles))
 					G3RenderDamageLightning (objP, nModel, i, animAnglesP, NULL, bHires);
-	//	G3RenderDamageLightning (objP, nModel, 0, animAnglesP, NULL, bHires);
+			//	G3RenderDamageLightning (objP, nModel, 0, animAnglesP, NULL, bHires);
 			transformation.End ();
 			glowRenderer.End ();
 			}

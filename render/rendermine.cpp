@@ -765,7 +765,14 @@ return nVisible;
 int32_t CGeoEdge::Type (void)
 {
 int32_t h = Visibility ();
-return ((h == 0) ? -1 : (h != 3) ? 0 : (m_fDot > 0.97f) ? -1 : 1);
+return ((h == 0) ? -1 : (h != 3) ? 0 : (m_fDot > 0.97f) ? -1 : (m_fScale < 1.0f) ? 2 : 1);
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CGeoEdge::Partial (void)
+{
+return m_fDot > 0.9f;
 }
 
 //------------------------------------------------------------------------------
@@ -784,16 +791,17 @@ return gameData.segData.fVertices [m_nVertices [i]];
 
 //------------------------------------------------------------------------------
 
-void CGeoEdge::Render (CFloatVector vViewer, int32_t nVertices [], int32_t bOnlyOutline)
+void CGeoEdge::Render (CFloatVector vViewer, int32_t nVertices [], int32_t nFilter)
 {
+#if DBG
 if ((gameStates.render.nType == RENDER_TYPE_OBJECTS) && (m_nFaces < 2))
 	BRP;
-//	return;
+#endif
 
 int32_t nType = Type ();
 if (nType < 0)
 	return;
-if (nType && bOnlyOutline)
+if (nType > nFilter)
 	return;
 
 #if 0 //DBG
@@ -814,13 +822,15 @@ if (gameStates.render.nType == RENDER_TYPE_OBJECTS) {
 
 CFloatVector vertices [2];
 
-int32_t bSplit = nType && (m_fSplit != 0.0f);
+int32_t bPartial = nType == 2;
+
+int32_t bSplit = bPartial && (m_fSplit != 0.0f);
 
 for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 	for (int32_t j = 0; j < 2; j++) {
 		vertices [j] = Vertex (j);
 		CFloatVector v;
-		if (j && nType && (m_fDot > 0.9f)) {
+		if (j && bPartial) {
 			v = vertices [1];
 			v -= vertices [0];
 			v *= m_fScale;
@@ -978,7 +988,7 @@ RenderCockpitModel ();
 gameStates.render.EnableCartoonStyle ();
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
-if (gameStates.render.bCartoonStyle)
+if (gameStates.render.bCartoonize)
 	RenderEdges ();
 //RenderSegmentOutline ();
 #	if 1

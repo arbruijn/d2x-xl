@@ -152,6 +152,12 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #define AMBIENT_LIGHT	0.3f
 #define DIFFUSE_LIGHT	0.7f
 
+#if DBG
+#	define CARTOON_BLUR_PASSES	1
+#else
+#	define CARTOON_BLUR_PASSES	3
+#endif
+
 //------------------------------------------------------------------------------
 
 #ifdef _OPENMP
@@ -446,7 +452,7 @@ class CRenderOptions {
 		int32_t nQuality;
 		int32_t nImageQuality;
 		int32_t nDebrisLife;
-		int32_t bCartoonStyle;
+		int32_t bCartoonize;
 		tCameraOptions cameras;
 		tColorOptions color;
 		tCockpitOptions cockpit;
@@ -1063,7 +1069,7 @@ class CRenderStates {
 		int32_t bSpecularColor;
 		int32_t bDoCameras;
 		int32_t bRenderIndirect;
-		int32_t bCartoonStyle;
+		int32_t bCartoonize;
 		int32_t bBuildModels;
 		int32_t bShowFrameRate;
 		int32_t bShowTime;
@@ -1117,12 +1123,12 @@ class CRenderStates {
 
 		inline bool Dirty (void) { return (nWindow [0] != nWindow [1]) || (xStereoSeparation [0] != xStereoSeparation [1]); }
 		inline int32_t SetCartoonStyle (int32_t bNewStyle) {
-			int32_t bOldStyle = bCartoonStyle;
-			bCartoonStyle = bNewStyle;
+			int32_t bOldStyle = bCartoonize;
+			bCartoonize = bNewStyle;
 			return bOldStyle;
 			}
 
-		inline int32_t ToggleCartoonStyle (void) { return SetCartoonStyle (-bCartoonStyle); }
+		inline int32_t ToggleCartoonStyle (void) { return SetCartoonStyle (-bCartoonize); }
 #if DBG
 		int32_t EnableCartoonStyle (void);
 		int32_t DisableCartoonStyle (void);
@@ -2104,9 +2110,10 @@ class CGeoEdge {
 		void Setup (void);
 		virtual int32_t Visibility (void);
 		virtual int32_t Type (void);
+		virtual int32_t Partial (void);
 		virtual CFloatVector& Normal (int32_t i);
 		virtual CFloatVector& Vertex (int32_t i);
-		void Render (CFloatVector vViewer, int32_t nVertices [], int32_t bOnlyOutline = false);
+		void Render (CFloatVector vViewer, int32_t nVertices [], int32_t nFilter = 2);
 	};
 
 //------------------------------------------------------------------------------

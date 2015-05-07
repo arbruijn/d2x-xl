@@ -99,8 +99,10 @@ void CModelEdge::Transform (void)
 {
 for (int32_t i = 0; i < 2; i++) {
 	transformation.Rotate (m_faces [i].m_vNormal [1], m_faces [i].m_vNormal [0]);
-	transformation.Transform (m_vertices [1][i], m_vertices [0][i]);
 	transformation.Transform (m_faces [i].m_vCenter [1], m_faces [i].m_vCenter [0]);
+#if 0 // only required if not transforming model outlines via OpenGL when rendering
+	transformation.Transform (m_vertices [1][i], m_vertices [0][i]);
+#endif
 	}
 }
 
@@ -140,8 +142,19 @@ return IsFacingViewer (0) != IsFacingViewer (1);
 
 int32_t CModelEdge::Type (void)
 {
+#if 0
+if (m_nFaces < 2)
+	return -1;
+#endif
 int32_t h = Visibility ();
-return ((h == 0) ? -1 : (h != 3) ? 0 : (m_fDot > 0.97f) ? -1 : 1);
+return (h == 0) ? -1 : (h != 3) ? 0 : (m_fDot < 0.975f) ? (m_fScale < 1.0f) ? 2 : 1 : -1;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CModelEdge::Partial (void)
+{
+return m_fDot > 0.75f; // ~ 41.5°
 }
 
 //------------------------------------------------------------------------------
@@ -155,7 +168,11 @@ return m_faces [nFace].m_vNormal [0];
 
 CFloatVector& CModelEdge::Vertex (int32_t nFace)
 {
+#if 1
+return m_vertices [0][nFace];
+#else	// only required if not transforming model outlines via OpenGL when rendering
 return m_vertices [1][nFace];
+#endif
 }
 
 //------------------------------------------------------------------------------

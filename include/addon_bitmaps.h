@@ -26,7 +26,7 @@ class CAddonBitmap : public CTGA {
 		void Unload (void);
 		inline CBitmap* Bitmap (void) { return m_bmP; }
 		inline CTexture* Texture (void) { return m_bmP ? m_bmP->Texture () : NULL; }
-		inline void SetRenderStyle (int32_t bCartoonize) { m_bCartoonize = bCartoonize; }
+		inline void SetCartoonizable (int32_t bCartoonize) { m_bCartoonize = bCartoonize; }
 		int32_t Bind (int32_t bMipMaps);
 		~CAddonBitmap () { Unload (); }
 };

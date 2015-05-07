@@ -1643,9 +1643,9 @@ void CGeoEdge::Setup (void)
 m_fScale = 1.0f;
 m_fSplit = 0.0f;
 m_vOffset.SetZero ();
-m_fDot = fabs (CFloatVector::Dot (Normal (0), Normal (1)));
-if ((m_fDot > 0.9f) && (m_fDot <= 0.975f)) { 
-	m_fScale = (0.5f + 0.5f * (1.0f - m_fDot * m_fDot));
+m_fDot = (m_nFaces == 1) ? 0.0f : fabs (CFloatVector::Dot (Normal (0), Normal (1)));
+if (Partial ()/* && (m_fDot <= 0.975f)*/) { 
+	m_fScale = 0.5f;// + 0.5f * (1.0f - m_fDot * m_fDot);
 	if (m_fScale < 0.75f) {
 		if (Rand (8) == 0)
 			m_fSplit = 0.3f + 0.4f * RandFloat ();
@@ -1758,8 +1758,15 @@ for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
 		continue;
 	CSide* sideP = segP->Side (0);
 	for (int32_t j = 0; j < 6; j++, sideP++) {
-		if ((segP->ChildId (j) >= 0) && (!sideP->Wall () || sideP->Wall ()->IsInvisible ())) 
-			continue;
+		if (segP->ChildId (j) >= 0) {
+			CWall *wallP = sideP->Wall ();
+			if (!wallP)
+				continue;
+			if (wallP->IsInvisible ())
+			 continue;
+			if (wallP->IsPassable (NULL, true) & (WID_NO_WALL | WID_TRANSILLUSORY_WALL))
+				continue;
+			}
 		int32_t nVertices;
 		switch (sideP->Shape ()) {
 			case SIDE_SHAPE_RECTANGLE:

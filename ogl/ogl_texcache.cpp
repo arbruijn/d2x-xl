@@ -242,8 +242,6 @@ PrintLog (1, "caching level textures\n");
 TexMergeClose ();
 TexMergeInit (-1);
 
-gameStates.render.EnableCartoonStyle ();
-
 PrintLog (1, "caching effect textures\n");
 for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 	for (i = 0, effectInfoP = gameData.effects.effects [bD1].Buffer (); i < gameData.effects.nEffects [bD1]; i++, effectInfoP++) {
@@ -260,6 +258,9 @@ for (bD1 = 0; bD1 <= gameStates.app.bD1Data; bD1++) {
 			}
 	}
 PrintLog (-1);
+
+gameStates.render.EnableCartoonStyle ();
+
 PrintLog (1, "caching geometry textures\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 0);
 for (segP = SEGMENTS.Buffer (), nSegment = 0; nSegment < gameData.segData.nSegments; nSegment++, segP++) {
@@ -310,6 +311,7 @@ FORALL_OBJS (objP) {
 	}
 PrintLog (-1);
 
+gameStates.render.DisableCartoonStyle ();
 
 PrintLog (1, "caching hostage sprites\n");
 // bLoadTextures = (ogl.m_states.nPreloadTextures > 3);
@@ -342,8 +344,6 @@ for (i = 0; i < 2; i++)
 		if (gameData.cockpit.gauges [i][j].index != 0xffff)
 			LoadTexture (gameData.cockpit.gauges [i][j].index, 0, 0);
 PrintLog (-1);
-
-gameStates.render.DisableCartoonStyle ();
 
 ResetSpecialEffects ();
 InitSpecialEffects ();

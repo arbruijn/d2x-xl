@@ -76,7 +76,7 @@ m_info.kernData = NULL;
 m_info.chars.Clear ();
 for (uint32_t i = 0; i < m_info.bitmaps.Length (); i++) {
 	m_info.bitmaps [i].Init ();
-	m_info.bitmaps [i].SetRenderStyle (0);
+	m_info.bitmaps [i].SetCartoonizable (0);
 	}
 m_info.parentBitmap.Init ();
 }
@@ -398,7 +398,7 @@ if (m_info.flags & FT_COLOR) {		//remap palette
 			m_info.data [i] = 0;
 		}
 #endif
-	m_info.parentBitmap.SetRenderStyle (0);
+	m_info.parentBitmap.SetCartoonizable (0);
 	m_info.parentBitmap.SetPalette (&palette, TRANSPARENCY_COLOR, -1, m_info.data, (int32_t) (ptr - m_info.data));
 	}
 else

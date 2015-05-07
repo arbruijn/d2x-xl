@@ -118,7 +118,7 @@ if (!m_bmP)
 else {
 	m_bAvailable = 1;
 	Register (this);
-	m_bmP->SetRenderStyle (m_bCartoonize);
+	m_bmP->SetCartoonizable (m_bCartoonize);
 	m_bmP->SetFrameCount ();
 	m_bmP->SetTranspType (-1);
 	//m_bmP->Bind (1);
@@ -185,7 +185,7 @@ CFile::SplitPath (pszName, szFolder, szFile, szExt);
 
 for (uint32_t i = 0; i < m_nFrames; i++) {
 	sprintf (szName, "%s%s-%02d%s", szFolder, szFile, i + 1, szExt);
-	m_frames [i].SetRenderStyle (m_bCartoonize);
+	m_frames [i].SetCartoonizable (m_bCartoonize);
 	if (!m_frames [i].Load (szName)) {
 		Destroy ();
 		return false;

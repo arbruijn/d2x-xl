@@ -370,9 +370,9 @@ if ((m = menu ["powerup quality"])) {
 if (!gameStates.app.bGameRunning) {
 	if ((m = menu ["render style"])) {
 		v = m->Value ();
-		if (gameOpts->render.bCartoonStyle != v) {
-			gameOpts->render.bCartoonStyle = v;
-			sprintf (m->Text (), TXT_RENDER_STYLE, pszRendStyle [gameOpts->render.bCartoonStyle]);
+		if (gameOpts->render.bCartoonize != v) {
+			gameOpts->render.bCartoonize = v;
+			sprintf (m->Text (), TXT_RENDER_STYLE, pszRendStyle [gameOpts->render.bCartoonize]);
 			m->m_bRebuild = 1;
 			}
 		}
@@ -609,9 +609,9 @@ do {
 
 	if (!gameStates.app.bPrecomputeLightmaps) {
 		if (!(gameStates.app.bGameRunning || gameStates.app.bNostalgia)) {
-			sprintf (szSlider + 1, TXT_RENDER_STYLE, pszRendStyle [gameOpts->render.bCartoonStyle]);
+			sprintf (szSlider + 1, TXT_RENDER_STYLE, pszRendStyle [gameOpts->render.bCartoonize]);
 			*szSlider = *(TXT_RENDER_STYLE - 1);
-			m.AddSlider ("render style", szSlider + 1, gameOpts->render.bCartoonStyle, 0, 1, KEY_S, HTX_RENDER_STYLE);
+			m.AddSlider ("render style", szSlider + 1, gameOpts->render.bCartoonize, 0, 1, KEY_S, HTX_RENDER_STYLE);
 			}
 		sprintf (szSlider + 1, TXT_IMAGE_QUALITY, pszImgQual [gameOpts->render.nImageQuality]);
 		*szSlider = *(TXT_IMAGE_QUALITY - 1);
@@ -757,11 +757,7 @@ do {
 gameOpts->render.stereo.nGlasses = stereoDeviceMap [nStereoDevice];
 if (gameOpts->render.stereo.nGlasses == 1)
 	gameOpts->render.stereo.nGlasses += nAnaglyphColor;
-#if DBG
-gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonStyle);
-#else
-gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonStyle * 3);
-#endif
+gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize * CARTOON_BLUR_PASSES);
 #if 0
 if (ogl.IsOculusRift ())
 	gameData.render.rift.m_magCalTO.Start (-1, true);

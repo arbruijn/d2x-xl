@@ -218,12 +218,12 @@ void CBackground::Draw (bool bUpdate)
 if (m_nType == BG_WALLPAPER) {
 	if (!(gameStates.menus.bNoBackground || (gameStates.app.bGameRunning && !gameStates.app.bNostalgia))) {
 		gameData.render.frame.Activate ("CBackGround::Draw (frame)");
-		int32_t bCartoonStyle;
+		int32_t bCartoonize;
 		if (gameOptions [0].menus.altBg.bCartoonize)
-			bCartoonStyle = gameStates.render.SetCartoonStyle (-1);
+			bCartoonize = gameStates.render.SetCartoonStyle (-1);
 		m_bitmap->RenderStretched ();
 		if (gameOptions [0].menus.altBg.bCartoonize)
-			gameStates.render.SetCartoonStyle (bCartoonStyle);
+			gameStates.render.SetCartoonStyle (bCartoonize);
 		PrintVersionInfo ();
 		gameData.render.frame.Deactivate ();
 		}
@@ -509,12 +509,12 @@ if (PCXReadBitmap (filename, bmP, bmP->Mode (), 0) != PCX_ERROR_NONE) {
 bmP->SetName (filename);
 bmP->SetTranspType (3);
 
-int32_t bCartoonStyle;
+int32_t bCartoonize;
 if (gameOptions [0].menus.altBg.bCartoonize)
-	bCartoonStyle = gameStates.render.SetCartoonStyle (-1);
+	bCartoonize = gameStates.render.SetCartoonStyle (-1);
 bmP->Bind (0);
 if (gameOptions [0].menus.altBg.bCartoonize)
-	gameStates.render.SetCartoonStyle (bCartoonStyle);
+	gameStates.render.SetCartoonStyle (bCartoonize);
 return bmP;
 }
 

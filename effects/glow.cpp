@@ -21,7 +21,7 @@ CGlowRenderer glowRenderer;
 
 int32_t hBlurShader = -1;
 
-#define LINEAR_SAMPLING 0
+#define LINEAR_SAMPLING 1
 
 #	if LINEAR_SAMPLING
 

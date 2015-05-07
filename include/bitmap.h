@@ -107,7 +107,7 @@ class CBitmapInfo {
 		char					nMasks;
 		uint8_t				nTeam;
 		uint8_t				nBlendMode;	//0: alpha, 1: additive
-		uint8_t				bCartoonize;
+		uint8_t				bCartoonizable;
 #if TEXTURE_COMPRESSION
 		CBitmapCompressionData	compressed;
 #endif
@@ -227,7 +227,8 @@ class CBitmap : public CArray< uint8_t > {
 
 		inline tBmProps* Props (void) { return &m_info.props; }
 		inline uint16_t Id (void) { return m_info.nId; }
-		inline void SetRenderStyle (uint8_t bCartoonize) { m_info.bCartoonize = bCartoonize; }
+		inline uint8_t Cartoonizable (void) { return m_info.bCartoonizable; }
+		inline void SetCartoonizable (uint8_t bCartoonizable) { m_info.bCartoonizable = bCartoonizable; }
 		inline void SetFrameCount (uint8_t nFrameCount) { m_info.frames.nCount = nFrameCount; }
 		inline void SetFrameCount (void) {  m_info.frames.nCount = m_info.props.h / m_info.props.w; }
 		void SetParent (CBitmap *parentP) { m_info.parentP = parentP; }

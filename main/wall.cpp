@@ -1104,8 +1104,8 @@ return (wallP != NULL) && (wallP->IsTriggerTarget () < 0);
 //	blast nearby monitors, lights, maybe other things
 void BlastNearbyGlass (CObject *objP, fix damage)
 {
-	int32_t		i;
-	int8_t		visited [MAX_SEGMENTS_D2X];
+	int32_t	i;
+	int8_t	visited [MAX_SEGMENTS_D2X];
 	CSegment	*cursegp;
 
 cursegp = SEGMENT (objP->info.nSegment);

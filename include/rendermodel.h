@@ -96,6 +96,7 @@ class CModelEdge : public CGeoEdge {
 		int32_t IsContour (void);
 		virtual int32_t Visibility (void);
 		virtual int32_t Type (void);
+		virtual int32_t Partial (void);
 		virtual CFloatVector& Normal (int32_t i);
 		virtual CFloatVector& Vertex (int32_t i);
 	};
