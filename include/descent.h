@@ -2109,7 +2109,7 @@ class CMeshEdge {
 			m_nVertices [0] = m_nVertices [1] = -1;
 			}
 		void Setup (void);
-		virtual void Transform (void);
+		void Transform (void);
 		virtual int32_t Visibility (void);
 		virtual int32_t Type (void);
 		virtual int32_t Partial (void);

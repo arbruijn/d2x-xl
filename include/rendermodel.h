@@ -88,7 +88,7 @@ inline int32_t operator- (RenderModel::CFace* f, CArray<RenderModel::CFace>& a) 
 
 class CModelEdge : public CMeshEdge {
 	public:
-		virtual void Transform (void);
+		void Transform (void);
 		int32_t IsFacingViewer (int16_t nFace);
 		int32_t IsContour (void);
 		virtual int32_t Visibility (void);
