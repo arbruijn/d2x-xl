@@ -1730,6 +1730,8 @@ else {
 	edgeP = &gameData.segData.edges [gameData.segData.nEdges++];
 	edgeP->m_nVertices [0] = nVertex1;
 	edgeP->m_nVertices [1] = nVertex2;
+	edgeP->m_vertices [0][0] = gameData.segData.fVertices [nVertex1];
+	edgeP->m_vertices [0][1] = gameData.segData.fVertices [nVertex2];
 	edgeP->m_nFaces = 1;
 	}
 edgeP->m_faces [i].m_nItem = nSegment;

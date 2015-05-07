@@ -786,7 +786,7 @@ return m_faces [i].m_vNormal [0];
 
 CFloatVector& CGeoEdge::Vertex (int32_t i)
 {
-return gameData.segData.fVertices [m_nVertices [i]];
+return m_vertices [0][i]; // gameData.segData.fVertices [m_nVertices [i]];
 }
 
 //------------------------------------------------------------------------------
