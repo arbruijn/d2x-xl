@@ -933,7 +933,7 @@ gameStates.render.nType = RENDER_TYPE_GEOMETRY;
 	CFloatVector	vViewer;
 	int32_t			nVisibleSegs = gameData.render.mine.visibility [0].nSegments;
 	CShortArray&	visibleSegs = gameData.render.mine.visibility [0].segments;
-	int32_t			nVertices [2] = { 0, gameData.segData.edges.Length () };
+	int32_t			nVertices [2] = { 0, gameData.segData.edgeVertices.Length () };
 
 vViewer.Assign (gameData.objData.viewerP->Position ());
 
