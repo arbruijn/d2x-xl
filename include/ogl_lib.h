@@ -453,7 +453,11 @@ class COGL {
 			}
 		inline bool GetTextureUsage (void) { return m_data.bUseTextures [m_data.nTMU [0]]; }
 		
-		inline bool SetLineSmooth (bool bLineSmooth) { return Enable (m_data.bLineSmooth, bLineSmooth, GL_LINE_SMOOTH); }
+		inline bool SetLineSmooth (bool bLineSmooth) { 
+			if ((bLineSmooth = Enable (m_data.bLineSmooth, bLineSmooth, GL_LINE_SMOOTH)))
+				glHint (GL_LINE_SMOOTH_HINT, GL_NICEST);
+			return bLineSmooth;
+			}
 		inline bool GetLineSmoothe (void) { return m_data.bLineSmooth; }
 		
 		inline bool SetBlendMode (GLenum nSrcBlendMode, GLenum nDestBlendMode) {

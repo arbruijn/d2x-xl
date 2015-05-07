@@ -985,6 +985,7 @@ ogl.SetBlendMode (GL_LEQUAL);
 ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 ogl.SetTexturing (false);
 ogl.SetLineSmooth (true);
+gl.glEnable (GL_POINT_SMOOTH);
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), gameData.segData.edgeVertices.Buffer ());
 #if 1
 glColor3f (0.01f, 0.01f, 0.01f);
@@ -1013,6 +1014,8 @@ for (int32_t j = 0; j < 2; j++) {
 		else {
 			glLineWidth (fScale * fLineWidths [j]);
 			OglDrawArrays (GL_LINES, j ? nVertices [1] : 0, h);
+			glPointSize (fScale * fLineWidths [j]);
+			OglDrawArrays (GL_POINTS, j ? nVertices [1] : 0, h);
 			}
 		}
 	}
