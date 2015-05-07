@@ -791,7 +791,7 @@ return gameData.segData.fVertices [m_nVertices [i]];
 
 //------------------------------------------------------------------------------
 
-void CGeoEdge::Render (CFloatVector vViewer, int32_t nVertices [], int32_t nFilter)
+void CGeoEdge::Prepare (CFloatVector vViewer, int32_t nVertices [], int32_t nFilter)
 {
 #if DBG
 if ((gameStates.render.nType == RENDER_TYPE_OBJECTS) && (m_nFaces < 2))
@@ -887,7 +887,18 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void RenderEdges (void)
+void CGeoEdge::Transform (void)
+{
+for (int32_t i = 0; i < 2; i++) {
+#if 0 // only required if not transforming model outlines via OpenGL when rendering
+	transformation.Transform (m_faces [i].m_vertices [1], m_faces [i].m_vertices [0]);
+#endif
+	}
+}
+
+//------------------------------------------------------------------------------
+
+void RenderSegmentEdges (void)
 {
 if (!gameData.segData.edgeVertices.Buffer ())
 	return;
@@ -902,6 +913,9 @@ gameStates.render.nType = RENDER_TYPE_GEOMETRY;
 
 vViewer.Assign (gameData.objData.viewerP->Position ());
 
+#if 0 // only needed when transforming edge vertices by software
+ogl.SetupTransform (1);
+#endif
 for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 	int32_t nVisible = 0;
 	for (int32_t j = 0; j < 2; j++) {
@@ -918,16 +932,22 @@ for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 	if (!nVisible)
 		continue;
 
-	edgeP->Render (vViewer, nVertices);
+	edgeP->Prepare (vViewer, nVertices);
 	}
+#if 0 // only needed when transforming edge vertices by software
+ogl.ResetTransform (1);
+#endif
+
+ogl.SetupTransform (1);
 RenderOutline (nVertices);
+ogl.ResetTransform (1);
 }
 
 //------------------------------------------------------------------------------
 
 void RenderOutline (int32_t nVertices [])
 {
-float	nLineWidths [2] = { automap.Active () ? 4.0f : 8.0f, automap.Active () ? 2.0f : 4.0f };
+float	nLineWidths [2] = { automap.Active () ? 6.0f : 9.0f, automap.Active () ? 3.0f : 6.0f };
 
 ogl.SetBlendMode (GL_LEQUAL);
 ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
@@ -941,13 +961,12 @@ glColor3f (1,1,1);
 #endif
 
 glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
-if (gameStates.render.nType == RENDER_TYPE_GEOMETRY)
-	ogl.SetupTransform (1);
 
 ogl.SetDepthMode (GL_LEQUAL);
 
+float fScale = float (CCanvas::Current ()->Width ()) / 1920.0f;
+
 for (int32_t j = 0; j < 2; j++) {
-	float fScale = 1.0f;
 #if 0
 	if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
 		fScale *= 0.5f;
@@ -963,7 +982,6 @@ for (int32_t j = 0; j < 2; j++) {
 	}
 ogl.DisableClientStates (0, 0, 0);
 if (gameStates.render.nType == RENDER_TYPE_GEOMETRY)
-	ogl.ResetTransform (1);
 glowRenderer.End ();
 }
 
@@ -989,7 +1007,7 @@ gameStates.render.EnableCartoonStyle ();
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
 if (gameStates.render.bCartoonize)
-	RenderEdges ();
+	RenderSegmentEdges ();
 //RenderSegmentOutline ();
 #	if 1
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {

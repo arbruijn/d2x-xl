@@ -101,9 +101,10 @@ for (int32_t i = 0; i < 2; i++) {
 	transformation.Rotate (m_faces [i].m_vNormal [1], m_faces [i].m_vNormal [0]);
 	transformation.Transform (m_faces [i].m_vCenter [1], m_faces [i].m_vCenter [0]);
 #if 0 // only required if not transforming model outlines via OpenGL when rendering
-	transformation.Transform (m_vertices [1][i], m_vertices [0][i]);
+	transformation.Transform (m_faces [i].m_vertices [1], m_faces [i].m_vertices [0]);
 #endif
 	}
+CGeoEdge::Transform ();
 }
 
 //------------------------------------------------------------------------------
@@ -169,7 +170,7 @@ return m_faces [nFace].m_vNormal [0];
 CFloatVector& CModelEdge::Vertex (int32_t nFace)
 {
 #if 1
-return m_vertices [0][nFace];
+return m_faces [nFace].m_vertices [0];
 #else	// only required if not transforming model outlines via OpenGL when rendering
 return m_vertices [1][nFace];
 #endif

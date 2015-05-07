@@ -579,7 +579,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 			int32_t nVertices [2] = { 0, gameData.segData.nEdges };
 			int32_t nEdgeFilter = objP->IsWeapon () ? 0 : bHires; //bHires || objP->IsWeapon ();
 			for (i = subModelP->m_nEdges; i; i--, edgeP++) 
-				edgeP->Render (CFloatVector::ZERO, nVertices, nEdgeFilter);
+				edgeP->Prepare (CFloatVector::ZERO, nVertices, nEdgeFilter);
 			RenderOutline (nVertices);
 			}	
 		}
