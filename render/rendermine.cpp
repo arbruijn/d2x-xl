@@ -796,6 +796,16 @@ else
 
 //------------------------------------------------------------------------------
 
+void CMeshEdge::Transform (void)
+{
+if (bPolygonalOutline) {
+	for (int32_t i = 0; i < 2; i++)
+		transformation.Transform (m_vertices [1][i], m_vertices [0][i]);
+	}
+}
+
+//------------------------------------------------------------------------------
+
 void CMeshEdge::Prepare (CFloatVector vViewer, int32_t nVertices [], int32_t nFilter)
 {
 #if DBG
@@ -865,18 +875,14 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 			v = vViewer;
 			v -= vertices [j];
 			float l = CFloatVector::Normalize (v);
-#if 1
-			v *= 2.0f;
-			//if (l > 1.0f)
-				v /= pow (l, 0.25f);
-#else
-			v *= 2.0f;
-#endif
+			if (bPolygonalOutline)
+				v *= 2.0f;
+			v /= pow (l, 0.25f);
 			if (bPolygonalOutline)
 				vertices [j] += v; 
 			else {
 				v += vertices [j]; 
-				if (nType && (m_fScale != 1.0f)) 
+				if (bPartial) 
 					gameData.segData.edgeVertices [--nVertices [1]] = v;
 				else
 					gameData.segData.edgeVertices [nVertices [0]++] = v;
@@ -896,7 +902,7 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 		vertices [1] -= p;
 		CFloatVector::Perp (p, vertices [0], vertices [1], CFloatVector::ZERO);
 		p *= wPixel * fScale * fLineWidths [nType != 0] / l;
-		if (nType && (m_fScale != 1.0f)) {
+		if (bPartial) {
 			gameData.segData.edgeVertices [--nVertices [1]] = vertices [0] - p;
 			gameData.segData.edgeVertices [--nVertices [1]] = vertices [0] + p;
 			gameData.segData.edgeVertices [--nVertices [1]] = vertices [1] + p;
@@ -914,17 +920,6 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-
-void CMeshEdge::Transform (void)
-{
-for (int32_t i = 0; i < 2; i++) {
-#if 1 // only required if not transforming model outlines via OpenGL when rendering
-	transformation.Transform (m_vertices [1][i], m_vertices [0][i]);
-#endif
-	}
-}
-
 //------------------------------------------------------------------------------
 
 void RenderSegmentEdges (void)
@@ -971,8 +966,7 @@ for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 
 if (bPolygonalOutline) // only needed when transforming edge vertices by software
 	ogl.ResetTransform (1);
-
-if (!bPolygonalOutline)
+else
 	ogl.SetupTransform (1);
 RenderOutline (nVertices);
 if (!bPolygonalOutline)
