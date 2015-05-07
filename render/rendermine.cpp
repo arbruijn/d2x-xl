@@ -877,16 +877,18 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 			float l = CFloatVector::Normalize (v);
 			if (bPolygonalOutline)
 				v *= 2.0f;
-			v /= pow (l, 0.25f);
+			//if (l > 1.0f)
+				v /= pow (l, 0.25f);
 			if (bPolygonalOutline)
 				vertices [j] += v; 
-			else {
+			else
 				v += vertices [j]; 
-				if (bPartial) 
-					gameData.segData.edgeVertices [--nVertices [1]] = v;
-				else
-					gameData.segData.edgeVertices [nVertices [0]++] = v;
-				}
+			}
+		if (!bPolygonalOutline) {
+			if (bPartial) 
+				gameData.segData.edgeVertices [--nVertices [1]] = v;
+			else
+				gameData.segData.edgeVertices [nVertices [0]++] = v;
 			}
 		}
 	if (bPolygonalOutline) {
