@@ -985,7 +985,7 @@ ogl.SetBlendMode (GL_LEQUAL);
 ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 ogl.SetTexturing (false);
 ogl.SetLineSmooth (true);
-gl.glEnable (GL_POINT_SMOOTH);
+glEnable (GL_POINT_SMOOTH);
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), gameData.segData.edgeVertices.Buffer ());
 #if 1
 glColor3f (0.01f, 0.01f, 0.01f);
