@@ -53,7 +53,9 @@ extern int32_t bZPass;
 #define G3_USE_VBOS					1 //G3_HW_LIGHTING
 #define G3_ALLOW_TRANSPARENCY		1
 
+#if POLYGONAL_OUTLINE
 extern bool bPolygonalOutline;
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -725,9 +727,11 @@ void G3DrawModel (CObject *objP, int16_t nModel, int16_t nSubModel, CArray<CBitm
 	CActiveDynLight*		activeLightsP = sliP ? lightManager.Active (0) + sliP->nFirst : NULL;
 	tObjTransformation*	posP = OBJPOS (objP);
 
+#if POLYGONAL_OUTLINE
 if (bEdges && bPolygonalOutline) // only required if not transforming model outlines via OpenGL when rendering
 	ogl.SetTransform (0);
 else
+#endif
 	ogl.SetupTransform (1);
 if (bLighting) {
 	nLights = sliP->nActive;
@@ -864,7 +868,9 @@ if (bLighting) {
 	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 	ogl.SetDepthWrite (true);
 	}
+#if POLYGONAL_OUTLINE
 if (!bEdges || !bPolygonalOutline)
+#endif
 	ogl.ResetTransform (1);
 //HUDMessage (0, "%s", szLightSources);
 }

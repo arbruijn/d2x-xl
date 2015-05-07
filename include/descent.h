@@ -2083,6 +2083,8 @@ typedef struct tVertexOwner {
 
 //------------------------------------------------------------------------------
 
+#define POLYGONAL_OUTLINE 0
+
 class CEdgeFaceInfo {
 	public:
 		int16_t			m_nItem;		// segment / (sub) model id

@@ -69,8 +69,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define PERSISTENT_THREADS 0
 #endif
 
-#define POLYGONAL_OUTLINE 0
-
 // ------------------------------------------------------------------------------
 
 #define CLEAR_WINDOW	0
@@ -745,7 +743,9 @@ if (bCockpit && bHave3DCockpit && (gameStates.render.cockpit.nType == CM_FULL_CO
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+#if POLYGONAL_OUTLINE
 bool bPolygonalOutline = false;
+#endif
 
 int32_t CMeshEdge::Visibility (void)
 {
@@ -887,9 +887,11 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 				v *= 2.0f;
 			//if (l > 1.0f)
 				v /= pow (l, 0.25f);
+#if POLYGONAL_OUTLINE
 			if (bPolygonalOutline)
 				vertices [j] += v; 
 			else
+#endif
 				v += vertices [j]; 
 			}
 #if POLYGONAL_OUTLINE
@@ -972,11 +974,13 @@ for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 	if (!nVisible)
 		continue;
 
+#if POLYGONAL_OUTLINE
 	if (bPolygonalOutline) { // only needed when transforming edge vertices by software
 		edgeP->Transform ();
 		edgeP->Prepare (CFloatVector::ZERO, nVertices);
 		}
 	else
+#endif
 		edgeP->Prepare (vViewer, nVertices);
 	}
 

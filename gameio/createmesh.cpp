@@ -62,7 +62,9 @@ void LoadFaceBitmaps (CSegment *segP, CSegFace *faceP);
 
 #define MESH_DATA_VERSION	16
 
+#if POLYGONAL_OUTLINE
 extern bool bPolygonalOutline;
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -1786,7 +1788,11 @@ for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
 			AddEdge (i, j, sideP->m_corners [k], sideP->m_corners [(k + 1) % nVertices]);
 		}
 	}
+#if POLYGONAL_OUTLINE
 if (!gameData.segData.edgeVertices.Create (gameData.segData.nEdges * (bPolygonalOutline ? 8 : 4)))
+#else
+if (!gameData.segData.edgeVertices.Create (gameData.segData.nEdges * 4))
+#endif
 	return -1;
 return gameData.segData.nEdges;
 }
