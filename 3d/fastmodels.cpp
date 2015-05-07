@@ -53,6 +53,8 @@ extern int32_t bZPass;
 #define G3_USE_VBOS					1 //G3_HW_LIGHTING
 #define G3_ALLOW_TRANSPARENCY		1
 
+extern bool bPolygonalOutline;
+
 //------------------------------------------------------------------------------
 
 void G3DynLightModel (CObject *objP, RenderModel::CModel *modelP, uint16_t iVerts, uint16_t nVerts, uint16_t iFaceVerts, uint16_t nFaceVerts)
@@ -576,7 +578,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 	if (bEdges) {
 		if (!subModelP->m_bThruster) {
 			RenderModel::CModelEdge* edgeP = subModelP->m_edges.Buffer ();
-			int32_t nVertices [2] = { 0, gameData.segData.nEdges };
+			int32_t nVertices [2] = { 0, gameData.segData.edges.Length () };
 			int32_t nEdgeFilter = objP->IsWeapon () ? 0 : bHires; //bHires || objP->IsWeapon ();
 			for (i = subModelP->m_nEdges; i; i--, edgeP++) 
 				edgeP->Prepare (CFloatVector::ZERO, nVertices, nEdgeFilter);
@@ -723,11 +725,9 @@ void G3DrawModel (CObject *objP, int16_t nModel, int16_t nSubModel, CArray<CBitm
 	CActiveDynLight*		activeLightsP = sliP ? lightManager.Active (0) + sliP->nFirst : NULL;
 	tObjTransformation*	posP = OBJPOS (objP);
 
-#if 0 // only required if not transforming model outlines via OpenGL when rendering
-if (bEdges)
+if (bEdges && bPolygonalOutline) // only required if not transforming model outlines via OpenGL when rendering
 	ogl.SetTransform (0);
 else
-#endif
 	ogl.SetupTransform (1);
 if (bLighting) {
 	nLights = sliP->nActive;
@@ -864,7 +864,8 @@ if (bLighting) {
 	ogl.SetBlendMode (OGL_BLEND_ALPHA);
 	ogl.SetDepthWrite (true);
 	}
-ogl.ResetTransform (1);
+if (!bEdges || !bPolygonalOutline)
+	ogl.ResetTransform (1);
 //HUDMessage (0, "%s", szLightSources);
 }
 

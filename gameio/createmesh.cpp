@@ -60,7 +60,9 @@ void LoadFaceBitmaps (CSegment *segP, CSegFace *faceP);
 
 #define	MAX_EDGE_LEN(nMeshQuality)	fMaxEdgeLen [nMeshQuality]
 
-#define MESH_DATA_VERSION 16
+#define MESH_DATA_VERSION	16
+
+extern bool bPolygonalOutline;
 
 //------------------------------------------------------------------------------
 
@@ -1784,7 +1786,7 @@ for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
 			AddEdge (i, j, sideP->m_corners [k], sideP->m_corners [(k + 1) % nVertices]);
 		}
 	}
-if (!gameData.segData.edgeVertices.Create (gameData.segData.nEdges * 2))
+if (!gameData.segData.edgeVertices.Create (gameData.segData.nEdges * (bPolygonalOutline ? 4 : 2)))
 	return -1;
 return gameData.segData.nEdges;
 }

@@ -75,6 +75,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int32_t	nClearWindow = 0; //2	// 1 = Clear whole background tPortal, 2 = clear view portals into rest of world, 0 = no clear
 
+bool bPolygonalOutline = false;
+
 void RenderSkyBox (int32_t nWindow);
 
 //------------------------------------------------------------------------------
@@ -786,7 +788,10 @@ return m_faces [i].m_vNormal [0];
 
 CFloatVector& CMeshEdge::Vertex (int32_t i)
 {
-return m_vertices [0][i]; // gameData.segData.fVertices [m_nVertices [i]];
+if (bPolygonalOutline)
+	return m_vertices [1][i]; // gameData.segData.fVertices [m_nVertices [i]];
+else
+	return m_vertices [0][i]; // gameData.segData.fVertices [m_nVertices [i]];
 }
 
 //------------------------------------------------------------------------------
@@ -823,8 +828,11 @@ if (gameStates.render.nType == RENDER_TYPE_OBJECTS) {
 CFloatVector vertices [2];
 
 int32_t bPartial = nType == 2;
-
 int32_t bSplit = bPartial && (m_fSplit != 0.0f);
+
+float fLineWidths [2] = { automap.Active () ? 3.0f : 6.0f, automap.Active () ? 1.0f : 2.0f };
+float wPixel = 2.0f / float (CCanvas::Current ()->Width ());
+float fScale = Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
 
 for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 	for (int32_t j = 0; j < 2; j++) {
@@ -868,16 +876,45 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 				v -= vertices [j];
 				float l = CFloatVector::Normalize (v);
 #if 1
-				v /= pow (l, 0.25f);
+				//if (l > 1.0f)
+					v /= pow (l, 0.25f);
 #else
 				v *= 2.0f;
 #endif
 				v += vertices [j]; 
 				}
-			if (nType && (m_fScale != 1.0f)) 
-				gameData.segData.edgeVertices [--nVertices [1]] = v;
-			else
-				gameData.segData.edgeVertices [nVertices [0]++] = v;
+			if (!bPolygonalOutline) {
+				if (nType && (m_fScale != 1.0f)) 
+					gameData.segData.edgeVertices [--nVertices [1]] = v;
+				else
+					gameData.segData.edgeVertices [nVertices [0]++] = v;
+				}
+			}
+		}
+	if (bPolygonalOutline) {
+		CFloatVector p = vertices [0];
+		p += vertices [1];
+		p *= 0.5f;
+		float l = p.Mag ();
+		p = vertices [0];
+		p -= vertices [1];
+		CFloatVector::Normalize (p);
+		p *= wPixel * fScale * fLineWidths [nType != 0] / l;
+		vertices [0] += p;
+		vertices [1] -= p;
+		CFloatVector::Perp (p, vertices [0], vertices [1], CFloatVector::ZERO);
+		p *= wPixel * fScale * fLineWidths [nType != 0] / l;
+		if (nType && (m_fScale != 1.0f)) {
+			gameData.segData.edgeVertices [--nVertices [1]] = vertices [0] - p;
+			gameData.segData.edgeVertices [--nVertices [1]] = vertices [0] + p;
+			gameData.segData.edgeVertices [--nVertices [1]] = vertices [1] + p;
+			gameData.segData.edgeVertices [--nVertices [1]] = vertices [1] - p;
+			}
+		else {
+			gameData.segData.edgeVertices [nVertices [0]++] = vertices [0] - p;
+			gameData.segData.edgeVertices [nVertices [0]++] = vertices [0] + p;
+			gameData.segData.edgeVertices [nVertices [0]++] = vertices [1] + p;
+			gameData.segData.edgeVertices [nVertices [0]++] = vertices [1] - p;
 			}
 		}
 	}
@@ -909,13 +946,13 @@ gameStates.render.nType = RENDER_TYPE_GEOMETRY;
 	CFloatVector	vViewer;
 	int32_t			nVisibleSegs = gameData.render.mine.visibility [0].nSegments;
 	CShortArray&	visibleSegs = gameData.render.mine.visibility [0].segments;
-	int32_t			nVertices [2] = { 0, gameData.segData.nEdges };
+	int32_t			nVertices [2] = { 0, gameData.segData.edges.Length () };
 
 vViewer.Assign (gameData.objData.viewerP->Position ());
 
-#if 0 // only needed when transforming edge vertices by software
-ogl.SetupTransform (1);
-#endif
+if (bPolygonalOutline) // only needed when transforming edge vertices by software
+	ogl.SetupTransform (1);
+
 for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 	int32_t nVisible = 0;
 	for (int32_t j = 0; j < 2; j++) {
@@ -932,22 +969,26 @@ for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 	if (!nVisible)
 		continue;
 
+if (bPolygonalOutline) // only needed when transforming edge vertices by software
+	edgeP->Transform ();
+
 	edgeP->Prepare (vViewer, nVertices);
 	}
-#if 0 // only needed when transforming edge vertices by software
-ogl.ResetTransform (1);
-#endif
+if (bPolygonalOutline) // only needed when transforming edge vertices by software
+	ogl.ResetTransform (1);
 
-ogl.SetupTransform (1);
+if (!bPolygonalOutline)
+	ogl.SetupTransform (1);
 RenderOutline (nVertices);
-ogl.ResetTransform (1);
+if (!bPolygonalOutline)
+	ogl.ResetTransform (1);
 }
 
 //------------------------------------------------------------------------------
 
 void RenderOutline (int32_t nVertices [])
 {
-float	nLineWidths [2] = { automap.Active () ? 6.0f : 9.0f, automap.Active () ? 3.0f : 6.0f };
+float	fLineWidths [2] = { automap.Active () ? 2.0f : 3.0f, automap.Active () ? 1.0f : 2.0f };
 
 ogl.SetBlendMode (GL_LEQUAL);
 ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
@@ -964,7 +1005,7 @@ glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
 
 ogl.SetDepthMode (GL_LEQUAL);
 
-float fScale = float (CCanvas::Current ()->Width ()) / 1920.0f;
+float fScale = Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
 
 for (int32_t j = 0; j < 2; j++) {
 #if 0
@@ -974,10 +1015,14 @@ for (int32_t j = 0; j < 2; j++) {
 		fScale *= 2.0f;
 #endif
 
-	int32_t h = j ? gameData.segData.nEdges - nVertices [1] : nVertices [0];
+	int32_t h = j ? gameData.segData.edges.Length () - nVertices [1] : nVertices [0];
 	if (h) {
-		glLineWidth (fScale * nLineWidths [j]);
-		OglDrawArrays (GL_LINES, j ? nVertices [1] : 0, h);
+		if (bPolygonalOutline)
+			OglDrawArrays (GL_QUADS, j ? nVertices [1] : 0, h);
+		else {
+			glLineWidth (fScale * fLineWidths [j]);
+			OglDrawArrays (GL_LINES, j ? nVertices [1] : 0, h);
+			}
 		}
 	}
 ogl.DisableClientStates (0, 0, 0);

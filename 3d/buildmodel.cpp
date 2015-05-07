@@ -31,7 +31,9 @@
 
 using namespace RenderModel;
 
-#define DIRECT_VBO	1
+#define DIRECT_VBO			1
+
+extern bool bPolygonalOutline;
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
@@ -166,11 +168,10 @@ return m_faces [nFace].m_vNormal [0];
 
 CFloatVector& CModelEdge::Vertex (int32_t i)
 {
-#if 1
-return m_vertices [0][i];
-#else	// only required if not transforming model outlines via OpenGL when rendering
-return m_vertices [1][i];
-#endif
+if (bPolygonalOutline)
+	return m_vertices [1][i];
+else	// only required if not transforming model outlines via OpenGL when rendering
+	return m_vertices [0][i];
 }
 
 //------------------------------------------------------------------------------
