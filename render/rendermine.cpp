@@ -69,6 +69,8 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 #	define PERSISTENT_THREADS 0
 #endif
 
+#define POLYGONAL_OUTLINE 0
+
 // ------------------------------------------------------------------------------
 
 #define CLEAR_WINDOW	0
@@ -788,9 +790,11 @@ return m_faces [i].m_vNormal [0];
 
 CFloatVector& CMeshEdge::Vertex (int32_t i)
 {
+#if POLYGONAL_OUTLINE
 if (bPolygonalOutline)
 	return m_vertices [1][i]; // gameData.segData.fVertices [m_nVertices [i]];
 else
+#endif
 	return m_vertices [0][i]; // gameData.segData.fVertices [m_nVertices [i]];
 }
 
@@ -798,10 +802,12 @@ else
 
 void CMeshEdge::Transform (void)
 {
+#if POLYGONAL_OUTLINE
 if (bPolygonalOutline) {
 	for (int32_t i = 0; i < 2; i++)
 		transformation.Transform (m_vertices [1][i], m_vertices [0][i]);
 	}
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -875,7 +881,9 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 			v = vViewer;
 			v -= vertices [j];
 			float l = CFloatVector::Normalize (v);
+#if POLYGONAL_OUTLINE
 			if (bPolygonalOutline)
+#endif
 				v *= 2.0f;
 			//if (l > 1.0f)
 				v /= pow (l, 0.25f);
@@ -884,13 +892,17 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 			else
 				v += vertices [j]; 
 			}
-		if (!bPolygonalOutline) {
+#if POLYGONAL_OUTLINE
+		if (!bPolygonalOutline) 
+#endif
+			{
 			if (bPartial) 
 				gameData.segData.edgeVertices [--nVertices [1]] = v;
 			else
 				gameData.segData.edgeVertices [nVertices [0]++] = v;
 			}
 		}
+#if POLYGONAL_OUTLINE
 	if (bPolygonalOutline) {
 		CFloatVector p = vertices [0];
 		p += vertices [1];
@@ -917,6 +929,7 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 			gameData.segData.edgeVertices [nVertices [0]++] = vertices [1] - p;
 			}
 		}
+#endif
 	}
 }
 
@@ -939,9 +952,10 @@ gameStates.render.nType = RENDER_TYPE_GEOMETRY;
 
 vViewer.Assign (gameData.objData.viewerP->Position ());
 
+#if POLYGONAL_OUTLINE
 if (bPolygonalOutline) // only needed when transforming edge vertices by software
 	ogl.SetupTransform (1);
-
+#endif
 for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 	int32_t nVisible = 0;
 	for (int32_t j = 0; j < 2; j++) {
@@ -966,12 +980,16 @@ for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 		edgeP->Prepare (vViewer, nVertices);
 	}
 
+#if POLYGONAL_OUTLINE
 if (bPolygonalOutline) // only needed when transforming edge vertices by software
 	ogl.ResetTransform (1);
 else
+#endif
 	ogl.SetupTransform (1);
 RenderOutline (nVertices);
+#if POLYGONAL_OUTLINE
 if (!bPolygonalOutline)
+#endif
 	ogl.ResetTransform (1);
 }
 
@@ -1007,11 +1025,14 @@ for (int32_t j = 0; j < 2; j++) {
 		fScale *= 2.0f;
 #endif
 
-	int32_t h = j ? gameData.segData.edges.Length () - nVertices [1] : nVertices [0];
+	int32_t h = j ? gameData.segData.edgeVertices.Length () - nVertices [1] : nVertices [0];
 	if (h) {
+#if POLYGONAL_OUTLINE
 		if (bPolygonalOutline)
 			OglDrawArrays (GL_QUADS, j ? nVertices [1] : 0, h);
-		else {
+		else 
+#endif
+			{
 			glLineWidth (fScale * fLineWidths [j]);
 			OglDrawArrays (GL_LINES, j ? nVertices [1] : 0, h);
 			glPointSize (fScale * fLineWidths [j]);
