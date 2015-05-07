@@ -75,8 +75,6 @@ COPYRIGHT 1993-1999 PARALLAX SOFTWARE CORPORATION.  ALL RIGHTS RESERVED.
 
 int32_t	nClearWindow = 0; //2	// 1 = Clear whole background tPortal, 2 = clear view portals into rest of world, 0 = no clear
 
-bool bPolygonalOutline = false;
-
 void RenderSkyBox (int32_t nWindow);
 
 //------------------------------------------------------------------------------
@@ -745,6 +743,8 @@ if (bCockpit && bHave3DCockpit && (gameStates.render.cockpit.nType == CM_FULL_CO
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+bool bPolygonalOutline = false;
+
 int32_t CMeshEdge::Visibility (void)
 {
 	CFloatVector		vViewDir, vViewer;
@@ -858,32 +858,24 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 		}
 
 	for (int32_t j = 0; j < 2; j++) {
-#if 0
-		if (gameStates.render.nType == RENDER_TYPE_OBJECTS) {
-			if (nType) 
-				gameData.segData.edgeVertices [--nVertices [1]] = vertices [j];
-			else
-				gameData.segData.edgeVertices [nVertices [0]++] = vertices [j];
-			}
-		else 
-#endif
-			{
-			CFloatVector v;	// pull a bit closer to viewer to avoid z fighting with related polygon
-			if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
-				v = vertices [j];
-			else {
-				v = vViewer;
-				v -= vertices [j];
-				float l = CFloatVector::Normalize (v);
+		CFloatVector v;	// pull a bit closer to viewer to avoid z fighting with related polygon
+		if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
+			v = vertices [j];
+		else {
+			v = vViewer;
+			v -= vertices [j];
+			float l = CFloatVector::Normalize (v);
 #if 1
-				//if (l > 1.0f)
-					v /= pow (l, 0.25f);
+			v *= 2.0f;
+			//if (l > 1.0f)
+				v /= pow (l, 0.25f);
 #else
-				v *= 2.0f;
+			v *= 2.0f;
 #endif
+			if (bPolygonalOutline)
+				vertices [j] += v; 
+			else {
 				v += vertices [j]; 
-				}
-			if (!bPolygonalOutline) {
 				if (nType && (m_fScale != 1.0f)) 
 					gameData.segData.edgeVertices [--nVertices [1]] = v;
 				else
@@ -969,11 +961,14 @@ for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 	if (!nVisible)
 		continue;
 
-if (bPolygonalOutline) // only needed when transforming edge vertices by software
-	edgeP->Transform ();
-
-	edgeP->Prepare (vViewer, nVertices);
+	if (bPolygonalOutline) { // only needed when transforming edge vertices by software
+		edgeP->Transform ();
+		edgeP->Prepare (CFloatVector::ZERO, nVertices);
+		}
+	else
+		edgeP->Prepare (vViewer, nVertices);
 	}
+
 if (bPolygonalOutline) // only needed when transforming edge vertices by software
 	ogl.ResetTransform (1);
 
