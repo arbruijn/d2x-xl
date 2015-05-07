@@ -86,7 +86,7 @@ class CFace : public CContourInfo {
 
 inline int32_t operator- (RenderModel::CFace* f, CArray<RenderModel::CFace>& a) { return a.Index (f); }
 
-class CModelEdge : public CGeoEdge {
+class CModelEdge : public CMeshEdge {
 	public:
 		virtual void Transform (void);
 		int32_t IsFacingViewer (int16_t nFace);

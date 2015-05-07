@@ -2093,7 +2093,7 @@ class CEdgeFaceInfo {
 		CEdgeFaceInfo () : m_nItem (-1), m_nFace (-1) {}
 	};
 
-class CGeoEdge {
+class CMeshEdge {
 	public:
 		CEdgeFaceInfo	m_faces [2];
 		int32_t			m_nVertices [2];
@@ -2105,7 +2105,7 @@ class CGeoEdge {
 		CFloatVector	m_vOffset;
 		CFloatVector	m_vertices [2][2];
 
-		CGeoEdge () : m_nFaces (0), m_fDot (0.0f), m_fScale (-1.0f), m_fSplit (0.0f), m_fOffset (0.0f) {
+		CMeshEdge () : m_nFaces (0), m_fDot (0.0f), m_fScale (-1.0f), m_fSplit (0.0f), m_fOffset (0.0f) {
 			m_nVertices [0] = m_nVertices [1] = -1;
 			}
 		void Setup (void);
@@ -2128,7 +2128,7 @@ class CSegmentData {
 		CArray<tVertexOwner>		vertexOwners;
 		CArray<CSegment>			segments;
 		CArray<tSegFaces>			segFaces;
-		CArray<CGeoEdge>			edges;
+		CArray<CMeshEdge>			edges;
 		CArray<CFloatVector>		edgeVertices;
 		CArray<fix>					segDists;
 		CSkyBox						skybox;
@@ -2242,7 +2242,7 @@ class CSegmentData {
 		inline bool HaveGrid (int32_t bSkyBox) { return grids [bSkyBox].Available (); }
 
 		int32_t CountEdges (void);
-		CGeoEdge *FindEdge (int16_t nVertex1, int16_t nVertex2);
+		CMeshEdge *FindEdge (int16_t nVertex1, int16_t nVertex2);
 		int32_t AddEdge (int16_t nSegment, int16_t nSide, int16_t nVertex1, int16_t nVertex2);
 		int32_t BuildEdgeList (void);
 	};

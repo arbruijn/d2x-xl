@@ -743,7 +743,7 @@ if (bCockpit && bHave3DCockpit && (gameStates.render.cockpit.nType == CM_FULL_CO
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-int32_t CGeoEdge::Visibility (void)
+int32_t CMeshEdge::Visibility (void)
 {
 	CFloatVector		vViewDir, vViewer;
 	
@@ -762,7 +762,7 @@ return nVisible;
 
 //------------------------------------------------------------------------------
 
-int32_t CGeoEdge::Type (void)
+int32_t CMeshEdge::Type (void)
 {
 int32_t h = Visibility ();
 return ((h == 0) ? -1 : (h != 3) ? 0 : (m_fDot > 0.97f) ? -1 : (m_fScale < 1.0f) ? 2 : 1);
@@ -770,28 +770,28 @@ return ((h == 0) ? -1 : (h != 3) ? 0 : (m_fDot > 0.97f) ? -1 : (m_fScale < 1.0f)
 
 //------------------------------------------------------------------------------
 
-int32_t CGeoEdge::Partial (void)
+int32_t CMeshEdge::Partial (void)
 {
 return m_fDot > 0.9f;
 }
 
 //------------------------------------------------------------------------------
 
-CFloatVector& CGeoEdge::Normal (int32_t i)
+CFloatVector& CMeshEdge::Normal (int32_t i)
 {
 return m_faces [i].m_vNormal [0];
 }
 
 //------------------------------------------------------------------------------
 
-CFloatVector& CGeoEdge::Vertex (int32_t i)
+CFloatVector& CMeshEdge::Vertex (int32_t i)
 {
 return m_vertices [0][i]; // gameData.segData.fVertices [m_nVertices [i]];
 }
 
 //------------------------------------------------------------------------------
 
-void CGeoEdge::Prepare (CFloatVector vViewer, int32_t nVertices [], int32_t nFilter)
+void CMeshEdge::Prepare (CFloatVector vViewer, int32_t nVertices [], int32_t nFilter)
 {
 #if DBG
 if ((gameStates.render.nType == RENDER_TYPE_OBJECTS) && (m_nFaces < 2))
@@ -887,11 +887,11 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CGeoEdge::Transform (void)
+void CMeshEdge::Transform (void)
 {
 for (int32_t i = 0; i < 2; i++) {
-#if 0 // only required if not transforming model outlines via OpenGL when rendering
-	transformation.Transform (m_faces [i].m_vertices [1], m_faces [i].m_vertices [0]);
+#if 1 // only required if not transforming model outlines via OpenGL when rendering
+	transformation.Transform (m_vertices [1][i], m_vertices [0][i]);
 #endif
 	}
 }
@@ -905,7 +905,7 @@ if (!gameData.segData.edgeVertices.Buffer ())
 
 gameStates.render.nType = RENDER_TYPE_GEOMETRY;
 
-	CGeoEdge			*edgeP = gameData.segData.edges.Buffer ();
+	CMeshEdge		*edgeP = gameData.segData.edges.Buffer ();
 	CFloatVector	vViewer;
 	int32_t			nVisibleSegs = gameData.render.mine.visibility [0].nSegments;
 	CShortArray&	visibleSegs = gameData.render.mine.visibility [0].segments;

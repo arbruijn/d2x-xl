@@ -1638,7 +1638,7 @@ return 1;
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-void CGeoEdge::Setup (void)
+void CMeshEdge::Setup (void)
 {
 m_fScale = 1.0f;
 m_fSplit = 0.0f;
@@ -1695,9 +1695,9 @@ return nEdges;
 
 //------------------------------------------------------------------------------
 
-CGeoEdge *CSegmentData::FindEdge (int16_t nVertex1, int16_t nVertex2)
+CMeshEdge *CSegmentData::FindEdge (int16_t nVertex1, int16_t nVertex2)
 {
-	CGeoEdge	*edgeP = gameData.segData.edges.Buffer ();
+	CMeshEdge	*edgeP = gameData.segData.edges.Buffer ();
 
 for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++)
 	if ((edgeP->m_nVertices [0] == nVertex1) && (edgeP->m_nVertices [1] == nVertex2))
@@ -1711,7 +1711,7 @@ int32_t CSegmentData::AddEdge (int16_t nSegment, int16_t nSide, int16_t nVertex1
 {
 if (nVertex1 > nVertex2)
 	Swap (nVertex1, nVertex2);
-CGeoEdge *edgeP = FindEdge (nVertex1, nVertex2);
+CMeshEdge *edgeP = FindEdge (nVertex1, nVertex2);
 
 int32_t i;
 
@@ -1719,8 +1719,8 @@ if (edgeP) {
 	if (edgeP->m_nFaces < 2) 
 		edgeP->m_nFaces = 2;
 	else {
-		CGeoEdge *newEdgeP = &gameData.segData.edges [gameData.segData.nEdges++];
-		memcpy (newEdgeP, edgeP, sizeof (CGeoEdge));
+		CMeshEdge *newEdgeP = &gameData.segData.edges [gameData.segData.nEdges++];
+		memcpy (newEdgeP, edgeP, sizeof (CMeshEdge));
 		edgeP = newEdgeP;
 		}
 	i = 1;

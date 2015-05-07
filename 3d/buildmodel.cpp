@@ -100,11 +100,8 @@ void CModelEdge::Transform (void)
 for (int32_t i = 0; i < 2; i++) {
 	transformation.Rotate (m_faces [i].m_vNormal [1], m_faces [i].m_vNormal [0]);
 	transformation.Transform (m_faces [i].m_vCenter [1], m_faces [i].m_vCenter [0]);
-#if 0 // only required if not transforming model outlines via OpenGL when rendering
-	transformation.Transform (m_faces [i].m_vertices [1], m_faces [i].m_vertices [0]);
-#endif
 	}
-CGeoEdge::Transform ();
+CMeshEdge::Transform ();
 }
 
 //------------------------------------------------------------------------------
