@@ -2104,7 +2104,6 @@ class CGeoEdge {
 		float				m_fOffset;
 		CFloatVector	m_vOffset;
 		CFloatVector	m_vertices [2][2];
-		CFloatVector	m_line [4];
 
 		CGeoEdge () : m_nFaces (0), m_fDot (0.0f), m_fScale (-1.0f), m_fSplit (0.0f), m_fOffset (0.0f) {
 			m_nVertices [0] = m_nVertices [1] = -1;
