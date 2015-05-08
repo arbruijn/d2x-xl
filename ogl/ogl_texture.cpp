@@ -245,7 +245,6 @@ static void VBoxBlurRGBWrapped (tRGB *dest, tRGB *src, int32_t w, int32_t h, int
 
 for (int32_t x = nStart; x < w; x += nStep) {
 	int32_t a [3] = { 0, 0, 0 };
-	int32_t n = 0;
 
 	for (int32_t y = -r; y < h + r; y++) {
 		if (y > r) {
