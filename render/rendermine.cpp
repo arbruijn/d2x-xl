@@ -812,7 +812,9 @@ if (bPolygonalOutline) {
 
 //------------------------------------------------------------------------------
 
-void CMeshEdge::Prepare (CFloatVector vViewer, int32_t nVertices [], int32_t nFilter)
+static float log2 = log10f (2);
+
+void CMeshEdge::Prepare (CFloatVector vViewer, int32_t nFilter)
 {
 #if DBG
 if ((gameStates.render.nType == RENDER_TYPE_OBJECTS) && (m_nFaces < 2))
@@ -852,7 +854,7 @@ float wPixel = 2.0f / float (CCanvas::Current ()->Width ());
 float fScale = Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
 #endif
 
-for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
+for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 	for (int32_t j = 0; j < 2; j++) {
 		vertices [j] = Vertex (j);
 		CFloatVector v;
@@ -861,8 +863,8 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 			v -= vertices [0];
 			v *= m_fScale;
 			if (bSplit) { // if outline is split, each partial outline starts at one of the edge's vertices
-				v *= h ? 1.0f - m_fSplit : m_fSplit;
-				if (h == 1) 
+				v *= n ? 1.0f - m_fSplit : m_fSplit;
+				if (n == 1) 
 					vertices [0] = vertices [1] - v;
 				else
 					vertices [1] = vertices [0] + v;
@@ -875,14 +877,20 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 			}
 		}
 
+	uint8_t d = 32;
 	for (int32_t j = 0; j < 2; j++) {
 		CFloatVector v;	// pull a bit closer to viewer to avoid z fighting with related polygon
+		v = vViewer;
+		v -= vertices [j];
+		float l = CFloatVector::Normalize (v);
 		if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
 			v = vertices [j];
 		else {
+#if 0
 			v = vViewer;
 			v -= vertices [j];
 			float l = CFloatVector::Normalize (v);
+#endif
 #if POLYGONAL_OUTLINE
 			if (bPolygonalOutline)
 #endif
@@ -896,16 +904,16 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 #endif
 				v += vertices [j]; 
 			}
+		l = log10f (l) / log2;
+		uint8_t hd = Clamp (uint8_t (l), uint8_t (0), uint8_t (31));
+		if (d > hd)
+			d = hd;
 #if POLYGONAL_OUTLINE
 		if (!bPolygonalOutline) 
 #endif
-			{
-			if (bPartial) 
-				gameData.segData.edgeVertices [--nVertices [1]] = v;
-			else
-				gameData.segData.edgeVertices [nVertices [0]++] = v;
-			}
+		gameData.segData.edgeVertexData [bPartial].Add (v);
 		}
+	gameData.segData.edgeVertexData [bPartial].SetDistance (d);
 #if POLYGONAL_OUTLINE
 	if (bPolygonalOutline) {
 		CFloatVector p = vertices [0];
@@ -941,16 +949,47 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
+void CEdgeVertexData::Sort (int32_t left, int32_t right) 
+{
+	int32_t	l = left,
+				r = right;
+	uint8_t	median = m_dists [(l + r) / 2];
+
+do {
+	while (m_dists [l] < median)
+		l++;
+	while (m_dists [r] > median)
+		r--;
+	if (l <= r) {
+		if (l < r) {
+			Swap (m_dists [l], m_dists [r]);
+			Swap (m_vertices [2 * l], m_vertices [2 * r]);
+			Swap (m_vertices [2 * l + 1], m_vertices [2 * r + 1]);
+			}
+		l++;
+		r--;
+		}
+	} while (l <= r);
+if (l < right)
+	Sort (l, right);
+if (left < r)
+	Sort (left, r);
+};
+
+//-----------------------------------------------------------------------------
+
 void RenderSegmentEdges (void)
 {
-if (!gameData.segData.edgeVertices.Buffer ())
+if (!gameData.segData.edgeVertexData [0].m_vertices.Buffer () || !gameData.segData.edgeVertexData [1].m_vertices.Buffer ())
 	return;
 
 gameStates.render.nType = RENDER_TYPE_GEOMETRY;
 
 	CMeshEdge		*edgeP = gameData.segData.edges.Buffer ();
 	CFloatVector	vViewer;
-	int32_t			nVertices [2] = { 0, (int32_t) gameData.segData.edgeVertices.Length () };
+
+gameData.segData.edgeVertexData [0].Reset ();
+gameData.segData.edgeVertexData [1].Reset ();
 
 vViewer.Assign (gameData.objData.viewerP->Position ());
 
@@ -981,7 +1020,7 @@ for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 		}
 	else
 #endif
-		edgeP->Prepare (vViewer, nVertices);
+		edgeP->Prepare (vViewer);
 	}
 
 #if POLYGONAL_OUTLINE
@@ -990,7 +1029,7 @@ if (bPolygonalOutline) // only needed when transforming edge vertices by softwar
 else
 #endif
 	ogl.SetupTransform (1);
-RenderOutline (nVertices);
+RenderMeshOutline ();
 #if POLYGONAL_OUTLINE
 if (!bPolygonalOutline)
 #endif
@@ -999,7 +1038,7 @@ if (!bPolygonalOutline)
 
 //------------------------------------------------------------------------------
 
-void RenderOutline (int32_t nVertices [])
+void RenderMeshOutline (void)
 {
 float	fLineWidths [2] = { automap.Active () ? 1.5f : 2.5f, automap.Active () ? 1.0f : 2.0f };
 
@@ -1010,7 +1049,6 @@ ogl.SetDepthWrite (true);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetLineSmooth (true);
 glEnable (GL_POINT_SMOOTH);
-OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), gameData.segData.edgeVertices.Buffer ());
 #if 1
 glColor3f (0.01f, 0.01f, 0.01f);
 #else
@@ -1033,7 +1071,8 @@ for (int32_t j = 0; j < 2; j++) {
 		fScale *= 2.0f;
 #endif
 
-	int32_t h = j ? gameData.segData.edgeVertices.Length () - nVertices [1] : nVertices [0];
+	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), gameData.segData.edgeVertexData [j].Buffer ());
+	int32_t h = gameData.segData.edgeVertexData [j].Sort ();
 	if (h) {
 #if POLYGONAL_OUTLINE
 		if (bPolygonalOutline)
@@ -1041,11 +1080,18 @@ for (int32_t j = 0; j < 2; j++) {
 		else 
 #endif
 			{
-			float w = Clamp (fScale * fLineWidths [j], lineWidthRange [0], lineWidthRange [1]);
-			glLineWidth (w);
-			OglDrawArrays (GL_LINES, j ? nVertices [1] : 0, h);
-			glPointSize (w);
-			OglDrawArrays (GL_POINTS, j ? nVertices [1] : 0, h);
+			int32_t i = 0;
+			for (int32_t d = 0; d < 32; d++) {
+				int32_t n = gameData.segData.edgeVertexData [j].VertexCountPerDist (d) * 2;
+				if (n) {
+					float w = Clamp (fScale * fLineWidths [j] / float (d + 1), lineWidthRange [0], lineWidthRange [1]);
+					glLineWidth (w);
+					OglDrawArrays (GL_LINES, i, n);
+					glPointSize (w);
+					OglDrawArrays (GL_POINTS, i, n);
+					}
+				i += n;
+				}
 			}
 		}
 	}

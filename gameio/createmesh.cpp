@@ -1794,10 +1794,15 @@ for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
 	}
 #if POLYGONAL_OUTLINE
 if (!gameData.segData.edgeVertices.Create (gameData.segData.nEdges * (bPolygonalOutline ? 8 : 4)))
-#else
-if (!gameData.segData.edgeVertices.Create (gameData.segData.nEdges * 4))
-#endif
 	return -1;
+#else
+for (int32_t i = 0; i < 2; i++) {
+	if (!gameData.segData.edgeVertexData [i].vertices.Create (gameData.segData.nEdges * 2))
+	return -1;
+	if (!gameData.segData.edgeVertexData [i].dists.Create (gameData.segData.nEdges * 2))
+		return -1;
+	}
+#endif
 return gameData.segData.nEdges;
 }
 

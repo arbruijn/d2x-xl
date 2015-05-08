@@ -580,11 +580,12 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 	if (bEdges) {
 		if (!subModelP->m_bThruster) {
 			RenderModel::CModelEdge* edgeP = subModelP->m_edges.Buffer ();
-			int32_t nVertices [2] = { 0, (int32_t) gameData.segData.edgeVertices.Length () };
 			int32_t nEdgeFilter = objP->IsWeapon () ? 0 : bHires; //0 : 2; //bHires;
+			gameData.segData.edgeVertexData [0].Reset ();
+			gameData.segData.edgeVertexData [1].Reset ();
 			for (i = subModelP->m_nEdges; i; i--, edgeP++) 
-				edgeP->Prepare (CFloatVector::ZERO, nVertices, nEdgeFilter);
-			RenderOutline (nVertices);
+				edgeP->Prepare (CFloatVector::ZERO, nEdgeFilter);
+			RenderMeshOutline ();
 			}	
 		}
 	else {

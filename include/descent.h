@@ -2118,10 +2118,44 @@ class CMeshEdge {
 		virtual int32_t Partial (void);
 		virtual CFloatVector& Normal (int32_t i);
 		virtual CFloatVector& Vertex (int32_t i);
-		void Prepare (CFloatVector vViewer, int32_t nVertices [], int32_t nFilter = 2);
+		void Prepare (CFloatVector vViewer, int32_t nFilter = 2);
 	};
 
 //------------------------------------------------------------------------------
+
+class CEdgeVertexData {
+	public:
+		CArray<CFloatVector>		m_vertices;
+		CArray<uint8_t>			m_dists;
+		uint16_t						m_nVertices;
+		uint16_t						m_countsPerDist [32];
+
+		inline void Reset (void) { 
+			m_nVertices = 0; 
+			memset (m_countsPerDist, 0, sizeof (m_countsPerDist));
+			}
+
+		inline void Add (CFloatVector& v) { m_vertices [m_nVertices++] = v; }
+
+		inline void SetDistance (uint8_t d) {
+			m_dists [m_nVertices / 2 - 1] = d;
+			++m_countsPerDist [d];
+		}
+
+		void CEdgeVertexData::Sort (int32_t left, int32_t right);
+
+		inline uint16_t CEdgeVertexData::Sort (void) { 
+			if (m_nVertices > 1)
+				Sort (0, m_nVertices - 1); 
+			return m_nVertices;
+			}
+
+		inline CFloatVector *Buffer (void) { return m_vertices.Buffer (); }
+
+		inline uint16_t VertexCount (void) { return m_nVertices; }
+
+		inline uint16_t VertexCountPerDist (uint8_t d) { return m_countsPerDist [d]; }
+	};
 
 class CSegmentData {
 	public:
@@ -2132,7 +2166,7 @@ class CSegmentData {
 		CArray<CSegment>			segments;
 		CArray<tSegFaces>			segFaces;
 		CArray<CMeshEdge>			edges;
-		CArray<CFloatVector>		edgeVertices;
+		CEdgeVertexData			edgeVertexData [2];
 		CArray<fix>					segDists;
 		CSkyBox						skybox;
 		CSegmentGrid				grids [2];
