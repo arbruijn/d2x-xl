@@ -905,7 +905,7 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 				v += vertices [j]; 
 			}
 #if 1
-		l = log10f (l)/* + 0.5f*/;
+		l = log10f (l) + 0.5f;
 #else
 		l = log10f (sqrt (l)) / log2 + 0.5f;
 #endif
@@ -1088,7 +1088,7 @@ for (int32_t j = 0; j < 2; j++) {
 			for (int32_t d = 0; d < 32; d++) {
 				int32_t n = gameData.segData.edgeVertexData [j].VertexCountPerDist (d) * 2;
 				if (n) {
-					float w = Clamp (fScale * fLineWidths [j] / float (d + 1), lineWidthRange [0], lineWidthRange [1]);
+					float w = Clamp (fScale * fLineWidths [j] / float (Max (d - 1, 0) * 2), lineWidthRange [0], lineWidthRange [1]);
 					glLineWidth (w);
 					OglDrawArrays (GL_LINES, i, n);
 					glPointSize (w);
