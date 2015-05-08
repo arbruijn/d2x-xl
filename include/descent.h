@@ -2118,7 +2118,7 @@ class CMeshEdge {
 		virtual int32_t Partial (void);
 		virtual CFloatVector& Normal (int32_t i);
 		virtual CFloatVector& Vertex (int32_t i, int32_t bTransformed = 0);
-		void Prepare (CFloatVector vViewer, int32_t nFilter = 2);
+		int32_t Prepare (CFloatVector vViewer, int32_t nFilter = 2, float fDistance = -1.0f);
 	};
 
 //------------------------------------------------------------------------------

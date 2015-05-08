@@ -812,9 +812,13 @@ if (bPolygonalOutline) {
 
 //------------------------------------------------------------------------------
 
-static float log2 = log10f (2);
+static inline float DistToScale (float fDistance) 
+{ 
+return Clamp (int32_t (log10f (logf (fDistance)) + 0.5f), int32_t (0), int32_t (31)),
+}
 
-void CMeshEdge::Prepare (CFloatVector vViewer, int32_t nFilter)
+
+int32_t CMeshEdge::Prepare (CFloatVector vViewer, int32_t nFilter, float fDistance)
 {
 #if DBG
 if ((gameStates.render.nType == RENDER_TYPE_OBJECTS) && (m_nFaces < 2))
@@ -847,6 +851,10 @@ CFloatVector vertices [2];
 
 int32_t bPartial = nType == 2;
 int32_t bSplit = bPartial && (m_fSplit != 0.0f);
+int32_t bScale = fDistance < 0;
+int32_t nDistance;
+if (!bScale)
+	nDistance = DistToScale (fDistance);
 
 #if POLYGONAL_OUTLINE
 float fLineWidths [2] = { automap.Active () ? 3.0f : 6.0f, automap.Active () ? 1.0f : 2.0f };
@@ -877,20 +885,24 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 			}
 		}
 
-	uint8_t d = 32;
+	if (bScale)
+		nDistance = 32;
 	for (int32_t j = 0; j < 2; j++) {
 		CFloatVector v;	// pull a bit closer to viewer to avoid z fighting with related polygon
-		v = vViewer;
-		v -= vertices [j];
-		float l = CFloatVector::Normalize (v);
+		float l;
+		if (bScale) {
+			v = vViewer;
+			v -= vertices [j];
+			l = CFloatVector::Normalize (v);
+			}
 		if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
 			v = vertices [j];
 		else {
-#if 0
-			v = vViewer;
-			v -= vertices [j];
-			float l = CFloatVector::Normalize (v);
-#endif
+			if (!bScale) {
+				v = vViewer;
+				v -= vertices [j];
+				l = CFloatVector::Normalize (v);
+				}
 #if POLYGONAL_OUTLINE
 			if (bPolygonalOutline)
 #endif
@@ -904,20 +916,17 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 #endif
 				v += vertices [j]; 
 			}
-#if 1
-		l = log10f (l) + 0.5f;
-#else
-		l = log10f (sqrt (l)) / log2 + 0.5f;
-#endif
-		uint8_t hd = Clamp (uint8_t (l), uint8_t (0), uint8_t (31));
-		if (d > hd)
-			d = hd;
+		if (bScale) {
+			int32_t d = DistToScale (l);
+			if (nDistance > d)
+				nDistance = d;
+			}
 #if POLYGONAL_OUTLINE
 		if (!bPolygonalOutline) 
 #endif
 		gameData.segData.edgeVertexData [bPartial].Add (v);
 		}
-	gameData.segData.edgeVertexData [bPartial].SetDistance (d);
+	gameData.segData.edgeVertexData [bPartial].SetDistance (nDistance);
 #if POLYGONAL_OUTLINE
 	if (bPolygonalOutline) {
 		CFloatVector p = vertices [0];
@@ -947,6 +956,7 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 		}
 #endif
 	}
+return bScale ? 0 : nDistance;
 }
 
 //------------------------------------------------------------------------------
@@ -1042,7 +1052,7 @@ if (!bPolygonalOutline)
 
 //------------------------------------------------------------------------------
 
-void RenderMeshOutline (void)
+void RenderMeshOutline (int32_t nScale)
 {
 float	fLineWidths [2] = { automap.Active () ? 1.5f : 2.5f, automap.Active () ? 1.0f : 2.0f };
 
@@ -1076,25 +1086,43 @@ for (int32_t j = 0; j < 2; j++) {
 #endif
 
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), gameData.segData.edgeVertexData [j].Buffer ());
-	int32_t h = gameData.segData.edgeVertexData [j].Sort ();
-	if (h) {
+	if (nScale >= 0) {
+		int32_t n = gameData.segData.edgeVertexData [j].VertexCount ();
+		if (n) {
+			float w = fScale * fLineWidths [j];
+			if (nScale > 1)
+				w /= float ((nScale - 1) * 2);
+			w = Clamp (w, lineWidthRange [0], lineWidthRange [1]);
+			glLineWidth (w);
+			OglDrawArrays (GL_LINES, 0, n);
+			glPointSize (w);
+			OglDrawArrays (GL_POINTS, 0, n);
+			}
+		}
+	else {
+		int32_t h = gameData.segData.edgeVertexData [j].Sort ();
+		if (h) {
 #if POLYGONAL_OUTLINE
-		if (bPolygonalOutline)
-			OglDrawArrays (GL_QUADS, j ? nVertices [1] : 0, h);
-		else 
+			if (bPolygonalOutline)
+				OglDrawArrays (GL_QUADS, j ? nVertices [1] : 0, h);
+			else 
 #endif
-			{
-			int32_t i = 0;
-			for (int32_t d = 0; d < 32; d++) {
-				int32_t n = gameData.segData.edgeVertexData [j].VertexCountPerDist (d) * 2;
-				if (n) {
-					float w = Clamp (fScale * fLineWidths [j] / float (Max (d - 1, 0) * 2), lineWidthRange [0], lineWidthRange [1]);
-					glLineWidth (w);
-					OglDrawArrays (GL_LINES, i, n);
-					glPointSize (w);
-					OglDrawArrays (GL_POINTS, i, n);
+				{
+				int32_t i = 0;
+				for (int32_t d = 0; d < 32; d++) {
+					int32_t n = gameData.segData.edgeVertexData [j].VertexCountPerDist (d) * 2;
+					if (n) {
+						float w = fScale * fLineWidths [j];
+						if (d > 1)
+							w /= float ((d - 1) * 2);
+						w = Clamp (w, lineWidthRange [0], lineWidthRange [1]);
+						glLineWidth (w);
+						OglDrawArrays (GL_LINES, i, n);
+						glPointSize (w);
+						OglDrawArrays (GL_POINTS, i, n);
+						}
+					i += n;
 					}
-				i += n;
 				}
 			}
 		}
