@@ -950,8 +950,6 @@ gameStates.render.nType = RENDER_TYPE_GEOMETRY;
 
 	CMeshEdge		*edgeP = gameData.segData.edges.Buffer ();
 	CFloatVector	vViewer;
-	int32_t			nVisibleSegs = gameData.render.mine.visibility [0].nSegments;
-	CShortArray&	visibleSegs = gameData.render.mine.visibility [0].segments;
 	int32_t			nVertices [2] = { 0, (int32_t) gameData.segData.edgeVertices.Length () };
 
 vViewer.Assign (gameData.objData.viewerP->Position ());
@@ -1019,7 +1017,12 @@ glColor3f (0.01f, 0.01f, 0.01f);
 glColor3f (1,1,1);
 #endif
 
+#ifdef _WIN32
 bool bGlow = (gameOpts->render.effects.bGlow == 2) &&	glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
+#else
+bool bGlow = glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
+#endif
+
 float fScale = Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
 if (!bGlow)
 	fScale *= 2.0f;
