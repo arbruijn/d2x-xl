@@ -1098,8 +1098,6 @@ void RenderMeshOutline (int32_t nScale)
 float	fLineWidths [2] = { automap.Active () ? 1.5f : 2.5f, automap.Active () ? 1.0f : 2.0f };
 
 ogl.SetBlendMode (GL_LEQUAL);
-ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
-ogl.SetTexturing (false);
 ogl.SetDepthWrite (true);
 ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetLineSmooth (true);
@@ -1118,7 +1116,7 @@ float fScale = Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
 float lineWidthRange [2];
 glGetFloatv (GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
 
-for (int32_t j = 1; j < 2; j++) {
+for (int32_t j = 0; j < 2; j++) {
 #if 0
 	if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
 		fScale *= 0.5f;
@@ -1126,6 +1124,8 @@ for (int32_t j = 1; j < 2; j++) {
 		fScale *= 2.0f;
 #endif
 
+	ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
+	ogl.SetTexturing (false);
 	OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), gameData.segData.edgeVertexData [j].Buffer ());
 	if (nScale >= 0) {
 		int32_t n = gameData.segData.edgeVertexData [j].VertexCount ();
@@ -1167,8 +1167,8 @@ for (int32_t j = 1; j < 2; j++) {
 				}
 			}
 		}
+	ogl.DisableClientStates (0, 0, 0);
 	}
-ogl.DisableClientStates (0, 0, 0);
 if (bBlur)
 	glowRenderer.End ();
 }

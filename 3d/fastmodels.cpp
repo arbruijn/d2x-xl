@@ -578,7 +578,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 	if (gameStates.render.bCloaked)
 		glColor4f (0, 0, 0, gameStates.render.grAlpha);
 	if (bEdges) {
-		if (0 /*!subModelP->m_bThruster*/) {
+		if (!subModelP->m_bThruster) {
 			CFloatVector vViewer;
 			float d = X2F (Max (0, CFixVector::Dist (OBJPOS (objP)->vPos, transformation.m_info.pos) - objP->Size ()));
 			vViewer.Assign (OBJPOS (objP)->vPos - gameData.objData.viewerP->Position ());
