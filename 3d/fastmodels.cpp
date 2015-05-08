@@ -580,7 +580,7 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 	if (bEdges) {
 		if (!subModelP->m_bThruster) {
 			CFloatVector vViewer;
-			float d = X2F (CFixVector::Dist (OBJPOS (objP)->vPos, gameData.objData.viewerP->Position ()));
+			float d = X2F (Max (0, CFixVector::Dist (OBJPOS (objP)->vPos, transformation.m_info.pos) - objP->Size ()));
 			vViewer.Assign (OBJPOS (objP)->vPos - gameData.objData.viewerP->Position ());
 			RenderModel::CModelEdge* edgeP = subModelP->m_edges.Buffer ();
 #if DBG

@@ -814,7 +814,8 @@ if (bPolygonalOutline) {
 
 static inline int32_t DistToScale (float fDistance) 
 { 
-return Clamp (int32_t (log10f (logf (fDistance)) + 0.5f), int32_t (0), int32_t (31));
+fDistance = log10f (Max (1.0f, logf (fDistance)));
+return Clamp (int32_t (fDistance * fDistance + 0.5f), int32_t (0), int32_t (31));
 }
 
 
@@ -853,8 +854,22 @@ int32_t bPartial = nType == 2;
 int32_t bSplit = bPartial && (m_fSplit != 0.0f);
 int32_t bScale = fDistance < 0;
 int32_t nDistance;
-if (!bScale)
+if (!bScale) {
+#if DBG
+	float l = Max (1.0f, logf (fDistance));
+	fDistance /= l;
+	fDistance = log10f (fDistance);
+#if 1
+	fDistance *= fDistance;
+	fDistance += 0.5f;
+#else
+	fDistance += 0.5f;
+#endif
+	nDistance = int32_t (fDistance);
+#else
 	nDistance = DistToScale (fDistance);
+#endif
+	}
 
 #if POLYGONAL_OUTLINE
 float fLineWidths [2] = { automap.Active () ? 3.0f : 6.0f, automap.Active () ? 1.0f : 2.0f };
@@ -1090,8 +1105,8 @@ for (int32_t j = 0; j < 2; j++) {
 		int32_t n = gameData.segData.edgeVertexData [j].VertexCount ();
 		if (n) {
 			float w = fScale * fLineWidths [j];
-			if (nScale > 1)
-				w /= float ((nScale - 1) * 2);
+			if (nScale)
+				w /= float (nScale * 2);
 			w = Clamp (w, lineWidthRange [0], lineWidthRange [1]);
 			glLineWidth (w);
 			OglDrawArrays (GL_LINES, 0, n);
@@ -1113,8 +1128,8 @@ for (int32_t j = 0; j < 2; j++) {
 					int32_t n = gameData.segData.edgeVertexData [j].VertexCountPerDist (d) * 2;
 					if (n) {
 						float w = fScale * fLineWidths [j];
-						if (d > 1)
-							w /= float ((d - 1) * 2);
+						if (d)
+							w /= float (d * 2);
 						w = Clamp (w, lineWidthRange [0], lineWidthRange [1]);
 						glLineWidth (w);
 						OglDrawArrays (GL_LINES, i, n);
@@ -1153,7 +1168,7 @@ RenderCockpitModel ();
 gameStates.render.EnableCartoonStyle ();
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
-#if 0
+#if 1
 if (gameStates.render.bCartoonize) {
 	ogl.CopyDepthTexture (0);
 	RenderSegmentEdges ();
