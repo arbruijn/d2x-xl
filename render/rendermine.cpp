@@ -846,9 +846,11 @@ CFloatVector vertices [2];
 int32_t bPartial = nType == 2;
 int32_t bSplit = bPartial && (m_fSplit != 0.0f);
 
+#if POLYGONAL_OUTLINE
 float fLineWidths [2] = { automap.Active () ? 3.0f : 6.0f, automap.Active () ? 1.0f : 2.0f };
 float wPixel = 2.0f / float (CCanvas::Current ()->Width ());
 float fScale = Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
+#endif
 
 for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 	for (int32_t j = 0; j < 2; j++) {
@@ -1007,6 +1009,7 @@ ogl.SetBlendMode (GL_LEQUAL);
 ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 ogl.SetTexturing (false);
 ogl.SetDepthWrite (true);
+ogl.SetDepthMode (GL_LEQUAL);
 ogl.SetLineSmooth (true);
 glEnable (GL_POINT_SMOOTH);
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), gameData.segData.edgeVertices.Buffer ());
@@ -1016,11 +1019,12 @@ glColor3f (0.01f, 0.01f, 0.01f);
 glColor3f (1,1,1);
 #endif
 
-glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
-
-ogl.SetDepthMode (GL_LEQUAL);
-
+bool bGlow = (gameOpts->render.effects.bGlow == 2) &&	glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
+float lineWidthRange [2];
+glGetFloatv (GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
 float fScale = Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
+if (!bGlow)
+	fScale *= 2.0f;
 
 for (int32_t j = 0; j < 2; j++) {
 #if 0
@@ -1038,16 +1042,18 @@ for (int32_t j = 0; j < 2; j++) {
 		else 
 #endif
 			{
-			glLineWidth (fScale * fLineWidths [j]);
+			float w = Min (fScale * fLineWidths [j], lineWidthRange [1]);
+			glLineWidth (w);
+			ogl.ClearError (0);
 			OglDrawArrays (GL_LINES, j ? nVertices [1] : 0, h);
-			glPointSize (fScale * fLineWidths [j]);
+			glPointSize (w);
 			OglDrawArrays (GL_POINTS, j ? nVertices [1] : 0, h);
 			}
 		}
 	}
 ogl.DisableClientStates (0, 0, 0);
-if (gameStates.render.nType == RENDER_TYPE_GEOMETRY)
-glowRenderer.End ();
+if (bGlow)
+	glowRenderer.End ();
 }
 
 //------------------------------------------------------------------------------
