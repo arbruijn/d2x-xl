@@ -1764,6 +1764,10 @@ for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
 		continue;
 	CSide* sideP = segP->Side (0);
 	for (int32_t j = 0; j < 6; j++, sideP++) {
+#if DBG
+		if ((i == nDbgSeg) && ((nDbgSide < 0) || (j == nDbgSide)))
+			BRP;
+#endif
 		if (segP->ChildId (j) >= 0) {
 			CWall *wallP = sideP->Wall ();
 			if (!wallP)

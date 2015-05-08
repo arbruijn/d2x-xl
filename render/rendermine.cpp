@@ -884,8 +884,8 @@ for (int32_t h = bSplit ? 0 : 1; h < 2; h++) {
 #if POLYGONAL_OUTLINE
 			if (bPolygonalOutline)
 #endif
-				v *= 2.0f;
-			//if (l > 1.0f)
+				//v *= 2.0f;
+				//if (l > 1.0f)
 				v /= pow (l, 0.25f);
 #if POLYGONAL_OUTLINE
 			if (bPolygonalOutline)
