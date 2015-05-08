@@ -812,6 +812,11 @@ if (bPolygonalOutline) {
 
 //------------------------------------------------------------------------------
 
+#if DBG
+float lMin, lMax;
+#endif
+
+
 static inline int32_t DistToScale (float fDistance) 
 { 
 fDistance = log10f (Max (1.0f, logf (fDistance)));
@@ -923,15 +928,21 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 #endif
 				//v *= 2.0f;
 				//if (l > 1.0f)
-				v /= pow (l, 0.25f);
+			v /= pow (l, 0.25f);
 #if POLYGONAL_OUTLINE
 			if (bPolygonalOutline)
 				vertices [j] += v; 
 			else
 #endif
-				v += vertices [j]; 
+			v += vertices [j]; 
 			}
 		if (bScale) {
+#if DBG
+				if (lMin > l)
+					lMin = l;
+				if (lMax < l)
+					lMax = l;
+#endif
 			int32_t d = DistToScale (l);
 			if (nDistance > d)
 				nDistance = d;
@@ -1021,6 +1032,10 @@ gameData.segData.edgeVertexData [0].Reset ();
 gameData.segData.edgeVertexData [1].Reset ();
 
 vViewer.Assign (transformation.m_info.pos);
+
+#if DBG
+lMin = 1.e6f, lMax = -1.0f;
+#endif
 
 #if POLYGONAL_OUTLINE
 if (bPolygonalOutline) // only needed when transforming edge vertices by software
