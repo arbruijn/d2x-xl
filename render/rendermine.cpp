@@ -1070,8 +1070,10 @@ RenderCockpitModel ();
 gameStates.render.EnableCartoonStyle ();
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
-if (gameStates.render.bCartoonize)
+if (gameStates.render.bCartoonize) {
+	ogl.CopyDepthTexture (1);
 	RenderSegmentEdges ();
+	}
 //RenderSegmentOutline ();
 #	if 1
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {
