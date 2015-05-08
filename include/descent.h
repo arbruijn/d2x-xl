@@ -2142,7 +2142,7 @@ class CEdgeVertexData {
 			++m_countsPerDist [d];
 		}
 
-		void CEdgeVertexData::Sort (int32_t left, int32_t right);
+		void Sort (int32_t left, int32_t right);
 
 		inline uint16_t CEdgeVertexData::Sort (void) { 
 			if (m_nVertices > 2)
