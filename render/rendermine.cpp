@@ -1003,7 +1003,7 @@ if (!bPolygonalOutline)
 
 void RenderOutline (int32_t nVertices [])
 {
-float	fLineWidths [2] = { automap.Active () ? 2.0f : 3.0f, automap.Active () ? 1.0f : 2.0f };
+float	fLineWidths [2] = { automap.Active () ? 1.5f : 2.5f, automap.Active () ? 1.0f : 2.0f };
 
 ogl.SetBlendMode (GL_LEQUAL);
 ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
