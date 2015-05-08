@@ -2117,7 +2117,7 @@ class CMeshEdge {
 		virtual int32_t Type (void);
 		virtual int32_t Partial (void);
 		virtual CFloatVector& Normal (int32_t i);
-		virtual CFloatVector& Vertex (int32_t i);
+		virtual CFloatVector& Vertex (int32_t i, int32_t bTransformed = 0);
 		void Prepare (CFloatVector vViewer, int32_t nFilter = 2);
 	};
 
@@ -2145,8 +2145,8 @@ class CEdgeVertexData {
 		void CEdgeVertexData::Sort (int32_t left, int32_t right);
 
 		inline uint16_t CEdgeVertexData::Sort (void) { 
-			if (m_nVertices > 1)
-				Sort (0, m_nVertices - 1); 
+			if (m_nVertices > 2)
+				Sort (0, m_nVertices / 2 - 1); 
 			return m_nVertices;
 			}
 

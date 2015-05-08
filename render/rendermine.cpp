@@ -788,14 +788,14 @@ return m_faces [i].m_vNormal [0];
 
 //------------------------------------------------------------------------------
 
-CFloatVector& CMeshEdge::Vertex (int32_t i)
+CFloatVector& CMeshEdge::Vertex (int32_t i, int32_t bTransformed)
 {
 #if POLYGONAL_OUTLINE
 if (bPolygonalOutline)
 	return m_vertices [1][i]; // gameData.segData.fVertices [m_nVertices [i]];
 else
 #endif
-	return m_vertices [0][i]; // gameData.segData.fVertices [m_nVertices [i]];
+	return m_vertices [bTransformed][i]; // gameData.segData.fVertices [m_nVertices [i]];
 }
 
 //------------------------------------------------------------------------------
@@ -904,7 +904,11 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 #endif
 				v += vertices [j]; 
 			}
-		l = log10f (l) / log2;
+#if 1
+		l = log10f (l)/* + 0.5f*/;
+#else
+		l = log10f (sqrt (l)) / log2 + 0.5f;
+#endif
 		uint8_t hd = Clamp (uint8_t (l), uint8_t (0), uint8_t (31));
 		if (d > hd)
 			d = hd;
@@ -1121,11 +1125,12 @@ RenderCockpitModel ();
 gameStates.render.EnableCartoonStyle ();
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
+#if 0
 if (gameStates.render.bCartoonize) {
 	ogl.CopyDepthTexture (0);
 	RenderSegmentEdges ();
 	}
-//RenderSegmentOutline ();
+#endif
 #	if 1
 if (!(EGI_FLAG (bShadows, 0, 1, 0) && (gameStates.render.nShadowMap > 0))) {
 	if (!gameStates.app.bNostalgia &&

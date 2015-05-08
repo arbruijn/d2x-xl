@@ -95,7 +95,7 @@ class CModelEdge : public CMeshEdge {
 		virtual int32_t Type (void);
 		virtual int32_t Partial (void);
 		virtual CFloatVector& Normal (int32_t i);
-		virtual CFloatVector& Vertex (int32_t i);
+		virtual CFloatVector& Vertex (int32_t i, int32_t bTransformed = 0);
 	};
 
 
