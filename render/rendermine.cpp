@@ -812,9 +812,9 @@ if (bPolygonalOutline) {
 
 //------------------------------------------------------------------------------
 
-static inline float DistToScale (float fDistance) 
+static inline int32_t DistToScale (float fDistance) 
 { 
-return Clamp (int32_t (log10f (logf (fDistance)) + 0.5f), int32_t (0), int32_t (31)),
+return Clamp (int32_t (log10f (logf (fDistance)) + 0.5f), int32_t (0), int32_t (31));
 }
 
 
@@ -827,9 +827,9 @@ if ((gameStates.render.nType == RENDER_TYPE_OBJECTS) && (m_nFaces < 2))
 
 int32_t nType = Type ();
 if (nType < 0)
-	return;
+	return -1;
 if (nType > nFilter)
-	return;
+	return -1;
 
 #if 0 //DBG
 if (gameStates.render.nType == RENDER_TYPE_OBJECTS) {

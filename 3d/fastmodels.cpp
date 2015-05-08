@@ -590,9 +590,13 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 #endif
 			gameData.segData.edgeVertexData [0].Reset ();
 			gameData.segData.edgeVertexData [1].Reset ();
-			for (i = subModelP->m_nEdges; i; i--, edgeP++) 
-				nScale = edgeP->Prepare (vViewer, nEdgeFilter, d);
-			RenderMeshOutline (nScale);
+			for (i = subModelP->m_nEdges; i; i--, edgeP++) {
+				int32_t s = edgeP->Prepare (vViewer, nEdgeFilter, d);
+				if (s >= 0)
+					nScale = s;
+				}
+			if (nScale >= 0)
+				RenderMeshOutline (nScale);
 			}	
 		}
 	else {
