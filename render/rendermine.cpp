@@ -814,12 +814,13 @@ if (bPolygonalOutline) {
 
 #if DBG
 float lMin, lMax;
+int32_t nMaxDist;
 #endif
 
 
 static inline int32_t DistToScale (float fDistance) 
 { 
-fDistance = log10f (Max (1.0f, logf (fDistance)));
+fDistance = log10f (fDistance / Max (1.0f, logf (fDistance)));
 return Clamp (int32_t (fDistance * fDistance + 0.5f), int32_t (0), int32_t (31));
 }
 
@@ -906,7 +907,7 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 		}
 
 	if (bScale)
-		nDistance = 32;
+		nDistance = 0xFFFF;
 	for (int32_t j = 0; j < 2; j++) {
 		CFloatVector v;	// pull a bit closer to viewer to avoid z fighting with related polygon
 		float l;
@@ -937,22 +938,31 @@ for (int32_t n = bSplit ? 0 : 1; n < 2; n++) {
 			v += vertices [j]; 
 			}
 		if (bScale) {
-#if DBG
-				if (lMin > l)
-					lMin = l;
-				if (lMax < l)
-					lMax = l;
-#endif
 			int32_t d = DistToScale (l);
 			if (nDistance > d)
 				nDistance = d;
+#if DBG
+			if (l > 150.0f)
+				BRP;
+			if (j && abs (nDistance - d) > 1)
+				BRP;
+			if (lMin > l)
+				lMin = l;
+			if (lMax < l)
+				lMax = l;
+#endif
 			}
 #if POLYGONAL_OUTLINE
 		if (!bPolygonalOutline) 
 #endif
 		gameData.segData.edgeVertexData [bPartial].Add (v);
 		}
-	gameData.segData.edgeVertexData [bPartial].SetDistance (nDistance);
+#if DBG
+	if (nMaxDist < nDistance)
+		nMaxDist = nDistance;
+#endif
+	if (bScale)
+		gameData.segData.edgeVertexData [bPartial].SetDistance (nDistance);
 #if POLYGONAL_OUTLINE
 	if (bPolygonalOutline) {
 		CFloatVector p = vertices [0];
@@ -1035,6 +1045,7 @@ vViewer.Assign (transformation.m_info.pos);
 
 #if DBG
 lMin = 1.e6f, lMax = -1.0f;
+nMaxDist = -1;
 #endif
 
 #if POLYGONAL_OUTLINE
@@ -1064,7 +1075,7 @@ for (int32_t i = gameData.segData.nEdges; i; i--, edgeP++) {
 		}
 	else
 #endif
-		edgeP->Prepare (vViewer);
+		edgeP->Prepare (vViewer, 2, 0.0f);
 	}
 
 #if POLYGONAL_OUTLINE
@@ -1073,7 +1084,7 @@ if (bPolygonalOutline) // only needed when transforming edge vertices by softwar
 else
 #endif
 	ogl.SetupTransform (1);
-RenderMeshOutline ();
+RenderMeshOutline (0);
 #if POLYGONAL_OUTLINE
 if (!bPolygonalOutline)
 #endif
@@ -1102,12 +1113,12 @@ glColor3f (1,1,1);
 bool bBlur = (gameOpts->render.effects.bGlow == 2) && glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
 
 float fScale = Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
-if (!bBlur)
-	fScale *= 2.0f;
+//if (!bBlur)
+//	fScale *= 2.0f;
 float lineWidthRange [2];
 glGetFloatv (GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
 
-for (int32_t j = 0; j < 2; j++) {
+for (int32_t j = 1; j < 2; j++) {
 #if 0
 	if (gameStates.render.nType == RENDER_TYPE_OBJECTS)
 		fScale *= 0.5f;
