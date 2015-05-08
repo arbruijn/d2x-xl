@@ -1774,7 +1774,7 @@ for (int32_t i = 0; i < gameData.segData.nSegments; i++, segP++) {
 				continue;
 			if (wallP->IsInvisible ())
 			 continue;
-			if (wallP->IsPassable (NULL, true) & (WID_NO_WALL | WID_TRANSILLUSORY_WALL))
+			if (wallP->IsPassable (NULL, false) & WID_NO_WALL)
 				continue;
 			}
 		int32_t nVertices;

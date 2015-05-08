@@ -1809,9 +1809,9 @@ if (!m_info.texP->IsRenderBuffer ())
 			int32_t h = Height () - dxo;
 			int32_t s = (w >= 512) ? 3 : (w >= 256) ? 2 : (w >= 128) ? 1 : 0;
 #if 0
-			bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), blurRads [0][s], nColors, bWrapBlur, 1);
+			bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), blurRads [0][s], nColors, !gameStates.render.bClampBlur, 1);
 #else
-			bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), blurRads [-gameStates.render.bCartoonize - 1][s], nColors, bWrapBlur, -gameStates.render.bCartoonize);
+			bufP = GaussianBlur (ogl.m_data.buffer [1], bufP, w, h, m_info.texP->TW (), m_info.texP->TH (), blurRads [-gameStates.render.bCartoonize - 1][s], nColors, !gameStates.render.bClampBlur, -gameStates.render.bCartoonize);
 #endif
 			Posterize (bufP, w, h, m_info.texP->TW (), nColors);
 			}

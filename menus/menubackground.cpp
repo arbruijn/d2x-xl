@@ -221,7 +221,9 @@ if (m_nType == BG_WALLPAPER) {
 		int32_t bCartoonize;
 		if (gameOptions [0].menus.altBg.bCartoonize)
 			bCartoonize = gameStates.render.SetCartoonStyle (-1);
+		gameStates.render.bClampBlur = 1;
 		m_bitmap->RenderStretched ();
+		gameStates.render.bClampBlur = 0;
 		if (gameOptions [0].menus.altBg.bCartoonize)
 			gameStates.render.SetCartoonStyle (bCartoonize);
 		PrintVersionInfo ();
@@ -512,7 +514,9 @@ bmP->SetTranspType (3);
 int32_t bCartoonize;
 if (gameOptions [0].menus.altBg.bCartoonize)
 	bCartoonize = gameStates.render.SetCartoonStyle (-1);
+gameStates.render.bClampBlur = 1;
 bmP->Bind (0);
+gameStates.render.bClampBlur = 0;
 if (gameOptions [0].menus.altBg.bCartoonize)
 	gameStates.render.SetCartoonStyle (bCartoonize);
 return bmP;

@@ -1070,6 +1070,7 @@ class CRenderStates {
 		int32_t bDoCameras;
 		int32_t bRenderIndirect;
 		int32_t bCartoonize;
+		int32_t bClampBlur;
 		int32_t bBuildModels;
 		int32_t bShowFrameRate;
 		int32_t bShowTime;
