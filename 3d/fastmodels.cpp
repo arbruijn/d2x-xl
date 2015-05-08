@@ -578,16 +578,12 @@ if ((nExclusive < 0) || (nSubModel == nExclusive)) {
 	if (gameStates.render.bCloaked)
 		glColor4f (0, 0, 0, gameStates.render.grAlpha);
 	if (bEdges) {
-		if (!subModelP->m_bThruster) {
+		if (0 /*!subModelP->m_bThruster*/) {
 			CFloatVector vViewer;
 			float d = X2F (Max (0, CFixVector::Dist (OBJPOS (objP)->vPos, transformation.m_info.pos) - objP->Size ()));
 			vViewer.Assign (OBJPOS (objP)->vPos - gameData.objData.viewerP->Position ());
 			RenderModel::CModelEdge* edgeP = subModelP->m_edges.Buffer ();
-#if DBG
-			int32_t nScale, nEdgeFilter = 0;
-#else
 			int32_t nScale, nEdgeFilter = objP->IsWeapon () ? 0 : bHires; //0 : 2; //bHires;
-#endif
 			gameData.segData.edgeVertexData [0].Reset ();
 			gameData.segData.edgeVertexData [1].Reset ();
 			for (i = subModelP->m_nEdges; i; i--, edgeP++) {

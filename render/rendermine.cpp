@@ -1020,7 +1020,7 @@ gameStates.render.nType = RENDER_TYPE_GEOMETRY;
 gameData.segData.edgeVertexData [0].Reset ();
 gameData.segData.edgeVertexData [1].Reset ();
 
-vViewer.Assign (gameData.objData.viewerP->Position ());
+vViewer.Assign (transformation.m_info.pos);
 
 #if POLYGONAL_OUTLINE
 if (bPolygonalOutline) // only needed when transforming edge vertices by software
