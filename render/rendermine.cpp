@@ -952,7 +952,7 @@ gameStates.render.nType = RENDER_TYPE_GEOMETRY;
 	CFloatVector	vViewer;
 	int32_t			nVisibleSegs = gameData.render.mine.visibility [0].nSegments;
 	CShortArray&	visibleSegs = gameData.render.mine.visibility [0].segments;
-	int32_t			nVertices [2] = { 0, gameData.segData.edgeVertices.Length () };
+	int32_t			nVertices [2] = { 0, (int32_t) gameData.segData.edgeVertices.Length () };
 
 vViewer.Assign (gameData.objData.viewerP->Position ());
 
@@ -1020,11 +1020,11 @@ glColor3f (1,1,1);
 #endif
 
 bool bGlow = (gameOpts->render.effects.bGlow == 2) &&	glowRenderer.Begin (BLUR_OUTLINE, 1, false, 1.0f);
-float lineWidthRange [2];
-glGetFloatv (GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
 float fScale = Max (1.0f, float (CCanvas::Current ()->Width ()) / 640.0f);
 if (!bGlow)
 	fScale *= 2.0f;
+float lineWidthRange [2];
+glGetFloatv (GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
 
 for (int32_t j = 0; j < 2; j++) {
 #if 0
@@ -1042,9 +1042,8 @@ for (int32_t j = 0; j < 2; j++) {
 		else 
 #endif
 			{
-			float w = Min (fScale * fLineWidths [j], lineWidthRange [1]);
+			float w = Clamp (fScale * fLineWidths [j], lineWidthRange [0], lineWidthRange [1]);
 			glLineWidth (w);
-			ogl.ClearError (0);
 			OglDrawArrays (GL_LINES, j ? nVertices [1] : 0, h);
 			glPointSize (w);
 			OglDrawArrays (GL_POINTS, j ? nVertices [1] : 0, h);
