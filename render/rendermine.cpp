@@ -1006,6 +1006,7 @@ float	fLineWidths [2] = { automap.Active () ? 2.0f : 3.0f, automap.Active () ? 1
 ogl.SetBlendMode (GL_LEQUAL);
 ogl.EnableClientStates (0, 0, 0, GL_TEXTURE0);
 ogl.SetTexturing (false);
+ogl.SetDepthWrite (true);
 ogl.SetLineSmooth (true);
 glEnable (GL_POINT_SMOOTH);
 OglVertexPointer (3, GL_FLOAT, sizeof (CFloatVector), gameData.segData.edgeVertices.Buffer ());
@@ -1071,7 +1072,7 @@ gameStates.render.EnableCartoonStyle ();
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
 if (gameStates.render.bCartoonize) {
-	ogl.CopyDepthTexture (1);
+	ogl.CopyDepthTexture (0);
 	RenderSegmentEdges ();
 	}
 //RenderSegmentOutline ();
