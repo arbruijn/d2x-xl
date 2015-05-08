@@ -311,14 +311,14 @@ void DrawObjectBitmap (CObject *objP, int32_t bmi0, int32_t bmi, int32_t iFrame,
 if ((nType == OBJ_POWERUP) && (gameStates.app.bGameSuspended & SUSP_POWERUPS))
 	return;
 
-	CBitmap*		bmP;
+	CBitmap*			bmP;
 	CFloatVector	color;
 	int32_t			nId = objP->info.nId;
 #if 0
 	int32_t			bMuzzleFlash = 0;
 #endif
 	int32_t			bAdditive = 0, bEnergy = 0;
-	fix			xSize;
+	fix				xSize;
 
 if ((nType == OBJ_WEAPON) && (objP->info.nId == OMEGA_ID) && omegaLightning.Exist ())
 	return;

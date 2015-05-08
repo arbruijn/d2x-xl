@@ -331,13 +331,13 @@ class CThreadedObjectRenderer {
 	private:
 		bool			m_bInited;
 		SDL_Thread* m_threads [MAX_THREADS];
-		int32_t			m_nThreadIds [MAX_THREADS];
+		int32_t		m_nThreadIds [MAX_THREADS];
 		SDL_sem*		m_lightObjects [MAX_THREADS];
 		SDL_mutex*	m_lightLock;
 		SDL_sem*		m_lightDone;
 		SDL_sem*		m_renderDone;
-		int32_t			m_nRenderThreads;
-		int32_t			m_nActiveThreads;
+		int32_t		m_nRenderThreads;
+		int32_t		m_nActiveThreads;
 
 	public:
 		CThreadedObjectRenderer ();
