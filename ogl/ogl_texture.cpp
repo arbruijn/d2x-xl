@@ -363,7 +363,7 @@ for (int32_t x = nStart; x < w; x += nStep) {
 				color.r = color.g = color.b = 0;
 			color.a = src [y * tw + x].a;
 			}
-		i += nStep * tw;
+		i += tw;
 		}
 	}
 }
@@ -404,7 +404,7 @@ for (int32_t x = nStart; x < w; x += nStep) {
 			color.g = uint8_t (a [1] / n);
 			color.b = uint8_t (a [2] / n);
 			}
-		i += nStep * tw;
+		i += tw;
 		}
 	}
 }
@@ -455,17 +455,21 @@ void BoxBlurRGBA (tRGBA *dest, tRGBA *src, int32_t w, int32_t h, int32_t tw, int
 if (gameStates.app.bMultiThreaded) {
 	if (bWrap) {
 #	pragma omp parallel
+#	pragma omp for
 		for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 			HBoxBlurRGBAWrapped (src, dest, w, h, tw, th, r, i, gameStates.app.nThreads);
 #	pragma omp parallel
+#	pragma omp for
 		for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 			VBoxBlurRGBAWrapped (dest, src, w, h, tw, th, r, i, gameStates.app.nThreads);
 		}
 	else {
 #	pragma omp parallel
+#	pragma omp for
 		for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 			HBoxBlurRGBAClamped (src, dest, w, h, tw, th, r, i, gameStates.app.nThreads);
 #	pragma omp parallel
+#	pragma omp for
 		for (int32_t i = 0; i < gameStates.app.nThreads; i++) 
 			VBoxBlurRGBAClamped (dest, src, w, h, tw, th, r, i, gameStates.app.nThreads);
 		}
