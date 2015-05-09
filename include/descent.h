@@ -2092,6 +2092,7 @@ typedef struct tVertexOwner {
 
 class CEdgeFaceInfo {
 	public:
+		int16_t			m_bValid;
 		int16_t			m_nItem;		// segment / (sub) model id
 		int16_t			m_nFace;
 		int16_t			m_nTexture;
@@ -2099,16 +2100,18 @@ class CEdgeFaceInfo {
 		CFloatVector	m_vNormal [2];
 		CFloatVector	m_vCenter [2];
 
-		CEdgeFaceInfo () : m_nItem (-1), m_nFace (-1), m_nTexture (0), m_nWall (-1) {}
-		void CEdgeFaceInfo::Setup (int16_t nSegment, int16_t nSide);
+		CEdgeFaceInfo () : m_bValid (0), m_nItem (-1), m_nFace (-1), m_nTexture (0), m_nWall (-1) {}
+		void Setup (int16_t nSegment, int16_t nSide);
+		void Setup (void);
 		int32_t Visible (void);
 	};
 
 class CMeshEdge {
 	public:
+		int16_t			m_bValid;
+		int16_t			m_nFaces;
 		CEdgeFaceInfo	m_faces [2];
 		int32_t			m_nVertices [2];
-		int16_t			m_nFaces;
 		float				m_fDot;
 		float				m_fScale;
 		float				m_fSplit;
@@ -2116,7 +2119,7 @@ class CMeshEdge {
 		CFloatVector	m_vOffset;
 		CFloatVector	m_vertices [2][2];
 
-		CMeshEdge () : m_nFaces (0), m_fDot (0.0f), m_fScale (-1.0f), m_fSplit (0.0f), m_fOffset (0.0f) {
+		CMeshEdge () : m_bValid (0), m_nFaces (0), m_fDot (0.0f), m_fScale (-1.0f), m_fSplit (0.0f), m_fOffset (0.0f) {
 			m_nVertices [0] = m_nVertices [1] = -1;
 			}
 		void Setup (void);

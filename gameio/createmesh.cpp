@@ -1706,10 +1706,8 @@ else {
 	pEdge->m_vertices [0][1] = gameData.segData.fVertices [nVertex2];
 	pEdge->m_nFaces = 1;
 	}
-pEdge->m_faces [i].Setup (nSegment, nSide);
 if (i == 0)
 	return 1;
-pEdge->Setup ();
 return 0;
 }
 

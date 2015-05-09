@@ -605,24 +605,24 @@ void CreateOutline (tRGBA *pTexture, int32_t w, int32_t h, int32_t tw, int32_t n
 {
 	int32_t offsets [9] = { -tw - 1, -tw, -tw + 1, -1, 0, 1, tw - 1, tw, tw + 1};
 	int32_t l = (h - 1) * tw + w;
-	int32_t nTag = 255, n = 0;
+	int32_t nTag = 254, n = 0;
 
 for (int32_t nPass = 0; nPass < nPasses; nPass++, nTag--) {
 	for (int32_t y = nStart; y < h; y += nStep) {
 		int32_t i = y * tw;
 		for (int32_t x = 0; x < w; x++, i++) {
-			if (pTexture [i].a)
+			if (ogl.m_data.outlineFilter [i])
 				continue;
 			for (int32_t o = 0; o < 9; o++) {
 				int32_t j = offsets [o];
 				if (j == 0)
 					continue;
-				if (j < i)
-					continue;
 				j += i;
+				if (j < 0)
+					continue;
 				if (j >= l)
 					continue;
-				if (ogl.m_data.outlineFilter [j] >= nTag) {
+				if (ogl.m_data.outlineFilter [j] > nTag) {
 					ogl.m_data.outlineFilter [i] = nTag;
 					pTexture [i].r = 
 					pTexture [i].g = 
@@ -645,7 +645,18 @@ for (int32_t y = nStart; y < h; y += nStep) {
 	tRGBA *pSrc = pTexture + y * tw;
 	uint8_t *pDest = ogl.m_data.outlineFilter + y * tw;
 	for (int32_t x = 0; x < w; x++)
-		*(pDest++) = (pSrc++)->a ? 255 : 0;
+#if DBG
+		{
+		if (pSrc->a > 128)
+			*pDest = 255;
+		else
+			*pDest = 0;
+		pSrc++;
+		pDest++;
+		}
+#else
+		*(pDest++) = ((pSrc++)->a > 128) ? 255 : 0;
+#endif
 	}
 }
 
@@ -689,13 +700,13 @@ if (pBm->m_info.bCartoonizable && (gameStates.render.bCartoonize < 0)) {
 	int32_t s = (w >= 512) ? 3 : (w >= 256) ? 2 : (w >= 128) ? 1 : 0;
 #if 0
 	pBuffer = GaussianBlur (ogl.m_data.buffer [1], pBuffer, w, h, tw, m_info.pTexture->TH (), blurRads [0][s], nColors, !gameStates.render.bClampBlur, 1);
-#else
+#elif 1
 	pBuffer = GaussianBlur (ogl.m_data.buffer [1], pBuffer, w, h, tw, pBm->m_info.pTexture->TH (), blurRads [-gameStates.render.bCartoonize - 1][s], 
 									nColors, !gameStates.render.bClampBlur, -gameStates.render.bCartoonize);
 #endif
 	Posterize (pBuffer, w, h, tw, nColors);
 	if (gameStates.render.bOutlineTextures && (nColors == 4) && !strstr (pBm->Name (), "lava") && !strstr (pBm->Name (), "water"))
-		Outline (pBuffer, w, h, tw, 1 << s);
+		Outline (pBuffer, w, h, tw, s);
 	}
 return pBuffer;
 }

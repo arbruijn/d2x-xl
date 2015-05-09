@@ -816,7 +816,7 @@ void WallFrameProcess (void)
 	CCloakingWall*	pCloakWall;
 	CActiveDoor*	pDoor = gameData.wallData.activeDoors.Buffer ();
 	CWall*			pWall, *pBackWall;
-	uint32_t				i;
+	uint32_t			i;
 
 for (i = 0; i < gameData.wallData.activeDoors.ToS (); i++) {
 	pDoor = &gameData.wallData.activeDoors [i];

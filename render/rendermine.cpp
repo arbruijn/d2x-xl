@@ -747,6 +747,10 @@ int32_t CEdgeFaceInfo::Visible (void)
 {
 if (m_nWall < 0)
 	return 1;
+#if DBG
+if ((m_nItem == nDbgSeg) && ((nDbgSide < 0) || (m_nFace == nDbgSide)))
+	BRP;
+#endif
 CWall *pWall = WALL (m_nWall);
 if (!pWall)
 	return 1;
@@ -761,22 +765,40 @@ return 1;
 
 void CEdgeFaceInfo::Setup (int16_t nSegment, int16_t nSide)
 {
+#if DBG
+if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	BRP;
+#endif
 m_nItem = nSegment;
 m_nFace = nSide;
-CSide* pSide = gameData.Segment (nSegment)->Side (nSide);
-m_vNormal [0] = pSide->Normalf (2);
-m_vCenter [0].Assign (pSide->Center ());
-m_nWall = pSide->WallNum ();
-if (!IS_WALL (m_nWall))
-	m_nWall = -1;
-m_nTexture = int32_t (pSide->m_nOvlTex & TEXTURE_ID_MASK);
-if (m_nTexture) {
-	CBitmap *pBm = gameData.pig.tex.pBitmap [gameData.pig.tex.pBmIndex [m_nTexture].index].Override (-1);
-	if (!pBm || (pBm->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)))
-		m_nTexture = 0;
+}
+
+//------------------------------------------------------------------------------
+
+void CEdgeFaceInfo::Setup (int16_t nSegment, int16_t nSide)
+{
+if (!m_bValid) {
+	m_bValid = 1;
+	CSide* pSide = gameData.Segment (nSegment)->Side (nSide);
+	m_vNormal [0] = pSide->Normalf (2);
+	m_vCenter [0].Assign (pSide->Center ());
+	m_nWall = pSide->WallNum ();
+	if (!IS_WALL (m_nWall))
+		m_nWall = -1;
+	#if DBG
+	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+		BRP;
+	#endif
+	m_nTexture = int32_t (pSide->m_nOvlTex & TEXTURE_ID_MASK);
+	if (m_nTexture) {
+		//LoadTexture (gameData.pig.tex.pBmIndex [m_nTexture].index, 0, gameStates.app.bD1Mission);
+		CBitmap *pBm = gameData.pig.tex.pBitmap [gameData.pig.tex.pBmIndex [m_nTexture].index].Override (-1);
+		if (!pBm || (pBm->Flags () & (BM_FLAG_TRANSPARENT | BM_FLAG_SUPER_TRANSPARENT)))
+			m_nTexture = 0;
+		}
+	if (!m_nTexture)
+		m_nTexture = int32_t (pSide->m_nBaseTex & TEXTURE_ID_MASK);
 	}
-if (!m_nTexture)
-	m_nTexture = int32_t (pSide->m_nBaseTex & TEXTURE_ID_MASK);
 }
 
 //------------------------------------------------------------------------------
@@ -878,29 +900,34 @@ if (bPolygonalOutline) {
 
 void CMeshEdge::Setup (void)
 {
-m_fScale = 1.0f;
-m_fSplit = 0.0f;
-m_vOffset.SetZero ();
-m_fDot = (m_nFaces == 1) ? 0.0f : fabs (CFloatVector::Dot (Normal (0), Normal (1)));
-if (Planar () && (m_faces [0].m_nTexture != m_faces [1].m_nTexture))
-	m_fDot = PartialAngle () + (PlanarAngle () - PartialAngle ()) * 0.5f;
-if (Partial () && (m_faces [0].m_nTexture == m_faces [1].m_nTexture)) { 
-	m_fScale = 0.5f + 0.25f * (1.0f - m_fDot * m_fDot);
-	if (m_fScale < 0.75f) {
-		if (Rand (8) == 0)
-			m_fSplit = 0.3f + 0.4f * RandFloat ();
-		else {
-			m_fSplit = 0.0f;
-			m_vOffset = Vertex (1);
-			m_vOffset -= Vertex (0);
+if (!m_bValid) {
+	for (int32_t i = 0; i < m_nFaces; i++)
+		m_faces [i].Setup ();
+
+	m_fScale = 1.0f;
+	m_fSplit = 0.0f;
+	m_vOffset.SetZero ();
+	m_fDot = (m_nFaces == 1) ? 0.0f : fabs (CFloatVector::Dot (Normal (0), Normal (1)));
+	if (Planar () && (m_faces [0].m_nTexture != m_faces [1].m_nTexture))
+		m_fDot = PartialAngle () + (PlanarAngle () - PartialAngle ()) * 0.5f;
+	if (Partial () && (m_faces [0].m_nTexture == m_faces [1].m_nTexture)) { 
+		m_fScale = 0.5f + 0.25f * (1.0f - m_fDot * m_fDot);
+		if (m_fScale < 0.75f) {
+			if (Rand (8) == 0)
+				m_fSplit = 0.3f + 0.4f * RandFloat ();
+			else {
+				m_fSplit = 0.0f;
+				m_vOffset = Vertex (1);
+				m_vOffset -= Vertex (0);
 #if 1
-			if (Rand (2) == 0)
-				m_fOffset = 1.0f - m_fScale;
+				if (Rand (2) == 0)
+					m_fOffset = 1.0f - m_fScale;
 #else
-			m_fOffset = (1.0f - m_fScale) * 0.25f;
-			m_fOffset *= m_fOffset + (2.0f * m_fOffset) * RandFloat ();
+				m_fOffset = (1.0f - m_fScale) * 0.25f;
+				m_fOffset *= m_fOffset + (2.0f * m_fOffset) * RandFloat ();
 #endif
-			m_vOffset *= m_fOffset;
+				m_vOffset *= m_fOffset;
+				}
 			}
 		}
 	}
@@ -923,6 +950,7 @@ int32_t CMeshEdge::Prepare (CFloatVector vViewer, int32_t nFilter, float fDistan
 if ((gameStates.render.nType == RENDER_TYPE_OBJECTS) && (m_nFaces < 2))
 	BRP;
 #endif
+Setup ();
 
 int32_t nType = Type ();
 if (nType < 0)
@@ -1278,7 +1306,7 @@ RenderCockpitModel ();
 #endif
 #if 1
 gameStates.render.SetCartoonStyle (gameOpts->render.bCartoonize);
-gameStates.render.EnableCartoonStyle ();
+gameStates.render.EnableCartoonStyle (1);
 RenderSkyBoxObjects ();
 RenderSegmentList (RENDER_TYPE_GEOMETRY);
 #if 1
