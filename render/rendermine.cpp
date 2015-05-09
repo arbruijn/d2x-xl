@@ -1146,7 +1146,7 @@ for (int32_t j = 0; j < 2; j++) {
 				w *= 2.0f / 3.0f;
 			if (nScale)
 				w /= float (nScale * 2);
-			w = Clamp (w + 0.5f, lineWidthRange [0], lineWidthRange [1]);
+			w = Clamp (w + 0.5f, lineWidthRange [0], Min (lineWidthRange [1], 10.f));
 			glLineWidth (w);
 			OglDrawArrays (GL_LINES, 0, n);
 			glPointSize (w);
@@ -1171,7 +1171,7 @@ for (int32_t j = 0; j < 2; j++) {
 							w *= 2.0f / 3.0f;
 						if (d)
 							w /= float (d * 2);
-						w = Clamp (w + 0.5f, lineWidthRange [0], lineWidthRange [1]);
+						w = Clamp (w + 0.5f, lineWidthRange [0], Min (lineWidthRange [1], 10.f));
 						glLineWidth (w);
 						OglDrawArrays (GL_LINES, i, n);
 						glPointSize (w);
