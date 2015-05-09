@@ -2295,7 +2295,7 @@ class CSegmentData {
 		inline bool HaveGrid (int32_t bSkyBox) { return grids [bSkyBox].Available (); }
 
 		int32_t CountEdges (void);
-		CMeshEdge *FindEdge (int16_t nVertex1, int16_t nVertex2);
+		int32_t FindEdge (int16_t nVertex1, int16_t nVertex2, int32_t nStart);
 		int32_t AddEdge (int16_t nSegment, int16_t nSide, int16_t nVertex1, int16_t nVertex2);
 		int32_t BuildEdgeList (void);
 	};

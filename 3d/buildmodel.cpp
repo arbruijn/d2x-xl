@@ -537,6 +537,7 @@ if (i >= 0) {
 	if (pEdge->m_nFaces < 1)
 		i = FindEdge (pModel, v1, v2);
 	pEdge->m_nFaces = 2;
+	pEdge->m_faces [1].m_bValid = 1;
 	pEdge->m_faces [1].m_nItem = pFace->m_nSubModel;
 	pEdge->m_faces [1].m_vNormal [0].Assign (pFace->m_vNormalf [0]);
 	pEdge->m_faces [1].m_vCenter [0].Assign (pFace->m_vCenterf [0]);
@@ -551,6 +552,7 @@ else {
 	pEdge->m_vertices [0][1].Assign (pModel->m_vertices [v2]);
 	if (pFace->m_nSubModel < 0)
 		BRP;
+	pEdge->m_faces [0].m_bValid = 1;
 	pEdge->m_faces [0].m_nItem = pFace->m_nSubModel;
 	pEdge->m_faces [0].m_vNormal [0].Assign (pFace->m_vNormalf [0]);
 	pEdge->m_faces [0].m_vCenter [0].Assign (pFace->m_vCenterf [0]);

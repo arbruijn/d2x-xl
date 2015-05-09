@@ -830,9 +830,16 @@ return nVisible;
 
 int32_t CMeshEdge::Type (void)
 {
+#if DBG
+if ((m_nVertices [0] == 110) && (m_nVertices [1] == 111)) {
+	for (int32_t i = 0; i < m_nFaces; i++)
+		if ((m_faces [i].m_nItem == nDbgSeg) && ((nDbgSide < 0) || (m_faces [i].m_nFace == nDbgSide)))
+			BRP;
+	}
+#endif
 for (int32_t i = 0; i < m_nFaces; i++)
 	if (!m_faces [i].Visible ())
-	return -1;
+		return -1;
 int32_t h = Visibility ();
 return ((h == 0) ? -1 : (h != 3) ? 0 : Planar () ? -1 : Partial () ? 2 : 1);
 }
@@ -902,6 +909,10 @@ void CMeshEdge::Setup (void)
 {
 if (!m_bValid) {
 	m_bValid = 1;
+#if DBG
+	if ((m_nVertices [0] == 110) && (m_nVertices [1] == 111))
+		BRP;
+#endif
 	for (int32_t i = 0; i < m_nFaces; i++)
 		m_faces [i].Setup ();
 

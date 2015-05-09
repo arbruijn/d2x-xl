@@ -1667,46 +1667,80 @@ return nEdges;
 
 //------------------------------------------------------------------------------
 
-CMeshEdge *CSegmentData::FindEdge (int16_t nVertex1, int16_t nVertex2)
+int32_t CSegmentData::FindEdge (int16_t nVertex1, int16_t nVertex2, int32_t nStart)
 {
-	CMeshEdge	*pEdge = gameData.segData.edges.Buffer ();
+	CMeshEdge *pEdge = &edges [nStart];
 
-for (int32_t i = gameData.segData.nEdges; i; i--, pEdge++)
+for (int32_t i = nStart; i < gameData.segData.nEdges; i++, pEdge++)
 	if ((pEdge->m_nVertices [0] == nVertex1) && (pEdge->m_nVertices [1] == nVertex2))
-		return pEdge;
-return NULL;
+		return i;
+return -1;
 }
 
 //------------------------------------------------------------------------------
+
+void SortEdgeFaces (CEdgeFaceInfo faces [])
+{
+if ((faces [1].m_nItem < faces [0].m_nItem) || ((faces [1].m_nItem == faces [0].m_nItem) && ((faces [1].m_nFace < faces [0].m_nFace)))) {
+	Swap (faces [1].m_nItem, faces [0].m_nItem);
+	Swap (faces [1].m_nFace, faces [0].m_nFace);
+	}
+}
+
 
 int32_t CSegmentData::AddEdge (int16_t nSegment, int16_t nSide, int16_t nVertex1, int16_t nVertex2)
 {
 if (nVertex1 > nVertex2)
 	Swap (nVertex1, nVertex2);
-CMeshEdge *pEdge = FindEdge (nVertex1, nVertex2);
+
+#if DBG
+if ((nVertex1 == 110) && (nVertex2 == 111))
+	BRP;
+#endif
+
+int32_t nEdge = FindEdge (nVertex1, nVertex2, 0);
 
 int32_t i;
 
-if (pEdge) {
-	if (pEdge->m_nFaces < 2) 
+if (nEdge >= 0) {
+	CMeshEdge *pEdge = &edges [nEdge];
+	if (pEdge->m_nFaces < 2) {
 		pEdge->m_nFaces = 2;
+		pEdge->m_faces [1].Setup (nSegment, nSide);
+		SortEdgeFaces (pEdge->m_faces);
+		}
 	else {
-		CMeshEdge *newEdgeP = &gameData.segData.edges [gameData.segData.nEdges++];
-		memcpy (newEdgeP, pEdge, sizeof (CMeshEdge));
-		pEdge = newEdgeP;
+		// this edge shares vertices with another edge
+		// create two new edges with the faces from the existing edge
+#if DBG
+		if ((nVertex1 == 110) && (nVertex2 == 111))
+			BRP;
+#endif
+		do {
+			pEdge = &edges [nEdge];
+			CMeshEdge *pNewEdge = &gameData.segData.edges [gameData.segData.nEdges++];
+			memcpy (pNewEdge, pEdge, sizeof (CMeshEdge));
+			pNewEdge->m_faces [0].Setup (nSegment, nSide);
+			SortEdgeFaces (pNewEdge->m_faces);
+			pNewEdge = &gameData.segData.edges [gameData.segData.nEdges++];
+			memcpy (pNewEdge, pEdge, sizeof (CMeshEdge));
+			pNewEdge->m_faces [1].Setup (nSegment, nSide);
+			SortEdgeFaces (pNewEdge->m_faces);
+			nEdge = FindEdge (nVertex1, nVertex2, nEdge + 1);
+			} while (nEdge >= 0);
 		}
 	i = 1;
 	}
 else {
 	i = 0;
-	pEdge = &gameData.segData.edges [gameData.segData.nEdges++];
+	CMeshEdge *pEdge = &edges [nEdges++];
 	pEdge->m_nVertices [0] = nVertex1;
 	pEdge->m_nVertices [1] = nVertex2;
-	pEdge->m_vertices [0][0] = gameData.segData.fVertices [nVertex1];
-	pEdge->m_vertices [0][1] = gameData.segData.fVertices [nVertex2];
+	pEdge->m_vertices [0][0] = fVertices [nVertex1];
+	pEdge->m_vertices [0][1] = fVertices [nVertex2];
 	pEdge->m_nFaces = 1;
+	pEdge->m_faces [0].Setup (nSegment, nSide);
 	}
-pEdge->m_faces [i].Setup (nSegment, nSide);
 if (i == 0)
 	return 1;
 return 0;
