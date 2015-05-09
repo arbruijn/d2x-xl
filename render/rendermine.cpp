@@ -1167,10 +1167,11 @@ for (int32_t j = 0; j < 2; j++) {
 				for (int32_t d = 0; d < 32; d++) {
 					int32_t n = gameData.segData.edgeVertexData [j].VertexCountPerDist (d) * 2;
 					if (n) {
-						float w = fScale * fLineWidths [j];
+						float w = fScale * fLineWidths [0];
 						if (d)
 							w /= float (d * 2);
 						w = Clamp (w, lineWidthRange [0], lineWidthRange [1]);
+						w /= float (j + 1);
 						glLineWidth (w);
 						OglDrawArrays (GL_LINES, i, n);
 						glPointSize (w);
