@@ -138,6 +138,20 @@ return IsFacingViewer (0) != IsFacingViewer (1);
 }
 
 //------------------------------------------------------------------------------
+
+float CModelEdge::PlanarAngle (void)
+{
+return 0.97f;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CModelEdge::Planar (void)
+{
+return m_fDot > PlanarAngle ();
+}
+
+//------------------------------------------------------------------------------
 // -1: edge invisible
 // 0: contour
 // 1: both faces visible
@@ -149,7 +163,7 @@ if (m_nFaces < 2)
 	return -1;
 #endif
 int32_t h = Visibility ();
-return (h == 0) ? -1 : (h != 3) ? 0 : (m_fDot < 0.975f) ? (m_fScale < 1.0f) ? 2 : 1 : -1;
+return (h == 0) ? -1 : (h != 3) ? 0 : Planar () ? (m_fScale < 1.0f) ? 2 : 1 : -1;
 }
 
 //------------------------------------------------------------------------------

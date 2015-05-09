@@ -769,7 +769,21 @@ return nVisible;
 int32_t CMeshEdge::Type (void)
 {
 int32_t h = Visibility ();
-return ((h == 0) ? -1 : (h != 3) ? 0 : (m_fDot > 0.97f) ? -1 : (m_fScale < 1.0f) ? 2 : 1);
+return ((h == 0) ? -1 : (h != 3) ? 0 : Planar () ? -1 : (m_fScale < 1.0f) ? 2 : 1);
+}
+
+//------------------------------------------------------------------------------
+
+float CMeshEdge::PlanarAngle (void)
+{
+return 0.97f;
+}
+
+//------------------------------------------------------------------------------
+
+int32_t CMeshEdge::Planar (void)
+{
+return m_fDot > PlanarAngle ();
 }
 
 //------------------------------------------------------------------------------

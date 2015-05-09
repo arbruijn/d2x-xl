@@ -2118,6 +2118,8 @@ class CMeshEdge {
 		void Transform (void);
 		virtual int32_t Visibility (void);
 		virtual int32_t Type (void);
+		virtual float PlanarAngle (void);
+		virtual int32_t Planar (void);
 		virtual int32_t Partial (void);
 		virtual CFloatVector& Normal (int32_t i);
 		virtual CFloatVector& Vertex (int32_t i, int32_t bTransformed = 0);
