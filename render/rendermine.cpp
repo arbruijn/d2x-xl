@@ -901,6 +901,7 @@ if (bPolygonalOutline) {
 void CMeshEdge::Setup (void)
 {
 if (!m_bValid) {
+	m_bValid = 1;
 	for (int32_t i = 0; i < m_nFaces; i++)
 		m_faces [i].Setup ();
 
@@ -950,7 +951,6 @@ int32_t CMeshEdge::Prepare (CFloatVector vViewer, int32_t nFilter, float fDistan
 if ((gameStates.render.nType == RENDER_TYPE_OBJECTS) && (m_nFaces < 2))
 	BRP;
 #endif
-Setup ();
 
 int32_t nType = Type ();
 if (nType < 0)
@@ -1163,6 +1163,7 @@ if (bPolygonalOutline) // only needed when transforming edge vertices by softwar
 	ogl.SetupTransform (1);
 #endif
 for (int32_t i = gameData.segData.nEdges; i; i--, pEdge++) {
+	pEdge->Setup ();
 	int32_t nVisible = 0;
 	for (int32_t j = 0; j < 2; j++) {
 		int16_t nSegment = pEdge->m_faces [j].m_nItem;
