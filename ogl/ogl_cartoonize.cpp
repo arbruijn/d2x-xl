@@ -609,25 +609,25 @@ void CreateOutline (tRGBA *pTexture, int32_t w, int32_t h, int32_t tw, int32_t n
 
 for (int32_t nPass = 0; nPass < nPasses; nPass++, nTag--) {
 	for (int32_t y = nStart; y < h; y += nStep) {
-		int32_t h = y * tw;
-		for (int32_t x = 0; x < w; x++, h++) {
-			if (pTexture [h].a)
+		int32_t i = y * tw;
+		for (int32_t x = 0; x < w; x++, i++) {
+			if (pTexture [i].a)
 				continue;
 			for (int32_t o = 0; o < 9; o++) {
-				int32_t i = offsets [o];
-				if (i == 0)
+				int32_t j = offsets [o];
+				if (j == 0)
 					continue;
-				if (i < h)
+				if (j < i)
 					continue;
-				i += h;
-				if (i >= l)
+				j += i;
+				if (j >= l)
 					continue;
-				if (ogl.m_data.outlineFilter [i] >= nTag) {
-					ogl.m_data.outlineFilter [h] = nTag;
-					pTexture [h].r = 
-					pTexture [h].g = 
-					pTexture [h].b = 0;
-					pTexture [h].a = 255;
+				if (ogl.m_data.outlineFilter [j] >= nTag) {
+					ogl.m_data.outlineFilter [i] = nTag;
+					pTexture [i].r = 
+					pTexture [i].g = 
+					pTexture [i].b = 2;
+					pTexture [i].a = 255;
 					break;
 					}
 				}
