@@ -2116,14 +2116,17 @@ class CMeshEdge {
 			}
 		void Setup (void);
 		void Transform (void);
+		int32_t Prepare (CFloatVector vViewer, int32_t nFilter = 2, float fDistance = -1.0f);
+
+	protected:
 		virtual int32_t Visibility (void);
 		virtual int32_t Type (void);
+		virtual float PartialAngle (void);
 		virtual float PlanarAngle (void);
-		virtual int32_t Planar (void);
-		virtual int32_t Partial (void);
 		virtual CFloatVector& Normal (int32_t i);
 		virtual CFloatVector& Vertex (int32_t i, int32_t bTransformed = 0);
-		int32_t Prepare (CFloatVector vViewer, int32_t nFilter = 2, float fDistance = -1.0f);
+		int32_t Planar (void);
+		int32_t Partial (void);
 	};
 
 //------------------------------------------------------------------------------

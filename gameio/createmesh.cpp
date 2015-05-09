@@ -1649,7 +1649,7 @@ m_fSplit = 0.0f;
 m_vOffset.SetZero ();
 m_fDot = (m_nFaces == 1) ? 0.0f : fabs (CFloatVector::Dot (Normal (0), Normal (1)));
 if (Planar () && (m_faces [0].m_nTexture != m_faces [1].m_nTexture))
-	m_fDot = PlanarAngle ();
+	m_fDot = PartialAngle ();
 if (Partial ()) { 
 	m_fScale = 0.5f + 0.25f * (1.0f - m_fDot * m_fDot);
 	if (m_fScale < 0.75f) {
