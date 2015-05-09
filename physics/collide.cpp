@@ -1017,7 +1017,7 @@ if (!IsStatic ()) {
 		CreateExplosion (nCollisionSeg, vHitPt, gameData.weapons.info [0].xImpactSize, gameData.weapons.info [0].nWallHitAnimation);
 	if (playerObjP->info.nId == N_LOCALPLAYER) {
 		if (IsGuideBot ())
-			return; //	Player and companion don't collide.
+			return 0; //	Player and companion don't collide.
 		tRobotInfo *botInfoP = ROBOTINFO (info.nId);
 		if (botInfoP && botInfoP->kamikaze) {
 			ApplyDamageToRobot (info.xShield + 1, OBJ_IDX (playerObjP));
@@ -1878,7 +1878,7 @@ int32_t CObject::CollidePlayerAndNastyRobot (CObject* robotP, CFixVector& vHitPt
 //	if (!(ROBOTINFO (objP)->energyDrain && PLAYER (info.nId).energy))
 tRobotInfo* botInfoP = ROBOTINFO (robotP);
 if (!botInfoP)
-	return;
+	return 0;
 CreateExplosion (info.nSegment, vHitPt, I2X (10) / 2, ANIM_PLAYER_HIT);
 if (BumpTwoObjects (this, robotP, 0, vHitPt)) {//no damage from bump
 	audio.CreateSegmentSound (botInfoP->clawSound, info.nSegment, 0, vHitPt);
@@ -1924,7 +1924,7 @@ int32_t CObject::CollideRobotAndObjProducer (void)
 
 tRobotInfo* botInfoP = ROBOTINFO (info.nId);
 if (!botInfoP)
-	return;
+	return 0;
 CreateSound (SOUND_ROBOT_HIT);
 //	audio.PlaySound (SOUND_ROBOT_HIT);
 if (botInfoP->nExp1VClip > -1)

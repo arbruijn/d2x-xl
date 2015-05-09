@@ -933,11 +933,19 @@ int32_t CLightmapManager::Load (int32_t nLevel)
 	char						szFilename [FILENAME_LEN];
 	CSegFace*				faceP;
 
-if (!(gameStates.app.bCacheLightmaps))
+if (!(gameStates.app.bCacheLightmaps)) {
+	PrintLog (0, "lightmap caching is disabled\n");
 	return 0;
+	}
 if (!cf.Open (Filename (szFilename, nLevel), gameFolders.var.szLightmaps, "rb", 0) &&
-	 !cf.Open (Filename (szFilename, nLevel), gameFolders.var.szCache, "rb", 0))
+	 !cf.Open (Filename (szFilename, nLevel), gameFolders.var.szCache, "rb", 0)) {
+	PrintLog (0, "Couldn't read lightmap file '%s'\n", Filename (szFilename, nLevel));
+	if (*gameFolders.var.szLightmaps)
+		PrintLog (0, "   Checked folder '%s'\n", gameFolders.var.szLightmaps);
+	if (*gameFolders.var.szCache)
+		PrintLog (0, "   Checked folder '%s'\n", gameFolders.var.szCache);
 	return 0;
+	}
 bOk = (cf.Read (&ldh, sizeof (ldh), 1) == 1);
 if (!bOk) 
 	PrintLog (0, "Error reading lightmap header data\n");
@@ -985,6 +993,8 @@ if (bOk) {
 #if 1
 	if (gameOpts->render.color.nLevel < 2)
 		ToGrayScale ();
+#endif
+#if 1
 	if (gameStates.render.bCartoonize)
 		Posterize ();
 #endif
