@@ -756,7 +756,7 @@ if (!pWall)
 	return 1;
 if (pWall->IsInvisible ())
 	return 0;
-if (pWall->IsPassable (NULL, false) & WID_NO_WALL)
+if (pWall->IsPassable (NULL, false) & /*WID_NO_WALL*/WID_TRANSPARENT_FLAG)
 	return 0;
 return 1;
 }
@@ -775,18 +775,18 @@ m_nFace = nSide;
 
 //------------------------------------------------------------------------------
 
-void CEdgeFaceInfo::Setup (int16_t nSegment, int16_t nSide)
+void CEdgeFaceInfo::Setup (void)
 {
 if (!m_bValid) {
 	m_bValid = 1;
-	CSide* pSide = gameData.Segment (nSegment)->Side (nSide);
+	CSide* pSide = gameData.Segment (m_nItem)->Side (m_nFace);
 	m_vNormal [0] = pSide->Normalf (2);
 	m_vCenter [0].Assign (pSide->Center ());
 	m_nWall = pSide->WallNum ();
 	if (!IS_WALL (m_nWall))
 		m_nWall = -1;
 	#if DBG
-	if ((nSegment == nDbgSeg) && ((nDbgSide < 0) || (nSide == nDbgSide)))
+	if ((m_nItem == nDbgSeg) && ((nDbgSide < 0) || (m_nFace == nDbgSide)))
 		BRP;
 	#endif
 	m_nTexture = int32_t (pSide->m_nOvlTex & TEXTURE_ID_MASK);
