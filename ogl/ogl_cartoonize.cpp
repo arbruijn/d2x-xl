@@ -706,7 +706,7 @@ if (pBm->m_info.bCartoonizable && (gameStates.render.bCartoonize < 0)) {
 #endif
 	Posterize (pBuffer, w, h, tw, nColors);
 	if (gameStates.render.bOutlineTextures && (nColors == 4) && !strstr (pBm->Name (), "lava") && !strstr (pBm->Name (), "water"))
-		Outline (pBuffer, w, h, tw, s);
+		Outline (pBuffer, w, h, tw, 1 << s);
 	}
 return pBuffer;
 }

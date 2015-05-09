@@ -1716,18 +1716,20 @@ if (nEdge >= 0) {
 		if ((nVertex1 == 110) && (nVertex2 == 111))
 			BRP;
 #endif
+		int32_t nEdges = gameData.segData.nEdges;
 		do {
 			pEdge = &edges [nEdge];
-			CMeshEdge *pNewEdge = &gameData.segData.edges [gameData.segData.nEdges++];
+			CMeshEdge *pNewEdge = &gameData.segData.edges [nEdges++];
 			memcpy (pNewEdge, pEdge, sizeof (CMeshEdge));
 			pNewEdge->m_faces [0].Setup (nSegment, nSide);
 			SortEdgeFaces (pNewEdge->m_faces);
-			pNewEdge = &gameData.segData.edges [gameData.segData.nEdges++];
+			pNewEdge = &gameData.segData.edges [nEdges++];
 			memcpy (pNewEdge, pEdge, sizeof (CMeshEdge));
 			pNewEdge->m_faces [1].Setup (nSegment, nSide);
 			SortEdgeFaces (pNewEdge->m_faces);
 			nEdge = FindEdge (nVertex1, nVertex2, nEdge + 1);
 			} while (nEdge >= 0);
+		gameData.segData.nEdges = nEdges;
 		}
 	i = 1;
 	}
