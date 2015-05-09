@@ -1106,7 +1106,7 @@ if (!bPolygonalOutline)
 
 void RenderMeshOutline (int32_t nScale)
 {
-float	fLineWidths [2] = { automap.Active () ? 3.0f : 5.0f, automap.Active () ? 1.5f : 2.5f };
+float	fLineWidths [2] = { automap.Active () ? 2.0f : 3.0f, automap.Active () ? 1.0f : 2.0f };
 
 ogl.SetBlendMode (GL_LEQUAL);
 ogl.SetDepthWrite (true);
