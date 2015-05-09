@@ -1132,7 +1132,7 @@ class CRenderStates {
 
 		inline int32_t ToggleCartoonStyle (void) { return SetCartoonStyle (-bCartoonize); }
 
-		inline int32_t CRenderStates::EnableCartoonStyle (int32_t bOutline) {
+		inline int32_t CRenderStates::EnableCartoonStyle (int32_t bOutline = 0) {
 			bOutlineTextures = bOutline;
 			return ToggleCartoonStyle ();
 			}
