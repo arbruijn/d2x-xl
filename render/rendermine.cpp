@@ -776,7 +776,7 @@ return ((h == 0) ? -1 : (h != 3) ? 0 : (m_fDot > 0.97f) ? -1 : (m_fScale < 1.0f)
 
 int32_t CMeshEdge::Partial (void)
 {
-return m_fDot > 0.9f;
+return (m_fDot > 0.9f);
 }
 
 //------------------------------------------------------------------------------

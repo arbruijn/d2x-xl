@@ -1647,9 +1647,9 @@ void CMeshEdge::Setup (void)
 m_fScale = 1.0f;
 m_fSplit = 0.0f;
 m_vOffset.SetZero ();
-m_fDot = (m_nFaces == 1) ? 0.0f : fabs (CFloatVector::Dot (Normal (0), Normal (1)));
-if (Partial ()/* && (m_fDot <= 0.975f)*/) { 
-	m_fScale = 0.5f;// + 0.5f * (1.0f - m_fDot * m_fDot);
+m_fDot = (m_nFaces == 1) ? 0.0f : (m_faces [0].m_nTexture != m_faces [1].m_nTexture) ? 0.5f : fabs (CFloatVector::Dot (Normal (0), Normal (1)));
+if (Partial ()) { 
+	m_fScale = 0.5f + 0.25f * (1.0f - m_fDot * m_fDot);
 	if (m_fScale < 0.75f) {
 		if (Rand (8) == 0)
 			m_fSplit = 0.3f + 0.4f * RandFloat ();
@@ -1740,8 +1740,10 @@ else {
 	}
 edgeP->m_faces [i].m_nItem = nSegment;
 edgeP->m_faces [i].m_nFace = nSide;
-edgeP->m_faces [i].m_vNormal [0] = gameData.Segment (nSegment)->Side (nSide)->Normalf (2);
-edgeP->m_faces [i].m_vCenter [0].Assign (gameData.Segment (nSegment)->Side (nSide)->Center ());
+CSide* sideP = gameData.Segment (nSegment)->Side (nSide);
+edgeP->m_faces [i].m_vNormal [0] = sideP->Normalf (2);
+edgeP->m_faces [i].m_vCenter [0].Assign (sideP->Center ());
+edgeP->m_faces [i].m_nTexture = int32_t (sideP->m_nBaseTex & TEXTURE_ID_MASK) | (int32_t (sideP->m_nBaseTex & TEXTURE_ID_MASK) << 16);
 
 if (i == 0)
 	return 1;

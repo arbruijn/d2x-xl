@@ -2084,16 +2084,19 @@ typedef struct tVertexOwner {
 
 //------------------------------------------------------------------------------
 
-#define POLYGONAL_OUTLINE 0
+#define POLYGONAL_OUTLINE	0
+#define TEXTURE_ID_MASK		0x3FFF // mask off the part of a texture number containing the actual id. The upper 2 bits contain the orientation (0 / 90 / 180 / 270 deg)
+
 
 class CEdgeFaceInfo {
 	public:
 		int16_t			m_nItem;		// segment / (sub) model id
 		int16_t			m_nFace;
+		int32_t			m_nTexture;
 		CFloatVector	m_vNormal [2];
 		CFloatVector	m_vCenter [2];
 
-		CEdgeFaceInfo () : m_nItem (-1), m_nFace (-1) {}
+		CEdgeFaceInfo () : m_nItem (-1), m_nFace (-1), m_nTexture (0) {}
 	};
 
 class CMeshEdge {

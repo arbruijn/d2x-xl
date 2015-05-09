@@ -166,8 +166,6 @@ for (i = 0;; i++) {
 return 0;
 }
 
-#define TMAP_NUM_MASK 0x3FFF
-
 //	-----------------------------------------------------------------------------------------------------------
 /* Converts descent 1 texture numbers to descent 2 texture numbers.
  * gameData.pig.tex.bmIndex from d1 which are unique to d1 have extra spaces around "return".
@@ -378,8 +376,8 @@ int16_t ConvertD1Texture (int16_t nD1Texture, int32_t bForce)
 			}
 
  { // handle rare case where orientation != 0
-		int16_t nTexture = nD1Texture & TMAP_NUM_MASK;
-		int16_t orient = nD1Texture & ~TMAP_NUM_MASK;
+		int16_t nTexture = nD1Texture & TEXTURE_ID_MASK;
+		int16_t orient = nD1Texture & ~TEXTURE_ID_MASK;
 	if (orient)
 		return orient | ConvertD1Texture (nTexture, bForce);
 	//Warning (TXT_D1TEXTURE, nTexture);
